@@ -20,6 +20,8 @@ NEW_COUNT=0
 UPDATE_COUNT=0
 
 for page in $PAGES; do
+  # changelogは除外
+  [[ "$page" == "changelog" ]] && continue
   FILE="$PAGES_DIR/${page}-ja.md"
   URL="${BASE_URL}/${page}.md"
 
