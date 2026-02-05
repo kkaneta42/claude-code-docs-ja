@@ -33,15 +33,28 @@ jobs:
 
           # diffを取得
           DIFF=$(git diff --staged --stat)
+          echo "=== DIFF ==="
+          echo "$DIFF"
 
           # Geminiで要約生成
-          PROMPT="以下のgit diffの変更点を日本語で1-2行で簡潔に要約してください。技術的な内容は保持しつつ、分かりやすく。\n\n${DIFF}"
+          REQUEST=$(jq -n --arg prompt "以下のgit diffの変更点を日本語で1-2行で簡潔に要約してください。技術的な内容は保持しつつ、分かりやすく。
 
-          SUMMARY=$(curl -s "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}" \
+$DIFF" '{contents:[{parts:[{text:$prompt}]}]}')
+
+          echo "=== REQUEST ==="
+          echo "$REQUEST"
+
+          RESPONSE=$(curl -s "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}" \
             -H 'Content-Type: application/json' \
-            -d "$(jq -n --arg prompt "$PROMPT" '{contents:[{parts:[{text:$prompt}]}]}')" \
-            | jq -r '.candidates[0].content.parts[0].text' \
-            | head -3)
+            -d "$REQUEST")
+
+          echo "=== RESPONSE ==="
+          echo "$RESPONSE"
+
+          SUMMARY=$(echo "$RESPONSE" | jq -r '.candidates[0].content.parts[0].text' | tr '\n' ' ' | head -c 200)
+
+          echo "=== SUMMARY ==="
+          echo "$SUMMARY"
 
           # 要約が取得できなければデフォルトメッセージ
           if [ -z "$SUMMARY" ] || [ "$SUMMARY" = "null" ]; then
