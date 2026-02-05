@@ -4,6 +4,8 @@
 
 # Claude Code 概要
 
+<!-- テスト用の変更: この行は公式にはありません -->
+
 > Anthropic の agentic coding ツール Claude Code について学びます。Claude Code はターミナルで動作し、アイデアをコードに変えるのを今までより速く支援します。
 
 ## 30 秒で始める
