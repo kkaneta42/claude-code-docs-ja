@@ -2,8 +2,8 @@ name: Update Japanese Docs
 
 on:
   schedule:
-    - cron: '0 0 * * *'  # 毎日UTC 0時（日本時間9時）
-  workflow_dispatch:      # 手動実行
+    - cron: '0 0 * * *'
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -25,21 +25,18 @@ jobs:
           git config user.email 'github-actions[bot]@users.noreply.github.com'
           git add -A
 
-          # 変更がなければ終了
           if git diff --staged --quiet; then
             echo "No changes"
             exit 0
           fi
 
-          # diffを取得
           DIFF=$(git diff --staged --stat)
           echo "=== DIFF ==="
           echo "$DIFF"
 
-          # Geminiで要約生成
-          REQUEST=$(jq -n --arg prompt "以下のgit diffの変更点を日本語で1-2行で簡潔に要約してください。技術的な内容は保持しつつ、分かりやすく。
+          PROMPT="以下のgit diffの変更点を日本語で1-2行で簡潔に要約してください。技術的な内容は保持しつつ、分かりやすく。変更点: ${DIFF}"
 
-$DIFF" '{contents:[{parts:[{text:$prompt}]}]}')
+          REQUEST=$(jq -n --arg prompt "$PROMPT" '{contents:[{parts:[{text:$prompt}]}]}')
 
           echo "=== REQUEST ==="
           echo "$REQUEST"
@@ -56,7 +53,6 @@ $DIFF" '{contents:[{parts:[{text:$prompt}]}]}')
           echo "=== SUMMARY ==="
           echo "$SUMMARY"
 
-          # 要約が取得できなければデフォルトメッセージ
           if [ -z "$SUMMARY" ] || [ "$SUMMARY" = "null" ]; then
             SUMMARY="ドキュメント更新"
           fi
