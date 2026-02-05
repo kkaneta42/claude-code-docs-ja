@@ -4,9 +4,10 @@
 SCRIPT_DIR="$(dirname "$0")"
 DOCS_DIR="$(dirname "$SCRIPT_DIR")"
 PAGES_DIR="$DOCS_DIR/pages"
-CACHE_FILE="$DOCS_DIR/.cache"
-BASE_URL="https://code.claude.com/docs/ja"
+BASE_URL_JA="https://code.claude.com/docs/ja"
+BASE_URL_EN="https://code.claude.com/docs/en"
 LLMS_URL="https://code.claude.com/docs/llms.txt"
+CHANGELOG_URL="https://raw.githubusercontent.com/anthropics/claude-code/main/CHANGELOG.md"
 
 mkdir -p "$PAGES_DIR"
 
@@ -15,39 +16,17 @@ echo "🔍 ページ一覧を取得中..."
 # llms.txt からページ候補を抽出
 PAGES=$(curl -s "$LLMS_URL" | grep -oE '/docs/en/[a-z0-9-]+\.md' | sed 's|/docs/en/||;s|\.md||' | sort -u)
 
-# 日本語版の存在チェック & 更新
-NEW_COUNT=0
-UPDATE_COUNT=0
-
+# 日本語版を試し、なければ英語版にフォールバック
 for page in $PAGES; do
-  # changelogは除外
   [[ "$page" == "changelog" ]] && continue
-  FILE="$PAGES_DIR/${page}-ja.md"
-  URL="${BASE_URL}/${page}.md"
-
-  # Last-Modified取得
-  HEADERS=$(curl -sI "$URL" 2>/dev/null)
-  HTTP_CODE=$(echo "$HEADERS" | head -1 | grep -oE '[0-9]{3}')
-
-  [[ "$HTTP_CODE" != "200" ]] && continue
-
-  LAST_MOD=$(echo "$HEADERS" | grep -i "last-modified" | cut -d: -f2- | xargs)
-  CACHED=$(grep "^${page}=" "$CACHE_FILE" 2>/dev/null | cut -d= -f2-)
-
-  if [[ -z "$CACHED" ]]; then
-    # 新規
-    echo "🆕 $page"
-    curl -s "$URL" > "$FILE"
-    echo "${page}=${LAST_MOD}" >> "$CACHE_FILE"
-    ((NEW_COUNT++))
-  elif [[ "$CACHED" != "$LAST_MOD" ]]; then
-    # 更新
-    echo "📝 $page"
-    curl -s "$URL" > "$FILE"
-    sed -i.bak "s|^${page}=.*|${page}=${LAST_MOD}|" "$CACHE_FILE" && rm -f "$CACHE_FILE.bak"
-    ((UPDATE_COUNT++))
+  content=$(curl -s "${BASE_URL_JA}/${page}.md")
+  if [[ "$content" == "null" || -z "$content" ]]; then
+    content=$(curl -s "${BASE_URL_EN}/${page}.md")
   fi
+  echo "$content" > "$PAGES_DIR/${page}-ja.md"
 done
 
-echo ""
-echo "✅ 完了: 新規${NEW_COUNT}件、更新${UPDATE_COUNT}件"
+# CHANGELOG.md (GitHub)
+curl -s "$CHANGELOG_URL" > "$PAGES_DIR/changelog.md"
+
+echo "✅ 完了"

@@ -18,8 +18,7 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 ```
 docs-ja/
 ├── index.md          # ドキュメント一覧・ナビゲーション
-├── pages/            # 日本語ドキュメント
-├── .cache            # Last-Modifiedキャッシュ
+├── pages/            # 日本語ドキュメント・CHANGELOG
 └── scripts/          # 更新スクリプト
 
 .github/workflows/
@@ -30,10 +29,11 @@ docs-ja/
 
 - **ソース**: https://code.claude.com/docs/ja/
 - **自動実行**: GitHub Actions（毎日UTC 0時 = 日本時間9時）
-- **処理**: llms.txt解析 → 日本語版存在チェック → Last-Modified比較 → ダウンロード
+- **処理**: llms.txt解析 → 全ページダウンロード → git diffで変更検知
+- **CHANGELOG**: GitHub (`anthropics/claude-code`) から取得
 - **履歴**: Gitコミット履歴で管理
 
 ## 命名規則
 
 - ドキュメント: `{page-name}-ja.md`（例: `overview-ja.md`, `cli-reference-ja.md`）
-- キャッシュ形式: `page-name=Last-Modified日時`
+- CHANGELOG: `changelog.md`

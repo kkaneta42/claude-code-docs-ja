@@ -65,8 +65,8 @@
 - [データ使用](pages/data-usage-ja.md)
 - [法的・コンプライアンス](pages/legal-and-compliance-ja.md)
 
-## その他
-- [変更履歴](pages/changelog-ja.md)
+## リリース
+- [CHANGELOG](pages/changelog.md)
 
 ---
 *自動更新: `../scripts/check-updates.sh`*
