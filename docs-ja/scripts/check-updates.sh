@@ -22,8 +22,10 @@ for page in $PAGES; do
   content=$(curl -s "${BASE_URL_JA}/${page}.md")
   if [[ "$content" == "null" || -z "$content" ]]; then
     content=$(curl -s "${BASE_URL_EN}/${page}.md")
+    echo "$content" > "$PAGES_DIR/${page}-en.md"
+  else
+    echo "$content" > "$PAGES_DIR/${page}-ja.md"
   fi
-  echo "$content" > "$PAGES_DIR/${page}-ja.md"
 done
 
 # CHANGELOG.md (GitHub)
