@@ -31,27 +31,16 @@ jobs:
           fi
 
           DIFF=$(git diff --staged --stat)
-          echo "=== DIFF ==="
-          echo "$DIFF"
 
-          PROMPT="以下のgit diffの変更点を日本語で1-2行で簡潔に要約してください。技術的な内容は保持しつつ、分かりやすく。変更点: ${DIFF}"
+          PROMPT="以下のgit diffの変更点を50文字以内の日本語で要約してください。ファイル名と主な変更内容を含めてください。変更点: ${DIFF}"
 
           REQUEST=$(jq -n --arg prompt "$PROMPT" '{contents:[{parts:[{text:$prompt}]}]}')
-
-          echo "=== REQUEST ==="
-          echo "$REQUEST"
 
           RESPONSE=$(curl -s "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}" \
             -H 'Content-Type: application/json' \
             -d "$REQUEST")
 
-          echo "=== RESPONSE ==="
-          echo "$RESPONSE"
-
-          SUMMARY=$(echo "$RESPONSE" | jq -r '.candidates[0].content.parts[0].text' | tr '\n' ' ' | head -c 200)
-
-          echo "=== SUMMARY ==="
-          echo "$SUMMARY"
+          SUMMARY=$(echo "$RESPONSE" | jq -r '.candidates[0].content.parts[0].text' | tr '\n' ' ' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
 
           if [ -z "$SUMMARY" ] || [ "$SUMMARY" = "null" ]; then
             SUMMARY="ドキュメント更新"
