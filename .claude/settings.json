@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "/Users/k/Claude/docs-ja/scripts/check-updates.sh --quiet"
+            "command": "/Users/k/Claude/docs-ja/scripts/check-updates.sh --quiet && /Users/k/Claude/docs-ja/scripts/update-log.sh --quiet"
           }
         ]
       }

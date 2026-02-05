@@ -17,6 +17,9 @@ jobs:
       - name: Check for updates
         run: ./docs-ja/scripts/check-updates.sh
 
+      - name: Generate update log
+        run: TZ=Asia/Tokyo ./docs-ja/scripts/update-log.sh
+
       - name: Commit and push
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
