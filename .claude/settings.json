@@ -1,0 +1,14 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/k/Claude/docs-ja/scripts/check-updates.sh --quiet"
+          }
+        ]
+      }
+    ]
+  }
+}

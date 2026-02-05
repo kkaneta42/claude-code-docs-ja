@@ -1,0 +1,23 @@
+name: Update Japanese Docs
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # 毎日UTC 0時（日本時間9時）
+  workflow_dispatch:      # 手動実行
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for updates
+        run: ./docs-ja/scripts/check-updates.sh
+
+      - name: Commit and push
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git diff --staged --quiet || git commit -m "docs: update $(date +%Y-%m-%d)"
+          git push
