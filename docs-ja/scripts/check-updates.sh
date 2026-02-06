@@ -25,6 +25,8 @@ for page in $PAGES; do
     echo "$content" > "$PAGES_DIR/${page}-en.md"
   else
     echo "$content" > "$PAGES_DIR/${page}-ja.md"
+    # 日本語版が取得できたら英語版を削除
+    rm -f "$PAGES_DIR/${page}-en.md"
   fi
 done
 
