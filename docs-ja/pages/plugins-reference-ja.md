@@ -4,71 +4,25 @@
 
 # プラグインリファレンス
 
-> Claude Codeプラグインシステムの完全な技術リファレンス。スキーマ、CLIコマンド、コンポーネント仕様を含みます。
+> Claude Code プラグインシステムの完全な技術リファレンス。スキーマ、CLI コマンド、コンポーネント仕様を含みます。
 
 <Tip>
   プラグインをインストールしたいですか？[プラグインの発見とインストール](/ja/discover-plugins)を参照してください。プラグインの作成については、[プラグイン](/ja/plugins)を参照してください。プラグインの配布については、[プラグインマーケットプレイス](/ja/plugin-marketplaces)を参照してください。
 </Tip>
 
-このリファレンスは、Claude Codeプラグインシステムの完全な技術仕様を提供します。コンポーネントスキーマ、CLIコマンド、開発ツールを含みます。
+このリファレンスは、Claude Code プラグインシステムの完全な技術仕様を提供します。コンポーネントスキーマ、CLI コマンド、開発ツールを含みます。
 
 ## プラグインコンポーネントリファレンス
 
-このセクションでは、プラグインが提供できる5つのタイプのコンポーネントについて説明します。
+このセクションでは、プラグインが提供できるコンポーネントのタイプについて説明します。
 
-### コマンド
+### Skills
 
-プラグインは、Claude Codeのコマンドシステムとシームレスに統合されるカスタムスラッシュコマンドを追加します。
+プラグインは Claude Code にスキルを追加し、`/name` ショートカットを作成します。これらはあなたまたは Claude が呼び出すことができます。
 
-**場所**: プラグインルートの`commands/`ディレクトリ
+**場所**: プラグインルートの `skills/` または `commands/` ディレクトリ
 
-**ファイル形式**: フロントマター付きのMarkdownファイル
-
-プラグインコマンド構造、呼び出しパターン、機能の詳細については、[プラグインコマンド](/ja/slash-commands#plugin-commands)を参照してください。
-
-### エージェント
-
-プラグインは、特定のタスク用の専門的なサブエージェントを提供でき、Claude が必要に応じて自動的に呼び出すことができます。
-
-**場所**: プラグインルートの`agents/`ディレクトリ
-
-**ファイル形式**: エージェント機能を説明するMarkdownファイル
-
-**エージェント構造**:
-
-```markdown  theme={null}
----
-description: このエージェントが専門とする内容
-capabilities: ["task1", "task2", "task3"]
----
-
-# エージェント名
-
-エージェントの役割、専門知識、およびClaudeがそれを呼び出すべき時期の詳細な説明。
-
-## 機能
-- エージェントが得意とする特定のタスク
-- もう1つの専門的な機能
-- このエージェントと他のエージェントを使い分ける時期
-
-## コンテキストと例
-このエージェントを使用すべき時期と、それが解決する問題の種類の例を提供します。
-```
-
-**統合ポイント**:
-
-* エージェントは`/agents`インターフェイスに表示されます
-* Claudeはタスクコンテキストに基づいてエージェントを自動的に呼び出すことができます
-* エージェントはユーザーによって手動で呼び出すことができます
-* プラグインエージェントは組み込みのClaudeエージェントと一緒に機能します
-
-### スキル
-
-プラグインは、Claudeの機能を拡張するエージェントスキルを提供できます。スキルはモデル呼び出し型です。Claudeはタスクコンテキストに基づいて自動的に使用するかどうかを決定します。
-
-**場所**: プラグインルートの`skills/`ディレクトリ
-
-**ファイル形式**: フロントマター付きの`SKILL.md`ファイルを含むディレクトリ
+**ファイル形式**: スキルは `SKILL.md` を含むディレクトリです。コマンドはシンプルなマークダウンファイルです。
 
 **スキル構造**:
 
@@ -84,22 +38,47 @@ skills/
 
 **統合動作**:
 
-* プラグインスキルはプラグインがインストールされると自動的に検出されます
-* Claudeはマッチするタスクコンテキストに基づいてスキルを自動的に呼び出します
-* スキルはSKILL.mdの隣にサポートファイルを含めることができます
+* スキルとコマンドはプラグインがインストールされると自動的に検出されます
+* Claude はタスクコンテキストに基づいて自動的にそれらを呼び出すことができます
+* スキルは SKILL.md の横にサポートファイルを含めることができます
 
-SKILL.md形式とスキル作成の完全なガイダンスについては、以下を参照してください:
+詳細については、[スキル](/ja/skills)を参照してください。
 
-* [Claude CodeでスキルをUse](/ja/skills)
-* [エージェントスキル概要](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview#skill-structure)
+### Agents
 
-### フック
+プラグインは、Claude が適切な場合に自動的に呼び出すことができる特定のタスク用の特化した subagent を提供できます。
 
-プラグインは、Claude Codeイベントに自動的に応答するイベントハンドラーを提供できます。
+**場所**: プラグインルートの `agents/` ディレクトリ
 
-**場所**: プラグインルートの`hooks/hooks.json`、またはplugin.jsonにインライン
+**ファイル形式**: エージェント機能を説明するマークダウンファイル
 
-**形式**: イベントマッチャーとアクションを含むJSON設定
+**エージェント構造**:
+
+```markdown  theme={null}
+---
+name: agent-name
+description: このエージェントが専門とする内容と Claude がそれを呼び出すべき時期
+---
+
+エージェントの役割、専門知識、動作を説明する詳細なシステムプロンプト。
+```
+
+**統合ポイント**:
+
+* エージェントは `/agents` インターフェイスに表示されます
+* Claude はタスクコンテキストに基づいてエージェントを自動的に呼び出すことができます
+* エージェントはユーザーが手動で呼び出すことができます
+* プラグインエージェントは組み込み Claude エージェントと一緒に動作します
+
+詳細については、[Subagents](/ja/sub-agents)を参照してください。
+
+### Hooks
+
+プラグインは Claude Code イベントに自動的に応答するイベントハンドラーを提供できます。
+
+**場所**: プラグインルートの `hooks/hooks.json`、または plugin.json 内のインライン
+
+**形式**: イベントマッチャーとアクションを含む JSON 設定
 
 **フック設定**:
 
@@ -123,15 +102,15 @@ SKILL.md形式とスキル作成の完全なガイダンスについては、以
 
 **利用可能なイベント**:
 
-* `PreToolUse`: Claudeがツールを使用する前
-* `PostToolUse`: Claudeがツールを正常に使用した後
-* `PostToolUseFailure`: Claudeのツール実行が失敗した後
-* `PermissionRequest`: パーミッションダイアログが表示されたとき
-* `UserPromptSubmit`: ユーザーがプロンプトを送信したとき
-* `Notification`: Claude Codeが通知を送信するとき
-* `Stop`: Claudeが停止しようとするとき
-* `SubagentStart`: サブエージェントが開始されたとき
-* `SubagentStop`: サブエージェントが停止しようとするとき
+* `PreToolUse`: Claude がツールを使用する前
+* `PostToolUse`: Claude がツールを正常に使用した後
+* `PostToolUseFailure`: Claude ツール実行が失敗した後
+* `PermissionRequest`: パーミッションダイアログが表示されるとき
+* `UserPromptSubmit`: ユーザーがプロンプトを送信するとき
+* `Notification`: Claude Code が通知を送信するとき
+* `Stop`: Claude が停止を試みるとき
+* `SubagentStart`: subagent が開始されるとき
+* `SubagentStop`: subagent が停止を試みるとき
 * `SessionStart`: セッションの開始時
 * `SessionEnd`: セッションの終了時
 * `PreCompact`: 会話履歴がコンパクト化される前
@@ -139,18 +118,18 @@ SKILL.md形式とスキル作成の完全なガイダンスについては、以
 **フックタイプ**:
 
 * `command`: シェルコマンドまたはスクリプトを実行
-* `prompt`: LLMでプロンプトを評価（コンテキスト用に`$ARGUMENTS`プレースホルダーを使用）
-* `agent`: 複雑な検証タスク用にツールを備えたエージェント検証器を実行
+* `prompt`: LLM でプロンプトを評価（コンテキスト用に `$ARGUMENTS` プレースホルダーを使用）
+* `agent`: 複雑な検証タスク用のツール付き agentic verifier を実行
 
-### MCPサーバー
+### MCP servers
 
-プラグインは、Model Context Protocol（MCP）サーバーをバンドルして、Claude Codeを外部ツールおよびサービスに接続できます。
+プラグインは Model Context Protocol（MCP）サーバーをバンドルして、Claude Code を外部ツールおよびサービスに接続できます。
 
-**場所**: プラグインルートの`.mcp.json`、またはplugin.jsonにインライン
+**場所**: プラグインルートの `.mcp.json`、または plugin.json 内のインライン
 
-**形式**: 標準MCPサーバー設定
+**形式**: 標準 MCP サーバー設定
 
-**MCPサーバー設定**:
+**MCP サーバー設定**:
 
 ```json  theme={null}
 {
@@ -173,30 +152,30 @@ SKILL.md形式とスキル作成の完全なガイダンスについては、以
 
 **統合動作**:
 
-* プラグインMCPサーバーはプラグインが有効になると自動的に開始されます
-* サーバーはClaudeのツールキットに標準MCPツールとして表示されます
-* サーバー機能はClaudeの既存ツールとシームレスに統合されます
-* プラグインサーバーはユーザーMCPサーバーとは独立して設定できます
+* プラグイン MCP サーバーはプラグインが有効になると自動的に開始されます
+* サーバーは Claude のツールキットに標準 MCP ツールとして表示されます
+* サーバー機能は Claude の既存ツールとシームレスに統合されます
+* プラグインサーバーはユーザー MCP サーバーとは独立して設定できます
 
-### LSPサーバー
+### LSP servers
 
 <Tip>
-  LSPプラグインを使用したいですか？公式マーケットプレイスからインストールしてください。`/plugin`の「Discover」タブで「lsp」を検索してください。このセクションでは、公式マーケットプレイスでカバーされていない言語用のLSPプラグインを作成する方法について説明します。
+  LSP プラグインを使用したいですか？公式マーケットプレイスからインストールしてください。`/plugin` Discover タブで「lsp」を検索してください。このセクションでは、公式マーケットプレイスでカバーされていない言語用の LSP プラグインを作成する方法について説明します。
 </Tip>
 
-プラグインは、[Language Server Protocol](https://microsoft.github.io/language-server-protocol/)（LSP）サーバーを提供して、Claudeがコードベースで作業中にリアルタイムコードインテリジェンスを取得できます。
+プラグインは [Language Server Protocol](https://microsoft.github.io/language-server-protocol/)（LSP）サーバーを提供して、コードベースで作業する際に Claude にリアルタイムコード インテリジェンスを提供できます。
 
-LSP統合は以下を提供します:
+LSP 統合は以下を提供します:
 
-* **インスタント診断**: Claudeは各編集後すぐにエラーと警告を表示します
+* **即座の診断**: Claude は各編集後すぐにエラーと警告を確認できます
 * **コードナビゲーション**: 定義へのジャンプ、参照の検索、ホバー情報
 * **言語認識**: コードシンボルの型情報とドキュメント
 
-**場所**: プラグインルートの`.lsp.json`、またはplugin.jsonにインライン
+**場所**: プラグインルートの `.lsp.json`、または `plugin.json` 内のインライン
 
-**形式**: 言語サーバー名をその設定にマップするJSON設定
+**形式**: 言語サーバー名をその設定にマップする JSON 設定
 
-**`.lsp.json`ファイル形式**:
+**`.lsp.json` ファイル形式**:
 
 ```json  theme={null}
 {
@@ -210,7 +189,7 @@ LSP統合は以下を提供します:
 }
 ```
 
-**`plugin.json`にインライン**:
+**`plugin.json` 内のインライン**:
 
 ```json  theme={null}
 {
@@ -229,39 +208,39 @@ LSP統合は以下を提供します:
 
 **必須フィールド:**
 
-| フィールド                 | 説明                              |
-| :-------------------- | :------------------------------ |
-| `command`             | 実行するLSPバイナリ（PATHに含まれている必要があります） |
-| `extensionToLanguage` | ファイル拡張子を言語識別子にマップ               |
+| フィールド                 | 説明                                 |
+| :-------------------- | :--------------------------------- |
+| `command`             | 実行する LSP バイナリ（PATH に含まれている必要があります） |
+| `extensionToLanguage` | ファイル拡張子を言語識別子にマップ                  |
 
 **オプションフィールド:**
 
-| フィールド                   | 説明                                          |
-| :---------------------- | :------------------------------------------ |
-| `args`                  | LSPサーバーのコマンドライン引数                           |
-| `transport`             | 通信トランスポート: `stdio`（デフォルト）または`socket`        |
-| `env`                   | サーバー起動時に設定する環境変数                            |
-| `initializationOptions` | 初期化中にサーバーに渡されるオプション                         |
-| `settings`              | `workspace/didChangeConfiguration`経由で渡される設定 |
-| `workspaceFolder`       | サーバーのワークスペースフォルダパス                          |
-| `startupTimeout`        | サーバー起動を待つ最大時間（ミリ秒）                          |
-| `shutdownTimeout`       | グレースフルシャットダウンを待つ最大時間（ミリ秒）                   |
-| `restartOnCrash`        | サーバーがクラッシュした場合に自動的に再起動するかどうか                |
-| `maxRestarts`           | 諦める前の最大再起動試行回数                              |
+| フィールド                   | 説明                                           |
+| :---------------------- | :------------------------------------------- |
+| `args`                  | LSP サーバーのコマンドライン引数                           |
+| `transport`             | 通信トランスポート: `stdio`（デフォルト）または `socket`        |
+| `env`                   | サーバー起動時に設定する環境変数                             |
+| `initializationOptions` | 初期化中にサーバーに渡されるオプション                          |
+| `settings`              | `workspace/didChangeConfiguration` 経由で渡される設定 |
+| `workspaceFolder`       | サーバーのワークスペースフォルダーパス                          |
+| `startupTimeout`        | サーバー起動を待つ最大時間（ミリ秒）                           |
+| `shutdownTimeout`       | グレースフルシャットダウンを待つ最大時間（ミリ秒）                    |
+| `restartOnCrash`        | クラッシュ時にサーバーを自動的に再起動するかどうか                    |
+| `maxRestarts`           | 諦める前の最大再起動試行回数                               |
 
 <Warning>
-  **言語サーバーバイナリを別途インストールする必要があります。** LSPプラグインはClaude Codeが言語サーバーに接続する方法を設定しますが、サーバー自体は含まれていません。`/plugin`の「Errors」タブに`Executable not found in $PATH`が表示される場合は、言語用の必要なバイナリをインストールしてください。
+  **言語サーバーバイナリを別途インストールする必要があります。** LSP プラグインは Claude Code が言語サーバーに接続する方法を設定しますが、サーバー自体は含まれていません。`/plugin` Errors タブに `Executable not found in $PATH` が表示される場合は、言語に必要なバイナリをインストールしてください。
 </Warning>
 
-**利用可能なLSPプラグイン:**
+**利用可能な LSP プラグイン:**
 
 | プラグイン            | 言語サーバー                     | インストールコマンド                                                                          |
 | :--------------- | :------------------------- | :---------------------------------------------------------------------------------- |
-| `pyright-lsp`    | Pyright（Python）            | `pip install pyright`または`npm install -g pyright`                                    |
+| `pyright-lsp`    | Pyright（Python）            | `pip install pyright` または `npm install -g pyright`                                  |
 | `typescript-lsp` | TypeScript Language Server | `npm install -g typescript-language-server typescript`                              |
 | `rust-lsp`       | rust-analyzer              | [rust-analyzer インストールを参照](https://rust-analyzer.github.io/manual.html#installation) |
 
-言語サーバーをインストールしてから、マーケットプレイスからプラグインをインストールしてください。
+言語サーバーをまずインストールしてから、マーケットプレイスからプラグインをインストールしてください。
 
 ***
 
@@ -276,13 +255,15 @@ LSP統合は以下を提供します:
 | `local`   | `.claude/settings.local.json` | プロジェクト固有のプラグイン、gitignored        |
 | `managed` | `managed-settings.json`       | 管理されたプラグイン（読み取り専用、更新のみ）          |
 
-プラグインは他のClaude Code設定と同じスコープシステムを使用します。インストール手順とスコープフラグについては、[プラグインのインストール](/ja/discover-plugins#install-plugins)を参照してください。スコープの完全な説明については、[設定スコープ](/ja/settings#configuration-scopes)を参照してください。
+プラグインは他の Claude Code 設定と同じスコープシステムを使用します。インストール手順とスコープフラグについては、[プラグインのインストール](/ja/discover-plugins#install-plugins)を参照してください。スコープの完全な説明については、[設定スコープ](/ja/settings#configuration-scopes)を参照してください。
 
 ***
 
 ## プラグインマニフェストスキーマ
 
-`plugin.json`ファイルはプラグインのメタデータと設定を定義します。このセクションでは、サポートされているすべてのフィールドとオプションについて説明します。
+`.claude-plugin/plugin.json` ファイルはプラグインのメタデータと設定を定義します。このセクションでは、サポートされているすべてのフィールドとオプションについて説明します。
+
+マニフェストはオプションです。省略された場合、Claude Code は[デフォルトの場所](#file-locations-reference)のコンポーネントを自動検出し、ディレクトリ名からプラグイン名を導出します。メタデータを提供するか、カスタムコンポーネントパスが必要な場合にマニフェストを使用してください。
 
 ### 完全なスキーマ
 
@@ -312,42 +293,46 @@ LSP統合は以下を提供します:
 
 ### 必須フィールド
 
-| フィールド  | 型      | 説明                    | 例                    |
+マニフェストを含める場合、`name` は唯一の必須フィールドです。
+
+| フィールド  | タイプ    | 説明                    | 例                    |
 | :----- | :----- | :-------------------- | :------------------- |
 | `name` | string | 一意の識別子（ケバブケース、スペースなし） | `"deployment-tools"` |
 
+この名前はコンポーネントの名前空間に使用されます。たとえば、UI では、名前が `plugin-dev` のプラグインのエージェント `agent-creator` は `plugin-dev:agent-creator` として表示されます。
+
 ### メタデータフィールド
 
-| フィールド         | 型      | 説明            | 例                                                  |
-| :------------ | :----- | :------------ | :------------------------------------------------- |
-| `version`     | string | セマンティックバージョン  | `"2.1.0"`                                          |
-| `description` | string | プラグイン目的の簡潔な説明 | `"Deployment automation tools"`                    |
-| `author`      | object | 著者情報          | `{"name": "Dev Team", "email": "dev@company.com"}` |
-| `homepage`    | string | ドキュメントURL     | `"https://docs.example.com"`                       |
-| `repository`  | string | ソースコードURL     | `"https://github.com/user/plugin"`                 |
-| `license`     | string | ライセンス識別子      | `"MIT"`、`"Apache-2.0"`                             |
-| `keywords`    | array  | 検出タグ          | `["deployment", "ci-cd"]`                          |
+| フィールド         | タイプ    | 説明                                                                              | 例                                                  |
+| :------------ | :----- | :------------------------------------------------------------------------------ | :------------------------------------------------- |
+| `version`     | string | セマンティックバージョン。マーケットプレイスエントリにも設定されている場合、`plugin.json` が優先されます。1 つの場所に設定するだけで済みます。 | `"2.1.0"`                                          |
+| `description` | string | プラグインの目的の簡潔な説明                                                                  | `"Deployment automation tools"`                    |
+| `author`      | object | 著者情報                                                                            | `{"name": "Dev Team", "email": "dev@company.com"}` |
+| `homepage`    | string | ドキュメント URL                                                                      | `"https://docs.example.com"`                       |
+| `repository`  | string | ソースコード URL                                                                      | `"https://github.com/user/plugin"`                 |
+| `license`     | string | ライセンス識別子                                                                        | `"MIT"`、`"Apache-2.0"`                             |
+| `keywords`    | array  | 検出タグ                                                                            | `["deployment", "ci-cd"]`                          |
 
 ### コンポーネントパスフィールド
 
-| フィールド          | 型              | 説明                                                                                                         | 例                                     |
-| :------------- | :------------- | :--------------------------------------------------------------------------------------------------------- | :------------------------------------ |
-| `commands`     | string\|array  | 追加のコマンドファイル/ディレクトリ                                                                                         | `"./custom/cmd.md"`または`["./cmd1.md"]` |
-| `agents`       | string\|array  | 追加のエージェントファイル                                                                                              | `"./custom/agents/"`                  |
-| `skills`       | string\|array  | 追加のスキルディレクトリ                                                                                               | `"./custom/skills/"`                  |
-| `hooks`        | string\|object | フック設定パスまたはインライン設定                                                                                          | `"./hooks.json"`                      |
-| `mcpServers`   | string\|object | MCP設定パスまたはインライン設定                                                                                          | `"./mcp-config.json"`                 |
-| `outputStyles` | string\|array  | 追加の出力スタイルファイル/ディレクトリ                                                                                       | `"./styles/"`                         |
-| `lspServers`   | string\|object | [Language Server Protocol](https://microsoft.github.io/language-server-protocol/)コード知能設定（定義へのジャンプ、参照の検索など） | `"./.lsp.json"`                       |
+| フィールド          | タイプ                   | 説明                                                                                                                  | 例                                       |
+| :------------- | :-------------------- | :------------------------------------------------------------------------------------------------------------------ | :-------------------------------------- |
+| `commands`     | string\|array         | 追加のコマンドファイル/ディレクトリ                                                                                                  | `"./custom/cmd.md"` または `["./cmd1.md"]` |
+| `agents`       | string\|array         | 追加のエージェントファイル                                                                                                       | `"./custom/agents/reviewer.md"`         |
+| `skills`       | string\|array         | 追加のスキルディレクトリ                                                                                                        | `"./custom/skills/"`                    |
+| `hooks`        | string\|array\|object | フック設定パスまたはインライン設定                                                                                                   | `"./my-extra-hooks.json"`               |
+| `mcpServers`   | string\|array\|object | MCP 設定パスまたはインライン設定                                                                                                  | `"./my-extra-mcp-config.json"`          |
+| `outputStyles` | string\|array         | 追加の出力スタイルファイル/ディレクトリ                                                                                                | `"./styles/"`                           |
+| `lspServers`   | string\|array\|object | [Language Server Protocol](https://microsoft.github.io/language-server-protocol/)コード インテリジェンス用の設定（定義へのジャンプ、参照の検索など） | `"./.lsp.json"`                         |
 
 ### パス動作ルール
 
 **重要**: カスタムパスはデフォルトディレクトリを置き換えるのではなく、補足します。
 
-* `commands/`が存在する場合、カスタムコマンドパスに加えてロードされます
-* すべてのパスはプラグインルートに対して相対的で、`./`で始まる必要があります
-* カスタムパスのコマンドは同じ命名とネームスペーシングルールを使用します
-* 複数のパスを配列として指定して柔軟性を持たせることができます
+* `commands/` が存在する場合、カスタムコマンドパスに加えてロードされます
+* すべてのパスはプラグインルートに相対的で、`./` で始まる必要があります
+* カスタムパスからのコマンドは同じ命名と名前空間ルールを使用します
+* 複雑性のために複数のパスを配列として指定できます
 
 **パスの例**:
 
@@ -366,7 +351,7 @@ LSP統合は以下を提供します:
 
 ### 環境変数
 
-**`${CLAUDE_PLUGIN_ROOT}`**: プラグインディレクトリへの絶対パスを含みます。フック、MCPサーバー、スクリプトで使用して、インストール場所に関係なく正しいパスを確保します。
+**`${CLAUDE_PLUGIN_ROOT}`**: プラグインディレクトリへの絶対パスを含みます。hooks、MCP サーバー、スクリプトでこれを使用して、インストール場所に関係なく正しいパスを確保してください。
 
 ```json  theme={null}
 {
@@ -389,24 +374,34 @@ LSP統合は以下を提供します:
 
 ## プラグインキャッシングとファイル解決
 
-セキュリティと検証の目的で、Claude Codeはプラグインをインプレイスで使用するのではなく、キャッシュディレクトリにコピーします。プラグインの開発時に外部ファイルを参照する場合、この動作を理解することが重要です。
+セキュリティと検証の目的で、Claude Code はプラグインをインプレイスで使用するのではなく、キャッシュディレクトリにコピーします。プラグインが外部ファイルを参照する場合、この動作を理解することが重要です。
 
 ### プラグインキャッシングの仕組み
 
-プラグインをインストールすると、Claude Codeはプラグインファイルをキャッシュディレクトリにコピーします:
+プラグインは 2 つの方法で指定されます:
 
-* **相対パスを持つマーケットプレイスプラグインの場合**: `source`フィールドで指定されたパスが再帰的にコピーされます。たとえば、マーケットプレイスエントリが`"source": "./plugins/my-plugin"`を指定している場合、`./plugins`ディレクトリ全体がコピーされます。
-* **`.claude-plugin/plugin.json`を持つプラグインの場合**: 暗黙的なルートディレクトリ（`.claude-plugin/plugin.json`を含むディレクトリ）が再帰的にコピーされます。
+* `claude --plugin-dir` を通じて、セッションの期間。
+* マーケットプレイスを通じて、ローカルプラグインキャッシュにインストール。
+
+プラグインをインストールすると、Claude Code はそのマーケットプレイスとそのマーケットプレイス内のプラグインの `source` フィールドを見つけます。
+
+ソースは 5 つのタイプのいずれかです:
+
+* 相対パス: プラグインキャッシュに再帰的にコピーされます。たとえば、マーケットプレイスエントリが `"source": "./plugins/my-plugin"` を指定する場合、`./plugins/my-plugin` ディレクトリ全体がコピーされます。
+* npm - npm からプラグインキャッシュにコピー
+* pip - pip からプラグインキャッシュにコピー
+* url - .git で終わる任意の https\:// URL
+* github - 任意の owner/repo 短縮形
 
 ### パストラバーサルの制限
 
-プラグインはコピーされたディレクトリ構造の外のファイルを参照できません。プラグインルートの外を走査するパス（`../shared-utils`など）は、インストール後に機能しません。これらの外部ファイルはキャッシュにコピーされないためです。
+プラグインはコピーされたディレクトリ構造の外のファイルを参照できません。プラグインルートの外を走査するパス（`../shared-utils` など）は、これらの外部ファイルがキャッシュにコピーされないため、インストール後は機能しません。
 
-### 外部依存関係の処理
+### 外部依存関係の操作
 
-プラグインがディレクトリの外のファイルにアクセスする必要がある場合、2つのオプションがあります:
+プラグインがディレクトリの外のファイルにアクセスする必要がある場合、2 つのオプションがあります:
 
-**オプション1: シンボリックリンクを使用**
+**オプション 1: シンボリックリンクを使用**
 
 プラグインディレクトリ内の外部ファイルへのシンボリックリンクを作成します。シンボリックリンクはコピープロセス中に尊重されます:
 
@@ -417,7 +412,7 @@ ln -s /path/to/shared-utils ./shared-utils
 
 シンボリックリンクされたコンテンツはプラグインキャッシュにコピーされます。
 
-**オプション2: マーケットプレイスを再構成**
+**オプション 2: マーケットプレイスを再構成**
 
 プラグインパスを必要なすべてのファイルを含む親ディレクトリに設定し、残りのプラグインマニフェストをマーケットプレイスエントリに直接提供します:
 
@@ -435,7 +430,7 @@ ln -s /path/to/shared-utils ./shared-utils
 このアプローチはマーケットプレイスルート全体をコピーし、プラグインに兄弟ディレクトリへのアクセスを提供します。
 
 <Note>
-  プラグインの論理的ルートの外の場所を指すシンボリックリンクはコピー中にフォローされます。これはキャッシングシステムのセキュリティ利点を維持しながら柔軟性を提供します。
+  プラグインの論理ルートの外の場所を指すシンボリックリンクはコピー中に従われます。これはキャッシングシステムのセキュリティ利点を維持しながら柔軟性を提供します。
 </Note>
 
 ***
@@ -448,8 +443,8 @@ ln -s /path/to/shared-utils ./shared-utils
 
 ```
 enterprise-plugin/
-├── .claude-plugin/           # メタデータディレクトリ
-│   └── plugin.json          # 必須: プラグインマニフェスト
+├── .claude-plugin/           # メタデータディレクトリ（オプション）
+│   └── plugin.json             # プラグインマニフェスト
 ├── commands/                 # デフォルトコマンド場所
 │   ├── status.md
 │   └── logs.md
@@ -466,8 +461,8 @@ enterprise-plugin/
 ├── hooks/                    # フック設定
 │   ├── hooks.json           # メインフック設定
 │   └── security-hooks.json  # 追加フック
-├── .mcp.json                # MCPサーバー定義
-├── .lsp.json                # LSPサーバー設定
+├── .mcp.json                # MCP サーバー定義
+├── .lsp.json                # LSP サーバー設定
 ├── scripts/                 # フックとユーティリティスクリプト
 │   ├── security-scan.sh
 │   ├── format-code.py
@@ -477,26 +472,26 @@ enterprise-plugin/
 ```
 
 <Warning>
-  `.claude-plugin/`ディレクトリには`plugin.json`ファイルが含まれています。他のすべてのディレクトリ（commands/、agents/、skills/、hooks/）は`.claude-plugin/`の内部ではなく、プラグインルートにある必要があります。
+  `.claude-plugin/` ディレクトリには `plugin.json` ファイルが含まれています。他のすべてのディレクトリ（commands/、agents/、skills/、hooks/）は `.claude-plugin/` 内ではなく、プラグインルートにある必要があります。
 </Warning>
 
 ### ファイル場所リファレンス
 
-| コンポーネント     | デフォルト場所                      | 目的                       |
-| :---------- | :--------------------------- | :----------------------- |
-| **マニフェスト**  | `.claude-plugin/plugin.json` | 必須メタデータファイル              |
-| **コマンド**    | `commands/`                  | スラッシュコマンドMarkdownファイル    |
-| **エージェント**  | `agents/`                    | サブエージェントMarkdownファイル     |
-| **スキル**     | `skills/`                    | SKILL.mdファイルを含むエージェントスキル |
-| **フック**     | `hooks/hooks.json`           | フック設定                    |
-| **MCPサーバー** | `.mcp.json`                  | MCPサーバー定義                |
-| **LSPサーバー** | `.lsp.json`                  | 言語サーバー設定                 |
+| コンポーネント      | デフォルト場所                      | 目的                                         |
+| :----------- | :--------------------------- | :----------------------------------------- |
+| **マニフェスト**   | `.claude-plugin/plugin.json` | プラグインメタデータと設定（オプション）                       |
+| **コマンド**     | `commands/`                  | スキルマークダウンファイル（レガシー。新しいスキルには `skills/` を使用） |
+| **エージェント**   | `agents/`                    | Subagent マークダウンファイル                        |
+| **スキル**      | `skills/`                    | `<name>/SKILL.md` 構造を持つスキル                 |
+| **フック**      | `hooks/hooks.json`           | フック設定                                      |
+| **MCP サーバー** | `.mcp.json`                  | MCP サーバー定義                                 |
+| **LSP サーバー** | `.lsp.json`                  | 言語サーバー設定                                   |
 
 ***
 
-## CLIコマンドリファレンス
+## CLI コマンドリファレンス
 
-Claude Codeは、スクリプトと自動化に役立つ非対話的なプラグイン管理用のCLIコマンドを提供します。
+Claude Code は非対話的なプラグイン管理用の CLI コマンドを提供します。スクリプトと自動化に役立ちます。
 
 ### plugin install
 
@@ -508,14 +503,16 @@ claude plugin install <plugin> [options]
 
 **引数:**
 
-* `<plugin>`: プラグイン名または特定のマーケットプレイス用の`plugin-name@marketplace-name`
+* `<plugin>`: プラグイン名または特定のマーケットプレイス用の `plugin-name@marketplace-name`
 
 **オプション:**
 
-| オプション                 | 説明                                      | デフォルト  |
-| :-------------------- | :-------------------------------------- | :----- |
-| `-s, --scope <scope>` | インストールスコープ: `user`、`project`、または`local` | `user` |
-| `-h, --help`          | コマンドのヘルプを表示                             |        |
+| オプション                 | 説明                                       | デフォルト  |
+| :-------------------- | :--------------------------------------- | :----- |
+| `-s, --scope <scope>` | インストールスコープ: `user`、`project`、または `local` | `user` |
+| `-h, --help`          | コマンドのヘルプを表示                              |        |
+
+スコープはインストールされたプラグインが追加される設定ファイルを決定します。たとえば、--scope project は `.claude/settings.json` の `enabledPlugins` に書き込み、プロジェクトリポジトリをクローンする全員がプラグインを利用できるようにします。
 
 **例:**
 
@@ -540,14 +537,14 @@ claude plugin uninstall <plugin> [options]
 
 **引数:**
 
-* `<plugin>`: プラグイン名または`plugin-name@marketplace-name`
+* `<plugin>`: プラグイン名または `plugin-name@marketplace-name`
 
 **オプション:**
 
-| オプション                 | 説明                                          | デフォルト  |
-| :-------------------- | :------------------------------------------ | :----- |
-| `-s, --scope <scope>` | アンインストール対象スコープ: `user`、`project`、または`local` | `user` |
-| `-h, --help`          | コマンドのヘルプを表示                                 |        |
+| オプション                 | 説明                                           | デフォルト  |
+| :-------------------- | :------------------------------------------- | :----- |
+| `-s, --scope <scope>` | スコープからアンインストール: `user`、`project`、または `local` | `user` |
+| `-h, --help`          | コマンドのヘルプを表示                                  |        |
 
 **エイリアス:** `remove`、`rm`
 
@@ -561,14 +558,14 @@ claude plugin enable <plugin> [options]
 
 **引数:**
 
-* `<plugin>`: プラグイン名または`plugin-name@marketplace-name`
+* `<plugin>`: プラグイン名または `plugin-name@marketplace-name`
 
 **オプション:**
 
-| オプション                 | 説明                                     | デフォルト  |
-| :-------------------- | :------------------------------------- | :----- |
-| `-s, --scope <scope>` | 有効にするスコープ: `user`、`project`、または`local` | `user` |
-| `-h, --help`          | コマンドのヘルプを表示                            |        |
+| オプション                 | 説明                                      | デフォルト  |
+| :-------------------- | :-------------------------------------- | :----- |
+| `-s, --scope <scope>` | 有効にするスコープ: `user`、`project`、または `local` | `user` |
+| `-h, --help`          | コマンドのヘルプを表示                             |        |
 
 ### plugin disable
 
@@ -580,14 +577,14 @@ claude plugin disable <plugin> [options]
 
 **引数:**
 
-* `<plugin>`: プラグイン名または`plugin-name@marketplace-name`
+* `<plugin>`: プラグイン名または `plugin-name@marketplace-name`
 
 **オプション:**
 
-| オプション                 | 説明                                     | デフォルト  |
-| :-------------------- | :------------------------------------- | :----- |
-| `-s, --scope <scope>` | 無効にするスコープ: `user`、`project`、または`local` | `user` |
-| `-h, --help`          | コマンドのヘルプを表示                            |        |
+| オプション                 | 説明                                      | デフォルト  |
+| :-------------------- | :-------------------------------------- | :----- |
+| `-s, --scope <scope>` | 無効にするスコープ: `user`、`project`、または `local` | `user` |
+| `-h, --help`          | コマンドのヘルプを表示                             |        |
 
 ### plugin update
 
@@ -599,14 +596,14 @@ claude plugin update <plugin> [options]
 
 **引数:**
 
-* `<plugin>`: プラグイン名または`plugin-name@marketplace-name`
+* `<plugin>`: プラグイン名または `plugin-name@marketplace-name`
 
 **オプション:**
 
-| オプション                 | 説明                                              | デフォルト  |
-| :-------------------- | :---------------------------------------------- | :----- |
-| `-s, --scope <scope>` | 更新するスコープ: `user`、`project`、`local`、または`managed` | `user` |
-| `-h, --help`          | コマンドのヘルプを表示                                     |        |
+| オプション                 | 説明                                               | デフォルト  |
+| :-------------------- | :----------------------------------------------- | :----- |
+| `-s, --scope <scope>` | 更新するスコープ: `user`、`project`、`local`、または `managed` | `user` |
+| `-h, --help`          | コマンドのヘルプを表示                                      |        |
 
 ***
 
@@ -614,79 +611,75 @@ claude plugin update <plugin> [options]
 
 ### デバッグコマンド
 
-`claude --debug`を使用してプラグイン読み込みの詳細を確認します:
-
-```bash  theme={null}
-claude --debug
-```
+`claude --debug`（または TUI 内の `/debug`）を使用してプラグイン読み込みの詳細を確認します:
 
 これは以下を表示します:
 
 * どのプラグインが読み込まれているか
 * プラグインマニフェストのエラー
 * コマンド、エージェント、フック登録
-* MCPサーバー初期化
+* MCP サーバー初期化
 
 ### 一般的な問題
 
-| 問題                                  | 原因                         | 解決策                                                                   |
-| :---------------------------------- | :------------------------- | :-------------------------------------------------------------------- |
-| プラグインが読み込まれない                       | 無効な`plugin.json`           | `claude plugin validate`または`/plugin validate`でJSON構文を検証               |
-| コマンドが表示されない                         | ディレクトリ構造が間違っている            | `commands/`がルートにあることを確認、`.claude-plugin/`内ではない                        |
-| フックが発火しない                           | スクリプトが実行可能でない              | `chmod +x script.sh`を実行                                               |
-| MCPサーバーが失敗                          | `${CLAUDE_PLUGIN_ROOT}`がない | すべてのプラグインパスに変数を使用                                                     |
-| パスエラー                               | 絶対パスが使用されている               | すべてのパスは相対的で`./`で始まる必要があります                                            |
-| LSP `Executable not found in $PATH` | 言語サーバーがインストールされていない        | バイナリをインストール（例：`npm install -g typescript-language-server typescript`） |
+| 問題                                  | 原因                          | 解決策                                                                    |
+| :---------------------------------- | :-------------------------- | :--------------------------------------------------------------------- |
+| プラグインが読み込まれない                       | 無効な `plugin.json`           | `claude plugin validate` または `/plugin validate` で JSON 構文を検証           |
+| コマンドが表示されない                         | ディレクトリ構造が間違っている             | `commands/` がルートにあることを確認、`.claude-plugin/` 内ではない                       |
+| フックが発火しない                           | スクリプトが実行可能でない               | `chmod +x script.sh` を実行                                               |
+| MCP サーバーが失敗                         | `${CLAUDE_PLUGIN_ROOT}` が不足 | すべてのプラグインパスに変数を使用                                                      |
+| パスエラー                               | 絶対パスが使用されている                | すべてのパスは相対的で `./` で始まる必要があります                                           |
+| LSP `Executable not found in $PATH` | 言語サーバーがインストールされていない         | バイナリをインストール（例: `npm install -g typescript-language-server typescript`） |
 
 ### エラーメッセージの例
 
 **マニフェスト検証エラー**:
 
 * `Invalid JSON syntax: Unexpected token } in JSON at position 142`: コンマの欠落、余分なコンマ、または引用符なしの文字列を確認
-* `Plugin has an invalid manifest file at .claude-plugin/plugin.json. Validation errors: name: Required`: 必須フィールドが欠落している
-* `Plugin has a corrupt manifest file at .claude-plugin/plugin.json. JSON parse error: ...`: JSON構文エラー
+* `Plugin has an invalid manifest file at .claude-plugin/plugin.json. Validation errors: name: Required`: 必須フィールドが不足
+* `Plugin has a corrupt manifest file at .claude-plugin/plugin.json. JSON parse error: ...`: JSON 構文エラー
 
 **プラグイン読み込みエラー**:
 
-* `Warning: No commands found in plugin my-plugin custom directory: ./cmds. Expected .md files or SKILL.md in subdirectories.`: コマンドパスは存在しますが、有効なコマンドファイルが含まれていない
-* `Plugin directory not found at path: ./plugins/my-plugin. Check that the marketplace entry has the correct path.`: マーケットプレイスの`source`パスが存在しないディレクトリを指している
-* `Plugin my-plugin has conflicting manifests: both plugin.json and marketplace entry specify components.`: 重複するコンポーネント定義を削除するか、マーケットプレイスエントリで`strict: true`を設定
+* `Warning: No commands found in plugin my-plugin custom directory: ./cmds. Expected .md files or SKILL.md in subdirectories.`: コマンドパスが存在しますが、有効なコマンドファイルが含まれていない
+* `Plugin directory not found at path: ./plugins/my-plugin. Check that the marketplace entry has the correct path.`: マーケットプレイスエントリの `source` パスが存在しないディレクトリを指している
+* `Plugin my-plugin has conflicting manifests: both plugin.json and marketplace entry specify components.`: 重複するコンポーネント定義を削除するか、マーケットプレイスエントリから `strict: false` を削除
 
-### フックトラブルシューティング
+### フックのトラブルシューティング
 
 **フックスクリプトが実行されない**:
 
 1. スクリプトが実行可能であることを確認: `chmod +x ./scripts/your-script.sh`
-2. シバンラインを確認: 最初の行は`#!/bin/bash`または`#!/usr/bin/env bash`である必要があります
-3. パスが`${CLAUDE_PLUGIN_ROOT}`を使用していることを確認: `"command": "${CLAUDE_PLUGIN_ROOT}/scripts/your-script.sh"`
+2. シバン行を確認: 最初の行は `#!/bin/bash` または `#!/usr/bin/env bash` である必要があります
+3. パスが `${CLAUDE_PLUGIN_ROOT}` を使用していることを確認: `"command": "${CLAUDE_PLUGIN_ROOT}/scripts/your-script.sh"`
 4. スクリプトを手動でテスト: `./scripts/your-script.sh`
 
 **フックが予期されたイベントでトリガーされない**:
 
-1. イベント名が正しいことを確認（大文字小文字を区別）: `PostToolUse`、`postToolUse`ではない
-2. マッチャーパターンがツールと一致することを確認: ファイル操作用の`"matcher": "Write|Edit"`
-3. フックタイプが有効であることを確認: `command`、`prompt`、または`agent`
+1. イベント名が正しいことを確認（大文字と小文字を区別）: `PostToolUse`、`postToolUse` ではない
+2. マッチャーパターンがツールと一致することを確認: ファイル操作用の `"matcher": "Write|Edit"`
+3. フックタイプが有効であることを確認: `command`、`prompt`、または `agent`
 
-### MCPサーバートラブルシューティング
+### MCP サーバーのトラブルシューティング
 
 **サーバーが起動しない**:
 
 1. コマンドが存在し、実行可能であることを確認
-2. すべてのパスが`${CLAUDE_PLUGIN_ROOT}`変数を使用していることを確認
-3. MCPサーバーログを確認: `claude --debug`は初期化エラーを表示します
-4. Claude Code外でサーバーを手動でテスト
+2. すべてのパスが `${CLAUDE_PLUGIN_ROOT}` 変数を使用していることを確認
+3. MCP サーバーログを確認: `claude --debug` は初期化エラーを表示
+4. Claude Code の外でサーバーを手動でテスト
 
 **サーバーツールが表示されない**:
 
-1. サーバーが`.mcp.json`またはplugin.jsonで正しく設定されていることを確認
-2. サーバーがMCPプロトコルを正しく実装していることを確認
+1. サーバーが `.mcp.json` または `plugin.json` で正しく設定されていることを確認
+2. サーバーが MCP プロトコルを正しく実装していることを確認
 3. デバッグ出力で接続タイムアウトを確認
 
 ### ディレクトリ構造の間違い
 
-**症状**: プラグインが読み込まれますが、コンポーネント（コマンド、エージェント、フック）が欠落しています。
+**症状**: プラグインが読み込まれますが、コンポーネント（コマンド、エージェント、フック）が不足しています。
 
-**正しい構造**: コンポーネントはプラグインルートにある必要があり、`.claude-plugin/`内ではありません。`plugin.json`のみが`.claude-plugin/`に属します。
+**正しい構造**: コンポーネントはプラグインルートにある必要があり、`.claude-plugin/` 内ではありません。`plugin.json` のみが `.claude-plugin/` に属します。
 
 ```
 my-plugin/
@@ -697,13 +690,13 @@ my-plugin/
 └── hooks/               ← ルートレベル
 ```
 
-コンポーネントが`.claude-plugin/`内にある場合は、プラグインルートに移動してください。
+コンポーネントが `.claude-plugin/` 内にある場合は、プラグインルートに移動してください。
 
 **デバッグチェックリスト**:
 
-1. `claude --debug`を実行して「loading plugin」メッセージを探します
-2. 各コンポーネントディレクトリがデバッグ出力にリストされていることを確認
-3. プラグインファイルを読み取ることができるファイルパーミッションを確認
+1. `claude --debug` を実行し、「loading plugin」メッセージを探す
+2. 各コンポーネントディレクトリがデバッグ出力に一覧表示されていることを確認
+3. ファイルパーミッションがプラグインファイルの読み取りを許可していることを確認
 
 ***
 
@@ -722,16 +715,16 @@ my-plugin/
 
 **バージョン形式**: `MAJOR.MINOR.PATCH`
 
-* **MAJOR**: 破壊的な変更（互換性のないAPI変更）
+* **MAJOR**: 破壊的変更（互換性のない API 変更）
 * **MINOR**: 新機能（後方互換性のある追加）
 * **PATCH**: バグ修正（後方互換性のある修正）
 
 **ベストプラクティス**:
 
-* 最初の安定版リリースは`1.0.0`から開始
-* 変更を配布する前に`plugin.json`のバージョンを更新
-* `CHANGELOG.md`ファイルで変更を文書化
-* テスト用に`2.0.0-beta.1`のようなプレリリースバージョンを使用
+* 最初の安定版リリースは `1.0.0` から開始
+* 変更を配布する前に `plugin.json` のバージョンを更新
+* `CHANGELOG.md` ファイルで変更を文書化
+* テスト用に `2.0.0-beta.1` のようなプレリリースバージョンを使用
 
 ***
 
@@ -739,9 +732,8 @@ my-plugin/
 
 * [プラグイン](/ja/plugins) - チュートリアルと実践的な使用法
 * [プラグインマーケットプレイス](/ja/plugin-marketplaces) - マーケットプレイスの作成と管理
-* [スラッシュコマンド](/ja/slash-commands) - コマンド開発の詳細
-* [サブエージェント](/ja/sub-agents) - エージェント設定と機能
-* [エージェントスキル](/ja/skills) - Claudeの機能を拡張
+* [スキル](/ja/skills) - スキル開発の詳細
+* [Subagents](/ja/sub-agents) - エージェント設定と機能
 * [フック](/ja/hooks) - イベント処理と自動化
 * [MCP](/ja/mcp) - 外部ツール統合
 * [設定](/ja/settings) - プラグインの設定オプション
