@@ -19,18 +19,19 @@ PAGES=$(curl -s "$LLMS_URL" | grep -oE '/docs/en/[a-z0-9-]+\.md' | sed 's|/docs/
 # 日本語版を試し、なければ英語版にフォールバック
 for page in $PAGES; do
   [[ "$page" == "changelog" ]] && continue
-  content=$(curl -s "${BASE_URL_JA}/${page}.md")
+  curl -s "${BASE_URL_JA}/${page}.md" -o "$PAGES_DIR/${page}-ja.md"
+  content=$(cat "$PAGES_DIR/${page}-ja.md")
   if [[ "$content" == "null" || -z "$content" ]]; then
-    content=$(curl -s "${BASE_URL_EN}/${page}.md")
-    echo "$content" > "$PAGES_DIR/${page}-en.md"
+    # JA版がない → 削除してEN版をダウンロード
+    rm -f "$PAGES_DIR/${page}-ja.md"
+    curl -s "${BASE_URL_EN}/${page}.md" -o "$PAGES_DIR/${page}-en.md"
   else
-    echo "$content" > "$PAGES_DIR/${page}-ja.md"
-    # 日本語版が取得できたら英語版を削除
+    # JA版が正常 → EN版を削除
     rm -f "$PAGES_DIR/${page}-en.md"
   fi
 done
 
 # CHANGELOG.md (GitHub)
-curl -s "$CHANGELOG_URL" > "$PAGES_DIR/changelog.md"
+curl -s "$CHANGELOG_URL" -o "$PAGES_DIR/changelog.md"
 
 echo "✅ 完了"
