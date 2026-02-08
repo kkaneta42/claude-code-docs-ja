@@ -17,6 +17,47 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-02-08</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+```
+
+**新規追加:**
+
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index d1f1f91..cfb32b2 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,12 @@
+ # Changelog
+ 
++## 2.1.37
++
++- Fixed an issue where /fast was not immediately available after enabling /extra-usage
++
++## 2.1.36
++
++- Fast mode is now available for Opus 4.6. Learn more at https://code.claude.com/docs/en/fast-mode
++
+ ## 2.1.34
+ 
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-02-06</summary>
 
 **変更ファイル:**
