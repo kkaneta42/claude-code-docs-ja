@@ -17,6 +17,77 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-02-11</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md    | 18 ++++++++++++++++++
+ docs-ja/pages/fast-mode-en.md |  2 +-
+ 2 files changed, 19 insertions(+), 1 deletion(-)
+```
+
+**新規追加:**
+
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index cfb32b2..e146ed5 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,22 @@
+ # Changelog
+ 
++## 2.1.39
++
++- Improved terminal rendering performance
++- Fixed fatal errors being swallowed instead of displayed
++- Fixed process hanging after session close
++- Fixed character loss at terminal screen boundary
++- Fixed blank lines in verbose transcript view
++
++## 2.1.38
++
++- Fixed VS Code terminal scroll-to-top regression introduced in 2.1.37
++- Fixed Tab key queueing slash commands instead of autocompleting
++- Fixed bash permission matching for commands using environment variable wrappers
++- Fixed text between tool uses disappearing when not using streaming
++- Fixed duplicate sessions when resuming in VS Code extension
++- Improved heredoc delimiter parsing to prevent command smuggling
++- Blocked writes to `.claude/skills` directory in sandbox mode
++
+ ## 2.1.37
+ 
+```
+
+</details>
+
+<details>
+<summary>fast-mode-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/fast-mode-en.md b/docs-ja/pages/fast-mode-en.md
+index ad273b9..9bd3724 100644
+--- a/docs-ja/pages/fast-mode-en.md
++++ b/docs-ja/pages/fast-mode-en.md
+@@ -11,5 +11,5 @@
+ </Note>
+ 
+-Fast mode delivers faster Opus 4.6 responses at a higher cost per token. Toggle it on with `/fast` when you need speed for interactive work like rapid iteration or live debugging, and toggle it off when cost matters more than latency.
++Fast mode is a high-speed configuration for Claude Opus 4.6, making the model 2.5x faster at a higher cost per token. Toggle it on with `/fast` when you need speed for interactive work like rapid iteration or live debugging, and toggle it off when cost matters more than latency.
+ 
+ Fast mode is not a different model. It uses the same Opus 4.6 with a different API configuration that prioritizes speed over cost efficiency. You get identical quality and capabilities, just faster responses.
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-02-08</summary>
 
 **変更ファイル:**
