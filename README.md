@@ -17,6 +17,64 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-02-12</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md                  | 8 ++++++++
+ docs-ja/pages/server-managed-settings-en.md | 2 +-
+ 2 files changed, 9 insertions(+), 1 deletion(-)
+```
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index e146ed5..f6388b1 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -3,4 +3,12 @@
+ ## 2.1.39
+ 
++- Added guard against launching Claude Code inside another Claude Code session
++- Fixed Agent Teams using wrong model identifier for Bedrock, Vertex, and Foundry customers
++- Fixed a crash when MCP tools return image content during streaming
++- Fixed /resume session previews showing raw XML tags instead of readable command names
++- Improved model error messages for Bedrock/Vertex/Foundry users with fallback suggestions
++- Fixed plugin browse showing misleading "Space to Toggle" hint for already-installed plugins
++- Fixed hook blocking errors (exit code 2) not showing stderr to the user
++- Added `speed` attribute to OTel events and trace spans for fast mode visibility
+ - Improved terminal rendering performance
+ - Fixed fatal errors being swallowed instead of displayed
+```
+
+</details>
+
+<details>
+<summary>server-managed-settings-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/server-managed-settings-en.md b/docs-ja/pages/server-managed-settings-en.md
+index 9e6d316..e80d0e7 100644
+--- a/docs-ja/pages/server-managed-settings-en.md
++++ b/docs-ja/pages/server-managed-settings-en.md
+@@ -20,5 +20,5 @@ To use server-managed settings, you need:
+ 
+ * Claude for Teams or Claude for Enterprise plan
+-* Claude Code version 2.1.30 or later
++* Claude Code version 2.1.38 or later for Claude for Teams, or version 2.1.30 or later for Claude for Enterprise
+ * Network access to `api.anthropic.com`
+ 
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-02-11</summary>
 
 **変更ファイル:**
