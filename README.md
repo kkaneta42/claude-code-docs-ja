@@ -17,6 +17,41 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-02-13</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md | 5 +++++
+ 1 file changed, 5 insertions(+)
+```
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index f6388b1..e3ed77e 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -11,4 +11,9 @@
+ - Fixed hook blocking errors (exit code 2) not showing stderr to the user
+ - Added `speed` attribute to OTel events and trace spans for fast mode visibility
++- Fixed /resume showing interrupt messages as session titles
++- Fixed Opus 4.6 launch announcement showing for Bedrock/Vertex/Foundry users
++- Improved error message for many-image dimension limit errors with /compact suggestion
++- Fixed structured-outputs beta header being sent unconditionally on Vertex/Bedrock
++- Fixed spurious warnings for non-agent markdown files in `.claude/agents/` directory
+ - Improved terminal rendering performance
+ - Fixed fatal errors being swallowed instead of displayed
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-02-12</summary>
 
 **変更ファイル:**
