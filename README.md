@@ -17,6 +17,96 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-02-14</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md         | 32 ++++++++++++++++++++++-----
+ docs-ja/pages/network-config-ja.md | 45 +++++++++++++++++++-------------------
+ 2 files changed, 48 insertions(+), 29 deletions(-)
+```
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index e3ed77e..2701cfc 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,5 +1,13 @@
+ # Changelog
+ 
+-## 2.1.39
++## 2.1.42
++
++- Improved startup performance by deferring Zod schema construction
++- Improved prompt cache hit rates by moving date out of system prompt
++- Added one-time Opus 4.6 effort callout for eligible users
++- Fixed /resume showing interrupt messages as session titles
++- Fixed image dimension limit errors to suggest /compact
++
++## 2.1.41
+ 
+ - Added guard against launching Claude Code inside another Claude Code session
+@@ -11,9 +19,21 @@
+ - Fixed hook blocking errors (exit code 2) not showing stderr to the user
+ - Added `speed` attribute to OTel events and trace spans for fast mode visibility
+-- Fixed /resume showing interrupt messages as session titles
+-- Fixed Opus 4.6 launch announcement showing for Bedrock/Vertex/Foundry users
+-- Improved error message for many-image dimension limit errors with /compact suggestion
+-- Fixed structured-outputs beta header being sent unconditionally on Vertex/Bedrock
+-- Fixed spurious warnings for non-agent markdown files in `.claude/agents/` directory
++- Added `claude auth login`, `claude auth status`, and `claude auth logout` CLI subcommands
++- Added Windows ARM64 (win32-arm64) native binary support
++- Improved `/rename` to auto-generate session name from conversation context when called without arguments
+```
+
+</details>
+
+<details>
+<summary>network-config-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/network-config-ja.md b/docs-ja/pages/network-config-ja.md
+index 066d6e4..fb62d0c 100644
+--- a/docs-ja/pages/network-config-ja.md
++++ b/docs-ja/pages/network-config-ja.md
+@@ -3,25 +3,25 @@
+ > Use this file to discover all available pages before exploring further.
+ 
+-# エンタープライズネットワーク構成
++# エンタープライズネットワーク設定
+ 
+-> プロキシサーバー、カスタム認証局（CA）、および相互トランスポートレイヤーセキュリティ（mTLS）認証を使用して、エンタープライズ環境向けにClaude Codeを構成します。
++> プロキシサーバー、カスタム認証局（CA）、相互 Transport Layer Security（mTLS）認証を使用して、エンタープライズ環境向けに Claude Code を設定します。
+ 
+-Claude Codeは、環境変数を通じてさまざまなエンタープライズネットワークおよびセキュリティ構成をサポートしています。これには、企業プロキシサーバーを通じたトラフィックのルーティング、カスタム認証局（CA）の信頼、およびセキュリティ強化のための相互トランスポートレイヤーセキュリティ（mTLS）証明書による認証が含まれます。
++Claude Code は、環境変数を通じてさまざまなエンタープライズネットワークおよびセキュリティ設定をサポートしています。これには、企業プロキシサーバーを経由したトラフィックのルーティング、カスタム認証局（CA）の信頼、およびセキュリティ強化のための相互 Transport Layer Security（mTLS）証明書による認証が含まれます。
+ 
+ <Note>
+-  このページに表示されているすべての環境変数は、[`settings.json`](/ja/settings)でも構成できます。
++  このページに表示されているすべての環境変数は、[`settings.json`](/ja/settings) でも設定できます。
+ </Note>
+ 
+-## プロキシ構成
++## プロキシ設定
+ 
+ ### 環境変数
+ 
+-Claude Codeは標準的なプロキシ環境変数に対応しています：
++Claude Code は標準的なプロキシ環境変数に対応しています。
+ 
+ ```bash  theme={null}
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-02-13</summary>
 
 **変更ファイル:**
