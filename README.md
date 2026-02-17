@@ -17,6 +17,85 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-02-17</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md   |  10 ++
+ docs-ja/pages/overview-ja.md | 275 ++++++++++++++++++++++++++-----------------
+ 2 files changed, 176 insertions(+), 109 deletions(-)
+```
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index 2701cfc..17e1909 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,14 @@
+ # Changelog
+ 
++## 2.1.44
++
++- Fixed auth refresh errors
++
++## 2.1.43
++
++- Fixed AWS auth refresh hanging indefinitely by adding a 3-minute timeout
++- Fixed spurious warnings for non-agent markdown files in `.claude/agents/` directory
++- Fixed structured-outputs beta header being sent unconditionally on Vertex/Bedrock
++
+ ## 2.1.42
+ 
+```
+
+</details>
+
+<details>
+<summary>overview-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/overview-ja.md b/docs-ja/pages/overview-ja.md
+index db13ab4..d25268c 100644
+--- a/docs-ja/pages/overview-ja.md
++++ b/docs-ja/pages/overview-ja.md
+@@ -3,159 +3,216 @@
+ > Use this file to discover all available pages before exploring further.
+ 
+-# Claude Code 概要
++# Claude Code の概要
+ 
+-> Anthropic の agentic coding ツール Claude Code について学びます。Claude Code はターミナルで動作し、アイデアをコードに変えるのを今までより速く支援します。
++> Claude Code は、コードベースを読み取り、ファイルを編集し、コマンドを実行し、開発ツールと統合する agentic coding ツールです。ターミナル、IDE、デスクトップアプリ、ブラウザで利用できます。
+ 
+-## 30 秒で始める
++Claude Code は、機能の構築、バグの修正、開発タスクの自動化を支援する AI 搭載のコーディングアシスタントです。コードベース全体を理解し、複数のファイルとツール全体で作業して、タスクを完了できます。
+ 
+-前提条件：
++## はじめに
+ 
+-* [システム要件](/ja/setup#system-requirements)を満たしていること
+-* [Claude サブスクリプション](https://claude.com/pricing)（Pro、Max、Teams、または Enterprise）または [Claude Console](https://console.anthropic.com/) アカウント
++環境を選択してはじめましょう。ほとんどのサーフェスには、[Claude サブスクリプション](https://claude.com/pricing)または [Anthropic Console](https://console.anthropic.com/) アカウントが必要です。Terminal CLI と VS Code は [サードパーティプロバイダー](/ja/third-party-integrations)もサポートしています。
+ 
+-**Claude Code をインストール：**
++<Tabs>
++  <Tab title="Terminal">
++    ターミナルで Claude Code を直接操作するための機能豊富な CLI です。ファイルを編集し、コマンドを実行し、コマンドラインからプロジェクト全体を管理できます。
+ 
+-To install Claude Code, use one of the following methods:
++    To install Claude Code, use one of the following methods:
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-02-15</summary>
 
 **新規追加:**

@@ -2,160 +2,217 @@
 > Fetch the complete documentation index at: https://code.claude.com/docs/llms.txt
 > Use this file to discover all available pages before exploring further.
 
-# Claude Code 概要
+# Claude Code の概要
 
-> Anthropic の agentic coding ツール Claude Code について学びます。Claude Code はターミナルで動作し、アイデアをコードに変えるのを今までより速く支援します。
+> Claude Code は、コードベースを読み取り、ファイルを編集し、コマンドを実行し、開発ツールと統合する agentic coding ツールです。ターミナル、IDE、デスクトップアプリ、ブラウザで利用できます。
 
-## 30 秒で始める
+Claude Code は、機能の構築、バグの修正、開発タスクの自動化を支援する AI 搭載のコーディングアシスタントです。コードベース全体を理解し、複数のファイルとツール全体で作業して、タスクを完了できます。
 
-前提条件：
+## はじめに
 
-* [システム要件](/ja/setup#system-requirements)を満たしていること
-* [Claude サブスクリプション](https://claude.com/pricing)（Pro、Max、Teams、または Enterprise）または [Claude Console](https://console.anthropic.com/) アカウント
-
-**Claude Code をインストール：**
-
-To install Claude Code, use one of the following methods:
+環境を選択してはじめましょう。ほとんどのサーフェスには、[Claude サブスクリプション](https://claude.com/pricing)または [Anthropic Console](https://console.anthropic.com/) アカウントが必要です。Terminal CLI と VS Code は [サードパーティプロバイダー](/ja/third-party-integrations)もサポートしています。
 
 <Tabs>
-  <Tab title="Native Install (Recommended)">
-    **macOS, Linux, WSL:**
+  <Tab title="Terminal">
+    ターミナルで Claude Code を直接操作するための機能豊富な CLI です。ファイルを編集し、コマンドを実行し、コマンドラインからプロジェクト全体を管理できます。
+
+    To install Claude Code, use one of the following methods:
+
+    <Tabs>
+      <Tab title="Native Install (Recommended)">
+        **macOS, Linux, WSL:**
+
+        ```bash  theme={null}
+        curl -fsSL https://claude.ai/install.sh | bash
+        ```
+
+        **Windows PowerShell:**
+
+        ```powershell  theme={null}
+        irm https://claude.ai/install.ps1 | iex
+        ```
+
+        **Windows CMD:**
+
+        ```batch  theme={null}
+        curl -fsSL https://claude.ai/install.cmd -o install.cmd && install.cmd && del install.cmd
+        ```
+
+        <Info>
+          Native installations automatically update in the background to keep you on the latest version.
+        </Info>
+      </Tab>
+
+      <Tab title="Homebrew">
+        ```sh  theme={null}
+        brew install --cask claude-code
+        ```
+
+        <Info>
+          Homebrew installations do not auto-update. Run `brew upgrade claude-code` periodically to get the latest features and security fixes.
+        </Info>
+      </Tab>
+
+      <Tab title="WinGet">
+        ```powershell  theme={null}
+        winget install Anthropic.ClaudeCode
+        ```
+
+        <Info>
+          WinGet installations do not auto-update. Run `winget upgrade Anthropic.ClaudeCode` periodically to get the latest features and security fixes.
+        </Info>
+      </Tab>
+    </Tabs>
+
+    その後、任意のプロジェクトで Claude Code を開始します：
 
     ```bash  theme={null}
-    curl -fsSL https://claude.ai/install.sh | bash
+    cd your-project
+    claude
     ```
 
-    **Windows PowerShell:**
+    初回使用時にログインするよう求められます。これだけです！[クイックスタートに進む →](/ja/quickstart)
 
-    ```powershell  theme={null}
-    irm https://claude.ai/install.ps1 | iex
-    ```
-
-    **Windows CMD:**
-
-    ```batch  theme={null}
-    curl -fsSL https://claude.ai/install.cmd -o install.cmd && install.cmd && del install.cmd
-    ```
-
-    <Info>
-      Native installations automatically update in the background to keep you on the latest version.
-    </Info>
+    <Tip>
+      [高度なセットアップ](/ja/setup)でインストールオプション、手動更新、またはアンインストール手順を参照してください。問題が発生した場合は、[トラブルシューティング](/ja/troubleshooting)にアクセスしてください。
+    </Tip>
   </Tab>
 
-  <Tab title="Homebrew">
-    ```sh  theme={null}
-    brew install --cask claude-code
-    ```
+  <Tab title="VS Code">
+    VS Code 拡張機能は、インラインの差分、@-mentions、プラン確認、会話履歴をエディタに直接提供します。
 
-    <Info>
-      Homebrew installations do not auto-update. Run `brew upgrade claude-code` periodically to get the latest features and security fixes.
-    </Info>
+    * [VS Code 用にインストール](vscode:extension/anthropic.claude-code)
+    * [Cursor 用にインストール](cursor:extension/anthropic.claude-code)
+
+    または、拡張機能ビューで「Claude Code」を検索します（Mac では `Cmd+Shift+X`、Windows/Linux では `Ctrl+Shift+X`）。インストール後、コマンドパレット（`Cmd+Shift+P` / `Ctrl+Shift+P`）を開き、「Claude Code」と入力して、**新しいタブで開く**を選択します。
+
+    [VS Code ではじめる →](/ja/vs-code#get-started)
   </Tab>
 
-  <Tab title="WinGet">
-    ```powershell  theme={null}
-    winget install Anthropic.ClaudeCode
-    ```
+  <Tab title="Desktop app">
+    IDE またはターミナルの外で Claude Code を実行するためのスタンドアロンアプリです。差分を視覚的に確認し、複数のセッションを並行して実行し、クラウドセッションを開始できます。
 
-    <Info>
-      WinGet installations do not auto-update. Run `winget upgrade Anthropic.ClaudeCode` periodically to get the latest features and security fixes.
-    </Info>
+    ダウンロードしてインストール：
+
+    * [macOS](https://claude.ai/api/desktop/darwin/universal/dmg/latest/redirect?utm_source=claude_code\&utm_medium=docs)（Intel および Apple Silicon）
+    * [Windows](https://claude.ai/api/desktop/win32/x64/exe/latest/redirect?utm_source=claude_code\&utm_medium=docs)（x64）
+    * [Windows ARM64](https://claude.ai/api/desktop/win32/arm64/exe/latest/redirect?utm_source=claude_code\&utm_medium=docs)（リモートセッションのみ）
+
+    インストール後、Claude を起動し、サインインして、**Code** タブをクリックしてコーディングを開始します。[有料サブスクリプション](https://claude.com/pricing)が必要です。
+
+    [デスクトップアプリについて詳しく →](/ja/desktop#get-started)
+  </Tab>
+
+  <Tab title="Web">
+    ローカルセットアップなしでブラウザで Claude Code を実行します。長時間実行されるタスクを開始して完了を待つ、ローカルにないリポジトリで作業する、または複数のタスクを並行して実行できます。デスクトップブラウザと Claude iOS アプリで利用できます。
+
+    [claude.ai/code](https://claude.ai/code) でコーディングを開始します。
+
+    [Web ではじめる →](/ja/claude-code-on-the-web#getting-started)
+  </Tab>
+
+  <Tab title="JetBrains">
+    IntelliJ IDEA、PyCharm、WebStorm、その他の JetBrains IDE 用のプラグインで、インタラクティブな差分表示と選択コンテキスト共有を備えています。
+
+    JetBrains Marketplace から [Claude Code プラグイン](https://plugins.jetbrains.com/plugin/27310-claude-code-beta-)をインストールし、IDE を再起動します。
+
+    [JetBrains ではじめる →](/ja/jetbrains)
   </Tab>
 </Tabs>
 
-**Claude Code を使い始める：**
+## できること
 
-```bash  theme={null}
-cd your-project
-claude
-```
+Claude Code を使用できるいくつかの方法を以下に示します：
 
-初回使用時にログインするよう促されます。以上です！[クイックスタート（5 分）に進む →](/ja/quickstart)
+<AccordionGroup>
+  <Accordion title="先延ばしにしている作業を自動化する" icon="wand-magic-sparkles">
+    Claude Code は、1 日を費やす退屈なタスクを処理します：テストされていないコードのテスト作成、プロジェクト全体のリント エラー修正、マージ競合の解決、依存関係の更新、リリースノートの作成。
 
-<Tip>
-  [高度なセットアップ](/ja/setup)でインストールオプション、手動更新、またはアンインストール手順を確認してください。問題が発生した場合は、[トラブルシューティング](/ja/troubleshooting)を参照してください。
-</Tip>
+    ```bash  theme={null}
+    claude "write tests for the auth module, run them, and fix any failures"
+    ```
+  </Accordion>
 
-## Claude Code があなたのためにすること
+  <Accordion title="機能を構築し、バグを修正する" icon="hammer">
+    プレーンテキストで必要なことを説明します。Claude Code はアプローチを計画し、複数のファイル全体でコードを作成し、動作を確認します。
 
-* **説明からフィーチャーを構築**: Claude に平易な英語で構築したいものを伝えます。計画を立て、コードを書き、動作を確認します。
-* **バグをデバッグして問題を修正**: バグを説明するか、エラーメッセージを貼り付けます。Claude Code はコードベースを分析し、問題を特定し、修正を実装します。
-* **任意のコードベースをナビゲート**: チームのコードベースについて何でも質問し、思慮深い回答を得ます。Claude Code はプロジェクト全体の構造を認識し、ウェブから最新情報を見つけることができ、[MCP](/ja/mcp)を使用すると Google Drive、Figma、Slack などの外部データソースから取得できます。
-* **退屈なタスクを自動化**: 厄介な lint の問題を修正し、マージコンフリクトを解決し、リリースノートを作成します。開発者マシンから単一のコマンドで、または CI で自動的にすべてを実行します。
+    バグの場合は、エラーメッセージを貼り付けるか、症状を説明します。Claude Code はコードベース全体で問題をトレースし、根本原因を特定し、修正を実装します。詳細な例については、[一般的なワークフロー](/ja/common-workflows)を参照してください。
+  </Accordion>
 
-## 開発者が Claude Code を愛する理由
+  <Accordion title="コミットとプルリクエストを作成する" icon="code-branch">
+    Claude Code は git と直接連携します。変更をステージし、コミットメッセージを作成し、ブランチを作成し、プルリクエストを開きます。
 
-* **ターミナルで動作**: 別のチャットウィンドウではありません。別の IDE ではありません。Claude Code はあなたが既に作業している場所で、既に愛用しているツールで、あなたに会います。
-* **アクションを実行**: Claude Code はファイルを直接編集し、コマンドを実行し、コミットを作成できます。さらに必要ですか？[MCP](/ja/mcp)により Claude は Google Drive のデザインドキュメントを読み、Jira のチケットを更新し、または\_あなたの\_カスタム開発者ツーリングを使用できます。
-* **Unix 哲学**: Claude Code は構成可能でスクリプト化可能です。`tail -f app.log | claude -p "Slack me if you see any anomalies appear in this log stream"` *動作します*。CI は `claude -p "If there are new text strings, translate them into French and raise a PR for @lang-fr-team to review"` を実行できます。
-* **エンタープライズ対応**: Claude API を使用するか、AWS または GCP でホストします。エンタープライズグレードの[セキュリティ](/ja/security)、[プライバシー](/ja/data-usage)、および[コンプライアンス](https://trust.anthropic.com/)が組み込まれています。
+    ```bash  theme={null}
+    claude "commit my changes with a descriptive message"
+    ```
 
-## Claude Code をどこでも使用
+    CI では、[GitHub Actions](/ja/github-actions)または [GitLab CI/CD](/ja/gitlab-ci-cd)でコードレビューと問題トリアージを自動化できます。
+  </Accordion>
 
-Claude Code は開発環境全体で動作します：ターミナル、IDE、クラウド、Slack で。
+  <Accordion title="MCP でツールを接続する" icon="plug">
+    [Model Context Protocol（MCP）](/ja/mcp)は、AI ツールを外部データソースに接続するためのオープンスタンダードです。MCP を使用すると、Claude Code は Google Drive のデザインドキュメントを読み取り、Jira のチケットを更新し、Slack からデータをプルするか、独自のカスタムツールを使用できます。
+  </Accordion>
 
-* **[ターミナル（CLI）](/ja/quickstart)**: コア Claude Code エクスペリエンス。任意のターミナルで `claude` を実行してコーディングを開始します。
-* **[ウェブ上の Claude Code](/ja/claude-code-on-the-web)**: [claude.ai/code](https://claude.ai/code) または Claude iOS アプリのブラウザから Claude Code を使用し、ローカルセットアップは不要です。タスクを並列実行し、ローカルにないリポジトリで作業し、組み込みの diff ビューで変更を確認します。
-* **[デスクトップアプリ](/ja/desktop)**: diff レビュー、git worktrees を使用した並列セッション、クラウドセッションを起動する機能を備えたスタンドアロンアプリケーション。
-* **[VS Code](/ja/vs-code)**: インラインの diff、@-mentions、プランレビューを備えたネイティブ拡張機能。
-* **[JetBrains IDE](/ja/jetbrains)**: IntelliJ IDEA、PyCharm、WebStorm、および他の JetBrains IDE 用のプラグイン（IDE diff ビューとコンテキスト共有機能付き）。
-* **[GitHub Actions](/ja/github-actions)**: `@claude` mentions を使用して CI/CD でコードレビュー、issue トリアージ、およびその他のワークフローを自動化します。
-* **[GitLab CI/CD](/ja/gitlab-ci-cd)**: GitLab マージリクエストと issue のイベント駆動型自動化。
-* **[Slack](/ja/slack)**: Slack で Claude にメンションして、コーディングタスクを Claude Code on the web にルーティングし、PR を取得します。
-* **[Chrome](/ja/chrome)**: Claude Code をブラウザに接続して、ライブデバッグ、デザイン検証、ウェブアプリテストを行います。
+  <Accordion title="指示、スキル、フックでカスタマイズする" icon="sliders">
+    [`CLAUDE.md`](/ja/claude-md)は、プロジェクトルートに追加するマークダウンファイルで、Claude Code はすべてのセッションの開始時に読み取ります。コーディング標準、アーキテクチャの決定、推奨ライブラリ、レビューチェックリストを設定するために使用します。
+
+    [カスタムスラッシュコマンド](/ja/skills)を作成して、チームが共有できる反復可能なワークフローをパッケージ化します（`/review-pr` や `/deploy-staging` など）。
+
+    [フック](/ja/hooks)を使用すると、ファイル編集後の自動フォーマットやコミット前のリント実行など、Claude Code アクション前後にシェルコマンドを実行できます。
+  </Accordion>
+
+  <Accordion title="エージェントチームを実行し、カスタムエージェントを構築する" icon="users">
+    [複数の Claude Code エージェント](/ja/sub-agents)を生成して、タスクのさまざまな部分に同時に取り組みます。リードエージェントが作業を調整し、サブタスクを割り当て、結果をマージします。
+
+    完全にカスタムなワークフローの場合、[Agent SDK](https://platform.claude.com/docs/en/agent-sdk/overview)を使用すると、Claude Code のツールと機能を活用した独自のエージェントを構築でき、オーケストレーション、ツールアクセス、権限を完全に制御できます。
+  </Accordion>
+
+  <Accordion title="CLI でパイプ、スクリプト、自動化する" icon="terminal">
+    Claude Code は構成可能で、Unix 哲学に従います。ログをパイプで渡し、CI で実行するか、他のツールと連鎖させます：
+
+    ```bash  theme={null}
+    # Monitor logs and get alerted
+    tail -f app.log | claude -p "Slack me if you see any anomalies"
+
+    # Automate translations in CI
+    claude -p "translate new strings into French and raise a PR for review"
+
+    # Bulk operations across files
+    git diff main --name-only | claude -p "review these changed files for security issues"
+    ```
+
+    コマンドとフラグの完全なセットについては、[CLI リファレンス](/ja/cli-reference)を参照してください。
+  </Accordion>
+
+  <Accordion title="どこからでも作業する" icon="globe">
+    セッションは単一のサーフェスに限定されません。コンテキストが変わるにつれて、環境間で作業を移動します：
+
+    * [Web](/ja/claude-code-on-the-web)または [iOS アプリ](https://apps.apple.com/app/claude-by-anthropic/id6473753684)で長時間実行されるタスクを開始し、`/teleport` でターミナルにプルします
+    * ターミナルセッションを [Desktop アプリ](/ja/desktop)に `/desktop` で渡して、視覚的な差分確認を行います
+    * チームチャットからタスクをルーティング：[Slack](/ja/slack)で `@Claude` にバグレポートを記載すると、プルリクエストが返されます
+  </Accordion>
+</AccordionGroup>
+
+## Claude Code をどこでも使用する
+
+各サーフェスは同じ基盤となる Claude Code エンジンに接続するため、CLAUDE.md ファイル、設定、MCP サーバーはすべてのサーフェスで機能します。
+
+上記の [Terminal](/ja/quickstart)、[VS Code](/ja/vs-code)、[JetBrains](/ja/jetbrains)、[Desktop](/ja/desktop)、[Web](/ja/claude-code-on-the-web)環境を超えて、Claude Code は CI/CD、チャット、ブラウザワークフローと統合します：
+
+| 実行したいこと                          | 最適なオプション                                                                                                           |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| ローカルでタスクを開始し、モバイルで続行する           | [Web](/ja/claude-code-on-the-web)または [Claude iOS アプリ](https://apps.apple.com/app/claude-by-anthropic/id6473753684) |
+| PR レビューと問題トリアージを自動化する            | [GitHub Actions](/ja/github-actions)または [GitLab CI/CD](/ja/gitlab-ci-cd)                                           |
+| Slack からのバグレポートをプルリクエストにルーティングする | [Slack](/ja/slack)                                                                                                 |
+| ライブ Web アプリケーションをデバッグする          | [Chrome](/ja/chrome)                                                                                               |
+| 独自のワークフロー用のカスタムエージェントを構築する       | [Agent SDK](https://platform.claude.com/docs/en/agent-sdk/overview)                                                |
 
 ## 次のステップ
 
-<CardGroup>
-  <Card title="クイックスタート" icon="rocket" href="/ja/quickstart">
-    実践的な例で Claude Code の動作を確認
-  </Card>
+Claude Code をインストールしたら、これらのガイドでさらに詳しく学べます。
 
-  <Card title="一般的なワークフロー" icon="graduation-cap" href="/ja/common-workflows">
-    一般的なワークフローのステップバイステップガイド
-  </Card>
-
-  <Card title="トラブルシューティング" icon="wrench" href="/ja/troubleshooting">
-    Claude Code の一般的な問題の解決策
-  </Card>
-
-  <Card title="デスクトップアプリ" icon="laptop" href="/ja/desktop">
-    Claude Code をスタンドアロンアプリケーションとして実行
-  </Card>
-</CardGroup>
-
-## 追加リソース
-
-<CardGroup>
-  <Card title="Claude Code について" icon="sparkles" href="https://claude.com/product/claude-code">
-    claude.com で Claude Code の詳細を確認
-  </Card>
-
-  <Card title="Agent SDK で構築" icon="code-branch" href="https://platform.claude.com/docs/en/agent-sdk/overview">
-    Claude Agent SDK でカスタム AI エージェントを作成
-  </Card>
-
-  <Card title="AWS または GCP でホスト" icon="cloud" href="/ja/third-party-integrations">
-    Amazon Bedrock または Google Vertex AI で Claude Code を構成
-  </Card>
-
-  <Card title="設定" icon="gear" href="/ja/settings">
-    ワークフロー用に Claude Code をカスタマイズ
-  </Card>
-
-  <Card title="コマンド" icon="terminal" href="/ja/cli-reference">
-    CLI コマンドとコントロールについて学ぶ
-  </Card>
-
-  <Card title="リファレンス実装" icon="code" href="https://github.com/anthropics/claude-code/tree/main/.devcontainer">
-    開発コンテナリファレンス実装をクローン
-  </Card>
-
-  <Card title="セキュリティ" icon="shield" href="/ja/security">
-    Claude Code のセーフガードと安全な使用のベストプラクティスを発見
-  </Card>
-
-  <Card title="プライバシーとデータ使用" icon="lock" href="/ja/data-usage">
-    Claude Code がデータをどのように処理するかを理解
-  </Card>
-</CardGroup>
+* [クイックスタート](/ja/quickstart)：コードベースの探索から修正のコミットまで、最初の実際のタスクを実行します
+* [ベストプラクティス](/ja/best-practices)と[一般的なワークフロー](/ja/common-workflows)でレベルアップします
+* [設定](/ja/settings)：ワークフローに合わせて Claude Code をカスタマイズします
+* [トラブルシューティング](/ja/troubleshooting)：一般的な問題の解決策
+* [code.claude.com](https://code.claude.com/)：デモ、価格、製品の詳細
