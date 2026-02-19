@@ -17,6 +17,96 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-02-19</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md |  76 +++++
+ docs-ja/pages/mcp-ja.md    | 735 +++++++++++++++++++++++++++------------------
+ 2 files changed, 518 insertions(+), 293 deletions(-)
+```
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index c1b178b..43a16ff 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,80 @@
+ # Changelog
+ 
++## 2.1.47
++
++- Fixed FileWriteTool line counting to preserve intentional trailing blank lines instead of stripping them with `trimEnd()`.
++- Fixed Windows terminal rendering bugs caused by `os.EOL` (`\r\n`) in display code — line counts now show correct values instead of always showing 1 on Windows.
++- Improved VS Code plan preview: auto-updates as Claude iterates, enables commenting only when the plan is ready for review, and keeps the preview open when rejecting so Claude can revise.
++- Fixed a bug where bold and colored text in markdown output could shift to the wrong characters on Windows due to `\r\n` line endings.
++- Fixed compaction failing when conversation contains many PDF documents by stripping document blocks alongside images before sending to the compaction API (anthropics/claude-code#26188)
++- Improved memory usage in long-running sessions by releasing API stream buffers, agent context, and skill state after use
++- Improved startup performance by deferring SessionStart hook execution, reducing time-to-interactive by ~500ms.
++- Fixed an issue where bash tool output was silently discarded on Windows when using MSYS2 or Cygwin shells.
++- Improved performance of `@` file mentions - file suggestions now appear faster by pre-warming the index on startup and using session-based caching with background refresh.
++- Improved memory usage by trimming agent task message history after tasks complete
++- Improved memory usage during long agent sessions by eliminating O(n²) message accumulation in progress updates
++- Fixed the bash permission classifier to validate that returned match descriptions correspond to actual input rules, preventing hallucinated descriptions from incorrectly granting permissions
++- Fixed user-defined agents only loading one file on NFS/FUSE filesystems that report zero inodes (anthropics/claude-code#26044)
++- Fixed plugin agent skills silently failing to load when referenced by bare name instead of fully-qualified plugin name (anthropics/claude-code#25834)
++- Search patterns in collapsed tool results are now displayed in quotes for clarity
++- Windows: Fixed CWD tracking temp files never being cleaned up, causing them to accumulate indefinitely (anthropics/claude-code#17600)
++- Use `ctrl+f` to kill all background agents instead of double-pressing ESC. Background agents now continue running when you press ESC to cancel the main thread, giving you more control over agent lifecycle.
++- Fixed API 400 errors ("thinking blocks cannot be modified") that occurred in sessions with concurrent agents, caused by interleaved streaming content blocks preventing proper message merging.
++- Simplified teammate navigation to use only Shift+Down (with wrapping) instead of both Shift+Up and Shift+Down.
++- Fixed an issue where a single file write/edit error would abort all other parallel file write/edit operations. Independent file mutations now complete even when a sibling fails.
++- Added `last_assistant_message` field to Stop and SubagentStop hook inputs, providing the final assistant response text so hooks can access it without parsing transcript files.
+```
+
+</details>
+
+<details>
+<summary>mcp-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/mcp-ja.md b/docs-ja/pages/mcp-ja.md
+index 4a7c600..8ba8a98 100644
+--- a/docs-ja/pages/mcp-ja.md
++++ b/docs-ja/pages/mcp-ja.md
+@@ -3,7 +3,7 @@
+ > Use this file to discover all available pages before exploring further.
+ 
+-# MCPを使用してClaude Codeをツールに接続する
++# MCP を使用して Claude Code をツールに接続する
+ 
+-> Model Context Protocolを使用してClaude Codeをツールに接続する方法を学びます。
++> Model Context Protocol を使用して Claude Code をツールに接続する方法を学びます。
+ 
+ export const MCPServersTable = ({platform = "all"}) => {
+@@ -213,24 +213,24 @@ export const MCPServersTable = ({platform = "all"}) => {
+ };
+ 
+-Claude Codeは、AI-ツール統合のためのオープンソース標準である[Model Context Protocol (MCP)](https://modelcontextprotocol.io/introduction)を通じて、数百の外部ツールとデータソースに接続できます。MCPサーバーは、Claude Codeにツール、データベース、APIへのアクセスを提供します。
++Claude Code は、AI ツール統合のためのオープンソース標準である [Model Context Protocol (MCP)](https://modelcontextprotocol.io/introduction) を通じて、数百の外部ツールとデータソースに接続できます。MCP サーバーは Claude Code にツール、データベース、API へのアクセスを提供します。
+ 
+-## MCPでできることは何か
++## MCP でできること
+ 
+-MCPサーバーが接続されている場合、Claude Codeに以下を依頼できます：
++MCP サーバーが接続されている場合、Claude Code に以下のことを依頼できます。
+ 
+-* **イシュートラッカーから機能を実装する**: 「JIRA issue ENG-4521に記載されている機能を追加し、GitHubにPRを作成してください。」
+-* **監視データを分析する**: 「SentryとStatsigをチェックして、ENG-4521に記載されている機能の使用状況を確認してください。」
+-* **データベースをクエリする**: 「PostgreSQLデータベースに基づいて、ENG-4521機能を使用した10人のランダムユーザーのメールアドレスを検索してください。」
+-* **デザインを統合する**: 「Slackに投稿された新しいFigmaデザインに基づいて、標準メールテンプレートを更新してください。」
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-02-18</summary>
 
 **変更ファイル:**
