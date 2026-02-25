@@ -17,6 +17,270 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-02-25</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/agent-teams-ja.md             | 261 +++++++------
+ docs-ja/pages/authentication-en.md          |  43 +-
+ docs-ja/pages/changelog.md                  |  18 +
+ docs-ja/pages/claude-code-on-the-web-ja.md  | 115 +++---
+ docs-ja/pages/cli-reference-ja.md           | 177 +++++----
+ docs-ja/pages/data-usage-ja.md              |  16 +-
+ docs-ja/pages/desktop-ja.md                 | 556 +++++++++++++++++++++++---
+ docs-ja/pages/how-claude-code-works-ja.md   | 147 +++----
+ docs-ja/pages/overview-ja.md                |  50 +--
+ docs-ja/pages/permissions-ja.md             | 167 ++++----
+ docs-ja/pages/plugins-reference-ja.md       | 227 +++++------
+ docs-ja/pages/quickstart-ja.md              |   4 +-
+ docs-ja/pages/security-ja.md                | 107 ++---
+ docs-ja/pages/server-managed-settings-en.md | 164 --------
+ docs-ja/pages/settings-ja.md                | 587 ++++++++++++++--------------
+ docs-ja/pages/setup-ja.md                   |  72 ++--
+ docs-ja/pages/skills-ja.md                  | 394 ++++++++++---------
+ docs-ja/pages/sub-agents-ja.md              | 278 +++++++------
+ docs-ja/pages/troubleshooting-ja.md         | 291 +++++++-------
+ 19 files changed, 2053 insertions(+), 1621 deletions(-)
+```
+
+**新規追加:**
+
+
+**削除:**
+
+
+<details>
+<summary>agent-teams-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/agent-teams-ja.md b/docs-ja/pages/agent-teams-ja.md
+index 301d8fd..9a5868d 100644
+--- a/docs-ja/pages/agent-teams-ja.md
++++ b/docs-ja/pages/agent-teams-ja.md
+@@ -8,46 +8,52 @@
+ 
+ <Warning>
+-  エージェントチームは実験的機能であり、デフォルトでは無効です。`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` を [settings.json](/ja/settings) または環境に追加して有効にしてください。エージェントチームには、セッション再開、タスク調整、シャットダウン動作に関する [既知の制限](#limitations) があります。
++  エージェントチームは実験的機能であり、デフォルトでは無効です。[settings.json](/ja/settings) または環境に `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` を追加して有効にしてください。エージェントチームには、セッション再開、タスク調整、シャットダウン動作に関する[既知の制限](#limitations)があります。
+ </Warning>
+ 
+-エージェントチームを使用すると、複数の Claude Code インスタンスが連携して動作するように調整できます。1 つのセッションがチームリーダーとして機能し、作業を調整し、タスクを割り当て、結果を統合します。チームメンバーは独立して動作し、それぞれ独自のコンテキストウィンドウで作業し、互いに直接通信します。
++エージェントチームを使用すると、複数の Claude Code インスタンスが連携して動作するように調整できます。1 つのセッションがチームリーダーとして機能し、作業を調整し、タスクを割り当て、結果を統合します。チームメイトは独立して動作し、それぞれ独自のコンテキストウィンドウで動作し、互いに直接通信します。
+ 
+-単一セッション内で実行され、メインエージェントにのみ報告できる [subagents](/ja/sub-agents) とは異なり、リーダーを経由せずにチームメンバー個別と直接やり取りすることもできます。
++単一セッション内で実行され、メインエージェントにのみ報告できる[subagents](/ja/sub-agents)とは異なり、リーダーを経由せずに個別のチームメイトと直接対話することもできます。
+ 
+ このページでは、以下について説明します。
+ 
+-* [エージェントチームを使用する場合](#when-to-use-agent-teams)。ユースケースと subagents との比較を含みます
++* [エージェントチームを使用する場合](#when-to-use-agent-teams)。ベストユースケースと subagents との比較を含みます
+ * [チームを開始する](#start-your-first-agent-team)
+-* [チームメンバーを制御する](#control-your-agent-team)。表示モード、タスク割り当て、委任を含みます
++* [チームメイトを制御する](#control-your-agent-team)。表示モード、タスク割り当て、委任を含みます
+ * [並列作業のベストプラクティス](#best-practices)
+ 
+ ## エージェントチームを使用する場合
+ 
+-エージェントチームは、並列探索が実際の価値を追加するタスクに最も効果的です。完全なシナリオについては、[ユースケース例](#use-case-examples) を参照してください。最も強力なユースケースは以下の通りです。
++エージェントチームは、並列探索が実際の価値を追加するタスクに最も効果的です。完全なシナリオについては、[ユースケース例](#use-case-examples)を参照してください。最も強力なユースケースは以下の通りです。
+```
+
+</details>
+
+<details>
+<summary>authentication-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/authentication-en.md b/docs-ja/pages/authentication-en.md
+index 76a4acc..25b933c 100644
+--- a/docs-ja/pages/authentication-en.md
++++ b/docs-ja/pages/authentication-en.md
+@@ -5,11 +5,30 @@
+ # Authentication
+ 
+-> Learn how to configure user authentication and credential management for Claude Code in your organization.
++> Log in to Claude Code and configure authentication for individuals, teams, and organizations.
+ 
+-## Authentication methods
++Claude Code supports multiple authentication methods depending on your setup. Individual users can log in with a Claude.ai account, while teams can use Claude for Teams or Enterprise, the Claude Console, or a cloud provider like Amazon Bedrock, Google Vertex AI, or Microsoft Foundry.
+ 
+-Setting up Claude Code requires access to Anthropic models. For teams, you can set up Claude Code access in one of these ways:
++## Log in to Claude Code
+ 
+-* [Claude for Teams or Enterprise](#claude-for-teams-or-enterprise) (recommended)
++After [installing Claude Code](/en/setup#install-claude-code), run `claude` in your terminal. On first launch, Claude Code opens a browser window for you to log in.
++
++If the browser doesn't open automatically, press `c` to copy the login URL to your clipboard, then paste it into your browser.
++
++You can authenticate with any of these account types:
++
++* **Claude Pro or Max subscription**: log in with your Claude.ai account. Subscribe at [claude.com/pricing](https://claude.com/pricing).
++* **Claude for Teams or Enterprise**: log in with the Claude.ai account your team admin invited you to.
++* **Claude Console**: log in with your Console credentials. Your admin must have [invited you](#claude-console-authentication) first.
++* **Cloud providers**: if your organization uses [Amazon Bedrock](/en/amazon-bedrock), [Google Vertex AI](/en/google-vertex-ai), or [Microsoft Foundry](/en/microsoft-foundry), set the required environment variables before running `claude`. No browser login is needed.
++
++To log out and re-authenticate, type `/logout` at the Claude Code prompt.
++
+```
+
+</details>
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index 20d264b..e14fe79 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,22 @@
+ # Changelog
+ 
++## 2.1.52
++
++- VS Code: Fixed extension crash on Windows ("command 'claude-vscode.editor.openLast' not found")
++
++## 2.1.51
++
++- Added `claude remote-control` subcommand for external builds, enabling local environment serving for all users.
++- Updated plugin marketplace default git timeout from 30s to 120s and added `CLAUDE_CODE_PLUGIN_GIT_TIMEOUT_MS` to configure.
++- Added support for custom npm registries and specific version pinning when installing plugins from npm sources
++- BashTool now skips login shell (`-l` flag) by default when a shell snapshot is available, improving command execution performance. Previously this required setting `CLAUDE_BASH_NO_LOGIN=true`.
++- Fixed a security issue where `statusLine` and `fileSuggestion` hook commands could execute without workspace trust acceptance in interactive mode.
++- Tool results larger than 50K characters are now persisted to disk (previously 100K). This reduces context window usage and improves conversation longevity.
++- Fixed a bug where duplicate `control_response` messages (e.g. from WebSocket reconnects) could cause API 400 errors by pushing duplicate assistant messages into the conversation.
++- Added `CLAUDE_CODE_ACCOUNT_UUID`, `CLAUDE_CODE_USER_EMAIL`, and `CLAUDE_CODE_ORGANIZATION_UUID` environment variables for SDK callers to provide account info synchronously, eliminating a race condition where early telemetry events lacked account metadata.
++- Fixed slash command autocomplete crashing when a plugin's SKILL.md description is a YAML array or other non-string type
++- The `/model` picker now shows human-readable labels (e.g., "Sonnet 4.5") instead of raw model IDs for pinned model versions, with an upgrade hint when a newer version is available.
++- Managed settings can now be set via macOS plist or Windows Registry. Learn more at https://code.claude.com/docs/en/settings#settings-files
++
+ ## 2.1.50
+ 
+```
+
+</details>
+
+<details>
+<summary>claude-code-on-the-web-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/claude-code-on-the-web-ja.md b/docs-ja/pages/claude-code-on-the-web-ja.md
+index 4582fd1..4cc0884 100644
+--- a/docs-ja/pages/claude-code-on-the-web-ja.md
++++ b/docs-ja/pages/claude-code-on-the-web-ja.md
+@@ -8,5 +8,5 @@
+ 
+ <Note>
+-  ウェブ上の Claude Code は現在リサーチプレビュー中です。
++  ウェブ上の Claude Code は現在リサーチプレビュー段階です。
+ </Note>
+ 
+@@ -16,12 +16,12 @@
+ 
+ * **質問への回答**：コードアーキテクチャと機能の実装方法について質問する
+-* **バグ修正とルーチンタスク**：頻繁なステアリングを必要としない明確に定義されたタスク
++* **バグ修正とルーチンタスク**：頻繁な操舵が不要な明確に定義されたタスク
+ * **並列作業**：複数のバグ修正を並列で処理する
+ * **ローカルマシンにないリポジトリ**：ローカルにチェックアウトしていないコードで作業する
+ * **バックエンド変更**：Claude Code がテストを作成してからそのテストに合格するコードを作成できる場所
+ 
+-Claude Code は Claude iOS アプリでも利用可能で、移動中にタスクを開始したり、進行中の作業を監視したりできます。
++Claude Code は Claude アプリの [iOS](https://apps.apple.com/us/app/claude-by-anthropic/id6473753684) および [Android](https://play.google.com/store/apps/details?id=com.anthropic.claude) でも利用可能で、移動中にタスクを開始し、進行中の作業を監視できます。
+ 
+-ローカルとリモート開発の間を移動できます：`&` プレフィックスで[ターミナルからウェブへタスクを送信](#from-terminal-to-web)して実行するか、[ウェブセッションをターミナルにテレポート](#from-web-to-terminal)してローカルで続行します。
++ローカルとリモート開発の間を移動できます：`&` プレフィックスで [ターミナルからウェブで実行するタスクを送信](#from-terminal-to-web)するか、[ウェブセッションをターミナルにテレポート](#from-web-to-terminal)してローカルで続行します。クラウドインフラストラクチャの代わりに自分のマシンで Claude Code を実行しながらウェブインターフェースを使用するには、[リモートコントロール](/ja/remote-control) を参照してください。
+ 
+ ## ウェブ上の Claude Code は誰が使用できますか？
+@@ -31,6 +31,6 @@ Claude Code は Claude iOS アプリでも利用可能で、移動中にタス
+ * **Pro ユーザー**
+ * **Max ユーザー**
+```
+
+</details>
+
+<details>
+<summary>cli-reference-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/cli-reference-ja.md b/docs-ja/pages/cli-reference-ja.md
+index c8ee375..4c3f3d1 100644
+--- a/docs-ja/pages/cli-reference-ja.md
++++ b/docs-ja/pages/cli-reference-ja.md
+@@ -9,73 +9,80 @@
+ ## CLI コマンド
+ 
+-| コマンド                            | 説明                                 | 例                                            |
+-| :------------------------------ | :--------------------------------- | :------------------------------------------- |
+-| `claude`                        | インタラクティブ REPL を開始                  | `claude`                                     |
+-| `claude "query"`                | 初期プロンプト付きで REPL を開始                | `claude "explain this project"`              |
+-| `claude -p "query"`             | SDK 経由でクエリを実行してから終了                | `claude -p "explain this function"`          |
+-| `cat file \| claude -p "query"` | パイプされたコンテンツを処理                     | `cat logs.txt \| claude -p "explain"`        |
+-| `claude -c`                     | 現在のディレクトリで最新の会話を続行                 | `claude -c`                                  |
+-| `claude -c -p "query"`          | SDK 経由で続行                          | `claude -c -p "Check for type errors"`       |
+-| `claude -r "<session>" "query"` | セッション ID または名前でセッションを再開            | `claude -r "auth-refactor" "Finish this PR"` |
+-| `claude update`                 | 最新バージョンに更新                         | `claude update`                              |
+-| `claude mcp`                    | Model Context Protocol（MCP）サーバーを設定 | [Claude Code MCP ドキュメント](/ja/mcp)を参照してください。  |
++| コマンド                            | 説明                                                                                                                                                              | 例                                            |
++| :------------------------------ | :-------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------- |
++| `claude`                        | インタラクティブ REPL を開始                                                                                                                                               | `claude`                                     |
++| `claude "query"`                | 初期プロンプト付きで REPL を開始                                                                                                                                             | `claude "explain this project"`              |
++| `claude -p "query"`             | SDK 経由でクエリを実行してから終了                                                                                                                                             | `claude -p "explain this function"`          |
++| `cat file \| claude -p "query"` | パイプされたコンテンツを処理                                                                                                                                                  | `cat logs.txt \| claude -p "explain"`        |
++| `claude -c`                     | 現在のディレクトリで最新の会話を続行                                                                                                                                              | `claude -c`                                  |
++| `claude -c -p "query"`          | SDK 経由で続行                                                                                                                                                       | `claude -c -p "Check for type errors"`       |
++| `claude -r "<session>" "query"` | セッション ID または名前でセッションを再開                                                                                                                                         | `claude -r "auth-refactor" "Finish this PR"` |
++| `claude update`                 | 最新バージョンに更新                                                                                                                                                      | `claude update`                              |
++| `claude auth login`             | Anthropic アカウントにサインイン                                                                                                                                           | `claude auth login`                          |
++| `claude auth logout`            | Anthropic アカウントからログアウト                                                                                                                                          | `claude auth logout`                         |
+```
+
+</details>
+
+<details>
+<summary>data-usage-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/data-usage-ja.md b/docs-ja/pages/data-usage-ja.md
+index 1f3e885..4f4746c 100644
+--- a/docs-ja/pages/data-usage-ja.md
++++ b/docs-ja/pages/data-usage-ja.md
+@@ -5,5 +5,5 @@
+ # データ使用
+ 
+-> Anthropic の Claude のデータ使用ポリシーについて学習します
++> Anthropic の Claude のデータ使用ポリシーについて学びます
+ 
+ ## データポリシー
+@@ -44,7 +44,7 @@ Anthropic は、アカウントタイプと設定に基づいて Claude Code デ
+ * 標準：30 日間の保持期間
+ * ゼロデータ保持：適切に設定された API キーで利用可能 - Claude Code はサーバーにチャットトランスクリプトを保持しません
+-* ローカルキャッシング：Claude Code クライアントは、セッション再開を有効にするために、セッションをローカルに最大 30 日間保存できます（設定可能）
++* ローカルキャッシング：Claude Code クライアントはセッション再開を有効にするために、セッションをローカルに最大 30 日間保存できます（設定可能）
+ 
+-データ保持慣行の詳細については、[Privacy Center](https://privacy.anthropic.com/) をご覧ください。
++[Privacy Center](https://privacy.anthropic.com/) でデータ保持慣行の詳細をご覧ください。
+ 
+ 詳細については、[Commercial Terms of Service](https://www.anthropic.com/legal/commercial-terms)（Team、Enterprise、API ユーザー向け）または [Consumer Terms](https://www.anthropic.com/legal/consumer-terms)（Free、Pro、Max ユーザー向け）および [Privacy Policy](https://www.anthropic.com/legal/privacy) をご確認ください。
+@@ -52,7 +52,7 @@ Anthropic は、アカウントタイプと設定に基づいて Claude Code デ
+ ## データアクセス
+ 
+-すべてのファーストパーティユーザーの場合、[local Claude Code](#local-claude-code-data-flow-and-dependencies) および [remote Claude Code](#cloud-execution-data-flow-and-dependencies) でログされるデータについて詳しく知ることができます。リモート Claude Code の場合、Claude は Claude Code セッションを開始したリポジトリにアクセスします。Claude は接続したが、セッションを開始していないリポジトリにはアクセスしません。
++すべてのファーストパーティユーザーの場合、[ローカル Claude Code](#local-claude-code-data-flow-and-dependencies) および [リモート Claude Code](#cloud-execution-data-flow-and-dependencies) でログされるデータについて詳しく知ることができます。[Remote Control](/ja/remote-control) セッションはすべての実行がマシン上で行われるため、ローカルデータフローに従います。リモート Claude Code の場合、Claude は Claude Code セッションを開始したリポジトリにアクセスします。Claude は接続したが、セッションを開始していないリポジトリにはアクセスしません。
+ 
+-## Local Claude Code：データフローと依存関係
++## ローカル Claude Code：データフローと依存関係
+ 
+```
+
+</details>
+
+*...以降省略*
+
+</details>
+
+
+<details>
 <summary>2026-02-21</summary>
 
 **変更ファイル:**

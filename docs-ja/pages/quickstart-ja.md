@@ -40,13 +40,15 @@ To install Claude Code, use one of the following methods:
     curl -fsSL https://claude.ai/install.cmd -o install.cmd && install.cmd && del install.cmd
     ```
 
+    **Windows requires [Git for Windows](https://git-scm.com/downloads/win).** Install it first if you don't have it.
+
     <Info>
       Native installations automatically update in the background to keep you on the latest version.
     </Info>
   </Tab>
 
   <Tab title="Homebrew">
-    ```sh  theme={null}
+    ```bash  theme={null}
     brew install --cask claude-code
     ```
 

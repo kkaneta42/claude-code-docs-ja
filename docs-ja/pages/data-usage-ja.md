@@ -4,7 +4,7 @@
 
 # データ使用
 
-> Anthropic の Claude のデータ使用ポリシーについて学習します
+> Anthropic の Claude のデータ使用ポリシーについて学びます
 
 ## データポリシー
 
@@ -43,17 +43,17 @@ Anthropic は、アカウントタイプと設定に基づいて Claude Code デ
 
 * 標準：30 日間の保持期間
 * ゼロデータ保持：適切に設定された API キーで利用可能 - Claude Code はサーバーにチャットトランスクリプトを保持しません
-* ローカルキャッシング：Claude Code クライアントは、セッション再開を有効にするために、セッションをローカルに最大 30 日間保存できます（設定可能）
+* ローカルキャッシング：Claude Code クライアントはセッション再開を有効にするために、セッションをローカルに最大 30 日間保存できます（設定可能）
 
-データ保持慣行の詳細については、[Privacy Center](https://privacy.anthropic.com/) をご覧ください。
+[Privacy Center](https://privacy.anthropic.com/) でデータ保持慣行の詳細をご覧ください。
 
 詳細については、[Commercial Terms of Service](https://www.anthropic.com/legal/commercial-terms)（Team、Enterprise、API ユーザー向け）または [Consumer Terms](https://www.anthropic.com/legal/consumer-terms)（Free、Pro、Max ユーザー向け）および [Privacy Policy](https://www.anthropic.com/legal/privacy) をご確認ください。
 
 ## データアクセス
 
-すべてのファーストパーティユーザーの場合、[local Claude Code](#local-claude-code-data-flow-and-dependencies) および [remote Claude Code](#cloud-execution-data-flow-and-dependencies) でログされるデータについて詳しく知ることができます。リモート Claude Code の場合、Claude は Claude Code セッションを開始したリポジトリにアクセスします。Claude は接続したが、セッションを開始していないリポジトリにはアクセスしません。
+すべてのファーストパーティユーザーの場合、[ローカル Claude Code](#local-claude-code-data-flow-and-dependencies) および [リモート Claude Code](#cloud-execution-data-flow-and-dependencies) でログされるデータについて詳しく知ることができます。[Remote Control](/ja/remote-control) セッションはすべての実行がマシン上で行われるため、ローカルデータフローに従います。リモート Claude Code の場合、Claude は Claude Code セッションを開始したリポジトリにアクセスします。Claude は接続したが、セッションを開始していないリポジトリにはアクセスしません。
 
-## Local Claude Code：データフローと依存関係
+## ローカル Claude Code：データフローと依存関係
 
 以下の図は、インストール中および通常の操作中に Claude Code が外部サービスにどのように接続するかを示しています。実線は必須の接続を示し、破線はオプションまたはユーザーが開始したデータフローを表します。
 
@@ -70,15 +70,15 @@ Claude Code は Anthropic の API 上に構築されています。API のセキ
 * **コードとデータストレージ**：リポジトリは分離された VM にクローンされます。コードとセッションデータは、アカウントタイプの保持および使用ポリシーに従います（上記のデータ保持セクションを参照）
 * **認証情報**：GitHub 認証はセキュアプロキシを通じて処理されます。GitHub 認証情報はサンドボックスに入りません
 * **ネットワークトラフィック**：すべてのアウトバウンドトラフィックはセキュリティプロキシを通じて監査ログと不正使用防止のために送信されます
-* **セッションデータ**：プロンプト、コード変更、出力は、local Claude Code 使用と同じデータポリシーに従います
+* **セッションデータ**：プロンプト、コード変更、出力はローカル Claude Code 使用と同じデータポリシーに従います
 
 クラウド実行のセキュリティ詳細については、[Security](/ja/security#cloud-execution-security) を参照してください。
 
 ## テレメトリサービス
 
-Claude Code はユーザーのマシンから Statsig サービスに接続して、レイテンシ、信頼性、使用パターンなどの運用メトリックをログします。このロギングには、コードまたはファイルパスは含まれません。データは TLS を使用して転送中に暗号化され、256 ビット AES 暗号化を使用して保存時に暗号化されます。[Statsig security documentation](https://www.statsig.com/trust/security) で詳細をご覧ください。Statsig テレメトリをオプトアウトするには、`DISABLE_TELEMETRY` 環境変数を設定します。
+Claude Code はユーザーのマシンから Statsig サービスに接続して、レイテンシ、信頼性、使用パターンなどの運用メトリックをログします。このロギングには、コードまたはファイルパスは含まれません。データは TLS を使用して転送中に暗号化され、256 ビット AES 暗号化を使用して保存時に暗号化されます。[Statsig セキュリティドキュメント](https://www.statsig.com/trust/security) で詳細をご覧ください。Statsig テレメトリをオプトアウトするには、`DISABLE_TELEMETRY` 環境変数を設定します。
 
-Claude Code はユーザーのマシンから Sentry に接続して、運用エラーログを記録します。データは TLS を使用して転送中に暗号化され、256 ビット AES 暗号化を使用して保存時に暗号化されます。[Sentry security documentation](https://sentry.io/security/) で詳細をご覧ください。エラーログをオプトアウトするには、`DISABLE_ERROR_REPORTING` 環境変数を設定します。
+Claude Code はユーザーのマシンから Sentry に接続して、運用エラーログを記録します。データは TLS を使用して転送中に暗号化され、256 ビット AES 暗号化を使用して保存時に暗号化されます。[Sentry セキュリティドキュメント](https://sentry.io/security/) で詳細をご覧ください。エラーログをオプトアウトするには、`DISABLE_ERROR_REPORTING` 環境変数を設定します。
 
 ユーザーが `/bug` コマンドを実行すると、コードを含む完全な会話履歴のコピーが Anthropic に送信されます。データは転送中および保存時に暗号化されます。オプションで、公開リポジトリに Github イシューが作成されます。バグレポートをオプトアウトするには、`DISABLE_BUG_COMMAND` 環境変数を設定します。
 
