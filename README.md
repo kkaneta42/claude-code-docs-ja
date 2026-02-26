@@ -17,6 +17,57 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-02-26</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md | 23 +++++++++++++++++++++++
+ 1 file changed, 23 insertions(+)
+```
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index e14fe79..3247963 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,27 @@
+ # Changelog
+ 
++## 2.1.58
++
++- Expand Remote Control to more users
++
++## 2.1.56
++
++- VS Code: Fixed another cause of "command 'claude-vscode.editor.openLast' not found" crashes
++
++## 2.1.55
++
++- Fixed BashTool failing on Windows with EINVAL error
++
++## 2.1.53
++
++- Fixed a UI flicker where user input would briefly disappear after submission before the message rendered
++- Fixed bulk agent kill (ctrl+f) to send a single aggregate notification instead of one per agent, and to properly clear the command queue
++- Fixed graceful shutdown sometimes leaving stale sessions when using Remote Control by parallelizing teardown network calls
++- Fixed `--worktree` sometimes being ignored on first launch
++- Fixed a panic ("switch on corrupted value") on Windows
++- Fixed a crash that could occur when spawning many processes on Windows
++- Fixed a crash in the WebAssembly interpreter on Linux x64 & Windows x64
++- Fixed a crash that sometimes occurred after 2 minutes on Windows ARM64
++
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-02-25</summary>
 
 **変更ファイル:**
