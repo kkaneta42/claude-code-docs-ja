@@ -17,6 +17,51 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-02-27</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
+```
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index 3247963..2c6f0d5 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,19 @@
+ # Changelog
+ 
++## 2.1.61
++
++- Fixed concurrent writes corrupting config file on Windows
++
++## 2.1.59
++
++- Claude automatically saves useful context to auto-memory. Manage with /memory
++- Added `/copy` command to show an interactive picker when code blocks are present, allowing selection of individual code blocks or the full response.
++- Improved "always allow" prefix suggestions for compound bash commands (e.g. `cd /tmp && git fetch && git push`) to compute smarter per-subcommand prefixes instead of treating the whole command as one
++- Improved ordering of short task lists
++- Improved memory usage in multi-agent sessions by releasing completed subagent task state
++- Fixed MCP OAuth token refresh race condition when running multiple Claude Code instances simultaneously
++- Fixed shell commands not showing a clear error message when the working directory has been deleted
++- Fixed config file corruption that could wipe authentication when multiple Claude Code instances ran simultaneously
++
+ ## 2.1.58
+ 
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-02-26</summary>
 
 **変更ファイル:**
