@@ -7,12 +7,12 @@
 > 複数の Claude Code インスタンスがチームとして連携して動作するように調整します。共有タスク、エージェント間メッセージング、一元管理を備えています。
 
 <Warning>
-  エージェントチームは実験的機能であり、デフォルトでは無効です。[settings.json](/ja/settings) または環境に `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` を追加して有効にしてください。エージェントチームには、セッション再開、タスク調整、シャットダウン動作に関する[既知の制限](#limitations)があります。
+  エージェントチームは実験的機能であり、デフォルトでは無効です。`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` を [settings.json](/ja/settings) または環境に追加して有効にしてください。エージェントチームには、セッション再開、タスク調整、シャットダウン動作に関する [既知の制限](#limitations) があります。
 </Warning>
 
 エージェントチームを使用すると、複数の Claude Code インスタンスが連携して動作するように調整できます。1 つのセッションがチームリーダーとして機能し、作業を調整し、タスクを割り当て、結果を統合します。チームメイトは独立して動作し、それぞれ独自のコンテキストウィンドウで動作し、互いに直接通信します。
 
-単一セッション内で実行され、メインエージェントにのみ報告できる[subagents](/ja/sub-agents)とは異なり、リーダーを経由せずに個別のチームメイトと直接対話することもできます。
+単一セッション内で実行され、メインエージェントにのみ報告できる [subagents](/ja/sub-agents) とは異なり、リーダーを経由せずに個別のチームメイトと直接対話することもできます。
 
 このページでは、以下について説明します。
 
@@ -23,23 +23,23 @@
 
 ## エージェントチームを使用する場合
 
-エージェントチームは、並列探索が実際の価値を追加するタスクに最も効果的です。完全なシナリオについては、[ユースケース例](#use-case-examples)を参照してください。最も強力なユースケースは以下の通りです。
+エージェントチームは、並列探索が実際の価値を追加するタスクに最も効果的です。完全なシナリオについては、[ユースケース例](#use-case-examples) を参照してください。最も強力なユースケースは以下の通りです。
 
 * **研究とレビュー**: 複数のチームメイトが問題のさまざまな側面を同時に調査し、その後、互いの発見を共有して異議を唱えることができます
 * **新しいモジュールまたは機能**: チームメイトは、互いに干渉することなく、個別のピースを所有できます
 * **競合する仮説でのデバッグ**: チームメイトは異なる理論を並列でテストし、より速く答えに収束します
-* **クロスレイヤー調整**: フロントエンド、バックエンド、テストにまたがる変更。各チームメイトが異なるレイヤーを所有します
+* **クロスレイヤー調整**: フロントエンド、バックエンド、テストにまたがる変更。各チームメイトが異なる部分を所有します
 
-エージェントチームは調整オーバーヘッドを追加し、単一セッションよりも大幅に多くのトークンを使用します。チームメイトが独立して動作できる場合に最適です。順序付きタスク、同じファイルの編集、または多くの依存関係を持つ作業の場合、単一セッションまたは[subagents](/ja/sub-agents)がより効果的です。
+エージェントチームは調整オーバーヘッドを追加し、単一セッションよりも大幅に多くのトークンを使用します。チームメイトが独立して動作できる場合に最適です。順序付きタスク、同じファイルの編集、または多くの依存関係を持つ作業の場合、単一セッションまたは [subagents](/ja/sub-agents) がより効果的です。
 
 ### subagents との比較
 
-エージェントチームと[subagents](/ja/sub-agents)の両方により、作業を並列化できますが、動作方法が異なります。ワーカーが互いに通信する必要があるかどうかに基づいて選択してください。
+エージェントチームと [subagents](/ja/sub-agents) の両方を使用すると、作業を並列化できますが、動作方法が異なります。ワーカーが互いに通信する必要があるかどうかに基づいて選択してください。
 
-<Frame caption="Subagents は結果をメインエージェントに報告するだけで、互いに話しません。エージェントチームでは、チームメイトは共有タスクリストを共有し、作業を要求し、互いに直接通信します。">
-  <img src="https://mintcdn.com/claude-code/nsvRFSDNfpSU5nT7/images/subagents-vs-agent-teams-light.png?fit=max&auto=format&n=nsvRFSDNfpSU5nT7&q=85&s=2f8db9b4f3705dd3ab931fbe2d96e42a" className="dark:hidden" alt="Subagent とエージェントチームアーキテクチャを比較する図。Subagents はメインエージェントによって生成され、作業を実行し、結果を報告します。エージェントチームは共有タスクリストを通じて調整し、チームメイトが互いに直接通信します。" data-og-width="4245" width="4245" data-og-height="1615" height="1615" data-path="images/subagents-vs-agent-teams-light.png" data-optimize="true" data-opv="3" srcset="https://mintcdn.com/claude-code/nsvRFSDNfpSU5nT7/images/subagents-vs-agent-teams-light.png?w=280&fit=max&auto=format&n=nsvRFSDNfpSU5nT7&q=85&s=a2cfe413c2084b477be40ac8723d9d40 280w, https://mintcdn.com/claude-code/nsvRFSDNfpSU5nT7/images/subagents-vs-agent-teams-light.png?w=560&fit=max&auto=format&n=nsvRFSDNfpSU5nT7&q=85&s=c642c09a4c211b10b35eee7d7d0d149f 560w, https://mintcdn.com/claude-code/nsvRFSDNfpSU5nT7/images/subagents-vs-agent-teams-light.png?w=840&fit=max&auto=format&n=nsvRFSDNfpSU5nT7&q=85&s=40d286f77c8a4075346b4fcaa2b36248 840w, https://mintcdn.com/claude-code/nsvRFSDNfpSU5nT7/images/subagents-vs-agent-teams-light.png?w=1100&fit=max&auto=format&n=nsvRFSDNfpSU5nT7&q=85&s=923986caa23c0ef2c27d7e45f4dce6d1 1100w, https://mintcdn.com/claude-code/nsvRFSDNfpSU5nT7/images/subagents-vs-agent-teams-light.png?w=1650&fit=max&auto=format&n=nsvRFSDNfpSU5nT7&q=85&s=17a730a070db6d71d029a98b074c68e8 1650w, https://mintcdn.com/claude-code/nsvRFSDNfpSU5nT7/images/subagents-vs-agent-teams-light.png?w=2500&fit=max&auto=format&n=nsvRFSDNfpSU5nT7&q=85&s=e402533fc9e8b5e8d26a835cc4aa1742 2500w" />
+<Frame caption="Subagents は結果をメインエージェントに報告するだけで、互いに話しません。エージェントチームでは、チームメイトがタスクリストを共有し、作業を要求し、互いに直接通信します。">
+  <img src="https://mintcdn.com/claude-code/nsvRFSDNfpSU5nT7/images/subagents-vs-agent-teams-light.png?fit=max&auto=format&n=nsvRFSDNfpSU5nT7&q=85&s=2f8db9b4f3705dd3ab931fbe2d96e42a" className="dark:hidden" alt="Subagent とエージェントチームアーキテクチャを比較する図。Subagent はメインエージェントによって生成され、作業を実行し、結果を報告します。エージェントチームは共有タスクリストを通じて調整し、チームメイトが互いに直接通信します。" data-og-width="4245" width="4245" data-og-height="1615" height="1615" data-path="images/subagents-vs-agent-teams-light.png" data-optimize="true" data-opv="3" srcset="https://mintcdn.com/claude-code/nsvRFSDNfpSU5nT7/images/subagents-vs-agent-teams-light.png?w=280&fit=max&auto=format&n=nsvRFSDNfpSU5nT7&q=85&s=a2cfe413c2084b477be40ac8723d9d40 280w, https://mintcdn.com/claude-code/nsvRFSDNfpSU5nT7/images/subagents-vs-agent-teams-light.png?w=560&fit=max&auto=format&n=nsvRFSDNfpSU5nT7&q=85&s=c642c09a4c211b10b35eee7d7d0d149f 560w, https://mintcdn.com/claude-code/nsvRFSDNfpSU5nT7/images/subagents-vs-agent-teams-light.png?w=840&fit=max&auto=format&n=nsvRFSDNfpSU5nT7&q=85&s=40d286f77c8a4075346b4fcaa2b36248 840w, https://mintcdn.com/claude-code/nsvRFSDNfpSU5nT7/images/subagents-vs-agent-teams-light.png?w=1100&fit=max&auto=format&n=nsvRFSDNfpSU5nT7&q=85&s=923986caa23c0ef2c27d7e45f4dce6d1 1100w, https://mintcdn.com/claude-code/nsvRFSDNfpSU5nT7/images/subagents-vs-agent-teams-light.png?w=1650&fit=max&auto=format&n=nsvRFSDNfpSU5nT7&q=85&s=17a730a070db6d71d029a98b074c68e8 1650w, https://mintcdn.com/claude-code/nsvRFSDNfpSU5nT7/images/subagents-vs-agent-teams-light.png?w=2500&fit=max&auto=format&n=nsvRFSDNfpSU5nT7&q=85&s=e402533fc9e8b5e8d26a835cc4aa1742 2500w" />
 
-  <img src="https://mintcdn.com/claude-code/nsvRFSDNfpSU5nT7/images/subagents-vs-agent-teams-dark.png?fit=max&auto=format&n=nsvRFSDNfpSU5nT7&q=85&s=d573a037540f2ada6a9ae7d8285b46fd" className="hidden dark:block" alt="Subagent とエージェントチームアーキテクチャを比較する図。Subagents はメインエージェントによって生成され、作業を実行し、結果を報告します。エージェントチームは共有タスクリストを通じて調整し、チームメイトが互いに直接通信します。" data-og-width="4245" width="4245" data-og-height="1615" height="1615" data-path="images/subagents-vs-agent-teams-dark.png" data-optimize="true" data-opv="3" srcset="https://mintcdn.com/claude-code/nsvRFSDNfpSU5nT7/images/subagents-vs-agent-teams-dark.png?w=280&fit=max&auto=format&n=nsvRFSDNfpSU5nT7&q=85&s=06ca5b18b232855acc488357d8d01fa7 280w, https://mintcdn.com/claude-code/nsvRFSDNfpSU5nT7/images/subagents-vs-agent-teams-dark.png?w=560&fit=max&auto=format&n=nsvRFSDNfpSU5nT7&q=85&s=3d34daee83994781eb74b74d1ed511c4 560w, https://mintcdn.com/claude-code/nsvRFSDNfpSU5nT7/images/subagents-vs-agent-teams-dark.png?w=840&fit=max&auto=format&n=nsvRFSDNfpSU5nT7&q=85&s=82ea35ac837de7d674002de69689b9cf 840w, https://mintcdn.com/claude-code/nsvRFSDNfpSU5nT7/images/subagents-vs-agent-teams-dark.png?w=1100&fit=max&auto=format&n=nsvRFSDNfpSU5nT7&q=85&s=3653085214a9fc65d1f589044894a296 1100w, https://mintcdn.com/claude-code/nsvRFSDNfpSU5nT7/images/subagents-vs-agent-teams-dark.png?w=1650&fit=max&auto=format&n=nsvRFSDNfpSU5nT7&q=85&s=8e74b42694e428570e876d34f29e6ad6 1650w, https://mintcdn.com/claude-code/nsvRFSDNfpSU5nT7/images/subagents-vs-agent-teams-dark.png?w=2500&fit=max&auto=format&n=nsvRFSDNfpSU5nT7&q=85&s=3be00c56c6a0dcccbe15640020be0128 2500w" />
+  <img src="https://mintcdn.com/claude-code/nsvRFSDNfpSU5nT7/images/subagents-vs-agent-teams-dark.png?fit=max&auto=format&n=nsvRFSDNfpSU5nT7&q=85&s=d573a037540f2ada6a9ae7d8285b46fd" className="hidden dark:block" alt="Subagent とエージェントチームアーキテクチャを比較する図。Subagent はメインエージェントによって生成され、作業を実行し、結果を報告します。エージェントチームは共有タスクリストを通じて調整し、チームメイトが互いに直接通信します。" data-og-width="4245" width="4245" data-og-height="1615" height="1615" data-path="images/subagents-vs-agent-teams-dark.png" data-optimize="true" data-opv="3" srcset="https://mintcdn.com/claude-code/nsvRFSDNfpSU5nT7/images/subagents-vs-agent-teams-dark.png?w=280&fit=max&auto=format&n=nsvRFSDNfpSU5nT7&q=85&s=06ca5b18b232855acc488357d8d01fa7 280w, https://mintcdn.com/claude-code/nsvRFSDNfpSU5nT7/images/subagents-vs-agent-teams-dark.png?w=560&fit=max&auto=format&n=nsvRFSDNfpSU5nT7&q=85&s=3d34daee83994781eb74b74d1ed511c4 560w, https://mintcdn.com/claude-code/nsvRFSDNfpSU5nT7/images/subagents-vs-agent-teams-dark.png?w=840&fit=max&auto=format&n=nsvRFSDNfpSU5nT7&q=85&s=82ea35ac837de7d674002de69689b9cf 840w, https://mintcdn.com/claude-code/nsvRFSDNfpSU5nT7/images/subagents-vs-agent-teams-dark.png?w=1100&fit=max&auto=format&n=nsvRFSDNfpSU5nT7&q=85&s=3653085214a9fc65d1f589044894a296 1100w, https://mintcdn.com/claude-code/nsvRFSDNfpSU5nT7/images/subagents-vs-agent-teams-dark.png?w=1650&fit=max&auto=format&n=nsvRFSDNfpSU5nT7&q=85&s=8e74b42694e428570e876d34f29e6ad6 1650w, https://mintcdn.com/claude-code/nsvRFSDNfpSU5nT7/images/subagents-vs-agent-teams-dark.png?w=2500&fit=max&auto=format&n=nsvRFSDNfpSU5nT7&q=85&s=3be00c56c6a0dcccbe15640020be0128 2500w" />
 </Frame>
 
 |             | Subagents                    | エージェントチーム                     |
@@ -50,11 +50,11 @@
 | **最適な用途**   | 結果のみが重要な焦点を絞ったタスク            | 議論と協力が必要な複雑な作業                |
 | **トークンコスト** | 低い: 結果がメインコンテキストに要約される       | 高い: 各チームメイトは個別の Claude インスタンス |
 
-クイックで焦点を絞ったワーカーが報告する必要がある場合は subagents を使用してください。チームメイトが発見を共有し、互いに異議を唱え、独立して調整する必要がある場合は、エージェントチームを使用してください。
+結果を報告する必要がある迅速で焦点を絞ったワーカーが必要な場合は subagents を使用してください。チームメイトが発見を共有し、互いに異議を唱え、独立して調整する必要がある場合は、エージェントチームを使用してください。
 
 ## エージェントチームを有効にする
 
-エージェントチームはデフォルトでは無効です。`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` 環境変数を `1` に設定して有効にします。シェル環境または[settings.json](/ja/settings)を通じて設定できます。
+エージェントチームはデフォルトでは無効です。`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` 環境変数を `1` に設定して有効にします。シェル環境または [settings.json](/ja/settings) を通じて設定できます。
 
 ```json settings.json theme={null}
 {
@@ -66,38 +66,38 @@
 
 ## 最初のエージェントチームを開始する
 
-エージェントチームを有効にした後、Claude に自然言語でエージェントチームを作成し、タスクとチーム構造を説明するよう指示します。Claude はチームを作成し、チームメイトを生成し、プロンプトに基づいて作業を調整します。
+エージェントチームを有効にした後、Claude に対してエージェントチームを作成するよう指示し、自然言語でタスクとチーム構造を説明してください。Claude はチームを作成し、チームメイトを生成し、プロンプトに基づいて作業を調整します。
 
 この例は、3 つのロールが独立しており、互いに待つことなく問題を探索できるため、うまく機能します。
 
-```
+```text  theme={null}
 I'm designing a CLI tool that helps developers track TODO comments across
 their codebase. Create an agent team to explore this from different angles: one
 teammate on UX, one on technical architecture, one playing devil's advocate.
 ```
 
-そこから、Claude は[共有タスクリスト](/ja/interactive-mode#task-list)を備えたチームを作成し、各視点のチームメイトを生成し、問題を探索させ、発見を統合し、完了時に[チームをクリーンアップ](#clean-up-the-team)しようとします。
+そこから、Claude は [共有タスクリスト](/ja/interactive-mode#task-list) を備えたチームを作成し、各視点のチームメイトを生成し、問題を探索させ、発見を統合し、完了時に [チームをクリーンアップ](#clean-up-the-team) しようとします。
 
-リーダーのターミナルには、すべてのチームメイトと彼らが取り組んでいることが表示されます。Shift+Down を使用してチームメイトをサイクルして、直接メッセージを送信します。最後のチームメイトの後、Shift+Down はリーダーに戻ります。
+リーダーのターミナルには、すべてのチームメイトと彼らが取り組んでいることが表示されます。Shift+Down を使用してチームメイトをサイクルして、直接メッセージを送信してください。最後のチームメイトの後、Shift+Down はリーダーに戻ります。
 
-各チームメイトを独自の分割ペインに配置したい場合は、[表示モードを選択](#choose-a-display-mode)を参照してください。
+各チームメイトを独自の分割ペインに配置したい場合は、[表示モードを選択](#choose-a-display-mode) を参照してください。
 
 ## チームメイトを制御する
 
-リーダーに自然言語で何をしたいかを伝えます。指示に基づいて、チーム調整、タスク割り当て、委任を処理します。
+リーダーに自然言語で何をしたいかを伝えてください。指示に基づいて、チーム調整、タスク割り当て、委任を処理します。
 
 ### 表示モードを選択する
 
 エージェントチームは 2 つの表示モードをサポートしています。
 
-* **In-process**: すべてのチームメイトがメインターミナル内で実行されます。Shift+Down を使用してチームメイトをサイクルして、直接メッセージを入力します。任意のターミナルで動作し、追加のセットアップは不要です。
-* **分割ペイン**: 各チームメイトが独自のペインを取得します。すべての出力を一度に表示でき、ペインをクリックして直接対話できます。tmux または iTerm2 が必要です。
+* **インプロセス**: すべてのチームメイトがメインターミナル内で実行されます。Shift+Down を使用してチームメイトをサイクルして、直接メッセージを入力してください。任意のターミナルで動作し、追加のセットアップは不要です。
+* **分割ペイン**: 各チームメイトが独自のペインを取得します。すべてのユーザーの出力を一度に表示でき、ペインをクリックして直接対話できます。tmux または iTerm2 が必要です。
 
 <Note>
   `tmux` には特定のオペレーティングシステムでの既知の制限があり、従来は macOS で最適に動作します。iTerm2 で `tmux -CC` を使用することが、`tmux` への推奨エントリーポイントです。
 </Note>
 
-デフォルトは `"auto"` です。これは、既に tmux セッション内で実行している場合は分割ペインを使用し、そうでない場合は in-process を使用します。`"tmux"` 設定は分割ペインモードを有効にし、ターミナルに基づいて tmux または iTerm2 を使用するかどうかを自動検出します。オーバーライドするには、[settings.json](/ja/settings) で `teammateMode` を設定します。
+デフォルトは `"auto"` です。これは、既に tmux セッション内で実行している場合は分割ペインを使用し、そうでない場合はインプロセスを使用します。`"tmux"` 設定は分割ペインモードを有効にし、ターミナルに基づいて tmux または iTerm2 を使用するかどうかを自動検出します。オーバーライドするには、[settings.json](/ja/settings) で `teammateMode` を設定してください。
 
 ```json  theme={null}
 {
@@ -105,22 +105,22 @@ teammate on UX, one on technical architecture, one playing devil's advocate.
 }
 ```
 
-単一セッションに対して in-process モードを強制するには、フラグとして渡します。
+単一セッションのインプロセスモードを強制するには、フラグとして渡してください。
 
 ```bash  theme={null}
 claude --teammate-mode in-process
 ```
 
-分割ペインモードには、[tmux](https://github.com/tmux/tmux/wiki) または [`it2` CLI](https://github.com/mkusaka/it2) を備えた iTerm2 が必要です。手動でインストールするには、以下を実行します。
+分割ペインモードには、[tmux](https://github.com/tmux/tmux/wiki) または [`it2` CLI](https://github.com/mkusaka/it2) を備えた iTerm2 が必要です。手動でインストールするには、以下を実行してください。
 
-* **tmux**: システムのパッケージマネージャーを通じてインストールします。プラットフォーム固有の手順については、[tmux wiki](https://github.com/tmux/tmux/wiki/Installing) を参照してください。
-* **iTerm2**: [`it2` CLI](https://github.com/mkusaka/it2) をインストールし、**iTerm2 → Settings → General → Magic → Enable Python API** で Python API を有効にします。
+* **tmux**: システムのパッケージマネージャーを通じてインストールしてください。プラットフォーム固有の手順については、[tmux wiki](https://github.com/tmux/tmux/wiki/Installing) を参照してください。
+* **iTerm2**: [`it2` CLI](https://github.com/mkusaka/it2) をインストールしてから、**iTerm2 → Settings → General → Magic → Enable Python API** で Python API を有効にしてください。
 
 ### チームメイトとモデルを指定する
 
 Claude はタスクに基づいてスポーンするチームメイトの数を決定するか、正確に何をしたいかを指定できます。
 
-```
+```text  theme={null}
 Create a team with 4 teammates to refactor these modules in parallel.
 Use Sonnet for each teammate.
 ```
@@ -129,21 +129,21 @@ Use Sonnet for each teammate.
 
 複雑またはリスクの高いタスクの場合、チームメイトが実装する前にプランを立てることを要求できます。チームメイトは、リーダーがアプローチを承認するまで、読み取り専用プランモードで動作します。
 
-```
+```text  theme={null}
 Spawn an architect teammate to refactor the authentication module.
 Require plan approval before they make any changes.
 ```
 
-チームメイトがプランを完了すると、リーダーにプラン承認リクエストを送信します。リーダーはプランをレビューし、承認するか、フィードバック付きで却下します。却下された場合、チームメイトはプランモードのままで、フィードバックに基づいて修正し、再送信します。承認されると、チームメイトはプランモードを終了し、実装を開始します。
+チームメイトがプランを完了すると、リーダーにプラン承認リクエストを送信します。リーダーはプランをレビューして、承認するか、フィードバック付きで却下するかのいずれかを行います。却下された場合、チームメイトはプランモードのままで、フィードバックに基づいて修正し、再送信します。承認されると、チームメイトはプランモードを終了し、実装を開始します。
 
-リーダーは自律的に承認決定を下します。リーダーの判断に影響を与えるには、プロンプトで基準を指定します。例えば、「テストカバレッジを含むプランのみを承認する」または「データベーススキーマを変更するプランを却下する」などです。
+リーダーは自律的に承認決定を下します。リーダーの判断に影響を与えるには、プロンプトに「テストカバレッジを含むプランのみを承認する」や「データベーススキーマを変更するプランを却下する」などの基準を指定してください。
 
-### チームメイトと直接対話する
+### チームメイトと直接話す
 
 各チームメイトは、完全で独立した Claude Code セッションです。任意のチームメイトに直接メッセージを送信して、追加の指示を与えたり、フォローアップの質問をしたり、アプローチをリダイレクトしたりできます。
 
-* **In-process モード**: Shift+Down を使用してチームメイトをサイクルし、メッセージを入力します。Enter キーを押してチームメイトのセッションを表示し、Escape キーを押して現在のターンを中断します。Ctrl+T を押してタスクリストを切り替えます。
-* **分割ペインモード**: チームメイトのペインをクリックして、セッションと直接対話します。各チームメイトは独自のターミナルの完全なビューを持っています。
+* **インプロセスモード**: Shift+Down を使用してチームメイトをサイクルして、メッセージを入力してください。Enter キーを押してチームメイトのセッションを表示し、Escape キーを押して現在のターンを中断してください。Ctrl+T を押してタスクリストを切り替えてください。
+* **分割ペインモード**: チームメイトのペインをクリックして、セッションと直接対話してください。各チームメイトは独自のターミナルの完全なビューを持っています。
 
 ### タスクを割り当てて要求する
 
@@ -151,16 +151,16 @@ Require plan approval before they make any changes.
 
 リーダーはタスクを明示的に割り当てるか、チームメイトが自己要求できます。
 
-* **リーダーが割り当てる**: リーダーにどのタスクをどのチームメイトに与えるかを指示します
+* **リーダーが割り当てる**: リーダーに、どのタスクをどのチームメイトに与えるかを伝えてください
 * **自己要求**: タスクを完了した後、チームメイトは次の割り当てられていない、ブロックされていないタスクを独立して選択します
 
 タスク要求はファイルロックを使用して、複数のチームメイトが同じタスクを同時に要求しようとするときの競合状態を防ぎます。
 
 ### チームメイトをシャットダウンする
 
-チームメイトのセッションを適切に終了するには、以下を実行します。
+チームメイトのセッションを適切に終了するには、以下を実行してください。
 
-```
+```text  theme={null}
 Ask the researcher teammate to shut down
 ```
 
@@ -168,9 +168,9 @@ Ask the researcher teammate to shut down
 
 ### チームをクリーンアップする
 
-完了したら、リーダーにクリーンアップするよう指示します。
+完了したら、リーダーにクリーンアップするよう依頼してください。
 
-```
+```text  theme={null}
 Clean up the team
 ```
 
@@ -182,23 +182,23 @@ Clean up the team
 
 ### hooks で品質ゲートを実施する
 
-[hooks](/ja/hooks)を使用して、チームメイトが作業を完了したときまたはタスクが完了したときのルールを実施します。
+[hooks](/ja/hooks) を使用して、チームメイトが作業を完了したときまたはタスクが完了したときのルールを実施してください。
 
-* [`TeammateIdle`](/ja/hooks#teammateidle): チームメイトがアイドル状態になろうとしているときに実行されます。終了コード 2 でフィードバックを送信し、チームメイトを動作させ続けます。
-* [`TaskCompleted`](/ja/hooks#taskcompleted): タスクが完了としてマークされているときに実行されます。終了コード 2 で完了を防止し、フィードバックを送信します。
+* [`TeammateIdle`](/ja/hooks#teammateidle): チームメイトがアイドル状態になろうとしているときに実行されます。終了コード 2 でフィードバックを送信し、チームメイトを動作させ続けてください。
+* [`TaskCompleted`](/ja/hooks#taskcompleted): タスクが完了としてマークされているときに実行されます。終了コード 2 で完了を防止し、フィードバックを送信してください。
 
 ## エージェントチームの仕組み
 
-このセクションでは、エージェントチームの背後にあるアーキテクチャとメカニクスについて説明します。使用を開始したい場合は、上記の[チームメイトを制御する](#control-your-agent-team)を参照してください。
+このセクションでは、エージェントチームの背後にあるアーキテクチャとメカニクスについて説明します。使用を開始したい場合は、上記の [チームメイトを制御する](#control-your-agent-team) を参照してください。
 
 ### Claude がエージェントチームを開始する方法
 
 エージェントチームが開始される方法は 2 つあります。
 
-* **チームをリクエストする**: 並列作業から利益を得るタスクを Claude に与え、明示的にエージェントチームをリクエストします。Claude はあなたの指示に基づいてチームを作成します。
-* **Claude がチームを提案する**: Claude があなたのタスクが並列作業から利益を得ると判断した場合、チームの作成を提案する可能性があります。進行する前に確認します。
+* **チームをリクエストする**: 並列作業から利益を得るタスクを Claude に与え、明示的にエージェントチームをリクエストしてください。Claude は指示に基づいてチームを作成します。
+* **Claude がチームを提案する**: Claude がタスクが並列作業から利益を得ると判断した場合、チームの作成を提案する可能性があります。進行する前に確認してください。
 
-どちらの場合でも、あなたは制御を保ちます。Claude はあなたの承認なしにチームを作成しません。
+どちらの場合でも、制御は維持されます。Claude は承認なしにチームを作成しません。
 
 ### アーキテクチャ
 
@@ -211,7 +211,7 @@ Clean up the team
 | **タスクリスト**  | チームメイトが要求して完了する共有作業項目リスト                        |
 | **メールボックス** | エージェント間の通信用メッセージングシステム                          |
 
-表示設定オプションについては、[表示モードを選択](#choose-a-display-mode)を参照してください。チームメイトメッセージはリーダーに自動的に到着します。
+表示設定オプションについては、[表示モードを選択](#choose-a-display-mode) を参照してください。チームメイトメッセージは自動的にリーダーに到着します。
 
 システムはタスク依存関係を自動的に管理します。チームメイトが他のタスクが依存するタスクを完了すると、ブロックされたタスクは手動介入なしにブロック解除されます。
 
@@ -224,7 +224,7 @@ Clean up the team
 
 ### 権限
 
-チームメイトはリーダーの権限設定で開始します。リーダーが `--dangerously-skip-permissions` で実行する場合、すべてのチームメイトも実行します。生成後、個別のチームメイトモードを変更できますが、生成時にチームメイトごとのモードを設定することはできません。
+チームメイトはリーダーの権限設定で開始します。リーダーが `--dangerously-skip-permissions` で実行される場合、すべてのチームメイトも同様です。生成後、個別のチームメイトモードを変更できますが、生成時にチームメイトごとのモードを設定することはできません。
 
 ### コンテキストと通信
 
@@ -243,7 +243,7 @@ Clean up the team
 
 ### トークン使用量
 
-エージェントチームは単一セッションよりも大幅に多くのトークンを使用します。各チームメイトは独自のコンテキストウィンドウを持ち、トークン使用量はアクティブなチームメイトの数でスケールします。研究、レビュー、新機能作業の場合、追加のトークンは通常価値があります。ルーチンタスクの場合、単一セッションがより費用効果的です。使用ガイダンスについては、[エージェントチームトークンコスト](/ja/costs#agent-team-token-costs)を参照してください。
+エージェントチームは単一セッションよりも大幅に多くのトークンを使用します。各チームメイトは独自のコンテキストウィンドウを持ち、トークン使用量はアクティブなチームメイトの数でスケールします。研究、レビュー、新機能作業の場合、追加のトークンは通常価値があります。ルーチンタスクの場合、単一セッションがより費用効果的です。使用ガイダンスについては、[エージェントチームトークンコスト](/ja/costs#agent-team-token-costs) を参照してください。
 
 ## ユースケース例
 
@@ -253,7 +253,7 @@ Clean up the team
 
 単一のレビュアーは、一度に 1 つのタイプの問題に向かう傾向があります。レビュー基準を独立したドメインに分割することで、セキュリティ、パフォーマンス、テストカバレッジがすべて同時に徹底的に注意を受けます。プロンプトは各チームメイトに異なるレンズを割り当てるため、重複しません。
 
-```
+```text  theme={null}
 Create an agent team to review PR #142. Spawn three reviewers:
 - One focused on security implications
 - One checking performance impact
@@ -261,30 +261,30 @@ Create an agent team to review PR #142. Spawn three reviewers:
 Have them each review and report findings.
 ```
 
-各レビュアーは同じ PR から動作しますが、異なるフィルターを適用します。リーダーは、すべてのレビュアーが完了した後、すべてのレビュアーの発見を統合します。
+各レビュアーは同じ PR から動作しますが、異なるフィルターを適用します。リーダーは、3 人全員が完了した後、すべてのレビュアーの発見を統合します。
 
 ### 競合する仮説で調査する
 
-根本原因が不明な場合、単一のエージェントは 1 つのもっともらしい説明を見つけて探索を停止する傾向があります。プロンプトはチームメイトを明示的に敵対的にすることでこれと戦います。各チームメイトの仕事は、独自の理論を調査するだけでなく、他の理論に異議を唱えることです。
+根本原因が不明な場合、単一のエージェントは 1 つのもっともらしい説明を見つけて、探索を停止する傾向があります。プロンプトは、チームメイトを明示的に敵対的にすることでこれと戦います。各チームメイトの仕事は、独自の理論を調査するだけでなく、他の理論に異議を唱えることです。
 
-```
+```text  theme={null}
 Users report the app exits after one message instead of staying connected.
 Spawn 5 agent teammates to investigate different hypotheses. Have them talk to
 each other to try to disprove each other's theories, like a scientific
 debate. Update the findings doc with whatever consensus emerges.
 ```
 
-議論構造がここでの重要なメカニズムです。順序付き調査はアンカリングに悩まされます。1 つの理論が探索されると、その後の調査はそれに向かってバイアスされます。
+議論構造はここでの重要なメカニズムです。順序付き調査はアンカリングに悩まされます。1 つの理論が探索されると、その後の調査はそれに向かってバイアスされます。
 
-複数の独立した調査官が互いに積極的に反論しようとしている場合、生き残る理論は実際の根本原因である可能性がはるかに高くなります。
+複数の独立した調査官が互いに積極的に反証しようとしている場合、生き残る理論は実際の根本原因である可能性がはるかに高くなります。
 
 ## ベストプラクティス
 
 ### チームメイトに十分なコンテキストを提供する
 
-チームメイトはプロジェクトコンテキストを自動的にロードします。CLAUDE.md、MCP サーバー、スキルを含みます。ただし、リーダーの会話履歴は継承しません。詳細については、[コンテキストと通信](#context-and-communication)を参照してください。スポーンプロンプトにタスク固有の詳細を含めます。
+チームメイトはプロジェクトコンテキストを自動的にロードします。CLAUDE.md、MCP サーバー、スキルを含みます。ただし、リーダーの会話履歴は継承しません。詳細については、[コンテキストと通信](#context-and-communication) を参照してください。スポーンプロンプトにタスク固有の詳細を含めてください。
 
-```
+```text  theme={null}
 Spawn a security reviewer teammate with the prompt: "Review the authentication module
 at src/auth/ for security vulnerabilities. Focus on token handling, session
 management, and input validation. The app uses JWT tokens stored in
@@ -295,13 +295,13 @@ httpOnly cookies. Report any issues with severity ratings."
 
 チームメイトの数に厳しい制限はありませんが、実際の制約が適用されます。
 
-* **トークンコストは線形にスケール**: 各チームメイトは独自のコンテキストウィンドウを持ち、独立してトークンを消費します。詳細については、[エージェントチームトークンコスト](/ja/costs#agent-team-token-costs)を参照してください。
+* **トークンコストは線形にスケール**: 各チームメイトは独自のコンテキストウィンドウを持ち、独立してトークンを消費します。詳細については、[エージェントチームトークンコスト](/ja/costs#agent-team-token-costs) を参照してください。
 * **調整オーバーヘッドが増加**: より多くのチームメイトは、より多くの通信、タスク調整、および競合の可能性を意味します
 * **収益逓減**: ある時点を超えると、追加のチームメイトは作業を比例的に高速化しません
 
-ほとんどのワークフローでは、3～5 人のチームメイトで開始してください。これは並列作業と管理可能な調整のバランスを取ります。このガイドの例では、3～5 人のチームメイトを使用しています。これは、異なるタスクタイプ全体でうまく機能するためです。
+ほとんどのワークフローでは、3～5 人のチームメイトで開始してください。これは並列作業と管理可能な調整のバランスを取ります。このガイドの例では、3～5 人のチームメイトを使用しています。その範囲はさまざまなタスクタイプ全体でうまく機能するためです。
 
-チームメイトあたり 5～6 個の[タスク](/ja/agent-teams#architecture)を持つことで、過度なコンテキストスイッチングなしに、すべての人を生産的に保ちます。15 個の独立したタスクがある場合、3 人のチームメイトが良い出発点です。
+チームメイトあたり 5～6 個の [タスク](/ja/agent-teams#architecture) を持つことで、過度なコンテキストスイッチングなしに、すべてを生産的に保ちます。15 個の独立したタスクがある場合、3 人のチームメイトは良い出発点です。
 
 作業が本当にチームメイトが同時に動作することから利益を得る場合にのみスケールアップしてください。3 人の焦点を絞ったチームメイトは、5 人の散らばったチームメイトを上回ることが多いです。
 
@@ -312,14 +312,14 @@ httpOnly cookies. Report any issues with severity ratings."
 * **ちょうど良い**: 関数、テストファイル、またはレビューなど、明確な成果物を生成する自己完結型ユニット
 
 <Tip>
-  リーダーは作業をタスクに分割し、チームメイトに自動的に割り当てます。十分なタスクを作成していない場合は、作業をより小さなピースに分割するよう指示してください。チームメイトあたり 5～6 個のタスクを持つことで、すべての人を生産的に保ち、誰かが立ち往生した場合にリーダーが作業を再割り当てできます。
+  リーダーは作業をタスクに分割し、チームメイトに自動的に割り当てます。十分なタスクを作成していない場合は、作業をより小さなピースに分割するよう依頼してください。チームメイトあたり 5～6 個のタスクを持つことで、すべてを生産的に保ち、誰かが立ち往生した場合にリーダーが作業を再割り当てできます。
 </Tip>
 
-### チームメイトが完了するのを待つ
+### チームメイトが完了するまで待つ
 
-リーダーがチームメイトを待たずにタスク自体を実装し始めることがあります。これに気付いた場合は、以下を実行します。
+リーダーがチームメイトを待たずにタスク自体を実装し始めることがあります。これに気付いた場合は、以下を実行してください。
 
-```
+```text  theme={null}
 Wait for your teammates to complete their tasks before proceeding
 ```
 
@@ -329,44 +329,46 @@ Wait for your teammates to complete their tasks before proceeding
 
 ### ファイルの競合を回避する
 
-2 人のチームメイトが同じファイルを編集すると、上書きが発生します。作業を分割して、各チームメイトが異なるファイルセットを所有するようにします。
+2 人のチームメイトが同じファイルを編集すると、上書きが発生します。作業を分割して、各チームメイトが異なるファイルセットを所有するようにしてください。
 
 ### 監視とステアリング
 
-チームメイトの進捗をチェックし、機能していないアプローチをリダイレクトし、発見が入ってくるにつれて統合します。チームを長時間無人で実行させると、無駄な努力のリスクが増加します。
+チームメイトの進捗をチェックし、機能していないアプローチをリダイレクトし、発見が入ってくるにつれて統合してください。チームを長時間無人で実行させると、無駄な努力のリスクが増加します。
 
 ## トラブルシューティング
 
 ### チームメイトが表示されない
 
-Claude にチームを作成するよう指示した後、チームメイトが表示されない場合は、以下を実行します。
+Claude にチームを作成するよう依頼した後、チームメイトが表示されない場合は、以下を実行してください。
 
-* In-process モードでは、チームメイトは既に実行されているが、表示されていない可能性があります。Shift+Down を押してアクティブなチームメイトをサイクルします。
+* インプロセスモードでは、チームメイトは既に実行されているが、表示されていない可能性があります。Shift+Down を押してアクティブなチームメイトをサイクルしてください。
 * Claude に与えたタスクがチームを保証するのに十分複雑であることを確認してください。Claude はタスクに基づいてチームメイトをスポーンするかどうかを決定します。
 * 分割ペインを明示的にリクエストした場合は、tmux がインストールされ、PATH で利用可能であることを確認してください。
-  ```bash  theme={null}
-  which tmux
-  ```
+
+```bash  theme={null}
+which tmux
+```
+
 * iTerm2 の場合、`it2` CLI がインストールされ、Python API が iTerm2 の設定で有効になっていることを確認してください。
 
 ### 権限プロンプトが多すぎる
 
-チームメイト権限リクエストはリーダーにバブルアップし、摩擦を生じさせる可能性があります。チームメイトをスポーンする前に、[権限設定](/ja/permissions)で一般的な操作を事前承認して、中断を減らしてください。
+チームメイト権限リクエストはリーダーにバブルアップし、摩擦を生じさせる可能性があります。チームメイトをスポーンする前に、[権限設定](/ja/permissions) で一般的な操作を事前承認して、中断を減らしてください。
 
 ### チームメイトがエラーで停止する
 
-チームメイトはエラーが発生した後、回復する代わりに停止する可能性があります。In-process モードで Shift+Down を使用するか、分割モードでペインをクリックして出力をチェックしてから、以下のいずれかを実行します。
+チームメイトはエラーが発生した後、回復する代わりに停止する可能性があります。インプロセスモードで Shift+Down を使用するか、分割モードでペインをクリックして、出力をチェックしてから、以下のいずれかを実行してください。
 
 * 追加の指示を直接与える
-* 作業を続行するための交換チームメイトをスポーンする
+* 作業を続行するために置き換えチームメイトをスポーンする
 
 ### リーダーが作業完了前にシャットダウンする
 
-リーダーは、すべてのタスクが実際に完了する前に、チームが完了したと判断する可能性があります。これが発生した場合は、続行するよう指示してください。また、リーダーに委任する代わりに作業を開始する場合は、チームメイトが完了するのを待つよう指示することもできます。
+リーダーは、すべてのタスクが実際に完了する前に、チームが完了したと判断する可能性があります。これが発生した場合は、続行するよう指示してください。リーダーが作業を委任する代わりに実行を開始した場合、チームメイトが完了するまで待つようにリーダーに指示することもできます。
 
 ### 孤立した tmux セッション
 
-チームが終了した後、tmux セッションが持続する場合、完全にクリーンアップされていない可能性があります。セッションをリストし、チームによって作成されたセッションを終了します。
+チームが終了した後、tmux セッションが存在する場合、完全にクリーンアップされていない可能性があります。セッションをリストして、チームによって作成されたセッションを終了してください。
 
 ```bash  theme={null}
 tmux ls
@@ -377,23 +379,23 @@ tmux kill-session -t <session-name>
 
 エージェントチームは実験的です。注意すべき現在の制限事項は以下の通りです。
 
-* **In-process チームメイトでのセッション再開なし**: `/resume` と `/rewind` は in-process チームメイトを復元しません。セッションを再開した後、リーダーは存在しなくなったチームメイトにメッセージを送信しようとする可能性があります。これが発生した場合は、リーダーに新しいチームメイトをスポーンするよう指示してください。
-* **タスクステータスが遅延する可能性**: チームメイトはタスクを完了としてマークできず、依存タスクをブロックすることがあります。タスクが立ち往生しているように見える場合は、作業が実際に完了しているかどうかを確認し、タスクステータスを手動で更新するか、リーダーにチームメイトをナッジするよう指示してください。
-* **シャットダウンが遅い可能性**: チームメイトは現在のリクエストまたはツール呼び出しを完了してからシャットダウンします。これには時間がかかる可能性があります。
+* **インプロセスチームメイトでのセッション再開なし**: `/resume` と `/rewind` はインプロセスチームメイトを復元しません。セッションを再開した後、リーダーは存在しなくなったチームメイトにメッセージを送信しようとする可能性があります。これが発生した場合は、リーダーに新しいチームメイトをスポーンするよう指示してください。
+* **タスクステータスは遅延する可能性があります**: チームメイトはタスクを完了としてマークできず、依存タスクをブロックすることがあります。タスクが立ち往生しているように見える場合は、作業が実際に完了しているかどうかを確認し、タスクステータスを手動で更新するか、リーダーにチームメイトを促すよう指示してください。
+* **シャットダウンは遅い可能性があります**: チームメイトは現在のリクエストまたはツール呼び出しを完了してからシャットダウンします。これには時間がかかる可能性があります。
 * **セッションあたり 1 つのチーム**: リーダーは一度に 1 つのチームのみを管理できます。新しいチームを開始する前に、現在のチームをクリーンアップしてください。
 * **ネストされたチームなし**: チームメイトは独自のチームまたはチームメイトをスポーンできません。リーダーのみがチームを管理できます。
 * **リーダーは固定**: チームを作成するセッションは、その生涯のリーダーです。チームメイトをリーダーに昇格させたり、リーダーシップを譲渡したりすることはできません。
 * **権限はスポーン時に設定**: すべてのチームメイトはリーダーの権限モードで開始します。スポーン後に個別のチームメイトモードを変更できますが、スポーン時にチームメイトごとのモードを設定することはできません。
-* **分割ペインには tmux または iTerm2 が必要**: デフォルトの in-process モードは任意のターミナルで動作します。分割ペインモードは VS Code の統合ターミナル、Windows Terminal、または Ghostty ではサポートされていません。
+* **分割ペインには tmux または iTerm2 が必要**: デフォルトのインプロセスモードは任意のターミナルで動作します。分割ペインモードは VS Code の統合ターミナル、Windows Terminal、または Ghostty ではサポートされていません。
 
 <Tip>
-  **`CLAUDE.md` は正常に動作**: チームメイトは作業ディレクトリから `CLAUDE.md` ファイルを読み取ります。これを使用して、すべてのチームメイトにプロジェクト固有のガイダンスを提供します。
+  **`CLAUDE.md` は正常に動作します**: チームメイトは作業ディレクトリから `CLAUDE.md` ファイルを読み取ります。これを使用して、すべてのチームメイトにプロジェクト固有のガイダンスを提供してください。
 </Tip>
 
 ## 次のステップ
 
-並列作業と委任の関連アプローチを探索します。
+並列作業と委任の関連アプローチを探索してください。
 
-* **軽量委任**: [subagents](/ja/sub-agents)は、セッション内でリサーチまたは検証用のヘルパーエージェントをスポーンします。エージェント間調整が不要なタスクに適しています
-* **手動並列セッション**: [Git worktrees](/ja/common-workflows#run-parallel-claude-code-sessions-with-git-worktrees)を使用すると、自動チーム調整なしで複数の Claude Code セッションを自分で実行できます
-* **アプローチを比較**: [subagent とエージェントチーム](/ja/features-overview#compare-similar-features)の比較を参照して、並べて比較してください
+* **軽量委任**: [subagents](/ja/sub-agents) はセッション内でヘルパーエージェントを生成して、研究または検証を行います。エージェント間調整が必要ないタスクに適しています
+* **手動並列セッション**: [Git worktrees](/ja/common-workflows#run-parallel-claude-code-sessions-with-git-worktrees) を使用すると、自動チーム調整なしで複数の Claude Code セッションを自分で実行できます
+* **アプローチを比較**: [subagent とエージェントチーム](/ja/features-overview#compare-similar-features) の比較を参照して、並べて比較してください

@@ -2,21 +2,21 @@
 > Fetch the complete documentation index at: https://code.claude.com/docs/llms.txt
 > Use this file to discover all available pages before exploring further.
 
-# マーケットプレイスを通じてプリビルトプラグインを発見してインストールする
+# マーケットプレイスから事前構築されたプラグインを発見してインストールする
 
-> マーケットプレイスからプラグインを見つけてインストールし、Claude Codeを新しいコマンド、エージェント、機能で拡張します。
+> マーケットプレイスからプラグインを検索してインストールし、Claude Code に新しいコマンド、エージェント、機能を追加します。
 
-プラグインはカスタムコマンド、エージェント、フック、MCPサーバーでClaude Codeを拡張します。プラグインマーケットプレイスは、自分で構築することなくこれらの拡張機能を発見してインストールするのに役立つカタログです。
+プラグインは Claude Code にスキル、エージェント、フック、MCP サーバーを追加します。プラグインマーケットプレイスは、これらの拡張機能を自分で構築することなく発見してインストールするのに役立つカタログです。
 
 独自のマーケットプレイスを作成して配布したいですか？[プラグインマーケットプレイスを作成して配布する](/ja/plugin-marketplaces)を参照してください。
 
 ## マーケットプレイスの仕組み
 
-マーケットプレイスは、他の誰かが作成して共有したプラグインのカタログです。マーケットプレイスを使用するのは2段階のプロセスです：
+マーケットプレイスは、他の誰かが作成して共有したプラグインのカタログです。マーケットプレイスを使用するのは 2 段階のプロセスです。
 
 <Steps>
   <Step title="マーケットプレイスを追加する">
-    これにより、カタログがClaude Codeに登録され、利用可能なものを参照できます。まだプラグインはインストールされていません。
+    これにより、カタログが Claude Code に登録され、利用可能な内容を参照できるようになります。プラグインはまだインストールされていません。
   </Step>
 
   <Step title="個別のプラグインをインストールする">
@@ -24,29 +24,34 @@
   </Step>
 </Steps>
 
-アプリストアを追加するようなものと考えてください：ストアを追加するとそのコレクションを参照できるようになりますが、どのアプリをダウンロードするかは個別に選択します。
+アプリストアを追加するようなものと考えてください。ストアを追加するとそのコレクションを参照できるようになりますが、どのアプリをダウンロードするかは個別に選択します。
 
-## 公式Anthropicマーケットプレイス
+## 公式 Anthropic マーケットプレイス
 
-公式Anthropicマーケットプレイス（`claude-plugins-official`）は、Claude Codeを起動すると自動的に利用可能になります。`/plugin`を実行して**Discover**タブに移動して、利用可能なものを参照してください。
+公式 Anthropic マーケットプレイス（`claude-plugins-official`）は、Claude Code を起動すると自動的に利用可能になります。`/plugin` を実行して **Discover** タブに移動し、利用可能な内容を参照してください。
 
-公式マーケットプレイスからプラグインをインストールするには：
+公式マーケットプレイスからプラグインをインストールするには、以下を実行します。
 
 ```shell  theme={null}
 /plugin install plugin-name@claude-plugins-official
 ```
 
 <Note>
-  公式マーケットプレイスはAnthropicによって保守されています。独自のプラグインを配布するには、[独自のマーケットプレイスを作成](/ja/plugin-marketplaces)してユーザーと共有してください。
+  公式マーケットプレイスは Anthropic によって管理されています。公式マーケットプレイスにプラグインを送信するには、アプリ内の送信フォームのいずれかを使用してください。
+
+  * **Claude.ai**: [claude.ai/settings/plugins/submit](https://claude.ai/settings/plugins/submit)
+  * **Console**: [platform.claude.com/plugins/submit](https://platform.claude.com/plugins/submit)
+
+  プラグインを独立して配布するには、[独自のマーケットプレイスを作成](/ja/plugin-marketplaces)してユーザーと共有してください。
 </Note>
 
-公式マーケットプレイスには、いくつかのカテゴリのプラグインが含まれています：
+公式マーケットプレイスには、複数のカテゴリのプラグインが含まれています。
 
 ### コード インテリジェンス
 
-コード インテリジェンスプラグインは、Claudeがコードベースをより深く理解するのに役立ちます。これらのプラグインがインストールされていると、Claudeは定義にジャンプしたり、参照を見つけたり、編集直後に型エラーを表示したりできます。これらのプラグインは[Language Server Protocol](https://microsoft.github.io/language-server-protocol/)（LSP）を使用します。これはVS Codeのコード インテリジェンスを強化する同じテクノロジーです。
+コード インテリジェンス プラグインは Claude Code の組み込み LSP ツールを有効にし、Claude が定義にジャンプしたり、参照を検索したり、編集直後に型エラーを確認したりできるようにします。これらのプラグインは [Language Server Protocol](https://microsoft.github.io/language-server-protocol/) 接続を構成します。これは VS Code のコード インテリジェンスを強化する同じテクノロジーです。
 
-これらのプラグインには、システムにインストールされた言語サーバーバイナリが必要です。既に言語サーバーがインストールされている場合、プロジェクトを開くときにClaudeが対応するプラグインをインストールするよう促す場合があります。
+これらのプラグインでは、言語サーバーのバイナリがシステムにインストールされている必要があります。既に言語サーバーがインストールされている場合、プロジェクトを開くと Claude が対応するプラグインをインストールするよう促す場合があります。
 
 | 言語         | プラグイン               | 必要なバイナリ                      |
 | :--------- | :------------------ | :--------------------------- |
@@ -54,6 +59,7 @@
 | C#         | `csharp-lsp`        | `csharp-ls`                  |
 | Go         | `gopls-lsp`         | `gopls`                      |
 | Java       | `jdtls-lsp`         | `jdtls`                      |
+| Kotlin     | `kotlin-lsp`        | `kotlin-language-server`     |
 | Lua        | `lua-lsp`           | `lua-language-server`        |
 | PHP        | `php-lsp`           | `intelephense`               |
 | Python     | `pyright-lsp`       | `pyright-langserver`         |
@@ -61,218 +67,227 @@
 | Swift      | `swift-lsp`         | `sourcekit-lsp`              |
 | TypeScript | `typescript-lsp`    | `typescript-language-server` |
 
-[他の言語用の独自のLSPプラグインを作成](/ja/plugins-reference#lsp-servers)することもできます。
+[他の言語用に独自の LSP プラグインを作成](/ja/plugins-reference#lsp-servers)することもできます。
 
 <Note>
-  プラグインをインストール後に`/plugin`エラータブで`Executable not found in $PATH`が表示される場合は、上記の表から必要なバイナリをインストールしてください。
+  プラグインをインストール後に `/plugin` Errors タブに `Executable not found in $PATH` が表示される場合は、上記の表から必要なバイナリをインストールしてください。
 </Note>
+
+#### コード インテリジェンス プラグインから Claude が得られるもの
+
+コード インテリジェンス プラグインがインストールされ、その言語サーバーのバイナリが利用可能になると、Claude は 2 つの機能を得られます。
+
+* **自動診断**: Claude が行うすべてのファイル編集後、言語サーバーは変更を分析し、エラーと警告を自動的に報告します。Claude はコンパイラやリンターを実行することなく、型エラー、不足しているインポート、構文の問題を確認できます。Claude がエラーを導入した場合、それに気付いて同じターンで問題を修正します。これはプラグインをインストール以外の設定は必要ありません。「diagnostics found」インジケーターが表示されたときに **Ctrl+O** を押すと、診断をインラインで確認できます。
+* **コード ナビゲーション**: Claude は言語サーバーを使用して定義にジャンプしたり、参照を検索したり、ホバー時に型情報を取得したり、シンボルをリストしたり、実装を検索したり、呼び出し階層をトレースしたりできます。これらの操作により、Claude は grep ベースの検索よりも正確なナビゲーションが可能になります。ただし、利用可能性は言語と環境によって異なる場合があります。
+
+問題が発生した場合は、[コード インテリジェンスのトラブルシューティング](#code-intelligence-issues)を参照してください。
 
 ### 外部統合
 
-これらのプラグインは事前設定された[MCPサーバー](/ja/mcp)をバンドルしているため、手動セットアップなしでClaudeを外部サービスに接続できます：
+これらのプラグインは事前構成された [MCP サーバー](/ja/mcp)をバンドルしているため、手動セットアップなしで Claude を外部サービスに接続できます。
 
 * **ソース管理**: `github`、`gitlab`
 * **プロジェクト管理**: `atlassian`（Jira/Confluence）、`asana`、`linear`、`notion`
 * **デザイン**: `figma`
 * **インフラストラクチャ**: `vercel`、`firebase`、`supabase`
 * **コミュニケーション**: `slack`
-* **モニタリング**: `sentry`
+* **監視**: `sentry`
 
 ### 開発ワークフロー
 
-一般的な開発タスク用のコマンドとエージェントを追加するプラグイン：
+一般的な開発タスク用のコマンドとエージェントを追加するプラグイン。
 
-* **commit-commands**: コミット、プッシュ、PR作成を含むGitコミットワークフロー
-* **pr-review-toolkit**: プルリクエストレビュー用の特化したエージェント
-* **agent-sdk-dev**: Claude Agent SDKで構築するためのツール
+* **commit-commands**: コミット、プッシュ、PR 作成を含む Git コミット ワークフロー
+* **pr-review-toolkit**: プルリクエストをレビューするための特化したエージェント
+* **agent-sdk-dev**: Claude Agent SDK で構築するためのツール
 * **plugin-dev**: 独自のプラグインを作成するためのツールキット
 
 ### 出力スタイル
 
-Claudeの応答方法をカスタマイズします：
+Claude の応答方法をカスタマイズします。
 
 * **explanatory-output-style**: 実装の選択肢に関する教育的な洞察
-* **learning-output-style**: スキル構築のためのインタラクティブラーニングモード
+* **learning-output-style**: スキル構築のためのインタラクティブな学習モード
 
-## 試してみる：デモマーケットプレイスを追加する
+## 試してみる: デモマーケットプレイスを追加する
 
-Anthropicは、プラグインシステムで何が可能かを示す例のプラグインを含む[デモプラグインマーケットプレイス](https://github.com/anthropics/claude-code/tree/main/plugins)（`claude-code-plugins`）も保守しています。公式マーケットプレイスとは異なり、このマーケットプレイスは手動で追加する必要があります。
+Anthropic は、プラグインシステムで何が可能かを示す例プラグインを含む [デモプラグインマーケットプレイス](https://github.com/anthropics/claude-code/tree/main/plugins)（`claude-code-plugins`）も管理しています。公式マーケットプレイスとは異なり、このマーケットプレイスは手動で追加する必要があります。
 
 <Steps>
   <Step title="マーケットプレイスを追加する">
-    Claude Code内から、`anthropics/claude-code`マーケットプレイスの`plugin marketplace add`コマンドを実行します：
+    Claude Code 内から、`anthropics/claude-code` マーケットプレイスの `plugin marketplace add` コマンドを実行します。
 
     ```shell  theme={null}
     /plugin marketplace add anthropics/claude-code
     ```
 
-    これにより、マーケットプレイスカタログがダウンロードされ、そのプラグインが利用可能になります。
+    これにより、マーケットプレイス カタログがダウンロードされ、そのプラグインが利用可能になります。
   </Step>
 
   <Step title="利用可能なプラグインを参照する">
-    `/plugin`を実行してプラグインマネージャーを開きます。これにより、**Tab**（または後ろに戻るには**Shift+Tab**）を使用して循環できる4つのタブを持つタブ付きインターフェイスが開きます：
+    `/plugin` を実行してプラグイン マネージャーを開きます。これにより、**Tab**（または後方に移動するには **Shift+Tab**）を使用してサイクルできる 4 つのタブを持つタブ付きインターフェイスが開きます。
 
     * **Discover**: すべてのマーケットプレイスから利用可能なプラグインを参照
     * **Installed**: インストール済みプラグインを表示および管理
     * **Marketplaces**: 追加したマーケットプレイスを追加、削除、または更新
     * **Errors**: プラグイン読み込みエラーを表示
 
-    **Discover**タブに移動して、追加したばかりのマーケットプレイスからのプラグインを確認してください。
+    **Discover** タブに移動して、追加したばかりのマーケットプレイスからプラグインを確認してください。
   </Step>
 
   <Step title="プラグインをインストールする">
-    プラグインを選択して詳細を表示し、インストールスコープを選択します：
+    プラグインを選択してその詳細を表示し、インストール スコープを選択します。
 
-    * **ユーザースコープ**: すべてのプロジェクト全体で自分用にインストール
-    * **プロジェクトスコープ**: このリポジトリのすべてのコラボレーター用にインストール
-    * **ローカルスコープ**: このリポジトリ内で自分用にのみインストール
+    * **User scope**: すべてのプロジェクト全体で自分用にインストール
+    * **Project scope**: このリポジトリのすべてのコラボレーター用にインストール
+    * **Local scope**: このリポジトリ内で自分用にのみインストール
 
-    たとえば、**commit-commands**（gitワークフローコマンドを追加するプラグイン）を選択して、ユーザースコープにインストールします。
+    たとえば、**commit-commands**（git ワークフロー コマンドを追加するプラグイン）を選択して、ユーザー スコープにインストールします。
 
-    コマンドラインから直接インストールすることもできます：
+    コマンドラインから直接インストールすることもできます。
 
     ```shell  theme={null}
     /plugin install commit-commands@anthropics-claude-code
     ```
 
-    スコープの詳細については、[設定スコープ](/ja/settings#configuration-scopes)を参照してください。
+    スコープの詳細については、[構成スコープ](/ja/settings#configuration-scopes)を参照してください。
   </Step>
 
   <Step title="新しいプラグインを使用する">
-    インストール後、プラグインのコマンドはすぐに利用可能になります。プラグインコマンドはプラグイン名でネームスペース化されているため、**commit-commands**は`/commit-commands:commit`のようなコマンドを提供します。
+    インストール後、プラグインのコマンドはすぐに利用可能になります。プラグイン コマンドはプラグイン名でネームスペース化されているため、**commit-commands** は `/commit-commands:commit` のようなコマンドを提供します。
 
-    ファイルに変更を加えて、以下を実行して試してみてください：
+    ファイルに変更を加えて、以下を実行して試してみてください。
 
     ```shell  theme={null}
     /commit-commands:commit
     ```
 
-    これにより、変更がステージングされ、コミットメッセージが生成され、コミットが作成されます。
+    これにより、変更がステージングされ、コミット メッセージが生成され、コミットが作成されます。
 
-    各プラグインは異なる方法で機能します。**Discover**タブのプラグインの説明またはそのホームページをチェックして、提供されるコマンドと機能を学習してください。
+    各プラグインは異なる方法で機能します。**Discover** タブのプラグインの説明またはそのホームページを確認して、提供されるコマンドと機能を確認してください。
   </Step>
 </Steps>
 
-このガイドの残りの部分では、マーケットプレイスを追加し、プラグインをインストールし、設定を管理するすべての方法について説明します。
+このガイドの残りの部分では、マーケットプレイスを追加し、プラグインをインストールし、構成を管理するすべての方法について説明します。
 
 ## マーケットプレイスを追加する
 
-`/plugin marketplace add`コマンドを使用して、異なるソースからマーケットプレイスを追加します。
+`/plugin marketplace add` コマンドを使用して、さまざまなソースからマーケットプレイスを追加します。
 
 <Tip>
-  **ショートカット**: `/plugin marketplace`の代わりに`/plugin market`を使用でき、`remove`の代わりに`rm`を使用できます。
+  **ショートカット**: `/plugin marketplace` の代わりに `/plugin market` を使用でき、`remove` の代わりに `rm` を使用できます。
 </Tip>
 
-* **GitHubリポジトリ**: `owner/repo`形式（例：`anthropics/claude-code`）
-* **Git URL**: 任意のGitリポジトリURL（GitLab、Bitbucket、自己ホスト）
-* **ローカルパス**: ディレクトリまたは`marketplace.json`ファイルへの直接パス
-* **リモートURL**: ホストされた`marketplace.json`ファイルへの直接URL
+* **GitHub リポジトリ**: `owner/repo` 形式（例：`anthropics/claude-code`）
+* **Git URL**: 任意の git リポジトリ URL（GitLab、Bitbucket、自己ホスト）
+* **ローカル パス**: ディレクトリまたは `marketplace.json` ファイルへの直接パス
+* **リモート URL**: ホストされた `marketplace.json` ファイルへの直接 URL
 
-### GitHubから追加する
+### GitHub から追加する
 
-`.claude-plugin/marketplace.json`ファイルを含むGitHubリポジトリを`owner/repo`形式を使用して追加します。ここで`owner`はGitHubユーザー名または組織で、`repo`はリポジトリ名です。
+`.claude-plugin/marketplace.json` ファイルを含む GitHub リポジトリを `owner/repo` 形式を使用して追加します。ここで、`owner` は GitHub ユーザー名または組織、`repo` はリポジトリ名です。
 
-たとえば、`anthropics/claude-code`は`anthropics`が所有する`claude-code`リポジトリを指します：
+たとえば、`anthropics/claude-code` は `anthropics` が所有する `claude-code` リポジトリを指します。
 
 ```shell  theme={null}
 /plugin marketplace add anthropics/claude-code
 ```
 
-### 他のGitホストから追加する
+### 他の Git ホストから追加する
 
-完全なURLを提供することで、任意のGitリポジトリを追加します。これはGitLab、Bitbucket、自己ホストサーバーを含む任意のGitホストで機能します：
+完全な URL を指定して、任意の git リポジトリを追加します。これは GitLab、Bitbucket、自己ホスト サーバーを含む任意の Git ホストで機能します。
 
-HTTPSを使用：
+HTTPS を使用する場合:
 
 ```shell  theme={null}
 /plugin marketplace add https://gitlab.com/company/plugins.git
 ```
 
-SSHを使用：
+SSH を使用する場合:
 
 ```shell  theme={null}
 /plugin marketplace add git@gitlab.com:company/plugins.git
 ```
 
-特定のブランチまたはタグを追加するには、`#`の後に参照を追加します：
+特定のブランチまたはタグを追加するには、`#` の後に ref を追加します。
 
 ```shell  theme={null}
 /plugin marketplace add https://gitlab.com/company/plugins.git#v1.0.0
 ```
 
-### ローカルパスから追加する
+### ローカル パスから追加する
 
-`.claude-plugin/marketplace.json`ファイルを含むローカルディレクトリを追加します：
+`.claude-plugin/marketplace.json` ファイルを含むローカル ディレクトリを追加します。
 
 ```shell  theme={null}
 /plugin marketplace add ./my-marketplace
 ```
 
-`marketplace.json`ファイルへの直接パスを追加することもできます：
+`marketplace.json` ファイルへの直接パスを追加することもできます。
 
 ```shell  theme={null}
 /plugin marketplace add ./path/to/marketplace.json
 ```
 
-### リモートURLから追加する
+### リモート URL から追加する
 
-URLを介してリモート`marketplace.json`ファイルを追加します：
+URL 経由でリモート `marketplace.json` ファイルを追加します。
 
 ```shell  theme={null}
 /plugin marketplace add https://example.com/marketplace.json
 ```
 
 <Note>
-  URLベースのマーケットプレイスは、Gitベースのマーケットプレイスと比べていくつかの制限があります。プラグインをインストールするときに「パスが見つかりません」エラーが発生する場合は、[トラブルシューティング](/ja/plugin-marketplaces#plugins-with-relative-paths-fail-in-url-based-marketplaces)を参照してください。
+  URL ベースのマーケットプレイスは、Git ベースのマーケットプレイスと比べていくつかの制限があります。プラグインをインストールするときに「path not found」エラーが発生した場合は、[トラブルシューティング](/ja/plugin-marketplaces#plugins-with-relative-paths-fail-in-url-based-marketplaces)を参照してください。
 </Note>
 
 ## プラグインをインストールする
 
-マーケットプレイスを追加したら、プラグインを直接インストールできます（デフォルトではユーザースコープにインストール）：
+マーケットプレイスを追加したら、プラグインを直接インストールできます（デフォルトではユーザー スコープにインストール）。
 
 ```shell  theme={null}
 /plugin install plugin-name@marketplace-name
 ```
 
-別の[インストールスコープ](/ja/settings#configuration-scopes)を選択するには、インタラクティブUIを使用します：`/plugin`を実行して**Discover**タブに移動し、プラグインで**Enter**を押します。以下のオプションが表示されます：
+別の[インストール スコープ](/ja/settings#configuration-scopes)を選択するには、インタラクティブ UI を使用します。`/plugin` を実行して **Discover** タブに移動し、プラグインで **Enter** を押します。以下のオプションが表示されます。
 
-* **ユーザースコープ**（デフォルト）: すべてのプロジェクト全体で自分用にインストール
-* **プロジェクトスコープ**: このリポジトリのすべてのコラボレーター用にインストール（`.claude/settings.json`に追加）
-* **ローカルスコープ**: このリポジトリ内で自分用にのみインストール（コラボレーターと共有されない）
+* **User scope**（デフォルト）: すべてのプロジェクト全体で自分用にインストール
+* **Project scope**: このリポジトリのすべてのコラボレーター用にインストール（`.claude/settings.json` に追加）
+* **Local scope**: このリポジトリ内で自分用にのみインストール（コラボレーターと共有されない）
 
-**管理**スコープのプラグインも表示される場合があります。これらは管理者が[管理設定](/ja/settings#settings-files)を通じてインストールしたもので、変更することはできません。
+[管理設定](/ja/settings#settings-files)経由で管理者がインストールした **managed** スコープのプラグインも表示される場合があります。これらは変更できません。
 
-`/plugin`を実行して**Installed**タブに移動して、スコープでグループ化されたプラグインを確認してください。
+`/plugin` を実行して **Installed** タブに移動すると、スコープ別にグループ化されたプラグインが表示されます。
 
 <Warning>
-  プラグインをインストールする前に、それを信頼していることを確認してください。Anthropicはプラグインに含まれるMCPサーバー、ファイル、またはその他のソフトウェアを制御せず、意図したとおりに機能することを確認できません。詳細については、各プラグインのホームページを確認してください。
+  プラグインをインストールする前に、信頼できることを確認してください。Anthropic はプラグインに含まれる MCP サーバー、ファイル、その他のソフトウェアを制御せず、意図したとおりに機能することを確認できません。詳細については、各プラグインのホームページを確認してください。
 </Warning>
 
 ## インストール済みプラグインを管理する
 
-`/plugin`を実行して**Installed**タブに移動して、プラグインを表示、有効化、無効化、またはアンインストールします。
+`/plugin` を実行して **Installed** タブに移動し、プラグインを表示、有効化、無効化、またはアンインストールします。プラグイン名または説明でリストをフィルタリングするには、入力します。
 
 直接コマンドでプラグインを管理することもできます。
 
-プラグインをアンインストールせずに無効化：
+プラグインをアンインストールせずに無効化します。
 
 ```shell  theme={null}
 /plugin disable plugin-name@marketplace-name
 ```
 
-無効化されたプラグインを再度有効化：
+無効化されたプラグインを再度有効化します。
 
 ```shell  theme={null}
 /plugin enable plugin-name@marketplace-name
 ```
 
-プラグインを完全に削除：
+プラグインを完全に削除します。
 
 ```shell  theme={null}
 /plugin uninstall plugin-name@marketplace-name
 ```
 
-`--scope`オプションを使用すると、CLIコマンドで特定のスコープをターゲットにできます：
+`--scope` オプションを使用すると、CLI コマンドで特定のスコープをターゲットにできます。
 
 ```shell  theme={null}
 claude plugin install formatter@your-org --scope project
@@ -281,34 +296,34 @@ claude plugin uninstall formatter@your-org --scope project
 
 ## マーケットプレイスを管理する
 
-インタラクティブ`/plugin`インターフェイスまたはCLIコマンドを使用してマーケットプレイスを管理できます。
+インタラクティブな `/plugin` インターフェイスまたは CLI コマンドを使用してマーケットプレイスを管理できます。
 
-### インタラクティブインターフェイスを使用する
+### インタラクティブ インターフェイスを使用する
 
-`/plugin`を実行して**Marketplaces**タブに移動して、以下を実行します：
+`/plugin` を実行して **Marketplaces** タブに移動して、以下を実行します。
 
-* 追加したすべてのマーケットプレイスをソースとステータスとともに表示
+* ソースとステータスを含むすべての追加マーケットプレイスを表示
 * 新しいマーケットプレイスを追加
-* マーケットプレイスリストを更新して最新のプラグインを取得
+* マーケットプレイス リストを更新して最新のプラグインを取得
 * 不要になったマーケットプレイスを削除
 
-### CLIコマンドを使用する
+### CLI コマンドを使用する
 
 直接コマンドでマーケットプレイスを管理することもできます。
 
-設定されたすべてのマーケットプレイスをリスト：
+構成されたすべてのマーケットプレイスをリストします。
 
 ```shell  theme={null}
 /plugin marketplace list
 ```
 
-マーケットプレイスからプラグインリストを更新：
+マーケットプレイスからプラグイン リストを更新します。
 
 ```shell  theme={null}
 /plugin marketplace update marketplace-name
 ```
 
-マーケットプレイスを削除：
+マーケットプレイスを削除します。
 
 ```shell  theme={null}
 /plugin marketplace remove marketplace-name
@@ -318,60 +333,81 @@ claude plugin uninstall formatter@your-org --scope project
   マーケットプレイスを削除すると、そこからインストールしたプラグインがアンインストールされます。
 </Warning>
 
-### 自動更新を設定する
+### 自動更新を構成する
 
-Claude Codeは起動時にマーケットプレイスとそのインストール済みプラグインを自動的に更新できます。マーケットプレイスで自動更新が有効になっている場合、Claude Codeはマーケットプレイスデータを更新し、インストール済みプラグインを最新バージョンに更新します。プラグインが更新された場合、Claude Codeを再起動することをお勧めする通知が表示されます。
+Claude Code は起動時にマーケットプレイスとそのインストール済みプラグインを自動的に更新できます。マーケットプレイスで自動更新が有効になっている場合、Claude Code はマーケットプレイス データを更新し、インストール済みプラグインを最新バージョンに更新します。プラグインが更新された場合、Claude Code を再起動することをお勧めするという通知が表示されます。
 
-UIを通じて個別のマーケットプレイスの自動更新を切り替えます：
+UI を通じて個別のマーケットプレイスの自動更新を切り替えます。
 
-1. `/plugin`を実行してプラグインマネージャーを開く
-2. **Marketplaces**を選択
+1. `/plugin` を実行してプラグイン マネージャーを開く
+2. **Marketplaces** を選択
 3. リストからマーケットプレイスを選択
-4. **自動更新を有効化**または**自動更新を無効化**を選択
+4. **Enable auto-update** または **Disable auto-update** を選択
 
-公式Anthropicマーケットプレイスはデフォルトで自動更新が有効になっています。サードパーティおよびローカル開発マーケットプレイスはデフォルトで自動更新が無効になっています。
+公式 Anthropic マーケットプレイスはデフォルトで自動更新が有効になっています。サードパーティおよびローカル開発マーケットプレイスはデフォルトで自動更新が無効になっています。
 
-Claude Codeとすべてのプラグインのすべての自動更新を完全に無効にするには、`DISABLE_AUTOUPDATER`環境変数を設定します。詳細については、[自動更新](/ja/setup#auto-updates)を参照してください。
+Claude Code とすべてのプラグインの両方のすべての自動更新を完全に無効にするには、`DISABLE_AUTOUPDATER` 環境変数を設定します。詳細については、[自動更新](/ja/setup#auto-updates)を参照してください。
 
-Claude Code自動更新を無効にしながらプラグイン自動更新を有効にしておくには、`DISABLE_AUTOUPDATER`と一緒に`FORCE_AUTOUPDATE_PLUGINS=true`を設定します：
+Claude Code の自動更新を無効にしながらプラグインの自動更新を有効に保つには、`DISABLE_AUTOUPDATER` と共に `FORCE_AUTOUPDATE_PLUGINS=true` を設定します。
 
 ```shell  theme={null}
 export DISABLE_AUTOUPDATER=true
 export FORCE_AUTOUPDATE_PLUGINS=true
 ```
 
-これは、Claude Code更新を手動で管理したいが、プラグイン更新は自動的に受け取りたい場合に便利です。
+これは Claude Code の更新を手動で管理したいが、プラグインの自動更新を受け取りたい場合に便利です。
 
-## チームマーケットプレイスを設定する
+## チーム マーケットプレイスを構成する
 
-チーム管理者は、`.claude/settings.json`にマーケットプレイス設定を追加することで、プロジェクトの自動マーケットプレイスインストールを設定できます。チームメンバーがリポジトリフォルダを信頼すると、Claude Codeはこれらのマーケットプレイスとプラグインをインストールするよう促します。
+チーム管理者は、`.claude/settings.json` にマーケットプレイス構成を追加することで、プロジェクトの自動マーケットプレイス インストールを設定できます。チーム メンバーがリポジトリ フォルダを信頼すると、Claude Code はこれらのマーケットプレイスとプラグインをインストールするよう促します。
 
-`extraKnownMarketplaces`と`enabledPlugins`を含む完全な設定オプションについては、[プラグイン設定](/ja/settings#plugin-settings)を参照してください。
+プロジェクトの `.claude/settings.json` に `extraKnownMarketplaces` を追加します。
+
+```json  theme={null}
+{
+  "extraKnownMarketplaces": {
+    "my-team-tools": {
+      "source": {
+        "source": "github",
+        "repo": "your-org/claude-plugins"
+      }
+    }
+  }
+}
+```
+
+`extraKnownMarketplaces` と `enabledPlugins` を含む完全な構成オプションについては、[プラグイン設定](/ja/settings#plugin-settings)を参照してください。
 
 ## トラブルシューティング
 
-### /pluginコマンドが認識されない
+### /plugin コマンドが認識されない
 
-「不明なコマンド」が表示されるか、`/plugin`コマンドが表示されない場合：
+「unknown command」が表示されるか、`/plugin` コマンドが表示されない場合。
 
-1. **バージョンを確認**: `claude --version`を実行します。プラグインにはバージョン1.0.33以降が必要です。
-2. **Claude Codeを更新**:
+1. **バージョンを確認する**: `claude --version` を実行します。プラグインにはバージョン 1.0.33 以降が必要です。
+2. **Claude Code を更新する**:
    * **Homebrew**: `brew upgrade claude-code`
    * **npm**: `npm update -g @anthropic-ai/claude-code`
-   * **ネイティブインストーラー**: [セットアップ](/ja/setup)からインストールコマンドを再実行
-3. **Claude Codeを再起動**: 更新後、ターミナルを再起動して`claude`を再度実行します。
+   * **ネイティブ インストーラー**: [セットアップ](/ja/setup)からインストール コマンドを再実行します。
+3. **Claude Code を再起動する**: 更新後、ターミナルを再起動して `claude` を再度実行します。
 
 ### 一般的な問題
 
-* **マーケットプレイスが読み込まれない**: URLがアクセス可能で、`.claude-plugin/marketplace.json`がパスに存在することを確認
-* **プラグインインストール失敗**: プラグインソースURLがアクセス可能で、リポジトリが公開されている（またはアクセス権がある）ことを確認
-* **インストール後にファイルが見つからない**: プラグインはキャッシュにコピーされるため、プラグインディレクトリ外のファイルを参照するパスは機能しません
-* **プラグインスキルが表示されない**: `rm -rf ~/.claude/plugins/cache`でキャッシュをクリアし、Claude Codeを再起動して、プラグインを再インストールします。詳細については、[プラグインスキルがインストール後に表示されない](/ja/skills#plugin-skills-not-appearing-after-installation)を参照してください。
+* **マーケットプレイスが読み込まれない**: URL がアクセス可能で、`.claude-plugin/marketplace.json` がパスに存在することを確認してください。
+* **プラグイン インストール エラー**: プラグイン ソース URL がアクセス可能で、リポジトリが公開されている（またはアクセス権がある）ことを確認してください。
+* **インストール後にファイルが見つからない**: プラグインはキャッシュにコピーされるため、プラグイン ディレクトリ外のファイルを参照するパスは機能しません。
+* **プラグイン スキルが表示されない**: `rm -rf ~/.claude/plugins/cache` でキャッシュをクリアし、Claude Code を再起動して、プラグインを再度インストールします。
 
-詳細なトラブルシューティングと解決策については、マーケットプレイスガイドの[トラブルシューティング](/ja/plugin-marketplaces#troubleshooting)を参照してください。デバッグツールについては、[デバッグおよび開発ツール](/ja/plugins-reference#debugging-and-development-tools)を参照してください。
+詳細なトラブルシューティングとソリューションについては、マーケットプレイス ガイドの [トラブルシューティング](/ja/plugin-marketplaces#troubleshooting)を参照してください。デバッグ ツールについては、[デバッグと開発ツール](/ja/plugins-reference#debugging-and-development-tools)を参照してください。
+
+### コード インテリジェンスの問題
+
+* **言語サーバーが起動しない**: バイナリがインストールされ、`$PATH` で利用可能であることを確認してください。詳細については、`/plugin` Errors タブを確認してください。
+* **メモリ使用量が多い**: `rust-analyzer` や `pyright` などの言語サーバーは、大規模なプロジェクトで大量のメモリを消費する可能性があります。メモリの問題が発生した場合は、`/plugin disable <plugin-name>` でプラグインを無効化し、代わりに Claude の組み込み検索ツールを使用してください。
+* **モノレポでの誤検知診断**: ワークスペースが正しく構成されていない場合、言語サーバーは内部パッケージの未解決インポート エラーを報告する可能性があります。これらは Claude のコード編集機能に影響しません。
 
 ## 次のステップ
 
-* **独自のプラグインを構築**: カスタムコマンド、エージェント、フックを作成するには、[プラグイン](/ja/plugins)を参照してください
-* **マーケットプレイスを作成**: チームまたはコミュニティにプラグインを配布するには、[プラグインマーケットプレイスを作成](/ja/plugin-marketplaces)を参照してください
-* **技術リファレンス**: 完全な仕様については、[プラグインリファレンス](/ja/plugins-reference)を参照してください
+* **独自のプラグインを構築する**: スキル、エージェント、フックを作成するには、[プラグイン](/ja/plugins)を参照してください。
+* **マーケットプレイスを作成する**: チームまたはコミュニティにプラグインを配布するには、[プラグイン マーケットプレイスを作成](/ja/plugin-marketplaces)を参照してください。
+* **技術リファレンス**: 完全な仕様については、[プラグイン リファレンス](/ja/plugins-reference)を参照してください。
