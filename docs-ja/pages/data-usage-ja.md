@@ -11,7 +11,7 @@
 ### データトレーニングポリシー
 
 **コンシューマーユーザー（Free、Pro、Max プラン）**：
-将来の Claude モデルの改善のためにデータを使用することを許可するかどうかを選択できます。この設定がオンの場合、Free、Pro、Max アカウントからのデータを使用して新しいモデルをトレーニングします（これらのアカウントから Claude Code を使用する場合を含む）。
+将来の Claude モデルの改善のためにデータを使用することを許可するかどうかを選択できます。この設定がオンの場合、Free、Pro、Max アカウントからのデータを使用して新しいモデルをトレーニングします（これらのアカウントから Claude Code を使用する場合も含みます）。
 
 **商用ユーザー**：（Team および Enterprise プラン、API、サードパーティプラットフォーム、Claude Gov）既存のポリシーを維持します。Anthropic は、商用条件の下で Claude Code に送信されたコードまたはプロンプトを使用して生成モデルをトレーニングしません。ただし、カスタマーがモデル改善のためにデータを提供することを選択した場合は除きます（例えば、[Developer Partner Program](https://support.claude.com/ja/articles/11174108-about-the-development-partner-program)）。
 
@@ -45,13 +45,15 @@ Anthropic は、アカウントタイプと設定に基づいて Claude Code デ
 * [Zero data retention](/ja/zero-data-retention)：Claude for Enterprise の Claude Code で利用可能。ZDR は組織ごとに有効になります。新しい各組織は、アカウントチームによって個別に ZDR を有効にする必要があります
 * ローカルキャッシング：Claude Code クライアントは、セッション再開を有効にするために、セッションをローカルに最大 30 日間保存できます（設定可能）
 
-データ保持慣行の詳細については、[Privacy Center](https://privacy.anthropic.com/) をご覧ください。
+Web 上の個別の Claude Code セッションはいつでも削除できます。セッションを削除すると、セッションのイベントデータが永久に削除されます。セッションの削除方法については、[Managing sessions](/ja/claude-code-on-the-web#managing-sessions) を参照してください。
 
-詳細については、[Commercial Terms of Service](https://www.anthropic.com/legal/commercial-terms)（Team、Enterprise、API ユーザー向け）または [Consumer Terms](https://www.anthropic.com/legal/consumer-terms)（Free、Pro、Max ユーザー向け）および [Privacy Policy](https://www.anthropic.com/legal/privacy) をご確認ください。
+データ保持慣行の詳細については、[Privacy Center](https://privacy.anthropic.com/) を参照してください。
+
+詳細については、[Commercial Terms of Service](https://www.anthropic.com/legal/commercial-terms)（Team、Enterprise、API ユーザー向け）または [Consumer Terms](https://www.anthropic.com/legal/consumer-terms)（Free、Pro、Max ユーザー向け）および [Privacy Policy](https://www.anthropic.com/legal/privacy) を確認してください。
 
 ## データアクセス
 
-すべてのファーストパーティユーザーの場合、[ローカル Claude Code](#local-claude-code-data-flow-and-dependencies) および [リモート Claude Code](#cloud-execution-data-flow-and-dependencies) でログされるデータについて詳しく知ることができます。[Remote Control](/ja/remote-control) セッションは、すべての実行がマシン上で行われるため、ローカルデータフローに従います。リモート Claude Code の場合、Claude は Claude Code セッションを開始するリポジトリにアクセスします。Claude は接続したが、セッションを開始していないリポジトリにはアクセスしません。
+すべてのファーストパーティユーザーの場合、[ローカル Claude Code](#local-claude-code-data-flow-and-dependencies) および [リモート Claude Code](#cloud-execution-data-flow-and-dependencies) に対してログされるデータについて詳しく知ることができます。[Remote Control](/ja/remote-control) セッションは、すべての実行がマシン上で行われるため、ローカルデータフローに従います。リモート Claude Code の場合、Claude は Claude Code セッションを開始するリポジトリにアクセスします。Claude は接続したが、セッションを開始していないリポジトリにはアクセスしません。
 
 ## ローカル Claude Code：データフローと依存関係
 
@@ -67,7 +69,7 @@ Claude Code は Anthropic の API 上に構築されています。API のセキ
 
 [Claude Code on the web](/ja/claude-code-on-the-web) を使用する場合、セッションはローカルではなく Anthropic が管理する仮想マシンで実行されます。クラウド環境では：
 
-* **コードとデータストレージ**：リポジトリは分離された VM にクローンされます。コードとセッションデータは、アカウントタイプの保持および使用ポリシーに従います（上記のデータ保持セクションを参照）
+* **コードとデータストレージ**：リポジトリは分離された VM にクローンされます。コードとセッションデータは、アカウントタイプのデータ保持および使用ポリシーの対象となります（上記のデータ保持セクションを参照）
 * **認証情報**：GitHub 認証はセキュアプロキシを通じて処理されます。GitHub 認証情報がサンドボックスに入ることはありません
 * **ネットワークトラフィック**：すべてのアウトバウンドトラフィックは、監査ログと不正使用防止のためのセキュリティプロキシを通じて行われます
 * **セッションデータ**：プロンプト、コード変更、出力は、ローカル Claude Code 使用と同じデータポリシーに従います
@@ -76,21 +78,21 @@ Claude Code は Anthropic の API 上に構築されています。API のセキ
 
 ## テレメトリサービス
 
-Claude Code は、ユーザーのマシンから Statsig サービスに接続して、レイテンシ、信頼性、使用パターンなどの運用メトリックをログします。このログには、コードまたはファイルパスは含まれません。データは TLS を使用して転送中に暗号化され、256 ビット AES 暗号化を使用して保存時に暗号化されます。[Statsig セキュリティドキュメント](https://www.statsig.com/trust/security) で詳細をご覧ください。Statsig テレメトリをオプトアウトするには、`DISABLE_TELEMETRY` 環境変数を設定します。
+Claude Code は、ユーザーのマシンから Statsig サービスに接続して、レイテンシ、信頼性、使用パターンなどの運用メトリックをログします。このログには、コードまたはファイルパスは含まれません。データは TLS を使用して転送中に暗号化され、256 ビット AES 暗号化を使用して保存時に暗号化されます。詳細については、[Statsig security documentation](https://www.statsig.com/trust/security) を参照してください。Statsig テレメトリをオプトアウトするには、`DISABLE_TELEMETRY` 環境変数を設定します。
 
-Claude Code は、ユーザーのマシンから Sentry に接続して、運用エラーログを記録します。データは TLS を使用して転送中に暗号化され、256 ビット AES 暗号化を使用して保存時に暗号化されます。[Sentry セキュリティドキュメント](https://sentry.io/security/) で詳細をご覧ください。エラーログをオプトアウトするには、`DISABLE_ERROR_REPORTING` 環境変数を設定します。
+Claude Code は、ユーザーのマシンから Sentry に接続して、運用エラーログを記録します。データは TLS を使用して転送中に暗号化され、256 ビット AES 暗号化を使用して保存時に暗号化されます。詳細については、[Sentry security documentation](https://sentry.io/security/) を参照してください。エラーログをオプトアウトするには、`DISABLE_ERROR_REPORTING` 環境変数を設定します。
 
 ユーザーが `/bug` コマンドを実行すると、コードを含む完全な会話履歴のコピーが Anthropic に送信されます。データは転送中および保存時に暗号化されます。オプションで、公開リポジトリに Github イシューが作成されます。バグレポートをオプトアウトするには、`DISABLE_BUG_COMMAND` 環境変数を設定します。
 
 ## API プロバイダーのデフォルト動作
 
-デフォルトでは、Bedrock、Vertex、または Foundry を使用する場合、エラーレポート、テレメトリ、バグレポート機能、セッション品質調査を含むすべての非必須トラフィックを無効にします。`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` 環境変数を設定することで、これらすべてを一度にオプトアウトすることもできます。以下は完全なデフォルト動作です：
+デフォルトでは、Bedrock、Vertex、または Foundry を使用する場合、すべての非必須トラフィック（エラーレポート、テレメトリ、バグレポート機能、セッション品質調査を含む）を無効にします。`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` 環境変数を設定することで、これらすべてを一度にオプトアウトすることもできます。以下は完全なデフォルト動作です：
 
 | サービス                        | Claude API                                                     | Vertex API                                             | Bedrock API                                             | Foundry API                                             |
 | --------------------------- | -------------------------------------------------------------- | ------------------------------------------------------ | ------------------------------------------------------- | ------------------------------------------------------- |
-| **Statsig（メトリック）**          | デフォルトオン。<br />`DISABLE_TELEMETRY=1` で無効にします。                   | デフォルトオフ。<br />`CLAUDE_CODE_USE_VERTEX` は 1 である必要があります。 | デフォルトオフ。<br />`CLAUDE_CODE_USE_BEDROCK` は 1 である必要があります。 | デフォルトオフ。<br />`CLAUDE_CODE_USE_FOUNDRY` は 1 である必要があります。 |
+| **Statsig（メトリクス）**          | デフォルトオン。<br />`DISABLE_TELEMETRY=1` で無効にします。                   | デフォルトオフ。<br />`CLAUDE_CODE_USE_VERTEX` は 1 である必要があります。 | デフォルトオフ。<br />`CLAUDE_CODE_USE_BEDROCK` は 1 である必要があります。 | デフォルトオフ。<br />`CLAUDE_CODE_USE_FOUNDRY` は 1 である必要があります。 |
 | **Sentry（エラー）**             | デフォルトオン。<br />`DISABLE_ERROR_REPORTING=1` で無効にします。             | デフォルトオフ。<br />`CLAUDE_CODE_USE_VERTEX` は 1 である必要があります。 | デフォルトオフ。<br />`CLAUDE_CODE_USE_BEDROCK` は 1 である必要があります。 | デフォルトオフ。<br />`CLAUDE_CODE_USE_FOUNDRY` は 1 である必要があります。 |
 | **Claude API（`/bug` レポート）** | デフォルトオン。<br />`DISABLE_BUG_COMMAND=1` で無効にします。                 | デフォルトオフ。<br />`CLAUDE_CODE_USE_VERTEX` は 1 である必要があります。 | デフォルトオフ。<br />`CLAUDE_CODE_USE_BEDROCK` は 1 である必要があります。 | デフォルトオフ。<br />`CLAUDE_CODE_USE_FOUNDRY` は 1 である必要があります。 |
 | **セッション品質調査**               | デフォルトオン。<br />`CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY=1` で無効にします。 | デフォルトオフ。<br />`CLAUDE_CODE_USE_VERTEX` は 1 である必要があります。 | デフォルトオフ。<br />`CLAUDE_CODE_USE_BEDROCK` は 1 である必要があります。 | デフォルトオフ。<br />`CLAUDE_CODE_USE_FOUNDRY` は 1 である必要があります。 |
 
-すべての環境変数は `settings.json` にチェックインできます（[詳細をご覧ください](/ja/settings)）。
+すべての環境変数は `settings.json` にチェックインできます（[詳細を読む](/ja/settings)）。
