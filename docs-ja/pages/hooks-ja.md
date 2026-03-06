@@ -18,31 +18,32 @@
 
 <div style={{maxWidth: "500px", margin: "0 auto"}}>
   <Frame>
-    <img src="https://mintcdn.com/claude-code/rsuu-ovdPNos9Dnn/images/hooks-lifecycle.svg?fit=max&auto=format&n=rsuu-ovdPNos9Dnn&q=85&s=ce5f1225339bbccdfbb52e99205db912" alt="SessionStart から agentic ループを経由して SessionEnd までのフックのシーケンスを示すフック ライフサイクル図。WorktreeCreate と WorktreeRemove はスタンドアロンのセットアップおよびティアダウン イベント" data-og-width="520" width="520" data-og-height="1020" height="1020" data-path="images/hooks-lifecycle.svg" data-optimize="true" data-opv="3" srcset="https://mintcdn.com/claude-code/rsuu-ovdPNos9Dnn/images/hooks-lifecycle.svg?w=280&fit=max&auto=format&n=rsuu-ovdPNos9Dnn&q=85&s=7c7143c65492c1beb6bc66f5d206ba15 280w, https://mintcdn.com/claude-code/rsuu-ovdPNos9Dnn/images/hooks-lifecycle.svg?w=560&fit=max&auto=format&n=rsuu-ovdPNos9Dnn&q=85&s=dafaebf8f789f94edbf6bd66853c69df 560w, https://mintcdn.com/claude-code/rsuu-ovdPNos9Dnn/images/hooks-lifecycle.svg?w=840&fit=max&auto=format&n=rsuu-ovdPNos9Dnn&q=85&s=2caa51d2d95596f1f80b92e3f5f534fa 840w, https://mintcdn.com/claude-code/rsuu-ovdPNos9Dnn/images/hooks-lifecycle.svg?w=1100&fit=max&auto=format&n=rsuu-ovdPNos9Dnn&q=85&s=614def559f34f9b0c1dec93739d96b64 1100w, https://mintcdn.com/claude-code/rsuu-ovdPNos9Dnn/images/hooks-lifecycle.svg?w=1650&fit=max&auto=format&n=rsuu-ovdPNos9Dnn&q=85&s=ca45b85fdd8b2da81c69d12c453230cb 1650w, https://mintcdn.com/claude-code/rsuu-ovdPNos9Dnn/images/hooks-lifecycle.svg?w=2500&fit=max&auto=format&n=rsuu-ovdPNos9Dnn&q=85&s=7fd92d6b9713493f59962c9f295c9d2f 2500w" />
+    <img src="https://mintcdn.com/claude-code/JWoaQLhotXStH4d2/images/hooks-lifecycle.svg?fit=max&auto=format&n=JWoaQLhotXStH4d2&q=85&s=9310bd002ef90ca32ac668455f5580a0" alt="SessionStart から agentic ループを経由して SessionEnd までのフックのシーケンスを示すフック ライフサイクル図。WorktreeCreate と WorktreeRemove はスタンドアロンのセットアップおよびティアダウン イベント" data-og-width="520" width="520" data-og-height="1020" height="1020" data-path="images/hooks-lifecycle.svg" data-optimize="true" data-opv="3" srcset="https://mintcdn.com/claude-code/JWoaQLhotXStH4d2/images/hooks-lifecycle.svg?w=280&fit=max&auto=format&n=JWoaQLhotXStH4d2&q=85&s=109982de941b0c53206b6178f4982f64 280w, https://mintcdn.com/claude-code/JWoaQLhotXStH4d2/images/hooks-lifecycle.svg?w=560&fit=max&auto=format&n=JWoaQLhotXStH4d2&q=85&s=9375684c8578b8ffe598d3798a59448c 560w, https://mintcdn.com/claude-code/JWoaQLhotXStH4d2/images/hooks-lifecycle.svg?w=840&fit=max&auto=format&n=JWoaQLhotXStH4d2&q=85&s=ee44a68c8feaabf5e7d09e65f3d653ae 840w, https://mintcdn.com/claude-code/JWoaQLhotXStH4d2/images/hooks-lifecycle.svg?w=1100&fit=max&auto=format&n=JWoaQLhotXStH4d2&q=85&s=4f35067e11e2d1861513ae8faf92cc04 1100w, https://mintcdn.com/claude-code/JWoaQLhotXStH4d2/images/hooks-lifecycle.svg?w=1650&fit=max&auto=format&n=JWoaQLhotXStH4d2&q=85&s=abf63881fb2c5cce211ac8ebb37af504 1650w, https://mintcdn.com/claude-code/JWoaQLhotXStH4d2/images/hooks-lifecycle.svg?w=2500&fit=max&auto=format&n=JWoaQLhotXStH4d2&q=85&s=e804d84b83ff44107fd2195c73e1c2ac 2500w" />
   </Frame>
 </div>
 
 以下の表は、各イベントがいつ発火するかをまとめています。[フック イベント](#hook-events)セクションでは、各イベントの完全な入力スキーマと決定制御オプションについて説明しています。
 
-| Event                | When it fires                                                                                               |
-| :------------------- | :---------------------------------------------------------------------------------------------------------- |
-| `SessionStart`       | When a session begins or resumes                                                                            |
-| `UserPromptSubmit`   | When you submit a prompt, before Claude processes it                                                        |
-| `PreToolUse`         | Before a tool call executes. Can block it                                                                   |
-| `PermissionRequest`  | When a permission dialog appears                                                                            |
-| `PostToolUse`        | After a tool call succeeds                                                                                  |
-| `PostToolUseFailure` | After a tool call fails                                                                                     |
-| `Notification`       | When Claude Code sends a notification                                                                       |
-| `SubagentStart`      | When a subagent is spawned                                                                                  |
-| `SubagentStop`       | When a subagent finishes                                                                                    |
-| `Stop`               | When Claude finishes responding                                                                             |
-| `TeammateIdle`       | When an [agent team](/en/agent-teams) teammate is about to go idle                                          |
-| `TaskCompleted`      | When a task is being marked as completed                                                                    |
-| `ConfigChange`       | When a configuration file changes during a session                                                          |
-| `WorktreeCreate`     | When a worktree is being created via `--worktree` or `isolation: "worktree"`. Replaces default git behavior |
-| `WorktreeRemove`     | When a worktree is being removed, either at session exit or when a subagent finishes                        |
-| `PreCompact`         | Before context compaction                                                                                   |
-| `SessionEnd`         | When a session terminates                                                                                   |
+| Event                | When it fires                                                                                                                                  |
+| :------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------- |
+| `SessionStart`       | When a session begins or resumes                                                                                                               |
+| `UserPromptSubmit`   | When you submit a prompt, before Claude processes it                                                                                           |
+| `PreToolUse`         | Before a tool call executes. Can block it                                                                                                      |
+| `PermissionRequest`  | When a permission dialog appears                                                                                                               |
+| `PostToolUse`        | After a tool call succeeds                                                                                                                     |
+| `PostToolUseFailure` | After a tool call fails                                                                                                                        |
+| `Notification`       | When Claude Code sends a notification                                                                                                          |
+| `SubagentStart`      | When a subagent is spawned                                                                                                                     |
+| `SubagentStop`       | When a subagent finishes                                                                                                                       |
+| `Stop`               | When Claude finishes responding                                                                                                                |
+| `TeammateIdle`       | When an [agent team](/en/agent-teams) teammate is about to go idle                                                                             |
+| `TaskCompleted`      | When a task is being marked as completed                                                                                                       |
+| `InstructionsLoaded` | When a CLAUDE.md or `.claude/rules/*.md` file is loaded into context. Fires at session start and when files are lazily loaded during a session |
+| `ConfigChange`       | When a configuration file changes during a session                                                                                             |
+| `WorktreeCreate`     | When a worktree is being created via `--worktree` or `isolation: "worktree"`. Replaces default git behavior                                    |
+| `WorktreeRemove`     | When a worktree is being removed, either at session exit or when a subagent finishes                                                           |
+| `PreCompact`         | Before context compaction                                                                                                                      |
+| `SessionEnd`         | When a session terminates                                                                                                                      |
 
 ### フックがどのように解決されるか
 

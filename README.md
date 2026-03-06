@@ -17,6 +17,135 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-03-06</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md      | 106 ++++++++++++++++++++++++++++++++++++++++
+ docs-ja/pages/hooks-guide-ja.md |  39 ++++++++-------
+ docs-ja/pages/hooks-ja.md       |  41 ++++++++--------
+ 3 files changed, 147 insertions(+), 39 deletions(-)
+```
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index ee93589..f9232b0 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,110 @@
+ # Changelog
+ 
++## 2.1.69
++
++- Added the `/claude-api` skill for building applications with the Claude API and Anthropic SDK
++- Added Ctrl+U on an empty bash prompt (`!`) to exit bash mode, matching `escape` and `backspace`
++- Added numeric keypad support for selecting options in Claude's interview questions (previously only the number row above QWERTY worked)
++- Added optional name argument to `/remote-control` and `claude remote-control` (`/remote-control My Project` or `--name "My Project"`) to set a custom session title visible in claude.ai/code
++- Added Voice STT support for 10 new languages (20 total) — Russian, Polish, Turkish, Dutch, Ukrainian, Greek, Czech, Danish, Swedish, Norwegian
++- Added effort level display (e.g., "with low effort") to the logo and spinner, making it easier to see which effort setting is active
++- Added agent name display in terminal title when using `claude --agent`
++- Added `sandbox.enableWeakerNetworkIsolation` setting (macOS only) to allow Go programs like `gh`, `gcloud`, and `terraform` to verify TLS certificates when using a custom MITM proxy with `httpProxyPort`
++- Added `includeGitInstructions` setting (and `CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS` env var) to remove built-in commit and PR workflow instructions from Claude's system prompt
++- Added `/reload-plugins` command to activate pending plugin changes without restarting
++- Added a one-time startup prompt suggesting Claude Code Desktop on macOS and Windows (max 3 showings, dismissible)
++- Added `${CLAUDE_SKILL_DIR}` variable for skills to reference their own directory in SKILL.md content
++- Added `InstructionsLoaded` hook event that fires when CLAUDE.md or `.claude/rules/*.md` files are loaded into context
++- Added `agent_id` (for subagents) and `agent_type` (for subagents and `--agent`) to hook events
++- Added `worktree` field to status line hook commands with name, path, branch, and original repo directory when running in a `--worktree` session
++- Added `pluginTrustMessage` in managed settings to append organization-specific context to the plugin trust warning shown before installation
++- Added policy limit fetching (e.g., remote control restrictions) for Team plan OAuth users, not just Enterprise
++- Added `pathPattern` to `strictKnownMarketplaces` for regex-matching file/directory marketplace sources alongside `hostPattern` restrictions
++- Added plugin source type `git-subdir` to point to a subdirectory within a git repo
++- Added `oauth.authServerMetadataUrl` config option for MCP servers to specify a custom OAuth metadata discovery URL when standard discovery fails
++- Fixed a security issue where nested skill discovery could load skills from gitignored directories like `node_modules`
+```
+
+</details>
+
+<details>
+<summary>hooks-guide-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/hooks-guide-ja.md b/docs-ja/pages/hooks-guide-ja.md
+index e6cc40a..1f2c61f 100644
+--- a/docs-ja/pages/hooks-guide-ja.md
++++ b/docs-ja/pages/hooks-guide-ja.md
+@@ -294,23 +294,24 @@ Claude のコンテキストウィンドウがいっぱいになると、圧縮
+ Hook イベントは Claude Code のライフサイクルの特定のポイントで発火します。イベントが発火すると、すべてのマッチングする hooks が並列で実行され、同一の hook コマンドは自動的に重複排除されます。以下の表は各イベントとそれがトリガーされるときを示しています：
+ 
+-| Event                | When it fires                                                                                               |
+-| :------------------- | :---------------------------------------------------------------------------------------------------------- |
+-| `SessionStart`       | When a session begins or resumes                                                                            |
+-| `UserPromptSubmit`   | When you submit a prompt, before Claude processes it                                                        |
+-| `PreToolUse`         | Before a tool call executes. Can block it                                                                   |
+-| `PermissionRequest`  | When a permission dialog appears                                                                            |
+-| `PostToolUse`        | After a tool call succeeds                                                                                  |
+-| `PostToolUseFailure` | After a tool call fails                                                                                     |
+-| `Notification`       | When Claude Code sends a notification                                                                       |
+-| `SubagentStart`      | When a subagent is spawned                                                                                  |
+-| `SubagentStop`       | When a subagent finishes                                                                                    |
+-| `Stop`               | When Claude finishes responding                                                                             |
+-| `TeammateIdle`       | When an [agent team](/en/agent-teams) teammate is about to go idle                                          |
+-| `TaskCompleted`      | When a task is being marked as completed                                                                    |
+-| `ConfigChange`       | When a configuration file changes during a session                                                          |
+-| `WorktreeCreate`     | When a worktree is being created via `--worktree` or `isolation: "worktree"`. Replaces default git behavior |
+-| `WorktreeRemove`     | When a worktree is being removed, either at session exit or when a subagent finishes                        |
+-| `PreCompact`         | Before context compaction                                                                                   |
+-| `SessionEnd`         | When a session terminates                                                                                   |
++| Event                | When it fires                                                                                                                                  |
++| :------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------- |
++| `SessionStart`       | When a session begins or resumes                                                                                                               |
++| `UserPromptSubmit`   | When you submit a prompt, before Claude processes it                                                                                           |
+```
+
+</details>
+
+<details>
+<summary>hooks-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/hooks-ja.md b/docs-ja/pages/hooks-ja.md
+index 9eace90..1a35bf4 100644
+--- a/docs-ja/pages/hooks-ja.md
++++ b/docs-ja/pages/hooks-ja.md
+@@ -19,5 +19,5 @@
+ <div style={{maxWidth: "500px", margin: "0 auto"}}>
+   <Frame>
+-    <img src="https://mintcdn.com/claude-code/rsuu-ovdPNos9Dnn/images/hooks-lifecycle.svg?fit=max&auto=format&n=rsuu-ovdPNos9Dnn&q=85&s=ce5f1225339bbccdfbb52e99205db912" alt="SessionStart から agentic ループを経由して SessionEnd までのフックのシーケンスを示すフック ライフサイクル図。WorktreeCreate と WorktreeRemove はスタンドアロンのセットアップおよびティアダウン イベント" data-og-width="520" width="520" data-og-height="1020" height="1020" data-path="images/hooks-lifecycle.svg" data-optimize="true" data-opv="3" srcset="https://mintcdn.com/claude-code/rsuu-ovdPNos9Dnn/images/hooks-lifecycle.svg?w=280&fit=max&auto=format&n=rsuu-ovdPNos9Dnn&q=85&s=7c7143c65492c1beb6bc66f5d206ba15 280w, https://mintcdn.com/claude-code/rsuu-ovdPNos9Dnn/images/hooks-lifecycle.svg?w=560&fit=max&auto=format&n=rsuu-ovdPNos9Dnn&q=85&s=dafaebf8f789f94edbf6bd66853c69df 560w, https://mintcdn.com/claude-code/rsuu-ovdPNos9Dnn/images/hooks-lifecycle.svg?w=840&fit=max&auto=format&n=rsuu-ovdPNos9Dnn&q=85&s=2caa51d2d95596f1f80b92e3f5f534fa 840w, https://mintcdn.com/claude-code/rsuu-ovdPNos9Dnn/images/hooks-lifecycle.svg?w=1100&fit=max&auto=format&n=rsuu-ovdPNos9Dnn&q=85&s=614def559f34f9b0c1dec93739d96b64 1100w, https://mintcdn.com/claude-code/rsuu-ovdPNos9Dnn/images/hooks-lifecycle.svg?w=1650&fit=max&auto=format&n=rsuu-ovdPNos9Dnn&q=85&s=ca45b85fdd8b2da81c69d12c453230cb 1650w, https://mintcdn.com/claude-code/rsuu-ovdPNos9Dnn/images/hooks-lifecycle.svg?w=2500&fit=max&auto=format&n=rsuu-ovdPNos9Dnn&q=85&s=7fd92d6b9713493f59962c9f295c9d2f 2500w" />
++    <img src="https://mintcdn.com/claude-code/JWoaQLhotXStH4d2/images/hooks-lifecycle.svg?fit=max&auto=format&n=JWoaQLhotXStH4d2&q=85&s=9310bd002ef90ca32ac668455f5580a0" alt="SessionStart から agentic ループを経由して SessionEnd までのフックのシーケンスを示すフック ライフサイクル図。WorktreeCreate と WorktreeRemove はスタンドアロンのセットアップおよびティアダウン イベント" data-og-width="520" width="520" data-og-height="1020" height="1020" data-path="images/hooks-lifecycle.svg" data-optimize="true" data-opv="3" srcset="https://mintcdn.com/claude-code/JWoaQLhotXStH4d2/images/hooks-lifecycle.svg?w=280&fit=max&auto=format&n=JWoaQLhotXStH4d2&q=85&s=109982de941b0c53206b6178f4982f64 280w, https://mintcdn.com/claude-code/JWoaQLhotXStH4d2/images/hooks-lifecycle.svg?w=560&fit=max&auto=format&n=JWoaQLhotXStH4d2&q=85&s=9375684c8578b8ffe598d3798a59448c 560w, https://mintcdn.com/claude-code/JWoaQLhotXStH4d2/images/hooks-lifecycle.svg?w=840&fit=max&auto=format&n=JWoaQLhotXStH4d2&q=85&s=ee44a68c8feaabf5e7d09e65f3d653ae 840w, https://mintcdn.com/claude-code/JWoaQLhotXStH4d2/images/hooks-lifecycle.svg?w=1100&fit=max&auto=format&n=JWoaQLhotXStH4d2&q=85&s=4f35067e11e2d1861513ae8faf92cc04 1100w, https://mintcdn.com/claude-code/JWoaQLhotXStH4d2/images/hooks-lifecycle.svg?w=1650&fit=max&auto=format&n=JWoaQLhotXStH4d2&q=85&s=abf63881fb2c5cce211ac8ebb37af504 1650w, https://mintcdn.com/claude-code/JWoaQLhotXStH4d2/images/hooks-lifecycle.svg?w=2500&fit=max&auto=format&n=JWoaQLhotXStH4d2&q=85&s=e804d84b83ff44107fd2195c73e1c2ac 2500w" />
+   </Frame>
+ </div>
+@@ -25,23 +25,24 @@
+ 以下の表は、各イベントがいつ発火するかをまとめています。[フック イベント](#hook-events)セクションでは、各イベントの完全な入力スキーマと決定制御オプションについて説明しています。
+ 
+-| Event                | When it fires                                                                                               |
+-| :------------------- | :---------------------------------------------------------------------------------------------------------- |
+-| `SessionStart`       | When a session begins or resumes                                                                            |
+-| `UserPromptSubmit`   | When you submit a prompt, before Claude processes it                                                        |
+-| `PreToolUse`         | Before a tool call executes. Can block it                                                                   |
+-| `PermissionRequest`  | When a permission dialog appears                                                                            |
+-| `PostToolUse`        | After a tool call succeeds                                                                                  |
+-| `PostToolUseFailure` | After a tool call fails                                                                                     |
+-| `Notification`       | When Claude Code sends a notification                                                                       |
+-| `SubagentStart`      | When a subagent is spawned                                                                                  |
+-| `SubagentStop`       | When a subagent finishes                                                                                    |
+-| `Stop`               | When Claude finishes responding                                                                             |
+-| `TeammateIdle`       | When an [agent team](/en/agent-teams) teammate is about to go idle                                          |
+-| `TaskCompleted`      | When a task is being marked as completed                                                                    |
+-| `ConfigChange`       | When a configuration file changes during a session                                                          |
+-| `WorktreeCreate`     | When a worktree is being created via `--worktree` or `isolation: "worktree"`. Replaces default git behavior |
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-03-05</summary>
 
 **変更ファイル:**
