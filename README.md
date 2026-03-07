@@ -17,6 +17,84 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-03-07</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md             | 32 ++++++++++++++++++++++++++++++++
+ docs-ja/pages/desktop-quickstart-en.md |  4 +++-
+ 2 files changed, 35 insertions(+), 1 deletion(-)
+```
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index f9232b0..6049d50 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,36 @@
+ # Changelog
+ 
++## 2.1.70
++
++- Fixed API 400 errors when using `ANTHROPIC_BASE_URL` with a third-party gateway — tool search now correctly detects proxy endpoints and disables `tool_reference` blocks
++- Fixed `API Error: 400 This model does not support the effort parameter` when using custom Bedrock inference profiles or other model identifiers not matching standard Claude naming patterns
++- Fixed empty model responses immediately after `ToolSearch` — the server renders tool schemas with system-prompt-style tags at the prompt tail, which could confuse models into stopping early
++- Fixed prompt-cache bust when an MCP server with `instructions` connects after the first turn
++- Fixed Enter inserting a newline instead of submitting when typing over a slow SSH connection
++- Fixed clipboard corrupting non-ASCII text (CJK, emoji) on Windows/WSL by using PowerShell `Set-Clipboard`
++- Fixed extra VS Code windows opening at startup on Windows when running from the VS Code integrated terminal
++- Fixed voice mode failing on Windows native binary with "native audio module could not be loaded"
++- Fixed push-to-talk not activating on session start when `voiceEnabled: true` was set in settings
++- Fixed markdown links containing `#NNN` references incorrectly pointing to the current repository instead of the linked URL
++- Fixed repeated "Model updated to Opus 4.6" notification when a project's `.claude/settings.json` has a legacy Opus model string pinned
++- Fixed plugins showing as inaccurately installed in `/plugin`
++- Fixed plugins showing "not found in marketplace" errors on fresh startup by auto-refreshing after marketplace installation
++- Fixed `/security-review` command failing with `unknown option merge-base` on older git versions
++- Fixed `/color` command having no way to reset back to the default color — `/color default`, `/color gray`, `/color reset`, and `/color none` now restore the default
++- Fixed a performance regression in the `AskUserQuestion` preview dialog that re-ran markdown rendering on every keystroke in the notes input
++- Fixed feature flags read during early startup never refreshing their disk cache, causing stale values to persist across sessions
++- Fixed `permissions.defaultMode` settings values other than `acceptEdits` or `plan` being applied in Claude Code Remote environments — they are now ignored
++- Fixed skill listing being re-injected on every `--resume` (~600 tokens saved per resume)
++- Fixed teleport marker not rendering in VS Code teleported sessions
++- Improved error message when microphone captures silence to distinguish from "no speech detected"
+```
+
+</details>
+
+<details>
+<summary>desktop-quickstart-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/desktop-quickstart-en.md b/docs-ja/pages/desktop-quickstart-en.md
+index 317c582..a0e5f72 100644
+--- a/docs-ja/pages/desktop-quickstart-en.md
++++ b/docs-ja/pages/desktop-quickstart-en.md
+@@ -7,5 +7,5 @@
+ > Install Claude Code on desktop and start your first coding session
+ 
+-The desktop app gives you Claude Code with a graphical interface: visual diff review, live app preview, GitHub PR monitoring with auto-merge, parallel sessions with Git worktree isolation, and the ability to run tasks remotely. No terminal required.
++The desktop app gives you Claude Code with a graphical interface: visual diff review, live app preview, GitHub PR monitoring with auto-merge, parallel sessions with Git worktree isolation, scheduled tasks, and the ability to run tasks remotely. No terminal required.
+ 
+ This page walks through installing the app and starting your first session. If you're already set up, see [Use Claude Code Desktop](/en/desktop) for the full reference.
+@@ -124,4 +124,6 @@ You've made your first edit. For the full reference on everything Desktop can do
+ **Track your pull request.** After opening a PR, Claude Code monitors CI check results and can automatically fix failures or merge the PR once all checks pass. See [Monitor pull request status](/en/desktop#monitor-pull-request-status).
+ 
++**Put Claude on a schedule.** Set up [scheduled tasks](/en/desktop#schedule-recurring-tasks) to run Claude automatically on a recurring basis: a daily code review every morning, a weekly dependency audit, or a briefing that pulls from your connected tools.
++
+ **Scale up when you're ready.** Open [parallel sessions](/en/desktop#work-in-parallel-with-sessions) from the sidebar to work on multiple tasks at once, each in its own Git worktree. Send [long-running work to the cloud](/en/desktop#run-long-running-tasks-remotely) so it continues even if you close the app, or [continue a session on the web or in your IDE](/en/desktop#continue-in-another-surface) if a task takes longer than expected. [Connect external tools](/en/desktop#extend-claude-code) like GitHub, Slack, and Linear to bring your workflow together.
+ 
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-03-06</summary>
 
 **変更ファイル:**
