@@ -17,6 +17,60 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-03-08</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md | 31 +++++++++++++++++++++++++++++++
+ 1 file changed, 31 insertions(+)
+```
+
+**新規追加:**
+
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index 6049d50..8ab2cf9 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,35 @@
+ # Changelog
+ 
++## 2.1.71
++
++- Added `/loop` command to run a prompt or slash command on a recurring interval (e.g. `/loop 5m check the deploy`)
++- Added cron scheduling tools for recurring prompts within a session
++- Added `voice:pushToTalk` keybinding to make the voice activation key rebindable in `keybindings.json` (default: space) — modifier+letter combos like `meta+k` have zero typing interference
++- Added `fmt`, `comm`, `cmp`, `numfmt`, `expr`, `test`, `printf`, `getconf`, `seq`, `tsort`, and `pr` to the bash auto-approval allowlist
++- Fixed stdin freeze in long-running sessions where keystrokes stop being processed but the process stays alive
++- Fixed a 5–8 second startup freeze for users with voice mode enabled, caused by CoreAudio initialization blocking the main thread after system wake
++- Fixed startup UI freeze when many claude.ai proxy connectors refresh an expired OAuth token simultaneously
++- Fixed forked conversations (`/fork`) sharing the same plan file, which caused plan edits in one fork to overwrite the other
++- Fixed the Read tool putting oversized images into context when image processing failed, breaking subsequent turns in long image-heavy sessions
++- Fixed false-positive permission prompts for compound bash commands containing heredoc commit messages
++- Fixed plugin installations being lost when running multiple Claude Code instances
++- Fixed claude.ai connectors failing to reconnect after OAuth token refresh
++- Fixed claude.ai MCP connector startup notifications appearing for every org-configured connector instead of only previously connected ones
++- Fixed background agent completion notifications missing the output file path, which made it difficult for parent agents to recover agent results after context compaction
++- Fixed duplicate output in Bash tool error messages when commands exit with non-zero status
++- Fixed Chrome extension auto-detection getting permanently stuck on "not installed" after running on a machine without local Chrome
++- Fixed `/plugin marketplace update` failing with merge conflicts when the marketplace is pinned to a branch/tag ref
++- Fixed `/plugin marketplace add owner/repo@ref` incorrectly parsing `@` — previously only `#` worked as a ref separator, causing undiagnosable errors with `strictKnownMarketplaces`
++- Fixed duplicate entries in `/permissions` Workspace tab when the same directory is added with and without a trailing slash
++- Fixed `--print` hanging forever when team agents are configured — the exit loop no longer waits on long-lived `in_process_teammate` tasks
++- Fixed "❯ Tool loaded." appearing in the REPL after every `ToolSearch` call
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-03-07</summary>
 
 **変更ファイル:**
