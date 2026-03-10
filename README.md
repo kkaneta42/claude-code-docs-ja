@@ -17,6 +17,15 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-03-10</summary>
+
+**新規追加:**
+
+
+</details>
+
+
+<details>
 <summary>2026-03-08</summary>
 
 **変更ファイル:**
