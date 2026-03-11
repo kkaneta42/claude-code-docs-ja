@@ -17,6 +17,57 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-03-11</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md | 54 ++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 54 insertions(+)
+```
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index 8ab2cf9..9030b86 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,58 @@
+ # Changelog
+ 
++## 2.1.72
++
++- Fixed tool search to activate even with `ANTHROPIC_BASE_URL` as long as `ENABLE_TOOL_SEARCH` is set.
++- Added `w` key in `/copy` to write the focused selection directly to a file, bypassing the clipboard (useful over SSH)
++- Added optional description argument to `/plan` (e.g., `/plan fix the auth bug`) that enters plan mode and immediately starts
++- Added `ExitWorktree` tool to leave an `EnterWorktree` session
++- Added `CLAUDE_CODE_DISABLE_CRON` environment variable to immediately stop scheduled cron jobs mid-session
++- Added `lsof`, `pgrep`, `tput`, `ss`, `fd`, and `fdfind` to the bash auto-approval allowlist, reducing permission prompts for common read-only operations
++- Restored the `model` parameter on the Agent tool for per-invocation model overrides
++- Simplified effort levels to low/medium/high (removed max) with new symbols (○ ◐ ●) and a brief notification instead of a persistent icon. Use `/effort auto` to reset to default
++- Improved `/config` — Escape now cancels changes, Enter saves and closes, Space toggles settings
++- Improved up-arrow history to show current session's messages first when running multiple concurrent sessions
++- Improved voice input transcription accuracy for repo names and common dev terms (regex, OAuth, JSON)
++- Improved bash command parsing by switching to a native module — faster initialization and no memory leak
++- Reduced bundle size by ~510 KB
++- Changed CLAUDE.md HTML comments (`<!-- ... -->`) to be hidden from Claude when auto-injected. Comments remain visible when read with the Read tool
++- Fixed slow exits when background tasks or hooks were slow to respond
++- Fixed agent task progress stuck on "Initializing…"
++- Fixed skill hooks firing twice per event when a hooks-enabled skill is invoked by the model
++- Fixed several voice mode issues: occasional input lag, false "No speech detected" errors after releasing push-to-talk, and stale transcripts re-filling the prompt after submission
++- Fixed `--continue` not resuming from the most recent point after `--compact`
++- Fixed bash security parsing edge cases
++- Added support for marketplace git URLs without `.git` suffix (Azure DevOps, AWS CodeCommit)
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-03-10</summary>
 
 **新規追加:**
