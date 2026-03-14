@@ -17,6 +17,94 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-03-14</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/authentication-en.md |  6 +++---
+ docs-ja/pages/changelog.md         | 22 ++++++++++++++++++++++
+ 2 files changed, 25 insertions(+), 3 deletions(-)
+```
+
+**新規追加:**
+
+
+<details>
+<summary>authentication-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/authentication-en.md b/docs-ja/pages/authentication-en.md
+index 25b933c..3177c4c 100644
+--- a/docs-ja/pages/authentication-en.md
++++ b/docs-ja/pages/authentication-en.md
+@@ -17,5 +17,5 @@ If the browser doesn't open automatically, press `c` to copy the login URL to yo
+ You can authenticate with any of these account types:
+ 
+-* **Claude Pro or Max subscription**: log in with your Claude.ai account. Subscribe at [claude.com/pricing](https://claude.com/pricing).
++* **Claude Pro or Max subscription**: log in with your Claude.ai account. Subscribe at [claude.com/pricing](https://claude.com/pricing?utm_source=claude_code\&utm_medium=docs\&utm_content=authentication_pro_max).
+ * **Claude for Teams or Enterprise**: log in with the Claude.ai account your team admin invited you to.
+ * **Claude Console**: log in with your Console credentials. Your admin must have [invited you](#claude-console-authentication) first.
+@@ -38,5 +38,5 @@ For teams and organizations, you can configure Claude Code access in one of thes
+ ### Claude for Teams or Enterprise
+ 
+-[Claude for Teams](https://claude.com/pricing#team-&-enterprise) and [Claude for Enterprise](https://anthropic.com/contact-sales) provide the best experience for organizations using Claude Code. Team members get access to both Claude Code and Claude on the web with centralized billing and team management.
++[Claude for Teams](https://claude.com/pricing?utm_source=claude_code\&utm_medium=docs\&utm_content=authentication_teams#team-&-enterprise) and [Claude for Enterprise](https://anthropic.com/contact-sales?utm_source=claude_code\&utm_medium=docs\&utm_content=authentication_enterprise) provide the best experience for organizations using Claude Code. Team members get access to both Claude Code and Claude on the web with centralized billing and team management.
+ 
+ * **Claude for Teams**: self-service plan with collaboration features, admin tools, and billing management. Best for smaller teams.
+@@ -45,5 +45,5 @@ For teams and organizations, you can configure Claude Code access in one of thes
+ <Steps>
+   <Step title="Subscribe">
+-    Subscribe to [Claude for Teams](https://claude.com/pricing#team-&-enterprise) or contact sales for [Claude for Enterprise](https://anthropic.com/contact-sales).
++    Subscribe to [Claude for Teams](https://claude.com/pricing?utm_source=claude_code\&utm_medium=docs\&utm_content=authentication_teams_step#team-&-enterprise) or contact sales for [Claude for Enterprise](https://anthropic.com/contact-sales?utm_source=claude_code\&utm_medium=docs\&utm_content=authentication_enterprise_step).
+   </Step>
+ 
+```
+
+</details>
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index f230235..d39b179 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,26 @@
+ # Changelog
+ 
++## 2.1.75
++
++- Added 1M context window for Opus 4.6 by default for Max, Team, and Enterprise plans (previously required extra usage)
++- Added `/color` command for all users to set a prompt-bar color for your session
++- Added session name display on the prompt bar when using `/rename`
++- Added last-modified timestamps to memory files, helping Claude reason about which memories are fresh vs. stale
++- Added hook source display (settings/plugin/skill) in permission prompts when a hook requires confirmation
++- Fixed voice mode not activating correctly on fresh installs without toggling `/voice` twice
++- Fixed the Claude Code header not updating the displayed model name after switching models with `/model` or Option+P
++- Fixed session crash when an attachment message computation returns undefined values
++- Fixed Bash tool mangling `!` in piped commands (e.g., `jq 'select(.x != .y)'` now works correctly)
++- Fixed managed-disabled plugins showing up in the `/plugin` Installed tab — plugins force-disabled by your organization are now hidden
++- Fixed token estimation over-counting for thinking and `tool_use` blocks, preventing premature context compaction
++- Fixed corrupted marketplace config path handling
++- Fixed `/resume` losing session names after resuming a forked or continued session
++- Fixed Esc not closing the `/status` dialog after visiting the Config tab
++- Fixed input handling when accepting or rejecting a plan
++- Fixed footer hint in agent teams showing "↓ to expand" instead of the correct "shift + ↓ to expand"
++- Improved startup performance on macOS non-MDM machines by skipping unnecessary subprocess spawns
++- Suppressed async hook completion messages by default (visible with `--verbose` or transcript mode)
++- Breaking change: Removed deprecated Windows managed settings fallback at `C:\ProgramData\ClaudeCode\managed-settings.json` — use `C:\Program Files\ClaudeCode\managed-settings.json`
++
+ ## 2.1.74
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-03-13</summary>
 
 **変更ファイル:**
@@ -2571,89 +2659,6 @@ index d1f1f91..cfb32b2 100644
 </details>
 
 </details>
-
-
-<details>
-<summary>2026-02-06</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/agent-teams-en.md           | 380 ------------------------------
- docs-ja/pages/changelog.md                |  24 ++
- docs-ja/pages/features-overview-en.md     | 278 ----------------------
- docs-ja/pages/how-claude-code-works-en.md | 240 -------------------
- docs-ja/pages/permissions-en.md           | 258 --------------------
- 5 files changed, 24 insertions(+), 1156 deletions(-)
-```
-
-**削除:**
-
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index 287e824..d1f1f91 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,28 @@
- # Changelog
- 
-+## 2.1.34
-+
-+- Fixed a crash when agent teams setting changed between renders
-+- Fixed a bug where commands excluded from sandboxing (via `sandbox.excludedCommands` or `dangerouslyDisableSandbox`) could bypass the Bash ask permission rule when `autoAllowBashIfSandboxed` was enabled
-+
-+## 2.1.33
-+
-+- Fixed agent teammate sessions in tmux to send and receive messages
-+- Fixed warnings about agent teams not being available on your current plan
-+- Added `TeammateIdle` and `TaskCompleted` hook events for multi-agent workflows
-+- Added support for restricting which sub-agents can be spawned via `Task(agent_type)` syntax in agent "tools" frontmatter
-+- Added `memory` frontmatter field support for agents, enabling persistent memory with `user`, `project`, or `local` scope
-+- Added plugin name to skill descriptions and `/skills` menu for better discoverability
-+- Fixed an issue where submitting a new message while the model was in extended thinking would interrupt the thinking phase
-+- Fixed an API error that could occur when aborting mid-stream, where whitespace text combined with a thinking block would bypass normalization and produce an invalid request
-+- Fixed API proxy compatibility issue where 404 errors on streaming endpoints no longer triggered non-streaming fallback
-+- Fixed an issue where proxy settings configured via `settings.json` environment variables were not applied to WebFetch and other HTTP requests on the Node.js build
-+- Fixed `/resume` session picker showing raw XML markup instead of clean titles for sessions started with slash commands
-+- Improved error messages for API connection failures — now shows specific cause (e.g., ECONNREFUSED, SSL errors) instead of generic "Connection error"
-+- Errors from invalid managed settings are now surfaced
-+- VSCode: Added support for remote sessions, allowing OAuth users to browse and resume sessions from claude.ai
-+- VSCode: Added git branch and message count to the session picker, with support for searching by branch name
-+- VSCode: Fixed scroll-to-bottom under-scrolling on initial session load and session switch
-```
-
-</details>
-
-</details>
-
-
-<details>
-<summary>2026-02-06</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/best-practices-ja.md      | 338 +++++++++---------
- docs-ja/pages/checkpointing-ja.md       |  50 +--
- docs-ja/pages/cli-reference-ja.md       | 127 +++----
- docs-ja/pages/common-workflows-ja.md    | 138 ++++---
- docs-ja/pages/data-usage-ja.md          |  87 ++---
- docs-ja/pages/headless-ja.md            |  85 +++--
- docs-ja/pages/model-config-ja.md        | 143 +++++---
- docs-ja/pages/output-styles-ja.md       |  44 +--
- docs-ja/pages/plugin-marketplaces-ja.md | 329 ++++++++++-------
- docs-ja/pages/plugins-ja.md             | 208 ++++++-----
- docs-ja/pages/plugins-reference-ja.md   | 460 ++++++++++++------------
- docs-ja/pages/settings-ja.md            | 464 ++++++++++++------------
- docs-ja/pages/sub-agents-ja.md          | 614 +++++++++++++++++---------------
- 13 files changed, 1622 insertions(+), 1465 deletions(-)
-```
-
-**新規追加:**
 
 
 <!-- UPDATE_LOG_END -->
