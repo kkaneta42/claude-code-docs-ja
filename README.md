@@ -17,6 +17,165 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-03-15</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md      |  38 ++++++++++++
+ docs-ja/pages/commands-en.md    | 127 ++++++++++++++++++++--------------------
+ docs-ja/pages/env-vars-en.md    |   2 +-
+ docs-ja/pages/hooks-guide-ja.md |   3 +
+ docs-ja/pages/hooks-ja.md       |   5 +-
+ 5 files changed, 110 insertions(+), 65 deletions(-)
+```
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index d39b179..82d5e22 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,42 @@
+ # Changelog
+ 
++## 2.1.76
++
++- Added MCP elicitation support — MCP servers can now request structured input mid-task via an interactive dialog (form fields or browser URL)
++- Added new `Elicitation` and `ElicitationResult` hooks to intercept and override responses before they're sent back
++- Added `-n` / `--name <name>` CLI flag to set a display name for the session at startup
++- Added `worktree.sparsePaths` setting for `claude --worktree` in large monorepos to check out only the directories you need via git sparse-checkout
++- Added `PostCompact` hook that fires after compaction completes
++- Added `/effort` slash command to set model effort level
++- Added session quality survey — enterprise admins can configure the sample rate via the `feedbackSurveyRate` setting
++- Fixed deferred tools (loaded via `ToolSearch`) losing their input schemas after conversation compaction, causing array and number parameters to be rejected with type errors
++- Fixed slash commands showing "Unknown skill"
++- Fixed plan mode asking for re-approval after the plan was already accepted
++- Fixed voice mode swallowing keypresses while a permission dialog or plan editor was open
++- Fixed `/voice` not working on Windows when installed via npm
++- Fixed spurious "Context limit reached" when invoking a skill with `model:` frontmatter on a 1M-context session
++- Fixed "adaptive thinking is not supported on this model" error when using non-standard model strings
++- Fixed `Bash(cmd:*)` permission rules not matching when a quoted argument contains `#`
++- Fixed "don't ask again" in the Bash permission dialog showing the full raw command for pipes and compound commands
++- Fixed auto-compaction retrying indefinitely after consecutive failures — a circuit breaker now stops after 3 attempts
++- Fixed MCP reconnect spinner persisting after successful reconnection
++- Fixed LSP plugins not registering servers when the LSP Manager initialized before marketplaces were reconciled
++- Fixed clipboard copying in tmux over SSH — now attempts both direct terminal write and tmux clipboard integration
++- Fixed `/export` showing only the filename instead of the full file path in the success message
+```
+
+</details>
+
+<details>
+<summary>commands-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/commands-en.md b/docs-ja/pages/commands-en.md
+index 3e4b9bc..6ab1c2e 100644
+--- a/docs-ja/pages/commands-en.md
++++ b/docs-ja/pages/commands-en.md
+@@ -13,67 +13,68 @@ Claude Code also includes [bundled skills](/en/skills#bundled-skills) like `/sim
+ In the table below, `<arg>` indicates a required argument and `[arg]` indicates an optional one.
+ 
+-| Command                   | Purpose                                                                                                                                                                                                                                 |
+-| :------------------------ | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+-| `/add-dir <path>`         | Add a new working directory to the current session                                                                                                                                                                                      |
+-| `/agents`                 | Manage [agent](/en/sub-agents) configurations                                                                                                                                                                                           |
+-| `/btw <question>`         | Ask a quick [side question](/en/interactive-mode#side-questions-with-btw) without adding to the conversation                                                                                                                            |
+-| `/chrome`                 | Configure [Claude in Chrome](/en/chrome) settings                                                                                                                                                                                       |
+-| `/clear`                  | Clear conversation history and free up context. Aliases: `/reset`, `/new`                                                                                                                                                               |
+-| `/color [color\|default]` | Set the prompt bar color for the current session. Available colors: `red`, `blue`, `green`, `yellow`, `purple`, `orange`, `pink`, `cyan`. Use `default` to reset                                                                        |
+-| `/compact [instructions]` | Compact conversation with optional focus instructions                                                                                                                                                                                   |
+-| `/config`                 | Open the [Settings](/en/settings) interface to adjust theme, model, [output style](/en/output-styles), and other preferences. Alias: `/settings`                                                                                        |
+-| `/context`                | Visualize current context usage as a colored grid. Shows optimization suggestions for context-heavy tools, memory bloat, and capacity warnings                                                                                          |
+-| `/copy`                   | Copy the last assistant response to clipboard. When code blocks are present, shows an interactive picker to select individual blocks or the full response                                                                               |
+-| `/cost`                   | Show token usage statistics. See [cost tracking guide](/en/costs#using-the-cost-command) for subscription-specific details                                                                                                              |
+-| `/desktop`                | Continue the current session in the Claude Code Desktop app. macOS and Windows only. Alias: `/app`                                                                                                                                      |
+-| `/diff`                   | Open an interactive diff viewer showing uncommitted changes and per-turn diffs. Use left/right arrows to switch between the current git diff and individual Claude turns, and up/down to browse files                                   |
+-| `/doctor`                 | Diagnose and verify your Claude Code installation and settings                                                                                                                                                                          |
+-| `/exit`                   | Exit the CLI. Alias: `/quit`                                                                                                                                                                                                            |
+-| `/export [filename]`      | Export the current conversation as plain text. With a filename, writes directly to that file. Without, opens a dialog to copy to clipboard or save to a file                                                                            |
+-| `/extra-usage`            | Configure extra usage to keep working when rate limits are hit                                                                                                                                                                          |
+-| `/fast [on\|off]`         | Toggle [fast mode](/en/fast-mode) on or off                                                                                                                                                                                             |
+-| `/feedback [report]`      | Submit feedback about Claude Code. Alias: `/bug`                                                                                                                                                                                        |
+-| `/fork [name]`            | Create a fork of the current conversation at this point                                                                                                                                                                                 |
+-| `/help`                   | Show help and available commands                                                                                                                                                                                                        |
+```
+
+</details>
+
+<details>
+<summary>env-vars-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/env-vars-en.md b/docs-ja/pages/env-vars-en.md
+index d109653..147b8b4 100644
+--- a/docs-ja/pages/env-vars-en.md
++++ b/docs-ja/pages/env-vars-en.md
+@@ -47,5 +47,5 @@ Claude Code supports the following environment variables to control its behavior
+ | `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`     | Equivalent of setting `DISABLE_AUTOUPDATER`, `DISABLE_BUG_COMMAND`, `DISABLE_ERROR_REPORTING`, and `DISABLE_TELEMETRY`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+ | `CLAUDE_CODE_DISABLE_TERMINAL_TITLE`           | Set to `1` to disable automatic terminal title updates based on conversation context                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+-| `CLAUDE_CODE_EFFORT_LEVEL`                     | Set the effort level for supported models. Values: `low`, `medium`, `high`. Lower effort is faster and cheaper, higher effort provides deeper reasoning. Supported on Opus 4.6 and Sonnet 4.6. See [Adjust effort level](/en/model-config#adjust-effort-level)                                                                                                                                                                                                                                                                                                                                                   |
++| `CLAUDE_CODE_EFFORT_LEVEL`                     | Set the effort level for supported models. Values: `low`, `medium`, `high`, `max` (Opus 4.6 only), or `auto` to use the model default. Takes precedence over `/effort` and the `effortLevel` setting. See [Adjust effort level](/en/model-config#adjust-effort-level)                                                                                                                                                                                                                                                                                                                                            |
+ | `CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION`         | Set to `false` to disable prompt suggestions (the "Prompt suggestions" toggle in `/config`). These are the grayed-out predictions that appear in your prompt input after Claude responds. See [Prompt suggestions](/en/interactive-mode#prompt-suggestions)                                                                                                                                                                                                                                                                                                                                                      |
+ | `CLAUDE_CODE_ENABLE_TASKS`                     | Set to `true` to enable the task tracking system in non-interactive mode (the `-p` flag). Tasks are on by default in interactive mode. See [Task list](/en/interactive-mode#task-list)                                                                                                                                                                                                                                                                                                                                                                                                                           |
+```
+
+</details>
+
+<details>
+<summary>hooks-guide-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/hooks-guide-ja.md b/docs-ja/pages/hooks-guide-ja.md
+index 1f2c61f..8941fdd 100644
+--- a/docs-ja/pages/hooks-guide-ja.md
++++ b/docs-ja/pages/hooks-guide-ja.md
+@@ -313,4 +313,7 @@ Hook イベントは Claude Code のライフサイクルの特定のポイン
+ | `WorktreeRemove`     | When a worktree is being removed, either at session exit or when a subagent finishes                                                           |
+ | `PreCompact`         | Before context compaction                                                                                                                      |
++| `PostCompact`        | After context compaction completes                                                                                                             |
++| `Elicitation`        | When an MCP server requests user input during a tool call                                                                                      |
++| `ElicitationResult`  | After a user responds to an MCP elicitation, before the response is sent back to the server                                                    |
+ | `SessionEnd`         | When a session terminates                                                                                                                      |
+ 
+```
+
+</details>
+
+<details>
+<summary>hooks-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/hooks-ja.md b/docs-ja/pages/hooks-ja.md
+index c5fbb95..55bc144 100644
+--- a/docs-ja/pages/hooks-ja.md
++++ b/docs-ja/pages/hooks-ja.md
+@@ -19,5 +19,5 @@
+ <div style={{maxWidth: "500px", margin: "0 auto"}}>
+   <Frame>
+-    <img src="https://mintcdn.com/claude-code/c5r9_6tjPMzFdDDT/images/hooks-lifecycle.svg?fit=max&auto=format&n=c5r9_6tjPMzFdDDT&q=85&s=996ed41d03e106ab6bc9a8fdd4ebcf26" alt="SessionStart から agentic ループを経由して SessionEnd までのフックのシーケンスを示すフック ライフサイクル図。WorktreeCreate、WorktreeRemove、InstructionsLoaded はスタンドアロン非同期イベント" width="520" height="1020" data-path="images/hooks-lifecycle.svg" />
++    <img src="https://mintcdn.com/claude-code/lBsitdsGyD9caWJQ/images/hooks-lifecycle.svg?fit=max&auto=format&n=lBsitdsGyD9caWJQ&q=85&s=be3486ef2cf2563eb213b6cbbce93982" alt="SessionStart から agentic ループを経由して SessionEnd までのフックのシーケンスを示すフック ライフサイクル図。WorktreeCreate、WorktreeRemove、InstructionsLoaded はスタンドアロン非同期イベント" width="520" height="1100" data-path="images/hooks-lifecycle.svg" />
+   </Frame>
+ </div>
+@@ -44,4 +44,7 @@
+ | `WorktreeRemove`     | When a worktree is being removed, either at session exit or when a subagent finishes                                                           |
+ | `PreCompact`         | Before context compaction                                                                                                                      |
++| `PostCompact`        | After context compaction completes                                                                                                             |
++| `Elicitation`        | When an MCP server requests user input during a tool call                                                                                      |
++| `ElicitationResult`  | After a user responds to an MCP elicitation, before the response is sent back to the server                                                    |
+ | `SessionEnd`         | When a session terminates                                                                                                                      |
+ 
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-03-14</summary>
 
 **変更ファイル:**
@@ -2526,139 +2685,5 @@ index e146ed5..f6388b1 100644
 ```
 
 </details>
-
-<details>
-<summary>server-managed-settings-en.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/server-managed-settings-en.md b/docs-ja/pages/server-managed-settings-en.md
-index 9e6d316..e80d0e7 100644
---- a/docs-ja/pages/server-managed-settings-en.md
-+++ b/docs-ja/pages/server-managed-settings-en.md
-@@ -20,5 +20,5 @@ To use server-managed settings, you need:
- 
- * Claude for Teams or Claude for Enterprise plan
--* Claude Code version 2.1.30 or later
-+* Claude Code version 2.1.38 or later for Claude for Teams, or version 2.1.30 or later for Claude for Enterprise
- * Network access to `api.anthropic.com`
- 
-```
-
-</details>
-
-</details>
-
-
-<details>
-<summary>2026-02-11</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/changelog.md    | 18 ++++++++++++++++++
- docs-ja/pages/fast-mode-en.md |  2 +-
- 2 files changed, 19 insertions(+), 1 deletion(-)
-```
-
-**新規追加:**
-
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index cfb32b2..e146ed5 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,22 @@
- # Changelog
- 
-+## 2.1.39
-+
-+- Improved terminal rendering performance
-+- Fixed fatal errors being swallowed instead of displayed
-+- Fixed process hanging after session close
-+- Fixed character loss at terminal screen boundary
-+- Fixed blank lines in verbose transcript view
-+
-+## 2.1.38
-+
-+- Fixed VS Code terminal scroll-to-top regression introduced in 2.1.37
-+- Fixed Tab key queueing slash commands instead of autocompleting
-+- Fixed bash permission matching for commands using environment variable wrappers
-+- Fixed text between tool uses disappearing when not using streaming
-+- Fixed duplicate sessions when resuming in VS Code extension
-+- Improved heredoc delimiter parsing to prevent command smuggling
-+- Blocked writes to `.claude/skills` directory in sandbox mode
-+
- ## 2.1.37
- 
-```
-
-</details>
-
-<details>
-<summary>fast-mode-en.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/fast-mode-en.md b/docs-ja/pages/fast-mode-en.md
-index ad273b9..9bd3724 100644
---- a/docs-ja/pages/fast-mode-en.md
-+++ b/docs-ja/pages/fast-mode-en.md
-@@ -11,5 +11,5 @@
- </Note>
- 
--Fast mode delivers faster Opus 4.6 responses at a higher cost per token. Toggle it on with `/fast` when you need speed for interactive work like rapid iteration or live debugging, and toggle it off when cost matters more than latency.
-+Fast mode is a high-speed configuration for Claude Opus 4.6, making the model 2.5x faster at a higher cost per token. Toggle it on with `/fast` when you need speed for interactive work like rapid iteration or live debugging, and toggle it off when cost matters more than latency.
- 
- Fast mode is not a different model. It uses the same Opus 4.6 with a different API configuration that prioritizes speed over cost efficiency. You get identical quality and capabilities, just faster responses.
-```
-
-</details>
-
-</details>
-
-
-<details>
-<summary>2026-02-08</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/changelog.md | 8 ++++++++
- 1 file changed, 8 insertions(+)
-```
-
-**新規追加:**
-
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index d1f1f91..cfb32b2 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,12 @@
- # Changelog
- 
-+## 2.1.37
-+
-+- Fixed an issue where /fast was not immediately available after enabling /extra-usage
-+
-+## 2.1.36
-+
-+- Fast mode is now available for Opus 4.6. Learn more at https://code.claude.com/docs/en/fast-mode
-+
- ## 2.1.34
- 
-```
-
-</details>
-
-</details>
-
 
 <!-- UPDATE_LOG_END -->
