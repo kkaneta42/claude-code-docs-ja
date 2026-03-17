@@ -17,6 +17,70 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-03-17</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/commands-en.md | 2 +-
+ docs-ja/pages/env-vars-en.md | 4 +++-
+ 2 files changed, 4 insertions(+), 2 deletions(-)
+```
+
+<details>
+<summary>commands-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/commands-en.md b/docs-ja/pages/commands-en.md
+index 6ab1c2e..5514c94 100644
+--- a/docs-ja/pages/commands-en.md
++++ b/docs-ja/pages/commands-en.md
+@@ -57,5 +57,5 @@ In the table below, `<arg>` indicates a required argument and `[arg]` indicates
+ | `/privacy-settings`                      | View and update your privacy settings. Only available for Pro and Max plan subscribers                                                                                                                                                                                                                                                                  |
+ | `/release-notes`                         | View the full changelog, with the most recent version closest to your prompt                                                                                                                                                                                                                                                                            |
+-| `/reload-plugins`                        | Reload all active [plugins](/en/plugins) to apply pending changes without restarting. Reports what was loaded and notes any changes that require a restart                                                                                                                                                                                              |
++| `/reload-plugins`                        | Reload all active [plugins](/en/plugins) to apply pending changes without restarting. Reports counts for each reloaded component and flags any load errors                                                                                                                                                                                              |
+ | `/remote-control`                        | Make this session available for [remote control](/en/remote-control) from claude.ai. Alias: `/rc`                                                                                                                                                                                                                                                       |
+ | `/remote-env`                            | Configure the default remote environment for [web sessions started with `--remote`](/en/claude-code-on-the-web#environment-configuration)                                                                                                                                                                                                               |
+```
+
+</details>
+
+<details>
+<summary>env-vars-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/env-vars-en.md b/docs-ja/pages/env-vars-en.md
+index 147b8b4..ef104b3 100644
+--- a/docs-ja/pages/env-vars-en.md
++++ b/docs-ja/pages/env-vars-en.md
+@@ -27,4 +27,5 @@ Claude Code supports the following environment variables to control its behavior
+ | `BASH_MAX_OUTPUT_LENGTH`                       | Maximum number of characters in bash outputs before they are middle-truncated                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+ | `BASH_MAX_TIMEOUT_MS`                          | Maximum timeout the model can set for long-running bash commands                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
++| `CLAUDECODE`                                   | Set to `1` in shell environments Claude Code spawns (Bash tool, tmux sessions). Not set in [hooks](/en/hooks) or [status line](/en/statusline) commands. Use to detect when a script is running inside a shell spawned by Claude Code                                                                                                                                                                                                                                                                                                                                                                            |
+ | `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE`              | Set the percentage of context capacity (1-100) at which auto-compaction triggers. By default, auto-compaction triggers at approximately 95% capacity. Use lower values like `50` to compact earlier. Values above the default threshold have no effect. Applies to both main conversations and subagents. This percentage aligns with the `context_window.used_percentage` field available in [status line](/en/statusline)                                                                                                                                                                                      |
+ | `CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR`     | Return to the original working directory after each Bash command                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+@@ -44,5 +45,5 @@ Claude Code supports the following environment variables to control its behavior
+ | `CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS`       | Set to `1` to disable Anthropic API-specific `anthropic-beta` headers. Use this if experiencing issues like "Unexpected value(s) for the `anthropic-beta` header" when using an LLM gateway with third-party providers                                                                                                                                                                                                                                                                                                                                                                                           |
+ | `CLAUDE_CODE_DISABLE_FAST_MODE`                | Set to `1` to disable [fast mode](/en/fast-mode)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+-| `CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY`          | Set to `1` to disable the "How is Claude doing?" session quality surveys. Also disabled when using third-party providers or when telemetry is disabled. See [Session quality surveys](/en/data-usage#session-quality-surveys)                                                                                                                                                                                                                                                                                                                                                                                    |
++| `CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY`          | Set to `1` to disable the "How is Claude doing?" session quality surveys. Surveys are also disabled when `DISABLE_TELEMETRY` or `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` is set. See [Session quality surveys](/en/data-usage#session-quality-surveys)                                                                                                                                                                                                                                                                                                                                                         |
+ | `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`     | Equivalent of setting `DISABLE_AUTOUPDATER`, `DISABLE_BUG_COMMAND`, `DISABLE_ERROR_REPORTING`, and `DISABLE_TELEMETRY`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+ | `CLAUDE_CODE_DISABLE_TERMINAL_TITLE`           | Set to `1` to disable automatic terminal title updates based on conversation context                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+@@ -66,4 +67,5 @@ Claude Code supports the following environment variables to control its behavior
+ | `CLAUDE_CODE_SIMPLE`                           | Set to `1` to run with a minimal system prompt and only the Bash, file read, and file edit tools. Disables MCP tools, attachments, hooks, and CLAUDE.md files                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+ | `CLAUDE_CODE_SKIP_BEDROCK_AUTH`                | Skip AWS authentication for Bedrock (for example, when using an LLM gateway)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
++| `CLAUDE_CODE_SKIP_FAST_MODE_NETWORK_ERRORS`    | Set to `1` to allow [fast mode](/en/fast-mode) when the organization status check fails due to a network error. Useful when a corporate proxy blocks the status endpoint. The API still enforces organization-level disable separately                                                                                                                                                                                                                                                                                                                                                                           |
+ | `CLAUDE_CODE_SKIP_FOUNDRY_AUTH`                | Skip Azure authentication for Microsoft Foundry (for example, when using an LLM gateway)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+ | `CLAUDE_CODE_SKIP_VERTEX_AUTH`                 | Skip Google authentication for Vertex (for example, when using an LLM gateway)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-03-15</summary>
 
 **変更ファイル:**
@@ -2624,66 +2688,5 @@ index 066d6e4..fb62d0c 100644
  docs-ja/pages/changelog.md | 5 +++++
  1 file changed, 5 insertions(+)
 ```
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index f6388b1..e3ed77e 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -11,4 +11,9 @@
- - Fixed hook blocking errors (exit code 2) not showing stderr to the user
- - Added `speed` attribute to OTel events and trace spans for fast mode visibility
-+- Fixed /resume showing interrupt messages as session titles
-+- Fixed Opus 4.6 launch announcement showing for Bedrock/Vertex/Foundry users
-+- Improved error message for many-image dimension limit errors with /compact suggestion
-+- Fixed structured-outputs beta header being sent unconditionally on Vertex/Bedrock
-+- Fixed spurious warnings for non-agent markdown files in `.claude/agents/` directory
- - Improved terminal rendering performance
- - Fixed fatal errors being swallowed instead of displayed
-```
-
-</details>
-
-</details>
-
-
-<details>
-<summary>2026-02-12</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/changelog.md                  | 8 ++++++++
- docs-ja/pages/server-managed-settings-en.md | 2 +-
- 2 files changed, 9 insertions(+), 1 deletion(-)
-```
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index e146ed5..f6388b1 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -3,4 +3,12 @@
- ## 2.1.39
- 
-+- Added guard against launching Claude Code inside another Claude Code session
-+- Fixed Agent Teams using wrong model identifier for Bedrock, Vertex, and Foundry customers
-+- Fixed a crash when MCP tools return image content during streaming
-+- Fixed /resume session previews showing raw XML tags instead of readable command names
-+- Improved model error messages for Bedrock/Vertex/Foundry users with fallback suggestions
-+- Fixed plugin browse showing misleading "Space to Toggle" hint for already-installed plugins
-+- Fixed hook blocking errors (exit code 2) not showing stderr to the user
-+- Added `speed` attribute to OTel events and trace spans for fast mode visibility
- - Improved terminal rendering performance
- - Fixed fatal errors being swallowed instead of displayed
-```
-
-</details>
 
 <!-- UPDATE_LOG_END -->
