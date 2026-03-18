@@ -17,6 +17,156 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-03-18</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/authentication-en.md |  3 ++
+ docs-ja/pages/changelog.md         | 76 ++++++++++++++++++++++++++++++++++++++
+ docs-ja/pages/commands-en.md       |  7 ++--
+ docs-ja/pages/env-vars-en.md       |  8 ++--
+ 4 files changed, 88 insertions(+), 6 deletions(-)
+```
+
+**新規追加:**
+
+
+<details>
+<summary>authentication-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/authentication-en.md b/docs-ja/pages/authentication-en.md
+index 3177c4c..ae370b0 100644
+--- a/docs-ja/pages/authentication-en.md
++++ b/docs-ja/pages/authentication-en.md
+@@ -116,2 +116,5 @@ Claude Code securely manages your authentication credentials:
+ * **Custom credential scripts**: the [`apiKeyHelper`](/en/settings#available-settings) setting can be configured to run a shell script that returns an API key.
+ * **Refresh intervals**: by default, `apiKeyHelper` is called after 5 minutes or on HTTP 401 response. Set `CLAUDE_CODE_API_KEY_HELPER_TTL_MS` environment variable for custom refresh intervals.
++* **Slow helper notice**: if `apiKeyHelper` takes longer than 10 seconds to return a key, Claude Code displays a warning notice in the prompt bar showing the elapsed time. If you see this notice regularly, check whether your credential script can be optimized.
++
++`apiKeyHelper`, `ANTHROPIC_API_KEY`, and `ANTHROPIC_AUTH_TOKEN` apply to terminal CLI sessions only. Claude Desktop and remote sessions use OAuth exclusively and do not call `apiKeyHelper` or read API key environment variables.
+```
+
+</details>
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index 82d5e22..9f68539 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,80 @@
+ # Changelog
+ 
++## 2.1.78
++
++- Added `StopFailure` hook event that fires when the turn ends due to an API error (rate limit, auth failure, etc.)
++- Added `${CLAUDE_PLUGIN_DATA}` variable for plugin persistent state that survives plugin updates; `/plugin uninstall` prompts before deleting it
++- Added `effort`, `maxTurns`, and `disallowedTools` frontmatter support for plugin-shipped agents
++- Terminal notifications (iTerm2/Kitty/Ghostty popups, progress bar) now reach the outer terminal when running inside tmux with `set -g allow-passthrough on`
++- Response text now streams line-by-line as it's generated
++- Fixed `git log HEAD` failing with "ambiguous argument" inside sandboxed Bash on Linux, and stub files polluting `git status` in the working directory
++- Fixed `cc log` and `--resume` silently truncating conversation history on large sessions (>5 MB) that used subagents
++- Fixed infinite loop when API errors triggered stop hooks that re-fed blocking errors to the model
++- Fixed `deny: ["mcp__servername"]` permission rules not removing MCP server tools before sending to the model, allowing it to see and attempt blocked tools
++- Fixed `sandbox.filesystem.allowWrite` not working with absolute paths (previously required `//` prefix)
++- Fixed `/sandbox` Dependencies tab showing Linux prerequisites on macOS instead of macOS-specific info
++- **Security:** Fixed silent sandbox disable when `sandbox.enabled: true` is set but dependencies are missing — now shows a visible startup warning
++- Fixed `.git`, `.claude`, and other protected directories being writable without a prompt in `bypassPermissions` mode
++- Fixed ctrl+u in normal mode scrolling instead of readline kill-line (ctrl+u/ctrl+d half-page scroll moved to transcript mode only)
++- Fixed voice mode modifier-combo push-to-talk keybindings (e.g. ctrl+k) requiring a hold instead of activating immediately
++- Fixed voice mode not working on WSL2 with WSLg (Windows 11); WSL1/Win10 users now get a clear error
++- Fixed `--worktree` flag not loading skills and hooks from the worktree directory
++- Fixed `CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS` and `includeGitInstructions` setting not suppressing the git status section in the system prompt
++- Fixed Bash tool not finding Homebrew and other PATH-dependent binaries when VS Code is launched from Dock/Spotlight
++- Fixed washed-out Claude orange color in VS Code/Cursor/code-server terminals that don't advertise truecolor support
++- Added `ANTHROPIC_CUSTOM_MODEL_OPTION` env var to add a custom entry to the `/model` picker, with optional `_NAME` and `_DESCRIPTION` suffixed vars for display
+```
+
+</details>
+
+<details>
+<summary>commands-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/commands-en.md b/docs-ja/pages/commands-en.md
+index 5514c94..5f9c182 100644
+--- a/docs-ja/pages/commands-en.md
++++ b/docs-ja/pages/commands-en.md
+@@ -24,5 +24,5 @@ In the table below, `<arg>` indicates a required argument and `[arg]` indicates
+ | `/config`                                | Open the [Settings](/en/settings) interface to adjust theme, model, [output style](/en/output-styles), and other preferences. Alias: `/settings`                                                                                                                                                                                                        |
+ | `/context`                               | Visualize current context usage as a colored grid. Shows optimization suggestions for context-heavy tools, memory bloat, and capacity warnings                                                                                                                                                                                                          |
+-| `/copy`                                  | Copy the last assistant response to clipboard. When code blocks are present, shows an interactive picker to select individual blocks or the full response                                                                                                                                                                                               |
++| `/copy [N]`                              | Copy the last assistant response to clipboard. Pass a number `N` to copy the Nth-latest response: `/copy 2` copies the second-to-last. When code blocks are present, shows an interactive picker to select individual blocks or the full response                                                                                                       |
+ | `/cost`                                  | Show token usage statistics. See [cost tracking guide](/en/costs#using-the-cost-command) for subscription-specific details                                                                                                                                                                                                                              |
+ | `/desktop`                               | Continue the current session in the Claude Code Desktop app. macOS and Windows only. Alias: `/app`                                                                                                                                                                                                                                                      |
+@@ -35,9 +35,9 @@ In the table below, `<arg>` indicates a required argument and `[arg]` indicates
+ | `/fast [on\|off]`                        | Toggle [fast mode](/en/fast-mode) on or off                                                                                                                                                                                                                                                                                                             |
+ | `/feedback [report]`                     | Submit feedback about Claude Code. Alias: `/bug`                                                                                                                                                                                                                                                                                                        |
+-| `/fork [name]`                           | Create a fork of the current conversation at this point                                                                                                                                                                                                                                                                                                 |
++| `/branch [name]`                         | Create a branch of the current conversation at this point. Alias: `/fork`                                                                                                                                                                                                                                                                               |
+ | `/help`                                  | Show help and available commands                                                                                                                                                                                                                                                                                                                        |
+ | `/hooks`                                 | View [hook](/en/hooks) configurations for tool events                                                                                                                                                                                                                                                                                                   |
+ | `/ide`                                   | Manage IDE integrations and show status                                                                                                                                                                                                                                                                                                                 |
+-| `/init`                                  | Initialize project with `CLAUDE.md` guide                                                                                                                                                                                                                                                                                                               |
++| `/init`                                  | Initialize project with a `CLAUDE.md` guide. Set `CLAUDE_CODE_NEW_INIT=true` for an interactive flow that also walks through skills, hooks, and personal memory files                                                                                                                                                                                   |
+ | `/insights`                              | Generate a report analyzing your Claude Code sessions, including project areas, interaction patterns, and friction points                                                                                                                                                                                                                               |
+ | `/install-github-app`                    | Set up the [Claude GitHub Actions](/en/github-actions) app for a repository. Walks you through selecting a repo and configuring the integration                                                                                                                                                                                                         |
+@@ -77,4 +77,5 @@ In the table below, `<arg>` indicates a required argument and `[arg]` indicates
+ | `/usage`                                 | Show plan usage limits and rate limit status                                                                                                                                                                                                                                                                                                            |
+ | `/vim`                                   | Toggle between Vim and Normal editing modes                                                                                                                                                                                                                                                                                                             |
++| `/voice`                                 | Toggle push-to-talk [voice dictation](/en/voice-dictation). Requires a Claude.ai account                                                                                                                                                                                                                                                                |
+ 
+ ## MCP prompts
+```
+
+</details>
+
+<details>
+<summary>env-vars-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/env-vars-en.md b/docs-ja/pages/env-vars-en.md
+index ef104b3..96c8bc6 100644
+--- a/docs-ja/pages/env-vars-en.md
++++ b/docs-ja/pages/env-vars-en.md
+@@ -43,5 +43,5 @@ Claude Code supports the following environment variables to control its behavior
+ | `CLAUDE_CODE_DISABLE_BACKGROUND_TASKS`         | Set to `1` to disable all background task functionality, including the `run_in_background` parameter on Bash and subagent tools, auto-backgrounding, and the Ctrl+B shortcut                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+ | `CLAUDE_CODE_DISABLE_CRON`                     | Set to `1` to disable [scheduled tasks](/en/scheduled-tasks). The `/loop` skill and cron tools become unavailable and any already-scheduled tasks stop firing, including tasks that are already running mid-session                                                                                                                                                                                                                                                                                                                                                                                              |
+-| `CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS`       | Set to `1` to disable Anthropic API-specific `anthropic-beta` headers. Use this if experiencing issues like "Unexpected value(s) for the `anthropic-beta` header" when using an LLM gateway with third-party providers                                                                                                                                                                                                                                                                                                                                                                                           |
++| `CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS`       | Set to `1` to strip Anthropic-specific `anthropic-beta` request headers and beta tool-schema fields (such as `defer_loading` and `eager_input_streaming`) from API requests. Use this when a proxy gateway rejects requests with errors like "Unexpected value(s) for the `anthropic-beta` header" or "Extra inputs are not permitted". Standard fields (`name`, `description`, `input_schema`, `cache_control`) are preserved.                                                                                                                                                                                  |
+ | `CLAUDE_CODE_DISABLE_FAST_MODE`                | Set to `1` to disable [fast mode](/en/fast-mode)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+ | `CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY`          | Set to `1` to disable the "How is Claude doing?" session quality surveys. Surveys are also disabled when `DISABLE_TELEMETRY` or `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` is set. See [Session quality surveys](/en/data-usage#session-quality-surveys)                                                                                                                                                                                                                                                                                                                                                         |
+@@ -56,9 +56,11 @@ Claude Code supports the following environment variables to control its behavior
+ | `CLAUDE_CODE_FILE_READ_MAX_OUTPUT_TOKENS`      | Override the default token limit for file reads. Useful when you need to read larger files in full                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+ | `CLAUDE_CODE_IDE_SKIP_AUTO_INSTALL`            | Skip auto-installation of IDE extensions                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+-| `CLAUDE_CODE_MAX_OUTPUT_TOKENS`                | Set the maximum number of output tokens for most requests. Default: 32,000. Maximum: 64,000. Increasing this value reduces the effective context window available before [auto-compaction](/en/costs#reduce-token-usage) triggers.                                                                                                                                                                                                                                                                                                                                                                               |
++| `CLAUDE_CODE_MAX_OUTPUT_TOKENS`                | Set the maximum number of output tokens for most requests. Defaults and caps vary by model; see [max output tokens](https://platform.claude.com/docs/en/about-claude/models/overview#latest-models-comparison). Increasing this value reduces the effective context window available before [auto-compaction](/en/costs#reduce-token-usage) triggers.                                                                                                                                                                                                                                                            |
++| `CLAUDE_CODE_NEW_INIT`                         | Set to `true` to make `/init` run an interactive setup flow. The flow asks which files to generate, including CLAUDE.md, skills, and hooks, before exploring the codebase and writing them. Without this variable, `/init` generates a CLAUDE.md automatically without prompting.                                                                                                                                                                                                                                                                                                                                |
+ | `CLAUDE_CODE_ORGANIZATION_UUID`                | Organization UUID for the authenticated user. Used by SDK callers to provide account information synchronously. Requires `CLAUDE_CODE_ACCOUNT_UUID` and `CLAUDE_CODE_USER_EMAIL` to also be set                                                                                                                                                                                                                                                                                                                                                                                                                  |
+ | `CLAUDE_CODE_OTEL_HEADERS_HELPER_DEBOUNCE_MS`  | Interval for refreshing dynamic OpenTelemetry headers in milliseconds (default: 1740000 / 29 minutes). See [Dynamic headers](/en/monitoring-usage#dynamic-headers)                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+ | `CLAUDE_CODE_PLAN_MODE_REQUIRED`               | Auto-set to `true` on [agent team](/en/agent-teams) teammates that require plan approval. Read-only: set by Claude Code when spawning teammates. See [require plan approval](/en/agent-teams#require-plan-approval-for-teammates)                                                                                                                                                                                                                                                                                                                                                                                |
+ | `CLAUDE_CODE_PLUGIN_GIT_TIMEOUT_MS`            | Timeout in milliseconds for git operations when installing or updating plugins (default: 120000). Increase this value for large repositories or slow network connections. See [Git operations time out](/en/plugin-marketplaces#git-operations-time-out)                                                                                                                                                                                                                                                                                                                                                         |
++| `CLAUDE_CODE_PLUGIN_SEED_DIR`                  | Path to a read-only plugin seed directory. Use this to bundle a pre-populated plugins directory into a container image. Claude Code registers marketplaces from this directory at startup and uses pre-cached plugins without re-cloning. See [Pre-populate plugins for containers](/en/plugin-marketplaces#pre-populate-plugins-for-containers)                                                                                                                                                                                                                                                                 |
+ | `CLAUDE_CODE_PROXY_RESOLVES_HOSTS`             | Set to `true` to allow the proxy to perform DNS resolution instead of the caller. Opt-in for environments where the proxy should handle hostname resolution                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+ | `CLAUDE_CODE_SESSIONEND_HOOKS_TIMEOUT_MS`      | Maximum time in milliseconds for [SessionEnd](/en/hooks#sessionend) hooks to complete (default: `1500`). Applies to both session exit and `/clear`. Per-hook `timeout` values are also capped by this budget                                                                                                                                                                                                                                                                                                                                                                                                     |
+@@ -97,5 +99,5 @@ Claude Code supports the following environment variables to control its behavior
+ | `IS_DEMO`                                      | Set to `true` to enable demo mode: hides email and organization from the UI, skips onboarding, and hides internal commands. Useful for streaming or recording sessions                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+ | `MAX_MCP_OUTPUT_TOKENS`                        | Maximum number of tokens allowed in MCP tool responses. Claude Code displays a warning when output exceeds 10,000 tokens (default: 25000)                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+-| `MAX_THINKING_TOKENS`                          | Override the [extended thinking](https://platform.claude.com/docs/en/build-with-claude/extended-thinking) token budget. Thinking is enabled at max budget (31,999 tokens) by default. Use this to limit the budget (for example, `MAX_THINKING_TOKENS=10000`) or disable thinking entirely (`MAX_THINKING_TOKENS=0`). For Opus 4.6, thinking depth is controlled by [effort level](/en/model-config#adjust-effort-level) instead, and this variable is ignored unless set to `0` to disable thinking.                                                                                                            |
++| `MAX_THINKING_TOKENS`                          | Override the [extended thinking](https://platform.claude.com/docs/en/build-with-claude/extended-thinking) token budget. The ceiling is the model's [max output tokens](https://platform.claude.com/docs/en/about-claude/models/overview#latest-models-comparison) minus one. Set to `0` to disable thinking entirely. On models with adaptive reasoning (Opus 4.6, Sonnet 4.6), the budget is ignored unless adaptive reasoning is disabled via `CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING`                                                                                                                          |
+ | `MCP_CLIENT_SECRET`                            | OAuth client secret for MCP servers that require [pre-configured credentials](/en/mcp#use-pre-configured-oauth-credentials). Avoids the interactive prompt when adding a server with `--client-secret`                                                                                                                                                                                                                                                                                                                                                                                                           |
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-03-17</summary>
 
 **変更ファイル:**
@@ -2579,114 +2729,5 @@ index db13ab4..d25268c 100644
 
 </details>
 
-
-<details>
-<summary>2026-02-15</summary>
-
-**新規追加:**
-
-
-</details>
-
-
-<details>
-<summary>2026-02-14</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/changelog.md         | 32 ++++++++++++++++++++++-----
- docs-ja/pages/network-config-ja.md | 45 +++++++++++++++++++-------------------
- 2 files changed, 48 insertions(+), 29 deletions(-)
-```
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index e3ed77e..2701cfc 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,5 +1,13 @@
- # Changelog
- 
--## 2.1.39
-+## 2.1.42
-+
-+- Improved startup performance by deferring Zod schema construction
-+- Improved prompt cache hit rates by moving date out of system prompt
-+- Added one-time Opus 4.6 effort callout for eligible users
-+- Fixed /resume showing interrupt messages as session titles
-+- Fixed image dimension limit errors to suggest /compact
-+
-+## 2.1.41
- 
- - Added guard against launching Claude Code inside another Claude Code session
-@@ -11,9 +19,21 @@
- - Fixed hook blocking errors (exit code 2) not showing stderr to the user
- - Added `speed` attribute to OTel events and trace spans for fast mode visibility
--- Fixed /resume showing interrupt messages as session titles
--- Fixed Opus 4.6 launch announcement showing for Bedrock/Vertex/Foundry users
--- Improved error message for many-image dimension limit errors with /compact suggestion
--- Fixed structured-outputs beta header being sent unconditionally on Vertex/Bedrock
--- Fixed spurious warnings for non-agent markdown files in `.claude/agents/` directory
-+- Added `claude auth login`, `claude auth status`, and `claude auth logout` CLI subcommands
-+- Added Windows ARM64 (win32-arm64) native binary support
-+- Improved `/rename` to auto-generate session name from conversation context when called without arguments
-```
-
-</details>
-
-<details>
-<summary>network-config-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/network-config-ja.md b/docs-ja/pages/network-config-ja.md
-index 066d6e4..fb62d0c 100644
---- a/docs-ja/pages/network-config-ja.md
-+++ b/docs-ja/pages/network-config-ja.md
-@@ -3,25 +3,25 @@
- > Use this file to discover all available pages before exploring further.
- 
--# エンタープライズネットワーク構成
-+# エンタープライズネットワーク設定
- 
--> プロキシサーバー、カスタム認証局（CA）、および相互トランスポートレイヤーセキュリティ（mTLS）認証を使用して、エンタープライズ環境向けにClaude Codeを構成します。
-+> プロキシサーバー、カスタム認証局（CA）、相互 Transport Layer Security（mTLS）認証を使用して、エンタープライズ環境向けに Claude Code を設定します。
- 
--Claude Codeは、環境変数を通じてさまざまなエンタープライズネットワークおよびセキュリティ構成をサポートしています。これには、企業プロキシサーバーを通じたトラフィックのルーティング、カスタム認証局（CA）の信頼、およびセキュリティ強化のための相互トランスポートレイヤーセキュリティ（mTLS）証明書による認証が含まれます。
-+Claude Code は、環境変数を通じてさまざまなエンタープライズネットワークおよびセキュリティ設定をサポートしています。これには、企業プロキシサーバーを経由したトラフィックのルーティング、カスタム認証局（CA）の信頼、およびセキュリティ強化のための相互 Transport Layer Security（mTLS）証明書による認証が含まれます。
- 
- <Note>
--  このページに表示されているすべての環境変数は、[`settings.json`](/ja/settings)でも構成できます。
-+  このページに表示されているすべての環境変数は、[`settings.json`](/ja/settings) でも設定できます。
- </Note>
- 
--## プロキシ構成
-+## プロキシ設定
- 
- ### 環境変数
- 
--Claude Codeは標準的なプロキシ環境変数に対応しています：
-+Claude Code は標準的なプロキシ環境変数に対応しています。
- 
- ```bash  theme={null}
-```
-
-</details>
-
-</details>
-
-
-<details>
-<summary>2026-02-13</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/changelog.md | 5 +++++
- 1 file changed, 5 insertions(+)
-```
 
 <!-- UPDATE_LOG_END -->
