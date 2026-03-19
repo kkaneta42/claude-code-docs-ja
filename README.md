@@ -17,6 +17,178 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-03-19</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/authentication-en.md | 16 +++++++++++++++-
+ docs-ja/pages/changelog.md         | 21 +++++++++++++++++++++
+ docs-ja/pages/env-vars-en.md       | 12 ++++++++----
+ docs-ja/pages/hooks-guide-ja.md    |  1 +
+ docs-ja/pages/hooks-ja.md          |  3 ++-
+ 5 files changed, 47 insertions(+), 6 deletions(-)
+```
+
+<details>
+<summary>authentication-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/authentication-en.md b/docs-ja/pages/authentication-en.md
+index ae370b0..61799a5 100644
+--- a/docs-ja/pages/authentication-en.md
++++ b/docs-ja/pages/authentication-en.md
+@@ -112,5 +112,5 @@ For teams using Amazon Bedrock, Google Vertex AI, or Microsoft Foundry:
+ Claude Code securely manages your authentication credentials:
+ 
+-* **Storage location**: on macOS, credentials are stored in the encrypted macOS Keychain.
++* **Storage location**: on macOS, credentials are stored in the encrypted macOS Keychain. On Linux and Windows, credentials are stored in `~/.claude/.credentials.json`, or under `$CLAUDE_CONFIG_DIR` if that variable is set. On Linux, the file is written with mode `0600`; on Windows, it inherits the access controls of your user profile directory.
+ * **Supported authentication types**: Claude.ai credentials, Claude API credentials, Azure Auth, Bedrock Auth, and Vertex Auth.
+ * **Custom credential scripts**: the [`apiKeyHelper`](/en/settings#available-settings) setting can be configured to run a shell script that returns an API key.
+@@ -119,2 +119,16 @@ Claude Code securely manages your authentication credentials:
+ 
+ `apiKeyHelper`, `ANTHROPIC_API_KEY`, and `ANTHROPIC_AUTH_TOKEN` apply to terminal CLI sessions only. Claude Desktop and remote sessions use OAuth exclusively and do not call `apiKeyHelper` or read API key environment variables.
++
++### Authentication precedence
++
++When multiple credentials are present, Claude Code chooses one in this order:
++
++1. Cloud provider credentials, when `CLAUDE_CODE_USE_BEDROCK`, `CLAUDE_CODE_USE_VERTEX`, or `CLAUDE_CODE_USE_FOUNDRY` is set. See [third-party integrations](/en/third-party-integrations) for setup.
++2. `ANTHROPIC_AUTH_TOKEN` environment variable. Sent as the `Authorization: Bearer` header. Use this when routing through an [LLM gateway or proxy](/en/llm-gateway) that authenticates with bearer tokens rather than Anthropic API keys.
++3. `ANTHROPIC_API_KEY` environment variable. Sent as the `X-Api-Key` header. Use this for direct Anthropic API access with a key from the [Claude Console](https://platform.claude.com). In interactive mode, you are prompted once to approve or decline the key, and your choice is remembered. To change it later, use the "Use custom API key" toggle in `/config`. In non-interactive mode (`-p`), the key is always used when present.
++4. [`apiKeyHelper`](/en/settings#available-settings) script output. Use this for dynamic or rotating credentials, such as short-lived tokens fetched from a vault.
++5. Subscription OAuth credentials from `/login`. This is the default for Claude Pro, Max, Team, and Enterprise users.
++
++If you have an active Claude subscription but also have `ANTHROPIC_API_KEY` set in your environment, the API key takes precedence once approved. This can cause authentication failures if the key belongs to a disabled or expired organization. Run `unset ANTHROPIC_API_KEY` to fall back to your subscription, and check `/status` to confirm which method is active.
++
++[Claude Code on the Web](/en/claude-code-on-the-web) always uses your subscription credentials. `ANTHROPIC_API_KEY` and `ANTHROPIC_AUTH_TOKEN` in the sandbox environment do not override them.
+```
+
+</details>
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index 9f68539..28b120f 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,25 @@
+ # Changelog
+ 
++## 2.1.79
++
++- Added `--console` flag to `claude auth login` for Anthropic Console (API billing) authentication
++- Added "Show turn duration" toggle to the `/config` menu
++- Fixed `claude -p` hanging when spawned as a subprocess without explicit stdin (e.g. Python `subprocess.run`)
++- Fixed Ctrl+C not working in `-p` (print) mode
++- Fixed `/btw` returning the main agent's output instead of answering the side question when triggered during streaming
++- Fixed voice mode not activating correctly on startup when `voiceEnabled: true` is set
++- Fixed left/right arrow tab navigation in `/permissions`
++- Fixed `CLAUDE_CODE_DISABLE_TERMINAL_TITLE` not preventing terminal title from being set on startup
++- Fixed custom status line showing nothing when workspace trust is blocking it
++- Fixed enterprise users being unable to retry on rate limit (429) errors
++- Fixed `SessionEnd` hooks not firing when using interactive `/resume` to switch sessions
++- Improved startup memory usage by ~18MB across all scenarios
++- Improved non-streaming API fallback with a 2-minute per-attempt timeout, preventing sessions from hanging indefinitely
++- `CLAUDE_CODE_PLUGIN_SEED_DIR` now supports multiple seed directories separated by the platform path delimiter (`:` on Unix, `;` on Windows)
++- [VSCode] Added `/remote-control` — bridge your session to claude.ai/code to continue from a browser or phone
++- [VSCode] Session tabs now get AI-generated titles based on your first message
++- [VSCode] Fixed the thinking pill showing "Thinking" instead of "Thought for Ns" after a response completes
++- [VSCode] Fixed missing session diff button when opening sessions from the left sidebar
++
+ ## 2.1.78
+ 
+```
+
+</details>
+
+<details>
+<summary>env-vars-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/env-vars-en.md b/docs-ja/pages/env-vars-en.md
+index 96c8bc6..c033c39 100644
+--- a/docs-ja/pages/env-vars-en.md
++++ b/docs-ja/pages/env-vars-en.md
+@@ -11,7 +11,11 @@ Claude Code supports the following environment variables to control its behavior
+ | Variable                                       | Purpose                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+ | :--------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+-| `ANTHROPIC_API_KEY`                            | API key sent as `X-Api-Key` header, typically for the Claude SDK (for interactive usage, run `/login`)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
++| `ANTHROPIC_API_KEY`                            | API key sent as `X-Api-Key` header. When set, this key is used instead of your Claude Pro, Max, Team, or Enterprise subscription even if you are logged in. In non-interactive mode (`-p`), the key is always used when present. In interactive mode, you are prompted to approve the key once before it overrides your subscription. To use your subscription instead, run `unset ANTHROPIC_API_KEY`                                                                                                                                                                                                            |
+ | `ANTHROPIC_AUTH_TOKEN`                         | Custom value for the `Authorization` header (the value you set here will be prefixed with `Bearer `)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
++| `ANTHROPIC_BASE_URL`                           | Override the API endpoint to route requests through a proxy or gateway. When set to a non-first-party host, [MCP tool search](/en/mcp#scale-with-mcp-tool-search) is disabled by default. Set `ENABLE_TOOL_SEARCH=true` if your proxy forwards `tool_reference` blocks                                                                                                                                                                                                                                                                                                                                           |
+ | `ANTHROPIC_CUSTOM_HEADERS`                     | Custom headers to add to requests (`Name: Value` format, newline-separated for multiple headers)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
++| `ANTHROPIC_CUSTOM_MODEL_OPTION`                | Model ID to add as a custom entry in the `/model` picker. Use this to make a non-standard or gateway-specific model selectable without replacing built-in aliases. See [Model configuration](/en/model-config#add-a-custom-model-option)                                                                                                                                                                                                                                                                                                                                                                         |
++| `ANTHROPIC_CUSTOM_MODEL_OPTION_DESCRIPTION`    | Display description for the custom model entry in the `/model` picker. Defaults to `Custom model (<model-id>)` when not set                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
++| `ANTHROPIC_CUSTOM_MODEL_OPTION_NAME`           | Display name for the custom model entry in the `/model` picker. Defaults to the model ID when not set                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+ | `ANTHROPIC_DEFAULT_HAIKU_MODEL`                | See [Model configuration](/en/model-config#environment-variables)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+ | `ANTHROPIC_DEFAULT_OPUS_MODEL`                 | See [Model configuration](/en/model-config#environment-variables)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+@@ -46,5 +50,5 @@ Claude Code supports the following environment variables to control its behavior
+ | `CLAUDE_CODE_DISABLE_FAST_MODE`                | Set to `1` to disable [fast mode](/en/fast-mode)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+ | `CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY`          | Set to `1` to disable the "How is Claude doing?" session quality surveys. Surveys are also disabled when `DISABLE_TELEMETRY` or `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` is set. See [Session quality surveys](/en/data-usage#session-quality-surveys)                                                                                                                                                                                                                                                                                                                                                         |
+-| `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`     | Equivalent of setting `DISABLE_AUTOUPDATER`, `DISABLE_BUG_COMMAND`, `DISABLE_ERROR_REPORTING`, and `DISABLE_TELEMETRY`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
++| `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`     | Equivalent of setting `DISABLE_AUTOUPDATER`, `DISABLE_FEEDBACK_COMMAND`, `DISABLE_ERROR_REPORTING`, and `DISABLE_TELEMETRY`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+ | `CLAUDE_CODE_DISABLE_TERMINAL_TITLE`           | Set to `1` to disable automatic terminal title updates based on conversation context                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+ | `CLAUDE_CODE_EFFORT_LEVEL`                     | Set the effort level for supported models. Values: `low`, `medium`, `high`, `max` (Opus 4.6 only), or `auto` to use the model default. Takes precedence over `/effort` and the `effortLevel` setting. See [Adjust effort level](/en/model-config#adjust-effort-level)                                                                                                                                                                                                                                                                                                                                            |
+@@ -62,5 +66,5 @@ Claude Code supports the following environment variables to control its behavior
+ | `CLAUDE_CODE_PLAN_MODE_REQUIRED`               | Auto-set to `true` on [agent team](/en/agent-teams) teammates that require plan approval. Read-only: set by Claude Code when spawning teammates. See [require plan approval](/en/agent-teams#require-plan-approval-for-teammates)                                                                                                                                                                                                                                                                                                                                                                                |
+ | `CLAUDE_CODE_PLUGIN_GIT_TIMEOUT_MS`            | Timeout in milliseconds for git operations when installing or updating plugins (default: 120000). Increase this value for large repositories or slow network connections. See [Git operations time out](/en/plugin-marketplaces#git-operations-time-out)                                                                                                                                                                                                                                                                                                                                                         |
+-| `CLAUDE_CODE_PLUGIN_SEED_DIR`                  | Path to a read-only plugin seed directory. Use this to bundle a pre-populated plugins directory into a container image. Claude Code registers marketplaces from this directory at startup and uses pre-cached plugins without re-cloning. See [Pre-populate plugins for containers](/en/plugin-marketplaces#pre-populate-plugins-for-containers)                                                                                                                                                                                                                                                                 |
++| `CLAUDE_CODE_PLUGIN_SEED_DIR`                  | Path to one or more read-only plugin seed directories, separated by `:` on Unix or `;` on Windows. Use this to bundle a pre-populated plugins directory into a container image. Claude Code registers marketplaces from these directories at startup and uses pre-cached plugins without re-cloning. See [Pre-populate plugins for containers](/en/plugin-marketplaces#pre-populate-plugins-for-containers)                                                                                                                                                                                                      |
+ | `CLAUDE_CODE_PROXY_RESOLVES_HOSTS`             | Set to `true` to allow the proxy to perform DNS resolution instead of the caller. Opt-in for environments where the proxy should handle hostname resolution                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+```
+
+</details>
+
+<details>
+<summary>hooks-guide-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/hooks-guide-ja.md b/docs-ja/pages/hooks-guide-ja.md
+index 8941fdd..c695d7b 100644
+--- a/docs-ja/pages/hooks-guide-ja.md
++++ b/docs-ja/pages/hooks-guide-ja.md
+@@ -306,4 +306,5 @@ Hook イベントは Claude Code のライフサイクルの特定のポイン
+ | `SubagentStop`       | When a subagent finishes                                                                                                                       |
+ | `Stop`               | When Claude finishes responding                                                                                                                |
++| `StopFailure`        | When the turn ends due to an API error. Output and exit code are ignored                                                                       |
+ | `TeammateIdle`       | When an [agent team](/en/agent-teams) teammate is about to go idle                                                                             |
+ | `TaskCompleted`      | When a task is being marked as completed                                                                                                       |
+```
+
+</details>
+
+<details>
+<summary>hooks-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/hooks-ja.md b/docs-ja/pages/hooks-ja.md
+index 55bc144..9e1426b 100644
+--- a/docs-ja/pages/hooks-ja.md
++++ b/docs-ja/pages/hooks-ja.md
+@@ -19,5 +19,5 @@
+ <div style={{maxWidth: "500px", margin: "0 auto"}}>
+   <Frame>
+-    <img src="https://mintcdn.com/claude-code/lBsitdsGyD9caWJQ/images/hooks-lifecycle.svg?fit=max&auto=format&n=lBsitdsGyD9caWJQ&q=85&s=be3486ef2cf2563eb213b6cbbce93982" alt="SessionStart から agentic ループを経由して SessionEnd までのフックのシーケンスを示すフック ライフサイクル図。WorktreeCreate、WorktreeRemove、InstructionsLoaded はスタンドアロン非同期イベント" width="520" height="1100" data-path="images/hooks-lifecycle.svg" />
++    <img src="https://mintcdn.com/claude-code/2YzYcIR7V1VggfgF/images/hooks-lifecycle.svg?fit=max&auto=format&n=2YzYcIR7V1VggfgF&q=85&s=3004e6c5dc95c4fe7fa3eb40fdc4176c" alt="SessionStart から agentic ループを経由して SessionEnd までのフックのシーケンスを示すフック ライフサイクル図。WorktreeCreate、WorktreeRemove、InstructionsLoaded はスタンドアロン非同期イベント" width="520" height="1100" data-path="images/hooks-lifecycle.svg" />
+   </Frame>
+ </div>
+@@ -37,4 +37,5 @@
+ | `SubagentStop`       | When a subagent finishes                                                                                                                       |
+ | `Stop`               | When Claude finishes responding                                                                                                                |
++| `StopFailure`        | When the turn ends due to an API error. Output and exit code are ignored                                                                       |
+ | `TeammateIdle`       | When an [agent team](/en/agent-teams) teammate is about to go idle                                                                             |
+ | `TaskCompleted`      | When a task is being marked as completed                                                                                                       |
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-03-18</summary>
 
 **変更ファイル:**
@@ -2558,176 +2730,5 @@ index c1b178b..43a16ff 100644
 ```
 
 </details>
-
-<details>
-<summary>mcp-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/mcp-ja.md b/docs-ja/pages/mcp-ja.md
-index 4a7c600..8ba8a98 100644
---- a/docs-ja/pages/mcp-ja.md
-+++ b/docs-ja/pages/mcp-ja.md
-@@ -3,7 +3,7 @@
- > Use this file to discover all available pages before exploring further.
- 
--# MCPを使用してClaude Codeをツールに接続する
-+# MCP を使用して Claude Code をツールに接続する
- 
--> Model Context Protocolを使用してClaude Codeをツールに接続する方法を学びます。
-+> Model Context Protocol を使用して Claude Code をツールに接続する方法を学びます。
- 
- export const MCPServersTable = ({platform = "all"}) => {
-@@ -213,24 +213,24 @@ export const MCPServersTable = ({platform = "all"}) => {
- };
- 
--Claude Codeは、AI-ツール統合のためのオープンソース標準である[Model Context Protocol (MCP)](https://modelcontextprotocol.io/introduction)を通じて、数百の外部ツールとデータソースに接続できます。MCPサーバーは、Claude Codeにツール、データベース、APIへのアクセスを提供します。
-+Claude Code は、AI ツール統合のためのオープンソース標準である [Model Context Protocol (MCP)](https://modelcontextprotocol.io/introduction) を通じて、数百の外部ツールとデータソースに接続できます。MCP サーバーは Claude Code にツール、データベース、API へのアクセスを提供します。
- 
--## MCPでできることは何か
-+## MCP でできること
- 
--MCPサーバーが接続されている場合、Claude Codeに以下を依頼できます：
-+MCP サーバーが接続されている場合、Claude Code に以下のことを依頼できます。
- 
--* **イシュートラッカーから機能を実装する**: 「JIRA issue ENG-4521に記載されている機能を追加し、GitHubにPRを作成してください。」
--* **監視データを分析する**: 「SentryとStatsigをチェックして、ENG-4521に記載されている機能の使用状況を確認してください。」
--* **データベースをクエリする**: 「PostgreSQLデータベースに基づいて、ENG-4521機能を使用した10人のランダムユーザーのメールアドレスを検索してください。」
--* **デザインを統合する**: 「Slackに投稿された新しいFigmaデザインに基づいて、標準メールテンプレートを更新してください。」
-```
-
-</details>
-
-</details>
-
-
-<details>
-<summary>2026-02-18</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/changelog.md | 19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
-```
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index 17e1909..c1b178b 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,6 +1,25 @@
- # Changelog
- 
-+## 2.1.45
-+
-+- Added support for Claude Sonnet 4.6
-+- Added support for reading `enabledPlugins` and `extraKnownMarketplaces` from `--add-dir` directories
-+- Added `spinnerTipsOverride` setting to customize spinner tips — configure `tips` with an array of custom tip strings, and optionally set `excludeDefault: true` to show only your custom tips instead of the built-in ones
-+- Added `SDKRateLimitInfo` and `SDKRateLimitEvent` types to the SDK, enabling consumers to receive rate limit status updates including utilization, reset times, and overage information
-+- Fixed Agent Teams teammates failing on Bedrock, Vertex, and Foundry by propagating API provider environment variables to tmux-spawned processes (anthropics/claude-code#23561)
-+- Fixed sandbox "operation not permitted" errors when writing temporary files on macOS by using the correct per-user temp directory (anthropics/claude-code#21654)
-+- Fixed Task tool (backgrounded agents) crashing with a `ReferenceError` on completion (anthropics/claude-code#22087)
-+- Fixed autocomplete suggestions not being accepted on Enter when images are pasted in the input
-+- Fixed skills invoked by subagents incorrectly appearing in main session context after compaction
-+- Fixed excessive `.claude.json.backup` files accumulating on every startup
-+- Fixed plugin-provided commands, agents, and hooks not being available immediately after installation without requiring a restart
-+- Improved startup performance by removing eager loading of session history for stats caching
-+- Improved memory usage for shell commands that produce large output — RSS no longer grows unboundedly with command output size
-+- Improved collapsed read/search groups to show the current file or search pattern being processed beneath the summary line while active
-+- [VSCode] Improved permission destination choice (project/user/session) to persist across sessions
-+
- ## 2.1.44
- 
-+- Fixed ENAMETOOLONG errors for deeply-nested directory paths
- - Fixed auth refresh errors
- 
-```
-
-</details>
-
-</details>
-
-
-<details>
-<summary>2026-02-17</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/changelog.md   |  10 ++
- docs-ja/pages/overview-ja.md | 275 ++++++++++++++++++++++++++-----------------
- 2 files changed, 176 insertions(+), 109 deletions(-)
-```
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index 2701cfc..17e1909 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,14 @@
- # Changelog
- 
-+## 2.1.44
-+
-+- Fixed auth refresh errors
-+
-+## 2.1.43
-+
-+- Fixed AWS auth refresh hanging indefinitely by adding a 3-minute timeout
-+- Fixed spurious warnings for non-agent markdown files in `.claude/agents/` directory
-+- Fixed structured-outputs beta header being sent unconditionally on Vertex/Bedrock
-+
- ## 2.1.42
- 
-```
-
-</details>
-
-<details>
-<summary>overview-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/overview-ja.md b/docs-ja/pages/overview-ja.md
-index db13ab4..d25268c 100644
---- a/docs-ja/pages/overview-ja.md
-+++ b/docs-ja/pages/overview-ja.md
-@@ -3,159 +3,216 @@
- > Use this file to discover all available pages before exploring further.
- 
--# Claude Code 概要
-+# Claude Code の概要
- 
--> Anthropic の agentic coding ツール Claude Code について学びます。Claude Code はターミナルで動作し、アイデアをコードに変えるのを今までより速く支援します。
-+> Claude Code は、コードベースを読み取り、ファイルを編集し、コマンドを実行し、開発ツールと統合する agentic coding ツールです。ターミナル、IDE、デスクトップアプリ、ブラウザで利用できます。
- 
--## 30 秒で始める
-+Claude Code は、機能の構築、バグの修正、開発タスクの自動化を支援する AI 搭載のコーディングアシスタントです。コードベース全体を理解し、複数のファイルとツール全体で作業して、タスクを完了できます。
- 
--前提条件：
-+## はじめに
- 
--* [システム要件](/ja/setup#system-requirements)を満たしていること
--* [Claude サブスクリプション](https://claude.com/pricing)（Pro、Max、Teams、または Enterprise）または [Claude Console](https://console.anthropic.com/) アカウント
-+環境を選択してはじめましょう。ほとんどのサーフェスには、[Claude サブスクリプション](https://claude.com/pricing)または [Anthropic Console](https://console.anthropic.com/) アカウントが必要です。Terminal CLI と VS Code は [サードパーティプロバイダー](/ja/third-party-integrations)もサポートしています。
- 
--**Claude Code をインストール：**
-+<Tabs>
-+  <Tab title="Terminal">
-+    ターミナルで Claude Code を直接操作するための機能豊富な CLI です。ファイルを編集し、コマンドを実行し、コマンドラインからプロジェクト全体を管理できます。
- 
--To install Claude Code, use one of the following methods:
-+    To install Claude Code, use one of the following methods:
-```
-
-</details>
-
-</details>
-
 
 <!-- UPDATE_LOG_END -->
