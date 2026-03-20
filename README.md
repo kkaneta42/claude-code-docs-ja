@@ -17,6 +17,59 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-03-20</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
+```
+
+**新規追加:**
+
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index 28b120f..208e49f 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,24 @@
+ # Changelog
+ 
++## 2.1.80
++
++- Added `rate_limits` field to statusline scripts for displaying Claude.ai rate limit usage (5-hour and 7-day windows with `used_percentage` and `resets_at`)
++- Added `source: 'settings'` plugin marketplace source — declare plugin entries inline in settings.json
++- Added CLI tool usage detection to plugin tips, in addition to file pattern matching
++- Added `effort` frontmatter support for skills and slash commands to override the model effort level when invoked
++- Added `--channels` (research preview) — allow MCP servers to push messages into your session
++- Fixed `--resume` dropping parallel tool results — sessions with parallel tool calls now restore all tool_use/tool_result pairs instead of showing `[Tool result missing]` placeholders
++- Fixed voice mode WebSocket failures caused by Cloudflare bot detection on non-browser TLS fingerprints
++- Fixed 400 errors when using fine-grained tool streaming through API proxies, Bedrock, or Vertex
++- Fixed `/remote-control` appearing for gateway and third-party provider deployments where it cannot function
++- Fixed `/sandbox` tab switching not responding to Tab or arrow keys
++- Improved responsiveness of `@` file autocomplete in large git repositories
++- Improved `/effort` to show what auto currently resolves to, matching the status bar indicator
++- Improved `/permissions` — Tab and arrow keys now switch tabs from within a list
++- Improved background tasks panel — left arrow now closes from the list view
++- Simplified plugin install tips to use a single `/plugin install` command instead of a two-step flow
++- Reduced memory usage on startup in large repositories (~80 MB saved on 250k-file repos)
++- Fixed managed settings (`enabledPlugins`, `permissions.defaultMode`, policy-set env vars) not being applied at startup when `remote-settings.json` was cached from a prior session
++
+ ## 2.1.79
+ 
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-03-19</summary>
 
 **変更ファイル:**
@@ -2681,54 +2734,5 @@ index 9824e57..123718d 100644
 
 </details>
 
-
-<details>
-<summary>2026-02-19</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/changelog.md |  76 +++++
- docs-ja/pages/mcp-ja.md    | 735 +++++++++++++++++++++++++++------------------
- 2 files changed, 518 insertions(+), 293 deletions(-)
-```
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index c1b178b..43a16ff 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,80 @@
- # Changelog
- 
-+## 2.1.47
-+
-+- Fixed FileWriteTool line counting to preserve intentional trailing blank lines instead of stripping them with `trimEnd()`.
-+- Fixed Windows terminal rendering bugs caused by `os.EOL` (`\r\n`) in display code — line counts now show correct values instead of always showing 1 on Windows.
-+- Improved VS Code plan preview: auto-updates as Claude iterates, enables commenting only when the plan is ready for review, and keeps the preview open when rejecting so Claude can revise.
-+- Fixed a bug where bold and colored text in markdown output could shift to the wrong characters on Windows due to `\r\n` line endings.
-+- Fixed compaction failing when conversation contains many PDF documents by stripping document blocks alongside images before sending to the compaction API (anthropics/claude-code#26188)
-+- Improved memory usage in long-running sessions by releasing API stream buffers, agent context, and skill state after use
-+- Improved startup performance by deferring SessionStart hook execution, reducing time-to-interactive by ~500ms.
-+- Fixed an issue where bash tool output was silently discarded on Windows when using MSYS2 or Cygwin shells.
-+- Improved performance of `@` file mentions - file suggestions now appear faster by pre-warming the index on startup and using session-based caching with background refresh.
-+- Improved memory usage by trimming agent task message history after tasks complete
-+- Improved memory usage during long agent sessions by eliminating O(n²) message accumulation in progress updates
-+- Fixed the bash permission classifier to validate that returned match descriptions correspond to actual input rules, preventing hallucinated descriptions from incorrectly granting permissions
-+- Fixed user-defined agents only loading one file on NFS/FUSE filesystems that report zero inodes (anthropics/claude-code#26044)
-+- Fixed plugin agent skills silently failing to load when referenced by bare name instead of fully-qualified plugin name (anthropics/claude-code#25834)
-+- Search patterns in collapsed tool results are now displayed in quotes for clarity
-+- Windows: Fixed CWD tracking temp files never being cleaned up, causing them to accumulate indefinitely (anthropics/claude-code#17600)
-+- Use `ctrl+f` to kill all background agents instead of double-pressing ESC. Background agents now continue running when you press ESC to cancel the main thread, giving you more control over agent lifecycle.
-+- Fixed API 400 errors ("thinking blocks cannot be modified") that occurred in sessions with concurrent agents, caused by interleaved streaming content blocks preventing proper message merging.
-+- Simplified teammate navigation to use only Shift+Down (with wrapping) instead of both Shift+Up and Shift+Down.
-+- Fixed an issue where a single file write/edit error would abort all other parallel file write/edit operations. Independent file mutations now complete even when a sibling fails.
-+- Added `last_assistant_message` field to Stop and SubagentStop hook inputs, providing the final assistant response text so hooks can access it without parsing transcript files.
-```
-
-</details>
 
 <!-- UPDATE_LOG_END -->
