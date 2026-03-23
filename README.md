@@ -17,6 +17,104 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-03-23</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/channels-en.md           |   4 +-
+ docs-ja/pages/channels-reference-en.md | 376 +++++++++++++++++++++++++++++++--
+ docs-ja/pages/env-vars-en.md           |   2 +-
+ 3 files changed, 365 insertions(+), 17 deletions(-)
+```
+
+<details>
+<summary>channels-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/channels-en.md b/docs-ja/pages/channels-en.md
+index 88b2740..ef64b59 100644
+--- a/docs-ja/pages/channels-en.md
++++ b/docs-ja/pages/channels-en.md
+@@ -218,5 +218,5 @@ To try the fakechat demo, you'll need:
+ </Steps>
+ 
+-If Claude hits a permission prompt while you're away from the terminal, the session pauses until you approve locally. For unattended use, [`--dangerously-skip-permissions`](/en/permissions#permission-modes) bypasses prompts, but only use it in environments you trust.
++If Claude hits a permission prompt while you're away from the terminal, the session pauses until you respond. Channel servers that declare the [permission relay capability](/en/channels-reference#relay-permission-prompts) can forward these prompts to you so you can approve or deny remotely. For unattended use, [`--dangerously-skip-permissions`](/en/permissions#permission-modes) bypasses prompts entirely, but only use it in environments you trust.
+ 
+ ## Security
+@@ -235,4 +235,6 @@ On top of that, you control which servers are enabled each session with `--chann
+ Being in `.mcp.json` isn't enough to push messages: a server also has to be named in `--channels`.
+ 
++The allowlist also gates [permission relay](/en/channels-reference#relay-permission-prompts) if the channel declares it. Anyone who can reply through the channel can approve or deny tool use in your session, so only allowlist senders you trust with that authority.
++
+ ## Enterprise controls
+ 
+```
+
+</details>
+
+<details>
+<summary>channels-reference-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/channels-reference-en.md b/docs-ja/pages/channels-reference-en.md
+index e1bc59a..f1565a4 100644
+--- a/docs-ja/pages/channels-reference-en.md
++++ b/docs-ja/pages/channels-reference-en.md
+@@ -5,5 +5,5 @@
+ # Channels reference
+ 
+-> Build an MCP server that pushes webhooks, alerts, and chat messages into a Claude Code session. Reference for the channel contract: capability declaration, notification events, reply tools, and sender gating.
++> Build an MCP server that pushes webhooks, alerts, and chat messages into a Claude Code session. Reference for the channel contract: capability declaration, notification events, reply tools, sender gating, and permission relay.
+ 
+ <Note>
+@@ -13,5 +13,5 @@
+ A channel is an MCP server that pushes events into a Claude Code session so Claude can react to things happening outside the terminal.
+ 
+-You can build a one-way or two-way channel. One-way channels forward alerts, webhooks, or monitoring events for Claude to act on. Two-way channels like chat bridges also [expose a reply tool](#expose-a-reply-tool) so Claude can send messages back.
++You can build a one-way or two-way channel. One-way channels forward alerts, webhooks, or monitoring events for Claude to act on. Two-way channels like chat bridges also [expose a reply tool](#expose-a-reply-tool) so Claude can send messages back. A channel with a trusted sender path can also opt in to [relay permission prompts](#relay-permission-prompts) so you can approve or deny tool use remotely.
+ 
+ This page covers:
+@@ -24,4 +24,5 @@ This page covers:
+ * [Expose a reply tool](#expose-a-reply-tool): let Claude send messages back
+ * [Gate inbound messages](#gate-inbound-messages): sender checks to prevent prompt injection
++* [Relay permission prompts](#relay-permission-prompts): forward tool approval prompts to remote channels
+ 
+ To use an existing channel instead of building one, see [Channels](/en/channels). Telegram, Discord, and fakechat are included in the research preview.
+@@ -153,4 +154,9 @@ This example uses [Bun](https://bun.sh) as the runtime for its built-in HTTP ser
+ 
+     In your Claude Code terminal, you'll see Claude receive the message and start responding: reading files, running commands, or whatever the message calls for. This is a one-way channel, so Claude acts in your session but doesn't send anything back through the webhook. To add replies, see [Expose a reply tool](#expose-a-reply-tool).
++
++    If the event doesn't arrive, the diagnosis depends on what `curl` returned:
++
+```
+
+</details>
+
+<details>
+<summary>env-vars-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/env-vars-en.md b/docs-ja/pages/env-vars-en.md
+index 0bdcb34..fa55c70 100644
+--- a/docs-ja/pages/env-vars-en.md
++++ b/docs-ja/pages/env-vars-en.md
+@@ -71,5 +71,5 @@ Claude Code supports the following environment variables to control its behavior
+ | `CLAUDE_CODE_SHELL`                            | Override automatic shell detection. Useful when your login shell differs from your preferred working shell (for example, `bash` vs `zsh`)                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+ | `CLAUDE_CODE_SHELL_PREFIX`                     | Command prefix to wrap all bash commands (for example, for logging or auditing). Example: `/path/to/logger.sh` will execute `/path/to/logger.sh <command>`                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+-| `CLAUDE_CODE_SIMPLE`                           | Set to `1` to run with a minimal system prompt and only the Bash, file read, and file edit tools. Disables MCP tools, attachments, hooks, and CLAUDE.md files                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
++| `CLAUDE_CODE_SIMPLE`                           | Set to `1` to run with a minimal system prompt and only the Bash, file read, and file edit tools. Disables auto-discovery of hooks, skills, plugins, MCP servers, auto memory, and CLAUDE.md. The [`--bare`](/en/headless#start-faster-with-bare-mode) CLI flag sets this                                                                                                                                                                                                                                                                                                                                        |
+ | `CLAUDE_CODE_SKIP_BEDROCK_AUTH`                | Skip AWS authentication for Bedrock (for example, when using an LLM gateway)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+ | `CLAUDE_CODE_SKIP_FAST_MODE_NETWORK_ERRORS`    | Set to `1` to allow [fast mode](/en/fast-mode) when the organization status check fails due to a network error. Useful when a corporate proxy blocks the status endpoint. The API still enforces organization-level disable separately                                                                                                                                                                                                                                                                                                                                                                           |
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-03-22</summary>
 
 **変更ファイル:**
@@ -2608,136 +2706,5 @@ index 20d264b..e14fe79 100644
 ```
 
 </details>
-
-<details>
-<summary>claude-code-on-the-web-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/claude-code-on-the-web-ja.md b/docs-ja/pages/claude-code-on-the-web-ja.md
-index 4582fd1..4cc0884 100644
---- a/docs-ja/pages/claude-code-on-the-web-ja.md
-+++ b/docs-ja/pages/claude-code-on-the-web-ja.md
-@@ -8,5 +8,5 @@
- 
- <Note>
--  ウェブ上の Claude Code は現在リサーチプレビュー中です。
-+  ウェブ上の Claude Code は現在リサーチプレビュー段階です。
- </Note>
- 
-@@ -16,12 +16,12 @@
- 
- * **質問への回答**：コードアーキテクチャと機能の実装方法について質問する
--* **バグ修正とルーチンタスク**：頻繁なステアリングを必要としない明確に定義されたタスク
-+* **バグ修正とルーチンタスク**：頻繁な操舵が不要な明確に定義されたタスク
- * **並列作業**：複数のバグ修正を並列で処理する
- * **ローカルマシンにないリポジトリ**：ローカルにチェックアウトしていないコードで作業する
- * **バックエンド変更**：Claude Code がテストを作成してからそのテストに合格するコードを作成できる場所
- 
--Claude Code は Claude iOS アプリでも利用可能で、移動中にタスクを開始したり、進行中の作業を監視したりできます。
-+Claude Code は Claude アプリの [iOS](https://apps.apple.com/us/app/claude-by-anthropic/id6473753684) および [Android](https://play.google.com/store/apps/details?id=com.anthropic.claude) でも利用可能で、移動中にタスクを開始し、進行中の作業を監視できます。
- 
--ローカルとリモート開発の間を移動できます：`&` プレフィックスで[ターミナルからウェブへタスクを送信](#from-terminal-to-web)して実行するか、[ウェブセッションをターミナルにテレポート](#from-web-to-terminal)してローカルで続行します。
-+ローカルとリモート開発の間を移動できます：`&` プレフィックスで [ターミナルからウェブで実行するタスクを送信](#from-terminal-to-web)するか、[ウェブセッションをターミナルにテレポート](#from-web-to-terminal)してローカルで続行します。クラウドインフラストラクチャの代わりに自分のマシンで Claude Code を実行しながらウェブインターフェースを使用するには、[リモートコントロール](/ja/remote-control) を参照してください。
- 
- ## ウェブ上の Claude Code は誰が使用できますか？
-@@ -31,6 +31,6 @@ Claude Code は Claude iOS アプリでも利用可能で、移動中にタス
- * **Pro ユーザー**
- * **Max ユーザー**
-```
-
-</details>
-
-<details>
-<summary>cli-reference-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/cli-reference-ja.md b/docs-ja/pages/cli-reference-ja.md
-index c8ee375..4c3f3d1 100644
---- a/docs-ja/pages/cli-reference-ja.md
-+++ b/docs-ja/pages/cli-reference-ja.md
-@@ -9,73 +9,80 @@
- ## CLI コマンド
- 
--| コマンド                            | 説明                                 | 例                                            |
--| :------------------------------ | :--------------------------------- | :------------------------------------------- |
--| `claude`                        | インタラクティブ REPL を開始                  | `claude`                                     |
--| `claude "query"`                | 初期プロンプト付きで REPL を開始                | `claude "explain this project"`              |
--| `claude -p "query"`             | SDK 経由でクエリを実行してから終了                | `claude -p "explain this function"`          |
--| `cat file \| claude -p "query"` | パイプされたコンテンツを処理                     | `cat logs.txt \| claude -p "explain"`        |
--| `claude -c`                     | 現在のディレクトリで最新の会話を続行                 | `claude -c`                                  |
--| `claude -c -p "query"`          | SDK 経由で続行                          | `claude -c -p "Check for type errors"`       |
--| `claude -r "<session>" "query"` | セッション ID または名前でセッションを再開            | `claude -r "auth-refactor" "Finish this PR"` |
--| `claude update`                 | 最新バージョンに更新                         | `claude update`                              |
--| `claude mcp`                    | Model Context Protocol（MCP）サーバーを設定 | [Claude Code MCP ドキュメント](/ja/mcp)を参照してください。  |
-+| コマンド                            | 説明                                                                                                                                                              | 例                                            |
-+| :------------------------------ | :-------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------- |
-+| `claude`                        | インタラクティブ REPL を開始                                                                                                                                               | `claude`                                     |
-+| `claude "query"`                | 初期プロンプト付きで REPL を開始                                                                                                                                             | `claude "explain this project"`              |
-+| `claude -p "query"`             | SDK 経由でクエリを実行してから終了                                                                                                                                             | `claude -p "explain this function"`          |
-+| `cat file \| claude -p "query"` | パイプされたコンテンツを処理                                                                                                                                                  | `cat logs.txt \| claude -p "explain"`        |
-+| `claude -c`                     | 現在のディレクトリで最新の会話を続行                                                                                                                                              | `claude -c`                                  |
-+| `claude -c -p "query"`          | SDK 経由で続行                                                                                                                                                       | `claude -c -p "Check for type errors"`       |
-+| `claude -r "<session>" "query"` | セッション ID または名前でセッションを再開                                                                                                                                         | `claude -r "auth-refactor" "Finish this PR"` |
-+| `claude update`                 | 最新バージョンに更新                                                                                                                                                      | `claude update`                              |
-+| `claude auth login`             | Anthropic アカウントにサインイン                                                                                                                                           | `claude auth login`                          |
-+| `claude auth logout`            | Anthropic アカウントからログアウト                                                                                                                                          | `claude auth logout`                         |
-```
-
-</details>
-
-<details>
-<summary>data-usage-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/data-usage-ja.md b/docs-ja/pages/data-usage-ja.md
-index 1f3e885..4f4746c 100644
---- a/docs-ja/pages/data-usage-ja.md
-+++ b/docs-ja/pages/data-usage-ja.md
-@@ -5,5 +5,5 @@
- # データ使用
- 
--> Anthropic の Claude のデータ使用ポリシーについて学習します
-+> Anthropic の Claude のデータ使用ポリシーについて学びます
- 
- ## データポリシー
-@@ -44,7 +44,7 @@ Anthropic は、アカウントタイプと設定に基づいて Claude Code デ
- * 標準：30 日間の保持期間
- * ゼロデータ保持：適切に設定された API キーで利用可能 - Claude Code はサーバーにチャットトランスクリプトを保持しません
--* ローカルキャッシング：Claude Code クライアントは、セッション再開を有効にするために、セッションをローカルに最大 30 日間保存できます（設定可能）
-+* ローカルキャッシング：Claude Code クライアントはセッション再開を有効にするために、セッションをローカルに最大 30 日間保存できます（設定可能）
- 
--データ保持慣行の詳細については、[Privacy Center](https://privacy.anthropic.com/) をご覧ください。
-+[Privacy Center](https://privacy.anthropic.com/) でデータ保持慣行の詳細をご覧ください。
- 
- 詳細については、[Commercial Terms of Service](https://www.anthropic.com/legal/commercial-terms)（Team、Enterprise、API ユーザー向け）または [Consumer Terms](https://www.anthropic.com/legal/consumer-terms)（Free、Pro、Max ユーザー向け）および [Privacy Policy](https://www.anthropic.com/legal/privacy) をご確認ください。
-@@ -52,7 +52,7 @@ Anthropic は、アカウントタイプと設定に基づいて Claude Code デ
- ## データアクセス
- 
--すべてのファーストパーティユーザーの場合、[local Claude Code](#local-claude-code-data-flow-and-dependencies) および [remote Claude Code](#cloud-execution-data-flow-and-dependencies) でログされるデータについて詳しく知ることができます。リモート Claude Code の場合、Claude は Claude Code セッションを開始したリポジトリにアクセスします。Claude は接続したが、セッションを開始していないリポジトリにはアクセスしません。
-+すべてのファーストパーティユーザーの場合、[ローカル Claude Code](#local-claude-code-data-flow-and-dependencies) および [リモート Claude Code](#cloud-execution-data-flow-and-dependencies) でログされるデータについて詳しく知ることができます。[Remote Control](/ja/remote-control) セッションはすべての実行がマシン上で行われるため、ローカルデータフローに従います。リモート Claude Code の場合、Claude は Claude Code セッションを開始したリポジトリにアクセスします。Claude は接続したが、セッションを開始していないリポジトリにはアクセスしません。
- 
--## Local Claude Code：データフローと依存関係
-+## ローカル Claude Code：データフローと依存関係
- 
-```
-
-</details>
-
-*...以降省略*
-
-</details>
-
-
-<details>
-<summary>2026-02-21</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/changelog.md                  | 29 ++++++++++++++++++++++++++++
- docs-ja/pages/desktop-quickstart-en.md      | 30 +++++++++++++++++------------
- docs-ja/pages/server-managed-settings-en.md |  2 ++
- 3 files changed, 49 insertions(+), 12 deletions(-)
-```
 
 <!-- UPDATE_LOG_END -->
