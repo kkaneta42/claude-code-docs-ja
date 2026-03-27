@@ -17,6 +17,159 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-03-27</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md            | 76 +++++++++++++++++++++++++++++++++++
+ docs-ja/pages/features-overview-ja.md |  2 +-
+ docs-ja/pages/hooks-guide-ja.md       |  3 +-
+ docs-ja/pages/hooks-ja.md             |  5 ++-
+ docs-ja/pages/plugins-reference-ja.md |  3 +-
+ 5 files changed, 84 insertions(+), 5 deletions(-)
+```
+
+**新規追加:**
+
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index cdf9941..447da9b 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,80 @@
+ # Changelog
+ 
++## 2.1.85
++
++- Added `CLAUDE_CODE_MCP_SERVER_NAME` and `CLAUDE_CODE_MCP_SERVER_URL` environment variables to MCP `headersHelper` scripts, allowing one helper to serve multiple servers
++- Added conditional `if` field for hooks using permission rule syntax (e.g., `Bash(git *)`) to filter when they run, reducing process spawning overhead
++- Added timestamp markers in transcripts when scheduled tasks (`/loop`, `CronCreate`) fire
++- Added trailing space after `[Image #N]` placeholder when pasting images
++- Deep link queries (`claude-cli://open?q=…`) now support up to 5,000 characters, with a "scroll to review" warning for long pre-filled prompts
++- MCP OAuth now follows RFC 9728 Protected Resource Metadata discovery to find the authorization server
++- Plugins blocked by organization policy (`managed-settings.json`) can no longer be installed or enabled, and are hidden from marketplace views
++- PreToolUse hooks can now satisfy `AskUserQuestion` by returning `updatedInput` alongside `permissionDecision: "allow"`, enabling headless integrations that collect answers via their own UI
++- `tool_parameters` in OpenTelemetry tool_result events are now gated behind `OTEL_LOG_TOOL_DETAILS=1`
++- Fixed `/compact` failing with "context exceeded" when the conversation has grown too large for the compact request itself to fit
++- Fixed `/plugin enable` and `/plugin disable` failing when a plugin's install location differs from where it's declared in settings
++- Fixed `--worktree` exiting with an error in non-git repositories before the `WorktreeCreate` hook could run
++- Fixed `deniedMcpServers` setting not blocking claude.ai MCP servers
++- Fixed `switch_display` in the computer-use tool returning "not available in this session" on multi-monitor setups
++- Fixed crash when `OTEL_LOGS_EXPORTER`, `OTEL_METRICS_EXPORTER`, or `OTEL_TRACES_EXPORTER` is set to `none`
++- Fixed diff syntax highlighting not working in non-native builds
++- Fixed MCP step-up authorization failing when a refresh token exists — servers requesting elevated scopes via `403 insufficient_scope` now correctly trigger the re-authorization flow
++- Fixed memory leak in remote sessions when a streaming response is interrupted
++- Fixed persistent ECONNRESET errors during edge connection churn by using a fresh TCP connection on retry
++- Fixed prompts getting stuck in the queue after running certain slash commands, with up-arrow unable to retrieve them
++- Fixed Python Agent SDK: `type:'sdk'` MCP servers passed via `--mcp-config` are no longer dropped during startup
+```
+
+</details>
+
+<details>
+<summary>features-overview-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/features-overview-ja.md b/docs-ja/pages/features-overview-ja.md
+index 929de83..22df0d5 100644
+--- a/docs-ja/pages/features-overview-ja.md
++++ b/docs-ja/pages/features-overview-ja.md
+@@ -189,5 +189,5 @@ Claude Code は、コードについて推論するモデルと、ファイル
+ 各機能はセッション内の異なるポイントでロードされます。以下のタブは、各機能がいつロードされるか、およびコンテキストに何が入るかを説明しています。
+ 
+-<img src="https://mintcdn.com/claude-code/c5r9_6tjPMzFdDDT/images/context-loading.svg?fit=max&auto=format&n=c5r9_6tjPMzFdDDT&q=85&s=729b5b634ba831d1d64772c6c9485b30" alt="コンテキストロード：CLAUDE.md と MCP はセッション開始時にロードされ、すべてのリクエストに留まります。スキルは開始時に説明をロードし、呼び出し時に完全なコンテンツをロードします。Subagents は独立したコンテキストを取得します。Hooks は外部で実行されます。" width="720" height="410" data-path="images/context-loading.svg" />
++<img src="https://mintcdn.com/claude-code/6yTCYq1p37ZB8-CQ/images/context-loading.svg?fit=max&auto=format&n=6yTCYq1p37ZB8-CQ&q=85&s=5a58ce953a35a2412892015e2ad6cb67" alt="コンテキストロード：CLAUDE.md と MCP はセッション開始時にロードされ、すべてのリクエストに留まります。スキルは開始時に説明をロードし、呼び出し時に完全なコンテンツをロードします。Subagents は独立したコンテキストを取得します。Hooks は外部で実行されます。" width="720" height="410" data-path="images/context-loading.svg" />
+ 
+ <Tabs>
+```
+
+</details>
+
+<details>
+<summary>hooks-guide-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/hooks-guide-ja.md b/docs-ja/pages/hooks-guide-ja.md
+index 6953b0b..b7a0444 100644
+--- a/docs-ja/pages/hooks-guide-ja.md
++++ b/docs-ja/pages/hooks-guide-ja.md
+@@ -390,8 +390,9 @@ Hook イベントは Claude Code のライフサイクルの特定のポイン
+ | `SubagentStart`      | When a subagent is spawned                                                                                                                             |
+ | `SubagentStop`       | When a subagent finishes                                                                                                                               |
++| `TaskCreated`        | When a task is being created via `TaskCreate`                                                                                                          |
++| `TaskCompleted`      | When a task is being marked as completed                                                                                                               |
+ | `Stop`               | When Claude finishes responding                                                                                                                        |
+ | `StopFailure`        | When the turn ends due to an API error. Output and exit code are ignored                                                                               |
+ | `TeammateIdle`       | When an [agent team](/en/agent-teams) teammate is about to go idle                                                                                     |
+-| `TaskCompleted`      | When a task is being marked as completed                                                                                                               |
+ | `InstructionsLoaded` | When a CLAUDE.md or `.claude/rules/*.md` file is loaded into context. Fires at session start and when files are lazily loaded during a session         |
+ | `ConfigChange`       | When a configuration file changes during a session                                                                                                     |
+```
+
+</details>
+
+<details>
+<summary>hooks-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/hooks-ja.md b/docs-ja/pages/hooks-ja.md
+index 2e96b22..4788e56 100644
+--- a/docs-ja/pages/hooks-ja.md
++++ b/docs-ja/pages/hooks-ja.md
+@@ -19,5 +19,5 @@
+ <div style={{maxWidth: "500px", margin: "0 auto"}}>
+   <Frame>
+-    <img src="https://mintcdn.com/claude-code/JCMefyZyaJwkJgv-/images/hooks-lifecycle.svg?fit=max&auto=format&n=JCMefyZyaJwkJgv-&q=85&s=f004f3fc7324fa2a4630e8d6559cf6dd" alt="SessionStart から agentic ループを経由して SessionEnd までのフックのシーケンスを示すフック ライフサイクル図。agentic ループ内に PreToolUse、PermissionRequest、PostToolUse、SubagentStart/Stop、TaskCompleted が含まれ、Elicitation と ElicitationResult が MCP ツール実行内にネストされ、WorktreeCreate、WorktreeRemove、Notification、ConfigChange、InstructionsLoaded がスタンドアロン非同期イベント" width="520" height="1100" data-path="images/hooks-lifecycle.svg" />
++    <img src="https://mintcdn.com/claude-code/1wr0LPds6lVWZkQB/images/hooks-lifecycle.svg?fit=max&auto=format&n=1wr0LPds6lVWZkQB&q=85&s=53a826e7bb64c6bff5f867506c0530ad" alt="SessionStart から agentic ループを経由して SessionEnd までのフックのシーケンスを示すフック ライフサイクル図。agentic ループ内に PreToolUse、PermissionRequest、PostToolUse、SubagentStart/Stop、TaskCompleted が含まれ、Elicitation と ElicitationResult が MCP ツール実行内にネストされ、WorktreeCreate、WorktreeRemove、Notification、ConfigChange、InstructionsLoaded がスタンドアロン非同期イベント" width="520" height="1155" data-path="images/hooks-lifecycle.svg" />
+   </Frame>
+ </div>
+@@ -36,8 +36,9 @@
+ | `SubagentStart`      | When a subagent is spawned                                                                                                                             |
+ | `SubagentStop`       | When a subagent finishes                                                                                                                               |
++| `TaskCreated`        | When a task is being created via `TaskCreate`                                                                                                          |
++| `TaskCompleted`      | When a task is being marked as completed                                                                                                               |
+ | `Stop`               | When Claude finishes responding                                                                                                                        |
+ | `StopFailure`        | When the turn ends due to an API error. Output and exit code are ignored                                                                               |
+ | `TeammateIdle`       | When an [agent team](/en/agent-teams) teammate is about to go idle                                                                                     |
+-| `TaskCompleted`      | When a task is being marked as completed                                                                                                               |
+ | `InstructionsLoaded` | When a CLAUDE.md or `.claude/rules/*.md` file is loaded into context. Fires at session start and when files are lazily loaded during a session         |
+ | `ConfigChange`       | When a configuration file changes during a session                                                                                                     |
+```
+
+</details>
+
+<details>
+<summary>plugins-reference-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/plugins-reference-ja.md b/docs-ja/pages/plugins-reference-ja.md
+index 5781b4b..0f5a4d6 100644
+--- a/docs-ja/pages/plugins-reference-ja.md
++++ b/docs-ja/pages/plugins-reference-ja.md
+@@ -120,8 +120,9 @@ disallowedTools: Write, Edit
+ | `SubagentStart`      | When a subagent is spawned                                                                                                                             |
+ | `SubagentStop`       | When a subagent finishes                                                                                                                               |
++| `TaskCreated`        | When a task is being created via `TaskCreate`                                                                                                          |
++| `TaskCompleted`      | When a task is being marked as completed                                                                                                               |
+ | `Stop`               | When Claude finishes responding                                                                                                                        |
+ | `StopFailure`        | When the turn ends due to an API error. Output and exit code are ignored                                                                               |
+ | `TeammateIdle`       | When an [agent team](/en/agent-teams) teammate is about to go idle                                                                                     |
+-| `TaskCompleted`      | When a task is being marked as completed                                                                                                               |
+ | `InstructionsLoaded` | When a CLAUDE.md or `.claude/rules/*.md` file is loaded into context. Fires at session start and when files are lazily loaded during a session         |
+ | `ConfigChange`       | When a configuration file changes during a session                                                                                                     |
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-03-26</summary>
 
 **変更ファイル:**
@@ -2585,218 +2738,5 @@ index 317c582..a0e5f72 100644
  docs-ja/pages/hooks-ja.md       |  41 ++++++++--------
  3 files changed, 147 insertions(+), 39 deletions(-)
 ```
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index ee93589..f9232b0 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,110 @@
- # Changelog
- 
-+## 2.1.69
-+
-+- Added the `/claude-api` skill for building applications with the Claude API and Anthropic SDK
-+- Added Ctrl+U on an empty bash prompt (`!`) to exit bash mode, matching `escape` and `backspace`
-+- Added numeric keypad support for selecting options in Claude's interview questions (previously only the number row above QWERTY worked)
-+- Added optional name argument to `/remote-control` and `claude remote-control` (`/remote-control My Project` or `--name "My Project"`) to set a custom session title visible in claude.ai/code
-+- Added Voice STT support for 10 new languages (20 total) — Russian, Polish, Turkish, Dutch, Ukrainian, Greek, Czech, Danish, Swedish, Norwegian
-+- Added effort level display (e.g., "with low effort") to the logo and spinner, making it easier to see which effort setting is active
-+- Added agent name display in terminal title when using `claude --agent`
-+- Added `sandbox.enableWeakerNetworkIsolation` setting (macOS only) to allow Go programs like `gh`, `gcloud`, and `terraform` to verify TLS certificates when using a custom MITM proxy with `httpProxyPort`
-+- Added `includeGitInstructions` setting (and `CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS` env var) to remove built-in commit and PR workflow instructions from Claude's system prompt
-+- Added `/reload-plugins` command to activate pending plugin changes without restarting
-+- Added a one-time startup prompt suggesting Claude Code Desktop on macOS and Windows (max 3 showings, dismissible)
-+- Added `${CLAUDE_SKILL_DIR}` variable for skills to reference their own directory in SKILL.md content
-+- Added `InstructionsLoaded` hook event that fires when CLAUDE.md or `.claude/rules/*.md` files are loaded into context
-+- Added `agent_id` (for subagents) and `agent_type` (for subagents and `--agent`) to hook events
-+- Added `worktree` field to status line hook commands with name, path, branch, and original repo directory when running in a `--worktree` session
-+- Added `pluginTrustMessage` in managed settings to append organization-specific context to the plugin trust warning shown before installation
-+- Added policy limit fetching (e.g., remote control restrictions) for Team plan OAuth users, not just Enterprise
-+- Added `pathPattern` to `strictKnownMarketplaces` for regex-matching file/directory marketplace sources alongside `hostPattern` restrictions
-+- Added plugin source type `git-subdir` to point to a subdirectory within a git repo
-+- Added `oauth.authServerMetadataUrl` config option for MCP servers to specify a custom OAuth metadata discovery URL when standard discovery fails
-+- Fixed a security issue where nested skill discovery could load skills from gitignored directories like `node_modules`
-```
-
-</details>
-
-<details>
-<summary>hooks-guide-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/hooks-guide-ja.md b/docs-ja/pages/hooks-guide-ja.md
-index e6cc40a..1f2c61f 100644
---- a/docs-ja/pages/hooks-guide-ja.md
-+++ b/docs-ja/pages/hooks-guide-ja.md
-@@ -294,23 +294,24 @@ Claude のコンテキストウィンドウがいっぱいになると、圧縮
- Hook イベントは Claude Code のライフサイクルの特定のポイントで発火します。イベントが発火すると、すべてのマッチングする hooks が並列で実行され、同一の hook コマンドは自動的に重複排除されます。以下の表は各イベントとそれがトリガーされるときを示しています：
- 
--| Event                | When it fires                                                                                               |
--| :------------------- | :---------------------------------------------------------------------------------------------------------- |
--| `SessionStart`       | When a session begins or resumes                                                                            |
--| `UserPromptSubmit`   | When you submit a prompt, before Claude processes it                                                        |
--| `PreToolUse`         | Before a tool call executes. Can block it                                                                   |
--| `PermissionRequest`  | When a permission dialog appears                                                                            |
--| `PostToolUse`        | After a tool call succeeds                                                                                  |
--| `PostToolUseFailure` | After a tool call fails                                                                                     |
--| `Notification`       | When Claude Code sends a notification                                                                       |
--| `SubagentStart`      | When a subagent is spawned                                                                                  |
--| `SubagentStop`       | When a subagent finishes                                                                                    |
--| `Stop`               | When Claude finishes responding                                                                             |
--| `TeammateIdle`       | When an [agent team](/en/agent-teams) teammate is about to go idle                                          |
--| `TaskCompleted`      | When a task is being marked as completed                                                                    |
--| `ConfigChange`       | When a configuration file changes during a session                                                          |
--| `WorktreeCreate`     | When a worktree is being created via `--worktree` or `isolation: "worktree"`. Replaces default git behavior |
--| `WorktreeRemove`     | When a worktree is being removed, either at session exit or when a subagent finishes                        |
--| `PreCompact`         | Before context compaction                                                                                   |
--| `SessionEnd`         | When a session terminates                                                                                   |
-+| Event                | When it fires                                                                                                                                  |
-+| :------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------- |
-+| `SessionStart`       | When a session begins or resumes                                                                                                               |
-+| `UserPromptSubmit`   | When you submit a prompt, before Claude processes it                                                                                           |
-```
-
-</details>
-
-<details>
-<summary>hooks-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/hooks-ja.md b/docs-ja/pages/hooks-ja.md
-index 9eace90..1a35bf4 100644
---- a/docs-ja/pages/hooks-ja.md
-+++ b/docs-ja/pages/hooks-ja.md
-@@ -19,5 +19,5 @@
- <div style={{maxWidth: "500px", margin: "0 auto"}}>
-   <Frame>
--    <img src="https://mintcdn.com/claude-code/rsuu-ovdPNos9Dnn/images/hooks-lifecycle.svg?fit=max&auto=format&n=rsuu-ovdPNos9Dnn&q=85&s=ce5f1225339bbccdfbb52e99205db912" alt="SessionStart から agentic ループを経由して SessionEnd までのフックのシーケンスを示すフック ライフサイクル図。WorktreeCreate と WorktreeRemove はスタンドアロンのセットアップおよびティアダウン イベント" data-og-width="520" width="520" data-og-height="1020" height="1020" data-path="images/hooks-lifecycle.svg" data-optimize="true" data-opv="3" srcset="https://mintcdn.com/claude-code/rsuu-ovdPNos9Dnn/images/hooks-lifecycle.svg?w=280&fit=max&auto=format&n=rsuu-ovdPNos9Dnn&q=85&s=7c7143c65492c1beb6bc66f5d206ba15 280w, https://mintcdn.com/claude-code/rsuu-ovdPNos9Dnn/images/hooks-lifecycle.svg?w=560&fit=max&auto=format&n=rsuu-ovdPNos9Dnn&q=85&s=dafaebf8f789f94edbf6bd66853c69df 560w, https://mintcdn.com/claude-code/rsuu-ovdPNos9Dnn/images/hooks-lifecycle.svg?w=840&fit=max&auto=format&n=rsuu-ovdPNos9Dnn&q=85&s=2caa51d2d95596f1f80b92e3f5f534fa 840w, https://mintcdn.com/claude-code/rsuu-ovdPNos9Dnn/images/hooks-lifecycle.svg?w=1100&fit=max&auto=format&n=rsuu-ovdPNos9Dnn&q=85&s=614def559f34f9b0c1dec93739d96b64 1100w, https://mintcdn.com/claude-code/rsuu-ovdPNos9Dnn/images/hooks-lifecycle.svg?w=1650&fit=max&auto=format&n=rsuu-ovdPNos9Dnn&q=85&s=ca45b85fdd8b2da81c69d12c453230cb 1650w, https://mintcdn.com/claude-code/rsuu-ovdPNos9Dnn/images/hooks-lifecycle.svg?w=2500&fit=max&auto=format&n=rsuu-ovdPNos9Dnn&q=85&s=7fd92d6b9713493f59962c9f295c9d2f 2500w" />
-+    <img src="https://mintcdn.com/claude-code/JWoaQLhotXStH4d2/images/hooks-lifecycle.svg?fit=max&auto=format&n=JWoaQLhotXStH4d2&q=85&s=9310bd002ef90ca32ac668455f5580a0" alt="SessionStart から agentic ループを経由して SessionEnd までのフックのシーケンスを示すフック ライフサイクル図。WorktreeCreate と WorktreeRemove はスタンドアロンのセットアップおよびティアダウン イベント" data-og-width="520" width="520" data-og-height="1020" height="1020" data-path="images/hooks-lifecycle.svg" data-optimize="true" data-opv="3" srcset="https://mintcdn.com/claude-code/JWoaQLhotXStH4d2/images/hooks-lifecycle.svg?w=280&fit=max&auto=format&n=JWoaQLhotXStH4d2&q=85&s=109982de941b0c53206b6178f4982f64 280w, https://mintcdn.com/claude-code/JWoaQLhotXStH4d2/images/hooks-lifecycle.svg?w=560&fit=max&auto=format&n=JWoaQLhotXStH4d2&q=85&s=9375684c8578b8ffe598d3798a59448c 560w, https://mintcdn.com/claude-code/JWoaQLhotXStH4d2/images/hooks-lifecycle.svg?w=840&fit=max&auto=format&n=JWoaQLhotXStH4d2&q=85&s=ee44a68c8feaabf5e7d09e65f3d653ae 840w, https://mintcdn.com/claude-code/JWoaQLhotXStH4d2/images/hooks-lifecycle.svg?w=1100&fit=max&auto=format&n=JWoaQLhotXStH4d2&q=85&s=4f35067e11e2d1861513ae8faf92cc04 1100w, https://mintcdn.com/claude-code/JWoaQLhotXStH4d2/images/hooks-lifecycle.svg?w=1650&fit=max&auto=format&n=JWoaQLhotXStH4d2&q=85&s=abf63881fb2c5cce211ac8ebb37af504 1650w, https://mintcdn.com/claude-code/JWoaQLhotXStH4d2/images/hooks-lifecycle.svg?w=2500&fit=max&auto=format&n=JWoaQLhotXStH4d2&q=85&s=e804d84b83ff44107fd2195c73e1c2ac 2500w" />
-   </Frame>
- </div>
-@@ -25,23 +25,24 @@
- 以下の表は、各イベントがいつ発火するかをまとめています。[フック イベント](#hook-events)セクションでは、各イベントの完全な入力スキーマと決定制御オプションについて説明しています。
- 
--| Event                | When it fires                                                                                               |
--| :------------------- | :---------------------------------------------------------------------------------------------------------- |
--| `SessionStart`       | When a session begins or resumes                                                                            |
--| `UserPromptSubmit`   | When you submit a prompt, before Claude processes it                                                        |
--| `PreToolUse`         | Before a tool call executes. Can block it                                                                   |
--| `PermissionRequest`  | When a permission dialog appears                                                                            |
--| `PostToolUse`        | After a tool call succeeds                                                                                  |
--| `PostToolUseFailure` | After a tool call fails                                                                                     |
--| `Notification`       | When Claude Code sends a notification                                                                       |
--| `SubagentStart`      | When a subagent is spawned                                                                                  |
--| `SubagentStop`       | When a subagent finishes                                                                                    |
--| `Stop`               | When Claude finishes responding                                                                             |
--| `TeammateIdle`       | When an [agent team](/en/agent-teams) teammate is about to go idle                                          |
--| `TaskCompleted`      | When a task is being marked as completed                                                                    |
--| `ConfigChange`       | When a configuration file changes during a session                                                          |
--| `WorktreeCreate`     | When a worktree is being created via `--worktree` or `isolation: "worktree"`. Replaces default git behavior |
-```
-
-</details>
-
-</details>
-
-
-<details>
-<summary>2026-03-05</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/changelog.md                 |  10 +
- docs-ja/pages/claude-code-on-the-web-ja.md |  91 +++--
- docs-ja/pages/cli-reference-ja.md          |  92 ++---
- docs-ja/pages/common-workflows-ja.md       | 131 +++----
- docs-ja/pages/data-usage-ja.md             |  22 +-
- docs-ja/pages/features-overview-ja.md      | 188 ++++-----
- docs-ja/pages/hooks-guide-ja.md            | 155 +++++---
- docs-ja/pages/hooks-ja.md                  | 226 +++++------
- docs-ja/pages/how-claude-code-works-ja.md  |  65 ++--
- docs-ja/pages/interactive-mode-ja.md       | 200 ++++++----
- docs-ja/pages/mcp-ja.md                    | 343 +++++++++--------
- docs-ja/pages/memory-ja.md                 | 404 +++++++++++---------
- docs-ja/pages/model-config-ja.md           |  18 +-
- docs-ja/pages/overview-ja.md               |  39 +-
- docs-ja/pages/permissions-ja.md            | 100 ++---
- docs-ja/pages/remote-control-ja.md         |  26 +-
- docs-ja/pages/sandboxing-ja.md             | 132 ++++---
- docs-ja/pages/settings-ja.md               | 591 +++++++++++++++--------------
- docs-ja/pages/skills-ja.md                 | 328 ++++++++--------
- docs-ja/pages/statusline-ja.md             | 171 ++++++---
- docs-ja/pages/sub-agents-ja.md             | 268 ++++++-------
- docs-ja/pages/vs-code-ja.md                | 134 +++----
- 22 files changed, 2012 insertions(+), 1722 deletions(-)
-```
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index a1a1615..ee93589 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,14 @@
- # Changelog
- 
-+## 2.1.68
-+
-+- Opus 4.6 now defaults to medium effort for Max and Team subscribers. Medium effort works well for most tasks — it's the sweet spot between speed and thoroughness. You can change this anytime with `/model`
-+- Re-introduced the "ultrathink" keyword to enable high effort for the next turn
-+- Removed Opus 4 and 4.1 from Claude Code on the first-party API — users with these models pinned are automatically moved to Opus 4.6
-+
-+## 2.1.66
-+
-+- Reduced spurious error logging
-+
- ## 2.1.63
- 
-```
-
-</details>
-
-<details>
-<summary>claude-code-on-the-web-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/claude-code-on-the-web-ja.md b/docs-ja/pages/claude-code-on-the-web-ja.md
-index b933fc3..209f19c 100644
---- a/docs-ja/pages/claude-code-on-the-web-ja.md
-+++ b/docs-ja/pages/claude-code-on-the-web-ja.md
-@@ -21,7 +21,7 @@
- * **バックエンド変更**：Claude Code がテストを作成してからそのテストに合格するコードを作成できる場所
- 
--Claude Code は [iOS](https://apps.apple.com/us/app/claude-by-anthropic/id6473753684) および [Android](https://play.google.com/store/apps/details?id=com.anthropic.claude) の Claude アプリでも利用可能で、外出先でタスクを開始し、進行中の作業を監視できます。
-+Claude Code は Claude アプリの [iOS](https://apps.apple.com/us/app/claude-by-anthropic/id6473753684) および [Android](https://play.google.com/store/apps/details?id=com.anthropic.claude) でも利用可能で、移動中にタスクを開始し、進行中の作業を監視できます。
- 
--ターミナルから `--remote` を使用して[ウェブで新しいタスクを開始](/ja/remote-control)したり、[ウェブセッションをターミナルにテレポート](#from-web-to-terminal)してローカルで続行したりできます。クラウドインフラストラクチャの代わりに自分のマシンで Claude Code を実行しながらウェブインターフェースを使用するには、[リモートコントロール](/ja/remote-control)を参照してください。
-+ターミナルから `--remote` を使用して[ウェブで新しいタスクを開始](#from-terminal-to-web)したり、[ウェブセッションをターミナルにテレポート](#from-web-to-terminal)してローカルで続行したりできます。クラウドインフラストラクチャの代わりに自分のマシンで Claude Code を実行しながらウェブインターフェースを使用するには、[リモートコントロール](/ja/remote-control)を参照してください。
- 
- ## ウェブ上の Claude Code は誰が使用できますか？
-@@ -56,5 +56,5 @@ Claude Code は [iOS](https://apps.apple.com/us/app/claude-by-anthropic/id647375
- ## diff ビューで変更を確認する
- 
--Diff ビューを使用すると、プルリクエストを作成する前に Claude が何を変更したかを正確に確認できます。GitHub で変更を確認するために「PR を作成」をクリックする代わりに、アプリで diff を直接表示し、変更の準備ができるまで Claude と反復処理します。
-+Diff ビューを使用すると、プルリクエストを作成する前に Claude が何を変更したかを正確に確認できます。GitHub でプルリクエストを確認するために「PR を作成」をクリックする代わりに、アプリで diff を直接表示し、変更の準備ができるまで Claude と反復処理できます。
- 
- Claude がファイルに変更を加えると、追加および削除された行数を示す diff 統計インジケーター（例：`+12 -1`）が表示されます。このインジケーターを選択して diff ビューアを開くと、左側にファイルリストが表示され、右側に各ファイルの変更が表示されます。
-@@ -64,5 +64,5 @@ diff ビューから、以下のことができます：
- * ファイルごとに変更を確認する
- * 特定の変更にコメントして修正をリクエストする
--* 表示内容に基づいて Claude との反復処理を続行する
-+* 表示内容に基づいて Claude との反復処理を続ける
- 
- これにより、ドラフト PR を作成したり GitHub に切り替えたりすることなく、複数ラウンドのフィードバックを通じて変更を改善できます。
-@@ -84,9 +84,9 @@ claude --remote "Fix the authentication bug in src/auth/login.ts"
- ```
-```
-
-</details>
 
 <!-- UPDATE_LOG_END -->
