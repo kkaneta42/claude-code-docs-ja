@@ -17,6 +17,60 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-03-28</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md | 29 +++++++++++++++++++++++++++++
+ 1 file changed, 29 insertions(+)
+```
+
+**新規追加:**
+
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index 447da9b..e17ed40 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,33 @@
+ # Changelog
+ 
++## 2.1.86
++
++- Added `X-Claude-Code-Session-Id` header to API requests so proxies can aggregate requests by session without parsing the body
++- Added `.jj` and `.sl` to VCS directory exclusion lists so Grep and file autocomplete don't descend into Jujutsu or Sapling metadata
++- Fixed `--resume` failing with "tool_use ids were found without tool_result blocks" on sessions created before v2.1.85
++- Fixed Write/Edit/Read failing on files outside the project root (e.g., `~/.claude/CLAUDE.md`) when conditional skills or rules are configured
++- Fixed unnecessary config disk writes on every skill invocation that could cause performance issues and config corruption on Windows
++- Fixed potential out-of-memory crash when using `/feedback` on very long sessions with large transcript files
++- Fixed `--bare` mode dropping MCP tools in interactive sessions and silently discarding messages enqueued mid-turn
++- Fixed the `c` shortcut copying only ~20 characters of the OAuth login URL instead of the full URL
++- Fixed masked input (e.g., OAuth code paste) leaking the start of the token when wrapping across multiple lines on narrow terminals
++- Fixed official marketplace plugin scripts failing with "Permission denied" on macOS/Linux since v2.1.83
++- Fixed statusline showing another session's model when running multiple Claude Code instances and using `/model` in one of them
++- Fixed scroll not following new messages after wheel scroll or click-to-select at the bottom of a long conversation
++- Fixed `/plugin` uninstall dialog: pressing `n` now correctly uninstalls the plugin while preserving its data directory
++- Fixed a regression where pressing Enter after clicking could leave the transcript blank until the response arrived
++- Fixed `ultrathink` hint lingering after deleting the keyword
++- Fixed memory growth in long sessions from markdown/highlight render caches retaining full content strings
++- Reduced startup event-loop stalls when many claude.ai MCP connectors are configured (macOS keychain cache extended from 5s to 30s)
++- Reduced token overhead when mentioning files with `@` — raw string content no longer JSON-escaped
++- Improved prompt cache hit rate for Bedrock, Vertex, and Foundry users by removing dynamic content from tool descriptions
++- Memory filenames in the "Saved N memories" notice now highlight on hover and open on click
++- Skill descriptions in the `/skills` listing are now capped at 250 characters to reduce context usage
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-03-27</summary>
 
 **変更ファイル:**
@@ -2697,46 +2751,5 @@ index f9232b0..6049d50 100644
 ```
 
 </details>
-
-<details>
-<summary>desktop-quickstart-en.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/desktop-quickstart-en.md b/docs-ja/pages/desktop-quickstart-en.md
-index 317c582..a0e5f72 100644
---- a/docs-ja/pages/desktop-quickstart-en.md
-+++ b/docs-ja/pages/desktop-quickstart-en.md
-@@ -7,5 +7,5 @@
- > Install Claude Code on desktop and start your first coding session
- 
--The desktop app gives you Claude Code with a graphical interface: visual diff review, live app preview, GitHub PR monitoring with auto-merge, parallel sessions with Git worktree isolation, and the ability to run tasks remotely. No terminal required.
-+The desktop app gives you Claude Code with a graphical interface: visual diff review, live app preview, GitHub PR monitoring with auto-merge, parallel sessions with Git worktree isolation, scheduled tasks, and the ability to run tasks remotely. No terminal required.
- 
- This page walks through installing the app and starting your first session. If you're already set up, see [Use Claude Code Desktop](/en/desktop) for the full reference.
-@@ -124,4 +124,6 @@ You've made your first edit. For the full reference on everything Desktop can do
- **Track your pull request.** After opening a PR, Claude Code monitors CI check results and can automatically fix failures or merge the PR once all checks pass. See [Monitor pull request status](/en/desktop#monitor-pull-request-status).
- 
-+**Put Claude on a schedule.** Set up [scheduled tasks](/en/desktop#schedule-recurring-tasks) to run Claude automatically on a recurring basis: a daily code review every morning, a weekly dependency audit, or a briefing that pulls from your connected tools.
-+
- **Scale up when you're ready.** Open [parallel sessions](/en/desktop#work-in-parallel-with-sessions) from the sidebar to work on multiple tasks at once, each in its own Git worktree. Send [long-running work to the cloud](/en/desktop#run-long-running-tasks-remotely) so it continues even if you close the app, or [continue a session on the web or in your IDE](/en/desktop#continue-in-another-surface) if a task takes longer than expected. [Connect external tools](/en/desktop#extend-claude-code) like GitHub, Slack, and Linear to bring your workflow together.
- 
-```
-
-</details>
-
-</details>
-
-
-<details>
-<summary>2026-03-06</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/changelog.md      | 106 ++++++++++++++++++++++++++++++++++++++++
- docs-ja/pages/hooks-guide-ja.md |  39 ++++++++-------
- docs-ja/pages/hooks-ja.md       |  41 ++++++++--------
- 3 files changed, 147 insertions(+), 39 deletions(-)
-```
 
 <!-- UPDATE_LOG_END -->
