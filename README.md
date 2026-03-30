@@ -17,6 +17,40 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-03-30</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md | 4 ++++
+ 1 file changed, 4 insertions(+)
+```
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index e17ed40..700d711 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,8 @@
+ # Changelog
+ 
++## 2.1.87
++
++- Fixed messages in Cowork Dispatch not getting delivered
++
+ ## 2.1.86
+ 
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-03-28</summary>
 
 **変更ファイル:**
@@ -2702,54 +2736,5 @@ index 6049d50..8ab2cf9 100644
 
 </details>
 
-
-<details>
-<summary>2026-03-07</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/changelog.md             | 32 ++++++++++++++++++++++++++++++++
- docs-ja/pages/desktop-quickstart-en.md |  4 +++-
- 2 files changed, 35 insertions(+), 1 deletion(-)
-```
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index f9232b0..6049d50 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,36 @@
- # Changelog
- 
-+## 2.1.70
-+
-+- Fixed API 400 errors when using `ANTHROPIC_BASE_URL` with a third-party gateway — tool search now correctly detects proxy endpoints and disables `tool_reference` blocks
-+- Fixed `API Error: 400 This model does not support the effort parameter` when using custom Bedrock inference profiles or other model identifiers not matching standard Claude naming patterns
-+- Fixed empty model responses immediately after `ToolSearch` — the server renders tool schemas with system-prompt-style tags at the prompt tail, which could confuse models into stopping early
-+- Fixed prompt-cache bust when an MCP server with `instructions` connects after the first turn
-+- Fixed Enter inserting a newline instead of submitting when typing over a slow SSH connection
-+- Fixed clipboard corrupting non-ASCII text (CJK, emoji) on Windows/WSL by using PowerShell `Set-Clipboard`
-+- Fixed extra VS Code windows opening at startup on Windows when running from the VS Code integrated terminal
-+- Fixed voice mode failing on Windows native binary with "native audio module could not be loaded"
-+- Fixed push-to-talk not activating on session start when `voiceEnabled: true` was set in settings
-+- Fixed markdown links containing `#NNN` references incorrectly pointing to the current repository instead of the linked URL
-+- Fixed repeated "Model updated to Opus 4.6" notification when a project's `.claude/settings.json` has a legacy Opus model string pinned
-+- Fixed plugins showing as inaccurately installed in `/plugin`
-+- Fixed plugins showing "not found in marketplace" errors on fresh startup by auto-refreshing after marketplace installation
-+- Fixed `/security-review` command failing with `unknown option merge-base` on older git versions
-+- Fixed `/color` command having no way to reset back to the default color — `/color default`, `/color gray`, `/color reset`, and `/color none` now restore the default
-+- Fixed a performance regression in the `AskUserQuestion` preview dialog that re-ran markdown rendering on every keystroke in the notes input
-+- Fixed feature flags read during early startup never refreshing their disk cache, causing stale values to persist across sessions
-+- Fixed `permissions.defaultMode` settings values other than `acceptEdits` or `plan` being applied in Claude Code Remote environments — they are now ignored
-+- Fixed skill listing being re-injected on every `--resume` (~600 tokens saved per resume)
-+- Fixed teleport marker not rendering in VS Code teleported sessions
-+- Improved error message when microphone captures silence to distinguish from "no speech detected"
-```
-
-</details>
 
 <!-- UPDATE_LOG_END -->
