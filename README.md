@@ -17,6 +17,139 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-03-31</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md                 | 44 ++++++++++++++++++++++++++++
+ docs-ja/pages/claude-code-on-the-web-ja.md | 46 +++++++++++++++++++++++++++++-
+ docs-ja/pages/hooks-ja.md                  |  2 +-
+ docs-ja/pages/voice-dictation-en.md        |  2 +-
+ 4 files changed, 91 insertions(+), 3 deletions(-)
+```
+
+**新規追加:**
+
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index 700d711..68dcaad 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,48 @@
+ # Changelog
+ 
++## 2.1.88
++
++- Added `CLAUDE_CODE_NO_FLICKER=1` environment variable to opt into flicker-free alt-screen rendering with virtualized scrollback
++- Added `PermissionDenied` hook that fires after auto mode classifier denials — return `{retry: true}` to tell the model it can retry
++- Added named subagents to `@` mention typeahead suggestions
++- Fixed prompt cache misses in long sessions caused by tool schema bytes changing mid-session
++- Fixed nested CLAUDE.md files being re-injected dozens of times in long sessions that read many files
++- Fixed Edit/Write tools doubling CRLF on Windows and stripping Markdown hard line breaks (two trailing spaces)
++- Fixed `StructuredOutput` schema cache bug causing ~50% failure rate in workflows with multiple schemas
++- Fixed memory leak where large JSON inputs were retained as LRU cache keys in long-running sessions
++- Fixed a potential out-of-memory crash when the Edit tool was used on very large files (>1 GiB)
++- Fixed a crash when removing a message from very large session files (over 50MB)
++- Fixed `--resume` crash when transcript contains a tool result from an older CLI version or interrupted write
++- Fixed misleading "Rate limit reached" message when the API returned an entitlement error — now shows the actual error with actionable hints
++- Fixed LSP server zombie state after crash — server now restarts on next request instead of failing until session restart
++- Fixed hooks `if` condition filtering not matching compound commands (`ls && git push`) or commands with env-var prefixes (`FOO=bar git push`)
++- Fixed prompt history entries containing CJK or emoji being silently dropped when they fall on a 4KB boundary in `~/.claude/history.jsonl`
++- Fixed `/stats` losing historical data beyond 30 days when the stats cache format changes
++- Fixed `/stats` undercounting tokens by excluding subagent/fork usage
++- Fixed scrollback disappearing when scrolling up in long sessions
++- Fixed collapsed search/read group badges duplicating in terminal scrollback during heavy parallel tool use
++- Fixed notification `invalidates` not clearing the currently-displayed notification immediately
++- Fixed prompt briefly disappearing after submit when background messages arrived during processing
+```
+
+</details>
+
+<details>
+<summary>claude-code-on-the-web-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/claude-code-on-the-web-ja.md b/docs-ja/pages/claude-code-on-the-web-ja.md
+index c2f7bbd..a75d9a7 100644
+--- a/docs-ja/pages/claude-code-on-the-web-ja.md
++++ b/docs-ja/pages/claude-code-on-the-web-ja.md
+@@ -36,4 +36,8 @@ Claude Code は [iOS](https://apps.apple.com/us/app/claude-by-anthropic/id647375
+ ## はじめに
+ 
++ブラウザまたはターミナルからウェブ上の Claude Code をセットアップします。
++
++### ブラウザから
++
+ 1. [claude.ai/code](https://claude.ai/code) にアクセスします
+ 2. GitHub アカウントを接続します
+@@ -43,4 +47,16 @@ Claude Code は [iOS](https://apps.apple.com/us/app/claude-by-anthropic/id647375
+ 6. diff ビューで変更を確認し、コメントで反復処理してから、プルリクエストを作成します
+ 
++### ターミナルから
++
++Claude Code 内で `/web-setup` を実行して、ローカル `gh` CLI 認証情報を使用して GitHub を接続します。このコマンドは `gh auth token` を Claude Code on the web に同期し、デフォルトクラウド環境を作成し、完了時にブラウザで claude.ai/code を開きます。
++
++このパスには `gh` CLI がインストールされ、`gh auth login` で認証されている必要があります。`gh` が利用できない場合、`/web-setup` は claude.ai/code を開いて、代わりにブラウザから GitHub を接続できます。
++
++`gh` 認証情報により Claude はクローンとプッシュにアクセスできるため、基本的なセッションでは GitHub アプリをスキップできます。後で [Auto-fix](#auto-fix-pull-requests) が必要な場合はアプリをインストールします。これはアプリを使用して PR webhook を受け取ります。
++
++<Note>
++  Team および Enterprise 管理者は [claude.ai/admin-settings/claude-code](https://claude.ai/admin-settings/claude-code) の Quick web setup トグルでターミナルセットアップを無効にできます。
++</Note>
++
+ ## 仕組み
+ 
+```
+
+</details>
+
+<details>
+<summary>hooks-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/hooks-ja.md b/docs-ja/pages/hooks-ja.md
+index 4788e56..59c84e0 100644
+--- a/docs-ja/pages/hooks-ja.md
++++ b/docs-ja/pages/hooks-ja.md
+@@ -98,5 +98,5 @@ fi
+ 
+ <Frame>
+-  <img src="https://mintcdn.com/claude-code/c5r9_6tjPMzFdDDT/images/hook-resolution.svg?fit=max&auto=format&n=c5r9_6tjPMzFdDDT&q=85&s=ad667ee6d86ab2276aa48a4e73e220df" alt="フック解決フロー: PreToolUse イベントが発火し、マッチャーが Bash マッチをチェックし、フック ハンドラーが実行され、結果が Claude Code に返される" width="780" height="290" data-path="images/hook-resolution.svg" />
++  <img src="https://mintcdn.com/claude-code/-tYw1BD_DEqfyyOZ/images/hook-resolution.svg?fit=max&auto=format&n=-tYw1BD_DEqfyyOZ&q=85&s=c73ebc1eeda2037570427d7af1e0a891" alt="フック解決フロー: PreToolUse イベントが発火し、マッチャーが Bash マッチをチェックし、フック ハンドラーが実行され、結果が Claude Code に返される" width="930" height="290" data-path="images/hook-resolution.svg" />
+ </Frame>
+ 
+```
+
+</details>
+
+<details>
+<summary>voice-dictation-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/voice-dictation-en.md b/docs-ja/pages/voice-dictation-en.md
+index 4c253d2..37109c1 100644
+--- a/docs-ja/pages/voice-dictation-en.md
++++ b/docs-ja/pages/voice-dictation-en.md
+@@ -15,5 +15,5 @@ Hold a key and speak to dictate your prompts. Your speech is transcribed live in
+ ## Requirements
+ 
+-Voice dictation uses a streaming speech-to-text service that is only available when you authenticate with a Claude.ai account. It is not available when Claude Code is configured to use an Anthropic API key directly, Amazon Bedrock, Google Vertex AI, or Microsoft Foundry.
++Voice dictation streams your recorded audio to Anthropic's servers for transcription. Audio is not processed locally. The speech-to-text service is only available when you authenticate with a Claude.ai account, and is not available when Claude Code is configured to use an Anthropic API key directly, Amazon Bedrock, Google Vertex AI, or Microsoft Foundry. See [data usage](/en/data-usage) for how Anthropic handles your data.
+ 
+ Voice dictation also needs local microphone access, so it does not work in remote environments such as [Claude Code on the web](/en/claude-code-on-the-web) or SSH sessions. In WSL, voice dictation requires WSLg for audio access, which is included with WSL2 on Windows 11. On Windows 10 or WSL1, run Claude Code in native Windows instead.
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-03-30</summary>
 
 **変更ファイル:**
@@ -2619,120 +2752,6 @@ index 9e7fe13..2c07fc6 100644
 </details>
 
 *...以降省略*
-
-</details>
-
-
-<details>
-<summary>2026-03-11</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/changelog.md | 54 ++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 54 insertions(+)
-```
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index 8ab2cf9..9030b86 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,58 @@
- # Changelog
- 
-+## 2.1.72
-+
-+- Fixed tool search to activate even with `ANTHROPIC_BASE_URL` as long as `ENABLE_TOOL_SEARCH` is set.
-+- Added `w` key in `/copy` to write the focused selection directly to a file, bypassing the clipboard (useful over SSH)
-+- Added optional description argument to `/plan` (e.g., `/plan fix the auth bug`) that enters plan mode and immediately starts
-+- Added `ExitWorktree` tool to leave an `EnterWorktree` session
-+- Added `CLAUDE_CODE_DISABLE_CRON` environment variable to immediately stop scheduled cron jobs mid-session
-+- Added `lsof`, `pgrep`, `tput`, `ss`, `fd`, and `fdfind` to the bash auto-approval allowlist, reducing permission prompts for common read-only operations
-+- Restored the `model` parameter on the Agent tool for per-invocation model overrides
-+- Simplified effort levels to low/medium/high (removed max) with new symbols (○ ◐ ●) and a brief notification instead of a persistent icon. Use `/effort auto` to reset to default
-+- Improved `/config` — Escape now cancels changes, Enter saves and closes, Space toggles settings
-+- Improved up-arrow history to show current session's messages first when running multiple concurrent sessions
-+- Improved voice input transcription accuracy for repo names and common dev terms (regex, OAuth, JSON)
-+- Improved bash command parsing by switching to a native module — faster initialization and no memory leak
-+- Reduced bundle size by ~510 KB
-+- Changed CLAUDE.md HTML comments (`<!-- ... -->`) to be hidden from Claude when auto-injected. Comments remain visible when read with the Read tool
-+- Fixed slow exits when background tasks or hooks were slow to respond
-+- Fixed agent task progress stuck on "Initializing…"
-+- Fixed skill hooks firing twice per event when a hooks-enabled skill is invoked by the model
-+- Fixed several voice mode issues: occasional input lag, false "No speech detected" errors after releasing push-to-talk, and stale transcripts re-filling the prompt after submission
-+- Fixed `--continue` not resuming from the most recent point after `--compact`
-+- Fixed bash security parsing edge cases
-+- Added support for marketplace git URLs without `.git` suffix (Azure DevOps, AWS CodeCommit)
-```
-
-</details>
-
-</details>
-
-
-<details>
-<summary>2026-03-10</summary>
-
-**新規追加:**
-
-
-</details>
-
-
-<details>
-<summary>2026-03-08</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/changelog.md | 31 +++++++++++++++++++++++++++++++
- 1 file changed, 31 insertions(+)
-```
-
-**新規追加:**
-
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index 6049d50..8ab2cf9 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,35 @@
- # Changelog
- 
-+## 2.1.71
-+
-+- Added `/loop` command to run a prompt or slash command on a recurring interval (e.g. `/loop 5m check the deploy`)
-+- Added cron scheduling tools for recurring prompts within a session
-+- Added `voice:pushToTalk` keybinding to make the voice activation key rebindable in `keybindings.json` (default: space) — modifier+letter combos like `meta+k` have zero typing interference
-+- Added `fmt`, `comm`, `cmp`, `numfmt`, `expr`, `test`, `printf`, `getconf`, `seq`, `tsort`, and `pr` to the bash auto-approval allowlist
-+- Fixed stdin freeze in long-running sessions where keystrokes stop being processed but the process stays alive
-+- Fixed a 5–8 second startup freeze for users with voice mode enabled, caused by CoreAudio initialization blocking the main thread after system wake
-+- Fixed startup UI freeze when many claude.ai proxy connectors refresh an expired OAuth token simultaneously
-+- Fixed forked conversations (`/fork`) sharing the same plan file, which caused plan edits in one fork to overwrite the other
-+- Fixed the Read tool putting oversized images into context when image processing failed, breaking subsequent turns in long image-heavy sessions
-+- Fixed false-positive permission prompts for compound bash commands containing heredoc commit messages
-+- Fixed plugin installations being lost when running multiple Claude Code instances
-+- Fixed claude.ai connectors failing to reconnect after OAuth token refresh
-+- Fixed claude.ai MCP connector startup notifications appearing for every org-configured connector instead of only previously connected ones
-+- Fixed background agent completion notifications missing the output file path, which made it difficult for parent agents to recover agent results after context compaction
-+- Fixed duplicate output in Bash tool error messages when commands exit with non-zero status
-+- Fixed Chrome extension auto-detection getting permanently stuck on "not installed" after running on a machine without local Chrome
-+- Fixed `/plugin marketplace update` failing with merge conflicts when the marketplace is pinned to a branch/tag ref
-+- Fixed `/plugin marketplace add owner/repo@ref` incorrectly parsing `@` — previously only `#` worked as a ref separator, causing undiagnosable errors with `strictKnownMarketplaces`
-+- Fixed duplicate entries in `/permissions` Workspace tab when the same directory is added with and without a trailing slash
-+- Fixed `--print` hanging forever when team agents are configured — the exit loop no longer waits on long-lived `in_process_teammate` tasks
-+- Fixed "❯ Tool loaded." appearing in the REPL after every `ToolSearch` call
-```
-
-</details>
 
 </details>
 
