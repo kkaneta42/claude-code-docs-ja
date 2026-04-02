@@ -17,6 +17,181 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-04-02</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md            | 77 +++++++++++++++++++++++++++++++++++
+ docs-ja/pages/hooks-guide-ja.md       |  1 +
+ docs-ja/pages/hooks-ja.md             |  3 +-
+ docs-ja/pages/overview-ja.md          |  2 +
+ docs-ja/pages/plugins-reference-ja.md |  1 +
+ docs-ja/pages/quickstart-ja.md        |  2 +
+ docs-ja/pages/setup-ja.md             |  2 +
+ 7 files changed, 87 insertions(+), 1 deletion(-)
+```
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index 700d711..10da815 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,81 @@
+ # Changelog
+ 
++## 2.1.90
++
++- Added `/powerup` — interactive lessons teaching Claude Code features with animated demos
++- Added `CLAUDE_CODE_PLUGIN_KEEP_MARKETPLACE_ON_FAILURE` env var to keep the existing marketplace cache when `git pull` fails, useful in offline environments
++- Added `.husky` to protected directories (acceptEdits mode)
++- Fixed an infinite loop where the rate-limit options dialog would repeatedly auto-open after hitting your usage limit, eventually crashing the session
++- Fixed `--resume` causing a full prompt-cache miss on the first request for users with deferred tools, MCP servers, or custom agents (regression since v2.1.69)
++- Fixed `Edit`/`Write` failing with "File content has changed" when a PostToolUse format-on-save hook rewrites the file between consecutive edits
++- Fixed `PreToolUse` hooks that emit JSON to stdout and exit with code 2 not correctly blocking the tool call
++- Fixed collapsed search/read summary badge appearing multiple times in fullscreen scrollback when a CLAUDE.md file auto-loads during a tool call
++- Fixed auto mode not respecting explicit user boundaries ("don't push", "wait for X before Y") even when the action would otherwise be allowed
++- Fixed click-to-expand hover text being nearly invisible on light terminal themes
++- Fixed UI crash when malformed tool input reached the permission dialog
++- Fixed headers disappearing when scrolling `/model`, `/config`, and other selection screens
++- Hardened PowerShell tool permission checks: fixed trailing `&` background job bypass, `-ErrorAction Break` debugger hang, archive-extraction TOCTOU, and parse-fail fallback deny-rule degradation
++- Improved performance: eliminated per-turn JSON.stringify of MCP tool schemas on cache-key lookup
++- Improved performance: SSE transport now handles large streamed frames in linear time (was quadratic)
++- Improved performance: SDK sessions with long conversations no longer slow down quadratically on transcript writes
++- Improved `/resume` all-projects view to load project sessions in parallel, improving load times for users with many projects
++- Changed `--resume` picker to no longer show sessions created by `claude -p` or SDK invocations
++- Removed `Get-DnsClientCache` and `ipconfig /displaydns` from auto-allow (DNS cache privacy)
++
++## 2.1.89
+```
+
+</details>
+
+<details>
+<summary>hooks-guide-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/hooks-guide-ja.md b/docs-ja/pages/hooks-guide-ja.md
+index b7a0444..572a0b6 100644
+--- a/docs-ja/pages/hooks-guide-ja.md
++++ b/docs-ja/pages/hooks-guide-ja.md
+@@ -385,4 +385,5 @@ Hook イベントは Claude Code のライフサイクルの特定のポイン
+ | `PreToolUse`         | Before a tool call executes. Can block it                                                                                                              |
+ | `PermissionRequest`  | When a permission dialog appears                                                                                                                       |
++| `PermissionDenied`   | When a tool call is denied by the auto mode classifier. Return `{retry: true}` to tell the model it may retry the denied tool call                     |
+ | `PostToolUse`        | After a tool call succeeds                                                                                                                             |
+ | `PostToolUseFailure` | After a tool call fails                                                                                                                                |
+```
+
+</details>
+
+<details>
+<summary>hooks-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/hooks-ja.md b/docs-ja/pages/hooks-ja.md
+index 3722f65..32dd78a 100644
+--- a/docs-ja/pages/hooks-ja.md
++++ b/docs-ja/pages/hooks-ja.md
+@@ -19,5 +19,5 @@
+ <div style={{maxWidth: "500px", margin: "0 auto"}}>
+   <Frame>
+-    <img src="https://mintcdn.com/claude-code/1wr0LPds6lVWZkQB/images/hooks-lifecycle.svg?fit=max&auto=format&n=1wr0LPds6lVWZkQB&q=85&s=53a826e7bb64c6bff5f867506c0530ad" alt="SessionStart から agentic ループを経由して SessionEnd までのフックのシーケンスを示すフック ライフサイクル図。agentic ループ内に PreToolUse、PermissionRequest、PostToolUse、SubagentStart/Stop、TaskCreated、TaskCompleted が含まれ、Elicitation と ElicitationResult が MCP ツール実行内にネストされ、WorktreeCreate、WorktreeRemove、Notification、ConfigChange、InstructionsLoaded、CwdChanged、FileChanged がスタンドアロン非同期イベント" width="520" height="1155" data-path="images/hooks-lifecycle.svg" />
++    <img src="https://mintcdn.com/claude-code/WLZtXlltXc8aIoIM/images/hooks-lifecycle.svg?fit=max&auto=format&n=WLZtXlltXc8aIoIM&q=85&s=6a0bf67eeb570a96e36b564721fa2a93" alt="SessionStart から agentic ループを経由して SessionEnd までのフックのシーケンスを示すフック ライフサイクル図。agentic ループ内に PreToolUse、PermissionRequest、PostToolUse、SubagentStart/Stop、TaskCreated、TaskCompleted が含まれ、Elicitation と ElicitationResult が MCP ツール実行内にネストされ、WorktreeCreate、WorktreeRemove、Notification、ConfigChange、InstructionsLoaded、CwdChanged、FileChanged がスタンドアロン非同期イベント" width="520" height="1155" data-path="images/hooks-lifecycle.svg" />
+   </Frame>
+ </div>
+@@ -31,4 +31,5 @@
+ | `PreToolUse`         | Before a tool call executes. Can block it                                                                                                              |
+ | `PermissionRequest`  | When a permission dialog appears                                                                                                                       |
++| `PermissionDenied`   | When a tool call is denied by the auto mode classifier. Return `{retry: true}` to tell the model it may retry the denied tool call                     |
+ | `PostToolUse`        | After a tool call succeeds                                                                                                                             |
+ | `PostToolUseFailure` | After a tool call fails                                                                                                                                |
+```
+
+</details>
+
+<details>
+<summary>overview-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/overview-ja.md b/docs-ja/pages/overview-ja.md
+index 9791fef..09b7ba9 100644
+--- a/docs-ja/pages/overview-ja.md
++++ b/docs-ja/pages/overview-ja.md
+@@ -39,4 +39,6 @@ Claude Code は AI を活用したコーディングアシスタントで、機
+         ```
+ 
++        If you see `The token '&&' is not a valid statement separator`, you're in PowerShell, not CMD. Use the PowerShell command above instead. Your prompt shows `PS C:\` when you're in PowerShell.
++
+         **Windows requires [Git for Windows](https://git-scm.com/downloads/win).** Install it first if you don't have it.
+ 
+```
+
+</details>
+
+<details>
+<summary>plugins-reference-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/plugins-reference-ja.md b/docs-ja/pages/plugins-reference-ja.md
+index 0f5a4d6..50bed15 100644
+--- a/docs-ja/pages/plugins-reference-ja.md
++++ b/docs-ja/pages/plugins-reference-ja.md
+@@ -115,4 +115,5 @@ disallowedTools: Write, Edit
+ | `PreToolUse`         | Before a tool call executes. Can block it                                                                                                              |
+ | `PermissionRequest`  | When a permission dialog appears                                                                                                                       |
++| `PermissionDenied`   | When a tool call is denied by the auto mode classifier. Return `{retry: true}` to tell the model it may retry the denied tool call                     |
+ | `PostToolUse`        | After a tool call succeeds                                                                                                                             |
+ | `PostToolUseFailure` | After a tool call fails                                                                                                                                |
+```
+
+</details>
+
+<details>
+<summary>quickstart-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/quickstart-ja.md b/docs-ja/pages/quickstart-ja.md
+index 85861ff..b90c178 100644
+--- a/docs-ja/pages/quickstart-ja.md
++++ b/docs-ja/pages/quickstart-ja.md
+@@ -654,4 +654,6 @@ To install Claude Code, use one of the following methods:
+     ```
+ 
++    If you see `The token '&&' is not a valid statement separator`, you're in PowerShell, not CMD. Use the PowerShell command above instead. Your prompt shows `PS C:\` when you're in PowerShell.
++
+     **Windows requires [Git for Windows](https://git-scm.com/downloads/win).** Install it first if you don't have it.
+ 
+```
+
+</details>
+
+<details>
+<summary>setup-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/setup-ja.md b/docs-ja/pages/setup-ja.md
+index bdeb83d..7421a3f 100644
+--- a/docs-ja/pages/setup-ja.md
++++ b/docs-ja/pages/setup-ja.md
+@@ -58,4 +58,6 @@ To install Claude Code, use one of the following methods:
+     ```
+ 
++    If you see `The token '&&' is not a valid statement separator`, you're in PowerShell, not CMD. Use the PowerShell command above instead. Your prompt shows `PS C:\` when you're in PowerShell.
++
+     **Windows requires [Git for Windows](https://git-scm.com/downloads/win).** Install it first if you don't have it.
+ 
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-04-01</summary>
 
 **変更ファイル:**
@@ -2534,243 +2709,6 @@ index 0c3296d..e0bbedd 100644
  
 @@ -75,5 +75,5 @@ Claude が直接コーディングにジャンプさせると、間違った問
      ```
-```
-
-</details>
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index f53466b..f230235 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,24 @@
- # Changelog
- 
-+## 2.1.74
-+
-+- Added actionable suggestions to `/context` command — identifies context-heavy tools, memory bloat, and capacity warnings with specific optimization tips
-+- Added `autoMemoryDirectory` setting to configure a custom directory for auto-memory storage
-+- Fixed memory leak where streaming API response buffers were not released when the generator was terminated early, causing unbounded RSS growth on the Node.js/npm code path
-+- Fixed managed policy `ask` rules being bypassed by user `allow` rules or skill `allowed-tools`
-+- Fixed full model IDs (e.g., `claude-opus-4-5`) being silently ignored in agent frontmatter `model:` field and `--agents` JSON config — agents now accept the same model values as `--model`
-+- Fixed MCP OAuth authentication hanging when the callback port is already in use
-+- Fixed MCP OAuth refresh never prompting for re-auth after the refresh token expires, for OAuth servers that return errors with HTTP 200 (e.g. Slack)
-+- Fixed voice mode silently failing on the macOS native binary for users whose terminal had never been granted microphone permission — the binary now includes the `audio-input` entitlement so macOS prompts correctly
-+- Fixed `SessionEnd` hooks being killed after 1.5 s on exit regardless of `hook.timeout` — now configurable via `CLAUDE_CODE_SESSIONEND_HOOKS_TIMEOUT_MS`
-+- Fixed `/plugin install` failing inside the REPL for marketplace plugins with local sources
-+- Fixed marketplace update not syncing git submodules — plugin sources in submodules no longer break after update
-+- Fixed unknown slash commands with arguments silently dropping input — now shows your input as a warning
-+- Fixed Hebrew, Arabic, and other RTL text not rendering correctly in Windows Terminal, conhost, and VS Code integrated terminal
-+- Fixed LSP servers not working on Windows due to malformed file URIs
-+- Changed `--plugin-dir` so local dev copies now override installed marketplace plugins with the same name (unless that plugin is force-enabled by managed settings)
-+- [VSCode] Fixed delete button not working for Untitled sessions
-+- [VSCode] Improved scroll wheel responsiveness in the integrated terminal with terminal-aware acceleration
-+
- ## 2.1.73
- 
-```
-
-</details>
-
-<details>
-<summary>claude-code-on-the-web-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/claude-code-on-the-web-ja.md b/docs-ja/pages/claude-code-on-the-web-ja.md
-index 209f19c..c2f7bbd 100644
---- a/docs-ja/pages/claude-code-on-the-web-ja.md
-+++ b/docs-ja/pages/claude-code-on-the-web-ja.md
-@@ -16,12 +16,12 @@
- 
- * **質問への回答**：コードアーキテクチャと機能の実装方法について質問する
--* **バグ修正とルーチンタスク**：頻繁な操舵が不要な明確に定義されたタスク
-+* **バグ修正とルーチンタスク**：頻繁な操舵を必要としない明確に定義されたタスク
- * **並列作業**：複数のバグ修正を並列で処理する
- * **ローカルマシンにないリポジトリ**：ローカルにチェックアウトしていないコードで作業する
- * **バックエンド変更**：Claude Code がテストを作成してからそのテストに合格するコードを作成できる場所
- 
--Claude Code は Claude アプリの [iOS](https://apps.apple.com/us/app/claude-by-anthropic/id6473753684) および [Android](https://play.google.com/store/apps/details?id=com.anthropic.claude) でも利用可能で、移動中にタスクを開始し、進行中の作業を監視できます。
-+Claude Code は [iOS](https://apps.apple.com/us/app/claude-by-anthropic/id6473753684) および [Android](https://play.google.com/store/apps/details?id=com.anthropic.claude) の Claude アプリでも利用可能で、外出先でタスクを開始し、進行中の作業を監視できます。
- 
--ターミナルから `--remote` を使用して[ウェブで新しいタスクを開始](#from-terminal-to-web)したり、[ウェブセッションをターミナルにテレポート](#from-web-to-terminal)してローカルで続行したりできます。クラウドインフラストラクチャの代わりに自分のマシンで Claude Code を実行しながらウェブインターフェースを使用するには、[リモートコントロール](/ja/remote-control)を参照してください。
-+[ターミナルから `--remote` でウェブ上で新しいタスクを開始](#from-terminal-to-web)するか、[ウェブセッションをターミナルにテレポートして](#from-web-to-terminal)ローカルで続行できます。クラウドインフラストラクチャの代わりに自分のマシンで Claude Code を実行しながらウェブインターフェースを使用するには、[リモートコントロール](/ja/remote-control)を参照してください。
- 
- ## ウェブ上の Claude Code は誰が使用できますか？
-@@ -48,7 +48,7 @@ Claude Code は Claude アプリの [iOS](https://apps.apple.com/us/app/claude-b
- 
- 1. **リポジトリのクローン**：リポジトリが Anthropic 管理の仮想マシンにクローンされます
--2. **環境セットアップ**：Claude がコードを含むセキュアなクラウド環境を準備します
--3. **ネットワーク設定**：設定に基づいてインターネットアクセスが構成されます
--4. **タスク実行**：Claude がコードを分析し、変更を加え、テストを実行し、作業を確認します
-+2. **環境セットアップ**：Claude はコードを含むセキュアなクラウド環境を準備し、設定されている場合は[セットアップスクリプト](#setup-scripts)を実行します
-+3. **ネットワーク設定**：インターネットアクセスは設定に基づいて構成されます
-+4. **タスク実行**：Claude はコードを分析し、変更を加え、テストを実行し、その作業を確認します
- 5. **完了**：完了時に通知され、変更を含むプルリクエストを作成できます
-```
-
-</details>
-
-<details>
-<summary>cli-reference-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/cli-reference-ja.md b/docs-ja/pages/cli-reference-ja.md
-index 4981774..8572d76 100644
---- a/docs-ja/pages/cli-reference-ja.md
-+++ b/docs-ja/pages/cli-reference-ja.md
-@@ -23,5 +23,5 @@
- | `claude auth login`             | Anthropic アカウントにサインイン。`--email` を使用してメールアドレスを事前入力し、`--sso` を使用して SSO 認証を強制します                                                                                    | `claude auth login --email user@example.com --sso` |
- | `claude auth logout`            | Anthropic アカウントからログアウト                                                                                                                                           | `claude auth logout`                               |
--| `claude auth status`            | 認証ステータスを JSON として表示。人間が読める形式の場合は `--text` を使用。ログイン済みの場合はコード 0 で終了、ログインしていない場合は 1 で終了                                                                             | `claude auth status`                               |
-+| `claude auth status`            | 認証ステータスを JSON として表示。`--text` を使用して人間が読める形式で表示。ログイン済みの場合はコード 0 で終了、ログインしていない場合は 1 で終了                                                                             | `claude auth status`                               |
- | `claude agents`                 | すべての設定済み [subagents](/ja/sub-agents) をソース別にグループ化して一覧表示                                                                                                           | `claude agents`                                    |
- | `claude mcp`                    | Model Context Protocol（MCP）サーバーを設定                                                                                                                               | [Claude Code MCP ドキュメント](/ja/mcp) を参照してください。       |
-@@ -32,74 +32,74 @@
- これらのコマンドラインフラグを使用して Claude Code の動作をカスタマイズします。
- 
--| フラグ                                    | 説明                                                                                                                                                                     | 例                                                                                                  |
--| :------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------- |
--| `--add-dir`                            | Claude がアクセスできる追加の作業ディレクトリを追加（各パスがディレクトリとして存在することを検証）                                                                                                                  | `claude --add-dir ../apps ../lib`                                                                  |
--| `--agent`                              | 現在のセッション用のエージェントを指定（`agent` 設定をオーバーライド）                                                                                                                                | `claude --agent my-custom-agent`                                                                   |
--| `--agents`                             | JSON 経由でカスタム [subagents](/ja/sub-agents) を動的に定義（形式については以下を参照）                                                                                                          | `claude --agents '{"reviewer":{"description":"Reviews code","prompt":"You are a code reviewer"}}'` |
--| `--allow-dangerously-skip-permissions` | 権限バイパスをオプションとして有効にします（すぐには有効化しません）。`--permission-mode` と組み合わせることができます（注意して使用）                                                                                          | `claude --permission-mode plan --allow-dangerously-skip-permissions`                               |
--| `--allowedTools`                       | 権限を求めずに実行するツール。パターンマッチングについては [権限ルール構文](/ja/settings#permission-rule-syntax) を参照してください。利用可能なツールを制限するには、代わりに `--tools` を使用してください                                        | `"Bash(git log *)" "Bash(git diff *)" "Read"`                                                      |
--| `--append-system-prompt`               | カスタムテキストをデフォルトシステムプロンプトの末尾に追加（インタラクティブモードと印刷モードの両方で機能）                                                                                                                 | `claude --append-system-prompt "Always use TypeScript"`                                            |
--| `--append-system-prompt-file`          | ファイルから追加のシステムプロンプトテキストを読み込み、デフォルトプロンプトに追加（印刷モードのみ）                                                                                                                     | `claude -p --append-system-prompt-file ./extra-rules.txt "query"`                                  |
--| `--betas`                              | API リクエストに含める Beta ヘッダー（API キーユーザーのみ）                                                                                                                                  | `claude --betas interleaved-thinking`                                                              |
--| `--chrome`                             | Web 自動化とテスト用の [Chrome ブラウザ統合](/ja/chrome) を有効化                                                                                                                         | `claude --chrome`                                                                                  |
--| `--continue`, `-c`                     | 現在のディレクトリで最新の会話を読み込む                                                                                                                                                   | `claude --continue`                                                                                |
--| `--dangerously-skip-permissions`       | すべての権限プロンプトをスキップ（注意して使用）                                                                                                                                               | `claude --dangerously-skip-permissions`                                                            |
--| `--debug`                              | デバッグモードを有効化（オプションのカテゴリフィルタリング付き。例：`"api,hooks"` または `"!statsig,!file"`）                                                                                                | `claude --debug "api,mcp"`                                                                         |
--| `--disable-slash-commands`             | このセッションのすべてのスキルとコマンドを無効化                                                                                                                                               | `claude --disable-slash-commands`                                                                  |
--| `--disallowedTools`                    | モデルのコンテキストから削除され、使用できないツール                                                                                                                                             | `"Bash(git log *)" "Bash(git diff *)" "Edit"`                                                      |
-```
-
-</details>
-
-*...以降省略*
-
-</details>
-
-
-<details>
-<summary>2026-03-12</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/agent-teams-ja.md           |  4 ++--
- docs-ja/pages/changelog.md                | 29 +++++++++++++++++++++++++++++
- docs-ja/pages/data-usage-ja.md            |  2 +-
- docs-ja/pages/desktop-quickstart-en.md    |  4 ++--
- docs-ja/pages/features-overview-ja.md     |  2 +-
- docs-ja/pages/hooks-ja.md                 |  4 ++--
- docs-ja/pages/how-claude-code-works-ja.md |  4 ++--
- docs-ja/pages/statusline-ja.md            | 14 +++++++-------
- docs-ja/pages/vs-code-ja.md               | 10 +++++-----
- 9 files changed, 51 insertions(+), 22 deletions(-)
-```
-
-<details>
-<summary>agent-teams-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/agent-teams-ja.md b/docs-ja/pages/agent-teams-ja.md
-index cb1edf7..3257876 100644
---- a/docs-ja/pages/agent-teams-ja.md
-+++ b/docs-ja/pages/agent-teams-ja.md
-@@ -38,7 +38,7 @@
- 
- <Frame caption="Subagents は結果をメインエージェントに報告するだけで、互いに話しません。エージェントチームでは、チームメイトがタスクリストを共有し、作業を要求し、互いに直接通信します。">
--  <img src="https://mintcdn.com/claude-code/nsvRFSDNfpSU5nT7/images/subagents-vs-agent-teams-light.png?fit=max&auto=format&n=nsvRFSDNfpSU5nT7&q=85&s=2f8db9b4f3705dd3ab931fbe2d96e42a" className="dark:hidden" alt="Subagent とエージェントチームアーキテクチャを比較する図。Subagent はメインエージェントによって生成され、作業を実行し、結果を報告します。エージェントチームは共有タスクリストを通じて調整し、チームメイトが互いに直接通信します。" data-og-width="4245" width="4245" data-og-height="1615" height="1615" data-path="images/subagents-vs-agent-teams-light.png" data-optimize="true" data-opv="3" srcset="https://mintcdn.com/claude-code/nsvRFSDNfpSU5nT7/images/subagents-vs-agent-teams-light.png?w=280&fit=max&auto=format&n=nsvRFSDNfpSU5nT7&q=85&s=a2cfe413c2084b477be40ac8723d9d40 280w, https://mintcdn.com/claude-code/nsvRFSDNfpSU5nT7/images/subagents-vs-agent-teams-light.png?w=560&fit=max&auto=format&n=nsvRFSDNfpSU5nT7&q=85&s=c642c09a4c211b10b35eee7d7d0d149f 560w, https://mintcdn.com/claude-code/nsvRFSDNfpSU5nT7/images/subagents-vs-agent-teams-light.png?w=840&fit=max&auto=format&n=nsvRFSDNfpSU5nT7&q=85&s=40d286f77c8a4075346b4fcaa2b36248 840w, https://mintcdn.com/claude-code/nsvRFSDNfpSU5nT7/images/subagents-vs-agent-teams-light.png?w=1100&fit=max&auto=format&n=nsvRFSDNfpSU5nT7&q=85&s=923986caa23c0ef2c27d7e45f4dce6d1 1100w, https://mintcdn.com/claude-code/nsvRFSDNfpSU5nT7/images/subagents-vs-agent-teams-light.png?w=1650&fit=max&auto=format&n=nsvRFSDNfpSU5nT7&q=85&s=17a730a070db6d71d029a98b074c68e8 1650w, https://mintcdn.com/claude-code/nsvRFSDNfpSU5nT7/images/subagents-vs-agent-teams-light.png?w=2500&fit=max&auto=format&n=nsvRFSDNfpSU5nT7&q=85&s=e402533fc9e8b5e8d26a835cc4aa1742 2500w" />
-+  <img src="https://mintcdn.com/claude-code/nsvRFSDNfpSU5nT7/images/subagents-vs-agent-teams-light.png?fit=max&auto=format&n=nsvRFSDNfpSU5nT7&q=85&s=2f8db9b4f3705dd3ab931fbe2d96e42a" className="dark:hidden" alt="Subagent とエージェントチームアーキテクチャを比較する図。Subagent はメインエージェントによって生成され、作業を実行し、結果を報告します。エージェントチームは共有タスクリストを通じて調整し、チームメイトが互いに直接通信します。" width="4245" height="1615" data-path="images/subagents-vs-agent-teams-light.png" />
- 
--  <img src="https://mintcdn.com/claude-code/nsvRFSDNfpSU5nT7/images/subagents-vs-agent-teams-dark.png?fit=max&auto=format&n=nsvRFSDNfpSU5nT7&q=85&s=d573a037540f2ada6a9ae7d8285b46fd" className="hidden dark:block" alt="Subagent とエージェントチームアーキテクチャを比較する図。Subagent はメインエージェントによって生成され、作業を実行し、結果を報告します。エージェントチームは共有タスクリストを通じて調整し、チームメイトが互いに直接通信します。" data-og-width="4245" width="4245" data-og-height="1615" height="1615" data-path="images/subagents-vs-agent-teams-dark.png" data-optimize="true" data-opv="3" srcset="https://mintcdn.com/claude-code/nsvRFSDNfpSU5nT7/images/subagents-vs-agent-teams-dark.png?w=280&fit=max&auto=format&n=nsvRFSDNfpSU5nT7&q=85&s=06ca5b18b232855acc488357d8d01fa7 280w, https://mintcdn.com/claude-code/nsvRFSDNfpSU5nT7/images/subagents-vs-agent-teams-dark.png?w=560&fit=max&auto=format&n=nsvRFSDNfpSU5nT7&q=85&s=3d34daee83994781eb74b74d1ed511c4 560w, https://mintcdn.com/claude-code/nsvRFSDNfpSU5nT7/images/subagents-vs-agent-teams-dark.png?w=840&fit=max&auto=format&n=nsvRFSDNfpSU5nT7&q=85&s=82ea35ac837de7d674002de69689b9cf 840w, https://mintcdn.com/claude-code/nsvRFSDNfpSU5nT7/images/subagents-vs-agent-teams-dark.png?w=1100&fit=max&auto=format&n=nsvRFSDNfpSU5nT7&q=85&s=3653085214a9fc65d1f589044894a296 1100w, https://mintcdn.com/claude-code/nsvRFSDNfpSU5nT7/images/subagents-vs-agent-teams-dark.png?w=1650&fit=max&auto=format&n=nsvRFSDNfpSU5nT7&q=85&s=8e74b42694e428570e876d34f29e6ad6 1650w, https://mintcdn.com/claude-code/nsvRFSDNfpSU5nT7/images/subagents-vs-agent-teams-dark.png?w=2500&fit=max&auto=format&n=nsvRFSDNfpSU5nT7&q=85&s=3be00c56c6a0dcccbe15640020be0128 2500w" />
-+  <img src="https://mintcdn.com/claude-code/nsvRFSDNfpSU5nT7/images/subagents-vs-agent-teams-dark.png?fit=max&auto=format&n=nsvRFSDNfpSU5nT7&q=85&s=d573a037540f2ada6a9ae7d8285b46fd" className="hidden dark:block" alt="Subagent とエージェントチームアーキテクチャを比較する図。Subagent はメインエージェントによって生成され、作業を実行し、結果を報告します。エージェントチームは共有タスクリストを通じて調整し、チームメイトが互いに直接通信します。" width="4245" height="1615" data-path="images/subagents-vs-agent-teams-dark.png" />
- </Frame>
- 
-```
-
-</details>
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index 9030b86..f53466b 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,33 @@
- # Changelog
- 
-+## 2.1.73
-+
-+- Added `modelOverrides` setting to map model picker entries to custom provider model IDs (e.g. Bedrock inference profile ARNs)
-+- Added actionable guidance when OAuth login or connectivity checks fail due to SSL certificate errors (corporate proxies, `NODE_EXTRA_CA_CERTS`)
-+- Fixed freezes and 100% CPU loops triggered by permission prompts for complex bash commands
-+- Fixed a deadlock that could freeze Claude Code when many skill files changed at once (e.g. during `git pull` in a repo with a large `.claude/skills/` directory)
-+- Fixed Bash tool output being lost when running multiple Claude Code sessions in the same project directory
-+- Fixed subagents with `model: opus`/`sonnet`/`haiku` being silently downgraded to older model versions on Bedrock, Vertex, and Microsoft Foundry
-+- Fixed background bash processes spawned by subagents not being cleaned up when the agent exits
-+- Fixed `/resume` showing the current session in the picker
-+- Fixed `/ide` crashing with `onInstall is not defined` when auto-installing the extension
-+- Fixed `/loop` not being available on Bedrock/Vertex/Foundry and when telemetry was disabled
-+- Fixed SessionStart hooks firing twice when resuming a session via `--resume` or `--continue`
-+- Fixed JSON-output hooks injecting no-op system-reminder messages into the model's context on every turn
-+- Fixed voice mode session corruption when a slow connection overlaps a new recording
-+- Fixed Linux sandbox failing to start with "ripgrep (rg) not found" on native builds
-+- Fixed Linux native modules not loading on Amazon Linux 2 and other glibc 2.26 systems
-+- Fixed "media_type: Field required" API error when receiving images via Remote Control
-+- Fixed `/heapdump` failing on Windows with `EEXIST` error when the Desktop folder already exists
-+- Improved Up arrow after interrupting Claude — now restores the interrupted prompt and rewinds the conversation in one step
-+- Improved IDE detection speed at startup
-+- Improved clipboard image pasting performance on macOS
-+- Improved `/effort` to work while Claude is responding, matching `/model` behavior
-```
-
-</details>
-
-<details>
-<summary>data-usage-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/data-usage-ja.md b/docs-ja/pages/data-usage-ja.md
-index d10bcf9..da76c70 100644
---- a/docs-ja/pages/data-usage-ja.md
-+++ b/docs-ja/pages/data-usage-ja.md
-@@ -60,5 +60,5 @@ Web 上の個別の Claude Code セッションはいつでも削除できます
- 以下の図は、インストール中および通常の操作中に Claude Code が外部サービスにどのように接続するかを示しています。実線は必須の接続を示し、破線はオプションまたはユーザーが開始したデータフローを表します。
- 
--<img src="https://mintcdn.com/claude-code/TBPmHzr19mDCuhZi/images/claude-code-data-flow.svg?fit=max&auto=format&n=TBPmHzr19mDCuhZi&q=85&s=e0239c69a0bbae485b726338e50f1082" alt="Claude Code の外部接続を示す図：インストール/更新は NPM に接続し、ユーザーリクエストは Console 認証、public-api、およびオプションで Statsig、Sentry、バグレポートを含む Anthropic サービスに接続します" data-og-width="720" width="720" data-og-height="520" height="520" data-path="images/claude-code-data-flow.svg" data-optimize="true" data-opv="3" srcset="https://mintcdn.com/claude-code/TBPmHzr19mDCuhZi/images/claude-code-data-flow.svg?w=280&fit=max&auto=format&n=TBPmHzr19mDCuhZi&q=85&s=06435e080df22e66a454e99af1b6040b 280w, https://mintcdn.com/claude-code/TBPmHzr19mDCuhZi/images/claude-code-data-flow.svg?w=560&fit=max&auto=format&n=TBPmHzr19mDCuhZi&q=85&s=8261c15b4ffc12504e0a6e3f0ccd8c7d 560w, https://mintcdn.com/claude-code/TBPmHzr19mDCuhZi/images/claude-code-data-flow.svg?w=840&fit=max&auto=format&n=TBPmHzr19mDCuhZi&q=85&s=163bfaa8d4727a1bbb492cb086e5f083 840w, https://mintcdn.com/claude-code/TBPmHzr19mDCuhZi/images/claude-code-data-flow.svg?w=1100&fit=max&auto=format&n=TBPmHzr19mDCuhZi&q=85&s=ea3c2f801dfa5ad956b18b5f72df5c50 1100w, https://mintcdn.com/claude-code/TBPmHzr19mDCuhZi/images/claude-code-data-flow.svg?w=1650&fit=max&auto=format&n=TBPmHzr19mDCuhZi&q=85&s=91d743def7a8d074c93001b351f23037 1650w, https://mintcdn.com/claude-code/TBPmHzr19mDCuhZi/images/claude-code-data-flow.svg?w=2500&fit=max&auto=format&n=TBPmHzr19mDCuhZi&q=85&s=df68b2dd6de83316f70fd7f61c3a3bbd 2500w" />
-+<img src="https://mintcdn.com/claude-code/TBPmHzr19mDCuhZi/images/claude-code-data-flow.svg?fit=max&auto=format&n=TBPmHzr19mDCuhZi&q=85&s=e0239c69a0bbae485b726338e50f1082" alt="Claude Code の外部接続を示す図：インストール/更新は NPM に接続し、ユーザーリクエストは Console 認証、public-api、およびオプションで Statsig、Sentry、バグレポートを含む Anthropic サービスに接続します" width="720" height="520" data-path="images/claude-code-data-flow.svg" />
- 
- Claude Code は [NPM](https://www.npmjs.com/package/@anthropic-ai/claude-code) からインストールされます。Claude Code はローカルで実行されます。LLM と対話するために、Claude Code はネットワーク経由でデータを送信します。このデータには、すべてのユーザープロンプトとモデル出力が含まれます。データは TLS 経由で転送中に暗号化され、保存時には暗号化されません。Claude Code はほとんどの一般的な VPN および LLM プロキシと互換性があります。
-```
-
-</details>
-
-<details>
-<summary>desktop-quickstart-en.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/desktop-quickstart-en.md b/docs-ja/pages/desktop-quickstart-en.md
-index a0e5f72..1eae904 100644
---- a/docs-ja/pages/desktop-quickstart-en.md
-+++ b/docs-ja/pages/desktop-quickstart-en.md
-@@ -12,7 +12,7 @@ This page walks through installing the app and starting your first session. If y
- 
- <Frame>
--  <img src="https://mintcdn.com/claude-code/CNLUpFGiXoc9mhvD/images/desktop-code-tab-light.png?fit=max&auto=format&n=CNLUpFGiXoc9mhvD&q=85&s=9a36a7a27b9f4c6f2e1c83bdb34f69ce" className="block dark:hidden" alt="The Claude Code Desktop interface showing the Code tab selected, with a prompt box, permission mode selector set to Ask permissions, model picker, folder selector, and Local environment option" data-og-width="2500" width="2500" data-og-height="1376" height="1376" data-path="images/desktop-code-tab-light.png" data-optimize="true" data-opv="3" srcset="https://mintcdn.com/claude-code/CNLUpFGiXoc9mhvD/images/desktop-code-tab-light.png?w=280&fit=max&auto=format&n=CNLUpFGiXoc9mhvD&q=85&s=b4d1408a312d3ff3ac96dd133e4ef32b 280w, https://mintcdn.com/claude-code/CNLUpFGiXoc9mhvD/images/desktop-code-tab-light.png?w=560&fit=max&auto=format&n=CNLUpFGiXoc9mhvD&q=85&s=c2d9f668767d4de33696b3de190c0024 560w, https://mintcdn.com/claude-code/CNLUpFGiXoc9mhvD/images/desktop-code-tab-light.png?w=840&fit=max&auto=format&n=CNLUpFGiXoc9mhvD&q=85&s=89a78335d513c0ec2131feb11eeef6dc 840w, https://mintcdn.com/claude-code/CNLUpFGiXoc9mhvD/images/desktop-code-tab-light.png?w=1100&fit=max&auto=format&n=CNLUpFGiXoc9mhvD&q=85&s=0ef93540eafcedd2fb0ad718553325f4 1100w, https://mintcdn.com/claude-code/CNLUpFGiXoc9mhvD/images/desktop-code-tab-light.png?w=1650&fit=max&auto=format&n=CNLUpFGiXoc9mhvD&q=85&s=e7923c583f632de9f8a7e0e0da4f8c84 1650w, https://mintcdn.com/claude-code/CNLUpFGiXoc9mhvD/images/desktop-code-tab-light.png?w=2500&fit=max&auto=format&n=CNLUpFGiXoc9mhvD&q=85&s=38d64bdceaba941a73446f258be336ea 2500w" />
-+  <img src="https://mintcdn.com/claude-code/CNLUpFGiXoc9mhvD/images/desktop-code-tab-light.png?fit=max&auto=format&n=CNLUpFGiXoc9mhvD&q=85&s=9a36a7a27b9f4c6f2e1c83bdb34f69ce" className="block dark:hidden" alt="The Claude Code Desktop interface showing the Code tab selected, with a prompt box, permission mode selector set to Ask permissions, model picker, folder selector, and Local environment option" width="2500" height="1376" data-path="images/desktop-code-tab-light.png" />
- 
--  <img src="https://mintcdn.com/claude-code/CNLUpFGiXoc9mhvD/images/desktop-code-tab-dark.png?fit=max&auto=format&n=CNLUpFGiXoc9mhvD&q=85&s=5463defe81c459fb9b1f91f6a958cfb8" className="hidden dark:block" alt="The Claude Code Desktop interface in dark mode showing the Code tab selected, with a prompt box, permission mode selector set to Ask permissions, model picker, folder selector, and Local environment option" data-og-width="2504" width="2504" data-og-height="1374" height="1374" data-path="images/desktop-code-tab-dark.png" data-optimize="true" data-opv="3" srcset="https://mintcdn.com/claude-code/CNLUpFGiXoc9mhvD/images/desktop-code-tab-dark.png?w=280&fit=max&auto=format&n=CNLUpFGiXoc9mhvD&q=85&s=f2a6322688262feb9d680b99c24817ab 280w, https://mintcdn.com/claude-code/CNLUpFGiXoc9mhvD/images/desktop-code-tab-dark.png?w=560&fit=max&auto=format&n=CNLUpFGiXoc9mhvD&q=85&s=ffe9a3d1c4260fb12c66f533fdedc02e 560w, https://mintcdn.com/claude-code/CNLUpFGiXoc9mhvD/images/desktop-code-tab-dark.png?w=840&fit=max&auto=format&n=CNLUpFGiXoc9mhvD&q=85&s=867b7997a910af3ffac1101559564dd7 840w, https://mintcdn.com/claude-code/CNLUpFGiXoc9mhvD/images/desktop-code-tab-dark.png?w=1100&fit=max&auto=format&n=CNLUpFGiXoc9mhvD&q=85&s=976c9049c9e4cea2b02d4b6a1ef55142 1100w, https://mintcdn.com/claude-code/CNLUpFGiXoc9mhvD/images/desktop-code-tab-dark.png?w=1650&fit=max&auto=format&n=CNLUpFGiXoc9mhvD&q=85&s=d8f3792ddadf66f61306dc41680aaa34 1650w, https://mintcdn.com/claude-code/CNLUpFGiXoc9mhvD/images/desktop-code-tab-dark.png?w=2500&fit=max&auto=format&n=CNLUpFGiXoc9mhvD&q=85&s=88d049488f547e483e8c4f59ea8b2fd8 2500w" />
-+  <img src="https://mintcdn.com/claude-code/CNLUpFGiXoc9mhvD/images/desktop-code-tab-dark.png?fit=max&auto=format&n=CNLUpFGiXoc9mhvD&q=85&s=5463defe81c459fb9b1f91f6a958cfb8" className="hidden dark:block" alt="The Claude Code Desktop interface in dark mode showing the Code tab selected, with a prompt box, permission mode selector set to Ask permissions, model picker, folder selector, and Local environment option" width="2504" height="1374" data-path="images/desktop-code-tab-dark.png" />
- </Frame>
- 
 ```
 
 </details>
