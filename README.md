@@ -17,6 +17,292 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-04-03</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/agent-teams-ja.md              |  21 ++-
+ docs-ja/pages/amazon-bedrock-ja.md           |  27 +++-
+ docs-ja/pages/changelog.md                   |  16 +++
+ docs-ja/pages/claude-code-on-the-web-ja.md   |   4 +
+ docs-ja/pages/claude-directory-en.md         |   2 +-
+ docs-ja/pages/cli-reference-ja.md            |  60 ++++----
+ docs-ja/pages/code-review-ja.md              |  71 ++++++++--
+ docs-ja/pages/commands-ja.md                 | 133 ++++++++---------
+ docs-ja/pages/common-workflows-ja.md         |  75 ++++++++--
+ docs-ja/pages/computer-use-en.md             | 205 ---------------------------
+ docs-ja/pages/desktop-ja.md                  |  48 +++++--
+ docs-ja/pages/discover-plugins-ja.md         |  18 +--
+ docs-ja/pages/env-vars-ja.md                 |  92 ++++++++++--
+ docs-ja/pages/fullscreen-ja.md               |   6 +-
+ docs-ja/pages/github-actions-ja.md           |   6 +-
+ docs-ja/pages/github-enterprise-server-en.md |   2 +-
+ docs-ja/pages/google-vertex-ai-ja.md         |  31 ++--
+ docs-ja/pages/hooks-guide-ja.md              |  86 ++++++++---
+ docs-ja/pages/hooks-ja.md                    | 203 +++++++++++++++++++-------
+ docs-ja/pages/how-claude-code-works-ja.md    |   8 +-
+ docs-ja/pages/interactive-mode-ja.md         |  25 ++--
+ docs-ja/pages/keybindings-ja.md              |  71 +++++++---
+ docs-ja/pages/mcp-ja.md                      |  42 +++---
+ docs-ja/pages/memory-ja.md                   |  10 +-
+ docs-ja/pages/model-config-ja.md             |  58 +++++++-
+ docs-ja/pages/monitoring-usage-ja.md         | 111 +++++++++------
+ docs-ja/pages/network-config-ja.md           |   7 +
+ docs-ja/pages/output-styles-ja.md            |   3 +-
+ docs-ja/pages/permission-modes-ja.md         |  50 +++----
+ docs-ja/pages/permissions-ja.md              |  51 +++++--
+ docs-ja/pages/plugin-marketplaces-ja.md      |  22 ++-
+ docs-ja/pages/plugins-ja.md                  |   3 +-
+ docs-ja/pages/sandboxing-ja.md               |   2 +-
+ docs-ja/pages/scheduled-tasks-ja.md          |   4 +-
+ docs-ja/pages/server-managed-settings-ja.md  |  13 +-
+ docs-ja/pages/settings-ja.md                 | 155 ++++++++++----------
+ docs-ja/pages/setup-ja.md                    | 102 +++++++++++--
+ docs-ja/pages/skills-ja.md                   |  42 +++---
+ docs-ja/pages/statusline-ja.md               | 145 +++++++++++++++----
+ docs-ja/pages/sub-agents-ja.md               |  48 ++++---
+ docs-ja/pages/tools-reference-ja.md          | 134 ++++++++++++-----
+ 41 files changed, 1405 insertions(+), 807 deletions(-)
+```
+
+**新規追加:**
+
+
+**削除:**
+
+
+<details>
+<summary>agent-teams-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/agent-teams-ja.md b/docs-ja/pages/agent-teams-ja.md
+index 2f461f7..eb95cdb 100644
+--- a/docs-ja/pages/agent-teams-ja.md
++++ b/docs-ja/pages/agent-teams-ja.md
+@@ -102,5 +102,5 @@ teammate on UX, one on technical architecture, one playing devil's advocate.
+ </Note>
+ 
+-デフォルトは `"auto"` で、既に tmux セッション内で実行している場合は分割ペインを使用し、そうでない場合は in-process を使用します。`"tmux"` 設定は分割ペインモードを有効にし、ターミナルに基づいて tmux または iTerm2 を使用するかどうかを自動検出します。オーバーライドするには、[settings.json](/ja/settings) で `teammateMode` を設定してください。
++デフォルトは `"auto"` で、既に tmux セッション内で実行している場合は分割ペインを使用し、そうでない場合は in-process を使用します。`"tmux"` 設定は分割ペインモードを有効にし、ターミナルに基づいて tmux または iTerm2 を使用するかどうかを自動検出します。オーバーライドするには、[グローバル設定](/ja/settings#global-config-settings)で `~/.claude.json` の `teammateMode` を設定してください。
+ 
+ ```json  theme={null}
+@@ -187,7 +187,8 @@ Clean up the team
+ ### hooks で品質ゲートを実施する
+ 
+-[hooks](/ja/hooks) を使用して、チームメンバーが作業を完了したときまたはタスクが完了したときのルールを実施してください。
++[hooks](/ja/hooks) を使用して、チームメンバーが作業を完了したときまたはタスクが作成または完了したときのルールを実施してください。
+ 
+ * [`TeammateIdle`](/ja/hooks#teammateidle)：チームメンバーがアイドル状態になろうとしているときに実行されます。終了コード 2 でフィードバックを送信し、チームメンバーを動作させ続けてください。
++* [`TaskCreated`](/ja/hooks#taskcreated)：タスクが作成されているときに実行されます。終了コード 2 で作成を防止し、フィードバックを送信してください。
+ * [`TaskCompleted`](/ja/hooks#taskcompleted)：タスクが完了としてマークされているときに実行されます。終了コード 2 で完了を防止し、フィードバックを送信してください。
+ 
+@@ -225,6 +226,22 @@ Clean up the team
+ * **タスクリスト**：`~/.claude/tasks/{team-name}/`
+ 
++Claude Code はチームを作成するときにこれらの両方を自動的に生成し、チームメンバーが参加、アイドル状態になる、または離脱するときに更新します。チーム設定には、セッション ID と tmux ペイン ID などのランタイム状態が含まれているため、手動で編集したり、事前に作成したりしないでください。次の状態更新時に変更が上書きされます。
++
++再利用可能なチームメンバーロールを定義するには、代わりに [subagent 定義を使用](#use-subagent-definitions-for-teammates) してください。
++
+ チーム設定には、各チームメンバーの名前、エージェント ID、およびエージェントタイプを含む `members` 配列が含まれています。チームメンバーはこのファイルを読み取って、他のチームメンバーを発見できます。
+ 
+```
+
+</details>
+
+<details>
+<summary>amazon-bedrock-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/amazon-bedrock-ja.md b/docs-ja/pages/amazon-bedrock-ja.md
+index 20dbef7..68121f6 100644
+--- a/docs-ja/pages/amazon-bedrock-ja.md
++++ b/docs-ja/pages/amazon-bedrock-ja.md
+@@ -117,4 +117,7 @@ export AWS_REGION=us-east-1  # または希望するリージョン
+ # オプション：小型/高速モデル（Haiku）のリージョンをオーバーライド
+ export ANTHROPIC_SMALL_FAST_MODEL_AWS_REGION=us-west-2
++
++# オプション：カスタムエンドポイントまたはゲートウェイ用に Bedrock エンドポイント URL をオーバーライド
++# export ANTHROPIC_BEDROCK_BASE_URL=https://bedrock-runtime.us-east-1.amazonaws.com
+ ```
+ 
+@@ -143,8 +146,8 @@ export ANTHROPIC_DEFAULT_HAIKU_MODEL='us.anthropic.claude-haiku-4-5-20251001-v1:
+ Claude Code は、ピン留め変数が設定されていない場合、これらのデフォルトモデルを使用します。
+ 
+-| モデルタイプ   | デフォルト値                                        |
+-| :------- | :-------------------------------------------- |
+-| プライマリモデル | `global.anthropic.claude-sonnet-4-6`          |
+-| 小型/高速モデル | `us.anthropic.claude-haiku-4-5-20251001-v1:0` |
++| モデルタイプ   | デフォルト値                                         |
++| :------- | :--------------------------------------------- |
++| プライマリモデル | `us.anthropic.claude-sonnet-4-5-20250929-v1:0` |
++| 小型/高速モデル | `us.anthropic.claude-haiku-4-5-20251001-v1:0`  |
+ 
+ モデルをさらにカスタマイズするには、以下のいずれかの方法を使用します。
+@@ -153,5 +156,5 @@ Claude Code は、ピン留め変数が設定されていない場合、これ
+ # 推論プロファイル ID を使用
+ export ANTHROPIC_MODEL='global.anthropic.claude-sonnet-4-6'
+-export ANTHROPIC_SMALL_FAST_MODEL='us.anthropic.claude-haiku-4-5-20251001-v1:0'
++export ANTHROPIC_DEFAULT_HAIKU_MODEL='us.anthropic.claude-haiku-4-5-20251001-v1:0'
+```
+
+</details>
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index 10da815..2f6c965 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,20 @@
+ # Changelog
+ 
++## 2.1.91
++
++- Added MCP tool result persistence override via `_meta["anthropic/maxResultSizeChars"]` annotation (up to 500K), allowing larger results like DB schemas to pass through without truncation
++- Added `disableSkillShellExecution` setting to disable inline shell execution in skills, custom slash commands, and plugin commands
++- Added support for multi-line prompts in `claude-cli://open?q=` deep links (encoded newlines `%0A` no longer rejected)
++- Plugins can now ship executables under `bin/` and invoke them as bare commands from the Bash tool
++- Fixed transcript chain breaks on `--resume` that could lose conversation history when async transcript writes fail silently
++- Fixed `cmd+delete` not deleting to start of line on iTerm2, kitty, WezTerm, Ghostty, and Windows Terminal
++- Fixed plan mode in remote sessions losing track of the plan file after a container restart, which caused permission prompts on plan edits and an empty plan-approval modal
++- Fixed JSON schema validation for `permissions.defaultMode: "auto"` in settings.json
++- Fixed Windows version cleanup not protecting the active version's rollback copy
++- `/feedback` now explains why it's unavailable instead of disappearing from the slash menu
++- Improved `/claude-api` skill guidance for agent design patterns including tool surface decisions, context management, and caching strategy
++- Improved performance: faster `stripAnsi` on Bun by routing through `Bun.stripANSI`
++- Edit tool now uses shorter `old_string` anchors, reducing output tokens
++
+ ## 2.1.90
+ 
+```
+
+</details>
+
+<details>
+<summary>claude-code-on-the-web-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/claude-code-on-the-web-ja.md b/docs-ja/pages/claude-code-on-the-web-ja.md
+index a75d9a7..c57cc15 100644
+--- a/docs-ja/pages/claude-code-on-the-web-ja.md
++++ b/docs-ja/pages/claude-code-on-the-web-ja.md
+@@ -108,4 +108,8 @@ auto-fix がアクティブな場合、Claude は新しいレビューコメン
+ Claude は PR を解決する際に GitHub のレビューコメントスレッドに返信する場合があります。これらの返信はあなたの GitHub アカウントを使用して投稿されるため、あなたのユーザー名の下に表示されますが、各返信は Claude Code から来たものとしてラベル付けされるため、レビュアーはそれがエージェントによって書かれたものであり、あなたが直接書いたものではないことを知っています。
+ 
++<Warning>
++  リポジトリが Atlantis、Terraform Cloud、または `issue_comment` イベントで実行されるカスタム GitHub Actions などのコメントトリガー自動化を使用する場合、Claude の返信がそれらのワークフローをトリガーする可能性があることに注意してください。auto-fix を有効にする前にリポジトリの自動化を確認し、PR コメントがインフラストラクチャをデプロイするか特権操作を実行できるリポジトリでは auto-fix を無効にすることを検討してください。
++</Warning>
++
+ ## ウェブとターミナル間でタスクを移動する
+ 
+```
+
+</details>
+
+<details>
+<summary>claude-directory-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/claude-directory-en.md b/docs-ja/pages/claude-directory-en.md
+index 10c6cbb..4331e82 100644
+--- a/docs-ja/pages/claude-directory-en.md
++++ b/docs-ja/pages/claude-directory-en.md
+@@ -266,5 +266,5 @@ Report findings with severity ratings and remediation steps.`
+               badge: 'committed',
+               oneLiner: 'Supporting file bundled with the skill',
+-              when: 'Claude reads it when SKILL.md mentions it',
++              when: 'Claude reads it on demand while running the skill',
+               description: <>Skills can bundle any supporting files: reference docs, templates, scripts. The skill directory path is prepended to SKILL.md, so Claude can read bundled files by name. For scripts in bash injection commands, use the <C>{'${CLAUDE_SKILL_DIR}'}</C> placeholder.</>,
+               example: `# Security Review Checklist
+```
+
+</details>
+
+<details>
+<summary>cli-reference-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/cli-reference-ja.md b/docs-ja/pages/cli-reference-ja.md
+index a13d6f6..eb5ba05 100644
+--- a/docs-ja/pages/cli-reference-ja.md
++++ b/docs-ja/pages/cli-reference-ja.md
+@@ -11,33 +11,33 @@
+ これらのコマンドを使用して、セッションを開始し、コンテンツをパイプし、会話を再開し、更新を管理できます。
+ 
+-| コマンド                            | 説明                                                                                                                                                                                      | 例                                                           |
+-| :------------------------------ | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :---------------------------------------------------------- |
+-| `claude`                        | インタラクティブセッションを開始                                                                                                                                                                        | `claude`                                                    |
+-| `claude "query"`                | 初期プロンプト付きでインタラクティブセッションを開始                                                                                                                                                              | `claude "explain this project"`                             |
+-| `claude -p "query"`             | SDK 経由でクエリを実行してから終了                                                                                                                                                                     | `claude -p "explain this function"`                         |
+-| `cat file \| claude -p "query"` | パイプされたコンテンツを処理                                                                                                                                                                          | `cat logs.txt \| claude -p "explain"`                       |
+-| `claude -c`                     | 現在のディレクトリで最新の会話を続行                                                                                                                                                                      | `claude -c`                                                 |
+-| `claude -c -p "query"`          | SDK 経由で続行                                                                                                                                                                               | `claude -c -p "Check for type errors"`                      |
+-| `claude -r "<session>" "query"` | セッション ID または名前でセッションを再開                                                                                                                                                                 | `claude -r "auth-refactor" "Finish this PR"`                |
+-| `claude update`                 | 最新バージョンに更新                                                                                                                                                                              | `claude update`                                             |
+-| `claude auth login`             | Anthropic アカウントにサインインします。`--email` を使用してメールアドレスを事前入力し、`--sso` を使用して SSO 認証を強制し、`--console` を使用して Claude サブスクリプションの代わりに Anthropic Console で API 使用料金をサインインできます                           | `claude auth login --console`                               |
+-| `claude auth logout`            | Anthropic アカウントからログアウト                                                                                                                                                                  | `claude auth logout`                                        |
+-| `claude auth status`            | 認証ステータスを JSON として表示します。`--text` を使用して人間が読める形式で表示できます。ログイン済みの場合はコード 0 で終了し、ログインしていない場合は 1 で終了します                                                                                         | `claude auth status`                                        |
+-| `claude agents`                 | すべての設定済み [subagents](/ja/sub-agents) をソース別にグループ化して一覧表示                                                                                                                                  | `claude agents`                                             |
+-| `claude auto-mode defaults`     | 組み込み [auto mode](/ja/permission-modes#eliminate-prompts-with-auto-mode) 分類器ルールを JSON として出力します。`claude auto-mode config` を使用して、設定が適用された有効な設定を確認してください                                    | `claude auto-mode defaults > rules.json`                    |
+-| `claude mcp`                    | Model Context Protocol（MCP）サーバーを設定                                                                                                                                                      | [Claude Code MCP ドキュメント](/ja/mcp) を参照してください。                |
+-| `claude plugin`                 | Claude Code [plugins](/ja/plugins) を管理します。エイリアス：`claude plugins`。サブコマンドについては [plugin reference](/ja/plugins-reference#cli-commands-reference) を参照してください                                 | `claude plugin install code-review@claude-code-marketplace` |
+-| `claude remote-control`         | [Remote Control](/ja/remote-control) サーバーを開始して、Claude.ai または Claude アプリから Claude Code を制御します。サーバーモード（ローカルインタラクティブセッションなし）で実行されます。[サーバーモードフラグ](/ja/remote-control#server-mode) を参照してください | `claude remote-control --name "My Project"`                 |
++| コマンド                            | 説明                                                                                                                                                                                                         | 例                                                           |
++| :------------------------------ | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :---------------------------------------------------------- |
++| `claude`                        | インタラクティブセッションを開始                                                                                                                                                                                           | `claude`                                                    |
++| `claude "query"`                | 初期プロンプト付きでインタラクティブセッションを開始                                                                                                                                                                                 | `claude "explain this project"`                             |
++| `claude -p "query"`             | SDK 経由でクエリを実行してから終了                                                                                                                                                                                        | `claude -p "explain this function"`                         |
+```
+
+</details>
+
+<details>
+<summary>code-review-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/code-review-ja.md b/docs-ja/pages/code-review-ja.md
+index 815c1b8..e56a971 100644
+--- a/docs-ja/pages/code-review-ja.md
++++ b/docs-ja/pages/code-review-ja.md
+@@ -15,5 +15,5 @@ Code Review は GitHub プルリクエストを分析し、コードの問題が
+ 結果は重大度でタグ付けされ、PR を承認またはブロックしないため、既存のレビューワークフローはそのまま機能します。リポジトリに `CLAUDE.md` または `REVIEW.md` ファイルを追加することで、Claude がフラグを立てる内容をカスタマイズできます。
+ 
+-Claude を管理サービスではなく独自の CI インフラストラクチャで実行する場合は、[GitHub Actions](/ja/github-actions) または [GitLab CI/CD](/ja/gitlab-ci-cd) を参照してください。
++Claude を管理サービスではなく独自の CI インフラストラクチャで実行する場合は、[GitHub Actions](/ja/github-actions) または [GitLab CI/CD](/ja/gitlab-ci-cd) を参照してください。自己ホスト型 GitHub インスタンス上のリポジトリについては、[GitHub Enterprise Server](/ja/github-enterprise-server) を参照してください。
+ 
+ このページでは以下をカバーしています：
+@@ -21,6 +21,8 @@ Claude を管理サービスではなく独自の CI インフラストラクチ
+ * [レビューの仕組み](#how-reviews-work)
+ * [セットアップ](#set-up-code-review)
++* [`@claude review` と `@claude review once` を使用した](#manually-trigger-reviews)レビューの手動トリガー
+ * [`CLAUDE.md` と `REVIEW.md` を使用した](#customize-reviews)レビューのカスタマイズ
+ * [料金](#pricing)
++* [トラブルシューティング](#troubleshooting)失敗した実行と欠落したコメント
+ 
+ ## レビューの仕組み
+@@ -38,5 +40,5 @@ Claude を管理サービスではなく独自の CI インフラストラクチ
+ | マーカー | 重大度          | 意味                             |
+ | :--- | :----------- | :----------------------------- |
+-| 🔴   | Normal       | マージ前に修正すべきバグ                   |
++| 🔴   | Important    | マージ前に修正すべきバグ                   |
+ | 🟡   | Nit          | 軽微な問題、修正する価値があるがブロッキングではない     |
+ | 🟣   | Pre-existing | コードベースに存在するが、この PR で導入されなかったバグ |
+@@ -44,4 +46,24 @@ Claude を管理サービスではなく独自の CI インフラストラクチ
+ 結果には、展開可能な拡張推論セクションが含まれており、Claude がなぜ問題をフラグ立てしたのか、どのように問題を検証したのかを理解するために展開できます。
+ 
+```
+
+</details>
+
+*...以降省略*
+
+</details>
+
+
+<details>
 <summary>2026-04-02</summary>
 
 **変更ファイル:**
@@ -2424,291 +2710,6 @@ index 1f2c61f..8941fdd 100644
 +| `ElicitationResult`  | After a user responds to an MCP elicitation, before the response is sent back to the server                                                    |
  | `SessionEnd`         | When a session terminates                                                                                                                      |
  
-```
-
-</details>
-
-<details>
-<summary>hooks-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/hooks-ja.md b/docs-ja/pages/hooks-ja.md
-index c5fbb95..55bc144 100644
---- a/docs-ja/pages/hooks-ja.md
-+++ b/docs-ja/pages/hooks-ja.md
-@@ -19,5 +19,5 @@
- <div style={{maxWidth: "500px", margin: "0 auto"}}>
-   <Frame>
--    <img src="https://mintcdn.com/claude-code/c5r9_6tjPMzFdDDT/images/hooks-lifecycle.svg?fit=max&auto=format&n=c5r9_6tjPMzFdDDT&q=85&s=996ed41d03e106ab6bc9a8fdd4ebcf26" alt="SessionStart から agentic ループを経由して SessionEnd までのフックのシーケンスを示すフック ライフサイクル図。WorktreeCreate、WorktreeRemove、InstructionsLoaded はスタンドアロン非同期イベント" width="520" height="1020" data-path="images/hooks-lifecycle.svg" />
-+    <img src="https://mintcdn.com/claude-code/lBsitdsGyD9caWJQ/images/hooks-lifecycle.svg?fit=max&auto=format&n=lBsitdsGyD9caWJQ&q=85&s=be3486ef2cf2563eb213b6cbbce93982" alt="SessionStart から agentic ループを経由して SessionEnd までのフックのシーケンスを示すフック ライフサイクル図。WorktreeCreate、WorktreeRemove、InstructionsLoaded はスタンドアロン非同期イベント" width="520" height="1100" data-path="images/hooks-lifecycle.svg" />
-   </Frame>
- </div>
-@@ -44,4 +44,7 @@
- | `WorktreeRemove`     | When a worktree is being removed, either at session exit or when a subagent finishes                                                           |
- | `PreCompact`         | Before context compaction                                                                                                                      |
-+| `PostCompact`        | After context compaction completes                                                                                                             |
-+| `Elicitation`        | When an MCP server requests user input during a tool call                                                                                      |
-+| `ElicitationResult`  | After a user responds to an MCP elicitation, before the response is sent back to the server                                                    |
- | `SessionEnd`         | When a session terminates                                                                                                                      |
- 
-```
-
-</details>
-
-</details>
-
-
-<details>
-<summary>2026-03-14</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/authentication-en.md |  6 +++---
- docs-ja/pages/changelog.md         | 22 ++++++++++++++++++++++
- 2 files changed, 25 insertions(+), 3 deletions(-)
-```
-
-**新規追加:**
-
-
-<details>
-<summary>authentication-en.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/authentication-en.md b/docs-ja/pages/authentication-en.md
-index 25b933c..3177c4c 100644
---- a/docs-ja/pages/authentication-en.md
-+++ b/docs-ja/pages/authentication-en.md
-@@ -17,5 +17,5 @@ If the browser doesn't open automatically, press `c` to copy the login URL to yo
- You can authenticate with any of these account types:
- 
--* **Claude Pro or Max subscription**: log in with your Claude.ai account. Subscribe at [claude.com/pricing](https://claude.com/pricing).
-+* **Claude Pro or Max subscription**: log in with your Claude.ai account. Subscribe at [claude.com/pricing](https://claude.com/pricing?utm_source=claude_code\&utm_medium=docs\&utm_content=authentication_pro_max).
- * **Claude for Teams or Enterprise**: log in with the Claude.ai account your team admin invited you to.
- * **Claude Console**: log in with your Console credentials. Your admin must have [invited you](#claude-console-authentication) first.
-@@ -38,5 +38,5 @@ For teams and organizations, you can configure Claude Code access in one of thes
- ### Claude for Teams or Enterprise
- 
--[Claude for Teams](https://claude.com/pricing#team-&-enterprise) and [Claude for Enterprise](https://anthropic.com/contact-sales) provide the best experience for organizations using Claude Code. Team members get access to both Claude Code and Claude on the web with centralized billing and team management.
-+[Claude for Teams](https://claude.com/pricing?utm_source=claude_code\&utm_medium=docs\&utm_content=authentication_teams#team-&-enterprise) and [Claude for Enterprise](https://anthropic.com/contact-sales?utm_source=claude_code\&utm_medium=docs\&utm_content=authentication_enterprise) provide the best experience for organizations using Claude Code. Team members get access to both Claude Code and Claude on the web with centralized billing and team management.
- 
- * **Claude for Teams**: self-service plan with collaboration features, admin tools, and billing management. Best for smaller teams.
-@@ -45,5 +45,5 @@ For teams and organizations, you can configure Claude Code access in one of thes
- <Steps>
-   <Step title="Subscribe">
--    Subscribe to [Claude for Teams](https://claude.com/pricing#team-&-enterprise) or contact sales for [Claude for Enterprise](https://anthropic.com/contact-sales).
-+    Subscribe to [Claude for Teams](https://claude.com/pricing?utm_source=claude_code\&utm_medium=docs\&utm_content=authentication_teams_step#team-&-enterprise) or contact sales for [Claude for Enterprise](https://anthropic.com/contact-sales?utm_source=claude_code\&utm_medium=docs\&utm_content=authentication_enterprise_step).
-   </Step>
- 
-```
-
-</details>
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index f230235..d39b179 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,26 @@
- # Changelog
- 
-+## 2.1.75
-+
-+- Added 1M context window for Opus 4.6 by default for Max, Team, and Enterprise plans (previously required extra usage)
-+- Added `/color` command for all users to set a prompt-bar color for your session
-+- Added session name display on the prompt bar when using `/rename`
-+- Added last-modified timestamps to memory files, helping Claude reason about which memories are fresh vs. stale
-+- Added hook source display (settings/plugin/skill) in permission prompts when a hook requires confirmation
-+- Fixed voice mode not activating correctly on fresh installs without toggling `/voice` twice
-+- Fixed the Claude Code header not updating the displayed model name after switching models with `/model` or Option+P
-+- Fixed session crash when an attachment message computation returns undefined values
-+- Fixed Bash tool mangling `!` in piped commands (e.g., `jq 'select(.x != .y)'` now works correctly)
-+- Fixed managed-disabled plugins showing up in the `/plugin` Installed tab — plugins force-disabled by your organization are now hidden
-+- Fixed token estimation over-counting for thinking and `tool_use` blocks, preventing premature context compaction
-+- Fixed corrupted marketplace config path handling
-+- Fixed `/resume` losing session names after resuming a forked or continued session
-+- Fixed Esc not closing the `/status` dialog after visiting the Config tab
-+- Fixed input handling when accepting or rejecting a plan
-+- Fixed footer hint in agent teams showing "↓ to expand" instead of the correct "shift + ↓ to expand"
-+- Improved startup performance on macOS non-MDM machines by skipping unnecessary subprocess spawns
-+- Suppressed async hook completion messages by default (visible with `--verbose` or transcript mode)
-+- Breaking change: Removed deprecated Windows managed settings fallback at `C:\ProgramData\ClaudeCode\managed-settings.json` — use `C:\Program Files\ClaudeCode\managed-settings.json`
-+
- ## 2.1.74
-```
-
-</details>
-
-</details>
-
-
-<details>
-<summary>2026-03-13</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/agent-teams-ja.md             | 278 +++++++-------
- docs-ja/pages/amazon-bedrock-ja.md          | 112 +++---
- docs-ja/pages/best-practices-ja.md          | 171 ++++-----
- docs-ja/pages/changelog.md                  |  20 +
- docs-ja/pages/claude-code-on-the-web-ja.md  | 174 +++++----
- docs-ja/pages/cli-reference-ja.md           | 158 ++++----
- docs-ja/pages/code-review-en.md             | 168 ---------
- docs-ja/pages/common-workflows-ja.md        | 303 +++++++--------
- docs-ja/pages/data-usage-ja.md              |   2 +-
- docs-ja/pages/desktop-ja.md                 | 352 +++++++++++-------
- docs-ja/pages/desktop-quickstart-en.md      | 139 -------
- docs-ja/pages/discover-plugins-ja.md        |  90 +++--
- docs-ja/pages/fast-mode-ja.md               |  56 +--
- docs-ja/pages/features-overview-ja.md       |  78 ++--
- docs-ja/pages/github-actions-ja.md          | 148 ++++----
- docs-ja/pages/hooks-ja.md                   | 493 +++++++++++++-----------
- docs-ja/pages/how-claude-code-works-ja.md   | 194 +++++-----
- docs-ja/pages/interactive-mode-ja.md        | 225 ++++++-----
- docs-ja/pages/jetbrains-ja.md               | 111 +++---
- docs-ja/pages/keybindings-ja.md             |  46 +--
- docs-ja/pages/mcp-ja.md                     | 557 +++++++++++++++-------------
- docs-ja/pages/memory-ja.md                  | 119 +++---
- docs-ja/pages/model-config-ja.md            |  88 +++--
- docs-ja/pages/output-styles-ja.md           |  32 +-
- docs-ja/pages/overview-ja.md                |  71 ++--
- docs-ja/pages/permissions-ja.md             |  56 +--
- docs-ja/pages/plugin-marketplaces-ja.md     | 274 ++++++++------
- docs-ja/pages/plugins-ja.md                 |  54 +--
- docs-ja/pages/remote-control-ja.md          |  77 ++--
- docs-ja/pages/sandboxing-ja.md              |  58 +--
- docs-ja/pages/scheduled-tasks-en.md         | 129 -------
- docs-ja/pages/server-managed-settings-ja.md |  28 +-
- docs-ja/pages/settings-ja.md                | 329 ++++++++--------
- docs-ja/pages/skills-ja.md                  | 135 +++----
- docs-ja/pages/statusline-ja.md              | 125 ++++---
- docs-ja/pages/sub-agents-ja.md              | 234 ++++++------
- docs-ja/pages/troubleshooting-ja.md         |  94 ++---
- docs-ja/pages/vs-code-ja.md                 | 217 +++++------
- 38 files changed, 3011 insertions(+), 2984 deletions(-)
-```
-
-**新規追加:**
-
-
-**削除:**
-
-
-<details>
-<summary>agent-teams-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/agent-teams-ja.md b/docs-ja/pages/agent-teams-ja.md
-index 3257876..2f461f7 100644
---- a/docs-ja/pages/agent-teams-ja.md
-+++ b/docs-ja/pages/agent-teams-ja.md
-@@ -5,31 +5,35 @@
- # Claude Code セッションのチームを調整する
- 
--> 複数の Claude Code インスタンスがチームとして連携して動作するように調整します。共有タスク、エージェント間メッセージング、一元管理を備えています。
-+> 複数の Claude Code インスタンスがチームとして連携して動作するように調整し、共有タスク、エージェント間メッセージング、および一元管理を実現します。
- 
- <Warning>
--  エージェントチームは実験的機能であり、デフォルトでは無効です。`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` を [settings.json](/ja/settings) または環境に追加して有効にしてください。エージェントチームには、セッション再開、タスク調整、シャットダウン動作に関する [既知の制限](#limitations) があります。
-+  エージェントチームは実験的機能であり、デフォルトでは無効になっています。[settings.json](/ja/settings) または環境に `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` を追加して有効にしてください。エージェントチームには、セッション再開、タスク調整、シャットダウン動作に関する[既知の制限](#limitations)があります。
- </Warning>
- 
--エージェントチームを使用すると、複数の Claude Code インスタンスが連携して動作するように調整できます。1 つのセッションがチームリーダーとして機能し、作業を調整し、タスクを割り当て、結果を統合します。チームメイトは独立して動作し、それぞれ独自のコンテキストウィンドウで動作し、互いに直接通信します。
-+エージェントチームを使用すると、複数の Claude Code インスタンスが連携して動作するように調整できます。1 つのセッションがチームリーダーとして機能し、作業を調整し、タスクを割り当て、結果を統合します。チームメンバーは独立して動作し、それぞれ独自のコンテキストウィンドウで動作し、互いに直接通信します。
- 
--単一セッション内で実行され、メインエージェントにのみ報告できる [subagents](/ja/sub-agents) とは異なり、リーダーを経由せずに個別のチームメイトと直接対話することもできます。
-+[subagents](/ja/sub-agents)（単一セッション内で実行され、メインエージェントにのみ報告できる）とは異なり、リーダーを経由せずに個別のチームメンバーと直接対話することもできます。
-+
-+<Note>
-+  エージェントチームには Claude Code v2.1.32 以降が必要です。`claude --version` でバージョンを確認してください。
-+</Note>
- 
- このページでは、以下について説明します。
- 
--* [エージェントチームを使用する場合](#when-to-use-agent-teams)。ベストユースケースと subagents との比較を含みます
-+* [エージェントチームを使用する場合](#when-to-use-agent-teams)（ユースケースと subagents との比較を含む）
- * [チームを開始する](#start-your-first-agent-team)
-```
-
-</details>
-
-<details>
-<summary>amazon-bedrock-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/amazon-bedrock-ja.md b/docs-ja/pages/amazon-bedrock-ja.md
-index 294e952..20dbef7 100644
---- a/docs-ja/pages/amazon-bedrock-ja.md
-+++ b/docs-ja/pages/amazon-bedrock-ja.md
-@@ -12,8 +12,12 @@ Claude Code を Bedrock で設定する前に、以下を確認してくださ
- 
- * Bedrock アクセスが有効になっている AWS アカウント
--* Bedrock で目的の Claude モデル（例：Claude Sonnet 4.5）へのアクセス
--* AWS CLI がインストールされ、設定されていること（オプション - 別の認証情報取得メカニズムがない場合のみ必要）
-+* Bedrock で目的の Claude モデル（例：Claude Sonnet 4.6）へのアクセス
-+* AWS CLI がインストールされ、設定されていること（オプション - 認証情報を取得する別のメカニズムがない場合のみ必要）
- * 適切な IAM 権限
- 
-+<Note>
-+  Claude Code を複数のユーザーにデプロイする場合は、[モデルバージョンをピン留めして](#4-pin-model-versions)、Anthropic が新しいモデルをリリースしたときの破損を防いでください。
-+</Note>
-+
- ## セットアップ
- 
-@@ -22,8 +26,8 @@ Claude Code を Bedrock で設定する前に、以下を確認してくださ
- Anthropic モデルの初回ユーザーは、モデルを呼び出す前にユースケースの詳細を送信する必要があります。これはアカウントごとに 1 回行われます。
- 
--1. 適切な IAM 権限があることを確認してください（詳細は以下を参照）
-+1. 適切な IAM 権限があることを確認してください（以下を参照）
- 2. [Amazon Bedrock コンソール](https://console.aws.amazon.com/bedrock/)に移動します
- 3. **Chat/Text playground** を選択します
--4. 任意の Anthropic モデルを選択すると、ユースケースフォームの入力を求められます
-+4. Anthropic モデルを選択すると、ユースケースフォームの入力を求められます
- 
- ### 2. AWS 認証情報を設定
-```
-
-</details>
-
-<details>
-<summary>best-practices-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/best-practices-ja.md b/docs-ja/pages/best-practices-ja.md
-index 0c3296d..e0bbedd 100644
---- a/docs-ja/pages/best-practices-ja.md
-+++ b/docs-ja/pages/best-practices-ja.md
-@@ -9,5 +9,5 @@
- Claude Code は agentic coding 環境です。質問に答えて待つチャットボットとは異なり、Claude Code はファイルを読み取り、コマンドを実行し、変更を加え、あなたが見守ったり、方向を変えたり、完全に任せたりしながら、自律的に問題を解決できます。
- 
--これはあなたの作業方法を変えます。自分でコードを書いて Claude にレビューしてもらう代わりに、何をしたいかを説明すると、Claude がそれをどのように構築するかを考え出します。Claude は探索し、計画し、実装します。
-+これはあなたの作業方法を変えます。自分でコードを書いて Claude にレビューしてもらう代わりに、やりたいことを説明すると Claude がそれをどのように構築するかを考え出します。Claude は探索し、計画し、実装します。
- 
- しかし、この自律性にも学習曲線があります。Claude は理解する必要がある特定の制約の中で動作します。
-@@ -19,7 +19,7 @@ Claude Code は agentic coding 環境です。質問に答えて待つチャッ
- ほとんどのベストプラクティスは 1 つの制約に基づいています。Claude のコンテキストウィンドウはすぐにいっぱいになり、満杯になるにつれてパフォーマンスが低下します。
- 
--Claude のコンテキストウィンドウは、すべてのメッセージ、Claude が読み取ったすべてのファイル、およびすべてのコマンド出力を含む、会話全体を保持します。ただし、これはすぐにいっぱいになる可能性があります。単一のデバッグセッションまたはコードベース探索でも、数万トークンを生成および消費する可能性があります。
-+Claude のコンテキストウィンドウは、すべてのメッセージ、Claude が読み取ったすべてのファイル、およびすべてのコマンド出力を含む、会話全体を保持します。ただし、これはすぐにいっぱいになる可能性があります。単一のデバッグセッションまたはコードベース探索でも、数万のトークンを生成および消費する可能性があります。
- 
--LLM のパフォーマンスはコンテキストが満杯になるにつれて低下するため、これは重要です。コンテキストウィンドウがいっぱいになると、Claude は以前の指示を「忘れる」か、より多くの間違いを犯す可能性があります。コンテキストウィンドウは管理する最も重要なリソースです。[カスタムステータスライン](/ja/statusline)でコンテキスト使用量を継続的に追跡し、[トークン使用量を削減](/ja/costs#reduce-token-usage)でトークン使用量を削減するための戦略を参照してください。
-+LLM のパフォーマンスはコンテキストが満杯になるにつれて低下するため、これは重要です。コンテキストウィンドウがいっぱいになると、Claude は以前の指示を「忘れる」か、より多くの間違いを犯す可能性があります。コンテキストウィンドウは管理する最も重要なリソースです。[カスタムステータスライン](/ja/statusline)でコンテキスト使用量を継続的に追跡し、トークン使用量を削減するための戦略については[トークン使用量を削減](/ja/costs#reduce-token-usage)を参照してください。
- 
- ***
-@@ -50,5 +50,5 @@ UI の変更は [Chrome 拡張機能の Claude](/ja/chrome) を使用して検
- 
- <Tip>
--  間違った問題を解決することを避けるために、研究と計画を実装から分離します。
-+  研究と計画を実装から分離して、間違った問題を解決することを避けます。
- </Tip>
- 
-@@ -75,5 +75,5 @@ Claude が直接コーディングにジャンプさせると、間違った問
-     ```
 ```
 
 </details>
