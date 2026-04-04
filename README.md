@@ -17,6 +17,202 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-04-04</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/desktop-ja.md             | 22 +++++++++++-----------
+ docs-ja/pages/platforms-ja.md           | 14 +++++++-------
+ docs-ja/pages/remote-control-ja.md      | 14 +++++++-------
+ docs-ja/pages/scheduled-tasks-ja.md     | 22 +++++++++++-----------
+ docs-ja/pages/web-scheduled-tasks-ja.md | 22 +++++++++++-----------
+ 5 files changed, 47 insertions(+), 47 deletions(-)
+```
+
+**新規追加:**
+
+
+<details>
+<summary>desktop-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/desktop-ja.md b/docs-ja/pages/desktop-ja.md
+index cc806aa..68d7591 100644
+--- a/docs-ja/pages/desktop-ja.md
++++ b/docs-ja/pages/desktop-ja.md
+@@ -416,15 +416,15 @@ Claude が別のポートを選択すると、割り当てられたポートを`
+ Claude Code offers three ways to schedule recurring work:
+ 
+-|                            | [Cloud](/en/web-scheduled-tasks) | [Desktop](/en/desktop#schedule-recurring-tasks) | [`/loop`](/en/scheduled-tasks) |
+-| :------------------------- | :------------------------------- | :---------------------------------------------- | :----------------------------- |
+-| Runs on                    | Anthropic cloud                  | Your machine                                    | Your machine                   |
+-| Requires machine on        | No                               | Yes                                             | Yes                            |
+-| Requires open session      | No                               | No                                              | Yes                            |
+-| Persistent across restarts | Yes                              | Yes                                             | No (session-scoped)            |
+-| Access to local files      | No (fresh clone)                 | Yes                                             | Yes                            |
+-| MCP servers                | Connectors configured per task   | [Config files](/en/mcp) and connectors          | Inherits from session          |
+-| Permission prompts         | No (runs autonomously)           | Configurable per task                           | Inherits from session          |
+-| Customizable schedule      | Via `/schedule` in the CLI       | Yes                                             | Yes                            |
+-| Minimum interval           | 1 hour                           | 1 minute                                        | 1 minute                       |
++|                            | [Cloud](/en/web-scheduled-tasks) | [Desktop](/en/desktop-scheduled-tasks) | [`/loop`](/en/scheduled-tasks) |
++| :------------------------- | :------------------------------- | :------------------------------------- | :----------------------------- |
++| Runs on                    | Anthropic cloud                  | Your machine                           | Your machine                   |
++| Requires machine on        | No                               | Yes                                    | Yes                            |
++| Requires open session      | No                               | No                                     | Yes                            |
++| Persistent across restarts | Yes                              | Yes                                    | No (session-scoped)            |
++| Access to local files      | No (fresh clone)                 | Yes                                    | Yes                            |
++| MCP servers                | Connectors configured per task   | [Config files](/en/mcp) and connectors | Inherits from session          |
++| Permission prompts         | No (runs autonomously)           | Configurable per task                  | Inherits from session          |
++| Customizable schedule      | Via `/schedule` in the CLI       | Yes                                    | Yes                            |
++| Minimum interval           | 1 hour                           | 1 minute                               | 1 minute                       |
+ 
+```
+
+</details>
+
+<details>
+<summary>platforms-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/platforms-ja.md b/docs-ja/pages/platforms-ja.md
+index 302a1d0..9a4a000 100644
+--- a/docs-ja/pages/platforms-ja.md
++++ b/docs-ja/pages/platforms-ja.md
+@@ -43,11 +43,11 @@ CLI はターミナルネイティブな作業に最も完全なサーフェス
+ Claude Code offers several ways to work when you're not at your terminal. They differ in what triggers the work, where Claude runs, and how much you need to set up.
+ 
+-|                                                | Trigger                                                                                        | Claude runs on                                                                                                   | Setup                                                                                                                                | Best for                                                      |
+-| :--------------------------------------------- | :--------------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------ |
+-| [Dispatch](/en/desktop#sessions-from-dispatch) | Message a task from the Claude mobile app                                                      | Your machine (Desktop)                                                                                           | [Pair the mobile app with Desktop](https://support.claude.com/en/articles/13947068)                                                  | Delegating work while you're away, minimal setup              |
+-| [Remote Control](/en/remote-control)           | Drive a running session from [claude.ai/code](https://claude.ai/code) or the Claude mobile app | Your machine (CLI or VS Code)                                                                                    | Run `claude remote-control`                                                                                                          | Steering in-progress work from another device                 |
+-| [Channels](/en/channels)                       | Push events from a chat app like Telegram or Discord, or your own server                       | Your machine (CLI)                                                                                               | [Install a channel plugin](/en/channels#quickstart) or [build your own](/en/channels-reference)                                      | Reacting to external events like CI failures or chat messages |
+-| [Slack](/en/slack)                             | Mention `@Claude` in a team channel                                                            | Anthropic cloud                                                                                                  | [Install the Slack app](/en/slack#setting-up-claude-code-in-slack) with [Claude Code on the web](/en/claude-code-on-the-web) enabled | PRs and reviews from team chat                                |
+-| [Scheduled tasks](/en/scheduled-tasks)         | Set a schedule                                                                                 | [CLI](/en/scheduled-tasks), [Desktop](/en/desktop#schedule-recurring-tasks), or [cloud](/en/web-scheduled-tasks) | Pick a frequency                                                                                                                     | Recurring automation like daily reviews                       |
++|                                                | Trigger                                                                                        | Claude runs on                                                                                          | Setup                                                                                                                                | Best for                                                      |
++| :--------------------------------------------- | :--------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------ | :----------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------ |
++| [Dispatch](/en/desktop#sessions-from-dispatch) | Message a task from the Claude mobile app                                                      | Your machine (Desktop)                                                                                  | [Pair the mobile app with Desktop](https://support.claude.com/en/articles/13947068)                                                  | Delegating work while you're away, minimal setup              |
++| [Remote Control](/en/remote-control)           | Drive a running session from [claude.ai/code](https://claude.ai/code) or the Claude mobile app | Your machine (CLI or VS Code)                                                                           | Run `claude remote-control`                                                                                                          | Steering in-progress work from another device                 |
++| [Channels](/en/channels)                       | Push events from a chat app like Telegram or Discord, or your own server                       | Your machine (CLI)                                                                                      | [Install a channel plugin](/en/channels#quickstart) or [build your own](/en/channels-reference)                                      | Reacting to external events like CI failures or chat messages |
++| [Slack](/en/slack)                             | Mention `@Claude` in a team channel                                                            | Anthropic cloud                                                                                         | [Install the Slack app](/en/slack#setting-up-claude-code-in-slack) with [Claude Code on the web](/en/claude-code-on-the-web) enabled | PRs and reviews from team chat                                |
++| [Scheduled tasks](/en/scheduled-tasks)         | Set a schedule                                                                                 | [CLI](/en/scheduled-tasks), [Desktop](/en/desktop-scheduled-tasks), or [cloud](/en/web-scheduled-tasks) | Pick a frequency                                                                                                                     | Recurring automation like daily reviews                       |
+ 
+ どこから始めるべきか不確かな場合は、[CLI をインストール](/ja/quickstart)してプロジェクトディレクトリで実行します。ターミナルを使用したくない場合は、[Desktop](/ja/desktop-quickstart) がグラフィカルインターフェースで同じエンジンを提供します。
+```
+
+</details>
+
+<details>
+<summary>remote-control-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/remote-control-ja.md b/docs-ja/pages/remote-control-ja.md
+index 1793458..ef64533 100644
+--- a/docs-ja/pages/remote-control-ja.md
++++ b/docs-ja/pages/remote-control-ja.md
+@@ -173,11 +173,11 @@ claude remote-control --verbose
+ Claude Code offers several ways to work when you're not at your terminal. They differ in what triggers the work, where Claude runs, and how much you need to set up.
+ 
+-|                                                | Trigger                                                                                        | Claude runs on                                                                                                   | Setup                                                                                                                                | Best for                                                      |
+-| :--------------------------------------------- | :--------------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------ |
+-| [Dispatch](/en/desktop#sessions-from-dispatch) | Message a task from the Claude mobile app                                                      | Your machine (Desktop)                                                                                           | [Pair the mobile app with Desktop](https://support.claude.com/en/articles/13947068)                                                  | Delegating work while you're away, minimal setup              |
+-| [Remote Control](/en/remote-control)           | Drive a running session from [claude.ai/code](https://claude.ai/code) or the Claude mobile app | Your machine (CLI or VS Code)                                                                                    | Run `claude remote-control`                                                                                                          | Steering in-progress work from another device                 |
+-| [Channels](/en/channels)                       | Push events from a chat app like Telegram or Discord, or your own server                       | Your machine (CLI)                                                                                               | [Install a channel plugin](/en/channels#quickstart) or [build your own](/en/channels-reference)                                      | Reacting to external events like CI failures or chat messages |
+-| [Slack](/en/slack)                             | Mention `@Claude` in a team channel                                                            | Anthropic cloud                                                                                                  | [Install the Slack app](/en/slack#setting-up-claude-code-in-slack) with [Claude Code on the web](/en/claude-code-on-the-web) enabled | PRs and reviews from team chat                                |
+-| [Scheduled tasks](/en/scheduled-tasks)         | Set a schedule                                                                                 | [CLI](/en/scheduled-tasks), [Desktop](/en/desktop#schedule-recurring-tasks), or [cloud](/en/web-scheduled-tasks) | Pick a frequency                                                                                                                     | Recurring automation like daily reviews                       |
++|                                                | Trigger                                                                                        | Claude runs on                                                                                          | Setup                                                                                                                                | Best for                                                      |
++| :--------------------------------------------- | :--------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------ | :----------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------ |
++| [Dispatch](/en/desktop#sessions-from-dispatch) | Message a task from the Claude mobile app                                                      | Your machine (Desktop)                                                                                  | [Pair the mobile app with Desktop](https://support.claude.com/en/articles/13947068)                                                  | Delegating work while you're away, minimal setup              |
++| [Remote Control](/en/remote-control)           | Drive a running session from [claude.ai/code](https://claude.ai/code) or the Claude mobile app | Your machine (CLI or VS Code)                                                                           | Run `claude remote-control`                                                                                                          | Steering in-progress work from another device                 |
++| [Channels](/en/channels)                       | Push events from a chat app like Telegram or Discord, or your own server                       | Your machine (CLI)                                                                                      | [Install a channel plugin](/en/channels#quickstart) or [build your own](/en/channels-reference)                                      | Reacting to external events like CI failures or chat messages |
++| [Slack](/en/slack)                             | Mention `@Claude` in a team channel                                                            | Anthropic cloud                                                                                         | [Install the Slack app](/en/slack#setting-up-claude-code-in-slack) with [Claude Code on the web](/en/claude-code-on-the-web) enabled | PRs and reviews from team chat                                |
++| [Scheduled tasks](/en/scheduled-tasks)         | Set a schedule                                                                                 | [CLI](/en/scheduled-tasks), [Desktop](/en/desktop-scheduled-tasks), or [cloud](/en/web-scheduled-tasks) | Pick a frequency                                                                                                                     | Recurring automation like daily reviews                       |
+ 
+ ## 関連リソース
+```
+
+</details>
+
+<details>
+<summary>scheduled-tasks-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/scheduled-tasks-ja.md b/docs-ja/pages/scheduled-tasks-ja.md
+index 1ef5b44..9b3495e 100644
+--- a/docs-ja/pages/scheduled-tasks-ja.md
++++ b/docs-ja/pages/scheduled-tasks-ja.md
+@@ -19,15 +19,15 @@
+ Claude Code offers three ways to schedule recurring work:
+ 
+-|                            | [Cloud](/en/web-scheduled-tasks) | [Desktop](/en/desktop#schedule-recurring-tasks) | [`/loop`](/en/scheduled-tasks) |
+-| :------------------------- | :------------------------------- | :---------------------------------------------- | :----------------------------- |
+-| Runs on                    | Anthropic cloud                  | Your machine                                    | Your machine                   |
+-| Requires machine on        | No                               | Yes                                             | Yes                            |
+-| Requires open session      | No                               | No                                              | Yes                            |
+-| Persistent across restarts | Yes                              | Yes                                             | No (session-scoped)            |
+-| Access to local files      | No (fresh clone)                 | Yes                                             | Yes                            |
+-| MCP servers                | Connectors configured per task   | [Config files](/en/mcp) and connectors          | Inherits from session          |
+-| Permission prompts         | No (runs autonomously)           | Configurable per task                           | Inherits from session          |
+-| Customizable schedule      | Via `/schedule` in the CLI       | Yes                                             | Yes                            |
+-| Minimum interval           | 1 hour                           | 1 minute                                        | 1 minute                       |
++|                            | [Cloud](/en/web-scheduled-tasks) | [Desktop](/en/desktop-scheduled-tasks) | [`/loop`](/en/scheduled-tasks) |
++| :------------------------- | :------------------------------- | :------------------------------------- | :----------------------------- |
++| Runs on                    | Anthropic cloud                  | Your machine                           | Your machine                   |
++| Requires machine on        | No                               | Yes                                    | Yes                            |
++| Requires open session      | No                               | No                                     | Yes                            |
++| Persistent across restarts | Yes                              | Yes                                    | No (session-scoped)            |
++| Access to local files      | No (fresh clone)                 | Yes                                    | Yes                            |
++| MCP servers                | Connectors configured per task   | [Config files](/en/mcp) and connectors | Inherits from session          |
++| Permission prompts         | No (runs autonomously)           | Configurable per task                  | Inherits from session          |
++| Customizable schedule      | Via `/schedule` in the CLI       | Yes                                    | Yes                            |
++| Minimum interval           | 1 hour                           | 1 minute                               | 1 minute                       |
+ 
+```
+
+</details>
+
+<details>
+<summary>web-scheduled-tasks-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/web-scheduled-tasks-ja.md b/docs-ja/pages/web-scheduled-tasks-ja.md
+index 437b80d..2e0fecb 100644
+--- a/docs-ja/pages/web-scheduled-tasks-ja.md
++++ b/docs-ja/pages/web-scheduled-tasks-ja.md
+@@ -22,15 +22,15 @@
+ Claude Code offers three ways to schedule recurring work:
+ 
+-|                            | [Cloud](/en/web-scheduled-tasks) | [Desktop](/en/desktop#schedule-recurring-tasks) | [`/loop`](/en/scheduled-tasks) |
+-| :------------------------- | :------------------------------- | :---------------------------------------------- | :----------------------------- |
+-| Runs on                    | Anthropic cloud                  | Your machine                                    | Your machine                   |
+-| Requires machine on        | No                               | Yes                                             | Yes                            |
+-| Requires open session      | No                               | No                                              | Yes                            |
+-| Persistent across restarts | Yes                              | Yes                                             | No (session-scoped)            |
+-| Access to local files      | No (fresh clone)                 | Yes                                             | Yes                            |
+-| MCP servers                | Connectors configured per task   | [Config files](/en/mcp) and connectors          | Inherits from session          |
+-| Permission prompts         | No (runs autonomously)           | Configurable per task                           | Inherits from session          |
+-| Customizable schedule      | Via `/schedule` in the CLI       | Yes                                             | Yes                            |
+-| Minimum interval           | 1 hour                           | 1 minute                                        | 1 minute                       |
++|                            | [Cloud](/en/web-scheduled-tasks) | [Desktop](/en/desktop-scheduled-tasks) | [`/loop`](/en/scheduled-tasks) |
++| :------------------------- | :------------------------------- | :------------------------------------- | :----------------------------- |
++| Runs on                    | Anthropic cloud                  | Your machine                           | Your machine                   |
++| Requires machine on        | No                               | Yes                                    | Yes                            |
++| Requires open session      | No                               | No                                     | Yes                            |
++| Persistent across restarts | Yes                              | Yes                                    | No (session-scoped)            |
++| Access to local files      | No (fresh clone)                 | Yes                                    | Yes                            |
++| MCP servers                | Connectors configured per task   | [Config files](/en/mcp) and connectors | Inherits from session          |
++| Permission prompts         | No (runs autonomously)           | Configurable per task                  | Inherits from session          |
++| Customizable schedule      | Via `/schedule` in the CLI       | Yes                                    | Yes                            |
++| Minimum interval           | 1 hour                           | 1 minute                               | 1 minute                       |
+ 
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-04-03</summary>
 
 **変更ファイル:**
@@ -2547,169 +2743,6 @@ index 6ab1c2e..5514c94 100644
 +| `/reload-plugins`                        | Reload all active [plugins](/en/plugins) to apply pending changes without restarting. Reports counts for each reloaded component and flags any load errors                                                                                                                                                                                              |
  | `/remote-control`                        | Make this session available for [remote control](/en/remote-control) from claude.ai. Alias: `/rc`                                                                                                                                                                                                                                                       |
  | `/remote-env`                            | Configure the default remote environment for [web sessions started with `--remote`](/en/claude-code-on-the-web#environment-configuration)                                                                                                                                                                                                               |
-```
-
-</details>
-
-<details>
-<summary>env-vars-en.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/env-vars-en.md b/docs-ja/pages/env-vars-en.md
-index 147b8b4..ef104b3 100644
---- a/docs-ja/pages/env-vars-en.md
-+++ b/docs-ja/pages/env-vars-en.md
-@@ -27,4 +27,5 @@ Claude Code supports the following environment variables to control its behavior
- | `BASH_MAX_OUTPUT_LENGTH`                       | Maximum number of characters in bash outputs before they are middle-truncated                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
- | `BASH_MAX_TIMEOUT_MS`                          | Maximum timeout the model can set for long-running bash commands                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-+| `CLAUDECODE`                                   | Set to `1` in shell environments Claude Code spawns (Bash tool, tmux sessions). Not set in [hooks](/en/hooks) or [status line](/en/statusline) commands. Use to detect when a script is running inside a shell spawned by Claude Code                                                                                                                                                                                                                                                                                                                                                                            |
- | `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE`              | Set the percentage of context capacity (1-100) at which auto-compaction triggers. By default, auto-compaction triggers at approximately 95% capacity. Use lower values like `50` to compact earlier. Values above the default threshold have no effect. Applies to both main conversations and subagents. This percentage aligns with the `context_window.used_percentage` field available in [status line](/en/statusline)                                                                                                                                                                                      |
- | `CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR`     | Return to the original working directory after each Bash command                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-@@ -44,5 +45,5 @@ Claude Code supports the following environment variables to control its behavior
- | `CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS`       | Set to `1` to disable Anthropic API-specific `anthropic-beta` headers. Use this if experiencing issues like "Unexpected value(s) for the `anthropic-beta` header" when using an LLM gateway with third-party providers                                                                                                                                                                                                                                                                                                                                                                                           |
- | `CLAUDE_CODE_DISABLE_FAST_MODE`                | Set to `1` to disable [fast mode](/en/fast-mode)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
--| `CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY`          | Set to `1` to disable the "How is Claude doing?" session quality surveys. Also disabled when using third-party providers or when telemetry is disabled. See [Session quality surveys](/en/data-usage#session-quality-surveys)                                                                                                                                                                                                                                                                                                                                                                                    |
-+| `CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY`          | Set to `1` to disable the "How is Claude doing?" session quality surveys. Surveys are also disabled when `DISABLE_TELEMETRY` or `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` is set. See [Session quality surveys](/en/data-usage#session-quality-surveys)                                                                                                                                                                                                                                                                                                                                                         |
- | `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`     | Equivalent of setting `DISABLE_AUTOUPDATER`, `DISABLE_BUG_COMMAND`, `DISABLE_ERROR_REPORTING`, and `DISABLE_TELEMETRY`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
- | `CLAUDE_CODE_DISABLE_TERMINAL_TITLE`           | Set to `1` to disable automatic terminal title updates based on conversation context                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-@@ -66,4 +67,5 @@ Claude Code supports the following environment variables to control its behavior
- | `CLAUDE_CODE_SIMPLE`                           | Set to `1` to run with a minimal system prompt and only the Bash, file read, and file edit tools. Disables MCP tools, attachments, hooks, and CLAUDE.md files                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
- | `CLAUDE_CODE_SKIP_BEDROCK_AUTH`                | Skip AWS authentication for Bedrock (for example, when using an LLM gateway)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-+| `CLAUDE_CODE_SKIP_FAST_MODE_NETWORK_ERRORS`    | Set to `1` to allow [fast mode](/en/fast-mode) when the organization status check fails due to a network error. Useful when a corporate proxy blocks the status endpoint. The API still enforces organization-level disable separately                                                                                                                                                                                                                                                                                                                                                                           |
- | `CLAUDE_CODE_SKIP_FOUNDRY_AUTH`                | Skip Azure authentication for Microsoft Foundry (for example, when using an LLM gateway)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
- | `CLAUDE_CODE_SKIP_VERTEX_AUTH`                 | Skip Google authentication for Vertex (for example, when using an LLM gateway)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-```
-
-</details>
-
-</details>
-
-
-<details>
-<summary>2026-03-15</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/changelog.md      |  38 ++++++++++++
- docs-ja/pages/commands-en.md    | 127 ++++++++++++++++++++--------------------
- docs-ja/pages/env-vars-en.md    |   2 +-
- docs-ja/pages/hooks-guide-ja.md |   3 +
- docs-ja/pages/hooks-ja.md       |   5 +-
- 5 files changed, 110 insertions(+), 65 deletions(-)
-```
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index d39b179..82d5e22 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,42 @@
- # Changelog
- 
-+## 2.1.76
-+
-+- Added MCP elicitation support — MCP servers can now request structured input mid-task via an interactive dialog (form fields or browser URL)
-+- Added new `Elicitation` and `ElicitationResult` hooks to intercept and override responses before they're sent back
-+- Added `-n` / `--name <name>` CLI flag to set a display name for the session at startup
-+- Added `worktree.sparsePaths` setting for `claude --worktree` in large monorepos to check out only the directories you need via git sparse-checkout
-+- Added `PostCompact` hook that fires after compaction completes
-+- Added `/effort` slash command to set model effort level
-+- Added session quality survey — enterprise admins can configure the sample rate via the `feedbackSurveyRate` setting
-+- Fixed deferred tools (loaded via `ToolSearch`) losing their input schemas after conversation compaction, causing array and number parameters to be rejected with type errors
-+- Fixed slash commands showing "Unknown skill"
-+- Fixed plan mode asking for re-approval after the plan was already accepted
-+- Fixed voice mode swallowing keypresses while a permission dialog or plan editor was open
-+- Fixed `/voice` not working on Windows when installed via npm
-+- Fixed spurious "Context limit reached" when invoking a skill with `model:` frontmatter on a 1M-context session
-+- Fixed "adaptive thinking is not supported on this model" error when using non-standard model strings
-+- Fixed `Bash(cmd:*)` permission rules not matching when a quoted argument contains `#`
-+- Fixed "don't ask again" in the Bash permission dialog showing the full raw command for pipes and compound commands
-+- Fixed auto-compaction retrying indefinitely after consecutive failures — a circuit breaker now stops after 3 attempts
-+- Fixed MCP reconnect spinner persisting after successful reconnection
-+- Fixed LSP plugins not registering servers when the LSP Manager initialized before marketplaces were reconciled
-+- Fixed clipboard copying in tmux over SSH — now attempts both direct terminal write and tmux clipboard integration
-+- Fixed `/export` showing only the filename instead of the full file path in the success message
-```
-
-</details>
-
-<details>
-<summary>commands-en.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/commands-en.md b/docs-ja/pages/commands-en.md
-index 3e4b9bc..6ab1c2e 100644
---- a/docs-ja/pages/commands-en.md
-+++ b/docs-ja/pages/commands-en.md
-@@ -13,67 +13,68 @@ Claude Code also includes [bundled skills](/en/skills#bundled-skills) like `/sim
- In the table below, `<arg>` indicates a required argument and `[arg]` indicates an optional one.
- 
--| Command                   | Purpose                                                                                                                                                                                                                                 |
--| :------------------------ | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
--| `/add-dir <path>`         | Add a new working directory to the current session                                                                                                                                                                                      |
--| `/agents`                 | Manage [agent](/en/sub-agents) configurations                                                                                                                                                                                           |
--| `/btw <question>`         | Ask a quick [side question](/en/interactive-mode#side-questions-with-btw) without adding to the conversation                                                                                                                            |
--| `/chrome`                 | Configure [Claude in Chrome](/en/chrome) settings                                                                                                                                                                                       |
--| `/clear`                  | Clear conversation history and free up context. Aliases: `/reset`, `/new`                                                                                                                                                               |
--| `/color [color\|default]` | Set the prompt bar color for the current session. Available colors: `red`, `blue`, `green`, `yellow`, `purple`, `orange`, `pink`, `cyan`. Use `default` to reset                                                                        |
--| `/compact [instructions]` | Compact conversation with optional focus instructions                                                                                                                                                                                   |
--| `/config`                 | Open the [Settings](/en/settings) interface to adjust theme, model, [output style](/en/output-styles), and other preferences. Alias: `/settings`                                                                                        |
--| `/context`                | Visualize current context usage as a colored grid. Shows optimization suggestions for context-heavy tools, memory bloat, and capacity warnings                                                                                          |
--| `/copy`                   | Copy the last assistant response to clipboard. When code blocks are present, shows an interactive picker to select individual blocks or the full response                                                                               |
--| `/cost`                   | Show token usage statistics. See [cost tracking guide](/en/costs#using-the-cost-command) for subscription-specific details                                                                                                              |
--| `/desktop`                | Continue the current session in the Claude Code Desktop app. macOS and Windows only. Alias: `/app`                                                                                                                                      |
--| `/diff`                   | Open an interactive diff viewer showing uncommitted changes and per-turn diffs. Use left/right arrows to switch between the current git diff and individual Claude turns, and up/down to browse files                                   |
--| `/doctor`                 | Diagnose and verify your Claude Code installation and settings                                                                                                                                                                          |
--| `/exit`                   | Exit the CLI. Alias: `/quit`                                                                                                                                                                                                            |
--| `/export [filename]`      | Export the current conversation as plain text. With a filename, writes directly to that file. Without, opens a dialog to copy to clipboard or save to a file                                                                            |
--| `/extra-usage`            | Configure extra usage to keep working when rate limits are hit                                                                                                                                                                          |
--| `/fast [on\|off]`         | Toggle [fast mode](/en/fast-mode) on or off                                                                                                                                                                                             |
--| `/feedback [report]`      | Submit feedback about Claude Code. Alias: `/bug`                                                                                                                                                                                        |
--| `/fork [name]`            | Create a fork of the current conversation at this point                                                                                                                                                                                 |
--| `/help`                   | Show help and available commands                                                                                                                                                                                                        |
-```
-
-</details>
-
-<details>
-<summary>env-vars-en.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/env-vars-en.md b/docs-ja/pages/env-vars-en.md
-index d109653..147b8b4 100644
---- a/docs-ja/pages/env-vars-en.md
-+++ b/docs-ja/pages/env-vars-en.md
-@@ -47,5 +47,5 @@ Claude Code supports the following environment variables to control its behavior
- | `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`     | Equivalent of setting `DISABLE_AUTOUPDATER`, `DISABLE_BUG_COMMAND`, `DISABLE_ERROR_REPORTING`, and `DISABLE_TELEMETRY`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
- | `CLAUDE_CODE_DISABLE_TERMINAL_TITLE`           | Set to `1` to disable automatic terminal title updates based on conversation context                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
--| `CLAUDE_CODE_EFFORT_LEVEL`                     | Set the effort level for supported models. Values: `low`, `medium`, `high`. Lower effort is faster and cheaper, higher effort provides deeper reasoning. Supported on Opus 4.6 and Sonnet 4.6. See [Adjust effort level](/en/model-config#adjust-effort-level)                                                                                                                                                                                                                                                                                                                                                   |
-+| `CLAUDE_CODE_EFFORT_LEVEL`                     | Set the effort level for supported models. Values: `low`, `medium`, `high`, `max` (Opus 4.6 only), or `auto` to use the model default. Takes precedence over `/effort` and the `effortLevel` setting. See [Adjust effort level](/en/model-config#adjust-effort-level)                                                                                                                                                                                                                                                                                                                                            |
- | `CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION`         | Set to `false` to disable prompt suggestions (the "Prompt suggestions" toggle in `/config`). These are the grayed-out predictions that appear in your prompt input after Claude responds. See [Prompt suggestions](/en/interactive-mode#prompt-suggestions)                                                                                                                                                                                                                                                                                                                                                      |
- | `CLAUDE_CODE_ENABLE_TASKS`                     | Set to `true` to enable the task tracking system in non-interactive mode (the `-p` flag). Tasks are on by default in interactive mode. See [Task list](/en/interactive-mode#task-list)                                                                                                                                                                                                                                                                                                                                                                                                                           |
-```
-
-</details>
-
-<details>
-<summary>hooks-guide-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/hooks-guide-ja.md b/docs-ja/pages/hooks-guide-ja.md
-index 1f2c61f..8941fdd 100644
---- a/docs-ja/pages/hooks-guide-ja.md
-+++ b/docs-ja/pages/hooks-guide-ja.md
-@@ -313,4 +313,7 @@ Hook イベントは Claude Code のライフサイクルの特定のポイン
- | `WorktreeRemove`     | When a worktree is being removed, either at session exit or when a subagent finishes                                                           |
- | `PreCompact`         | Before context compaction                                                                                                                      |
-+| `PostCompact`        | After context compaction completes                                                                                                             |
-+| `Elicitation`        | When an MCP server requests user input during a tool call                                                                                      |
-+| `ElicitationResult`  | After a user responds to an MCP elicitation, before the response is sent back to the server                                                    |
- | `SessionEnd`         | When a session terminates                                                                                                                      |
- 
 ```
 
 </details>
