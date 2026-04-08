@@ -17,6 +17,150 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-04-08</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md           | 28 +++++++++++++++
+ docs-ja/pages/claude-directory-en.md | 67 +++++++++++++++++++++++++++++++++---
+ docs-ja/pages/context-window-en.md   |  4 +--
+ docs-ja/pages/ultraplan-en.md        |  4 +--
+ 4 files changed, 94 insertions(+), 9 deletions(-)
+```
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index 81f60c1..e678c89 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,32 @@
+ # Changelog
+ 
++## 2.1.94
++
++- Added support for Amazon Bedrock powered by Mantle, set `CLAUDE_CODE_USE_MANTLE=1`
++- Changed default effort level from medium to high for API-key, Bedrock/Vertex/Foundry, Team, and Enterprise users (control this with `/effort`)
++- Added compact `Slacked #channel` header with a clickable channel link for Slack MCP send-message tool calls
++- Added `keep-coding-instructions` frontmatter field support for plugin output styles
++- Added `hookSpecificOutput.sessionTitle` to `UserPromptSubmit` hooks for setting the session title
++- Plugin skills declared via `"skills": ["./"]` now use the skill's frontmatter `name` for the invocation name instead of the directory basename, giving a stable name across install methods
++- Fixed agents appearing stuck after a 429 rate-limit response with a long Retry-After header — the error now surfaces immediately instead of silently waiting
++- Fixed Console login on macOS silently failing with "Not logged in" when the login keychain is locked or its password is out of sync — the error is now surfaced and `claude doctor` diagnoses the fix
++- Fixed plugin skill hooks defined in YAML frontmatter being silently ignored
++- Fixed plugin hooks failing with "No such file or directory" when `CLAUDE_PLUGIN_ROOT` was not set
++- Fixed `${CLAUDE_PLUGIN_ROOT}` resolving to the marketplace source directory instead of the installed cache for local-marketplace plugins on startup
++- Fixed scrollback showing the same diff repeated and blank pages in long-running sessions
++- Fixed multiline user prompts in the transcript indenting wrapped lines under the `❯` caret instead of under the text
++- Fixed Shift+Space inserting the literal word "space" instead of a space character in search inputs
++- Fixed hyperlinks opening two browser tabs when clicked inside tmux running in an xterm.js-based terminal (VS Code, Hyper, Tabby)
++- Fixed an alt-screen rendering bug where content height changes mid-scroll could leave compounding ghost lines
++- Fixed `FORCE_HYPERLINK` environment variable being ignored when set via `settings.json` `env`
++- Fixed native terminal cursor not tracking the selected tab in dialogs, so screen readers and magnifiers can follow tab navigation
++- Fixed Bedrock invocation of Sonnet 3.5 v2 by using the `us.` inference profile ID
++- Fixed SDK/print mode not preserving the partial assistant response in conversation history when interrupted mid-stream
++- Improved `--resume` to resume sessions from other worktrees of the same repo directly instead of printing a `cd` command
+```
+
+</details>
+
+<details>
+<summary>claude-directory-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/claude-directory-en.md b/docs-ja/pages/claude-directory-en.md
+index 4331e82..622564e 100644
+--- a/docs-ja/pages/claude-directory-en.md
++++ b/docs-ja/pages/claude-directory-en.md
+@@ -1399,10 +1399,13 @@ This page is an interactive explorer: click files in the tree to see what each o
+ ## What's not shown
+ 
+-The explorer covers the files you'll interact with most. A few things live elsewhere:
++The explorer covers files you author and edit. A few authored files live elsewhere:
+ 
+-| File                    | Location                   | Purpose                                                                                                               |
+-| ----------------------- | -------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+-| `managed-settings.json` | System-level, varies by OS | Enterprise-enforced settings that you can't override. See [server-managed settings](/en/server-managed-settings).     |
+-| `CLAUDE.local.md`       | Project root               | Your private preferences for this project, loaded alongside CLAUDE.md. Create it manually and add it to `.gitignore`. |
++| File                    | Location                   | Purpose                                                                                                                                                                                                                                                            |
++| ----------------------- | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
++| `managed-settings.json` | System-level, varies by OS | Enterprise-enforced settings that you can't override. See [server-managed settings](/en/server-managed-settings).                                                                                                                                                  |
++| `CLAUDE.local.md`       | Project root               | Your private preferences for this project, loaded alongside CLAUDE.md. Create it manually and add it to `.gitignore`.                                                                                                                                              |
++| Installed plugins       | `~/.claude/plugins/`       | Cloned marketplaces, installed plugin versions, and per-plugin data, managed by `claude plugin` commands. Orphaned versions are deleted 7 days after a plugin update or uninstall. See [plugin caching](/en/plugins-reference#plugin-caching-and-file-resolution). |
++
++`~/.claude` also holds data Claude Code writes as you work: transcripts, prompt history, file snapshots, caches, and logs. See [application data](#application-data) below.
+ 
+ ## File reference
+@@ -1456,4 +1459,58 @@ The explorer shows what files can exist. To see what actually loaded in your cur
+ Run `/context` first for the overview, then the specific command for the area you want to investigate.
+ 
++## Application data
++
++Beyond the config you author, `~/.claude` holds data Claude Code writes during sessions. These files are plaintext. Anything that passes through a tool (file contents, command output, pasted text) lands in a transcript on disk.
++
+```
+
+</details>
+
+<details>
+<summary>context-window-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/context-window-en.md b/docs-ja/pages/context-window-en.md
+index 7eb7fb0..6bef1f1 100644
+--- a/docs-ja/pages/context-window-en.md
++++ b/docs-ja/pages/context-window-en.md
+@@ -174,5 +174,5 @@ export const ContextWindow = () => {
+     color: '#B8860B',
+     vis: 'hidden',
+-    desc: 'A PostToolUse hook in `settings.json` runs prettier after every file edit and reports back via `hookSpecificOutput.additionalContext`. That field enters Claude\'s context. Plain stdout on exit 0 does not. It only appears in verbose mode via Ctrl+O.',
++    desc: 'A PostToolUse hook in `settings.json` runs prettier after every file edit and reports back via `hookSpecificOutput.additionalContext`. That field enters Claude\'s context. Plain stdout on exit 0 does not. It is written to the debug log only.',
+     tip: 'Output JSON with `additionalContext` to send info to Claude. For PostToolUse hooks, exit code 2 surfaces stderr as an error but cannot block since the tool already ran. Keep output concise since it enters context without truncation.',
+     link: '/en/hooks-guide'
+@@ -618,5 +618,5 @@ export const ContextWindow = () => {
+   }, [hovEvent]);
+   const focusT = hovEvent ? hovEvent.t : time;
+-  const takeaway = isCompacted ? 'Compaction replaces the conversation with a structured summary. System prompt, CLAUDE.md, memory, and MCP tools reload automatically. The skill listing is the one exception. Only skills you actually invoked are preserved.' : focusT < STARTUP_END ? 'A lot loads before you type anything. CLAUDE.md, memory, skills, and MCP tools are all in context before your first prompt.' : focusT < 0.28 ? "Your prompt is tiny compared to what's already loaded. Most of Claude's context is project knowledge, not your words." : focusT < 0.50 ? 'Each file Claude reads grows the context. Path-scoped rules load automatically alongside matching files.' : focusT < 0.71 ? 'Hooks fire automatically on tool events. Output reaches Claude via additionalContext JSON. Exit code 2 surfaces stderr to Claude. Plain stdout stays in verbose mode only.' : focusT < 0.79 ? 'Follow-up questions keep building on the same context. Everything from earlier is still there.' : focusT < 0.87 ? "The subagent works in its own separate context window. None of its file reads touch yours. Only the final summary comes back." : focusT < 0.88 ? 'Bang commands run in your shell and prefix the output to your next message. Useful for grounding Claude in command results without it running them.' : focusT < 0.90 ? 'User-only skills stay out of context entirely until you invoke them. The skill index at startup only lists skills Claude can call on its own.' : '/compact summarizes the conversation to free space while keeping key information. In a real session, run it when context starts affecting performance or before a long new task.';
++  const takeaway = isCompacted ? 'Compaction replaces the conversation with a structured summary. System prompt, CLAUDE.md, memory, and MCP tools reload automatically. The skill listing is the one exception. Only skills you actually invoked are preserved.' : focusT < STARTUP_END ? 'A lot loads before you type anything. CLAUDE.md, memory, skills, and MCP tools are all in context before your first prompt.' : focusT < 0.28 ? "Your prompt is tiny compared to what's already loaded. Most of Claude's context is project knowledge, not your words." : focusT < 0.50 ? 'Each file Claude reads grows the context. Path-scoped rules load automatically alongside matching files.' : focusT < 0.71 ? 'Hooks fire automatically on tool events. Output reaches Claude via additionalContext JSON. Exit code 2 surfaces stderr to Claude. Plain stdout on exit 0 goes to the debug log, not the transcript.' : focusT < 0.79 ? 'Follow-up questions keep building on the same context. Everything from earlier is still there.' : focusT < 0.87 ? "The subagent works in its own separate context window. None of its file reads touch yours. Only the final summary comes back." : focusT < 0.88 ? 'Bang commands run in your shell and prefix the output to your next message. Useful for grounding Claude in command results without it running them.' : focusT < 0.90 ? 'User-only skills stay out of context entirely until you invoke them. The skill index at startup only lists skills Claude can call on its own.' : '/compact summarizes the conversation to free space while keeping key information. In a real session, run it when context starts affecting performance or before a long new task.';
+   const terminalView = isCompacted ? 'A "Conversation compacted" message. The summarization happens silently.' : focusT < STARTUP_END ? 'The input box, waiting for your first message. Everything above loads silently before you type anything.' : focusT < 0.28 ? 'Your prompt. Claude hasn\'t started working yet.' : focusT < 0.52 ? 'Your prompt and "Reading files...". Rules show as one-line "Loaded" notices, not their content.' : focusT < 0.72 ? "Claude's response and file diffs. Hooks fire silently. Tool output like npm test shows as a brief summary, not the full content." : focusT < 0.79 ? 'Your follow-up prompt.' : focusT < 0.86 ? "A brief notice that a subagent is working, then its result. You don't see the subagent's individual file reads." : focusT < 0.90 ? "Claude's response, your git status output, and the commit-push skill running." : 'Your full conversation. /compact is available to run.';
+   const mono = 'var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace)';
+```
+
+</details>
+
+<details>
+<summary>ultraplan-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/ultraplan-en.md b/docs-ja/pages/ultraplan-en.md
+index d6b4a03..fedc4ba 100644
+--- a/docs-ja/pages/ultraplan-en.md
++++ b/docs-ja/pages/ultraplan-en.md
+@@ -8,5 +8,5 @@
+ 
+ <Note>
+-  Ultraplan is in research preview. Behavior and capabilities may change based on feedback.
++  Ultraplan is in research preview and requires Claude Code v2.1.91 or later. Behavior and capabilities may change based on feedback.
+ </Note>
+ 
+@@ -19,5 +19,5 @@ This is useful when you want a richer review surface than the terminal offers:
+ * **Flexible execution**: approve the plan to run on the web and open a pull request, or send it back to your terminal
+ 
+-Ultraplan requires a [Claude Code on the web](/en/claude-code-on-the-web#who-can-use-claude-code-on-the-web) account and a GitHub repository. The cloud session runs in your account's default [cloud environment](/en/claude-code-on-the-web#cloud-environment).
++Ultraplan requires a [Claude Code on the web](/en/claude-code-on-the-web#who-can-use-claude-code-on-the-web) account and a GitHub repository. Because it runs on Anthropic's cloud infrastructure, it is not available when using Amazon Bedrock, Google Cloud Vertex AI, or Microsoft Foundry. The cloud session runs in your account's default [cloud environment](/en/claude-code-on-the-web#cloud-environment).
+ 
+ ## Launch ultraplan from the CLI
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-04-05</summary>
 
 **変更ファイル:**
@@ -2611,156 +2755,6 @@ index 55bc144..9e1426b 100644
 +| `StopFailure`        | When the turn ends due to an API error. Output and exit code are ignored                                                                       |
  | `TeammateIdle`       | When an [agent team](/en/agent-teams) teammate is about to go idle                                                                             |
  | `TaskCompleted`      | When a task is being marked as completed                                                                                                       |
-```
-
-</details>
-
-</details>
-
-
-<details>
-<summary>2026-03-18</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/authentication-en.md |  3 ++
- docs-ja/pages/changelog.md         | 76 ++++++++++++++++++++++++++++++++++++++
- docs-ja/pages/commands-en.md       |  7 ++--
- docs-ja/pages/env-vars-en.md       |  8 ++--
- 4 files changed, 88 insertions(+), 6 deletions(-)
-```
-
-**新規追加:**
-
-
-<details>
-<summary>authentication-en.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/authentication-en.md b/docs-ja/pages/authentication-en.md
-index 3177c4c..ae370b0 100644
---- a/docs-ja/pages/authentication-en.md
-+++ b/docs-ja/pages/authentication-en.md
-@@ -116,2 +116,5 @@ Claude Code securely manages your authentication credentials:
- * **Custom credential scripts**: the [`apiKeyHelper`](/en/settings#available-settings) setting can be configured to run a shell script that returns an API key.
- * **Refresh intervals**: by default, `apiKeyHelper` is called after 5 minutes or on HTTP 401 response. Set `CLAUDE_CODE_API_KEY_HELPER_TTL_MS` environment variable for custom refresh intervals.
-+* **Slow helper notice**: if `apiKeyHelper` takes longer than 10 seconds to return a key, Claude Code displays a warning notice in the prompt bar showing the elapsed time. If you see this notice regularly, check whether your credential script can be optimized.
-+
-+`apiKeyHelper`, `ANTHROPIC_API_KEY`, and `ANTHROPIC_AUTH_TOKEN` apply to terminal CLI sessions only. Claude Desktop and remote sessions use OAuth exclusively and do not call `apiKeyHelper` or read API key environment variables.
-```
-
-</details>
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index 82d5e22..9f68539 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,80 @@
- # Changelog
- 
-+## 2.1.78
-+
-+- Added `StopFailure` hook event that fires when the turn ends due to an API error (rate limit, auth failure, etc.)
-+- Added `${CLAUDE_PLUGIN_DATA}` variable for plugin persistent state that survives plugin updates; `/plugin uninstall` prompts before deleting it
-+- Added `effort`, `maxTurns`, and `disallowedTools` frontmatter support for plugin-shipped agents
-+- Terminal notifications (iTerm2/Kitty/Ghostty popups, progress bar) now reach the outer terminal when running inside tmux with `set -g allow-passthrough on`
-+- Response text now streams line-by-line as it's generated
-+- Fixed `git log HEAD` failing with "ambiguous argument" inside sandboxed Bash on Linux, and stub files polluting `git status` in the working directory
-+- Fixed `cc log` and `--resume` silently truncating conversation history on large sessions (>5 MB) that used subagents
-+- Fixed infinite loop when API errors triggered stop hooks that re-fed blocking errors to the model
-+- Fixed `deny: ["mcp__servername"]` permission rules not removing MCP server tools before sending to the model, allowing it to see and attempt blocked tools
-+- Fixed `sandbox.filesystem.allowWrite` not working with absolute paths (previously required `//` prefix)
-+- Fixed `/sandbox` Dependencies tab showing Linux prerequisites on macOS instead of macOS-specific info
-+- **Security:** Fixed silent sandbox disable when `sandbox.enabled: true` is set but dependencies are missing — now shows a visible startup warning
-+- Fixed `.git`, `.claude`, and other protected directories being writable without a prompt in `bypassPermissions` mode
-+- Fixed ctrl+u in normal mode scrolling instead of readline kill-line (ctrl+u/ctrl+d half-page scroll moved to transcript mode only)
-+- Fixed voice mode modifier-combo push-to-talk keybindings (e.g. ctrl+k) requiring a hold instead of activating immediately
-+- Fixed voice mode not working on WSL2 with WSLg (Windows 11); WSL1/Win10 users now get a clear error
-+- Fixed `--worktree` flag not loading skills and hooks from the worktree directory
-+- Fixed `CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS` and `includeGitInstructions` setting not suppressing the git status section in the system prompt
-+- Fixed Bash tool not finding Homebrew and other PATH-dependent binaries when VS Code is launched from Dock/Spotlight
-+- Fixed washed-out Claude orange color in VS Code/Cursor/code-server terminals that don't advertise truecolor support
-+- Added `ANTHROPIC_CUSTOM_MODEL_OPTION` env var to add a custom entry to the `/model` picker, with optional `_NAME` and `_DESCRIPTION` suffixed vars for display
-```
-
-</details>
-
-<details>
-<summary>commands-en.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/commands-en.md b/docs-ja/pages/commands-en.md
-index 5514c94..5f9c182 100644
---- a/docs-ja/pages/commands-en.md
-+++ b/docs-ja/pages/commands-en.md
-@@ -24,5 +24,5 @@ In the table below, `<arg>` indicates a required argument and `[arg]` indicates
- | `/config`                                | Open the [Settings](/en/settings) interface to adjust theme, model, [output style](/en/output-styles), and other preferences. Alias: `/settings`                                                                                                                                                                                                        |
- | `/context`                               | Visualize current context usage as a colored grid. Shows optimization suggestions for context-heavy tools, memory bloat, and capacity warnings                                                                                                                                                                                                          |
--| `/copy`                                  | Copy the last assistant response to clipboard. When code blocks are present, shows an interactive picker to select individual blocks or the full response                                                                                                                                                                                               |
-+| `/copy [N]`                              | Copy the last assistant response to clipboard. Pass a number `N` to copy the Nth-latest response: `/copy 2` copies the second-to-last. When code blocks are present, shows an interactive picker to select individual blocks or the full response                                                                                                       |
- | `/cost`                                  | Show token usage statistics. See [cost tracking guide](/en/costs#using-the-cost-command) for subscription-specific details                                                                                                                                                                                                                              |
- | `/desktop`                               | Continue the current session in the Claude Code Desktop app. macOS and Windows only. Alias: `/app`                                                                                                                                                                                                                                                      |
-@@ -35,9 +35,9 @@ In the table below, `<arg>` indicates a required argument and `[arg]` indicates
- | `/fast [on\|off]`                        | Toggle [fast mode](/en/fast-mode) on or off                                                                                                                                                                                                                                                                                                             |
- | `/feedback [report]`                     | Submit feedback about Claude Code. Alias: `/bug`                                                                                                                                                                                                                                                                                                        |
--| `/fork [name]`                           | Create a fork of the current conversation at this point                                                                                                                                                                                                                                                                                                 |
-+| `/branch [name]`                         | Create a branch of the current conversation at this point. Alias: `/fork`                                                                                                                                                                                                                                                                               |
- | `/help`                                  | Show help and available commands                                                                                                                                                                                                                                                                                                                        |
- | `/hooks`                                 | View [hook](/en/hooks) configurations for tool events                                                                                                                                                                                                                                                                                                   |
- | `/ide`                                   | Manage IDE integrations and show status                                                                                                                                                                                                                                                                                                                 |
--| `/init`                                  | Initialize project with `CLAUDE.md` guide                                                                                                                                                                                                                                                                                                               |
-+| `/init`                                  | Initialize project with a `CLAUDE.md` guide. Set `CLAUDE_CODE_NEW_INIT=true` for an interactive flow that also walks through skills, hooks, and personal memory files                                                                                                                                                                                   |
- | `/insights`                              | Generate a report analyzing your Claude Code sessions, including project areas, interaction patterns, and friction points                                                                                                                                                                                                                               |
- | `/install-github-app`                    | Set up the [Claude GitHub Actions](/en/github-actions) app for a repository. Walks you through selecting a repo and configuring the integration                                                                                                                                                                                                         |
-@@ -77,4 +77,5 @@ In the table below, `<arg>` indicates a required argument and `[arg]` indicates
- | `/usage`                                 | Show plan usage limits and rate limit status                                                                                                                                                                                                                                                                                                            |
- | `/vim`                                   | Toggle between Vim and Normal editing modes                                                                                                                                                                                                                                                                                                             |
-+| `/voice`                                 | Toggle push-to-talk [voice dictation](/en/voice-dictation). Requires a Claude.ai account                                                                                                                                                                                                                                                                |
- 
- ## MCP prompts
-```
-
-</details>
-
-<details>
-<summary>env-vars-en.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/env-vars-en.md b/docs-ja/pages/env-vars-en.md
-index ef104b3..96c8bc6 100644
---- a/docs-ja/pages/env-vars-en.md
-+++ b/docs-ja/pages/env-vars-en.md
-@@ -43,5 +43,5 @@ Claude Code supports the following environment variables to control its behavior
- | `CLAUDE_CODE_DISABLE_BACKGROUND_TASKS`         | Set to `1` to disable all background task functionality, including the `run_in_background` parameter on Bash and subagent tools, auto-backgrounding, and the Ctrl+B shortcut                                                                                                                                                                                                                                                                                                                                                                                                                                     |
- | `CLAUDE_CODE_DISABLE_CRON`                     | Set to `1` to disable [scheduled tasks](/en/scheduled-tasks). The `/loop` skill and cron tools become unavailable and any already-scheduled tasks stop firing, including tasks that are already running mid-session                                                                                                                                                                                                                                                                                                                                                                                              |
--| `CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS`       | Set to `1` to disable Anthropic API-specific `anthropic-beta` headers. Use this if experiencing issues like "Unexpected value(s) for the `anthropic-beta` header" when using an LLM gateway with third-party providers                                                                                                                                                                                                                                                                                                                                                                                           |
-+| `CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS`       | Set to `1` to strip Anthropic-specific `anthropic-beta` request headers and beta tool-schema fields (such as `defer_loading` and `eager_input_streaming`) from API requests. Use this when a proxy gateway rejects requests with errors like "Unexpected value(s) for the `anthropic-beta` header" or "Extra inputs are not permitted". Standard fields (`name`, `description`, `input_schema`, `cache_control`) are preserved.                                                                                                                                                                                  |
- | `CLAUDE_CODE_DISABLE_FAST_MODE`                | Set to `1` to disable [fast mode](/en/fast-mode)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
- | `CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY`          | Set to `1` to disable the "How is Claude doing?" session quality surveys. Surveys are also disabled when `DISABLE_TELEMETRY` or `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` is set. See [Session quality surveys](/en/data-usage#session-quality-surveys)                                                                                                                                                                                                                                                                                                                                                         |
-@@ -56,9 +56,11 @@ Claude Code supports the following environment variables to control its behavior
- | `CLAUDE_CODE_FILE_READ_MAX_OUTPUT_TOKENS`      | Override the default token limit for file reads. Useful when you need to read larger files in full                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
- | `CLAUDE_CODE_IDE_SKIP_AUTO_INSTALL`            | Skip auto-installation of IDE extensions                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
--| `CLAUDE_CODE_MAX_OUTPUT_TOKENS`                | Set the maximum number of output tokens for most requests. Default: 32,000. Maximum: 64,000. Increasing this value reduces the effective context window available before [auto-compaction](/en/costs#reduce-token-usage) triggers.                                                                                                                                                                                                                                                                                                                                                                               |
-+| `CLAUDE_CODE_MAX_OUTPUT_TOKENS`                | Set the maximum number of output tokens for most requests. Defaults and caps vary by model; see [max output tokens](https://platform.claude.com/docs/en/about-claude/models/overview#latest-models-comparison). Increasing this value reduces the effective context window available before [auto-compaction](/en/costs#reduce-token-usage) triggers.                                                                                                                                                                                                                                                            |
-+| `CLAUDE_CODE_NEW_INIT`                         | Set to `true` to make `/init` run an interactive setup flow. The flow asks which files to generate, including CLAUDE.md, skills, and hooks, before exploring the codebase and writing them. Without this variable, `/init` generates a CLAUDE.md automatically without prompting.                                                                                                                                                                                                                                                                                                                                |
- | `CLAUDE_CODE_ORGANIZATION_UUID`                | Organization UUID for the authenticated user. Used by SDK callers to provide account information synchronously. Requires `CLAUDE_CODE_ACCOUNT_UUID` and `CLAUDE_CODE_USER_EMAIL` to also be set                                                                                                                                                                                                                                                                                                                                                                                                                  |
- | `CLAUDE_CODE_OTEL_HEADERS_HELPER_DEBOUNCE_MS`  | Interval for refreshing dynamic OpenTelemetry headers in milliseconds (default: 1740000 / 29 minutes). See [Dynamic headers](/en/monitoring-usage#dynamic-headers)                                                                                                                                                                                                                                                                                                                                                                                                                                               |
- | `CLAUDE_CODE_PLAN_MODE_REQUIRED`               | Auto-set to `true` on [agent team](/en/agent-teams) teammates that require plan approval. Read-only: set by Claude Code when spawning teammates. See [require plan approval](/en/agent-teams#require-plan-approval-for-teammates)                                                                                                                                                                                                                                                                                                                                                                                |
- | `CLAUDE_CODE_PLUGIN_GIT_TIMEOUT_MS`            | Timeout in milliseconds for git operations when installing or updating plugins (default: 120000). Increase this value for large repositories or slow network connections. See [Git operations time out](/en/plugin-marketplaces#git-operations-time-out)                                                                                                                                                                                                                                                                                                                                                         |
-+| `CLAUDE_CODE_PLUGIN_SEED_DIR`                  | Path to a read-only plugin seed directory. Use this to bundle a pre-populated plugins directory into a container image. Claude Code registers marketplaces from this directory at startup and uses pre-cached plugins without re-cloning. See [Pre-populate plugins for containers](/en/plugin-marketplaces#pre-populate-plugins-for-containers)                                                                                                                                                                                                                                                                 |
- | `CLAUDE_CODE_PROXY_RESOLVES_HOSTS`             | Set to `true` to allow the proxy to perform DNS resolution instead of the caller. Opt-in for environments where the proxy should handle hostname resolution                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
- | `CLAUDE_CODE_SESSIONEND_HOOKS_TIMEOUT_MS`      | Maximum time in milliseconds for [SessionEnd](/en/hooks#sessionend) hooks to complete (default: `1500`). Applies to both session exit and `/clear`. Per-hook `timeout` values are also capped by this budget                                                                                                                                                                                                                                                                                                                                                                                                     |
-@@ -97,5 +99,5 @@ Claude Code supports the following environment variables to control its behavior
- | `IS_DEMO`                                      | Set to `true` to enable demo mode: hides email and organization from the UI, skips onboarding, and hides internal commands. Useful for streaming or recording sessions                                                                                                                                                                                                                                                                                                                                                                                                                                           |
- | `MAX_MCP_OUTPUT_TOKENS`                        | Maximum number of tokens allowed in MCP tool responses. Claude Code displays a warning when output exceeds 10,000 tokens (default: 25000)                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
--| `MAX_THINKING_TOKENS`                          | Override the [extended thinking](https://platform.claude.com/docs/en/build-with-claude/extended-thinking) token budget. Thinking is enabled at max budget (31,999 tokens) by default. Use this to limit the budget (for example, `MAX_THINKING_TOKENS=10000`) or disable thinking entirely (`MAX_THINKING_TOKENS=0`). For Opus 4.6, thinking depth is controlled by [effort level](/en/model-config#adjust-effort-level) instead, and this variable is ignored unless set to `0` to disable thinking.                                                                                                            |
-+| `MAX_THINKING_TOKENS`                          | Override the [extended thinking](https://platform.claude.com/docs/en/build-with-claude/extended-thinking) token budget. The ceiling is the model's [max output tokens](https://platform.claude.com/docs/en/about-claude/models/overview#latest-models-comparison) minus one. Set to `0` to disable thinking entirely. On models with adaptive reasoning (Opus 4.6, Sonnet 4.6), the budget is ignored unless adaptive reasoning is disabled via `CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING`                                                                                                                          |
- | `MCP_CLIENT_SECRET`                            | OAuth client secret for MCP servers that require [pre-configured credentials](/en/mcp#use-pre-configured-oauth-credentials). Avoids the interactive prompt when adding a server with `--client-secret`                                                                                                                                                                                                                                                                                                                                                                                                           |
 ```
 
 </details>
