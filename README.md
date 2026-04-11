@@ -17,6 +17,146 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-04-11</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md     | 49 ++++++++++++++++++++++++++++++++++++++++++
+ docs-ja/pages/hooks-ja.md      |  2 +-
+ docs-ja/pages/overview-ja.md   |  4 +++-
+ docs-ja/pages/quickstart-ja.md |  4 +++-
+ docs-ja/pages/setup-ja.md      |  4 +++-
+ 5 files changed, 59 insertions(+), 4 deletions(-)
+```
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index 289635e..6677cdd 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,53 @@
+ # Changelog
+ 
++## 2.1.101
++
++- Added `/team-onboarding` command to generate a teammate ramp-up guide from your local Claude Code usage
++- Added OS CA certificate store trust by default, so enterprise TLS proxies work without extra setup (set `CLAUDE_CODE_CERT_STORE=bundled` to use only bundled CAs)
++- `/ultraplan` and other remote-session features now auto-create a default cloud environment instead of requiring web setup first
++- Improved brief mode to retry once when Claude responds with plain text instead of a structured message
++- Improved focus mode: Claude now writes more self-contained summaries since it knows you only see its final message
++- Improved tool-not-available errors to explain why and how to proceed when the model calls a tool that exists but isn't available in the current context
++- Improved rate-limit retry messages to show which limit was hit and when it resets instead of an opaque seconds countdown
++- Improved refusal error messages to include the API-provided explanation when available
++- Improved `claude -p --resume <name>` to accept session titles set via `/rename` or `--name`
++- Improved settings resilience: an unrecognized hook event name in `settings.json` no longer causes the entire file to be ignored
++- Improved plugin hooks from plugins force-enabled by managed settings to run when `allowManagedHooksOnly` is set
++- Improved `/plugin` and `claude plugin update` to show a warning when the marketplace could not be refreshed, instead of silently reporting a stale version
++- Improved plan mode to hide the "Refine with Ultraplan" option when the user's org or auth setup can't reach Claude Code on the web
++- Improved beta tracing to honor `OTEL_LOG_USER_PROMPTS`, `OTEL_LOG_TOOL_DETAILS`, and `OTEL_LOG_TOOL_CONTENT`; sensitive span attributes are no longer emitted unless opted in
++- Improved SDK `query()` to clean up subprocess and temp files when consumers `break` from `for await` or use `await using`
++- Fixed a command injection vulnerability in the POSIX `which` fallback used by LSP binary detection
++- Fixed a memory leak where long sessions retained dozens of historical copies of the message list in the virtual scroller
++- Fixed `--resume`/`--continue` losing conversation context on large sessions when the loader anchored on a dead-end branch instead of the live conversation
++- Fixed `--resume` chain recovery bridging into an unrelated subagent conversation when a subagent message landed near a main-chain write gap
++- Fixed a crash on `--resume` when a persisted Edit/Write tool result was missing its `file_path`
++- Fixed a hardcoded 5-minute request timeout that aborted slow backends (local LLMs, extended thinking, slow gateways) regardless of `API_TIMEOUT_MS`
+```
+
+</details>
+
+<details>
+<summary>hooks-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/hooks-ja.md b/docs-ja/pages/hooks-ja.md
+index 865504f..ac384ed 100644
+--- a/docs-ja/pages/hooks-ja.md
++++ b/docs-ja/pages/hooks-ja.md
+@@ -29,5 +29,5 @@
+ <div style={{maxWidth: "500px", margin: "0 auto"}}>
+   <Frame>
+-    <img src="https://mintcdn.com/claude-code/WLZtXlltXc8aIoIM/images/hooks-lifecycle.svg?fit=max&auto=format&n=WLZtXlltXc8aIoIM&q=85&s=6a0bf67eeb570a96e36b564721fa2a93" alt="SessionStart から agentic ループを経由して SessionEnd までのフックのシーケンスを示すフック ライフサイクル図。agentic ループ内に PreToolUse、PermissionRequest、PostToolUse、SubagentStart/Stop、TaskCreated、TaskCompleted が含まれ、Elicitation と ElicitationResult が MCP ツール実行内にネストされ、PermissionDenied が PermissionRequest からの副分岐として、WorktreeCreate、WorktreeRemove、Notification、ConfigChange、InstructionsLoaded、CwdChanged、FileChanged がスタンドアロン非同期イベント" width="520" height="1155" data-path="images/hooks-lifecycle.svg" />
++    <img src="https://mintcdn.com/claude-code/UMJp-WgTWngzO609/images/hooks-lifecycle.svg?fit=max&auto=format&n=UMJp-WgTWngzO609&q=85&s=3f4de67df216c87dc313943b32c15f62" alt="SessionStart から agentic ループを経由して SessionEnd までのフックのシーケンスを示すフック ライフサイクル図。agentic ループ内に PreToolUse、PermissionRequest、PostToolUse、SubagentStart/Stop、TaskCreated、TaskCompleted が含まれ、Elicitation と ElicitationResult が MCP ツール実行内にネストされ、PermissionDenied が PermissionRequest からの副分岐として、WorktreeCreate、WorktreeRemove、Notification、ConfigChange、InstructionsLoaded、CwdChanged、FileChanged がスタンドアロン非同期イベント" width="520" height="1155" data-path="images/hooks-lifecycle.svg" />
+   </Frame>
+ </div>
+```
+
+</details>
+
+<details>
+<summary>overview-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/overview-ja.md b/docs-ja/pages/overview-ja.md
+index 212d534..f4b958a 100644
+--- a/docs-ja/pages/overview-ja.md
++++ b/docs-ja/pages/overview-ja.md
+@@ -63,6 +63,8 @@ Claude Code は AI を活用したコーディングアシスタントで、機
+         ```
+ 
++        Homebrew offers two casks. `claude-code` tracks the stable release channel, which is typically about a week behind and skips releases with major regressions. `claude-code@latest` tracks the latest channel and receives new versions as soon as they ship.
++
+         <Info>
+-          Homebrew installations do not auto-update. Run `brew upgrade claude-code` periodically to get the latest features and security fixes.
++          Homebrew installations do not auto-update. Run `brew upgrade claude-code` or `brew upgrade claude-code@latest`, depending on which cask you installed, to get the latest features and security fixes.
+         </Info>
+       </Tab>
+```
+
+</details>
+
+<details>
+<summary>quickstart-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/quickstart-ja.md b/docs-ja/pages/quickstart-ja.md
+index 6c63297..c9eed2d 100644
+--- a/docs-ja/pages/quickstart-ja.md
++++ b/docs-ja/pages/quickstart-ja.md
+@@ -678,6 +678,8 @@ To install Claude Code, use one of the following methods:
+     ```
+ 
++    Homebrew offers two casks. `claude-code` tracks the stable release channel, which is typically about a week behind and skips releases with major regressions. `claude-code@latest` tracks the latest channel and receives new versions as soon as they ship.
++
+     <Info>
+-      Homebrew installations do not auto-update. Run `brew upgrade claude-code` periodically to get the latest features and security fixes.
++      Homebrew installations do not auto-update. Run `brew upgrade claude-code` or `brew upgrade claude-code@latest`, depending on which cask you installed, to get the latest features and security fixes.
+     </Info>
+   </Tab>
+```
+
+</details>
+
+<details>
+<summary>setup-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/setup-ja.md b/docs-ja/pages/setup-ja.md
+index 533451c..e6fb6a7 100644
+--- a/docs-ja/pages/setup-ja.md
++++ b/docs-ja/pages/setup-ja.md
+@@ -82,6 +82,8 @@ To install Claude Code, use one of the following methods:
+     ```
+ 
++    Homebrew offers two casks. `claude-code` tracks the stable release channel, which is typically about a week behind and skips releases with major regressions. `claude-code@latest` tracks the latest channel and receives new versions as soon as they ship.
++
+     <Info>
+-      Homebrew installations do not auto-update. Run `brew upgrade claude-code` periodically to get the latest features and security fixes.
++      Homebrew installations do not auto-update. Run `brew upgrade claude-code` or `brew upgrade claude-code@latest`, depending on which cask you installed, to get the latest features and security fixes.
+     </Info>
+   </Tab>
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-04-10</summary>
 
 **変更ファイル:**
@@ -2683,151 +2823,5 @@ index 4eb7ed1..6aa6f3f 100644
 
 </details>
 
-
-<details>
-<summary>2026-03-23</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/channels-en.md           |   4 +-
- docs-ja/pages/channels-reference-en.md | 376 +++++++++++++++++++++++++++++++--
- docs-ja/pages/env-vars-en.md           |   2 +-
- 3 files changed, 365 insertions(+), 17 deletions(-)
-```
-
-<details>
-<summary>channels-en.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/channels-en.md b/docs-ja/pages/channels-en.md
-index 88b2740..ef64b59 100644
---- a/docs-ja/pages/channels-en.md
-+++ b/docs-ja/pages/channels-en.md
-@@ -218,5 +218,5 @@ To try the fakechat demo, you'll need:
- </Steps>
- 
--If Claude hits a permission prompt while you're away from the terminal, the session pauses until you approve locally. For unattended use, [`--dangerously-skip-permissions`](/en/permissions#permission-modes) bypasses prompts, but only use it in environments you trust.
-+If Claude hits a permission prompt while you're away from the terminal, the session pauses until you respond. Channel servers that declare the [permission relay capability](/en/channels-reference#relay-permission-prompts) can forward these prompts to you so you can approve or deny remotely. For unattended use, [`--dangerously-skip-permissions`](/en/permissions#permission-modes) bypasses prompts entirely, but only use it in environments you trust.
- 
- ## Security
-@@ -235,4 +235,6 @@ On top of that, you control which servers are enabled each session with `--chann
- Being in `.mcp.json` isn't enough to push messages: a server also has to be named in `--channels`.
- 
-+The allowlist also gates [permission relay](/en/channels-reference#relay-permission-prompts) if the channel declares it. Anyone who can reply through the channel can approve or deny tool use in your session, so only allowlist senders you trust with that authority.
-+
- ## Enterprise controls
- 
-```
-
-</details>
-
-<details>
-<summary>channels-reference-en.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/channels-reference-en.md b/docs-ja/pages/channels-reference-en.md
-index e1bc59a..f1565a4 100644
---- a/docs-ja/pages/channels-reference-en.md
-+++ b/docs-ja/pages/channels-reference-en.md
-@@ -5,5 +5,5 @@
- # Channels reference
- 
--> Build an MCP server that pushes webhooks, alerts, and chat messages into a Claude Code session. Reference for the channel contract: capability declaration, notification events, reply tools, and sender gating.
-+> Build an MCP server that pushes webhooks, alerts, and chat messages into a Claude Code session. Reference for the channel contract: capability declaration, notification events, reply tools, sender gating, and permission relay.
- 
- <Note>
-@@ -13,5 +13,5 @@
- A channel is an MCP server that pushes events into a Claude Code session so Claude can react to things happening outside the terminal.
- 
--You can build a one-way or two-way channel. One-way channels forward alerts, webhooks, or monitoring events for Claude to act on. Two-way channels like chat bridges also [expose a reply tool](#expose-a-reply-tool) so Claude can send messages back.
-+You can build a one-way or two-way channel. One-way channels forward alerts, webhooks, or monitoring events for Claude to act on. Two-way channels like chat bridges also [expose a reply tool](#expose-a-reply-tool) so Claude can send messages back. A channel with a trusted sender path can also opt in to [relay permission prompts](#relay-permission-prompts) so you can approve or deny tool use remotely.
- 
- This page covers:
-@@ -24,4 +24,5 @@ This page covers:
- * [Expose a reply tool](#expose-a-reply-tool): let Claude send messages back
- * [Gate inbound messages](#gate-inbound-messages): sender checks to prevent prompt injection
-+* [Relay permission prompts](#relay-permission-prompts): forward tool approval prompts to remote channels
- 
- To use an existing channel instead of building one, see [Channels](/en/channels). Telegram, Discord, and fakechat are included in the research preview.
-@@ -153,4 +154,9 @@ This example uses [Bun](https://bun.sh) as the runtime for its built-in HTTP ser
- 
-     In your Claude Code terminal, you'll see Claude receive the message and start responding: reading files, running commands, or whatever the message calls for. This is a one-way channel, so Claude acts in your session but doesn't send anything back through the webhook. To add replies, see [Expose a reply tool](#expose-a-reply-tool).
-+
-+    If the event doesn't arrive, the diagnosis depends on what `curl` returned:
-+
-```
-
-</details>
-
-<details>
-<summary>env-vars-en.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/env-vars-en.md b/docs-ja/pages/env-vars-en.md
-index 0bdcb34..fa55c70 100644
---- a/docs-ja/pages/env-vars-en.md
-+++ b/docs-ja/pages/env-vars-en.md
-@@ -71,5 +71,5 @@ Claude Code supports the following environment variables to control its behavior
- | `CLAUDE_CODE_SHELL`                            | Override automatic shell detection. Useful when your login shell differs from your preferred working shell (for example, `bash` vs `zsh`)                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
- | `CLAUDE_CODE_SHELL_PREFIX`                     | Command prefix to wrap all bash commands (for example, for logging or auditing). Example: `/path/to/logger.sh` will execute `/path/to/logger.sh <command>`                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
--| `CLAUDE_CODE_SIMPLE`                           | Set to `1` to run with a minimal system prompt and only the Bash, file read, and file edit tools. Disables MCP tools, attachments, hooks, and CLAUDE.md files                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
-+| `CLAUDE_CODE_SIMPLE`                           | Set to `1` to run with a minimal system prompt and only the Bash, file read, and file edit tools. Disables auto-discovery of hooks, skills, plugins, MCP servers, auto memory, and CLAUDE.md. The [`--bare`](/en/headless#start-faster-with-bare-mode) CLI flag sets this                                                                                                                                                                                                                                                                                                                                        |
- | `CLAUDE_CODE_SKIP_BEDROCK_AUTH`                | Skip AWS authentication for Bedrock (for example, when using an LLM gateway)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
- | `CLAUDE_CODE_SKIP_FAST_MODE_NETWORK_ERRORS`    | Set to `1` to allow [fast mode](/en/fast-mode) when the organization status check fails due to a network error. Useful when a corporate proxy blocks the status endpoint. The API still enforces organization-level disable separately                                                                                                                                                                                                                                                                                                                                                                           |
-```
-
-</details>
-
-</details>
-
-
-<details>
-<summary>2026-03-22</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/channels-en.md | 10 +++++++---
- docs-ja/pages/env-vars-en.md |  2 +-
- 2 files changed, 8 insertions(+), 4 deletions(-)
-```
-
-<details>
-<summary>channels-en.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/channels-en.md b/docs-ja/pages/channels-en.md
-index 4f3279d..88b2740 100644
---- a/docs-ja/pages/channels-en.md
-+++ b/docs-ja/pages/channels-en.md
-@@ -49,5 +49,7 @@ Each supported channel is a plugin that requires [Bun](https://bun.sh). For a ha
-         ```
- 
--        If Claude Code reports that the plugin is not found in any marketplace, run `/plugin marketplace add anthropics/claude-plugins-official` first and retry the install.
-+        If Claude Code reports that the plugin is not found in any marketplace, your marketplace is either missing or outdated. Run `/plugin marketplace update claude-plugins-official` to refresh it, or `/plugin marketplace add anthropics/claude-plugins-official` if you haven't added it before. Then retry the install.
-+
-+        After installing, run `/reload-plugins` to activate the plugin's configure command.
-       </Step>
- 
-@@ -122,5 +124,7 @@ Each supported channel is a plugin that requires [Bun](https://bun.sh). For a ha
-         ```
- 
--        If Claude Code reports that the plugin is not found in any marketplace, run `/plugin marketplace add anthropics/claude-plugins-official` first and retry the install.
-+        If Claude Code reports that the plugin is not found in any marketplace, your marketplace is either missing or outdated. Run `/plugin marketplace update claude-plugins-official` to refresh it, or `/plugin marketplace add anthropics/claude-plugins-official` if you haven't added it before. Then retry the install.
-+
-+        After installing, run `/reload-plugins` to activate the plugin's configure command.
-       </Step>
- 
-@@ -186,5 +190,5 @@ To try the fakechat demo, you'll need:
-     ```
- 
--    If Claude Code reports that the plugin is not found in any marketplace, run `/plugin marketplace add anthropics/claude-plugins-official` first and retry the install.
-+    If Claude Code reports that the plugin is not found in any marketplace, your marketplace is either missing or outdated. Run `/plugin marketplace update claude-plugins-official` to refresh it, or `/plugin marketplace add anthropics/claude-plugins-official` if you haven't added it before. Then retry the install.
-   </Step>
- 
-```
-
-</details>
 
 <!-- UPDATE_LOG_END -->
