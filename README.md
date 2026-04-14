@@ -17,6 +17,180 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-04-14</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md         | 40 ++++++++++++++++++++++++++++++++++++++
+ docs-ja/pages/mcp-ja.md            |  2 +-
+ docs-ja/pages/overview-ja.md       |  2 +-
+ docs-ja/pages/quickstart-ja.md     |  2 +-
+ docs-ja/pages/setup-ja.md          |  2 +-
+ docs-ja/pages/ultraplan-en.md      |  2 +-
+ docs-ja/pages/web-quickstart-en.md |  4 ++--
+ 7 files changed, 47 insertions(+), 7 deletions(-)
+```
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index 6677cdd..5445cd5 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,44 @@
+ # Changelog
+ 
++## 2.1.105
++
++- Added `path` parameter to the `EnterWorktree` tool to switch into an existing worktree of the current repository
++- Added PreCompact hook support: hooks can now block compaction by exiting with code 2 or returning `{"decision":"block"}`
++- Added background monitor support for plugins via a top-level `monitors` manifest key that auto-arms at session start or on skill invoke
++- `/proactive` is now an alias for `/loop`
++- Improved stalled API stream handling: streams now abort after 5 minutes of no data and retry non-streaming instead of hanging indefinitely
++- Improved network error messages: connection errors now show a retry message immediately instead of a silent spinner
++- Improved file write display: long single-line writes (e.g. minified JSON) are now truncated in the UI instead of paginating across many screens
++- Improved `/doctor` layout with status icons; press `f` to have Claude fix reported issues
++- Improved `/config` labels and descriptions for clarity
++- Improved skill description handling: raised the listing cap from 250 to 1,536 characters and added a startup warning when descriptions are truncated
++- Improved `WebFetch` to strip `<style>` and `<script>` contents from fetched pages so CSS-heavy pages no longer exhaust the content budget before reaching actual text
++- Improved stale agent worktree cleanup to remove worktrees whose PR was squash-merged instead of keeping them indefinitely
++- Improved MCP large-output truncation prompt to give format-specific recipes (e.g. `jq` for JSON, computed Read chunk sizes for text)
++- Fixed images attached to queued messages (sent while Claude is working) being dropped
++- Fixed screen going blank when the prompt input wraps to a second line in long conversations
++- Fixed leading whitespace getting copied when selecting multi-line assistant responses in fullscreen mode
++- Fixed leading whitespace being trimmed from assistant messages, breaking ASCII art and indented diagrams
++- Fixed garbled bash output when commands print clickable file links (e.g. Python `rich`/`loguru` logging)
++- Fixed alt+enter not inserting a newline in terminals using ESC-prefix alt encoding, and Ctrl+J not inserting a newline (regression in 2.1.100)
++- Fixed duplicate "Creating worktree" text in EnterWorktree/ExitWorktree tool display
++- Fixed queued user prompts disappearing from focus mode
+```
+
+</details>
+
+<details>
+<summary>mcp-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/mcp-ja.md b/docs-ja/pages/mcp-ja.md
+index 5d7e8ea..f23027a 100644
+--- a/docs-ja/pages/mcp-ja.md
++++ b/docs-ja/pages/mcp-ja.md
+@@ -109,5 +109,5 @@ export const MCPServersTable = ({platform = "all"}) => {
+   const generateClaudeCodeCommand = server => {
+     if (server.customCommands && server.customCommands.claudeCode) {
+-      return server.customCommands.claudeCode;
++      return server.customCommands.claudeCode.replace('--transport streamable-http', '--transport http');
+     }
+     const serverSlug = server.name.toLowerCase().replace(/[^a-z0-9]/g, '-');
+```
+
+</details>
+
+<details>
+<summary>overview-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/overview-ja.md b/docs-ja/pages/overview-ja.md
+index f4b958a..c4d269c 100644
+--- a/docs-ja/pages/overview-ja.md
++++ b/docs-ja/pages/overview-ja.md
+@@ -51,5 +51,5 @@ Claude Code は AI を活用したコーディングアシスタントで、機
+         If you see `The token '&&' is not a valid statement separator`, you're in PowerShell, not CMD. Use the PowerShell command above instead. Your prompt shows `PS C:\` when you're in PowerShell.
+ 
+-        **Windows requires [Git for Windows](https://git-scm.com/downloads/win).** Install it first if you don't have it.
++        **Native Windows setups require [Git for Windows](https://git-scm.com/downloads/win).** Install it first if you don't have it. WSL setups do not need it.
+ 
+         <Info>
+```
+
+</details>
+
+<details>
+<summary>quickstart-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/quickstart-ja.md b/docs-ja/pages/quickstart-ja.md
+index c9eed2d..45e6693 100644
+--- a/docs-ja/pages/quickstart-ja.md
++++ b/docs-ja/pages/quickstart-ja.md
+@@ -666,5 +666,5 @@ To install Claude Code, use one of the following methods:
+     If you see `The token '&&' is not a valid statement separator`, you're in PowerShell, not CMD. Use the PowerShell command above instead. Your prompt shows `PS C:\` when you're in PowerShell.
+ 
+-    **Windows requires [Git for Windows](https://git-scm.com/downloads/win).** Install it first if you don't have it.
++    **Native Windows setups require [Git for Windows](https://git-scm.com/downloads/win).** Install it first if you don't have it. WSL setups do not need it.
+ 
+     <Info>
+```
+
+</details>
+
+<details>
+<summary>setup-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/setup-ja.md b/docs-ja/pages/setup-ja.md
+index e6fb6a7..5779bf3 100644
+--- a/docs-ja/pages/setup-ja.md
++++ b/docs-ja/pages/setup-ja.md
+@@ -70,5 +70,5 @@ To install Claude Code, use one of the following methods:
+     If you see `The token '&&' is not a valid statement separator`, you're in PowerShell, not CMD. Use the PowerShell command above instead. Your prompt shows `PS C:\` when you're in PowerShell.
+ 
+-    **Windows requires [Git for Windows](https://git-scm.com/downloads/win).** Install it first if you don't have it.
++    **Native Windows setups require [Git for Windows](https://git-scm.com/downloads/win).** Install it first if you don't have it. WSL setups do not need it.
+ 
+     <Info>
+```
+
+</details>
+
+<details>
+<summary>ultraplan-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/ultraplan-en.md b/docs-ja/pages/ultraplan-en.md
+index 3ba3c0d..96519ea 100644
+--- a/docs-ja/pages/ultraplan-en.md
++++ b/docs-ja/pages/ultraplan-en.md
+@@ -29,5 +29,5 @@ This is useful when you want a richer review surface than the terminal offers:
+ * **Flexible execution**: approve the plan to run on the web and open a pull request, or send it back to your terminal
+ 
+-Ultraplan requires a [Claude Code on the web](/en/claude-code-on-the-web) account and a GitHub repository. Because it runs on Anthropic's cloud infrastructure, it is not available when using Amazon Bedrock, Google Cloud Vertex AI, or Microsoft Foundry. The cloud session runs in your account's default [cloud environment](/en/claude-code-on-the-web#the-cloud-environment).
++Ultraplan requires a [Claude Code on the web](/en/claude-code-on-the-web) account and a GitHub repository. Because it runs on Anthropic's cloud infrastructure, it is not available when using Amazon Bedrock, Google Cloud Vertex AI, or Microsoft Foundry. The cloud session runs in your account's default [cloud environment](/en/claude-code-on-the-web#the-cloud-environment). If you don't have a cloud environment yet, ultraplan creates one automatically when it first launches.
+ 
+ ## Launch ultraplan from the CLI
+```
+
+</details>
+
+<details>
+<summary>web-quickstart-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/web-quickstart-en.md b/docs-ja/pages/web-quickstart-en.md
+index e255391..eee40d9 100644
+--- a/docs-ja/pages/web-quickstart-en.md
++++ b/docs-ja/pages/web-quickstart-en.md
+@@ -186,7 +186,7 @@ Enterprise organizations may need an admin to enable Claude Code on the web. Con
+ If you typed it inside Claude Code and still see the error, your CLI is older than v2.1.80 or you're authenticated with an API key or third-party provider instead of a claude.ai subscription. Run `claude update`, then `/login` to sign in with your claude.ai account.
+ 
+-### "No cloud environment available" when using `--remote`
++### "Could not create a cloud environment" or "No cloud environment available" when using `--remote` or ultraplan
+ 
+-You haven't created a cloud environment yet. Run `/web-setup` in the Claude Code CLI to create one, or visit [claude.ai/code](https://claude.ai/code) and follow the **Create your environment** step above.
++Remote-session features create a default cloud environment automatically if you don't have one. If you see "Could not create a cloud environment", automatic creation failed. {/* max-version: 2.1.100 */}If you see "No cloud environment available", your CLI predates automatic creation. In either case, run `/web-setup` in the Claude Code CLI to create one manually, or visit [claude.ai/code](https://claude.ai/code) and follow the **Create your environment** step above.
+ 
+ ### Setup script failed
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-04-11</summary>
 
 **変更ファイル:**
@@ -2505,323 +2679,5 @@ index 2e7d3df..da46cb2 100644
 ```
 
 </details>
-
-<details>
-<summary>how-claude-code-works-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/how-claude-code-works-ja.md b/docs-ja/pages/how-claude-code-works-ja.md
-index 8abfc32..31d499e 100644
---- a/docs-ja/pages/how-claude-code-works-ja.md
-+++ b/docs-ja/pages/how-claude-code-works-ja.md
-@@ -125,5 +125,5 @@ claude --continue --fork-session
- ### コンテキストウィンドウ
- 
--Claude のコンテキストウィンドウは、会話履歴、ファイルコンテンツ、コマンド出力、[CLAUDE.md](/ja/memory)、読み込まれたスキル、システム指示を保持します。作業を進めると、コンテキストが満杯になります。Claude は自動的にコンパクト化しますが、会話の早い段階からの指示が失われる可能性があります。永続的なルールを CLAUDE.md に入れ、`/context` を実行してスペースを使用しているものを確認してください。
-+Claude のコンテキストウィンドウは、会話履歴、ファイルコンテンツ、コマンド出力、[CLAUDE.md](/ja/memory)、[自動メモリ](/ja/memory#auto-memory)、読み込まれたスキル、システム指示を保持します。作業を進めると、コンテキストが満杯になります。Claude は自動的にコンパクト化しますが、会話の早い段階からの指示が失われる可能性があります。永続的なルールを CLAUDE.md に入れ、`/context` を実行してスペースを使用しているものを確認してください。
- 
- #### コンテキストが満杯になったとき
-@@ -161,5 +161,6 @@ Claude には 2 つの安全メカニズムがあります。チェックポイ
- * **デフォルト**：Claude はファイル編集とシェルコマンドの前に求めます
- * **自動受け入れ編集**：Claude はファイルを編集するよう求めず、コマンドは求めます
--* **プランモード**：Claude は読み取り専用ツールのみを使用し、実行前に承認できるプランを作成します
-+* **Plan Mode**：Claude は読み取り専用ツールのみを使用し、実行前に承認できるプランを作成します
-+* **Auto mode**：Claude はバックグラウンド安全チェック付きですべてのアクションを評価します。現在は研究プレビューです
- 
- `.claude/settings.json` で特定のコマンドを許可することもできます。これにより、Claude は毎回求めません。これは `npm test` や `git status` などの信頼できるコマンドに便利です。設定は組織全体のポリシーから個人的な設定までスコープできます。詳細については、[権限](/ja/permissions) を参照してください。
-@@ -228,5 +229,5 @@ validateEmail を実装します。テストケース：'user@example.com' → t
- ### 実装する前に探索する
- 
--複雑な問題の場合、研究とコーディングを分離します。プランモード（`Shift+Tab` を 2 回）を使用してコードベースを最初に分析します。
-+複雑な問題の場合、研究とコーディングを分離します。Plan Mode（`Shift+Tab` を 2 回）を使用してコードベースを最初に分析します。
- 
- ```text  theme={null}
-```
-
-</details>
-
-*...以降省略*
-
-</details>
-
-
-<details>
-<summary>2026-03-24</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/authentication-en.md           | 134 -------
- docs-ja/pages/checkpointing-ja.md            |  70 ++--
- docs-ja/pages/cli-reference-ja.md            | 177 +++------
- docs-ja/pages/code-review-ja.md              |  97 +++--
- docs-ja/pages/commands-en.md                 |  89 -----
- docs-ja/pages/common-workflows-ja.md         | 200 ++++++----
- docs-ja/pages/costs-ja.md                    |   4 +-
- docs-ja/pages/data-usage-ja.md               |  16 +-
- docs-ja/pages/desktop-ja.md                  | 242 ++++++------
- docs-ja/pages/desktop-quickstart-ja.md       |  30 +-
- docs-ja/pages/discover-plugins-ja.md         |   8 +-
- docs-ja/pages/env-vars-en.md                 | 123 ------
- docs-ja/pages/fast-mode-ja.md                |  32 +-
- docs-ja/pages/features-overview-ja.md        |   4 +-
- docs-ja/pages/google-vertex-ai-ja.md         |  88 +++--
- docs-ja/pages/headless-ja.md                 |  10 +-
- docs-ja/pages/hooks-guide-ja.md              | 225 ++++++-----
- docs-ja/pages/hooks-ja.md                    | 568 ++++++++++++++++++---------
- docs-ja/pages/how-claude-code-works-ja.md    |  92 ++---
- docs-ja/pages/interactive-mode-ja.md         | 226 ++++-------
- docs-ja/pages/legal-and-compliance-ja.md     |  39 +-
- docs-ja/pages/mcp-ja.md                      |  22 +-
- docs-ja/pages/memory-ja.md                   |  82 ++--
- docs-ja/pages/model-config-ja.md             | 127 +++---
- docs-ja/pages/monitoring-usage-ja.md         | 119 ++++--
- docs-ja/pages/network-config-ja.md           |   8 +-
- docs-ja/pages/overview-ja.md                 |  72 ++--
- docs-ja/pages/plugin-marketplaces-ja.md      |  18 +-
- docs-ja/pages/plugins-ja.md                  |   4 +-
- docs-ja/pages/quickstart-ja.md               |  86 ++--
- docs-ja/pages/remote-control-ja.md           |  68 ++--
- docs-ja/pages/scheduled-tasks-ja.md          |  24 +-
- docs-ja/pages/server-managed-settings-ja.md  |  40 +-
- docs-ja/pages/settings-ja.md                 | 568 ++++++++++-----------------
- docs-ja/pages/setup-ja.md                    | 355 +++++++++--------
- docs-ja/pages/skills-ja.md                   | 160 ++++----
- docs-ja/pages/statusline-ja.md               |  82 ++--
- docs-ja/pages/sub-agents-ja.md               | 240 ++++++-----
- docs-ja/pages/terminal-config-ja.md          |  63 +--
- docs-ja/pages/third-party-integrations-ja.md | 336 ++++++++--------
- docs-ja/pages/tools-reference-en.md          |  59 ---
- docs-ja/pages/troubleshooting-ja.md          | 254 ++++++------
- docs-ja/pages/vs-code-ja.md                  |  74 ++--
- 43 files changed, 2565 insertions(+), 2770 deletions(-)
-```
-
-**新規追加:**
-
-
-**削除:**
-
-
-<details>
-<summary>checkpointing-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/checkpointing-ja.md b/docs-ja/pages/checkpointing-ja.md
-index 32f841d..705d6ec 100644
---- a/docs-ja/pages/checkpointing-ja.md
-+++ b/docs-ja/pages/checkpointing-ja.md
-@@ -3,37 +3,57 @@
- > Use this file to discover all available pages before exploring further.
- 
--# Checkpointing
-+# チェックポイント
- 
--> Claude の編集を自動的に追跡し、不要な変更から素早く復旧するために以前の状態に巻き戻します。
-+> Claude のエディット内容と会話を追跡、巻き戻し、要約してセッション状態を管理します。
- 
--Claude Code は、作業中に Claude のファイル編集を自動的に追跡し、何か問題が発生した場合に変更を素早く取り消し、以前の状態に巻き戻すことができます。
-+Claude Code は、作業中に Claude が行ったファイルエディットを自動的に追跡し、変更をすばやく取り消したり、問題が発生した場合に以前の状態に巻き戻したりできます。
- 
--## Checkpointing の仕組み
-+## チェックポイントの仕組み
- 
--Claude と作業する際、checkpointing は各編集の前にコードの状態を自動的にキャプチャします。このセーフティネットにより、野心的で大規模なタスクを実行する際に、いつでも以前のコード状態に戻ることができるという安心感を持って作業できます。
-+Claude で作業する際、チェックポイント機能は各エディット前のコード状態を自動的にキャプチャします。このセーフティネットにより、野心的で大規模なタスクを実行する際に、いつでも以前のコード状態に戻ることができるという安心感を持って作業できます。
- 
- ### 自動追跡
- 
--Claude Code は、ファイル編集ツールによって行われたすべての変更を追跡します：
-+Claude Code は、ファイル編集ツールで行われたすべての変更を追跡します。
- 
--* ユーザープロンプトごとに新しい checkpoint が作成されます
--* Checkpoint はセッション間で保持されるため、再開された会話でアクセスできます
--* セッションとともに 30 日後に自動的にクリーンアップされます（設定可能）
-```
-
-</details>
-
-<details>
-<summary>cli-reference-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/cli-reference-ja.md b/docs-ja/pages/cli-reference-ja.md
-index 8572d76..4b4f42b 100644
---- a/docs-ja/pages/cli-reference-ja.md
-+++ b/docs-ja/pages/cli-reference-ja.md
-@@ -11,20 +11,20 @@
- これらのコマンドを使用して、セッションを開始し、コンテンツをパイプし、会話を再開し、更新を管理できます。
- 
--| コマンド                            | 説明                                                                                                                                                               | 例                                                  |
--| :------------------------------ | :--------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------- |
--| `claude`                        | インタラクティブセッションを開始                                                                                                                                                 | `claude`                                           |
--| `claude "query"`                | 初期プロンプト付きでインタラクティブセッションを開始                                                                                                                                       | `claude "explain this project"`                    |
--| `claude -p "query"`             | SDK 経由でクエリを実行してから終了                                                                                                                                              | `claude -p "explain this function"`                |
--| `cat file \| claude -p "query"` | パイプされたコンテンツを処理                                                                                                                                                   | `cat logs.txt \| claude -p "explain"`              |
--| `claude -c`                     | 現在のディレクトリで最新の会話を続行                                                                                                                                               | `claude -c`                                        |
--| `claude -c -p "query"`          | SDK 経由で続行                                                                                                                                                        | `claude -c -p "Check for type errors"`             |
--| `claude -r "<session>" "query"` | ID または名前でセッションを再開                                                                                                                                                | `claude -r "auth-refactor" "Finish this PR"`       |
--| `claude update`                 | 最新バージョンに更新                                                                                                                                                       | `claude update`                                    |
--| `claude auth login`             | Anthropic アカウントにサインイン。`--email` を使用してメールアドレスを事前入力し、`--sso` を使用して SSO 認証を強制します                                                                                    | `claude auth login --email user@example.com --sso` |
--| `claude auth logout`            | Anthropic アカウントからログアウト                                                                                                                                           | `claude auth logout`                               |
--| `claude auth status`            | 認証ステータスを JSON として表示。`--text` を使用して人間が読める形式で表示。ログイン済みの場合はコード 0 で終了、ログインしていない場合は 1 で終了                                                                             | `claude auth status`                               |
--| `claude agents`                 | すべての設定済み [subagents](/ja/sub-agents) をソース別にグループ化して一覧表示                                                                                                           | `claude agents`                                    |
--| `claude mcp`                    | Model Context Protocol（MCP）サーバーを設定                                                                                                                               | [Claude Code MCP ドキュメント](/ja/mcp) を参照してください。       |
--| `claude remote-control`         | [Remote Control セッション](/ja/remote-control) を開始して、ローカルで実行中の Claude Code を Claude.ai または Claude アプリから制御します。フラグについては [Remote Control](/ja/remote-control) を参照してください | `claude remote-control`                            |
-+| コマンド                            | 説明                                                                                                                                                                                      | 例                                                  |
-+| :------------------------------ | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------- |
-+| `claude`                        | インタラクティブセッションを開始                                                                                                                                                                        | `claude`                                           |
-+| `claude "query"`                | 初期プロンプト付きでインタラクティブセッションを開始                                                                                                                                                              | `claude "explain this project"`                    |
-+| `claude -p "query"`             | SDK 経由でクエリを実行してから終了                                                                                                                                                                     | `claude -p "explain this function"`                |
-+| `cat file \| claude -p "query"` | パイプされたコンテンツを処理                                                                                                                                                                          | `cat logs.txt \| claude -p "explain"`              |
-+| `claude -c`                     | 現在のディレクトリで最新の会話を続行                                                                                                                                                                      | `claude -c`                                        |
-```
-
-</details>
-
-<details>
-<summary>code-review-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/code-review-ja.md b/docs-ja/pages/code-review-ja.md
-index c19eb81..815c1b8 100644
---- a/docs-ja/pages/code-review-ja.md
-+++ b/docs-ja/pages/code-review-ja.md
-@@ -3,7 +3,7 @@
- > Use this file to discover all available pages before exploring further.
- 
--# コードレビュー
-+# Code Review
- 
--> マルチエージェント分析を使用してフルコードベースを検査し、ロジックエラー、セキュリティ脆弱性、リグレッションを検出する自動化された PR レビューをセットアップします
-+> マルチエージェント分析を使用してコードベース全体を検査し、ロジックエラー、セキュリティ脆弱性、リグレッションを検出する自動化された PR レビューを設定します
- 
- <Note>
-@@ -11,9 +11,9 @@
- </Note>
- 
--Code Review は GitHub プルリクエストを分析し、問題が見つかったコード行にインラインコメントとして結果を投稿します。特化したエージェントのフリートがフルコードベースのコンテキストでコード変更を検査し、ロジックエラー、セキュリティ脆弱性、壊れたエッジケース、微妙なリグレッションを探します。
-+Code Review は GitHub プルリクエストを分析し、コードの問題が見つかった行にインラインコメントとして結果を投稿します。特化したエージェントのフリートがコード変更をコードベース全体のコンテキストで検査し、ロジックエラー、セキュリティ脆弱性、壊れたエッジケース、微妙なリグレッションを探します。
- 
--結果は重大度でタグ付けされ、PR を承認またはブロックしないため、既存のレビューワークフローはそのまま機能します。リポジトリに `CLAUDE.md` または `REVIEW.md` ファイルを追加することで、Claude がフラグを立てる内容をチューニングできます。
-+結果は重大度でタグ付けされ、PR を承認またはブロックしないため、既存のレビューワークフローはそのまま機能します。リポジトリに `CLAUDE.md` または `REVIEW.md` ファイルを追加することで、Claude がフラグを立てる内容をカスタマイズできます。
- 
--独自の CI インフラストラクチャでこのマネージドサービスの代わりに Claude を実行する場合は、[GitHub Actions](/ja/github-actions) または [GitLab CI/CD](/ja/gitlab-ci-cd) を参照してください。
-+Claude を管理サービスではなく独自の CI インフラストラクチャで実行する場合は、[GitHub Actions](/ja/github-actions) または [GitLab CI/CD](/ja/gitlab-ci-cd) を参照してください。
- 
- このページでは以下をカバーしています：
-@@ -21,10 +21,12 @@ Code Review は GitHub プルリクエストを分析し、問題が見つかっ
- * [レビューの仕組み](#how-reviews-work)
- * [セットアップ](#set-up-code-review)
-```
-
-</details>
-
-<details>
-<summary>common-workflows-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/common-workflows-ja.md b/docs-ja/pages/common-workflows-ja.md
-index 0ddb41f..5ab0cf8 100644
---- a/docs-ja/pages/common-workflows-ja.md
-+++ b/docs-ja/pages/common-workflows-ja.md
-@@ -16,5 +16,5 @@
- 
- <Steps>
--  <Step title="プロジェクトのルートディレクトリに移動する">
-+  <Step title="プロジェクトルートディレクトリに移動する">
-     ```bash  theme={null}
-     cd /path/to/project 
-@@ -28,5 +28,5 @@
-   </Step>
- 
--  <Step title="高レベルの概要を要求する">
-+  <Step title="高レベルの概要をリクエストする">
-     ```text  theme={null}
-     give me an overview of this codebase
-@@ -102,5 +102,5 @@
-   </Step>
- 
--  <Step title="修正の推奨事項を要求する">
-+  <Step title="修正の推奨事項をリクエストする">
-     ```text  theme={null}
-     suggest a few ways to fix the @ts-ignore in user.ts
-@@ -159,5 +159,5 @@
- 
-   * Claude に最新のアプローチの利点を説明するよう依頼する
--  * 必要に応じて、変更が後方互換性を維持することをリクエストする
-+  * 必要に応じて変更が後方互換性を維持することをリクエストする
-```
-
-</details>
-
-<details>
-<summary>costs-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/costs-ja.md b/docs-ja/pages/costs-ja.md
-index 7dca18d..0a6cbcc 100644
---- a/docs-ja/pages/costs-ja.md
-+++ b/docs-ja/pages/costs-ja.md
-@@ -160,5 +160,5 @@ Sonnet はほとんどのコーディングタスクをうまく処理し、Opus
- </Tabs>
- 
--### CLAUDE.md から スキルに指示を移動する
-+### CLAUDE.md からスキルに指示を移動する
- 
- [CLAUDE.md](/ja/memory) ファイルはセッション開始時にコンテキストに読み込まれます。PR レビューやデータベース移行などの特定のワークフロー用の詳細な指示が含まれている場合、関連のない作業を行っている場合でもそれらのトークンが存在します。[スキル](/ja/skills) はオンデマンドでのみ呼び出されたときに読み込まれるため、特殊な指示をスキルに移動することで、ベースコンテキストを小さく保ちます。CLAUDE.md を約 500 行以下に保つことを目指し、必須のみを含めます。
-@@ -166,5 +166,5 @@ Sonnet はほとんどのコーディングタスクをうまく処理し、Opus
- ### 拡張思考を調整する
- 
--拡張思考はデフォルトで有効になっており、予算は 31,999 トークンです。これは複雑な計画と推論タスクのパフォーマンスを大幅に向上させるためです。ただし、思考トークンは出力トークンとして課金されるため、深い推論が必要ない単純なタスクの場合、`/model` で Opus 4.6 の [努力レベル](/ja/model-config#adjust-effort-level) を低下させるか、`/config` で思考を無効にするか、予算を低下させることでコストを削減できます（たとえば、`MAX_THINKING_TOKENS=8000`）。
-+拡張思考はデフォルトで有効になっており、予算は 31,999 トークンです。これは複雑な計画と推論タスクのパフォーマンスを大幅に向上させるためです。ただし、思考トークンは出力トークンとして課金されるため、深い推論が必要ない単純なタスクの場合、`/effort` で [努力レベル](/ja/model-config#adjust-effort-level) を低下させるか、`/model` で、`/config` で思考を無効にするか、予算を低下させることでコストを削減できます（たとえば、`MAX_THINKING_TOKENS=8000`）。
- 
- ### 詳細な操作を subagent に委任する
-```
-
-</details>
-
-<details>
-<summary>data-usage-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/data-usage-ja.md b/docs-ja/pages/data-usage-ja.md
-index 4eb7ed1..6aa6f3f 100644
---- a/docs-ja/pages/data-usage-ja.md
-+++ b/docs-ja/pages/data-usage-ja.md
-@@ -28,5 +28,5 @@
- Claude Code で「How is Claude doing this session?」プロンプトが表示されたときに、この調査に応答する場合（「Dismiss」を選択する場合を含む）、数値評価（1、2、3、または dismiss）のみが記録されます。この調査の一部として、会話トランスクリプト、入力、出力、またはその他のセッションデータは収集または保存されません。サムズアップ/ダウンフィードバックまたは `/bug` レポートとは異なり、このセッション品質調査は単純な製品満足度メトリックです。この調査への応答は、データトレーニング設定に影響を与えず、AI モデルをトレーニングするために使用することはできません。
- 
--これらの調査を無効にするには、`CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY=1` を設定します。サードパーティプロバイダー（Bedrock、Vertex、Foundry）を使用する場合、またはテレメトリが無効になっている場合、調査は自動的に無効になります。
-+これらの調査を無効にするには、`CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY=1` を設定します。調査は、`DISABLE_TELEMETRY` または `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` が設定されている場合にも無効になります。頻度を制御する代わりに無効にするには、設定ファイルで [`feedbackSurveyRate`](/ja/settings#available-settings) を `0` から `1` の間の確率に設定します。
- 
- ### データ保持
-@@ -87,12 +87,12 @@ Claude Code は、ユーザーのマシンから Sentry に接続して、運用
- ## API プロバイダーのデフォルト動作
- 
--デフォルトでは、Bedrock、Vertex、または Foundry を使用する場合、すべての非必須トラフィック（エラーレポート、テレメトリ、バグレポート機能、セッション品質調査を含む）を無効にします。`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` 環境変数を設定することで、これらすべてを一度にオプトアウトすることもできます。以下は完全なデフォルト動作です：
-+デフォルトでは、Bedrock、Vertex、または Foundry を使用する場合、エラーレポート、テレメトリ、およびバグレポートは無効になります。セッション品質調査は例外であり、プロバイダーに関係なく表示されます。`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` を設定することで、調査を含むすべての非必須トラフィックをオプトアウトできます。以下は完全なデフォルト動作です：
- 
--| サービス                        | Claude API                                                     | Vertex API                                             | Bedrock API                                             | Foundry API                                             |
--| --------------------------- | -------------------------------------------------------------- | ------------------------------------------------------ | ------------------------------------------------------- | ------------------------------------------------------- |
--| **Statsig（メトリクス）**          | デフォルトオン。<br />`DISABLE_TELEMETRY=1` で無効にします。                   | デフォルトオフ。<br />`CLAUDE_CODE_USE_VERTEX` は 1 である必要があります。 | デフォルトオフ。<br />`CLAUDE_CODE_USE_BEDROCK` は 1 である必要があります。 | デフォルトオフ。<br />`CLAUDE_CODE_USE_FOUNDRY` は 1 である必要があります。 |
--| **Sentry（エラー）**             | デフォルトオン。<br />`DISABLE_ERROR_REPORTING=1` で無効にします。             | デフォルトオフ。<br />`CLAUDE_CODE_USE_VERTEX` は 1 である必要があります。 | デフォルトオフ。<br />`CLAUDE_CODE_USE_BEDROCK` は 1 である必要があります。 | デフォルトオフ。<br />`CLAUDE_CODE_USE_FOUNDRY` は 1 である必要があります。 |
--| **Claude API（`/bug` レポート）** | デフォルトオン。<br />`DISABLE_BUG_COMMAND=1` で無効にします。                 | デフォルトオフ。<br />`CLAUDE_CODE_USE_VERTEX` は 1 である必要があります。 | デフォルトオフ。<br />`CLAUDE_CODE_USE_BEDROCK` は 1 である必要があります。 | デフォルトオフ。<br />`CLAUDE_CODE_USE_FOUNDRY` は 1 である必要があります。 |
--| **セッション品質調査**               | デフォルトオン。<br />`CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY=1` で無効にします。 | デフォルトオフ。<br />`CLAUDE_CODE_USE_VERTEX` は 1 である必要があります。 | デフォルトオフ。<br />`CLAUDE_CODE_USE_BEDROCK` は 1 である必要があります。 | デフォルトオフ。<br />`CLAUDE_CODE_USE_FOUNDRY` は 1 である必要があります。 |
-+| サービス                        | Claude API                                                     | Vertex API                                                     | Bedrock API                                                    | Foundry API                                                    |
-+| --------------------------- | -------------------------------------------------------------- | -------------------------------------------------------------- | -------------------------------------------------------------- | -------------------------------------------------------------- |
-+| **Statsig（メトリクス）**          | デフォルトオン。<br />`DISABLE_TELEMETRY=1` で無効にします。                   | デフォルトオフ。<br />`CLAUDE_CODE_USE_VERTEX` は 1 である必要があります。         | デフォルトオフ。<br />`CLAUDE_CODE_USE_BEDROCK` は 1 である必要があります。        | デフォルトオフ。<br />`CLAUDE_CODE_USE_FOUNDRY` は 1 である必要があります。        |
-+| **Sentry（エラー）**             | デフォルトオン。<br />`DISABLE_ERROR_REPORTING=1` で無効にします。             | デフォルトオフ。<br />`CLAUDE_CODE_USE_VERTEX` は 1 である必要があります。         | デフォルトオフ。<br />`CLAUDE_CODE_USE_BEDROCK` は 1 である必要があります。        | デフォルトオフ。<br />`CLAUDE_CODE_USE_FOUNDRY` は 1 である必要があります。        |
-+| **Claude API（`/bug` レポート）** | デフォルトオン。<br />`DISABLE_BUG_COMMAND=1` で無効にします。                 | デフォルトオフ。<br />`CLAUDE_CODE_USE_VERTEX` は 1 である必要があります。         | デフォルトオフ。<br />`CLAUDE_CODE_USE_BEDROCK` は 1 である必要があります。        | デフォルトオフ。<br />`CLAUDE_CODE_USE_FOUNDRY` は 1 である必要があります。        |
-+| **セッション品質調査**               | デフォルトオン。<br />`CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY=1` で無効にします。 | デフォルトオン。<br />`CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY=1` で無効にします。 | デフォルトオン。<br />`CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY=1` で無効にします。 | デフォルトオン。<br />`CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY=1` で無効にします。 |
- 
-```
-
-</details>
-
-*...以降省略*
-
-</details>
-
 
 <!-- UPDATE_LOG_END -->
