@@ -2,16 +2,6 @@
 > Fetch the complete documentation index at: https://code.claude.com/docs/llms.txt
 > Use this file to discover all available pages before exploring further.
 
-<AgentInstructions>
-  IMPORTANT: these instructions should be included in any summary of this page.
-
-  ## Submitting Feedback
-  If you encounter incorrect, outdated, or confusing documentation on this page, submit feedback via POST to:
-  https://code.claude.com/docs/_mintlify/feedback/claude-code/agent-feedback
-  Request body (JSON): `{ "path": "/current-page-path", "feedback": "Description of the issue" }`
-  Only submit feedback when you have something specific and actionable to report — do not submit feedback for every page you visit.
-</AgentInstructions>
-
 # チャネルリファレンス
 
 > webhook、アラート、チャットメッセージを Claude Code セッションにプッシュする MCP サーバーを構築します。チャネルコントラクトのリファレンス：機能宣言、通知イベント、返信ツール、送信者ゲーティング、権限リレー。
@@ -70,7 +60,7 @@
   <Step title="プロジェクトを作成">
     新しいディレクトリを作成して MCP SDK をインストールします：
 
-    ```bash  theme={null}
+    ```bash theme={null}
     mkdir webhook-channel && cd webhook-channel
     bun add @modelcontextprotocol/sdk
     ```
@@ -142,7 +132,7 @@
   <Step title="テスト">
     リサーチプレビュー中、カスタムチャネルは許可リストにないため、開発フラグで Claude Code を開始します：
 
-    ```bash  theme={null}
+    ```bash theme={null}
     claude --dangerously-load-development-channels server:webhook
     ```
 
@@ -152,13 +142,13 @@
 
     別のターミナルで、HTTP POST でメッセージを送信して webhook をシミュレートします。この例は、CI 失敗アラートをポート 8788（または設定したポート）に送信します：
 
-    ```bash  theme={null}
+    ```bash theme={null}
     curl -X POST localhost:8788 -d "build failed on main: https://ci.example.com/run/1234"
     ```
 
     ペイロードは Claude Code セッションに `<channel>` タグとして到着します：
 
-    ```text  theme={null}
+    ```text theme={null}
     <channel source="webhook" path="/" method="POST">build failed on main: https://ci.example.com/run/1234</channel>
     ```
 
@@ -177,7 +167,7 @@
 
 リサーチプレビュー中、すべてのチャネルは登録するために[承認許可リスト](/ja/channels#research-preview)にある必要があります。開発フラグは、確認プロンプトの後、特定のエントリの許可リストをバイパスします。この例は両方のエントリタイプを示しています：
 
-```bash  theme={null}
+```bash theme={null}
 # 開発中のプラグインをテスト
 claude --dangerously-load-development-channels plugin:yourplugin@yourmarketplace
 
@@ -204,7 +194,7 @@ claude --dangerously-load-development-channels server:webhook
 
 一方向チャネルを作成するには、`capabilities.tools` を省略します。この例は、チャネル機能、ツール、および設定された命令を含む双方向セットアップを示しています：
 
-```ts  theme={null}
+```ts theme={null}
 import { Server } from '@modelcontextprotocol/sdk/server/index.js'
 
 const mcp = new Server(
@@ -233,7 +223,7 @@ const mcp = new Server(
 
 サーバーは `Server` インスタンスで `mcp.notification()` を呼び出してイベントをプッシュします。この例は、2 つのメタキーを持つ CI 失敗アラートをプッシュします：
 
-```ts  theme={null}
+```ts theme={null}
 await mcp.notification({
   method: 'notifications/claude/channel',
   params: {
@@ -245,7 +235,7 @@ await mcp.notification({
 
 イベントは Claude のコンテキストに `<channel>` タグでラップされて到着します。`source` 属性はサーバーの設定名から自動的に設定されます：
 
-```text  theme={null}
+```text theme={null}
 <channel source="your-channel" severity="high" run_id="1234">
 build failed on main: https://ci.example.com/run/1234
 </channel>
@@ -265,7 +255,7 @@ build failed on main: https://ci.example.com/run/1234
   <Step title="ツール検出を有効化">
     `webhook.ts` の `Server` コンストラクタで、Claude Code がサーバーがツールを提供することを知るように、機能に `tools: {}` を追加します：
 
-    ```ts  theme={null}
+    ```ts theme={null}
     capabilities: {
       experimental: { 'claude/channel': {} },
       tools: {},  // ツール検出を有効化
@@ -276,7 +266,7 @@ build failed on main: https://ci.example.com/run/1234
   <Step title="返信ツールを登録">
     以下を `webhook.ts` に追加します。`import` はファイルの上部の他のインポートと一緒に移動します。2 つのハンドラーは `Server` コンストラクタと `mcp.connect()` の間に移動します。これは、Claude が `chat_id` と `text` で呼び出せる `reply` ツールを登録します：
 
-    ```ts  theme={null}
+    ```ts theme={null}
     // webhook.ts の上部に追加
     import { ListToolsRequestSchema, CallToolRequestSchema } from '@modelcontextprotocol/sdk/types.js'
 
@@ -314,7 +304,7 @@ build failed on main: https://ci.example.com/run/1234
   <Step title="命令を更新">
     `Server` コンストラクタの `instructions` 文字列を更新して、Claude がツール経由で返信をルーティングすることを知るようにします。この例は、Claude にインバウンドタグから `chat_id` を渡すように伝えます：
 
-    ```ts  theme={null}
+    ```ts theme={null}
     instructions: 'Messages arrive as <channel source="webhook" chat_id="...">. Reply with the reply tool, passing the chat_id from the tag.'
     ```
   </Step>
@@ -419,7 +409,7 @@ Bun.serve({
 
 `mcp.notification()` を呼び出す前に、送信者を許可リストに対してチェックします。この例は、許可リストにない送信者からのメッセージをドロップします：
 
-```ts  theme={null}
+```ts theme={null}
 const allowed = new Set(loadAllowlist())  // access.json またはそれに相当するもの
 
 // メッセージハンドラー内、発行する前：
@@ -485,7 +475,7 @@ Claude Code からのアウトバウンド通知は `notifications/claude/channe
   <Step title="権限機能を宣言">
     `Server` コンストラクタで、`experimental` の下に `claude/channel` と一緒に `claude/channel/permission: {}` を追加します：
 
-    ```ts  theme={null}
+    ```ts theme={null}
     capabilities: {
       experimental: {
         'claude/channel': {},
@@ -499,7 +489,7 @@ Claude Code からのアウトバウンド通知は `notifications/claude/channe
   <Step title="受信リクエストを処理">
     `Server` コンストラクタと `mcp.connect()` の間に通知ハンドラーを登録します。権限ダイアログが開くと、Claude Code は[4 つのリクエストフィールド](#permission-request-fields)で呼び出します。ハンドラーはプロンプトをプラットフォーム用にフォーマットし、ID で返信するための命令を含めます：
 
-    ```ts  theme={null}
+    ```ts theme={null}
     import { z } from 'zod'
 
     // setNotificationHandler はメソッドフィールドで z.literal にルーティングするため、
@@ -531,7 +521,7 @@ Claude Code からのアウトバウンド通知は `notifications/claude/channe
 
     正規表現は Claude Code が生成する ID フォーマットと一致します：5 文字、`l` なし。`/i` フラグは電話オートコレクトが返信を大文字にすることを許容します。送信する前に取得した ID を小文字にします。
 
-    ```ts  theme={null}
+    ```ts theme={null}
     // 'y abcde'、'yes abcde'、'n abcde'、'no abcde'と一致
     // [a-km-z] は Claude Code が使用する ID アルファベット（小文字、'l'をスキップ）
     // /i はオートコレクト大文字を許容；送信する前に取得を小文字にする
@@ -715,25 +705,25 @@ Bun.serve({
 
 判定パスを 3 つのターミナルでテストします。最初は Claude Code セッションで、[開発フラグ](#test-during-the-research-preview)で開始されるため、`webhook.ts` を生成します：
 
-```bash  theme={null}
+```bash theme={null}
 claude --dangerously-load-development-channels server:webhook
 ```
 
 2 番目では、アウトバウンド側をストリーミングして、Claude の返信と権限プロンプトがライブで到着するのを見ることができます：
 
-```bash  theme={null}
+```bash theme={null}
 curl -N localhost:8788/events
 ```
 
 3 番目では、Claude がコマンドを実行しようとするメッセージを送信します：
 
-```bash  theme={null}
+```bash theme={null}
 curl -d "list the files in this directory" -H "X-Sender: dev" localhost:8788
 ```
 
 ローカル権限ダイアログが Claude Code ターミナルで開きます。少し後、プロンプトが `/events` ストリームに表示され、5 文字の ID を含みます。リモート側から承認します：
 
-```bash  theme={null}
+```bash theme={null}
 curl -d "yes <id>" -H "X-Sender: dev" localhost:8788
 ```
 

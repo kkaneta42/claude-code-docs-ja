@@ -17,6 +17,306 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-04-15</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/agent-teams-ja.md              |  38 +++----
+ docs-ja/pages/amazon-bedrock-ja.md           |  36 +++---
+ docs-ja/pages/analytics-ja.md                |  10 --
+ docs-ja/pages/authentication-ja.md           |  10 --
+ docs-ja/pages/best-practices-ja.md           |  26 ++---
+ docs-ja/pages/changelog.md                   |  31 ++++++
+ docs-ja/pages/channels-ja.md                 |  24 ++--
+ docs-ja/pages/channels-reference-ja.md       |  48 ++++----
+ docs-ja/pages/checkpointing-ja.md            |  12 +-
+ docs-ja/pages/chrome-ja.md                   |  28 ++---
+ docs-ja/pages/claude-code-on-the-web-ja.md   |  30 ++---
+ docs-ja/pages/claude-directory-en.md         |  12 +-
+ docs-ja/pages/cli-reference-ja.md            |  10 --
+ docs-ja/pages/code-review-ja.md              |  14 +--
+ docs-ja/pages/commands-ja.md                 |  10 --
+ docs-ja/pages/common-workflows-ja.md         | 154 ++++++++++++--------------
+ docs-ja/pages/computer-use-ja.md             |  20 +---
+ docs-ja/pages/context-window-en.md           |  10 --
+ docs-ja/pages/costs-ja.md                    |  18 +--
+ docs-ja/pages/data-usage-ja.md               |  10 --
+ docs-ja/pages/desktop-ja.md                  |  44 +++-----
+ docs-ja/pages/desktop-quickstart-ja.md       |  10 --
+ docs-ja/pages/desktop-scheduled-tasks-en.md  |  38 +++----
+ docs-ja/pages/devcontainer-ja.md             |  10 --
+ docs-ja/pages/discover-plugins-ja.md         |  54 ++++-----
+ docs-ja/pages/env-vars-ja.md                 |  10 --
+ docs-ja/pages/fast-mode-ja.md                |  12 +-
+ docs-ja/pages/features-overview-ja.md        |  10 --
+ docs-ja/pages/fullscreen-ja.md               |  20 +---
+ docs-ja/pages/github-actions-ja.md           |  30 ++---
+ docs-ja/pages/github-enterprise-server-en.md |  24 ++--
+ docs-ja/pages/gitlab-ci-cd-ja.md             |  28 ++---
+ docs-ja/pages/google-vertex-ai-ja.md         |  18 +--
+ docs-ja/pages/headless-ja.md                 |  34 ++----
+ docs-ja/pages/hooks-guide-ja.md              |  70 +++++-------
+ docs-ja/pages/hooks-ja.md                    | 158 +++++++++++++-------------
+ docs-ja/pages/how-claude-code-works-ja.md    |  24 ++--
+ docs-ja/pages/interactive-mode-ja.md         |  14 +--
+ docs-ja/pages/jetbrains-ja.md                |  14 +--
+ docs-ja/pages/keybindings-ja.md              |  20 +---
+ docs-ja/pages/legal-and-compliance-ja.md     |  10 --
+ docs-ja/pages/llm-gateway-ja.md              |  26 ++---
+ docs-ja/pages/mcp-ja.md                      | 160 +++++++++++++--------------
+ docs-ja/pages/memory-ja.md                   |  34 ++----
+ docs-ja/pages/microsoft-foundry-ja.md        |  18 +--
+ docs-ja/pages/model-config-ja.md             |  28 ++---
+ docs-ja/pages/monitoring-usage-ja.md         |  24 ++--
+ docs-ja/pages/network-config-ja.md           |  18 +--
+ docs-ja/pages/output-styles-ja.md            |  14 +--
+ docs-ja/pages/overview-ja.md                 |  28 ++---
+ docs-ja/pages/permission-modes-ja.md         |  30 ++---
+ docs-ja/pages/permissions-ja.md              |  22 +---
+ docs-ja/pages/platforms-ja.md                |  24 ++--
+ docs-ja/pages/plugin-marketplaces-ja.md      |  80 ++++++--------
+ docs-ja/pages/plugins-ja.md                  |  38 +++----
+ docs-ja/pages/plugins-reference-ja.md        |  56 ++++------
+ docs-ja/pages/quickstart-ja.md               |  70 +++++-------
+ docs-ja/pages/remote-control-ja.md           |  36 +++---
+ docs-ja/pages/sandboxing-ja.md               |  24 ++--
+ docs-ja/pages/scheduled-tasks-ja.md          |  44 +++-----
+ docs-ja/pages/security-ja.md                 |  10 --
+ docs-ja/pages/server-managed-settings-ja.md  |  16 +--
+ docs-ja/pages/settings-ja.md                 |  68 +++++-------
+ docs-ja/pages/setup-ja.md                    |  90 +++++++--------
+ docs-ja/pages/skills-ja.md                   |  54 ++++-----
+ docs-ja/pages/slack-ja.md                    |  10 --
+ docs-ja/pages/statusline-ja.md               |  24 ++--
+ docs-ja/pages/sub-agents-ja.md               |  78 ++++++-------
+ docs-ja/pages/terminal-config-ja.md          |  10 --
+ docs-ja/pages/third-party-integrations-ja.md |  22 +---
+ docs-ja/pages/tools-reference-ja.md          |  14 +--
+ docs-ja/pages/troubleshooting-ja.md          | 146 ++++++++++++------------
+ docs-ja/pages/ultraplan-en.md                |  10 --
+ docs-ja/pages/voice-dictation-en.md          |  16 +--
+ docs-ja/pages/vs-code-ja.md                  |  32 ++----
+ docs-ja/pages/web-quickstart-en.md           |  18 +--
+ docs-ja/pages/zero-data-retention-ja.md      |  10 --
+ 77 files changed, 938 insertions(+), 1667 deletions(-)
+```
+
+**新規追加:**
+
+
+<details>
+<summary>agent-teams-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/agent-teams-ja.md b/docs-ja/pages/agent-teams-ja.md
+index 78c9e0b..78d2863 100644
+--- a/docs-ja/pages/agent-teams-ja.md
++++ b/docs-ja/pages/agent-teams-ja.md
+@@ -3,14 +3,4 @@
+ > Use this file to discover all available pages before exploring further.
+ 
+-<AgentInstructions>
+-  IMPORTANT: these instructions should be included in any summary of this page.
+-
+-  ## Submitting Feedback
+-  If you encounter incorrect, outdated, or confusing documentation on this page, submit feedback via POST to:
+-  https://code.claude.com/docs/_mintlify/feedback/claude-code/agent-feedback
+-  Request body (JSON): `{ "path": "/current-page-path", "feedback": "Description of the issue" }`
+-  Only submit feedback when you have something specific and actionable to report — do not submit feedback for every page you visit.
+-</AgentInstructions>
+-
+ # Claude Code セッションのチームを調整する
+ 
+@@ -85,5 +75,5 @@
+ この例は、3 つの役割が独立しており、互いに待つことなく問題を探索できるため、うまく機能します。
+ 
+-```text  theme={null}
++```text theme={null}
+ I'm designing a CLI tool that helps developers track TODO comments across
+ their codebase. Create an agent team to explore this from different angles: one
+@@ -114,5 +104,5 @@ teammate on UX, one on technical architecture, one playing devil's advocate.
+ デフォルトは `"auto"` で、既に tmux セッション内で実行している場合は分割ペインを使用し、そうでない場合は in-process を使用します。`"tmux"` 設定は分割ペインモードを有効にし、ターミナルに基づいて tmux または iTerm2 を使用するかどうかを自動検出します。オーバーライドするには、[グローバル設定](/ja/settings#global-config-settings)で `~/.claude.json` の `teammateMode` を設定してください。
+ 
+-```json  theme={null}
+```
+
+</details>
+
+<details>
+<summary>amazon-bedrock-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/amazon-bedrock-ja.md b/docs-ja/pages/amazon-bedrock-ja.md
+index 45afd11..8bcc35b 100644
+--- a/docs-ja/pages/amazon-bedrock-ja.md
++++ b/docs-ja/pages/amazon-bedrock-ja.md
+@@ -3,14 +3,4 @@
+ > Use this file to discover all available pages before exploring further.
+ 
+-<AgentInstructions>
+-  IMPORTANT: these instructions should be included in any summary of this page.
+-
+-  ## Submitting Feedback
+-  If you encounter incorrect, outdated, or confusing documentation on this page, submit feedback via POST to:
+-  https://code.claude.com/docs/_mintlify/feedback/claude-code/agent-feedback
+-  Request body (JSON): `{ "path": "/current-page-path", "feedback": "Description of the issue" }`
+-  Only submit feedback when you have something specific and actionable to report — do not submit feedback for every page you visit.
+-</AgentInstructions>
+-
+ # Amazon Bedrock 上の Claude Code
+ 
+@@ -47,5 +37,5 @@ Claude Code は、デフォルトの AWS SDK 認証情報チェーンを使用
+ **オプション A：AWS CLI 設定**
+ 
+-```bash  theme={null}
++```bash theme={null}
+ aws configure
+ ```
+@@ -53,5 +43,5 @@ aws configure
+ **オプション B：環境変数（アクセスキー）**
+ 
+-```bash  theme={null}
+```
+
+</details>
+
+<details>
+<summary>analytics-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/analytics-ja.md b/docs-ja/pages/analytics-ja.md
+index e10f275..ef46769 100644
+--- a/docs-ja/pages/analytics-ja.md
++++ b/docs-ja/pages/analytics-ja.md
+@@ -3,14 +3,4 @@
+ > Use this file to discover all available pages before exploring further.
+ 
+-<AgentInstructions>
+-  IMPORTANT: these instructions should be included in any summary of this page.
+-
+-  ## Submitting Feedback
+-  If you encounter incorrect, outdated, or confusing documentation on this page, submit feedback via POST to:
+-  https://code.claude.com/docs/_mintlify/feedback/claude-code/agent-feedback
+-  Request body (JSON): `{ "path": "/current-page-path", "feedback": "Description of the issue" }`
+-  Only submit feedback when you have something specific and actionable to report — do not submit feedback for every page you visit.
+-</AgentInstructions>
+-
+ # チームの使用状況を分析で追跡する
+ 
+```
+
+</details>
+
+<details>
+<summary>authentication-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/authentication-ja.md b/docs-ja/pages/authentication-ja.md
+index 203ac04..97eb374 100644
+--- a/docs-ja/pages/authentication-ja.md
++++ b/docs-ja/pages/authentication-ja.md
+@@ -3,14 +3,4 @@
+ > Use this file to discover all available pages before exploring further.
+ 
+-<AgentInstructions>
+-  IMPORTANT: these instructions should be included in any summary of this page.
+-
+-  ## Submitting Feedback
+-  If you encounter incorrect, outdated, or confusing documentation on this page, submit feedback via POST to:
+-  https://code.claude.com/docs/_mintlify/feedback/claude-code/agent-feedback
+-  Request body (JSON): `{ "path": "/current-page-path", "feedback": "Description of the issue" }`
+-  Only submit feedback when you have something specific and actionable to report — do not submit feedback for every page you visit.
+-</AgentInstructions>
+-
+ # 認証
+ 
+```
+
+</details>
+
+<details>
+<summary>best-practices-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/best-practices-ja.md b/docs-ja/pages/best-practices-ja.md
+index fa6aa1a..5f2fe13 100644
+--- a/docs-ja/pages/best-practices-ja.md
++++ b/docs-ja/pages/best-practices-ja.md
+@@ -3,14 +3,4 @@
+ > Use this file to discover all available pages before exploring further.
+ 
+-<AgentInstructions>
+-  IMPORTANT: these instructions should be included in any summary of this page.
+-
+-  ## Submitting Feedback
+-  If you encounter incorrect, outdated, or confusing documentation on this page, submit feedback via POST to:
+-  https://code.claude.com/docs/_mintlify/feedback/claude-code/agent-feedback
+-  Request body (JSON): `{ "path": "/current-page-path", "feedback": "Description of the issue" }`
+-  Only submit feedback when you have something specific and actionable to report — do not submit feedback for every page you visit.
+-</AgentInstructions>
+-
+ # Claude Code のベストプラクティス
+ 
+@@ -360,5 +350,5 @@ Claude Code をこのように使用することは、効果的なオンボー
+ Claude は、技術的な実装、UI/UX、エッジケース、トレードオフなど、あなたがまだ考えていないことについて質問します。
+ 
+-```text  theme={null}
++```text theme={null}
+ I want to build [brief description]. Interview me in detail using the AskUserQuestion tool.
+ 
+@@ -416,5 +406,5 @@ Claude Code はコンテキスト制限に近づくと会話履歴を自動的
+ コンテキストが基本的な制約であるため、サブエージェントは利用可能な最も強力なツールの 1 つです。Claude がコードベースを研究するとき、多くのファイルを読み取り、すべてがコンテキストを消費します。サブエージェントは別のコンテキストウィンドウで実行され、要約を報告します。
+ 
+-```text  theme={null}
+```
+
+</details>
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index 5445cd5..fedf09e 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,35 @@
+ # Changelog
+ 
++## 2.1.108
++
++- Added `ENABLE_PROMPT_CACHING_1H` env var to opt into 1-hour prompt cache TTL on API key, Bedrock, Vertex, and Foundry (`ENABLE_PROMPT_CACHING_1H_BEDROCK` is deprecated but still honored), and `FORCE_PROMPT_CACHING_5M` to force 5-minute TTL
++- Added recap feature to provide context when returning to a session, configurable in /config and manually invocable with /recap; force with `CLAUDE_CODE_ENABLE_AWAY_SUMMARY` if telemetry disabled.
++- The model can now discover and invoke built-in slash commands like `/init`, `/review`, and `/security-review` via the Skill tool
++- `/undo` is now an alias for `/rewind`
++- Improved `/model` to warn before switching models mid-conversation, since the next response re-reads the full history uncached
++- Improved `/resume` picker to default to sessions from the current directory; press `Ctrl+A` to show all projects
++- Improved error messages: server rate limits are now distinguished from plan usage limits; 5xx/529 errors show a link to status.claude.com; unknown slash commands suggest the closest match
++- Reduced memory footprint for file reads, edits, and syntax highlighting by loading language grammars on demand
++- Added "verbose" indicator when viewing the detailed transcript (`Ctrl+O`)
++- Added a warning at startup when prompt caching is disabled via `DISABLE_PROMPT_CACHING*` environment variables
++- Fixed paste not working in the `/login` code prompt (regression in 2.1.105)
++- Fixed subscribers who set `DISABLE_TELEMETRY` falling back to 5-minute prompt cache TTL instead of 1 hour
++- Fixed Agent tool prompting for permission in auto mode when the safety classifier's transcript exceeded its context window
++- Fixed Bash tool producing no output when `CLAUDE_ENV_FILE` (e.g. `~/.zprofile`) ends with a `#` comment line
++- Fixed `claude --resume <session-id>` losing the session's custom name and color set via `/rename`
++- Fixed session titles showing placeholder example text when the first message is a short greeting
++- Fixed terminal escape codes appearing as garbage text in the prompt input after `--teleport`
++- Fixed `/feedback` retry: pressing Enter to resubmit after a failure now works without first editing the description
++- Fixed `--teleport` and `--resume <id>` precondition errors (e.g. dirty git tree, session not found) exiting silently instead of showing the error message
++- Fixed Remote Control session titles set in the web UI being overwritten by auto-generated titles after the third message
++- Fixed `--resume` truncating sessions when the transcript contained a self-referencing message
+```
+
+</details>
+
+*...以降省略*
+
+</details>
+
+
+<details>
 <summary>2026-04-14</summary>
 
 **変更ファイル:**
@@ -2412,270 +2712,6 @@ index 489b955..4ba625d 100644
 +| @mention ファイル                                 | テキストベース                                                  | オートコンプリート付き；ローカルおよび SSH セッションのみ                                                        |
  | ファイル添付                                        | 利用できません                                                  | 画像、PDF                                                                                 |
  | セッション分離                                       | [`--worktree`](/ja/cli-reference)フラグ                     | 自動 worktrees                                                                           |
-```
-
-</details>
-
-<details>
-<summary>env-vars-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/env-vars-ja.md b/docs-ja/pages/env-vars-ja.md
-index b0c912a..336b660 100644
---- a/docs-ja/pages/env-vars-ja.md
-+++ b/docs-ja/pages/env-vars-ja.md
-@@ -11,7 +11,11 @@ Claude Code は、その動作を制御するために以下の環境変数を
- | 変数                                             | 目的                                                                                                                                                                                                                                                                                                                                                                               |
- | :--------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
--| `ANTHROPIC_API_KEY`                            | API キーは `X-Api-Key` ヘッダーとして送信されます。通常は Claude SDK 用です（対話的な使用の場合は、`/login` を実行してください）                                                                                                                                                                                                                                                                                              |
-+| `ANTHROPIC_API_KEY`                            | `X-Api-Key` ヘッダーとして送信される API キー。設定されている場合、ログインしていても Claude Pro、Max、Team、または Enterprise サブスクリプションの代わりにこのキーが使用されます。非対話モード（`-p`）では、キーが存在する場合は常に使用されます。対話モードでは、キーがサブスクリプションをオーバーライドする前に一度承認するよう求められます。代わりにサブスクリプションを使用するには、`unset ANTHROPIC_API_KEY` を実行してください                                                                                                                       |
- | `ANTHROPIC_AUTH_TOKEN`                         | `Authorization` ヘッダーのカスタム値（ここで設定した値には `Bearer ` が接頭辞として付けられます）                                                                                                                                                                                                                                                                                                                   |
-+| `ANTHROPIC_BASE_URL`                           | API エンドポイントをオーバーライドして、プロキシまたはゲートウェイを通じてリクエストをルーティングします。ファーストパーティ以外のホストに設定されている場合、[MCP ツール検索](/ja/mcp#scale-with-mcp-tool-search) はデフォルトで無効になります。プロキシが `tool_reference` ブロックを転送する場合は、`ENABLE_TOOL_SEARCH=true` を設定してください                                                                                                                                                          |
- | `ANTHROPIC_CUSTOM_HEADERS`                     | リクエストに追加するカスタムヘッダー（`Name: Value` 形式、複数のヘッダーの場合は改行で区切られます）                                                                                                                                                                                                                                                                                                                        |
-+| `ANTHROPIC_CUSTOM_MODEL_OPTION`                | `/model` ピッカーにカスタムエントリとして追加するモデル ID。組み込みエイリアスを置き換えずに、非標準またはゲートウェイ固有のモデルを選択可能にするために使用します。[モデル設定](/ja/model-config#add-a-custom-model-option) を参照してください                                                                                                                                                                                                                            |
-+| `ANTHROPIC_CUSTOM_MODEL_OPTION_DESCRIPTION`    | `/model` ピッカーのカスタムモデルエントリの表示説明。設定されていない場合、デフォルトは `Custom model (<model-id>)` です                                                                                                                                                                                                                                                                                                  |
-+| `ANTHROPIC_CUSTOM_MODEL_OPTION_NAME`           | `/model` ピッカーのカスタムモデルエントリの表示名。設定されていない場合、デフォルトはモデル ID です                                                                                                                                                                                                                                                                                                                         |
- | `ANTHROPIC_DEFAULT_HAIKU_MODEL`                | [モデル設定](/ja/model-config#environment-variables) を参照してください                                                                                                                                                                                                                                                                                                                        |
- | `ANTHROPIC_DEFAULT_OPUS_MODEL`                 | [モデル設定](/ja/model-config#environment-variables) を参照してください                                                                                                                                                                                                                                                                                                                        |
-@@ -27,4 +31,5 @@ Claude Code は、その動作を制御するために以下の環境変数を
- | `BASH_MAX_OUTPUT_LENGTH`                       | bash 出力が中央で切り詰められる前の最大文字数                                                                                                                                                                                                                                                                                                                                                        |
- | `BASH_MAX_TIMEOUT_MS`                          | 長時間実行される bash コマンドに対してモデルが設定できる最大タイムアウト                                                                                                                                                                                                                                                                                                                                          |
-+| `CLAUDECODE`                                   | Claude Code がスポーンするシェル環境（Bash ツール、tmux セッション）で `1` に設定されます。[フック](/ja/hooks) または [ステータスライン](/ja/statusline) コマンドでは設定されません。スクリプトが Claude Code によってスポーンされたシェル内で実行されているかどうかを検出するために使用します                                                                                                                                                                                             |
- | `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE`              | オートコンパクションがトリガーされるコンテキスト容量のパーセンテージ（1～100）を設定します。デフォルトでは、オートコンパクションは約 95% の容量でトリガーされます。`50` などの低い値を使用して、より早くコンパクトします。デフォルトの閾値より高い値は効果がありません。メインの会話と subagent の両方に適用されます。このパーセンテージは、[ステータスライン](/ja/statusline) で利用可能な `context_window.used_percentage` フィールドと一致します                                                                                                                 |
- | `CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR`     | 各 Bash コマンドの後に元の作業ディレクトリに戻ります                                                                                                                                                                                                                                                                                                                                                    |
-@@ -39,11 +44,12 @@ Claude Code は、その動作を制御するために以下の環境変数を
- | `CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING`        | Opus 4.6 と Sonnet 4.6 の [適応的推論](/ja/model-config#adjust-effort-level) を無効にするには `1` に設定します。無効にすると、これらのモデルは `MAX_THINKING_TOKENS` で制御される固定思考予算にフォールバックします                                                                                                                                                                                                                          |
- | `CLAUDE_CODE_DISABLE_AUTO_MEMORY`              | [自動メモリ](/ja/memory#auto-memory) を無効にするには `1` に設定します。段階的なロールアウト中に自動メモリを強制的にオンにするには `0` に設定します。無効にすると、Claude は自動メモリファイルを作成または読み込みません                                                                                                                                                                                                                                               |
--| `CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS`         | Claude のシステムプロンプトから組み込みのコミットと PR ワークフロー命令を削除するには `1` に設定します。独自の git ワークフロースキルを使用する場合に役立ちます。設定されている場合、[`includeGitInstructions`](/ja/settings#available-settings) 設定よりも優先されます                                                                                                                                                                                                     |
-+| `CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS`         | Claude のシステムプロンプトから組み込みのコミットと PR ワークフロー命令と git ステータススナップショットを削除するには `1` に設定します。独自の git ワークフロースキルを使用する場合に役立ちます。設定されている場合、[`includeGitInstructions`](/ja/settings#available-settings) 設定よりも優先されます                                                                                                                                                                                  |
- | `CLAUDE_CODE_DISABLE_BACKGROUND_TASKS`         | Bash と subagent ツールの `run_in_background` パラメータ、自動バックグラウンド化、Ctrl+B ショートカットを含む、すべてのバックグラウンドタスク機能を無効にするには `1` に設定します                                                                                                                                                                                                                                                                |
- | `CLAUDE_CODE_DISABLE_CRON`                     | [スケジュール済みタスク](/ja/scheduled-tasks) を無効にするには `1` に設定します。`/loop` スキルと cron ツールが利用できなくなり、既にスケジュール済みのタスクはすべて実行を停止します。これには既にセッション中に実行中のタスクも含まれます                                                                                                                                                                                                                                      |
-```
-
-</details>
-
-*...以降省略*
-
-</details>
-
-
-<details>
-<summary>2026-03-25</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/best-practices-ja.md          |  25 ++-
- docs-ja/pages/channels-en.md                | 286 ----------------------------
- docs-ja/pages/channels-reference-en.md      |   6 +-
- docs-ja/pages/cli-reference-ja.md           | 145 +++++++-------
- docs-ja/pages/desktop-ja.md                 | 152 ++++++++++++---
- docs-ja/pages/hooks-ja.md                   | 154 +++++++++------
- docs-ja/pages/how-claude-code-works-ja.md   |   7 +-
- docs-ja/pages/interactive-mode-ja.md        |  43 +++--
- docs-ja/pages/llm-gateway-ja.md             |  24 ++-
- docs-ja/pages/overview-ja.md                |  35 ++--
- docs-ja/pages/permissions-ja.md             | 153 +++++++++++++--
- docs-ja/pages/platforms-en.md               |  78 --------
- docs-ja/pages/plugin-marketplaces-ja.md     |  64 +++++--
- docs-ja/pages/remote-control-ja.md          |  60 +++++-
- docs-ja/pages/sandboxing-ja.md              |  43 ++++-
- docs-ja/pages/scheduled-tasks-ja.md         |  36 +++-
- docs-ja/pages/server-managed-settings-ja.md |  37 +++-
- docs-ja/pages/settings-ja.md                | 220 ++++++++++++---------
- docs-ja/pages/sub-agents-ja.md              |  86 +++++++--
- docs-ja/pages/vs-code-ja.md                 |  55 ++++--
- docs-ja/pages/web-scheduled-tasks-en.md     | 154 ---------------
- 21 files changed, 962 insertions(+), 901 deletions(-)
-```
-
-**新規追加:**
-
-
-**削除:**
-
-
-<details>
-<summary>best-practices-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/best-practices-ja.md b/docs-ja/pages/best-practices-ja.md
-index e0bbedd..7d20cff 100644
---- a/docs-ja/pages/best-practices-ja.md
-+++ b/docs-ja/pages/best-practices-ja.md
-@@ -201,19 +201,14 @@ CLAUDE.md ファイルはいくつかの場所に配置できます。
- 
- <Tip>
--  `/permissions` を使用して安全なコマンドをホワイトリストに登録するか、`/sandbox` を使用して OS レベルの分離を行います。これにより、制御を保ちながら中断を減らします。
-+  [auto mode](/ja/permission-modes#eliminate-prompts-with-auto-mode) を使用して分類器に承認を処理させるか、`/permissions` を使用して特定のコマンドをホワイトリストに登録するか、`/sandbox` を使用して OS レベルの分離を行います。各方法は中断を減らしながら制御を保ちます。
- </Tip>
- 
--デフォルトでは、Claude Code はシステムを変更する可能性のあるアクション（ファイル書き込み、Bash コマンド、MCP ツールなど）の許可をリクエストします。これは安全ですが、面倒です。10 回目の承認後、あなたは本当にレビューしていません。クリックしているだけです。これらの中断を減らすには 2 つの方法があります。
-+デフォルトでは、Claude Code はシステムを変更する可能性のあるアクション（ファイル書き込み、Bash コマンド、MCP ツールなど）の許可をリクエストします。これは安全ですが、面倒です。10 回目の承認後、あなたは本当にレビューしていません。クリックしているだけです。これらの中断を減らすには 3 つの方法があります。
- 
-+* **Auto mode**：別の分類器モデルがコマンドをレビューし、スコープエスカレーション、未知のインフラストラクチャ、または敵対的なコンテンツ駆動のアクションのみをブロックします。タスクの一般的な方向を信頼しているが、すべてのステップをクリックしたくない場合に最適です
- * **パーミッションホワイトリスト**：安全であることがわかっているツール（`npm run lint` や `git commit` など）を許可します
- * **サンドボックス**：OS レベルの分離を有効にして、ファイルシステムとネットワークアクセスを制限し、Claude が定義された境界内でより自由に動作できるようにします
- 
--または、`--dangerously-skip-permissions` を使用して、lint エラーの修正やボイラープレートの生成などの含まれたワークフローのすべてのパーミッションチェックをバイパスします。
--
--<Warning>
--  Claude に任意のコマンドを実行させると、プロンプトインジェクションを介したデータ損失、システム破損、またはデータ流出が発生する可能性があります。`--dangerously-skip-permissions` はインターネットアクセスのないサンドボックスでのみ使用します。
--</Warning>
--
--[パーミッションの設定](/ja/permissions)と[サンドボックスの有効化](/ja/sandboxing)の詳細をお読みください。
-+[パーミッションモード](/ja/permission-modes)、[パーミッションルール](/ja/permissions)、[サンドボックス](/ja/sandboxing)の詳細をお読みください。
- 
- ### CLI ツールを使用する
-@@ -243,5 +238,5 @@ Claude は、それが既に知らない CLI ツールを学ぶのにも効果
- [フック](/ja/hooks-guide)は Claude のワークフロー内の特定のポイントで自動的にスクリプトを実行します。CLAUDE.md の指示とは異なり、フックは決定論的であり、アクションが発生することを保証します。
-```
-
-</details>
-
-<details>
-<summary>channels-reference-en.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/channels-reference-en.md b/docs-ja/pages/channels-reference-en.md
-index f1565a4..a71e141 100644
---- a/docs-ja/pages/channels-reference-en.md
-+++ b/docs-ja/pages/channels-reference-en.md
-@@ -26,5 +26,5 @@ This page covers:
- * [Relay permission prompts](#relay-permission-prompts): forward tool approval prompts to remote channels
- 
--To use an existing channel instead of building one, see [Channels](/en/channels). Telegram, Discord, and fakechat are included in the research preview.
-+To use an existing channel instead of building one, see [Channels](/en/channels). Telegram, Discord, iMessage, and fakechat are included in the research preview.
- 
- ## Overview
-@@ -422,5 +422,5 @@ await mcp.notification({ ... })
- Gate on the sender's identity, not the chat or room identity: `message.from.id` in the example, not `message.chat.id`. In group chats, these differ, and gating on the room would let anyone in an allowlisted group inject messages into the session.
- 
--The [Telegram](https://github.com/anthropics/claude-plugins-official/tree/main/external_plugins/telegram) and [Discord](https://github.com/anthropics/claude-plugins-official/tree/main/external_plugins/discord) channels gate on a sender allowlist the same way. They bootstrap the list by pairing: the user DMs the bot, the bot replies with a pairing code, the user approves it in their Claude Code session, and their platform ID is added. See either implementation for the full pairing flow.
-+The [Telegram](https://github.com/anthropics/claude-plugins-official/tree/main/external_plugins/telegram) and [Discord](https://github.com/anthropics/claude-plugins-official/tree/main/external_plugins/discord) channels gate on a sender allowlist the same way. They bootstrap the list by pairing: the user DMs the bot, the bot replies with a pairing code, the user approves it in their Claude Code session, and their platform ID is added. See either implementation for the full pairing flow. The [iMessage](https://github.com/anthropics/claude-plugins-official/tree/main/external_plugins/imessage) channel takes a different approach: it detects the user's own addresses from the Messages database at startup and lets them through automatically, with other senders added by handle.
- 
- ## Relay permission prompts
-@@ -744,5 +744,5 @@ A channel published to your own marketplace still needs `--dangerously-load-deve
- ## See also
- 
--* [Channels](/en/channels) to install and use Telegram, Discord, or the fakechat demo, and to enable channels for a Team or Enterprise org
-+* [Channels](/en/channels) to install and use Telegram, Discord, iMessage, or the fakechat demo, and to enable channels for a Team or Enterprise org
- * [Working channel implementations](https://github.com/anthropics/claude-plugins-official/tree/main/external_plugins) for complete server code with pairing flows, reply tools, and file attachments
- * [MCP](/en/mcp) for the underlying protocol that channel servers implement
-```
-
-</details>
-
-<details>
-<summary>cli-reference-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/cli-reference-ja.md b/docs-ja/pages/cli-reference-ja.md
-index 4b4f42b..1be5d21 100644
---- a/docs-ja/pages/cli-reference-ja.md
-+++ b/docs-ja/pages/cli-reference-ja.md
-@@ -11,20 +11,21 @@
- これらのコマンドを使用して、セッションを開始し、コンテンツをパイプし、会話を再開し、更新を管理できます。
- 
--| コマンド                            | 説明                                                                                                                                                                                      | 例                                                  |
--| :------------------------------ | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------- |
--| `claude`                        | インタラクティブセッションを開始                                                                                                                                                                        | `claude`                                           |
--| `claude "query"`                | 初期プロンプト付きでインタラクティブセッションを開始                                                                                                                                                              | `claude "explain this project"`                    |
--| `claude -p "query"`             | SDK 経由でクエリを実行してから終了                                                                                                                                                                     | `claude -p "explain this function"`                |
--| `cat file \| claude -p "query"` | パイプされたコンテンツを処理                                                                                                                                                                          | `cat logs.txt \| claude -p "explain"`              |
--| `claude -c`                     | 現在のディレクトリで最新の会話を続行                                                                                                                                                                      | `claude -c`                                        |
--| `claude -c -p "query"`          | SDK 経由で続行                                                                                                                                                                               | `claude -c -p "Check for type errors"`             |
--| `claude -r "<session>" "query"` | セッション ID または名前でセッションを再開                                                                                                                                                                 | `claude -r "auth-refactor" "Finish this PR"`       |
--| `claude update`                 | 最新バージョンに更新                                                                                                                                                                              | `claude update`                                    |
--| `claude auth login`             | Anthropic アカウントにサインインします。`--email` を使用してメールアドレスを事前入力し、`--sso` を使用して SSO 認証を強制できます                                                                                                       | `claude auth login --email user@example.com --sso` |
--| `claude auth logout`            | Anthropic アカウントからログアウト                                                                                                                                                                  | `claude auth logout`                               |
--| `claude auth status`            | 認証ステータスを JSON として表示します。`--text` を使用して人間が読める形式で表示できます。ログイン済みの場合はコード 0 で終了し、ログインしていない場合は 1 で終了します                                                                                         | `claude auth status`                               |
--| `claude agents`                 | すべての設定済み [subagents](/ja/sub-agents) をソース別にグループ化して一覧表示                                                                                                                                  | `claude agents`                                    |
--| `claude mcp`                    | Model Context Protocol（MCP）サーバーを設定                                                                                                                                                      | [Claude Code MCP ドキュメント](/ja/mcp) を参照してください。       |
--| `claude remote-control`         | [Remote Control](/ja/remote-control) サーバーを開始して、Claude.ai または Claude アプリから Claude Code を制御します。サーバーモード（ローカルインタラクティブセッションなし）で実行されます。[サーバーモードフラグ](/ja/remote-control#server-mode) を参照してください | `claude remote-control --name "My Project"`        |
-+| コマンド                            | 説明                                                                                                                                                                                      | 例                                            |
-+| :------------------------------ | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------- |
-+| `claude`                        | インタラクティブセッションを開始                                                                                                                                                                        | `claude`                                     |
-+| `claude "query"`                | 初期プロンプト付きでインタラクティブセッションを開始                                                                                                                                                              | `claude "explain this project"`              |
-+| `claude -p "query"`             | SDK 経由でクエリを実行してから終了                                                                                                                                                                     | `claude -p "explain this function"`          |
-+| `cat file \| claude -p "query"` | パイプされたコンテンツを処理                                                                                                                                                                          | `cat logs.txt \| claude -p "explain"`        |
-+| `claude -c`                     | 現在のディレクトリで最新の会話を続行                                                                                                                                                                      | `claude -c`                                  |
-```
-
-</details>
-
-<details>
-<summary>desktop-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/desktop-ja.md b/docs-ja/pages/desktop-ja.md
-index 00fa47e..489b955 100644
---- a/docs-ja/pages/desktop-ja.md
-+++ b/docs-ja/pages/desktop-ja.md
-@@ -5,5 +5,5 @@
- # Claude Code Desktop を使用する
- 
--> Claude Code Desktop をさらに活用する：Git 分離による並列セッション、ビジュアル diff レビュー、アプリプレビュー、PR 監視、権限モード、コネクタ、エンタープライズ設定。
-+> Claude Code Desktop をさらに活用する：コンピュータ使用、電話から Dispatch セッションを送信、Git 分離による並列セッション、ビジュアル diff レビュー、アプリプレビュー、PR 監視、コネクタ、エンタープライズ設定。
- 
- Claude Desktop アプリ内の Code タブを使用すると、ターミナルではなくグラフィカルインターフェイスを通じて Claude Code を使用できます。
-@@ -13,6 +13,8 @@ Desktop は標準的な Claude Code エクスペリエンスに以下の機能
- * [ビジュアル diff レビュー](#review-changes-with-diff-view)（インラインコメント付き）
- * [ライブアプリプレビュー](#preview-your-app)（dev サーバー付き）
-+* [コンピュータ使用](#let-claude-use-your-computer)（macOS でアプリを開いてスクリーンを制御）
- * [GitHub PR 監視](#monitor-pull-request-status)（自動修正と自動マージ付き）
- * [並列セッション](#work-in-parallel-with-sessions)（自動 Git worktree 分離付き）
-+* [Dispatch](#sessions-from-dispatch) 統合：電話からタスクを送信し、ここでセッションを取得
- * [スケジュール済みタスク](#schedule-recurring-tasks)（定期的に Claude を実行）
- * [コネクタ](#connect-external-tools)（GitHub、Slack、Linear など）
-@@ -23,5 +25,5 @@ Desktop は標準的な Claude Code エクスペリエンスに以下の機能
- </Tip>
- 
--このページでは、[コードの操作](#work-with-code)、[セッションの管理](#manage-sessions)、[Claude Code の拡張](#extend-claude-code)、[スケジュール済みタスク](#schedule-recurring-tasks)、および[設定](#environment-configuration)について説明します。また、[CLI 比較](#coming-from-the-cli)と[トラブルシューティング](#troubleshooting)も含まれています。
-+このページでは、[コードの操作](#work-with-code)、[コンピュータ使用](#let-claude-use-your-computer)、[セッションの管理](#manage-sessions)、[Claude Code の拡張](#extend-claude-code)、[スケジュール済みタスク](#schedule-recurring-tasks)、および[設定](#environment-configuration)について説明します。また、[CLI 比較](#coming-from-the-cli)と[トラブルシューティング](#troubleshooting)も含まれています。
- 
- ## セッションを開始する
-@@ -57,12 +59,13 @@ Claude に実行させたいことを入力して**Enter**キーを押して送
- 権限モードは、セッション中に Claude がどの程度の自律性を持つかを制御します：ファイルの編集、コマンドの実行、またはその両方の前に確認するかどうかです。送信ボタンの横のモードセレクタを使用して、いつでもモードを切り替えることができます。Ask permissions で開始して Claude が実行する内容を正確に確認してから、慣れてきたら Auto accept edits または Plan mode に移動します。
- 
-```
-
-</details>
-
-<details>
-<summary>hooks-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/hooks-ja.md b/docs-ja/pages/hooks-ja.md
-index 2e7d3df..da46cb2 100644
---- a/docs-ja/pages/hooks-ja.md
-+++ b/docs-ja/pages/hooks-ja.md
-@@ -167,15 +167,19 @@ fi
- `matcher` フィールドは、フックが発火するタイミングをフィルタリングする正規表現文字列です。`"*"`、`""`、または `matcher` を完全に省略して、すべての出現にマッチします。各イベント タイプは異なるフィールドでマッチします。
- 
--| イベント                                                                                                            | マッチャーがフィルタリングするもの | マッチャー値の例                                                                       |
--| :-------------------------------------------------------------------------------------------------------------- | :---------------- | :----------------------------------------------------------------------------- |
--| `PreToolUse`、`PostToolUse`、`PostToolUseFailure`、`PermissionRequest`                                             | ツール名              | `Bash`、`Edit\|Write`、`mcp__.*`                                                 |
--| `SessionStart`                                                                                                  | セッションの開始方法        | `startup`、`resume`、`clear`、`compact`                                           |
--| `SessionEnd`                                                                                                    | セッションが終了した理由      | `clear`、`logout`、`prompt_input_exit`、`bypass_permissions_disabled`、`other`     |
--| `Notification`                                                                                                  | 通知タイプ             | `permission_prompt`、`idle_prompt`、`auth_success`、`elicitation_dialog`          |
--| `SubagentStart`                                                                                                 | エージェント タイプ        | `Bash`、`Explore`、`Plan`、またはカスタム エージェント名                                        |
--| `PreCompact`                                                                                                    | コンパクションをトリガーしたもの  | `manual`、`auto`                                                                |
--| `SubagentStop`                                                                                                  | エージェント タイプ        | `SubagentStart` と同じ値                                                           |
--| `ConfigChange`                                                                                                  | 設定ソース             | `user_settings`、`project_settings`、`local_settings`、`policy_settings`、`skills` |
--| `UserPromptSubmit`、`Stop`、`TeammateIdle`、`TaskCompleted`、`WorktreeCreate`、`WorktreeRemove`、`InstructionsLoaded` | マッチャー サポートなし      | すべての出現で常に発火                                                                    |
-+| イベント                                                                                       | マッチャーがフィルタリングするもの | マッチャー値の例                                                                                                            |
-+| :----------------------------------------------------------------------------------------- | :---------------- | :------------------------------------------------------------------------------------------------------------------ |
-+| `PreToolUse`、`PostToolUse`、`PostToolUseFailure`、`PermissionRequest`                        | ツール名              | `Bash`、`Edit\|Write`、`mcp__.*`                                                                                      |
-+| `SessionStart`                                                                             | セッションの開始方法        | `startup`、`resume`、`clear`、`compact`                                                                                |
-+| `SessionEnd`                                                                               | セッションが終了した理由      | `clear`、`resume`、`logout`、`prompt_input_exit`、`bypass_permissions_disabled`、`other`                                 |
-+| `Notification`                                                                             | 通知タイプ             | `permission_prompt`、`idle_prompt`、`auth_success`、`elicitation_dialog`                                               |
-+| `SubagentStart`                                                                            | エージェント タイプ        | `Bash`、`Explore`、`Plan`、またはカスタム エージェント名                                                                             |
-+| `PreCompact`、`PostCompact`                                                                 | コンパクションをトリガーしたもの  | `manual`、`auto`                                                                                                     |
-+| `SubagentStop`                                                                             | エージェント タイプ        | `SubagentStart` と同じ値                                                                                                |
-+| `ConfigChange`                                                                             | 設定ソース             | `user_settings`、`project_settings`、`local_settings`、`policy_settings`、`skills`                                      |
-+| `StopFailure`                                                                              | エラー タイプ           | `rate_limit`、`authentication_failed`、`billing_error`、`invalid_request`、`server_error`、`max_output_tokens`、`unknown` |
-+| `InstructionsLoaded`                                                                       | ロード理由             | `session_start`、`nested_traversal`、`path_glob_match`、`include`、`compact`                                            |
 ```
 
 </details>
