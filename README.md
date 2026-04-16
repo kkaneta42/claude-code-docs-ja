@@ -17,6 +17,210 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-04-16</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md         | 42 ++++++++++++++++-
+ docs-ja/pages/overview-ja.md       |  2 +-
+ docs-ja/pages/quickstart-ja.md     | 92 ++++++++++++++++++++++++--------------
+ docs-ja/pages/routines-en.md       | 38 ++++++----------
+ docs-ja/pages/setup-ja.md          |  2 +-
+ docs-ja/pages/web-quickstart-en.md | 17 +++++++
+ 6 files changed, 131 insertions(+), 62 deletions(-)
+```
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index fedf09e..457d6d1 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,8 +1,48 @@
+ # Changelog
+ 
++## 2.1.110
++
++- Added `/tui` command and `tui` setting — run `/tui fullscreen` to switch to flicker-free rendering in the same conversation
++- Added push notification tool — Claude can send mobile push notifications when Remote Control and "Push when Claude decides" config are enabled
++- Changed `Ctrl+O` to toggle between normal and verbose transcript only; focus view is now toggled separately with the new `/focus` command
++- Added `autoScrollEnabled` config to disable conversation auto-scroll in fullscreen mode
++- Added option to show Claude's last response as commented context in the `Ctrl+G` external editor (enable via `/config`)
++- Improved `/plugin` Installed tab — items needing attention and favorites appear at the top, disabled items are hidden behind a fold, and `f` favorites the selected item
++- Improved `/doctor` to warn when an MCP server is defined in multiple config scopes with different endpoints
++- `--resume`/`--continue` now resurrects unexpired scheduled tasks
++- `/autocompact`, `/context`, `/exit`, and `/reload-plugins` now work from Remote Control (mobile/web) clients
++- Write tool now informs the model when you edit the proposed content in the IDE diff before accepting
++- Bash tool now enforces the documented maximum timeout instead of accepting arbitrarily large values
++- SDK/headless sessions now read `TRACEPARENT`/`TRACESTATE` from the environment for distributed trace linking
++- Session recap is now enabled for users with telemetry disabled (Bedrock, Vertex, Foundry, `DISABLE_TELEMETRY`). Opt out via `/config` or `CLAUDE_CODE_ENABLE_AWAY_SUMMARY=0`.
++- Fixed MCP tool calls hanging indefinitely when the server connection drops mid-response on SSE/HTTP transports
++- Fixed non-streaming fallback retries causing multi-minute hangs when the API is unreachable
++- Fixed session recap, local slash-command output, and other system status lines not appearing in focus mode
++- Fixed high CPU usage in fullscreen when text is selected while a tool is running
++- Fixed plugin install not honoring dependencies declared in `plugin.json` when the marketplace entry omits them; `/plugin` install now lists auto-installed dependencies
++- Fixed skills with `disable-model-invocation: true` failing when invoked via `/<skill>` mid-message
++- Fixed `--resume` sometimes showing the first prompt instead of the `/rename` name for sessions still running or exited uncleanly
++- Fixed queued messages briefly appearing twice during multi-tool-call turns
+```
+
+</details>
+
+<details>
+<summary>overview-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/overview-ja.md b/docs-ja/pages/overview-ja.md
+index 6018579..0a9231b 100644
+--- a/docs-ja/pages/overview-ja.md
++++ b/docs-ja/pages/overview-ja.md
+@@ -39,5 +39,5 @@ Claude Code は AI を活用したコーディングアシスタントで、機
+         ```
+ 
+-        If you see `The token '&&' is not a valid statement separator`, you're in PowerShell, not CMD. Use the PowerShell command above instead. Your prompt shows `PS C:\` when you're in PowerShell.
++        If you see `The token '&&' is not a valid statement separator`, you're in PowerShell, not CMD. If you see `'irm' is not recognized as an internal or external command`, you're in CMD, not PowerShell. Your prompt shows `PS C:\` when you're in PowerShell and `C:\` without the `PS` when you're in CMD.
+ 
+         **Native Windows setups require [Git for Windows](https://git-scm.com/downloads/win).** Install it first if you don't have it. WSL setups do not need it.
+```
+
+</details>
+
+<details>
+<summary>quickstart-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/quickstart-ja.md b/docs-ja/pages/quickstart-ja.md
+index 1b86260..d33c792 100644
+--- a/docs-ja/pages/quickstart-ja.md
++++ b/docs-ja/pages/quickstart-ja.md
+@@ -7,5 +7,5 @@
+ > Claude Code へようこそ！
+ 
+-export const InstallConfigurator = () => {
++export const InstallConfigurator = ({defaultSurface = 'terminal'}) => {
+   const TERM = {
+     mac: {
+@@ -45,4 +45,5 @@ export const InstallConfigurator = () => {
+     desktop: {
+       name: 'Desktop',
++      tagline: 'The full agent in a native app for macOS and Windows.',
+       installLabel: 'Download the app',
+       installHref: 'https://claude.com/download?utm_source=claude_code&utm_medium=docs&utm_content=configurator_desktop_download',
+@@ -51,4 +52,5 @@ export const InstallConfigurator = () => {
+     vscode: {
+       name: 'VS Code',
++      tagline: 'Review diffs, manage context, and chat without leaving your editor.',
+       installLabel: 'Install from Marketplace',
+       installHref: 'https://marketplace.visualstudio.com/items?itemName=anthropic.claude-code',
+@@ -58,4 +60,5 @@ export const InstallConfigurator = () => {
+     jetbrains: {
+       name: 'JetBrains',
++      tagline: 'Native plugin for IntelliJ, PyCharm, WebStorm, and other JetBrains IDEs.',
+       installLabel: 'Install from Marketplace',
+       installHref: 'https://plugins.jetbrains.com/plugin/27310-claude-code-beta-',
+@@ -115,5 +118,5 @@ export const InstallConfigurator = () => {
+```
+
+</details>
+
+<details>
+<summary>routines-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/routines-en.md b/docs-ja/pages/routines-en.md
+index 61b85a6..ebe0e84 100644
+--- a/docs-ja/pages/routines-en.md
++++ b/docs-ja/pages/routines-en.md
+@@ -17,5 +17,5 @@ Each routine can have one or more triggers attached to it:
+ * **Scheduled**: run on a recurring cadence like hourly, nightly, or weekly
+ * **API**: trigger on demand by sending an HTTP POST to a per-routine endpoint with a bearer token
+-* **GitHub**: run automatically in response to repository events such as pull requests, pushes, issues, or workflow runs
++* **GitHub**: run automatically in response to repository events such as pull requests or releases
+ 
+ A single routine can combine triggers. For example, a PR review routine can run nightly, trigger from a deploy script, and also react to every new PR.
+@@ -161,5 +161,5 @@ Each routine has its own token, scoped to triggering that routine only. To rotat
+ #### Trigger a routine
+ 
+-Send a POST request to the `/fire` endpoint with the bearer token in the `Authorization` header. The request body accepts an optional `text` field that's appended to the routine's configured prompt as a one-shot user turn. Use `text` to pass context like an alert body or a failing log.
++Send a POST request to the `/fire` endpoint with the bearer token in the `Authorization` header. The request body accepts an optional `text` field for run-specific context such as an alert body or a failing log, passed to the routine alongside its saved prompt. The value is freeform text and is not parsed: if you send JSON or another structured payload, the routine receives it as a literal string.
+ 
+ The example below triggers a routine from a shell:
+@@ -230,26 +230,10 @@ GitHub triggers are configured from the web UI only.
+ #### Supported events
+ 
+-GitHub triggers can subscribe to any of the following event categories. Within each category you can pick a specific action, such as `pull_request.opened`, or react to all actions in the category.
+-
+-| Event                       | Triggers when                                                                 |
+-| :-------------------------- | :---------------------------------------------------------------------------- |
+-| Pull request                | A PR is opened, closed, assigned, labeled, synchronized, or otherwise updated |
+-| Pull request review         | A PR review is submitted, edited, or dismissed                                |
+-| Pull request review comment | A comment on a PR diff is created, edited, or deleted                         |
+-| Push                        | Commits are pushed to a branch                                                |
+-| Release                     | A release is created, published, edited, or deleted                           |
+```
+
+</details>
+
+<details>
+<summary>setup-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/setup-ja.md b/docs-ja/pages/setup-ja.md
+index a11c197..38143f6 100644
+--- a/docs-ja/pages/setup-ja.md
++++ b/docs-ja/pages/setup-ja.md
+@@ -58,5 +58,5 @@ To install Claude Code, use one of the following methods:
+     ```
+ 
+-    If you see `The token '&&' is not a valid statement separator`, you're in PowerShell, not CMD. Use the PowerShell command above instead. Your prompt shows `PS C:\` when you're in PowerShell.
++    If you see `The token '&&' is not a valid statement separator`, you're in PowerShell, not CMD. If you see `'irm' is not recognized as an internal or external command`, you're in CMD, not PowerShell. Your prompt shows `PS C:\` when you're in PowerShell and `C:\` without the `PS` when you're in CMD.
+ 
+     **Native Windows setups require [Git for Windows](https://git-scm.com/downloads/win).** Install it first if you don't have it. WSL setups do not need it.
+```
+
+</details>
+
+<details>
+<summary>web-quickstart-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/web-quickstart-en.md b/docs-ja/pages/web-quickstart-en.md
+index afc68e0..8cb5f1d 100644
+--- a/docs-ja/pages/web-quickstart-en.md
++++ b/docs-ja/pages/web-quickstart-en.md
+@@ -134,4 +134,21 @@ With GitHub connected and an environment created, you're ready to submit tasks.
+ </Steps>
+ 
++## Pre-fill sessions
++
++You can prefill the prompt, repositories, and environment for a new session by adding query parameters to the [claude.ai/code](https://claude.ai/code) URL. Use this to build integrations such as a button in your issue tracker that opens Claude Code with the issue description as the prompt.
++
++| Parameter      | Description                                                                                                                                                      |
++| :------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------- |
++| `prompt`       | Prompt text to prefill in the input box. The alias `q` is also accepted.                                                                                         |
++| `prompt_url`   | URL to fetch the prompt text from, for prompts too long to embed in a query string. The URL must allow cross-origin requests. Ignored when `prompt` is also set. |
++| `repositories` | Comma-separated list of `owner/repo` slugs to preselect. The alias `repo` is also accepted.                                                                      |
++| `environment`  | Name or ID of the [environment](#connect-github-and-create-an-environment) to preselect.                                                                         |
++
++URL-encode each value. The example below opens the form with a prompt and a repository already selected:
++
++```text theme={null}
++https://claude.ai/code?prompt=Fix%20the%20login%20bug&repositories=acme/webapp
++```
++
+ ## Review and iterate
+ 
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-04-15</summary>
 
 **変更ファイル:**
@@ -2463,255 +2667,6 @@ index 2e96b22..4788e56 100644
 -| `TaskCompleted`      | When a task is being marked as completed                                                                                                               |
  | `InstructionsLoaded` | When a CLAUDE.md or `.claude/rules/*.md` file is loaded into context. Fires at session start and when files are lazily loaded during a session         |
  | `ConfigChange`       | When a configuration file changes during a session                                                                                                     |
-```
-
-</details>
-
-<details>
-<summary>plugins-reference-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/plugins-reference-ja.md b/docs-ja/pages/plugins-reference-ja.md
-index 5781b4b..0f5a4d6 100644
---- a/docs-ja/pages/plugins-reference-ja.md
-+++ b/docs-ja/pages/plugins-reference-ja.md
-@@ -120,8 +120,9 @@ disallowedTools: Write, Edit
- | `SubagentStart`      | When a subagent is spawned                                                                                                                             |
- | `SubagentStop`       | When a subagent finishes                                                                                                                               |
-+| `TaskCreated`        | When a task is being created via `TaskCreate`                                                                                                          |
-+| `TaskCompleted`      | When a task is being marked as completed                                                                                                               |
- | `Stop`               | When Claude finishes responding                                                                                                                        |
- | `StopFailure`        | When the turn ends due to an API error. Output and exit code are ignored                                                                               |
- | `TeammateIdle`       | When an [agent team](/en/agent-teams) teammate is about to go idle                                                                                     |
--| `TaskCompleted`      | When a task is being marked as completed                                                                                                               |
- | `InstructionsLoaded` | When a CLAUDE.md or `.claude/rules/*.md` file is loaded into context. Fires at session start and when files are lazily loaded during a session         |
- | `ConfigChange`       | When a configuration file changes during a session                                                                                                     |
-```
-
-</details>
-
-</details>
-
-
-<details>
-<summary>2026-03-26</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/changelog.md             |  79 ++++
- docs-ja/pages/channels-ja.md           |  33 +-
- docs-ja/pages/channels-reference-en.md | 749 ---------------------------------
- docs-ja/pages/cli-reference-ja.md      |  35 +-
- docs-ja/pages/commands-ja.md           |  14 +-
- docs-ja/pages/desktop-ja.md            |   6 +-
- docs-ja/pages/env-vars-ja.md           |  31 +-
- docs-ja/pages/hooks-guide-ja.md        | 125 ++++--
- docs-ja/pages/hooks-ja.md              | 195 ++++++---
- docs-ja/pages/interactive-mode-ja.md   |  20 +-
- docs-ja/pages/keybindings-ja.md        |  41 +-
- docs-ja/pages/mcp-ja.md                |  67 ++-
- docs-ja/pages/memory-ja.md             |  32 +-
- docs-ja/pages/model-config-ja.md       |  27 +-
- docs-ja/pages/monitoring-usage-ja.md   |  43 +-
- docs-ja/pages/plugins-reference-ja.md  | 178 ++++++--
- docs-ja/pages/quickstart-ja.md         | 608 ++++++++++++++++++++++++++
- docs-ja/pages/sandboxing-ja.md         |   2 +
- docs-ja/pages/settings-ja.md           |  12 +-
- docs-ja/pages/skills-ja.md             |  33 +-
- docs-ja/pages/sub-agents-ja.md         |  28 +-
- docs-ja/pages/tools-reference-ja.md    |   2 +-
- docs-ja/pages/vs-code-ja.md            |  25 ++
- 23 files changed, 1388 insertions(+), 997 deletions(-)
-```
-
-**新規追加:**
-
-
-**削除:**
-
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index 4b18ccc..cdf9941 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,83 @@
- # Changelog
- 
-+## 2.1.83
-+
-+- Added `managed-settings.d/` drop-in directory alongside `managed-settings.json`, letting separate teams deploy independent policy fragments that merge alphabetically
-+- Added `CwdChanged` and `FileChanged` hook events for reactive environment management (e.g., direnv)
-+- Added `sandbox.failIfUnavailable` setting to exit with an error when sandbox is enabled but cannot start, instead of running unsandboxed
-+- Added `disableDeepLinkRegistration` setting to prevent `claude-cli://` protocol handler registration
-+- Added `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB=1` to strip Anthropic and cloud provider credentials from subprocess environments (Bash tool, hooks, MCP stdio servers)
-+- Added transcript search — press `/` in transcript mode (`Ctrl+O`) to search, `n`/`N` to step through matches
-+- Added `Ctrl+X Ctrl+E` as an alias for opening the external editor (readline-native binding; `Ctrl+G` still works)
-+- Pasted images now insert an `[Image #N]` chip at the cursor so you can reference them positionally in your prompt
-+- Agents can now declare `initialPrompt` in frontmatter to auto-submit a first turn
-+- `chat:killAgents` and `chat:fastMode` are now rebindable via `~/.claude/keybindings.json`
-+- Fixed mouse tracking escape sequences leaking to shell prompt after exit
-+- Fixed Claude Code hanging on exit on macOS
-+- Fixed screen flashing blank after being idle for a few seconds
-+- Fixed a hang when diffing very large files with few common lines — diffs now time out after 5 seconds and fall back gracefully
-+- Fixed a 1–8 second UI freeze on startup when voice input was enabled, caused by eagerly loading the native audio module
-+- Fixed a startup regression where Claude Code would wait ~3s for claude.ai MCP config fetch before proceeding
-+- Fixed `--mcp-config` CLI flag bypassing `allowedMcpServers`/`deniedMcpServers` managed policy enforcement
-+- Fixed claude.ai MCP connectors (Slack, Gmail, etc.) not being available in single-turn `--print` mode
-+- Fixed `caffeinate` process not properly terminating when Claude Code exits, preventing Mac from sleeping
-+- Fixed bash mode not activating when tab-accepting `!`-prefixed command suggestions
-+- Fixed stale slash command selection showing wrong highlighted command after navigating suggestions
-```
-
-</details>
-
-<details>
-<summary>channels-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/channels-ja.md b/docs-ja/pages/channels-ja.md
-index 8bf5ac7..c9f89ed 100644
---- a/docs-ja/pages/channels-ja.md
-+++ b/docs-ja/pages/channels-ja.md
-@@ -289,10 +289,12 @@ iMessage は異なります。自分自身にテキストを送信するとゲ
- ## Enterprise コントロール
- 
--チャネルは[管理設定](/ja/settings)の `channelsEnabled` 設定で制御されます。
-+Team および Enterprise プランでは、チャネルはデフォルトでオフです。管理者は、ユーザーがオーバーライドできない 2 つの[管理設定](/ja/settings)を通じて可用性を制御します。
- 
--| プランタイプ            | デフォルト動作                                     |
--| :---------------- | :------------------------------------------ |
--| Pro / Max、組織なし    | チャネルが利用可能。ユーザーは `--channels` でセッションごとにオプトイン |
--| Team / Enterprise | 管理者が明示的に有効にするまでチャネルは無効                      |
-+| 設定                      | 目的                                                                                                                                                                      | 設定されていない場合                |
-+| :---------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------ |
-+| `channelsEnabled`       | マスタースイッチ。チャネルがメッセージを配信するには `true` である必要があります。[claude.ai Admin console](https://claude.ai/admin-settings/claude-code) トグルまたは管理設定で直接設定します。オフの場合、開発フラグを含むすべてのチャネルをブロックします。 | チャネルがブロックされます             |
-+| `allowedChannelPlugins` | チャネルが有効になったら、どのプラグインが登録できるか。設定されている場合、Anthropic が管理するリストを置き換えます。`channelsEnabled` が `true` の場合のみ適用されます。                                                                 | Anthropic デフォルトリストが適用されます |
-+
-+組織のない Pro および Max ユーザーはこれらのチェックを完全にスキップします。チャネルが利用可能で、ユーザーは `--channels` でセッションごとにオプトインします。
- 
- ### 組織のチャネルを有効にする
-@@ -302,9 +304,28 @@ iMessage は異なります。自分自身にテキストを送信するとゲ
- 有効にすると、組織内のユーザーは `--channels` を使用して個別のセッションにチャネルサーバーをオプトインできます。設定が無効または未設定の場合、MCP サーバーは接続され、そのツールは機能しますが、チャネルメッセージは到着しません。スタートアップ警告は、ユーザーに管理者が設定を有効にするよう指示します。
- 
-+### チャネルプラグインが実行できるものを制限する
-+
-+デフォルトでは、Anthropic が管理する許可リスト上のプラグインはチャネルとして登録できます。Team および Enterprise プランの管理者は、管理設定で `allowedChannelPlugins` を設定することで、その許可リストを独自のものに置き換えることができます。これを使用して、許可されている公式プラグインを制限したり、独自の内部マーケットプレイスからチャネルを承認したり、その両方を行ったりします。各エントリは、プラグインとそれが由来するマーケットプレイスに名前を付けます。
-+
-+```json  theme={null}
-```
-
-</details>
-
-<details>
-<summary>cli-reference-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/cli-reference-ja.md b/docs-ja/pages/cli-reference-ja.md
-index 1be5d21..a13d6f6 100644
---- a/docs-ja/pages/cli-reference-ja.md
-+++ b/docs-ja/pages/cli-reference-ja.md
-@@ -11,21 +11,22 @@
- これらのコマンドを使用して、セッションを開始し、コンテンツをパイプし、会話を再開し、更新を管理できます。
- 
--| コマンド                            | 説明                                                                                                                                                                                      | 例                                            |
--| :------------------------------ | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------- |
--| `claude`                        | インタラクティブセッションを開始                                                                                                                                                                        | `claude`                                     |
--| `claude "query"`                | 初期プロンプト付きでインタラクティブセッションを開始                                                                                                                                                              | `claude "explain this project"`              |
--| `claude -p "query"`             | SDK 経由でクエリを実行してから終了                                                                                                                                                                     | `claude -p "explain this function"`          |
--| `cat file \| claude -p "query"` | パイプされたコンテンツを処理                                                                                                                                                                          | `cat logs.txt \| claude -p "explain"`        |
--| `claude -c`                     | 現在のディレクトリで最新の会話を続行                                                                                                                                                                      | `claude -c`                                  |
--| `claude -c -p "query"`          | SDK 経由で続行                                                                                                                                                                               | `claude -c -p "Check for type errors"`       |
--| `claude -r "<session>" "query"` | セッション ID または名前でセッションを再開                                                                                                                                                                 | `claude -r "auth-refactor" "Finish this PR"` |
--| `claude update`                 | 最新バージョンに更新                                                                                                                                                                              | `claude update`                              |
--| `claude auth login`             | Anthropic アカウントにサインインします。`--email` を使用してメールアドレスを事前入力し、`--sso` を使用して SSO 認証を強制し、`--console` を使用して Claude サブスクリプションの代わりに Anthropic Console で API 使用料金をサインインできます                           | `claude auth login --console`                |
--| `claude auth logout`            | Anthropic アカウントからログアウト                                                                                                                                                                  | `claude auth logout`                         |
--| `claude auth status`            | 認証ステータスを JSON として表示します。`--text` を使用して人間が読める形式で表示できます。ログイン済みの場合はコード 0 で終了し、ログインしていない場合は 1 で終了します                                                                                         | `claude auth status`                         |
--| `claude agents`                 | すべての設定済み [subagents](/ja/sub-agents) をソース別にグループ化して一覧表示                                                                                                                                  | `claude agents`                              |
--| `claude auto-mode defaults`     | 組み込み [auto mode](/ja/permission-modes#eliminate-prompts-with-auto-mode) 分類器ルールを JSON として出力します。`claude auto-mode config` を使用して、設定が適用された有効な設定を確認してください                                    | `claude auto-mode defaults > rules.json`     |
--| `claude mcp`                    | Model Context Protocol（MCP）サーバーを設定                                                                                                                                                      | [Claude Code MCP ドキュメント](/ja/mcp) を参照してください。 |
--| `claude remote-control`         | [Remote Control](/ja/remote-control) サーバーを開始して、Claude.ai または Claude アプリから Claude Code を制御します。サーバーモード（ローカルインタラクティブセッションなし）で実行されます。[サーバーモードフラグ](/ja/remote-control#server-mode) を参照してください | `claude remote-control --name "My Project"`  |
-+| コマンド                            | 説明                                                                                                                                                                                      | 例                                                           |
-+| :------------------------------ | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :---------------------------------------------------------- |
-+| `claude`                        | インタラクティブセッションを開始                                                                                                                                                                        | `claude`                                                    |
-+| `claude "query"`                | 初期プロンプト付きでインタラクティブセッションを開始                                                                                                                                                              | `claude "explain this project"`                             |
-+| `claude -p "query"`             | SDK 経由でクエリを実行してから終了                                                                                                                                                                     | `claude -p "explain this function"`                         |
-+| `cat file \| claude -p "query"` | パイプされたコンテンツを処理                                                                                                                                                                          | `cat logs.txt \| claude -p "explain"`                       |
-```
-
-</details>
-
-<details>
-<summary>commands-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/commands-ja.md b/docs-ja/pages/commands-ja.md
-index ddb6f88..1ae56e8 100644
---- a/docs-ja/pages/commands-ja.md
-+++ b/docs-ja/pages/commands-ja.md
-@@ -9,5 +9,5 @@
- Claude Code で `/` と入力すると、利用可能なすべてのコマンドが表示されます。または `/` の後に任意の文字を入力してフィルタリングできます。すべてのコマンドがすべてのユーザーに表示されるわけではありません。プラットフォーム、プラン、または環境によって異なります。たとえば、`/desktop` は macOS と Windows にのみ表示され、`/upgrade` と `/privacy-settings` は Pro プランと Max プランでのみ利用可能で、`/terminal-setup` はターミナルがネイティブにキーバインディングをサポートしている場合は非表示になります。
- 
--Claude Code には、`/` と入力したときに組み込みコマンドと一緒に表示される `/simplify`、`/batch`、`/debug` などの[バンドルされたスキル](/ja/skills#bundled-skills)も含まれています。独自のコマンドを作成するには、[スキル](/ja/skills)を参照してください。
-+Claude Code には、`/` と入力したときに組み込みコマンドと一緒に表示される `/simplify`、`/batch`、`/debug`、`/loop` などの[バンドルされたスキル](/ja/skills#bundled-skills)も含まれています。独自のコマンドを作成するには、[スキル](/ja/skills)を参照してください。
- 
- 以下の表では、`<arg>` は必須引数を示し、`[arg]` はオプション引数を示します。
-@@ -24,5 +24,5 @@ Claude Code には、`/` と入力したときに組み込みコマンドと一
- | `/config`                                | [設定](/ja/settings)インターフェースを開いて、テーマ、モデル、[出力スタイル](/ja/output-styles)、およびその他の設定を調整。エイリアス: `/settings`                                                                                         |
- | `/context`                               | 現在のコンテキスト使用状況をカラーグリッドとして視覚化。コンテキストが多いツール、メモリ肥大化、容量警告の最適化提案を表示                                                                                                                              |
--| `/copy`                                  | 最後のアシスタント応答をクリップボードにコピー。コードブロックが存在する場合、個別ブロックまたは完全な応答を選択するインタラクティブピッカーを表示                                                                                                                  |
-+| `/copy [N]`                              | 最後のアシスタント応答をクリップボードにコピー。数字 `N` を渡して N 番目に新しい応答をコピー: `/copy 2` は 2 番目に新しい応答をコピー。コードブロックが存在する場合、個別ブロックまたは完全な応答を選択するインタラクティブピッカーを表示。ピッカーで `w` を押して、クリップボードの代わりにファイルに選択内容を書き込み。SSH 経由で便利       |
- | `/cost`                                  | トークン使用統計を表示。サブスクリプション固有の詳細については、[コスト追跡ガイド](/ja/costs#using-the-cost-command)を参照                                                                                                            |
- | `/desktop`                               | 現在のセッションを Claude Code デスクトップアプリで続行。macOS と Windows のみ。エイリアス: `/app`                                                                                                                        |
-@@ -35,9 +35,9 @@ Claude Code には、`/` と入力したときに組み込みコマンドと一
- | `/fast [on\|off]`                        | [高速モード](/ja/fast-mode)のオン/オフを切り替え                                                                                                                                                          |
- | `/feedback [report]`                     | Claude Code に関するフィードバックを送信。エイリアス: `/bug`                                                                                                                                                   |
--| `/fork [name]`                           | この時点で現在の会話のフォークを作成                                                                                                                                                                         |
-+| `/branch [name]`                         | この時点で現在の会話のブランチを作成。エイリアス: `/fork`                                                                                                                                                          |
- | `/help`                                  | ヘルプと利用可能なコマンドを表示                                                                                                                                                                           |
- | `/hooks`                                 | ツールイベント用の[フック](/ja/hooks)設定を表示                                                                                                                                                             |
- | `/ide`                                   | IDE 統合を管理し、ステータスを表示                                                                                                                                                                        |
--| `/init`                                  | `CLAUDE.md` ガイドでプロジェクトを初期化                                                                                                                                                                 |
-+| `/init`                                  | `CLAUDE.md` ガイドでプロジェクトを初期化。スキル、フック、個人メモリファイルをウォークスルーするインタラクティブフローについては、`CLAUDE_CODE_NEW_INIT=true` を設定                                                                                     |
- | `/insights`                              | Claude Code セッションを分析するレポートを生成。プロジェクト領域、相互作用パターン、および摩擦点を含む                                                                                                                                  |
- | `/install-github-app`                    | リポジトリ用の [Claude GitHub Actions](/ja/github-actions) アプリをセットアップ。リポジトリを選択して統合を構成するプロセスをガイド                                                                                                   |
-```
-
-</details>
-
-<details>
-<summary>desktop-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/desktop-ja.md b/docs-ja/pages/desktop-ja.md
-index 489b955..4ba625d 100644
---- a/docs-ja/pages/desktop-ja.md
-+++ b/docs-ja/pages/desktop-ja.md
-@@ -52,5 +52,5 @@ Claude に実行させたいことを入力して**Enter**キーを押して送
- プロンプトボックスは外部コンテキストを取り込む 2 つの方法をサポートしています：
- 
--* **@mention ファイル**：`@`の後にファイル名を入力して、ファイルを会話コンテキストに追加します。Claude はそのファイルを読み取り、参照できます。
-+* **@mention ファイル**：`@`の後にファイル名を入力して、ファイルを会話コンテキストに追加します。Claude はそのファイルを読み取り、参照できます。@mention はリモートセッションでは利用できません。
- * **ファイルを添付**：添付ボタンを使用するか、ファイルをプロンプトに直接ドラッグアンドドロップして、画像、PDF、およびその他のファイルをプロンプトに添付します。これはバグのスクリーンショット、デザインモックアップ、または参照ドキュメントを共有するのに便利です。
- 
-@@ -547,5 +547,5 @@ Teams または Enterprise プランの組織は、管理コンソールコン
- ### デバイス管理ポリシー
- 
--IT チームは、macOS の MDM またはWindows のグループポリシーを通じてデスクトップアプリを管理できます。利用可能なポリシーには、Claude Code 機能の有効化または無効化、自動更新の制御、およびカスタムデプロイメント URL の設定が含まれます。
-+IT チームは、macOS の MDM または Windows のグループポリシーを通じてデスクトップアプリを管理できます。利用可能なポリシーには、Claude Code 機能の有効化または無効化、自動更新の制御、およびカスタムデプロイメント URL の設定が含まれます。
- 
- * **macOS**：Jamf または Kandji などのツールを使用して`com.anthropic.Claude`プリファレンスドメインを通じて設定します
-@@ -623,5 +623,5 @@ Desktop と CLI は同じ設定ファイルを読み取るため、セットア
- | [MCP サーバー](/ja/mcp)                           | 設定ファイルで設定                                                | ローカルおよび SSH セッションの Connectors UI、または設定ファイル                                             |
- | [プラグイン](/ja/plugins)                          | `/plugin`コマンド                                            | プラグインマネージャー UI                                                                         |
--| @mention ファイル                                 | テキストベース                                                  | オートコンプリート付き                                                                            |
-+| @mention ファイル                                 | テキストベース                                                  | オートコンプリート付き；ローカルおよび SSH セッションのみ                                                        |
- | ファイル添付                                        | 利用できません                                                  | 画像、PDF                                                                                 |
- | セッション分離                                       | [`--worktree`](/ja/cli-reference)フラグ                     | 自動 worktrees                                                                           |
 ```
 
 </details>
