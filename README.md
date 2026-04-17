@@ -17,6 +17,253 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-04-17</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md                  |   44 +-
+ docs-ja/pages/claude-code-on-the-web-ja.md  | 1118 ++++++++++++++-------------
+ docs-ja/pages/desktop-ja.md                 |   22 +-
+ docs-ja/pages/desktop-quickstart-ja.md      |    4 +-
+ docs-ja/pages/desktop-scheduled-tasks-en.md |   22 +-
+ docs-ja/pages/plugins-ja.md                 |   65 +-
+ docs-ja/pages/plugins-reference-ja.md       |  164 ++--
+ docs-ja/pages/remote-control-ja.md          |   95 ++-
+ docs-ja/pages/routines-en.md                |  319 --------
+ docs-ja/pages/scheduled-tasks-ja.md         |  112 ++-
+ docs-ja/pages/settings-ja.md                |   37 +-
+ docs-ja/pages/setup-ja.md                   |   36 +-
+ docs-ja/pages/tools-reference-ja.md         |   28 +-
+ docs-ja/pages/ultraplan-en.md               |   83 --
+ docs-ja/pages/web-quickstart-en.md          |  220 ------
+ 15 files changed, 1059 insertions(+), 1310 deletions(-)
+```
+
+**新規追加:**
+
+
+**削除:**
+
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index 457d6d1..d9de314 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,46 @@
+ # Changelog
+ 
++## 2.1.112
++
++- Fixed "claude-opus-4-7 is temporarily unavailable" for auto mode
++
++## 2.1.111
++
++- Claude Opus 4.7 xhigh is now available! Use /effort to tune speed vs. intelligence
++- Auto mode is now available for Max subscribers when using Opus 4.7
++- Added `xhigh` effort level for Opus 4.7, sitting between `high` and `max`. Available via `/effort`, `--effort`, and the model picker; other models fall back to `high`
++- `/effort` now opens an interactive slider when called without arguments, with arrow-key navigation between levels and Enter to confirm
++- Added "Auto (match terminal)" theme option that matches your terminal's dark/light mode — select it from `/theme`
++- Added `/less-permission-prompts` skill — scans transcripts for common read-only Bash and MCP tool calls and proposes a prioritized allowlist for `.claude/settings.json`
++- Added `/ultrareview` for running comprehensive code review in the cloud using parallel multi-agent analysis and critique — invoke with no arguments to review your current branch, or `/ultrareview <PR#>` to fetch and review a specific GitHub PR
++- Auto mode no longer requires `--enable-auto-mode`
++- Windows: PowerShell tool is progressively rolling out. Opt in or out with `CLAUDE_CODE_USE_POWERSHELL_TOOL`. On Linux and macOS, enable with `CLAUDE_CODE_USE_POWERSHELL_TOOL=1` (requires `pwsh` on PATH)
++- Read-only bash commands with glob patterns (e.g. `ls *.ts`) and commands starting with `cd <project-dir> &&` no longer trigger a permission prompt
++- Suggest the closest matching subcommand when `claude <word>` is invoked with a near-miss typo (e.g. `claude udpate` → "Did you mean `claude update`?")
++- Plan files are now named after your prompt (e.g. `fix-auth-race-snug-otter.md`) instead of purely random words
++- Improved `/setup-vertex` and `/setup-bedrock` to show the actual `settings.json` path when `CLAUDE_CONFIG_DIR` is set, seed model candidates from existing pins on re-run, and offer a "with 1M context" option for supported models
++- `/skills` menu now supports sorting by estimated token count — press `t` to toggle
++- `Ctrl+U` now clears the entire input buffer (previously: delete to start of line); press `Ctrl+Y` to restore
++- `Ctrl+L` now forces a full screen redraw in addition to clearing the prompt input
++- Transcript view footer now shows `[` (dump to scrollback) and `v` (open in editor) shortcuts
+```
+
+</details>
+
+<details>
+<summary>claude-code-on-the-web-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/claude-code-on-the-web-ja.md b/docs-ja/pages/claude-code-on-the-web-ja.md
+index 40165e9..d1a97f3 100644
+--- a/docs-ja/pages/claude-code-on-the-web-ja.md
++++ b/docs-ja/pages/claude-code-on-the-web-ja.md
+@@ -3,705 +3,771 @@
+ > Use this file to discover all available pages before exploring further.
+ 
+-# ウェブ上の Claude Code
++# ウェブ上の Claude Code を使用する
+ 
+-> セキュアなクラウドインフラストラクチャで Claude Code タスクを非同期に実行します
++> Anthropic のサンドボックスでクラウド環境、セットアップスクリプト、ネットワークアクセス、Docker を設定します。`--remote` と `--teleport` を使用してウェブとターミナル間でセッションを移動します。
+ 
+ <Note>
+-  ウェブ上の Claude Code は現在リサーチプレビュー段階です。
++  ウェブ上の Claude Code は Pro、Max、Team ユーザー、およびプレミアムシートまたは Chat + Claude Code シートを持つ Enterprise ユーザーを対象としたリサーチプレビュー段階です。
+ </Note>
+ 
+-## ウェブ上の Claude Code とは？
++ウェブ上の Claude Code は [claude.ai/code](https://claude.ai/code) の Anthropic 管理クラウドインフラストラクチャでタスクを実行します。セッションはブラウザを閉じても保持され、Claude モバイルアプリから監視できます。
+ 
+-ウェブ上の Claude Code を使用すると、開発者は Claude アプリから Claude Code を開始できます。これは以下の場合に最適です：
++<Tip>
++  ウェブ上の Claude Code は初めてですか？[はじめに](/ja/web-quickstart)から始めて、GitHub アカウントを接続し、最初のタスクを送信してください。
++</Tip>
+ 
+-* **質問への回答**：コードアーキテクチャと機能の実装方法について質問する
+-* **バグ修正とルーチンタスク**：頻繁な操舵を必要としない明確に定義されたタスク
+-* **並列作業**：複数のバグ修正を並列で処理する
+-* **ローカルマシンにないリポジトリ**：ローカルにチェックアウトしていないコードで作業する
+```
+
+</details>
+
+<details>
+<summary>desktop-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/desktop-ja.md b/docs-ja/pages/desktop-ja.md
+index 6aa9d30..aece073 100644
+--- a/docs-ja/pages/desktop-ja.md
++++ b/docs-ja/pages/desktop-ja.md
+@@ -416,15 +416,15 @@ Claude が別のポートを選択すると、割り当てられたポートを`
+ Claude Code offers three ways to schedule recurring work:
+ 
+-|                            | [Cloud](/en/routines)          | [Desktop](/en/desktop-scheduled-tasks) | [`/loop`](/en/scheduled-tasks) |
+-| :------------------------- | :----------------------------- | :------------------------------------- | :----------------------------- |
+-| Runs on                    | Anthropic cloud                | Your machine                           | Your machine                   |
+-| Requires machine on        | No                             | Yes                                    | Yes                            |
+-| Requires open session      | No                             | No                                     | Yes                            |
+-| Persistent across restarts | Yes                            | Yes                                    | No (session-scoped)            |
+-| Access to local files      | No (fresh clone)               | Yes                                    | Yes                            |
+-| MCP servers                | Connectors configured per task | [Config files](/en/mcp) and connectors | Inherits from session          |
+-| Permission prompts         | No (runs autonomously)         | Configurable per task                  | Inherits from session          |
+-| Customizable schedule      | Via `/schedule` in the CLI     | Yes                                    | Yes                            |
+-| Minimum interval           | 1 hour                         | 1 minute                               | 1 minute                       |
++|                            | [Cloud](/en/routines)          | [Desktop](/en/desktop-scheduled-tasks) | [`/loop`](/en/scheduled-tasks)      |
++| :------------------------- | :----------------------------- | :------------------------------------- | :---------------------------------- |
++| Runs on                    | Anthropic cloud                | Your machine                           | Your machine                        |
++| Requires machine on        | No                             | Yes                                    | Yes                                 |
++| Requires open session      | No                             | No                                     | Yes                                 |
++| Persistent across restarts | Yes                            | Yes                                    | Restored on `--resume` if unexpired |
++| Access to local files      | No (fresh clone)               | Yes                                    | Yes                                 |
++| MCP servers                | Connectors configured per task | [Config files](/en/mcp) and connectors | Inherits from session               |
++| Permission prompts         | No (runs autonomously)         | Configurable per task                  | Inherits from session               |
++| Customizable schedule      | Via `/schedule` in the CLI     | Yes                                    | Yes                                 |
++| Minimum interval           | 1 hour                         | 1 minute                               | 1 minute                            |
+ 
+```
+
+</details>
+
+<details>
+<summary>desktop-quickstart-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/desktop-quickstart-ja.md b/docs-ja/pages/desktop-quickstart-ja.md
+index 0709ee4..ee92f63 100644
+--- a/docs-ja/pages/desktop-quickstart-ja.md
++++ b/docs-ja/pages/desktop-quickstart-ja.md
+@@ -12,7 +12,7 @@
+ 
+ <Frame>
+-  <img src="https://mintcdn.com/claude-code/CNLUpFGiXoc9mhvD/images/desktop-code-tab-light.png?fit=max&auto=format&n=CNLUpFGiXoc9mhvD&q=85&s=9a36a7a27b9f4c6f2e1c83bdb34f69ce" className="block dark:hidden" alt="Code タブが選択されている Claude Code Desktop インターフェースを示しており、プロンプトボックス、権限モードセレクター（'Ask permissions'に設定）、モデルピッカー、フォルダセレクター、Local environment オプションが表示されています" width="2500" height="1376" data-path="images/desktop-code-tab-light.png" />
++  <img src="https://mintlify.s3.us-west-1.amazonaws.com/claude-code/images/desktop-code-tab-light.png" className="block dark:hidden" alt="Code タブが選択されている Claude Code Desktop インターフェースを示しており、プロンプトボックス、権限モードセレクター（'Ask permissions'に設定）、モデルピッカー、フォルダセレクター、Local environment オプションが表示されています" />
+ 
+-  <img src="https://mintcdn.com/claude-code/CNLUpFGiXoc9mhvD/images/desktop-code-tab-dark.png?fit=max&auto=format&n=CNLUpFGiXoc9mhvD&q=85&s=5463defe81c459fb9b1f91f6a958cfb8" className="hidden dark:block" alt="ダークモードの Claude Code Desktop インターフェースを示しており、Code タブが選択されている状態で、プロンプトボックス、権限モードセレクター（'Ask permissions'に設定）、モデルピッカー、フォルダセレクター、Local environment オプションが表示されています" width="2504" height="1374" data-path="images/desktop-code-tab-dark.png" />
++  <img src="https://mintlify.s3.us-west-1.amazonaws.com/claude-code/images/desktop-code-tab-dark.png" className="hidden dark:block" alt="ダークモードの Claude Code Desktop インターフェースを示しており、Code タブが選択されている状態で、プロンプトボックス、権限モードセレクター（'Ask permissions'に設定）、モデルピッカー、フォルダセレクター、Local environment オプションが表示されています" />
+ </Frame>
+ 
+```
+
+</details>
+
+<details>
+<summary>desktop-scheduled-tasks-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/desktop-scheduled-tasks-en.md b/docs-ja/pages/desktop-scheduled-tasks-en.md
+index f8bfea8..79337d9 100644
+--- a/docs-ja/pages/desktop-scheduled-tasks-en.md
++++ b/docs-ja/pages/desktop-scheduled-tasks-en.md
+@@ -13,15 +13,15 @@ By default, scheduled tasks start a new session automatically at a time and freq
+ Claude Code offers three ways to schedule recurring work:
+ 
+-|                            | [Cloud](/en/routines)          | [Desktop](/en/desktop-scheduled-tasks) | [`/loop`](/en/scheduled-tasks) |
+-| :------------------------- | :----------------------------- | :------------------------------------- | :----------------------------- |
+-| Runs on                    | Anthropic cloud                | Your machine                           | Your machine                   |
+-| Requires machine on        | No                             | Yes                                    | Yes                            |
+-| Requires open session      | No                             | No                                     | Yes                            |
+-| Persistent across restarts | Yes                            | Yes                                    | No (session-scoped)            |
+-| Access to local files      | No (fresh clone)               | Yes                                    | Yes                            |
+-| MCP servers                | Connectors configured per task | [Config files](/en/mcp) and connectors | Inherits from session          |
+-| Permission prompts         | No (runs autonomously)         | Configurable per task                  | Inherits from session          |
+-| Customizable schedule      | Via `/schedule` in the CLI     | Yes                                    | Yes                            |
+-| Minimum interval           | 1 hour                         | 1 minute                               | 1 minute                       |
++|                            | [Cloud](/en/routines)          | [Desktop](/en/desktop-scheduled-tasks) | [`/loop`](/en/scheduled-tasks)      |
++| :------------------------- | :----------------------------- | :------------------------------------- | :---------------------------------- |
++| Runs on                    | Anthropic cloud                | Your machine                           | Your machine                        |
++| Requires machine on        | No                             | Yes                                    | Yes                                 |
++| Requires open session      | No                             | No                                     | Yes                                 |
++| Persistent across restarts | Yes                            | Yes                                    | Restored on `--resume` if unexpired |
++| Access to local files      | No (fresh clone)               | Yes                                    | Yes                                 |
++| MCP servers                | Connectors configured per task | [Config files](/en/mcp) and connectors | Inherits from session               |
++| Permission prompts         | No (runs autonomously)         | Configurable per task                  | Inherits from session               |
++| Customizable schedule      | Via `/schedule` in the CLI     | Yes                                    | Yes                                 |
++| Minimum interval           | 1 hour                         | 1 minute                               | 1 minute                            |
+ 
+```
+
+</details>
+
+<details>
+<summary>plugins-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/plugins-ja.md b/docs-ja/pages/plugins-ja.md
+index c89c0b5..3e8dc78 100644
+--- a/docs-ja/pages/plugins-ja.md
++++ b/docs-ja/pages/plugins-ja.md
+@@ -75,10 +75,10 @@ Claude Code では、カスタムスキル、エージェント、フックを
+     ```json my-first-plugin/.claude-plugin/plugin.json theme={null}
+     {
+-    "name": "my-first-plugin",
+-    "description": "A greeting plugin to learn the basics",
+-    "version": "1.0.0",
+-    "author": {
+-    "name": "Your Name"
+-    }
++      "name": "my-first-plugin",
++      "description": "A greeting plugin to learn the basics",
++      "version": "1.0.0",
++      "author": {
++        "name": "Your Name"
++      }
+     }
+     ```
+@@ -174,5 +174,5 @@ Claude Code では、カスタムスキル、エージェント、フックを
+ ## プラグイン構造の概要
+ 
+-スキルを使用してプラグインを作成しましたが、プラグインにはさらに多くの機能を含めることができます。カスタムエージェント、フック、MCP サーバー、LSP サーバーです。
++スキルを使用してプラグインを作成しましたが、プラグインにはさらに多くの機能を含めることができます。カスタムエージェント、フック、MCP サーバー、LSP サーバー、バックグラウンドモニターです。
+ 
+ <Warning>
+@@ -180,14 +180,16 @@ Claude Code では、カスタムスキル、エージェント、フックを
+ </Warning>
+```
+
+</details>
+
+*...以降省略*
+
+</details>
+
+
+<details>
 <summary>2026-04-16</summary>
 
 **変更ファイル:**
@@ -2489,186 +2736,5 @@ index e17ed40..700d711 100644
 
 </details>
 
-
-<details>
-<summary>2026-03-28</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/changelog.md | 29 +++++++++++++++++++++++++++++
- 1 file changed, 29 insertions(+)
-```
-
-**新規追加:**
-
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index 447da9b..e17ed40 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,33 @@
- # Changelog
- 
-+## 2.1.86
-+
-+- Added `X-Claude-Code-Session-Id` header to API requests so proxies can aggregate requests by session without parsing the body
-+- Added `.jj` and `.sl` to VCS directory exclusion lists so Grep and file autocomplete don't descend into Jujutsu or Sapling metadata
-+- Fixed `--resume` failing with "tool_use ids were found without tool_result blocks" on sessions created before v2.1.85
-+- Fixed Write/Edit/Read failing on files outside the project root (e.g., `~/.claude/CLAUDE.md`) when conditional skills or rules are configured
-+- Fixed unnecessary config disk writes on every skill invocation that could cause performance issues and config corruption on Windows
-+- Fixed potential out-of-memory crash when using `/feedback` on very long sessions with large transcript files
-+- Fixed `--bare` mode dropping MCP tools in interactive sessions and silently discarding messages enqueued mid-turn
-+- Fixed the `c` shortcut copying only ~20 characters of the OAuth login URL instead of the full URL
-+- Fixed masked input (e.g., OAuth code paste) leaking the start of the token when wrapping across multiple lines on narrow terminals
-+- Fixed official marketplace plugin scripts failing with "Permission denied" on macOS/Linux since v2.1.83
-+- Fixed statusline showing another session's model when running multiple Claude Code instances and using `/model` in one of them
-+- Fixed scroll not following new messages after wheel scroll or click-to-select at the bottom of a long conversation
-+- Fixed `/plugin` uninstall dialog: pressing `n` now correctly uninstalls the plugin while preserving its data directory
-+- Fixed a regression where pressing Enter after clicking could leave the transcript blank until the response arrived
-+- Fixed `ultrathink` hint lingering after deleting the keyword
-+- Fixed memory growth in long sessions from markdown/highlight render caches retaining full content strings
-+- Reduced startup event-loop stalls when many claude.ai MCP connectors are configured (macOS keychain cache extended from 5s to 30s)
-+- Reduced token overhead when mentioning files with `@` — raw string content no longer JSON-escaped
-+- Improved prompt cache hit rate for Bedrock, Vertex, and Foundry users by removing dynamic content from tool descriptions
-+- Memory filenames in the "Saved N memories" notice now highlight on hover and open on click
-+- Skill descriptions in the `/skills` listing are now capped at 250 characters to reduce context usage
-```
-
-</details>
-
-</details>
-
-
-<details>
-<summary>2026-03-27</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/changelog.md            | 76 +++++++++++++++++++++++++++++++++++
- docs-ja/pages/features-overview-ja.md |  2 +-
- docs-ja/pages/hooks-guide-ja.md       |  3 +-
- docs-ja/pages/hooks-ja.md             |  5 ++-
- docs-ja/pages/plugins-reference-ja.md |  3 +-
- 5 files changed, 84 insertions(+), 5 deletions(-)
-```
-
-**新規追加:**
-
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index cdf9941..447da9b 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,80 @@
- # Changelog
- 
-+## 2.1.85
-+
-+- Added `CLAUDE_CODE_MCP_SERVER_NAME` and `CLAUDE_CODE_MCP_SERVER_URL` environment variables to MCP `headersHelper` scripts, allowing one helper to serve multiple servers
-+- Added conditional `if` field for hooks using permission rule syntax (e.g., `Bash(git *)`) to filter when they run, reducing process spawning overhead
-+- Added timestamp markers in transcripts when scheduled tasks (`/loop`, `CronCreate`) fire
-+- Added trailing space after `[Image #N]` placeholder when pasting images
-+- Deep link queries (`claude-cli://open?q=…`) now support up to 5,000 characters, with a "scroll to review" warning for long pre-filled prompts
-+- MCP OAuth now follows RFC 9728 Protected Resource Metadata discovery to find the authorization server
-+- Plugins blocked by organization policy (`managed-settings.json`) can no longer be installed or enabled, and are hidden from marketplace views
-+- PreToolUse hooks can now satisfy `AskUserQuestion` by returning `updatedInput` alongside `permissionDecision: "allow"`, enabling headless integrations that collect answers via their own UI
-+- `tool_parameters` in OpenTelemetry tool_result events are now gated behind `OTEL_LOG_TOOL_DETAILS=1`
-+- Fixed `/compact` failing with "context exceeded" when the conversation has grown too large for the compact request itself to fit
-+- Fixed `/plugin enable` and `/plugin disable` failing when a plugin's install location differs from where it's declared in settings
-+- Fixed `--worktree` exiting with an error in non-git repositories before the `WorktreeCreate` hook could run
-+- Fixed `deniedMcpServers` setting not blocking claude.ai MCP servers
-+- Fixed `switch_display` in the computer-use tool returning "not available in this session" on multi-monitor setups
-+- Fixed crash when `OTEL_LOGS_EXPORTER`, `OTEL_METRICS_EXPORTER`, or `OTEL_TRACES_EXPORTER` is set to `none`
-+- Fixed diff syntax highlighting not working in non-native builds
-+- Fixed MCP step-up authorization failing when a refresh token exists — servers requesting elevated scopes via `403 insufficient_scope` now correctly trigger the re-authorization flow
-+- Fixed memory leak in remote sessions when a streaming response is interrupted
-+- Fixed persistent ECONNRESET errors during edge connection churn by using a fresh TCP connection on retry
-+- Fixed prompts getting stuck in the queue after running certain slash commands, with up-arrow unable to retrieve them
-+- Fixed Python Agent SDK: `type:'sdk'` MCP servers passed via `--mcp-config` are no longer dropped during startup
-```
-
-</details>
-
-<details>
-<summary>features-overview-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/features-overview-ja.md b/docs-ja/pages/features-overview-ja.md
-index 929de83..22df0d5 100644
---- a/docs-ja/pages/features-overview-ja.md
-+++ b/docs-ja/pages/features-overview-ja.md
-@@ -189,5 +189,5 @@ Claude Code は、コードについて推論するモデルと、ファイル
- 各機能はセッション内の異なるポイントでロードされます。以下のタブは、各機能がいつロードされるか、およびコンテキストに何が入るかを説明しています。
- 
--<img src="https://mintcdn.com/claude-code/c5r9_6tjPMzFdDDT/images/context-loading.svg?fit=max&auto=format&n=c5r9_6tjPMzFdDDT&q=85&s=729b5b634ba831d1d64772c6c9485b30" alt="コンテキストロード：CLAUDE.md と MCP はセッション開始時にロードされ、すべてのリクエストに留まります。スキルは開始時に説明をロードし、呼び出し時に完全なコンテンツをロードします。Subagents は独立したコンテキストを取得します。Hooks は外部で実行されます。" width="720" height="410" data-path="images/context-loading.svg" />
-+<img src="https://mintcdn.com/claude-code/6yTCYq1p37ZB8-CQ/images/context-loading.svg?fit=max&auto=format&n=6yTCYq1p37ZB8-CQ&q=85&s=5a58ce953a35a2412892015e2ad6cb67" alt="コンテキストロード：CLAUDE.md と MCP はセッション開始時にロードされ、すべてのリクエストに留まります。スキルは開始時に説明をロードし、呼び出し時に完全なコンテンツをロードします。Subagents は独立したコンテキストを取得します。Hooks は外部で実行されます。" width="720" height="410" data-path="images/context-loading.svg" />
- 
- <Tabs>
-```
-
-</details>
-
-<details>
-<summary>hooks-guide-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/hooks-guide-ja.md b/docs-ja/pages/hooks-guide-ja.md
-index 6953b0b..b7a0444 100644
---- a/docs-ja/pages/hooks-guide-ja.md
-+++ b/docs-ja/pages/hooks-guide-ja.md
-@@ -390,8 +390,9 @@ Hook イベントは Claude Code のライフサイクルの特定のポイン
- | `SubagentStart`      | When a subagent is spawned                                                                                                                             |
- | `SubagentStop`       | When a subagent finishes                                                                                                                               |
-+| `TaskCreated`        | When a task is being created via `TaskCreate`                                                                                                          |
-+| `TaskCompleted`      | When a task is being marked as completed                                                                                                               |
- | `Stop`               | When Claude finishes responding                                                                                                                        |
- | `StopFailure`        | When the turn ends due to an API error. Output and exit code are ignored                                                                               |
- | `TeammateIdle`       | When an [agent team](/en/agent-teams) teammate is about to go idle                                                                                     |
--| `TaskCompleted`      | When a task is being marked as completed                                                                                                               |
- | `InstructionsLoaded` | When a CLAUDE.md or `.claude/rules/*.md` file is loaded into context. Fires at session start and when files are lazily loaded during a session         |
- | `ConfigChange`       | When a configuration file changes during a session                                                                                                     |
-```
-
-</details>
-
-<details>
-<summary>hooks-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/hooks-ja.md b/docs-ja/pages/hooks-ja.md
-index 2e96b22..4788e56 100644
---- a/docs-ja/pages/hooks-ja.md
-+++ b/docs-ja/pages/hooks-ja.md
-@@ -19,5 +19,5 @@
- <div style={{maxWidth: "500px", margin: "0 auto"}}>
-   <Frame>
--    <img src="https://mintcdn.com/claude-code/JCMefyZyaJwkJgv-/images/hooks-lifecycle.svg?fit=max&auto=format&n=JCMefyZyaJwkJgv-&q=85&s=f004f3fc7324fa2a4630e8d6559cf6dd" alt="SessionStart から agentic ループを経由して SessionEnd までのフックのシーケンスを示すフック ライフサイクル図。agentic ループ内に PreToolUse、PermissionRequest、PostToolUse、SubagentStart/Stop、TaskCompleted が含まれ、Elicitation と ElicitationResult が MCP ツール実行内にネストされ、WorktreeCreate、WorktreeRemove、Notification、ConfigChange、InstructionsLoaded がスタンドアロン非同期イベント" width="520" height="1100" data-path="images/hooks-lifecycle.svg" />
-+    <img src="https://mintcdn.com/claude-code/1wr0LPds6lVWZkQB/images/hooks-lifecycle.svg?fit=max&auto=format&n=1wr0LPds6lVWZkQB&q=85&s=53a826e7bb64c6bff5f867506c0530ad" alt="SessionStart から agentic ループを経由して SessionEnd までのフックのシーケンスを示すフック ライフサイクル図。agentic ループ内に PreToolUse、PermissionRequest、PostToolUse、SubagentStart/Stop、TaskCompleted が含まれ、Elicitation と ElicitationResult が MCP ツール実行内にネストされ、WorktreeCreate、WorktreeRemove、Notification、ConfigChange、InstructionsLoaded がスタンドアロン非同期イベント" width="520" height="1155" data-path="images/hooks-lifecycle.svg" />
-   </Frame>
- </div>
-@@ -36,8 +36,9 @@
- | `SubagentStart`      | When a subagent is spawned                                                                                                                             |
- | `SubagentStop`       | When a subagent finishes                                                                                                                               |
-+| `TaskCreated`        | When a task is being created via `TaskCreate`                                                                                                          |
-+| `TaskCompleted`      | When a task is being marked as completed                                                                                                               |
- | `Stop`               | When Claude finishes responding                                                                                                                        |
- | `StopFailure`        | When the turn ends due to an API error. Output and exit code are ignored                                                                               |
- | `TeammateIdle`       | When an [agent team](/en/agent-teams) teammate is about to go idle                                                                                     |
--| `TaskCompleted`      | When a task is being marked as completed                                                                                                               |
- | `InstructionsLoaded` | When a CLAUDE.md or `.claude/rules/*.md` file is loaded into context. Fires at session start and when files are lazily loaded during a session         |
- | `ConfigChange`       | When a configuration file changes during a session                                                                                                     |
-```
-
-</details>
 
 <!-- UPDATE_LOG_END -->
