@@ -17,6 +17,77 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-04-18</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md            | 41 +++++++++++++++++++++++++++++++++++
+ docs-ja/pages/features-overview-ja.md |  2 +-
+ 2 files changed, 42 insertions(+), 1 deletion(-)
+```
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index d9de314..7af2294 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,45 @@
+ # Changelog
+ 
++## 2.1.113
++
++- Changed the CLI to spawn a native Claude Code binary (via a per-platform optional dependency) instead of bundled JavaScript
++- Added `sandbox.network.deniedDomains` setting to block specific domains even when a broader `allowedDomains` wildcard would otherwise permit them
++- Fullscreen mode: Shift+↑/↓ now scrolls the viewport when extending a selection past the visible edge
++- `Ctrl+A` and `Ctrl+E` now move to the start/end of the current logical line in multiline input, matching readline behavior
++- Windows: `Ctrl+Backspace` now deletes the previous word
++- Long URLs in responses and bash output stay clickable when they wrap across lines (in terminals with OSC 8 hyperlinks)
++- Improved `/loop`: pressing Esc now cancels pending wakeups, and wakeups display as "Claude resuming /loop wakeup" for clarity
++- `/extra-usage` now works from Remote Control (mobile/web) clients
++- Remote Control clients can now query `@`-file autocomplete suggestions
++- Improved `/ultrareview`: faster launch with parallelized checks, diffstat in the launch dialog, and animated launching state
++- Subagents that stall mid-stream now fail with a clear error after 10 minutes instead of hanging silently
++- Bash tool: multi-line commands whose first line is a comment now show the full command in the transcript, closing a UI-spoofing vector
++- Running `cd <current-directory> && git …` no longer triggers a permission prompt when the `cd` is a no-op
++- Security: on macOS, `/private/{etc,var,tmp,home}` paths are now treated as dangerous removal targets under `Bash(rm:*)` allow rules
++- Security: Bash deny rules now match commands wrapped in `env`/`sudo`/`watch`/`ionice`/`setsid` and similar exec wrappers
++- Security: `Bash(find:*)` allow rules no longer auto-approve `find -exec`/`-delete`
++- Fixed MCP concurrent-call timeout handling where a message for one tool call could silently disarm another call's watchdog
++- Fixed Cmd-backspace / `Ctrl+U` to once again delete from the cursor to the start of the line
++- Fixed markdown tables breaking when a cell contains an inline code span with a pipe character
++- Fixed session recap auto-firing while composing unsent text in the prompt
++- Fixed `/copy` "Full response" not aligning markdown table columns for pasting into GitHub, Notion, or Slack
+```
+
+</details>
+
+<details>
+<summary>features-overview-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/features-overview-ja.md b/docs-ja/pages/features-overview-ja.md
+index 22df0d5..b5ceb1b 100644
+--- a/docs-ja/pages/features-overview-ja.md
++++ b/docs-ja/pages/features-overview-ja.md
+@@ -199,5 +199,5 @@ Claude Code は、コードについて推論するモデルと、ファイル
+     **継承：** Claude は作業ディレクトリからルートまで CLAUDE.md ファイルを読み取り、サブディレクトリにネストされたものを、それらのファイルにアクセスするときに検出します。詳細は [How CLAUDE.md files load](/ja/memory#how-claudemd-files-load) を参照してください。
+ 
+-    <Tip>CLAUDE.md を約 500 行以下に保ちます。リファレンスマテリアルをスキルに移動します。スキルはオンデマンドでロードされます。</Tip>
++    <Tip>CLAUDE.md を 200 行以下に保ちます。リファレンスマテリアルをスキルに移動します。スキルはオンデマンドでロードされます。</Tip>
+   </Tab>
+ 
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-04-17</summary>
 
 **変更ファイル:**
@@ -2680,61 +2751,5 @@ index 4788e56..59c84e0 100644
 ```
 
 </details>
-
-<details>
-<summary>voice-dictation-en.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/voice-dictation-en.md b/docs-ja/pages/voice-dictation-en.md
-index 4c253d2..37109c1 100644
---- a/docs-ja/pages/voice-dictation-en.md
-+++ b/docs-ja/pages/voice-dictation-en.md
-@@ -15,5 +15,5 @@ Hold a key and speak to dictate your prompts. Your speech is transcribed live in
- ## Requirements
- 
--Voice dictation uses a streaming speech-to-text service that is only available when you authenticate with a Claude.ai account. It is not available when Claude Code is configured to use an Anthropic API key directly, Amazon Bedrock, Google Vertex AI, or Microsoft Foundry.
-+Voice dictation streams your recorded audio to Anthropic's servers for transcription. Audio is not processed locally. The speech-to-text service is only available when you authenticate with a Claude.ai account, and is not available when Claude Code is configured to use an Anthropic API key directly, Amazon Bedrock, Google Vertex AI, or Microsoft Foundry. See [data usage](/en/data-usage) for how Anthropic handles your data.
- 
- Voice dictation also needs local microphone access, so it does not work in remote environments such as [Claude Code on the web](/en/claude-code-on-the-web) or SSH sessions. In WSL, voice dictation requires WSLg for audio access, which is included with WSL2 on Windows 11. On Windows 10 or WSL1, run Claude Code in native Windows instead.
-```
-
-</details>
-
-</details>
-
-
-<details>
-<summary>2026-03-30</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/changelog.md | 4 ++++
- 1 file changed, 4 insertions(+)
-```
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index e17ed40..700d711 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,8 @@
- # Changelog
- 
-+## 2.1.87
-+
-+- Fixed messages in Cowork Dispatch not getting delivered
-+
- ## 2.1.86
- 
-```
-
-</details>
-
-</details>
-
 
 <!-- UPDATE_LOG_END -->
