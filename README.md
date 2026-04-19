@@ -17,6 +17,40 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-04-19</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md | 4 ++++
+ 1 file changed, 4 insertions(+)
+```
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index 7af2294..475ad34 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,8 @@
+ # Changelog
+ 
++## 2.1.114
++
++- Fixed a crash in the permission dialog when an agent teams teammate requested tool permission
++
+ ## 2.1.113
+ 
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-04-18</summary>
 
 **変更ファイル:**
@@ -2691,63 +2725,6 @@ index 700d711..68dcaad 100644
 +- Fixed collapsed search/read group badges duplicating in terminal scrollback during heavy parallel tool use
 +- Fixed notification `invalidates` not clearing the currently-displayed notification immediately
 +- Fixed prompt briefly disappearing after submit when background messages arrived during processing
-```
-
-</details>
-
-<details>
-<summary>claude-code-on-the-web-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/claude-code-on-the-web-ja.md b/docs-ja/pages/claude-code-on-the-web-ja.md
-index c2f7bbd..a75d9a7 100644
---- a/docs-ja/pages/claude-code-on-the-web-ja.md
-+++ b/docs-ja/pages/claude-code-on-the-web-ja.md
-@@ -36,4 +36,8 @@ Claude Code は [iOS](https://apps.apple.com/us/app/claude-by-anthropic/id647375
- ## はじめに
- 
-+ブラウザまたはターミナルからウェブ上の Claude Code をセットアップします。
-+
-+### ブラウザから
-+
- 1. [claude.ai/code](https://claude.ai/code) にアクセスします
- 2. GitHub アカウントを接続します
-@@ -43,4 +47,16 @@ Claude Code は [iOS](https://apps.apple.com/us/app/claude-by-anthropic/id647375
- 6. diff ビューで変更を確認し、コメントで反復処理してから、プルリクエストを作成します
- 
-+### ターミナルから
-+
-+Claude Code 内で `/web-setup` を実行して、ローカル `gh` CLI 認証情報を使用して GitHub を接続します。このコマンドは `gh auth token` を Claude Code on the web に同期し、デフォルトクラウド環境を作成し、完了時にブラウザで claude.ai/code を開きます。
-+
-+このパスには `gh` CLI がインストールされ、`gh auth login` で認証されている必要があります。`gh` が利用できない場合、`/web-setup` は claude.ai/code を開いて、代わりにブラウザから GitHub を接続できます。
-+
-+`gh` 認証情報により Claude はクローンとプッシュにアクセスできるため、基本的なセッションでは GitHub アプリをスキップできます。後で [Auto-fix](#auto-fix-pull-requests) が必要な場合はアプリをインストールします。これはアプリを使用して PR webhook を受け取ります。
-+
-+<Note>
-+  Team および Enterprise 管理者は [claude.ai/admin-settings/claude-code](https://claude.ai/admin-settings/claude-code) の Quick web setup トグルでターミナルセットアップを無効にできます。
-+</Note>
-+
- ## 仕組み
- 
-```
-
-</details>
-
-<details>
-<summary>hooks-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/hooks-ja.md b/docs-ja/pages/hooks-ja.md
-index 4788e56..59c84e0 100644
---- a/docs-ja/pages/hooks-ja.md
-+++ b/docs-ja/pages/hooks-ja.md
-@@ -98,5 +98,5 @@ fi
- 
- <Frame>
--  <img src="https://mintcdn.com/claude-code/c5r9_6tjPMzFdDDT/images/hook-resolution.svg?fit=max&auto=format&n=c5r9_6tjPMzFdDDT&q=85&s=ad667ee6d86ab2276aa48a4e73e220df" alt="フック解決フロー: PreToolUse イベントが発火し、マッチャーが Bash マッチをチェックし、フック ハンドラーが実行され、結果が Claude Code に返される" width="780" height="290" data-path="images/hook-resolution.svg" />
-+  <img src="https://mintcdn.com/claude-code/-tYw1BD_DEqfyyOZ/images/hook-resolution.svg?fit=max&auto=format&n=-tYw1BD_DEqfyyOZ&q=85&s=c73ebc1eeda2037570427d7af1e0a891" alt="フック解決フロー: PreToolUse イベントが発火し、マッチャーが Bash マッチをチェックし、フック ハンドラーが実行され、結果が Claude Code に返される" width="930" height="290" data-path="images/hook-resolution.svg" />
- </Frame>
- 
 ```
 
 </details>
