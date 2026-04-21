@@ -17,6 +17,268 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-04-21</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md             |  27 +++
+ docs-ja/pages/commands-ja.md           | 164 ++++++++------
+ docs-ja/pages/desktop-ja.md            | 341 ++++++++++++++--------------
+ docs-ja/pages/desktop-quickstart-ja.md |  56 ++---
+ docs-ja/pages/env-vars-ja.md           | 391 +++++++++++++++++----------------
+ docs-ja/pages/fullscreen-ja.md         |  46 ++--
+ docs-ja/pages/hooks-guide-ja.md        | 119 ++++++----
+ docs-ja/pages/hooks-ja.md              | 200 ++++++++++-------
+ docs-ja/pages/interactive-mode-ja.md   | 118 +++++-----
+ docs-ja/pages/keybindings-ja.md        |  91 +++++---
+ docs-ja/pages/model-config-ja.md       | 122 ++++++----
+ docs-ja/pages/permissions-ja.md        |  72 ++++--
+ docs-ja/pages/remote-control-ja.md     |   9 +-
+ docs-ja/pages/routines-ja.md           |   2 -
+ docs-ja/pages/sandboxing-ja.md         |   7 +-
+ docs-ja/pages/scheduled-tasks-ja.md    |  10 +-
+ docs-ja/pages/settings-ja.md           |  54 +++--
+ docs-ja/pages/setup-ja.md              |  43 ++--
+ docs-ja/pages/terminal-config-ja.md    | 167 +++++++++-----
+ docs-ja/pages/troubleshooting-ja.md    | 171 +++++++++++---
+ 20 files changed, 1330 insertions(+), 880 deletions(-)
+```
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index 475ad34..d68a21f 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,31 @@
+ # Changelog
+ 
++## 2.1.116
++
++- `/resume` on large sessions is significantly faster (up to 67% on 40MB+ sessions) and handles sessions with many dead-fork entries more efficiently
++- Faster MCP startup when multiple stdio servers are configured; `resources/templates/list` is now deferred to first `@`-mention
++- Smoother fullscreen scrolling in VS Code, Cursor, and Windsurf terminals — `/terminal-setup` now configures the editor's scroll sensitivity
++- Thinking spinner now shows progress inline ("still thinking", "thinking more", "almost done thinking"), replacing the separate hint row
++- `/config` search now matches option values (e.g. searching "vim" finds the Editor mode setting)
++- `/doctor` can now be opened while Claude is responding, without waiting for the current turn to finish
++- `/reload-plugins` and background plugin auto-update now auto-install missing plugin dependencies from marketplaces you've already added
++- Bash tool now surfaces a hint when `gh` commands hit GitHub's API rate limit, so agents can back off instead of retrying
++- The Usage tab in Settings now shows your 5-hour and weekly usage immediately and no longer fails when the usage endpoint is rate-limited
++- Agent frontmatter `hooks:` now fire when running as a main-thread agent via `--agent`
++- Slash command menu now shows "No commands match" when your filter has zero results, instead of disappearing
++- Security: sandbox auto-allow no longer bypasses the dangerous-path safety check for `rm`/`rmdir` targeting `/`, `$HOME`, or other critical system directories
++- Fixed Devanagari and other Indic scripts rendering with broken column alignment in the terminal UI
++- Fixed Ctrl+- not triggering undo in terminals using the Kitty keyboard protocol (iTerm2, Ghostty, kitty, WezTerm, Windows Terminal)
++- Fixed Cmd+Left/Right not jumping to line start/end in terminals that use the Kitty keyboard protocol (Warp fullscreen, kitty, Ghostty, WezTerm)
++- Fixed Ctrl+Z hanging the terminal when Claude Code is launched via a wrapper process (e.g. `npx`, `bun run`)
++- Fixed scrollback duplication in inline mode where resizing the terminal or large output bursts would repeat earlier conversation history
++- Fixed modal search dialogs overflowing the screen at short terminal heights, hiding the search box and keyboard hints
++- Fixed scattered blank cells and disappearing composer chrome in the VS Code integrated terminal during scrolling
++- Fixed an intermittent API 400 error related to cache control TTL ordering that could occur when a parallel request completed during request setup
++- Fixed `/branch` rejecting conversations with transcripts larger than 50MB
+```
+
+</details>
+
+<details>
+<summary>commands-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/commands-ja.md b/docs-ja/pages/commands-ja.md
+index 20e57ff..06eff03 100644
+--- a/docs-ja/pages/commands-ja.md
++++ b/docs-ja/pages/commands-ja.md
+@@ -3,81 +3,103 @@
+ > Use this file to discover all available pages before exploring further.
+ 
+-# 組み込みコマンド
++# コマンド
+ 
+-> Claude Code で利用可能な組み込みコマンドの完全なリファレンス。
++> Claude Code で利用可能なコマンドの完全なリファレンス。組み込みコマンドとバンドルされたスキルを含む。
+ 
+-Claude Code で `/` と入力すると、利用可能なすべてのコマンドが表示されます。または `/` の後に任意の文字を入力してフィルタリングできます。すべてのコマンドがすべてのユーザーに表示されるわけではありません。プラットフォーム、プラン、または環境によって異なります。たとえば、`/desktop` は macOS と Windows にのみ表示され、`/upgrade` と `/privacy-settings` は Pro プランと Max プランでのみ利用可能で、`/terminal-setup` はターミナルがネイティブにキーバインディングをサポートしている場合は非表示になります。
++コマンドはセッション内から Claude Code を制御します。モデルの切り替え、権限の管理、コンテキストのクリア、ワークフローの実行など、様々な操作を素早く行うことができます。
+ 
+-Claude Code には、`/` と入力したときに組み込みコマンドと一緒に表示される `/simplify`、`/batch`、`/debug`、`/loop` などの[バンドルされたスキル](/ja/skills#bundled-skills)も含まれています。独自のコマンドを作成するには、[スキル](/ja/skills)を参照してください。
++`/` と入力すると、利用可能なすべてのコマンドが表示されます。または `/` の後に文字を入力してフィルタリングできます。
++
++以下の表は Claude Code に含まれるすべてのコマンドをリストしています。**[スキル](/ja/skills#bundled-skills)** とマークされたエントリはバンドルされたスキルです。これらは自分で作成するスキルと同じメカニズムを使用します。Claude に渡されるプロンプトであり、Claude は関連する場合に自動的に呼び出すこともできます。その他はすべて、CLI にコード化された動作を持つ組み込みコマンドです。独自のコマンドを追加するには、[スキル](/ja/skills)を参照してください。
++
++すべてのコマンドがすべてのユーザーに表示されるわけではありません。可用性はプラットフォーム、プラン、環境によって異なります。たとえば、`/desktop` は macOS と Windows にのみ表示され、`/upgrade` は Pro プランと Max プランにのみ表示されます。
+ 
+ 以下の表では、`<arg>` は必須引数を示し、`[arg]` はオプション引数を示します。
+ 
+-| コマンド                                     | 目的                                                                                                                                                                                       |
+-| :--------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+-| `/add-dir <path>`                        | 現在のセッション中にファイルアクセス用の作業ディレクトリを追加。ほとんどの `.claude/` 設定は追加されたディレクトリから[検出されません](/ja/permissions#additional-directories-grant-file-access-not-configuration)                                   |
+-| `/agents`                                | [エージェント](/ja/sub-agents)設定を管理                                                                                                                                                            |
+-| `/btw <question>`                        | 会話に追加せずに[サイドクエスチョン](/ja/interactive-mode#side-questions-with-btw)として素早く質問                                                                                                                |
+```
+
+</details>
+
+<details>
+<summary>desktop-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/desktop-ja.md b/docs-ja/pages/desktop-ja.md
+index aece073..a688330 100644
+--- a/docs-ja/pages/desktop-ja.md
++++ b/docs-ja/pages/desktop-ja.md
+@@ -5,25 +5,41 @@
+ # Claude Code Desktop を使用する
+ 
+-> Claude Code Desktop をさらに活用する：コンピュータ使用、電話から Dispatch セッションを送信、Git 分離による並列セッション、ビジュアル diff レビュー、アプリプレビュー、PR 監視、コネクタ、エンタープライズ設定。
++> Claude Code Desktop をさらに活用する：Git 分離による並列セッション、ドラッグアンドドロップペインレイアウト、統合ターミナルとファイルエディタ、サイドチャット、コンピュータ使用、電話から Dispatch セッションを送信、ビジュアル diff レビュー、アプリプレビュー、PR 監視、コネクタ、エンタープライズ設定。
+ 
+ Claude Desktop アプリ内の Code タブを使用すると、ターミナルではなくグラフィカルインターフェイスを通じて Claude Code を使用できます。
+ 
++<CardGroup cols={2}>
++  <Card title="Download for macOS" icon="apple" href="https://claude.ai/api/desktop/darwin/universal/dmg/latest/redirect?utm_source=claude_code&utm_medium=docs">
++    Universal build for Intel and Apple Silicon
++  </Card>
++
++  <Card title="Download for Windows" icon="windows" href="https://claude.ai/api/desktop/win32/x64/setup/latest/redirect?utm_source=claude_code&utm_medium=docs">
++    For x64 processors
++  </Card>
++</CardGroup>
++
++For Windows ARM64, download the [ARM64 installer](https://claude.ai/api/desktop/win32/arm64/setup/latest/redirect?utm_source=claude_code\&utm_medium=docs). Linux is not supported.
++
++インストール後、Claude を起動してサインインし、**Code**タブをクリックします。最初のセッションの完全なウォークスルーについては、[はじめにガイド](/ja/desktop-quickstart)を参照してください。
++
+ Desktop は標準的な Claude Code エクスペリエンスに以下の機能を追加します：
+ 
+-* [ビジュアル diff レビュー](#review-changes-with-diff-view)（インラインコメント付き）
+-* [ライブアプリプレビュー](#preview-your-app)（dev サーバー付き）
+```
+
+</details>
+
+<details>
+<summary>desktop-quickstart-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/desktop-quickstart-ja.md b/docs-ja/pages/desktop-quickstart-ja.md
+index ee92f63..2145a52 100644
+--- a/docs-ja/pages/desktop-quickstart-ja.md
++++ b/docs-ja/pages/desktop-quickstart-ja.md
+@@ -7,13 +7,23 @@
+ > Claude Code をデスクトップにインストールして、最初のコーディングセッションを開始します
+ 
+-デスクトップアプリは、グラフィカルインターフェース付きの Claude Code を提供します。ビジュアル diff レビュー、ライブアプリプレビュー、GitHub PR 監視と自動マージ、Git worktree 分離による並列セッション、スケジュール済みタスク、リモートでタスクを実行する機能があります。ターミナルは不要です。
++デスクトップアプリは、複数のセッションを並行して実行するために構築されたグラフィカルインターフェース付きの Claude Code を提供します。並列作業を管理するためのサイドバー、統合ターミナルとファイルエディター付きのドラッグアンドドロップレイアウト、ビジュアル diff レビュー、ライブアプリプレビュー、自動マージ機能付きの GitHub PR 監視、スケジュール済みタスクがあります。ターミナルは不要です。
+ 
+-このページでは、アプリのインストールと最初のセッションの開始について説明します。既にセットアップが完了している場合は、[Claude Code Desktop を使用する](/ja/desktop)で完全なリファレンスを参照してください。
++<CardGroup cols={2}>
++  <Card title="Download for macOS" icon="apple" href="https://claude.ai/api/desktop/darwin/universal/dmg/latest/redirect?utm_source=claude_code&utm_medium=docs">
++    Universal build for Intel and Apple Silicon
++  </Card>
++
++  <Card title="Download for Windows" icon="windows" href="https://claude.ai/api/desktop/win32/x64/setup/latest/redirect?utm_source=claude_code&utm_medium=docs">
++    For x64 processors
++  </Card>
++</CardGroup>
+ 
+-<Frame>
+-  <img src="https://mintlify.s3.us-west-1.amazonaws.com/claude-code/images/desktop-code-tab-light.png" className="block dark:hidden" alt="Code タブが選択されている Claude Code Desktop インターフェースを示しており、プロンプトボックス、権限モードセレクター（'Ask permissions'に設定）、モデルピッカー、フォルダセレクター、Local environment オプションが表示されています" />
++For Windows ARM64, download the [ARM64 installer](https://claude.ai/api/desktop/win32/arm64/setup/latest/redirect?utm_source=claude_code\&utm_medium=docs). Linux is not supported.
++
++<Note>
++  Claude Code には [Pro、Max、Team、または Enterprise サブスクリプション](https://claude.com/pricing?utm_source=claude_code\&utm_medium=docs\&utm_content=desktop_quickstart_pricing)が必要です。
++</Note>
+ 
+-  <img src="https://mintlify.s3.us-west-1.amazonaws.com/claude-code/images/desktop-code-tab-dark.png" className="hidden dark:block" alt="ダークモードの Claude Code Desktop インターフェースを示しており、Code タブが選択されている状態で、プロンプトボックス、権限モードセレクター（'Ask permissions'に設定）、モデルピッカー、フォルダセレクター、Local environment オプションが表示されています" />
+```
+
+</details>
+
+<details>
+<summary>env-vars-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/env-vars-ja.md b/docs-ja/pages/env-vars-ja.md
+index 234f9f2..c176b23 100644
+--- a/docs-ja/pages/env-vars-ja.md
++++ b/docs-ja/pages/env-vars-ja.md
+@@ -9,188 +9,211 @@
+ Claude Code は、その動作を制御するために以下の環境変数をサポートしています。`claude` を起動する前にシェルで設定するか、[`settings.json`](/ja/settings#available-settings) の `env` キーで設定して、すべてのセッションに適用するか、チーム全体にロールアウトしてください。
+ 
+-| 変数                                                      | 目的                                                                                                                                                                                                                                                                                                                                                                               |
+-| :------------------------------------------------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+-| `ANTHROPIC_API_KEY`                                     | `X-Api-Key` ヘッダーとして送信される API キー。設定されている場合、ログインしていても Claude Pro、Max、Team、または Enterprise サブスクリプションの代わりにこのキーが使用されます。非対話モード（`-p`）では、キーが存在する場合は常に使用されます。対話モードでは、キーがサブスクリプションをオーバーライドする前に一度承認するよう求められます。代わりにサブスクリプションを使用するには、`unset ANTHROPIC_API_KEY` を実行してください                                                                                                                       |
+-| `ANTHROPIC_AUTH_TOKEN`                                  | `Authorization` ヘッダーのカスタム値（ここで設定した値には `Bearer ` が接頭辞として付けられます）                                                                                                                                                                                                                                                                                                                   |
+-| `ANTHROPIC_BASE_URL`                                    | API エンドポイントをオーバーライドして、プロキシまたはゲートウェイを通じてリクエストをルーティングします。ファーストパーティ以外のホストに設定されている場合、[MCP ツール検索](/ja/mcp#scale-with-mcp-tool-search) はデフォルトで無効になります。プロキシが `tool_reference` ブロックを転送する場合は、`ENABLE_TOOL_SEARCH=true` を設定してください                                                                                                                                                          |
+-| `ANTHROPIC_BEDROCK_BASE_URL`                            | Bedrock エンドポイント URL をオーバーライドします。カスタム Bedrock エンドポイントを使用する場合、または [LLM ゲートウェイ](/ja/llm-gateway) を通じてルーティングする場合に使用します。[Amazon Bedrock](/ja/amazon-bedrock) を参照してください                                                                                                                                                                                                                |
+-| `ANTHROPIC_BETAS`                                       | API リクエストに含める追加の `anthropic-beta` ヘッダー値のカンマ区切りリスト。Claude Code は既に必要なベータヘッダーを送信しています。Claude Code がネイティブサポートを追加する前に、[Anthropic API ベータ](https://platform.claude.com/docs/en/api/beta-headers) にオプトインするために使用します。API キー認証が必要な [`--betas` フラグ](/ja/cli-reference#cli-flags) とは異なり、この変数は Claude.ai サブスクリプションを含むすべての認証方法で機能します                                                          |
+-| `ANTHROPIC_CUSTOM_HEADERS`                              | リクエストに追加するカスタムヘッダー（`Name: Value` 形式、複数のヘッダーの場合は改行で区切られます）                                                                                                                                                                                                                                                                                                                        |
+-| `ANTHROPIC_CUSTOM_MODEL_OPTION`                         | `/model` ピッカーにカスタムエントリとして追加するモデル ID。組み込みエイリアスを置き換えずに、非標準またはゲートウェイ固有のモデルを選択可能にするために使用します。[モデル設定](/ja/model-config#add-a-custom-model-option) を参照してください                                                                                                                                                                                                                            |
+-| `ANTHROPIC_CUSTOM_MODEL_OPTION_DESCRIPTION`             | `/model` ピッカーのカスタムモデルエントリの表示説明。設定されていない場合、デフォルトは `Custom model (<model-id>)` です                                                                                                                                                                                                                                                                                                  |
+-| `ANTHROPIC_CUSTOM_MODEL_OPTION_NAME`                    | `/model` ピッカーのカスタムモデルエントリの表示名。設定されていない場合、デフォルトはモデル ID です                                                                                                                                                                                                                                                                                                                         |
+-| `ANTHROPIC_DEFAULT_HAIKU_MODEL`                         | [モデル設定](/ja/model-config#environment-variables) を参照してください                                                                                                                                                                                                                                                                                                                        |
+-| `ANTHROPIC_DEFAULT_HAIKU_MODEL_DESCRIPTION`             | [モデル設定](/ja/model-config#customize-pinned-model-display-and-capabilities) を参照してください                                                                                                                                                                                                                                                                                              |
+-| `ANTHROPIC_DEFAULT_HAIKU_MODEL_NAME`                    | [モデル設定](/ja/model-config#customize-pinned-model-display-and-capabilities) を参照してください                                                                                                                                                                                                                                                                                              |
+-| `ANTHROPIC_DEFAULT_HAIKU_MODEL_SUPPORTED_CAPABILITIES`  | [モデル設定](/ja/model-config#customize-pinned-model-display-and-capabilities) を参照してください                                                                                                                                                                                                                                                                                              |
+-| `ANTHROPIC_DEFAULT_OPUS_MODEL`                          | [モデル設定](/ja/model-config#environment-variables) を参照してください                                                                                                                                                                                                                                                                                                                        |
+-| `ANTHROPIC_DEFAULT_OPUS_MODEL_DESCRIPTION`              | [モデル設定](/ja/model-config#customize-pinned-model-display-and-capabilities) を参照してください                                                                                                                                                                                                                                                                                              |
+-| `ANTHROPIC_DEFAULT_OPUS_MODEL_NAME`                     | [モデル設定](/ja/model-config#customize-pinned-model-display-and-capabilities) を参照してください                                                                                                                                                                                                                                                                                              |
+-| `ANTHROPIC_DEFAULT_OPUS_MODEL_SUPPORTED_CAPABILITIES`   | [モデル設定](/ja/model-config#customize-pinned-model-display-and-capabilities) を参照してください                                                                                                                                                                                                                                                                                              |
+-| `ANTHROPIC_DEFAULT_SONNET_MODEL`                        | [モデル設定](/ja/model-config#environment-variables) を参照してください                                                                                                                                                                                                                                                                                                                        |
+-| `ANTHROPIC_DEFAULT_SONNET_MODEL_DESCRIPTION`            | [モデル設定](/ja/model-config#customize-pinned-model-display-and-capabilities) を参照してください                                                                                                                                                                                                                                                                                              |
+-| `ANTHROPIC_DEFAULT_SONNET_MODEL_NAME`                   | [モデル設定](/ja/model-config#customize-pinned-model-display-and-capabilities) を参照してください                                                                                                                                                                                                                                                                                              |
+-| `ANTHROPIC_DEFAULT_SONNET_MODEL_SUPPORTED_CAPABILITIES` | [モデル設定](/ja/model-config#customize-pinned-model-display-and-capabilities) を参照してください                                                                                                                                                                                                                                                                                              |
+```
+
+</details>
+
+<details>
+<summary>fullscreen-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/fullscreen-ja.md b/docs-ja/pages/fullscreen-ja.md
+index 4ac25cc..bb4c70a 100644
+--- a/docs-ja/pages/fullscreen-ja.md
++++ b/docs-ja/pages/fullscreen-ja.md
+@@ -8,5 +8,5 @@
+ 
+ <Note>
+-  フルスクリーンレンダリングはオプトイン形式の[リサーチプレビュー](#research-preview)であり、Claude Code v2.1.89 以降が必要です。`CLAUDE_CODE_NO_FLICKER=1` で有効にできます。フィードバックに基づいて動作が変わる可能性があります。
++  フルスクリーンレンダリングはオプトイン形式の[リサーチプレビュー](#research-preview)であり、Claude Code v2.1.89 以降が必要です。現在の会話で `/tui fullscreen` を実行して切り替えるか、v2.1.110 より前のバージョンで `CLAUDE_CODE_NO_FLICKER=1` を設定してください。フィードバックに基づいて動作が変わる可能性があります。
+ </Note>
+ 
+@@ -21,5 +21,7 @@
+ ## フルスクリーンレンダリングを有効にする
+ 
+-Claude Code を起動するときに `CLAUDE_CODE_NO_FLICKER` 環境変数を設定します。
++Claude Code の会話内で `/tui fullscreen` を実行してください。CLI は [`tui` 設定](/ja/settings#available-settings)を保存し、会話をそのままにしてフルスクリーンで再起動するため、コンテキストを失わずにセッション中に切り替えることができます。引数なしで `/tui` を実行して、どのレンダラーがアクティブかを確認してください。
++
++Claude Code を起動する前に `CLAUDE_CODE_NO_FLICKER` 環境変数を設定することもできます。
+ 
+ ```bash theme={null}
+@@ -27,9 +29,5 @@ CLAUDE_CODE_NO_FLICKER=1 claude
+ ```
+ 
+-すべてのセッションで有効にするには、`~/.zshrc` や `~/.bashrc` などのシェルプロファイルで変数をエクスポートします。
+-
+-```bash theme={null}
+-export CLAUDE_CODE_NO_FLICKER=1
+-```
++`tui` 設定と環境変数は同等です。`/tui` コマンドは再起動されたプロセスから `CLAUDE_CODE_NO_FLICKER` をクリアして、書き込まれた設定が有効になるようにします。
+ 
+```
+
+</details>
+
+*...以降省略*
+
+</details>
+
+
+<details>
 <summary>2026-04-19</summary>
 
 **変更ファイル:**
@@ -2503,230 +2765,5 @@ index bdeb83d..7421a3f 100644
 
 </details>
 
-
-<details>
-<summary>2026-04-01</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/changelog.md          |  44 -----
- docs-ja/pages/env-vars-ja.md        | 232 +++++++++++++-------------
- docs-ja/pages/hooks-ja.md           | 317 ++++++++++++++++++++++++------------
- docs-ja/pages/terminal-config-ja.md |  20 ++-
- 4 files changed, 352 insertions(+), 261 deletions(-)
-```
-
-**新規追加:**
-
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index 68dcaad..700d711 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,48 +1,4 @@
- # Changelog
- 
--## 2.1.88
--
--- Added `CLAUDE_CODE_NO_FLICKER=1` environment variable to opt into flicker-free alt-screen rendering with virtualized scrollback
--- Added `PermissionDenied` hook that fires after auto mode classifier denials — return `{retry: true}` to tell the model it can retry
--- Added named subagents to `@` mention typeahead suggestions
--- Fixed prompt cache misses in long sessions caused by tool schema bytes changing mid-session
--- Fixed nested CLAUDE.md files being re-injected dozens of times in long sessions that read many files
--- Fixed Edit/Write tools doubling CRLF on Windows and stripping Markdown hard line breaks (two trailing spaces)
--- Fixed `StructuredOutput` schema cache bug causing ~50% failure rate in workflows with multiple schemas
--- Fixed memory leak where large JSON inputs were retained as LRU cache keys in long-running sessions
--- Fixed a potential out-of-memory crash when the Edit tool was used on very large files (>1 GiB)
--- Fixed a crash when removing a message from very large session files (over 50MB)
--- Fixed `--resume` crash when transcript contains a tool result from an older CLI version or interrupted write
--- Fixed misleading "Rate limit reached" message when the API returned an entitlement error — now shows the actual error with actionable hints
--- Fixed LSP server zombie state after crash — server now restarts on next request instead of failing until session restart
--- Fixed hooks `if` condition filtering not matching compound commands (`ls && git push`) or commands with env-var prefixes (`FOO=bar git push`)
--- Fixed prompt history entries containing CJK or emoji being silently dropped when they fall on a 4KB boundary in `~/.claude/history.jsonl`
--- Fixed `/stats` losing historical data beyond 30 days when the stats cache format changes
--- Fixed `/stats` undercounting tokens by excluding subagent/fork usage
--- Fixed scrollback disappearing when scrolling up in long sessions
--- Fixed collapsed search/read group badges duplicating in terminal scrollback during heavy parallel tool use
--- Fixed notification `invalidates` not clearing the currently-displayed notification immediately
--- Fixed prompt briefly disappearing after submit when background messages arrived during processing
-```
-
-</details>
-
-<details>
-<summary>env-vars-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/env-vars-ja.md b/docs-ja/pages/env-vars-ja.md
-index 336b660..3baa51c 100644
---- a/docs-ja/pages/env-vars-ja.md
-+++ b/docs-ja/pages/env-vars-ja.md
-@@ -9,113 +9,127 @@
- Claude Code は、その動作を制御するために以下の環境変数をサポートしています。`claude` を起動する前にシェルで設定するか、[`settings.json`](/ja/settings#available-settings) の `env` キーで設定して、すべてのセッションに適用するか、チーム全体にロールアウトしてください。
- 
--| 変数                                             | 目的                                                                                                                                                                                                                                                                                                                                                                               |
--| :--------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
--| `ANTHROPIC_API_KEY`                            | `X-Api-Key` ヘッダーとして送信される API キー。設定されている場合、ログインしていても Claude Pro、Max、Team、または Enterprise サブスクリプションの代わりにこのキーが使用されます。非対話モード（`-p`）では、キーが存在する場合は常に使用されます。対話モードでは、キーがサブスクリプションをオーバーライドする前に一度承認するよう求められます。代わりにサブスクリプションを使用するには、`unset ANTHROPIC_API_KEY` を実行してください                                                                                                                       |
--| `ANTHROPIC_AUTH_TOKEN`                         | `Authorization` ヘッダーのカスタム値（ここで設定した値には `Bearer ` が接頭辞として付けられます）                                                                                                                                                                                                                                                                                                                   |
--| `ANTHROPIC_BASE_URL`                           | API エンドポイントをオーバーライドして、プロキシまたはゲートウェイを通じてリクエストをルーティングします。ファーストパーティ以外のホストに設定されている場合、[MCP ツール検索](/ja/mcp#scale-with-mcp-tool-search) はデフォルトで無効になります。プロキシが `tool_reference` ブロックを転送する場合は、`ENABLE_TOOL_SEARCH=true` を設定してください                                                                                                                                                          |
--| `ANTHROPIC_CUSTOM_HEADERS`                     | リクエストに追加するカスタムヘッダー（`Name: Value` 形式、複数のヘッダーの場合は改行で区切られます）                                                                                                                                                                                                                                                                                                                        |
--| `ANTHROPIC_CUSTOM_MODEL_OPTION`                | `/model` ピッカーにカスタムエントリとして追加するモデル ID。組み込みエイリアスを置き換えずに、非標準またはゲートウェイ固有のモデルを選択可能にするために使用します。[モデル設定](/ja/model-config#add-a-custom-model-option) を参照してください                                                                                                                                                                                                                            |
--| `ANTHROPIC_CUSTOM_MODEL_OPTION_DESCRIPTION`    | `/model` ピッカーのカスタムモデルエントリの表示説明。設定されていない場合、デフォルトは `Custom model (<model-id>)` です                                                                                                                                                                                                                                                                                                  |
--| `ANTHROPIC_CUSTOM_MODEL_OPTION_NAME`           | `/model` ピッカーのカスタムモデルエントリの表示名。設定されていない場合、デフォルトはモデル ID です                                                                                                                                                                                                                                                                                                                         |
--| `ANTHROPIC_DEFAULT_HAIKU_MODEL`                | [モデル設定](/ja/model-config#environment-variables) を参照してください                                                                                                                                                                                                                                                                                                                        |
--| `ANTHROPIC_DEFAULT_OPUS_MODEL`                 | [モデル設定](/ja/model-config#environment-variables) を参照してください                                                                                                                                                                                                                                                                                                                        |
--| `ANTHROPIC_DEFAULT_SONNET_MODEL`               | [モデル設定](/ja/model-config#environment-variables) を参照してください                                                                                                                                                                                                                                                                                                                        |
--| `ANTHROPIC_FOUNDRY_API_KEY`                    | Microsoft Foundry 認証用の API キー（[Microsoft Foundry](/ja/microsoft-foundry) を参照してください）                                                                                                                                                                                                                                                                                              |
--| `ANTHROPIC_FOUNDRY_BASE_URL`                   | Foundry リソースの完全なベース URL（例：`https://my-resource.services.ai.azure.com/anthropic`）。`ANTHROPIC_FOUNDRY_RESOURCE` の代替（[Microsoft Foundry](/ja/microsoft-foundry) を参照してください）                                                                                                                                                                                                          |
--| `ANTHROPIC_FOUNDRY_RESOURCE`                   | Foundry リソース名（例：`my-resource`）。`ANTHROPIC_FOUNDRY_BASE_URL` が設定されていない場合は必須（[Microsoft Foundry](/ja/microsoft-foundry) を参照してください）                                                                                                                                                                                                                                                 |
--| `ANTHROPIC_MODEL`                              | 使用するモデル設定の名前（[モデル設定](/ja/model-config#environment-variables) を参照してください）                                                                                                                                                                                                                                                                                                          |
--| `ANTHROPIC_SMALL_FAST_MODEL`                   | \[非推奨] バックグラウンドタスク用の [Haiku クラスモデルの名前](/ja/costs)                                                                                                                                                                                                                                                                                                                                |
--| `ANTHROPIC_SMALL_FAST_MODEL_AWS_REGION`        | Bedrock を使用する場合、Haiku クラスモデルの AWS リージョンをオーバーライドします                                                                                                                                                                                                                                                                                                                               |
--| `AWS_BEARER_TOKEN_BEDROCK`                     | 認証用の Bedrock API キー（[Bedrock API キー](https://aws.amazon.com/blogs/machine-learning/accelerate-ai-development-with-amazon-bedrock-api-keys/) を参照してください）                                                                                                                                                                                                                           |
--| `BASH_DEFAULT_TIMEOUT_MS`                      | 長時間実行される bash コマンドのデフォルトタイムアウト                                                                                                                                                                                                                                                                                                                                                   |
--| `BASH_MAX_OUTPUT_LENGTH`                       | bash 出力が中央で切り詰められる前の最大文字数                                                                                                                                                                                                                                                                                                                                                        |
--| `BASH_MAX_TIMEOUT_MS`                          | 長時間実行される bash コマンドに対してモデルが設定できる最大タイムアウト                                                                                                                                                                                                                                                                                                                                          |
--| `CLAUDECODE`                                   | Claude Code がスポーンするシェル環境（Bash ツール、tmux セッション）で `1` に設定されます。[フック](/ja/hooks) または [ステータスライン](/ja/statusline) コマンドでは設定されません。スクリプトが Claude Code によってスポーンされたシェル内で実行されているかどうかを検出するために使用します                                                                                                                                                                                             |
-```
-
-</details>
-
-<details>
-<summary>hooks-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/hooks-ja.md b/docs-ja/pages/hooks-ja.md
-index 59c84e0..3722f65 100644
---- a/docs-ja/pages/hooks-ja.md
-+++ b/docs-ja/pages/hooks-ja.md
-@@ -19,5 +19,5 @@
- <div style={{maxWidth: "500px", margin: "0 auto"}}>
-   <Frame>
--    <img src="https://mintcdn.com/claude-code/1wr0LPds6lVWZkQB/images/hooks-lifecycle.svg?fit=max&auto=format&n=1wr0LPds6lVWZkQB&q=85&s=53a826e7bb64c6bff5f867506c0530ad" alt="SessionStart から agentic ループを経由して SessionEnd までのフックのシーケンスを示すフック ライフサイクル図。agentic ループ内に PreToolUse、PermissionRequest、PostToolUse、SubagentStart/Stop、TaskCompleted が含まれ、Elicitation と ElicitationResult が MCP ツール実行内にネストされ、WorktreeCreate、WorktreeRemove、Notification、ConfigChange、InstructionsLoaded がスタンドアロン非同期イベント" width="520" height="1155" data-path="images/hooks-lifecycle.svg" />
-+    <img src="https://mintcdn.com/claude-code/1wr0LPds6lVWZkQB/images/hooks-lifecycle.svg?fit=max&auto=format&n=1wr0LPds6lVWZkQB&q=85&s=53a826e7bb64c6bff5f867506c0530ad" alt="SessionStart から agentic ループを経由して SessionEnd までのフックのシーケンスを示すフック ライフサイクル図。agentic ループ内に PreToolUse、PermissionRequest、PostToolUse、SubagentStart/Stop、TaskCreated、TaskCompleted が含まれ、Elicitation と ElicitationResult が MCP ツール実行内にネストされ、WorktreeCreate、WorktreeRemove、Notification、ConfigChange、InstructionsLoaded、CwdChanged、FileChanged がスタンドアロン非同期イベント" width="520" height="1155" data-path="images/hooks-lifecycle.svg" />
-   </Frame>
- </div>
-@@ -55,5 +55,5 @@
- ### フックがどのように解決されるか
- 
--これらの部分がどのように組み合わさるかを理解するために、破壊的なシェル コマンドをブロックする `PreToolUse` フックを考えてみましょう。このフックは、すべての Bash ツール呼び出しの前に `block-rm.sh` を実行します。
-+これらの部分がどのように組み合わさるかを理解するために、破壊的なシェル コマンドをブロックする `PreToolUse` フックを考えてみましょう。`matcher` は Bash ツール呼び出しに絞り込み、`if` 条件は `rm` で始まるコマンドにさらに絞り込むため、`block-rm.sh` は両方のフィルターがマッチするときのみ生成されます。
- 
- ```json  theme={null}
-@@ -66,5 +66,6 @@
-           {
-             "type": "command",
--            "command": ".claude/hooks/block-rm.sh"
-+            "if": "Bash(rm *)",
-+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/block-rm.sh"
-           }
-         ]
-@@ -98,5 +99,5 @@ fi
- 
- <Frame>
--  <img src="https://mintcdn.com/claude-code/-tYw1BD_DEqfyyOZ/images/hook-resolution.svg?fit=max&auto=format&n=-tYw1BD_DEqfyyOZ&q=85&s=c73ebc1eeda2037570427d7af1e0a891" alt="フック解決フロー: PreToolUse イベントが発火し、マッチャーが Bash マッチをチェックし、フック ハンドラーが実行され、結果が Claude Code に返される" width="930" height="290" data-path="images/hook-resolution.svg" />
-```
-
-</details>
-
-<details>
-<summary>terminal-config-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/terminal-config-ja.md b/docs-ja/pages/terminal-config-ja.md
-index 25693cf..3791a93 100644
---- a/docs-ja/pages/terminal-config-ja.md
-+++ b/docs-ja/pages/terminal-config-ja.md
-@@ -36,9 +36,13 @@ Claude Code 内で `/terminal-setup` を実行して、VS Code、Alacritty、Zed
- 2. 「Option キーを Meta キーとして使用」をチェックする
- 
--**iTerm2 および VS Code ターミナルの場合：**
-+**iTerm2 の場合：**
- 
- 1. 設定 → プロファイル → キーを開く
- 2. 「一般」で、左右の Option キーを「Esc+」に設定する
- 
-+**VS Code ターミナルの場合：**
-+
-+VS Code 設定で `"terminal.integrated.macOptionIsMeta": true` を設定します。
-+
- ### 通知設定
- 
-@@ -55,4 +59,12 @@ Kitty と Ghostty は追加設定なしでデスクトップ通知をサポー
- 通知が表示されない場合は、ターミナルアプリが OS 設定で通知権限を持っていることを確認してください。
- 
-+Claude Code を tmux 内で実行する場合、通知と[ターミナルプログレスバー](/ja/settings#global-config-settings)は、tmux 設定でパススルーを有効にした場合にのみ、iTerm2、Kitty、または Ghostty などの外側のターミナルに到達します。
-+
-+```
-+set -g allow-passthrough on
-+```
-+
-+この設定がない場合、tmux はエスケープシーケンスをインターセプトし、ターミナルアプリケーションに到達しません。
-+
-```
-
-</details>
-
-</details>
-
-
-<details>
-<summary>2026-03-31</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/changelog.md                 | 44 ++++++++++++++++++++++++++++
- docs-ja/pages/claude-code-on-the-web-ja.md | 46 +++++++++++++++++++++++++++++-
- docs-ja/pages/hooks-ja.md                  |  2 +-
- docs-ja/pages/voice-dictation-en.md        |  2 +-
- 4 files changed, 91 insertions(+), 3 deletions(-)
-```
-
-**新規追加:**
-
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index 700d711..68dcaad 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,48 @@
- # Changelog
- 
-+## 2.1.88
-+
-+- Added `CLAUDE_CODE_NO_FLICKER=1` environment variable to opt into flicker-free alt-screen rendering with virtualized scrollback
-+- Added `PermissionDenied` hook that fires after auto mode classifier denials — return `{retry: true}` to tell the model it can retry
-+- Added named subagents to `@` mention typeahead suggestions
-+- Fixed prompt cache misses in long sessions caused by tool schema bytes changing mid-session
-+- Fixed nested CLAUDE.md files being re-injected dozens of times in long sessions that read many files
-+- Fixed Edit/Write tools doubling CRLF on Windows and stripping Markdown hard line breaks (two trailing spaces)
-+- Fixed `StructuredOutput` schema cache bug causing ~50% failure rate in workflows with multiple schemas
-+- Fixed memory leak where large JSON inputs were retained as LRU cache keys in long-running sessions
-+- Fixed a potential out-of-memory crash when the Edit tool was used on very large files (>1 GiB)
-+- Fixed a crash when removing a message from very large session files (over 50MB)
-+- Fixed `--resume` crash when transcript contains a tool result from an older CLI version or interrupted write
-+- Fixed misleading "Rate limit reached" message when the API returned an entitlement error — now shows the actual error with actionable hints
-+- Fixed LSP server zombie state after crash — server now restarts on next request instead of failing until session restart
-+- Fixed hooks `if` condition filtering not matching compound commands (`ls && git push`) or commands with env-var prefixes (`FOO=bar git push`)
-+- Fixed prompt history entries containing CJK or emoji being silently dropped when they fall on a 4KB boundary in `~/.claude/history.jsonl`
-+- Fixed `/stats` losing historical data beyond 30 days when the stats cache format changes
-+- Fixed `/stats` undercounting tokens by excluding subagent/fork usage
-+- Fixed scrollback disappearing when scrolling up in long sessions
-+- Fixed collapsed search/read group badges duplicating in terminal scrollback during heavy parallel tool use
-+- Fixed notification `invalidates` not clearing the currently-displayed notification immediately
-+- Fixed prompt briefly disappearing after submit when background messages arrived during processing
-```
-
-</details>
 
 <!-- UPDATE_LOG_END -->
