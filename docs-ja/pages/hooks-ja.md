@@ -18,40 +18,41 @@
 
 <div style={{maxWidth: "500px", margin: "0 auto"}}>
   <Frame>
-    <img src="https://mintcdn.com/claude-code/UMJp-WgTWngzO609/images/hooks-lifecycle.svg?fit=max&auto=format&n=UMJp-WgTWngzO609&q=85&s=3f4de67df216c87dc313943b32c15f62" alt="SessionStart から始まり、ターンごとのループ（UserPromptSubmit、nested agentic ループ（PreToolUse、PermissionRequest、PostToolUse、SubagentStart/Stop、TaskCreated、TaskCompleted）、Stop または StopFailure）、TeammateIdle、PreCompact、PostCompact、SessionEnd を含むフック ライフサイクル図。Elicitation と ElicitationResult は MCP ツール実行内にネストされ、PermissionDenied は PermissionRequest からの副分岐として、WorktreeCreate、WorktreeRemove、Notification、ConfigChange、InstructionsLoaded、CwdChanged、FileChanged はスタンドアロン非同期イベント" width="520" height="1155" data-path="images/hooks-lifecycle.svg" />
+    <img src="https://mintcdn.com/claude-code/NgDeMMkM7ZmaRibg/images/hooks-lifecycle.svg?fit=max&auto=format&n=NgDeMMkM7ZmaRibg&q=85&s=ec53c77f9943a6470cb2c8ecace6d809" alt="SessionStart から始まり、ターンごとのループ（UserPromptSubmit、nested agentic ループ（PreToolUse、PermissionRequest、PostToolUse、SubagentStart/Stop、TaskCreated、TaskCompleted）、Stop または StopFailure）、TeammateIdle、PreCompact、PostCompact、SessionEnd を含むフック ライフサイクル図。Elicitation と ElicitationResult は MCP ツール実行内にネストされ、PermissionDenied は PermissionRequest からの副分岐として、WorktreeCreate、WorktreeRemove、Notification、ConfigChange、InstructionsLoaded、CwdChanged、FileChanged はスタンドアロン非同期イベント" width="520" height="1155" data-path="images/hooks-lifecycle.svg" />
   </Frame>
 </div>
 
 以下の表は、各イベントがいつ発火するかをまとめています。[フック イベント](#hook-events)セクションでは、各イベントの完全な入力スキーマと決定制御オプションについて説明しています。
 
-| Event                | When it fires                                                                                                                                          |
-| :------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `SessionStart`       | When a session begins or resumes                                                                                                                       |
-| `UserPromptSubmit`   | When you submit a prompt, before Claude processes it                                                                                                   |
-| `PreToolUse`         | Before a tool call executes. Can block it                                                                                                              |
-| `PermissionRequest`  | When a permission dialog appears                                                                                                                       |
-| `PermissionDenied`   | When a tool call is denied by the auto mode classifier. Return `{retry: true}` to tell the model it may retry the denied tool call                     |
-| `PostToolUse`        | After a tool call succeeds                                                                                                                             |
-| `PostToolUseFailure` | After a tool call fails                                                                                                                                |
-| `Notification`       | When Claude Code sends a notification                                                                                                                  |
-| `SubagentStart`      | When a subagent is spawned                                                                                                                             |
-| `SubagentStop`       | When a subagent finishes                                                                                                                               |
-| `TaskCreated`        | When a task is being created via `TaskCreate`                                                                                                          |
-| `TaskCompleted`      | When a task is being marked as completed                                                                                                               |
-| `Stop`               | When Claude finishes responding                                                                                                                        |
-| `StopFailure`        | When the turn ends due to an API error. Output and exit code are ignored                                                                               |
-| `TeammateIdle`       | When an [agent team](/en/agent-teams) teammate is about to go idle                                                                                     |
-| `InstructionsLoaded` | When a CLAUDE.md or `.claude/rules/*.md` file is loaded into context. Fires at session start and when files are lazily loaded during a session         |
-| `ConfigChange`       | When a configuration file changes during a session                                                                                                     |
-| `CwdChanged`         | When the working directory changes, for example when Claude executes a `cd` command. Useful for reactive environment management with tools like direnv |
-| `FileChanged`        | When a watched file changes on disk. The `matcher` field specifies which filenames to watch                                                            |
-| `WorktreeCreate`     | When a worktree is being created via `--worktree` or `isolation: "worktree"`. Replaces default git behavior                                            |
-| `WorktreeRemove`     | When a worktree is being removed, either at session exit or when a subagent finishes                                                                   |
-| `PreCompact`         | Before context compaction                                                                                                                              |
-| `PostCompact`        | After context compaction completes                                                                                                                     |
-| `Elicitation`        | When an MCP server requests user input during a tool call                                                                                              |
-| `ElicitationResult`  | After a user responds to an MCP elicitation, before the response is sent back to the server                                                            |
-| `SessionEnd`         | When a session terminates                                                                                                                              |
+| Event                 | When it fires                                                                                                                                          |
+| :-------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `SessionStart`        | When a session begins or resumes                                                                                                                       |
+| `UserPromptSubmit`    | When you submit a prompt, before Claude processes it                                                                                                   |
+| `UserPromptExpansion` | When a user-typed command expands into a prompt, before it reaches Claude. Can block the expansion                                                     |
+| `PreToolUse`          | Before a tool call executes. Can block it                                                                                                              |
+| `PermissionRequest`   | When a permission dialog appears                                                                                                                       |
+| `PermissionDenied`    | When a tool call is denied by the auto mode classifier. Return `{retry: true}` to tell the model it may retry the denied tool call                     |
+| `PostToolUse`         | After a tool call succeeds                                                                                                                             |
+| `PostToolUseFailure`  | After a tool call fails                                                                                                                                |
+| `Notification`        | When Claude Code sends a notification                                                                                                                  |
+| `SubagentStart`       | When a subagent is spawned                                                                                                                             |
+| `SubagentStop`        | When a subagent finishes                                                                                                                               |
+| `TaskCreated`         | When a task is being created via `TaskCreate`                                                                                                          |
+| `TaskCompleted`       | When a task is being marked as completed                                                                                                               |
+| `Stop`                | When Claude finishes responding                                                                                                                        |
+| `StopFailure`         | When the turn ends due to an API error. Output and exit code are ignored                                                                               |
+| `TeammateIdle`        | When an [agent team](/en/agent-teams) teammate is about to go idle                                                                                     |
+| `InstructionsLoaded`  | When a CLAUDE.md or `.claude/rules/*.md` file is loaded into context. Fires at session start and when files are lazily loaded during a session         |
+| `ConfigChange`        | When a configuration file changes during a session                                                                                                     |
+| `CwdChanged`          | When the working directory changes, for example when Claude executes a `cd` command. Useful for reactive environment management with tools like direnv |
+| `FileChanged`         | When a watched file changes on disk. The `matcher` field specifies which filenames to watch                                                            |
+| `WorktreeCreate`      | When a worktree is being created via `--worktree` or `isolation: "worktree"`. Replaces default git behavior                                            |
+| `WorktreeRemove`      | When a worktree is being removed, either at session exit or when a subagent finishes                                                                   |
+| `PreCompact`          | Before context compaction                                                                                                                              |
+| `PostCompact`         | After context compaction completes                                                                                                                     |
+| `Elicitation`         | When an MCP server requests user input during a tool call                                                                                              |
+| `ElicitationResult`   | After a user responds to an MCP elicitation, before the response is sent back to the server                                                            |
+| `SessionEnd`          | When a session terminates                                                                                                                              |
 
 ### フックがどのように解決されるか
 

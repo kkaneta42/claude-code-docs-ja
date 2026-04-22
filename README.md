@@ -17,6 +17,281 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-04-22</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/best-practices-ja.md      |    3 +-
+ docs-ja/pages/changelog.md              |   31 +
+ docs-ja/pages/claude-directory-en.md    | 1523 -------------------------------
+ docs-ja/pages/commands-ja.md            |    2 +-
+ docs-ja/pages/common-workflows-ja.md    |   88 +-
+ docs-ja/pages/data-usage-ja.md          |   35 +-
+ docs-ja/pages/desktop-ja.md             |   40 +-
+ docs-ja/pages/hooks-guide-ja.md         |   57 +-
+ docs-ja/pages/hooks-ja.md               |   59 +-
+ docs-ja/pages/network-config-ja.md      |   38 +-
+ docs-ja/pages/permissions-ja.md         |   12 +-
+ docs-ja/pages/plugin-dependencies-en.md |  104 ---
+ docs-ja/pages/plugin-marketplaces-ja.md |  197 +++-
+ docs-ja/pages/plugins-reference-ja.md   |  110 ++-
+ docs-ja/pages/settings-ja.md            |   12 +-
+ docs-ja/pages/skills-ja.md              |  121 ++-
+ docs-ja/pages/statusline-ja.md          |  107 ++-
+ docs-ja/pages/sub-agents-ja.md          |   46 +-
+ docs-ja/pages/ultrareview-ja.md         |   12 +-
+ docs-ja/pages/vs-code-ja.md             |  156 ++--
+ docs-ja/pages/zero-data-retention-ja.md |    4 +-
+ 21 files changed, 748 insertions(+), 2009 deletions(-)
+```
+
+**新規追加:**
+
+
+**削除:**
+
+
+<details>
+<summary>best-practices-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/best-practices-ja.md b/docs-ja/pages/best-practices-ja.md
+index 5f2fe13..dbdc966 100644
+--- a/docs-ja/pages/best-practices-ja.md
++++ b/docs-ja/pages/best-practices-ja.md
+@@ -21,5 +21,5 @@ Claude Code は agentic coding 環境です。質問に答えて待つチャッ
+ Claude のコンテキストウィンドウは、すべてのメッセージ、Claude が読み取ったすべてのファイル、およびすべてのコマンド出力を含む、会話全体を保持します。ただし、これはすぐにいっぱいになる可能性があります。単一のデバッグセッションまたはコードベース探索でも、数万のトークンを生成および消費する可能性があります。
+ 
+-LLM のパフォーマンスはコンテキストが満杯になるにつれて低下するため、これは重要です。コンテキストウィンドウがいっぱいになると、Claude は以前の指示を「忘れる」か、より多くの間違いを犯す可能性があります。コンテキストウィンドウは管理する最も重要なリソースです。[カスタムステータスライン](/ja/statusline)でコンテキスト使用量を継続的に追跡し、トークン使用量を削減するための戦略については[トークン使用量を削減](/ja/costs#reduce-token-usage)を参照してください。
++LLM のパフォーマンスはコンテキストが満杯になるにつれて低下するため、これは重要です。コンテキストウィンドウがいっぱいになると、Claude は以前の指示を「忘れる」か、より多くの間違いを犯す可能性があります。コンテキストウィンドウは管理する最も重要なリソースです。セッションがどのように満杯になるかを実際に確認するには、スタートアップで何が読み込まれるか、各ファイル読み取りのコストについての[インタラクティブなウォークスルー](/ja/context-window)を参照してください。[カスタムステータスライン](/ja/statusline)でコンテキスト使用量を継続的に追跡し、トークン使用量を削減するための戦略については[トークン使用量を削減](/ja/costs#reduce-token-usage)を参照してください。
+ 
+ ***
+@@ -195,4 +195,5 @@ CLAUDE.md ファイルはいくつかの場所に配置できます。
+ * **ホームフォルダ（`~/.claude/CLAUDE.md`）**：すべての Claude セッションに適用されます
+ * **プロジェクトルート（`./CLAUDE.md`）**：git にチェックインしてチームと共有します
++* **プロジェクトルート（`./CLAUDE.local.md`）**：個人的なプロジェクト固有のメモ；このファイルを `.gitignore` に追加して、チームと共有しないようにします
+ * **親ディレクトリ**：`root/CLAUDE.md` と `root/foo/CLAUDE.md` の両方が自動的にプルされるモノレポに役立ちます
+ * **子ディレクトリ**：Claude はそれらのディレクトリ内のファイルを操作するときに、子 CLAUDE.md ファイルをオンデマンドでプルします
+```
+
+</details>
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index d68a21f..65e9f4b 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,35 @@
+ # Changelog
+ 
++## 2.1.117
++
++- Forked subagents can now be enabled on external builds by setting `CLAUDE_CODE_FORK_SUBAGENT=1`
++- Agent frontmatter `mcpServers` are now loaded for main-thread agent sessions via `--agent`
++- Improved `/model`: selections now persist across restarts even when the project pins a different model, and the startup header shows when the active model comes from a project or managed-settings pin
++- The `/resume` command now offers to summarize stale, large sessions before re-reading them, matching the existing `--resume` behavior
++- Faster startup when both local and claude.ai MCP servers are configured (concurrent connect now default)
++- `plugin install` on an already-installed plugin now installs any missing dependencies instead of stopping at "already installed"
++- Plugin dependency errors now say "not installed" with an install hint, and `claude plugin marketplace add` now auto-resolves missing dependencies from configured marketplaces
++- Managed-settings `blockedMarketplaces` and `strictKnownMarketplaces` are now enforced on plugin install, update, refresh, and autoupdate
++- Advisor Tool (experimental): dialog now carries an "experimental" label, learn-more link, and startup notification when enabled; sessions no longer get stuck with "Advisor tool result content could not be processed" errors on every prompt and `/compact`
++- The `cleanupPeriodDays` retention sweep now also covers `~/.claude/tasks/`, `~/.claude/shell-snapshots/`, and `~/.claude/backups/`
++- OpenTelemetry: `user_prompt` events now include `command_name` and `command_source` for slash commands; `cost.usage`, `token.usage`, `api_request`, and `api_error` now include an `effort` attribute when the model supports effort levels. Custom/MCP command names are redacted unless `OTEL_LOG_TOOL_DETAILS=1` is set
++- Native builds on macOS and Linux: the `Glob` and `Grep` tools are replaced by embedded `bfs` and `ugrep` available through the Bash tool — faster searches without a separate tool round-trip (Windows and npm-installed builds unchanged)
++- Windows: cached `where.exe` executable lookups per process for faster subprocess launches
++- Default effort for Pro/Max subscribers on Opus 4.6 and Sonnet 4.6 is now `high` (was `medium`)
++- Fixed Plain-CLI OAuth sessions dying with "Please run /login" when the access token expires mid-session — the token is now refreshed reactively on 401
++- Fixed `WebFetch` hanging on very large HTML pages by truncating input before HTML-to-markdown conversion
++- Fixed a crash when a proxy returns HTTP 204 No Content — now surfaces a clear error instead of a `TypeError`
++- Fixed `/login` having no effect when launched with `CLAUDE_CODE_OAUTH_TOKEN` env var and that token expires
++- Fixed prompt-input undo (`Ctrl+_`) doing nothing immediately after typing, and skipping a state on each undo step
++- Fixed `NO_PROXY` not being respected for remote API requests when running under Bun
++- Fixed rare spurious escape/return triggers when key names arrive as coalesced text over slow connections
+```
+
+</details>
+
+<details>
+<summary>commands-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/commands-ja.md b/docs-ja/pages/commands-ja.md
+index 06eff03..30d6e9b 100644
+--- a/docs-ja/pages/commands-ja.md
++++ b/docs-ja/pages/commands-ja.md
+@@ -24,5 +24,5 @@
+ | `/batch <instruction>`       | **[スキル](/ja/skills#bundled-skills)。** コードベース全体にわたる大規模な変更を並列で調整します。コードベースを調査し、作業を 5 ～ 30 個の独立したユニットに分解し、計画を提示します。承認されると、分離された [git worktree](/ja/common-workflows#run-parallel-claude-code-sessions-with-git-worktrees) 内の各ユニットごとに 1 つのバックグラウンドエージェントを生成します。各エージェントはそのユニットを実装し、テストを実行し、プルリクエストを開きます。git リポジトリが必要です。例: `/batch migrate src/ from Solid to React`                                                                                             |
+ | `/branch [name]`             | この時点で現在の会話のブランチを作成。ブランチに切り替え、元の会話を保持します。`/resume` で戻ることができます。エイリアス: `/fork`                                                                                                                                                                                                                                                                                                                                                                                |
+-| `/btw <question>`            | 会話に追加せずに[サイドクエスチョン](/ja/interactive-mode#side-questions-with-btw)として素早く質問                                                                                                                                                                                                                                                                                                                                                                                  |
++| `/btw <question>`            | 会話に追加せずに[サイドクエスチョン](/ja/interactive-mode#side-questions-with-%2Fbtw)として素早く質問                                                                                                                                                                                                                                                                                                                                                                               |
+ | `/chrome`                    | [Chrome の Claude](/ja/chrome) 設定を構成                                                                                                                                                                                                                                                                                                                                                                                                                        |
+ | `/claude-api`                | **[スキル](/ja/skills#bundled-skills)。** プロジェクトの言語（Python、TypeScript、Java、Go、Ruby、C#、PHP、または cURL）と Managed Agents リファレンス用の Claude API リファレンス資料を読み込みます。ツール使用、ストリーミング、バッチ、構造化出力、および一般的な落とし穴をカバーしています。また、コードが `anthropic` または `@anthropic-ai/sdk` をインポートするときに自動的にアクティブになります                                                                                                                                                                                     |
+```
+
+</details>
+
+<details>
+<summary>common-workflows-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/common-workflows-ja.md b/docs-ja/pages/common-workflows-ja.md
+index e280607..b3a6387 100644
+--- a/docs-ja/pages/common-workflows-ja.md
++++ b/docs-ja/pages/common-workflows-ja.md
+@@ -404,4 +404,12 @@ Claude に直接プルリクエストを作成するよう依頼するか（「c
+ ***
+ 
++## ノートと非コードフォルダで作業する
++
++Claude Code はどのディレクトリでも機能します。ノートボルト、ドキュメントフォルダ、またはマークダウンファイルの任意のコレクション内で実行して、コードと同じ方法でコンテンツを検索、編集、再編成します。
++
++`.claude/` ディレクトリと `CLAUDE.md` は他のツールの設定ディレクトリと並んで競合なく存在します。Claude は各ツール呼び出しで新しくファイルを読み込むため、別のアプリケーションで行った編集は次回そのファイルを読み込むときに表示されます。
++
++***
++
+ ## 画像を使用する
+ 
+@@ -507,7 +515,5 @@ Claude に直接プルリクエストを作成するよう依頼するか（「c
+ ## 拡張思考（思考モード）を使用する
+ 
+-[拡張思考](https://platform.claude.com/docs/en/build-with-claude/extended-thinking)はデフォルトで有効になっており、Claude が複雑な問題をステップバイステップで推論するためのスペースを提供します。この推論は詳細モードで表示され、`Ctrl+O` でオンに切り替えることができます。
+-
+-さらに、Opus 4.6 と Sonnet 4.6 は適応的推論をサポートしています。固定された思考トークン予算の代わりに、モデルは[努力レベル](/ja/model-config#adjust-effort-level)設定に基づいて思考を動的に割り当てます。拡張思考と適応的推論は一緒に機能して、Claude が応答する前にどの程度深く推論するかを制御できます。
++[拡張思考](https://platform.claude.com/docs/en/build-with-claude/extended-thinking)はデフォルトで有効になっており、Claude が複雑な問題をステップバイステップで推論するためのスペースを提供します。この推論は詳細モードで表示され、`Ctrl+O` でオンに切り替えることができます。さらに、[努力レベルをサポートするモデル](/ja/model-config#adjust-effort-level)は適応的推論を使用します。固定された思考トークン予算の代わりに、モデルは努力レベル設定とタスクに基づいて動的に思考を決定します。適応的推論により、Claude は日常的なプロンプトにより速く応答し、それから恩恵を受けるステップのためにより深い思考を予約できます。
+ 
+ 拡張思考は、複雑なアーキテクチャの決定、難しいバグ、マルチステップの実装計画、異なるアプローチ間のトレードオフの評価に特に価値があります。
+@@ -521,11 +527,11 @@ Claude に直接プルリクエストを作成するよう依頼するか（「c
+ 思考はデフォルトで有効になっていますが、調整または無効にできます。
+ 
+-| スコープ                   | 設定方法                                                                             | 詳細                                                                                                                         |
+```
+
+</details>
+
+<details>
+<summary>data-usage-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/data-usage-ja.md b/docs-ja/pages/data-usage-ja.md
+index 6aa6f3f..c6a4d7c 100644
+--- a/docs-ja/pages/data-usage-ja.md
++++ b/docs-ja/pages/data-usage-ja.md
+@@ -20,11 +20,11 @@
+ [Development Partner Program](https://support.claude.com/ja/articles/11174108-about-the-development-partner-program) などを通じて、トレーニング用の資料を提供する方法に明示的にオプトインした場合、提供された資料を使用してモデルをトレーニングする可能性があります。組織管理者は、組織の Development Partner Program に明示的にオプトインできます。このプログラムは Anthropic ファーストパーティ API でのみ利用可能であり、Bedrock または Vertex ユーザーは利用できないことに注意してください。
+ 
+-### `/bug` コマンドを使用したフィードバック
++### `/feedback` コマンドを使用したフィードバック
+ 
+-`/bug` コマンドを使用して Claude Code に関するフィードバックを送信することを選択した場合、製品とサービスを改善するためにフィードバックを使用する可能性があります。`/bug` を通じて共有されたトランスクリプトは 5 年間保持されます。
++`/feedback` コマンドを使用して Claude Code に関するフィードバックを送信することを選択した場合、製品とサービスを改善するためにフィードバックを使用する可能性があります。`/feedback` を通じて共有されたトランスクリプトは 5 年間保持されます。
+ 
+ ### セッション品質調査
+ 
+-Claude Code で「How is Claude doing this session?」プロンプトが表示されたときに、この調査に応答する場合（「Dismiss」を選択する場合を含む）、数値評価（1、2、3、または dismiss）のみが記録されます。この調査の一部として、会話トランスクリプト、入力、出力、またはその他のセッションデータは収集または保存されません。サムズアップ/ダウンフィードバックまたは `/bug` レポートとは異なり、このセッション品質調査は単純な製品満足度メトリックです。この調査への応答は、データトレーニング設定に影響を与えず、AI モデルをトレーニングするために使用することはできません。
++Claude Code で「How is Claude doing this session?」プロンプトが表示されたときに、この調査に応答する場合（「Dismiss」を選択する場合を含む）、数値評価（1、2、3、または dismiss）のみが記録されます。この調査の一部として、会話トランスクリプト、入力、出力、またはその他のセッションデータは収集または保存されません。サムズアップ/ダウンフィードバックまたは `/feedback` レポートとは異なり、このセッション品質調査は単純な製品満足度メトリックです。この調査への応答は、データトレーニング設定に影響を与えず、AI モデルをトレーニングするために使用することはできません。
+ 
+ これらの調査を無効にするには、`CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY=1` を設定します。調査は、`DISABLE_TELEMETRY` または `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` が設定されている場合にも無効になります。頻度を制御する代わりに無効にするには、設定ファイルで [`feedbackSurveyRate`](/ja/settings#available-settings) を `0` から `1` の間の確率に設定します。
+@@ -44,7 +44,7 @@ Anthropic は、アカウントタイプと設定に基づいて Claude Code デ
+ * 標準：30 日間の保持期間
+ * [Zero data retention](/ja/zero-data-retention)：Claude for Enterprise の Claude Code で利用可能。ZDR は組織ごとに有効になります。新しい各組織は、アカウントチームによって個別に ZDR を有効にする必要があります
+-* ローカルキャッシング：Claude Code クライアントは、セッション再開を有効にするために、セッションをローカルに最大 30 日間保存できます（設定可能）
++* ローカルキャッシング：Claude Code クライアントは、セッション再開を有効にするために、`~/.claude/projects/` の下にセッショントランスクリプトをプレーンテキストでローカルに 30 日間保存します。`cleanupPeriodDays` で期間を調整できます。[application data](/ja/claude-directory#application-data) を参照して、何が保存されているか、およびそれをクリアする方法を確認してください。
+ 
+-Web 上の個別の Claude Code セッションはいつでも削除できます。セッションを削除すると、セッションのイベントデータが永久に削除されます。セッションの削除方法については、[Managing sessions](/ja/claude-code-on-the-web#managing-sessions) を参照してください。
++Web 上の個別の Claude Code セッションはいつでも削除できます。セッションを削除すると、セッションのイベントデータが永久に削除されます。セッションの削除方法については、[Delete sessions](/ja/claude-code-on-the-web#delete-sessions) を参照してください。
+ 
+ データ保持慣行の詳細については、[Privacy Center](https://privacy.anthropic.com/) を参照してください。
+@@ -83,16 +83,23 @@ Claude Code は、ユーザーのマシンから Statsig サービスに接続
+```
+
+</details>
+
+<details>
+<summary>desktop-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/desktop-ja.md b/docs-ja/pages/desktop-ja.md
+index a688330..9b64fb9 100644
+--- a/docs-ja/pages/desktop-ja.md
++++ b/docs-ja/pages/desktop-ja.md
+@@ -511,9 +511,9 @@ Claude が別のポートを選択すると、割り当てられたポートを`
+ ### ローカルセッション
+ 
+-デスクトップアプリは常にシェル環境全体を継承するわけではありません。macOS では、Dock または Finder からアプリを起動すると、`~/.zshrc`または`~/.bashrc`などのシェルプロファイルを読み取り、`PATH`と固定された Claude Code 変数セットを抽出しますが、そこでエクスポートする他の変数は取得されません。Windows では、アプリはユーザーおよびシステム環境変数を継承しますが、PowerShell プロファイルは読み取りません。
++デスクトップアプリは常にシェル環境全体を継承するわけではありません。macOS では、Dock または Finder からアプリを起動すると、`~/.zshrc` または `~/.bashrc` などのシェルプロファイルを読み取り、`PATH` と固定された Claude Code 変数セットを抽出しますが、そこでエクスポートする他の変数は取得されません。Windows では、アプリはユーザーおよびシステム環境変数を継承しますが、PowerShell プロファイルは読み取りません。
+ 
+-ローカルセッションと dev サーバーの環境変数を設定するには、プロンプトボックスの環境ドロップダウンを開き、**Local**にマウスを合わせて、ギアアイコンをクリックしてローカル環境エディタを開きます。ここで保存する変数は、マシンに暗号化されて保存され、開始するすべてのローカルセッションとプレビューサーバーに適用されます。また、`~/.claude/settings.json`ファイルの`env`キーに変数を追加することもできます。ただし、これらは Claude セッションにのみ到達し、dev サーバーには到達しません。サポートされている変数の完全なリストについては、[環境変数](/ja/env-vars)を参照してください。
++ローカルセッションと dev サーバーの環境変数を設定するには、プロンプトボックスの環境ドロップダウンを開き、**Local** にマウスを合わせて、ギアアイコンをクリックしてローカル環境エディタを開きます。ここで保存する変数は、マシンに暗号化されて保存され、開始するすべてのローカルセッションとプレビューサーバーに適用されます。また、`~/.claude/settings.json` ファイルの `env` キーに変数を追加することもできます。ただし、これらは Claude セッションにのみ到達し、dev サーバーには到達しません。サポートされている変数の完全なリストについては、[環境変数](/ja/env-vars)を参照してください。
+ 
+-[拡張思考](/ja/common-workflows#use-extended-thinking-thinking-mode)はデフォルトで有効になっており、複雑な推論タスクのパフォーマンスを向上させますが、追加のトークンを使用します。思考を完全に無効にするには、ローカル環境エディタで`MAX_THINKING_TOKENS`を`0`に設定します。[適応的推論](/ja/model-config#adjust-effort-level)を持つモデルでは、適応的推論が思考の深さを制御するため、他の`MAX_THINKING_TOKENS`値は無視されます。Opus 4.6 と Sonnet 4.6 では、固定思考予算を使用するために`CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING`を`1`に設定します。Opus 4.7 は常に適応的推論を使用し、固定予算モードはありません。
++[拡張思考](/ja/common-workflows#use-extended-thinking-thinking-mode)はデフォルトで有効になっており、複雑な推論タスクのパフォーマンスを向上させますが、追加のトークンを使用します。思考を完全に無効にするには、ローカル環境エディタで `MAX_THINKING_TOKENS` を `0` に設定します。[適応的推論](/ja/model-config#adjust-effort-level)を持つモデルでは、適応的推論が思考の深さを制御するため、他の `MAX_THINKING_TOKENS` 値は無視されます。Opus 4.6 と Sonnet 4.6 では、固定思考予算を使用するために `CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING` を `1` に設定します。Opus 4.7 は常に適応的推論を使用し、固定予算モードはありません。
+ 
+ ### リモートセッション
+@@ -521,5 +521,5 @@ Claude が別のポートを選択すると、割り当てられたポートを`
+ リモートセッションはアプリを閉じても、バックグラウンドで続行されます。使用状況は[サブスクリプションプランの制限](/ja/costs)にカウントされ、別の計算料金はありません。
+ 
+-異なるネットワークアクセスレベルと環境変数を持つカスタムクラウド環境を作成できます。リモートセッションを開始するときに環境ドロップダウンを選択し、**Add environment**を選択します。ネットワークアクセスと環境変数の設定の詳細については、[クラウド環境](/ja/claude-code-on-the-web#the-cloud-environment)を参照してください。
++異なるネットワークアクセスレベルと環境変数を持つカスタムクラウド環境を作成できます。リモートセッションを開始するときに環境ドロップダウンを選択し、**Add environment** を選択します。ネットワークアクセスと環境変数の設定の詳細については、[クラウド環境](/ja/claude-code-on-the-web#the-cloud-environment)を参照してください。
+ 
+ ### SSH セッション
+@@ -527,10 +527,10 @@ Claude が別のポートを選択すると、割り当てられたポートを`
+ SSH セッションを使用すると、デスクトップアプリをインターフェイスとして使用しながら、リモートマシンで Claude Code を実行できます。これは、クラウド VM、dev コンテナ、または特定のハードウェアまたは依存関係を持つサーバーに存在するコードベースで作業するのに便利です。
+ 
+-SSH 接続を追加するには、セッションを開始する前に環境ドロップダウンをクリックして、**+ Add SSH connection**を選択します。ダイアログは以下を要求します：
++SSH 接続を追加するには、セッションを開始する前に環境ドロップダウンをクリックして、**+ Add SSH connection** を選択します。ダイアログは以下を要求します：
+ 
+```
+
+</details>
+
+<details>
+<summary>hooks-guide-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/hooks-guide-ja.md b/docs-ja/pages/hooks-guide-ja.md
+index 7df87f6..e51bdaf 100644
+--- a/docs-ja/pages/hooks-guide-ja.md
++++ b/docs-ja/pages/hooks-guide-ja.md
+@@ -424,32 +424,33 @@ Hook が承認すると、Claude Code は Plan Mode を終了し、Plan Mode に
+ Hook イベントは Claude Code のライフサイクルの特定のポイントで発火します。イベントが発火すると、すべてのマッチングする hooks が並列で実行され、同一の hook コマンドは自動的に重複排除されます。以下の表は各イベントとそれがトリガーされるときを示しています：
+ 
+-| Event                | When it fires                                                                                                                                          |
+-| :------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------- |
+-| `SessionStart`       | When a session begins or resumes                                                                                                                       |
+-| `UserPromptSubmit`   | When you submit a prompt, before Claude processes it                                                                                                   |
+-| `PreToolUse`         | Before a tool call executes. Can block it                                                                                                              |
+-| `PermissionRequest`  | When a permission dialog appears                                                                                                                       |
+-| `PermissionDenied`   | When a tool call is denied by the auto mode classifier. Return `{retry: true}` to tell the model it may retry the denied tool call                     |
+-| `PostToolUse`        | After a tool call succeeds                                                                                                                             |
+-| `PostToolUseFailure` | After a tool call fails                                                                                                                                |
+-| `Notification`       | When Claude Code sends a notification                                                                                                                  |
+-| `SubagentStart`      | When a subagent is spawned                                                                                                                             |
+-| `SubagentStop`       | When a subagent finishes                                                                                                                               |
+-| `TaskCreated`        | When a task is being created via `TaskCreate`                                                                                                          |
+-| `TaskCompleted`      | When a task is being marked as completed                                                                                                               |
+-| `Stop`               | When Claude finishes responding                                                                                                                        |
+-| `StopFailure`        | When the turn ends due to an API error. Output and exit code are ignored                                                                               |
+-| `TeammateIdle`       | When an [agent team](/en/agent-teams) teammate is about to go idle                                                                                     |
+-| `InstructionsLoaded` | When a CLAUDE.md or `.claude/rules/*.md` file is loaded into context. Fires at session start and when files are lazily loaded during a session         |
+-| `ConfigChange`       | When a configuration file changes during a session                                                                                                     |
+-| `CwdChanged`         | When the working directory changes, for example when Claude executes a `cd` command. Useful for reactive environment management with tools like direnv |
+-| `FileChanged`        | When a watched file changes on disk. The `matcher` field specifies which filenames to watch                                                            |
+-| `WorktreeCreate`     | When a worktree is being created via `--worktree` or `isolation: "worktree"`. Replaces default git behavior                                            |
+-| `WorktreeRemove`     | When a worktree is being removed, either at session exit or when a subagent finishes                                                                   |
+```
+
+</details>
+
+*...以降省略*
+
+</details>
+
+
+<details>
 <summary>2026-04-21</summary>
 
 **変更ファイル:**
@@ -2587,181 +2862,6 @@ index 815c1b8..e56a971 100644
 </details>
 
 *...以降省略*
-
-</details>
-
-
-<details>
-<summary>2026-04-02</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/changelog.md            | 77 +++++++++++++++++++++++++++++++++++
- docs-ja/pages/hooks-guide-ja.md       |  1 +
- docs-ja/pages/hooks-ja.md             |  3 +-
- docs-ja/pages/overview-ja.md          |  2 +
- docs-ja/pages/plugins-reference-ja.md |  1 +
- docs-ja/pages/quickstart-ja.md        |  2 +
- docs-ja/pages/setup-ja.md             |  2 +
- 7 files changed, 87 insertions(+), 1 deletion(-)
-```
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index 700d711..10da815 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,81 @@
- # Changelog
- 
-+## 2.1.90
-+
-+- Added `/powerup` — interactive lessons teaching Claude Code features with animated demos
-+- Added `CLAUDE_CODE_PLUGIN_KEEP_MARKETPLACE_ON_FAILURE` env var to keep the existing marketplace cache when `git pull` fails, useful in offline environments
-+- Added `.husky` to protected directories (acceptEdits mode)
-+- Fixed an infinite loop where the rate-limit options dialog would repeatedly auto-open after hitting your usage limit, eventually crashing the session
-+- Fixed `--resume` causing a full prompt-cache miss on the first request for users with deferred tools, MCP servers, or custom agents (regression since v2.1.69)
-+- Fixed `Edit`/`Write` failing with "File content has changed" when a PostToolUse format-on-save hook rewrites the file between consecutive edits
-+- Fixed `PreToolUse` hooks that emit JSON to stdout and exit with code 2 not correctly blocking the tool call
-+- Fixed collapsed search/read summary badge appearing multiple times in fullscreen scrollback when a CLAUDE.md file auto-loads during a tool call
-+- Fixed auto mode not respecting explicit user boundaries ("don't push", "wait for X before Y") even when the action would otherwise be allowed
-+- Fixed click-to-expand hover text being nearly invisible on light terminal themes
-+- Fixed UI crash when malformed tool input reached the permission dialog
-+- Fixed headers disappearing when scrolling `/model`, `/config`, and other selection screens
-+- Hardened PowerShell tool permission checks: fixed trailing `&` background job bypass, `-ErrorAction Break` debugger hang, archive-extraction TOCTOU, and parse-fail fallback deny-rule degradation
-+- Improved performance: eliminated per-turn JSON.stringify of MCP tool schemas on cache-key lookup
-+- Improved performance: SSE transport now handles large streamed frames in linear time (was quadratic)
-+- Improved performance: SDK sessions with long conversations no longer slow down quadratically on transcript writes
-+- Improved `/resume` all-projects view to load project sessions in parallel, improving load times for users with many projects
-+- Changed `--resume` picker to no longer show sessions created by `claude -p` or SDK invocations
-+- Removed `Get-DnsClientCache` and `ipconfig /displaydns` from auto-allow (DNS cache privacy)
-+
-+## 2.1.89
-```
-
-</details>
-
-<details>
-<summary>hooks-guide-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/hooks-guide-ja.md b/docs-ja/pages/hooks-guide-ja.md
-index b7a0444..572a0b6 100644
---- a/docs-ja/pages/hooks-guide-ja.md
-+++ b/docs-ja/pages/hooks-guide-ja.md
-@@ -385,4 +385,5 @@ Hook イベントは Claude Code のライフサイクルの特定のポイン
- | `PreToolUse`         | Before a tool call executes. Can block it                                                                                                              |
- | `PermissionRequest`  | When a permission dialog appears                                                                                                                       |
-+| `PermissionDenied`   | When a tool call is denied by the auto mode classifier. Return `{retry: true}` to tell the model it may retry the denied tool call                     |
- | `PostToolUse`        | After a tool call succeeds                                                                                                                             |
- | `PostToolUseFailure` | After a tool call fails                                                                                                                                |
-```
-
-</details>
-
-<details>
-<summary>hooks-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/hooks-ja.md b/docs-ja/pages/hooks-ja.md
-index 3722f65..32dd78a 100644
---- a/docs-ja/pages/hooks-ja.md
-+++ b/docs-ja/pages/hooks-ja.md
-@@ -19,5 +19,5 @@
- <div style={{maxWidth: "500px", margin: "0 auto"}}>
-   <Frame>
--    <img src="https://mintcdn.com/claude-code/1wr0LPds6lVWZkQB/images/hooks-lifecycle.svg?fit=max&auto=format&n=1wr0LPds6lVWZkQB&q=85&s=53a826e7bb64c6bff5f867506c0530ad" alt="SessionStart から agentic ループを経由して SessionEnd までのフックのシーケンスを示すフック ライフサイクル図。agentic ループ内に PreToolUse、PermissionRequest、PostToolUse、SubagentStart/Stop、TaskCreated、TaskCompleted が含まれ、Elicitation と ElicitationResult が MCP ツール実行内にネストされ、WorktreeCreate、WorktreeRemove、Notification、ConfigChange、InstructionsLoaded、CwdChanged、FileChanged がスタンドアロン非同期イベント" width="520" height="1155" data-path="images/hooks-lifecycle.svg" />
-+    <img src="https://mintcdn.com/claude-code/WLZtXlltXc8aIoIM/images/hooks-lifecycle.svg?fit=max&auto=format&n=WLZtXlltXc8aIoIM&q=85&s=6a0bf67eeb570a96e36b564721fa2a93" alt="SessionStart から agentic ループを経由して SessionEnd までのフックのシーケンスを示すフック ライフサイクル図。agentic ループ内に PreToolUse、PermissionRequest、PostToolUse、SubagentStart/Stop、TaskCreated、TaskCompleted が含まれ、Elicitation と ElicitationResult が MCP ツール実行内にネストされ、WorktreeCreate、WorktreeRemove、Notification、ConfigChange、InstructionsLoaded、CwdChanged、FileChanged がスタンドアロン非同期イベント" width="520" height="1155" data-path="images/hooks-lifecycle.svg" />
-   </Frame>
- </div>
-@@ -31,4 +31,5 @@
- | `PreToolUse`         | Before a tool call executes. Can block it                                                                                                              |
- | `PermissionRequest`  | When a permission dialog appears                                                                                                                       |
-+| `PermissionDenied`   | When a tool call is denied by the auto mode classifier. Return `{retry: true}` to tell the model it may retry the denied tool call                     |
- | `PostToolUse`        | After a tool call succeeds                                                                                                                             |
- | `PostToolUseFailure` | After a tool call fails                                                                                                                                |
-```
-
-</details>
-
-<details>
-<summary>overview-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/overview-ja.md b/docs-ja/pages/overview-ja.md
-index 9791fef..09b7ba9 100644
---- a/docs-ja/pages/overview-ja.md
-+++ b/docs-ja/pages/overview-ja.md
-@@ -39,4 +39,6 @@ Claude Code は AI を活用したコーディングアシスタントで、機
-         ```
- 
-+        If you see `The token '&&' is not a valid statement separator`, you're in PowerShell, not CMD. Use the PowerShell command above instead. Your prompt shows `PS C:\` when you're in PowerShell.
-+
-         **Windows requires [Git for Windows](https://git-scm.com/downloads/win).** Install it first if you don't have it.
- 
-```
-
-</details>
-
-<details>
-<summary>plugins-reference-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/plugins-reference-ja.md b/docs-ja/pages/plugins-reference-ja.md
-index 0f5a4d6..50bed15 100644
---- a/docs-ja/pages/plugins-reference-ja.md
-+++ b/docs-ja/pages/plugins-reference-ja.md
-@@ -115,4 +115,5 @@ disallowedTools: Write, Edit
- | `PreToolUse`         | Before a tool call executes. Can block it                                                                                                              |
- | `PermissionRequest`  | When a permission dialog appears                                                                                                                       |
-+| `PermissionDenied`   | When a tool call is denied by the auto mode classifier. Return `{retry: true}` to tell the model it may retry the denied tool call                     |
- | `PostToolUse`        | After a tool call succeeds                                                                                                                             |
- | `PostToolUseFailure` | After a tool call fails                                                                                                                                |
-```
-
-</details>
-
-<details>
-<summary>quickstart-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/quickstart-ja.md b/docs-ja/pages/quickstart-ja.md
-index 85861ff..b90c178 100644
---- a/docs-ja/pages/quickstart-ja.md
-+++ b/docs-ja/pages/quickstart-ja.md
-@@ -654,4 +654,6 @@ To install Claude Code, use one of the following methods:
-     ```
- 
-+    If you see `The token '&&' is not a valid statement separator`, you're in PowerShell, not CMD. Use the PowerShell command above instead. Your prompt shows `PS C:\` when you're in PowerShell.
-+
-     **Windows requires [Git for Windows](https://git-scm.com/downloads/win).** Install it first if you don't have it.
- 
-```
-
-</details>
-
-<details>
-<summary>setup-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/setup-ja.md b/docs-ja/pages/setup-ja.md
-index bdeb83d..7421a3f 100644
---- a/docs-ja/pages/setup-ja.md
-+++ b/docs-ja/pages/setup-ja.md
-@@ -58,4 +58,6 @@ To install Claude Code, use one of the following methods:
-     ```
- 
-+    If you see `The token '&&' is not a valid statement separator`, you're in PowerShell, not CMD. Use the PowerShell command above instead. Your prompt shows `PS C:\` when you're in PowerShell.
-+
-     **Windows requires [Git for Windows](https://git-scm.com/downloads/win).** Install it first if you don't have it.
- 
-```
-
-</details>
 
 </details>
 

@@ -2,9 +2,9 @@
 > Fetch the complete documentation index at: https://code.claude.com/docs/llms.txt
 > Use this file to discover all available pages before exploring further.
 
-# Explore the .claude directory
+# .claude ディレクトリを探索する
 
-> Where Claude Code reads CLAUDE.md, settings.json, hooks, skills, commands, subagents, rules, and auto memory. Explore the .claude directory in your project and ~/.claude in your home directory.
+> Claude Code が CLAUDE.md、settings.json、hooks、skills、commands、subagents、rules、auto memory を読み込む場所。プロジェクト内の .claude ディレクトリとホームディレクトリの ~/.claude を探索します。
 
 export const ClaudeExplorer = () => {
   const A = useMemo(() => ({href, children}) => <a href={href} style={{
@@ -1388,136 +1388,136 @@ themselves by leaving a TODO(human) marker instead of writing it.`
     </>;
 };
 
-Claude Code reads instructions, settings, skills, subagents, and memory from your project directory and from `~/.claude` in your home directory. Commit project files to git to share them with your team; files in `~/.claude` are personal configuration that applies across all your projects.
+Claude Code は、プロジェクトディレクトリとホームディレクトリの `~/.claude` から、指示、設定、skills、subagents、メモリを読み込みます。プロジェクトファイルを git にコミットしてチームと共有します。`~/.claude` 内のファイルは、すべてのプロジェクトに適用される個人設定です。
 
-If you set [`CLAUDE_CONFIG_DIR`](/en/env-vars), every `~/.claude` path on this page lives under that directory instead.
+Windows では、`~/.claude` は `%USERPROFILE%\.claude` に解決されます。[`CLAUDE_CONFIG_DIR`](/ja/env-vars) を設定した場合、このページのすべての `~/.claude` パスはそのディレクトリの下に存在します。
 
-Most users only edit `CLAUDE.md` and `settings.json`. The rest of the directory is optional: add skills, rules, or subagents as you need them.
+ほとんどのユーザーは `CLAUDE.md` と `settings.json` のみを編集します。ディレクトリの残りはオプションです。必要に応じて skills、rules、または subagents を追加してください。
 
-This page is an interactive explorer: click files in the tree to see what each one does, when it loads, and an example. For a quick reference, see the [file reference table](#file-reference) below.
+このページはインタラクティブなエクスプローラーです。ツリー内のファイルをクリックして、各ファイルの機能、読み込みタイミング、および例を確認できます。クイックリファレンスについては、以下の[ファイルリファレンステーブル](#file-reference)を参照してください。
 
 <ClaudeExplorer />
 
-## What's not shown
+## 表示されていないもの
 
-The explorer covers files you author and edit. A few related files live elsewhere:
+エクスプローラーは、作成および編集するファイルをカバーしています。関連するいくつかのファイルは他の場所に存在します。
 
-| File                    | Location                   | Purpose                                                                                                                                                                                                                                                            |
-| ----------------------- | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `managed-settings.json` | System-level, varies by OS | Enterprise-enforced settings that you can't override. See [server-managed settings](/en/server-managed-settings).                                                                                                                                                  |
-| `CLAUDE.local.md`       | Project root               | Your private preferences for this project, loaded alongside CLAUDE.md. Create it manually and add it to `.gitignore`.                                                                                                                                              |
-| Installed plugins       | `~/.claude/plugins/`       | Cloned marketplaces, installed plugin versions, and per-plugin data, managed by `claude plugin` commands. Orphaned versions are deleted 7 days after a plugin update or uninstall. See [plugin caching](/en/plugins-reference#plugin-caching-and-file-resolution). |
+| ファイル                    | 場所                   | 目的                                                                                                                                                                                                         |
+| ----------------------- | -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `managed-settings.json` | システムレベル、OS によって異なる   | オーバーライドできないエンタープライズが強制する設定。[サーバー管理設定](/ja/server-managed-settings)を参照してください。                                                                                                                               |
+| `CLAUDE.local.md`       | プロジェクトルート            | このプロジェクトの個人的な設定。CLAUDE.md と一緒に読み込まれます。手動で作成し、`.gitignore` に追加してください。                                                                                                                                       |
+| インストール済みプラグイン           | `~/.claude/plugins/` | クローンされたマーケットプレイス、インストール済みプラグインバージョン、およびプラグインごとのデータ。`claude plugin` コマンドで管理されます。孤立したバージョンはプラグインの更新またはアンインストール後 7 日で削除されます。[プラグインキャッシング](/ja/plugins-reference#plugin-caching-and-file-resolution)を参照してください。 |
 
-`~/.claude` also holds data Claude Code writes as you work: transcripts, prompt history, file snapshots, caches, and logs. See [application data](#application-data) below.
+`~/.claude` は、作業中に Claude Code が書き込むデータも保持します。トランスクリプト、プロンプト履歴、ファイルスナップショット、キャッシュ、ログです。以下の[アプリケーションデータ](#application-data)を参照してください。
 
-## File reference
+## ファイルリファレンス
 
-This table lists every file the explorer covers. Project-scope files live in your repo under `.claude/` (or at the root for `CLAUDE.md`, `.mcp.json`, and `.worktreeinclude`). Global-scope files live in `~/.claude/` and apply across all projects.
+このテーブルは、エクスプローラーがカバーするすべてのファイルをリストしています。プロジェクトスコープのファイルはリポジトリの `.claude/` の下に存在します（`CLAUDE.md`、`.mcp.json`、`.worktreeinclude` はルートにあります）。グローバルスコープのファイルは `~/.claude/` に存在し、すべてのプロジェクトに適用されます。
 
 <Note>
-  Several things can override what you put in these files:
+  これらのファイルに入れたものをオーバーライドできるいくつかのことがあります。
 
-  * [Managed settings](/en/server-managed-settings) deployed by your organization take precedence over everything
-  * CLI flags like `--permission-mode` or `--settings` override `settings.json` for that session
-  * Some environment variables take precedence over their equivalent setting, but this varies: check the [environment variables reference](/en/env-vars) for each one
+  * 組織によってデプロイされた[管理設定](/ja/server-managed-settings)はすべてに優先します
+  * `--permission-mode` や `--settings` などの CLI フラグはそのセッションの `settings.json` をオーバーライドします
+  * 一部の環境変数は同等の設定に優先しますが、これは異なります。各設定について[環境変数リファレンス](/ja/env-vars)を確認してください
 
-  See [settings precedence](/en/settings#settings-precedence) for the full order.
+  完全な順序については[設定の優先順位](/ja/settings#settings-precedence)を参照してください。
 </Note>
 
-Click a filename to open that node in the explorer above.
+ファイル名をクリックして、上記のエクスプローラーでそのノードを開きます。
 
-| File                                                | Scope              | Commit | What it does                                          | Reference                                                            |
-| --------------------------------------------------- | ------------------ | ------ | ----------------------------------------------------- | -------------------------------------------------------------------- |
-| [`CLAUDE.md`](#ce-claude-md)                        | Project and global | ✓      | Instructions loaded every session                     | [Memory](/en/memory)                                                 |
-| [`rules/*.md`](#ce-rules)                           | Project and global | ✓      | Topic-scoped instructions, optionally path-gated      | [Rules](/en/memory#organize-rules-with-claude/rules/)                |
-| [`settings.json`](#ce-settings-json)                | Project and global | ✓      | Permissions, hooks, env vars, model defaults          | [Settings](/en/settings)                                             |
-| [`settings.local.json`](#ce-settings-local-json)    | Project only       |        | Your personal overrides, auto-gitignored              | [Settings scopes](/en/settings#settings-files)                       |
-| [`.mcp.json`](#ce-mcp-json)                         | Project only       | ✓      | Team-shared MCP servers                               | [MCP scopes](/en/mcp#mcp-installation-scopes)                        |
-| [`.worktreeinclude`](#ce-worktreeinclude)           | Project only       | ✓      | Gitignored files to copy into new worktrees           | [Worktrees](/en/common-workflows#copy-gitignored-files-to-worktrees) |
-| [`skills/<name>/SKILL.md`](#ce-skills)              | Project and global | ✓      | Reusable prompts invoked with `/name` or auto-invoked | [Skills](/en/skills)                                                 |
-| [`commands/*.md`](#ce-commands)                     | Project and global | ✓      | Single-file prompts; same mechanism as skills         | [Skills](/en/skills)                                                 |
-| [`output-styles/*.md`](#ce-output-styles)           | Project and global | ✓      | Custom system-prompt sections                         | [Output styles](/en/output-styles)                                   |
-| [`agents/*.md`](#ce-agents)                         | Project and global | ✓      | Subagent definitions with their own prompt and tools  | [Subagents](/en/sub-agents)                                          |
-| [`agent-memory/<name>/`](#ce-agent-memory)          | Project and global | ✓      | Persistent memory for subagents                       | [Persistent memory](/en/sub-agents#enable-persistent-memory)         |
-| [`~/.claude.json`](#ce-claude-json)                 | Global only        |        | App state, OAuth, UI toggles, personal MCP servers    | [Global config](/en/settings#global-config-settings)                 |
-| [`projects/<project>/memory/`](#ce-global-projects) | Global only        |        | Auto memory: Claude's notes to itself across sessions | [Auto memory](/en/memory#auto-memory)                                |
-| [`keybindings.json`](#ce-keybindings)               | Global only        |        | Custom keyboard shortcuts                             | [Keybindings](/en/keybindings)                                       |
+| ファイル                                                | スコープ           | コミット | 機能                                     | リファレンス                                                               |
+| --------------------------------------------------- | -------------- | ---- | -------------------------------------- | -------------------------------------------------------------------- |
+| [`CLAUDE.md`](#ce-claude-md)                        | プロジェクトおよびグローバル | ✓    | 毎セッション読み込まれる指示                         | [メモリ](/ja/memory)                                                    |
+| [`rules/*.md`](#ce-rules)                           | プロジェクトおよびグローバル | ✓    | トピックスコープの指示、オプションでパスゲート                | [ルール](/ja/memory#organize-rules-with-claude/rules/)                  |
+| [`settings.json`](#ce-settings-json)                | プロジェクトおよびグローバル | ✓    | パーミッション、hooks、環境変数、モデルデフォルト            | [設定](/ja/settings)                                                   |
+| [`settings.local.json`](#ce-settings-local-json)    | プロジェクトのみ       |      | 個人的なオーバーライド、自動 gitignore               | [設定スコープ](/ja/settings#settings-files)                                |
+| [`.mcp.json`](#ce-mcp-json)                         | プロジェクトのみ       | ✓    | チーム共有 MCP サーバー                         | [MCP スコープ](/ja/mcp#mcp-installation-scopes)                          |
+| [`.worktreeinclude`](#ce-worktreeinclude)           | プロジェクトのみ       | ✓    | 新しい worktrees にコピーする gitignore ファイル    | [Worktrees](/ja/common-workflows#copy-gitignored-files-to-worktrees) |
+| [`skills/<name>/SKILL.md`](#ce-skills)              | プロジェクトおよびグローバル | ✓    | `/name` で呼び出される、または自動呼び出される再利用可能なプロンプト | [Skills](/ja/skills)                                                 |
+| [`commands/*.md`](#ce-commands)                     | プロジェクトおよびグローバル | ✓    | シングルファイルプロンプト。skills と同じメカニズム          | [Skills](/ja/skills)                                                 |
+| [`output-styles/*.md`](#ce-output-styles)           | プロジェクトおよびグローバル | ✓    | カスタムシステムプロンプトセクション                     | [出力スタイル](/ja/output-styles)                                          |
+| [`agents/*.md`](#ce-agents)                         | プロジェクトおよびグローバル | ✓    | 独自のプロンプトとツールを持つ subagent 定義            | [Subagents](/ja/sub-agents)                                          |
+| [`agent-memory/<name>/`](#ce-agent-memory)          | プロジェクトおよびグローバル | ✓    | subagents の永続メモリ                       | [永続メモリ](/ja/sub-agents#enable-persistent-memory)                     |
+| [`~/.claude.json`](#ce-claude-json)                 | グローバルのみ        |      | アプリ状態、OAuth、UI トグル、個人 MCP サーバー         | [グローバル設定](/ja/settings#global-config-settings)                       |
+| [`projects/<project>/memory/`](#ce-global-projects) | グローバルのみ        |      | Auto memory：Claude のセッション間のメモ          | [Auto memory](/ja/memory#auto-memory)                                |
+| [`keybindings.json`](#ce-keybindings)               | グローバルのみ        |      | カスタムキーボードショートカット                       | [キーバインディング](/ja/keybindings)                                         |
 
-## Check what loaded
+## 読み込まれたものを確認する
 
-The explorer shows what files can exist. To see what actually loaded in your current session, use these commands:
+エクスプローラーは、存在できるファイルを表示します。現在のセッションで実際に読み込まれたものを確認するには、これらのコマンドを使用します。
 
-| Command        | Shows                                                                                 |
-| -------------- | ------------------------------------------------------------------------------------- |
-| `/context`     | Token usage by category: system prompt, memory files, skills, MCP tools, and messages |
-| `/memory`      | Which CLAUDE.md and rules files loaded, plus auto-memory entries                      |
-| `/agents`      | Configured subagents and their settings                                               |
-| `/hooks`       | Active hook configurations                                                            |
-| `/mcp`         | Connected MCP servers and their status                                                |
-| `/skills`      | Available skills from project, user, and plugin sources                               |
-| `/permissions` | Current allow and deny rules                                                          |
-| `/doctor`      | Installation and configuration diagnostics                                            |
+| コマンド           | 表示内容                                                  |
+| -------------- | ----------------------------------------------------- |
+| `/context`     | トークン使用量（カテゴリ別）：システムプロンプト、メモリファイル、skills、MCP ツール、メッセージ |
+| `/memory`      | 読み込まれた CLAUDE.md および rules ファイル、および auto-memory エントリ  |
+| `/agents`      | 設定された subagents とその設定                                 |
+| `/hooks`       | アクティブな hook 設定                                        |
+| `/mcp`         | 接続された MCP サーバーとそのステータス                                |
+| `/skills`      | プロジェクト、ユーザー、プラグインソースから利用可能な skills                    |
+| `/permissions` | 現在の許可および拒否ルール                                         |
+| `/doctor`      | インストールおよび設定診断                                         |
 
-Run `/context` first for the overview, then the specific command for the area you want to investigate.
+最初に `/context` を実行して概要を確認し、次に調査したい領域の特定のコマンドを実行します。
 
-## Application data
+## アプリケーションデータ
 
-Beyond the config you author, `~/.claude` holds data Claude Code writes during sessions. These files are plaintext. Anything that passes through a tool lands in a transcript on disk: file contents, command output, pasted text.
+作成する設定を超えて、`~/.claude` はセッション中に Claude Code が書き込むデータを保持します。これらのファイルはプレーンテキストです。ツールを通過するすべてのものはディスク上のトランスクリプトに記録されます。ファイルコンテンツ、コマンド出力、貼り付けられたテキスト。
 
-### Cleaned up automatically
+### 自動的にクリーンアップされる
 
-Files in the paths below are deleted on startup once they're older than [`cleanupPeriodDays`](/en/settings#available-settings). The default is 30 days.
+以下のパス内のファイルは、[`cleanupPeriodDays`](/ja/settings#available-settings) より古い場合、起動時に削除されます。デフォルトは 30 日です。
 
-| Path under `~/.claude/`                      | Contents                                                                                           |
-| -------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| `projects/<project>/<session>.jsonl`         | Full conversation transcript: every message, tool call, and tool result                            |
-| `projects/<project>/<session>/tool-results/` | Large tool outputs spilled to separate files                                                       |
-| `file-history/<session>/`                    | Pre-edit snapshots of files Claude changed, used for [checkpoint restore](/en/checkpointing)       |
-| `plans/`                                     | Plan files written during [plan mode](/en/permission-modes#analyze-before-you-edit-with-plan-mode) |
-| `debug/`                                     | Per-session debug logs, written only when you start with `--debug` or run `/debug`                 |
-| `paste-cache/`, `image-cache/`               | Contents of large pastes and attached images                                                       |
-| `session-env/`                               | Per-session environment metadata                                                                   |
+| `~/.claude/` の下のパス                           | コンテンツ                                                                                |
+| -------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `projects/<project>/<session>.jsonl`         | 完全な会話トランスクリプト：すべてのメッセージ、ツール呼び出し、ツール結果                                                |
+| `projects/<project>/<session>/tool-results/` | 大きなツール出力を別ファイルにこぼしたもの                                                                |
+| `file-history/<session>/`                    | Claude が変更したファイルの編集前スナップショット。[チェックポイント復元](/ja/checkpointing)に使用                      |
+| `plans/`                                     | [プランモード](/ja/permission-modes#analyze-before-you-edit-with-plan-mode)中に書き込まれたプランファイル |
+| `debug/`                                     | セッションごとのデバッグログ。`--debug` で開始するか `/debug` を実行した場合のみ書き込まれます                            |
+| `paste-cache/`、`image-cache/`                | 大きな貼り付けと添付画像のコンテンツ                                                                   |
+| `session-env/`                               | セッションごとの環境メタデータ                                                                      |
 
-### Kept until you delete them
+### 削除するまで保持される
 
-The following paths are not covered by automatic cleanup and persist indefinitely.
+以下のパスは自動クリーンアップの対象ではなく、無期限に保持されます。
 
-| Path under `~/.claude/` | Contents                                                                              |
-| ----------------------- | ------------------------------------------------------------------------------------- |
-| `history.jsonl`         | Every prompt you've typed, with timestamp and project path. Used for up-arrow recall. |
-| `stats-cache.json`      | Aggregated token and cost counts shown by `/cost`                                     |
-| `backups/`              | Timestamped copies of `~/.claude.json` taken before config migrations                 |
-| `todos/`                | Legacy per-session task lists. No longer written by current versions; safe to delete. |
+| `~/.claude/` の下のパス | コンテンツ                                            |
+| ------------------ | ------------------------------------------------ |
+| `history.jsonl`    | 入力したすべてのプロンプト（タイムスタンプとプロジェクトパス付き）。上矢印リコール用に使用    |
+| `stats-cache.json` | `/cost` で表示される集計トークンおよびコスト数                      |
+| `backups/`         | 設定マイグレーション前に取得された `~/.claude.json` のタイムスタンプ付きコピー |
+| `todos/`           | レガシーセッションごとのタスクリスト。現在のバージョンでは書き込まれません。削除しても安全です。 |
 
-`shell-snapshots/` holds runtime files removed when the session exits cleanly. Other small cache and lock files appear depending on which features you use and are safe to delete.
+`shell-snapshots/` はセッションが正常に終了したときに削除されるランタイムファイルを保持します。その他の小さなキャッシュおよびロックファイルは、使用する機能に応じて表示され、削除しても安全です。
 
-### Plaintext storage
+### プレーンテキストストレージ
 
-Transcripts and history are not encrypted at rest. OS file permissions are the only protection. If a tool reads a `.env` file or a command prints a credential, that value is written to `projects/<project>/<session>.jsonl`. To reduce exposure:
+トランスクリプトと履歴は保存時に暗号化されません。OS ファイルパーミッションのみが保護です。ツールが `.env` ファイルを読み込むか、コマンドが認証情報を出力する場合、その値は `projects/<project>/<session>.jsonl` に書き込まれます。露出を減らすには。
 
-* Lower `cleanupPeriodDays` to shorten how long transcripts are kept
-* Set the [`CLAUDE_CODE_SKIP_PROMPT_HISTORY`](/en/env-vars) environment variable to skip writing transcripts and prompt history in any mode. In non-interactive mode, you can instead pass `--no-session-persistence` alongside `-p`, or set `persistSession: false` in the Agent SDK.
-* Use [permission rules](/en/permissions) to deny reads of credential files
+* `cleanupPeriodDays` を低くしてトランスクリプトの保持期間を短縮します
+* [`CLAUDE_CODE_SKIP_PROMPT_HISTORY`](/ja/env-vars)環境変数を設定して、任意のモードでトランスクリプトとプロンプト履歴の書き込みをスキップします。非対話型モードでは、代わりに `-p` と一緒に `--no-session-persistence` を渡すか、Agent SDK で `persistSession: false` を設定できます。
+* [パーミッションルール](/ja/permissions)を使用して認証情報ファイルの読み込みを拒否します
 
-### Clear local data
+### ローカルデータをクリアする
 
-You can delete any of the application-data paths above at any time. New sessions are unaffected. The table below shows what you lose for past sessions.
+上記のアプリケーションデータパスのいずれかをいつでも削除できます。新しいセッションは影響を受けません。以下のテーブルは、過去のセッションで失うものを示しています。
 
-| Delete                                                                                                               | You lose                                                        |
-| -------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
-| `~/.claude/projects/`                                                                                                | Resume, continue, and rewind for past sessions                  |
-| `~/.claude/history.jsonl`                                                                                            | Up-arrow prompt recall                                          |
-| `~/.claude/file-history/`                                                                                            | Checkpoint restore for past sessions                            |
-| `~/.claude/stats-cache.json`                                                                                         | Historical totals shown by `/cost`                              |
-| `~/.claude/backups/`                                                                                                 | Rollback copies of `~/.claude.json` from past config migrations |
-| `~/.claude/debug/`, `~/.claude/plans/`, `~/.claude/paste-cache/`, `~/.claude/image-cache/`, `~/.claude/session-env/` | Nothing user-facing                                             |
-| `~/.claude/todos/`                                                                                                   | Nothing. Legacy directory not written by current versions.      |
+| 削除                                                                                                               | 失うもの                                         |
+| ---------------------------------------------------------------------------------------------------------------- | -------------------------------------------- |
+| `~/.claude/projects/`                                                                                            | 過去のセッションの再開、続行、巻き戻し                          |
+| `~/.claude/history.jsonl`                                                                                        | 上矢印プロンプトリコール                                 |
+| `~/.claude/file-history/`                                                                                        | 過去のセッションのチェックポイント復元                          |
+| `~/.claude/stats-cache.json`                                                                                     | `/cost` で表示される履歴合計                           |
+| `~/.claude/backups/`                                                                                             | 過去の設定マイグレーションからの `~/.claude.json` のロールバックコピー |
+| `~/.claude/debug/`、`~/.claude/plans/`、`~/.claude/paste-cache/`、`~/.claude/image-cache/`、`~/.claude/session-env/` | ユーザー向けのもの                                    |
+| `~/.claude/todos/`                                                                                               | なし。現在のバージョンでは書き込まれないレガシーディレクトリ。              |
 
-Don't delete `~/.claude.json`, `~/.claude/settings.json`, or `~/.claude/plugins/`: those hold your auth, preferences, and installed plugins.
+`~/.claude.json`、`~/.claude/settings.json`、または `~/.claude/plugins/` は削除しないでください。これらは認証、設定、インストール済みプラグインを保持しています。
 
-## Related resources
+## 関連リソース
 
-* [Manage Claude's memory](/en/memory): write and organize CLAUDE.md, rules, and auto memory
-* [Configure settings](/en/settings): set permissions, hooks, environment variables, and model defaults
-* [Create skills](/en/skills): build reusable prompts and workflows
-* [Configure subagents](/en/sub-agents): define specialized agents with their own context
+* [Claude のメモリを管理する](/ja/memory)：CLAUDE.md、rules、auto memory を書き込んで整理します
+* [設定を構成する](/ja/settings)：パーミッション、hooks、環境変数、モデルデフォルトを設定します
+* [Skills を作成する](/ja/skills)：再利用可能なプロンプトとワークフローを構築します
+* [Subagents を構成する](/ja/sub-agents)：独自のコンテキストを持つ特化したエージェントを定義します
