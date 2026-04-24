@@ -45,12 +45,13 @@
 
 ほとんどの組織では、`autoMode.environment` が設定する必要がある唯一のフィールドです。これは、分類器に、どのリポジトリ、バケット、ドメインが信頼できるかを指定します。分類器はこれを使用して「外部」が何を意味するかを決定するため、リストに記載されていない宛先は潜在的な流出ターゲットです。
 
-`environment` を設定すると、デフォルトの環境リストが置き換わります。デフォルトには、作業リポジトリとそのリモートを信頼するエントリが含まれます。`claude auto-mode defaults` を実行してデフォルトを出力し、リストを狭めるのではなく拡張するように、独自のエントリと一緒に含めます。
+デフォルトの環境リストは、作業リポジトリとその設定されたリモートを信頼します。そのデフォルトと一緒に独自のエントリを追加するには、配列にリテラル文字列 `"$defaults"` を含めます。デフォルトエントリはその位置に挿入されるため、カスタムエントリはそれらの前後に配置できます。
 
 ```json theme={null}
 {
   "autoMode": {
     "environment": [
+      "$defaults",
       "Source control: github.example.com/acme-corp and all repos under it",
       "Trusted cloud buckets: s3://acme-build-artifacts, gs://acme-ml-datasets",
       "Trusted internal domains: *.corp.example.com, api.internal.example.com",
@@ -75,6 +76,7 @@
 {
   "autoMode": {
     "environment": [
+      "$defaults",
       "Organization: {COMPANY_NAME}. Primary use: {PRIMARY_USE_CASE, e.g. software development, infrastructure automation}",
       "Source control: {SOURCE_CONTROL, e.g. GitHub org github.example.com/acme-corp}",
       "Cloud provider(s): {CLOUD_PROVIDERS, e.g. AWS, GCP, Azure}",
@@ -103,36 +105,38 @@
 
 一般的なリクエストは明示的な意図としてカウントされません。Claude に「リポジトリをクリーンアップする」ように依頼することは force push を認可しませんが、「このブランチを force push する」ように依頼することは認可します。
 
-<Danger>
-  `environment`、`allow`、`soft_deny` のいずれかを設定すると、そのセクション全体のデフォルトリストが置き換わります。単一のエントリで `soft_deny` を設定すると、すべての組み込みブロックルール（force push、データ流出、`curl | bash`、本番環境へのデプロイ、その他すべてのデフォルトブロックルール）が破棄されて許可されます。安全にカスタマイズするには、`claude auto-mode defaults` を実行して組み込みルールを出力し、それらを設定ファイルにコピーしてから、各ルールを独自のパイプラインとリスク許容度に対して確認します。インフラストラクチャが既に軽減しているリスクのルールのみを削除します。
-</Danger>
-
-緩和するには。デフォルトがパイプラインが既に PR レビュー、CI、またはステージング環境で保護しているものをブロックする場合、`soft_deny` からルールを削除するか、分類器がデフォルトの例外がカバーしていないルーチンパターンを繰り返しフラグする場合、`allow` に追加します。厳しくするには。環境に固有で、デフォルトが見落としているリスクについて `soft_deny` に追加するか、デフォルトの例外をブロックルールに保持するために `allow` から削除します。すべての場合において、`claude auto-mode defaults` を実行して完全なデフォルトリストを取得し、コピーして編集します。空のリストから開始しないでください。
+緩和するには、分類器がデフォルトの例外がカバーしていないルーチンパターンを繰り返しフラグする場合、`allow` に追加します。厳しくするには、環境に固有で、デフォルトが見落としているリスクについて `soft_deny` に追加します。組み込みルールを保持しながら独自のルールを追加するには、配列にリテラル文字列 `"$defaults"` を含めます。デフォルトルールはその位置に挿入されるため、カスタムルールはそれらの前後に配置でき、リリース全体でビルトインリストが変更されるにつれて更新を継続して継承します。
 
 ```json theme={null}
 {
   "autoMode": {
     "environment": [
+      "$defaults",
       "Source control: github.example.com/acme-corp and all repos under it"
     ],
     "allow": [
+      "$defaults",
       "Deploying to the staging namespace is allowed: staging is isolated from production and resets nightly",
       "Writing to s3://acme-scratch/ is allowed: ephemeral bucket with a 7-day lifecycle policy"
     ],
     "soft_deny": [
+      "$defaults",
       "Never run database migrations outside the migrations CLI, even against dev databases",
-      "Never modify files under infra/terraform/prod/: production infrastructure changes go through the review workflow",
-      "...copy full default soft_deny list here first, then add your rules..."
+      "Never modify files under infra/terraform/prod/: production infrastructure changes go through the review workflow"
     ]
   }
 }
 ```
 
-各セクションは独自のデフォルトのみを置き換えるため、`environment` のみを設定すると、デフォルトの `allow` および `soft_deny` リストはそのままになります。
+<Danger>
+  `environment`、`allow`、`soft_deny` のいずれかを `"$defaults"` なしで設定すると、そのセクション全体のデフォルトリストが置き換わります。単一のエントリで `soft_deny` を設定し、`"$defaults"` を省略すると、すべての組み込みブロックルール（force push、データ流出、`curl | bash`、本番環境へのデプロイ、その他すべてのデフォルトブロックルール）が破棄されて許可されます。`"$defaults"` を省略するのは、リストの完全な所有権を取得する意図がある場合のみです。その場合、`claude auto-mode defaults` を実行して組み込みルールを出力し、それらを設定ファイルにコピーしてから、各ルールを独自のパイプラインとリスク許容度に対して確認します。
+</Danger>
+
+各セクションは独立して評価されるため、`environment` のみを設定すると、デフォルトの `allow` および `soft_deny` リストはそのままになります。
 
 ## デフォルトと有効な設定を確認する
 
-3 つの配列のいずれかを設定するとそのデフォルトが置き換わるため、カスタマイズを開始する前に完全なデフォルトリストをコピーします。3 つの CLI サブコマンドは、検査と検証に役立ちます。
+3 つの CLI サブコマンドは、設定の検査と検証に役立ちます。
 
 組み込みの `environment`、`allow`、`soft_deny` ルールを JSON として出力します。
 
@@ -152,7 +156,7 @@ claude auto-mode config
 claude auto-mode critique
 ```
 
-`claude auto-mode defaults` の出力をファイルに保存し、リストを編集してポリシーに一致させ、結果を設定ファイルに貼り付けます。保存後、`claude auto-mode config` を実行して、有効なルールが期待通りであることを確認します。カスタムルールを記述した場合、`claude auto-mode critique` はそれらを確認し、曖昧、冗長、または誤検知を引き起こす可能性があるエントリにフラグを付けます。
+設定を保存した後、`claude auto-mode config` を実行して、有効なルールが期待通りであることを確認します。`"$defaults"` が展開されて配置されます。カスタムルールを記述した場合、`claude auto-mode critique` はそれらを確認し、曖昧、冗長、または誤検知を引き起こす可能性があるエントリにフラグを付けます。組み込みルールを削除または書き直す必要がある場合は、`claude auto-mode defaults` の出力をファイルに保存し、リストを編集して、結果を設定ファイルの `"$defaults"` の代わりに貼り付けます。
 
 ## 拒否を確認する
 
