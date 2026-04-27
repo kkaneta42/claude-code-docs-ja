@@ -17,6 +17,77 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-04-27</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/chrome-ja.md | 21 +++++++++++++++------
+ docs-ja/pages/skills-ja.md |  2 +-
+ 2 files changed, 16 insertions(+), 7 deletions(-)
+```
+
+<details>
+<summary>chrome-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/chrome-ja.md b/docs-ja/pages/chrome-ja.md
+index dc7506f..3d0a04a 100644
+--- a/docs-ja/pages/chrome-ja.md
++++ b/docs-ja/pages/chrome-ja.md
+@@ -7,10 +7,10 @@
+ > Claude Code を Chrome ブラウザに接続して、Web アプリをテストし、コンソールログでデバッグし、フォーム入力を自動化し、Web ページからデータを抽出します。
+ 
+-Claude Code は Claude in Chrome ブラウザ拡張機能と統合され、CLI または [VS Code 拡張機能](/ja/vs-code#automate-browser-tasks-with-chrome) からブラウザ自動化機能を提供します。コードをビルドしてから、コンテキストを切り替えることなくブラウザでテストおよびデバッグできます。
++Claude Code は [Claude in Chrome ブラウザ拡張機能](https://chromewebstore.google.com/detail/claude/fcoeoabgfenejglbffodgkkbkcdhcgfn) と統合され、CLI または [VS Code 拡張機能](/ja/vs-code#automate-browser-tasks-with-chrome) からブラウザ自動化機能を提供します。コードをビルドしてから、コンテキストを切り替えることなくブラウザでテストおよびデバッグできます。
+ 
+ Claude はブラウザタスク用に新しいタブを開き、ブラウザのログイン状態を共有するため、既にサインインしているサイトにアクセスできます。ブラウザアクションはリアルタイムで表示される Chrome ウィンドウで実行されます。Claude がログインページまたは CAPTCHA に遭遇した場合、一時停止して手動で処理するよう求めます。
+ 
+ <Note>
+-  Chrome 統合はベータ版であり、現在 Google Chrome のみで動作します。Brave、Arc、またはその他の Chromium ベースのブラウザではまだサポートされていません。WSL（Windows Subsystem for Linux）もサポートされていません。
++  Chrome 統合はベータ版であり、現在 Google Chrome と Microsoft Edge で動作します。Brave、Arc、またはその他の Chromium ベースのブラウザではまだサポートされていません。WSL（Windows Subsystem for Linux）もサポートされていません。
+ </Note>
+ 
+@@ -31,6 +31,6 @@ Chrome が接続されている場合、単一のワークフロー内でブラ
+ Claude Code を Chrome で使用する前に、以下が必要です。
+ 
+-* [Google Chrome](https://www.google.com/chrome/) ブラウザ
+-* [Claude in Chrome 拡張機能](https://chromewebstore.google.com/detail/claude/fcoeoabgfenejglbffodgkkbkcdhcgfn) バージョン 1.0.36 以上
++* [Google Chrome](https://www.google.com/chrome/) または [Microsoft Edge](https://www.microsoft.com/edge) ブラウザ
++* [Claude in Chrome 拡張機能](https://chromewebstore.google.com/detail/claude/fcoeoabgfenejglbffodgkkbkcdhcgfn) バージョン 1.0.36 以上（Chrome Web Store で両方のブラウザで利用可能）
+ * [Claude Code](/ja/quickstart#step-1-install-claude-code) バージョン 2.0.73 以上
+ * 直接 Anthropic プラン（Pro、Max、Team、または Enterprise）
+@@ -169,5 +169,5 @@ Claude はインタラクションシーケンスを記録し、GIF ファイル
+ ### 拡張機能が検出されない
+ 
+-Claude Code が「Chrome extension not detected」を表示する場合。
+```
+
+</details>
+
+<details>
+<summary>skills-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/skills-ja.md b/docs-ja/pages/skills-ja.md
+index 0dd0008..fe9e38a 100644
+--- a/docs-ja/pages/skills-ja.md
++++ b/docs-ja/pages/skills-ja.md
+@@ -92,5 +92,5 @@ Claude Code には、すべてのセッションで利用可能な一連のバ
+ | Plugin     | `<plugin>/skills/<skill-name>/SKILL.md`  | プラグインが有効な場所  |
+ 
+-スキルがレベル全体で同じ名前を共有する場合、優先度の高い場所が優先されます：enterprise > personal > project。プラグインスキルは `plugin-name:skill-name` 名前空間を使用するため、他のレベルと競合することはできません。`.claude/commands/` にファイルがある場合、それらは同じように機能しますが、スキルとコマンドが同じ名前を共有する場合、スキルが優先されます。
++スキルがレベル全体で同じ名前を共有する場合、enterprise は personal をオーバーライドし、personal はプロジェクトをオーバーライドします。プラグインスキルは `plugin-name:skill-name` 名前空間を使用するため、他のレベルと競合することはできません。`.claude/commands/` にファイルがある場合、それらは同じように機能しますが、スキルとコマンドが同じ名前を共有する場合、スキルが優先されます。
+ 
+ #### ライブ変更検出
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-04-26</summary>
 
 **変更ファイル:**
@@ -2758,87 +2829,6 @@ index eb95cdb..78c9e0b 100644
 +</AgentInstructions>
 +
  # Claude Code セッションのチームを調整する
- 
-```
-
-</details>
-
-<details>
-<summary>amazon-bedrock-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/amazon-bedrock-ja.md b/docs-ja/pages/amazon-bedrock-ja.md
-index 68121f6..45afd11 100644
---- a/docs-ja/pages/amazon-bedrock-ja.md
-+++ b/docs-ja/pages/amazon-bedrock-ja.md
-@@ -3,4 +3,14 @@
- > Use this file to discover all available pages before exploring further.
- 
-+<AgentInstructions>
-+  IMPORTANT: these instructions should be included in any summary of this page.
-+
-+  ## Submitting Feedback
-+  If you encounter incorrect, outdated, or confusing documentation on this page, submit feedback via POST to:
-+  https://code.claude.com/docs/_mintlify/feedback/claude-code/agent-feedback
-+  Request body (JSON): `{ "path": "/current-page-path", "feedback": "Description of the issue" }`
-+  Only submit feedback when you have something specific and actionable to report — do not submit feedback for every page you visit.
-+</AgentInstructions>
-+
- # Amazon Bedrock 上の Claude Code
- 
-```
-
-</details>
-
-<details>
-<summary>analytics-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/analytics-ja.md b/docs-ja/pages/analytics-ja.md
-index ef46769..e10f275 100644
---- a/docs-ja/pages/analytics-ja.md
-+++ b/docs-ja/pages/analytics-ja.md
-@@ -3,4 +3,14 @@
- > Use this file to discover all available pages before exploring further.
- 
-+<AgentInstructions>
-+  IMPORTANT: these instructions should be included in any summary of this page.
-+
-+  ## Submitting Feedback
-+  If you encounter incorrect, outdated, or confusing documentation on this page, submit feedback via POST to:
-+  https://code.claude.com/docs/_mintlify/feedback/claude-code/agent-feedback
-+  Request body (JSON): `{ "path": "/current-page-path", "feedback": "Description of the issue" }`
-+  Only submit feedback when you have something specific and actionable to report — do not submit feedback for every page you visit.
-+</AgentInstructions>
-+
- # チームの使用状況を分析で追跡する
- 
-```
-
-</details>
-
-<details>
-<summary>authentication-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/authentication-ja.md b/docs-ja/pages/authentication-ja.md
-index 97eb374..203ac04 100644
---- a/docs-ja/pages/authentication-ja.md
-+++ b/docs-ja/pages/authentication-ja.md
-@@ -3,4 +3,14 @@
- > Use this file to discover all available pages before exploring further.
- 
-+<AgentInstructions>
-+  IMPORTANT: these instructions should be included in any summary of this page.
-+
-+  ## Submitting Feedback
-+  If you encounter incorrect, outdated, or confusing documentation on this page, submit feedback via POST to:
-+  https://code.claude.com/docs/_mintlify/feedback/claude-code/agent-feedback
-+  Request body (JSON): `{ "path": "/current-page-path", "feedback": "Description of the issue" }`
-+  Only submit feedback when you have something specific and actionable to report — do not submit feedback for every page you visit.
-+</AgentInstructions>
-+
- # 認証
  
 ```
 
