@@ -17,6 +17,272 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-04-29</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/admin-setup-ja.md             |   8 +-
+ docs-ja/pages/amazon-bedrock-ja.md          |   7 +-
+ docs-ja/pages/authentication-ja.md          |  42 +-
+ docs-ja/pages/changelog.md                  |  88 +++
+ docs-ja/pages/cli-reference-ja.md           |   7 +-
+ docs-ja/pages/commands-ja.md                | 170 ++---
+ docs-ja/pages/common-workflows-ja.md        |  14 +-
+ docs-ja/pages/data-usage-ja.md              |  14 +-
+ docs-ja/pages/debug-your-config-ja.md       |  11 +-
+ docs-ja/pages/env-vars-ja.md                |  17 +-
+ docs-ja/pages/errors-ja.md                  |  19 +-
+ docs-ja/pages/fullscreen-ja.md              |   6 +-
+ docs-ja/pages/google-vertex-ai-ja.md        |   6 +-
+ docs-ja/pages/hooks-guide-ja.md             |  12 +-
+ docs-ja/pages/hooks-ja.md                   | 219 +++++--
+ docs-ja/pages/interactive-mode-ja.md        |   2 +-
+ docs-ja/pages/jetbrains-ja.md               |  75 ++-
+ docs-ja/pages/legal-and-compliance-ja.md    |   8 +-
+ docs-ja/pages/llm-gateway-ja.md             |  10 +
+ docs-ja/pages/mcp-ja.md                     |  24 +-
+ docs-ja/pages/monitoring-usage-ja.md        |  48 +-
+ docs-ja/pages/overview-ja.md                | 678 ++++++++++++++++++-
+ docs-ja/pages/plugin-dependencies-ja.md     |  18 +
+ docs-ja/pages/plugin-marketplaces-ja.md     |  15 +-
+ docs-ja/pages/plugins-ja.md                 |   4 +-
+ docs-ja/pages/plugins-reference-ja.md       |  79 ++-
+ docs-ja/pages/quickstart-ja.md              |   4 +-
+ docs-ja/pages/sandboxing-ja.md              |   4 +
+ docs-ja/pages/security-ja.md                |  20 +-
+ docs-ja/pages/server-managed-settings-ja.md |  18 +-
+ docs-ja/pages/settings-ja.md                |   2 +-
+ docs-ja/pages/setup-ja.md                   |  24 +-
+ docs-ja/pages/skills-ja.md                  |   1 +
+ docs-ja/pages/statusline-ja.md              |   2 +
+ docs-ja/pages/sub-agents-ja.md              |  10 +-
+ docs-ja/pages/terminal-config-ja.md         |   2 +
+ docs-ja/pages/tools-reference-ja.md         |   1 -
+ docs-ja/pages/troubleshooting-ja.md         | 972 ++--------------------------
+ docs-ja/pages/ultrareview-ja.md             |  25 +-
+ docs-ja/pages/voice-dictation-en.md         | 189 ------
+ 40 files changed, 1427 insertions(+), 1448 deletions(-)
+```
+
+**新規追加:**
+
+
+**削除:**
+
+
+<details>
+<summary>admin-setup-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/admin-setup-ja.md b/docs-ja/pages/admin-setup-ja.md
+index 21a13aa..64e4f81 100644
+--- a/docs-ja/pages/admin-setup-ja.md
++++ b/docs-ja/pages/admin-setup-ja.md
+@@ -107,13 +107,13 @@ Team、Enterprise、Claude API、およびクラウドプロバイダープラ
+ ## 検証とオンボード
+ 
+-マネージド設定を設定した後、開発者に Claude Code 内で `/status` を実行させてください。出力には `Enterprise managed settings` で始まる行が含まれ、その後に括弧内のソースが続きます。`(remote)`、`(plist)`、`(HKLM)`、`(HKCU)`、または `(file)` のいずれかです。[Verify active settings](/ja/settings#verify-active-settings) を参照してください。
++マネージド設定を設定した後、開発者に Claude Code 内で `/status` を実行させてください。出力には `Enterprise managed settings` で始まる行が含まれ、その後に括弧内のソースが続きます。`(remote)`、`(plist)`、`(HKLM)`、`(HKCU)`、または `(file)` のいずれかです。[アクティブな設定を検証](/ja/settings#verify-active-settings) を参照してください。
+ 
+ 開発者が開始するのに役立つこれらのリソースを共有してください。
+ 
+-* [Quickstart](/ja/quickstart): インストールからプロジェクトの操作まで、最初のセッションのウォークスルー
+-* [Common workflows](/ja/common-workflows): コードレビュー、リファクタリング、デバッグなどの日常的なタスクのパターン
++* [クイックスタート](/ja/quickstart): インストールからプロジェクトの操作まで、最初のセッションのウォークスルー
++* [一般的なワークフロー](/ja/common-workflows): コードレビュー、リファクタリング、デバッグなどの日常的なタスクのパターン
+ * [Claude 101](https://anthropic.skilljar.com/claude-101) と [Claude Code in Action](https://anthropic.skilljar.com/claude-code-in-action): Anthropic Academy の自習型コース
+ 
+-ログインの問題については、開発者に [authentication troubleshooting](/ja/troubleshooting#authentication-issues) を指してください。最も一般的な修正は次のとおりです。
++ログインの問題については、開発者に [認証のトラブルシューティング](/ja/troubleshoot-install#login-and-authentication) を指してください。最も一般的な修正は次のとおりです。
+ 
+ * `/logout` を実行してから `/login` を実行してアカウントを切り替える
+```
+
+</details>
+
+<details>
+<summary>amazon-bedrock-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/amazon-bedrock-ja.md b/docs-ja/pages/amazon-bedrock-ja.md
+index a3e2c8f..799be23 100644
+--- a/docs-ja/pages/amazon-bedrock-ja.md
++++ b/docs-ja/pages/amazon-bedrock-ja.md
+@@ -418,5 +418,6 @@ Claude Code に必要な権限を持つ IAM ポリシーを作成します。
+         "bedrock:InvokeModel",
+         "bedrock:InvokeModelWithResponseStream",
+-        "bedrock:ListInferenceProfiles"
++        "bedrock:ListInferenceProfiles",
++        "bedrock:GetInferenceProfile"
+       ],
+       "Resource": [
+@@ -446,4 +447,8 @@ Claude Code に必要な権限を持つ IAM ポリシーを作成します。
+ より制限的な権限の場合は、リソースを特定の推論プロファイル ARN に制限できます。
+ 
++`bedrock:GetInferenceProfile` により、Claude Code は[アプリケーション推論プロファイル ARN](#map-each-model-version-to-an-inference-profile) をそのバッキング基盤モデルに解決でき、そのモデルに対して正しいリクエスト形状を選択するために使用されます。
++
++トークンにこの権限がない場合、Claude Code は代替形状で 1 回再試行することで自動的に復旧するため、リクエストは成功しますが、新しいモデルが追加されるたびに追加のラウンドトリップが発生します。権限を付与することで再試行を回避できます。これは `AWS_BEARER_TOKEN_BEDROCK` デプロイメントに最も頻繁に適用され、トークンのポリシーは通常、完全な IAM ロールよりも狭くなります。
++
+ 詳細については、[Bedrock IAM documentation](https://docs.aws.amazon.com/bedrock/latest/userguide/security-iam.html) を参照してください。
+ 
+```
+
+</details>
+
+<details>
+<summary>authentication-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/authentication-ja.md b/docs-ja/pages/authentication-ja.md
+index 97eb374..d100276 100644
+--- a/docs-ja/pages/authentication-ja.md
++++ b/docs-ja/pages/authentication-ja.md
+@@ -15,4 +15,6 @@ Claude Code は、セットアップに応じて複数の認証方法をサポ
+ ブラウザが自動的に開かない場合は、`c` を押してログイン URL をクリップボードにコピーし、ブラウザに貼り付けます。
+ 
++ブラウザがサインイン後にリダイレクトされずにログインコードを表示する場合は、`Paste code here if prompted` プロンプトでそれをターミナルに貼り付けます。
++
+ 以下のいずれかのアカウントタイプで認証できます。
+ 
+@@ -24,5 +26,5 @@ Claude Code は、セットアップに応じて複数の認証方法をサポ
+ ログアウトして再認証するには、Claude Code プロンプトで `/logout` と入力します。
+ 
+-ログインに問題がある場合は、[認証のトラブルシューティング](/ja/troubleshooting#authentication-issues)を参照してください。
++ログインに問題がある場合は、[認証のトラブルシューティング](/ja/troubleshoot-install#login-and-authentication)を参照してください。
+ 
+ ## チーム認証を設定する
+@@ -112,6 +114,42 @@ Amazon Bedrock、Google Vertex AI、または Microsoft Foundry を使用する
+ Claude Code は認証認証情報を安全に管理します。
+ 
+-* **保存場所**: macOS では、認証情報は暗号化された macOS Keychain に保存されます。
++* **保存場所**: macOS では、認証情報は暗号化された macOS Keychain に保存されます。Linux と Windows では、認証情報は `~/.claude/.credentials.json` に保存されるか、その変数が設定されている場合は `$CLAUDE_CONFIG_DIR` の下に保存されます。Linux では、ファイルはモード `0600` で書き込まれます。Windows では、ユーザープロファイルディレクトリのアクセス制御を継承します。
+ * **サポートされている認証タイプ**: Claude.ai 認証情報、Claude API 認証情報、Azure Auth、Bedrock Auth、および Vertex Auth。
+ * **カスタム認証情報スクリプト**: [`apiKeyHelper`](/ja/settings#available-settings) 設定は、API キーを返すシェルスクリプトを実行するように設定できます。
+ * **更新間隔**: デフォルトでは、`apiKeyHelper` は 5 分後または HTTP 401 レスポンス時に呼び出されます。カスタム更新間隔の場合は、`CLAUDE_CODE_API_KEY_HELPER_TTL_MS` 環境変数を設定してください。
++* **遅いヘルパー通知**: `apiKeyHelper` がキーを返すのに 10 秒以上かかる場合、Claude Code はプロンプトバーに経過時間を表示する警告通知を表示します。この通知が定期的に表示される場合は、認証情報スクリプトを最適化できるかどうかを確認してください。
++
++`apiKeyHelper`、`ANTHROPIC_API_KEY`、および `ANTHROPIC_AUTH_TOKEN` はターミナル CLI セッションにのみ適用されます。Claude Desktop とリモートセッションは OAuth のみを使用し、`apiKeyHelper` を呼び出したり、API キー環境変数を読み込んだりしません。
++
+```
+
+</details>
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index bd99d3b..7359d2c 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,92 @@
+ # Changelog
+ 
++## 2.1.122
++
++- Added `ANTHROPIC_BEDROCK_SERVICE_TIER` environment variable to select a Bedrock service tier (`default`, `flex`, or `priority`), sent as the `X-Amzn-Bedrock-Service-Tier` header
++- Pasting a PR URL into the `/resume` search box now finds the session that created that PR (GitHub, GitHub Enterprise, GitLab, and Bitbucket)
++- `/mcp` now shows claude.ai connectors hidden by a manually-added server with the same URL, with a hint to remove the duplicate
++- Clarified the `/mcp` message shown when an MCP server is still unauthorized after the browser sign-in flow
++- OpenTelemetry: numeric attributes on `api_request`/`api_error` log events are now emitted as numbers, not strings
++- OpenTelemetry: added `claude_code.at_mention` log event for `@`-mention resolution
++- Fixed `/branch` producing forks that fail with "tool_use ids were found without tool_result blocks" when the source session contained entries from rewound timelines
++- Fixed `/model` not showing the Effort option for Bedrock application inference profile ARNs, and those ARNs not receiving `output_config.effort`
++- Fixed Vertex AI / Bedrock returning `invalid_request_error: output_config: Extra inputs are not permitted` on session-title generation and other structured-output queries
++- Fixed Vertex AI `count_tokens` endpoint returning 400 errors for users behind proxy gateways
++- Fixed `spinnerTipsOverride.excludeDefault` not suppressing the time-based spinner tips
++- Fixed ToolSearch missing MCP tools that connected after session start in nonblocking mode
++- Fixed `!exit` / `!quit` in bash mode terminating the CLI instead of running as a shell command
++- Fixed images sent to newer models being resized to 2576px per side instead of the correct 2000px maximum
++- Fixed remote control session idle status redrawing twice per second, which could flood `tmux -CC` control pipes and pause the terminal
++- Fixed assistant messages appearing blank in some sessions due to a stale view preference
++- Fixed a malformed hooks entry in `settings.json` no longer invalidating the entire file
++- Voice mode: keybindings bound to Caps Lock now show an error since terminals don't deliver Caps Lock as a key event
++
++## 2.1.121
++
+```
+
+</details>
+
+<details>
+<summary>cli-reference-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/cli-reference-ja.md b/docs-ja/pages/cli-reference-ja.md
+index a3a3bac..d12336f 100644
+--- a/docs-ja/pages/cli-reference-ja.md
++++ b/docs-ja/pages/cli-reference-ja.md
+@@ -31,4 +31,5 @@
+ | `claude remote-control`         | [Remote Control](/ja/remote-control) サーバーを開始して、Claude.ai または Claude アプリから Claude Code を制御します。サーバーモード（ローカルインタラクティブセッションなし）で実行されます。[サーバーモードフラグ](/ja/remote-control#start-a-remote-control-session) を参照してください | `claude remote-control --name "My Project"`                 |
+ | `claude setup-token`            | CI とスクリプト用の長期間有効な OAuth トークンを生成します。ターミナルにトークンを出力し、保存しません。Claude サブスクリプションが必要です。[長期間有効なトークンを生成](/ja/authentication#generate-a-long-lived-token) を参照してください                                                   | `claude setup-token`                                        |
++| `claude ultrareview [target]`   | [ultrareview](/ja/ultrareview#run-ultrareview-non-interactively) を非対話的に実行します。結果を stdout に出力し、成功時は 0 で終了し、失敗時は 1 で終了します。`--json` を使用して生のペイロードを取得し、`--timeout <minutes>` を使用して 30 分のデフォルトをオーバーライドできます        | `claude ultrareview 1234 --json`                            |
+ 
+ サブコマンドを誤入力した場合、Claude Code は最も近い一致を提案して、セッションを開始せずに終了します。たとえば、`claude udpate` は `Did you mean claude update?` と出力します。
+@@ -65,11 +66,11 @@
+ | `--from-pr`                                     | 特定のプルリクエストにリンクされたセッションを再開します。PR 番号、GitHub または GitHub Enterprise PR URL、GitLab マージリクエスト URL、または Bitbucket プルリクエスト URL を受け入れます。Claude がプルリクエストを作成するときに、セッションは自動的にリンクされます                                                                                        | `claude --from-pr 123`                                                                             |
+ | `--ide`                                         | 起動時に、正確に 1 つの有効な IDE が利用可能な場合、自動的に IDE に接続します                                                                                                                                                                                                                 | `claude --ide`                                                                                     |
+-| `--init`                                        | 初期化フックを実行してインタラクティブモードを開始                                                                                                                                                                                                                                     | `claude --init`                                                                                    |
+-| `--init-only`                                   | 初期化フックを実行して終了（インタラクティブセッションなし）                                                                                                                                                                                                                                | `claude --init-only`                                                                               |
++| `--init`                                        | セッション開始前に `init` マッチャーで [Setup hooks](/ja/hooks#setup) を実行します（プリントモードのみ）                                                                                                                                                                                      | `claude -p --init "query"`                                                                         |
++| `--init-only`                                   | [Setup](/ja/hooks#setup) および `SessionStart` hooks を実行してから、会話を開始せずに終了します                                                                                                                                                                                       | `claude --init-only`                                                                               |
+ | `--include-hook-events`                         | すべてのフックライフサイクルイベントを出力ストリームに含めます。`--output-format stream-json` が必要です                                                                                                                                                                                           | `claude -p --output-format stream-json --include-hook-events "query"`                              |
+ | `--include-partial-messages`                    | 部分的なストリーミングイベントを出力に含めます。`--print` と `--output-format stream-json` が必要です                                                                                                                                                                                       | `claude -p --output-format stream-json --include-partial-messages "query"`                         |
+ | `--input-format`                                | プリントモードの入力形式を指定します（オプション：`text`、`stream-json`）                                                                                                                                                                                                                | `claude -p --output-format json --input-format stream-json`                                        |
+ | `--json-schema`                                 | エージェントがワークフローを完了した後、JSON Schema に一致する検証済み JSON 出力を取得します（プリントモードのみ。[構造化出力](/ja/agent-sdk/structured-outputs) を参照）                                                                                                                                              | `claude -p --json-schema '{"type":"object","properties":{...}}' "query"`                           |
+-| `--maintenance`                                 | メンテナンスフックを実行してインタラクティブモードを開始                                                                                                                                                                                                                                  | `claude --maintenance`                                                                             |
++| `--maintenance`                                 | セッション開始前に `maintenance` マッチャーで [Setup hooks](/ja/hooks#setup) を実行します（プリントモードのみ）                                                                                                                                                                               | `claude -p --maintenance "query"`                                                                  |
+ | `--max-budget-usd`                              | 停止する前に API 呼び出しに費やす最大ドル金額（プリントモードのみ）                                                                                                                                                                                                                          | `claude -p --max-budget-usd 5.00 "query"`                                                          |
+ | `--max-turns`                                   | agentic ターンの数を制限します（プリントモードのみ）。制限に達するとエラーで終了します。デフォルトでは制限なし                                                                                                                                                                                                   | `claude -p --max-turns 3 "query"`                                                                  |
+```
+
+</details>
+
+<details>
+<summary>commands-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/commands-ja.md b/docs-ja/pages/commands-ja.md
+index 6f6fe09..727d194 100644
+--- a/docs-ja/pages/commands-ja.md
++++ b/docs-ja/pages/commands-ja.md
+@@ -17,89 +17,89 @@
+ 以下の表では、`<arg>` は必須引数を示し、`[arg]` はオプション引数を示します。
+ 
+-| コマンド                         | 目的                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+-| :--------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+-| `/add-dir <path>`            | 現在のセッション中にファイルアクセス用の作業ディレクトリを追加。ほとんどの `.claude/` 設定は追加されたディレクトリから[検出されません](/ja/permissions#additional-directories-grant-file-access-not-configuration)。後で `--continue` または `--resume` を使用して、追加されたディレクトリからセッションを再開できます                                                                                                                                                                                                                                      |
+-| `/agents`                    | [エージェント](/ja/sub-agents)設定を管理                                                                                                                                                                                                                                                                                                                                                                                                                              |
+-| `/autofix-pr [prompt]`       | 現在のブランチの PR を監視し、CI が失敗するか、レビュアーがコメントを残したときに修正をプッシュする [Claude Code on the web](/ja/claude-code-on-the-web#auto-fix-pull-requests) セッションを生成。`gh pr view` で開いている PR を検出します。別の PR を監視するには、最初にそのブランチをチェックアウトしてください。デフォルトでは、リモートセッションはすべての CI 失敗とレビューコメントを修正するよう指示されます。プロンプトを渡して異なる指示を与えることができます。例えば `/autofix-pr only fix lint and type errors`。`gh` CLI と [Claude Code on the web](/ja/claude-code-on-the-web#who-can-use-claude-code-on-the-web) へのアクセスが必要です |
+-| `/batch <instruction>`       | **[スキル](/ja/skills#bundled-skills)。** コードベース全体にわたる大規模な変更を並列で調整します。コードベースを調査し、作業を 5 ～ 30 個の独立したユニットに分解し、計画を提示します。承認されると、分離された [git worktree](/ja/common-workflows#run-parallel-claude-code-sessions-with-git-worktrees) 内の各ユニットごとに 1 つのバックグラウンドエージェントを生成します。各エージェントはそのユニットを実装し、テストを実行し、プルリクエストを開きます。git リポジトリが必要です。例: `/batch migrate src/ from Solid to React`                                                                                             |
+-| `/branch [name]`             | この時点で現在の会話のブランチを作成。ブランチに切り替え、元の会話を保持します。`/resume` で戻ることができます。エイリアス: `/fork`。[`CLAUDE_CODE_FORK_SUBAGENT`](/ja/env-vars) が設定されている場合、`/fork` は代わりに[フォークされたサブエージェント](/ja/sub-agents#fork-the-current-conversation)を生成し、このコマンドのエイリアスではなくなります                                                                                                                                                                                                                   |
+-| `/btw <question>`            | 会話に追加せずに[サイドクエスチョン](/ja/interactive-mode#side-questions-with-%2Fbtw)として素早く質問                                                                                                                                                                                                                                                                                                                                                                               |
+-| `/chrome`                    | [Chrome の Claude](/ja/chrome) 設定を構成                                                                                                                                                                                                                                                                                                                                                                                                                        |
+-| `/claude-api`                | **[スキル](/ja/skills#bundled-skills)。** プロジェクトの言語（Python、TypeScript、Java、Go、Ruby、C#、PHP、または cURL）と Managed Agents リファレンス用の Claude API リファレンス資料を読み込みます。ツール使用、ストリーミング、バッチ、構造化出力、および一般的な落とし穴をカバーしています。また、コードが `anthropic` または `@anthropic-ai/sdk` をインポートするときに自動的にアクティブになります                                                                                                                                                                                     |
+-| `/clear`                     | 空のコンテキストで新しい会話を開始。前の会話は `/resume` で利用可能なままです。同じ会話を続けながらコンテキストを解放するには、代わりに `/compact` を使用してください。エイリアス: `/reset`、`/new`                                                                                                                                                                                                                                                                                                                                      |
+-| `/color [color\|default]`    | 現在のセッションのプロンプトバーの色を設定。利用可能な色: `red`、`blue`、`green`、`yellow`、`purple`、`orange`、`pink`、`cyan`。`default` を使用してリセット。[リモートコントロール](/ja/remote-control)が接続されている場合、色は claude.ai/code に同期されます                                                                                                                                                                                                                                                                       |
+-| `/compact [instructions]`    | 会話をここまで要約してコンテキストを解放。オプションで要約のフォーカス指示を渡します。[コンパクション時にルール、スキル、メモリファイルがどのように処理されるか](/ja/context-window#what-survives-compaction)を参照してください                                                                                                                                                                                                                                                                                                                    |
+-| `/config`                    | [設定](/ja/settings)インターフェースを開いて、テーマ、モデル、[出力スタイル](/ja/output-styles)、およびその他の設定を調整。エイリアス: `/settings`                                                                                                                                                                                                                                                                                                                                                         |
+-| `/context`                   | 現在のコンテキスト使用状況をカラーグリッドとして視覚化。コンテキストが多いツール、メモリ肥大化、容量警告の最適化提案を表示                                                                                                                                                                                                                                                                                                                                                                                              |
+-| `/copy [N]`                  | 最後のアシスタント応答をクリップボードにコピー。数字 `N` を渡して N 番目に新しい応答をコピー: `/copy 2` は 2 番目に新しい応答をコピー。コードブロックが存在する場合、個別ブロックまたは完全な応答を選択するインタラクティブピッカーを表示。ピッカーで `w` を押して、クリップボードの代わりにファイルに選択内容を書き込み。SSH 経由で便利です                                                                                                                                                                                                                                                                     |
+-| `/cost`                      | `/usage` のエイリアス                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+-| `/debug [description]`       | **[スキル](/ja/skills#bundled-skills)。** 現在のセッションのデバッグログを有効にし、セッションデバッグログを読むことで問題をトラブルシューティングします。デバッグログはデフォルトではオフです。`claude --debug` で開始した場合を除き、セッション中に `/debug` を実行するとその時点からログのキャプチャを開始します。オプションで問題を説明して分析にフォーカスを当てます                                                                                                                                                                                                                                        |
+-| `/desktop`                   | 現在のセッションを Claude Code デスクトップアプリで続行。macOS と Windows のみ。エイリアス: `/app`                                                                                                                                                                                                                                                                                                                                                                                        |
+-| `/diff`                      | コミットされていない変更と各ターンの diff を表示するインタラクティブ diff ビューアを開きます。左右矢印を使用して現在の git diff と個別の Claude ターンを切り替え、上下矢印でファイルをブラウズします                                                                                                                                                                                                                                                                                                                                          |
+-| `/doctor`                    | Claude Code のインストールと設定を診断および検証。結果はステータスアイコン付きで表示されます。`f` を押して Claude に報告された問題を修正させます                                                                                                                                                                                                                                                                                                                                                                       |
+-| `/effort [level\|auto]`      | モデルの[努力レベル](/ja/model-config#adjust-effort-level)を設定。`low`、`medium`、`high`、`xhigh`、または `max` を受け入れます。利用可能なレベルはモデルに依存し、`max` はセッションのみです。`auto` はモデルのデフォルトにリセットします。引数なしで、インタラクティブスライダーを開きます。左右矢印でレベルを選択し、`Enter` で適用します。現在の応答の完了を待たずに即座に有効になります                                                                                                                                                                                                              |
+-| `/exit`                      | CLI を終了。エイリアス: `/quit`                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+```
+
+</details>
+
+*...以降省略*
+
+</details>
+
+
+<details>
 <summary>2026-04-28</summary>
 
 **変更ファイル:**
@@ -2631,159 +2897,6 @@ index f4b958a..c4d269c 100644
 +        **Native Windows setups require [Git for Windows](https://git-scm.com/downloads/win).** Install it first if you don't have it. WSL setups do not need it.
  
          <Info>
-```
-
-</details>
-
-<details>
-<summary>quickstart-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/quickstart-ja.md b/docs-ja/pages/quickstart-ja.md
-index c9eed2d..45e6693 100644
---- a/docs-ja/pages/quickstart-ja.md
-+++ b/docs-ja/pages/quickstart-ja.md
-@@ -666,5 +666,5 @@ To install Claude Code, use one of the following methods:
-     If you see `The token '&&' is not a valid statement separator`, you're in PowerShell, not CMD. Use the PowerShell command above instead. Your prompt shows `PS C:\` when you're in PowerShell.
- 
--    **Windows requires [Git for Windows](https://git-scm.com/downloads/win).** Install it first if you don't have it.
-+    **Native Windows setups require [Git for Windows](https://git-scm.com/downloads/win).** Install it first if you don't have it. WSL setups do not need it.
- 
-     <Info>
-```
-
-</details>
-
-<details>
-<summary>setup-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/setup-ja.md b/docs-ja/pages/setup-ja.md
-index e6fb6a7..5779bf3 100644
---- a/docs-ja/pages/setup-ja.md
-+++ b/docs-ja/pages/setup-ja.md
-@@ -70,5 +70,5 @@ To install Claude Code, use one of the following methods:
-     If you see `The token '&&' is not a valid statement separator`, you're in PowerShell, not CMD. Use the PowerShell command above instead. Your prompt shows `PS C:\` when you're in PowerShell.
- 
--    **Windows requires [Git for Windows](https://git-scm.com/downloads/win).** Install it first if you don't have it.
-+    **Native Windows setups require [Git for Windows](https://git-scm.com/downloads/win).** Install it first if you don't have it. WSL setups do not need it.
- 
-     <Info>
-```
-
-</details>
-
-<details>
-<summary>ultraplan-en.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/ultraplan-en.md b/docs-ja/pages/ultraplan-en.md
-index 3ba3c0d..96519ea 100644
---- a/docs-ja/pages/ultraplan-en.md
-+++ b/docs-ja/pages/ultraplan-en.md
-@@ -29,5 +29,5 @@ This is useful when you want a richer review surface than the terminal offers:
- * **Flexible execution**: approve the plan to run on the web and open a pull request, or send it back to your terminal
- 
--Ultraplan requires a [Claude Code on the web](/en/claude-code-on-the-web) account and a GitHub repository. Because it runs on Anthropic's cloud infrastructure, it is not available when using Amazon Bedrock, Google Cloud Vertex AI, or Microsoft Foundry. The cloud session runs in your account's default [cloud environment](/en/claude-code-on-the-web#the-cloud-environment).
-+Ultraplan requires a [Claude Code on the web](/en/claude-code-on-the-web) account and a GitHub repository. Because it runs on Anthropic's cloud infrastructure, it is not available when using Amazon Bedrock, Google Cloud Vertex AI, or Microsoft Foundry. The cloud session runs in your account's default [cloud environment](/en/claude-code-on-the-web#the-cloud-environment). If you don't have a cloud environment yet, ultraplan creates one automatically when it first launches.
- 
- ## Launch ultraplan from the CLI
-```
-
-</details>
-
-<details>
-<summary>web-quickstart-en.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/web-quickstart-en.md b/docs-ja/pages/web-quickstart-en.md
-index e255391..eee40d9 100644
---- a/docs-ja/pages/web-quickstart-en.md
-+++ b/docs-ja/pages/web-quickstart-en.md
-@@ -186,7 +186,7 @@ Enterprise organizations may need an admin to enable Claude Code on the web. Con
- If you typed it inside Claude Code and still see the error, your CLI is older than v2.1.80 or you're authenticated with an API key or third-party provider instead of a claude.ai subscription. Run `claude update`, then `/login` to sign in with your claude.ai account.
- 
--### "No cloud environment available" when using `--remote`
-+### "Could not create a cloud environment" or "No cloud environment available" when using `--remote` or ultraplan
- 
--You haven't created a cloud environment yet. Run `/web-setup` in the Claude Code CLI to create one, or visit [claude.ai/code](https://claude.ai/code) and follow the **Create your environment** step above.
-+Remote-session features create a default cloud environment automatically if you don't have one. If you see "Could not create a cloud environment", automatic creation failed. {/* max-version: 2.1.100 */}If you see "No cloud environment available", your CLI predates automatic creation. In either case, run `/web-setup` in the Claude Code CLI to create one manually, or visit [claude.ai/code](https://claude.ai/code) and follow the **Create your environment** step above.
- 
- ### Setup script failed
-```
-
-</details>
-
-</details>
-
-
-<details>
-<summary>2026-04-11</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/changelog.md     | 49 ++++++++++++++++++++++++++++++++++++++++++
- docs-ja/pages/hooks-ja.md      |  2 +-
- docs-ja/pages/overview-ja.md   |  4 +++-
- docs-ja/pages/quickstart-ja.md |  4 +++-
- docs-ja/pages/setup-ja.md      |  4 +++-
- 5 files changed, 59 insertions(+), 4 deletions(-)
-```
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index 289635e..6677cdd 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,53 @@
- # Changelog
- 
-+## 2.1.101
-+
-+- Added `/team-onboarding` command to generate a teammate ramp-up guide from your local Claude Code usage
-+- Added OS CA certificate store trust by default, so enterprise TLS proxies work without extra setup (set `CLAUDE_CODE_CERT_STORE=bundled` to use only bundled CAs)
-+- `/ultraplan` and other remote-session features now auto-create a default cloud environment instead of requiring web setup first
-+- Improved brief mode to retry once when Claude responds with plain text instead of a structured message
-+- Improved focus mode: Claude now writes more self-contained summaries since it knows you only see its final message
-+- Improved tool-not-available errors to explain why and how to proceed when the model calls a tool that exists but isn't available in the current context
-+- Improved rate-limit retry messages to show which limit was hit and when it resets instead of an opaque seconds countdown
-+- Improved refusal error messages to include the API-provided explanation when available
-+- Improved `claude -p --resume <name>` to accept session titles set via `/rename` or `--name`
-+- Improved settings resilience: an unrecognized hook event name in `settings.json` no longer causes the entire file to be ignored
-+- Improved plugin hooks from plugins force-enabled by managed settings to run when `allowManagedHooksOnly` is set
-+- Improved `/plugin` and `claude plugin update` to show a warning when the marketplace could not be refreshed, instead of silently reporting a stale version
-+- Improved plan mode to hide the "Refine with Ultraplan" option when the user's org or auth setup can't reach Claude Code on the web
-+- Improved beta tracing to honor `OTEL_LOG_USER_PROMPTS`, `OTEL_LOG_TOOL_DETAILS`, and `OTEL_LOG_TOOL_CONTENT`; sensitive span attributes are no longer emitted unless opted in
-+- Improved SDK `query()` to clean up subprocess and temp files when consumers `break` from `for await` or use `await using`
-+- Fixed a command injection vulnerability in the POSIX `which` fallback used by LSP binary detection
-+- Fixed a memory leak where long sessions retained dozens of historical copies of the message list in the virtual scroller
-+- Fixed `--resume`/`--continue` losing conversation context on large sessions when the loader anchored on a dead-end branch instead of the live conversation
-+- Fixed `--resume` chain recovery bridging into an unrelated subagent conversation when a subagent message landed near a main-chain write gap
-+- Fixed a crash on `--resume` when a persisted Edit/Write tool result was missing its `file_path`
-+- Fixed a hardcoded 5-minute request timeout that aborted slow backends (local LLMs, extended thinking, slow gateways) regardless of `API_TIMEOUT_MS`
-```
-
-</details>
-
-<details>
-<summary>hooks-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/hooks-ja.md b/docs-ja/pages/hooks-ja.md
-index 865504f..ac384ed 100644
---- a/docs-ja/pages/hooks-ja.md
-+++ b/docs-ja/pages/hooks-ja.md
-@@ -29,5 +29,5 @@
- <div style={{maxWidth: "500px", margin: "0 auto"}}>
-   <Frame>
--    <img src="https://mintcdn.com/claude-code/WLZtXlltXc8aIoIM/images/hooks-lifecycle.svg?fit=max&auto=format&n=WLZtXlltXc8aIoIM&q=85&s=6a0bf67eeb570a96e36b564721fa2a93" alt="SessionStart から agentic ループを経由して SessionEnd までのフックのシーケンスを示すフック ライフサイクル図。agentic ループ内に PreToolUse、PermissionRequest、PostToolUse、SubagentStart/Stop、TaskCreated、TaskCompleted が含まれ、Elicitation と ElicitationResult が MCP ツール実行内にネストされ、PermissionDenied が PermissionRequest からの副分岐として、WorktreeCreate、WorktreeRemove、Notification、ConfigChange、InstructionsLoaded、CwdChanged、FileChanged がスタンドアロン非同期イベント" width="520" height="1155" data-path="images/hooks-lifecycle.svg" />
-+    <img src="https://mintcdn.com/claude-code/UMJp-WgTWngzO609/images/hooks-lifecycle.svg?fit=max&auto=format&n=UMJp-WgTWngzO609&q=85&s=3f4de67df216c87dc313943b32c15f62" alt="SessionStart から agentic ループを経由して SessionEnd までのフックのシーケンスを示すフック ライフサイクル図。agentic ループ内に PreToolUse、PermissionRequest、PostToolUse、SubagentStart/Stop、TaskCreated、TaskCompleted が含まれ、Elicitation と ElicitationResult が MCP ツール実行内にネストされ、PermissionDenied が PermissionRequest からの副分岐として、WorktreeCreate、WorktreeRemove、Notification、ConfigChange、InstructionsLoaded、CwdChanged、FileChanged がスタンドアロン非同期イベント" width="520" height="1155" data-path="images/hooks-lifecycle.svg" />
-   </Frame>
- </div>
 ```
 
 </details>

@@ -129,7 +129,6 @@ PowerShell ツールには、プレビュー中に次の既知の制限事項が
 
 * PowerShell プロファイルはロードされません
 * Windows では、サンドボックスはサポートされていません
-* Windows では、Git Bash は依然として Claude Code を起動するために必要です
 
 ## 利用可能なツールを確認する
 
