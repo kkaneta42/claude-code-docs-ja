@@ -95,7 +95,7 @@ Monitor は [Bash と同じ権限ルール](/ja/permissions#tool-specific-permis
 
 ## PowerShell ツール
 
-PowerShell ツールを使用すると、Claude は PowerShell コマンドをネイティブに実行できます。Windows では、これは Git Bash を経由するのではなく、PowerShell でコマンドが実行されることを意味します。ツールは Windows で段階的にロールアウトされており、Linux、macOS、および WSL ではオプトインです。
+PowerShell ツールを使用すると、Claude は PowerShell コマンドをネイティブに実行できます。Windows では、これは Git Bash を経由するのではなく、PowerShell でコマンドが実行されることを意味します。Git Bash がない Windows では、ツールは自動的に有効になります。Git Bash がインストールされている Windows では、ツールは段階的にロールアウトされています。Linux、macOS、および WSL では、ツールはオプトインです。
 
 ### PowerShell ツールを有効にする
 

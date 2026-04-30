@@ -22,8 +22,9 @@
 | `Failed to fetch version` またはダウンロードサーバーに到達できない                                               | [ネットワークとプロキシ設定を確認する](#check-network-connectivity)                                                 |
 | `irm is not recognized` または `&& is not valid`                                                | [シェルに適切なコマンドを使用する](#wrong-install-command-on-windows)                                             |
 | `'bash' is not recognized as the name of a cmdlet`                                           | [Windows インストーラーコマンドを使用する](#wrong-install-command-on-windows)                                     |
-| `Claude Code on Windows requires git-bash`                                                   | [Git Bash をインストールまたは設定する](#claude-code-on-windows-requires-git-bash)                              |
+| `Claude Code on Windows requires either Git for Windows (for bash) or PowerShell`            | [シェルをインストールする](#claude-code-on-windows-requires-either-git-for-windows-for-bash-or-powershell)    |
 | `Claude Code does not support 32-bit Windows`                                                | [Windows PowerShell を開く（x86 エントリではなく）](#claude-code-does-not-support-32-bit-windows)              |
+| `The process cannot access the file ... because it is being used by another process`         | [ダウンロードフォルダをクリアして再試行する](#the-process-cannot-access-the-file-during-windows-install)               |
 | `Error loading shared library`                                                               | [システムに対応したバイナリバリアント](#linux-musl-or-glibc-binary-mismatch)                                        |
 | `Illegal instruction`                                                                        | [アーキテクチャまたは CPU 命令セットの不一致](#illegal-instruction)                                                  |
 | WSL での `cannot execute binary file: Exec format error`                                       | [WSL1 ネイティブバイナリ回帰](#exec-format-error-on-wsl1)                                                    |
@@ -110,6 +111,8 @@ curl -sI https://downloads.claude.ai/claude-code-releases/latest
     ```
 
     または、ターミナルを閉じて再度開いてください。
+
+    fish や Nushell などの他のシェルの場合は、シェル独自の設定構文を使用して `~/.local/bin` を PATH に追加してから、ターミナルを再起動してください。
 
     修正が機能したことを確認してください：
 
@@ -453,6 +456,17 @@ Invoke-Expression: Missing argument in parameter list.
   irm https://claude.ai/install.ps1 | iex
   ```
 
+### Windows インストール中の `The process cannot access the file`
+
+PowerShell インストーラーが `Failed to download binary: The process cannot access the file ... because it is being used by another process` で失敗する場合、インストーラーは `%USERPROFILE%\.claude\downloads` に書き込むことができませんでした。これは通常、以前のインストール試行がまだ実行されているか、アンチウイルスソフトウェアがそのフォルダー内の部分的にダウンロードされたバイナリをスキャンしていることを意味します。
+
+インストーラーを実行している他の PowerShell ウィンドウを閉じ、アンチウイルススキャンがファイルを解放するのを待ってください。その後、ダウンロードフォルダーを削除してインストーラーを再度実行してください：
+
+```powershell theme={null}
+Remove-Item -Recurse -Force "$env:USERPROFILE\.claude\downloads"
+irm https://claude.ai/install.ps1 | iex
+```
+
 ### 低メモリ Linux サーバーでインストール中に Killed
 
 VPS またはクラウドインスタンスでインストール中に `Killed` が表示される場合：
@@ -511,11 +525,14 @@ Claude Desktop の古いバージョンをインストールした場合、`Wind
 
 Claude Desktop を最新バージョンに更新して、この問題を修正してください。
 
-### Windows での Claude Code は Git Bash が必要です
+### Windows での Claude Code は Git for Windows（Bash 用）または PowerShell が必要です
 
-ネイティブ Windows での Claude Code には、シェルコマンドを実行するための Git Bash を提供する [Git for Windows](https://git-scm.com/downloads/win) が必要です。
+ネイティブ Windows での Claude Code には、少なくとも 1 つのシェルが必要です：Bash 用の [Git for Windows](https://git-scm.com/downloads/win)、または PowerShell。どちらも見つからない場合、このエラーは起動時に表示されます。PowerShell のみが見つかった場合、Claude Code は Bash の代わりに PowerShell ツールを使用します。
 
-**Git がインストールされていない場合**、[git-scm.com/downloads/win](https://git-scm.com/downloads/win) からダウンロードしてください。セットアップ中に「Add to PATH」を選択してください。インストール後、ターミナルを再起動してください。
+**どちらもインストールされていない場合**、1 つをインストールしてください：
+
+* Git for Windows：[git-scm.com/downloads/win](https://git-scm.com/downloads/win) からダウンロードしてください。セットアップ中に「Add to PATH」を選択してください。インストール後、ターミナルを再起動してください。
+* PowerShell 7：[aka.ms/powershell](https://aka.ms/powershell) からダウンロードしてください。
 
 **Git が既にインストールされている**が Claude Code が見つけられない場合は、[settings.json ファイル](/ja/settings)でパスを設定してください：
 
