@@ -17,6 +17,57 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-05-01</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/memory-ja.md | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+```
+
+<details>
+<summary>memory-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/memory-ja.md b/docs-ja/pages/memory-ja.md
+index fb7c79b..2d83d0b 100644
+--- a/docs-ja/pages/memory-ja.md
++++ b/docs-ja/pages/memory-ja.md
+@@ -48,5 +48,5 @@ CLAUDE.md を、そうでなければ再度説明する場所として扱いま
+ * 新しいチームメンバーが生産的になるために同じコンテキストが必要になる
+ 
+-Claude がすべてのセッションで保持すべき事実に限定します。ビルドコマンド、規約、プロジェクトレイアウト、「常に X を実行する」ルール。エントリが複数ステップの手順である場合、またはコードベースの 1 つの部分にのみ関連する場合は、代わりに [skill](/ja/skills) または [パススコープルール](#organize-rules-with-clauderules) に移動します。[拡張機能の概要](/ja/features-overview#build-your-setup-over-time)では、各メカニズムをいつ使用するかについて説明しています。
++Claude がすべてのセッションで保持すべき事実に限定します。ビルドコマンド、規約、プロジェクトレイアウト、「常に X を実行する」ルール。エントリが複数ステップの手順である場合、またはコードベースの 1 つの部分にのみ関連する場合は、代わりに [skill](/ja/skills) または [パススコープルール](#organize-rules-with-claude/rules/) に移動します。[拡張機能の概要](/ja/features-overview#build-your-setup-over-time)では、各メカニズムをいつ使用するかについて説明しています。
+ 
+ ### CLAUDE.md ファイルをどこに配置するかを選択する
+@@ -61,7 +61,7 @@ CLAUDE.md ファイルはいくつかの場所に配置でき、それぞれ異
+ | **ローカル指示**   | `./CLAUDE.local.md`                                                                                                                                                   | 個人的なプロジェクト固有の好み。`.gitignore` に追加します | あなたのサンドボックス URL、好みのテストデータ         | あなただけ（現在のプロジェクト）  |
+ 
+-ワーキングディレクトリより上のディレクトリ階層内の CLAUDE.md および CLAUDE.local.md ファイルは、起動時に完全に読み込まれます。サブディレクトリ内のファイルは、Claude がそれらのディレクトリ内のファイルを読むときにオンデマンドで読み込まれます。完全な解決順序については、[CLAUDE.md ファイルの読み込み方法](#how-claudemd-files-load)を参照してください。
++ワーキングディレクトリより上のディレクトリ階層内の CLAUDE.md および CLAUDE.local.md ファイルは、起動時に完全に読み込まれます。サブディレクトリ内のファイルは、Claude がそれらのディレクトリ内のファイルを読むときにオンデマンドで読み込まれます。完全な解決順序については、[CLAUDE.md ファイルの読み込み方法](#how-claude-md-files-load)を参照してください。
+ 
+-大規模なプロジェクトの場合、[プロジェクトルール](#organize-rules-with-clauderules)を使用してトピック固有のファイルに指示を分割できます。ルールを使用すると、特定のファイルタイプまたはサブディレクトリに指示をスコープできます。
++大規模なプロジェクトの場合、[プロジェクトルール](#organize-rules-with-claude/rules/)を使用してトピック固有のファイルに指示を分割できます。ルールを使用すると、特定のファイルタイプまたはサブディレクトリに指示をスコープできます。
+ 
+ ### プロジェクト CLAUDE.md を設定する
+@@ -89,5 +89,5 @@ CLAUDE.md ファイルは各セッションの開始時にコンテキストウ
+ * 「ファイルを整理しておく」ではなく「API ハンドラーは `src/api/handlers/` に存在する」
+ 
+-**一貫性**: 2 つのルールが互いに矛盾している場合、Claude は 1 つを任意に選択する可能性があります。CLAUDE.md ファイル、サブディレクトリ内のネストされた CLAUDE.md ファイル、および [`.claude/rules/`](#organize-rules-with-clauderules) を定期的に確認して、古い指示または矛盾する指示を削除します。モノレポでは、[`claudeMdExcludes`](#exclude-specific-claudemd-files) を使用して、作業に関連のない他のチームの CLAUDE.md ファイルをスキップします。
++**一貫性**: 2 つのルールが互いに矛盾している場合、Claude は 1 つを任意に選択する可能性があります。CLAUDE.md ファイル、サブディレクトリ内のネストされた CLAUDE.md ファイル、および [`.claude/rules/`](#organize-rules-with-claude/rules/) を定期的に確認して、古い指示または矛盾する指示を削除します。モノレポでは、[`claudeMdExcludes`](#exclude-specific-claude-md-files) を使用して、作業に関連のない他のチームの CLAUDE.md ファイルをスキップします。
+ 
+ ### 追加ファイルをインポートする
+@@ -119,5 +119,5 @@ README、package.json、およびワークフローガイドを取得するに
+ </Warning>
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-04-30</summary>
 
 **変更ファイル:**
@@ -2742,61 +2793,5 @@ index 61b85a6..ebe0e84 100644
 ```
 
 </details>
-
-<details>
-<summary>setup-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/setup-ja.md b/docs-ja/pages/setup-ja.md
-index a11c197..38143f6 100644
---- a/docs-ja/pages/setup-ja.md
-+++ b/docs-ja/pages/setup-ja.md
-@@ -58,5 +58,5 @@ To install Claude Code, use one of the following methods:
-     ```
- 
--    If you see `The token '&&' is not a valid statement separator`, you're in PowerShell, not CMD. Use the PowerShell command above instead. Your prompt shows `PS C:\` when you're in PowerShell.
-+    If you see `The token '&&' is not a valid statement separator`, you're in PowerShell, not CMD. If you see `'irm' is not recognized as an internal or external command`, you're in CMD, not PowerShell. Your prompt shows `PS C:\` when you're in PowerShell and `C:\` without the `PS` when you're in CMD.
- 
-     **Native Windows setups require [Git for Windows](https://git-scm.com/downloads/win).** Install it first if you don't have it. WSL setups do not need it.
-```
-
-</details>
-
-<details>
-<summary>web-quickstart-en.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/web-quickstart-en.md b/docs-ja/pages/web-quickstart-en.md
-index afc68e0..8cb5f1d 100644
---- a/docs-ja/pages/web-quickstart-en.md
-+++ b/docs-ja/pages/web-quickstart-en.md
-@@ -134,4 +134,21 @@ With GitHub connected and an environment created, you're ready to submit tasks.
- </Steps>
- 
-+## Pre-fill sessions
-+
-+You can prefill the prompt, repositories, and environment for a new session by adding query parameters to the [claude.ai/code](https://claude.ai/code) URL. Use this to build integrations such as a button in your issue tracker that opens Claude Code with the issue description as the prompt.
-+
-+| Parameter      | Description                                                                                                                                                      |
-+| :------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-+| `prompt`       | Prompt text to prefill in the input box. The alias `q` is also accepted.                                                                                         |
-+| `prompt_url`   | URL to fetch the prompt text from, for prompts too long to embed in a query string. The URL must allow cross-origin requests. Ignored when `prompt` is also set. |
-+| `repositories` | Comma-separated list of `owner/repo` slugs to preselect. The alias `repo` is also accepted.                                                                      |
-+| `environment`  | Name or ID of the [environment](#connect-github-and-create-an-environment) to preselect.                                                                         |
-+
-+URL-encode each value. The example below opens the form with a prompt and a repository already selected:
-+
-+```text theme={null}
-+https://claude.ai/code?prompt=Fix%20the%20login%20bug&repositories=acme/webapp
-+```
-+
- ## Review and iterate
- 
-```
-
-</details>
-
-</details>
-
 
 <!-- UPDATE_LOG_END -->
