@@ -718,13 +718,13 @@ curl -fsSL https://claude.ai/install.sh | bash
 
 * **Claude Pro/Max ユーザー**：[claude.ai/settings](https://claude.ai/settings) でサブスクリプションがアクティブであることを確認してください
 * **Anthropic Console ユーザー**：アカウントに「Claude Code」または「Developer」ロールがあることを確認してください。管理者は Anthropic Console の設定 → メンバーで割り当てます。
-* **プロキシの背後**：企業プロキシは API リクエストに干渉する可能性があります。[ネットワーク設定](/ja/network-config)を参照してプロキシセットアップを確認してください。
+* **プロキシの背後**：企業プロキシは API リクエストに干渉する可能性があります。[ネットワーク設定](/ja/network-config) を参照してプロキシセットアップを確認してください。
 
 ### このオーガニゼーションはアクティブなサブスクリプションで無効になっています
 
 アクティブな Claude サブスクリプションがあるにもかかわらず `API Error: 400 ... "This organization has been disabled"` が表示される場合、`ANTHROPIC_API_KEY` 環境変数がサブスクリプションをオーバーライドしています。これは、前の雇用主またはプロジェクトからの古い API キーがシェルプロファイルに設定されている場合に一般的に発生します。
 
-`ANTHROPIC_API_KEY` が存在し、承認されている場合、Claude Code はサブスクリプションの OAuth 認証情報の代わりにそのキーを使用します。`-p` フラグを使用した非対話モードでは、存在する場合、キーは常に使用されます。[認証の優先順位](/ja/authentication#authentication-precedence)を参照して、完全な解決順序を確認してください。
+`ANTHROPIC_API_KEY` が存在し、承認されている場合、Claude Code はサブスクリプションの OAuth 認証情報の代わりにそのキーを使用します。`-p` フラグを使用した非対話モードでは、存在する場合、キーは常に使用されます。[認証の優先順位](/ja/authentication#authentication-precedence) を参照して、完全な解決順序を確認してください。
 
 代わりにサブスクリプションを使用するには、環境変数を設定解除し、シェルプロファイルから削除してください：
 
@@ -735,20 +735,20 @@ claude
 
 `~/.zshrc`、`~/.bashrc`、または `~/.profile` で `export ANTHROPIC_API_KEY=...` 行を確認して削除し、変更を永続的にしてください。Windows では、`$PROFILE` の PowerShell プロファイルと `ANTHROPIC_API_KEY` のユーザー環境変数を確認してください。Claude Code 内で `/status` を実行して、どの認証方法がアクティブであるかを確認してください。
 
-### WSL2 での OAuth ログイン失敗
+### WSL2、SSH、またはコンテナでの OAuth ログイン失敗
 
-WSL2 でのブラウザベースのログインは 2 つの方法で失敗する可能性があります：WSL が Windows ブラウザを開けない、またはターミナルが貼り付けられた認可コードを受け入れません。
+Claude Code が WSL2 で実行されている場合、SSH 経由でリモートマシンで実行されている場合、またはコンテナ内で実行されている場合、ブラウザは通常、別のホストで開き、そのリダイレクトは Claude Code のローカルコールバックサーバーに到達できません。サインイン後、ブラウザは自動的にリダイレクトされるのではなく、ログインコードを表示します。ターミナルの `Paste code here if prompted` プロンプトにそのコードを貼り付けてログインを完了してください。
 
-ブラウザが開かない場合は、`BROWSER` 環境変数を Windows ブラウザパスに設定してください：
+WSL2 からブラウザがまったく開かない場合は、`BROWSER` 環境変数を Windows ブラウザパスに設定してください：
 
 ```bash theme={null}
 export BROWSER="/mnt/c/Program Files/Google/Chrome/Application/chrome.exe"
 claude
 ```
 
-または、ログインプロンプトで `c` を押して OAuth URL をコピーし、Windows ブラウザに手動で貼り付けてください。
+または、対話型ログインプロンプトで `c` を押して OAuth URL をコピーするか、`claude auth login` が出力する URL をコピーして、ローカルマシンのブラウザで開いてください。
 
-ブラウザが開いても、コードをターミナルに貼り付けても何もしない場合、ターミナルの貼り付けバインディングはおそらくプロンプトに到達していません。ターミナルの別の貼り付けショートカット（Windows Terminal では右クリックまたは Shift+Insert）を試すか、対話型 UI の外でログインを実行してください：
+対話型プロンプトにコードを貼り付けても何もしない場合、ターミナルの貼り付けバインディングはおそらく入力フィールドに到達していません。ターミナルの別の貼り付けショートカット（Windows Terminal では右クリックまたは Shift+Insert）を試すか、標準入力から貼り付けられたコードを読み取る `claude auth login` を使用してください：
 
 ```bash theme={null}
 claude auth login
