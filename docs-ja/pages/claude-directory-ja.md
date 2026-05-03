@@ -94,7 +94,7 @@ export const ClaudeExplorer = () => {
 
 # API credentials
 config/secrets.json`,
-        docsLink: '/en/common-workflows#copy-gitignored-files-to-worktrees'
+        docsLink: '/en/worktrees#copy-gitignored-files-into-worktrees'
       }, {
         id: 'dot-claude',
         label: '.claude/',

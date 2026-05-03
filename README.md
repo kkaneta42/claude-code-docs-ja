@@ -17,6 +17,262 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-05-03</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/claude-directory-ja.md     |   2 +-
+ docs-ja/pages/code-review-ja.md          |  86 ++++++++++++-----
+ docs-ja/pages/desktop-ja.md              | 110 +++++++++++-----------
+ docs-ja/pages/desktop-quickstart-ja.md   |   2 +-
+ docs-ja/pages/github-actions-ja.md       |  10 +-
+ docs-ja/pages/gitlab-ci-cd-ja.md         |  22 ++---
+ docs-ja/pages/legal-and-compliance-ja.md |   2 +-
+ docs-ja/pages/monitoring-usage-ja.md     |   2 +-
+ docs-ja/pages/settings-ja.md             | 153 ++++++++++++++++---------------
+ docs-ja/pages/vs-code-ja.md              |  41 +++++++--
+ docs-ja/pages/zero-data-retention-ja.md  |   2 +-
+ 11 files changed, 248 insertions(+), 184 deletions(-)
+```
+
+**新規追加:**
+
+
+<details>
+<summary>claude-directory-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/claude-directory-ja.md b/docs-ja/pages/claude-directory-ja.md
+index b501cf1..c270b4e 100644
+--- a/docs-ja/pages/claude-directory-ja.md
++++ b/docs-ja/pages/claude-directory-ja.md
+@@ -95,5 +95,5 @@ export const ClaudeExplorer = () => {
+ # API credentials
+ config/secrets.json`,
+-        docsLink: '/en/common-workflows#copy-gitignored-files-to-worktrees'
++        docsLink: '/en/worktrees#copy-gitignored-files-into-worktrees'
+       }, {
+         id: 'dot-claude',
+```
+
+</details>
+
+<details>
+<summary>code-review-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/code-review-ja.md b/docs-ja/pages/code-review-ja.md
+index 4c8761d..080d8e9 100644
+--- a/docs-ja/pages/code-review-ja.md
++++ b/docs-ja/pages/code-review-ja.md
+@@ -8,5 +8,5 @@
+ 
+ <Note>
+-  Code Review はリサーチプレビュー段階であり、[Teams および Enterprise](https://claude.ai/admin-settings/claude-code) サブスクリプションで利用可能です。[Zero Data Retention](/ja/zero-data-retention) が有効になっている組織では利用できません。
++  Code Review はリサーチプレビュー段階であり、[Team および Enterprise](https://claude.ai/admin-settings/claude-code) サブスクリプションで利用可能です。[Zero Data Retention](/ja/zero-data-retention) が有効になっている組織では利用できません。
+ </Note>
+ 
+@@ -46,4 +46,10 @@ Claude を管理サービスではなく独自の CI インフラストラクチ
+ 結果には、展開可能な拡張推論セクションが含まれており、Claude がなぜ問題をフラグ立てしたのか、どのように問題を検証したのかを理解するために展開できます。
+ 
++### 結果に対する評価と返信
++
++Claude からの各レビューコメントには、👍 と 👎 が既に添付されているため、GitHub UI で両方のボタンがワンクリック評価のために表示されます。結果が有用だった場合は 👍 をクリックし、間違っていたか騒々しかった場合は 👎 をクリックしてください。Anthropic は PR がマージされた後にリアクションカウントを収集し、それを使用してレビュアーをチューニングします。リアクションは再レビューをトリガーしたり、PR 上の何かを変更したりしません。
++
++インラインコメントに返信しても、Claude が応答したり PR を更新したりするようにプロンプトされません。結果に対処するには、コードを修正してプッシュしてください。PR がプッシュトリガーレビューにサブスクライブされている場合、次の実行は問題が修正されるとスレッドを解決します。プッシュせずに新しいレビューをリクエストするには、[トップレベルの PR コメント](#manually-trigger-reviews)として `@claude review once` とコメントしてください。
++
+ ### チェック実行出力
+ 
+@@ -136,12 +142,12 @@ PR の現在の状態についてフィードバックが必要だが、その
+ ## レビューをカスタマイズする
+ 
+-Code Review はリポジトリから 2 つのファイルを読み取り、フラグを立てる内容をガイドします。どちらもデフォルトの正確性チェックの上に追加されます：
++Code Review はリポジトリから 2 つのファイルを読み取り、フラグを立てる内容をガイドします。これらは、デフォルトの正確性チェックの上にどの程度強く影響するかが異なります：
+ 
+-* **`CLAUDE.md`**: Claude Code がすべてのタスク（レビューだけではなく）に使用する共有プロジェクト指示。ガイダンスが対話的な Claude Code セッションにも適用される場合に使用します。
+-* **`REVIEW.md`**: レビューのみのガイダンス、コードレビュー中にのみ読み取られます。レビュー中にフラグを立てるか、スキップするかについての厳密なルールで、一般的な `CLAUDE.md` を乱雑にするルールに使用します。
+```
+
+</details>
+
+<details>
+<summary>desktop-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/desktop-ja.md b/docs-ja/pages/desktop-ja.md
+index 8d5190c..8a9c6a5 100644
+--- a/docs-ja/pages/desktop-ja.md
++++ b/docs-ja/pages/desktop-ja.md
+@@ -7,5 +7,5 @@
+ > Claude Code Desktop をさらに活用する：Git 分離による並列セッション、ドラッグアンドドロップペインレイアウト、統合ターミナルとファイルエディタ、サイドチャット、コンピュータ使用、電話から Dispatch セッションを送信、ビジュアル diff レビュー、アプリプレビュー、PR 監視、コネクタ、エンタープライズ設定。
+ 
+-Claude Desktop アプリ内の Code タブを使用すると、ターミナルではなくグラフィカルインターフェイスを通じて Claude Code を使用できます。
++Claude Desktop アプリには 3 つのタブがあります：**Chat** は会話用、**Cowork** は [Dispatch とより長い agentic work](https://claude.com/product/cowork) 用、**Code** はソフトウェア開発用です。このページは Code タブのリファレンスです。
+ 
+ <CardGroup cols={2}>
+@@ -19,27 +19,19 @@ Claude Desktop アプリ内の Code タブを使用すると、ターミナル
+ </CardGroup>
+ 
+-For Windows ARM64, download the [ARM64 installer](https://claude.ai/api/desktop/win32/arm64/setup/latest/redirect?utm_source=claude_code\&utm_medium=docs). Linux is not supported.
++For Windows ARM64, download the [ARM64 installer](https://claude.ai/api/desktop/win32/arm64/setup/latest/redirect?utm_source=claude_code\&utm_medium=docs). The desktop app is not available on Linux; use the [CLI](/en/quickstart) instead.
+ 
+-インストール後、Claude を起動してサインインし、**Code**タブをクリックします。最初のセッションの完全なウォークスルーについては、[はじめにガイド](/ja/desktop-quickstart)を参照してください。
++インストール後、Claude を起動してサインインし、**Code** タブをクリックします。Windows で初めて開く場合、[Git for Windows](https://git-scm.com/downloads/win) がインストールされている必要があります。インストール後、アプリを再起動してください。最初のセッションのウォークスルーについては、[はじめにガイド](/ja/desktop-quickstart)を参照してください。
+ 
+-Desktop は標準的な Claude Code エクスペリエンスに以下の機能を追加します：
++Code タブでは、各会話は **セッション** です：独自のチャット履歴、プロジェクトフォルダ、コード変更を持ち、他のセッションとは独立しています。サイドバーはセッションをリストアップし、複数を並列で実行できます。セッション内では以下のことができます：
+ 
+-* [並列セッション](#work-in-parallel-with-sessions)（自動 Git worktree 分離付き）
+-* [ドラッグアンドドロップレイアウト](#arrange-your-workspace)（統合ターミナル、ファイルエディタ、プレビューペイン付き）
+-* [サイドチャット](#ask-a-side-question-without-derailing-the-session)（メインスレッドに影響を与えずに分岐）
+-* [ビジュアル diff レビュー](#review-changes-with-diff-view)（インラインコメント付き）
+-* [ライブアプリプレビュー](#preview-your-app)（dev サーバー、HTML ファイル、PDF 付き）
+-* [コンピュータ使用](#let-claude-use-your-computer)（macOS と Windows でアプリを開いてスクリーンを制御）
+-* [GitHub PR 監視](#monitor-pull-request-status)（自動修正、自動マージ、自動アーカイブ付き）
+```
+
+</details>
+
+<details>
+<summary>desktop-quickstart-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/desktop-quickstart-ja.md b/docs-ja/pages/desktop-quickstart-ja.md
+index 2145a52..cb22f4a 100644
+--- a/docs-ja/pages/desktop-quickstart-ja.md
++++ b/docs-ja/pages/desktop-quickstart-ja.md
+@@ -19,5 +19,5 @@
+ </CardGroup>
+ 
+-For Windows ARM64, download the [ARM64 installer](https://claude.ai/api/desktop/win32/arm64/setup/latest/redirect?utm_source=claude_code\&utm_medium=docs). Linux is not supported.
++For Windows ARM64, download the [ARM64 installer](https://claude.ai/api/desktop/win32/arm64/setup/latest/redirect?utm_source=claude_code\&utm_medium=docs). The desktop app is not available on Linux; use the [CLI](/en/quickstart) instead.
+ 
+ <Note>
+```
+
+</details>
+
+<details>
+<summary>github-actions-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/github-actions-ja.md b/docs-ja/pages/github-actions-ja.md
+index 4bee071..1d5cdfe 100644
+--- a/docs-ja/pages/github-actions-ja.md
++++ b/docs-ja/pages/github-actions-ja.md
+@@ -10,9 +10,9 @@ Claude Code GitHub Actions は、GitHub ワークフローに AI を活用した
+ 
+ <Note>
+-  Claude Code GitHub Actions は [Claude Agent SDK](https://platform.claude.com/docs/en/agent-sdk/overview) の上に構築されており、Claude Code をアプリケーションにプログラム的に統合できます。SDK を使用して、GitHub Actions を超えたカスタム自動化ワークフローを構築できます。
++  Claude Code GitHub Actions は [Claude Agent SDK](/ja/agent-sdk/overview) の上に構築されており、Claude Code をアプリケーションにプログラム的に統合できます。SDK を使用して、GitHub Actions を超えたカスタム自動化ワークフローを構築できます。
+ </Note>
+ 
+ <Info>
+-  **Claude Opus 4.6 が利用可能になりました。** Claude Code GitHub Actions はデフォルトで Sonnet を使用します。Opus 4.6 を使用するには、[model パラメータ](#breaking-changes-reference) を `claude-opus-4-6` に設定してください。
++  **Claude Opus 4.7 が利用可能になりました。** Claude Code GitHub Actions はデフォルトで Sonnet を使用します。Opus 4.7 を使用するには、[model パラメータ](#breaking-changes-reference) を `claude-opus-4-7` に設定してください。
+ </Info>
+ 
+@@ -46,5 +46,5 @@ Claude Code は、コードの操作方法を変える強力な GitHub Action 
+   * GitHub アプリをインストールしてシークレットを追加するには、リポジトリ管理者である必要があります
+   * GitHub アプリは、Contents、Issues、Pull requests に対する読み取りと書き込みのアクセス許可をリクエストします
+-  * このクイックスタート方法は、直接 Claude API ユーザーのみが利用できます。AWS Bedrock または Google Vertex AI を使用している場合は、[AWS Bedrock と Google Vertex AI での使用](#using-with-aws-bedrock-%26-google-vertex-ai) セクションを参照してください。
++  * このクイックスタート方法は、直接 Claude API ユーザーのみが利用できます。Amazon Bedrock または Google Vertex AI を使用している場合は、[Amazon Bedrock と Google Vertex AI での使用](#using-with-amazon-bedrock-%26-google-vertex-ai) セクションを参照してください。
+ </Note>
+ 
+@@ -275,5 +275,5 @@ Claude Code Action v1 は、統一されたパラメータで設定を簡素化
+ </Tip>
+ 
+-## AWS Bedrock と Google Vertex AI での使用
++## Amazon Bedrock と Google Vertex AI での使用
+ 
+ エンタープライズ環境では、Claude Code GitHub Actions を独自のクラウドインフラストラクチャで使用できます。このアプローチにより、データレジデンシーと請求を制御しながら、同じ機能を維持できます。
+```
+
+</details>
+
+<details>
+<summary>gitlab-ci-cd-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/gitlab-ci-cd-ja.md b/docs-ja/pages/gitlab-ci-cd-ja.md
+index 5597975..e6ad63f 100644
+--- a/docs-ja/pages/gitlab-ci-cd-ja.md
++++ b/docs-ja/pages/gitlab-ci-cd-ja.md
+@@ -14,5 +14,5 @@
+ 
+ <Note>
+-  この統合は [Claude Code CLI and Agent SDK](https://platform.claude.com/docs/ja/agent-sdk/overview) の上に構築されており、CI/CD ジョブとカスタム自動化ワークフローで Claude をプログラム的に使用できます。
++  この統合は [Claude Code CLI and Agent SDK](/ja/agent-sdk/overview) の上に構築されており、CI/CD ジョブとカスタム自動化ワークフローで Claude をプログラム的に使用できます。
+ </Note>
+ 
+@@ -23,5 +23,5 @@
+ * **プロジェクト対応**: Claude は `CLAUDE.md` ガイドラインと既存のコードパターンに従います
+ * **シンプルなセットアップ**: `.gitlab-ci.yml` に 1 つのジョブとマスクされた CI/CD 変数を追加します
+-* **エンタープライズ対応**: Claude API、AWS Bedrock、または Google Vertex AI を選択して、データレジデンシーと調達のニーズを満たします
++* **エンタープライズ対応**: Claude API、Amazon Bedrock、または Google Vertex AI を選択して、データレジデンシーと調達のニーズを満たします
+ * **デフォルトでセキュア**: GitLab ランナーで実行され、ブランチ保護と承認が適用されます
+ 
+@@ -34,5 +34,5 @@ Claude Code は GitLab CI/CD を使用して AI タスクを分離されたジ
+ 2. **プロバイダー抽象化**: 環境に適したプロバイダーを使用します。
+    * Claude API（SaaS）
+-   * AWS Bedrock（IAM ベースのアクセス、クロスリージョンオプション）
++   * Amazon Bedrock（IAM ベースのアクセス、クロスリージョンオプション）
+    * Google Vertex AI（GCP ネイティブ、Workload Identity Federation）
+ 
+@@ -99,5 +99,5 @@ claude:
+ 
+ <Note>
+-  Claude API の代わりに AWS Bedrock または Google Vertex AI で実行するには、以下の [Using with AWS Bedrock & Google Vertex AI](#using-with-aws-bedrock--google-vertex-ai) セクションを参照して、認証と環境セットアップを確認してください。
++  Claude API の代わりに Amazon Bedrock または Google Vertex AI で実行するには、以下の [Using with Amazon Bedrock & Google Vertex AI](#using-with-amazon-bedrock--google-vertex-ai) セクションを参照して、認証と環境セットアップを確認してください。
+```
+
+</details>
+
+<details>
+<summary>legal-and-compliance-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/legal-and-compliance-ja.md b/docs-ja/pages/legal-and-compliance-ja.md
+index cb5693a..2419d8c 100644
+--- a/docs-ja/pages/legal-and-compliance-ja.md
++++ b/docs-ja/pages/legal-and-compliance-ja.md
+@@ -18,5 +18,5 @@ Claude Code の使用は、以下の対象となります。
+ ### 商用契約
+ 
+-Claude API を直接（1P）使用している場合でも、AWS Bedrock または Google Vertex を通じてアクセスしている場合（3P）でも、既存の商用契約が Claude Code の使用に適用されます。ただし、相互に別途合意した場合を除きます。
++Claude API を直接（1P）使用している場合でも、Amazon Bedrock または Google Vertex を通じてアクセスしている場合（3P）でも、既存の商用契約が Claude Code の使用に適用されます。ただし、相互に別途合意した場合を除きます。
+ 
+ ## 規制対応
+```
+
+</details>
+
+<details>
+<summary>monitoring-usage-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/monitoring-usage-ja.md b/docs-ja/pages/monitoring-usage-ja.md
+index 7c8fc94..0a23d1a 100644
+--- a/docs-ja/pages/monitoring-usage-ja.md
++++ b/docs-ja/pages/monitoring-usage-ja.md
+@@ -860,5 +860,5 @@ API リクエストが複数回の試行後に失敗した場合に 1 回ログ
+ 
+ <Note>
+-  コストメトリクスは概算です。公式な請求データについては、API プロバイダー (Claude Console、AWS Bedrock、または Google Cloud Vertex) を参照してください。
++  コストメトリクスは概算です。公式な請求データについては、API プロバイダー (Claude Console、Amazon Bedrock、または Google Cloud Vertex) を参照してください。
+ </Note>
+ 
+```
+
+</details>
+
+*...以降省略*
+
+</details>
+
+
+<details>
 <summary>2026-05-02</summary>
 
 **変更ファイル:**
@@ -2507,260 +2763,6 @@ index 234f9f2..c176b23 100644
 -| `ANTHROPIC_DEFAULT_SONNET_MODEL_DESCRIPTION`            | [モデル設定](/ja/model-config#customize-pinned-model-display-and-capabilities) を参照してください                                                                                                                                                                                                                                                                                              |
 -| `ANTHROPIC_DEFAULT_SONNET_MODEL_NAME`                   | [モデル設定](/ja/model-config#customize-pinned-model-display-and-capabilities) を参照してください                                                                                                                                                                                                                                                                                              |
 -| `ANTHROPIC_DEFAULT_SONNET_MODEL_SUPPORTED_CAPABILITIES` | [モデル設定](/ja/model-config#customize-pinned-model-display-and-capabilities) を参照してください                                                                                                                                                                                                                                                                                              |
-```
-
-</details>
-
-<details>
-<summary>fullscreen-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/fullscreen-ja.md b/docs-ja/pages/fullscreen-ja.md
-index 4ac25cc..bb4c70a 100644
---- a/docs-ja/pages/fullscreen-ja.md
-+++ b/docs-ja/pages/fullscreen-ja.md
-@@ -8,5 +8,5 @@
- 
- <Note>
--  フルスクリーンレンダリングはオプトイン形式の[リサーチプレビュー](#research-preview)であり、Claude Code v2.1.89 以降が必要です。`CLAUDE_CODE_NO_FLICKER=1` で有効にできます。フィードバックに基づいて動作が変わる可能性があります。
-+  フルスクリーンレンダリングはオプトイン形式の[リサーチプレビュー](#research-preview)であり、Claude Code v2.1.89 以降が必要です。現在の会話で `/tui fullscreen` を実行して切り替えるか、v2.1.110 より前のバージョンで `CLAUDE_CODE_NO_FLICKER=1` を設定してください。フィードバックに基づいて動作が変わる可能性があります。
- </Note>
- 
-@@ -21,5 +21,7 @@
- ## フルスクリーンレンダリングを有効にする
- 
--Claude Code を起動するときに `CLAUDE_CODE_NO_FLICKER` 環境変数を設定します。
-+Claude Code の会話内で `/tui fullscreen` を実行してください。CLI は [`tui` 設定](/ja/settings#available-settings)を保存し、会話をそのままにしてフルスクリーンで再起動するため、コンテキストを失わずにセッション中に切り替えることができます。引数なしで `/tui` を実行して、どのレンダラーがアクティブかを確認してください。
-+
-+Claude Code を起動する前に `CLAUDE_CODE_NO_FLICKER` 環境変数を設定することもできます。
- 
- ```bash theme={null}
-@@ -27,9 +29,5 @@ CLAUDE_CODE_NO_FLICKER=1 claude
- ```
- 
--すべてのセッションで有効にするには、`~/.zshrc` や `~/.bashrc` などのシェルプロファイルで変数をエクスポートします。
--
--```bash theme={null}
--export CLAUDE_CODE_NO_FLICKER=1
--```
-+`tui` 設定と環境変数は同等です。`/tui` コマンドは再起動されたプロセスから `CLAUDE_CODE_NO_FLICKER` をクリアして、書き込まれた設定が有効になるようにします。
- 
-```
-
-</details>
-
-*...以降省略*
-
-</details>
-
-
-<details>
-<summary>2026-04-19</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/changelog.md | 4 ++++
- 1 file changed, 4 insertions(+)
-```
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index 7af2294..475ad34 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,8 @@
- # Changelog
- 
-+## 2.1.114
-+
-+- Fixed a crash in the permission dialog when an agent teams teammate requested tool permission
-+
- ## 2.1.113
- 
-```
-
-</details>
-
-</details>
-
-
-<details>
-<summary>2026-04-18</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/changelog.md            | 41 +++++++++++++++++++++++++++++++++++
- docs-ja/pages/features-overview-ja.md |  2 +-
- 2 files changed, 42 insertions(+), 1 deletion(-)
-```
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index d9de314..7af2294 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,45 @@
- # Changelog
- 
-+## 2.1.113
-+
-+- Changed the CLI to spawn a native Claude Code binary (via a per-platform optional dependency) instead of bundled JavaScript
-+- Added `sandbox.network.deniedDomains` setting to block specific domains even when a broader `allowedDomains` wildcard would otherwise permit them
-+- Fullscreen mode: Shift+↑/↓ now scrolls the viewport when extending a selection past the visible edge
-+- `Ctrl+A` and `Ctrl+E` now move to the start/end of the current logical line in multiline input, matching readline behavior
-+- Windows: `Ctrl+Backspace` now deletes the previous word
-+- Long URLs in responses and bash output stay clickable when they wrap across lines (in terminals with OSC 8 hyperlinks)
-+- Improved `/loop`: pressing Esc now cancels pending wakeups, and wakeups display as "Claude resuming /loop wakeup" for clarity
-+- `/extra-usage` now works from Remote Control (mobile/web) clients
-+- Remote Control clients can now query `@`-file autocomplete suggestions
-+- Improved `/ultrareview`: faster launch with parallelized checks, diffstat in the launch dialog, and animated launching state
-+- Subagents that stall mid-stream now fail with a clear error after 10 minutes instead of hanging silently
-+- Bash tool: multi-line commands whose first line is a comment now show the full command in the transcript, closing a UI-spoofing vector
-+- Running `cd <current-directory> && git …` no longer triggers a permission prompt when the `cd` is a no-op
-+- Security: on macOS, `/private/{etc,var,tmp,home}` paths are now treated as dangerous removal targets under `Bash(rm:*)` allow rules
-+- Security: Bash deny rules now match commands wrapped in `env`/`sudo`/`watch`/`ionice`/`setsid` and similar exec wrappers
-+- Security: `Bash(find:*)` allow rules no longer auto-approve `find -exec`/`-delete`
-+- Fixed MCP concurrent-call timeout handling where a message for one tool call could silently disarm another call's watchdog
-+- Fixed Cmd-backspace / `Ctrl+U` to once again delete from the cursor to the start of the line
-+- Fixed markdown tables breaking when a cell contains an inline code span with a pipe character
-+- Fixed session recap auto-firing while composing unsent text in the prompt
-+- Fixed `/copy` "Full response" not aligning markdown table columns for pasting into GitHub, Notion, or Slack
-```
-
-</details>
-
-<details>
-<summary>features-overview-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/features-overview-ja.md b/docs-ja/pages/features-overview-ja.md
-index 22df0d5..b5ceb1b 100644
---- a/docs-ja/pages/features-overview-ja.md
-+++ b/docs-ja/pages/features-overview-ja.md
-@@ -199,5 +199,5 @@ Claude Code は、コードについて推論するモデルと、ファイル
-     **継承：** Claude は作業ディレクトリからルートまで CLAUDE.md ファイルを読み取り、サブディレクトリにネストされたものを、それらのファイルにアクセスするときに検出します。詳細は [How CLAUDE.md files load](/ja/memory#how-claudemd-files-load) を参照してください。
- 
--    <Tip>CLAUDE.md を約 500 行以下に保ちます。リファレンスマテリアルをスキルに移動します。スキルはオンデマンドでロードされます。</Tip>
-+    <Tip>CLAUDE.md を 200 行以下に保ちます。リファレンスマテリアルをスキルに移動します。スキルはオンデマンドでロードされます。</Tip>
-   </Tab>
- 
-```
-
-</details>
-
-</details>
-
-
-<details>
-<summary>2026-04-17</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/changelog.md                  |   44 +-
- docs-ja/pages/claude-code-on-the-web-ja.md  | 1118 ++++++++++++++-------------
- docs-ja/pages/desktop-ja.md                 |   22 +-
- docs-ja/pages/desktop-quickstart-ja.md      |    4 +-
- docs-ja/pages/desktop-scheduled-tasks-en.md |   22 +-
- docs-ja/pages/plugins-ja.md                 |   65 +-
- docs-ja/pages/plugins-reference-ja.md       |  164 ++--
- docs-ja/pages/remote-control-ja.md          |   95 ++-
- docs-ja/pages/routines-en.md                |  319 --------
- docs-ja/pages/scheduled-tasks-ja.md         |  112 ++-
- docs-ja/pages/settings-ja.md                |   37 +-
- docs-ja/pages/setup-ja.md                   |   36 +-
- docs-ja/pages/tools-reference-ja.md         |   28 +-
- docs-ja/pages/ultraplan-en.md               |   83 --
- docs-ja/pages/web-quickstart-en.md          |  220 ------
- 15 files changed, 1059 insertions(+), 1310 deletions(-)
-```
-
-**新規追加:**
-
-
-**削除:**
-
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index 457d6d1..d9de314 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,46 @@
- # Changelog
- 
-+## 2.1.112
-+
-+- Fixed "claude-opus-4-7 is temporarily unavailable" for auto mode
-+
-+## 2.1.111
-+
-+- Claude Opus 4.7 xhigh is now available! Use /effort to tune speed vs. intelligence
-+- Auto mode is now available for Max subscribers when using Opus 4.7
-+- Added `xhigh` effort level for Opus 4.7, sitting between `high` and `max`. Available via `/effort`, `--effort`, and the model picker; other models fall back to `high`
-+- `/effort` now opens an interactive slider when called without arguments, with arrow-key navigation between levels and Enter to confirm
-+- Added "Auto (match terminal)" theme option that matches your terminal's dark/light mode — select it from `/theme`
-+- Added `/less-permission-prompts` skill — scans transcripts for common read-only Bash and MCP tool calls and proposes a prioritized allowlist for `.claude/settings.json`
-+- Added `/ultrareview` for running comprehensive code review in the cloud using parallel multi-agent analysis and critique — invoke with no arguments to review your current branch, or `/ultrareview <PR#>` to fetch and review a specific GitHub PR
-+- Auto mode no longer requires `--enable-auto-mode`
-+- Windows: PowerShell tool is progressively rolling out. Opt in or out with `CLAUDE_CODE_USE_POWERSHELL_TOOL`. On Linux and macOS, enable with `CLAUDE_CODE_USE_POWERSHELL_TOOL=1` (requires `pwsh` on PATH)
-+- Read-only bash commands with glob patterns (e.g. `ls *.ts`) and commands starting with `cd <project-dir> &&` no longer trigger a permission prompt
-+- Suggest the closest matching subcommand when `claude <word>` is invoked with a near-miss typo (e.g. `claude udpate` → "Did you mean `claude update`?")
-+- Plan files are now named after your prompt (e.g. `fix-auth-race-snug-otter.md`) instead of purely random words
-+- Improved `/setup-vertex` and `/setup-bedrock` to show the actual `settings.json` path when `CLAUDE_CONFIG_DIR` is set, seed model candidates from existing pins on re-run, and offer a "with 1M context" option for supported models
-+- `/skills` menu now supports sorting by estimated token count — press `t` to toggle
-+- `Ctrl+U` now clears the entire input buffer (previously: delete to start of line); press `Ctrl+Y` to restore
-+- `Ctrl+L` now forces a full screen redraw in addition to clearing the prompt input
-+- Transcript view footer now shows `[` (dump to scrollback) and `v` (open in editor) shortcuts
-```
-
-</details>
-
-<details>
-<summary>claude-code-on-the-web-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/claude-code-on-the-web-ja.md b/docs-ja/pages/claude-code-on-the-web-ja.md
-index 40165e9..d1a97f3 100644
---- a/docs-ja/pages/claude-code-on-the-web-ja.md
-+++ b/docs-ja/pages/claude-code-on-the-web-ja.md
-@@ -3,705 +3,771 @@
- > Use this file to discover all available pages before exploring further.
- 
--# ウェブ上の Claude Code
-+# ウェブ上の Claude Code を使用する
- 
--> セキュアなクラウドインフラストラクチャで Claude Code タスクを非同期に実行します
-+> Anthropic のサンドボックスでクラウド環境、セットアップスクリプト、ネットワークアクセス、Docker を設定します。`--remote` と `--teleport` を使用してウェブとターミナル間でセッションを移動します。
- 
- <Note>
--  ウェブ上の Claude Code は現在リサーチプレビュー段階です。
-+  ウェブ上の Claude Code は Pro、Max、Team ユーザー、およびプレミアムシートまたは Chat + Claude Code シートを持つ Enterprise ユーザーを対象としたリサーチプレビュー段階です。
- </Note>
- 
--## ウェブ上の Claude Code とは？
-+ウェブ上の Claude Code は [claude.ai/code](https://claude.ai/code) の Anthropic 管理クラウドインフラストラクチャでタスクを実行します。セッションはブラウザを閉じても保持され、Claude モバイルアプリから監視できます。
- 
--ウェブ上の Claude Code を使用すると、開発者は Claude アプリから Claude Code を開始できます。これは以下の場合に最適です：
-+<Tip>
-+  ウェブ上の Claude Code は初めてですか？[はじめに](/ja/web-quickstart)から始めて、GitHub アカウントを接続し、最初のタスクを送信してください。
-+</Tip>
- 
--* **質問への回答**：コードアーキテクチャと機能の実装方法について質問する
--* **バグ修正とルーチンタスク**：頻繁な操舵を必要としない明確に定義されたタスク
--* **並列作業**：複数のバグ修正を並列で処理する
--* **ローカルマシンにないリポジトリ**：ローカルにチェックアウトしていないコードで作業する
 ```
 
 </details>
