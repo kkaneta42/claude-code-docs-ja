@@ -589,7 +589,11 @@ Error loading shared library libstdc++.so.6: No such file or directory
 
 **アーキテクチャの不一致。** インストーラーは間違ったバイナリをダウンロードしました。たとえば、ARM サーバーで x86。macOS または Linux では `uname -m` で、PowerShell では `$env:PROCESSOR_ARCHITECTURE` で確認してください。結果が受け取ったバイナリと一致しない場合は、出力を含めて [GitHub issue](https://github.com/anthropics/claude-code/issues) をファイルしてください。
 
-**古い CPU での不足している命令セット。** アーキテクチャは正しいが、それでも `Illegal instruction` が表示される場合、CPU は AVX またはバイナリが必要とする別の命令がない可能性があります。これは約 2013 年以前の Intel および AMD プロセッサに影響します。現在、ネイティブバイナリの回避策はありません。[issue #50384](https://github.com/anthropics/claude-code/issues/50384) でステータスを追跡し、報告するときに Linux では `cat /proc/cpuinfo | grep "model name" | head -1` から、macOS では `sysctl -n machdep.cpu.brand_string` から CPU モデルを含めてください。
+**古い CPU での不足している命令セット。** アーキテクチャは正しいが、それでも `Illegal instruction` が表示される場合、CPU は AVX またはバイナリが必要とする別の命令がない可能性があります。これは約 2013 年以前の Intel および AMD プロセッサに影響します。仮想マシンでは、ハイパーバイザーが AVX をゲストに渡さない場合があります。
+
+VPS または VM では、`grep -m1 -ow avx /proc/cpuinfo` を実行してください。空の結果は AVX がゲストで利用できないことを意味します。
+
+ネイティブバイナリの回避策はありません。[issue #50384](https://github.com/anthropics/claude-code/issues/50384) でステータスを追跡し、報告するときに Linux では `grep -m1 "model name" /proc/cpuinfo` から、macOS では `sysctl -n machdep.cpu.brand_string` から CPU モデルを含めてください。
 
 別のインストール方法は同じネイティブバイナリをダウンロードし、どちらの原因も解決しません。
 
