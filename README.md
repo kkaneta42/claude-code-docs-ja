@@ -17,6 +17,251 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-05-09</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/agent-teams-ja.md       |   2 +-
+ docs-ja/pages/changelog.md            |  59 ++++
+ docs-ja/pages/cli-reference-ja.md     |   4 +-
+ docs-ja/pages/commands-ja.md          |  22 +-
+ docs-ja/pages/desktop-ja.md           |  17 +
+ docs-ja/pages/env-vars-ja.md          | 452 ++++++++++++------------
+ docs-ja/pages/features-overview-ja.md |   2 +-
+ docs-ja/pages/hooks-ja.md             |  21 +-
+ docs-ja/pages/overview-ja.md          | 636 +--------------------------------
+ docs-ja/pages/plugins-ja.md           |  10 +-
+ docs-ja/pages/quickstart-ja.md        | 639 +---------------------------------
+ docs-ja/pages/settings-ja.md          |  14 +-
+ docs-ja/pages/setup-ja.md             |   2 +
+ docs-ja/pages/sub-agents-ja.md        |   6 +-
+ docs-ja/pages/terminal-config-ja.md   |   2 +-
+ docs-ja/pages/vs-code-ja.md           |   2 +-
+ 16 files changed, 367 insertions(+), 1523 deletions(-)
+```
+
+<details>
+<summary>agent-teams-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/agent-teams-ja.md b/docs-ja/pages/agent-teams-ja.md
+index f457bb0..691d350 100644
+--- a/docs-ja/pages/agent-teams-ja.md
++++ b/docs-ja/pages/agent-teams-ja.md
+@@ -421,4 +421,4 @@ tmux kill-session -t <session-name>
+ 
+ * **軽量委任**：[subagents](/ja/sub-agents) はセッション内で調査または検証用のヘルパーエージェントを生成し、エージェント間調整が必要ないタスクに適しています
+-* **手動並列セッション**：[Git worktrees](/ja/common-workflows#run-parallel-claude-code-sessions-with-git-worktrees) を使用すると、自動チーム調整なしで複数の Claude Code セッションを自分で実行できます
++* **手動並列セッション**：[Git worktrees](/ja/worktrees) を使用すると、自動チーム調整なしで複数の Claude Code セッションを自分で実行できます
+ * **アプローチを比較**：[subagent とエージェントチーム](/ja/features-overview#compare-similar-features)の比較を参照して、並べて比較してください
+```
+
+</details>
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index 32b662b..60efa10 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,63 @@
+ # Changelog
+ 
++## 2.1.137
++
++- [VSCode] Fixed extension failing to activate on Windows
++
++## 2.1.136
++
++- Added `CLAUDE_CODE_ENABLE_FEEDBACK_SURVEY_FOR_OTEL` to re-enable the session quality survey for enterprises capturing responses through OpenTelemetry
++- Added `settings.autoMode.hard_deny` for auto mode classifier rules that block unconditionally regardless of user intent or allow exceptions
++- Fixed MCP servers configured in `.mcp.json`, plugins, and claude.ai connectors silently disappearing after `/clear` in the VS Code extension, JetBrains plugin, and Agent SDK
++- Fixed a rare login loop where a concurrent credential write could overwrite a freshly-rotated OAuth token and force re-login
++- Fixed MCP OAuth refresh tokens being lost when multiple servers refresh concurrently — users with several remote MCP servers should no longer need daily re-authentication
++- Fixed an API error (400) when extended thinking emitted a redacted thinking block after a tool call
++- Fixed `--resume` / `--continue` not finding sessions when the project path contains underscores
++- Fixed plan mode not blocking file writes when a matching `Edit(...)` allow rule exists
++- WSL2: image paste from Windows clipboard now works via a PowerShell fallback when xclip/wl-paste cannot read image data
++- Fixed plugin `Stop`/`UserPromptSubmit` hooks failing when cache cleanup deletes a version still in use by a running session
++- Improved visual consistency across slash command dialogs: standardized footer hints, dialog spacing, and arrow-key styling, and the dialog frame now appears immediately during loading instead of popping in after
++- Fixed colors appearing at wrong positions in bash command output and markdown code blocks
++- Fixed ReasonML diffs rendering corrupted "undefined" text artifacts at word-diff boundaries
++- Fixed worktree exit dialog warning about uncommitted files in the wrong directory after worktree removal
++- Fixed `@` file picker not matching files created mid-session in small non-git directories
++- Fixed `@`-mention file picker not finding files in directories with more than 100 entries
++- Fixed failed tool calls not being click-to-expand in fullscreen mode when their output was truncated
+```
+
+</details>
+
+<details>
+<summary>cli-reference-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/cli-reference-ja.md b/docs-ja/pages/cli-reference-ja.md
+index a7190a9..c81bcc0 100644
+--- a/docs-ja/pages/cli-reference-ja.md
++++ b/docs-ja/pages/cli-reference-ja.md
+@@ -85,5 +85,5 @@
+ | `--permission-prompt-tool`                      | 非インタラクティブモードで権限プロンプトを処理する MCP ツールを指定します                                                                                                                                                                                                                                                                                     | `claude -p --permission-prompt-tool mcp_auth_tool "query"`                                         |
+ | `--plugin-dir`                                  | このセッションのみのプラグインをディレクトリまたは `.zip` アーカイブから読み込みます。各フラグは 1 つのパスを取ります。複数のプラグインの場合はフラグを繰り返します：`--plugin-dir A --plugin-dir B.zip`                                                                                                                                                                                                 | `claude --plugin-dir ./my-plugin`                                                                  |
+-| `--plugin-url`                                  | このセッションのみのプラグイン `.zip` アーカイブを URL から取得します。各フラグは 1 つの URL を取ります。複数のプラグインの場合はフラグを繰り返します                                                                                                                                                                                                                                       | `claude --plugin-url https://example.com/plugin.zip`                                               |
++| `--plugin-url`                                  | このセッションのみのプラグイン `.zip` アーカイブを URL から取得します。複数のプラグインの場合はフラグを繰り返すか、スペース区切りの URL を単一の引用符で囲まれた値で渡します                                                                                                                                                                                                                             | `claude --plugin-url https://example.com/plugin.zip`                                               |
+ | `--print`, `-p`                                 | インタラクティブモードなしで応答を出力します（プログラムによる使用の詳細については [Agent SDK ドキュメント](/ja/agent-sdk/overview) を参照）                                                                                                                                                                                                                                   | `claude -p "query"`                                                                                |
+ | `--remote`                                      | 提供されたタスク説明で claude.ai に新しい [Web セッション](/ja/claude-code-on-the-web) を作成します                                                                                                                                                                                                                                                   | `claude --remote "Fix the login bug"`                                                              |
+@@ -104,5 +104,5 @@
+ | `--verbose`                                     | 詳細ログを有効にし、ターンごとの完全な出力を表示します。このセッションの [`viewMode`](/ja/settings#available-settings) 設定をオーバーライドします                                                                                                                                                                                                                            | `claude --verbose`                                                                                 |
+ | `--version`, `-v`                               | バージョン番号を出力します                                                                                                                                                                                                                                                                                                               | `claude -v`                                                                                        |
+-| `--worktree`, `-w`                              | Claude を `<repo>/.claude/worktrees/<name>` の分離された [git worktree](/ja/worktrees) で開始します。名前が指定されていない場合は、自動生成されます                                                                                                                                                                                                              | `claude -w feature-auth`                                                                           |
++| `--worktree`, `-w`                              | Claude を `<repo>/.claude/worktrees/<name>` の分離された [git worktree](/ja/worktrees) で開始します。名前が指定されていない場合は、自動生成されます。`#<number>` または GitHub プルリクエスト URL を渡して、`origin` からその PR をフェッチし、worktree をそこからブランチします                                                                                                                        | `claude -w feature-auth`                                                                           |
+ 
+ ### システムプロンプトフラグ
+```
+
+</details>
+
+<details>
+<summary>commands-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/commands-ja.md b/docs-ja/pages/commands-ja.md
+index 98542ab..e218299 100644
+--- a/docs-ja/pages/commands-ja.md
++++ b/docs-ja/pages/commands-ja.md
+@@ -13,10 +13,28 @@
+ コマンドはメッセージの開始時にのみ認識されます。コマンド名の後に続くテキストは引数として渡されます。
+ 
+-以下の表は Claude Code に含まれるすべてのコマンドをリストしています。**[スキル](/ja/skills#bundled-skills)** とマークされたエントリはバンドルされたスキルです。これらは自分で作成するスキルと同じメカニズムを使用します。Claude に渡されるプロンプトであり、Claude は関連する場合に自動的に呼び出すこともできます。その他はすべて、CLI にコード化された動作を持つ組み込みコマンドです。独自のコマンドを追加するには、[スキル](/ja/skills)を参照してください。
++## 典型的なワークフロー全体でのコマンド
++
++ほとんどのコマンドはセッション内の特定の時点で有用です。プロジェクトのセットアップから変更のリリースまでです。
++
++**リポジトリでの最初のセッション。** `/init` を実行してスターター `CLAUDE.md` を生成し、その後 `/memory` を実行して改善します。`/mcp` と `/agents` を使用してプロジェクトが必要とするサーバーまたはサブエージェントをセットアップし、`/permissions` を使用して必要な承認ルールを設定します。
++
++**タスク中。** `/plan` は大きな変更の前に Plan Mode に切り替えます。`/model` と `/effort` は使用している推論量を調整します。会話が長くなったら、`/context` はウィンドウがどこに向かっているかを表示し、`/compact` はそれを要約します。`/btw` を使用して、履歴を膨らませるべきではない素早い脇道を作成します。
++
++**リリース前。** `/diff` は変更内容を表示し、`/simplify` は最近のファイルをレビューして品質と効率の修正を適用し、`/review` または `/security-review` はより深い読み取り専用パスを提供します。
+ 
+-すべてのコマンドがすべてのユーザーに表示されるわけではありません。可用性はプラットフォーム、プラン、環境によって異なります。たとえば、`/desktop` は macOS と Windows にのみ表示され、`/upgrade` は Pro プランと Max プランにのみ表示されます。
++**セッション間。** `/clear` は新しいタスクで新しく開始しながらプロジェクトメモリを保持します。`/resume` と `/branch` を使用して、以前の会話に戻るか、フォークできます。`/teleport` はウェブセッションをこのターミナルに引き込み、`/remote-control` を使用してこのローカルセッションを別のデバイスから続行できます。
++
++**何か問題がある場合。** `/rewind` はコードと会話をチェックポイントに巻き戻します。`/doctor` と `/debug` はインストールとランタイムの問題を診断し、`/feedback` はセッションコンテキストが添付されたバグを報告します。
++
++## すべてのコマンド
++
++以下の表は Claude Code に含まれるすべてのコマンドをリストしています。**[スキル](/ja/skills#bundled-skills)** とマークされたエントリはバンドルされたスキルです。これらは自分で作成するスキルと同じメカニズムを使用します。Claude に渡されるプロンプトであり、Claude は関連する場合に自動的に呼び出すこともできます。その他はすべて、CLI にコード化された動作を持つ組み込みコマンドです。独自のコマンドを追加するには、[スキル](/ja/skills)を参照してください。
+ 
+ 以下の表では、`<arg>` は必須引数を示し、`[arg]` はオプション引数を示します。
+ 
++<Note>
+```
+
+</details>
+
+<details>
+<summary>desktop-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/desktop-ja.md b/docs-ja/pages/desktop-ja.md
+index 24cc374..a5ebd8a 100644
+--- a/docs-ja/pages/desktop-ja.md
++++ b/docs-ja/pages/desktop-ja.md
+@@ -565,4 +565,20 @@ SSH 接続を追加するには、セッションを開始する前に環境ド
+ 各エントリには `id`、`name`、および `sshHost` が必要です。`sshPort`、`sshIdentityFile`、および `startDirectory` フィールドはオプションです。ユーザーは、ダイアログを通じて追加された接続が保存される独自の `~/.claude/settings.json` に `sshConfigs` を追加することもできます。
+ 
++#### ユーザーが接続できる SSH ホストを制限する
++
++管理者は、[管理設定](/ja/settings#settings-precedence)ファイルに `sshHostAllowlist` を追加することで、Desktop の SSH セッションを承認されたホストのセットに制限できます。設定されると、ユーザーは解決されたホスト名がパターンの 1 つと一致するホストにのみ接続できます。SSH セッションを完全に無効にするには、空の配列に設定します。
++
++次の例は、`devboxes.example.com` の下のすべてのホストと、単一の名前付きバスティオンホストへの接続を許可しています：
++
++```json theme={null}
++{
++  "sshHostAllowlist": ["*.devboxes.example.com", "bastion.example.com"]
++}
++```
++
++パターンは大文字と小文字を区別しません。`*` はすべてのホストと一致し、`*.example.com` は `example.com` とすべてのサブドメインと一致します。その他はすべて完全一致です。チェックは `ssh -G` を経由した `~/.ssh/config` 解決後のホスト名に対して実行されるため、`Host` エイリアスと `ProxyCommand`/`ProxyJump` エントリは、解決された `HostName` が一致する限り許可されます。
++
++`sshHostAllowlist` は管理設定からのみ読み取られます。ユーザーまたはプロジェクト設定の値は無視されます。Claude Desktop アプリのみがこの設定を尊重します。Claude Code CLI と IDE 拡張機能はこれを読み取らず、Bash ツールを通じて実行される `ssh` コマンドを制限しません。これは Desktop アプリが接続するホストを管理し、ネットワーク出力ではないため、ハード境界が必要な場合は組織のネットワークまたはゼロトラストコントロールと組み合わせてください。
++
+ ## エンタープライズ設定
+ 
+@@ -588,4 +604,5 @@ Team または Enterprise プランの組織は、管理コンソールコント
+ | `autoMode`                                 | 組織全体で auto mode 分類器が信頼およびブロックするものをカスタマイズします。[auto mode を設定する](/ja/auto-mode-config)を参照してください。                                                       |
+ | `sshConfigs`                               | 環境ドロップダウンに表示される[SSH 接続](#pre-configure-ssh-connections-for-your-team)を事前設定します。ユーザーは管理接続を編集または削除できません。                                               |
++| `sshHostAllowlist`                         | [SSH セッション](#restrict-which-ssh-hosts-users-can-connect-to)を、解決されたホスト名がこれらのパターンのいずれかと一致するホストに制限します。空の配列は SSH セッションを無効にします。管理設定からのみ読み取られます。          |
+ 
+```
+
+</details>
+
+<details>
+<summary>env-vars-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/env-vars-ja.md b/docs-ja/pages/env-vars-ja.md
+index 6a52fc6..1e078de 100644
+--- a/docs-ja/pages/env-vars-ja.md
++++ b/docs-ja/pages/env-vars-ja.md
+@@ -9,229 +9,231 @@
+ Claude Code は、その動作を制御するために以下の環境変数をサポートしています。`claude` を起動する前にシェルで設定するか、[`settings.json`](/ja/settings#available-settings) の `env` キーで設定して、すべてのセッションに適用するか、チーム全体にロールアウトしてください。
+ 
+-| 変数                                                      | 目的                                                                                                                                                                                                                                                                                                                                                                                                                    |
+-| :------------------------------------------------------ | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+-| `ANTHROPIC_API_KEY`                                     | `X-Api-Key` ヘッダーとして送信される API キー。設定されている場合、ログインしていても Claude Pro、Max、Team、または Enterprise サブスクリプションの代わりにこのキーが使用されます。非対話モード（`-p`）では、キーが存在する場合は常に使用されます。対話モードでは、キーがサブスクリプションをオーバーライドする前に一度承認するよう求められます。代わりにサブスクリプションを使用するには、`unset ANTHROPIC_API_KEY` を実行してください                                                                                                                                                            |
+-| `ANTHROPIC_AUTH_TOKEN`                                  | `Authorization` ヘッダーのカスタム値（ここで設定した値には `Bearer ` が接頭辞として付けられます）                                                                                                                                                                                                                                                                                                                                                        |
+-| `ANTHROPIC_BASE_URL`                                    | API エンドポイントをオーバーライドして、プロキシまたはゲートウェイを通じてリクエストをルーティングします。ファーストパーティ以外のホストに設定されている場合、[MCP ツール検索](/ja/mcp#scale-with-mcp-tool-search) はデフォルトで無効になります。プロキシが `tool_reference` ブロックを転送する場合は、`ENABLE_TOOL_SEARCH=true` を設定してください                                                                                                                                                                                               |
+-| `ANTHROPIC_BEDROCK_BASE_URL`                            | Bedrock エンドポイント URL をオーバーライドします。カスタム Bedrock エンドポイントを使用する場合、または [LLM ゲートウェイ](/ja/llm-gateway) を通じてルーティングする場合に使用します。[Amazon Bedrock](/ja/amazon-bedrock) を参照してください                                                                                                                                                                                                                                                     |
+-| `ANTHROPIC_BEDROCK_MANTLE_BASE_URL`                     | Bedrock Mantle エンドポイント URL をオーバーライドします。[Mantle エンドポイント](/ja/amazon-bedrock#use-the-mantle-endpoint) を参照してください                                                                                                                                                                                                                                                                                                         |
+-| `ANTHROPIC_BEDROCK_SERVICE_TIER`                        | Bedrock [サービスティア](https://docs.aws.amazon.com/bedrock/latest/userguide/service-tiers-inference.html)（`default`、`flex`、または `priority`）。`X-Amzn-Bedrock-Service-Tier` ヘッダーとして送信されます。[Amazon Bedrock](/ja/amazon-bedrock#service-tiers) を参照してください                                                                                                                                                                        |
+-| `ANTHROPIC_BETAS`                                       | API リクエストに含める追加の `anthropic-beta` ヘッダー値のカンマ区切りリスト。Claude Code は既に必要なベータヘッダーを送信しています。Claude Code がネイティブサポートを追加する前に、[Anthropic API ベータ](https://platform.claude.com/docs/en/api/beta-headers) にオプトインするために使用します。API キー認証が必要な [`--betas` フラグ](/ja/cli-reference#cli-flags) とは異なり、この変数は Claude.ai サブスクリプションを含むすべての認証方法で機能します                                                                                               |
+-| `ANTHROPIC_CUSTOM_HEADERS`                              | リクエストに追加するカスタムヘッダー（`Name: Value` 形式、複数のヘッダーの場合は改行で区切られます）                                                                                                                                                                                                                                                                                                                                                             |
+-| `ANTHROPIC_CUSTOM_MODEL_OPTION`                         | `/model` ピッカーにカスタムエントリとして追加するモデル ID。組み込みエイリアスを置き換えずに、非標準またはゲートウェイ固有のモデルを選択可能にするために使用します。[モデル設定](/ja/model-config#add-a-custom-model-option) を参照してください                                                                                                                                                                                                                                                                 |
+-| `ANTHROPIC_CUSTOM_MODEL_OPTION_DESCRIPTION`             | `/model` ピッカーのカスタムモデルエントリの表示説明。設定されていない場合、デフォルトは `Custom model (<model-id>)` です                                                                                                                                                                                                                                                                                                                                       |
+-| `ANTHROPIC_CUSTOM_MODEL_OPTION_NAME`                    | `/model` ピッカーのカスタムモデルエントリの表示名。設定されていない場合、デフォルトはモデル ID です                                                                                                                                                                                                                                                                                                                                                              |
+-| `ANTHROPIC_CUSTOM_MODEL_OPTION_SUPPORTED_CAPABILITIES`  | [モデル設定](/ja/model-config#customize-pinned-model-display-and-capabilities) を参照してください                                                                                                                                                                                                                                                                                                                                   |
+-| `ANTHROPIC_DEFAULT_HAIKU_MODEL`                         | [モデル設定](/ja/model-config#environment-variables) を参照してください                                                                                                                                                                                                                                                                                                                                                             |
+-| `ANTHROPIC_DEFAULT_HAIKU_MODEL_DESCRIPTION`             | [モデル設定](/ja/model-config#customize-pinned-model-display-and-capabilities) を参照してください                                                                                                                                                                                                                                                                                                                                   |
+-| `ANTHROPIC_DEFAULT_HAIKU_MODEL_NAME`                    | [モデル設定](/ja/model-config#customize-pinned-model-display-and-capabilities) を参照してください                                                                                                                                                                                                                                                                                                                                   |
+-| `ANTHROPIC_DEFAULT_HAIKU_MODEL_SUPPORTED_CAPABILITIES`  | [モデル設定](/ja/model-config#customize-pinned-model-display-and-capabilities) を参照してください                                                                                                                                                                                                                                                                                                                                   |
+-| `ANTHROPIC_DEFAULT_OPUS_MODEL`                          | [モデル設定](/ja/model-config#environment-variables) を参照してください                                                                                                                                                                                                                                                                                                                                                             |
+-| `ANTHROPIC_DEFAULT_OPUS_MODEL_DESCRIPTION`              | [モデル設定](/ja/model-config#customize-pinned-model-display-and-capabilities) を参照してください                                                                                                                                                                                                                                                                                                                                   |
+-| `ANTHROPIC_DEFAULT_OPUS_MODEL_NAME`                     | [モデル設定](/ja/model-config#customize-pinned-model-display-and-capabilities) を参照してください                                                                                                                                                                                                                                                                                                                                   |
+-| `ANTHROPIC_DEFAULT_OPUS_MODEL_SUPPORTED_CAPABILITIES`   | [モデル設定](/ja/model-config#customize-pinned-model-display-and-capabilities) を参照してください                                                                                                                                                                                                                                                                                                                                   |
+-| `ANTHROPIC_DEFAULT_SONNET_MODEL`                        | [モデル設定](/ja/model-config#environment-variables) を参照してください                                                                                                                                                                                                                                                                                                                                                             |
+```
+
+</details>
+
+<details>
+<summary>features-overview-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/features-overview-ja.md b/docs-ja/pages/features-overview-ja.md
+index 1dae4a0..d15b86b 100644
+--- a/docs-ja/pages/features-overview-ja.md
++++ b/docs-ja/pages/features-overview-ja.md
+@@ -250,5 +250,5 @@ Claude Code は、コードについて推論するモデルと、ファイル
+     **コンテキストコスト：** 使用されるまで低い。ユーザーのみのスキルは呼び出されるまでゼロコストです。
+ 
+-    **Subagents 内：** スキルは subagents で異なる動作をします。オンデマンドロードの代わりに、subagent に渡されるスキルは起動時にそのコンテキストに完全にプリロードされます。Subagents はメインセッションからスキルを継承しません。明示的に指定する必要があります。
++    **Subagents 内：** スキルは subagents で異なる動作をします。オンデマンドロードの代わりに、subagent の `skills` フィールドにリストされているスキルは起動時にそのコンテキストに完全にプリロードされます。Subagents はスキルツールを通じて、リストされていないプロジェクト、ユーザー、プラグインスキルを発見して呼び出すことができます。
+ 
+     <Tip>副作用を持つスキルには `disable-model-invocation: true` を使用します。これはコンテキストを節約し、あなたのみがそれらをトリガーすることを保証します。</Tip>
+```
+
+</details>
+
+*...以降省略*
+
+</details>
+
+
+<details>
 <summary>2026-05-08</summary>
 
 **変更ファイル:**
@@ -2533,262 +2778,6 @@ index 0090eac..a3a3bac 100644
 +| `--from-pr`                                     | 特定のプルリクエストにリンクされたセッションを再開します。PR 番号、GitHub または GitHub Enterprise PR URL、GitLab マージリクエスト URL、または Bitbucket プルリクエスト URL を受け入れます。Claude がプルリクエストを作成するときに、セッションは自動的にリンクされます                                                                                        | `claude --from-pr 123`                                                                             |
  | `--ide`                                         | 起動時に、正確に 1 つの有効な IDE が利用可能な場合、自動的に IDE に接続します                                                                                                                                                                                                                 | `claude --ide`                                                                                     |
  | `--init`                                        | 初期化フックを実行してインタラクティブモードを開始                                                                                                                                                                                                                                     | `claude --init`                                                                                    |
-```
-
-</details>
-
-<details>
-<summary>env-vars-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/env-vars-ja.md b/docs-ja/pages/env-vars-ja.md
-index 958b620..edc0135 100644
---- a/docs-ja/pages/env-vars-ja.md
-+++ b/docs-ja/pages/env-vars-ja.md
-@@ -100,4 +100,5 @@ Claude Code は、その動作を制御するために以下の環境変数を
- | `CLAUDE_CODE_GLOB_NO_IGNORE`                            | [Glob ツール](/ja/tools-reference) が `.gitignore` パターンを尊重するようにするには `false` に設定します。デフォルトでは、Glob は gitignored されたものを含むすべての一致するファイルを返します。`@` ファイルオートコンプリートには影響しません。これは独自の [`respectGitignore` 設定](/ja/settings#available-settings) を持っています                                                                                                                                                                                  |
- | `CLAUDE_CODE_GLOB_TIMEOUT_SECONDS`                      | Glob ツールファイル検出のタイムアウト（秒）。ほとんどのプラットフォームではデフォルト 20 秒、WSL では 60 秒                                                                                                                                                                                                                                                                                                                                                        |
-+| `CLAUDE_CODE_HIDE_CWD`                                  | スタートアップロゴで作業ディレクトリを非表示にするには `1` に設定します。スクリーンシェアまたは記録でパスが OS ユーザー名を公開する場合に役立ちます                                                                                                                                                                                                                                                                                                                                        |
- | `CLAUDE_CODE_IDE_HOST_OVERRIDE`                         | IDE 拡張機能への接続に使用されるホストアドレスをオーバーライドします。デフォルトでは Claude Code は WSL-to-Windows ルーティングを含む正しいアドレスを自動検出します                                                                                                                                                                                                                                                                                                                    |
- | `CLAUDE_CODE_IDE_SKIP_AUTO_INSTALL`                     | IDE 拡張機能の自動インストールをスキップします。[`autoInstallIdeExtension`](/ja/settings#global-config-settings) を `false` に設定するのと同等です                                                                                                                                                                                                                                                                                                      |
-```
-
-</details>
-
-<details>
-<summary>google-vertex-ai-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/google-vertex-ai-ja.md b/docs-ja/pages/google-vertex-ai-ja.md
-index db49afd..c568906 100644
---- a/docs-ja/pages/google-vertex-ai-ja.md
-+++ b/docs-ja/pages/google-vertex-ai-ja.md
-@@ -69,5 +69,5 @@ export const ContactSalesCard = ({surface}) => {
-             View plans
-           </a>
--          <a href={`https://www.anthropic.com/contact-sales?${utm('contact_sales')}`} className="cc-cs-btn-clay">
-+          <a href={`https://claude.com/contact-sales?${utm('contact_sales')}`} className="cc-cs-btn-clay">
-             Contact sales {iconArrowRight()}
-           </a>
-@@ -296,4 +296,6 @@ export VERTEX_REGION_CLAUDE_4_6_SONNET=europe-west1
- [プロンプトキャッシング](https://platform.claude.com/docs/en/build-with-claude/prompt-caching)は自動的に有効になります。これを無効にするには、`DISABLE_PROMPT_CACHING=1` を設定します。デフォルトの 5 分ではなく 1 時間のキャッシュ TTL をリクエストするには、`ENABLE_PROMPT_CACHING_1H=1` を設定します。1 時間の TTL でのキャッシュ書き込みはより高いレートで課金されます。レート制限を高くするには、Google Cloud サポートに連絡してください。Vertex AI を使用する場合、Google Cloud 認証情報を通じて認証が処理されるため、`/login` および `/logout` コマンドは無効になります。
- 
-+[MCP ツール検索](/ja/mcp#scale-with-mcp-tool-search)は、エンドポイントが必要なベータヘッダーを受け入れないため、Vertex AI ではデフォルトで無効になっています。すべての MCP ツール定義は代わりに事前にロードされます。オプトインするには、`ENABLE_TOOL_SEARCH=true` を設定します。
-+
- ### 5. モデルバージョンをピン留めする
- 
-```
-
-</details>
-
-<details>
-<summary>hooks-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/hooks-ja.md b/docs-ja/pages/hooks-ja.md
-index f8da3f0..6793122 100644
---- a/docs-ja/pages/hooks-ja.md
-+++ b/docs-ja/pages/hooks-ja.md
-@@ -1256,8 +1256,13 @@ PermissionRequest フックは PreToolUse フックのような `tool_name` と
-     "success": true
-   },
--  "tool_use_id": "toolu_01ABC123..."
-+  "tool_use_id": "toolu_01ABC123...",
-+  "duration_ms": 12
- }
- ```
- 
-+| フィールド         | 説明                                                    |
-+| :------------ | :---------------------------------------------------- |
-+| `duration_ms` | オプション。ツール実行時間（ミリ秒）。権限プロンプトと PreToolUse フックに費やされた時間は除外 |
-+
- #### PostToolUse 決定制御
- 
-@@ -1306,12 +1311,14 @@ PostToolUseFailure フックは PostToolUse と同じ `tool_name` と `tool_inpu
-   "tool_use_id": "toolu_01ABC123...",
-   "error": "Command exited with non-zero status code 1",
--  "is_interrupt": false
-+  "is_interrupt": false,
-+  "duration_ms": 4187
- }
- ```
- 
--| フィールド          | 説明                                      |
--| :------------- | :-------------------------------------- |
-```
-
-</details>
-
-<details>
-<summary>mcp-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/mcp-ja.md b/docs-ja/pages/mcp-ja.md
-index f04d21f..e54cc9a 100644
---- a/docs-ja/pages/mcp-ja.md
-+++ b/docs-ja/pages/mcp-ja.md
-@@ -215,4 +215,6 @@ export const MCPServersTable = ({platform = "all"}) => {
- Claude Code は、AI ツール統合のためのオープンソース標準である [Model Context Protocol (MCP)](https://modelcontextprotocol.io/introduction) を通じて、数百の外部ツールとデータソースに接続できます。MCP サーバーは Claude Code にツール、データベース、API へのアクセスを提供します。
- 
-+別のツール（課題追跡ツールや監視ダッシュボードなど）からチャットにデータをコピーしている場合は、サーバーを接続してください。接続すると、Claude は貼り付けたものから作業する代わりに、そのシステムを直接読み取り、操作できます。
-+
- ## MCP でできること
- 
-@@ -328,4 +330,8 @@ claude mcp remove github
- Claude Code は MCP `list_changed` 通知をサポートしており、MCP サーバーが切断して再接続することなく、利用可能なツール、プロンプト、リソースを動的に更新できます。MCP サーバーが `list_changed` 通知を送信すると、Claude Code はそのサーバーから利用可能な機能を自動的に更新します。
- 
-+### 自動再接続
-+
-+HTTP または SSE サーバーがセッション中に切断された場合、Claude Code は指数バックオフで自動的に再接続します：最大 5 回の試行、1 秒の遅延から始まり、毎回 2 倍になります。サーバーは再接続が進行中の間、`/mcp` では保留中として表示されます。5 回の失敗した試行の後、サーバーは失敗としてマークされ、`/mcp` から手動で再試行できます。Stdio サーバーはローカルプロセスであり、自動的には再接続されません。
-+
- ### チャネルでメッセージをプッシュする
- 
-@@ -345,15 +351,4 @@ MCP サーバーはセッションに直接メッセージをプッシュする
- </Tip>
- 
--<Warning>
--  **Windows ユーザー向け**：ネイティブ Windows（WSL ではない）では、`npx` を使用するローカル MCP サーバーは適切な実行を確保するために `cmd /c` ラッパーが必要です。
--
--  ```bash theme={null}
--  # これにより、Windows が実行できる command="cmd" が作成されます
--  claude mcp add --transport stdio my-server -- cmd /c npx -y @some/package
--  ```
-```
-
-</details>
-
-<details>
-<summary>microsoft-foundry-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/microsoft-foundry-ja.md b/docs-ja/pages/microsoft-foundry-ja.md
-index 3de8faf..54d6f7f 100644
---- a/docs-ja/pages/microsoft-foundry-ja.md
-+++ b/docs-ja/pages/microsoft-foundry-ja.md
-@@ -69,5 +69,5 @@ export const ContactSalesCard = ({surface}) => {
-             View plans
-           </a>
--          <a href={`https://www.anthropic.com/contact-sales?${utm('contact_sales')}`} className="cc-cs-btn-clay">
-+          <a href={`https://claude.com/contact-sales?${utm('contact_sales')}`} className="cc-cs-btn-clay">
-             Contact sales {iconArrowRight()}
-           </a>
-```
-
-</details>
-
-<details>
-<summary>monitoring-usage-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/monitoring-usage-ja.md b/docs-ja/pages/monitoring-usage-ja.md
-index cea3f49..a235173 100644
---- a/docs-ja/pages/monitoring-usage-ja.md
-+++ b/docs-ja/pages/monitoring-usage-ja.md
-@@ -517,4 +517,5 @@ Claude Code は、OpenTelemetry ログ/イベント経由で以下のイベン
- * `event.sequence`: セッション内のイベントを順序付けするための単調増加カウンター
- * `tool_name`: ツールの名前
-+* `tool_use_id`: このツール呼び出しの一意の識別子。フックに渡される `tool_use_id` と一致し、OTel イベントとフック取得データ間の相関を可能にします。
- * `success`: `"true"` または `"false"`
- * `duration_ms`: 実行時間 (ミリ秒単位)
-@@ -523,4 +524,5 @@ Claude Code は、OpenTelemetry ログ/イベント経由で以下のイベン
- * `decision_type`: `"accept"` または `"reject"`
- * `decision_source`: 決定ソース - `"config"`、`"hook"`、`"user_permanent"`、`"user_temporary"`、`"user_abort"`、または `"user_reject"`
-+* `tool_input_size_bytes`: JSON シリアル化されたツール入力のサイズ (バイト単位)
- * `tool_result_size_bytes`: ツール結果のサイズ (バイト単位)
- * `mcp_server_scope`: MCP サーバースコープ識別子 (MCP ツール用)
-@@ -630,4 +632,5 @@ Claude への API リクエストが失敗するときにログされます。
- * `event.sequence`: セッション内のイベントを順序付けするための単調増加カウンター
- * `tool_name`: ツールの名前 (例: "Read"、"Edit"、"Write"、"NotebookEdit")
-+* `tool_use_id`: このツール呼び出しの一意の識別子。フックに渡される `tool_use_id` と一致し、OTel イベントとフック取得データ間の相関を可能にします。
- * `decision`: `"accept"` または `"reject"`
- * `source`: 決定ソース - `"config"`、`"hook"`、`"user_permanent"`、`"user_temporary"`、`"user_abort"`、または `"user_reject"`
-```
-
-</details>
-
-*...以降省略*
-
-</details>
-
-
-<details>
-<summary>2026-04-24</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/agent-teams-ja.md             |  14 +-
- docs-ja/pages/amazon-bedrock-ja.md          | 329 ++++++++++++++++++++++++++--
- docs-ja/pages/auto-mode-config-ja.md        |  26 ++-
- docs-ja/pages/changelog.md                  |  91 ++++++++
- docs-ja/pages/claude-directory-ja.md        |  25 ++-
- docs-ja/pages/cli-reference-ja.md           | 132 +++++------
- docs-ja/pages/commands-ja.md                |  18 +-
- docs-ja/pages/costs-ja.md                   |  27 +--
- docs-ja/pages/data-usage-ja.md              |  17 +-
- docs-ja/pages/desktop-scheduled-tasks-en.md |   2 +-
- docs-ja/pages/env-vars-ja.md                |   9 +-
- docs-ja/pages/google-vertex-ai-ja.md        |   5 +-
- docs-ja/pages/hooks-guide-ja.md             |  39 ++--
- docs-ja/pages/hooks-ja.md                   | 209 +++++++++++++-----
- docs-ja/pages/interactive-mode-ja.md        |  50 +++--
- docs-ja/pages/microsoft-foundry-ja.md       | 273 ++++++++++++++++++++---
- docs-ja/pages/model-config-ja.md            |   4 +-
- docs-ja/pages/overview-ja.md                |   2 +
- docs-ja/pages/permission-modes-ja.md        |   2 +-
- docs-ja/pages/permissions-ja.md             |  27 +--
- docs-ja/pages/plugin-dependencies-ja.md     |  15 +-
- docs-ja/pages/plugin-marketplaces-ja.md     |  48 ++--
- docs-ja/pages/plugins-ja.md                 |  14 +-
- docs-ja/pages/plugins-reference-ja.md       | 100 ++++++---
- docs-ja/pages/quickstart-ja.md              |   2 +
- docs-ja/pages/remote-control-ja.md          |   6 +-
- docs-ja/pages/scheduled-tasks-ja.md         |   2 +-
- docs-ja/pages/settings-ja.md                |  12 +-
- docs-ja/pages/setup-ja.md                   | 115 +++++++++-
- docs-ja/pages/statusline-ja.md              |   2 +-
- docs-ja/pages/sub-agents-ja.md              |  64 +++++-
- docs-ja/pages/terminal-config-ja.md         |  40 +++-
- 32 files changed, 1375 insertions(+), 346 deletions(-)
-```
-
-**新規追加:**
-
-
-<details>
-<summary>agent-teams-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/agent-teams-ja.md b/docs-ja/pages/agent-teams-ja.md
-index 78d2863..d679409 100644
---- a/docs-ja/pages/agent-teams-ja.md
-+++ b/docs-ja/pages/agent-teams-ja.md
-@@ -236,5 +236,5 @@ Claude Code はチームを作成するときにこれらの両方を自動的
- ### チームメンバーに subagent 定義を使用する
- 
--チームメンバーを生成するときに、任意の [subagent スコープ](/ja/sub-agents#choose-the-subagent-scope)（プロジェクト、ユーザー、プラグイン、または CLI 定義）から [subagent](/ja/sub-agents) タイプを参照できます。チームメンバーはその subagent のシステムプロンプト、ツール、およびモデルを継承します。これにより、セキュリティレビュアーやテストランナーなどのロールを 1 回定義し、委任された subagent とエージェントチームチームメンバーの両方として再利用できます。
-+チームメンバーを生成するときに、任意の [subagent スコープ](/ja/sub-agents#choose-the-subagent-scope)（プロジェクト、ユーザー、プラグイン、または CLI 定義）から [subagent](/ja/sub-agents) タイプを参照できます。これにより、セキュリティレビュアーやテストランナーなどのロールを 1 回定義し、委任された subagent とエージェントチームチームメンバーの両方として再利用できます。
- 
- subagent 定義を使用するには、Claude にチームメンバーを生成するよう指示するときに名前で言及してください。
-@@ -244,4 +244,10 @@ Spawn a teammate using the security-reviewer agent type to audit the auth module
- ```
- 
-+チームメンバーはその定義の `tools` 許可リストと `model` を尊重し、定義の本体はチームメンバーのシステムプロンプトに追加の指示として追加されます。チーム調整ツール（`SendMessage` やタスク管理ツール）は、`tools` が他のツールを制限している場合でも、チームメンバーが常に利用できます。
-+
-+<Note>
-+  subagent 定義の `skills` と `mcpServers` frontmatter フィールドは、その定義がチームメンバーとして実行される場合は適用されません。チームメンバーは、通常のセッションと同じように、プロジェクトおよびユーザー設定から skills と MCP servers をロードします。
-+</Note>
-+
- ### 権限
- 
-@@ -257,9 +263,7 @@ Spawn a teammate using the security-reviewer agent type to audit the auth module
- * **アイドル通知**：チームメンバーが完了して停止すると、リーダーに自動的に通知します。
- * **共有タスクリスト**：すべてのエージェントはタスクステータスを表示でき、利用可能な作業を要求できます。
-+* **チームメンバーメッセージング**：その名前で特定のチームメンバーにメッセージを送信します。全員に到達するには、受信者ごとに 1 つのメッセージを送信してください。
- 
--**チームメンバーメッセージング：**
--
--* **message**：特定のチームメンバーに 1 つのメッセージを送信します
 ```
 
 </details>
