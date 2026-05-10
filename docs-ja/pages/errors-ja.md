@@ -31,6 +31,7 @@
 | `Not logged in · Please run /login`                                                  | [認証](#not-logged-in)                                                                          |
 | `Invalid API key`                                                                    | [認証](#invalid-api-key)                                                                        |
 | `This organization has been disabled`                                                | [認証](#this-organization-has-been-disabled)                                                    |
+| `Routines are disabled by your organization's policy`                                | [認証](#routines-are-disabled-by-your-organizations-policy)                                     |
 | `OAuth token revoked` / `OAuth token has expired`                                    | [認証](#oauth-token-revoked-or-expired)                                                         |
 | `does not meet scope requirement user:profile`                                       | [認証](#oauth-scope-requirement)                                                                |
 | `Unable to connect to API`                                                           | [ネットワーク](#unable-to-connect-to-api)                                                           |
@@ -251,6 +252,21 @@ API Error: 400 ... This organization has been disabled.
 * 現在のシェルで `ANTHROPIC_API_KEY` をアンセットし、シェルプロファイルから削除してから、`claude` を再起動してください
 * その後 `/status` を実行して、アクティブな認証情報がサブスクリプションであることを確認してください
 * 環境変数が設定されておらず、エラーが続く場合、無効な組織は `/login` に関連付けられているものです。サポートに連絡するか、別のアカウントでサインインしてください。
+
+### Routines are disabled by your organization's policy
+
+チームまたはエンタープライズ管理者が、組織レベルでルーチンをオフにしています。エラーは、`/schedule` および claude.ai/code の [Routines](/ja/routines) UI を含め、ルーチンを作成または実行しようとするときに表示されます。
+
+```text theme={null}
+Routines are disabled by your organization's policy.
+```
+
+これはサーバー側の設定であるため、ローカル設定、環境変数、または CLI フラグからオーバーライドすることはできません。
+
+**対応方法：**
+
+* 管理者に [claude.ai/admin-settings/claude-code](https://claude.ai/admin-settings/claude-code) で **Routines** トグルを有効にするよう依頼してください
+* 組織レベルのルーチンを必要としない 1 回限りのスケジュール済み作業については、[スケジュール済みタスク](/ja/scheduled-tasks)を参照してください
 
 ### OAuth token revoked or expired
 
