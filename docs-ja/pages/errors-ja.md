@@ -24,6 +24,8 @@
 | `API Error: Repeated 529 Overloaded errors`                                          | [サーバーエラー](#api-error-repeated-529-overloaded-errors)                                          |
 | `Request timed out`                                                                  | [サーバーエラー](#request-timed-out)、またはメッセージがインターネット接続に言及している場合は[ネットワーク](#unable-to-connect-to-api) |
 | `<model> is temporarily unavailable, so auto mode cannot determine the safety of...` | [サーバーエラー](#auto-mode-cannot-determine-the-safety-of-an-action)                                |
+| `Auto mode could not evaluate this action and is blocking it for safety`             | [サーバーエラー](#auto-mode-cannot-determine-the-safety-of-an-action)                                |
+| `Auto mode classifier transcript exceeded context window`                            | [サーバーエラー](#auto-mode-cannot-determine-the-safety-of-an-action)                                |
 | `You've hit your session limit` / `You've hit your weekly limit`                     | [使用制限](#youve-hit-your-session-limit)                                                         |
 | `Server is temporarily limiting requests`                                            | [使用制限](#server-is-temporarily-limiting-requests)                                              |
 | `Request rejected (429)`                                                             | [使用制限](#request-rejected-429)                                                                 |
@@ -116,19 +118,45 @@ Request timed out
 
 ### Auto mode cannot determine the safety of an action
 
-[auto mode](/ja/permission-modes#eliminate-prompts-with-auto-mode)がアクションを分類するために使用するモデルがオーバーロードされているため、auto mode はそれをチェックなしで承認する代わりにアクションをブロックしました。
+[auto mode](/ja/permission-modes#eliminate-prompts-with-auto-mode)がアクションを分類するために使用するモデルが決定を生成できなかったため、auto mode はアクションを自動的に承認しませんでした。表示されるメッセージは、分類器が失敗した理由によって異なります。
+
+読み取り、検索、および作業ディレクトリ内の編集は分類器をスキップするため、これらすべてのケースで機能し続けます。
+
+分類器モデルがオーバーロードされている場合：
 
 ```text theme={null}
 <model> is temporarily unavailable, so auto mode cannot determine the safety of <tool> right now. Wait briefly and then try this action again.
 ```
-
-読み取り、検索、および作業ディレクトリ内の編集は分類器をスキップするため、停止中も機能し続けます。
 
 **対応方法：**
 
 * 数秒後に再試行してください。Claude は同じメッセージを見て、通常は自動的に再試行します
 * リトライが失敗し続ける場合は、読み取り専用タスクを続行し、後でブロックされたアクションに戻ってください
 * これは一時的であり、[auto mode 適格性](/ja/permission-modes#eliminate-prompts-with-auto-mode)とは無関係です。設定を変更する必要はありません
+
+分類器が解析不可能なレスポンスを返した場合：
+
+```text theme={null}
+Auto mode could not evaluate this action and is blocking it for safety — run with --debug for details
+```
+
+**対応方法：**
+
+* アクションを再試行してください。これは通常、次の試行で成功します
+* `claude --debug` を実行してアクションを繰り返し、デバッグログで基になる分類器レスポンスを確認してください
+
+会話が分類器のコンテキストウィンドウより大きくなった場合：
+
+```text theme={null}
+Auto mode classifier transcript exceeded context window — falling back to manual approval (try /compact to reduce conversation size)
+```
+
+インタラクティブセッションでは、auto mode はそのアクションに対して通常の権限プロンプトにフォールバックするため、手動で承認または拒否できます。[非インタラクティブモード](/ja/headless)では、トランスクリプトのみが増加し、リトライが成功できないため、実行が中止されます。
+
+**対応方法：**
+
+* 表示されるプロンプトでアクションを承認または拒否してください
+* `/compact` を実行して会話サイズを削減し、後続のアクションが分類器ウィンドウ内に収まるようにしてください
 
 ## 使用制限
 

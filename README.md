@@ -17,6 +17,144 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-05-11</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/errors-ja.md      | 34 +++++++++++++++++++++++++++++++---
+ docs-ja/pages/hooks-guide-ja.md | 34 ++++++++++++++++++++++++++++++++--
+ docs-ja/pages/settings-ja.md    |  2 ++
+ docs-ja/pages/skills-ja.md      |  4 ++--
+ 4 files changed, 67 insertions(+), 7 deletions(-)
+```
+
+<details>
+<summary>errors-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/errors-ja.md b/docs-ja/pages/errors-ja.md
+index 4779629..414f4be 100644
+--- a/docs-ja/pages/errors-ja.md
++++ b/docs-ja/pages/errors-ja.md
+@@ -25,4 +25,6 @@
+ | `Request timed out`                                                                  | [サーバーエラー](#request-timed-out)、またはメッセージがインターネット接続に言及している場合は[ネットワーク](#unable-to-connect-to-api) |
+ | `<model> is temporarily unavailable, so auto mode cannot determine the safety of...` | [サーバーエラー](#auto-mode-cannot-determine-the-safety-of-an-action)                                |
++| `Auto mode could not evaluate this action and is blocking it for safety`             | [サーバーエラー](#auto-mode-cannot-determine-the-safety-of-an-action)                                |
++| `Auto mode classifier transcript exceeded context window`                            | [サーバーエラー](#auto-mode-cannot-determine-the-safety-of-an-action)                                |
+ | `You've hit your session limit` / `You've hit your weekly limit`                     | [使用制限](#youve-hit-your-session-limit)                                                         |
+ | `Server is temporarily limiting requests`                                            | [使用制限](#server-is-temporarily-limiting-requests)                                              |
+@@ -117,5 +119,9 @@ Request timed out
+ ### Auto mode cannot determine the safety of an action
+ 
+-[auto mode](/ja/permission-modes#eliminate-prompts-with-auto-mode)がアクションを分類するために使用するモデルがオーバーロードされているため、auto mode はそれをチェックなしで承認する代わりにアクションをブロックしました。
++[auto mode](/ja/permission-modes#eliminate-prompts-with-auto-mode)がアクションを分類するために使用するモデルが決定を生成できなかったため、auto mode はアクションを自動的に承認しませんでした。表示されるメッセージは、分類器が失敗した理由によって異なります。
++
++読み取り、検索、および作業ディレクトリ内の編集は分類器をスキップするため、これらすべてのケースで機能し続けます。
++
++分類器モデルがオーバーロードされている場合：
+ 
+ ```text theme={null}
+@@ -123,6 +129,4 @@ Request timed out
+ ```
+ 
+-読み取り、検索、および作業ディレクトリ内の編集は分類器をスキップするため、停止中も機能し続けます。
+-
+ **対応方法：**
+ 
+@@ -131,4 +135,28 @@ Request timed out
+```
+
+</details>
+
+<details>
+<summary>hooks-guide-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/hooks-guide-ja.md b/docs-ja/pages/hooks-guide-ja.md
+index 997f2d5..ea59109 100644
+--- a/docs-ja/pages/hooks-guide-ja.md
++++ b/docs-ja/pages/hooks-guide-ja.md
+@@ -471,6 +471,4 @@ Hook イベントは Claude Code のライフサイクルの特定のポイン
+ | `SessionEnd`          | When a session terminates                                                                                                                              |
+ 
+-複数の hooks がマッチする場合、それぞれが独自の結果を返します。決定については、Claude Code は最も制限的な答えを選択します。`PreToolUse` hook が `deny` を返すと、他が何を返すかに関わらず、ツール呼び出しがキャンセルされます。1 つの hook が `ask` を返すと、残りが `allow` を返しても、許可プロンプトが強制されます。`additionalContext` からのテキストはすべての hook から保持され、Claude に一緒に渡されます。
+-
+ 各 hook には、それがどのように実行されるかを決定する `type` があります。ほとんどの hooks は `"type": "command"` を使用し、シェルコマンドを実行します。他の 4 つのタイプが利用可能です：
+ 
+@@ -480,4 +478,36 @@ Hook イベントは Claude Code のライフサイクルの特定のポイン
+ * `"type": "agent"`：ツールアクセス付きマルチターン検証。エージェント hooks は実験的であり、変更される可能性があります。[エージェントベースの hooks](#agent-based-hooks) を参照してください。
+ 
++### 複数の hooks からの結果を組み合わせる
++
++複数の hooks が同じイベントにマッチする場合、すべての hook のコマンドが完了してから Claude Code は結果をマージします。1 つの hook が `deny` を返しても、兄弟 hooks の実行は停止されません。1 つの hook の `deny` が別の hook の副作用を抑制することに依存しないでください。
++
++すべてのマッチングする hooks が完了した後、Claude Code はそれらの出力を組み合わせます。`PreToolUse` 許可決定については、最も制限的な答えが勝ちます：`deny` は `ask` をオーバーライドし、`ask` は `allow` をオーバーライドします。`additionalContext` からのテキストはすべての hook から保持され、Claude に一緒に渡されます。
++
++以下の例は `Bash` に 2 つの `PreToolUse` hooks を登録しています。最初のものはすべてのコマンドをログファイルに追加して 0 で終了します。2 番目のものはスクリプトを実行し、コマンドに `rm -rf` が含まれている場合は 2 で終了して拒否します：
++
++```json theme={null}
++{
++  "hooks": {
++    "PreToolUse": [
++      {
++        "matcher": "Bash",
++        "hooks": [
++          {
+```
+
+</details>
+
+<details>
+<summary>settings-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/settings-ja.md b/docs-ja/pages/settings-ja.md
+index 85a546b..b72108e 100644
+--- a/docs-ja/pages/settings-ja.md
++++ b/docs-ja/pages/settings-ja.md
+@@ -207,4 +207,5 @@ Windows では、`~/.claude` として表示されるパスは `%USERPROFILE%\.c
+ | `includeGitInstructions`          | Claude のシステムプロンプトに組み込みコミットおよび PR ワークフロー命令と git ステータススナップショットを含めます（デフォルト：`true`）。たとえば、独自の git ワークフロースキルを使用する場合は、これらの命令を削除するために `false` に設定します。`CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS` 環境変数が設定されている場合、この設定よりも優先されます                                                                                                                                                                             | `false`                                                                                                                         |
+ | `language`                        | Claude の優先応答言語を構成します（例：`"japanese"`、`"spanish"`、`"french"`）。Claude はデフォルトでこの言語で応答します。また、[音声ディクテーション](/ja/voice-dictation#change-the-dictation-language)言語も設定します                                                                                                                                                                                                                              | `"japanese"`                                                                                                                    |
++| `maxSkillDescriptionChars`        | {/* min-version: 2.1.105 */}[スキルリスティング](/ja/skills#skill-descriptions-are-cut-short)Claude が各ターンで見る `description` と `when_to_use` テキストの結合されたスキルごとの文字上限（デフォルト：`1536`）。この長さより長いテキストは切り詰められます。長い説明を保持するために上げるか、より多くのスキルを [`skillListingBudgetFraction`](#available-settings)の下に収めるために下げます。Claude Code v2.1.105 以降が必要です                                                                          | `2048`                                                                                                                          |
+ | `minimumVersion`                  | 背景自動更新と `claude update` が特定のバージョン以下にインストールするのを防止するフロア。`"latest"` チャネルから `"stable"` に `/config` を通じて切り替えると、現在のバージョンに留まるか、ダウングレードを許可するかを求めるプロンプトが表示されます。留まることを選択すると、この値が設定されます。また、[managed 設定](/ja/permissions#managed-settings)で組織全体の最小値をピンするのに役立ちます                                                                                                                                          | `"2.1.100"`                                                                                                                     |
+ | `model`                           | Claude Code に使用するデフォルトモデルをオーバーライドします。`--model` と [`ANTHROPIC_MODEL`](/ja/model-config#environment-variables)はこれを 1 セッション間オーバーライドします                                                                                                                                                                                                                                                          | `"claude-sonnet-4-6"`                                                                                                           |
+@@ -224,4 +225,5 @@ Windows では、`~/.claude` として表示されるパスは `%USERPROFILE%\.c
+ | `showThinkingSummaries`           | [拡張思考](/ja/model-config#extended-thinking)サマリーをインタラクティブセッションに表示します。未設定または `false`（インタラクティブモードのデフォルト）の場合、思考ブロックは API によって編集され、折りたたまれたスタブとして表示されます。編集は表示内容のみを変更し、モデルが生成するものは変更しません：思考支出を削減するには、[予算を低下させるか思考を無効にする](/ja/model-config#extended-thinking)代わりに。非インタラクティブモード（`-p`）と SDK 呼び出し元は、この設定に関係なく常にサマリーを受け取ります                                                                               | `true`                                                                                                                          |
+ | `showTurnDuration`                | レスポンス後のターン期間メッセージを表示します（例：「Cooked for 1m 6s」）。デフォルト：`true`。`/config` に**ターン期間を表示**として表示されます                                                                                                                                                                                                                                                                                                  | `false`                                                                                                                         |
++| `skillListingBudgetFraction`      | {/* min-version: 2.1.105 */}[スキルリスティング](/ja/skills#skill-descriptions-are-cut-short)Claude が各ターンで見るモデルのコンテキストウィンドウ用に予約されたフラクション（デフォルト：`0.01` = 1%）。リスティングが予算を超える場合、最も使用頻度の低いスキルの説明は、Claude が引き続き呼び出すことができるが理由を見ることができないように、ベアネームに折りたたまれます。より多くの説明を表示するために上げるか、より多くのスキルを収めるために下げます。`/doctor` は現在の切り詰めカウントと影響を受けるスキルを表示します。Claude Code v2.1.105 以降が必要です                                        | `0.02`                                                                                                                          |
+ | `skillOverrides`                  | {/* min-version: 2.1.129 */}スキル名でキー付けされたスキルごとの可視性オーバーライド。値は `"on"`、`"name-only"`、`"user-invocable-only"`、または `"off"` です。スキルの SKILL.md を編集することなく、スキルを非表示または折りたたむことができます。プラグインスキルには適用されません。これらは `/plugin` を通じて管理されます。`/skills` メニューはこれらを `.claude/settings.local.json` に書き込みます。[設定からスキルの可視性をオーバーライド](/ja/skills#override-skill-visibility-from-settings)を参照してください。Claude Code v2.1.129 以降が必要です | `{"legacy-context": "name-only", "deploy": "off"}`                                                                              |
+ | `skipWebFetchPreflight`           | [WebFetch ドメイン安全チェック](/ja/data-usage#webfetch-domain-safety-check)をスキップします。このチェックは、フェッチ前に各リクエストされたホスト名を `api.anthropic.com` に送信します。Bedrock、Vertex AI、または制限的な出力を持つ Foundry デプロイメントなど、Anthropic へのトラフィックをブロックする環境で `true` に設定します。スキップされた場合、WebFetch はブロックリストを参照せずに任意の URL を試みます                                                                                                                | `true`                                                                                                                          |
+```
+
+</details>
+
+<details>
+<summary>skills-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/skills-ja.md b/docs-ja/pages/skills-ja.md
+index 47de823..21a6874 100644
+--- a/docs-ja/pages/skills-ja.md
++++ b/docs-ja/pages/skills-ja.md
+@@ -753,7 +753,7 @@ Claude がスキルを使用したくない場合：
+ ### スキルの説明が短縮される
+ 
+-スキルの説明がコンテキストに読み込まれるため、Claude は利用可能なものを知っています。すべてのスキル名は常に含まれていますが、多くのスキルがある場合、説明は文字予算に合わせて短縮される可能性があり、Claude が一致するために必要なキーワードを削除できます。予算はコンテキストウィンドウの 1% で動的にスケーリングされ、8,000 文字のフォールバックがあります。
++スキルの説明がコンテキストに読み込まれるため、Claude は利用可能なものを知っています。すべてのスキル名は常に含まれていますが、多くのスキルがある場合、説明は文字予算に合わせて短縮される可能性があり、Claude が一致するために必要なキーワードを削除できます。予算はモデルのコンテキストウィンドウの 1% でスケーリングされます。オーバーフローすると、最も呼び出しが少ないスキルの説明が最初に削除され、実際に使用するスキルは完全なテキストを保持します。`/doctor` を実行して、予算がオーバーフローしているかどうか、どのスキルが影響を受けているかを確認します。
+ 
+-制限を上げるには、`SLASH_COMMAND_TOOL_CHAR_BUDGET` 環境変数を設定します。他のスキルの予算を解放するには、[`skillOverrides`](#override-skill-visibility-from-settings) で低優先度のエントリを `"name-only"` に設定して、説明なしでリストアップします。ソースで `description` と `when_to_use` テキストをトリミングすることもできます。各エントリの組み合わせテキストは予算に関係なく 1,536 文字でキャップされているため、主要なユースケースを前置きしてください。
++予算を上げるには、[`skillListingBudgetFraction`](/ja/settings#available-settings) 設定（例：`0.02` = 2%）または `SLASH_COMMAND_TOOL_CHAR_BUDGET` 環境変数を固定文字数に設定します。他のスキルの予算を解放するには、[`skillOverrides`](#override-skill-visibility-from-settings) で低優先度のエントリを `"name-only"` に設定して、説明なしでリストアップします。ソースで `description` と `when_to_use` テキストをトリミングすることもできます。各エントリの組み合わせテキストは予算に関係なく 1,536 文字でキャップされているため、主要なユースケースを前置きしてください。キャップは [`maxSkillDescriptionChars`](/ja/settings#available-settings) で設定可能です。
+ 
+ ## 関連リソース
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-05-10</summary>
 
 **変更ファイル:**
@@ -2674,141 +2812,6 @@ index 6f6fe09..727d194 100644
  docs-ja/pages/sandboxing-ja.md     |  18 ++--
  docs-ja/pages/security-ja.md       |   4 +-
  4 files changed, 174 insertions(+), 59 deletions(-)
-```
-
-<details>
-<summary>devcontainer-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/devcontainer-ja.md b/docs-ja/pages/devcontainer-ja.md
-index 35b2ece..bbeeb37 100644
---- a/docs-ja/pages/devcontainer-ja.md
-+++ b/docs-ja/pages/devcontainer-ja.md
-@@ -5,77 +5,190 @@
- # 開発コンテナ
- 
--> 一貫性のある安全な環境が必要なチーム向けのClaude Code開発コンテナについて学びます。
-+> チーム全体で一貫した分離環境を実現するため、開発コンテナ内で Claude Code を実行します。
- 
--リファレンス[devcontainerセットアップ](https://github.com/anthropics/claude-code/tree/main/.devcontainer)と関連する[Dockerfile](https://github.com/anthropics/claude-code/blob/main/.devcontainer/Dockerfile)は、そのまま使用することも、ニーズに合わせてカスタマイズすることもできる事前設定済みの開発コンテナを提供します。このdevcontainerはVisual Studio Code [Dev Containers拡張機能](https://code.visualstudio.com/docs/devcontainers/containers)および同様のツールと連携します。
-+[開発コンテナ](https://containers.dev/)（dev container）を使用すると、チームのすべてのエンジニアが実行できる同一の分離環境を定義できます。Claude Code がそのコンテナにインストールされている場合、Claude が実行するコマンドはホストマシンではなくコンテナ内で実行され、プロジェクトファイルへの編集はローカルリポジトリに表示されます。
- 
--コンテナの強化されたセキュリティ対策（分離とファイアウォールルール）により、`claude --dangerously-skip-permissions`を実行して権限プロンプトをバイパスし、無人操作を行うことができます。
-+このページでは、[開発コンテナに Claude Code をインストール](#add-claude-code-to-your-dev-container)する方法と、その後の設定トピックについて説明します。各トピックは独立しているため、必要な設定に合わせてジャンプしてください：
-+
-+* [再構築時に認証と設定を保持する](#persist-authentication-and-settings-across-rebuilds)
-+* [組織ポリシーを適用する](#enforce-organization-policy)
-+* [ネットワークエグレスを制限する](#restrict-network-egress)
-+* [権限プロンプトなしで実行する](#run-without-permission-prompts)
- 
- <Warning>
--  devcontainerは実質的な保護を提供していますが、すべての攻撃に完全に耐性のあるシステムはありません。
--  `--dangerously-skip-permissions`で実行する場合、devcontainerはClaude Codeの認証情報を含むdevcontainer内でアクセス可能なものを悪意のあるプロジェクトが流出させることを防ぎません。
--  信頼できるリポジトリで開発する場合にのみdevcontainerを使用することをお勧めします。
--  常に良好なセキュリティプラクティスを維持し、Claudeのアクティビティを監視してください。
-+  開発コンテナは実質的な保護を提供していますが、すべての攻撃に完全に耐性のあるシステムはありません。
-+  `--dangerously-skip-permissions` で実行する場合、開発コンテナは、[`~/.claude`](/ja/claude-directory) に保存されている Claude Code の認証情報を含む、コンテナ内でアクセス可能なものを悪意のあるプロジェクトが流出させることを防ぎません。
-+  信頼できるリポジトリで開発する場合にのみ開発コンテナを使用し、Claude のアクティビティを監視してください。
-+  `~/.ssh` やクラウド認証情報ファイルなどのホストシークレットをコンテナにマウントすることは避け、リポジトリスコープまたは短期間有効なトークンを使用してください。
-```
-
-</details>
-
-<details>
-<summary>network-config-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/network-config-ja.md b/docs-ja/pages/network-config-ja.md
-index 2a05205..d667485 100644
---- a/docs-ja/pages/network-config-ja.md
-+++ b/docs-ja/pages/network-config-ja.md
-@@ -118,4 +118,6 @@ Claude Code は以下の URL へのアクセスが必要です。プロキシ設
- npm を通じて Claude Code をインストールするか、独自のバイナリ配布を管理する場合、エンドユーザーは `downloads.claude.ai` または `storage.googleapis.com` へのアクセスが不要な場合があります。
- 
-+Claude Code はデフォルトでオプションの運用テレメトリを送信します。これは環境変数で無効にできます。ホワイトリストを最終化する前に、[テレメトリサービス](/ja/data-usage#telemetry-services) を参照して無効にする方法を確認してください。
-+
- [Amazon Bedrock](/ja/amazon-bedrock)、[Google Vertex AI](/ja/google-vertex-ai)、または [Microsoft Foundry](/ja/microsoft-foundry) を使用する場合、モデルトラフィックと認証は `api.anthropic.com`、`claude.ai`、または `platform.claude.com` ではなくプロバイダーに送信されます。WebFetch ツールは、[settings](/ja/settings) で `skipWebFetchPreflight: true` を設定しない限り、[ドメイン安全性チェック](/ja/data-usage#webfetch-domain-safety-check) のために `api.anthropic.com` を呼び出します。
- 
-```
-
-</details>
-
-<details>
-<summary>sandboxing-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/sandboxing-ja.md b/docs-ja/pages/sandboxing-ja.md
-index c99ac9a..0e4ff9f 100644
---- a/docs-ja/pages/sandboxing-ja.md
-+++ b/docs-ja/pages/sandboxing-ja.md
-@@ -72,5 +72,5 @@ WSL1 は bubblewrap が WSL2 でのみ利用可能なカーネル機能を必要
- **macOS** では、サンドボックス化は組み込みの Seatbelt フレームワークを使用してすぐに動作します。
- 
--**Linux と WSL2** では、まず必要なパッケージをインストールします。
-+**Linux と WSL2** では、まず必要なパッケージをインストールしてください。
- 
- <Tabs>
-@@ -98,5 +98,5 @@ WSL1 は bubblewrap が WSL2 でのみ利用可能なカーネル機能を必要
- これはサンドボックスモードを選択できるメニューを開きます。必要な依存関係（Linux の `bubblewrap` や `socat` など）が不足している場合、メニューはプラットフォームのインストール手順を表示します。
- 
--デフォルトでは、サンドボックスが起動できない場合（依存関係の不足、サポートされていないプラットフォーム、またはプラットフォーム制限）、Claude Code は警告を表示してサンドボックス化なしでコマンドを実行します。これをハード失敗にするには、[`sandbox.failIfUnavailable`](/ja/settings#sandbox-settings) を `true` に設定します。これは、セキュリティゲートとしてサンドボックス化を必要とする管理デプロイメント向けです。
-+デフォルトでは、サンドボックスが起動できない場合（依存関係の不足またはサポートされていないプラットフォーム）、Claude Code は警告を表示してサンドボックス化なしでコマンドを実行します。これをハード失敗にするには、[`sandbox.failIfUnavailable`](/ja/settings#sandbox-settings) を `true` に設定します。これは、セキュリティゲートとしてサンドボックス化を必要とする管理デプロイメント向けです。
- 
- ### サンドボックスモード
-@@ -104,5 +104,5 @@ WSL1 は bubblewrap が WSL2 でのみ利用可能なカーネル機能を必要
- Claude Code は 2 つのサンドボックスモードを提供します。
- 
--**自動許可モード**：Bash コマンドはサンドボックス内で実行を試みられ、許可なしに自動的に許可されます。サンドボックス化できないコマンド（許可されていないホストへのネットワークアクセスが必要なコマンドなど）は通常の許可フローにフォールバックします。明示的な拒否ルールは常に尊重されます。Ask ルールは通常の許可フローにフォールバックするコマンドにのみ適用されます。
-+**自動許可モード**：Bash コマンドはサンドボックス内で実行を試みられ、許可なしに自動的に許可されます。サンドボックス化できないコマンド（許可されていないホストへのネットワークアクセスが必要なコマンドなど）は通常の許可フローにフォールバックします。明示的な拒否ルールは常に尊重されます。また、`rm` または `rmdir` コマンドが `/`、ホームディレクトリ、または他の重要なシステムパスをターゲットにしている場合でも、許可プロンプトがトリガーされます。Ask ルールは通常の許可フローにフォールバックするコマンドにのみ適用されます。
- 
- **通常の許可モード**：すべての bash コマンドは、サンドボックス化されている場合でも標準的な許可フローを通じます。これはより多くの制御を提供しますが、より多くの承認が必要です。
-@@ -139,9 +139,9 @@ Claude Code は 2 つのサンドボックスモードを提供します。
- パスプレフィックスはパスの解決方法を制御します。
- 
--| プレフィックス           | 意味                                                          | 例                                                                      |
--| :---------------- | :---------------------------------------------------------- | :--------------------------------------------------------------------- |
-```
-
-</details>
-
-<details>
-<summary>security-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/security-ja.md b/docs-ja/pages/security-ja.md
-index 367ac99..25f2a1d 100644
---- a/docs-ja/pages/security-ja.md
-+++ b/docs-ja/pages/security-ja.md
-@@ -76,5 +76,5 @@ Claude Code は、ユーザーが付与したパーミッションのみを持
- 3. 重要なファイルへの提案された変更を確認します
- 4. 仮想マシン（VM）を使用してスクリプトを実行し、ツール呼び出しを行います。特に外部 Web サービスと対話する場合
--5. `/bug` で疑わしい動作を報告します
-+5. `/feedback` で疑わしい動作を報告します
- 
- <Warning>
-@@ -113,5 +113,5 @@ IDE で Claude Code を実行する場合の詳細については、[VS Code sec
- * 承認前にすべての提案された変更を確認します
- * 機密リポジトリにはプロジェクト固有のパーミッション設定を使用します
--* 追加の分離のために [devcontainers](/ja/devcontainer) の使用を検討します
-+* 追加の分離のために [dev containers](/ja/devcontainer) の使用を検討します
- * `/permissions` で定期的にパーミッション設定を監査します
- 
-```
-
-</details>
-
-</details>
-
-
-<details>
-<summary>2026-04-27</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/chrome-ja.md | 21 +++++++++++++++------
- docs-ja/pages/skills-ja.md |  2 +-
- 2 files changed, 16 insertions(+), 7 deletions(-)
 ```
 
 <!-- UPDATE_LOG_END -->
