@@ -17,6 +17,265 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-05-13</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/agent-teams-ja.md       |   2 +
+ docs-ja/pages/agent-view-ja.md        |  15 +-
+ docs-ja/pages/changelog.md            |  16 +++
+ docs-ja/pages/claude-directory-ja.md  |   3 +-
+ docs-ja/pages/cli-reference-ja.md     |   6 +-
+ docs-ja/pages/data-usage-ja.md        |   4 +-
+ docs-ja/pages/discover-plugins-ja.md  |   2 +
+ docs-ja/pages/env-vars-ja.md          |  10 +-
+ docs-ja/pages/fast-mode-ja.md         |  73 +++++++---
+ docs-ja/pages/goal-ja.md              |   2 +-
+ docs-ja/pages/hooks-guide-ja.md       |   2 +-
+ docs-ja/pages/hooks-ja.md             |  17 ++-
+ docs-ja/pages/mcp-ja.md               | 256 +++++-----------------------------
+ docs-ja/pages/monitoring-usage-ja.md  |  18 +++
+ docs-ja/pages/output-styles-ja.md     |   8 +-
+ docs-ja/pages/permission-modes-ja.md  |   8 ++
+ docs-ja/pages/permissions-ja.md       |  24 ++--
+ docs-ja/pages/plugins-ja.md           |   6 +
+ docs-ja/pages/plugins-reference-ja.md |   4 +-
+ docs-ja/pages/routines-ja.md          |   4 +-
+ docs-ja/pages/security-ja.md          |   2 +-
+ docs-ja/pages/settings-ja.md          |  13 +-
+ docs-ja/pages/skills-ja.md            |  10 +-
+ 23 files changed, 214 insertions(+), 291 deletions(-)
+```
+
+<details>
+<summary>agent-teams-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/agent-teams-ja.md b/docs-ja/pages/agent-teams-ja.md
+index 691d350..9e7818b 100644
+--- a/docs-ja/pages/agent-teams-ja.md
++++ b/docs-ja/pages/agent-teams-ja.md
+@@ -130,4 +130,6 @@ Use Sonnet for each teammate.
+ ```
+ 
++チームメンバーはデフォルトではリーダーの `/model` 選択を継承しません。プロンプトで指定されていない場合に使用されるモデルを変更するには、`/config` で **Default teammate model** を設定してください。チームメンバーがリーダーの現在のモデルに従うようにするには、**Default (leader's model)** を選択してください。
++
+ ### チームメンバーのプラン承認を要求する
+ 
+```
+
+</details>
+
+<details>
+<summary>agent-view-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/agent-view-ja.md b/docs-ja/pages/agent-view-ja.md
+index ef45b0a..e888f27 100644
+--- a/docs-ja/pages/agent-view-ja.md
++++ b/docs-ja/pages/agent-view-ja.md
+@@ -59,5 +59,5 @@
+ `claude agents` を実行してエージェントビューを開きます。ターミナル全体を占有し、状態でグループ化されたすべてのセッションをリストします。ピン留めされたセッションと入力が必要なセッションが上部に表示されます。各行はセッションの名前、現在のアクティビティ、最後に変更されてからの経過時間を表示します。
+ 
+-リストはマシンに対してグローバルであり、どのプロジェクトまたはワークツリーで作業しているかに関係なく、[config ディレクトリ](#how-background-sessions-are-hosted)の下にあるすべてのバックグラウンドセッションを含みます。1 つのリポジトリで開始されたセッションと別のワークツリーで開始された別のセッションの両方が一緒に表示されます。他のターミナルで開いているインタラクティブセッションは、[バックグラウンドにする](#from-inside-a-session)までは表示されず、セッション内で実行している [subagents](/ja/sub-agents) は個別の行としてリストされません。
++リストは [config ディレクトリ](#how-background-sessions-are-hosted) の下にあるすべてのバックグラウンドセッションを含み、どのプロジェクトまたはワークツリーで作業しているかに関係なく、マシン全体をカバーします。1 つのリポジトリで開始されたセッションと別のワークツリーで開始された別のセッションの両方が一緒に表示されます。他のターミナルで開いているインタラクティブセッションは、[バックグラウンドにする](#from-inside-a-session)までは表示されず、セッション内で実行している [subagents](/ja/sub-agents) は個別の行としてリストされません。
+ 
+ ```text theme={null}
+@@ -66,5 +66,5 @@ Pinned
+ 
+ Ready for review
+-  ∙ jump physics              github.com/anthropics/example/pull/2048       2h
++  ∙ jump physics              github.com/anthropics/example/pull/2048    ●  2h
+ 
+ Needs input
+@@ -100,5 +100,14 @@ Completed
+ 各行の 1 行の概要は、設定された [Haiku クラスモデル](/ja/model-config) によって生成されるため、行はセッションが何をしているか、何が必要か、または何を生成したかをトランスクリプトを開かずに伝えることができます。セッションがアクティブに作業している間、概要は最大 15 秒ごとに 1 回、および各ターンが終了したときに 1 回更新されます。各更新は通常のプロバイダーを通じた 1 つの短い Haiku クラスリクエストであり、セッション自体と同じ [データ使用条件](/ja/data-usage) の下で請求および処理されます。
+ 
+-セッションがプルリクエストを開くと、行は PR リンクと CI チェックのステータスインジケーターを表示します。ほとんどのタスクでは、この行が結果を収集する方法です。チェックが成功したときにプルリクエストをレビューしてマージします。
++セッションがプルリクエストを開くと、ステータスドットが行の右端に表示され、ハイパーリンクをサポートするターミナルではプルリクエストにリンクされます。セッションが複数のプルリクエストを開いた場合、カウントはドットの前に表示され、色はどれが最も注意が必要かを反映します。
++
++| ドットの色 | プルリクエストのステータス              |
++| :---- | :------------------------- |
++| 黄色    | チェックまたはレビューを待機中、またはチェックが失敗 |
++| 緑     | チェックが成功し、レビューがブロックされていない   |
++| 紫     | マージ済み                      |
++| グレー   | ドラフトまたはクローズ                |
+```
+
+</details>
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index af9c193..8a8624e 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,20 @@
+ # Changelog
+ 
++## 2.1.140
++
++- Improved Agent tool `subagent_type` matching to accept case- and separator-insensitive values (e.g. `"Code Reviewer"` resolves to `code-reviewer`)
++- Updated agent color palette
++- Fixed `/goal` silently hanging when `disableAllHooks` or `allowManagedHooksOnly` is set — now shows a clear message instead of an indicator that never resolves
++- Fixed a regression in settings hot-reload where symlinked settings files caused misattributed change events and spurious `ConfigChange` hooks
++- Fixed `claude --bg` failing with "connection dropped mid-request" when the background service was about to idle-exit
++- Fixed background service startup failing on machines with enterprise endpoint security by allowing more time
++- Fixed remote managed settings not retrying on 401 — now retries once with a force-refreshed token
++- Fixed managed `extraKnownMarketplaces` auto-update policy not being persisted to `known_marketplaces.json`
++- Fixed `/loop` scheduling redundant wakeups to poll for background tasks that already notify on completion
++- Fixed a recurring event-loop stall on Windows when a missing executable (e.g. `gh`) triggered synchronous `where.exe` re-spawns on every check
++- Fixed `Read` tool calls failing validation when `offset` is passed as a whitespace-padded or `+`-prefixed string
++- Fixed native terminal cursor not staying at the input caret when the terminal loses focus
++- Plugins now warn when a default component folder (e.g. `commands/`) is silently ignored because `plugin.json` sets the matching key. Shown in `/doctor`, `claude plugin list`, and `/plugin`.
++
+ ## 2.1.139
+ 
+```
+
+</details>
+
+<details>
+<summary>claude-directory-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/claude-directory-ja.md b/docs-ja/pages/claude-directory-ja.md
+index 56d7d22..3e1b6a3 100644
+--- a/docs-ja/pages/claude-directory-ja.md
++++ b/docs-ja/pages/claude-directory-ja.md
+@@ -1498,4 +1498,5 @@ Windows では、`~/.claude` は `%USERPROFILE%\.claude` に解決されます
+ | -------------------------------------------- | ------------------------------------------------------------------------------------ |
+ | `projects/<project>/<session>.jsonl`         | 完全な会話トランスクリプト：すべてのメッセージ、ツール呼び出し、ツール結果                                                |
++| `projects/<project>/<session>/subagents/`    | [Subagent](/ja/sub-agents) 会話トランスクリプト。親セッショントランスクリプトが古くなると一緒に削除されます                  |
+ | `projects/<project>/<session>/tool-results/` | 大きなツール出力を別ファイルにこぼしたもの                                                                |
+ | `file-history/<session>/`                    | Claude が変更したファイルの編集前スナップショット。[チェックポイント復元](/ja/checkpointing)に使用                      |
+@@ -1526,5 +1527,5 @@ Windows では、`~/.claude` は `%USERPROFILE%\.claude` に解決されます
+ 
+ * `cleanupPeriodDays` を低くしてトランスクリプトの保持期間を短縮します
+-* [`CLAUDE_CODE_SKIP_PROMPT_HISTORY`](/ja/env-vars)環境変数を設定して、任意のモードでトランスクリプトとプロンプト履歴の書き込みをスキップします。非対話型モードでは、代わりに `-p` と一緒に `--no-session-persistence` を渡すか、Agent SDK で `persistSession: false` を設定できます。
++* [`CLAUDE_CODE_SKIP_PROMPT_HISTORY`](/ja/env-vars) 環境変数を設定して、任意のモードでトランスクリプトとプロンプト履歴の書き込みをスキップします。非対話型モードでは、代わりに `-p` と一緒に `--no-session-persistence` を渡すか、Agent SDK で `persistSession: false` を設定できます。
+ * [パーミッションルール](/ja/permissions)を使用して認証情報ファイルの読み込みを拒否します
+ 
+```
+
+</details>
+
+<details>
+<summary>cli-reference-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/cli-reference-ja.md b/docs-ja/pages/cli-reference-ja.md
+index de6df18..951e0a9 100644
+--- a/docs-ja/pages/cli-reference-ja.md
++++ b/docs-ja/pages/cli-reference-ja.md
+@@ -68,5 +68,5 @@
+ | `--effort`                                      | 現在のセッションの [努力レベル](/ja/model-config#adjust-effort-level) を設定します。オプション：`low`、`medium`、`high`、`xhigh`、`max`。利用可能なレベルはモデルによって異なります。[`effortLevel`](/ja/settings#available-settings) 設定をこのセッションでオーバーライドし、永続化されません                                                                                                                | `claude --effort high`                                                                             |
+ | `--enable-auto-mode`                            | {/* max-version: 2.1.110 */}v2.1.111 で削除されました。Auto mode は現在 `Shift+Tab` サイクルにデフォルトで含まれています。`--permission-mode auto` を使用して開始してください                                                                                                                                                                                           | `claude --permission-mode auto`                                                                    |
+-| `--exclude-dynamic-system-prompt-sections`      | システムプロンプトからマシンごとのセクション（作業ディレクトリ、環境情報、メモリパス、git ステータス）を最初のユーザーメッセージに移動します。異なるユーザーとマシンで同じタスクを実行する場合、prompt-cache の再利用を改善します。デフォルトシステムプロンプトにのみ適用されます。`--system-prompt` または `--system-prompt-file` が設定されている場合は無視されます。スクリプト化された複数ユーザーのワークロードの場合は `-p` と一緒に使用してください                                                               | `claude -p --exclude-dynamic-system-prompt-sections "query"`                                       |
++| `--exclude-dynamic-system-prompt-sections`      | システムプロンプトからマシンごとのセクション（作業ディレクトリ、環境情報、メモリパス、git リポジトリフラグ）を最初のユーザーメッセージに移動します。異なるユーザーとマシンで同じタスクを実行する場合、prompt-cache の再利用を改善します。デフォルトシステムプロンプトにのみ適用されます。`--system-prompt` または `--system-prompt-file` が設定されている場合は無視されます。スクリプト化された複数ユーザーのワークロードの場合は `-p` と一緒に使用してください                                                            | `claude -p --exclude-dynamic-system-prompt-sections "query"`                                       |
+ | `--fallback-model`                              | デフォルトモデルが過負荷の場合、指定されたモデルへの自動フォールバックを有効にします（プリントモードのみ）                                                                                                                                                                                                                                                                       | `claude -p --fallback-model sonnet "query"`                                                        |
+ | `--fork-session`                                | 再開時に、元のセッション ID を再利用する代わりに新しいセッション ID を作成します（`--resume` または `--continue` と一緒に使用）                                                                                                                                                                                                                                            | `claude --resume abc123 --fork-session`                                                            |
+@@ -125,5 +125,7 @@ Claude Code は、システムプロンプトをカスタマイズするため
+ `--system-prompt` と `--system-prompt-file` は相互に排他的です。追加フラグは、置き換えフラグのいずれかと組み合わせることができます。
+ 
+-ほとんどのユースケースでは、追加フラグを使用してください。追加することで、Claude Code の組み込み機能を保持しながら、要件を追加できます。置き換えフラグは、システムプロンプトを完全に制御する必要がある場合にのみ使用してください。
++Claude Code のデフォルトの ID がタスクに適合しているかどうかに基づいて選択してください。Claude が追加のルールも従うコーディングアシスタントのままである場合は、追加フラグを使用してください：呼び出しごとの指示、出力形式設定、または `-p` スクリプトのドメインコンテキスト。追加することで、デフォルトのツールガイダンス、安全指示、およびコーディング規約が保持されるため、異なる部分のみを提供します。システムプロンプトの表面、ID、または権限モデルが Claude Code のものと異なる場合は、置き換えフラグを使用してください。例えば、人間が監視していないパイプラインの非コーディングエージェント。置き換えることで、デフォルトプロンプト全体が削除されます。ツールガイダンスと安全指示を含めて、タスクがまだ必要とするものについて責任を負います。
++
++これらのフラグは現在の呼び出しにのみ適用されます。プロジェクト全体で切り替えて共有できる永続的なペルソナについては、[出力スタイル](/ja/output-styles) を使用してください。Claude が常に従うべきプロジェクト規約については、[CLAUDE.md](/ja/memory) を使用してください。[Agent SDK ガイドのシステムプロンプト](/ja/agent-sdk/modifying-system-prompts#decide-on-a-starting-point) は、より詳細に同じ決定をカバーしています。
+ 
+ ## 関連項目
+```
+
+</details>
+
+<details>
+<summary>data-usage-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/data-usage-ja.md b/docs-ja/pages/data-usage-ja.md
+index d326c51..a165950 100644
+--- a/docs-ja/pages/data-usage-ja.md
++++ b/docs-ja/pages/data-usage-ja.md
+@@ -34,7 +34,7 @@ Claude Code で「How is Claude doing this session?」プロンプトが表示
+ * **Don't ask again**：拒否し、今後のセッションでこのフォローアップが表示されなくなります
+ 
+-**Yes** を明示的に選択しない限り、何もアップロードされません。[ゼロデータ保持](/ja/zero-data-retention) を設定している組織、または組織ポリシーで製品フィードバックが無効になっている組織は、このフォローアップを表示しません。数値評価プロンプトの後に送信されたセッショントランスクリプトを含む、この調査への応答は、データトレーニング設定に影響を与えず、AI モデルをトレーニングするために使用することはできません。
++**Yes** を明示的に選択しない限り、何もアップロードされません。[ゼロデータ保持](/ja/zero-data-retention) を設定している組織、または組織ポリシーで製品フィードバックが無効になっている組織、または `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` が設定されている組織は、このフォローアップを表示しません。数値評価プロンプトの後に送信されたセッショントランスクリプトを含む、この調査への応答は、データトレーニング設定に影響を与えず、AI モデルをトレーニングするために使用することはできません。
+ 
+-これらの調査を無効にするには、`CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY=1` を設定します。調査は、`DISABLE_TELEMETRY` または `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` が設定されている場合にも無効になります。無効にする代わりに頻度を制御するには、設定ファイルで [`feedbackSurveyRate`](/ja/settings#available-settings) を `0` から `1` の間の確率に設定します。
++これらの調査を無効にするには、`CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY=1` を設定します。調査は、`DISABLE_TELEMETRY`、`DO_NOT_TRACK`、または `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` が設定されている場合にも無効になります。無効にする代わりに頻度を制御するには、設定ファイルで [`feedbackSurveyRate`](/ja/settings#available-settings) を `0` から `1` の間の確率に設定します。非必須トラフィックをブロックしているが、独自の [OpenTelemetry collector](/ja/monitoring-usage) を通じて調査応答をキャプチャしている組織は、`CLAUDE_CODE_ENABLE_FEEDBACK_SURVEY_FOR_OTEL=1` を設定することで調査をオプトバックインできます。調査は、設定されたコレクターのみに数値評価をログします。トランスクリプト共有フォローアップおよび他のすべての Anthropic バウンドフィードバックトラフィックは無効のままです。
+ 
+ ### データ保持
+```
+
+</details>
+
+<details>
+<summary>discover-plugins-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/discover-plugins-ja.md b/docs-ja/pages/discover-plugins-ja.md
+index ca4164c..5116c21 100644
+--- a/docs-ja/pages/discover-plugins-ja.md
++++ b/docs-ja/pages/discover-plugins-ja.md
+@@ -365,4 +365,6 @@ UI を通じて個別のマーケットプレイスの自動更新を切り替
+ 公式 Anthropic マーケットプレイスはデフォルトで自動更新が有効になっています。サードパーティおよびローカル開発マーケットプレイスはデフォルトで自動更新が無効になっています。
+ 
++管理者は、マネージド設定で各 [`extraKnownMarketplaces`](/ja/settings#extraknownmarketplaces) エントリに `"autoUpdate": true` を設定して、各ユーザーが切り替える必要なく、組織マーケットプレイスの自動更新を有効にすることもできます。
++
+ Claude Code とすべてのプラグインの両方のすべての自動更新を完全に無効化するには、`DISABLE_AUTOUPDATER` 環境変数を設定します。詳細については、[自動更新](/ja/setup#auto-updates)を参照してください。
+ 
+```
+
+</details>
+
+<details>
+<summary>env-vars-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/env-vars-ja.md b/docs-ja/pages/env-vars-ja.md
+index 981ce2c..3e142e8 100644
+--- a/docs-ja/pages/env-vars-ja.md
++++ b/docs-ja/pages/env-vars-ja.md
+@@ -82,5 +82,5 @@ Claude Code は、その動作を制御するために以下の環境変数を
+ | `CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS`                | Anthropic 固有の `anthropic-beta` リクエストヘッダーと beta ツールスキーマフィールド（`defer_loading` や `eager_input_streaming` など）を API リクエストから削除するには `1` に設定します。プロキシゲートウェイが「`anthropic-beta` ヘッダーの予期しない値」や「追加の入力は許可されていません」などのエラーでリクエストを拒否する場合に使用します。標準フィールド（`name`、`description`、`input_schema`、`cache_control`）は保持されます。                                                                                                                              |
+ | `CLAUDE_CODE_DISABLE_FAST_MODE`                         | [高速モード](/ja/fast-mode) を無効にするには `1` に設定します                                                                                                                                                                                                                                                                                                                                                                                     |
+-| `CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY`                   | 「Claude の調子はどうですか？」セッション品質調査を無効にするには `1` に設定します。`DISABLE_TELEMETRY` または `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` が設定されている場合も調査は無効になります。サンプルレートを設定する代わりに、[`feedbackSurveyRate`](/ja/settings#available-settings) 設定を使用します。[セッション品質調査](/ja/data-usage#session-quality-surveys) を参照してください                                                                                                                                       |
++| `CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY`                   | 「Claude の調子はどうですか？」セッション品質調査を無効にするには `1` に設定します。`DISABLE_TELEMETRY`、`DO_NOT_TRACK`、または `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` が設定されている場合も調査は無効になります。`CLAUDE_CODE_ENABLE_FEEDBACK_SURVEY_FOR_OTEL` でオプトバックインしない限り。サンプルレートを設定する代わりに、[`feedbackSurveyRate`](/ja/settings#available-settings) 設定を使用します。[セッション品質調査](/ja/data-usage#session-quality-surveys) を参照してください                                                           |
+ | `CLAUDE_CODE_DISABLE_FILE_CHECKPOINTING`                | ファイル [チェックポイント](/ja/checkpointing) を無効にするには `1` に設定します。`/rewind` コマンドはコード変更を復元できなくなります                                                                                                                                                                                                                                                                                                                                         |
+ | `CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS`                  | Claude のシステムプロンプトから組み込みのコミットと PR ワークフロー命令と git ステータススナップショットを削除するには `1` に設定します。独自の git ワークフロースキルを使用する場合に役立ちます。設定されている場合、[`includeGitInstructions`](/ja/settings#available-settings) 設定よりも優先されます                                                                                                                                                                                                                                |
+@@ -97,6 +97,8 @@ Claude Code は、その動作を制御するために以下の環境変数を
+ | `CLAUDE_CODE_ENABLE_AWAY_SUMMARY`                       | [セッションリキャップ](/ja/interactive-mode#session-recap) の利用可能性をオーバーライドします。`/config` トグルに関係なくリキャップを強制的にオフにするには `0` に設定します。[`awaySummaryEnabled`](/ja/settings#available-settings) が `false` の場合にリキャップを強制的にオンにするには `1` に設定します。設定と `/config` トグルより優先されます                                                                                                                                                                                 |
+ | `CLAUDE_CODE_ENABLE_BACKGROUND_PLUGIN_REFRESH`          | [非対話モード](/ja/headless) でバックグラウンドインストールが完了した後、ターン境界でプラグイン状態をリフレッシュするには `1` に設定します。リフレッシュはセッション中にシステムプロンプトを変更するため、デフォルトではオフです。これにより、そのターンの [プロンプトキャッシング](https://platform.claude.com/docs/en/build-with-claude/prompt-caching) が無効になります                                                                                                                                                                                          |
++| `CLAUDE_CODE_ENABLE_FEEDBACK_SURVEY_FOR_OTEL`           | Anthropic バウンドの非必須トラフィックがブロックされている場合、「Claude の調子はどうですか？」セッション品質調査を独自の [OpenTelemetry コレクター](/ja/monitoring-usage) にルーティングするには `1` に設定します。調査の評価は OTEL イベントとしてのみ設定されたコレクターに出力されます。このモードでは調査データは Anthropic に送信されません。`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`、`DISABLE_TELEMETRY`、または `DO_NOT_TRACK` が設定されている場合に適用され、それ以外の場合は効果がありません。`CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY` と組織製品フィードバックポリシーが優先されます                              |
+ | `CLAUDE_CODE_ENABLE_FINE_GRAINED_TOOL_STREAMING`        | ツール呼び出し入力が Claude によって生成されるときに API からストリーミングされるかどうかを制御します。これがない場合、大きなツール入力（長いファイル書き込みなど）は Claude が生成を完了した後にのみ到着します。これは、ハングしているように見える可能性があります。Anthropic API 直接接続でデフォルトで有効です。Bedrock と Vertex では、デプロイされたコンテナがサポートしているモデルごとに有効です。`0` に設定してオプトアウトします。`1` に設定して、`ANTHROPIC_BASE_URL`、`ANTHROPIC_VERTEX_BASE_URL`、または `ANTHROPIC_BEDROCK_BASE_URL` を通じてプロキシにルーティングする場合に強制的に有効にします。Foundry と [ゲートウェイ](/ja/llm-gateway) 接続ではデフォルトでオフです |
+ | `CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY`            | `ANTHROPIC_BASE_URL` が LiteLLM、Kong、または内部プロキシなどの Anthropic 互換ゲートウェイを指している場合、ゲートウェイの `/v1/models` エンドポイントから `/model` ピッカーを入力するには `1` に設定します。共有 API キーでバックアップされたゲートウェイはそれ以外の場合、すべてのユーザーにキーがアクセスできるすべてのモデルを表示するため、デフォルトではオフです。検出されたモデルは依然として [`availableModels`](/ja/settings#available-settings) 許可リストでフィルタリングされます                                                                                                               |
++| `CLAUDE_CODE_ENABLE_OPUS_4_7_FAST_MODE`                 | [高速モード](/ja/fast-mode) を Claude Opus 4.7 で実行するには `1` に設定します。Opus 4.6 の代わりに。変数が設定されている場合、`/fast` は Opus 4.7 に切り替わります。設定されていない場合、`/fast` は引き続き Opus 4.6 を使用します                                                                                                                                                                                                                                                                   |
+ | `CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION`                  | プロンプト提案を無効にするには `false` に設定します（`/config` の「プロンプト提案」トグル）。これらは Claude が応答した後にプロンプト入力に表示される灰色の予測です。[プロンプト提案](/ja/interactive-mode#prompt-suggestions) を参照してください                                                                                                                                                                                                                                                                   |
+ | `CLAUDE_CODE_ENABLE_TASKS`                              | 非対話モード（`-p` フラグ）でタスク追跡システムを有効にするには `1` に設定します。タスクは対話モードではデフォルトでオンです。[タスクリスト](/ja/interactive-mode#task-list) を参照してください                                                                                                                                                                                                                                                                                                         |
+@@ -128,4 +130,5 @@ Claude Code は、その動作を制御するために以下の環境変数を
+ | `CLAUDE_CODE_OAUTH_SCOPES`                              | リフレッシュトークンが発行されたスペース区切りの OAuth スコープ（例：`"user:profile user:inference user:sessions:claude_code"`）。`CLAUDE_CODE_OAUTH_REFRESH_TOKEN` が設定されている場合は必須です                                                                                                                                                                                                                                                                             |
+ | `CLAUDE_CODE_OAUTH_TOKEN`                               | Claude.ai 認証用の OAuth アクセストークン。SDK および自動化された環境での `/login` の代替。キーチェーンに保存された認証情報よりも優先されます。[`claude setup-token`](/ja/authentication#generate-a-long-lived-token) で生成します                                                                                                                                                                                                                                                           |
++| `CLAUDE_CODE_OPUS_4_6_FAST_MODE_OVERRIDE`               | [高速モード](/ja/fast-mode) を Claude Opus 4.6 で保持するには `1` に設定します。`CLAUDE_CODE_ENABLE_OPUS_4_7_FAST_MODE` より優先されるため、デフォルトの変更方法に関係なく Opus 4.6 をピンする必要がある場合に設定します                                                                                                                                                                                                                                                                      |
+ | `CLAUDE_CODE_OTEL_FLUSH_TIMEOUT_MS`                     | 保留中の OpenTelemetry スパンをフラッシュするためのタイムアウト（ミリ秒）（デフォルト：5000）。[監視](/ja/monitoring-usage) を参照してください                                                                                                                                                                                                                                                                                                                                  |
+ | `CLAUDE_CODE_OTEL_HEADERS_HELPER_DEBOUNCE_MS`           | 動的 OpenTelemetry ヘッダーをリフレッシュする間隔（ミリ秒）（デフォルト：1740000 / 29 分）。[動的ヘッダー](/ja/monitoring-usage#dynamic-headers) を参照してください                                                                                                                                                                                                                                                                                                           |
+@@ -142,4 +145,5 @@ Claude Code は、その動作を制御するために以下の環境変数を
+ | `CLAUDE_CODE_REMOTE_SESSION_ID`                         | [クラウドセッション](/ja/claude-code-on-the-web) で現在のセッションの ID に自動的に設定されます。セッショントランスクリプトへのリンクを構築するために読み取ります。[セッションにアーティファクトをリンク](/ja/claude-code-on-the-web#link-artifacts-back-to-the-session) を参照してください                                                                                                                                                                                                                               |
+ | `CLAUDE_CODE_RESUME_INTERRUPTED_TURN`                   | 前のセッションが途中で終了した場合に自動的に再開するには `1` に設定します。SDK モードで使用されるため、モデルは SDK がプロンプトを再送信する必要なく続行します                                                                                                                                                                                                                                                                                                                                         |
++| `CLAUDE_CODE_RESUME_PROMPT`                             | セッションが途中で終了した場合に再開するときに挿入される継続メッセージをオーバーライドします。デフォルトは `Continue from where you left off.` です。長時間実行されるエージェント用のスポーンスクリプトは、これをより指示的なブートメッセージに設定できます。空の文字列はデフォルトを使用します                                                                                                                                                                                                                                                             |
+```
+
+</details>
+
+*...以降省略*
+
+</details>
+
+
+<details>
 <summary>2026-05-12</summary>
 
 **変更ファイル:**
@@ -2565,290 +2824,5 @@ index f951427..fbee99f 100644
 ```
 
 </details>
-
-<details>
-<summary>env-vars-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/env-vars-ja.md b/docs-ja/pages/env-vars-ja.md
-index 9fe4beb..dd25739 100644
---- a/docs-ja/pages/env-vars-ja.md
-+++ b/docs-ja/pages/env-vars-ja.md
-@@ -154,5 +154,5 @@ Claude Code は、その動作を制御するために以下の環境変数を
- | `CLAUDE_CODE_USE_MANTLE`                                | Bedrock [Mantle エンドポイント](/ja/amazon-bedrock#use-the-mantle-endpoint) を使用します                                                                                                                                                                                                                                                                                                                                           |
- | `CLAUDE_CODE_USE_NATIVE_FILE_SEARCH`                    | ripgrep の代わりに Node.js ファイル API を使用してカスタムコマンド、subagent、出力スタイルを検出するには `1` に設定します。バンドルされた ripgrep バイナリが利用できないか、環境でブロックされている場合に設定します。Grep またはファイル検索ツールには影響しません                                                                                                                                                                                                                                                            |
--| `CLAUDE_CODE_USE_POWERSHELL_TOOL`                       | PowerShell ツールを制御します。Windows では、ツールは段階的にロールアウトされています：オプトインするには `1` に、オプトアウトするには `0` に設定します。Linux、macOS、WSL では、有効にするには `1` に設定します。これには PATH に `pwsh` が必須です。Windows で有効にすると、Claude は Git Bash を通じてルーティングする代わりに PowerShell コマンドをネイティブに実行できます。[PowerShell ツール](/ja/tools-reference#powershell-tool) を参照してください                                                                                                             |
-+| `CLAUDE_CODE_USE_POWERSHELL_TOOL`                       | PowerShell ツールを制御します。Windows では Git Bash がない場合、ツールは自動的に有効になります。無効にするには `0` に設定します。Windows に Git Bash がインストールされている場合、ツールは段階的にロールアウトされています：オプトインするには `1` に、オプトアウトするには `0` に設定します。Linux、macOS、WSL では、有効にするには `1` に設定します。これには PATH に `pwsh` が必須です。Windows で有効にすると、Claude は Git Bash を通じてルーティングする代わりに PowerShell コマンドをネイティブに実行できます。[PowerShell ツール](/ja/tools-reference#powershell-tool) を参照してください                         |
- | `CLAUDE_CODE_USE_VERTEX`                                | [Vertex](/ja/google-vertex-ai) を使用します                                                                                                                                                                                                                                                                                                                                                                                 |
- | `CLAUDE_CONFIG_DIR`                                     | 設定ディレクトリをオーバーライドします（デフォルト：`~/.claude`）。すべての設定、認証情報、セッション履歴、プラグインはこのパスの下に保存されます。複数のアカウントを並行して実行する場合に役立ちます：例えば、`alias claude-work='CLAUDE_CONFIG_DIR=~/.claude-work claude'`                                                                                                                                                                                                                                            |
-```
-
-</details>
-
-<details>
-<summary>overview-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/overview-ja.md b/docs-ja/pages/overview-ja.md
-index e3a9595..2334771 100644
---- a/docs-ja/pages/overview-ja.md
-+++ b/docs-ja/pages/overview-ja.md
-@@ -490,8 +490,8 @@ export const InstallConfigurator = ({defaultSurface = 'terminal'}) => {
-       {target === 'terminal' && <div className="cc-ic-below">
-           {isWinInstaller && <span>
--              Requires{' '}
-               <a href="https://git-scm.com/downloads/win" target="_blank" rel="noopener">
-                 Git for Windows
--              </a>.
-+              </a>{' '}
-+              recommended. PowerShell is used if Git Bash is absent.
-             </span>}
-           {(pkg === 'brew' || pkg === 'winget') && <span>
-@@ -675,5 +675,5 @@ Claude Code は AI を活用したコーディングアシスタントで、機
-         If you see `The token '&&' is not a valid statement separator`, you're in PowerShell, not CMD. If you see `'irm' is not recognized as an internal or external command`, you're in CMD, not PowerShell. Your prompt shows `PS C:\` when you're in PowerShell and `C:\` without the `PS` when you're in CMD.
- 
--        [Git for Windows](https://git-scm.com/downloads/win) is required on native Windows so Claude Code can use the Bash tool. WSL setups do not need Git for Windows.
-+        [Git for Windows](https://git-scm.com/downloads/win) is recommended on native Windows so Claude Code can use the Bash tool. If Git for Windows is not installed, Claude Code uses PowerShell as the shell tool instead. WSL setups do not need Git for Windows.
- 
-         <Info>
-```
-
-</details>
-
-<details>
-<summary>quickstart-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/quickstart-ja.md b/docs-ja/pages/quickstart-ja.md
-index 426425a..4f9925e 100644
---- a/docs-ja/pages/quickstart-ja.md
-+++ b/docs-ja/pages/quickstart-ja.md
-@@ -490,8 +490,8 @@ export const InstallConfigurator = ({defaultSurface = 'terminal'}) => {
-       {target === 'terminal' && <div className="cc-ic-below">
-           {isWinInstaller && <span>
--              Requires{' '}
-               <a href="https://git-scm.com/downloads/win" target="_blank" rel="noopener">
-                 Git for Windows
--              </a>.
-+              </a>{' '}
-+              recommended. PowerShell is used if Git Bash is absent.
-             </span>}
-           {(pkg === 'brew' || pkg === 'winget') && <span>
-@@ -680,5 +680,5 @@ To install Claude Code, use one of the following methods:
-     If you see `The token '&&' is not a valid statement separator`, you're in PowerShell, not CMD. If you see `'irm' is not recognized as an internal or external command`, you're in CMD, not PowerShell. Your prompt shows `PS C:\` when you're in PowerShell and `C:\` without the `PS` when you're in CMD.
- 
--    [Git for Windows](https://git-scm.com/downloads/win) is required on native Windows so Claude Code can use the Bash tool. WSL setups do not need Git for Windows.
-+    [Git for Windows](https://git-scm.com/downloads/win) is recommended on native Windows so Claude Code can use the Bash tool. If Git for Windows is not installed, Claude Code uses PowerShell as the shell tool instead. WSL setups do not need Git for Windows.
- 
-     <Info>
-```
-
-</details>
-
-<details>
-<summary>setup-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/setup-ja.md b/docs-ja/pages/setup-ja.md
-index d49e141..546dd06 100644
---- a/docs-ja/pages/setup-ja.md
-+++ b/docs-ja/pages/setup-ja.md
-@@ -60,5 +60,5 @@ To install Claude Code, use one of the following methods:
-     If you see `The token '&&' is not a valid statement separator`, you're in PowerShell, not CMD. If you see `'irm' is not recognized as an internal or external command`, you're in CMD, not PowerShell. Your prompt shows `PS C:\` when you're in PowerShell and `C:\` without the `PS` when you're in CMD.
- 
--    [Git for Windows](https://git-scm.com/downloads/win) is required on native Windows so Claude Code can use the Bash tool. WSL setups do not need Git for Windows.
-+    [Git for Windows](https://git-scm.com/downloads/win) is recommended on native Windows so Claude Code can use the Bash tool. If Git for Windows is not installed, Claude Code uses PowerShell as the shell tool instead. WSL setups do not need Git for Windows.
- 
-     <Info>
-@@ -104,9 +104,9 @@ claude
- Claude Code をネイティブに Windows で実行することも、WSL 内で実行することもできます。プロジェクトの場所と必要な機能に基づいて選択してください。
- 
--| オプション         | 必須                                                      | [サンドボックス](/ja/sandboxing) | 使用時期                              |
--| ------------- | ------------------------------------------------------- | ------------------------- | --------------------------------- |
--| ネイティブ Windows | [Git for Windows](https://git-scm.com/downloads/win)が必須 | サポートされていません               | Windows ネイティブプロジェクトとツール           |
--| WSL 2         | WSL 2 有効                                                | サポートされています                | Linux ツールチェーンまたはサンドボックス化されたコマンド実行 |
--| WSL 1         | WSL 1 有効                                                | サポートされていません               | WSL 2 が利用できない場合                   |
-+| オプション         | 必須                                                                           | [サンドボックス](/ja/sandboxing) | 使用時期                              |
-+| ------------- | ---------------------------------------------------------------------------- | ------------------------- | --------------------------------- |
-+| ネイティブ Windows | [Git for Windows](https://git-scm.com/downloads/win)推奨；不在の場合は PowerShell を使用 | サポートされていません               | Windows ネイティブプロジェクトとツール           |
-+| WSL 2         | WSL 2 有効                                                                     | サポートされています                | Linux ツールチェーンまたはサンドボックス化されたコマンド実行 |
-+| WSL 1         | WSL 1 有効                                                                     | サポートされていません               | WSL 2 が利用できない場合                   |
- 
- **オプション 1: Git Bash を使用したネイティブ Windows**
-@@ -126,5 +126,5 @@ PowerShell または CMD からインストールするかどうかは、実行
- ```
- 
--Claude Code は Windows でネイティブに PowerShell を実行することもできます。PowerShell ツールは段階的にロールアウトされています。オプトインするには `CLAUDE_CODE_USE_POWERSHELL_TOOL=1` を設定するか、オプトアウトするには `0` を設定します。セットアップと制限については、[PowerShell ツール](/ja/tools-reference#powershell-tool)を参照してください。
-```
-
-</details>
-
-<details>
-<summary>skills-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/skills-ja.md b/docs-ja/pages/skills-ja.md
-index bd1a731..989c286 100644
---- a/docs-ja/pages/skills-ja.md
-+++ b/docs-ja/pages/skills-ja.md
-@@ -41,5 +41,5 @@ Claude Code には、すべてのセッションで利用可能な一連のバ
- 
-   <Step title="SKILL.md を記述する">
--    すべてのスキルには `SKILL.md` ファイルが必要です。2 つの部分があります。YAML フロントマター（`---` マーカー間）は Claude にスキルをいつ使用するかを伝え、マークダウンコンテンツはスキルが呼び出されるときに Claude が従う指示です。`name` フィールドは `/slash-command` になり、`description` は Claude がスキルを自動的に読み込むかどうかを決定するのに役立ちます。
-+    すべてのスキルには `SKILL.md` ファイルが必要です。2 つの部分があります。YAML フロントマター（`---` マーカー間）は Claude にスキルをいつ使用するかを伝え、マークダウンコンテンツはスキルが呼び出されるときに Claude が従う指示です。ディレクトリ名は `/slash-command` になり、`description` は Claude がスキルを自動的に読み込むかどうかを決定するのに役立ちます。
- 
-     `~/.claude/skills/explain-code/SKILL.md` を作成します：
-@@ -47,5 +47,4 @@ Claude Code には、すべてのセッションで利用可能な一連のバ
-     ```yaml theme={null}
-     ---
--    name: explain-code
-     description: Explains code with visual diagrams and analogies. Use when explaining how code works, teaching about a codebase, or when the user asks "how does this work?"
-     ---
-```
-
-</details>
-
-<details>
-<summary>statusline-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/statusline-ja.md b/docs-ja/pages/statusline-ja.md
-index 28c960a..df2cb56 100644
---- a/docs-ja/pages/statusline-ja.md
-+++ b/docs-ja/pages/statusline-ja.md
-@@ -917,5 +917,5 @@ Claude.ai サブスクリプションのレート制限使用状況をステー
- ### Windows 設定
- 
--Windows では、Claude Code はステータスラインコマンドを Git Bash 経由で実行します。そのシェルから PowerShell を呼び出すことができます：
-+Windows では、Claude Code はステータスラインコマンドを Git Bash 経由で実行します。Git Bash がインストールされている場合、または Git Bash がない場合は PowerShell を通じて実行します。PowerShell スクリプトをステータスラインとして実行するには、`powershell` 経由で呼び出します。これはどちらのシェルからでも機能します：
- 
- <CodeGroup>
-@@ -944,5 +944,5 @@ Windows では、Claude Code はステータスラインコマンドを Git Bash
- </CodeGroup>
- 
--または Bash スクリプトを直接実行します：
-+または、Git Bash がインストールされている場合は、Bash スクリプトを直接実行します：
- 
- <CodeGroup>
-```
-
-</details>
-
-<details>
-<summary>tools-reference-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/tools-reference-ja.md b/docs-ja/pages/tools-reference-ja.md
-index 462b419..4964c27 100644
---- a/docs-ja/pages/tools-reference-ja.md
-+++ b/docs-ja/pages/tools-reference-ja.md
-@@ -96,5 +96,5 @@ Monitor は [Bash と同じ権限ルール](/ja/permissions#tool-specific-permis
- ## PowerShell ツール
- 
--PowerShell ツールを使用すると、Claude は PowerShell コマンドをネイティブに実行できます。Windows では、これは Git Bash を経由するのではなく、PowerShell でコマンドが実行されることを意味します。ツールは Windows で段階的にロールアウトされており、Linux、macOS、および WSL ではオプトインです。
-+PowerShell ツールを使用すると、Claude は PowerShell コマンドをネイティブに実行できます。Windows では、これは Git Bash を経由するのではなく、PowerShell でコマンドが実行されることを意味します。Git Bash がない Windows では、ツールは自動的に有効になります。Git Bash がインストールされている Windows では、ツールは段階的にロールアウトされています。Linux、macOS、および WSL では、ツールはオプトインです。
- 
- ### PowerShell ツールを有効にする
-```
-
-</details>
-
-<details>
-<summary>troubleshoot-install-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/troubleshoot-install-ja.md b/docs-ja/pages/troubleshoot-install-ja.md
-index e316bda..15b50da 100644
---- a/docs-ja/pages/troubleshoot-install-ja.md
-+++ b/docs-ja/pages/troubleshoot-install-ja.md
-@@ -23,6 +23,7 @@
- | `irm is not recognized` または `&& is not valid`                                                | [シェルに適切なコマンドを使用する](#wrong-install-command-on-windows)                                             |
- | `'bash' is not recognized as the name of a cmdlet`                                           | [Windows インストーラーコマンドを使用する](#wrong-install-command-on-windows)                                     |
--| `Claude Code on Windows requires git-bash`                                                   | [Git Bash をインストールまたは設定する](#claude-code-on-windows-requires-git-bash)                              |
-+| `Claude Code on Windows requires either Git for Windows (for bash) or PowerShell`            | [シェルをインストールする](#claude-code-on-windows-requires-either-git-for-windows-for-bash-or-powershell)    |
- | `Claude Code does not support 32-bit Windows`                                                | [Windows PowerShell を開く（x86 エントリではなく）](#claude-code-does-not-support-32-bit-windows)              |
-+| `The process cannot access the file ... because it is being used by another process`         | [ダウンロードフォルダをクリアして再試行する](#the-process-cannot-access-the-file-during-windows-install)               |
- | `Error loading shared library`                                                               | [システムに対応したバイナリバリアント](#linux-musl-or-glibc-binary-mismatch)                                        |
- | `Illegal instruction`                                                                        | [アーキテクチャまたは CPU 命令セットの不一致](#illegal-instruction)                                                  |
-@@ -112,4 +113,6 @@ curl -sI https://downloads.claude.ai/claude-code-releases/latest
-     または、ターミナルを閉じて再度開いてください。
- 
-+    fish や Nushell などの他のシェルの場合は、シェル独自の設定構文を使用して `~/.local/bin` を PATH に追加してから、ターミナルを再起動してください。
-+
-     修正が機能したことを確認してください：
- 
-@@ -454,4 +457,15 @@ Invoke-Expression: Missing argument in parameter list.
-   ```
- 
-+### Windows インストール中の `The process cannot access the file`
-+
-+PowerShell インストーラーが `Failed to download binary: The process cannot access the file ... because it is being used by another process` で失敗する場合、インストーラーは `%USERPROFILE%\.claude\downloads` に書き込むことができませんでした。これは通常、以前のインストール試行がまだ実行されているか、アンチウイルスソフトウェアがそのフォルダー内の部分的にダウンロードされたバイナリをスキャンしていることを意味します。
-+
-+インストーラーを実行している他の PowerShell ウィンドウを閉じ、アンチウイルススキャンがファイルを解放するのを待ってください。その後、ダウンロードフォルダーを削除してインストーラーを再度実行してください：
-+
-+```powershell theme={null}
-```
-
-</details>
-
-*...以降省略*
-
-</details>
-
-
-<details>
-<summary>2026-04-29</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/admin-setup-ja.md             |   8 +-
- docs-ja/pages/amazon-bedrock-ja.md          |   7 +-
- docs-ja/pages/authentication-ja.md          |  42 +-
- docs-ja/pages/changelog.md                  |  88 +++
- docs-ja/pages/cli-reference-ja.md           |   7 +-
- docs-ja/pages/commands-ja.md                | 170 ++---
- docs-ja/pages/common-workflows-ja.md        |  14 +-
- docs-ja/pages/data-usage-ja.md              |  14 +-
- docs-ja/pages/debug-your-config-ja.md       |  11 +-
- docs-ja/pages/env-vars-ja.md                |  17 +-
- docs-ja/pages/errors-ja.md                  |  19 +-
- docs-ja/pages/fullscreen-ja.md              |   6 +-
- docs-ja/pages/google-vertex-ai-ja.md        |   6 +-
- docs-ja/pages/hooks-guide-ja.md             |  12 +-
- docs-ja/pages/hooks-ja.md                   | 219 +++++--
- docs-ja/pages/interactive-mode-ja.md        |   2 +-
- docs-ja/pages/jetbrains-ja.md               |  75 ++-
- docs-ja/pages/legal-and-compliance-ja.md    |   8 +-
- docs-ja/pages/llm-gateway-ja.md             |  10 +
- docs-ja/pages/mcp-ja.md                     |  24 +-
- docs-ja/pages/monitoring-usage-ja.md        |  48 +-
- docs-ja/pages/overview-ja.md                | 678 ++++++++++++++++++-
- docs-ja/pages/plugin-dependencies-ja.md     |  18 +
- docs-ja/pages/plugin-marketplaces-ja.md     |  15 +-
- docs-ja/pages/plugins-ja.md                 |   4 +-
- docs-ja/pages/plugins-reference-ja.md       |  79 ++-
- docs-ja/pages/quickstart-ja.md              |   4 +-
- docs-ja/pages/sandboxing-ja.md              |   4 +
- docs-ja/pages/security-ja.md                |  20 +-
- docs-ja/pages/server-managed-settings-ja.md |  18 +-
- docs-ja/pages/settings-ja.md                |   2 +-
- docs-ja/pages/setup-ja.md                   |  24 +-
- docs-ja/pages/skills-ja.md                  |   1 +
- docs-ja/pages/statusline-ja.md              |   2 +
- docs-ja/pages/sub-agents-ja.md              |  10 +-
- docs-ja/pages/terminal-config-ja.md         |   2 +
- docs-ja/pages/tools-reference-ja.md         |   1 -
- docs-ja/pages/troubleshooting-ja.md         | 972 ++--------------------------
- docs-ja/pages/ultrareview-ja.md             |  25 +-
- docs-ja/pages/voice-dictation-en.md         | 189 ------
- 40 files changed, 1427 insertions(+), 1448 deletions(-)
-```
-
-**新規追加:**
-
-
-**削除:**
-
 
 <!-- UPDATE_LOG_END -->

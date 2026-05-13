@@ -276,6 +276,14 @@ claude --permission-mode bypassPermissions
 
 `--dangerously-skip-permissions` フラグは同等です。
 
+Linux と macOS では、Claude Code はこのモードで root として実行されている場合、または `sudo` の下で実行されている場合、起動を拒否します。
+
+```text theme={null}
+--dangerously-skip-permissions cannot be used with root/sudo privileges for security reasons
+```
+
+チェックは認識されたサンドボックス内で自動的にスキップされます。コンテナで自律的に実行するには、[dev container](/ja/devcontainer) 設定を使用してください。これは Claude Code を非 root ユーザーとして実行します。
+
 <Warning>
   `bypassPermissions` はプロンプトインジェクションまたは意図しないアクションに対する保護を提供しません。プロンプトなしで背景安全チェックの場合、代わりに[自動モード](#eliminate-prompts-with-auto-mode)を使用してください。管理者は[管理設定](/ja/permissions#managed-settings)で `permissions.disableBypassPermissionsMode` を `"disable"` に設定することでこのモードをブロックできます。
 </Warning>
