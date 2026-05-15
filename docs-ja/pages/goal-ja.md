@@ -108,7 +108,7 @@
 
 ### 非対話的に実行する
 
-`/goal` は[非対話的モード](/ja/headless)および[リモート コントロール](/ja/remote-control)で機能します。`-p` でゴールを設定すると、ループが単一の呼び出しで完了まで実行されます。
+`/goal` は[非対話的モード](/ja/headless)、[デスクトップ アプリ](/ja/desktop)、および[リモート コントロール](/ja/remote-control)で機能します。`-p` でゴールを設定すると、ループが単一の呼び出しで完了まで実行されます。
 
 ```bash theme={null}
 claude -p "/goal CHANGELOG.md has an entry for every PR merged this week"
