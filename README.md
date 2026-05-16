@@ -17,6 +17,254 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-05-16</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/agent-view-ja.md        |  6 ++++++
+ docs-ja/pages/amazon-bedrock-ja.md    |  9 ++++++---
+ docs-ja/pages/changelog.md            | 36 +++++++++++++++++++++++++++++++++++
+ docs-ja/pages/claude-directory-ja.md  |  1 +
+ docs-ja/pages/data-usage-ja.md        |  4 +++-
+ docs-ja/pages/env-vars-ja.md          |  5 +++--
+ docs-ja/pages/errors-ja.md            | 20 +++++++++----------
+ docs-ja/pages/goal-ja.md              |  4 ++++
+ docs-ja/pages/google-vertex-ai-ja.md  |  6 ++++--
+ docs-ja/pages/hooks-ja.md             | 16 +++++++++++++++-
+ docs-ja/pages/mcp-ja.md               | 20 ++++++++++---------
+ docs-ja/pages/microsoft-foundry-ja.md |  2 ++
+ 12 files changed, 101 insertions(+), 28 deletions(-)
+```
+
+<details>
+<summary>agent-view-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/agent-view-ja.md b/docs-ja/pages/agent-view-ja.md
+index 4c98b5e..bbb89ed 100644
+--- a/docs-ja/pages/agent-view-ja.md
++++ b/docs-ja/pages/agent-view-ja.md
+@@ -266,4 +266,10 @@ claude --agent code-reviewer --bg "address review comments on PR 1234"
+ ```
+ 
++`--name` を渡して、自動生成されたセッションの代わりにエージェントビューでセッションの表示名を設定します。
++
++```bash theme={null}
++claude --bg --name "flaky-test-fix" "investigate the flaky SettingsChangeDetector test"
++```
++
+ バックグラウンド化の後、Claude はセッションの短い ID とセッションを管理するためのコマンドを出力します。
+ 
+```
+
+</details>
+
+<details>
+<summary>amazon-bedrock-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/amazon-bedrock-ja.md b/docs-ja/pages/amazon-bedrock-ja.md
+index 53f2bea..2665a7e 100644
+--- a/docs-ja/pages/amazon-bedrock-ja.md
++++ b/docs-ja/pages/amazon-bedrock-ja.md
+@@ -212,6 +212,7 @@ export CLAUDE_CODE_USE_BEDROCK=1
+ export AWS_REGION=us-east-1  # または希望するリージョン
+ 
+-# オプション：小型/高速モデル（Haiku）のリージョンをオーバーライド
+-# Bedrock Mantle にも適用されます。
++# オプション：小型/高速モデル（Bedrock および Mantle）の AWS リージョンをオーバーライド
++# Bedrock では、ANTHROPIC_DEFAULT_HAIKU_MODEL
++# または非推奨の ANTHROPIC_SMALL_FAST_MODEL が設定されていない場合、効果がありません。
+ export ANTHROPIC_SMALL_FAST_MODEL_AWS_REGION=us-west-2
+ 
+@@ -249,5 +250,7 @@ export ANTHROPIC_DEFAULT_HAIKU_MODEL='us.anthropic.claude-haiku-4-5-20251001-v1:
+ | :------- | :--------------------------------------------- |
+ | プライマリモデル | `us.anthropic.claude-sonnet-4-5-20250929-v1:0` |
+-| 小型/高速モデル | `us.anthropic.claude-haiku-4-5-20251001-v1:0`  |
++| 小型/高速モデル | プライマリモデルと同じ                                    |
++
++セッションタイトル生成などのバックグラウンドタスクは、小型/高速モデル（通常は Haiku クラスモデル）を使用します。Bedrock では、すべてのアカウントまたはリージョンで Haiku が有効になっていない可能性があるため、Claude Code はこれをプライマリモデルにデフォルト設定します。バックグラウンドタスクに Haiku を使用するには、`ANTHROPIC_DEFAULT_HAIKU_MODEL` をアカウントで利用可能なモデル ID に設定してください。
+ 
+ モデルをさらにカスタマイズするには、以下のいずれかの方法を使用します。
+```
+
+</details>
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index 3fcf5ed..8c6909b 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,40 @@
+ # Changelog
+ 
++## 2.1.143
++
++- Added plugin dependency enforcement: `claude plugin disable` now refuses when another enabled plugin depends on the target (with a copy-pasteable disable-chain hint), and `claude plugin enable` force-enables transitive dependencies
++- Added projected context cost (per-turn and per-invocation token estimates) to the `/plugin` marketplace browse pane
++- Added `worktree.bgIsolation: "none"` setting to let background sessions edit the working copy directly without `EnterWorktree`, for repos where worktrees are impractical
++- PowerShell tool now passes `-ExecutionPolicy Bypass`. Opt out with `CLAUDE_CODE_POWERSHELL_RESPECT_EXECUTION_POLICY=1`
++- Background sessions now preserve the model and effort level you set after waking from idle
++- Shift+Tab in attached agent sessions now includes auto mode in the cycle
++- Fixed a corrupt `.credentials.json` with a non-array `scopes` value hanging the CLI on startup or silently aborting OAuth token refresh
++- Fixed right-click paste in `claude agents` on Windows Terminal and WSL
++- Fixed stop hooks that block repeatedly looping forever — the turn now ends with a warning after 8 consecutive blocks (override via `CLAUDE_CODE_STOP_HOOK_BLOCK_CAP`)
++- Fixed Esc/Ctrl+C not cancelling a pending `/loop` wakeup while Claude is idle between iterations
++- Fixed `/goal` evaluator firing while background shells or delegated subagents are still running
++- Fixed `NO_COLOR`/`FORCE_COLOR` in settings.json `env` stripping Claude Code's own UI colors — they now apply to subprocesses only
++- Fixed agent view spawning repeated PowerShell processes on Windows when listing sessions
++- Fixed `/bg` without a prompt sending "continue" to the forked session — the fork now waits for input
++- Fixed `--agent <name>` not finding plugin-contributed agents without the `plugin:` prefix
++- Fixed deleting a session from agent view not removing its transcript file
++- Fixed stale-fragment rendering when scrolling in attached background sessions on Windows Terminal
++- Fixed background agents false-positive worker-stall detection storm after host sleep or macOS App Nap
++- Fixed 5xx error messages pointing at status.claude.com instead of naming the configured gateway or cloud provider
++- The PowerShell tool is now enabled by default on Windows for Bedrock, Vertex, and Foundry users. Opt out with `CLAUDE_CODE_USE_POWERSHELL_TOOL=0`.
++- `claude agents` now accepts `--add-dir`, `--settings`, `--mcp-config`, and `--plugin-dir` and applies them to the dashboard and to background sessions dispatched from it
+```
+
+</details>
+
+<details>
+<summary>claude-directory-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/claude-directory-ja.md b/docs-ja/pages/claude-directory-ja.md
+index 3e1b6a3..cc41673 100644
+--- a/docs-ja/pages/claude-directory-ja.md
++++ b/docs-ja/pages/claude-directory-ja.md
+@@ -1508,4 +1508,5 @@ Windows では、`~/.claude` は `%USERPROFILE%\.claude` に解決されます
+ | `shell-snapshots/`                           | Bash ツールによって使用されるキャプチャされたシェル環境。正常な終了時に削除されます。スイープはクラッシュ後に残されたものをクリアします。              |
+ | `backups/`                                   | 設定マイグレーション前に取得された `~/.claude.json` のタイムスタンプ付きコピー                                     |
++| `feedback-bundles/`                          | `/feedback` によってサードパーティプロバイダーに書き込まれた編集済みトランスクリプトアーカイブ。Anthropic アカウントチームに送信するため      |
+ 
+ ### 削除するまで保持される
+```
+
+</details>
+
+<details>
+<summary>data-usage-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/data-usage-ja.md b/docs-ja/pages/data-usage-ja.md
+index a165950..69741f4 100644
+--- a/docs-ja/pages/data-usage-ja.md
++++ b/docs-ja/pages/data-usage-ja.md
+@@ -100,5 +100,7 @@ Claude Code はユーザーのマシンから Anthropic に接続して、レイ
+ Claude Code はユーザーのマシンから Sentry に接続して、運用エラーログを記録します。データは TLS を使用して転送中に暗号化され、256 ビット AES 暗号化を使用して保存時に暗号化されます。詳細については、[Sentry security documentation](https://sentry.io/security/) を参照してください。エラーログをオプトアウトするには、`DISABLE_ERROR_REPORTING` 環境変数を設定します。
+ 
+-ユーザーが `/feedback` コマンドを実行すると、コードを含む完全な会話履歴のコピーが Anthropic に送信されます。データは転送中に TLS で暗号化されます。オプションで、公開リポジトリに GitHub イシューが作成されます。オプトアウトするには、`DISABLE_FEEDBACK_COMMAND` 環境変数を `1` に設定します。
++`/feedback` コマンドを実行すると、コードを含む会話履歴のコピーが Anthropic に送信されます。送信前に、含める履歴の量を選択できます。デフォルトは現在のセッションのみですが、同じプロジェクトの過去 24 時間または 7 日間の他のセッションも含めることができます。データは TLS 経由で転送中に暗号化されます。オプションで、公開リポジトリに GitHub イシューが作成されます。オプトアウトするには、`DISABLE_FEEDBACK_COMMAND` 環境変数を `1` に設定します。
++
++Bedrock や Vertex などのサードパーティプロバイダーを使用している場合、または Anthropic 認証情報が設定されていない場合、`/feedback` はレポートを Anthropic に送信する代わりに、`~/.claude/feedback-bundles/` の下のローカルアーカイブに書き込みます。既知の API キーおよびトークンパターンは、アーカイブが書き込まれる前に削除されます。Anthropic アカウント担当者にファイルを送信するか、サポートリクエストに添付するまで、何もマシンから出ません。
+ 
+ ## API プロバイダーのデフォルト動作
+```
+
+</details>
+
+<details>
+<summary>env-vars-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/env-vars-ja.md b/docs-ja/pages/env-vars-ja.md
+index 2b295c5..331370d 100644
+--- a/docs-ja/pages/env-vars-ja.md
++++ b/docs-ja/pages/env-vars-ja.md
+@@ -43,5 +43,5 @@ Claude Code は、その動作を制御するために以下の環境変数を
+ | `ANTHROPIC_MODEL`                                       | 使用するモデル設定の名前（[モデル設定](/ja/model-config#environment-variables) を参照してください）                                                                                                                                                                                                                                                                                                                                                        |
+ | `ANTHROPIC_SMALL_FAST_MODEL`                            | \[非推奨] バックグラウンドタスク用の [Haiku クラスモデルの名前](/ja/costs)                                                                                                                                                                                                                                                                                                                                                                              |
+-| `ANTHROPIC_SMALL_FAST_MODEL_AWS_REGION`                 | Bedrock または Bedrock Mantle を使用する場合、Haiku クラスモデルの AWS リージョンをオーバーライドします                                                                                                                                                                                                                                                                                                                                                          |
++| `ANTHROPIC_SMALL_FAST_MODEL_AWS_REGION`                 | Bedrock または Bedrock Mantle を使用する場合、Haiku クラスモデルの AWS リージョンをオーバーライドします。Bedrock では、`ANTHROPIC_DEFAULT_HAIKU_MODEL` または非推奨の `ANTHROPIC_SMALL_FAST_MODEL` も設定されている場合にのみ有効になります。Bedrock はそれ以外の場合、バックグラウンドタスク用にプライマリモデルを使用するためです                                                                                                                                                                                                     |
+ | `ANTHROPIC_VERTEX_BASE_URL`                             | Vertex AI エンドポイント URL をオーバーライドします。カスタム Vertex エンドポイントを使用する場合、または [LLM ゲートウェイ](/ja/llm-gateway) を通じてルーティングする場合に使用します。[Google Vertex AI](/ja/google-vertex-ai) を参照してください                                                                                                                                                                                                                                                         |
+ | `ANTHROPIC_VERTEX_PROJECT_ID`                           | Vertex AI リクエスト用の GCP プロジェクト ID。`GCLOUD_PROJECT`、`GOOGLE_CLOUD_PROJECT`、または `GOOGLE_APPLICATION_CREDENTIALS` 認証情報ファイル内のプロジェクトでオーバーライドされます。[Google Vertex AI](/ja/google-vertex-ai) を参照してください                                                                                                                                                                                                                                   |
+@@ -70,5 +70,5 @@ Claude Code は、その動作を制御するために以下の環境変数を
+ | `CLAUDE_CODE_CLIENT_KEY`                                | mTLS 認証用のクライアント秘密鍵ファイルへのパス                                                                                                                                                                                                                                                                                                                                                                                                     |
+ | `CLAUDE_CODE_CLIENT_KEY_PASSPHRASE`                     | 暗号化された CLAUDE\_CODE\_CLIENT\_KEY のパスフレーズ（オプション）                                                                                                                                                                                                                                                                                                                                                                                |
+-| `CLAUDE_CODE_DEBUG_LOGS_DIR`                            | デバッグログファイルパスをオーバーライドします。名前に反して、これはディレクトリではなくファイルパスです。デバッグモードを `--debug` または `/debug` で別途有効にする必要があります。この変数を設定するだけではログが有効になりません。[`--debug-file`](/ja/cli-reference#cli-flags) フラグは両方を一度に行います。デフォルトは `~/.claude/debug/<session-id>.txt` です                                                                                                                                                                                        |
++| `CLAUDE_CODE_DEBUG_LOGS_DIR`                            | デバッグログファイルパスをオーバーライドします。名前に反して、これはディレクトリではなくファイルパスです。デバッグモードを `--debug`、`/debug`、または `DEBUG` 環境変数で別途有効にする必要があります。この変数を設定するだけではログが有効になりません。[`--debug-file`](/ja/cli-reference#cli-flags) フラグは両方を一度に行います。デフォルトは `~/.claude/debug/<session-id>.txt` です                                                                                                                                                                            |
+ | `CLAUDE_CODE_DEBUG_LOG_LEVEL`                           | デバッグログファイルに書き込まれる最小ログレベル。値：`verbose`、`debug`（デフォルト）、`info`、`warn`、`error`。フルステータスラインコマンド出力などの大量の診断を含めるには `verbose` に設定するか、ノイズを減らすには `error` に上げます                                                                                                                                                                                                                                                                              |
+ | `CLAUDE_CODE_DISABLE_1M_CONTEXT`                        | [1M コンテキストウィンドウ](/ja/model-config#extended-context) サポートを無効にするには `1` に設定します。設定すると、1M モデルバリアントはモデルピッカーで利用できなくなります。コンプライアンス要件のあるエンタープライズ環境に役立ちます                                                                                                                                                                                                                                                                                 |
+@@ -185,4 +185,5 @@ Claude Code は、その動作を制御するために以下の環境変数を
+ | `CLAUDE_REMOTE_CONTROL_SESSION_NAME_PREFIX`             | 明示的な名前が指定されていない場合、自動生成される [Remote Control](/ja/remote-control) セッション名のプレフィックス。デフォルトはマシンのホスト名で、`myhost-graceful-unicorn` のような名前を生成します。`--remote-control-session-name-prefix` CLI フラグは単一の呼び出しに対して同じ値を設定します                                                                                                                                                                                                                       |
+ | `CLAUDE_STREAM_IDLE_TIMEOUT_MS`                         | ストリーミングアイドルウォッチドッグが停止した接続を閉じるまでのタイムアウト（ミリ秒）。デフォルトと最小 `300000`（5 分）の両方のバイトレベルとイベントレベルウォッチドッグの場合。低い値は拡張思考の一時停止とプロキシバッファリングを吸収するために自動的にクランプされます。サードパーティプロバイダーの場合、`CLAUDE_ENABLE_STREAM_WATCHDOG=1` が必須です                                                                                                                                                                                                                          |
++| `DEBUG`                                                 | デバッグモードを有効にするには `1` に設定します。[`--debug`](/ja/cli-reference#cli-flags) で起動するのと同等です。デバッグログは `~/.claude/debug/<session-id>.txt` に書き込まれるか、`CLAUDE_CODE_DEBUG_LOGS_DIR` で設定されたパスに書き込まれます。`1`、`true`、`yes`、`on` の真の値のみがデバッグモードを有効にするため、他のツール用に設定された `DEBUG=express:*` などの名前空間パターンはトリガーしません                                                                                                                                             |
+ | `DISABLE_AUTOUPDATER`                                   | 自動更新を無効にするには `1` に設定します。手動の `claude update` は引き続き機能します。`DISABLE_UPDATES` を使用して両方をブロックします                                                                                                                                                                                                                                                                                                                                       |
+ | `DISABLE_AUTO_COMPACT`                                  | コンテキスト制限に近づいたときの自動コンパクションを無効にするには `1` に設定します。手動の `/compact` コマンドは引き続き利用可能です。コンパクションが発生するタイミングを明示的に制御したい場合に使用します                                                                                                                                                                                                                                                                                                                |
+```
+
+</details>
+
+<details>
+<summary>errors-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/errors-ja.md b/docs-ja/pages/errors-ja.md
+index 414f4be..4f2d5d3 100644
+--- a/docs-ja/pages/errors-ja.md
++++ b/docs-ja/pages/errors-ja.md
+@@ -80,7 +80,7 @@ API Error: 500 {"type":"error","error":{"type":"api_error","message":"Internal s
+ **対応方法：**
+ 
+-* [status.claude.com](https://status.claude.com)でアクティブなインシデントを確認してください
++* [status.claude.com](https://status.claude.com) でアクティブなインシデントを確認してください
+ * 1 分待ってからメッセージを再度送信してください。元のメッセージはまだ会話に残っているため、長いプロンプトの場合は全体を貼り付ける代わりに `try again` と入力できます。
+-* エラーが投稿されたインシデントなしで続く場合は、`/feedback` を実行して、Anthropic がリクエスト詳細で調査できるようにしてください。プロバイダーで `/feedback` が利用できない場合は、[エラーを報告する](#report-an-error)を参照してください。
++* エラーが投稿されたインシデントなしで続く場合は、`/feedback` を実行して、Anthropic がリクエスト詳細で調査できるようにしてください。環境で `/feedback` が利用できない場合は、[エラーを報告する](#report-an-error) を参照してください。
+ 
+ ### API Error: Repeated 529 Overloaded errors
+@@ -96,5 +96,5 @@ API Error: Repeated 529 Overloaded errors · check status.claude.com
+ **対応方法：**
+ 
+-* [status.claude.com](https://status.claude.com)で容量に関する通知を確認してください
++* [status.claude.com](https://status.claude.com) で容量に関する通知を確認してください
+ * 数分後に再度試してください
+ * `/model` を実行して別のモデルに切り替えて、容量がモデルごとに追跡されるため、作業を続けてください。Claude Code は、1 つのモデルが特に高い負荷を受けている場合、たとえば `Opus is experiencing high load, please use /model to switch to Sonnet` のようにこれを行うようにプロンプトを表示します。
+@@ -114,10 +114,10 @@ Request timed out
+ * リクエストを再試行してください
+ * 長時間実行されるタスクの場合は、作業をより小さいプロンプトに分割してください
+-* 遅いネットワークまたはプロキシが原因の場合は、[自動リトライ](#automatic-retries)で説明されているように `API_TIMEOUT_MS` を上げてください
+-* タイムアウトが頻繁で、ネットワークが正常な場合は、以下の[ネットワークと接続エラー](#network-and-connection-errors)を参照してください
++* 遅いネットワークまたはプロキシが原因の場合は、[自動リトライ](#automatic-retries) で説明されているように `API_TIMEOUT_MS` を上げてください
++* タイムアウトが頻繁で、ネットワークが正常な場合は、以下の[ネットワークと接続エラー](#network-and-connection-errors) を参照してください
+ 
+ ### Auto mode cannot determine the safety of an action
+```
+
+</details>
+
+<details>
+<summary>goal-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/goal-ja.md b/docs-ja/pages/goal-ja.md
+index 16469b3..08f2780 100644
+--- a/docs-ja/pages/goal-ja.md
++++ b/docs-ja/pages/goal-ja.md
+@@ -7,4 +7,8 @@
+ > /goal でコンプリーション条件を設定すると、Claude はターン間でプロンプトなしに条件が満たされるまで動作し続けます。
+ 
++<Note>
++  `/goal` には Claude Code v2.1.139 以降が必要です。
++</Note>
++
+ `/goal` コマンドはコンプリーション条件を設定し、Claude はあなたが各ステップをプロンプトすることなく、その条件に向かって動作し続けます。各ターンの後、小さく高速なモデルが条件が成立しているかどうかをチェックします。成立していない場合、Claude はあなたに制御を返す代わりに別のターンを開始します。条件が満たされると、ゴールは自動的にクリアされます。
+ 
+```
+
+</details>
+
+*...以降省略*
+
+</details>
+
+
+<details>
 <summary>2026-05-15</summary>
 
 **変更ファイル:**
@@ -2620,299 +2868,6 @@ index 52f531b..a3178e2 100644
 +| `ok`     | `true` はアクションを許可、`false` は防止  |
 +| `reason` | `ok` が `false` のときに必須。ブロックの説明 |
 +
-```
-
-</details>
-
-<details>
-<summary>memory-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/memory-ja.md b/docs-ja/pages/memory-ja.md
-index 2d83d0b..c6448ca 100644
---- a/docs-ja/pages/memory-ja.md
-+++ b/docs-ja/pages/memory-ja.md
-@@ -298,8 +298,8 @@ Claude Code をチーム全体に展開する組織の場合、指示を一元
- ## 自動メモリ
- 
--自動メモリを使用すると、Claude は何も書かずにセッション間で知識を蓄積できます。Claude は作業中に自分自身のためにメモを保存します。ビルドコマンド、デバッグの洞察、アーキテクチャノート、コードスタイルの好み、ワークフローの習慣。Claude はすべてのセッションで何かを保存するわけではありません。情報が将来の会話で役立つかどうかに基づいて、何を記憶する価値があるかを決定します。
-+自動メモリを使用すると、Claude は何も書かずにセッション間で知識を蓄積できます。Claude は作業中に自分自身のためにメモを保存します。ビルドコマンド、デバッグの洞察、アーキテクチャノート、コードスタイルの好み、ワークフローの習慣です。Claude はすべてのセッションで何かを保存するわけではありません。情報が将来の会話で役立つかどうかに基づいて、何を記憶する価値があるかを決定します。
- 
- <Note>
--  自動メモリには Claude Code v2.1.59 以降が必要です。`claude --version` でバージョンを確認します。
-+  自動メモリには Claude Code v2.1.59 以降が必要です。`claude --version` でバージョンを確認してください。
- </Note>
- 
-@@ -320,5 +320,5 @@ Claude Code をチーム全体に展開する組織の場合、指示を一元
- 各プロジェクトは `~/.claude/projects/<project>/memory/` に独自のメモリディレクトリを取得します。`<project>` パスは git リポジトリから派生しているため、同じリポジトリ内のすべてのワーキングツリーとサブディレクトリは 1 つの自動メモリディレクトリを共有します。git リポジトリの外では、プロジェクトルートが代わりに使用されます。
- 
--自動メモリを別の場所に保存するには、ユーザーまたはローカル設定で `autoMemoryDirectory` を設定します。
-+自動メモリを別の場所に保存するには、`~/.claude/settings.json` のユーザー設定で `autoMemoryDirectory` を設定します。
- 
- ```json theme={null}
-@@ -328,5 +328,5 @@ Claude Code をチーム全体に展開する組織の場合、指示を一元
- ```
- 
--この設定はポリシー、ローカル、およびユーザー設定から受け入れられます。共有プロジェクトが自動メモリ書き込みを機密の場所にリダイレクトするのを防ぐため、プロジェクト設定（`.claude/settings.json`）からは受け入れられません。
-+値は絶対パスであるか、`~/` で始まる必要があります。この設定はポリシーおよびユーザー設定から受け入れられ、`--settings` フラグからも受け入れられます。プロジェクトまたはローカル設定からは受け入れられません。両方のファイルはプロジェクトディレクトリ内に存在し、クローンされたリポジトリは自動メモリ書き込みを機密の場所にリダイレクトするために、どちらかを提供する可能性があるためです。
- 
- ディレクトリには `MEMORY.md` エントリポイントとオプションのトピックファイルが含まれます。
-```
-
-</details>
-
-<details>
-<summary>monitoring-usage-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/monitoring-usage-ja.md b/docs-ja/pages/monitoring-usage-ja.md
-index 0a23d1a..a441917 100644
---- a/docs-ja/pages/monitoring-usage-ja.md
-+++ b/docs-ja/pages/monitoring-usage-ja.md
-@@ -198,9 +198,9 @@ Agent SDK および `claude -p` セッションでは、`TRACEPARENT` が環境
- **`claude_code.tool.blocked_on_user`**
- 
--| 属性            | 説明                            | ゲート |
--| ------------- | ----------------------------- | --- |
--| `duration_ms` | 権限決定の待機に費やされた時間               |     |
--| `decision`    | `accept` または `reject`         |     |
--| `source`      | 決定ソース。`tool_decision` イベントと一致 |     |
-+| 属性            | 説明                                                    | ゲート |
-+| ------------- | ----------------------------------------------------- | --- |
-+| `duration_ms` | 権限決定の待機に費やされた時間                                       |     |
-+| `decision`    | `accept` または `reject`                                 |     |
-+| `source`      | 決定ソース。[Tool decision event](#tool-decision-event) と一致 |     |
- 
- **`claude_code.tool.execution`**
-@@ -459,5 +459,5 @@ Claude Code を介して git コミットを作成するときにインクリメ
- * `tool_name`: ツール名 (`"Edit"`、`"Write"`、`"NotebookEdit"`)
- * `decision`: ユーザーの決定 (`"accept"`、`"reject"`)
--* `source`: 決定ソース - `"config"`、`"hook"`、`"user_permanent"`、`"user_temporary"`、`"user_abort"`、または `"user_reject"`
-+* `source`: 決定ソース - `"config"`、`"hook"`、`"user_permanent"`、`"user_temporary"`、`"user_abort"`、または `"user_reject"`。詳細は [ツール決定イベント](#tool-decision-event)を参照してください。
- * `language`: 編集されたファイルのプログラミング言語。例: `"TypeScript"`、`"Python"`、`"JavaScript"`、`"Markdown"`。認識されないファイル拡張子の場合は `"unknown"` を返します。
- 
-@@ -525,5 +525,5 @@ Claude Code は、OpenTelemetry ログ/イベント経由で以下のイベン
- * `error` (`OTEL_LOG_TOOL_DETAILS=1` の場合): ツールが失敗した場合の完全なエラーメッセージ
- * `decision_type`: `"accept"` または `"reject"`
--* `decision_source`: 決定ソース - `"config"`、`"hook"`、`"user_permanent"`、`"user_temporary"`、`"user_abort"`、または `"user_reject"`
-```
-
-</details>
-
-*...以降省略*
-
-</details>
-
-
-<details>
-<summary>2026-05-03</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/claude-directory-ja.md     |   2 +-
- docs-ja/pages/code-review-ja.md          |  86 ++++++++++++-----
- docs-ja/pages/desktop-ja.md              | 110 +++++++++++-----------
- docs-ja/pages/desktop-quickstart-ja.md   |   2 +-
- docs-ja/pages/github-actions-ja.md       |  10 +-
- docs-ja/pages/gitlab-ci-cd-ja.md         |  22 ++---
- docs-ja/pages/legal-and-compliance-ja.md |   2 +-
- docs-ja/pages/monitoring-usage-ja.md     |   2 +-
- docs-ja/pages/settings-ja.md             | 153 ++++++++++++++++---------------
- docs-ja/pages/vs-code-ja.md              |  41 +++++++--
- docs-ja/pages/zero-data-retention-ja.md  |   2 +-
- 11 files changed, 248 insertions(+), 184 deletions(-)
-```
-
-**新規追加:**
-
-
-<details>
-<summary>claude-directory-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/claude-directory-ja.md b/docs-ja/pages/claude-directory-ja.md
-index b501cf1..c270b4e 100644
---- a/docs-ja/pages/claude-directory-ja.md
-+++ b/docs-ja/pages/claude-directory-ja.md
-@@ -95,5 +95,5 @@ export const ClaudeExplorer = () => {
- # API credentials
- config/secrets.json`,
--        docsLink: '/en/common-workflows#copy-gitignored-files-to-worktrees'
-+        docsLink: '/en/worktrees#copy-gitignored-files-into-worktrees'
-       }, {
-         id: 'dot-claude',
-```
-
-</details>
-
-<details>
-<summary>code-review-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/code-review-ja.md b/docs-ja/pages/code-review-ja.md
-index 4c8761d..080d8e9 100644
---- a/docs-ja/pages/code-review-ja.md
-+++ b/docs-ja/pages/code-review-ja.md
-@@ -8,5 +8,5 @@
- 
- <Note>
--  Code Review はリサーチプレビュー段階であり、[Teams および Enterprise](https://claude.ai/admin-settings/claude-code) サブスクリプションで利用可能です。[Zero Data Retention](/ja/zero-data-retention) が有効になっている組織では利用できません。
-+  Code Review はリサーチプレビュー段階であり、[Team および Enterprise](https://claude.ai/admin-settings/claude-code) サブスクリプションで利用可能です。[Zero Data Retention](/ja/zero-data-retention) が有効になっている組織では利用できません。
- </Note>
- 
-@@ -46,4 +46,10 @@ Claude を管理サービスではなく独自の CI インフラストラクチ
- 結果には、展開可能な拡張推論セクションが含まれており、Claude がなぜ問題をフラグ立てしたのか、どのように問題を検証したのかを理解するために展開できます。
- 
-+### 結果に対する評価と返信
-+
-+Claude からの各レビューコメントには、👍 と 👎 が既に添付されているため、GitHub UI で両方のボタンがワンクリック評価のために表示されます。結果が有用だった場合は 👍 をクリックし、間違っていたか騒々しかった場合は 👎 をクリックしてください。Anthropic は PR がマージされた後にリアクションカウントを収集し、それを使用してレビュアーをチューニングします。リアクションは再レビューをトリガーしたり、PR 上の何かを変更したりしません。
-+
-+インラインコメントに返信しても、Claude が応答したり PR を更新したりするようにプロンプトされません。結果に対処するには、コードを修正してプッシュしてください。PR がプッシュトリガーレビューにサブスクライブされている場合、次の実行は問題が修正されるとスレッドを解決します。プッシュせずに新しいレビューをリクエストするには、[トップレベルの PR コメント](#manually-trigger-reviews)として `@claude review once` とコメントしてください。
-+
- ### チェック実行出力
- 
-@@ -136,12 +142,12 @@ PR の現在の状態についてフィードバックが必要だが、その
- ## レビューをカスタマイズする
- 
--Code Review はリポジトリから 2 つのファイルを読み取り、フラグを立てる内容をガイドします。どちらもデフォルトの正確性チェックの上に追加されます：
-+Code Review はリポジトリから 2 つのファイルを読み取り、フラグを立てる内容をガイドします。これらは、デフォルトの正確性チェックの上にどの程度強く影響するかが異なります：
- 
--* **`CLAUDE.md`**: Claude Code がすべてのタスク（レビューだけではなく）に使用する共有プロジェクト指示。ガイダンスが対話的な Claude Code セッションにも適用される場合に使用します。
--* **`REVIEW.md`**: レビューのみのガイダンス、コードレビュー中にのみ読み取られます。レビュー中にフラグを立てるか、スキップするかについての厳密なルールで、一般的な `CLAUDE.md` を乱雑にするルールに使用します。
-```
-
-</details>
-
-<details>
-<summary>desktop-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/desktop-ja.md b/docs-ja/pages/desktop-ja.md
-index 8d5190c..8a9c6a5 100644
---- a/docs-ja/pages/desktop-ja.md
-+++ b/docs-ja/pages/desktop-ja.md
-@@ -7,5 +7,5 @@
- > Claude Code Desktop をさらに活用する：Git 分離による並列セッション、ドラッグアンドドロップペインレイアウト、統合ターミナルとファイルエディタ、サイドチャット、コンピュータ使用、電話から Dispatch セッションを送信、ビジュアル diff レビュー、アプリプレビュー、PR 監視、コネクタ、エンタープライズ設定。
- 
--Claude Desktop アプリ内の Code タブを使用すると、ターミナルではなくグラフィカルインターフェイスを通じて Claude Code を使用できます。
-+Claude Desktop アプリには 3 つのタブがあります：**Chat** は会話用、**Cowork** は [Dispatch とより長い agentic work](https://claude.com/product/cowork) 用、**Code** はソフトウェア開発用です。このページは Code タブのリファレンスです。
- 
- <CardGroup cols={2}>
-@@ -19,27 +19,19 @@ Claude Desktop アプリ内の Code タブを使用すると、ターミナル
- </CardGroup>
- 
--For Windows ARM64, download the [ARM64 installer](https://claude.ai/api/desktop/win32/arm64/setup/latest/redirect?utm_source=claude_code\&utm_medium=docs). Linux is not supported.
-+For Windows ARM64, download the [ARM64 installer](https://claude.ai/api/desktop/win32/arm64/setup/latest/redirect?utm_source=claude_code\&utm_medium=docs). The desktop app is not available on Linux; use the [CLI](/en/quickstart) instead.
- 
--インストール後、Claude を起動してサインインし、**Code**タブをクリックします。最初のセッションの完全なウォークスルーについては、[はじめにガイド](/ja/desktop-quickstart)を参照してください。
-+インストール後、Claude を起動してサインインし、**Code** タブをクリックします。Windows で初めて開く場合、[Git for Windows](https://git-scm.com/downloads/win) がインストールされている必要があります。インストール後、アプリを再起動してください。最初のセッションのウォークスルーについては、[はじめにガイド](/ja/desktop-quickstart)を参照してください。
- 
--Desktop は標準的な Claude Code エクスペリエンスに以下の機能を追加します：
-+Code タブでは、各会話は **セッション** です：独自のチャット履歴、プロジェクトフォルダ、コード変更を持ち、他のセッションとは独立しています。サイドバーはセッションをリストアップし、複数を並列で実行できます。セッション内では以下のことができます：
- 
--* [並列セッション](#work-in-parallel-with-sessions)（自動 Git worktree 分離付き）
--* [ドラッグアンドドロップレイアウト](#arrange-your-workspace)（統合ターミナル、ファイルエディタ、プレビューペイン付き）
--* [サイドチャット](#ask-a-side-question-without-derailing-the-session)（メインスレッドに影響を与えずに分岐）
--* [ビジュアル diff レビュー](#review-changes-with-diff-view)（インラインコメント付き）
--* [ライブアプリプレビュー](#preview-your-app)（dev サーバー、HTML ファイル、PDF 付き）
--* [コンピュータ使用](#let-claude-use-your-computer)（macOS と Windows でアプリを開いてスクリーンを制御）
--* [GitHub PR 監視](#monitor-pull-request-status)（自動修正、自動マージ、自動アーカイブ付き）
-```
-
-</details>
-
-<details>
-<summary>desktop-quickstart-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/desktop-quickstart-ja.md b/docs-ja/pages/desktop-quickstart-ja.md
-index 2145a52..cb22f4a 100644
---- a/docs-ja/pages/desktop-quickstart-ja.md
-+++ b/docs-ja/pages/desktop-quickstart-ja.md
-@@ -19,5 +19,5 @@
- </CardGroup>
- 
--For Windows ARM64, download the [ARM64 installer](https://claude.ai/api/desktop/win32/arm64/setup/latest/redirect?utm_source=claude_code\&utm_medium=docs). Linux is not supported.
-+For Windows ARM64, download the [ARM64 installer](https://claude.ai/api/desktop/win32/arm64/setup/latest/redirect?utm_source=claude_code\&utm_medium=docs). The desktop app is not available on Linux; use the [CLI](/en/quickstart) instead.
- 
- <Note>
-```
-
-</details>
-
-<details>
-<summary>github-actions-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/github-actions-ja.md b/docs-ja/pages/github-actions-ja.md
-index 4bee071..1d5cdfe 100644
---- a/docs-ja/pages/github-actions-ja.md
-+++ b/docs-ja/pages/github-actions-ja.md
-@@ -10,9 +10,9 @@ Claude Code GitHub Actions は、GitHub ワークフローに AI を活用した
- 
- <Note>
--  Claude Code GitHub Actions は [Claude Agent SDK](https://platform.claude.com/docs/en/agent-sdk/overview) の上に構築されており、Claude Code をアプリケーションにプログラム的に統合できます。SDK を使用して、GitHub Actions を超えたカスタム自動化ワークフローを構築できます。
-+  Claude Code GitHub Actions は [Claude Agent SDK](/ja/agent-sdk/overview) の上に構築されており、Claude Code をアプリケーションにプログラム的に統合できます。SDK を使用して、GitHub Actions を超えたカスタム自動化ワークフローを構築できます。
- </Note>
- 
- <Info>
--  **Claude Opus 4.6 が利用可能になりました。** Claude Code GitHub Actions はデフォルトで Sonnet を使用します。Opus 4.6 を使用するには、[model パラメータ](#breaking-changes-reference) を `claude-opus-4-6` に設定してください。
-+  **Claude Opus 4.7 が利用可能になりました。** Claude Code GitHub Actions はデフォルトで Sonnet を使用します。Opus 4.7 を使用するには、[model パラメータ](#breaking-changes-reference) を `claude-opus-4-7` に設定してください。
- </Info>
- 
-@@ -46,5 +46,5 @@ Claude Code は、コードの操作方法を変える強力な GitHub Action 
-   * GitHub アプリをインストールしてシークレットを追加するには、リポジトリ管理者である必要があります
-   * GitHub アプリは、Contents、Issues、Pull requests に対する読み取りと書き込みのアクセス許可をリクエストします
--  * このクイックスタート方法は、直接 Claude API ユーザーのみが利用できます。AWS Bedrock または Google Vertex AI を使用している場合は、[AWS Bedrock と Google Vertex AI での使用](#using-with-aws-bedrock-%26-google-vertex-ai) セクションを参照してください。
-+  * このクイックスタート方法は、直接 Claude API ユーザーのみが利用できます。Amazon Bedrock または Google Vertex AI を使用している場合は、[Amazon Bedrock と Google Vertex AI での使用](#using-with-amazon-bedrock-%26-google-vertex-ai) セクションを参照してください。
- </Note>
- 
-@@ -275,5 +275,5 @@ Claude Code Action v1 は、統一されたパラメータで設定を簡素化
- </Tip>
- 
--## AWS Bedrock と Google Vertex AI での使用
-+## Amazon Bedrock と Google Vertex AI での使用
- 
- エンタープライズ環境では、Claude Code GitHub Actions を独自のクラウドインフラストラクチャで使用できます。このアプローチにより、データレジデンシーと請求を制御しながら、同じ機能を維持できます。
-```
-
-</details>
-
-<details>
-<summary>gitlab-ci-cd-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/gitlab-ci-cd-ja.md b/docs-ja/pages/gitlab-ci-cd-ja.md
-index 5597975..e6ad63f 100644
---- a/docs-ja/pages/gitlab-ci-cd-ja.md
-+++ b/docs-ja/pages/gitlab-ci-cd-ja.md
-@@ -14,5 +14,5 @@
- 
- <Note>
--  この統合は [Claude Code CLI and Agent SDK](https://platform.claude.com/docs/ja/agent-sdk/overview) の上に構築されており、CI/CD ジョブとカスタム自動化ワークフローで Claude をプログラム的に使用できます。
-+  この統合は [Claude Code CLI and Agent SDK](/ja/agent-sdk/overview) の上に構築されており、CI/CD ジョブとカスタム自動化ワークフローで Claude をプログラム的に使用できます。
- </Note>
- 
-@@ -23,5 +23,5 @@
- * **プロジェクト対応**: Claude は `CLAUDE.md` ガイドラインと既存のコードパターンに従います
- * **シンプルなセットアップ**: `.gitlab-ci.yml` に 1 つのジョブとマスクされた CI/CD 変数を追加します
--* **エンタープライズ対応**: Claude API、AWS Bedrock、または Google Vertex AI を選択して、データレジデンシーと調達のニーズを満たします
-+* **エンタープライズ対応**: Claude API、Amazon Bedrock、または Google Vertex AI を選択して、データレジデンシーと調達のニーズを満たします
- * **デフォルトでセキュア**: GitLab ランナーで実行され、ブランチ保護と承認が適用されます
- 
-@@ -34,5 +34,5 @@ Claude Code は GitLab CI/CD を使用して AI タスクを分離されたジ
- 2. **プロバイダー抽象化**: 環境に適したプロバイダーを使用します。
-    * Claude API（SaaS）
--   * AWS Bedrock（IAM ベースのアクセス、クロスリージョンオプション）
-+   * Amazon Bedrock（IAM ベースのアクセス、クロスリージョンオプション）
-    * Google Vertex AI（GCP ネイティブ、Workload Identity Federation）
- 
-@@ -99,5 +99,5 @@ claude:
- 
- <Note>
--  Claude API の代わりに AWS Bedrock または Google Vertex AI で実行するには、以下の [Using with AWS Bedrock & Google Vertex AI](#using-with-aws-bedrock--google-vertex-ai) セクションを参照して、認証と環境セットアップを確認してください。
-+  Claude API の代わりに Amazon Bedrock または Google Vertex AI で実行するには、以下の [Using with Amazon Bedrock & Google Vertex AI](#using-with-amazon-bedrock--google-vertex-ai) セクションを参照して、認証と環境セットアップを確認してください。
 ```
 
 </details>

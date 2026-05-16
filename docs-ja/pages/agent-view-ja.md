@@ -265,6 +265,12 @@ claude --bg "investigate the flaky SettingsChangeDetector test"
 claude --agent code-reviewer --bg "address review comments on PR 1234"
 ```
 
+`--name` を渡して、自動生成されたセッションの代わりにエージェントビューでセッションの表示名を設定します。
+
+```bash theme={null}
+claude --bg --name "flaky-test-fix" "investigate the flaky SettingsChangeDetector test"
+```
+
 バックグラウンド化の後、Claude はセッションの短い ID とセッションを管理するためのコマンドを出力します。
 
 ```text theme={null}
