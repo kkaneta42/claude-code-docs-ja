@@ -17,6 +17,86 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-05-17</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/microsoft-foundry-ja.md | 10 ++++++++++
+ docs-ja/pages/model-config-ja.md      |  2 +-
+ docs-ja/pages/skills-ja.md            |  2 ++
+ 3 files changed, 13 insertions(+), 1 deletion(-)
+```
+
+<details>
+<summary>microsoft-foundry-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/microsoft-foundry-ja.md b/docs-ja/pages/microsoft-foundry-ja.md
+index 3126d0b..fb2293a 100644
+--- a/docs-ja/pages/microsoft-foundry-ja.md
++++ b/docs-ja/pages/microsoft-foundry-ja.md
+@@ -174,4 +174,14 @@ export ENABLE_PROMPT_CACHING_1H=1
+ ```
+ 
++### 5. Claude Code を実行する
++
++環境変数を設定したら、プロジェクトディレクトリから Claude Code を起動します：
++
++```bash theme={null}
++claude
++```
++
++Claude Code は環境から `CLAUDE_CODE_USE_FOUNDRY` およびその他の Foundry 変数を読み込み、最初のプロンプトで Azure リソースに接続します。Bedrock および Vertex AI とは異なり、Foundry には対話型セットアップウィザードがないため、ステップ 3 およびステップ 4 の環境変数が唯一の構成パスです。
++
+ ## Azure RBAC 構成
+ 
+```
+
+</details>
+
+<details>
+<summary>model-config-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/model-config-ja.md b/docs-ja/pages/model-config-ja.md
+index 7393d92..c98dc3c 100644
+--- a/docs-ja/pages/model-config-ja.md
++++ b/docs-ja/pages/model-config-ja.md
+@@ -201,5 +201,5 @@ Opus 4.7 を初めて実行する場合、Claude Code は、以前に Opus 4.6 
+ * **`--effort` フラグ**：Claude Code を起動する際にレベル名を渡して、単一セッションのレベルを設定
+ * **環境変数**：`CLAUDE_CODE_EFFORT_LEVEL` をレベル名または `auto` に設定
+-* **設定**：設定ファイルで `effortLevel` を設定
++* **設定**：設定ファイルで `effortLevel` を `low`、`medium`、`high`、`xhigh` に設定します。`max` は [セッションのみ](#adjust-effort-level) であり、ここでは受け入れられません
+ * **Skill と subagent frontmatter**：[skill](/ja/skills#frontmatter-reference) または [subagent](/ja/sub-agents#supported-frontmatter-fields) markdown ファイルで `effort` を設定して、その skill または subagent が実行される際の努力レベルをオーバーライド
+ 
+```
+
+</details>
+
+<details>
+<summary>skills-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/skills-ja.md b/docs-ja/pages/skills-ja.md
+index 0ea2ddb..fb7abe6 100644
+--- a/docs-ja/pages/skills-ja.md
++++ b/docs-ja/pages/skills-ja.md
+@@ -408,4 +408,6 @@ Summarize this pull request...
+ これは前処理であり、Claude が実行するものではありません。Claude は最終結果のみを見ます。
+ 
++置換は元のファイルに対して 1 回実行されます。コマンド出力はプレーンテキストとして挿入され、さらに `` !`<command>` `` プレースホルダーについて再スキャンされないため、コマンドは後のパスで展開するプレースホルダーを発行することはできません。
++
+ 複数行のコマンドの場合、インラインフォーム `` !`<command>` `` の代わりに、` ```! ` で開かれたフェンスコードブロックを使用します：
+ 
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-05-16</summary>
 
 **変更ファイル:**
@@ -2719,157 +2799,5 @@ index 807141b..6783090 100644
  docs-ja/pages/vs-code-ja.md              | 36 +++++++-----
  12 files changed, 280 insertions(+), 101 deletions(-)
 ```
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index 01788b6..4051405 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,44 @@
- # Changelog
- 
-+## 2.1.128
-+
-+- Bare `/color` (no args) now picks a random session color
-+- `/mcp` now shows the tool count for connected servers and flags servers that connected with 0 tools
-+- `--plugin-dir` now accepts `.zip` plugin archives in addition to directories
-+- `--channels` now works with console (API key) authentication — console orgs with managed settings must set `channelsEnabled: true` to enable
-+- Updated `/model` picker: collapsed duplicate Opus 4.7 entries, and current Opus now shows as "Opus" instead of "Opus 4.7"
-+- Subprocesses (Bash, hooks, MCP, LSP) no longer inherit `OTEL_*` environment variables, so OTEL-instrumented apps run via the Bash tool no longer pick up the CLI's own OTLP endpoint
-+- MCP: `workspace` is now a reserved server name — existing servers with that name will be skipped with a warning
-+- Reconnecting MCP servers no longer flood the conversation with full tool-name lists on every reconnect — re-announced tools are summarized by server prefix
-+- SDK hosts now receive a persistent `localSettings` suggestion for Bash permission prompts, so "Always allow" writes to `.claude/settings.local.json`
-+- `EnterWorktree` now creates the new branch from local HEAD as documented, instead of `origin/<default-branch>` — unpushed commits are no longer dropped
-+- Auto mode: when the classifier can't evaluate an action, the error now includes a hint (retry, `/compact`, or run with `--debug`)
-+- Fixed focus mode briefly dimming the previous response when submitting a new prompt
-+- Fixed stray "4;0;" desktop notification on every `/exit` in Kitty and other terminals that interpret OSC 9 as a notification
-+- Fixed Remote Control showing an empty "Opening your options…" message on rate limit instead of actionable upsell options
-+- Fixed drag-and-drop image upload hanging on "Pasting text…" when the image read fails
-+- Fixed crash loop when piping very large input (>10 MB) to `claude -p` via stdin
-+- Fixed long URLs not being individually clickable on every wrapped row in fullscreen mode
-+- Fixed `/plugin` Components panel showing "Marketplace 'inline' not found" for plugins loaded via `--plugin-dir`
-+- Fixed MCP tool results dropping images when the server returns both structured content and content blocks
-+- Fixed fenced code blocks inside list items carrying leading whitespace into the clipboard on copy-paste
-+- Fixed tab navigation in `/config` stranding focus — the tab header now stays focused so arrows and Esc keep working
-```
-
-</details>
-
-<details>
-<summary>features-overview-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/features-overview-ja.md b/docs-ja/pages/features-overview-ja.md
-index b5ceb1b..c306054 100644
---- a/docs-ja/pages/features-overview-ja.md
-+++ b/docs-ja/pages/features-overview-ja.md
-@@ -13,5 +13,5 @@ Claude Code は、コードについて推論するモデルと、ファイル
- </Note>
- 
--**Claude Code は初めてですか？** [CLAUDE.md](/ja/memory) でプロジェクト規約を開始します。必要に応じて他の拡張機能を追加してください。
-+**Claude Code は初めてですか？** [CLAUDE.md](/ja/memory) でプロジェクト規約を開始します。その後、[特定のトリガーが発生したときに](#build-your-setup-over-time)他の拡張機能を追加してください。
- 
- ## 概要
-@@ -24,5 +24,5 @@ Claude Code は、コードについて推論するモデルと、ファイル
- * **[Subagents](/ja/sub-agents)** は独立したコンテキストで独自のループを実行し、サマリーを返します
- * **[Agent teams](/ja/agent-teams)** は、共有タスクとピアツーピアメッセージングを使用して複数の独立したセッションを調整します
--* **[Hooks](/ja/hooks)** はループの外側で決定論的スクリプトとして実行されます
-+* **[Hooks](/ja/hooks-guide)** はライフサイクルイベントで発火し、スクリプト、HTTP リクエスト、プロンプト、または subagent を実行できます
- * **[Plugins](/ja/plugins)** と **[marketplaces](/ja/plugin-marketplaces)** はこれらの機能をパッケージ化して配布します
- 
-@@ -33,15 +33,31 @@ Claude Code は、コードについて推論するモデルと、ファイル
- 機能は、Claude がすべてのセッションで見る常時オンのコンテキストから、あなたまたは Claude が呼び出すことができるオンデマンド機能、特定のイベントで実行される背景自動化まで、さまざまです。以下の表は、利用可能な機能と各機能が適切な場合を示しています。
- 
--| 機能                                 | 機能                           | 使用する場合                           | 例                                                            |
--| ---------------------------------- | ---------------------------- | -------------------------------- | ------------------------------------------------------------ |
--| **CLAUDE.md**                      | すべての会話で読み込まれる永続的なコンテキスト      | プロジェクト規約、「常に X を実行する」ルール         | 「pnpm を使用し、npm は使用しない。コミット前にテストを実行する。」                       |
--| **Skill**                          | Claude が使用できる指示、知識、ワークフロー    | 再利用可能なコンテンツ、リファレンスドキュメント、繰り返しタスク | `/deploy` はデプロイメントチェックリストを実行します。エンドポイントパターンを持つ API ドキュメントスキル |
--| **Subagent**                       | サマリー結果を返す独立した実行コンテキスト        | コンテキスト分離、並列タスク、専門的なワーカー          | 多くのファイルを読み取るが、主要な結果のみを返す研究タスク                                |
--| **[Agent teams](/ja/agent-teams)** | 複数の独立した Claude Code セッションを調整 | 並列研究、新機能開発、競合する仮説でのデバッグ          | セキュリティ、パフォーマンス、テストを同時にチェックするレビュアーをスポーン                       |
--| **MCP**                            | 外部サービスに接続                    | 外部データまたはアクション                    | データベースをクエリ、Slack に投稿、ブラウザを制御                                 |
--| **Hook**                           | イベントで実行される決定論的スクリプト          | 予測可能な自動化、LLM は関与しない              | すべてのファイル編集後に ESLint を実行                                      |
-+| 機能                                 | 機能                                            | 使用する場合                           | 例                                                            |
-```
-
-</details>
-
-<details>
-<summary>hooks-guide-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/hooks-guide-ja.md b/docs-ja/pages/hooks-guide-ja.md
-index 2f316e7..997f2d5 100644
---- a/docs-ja/pages/hooks-guide-ja.md
-+++ b/docs-ja/pages/hooks-guide-ja.md
-@@ -172,4 +172,17 @@ Claude が作業を完了して入力を必要とするときはいつでもデ
- </Tabs>
- 
-+空の `matcher` はすべての通知タイプで発火します。特定のイベントでのみ発火させるには、次のいずれかの値に設定します：
-+
-+| Matcher                | 発火するタイミング                   |
-+| :--------------------- | :-------------------------- |
-+| `permission_prompt`    | Claude がツール使用を承認する必要があるとき   |
-+| `idle_prompt`          | Claude が完了し、次のプロンプトを待っているとき |
-+| `auth_success`         | 認証が完了したとき                   |
-+| `elicitation_dialog`   | MCP サーバーが引き出しフォームを開くとき      |
-+| `elicitation_complete` | MCP 引き出しフォームが送信または却下されたとき   |
-+| `elicitation_response` | MCP 引き出し応答がサーバーに送り返されたとき    |
-+
-+`/hooks` と入力して `Notification` を選択し、hook が登録されていることを確認します。完全なイベントスキーマについては、[Notification リファレンス](/ja/hooks#notification) を参照してください。
-+
- ### 編集後にコードを自動フォーマットする
- 
-@@ -346,4 +359,6 @@ Claude のコンテキストウィンドウがいっぱいになると、圧縮
- ```
- 
-+`direnv allow` をすべてのディレクトリで 1 回実行して、direnv が `.envrc` をロードすることが許可されるようにします。direnv の代わりに devbox または nix を使用する場合、同じパターンは `direnv export bash` の代わりに `devbox shellenv` または `devbox global shellenv` で機能します。
-+
- すべてのディレクトリ変更ではなく、特定のファイルに反応するには、`FileChanged` を `matcher` で使用して、監視するファイル名をリストします（パイプで区切られています）。ウォッチリストを構築するために、この値は正規表現として評価されるのではなく、リテラルファイル名に分割されます。[FileChanged](/ja/hooks#filechanged) を参照して、同じ値がファイルが変更されたときにどの hook グループが実行されるかをフィルタリングする方法を確認してください。この例は現在のディレクトリの `.envrc` と `.env` を監視します：
- 
-@@ -721,5 +736,8 @@ Claude Code が実行中に設定ファイルを直接編集する場合、フ
-```
-
-</details>
-
-<details>
-<summary>hooks-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/hooks-ja.md b/docs-ja/pages/hooks-ja.md
-index 52f531b..a3178e2 100644
---- a/docs-ja/pages/hooks-ja.md
-+++ b/docs-ja/pages/hooks-ja.md
-@@ -975,5 +975,5 @@ InstructionsLoaded フックは決定制御がありません。命令ロード
- | `reason`            | `decision` が `"block"` のときにユーザーに表示されます。コンテキストに追加されません                         |
- | `additionalContext` | Claude のコンテキストに追加される文字列。[Claude のコンテキストを追加](#add-context-for-claude)を参照してください |
--| `sessionTitle`      | セッション タイトルを設定します。`/rename` と同じ効果。プロンプト コンテンツに基づいてセッションを自動的に名前付けするのに使用         |
-+| `sessionTitle`      | セッション タイトルを設定します。プロンプト コンテンツに基づいてセッションを自動的に名前付けするのに使用                         |
- 
- ```json theme={null}
-@@ -2023,5 +2023,5 @@ FileChanged フックは決定制御がありません。ファイル変更を
- フックは作成されたワークツリー ディレクトリへの絶対パスを返す必要があります。Claude Code はこのパスを分離されたセッションの作業ディレクトリとして使用します。コマンド フックは stdout にパスを出力します。HTTP フックは `hookSpecificOutput.worktreePath` 経由で返します。
- 
--フックはデフォルトの git 動作を完全に置き換えるため、[`.worktreeinclude`](/ja/common-workflows#copy-gitignored-files-to-worktrees)は処理されません。`.env` などのローカル設定ファイルを新しいワークツリーにコピーする必要がある場合は、フック スクリプト内で実行してください。
-+フックはデフォルトの git 動作を完全に置き換えるため、[`.worktreeinclude`](/ja/worktrees#copy-gitignored-files-into-worktrees)は処理されません。`.env` などのローカル設定ファイルを新しいワークツリーにコピーする必要がある場合は、フック スクリプト内で実行してください。
- 
- この例は SVN 作業コピーを作成し、Claude Code が使用するパスを出力します。リポジトリ URL を自分のものに置き換えます。
-@@ -2407,8 +2407,18 @@ LLM は以下を含む JSON で応答する必要があります：
- ```
- 
--| フィールド    | 説明                                    |
--| :------- | :------------------------------------ |
--| `ok`     | `true` はアクションを許可、`false` は防止          |
--| `reason` | `ok` が `false` のときに必須。Claude に表示される説明 |
-+| フィールド    | 説明                            |
-+| :------- | :---------------------------- |
-+| `ok`     | `true` はアクションを許可、`false` は防止  |
-+| `reason` | `ok` が `false` のときに必須。ブロックの説明 |
-+
-```
-
-</details>
 
 <!-- UPDATE_LOG_END -->
