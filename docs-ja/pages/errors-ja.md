@@ -18,39 +18,40 @@
 
 ターミナルに表示されるメッセージを以下のセクションと照合してください。
 
-| メッセージ                                                                                | セクション                                                                                         |
-| :----------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------- |
-| `API Error: 500 ... Internal server error`                                           | [サーバーエラー](#api-error-500-internal-server-error)                                               |
-| `API Error: Repeated 529 Overloaded errors`                                          | [サーバーエラー](#api-error-repeated-529-overloaded-errors)                                          |
-| `Request timed out`                                                                  | [サーバーエラー](#request-timed-out)、またはメッセージがインターネット接続に言及している場合は[ネットワーク](#unable-to-connect-to-api) |
-| `<model> is temporarily unavailable, so auto mode cannot determine the safety of...` | [サーバーエラー](#auto-mode-cannot-determine-the-safety-of-an-action)                                |
-| `Auto mode could not evaluate this action and is blocking it for safety`             | [サーバーエラー](#auto-mode-cannot-determine-the-safety-of-an-action)                                |
-| `Auto mode classifier transcript exceeded context window`                            | [サーバーエラー](#auto-mode-cannot-determine-the-safety-of-an-action)                                |
-| `You've hit your session limit` / `You've hit your weekly limit`                     | [使用制限](#youve-hit-your-session-limit)                                                         |
-| `Server is temporarily limiting requests`                                            | [使用制限](#server-is-temporarily-limiting-requests)                                              |
-| `Request rejected (429)`                                                             | [使用制限](#request-rejected-429)                                                                 |
-| `Credit balance is too low`                                                          | [使用制限](#credit-balance-is-too-low)                                                            |
-| `Not logged in · Please run /login`                                                  | [認証](#not-logged-in)                                                                          |
-| `Invalid API key`                                                                    | [認証](#invalid-api-key)                                                                        |
-| `This organization has been disabled`                                                | [認証](#this-organization-has-been-disabled)                                                    |
-| `Routines are disabled by your organization's policy`                                | [認証](#routines-are-disabled-by-your-organizations-policy)                                     |
-| `OAuth token revoked` / `OAuth token has expired`                                    | [認証](#oauth-token-revoked-or-expired)                                                         |
-| `does not meet scope requirement user:profile`                                       | [認証](#oauth-scope-requirement)                                                                |
-| `Unable to connect to API`                                                           | [ネットワーク](#unable-to-connect-to-api)                                                           |
-| `SSL certificate verification failed`                                                | [ネットワーク](#ssl-certificate-errors)                                                             |
-| `403` with `x-deny-reason: host_not_allowed` in a cloud or routine session           | [ネットワーク](#host-not-allowed-in-a-cloud-session)                                                |
-| `Prompt is too long`                                                                 | [リクエストエラー](#prompt-is-too-long)                                                               |
-| `Error during compaction: Conversation too long`                                     | [リクエストエラー](#error-during-compaction-conversation-too-long)                                    |
-| `Request too large`                                                                  | [リクエストエラー](#request-too-large)                                                                |
-| `Image was too large`                                                                | [リクエストエラー](#image-was-too-large)                                                              |
-| `PDF too large` / `PDF is password protected`                                        | [リクエストエラー](#pdf-errors)                                                                       |
-| `Extra inputs are not permitted`                                                     | [リクエストエラー](#extra-inputs-are-not-permitted)                                                   |
-| `There's an issue with the selected model`                                           | [リクエストエラー](#theres-an-issue-with-the-selected-model)                                          |
-| `Claude Opus is not available with the Claude Pro plan`                              | [リクエストエラー](#claude-opus-is-not-available-with-the-claude-pro-plan)                            |
-| `thinking.type.enabled is not supported for this model`                              | [リクエストエラー](#thinking-type-enabled-is-not-supported-for-this-model)                            |
-| `max_tokens must be greater than thinking.budget_tokens`                             | [リクエストエラー](#thinking-budget-exceeds-output-limit)                                             |
-| `API Error: 400 due to tool use concurrency issues`                                  | [リクエストエラー](#tool-use-or-thinking-block-mismatch)                                              |
-| レスポンスの品質が通常より低いように見える                                                                | [レスポンス品質](#responses-seem-lower-quality-than-usual)                                           |
+| メッセージ                                                                                         | セクション                                                                                         |
+| :-------------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------- |
+| `API Error: 500 ... Internal server error`                                                    | [サーバーエラー](#api-error-500-internal-server-error)                                               |
+| `API Error: Repeated 529 Overloaded errors`                                                   | [サーバーエラー](#api-error-repeated-529-overloaded-errors)                                          |
+| `Request timed out`                                                                           | [サーバーエラー](#request-timed-out)、またはメッセージがインターネット接続に言及している場合は[ネットワーク](#unable-to-connect-to-api) |
+| `<model> is temporarily unavailable, so auto mode cannot determine the safety of...`          | [サーバーエラー](#auto-mode-cannot-determine-the-safety-of-an-action)                                |
+| `Auto mode could not evaluate this action and is blocking it for safety`                      | [サーバーエラー](#auto-mode-cannot-determine-the-safety-of-an-action)                                |
+| `Auto mode classifier transcript exceeded context window`                                     | [サーバーエラー](#auto-mode-cannot-determine-the-safety-of-an-action)                                |
+| `You've hit your session limit` / `You've hit your weekly limit`                              | [使用制限](#youve-hit-your-session-limit)                                                         |
+| `Server is temporarily limiting requests`                                                     | [使用制限](#server-is-temporarily-limiting-requests)                                              |
+| `Request rejected (429)`                                                                      | [使用制限](#request-rejected-429)                                                                 |
+| `Credit balance is too low`                                                                   | [使用制限](#credit-balance-is-too-low)                                                            |
+| `Not logged in · Please run /login`                                                           | [認証](#not-logged-in)                                                                          |
+| `Invalid API key`                                                                             | [認証](#invalid-api-key)                                                                        |
+| `This organization has been disabled`                                                         | [認証](#this-organization-has-been-disabled)                                                    |
+| `Routines are disabled by your organization's policy`                                         | [認証](#routines-are-disabled-by-your-organizations-policy)                                     |
+| `OAuth token revoked` / `OAuth token has expired`                                             | [認証](#oauth-token-revoked-or-expired)                                                         |
+| `does not meet scope requirement user:profile`                                                | [認証](#oauth-scope-requirement)                                                                |
+| `Unable to connect to API`                                                                    | [ネットワーク](#unable-to-connect-to-api)                                                           |
+| `SSL certificate verification failed`                                                         | [ネットワーク](#ssl-certificate-errors)                                                             |
+| `403` with `x-deny-reason: host_not_allowed` in a cloud or routine session                    | [ネットワーク](#host-not-allowed-in-a-cloud-session)                                                |
+| `Prompt is too long`                                                                          | [リクエストエラー](#prompt-is-too-long)                                                               |
+| `Error during compaction: Conversation too long`                                              | [リクエストエラー](#error-during-compaction-conversation-too-long)                                    |
+| `Request too large`                                                                           | [リクエストエラー](#request-too-large)                                                                |
+| `Image was too large`                                                                         | [リクエストエラー](#image-was-too-large)                                                              |
+| `PDF too large` / `PDF is password protected`                                                 | [リクエストエラー](#pdf-errors)                                                                       |
+| `Extra inputs are not permitted`                                                              | [リクエストエラー](#extra-inputs-are-not-permitted)                                                   |
+| `There's an issue with the selected model`                                                    | [リクエストエラー](#theres-an-issue-with-the-selected-model)                                          |
+| `Claude Opus is not available with the Claude Pro plan`                                       | [リクエストエラー](#claude-opus-is-not-available-with-the-claude-pro-plan)                            |
+| `thinking.type.enabled is not supported for this model`                                       | [リクエストエラー](#thinking-type-enabled-is-not-supported-for-this-model)                            |
+| `max_tokens must be greater than thinking.budget_tokens`                                      | [リクエストエラー](#thinking-budget-exceeds-output-limit)                                             |
+| `API Error: 400 due to tool use concurrency issues`                                           | [リクエストエラー](#tool-use-or-thinking-block-mismatch)                                              |
+| `Claude Code is unable to respond to this request, which appears to violate our Usage Policy` | [リクエストエラー](#usage-policy-refusal)                                                             |
+| レスポンスの品質が通常より低いように見える                                                                         | [レスポンス品質](#responses-seem-lower-quality-than-usual)                                           |
 
 ## 自動リトライ
 
@@ -282,6 +283,22 @@ API Error: 400 ... This organization has been disabled.
 * 現在のシェルで `ANTHROPIC_API_KEY` をアンセットし、シェルプロファイルから削除してから、`claude` を再起動してください
 * その後 `/status` を実行して、アクティブな認証情報がサブスクリプションであることを確認してください
 * 環境変数が設定されておらず、エラーが続く場合、無効な組織は `/login` に関連付けられているものです。サポートに連絡するか、別のアカウントでサインインしてください。
+
+### Your organization has disabled Claude subscription access
+
+Claude 組織がサブスクリプションログインで Claude Code にサインインすることを許可していません。同じアカウントで `/login` を再度実行すると、同じエラーが返されます。
+
+```text theme={null}
+Your organization has disabled Claude subscription access for Claude Code · Use an Anthropic API key instead, or ask your admin to enable access
+```
+
+これはサーバー側の組織設定であるため、ローカル設定、環境変数、または CLI フラグからオーバーライドすることはできません。Agent SDK および `-p` 非インタラクティブモードは、これを `oauth_org_not_allowed` エラーコードとして表示します。
+
+**対応方法：**
+
+* 管理者に組織の Claude Code アクセスを有効にするよう依頼してください
+* サブスクリプションの代わりに Console API キーで認証してください。セットアップについては、[Claude Console 認証](/ja/authentication#claude-console-authentication)を参照してください。
+* 管理者であり、アクセスを有効にするオプションが表示されない場合は、[Anthropic サポート](https://support.claude.com)に連絡してください
 
 ### Routines are disabled by your organization's policy
 
@@ -572,6 +589,22 @@ API Error: 400 ... thinking blocks ... cannot be modified
 **対応方法：**
 
 * `/rewind` を実行するか、Esc を 2 回押して、破損したターンの前のチェックポイントに戻り、そこから続行してください。[チェックポイント](/ja/checkpointing)を参照して、チェックポイントがどのように作成および復元されるかを確認してください。
+
+### Usage Policy refusal
+
+API は、会話内のコンテンツが[利用規約](https://www.anthropic.com/legal/aup)チェックをトリガーしたため、応答を拒否しました。メッセージには、拒否が正しくないと思われる場合にサポートに引用できるリクエスト ID が含まれています。
+
+```text theme={null}
+API Error: Claude Code is unable to respond to this request, which appears to violate our Usage Policy (https://www.anthropic.com/legal/aup). Please double press esc to edit your last message or start a new session for Claude Code to assist with a different task.
+```
+
+チェックは最新のプロンプトだけでなく、会話全体を評価するため、同じセッションで新しいメッセージを送信すると、通常は同じ拒否が再度トリガーされます。`--continue` または `--resume` でセッションを終了して再度開いた後も同じことが当てはまります。ディスク上のトランスクリプトにはまだトリガーコンテンツが含まれているためです。
+
+**対応方法：**
+
+* Esc を 2 回押すか `/rewind` を実行して、拒否をトリガーしたターンの前のチェックポイントに戻り、その後、別の方法で言い換えるか、別のアプローチを取ってください。[チェックポイント](/ja/checkpointing)を参照してください。
+* どのターンが原因かを特定できない場合は、`/clear` を実行して同じプロジェクト内で新しい会話を開始してください。以前の会話はディスクに保存され、`/resume` で利用可能なままです。
+* [非対話型モード](/ja/headless)（`-p`）では、巻き戻しが利用できないため、言い換えたプロンプトで再試行するか、`--continue` なしで新しいセッションを開始してください。
 
 ## Responses seem lower quality than usual
 

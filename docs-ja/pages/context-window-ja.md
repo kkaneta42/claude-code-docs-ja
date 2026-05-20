@@ -2,9 +2,9 @@
 > Fetch the complete documentation index at: https://code.claude.com/docs/llms.txt
 > Use this file to discover all available pages before exploring further.
 
-# Explore the context window
+# コンテキストウィンドウを探索する
 
-> An interactive simulation of how Claude Code's context window fills during a session. See what loads automatically, what each file read costs, and when rules and hooks fire.
+> Claude Code のコンテキストウィンドウがセッション中にどのように満たされるかのインタラクティブなシミュレーション。自動的に読み込まれるもの、各ファイル読み込みのコスト、ルールとフックが発火するタイミングを確認できます。
 
 export const ContextWindow = () => {
   const MAX = 200000;
@@ -1568,47 +1568,48 @@ export const ContextWindow = () => {
     </>;
 };
 
-Claude Code's context window holds everything Claude knows about your session: your instructions, the files it reads, its own responses, and content that never appears in your terminal. The timeline below walks through what loads and when. See [the written breakdown](#what-the-timeline-shows) for the same content as a list.
+Claude Code のコンテキストウィンドウには、セッションについて Claude が知っているすべてのものが含まれます。つまり、あなたの指示、読み込まれたファイル、Claude 自身の応答、およびターミナルに表示されないコンテンツです。以下のタイムラインは、何が読み込まれ、いつ読み込まれるかを説明します。[書かれた説明](#what-the-timeline-shows)で同じコンテンツをリストとして確認できます。
 
 <ContextWindow />
 
-## What the timeline shows
+## タイムラインが示すもの
 
-The session walks through a realistic flow with representative token counts:
+セッションは、代表的なトークン数を含む現実的なフローを通じて進みます。
 
-* **Before you type anything**: CLAUDE.md, auto memory, MCP tool names, and skill descriptions all load into context. Your own setup may add more here, like an [output style](/en/output-styles) or text from [`--append-system-prompt`](/en/cli-reference), which both go into the system prompt the same way.
-* **As Claude works**: each file read adds to context, [path-scoped rules](/en/memory#path-specific-rules) load automatically alongside matching files, and a [PostToolUse hook](/en/hooks-guide) fires after each edit.
-* **The follow-up prompt**: a [subagent](/en/sub-agents) handles the research in its own separate context window, so the large file reads stay out of yours. Only the summary and a small metadata trailer come back.
-* **At the end**: `/compact` replaces the conversation with a structured summary. Most startup content reloads automatically; the table below shows what happens to each mechanism.
+* **何も入力する前に**: CLAUDE.md、自動メモリ、MCP ツール名、スキルの説明がすべてコンテキストに読み込まれます。あなた自身のセットアップは、[出力スタイル](/ja/output-styles)や[`--append-system-prompt`](/ja/cli-reference)からのテキストなど、ここにさらに多くのものを追加する可能性があります。これらはシステムプロンプトと同じ方法で入ります。
+* **Claude が作業するとき**: 各ファイル読み込みがコンテキストに追加され、[パススコープ付きルール](/ja/memory#path-specific-rules)は一致するファイルと一緒に自動的に読み込まれ、[PostToolUse フック](/ja/hooks-guide)は各編集後に発火します。
+* **フォローアップ プロンプト**: [サブエージェント](/ja/sub-agents)は独自の別のコンテキストウィンドウで研究を処理するため、大きなファイル読み込みはあなたのコンテキストウィンドウから外れます。サマリーと小さなメタデータトレーラーだけが戻ってきます。
+* **最後に**: `/compact` は会話をまとめられた構造化されたサマリーに置き換えます。ほとんどのスタートアップコンテンツは自動的に再度読み込まれます。以下の表は、各メカニズムに何が起こるかを示しています。
 
-## What survives compaction
+## コンパクション後に残るもの
 
-When a long session compacts, Claude Code summarizes the conversation history to fit the context window. What happens to your instructions depends on how they were loaded:
+長いセッションがコンパクションされると、Claude Code は会話履歴をコンテキストウィンドウに収まるようにまとめます。あなたの指示に何が起こるかは、それらがどのように読み込まれたかによって異なります。
 
-| Mechanism                                 | After compaction                                                                            |
-| :---------------------------------------- | :------------------------------------------------------------------------------------------ |
-| System prompt and output style            | Unchanged; not part of message history                                                      |
-| Project-root CLAUDE.md and unscoped rules | Re-injected from disk                                                                       |
-| Auto memory                               | Re-injected from disk                                                                       |
-| Rules with `paths:` frontmatter           | Lost until a matching file is read again                                                    |
-| Nested CLAUDE.md in subdirectories        | Lost until a file in that subdirectory is read again                                        |
-| Invoked skill bodies                      | Re-injected, capped at 5,000 tokens per skill and 25,000 tokens total; oldest dropped first |
-| Hooks                                     | Not applicable; hooks run as code, not context                                              |
+| メカニズム                          | コンパクション後                                                              |
+| :----------------------------- | :-------------------------------------------------------------------- |
+| システムプロンプトと出力スタイル               | 変更なし。メッセージ履歴の一部ではありません                                                |
+| プロジェクトルート CLAUDE.md とスコープなしルール | ディスクから再度注入されます                                                        |
+| 自動メモリ                          | ディスクから再度注入されます                                                        |
+| `paths:` frontmatter を持つルール    | 一致するファイルが再度読み込まれるまで失われます                                              |
+| サブディレクトリ内のネストされた CLAUDE.md     | そのサブディレクトリ内のファイルが再度読み込まれるまで失われます                                      |
+| 呼び出されたスキル本体                    | 再度注入されます。スキルあたり 5,000 トークン、合計 25,000 トークンでキャップされます。最も古いものが最初にドロップされます |
+| フック                            | 適用されません。フックはコンテキストではなくコードとして実行されます                                    |
 
-Path-scoped rules and nested CLAUDE.md files load into message history when their trigger file is read, so compaction summarizes them away with everything else. They reload the next time Claude reads a matching file. If a rule must persist across compaction, drop the `paths:` frontmatter or move it to the project-root CLAUDE.md.
+パススコープ付きルールとネストされた CLAUDE.md ファイルは、トリガーファイルが読み込まれるときにメッセージ履歴に読み込まれるため、コンパクションはそれらを他のすべてのものと一緒にまとめます。一致するファイルが Claude によって再度読み込まれるときに再度読み込まれます。ルールがコンパクション全体で永続化する必要がある場合は、`paths:` frontmatter をドロップするか、プロジェクトルート CLAUDE.md に移動してください。
 
-Skill bodies are re-injected after compaction, but large skills are truncated to fit the per-skill cap, and the oldest invoked skills are dropped once the total budget is exceeded. Truncation keeps the start of the file, so put the most important instructions near the top of `SKILL.md`.
+スキル本体はコンパクション後に再度注入されますが、大きなスキルはスキルあたりのキャップに収まるようにトリミングされ、合計予算を超えると最も古い呼び出されたスキルがドロップされます。トリミングはファイルの開始を保持するため、`SKILL.md` の上部に最も重要な指示を配置してください。
 
-## Check your own session
+## あなた自身のセッションを確認する
 
-The visualization uses representative numbers. To see your actual context usage at any point, run `/context` for a live breakdown by category with optimization suggestions. Run `/memory` to check which CLAUDE.md and auto memory files loaded at startup.
+ビジュアライゼーションは代表的な数値を使用しています。任意の時点でのあなたの実際のコンテキスト使用状況を確認するには、`/context` を実行して、カテゴリ別の詳細な内訳と最適化の提案を取得してください。`/memory` を実行して、スタートアップ時にどの CLAUDE.md と自動メモリファイルが読み込まれたかを確認してください。
 
-## Related resources
+## 関連リソース
 
-For deeper coverage of the features shown in the timeline, see these pages:
+タイムラインに示されている機能の詳細なカバレッジについては、これらのページを参照してください。
 
-* [Extend Claude Code](/en/features-overview): when to use CLAUDE.md vs skills vs rules vs hooks vs MCP
-* [Store instructions and memories](/en/memory): CLAUDE.md hierarchy and auto memory
-* [Subagents](/en/sub-agents): delegate research to a separate context window
-* [Best practices](/en/best-practices): managing context as your primary constraint
-* [Reduce token usage](/en/costs#reduce-token-usage): strategies for keeping context usage low
+* [Claude Code を拡張する](/ja/features-overview): CLAUDE.md とスキルとルールとフックと MCP をいつ使用するか
+* [指示とメモリを保存する](/ja/memory): CLAUDE.md 階層と自動メモリ
+* [サブエージェント](/ja/sub-agents): 研究を別のコンテキストウィンドウに委譲する
+* [ベストプラクティス](/ja/best-practices): コンテキストを主な制約として管理する
+* [プロンプト キャッシング](/ja/prompt-caching): キャッシュされたプレフィックスを無効にするアクション
+* [トークン使用量を削減する](/ja/costs#reduce-token-usage): コンテキスト使用量を低く保つための戦略

@@ -7,7 +7,7 @@
 > webhook、アラート、チャットメッセージを Claude Code セッションにプッシュする MCP サーバーを構築します。チャネルコントラクトのリファレンス：機能宣言、通知イベント、返信ツール、送信者ゲーティング、権限リレー。
 
 <Note>
-  チャネルは[リサーチプレビュー](/ja/channels#research-preview)段階にあり、Claude Code v2.1.80 以降が必要です。claude.ai ログインが必要です。Console と API キー認証はサポートされていません。Team および Enterprise 組織は[明示的に有効化](/ja/channels#enterprise-controls)する必要があります。
+  チャネルは[リサーチプレビュー](/ja/channels#research-preview)段階にあり、Claude Code v2.1.80 以降が必要です。Team および Enterprise 組織は[明示的に有効化](/ja/channels#enterprise-controls)する必要があります。
 </Note>
 
 チャネルは、Claude Code セッションにイベントをプッシュする MCP サーバーで、Claude がターミナルの外で発生していることに反応できるようにします。
@@ -20,7 +20,7 @@
 * [必要なもの](#what-you-need)：要件と一般的な手順
 * [例：webhook レシーバーを構築](#example-build-a-webhook-receiver)：最小限の一方向ウォークスルー
 * [サーバーオプション](#server-options)：コンストラクタフィールド
-* [通知フォーマット](#notification-format)：イベントペイロード
+* [通知フォーマット](#notification-format)：イベントペイロードと配信動作
 * [返信ツールを公開](#expose-a-reply-tool)：Claude がメッセージを返送できるようにする
 * [インバウンドメッセージをゲート](#gate-inbound-messages)：プロンプトインジェクションを防ぐための送信者チェック
 * [権限プロンプトをリレー](#relay-permission-prompts)：ツール承認プロンプトをリモートチャネルに転送
@@ -138,7 +138,7 @@
 
     Claude Code が起動すると、MCP 設定を読み込み、`webhook.ts` をサブプロセスとして生成し、HTTP リスナーは設定したポート（この例では 8788）で自動的に開始されます。サーバーを自分で実行する必要はありません。
 
-    'ブロックされた組織ポリシー'が表示される場合は、Team または Enterprise 管理者が最初に[チャネルを有効化](/ja/channels#enterprise-controls)する必要があります。
+    'ブロックされた組織ポリシー'が表示される場合は、組織管理者が最初に[チャネルを有効化](/ja/channels#enterprise-controls)する必要があります。
 
     別のターミナルで、HTTP POST でメッセージを送信して webhook をシミュレートします。この例は、CI 失敗アラートをポート 8788（または設定したポート）に送信します：
 
@@ -240,6 +240,12 @@ await mcp.notification({
 build failed on main: https://ci.example.com/run/1234
 </channel>
 ```
+
+通知は確認されません。`mcp.notification()` の `await` は、メッセージがトランスポートに書き込まれるときに解決され、Claude が処理したときではありません。セッションがチャネルとしてサーバーを読み込んでいない場合、または組織ポリシーがそれをブロックしている場合、イベントはサーバーにエラーが返されることなくサイレントにドロップされます。
+
+配信確認が必要な場合は、サーバーでイベント状態を追跡し、Claude が状態を報告するために呼び出せる[返信ツール](#expose-a-reply-tool)を公開します。
+
+イベントはセッションにキューイングされ、順番に処理されます。Claude がビジーの間に複数の通知が到着した場合、次のターンで一緒に配信され、Claude はそれらをグループとして処理します。独立したイベントストリームを同時に処理するには、別のセッションを実行します。
 
 ## 返信ツールを公開
 
@@ -739,7 +745,9 @@ curl -d "yes <id>" -H "X-Sender: dev" localhost:8788
 
 チャネルをインストール可能で共有可能にするには、[プラグイン](/ja/plugins)でラップして[マーケットプレイス](/ja/plugin-marketplaces)に公開します。ユーザーは `/plugin install` でインストールし、`--channels plugin:<name>@<marketplace>` でセッションごとに有効化します。
 
-独自のマーケットプレイスに公開されたチャネルは、[承認許可リスト](/ja/channels#supported-channels)にないため、実行するには `--dangerously-load-development-channels` が必要です。追加されるようにするには、[公式マーケットプレイスに提出](/ja/plugins#submit-your-plugin-to-the-official-marketplace)してください。チャネルプラグインは承認される前にセキュリティレビューを受けます。Team および Enterprise プランでは、管理者は代わりにプラグインを組織の独自の [`allowedChannelPlugins`](/ja/channels#restrict-which-channel-plugins-can-run) リストに含めることができます。これはデフォルトの Anthropic 許可リストを置き換えます。
+独自のマーケットプレイスに公開されたチャネルは、[承認許可リスト](/ja/channels#supported-channels)にないため、実行するには `--dangerously-load-development-channels` が必要です。デフォルトの許可リストは `claude-plugins-official` のチャネルプラグインで、Anthropic がその裁量で管理しています。[アプリ内送信フォーム](/ja/plugins#submit-your-plugin-to-the-community-marketplace)はプラグインをコミュニティマーケットプレイスに追加しますが、これはチャネル許可リストにはありません。
+
+Anthropic パートナー連絡先と協力している場合は、公式マーケットプレイスリストを調整するために彼らに連絡してください。Team および Enterprise プランでは、管理者は代わりにプラグインを組織の独自の [`allowedChannelPlugins`](/ja/channels#restrict-which-channel-plugins-can-run) リストに含めることができます。これはデフォルトの Anthropic 許可リストを置き換えます。
 
 ## 関連項目
 
