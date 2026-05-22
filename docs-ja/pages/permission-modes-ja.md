@@ -172,9 +172,9 @@ claude --permission-mode plan
 
 自動モードはアカウントがこれらすべての要件を満たす場合にのみ利用可能です。
 
-* **プラン**：Max、Team、Enterprise、または API。Pro では利用できません。
+* **プラン**：すべてのプラン。
 * **管理者**：Team と Enterprise では、管理者がユーザーがオンにできるようにする前に [Claude Code 管理設定](https://claude.ai/admin-settings/claude-code) で有効にする必要があります。管理者は [管理設定](/ja/permissions#managed-settings) で `permissions.disableAutoMode` を `"disable"` に設定することでロックオフすることもできます。
-* **モデル**：Team、Enterprise、API プランで Claude Sonnet 4.6、Opus 4.6、または Opus 4.7。Max プランで Claude Opus 4.7 のみ。Haiku および claude-3 モデルを含む他のモデルはサポートされていません。
+* **モデル**：Claude Sonnet 4.6、Opus 4.6、または Opus 4.7。Sonnet 4.5、Opus 4.5、Haiku、claude-3 モデルを含む古いモデルはサポートされていません。
 * **プロバイダー**：Anthropic API のみ。Bedrock、Vertex、Foundry では利用できません。
 
 Claude Code が自動モードを利用不可と報告する場合、これらの要件のいずれかが満たされていません。これは一時的な停止ではありません。モデルに名前を付けて自動モードが「アクションの安全性を判断できない」と言う別のメッセージは一時的な分類器停止です。[エラーリファレンス](/ja/errors#auto-mode-cannot-determine-the-safety-of-an-action) を参照してください。

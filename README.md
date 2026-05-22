@@ -17,6 +17,299 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-05-22</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/admin-setup-ja.md             |  27 +-
+ docs-ja/pages/auto-mode-config-ja.md        |   2 +-
+ docs-ja/pages/changelog.md                  |  36 +++
+ docs-ja/pages/desktop-ja.md                 |   2 +-
+ docs-ja/pages/devcontainer-ja.md            |   1 +
+ docs-ja/pages/errors-ja.md                  |  23 +-
+ docs-ja/pages/glossary-ja.md                |   2 +-
+ docs-ja/pages/hooks-guide-ja.md             |   6 +-
+ docs-ja/pages/hooks-ja.md                   |  60 +++--
+ docs-ja/pages/mcp-ja.md                     | 228 +----------------
+ docs-ja/pages/permission-modes-ja.md        |   4 +-
+ docs-ja/pages/permissions-ja.md             |  29 +--
+ docs-ja/pages/sandboxing-ja.md              | 376 ++++++++++++++++------------
+ docs-ja/pages/scheduled-tasks-ja.md         |   4 +-
+ docs-ja/pages/security-ja.md                |  11 +-
+ docs-ja/pages/server-managed-settings-ja.md |   2 +-
+ docs-ja/pages/settings-ja.md                |  36 ++-
+ 17 files changed, 379 insertions(+), 470 deletions(-)
+```
+
+**新規追加:**
+
+
+<details>
+<summary>admin-setup-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/admin-setup-ja.md b/docs-ja/pages/admin-setup-ja.md
+index 463883e..0c9936a 100644
+--- a/docs-ja/pages/admin-setup-ja.md
++++ b/docs-ja/pages/admin-setup-ja.md
+@@ -66,17 +66,18 @@ plist と HKLM レジストリの場所は任意のプロバイダーで機能
+ ## 実行する内容を決定する
+ 
+-マネージド設定は、ツール、サンドボックス実行、MCP サーバーとプラグインソースへのアクセスをロックダウンし、実行されるフック を制御できます。各行は、それを駆動する設定キーを持つ制御サーフェスです。
+-
+-| 制御                                                                                     | 機能                                                              | キー設定                                                                         |
+-| :------------------------------------------------------------------------------------- | :-------------------------------------------------------------- | :--------------------------------------------------------------------------- |
+-| [Permission rules](/ja/permissions)                                                    | 特定のツールとコマンドを許可、確認、または拒否する                                       | `permissions.allow`、`permissions.deny`                                       |
+-| [Permission lockdown](/ja/permissions#managed-only-settings)                           | マネージドパーミッションルールのみが適用される。`--dangerously-skip-permissions` を無効化する | `allowManagedPermissionRulesOnly`、`permissions.disableBypassPermissionsMode` |
+-| [Sandboxing](/ja/sandboxing)                                                           | ドメイン許可リスト付きの OS レベルのファイルシステムとネットワーク分離                           | `sandbox.enabled`、`sandbox.network.allowedDomains`                           |
+-| [Managed policy CLAUDE.md](/ja/memory#deploy-organization-wide-claude-md)              | すべてのセッションで読み込まれる組織全体の指示。除外できない                                  | マネージドポリシーパスのファイル                                                             |
+-| [MCP server control](/ja/mcp#managed-mcp-configuration)                                | ユーザーが追加または接続できる MCP サーバーを制限する                                   | `allowedMcpServers`、`deniedMcpServers`、`allowManagedMcpServersOnly`          |
+-| [Plugin marketplace control](/ja/plugin-marketplaces#managed-marketplace-restrictions) | ユーザーが追加およびインストールできるマーケットプレイスソースを制限する                            | `strictKnownMarketplaces`、`blockedMarketplaces`                              |
+-| [Hook restrictions](/ja/settings#hook-configuration)                                   | マネージドフックのみが読み込まれる。HTTP フック URL を制限する                            | `allowManagedHooksOnly`、`allowedHttpHookUrls`                                |
+-| [Disable agent view](/ja/agent-view#how-background-sessions-are-hosted)                | `claude agents`、`--bg`、`/background`、およびオンデマンドスーパーバイザーをオフにする    | `disableAgentView`                                                           |
+-| [Version floor](/ja/settings)                                                          | 自動更新が組織全体の最小値より下にインストールされるのを防ぐ                                  | `minimumVersion`                                                             |
++マネージド設定は、ツール、サンドボックス実行、MCP サーバーとプラグインソースへのアクセスをロックダウンし、実行されるフックを制御できます。各行は、それを駆動する設定キーを持つ制御サーフェスです。
++
++| 制御                                                                                     | 機能                                                                                | キー設定                                                                                                   |
++| :------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------- |
++| [Permission rules](/ja/permissions)                                                    | 特定のツールとコマンドを許可、確認、または拒否する                                                         | `permissions.allow`、`permissions.deny`                                                                 |
++| [Permission lockdown](/ja/permissions#managed-only-settings)                           | マネージドパーミッションルールのみが適用される。`--dangerously-skip-permissions` を無効化する                   | `allowManagedPermissionRulesOnly`、`permissions.disableBypassPermissionsMode`                           |
++| [Sandboxing](/ja/sandboxing)                                                           | ドメイン許可リスト付きの OS レベルのファイルシステムとネットワーク分離                                             | `sandbox.enabled`、`sandbox.network.allowedDomains`                                                     |
++| [Managed policy CLAUDE.md](/ja/memory#deploy-organization-wide-claude-md)              | すべてのセッションで読み込まれる組織全体の指示。除外できない                                                    | マネージドポリシーパスのファイル                                                                                       |
++| [MCP server control](/ja/managed-mcp)                                                  | ユーザーが追加または接続できる MCP サーバーを制限するか、固定セットをデプロイする                                       | `allowedMcpServers`、`deniedMcpServers`、`allowManagedMcpServersOnly`、またはデプロイされた `managed-mcp.json` ファイル |
++| [Plugin marketplace control](/ja/plugin-marketplaces#managed-marketplace-restrictions) | ユーザーが追加およびインストールできるマーケットプレイスソースを制限する                                              | `strictKnownMarketplaces`、`blockedMarketplaces`                                                        |
+```
+
+</details>
+
+<details>
+<summary>auto-mode-config-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/auto-mode-config-ja.md b/docs-ja/pages/auto-mode-config-ja.md
+index 88d9241..5dd6a62 100644
+--- a/docs-ja/pages/auto-mode-config-ja.md
++++ b/docs-ja/pages/auto-mode-config-ja.md
+@@ -10,5 +10,5 @@
+ 
+ <Note>
+-  オートモードは、Anthropic API を通じて Max、Team、Enterprise、API プランで利用可能です。Pro プランでは利用できず、Bedrock、Vertex、Foundry でも利用できません。Claude Code がアカウントでオートモードが利用不可と報告する場合は、[完全な要件](/ja/permission-modes#eliminate-prompts-with-auto-mode)を確認してください。これには、サポートされているモデルと Team および Enterprise プランの管理者有効化も含まれます。
++  オートモードは、Anthropic API を通じてすべてのユーザーが利用できます。Bedrock、Vertex、Foundry では利用できません。Claude Code がアカウントでオートモードが利用不可と報告する場合は、[完全な要件](/ja/permission-modes#eliminate-prompts-with-auto-mode)を確認してください。これには、サポートされているモデルと Team および Enterprise プランの管理者有効化も含まれます。
+ </Note>
+ 
+```
+
+</details>
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index f476a24..7c01af0 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,40 @@
+ # Changelog
+ 
++## 2.1.147
++
++- Pinned background sessions (`Ctrl+T` in `claude agents`) now stay alive when idle, are restarted in place to apply Claude Code updates, and are shed under memory pressure only after non-pinned sessions
++- Renamed `/simplify` to `/code-review`. It now reports correctness bugs at a chosen effort level (e.g., `/code-review high`); pass `--comment` to post findings as inline GitHub PR comments. The old cleanup-and-fix behavior has been removed
++- Improved auto-updater: retries transient network failures, reports specific error categories and OS error codes on failure, and shows the current version when an update fails
++- Improved diff rendering performance for large file edits
++- Prompt history no longer records consecutive duplicate entries — recalling a prompt with arrow-up and submitting it again won't add another copy
++- Fixed enterprise login restrictions (`forceLoginOrgUUID` and `forceLoginMethod` managed-settings) not being enforced against third-party-provider and API-key sessions
++- Fixed `&` in `!` command output displaying as `&amp;`, which broke copy-pasting URLs from commands like `gcloud auth login` on headless machines
++- Fixed unknown slash commands silently doing nothing in headless/SDK mode — they now show an error message
++- Fixed `/help` rendering a broken tab header and showing only one command per page on small terminals when not in fullscreen mode
++- Fixed shell snapshot dropping user functions whose names start with a single underscore, which broke aliases referencing them
++- Fixed plugin agents that declare multiple `Agent(...)` types in `tools:` frontmatter dropping all but the last entry
++- Fixed hook `if` conditions like `PowerShell(git push*)` never matching — only `PowerShell(*)` worked
++- Fixed PowerShell tool dropping output for commands that rely on the default formatter
++- Fixed: on Windows, "Yes, and don't ask again" for a PowerShell script invocation now writes a rule that actually matches on subsequent runs
++- Fixed PowerShell tool failing on Windows with exit code 1 when `pwsh` is installed via winget or the Microsoft Store
++- Fixed `/effort` opening with the slider on the wrong level — it now starts at your current effort
++- Fixed paginating MCP servers dropping resources, templates, and prompts past page 1
++- Fixed full-screen strobing in attached background sessions on Windows Terminal while Claude is streaming
++- Fixed: on Windows, removing a background-job worktree no longer follows NTFS junctions into the main repo
++- Fixed `/background` refusing sessions whose only typed input was a skill or custom slash command
++- Fixed auto mode suppressing `AskUserQuestion` when the user or a skill explicitly relies on it; the auto-mode classifier now sees the user's answers as intent signal
+```
+
+</details>
+
+<details>
+<summary>desktop-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/desktop-ja.md b/docs-ja/pages/desktop-ja.md
+index 6e08268..e605625 100644
+--- a/docs-ja/pages/desktop-ja.md
++++ b/docs-ja/pages/desktop-ja.md
+@@ -79,5 +79,5 @@ Claude に実行させたいことを入力して**Enter**キーを押して送
+ <span id="auto-mode-availability" />
+ 
+-Auto mode は Max、Team、Enterprise、および API プランで利用可能な研究プレビューです。Pro プランまたはサードパーティプロバイダーでは利用できません。Team、Enterprise、および API プランでは Claude Sonnet 4.6、Opus 4.6、または Opus 4.7 が必要です。Max プランでは Claude Opus 4.7 が必要です。
++Auto mode は Anthropic API のすべてのユーザーが利用できる研究プレビューです。サードパーティプロバイダーでは利用できません。Claude Sonnet 4.6、Opus 4.6、または Opus 4.7 が必要です。
+ 
+ <Tip title="ベストプラクティス">
+```
+
+</details>
+
+<details>
+<summary>devcontainer-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/devcontainer-ja.md b/docs-ja/pages/devcontainer-ja.md
+index bbeeb37..2f9c6e5 100644
+--- a/docs-ja/pages/devcontainer-ja.md
++++ b/docs-ja/pages/devcontainer-ja.md
+@@ -191,4 +191,5 @@ Claude Code が開発コンテナで実行されたら、以下のページは
+ * [テレメトリサービスとオプトアウト](/ja/data-usage#telemetry-services)：Claude Code がデフォルトで送信するもの、およびそれを無効にする環境変数
+ * [`.claude` ディレクトリを探索する](/ja/claude-directory)：ボリュームマウントが保持するもの（認証情報、設定、セッション履歴を含む）
++* [サンドボックス環境](/ja/sandbox-environments)：開発コンテナと組み込み Bash サンドボックス、カスタムコンテナ、VM を比較します
+ * [セキュリティモデル](/ja/security)：Claude Code の権限システム、サンドボックス、プロンプトインジェクション保護がどのように組み合わさるか
+ * [権限モード](/ja/permission-modes)：プランモードから自動モードからバイパスまでの完全な範囲、および各モードを使用する場合
+```
+
+</details>
+
+<details>
+<summary>errors-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/errors-ja.md b/docs-ja/pages/errors-ja.md
+index ba9250c..25db665 100644
+--- a/docs-ja/pages/errors-ja.md
++++ b/docs-ja/pages/errors-ja.md
+@@ -21,5 +21,5 @@
+ | メッセージ                                                                                         | セクション                                                                                         |
+ | :-------------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------- |
+-| `API Error: 500 ... Internal server error`                                                    | [サーバーエラー](#api-error-500-internal-server-error)                                               |
++| `API Error: 500 Internal server error`                                                        | [サーバーエラー](#api-error-500-internal-server-error)                                               |
+ | `API Error: Repeated 529 Overloaded errors`                                                   | [サーバーエラー](#api-error-repeated-529-overloaded-errors)                                          |
+ | `Request timed out`                                                                           | [サーバーエラー](#request-timed-out)、またはメッセージがインターネット接続に言及している場合は[ネットワーク](#unable-to-connect-to-api) |
+@@ -34,4 +34,5 @@
+ | `Invalid API key`                                                                             | [認証](#invalid-api-key)                                                                        |
+ | `This organization has been disabled`                                                         | [認証](#this-organization-has-been-disabled)                                                    |
++| `Your organization has disabled Claude subscription access`                                   | [認証](#your-organization-has-disabled-claude-subscription-access)                              |
+ | `Routines are disabled by your organization's policy`                                         | [認証](#routines-are-disabled-by-your-organizations-policy)                                     |
+ | `OAuth token revoked` / `OAuth token has expired`                                             | [認証](#oauth-token-revoked-or-expired)                                                         |
+@@ -67,19 +68,21 @@ Claude Code は、エラーを表示する前に一時的な障害をリトラ
+ ## サーバーエラー
+ 
+-これらのエラーは、アカウントまたはリクエストではなく、Anthropic インフラストラクチャから発生します。
++これらのエラーは、アカウントまたはリクエストではなく、推論プロバイダーから発生します。Anthropic API では Anthropic インフラストラクチャを意味します。Bedrock、Vertex AI、Foundry、またはカスタムゲートウェイでは、そのプロバイダーのインフラストラクチャを意味します。
+ 
+ ### API Error: 500 Internal server error
+ 
+-Claude Code は、5xx ステータスの生の API レスポンスボディを表示します。以下の例は 500 レスポンスを示しています。
++Claude Code は、5xx レスポンスに対してステータスコードと API のエラーメッセージを表示します。以下の例は Anthropic API での 500 レスポンスを示しています：
+ 
+ ```text theme={null}
+-API Error: 500 {"type":"error","error":{"type":"api_error","message":"Internal server error"}} · check status.claude.com
+```
+
+</details>
+
+<details>
+<summary>glossary-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/glossary-ja.md b/docs-ja/pages/glossary-ja.md
+index 40d7b70..6bb76d8 100644
+--- a/docs-ja/pages/glossary-ja.md
++++ b/docs-ja/pages/glossary-ja.md
+@@ -43,5 +43,5 @@ Claude が自分自身のために書いたメモ。あなたの修正と設定
+ ### Auto mode
+ 
+-[permission mode](#permission-mode) の一種。承認プロンプトを表示する代わりに、別の分類器モデルがバックグラウンドで各アクションをレビューします。分類器はスコープエスカレーション、信頼されていないインフラストラクチャ、および [prompt injection](#prompt-injection) をブロックします。ツール結果を見ることはないため、注入された指示がその決定に影響を与えることはできません。Auto mode は Max、Team、Enterprise、API プランで利用可能な研究プレビューです。
++[permission mode](#permission-mode) の一種。承認プロンプトを表示する代わりに、別の分類器モデルがバックグラウンドで各アクションをレビューします。分類器はスコープエスカレーション、信頼されていないインフラストラクチャ、および [prompt injection](#prompt-injection) をブロックします。ツール結果を見ることはないため、注入された指示がその決定に影響を与えることはできません。Auto mode は Anthropic API のすべてのユーザーが利用可能な研究プレビューです。
+ 
+ 詳細情報: [Eliminate prompts with auto mode](/ja/permission-modes#eliminate-prompts-with-auto-mode)
+```
+
+</details>
+
+<details>
+<summary>hooks-guide-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/hooks-guide-ja.md b/docs-ja/pages/hooks-guide-ja.md
+index d954ddd..eef1196 100644
+--- a/docs-ja/pages/hooks-guide-ja.md
++++ b/docs-ja/pages/hooks-guide-ja.md
+@@ -546,10 +546,10 @@ if echo "$COMMAND" | grep -q "drop table"; then
+ fi
+ 
+-exit 0  # exit 0 = 続行させる
++exit 0  # exit 0 = 決定なし。通常の許可フローが適用されます
+ ```
+ 
+ 終了コードは次に何が起こるかを決定します：
+ 
+-* **終了 0**：アクションが続行されます。`UserPromptSubmit`、`UserPromptExpansion`、および `SessionStart` hooks の場合、stdout に書き込むすべてのものが Claude のコンテキストに追加されます。
++* **終了 0**：hook は異議を報告せず、アクションは通常どおり進行します。`PreToolUse` hook の場合、これはツール呼び出しを承認しません：通常の [許可フロー](/ja/permissions) が引き続き適用されます。`UserPromptSubmit`、`UserPromptExpansion`、および `SessionStart` hooks の場合、stdout に書き込むすべてのものが Claude のコンテキストに追加されます。
+ * **終了 2**：アクションがブロックされます。stderr に理由を書き込み、Claude はそれをフィードバックとして受け取るため、調整できます。一部のイベントはブロックできません：`SessionStart`、`Setup`、`Notification` などの場合、終了 2 は stderr をユーザーに表示し、実行は続行されます。[イベントごとの終了コード 2 の動作](/ja/hooks#exit-code-2-behavior-per-event) で完全なリストを参照してください。
+ * **その他の終了コード**：アクションが続行されます。トランスクリプトは `<hook name> hook error` 通知を表示し、その後 stderr の最初の行が続きます。完全な stderr は [デバッグログ](/ja/hooks#debug-hooks) に記録されます。
+@@ -557,5 +557,5 @@ exit 0  # exit 0 = 続行させる
+ #### 構造化 JSON 出力
+ 
+-終了コードは 2 つのオプションを提供します：許可またはブロック。より多くの制御のために、終了 0 して stdout に JSON オブジェクトを出力します。
++終了コードはブロックするか沈黙するかのみを許可します。より多くの制御のために、終了 0 して stdout に JSON オブジェクトを出力します。
+ 
+ <Note>
+```
+
+</details>
+
+<details>
+<summary>hooks-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/hooks-ja.md b/docs-ja/pages/hooks-ja.md
+index fd66b90..87e96a6 100644
+--- a/docs-ja/pages/hooks-ja.md
++++ b/docs-ja/pages/hooks-ja.md
+@@ -97,5 +97,5 @@ if echo "$COMMAND" | grep -q 'rm -rf'; then
+   }'
+ else
+-  exit 0  # allow the command
++  exit 0  # no decision; normal permission flow applies
+ fi
+ ```
+@@ -137,5 +137,5 @@ fi
+     ```
+ 
+-    コマンドが安全だった場合（`rm file.txt` など）、スクリプトは代わりに `exit 0` に到達し、これは Claude Code にツール呼び出しを許可するよう指示します。
++    コマンドが安全な `rm` バリアント（`rm file.txt` など）だった場合、スクリプトは代わりに `exit 0` に到達します。出力なしの終了コード 0 は、フックが報告する決定がないことを意味するため、ツール呼び出しは通常の[権限フロー](/ja/permissions)を通じて続行されます。フックは呼び出しを拒否できますが、沈黙を保つことは承認を意味しません。
+   </Step>
+ 
+@@ -733,6 +733,6 @@ Claude を完全に停止するには、イベント タイプに関係なく。
+ input=$(cat)
+ title="Claude Code'
+-body=$(jq -r '.message // 'Needs your attention'' <<<'$input')
+-seq=$(printf '\033]777;notify;%s;%s\007' '$title" "$body")
++body=$(jq -r '.message // "Needs your attention"' <<<"$input")
++seq=$(printf '\033]777;notify;%s;%s\007' "$title" "$body")
+ jq -nc --arg seq "$seq" '{terminalSequence: $seq}'
+ ```
+@@ -783,15 +783,16 @@ Claude が現在の環境の状態または実行されたばかりの操作に
+ すべてのイベントが JSON を通じたブロッキングまたは動作制御をサポートしているわけではありません。サポートするイベントは、その決定を表現するために異なるフィールド セットを使用します。フックを書く前に、このテーブルをクイック リファレンスとして使用してください。
+ 
+```
+
+</details>
+
+*...以降省略*
+
+</details>
+
+
+<details>
 <summary>2026-05-21</summary>
 
 **変更ファイル:**
@@ -2478,293 +2771,6 @@ index d9c5e3d..4779629 100644
 +* 組織レベルのルーチンを必要としない 1 回限りのスケジュール済み作業については、[スケジュール済みタスク](/ja/scheduled-tasks)を参照してください
 +
  ### OAuth token revoked or expired
- 
-```
-
-</details>
-
-<details>
-<summary>interactive-mode-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/interactive-mode-ja.md b/docs-ja/pages/interactive-mode-ja.md
-index cc0d611..42cfa91 100644
---- a/docs-ja/pages/interactive-mode-ja.md
-+++ b/docs-ja/pages/interactive-mode-ja.md
-@@ -290,5 +290,5 @@ Bash モード：
- Claude が応答した後、マルチパートリクエストのフォローアップステップや、ワークフローの自然な継続など、会話履歴に基づいて提案が表示され続けます。
- 
--* **Tab** または **Right arrow** を押して提案を受け入れるか、**Enter** を押して受け入れて送信
-+* **Tab** または **Right arrow** を押して提案をプロンプト入力に配置してから、**Enter** を押して送信
- * 入力を開始して却下
- 
-```
-
-</details>
-
-<details>
-<summary>mcp-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/mcp-ja.md b/docs-ja/pages/mcp-ja.md
-index 90382ce..2271b72 100644
---- a/docs-ja/pages/mcp-ja.md
-+++ b/docs-ja/pages/mcp-ja.md
-@@ -264,4 +264,6 @@ claude mcp add --transport http secure-api https://api.example.com/mcp \
- ```
- 
-+MCP サーバーを `.mcp.json`、`~/.claude.json`、または `claude mcp add-json` で JSON を使用して設定する場合、`type` フィールドは `http` のエイリアスとして `streamable-http` を受け入れます。MCP 仕様ではこのトランスポートに `streamable-http` という名前を使用しているため、サーバードキュメントからコピーされた設定は変更なしで機能します。
-+
- ### オプション 2：リモート SSE サーバーを追加する
- 
-```
-
-</details>
-
-<details>
-<summary>permissions-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/permissions-ja.md b/docs-ja/pages/permissions-ja.md
-index 8ded97f..b4d1fd9 100644
---- a/docs-ja/pages/permissions-ja.md
-+++ b/docs-ja/pages/permissions-ja.md
-@@ -211,4 +211,11 @@ Windows では、パスはマッチング前に POSIX 形式に正規化され
- * `Read(src/**)`: `<current-directory>/src/` から読み取ります
- 
-+ルールはそのアンカーの下のファイルのみをマッチさせるため、アンカーは deny ルールがどこまで到達するかを決定します。ベアファイル名は gitignore セマンティクスに従い、任意の深さでマッチするため、`Read(.env)` と `Read(**/.env)` は同等です。
-+
-+| Deny ルール                         | ブロック                    | ブロックしない                       |
-+| -------------------------------- | ----------------------- | ----------------------------- |
-+| `Read(.env)` または `Read(**/.env)` | 現在のディレクトリ以下の任意の `.env`  | 親ディレクトリまたは別のプロジェクト内の `.env`   |
-+| `Read(//**/.env)`                | ファイルシステム上の任意の場所の `.env` | なし。ルールはファイルシステムルートにアンカーされています |
-+
- <Note>
-   gitignore パターンでは、`*` は単一のディレクトリ内のファイルをマッチさせ、`**` はディレクトリ全体で再帰的にマッチさせます。すべてのファイルアクセスを許可するには、括弧なしでツール名を使用します。`Read`、`Edit`、または `Write`。
-```
-
-</details>
-
-<details>
-<summary>plugins-reference-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/plugins-reference-ja.md b/docs-ja/pages/plugins-reference-ja.md
-index e0364d1..e278347 100644
---- a/docs-ja/pages/plugins-reference-ja.md
-+++ b/docs-ja/pages/plugins-reference-ja.md
-@@ -424,5 +424,5 @@ monitors をインラインで宣言するには、`plugin.json` の `experiment
- | フィールド                   | 型                     | 説明                                                                                                                  | 例                                                    |
- | :---------------------- | :-------------------- | :------------------------------------------------------------------------------------------------------------------ | :--------------------------------------------------- |
--| `skills`                | string\|array         | `<name>/SKILL.md` を含むカスタム skill ディレクトリ（デフォルト `skills/` を置き換え）                                                       | `"./custom/skills/"`                                 |
-+| `skills`                | string\|array         | `<name>/SKILL.md` を含むカスタム skill ディレクトリ（デフォルト `skills/` に加えて）                                                        | `"./custom/skills/"`                                 |
- | `commands`              | string\|array         | カスタムフラット `.md` skill ファイルまたはディレクトリ（デフォルト `commands/` を置き換え）                                                         | `"./custom/cmd.md"` または `["./cmd1.md"]`              |
- | `agents`                | string\|array         | カスタムエージェントファイル（デフォルト `agents/` を置き換え）                                                                               | `"./custom/agents/reviewer.md"`                      |
-@@ -511,10 +511,15 @@ monitors をインラインで宣言するには、`plugin.json` の `experiment
- ### パス動作ルール
- 
--`skills`、`commands`、`agents`、`outputStyles`、`experimental.themes`、`experimental.monitors` の場合、カスタムパスはデフォルトを置き換えます。マニフェストが `skills` を指定する場合、デフォルト `skills/` ディレクトリはスキャンされません。`experimental.monitors` を指定する場合、デフォルト `monitors/monitors.json` は読み込まれません。[Hooks](#hooks)、[MCP servers](#mcp-servers)、[LSP servers](#lsp-servers)は複数のソースを処理するための異なるセマンティクスを持ちます。
-+カスタムパスがプラグインのデフォルトディレクトリを置き換えるか拡張するかは、フィールドによって異なります:
-+
-+* **デフォルトを置き換える**: `commands`、`agents`、`outputStyles`、`experimental.themes`、`experimental.monitors`。たとえば、マニフェストが `commands` を指定する場合、デフォルト `commands/` ディレクトリはスキャンされません。デフォルトを保持してさらに追加するには、明示的にリストします: `"commands": ["./commands/", "./extras/"]`
-+* **デフォルトに追加**: `skills`。デフォルト `skills/` ディレクトリは常にスキャンされ、`skills` にリストされているディレクトリはそれと一緒に読み込まれます
-+* **独自のマージルール**: [hooks](#hooks)、[MCP servers](#mcp-servers)、[LSP servers](#lsp-servers)。各セクションで複数のソースがどのように結合されるかを参照してください
-+
-+すべてのパスフィールドについて:
- 
- * すべてのパスはプラグインルートに相対的で、`./` で始まる必要があります
- * カスタムパスからのコンポーネントは同じ命名と名前空間ルールを使用します
- * 複数のパスを配列として指定できます
--* skills、commands、agents、output styles のデフォルトディレクトリを保持してさらにパスを追加するには、配列にデフォルトを含めます: `"skills": ["./skills/", "./extras/"]`
- * skill パスが `SKILL.md` を直接含むディレクトリを指す場合（例: `"skills": ["./"]` がプラグインルートを指す）、`SKILL.md` の frontmatter `name` フィールドが skill の呼び出し名を決定します。これはインストールディレクトリに関係なく安定した名前を提供します。frontmatter に `name` が設定されていない場合、ディレクトリ basename がフォールバックとして使用されます。
- 
-```
-
-</details>
-
-*...以降省略*
-
-</details>
-
-
-<details>
-<summary>2026-05-09</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/agent-teams-ja.md       |   2 +-
- docs-ja/pages/changelog.md            |  59 ++++
- docs-ja/pages/cli-reference-ja.md     |   4 +-
- docs-ja/pages/commands-ja.md          |  22 +-
- docs-ja/pages/desktop-ja.md           |  17 +
- docs-ja/pages/env-vars-ja.md          | 452 ++++++++++++------------
- docs-ja/pages/features-overview-ja.md |   2 +-
- docs-ja/pages/hooks-ja.md             |  21 +-
- docs-ja/pages/overview-ja.md          | 636 +--------------------------------
- docs-ja/pages/plugins-ja.md           |  10 +-
- docs-ja/pages/quickstart-ja.md        | 639 +---------------------------------
- docs-ja/pages/settings-ja.md          |  14 +-
- docs-ja/pages/setup-ja.md             |   2 +
- docs-ja/pages/sub-agents-ja.md        |   6 +-
- docs-ja/pages/terminal-config-ja.md   |   2 +-
- docs-ja/pages/vs-code-ja.md           |   2 +-
- 16 files changed, 367 insertions(+), 1523 deletions(-)
-```
-
-<details>
-<summary>agent-teams-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/agent-teams-ja.md b/docs-ja/pages/agent-teams-ja.md
-index f457bb0..691d350 100644
---- a/docs-ja/pages/agent-teams-ja.md
-+++ b/docs-ja/pages/agent-teams-ja.md
-@@ -421,4 +421,4 @@ tmux kill-session -t <session-name>
- 
- * **軽量委任**：[subagents](/ja/sub-agents) はセッション内で調査または検証用のヘルパーエージェントを生成し、エージェント間調整が必要ないタスクに適しています
--* **手動並列セッション**：[Git worktrees](/ja/common-workflows#run-parallel-claude-code-sessions-with-git-worktrees) を使用すると、自動チーム調整なしで複数の Claude Code セッションを自分で実行できます
-+* **手動並列セッション**：[Git worktrees](/ja/worktrees) を使用すると、自動チーム調整なしで複数の Claude Code セッションを自分で実行できます
- * **アプローチを比較**：[subagent とエージェントチーム](/ja/features-overview#compare-similar-features)の比較を参照して、並べて比較してください
-```
-
-</details>
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index 32b662b..60efa10 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,63 @@
- # Changelog
- 
-+## 2.1.137
-+
-+- [VSCode] Fixed extension failing to activate on Windows
-+
-+## 2.1.136
-+
-+- Added `CLAUDE_CODE_ENABLE_FEEDBACK_SURVEY_FOR_OTEL` to re-enable the session quality survey for enterprises capturing responses through OpenTelemetry
-+- Added `settings.autoMode.hard_deny` for auto mode classifier rules that block unconditionally regardless of user intent or allow exceptions
-+- Fixed MCP servers configured in `.mcp.json`, plugins, and claude.ai connectors silently disappearing after `/clear` in the VS Code extension, JetBrains plugin, and Agent SDK
-+- Fixed a rare login loop where a concurrent credential write could overwrite a freshly-rotated OAuth token and force re-login
-+- Fixed MCP OAuth refresh tokens being lost when multiple servers refresh concurrently — users with several remote MCP servers should no longer need daily re-authentication
-+- Fixed an API error (400) when extended thinking emitted a redacted thinking block after a tool call
-+- Fixed `--resume` / `--continue` not finding sessions when the project path contains underscores
-+- Fixed plan mode not blocking file writes when a matching `Edit(...)` allow rule exists
-+- WSL2: image paste from Windows clipboard now works via a PowerShell fallback when xclip/wl-paste cannot read image data
-+- Fixed plugin `Stop`/`UserPromptSubmit` hooks failing when cache cleanup deletes a version still in use by a running session
-+- Improved visual consistency across slash command dialogs: standardized footer hints, dialog spacing, and arrow-key styling, and the dialog frame now appears immediately during loading instead of popping in after
-+- Fixed colors appearing at wrong positions in bash command output and markdown code blocks
-+- Fixed ReasonML diffs rendering corrupted "undefined" text artifacts at word-diff boundaries
-+- Fixed worktree exit dialog warning about uncommitted files in the wrong directory after worktree removal
-+- Fixed `@` file picker not matching files created mid-session in small non-git directories
-+- Fixed `@`-mention file picker not finding files in directories with more than 100 entries
-+- Fixed failed tool calls not being click-to-expand in fullscreen mode when their output was truncated
-```
-
-</details>
-
-<details>
-<summary>cli-reference-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/cli-reference-ja.md b/docs-ja/pages/cli-reference-ja.md
-index a7190a9..c81bcc0 100644
---- a/docs-ja/pages/cli-reference-ja.md
-+++ b/docs-ja/pages/cli-reference-ja.md
-@@ -85,5 +85,5 @@
- | `--permission-prompt-tool`                      | 非インタラクティブモードで権限プロンプトを処理する MCP ツールを指定します                                                                                                                                                                                                                                                                                     | `claude -p --permission-prompt-tool mcp_auth_tool "query"`                                         |
- | `--plugin-dir`                                  | このセッションのみのプラグインをディレクトリまたは `.zip` アーカイブから読み込みます。各フラグは 1 つのパスを取ります。複数のプラグインの場合はフラグを繰り返します：`--plugin-dir A --plugin-dir B.zip`                                                                                                                                                                                                 | `claude --plugin-dir ./my-plugin`                                                                  |
--| `--plugin-url`                                  | このセッションのみのプラグイン `.zip` アーカイブを URL から取得します。各フラグは 1 つの URL を取ります。複数のプラグインの場合はフラグを繰り返します                                                                                                                                                                                                                                       | `claude --plugin-url https://example.com/plugin.zip`                                               |
-+| `--plugin-url`                                  | このセッションのみのプラグイン `.zip` アーカイブを URL から取得します。複数のプラグインの場合はフラグを繰り返すか、スペース区切りの URL を単一の引用符で囲まれた値で渡します                                                                                                                                                                                                                             | `claude --plugin-url https://example.com/plugin.zip`                                               |
- | `--print`, `-p`                                 | インタラクティブモードなしで応答を出力します（プログラムによる使用の詳細については [Agent SDK ドキュメント](/ja/agent-sdk/overview) を参照）                                                                                                                                                                                                                                   | `claude -p "query"`                                                                                |
- | `--remote`                                      | 提供されたタスク説明で claude.ai に新しい [Web セッション](/ja/claude-code-on-the-web) を作成します                                                                                                                                                                                                                                                   | `claude --remote "Fix the login bug"`                                                              |
-@@ -104,5 +104,5 @@
- | `--verbose`                                     | 詳細ログを有効にし、ターンごとの完全な出力を表示します。このセッションの [`viewMode`](/ja/settings#available-settings) 設定をオーバーライドします                                                                                                                                                                                                                            | `claude --verbose`                                                                                 |
- | `--version`, `-v`                               | バージョン番号を出力します                                                                                                                                                                                                                                                                                                               | `claude -v`                                                                                        |
--| `--worktree`, `-w`                              | Claude を `<repo>/.claude/worktrees/<name>` の分離された [git worktree](/ja/worktrees) で開始します。名前が指定されていない場合は、自動生成されます                                                                                                                                                                                                              | `claude -w feature-auth`                                                                           |
-+| `--worktree`, `-w`                              | Claude を `<repo>/.claude/worktrees/<name>` の分離された [git worktree](/ja/worktrees) で開始します。名前が指定されていない場合は、自動生成されます。`#<number>` または GitHub プルリクエスト URL を渡して、`origin` からその PR をフェッチし、worktree をそこからブランチします                                                                                                                        | `claude -w feature-auth`                                                                           |
- 
- ### システムプロンプトフラグ
-```
-
-</details>
-
-<details>
-<summary>commands-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/commands-ja.md b/docs-ja/pages/commands-ja.md
-index 98542ab..e218299 100644
---- a/docs-ja/pages/commands-ja.md
-+++ b/docs-ja/pages/commands-ja.md
-@@ -13,10 +13,28 @@
- コマンドはメッセージの開始時にのみ認識されます。コマンド名の後に続くテキストは引数として渡されます。
- 
--以下の表は Claude Code に含まれるすべてのコマンドをリストしています。**[スキル](/ja/skills#bundled-skills)** とマークされたエントリはバンドルされたスキルです。これらは自分で作成するスキルと同じメカニズムを使用します。Claude に渡されるプロンプトであり、Claude は関連する場合に自動的に呼び出すこともできます。その他はすべて、CLI にコード化された動作を持つ組み込みコマンドです。独自のコマンドを追加するには、[スキル](/ja/skills)を参照してください。
-+## 典型的なワークフロー全体でのコマンド
-+
-+ほとんどのコマンドはセッション内の特定の時点で有用です。プロジェクトのセットアップから変更のリリースまでです。
-+
-+**リポジトリでの最初のセッション。** `/init` を実行してスターター `CLAUDE.md` を生成し、その後 `/memory` を実行して改善します。`/mcp` と `/agents` を使用してプロジェクトが必要とするサーバーまたはサブエージェントをセットアップし、`/permissions` を使用して必要な承認ルールを設定します。
-+
-+**タスク中。** `/plan` は大きな変更の前に Plan Mode に切り替えます。`/model` と `/effort` は使用している推論量を調整します。会話が長くなったら、`/context` はウィンドウがどこに向かっているかを表示し、`/compact` はそれを要約します。`/btw` を使用して、履歴を膨らませるべきではない素早い脇道を作成します。
-+
-+**リリース前。** `/diff` は変更内容を表示し、`/simplify` は最近のファイルをレビューして品質と効率の修正を適用し、`/review` または `/security-review` はより深い読み取り専用パスを提供します。
- 
--すべてのコマンドがすべてのユーザーに表示されるわけではありません。可用性はプラットフォーム、プラン、環境によって異なります。たとえば、`/desktop` は macOS と Windows にのみ表示され、`/upgrade` は Pro プランと Max プランにのみ表示されます。
-+**セッション間。** `/clear` は新しいタスクで新しく開始しながらプロジェクトメモリを保持します。`/resume` と `/branch` を使用して、以前の会話に戻るか、フォークできます。`/teleport` はウェブセッションをこのターミナルに引き込み、`/remote-control` を使用してこのローカルセッションを別のデバイスから続行できます。
-+
-+**何か問題がある場合。** `/rewind` はコードと会話をチェックポイントに巻き戻します。`/doctor` と `/debug` はインストールとランタイムの問題を診断し、`/feedback` はセッションコンテキストが添付されたバグを報告します。
-+
-+## すべてのコマンド
-+
-+以下の表は Claude Code に含まれるすべてのコマンドをリストしています。**[スキル](/ja/skills#bundled-skills)** とマークされたエントリはバンドルされたスキルです。これらは自分で作成するスキルと同じメカニズムを使用します。Claude に渡されるプロンプトであり、Claude は関連する場合に自動的に呼び出すこともできます。その他はすべて、CLI にコード化された動作を持つ組み込みコマンドです。独自のコマンドを追加するには、[スキル](/ja/skills)を参照してください。
- 
- 以下の表では、`<arg>` は必須引数を示し、`[arg]` はオプション引数を示します。
- 
-+<Note>
-```
-
-</details>
-
-<details>
-<summary>desktop-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/desktop-ja.md b/docs-ja/pages/desktop-ja.md
-index 24cc374..a5ebd8a 100644
---- a/docs-ja/pages/desktop-ja.md
-+++ b/docs-ja/pages/desktop-ja.md
-@@ -565,4 +565,20 @@ SSH 接続を追加するには、セッションを開始する前に環境ド
- 各エントリには `id`、`name`、および `sshHost` が必要です。`sshPort`、`sshIdentityFile`、および `startDirectory` フィールドはオプションです。ユーザーは、ダイアログを通じて追加された接続が保存される独自の `~/.claude/settings.json` に `sshConfigs` を追加することもできます。
- 
-+#### ユーザーが接続できる SSH ホストを制限する
-+
-+管理者は、[管理設定](/ja/settings#settings-precedence)ファイルに `sshHostAllowlist` を追加することで、Desktop の SSH セッションを承認されたホストのセットに制限できます。設定されると、ユーザーは解決されたホスト名がパターンの 1 つと一致するホストにのみ接続できます。SSH セッションを完全に無効にするには、空の配列に設定します。
-+
-+次の例は、`devboxes.example.com` の下のすべてのホストと、単一の名前付きバスティオンホストへの接続を許可しています：
-+
-+```json theme={null}
-+{
-+  "sshHostAllowlist": ["*.devboxes.example.com", "bastion.example.com"]
-+}
-+```
-+
-+パターンは大文字と小文字を区別しません。`*` はすべてのホストと一致し、`*.example.com` は `example.com` とすべてのサブドメインと一致します。その他はすべて完全一致です。チェックは `ssh -G` を経由した `~/.ssh/config` 解決後のホスト名に対して実行されるため、`Host` エイリアスと `ProxyCommand`/`ProxyJump` エントリは、解決された `HostName` が一致する限り許可されます。
-+
-+`sshHostAllowlist` は管理設定からのみ読み取られます。ユーザーまたはプロジェクト設定の値は無視されます。Claude Desktop アプリのみがこの設定を尊重します。Claude Code CLI と IDE 拡張機能はこれを読み取らず、Bash ツールを通じて実行される `ssh` コマンドを制限しません。これは Desktop アプリが接続するホストを管理し、ネットワーク出力ではないため、ハード境界が必要な場合は組織のネットワークまたはゼロトラストコントロールと組み合わせてください。
-+
- ## エンタープライズ設定
- 
-@@ -588,4 +604,5 @@ Team または Enterprise プランの組織は、管理コンソールコント
- | `autoMode`                                 | 組織全体で auto mode 分類器が信頼およびブロックするものをカスタマイズします。[auto mode を設定する](/ja/auto-mode-config)を参照してください。                                                       |
- | `sshConfigs`                               | 環境ドロップダウンに表示される[SSH 接続](#pre-configure-ssh-connections-for-your-team)を事前設定します。ユーザーは管理接続を編集または削除できません。                                               |
-+| `sshHostAllowlist`                         | [SSH セッション](#restrict-which-ssh-hosts-users-can-connect-to)を、解決されたホスト名がこれらのパターンのいずれかと一致するホストに制限します。空の配列は SSH セッションを無効にします。管理設定からのみ読み取られます。          |
  
 ```
 
