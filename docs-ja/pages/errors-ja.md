@@ -44,6 +44,7 @@
 | `Error during compaction: Conversation too long`                                              | [リクエストエラー](#error-during-compaction-conversation-too-long)                                    |
 | `Request too large`                                                                           | [リクエストエラー](#request-too-large)                                                                |
 | `Image was too large`                                                                         | [リクエストエラー](#image-was-too-large)                                                              |
+| `Unable to resize image`                                                                      | [リクエストエラー](#unable-to-resize-image)                                                           |
 | `PDF too large` / `PDF is password protected`                                                 | [リクエストエラー](#pdf-errors)                                                                       |
 | `Extra inputs are not permitted`                                                              | [リクエストエラー](#extra-inputs-are-not-permitted)                                                   |
 | `There's an issue with the selected model`                                                    | [リクエストエラー](#theres-an-issue-with-the-selected-model)                                          |
@@ -486,6 +487,24 @@ API Error: 400 ... image dimensions exceed max allowed size
 * Esc を 2 回押して、画像が追加されたターンを過ぎて戻ってください
 * 貼り付ける前に画像をリサイズしてください。API は、単一の画像の場合は最長辺で最大 8000 ピクセル、またはコンテキストに多くの画像がある場合は 2000 ピクセルの画像を受け入れます。
 * 全画面ではなく、関連する領域のより厳密なスクリーンショットを撮ってください
+
+### Unable to resize image
+
+Claude Code は、API に送信する前に添付された画像をダウンスケールできませんでした。
+
+```text theme={null}
+Unable to resize image — image processing is unavailable and dimensions could not be read from the file header. Please convert the image to PNG, JPEG, GIF, or WebP.
+Unable to resize image — dimensions exceed the 2000x2000px limit and image processing failed. Please resize the image to reduce its pixel dimensions.
+Unable to resize image (… raw, … base64). The image exceeds the … API limit and compression failed. Please resize the image manually or use a smaller image.
+Unable to resize image — could not verify image dimensions are within the 2000x2000px API limit.
+```
+
+Claude Code は通常、大きな画像を自動的にリサイズします。これらのエラーは、ネイティブ画像プロセッサーがロードに失敗したか、エラーを返したため、画像を API 制限内に収まるようにリサイズできなかったことを意味します。
+
+**対応方法：**
+
+* メッセージが画像の変換を求めている場合は、PNG、JPEG、GIF、または WebP に変換して、再度添付してください。Claude Code はこれらの形式の寸法を画像プロセッサーなしで検証できます。
+* メッセージが寸法またはサイズ制限を報告している場合は、その制限以下に画像をリサイズまたは再圧縮してから添付してください。
 
 ### PDF errors
 
