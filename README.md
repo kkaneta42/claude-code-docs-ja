@@ -17,6 +17,40 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-05-24</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md | 4 ++++
+ 1 file changed, 4 insertions(+)
+```
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index 1f55984..20cadc6 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,8 @@
+ # Changelog
+ 
++## 2.1.150
++
++- Internal infrastructure improvements (no user-facing changes)
++
+ ## 2.1.149
+ 
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-05-23</summary>
 
 **変更ファイル:**
@@ -2714,56 +2748,5 @@ index 26283e8..0115bb6 100644
 
 </details>
 
-
-<details>
-<summary>2026-05-11</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/errors-ja.md      | 34 +++++++++++++++++++++++++++++++---
- docs-ja/pages/hooks-guide-ja.md | 34 ++++++++++++++++++++++++++++++++--
- docs-ja/pages/settings-ja.md    |  2 ++
- docs-ja/pages/skills-ja.md      |  4 ++--
- 4 files changed, 67 insertions(+), 7 deletions(-)
-```
-
-<details>
-<summary>errors-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/errors-ja.md b/docs-ja/pages/errors-ja.md
-index 4779629..414f4be 100644
---- a/docs-ja/pages/errors-ja.md
-+++ b/docs-ja/pages/errors-ja.md
-@@ -25,4 +25,6 @@
- | `Request timed out`                                                                  | [サーバーエラー](#request-timed-out)、またはメッセージがインターネット接続に言及している場合は[ネットワーク](#unable-to-connect-to-api) |
- | `<model> is temporarily unavailable, so auto mode cannot determine the safety of...` | [サーバーエラー](#auto-mode-cannot-determine-the-safety-of-an-action)                                |
-+| `Auto mode could not evaluate this action and is blocking it for safety`             | [サーバーエラー](#auto-mode-cannot-determine-the-safety-of-an-action)                                |
-+| `Auto mode classifier transcript exceeded context window`                            | [サーバーエラー](#auto-mode-cannot-determine-the-safety-of-an-action)                                |
- | `You've hit your session limit` / `You've hit your weekly limit`                     | [使用制限](#youve-hit-your-session-limit)                                                         |
- | `Server is temporarily limiting requests`                                            | [使用制限](#server-is-temporarily-limiting-requests)                                              |
-@@ -117,5 +119,9 @@ Request timed out
- ### Auto mode cannot determine the safety of an action
- 
--[auto mode](/ja/permission-modes#eliminate-prompts-with-auto-mode)がアクションを分類するために使用するモデルがオーバーロードされているため、auto mode はそれをチェックなしで承認する代わりにアクションをブロックしました。
-+[auto mode](/ja/permission-modes#eliminate-prompts-with-auto-mode)がアクションを分類するために使用するモデルが決定を生成できなかったため、auto mode はアクションを自動的に承認しませんでした。表示されるメッセージは、分類器が失敗した理由によって異なります。
-+
-+読み取り、検索、および作業ディレクトリ内の編集は分類器をスキップするため、これらすべてのケースで機能し続けます。
-+
-+分類器モデルがオーバーロードされている場合：
- 
- ```text theme={null}
-@@ -123,6 +129,4 @@ Request timed out
- ```
- 
--読み取り、検索、および作業ディレクトリ内の編集は分類器をスキップするため、停止中も機能し続けます。
--
- **対応方法：**
- 
-@@ -131,4 +135,28 @@ Request timed out
-```
-
-</details>
 
 <!-- UPDATE_LOG_END -->
