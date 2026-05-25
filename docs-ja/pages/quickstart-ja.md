@@ -81,16 +81,16 @@ You can also install with [apt, dnf, or apk](/en/setup#install-with-linux-packag
 
 ## ステップ 2：アカウントにログインする
 
-Claude Code を使用するにはアカウントが必要です。`claude` コマンドでインタラクティブセッションを開始すると、ログインが必要になります：
+Claude Code を使用するにはアカウントが必要です。`claude` コマンドでインタラクティブセッションを開始すると、初回使用時にログインするよう求められます：
 
 ```bash theme={null}
 claude
-# 初回使用時にログインするよう求められます
 ```
 
-```bash theme={null}
+Claude サブスクリプションまたは Console アカウントの場合は、プロンプトに従ってブラウザで認証を完了してください。後でアカウントを切り替えるか再認証するには、実行中のセッション内で `/login` と入力します：
+
+```text theme={null}
 /login
-# プロンプトに従ってアカウントでログインします
 ```
 
 以下のいずれかのアカウントタイプを使用してログインできます：
@@ -99,7 +99,7 @@ claude
 * [Claude Console](https://console.anthropic.com/)（プリペイドクレジット付き API アクセス）。初回ログイン時に、コスト追跡を一元化するために「Claude Code」ワークスペースが Console に自動的に作成されます。
 * [Amazon Bedrock、Google Vertex AI、または Microsoft Foundry](/ja/third-party-integrations)（エンタープライズクラウドプロバイダー）
 
-ログイン後、認証情報がシステムに保存され、再度ログインする必要はありません。後でアカウントを切り替えるには、`/login` コマンドを使用します。
+ログイン後、認証情報が保存され、再度ログインする必要はありません。
 
 ## ステップ 3：最初のセッションを開始する
 
