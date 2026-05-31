@@ -32,7 +32,7 @@ claude --worktree bugfix-123
 claude --worktree
 ```
 
-セッション中に Claude に「worktree で作業する」と指示することもでき、[`EnterWorktree`](/ja/tools-reference) ツールを使用して作成します。
+セッション中に Claude に「worktree で作業する」と指示することもでき、[`EnterWorktree`](/ja/tools-reference) ツールを使用して作成します。Worktree に入ると、Claude は `.claude/worktrees/` の下の別の worktree に `EnterWorktree` をターゲットパスで呼び出すことで直接切り替えることができます。前の worktree はディスク上に変更されずに残ります。
 
 初めてディレクトリで `--worktree` を使用する前に、そのディレクトリで `claude` を 1 回実行してワークスペース信頼ダイアログを受け入れてください。信頼がまだ受け入れられていない場合、`--worktree` はエラーで終了し、最初にディレクトリで `claude` を実行するよう求めるプロンプトが表示されます。これは `-p` と組み合わせた場合も含まれます。
 
@@ -80,15 +80,17 @@ config/secrets.json
 
 Subagent は独自の worktree で実行できるため、並列編集は競合しません。Claude に「エージェント用に worktree を使用する」と指示するか、[カスタム subagent](/ja/sub-agents#supported-frontmatter-fields) にフロントマターに `isolation: worktree` を追加して永続的に設定します。各 subagent は一時的な worktree を取得し、subagent が変更なしで完了すると自動的に削除されます。
 
+Subagent worktree は `--worktree` と同じ[ベースブランチ](#choose-the-base-branch)を使用するため、`worktree.baseRef` が `"head"` に設定されていない限り、リポジトリのデフォルトブランチから分岐します。
+
 ## worktree をクリーンアップする
 
 Worktree セッションを終了すると、クリーンアップは変更を加えたかどうかによって異なります。
 
-* **変更なし**: worktree とそのブランチは自動的に削除されます
-* **変更またはコミットが存在する**: Claude は worktree を保持するか削除するかを求めるプロンプトを表示します。保持するとディレクトリとブランチが保存されるため、後で戻ることができます。削除すると worktree ディレクトリとそのブランチが削除され、すべてのコミットされていない変更とコミットが破棄されます
+* **コミットされていない変更なし、追跡されていないファイルなし、新しいコミットなし**: worktree とそのブランチは自動的に削除されます。セッションに[名前](/ja/sessions#name-your-sessions)がある場合、Claude は代わりにプロンプトを表示するため、後で使用するために worktree を保持できます
+* **コミットされていない変更、追跡されていないファイル、または新しいコミットが存在する**: Claude は worktree を保持するか削除するかを求めるプロンプトを表示します。保持するとディレクトリとブランチが保存されるため、後で戻ることができます。削除すると worktree ディレクトリとそのブランチが削除され、すべてのコミットされていない変更、追跡されていないファイル、およびコミットが破棄されます
 * **非対話的な実行**: `-p` と共に `--worktree` で作成された worktree は、終了プロンプトがないため自動的にクリーンアップされません。`git worktree remove` で削除します
 
-Crash または中断された実行によって孤立した subagent worktree は、[`cleanupPeriodDays`](/ja/settings#available-settings) 設定より古い場合、コミットされていない変更、追跡されていないファイル、およびプッシュされていないコミットがない場合、起動時に削除されます。`--worktree` で作成した worktree は、このスイープによって削除されることはありません。
+Claude が subagent および[バックグラウンドセッション](/ja/agent-view#how-file-edits-are-isolated)用に作成した worktree は、[`cleanupPeriodDays`](/ja/settings#available-settings)設定より古い場合、コミットされていない変更、追跡されていないファイル、およびプッシュされていないコミットがない場合、自動的に削除されます。`--worktree` で作成した worktree は、このスイープによって削除されることはありません。
 
 ## worktree を手動で管理する
 

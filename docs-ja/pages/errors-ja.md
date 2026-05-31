@@ -569,7 +569,7 @@ Claude Opus is not available with the Claude Pro plan · Select a different mode
 
 ### thinking.type.enabled is not supported for this model
 
-Claude Code バージョンが Opus 4.7 の最小値より古いです。CLI は、モデルが受け入れなくなった思考設定を送信しました。
+Claude Code バージョンが Opus 4.7 または Opus 4.8 の最小値より古いです。CLI は、モデルが受け入れなくなった思考設定を送信しました。
 
 ```text theme={null}
 API Error: 400 ... "thinking.type.enabled" is not supported for this model. Use "thinking.type.adaptive" and "output_config.effort" to control thinking behavior.
@@ -577,7 +577,7 @@ API Error: 400 ... "thinking.type.enabled" is not supported for this model. Use 
 
 **対応方法：**
 
-* `claude update` を実行して v2.1.111 以降にアップグレードしてから、Claude Code を再起動してください
+* `claude update` を実行して Claude Code を再起動してください。Opus 4.7 は v2.1.111 以降が必要です。Opus 4.8 は v2.1.154 以降が必要です
 * アップグレードできない場合は、`/model` を実行して Opus 4.6 または Sonnet を選択してください
 * Agent SDK でこれに遭遇した場合は、[SDK トラブルシューティング](/ja/agent-sdk/quickstart#troubleshooting)を参照してください
 
@@ -610,6 +610,7 @@ API Error: 400 ... thinking blocks ... cannot be modified
 
 **対応方法：**
 
+* {/* max-version: 2.1.155 */}Opus 4.7 または Opus 4.8 を使用している場合は、まず `claude update` を実行してください。v2.1.156 より前のバージョンは、通常のツール使用中にこのエラーをトリガーでき、`/rewind` はそれをクリアしません。
 * `/rewind` を実行するか、Esc を 2 回押して、破損したターンの前のチェックポイントに戻り、そこから続行してください。[チェックポイント](/ja/checkpointing)を参照して、チェックポイントがどのように作成および復元されるかを確認してください。
 
 ### Usage Policy refusal
