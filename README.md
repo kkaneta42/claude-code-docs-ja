@@ -17,6 +17,40 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-06-01</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md | 4 ++++
+ 1 file changed, 4 insertions(+)
+```
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index b2d6dea..efa9d13 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,8 @@
+ # Changelog
+ 
++## 2.1.159
++
++- Internal infrastructure improvements (no user-facing changes)
++
+ ## 2.1.158
+ 
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-05-31</summary>
 
 **変更ファイル:**
@@ -2745,81 +2779,5 @@ index 963b558..7f876e7 100644
 ```
 
 </details>
-
-<details>
-<summary>commands-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/commands-ja.md b/docs-ja/pages/commands-ja.md
-index a5efe68..11b3094 100644
---- a/docs-ja/pages/commands-ja.md
-+++ b/docs-ja/pages/commands-ja.md
-@@ -64,5 +64,5 @@
- | `/export [filename]`                            | 現在の会話をプレーンテキストとしてエクスポートします。ファイル名を指定すると、そのファイルに直接書き込みます。指定しない場合、クリップボードにコピーするか、ファイルに保存するダイアログを開きます                                                                                                                                                                                                                                                                                                                                                                                                              |
- | `/fast [on\|off]`                               | [高速モード](/ja/fast-mode)のオン/オフを切り替えます                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
--| `/feedback [report]`                            | Claude Code に関するフィードバックを送信します。エイリアス: `/bug`                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
-+| `/feedback [report]`                            | フィードバックを送信し、バグを報告するか、会話を共有します。エイリアス: `/bug`、`/share`                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
- | `/fewer-permission-prompts`                     | **[スキル](/ja/skills#bundled-skills)。** トランスクリプトで一般的な読み取り専用 Bash と MCP ツール呼び出しをスキャンし、プロジェクト `.claude/settings.json` に優先度付きの許可リストを追加して権限プロンプトを削減します                                                                                                                                                                                                                                                                                                                                                               |
- | `/focus`                                        | フォーカスビューを切り替えます。最後のプロンプト、編集 diffstats を含む 1 行のツール呼び出し要約、および最終応答のみを表示します。選択は複数セッション間で保持されます。設定で [`viewMode`](/ja/settings#available-settings) を設定してオーバーライドします。[フルスクリーンレンダリング](/ja/fullscreen)でのみ利用可能です                                                                                                                                                                                                                                                                                                          |
-@@ -83,5 +83,5 @@
- | `/memory`                                       | `CLAUDE.md` メモリファイルを編集し、[自動メモリ](/ja/memory#auto-memory)を有効または無効にし、自動メモリエントリを表示します                                                                                                                                                                                                                                                                                                                                                                                                                              |
- | `/mobile`                                       | Claude モバイルアプリをダウンロードするための QR コードを表示します。エイリアス: `/ios`、`/android`                                                                                                                                                                                                                                                                                                                                                                                                                                               |
--| `/model [model]`                                | AI モデルを選択または変更します。サポートしているモデルの場合、左右矢印を使用して[努力レベルを調整](/ja/model-config#adjust-effort-level)します。引数なしで、会話に前の出力がある場合に確認を求めるピッカーを開きます。次の応答はキャッシュされたコンテキストなしで完全な履歴を再読み込みするためです。確認されると、現在の応答の完了を待たずに変更が適用されます                                                                                                                                                                                                                                                                                                         |
-+| `/model [model]`                                | 現在のセッションの AI モデルを設定します。サポートしているモデルの場合、左右矢印を使用して[努力レベルを調整](/ja/model-config#adjust-effort-level)します。引数なしで、ピッカーを開きます。ピッカーで `d` を押して、そのモデルを新しいセッションのデフォルトとして保存することもできます。会話に前の出力がある場合、ピッカーは確認を求めます。次の応答はキャッシュされたコンテキストなしで完全な履歴を再読み込みするためです。確認されると、現在の応答の完了を待たずに変更が適用されます                                                                                                                                                                                                                                           |
- | `/passes`                                       | Claude Code の無料 1 週間を友人と共有します。アカウントが対象の場合のみ表示されます                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
- | `/permissions`                                  | ツール権限のアクセス許可、確認、および拒否ルールを管理します。スコープ別にルールを表示し、ルールを追加または削除し、作業ディレクトリを管理し、[最近の自動モード拒否](/ja/auto-mode-config#review-denials)を確認できるインタラクティブダイアログを開きます。エイリアス: `/allowed-tools`                                                                                                                                                                                                                                                                                                                                       |
-@@ -98,5 +98,5 @@
- | `/remote-env`                                   | [`--remote` で開始されたウェブセッション](/ja/claude-code-on-the-web#configure-your-environment)のデフォルトリモート環境を構成します                                                                                                                                                                                                                                                                                                                                                                                                           |
- | `/rename [name]`                                | 現在のセッションの名前を変更してプロンプトバーに名前を表示します。名前を指定しない場合、会話履歴から自動生成されます                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
--| `/resume [session]`                             | ID または名前で会話を再開するか、セッションピッカーを開きます。エイリアス: `/continue`                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-+| `/resume [session]`                             | ID または名前で会話を再開するか、セッションピッカーを開きます。v2.1.144 以降、[バックグラウンドセッション](/ja/agent-view)はピッカーに `bg` とマークされて表示されます。エイリアス: `/continue`                                                                                                                                                                                                                                                                                                                                                                                       |
- | `/review [PR]`                                  | 現在のセッションでプルリクエストをローカルでレビューします。より深いクラウドベースのレビューについては、[`/ultrareview`](/ja/ultrareview)を参照してください                                                                                                                                                                                                                                                                                                                                                                                                                 |
- | `/rewind`                                       | 会話またはコードを前の時点に巻き戻すか、選択したメッセージから要約します。[チェックポイント](/ja/checkpointing)を参照してください。エイリアス: `/checkpoint`、`/undo`                                                                                                                                                                                                                                                                                                                                                                                                       |
-```
-
-</details>
-
-*...以降省略*
-
-</details>
-
-
-<details>
-<summary>2026-05-19</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/agent-view-ja.md          | 115 +++++++++++++++++++++++---------
- docs-ja/pages/cli-reference-ja.md       |  57 ++++++++--------
- docs-ja/pages/code-review-ja.md         |   4 +-
- docs-ja/pages/commands-ja.md            |   6 +-
- docs-ja/pages/debug-your-config-ja.md   |  36 +++++-----
- docs-ja/pages/desktop-ja.md             |   3 +-
- docs-ja/pages/discover-plugins-ja.md    |   4 +-
- docs-ja/pages/env-vars-ja.md            |  21 +++---
- docs-ja/pages/errors-ja.md              |  16 +++--
- docs-ja/pages/fast-mode-ja.md           |  56 +++-------------
- docs-ja/pages/features-overview-ja.md   |   4 +-
- docs-ja/pages/hooks-guide-ja.md         |   8 ++-
- docs-ja/pages/hooks-ja.md               |   4 +-
- docs-ja/pages/mcp-ja.md                 |   4 +-
- docs-ja/pages/model-config-ja.md        |  54 +++++++--------
- docs-ja/pages/overview-ja.md            |   2 +-
- docs-ja/pages/permission-modes-ja.md    |  26 ++++----
- docs-ja/pages/plugin-dependencies-ja.md |  24 +++++++
- docs-ja/pages/plugin-marketplaces-ja.md |   3 +-
- docs-ja/pages/plugins-reference-ja.md   |  13 ++--
- docs-ja/pages/remote-control-ja.md      |   2 +-
- docs-ja/pages/routines-ja.md            |   2 +-
- docs-ja/pages/scheduled-tasks-ja.md     |   2 +-
- docs-ja/pages/settings-ja.md            |  33 ++++-----
- docs-ja/pages/skills-ja.md              |  10 +--
- docs-ja/pages/statusline-ja.md          |   1 +
- docs-ja/pages/sub-agents-ja.md          |  32 ++++++++-
- docs-ja/pages/tools-reference-ja.md     |   3 +-
- docs-ja/pages/ultrareview-ja.md         |   2 +-
- 29 files changed, 322 insertions(+), 225 deletions(-)
-```
 
 <!-- UPDATE_LOG_END -->
