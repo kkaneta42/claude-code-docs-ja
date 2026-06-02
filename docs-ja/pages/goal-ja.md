@@ -21,12 +21,12 @@
 
 このページでは以下について説明します。
 
-* [自律的なワークフロー アプローチの比較](#compare-to-other-autonomous-workflows)：`/loop`、Stop hook、および自動モード
+* [セッションを実行し続ける方法の比較](#compare-ways-to-keep-a-session-running)：`/loop`、Stop hook、および自動モード
 * [ゴールの設定](#set-a-goal)と[効果的な条件の作成](#write-an-effective-condition)
 * [ステータスの確認](#check-status)、[早期クリア](#clear-a-goal)、および[非対話的な実行](#run-non-interactively)
 * [評価の仕組み](#how-evaluation-works)と[要件](#requirements)を確認
 
-## 他の自律的なワークフロー アプローチとの比較
+## セッションを実行し続ける方法の比較
 
 3 つのアプローチが、プロンプト間で現在のセッションを実行し続けます。次のターンを開始するべき内容に基づいて選択します。
 
