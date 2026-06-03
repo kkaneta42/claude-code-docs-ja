@@ -74,7 +74,7 @@
 | ペーストモード     | 直接貼り付け         | コードブロック、ログの場合                                                                                |
 
 <Tip>
-  Shift+Enter は設定なしで iTerm2、WezTerm、Ghostty、Kitty、Warp、Apple Terminal、Windows Terminal で機能します。VS Code、Cursor、Windsurf、Alacritty、Zed の場合は、`/terminal-setup` を実行してバインディングをインストールしてください。
+  Shift+Enter は設定なしで iTerm2、WezTerm、Ghostty、Kitty、Warp、Apple Terminal、Windows Terminal で機能します。VS Code、Cursor、Devin Desktop、Alacritty、Zed の場合は、`/terminal-setup` を実行してバインディングをインストールしてください。
 </Tip>
 
 ### クイックコマンド

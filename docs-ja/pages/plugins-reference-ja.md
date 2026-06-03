@@ -252,8 +252,6 @@ LSP 統合は以下を提供します:
 | `settings`              | `workspace/didChangeConfiguration` 経由で渡される設定 |
 | `workspaceFolder`       | サーバーのワークスペースフォルダーパス                          |
 | `startupTimeout`        | サーバー起動を待つ最大時間（ミリ秒）                           |
-| `shutdownTimeout`       | グレースフルシャットダウンを待つ最大時間（ミリ秒）                    |
-| `restartOnCrash`        | サーバーがクラッシュした場合に自動的に再起動するかどうか                 |
 | `maxRestarts`           | 諦める前の最大再起動試行回数                               |
 
 <Warning>

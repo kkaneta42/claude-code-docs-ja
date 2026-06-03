@@ -32,7 +32,7 @@ IDE のリンクをクリックして直接インストールします。
 
 または、VS Code で `Cmd+Shift+X`（Mac）または `Ctrl+Shift+X`（Windows/Linux）を押して拡張機能ビューを開き、「Claude Code」を検索して、**インストール**をクリックします。
 
-拡張機能は Windsurf や Kiro などの他の VS Code フォークにもインストールされます。エディタの拡張機能ビューで「Claude Code」を検索するか、[Open VSX レジストリ](https://open-vsx.org/extension/Anthropic/claude-code)からインストールしてください。エディタが拡張機能をインストールできない場合は、統合ターミナルで `claude` を実行してください。[CLI](/ja/quickstart) はどのターミナルでも動作します。
+拡張機能は Devin Desktop や Kiro などの他の VS Code フォークにもインストールされます。エディタの拡張機能ビューで「Claude Code」を検索するか、[Open VSX レジストリ](https://open-vsx.org/extension/Anthropic/claude-code)からインストールしてください。エディタが拡張機能をインストールできない場合は、統合ターミナルで `claude` を実行してください。[CLI](/ja/quickstart) はどのターミナルでも動作します。
 
 <Note>インストール後に拡張機能が表示されない場合は、VS Code を再起動するか、コマンドパレットから「Developer: Reload Window」を実行してください。</Note>
 
@@ -307,22 +307,22 @@ vscode://anthropic.claude-code/open?prompt=review%20my%20changes
 
 ### 拡張機能設定
 
-| 設定                                  | デフォルト     | 説明                                                                                                                                                                                                                                                                                                   |
-| ----------------------------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `useTerminal`                       | `false`   | グラフィカルパネルの代わりにターミナルモードで Claude を起動します。                                                                                                                                                                                                                                                               |
-| `initialPermissionMode`             | `default` | 新しい会話の承認プロンプトを制御します。`default`、`plan`、`acceptEdits`、または `bypassPermissions`。[permission modes](/ja/permission-modes) を参照してください。                                                                                                                                                                       |
-| `preferredLocation`                 | `panel`   | Claude が開く場所：`sidebar`（右）または `panel`（新しいタブ）                                                                                                                                                                                                                                                          |
-| `autosave`                          | `true`    | Claude が読み取りまたは書き込みする前にファイルを自動保存します。                                                                                                                                                                                                                                                                 |
-| `useCtrlEnterToSend`                | `false`   | Enter の代わりに Ctrl/Cmd+Enter を使用してプロンプトを送信します。                                                                                                                                                                                                                                                         |
-| `enableNewConversationShortcut`     | `false`   | Cmd/Ctrl+N を有効にして新しい会話を開始します。                                                                                                                                                                                                                                                                        |
-| `enableReopenClosedSessionShortcut` | `true`    | Cmd/Ctrl+Shift+T を使用して、最近閉じた Claude セッションタブを再度開きます。最後に閉じたタブが Claude セッションではなかった場合、このショートカットは VS Code の通常の reopen-closed-editor コマンドを実行します。                                                                                                                                                           |
-| `hideOnboarding`                    | `false`   | オンボーディングチェックリスト（卒業キャップアイコン）を非表示にします。                                                                                                                                                                                                                                                                 |
-| `respectGitIgnore`                  | `true`    | ファイル検索から .gitignore パターンを除外します。                                                                                                                                                                                                                                                                      |
-| `usePythonEnvironment`              | `true`    | Claude を実行するときにワークスペースの Python 環境をアクティベートします。Python 拡張機能が必要です。                                                                                                                                                                                                                                       |
-| `environmentVariables`              | `[]`      | Claude プロセスの環境変数を設定します。共有設定には Claude Code 設定を使用します。                                                                                                                                                                                                                                                  |
-| `disableLoginPrompt`                | `false`   | 認証プロンプトをスキップします（サードパーティプロバイダーセットアップ用）。                                                                                                                                                                                                                                                               |
-| `allowDangerouslySkipPermissions`   | `false`   | [Auto mode](/ja/permission-modes#eliminate-prompts-with-auto-mode) と Bypass permissions をモード選択ツールに追加します。Auto mode には [plan、admin、model、provider の要件](/ja/permission-modes#eliminate-prompts-with-auto-mode)があるため、このトグルがオンでも利用不可のままである可能性があります。Bypass permissions は、インターネットアクセスのないサンドボックスでのみ使用してください。 |
-| `claudeProcessWrapper`              | -         | Claude プロセスを起動するために使用される実行可能ファイル。バンドルされたバイナリパスは、存在する場合は引数として渡されます。拡張機能ビルドにプラットフォーム用のバイナリが含まれていない場合は、これを別途インストールされた `claude` バイナリに設定します。                                                                                                                                                              |
+| 設定                                  | デフォルト     | 説明                                                                                                                                         |
+| ----------------------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `useTerminal`                       | `false`   | グラフィカルパネルの代わりにターミナルモードで Claude を起動します。                                                                                                     |
+| `initialPermissionMode`             | `default` | 新しい会話の承認プロンプトを制御します。`default`、`plan`、`acceptEdits`、または `bypassPermissions`。[permission modes](/ja/permission-modes) を参照してください。             |
+| `preferredLocation`                 | `panel`   | Claude が開く場所：`sidebar`（右）または `panel`（新しいタブ）                                                                                                |
+| `autosave`                          | `true`    | Claude が読み取りまたは書き込みする前にファイルを自動保存します。                                                                                                       |
+| `useCtrlEnterToSend`                | `false`   | Enter の代わりに Ctrl/Cmd+Enter を使用してプロンプトを送信します。                                                                                               |
+| `enableNewConversationShortcut`     | `false`   | Cmd/Ctrl+N を有効にして新しい会話を開始します。                                                                                                              |
+| `enableReopenClosedSessionShortcut` | `true`    | Cmd/Ctrl+Shift+T を使用して、最近閉じた Claude セッションタブを再度開きます。最後に閉じたタブが Claude セッションではなかった場合、このショートカットは VS Code の通常の reopen-closed-editor コマンドを実行します。 |
+| `hideOnboarding`                    | `false`   | オンボーディングチェックリスト（卒業キャップアイコン）を非表示にします。                                                                                                       |
+| `respectGitIgnore`                  | `true`    | ファイル検索から .gitignore パターンを除外します。                                                                                                            |
+| `usePythonEnvironment`              | `true`    | Claude を実行するときにワークスペースの Python 環境をアクティベートします。Python 拡張機能が必要です。                                                                             |
+| `environmentVariables`              | `[]`      | Claude プロセスの環境変数を設定します。共有設定には Claude Code 設定を使用します。                                                                                        |
+| `disableLoginPrompt`                | `false`   | 認証プロンプトをスキップします（サードパーティプロバイダーセットアップ用）。                                                                                                     |
+| `allowDangerouslySkipPermissions`   | `false`   | モード選択ツールに Bypass permissions を追加します。インターネットアクセスのないサンドボックスでのみ使用してください。                                                                      |
+| `claudeProcessWrapper`              | -         | Claude プロセスを起動するために使用される実行可能ファイル。バンドルされたバイナリパスは、存在する場合は引数として渡されます。拡張機能ビルドにプラットフォーム用のバイナリが含まれていない場合は、これを別途インストールされた `claude` バイナリに設定します。    |
 
 ## VS Code 拡張機能と Claude Code CLI
 
@@ -431,17 +431,19 @@ claude --worktree feature-auth
 
 コードはプライベートのままです。Claude Code はコード支援を提供するためにコードを処理しますが、モデルのトレーニングには使用しません。データ処理とログアウトの方法の詳細については、[Data and privacy](/ja/data-usage) を参照してください。
 
-自動編集権限が有効な場合、Claude Code は VS Code が自動的に実行する可能性がある VS Code 設定ファイル（`settings.json` や `tasks.json` など）を変更できます。信頼できないコードで作業するときのリスクを軽減するには、以下を実行します。
+自動編集権限が有効な場合、Claude Code は VS Code が自動的に実行する可能性がある VS Code 設定ファイル（`settings.json` や `tasks.json` など）を変更できます。信頼できないコードで作業するときのリスクを軽減するには、以下を実行してください。
 
-* 信頼できないワークスペースに対して [VS Code Restricted Mode](https://code.visualstudio.com/docs/editor/workspace-trust#_restricted-mode) を有効にします。
-* 編集の自動受け入れの代わりに手動承認モードを使用します。
-* 変更を受け入れる前に慎重に確認します。
+* 信頼できないワークスペースに対して [VS Code Restricted Mode](https://code.visualstudio.com/docs/editor/workspace-trust#_restricted-mode) を有効にします
+* 編集の自動受け入れの代わりに手動承認モードを使用します
+* 変更を受け入れる前に慎重に確認します
 
 ### 組み込み IDE MCP サーバー
 
 拡張機能がアクティブな場合、CLI が自動的に接続するローカル MCP サーバーを実行します。これは、CLI が VS Code のネイティブ差分ビューアで差分を開く方法、`@`-メンション用に現在の選択を読む方法、および Jupyter ノートブックで作業しているときに VS Code にセルを実行するよう依頼する方法です。
 
 サーバーは `ide` という名前で、設定するものがないため `/mcp` から非表示になっています。ただし、組織が `PreToolUse` hook を使用して MCP ツールをホワイトリストに登録している場合は、それが存在することを知る必要があります。
+
+**選択とオープンファイルコンテキスト。** 接続中、CLI は現在のエディタ選択とアクティブなファイルのパスを各プロンプトのコンテキストとして含めます。トランスクリプトは、これが発生したときに `⧉ Selected N lines from <file>` 行を表示します。`.env` などの機密ファイルを除外するには、そのパスに対して [`Read` deny rule](/ja/permissions#read-and-edit) を追加します。一致する deny rule は、そのファイルの選択されたテキストとオープンファイル通知の両方が Claude に到達するのを防ぎます。
 
 **トランスポートと認証。** サーバーは `127.0.0.1` にバインドし、ランダムな高いポートで、他のマシンからはアクセスできません。各拡張機能のアクティベーションは、接続するために CLI が提示する必要がある新しいランダム認証トークンを生成します。トークンは `~/.claude/ide/` の下のロックファイルに書き込まれ、`0600` 権限を持つ `0700` ディレクトリにあるため、VS Code を実行しているユーザーのみがそれを読むことができます。
 

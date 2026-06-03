@@ -168,3 +168,5 @@ CLAUDE_CODE_NO_FLICKER=1 CLAUDE_CODE_DISABLE_MOUSE=1 claude
 問題が発生した場合は、Claude Code 内で `/feedback` を実行して報告するか、[claude-code GitHub リポジトリ](https://github.com/anthropics/claude-code/issues)で issue を開いてください。ターミナルエミュレータの名前とバージョンを含めてください。
 
 フルスクリーンレンダリングをオフにするには、`/tui default` を実行するか、その方法で有効にした場合は `CLAUDE_CODE_NO_FLICKER` をアンセットしてください。保存された `tui` 設定に関係なくクラシックレンダラーを強制するには、`CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN=1` を設定してください。クラシックレンダラーはターミナルのネイティブスクロールバックに会話を保持するため、`Cmd+f` と tmux コピーモードは通常通り機能します。
+
+[agent view](/ja/agent-view) または `claude attach` から開かれたバックグラウンドセッションは常にフルスクリーンレンダリングを使用します。アタッチするターミナルは代替スクリーンバッファに入ってセッションを表示し、クラシックレンダラーはそこではスクロールバックまたはマウスハンドリングがないため、`tui` 設定と `CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN` はそれらに適用されません。

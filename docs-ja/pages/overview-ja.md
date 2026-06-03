@@ -158,7 +158,7 @@ Claude Code を使用できるいくつかの方法を紹介します：
   </Accordion>
 
   <Accordion title="MCP でツールを接続する" icon="plug">
-    [Model Context Protocol（MCP）](/ja/mcp) は、AI ツールを外部データソースに接続するためのオープンスタンダードです。MCP を使用すると、Claude Code は Google Drive のデザインドキュメントを読み取り、Jira のチケットを更新し、Slack からデータをプルするか、独自のカスタムツーリングを使用できます。
+    [Model Context Protocol（MCP）](/ja/mcp) は、AI ツールを外部データソースに接続するためのオープンスタンダードです。MCP を使用すると、Claude Code は Google Drive のデザインドキュメントを読み取り、Jira のチケットを更新し、Slack からデータをプルするか、独自のカスタムツーリングを使用できます。[MCP クイックスタート](/ja/mcp-quickstart) は、最初のサーバーをエンドツーエンドで接続します。
   </Accordion>
 
   <Accordion title="指示、スキル、フックでカスタマイズする" icon="sliders">

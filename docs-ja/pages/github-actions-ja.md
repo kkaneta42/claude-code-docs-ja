@@ -13,7 +13,7 @@ Claude Code GitHub Actions は、GitHub ワークフローに AI を活用した
 </Note>
 
 <Info>
-  **Claude Opus 4.7 が利用可能になりました。** Claude Code GitHub Actions はデフォルトで Sonnet を使用します。Opus 4.7 を使用するには、[model パラメータ](#breaking-changes-reference) を `claude-opus-4-7` に設定してください。
+  **Claude Opus 4.8 が利用可能になりました。** Claude Code GitHub Actions はデフォルトで Sonnet を使用します。Opus 4.8 を使用するには、[model パラメータ](#breaking-changes-reference) を `claude-opus-4-8` に設定してください。
 </Info>
 
 ## Claude Code GitHub Actions を使用する理由

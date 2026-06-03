@@ -2,9 +2,9 @@
 > Fetch the complete documentation index at: https://code.claude.com/docs/llms.txt
 > Use this file to discover all available pages before exploring further.
 
-# Prompt library
+# プロンプトライブラリ
 
-> Copy-paste prompts for Claude Code, tagged by task and role.
+> Claude Code 用のコピー＆ペーストプロンプト。タスクと役割でタグ付けされています。
 
 export const PromptLibrary = ({text = {}, labels = {}, tagLabels = {}, phaseLabels = {}, sourceLabels = {}, catLabels = {}}) => {
   const RAW = useMemo(() => [{
@@ -996,394 +996,394 @@ export const PromptLibrary = ({text = {}, labels = {}, tagLabels = {}, phaseLabe
     </div>;
 };
 
-This is a library of prompts to copy into Claude Code. Use it to explore ways of working you haven't tried, or when you're not sure where to start.
+これは Claude Code にコピーして使用するプロンプトのライブラリです。試したことのない作業方法を探索したり、どこから始めたらよいかわからない場合に使用してください。
 
-The prompts are collected from various Anthropic guides, including [Common workflows](/en/common-workflows), [Best practices](/en/best-practices), and [How Anthropic teams use Claude Code](https://claude.com/blog/how-anthropic-teams-use-claude-code). They're starting points rather than scripts. Open **Why this works** under any prompt to see the pattern behind it so you can write your own.
+プロンプトは、[一般的なワークフロー](/ja/common-workflows)、[ベストプラクティス](/ja/best-practices)、[Anthropic チームが Claude Code をどのように使用しているか](https://claude.com/blog/how-anthropic-teams-use-claude-code)など、様々な Anthropic ガイドから収集されています。これらはスクリプトではなく、出発点です。任意のプロンプトの下にある **このプロンプトが機能する理由** を開くと、その背後にあるパターンを確認できるため、独自のプロンプトを作成できます。
 
 export const labels = {
-  startHere: "Start here",
-  startHereHeader: "Five prompts to try first",
-  showAll: "Show all {n} prompts",
-  search: "Search prompts…",
-  clear: "Clear",
-  prompt: "prompt",
-  prompts: "prompts",
-  noMatch: "No prompts match",
-  fillAndCopy: "Fill in and copy",
-  copyThis: "Copy this prompt",
-  hintBefore: "Type in the",
-  hintChip: "highlighted",
-  hintAfter: "fields to customize, then copy.",
-  copy: "Copy",
-  copied: "Copied",
-  whyWorks: "Why this works",
-  makeItStick: "Make it stick",
-  from: "From",
+  startHere: "ここから始める",
+  startHereHeader: "最初に試すべき 5 つのプロンプト",
+  showAll: "{n} 個のプロンプトをすべて表示",
+  search: "プロンプトを検索…",
+  clear: "クリア",
+  prompt: "プロンプト",
+  prompts: "プロンプト",
+  noMatch: "一致するプロンプトがありません",
+  fillAndCopy: "入力してコピー",
+  copyThis: "このプロンプトをコピー",
+  hintBefore: "次の",
+  hintChip: "ハイライト",
+  hintAfter: "フィールドに入力してからコピーしてください。",
+  copy: "コピー",
+  copied: "コピーしました",
+  whyWorks: "このプロンプトが機能する理由",
+  makeItStick: "記憶に残す",
+  from: "出典",
   paste: {
-    mockup: "Paste, drag, or @-mention your mockup image, then send this:",
-    design: "Paste, drag, or @-mention your design image, then send this:",
-    screenshot: "Paste, drag, or @-mention your screenshot, then send this:",
-    plan: "Paste your plan output into the prompt first, then send this:",
-    error: "Paste the error output into the prompt first, then send this:",
-    csv: "Drag your file into the prompt, or replace the path below with an @-mention of your own:"
+    mockup: "モックアップ画像をペースト、ドラッグ、または @-mention してから、以下を送信してください:",
+    design: "デザイン画像をペースト、ドラッグ、または @-mention してから、以下を送信してください:",
+    screenshot: "スクリーンショットをペースト、ドラッグ、または @-mention してから、以下を送信してください:",
+    plan: "プラン出力をプロンプトに最初にペーストしてから、以下を送信してください:",
+    error: "エラー出力をプロンプトに最初にペーストしてから、以下を送信してください:",
+    csv: "ファイルをプロンプトにドラッグするか、以下のパスを独自の @-mention に置き換えてください:"
   },
-  needsLabel: "Needs",
+  needsLabel: "必要なもの",
   needs: {
-    tracker: "your issue tracker added as a [claude.ai connector](/en/mcp#use-mcp-servers-from-claude-ai) or [MCP server](/en/mcp).",
-    gh: "the [gh CLI](https://cli.github.com) authenticated, or GitHub added as a [claude.ai connector](/en/mcp#use-mcp-servers-from-claude-ai).",
-    browser: "a way for Claude to render and screenshot the result. The [Desktop app](/en/desktop#preview-your-app) has this built in. In the terminal, install the [Chrome extension](/en/chrome) or a Playwright [MCP](/en/mcp) server.",
-    db: "your data warehouse or log store added as a [claude.ai connector](/en/mcp#use-mcp-servers-from-claude-ai) or [MCP server](/en/mcp)."
+    tracker: "[claude.ai コネクタ](/ja/mcp#use-mcp-servers-from-claude-ai)または [MCP サーバー](/ja/mcp)として追加されたイシュートラッカー。",
+    gh: "[gh CLI](https://cli.github.com) が認証されているか、GitHub が [claude.ai コネクタ](/ja/mcp#use-mcp-servers-from-claude-ai)として追加されていること。",
+    browser: "Claude が結果をレンダリングしてスクリーンショットを撮る方法。[デスクトップアプリ](/ja/desktop#preview-your-app)にはこれが組み込まれています。ターミナルでは、[Chrome 拡張機能](/ja/chrome)または Playwright [MCP](/ja/mcp) サーバーをインストールしてください。",
+    db: "[claude.ai コネクタ](/ja/mcp#use-mcp-servers-from-claude-ai)または [MCP サーバー](/ja/mcp)として追加されたデータウェアハウスまたはログストア。"
   }
 };
 
 export const tagLabels = {
-  understand: "Understand",
-  plan: "Plan",
-  prototype: "Prototype",
-  build: "Build",
-  test: "Test",
-  refactor: "Refactor",
-  review: "Review",
-  steer: "Steer",
-  debug: "Debug",
+  understand: "理解",
+  plan: "計画",
+  prototype: "プロトタイプ",
+  build: "構築",
+  test: "テスト",
+  refactor: "リファクタリング",
+  review: "レビュー",
+  steer: "操舵",
+  debug: "デバッグ",
   git: "Git",
-  release: "Release",
-  data: "Data",
-  automate: "Automate",
-  pm: "Product",
-  design: "Design",
-  docs: "Docs",
-  marketing: "Marketing",
-  security: "Security",
-  ops: "On-call"
+  release: "リリース",
+  data: "データ",
+  automate: "自動化",
+  pm: "プロダクト",
+  design: "デザイン",
+  docs: "ドキュメント",
+  marketing: "マーケティング",
+  security: "セキュリティ",
+  ops: "オンコール"
 };
 
 export const phaseLabels = {
-  discover: "Discover",
-  design: "Design",
-  build: "Build",
-  ship: "Ship",
-  operate: "Operate"
+  discover: "発見",
+  design: "設計",
+  build: "構築",
+  ship: "リリース",
+  operate: "運用"
 };
 
 export const sourceLabels = {
-  workflows: "Common workflows",
-  teams: "How Anthropic teams use Claude Code",
-  legal: "How Anthropic uses Claude in Legal",
-  cybersecurity: "How Anthropic uses Claude in Cybersecurity",
-  "best-practices": "Best practices",
-  ebook: "Scaling agentic coding guide"
+  workflows: "一般的なワークフロー",
+  teams: "Anthropic チームが Claude Code をどのように使用しているか",
+  legal: "Anthropic が法務で Claude をどのように使用しているか",
+  cybersecurity: "Anthropic がサイバーセキュリティで Claude をどのように使用しているか",
+  "best-practices": "ベストプラクティス",
+  ebook: "agentic coding スケーリングガイド"
 };
 
 export const catLabels = {
-  Onboard: "Onboard",
-  Understand: "Understand",
-  Plan: "Plan",
-  Prototype: "Prototype",
-  Implement: "Implement",
-  Test: "Test",
-  Refactor: "Refactor",
-  Review: "Review",
-  Steer: "Steer",
+  Onboard: "オンボード",
+  Understand: "理解",
+  Plan: "計画",
+  Prototype: "プロトタイプ",
+  Implement: "実装",
+  Test: "テスト",
+  Refactor: "リファクタリング",
+  Review: "レビュー",
+  Steer: "操舵",
   Git: "Git",
-  Release: "Release",
-  Debug: "Debug",
-  Incident: "Incident",
-  Data: "Data",
-  Automate: "Automate"
+  Release: "リリース",
+  Debug: "デバッグ",
+  Incident: "インシデント",
+  Data: "データ",
+  Automate: "自動化"
 };
 
 export const text = {
   "get-oriented-in-a": {
-    title: "Get oriented in a new repository",
-    teaches: "Describe what you want to know, not which files to read. Claude explores the project on its own and returns a summary of how it fits together.",
-    next: "Run `/init` to set up `CLAUDE.md` so Claude remembers this every session"
+    title: "新しいリポジトリで方向性を確認する",
+    teaches: "読むべきファイルではなく、知りたいことを説明してください。Claude はプロジェクトを独自に探索し、それがどのように組み合わさっているかの概要を返します。",
+    next: "`/init` を実行して `CLAUDE.md` をセットアップし、Claude がこれを毎回のセッションで覚えるようにしてください"
   },
   "explain-unfamiliar-code": {
-    title: "Explain unfamiliar code",
-    teaches: "Name the file and say what format you want the answer in. Swap the HTML page for a diagram, bullet points, or whatever fits how you learn.",
-    next: "Set an output style so Claude always explains in your preferred format"
+    title: "なじみのないコードを説明する",
+    teaches: "ファイル名を指定し、答えてほしい形式を言ってください。HTML ページを図、箇条書き、または学習方法に合ったものに置き換えてください。",
+    next: "出力スタイルを設定して、Claude が常に好みの形式で説明するようにしてください"
   },
   "find-where-something-happens": {
-    title: "Find where something happens",
-    teaches: "Search by behavior instead of by filename. The search works even when you don't know what the file is called or which directory it lives in."
+    title: "何かが起こる場所を見つける",
+    teaches: "ファイル名ではなく動作で検索してください。ファイルの名前やディレクトリの場所がわからない場合でも、検索は機能します。"
   },
   "see-what-depends-on": {
-    title: "Check what breaks before you delete",
-    teaches: "Ask before you remove anything. The list of callers and downstream effects tells you whether you're looking at a one-line cleanup or a change you need to coordinate."
+    title: "削除する前に何が壊れるかを確認する",
+    teaches: "何かを削除する前に尋ねてください。呼び出し元と下流への影響のリストは、1 行のクリーンアップを見ているのか、調整が必要な変更を見ているのかを示します。"
   },
   "trace-how-code-evolved": {
-    title: "Trace how code evolved",
-    teaches: "Point at commit history when the question is why, not what. Claude reads the log and blame for whatever version control you use and explains the decisions behind the current implementation."
+    title: "コードがどのように進化したかを追跡する",
+    teaches: "質問が「何」ではなく「なぜ」の場合は、コミット履歴を指してください。Claude はどのバージョン管理を使用していても、ログと blame を読み、現在の実装の背後にある決定を説明します。"
   },
   "scope-a-change-before": {
-    title: "Scope a change before you start",
-    teaches: "Size the work before you commit it to a roadmap. The file list tells you whether you're looking at one component or a cross-cutting change."
+    title: "開始する前に変更の範囲を決定する",
+    teaches: "ロードマップにコミットする前に作業をサイズ化してください。ファイルリストは、1 つのコンポーネントを見ているのか、クロスカッティング変更を見ているのかを示します。"
   },
   "ask-the-codebase-a": {
-    title: "Ask the codebase a product question",
-    teaches: "State your role so the answer is pitched at the right level. Claude explains what the product actually does from the source code, without you needing to read it.",
-    next: "Set an output style so Claude always pitches answers at this level"
+    title: "コードベースにプロダクト質問をする",
+    teaches: "役割を述べて、答えが適切なレベルで提供されるようにしてください。Claude はソースコードから実際に何をするかを説明し、読む必要はありません。",
+    next: "出力スタイルを設定して、Claude が常にこのレベルで答えを提供するようにしてください"
   },
   "plan-a-multi-file": {
-    title: "Plan a multi-file change before touching code",
-    teaches: "Adding \"don't edit yet\" separates exploration from changes, so you see the approach before any code moves. To make plan-first the default on every prompt, press Shift+Tab for [plan mode](/en/permission-modes#analyze-before-you-edit-with-plan-mode)."
+    title: "コードに触れる前に複数ファイルの変更を計画する",
+    teaches: "「まだ編集しないでください」を追加すると、探索と変更が分離されるため、コードが移動する前にアプローチが表示されます。すべてのプロンプトでプラン優先をデフォルトにするには、Shift+Tab を押して [プランモード](/ja/permission-modes#analyze-before-you-edit-with-plan-mode)を使用してください。"
   },
   "draft-a-spec-by": {
-    title: "Draft a spec by interview",
-    teaches: "Ask to be interviewed instead of writing the spec yourself. Claude asks you structured questions until the requirements are complete, then writes the result to a file.",
-    next: "Save your interview questions as a `/spec` skill so every spec starts the same way"
+    title: "インタビューでスペックを作成する",
+    teaches: "スペックを自分で書く代わりに、インタビューを受けるよう依頼してください。Claude は要件が完全になるまで構造化された質問をし、その後、結果をファイルに書き込みます。",
+    next: "インタビュー質問を `/spec` スキルとして保存して、すべてのスペックが同じ方法で開始されるようにしてください"
   },
   "turn-a-meeting-into": {
-    title: "Turn a meeting into tickets",
-    teaches: "Skip the transcription step. Claude pulls action items from the unstructured input and writes them straight into your tracker via [MCP](/en/mcp), so you review the tickets, not the transcript.",
-    next: "Save this as a `/tickets` skill"
+    title: "ミーティングをチケットに変換する",
+    teaches: "トランスクリプションステップをスキップしてください。Claude は非構造化入力からアクション項目を抽出し、[MCP](/ja/mcp)経由でトラッカーに直接書き込むため、トランスクリプトではなくチケットをレビューします。",
+    next: "これを `/tickets` スキルとして保存してください"
   },
   "map-edge-cases-before": {
-    title: "Map edge cases before building",
-    teaches: "Ask for what's missing, not what's there. Claude lists the error states, empty states, and edge cases a happy-path design tends to skip."
+    title: "構築する前にエッジケースをマップする",
+    teaches: "そこにあるものではなく、欠けているものを尋ねてください。Claude はエラー状態、空の状態、ハッピーパス設計が傾向としてスキップするエッジケースをリストアップします。"
   },
   "turn-a-mockup-into": {
-    title: "Turn a mockup into a working prototype",
-    teaches: "A clickable prototype answers questions a static mockup can't. Hand the working code to engineering instead of explaining the interactions in a doc."
+    title: "モックアップを動作するプロトタイプに変換する",
+    teaches: "クリック可能なプロトタイプは、静的モックアップが答えられない質問に答えます。ドキュメントで相互作用を説明する代わりに、動作するコードをエンジニアリングに渡してください。"
   },
   "implement-from-a-screenshot": {
-    title: "Implement from a screenshot and self-check",
-    teaches: "This gives Claude a verification loop: it renders, compares against the source image, and iterates without you pointing out each gap.",
-    next: "Use `/goal` to keep Claude iterating until the screenshots match"
+    title: "スクリーンショットから実装して自己チェックする",
+    teaches: "これは Claude に検証ループを提供します。レンダリングし、ソース画像と比較し、各ギャップを指摘することなく反復します。",
+    next: "`/goal` を使用して、Claude がスクリーンショットが一致するまで反復し続けるようにしてください"
   },
   "follow-an-existing-pattern": {
-    title: "Follow an existing pattern",
-    teaches: "Point at code you already like. Without a reference, Claude defaults to general best practices. With one, it matches the conventions your codebase actually uses.",
-    next: "Ask Claude to write the pattern it followed into `CLAUDE.md` so future sessions match it without the reference"
+    title: "既存のパターンに従う",
+    teaches: "既に気に入っているコードを指してください。参照がないと、Claude は一般的なベストプラクティスにデフォルト設定されます。参照があると、コードベースが実際に使用する規約に一致します。",
+    next: "Claude に、従ったパターンを `CLAUDE.md` に書き込むよう依頼して、将来のセッションが参照なしで一致するようにしてください"
   },
   "add-a-small-well": {
-    title: "Add a small, well-defined feature",
-    teaches: "State the inputs and outputs, not how to build it. Claude finds where similar code lives and adds yours alongside it."
+    title: "小さく、明確に定義された機能を追加する",
+    teaches: "構築方法ではなく、入力と出力を述べてください。Claude は同様のコードが存在する場所を見つけ、その横に追加します。"
   },
   "build-a-small-internal": {
-    title: "Build a small internal tool from scratch",
-    teaches: "You don't need a project, a framework, or a build step. Describe the tool and ask Claude to open it so you see it working immediately."
+    title: "小さな内部ツールをゼロから構築する",
+    teaches: "プロジェクト、フレームワーク、またはビルドステップは必要ありません。ツールを説明し、Claude に開くよう依頼して、すぐに動作を確認してください。"
   },
   "work-an-issue-end": {
-    title: "Work an issue end to end",
-    teaches: "Give the issue number, not a summary. Claude reads the full ticket itself, so requirements you'd forget to mention come through, and it validates the change before reporting back."
+    title: "イシューをエンドツーエンドで処理する",
+    teaches: "概要ではなく、イシュー番号を指定してください。Claude はチケット全体を読むため、言及し忘れた要件が含まれ、変更を報告する前に検証します。"
   },
   "find-and-update-copy": {
-    title: "Find and update copy across the codebase",
-    teaches: "Ask for variants and say what to skip. Claude finds phrasings a literal search would miss and leaves test fixtures and history untouched, so you review only the copy users actually see."
+    title: "コードベース全体でコピーを見つけて更新する",
+    teaches: "バリエーションを尋ね、スキップするものを言ってください。Claude はリテラル検索が見落とすフレーズングを見つけ、テストフィクスチャと履歴をそのままにしておくため、ユーザーが実際に見るコピーのみをレビューします。"
   },
   "draft-from-past-examples": {
-    title: "Draft a document from past examples",
-    teaches: "Point at a folder of finished work instead of describing your style. Claude learns the structure and voice from what you've already shipped, so the first draft reads like one of yours.",
-    next: "Save the voice as a skill so every draft starts there"
+    title: "過去の例からドキュメントを作成する",
+    teaches: "スタイルを説明する代わりに、完成した作業のフォルダを指してください。Claude は既に出荷したものからスタイルと声を学ぶため、最初のドラフトはあなたのものの 1 つのように読めます。",
+    next: "声をスキルとして保存して、すべてのドラフトがそこから開始されるようにしてください"
   },
   "write-tests-run-them": {
-    title: "Write tests, run them, fix failures",
-    teaches: "Ask for write, run, and fix together so Claude iterates without stopping for instructions.",
-    next: "Run `/init` so Claude learns your test command automatically"
+    title: "テストを書き、実行し、失敗を修正する",
+    teaches: "書き込み、実行、修正を一緒に依頼して、Claude が指示を待たずに反復するようにしてください。",
+    next: "`/init` を実行して、Claude がテストコマンドを自動的に学習するようにしてください"
   },
   "drive-implementation-from-tests": {
-    title: "Drive implementation from tests",
-    teaches: "Test-driven development: the tests define when the work is complete, and Claude iterates on the implementation until they pass."
+    title: "テストから実装を駆動する",
+    teaches: "テスト駆動開発: テストは作業が完了したときを定義し、Claude は合格するまで実装を反復します。"
   },
   "fill-gaps-from-a": {
-    title: "Fill gaps from a coverage report",
-    teaches: "Point at the coverage report instead of guessing what's untested. Claude reads the actual numbers and writes tests for the files that need them most.",
-    next: "Set this as a `/goal` so Claude keeps writing tests until coverage hits the target"
+    title: "カバレッジレポートからギャップを埋める",
+    teaches: "何がテストされていないかを推測する代わりに、カバレッジレポートを指してください。Claude は実際の数字を読み、最も必要なファイルのテストを書きます。",
+    next: "これを `/goal` として設定して、Claude がカバレッジがターゲットに達するまでテストを書き続けるようにしてください"
   },
   "port-code-between-languages": {
-    title: "Port code to another language",
-    teaches: "Say what to preserve, not just the target language. Naming the API or behavior that must stay the same gives Claude a contract to check the port against."
+    title: "コードを別の言語に移植する",
+    teaches: "ターゲット言語だけでなく、保持するものを言ってください。保持する必要がある API または動作に名前を付けると、Claude がポートをチェックするための契約が与えられます。"
   },
   "generate-docs-for-code": {
-    title: "Generate docs for undocumented code",
-    teaches: "Name the scope and the format. Claude finds what's missing and matches the comment style already in the file, so the new docs read like the rest."
+    title: "ドキュメント化されていないコードのドキュメントを生成する",
+    teaches: "スコープと形式に名前を付けてください。Claude は欠けているものを見つけ、ファイルに既にある comment スタイルに一致するため、新しいドキュメントは残りのように読めます。"
   },
   "migrate-a-pattern-across": {
-    title: "Migrate a pattern across the codebase",
-    teaches: "Describe the old pattern and the new one. Asking Claude to identify every place first means the call sites are listed in the response, so you can check none were missed."
+    title: "コードベース全体でパターンを移行する",
+    teaches: "古いパターンと新しいパターンを説明してください。Claude に最初にすべての場所を識別するよう依頼すると、呼び出しサイトが応答にリストアップされるため、何も見落とされていないことを確認できます。"
   },
   "optimize-against-a-measurable": {
-    title: "Optimize against a measurable target",
-    teaches: "Stating the metric and target gives Claude a clear definition of done.",
-    next: "Set this as a `/goal` so Claude keeps measuring and iterating until it hits the number"
+    title: "測定可能なターゲットに対して最適化する",
+    teaches: "メトリックとターゲットを述べると、Claude に完了の明確な定義が与えられます。",
+    next: "これを `/goal` として設定して、Claude がターゲットに達するまで測定と反復を続けるようにしてください"
   },
   "fix-a-precise-visual": {
-    title: "Fix a precise visual bug",
-    teaches: "Precise visual feedback gets a precise fix. State the exact element, measurement, and viewport.",
-    next: "Add a preview tool so Claude screenshots and verifies the fix itself"
+    title: "正確なビジュアルバグを修正する",
+    teaches: "正確なビジュアルフィードバックは正確な修正を得ます。正確な要素、測定、ビューポートを述べてください。",
+    next: "プレビューツールを追加して、Claude がスクリーンショットを撮り、修正を自分で検証するようにしてください"
   },
   "review-your-changes-before": {
-    title: "Review your changes before you commit",
-    teaches: "Catch problems while they're still cheap to fix. Claude reads the changed files in full, not just the diff lines, so it spots issues a quick self-review misses.",
-    next: "Run `/review` for the same check in one command"
+    title: "コミットする前に変更をレビューする",
+    teaches: "問題が修正するのに安い間に問題をキャッチしてください。Claude は diff 行だけでなく、変更されたファイル全体を読むため、迅速な自己レビューが見落とす問題を見つけます。",
+    next: "同じチェックを 1 つのコマンドで実行するために `/review` を実行してください"
   },
   "review-a-pull-request": {
-    title: "Review a pull request",
-    teaches: "Claude reviews with the whole codebase in context, not just the diff. It reads the changed code and what it calls, so it catches problems a diff-only review would miss.",
-    next: "Turn this on for every PR with Code Review"
+    title: "プルリクエストをレビューする",
+    teaches: "Claude は diff だけでなく、コードベース全体のコンテキストでレビューします。変更されたコードとそれが呼び出すものを読むため、diff のみのレビューが見落とす問題をキャッチします。",
+    next: "Code Review ですべての PR に対してこれをオンにしてください"
   },
   "review-infrastructure-changes-before": {
-    title: "Review infrastructure changes before applying",
-    teaches: "Plan output is dense and hard to scan. Pasting it gets you a plain-language summary of what's actually going to change before you apply it."
+    title: "適用する前にインフラストラクチャの変更をレビューする",
+    teaches: "プラン出力は密集していてスキャンが難しいです。ペーストすると、実際に何が変わるかの平易な言語の概要が得られます。"
   },
   "run-a-security-review": {
-    title: "Run a security review with a subagent",
-    teaches: "A [subagent](/en/sub-agents) runs the audit in its own context window and reports back a summary, so a long security review doesn't fill up your main session. The built-in general-purpose subagent handles this without extra setup.",
-    next: "Set up a dedicated security-review subagent your whole team can use"
+    title: "サブエージェントでセキュリティレビューを実行する",
+    teaches: "[サブエージェント](/ja/sub-agents)は独自のコンテキストウィンドウで監査を実行し、概要を報告するため、長いセキュリティレビューがメインセッションを満たしません。組み込みの汎用サブエージェントは追加のセットアップなしでこれを処理します。",
+    next: "チーム全体が使用できる専用のセキュリティレビューサブエージェントをセットアップしてください"
   },
   "review-content-before-sending": {
-    title: "Catch issues before formal review",
-    teaches: "Get a first pass before a human spends time on it. Name the concerns you want checked so the review is focused, then fix what it finds and send a cleaner draft.",
-    next: "Capture your review checklist as a skill your whole team can run"
+    title: "正式なレビューの前に問題をキャッチする",
+    teaches: "人間が時間を費やす前に最初のパスを取得してください。チェックしたい懸念事項に名前を付けて、レビューが焦点を当てるようにしてから、見つけたものを修正して、よりクリーンなドラフトを送信してください。",
+    next: "レビューチェックリストをスキルとしてキャプチャして、チーム全体が実行できるようにしてください"
   },
   "course-correct-a-wrong": {
-    title: "Course-correct a wrong approach",
-    teaches: "Name the constraint Claude missed, not just that it's wrong. A specific reason gives Claude a concrete constraint to satisfy on the retry, instead of guessing again.",
-    next: "Press `Esc` twice to open the rewind menu and restore code and conversation so the retry starts clean"
+    title: "間違ったアプローチを修正する",
+    teaches: "それが間違っているだけでなく、Claude が見落とした制約に名前を付けてください。具体的な理由は、Claude に再試行時に満たすべき具体的な制約を与え、再度推測する代わりに。",
+    next: "Esc を 2 回押して巻き戻しメニューを開き、コードと会話を復元して、再試行がクリーンに開始されるようにしてください"
   },
   "narrow-the-scope-of": {
-    title: "Narrow the scope of a change",
-    teaches: "When the direction is right but the change went too broad, ask Claude to keep part of it rather than rewinding everything. A stated boundary keeps a small fix from becoming a refactor."
+    title: "変更の範囲を絞る",
+    teaches: "方向が正しいが変更が広すぎる場合は、Claude にすべてを巻き戻すのではなく、その一部を保持するよう依頼してください。述べられた境界は、小さな修正がリファクタリングになるのを防ぎます。"
   },
   "turn-a-correction-into": {
-    title: "Turn a correction into a rule",
-    teaches: "A correction in chat isn't shared with your team. A rule in the project's [CLAUDE.md](/en/memory) is shared once you commit it, and Claude reads it at the start of every session.",
-    next: "Open `/memory` to review what Claude wrote"
+    title: "修正をルールに変える",
+    teaches: "チャットの修正はチーム全体と共有されません。プロジェクトの [CLAUDE.md](/ja/memory)のルールはコミットすると共有され、Claude はすべてのセッションの開始時にそれを読みます。",
+    next: "`/memory` を開いて、Claude が書いたものをレビューしてください"
   },
   "resolve-merge-conflicts": {
-    title: "Resolve merge conflicts",
-    teaches: "Say what state you want, not which markers to keep. Asking for the reasoning makes the merge reviewable instead of a black box."
+    title: "マージコンフリクトを解決する",
+    teaches: "保持するマーカーではなく、望む状態を言ってください。推論を求めると、マージがレビュー可能になり、ブラックボックスではなくなります。"
   },
   "commit-with-a-generated": {
-    title: "Commit with a generated message",
-    teaches: "Let Claude derive the message from the diff. It matches your repository's existing commit style."
+    title: "生成されたメッセージでコミットする",
+    teaches: "Claude に diff からメッセージを導出させてください。リポジトリの既存のコミットスタイルに一致します。"
   },
   "open-a-pull-request": {
-    title: "Open a pull request from a ticket",
-    teaches: "Skip the context switch between tracker, editor, and GitHub. One prompt reads the spec, makes the change, and opens the PR."
+    title: "チケットからプルリクエストを開く",
+    teaches: "トラッカー、エディタ、GitHub 間のコンテキストスイッチをスキップしてください。1 つのプロンプトがスペックを読み、変更を加え、PR を開きます。"
   },
   "draft-release-notes-from": {
-    title: "Draft release notes from git history",
-    teaches: "Give two reference points and the structure you want. Claude reads the commit log between them and drafts a changelog you can edit.",
-    next: "Save this as a `/changelog` skill"
+    title: "git 履歴からリリースノートを作成する",
+    teaches: "2 つの参照ポイントと望む構造を指定してください。Claude はそれらの間のコミットログを読み、編集できるチェンジログを作成します。",
+    next: "これを `/changelog` スキルとして保存してください"
   },
   "write-a-ci-workflow": {
-    title: "Write a CI workflow",
-    teaches: "Describe when it should run and what it should do; the YAML is generated for you, matched to your project's build and test commands."
+    title: "CI ワークフローを書く",
+    teaches: "いつ実行すべきか、何をすべきかを説明してください。YAML はプロジェクトのビルドおよびテストコマンドに一致して生成されます。"
   },
   "find-and-fix-a": {
-    title: "Find and fix a failing test",
-    teaches: "Describe the symptom; you don't need to know which file is broken. Claude runs the test to see the failure, traces it into source, and fixes it."
+    title: "失敗したテストを見つけて修正する",
+    teaches: "症状を説明してください。どのファイルが壊れているかを知る必要はありません。Claude はテストを実行して失敗を確認し、ソースに追跡して修正します。"
   },
   "investigate-a-reported-error": {
-    title: "Investigate a reported error",
-    teaches: "Describe the symptom and location; Claude reads the relevant code path and traces likely causes. Paste stack traces or logs if you have them.",
-    next: "Put a deeplink in your runbook that opens Claude with this prompt pre-filled"
+    title: "報告されたエラーを調査する",
+    teaches: "症状と場所を説明してください。Claude は関連するコードパスを読み、可能性のある原因を追跡します。スタックトレースまたはログがあればペーストしてください。",
+    next: "実行ブックに deeplink を入れて、このプロンプトが事前に入力された状態で Claude を開くようにしてください"
   },
   "fix-a-build-error": {
-    title: "Fix a build error at the root",
-    teaches: "Asking for root cause and verification prevents surface-level patches that suppress the error without fixing it."
+    title: "ビルドエラーを根本から修正する",
+    teaches: "根本原因と検証を求めると、エラーを修正せずに抑制する表面レベルのパッチが防止されます。"
   },
   "investigate-a-production-incident": {
-    title: "Investigate a production incident",
-    teaches: "List the evidence sources to correlate, not the steps to take. Claude reads logs, git history, and config together to narrow the cause.",
-    next: "Connect Sentry or your log store via MCP"
+    title: "本番インシデントを調査する",
+    teaches: "実行するステップではなく、相関させるエビデンスソースをリストアップしてください。Claude はログ、git 履歴、設定を一緒に読んで、原因を絞り込みます。",
+    next: "Sentry またはログストアを MCP 経由で接続してください"
   },
   "query-logs-in-plain": {
-    title: "Query logs in plain English",
-    teaches: "Ask the question instead of writing the SQL. Claude builds the query, runs it against your connected logs, and shows both the query and the result so you can check what ran."
+    title: "平易な英語でログをクエリする",
+    teaches: "SQL を書く代わりに、質問を尋ねてください。Claude はクエリを構築し、接続されたログに対して実行し、クエリと結果の両方を表示して、何が実行されたかを確認できるようにします。"
   },
   "diagnose-from-a-console": {
-    title: "Diagnose from a console screenshot",
-    teaches: "Cloud consoles show you the problem but not the commands to fix it. Claude reads the screenshot and translates the dashboard into the kubectl, gcloud, or aws commands to run."
+    title: "コンソールスクリーンショットから診断する",
+    teaches: "クラウドコンソールは問題を表示しますが、修正するコマンドは表示しません。Claude はスクリーンショットを読み、ダッシュボードを実行する kubectl、gcloud、または aws コマンドに変換します。"
   },
   "analyze-a-data-file": {
-    title: "Analyze a data file",
-    teaches: "A one-off question doesn't need a one-off script. Point at a file in your project folder and Claude reads it directly, finds the patterns, and writes the output where you ask.",
-    next: "Connect the data source via MCP instead of exporting files"
+    title: "データファイルを分析する",
+    teaches: "1 回限りの質問は 1 回限りのスクリプトを必要としません。プロジェクトフォルダ内のファイルを指してください。Claude はそれを直接読み、パターンを見つけ、要求した場所に出力を書き込みます。",
+    next: "ファイルをエクスポートする代わりに、MCP 経由でデータソースを接続してください"
   },
   "generate-variations-from-performance": {
-    title: "Generate variations from performance data",
-    teaches: "State the constraint at the start so generation stays within the limit. Claude reads the metrics, picks what to replace, and produces alternatives that fit.",
-    next: "Connect the ad platform via MCP instead of exporting a file"
+    title: "パフォーマンスデータからバリエーションを生成する",
+    teaches: "制約を最初に述べて、生成が制限内に留まるようにしてください。Claude はメトリックを読み、置き換えるものを選択し、制限に適合する代替案を生成します。",
+    next: "ファイルをエクスポートする代わりに、MCP 経由で広告プラットフォームを接続してください"
   },
   "turn-a-recurring-task": {
-    title: "Turn a recurring task into a skill",
-    teaches: "Name the steps once; reuse them as a command. Claude writes a [skill](/en/skills) anyone on your team can run."
+    title: "繰り返しタスクをスキルに変える",
+    teaches: "ステップに一度名前を付けてください。コマンドとして再利用してください。Claude はチーム内の誰でも実行できる [スキル](/ja/skills)を書きます。"
   },
   "add-a-hook-for": {
-    title: "Add a hook for repeat behavior",
-    teaches: "Hooks make a behavior automatic instead of something you have to remember to ask for. Describe the trigger and action and Claude writes the [hook](/en/hooks) configuration."
+    title: "繰り返し動作のためのフックを追加する",
+    teaches: "フックは、覚えておく必要があるものではなく、動作を自動にします。トリガーとアクションを説明し、Claude が [フック](/ja/hooks)設定を書きます。"
   },
   "connect-a-tool-with": {
-    title: "Connect a tool with MCP",
-    teaches: "Connect the source once instead of pasting data every session. After [MCP](/en/mcp) setup, Claude reads from the tool directly when you ask about it."
+    title: "MCP でツールを接続する",
+    teaches: "毎回のセッションでデータをペーストする代わりに、ソースを一度接続してください。[MCP](/ja/mcp)セットアップ後、Claude はそれについて尋ねるときにツールから直接読みます。"
   },
   "capture-what-to-remember": {
-    title: "Capture what to remember for next time",
-    teaches: "Ask before you forget. Claude knows what it had to figure out this session and proposes [CLAUDE.md](/en/memory) entries so the next session starts with that context."
+    title: "次回のために覚えておくべきことをキャプチャする",
+    teaches: "忘れる前に尋ねてください。Claude はこのセッションで何を理解する必要があったかを知っており、次のセッションがその文脈で開始されるように [CLAUDE.md](/ja/memory)エントリを提案します。"
   }
 };
 
 <PromptLibrary text={text} labels={labels} tagLabels={tagLabels} phaseLabels={phaseLabels} sourceLabels={sourceLabels} catLabels={catLabels} />
 
-## What makes these prompts work
+## これらのプロンプトを機能させるもの
 
-The prompts above share a few patterns. Recognizing them helps you adapt any prompt here to your own task.
+上記のプロンプトはいくつかのパターンを共有しています。それらを認識することは、ここで任意のプロンプトを独自のタスクに適応させるのに役立ちます。
 
-**Describe the outcome, not the steps.** Say what you want and let Claude find the files. The prompt below works without naming a single file path.
+**ステップではなく結果を説明してください。** 何をしたいかを言い、Claude にファイルを見つけさせてください。以下のプロンプトは、単一のファイルパスを名前付けなくても機能します。
 
 ```text theme={null}
 add rate limiting to the public API and make sure existing tests still pass
 ```
 
-**Give it a way to check its own work.** Ask for run, test, compare, or verify in the same prompt so Claude iterates instead of stopping after one attempt.
+**自分の作業をチェックする方法を与えてください。** 同じプロンプトで実行、テスト、比較、または検証を依頼して、Claude が 1 回の試行後に停止する代わりに反復するようにしてください。
 
 ```text theme={null}
 write the migration, run it against the dev database, and confirm the schema matches
 ```
 
-**Point at a reference.** Name an existing file, test, or pattern to match so the new code is consistent with what you already have.
+**参照を指してください。** 既存のファイル、テスト、またはパターンに名前を付けて、新しいコードが既に持っているものと一致するようにしてください。
 
 ```text theme={null}
 add a settings page that follows the same layout as the profile page
 ```
 
-**State the measurable target.** When the goal is performance or coverage, give the metric and threshold so completion is unambiguous.
+**測定可能なターゲットを述べてください。** 目標がパフォーマンスまたはカバレッジの場合、メトリックとしきい値を指定して、完了が明確になるようにしてください。
 
 ```text theme={null}
 get the bundle size under 200KB and show me what you removed
 ```
 
-**Give it the artifact.** Paste errors, logs, screenshots, and plan output directly in the prompt, or type `@` to reference a file. Claude reads the source instead of your description of it.
+**アーティファクトを与えてください。** エラー、ログ、スクリーンショット、プラン出力をプロンプトに直接ペーストするか、`@` を入力してファイルを参照してください。Claude はあなたの説明ではなくソースを読みます。
 
 ```text theme={null}
 why is the build failing? @build.log
 ```
 
-**Say how you want the answer.** Name the format, length, or audience so the explanation fits how you'll use it. To make a format the default for every response, set an [output style](/en/output-styles).
+**答えてほしい方法を言ってください。** 形式、長さ、または対象者に名前を付けて、説明がどのように使用するかに適合するようにしてください。すべての応答のデフォルトとして形式を作成するには、[出力スタイル](/ja/output-styles)を設定してください。
 
 ```text theme={null}
 explain how the payment retry logic works as an HTML page with a diagram, then open it in my browser
 ```
 
-For more on each pattern, see [best practices](/en/best-practices).
+各パターンの詳細については、[ベストプラクティス](/ja/best-practices)を参照してください。
 
-## Where these come from
+## これらはどこから来ているのか
 
-These prompts are based on patterns from published Anthropic resources. Each card links to its source:
+これらのプロンプトは、公開されている Anthropic リソースのパターンに基づいています。各カードはそのソースにリンクしています:
 
-* [Common workflows](/en/common-workflows): step-by-step guides for the core tasks
-* [Best practices](/en/best-practices): prompting patterns and project setup
-* [How Anthropic teams use Claude Code](https://claude.com/blog/how-anthropic-teams-use-claude-code): real workflows from engineering, product, design, and data teams, with deep dives on [legal](https://claude.com/blog/how-anthropic-uses-claude-legal), [marketing](https://claude.com/blog/how-anthropic-uses-claude-marketing), and [cybersecurity](https://claude.com/blog/how-anthropic-uses-claude-cybersecurity)
-* [Scaling agentic coding guide](https://resources.anthropic.com/hubfs/Scaling%20agentic%20coding%20across%20your%20organization.pdf): the enterprise adoption guide
+* [一般的なワークフロー](/ja/common-workflows): コアタスクのステップバイステップガイド
+* [ベストプラクティス](/ja/best-practices): プロンプティングパターンとプロジェクトセットアップ
+* [Anthropic チームが Claude Code をどのように使用しているか](https://claude.com/blog/how-anthropic-teams-use-claude-code): エンジニアリング、プロダクト、デザイン、データチームからの実際のワークフロー。[法務](https://claude.com/blog/how-anthropic-uses-claude-legal)、[マーケティング](https://claude.com/blog/how-anthropic-uses-claude-marketing)、[サイバーセキュリティ](https://claude.com/blog/how-anthropic-uses-claude-cybersecurity)の詳細なダイブ
+* [agentic coding スケーリングガイド](https://resources.anthropic.com/hubfs/Scaling%20agentic%20coding%20across%20your%20organization.pdf): エンタープライズ採用ガイド
 
-For video walkthroughs of these patterns, see the free [Claude Code in Action](https://anthropic.skilljar.com/claude-code-in-action) course on Anthropic Academy.
+これらのパターンのビデオウォークスルーについては、Anthropic Academy の無料 [Claude Code in Action](https://anthropic.skilljar.com/claude-code-in-action)コースを参照してください。
 
-## Related resources
+## 関連リソース
 
-The prompts on this page are starting points. Once one works for your project, the next step is making it repeatable: save it as a [skill](/en/skills) so anyone on your team can run it as a `/command`, and record the conventions Claude learned in [CLAUDE.md](/en/memory) so every session starts with that context instead of Claude relearning it. For larger or riskier changes, [plan mode](/en/permission-modes#analyze-before-you-edit-with-plan-mode) shows you the file list before any edits happen.
+このページのプロンプトは出発点です。1 つがプロジェクトで機能したら、次のステップはそれを繰り返し可能にすることです。[スキル](/ja/skills)として保存して、チーム内の誰でも `/command` として実行でき、Claude が学習したコンベンションを [CLAUDE.md](/ja/memory)に記録して、すべてのセッションがその文脈で開始されるようにしてください。より大きなまたはより危険な変更については、[プランモード](/ja/permission-modes#analyze-before-you-edit-with-plan-mode)は編集が発生する前にファイルリストを表示します。
 
-If you're introducing Claude Code across a team, see [administration](/en/admin-setup) for managed settings and policy, and [costs and usage](/en/costs) for how this work is billed on your plan.
+チーム全体に Claude Code を導入している場合は、管理設定とポリシーについては [管理](/ja/admin-setup)を、このワークがプランでどのように請求されるかについては [コストと使用状況](/ja/costs)を参照してください。

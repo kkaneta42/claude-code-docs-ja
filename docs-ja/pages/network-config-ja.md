@@ -55,13 +55,9 @@ export HTTPS_PROXY=http://username:password@proxy.example.com:8080
 
 ## CA 証明書ストア
 
-デフォルトでは、Claude Code は、バンドルされた Mozilla CA 証明書とオペレーティングシステムの証明書ストアの両方を信頼しています。CrowdStrike Falcon や Zscaler などのエンタープライズ TLS インスペクションプロキシは、ルート証明書が OS 信頼ストアにインストールされている場合、追加の設定なしで動作します。
+デフォルトでは、Claude Code はバンドルされた Mozilla CA 証明書とオペレーティングシステムの証明書ストアの両方を信頼しています。CrowdStrike Falcon や Zscaler などのエンタープライズ TLS インスペクションプロキシは、ルート証明書が OS 信頼ストアにインストールされている場合、追加の設定なしで動作します。
 
-<Note>
-  システム CA ストア統合には、ネイティブ Claude Code バイナリ配布が必要です。Node.js ランタイムで実行している場合、システム CA ストアは自動的にマージされません。その場合は、`NODE_EXTRA_CA_CERTS=/path/to/ca-cert.pem` を設定して、エンタープライズルート CA を信頼してください。
-</Note>
-
-`CLAUDE_CODE_CERT_STORE` は、カンマ区切りのソースリストを受け入れます。認識される値は、Claude Code に付属する Mozilla CA セットの場合は `bundled`、オペレーティングシステムの信頼ストアの場合は `system` です。デフォルトは `bundled,system` です。
+`CLAUDE_CODE_CERT_STORE` はカンマ区切りのソースリストを受け入れます。認識される値は、Claude Code に付属する Mozilla CA セットの場合は `bundled`、オペレーティングシステムの信頼ストアの場合は `system` です。デフォルトは `bundled,system` です。
 
 バンドルされた Mozilla CA セットのみを信頼するには：
 
@@ -106,14 +102,15 @@ export CLAUDE_CODE_CLIENT_KEY_PASSPHRASE="your-passphrase"
 
 Claude Code は以下の URL へのアクセスが必要です。プロキシ設定とファイアウォールルールでこれらをホワイトリストに登録してください。特にコンテナ化された環境または制限されたネットワーク環境では重要です。
 
-| URL                            | 必要な用途                                                                       |
-| ------------------------------ | --------------------------------------------------------------------------- |
-| `api.anthropic.com`            | Claude API リクエスト                                                            |
-| `claude.ai`                    | claude.ai アカウント認証                                                           |
-| `platform.claude.com`          | Anthropic Console アカウント認証                                                   |
-| `downloads.claude.ai`          | プラグイン実行可能ファイルのダウンロード、ネイティブインストーラーおよびネイティブ自動更新プログラム                          |
-| `storage.googleapis.com`       | {/* max-version: 2.1.115 */}2.1.116 より前のバージョンのネイティブインストーラーおよびネイティブ自動更新プログラム |
-| `bridge.claudeusercontent.com` | [Chrome の Claude](/ja/chrome) 拡張機能 WebSocket ブリッジ                           |
+| URL                            | 必要な用途                                                                                |
+| ------------------------------ | ------------------------------------------------------------------------------------ |
+| `api.anthropic.com`            | Claude API リクエスト                                                                     |
+| `claude.ai`                    | claude.ai アカウント認証                                                                    |
+| `platform.claude.com`          | Anthropic Console アカウント認証                                                            |
+| `downloads.claude.ai`          | プラグイン実行可能ファイルのダウンロード、ネイティブインストーラーおよびネイティブ自動更新プログラム                                   |
+| `storage.googleapis.com`       | {/* max-version: 2.1.115 */}2.1.116 より前のバージョンのネイティブインストーラーおよびネイティブ自動更新プログラム          |
+| `bridge.claudeusercontent.com` | [Chrome の Claude](/ja/chrome) 拡張機能 WebSocket ブリッジ                                    |
+| `raw.githubusercontent.com`    | [`/release-notes`](/ja/commands) のチェンジログフィード、更新後に表示されるリリースノート、プラグインマーケットプレイスのインストール数 |
 
 npm を通じて Claude Code をインストールするか、独自のバイナリ配布を管理する場合、エンドユーザーは `downloads.claude.ai` または `storage.googleapis.com` へのアクセスが不要な場合があります。
 
