@@ -106,12 +106,13 @@ OTLP エクスポーターのクライアント証明書を設定する方法は
 
 以下の環境変数は、カーディナリティを管理するためにメトリクスに含まれる属性を制御します:
 
-| 環境変数                                | 説明                                                    | デフォルト値  | 無効化する例  |
-| ----------------------------------- | ----------------------------------------------------- | ------- | ------- |
-| `OTEL_METRICS_INCLUDE_SESSION_ID`   | メトリクスに session.id 属性を含める                              | `true`  | `false` |
-| `OTEL_METRICS_INCLUDE_VERSION`      | メトリクスに app.version 属性を含める                             | `false` | `true`  |
-| `OTEL_METRICS_INCLUDE_ACCOUNT_UUID` | メトリクスに user.account\_uuid および user.account\_id 属性を含める | `true`  | `false` |
-| `OTEL_METRICS_INCLUDE_ENTRYPOINT`   | メトリクスに app.entrypoint 属性を含める                          | `false` | `true`  |
+| 環境変数                                       | 説明                                                     | デフォルト値  | 無効化する例  |
+| ------------------------------------------ | ------------------------------------------------------ | ------- | ------- |
+| `OTEL_METRICS_INCLUDE_SESSION_ID`          | メトリクスに session.id 属性を含める                               | `true`  | `false` |
+| `OTEL_METRICS_INCLUDE_VERSION`             | メトリクスに app.version 属性を含める                              | `false` | `true`  |
+| `OTEL_METRICS_INCLUDE_ACCOUNT_UUID`        | メトリクスに user.account\_uuid および user.account\_id 属性を含める  | `true`  | `false` |
+| `OTEL_METRICS_INCLUDE_ENTRYPOINT`          | メトリクスに app.entrypoint 属性を含める                           | `false` | `true`  |
+| `OTEL_METRICS_INCLUDE_RESOURCE_ATTRIBUTES` | `OTEL_RESOURCE_ATTRIBUTES` からのキーをメトリクスデータポイントの属性として含める | `true`  | `false` |
 
 これらの変数は、メトリクスのカーディナリティを制御するのに役立ちます。これはメトリクスバックエンドのストレージ要件とクエリパフォーマンスに影響します。カーディナリティが低いほど、一般的にパフォーマンスが向上し、ストレージコストが低くなりますが、分析用のより詳細なデータは少なくなります。
 
@@ -303,6 +304,10 @@ export OTEL_RESOURCE_ATTRIBUTES="department=engineering,team.id=platform,cost_ce
 * チーム固有のダッシュボードを作成する
 * 特定のチームのアラートを設定する
 
+Claude Code はこれらの値をすべてのメトリクスデータポイントとイベントレコードの属性として、OTLP リソースブロックで送信することに加えて、属性として付加します。ほとんどのメトリクスバックエンドはデータポイント属性をクエリ可能なラベルとして公開しているため、カスタムキーで直接メトリクスをグループ化およびフィルタリングできます。カスタムキーは、`user.id` または `session.id` などの [標準属性](#standard-attributes)をオーバーライドしません: キーが衝突する場合、Claude Code は組み込み値を保持します。
+
+各カスタムキーはすべてのメトリクスシリーズのラベルになるため、高カーディナリティ値はメトリクスバックエンドのストレージコストを増加させます。カスタム属性をリソースブロックのみで送信し、データポイントラベルから省略するには、`OTEL_METRICS_INCLUDE_RESOURCE_ATTRIBUTES=false` を設定します。[メトリクスカーディナリティ制御](#metrics-cardinality-control)を参照してください。
+
 <Warning>
   **OTEL\_RESOURCE\_ATTRIBUTES の重要なフォーマット要件:**
 
@@ -383,17 +388,18 @@ export OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317
 
 すべてのメトリクスとイベントは、これらの標準属性を共有します:
 
-| 属性                  | 説明                                                                         | 制御者                                               |
-| ------------------- | -------------------------------------------------------------------------- | ------------------------------------------------- |
-| `session.id`        | 一意のセッション識別子                                                                | `OTEL_METRICS_INCLUDE_SESSION_ID` (デフォルト: true)   |
-| `app.version`       | 現在の Claude Code バージョン                                                      | `OTEL_METRICS_INCLUDE_VERSION` (デフォルト: false)     |
-| `app.entrypoint`    | セッションがどのように起動されたか。例: `cli`、`sdk-cli`、`sdk-ts`、`sdk-py`、または `claude-vscode` | `OTEL_METRICS_INCLUDE_ENTRYPOINT` (デフォルト: false)  |
-| `organization.id`   | 組織 UUID (認証時)                                                              | 利用可能な場合は常に含まれます                                   |
-| `user.account_uuid` | アカウント UUID (認証時)                                                           | `OTEL_METRICS_INCLUDE_ACCOUNT_UUID` (デフォルト: true) |
-| `user.account_id`   | Anthropic 管理 API と一致するタグ付き形式のアカウント ID (認証時)。例: `user_01BWBeN28...`         | `OTEL_METRICS_INCLUDE_ACCOUNT_UUID` (デフォルト: true) |
-| `user.id`           | Claude Code インストールごとに生成される匿名デバイス/インストール識別子                                 | 常に含まれます                                           |
-| `user.email`        | ユーザーメールアドレス (OAuth 経由で認証時)                                                 | 利用可能な場合は常に含まれます                                   |
-| `terminal.type`     | ターミナルタイプ。例: `iTerm.app`、`vscode`、`cursor`、`tmux`                           | 検出された場合は常に含まれます                                   |
+| 属性                                   | 説明                                                                                                | 制御者                                                      |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| `session.id`                         | 一意のセッション識別子                                                                                       | `OTEL_METRICS_INCLUDE_SESSION_ID` (デフォルト: true)          |
+| `app.version`                        | 現在の Claude Code バージョン                                                                             | `OTEL_METRICS_INCLUDE_VERSION` (デフォルト: false)            |
+| `app.entrypoint`                     | セッションがどのように起動されたか。例: `cli`、`sdk-cli`、`sdk-ts`、`sdk-py`、または `claude-vscode`                        | `OTEL_METRICS_INCLUDE_ENTRYPOINT` (デフォルト: false)         |
+| `organization.id`                    | 組織 UUID (認証時)                                                                                     | 利用可能な場合は常に含まれます                                          |
+| `user.account_uuid`                  | アカウント UUID (認証時)                                                                                  | `OTEL_METRICS_INCLUDE_ACCOUNT_UUID` (デフォルト: true)        |
+| `user.account_id`                    | Anthropic 管理 API と一致するタグ付き形式のアカウント ID (認証時)。例: `user_01BWBeN28...`                                | `OTEL_METRICS_INCLUDE_ACCOUNT_UUID` (デフォルト: true)        |
+| `user.id`                            | Claude Code インストールごとに生成される匿名デバイス/インストール識別子                                                        | 常に含まれます                                                  |
+| `user.email`                         | ユーザーメールアドレス (OAuth 経由で認証時)                                                                        | 利用可能な場合は常に含まれます                                          |
+| `terminal.type`                      | ターミナルタイプ。例: `iTerm.app`、`vscode`、`cursor`、`tmux`                                                  | 検出された場合は常に含まれます                                          |
+| Keys from `OTEL_RESOURCE_ATTRIBUTES` | カスタム属性 (例: `department` または `team.id`)。[マルチチームの組織サポート](#multi-team-organization-support)を参照してください | `OTEL_METRICS_INCLUDE_RESOURCE_ATTRIBUTES` (デフォルト: true) |
 
 イベントには、以下の追加属性が含まれます。これらはメトリクスに添付されることはありません。これらはバウンドされていないカーディナリティを引き起こすためです:
 

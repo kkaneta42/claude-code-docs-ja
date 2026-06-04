@@ -17,6 +17,270 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-06-04</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/amazon-bedrock-ja.md     |   1 +
+ docs-ja/pages/changelog.md             |  31 ++
+ docs-ja/pages/channels-reference-ja.md | 782 ++-------------------------------
+ docs-ja/pages/chrome-ja.md             |   4 +-
+ docs-ja/pages/claude-directory-ja.md   |   2 +-
+ docs-ja/pages/env-vars-ja.md           |  15 +-
+ docs-ja/pages/fast-mode-ja.md          |   2 +-
+ docs-ja/pages/headless-ja.md           |  22 +-
+ docs-ja/pages/hooks-guide-ja.md        |  36 +-
+ docs-ja/pages/hooks-ja.md              |  50 +--
+ docs-ja/pages/mcp-ja.md                |   2 +
+ docs-ja/pages/monitoring-usage-ja.md   |  40 +-
+ docs-ja/pages/prompt-caching-ja.md     |  11 +
+ docs-ja/pages/settings-ja.md           | 190 ++++----
+ docs-ja/pages/sub-agents-ja.md         |   7 +-
+ docs-ja/pages/troubleshooting-ja.md    | 146 ++----
+ 16 files changed, 282 insertions(+), 1059 deletions(-)
+```
+
+<details>
+<summary>amazon-bedrock-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/amazon-bedrock-ja.md b/docs-ja/pages/amazon-bedrock-ja.md
+index 90046f9..c411db1 100644
+--- a/docs-ja/pages/amazon-bedrock-ja.md
++++ b/docs-ja/pages/amazon-bedrock-ja.md
+@@ -225,4 +225,5 @@ Claude Code で Bedrock を有効にする場合は、以下に注意してく
+ * `AWS_REGION` は必須の環境変数です。Claude Code はこの設定について `.aws` 設定ファイルから読み込みません。
+ * Bedrock を使用する場合、`/logout` コマンドは無効になります。認証は AWS 認証情報を通じて処理されるためです。
++* WebSearch ツールは Bedrock では利用できません。[WebSearch ツールの動作](/ja/tools-reference#websearch-tool-behavior)を参照してください。
+ * 他のプロセスに漏らしたくない `AWS_PROFILE` などの環境変数に設定ファイルを使用できます。詳細については [Settings](/ja/settings) を参照してください。
+ 
+```
+
+</details>
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index d4dab2e..e02bb2e 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,35 @@
+ # Changelog
+ 
++## 2.1.162
++
++- `claude agents --json` now includes `waitingFor` showing what a waiting session is blocked on (e.g. permission prompt)
++- `--tools`: explicitly listing Grep/Glob now provides the dedicated search tools on native builds with embedded search (previously these names were silently ignored)
++- `/effort` now confirms when your chosen level will persist as the default for new sessions
++- Clicking a slash command in the autocomplete menu now fills it into your prompt instead of running it immediately; press Enter to run
++- Remote Control now shows as a persistent footer pill (with a link to the session) instead of a startup message
++- Renamed Windsurf to Devin Desktop in the `/ide` menu, `/terminal-setup`, and `/scroll-speed`, following the editor's rebrand
++- Fixed a silent startup hang when the config directory is read-only or unwritable — Claude Code now starts with in-memory config and surfaces startup errors instead of showing a blank screen
++- Fixed WebFetch permission rules not being applied to built-in preapproved domains; explicit `WebFetch(domain:...)` deny/ask/allow rules now take precedence over the preapproved-host auto-allow
++- Fixed Windows permission rules never matching when spelled with backslashes (`~\`, `\\server\share`) or case-variant paths, and Read deny rules not hiding files from Glob/Grep results
++- Fixed an interrupt (Esc) sent at the very start of a turn being silently dropped in stream-json/SDK sessions, leaving the turn running with no "Interrupted" feedback
++- Fixed API 400 `no low surrogate in string` errors for classifier side-queries and MCP server descriptions containing emoji near a truncation boundary
++- Fixed MCP per-server `timeout` config values below 1000 ms being floored to a 1-second watchdog that aborted every tool call; sub-1000 ms values are now ignored (falling back to `MCP_TOOL_TIMEOUT` or default), and `claude mcp get` annotates them accordingly
++- Fixed the LSP tool's `workspaceSymbol` operation returning no results; it now accepts a `query` parameter and passes it to the language server
++- Fixed `claude agents` cutting live status text (tool args, replies, prompts, exec output) at 60–120 columns on wide terminals; the status detail now uses the full terminal width
++- Fixed `claude agents` truncating long session names at 40 columns; the name column now grows with terminal width
++- Fixed `claude agents` attach occasionally bouncing straight back to the session list on the first try after a background-service restart
++- Fixed `claude agents` Ctrl+V image paste doing nothing in the dispatch input and the session reply box; pasting with no image now shows a hint
++- Fixed backgrounding a session with ← silently losing the conversation when the background service cannot start; the session stays in the list as a failed row you can wake with Enter
++- Fixed replies from the agents view that fail to send being lost; they are now queued for delivery on the next session start
++- Fixed cross-session messaging (`SendMessage`) silently breaking when `CLAUDE_CODE_TMPDIR` or `$TMPDIR` points at a deep directory
++- Fixed opening a running background session from `claude agents` stalling for 5 seconds before attaching
+```
+
+</details>
+
+<details>
+<summary>channels-reference-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/channels-reference-ja.md b/docs-ja/pages/channels-reference-ja.md
+index d3e6664..7d00277 100644
+--- a/docs-ja/pages/channels-reference-ja.md
++++ b/docs-ja/pages/channels-reference-ja.md
+@@ -1,757 +1,25 @@
+-> ## Documentation Index
+-> Fetch the complete documentation index at: https://code.claude.com/docs/llms.txt
+-> Use this file to discover all available pages before exploring further.
+-
+-# チャネルリファレンス
+-
+-> webhook、アラート、チャットメッセージを Claude Code セッションにプッシュする MCP サーバーを構築します。チャネルコントラクトのリファレンス：機能宣言、通知イベント、返信ツール、送信者ゲーティング、権限リレー。
+-
+-<Note>
+-  チャネルは[リサーチプレビュー](/ja/channels#research-preview)段階にあり、Claude Code v2.1.80 以降が必要です。Team および Enterprise 組織は[明示的に有効化](/ja/channels#enterprise-controls)する必要があります。
+-</Note>
+-
+-チャネルは、Claude Code セッションにイベントをプッシュする MCP サーバーで、Claude がターミナルの外で発生していることに反応できるようにします。
+-
+-一方向または双方向のチャネルを構築できます。一方向チャネルは、アラート、webhook、または監視イベントを転送して Claude が対応できるようにします。チャットブリッジのような双方向チャネルは、Claude がメッセージを返送できるように[返信ツールを公開](#expose-a-reply-tool)することもできます。信頼できる送信者パスを持つチャネルは、[権限プロンプトをリレー](#relay-permission-prompts)することを選択して、ツール使用をリモートで承認または拒否できます。
+-
+-このページでは以下をカバーしています：
+-
+-* [概要](#overview)：チャネルの仕組み
+-* [必要なもの](#what-you-need)：要件と一般的な手順
+-* [例：webhook レシーバーを構築](#example-build-a-webhook-receiver)：最小限の一方向ウォークスルー
+-* [サーバーオプション](#server-options)：コンストラクタフィールド
+-* [通知フォーマット](#notification-format)：イベントペイロードと配信動作
+-* [返信ツールを公開](#expose-a-reply-tool)：Claude がメッセージを返送できるようにする
+-* [インバウンドメッセージをゲート](#gate-inbound-messages)：プロンプトインジェクションを防ぐための送信者チェック
+```
+
+</details>
+
+<details>
+<summary>chrome-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/chrome-ja.md b/docs-ja/pages/chrome-ja.md
+index c7091f7..cba3951 100644
+--- a/docs-ja/pages/chrome-ja.md
++++ b/docs-ja/pages/chrome-ja.md
+@@ -69,5 +69,5 @@ VS Code については、[VS Code でのブラウザ自動化](/ja/vs-code#auto
+ ### Chrome をデフォルトで有効にする
+ 
+-各セッションで `--chrome` を渡すことを避けるには、`/chrome` を実行して「Enabled by default」を選択します。
++各セッションで `--chrome` を渡すことを避けるには、`/chrome` を実行して「デフォルトで有効」を選択します。
+ 
+ [VS Code 拡張機能](/ja/vs-code#automate-browser-tasks-with-chrome) では、Chrome 拡張機能がインストールされている場合、Chrome はいつでも利用可能です。追加のフラグは必要ありません。
+@@ -169,5 +169,5 @@ Claude はインタラクションシーケンスを記録し、GIF ファイル
+ ### 拡張機能が検出されない
+ 
+-Claude Code が「Chrome extension not detected」を表示する場合：
++Claude Code の setup-issues 行に `chrome` がリストされている場合：
+ 
+ 1. Chrome 拡張機能が `chrome://extensions` にインストールされ、有効になっていることを確認します
+```
+
+</details>
+
+<details>
+<summary>claude-directory-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/claude-directory-ja.md b/docs-ja/pages/claude-directory-ja.md
+index 3347c46..931e4cd 100644
+--- a/docs-ja/pages/claude-directory-ja.md
++++ b/docs-ja/pages/claude-directory-ja.md
+@@ -1557,5 +1557,5 @@ Windows では、`~/.claude` は `%USERPROFILE%\.claude` に解決されます
+ ### ローカルデータをクリアする
+ 
+-`claude project purge` を実行して、1 つのプロジェクトに対して Claude Code が保持する状態を削除します：
++`claude project purge` を実行して、1 つのプロジェクトに対して Claude Code が保持する状態を削除します。このコマンドには Claude Code v2.1.124 以降が必要です。以下を削除します：
+ 
+ * `projects/` の下のトランスクリプトと自動メモリ
+```
+
+</details>
+
+<details>
+<summary>env-vars-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/env-vars-ja.md b/docs-ja/pages/env-vars-ja.md
+index 988c1ea..ab6707c 100644
+--- a/docs-ja/pages/env-vars-ja.md
++++ b/docs-ja/pages/env-vars-ja.md
+@@ -151,5 +151,5 @@ Claude Code は起動時に環境変数を読み取るため、変更は `claude
+ | `CLAUDE_CODE_DEBUG_LOG_LEVEL`                           | デバッグログファイルに書き込まれる最小ログレベル。値：`verbose`、`debug`（デフォルト）、`info`、`warn`、`error`。フルステータスラインコマンド出力などの大量の診断を含めるには `verbose` に設定するか、ノイズを減らすには `error` に上げます                                                                                                                                                                                                                                                                              |
+ | `CLAUDE_CODE_DISABLE_1M_CONTEXT`                        | [1M コンテキストウィンドウ](/ja/model-config#extended-context) サポートを無効にするには `1` に設定します。設定すると、1M モデルバリアントはモデルピッカーで利用できなくなります。コンプライアンス要件のあるエンタープライズ環境に役立ちます                                                                                                                                                                                                                                                                                 |
+-| `CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING`                 | Opus 4.6 と Sonnet 4.6 の [適応的推論](/ja/model-config#adjust-effort-level) を無効にするには `1` に設定します。`MAX_THINKING_TOKENS` で制御される固定思考予算にフォールバックします。{/* min-version: 2.1.111 */}Opus 4.7 以降では効果がなく、常に適応的推論を使用します                                                                                                                                                                                                                           |
++| `CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING`                 | Opus 4.6 と Sonnet 4.6 の [適応的推論](/ja/model-config#adjust-effort-level) を無効にするには `1` に設定します。`MAX_THINKING_TOKENS` で制御される固定思考予算にフォールバックします。{/* min-version: 2.1.111 */}v2.1.111 以降、Opus 4.7 以降では効果がなく、常に適応的推論を使用します                                                                                                                                                                                                               |
+ | `CLAUDE_CODE_DISABLE_AGENT_VIEW`                        | [バックグラウンドエージェントとエージェントビュー](/ja/agent-view) をオフにするには `1` に設定します：`claude agents`、`--bg`、`/background`、およびオンデマンドスーパーバイザー。[`disableAgentView`](/ja/settings#available-settings) 設定と同等です                                                                                                                                                                                                                                            |
+ | `CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN`                  | [フルスクリーンレンダリング](/ja/fullscreen) を無効にするには `1` に設定します。クラシックなメインスクリーンレンダラーを使用します。会話はターミナルのネイティブなスクロールバックに留まるため、`Cmd+f` と tmux コピーモードが通常通り機能します。`CLAUDE_CODE_NO_FLICKER` と [`tui`](/ja/settings#available-settings) 設定より優先されます。`/tui default` で切り替えることもできます。バックグラウンドセッションから開かれた [エージェントビュー](/ja/agent-view) には適用されません。これらは常にフルスクリーンレンダリングを使用します                                                                                    |
+@@ -175,5 +175,5 @@ Claude Code は起動時に環境変数を読み取るため、変更は `claude
+ | `CLAUDE_CODE_DISABLE_WORKFLOWS`                         | [ワークフロー](/ja/workflows#turn-workflows-off) を無効にするには `1` に設定します。[`disableWorkflows`](/ja/settings#available-settings) 設定と同等です                                                                                                                                                                                                                                                                                                   |
+ | `CLAUDE_CODE_EFFORT_LEVEL`                              | サポートされているモデルの努力レベルを設定します。値：`low`、`medium`、`high`、`xhigh`、`max`、または `auto`（モデルのデフォルトを使用）。利用可能なレベルはモデルによって異なります。`/effort` および `effortLevel` 設定より優先されます。[努力レベルを調整](/ja/model-config#adjust-effort-level) を参照してください                                                                                                                                                                                                                |
+-| `CLAUDE_CODE_ENABLE_AUTO_MODE`                          | {/* min-version: 2.1.158 */}Amazon Bedrock、Google Cloud Vertex AI、Microsoft Foundry で [自動モード](/ja/permission-modes#eliminate-prompts-with-auto-mode) を利用可能にするには `1` に設定します。Anthropic API では効果がなく、自動モードはデフォルトで利用可能です。[Bedrock、Vertex AI、または Foundry で自動モードを有効にする](/ja/permission-modes#enable-auto-mode-on-bedrock-vertex-ai-or-foundry) を参照してください                                                                              |
++| `CLAUDE_CODE_ENABLE_AUTO_MODE`                          | {/* min-version: 2.1.158 */}Amazon Bedrock、Google Cloud Vertex AI、Microsoft Foundry で [自動モード](/ja/permission-modes#eliminate-prompts-with-auto-mode) を利用可能にするには `1` に設定します。Claude Code v2.1.158 以降が必須です。Anthropic API では効果がなく、自動モードはデフォルトで利用可能です。[Bedrock、Vertex AI、または Foundry で自動モードを有効にする](/ja/permission-modes#enable-auto-mode-on-bedrock-vertex-ai-or-foundry) を参照してください                                                 |
+ | `CLAUDE_CODE_ENABLE_AWAY_SUMMARY`                       | [セッションリキャップ](/ja/interactive-mode#session-recap) の利用可能性をオーバーライドします。`/config` トグルに関係なくリキャップを強制的にオフにするには `0` に設定します。[`awaySummaryEnabled`](/ja/settings#available-settings) が `false` の場合にリキャップを強制的にオンにするには `1` に設定します。設定と `/config` トグルより優先されます                                                                                                                                                                                 |
+ | `CLAUDE_CODE_ENABLE_BACKGROUND_PLUGIN_REFRESH`          | [非対話モード](/ja/headless) でバックグラウンドインストールが完了した後、ターン境界でプラグイン状態をリフレッシュするには `1` に設定します。リフレッシュはセッション中にシステムプロンプトを変更するため、デフォルトではオフです。これにより、そのターンの [プロンプトキャッシング](/ja/prompt-caching) が無効になります                                                                                                                                                                                                                                            |
+@@ -190,5 +190,5 @@ Claude Code は起動時に環境変数を読み取るため、変更は `claude
+ | `CLAUDE_CODE_FILE_READ_MAX_OUTPUT_TOKENS`               | ファイル読み取りのデフォルトトークン制限をオーバーライドします。より大きなファイルを完全に読み取る必要がある場合に役立ちます                                                                                                                                                                                                                                                                                                                                                                 |
+ | `CLAUDE_CODE_FORCE_SYNC_OUTPUT`                         | ターミナルがサポートしているが自動検出されていない場合、DEC プライベートモード 2026 [同期出力](https://gist.github.com/christianparpart/d8a62cc1ab659194337d73e399004036) を強制的に有効にするには `1` に設定します。Emacs `eat` などのエミュレーターで役立ちます。これは BSU/ESU を実装していますが、機能プローブに応答しません。tmux では効果がありません                                                                                                                                                                                      |
+-| `CLAUDE_CODE_FORK_SUBAGENT`                             | [フォークされた subagent](/ja/sub-agents#fork-the-current-conversation) を有効にするには `1` に設定します。フォークされた subagent は、最初から開始する代わりに、メインセッションから完全な会話コンテキストを継承します。有効にすると、`/fork` は [`/branch`](/ja/commands) のエイリアスとして機能する代わりに、フォークされた subagent をスポーンします。すべての subagent スポーンはバックグラウンドで実行されます。対話モードと SDK または `claude -p` を通じて                                                                                                                     |
++| `CLAUDE_CODE_FORK_SUBAGENT`                             | [フォークされた subagent](/ja/sub-agents#fork-the-current-conversation) をモデルのデフォルトにするには `1` に設定します：Claude は、一般的な subagent を使用する代わりにフォークをスポーンします。フォークは、最初から開始する代わりに、完全な会話コンテキストを継承する subagent です。すべての subagent スポーンはバックグラウンドで実行されます。明示的な [`/fork`](/ja/commands) コマンドはこの変数なしで機能します。対話モードと SDK または `claude -p` を通じて機能します                                                                                                                |
+ | `CLAUDE_CODE_GIT_BASH_PATH`                             | Windows のみ：Git Bash 実行可能ファイル（`bash.exe`）へのパス。Git Bash がインストールされているが PATH にない場合に使用します。[Windows セットアップ](/ja/setup#set-up-on-windows) を参照してください                                                                                                                                                                                                                                                                                   |
+ | `CLAUDE_CODE_GLOB_HIDDEN`                               | Claude が [Glob ツール](/ja/tools-reference#glob-tool-behavior) を呼び出すときに結果からドットファイルを除外するには `false` に設定します。デフォルトで含まれます。`@` ファイルオートコンプリート、`ls`、Grep、または Read には影響しません                                                                                                                                                                                                                                                                |
+@@ -223,5 +223,5 @@ Claude Code は起動時に環境変数を読み取るため、変更は `claude
+ | `CLAUDE_CODE_PLUGIN_SEED_DIR`                           | 1 つ以上の読み取り専用プラグインシードディレクトリへのパス。Unix では `:` で、Windows では `;` で区切られます。事前入力されたプラグインディレクトリをコンテナイメージにバンドルするために使用します。Claude Code はこれらのディレクトリからマーケットプレイスを登録し、再クローンなしで事前キャッシュされたプラグインを使用します。[コンテナ用のプラグインを事前入力](/ja/plugin-marketplaces#pre-populate-plugins-for-containers) を参照してください                                                                                                                                                  |
+ | `CLAUDE_CODE_POWERSHELL_RESPECT_EXECUTION_POLICY`       | Claude Code が PowerShell をスポーンするときに `-ExecutionPolicy Bypass` を渡すことを停止するには `1` に設定します。ツール呼び出し、フック、ステータスラインコマンドの場合、マシンの有効な実行ポリシーを尊重します。デフォルトでは Claude Code はプロセススコープでバイパスを実行するため、`.ps1` スクリプトとモジュールインポートはデフォルト制限 Windows インストールで機能します。プロセススコープバイパスは、この設定に関係なく、グループポリシー `MachinePolicy` または `UserPolicy` をオーバーライドしません                                                                                                            |
+-| `CLAUDE_CODE_PROPAGATE_TRACEPARENT`                     | {/* min-version: 2.1.152 */}カスタムプロキシを指す場合、W3C トレースコンテキストを伝播するには `1` に設定します。`ANTHROPIC_BASE_URL` が指しています。伝播は、モデルと HTTP MCP リクエストの `traceparent` ヘッダーと、Bash、PowerShell、フックサブプロセスの `TRACEPARENT` 環境変数をカバーします。デフォルトでは、伝播は Anthropic API に直接接続されている場合にのみ有効になります。[トレース（ベータ）](/ja/monitoring-usage#traces-beta) を参照してください                                                                                                             |
++| `CLAUDE_CODE_PROPAGATE_TRACEPARENT`                     | {/* min-version: 2.1.152 */}カスタムプロキシを指す場合、W3C トレースコンテキストを伝播するには `1` に設定します。`ANTHROPIC_BASE_URL` が指しています。伝播は、モデルと HTTP MCP リクエストの `traceparent` ヘッダーと、Bash、PowerShell、フックサブプロセスの `TRACEPARENT` 環境変数をカバーします。デフォルトでは、伝播は Anthropic API に直接接続されている場合にのみ有効になります。v2.1.152 で追加されました。[トレース（ベータ）](/ja/monitoring-usage#traces-beta) を参照してください                                                                                           |
+```
+
+</details>
+
+<details>
+<summary>fast-mode-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/fast-mode-ja.md b/docs-ja/pages/fast-mode-ja.md
+index fd997e8..90d5579 100644
+--- a/docs-ja/pages/fast-mode-ja.md
++++ b/docs-ja/pages/fast-mode-ja.md
+@@ -65,5 +65,5 @@ Opus 4.8 は Claude Code v2.1.154 以降の高速モードのデフォルトで
+ 高速モード価格は完全な 1M トークンコンテキストウィンドウ全体で一定です。比較対象となる標準 Opus レートについては、[Claude 価格リファレンス](https://platform.claude.com/docs/ja/about-claude/pricing)を参照してください。
+ 
+-会話の途中で高速モードに切り替えると、会話コンテキスト全体に対して完全な高速モードキャッシュなし入力トークン価格を支払います。これは最初から高速モードを有効にした場合よりもコストが高くなります。
++会話で初めて高速モードを有効にすると、会話コンテキスト全体に対して完全な高速モードキャッシュなし入力トークン価格を支払います。会話が進むほど、このコストは高くなるため、最初から高速モードを有効にする方が安くなります。コストは会話ごとに 1 回適用されるため、後で高速モードをオフにしてからオンに切り替えても、再度請求されることはありません。メカニズムについては、[高速モードがプロンプトキャッシュとどのように相互作用するか](/ja/prompt-caching#turning-on-fast-mode)を参照してください。
+ 
+ ## 高速モードの使用時期を判断する
+```
+
+</details>
+
+<details>
+<summary>headless-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/headless-ja.md b/docs-ja/pages/headless-ja.md
+index 2d91423..cfda9d0 100644
+--- a/docs-ja/pages/headless-ja.md
++++ b/docs-ja/pages/headless-ja.md
+@@ -153,15 +153,15 @@ claude -p "Write a poem" --output-format stream-json --verbose --include-partial
+ API リクエストが再試行可能なエラーで失敗すると、Claude Code は再試行前に `system/api_retry` イベントを発行します。これを使用して、再試行の進行状況を表示したり、カスタムバックオフロジックを実装したりできます。
+ 
+-| フィールド            | 型             | 説明                                                                                                                                                                        |
+-| ---------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+-| `type`           | `"system"`    | メッセージタイプ                                                                                                                                                                  |
+-| `subtype`        | `"api_retry"` | これが再試行イベントであることを識別します                                                                                                                                                     |
+-| `attempt`        | 整数            | 現在の試行番号（1 から開始）                                                                                                                                                           |
+-| `max_retries`    | 整数            | 許可される再試行の合計                                                                                                                                                               |
+-| `retry_delay_ms` | 整数            | 次の試行までのミリ秒                                                                                                                                                                |
+-| `error_status`   | 整数または null    | HTTP ステータスコード、または HTTP レスポンスのない接続エラーの場合は `null`                                                                                                                           |
+-| `error`          | 文字列           | エラーカテゴリ：`authentication_failed`、`oauth_org_not_allowed`、`billing_error`、`rate_limit`、`invalid_request`、`model_not_found`、`server_error`、`max_output_tokens`、または `unknown` |
+-| `uuid`           | 文字列           | 一意のイベント識別子                                                                                                                                                                |
+-| `session_id`     | 文字列           | イベントが属するセッション                                                                                                                                                             |
++| フィールド            | 型             | 説明                                                                                                                                                                                     |
++| ---------------- | ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
++| `type`           | `"system"`    | メッセージタイプ                                                                                                                                                                               |
++| `subtype`        | `"api_retry"` | これが再試行イベントであることを識別します                                                                                                                                                                  |
++| `attempt`        | 整数            | 現在の試行番号（1 から開始）                                                                                                                                                                        |
++| `max_retries`    | 整数            | 許可される再試行の合計                                                                                                                                                                            |
++| `retry_delay_ms` | 整数            | 次の試行までのミリ秒                                                                                                                                                                             |
++| `error_status`   | 整数または null    | HTTP ステータスコード、または HTTP レスポンスのない接続エラーの場合は `null`                                                                                                                                        |
++| `error`          | 文字列           | エラーカテゴリ：`authentication_failed`、`oauth_org_not_allowed`、`billing_error`、`rate_limit`、`overloaded`、`invalid_request`、`model_not_found`、`server_error`、`max_output_tokens`、または `unknown` |
++| `uuid`           | 文字列           | 一意のイベント識別子                                                                                                                                                                             |
++| `session_id`     | 文字列           | イベントが属するセッション                                                                                                                                                                          |
+ 
+```
+
+</details>
+
+*...以降省略*
+
+</details>
+
+
+<details>
 <summary>2026-06-03</summary>
 
 **変更ファイル:**
@@ -2498,228 +2762,6 @@ index 25db665..843f4b0 100644
 +
 +* メッセージが画像の変換を求めている場合は、PNG、JPEG、GIF、または WebP に変換して、再度添付してください。Claude Code はこれらの形式の寸法を画像プロセッサーなしで検証できます。
 +* メッセージが寸法またはサイズ制限を報告している場合は、その制限以下に画像をリサイズまたは再圧縮してから添付してください。
-```
-
-</details>
-
-<details>
-<summary>features-overview-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/features-overview-ja.md b/docs-ja/pages/features-overview-ja.md
-index 8e42a08..85ae42e 100644
---- a/docs-ja/pages/features-overview-ja.md
-+++ b/docs-ja/pages/features-overview-ja.md
-@@ -244,5 +244,5 @@ Claude Code は、コードについて推論するモデルと、ファイル
- 
-   <Tab title="Skills">
--    スキルは Claude のツールキットの追加機能です。リファレンスマテリアル（API スタイルガイドなど）または `/<name>` でトリガーする呼び出し可能なワークフロー（`/deploy` など）です。Claude Code は `/simplify`、`/batch`、`/debug` などの[バンドルされたスキル](/ja/commands) を備えており、すぐに機能します。独自のスキルを作成することもできます。Claude は適切な場合にスキルを使用するか、直接呼び出すことができます。
-+    スキルは Claude のツールキットの追加機能です。リファレンスマテリアル（API スタイルガイドなど）または `/<name>` でトリガーする呼び出し可能なワークフロー（`/deploy` など）です。Claude Code は `/code-review`、`/batch`、`/debug` などの[バンドルされたスキル](/ja/commands) を備えており、すぐに機能します。独自のスキルを作成することもできます。Claude は適切な場合にスキルを使用するか、直接呼び出すことができます。
- 
-     **時期：** スキルの設定によって異なります。デフォルトでは、説明はセッション開始時にロードされ、完全なコンテンツは使用時にロードされます。ユーザーのみのスキル（`disable-model-invocation: true`）の場合、呼び出すまで何もロードされません。
-```
-
-</details>
-
-<details>
-<summary>glossary-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/glossary-ja.md b/docs-ja/pages/glossary-ja.md
-index 6bb76d8..af1005e 100644
---- a/docs-ja/pages/glossary-ja.md
-+++ b/docs-ja/pages/glossary-ja.md
-@@ -57,5 +57,5 @@ Claude が自分自身のために書いたメモ。あなたの修正と設定
- ### Bundled skills
- 
--Claude Code に含まれるプロンプトベースのプレイブック。`/batch`、`/simplify`、`/debug`、`/loop` など。固定ロジックを実行する組み込みコマンドとは異なり、bundled skills は Claude に詳細なプロンプトを与え、作業をオーケストレーションさせるため、エージェントを生成し、ファイルを読み取り、コードベースに適応できます。
-+Claude Code に含まれるプロンプトベースのプレイブック。`/batch`、`/code-review`、`/debug`、`/loop` など。固定ロジックを実行する組み込みコマンドとは異なり、bundled skills は Claude に詳細なプロンプトを与え、作業をオーケストレーションさせるため、エージェントを生成し、ファイルを読み取り、コードベースに適応できます。
- 
- 詳細情報: [Bundled skills](/ja/skills#bundled-skills)
-```
-
-</details>
-
-<details>
-<summary>interactive-mode-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/interactive-mode-ja.md b/docs-ja/pages/interactive-mode-ja.md
-index 7905e12..b70d474 100644
---- a/docs-ja/pages/interactive-mode-ja.md
-+++ b/docs-ja/pages/interactive-mode-ja.md
-@@ -215,4 +215,5 @@ Claude Code は現在のセッションのコマンド履歴を保持します
- * 入力履歴は作業ディレクトリごとに保存されます
- * `/clear` を実行して新しいセッションを開始すると、入力履歴がリセットされます。前のセッションの会話は保持され、再開できます。
-+* 同じプロンプトを 2 回連続で送信すると、1 つの履歴エントリが記録されるため、Up キーを押すと前の異なるプロンプトにステップします
- * Up/Down 矢印を使用して移動します（上記のキーボードショートカットを参照）
- * **注記**: 履歴展開（`!`）はデフォルトで無効です
-```
-
-</details>
-
-*...以降省略*
-
-</details>
-
-
-<details>
-<summary>2026-05-22</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/admin-setup-ja.md             |  27 +-
- docs-ja/pages/auto-mode-config-ja.md        |   2 +-
- docs-ja/pages/changelog.md                  |  36 +++
- docs-ja/pages/desktop-ja.md                 |   2 +-
- docs-ja/pages/devcontainer-ja.md            |   1 +
- docs-ja/pages/errors-ja.md                  |  23 +-
- docs-ja/pages/glossary-ja.md                |   2 +-
- docs-ja/pages/hooks-guide-ja.md             |   6 +-
- docs-ja/pages/hooks-ja.md                   |  60 +++--
- docs-ja/pages/mcp-ja.md                     | 228 +----------------
- docs-ja/pages/permission-modes-ja.md        |   4 +-
- docs-ja/pages/permissions-ja.md             |  29 +--
- docs-ja/pages/sandboxing-ja.md              | 376 ++++++++++++++++------------
- docs-ja/pages/scheduled-tasks-ja.md         |   4 +-
- docs-ja/pages/security-ja.md                |  11 +-
- docs-ja/pages/server-managed-settings-ja.md |   2 +-
- docs-ja/pages/settings-ja.md                |  36 ++-
- 17 files changed, 379 insertions(+), 470 deletions(-)
-```
-
-**新規追加:**
-
-
-<details>
-<summary>admin-setup-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/admin-setup-ja.md b/docs-ja/pages/admin-setup-ja.md
-index 463883e..0c9936a 100644
---- a/docs-ja/pages/admin-setup-ja.md
-+++ b/docs-ja/pages/admin-setup-ja.md
-@@ -66,17 +66,18 @@ plist と HKLM レジストリの場所は任意のプロバイダーで機能
- ## 実行する内容を決定する
- 
--マネージド設定は、ツール、サンドボックス実行、MCP サーバーとプラグインソースへのアクセスをロックダウンし、実行されるフック を制御できます。各行は、それを駆動する設定キーを持つ制御サーフェスです。
--
--| 制御                                                                                     | 機能                                                              | キー設定                                                                         |
--| :------------------------------------------------------------------------------------- | :-------------------------------------------------------------- | :--------------------------------------------------------------------------- |
--| [Permission rules](/ja/permissions)                                                    | 特定のツールとコマンドを許可、確認、または拒否する                                       | `permissions.allow`、`permissions.deny`                                       |
--| [Permission lockdown](/ja/permissions#managed-only-settings)                           | マネージドパーミッションルールのみが適用される。`--dangerously-skip-permissions` を無効化する | `allowManagedPermissionRulesOnly`、`permissions.disableBypassPermissionsMode` |
--| [Sandboxing](/ja/sandboxing)                                                           | ドメイン許可リスト付きの OS レベルのファイルシステムとネットワーク分離                           | `sandbox.enabled`、`sandbox.network.allowedDomains`                           |
--| [Managed policy CLAUDE.md](/ja/memory#deploy-organization-wide-claude-md)              | すべてのセッションで読み込まれる組織全体の指示。除外できない                                  | マネージドポリシーパスのファイル                                                             |
--| [MCP server control](/ja/mcp#managed-mcp-configuration)                                | ユーザーが追加または接続できる MCP サーバーを制限する                                   | `allowedMcpServers`、`deniedMcpServers`、`allowManagedMcpServersOnly`          |
--| [Plugin marketplace control](/ja/plugin-marketplaces#managed-marketplace-restrictions) | ユーザーが追加およびインストールできるマーケットプレイスソースを制限する                            | `strictKnownMarketplaces`、`blockedMarketplaces`                              |
--| [Hook restrictions](/ja/settings#hook-configuration)                                   | マネージドフックのみが読み込まれる。HTTP フック URL を制限する                            | `allowManagedHooksOnly`、`allowedHttpHookUrls`                                |
--| [Disable agent view](/ja/agent-view#how-background-sessions-are-hosted)                | `claude agents`、`--bg`、`/background`、およびオンデマンドスーパーバイザーをオフにする    | `disableAgentView`                                                           |
--| [Version floor](/ja/settings)                                                          | 自動更新が組織全体の最小値より下にインストールされるのを防ぐ                                  | `minimumVersion`                                                             |
-+マネージド設定は、ツール、サンドボックス実行、MCP サーバーとプラグインソースへのアクセスをロックダウンし、実行されるフックを制御できます。各行は、それを駆動する設定キーを持つ制御サーフェスです。
-+
-+| 制御                                                                                     | 機能                                                                                | キー設定                                                                                                   |
-+| :------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------- |
-+| [Permission rules](/ja/permissions)                                                    | 特定のツールとコマンドを許可、確認、または拒否する                                                         | `permissions.allow`、`permissions.deny`                                                                 |
-+| [Permission lockdown](/ja/permissions#managed-only-settings)                           | マネージドパーミッションルールのみが適用される。`--dangerously-skip-permissions` を無効化する                   | `allowManagedPermissionRulesOnly`、`permissions.disableBypassPermissionsMode`                           |
-+| [Sandboxing](/ja/sandboxing)                                                           | ドメイン許可リスト付きの OS レベルのファイルシステムとネットワーク分離                                             | `sandbox.enabled`、`sandbox.network.allowedDomains`                                                     |
-+| [Managed policy CLAUDE.md](/ja/memory#deploy-organization-wide-claude-md)              | すべてのセッションで読み込まれる組織全体の指示。除外できない                                                    | マネージドポリシーパスのファイル                                                                                       |
-+| [MCP server control](/ja/managed-mcp)                                                  | ユーザーが追加または接続できる MCP サーバーを制限するか、固定セットをデプロイする                                       | `allowedMcpServers`、`deniedMcpServers`、`allowManagedMcpServersOnly`、またはデプロイされた `managed-mcp.json` ファイル |
-+| [Plugin marketplace control](/ja/plugin-marketplaces#managed-marketplace-restrictions) | ユーザーが追加およびインストールできるマーケットプレイスソースを制限する                                              | `strictKnownMarketplaces`、`blockedMarketplaces`                                                        |
-```
-
-</details>
-
-<details>
-<summary>auto-mode-config-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/auto-mode-config-ja.md b/docs-ja/pages/auto-mode-config-ja.md
-index 88d9241..5dd6a62 100644
---- a/docs-ja/pages/auto-mode-config-ja.md
-+++ b/docs-ja/pages/auto-mode-config-ja.md
-@@ -10,5 +10,5 @@
- 
- <Note>
--  オートモードは、Anthropic API を通じて Max、Team、Enterprise、API プランで利用可能です。Pro プランでは利用できず、Bedrock、Vertex、Foundry でも利用できません。Claude Code がアカウントでオートモードが利用不可と報告する場合は、[完全な要件](/ja/permission-modes#eliminate-prompts-with-auto-mode)を確認してください。これには、サポートされているモデルと Team および Enterprise プランの管理者有効化も含まれます。
-+  オートモードは、Anthropic API を通じてすべてのユーザーが利用できます。Bedrock、Vertex、Foundry では利用できません。Claude Code がアカウントでオートモードが利用不可と報告する場合は、[完全な要件](/ja/permission-modes#eliminate-prompts-with-auto-mode)を確認してください。これには、サポートされているモデルと Team および Enterprise プランの管理者有効化も含まれます。
- </Note>
- 
-```
-
-</details>
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index f476a24..7c01af0 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,40 @@
- # Changelog
- 
-+## 2.1.147
-+
-+- Pinned background sessions (`Ctrl+T` in `claude agents`) now stay alive when idle, are restarted in place to apply Claude Code updates, and are shed under memory pressure only after non-pinned sessions
-+- Renamed `/simplify` to `/code-review`. It now reports correctness bugs at a chosen effort level (e.g., `/code-review high`); pass `--comment` to post findings as inline GitHub PR comments. The old cleanup-and-fix behavior has been removed
-+- Improved auto-updater: retries transient network failures, reports specific error categories and OS error codes on failure, and shows the current version when an update fails
-+- Improved diff rendering performance for large file edits
-+- Prompt history no longer records consecutive duplicate entries — recalling a prompt with arrow-up and submitting it again won't add another copy
-+- Fixed enterprise login restrictions (`forceLoginOrgUUID` and `forceLoginMethod` managed-settings) not being enforced against third-party-provider and API-key sessions
-+- Fixed `&` in `!` command output displaying as `&amp;`, which broke copy-pasting URLs from commands like `gcloud auth login` on headless machines
-+- Fixed unknown slash commands silently doing nothing in headless/SDK mode — they now show an error message
-+- Fixed `/help` rendering a broken tab header and showing only one command per page on small terminals when not in fullscreen mode
-+- Fixed shell snapshot dropping user functions whose names start with a single underscore, which broke aliases referencing them
-+- Fixed plugin agents that declare multiple `Agent(...)` types in `tools:` frontmatter dropping all but the last entry
-+- Fixed hook `if` conditions like `PowerShell(git push*)` never matching — only `PowerShell(*)` worked
-+- Fixed PowerShell tool dropping output for commands that rely on the default formatter
-+- Fixed: on Windows, "Yes, and don't ask again" for a PowerShell script invocation now writes a rule that actually matches on subsequent runs
-+- Fixed PowerShell tool failing on Windows with exit code 1 when `pwsh` is installed via winget or the Microsoft Store
-+- Fixed `/effort` opening with the slider on the wrong level — it now starts at your current effort
-+- Fixed paginating MCP servers dropping resources, templates, and prompts past page 1
-+- Fixed full-screen strobing in attached background sessions on Windows Terminal while Claude is streaming
-+- Fixed: on Windows, removing a background-job worktree no longer follows NTFS junctions into the main repo
-+- Fixed `/background` refusing sessions whose only typed input was a skill or custom slash command
-+- Fixed auto mode suppressing `AskUserQuestion` when the user or a skill explicitly relies on it; the auto-mode classifier now sees the user's answers as intent signal
-```
-
-</details>
-
-<details>
-<summary>desktop-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/desktop-ja.md b/docs-ja/pages/desktop-ja.md
-index 6e08268..e605625 100644
---- a/docs-ja/pages/desktop-ja.md
-+++ b/docs-ja/pages/desktop-ja.md
-@@ -79,5 +79,5 @@ Claude に実行させたいことを入力して**Enter**キーを押して送
- <span id="auto-mode-availability" />
- 
--Auto mode は Max、Team、Enterprise、および API プランで利用可能な研究プレビューです。Pro プランまたはサードパーティプロバイダーでは利用できません。Team、Enterprise、および API プランでは Claude Sonnet 4.6、Opus 4.6、または Opus 4.7 が必要です。Max プランでは Claude Opus 4.7 が必要です。
-+Auto mode は Anthropic API のすべてのユーザーが利用できる研究プレビューです。サードパーティプロバイダーでは利用できません。Claude Sonnet 4.6、Opus 4.6、または Opus 4.7 が必要です。
- 
- <Tip title="ベストプラクティス">
-```
-
-</details>
-
-<details>
-<summary>devcontainer-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/devcontainer-ja.md b/docs-ja/pages/devcontainer-ja.md
-index bbeeb37..2f9c6e5 100644
---- a/docs-ja/pages/devcontainer-ja.md
-+++ b/docs-ja/pages/devcontainer-ja.md
-@@ -191,4 +191,5 @@ Claude Code が開発コンテナで実行されたら、以下のページは
- * [テレメトリサービスとオプトアウト](/ja/data-usage#telemetry-services)：Claude Code がデフォルトで送信するもの、およびそれを無効にする環境変数
- * [`.claude` ディレクトリを探索する](/ja/claude-directory)：ボリュームマウントが保持するもの（認証情報、設定、セッション履歴を含む）
-+* [サンドボックス環境](/ja/sandbox-environments)：開発コンテナと組み込み Bash サンドボックス、カスタムコンテナ、VM を比較します
- * [セキュリティモデル](/ja/security)：Claude Code の権限システム、サンドボックス、プロンプトインジェクション保護がどのように組み合わさるか
- * [権限モード](/ja/permission-modes)：プランモードから自動モードからバイパスまでの完全な範囲、および各モードを使用する場合
 ```
 
 </details>
