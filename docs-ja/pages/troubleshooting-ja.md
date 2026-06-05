@@ -1,25 +1,125 @@
-<!DOCTYPE html><html lang="en" class="dark"><head><meta charSet="utf-8" data-next-head=""/><meta name="viewport" content="width=device-width" data-next-head=""/><link rel="preload" href="/docs/_next/static/media/f67ad414ed34149c-s.p.84166d94.woff2" as="font" type="font/woff2" crossorigin="anonymous" data-next-font="size-adjust"/><link rel="preload" href="/docs/_next/static/media/83afe278b6a6bb3c-s.p.3a6ba036.woff2" as="font" type="font/woff2" crossorigin="anonymous" data-next-font="size-adjust"/><link rel="preload" href="/docs/_next/static/media/70bc3e132a0a741e-s.p.15008bfb.woff2" as="font" type="font/woff2" crossorigin="anonymous" data-next-font="size-adjust"/><link rel="preload" href="/docs/_next/static/chunks/a55e453750c2a7fa.css?dpl=dpl_BhwhCYBiuV3ekjQKzo1MLMxFFZrj" as="style"/><link rel="preload" href="/docs/_next/static/chunks/b652b64e1051c665.css?dpl=dpl_BhwhCYBiuV3ekjQKzo1MLMxFFZrj" as="style"/><link rel="stylesheet" href="/docs/_next/static/chunks/a55e453750c2a7fa.css?dpl=dpl_BhwhCYBiuV3ekjQKzo1MLMxFFZrj" data-n-g=""/><link rel="stylesheet" href="/docs/_next/static/chunks/b652b64e1051c665.css?dpl=dpl_BhwhCYBiuV3ekjQKzo1MLMxFFZrj" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" noModule="" src="/docs/_next/static/chunks/a6dad97d9634a72d.js?dpl=dpl_BhwhCYBiuV3ekjQKzo1MLMxFFZrj"></script><script src="/docs/_next/static/chunks/43c19863fe36e93b.js?dpl=dpl_BhwhCYBiuV3ekjQKzo1MLMxFFZrj" defer=""></script><script src="/docs/_next/static/chunks/3c928de4ba7be83b.js?dpl=dpl_BhwhCYBiuV3ekjQKzo1MLMxFFZrj" defer=""></script><script src="/docs/_next/static/chunks/86fe569cdc737c49.js?dpl=dpl_BhwhCYBiuV3ekjQKzo1MLMxFFZrj" defer=""></script><script src="/docs/_next/static/chunks/turbopack-75fb6b56b8755fe3.js?dpl=dpl_BhwhCYBiuV3ekjQKzo1MLMxFFZrj" defer=""></script><script src="/docs/_next/static/chunks/fbb6cc5da66f86ca.js?dpl=dpl_BhwhCYBiuV3ekjQKzo1MLMxFFZrj" defer=""></script><script src="/docs/_next/static/chunks/c1fce75d7b81c8aa.js?dpl=dpl_BhwhCYBiuV3ekjQKzo1MLMxFFZrj" defer=""></script><script src="/docs/_next/static/chunks/45693c1bc90a75b9.js?dpl=dpl_BhwhCYBiuV3ekjQKzo1MLMxFFZrj" defer=""></script><script src="/docs/_next/static/chunks/c769afa446170645.js?dpl=dpl_BhwhCYBiuV3ekjQKzo1MLMxFFZrj" defer=""></script><script src="/docs/_next/static/chunks/26355f534f6eb1e7.js?dpl=dpl_BhwhCYBiuV3ekjQKzo1MLMxFFZrj" defer=""></script><script src="/docs/_next/static/chunks/d1708a2f7646f126.js?dpl=dpl_BhwhCYBiuV3ekjQKzo1MLMxFFZrj" defer=""></script><script src="/docs/_next/static/chunks/turbopack-7384b69b884e7e5a.js?dpl=dpl_BhwhCYBiuV3ekjQKzo1MLMxFFZrj" defer=""></script><script src="/docs/_next/static/ss5xJB33E-HAu6QQpydoa/_ssgManifest.js?dpl=dpl_BhwhCYBiuV3ekjQKzo1MLMxFFZrj" defer=""></script><script src="/docs/_next/static/ss5xJB33E-HAu6QQpydoa/_buildManifest.js?dpl=dpl_BhwhCYBiuV3ekjQKzo1MLMxFFZrj" defer=""></script></head><div id="__next"><main class="inter_8e83f138-module__et_h3a__variable jetbrains_mono_8f10fcc1-module__2Oizva__variable"><script>((e,i,s,u,m,a,l,h)=>{let d=document.documentElement,w=["light","dark"];function p(n){(Array.isArray(e)?e:[e]).forEach(y=>{let k=y==="class",S=k&&a?m.map(f=>a[f]||f):m;k?(d.classList.remove(...S),d.classList.add(a&&a[n]?a[n]:n)):d.setAttribute(y,n)}),R(n)}function R(n){h&&w.includes(n)&&(d.style.colorScheme=n)}function c(){return window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}if(u)p(u);else try{let n=localStorage.getItem(i)||s,y=l&&n==="system"?c():n;p(y)}catch(n){}})("class","isDarkMode","system",null,["dark","light","true","false","system"],{"true":"dark","false":"light","dark":"dark","light":"light"},true,false)</script><style>:root {
-    --primary: 22 163 74;
-    --primary-light: 74 222 128;
-    --primary-dark: 22 101 52;
-    --tooltip-foreground: 255 255 255;
-    --background-light: 255 255 255;
-    --background-dark: 10 13 13;
-    --gray-50: 243 247 245;
-    --gray-100: 238 242 240;
-    --gray-200: 223 227 224;
-    --gray-300: 206 211 208;
-    --gray-400: 159 163 160;
-    --gray-500: 112 116 114;
-    --gray-600: 80 84 82;
-    --gray-700: 63 67 64;
-    --gray-800: 38 42 39;
-    --gray-900: 23 27 25;
-    --gray-950: 10 15 12;
-  }</style><style>:root {
-  --primary: 17 120 102;
-  --primary-light: 74 222 128;
-  --primary-dark: 22 101 52;
-  --background-light: 255 255 255;
-  --background-dark: 15 17 23;
-}</style><main class="h-screen bg-background-light dark:bg-background-dark text-left"><article class="bg-custom bg-fixed bg-center bg-cover relative flex flex-col items-center justify-center h-full"><div class="w-full max-w-xl px-10"><span class="inline-flex mb-6 rounded-full px-3 py-1 text-sm font-semibold mr-4 text-white p-1 bg-primary">Error <!-- -->500</span><h1 class="font-semibold mb-3 text-3xl">Page not found!</h1><p class="text-lg text-gray-600 dark:text-gray-400 mb-6">An unexpected error occurred. Please <a class="font-medium text-gray-700 dark:text-gray-100 border-b hover:border-b-[2px] border-primary-dark dark:border-primary-light" href="mailto:support@mintlify.com">contact support</a> to get help.</p></div></article></main></main></div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{}},"page":"/500","query":{},"buildId":"ss5xJB33E-HAu6QQpydoa","assetPrefix":"/docs","nextExport":true,"autoExport":true,"isFallback":false,"scriptLoader":[]}</script></html>
+> ## Documentation Index
+> Fetch the complete documentation index at: https://code.claude.com/docs/llms.txt
+> Use this file to discover all available pages before exploring further.
+
+# トラブルシューティング
+
+> Claude Code の高い CPU またはメモリ使用量、ハング、auto-compact スラッシング、検索の問題を修正し、その他の問題に対応する適切なページを見つけます。
+
+このページでは、Claude Code が実行中のパフォーマンス、安定性、検索の問題について説明します。その他の問題については、問題が発生している場所に一致するページから始めてください：
+
+| 症状                                                                                    | 移動先                                                                          |
+| :------------------------------------------------------------------------------------ | :--------------------------------------------------------------------------- |
+| `command not found`、インストール失敗、PATH の問題、`EACCES`、TLS エラー                                | [インストールとログインのトラブルシューティング](/ja/troubleshoot-install)                          |
+| ログインループ、OAuth エラー、`403 Forbidden`、「organization disabled」、Bedrock/Vertex/Foundry 認証情報 | [インストールとログインのトラブルシューティング](/ja/troubleshoot-install#login-and-authentication) |
+| 設定が適用されない、hooks が実行されない、MCP サーバーがロードされない                                              | [設定をデバッグする](/ja/debug-your-config)                                           |
+| `API Error: 5xx`、`529 Overloaded`、`429`、リクエスト検証エラー                                    | [エラーリファレンス](/ja/errors)                                                      |
+| `model not found` または `you may not have access to it`                                 | [エラーリファレンス](/ja/errors#there%E2%80%99s-an-issue-with-the-selected-model)     |
+| VS Code 拡張機能が接続されていない、または Claude を検出していない                                             | [VS Code 統合](/ja/vs-code#fix-common-issues)                                  |
+| JetBrains プラグインまたは IDE が検出されない                                                        | [JetBrains 統合](/ja/jetbrains#troubleshooting)                                |
+| CPU またはメモリ使用量が多い、応答が遅い、ハング、検索がファイルを見つけられない                                            | [パフォーマンスと安定性](#performance-and-stability)（下記）                                |
+
+どれが当てはまるかわからない場合は、Claude Code 内で `/doctor` を実行して、インストール、設定、MCP サーバー、コンテキスト使用量の自動チェックを実行してください。`claude` がまったく起動しない場合は、代わりにシェルから `claude doctor` を実行してください。
+
+## パフォーマンスと安定性
+
+これらのセクションでは、リソース使用量、応答性、検索動作に関連する問題について説明します。
+
+### CPU またはメモリ使用量が多い
+
+Claude Code はほとんどの開発環境で動作するように設計されていますが、大規模なコードベースを処理する場合、かなりのリソースを消費する可能性があります。パフォーマンスの問題が発生している場合：
+
+1. `/compact` を定期的に使用してコンテキストサイズを削減します
+2. 主要なタスク間で Claude Code を閉じて再起動します
+3. 大規模なビルドディレクトリを `.gitignore` ファイルに追加することを検討してください
+
+メモリ使用量がこれらのステップ後も高いままの場合は、`/heapdump` を実行して JavaScript ヒープスナップショットとメモリ分析を `~/Desktop` に書き込みます。Linux でデスクトップフォルダがない場合、ファイルはホームディレクトリに書き込まれます。
+
+分析は常駐セットサイズ、JS ヒープ、配列バッファ、および説明されていないネイティブメモリを表示し、成長が JavaScript オブジェクトにあるか、ネイティブコードにあるかを識別するのに役立ちます。Chrome DevTools のメモリ → ロードで `.heapsnapshot` ファイルを開いて、リテイナーを検査します。メモリの問題を報告するときに両方のファイルを [GitHub](https://github.com/anthropics/claude-code/issues) に添付します。
+
+### 自動コンパクションがスラッシングエラーで停止する
+
+`Autocompact is thrashing: the context refilled to the limit...` が表示される場合、自動コンパクションは成功しましたが、ファイルまたはツール出力がコンテキストウィンドウを数回連続で満杯に戻しました。Claude Code は進捗を遂行していないループで API 呼び出しを無駄にするのを避けるために再試行を停止します。
+
+回復するには：
+
+1. Claude に、ファイル全体ではなく、特定の行範囲または関数など、より小さなチャンクで大きなファイルを読むよう依頼します
+2. `/compact` を実行して、大きな出力を削除するフォーカスを使用します（例：`/compact keep only the plan and the diff`）
+3. 大規模ファイルの作業を [subagent](/ja/sub-agents) に移動して、別のコンテキストウィンドウで実行されるようにします
+4. 以前の会話がもう必要ない場合は `/clear` を実行します
+
+### コマンドがハングまたはフリーズする
+
+Claude Code が応答しないように見える場合：
+
+1. Ctrl+C を押して現在の操作をキャンセルしてみます
+2. 応答しない場合は、ターミナルを閉じて再起動する必要があります
+
+再起動してもカンバセーションは失われません。同じディレクトリで `claude --resume` を実行してセッションを再開してください。
+
+### エディタの統合ターミナルでのテキストの文字化けまたは破損
+
+VS Code、Cursor、または Devin Desktop の統合ターミナルで Claude Code を実行する場合、文字がボックス、スミア、または間違ったグリフとしてレンダリングされる場合、ターミナルの GPU レンダラーが原因である可能性があります。Claude Code 内で `/terminal-setup` を実行して、`terminal.integrated.gpuAcceleration` を `"off"` に設定するか、エディタの設定で手動で設定してウィンドウをリロードします。[ターミナル設定](/ja/terminal-config) で、`/terminal-setup` が書き込む他の設定を参照してください。
+
+### 検索と発見の問題
+
+Search ツール、`@file` メンション、カスタムエージェント、またはカスタムスキルがファイルを見つけられない場合、バンドルされた `ripgrep` バイナリがシステムで実行されない可能性があります。プラットフォームの `ripgrep` パッケージをインストールして、Claude Code にそれを使用するよう指示します：
+
+<Tabs>
+  <Tab title="macOS">
+    ```bash theme={null}
+    brew install ripgrep
+    ```
+  </Tab>
+
+  <Tab title="Ubuntu/Debian">
+    ```bash theme={null}
+    sudo apt install ripgrep
+    ```
+  </Tab>
+
+  <Tab title="Alpine">
+    ```bash theme={null}
+    apk add ripgrep
+    ```
+  </Tab>
+
+  <Tab title="Arch">
+    ```bash theme={null}
+    pacman -S ripgrep
+    ```
+  </Tab>
+
+  <Tab title="Windows">
+    ```powershell theme={null}
+    winget install BurntSushi.ripgrep.MSVC
+    ```
+  </Tab>
+</Tabs>
+
+その後、[environment](/ja/env-vars) で `USE_BUILTIN_RIPGREP=0` を設定します。
+
+### WSL での遅い、または不完全な検索結果
+
+[WSL でファイルシステム間で作業する場合](https://learn.microsoft.com/en-us/windows/wsl/filesystems)のディスク読み取りパフォーマンスペナルティにより、WSL で Claude Code を使用する場合、Search ツール使用時に予想より少ないマッチが返される可能性があります。検索は機能しますが、ネイティブファイルシステムより少ない結果を返します。
+
+<Note>
+  この場合、`/doctor` は Search を OK として表示します。
+</Note>
+
+**解決策：**
+
+1. **より具体的な検索を送信する**：検索するファイル数を減らすために、ディレクトリまたはファイルタイプを指定します：「auth-service パッケージで JWT 検証ロジックを検索」または「JS ファイルで md5 ハッシュの使用を見つける」。
+
+2. **プロジェクトを Linux ファイルシステムに移動する**：可能であれば、プロジェクトが Windows ファイルシステム（`/mnt/c/`）ではなく Linux ファイルシステム（`/home/`）に配置されていることを確認します。
+
+3. **ネイティブ Windows を使用する**：WSL ではなく Windows でネイティブに Claude Code を実行することを検討して、ファイルシステムのパフォーマンスを向上させます。
+
+## さらにヘルプを得る
+
+ここで説明されていない問題が発生している場合：
+
+1. `/doctor` を実行して、インストール状態、設定の有効性、MCP 設定、コンテキスト使用量を一度にチェックします
+2. Claude Code 内で `/feedback` コマンドを使用して、Anthropic に問題を直接報告します
+3. [GitHub リポジトリ](https://github.com/anthropics/claude-code)で既知の問題を確認します
+4. Claude に直接その機能と機能について質問します。Claude はドキュメントへの組み込みアクセスを持っています。

@@ -17,6 +17,135 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-06-05</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md             |  25 ++
+ docs-ja/pages/channels-reference-ja.md | 782 +++++++++++++++++++++++++++++++--
+ docs-ja/pages/troubleshooting-ja.md    | 150 +++++--
+ 3 files changed, 907 insertions(+), 50 deletions(-)
+```
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index e02bb2e..f877eb7 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,29 @@
+ # Changelog
+ 
++## 2.1.163
++
++- Added `requiredMinimumVersion` and `requiredMaximumVersion` managed settings — Claude Code refuses to start if its version is outside the allowed range and directs the user to an approved version
++- Added `/plugin list` command to list installed plugins, with `--enabled`/`--disabled` filters
++- Added a "c to copy" shortcut to `/btw` that copies the raw markdown answer to the clipboard, preserving formatting when pasted elsewhere
++- Hooks: Stop and SubagentStop hooks can now return `hookSpecificOutput.additionalContext` to give Claude feedback and keep the turn going without being labeled a hook error
++- Skills: added `\$` escape syntax to include a literal `$` before a digit in command bodies
++- stdio MCP servers now receive the same `CLAUDE_CODE_SESSION_ID` as hooks/Bash on `--resume`
++- Fixed `claude -p` hanging forever after its final result when a backgrounded command never exits — background shells are now stopped ~5s after the result once stdin closes
++- Fixed `claude -p` failing with "ANTHROPIC_API_KEY required" on Bedrock/Vertex/Foundry when `CI=true` and no Anthropic API key is set
++- Fixed bash commands failing under bazel and EDR-protected Go workflows: `$TMPDIR` was overridden to `/tmp/claude-{uid}` for all commands instead of only sandboxed ones (regression in 2.1.154)
++- Fixed Bash commands failing on Windows with "EEXIST: file already exists" on the session-env directory when it has the read-only attribute or is inside OneDrive
++- Fixed org-managed permission rules not applying for the entire session when the managed settings fetch completed during startup on a fresh config directory
++- Fixed background sessions in `claude agents` losing their running background tasks when reattached after a Claude Code update
++- Fixed terminal misalignment and a multi-second hang when exiting the agent view by pressing Esc
++- Fixed clicking Stop on a background-task chip in the desktop app not clearing the chip when the underlying process was already gone
++- Fixed keyboard input becoming permanently unresponsive after a paste operation whose end marker is dropped by the terminal
++- Fixed hook `if: "Bash(...)"` conditions firing on every Bash command containing `$()` or `$VAR`; the pattern now matches against commands inside subshells and backticks too
++- Fixed deny rules on home-directory paths (e.g. `Read(~/Desktop/**)`) not blocking Bash commands that reference the path via `$HOME`
++- Fixed a stray "(no content)" line left in the transcript after closing panel dialogs like /mcp and /plugins
++- Background agent sessions now update to a new Claude Code version in the background, so opening a session after an update no longer waits on a cold restart
++- Clearer descriptions for built-in commands and skills in the / menu
++- The subscription-switch suggestion now shows in the startup announcement slot instead of a toast
+```
+
+</details>
+
+<details>
+<summary>channels-reference-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/channels-reference-ja.md b/docs-ja/pages/channels-reference-ja.md
+index 7d00277..d3e6664 100644
+--- a/docs-ja/pages/channels-reference-ja.md
++++ b/docs-ja/pages/channels-reference-ja.md
+@@ -1,25 +1,757 @@
+-<!DOCTYPE html><html lang="en" class="dark"><head><meta charSet="utf-8" data-next-head=""/><meta name="viewport" content="width=device-width" data-next-head=""/><link rel="preload" href="/docs/_next/static/media/f67ad414ed34149c-s.p.84166d94.woff2" as="font" type="font/woff2" crossorigin="anonymous" data-next-font="size-adjust"/><link rel="preload" href="/docs/_next/static/media/83afe278b6a6bb3c-s.p.3a6ba036.woff2" as="font" type="font/woff2" crossorigin="anonymous" data-next-font="size-adjust"/><link rel="preload" href="/docs/_next/static/media/70bc3e132a0a741e-s.p.15008bfb.woff2" as="font" type="font/woff2" crossorigin="anonymous" data-next-font="size-adjust"/><link rel="preload" href="/docs/_next/static/chunks/a55e453750c2a7fa.css?dpl=dpl_BhwhCYBiuV3ekjQKzo1MLMxFFZrj" as="style"/><link rel="preload" href="/docs/_next/static/chunks/b652b64e1051c665.css?dpl=dpl_BhwhCYBiuV3ekjQKzo1MLMxFFZrj" as="style"/><link rel="stylesheet" href="/docs/_next/static/chunks/a55e453750c2a7fa.css?dpl=dpl_BhwhCYBiuV3ekjQKzo1MLMxFFZrj" data-n-g=""/><link rel="stylesheet" href="/docs/_next/static/chunks/b652b64e1051c665.css?dpl=dpl_BhwhCYBiuV3ekjQKzo1MLMxFFZrj" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" noModule="" src="/docs/_next/static/chunks/a6dad97d9634a72d.js?dpl=dpl_BhwhCYBiuV3ekjQKzo1MLMxFFZrj"></script><script src="/docs/_next/static/chunks/43c19863fe36e93b.js?dpl=dpl_BhwhCYBiuV3ekjQKzo1MLMxFFZrj" defer=""></script><script src="/docs/_next/static/chunks/3c928de4ba7be83b.js?dpl=dpl_BhwhCYBiuV3ekjQKzo1MLMxFFZrj" defer=""></script><script src="/docs/_next/static/chunks/86fe569cdc737c49.js?dpl=dpl_BhwhCYBiuV3ekjQKzo1MLMxFFZrj" defer=""></script><script src="/docs/_next/static/chunks/turbopack-75fb6b56b8755fe3.js?dpl=dpl_BhwhCYBiuV3ekjQKzo1MLMxFFZrj" defer=""></script><script src="/docs/_next/static/chunks/fbb6cc5da66f86ca.js?dpl=dpl_BhwhCYBiuV3ekjQKzo1MLMxFFZrj" defer=""></script><script src="/docs/_next/static/chunks/c1fce75d7b81c8aa.js?dpl=dpl_BhwhCYBiuV3ekjQKzo1MLMxFFZrj" defer=""></script><script src="/docs/_next/static/chunks/45693c1bc90a75b9.js?dpl=dpl_BhwhCYBiuV3ekjQKzo1MLMxFFZrj" defer=""></script><script src="/docs/_next/static/chunks/c769afa446170645.js?dpl=dpl_BhwhCYBiuV3ekjQKzo1MLMxFFZrj" defer=""></script><script src="/docs/_next/static/chunks/26355f534f6eb1e7.js?dpl=dpl_BhwhCYBiuV3ekjQKzo1MLMxFFZrj" defer=""></script><script src="/docs/_next/static/chunks/d1708a2f7646f126.js?dpl=dpl_BhwhCYBiuV3ekjQKzo1MLMxFFZrj" defer=""></script><script src="/docs/_next/static/chunks/turbopack-7384b69b884e7e5a.js?dpl=dpl_BhwhCYBiuV3ekjQKzo1MLMxFFZrj" defer=""></script><script src="/docs/_next/static/ss5xJB33E-HAu6QQpydoa/_ssgManifest.js?dpl=dpl_BhwhCYBiuV3ekjQKzo1MLMxFFZrj" defer=""></script><script src="/docs/_next/static/ss5xJB33E-HAu6QQpydoa/_buildManifest.js?dpl=dpl_BhwhCYBiuV3ekjQKzo1MLMxFFZrj" defer=""></script></head><div id="__next"><main class="inter_8e83f138-module__et_h3a__variable jetbrains_mono_8f10fcc1-module__2Oizva__variable"><script>((e,i,s,u,m,a,l,h)=>{let d=document.documentElement,w=["light","dark"];function p(n){(Array.isArray(e)?e:[e]).forEach(y=>{let k=y==="class",S=k&&a?m.map(f=>a[f]||f):m;k?(d.classList.remove(...S),d.classList.add(a&&a[n]?a[n]:n)):d.setAttribute(y,n)}),R(n)}function R(n){h&&w.includes(n)&&(d.style.colorScheme=n)}function c(){return window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}if(u)p(u);else try{let n=localStorage.getItem(i)||s,y=l&&n==="system"?c():n;p(y)}catch(n){}})("class","isDarkMode","system",null,["dark","light","true","false","system"],{"true":"dark","false":"light","dark":"dark","light":"light"},true,false)</script><style>:root {
+-    --primary: 22 163 74;
+-    --primary-light: 74 222 128;
+-    --primary-dark: 22 101 52;
+-    --tooltip-foreground: 255 255 255;
+-    --background-light: 255 255 255;
+-    --background-dark: 10 13 13;
+-    --gray-50: 243 247 245;
+-    --gray-100: 238 242 240;
+-    --gray-200: 223 227 224;
+-    --gray-300: 206 211 208;
+-    --gray-400: 159 163 160;
+-    --gray-500: 112 116 114;
+-    --gray-600: 80 84 82;
+-    --gray-700: 63 67 64;
+-    --gray-800: 38 42 39;
+-    --gray-900: 23 27 25;
+-    --gray-950: 10 15 12;
+-  }</style><style>:root {
+-  --primary: 17 120 102;
+-  --primary-light: 74 222 128;
+-  --primary-dark: 22 101 52;
+-  --background-light: 255 255 255;
+-  --background-dark: 15 17 23;
+-}</style><main class="h-screen bg-background-light dark:bg-background-dark text-left"><article class="bg-custom bg-fixed bg-center bg-cover relative flex flex-col items-center justify-center h-full"><div class="w-full max-w-xl px-10"><span class="inline-flex mb-6 rounded-full px-3 py-1 text-sm font-semibold mr-4 text-white p-1 bg-primary">Error <!-- -->500</span><h1 class="font-semibold mb-3 text-3xl">Page not found!</h1><p class="text-lg text-gray-600 dark:text-gray-400 mb-6">An unexpected error occurred. Please <a class="font-medium text-gray-700 dark:text-gray-100 border-b hover:border-b-[2px] border-primary-dark dark:border-primary-light" href="mailto:support@mintlify.com">contact support</a> to get help.</p></div></article></main></main></div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{}},"page":"/500","query":{},"buildId":"ss5xJB33E-HAu6QQpydoa","assetPrefix":"/docs","nextExport":true,"autoExport":true,"isFallback":false,"scriptLoader":[]}</script></html>
+```
+
+</details>
+
+<details>
+<summary>troubleshooting-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/troubleshooting-ja.md b/docs-ja/pages/troubleshooting-ja.md
+index 7d00277..b49f307 100644
+--- a/docs-ja/pages/troubleshooting-ja.md
++++ b/docs-ja/pages/troubleshooting-ja.md
+@@ -1,25 +1,125 @@
+-<!DOCTYPE html><html lang="en" class="dark"><head><meta charSet="utf-8" data-next-head=""/><meta name="viewport" content="width=device-width" data-next-head=""/><link rel="preload" href="/docs/_next/static/media/f67ad414ed34149c-s.p.84166d94.woff2" as="font" type="font/woff2" crossorigin="anonymous" data-next-font="size-adjust"/><link rel="preload" href="/docs/_next/static/media/83afe278b6a6bb3c-s.p.3a6ba036.woff2" as="font" type="font/woff2" crossorigin="anonymous" data-next-font="size-adjust"/><link rel="preload" href="/docs/_next/static/media/70bc3e132a0a741e-s.p.15008bfb.woff2" as="font" type="font/woff2" crossorigin="anonymous" data-next-font="size-adjust"/><link rel="preload" href="/docs/_next/static/chunks/a55e453750c2a7fa.css?dpl=dpl_BhwhCYBiuV3ekjQKzo1MLMxFFZrj" as="style"/><link rel="preload" href="/docs/_next/static/chunks/b652b64e1051c665.css?dpl=dpl_BhwhCYBiuV3ekjQKzo1MLMxFFZrj" as="style"/><link rel="stylesheet" href="/docs/_next/static/chunks/a55e453750c2a7fa.css?dpl=dpl_BhwhCYBiuV3ekjQKzo1MLMxFFZrj" data-n-g=""/><link rel="stylesheet" href="/docs/_next/static/chunks/b652b64e1051c665.css?dpl=dpl_BhwhCYBiuV3ekjQKzo1MLMxFFZrj" data-n-g=""/><noscript data-n-css=""></noscript><script defer="" noModule="" src="/docs/_next/static/chunks/a6dad97d9634a72d.js?dpl=dpl_BhwhCYBiuV3ekjQKzo1MLMxFFZrj"></script><script src="/docs/_next/static/chunks/43c19863fe36e93b.js?dpl=dpl_BhwhCYBiuV3ekjQKzo1MLMxFFZrj" defer=""></script><script src="/docs/_next/static/chunks/3c928de4ba7be83b.js?dpl=dpl_BhwhCYBiuV3ekjQKzo1MLMxFFZrj" defer=""></script><script src="/docs/_next/static/chunks/86fe569cdc737c49.js?dpl=dpl_BhwhCYBiuV3ekjQKzo1MLMxFFZrj" defer=""></script><script src="/docs/_next/static/chunks/turbopack-75fb6b56b8755fe3.js?dpl=dpl_BhwhCYBiuV3ekjQKzo1MLMxFFZrj" defer=""></script><script src="/docs/_next/static/chunks/fbb6cc5da66f86ca.js?dpl=dpl_BhwhCYBiuV3ekjQKzo1MLMxFFZrj" defer=""></script><script src="/docs/_next/static/chunks/c1fce75d7b81c8aa.js?dpl=dpl_BhwhCYBiuV3ekjQKzo1MLMxFFZrj" defer=""></script><script src="/docs/_next/static/chunks/45693c1bc90a75b9.js?dpl=dpl_BhwhCYBiuV3ekjQKzo1MLMxFFZrj" defer=""></script><script src="/docs/_next/static/chunks/c769afa446170645.js?dpl=dpl_BhwhCYBiuV3ekjQKzo1MLMxFFZrj" defer=""></script><script src="/docs/_next/static/chunks/26355f534f6eb1e7.js?dpl=dpl_BhwhCYBiuV3ekjQKzo1MLMxFFZrj" defer=""></script><script src="/docs/_next/static/chunks/d1708a2f7646f126.js?dpl=dpl_BhwhCYBiuV3ekjQKzo1MLMxFFZrj" defer=""></script><script src="/docs/_next/static/chunks/turbopack-7384b69b884e7e5a.js?dpl=dpl_BhwhCYBiuV3ekjQKzo1MLMxFFZrj" defer=""></script><script src="/docs/_next/static/ss5xJB33E-HAu6QQpydoa/_ssgManifest.js?dpl=dpl_BhwhCYBiuV3ekjQKzo1MLMxFFZrj" defer=""></script><script src="/docs/_next/static/ss5xJB33E-HAu6QQpydoa/_buildManifest.js?dpl=dpl_BhwhCYBiuV3ekjQKzo1MLMxFFZrj" defer=""></script></head><div id="__next"><main class="inter_8e83f138-module__et_h3a__variable jetbrains_mono_8f10fcc1-module__2Oizva__variable"><script>((e,i,s,u,m,a,l,h)=>{let d=document.documentElement,w=["light","dark"];function p(n){(Array.isArray(e)?e:[e]).forEach(y=>{let k=y==="class",S=k&&a?m.map(f=>a[f]||f):m;k?(d.classList.remove(...S),d.classList.add(a&&a[n]?a[n]:n)):d.setAttribute(y,n)}),R(n)}function R(n){h&&w.includes(n)&&(d.style.colorScheme=n)}function c(){return window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}if(u)p(u);else try{let n=localStorage.getItem(i)||s,y=l&&n==="system"?c():n;p(y)}catch(n){}})("class","isDarkMode","system",null,["dark","light","true","false","system"],{"true":"dark","false":"light","dark":"dark","light":"light"},true,false)</script><style>:root {
+-    --primary: 22 163 74;
+-    --primary-light: 74 222 128;
+-    --primary-dark: 22 101 52;
+-    --tooltip-foreground: 255 255 255;
+-    --background-light: 255 255 255;
+-    --background-dark: 10 13 13;
+-    --gray-50: 243 247 245;
+-    --gray-100: 238 242 240;
+-    --gray-200: 223 227 224;
+-    --gray-300: 206 211 208;
+-    --gray-400: 159 163 160;
+-    --gray-500: 112 116 114;
+-    --gray-600: 80 84 82;
+-    --gray-700: 63 67 64;
+-    --gray-800: 38 42 39;
+-    --gray-900: 23 27 25;
+-    --gray-950: 10 15 12;
+-  }</style><style>:root {
+-  --primary: 17 120 102;
+-  --primary-light: 74 222 128;
+-  --primary-dark: 22 101 52;
+-  --background-light: 255 255 255;
+-  --background-dark: 15 17 23;
+-}</style><main class="h-screen bg-background-light dark:bg-background-dark text-left"><article class="bg-custom bg-fixed bg-center bg-cover relative flex flex-col items-center justify-center h-full"><div class="w-full max-w-xl px-10"><span class="inline-flex mb-6 rounded-full px-3 py-1 text-sm font-semibold mr-4 text-white p-1 bg-primary">Error <!-- -->500</span><h1 class="font-semibold mb-3 text-3xl">Page not found!</h1><p class="text-lg text-gray-600 dark:text-gray-400 mb-6">An unexpected error occurred. Please <a class="font-medium text-gray-700 dark:text-gray-100 border-b hover:border-b-[2px] border-primary-dark dark:border-primary-light" href="mailto:support@mintlify.com">contact support</a> to get help.</p></div></article></main></main></div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{}},"page":"/500","query":{},"buildId":"ss5xJB33E-HAu6QQpydoa","assetPrefix":"/docs","nextExport":true,"autoExport":true,"isFallback":false,"scriptLoader":[]}</script></html>
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-06-04</summary>
 
 **変更ファイル:**
@@ -2629,139 +2758,6 @@ index 927081d..db305cf 100644
 +セッションが完了し、約 1 時間アタッチされていない状態で待機すると、スーパーバイザーはリソースを解放するためにプロセスを停止します。アタッチすると、中断したところから新しいプロセスが開始され、少し時間がかかります。作業中または入力を待機しているセッション、または[ピン留めされた](#organize-the-list)セッションはこの方法で停止されることはありません。セッションを `Ctrl+T` でピン留めして、応答性を保つことができます。
  
  ### `.claude/worktrees/` が満杯になっている
-```
-
-</details>
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index 7c01af0..1f55984 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,37 @@
- # Changelog
- 
-+## 2.1.149
-+
-+- `/usage` now shows a per-category breakdown of what's driving your limits usage — skills, subagents, plugins, and per-MCP-server cost
-+- `/diff` detail view can now be scrolled with the keyboard (arrows, `j`/`k`, `PgUp`/`PgDn`, `Space`, `Home`/`End`)
-+- Markdown output now renders GFM task list checkboxes (`- [ ] todo` / `- [x] done`) instead of plain bullets
-+- Enterprise: added the `allowAllClaudeAiMcps` managed setting to load claude.ai cloud MCP connectors alongside `managed-mcp.json`
-+- Fixed a PowerShell permission bypass: built-in `cd` functions (`cd..`, `cd\`, `cd~`, `X:`) changed the working directory undetected, letting a later command read outside the workspace
-+- Fixed the sandbox write allowlist in git worktrees covering the entire main repository root instead of only the shared `.git` directory (with `hooks/` and `config` denied)
-+- Fixed PowerShell prefix/wildcard allow rules (e.g. `PowerShell(dotnet.exe build *)`) not pre-approving native executables and scripts
-+- Fixed a permission-analysis gap where the parser trusted stale variable-tracking values for `PWD`/`OLDPWD`/`DIRSTACK` across `cd`/`pushd`/`popd`
-+- Fixed `find` in the Bash tool exhausting the macOS system file/vnode table and crashing the host on large directory trees
-+- Fixed the managed-settings approval dialog leaving the terminal frozen after accepting at startup
-+- Fixed `/ultraplan` and remote session creation failing with "Could not capture uncommitted changes" when the working tree has no real changes
-+- Fixed `otelHeadersHelper` failing silently when the script path contains spaces; helper failures are now reported in `/doctor` and the debug log
-+- Fixed the thinking spinner staying amber across tool calls and onto fresh thinking bursts
-+- Fixed collapsed Bash output reporting the wrong hidden-line count for outputs with many short lines
-+- Fixed slash-command argument-hint clipping trailing typed characters when the hint overflows the input box
-+- Fixed argument-hint and progressive arg suggestions not appearing after Tab-completing a skill whose frontmatter `name:` differs from its directory basename
-+- Fixed the status bar showing the user's baseline `/effort` setting instead of the effort level applied by skill/agent `effort:` frontmatter
-+- Fixed Ctrl+O transcript view freezing at the moment it was opened instead of tailing new messages
-+- Fixed editing a recalled prompt-history entry losing the edit when navigating further up/down with arrow keys
-+- Fixed `/config` exit summary reporting phantom changes to auto-compact and theme when toggling unrelated settings
-+- Fixed `/insights` crashing when cached session-meta files are missing optional fields
-```
-
-</details>
-
-<details>
-<summary>commands-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/commands-ja.md b/docs-ja/pages/commands-ja.md
-index 38144a7..29bd6dc 100644
---- a/docs-ja/pages/commands-ja.md
-+++ b/docs-ja/pages/commands-ja.md
-@@ -23,5 +23,5 @@
- **並行して作業を実行する。** `/agents` は Claude が副次的なタスクを委譲できる[サブエージェント](/ja/sub-agents)のマネージャーを開き、`/tasks` は現在のセッションのバックグラウンドで実行されているものをリストします。`/background` はセッション全体をデタッチして[バックグラウンドエージェント](/ja/agent-view)として実行し続け、ターミナルを解放します。コードベース全体にまたがる大きな変更の場合、`/batch` はそれを独立したユニットに分解し、各ユニットを独自の[worktree](/ja/worktrees)で実行します。これらのアプローチがどのように関連しているかについては、[エージェントを並行して実行する](/ja/agents)を参照してください。
- 
--**リリース前。** `/diff` は変更内容を表示し、`/simplify` は最近のファイルをレビューして品質と効率の修正を適用し、`/review` または `/security-review` はより深い読み取り専用パスを提供します。
-+**リリース前。** `/diff` は変更内容を表示し、`/code-review` は diff の正確性のバグをチェックし、`/review` または `/security-review` はより深い読み取り専用パスを提供します。
- 
- **セッション間。** `/clear` は新しいタスクで新しく開始しながらプロジェクトメモリを保持します。`/resume` と `/branch` を使用して、以前の会話に戻るか、フォークできます。`/teleport` はウェブセッションをこのターミナルに引き込み、`/remote-control` を使用してこのローカルセッションを別のデバイスから続行できます。
-@@ -39,96 +39,96 @@
- </Note>
- 
--| コマンド                                            | 目的                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
--| :---------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
--| `/add-dir <path>`                               | 現在のセッション中にファイルアクセス用の作業ディレクトリを追加します。ほとんどの `.claude/` 設定は追加されたディレクトリから[検出されません](/ja/permissions#additional-directories-grant-file-access-not-configuration)。後で `--continue` または `--resume` を使用して、追加されたディレクトリからセッションを再開できます                                                                                                                                                                                                                                                                                       |
--| `/agents`                                       | [エージェント](/ja/sub-agents)設定を管理します                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
--| `/autofix-pr [prompt]`                          | 現在のブランチの PR を監視し、CI が失敗するか、レビュアーがコメントを残したときに修正をプッシュする [Claude Code on the web](/ja/claude-code-on-the-web#auto-fix-pull-requests) セッションを生成します。`gh pr view` で開いている PR を検出します。別の PR を監視するには、最初にそのブランチをチェックアウトしてください。デフォルトでは、リモートセッションはすべての CI 失敗とレビューコメントを修正するよう指示されます。プロンプトを渡して異なる指示を与えることができます。例えば `/autofix-pr only fix lint and type errors`。`gh` CLI と [Claude Code on the web](/ja/claude-code-on-the-web#who-can-use-claude-code-on-the-web) へのアクセスが必要です                                                  |
--| `/batch <instruction>`                          | **[スキル](/ja/skills#bundled-skills)。** コードベース全体にわたる大規模な変更を並列で調整します。コードベースを調査し、作業を 5 ～ 30 個の独立したユニットに分解し、計画を提示します。承認されると、分離された [git worktree](/ja/worktrees) 内の各ユニットごとに 1 つのバックグラウンドサブエージェントを生成します。各サブエージェントはそのユニットを実装し、テストを実行し、プルリクエストを開きます。git リポジトリが必要です。例: `/batch migrate src/ from Solid to React`                                                                                                                                                                                                         |
--| `/branch [name]`                                | この時点で現在の会話のブランチを作成します。ブランチに切り替え、元の会話を保持します。`/resume` で戻ることができます。エイリアス: `/fork`。[`CLAUDE_CODE_FORK_SUBAGENT`](/ja/env-vars) が設定されている場合、`/fork` は代わりに[フォークされたサブエージェント](/ja/sub-agents#fork-the-current-conversation)を生成し、このコマンドのエイリアスではなくなります                                                                                                                                                                                                                                                                    |
--| `/btw <question>`                               | 会話に追加せずに[サイドクエスチョン](/ja/interactive-mode#side-questions-with-%2Fbtw)として素早く質問します                                                                                                                                                                                                                                                                                                                                                                                                                                |
--| `/chrome`                                       | [Chrome の Claude](/ja/chrome) 設定を構成します                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
--| `/claude-api [migrate\|managed-agents-onboard]` | **[スキル](/ja/skills#bundled-skills)。** プロジェクトの言語（Python、TypeScript、Java、Go、Ruby、C#、PHP、または cURL）と Managed Agents リファレンス用の Claude API リファレンス資料を読み込みます。ツール使用、ストリーミング、バッチ、構造化出力、および一般的な落とし穴をカバーしています。また、コードが `anthropic` または `@anthropic-ai/sdk` をインポートするときに自動的にアクティブになります。`/claude-api migrate` を実行して、既存の Claude API コードを新しいモデルにアップグレードします。Claude はスキャンするファイルとターゲットモデルを尋ね、モデル ID、思考設定、およびバージョン間で変更されたその他のパラメータを更新します。`/claude-api managed-agents-onboard` を実行して、新しい Managed Agent をゼロから作成するインタラクティブなウォークスルーを実施します |
--| `/clear [name]`                                 | 空のコンテキストで新しい会話を開始します。前の会話は `/resume` で利用可能なままです。前の会話にラベルを付けるために名前を渡します。`/resume` ピッカーで。同じ会話を続けながらコンテキストを解放するには、代わりに `/compact` を使用してください。エイリアス: `/reset`、`/new`                                                                                                                                                                                                                                                                                                                                                |
--| `/color [color\|default]`                       | 現在のセッションのプロンプトバーの色を設定します。利用可能な色: `red`、`blue`、`green`、`yellow`、`purple`、`orange`、`pink`、`cyan`。`default` を使用してリセットするか、引数なしで実行するとランダムな色を選択します。[リモートコントロール](/ja/remote-control)が接続されている場合、色は claude.ai/code に同期されます                                                                                                                                                                                                                                                                                              |
--| `/compact [instructions]`                       | 会話をここまで要約してコンテキストを解放します。オプションで要約のフォーカス指示を渡します。[コンパクション時にルール、スキル、メモリファイルがどのように処理されるか](/ja/context-window#what-survives-compaction)を参照してください                                                                                                                                                                                                                                                                                                                                                                     |
--| `/config`                                       | [設定](/ja/settings)インターフェースを開いて、テーマ、モデル、[出力スタイル](/ja/output-styles)、およびその他の設定を調整します。エイリアス: `/settings`                                                                                                                                                                                                                                                                                                                                                                                                          |
--| `/context [all]`                                | 現在のコンテキスト使用状況をカラーグリッドとして視覚化します。コンテキストが多いツール、メモリ肥大化、容量警告の最適化提案を表示します。[フルスクリーンモード](/ja/fullscreen)では、項目ごとの内訳はグリッドを表示したままにするために折りたたまれます。`all` を渡して展開します                                                                                                                                                                                                                                                                                                                                                           |
--| `/copy [N]`                                     | 最後のアシスタント応答をクリップボードにコピーします。数字 `N` を渡して N 番目に新しい応答をコピーします。`/copy 2` は 2 番目に新しい応答をコピーします。コードブロックが存在する場合、個別ブロックまたは完全な応答を選択するインタラクティブピッカーを表示します。ピッカーで `w` を押して、クリップボードの代わりにファイルに選択内容を書き込みます。SSH 経由で便利です                                                                                                                                                                                                                                                                                                            |
-```
-
-</details>
-
-<details>
-<summary>env-vars-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/env-vars-ja.md b/docs-ja/pages/env-vars-ja.md
-index ecd7046..c8ddfea 100644
---- a/docs-ja/pages/env-vars-ja.md
-+++ b/docs-ja/pages/env-vars-ja.md
-@@ -309,5 +309,5 @@ Claude Code は起動時に環境変数を読み取るため、変更は `claude
- | `MCP_SERVER_CONNECTION_BATCH_SIZE`                      | スタートアップ中に並列接続するローカル MCP サーバー（stdio）の最大数（デフォルト：3）                                                                                                                                                                                                                                                                                                                                                                               |
- | `MCP_TIMEOUT`                                           | MCP サーバー起動のタイムアウト（ミリ秒）（デフォルト：30000、または 30 秒）                                                                                                                                                                                                                                                                                                                                                                                   |
--| `MCP_TOOL_TIMEOUT`                                      | MCP ツール実行のタイムアウト（ミリ秒）（デフォルト：100000000、約 28 時間）                                                                                                                                                                                                                                                                                                                                                                                 |
-+| `MCP_TOOL_TIMEOUT`                                      | MCP ツール実行のタイムアウト（ミリ秒）（デフォルト：100000000、約 28 時間）。`.mcp.json` のサーバーごとの `timeout` フィールドはそのサーバーのこれをオーバーライドします。1000 未満の値は 1 秒にフロアされます                                                                                                                                                                                                                                                                                                |
- | `NO_PROXY`                                              | リクエストが直接発行されるドメインと IP のリスト。プロキシをバイパスします                                                                                                                                                                                                                                                                                                                                                                                        |
- | `OTEL_LOG_RAW_API_BODIES`                               | Anthropic Messages API リクエストとレスポンス JSON を `api_request_body` / `api_response_body` ログイベントとして出力します。60 KB で切り詰められたインラインボディの場合は `1` に設定するか、切り詰められていないボディをディスクに書き込み、`body_ref` パスを出力する場合は `file:<dir>` に設定します。デフォルトでは無効です。ボディには会話履歴全体が含まれます。[監視](/ja/monitoring-usage#api-request-body-event) を参照してください                                                                                                                            |
-```
-
-</details>
-
-<details>
-<summary>errors-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/errors-ja.md b/docs-ja/pages/errors-ja.md
-index 25db665..843f4b0 100644
---- a/docs-ja/pages/errors-ja.md
-+++ b/docs-ja/pages/errors-ja.md
-@@ -45,4 +45,5 @@
- | `Request too large`                                                                           | [リクエストエラー](#request-too-large)                                                                |
- | `Image was too large`                                                                         | [リクエストエラー](#image-was-too-large)                                                              |
-+| `Unable to resize image`                                                                      | [リクエストエラー](#unable-to-resize-image)                                                           |
- | `PDF too large` / `PDF is password protected`                                                 | [リクエストエラー](#pdf-errors)                                                                       |
- | `Extra inputs are not permitted`                                                              | [リクエストエラー](#extra-inputs-are-not-permitted)                                                   |
-@@ -488,4 +489,22 @@ API Error: 400 ... image dimensions exceed max allowed size
- * 全画面ではなく、関連する領域のより厳密なスクリーンショットを撮ってください
- 
-+### Unable to resize image
-+
-+Claude Code は、API に送信する前に添付された画像をダウンスケールできませんでした。
-+
-+```text theme={null}
-+Unable to resize image — image processing is unavailable and dimensions could not be read from the file header. Please convert the image to PNG, JPEG, GIF, or WebP.
-+Unable to resize image — dimensions exceed the 2000x2000px limit and image processing failed. Please resize the image to reduce its pixel dimensions.
-+Unable to resize image (… raw, … base64). The image exceeds the … API limit and compression failed. Please resize the image manually or use a smaller image.
-+Unable to resize image — could not verify image dimensions are within the 2000x2000px API limit.
-+```
-+
-+Claude Code は通常、大きな画像を自動的にリサイズします。これらのエラーは、ネイティブ画像プロセッサーがロードに失敗したか、エラーを返したため、画像を API 制限内に収まるようにリサイズできなかったことを意味します。
-+
-+**対応方法：**
-+
-+* メッセージが画像の変換を求めている場合は、PNG、JPEG、GIF、または WebP に変換して、再度添付してください。Claude Code はこれらの形式の寸法を画像プロセッサーなしで検証できます。
-+* メッセージが寸法またはサイズ制限を報告している場合は、その制限以下に画像をリサイズまたは再圧縮してから添付してください。
 ```
 
 </details>
