@@ -17,6 +17,40 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-06-06</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md | 4 ++++
+ 1 file changed, 4 insertions(+)
+```
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index f877eb7..b475a37 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,8 @@
+ # Changelog
+ 
++## 2.1.165
++
++- Bug fixes and reliability improvements
++
+ ## 2.1.163
+ 
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-06-05</summary>
 
 **変更ファイル:**
@@ -2697,69 +2731,5 @@ index 1f55984..20cadc6 100644
 
 </details>
 
-
-<details>
-<summary>2026-05-23</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/agent-view-ja.md           |  10 +-
- docs-ja/pages/changelog.md               |  33 ++++++
- docs-ja/pages/commands-ja.md             | 186 +++++++++++++++----------------
- docs-ja/pages/env-vars-ja.md             |   2 +-
- docs-ja/pages/errors-ja.md               |  19 ++++
- docs-ja/pages/features-overview-ja.md    |   2 +-
- docs-ja/pages/glossary-ja.md             |   2 +-
- docs-ja/pages/interactive-mode-ja.md     |   1 +
- docs-ja/pages/keybindings-ja.md          |   6 +-
- docs-ja/pages/mcp-ja.md                  |   3 +
- docs-ja/pages/model-config-ja.md         |  12 +-
- docs-ja/pages/plugin-marketplaces-ja.md  |   2 +-
- docs-ja/pages/settings-ja.md             |   5 +-
- docs-ja/pages/setup-ja.md                |  35 +++---
- docs-ja/pages/skills-ja.md               |   4 +-
- docs-ja/pages/tools-reference-ja.md      |   2 +
- docs-ja/pages/troubleshoot-install-ja.md |  22 ++--
- 17 files changed, 209 insertions(+), 137 deletions(-)
-```
-
-<details>
-<summary>agent-view-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/agent-view-ja.md b/docs-ja/pages/agent-view-ja.md
-index 927081d..db305cf 100644
---- a/docs-ja/pages/agent-view-ja.md
-+++ b/docs-ja/pages/agent-view-ja.md
-@@ -177,5 +177,5 @@ Completed
- グループ内で：
- 
--* `Ctrl+T` を押してセッションをトップにピン留めします
-+* `Ctrl+T` を押してセッションをトップにピン留めし、[アイドル中にそのプロセスを実行し続けます](#the-supervisor-process)
- * `Shift+↑` または `Shift+↓` を押してセッションを並べ替えます
- * `Ctrl+R` を押してセッションの名前を変更します
-@@ -422,7 +422,9 @@ claude agents --settings ./ci-settings.json --add-dir ../shared-lib
- 各バックグラウンドセッションは独自の Claude Code プロセスであり、ターミナルではなくスーパーバイザーによって管理されます。アクティブに作業しているセッション、入力を待機しているセッション、またはターミナルが接続されているセッションはプロセスを実行し続けます。実行中のバックグラウンドシェルコマンド、サブエージェント、ワークフロー、またはモニターはアクティブな作業としてカウントされるため、開発サーバーなどの長時間実行プロセスはセッションを生かし続けます。
- 
--セッションが完了し、約 1 時間アタッチされていない状態で待機すると、スーパーバイザーはリソースを解放するためにプロセスを停止します。トランスクリプトと状態はディスク上に残り、次回アタッチ、ピーク表示、または返信するときに、スーパーバイザーは中断したところから新しいプロセスを開始します。すべてのセッションが完了し、ターミナルが接続されていない場合、スーパーバイザー自体が終了し、次回セッションをバックグラウンド化するか、エージェントビューを開くときに再度開始します。
-+セッションが完了し、約 1 時間アタッチされていない状態で待機すると、スーパーバイザーはリソースを解放するためにプロセスを停止します。[`Ctrl+T`](#organize-the-list) でピン留めしたセッションは除外され、アイドル状態でもプロセスを実行し続けます。トランスクリプトと状態はディスク上に残り、次回アタッチ、ピーク表示、または返信するときに、スーパーバイザーは中断したところから新しいプロセスを開始します。すべてのセッションが完了し、ターミナルが接続されていない場合、スーパーバイザー自体が終了し、次回セッションをバックグラウンド化するか、エージェントビューを開くときに再度開始します。
- 
--スーパーバイザーはディスク上にインストールされた Claude Code バイナリを監視し、通常の [自動更新プログラム](/ja/setup#auto-updates) がそれを置き換えた後、新しいバージョンに再開します。これはネットワークチェックではなく、ローカルファイルウォッチです。バックグラウンドセッションはデタッチされたプロセスであるため、再開を通じて実行し続け、新しいスーパーバイザーはそれらに再接続します。
-+ホストのメモリが不足している場合、スーパーバイザーはアイドル状態の非ピン留めセッションを最初に停止し、何も解放されない場合のみアイドル状態のピン留めセッションを停止します。
-+
-+スーパーバイザーはディスク上にインストールされた Claude Code バイナリを監視し、通常の [自動更新プログラム](/ja/setup#auto-updates) がそれを置き換えた後、新しいバージョンに再開します。これはネットワークチェックではなく、ローカルファイルウォッチです。バックグラウンドセッションはデタッチされたプロセスであるため、再開を通じて実行し続け、新しいスーパーバイザーはそれらに再接続します。アイドル状態のピン留めセッションも新しいバージョンに再開されるため、再度アタッチすることなく更新を取得します。
- 
- ### 状態が保存される場所
-@@ -470,5 +472,5 @@ claude agents --settings ./ci-settings.json --add-dir ../shared-lib
- ### セッションがアタッチ後に応答が遅い
- 
--セッションが完了し、約 1 時間アタッチされていない状態で待機すると、スーパーバイザーはリソースを解放するためにプロセスを停止します。アタッチすると、中断したところから新しいプロセスが開始され、少し時間がかかります。作業中または入力を待機しているセッションはこの方法で停止されることはありません。
-+セッションが完了し、約 1 時間アタッチされていない状態で待機すると、スーパーバイザーはリソースを解放するためにプロセスを停止します。アタッチすると、中断したところから新しいプロセスが開始され、少し時間がかかります。作業中または入力を待機しているセッション、または[ピン留めされた](#organize-the-list)セッションはこの方法で停止されることはありません。セッションを `Ctrl+T` でピン留めして、応答性を保つことができます。
- 
- ### `.claude/worktrees/` が満杯になっている
-```
-
-</details>
 
 <!-- UPDATE_LOG_END -->
