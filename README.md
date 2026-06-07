@@ -17,6 +17,57 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-06-07</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md | 32 ++++++++++++++++++++++++++++++++
+ 1 file changed, 32 insertions(+)
+```
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index b475a37..d840d7f 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,36 @@
+ # Changelog
+ 
++## 2.1.168
++
++- Bug fixes and reliability improvements
++
++## 2.1.167
++
++- Bug fixes and reliability improvements
++
++## 2.1.166
++
++- Added `fallbackModel` setting to configure up to three fallback models tried in order when the primary model is overloaded or unavailable; `--fallback-model` now also applies to interactive sessions
++- Added glob pattern support in deny rule tool-name position (`"*"` denies all tools); allow rules reject non-MCP globs, and unknown tool names in deny rules warn at startup
++- Hardened cross-session messaging: messages relayed via `SendMessage` from other Claude sessions no longer carry user authority — receivers refuse relayed permission requests, and auto mode blocks them
++- `MAX_THINKING_TOKENS=0`, `--thinking disabled`, and the per-model thinking toggle now disable thinking on models that think by default via the Claude API (3P providers unchanged)
++- Claude Code now retries a turn once on the fallback model when the API rejects an unexpected non-retryable error; auth, rate-limit, request-size, and transport errors still surface immediately
++- `claude update` now announces the target version before downloading instead of going silent
++- `claude agents`: typing a URL into the list now filters to the session whose first prompt contained it
++- Fixed a recurring "image could not be processed" error and extra token usage when an unprocessable image was sent in a session
++- Fixed remote sessions becoming permanently stuck when a brief backend disruption occurred during worker registration at startup
++- Fixed flickering in JetBrains IDE terminals (IntelliJ, PyCharm, WebStorm, etc.) on 2026.1+ by enabling synchronized output
++- Fixed Shift+non-ASCII characters (e.g. Shift+ä → Ä) being dropped in terminals using the Kitty keyboard protocol (WezTerm, Ghostty, kitty)
++- Fixed PowerShell command validation occasionally hanging far past its time budget on Windows when a killed process's children held its output pipes
++- Fixed orphaned `claude --bg-pty-host` processes spinning at 100% CPU after the daemon dies while connected on macOS
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-06-06</summary>
 
 **変更ファイル:**
@@ -2691,40 +2742,6 @@ index f65f794..94a262f 100644
 +Claude Code を起動する前に virtualenv または conda 環境をアクティブ化してください。Bash コマンド間で環境変数を永続化するには、Claude Code を起動する前に [`CLAUDE_ENV_FILE`](/ja/env-vars) をシェル スクリプトに設定するか、[SessionStart フック](/ja/hooks#persist-environment-variables)を使用して動的に設定します。
  
  2 つの制限が各コマンドを制限します：
-```
-
-</details>
-
-</details>
-
-
-<details>
-<summary>2026-05-24</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/changelog.md | 4 ++++
- 1 file changed, 4 insertions(+)
-```
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index 1f55984..20cadc6 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,8 @@
- # Changelog
- 
-+## 2.1.150
-+
-+- Internal infrastructure improvements (no user-facing changes)
-+
- ## 2.1.149
- 
 ```
 
 </details>
