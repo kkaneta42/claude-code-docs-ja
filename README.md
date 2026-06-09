@@ -17,6 +17,57 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-06-09</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md | 33 +++++++++++++++++++++++++++++++++
+ 1 file changed, 33 insertions(+)
+```
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index d840d7f..a52cc67 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,37 @@
+ # Changelog
+ 
++## 2.1.169
++
++- Added `--safe-mode` flag (and `CLAUDE_CODE_SAFE_MODE`) to start Claude Code with all customizations (CLAUDE.md, plugins, skills, hooks, MCP servers) disabled for troubleshooting
++- Added `/cd` command to move a session to a new working directory without breaking the prompt cache mid-session
++- Added a `disableBundledSkills` setting and `CLAUDE_CODE_DISABLE_BUNDLED_SKILLS` environment variable to hide bundled skills, workflows, and built-in slash commands from the model
++- Fixed Up/Down arrows jumping to command history past the wrapped rows of a long input line — they now move through each visual row first, and history recall enters at the near edge
++- Fixed enterprise managed MCP policies (`allowedMcpServers`/`deniedMcpServers`) not being enforced on reconnect, IDE-typed configs, `--mcp-config` servers during the first session after install, or before remote settings loaded; also fixed slow cold starts for orgs without remote settings
++- Fixed a ~30-50ms UI stall at the start of each turn for macOS users logged in with claude.ai credentials
++- Fixed `claude -p` being slow or appearing to hang on Windows while waiting for the slash-command/skill scan (regression in 2.1.161)
++- Fixed Remote Control getting stuck on "reconnecting" after resuming a session when an OAuth token refresh happened at the same time
++- Fixed Git Credential Manager's "Connect to GitHub" popup appearing on Windows at startup when background git commands ran without cached credentials
++- Fixed footer hints (e.g. "esc to interrupt") not showing for users with a custom statusline
++- Fixed stale permission and dialog prompts reappearing every time you reattached to a remote session whose worker had died while waiting on them
++- Fixed `claude agents --json` omitting blocked and just-dispatched background sessions; added `--all` to include completed sessions, plus new `id` and `state` fields
++- Fixed agents view leaving a stale/garbled frame after navigating back from an agent on WSL in Windows Terminal
++- Fixed background agents ignoring project-level settings `env` values (e.g. `ANTHROPIC_MODEL`) when dispatched onto a pre-warmed worker
++- Fixed MCPB plugin cache being spuriously invalidated on Windows, causing unnecessary re-extraction
++- Fixed plugin `.in_use` PID lock files accumulating without bound; stale markers from crashed sessions are now swept once per day
++- Fixed untrusted project settings being able to set OTEL client-certificate paths without trust confirmation
++- `/workflows` now opens immediately even while a turn is in progress
++- Improved `TaskCreate` reliability: malformed inputs are repaired automatically and validation errors for unloaded tools include the schema
++- Improved the error message shown when your organization has disabled API key authentication, with guidance based on where the active API key comes from
++- Reduced CPU usage while responses stream and during spinner animations
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-06-07</summary>
 
 **変更ファイル:**
@@ -2706,47 +2757,5 @@ index ba1a22a..45f226e 100644
 ```
 
 </details>
-
-<details>
-<summary>sandboxing-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/sandboxing-ja.md b/docs-ja/pages/sandboxing-ja.md
-index 920238d..bdb8acd 100644
---- a/docs-ja/pages/sandboxing-ja.md
-+++ b/docs-ja/pages/sandboxing-ja.md
-@@ -201,4 +201,5 @@ Claude Code は 2 つのサンドボックスモードを提供します。
- * **デフォルトの読み取り動作**：特定の拒否ディレクトリを除く、コンピュータ全体への読み取りアクセス。このデフォルトは `~/.aws/credentials` や `~/.ssh/` などの認証情報ファイルの読み取りを許可することに注意してください。これらをブロックするには、`denyRead` に追加してください。
- * **ブロックされたアクセス**：明示的な許可なしに現在の作業ディレクトリ外のファイルを変更できません。これには `~/.bashrc` などのシェル設定ファイルと `/bin/` のシステムバイナリが含まれます。
-+* **Git worktrees**：作業ディレクトリが[リンクされた git worktree](/ja/worktrees)の場合、サンドボックスはメインリポジトリの共有 `.git` ディレクトリへの書き込みも許可するため、`git commit` などのコマンドが refs とインデックスを更新できます。そのディレクトリ内の `hooks/` と `config` への書き込みは引き続き拒否されます。
- * **設定可能**：設定を通じてカスタム許可パスと拒否パスを定義します
- 
-```
-
-</details>
-
-<details>
-<summary>tools-reference-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/tools-reference-ja.md b/docs-ja/pages/tools-reference-ja.md
-index f65f794..94a262f 100644
---- a/docs-ja/pages/tools-reference-ja.md
-+++ b/docs-ja/pages/tools-reference-ja.md
-@@ -112,6 +112,7 @@ Bash ツールは、次の永続化動作で各コマンドを別々のプロセ
-   * この引き継ぎを無効にして、すべての Bash コマンドがプロジェクト ディレクトリで開始されるようにするには、`CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR=1` を設定します。
- * 環境変数は永続化されません。1 つのコマンドの `export` は次のコマンドでは利用できません。
-+* シェル スタートアップ ファイルで定義されたエイリアスとシェル関数は利用できます。セッション開始時に、Claude Code はシェルに応じて `~/.zshrc`、`~/.bashrc`、または `~/.profile` をソースし、結果のエイリアス、関数、およびシェル オプションをキャプチャして、すべての Bash コマンドに適用します。
- 
--Claude Code を起動する前に virtualenv または conda 環境をアクティブ化してください。Bash コマンド間で環境変数を永続化するには、Claude Code を起動する前に [`CLAUDE_ENV_FILE`](/ja/env-vars)をシェル スクリプトに設定するか、[SessionStart フック](/ja/hooks#persist-environment-variables)を使用して動的に設定します。
-+Claude Code を起動する前に virtualenv または conda 環境をアクティブ化してください。Bash コマンド間で環境変数を永続化するには、Claude Code を起動する前に [`CLAUDE_ENV_FILE`](/ja/env-vars) をシェル スクリプトに設定するか、[SessionStart フック](/ja/hooks#persist-environment-variables)を使用して動的に設定します。
- 
- 2 つの制限が各コマンドを制限します：
-```
-
-</details>
-
-</details>
-
 
 <!-- UPDATE_LOG_END -->
