@@ -196,7 +196,9 @@ AWS 上の Claude Platform は、AWS 認証、IAM アクセス制御、AWS Marke
   AWS Marketplace を通じてサブスクリプションすると、AWS アカウントに関連付けられた新しい Anthropic 組織がプロビジョニングされます。この組織は、Anthropic で既に持っている組織とは別であり、認証情報はそれらの間で転送されません。AWS にリンクされた組織のワークスペース ID と API キーを使用してください。既存の Claude Console アカウントからではなく。
 </Note>
 
-## 前提条件
+<h2 id="prerequisites">
+  前提条件
+</h2>
 
 Claude Code を設定する前に、以下が必要です。
 
@@ -205,9 +207,13 @@ Claude Code を設定する前に、以下が必要です。
 * Anthropic サービスを呼び出す権限を持つ IAM プリンシパル、またはワークスペースにスコープされた API キー
 * 環境内、`~/.aws/credentials` 内、または SigV4 認証が必要な場合は接続された IAM ロールからの AWS 認証情報。AWS CLI は SSO ログインフローにのみ必要です。
 
-## セットアップ
+<h2 id="setup">
+  セットアップ
+</h2>
 
-### 1. AWS 認証情報を設定する
+<h3 id="1-configure-aws-credentials">
+  1. AWS 認証情報を設定する
+</h3>
 
 Claude Code は AWS 上の Claude Platform に対して 2 つの認証方法をサポートしています。チームがアクセスを管理する方法に合った方法を選択してください。
 
@@ -248,7 +254,9 @@ export ANTHROPIC_AWS_API_KEY=sk-ant-xxxxx
   `/login` および `/logout` コマンドは AWS 上の Claude Platform 認証を変更しません。認証は AWS 認証情報またはワークスペース API キーを通じて実行され、Claude.ai サブスクリプションを通じてではありません。
 </Note>
 
-### 2. Claude Code を設定する
+<h3 id="2-configure-claude-code">
+  2. Claude Code を設定する
+</h3>
 
 Claude Code をデフォルトの Anthropic API ではなく AWS 上の Claude Platform を通じてルーティングする環境変数を設定します。
 
@@ -262,7 +270,9 @@ export AWS_REGION=us-east-1
 
 AWS 上の Claude Platform は、環境に AWS 認証情報が存在する場合でもオプトインです。Bedrock と Foundry はプロバイダールーティングで優先されるため、設定されている場合は `CLAUDE_CODE_USE_BEDROCK` と `CLAUDE_CODE_USE_FOUNDRY` をアンセットします。
 
-### 3. モデルバージョンをピン留めする
+<h3 id="3-pin-model-versions">
+  3. モデルバージョンをピン留めする
+</h3>
 
 AWS 上の Claude Platform は、直接 Claude API と同じモデル ID を使用します。デフォルトのエイリアス `opus`、`sonnet`、`haiku` は、ワークスペースで利用可能な最新バージョンに解決されます。
 
@@ -278,7 +288,9 @@ export ANTHROPIC_DEFAULT_HAIKU_MODEL=claude-haiku-4-5
 
 [プロンプトキャッシング](/ja/prompt-caching) は自動的に有効になります。5 分のデフォルトの代わりに 1 時間のキャッシュ TTL をリクエストするには、`ENABLE_PROMPT_CACHING_1H=1` を設定します。API は 1 時間のキャッシュ書き込みをより高いレートで請求します。レートについては、[プロンプトキャッシング価格](https://platform.claude.com/docs/en/build-with-claude/prompt-caching#pricing) を参照してください。
 
-## Agent SDK を使用する
+<h2 id="use-the-agent-sdk">
+  Agent SDK を使用する
+</h2>
 
 [Agent SDK](/ja/agent-sdk/overview) は CLI と同じ環境変数を読み取るため、Claude Code サブプロセスを生成するプログラムは、呼び出しの前に `CLAUDE_CODE_USE_ANTHROPIC_AWS`、`ANTHROPIC_AWS_WORKSPACE_ID`、および `ANTHROPIC_AWS_API_KEY` または AWS 認証情報をエクスポートすることで AWS 上の Claude Platform をターゲットにできます。
 
@@ -296,7 +308,9 @@ for await (const msg of query({ prompt: "What's in this repo?" })) {
 
 この例は SigV4 のアンビエント AWS 認証情報チェーンに依存しています。代わりにワークスペース API キーで認証するには、同じ方法で `ANTHROPIC_AWS_API_KEY` を設定します。より広い Agent SDK サーフェスについては、[Agent SDK 概要](/ja/agent-sdk/overview)を参照してください。
 
-## 企業プロキシを通じてルーティングする
+<h2 id="route-through-a-corporate-proxy">
+  企業プロキシを通じてルーティングする
+</h2>
 
 プロキシまたは [LLM ゲートウェイ](/ja/llm-gateway)を通じてトラフィックをルーティングするには、`ANTHROPIC_AWS_BASE_URL` をプロキシのアドレスに設定します。Claude Code は同じワークスペースと認証ヘッダーを使用してそのアドレスにリクエストを送信するため、それらを変更せずに転送するゲートウェイが機能します。
 
@@ -315,25 +329,35 @@ export ANTHROPIC_AWS_WORKSPACE_ID=wrkspc_01ABCDEFGHIJKLMN
 export ANTHROPIC_AWS_BASE_URL=https://anthropic-proxy.example.com
 ```
 
-## トラブルシューティング
+<h2 id="troubleshooting">
+  トラブルシューティング
+</h2>
 
 `/status` を実行して、解決されたプロバイダーと明示的に設定されたワークスペース ID、リージョン、ベース URL オーバーライド、および認証スキップ設定を確認します。これは Claude Code が AWS 上の Claude Platform をターゲットにしているかどうかを確認する最速の方法です。
 
-### すべてのリクエストで `403 Forbidden` または `AccessDenied`
+<h3 id="403-forbidden-or-accessdenied-on-every-request">
+  すべてのリクエストで `403 Forbidden` または `AccessDenied`
+</h3>
 
 Claude Code が解決した IAM プリンシパルは、ワークスペースで Anthropic サービスを呼び出す権限がない可能性があります。AWS プロファイルに接続されたロール、または Claude Code を開始したランナーを確認し、[IAM アクション参照](https://platform.claude.com/docs/en/api/claude-platform-on-aws-iam-actions)に記載されている `aws-external-anthropic` アクションがあることを確認します。
 
 `ANTHROPIC_AWS_API_KEY` を設定した場合、キーは SigV4 よりも優先され、古いキーは同じエラーを生成します。AWS Console の **Claude Platform on AWS → API keys** でキーを再生成するか、変数をアンセットして AWS 認証情報にフォールバックします。
 
-### リクエストがワークスペース不足エラーで失敗する
+<h3 id="requests-fail-with-a-missing-workspace-error">
+  リクエストがワークスペース不足エラーで失敗する
+</h3>
 
 `ANTHROPIC_AWS_WORKSPACE_ID` がアンセットまたは空の可能性があります。すべての AWS 上の Claude Platform リクエストにはワークスペース ID を含める必要があります。AWS 認証情報によって暗示されません。AWS Console サービスページの **Workspaces** の下で ID を見つけ、Claude Code を開始する前にエクスポートします。
 
-### リクエストが依然として `api.anthropic.com` に送信される
+<h3 id="requests-still-go-to-api-anthropic-com">
+  リクエストが依然として `api.anthropic.com` に送信される
+</h3>
 
 `CLAUDE_CODE_USE_ANTHROPIC_AWS` がアンセットまたは truthy として解析されない値に設定されている可能性があります。`1` に設定し、`/status` を実行して解決されたプロバイダーを確認します。`CLAUDE_CODE_USE_BEDROCK` または `CLAUDE_CODE_USE_FOUNDRY` も設定されている場合、それらは AWS 上の Claude Platform よりも優先されます。
 
-## 追加リソース
+<h2 id="additional-resources">
+  追加リソース
+</h2>
 
 Claude Code を設定する前に行う AWS 上の Claude Platform サブスクリプション、ワークスペース、IAM セットアップはプラットフォームドキュメントで説明されています。
 

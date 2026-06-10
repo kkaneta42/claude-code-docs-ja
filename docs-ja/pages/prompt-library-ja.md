@@ -1329,7 +1329,9 @@ export const text = {
 
 <PromptLibrary text={text} labels={labels} tagLabels={tagLabels} phaseLabels={phaseLabels} sourceLabels={sourceLabels} catLabels={catLabels} />
 
-## これらのプロンプトを機能させるもの
+<h2 id="what-makes-these-prompts-work">
+  これらのプロンプトを機能させるもの
+</h2>
 
 上記のプロンプトはいくつかのパターンを共有しています。それらを認識することは、ここで任意のプロンプトを独自のタスクに適応させるのに役立ちます。
 
@@ -1371,7 +1373,9 @@ explain how the payment retry logic works as an HTML page with a diagram, then o
 
 各パターンの詳細については、[ベストプラクティス](/ja/best-practices)を参照してください。
 
-## これらはどこから来ているのか
+<h2 id="where-these-come-from">
+  これらはどこから来ているのか
+</h2>
 
 これらのプロンプトは、公開されている Anthropic リソースのパターンに基づいています。各カードはそのソースにリンクしています:
 
@@ -1382,7 +1386,9 @@ explain how the payment retry logic works as an HTML page with a diagram, then o
 
 これらのパターンのビデオウォークスルーについては、Anthropic Academy の無料 [Claude Code in Action](https://anthropic.skilljar.com/claude-code-in-action)コースを参照してください。
 
-## 関連リソース
+<h2 id="related-resources">
+  関連リソース
+</h2>
 
 このページのプロンプトは出発点です。1 つがプロジェクトで機能したら、次のステップはそれを繰り返し可能にすることです。[スキル](/ja/skills)として保存して、チーム内の誰でも `/command` として実行でき、Claude が学習したコンベンションを [CLAUDE.md](/ja/memory)に記録して、すべてのセッションがその文脈で開始されるようにしてください。より大きなまたはより危険な変更については、[プランモード](/ja/permission-modes#analyze-before-you-edit-with-plan-mode)は編集が発生する前にファイルリストを表示します。
 

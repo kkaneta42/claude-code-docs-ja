@@ -17,6 +17,338 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-06-10</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/agent-view-ja.md               | 148 +++++--
+ docs-ja/pages/agents-ja.md                   |  12 +-
+ docs-ja/pages/analytics-ja.md                |  88 +++--
+ docs-ja/pages/authentication-ja.md           |  32 +-
+ docs-ja/pages/auto-mode-config-ja.md         |  24 +-
+ docs-ja/pages/best-practices-ja.md           | 124 ++++--
+ docs-ja/pages/champion-kit-ja.md             |  64 ++-
+ docs-ja/pages/changelog.md                   |   6 +
+ docs-ja/pages/channels-ja.md                 |  36 +-
+ docs-ja/pages/channels-reference-ja.md       |  60 ++-
+ docs-ja/pages/checkpointing-ja.md            |  40 +-
+ docs-ja/pages/chrome-ja.md                   |  80 +++-
+ docs-ja/pages/claude-code-on-the-web-ja.md   | 172 ++++++--
+ docs-ja/pages/claude-directory-ja.md         |  44 ++-
+ docs-ja/pages/claude-platform-on-aws-ja.md   |  48 ++-
+ docs-ja/pages/cli-reference-ja.md            |  16 +-
+ docs-ja/pages/common-workflows-ja.md         |  84 +++-
+ docs-ja/pages/communications-kit-ja.md       |  72 +++-
+ docs-ja/pages/costs-ja.md                    |  76 +++-
+ docs-ja/pages/data-usage-ja.md               |  48 ++-
+ docs-ja/pages/debug-your-config-ja.md        |  28 +-
+ docs-ja/pages/deep-links-ja.md               |  60 ++-
+ docs-ja/pages/desktop-ja.md                  | 268 +++++++++----
+ docs-ja/pages/desktop-quickstart-ja.md       |  20 +-
+ docs-ja/pages/desktop-scheduled-tasks-ja.md  |  32 +-
+ docs-ja/pages/devcontainer-ja.md             |  28 +-
+ docs-ja/pages/env-vars-ja.md                 |  24 +-
+ docs-ja/pages/fast-mode-ja.md                |  40 +-
+ docs-ja/pages/features-overview-ja.md        |  40 +-
+ docs-ja/pages/fullscreen-ja.md               |  48 ++-
+ docs-ja/pages/github-enterprise-server-ja.md |  64 ++-
+ docs-ja/pages/glossary-ja.md                 | 236 ++++++++---
+ docs-ja/pages/goal-ja.md                     |  44 ++-
+ docs-ja/pages/google-vertex-ai-ja.md         |  60 ++-
+ docs-ja/pages/headless-ja.md                 |  48 ++-
+ docs-ja/pages/hooks-guide-ja.md              | 124 ++++--
+ docs-ja/pages/hooks-ja.md                    | 564 ++++++++++++++++++++-------
+ docs-ja/pages/how-claude-code-works-ja.md    | 100 +++--
+ docs-ja/pages/interactive-mode-ja.md         | 104 +++--
+ docs-ja/pages/keybindings-ja.md              | 144 +++++--
+ docs-ja/pages/large-codebases-ja.md          |  80 +++-
+ docs-ja/pages/legal-and-compliance-ja.md     |  44 ++-
+ docs-ja/pages/llm-gateway-ja.md              |  64 ++-
+ docs-ja/pages/managed-mcp-ja.md              |  60 ++-
+ docs-ja/pages/mcp-quickstart-ja.md           |  56 ++-
+ docs-ja/pages/microsoft-foundry-ja.md        |  40 +-
+ docs-ja/pages/model-config-ja.md             | 100 +++--
+ docs-ja/pages/monitoring-usage-ja.md         | 280 +++++++++----
+ docs-ja/pages/network-config-ja.md           |  32 +-
+ docs-ja/pages/output-styles-ja.md            |  28 +-
+ docs-ja/pages/overview-ja.md                 |  16 +-
+ docs-ja/pages/permission-modes-ja.md         |  60 ++-
+ docs-ja/pages/permissions-ja.md              | 104 +++--
+ docs-ja/pages/platforms-ja.md                |  28 +-
+ docs-ja/pages/plugin-dependencies-ja.md      |  36 +-
+ docs-ja/pages/plugin-hints-ja.md             |  32 +-
+ docs-ja/pages/plugin-marketplaces-ja.md      | 196 +++++++---
+ docs-ja/pages/plugins-ja.md                  |  88 +++--
+ docs-ja/pages/plugins-reference-ja.md        | 208 +++++++---
+ docs-ja/pages/prompt-caching-ja.md           | 112 ++++--
+ docs-ja/pages/prompt-library-ja.md           |  12 +-
+ docs-ja/pages/quickstart-ja.md               |  52 ++-
+ docs-ja/pages/routines-ja.md                 | 100 +++--
+ docs-ja/pages/sandbox-environments-ja.md     |  44 ++-
+ docs-ja/pages/sandboxing-ja.md               |  84 +++-
+ docs-ja/pages/scheduled-tasks-ja.md          |  60 ++-
+ docs-ja/pages/security-guidance-ja.md        |  72 +++-
+ docs-ja/pages/security-ja.md                 |  68 +++-
+ docs-ja/pages/server-managed-settings-ja.md  |  64 ++-
+ docs-ja/pages/sessions-ja.md                 |  32 +-
+ docs-ja/pages/settings-ja.md                 | 136 +++++--
+ docs-ja/pages/setup-ja.md                    | 108 +++--
+ docs-ja/pages/skills-ja.md                   | 124 ++++--
+ docs-ja/pages/slack-ja.md                    | 108 +++--
+ docs-ja/pages/sub-agents-ja.md               | 176 ++++++---
+ docs-ja/pages/terminal-config-ja.md          |  72 +++-
+ docs-ja/pages/third-party-integrations-ja.md |  52 ++-
+ docs-ja/pages/tools-reference-ja.md          |  76 +++-
+ docs-ja/pages/troubleshoot-install-ja.md     | 144 +++++--
+ docs-ja/pages/troubleshooting-ja.md          |  32 +-
+ docs-ja/pages/ultraplan-ja.md                |  24 +-
+ docs-ja/pages/ultrareview-ja.md              |  24 +-
+ docs-ja/pages/voice-dictation-ja.md          |  36 +-
+ docs-ja/pages/web-quickstart-ja.md           |  68 +++-
+ docs-ja/pages/workflows-ja.md                |  68 +++-
+ docs-ja/pages/worktrees-ja.md                |  32 +-
+ docs-ja/pages/zero-data-retention-ja.md      |  24 +-
+ 87 files changed, 5181 insertions(+), 1725 deletions(-)
+```
+
+**新規追加:**
+
+
+<details>
+<summary>agent-view-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/agent-view-ja.md b/docs-ja/pages/agent-view-ja.md
+index 0e8451a..c57f9c8 100644
+--- a/docs-ja/pages/agent-view-ja.md
++++ b/docs-ja/pages/agent-view-ja.md
+@@ -31,5 +31,7 @@ Claude が複数の独立したタスクに対して、あなたが毎ステッ
+ * [バックグラウンドセッションがどのようにホストされるか](#how-background-sessions-are-hosted)。スーパーバイザープロセスによって
+ 
+-## クイックスタート
++<h2 id="quick-start">
++  クイックスタート
++</h2>
+ 
+ このチュートリアルでは、コアエージェントビューループについて説明します。タスクをディスパッチし、Claude が作業する際に行が更新されるのを見守り、ピークして確認して返信し、フル会話にアタッチします。ディスパッチしたセッションはエージェントビューを閉じた後も実行し続けるため、離れて後で戻ることができます。
+@@ -69,5 +71,7 @@ Claude が複数の独立したタスクに対して、あなたが毎ステッ
+ `claude agents` を `claude` の代わりにプライマリエントリーポイントとして使用できます。エージェントビューからすべてのタスクをディスパッチし、フル会話が必要な場合はアタッチし、`←` を押してテーブルに戻ります。
+ 
+-## エージェントビューでセッションを監視する
++<h2 id="monitor-sessions-with-agent-view">
++  エージェントビューでセッションを監視する
++</h2>
+ 
+ `claude agents` を実行してエージェントビューを開きます。ターミナル全体を占有し、状態でグループ化されたすべてのセッションをリストします。ピン留めされたセッションと入力が必要なセッションが上部に表示されます。各行はセッションの名前、現在のアクティビティ、最後に変更されてからの経過時間を表示します。
+@@ -103,5 +107,7 @@ Completed
+ ```
+ 
+-### セッション状態を読む
++<h3 id="read-session-state">
++  セッション状態を読む
++</h3>
+ 
+```
+
+</details>
+
+<details>
+<summary>agents-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/agents-ja.md b/docs-ja/pages/agents-ja.md
+index 5984b05..4d18871 100644
+--- a/docs-ja/pages/agents-ja.md
++++ b/docs-ja/pages/agents-ja.md
+@@ -33,5 +33,7 @@
+ </Note>
+ 
+-## アプローチを選択する
++<h2 id="choose-an-approach">
++  アプローチを選択する
++</h2>
+ 
+ 適切なアプローチは、誰が作業を調整するか、ワーカーが通信する必要があるかどうか、および同じファイルを編集するかどうかによって異なります。
+@@ -45,5 +47,7 @@
+ * **タスクが同じファイルに触れるか？** [ワークツリー](/ja/worktrees)で作業を分離します。サブエージェントと自分で実行するセッションは、それぞれ個別のワークツリーを使用できます。エージェントチームはチームメイトをワークツリーで分離しないため、[作業を分割](/ja/agent-teams#avoid-file-conflicts)して、各チームメイトが異なるファイルセットを所有するようにします。
+ 
+-## 実行中の作業を確認する
++<h2 id="check-on-running-work">
++  実行中の作業を確認する
++</h2>
+ 
+ 実行中の作業を確認するコマンドは、使用したアプローチによって異なります。
+@@ -56,5 +60,7 @@
+ すべてのセッションのデスクトップビューについては、[デスクトップアプリでのセッションの並列実行](/ja/desktop#work-in-parallel-with-sessions) を参照してください。
+ 
+-## 詳細情報
++<h2 id="learn-more">
++  詳細情報
++</h2>
+ 
+```
+
+</details>
+
+<details>
+<summary>analytics-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/analytics-ja.md b/docs-ja/pages/analytics-ja.md
+index 4c7149d..0d03426 100644
+--- a/docs-ja/pages/analytics-ja.md
++++ b/docs-ja/pages/analytics-ja.md
+@@ -14,5 +14,7 @@ Claude Code は、組織が開発者の使用パターンを理解し、貢献
+ | API（Claude Console）           | [platform.claude.com/claude-code](https://platform.claude.com/claude-code) | 使用メトリクス、支出追跡、チームインサイト                         | [詳細](#access-analytics-for-api-customers)       |
+ 
+-## Team と Enterprise の分析にアクセスする
++<h2 id="access-analytics-for-team-and-enterprise">
++  Team と Enterprise の分析にアクセスする
++</h2>
+ 
+ [claude.ai/analytics/claude-code](https://claude.ai/analytics/claude-code) に移動してください。管理者とオーナーがダッシュボードを表示できます。
+@@ -27,5 +29,7 @@ Team と Enterprise ダッシュボードには以下が含まれます。
+ ユーザーごとのトークン数とコスト推定については、[OpenTelemetry エクスポート](/ja/monitoring-usage)を構成してください。
+ 
+-### 貢献メトリクスを有効にする
++<h3 id="enable-contribution-metrics">
++  貢献メトリクスを有効にする
++</h3>
+ 
+ <Note>
+@@ -66,5 +70,7 @@ Team と Enterprise ダッシュボードには以下が含まれます。
+ 貢献メトリクスは GitHub Cloud と GitHub Enterprise Server をサポートしています。
+ 
+-### サマリーメトリクスを確認する
++<h3 id="review-summary-metrics">
++  サマリーメトリクスを確認する
++</h3>
+ 
+```
+
+</details>
+
+<details>
+<summary>authentication-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/authentication-ja.md b/docs-ja/pages/authentication-ja.md
+index e8c9bd5..d916202 100644
+--- a/docs-ja/pages/authentication-ja.md
++++ b/docs-ja/pages/authentication-ja.md
+@@ -9,5 +9,7 @@
+ Claude Code は、セットアップに応じて複数の認証方法をサポートしています。個人ユーザーは Claude.ai アカウントでログインでき、チームは Claude for Teams または Enterprise、Claude Console、または Amazon Bedrock、Google Vertex AI、Microsoft Foundry などのクラウドプロバイダーを使用できます。
+ 
+-## Claude Code にログインする
++<h2 id="log-in-to-claude-code">
++  Claude Code にログインする
++</h2>
+ 
+ [Claude Code をインストール](/ja/setup#install-claude-code)した後、ターミナルで `claude` を実行します。初回起動時に、Claude Code はログインするためのブラウザウィンドウを開きます。
+@@ -28,5 +30,7 @@ Claude Code は、セットアップに応じて複数の認証方法をサポ
+ ログインに問題がある場合は、[認証のトラブルシューティング](/ja/troubleshoot-install#login-and-authentication)を参照してください。
+ 
+-## チーム認証を設定する
++<h2 id="set-up-team-authentication">
++  チーム認証を設定する
++</h2>
+ 
+ チームと組織の場合、Claude Code アクセスを以下のいずれかの方法で設定できます。
+@@ -38,5 +42,7 @@ Claude Code は、セットアップに応じて複数の認証方法をサポ
+ * [Microsoft Foundry](/ja/microsoft-foundry)
+ 
+-### Claude for Teams または Enterprise
++<h3 id="claude-for-teams-or-enterprise">
++  Claude for Teams または Enterprise
++</h3>
+ 
+```
+
+</details>
+
+<details>
+<summary>auto-mode-config-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/auto-mode-config-ja.md b/docs-ja/pages/auto-mode-config-ja.md
+index cc485a3..d63f4f7 100644
+--- a/docs-ja/pages/auto-mode-config-ja.md
++++ b/docs-ja/pages/auto-mode-config-ja.md
+@@ -25,5 +25,7 @@
+ * [拒否を確認する](#review-denials)（次に何を追加するかを知るため）
+ 
+-## 分類器が設定を読み込む場所
++<h2 id="where-the-classifier-reads-configuration">
++  分類器が設定を読み込む場所
++</h2>
+ 
+ 分類器は Claude 自体が読み込む同じ [CLAUDE.md](/ja/memory) コンテンツを読み込むため、プロジェクトの CLAUDE.md の「force push を絶対にしない」のような指示は、Claude と分類器の両方を同時に制御します。プロジェクト規約と動作ルールはここから始めてください。
+@@ -46,5 +48,7 @@
+ </Note>
+ 
+-## 信頼できるインフラストラクチャを定義する
++<h2 id="define-trusted-infrastructure">
++  信頼できるインフラストラクチャを定義する
++</h2>
+ 
+ ほとんどの組織では、`autoMode.environment` が設定する必要がある唯一のフィールドです。これは、分類器に、どのリポジトリ、バケット、ドメインが信頼できるかを指定します。分類器はこれを使用して「外部」が何を意味するかを決定するため、リストに記載されていない宛先は潜在的な流出ターゲットです。
+@@ -98,5 +102,7 @@
+ すべてを一度に入力する必要はありません。合理的なロールアウト。デフォルトから始めて、ソース管理組織と主要な内部サービスを追加します。これにより、独自のリポジトリへのプッシュなど、最も一般的な誤検知が解決されます。次に信頼できるドメインとクラウドバケットを追加します。ブロックが発生したら残りを入力します。
+ 
+-## ブロックルールと許可ルールをオーバーライドする
++<h2 id="override-the-block-and-allow-rules">
++  ブロックルールと許可ルールをオーバーライドする
++</h2>
+ 
+```
+
+</details>
+
+<details>
+<summary>best-practices-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/best-practices-ja.md b/docs-ja/pages/best-practices-ja.md
+index c480d8b..e548ab6 100644
+--- a/docs-ja/pages/best-practices-ja.md
++++ b/docs-ja/pages/best-practices-ja.md
+@@ -25,5 +25,7 @@ LLM のパフォーマンスはコンテキストが満杯になるにつれて
+ ***
+ 
+-## Claude に自分の作業を検証する方法を与える
++<h2 id="give-claude-a-way-to-verify-its-work">
++  Claude に自分の作業を検証する方法を与える
++</h2>
+ 
+ <Tip>
+@@ -54,5 +56,7 @@ Claude に成功を主張するのではなく、証拠を示すよう指示し
+ ***
+ 
+-## 最初に探索し、次に計画し、その後コーディングする
++<h2 id="explore-first-then-plan-then-code">
++  最初に探索し、次に計画し、その後コーディングする
++</h2>
+ 
+ <Tip>
+@@ -113,5 +117,7 @@ Claude が直接コーディングにジャンプさせると、間違った問
+ ***
+ 
+-## プロンプトで具体的なコンテキストを提供する
++<h2 id="provide-specific-context-in-your-prompts">
++  プロンプトで具体的なコンテキストを提供する
++</h2>
+ 
+```
+
+</details>
+
+*...以降省略*
+
+</details>
+
+
+<details>
 <summary>2026-06-09</summary>
 
 **変更ファイル:**
@@ -2537,223 +2869,6 @@ index 9739f2d..9064823 100644
 +
  <Note>
    Claude Code を Claude Console アカウントで初めて認証すると、「Claude Code」というワークスペースが自動的に作成されます。このワークスペースは、組織内のすべての Claude Code 使用量の一元化されたコスト追跡と管理を提供します。このワークスペースの API キーを作成することはできません。これは Claude Code 認証と使用量専用です。
-```
-
-</details>
-
-<details>
-<summary>features-overview-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/features-overview-ja.md b/docs-ja/pages/features-overview-ja.md
-index 85ae42e..88093dd 100644
---- a/docs-ja/pages/features-overview-ja.md
-+++ b/docs-ja/pages/features-overview-ja.md
-@@ -266,6 +266,4 @@ Claude Code は、コードについて推論するモデルと、ファイル
-     **コンテキストコスト：** [ツール検索](/ja/mcp#scale-with-mcp-tool-search) はデフォルトで有効になっているため、アイドル MCP ツールは最小限のコンテキストを消費します。
- 
--    **信頼性に関する注記：** MCP 接続はセッション中に静かに失敗する可能性があります。サーバーが切断されると、そのツールは警告なく消えます。Claude は以前アクセスできたツールを使用しようとする可能性があります。Claude が以前アクセスできた MCP ツールを使用できなくなったことに気付いた場合は、`/mcp` で接続を確認してください。
--
-     <Tip>`/mcp` を実行してサーバーごとのトークンコストを確認します。積極的に使用していないサーバーを切断します。</Tip>
-   </Tab>
-```
-
-</details>
-
-<details>
-<summary>keybindings-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/keybindings-ja.md b/docs-ja/pages/keybindings-ja.md
-index 186e886..df5334f 100644
---- a/docs-ja/pages/keybindings-ja.md
-+++ b/docs-ja/pages/keybindings-ja.md
-@@ -248,13 +248,24 @@ Claude Code はカスタマイズ可能なキーボードショートカット
- `DiffDialog` コンテキストで利用可能なアクション：
- 
--| アクション                 | デフォルト      | 説明            |
--| :-------------------- | :--------- | :------------ |
--| `diff:dismiss`        | Escape     | Diff ビューアを閉じる |
--| `diff:previousSource` | Left       | 前の Diff ソース   |
--| `diff:nextSource`     | Right      | 次の Diff ソース   |
--| `diff:previousFile`   | Up         | Diff の前のファイル  |
--| `diff:nextFile`       | Down       | Diff の次のファイル  |
--| `diff:viewDetails`    | Enter      | Diff の詳細を表示   |
--| `diff:back`           | （コンテキスト固有） | Diff ビューアで戻る  |
-+| アクション                 | デフォルト      | 説明                               |
-+| :-------------------- | :--------- | :------------------------------- |
-+| `diff:dismiss`        | Escape     | Diff ビューアを閉じる                    |
-+| `diff:previousSource` | Left       | 前の Diff ソース                      |
-+| `diff:nextSource`     | Right      | 次の Diff ソース                      |
-+| `diff:previousFile`   | Up、K       | ファイルリストの前のファイル。詳細ビューで 1 行上にスクロール |
-+| `diff:nextFile`       | Down、J     | ファイルリストの次のファイル。詳細ビューで 1 行下にスクロール |
-+| `diff:viewDetails`    | Enter      | Diff の詳細を表示                      |
-+| `diff:back`           | （コンテキスト固有） | Diff ビューアで戻る                     |
-+
-+Diff 詳細ビューは、ページャースタイルのキーを標準的な[スクロールアクション](#scroll-actions)にバインドします。これらのバインディングは `DiffDialog` コンテキストの一部であり、詳細ビューにのみ適用されます。[スクロールアクション](#scroll-actions)の下に記載されている `Scroll` コンテキストのデフォルトは変わりません。
-+
-+| アクション                 | デフォルト         | 説明                 |
-+| :-------------------- | :------------ | :----------------- |
-```
-
-</details>
-
-<details>
-<summary>managed-mcp-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/managed-mcp-ja.md b/docs-ja/pages/managed-mcp-ja.md
-index 98936f3..b2ea6fb 100644
---- a/docs-ja/pages/managed-mcp-ja.md
-+++ b/docs-ja/pages/managed-mcp-ja.md
-@@ -41,5 +41,5 @@ Claude Code は、さまざまな制限レベルをサポートしています
- ## managed-mcp.json による排他的制御
- 
--`managed-mcp.json` ファイルをデプロイすると、Claude Code はそのファイルで定義されたサーバーのみを読み込みます。ユーザーは、プラグイン提供のサーバーや claude.ai コネクターを含む、他の MCP サーバーを追加、変更、または使用することはできません。
-+`managed-mcp.json` ファイルをデプロイすると、Claude Code はそのファイルで定義されたサーバーのみを読み込みます。ユーザーは、プラグイン提供のサーバーを含む他の MCP サーバーを追加、変更、または使用することはできません。また、このファイルは [管理対象セットと共に許可する](#allow-claude-ai-connectors-alongside-the-managed-set)場合を除き、claude.ai コネクターも抑制します。
- 
- 2 つの他の設定は、管理対象セットをさらにフィルタリングできます。
-@@ -110,4 +110,12 @@ Claude Code は、さまざまな制限レベルをサポートしています
- ユーザーは `/mcp` に MCP サーバーを表示しません。`claude mcp add` は上記のエンタープライズポリシーエラーで失敗します。ユーザーが以前に設定したサーバーは、次回セッションを開始するときに読み込みを停止します。ポリシーが理由であることについて警告はありません。
- 
-+### 管理対象セットと共に claude.ai コネクターを許可する
-+
-+`managed-mcp.json` をデプロイすると、デフォルトでは [claude.ai コネクター](/ja/mcp#use-mcp-servers-from-claude-ai)が抑制されます。これには、管理者が claude.ai 管理コンソールで組織向けに設定したコネクターも含まれます。これらのコネクターを `managed-mcp.json` 内のサーバーと共に読み込むには、[管理設定ソース](/ja/admin-setup#decide-how-settings-reach-devices)で `"allowAllClaudeAiMcps": true` を設定します。Claude Code v2.1.149 以降が必要です。
-+
-+この設定が有効になると、Claude Code は `managed-mcp.json` がデプロイされていない場合に読み込むのと同じ claude.ai コネクターを読み込みます。[許可リストと拒否リスト](#policy-based-control-with-allowlists-and-denylists)は引き続きこれらのコネクターに適用されるため、`deniedMcpServers` で特定のコネクターをブロックできます。この設定は claude.ai コネクターのみに影響します。プラグイン提供のサーバーは抑制されたままです。
-+
-+Claude Code は、この設定を管理者制御のポリシー層からのみ読み取ります。サーバー管理設定、MDM デプロイされた plist または HKLM レジストリキー、またはシステム `managed-settings.json` ファイルです。これをユーザーまたはプロジェクト設定に配置しても効果がないため、ユーザーは排他的制御が抑制したコネクターを再度有効にすることはできません。
-+
- ## 許可リストとブロックリストによるポリシーベースの制御
- 
-@@ -322,12 +330,13 @@ Claude Code は、さまざまな制限レベルをサポートしています
- ## 設定の概要
- 
--このページで説明するすべてのファイルと設定、それが制御するもの、および配信方法。
-+このページで説明するすべてのファイルと設定、それが制御するもの、および配信方法：
- 
-```
-
-</details>
-
-<details>
-<summary>monitoring-usage-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/monitoring-usage-ja.md b/docs-ja/pages/monitoring-usage-ja.md
-index a625b86..96ee86b 100644
---- a/docs-ja/pages/monitoring-usage-ja.md
-+++ b/docs-ja/pages/monitoring-usage-ja.md
-@@ -263,4 +263,6 @@ Agent SDK および `claude -p` セッションでは、`TRACEPARENT` が環境
- ```
- 
-+値は、スペースを含むパスを含む実行可能ファイルへのパス、またはシェルコマンドラインと引数です。Windows では、値は常にシェルを通じて実行されるため、JSON 値内にスペースを含むパスをクォートで囲みます。
-+
- #### スクリプト要件
- 
-@@ -273,4 +275,10 @@ echo "{\"Authorization\": \"Bearer $(get-token.sh)\", \"X-API-Key\": \"$(get-api
- ```
- 
-+ヘルパーが失敗するか、これらの要件を満たさない出力を出力する場合、Claude Code は以下のエラーを報告します:
-+
-+* `/doctor` 出力
-+* [`--debug`](/ja/cli-reference#cli-flags) で実行するか、セッション内で `/debug` を実行した後のデバッグログ
-+* stderr、`-p` で開始された非対話型セッション内
-+
- #### リフレッシュ動作
- 
-@@ -530,5 +538,5 @@ Claude Code は、OpenTelemetry ログ/イベント経由で以下のイベン
- #### ツール結果イベント
- 
--ツールが実行を完了するときにログされます。
-+ツールが実行を完了するときにログされます。ツール呼び出しが拒否された場合は出力されません。[ツール決定イベント](#tool-decision-event)を参照してください。
- 
- **イベント名**: `claude_code.tool_result`
-@@ -546,6 +554,6 @@ Claude Code は、OpenTelemetry ログ/イベント経由で以下のイベン
-```
-
-</details>
-
-*...以降省略*
-
-</details>
-
-
-<details>
-<summary>2026-05-25</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/code-review-ja.md     |  6 +++++-
- docs-ja/pages/quickstart-ja.md      | 10 +++++-----
- docs-ja/pages/sandboxing-ja.md      |  1 +
- docs-ja/pages/tools-reference-ja.md |  3 ++-
- 4 files changed, 13 insertions(+), 7 deletions(-)
-```
-
-<details>
-<summary>code-review-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/code-review-ja.md b/docs-ja/pages/code-review-ja.md
-index eacd4b1..2750b92 100644
---- a/docs-ja/pages/code-review-ja.md
-+++ b/docs-ja/pages/code-review-ja.md
-@@ -26,4 +26,8 @@ Claude を管理サービスではなく独自の CI インフラストラクチ
- * [トラブルシューティング](#troubleshooting)失敗した実行と欠落したコメント
- 
-+<Note>
-+  GitHub アプリをインストールせずにターミナルでローカルに差分をレビューするには、任意の Claude Code セッションで [`/code-review` コマンド](/ja/commands)を実行してください。選択した努力レベルで現在の差分の正確性バグを報告し、`--comment` で結果をインライン PR コメントとして投稿できます。このコマンドは v2.1.147 より前は `/simplify` という名前でした。
-+</Note>
-+
- ## レビューの仕組み
- 
-@@ -268,5 +272,5 @@ GitHub の Checks タブの **Re-run** ボタンは Code Review を再トリガ
- Code Review は Claude Code の残りの部分と連携するように設計されています。PR を開く前にローカルでレビューを実行したい場合、自己ホスト型セットアップが必要な場合、または `CLAUDE.md` がツール全体で Claude の動作をどのように形成するかについてさらに詳しく知りたい場合、これらのページは次の良い停止点です：
- 
--* [Plugins](/ja/discover-plugins): プッシュ前にローカルでオンデマンドレビューを実行するための `code-review` プラグインを含むプラグインマーケットプレイスを参照
-+* [Commands](/ja/commands): ローカルの Claude Code セッションで `/code-review` を実行して、プッシュ前に差分をチェック
- * [GitHub Actions](/ja/github-actions): コードレビューを超えたカスタム自動化のための独自の GitHub Actions ワークフローで Claude を実行
- * [GitLab CI/CD](/ja/gitlab-ci-cd): GitLab パイプライン用の自己ホスト型 Claude 統合
-```
-
-</details>
-
-<details>
-<summary>quickstart-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/quickstart-ja.md b/docs-ja/pages/quickstart-ja.md
-index ba1a22a..45f226e 100644
---- a/docs-ja/pages/quickstart-ja.md
-+++ b/docs-ja/pages/quickstart-ja.md
-@@ -82,14 +82,14 @@ You can also install with [apt, dnf, or apk](/en/setup#install-with-linux-packag
- ## ステップ 2：アカウントにログインする
- 
--Claude Code を使用するにはアカウントが必要です。`claude` コマンドでインタラクティブセッションを開始すると、ログインが必要になります：
-+Claude Code を使用するにはアカウントが必要です。`claude` コマンドでインタラクティブセッションを開始すると、初回使用時にログインするよう求められます：
- 
- ```bash theme={null}
- claude
--# 初回使用時にログインするよう求められます
- ```
- 
--```bash theme={null}
-+Claude サブスクリプションまたは Console アカウントの場合は、プロンプトに従ってブラウザで認証を完了してください。後でアカウントを切り替えるか再認証するには、実行中のセッション内で `/login` と入力します：
-+
-+```text theme={null}
- /login
--# プロンプトに従ってアカウントでログインします
- ```
- 
-@@ -100,5 +100,5 @@ claude
- * [Amazon Bedrock、Google Vertex AI、または Microsoft Foundry](/ja/third-party-integrations)（エンタープライズクラウドプロバイダー）
- 
--ログイン後、認証情報がシステムに保存され、再度ログインする必要はありません。後でアカウントを切り替えるには、`/login` コマンドを使用します。
-+ログイン後、認証情報が保存され、再度ログインする必要はありません。
- 
- ## ステップ 3：最初のセッションを開始する
 ```
 
 </details>

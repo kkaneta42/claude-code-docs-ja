@@ -20,7 +20,9 @@ claude -p "Find and fix the bug in auth.py" --allowedTools "Read,Edit,Bash"
 
 このページでは、CLI（`claude -p`）経由で Agent SDK を使用することについて説明しています。構造化された出力、ツール承認コールバック、およびネイティブメッセージオブジェクトを備えた Python および TypeScript SDK パッケージについては、[完全な Agent SDK ドキュメント](/ja/agent-sdk/overview) を参照してください。
 
-## 基本的な使用方法
+<h2 id="basic-usage">
+  基本的な使用方法
+</h2>
 
 任意の `claude` コマンドに `-p`（または `--print`）フラグを追加して、非対話的に実行します。すべての [CLI オプション](/ja/cli-reference) は `-p` で機能します。以下を含みます。
 
@@ -34,7 +36,9 @@ claude -p "Find and fix the bug in auth.py" --allowedTools "Read,Edit,Bash"
 claude -p "What does the auth module do?"
 ```
 
-### ベアモードでより高速に開始する
+<h3 id="start-faster-with-bare-mode">
+  ベアモードでより高速に開始する
+</h3>
 
 `--bare` を追加して、hooks、skills、plugins、MCP サーバー、auto memory、および CLAUDE.md の自動検出をスキップすることで、起動時間を短縮します。これがない場合、`claude -p` は対話型セッションと同じ [コンテキスト](/ja/how-claude-code-works#the-context-window) を読み込みます。これには、作業ディレクトリまたは `~/.claude` で設定されたすべてのものが含まれます。
 
@@ -62,11 +66,15 @@ claude --bare -p "Summarize this file" --allowedTools "Read"
   `--bare` はスクリプトおよび SDK 呼び出しの推奨モードであり、将来のリリースで `-p` のデフォルトになります。
 </Note>
 
-## 例
+<h2 id="examples">
+  例
+</h2>
 
 これらの例は、一般的な CLI パターンを強調しています。CI およびその他のスクリプト呼び出しの場合は、[`--bare`](#start-faster-with-bare-mode) を追加して、ローカルで設定されているものを取得しないようにします。
 
-### Claude にデータをパイプする
+<h3 id="pipe-data-through-claude">
+  Claude にデータをパイプする
+</h3>
 
 非対話モードは stdin を読み取るため、他のコマンドラインツールと同様にデータをパイプして応答をリダイレクトできます。
 
@@ -82,7 +90,9 @@ cat build-error.txt | claude -p 'concisely explain the root cause of this build 
   Claude Code v2.1.128 以降、パイプされた stdin は 10MB に制限されています。制限を超える場合、Claude Code は明確なエラーと 0 以外のステータスで終了します。より大きな入力を処理するには、コンテンツをファイルに書き込み、パイプする代わりにプロンプトでファイルパスを参照してください。
 </Note>
 
-### ビルドスクリプトに Claude を追加する
+<h3 id="add-claude-to-a-build-script">
+  ビルドスクリプトに Claude を追加する
+</h3>
 
 非対話呼び出しをスクリプトでラップして、Claude をプロジェクト固有のリンターまたはレビュアーとして使用できます。
 
@@ -96,7 +106,9 @@ cat build-error.txt | claude -p 'concisely explain the root cause of this build 
 }
 ```
 
-### 構造化された出力を取得する
+<h3 id="get-structured-output">
+  構造化された出力を取得する
+</h3>
 
 `--output-format` を使用して、応答がどのように返されるかを制御します。
 
@@ -135,7 +147,9 @@ claude -p "Extract the main function names from auth.py" \
   ```
 </Tip>
 
-### レスポンスをストリーミングする
+<h3 id="stream-responses">
+  レスポンスをストリーミングする
+</h3>
 
 `--output-format stream-json` を `--verbose` および `--include-partial-messages` と共に使用して、生成されるトークンをリアルタイムで受け取ります。各行はイベントを表す JSON オブジェクトです。
 
@@ -185,7 +199,9 @@ API リクエストが再試行可能なエラーで失敗すると、Claude Cod
 
 コールバックとメッセージオブジェクトを使用したプログラムによるストリーミングについては、Agent SDK ドキュメントの [リアルタイムでレスポンスをストリーミングする](/ja/agent-sdk/streaming-output) を参照してください。
 
-### ツールを自動承認する
+<h3 id="auto-approve-tools">
+  ツールを自動承認する
+</h3>
 
 `--allowedTools` を使用して、Claude が確認を求めずに特定のツールを使用できるようにします。この例はテストスイートを実行し、失敗を修正し、Claude が許可を求めずに Bash コマンドを実行し、ファイルを読み取り/編集できるようにします。
 
@@ -200,7 +216,9 @@ claude -p "Run the test suite and fix any failures" \
 claude -p "Apply the lint fixes" --permission-mode acceptEdits
 ```
 
-### コミットを作成する
+<h3 id="create-a-commit">
+  コミットを作成する
+</h3>
 
 この例は、ステージされた変更を確認し、適切なメッセージを含むコミットを作成します。
 
@@ -215,7 +233,9 @@ claude -p "Look at my staged changes and create an appropriate commit" \
   ユーザーが呼び出した [skills](/ja/skills)（`/code-review` など）および [組み込みコマンド](/ja/commands) は、対話モードでのみ利用可能です。`-p` モードでは、代わりに実行したいタスクを説明してください。
 </Note>
 
-### システムプロンプトをカスタマイズする
+<h3 id="customize-the-system-prompt">
+  システムプロンプトをカスタマイズする
+</h3>
 
 `--append-system-prompt` を使用して、Claude Code のデフォルト動作を保持しながら指示を追加します。この例は PR diff を Claude にパイプし、セキュリティ脆弱性をレビューするよう指示します。
 
@@ -227,7 +247,9 @@ gh pr diff "$1" | claude -p \
 
 デフォルトプロンプトを完全に置き換える `--system-prompt` を含む詳細なオプションについては、[システムプロンプトフラグ](/ja/cli-reference#system-prompt-flags) を参照してください。
 
-### 会話を続ける
+<h3 id="continue-conversations">
+  会話を続ける
+</h3>
 
 `--continue` を使用して最新の会話を続けるか、`--resume` をセッション ID と共に使用して特定の会話を続けます。この例はレビューを実行し、その後フォローアッププロンプトを送信します。
 
@@ -247,7 +269,9 @@ session_id=$(claude -p "Start a review" --output-format json | jq -r '.session_i
 claude -p "Continue that review" --resume "$session_id"
 ```
 
-## 次のステップ
+<h2 id="next-steps">
+  次のステップ
+</h2>
 
 * [Agent SDK クイックスタート](/ja/agent-sdk/quickstart)：Python または TypeScript で最初のエージェントを構築します
 * [CLI リファレンス](/ja/cli-reference)：すべての CLI フラグとオプション
