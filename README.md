@@ -17,6 +17,257 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-06-11</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/amazon-bedrock-ja.md           |   72 --
+ docs-ja/pages/changelog.md                   |   33 +
+ docs-ja/pages/claude-directory-ja.md         | 1426 -----------------------
+ docs-ja/pages/claude-platform-on-aws-ja.md   |  182 ---
+ docs-ja/pages/context-window-ja.md           | 1564 --------------------------
+ docs-ja/pages/google-vertex-ai-ja.md         |   72 --
+ docs-ja/pages/microsoft-foundry-ja.md        |   72 --
+ docs-ja/pages/prompt-library-ja.md           | 1319 ----------------------
+ docs-ja/pages/third-party-integrations-ja.md |   72 --
+ 9 files changed, 33 insertions(+), 4779 deletions(-)
+```
+
+<details>
+<summary>amazon-bedrock-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/amazon-bedrock-ja.md b/docs-ja/pages/amazon-bedrock-ja.md
+index c411db1..6eac9dc 100644
+--- a/docs-ja/pages/amazon-bedrock-ja.md
++++ b/docs-ja/pages/amazon-bedrock-ja.md
+@@ -7,76 +7,4 @@
+ > Amazon Bedrock を通じた Claude Code の設定方法（セットアップ、IAM 設定、トラブルシューティングを含む）について学習します。
+ 
+-export const ContactSalesCard = ({surface}) => {
+-  const utm = content => `utm_source=claude_code&utm_medium=docs&utm_content=${surface}_${content}`;
+-  const iconArrowRight = (size = 13) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+-      <line x1="5" y1="12" x2="19" y2="12" />
+-      <polyline points="12 5 19 12 12 19" />
+-    </svg>;
+-  const STYLES = `
+-.cc-cs {
+-  --cs-slate: #141413;
+-  --cs-clay: #d97757;
+-  --cs-clay-deep: #c6613f;
+-  --cs-gray-000: #ffffff;
+-  --cs-gray-700: #3d3d3a;
+-  --cs-border-default: rgba(31, 30, 29, 0.15);
+-  font-family: inherit;
+-}
+-.dark .cc-cs {
+-  --cs-slate: #f0eee6;
+-  --cs-gray-000: #262624;
+-  --cs-gray-700: #bfbdb4;
+-  --cs-border-default: rgba(240, 238, 230, 0.14);
+-}
+-.cc-cs-card {
+```
+
+</details>
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index 5b4fcd8..f1d4f8d 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,37 @@
+ # Changelog
+ 
++## 2.1.172
++
++- Sub-agents can now spawn their own sub-agents (up to 5 levels deep)
++- Amazon Bedrock now reads the AWS region from `~/.aws` config files when `AWS_REGION` isn't set, matching AWS SDK precedence; `/status` shows where the region came from
++- Added a search bar when browsing a marketplace's plugins in `/plugin`
++- Added `model` attribute to the `claude_code.lines_of_code.count` OTEL metric
++- Fixed sessions using 1M context without usage credits getting permanently stuck — the session now automatically compacts back under the standard context limit
++- Fixed a repeating "an image in the conversation could not be processed and was removed" error when the conversation contained multiple images
++- Fixed the agents view keeping a session under Working with a busy spinner for up to 30 seconds after the worker replied
++- Fixed background agents potentially reading another directory's project settings (`.mcp.json` approvals, trust) when dispatched onto a pre-warmed worker
++- Fixed background-session attach failing with EAUTH for sessions started on an older version after the daemon auto-updated
++- Fixed a background sub-agent staying stuck as "active" in the agent panel after a nested agent it spawned was stopped
++- Fixed `/model` suggestions in the `claude agents` dispatch input rendering with a misleading slash prefix and showing models disabled for your org
++- Fixed `availableModels` restrictions not being applied to subagent model overrides, the agent dispatch model picker, and the advisor model
++- Fixed `availableModels` allowlists hiding the `/model` picker's Opus and Sonnet 1M rows when entries use version-specific IDs like `claude-opus-4-8`
++- Fixed the `/model` picker on Bedrock offering models the provider doesn't serve — selecting one silently switched the session model and lit the selection marker on multiple rows
++- Fixed model IDs getting a doubled 1M-context suffix (e.g. `[1M][1m]`) when `ANTHROPIC_DEFAULT_OPUS_MODEL` already includes one
++- Fixed `opusplan` model setting not shipping with 1M context in plan mode for entitled users; the `opusplan[1m]` workaround now also correctly switches to Opus in plan mode
++- Fixed `WebFetch(domain:*.example.com)` wildcard domain rules never matching subdomains in allow, deny, and ask position, and file permission rules with mid-pattern wildcards (e.g. `Read(secrets-*/config.json)`) being rejected at startup
++- Fixed up-arrow prompt history showing the main agent's prompts while a subagent's chat tab is open
++- Fixed memory recall not finding mounted team memory stores (`CLAUDE_MEMORY_STORES`) in remote sessions
++- Fixed workflow validation rejecting scripts whose prompt strings or comments merely mention `Date.now()`/`Math.random()`
++- Disable mouse tracking on Windows consoles that don't fully support it
+```
+
+</details>
+
+<details>
+<summary>claude-directory-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/claude-directory-ja.md b/docs-ja/pages/claude-directory-ja.md
+index 467b49d..0ab4439 100644
+--- a/docs-ja/pages/claude-directory-ja.md
++++ b/docs-ja/pages/claude-directory-ja.md
+@@ -7,1428 +7,4 @@
+ > Claude Code が CLAUDE.md、settings.json、hooks、skills、commands、subagents、workflows、rules、auto memory を読み込む場所。プロジェクト内の .claude ディレクトリとホームディレクトリの ~/.claude を探索します。
+ 
+-export const ClaudeExplorer = () => {
+-  const A = useMemo(() => ({href, children}) => <a href={href} style={{
+-    color: 'var(--ce-accent)',
+-    textDecoration: 'none',
+-    borderBottom: '1px dotted var(--ce-accent)'
+-  }}>{children}</a>, []);
+-  const C = useMemo(() => ({children}) => <code style={{
+-    fontFamily: 'var(--ce-mono)',
+-    fontSize: '0.92em',
+-    padding: '1px 4px',
+-    borderRadius: '3px',
+-    background: 'var(--ce-surface)',
+-    border: '0.5px solid var(--ce-border-subtle)'
+-  }}>{children}</code>, []);
+-  const commandsNote = useMemo(() => <>Commands and skills are now the same mechanism. For new workflows, use <A href="/en/skills">skills/</A> instead: same <C>/name</C> invocation, plus you can bundle supporting files.</>, []);
+-  const FILE_TREE = useMemo(() => ({
+-    project: {
+-      label: 'your-project/',
+-      children: [{
+-        id: 'claude-md',
+-        label: 'CLAUDE.md',
+-        type: 'file',
+-        icon: 'md',
+```
+
+</details>
+
+<details>
+<summary>claude-platform-on-aws-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/claude-platform-on-aws-ja.md b/docs-ja/pages/claude-platform-on-aws-ja.md
+index 1c2ff61..ada8273 100644
+--- a/docs-ja/pages/claude-platform-on-aws-ja.md
++++ b/docs-ja/pages/claude-platform-on-aws-ja.md
+@@ -7,186 +7,4 @@
+ > AWS 認証、IAM アクセス制御、AWS Marketplace 請求を使用して、Anthropic が運営する Claude API を使用するように Claude Code を設定します。
+ 
+-export const ContactSalesCard = ({surface}) => {
+-  const utm = content => `utm_source=claude_code&utm_medium=docs&utm_content=${surface}_${content}`;
+-  const iconArrowRight = (size = 13) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+-      <line x1="5" y1="12" x2="19" y2="12" />
+-      <polyline points="12 5 19 12 12 19" />
+-    </svg>;
+-  const STYLES = `
+-.cc-cs {
+-  --cs-slate: #141413;
+-  --cs-clay: #d97757;
+-  --cs-clay-deep: #c6613f;
+-  --cs-gray-000: #ffffff;
+-  --cs-gray-700: #3d3d3a;
+-  --cs-border-default: rgba(31, 30, 29, 0.15);
+-  font-family: inherit;
+-}
+-.dark .cc-cs {
+-  --cs-slate: #f0eee6;
+-  --cs-gray-000: #262624;
+-  --cs-gray-700: #bfbdb4;
+-  --cs-border-default: rgba(240, 238, 230, 0.14);
+-}
+-.cc-cs-card {
+```
+
+</details>
+
+<details>
+<summary>context-window-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/context-window-ja.md b/docs-ja/pages/context-window-ja.md
+index 04ca98c..17cb163 100644
+--- a/docs-ja/pages/context-window-ja.md
++++ b/docs-ja/pages/context-window-ja.md
+@@ -7,1570 +7,6 @@
+ > Claude Code のコンテキストウィンドウがセッション中にどのように満たされるかのインタラクティブなシミュレーション。自動的に読み込まれるもの、各ファイル読み込みのコスト、ルールとフックが発火するタイミングを確認できます。
+ 
+-export const ContextWindow = () => {
+-  const MAX = 200000;
+-  const STARTUP_END = 0.2;
+-  {}
+-  const EVENTS = useMemo(() => [{}, {
+-    t: 0.015,
+-    kind: 'auto',
+-    label: 'System prompt',
+-    tokens: 4200,
+-    color: '#6B6964',
+-    vis: 'hidden',
+-    desc: 'Core instructions for behavior, tool use, and response formatting. Always loaded first. You never see it.',
+-    link: null
+-  }, {
+-    t: 0.035,
+-    kind: 'auto',
+-    label: 'Auto memory (MEMORY.md)',
+-    tokens: 680,
+-    color: '#E8A45C',
+-    vis: 'hidden',
+-    desc: "Claude's notes to itself from previous sessions: build commands it learned, patterns it noticed, mistakes to avoid. The first 200 lines or 25KB, whichever comes first, are loaded into the conversation context.",
+-    link: '/en/memory#auto-memory'
+-  }, {
+```
+
+</details>
+
+<details>
+<summary>google-vertex-ai-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/google-vertex-ai-ja.md b/docs-ja/pages/google-vertex-ai-ja.md
+index 608eab8..2575a95 100644
+--- a/docs-ja/pages/google-vertex-ai-ja.md
++++ b/docs-ja/pages/google-vertex-ai-ja.md
+@@ -7,76 +7,4 @@
+ > Google Vertex AI を通じた Claude Code の設定方法について学びます。セットアップ、IAM 設定、トラブルシューティングを含みます。
+ 
+-export const ContactSalesCard = ({surface}) => {
+-  const utm = content => `utm_source=claude_code&utm_medium=docs&utm_content=${surface}_${content}`;
+-  const iconArrowRight = (size = 13) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+-      <line x1="5" y1="12" x2="19" y2="12" />
+-      <polyline points="12 5 19 12 12 19" />
+-    </svg>;
+-  const STYLES = `
+-.cc-cs {
+-  --cs-slate: #141413;
+-  --cs-clay: #d97757;
+-  --cs-clay-deep: #c6613f;
+-  --cs-gray-000: #ffffff;
+-  --cs-gray-700: #3d3d3a;
+-  --cs-border-default: rgba(31, 30, 29, 0.15);
+-  font-family: inherit;
+-}
+-.dark .cc-cs {
+-  --cs-slate: #f0eee6;
+-  --cs-gray-000: #262624;
+-  --cs-gray-700: #bfbdb4;
+-  --cs-border-default: rgba(240, 238, 230, 0.14);
+-}
+-.cc-cs-card {
+```
+
+</details>
+
+*...以降省略*
+
+</details>
+
+
+<details>
 <summary>2026-06-10</summary>
 
 **変更ファイル:**
@@ -2676,199 +2927,6 @@ index 4f058a6..8d81b81 100644
 +[prompt caching](/ja/prompt-caching)は自動的に有効になります。これを無効にするには、`DISABLE_PROMPT_CACHING=1` を設定します。デフォルトの 5 分ではなく 1 時間のキャッシュ TTL をリクエストするには、`ENABLE_PROMPT_CACHING_1H=1` を設定します。1 時間の TTL でのキャッシュ書き込みはより高いレートで課金されます。レート制限を高くするには、Google Cloud サポートに連絡してください。Vertex AI を使用する場合、Google Cloud 認証情報を通じて認証が処理されるため、`/logout` コマンドは無効になります。
  
  Claude Code は Vertex AI でデフォルトで [MCP tool search](/ja/mcp#scale-with-mcp-tool-search)を無効にしているため、MCP ツール定義は事前にロードされます。Vertex AI は Claude Sonnet 4.5 以降および Claude Opus 4.5 以降のツール検索をサポートしています。`ENABLE_TOOL_SEARCH=true` を設定して、これらのモデルで有効にします。Vertex AI の以前のモデルは必要なベータヘッダーを受け入れず、これらのモデルでツール検索を有効にするとリクエストが失敗します。
-```
-
-</details>
-
-<details>
-<summary>hooks-guide-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/hooks-guide-ja.md b/docs-ja/pages/hooks-guide-ja.md
-index eef1196..01ae6af 100644
---- a/docs-ja/pages/hooks-guide-ja.md
-+++ b/docs-ja/pages/hooks-guide-ja.md
-@@ -94,4 +94,6 @@ Hooks を使用すると、Claude Code のライフサイクルの主要なポ
- * [特定の許可プロンプトを自動承認する](#auto-approve-specific-permission-prompts)
- 
-+本番環境での hooks の例として、別のモデルレビューを実行し、その結果をセッションにフィードバックする場合は、[`security-guidance` プラグインが Claude Code と統合する方法](/ja/security-guidance#how-the-plugin-integrates-with-claude-code) を参照してください。
-+
- ### Claude が入力を必要とするときに通知を受け取る
- 
-```
-
-</details>
-
-<details>
-<summary>mcp-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/mcp-ja.md b/docs-ja/pages/mcp-ja.md
-index a10ec0d..cae9faf 100644
---- a/docs-ja/pages/mcp-ja.md
-+++ b/docs-ja/pages/mcp-ja.md
-@@ -42,5 +42,5 @@ MCP サーバーが接続されている場合、Claude Code に以下のこと
-     ```
- 
--    次に `/reload-plugins` を実行して、現在のセッションでアクティブにします。
-+    Claude Code がマーケットプレイスが見つからないと報告する場合は、まず `/plugin marketplace add anthropics/claude-plugins-official` を実行してから、インストールを再試行してください。インストール後、`/reload-plugins` を実行して、現在のセッションでアクティブにします。
-   </Step>
- 
-@@ -324,5 +324,5 @@ claude mcp add --transport http hubspot --scope user https://mcp.hubspot.com/ant
- ### スコープの階層と優先順位
- 
--同じサーバーが複数の場所で定義されている場合、Claude Code はそれに 1 回接続し、最も優先度の高いソースからの定義を使用します：
-+同じサーバーが複数の場所で定義されている場合、Claude Code はそれに 1 回接続し、最も優先度の高いソースからの定義を使用します。その定義全体が使用され、フィールドはスコープ全体でマージされません。
- 
- 1. ローカルスコープ
-```
-
-</details>
-
-<details>
-<summary>memory-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/memory-ja.md b/docs-ja/pages/memory-ja.md
-index b72f343..a5fa144 100644
---- a/docs-ja/pages/memory-ja.md
-+++ b/docs-ja/pages/memory-ja.md
-@@ -21,5 +21,5 @@ Claude Code の各セッションは、新しいコンテキストウィンド
- ## CLAUDE.md と自動メモリ
- 
--Claude Code には 2 つの相互補完的なメモリシステムがあります。どちらも各会話の開始時に読み込まれます。Claude はこれらをコンテキストとして扱い、強制的な設定ではありません。指示がより具体的で簡潔であるほど、Claude はそれに従う可能性が高くなります。
-+Claude Code には 2 つの相互補完的なメモリシステムがあります。どちらも各会話の開始時に読み込まれます。Claude はこれらをコンテキストとして扱い、強制的な設定ではありません。指示がより具体的で簡潔であるほど、Claude はそれに従う可能性が高くなります。アクションをブロックするには、Claude の判断に関わらず [PreToolUse hook](/ja/hooks-guide) を使用してください。
- 
- |              | CLAUDE.md ファイル                | 自動メモリ                          |
-@@ -95,5 +95,5 @@ CLAUDE.md ファイルは各セッションの開始時にコンテキストウ
- CLAUDE.md ファイルは `@path/to/import` 構文を使用して追加ファイルをインポートできます。インポートされたファイルは展開され、それらを参照する CLAUDE.md と一緒に起動時にコンテキストに読み込まれます。
- 
--相対パスと絶対パスの両方が許可されます。相対パスはワーキングディレクトリではなく、インポートを含むファイルに相対的に解決されます。インポートされたファイルは他のファイルを再帰的にインポートでき、最大深度は 5 ホップです。
-+相対パスと絶対パスの両方が許可されます。相対パスはワーキングディレクトリではなく、インポートを含むファイルに相対的に解決されます。インポートされたファイルは他のファイルを再帰的にインポートでき、最大深度は 4 ホップです。
- 
- README、package.json、およびワークフローガイドを取得するには、CLAUDE.md の任意の場所で `@` 構文を使用してそれらを参照します。
-@@ -151,5 +151,5 @@ Claude Code は現在のワーキングディレクトリからディレクト
- Claude は現在のワーキングディレクトリの下のサブディレクトリ内の `CLAUDE.md` および `CLAUDE.local.md` ファイルも発見します。起動時に読み込む代わりに、Claude がそれらのサブディレクトリ内のファイルを読むときに含まれます。
- 
--他のチームの CLAUDE.md ファイルが取得される大規模なモノレポで作業する場合は、[`claudeMdExcludes`](#exclude-specific-claude-md-files) を使用してそれらをスキップします。
-+他のチームの CLAUDE.md ファイルが取得される大規模なモノレポで作業する場合は、[`claudeMdExcludes`](#exclude-specific-claude-md-files) を使用してそれらをスキップします。大規模なリポジトリのルートおよびディレクトリごとの CLAUDE.md ファイルとルールの完全なレイアウトについては、[モノレポと大規模リポジトリ](/ja/large-codebases)を参照してください。
- 
- CLAUDE.md ファイル内のブロックレベル HTML コメント（`<!-- maintainer notes -->`）は、コンテンツが Claude のコンテキストに注入される前に削除されます。コンテキストトークンを費やさずに人間のメンテナーのためにメモを残すために使用します。コードブロック内のコメントは保持されます。Read ツールで CLAUDE.md ファイルを直接開くと、コメントは表示されたままになります。
-```
-
-</details>
-
-*...以降省略*
-
-</details>
-
-
-<details>
-<summary>2026-05-26</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/claude-directory-ja.md  |  4 ++--
- docs-ja/pages/commands-ja.md          |  2 +-
- docs-ja/pages/costs-ja.md             |  8 +++++--
- docs-ja/pages/features-overview-ja.md |  2 --
- docs-ja/pages/keybindings-ja.md       | 29 +++++++++++++++-------
- docs-ja/pages/managed-mcp-ja.md       | 25 ++++++++++++-------
- docs-ja/pages/monitoring-usage-ja.md  | 16 +++++++++----
- docs-ja/pages/output-styles-ja.md     |  2 ++
- docs-ja/pages/permissions-ja.md       |  3 ++-
- docs-ja/pages/prompt-caching-ja.md    | 13 ++++++----
- docs-ja/pages/remote-control-ja.md    |  2 +-
- docs-ja/pages/settings-ja.md          |  1 +
- docs-ja/pages/skills-ja.md            | 17 ++++++++++++-
- docs-ja/pages/sub-agents-ja.md        | 45 ++++++++++++++++++++---------------
- docs-ja/pages/tools-reference-ja.md   |  4 ++--
- 15 files changed, 117 insertions(+), 56 deletions(-)
-```
-
-<details>
-<summary>claude-directory-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/claude-directory-ja.md b/docs-ja/pages/claude-directory-ja.md
-index cc41673..2b3cba4 100644
---- a/docs-ja/pages/claude-directory-ja.md
-+++ b/docs-ja/pages/claude-directory-ja.md
-@@ -1509,4 +1509,5 @@ Windows では、`~/.claude` は `%USERPROFILE%\.claude` に解決されます
- | `backups/`                                   | 設定マイグレーション前に取得された `~/.claude.json` のタイムスタンプ付きコピー                                     |
- | `feedback-bundles/`                          | `/feedback` によってサードパーティプロバイダーに書き込まれた編集済みトランスクリプトアーカイブ。Anthropic アカウントチームに送信するため      |
-+| `todos/`、`statsig/`、`logs/`                  | 古いバージョンのレガシーディレクトリ。現在は書き込まれません。スイープはコンテンツを削除してから空のディレクトリを削除します。                      |
- 
- ### 削除するまで保持される
-@@ -1519,5 +1520,4 @@ Windows では、`~/.claude` は `%USERPROFILE%\.claude` に解決されます
- | `stats-cache.json`     | `/usage` で表示される集計トークンおよびコスト数                                                           |
- | `remote-settings.json` | 組織の[サーバー管理設定](/ja/server-managed-settings)のキャッシュコピー。組織が設定を構成している場合のみ存在します。各起動時に更新されます。 |
--| `todos/`               | レガシーセッションごとのタスクリスト。現在のバージョンでは書き込まれません。削除しても安全です。                                       |
- 
- その他の小さなキャッシュおよびロックファイルは、使用する機能に応じて表示され、削除しても安全です。
-@@ -1576,5 +1576,5 @@ claude project purge ~/work/my-repo --yes
- | `~/.claude/remote-settings.json`                                                                                                                                                      | なし。次の起動時に再取得されます。               |
- | `~/.claude/debug/`、`~/.claude/plans/`、`~/.claude/paste-cache/`、`~/.claude/image-cache/`、`~/.claude/session-env/`、`~/.claude/tasks/`、`~/.claude/shell-snapshots/`、`~/.claude/backups/` | ユーザー向けのもの                       |
--| `~/.claude/todos/`                                                                                                                                                                    | なし。現在のバージョンでは書き込まれないレガシーディレクトリ。 |
-+| `~/.claude/todos/`、`~/.claude/statsig/`、`~/.claude/logs/`                                                                                                                             | なし。現在のバージョンでは書き込まれないレガシーディレクトリ。 |
- 
- `~/.claude.json`、`~/.claude/settings.json`、または `~/.claude/plugins/` は削除しないでください。これらは認証、設定、インストール済みプラグインを保持しています。
-```
-
-</details>
-
-<details>
-<summary>commands-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/commands-ja.md b/docs-ja/pages/commands-ja.md
-index 29bd6dc..e0f52f1 100644
---- a/docs-ja/pages/commands-ja.md
-+++ b/docs-ja/pages/commands-ja.md
-@@ -125,5 +125,5 @@
- | `/ultrareview [PR]`                                                 | [ultrareview](/ja/ultrareview) を使用してクラウドサンドボックスで深い複数エージェントコードレビューを実行します。Pro と Max に 3 つの無料実行が含まれ、その後は [usage credits](https://support.claude.com/en/articles/12429409-extra-usage-for-paid-claude-plans) が必要です                                                                                                                                                                                                                                                                                                 |
- | `/upgrade`                                                          | アップグレードページを開いて、より高いプランティアに切り替えます                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
--| `/usage`                                                            | セッションコスト、プラン使用制限、およびアクティビティ統計を表示します。サブスクリプション固有の詳細については、[コスト追跡ガイド](/ja/costs#using-the-%2Fusage-command)を参照してください。`/cost` と `/stats` はエイリアスです                                                                                                                                                                                                                                                                                                                                                                  |
-+| `/usage`                                                            | セッションコスト、プラン使用制限、およびアクティビティ統計を表示します。Pro、Max、Team、または Enterprise プランの場合、スキル、サブエージェント、プラグイン、MCP サーバーごとの使用状況の内訳が含まれます。詳細については、[コスト追跡ガイド](/ja/costs#using-the-%2Fusage-command)を参照してください。`/cost` と `/stats` はエイリアスです                                                                                                                                                                                                                                                                                               |
- | `/usage-credits`                                                    | 制限に達したときに作業を続行するための usage credits を構成します。以前は `/extra-usage`                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
- | `/verify`                                                           | **[スキル](/ja/skills#bundled-skills)。** プロジェクトのアプリをビルドして実行し、結果を観察することで、コード変更が期待通りに機能することを確認します。テストまたは型チェックに依存するのではなく。[アプリを実行して検証](/ja/skills#run-and-verify-your-app)を参照してください。{/* min-version: 2.1.145 */}Claude Code v2.1.145 以降が必要です                                                                                                                                                                                                                                                                          |
-```
-
-</details>
-
-<details>
-<summary>costs-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/costs-ja.md b/docs-ja/pages/costs-ja.md
-index 9739f2d..9064823 100644
---- a/docs-ja/pages/costs-ja.md
-+++ b/docs-ja/pages/costs-ja.md
-@@ -18,8 +18,8 @@ Claude Code は API トークン消費によって課金されます。サブス
- 
- <Note>
--  `/usage` のセッションブロックは API トークン使用量を表示し、API ユーザーを対象としています。Claude Max および Pro サブスクライバーはサブスクリプションに使用量が含まれているため、セッションコスト数値は請求目的では関連がありません。サブスクライバーは同じ画面でプラン使用量バーとアクティビティ統計を表示します。
-+  `/usage` のセッションブロックは API トークン使用量を表示し、API ユーザーを対象としています。Claude Max および Pro サブスクライバーはサブスクリプションに使用量が含まれているため、セッションコスト数値は請求目的では関連がありません。サブスクライバーは同じ画面でプラン使用量バー、アクティビティ統計、および使用量の内訳を表示します。
- </Note>
- 
--`/usage` コマンドは現在のセッションの詳細なトークン使用統計を提供します。ドル数値はトークン数から局所的に計算された推定値であり、実際の請求書と異なる場合があります。権限のある請求については、[Claude Console](https://platform.claude.com/usage) の使用量ページを参照してください。
-+`/usage` の上部のセッションブロックは、現在のセッションの詳細なトークン使用統計を表示します。ドル数値はトークン数から局所的に計算された推定値であり、実際の請求書と異なる場合があります。権限のある請求については、[Claude Console](https://platform.claude.com/usage) の使用量ページを参照してください。
- 
- ```text theme={null}
-@@ -30,8 +30,12 @@ Total code changes:    0 lines added, 0 lines removed
- ```
- 
-+Pro、Max、Team、または Enterprise プランでは、`/usage` はプラン制限に対してカウントされるものの内訳も表示します。最近の使用量をスキル、サブエージェント、プラグイン、および個別の MCP サーバーに属性付けし、それぞれが合計のパーセンテージとして表示されます。`d` または `w` を押して、過去 24 時間と過去 7 日間を切り替えることができます。数値は概算であり、このマシン上のローカルセッション履歴から計算されるため、他のデバイスまたは claude.ai からの使用量は含まれていません。
-+
- ## チームのコストを管理する
- 
- Claude API を使用する場合、Claude Code ワークスペース支出の合計に対して [ワークスペース支出制限を設定](https://platform.claude.com/docs/ja/build-with-claude/workspaces#workspace-limits) できます。管理者は Console で [コストと使用状況レポートを表示](https://platform.claude.com/docs/ja/build-with-claude/workspaces#usage-and-cost-tracking) できます。
- 
-+Pro および Max プランでは、`/usage-credits` コマンドを使用して使用クレジットの月間支出制限を設定できます。その制限に達しても使用クレジットがまだ利用可能な場合、Claude Code はプロンプトを表示して、制限を引き上げるか削除するよう促し、CLI を離れることなく続行できるようにします。制限の変更にはアカウントの請求アクセスが必要です。
-+
- <Note>
-   Claude Code を Claude Console アカウントで初めて認証すると、「Claude Code」というワークスペースが自動的に作成されます。このワークスペースは、組織内のすべての Claude Code 使用量の一元化されたコスト追跡と管理を提供します。このワークスペースの API キーを作成することはできません。これは Claude Code 認証と使用量専用です。
 ```
 
 </details>
