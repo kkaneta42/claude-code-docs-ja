@@ -17,6 +17,57 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-06-13</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md | 45 +++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 45 insertions(+)
+```
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index 3aa61b1..478b0ad 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,49 @@
+ # Changelog
+ 
++## 2.1.176
++
++- Session titles are now generated in the language of your conversation (set the `language` setting to pin a specific language)
++- Added `footerLinksRegexes` setting for regex-matched link badges in the footer row, configurable via user or managed settings
++- Improved Bedrock credential caching: credentials from `awsCredentialExport` are now cached until their `Expiration` instead of a fixed 1 hour
++- Fixed `availableModels` enforcement: alias model picks can no longer be redirected to a blocked model via `ANTHROPIC_DEFAULT_*_MODEL` environment variables, and `/fast` now refuses to toggle when it would switch to a model outside the allowlist
++- Fixed auto mode failing on Fable 5 for organizations without Opus 4.8 enabled — the classifier now falls back to the best available Opus model
++- Fixed hook `if` conditions for Read/Edit/Write tool paths: documented patterns like `Edit(src/**)`, `Read(~/.ssh/**)`, and `Read(.env)` now match correctly
++- Fixed Linux sandbox failing to start when `.claude/settings.json` is a symlink with an absolute target
++- Fixed `/copy` and mouse-selection copy not reaching the system clipboard inside tmux over SSH, and tmux paste buffer not loading on versions older than 3.2
++- Fixed Remote Control connecting from web/mobile silently switching the session's model
++- Fixed Remote Control disconnect notifications showing a bare numeric code instead of a human-readable reason, and connection failures adding a duplicate line to the conversation transcript
++- Fixed Remote Control sessions not disconnecting when you sign in to a different account
++- Fixed `/cd` and worktree moves leaving the session reporting the previous directory's git branch
++- Fixed `claude agents`: pressing back in one window no longer detaches other windows attached to the same session
++- Fixed backgrounded sessions showing "Working" forever when `/bg` mid-turn had nothing left to continue
++- Fixed background agent search by PR URL: PRs opened during scheduled wakeups or while a job was blocked now appear in `claude agents` search
++- Fixed the agents view input showing no text cursor on Windows
++- Fixed `claude --bg -cn <name>` not seeding the session name
++- Fixed background sessions to neutralize Windows network paths in persisted state before respawn
++- Fixed background-session respawn rejecting malformed resume IDs from corrupted state files
++- Fixed the Windows background-service daemon not starting when `~/.claude/daemon` has the ReadOnly attribute set
++- Fixed cloud sessions failing with "Could not resolve authentication method" when idle for too long before being claimed
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-06-12</summary>
 
 **変更ファイル:**
@@ -2910,67 +2961,5 @@ index e0f52f1..abb0c4e 100644
 ```
 
 </details>
-
-<details>
-<summary>env-vars-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/env-vars-ja.md b/docs-ja/pages/env-vars-ja.md
-index c8ddfea..4af7768 100644
---- a/docs-ja/pages/env-vars-ja.md
-+++ b/docs-ja/pages/env-vars-ja.md
-@@ -221,4 +221,5 @@ Claude Code は起動時に環境変数を読み取るため、変更は `claude
- | `CLAUDE_CODE_PLUGIN_SEED_DIR`                           | 1 つ以上の読み取り専用プラグインシードディレクトリへのパス。Unix では `:` で、Windows では `;` で区切られます。事前入力されたプラグインディレクトリをコンテナイメージにバンドルするために使用します。Claude Code はこれらのディレクトリからマーケットプレイスを登録し、再クローンなしで事前キャッシュされたプラグインを使用します。[コンテナ用のプラグインを事前入力](/ja/plugin-marketplaces#pre-populate-plugins-for-containers) を参照してください                                                                                                                                                  |
- | `CLAUDE_CODE_POWERSHELL_RESPECT_EXECUTION_POLICY`       | Claude Code が PowerShell をスポーンするときに `-ExecutionPolicy Bypass` を渡すことを停止するには `1` に設定します。ツール呼び出し、フック、ステータスラインコマンドの場合、マシンの有効な実行ポリシーを尊重します。デフォルトでは Claude Code はプロセススコープでバイパスを実行するため、`.ps1` スクリプトとモジュールインポートはデフォルト制限 Windows インストールで機能します。プロセススコープバイパスは、この設定に関係なく、グループポリシー `MachinePolicy` または `UserPolicy` をオーバーライドしません                                                                                                            |
-+| `CLAUDE_CODE_PROPAGATE_TRACEPARENT`                     | {/* min-version: 2.1.152 */}カスタムプロキシを指す場合、W3C トレースコンテキストを伝播するには `1` に設定します。`ANTHROPIC_BASE_URL` が指しています。伝播は、モデルと HTTP MCP リクエストの `traceparent` ヘッダーと、Bash、PowerShell、フックサブプロセスの `TRACEPARENT` 環境変数をカバーします。デフォルトでは、伝播は Anthropic API に直接接続されている場合にのみ有効になります。[トレース（ベータ）](/ja/monitoring-usage#traces-beta) を参照してください                                                                                                             |
- | `CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST`                  | Claude Code を埋め込み、その代わりにモデルプロバイダーのルーティングを管理するホストプラットフォームによって設定されます。設定されている場合、`CLAUDE_CODE_USE_BEDROCK`、`ANTHROPIC_BASE_URL`、`ANTHROPIC_API_KEY` などのプロバイダー選択、エンドポイント、認証変数は設定ファイルで無視されるため、ユーザー設定はホストのルーティングをオーバーライドできません。Bedrock、Vertex、Foundry の自動テレメトリオプトアウトもスキップされるため、テレメトリは標準の `DISABLE_TELEMETRY` オプトアウトに従います。[API プロバイダーごとのデフォルト動作](/ja/data-usage#default-behaviors-by-api-provider) を参照してください                            |
- | `CLAUDE_CODE_PROXY_RESOLVES_HOSTS`                      | プロキシが呼び出し元の代わりに DNS 解決を実行できるようにするには `1` に設定します。プロキシがホスト名解決を処理する必要がある環境でオプトインします                                                                                                                                                                                                                                                                                                                                                |
-@@ -316,4 +317,5 @@ Claude Code は起動時に環境変数を読み取るため、変更は `claude
- | `OTEL_LOG_USER_PROMPTS`                                 | ユーザープロンプトテキストを OpenTelemetry トレースとログに含めるには `1` に設定します。デフォルトで無効です（プロンプトは編集されます）。[監視](/ja/monitoring-usage) を参照してください                                                                                                                                                                                                                                                                                                            |
- | `OTEL_METRICS_INCLUDE_ACCOUNT_UUID`                     | メトリクス属性からアカウント UUID を除外するには `false` に設定します（デフォルト：含まれます）。[監視](/ja/monitoring-usage) を参照してください                                                                                                                                                                                                                                                                                                                                   |
-+| `OTEL_METRICS_INCLUDE_ENTRYPOINT`                       | {/* min-version: 2.1.152 */}セッションエントリポイントをメトリクス属性に含めるには `true` に設定します（デフォルト：除外）。[監視](/ja/monitoring-usage) を参照してください                                                                                                                                                                                                                                                                                                           |
- | `OTEL_METRICS_INCLUDE_SESSION_ID`                       | メトリクス属性からセッション ID を除外するには `false` に設定します（デフォルト：含まれます）。[監視](/ja/monitoring-usage) を参照してください                                                                                                                                                                                                                                                                                                                                     |
- | `OTEL_METRICS_INCLUDE_VERSION`                          | Claude Code バージョンをメトリクス属性に含めるには `true` に設定します（デフォルト：除外）。[監視](/ja/monitoring-usage) を参照してください                                                                                                                                                                                                                                                                                                                                   |
-```
-
-</details>
-
-<details>
-<summary>errors-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/errors-ja.md b/docs-ja/pages/errors-ja.md
-index 843f4b0..96510d9 100644
---- a/docs-ja/pages/errors-ja.md
-+++ b/docs-ja/pages/errors-ja.md
-@@ -76,5 +76,5 @@ Claude Code は、5xx レスポンスに対してステータスコードと API
- 
- ```text theme={null}
--API Error: 500 Internal server error. This is a server-side issue, usually temporary — try again in a moment. If it persists, check status.claude.com.
-+API Error: 500 Internal server error. This is a server-side issue, usually temporary — try again in a moment. If it persists, check https://status.claude.com.
- ```
- 
-@@ -94,5 +94,5 @@ API は、すべてのユーザー全体で一時的に容量に達していま
- 
- ```text theme={null}
--API Error: Repeated 529 Overloaded errors. The API is at capacity — this is usually temporary. Try again in a moment. If it persists, check status.claude.com.
-+API Error: Repeated 529 Overloaded errors. The API is at capacity — this is usually temporary. Try again in a moment. If it persists, check https://status.claude.com.
- ```
- 
-@@ -209,5 +209,5 @@ API キー、Amazon Bedrock プロジェクト、または Google Vertex AI プ
- 
- ```text theme={null}
--API Error: Request rejected (429) · this may be a temporary capacity issue. If it persists, check status.claude.com.
-+API Error: Request rejected (429) · this may be a temporary capacity issue. If it persists, check https://status.claude.com.
- ```
- 
-```
-
-</details>
-
-*...以降省略*
-
-</details>
-
 
 <!-- UPDATE_LOG_END -->
