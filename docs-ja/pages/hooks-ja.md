@@ -108,7 +108,7 @@ fi
 ここで Claude Code が `Bash "rm -rf /tmp/build"` を実行することにしたとします。以下が起こります。
 
 <Frame>
-  <img src="https://mintcdn.com/claude-code/-tYw1BD_DEqfyyOZ/images/hook-resolution.svg?fit=max&auto=format&n=-tYw1BD_DEqfyyOZ&q=85&s=c73ebc1eeda2037570427d7af1e0a891" alt="フック解決フロー：PreToolUse イベントが発火し、マッチャーが Bash マッチをチェックし、if 条件が Bash(rm *) マッチをチェックし、フック ハンドラーが実行され、結果が Claude Code に返される" width="930" height="290" data-path="images/hook-resolution.svg" />
+  <img src="https://mintcdn.com/claude-code/ikqp3_70mqIahteV/images/hook-resolution.svg?fit=max&auto=format&n=ikqp3_70mqIahteV&q=85&s=be0bf3053550c26de5f54cd64674c197" alt="フック解決フロー：PreToolUse イベントが発火し、マッチャーが Bash マッチをチェックし、if 条件が Bash(rm *) マッチをチェックし、フック ハンドラーが実行され、結果が Claude Code に返される" width="930" height="270" data-path="images/hook-resolution.svg" />
 </Frame>
 
 <Steps>
