@@ -17,6 +17,91 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-06-17</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/advisor-en.md | 11 ++++++++---
+ docs-ja/pages/changelog.md  | 13 +++++++++++++
+ 2 files changed, 21 insertions(+), 3 deletions(-)
+```
+
+<details>
+<summary>advisor-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/advisor-en.md b/docs-ja/pages/advisor-en.md
+index 4ccf636..c4853ca 100644
+--- a/docs-ja/pages/advisor-en.md
++++ b/docs-ja/pages/advisor-en.md
+@@ -36,5 +36,5 @@ If any of these sets an advisor model, the advisor is enabled for sessions whose
+ 
+ <Note>
+-  To use Fable 5 as the advisor, you need Claude Code v2.1.170 or later and [Fable 5 access](/en/model-config#work-with-fable-5) for your organization. Fable does not appear in the picker that `/advisor` opens, so pass it directly as `/advisor fable`, `--advisor fable`, or `"advisorModel": "fable"`.
++  To use Fable 5 as the advisor, you need Claude Code v2.1.170 or later and [Fable 5 access](/en/model-config#work-with-fable-5) for your organization.
+ </Note>
+ 
+@@ -80,9 +80,14 @@ The advisor must be at least as capable as the main model. The accepted advisors
+ | Fable 5 ({/* min-version: 2.1.170 */}v2.1.170+) | Fable                                            | An Opus or Sonnet advisor is rejected                 |
+ 
+-Fable 5 requires Claude Code v2.1.170 or later and Fable 5 access, whether it acts as the main model or the advisor. The `fable` option does not appear in the `/advisor` picker.
++Fable 5 requires Claude Code v2.1.170 or later and Fable 5 access, whether it acts as the main model or the advisor.
+ 
+ Set the advisor as `opus`, `sonnet`, or `fable`. These aliases resolve to the latest version of each model. You can also pass a full model ID such as `claude-opus-4-8`.
+ 
+-The API enforces the pairing, not Claude Code. Setting a rejected pairing succeeds, then surfaces as a `cannot be used as an advisor when the request model is` error on the next request.
++Subagents inherit the configured advisor and apply the same pairing check against their own model.
++
++Claude Code validates the pairing before sending a request:
++
++* If the advisor is less capable than the main model, the advisor is not attached to the main model's requests. The `/advisor` command output and a notification show this. Subagents whose own model satisfies the pairing may still use the advisor.
++* If the main model or the advisor is a model Claude Code does not recognize, the advisor is not attached.
+ 
+ ### Common model pairings
+```
+
+</details>
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index 30a4251..862d9f9 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,16 @@
+ # Changelog
+ 
++## 2.1.179
++
++- Fixed mid-stream connection drops: partial responses are now preserved instead of showing a raw error, and the spinner no longer gets stuck at "running tool"
++- Fixed mouse-wheel scrolling in WSL2 under Windows Terminal and VS Code (regression in 2.1.172)
++- Fixed a sandbox `denyRead`/`allowRead` glob over a large directory tree making the Bash tool description enormous and the session unusable on Linux
++- Fixed the feedback survey capturing a single-digit reply as a session rating immediately after a turn completes
++- Fixed the welcome screen stacking multiple promotional banners — at most one promo now shows per session
++- Fixed Ctrl+O not showing the subagent's transcript when viewing a subagent
++- Fixed clicking the prompt input not returning focus from the subagent/footer panel
++- Fixed remote session background tasks appearing stuck as "still running" between turns
++- Improved plugin loading performance in remote sessions
++
+ ## 2.1.178
+ 
+@@ -20,4 +32,5 @@
+ - Fixed model requests continuing to fail with auth errors after credentials were refreshed outside the session, due to a stale cached request configuration
+ - Fixed background sessions created with `/bg` or `←←` after a turn finished showing "Working" forever in the agents list
++- Fixed Linux sandbox failing to start when `.claude/skills` or `.claude/hooks` is a symlink
+ - Fixed `CLAUDE_CODE_PLUGIN_KEEP_MARKETPLACE_ON_FAILURE=1` preventing fresh marketplace installs from cloning
+ - Fixed MCP server-level specs (`mcp__server`, `mcp__server__*`, `mcp__*`) in subagent `disallowedTools` being silently ignored
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-06-16</summary>
 
 **変更ファイル:**
@@ -2724,112 +2809,5 @@ index 935b10b..32ee49b 100644
 
 </details>
 
-
-<details>
-<summary>2026-05-29</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/agent-view-ja.md       | 24 +++++-----
- docs-ja/pages/agents-ja.md           | 36 ++++++++++-----
- docs-ja/pages/best-practices-ja.md   | 15 ++++---
- docs-ja/pages/changelog.md           | 86 ++++++++++++++++++++++++++++++++++++
- docs-ja/pages/claude-directory-ja.md | 82 ++++++++++++++++++++++------------
- docs-ja/pages/commands-ja.md         | 16 +++++--
- docs-ja/pages/desktop-ja.md          |  2 +-
- docs-ja/pages/env-vars-ja.md         | 15 ++++---
- docs-ja/pages/fast-mode-ja.md        | 35 ++++++++-------
- docs-ja/pages/glossary-ja.md         | 26 +++++++----
- docs-ja/pages/hooks-ja.md            | 18 ++++----
- docs-ja/pages/keybindings-ja.md      | 10 ++---
- docs-ja/pages/model-config-ja.md     | 32 +++++++++-----
- docs-ja/pages/monitoring-usage-ja.md |  1 +
- docs-ja/pages/settings-ja.md         |  4 ++
- docs-ja/pages/setup-ja.md            |  6 ++-
- docs-ja/pages/skills-ja.md           |  2 +-
- docs-ja/pages/statusline-ja.md       | 76 ++++++++++++++++---------------
- docs-ja/pages/sub-agents-ja.md       | 10 +++++
- 19 files changed, 341 insertions(+), 155 deletions(-)
-```
-
-**新規追加:**
-
-
-<details>
-<summary>agent-view-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/agent-view-ja.md b/docs-ja/pages/agent-view-ja.md
-index 22f28cc..6e99095 100644
---- a/docs-ja/pages/agent-view-ja.md
-+++ b/docs-ja/pages/agent-view-ja.md
-@@ -88,5 +88,5 @@ Pinned
- 
- Ready for review
--  ∙ jump physics              Opened PR with collision fix            ⧉ PR #2048  2h
-+  ∙ jump physics              Opened PR with collision fix              PR #2048  2h
- 
- Needs input
-@@ -124,5 +124,5 @@ Completed
- | `✢`                | [`/loop`](/ja/scheduled-tasks) セッションはイテレーション間でスリープしています。行は実行回数とカウントダウンを表示します |
- 
--行の右端に表示される `⧉ PR #N` ラベルは [セッションが開いたプルリクエスト](#pull-request-status) であり、状態アイコンの一部ではありません。セッションが複数のプルリクエストを開いた場合、ラベルは他をカウントする `+N` サフィックスを追加します。
-+行の右端に表示される `PR #N` ラベルは [セッションが開いたプルリクエスト](#pull-request-status) であり、状態アイコンの一部ではありません。セッションが複数のプルリクエストを開いた場合、ラベルはカウントを表示します。例えば `3 PRs` のようになります。
- 
- ターミナルタブのタイトルは、エージェントビューが開いている間、待機中の入力カウントを表示します。セッションが入力を必要とする場合は `2 awaiting input · claude agents`、そうでない場合は `claude agents` です。
-@@ -140,9 +140,9 @@ Completed
- ### プルリクエストステータス
- 
--セッションがプルリクエストを開くと、`⧉ PR #1234` ラベルが行の右端に表示され、ハイパーリンクをサポートするターミナルではプルリクエストにリンクされます。セッションにフォローアップを送信するときもラベルは保存されるため、行がライブプログレスに戻るときもプルリクエストは表示されたままです。
-+セッションがプルリクエストを開くと、`PR #1234` ラベルが行の右端に表示され、ハイパーリンクをサポートするターミナルではプルリクエストにリンクされます。セッションにフォローアップを送信するときもラベルは保存されるため、行がライブプログレスに戻るときもプルリクエストは表示されたままです。
- 
--セッションが複数のプルリクエストを開いた場合、ラベルは最も注意が必要なオープンプルリクエストを表示し、他をカウントする `+N` サフィックスを追加します。[ピークパネル](#peek-and-reply) を開いてすべてを表示します。
-+セッションが複数のプルリクエストを開いた場合、ラベルはカウントを表示します。例えば `3 PRs` のようになり、最も注意が必要なオープンプルリクエストで色付けされます。[ピークパネル](#peek-and-reply) を開いてすべてを表示します。
- 
--`⧉` アイコンはプルリクエストのステータスで色付けされます。
-+プルリクエスト番号はそのステータスで色付けされます。
- 
-```
-
-</details>
-
-<details>
-<summary>agents-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/agents-ja.md b/docs-ja/pages/agents-ja.md
-index 9ae0ee1..f296684 100644
---- a/docs-ja/pages/agents-ja.md
-+++ b/docs-ja/pages/agents-ja.md
-@@ -5,19 +5,27 @@
- # エージェントを並列実行する
- 
--> Claude Code が複数のタスクを同時に実行する方法を比較します。サブエージェント、エージェントビュー、エージェントチーム、および分離されたワークツリーセッションについて説明します。
-+> Claude Code が複数のタスクを同時に実行する方法を比較します。サブエージェント、エージェントビュー、エージェントチーム、および動的ワークフローについて説明します。
- 
--[サブエージェント](/ja/sub-agents)、[エージェントビュー](/ja/agent-view)、[エージェントチーム](/ja/agent-teams)、および [ワークツリー](/ja/worktrees) は、それぞれ異なる方法で作業を並列化します。どれを選ぶかは、各会話に自分で留まりたいのか、タスクを引き継いで後で確認したいのか、それとも Claude に一群のワーカーを調整させたいのかによって異なります。
-+[サブエージェント](/ja/sub-agents)、[エージェントビュー](/ja/agent-view)、[エージェントチーム](/ja/agent-teams)、および [動的ワークフロー](/ja/workflows) は、それぞれ異なる方法で作業を並列化します。どれを選ぶかは、各会話に自分で留まりたいのか、タスクを引き継いで後で確認したいのか、それとも Claude に一群のワーカーを調整させたいのかによって異なります。
- 
--| アプローチ                        | 提供内容                                                                    | 使用する場合                                            |
--| :--------------------------- | :---------------------------------------------------------------------- | :------------------------------------------------ |
--| [サブエージェント](/ja/sub-agents)   | 1 つのセッション内で委任されたワーカーが、独自のコンテキストでサイドタスクを実行し、サマリーを返す                      | サイドタスクが検索結果、ログ、またはファイルコンテンツで主な会話を埋め尽くす場合（再度参照しない） |
--| [エージェントビュー](/ja/agent-view)  | `claude agents` で開く、バックグラウンドで実行されているセッションをディスパッチして監視する 1 つの画面。リサーチプレビュー | 複数の独立したタスクがあり、それらを引き継いで、一目で状態を確認し、必要な場合のみ介入したい場合  |
--| [エージェントチーム](/ja/agent-teams) | 共有タスクリストとエージェント間メッセージングを備えた複数の調整されたセッション。リーダーによって管理される。実験的で、デフォルトでは無効   | Claude にプロジェクトを分割させ、割り当てさせ、ワーカーを同期させたい場合          |
--| [ワークツリー](/ja/worktrees)      | 個別の git チェックアウト。並列セッションが互いのファイルに触れることはない                                | 複数のセッションを自分で実行しているか、サブエージェントが重複するファイルを編集している場合    |
--| [`/batch`](/ja/commands)     | 1 つの大きな変更を 5 ～ 30 個のワークツリー分離サブエージェントに計画的に分割し、各エージェントがプルリクエストを開く         | リポジトリ全体のマイグレーションまたは機械的なリファクタリング。1 つの指示で説明できる場合    |
-+| アプローチ                        | 提供内容                                                                    | 使用する場合                                                                       |
-+| :--------------------------- | :---------------------------------------------------------------------- | :--------------------------------------------------------------------------- |
-+| [サブエージェント](/ja/sub-agents)   | 1 つのセッション内で委任されたワーカーが、独自のコンテキストでサイドタスクを実行し、サマリーを返す                      | サイドタスクが検索結果、ログ、またはファイルコンテンツで主な会話を埋め尽くす場合（再度参照しない）                            |
-+| [エージェントビュー](/ja/agent-view)  | `claude agents` で開く、バックグラウンドで実行されているセッションをディスパッチして監視する 1 つの画面。リサーチプレビュー | 複数の独立したタスクがあり、それらを引き継いで、一目で状態を確認し、必要な場合のみ介入したい場合                             |
-+| [エージェントチーム](/ja/agent-teams) | 共有タスクリストとエージェント間メッセージングを備えた複数の調整されたセッション。リーダーによって管理される。実験的で、デフォルトでは無効   | Claude にプロジェクトを分割させ、割り当てさせ、ワーカーを同期させたい場合                                     |
-+| [動的ワークフロー](/ja/workflows)    | 多くのサブエージェントを実行し、その結果をチェックするスクリプト。1 回のターンで調整するには大きすぎるジョブ向け。リサーチプレビュー     | タスクが大きすぎてサブエージェント数個では対応できない場合。コードベース全体の監査、500 ファイルのマイグレーション、または敵対的検証が必要な調査など |
- 
- すべてのアプローチにおいて、ワーカーは Claude セッションです。別のツールを関与させるには、それを Claude に [MCP サーバー](/ja/mcp) として公開します。
- 
--これらのアプローチを組み合わせることができます。エージェントビューは、ディスパッチされた各セッションをファイルを編集する必要がある場合に自動的に独自のワークツリーに移動し、作業中のセッションはサブエージェントを生成でき、各サブエージェントは独自のワークツリーを取得します。
-```
-
-</details>
 
 <!-- UPDATE_LOG_END -->
