@@ -6,7 +6,7 @@
 
 > オートモード分類器に、組織が信頼するリポジトリ、バケット、ドメインを指定します。環境コンテキストを設定し、デフォルトのブロックルールと許可ルールをオーバーライドし、オートモード CLI サブコマンドで有効な設定を確認します。
 
-[オートモード](/ja/permission-modes#eliminate-prompts-with-auto-mode)を使用すると、Claude Code は各ツール呼び出しを分類器にルーティングして、不可逆的、破壊的、または環境外を対象とした操作をブロックすることで、権限プロンプトなしで実行できます。`autoMode` 設定ブロックを使用して、その分類器に、組織が信頼するリポジトリ、バケット、ドメインを指定すると、ルーチンの内部操作のブロックが停止します。
+[オートモード](/ja/permission-modes#eliminate-prompts-with-auto-mode)を使用すると、Claude Code は各ツール呼び出しを分類器にルーティングして、不可逆的、破壊的、または環境外を対象とした操作をブロックすることで、権限プロンプトなしで実行できます。Deny ルールと explicit ask ルールは分類器の前に評価され、引き続きブロックまたはプロンプトを表示します。`autoMode` 設定ブロックを使用して、その分類器に、組織が信頼するリポジトリ、バケット、ドメインを指定すると、ルーチンの内部操作のブロックが停止します。
 
 <Note>
   オートモードは、Anthropic API を通じてすべてのユーザーが利用できます。Amazon Bedrock、Google Cloud Vertex AI、Microsoft Foundry では、まず [`CLAUDE_CODE_ENABLE_AUTO_MODE`](/ja/permission-modes#enable-auto-mode-on-bedrock-vertex-ai-or-foundry) を[設定](/ja/permission-modes#enable-auto-mode-on-bedrock-vertex-ai-or-foundry)する必要があります。Claude Code がアカウントでオートモードが利用不可と報告する場合は、[完全な要件](/ja/permission-modes#eliminate-prompts-with-auto-mode)を確認してください。これには、サポートされているモデルと Team および Enterprise プランの管理者有効化も含まれます。
@@ -32,12 +32,12 @@
 
 信頼できるインフラストラクチャや組織全体の拒否ルールなど、プロジェクト全体に適用されるルールについては、`autoMode` 設定ブロックを使用します。分類器は以下のスコープから `autoMode` を読み込みます。
 
-| スコープ                          | ファイル                                | 用途                                   |
-| :---------------------------- | :---------------------------------- | :----------------------------------- |
-| 1 人の開発者                       | `~/.claude/settings.json`           | 個人の信頼できるインフラストラクチャ                   |
-| 1 つのプロジェクト、1 人の開発者            | `.claude/settings.local.json`       | プロジェクトごとの信頼できるバケットまたはサービス、gitignored |
-| 組織全体                          | [管理設定](/ja/server-managed-settings) | すべての開発者に配布される信頼できるインフラストラクチャ         |
-| `--settings` フラグまたは Agent SDK | インライン JSON                          | 自動化のための呼び出しごとのオーバーライド                |
+| スコープ                          | ファイル                                | 用途                           |
+| :---------------------------- | :---------------------------------- | :--------------------------- |
+| 1 人の開発者                       | `~/.claude/settings.json`           | 個人の信頼できるインフラストラクチャ           |
+| 1 つのプロジェクト、1 人の開発者            | `.claude/settings.local.json`       | プロジェクトごとの信頼できるバケットまたはサービス    |
+| 組織全体                          | [管理設定](/ja/server-managed-settings) | すべての開発者に配布される信頼できるインフラストラクチャ |
+| `--settings` フラグまたは Agent SDK | インライン JSON                          | 自動化のための呼び出しごとのオーバーライド        |
 
 分類器は `.claude/settings.json` の共有プロジェクト設定から `autoMode` を読み込まないため、チェックインされたリポジトリは独自の許可ルールを注入できません。
 
@@ -189,7 +189,7 @@ claude auto-mode critique
   関連項目
 </h2>
 
-* [権限モード](/ja/permission-modes#eliminate-prompts-with-auto-mode)。オートモードとは何か、デフォルトでブロックされる内容、有効にする方法
-* [管理設定](/ja/server-managed-settings)。組織全体に `autoMode` 設定をデプロイ
-* [権限](/ja/permissions)。分類器が実行される前に適用される許可、質問、拒否ルール
-* [設定](/ja/settings)。`autoMode` キーを含む完全な設定リファレンス
+* [権限モード](/ja/permission-modes#eliminate-prompts-with-auto-mode)：オートモードとは何か、デフォルトでブロックされる内容、有効にする方法
+* [管理設定](/ja/server-managed-settings)：組織全体に `autoMode` 設定をデプロイ
+* [権限](/ja/permissions)：分類器が実行される前に適用される許可、質問、拒否ルール
+* [設定](/ja/settings)：`autoMode` キーを含む完全な設定リファレンス

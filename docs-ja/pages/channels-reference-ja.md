@@ -116,8 +116,8 @@
 
     ファイルは順番に 3 つのことを実行します：
 
-    * **サーバー設定**：`claude/channel` をその機能に含む MCP サーバーを作成します。これが Claude Code にこれがチャネルであることを伝えます。[`instructions`](#server-options) 文字列は Claude のシステムプロンプトに入ります：Claude に期待するイベント、返信するかどうか、返信する場合はどのツールを使用するか、どの属性を返送するか（`chat_id` など）を伝えます。
-    * **Stdio 接続**：stdin/stdout 経由で Claude Code に接続します。これは任意の [MCP サーバー](https://modelcontextprotocol.io/docs/concepts/transports#standard-io)の標準です：Claude Code はそれをサブプロセスとして生成します。
+    * **サーバー設定**：`claude/channel` をその機能に含む MCP サーバーを作成します。これが Claude Code にこれがチャネルであることを伝えます。[`instructions`](#server-options) 文字列は Claude のシステムプロンプトに入ります：Claude に期待するイベント、返信するかどうか、返信する場合はどのように返信を処理するかを伝えます。
+    * **Stdio 接続**：stdin/stdout 経由で Claude Code に接続します。これは任意の [MCP サーバー](https://modelcontextprotocol.io/docs/concepts/transports#standard-io) の標準です：Claude Code はそれをサブプロセスとして生成します。
     * **HTTP リスナー**：ポート 8788 でローカル Web サーバーを開始します。すべての POST 本文は `mcp.notification()` 経由でチャネルイベントとして Claude に転送されます。`content` はイベント本文になり、各 `meta` エントリは `<channel>` タグの属性になります。リスナーは `mcp` インスタンスへのアクセスが必要なため、同じプロセスで実行されます。より大きなプロジェクトの場合は、別のモジュールに分割できます。
   </Step>
 
@@ -142,9 +142,13 @@
     claude --dangerously-load-development-channels server:webhook
     ```
 
+    このプロジェクトで初めてセッションを開始するとき、Claude Code は `.mcp.json` から新しいサーバーを使用する前に同意を求めます。ダイアログは'このプロジェクトで見つかった新しい MCP サーバー：webhook'と報告します。**このMCPサーバーを使用** を選択して続行します。
+
     Claude Code が起動すると、MCP 設定を読み込み、`webhook.ts` をサブプロセスとして生成し、HTTP リスナーは設定したポート（この例では 8788）で自動的に開始されます。サーバーを自分で実行する必要はありません。
 
-    'ブロックされた組織ポリシー'が表示される場合は、組織管理者が最初に[チャネルを有効化](/ja/channels#enterprise-controls)する必要があります。
+    スタートアップバナーの下の薄い通知がチャネルが登録されたことを確認します：`Channels (experimental) messages from server:webhook inject directly in this session · restart without --dangerously-load-development-channels to stop`。
+
+    '組織ポリシーによってブロックされています'が表示される場合は、組織管理者が最初に [チャネルを有効化](/ja/channels#enterprise-controls) する必要があります。
 
     別のターミナルで、HTTP POST でメッセージを送信して webhook をシミュレートします。この例は、CI 失敗アラートをポート 8788（または設定したポート）に送信します：
 
@@ -158,7 +162,7 @@
     <channel source="webhook" path="/" method="POST">build failed on main: https://ci.example.com/run/1234</channel>
     ```
 
-    Claude Code ターミナルでは、Claude がメッセージを受け取り、応答を開始するのが見えます：ファイルを読み込み、コマンドを実行、またはメッセージが要求するもの。これは一方向チャネルなので、Claude はセッションで動作しますが、webhook を通じて何も返送しません。返信を追加するには、[返信ツールを公開](#expose-a-reply-tool)を参照してください。
+    Claude Code ターミナルでは、Claude がメッセージを受け取り、応答を開始するのが見えます：ファイルを読み込み、コマンドを実行、またはメッセージが要求するもの。これは一方向チャネルなので、Claude はセッションで動作しますが、webhook を通じて何も返送しません。返信を追加するには、[返信ツールを公開](#expose-a-reply-tool) を参照してください。
 
     イベントが到着しない場合、診断は `curl` が返したものに依存します：
 
@@ -167,7 +171,7 @@
   </Step>
 </Steps>
 
-[fakechat サーバー](https://github.com/anthropics/claude-plugins-official/tree/main/external_plugins/fakechat)は、Web UI、ファイル添付、および双方向チャットの返信ツールでこのパターンを拡張します。
+[fakechat サーバー](https://github.com/anthropics/claude-plugins-official/tree/main/external_plugins/fakechat) は、Web UI、ファイル添付、および双方向チャットの返信ツールでこのパターンを拡張します。
 
 <h2 id="test-during-the-research-preview">
   リサーチプレビュー中のテスト
@@ -753,13 +757,13 @@ curl -N localhost:8788/events
 curl -d "list the files in this directory" -H "X-Sender: dev" localhost:8788
 ```
 
-ローカル権限ダイアログが Claude Code ターミナルで開きます。少し後、プロンプトが `/events` ストリームに表示され、5 文字の ID を含みます。リモート側から承認します：
+ファイルをリストすることは読み取り専用なので、Claude は承認なしでそれを実行します。権限ダイアログは Claude が `reply` ツールを呼び出して答えを返送するときに開きます。ローカルダイアログは Claude Code ターミナルで開き、少し後、`mcp__webhook__reply` のプロンプトが `/events` ストリームに表示され、5 文字の ID を含みます。リモート側から承認します：
 
 ```bash theme={null}
 curl -d "yes <id>" -H "X-Sender: dev" localhost:8788
 ```
 
-ローカルダイアログが閉じ、ツールが実行されます。Claude の返信は `reply` ツール経由で戻り、ストリームにも到着します。
+ローカルダイアログが閉じ、`reply` ツールが実行され、Claude の返信がストリームに到着します。
 
 このファイルの 3 つのチャネル固有の部分：
 

@@ -30,13 +30,13 @@
 | `claude --from-pr <number>` | そのプルリクエストにリンクされたセッションを再開します               |
 | `/resume`                   | アクティブなセッション内から別の会話に切り替えます                 |
 
-[`claude -p`](/ja/headless)または [Agent SDK](/ja/agent-sdk/overview)で作成されたセッションはセッションピッカーに表示されませんが、セッション ID を `claude --resume <session-id>` に渡すことで再開できます。
+[`claude -p`](/ja/headless)または [Agent SDK](/ja/agent-sdk/overview)で作成されたセッションはセッションピッカーに表示されませんが、セッション ID を `claude --resume <session-id>` に渡すことで再開できます。セッションが開始されたディレクトリから実行してください。セッション ID ルックアップは現在のプロジェクトディレクトリとその git worktrees にスコープされているため、他の場所で作成されたセッションは `No conversation found with session ID: <session-id>` と報告されます。
 
 <h3 id="where-the-session-picker-looks">
   セッションピッカーが検索する場所
 </h3>
 
-セッションはプロジェクトディレクトリごとに保存されます。デフォルトでは、セッションピッカーは現在の worktree からのインタラクティブセッション、および `/add-dir` で現在のディレクトリを追加した他の場所で開始されたセッションを表示します。`Ctrl+W` を使用してリポジトリのすべての worktree に拡張するか、`Ctrl+A` を使用してこのマシン上のすべてのプロジェクトに拡張します。
+セッションはプロジェクトディレクトリごとに保存されます。デフォルトでは、セッションピッカーは現在の worktree からのインタラクティブセッション、および `/add-dir` で現在のディレクトリを追加した他の場所で開始されたセッションを表示します。v2.1.169 以降、[`/cd`](/ja/commands)でセッションを移動すると、新しいディレクトリのプロジェクトストレージに再配置されるため、その後そのディレクトリのピッカーに表示されます。`Ctrl+W` を使用してリポジトリのすべての worktree に拡張するか、`Ctrl+A` を使用してこのマシン上のすべてのプロジェクトに拡張します。
 
 同じリポジトリの別の worktree からセッションを選択すると、そこで再開されます。関連のないプロジェクトからセッションを選択すると、`cd` と再開コマンドがクリップボードにコピーされます。
 
@@ -53,12 +53,12 @@
 
 セッションに説明的な名前を付けて、セッションピッカーで見つけやすく、名前で再開できるようにします。これは複数のタスクを並行して処理している場合に最も重要です。
 
-| 時期          | 名前を設定する方法                                                                                                              |
-| :---------- | :--------------------------------------------------------------------------------------------------------------------- |
-| 起動時         | `claude -n auth-refactor`                                                                                              |
-| セッション中      | `/rename auth-refactor`。名前はプロンプトバーにも表示されます                                                                             |
-| セッションピッカーから | セッションをハイライトして `Ctrl+R` を押します                                                                                           |
-| プラン受け入れ時    | [プランモード](/ja/permission-modes#analyze-before-you-edit-with-plan-mode)でプランを受け入れると、既に設定していない限り、プランコンテンツからセッションに名前が付けられます |
+| 時期          | 名前を設定する方法                                                                                                                 |
+| :---------- | :------------------------------------------------------------------------------------------------------------------------ |
+| 起動時         | `claude -n auth-refactor`                                                                                                 |
+| セッション中      | `/rename auth-refactor`。名前はプロンプトバーにも表示されます                                                                                |
+| セッションピッカーから | セッションをハイライトして `Ctrl+R` を押します                                                                                              |
+| プラン受け入れ時    | [Plan Mode](/ja/permission-modes#analyze-before-you-edit-with-plan-mode)でプランを受け入れると、既に設定していない限り、プランコンテンツからセッションに名前が付けられます |
 
 セッションに名前が付けられたら、`claude --resume <name>` または `/resume <name>` で再開できます。worktree 全体での名前解決の動作については、[セッションを再開する](#resume-a-session)を参照してください。
 
@@ -125,9 +125,9 @@ claude --continue --fork-session
 
 `/export` を実行して、現在の会話をクリップボードにコピーするか、プレーンテキストファイルとして保存します。メッセージとツール出力は読みやすいテキストとしてレンダリングされます。ファイル名を渡して、そのファイルに直接書き込みます。
 
-トランスクリプトは `~/.claude/projects/<project>/<session-id>.jsonl` に JSONL として保存されます。ここで `<project>` は作業ディレクトリパスから派生しています。各行はメッセージ、ツール使用、またはメタデータエントリの JSON オブジェクトです。セッションを `~/.claude` 以外の場所に保存するには、[`CLAUDE_CONFIG_DIR`](/ja/env-vars)を設定します。これらのローカルファイルはデフォルトで 30 日後に削除されます。[`cleanupPeriodDays`](/ja/settings#available-settings)で変更します。
+トランスクリプトは `~/.claude/projects/<project>/<session-id>.jsonl` に JSONL として保存されます。ここで `<project>` は作業ディレクトリパスから派生しています。各行はメッセージ、ツール使用、またはメタデータエントリの JSON オブジェクトです。セッションを `~/.claude` 以外の場所に保存するには、[`CLAUDE_CONFIG_DIR`](/ja/env-vars) を設定します。これらのローカルファイルはデフォルトで 30 日後に削除されます。[`cleanupPeriodDays`](/ja/settings#available-settings) で変更します。
 
-トランスクリプト書き込みを完全に抑制するには、[`CLAUDE_CODE_SKIP_PROMPT_HISTORY`](/ja/env-vars)を設定するか、非インタラクティブモードで `--no-session-persistence` を使用します。
+トランスクリプト書き込みを完全に抑制するには、[`CLAUDE_CODE_SKIP_PROMPT_HISTORY`](/ja/env-vars) を設定するか、非インタラクティブモードで `--no-session-persistence` を使用します。
 
 <h2 id="see-also">
   関連項目
@@ -136,6 +136,6 @@ claude --continue --fork-session
 これらのページは関連するセッションと並列処理のメカニクスについて説明しています。
 
 * [Worktrees](/ja/worktrees)：別のブランチで分離された並列セッションを実行します
-* [チェックポイント](/ja/checkpointing)：コードと会話を以前のポイントに巻き戻します
-* [コンテキストウィンドウ](/ja/context-window)：コンテキストを満たすもの、圧縮後に残るもの
-* [非インタラクティブモード](/ja/headless)：`claude -p` の下でのセッション動作
+* [Checkpointing](/ja/checkpointing)：コードと会話を以前のポイントに巻き戻します
+* [Context window](/ja/context-window)：コンテキストを満たすもの、圧縮後に残るもの
+* [Non-interactive mode](/ja/headless)：`claude -p` の下でのセッション動作

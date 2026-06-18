@@ -6,7 +6,7 @@
 
 > Claude Code のインストールまたはサインイン時に、コマンドが見つからない、PATH、権限、ネットワーク、認証エラーを修正します。
 
-インストールが失敗した場合、またはサインインできない場合は、以下からエラーを見つけてください。Claude Code が動作している場合のランタイム問題については、[トラブルシューティング](/ja/troubleshooting)を参照してください。設定が適用されない、またはフック が発火しないなどの設定の問題については、[設定をデバッグする](/ja/debug-your-config)を参照してください。
+インストールが失敗した場合、またはサインインできない場合は、以下からエラーを見つけてください。Claude Code が動作している場合のランタイム問題については、[トラブルシューティング](/ja/troubleshooting)を参照してください。設定が適用されない、またはフックが発火しないなどの設定の問題については、[設定をデバッグする](/ja/debug-your-config)を参照してください。
 
 <h2 id="find-your-error">
   エラーを見つける
@@ -24,6 +24,7 @@
 | `TLS connect error` または `SSL/TLS secure channel`                                             | [CA 証明書を更新する](#tls-or-ssl-connection-errors)                                                      |
 | `Failed to fetch version` またはダウンロードサーバーに到達できない                                               | [ネットワークとプロキシ設定を確認する](#check-network-connectivity)                                                 |
 | `irm is not recognized` または `&& is not valid`                                                | [シェルに適切なコマンドを使用する](#wrong-install-command-on-windows)                                             |
+| `Cask 'claude-code' is unavailable: No Cask with this name exists`                           | [Homebrew を更新する](#homebrew-cask-unavailable-or-outdated)                                          |
 | `'bash' is not recognized as the name of a cmdlet`                                           | [Windows インストーラーコマンドを使用する](#wrong-install-command-on-windows)                                     |
 | `Claude Code on Windows requires either Git for Windows (for bash) or PowerShell`            | [シェルをインストールする](#claude-code-on-windows-requires-either-git-for-windows-for-bash-or-powershell)    |
 | `Claude Code does not support 32-bit Windows`                                                | [Windows PowerShell を開く（x86 エントリではなく）](#claude-code-does-not-support-32-bit-windows)              |
@@ -61,6 +62,8 @@
 curl -sI https://downloads.claude.ai/claude-code-releases/latest
 ```
 
+PowerShell では、代わりに `curl.exe -sI` を実行してください。PowerShell は `curl` を `Invoke-WebRequest` にエイリアスしており、`-sI` フラグを拒否します。
+
 `HTTP/2 200` という行はサーバーに到達したことを意味します。出力がない、`Could not resolve host`、または接続タイムアウトが表示される場合、ネットワークが接続をブロックしています。一般的な原因：
 
 * `downloads.claude.ai` をブロックしている企業ファイアウォールまたはプロキシ
@@ -94,6 +97,10 @@ curl -sI https://downloads.claude.ai/claude-code-releases/latest
 </h3>
 
 インストールが成功しても、`claude` を実行するときに `command not found` または `not recognized` エラーが表示される場合、インストールディレクトリが PATH に含まれていません。シェルは PATH にリストされているディレクトリ内のプログラムを検索し、インストーラーは macOS/Linux では `~/.local/bin/claude` に、Windows では `%USERPROFILE%\.local\bin\claude.exe` に `claude` を配置します。
+
+<Note>
+  [VS Code 拡張機能](/ja/vs-code)は `claude` をこの場所に配置しません。拡張機能ディレクトリ内に CLI のプライベートコピーをバンドルし、独自のチャットパネル用に使用し、PATH に追加しません。拡張機能のみをインストールした場合、`~/.local/bin/claude` は存在しません。ターミナルから `claude` を使用するには[スタンドアロンインストール](/ja/setup)を実行してから、以下を続行してください。
+</Note>
 
 インストールディレクトリが PATH に含まれているかどうかを確認するには、PATH エントリをリストして `local/bin` でフィルタリングしてください：
 
@@ -187,6 +194,8 @@ curl -sI https://downloads.claude.ai/claude-code-releases/latest
     ```bash theme={null}
     ls -la ~/.local/bin/claude
     ```
+
+    `ls` コマンドが `No such file or directory` を出力する場合、それはエラーではありません。その場所に何もインストールされていないことを意味するため、次のチェックに進んでください。
 
     ```bash theme={null}
     ls -la ~/.claude/local/
@@ -390,6 +399,19 @@ curl: (22) The requested URL returned error: 403
    winget install Anthropic.ClaudeCode
    ```
 
+<h3 id="homebrew-cask-unavailable-or-outdated">
+  Homebrew cask が利用できないか古い
+</h3>
+
+Homebrew が `Error: Cask 'claude-code' is unavailable: No Cask with this name exists` を報告する場合、Homebrew cask インデックスのローカルコピーが cask の公開より前のものです。インデックスを更新して再試行してください：
+
+```bash theme={null}
+brew update
+brew install --cask claude-code
+```
+
+Homebrew が予想より古い Claude Code バージョンをインストールする場合、通常は同じ古いインデックスが原因です。`claude-code` cask は安定チャネルを追跡し、通常は最新リリースより約 1 週間遅れています。最新バージョンを実行するには、代わりに `brew install --cask claude-code@latest` を実行してください。2 つの cask の違いについては、[リリースチャネルを設定する](/ja/setup#configure-release-channel)を参照してください。
+
 <h3 id="tls-or-ssl-connection-errors">
   TLS または SSL 接続エラー
 </h3>
@@ -591,6 +613,10 @@ Git for Windows はオプションです。Claude Code は Git Bash がない場
 ```
 
 Git がどこか別の場所にインストールされている場合は、PowerShell で `where.exe git` を実行してパスを見つけ、そのディレクトリから `bin\bash.exe` パスを使用してください。
+
+**パスが正しく、ファイルが存在する**が Claude Code がそれを見つけられないと報告する場合、AppLocker、グループポリシーソフトウェア制限ポリシー、または EDR エージェントなどのエンドポイントセキュリティソフトウェアが干渉している可能性があります。v2.1.116 より前のバージョンでは、Claude Code はパスを確認するために子プロセス（`cmd.exe`）を生成しました。これらのポリシーはこれをブロックできます。一般的な兆候は、`cmd.exe /c dir "C:\Program Files\Git\bin\bash.exe"` が PowerShell で直接実行するときは機能しますが、`claude.exe` によって起動されたときはサイレントに失敗することです。
+
+Claude Code v2.1.116 以降はファイルシステムを直接チェックするため、最初に更新してください。現在のバージョンでエラーが続く場合は、IT チームに `claude.exe` と、`cmd.exe` や `bash.exe` を含むそれが生成するプロセスをエンドポイント保護ポリシーでホワイトリストに登録するよう依頼してください。
 
 <h3 id="claude-code-does-not-support-32-bit-windows">
   Claude Code は 32 ビット Windows をサポートしていません

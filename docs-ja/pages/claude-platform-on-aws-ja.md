@@ -274,11 +274,12 @@ AWS 上の Claude Platform は、環境に AWS 認証情報が存在する場合
   3. モデルバージョンをピン留めする
 </h3>
 
-AWS 上の Claude Platform は、直接 Claude API と同じモデル ID を使用します。デフォルトのエイリアス `opus`、`sonnet`、`haiku` は、ワークスペースで利用可能な最新バージョンに解決されます。
+AWS 上の Claude Platform は、直接 Claude API と同じモデル ID を使用します。デフォルトのエイリアス `fable`、`opus`、`sonnet`、`haiku` は Claude Code の AWS 上の Claude Platform 用の組み込みデフォルトに解決されます。これは最新リリースより遅れる可能性があります。`ANTHROPIC_DEFAULT_OPUS_MODEL` がない場合、`opus` エイリアスは Opus 4.7 に解決されます。
 
 Claude Code をチームにデプロイする場合、モデル ID を明示的にピン留めして、新しいリリースがすべてのユーザーを一度に移動しないようにします。
 
 ```bash theme={null}
+export ANTHROPIC_DEFAULT_FABLE_MODEL=claude-fable-5
 export ANTHROPIC_DEFAULT_OPUS_MODEL=claude-opus-4-7
 export ANTHROPIC_DEFAULT_SONNET_MODEL=claude-sonnet-4-6
 export ANTHROPIC_DEFAULT_HAIKU_MODEL=claude-haiku-4-5
@@ -339,7 +340,7 @@ export ANTHROPIC_AWS_BASE_URL=https://anthropic-proxy.example.com
   すべてのリクエストで `403 Forbidden` または `AccessDenied`
 </h3>
 
-Claude Code が解決した IAM プリンシパルは、ワークスペースで Anthropic サービスを呼び出す権限がない可能性があります。AWS プロファイルに接続されたロール、または Claude Code を開始したランナーを確認し、[IAM アクション参照](https://platform.claude.com/docs/en/api/claude-platform-on-aws-iam-actions)に記載されている `aws-external-anthropic` アクションがあることを確認します。
+Claude Code が解決した IAM プリンシパルは、ワークスペースで Anthropic サービスを呼び出す権限がない可能性があります。AWS プロファイルに接続されたロール、または Claude Code を開始したランナーを確認し、[IAM アクション参照](https://platform.claude.com/docs/ja/api/claude-platform-on-aws-iam-actions)に記載されている `aws-external-anthropic` アクションがあることを確認します。
 
 `ANTHROPIC_AWS_API_KEY` を設定した場合、キーは SigV4 よりも優先され、古いキーは同じエラーを生成します。AWS Console の **Claude Platform on AWS → API keys** でキーを再生成するか、変数をアンセットして AWS 認証情報にフォールバックします。
 
@@ -361,5 +362,5 @@ Claude Code が解決した IAM プリンシパルは、ワークスペースで
 
 Claude Code を設定する前に行う AWS 上の Claude Platform サブスクリプション、ワークスペース、IAM セットアップはプラットフォームドキュメントで説明されています。
 
-* [AWS 上の Claude Platform 概要](https://platform.claude.com/docs/en/build-with-claude/claude-platform-on-aws): サブスクリプション、ワークスペースセットアップ、製品リファレンス
-* [IAM アクション参照](https://platform.claude.com/docs/en/api/claude-platform-on-aws-iam-actions): 権限とマネージドポリシー
+* [AWS 上の Claude Platform 概要](https://platform.claude.com/docs/ja/build-with-claude/claude-platform-on-aws): サブスクリプション、ワークスペースセットアップ、製品リファレンス
+* [IAM アクション参照](https://platform.claude.com/docs/ja/api/claude-platform-on-aws-iam-actions): 権限とマネージドポリシー
