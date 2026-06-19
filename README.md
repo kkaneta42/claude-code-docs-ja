@@ -17,6 +17,60 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-06-19</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md | 1 +
+ docs-ja/pages/memory-ja.md | 2 ++
+ 2 files changed, 3 insertions(+)
+```
+
+**新規追加:**
+
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index 58a42a5..b19e538 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -57,4 +57,5 @@
+ ## 2.1.178
+ 
++- Agent teams: removed the `TeamCreate` and `TeamDelete` tools. With `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` set, every session now has one implicit team — spawn teammates directly with the Agent tool's `name` parameter, no setup step needed. The `team_name` parameter on the Agent tool is still accepted but ignored.
+ - Added `Tool(param:value)` syntax for permission rules to match a tool's input parameters (with `*` wildcard), e.g. `Agent(model:opus)` to block Opus subagents
+ - Skills in nested `.claude/skills` directories now load when working on files there; on a name clash, the nested skill appears as `<dir>:<name>` so both stay available
+```
+
+</details>
+
+<details>
+<summary>memory-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/memory-ja.md b/docs-ja/pages/memory-ja.md
+index a3d0479..409ebe0 100644
+--- a/docs-ja/pages/memory-ja.md
++++ b/docs-ja/pages/memory-ja.md
+@@ -111,4 +111,6 @@ CLAUDE.md ファイルは `@path/to/import` 構文を使用して追加ファイ
+ 相対パスと絶対パスの両方が許可されます。相対パスはワーキングディレクトリではなく、インポートを含むファイルに相対的に解決されます。インポートされたファイルは他のファイルを再帰的にインポートでき、最大深度は 4 ホップです。
+ 
++インポート解析は Markdown コードスパンとフェンスコードブロックをスキップします。CLAUDE.md でパスを言及する場合、インポートせずに、バッククォートでラップします。`` `@README` `` と書くとテキストはリテラルのままになり、バッククォートの外の `@README` はファイルをインポートします。
++
+ README、package.json、およびワークフローガイドを取得するには、CLAUDE.md の任意の場所で `@` 構文を使用してそれらを参照します。
+ 
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-06-18</summary>
 
 **変更ファイル:**
@@ -2784,97 +2838,5 @@ index 96510d9..19be8c5 100644
 ```
 
 </details>
-
-<details>
-<summary>interactive-mode-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/interactive-mode-ja.md b/docs-ja/pages/interactive-mode-ja.md
-index fbf44d3..21d766f 100644
---- a/docs-ja/pages/interactive-mode-ja.md
-+++ b/docs-ja/pages/interactive-mode-ja.md
-@@ -23,24 +23,24 @@
- ### 一般的なコントロール
- 
--| ショートカット                                          | 説明                                                                                                                | コンテキスト                                                                                                                                                                                 |
--| :----------------------------------------------- | :---------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
--| `Ctrl+C`                                         | 割り込み、または入力をクリア                                                                                                    | 実行中の操作を割り込みます。何も実行されていない場合、最初の押下でプロンプト入力をクリアし、2 回目の押下で Claude Code を終了します                                                                                                              |
--| `Ctrl+X Ctrl+K`                                  | このセッション内のすべてのバックグラウンド [サブエージェント](/ja/sub-agents#run-subagents-in-foreground-or-background) を終了します。3 秒以内に 2 回押して確認 | サブエージェント制御                                                                                                                                                                             |
--| `Ctrl+D`                                         | Claude Code セッションを終了                                                                                              | EOF シグナル                                                                                                                                                                               |
--| `Ctrl+G` または `Ctrl+X Ctrl+E`                     | デフォルトテキストエディタで開く                                                                                                  | プロンプトまたはカスタム応答をデフォルトテキストエディタで編集します。`Ctrl+X Ctrl+E` は readline ネイティブバインディングです。`/config` で「外部エディタで最後の応答を表示」をオンにすると、Claude の前の応答を `#` でコメント化されたコンテキストとしてプロンプトの上に追加します。保存時にコメントブロックは削除されます |
--| `Ctrl+L`                                         | 画面を再描画                                                                                                            | 完全なターミナル再描画を強制します。入力と会話履歴は保持されます。ディスプレイが破損したり部分的に空白になった場合に、これを使用して復旧します                                                                                                                |
--| `Ctrl+O`                                         | トランスクリプトビューアを切り替え                                                                                                 | 詳細なツール使用と実行を表示します。また MCP 呼び出しを展開します。デフォルトでは「Slack を 3 回呼び出し」のような 1 行に折りたたまれます                                                                                                          |
--| `Ctrl+R`                                         | コマンド履歴を逆順検索                                                                                                       | 前のコマンドをインタラクティブに検索                                                                                                                                                                     |
--| `Ctrl+V` または `Cmd+V`（iTerm2）または `Alt+V`（Windows） | クリップボードから画像を貼り付け                                                                                                  | カーソルに `[Image #N]` チップを挿入して、プロンプト内で位置的に参照できます                                                                                                                                          |
--| `Ctrl+B`                                         | バックグラウンドで実行中のタスク                                                                                                  | bash コマンドとエージェントをバックグラウンドで実行します。Tmux ユーザーは 2 回押す                                                                                                                                       |
--| `Ctrl+T`                                         | タスクリストを切り替え                                                                                                       | ターミナルステータス領域の [タスクリスト](#task-list) を表示または非表示                                                                                                                                           |
--| `Left/Right 矢印`                                  | ダイアログタブを循環                                                                                                        | 権限ダイアログとメニューのタブ間を移動                                                                                                                                                                    |
--| `Up/Down 矢印` または `Ctrl+P`/`Ctrl+N`               | カーソルを移動またはコマンド履歴を移動                                                                                               | 複数行入力では、最初にカーソルをプロンプト内で移動します。カーソルが既に上端または下端にある場合、もう一度押すとコマンド履歴を移動します                                                                                                                   |
--| `Esc`                                            | Claude を割り込み                                                                                                      | 現在の応答またはツール呼び出しを途中で停止して、リダイレクトできます。Claude はこれまでの作業を保持します                                                                                                                               |
--| `Esc` + `Esc`                                    | 入力ドラフトをクリア、または巻き戻し                                                                                                | プロンプト入力にテキストが含まれている場合、ダブル `Esc` でクリアし、ドラフトを履歴に保存して `Up` で呼び出せます。入力が空の場合、ダブル `Esc` で [巻き戻しメニュー](/ja/checkpointing) を開き、前の時点からコードと会話を復元または要約できます                                         |
--| `Shift+Tab` または `Alt+M`（一部の設定）                   | 権限モードを切り替え                                                                                                        | `default`、`acceptEdits`、`plan`、および `auto` や `bypassPermissions` などの有効にしたモード間を循環します。[権限モード](/ja/permission-modes) を参照してください。                                                            |
--| `Option+P`（macOS）または `Alt+P`（Windows/Linux）      | モデルを切り替え                                                                                                          | プロンプトをクリアせずにモデルを切り替え                                                                                                                                                                   |
--| `Option+T`（macOS）または `Alt+T`（Windows/Linux）      | 拡張思考を切り替え                                                                                                         | 拡張思考モードを有効または無効にします。{/* min-version: 2.1.132 */}v2.1.132 以降、このショートカットは macOS で Option を Meta として設定しなくても機能します                                                                           |
--| `Option+O`（macOS）または `Alt+O`（Windows/Linux）      | 高速モードを切り替え                                                                                                        | [高速モード](/ja/fast-mode) を有効または無効にします                                                                                                                                                    |
-+| ショートカット                                                  | 説明                                                                                                                | コンテキスト                                                                                                                                                                                 |
-+| :------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-+| `Ctrl+C`                                                 | 割り込み、または入力をクリア                                                                                                    | 実行中の操作を割り込みます。何も実行されていない場合、最初の押下でプロンプト入力をクリアし、2 回目の押下で Claude Code を終了します                                                                                                              |
-```
-
-</details>
-
-<details>
-<summary>keybindings-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/keybindings-ja.md b/docs-ja/pages/keybindings-ja.md
-index c5e304b..3fc87cf 100644
---- a/docs-ja/pages/keybindings-ja.md
-+++ b/docs-ja/pages/keybindings-ja.md
-@@ -115,5 +115,5 @@ Claude Code はカスタマイズ可能なキーボードショートカット
- | `chat:externalEditor` | Ctrl+G、Ctrl+X Ctrl+E     | 外部エディタで開く                                                                                                 |
- | `chat:stash`          | Ctrl+S                   | 現在のプロンプトを保存                                                                                               |
--| `chat:imagePaste`     | Ctrl+V（Windows では Alt+V） | 画像を貼り付け                                                                                                   |
-+| `chat:imagePaste`     | Ctrl+V（Windows では Alt+V） | クリップボードから画像を貼り付けます。WSL では、両方のショートカットがデフォルトでバインドされています                                                     |
- 
- \*VT モードなし（Node \<24.2.0/\<22.17.0、Bun \<1.2.23）の Windows では、デフォルトは Meta+M です。
-@@ -150,7 +150,7 @@ Claude Code はカスタマイズ可能なキーボードショートカット
- 権限ダイアログの `Confirmation` コンテキストで利用可能なアクション：
- 
--| アクション                    | デフォルト    | 説明                                                                             |
--| :----------------------- | :------- | :----------------------------------------------------------------------------- |
--| `permission:toggleDebug` | （アンバインド） | 権限デバッグ情報を切り替え。Ctrl+D の以前のデフォルトは v2.1.146 で削除されました。これは `app:exit` をシャドウしていたためです |
-+| アクション                    | デフォルト    | 説明                                                                               |
-+| :----------------------- | :------- | :------------------------------------------------------------------------------- |
-+| `permission:toggleDebug` | （アンバインド） | 権限デバッグ情報を切り替えます。Ctrl+D の以前のデフォルトは v2.1.146 で削除されました。これは `app:exit` をシャドウしていたためです |
- 
- ### トランスクリプトアクション
-```
-
-</details>
-
-<details>
-<summary>mcp-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/mcp-ja.md b/docs-ja/pages/mcp-ja.md
-index 5137c41..9d13b27 100644
---- a/docs-ja/pages/mcp-ja.md
-+++ b/docs-ja/pages/mcp-ja.md
-@@ -481,4 +481,6 @@ orders テーブルのスキーマを表示してください
- Claude Code は、サーバーが `401 Unauthorized` または `403 Forbidden` で応答するときに、リモートサーバーが認証を必要とするとマークします。どちらのステータスコードでも、サーバーは `/mcp` でフラグが立てられ、OAuth フローを完了できます。認可サーバーを指す `WWW-Authenticate` ヘッダーを返すカスタムサーバーは、他のリモートサーバーと同じ自動検出を取得します。
- 
-+`headers.Authorization` をサーバー用に設定し、サーバーがそのヘッダーを拒否する場合、Claude Code は OAuth にフォールバックするのではなく、接続が失敗したと報告します。トークンが MCP エンドポイント用に有効であることを確認するか、OAuth フローを使用するためにヘッダーを削除してください。
-+
- <Steps>
-   <Step title="認証が必要なサーバーを追加する">
-```
-
-</details>
-
-*...以降省略*
-
-</details>
-
 
 <!-- UPDATE_LOG_END -->
