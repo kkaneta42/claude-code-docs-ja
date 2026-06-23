@@ -116,15 +116,16 @@ export CLAUDE_CODE_CLIENT_KEY_PASSPHRASE="your-passphrase"
 
 Claude Code は以下の URL へのアクセスが必要です。プロキシ設定とファイアウォールルールでこれらをホワイトリストに登録してください。特にコンテナ化された環境または制限されたネットワーク環境では重要です。
 
-| URL                            | 必要な用途                                                                                |
-| ------------------------------ | ------------------------------------------------------------------------------------ |
-| `api.anthropic.com`            | Claude API リクエスト                                                                     |
-| `claude.ai`                    | claude.ai アカウント認証                                                                    |
-| `platform.claude.com`          | Anthropic Console アカウント認証                                                            |
-| `downloads.claude.ai`          | プラグイン実行可能ファイルのダウンロード、ネイティブインストーラーおよびネイティブ自動更新プログラム                                   |
-| `storage.googleapis.com`       | {/* max-version: 2.1.115 */}2.1.116 より前のバージョンのネイティブインストーラーおよびネイティブ自動更新プログラム          |
-| `bridge.claudeusercontent.com` | [Chrome の Claude](/ja/chrome) 拡張機能 WebSocket ブリッジ                                    |
-| `raw.githubusercontent.com`    | [`/release-notes`](/ja/commands) のチェンジログフィード、更新後に表示されるリリースノート、プラグインマーケットプレイスのインストール数 |
+| URL                            | 必要な用途                                                                                                                         |
+| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
+| `api.anthropic.com`            | Claude API リクエスト                                                                                                              |
+| `claude.ai`                    | claude.ai アカウント認証                                                                                                             |
+| `platform.claude.com`          | Anthropic Console アカウント認証                                                                                                     |
+| `downloads.claude.ai`          | プラグイン実行可能ファイルのダウンロード、ネイティブインストーラーおよびネイティブ自動更新プログラム                                                                            |
+| `storage.googleapis.com`       | {/* max-version: 2.1.115 */}2.1.116 より前のバージョンのネイティブインストーラーおよびネイティブ自動更新プログラム                                                   |
+| `bridge.claudeusercontent.com` | [Chrome の Claude](/ja/chrome) 拡張機能 WebSocket ブリッジ                                                                             |
+| `*.claudeusercontent.com`      | claude.ai での[アーティファクト](/ja/artifacts)の表示。ビューアーは各アーティファクトのコンテンツをこのオリジンのサンドボックス化されたサブドメインから読み込みます。ビューアーのブラウザーで必要です。CLI 自体では不要です |
+| `raw.githubusercontent.com`    | [`/release-notes`](/ja/commands) のチェンジログフィード、更新後に表示されるリリースノート、プラグインマーケットプレイスのインストール数                                          |
 
 npm を通じて Claude Code をインストールするか、独自のバイナリ配布を管理する場合、エンドユーザーは `downloads.claude.ai` または `storage.googleapis.com` へのアクセスが不要な場合があります。
 

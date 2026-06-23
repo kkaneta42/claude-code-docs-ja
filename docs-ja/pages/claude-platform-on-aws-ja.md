@@ -238,6 +238,8 @@ SSO 認証情報がセッション中に期限切れになった場合、[`awsAu
 }
 ```
 
+`awsAuthRefresh` が設定されている場合、`/login` は **Using 3rd-party platforms** の下に **Claude Platform on AWS · refresh credentials** オプションを表示します。これを選択すると、設定されたコマンドが実行され、Claude Code を再起動せずに AWS 認証情報が再度読み込まれます。
+
 **オプション B: ワークスペース API キー**
 
 ワークスペース API キーは長期間有効なシークレットで、フェデレーション AWS 認証情報を管理したくない場合に便利です。AWS Console の **Claude Platform on AWS → API keys** で生成し、`ANTHROPIC_AWS_API_KEY` として設定します。
@@ -251,7 +253,7 @@ export ANTHROPIC_AWS_API_KEY=sk-ant-xxxxx
 ワークスペース API キーは他の本番認証情報と同様に扱ってください。[ユーザー設定ファイル](/ja/settings) の `env` ブロックは、グローバルにエクスポートせずにキーをマシンにスコープするための便利な方法です。
 
 <Note>
-  `/login` および `/logout` コマンドは AWS 上の Claude Platform 認証を変更しません。認証は AWS 認証情報またはワークスペース API キーを通じて実行され、Claude.ai サブスクリプションを通じてではありません。
+  `/login` および `/logout` コマンドは Claude.ai サブスクリプションに対してサインインしません。AWS 上の Claude Platform の場合、認証は AWS 認証情報またはワークスペース API キーを通じて実行されます。例外は、`awsAuthRefresh` が設定されている場合に `/login` が表示する **refresh credentials** オプションで、これは上記で説明したように AWS 認証情報を再度読み込みます。
 </Note>
 
 <h3 id="2-configure-claude-code">

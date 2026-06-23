@@ -632,6 +632,38 @@ Skill(deploy *)
 
 プラグインスキルは `skillOverrides` の影響を受けません。代わりに `/plugin` を通じてそれらを管理します。
 
+<h2 id="evaluate-and-iterate-on-a-skill">
+  スキルを評価して反復する
+</h2>
+
+スキルがトリガーされるのを見ることは、Claude がそれを見つけたことを示しており、意図したことをしたことを示していません。スキルが機能していることを知るには、2 つのことを別々に測定します。Claude がそれを呼び出すべきプロンプトでそれを呼び出すかどうか、および実行するときの出力が期待と一致するかどうか。
+
+両方のチェックはベースライン比較です。いくつかの現実的なプロンプトを収集し、スキルが利用可能な新しいセッションで各プロンプトを実行し、[無効にされた](#override-skill-visibility-from-settings)状態で再度実行し、結果を比較します。新しいセッションが重要です。スキルの作成から残っているコンテキストは、書かれた指示のギャップをマスクするためです。
+
+<h3 id="run-evals-with-skill-creator">
+  skill-creator でエバルを実行する
+</h3>
+
+[`skill-creator` プラグイン](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/skill-creator)は Claude Code 内で比較ループを自動化します。公式マーケットプレイスからインストールします：
+
+```text theme={null}
+/plugin install skill-creator@claude-plugins-official
+```
+
+Claude Code がプラグインがマーケットプレイスに見つからないと報告する場合、マーケットプレイスが見つからないか古い可能性があります。`/plugin marketplace update claude-plugins-official` を実行してリフレッシュするか、まだ追加していない場合は `/plugin marketplace add anthropics/claude-plugins-official` を実行します。その後、インストールを再試行します。
+
+インストール後、`/reload-plugins` を実行して、プラグインのスキルを現在のセッションで利用可能にします。その後、Claude に既存のスキルを評価するよう依頼します。たとえば、`evaluate my summarize-changes skill with skill-creator`。プラグインはテストケースを記述するプロセスを案内し、ループを実行します：
+
+* **テストケース**：プロンプト、入力ファイル、および期待される動作をスキルディレクトリ内の `evals/evals.json` に保存します
+* **分離実行**：テストケースごとに[サブエージェント](/ja/sub-agents)を生成して、各実行がクリーンなコンテキストで開始され、トークン数と期間を記録します
+* **グレーディング**：各アサーションを出力に対してチェックし、`grading.json` にパスまたはフェイルを証拠とともに記述します
+* **ベンチマーク**：パス率、時間、トークンをスキルなしとスキルありで集約して `benchmark.json` に記述するため、パス率の改善をトークンと時間のオーバーヘッドと比較できます
+* **バージョン比較**：2 つのバージョンのスキル間でブラインド A/B を実行して、コミット前に編集が改善であることを確認します
+* **説明チューニング**：トリガーすべきおよびトリガーすべきでないプロンプトを生成し、ヒット率を測定し、スキルが間違ったリクエストでアクティブ化されるときに説明編集を提案します
+* **レビュービューア**：各出力を検査し、定性的フィードバックを記録できる HTML レポートを開きます。次の反復がこれを読みます
+
+eval ファイル形式と完全な反復ワークフローについては、agentskills.io の[スキル出力品質の評価](https://agentskills.io/skill-creation/evaluating-skills)を参照してください。ベンチマークと比較モードの背景については、[skill-creator アナウンスメント](https://claude.com/blog/improving-skill-creator-test-measure-and-refine-agent-skills)を参照してください。
+
 <h2 id="share-skills">
   スキルを共有する
 </h2>
@@ -850,6 +882,8 @@ Claude がスキルを期待どおりに使用しない場合：
 3. 説明により密接に一致するようにリクエストを言い換えてみます
 4. スキルがユーザー呼び出し可能な場合は、`/skill-name` で直接呼び出してみます
 
+frontmatter YAML が不正な形式の場合、Claude Code はスキル本体を空のメタデータで読み込むため、`/skill-name` は引き続き機能しますが、Claude は一致させるための `description` を持ちません。`--debug` で実行してパースエラーを確認します。
+
 <h3 id="skill-triggers-too-often">
   スキルが頻繁にトリガーされる
 </h3>
@@ -872,6 +906,8 @@ Claude がスキルを使用したくない場合：
 </h2>
 
 * **[設定をデバッグする](/ja/debug-your-config)**：スキルが表示されない、またはトリガーされない理由を診断する
+* **[スキル出力品質の評価](https://agentskills.io/skill-creation/evaluating-skills)**：agentskills.io の eval ファイル形式と反復ワークフロー
+* **[スキル作成のベストプラクティス](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices)**：Claude 製品全体に適用される作成ガイダンス
 * **[サブエージェント](/ja/sub-agents)**：特化したエージェントにタスクを委任する
 * **[プラグイン](/ja/plugins)**：他の拡張機能でスキルをパッケージ化して配布する
 * **[フック](/ja/hooks)**：ツールイベント周辺のワークフローを自動化する

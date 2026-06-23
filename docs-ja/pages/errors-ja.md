@@ -43,6 +43,7 @@
 | `OAuth token revoked` / `OAuth token has expired`                                             | [認証](#oauth-token-revoked-or-expired)                                                         |
 | `does not meet scope requirement user:profile`                                                | [認証](#oauth-scope-requirement)                                                                |
 | `Unable to connect to API`                                                                    | [ネットワーク](#unable-to-connect-to-api)                                                           |
+| `Waiting for API response · will retry in`                                                    | [自動リトライ](#automatic-retries)、または継続する場合は[ネットワーク](#unable-to-connect-to-api)                    |
 | `SSL certificate verification failed`                                                         | [ネットワーク](#ssl-certificate-errors)                                                             |
 | `403` with `x-deny-reason: host_not_allowed` in a cloud or routine session                    | [ネットワーク](#host-not-allowed-in-a-cloud-session)                                                |
 | `Prompt is too long`                                                                          | [リクエストエラー](#prompt-is-too-long)                                                               |
@@ -66,12 +67,15 @@
 
 Claude Code は、エラーを表示する前に一時的な障害をリトライします。サーバーエラー、オーバーロードレスポンス、リクエストタイムアウト、一時的な 429 スロットル、および接続の切断はすべて、指数バックオフで最大 10 回リトライされます。リトライ中、スピナーは `Retrying in Ns · attempt x/y` カウントダウンを表示します。
 
-このページのエラーの 1 つが表示されている場合、これらのリトライはすでに使い果たされています。2 つの環境変数で動作をチューニングできます。
+{/* min-version: 2.1.185 */}リクエストがまだ保留中の状態で、レスポンスストリームで 20 秒間データが到着しない場合、スピナーは `Waiting for API response · will retry in … · check your network` を表示します。これはリトライが開始される前です。リクエストはまだ失敗していません。カウントダウンは Claude Code が停止した接続を中止してリトライする時点まで実行されるため、データが再開されるか、リトライが成功するとバナーは自動的にクリアされます。v2.1.185 以降、閾値は 20 秒です。それより前のバージョンでは、異なる表現でバナーが 10 秒後に表示されます。すべての試行で再度表示される場合は、[ネットワークの問題](#unable-to-connect-to-api)として扱ってください。
 
-| 変数                                        | デフォルト  | 効果                                                    |
-| :---------------------------------------- | :----- | :---------------------------------------------------- |
-| [`CLAUDE_CODE_MAX_RETRIES`](/ja/env-vars) | 10     | リトライ試行回数。スクリプトで障害をより速く表示するには低くし、より長いインシデントを待つには高くします。 |
-| [`API_TIMEOUT_MS`](/ja/env-vars)          | 600000 | リクエストごとのタイムアウト（ミリ秒単位）。遅いネットワークまたはプロキシの場合は高くします。       |
+このページのエラーの 1 つが表示されている場合、これらのリトライはすでに使い果たされています。これらの環境変数で動作をチューニングできます。
+
+| 変数                                           | デフォルト  | 効果                                                                                                       |
+| :------------------------------------------- | :----- | :------------------------------------------------------------------------------------------------------- |
+| [`CLAUDE_CODE_MAX_RETRIES`](/ja/env-vars)    | 10     | リトライ試行回数。{/* min-version: 2.1.186 */}v2.1.186 以降、15 に制限されています。スクリプトで障害をより速く表示するには低くします。                  |
+| [`CLAUDE_CODE_RETRY_WATCHDOG`](/ja/env-vars) | 未設定    | CI ジョブなどの無人セッションで `1` に設定して、`CLAUDE_CODE_MAX_RETRIES` 試行後に失敗する代わりに、`429` および `529` キャパシティエラーを無限にリトライします。 |
+| [`API_TIMEOUT_MS`](/ja/env-vars)             | 600000 | リクエストごとのタイムアウト（ミリ秒単位）。遅いネットワークまたはプロキシの場合は高くします。                                                          |
 
 <h2 id="server-errors">
   サーバーエラー

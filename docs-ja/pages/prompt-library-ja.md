@@ -1217,7 +1217,7 @@ export const text = {
   "review-your-changes-before": {
     title: "コミットする前に変更をレビューする",
     teaches: "問題が修正するのに安い間に問題をキャッチしてください。Claude は diff 行だけでなく、変更されたファイル全体を読むため、迅速な自己レビューが見落とす問題を見つけます。",
-    next: "同じチェックを 1 つのコマンドで実行するために `/review` を実行してください"
+    next: "同じチェックを 1 つのコマンドで実行するために `/code-review` を実行してください"
   },
   "review-a-pull-request": {
     title: "プルリクエストをレビューする",
