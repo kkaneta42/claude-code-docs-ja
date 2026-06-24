@@ -17,6 +17,169 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-06-24</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/agent-view-ja.md             | 35 +++++++++++++++++++++++++++---
+ docs-ja/pages/changelog.md                 | 24 ++++++++++++++++++++
+ docs-ja/pages/claude-code-on-the-web-ja.md |  1 +
+ docs-ja/pages/skills-ja.md                 |  1 +
+ docs-ja/pages/slack-ja.md                  | 16 +++++++++++++-
+ 5 files changed, 73 insertions(+), 4 deletions(-)
+```
+
+<details>
+<summary>agent-view-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/agent-view-ja.md b/docs-ja/pages/agent-view-ja.md
+index 6333b01..55f5768 100644
+--- a/docs-ja/pages/agent-view-ja.md
++++ b/docs-ja/pages/agent-view-ja.md
+@@ -282,5 +282,5 @@ v2.1.145 以降では、[音声ディクテーション](/ja/voice-dictation) 
+ | `Shift+Enter`                    | ディスパッチして新しいセッションに直ちにアタッチ                                                                                 |
+ 
+-エージェントビュー自体で実行される少数のコマンドがあります。ディスパッチの代わりに：`/exit` および `/quit` はエージェントビューを閉じ、`/logout` はサインアウトします。その他のすべてのコマンドとスキルは、新しいバックグラウンドセッションにその最初のプロンプトとして送信されます。
++エージェントビュー自体で実行される少数のコマンドがあります。ディスパッチの代わりに：`/exit` および `/quit` はエージェントビューを閉じ、`/logout` はサインアウトします。`/model` はディスパッチモデルを設定します。skills、独自のコマンド、および `/init` などのプロンプト展開組み込みは、新しいバックグラウンドセッションにその最初のプロンプトとして送信されます。その他の組み込みコマンドは、代わりに `attach to a session to run it` ヒントを表示します。
+ 
+ 繰り返しタスクを [skill](/ja/skills) としてパッケージ化すると、プロンプトを再入力せずにエージェントビューから同じワークフローを何度も開始できます。
+@@ -413,4 +413,13 @@ git リポジトリの外では、セッションは作業ディレクトリに
+ エージェントビューヘッダーに表示されるモデル名はディスパッチのデフォルトです。入力から開始する新しいセッションはこのモデルを使用します。これは [`model` setting](/ja/settings#available-settings) からユーザー設定で取得されます。[`/model` picker](/ja/model-config) でモデルを選択して設定するか、設定を直接編集します。エージェントビューセッション全体でオーバーライドするには、エージェントビューを開く際に `--model` を渡します。[パーミッションモード、モデル、および努力](#permission-mode-model-and-effort) を参照してください。
+ 
++エージェントビューの入力でディスパッチモデルを変更するには、ディスパッチ入力に `/model` の後にモデル名を入力して `Enter` を押します。ヘッダーは `(session)` マーカー付きでそのモデルを表示するように更新され、その後ディスパッチするセッションはそれを使用します。`/model default` と入力してオーバーライドをクリアし、ディスパッチのデフォルトに戻します。このオーバーライドは現在の `claude agents` 実行の残りの間続き、設定ファイルに書き込まれず、Claude Code v2.1.172 以降が必要です。{/* min-version: 2.1.172 */} 次の例は、1 つのセッションを Opus でディスパッチし、次のセッションを Sonnet でディスパッチします：
++
++```text theme={null}
++/model opus
++refactor auth
++/model sonnet
++run the test suite
++```
++
+ 各バックグラウンドセッションは異なるモデルで実行できます。1 つのセッションでオーバーライドするには：
+ 
+@@ -423,5 +432,7 @@ git リポジトリの外では、セッションは作業ディレクトリに
+ </h3>
+ 
+-バックグラウンドセッションは、そこで `claude` を開始した場合と同じように、実行されるディレクトリから [settings](/ja/settings) を読み取ります。
++バックグラウンドセッションは、そこで `claude` を開始した場合と同じように、実行されるディレクトリから [settings](/ja/settings) を読み取ります。これには、プロジェクト設定の [`env` values](/ja/settings#available-settings) が含まれるため、そこで設定された `ANTHROPIC_MODEL` またはプロバイダー変数がそのディレクトリのバックグラウンドセッションに適用されます。
+```
+
+</details>
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index 3c832a7..3507be5 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,28 @@
+ # Changelog
+ 
++## 2.1.187
++
++- Added `sandbox.credentials` setting to block sandboxed commands from reading credential files and secret environment variables
++- Added org-configured model restrictions to the model picker, `--model`, `/model`, and `ANTHROPIC_MODEL`, with a "restricted by your organization's settings" message when a restricted model is selected
++- Added mouse click support to select menus (permission prompts, `/model`, `/config`, etc.) in fullscreen mode
++- Fixed `--resume` failing with "No conversation found" when the original `-p` run produced no model turns
++- Fixed `--json-schema` and workflow `agent({schema})` structured output: the model can no longer re-call `StructuredOutput` indefinitely after a successful call, and follow-up turns now reliably return structured output
++- Fixed remote MCP tool calls that hang with no response for 5 minutes — they now abort with an error instead of blocking indefinitely (override with `CLAUDE_CODE_MCP_TOOL_IDLE_TIMEOUT`)
++- Fixed Claude Code Remote sessions taking ~2.7s longer to start after the agent proxy CA system-trust install was added
++- Fixed pasted Korean/CJK text turning into mojibake in terminals that deliver paste as per-byte extended-key events
++- Fixed `/update` over Remote Control hanging when a startup trust dialog would have shown
++- Fixed background jobs in the agents view getting stuck in "working" indefinitely when the agent ended a turn without producing structured output
++- Fixed channel connections dropping after navigating to the agents view and back, and after `/bg`, `/tui`, or `/update`
++- Fixed agent stop notifications not correctly attributing who stopped the agent, and improved wording ("finished"/"stopped" instead of "came to rest")
++- Fixed subagent depth tracking: resumed subagents now restore their original spawn depth, and forked subagents now count toward the depth cap
++- Fixed leaked agent worktree registrations: locked `.git/worktrees/` entries from killed agents are now cleaned up automatically
++- Fixed Cmd+click not opening URLs in fullscreen mode in Ghostty on macOS
++- Fixed `claude --help` not listing the `--bg`/`--background` flag
++- Fixed Esc, Ctrl-C, and Ctrl-D not working while `/share` is uploading
++- Improved `/install-github-app`: GitHub Actions workflow setup is now optional — you can install just the GitHub App and skip the workflow/secret steps
++- Improved `/btw` with ←/→ arrow navigation to step through earlier answers
++- Improved `/plugin` to surface plugins you haven't used recently so you can clean them up
++- [VSCode] Fixed extension becoming unresponsive when resuming a large session
+```
+
+</details>
+
+<details>
+<summary>claude-code-on-the-web-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/claude-code-on-the-web-ja.md b/docs-ja/pages/claude-code-on-the-web-ja.md
+index 3058b3c..6d126df 100644
+--- a/docs-ja/pages/claude-code-on-the-web-ja.md
++++ b/docs-ja/pages/claude-code-on-the-web-ja.md
+@@ -905,2 +905,3 @@ Claude は PR を解決する際に GitHub のレビューコメントスレッ
+ * [セキュリティ](/ja/security)：分離保証とデータ処理
+ * [データ使用](/ja/data-usage)：Anthropic がクラウドセッションから保持するもの
++* [Claude Tag](https://claude.com/docs/claude-tag/overview)：Slack で実行される組織管理の @Claude で、同じクラウド環境で動作
+```
+
+</details>
+
+<details>
+<summary>skills-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/skills-ja.md b/docs-ja/pages/skills-ja.md
+index 265b1d9..c54da1f 100644
+--- a/docs-ja/pages/skills-ja.md
++++ b/docs-ja/pages/skills-ja.md
+@@ -915,2 +915,3 @@ Claude がスキルを使用したくない場合：
+ * **[コマンド](/ja/commands)**：組み込みコマンドとバンドルされたスキルのリファレンス
+ * **[権限](/ja/permissions)**：ツールとスキルアクセスを制御する
++* **[Claude Tag スキル](https://claude.com/docs/claude-tag/admins/skills-repo)**：リポジトリにコミットされたプロジェクトスキルは、そのリポジトリが Claude Tag チャネルで使用される場合にも読み込まれます
+```
+
+</details>
+
+<details>
+<summary>slack-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/slack-ja.md b/docs-ja/pages/slack-ja.md
+index 45ca981..81b9aef 100644
+--- a/docs-ja/pages/slack-ja.md
++++ b/docs-ja/pages/slack-ja.md
+@@ -7,7 +7,11 @@
+ > Slack ワークスペースから直接コーディングタスクを委任する
+ 
++<Note>
++  Claude Code in Slack は、Team および Enterprise ワークスペース向けに [Claude Tag](https://claude.com/docs/claude-tag/overview) に置き換わります。Claude Tag は、管理者が設定したアクセス権限を持つ組織の共有 ID として @Claude を実行し、同じ Slack アプリの下で動作するため、再インストールする必要がなく、既存のセットアップは移行中も機能し続けます。ワークスペースを切り替えるには、[Claude in Slack の以前のバージョンから移行する](https://claude.com/docs/claude-tag/admins/migrate-from-earlier)を参照してください。
++</Note>
++
+ Slack での Claude Code は、Claude Code の機能を Slack ワークスペースに直接もたらします。`@Claude` にコーディングタスクをメンションすると、Claude は自動的に意図を検出し、ウェブ上で Claude Code セッションを作成します。これにより、チームの会話を離れることなく開発作業を委任できます。
+ 
+-この統合は既存の Claude for Slack アプリに基づいていますが、コーディング関連のリクエストに対して Claude Code ウェブへのインテリジェントなルーティングを追加しています。
++この統合は既存の Claude for Slack アプリに基づいていますが、コーディング関連のリクエストに対して Claude Code ウェブへのインテリジェントなルーティングを追加しています。各セッションは自分の Claude アカウントで実行され、接続されたリポジトリと自分のプラン制限を使用します。
+ 
+ <h2 id="use-cases">
+@@ -218,4 +222,10 @@ Enterprise および Team アカウントの場合、Slack の Claude から作
+ </h2>
+ 
++<h3 id="claude-code-is-not-enabled-for-your-account">
++  'Claude Code がアカウントで有効になっていません'
++</h3>
++
++このエラーは、Claude アカウントにまだクラウド環境がないことを意味します。管理者が何かを有効にする必要があるわけではありません。Slack に接続したのと同じアカウントで [claude.ai/code](https://claude.ai/code) に 1 回サインインしてください。初回訪問時にデフォルトのクラウド環境が作成され、次回のメンション時にエラーが解消されます。各ユーザーが個別に実行する必要があります。
++
+ <h3 id="sessions-not-starting">
+   セッションが開始しない
+@@ -278,4 +288,8 @@ Enterprise および Team アカウントの場合、Slack の Claude から作
+   </Card>
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-06-23</summary>
 
 **変更ファイル:**
@@ -2665,193 +2828,6 @@ index 5dd6a62..cc485a3 100644
  <Note>
 -  オートモードは、Anthropic API を通じてすべてのユーザーが利用できます。Bedrock、Vertex、Foundry では利用できません。Claude Code がアカウントでオートモードが利用不可と報告する場合は、[完全な要件](/ja/permission-modes#eliminate-prompts-with-auto-mode)を確認してください。これには、サポートされているモデルと Team および Enterprise プランの管理者有効化も含まれます。
 +  オートモードは、Anthropic API を通じてすべてのユーザーが利用できます。Amazon Bedrock、Google Cloud Vertex AI、Microsoft Foundry では、まず [`CLAUDE_CODE_ENABLE_AUTO_MODE`](/ja/permission-modes#enable-auto-mode-on-bedrock-vertex-ai-or-foundry) を[設定](/ja/permission-modes#enable-auto-mode-on-bedrock-vertex-ai-or-foundry)する必要があります。Claude Code がアカウントでオートモードが利用不可と報告する場合は、[完全な要件](/ja/permission-modes#eliminate-prompts-with-auto-mode)を確認してください。これには、サポートされているモデルと Team および Enterprise プランの管理者有効化も含まれます。
- </Note>
- 
-```
-
-</details>
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index efa9d13..d4dab2e 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,59 @@
- # Changelog
- 
-+## 2.1.161
-+
-+- `OTEL_RESOURCE_ATTRIBUTES` values are now included as labels on metric datapoints, so you can slice usage metrics by custom dimensions like team or repo
-+- `claude agents` rows now show `done/total` before the detail when work is fanned out; peek shows the longest-running item
-+- `/mcp` now collapses claude.ai connectors you've never signed in to behind a "Show unused connectors" row
-+- Parallel tool calls: a failed Bash command no longer cancels other calls in the same batch — each tool returns its own result independently
-+- Fullscreen mode: clipboard now uses `wl-copy`/`xclip`/`xsel` on Linux when available, copies to both the clipboard and PRIMARY selection for middle-click paste, and the "hold {key} for native selection" hint now shows the correct key per terminal
-+- Fixed the `/effort` dialog, workflow animations, and prompt keyword shimmer not honoring the "Reduce motion" setting
-+- Fixed `forceLoginOrgUUID`/`forceLoginMethod` managed-settings policies blocking third-party provider sessions (Bedrock, Vertex, Foundry, Mantle) alongside the org pin (regression in 2.1.146)
-+- Fixed background subagent output corrupting `claude -p` stdout when using `--output-format text` or `json`
-+- Fixed `/usage-credits` starting a re-login for Team and Enterprise admins instead of pointing to the organization's usage settings page
-+- Fixed `/autofix-pr` reporting "cannot run on the default branch" when the session is inside a git worktree or another repository
-+- Fixed `--resume` picker not showing sessions from the current directory when it isn't a git worktree (e.g., jj workspaces)
-+- Fixed Windows hooks that invoke bash explicitly (e.g., `/usr/bin/bash script.sh`) failing with "command not found" or "cannot execute binary file"
-+- Fixed OpenTelemetry log events (`user_prompt`, `api_request`, `tool_result`, `tool_decision`) being silently dropped when emitted before telemetry initialization completed
-+- Fixed `claude mcp` list/get/add printing secrets to the terminal: `${VAR}` references are no longer expanded, and credential headers and URL secrets are redacted
-+- Fixed Workflow agents spawned with `isolation: "worktree"` in background sessions being blocked from editing files inside their own worktree
-+- Fixed background sessions dispatched from `claude agents` booting on a stale model from the daemon's environment instead of the model in `settings.json`
-+- Fixed a potential crash when rendering Write tool results after resuming a session
-+- Fixed completed subagents getting stuck showing as running when an error occurs while finalizing their result
-+- Fixed `EADDRINUSE` errors from tools that bind Unix sockets under `$TMPDIR` when `CLAUDE_CODE_TMPDIR` is set to a deep path
-+- Improved terminal rendering performance by stabilizing the layout engine's JIT compilation profile
-+- Improved rendering performance for large file writes
-```
-
-</details>
-
-<details>
-<summary>channels-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/channels-ja.md b/docs-ja/pages/channels-ja.md
-index 77478b3..58acc7a 100644
---- a/docs-ja/pages/channels-ja.md
-+++ b/docs-ja/pages/channels-ja.md
-@@ -8,5 +8,5 @@
- 
- <Note>
--  チャネルは[リサーチプレビュー](#research-preview)段階にあり、Claude Code v2.1.80 以降が必要です。claude.ai ログインが必要です。Console と API キー認証はサポートされていません。Team および Enterprise 組織は[明示的に有効にする](#enterprise-controls)必要があります。
-+  チャネルは[リサーチプレビュー](#research-preview)段階にあり、Claude Code v2.1.80 以降が必要です。Anthropic 認証が claude.ai または Console API キーを通じて必要で、Amazon Bedrock、Google Vertex AI、Microsoft Foundry では利用できません。Team および Enterprise 組織は[明示的に有効にする](#enterprise-controls)必要があります。
- </Note>
- 
-@@ -226,7 +226,7 @@ Fakechat をインストールして有効にすると、ブラウザで入力
- Fakechat デモを試すには、以下が必要です。
- 
--* Claude Code が[インストールされ、認証されている](/ja/quickstart#step-1-install-claude-code)（claude.ai アカウント）
-+* Claude Code が[インストールされ、認証されている](/ja/quickstart#step-1-install-claude-code)（claude.ai アカウントまたは Claude Console API キー）
- * [Bun](https://bun.sh) がインストールされている。事前構築されたチャネルプラグインは Bun スクリプトです。`bun --version` で確認します。失敗する場合は、[Bun をインストール](https://bun.sh/docs/installation)します。
--* **Team/Enterprise ユーザー**：組織管理者が管理設定で[チャネルを有効にする](#enterprise-controls)必要があります。
-+* **Team、Enterprise、または管理 Console 組織**：管理者が[チャネルを有効にする](#enterprise-controls)必要があります。
- 
- <Steps>
-@@ -268,4 +268,6 @@ Fakechat デモを試すには、以下が必要です。
- Claude がターミナルから離れている間にパーミッションプロンプトにヒットした場合、セッションは応答するまで一時停止します。[パーミッションリレー機能](/ja/channels-reference#relay-permission-prompts)を宣言するチャネルサーバーは、これらのプロンプトをあなたに転送して、リモートで承認または拒否できるようにします。無人使用の場合、[`--dangerously-skip-permissions`](/ja/permission-modes#skip-all-checks-with-bypasspermissions-mode) はプロンプトを完全にバイパスしますが、信頼できる環境でのみ使用してください。
- 
-+非対話型モードで `-p` でチャネルを実行する場合、複数選択質問や Plan Mode 承認など、ターミナル入力が必要なツールは無効になるため、セッションは入力を待つことで停止することはありません。
-+
- ## セキュリティ
- 
-@@ -281,5 +283,5 @@ Telegram と Discord はペアリングでリストをブートストラップ
- iMessage は異なります。自分自身にテキストを送信するとゲートを自動的にバイパスし、`/imessage:access allow` でハンドルを使用して他の連絡先を追加します。
-```
-
-</details>
-
-*...以降省略*
-
-</details>
-
-
-<details>
-<summary>2026-06-02</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/agent-view-ja.md       |  56 +++--
- docs-ja/pages/cli-reference-ja.md    |   1 +
- docs-ja/pages/desktop-ja.md          |   4 +-
- docs-ja/pages/discover-plugins-ja.md |   4 +-
- docs-ja/pages/glossary-ja.md         |   6 +-
- docs-ja/pages/goal-ja.md             |   4 +-
- docs-ja/pages/hooks-guide-ja.md      |   4 +-
- docs-ja/pages/hooks-ja.md            |  96 ++++++-
- docs-ja/pages/large-codebases-en.md  | 471 -----------------------------------
- docs-ja/pages/permission-modes-ja.md |   2 +-
- docs-ja/pages/plugins-ja.md          |  10 +-
- docs-ja/pages/prompt-caching-ja.md   |  34 ++-
- docs-ja/pages/voice-dictation-ja.md  |   6 +-
- docs-ja/pages/workflows-ja.md        |  38 +--
- 14 files changed, 202 insertions(+), 534 deletions(-)
-```
-
-**新規追加:**
-
-
-**削除:**
-
-
-<details>
-<summary>agent-view-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/agent-view-ja.md b/docs-ja/pages/agent-view-ja.md
-index 69b1115..5d38ff9 100644
---- a/docs-ja/pages/agent-view-ja.md
-+++ b/docs-ja/pages/agent-view-ja.md
-@@ -81,5 +81,5 @@ claude agents --cwd ~/projects/my-app
- これはそのディレクトリの下で開始されたセッションのみを表示します。`~/projects/my-app/.claude/worktrees/` の下の [ワークツリーに移動した](#how-file-edits-are-isolated) セッションは、`~/projects/my-app` に属するものとしてカウントされます。
- 
--他のターミナルで開いているインタラクティブセッションは、[バックグラウンドにする](#from-inside-a-session)までは表示されません。[Subagents](/ja/sub-agents) と [teammates](/ja/agent-teams) はセッションが生成しても個別の行としてリストされません。
-+他のターミナルで開いているインタラクティブセッションは、[バックグラウンドにする](#from-inside-a-session) までは表示されません。[Subagents](/ja/sub-agents) と [teammates](/ja/agent-teams) はセッションが生成しても個別の行としてリストされません。
- 
- ```text theme={null}
-@@ -136,5 +136,5 @@ Completed
- 各行の 1 行の概要は [Haiku クラスモデル](/ja/model-config) によって生成されるため、行はトランスクリプトを開かずにセッションが何をしているか、何が必要か、または何を生成したかを伝えることができます。セッションがアクティブに作業している間、概要は最大 15 秒ごとに 1 回、および各ターンが終了したときに 1 回更新されます。
- 
--各更新は通常のプロバイダーを通じた 1 つの短い Haiku クラスリクエストであり、セッション自体と同じ [データ使用条件](/ja/data-usage) の下で請求および処理されます。
-+各更新は通常のプロバイダーを通じた 1 つの短い Haiku クラスリクエストであり、セッション自体と同じ [データ使用条件](/ja/data-usage) の下で請求および処理されます。Bedrock、Vertex AI、Microsoft Foundry、カスタムゲートウェイなどのサードパーティプロバイダーでは、Haiku モデルが設定されていない場合、リクエストはセッションのメインモデルにフォールバックします。これらのプロバイダーでこれらの概要のモデルを選択するには、[`ANTHROPIC_DEFAULT_HAIKU_MODEL`](/ja/model-config#environment-variables) を設定します。
- 
- ### プルリクエストステータス
-@@ -161,4 +161,6 @@ Completed
- ピークパネルに返信を入力して `Enter` を押すと、そのセッションに送信されます。セッションが複数選択肢の質問をしている場合、ピークパネルはオプションを表示し、数字キーを押して 1 つを選択できます。他のブロックされたセッションの場合は、`Tab` を押して入力に提案された返信を入力し、送信前に編集できます。返信の前に `!` を付けて Bash コマンドを代わりに送信します。
- 
-+[音声ディクテーション](/ja/voice-dictation) が有効な場合、返信入力がフォーカスされている間、プッシュトゥトークキーを押したままにするか、タップして返信をディクテーションします。これはエージェントビューの下部のディスパッチ入力でも同じように機能します。
-+
- `↑` と `↓` を使用してパネルを閉じずに隣接するセッションをピーク表示するか、`→` を使用してアタッチします。
- 
-@@ -249,4 +251,6 @@ Completed
- | `Shift+Enter`                    | ディスパッチして新しいセッションに直ちにアタッチ                                                                                 |
- 
-+エージェントビュー自体で実行される少数のコマンドがあります。ディスパッチの代わりに：`/exit` および `/quit` はエージェントビューを閉じ、`/logout` はサインアウトします。その他のすべてのコマンドとスキルは、新しいバックグラウンドセッションにその最初のプロンプトとして送信されます。
-+
-```
-
-</details>
-
-<details>
-<summary>cli-reference-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/cli-reference-ja.md b/docs-ja/pages/cli-reference-ja.md
-index e9f1326..e48963f 100644
---- a/docs-ja/pages/cli-reference-ja.md
-+++ b/docs-ja/pages/cli-reference-ja.md
-@@ -29,4 +29,5 @@
- | `claude auto-mode defaults`     | 組み込み [auto mode](/ja/permission-modes#eliminate-prompts-with-auto-mode) 分類器ルールを JSON として出力します。`claude auto-mode config` を使用して、設定が適用された有効な設定を確認してください                                                                                                                                                                                                                                                                                           | `claude auto-mode defaults > rules.json`                    |
- | `claude daemon status`          | バックグラウンドセッション [スーパーバイザー](/ja/agent-view#the-supervisor-process) の状態、バージョン、ソケットディレクトリ、および診断用のワーカー数を出力します。スーパーバイザーが実行されていない場合は 1 で終了します                                                                                                                                                                                                                                                                                                          | `claude daemon status`                                      |
-+| `claude daemon stop --any`      | バックグラウンドセッション [スーパーバイザー](/ja/agent-view#the-supervisor-process) とそれがホストするセッションを停止します。`--keep-workers` を渡して、バックグラウンドセッションを実行したままにして、次のスーパーバイザーが再接続できるようにします。`--any` はオンデマンドスーパーバイザーの停止を確認します。これはデフォルトです。これを使用して、[応答しないスーパーバイザー](/ja/agent-view#agent-view-says-the-background-service-did-not-respond) から回復します                                                                                                                                  | `claude daemon stop --any --keep-workers`                   |
- | `claude logs <id>`              | [バックグラウンドセッション](/ja/agent-view#manage-sessions-from-the-shell) からの最近の出力を出力します                                                                                                                                                                                                                                                                                                                                                                  | `claude logs 7c5dcf5d`                                      |
- | `claude mcp`                    | Model Context Protocol（MCP）サーバーを設定                                                                                                                                                                                                                                                                                                                                                                                                             | [Claude Code MCP ドキュメント](/ja/mcp) を参照してください。                |
-```
-
-</details>
-
-<details>
-<summary>desktop-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/desktop-ja.md b/docs-ja/pages/desktop-ja.md
-index ecba628..74b9b84 100644
---- a/docs-ja/pages/desktop-ja.md
-+++ b/docs-ja/pages/desktop-ja.md
-@@ -677,5 +677,7 @@ Desktop と CLI は同じ設定ファイルを読み取るため、セットア
- 
- <Note>
--  **MCP サーバー：デスクトップチャットアプリと Claude Code**：Claude Desktop チャットアプリの `claude_desktop_config.json` で設定された MCP サーバーは Claude Code とは別であり、Code タブに表示されません。Claude Code で MCP サーバーを使用するには、`~/.claude.json` またはプロジェクトの `.mcp.json` ファイルで設定します。詳細については、[MCP 設定](/ja/mcp#installing-mcp-servers)を参照してください。
-+  **Claude Desktop チャットアプリからの MCP サーバー**：Desktop アプリは `claude_desktop_config.json` から MCP サーバーを Code タブセッションに読み込みます。これは `~/.claude.json` および `.mcp.json` からのサーバーと並行して行われます。`claude_desktop_config.json` で定義されたサーバーは Desktop チャットサーフェスと Code タブの両方で利用可能です。
-+
-+  スタンドアロン CLI は `claude_desktop_config.json` を読み取りません。macOS と WSL では、`claude mcp add-from-claude-desktop` を実行して、これらのサーバーを `~/.claude.json` にコピーします。[Claude Desktop から MCP サーバーをインポート](/ja/mcp#import-mcp-servers-from-claude-desktop)を参照して、インポートフローとスコープオプションを確認してください。
  </Note>
  
 ```
