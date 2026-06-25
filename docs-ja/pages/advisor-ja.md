@@ -52,7 +52,7 @@ advisor モデルは 3 つの方法で設定できます。
 /advisor opus
 ```
 
-選択は、ユーザー設定の `advisorModel` に保存され、セッション全体で保持されます。現在のメインモデルが advisor をサポートしていない場合、選択は引き続き保存され、[`/model`](/ja/model-config#setting-your-model)で[互換性のあるメインモデル](#choose-an-advisor-model)に切り替えるときにアクティブになります。
+選択は、ユーザー設定の `advisorModel` に保存され、セッション全体で保持されます。組織の [`availableModels`](/ja/model-config#restrict-model-selection)許可リストが保存された advisor モデルを除外している場合、`/advisor` で許可されたモデルを選択するまで advisor は呼び出されません。現在のメインモデルが advisor をサポートしていない場合、選択は引き続き保存され、[`/model`](/ja/model-config#setting-your-model)で[互換性のあるメインモデル](#choose-an-advisor-model)に切り替えるときにアクティブになります。
 
 <h3 id="set-advisormodel-in-settings">
   設定で `advisorModel` を設定する
@@ -76,7 +76,7 @@ advisor モデルは 3 つの方法で設定できます。
 claude --advisor opus
 ```
 
-フラグはそのセッションの `advisorModel` 設定よりも優先されます。`/advisor` とは異なり、セッションのメインモデルが advisor をサポートしていない場合、フラグはエラーで終了します。
+フラグはそのセッションの `advisorModel` 設定よりも優先されます。セッションのメインモデルが advisor をサポートしていない場合、またはリクエストされた advisor モデルが組織の [`availableModels`](/ja/model-config#restrict-model-selection)許可リストで除外されている場合、エラーで終了します。
 
 <h2 id="choose-an-advisor-model">
   advisor モデルを選択する
@@ -181,12 +181,12 @@ advisor ツール全体（`/advisor` コマンドと `--advisor` フラグを含
 
 advisor は、モデルの強みを組み合わせるいくつかの方法の 1 つです。2 番目のモデルをいつ関与させるかに基づいて選択します。
 
-| アプローチ                                                 | より強力なモデルが実行される場合                | 開始方法                          |
-| ----------------------------------------------------- | ------------------------------- | ----------------------------- |
-| Advisor ツール                                           | タスク中の決定ポイント                     | Claude がガイダンスが必要な場合に呼び出します    |
-| [`opusplan`](/ja/model-config#opusplan-model-setting) | プランモード中、その後実行用に Sonnet に切り替わります | プランモードに入ります                   |
-| [サブエージェント](/ja/sub-agents#choose-a-model)（`model` 設定） | 委任されたサブタスク全体                    | Claude が委任するか、サブエージェントを呼び出します |
-| [`/model`](/ja/model-config#setting-your-model)       | 後続のすべてのターン                      | モデルを切り替えます                    |
+| アプローチ                                                 | より強力なモデルが実行される場合                                                                                          | 開始方法                          |
+| ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------- | ----------------------------- |
+| Advisor ツール                                           | タスク中の決定ポイント                                                                                               | Claude がガイダンスが必要な場合に呼び出します    |
+| [`opusplan`](/ja/model-config#opusplan-model-setting) | プランモード中（[`availableModels`](/ja/model-config#restrict-model-selection)で許可されている場合）、その後実行用に Sonnet に切り替わります | プランモードに入ります                   |
+| [サブエージェント](/ja/sub-agents#choose-a-model)（`model` 設定） | 委任されたサブタスク全体                                                                                              | Claude が委任するか、サブエージェントを呼び出します |
+| [`/model`](/ja/model-config#setting-your-model)       | 後続のすべてのターン                                                                                                | モデルを切り替えます                    |
 
 <h2 id="see-also">
   関連項目

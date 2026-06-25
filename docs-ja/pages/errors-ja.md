@@ -55,6 +55,7 @@
 | `Extra inputs are not permitted`                                                              | [リクエストエラー](#extra-inputs-are-not-permitted)                                                   |
 | `There's an issue with the selected model`                                                    | [リクエストエラー](#there%E2%80%99s-an-issue-with-the-selected-model)                                 |
 | `Claude Opus is not available with the Claude Pro plan`                                       | [リクエストエラー](#claude-opus-is-not-available-with-the-claude-pro-plan)                            |
+| `Model ... is restricted by your organization's settings`                                     | [リクエストエラー](#model-is-restricted-by-your-organization%E2%80%99s-settings)                      |
 | `thinking.type.enabled is not supported for this model`                                       | [リクエストエラー](#thinking-type-enabled-is-not-supported-for-this-model)                            |
 | `max_tokens must be greater than thinking.budget_tokens`                                      | [リクエストエラー](#thinking-budget-exceeds-output-limit)                                             |
 | `API Error: 400 due to tool use concurrency issues`                                           | [リクエストエラー](#tool-use-or-thinking-block-mismatch)                                              |
@@ -705,6 +706,22 @@ Claude Opus is not available with the Claude Pro plan · Select a different mode
 * `/model` を実行して、プランに含まれるモデルを選択してください
 * 最近プランをアップグレードしてもこれが表示される場合は、`/logout` を実行してから `/login` を実行してください。保存されたトークンはサインイン時のプランを反映しているため、ウェブでアップグレードしても既存のセッションで有効になるまで再認証する必要があります。
 * [claude.com/pricing](https://claude.com/pricing)を参照して、各プランに含まれるモデルを確認してください
+
+<h3 id="model-is-restricted-by-your-organization’s-settings">
+  Model is restricted by your organization's settings
+</h3>
+
+組織の管理者が Claude Console でこのモデルを無効にしたか、管理設定の [`availableModels`](/ja/model-config#restrict-model-selection) 許可リストで除外されています。制限されたモデルが `--model`、`ANTHROPIC_MODEL`、または `model` 設定で設定された場合、Claude Code は許可されたモデルに置き換えて続行します。制限されたモデルに対して `/model <name>` を入力すると、`Run /model to choose a different model.` で拒否され、セッションは現在のモデルを保持します。
+
+```text theme={null}
+Model "claude-opus-4-8" is restricted by your organization's settings. Using claude-sonnet-4-6 instead.
+```
+
+**対応方法：**
+
+* `/model` を実行して、組織が許可するモデルから選択してください。制限されたモデルはピッカーから非表示になります。
+* 制限されたモデルが `--model`、`ANTHROPIC_MODEL`、または設定ファイルの `model` フィールドで設定された場合は、その値を削除または更新して、起動するたびに通知が繰り返されないようにしてください
+* 制限されたモデルへのアクセスが必要な場合は、組織の管理者に有効にするよう依頼してください。[組織モデル制限](/ja/model-config#organization-model-restrictions)を参照してください。
 
 <h3 id="thinking-type-enabled-is-not-supported-for-this-model">
   thinking.type.enabled is not supported for this model
