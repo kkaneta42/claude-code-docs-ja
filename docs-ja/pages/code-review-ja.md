@@ -98,7 +98,7 @@ gh api repos/OWNER/REPO/check-runs/CHECK_RUN_ID \
 
 <Steps>
   <Step title="Claude Code 管理設定を開く">
-    [claude.ai/admin-settings/claude-code](https://claude.ai/admin-settings/claude-code) にアクセスして、Code Review セクションを見つけます。Claude 組織への管理者アクセスと GitHub 組織に GitHub Apps をインストールする権限が必要です。
+    [claude.ai/admin-settings/claude-code](https://claude.ai/admin-settings/claude-code) にアクセスして、Code Review セクションを見つけます。Claude 組織での Owner または Primary Owner ロールと GitHub 組織に GitHub Apps をインストールする権限が必要です。
   </Step>
 
   <Step title="セットアップを開始する">

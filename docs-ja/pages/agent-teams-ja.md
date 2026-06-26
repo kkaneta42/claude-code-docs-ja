@@ -155,6 +155,8 @@ each teammate.
 
 チームメンバーはデフォルトではリーダーの `/model` 選択を継承しません。プロンプトで指定されていない場合に使用されるモデルを変更するには、`/config` で **Default teammate model** を設定してください。チームメンバーがリーダーの現在のモデルに従うようにするには、**Default (leader's model)** を選択してください。
 
+{/* min-version: 2.1.186 */}チームメンバーはリーダーの[努力レベル](/ja/model-config#adjust-effort-level)を継承します。分割ペインモードではこれは v2.1.186 から適用されます。それより前のバージョンではリーダーのセッション努力を分割ペインチームメンバーに渡しませんでした。
+
 <h3 id="require-plan-approval-for-teammates">
   チームメンバーのプラン承認を要求する
 </h3>

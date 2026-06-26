@@ -206,15 +206,15 @@ Cloud セッションには接続された GitHub アカウントが必要です
   「Not available for the selected organization」
 </h3>
 
-Enterprise Organization では、管理者が Claude Code on the web を有効にする必要がある場合があります。Anthropic アカウントチームに連絡してください。
+Enterprise Organization では、Owner が Claude Code on the web を有効にする必要がある場合があります。Anthropic アカウントチームに連絡してください。
 
-<h3 id="/web-setup-returns-unknown-command">
-  `/web-setup` が「Unknown command」を返す
+<h3 id="/web-setup-shows-no-commands-match-or-unknown-command">
+  `/web-setup` が'No commands match'または'Unknown command'を表示する
 </h3>
 
 `/web-setup` はシェルではなく Claude Code CLI 内で実行されます。まず `claude` を起動し、プロンプトで `/web-setup` を入力します。
 
-Claude Code 内で入力してもエラーが表示される場合は、CLI が v2.1.80 より古いか、API キーまたはサードパーティプロバイダーではなく claude.ai サブスクリプションで認証されています。`claude update` を実行してから `/login` を実行して、claude.ai アカウントでサインインします。
+Claude Code 内で入力してコマンドメニューが `/web-setup` に対して'No commands match "/web-setup"」を表示するか、送信すると「Unknown command: /web-setup」が返される場合、要件が満たされていないため、コマンドは非表示になっています。原因は通常、CLI が v2.1.80 より古いか、API キーまたはサードパーティプロバイダーではなく claude.ai サブスクリプションで認証されていることです。`claude update` を実行してから `/login` を実行して、claude.ai アカウントでサインインします。
 
 <h3 id="could-not-create-a-cloud-environment-or-no-cloud-environment-available-when-using-remote-or-ultraplan">
   `--remote` または ultraplan を使用する場合に「Could not create a cloud environment」または「No cloud environment available」

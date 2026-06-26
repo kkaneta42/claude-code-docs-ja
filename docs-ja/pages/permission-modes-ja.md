@@ -187,7 +187,7 @@ claude --permission-mode plan
 自動モードはアカウントがこれらすべての要件を満たす場合にのみ利用可能です。
 
 * **プラン**：すべてのプラン。
-* **管理者**：Team と Enterprise では、管理者がユーザーがオンにできるようにする前に [Claude Code 管理設定](https://claude.ai/admin-settings/claude-code) で有効にする必要があります。管理者は [管理設定](/ja/permissions#managed-settings) で `permissions.disableAutoMode` を `"disable"` に設定することでロックオフすることもできます。
+* **所有者**：Team と Enterprise では、所有者がユーザーがオンにできるようにする前に [Claude Code 管理設定](https://claude.ai/admin-settings/claude-code) で有効にする必要があります。管理者は [管理設定](/ja/permissions#managed-settings) で `permissions.disableAutoMode` を `"disable"` に設定することでロックオフすることもできます。
 * **モデル**：Anthropic API では Claude Opus 4.6 以降、または Sonnet 4.6。Amazon Bedrock、Google Cloud Vertex AI、Microsoft Foundry では Claude Opus 4.7 と Opus 4.8 のみ。Sonnet 4.5、Opus 4.5、Haiku、claude-3 モデルを含む古いモデルはどのプロバイダーでもサポートされていません。
 * **プロバイダー**：Anthropic API ではデフォルトで利用可能です。Amazon Bedrock、Google Cloud Vertex AI、Microsoft Foundry では、[`CLAUDE_CODE_ENABLE_AUTO_MODE` を設定](#enable-auto-mode-on-bedrock-vertex-ai-or-foundry) するまで自動モードはオフです。
 

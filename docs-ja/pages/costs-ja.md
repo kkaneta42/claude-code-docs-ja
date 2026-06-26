@@ -51,7 +51,7 @@ Pro および Max プランでは、`/usage-credits` コマンドを使用して
   カスタムレート制限を持つ組織の場合、このワークスペースの Claude Code トラフィックは組織全体の API レート制限にカウントされます。Claude Console の Limits ページでこのワークスペースに [ワークスペースレート制限](https://platform.claude.com/docs/ja/api/rate-limits#setting-lower-limits-for-workspaces) を設定して、Claude Code の共有をキャップし、他の本番ワークロードを保護できます。
 </Note>
 
-Bedrock、Vertex、および Foundry では、Claude Code はクラウドからメトリクスを送信しません。コストメトリクスを取得するために、複数の大規模企業は [LiteLLM](/ja/llm-gateway#litellm-configuration) を使用していると報告しており、これは企業が [キーごとに支出を追跡](https://docs.litellm.ai/docs/proxy/virtual_keys#tracking-spend) するのに役立つオープンソースツールです。このプロジェクトは Anthropic と提携していないため、セキュリティについて監査されていません。
+Bedrock、Vertex、および Foundry では、Claude Code はクラウドからメトリクスを送信しません。既に [LLM ゲートウェイ](/ja/llm-gateway) を通じて Claude Code をルーティングしている組織は、ゲートウェイがすべてのリクエストを確認するため、そこでコストを追跡できます。
 
 <h3 id="rate-limit-recommendations">
   レート制限の推奨事項
