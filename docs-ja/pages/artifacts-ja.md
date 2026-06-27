@@ -18,15 +18,6 @@
   <img src="https://mintcdn.com/claude-code/kaHIYYMIYMYPxQg9/images/artifacts-viewer.png?fit=max&auto=format&n=kaHIYYMIYMYPxQg9&q=85&s=dbfd671cdb0d15f49f808b9e89778fe1" alt="claude.ai/code/artifact で開かれたアーティファクト。ビューアヘッダーには、アーティファクトタイトル acme-funnel-fix、Share ボタン、および作成者アバターが表示されます。Share メニューが開いており、Always share latest version トグル、Sharing version 2 と表示されたバージョンピッカー、Everyone at Acme オーディエンスセレクタ、および Copy link ボタンが表示されます。ヘッダーの下には、2 つのモバイルモックアップが並んで表示され、ファネルチャート、およびメトリックカードの行が表示されます。" width="2511" height="1890" data-path="images/artifacts-viewer.png" />
 </Frame>
 
-このページでは、以下の内容について説明します。
-
-* [アーティファクトを使用する時期](#when-to-use-an-artifact)を判断する
-* アーティファクトを[作成](#create-an-artifact)、[更新](#update-an-artifact)、[共有](#share-an-artifact)する
-* より豊かなページのための[プロンプティングパターン](#what-you-can-build)を適用する
-* [ビジュアルデザインを改善](#improve-the-visual-design)して、アーティファクトが製品のブランディングと一致するようにする
-* [ページの制約](#page-constraints)と[利用可能性の要件](#availability)を理解する
-* アーティファクトを[無効にする](#disable-artifacts)か、[組織のアーティファクトを管理](#manage-artifacts-for-your-organization)する
-
 <h2 id="when-to-use-an-artifact">
   アーティファクトを使用する時期
 </h2>

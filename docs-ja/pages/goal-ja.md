@@ -19,13 +19,6 @@
 * 大きなファイルをフォーカスされたモジュールに分割し、各モジュールがサイズ予算以下になるまで
 * ラベル付きの問題バックログを処理し、キューが空になるまで
 
-このページでは以下について説明します。
-
-* [セッションを実行し続ける方法の比較](#compare-ways-to-keep-a-session-running)：`/loop`、Stop hook、および自動モード
-* [ゴールの設定](#set-a-goal)と[効果的な条件の作成](#write-an-effective-condition)
-* [ステータスの確認](#check-status)、[早期クリア](#clear-a-goal)、および[非対話的な実行](#run-non-interactively)
-* [評価の仕組み](#how-evaluation-works)と[要件](#requirements)を確認
-
 <h2 id="compare-ways-to-keep-a-session-running">
   セッションを実行し続ける方法の比較
 </h2>

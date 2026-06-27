@@ -17,6 +17,269 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-06-27</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/agent-teams-ja.md          |  7 ---
+ docs-ja/pages/artifacts-ja.md            |  9 ----
+ docs-ja/pages/changelog.md               | 15 +++++++
+ docs-ja/pages/channels-ja.md             | 10 +----
+ docs-ja/pages/devcontainer-ja.md         |  7 +--
+ docs-ja/pages/env-vars-ja.md             |  2 +-
+ docs-ja/pages/fast-mode-ja.md            | 18 ++++----
+ docs-ja/pages/fullscreen-ja.md           |  2 +-
+ docs-ja/pages/goal-ja.md                 |  7 ---
+ docs-ja/pages/llm-gateway-ja.md          | 14 ++----
+ docs-ja/pages/sandbox-environments-ja.md |  7 +--
+ docs-ja/pages/sandboxing-ja.md           |  7 ---
+ docs-ja/pages/sessions-ja.md             | 40 +++++++++++++----
+ docs-ja/pages/settings-ja.md             | 73 ++++++++++++++++----------------
+ docs-ja/pages/sub-agents-ja.md           |  9 +---
+ docs-ja/pages/workflows-ja.md            |  7 ---
+ 16 files changed, 99 insertions(+), 135 deletions(-)
+```
+
+<details>
+<summary>agent-teams-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/agent-teams-ja.md b/docs-ja/pages/agent-teams-ja.md
+index 87f5a87..544d62a 100644
+--- a/docs-ja/pages/agent-teams-ja.md
++++ b/docs-ja/pages/agent-teams-ja.md
+@@ -19,11 +19,4 @@
+ </Note>
+ 
+-このページでは、以下について説明します。
+-
+-* [エージェントチームを使用する場合](#when-to-use-agent-teams)（ユースケースと subagents との比較を含む）
+-* [チームを開始する](#start-your-first-agent-team)
+-* [チームメンバーを制御する](#control-your-agent-team)（表示モード、タスク割り当て、委任を含む）
+-* [並列作業のベストプラクティス](#best-practices)
+-
+ <h2 id="when-to-use-agent-teams">
+   エージェントチームを使用する場合
+```
+
+</details>
+
+<details>
+<summary>artifacts-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/artifacts-ja.md b/docs-ja/pages/artifacts-ja.md
+index 46a22fc..10fb365 100644
+--- a/docs-ja/pages/artifacts-ja.md
++++ b/docs-ja/pages/artifacts-ja.md
+@@ -19,13 +19,4 @@
+ </Frame>
+ 
+-このページでは、以下の内容について説明します。
+-
+-* [アーティファクトを使用する時期](#when-to-use-an-artifact)を判断する
+-* アーティファクトを[作成](#create-an-artifact)、[更新](#update-an-artifact)、[共有](#share-an-artifact)する
+-* より豊かなページのための[プロンプティングパターン](#what-you-can-build)を適用する
+-* [ビジュアルデザインを改善](#improve-the-visual-design)して、アーティファクトが製品のブランディングと一致するようにする
+-* [ページの制約](#page-constraints)と[利用可能性の要件](#availability)を理解する
+-* アーティファクトを[無効にする](#disable-artifacts)か、[組織のアーティファクトを管理](#manage-artifacts-for-your-organization)する
+-
+ <h2 id="when-to-use-an-artifact">
+   アーティファクトを使用する時期
+```
+
+</details>
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index 534a987..3fa4a5d 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,19 @@
+ # Changelog
+ 
++## 2.1.195
++
++- Added `CLAUDE_CODE_DISABLE_MOUSE_CLICKS` to disable mouse click/drag/hover in fullscreen mode while keeping wheel scroll
++- Fixed hook matchers with hyphenated identifiers (e.g. `code-reviewer`, `mcp__brave-search`) accidentally substring-matching — they now exact-match. Use `mcp__brave-search__.*` to match all tools from a hyphenated MCP server.
++- Fixed voice dictation on macOS capturing silence in long-running sessions after the default input device changes
++- Fixed voice dictation auto-submit never firing for languages written without spaces (Japanese, Chinese, Thai)
++- Fixed external plugins enabled only by project `.claude/settings.json` not requiring explicit install consent on every loader path
++- Fixed `/plugin` Enable/Disable not working when a plugin's `plugin.json` `name` differs from its marketplace entry name
++- Fixed background jobs disappearing from `claude agents` or losing data when written by a newer Claude Code version
++- Fixed reopening a crashed background task showing a blank screen for up to 5 seconds instead of its restart
++- Fixed background agent daemons running unreachable when the control socket fails to start, blocking restarts
++- Improved voice mode on Linux: now distinguishes "no microphone" from "SoX not installed" when SoX is present but no audio capture device exists
++- Improved `claude agents` completed list to fill available vertical space; on short terminals the header compacts so live sessions stay visible
++- Improved Remote session startup with a provisioning checklist while the container starts
++
+ ## 2.1.193
+ 
+```
+
+</details>
+
+<details>
+<summary>channels-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/channels-ja.md b/docs-ja/pages/channels-ja.md
+index 9579881..84a5ad5 100644
+--- a/docs-ja/pages/channels-ja.md
++++ b/docs-ja/pages/channels-ja.md
+@@ -19,13 +19,5 @@
+ Claude がチャネルを通じて返信する場合、ターミナルに受信メッセージが表示されますが、返信テキストは表示されません。ターミナルはツール呼び出しと確認（「送信済み」など）を表示し、実際の返信は他のプラットフォームに表示されます。
+ 
+-このページでは以下をカバーしています。
+-
+-* [サポートされているチャネル](#supported-channels)：Telegram、Discord、iMessage のセットアップ
+-* [チャネルをインストールして実行する](#quickstart)（fakechat、localhost デモ）
+-* [メッセージをプッシュできるユーザー](#security)：送信者許可リストとペアリング方法
+-* [組織のチャネルを有効にする](#enterprise-controls)（Team および Enterprise）
+-* [チャネルの比較方法](#how-channels-compare)（ウェブセッション、Slack、MCP、リモートコントロール）
+-
+-独自のチャネルを構築するには、[チャネルリファレンス](/ja/channels-reference)を参照してください。
++Team、Enterprise、または Console 組織を管理している場合は、[組織のチャネルを有効にする](#enterprise-controls)を参照してください。独自のチャネルを構築するには、[チャネルリファレンス](/ja/channels-reference)を参照してください。
+ 
+ <h2 id="supported-channels">
+```
+
+</details>
+
+<details>
+<summary>devcontainer-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/devcontainer-ja.md b/docs-ja/pages/devcontainer-ja.md
+index b8e179c..308bbed 100644
+--- a/docs-ja/pages/devcontainer-ja.md
++++ b/docs-ja/pages/devcontainer-ja.md
+@@ -9,10 +9,5 @@
+ [開発コンテナ](https://containers.dev/)（dev container）を使用すると、チームのすべてのエンジニアが実行できる同一の分離環境を定義できます。Claude Code がそのコンテナにインストールされている場合、Claude が実行するコマンドはホストマシンではなくコンテナ内で実行され、プロジェクトファイルへの編集はローカルリポジトリに表示されます。
+ 
+-このページでは、[開発コンテナに Claude Code をインストール](#add-claude-code-to-your-dev-container)する方法と、その後の設定トピックについて説明します。各トピックは独立しているため、必要な設定に合わせてジャンプしてください：
+-
+-* [再構築時に認証と設定を保持する](#persist-authentication-and-settings-across-rebuilds)
+-* [組織ポリシーを適用する](#enforce-organization-policy)
+-* [ネットワークエグレスを制限する](#restrict-network-egress)
+-* [権限プロンプトなしで実行する](#run-without-permission-prompts)
++このページでは、[開発コンテナに Claude Code をインストール](#add-claude-code-to-your-dev-container)する方法と、その後の自己完結型の設定トピックについて説明します。認証をリビルド全体で保持する、組織ポリシーを適用する、ネットワークエグレスを制限する、権限プロンプトなしで実行するなどです。セットアップに合致するものをお読みください。
+ 
+ <Warning>
+```
+
+</details>
+
+<details>
+<summary>env-vars-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/env-vars-ja.md b/docs-ja/pages/env-vars-ja.md
+index 0a91aa7..163289e 100644
+--- a/docs-ja/pages/env-vars-ja.md
++++ b/docs-ja/pages/env-vars-ja.md
+@@ -238,5 +238,5 @@ Claude Code は起動時に環境変数を読み取るため、変更は `claude
+ | `CLAUDE_CODE_OAUTH_SCOPES`                              | リフレッシュトークンが発行されたスペース区切りの OAuth スコープ（例：`"user:profile user:inference user:sessions:claude_code"`）。`CLAUDE_CODE_OAUTH_REFRESH_TOKEN` が設定されている場合は必須です                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+ | `CLAUDE_CODE_OAUTH_TOKEN`                               | Claude.ai 認証用の OAuth アクセストークン。SDK および自動化された環境での `/login` の代替。キーチェーンに保存された認証情報よりも優先されます。[`claude setup-token`](/ja/authentication#generate-a-long-lived-token) で生成します                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+-| `CLAUDE_CODE_OPUS_4_6_FAST_MODE_OVERRIDE`               | {/* max-version: 2.1.159 */}v2.1.160 で削除されました。現在は no-op です。以前は [高速モード](/ja/fast-mode) を現在のデフォルトの代わりに Claude Opus 4.6 にピンしていました。Opus 4.6 が廃止されるまで高速モード Opus 4.6 で実行するには、最初に `/model` でモデルを選択してから、`/fast on` を実行します                                                                                                                                                                                                                                                                                                                                                                                                |
++| `CLAUDE_CODE_OPUS_4_6_FAST_MODE_OVERRIDE`               | {/* max-version: 2.1.159 */}v2.1.160 で削除されました。現在は no-op です。以前は [高速モード](/ja/fast-mode) を現在のデフォルトの代わりに Claude Opus 4.6 にピンしていました                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+ | `CLAUDE_CODE_OTEL_DIAG_STDERR`                          | {/* min-version: 2.1.179 */}OpenTelemetry エクスポーター診断エラーを stderr に書き込むには `1` に設定します。デフォルトでは、これらのエラーは `--debug` でのみ表示されるため、Prometheus ポート衝突などの設定が間違ったエクスポーターはそれ以外の場合、サイレントに失敗します。Claude Code v2.1.179 以降が必須です。[監視](/ja/monitoring-usage) を参照してください                                                                                                                                                                                                                                                                                                                                                                  |
+ | `CLAUDE_CODE_OTEL_FLUSH_TIMEOUT_MS`                     | 保留中の OpenTelemetry スパンをフラッシュするためのタイムアウト（ミリ秒）（デフォルト：5000）。[監視](/ja/monitoring-usage) を参照してください                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+```
+
+</details>
+
+<details>
+<summary>fast-mode-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/fast-mode-ja.md b/docs-ja/pages/fast-mode-ja.md
+index 636106a..3d7ff2c 100644
+--- a/docs-ja/pages/fast-mode-ja.md
++++ b/docs-ja/pages/fast-mode-ja.md
+@@ -13,8 +13,8 @@
+ 高速モードは Claude Opus の高速構成で、モデルを最大 2.5 倍高速化しますが、トークンあたりのコストは高くなります。迅速な反復やライブデバッグなどのインタラクティブな作業で速度が必要な場合は `/fast` でオンにし、コストがレイテンシーより重要な場合はオフにします。
+ 
+-高速モードは異なるモデルではありません。Claude Opus を使用していますが、コスト効率よりも速度を優先する異なる API 構成です。同じ品質と機能が得られ、レスポンスが高速化されるだけです。高速モードは Opus 4.8、Opus 4.7、および Opus 4.6 でサポートされています。Sonnet、Haiku、または他のモデルでは利用できません。
++高速モードは異なるモデルではありません。Claude Opus を使用していますが、コスト効率よりも速度を優先する異なる API 構成です。同じ品質と機能が得られ、レスポンスが高速化されるだけです。高速モードは Opus 4.8 および Opus 4.7 でサポートされています。Sonnet、Haiku、または他のモデルでは利用できません。
+ 
+ <Warning>
+-  Opus 4.6 の高速モードは非推奨であり、Opus 4.8 のローンチ後約 30 日で削除される予定です。削除後、Opus 4.6 の高速モードは標準速度で標準価格にフォールバックします。高速化を維持するには Opus 4.8 または Opus 4.7 に移行してください。
++  Opus 4.7 の高速モードは 2026 年 6 月 25 日時点で非推奨となり、2026 年 7 月 24 日に削除される予定です。削除後、Opus 4.7 の高速モードリクエストはエラーを返し、標準 Opus 4.7 にフォールバックしません。高速化を維持するには Opus 4.8 に移行してください。
+ </Warning>
+ 
+@@ -26,10 +26,8 @@
+ 
+ * Claude Code CLI で `/fast` を使用して高速モードをオンにします。VS Code Extension では高速モードはサポートされていません。
+-* 高速モード価格は Opus 4.8 で $10/$50 MTok、Opus 4.7 および Opus 4.6 で $30/$150 MTok です。
++* 高速モード価格は Opus 4.8 で入力/出力あたり $10/$50 MTok、Opus 4.7 で $30/$150 MTok です。
+ * サブスクリプションプラン（Pro/Max/Team/Enterprise）の Claude Code ユーザーと Claude Console のすべてのユーザーが利用可能です。
+ * サブスクリプションプラン（Pro/Max/Team/Enterprise）の Claude Code ユーザーの場合、高速モードは使用量クレジットのみで利用可能であり、サブスクリプションレート制限に含まれていません。
+ 
+-このページでは、[高速モードの切り替え](#toggle-fast-mode)、[コストのトレードオフ](#understand-the-cost-tradeoff)、[使用時期の判断](#decide-when-to-use-fast-mode)、[要件](#requirements)、[セッションごとのオプトイン](#require-per-session-opt-in)、および[レート制限の処理](#handle-rate-limits)について説明します。
+-
+ <h2 id="toggle-fast-mode">
+   高速モードの切り替え
+@@ -62,8 +60,8 @@ Opus 4.8 は Claude Code v2.1.154 以降の高速モードのデフォルトで
+ 高速モードは標準 Opus よりもトークンあたりの価格が高くなります。乗数はモデルによって異なります：
+ 
+```
+
+</details>
+
+<details>
+<summary>fullscreen-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/fullscreen-ja.md b/docs-ja/pages/fullscreen-ja.md
+index 2540987..495d472 100644
+--- a/docs-ja/pages/fullscreen-ja.md
++++ b/docs-ja/pages/fullscreen-ja.md
+@@ -23,5 +23,5 @@
+ </h2>
+ 
+-Claude Code の会話内で `/tui fullscreen` を実行してください。CLI は [`tui` 設定](/ja/settings#available-settings)を保存し、会話をそのままにしてフルスクリーンで再起動するため、コンテキストを失わずにセッション中に切り替えることができます。引数なしで `/tui` を実行して、どのレンダラーがアクティブかを確認してください。
++Claude Code の会話内で `/tui fullscreen` を実行してください。CLI は [`tui` 設定](/ja/settings#available-settings)を保存し、会話をそのままにしてフルスクリーンで再起動するため、コンテキストを失わずにセッション中に切り替えることができます。`/tui default` を実行してクラシックレンダラーに戻すか、引数なしで `/tui` を実行してどのレンダラーがアクティブかを確認してください。
+ 
+ Claude Code を起動する前に `CLAUDE_CODE_NO_FLICKER` 環境変数を設定することもできます。
+```
+
+</details>
+
+<details>
+<summary>goal-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/goal-ja.md b/docs-ja/pages/goal-ja.md
+index 457d90a..10ee28c 100644
+--- a/docs-ja/pages/goal-ja.md
++++ b/docs-ja/pages/goal-ja.md
+@@ -20,11 +20,4 @@
+ * ラベル付きの問題バックログを処理し、キューが空になるまで
+ 
+-このページでは以下について説明します。
+-
+-* [セッションを実行し続ける方法の比較](#compare-ways-to-keep-a-session-running)：`/loop`、Stop hook、および自動モード
+-* [ゴールの設定](#set-a-goal)と[効果的な条件の作成](#write-an-effective-condition)
+-* [ステータスの確認](#check-status)、[早期クリア](#clear-a-goal)、および[非対話的な実行](#run-non-interactively)
+-* [評価の仕組み](#how-evaluation-works)と[要件](#requirements)を確認
+-
+ <h2 id="compare-ways-to-keep-a-session-running">
+   セッションを実行し続ける方法の比較
+```
+
+</details>
+
+*...以降省略*
+
+</details>
+
+
+<details>
 <summary>2026-06-26</summary>
 
 **変更ファイル:**
@@ -2513,298 +2776,5 @@ index 5984b05..4d18871 100644
 ```
 
 </details>
-
-<details>
-<summary>analytics-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/analytics-ja.md b/docs-ja/pages/analytics-ja.md
-index 4c7149d..0d03426 100644
---- a/docs-ja/pages/analytics-ja.md
-+++ b/docs-ja/pages/analytics-ja.md
-@@ -14,5 +14,7 @@ Claude Code は、組織が開発者の使用パターンを理解し、貢献
- | API（Claude Console）           | [platform.claude.com/claude-code](https://platform.claude.com/claude-code) | 使用メトリクス、支出追跡、チームインサイト                         | [詳細](#access-analytics-for-api-customers)       |
- 
--## Team と Enterprise の分析にアクセスする
-+<h2 id="access-analytics-for-team-and-enterprise">
-+  Team と Enterprise の分析にアクセスする
-+</h2>
- 
- [claude.ai/analytics/claude-code](https://claude.ai/analytics/claude-code) に移動してください。管理者とオーナーがダッシュボードを表示できます。
-@@ -27,5 +29,7 @@ Team と Enterprise ダッシュボードには以下が含まれます。
- ユーザーごとのトークン数とコスト推定については、[OpenTelemetry エクスポート](/ja/monitoring-usage)を構成してください。
- 
--### 貢献メトリクスを有効にする
-+<h3 id="enable-contribution-metrics">
-+  貢献メトリクスを有効にする
-+</h3>
- 
- <Note>
-@@ -66,5 +70,7 @@ Team と Enterprise ダッシュボードには以下が含まれます。
- 貢献メトリクスは GitHub Cloud と GitHub Enterprise Server をサポートしています。
- 
--### サマリーメトリクスを確認する
-+<h3 id="review-summary-metrics">
-+  サマリーメトリクスを確認する
-+</h3>
- 
-```
-
-</details>
-
-<details>
-<summary>authentication-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/authentication-ja.md b/docs-ja/pages/authentication-ja.md
-index e8c9bd5..d916202 100644
---- a/docs-ja/pages/authentication-ja.md
-+++ b/docs-ja/pages/authentication-ja.md
-@@ -9,5 +9,7 @@
- Claude Code は、セットアップに応じて複数の認証方法をサポートしています。個人ユーザーは Claude.ai アカウントでログインでき、チームは Claude for Teams または Enterprise、Claude Console、または Amazon Bedrock、Google Vertex AI、Microsoft Foundry などのクラウドプロバイダーを使用できます。
- 
--## Claude Code にログインする
-+<h2 id="log-in-to-claude-code">
-+  Claude Code にログインする
-+</h2>
- 
- [Claude Code をインストール](/ja/setup#install-claude-code)した後、ターミナルで `claude` を実行します。初回起動時に、Claude Code はログインするためのブラウザウィンドウを開きます。
-@@ -28,5 +30,7 @@ Claude Code は、セットアップに応じて複数の認証方法をサポ
- ログインに問題がある場合は、[認証のトラブルシューティング](/ja/troubleshoot-install#login-and-authentication)を参照してください。
- 
--## チーム認証を設定する
-+<h2 id="set-up-team-authentication">
-+  チーム認証を設定する
-+</h2>
- 
- チームと組織の場合、Claude Code アクセスを以下のいずれかの方法で設定できます。
-@@ -38,5 +42,7 @@ Claude Code は、セットアップに応じて複数の認証方法をサポ
- * [Microsoft Foundry](/ja/microsoft-foundry)
- 
--### Claude for Teams または Enterprise
-+<h3 id="claude-for-teams-or-enterprise">
-+  Claude for Teams または Enterprise
-+</h3>
- 
-```
-
-</details>
-
-<details>
-<summary>auto-mode-config-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/auto-mode-config-ja.md b/docs-ja/pages/auto-mode-config-ja.md
-index cc485a3..d63f4f7 100644
---- a/docs-ja/pages/auto-mode-config-ja.md
-+++ b/docs-ja/pages/auto-mode-config-ja.md
-@@ -25,5 +25,7 @@
- * [拒否を確認する](#review-denials)（次に何を追加するかを知るため）
- 
--## 分類器が設定を読み込む場所
-+<h2 id="where-the-classifier-reads-configuration">
-+  分類器が設定を読み込む場所
-+</h2>
- 
- 分類器は Claude 自体が読み込む同じ [CLAUDE.md](/ja/memory) コンテンツを読み込むため、プロジェクトの CLAUDE.md の「force push を絶対にしない」のような指示は、Claude と分類器の両方を同時に制御します。プロジェクト規約と動作ルールはここから始めてください。
-@@ -46,5 +48,7 @@
- </Note>
- 
--## 信頼できるインフラストラクチャを定義する
-+<h2 id="define-trusted-infrastructure">
-+  信頼できるインフラストラクチャを定義する
-+</h2>
- 
- ほとんどの組織では、`autoMode.environment` が設定する必要がある唯一のフィールドです。これは、分類器に、どのリポジトリ、バケット、ドメインが信頼できるかを指定します。分類器はこれを使用して「外部」が何を意味するかを決定するため、リストに記載されていない宛先は潜在的な流出ターゲットです。
-@@ -98,5 +102,7 @@
- すべてを一度に入力する必要はありません。合理的なロールアウト。デフォルトから始めて、ソース管理組織と主要な内部サービスを追加します。これにより、独自のリポジトリへのプッシュなど、最も一般的な誤検知が解決されます。次に信頼できるドメインとクラウドバケットを追加します。ブロックが発生したら残りを入力します。
- 
--## ブロックルールと許可ルールをオーバーライドする
-+<h2 id="override-the-block-and-allow-rules">
-+  ブロックルールと許可ルールをオーバーライドする
-+</h2>
- 
-```
-
-</details>
-
-<details>
-<summary>best-practices-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/best-practices-ja.md b/docs-ja/pages/best-practices-ja.md
-index c480d8b..e548ab6 100644
---- a/docs-ja/pages/best-practices-ja.md
-+++ b/docs-ja/pages/best-practices-ja.md
-@@ -25,5 +25,7 @@ LLM のパフォーマンスはコンテキストが満杯になるにつれて
- ***
- 
--## Claude に自分の作業を検証する方法を与える
-+<h2 id="give-claude-a-way-to-verify-its-work">
-+  Claude に自分の作業を検証する方法を与える
-+</h2>
- 
- <Tip>
-@@ -54,5 +56,7 @@ Claude に成功を主張するのではなく、証拠を示すよう指示し
- ***
- 
--## 最初に探索し、次に計画し、その後コーディングする
-+<h2 id="explore-first-then-plan-then-code">
-+  最初に探索し、次に計画し、その後コーディングする
-+</h2>
- 
- <Tip>
-@@ -113,5 +117,7 @@ Claude が直接コーディングにジャンプさせると、間違った問
- ***
- 
--## プロンプトで具体的なコンテキストを提供する
-+<h2 id="provide-specific-context-in-your-prompts">
-+  プロンプトで具体的なコンテキストを提供する
-+</h2>
- 
-```
-
-</details>
-
-*...以降省略*
-
-</details>
-
-
-<details>
-<summary>2026-06-09</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/changelog.md | 33 +++++++++++++++++++++++++++++++++
- 1 file changed, 33 insertions(+)
-```
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index d840d7f..a52cc67 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,37 @@
- # Changelog
- 
-+## 2.1.169
-+
-+- Added `--safe-mode` flag (and `CLAUDE_CODE_SAFE_MODE`) to start Claude Code with all customizations (CLAUDE.md, plugins, skills, hooks, MCP servers) disabled for troubleshooting
-+- Added `/cd` command to move a session to a new working directory without breaking the prompt cache mid-session
-+- Added a `disableBundledSkills` setting and `CLAUDE_CODE_DISABLE_BUNDLED_SKILLS` environment variable to hide bundled skills, workflows, and built-in slash commands from the model
-+- Fixed Up/Down arrows jumping to command history past the wrapped rows of a long input line — they now move through each visual row first, and history recall enters at the near edge
-+- Fixed enterprise managed MCP policies (`allowedMcpServers`/`deniedMcpServers`) not being enforced on reconnect, IDE-typed configs, `--mcp-config` servers during the first session after install, or before remote settings loaded; also fixed slow cold starts for orgs without remote settings
-+- Fixed a ~30-50ms UI stall at the start of each turn for macOS users logged in with claude.ai credentials
-+- Fixed `claude -p` being slow or appearing to hang on Windows while waiting for the slash-command/skill scan (regression in 2.1.161)
-+- Fixed Remote Control getting stuck on "reconnecting" after resuming a session when an OAuth token refresh happened at the same time
-+- Fixed Git Credential Manager's "Connect to GitHub" popup appearing on Windows at startup when background git commands ran without cached credentials
-+- Fixed footer hints (e.g. "esc to interrupt") not showing for users with a custom statusline
-+- Fixed stale permission and dialog prompts reappearing every time you reattached to a remote session whose worker had died while waiting on them
-+- Fixed `claude agents --json` omitting blocked and just-dispatched background sessions; added `--all` to include completed sessions, plus new `id` and `state` fields
-+- Fixed agents view leaving a stale/garbled frame after navigating back from an agent on WSL in Windows Terminal
-+- Fixed background agents ignoring project-level settings `env` values (e.g. `ANTHROPIC_MODEL`) when dispatched onto a pre-warmed worker
-+- Fixed MCPB plugin cache being spuriously invalidated on Windows, causing unnecessary re-extraction
-+- Fixed plugin `.in_use` PID lock files accumulating without bound; stale markers from crashed sessions are now swept once per day
-+- Fixed untrusted project settings being able to set OTEL client-certificate paths without trust confirmation
-+- `/workflows` now opens immediately even while a turn is in progress
-+- Improved `TaskCreate` reliability: malformed inputs are repaired automatically and validation errors for unloaded tools include the schema
-+- Improved the error message shown when your organization has disabled API key authentication, with guidance based on where the active API key comes from
-+- Reduced CPU usage while responses stream and during spinner animations
-```
-
-</details>
-
-</details>
-
-
-<details>
-<summary>2026-06-07</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/changelog.md | 32 ++++++++++++++++++++++++++++++++
- 1 file changed, 32 insertions(+)
-```
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index b475a37..d840d7f 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,36 @@
- # Changelog
- 
-+## 2.1.168
-+
-+- Bug fixes and reliability improvements
-+
-+## 2.1.167
-+
-+- Bug fixes and reliability improvements
-+
-+## 2.1.166
-+
-+- Added `fallbackModel` setting to configure up to three fallback models tried in order when the primary model is overloaded or unavailable; `--fallback-model` now also applies to interactive sessions
-+- Added glob pattern support in deny rule tool-name position (`"*"` denies all tools); allow rules reject non-MCP globs, and unknown tool names in deny rules warn at startup
-+- Hardened cross-session messaging: messages relayed via `SendMessage` from other Claude sessions no longer carry user authority — receivers refuse relayed permission requests, and auto mode blocks them
-+- `MAX_THINKING_TOKENS=0`, `--thinking disabled`, and the per-model thinking toggle now disable thinking on models that think by default via the Claude API (3P providers unchanged)
-+- Claude Code now retries a turn once on the fallback model when the API rejects an unexpected non-retryable error; auth, rate-limit, request-size, and transport errors still surface immediately
-+- `claude update` now announces the target version before downloading instead of going silent
-+- `claude agents`: typing a URL into the list now filters to the session whose first prompt contained it
-+- Fixed a recurring "image could not be processed" error and extra token usage when an unprocessable image was sent in a session
-+- Fixed remote sessions becoming permanently stuck when a brief backend disruption occurred during worker registration at startup
-+- Fixed flickering in JetBrains IDE terminals (IntelliJ, PyCharm, WebStorm, etc.) on 2026.1+ by enabling synchronized output
-+- Fixed Shift+non-ASCII characters (e.g. Shift+ä → Ä) being dropped in terminals using the Kitty keyboard protocol (WezTerm, Ghostty, kitty)
-+- Fixed PowerShell command validation occasionally hanging far past its time budget on Windows when a killed process's children held its output pipes
-+- Fixed orphaned `claude --bg-pty-host` processes spinning at 100% CPU after the daemon dies while connected on macOS
-```
-
-</details>
-
-</details>
-
-
-<details>
-<summary>2026-06-06</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/changelog.md | 4 ++++
- 1 file changed, 4 insertions(+)
-```
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index f877eb7..b475a37 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,8 @@
- # Changelog
- 
-+## 2.1.165
-+
-+- Bug fixes and reliability improvements
-+
- ## 2.1.163
- 
-```
-
-</details>
-
-</details>
-
 
 <!-- UPDATE_LOG_END -->

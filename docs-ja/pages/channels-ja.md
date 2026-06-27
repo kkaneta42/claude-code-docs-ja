@@ -18,15 +18,7 @@
 
 Claude がチャネルを通じて返信する場合、ターミナルに受信メッセージが表示されますが、返信テキストは表示されません。ターミナルはツール呼び出しと確認（「送信済み」など）を表示し、実際の返信は他のプラットフォームに表示されます。
 
-このページでは以下をカバーしています。
-
-* [サポートされているチャネル](#supported-channels)：Telegram、Discord、iMessage のセットアップ
-* [チャネルをインストールして実行する](#quickstart)（fakechat、localhost デモ）
-* [メッセージをプッシュできるユーザー](#security)：送信者許可リストとペアリング方法
-* [組織のチャネルを有効にする](#enterprise-controls)（Team および Enterprise）
-* [チャネルの比較方法](#how-channels-compare)（ウェブセッション、Slack、MCP、リモートコントロール）
-
-独自のチャネルを構築するには、[チャネルリファレンス](/ja/channels-reference)を参照してください。
+Team、Enterprise、または Console 組織を管理している場合は、[組織のチャネルを有効にする](#enterprise-controls)を参照してください。独自のチャネルを構築するには、[チャネルリファレンス](/ja/channels-reference)を参照してください。
 
 <h2 id="supported-channels">
   サポートされているチャネル

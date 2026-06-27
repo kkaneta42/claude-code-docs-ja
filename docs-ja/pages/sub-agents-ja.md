@@ -24,14 +24,7 @@
 
 Claude は各サブエージェントの説明を使用して、タスクを委譲するかどうかを決定します。サブエージェントを作成するときは、Claude がいつそれを使用するかを知るように、明確な説明を書いてください。
 
-Claude Code には、**Explore**、**Plan**、**general-purpose** などのいくつかの組み込みサブエージェントが含まれています。特定のタスクを処理するカスタムサブエージェントを作成することもできます。このページでは以下について説明します：
-
-* [組み込みサブエージェント](#built-in-subagents)
-* [独自のサブエージェントを作成する方法](#quickstart-create-your-first-subagent)
-* [完全な設定オプション](#configure-subagents)
-* [サブエージェントを使用するためのパターン](#work-with-subagents)
-* [フォークされたサブエージェント](#fork-the-current-conversation)
-* [サブエージェントの例](#example-subagents)
+Claude Code には、**Explore**、**Plan**、**general-purpose** などのいくつかの組み込みサブエージェントが含まれています。特定のタスクを処理するカスタムサブエージェントを作成することもできます。
 
 <h2 id="built-in-subagents">
   組み込みサブエージェント

@@ -4,17 +4,11 @@
 
 # セッションの管理
 
-> Claude Code の会話に名前を付け、再開し、分岐し、切り替えます。`--continue`、`--resume`、`--from-pr`、`/resume` ピッカー、セッション命名、トランスクリプトの保存場所について説明します。
+> Claude Code の会話に名前を付け、再開し、分岐し、切り替えます。`--continue`、`--resume`、`--from-pr`、`/resume` ピッカー、セッション命名、トランスクリプトのエクスポート、およびトランスクリプトの保存場所について説明します。
 
 セッションはプロジェクトディレクトリに紐付けられた保存済みの会話です。Claude Code はローカルに保存されるため、中断したところから再開したり、別のアプローチを試すために分岐したり、タスク間を切り替えたりできます。
 
 [デスクトップアプリ](/ja/desktop#work-in-parallel-with-sessions)、[Web 上の Claude Code](/ja/claude-code-on-the-web)、および [VS Code 拡張機能](/ja/vs-code#resume-past-conversations)はそれぞれ独自のセッション履歴を保持しています。このページでは CLI について説明します。
-
-* [再開](#resume-a-session)：フラグ、名前、または PR で以前の会話を再開する
-* [名前を付ける](#name-your-sessions)：後で見つけられるようにセッションに名前を付ける
-* [参照](#use-the-session-picker)：`/resume` ピッカーでセッションを参照する
-* [分岐](#branch-a-session)：別のアプローチを試すために会話を分岐させる
-* [エクスポート](#export-and-locate-session-data)：トランスクリプトをエクスポートしてディスク上で見つける
 
 <h2 id="resume-a-session">
   セッションを再開する
@@ -125,9 +119,37 @@ claude --continue --fork-session
 
 `/export` を実行して、現在の会話をクリップボードにコピーするか、プレーンテキストファイルとして保存します。メッセージとツール出力は読みやすいテキストとしてレンダリングされます。ファイル名を渡して、そのファイルに直接書き込みます。
 
-トランスクリプトは `~/.claude/projects/<project>/<session-id>.jsonl` に JSONL として保存されます。ここで `<project>` は作業ディレクトリパスから派生しています。各行はメッセージ、ツール使用、またはメタデータエントリの JSON オブジェクトです。セッションを `~/.claude` 以外の場所に保存するには、[`CLAUDE_CONFIG_DIR`](/ja/env-vars) を設定します。これらのローカルファイルはデフォルトで 30 日後に削除されます。[`cleanupPeriodDays`](/ja/settings#available-settings) で変更します。
+<h3 id="access-conversations-from-scripts">
+  スクリプトから会話にアクセスする
+</h3>
 
-トランスクリプト書き込みを完全に抑制するには、[`CLAUDE_CODE_SKIP_PROMPT_HISTORY`](/ja/env-vars) を設定するか、非インタラクティブモードで `--no-session-persistence` を使用します。
+`/export` は人が読むためのレンダリングされたトランスクリプトを生成します。以下のインターフェースはスクリプトが解析するための構造化データを生成します。実行からの JSON 結果、セッションのトランスクリプトファイルへのパス、またはイベントのライブストリームです。スクリプトをトリガーするものによって選択してください。
+
+* **Claude を 1 回実行して結果をキャプチャする**: [`--output-format json` または `stream-json`](/ja/headless#get-structured-output) で `claude -p` を呼び出して、非インタラクティブ実行の結果、セッション ID、使用状況、およびコストを構造化 JSON としてキャプチャします。
+* **既存のセッションに質問する**: [`claude -p --resume`](/ja/headless#continue-conversations) にセッション ID を渡して、フォローアップ プロンプト（要約リクエストなど）を送信し、構造化された応答をキャプチャします。
+* **セッションイベントに反応する**: [hooks](/ja/hooks#common-input-fields) と [status line commands](/ja/statusline#available-data) が入力として受け取る `transcript_path` フィールドを読みます。`SessionEnd` hook はセッションが終了したときにトランスクリプトをアーカイブできます。
+* **TypeScript または Python アプリに Claude を埋め込む**: [Agent SDK](/ja/agent-sdk/overview) を使用して、各メッセージをプログラムで受け取ります。
+
+以下の例は 2 番目のインターフェースを使用しています。既存のセッションにフォローアップ プロンプトを送信し、`jq` で答えを読みます。
+
+```bash theme={null}
+claude -p --resume <session-id> --output-format json "summarize what we changed" | jq -r '.result'
+```
+
+<h3 id="where-transcripts-are-stored">
+  トランスクリプトが保存される場所
+</h3>
+
+デフォルトでは、トランスクリプトは `~/.claude/projects/<project>/<session-id>.jsonl` に JSONL として保存されます。ここで `<project>` は作業ディレクトリパスで、英数字以外の文字が `-` に置き換えられています。各行はメッセージ、ツール使用、またはメタデータエントリの JSON オブジェクトです。エントリ形式は Claude Code の内部形式であり、バージョン間で変更されるため、これらのファイルを直接解析するスクリプトはリリースごとに破損する可能性があります。セッションデータを構築するには、代わりに `/export` または [スクリプトインターフェース](#access-conversations-from-scripts) を使用してください。
+
+場所、保持期間、および書き込み動作は設定可能です。
+
+| 目的                        | 設定                                                     | 場所                        |
+| ------------------------- | ------------------------------------------------------ | ------------------------- |
+| `~/.claude` からストレージを移動する  | [`CLAUDE_CONFIG_DIR`](/ja/env-vars)                    | 環境変数                      |
+| 30 日間の保持期間を変更する           | [`cleanupPeriodDays`](/ja/settings#available-settings) | `settings.json`           |
+| すべてのモードでトランスクリプト書き込みを抑制する | [`CLAUDE_CODE_SKIP_PROMPT_HISTORY`](/ja/env-vars)      | 環境変数                      |
+| 1 つの非インタラクティブ実行の書き込みを抑制する | [`--no-session-persistence`](/ja/cli-reference)        | `claude -p` を使用した CLI フラグ |
 
 <h2 id="see-also">
   関連項目
