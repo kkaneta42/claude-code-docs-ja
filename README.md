@@ -17,6 +17,80 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-06-30</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md      | 30 ++++++++++++++++++++++++++++++
+ docs-ja/pages/llm-gateway-ja.md |  2 +-
+ 2 files changed, 31 insertions(+), 1 deletion(-)
+```
+
+**新規追加:**
+
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index 3fa4a5d..8152155 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,34 @@
+ # Changelog
+ 
++## 2.1.196
++
++- Added support for organization default models — admins set it in the org console; it shows as "Org default" (or "Role default") in `/model` when you haven't picked one yourself
++- Added readable default names for sessions at start, making them easier to identify and message
++- Added clickable file attachments in chat — Cmd/Ctrl-click reveals the file in Finder/Explorer
++- Security: `claude mcp list`/`get` no longer spawn `.mcp.json` servers that a repo self-approved via a committed `.claude/settings.json`; untrusted workspaces show `⏸ Pending approval`
++- Fixed waking a background job permanently deleting its conversation and re-running the original prompt when the transcript probe misread a real transcript; the file is now set aside, never deleted
++- Fixed the rate-limit warning flickering off and rate-limit telemetry being over-counted when multiple parallel requests were in flight at the moment a usage limit was hit
++- Fixed duplicate recap lines after a background session's turn: a schema-rejected StructuredOutput attempt no longer renders alongside its retry
++- Fixed PowerShell `git diff`/`git grep`, `egrep`/`fgrep`, and quoted search patterns containing `|` being reported as failures when they exit 1, matching Bash behavior
++- Fixed multiple `claude agents` side panel issues: keyboard focus getting stuck when opening an agent, background jobs losing their subagent types on every open, and sessions showing incorrect status while actively running
++- Fixed `claude agents --dangerously-skip-permissions` silently falling back to auto mode instead of showing the bypass disclaimer and applying bypass mode to spawned agents
++- Fixed mid-turn crash recovery for Remote sessions — sessions interrupted by a server restart now auto-resume on the next worker
++- Fixed sessions moved with `/cd` reappearing in the old directory's resume list after a non-graceful exit when the old path contained special characters
++- Fixed `claude plugin validate` skipping local plugins whose source is "." and stopping after the first error class
++- Fixed Esc Esc at an idle prompt not opening the rewind menu (regression); use Ctrl+C or Ctrl+X Ctrl+K to stop background agents
++- Fixed MCP OAuth requesting the authorization server's full `scopes_supported` catalog when no scope is specified, causing `invalid_scope` failures on GitLab self-hosted and other enterprise IdPs
++- Fixed `/context` showing 0 tokens for all tool groups on Bedrock
++- Fixed `/deep-research` misreporting verifier failures as "all claims refuted" instead of `unverified`
++- Fixed plugin dependency version pins not being honored when the marketplace was added as a local folder path backed by a git repo
++- Fixed `claude agents` session status: completed rows no longer flip between "Done" and "Needs your input", stalled agents are now labeled "Needs attention", and results that mention a PR show a clickable link
++- Fixed voice dictation swallowing spaces and spuriously starting a recording during very fast typing when voice mode is enabled
++- Improved background session reliability: long-running commands and workflows now survive the session's process being stopped, restarted, or updated — including on Windows, where background shells are handed off instead of being killed
+```
+
+</details>
+
+<details>
+<summary>llm-gateway-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/llm-gateway-ja.md b/docs-ja/pages/llm-gateway-ja.md
+index cb3e944..aaa9867 100644
+--- a/docs-ja/pages/llm-gateway-ja.md
++++ b/docs-ja/pages/llm-gateway-ja.md
+@@ -40,5 +40,5 @@ LLM gateway は、Claude Code とモデルプロバイダー間に組織が実
+ 
+ <Frame>
+-  <img src="https://mintcdn.com/claude-code/zIcIE_SQv4Z0Zbhc/images/llm-gateway-flow.svg?fit=max&auto=format&n=zIcIE_SQv4Z0Zbhc&q=85&s=490607d033d235694efb49a73a5b9e4b" alt="Claude Code が LLM gateway 経由でルーティングされることを示す図。開発者マシンゾーンでは、Claude Code CLI、VS Code 拡張機能、CI またはエージェント SDK クライアントがゲートウェイにリクエストを送信し、ゲートウェイの API 形式のベース URL 変数がそれを指し、各開発者が開発者ごとの認証情報を保持し、デスクトップアプリは組織が配布した設定を通じて同じゲートウェイに到達します。あなたのインフラストラクチャというラベルが付いたゾーンでは、LLM gateway が認証、使用状況追跡、予算、ルーティングを処理し、組織の認証情報を使用してリクエストを転送します。モデルプロバイダーゾーンでは、実線矢印が設定したプロバイダー（Anthropic API として表示）に向かい、破線矢印が他のプロバイダーオプション（Amazon Bedrock、Google Vertex AI、Microsoft Foundry の例として示されている）に向かいます。" width="780" height="322" data-path="images/llm-gateway-flow.svg" />
++  <img src="https://mintcdn.com/claude-code/-uq-4JE0W_JO5Er5/images/llm-gateway-flow.svg?fit=max&auto=format&n=-uq-4JE0W_JO5Er5&q=85&s=1c1a8dcc0cfcc3a58652cc8e28cd3e20" alt="Claude Code が LLM gateway 経由でルーティングされることを示す図。開発者マシンゾーンでは、Claude Code CLI、VS Code 拡張機能、CI またはエージェント SDK クライアントがゲートウェイにリクエストを送信し、ゲートウェイの API 形式のベース URL 変数がそれを指し、各開発者が開発者ごとの認証情報を保持し、デスクトップアプリは組織が配布した設定を通じて同じゲートウェイに到達します。あなたのインフラストラクチャというラベルが付いたゾーンでは、LLM gateway が認証、使用状況追跡、予算、ルーティングを処理し、組織の認証情報を使用してリクエストを転送します。モデルプロバイダーゾーンでは、実線矢印が設定したプロバイダー（Anthropic API として表示）に向かい、破線矢印が他のプロバイダーオプション（Amazon Bedrock、Google Vertex AI、Microsoft Foundry の例として示されている）に向かいます。" width="780" height="322" data-path="images/llm-gateway-flow.svg" />
+ </Frame>
+ 
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-06-27</summary>
 
 **変更ファイル:**
@@ -2601,180 +2675,5 @@ index 608eab8..2575a95 100644
 
 </details>
 
-
-<details>
-<summary>2026-06-10</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/agent-view-ja.md               | 148 +++++--
- docs-ja/pages/agents-ja.md                   |  12 +-
- docs-ja/pages/analytics-ja.md                |  88 +++--
- docs-ja/pages/authentication-ja.md           |  32 +-
- docs-ja/pages/auto-mode-config-ja.md         |  24 +-
- docs-ja/pages/best-practices-ja.md           | 124 ++++--
- docs-ja/pages/champion-kit-ja.md             |  64 ++-
- docs-ja/pages/changelog.md                   |   6 +
- docs-ja/pages/channels-ja.md                 |  36 +-
- docs-ja/pages/channels-reference-ja.md       |  60 ++-
- docs-ja/pages/checkpointing-ja.md            |  40 +-
- docs-ja/pages/chrome-ja.md                   |  80 +++-
- docs-ja/pages/claude-code-on-the-web-ja.md   | 172 ++++++--
- docs-ja/pages/claude-directory-ja.md         |  44 ++-
- docs-ja/pages/claude-platform-on-aws-ja.md   |  48 ++-
- docs-ja/pages/cli-reference-ja.md            |  16 +-
- docs-ja/pages/common-workflows-ja.md         |  84 +++-
- docs-ja/pages/communications-kit-ja.md       |  72 +++-
- docs-ja/pages/costs-ja.md                    |  76 +++-
- docs-ja/pages/data-usage-ja.md               |  48 ++-
- docs-ja/pages/debug-your-config-ja.md        |  28 +-
- docs-ja/pages/deep-links-ja.md               |  60 ++-
- docs-ja/pages/desktop-ja.md                  | 268 +++++++++----
- docs-ja/pages/desktop-quickstart-ja.md       |  20 +-
- docs-ja/pages/desktop-scheduled-tasks-ja.md  |  32 +-
- docs-ja/pages/devcontainer-ja.md             |  28 +-
- docs-ja/pages/env-vars-ja.md                 |  24 +-
- docs-ja/pages/fast-mode-ja.md                |  40 +-
- docs-ja/pages/features-overview-ja.md        |  40 +-
- docs-ja/pages/fullscreen-ja.md               |  48 ++-
- docs-ja/pages/github-enterprise-server-ja.md |  64 ++-
- docs-ja/pages/glossary-ja.md                 | 236 ++++++++---
- docs-ja/pages/goal-ja.md                     |  44 ++-
- docs-ja/pages/google-vertex-ai-ja.md         |  60 ++-
- docs-ja/pages/headless-ja.md                 |  48 ++-
- docs-ja/pages/hooks-guide-ja.md              | 124 ++++--
- docs-ja/pages/hooks-ja.md                    | 564 ++++++++++++++++++++-------
- docs-ja/pages/how-claude-code-works-ja.md    | 100 +++--
- docs-ja/pages/interactive-mode-ja.md         | 104 +++--
- docs-ja/pages/keybindings-ja.md              | 144 +++++--
- docs-ja/pages/large-codebases-ja.md          |  80 +++-
- docs-ja/pages/legal-and-compliance-ja.md     |  44 ++-
- docs-ja/pages/llm-gateway-ja.md              |  64 ++-
- docs-ja/pages/managed-mcp-ja.md              |  60 ++-
- docs-ja/pages/mcp-quickstart-ja.md           |  56 ++-
- docs-ja/pages/microsoft-foundry-ja.md        |  40 +-
- docs-ja/pages/model-config-ja.md             | 100 +++--
- docs-ja/pages/monitoring-usage-ja.md         | 280 +++++++++----
- docs-ja/pages/network-config-ja.md           |  32 +-
- docs-ja/pages/output-styles-ja.md            |  28 +-
- docs-ja/pages/overview-ja.md                 |  16 +-
- docs-ja/pages/permission-modes-ja.md         |  60 ++-
- docs-ja/pages/permissions-ja.md              | 104 +++--
- docs-ja/pages/platforms-ja.md                |  28 +-
- docs-ja/pages/plugin-dependencies-ja.md      |  36 +-
- docs-ja/pages/plugin-hints-ja.md             |  32 +-
- docs-ja/pages/plugin-marketplaces-ja.md      | 196 +++++++---
- docs-ja/pages/plugins-ja.md                  |  88 +++--
- docs-ja/pages/plugins-reference-ja.md        | 208 +++++++---
- docs-ja/pages/prompt-caching-ja.md           | 112 ++++--
- docs-ja/pages/prompt-library-ja.md           |  12 +-
- docs-ja/pages/quickstart-ja.md               |  52 ++-
- docs-ja/pages/routines-ja.md                 | 100 +++--
- docs-ja/pages/sandbox-environments-ja.md     |  44 ++-
- docs-ja/pages/sandboxing-ja.md               |  84 +++-
- docs-ja/pages/scheduled-tasks-ja.md          |  60 ++-
- docs-ja/pages/security-guidance-ja.md        |  72 +++-
- docs-ja/pages/security-ja.md                 |  68 +++-
- docs-ja/pages/server-managed-settings-ja.md  |  64 ++-
- docs-ja/pages/sessions-ja.md                 |  32 +-
- docs-ja/pages/settings-ja.md                 | 136 +++++--
- docs-ja/pages/setup-ja.md                    | 108 +++--
- docs-ja/pages/skills-ja.md                   | 124 ++++--
- docs-ja/pages/slack-ja.md                    | 108 +++--
- docs-ja/pages/sub-agents-ja.md               | 176 ++++++---
- docs-ja/pages/terminal-config-ja.md          |  72 +++-
- docs-ja/pages/third-party-integrations-ja.md |  52 ++-
- docs-ja/pages/tools-reference-ja.md          |  76 +++-
- docs-ja/pages/troubleshoot-install-ja.md     | 144 +++++--
- docs-ja/pages/troubleshooting-ja.md          |  32 +-
- docs-ja/pages/ultraplan-ja.md                |  24 +-
- docs-ja/pages/ultrareview-ja.md              |  24 +-
- docs-ja/pages/voice-dictation-ja.md          |  36 +-
- docs-ja/pages/web-quickstart-ja.md           |  68 +++-
- docs-ja/pages/workflows-ja.md                |  68 +++-
- docs-ja/pages/worktrees-ja.md                |  32 +-
- docs-ja/pages/zero-data-retention-ja.md      |  24 +-
- 87 files changed, 5181 insertions(+), 1725 deletions(-)
-```
-
-**新規追加:**
-
-
-<details>
-<summary>agent-view-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/agent-view-ja.md b/docs-ja/pages/agent-view-ja.md
-index 0e8451a..c57f9c8 100644
---- a/docs-ja/pages/agent-view-ja.md
-+++ b/docs-ja/pages/agent-view-ja.md
-@@ -31,5 +31,7 @@ Claude が複数の独立したタスクに対して、あなたが毎ステッ
- * [バックグラウンドセッションがどのようにホストされるか](#how-background-sessions-are-hosted)。スーパーバイザープロセスによって
- 
--## クイックスタート
-+<h2 id="quick-start">
-+  クイックスタート
-+</h2>
- 
- このチュートリアルでは、コアエージェントビューループについて説明します。タスクをディスパッチし、Claude が作業する際に行が更新されるのを見守り、ピークして確認して返信し、フル会話にアタッチします。ディスパッチしたセッションはエージェントビューを閉じた後も実行し続けるため、離れて後で戻ることができます。
-@@ -69,5 +71,7 @@ Claude が複数の独立したタスクに対して、あなたが毎ステッ
- `claude agents` を `claude` の代わりにプライマリエントリーポイントとして使用できます。エージェントビューからすべてのタスクをディスパッチし、フル会話が必要な場合はアタッチし、`←` を押してテーブルに戻ります。
- 
--## エージェントビューでセッションを監視する
-+<h2 id="monitor-sessions-with-agent-view">
-+  エージェントビューでセッションを監視する
-+</h2>
- 
- `claude agents` を実行してエージェントビューを開きます。ターミナル全体を占有し、状態でグループ化されたすべてのセッションをリストします。ピン留めされたセッションと入力が必要なセッションが上部に表示されます。各行はセッションの名前、現在のアクティビティ、最後に変更されてからの経過時間を表示します。
-@@ -103,5 +107,7 @@ Completed
- ```
- 
--### セッション状態を読む
-+<h3 id="read-session-state">
-+  セッション状態を読む
-+</h3>
- 
-```
-
-</details>
-
-<details>
-<summary>agents-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/agents-ja.md b/docs-ja/pages/agents-ja.md
-index 5984b05..4d18871 100644
---- a/docs-ja/pages/agents-ja.md
-+++ b/docs-ja/pages/agents-ja.md
-@@ -33,5 +33,7 @@
- </Note>
- 
--## アプローチを選択する
-+<h2 id="choose-an-approach">
-+  アプローチを選択する
-+</h2>
- 
- 適切なアプローチは、誰が作業を調整するか、ワーカーが通信する必要があるかどうか、および同じファイルを編集するかどうかによって異なります。
-@@ -45,5 +47,7 @@
- * **タスクが同じファイルに触れるか？** [ワークツリー](/ja/worktrees)で作業を分離します。サブエージェントと自分で実行するセッションは、それぞれ個別のワークツリーを使用できます。エージェントチームはチームメイトをワークツリーで分離しないため、[作業を分割](/ja/agent-teams#avoid-file-conflicts)して、各チームメイトが異なるファイルセットを所有するようにします。
- 
--## 実行中の作業を確認する
-+<h2 id="check-on-running-work">
-+  実行中の作業を確認する
-+</h2>
- 
- 実行中の作業を確認するコマンドは、使用したアプローチによって異なります。
-@@ -56,5 +60,7 @@
- すべてのセッションのデスクトップビューについては、[デスクトップアプリでのセッションの並列実行](/ja/desktop#work-in-parallel-with-sessions) を参照してください。
- 
--## 詳細情報
-+<h2 id="learn-more">
-+  詳細情報
-+</h2>
- 
-```
-
-</details>
 
 <!-- UPDATE_LOG_END -->
