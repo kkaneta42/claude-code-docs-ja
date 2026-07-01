@@ -17,6 +17,306 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-07-01</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/admin-setup-ja.md                    |  28 +-
+ docs-ja/pages/advisor-ja.md                        |   3 +-
+ docs-ja/pages/agent-view-ja.md                     | 104 +--
+ docs-ja/pages/amazon-bedrock-ja.md                 |  24 +-
+ docs-ja/pages/authentication-ja.md                 |   6 +-
+ docs-ja/pages/auto-mode-config-ja.md               |  84 ++-
+ docs-ja/pages/changelog.md                         |   4 +
+ docs-ja/pages/claude-apps-gateway-config-en.md     | 699 ---------------------
+ docs-ja/pages/claude-apps-gateway-deploy-en.md     | 263 --------
+ docs-ja/pages/claude-apps-gateway-en.md            | 319 ----------
+ docs-ja/pages/claude-apps-gateway-on-gcp-en.md     | 318 ----------
+ .../pages/claude-apps-gateway-spend-limits-en.md   | 142 -----
+ docs-ja/pages/claude-code-on-the-web-ja.md         |  13 +-
+ docs-ja/pages/claude-platform-on-aws-ja.md         |   2 +-
+ docs-ja/pages/cli-reference-ja.md                  |   3 +-
+ docs-ja/pages/commands-ja.md                       |   2 +
+ docs-ja/pages/computer-use-ja.md                   |   6 +-
+ docs-ja/pages/context-window-ja.md                 |   2 +-
+ docs-ja/pages/costs-ja.md                          |   2 +-
+ docs-ja/pages/data-usage-ja.md                     |   4 +-
+ docs-ja/pages/debug-your-config-ja.md              |  22 +-
+ docs-ja/pages/deep-links-ja.md                     |   2 +-
+ docs-ja/pages/desktop-ja.md                        |  18 +-
+ docs-ja/pages/desktop-quickstart-ja.md             |  10 +-
+ docs-ja/pages/discover-plugins-ja.md               |  18 +-
+ docs-ja/pages/env-vars-ja.md                       |  42 +-
+ docs-ja/pages/errors-ja.md                         |  26 +-
+ docs-ja/pages/fullscreen-ja.md                     |   8 +-
+ docs-ja/pages/gateways-en.md                       |  73 ---
+ docs-ja/pages/github-actions-ja.md                 |  10 +-
+ docs-ja/pages/glossary-ja.md                       |   2 +-
+ docs-ja/pages/google-vertex-ai-ja.md               |   4 +-
+ docs-ja/pages/hooks-ja.md                          |  78 ++-
+ docs-ja/pages/interactive-mode-ja.md               |  28 +-
+ docs-ja/pages/jetbrains-ja.md                      |   2 +-
+ docs-ja/pages/llm-gateway-connect-ja.md            |  19 +-
+ docs-ja/pages/llm-gateway-ja.md                    |  52 +-
+ docs-ja/pages/llm-gateway-protocol-ja.md           |  53 +-
+ docs-ja/pages/llm-gateway-rollout-ja.md            |  20 +-
+ docs-ja/pages/mcp-ja.md                            |  44 +-
+ docs-ja/pages/microsoft-foundry-ja.md              |   2 +-
+ docs-ja/pages/model-config-ja.md                   | 182 ++++--
+ docs-ja/pages/monitoring-usage-ja.md               |  55 +-
+ docs-ja/pages/network-config-ja.md                 |   4 +-
+ docs-ja/pages/output-styles-ja.md                  |   4 +-
+ docs-ja/pages/permission-modes-ja.md               |  89 ++-
+ docs-ja/pages/permissions-ja.md                    |  81 +--
+ docs-ja/pages/plugin-dependencies-ja.md            |   5 +
+ docs-ja/pages/plugin-marketplaces-ja.md            |  98 ++-
+ docs-ja/pages/plugins-reference-ja.md              |   6 +-
+ docs-ja/pages/quickstart-ja.md                     |   3 +-
+ docs-ja/pages/remote-control-ja.md                 |   7 +
+ docs-ja/pages/scheduled-tasks-ja.md                |   9 +-
+ docs-ja/pages/server-managed-settings-ja.md        |  12 +-
+ docs-ja/pages/sessions-ja.md                       |  10 +-
+ docs-ja/pages/settings-ja.md                       | 264 ++++----
+ docs-ja/pages/setup-ja.md                          |   2 +-
+ docs-ja/pages/skills-ja.md                         |  27 +-
+ docs-ja/pages/statusline-ja.md                     |   3 +
+ docs-ja/pages/sub-agents-ja.md                     |  58 +-
+ docs-ja/pages/third-party-integrations-ja.md       |   1 +
+ docs-ja/pages/tools-reference-ja.md                | 127 ++--
+ docs-ja/pages/troubleshoot-install-ja.md           |   4 +-
+ docs-ja/pages/voice-dictation-ja.md                |  19 +-
+ docs-ja/pages/workflows-ja.md                      |   2 +
+ 65 files changed, 1145 insertions(+), 2488 deletions(-)
+```
+
+**新規追加:**
+
+
+**削除:**
+
+
+<details>
+<summary>admin-setup-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/admin-setup-ja.md b/docs-ja/pages/admin-setup-ja.md
+index 8c5ff4e..2e42a33 100644
+--- a/docs-ja/pages/admin-setup-ja.md
++++ b/docs-ja/pages/admin-setup-ja.md
+@@ -37,5 +37,5 @@ Claude Code は複数の API プロバイダーのいずれかを通じて Claud
+ | Microsoft Foundry             | 既存の Azure コンプライアンス制御と課金を継承したい場合                                                            |
+ 
+-一部の Claude Code 機能には Claude.ai アカウントが必要です。[web 上の Claude Code](/ja/claude-code-on-the-web)、[Routines](/ja/routines)、[Code Review](/ja/code-review)、[Remote Control](/ja/remote-control)、および [Chrome 拡張機能](/ja/chrome) は、Console API キーまたはクラウドプロバイダーの認証情報だけでは利用できません。Bedrock、Vertex、または Foundry を通じてデプロイする場合は、開発者が Claude for Teams または Enterprise シートも必要かどうかを検討してください。各機能ページにはプラン要件が記載されています。
++一部の Claude Code 機能には claude.ai アカウントが必要です。[web 上の Claude Code](/ja/claude-code-on-the-web)、[Routines](/ja/routines)、[Code Review](/ja/code-review)、[Remote Control](/ja/remote-control)、および [Chrome 拡張機能](/ja/chrome) は、Console API キーまたはクラウドプロバイダーの認証情報だけでは利用できません。Bedrock、Vertex、または Foundry を通じてデプロイする場合は、開発者が Claude for Teams または Enterprise シートも必要かどうかを検討してください。各機能ページにはプラン要件が記載されています。
+ 
+ 認証、リージョン、機能パリティをカバーする完全なプロバイダー比較については、[エンタープライズ展開概要](/ja/third-party-integrations) を参照してください。各プロバイダーの認証セットアップは [Authentication](/ja/authentication) にあります。
+@@ -47,16 +47,18 @@ Claude Code は複数の API プロバイダーのいずれかを通じて Claud
+ </h2>
+ 
+-マネージド設定は、ローカル開発者設定よりも優先されるポリシーを定義します。Claude Code は以下の 4 つのソースを優先順位順にチェックし、空でない設定を返す最初のものを適用します。
++マネージド設定は、ローカル開発者設定よりも優先されるポリシーを定義します。Claude Code は以下の 4 つのソースを優先順位順にチェックし、空でない設定を返す最初のものを適用します。ただし 1 つの例外があります。[クロスソースロックキー](/ja/settings#settings-precedence)（サンドボックス許可リストロックなど）の小さなセットは、管理者が制御するソースがそれらを設定する場合に尊重されます。
+ 
+ | メカニズム                   | 配信                                                                                                                                                                                                  | 優先度 | プラットフォーム      |
+ | :---------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :-- | :------------ |
+-| Server-managed          | Claude.ai 管理コンソール                                                                                                                                                                                   | 最高  | すべて           |
++| Server-managed          | claude.ai 管理コンソール、またはゲートウェイサインイン用の自己ホスト型 [Claude apps gateway](/ja/claude-apps-gateway)                                                                                                             | 最高  | すべて           |
+ | plist / registry policy | macOS: `com.anthropic.claudecode` plist<br />Windows: `HKLM\SOFTWARE\Policies\ClaudeCode`                                                                                                           | 高   | macOS、Windows |
+ | File-based managed      | macOS: `/Library/Application Support/ClaudeCode/managed-settings.json`<br />Linux と WSL: `/etc/claude-code/managed-settings.json`<br />Windows: `C:\Program Files\ClaudeCode\managed-settings.json` | 中   | すべて           |
+ | Windows user registry   | `HKCU\SOFTWARE\Policies\ClaudeCode`                                                                                                                                                                 | 最低  | Windows のみ    |
+ 
+-Server-managed 設定はデバイスが認証されるときに到達し、アクティブなセッション中は 1 時間ごとに更新されます。エンドポイントインフラストラクチャは不要です。Claude for Teams または Enterprise プランが必要なため、他のプロバイダーでの展開は、代わりにファイルベースまたは OS レベルのメカニズムのいずれかが必要です。
++設定済みの [`policyHelper`](/ja/settings#compute-managed-settings-with-a-policy-helper) は 4 つのソースすべてに優先します。その出力は実行時のマネージド設定の唯一のものになります。[設定の優先度](/ja/settings#settings-precedence) を参照してください。
+ 
+-組織が複数のプロバイダーを混在させている場合、Claude.ai ユーザー向けに [server-managed settings](/ja/server-managed-settings) を設定し、他のユーザーがマネージドポリシーを受け取るように [ファイルベースまたは plist/registry フォールバック](/ja/settings#settings-files) を設定してください。
++Server-managed 設定はデバイスが認証されるときに到達し、アクティブなセッション中は 1 時間ごとに更新されます。エンドポイントインフラストラクチャは不要です。claude.ai 管理コンソール経由の配信には Claude for Teams または Enterprise プランが必要です。Bedrock、Vertex AI、または Foundry での展開は、[Claude apps gateway](/ja/claude-apps-gateway) を実行することで同じリモート配信を取得できます。または、代わりにファイルベースまたは OS レベルのメカニズムのいずれかを使用してください。
+```
+
+</details>
+
+<details>
+<summary>advisor-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/advisor-ja.md b/docs-ja/pages/advisor-ja.md
+index 0445cf9..7269a1a 100644
+--- a/docs-ja/pages/advisor-ja.md
++++ b/docs-ja/pages/advisor-ja.md
+@@ -89,4 +89,5 @@ advisor はメインモデル以上の機能を持つ必要があります。各
+ | Haiku 4.5                                       | Fable、Opus、Sonnet          | Haiku は advisor を呼び出すことはできますが、advisor として機能することはできません |
+ | Sonnet 4.6                                      | Fable、Opus、Sonnet          |                                                       |
++| Sonnet 5                                        | Fable、Opus、Sonnet 5        | Sonnet 4.6 advisor は拒否されます                            |
+ | Opus 4.6 以降                                     | Fable、メインモデルのバージョン以上の Opus | Opus 4.7 メインと Opus 4.6 advisor は拒否されます                |
+ | Fable 5 ({/* min-version: 2.1.170 */}v2.1.170+) | Fable                      | Opus または Sonnet advisor は拒否されます                       |
+@@ -162,5 +163,5 @@ advisor ツールには、以下のすべてが必要です。
+ * **Claude Code v2.1.98 以降**：`claude update` を実行してアップグレードします。
+ * **Anthropic API のみ**：advisor はサーバー実行ツールです。Amazon Bedrock、Google Vertex AI、または Microsoft Foundry では利用できません。[LLM ゲートウェイ](/ja/llm-gateway)を通じて `ANTHROPIC_BASE_URL` で構成されている場合、利用可能性はゲートウェイがリクエストを Anthropic API に完全に転送するかどうかに依存します。
+-* **サポートされているメインモデル**：Opus 4.6 以降、Sonnet 4.6、または Haiku 4.5。{/* min-version: 2.1.170 */}Fable 5 も Claude Code v2.1.170 以降で適格です。
++* **サポートされているメインモデル**：Opus 4.6 以降、Sonnet 4.6 以降、または Haiku 4.5。{/* min-version: 2.1.170 */}Fable 5 も Claude Code v2.1.170 以降で適格です。
+ 
+ <h2 id="turn-the-advisor-off">
+```
+
+</details>
+
+<details>
+<summary>agent-view-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/agent-view-ja.md b/docs-ja/pages/agent-view-ja.md
+index 90fe71c..c8b6854 100644
+--- a/docs-ja/pages/agent-view-ja.md
++++ b/docs-ja/pages/agent-view-ja.md
+@@ -49,5 +49,5 @@ Claude が複数の独立したタスクに対して、あなたが毎ステッ
+ 
+   <Step title="セッションをディスパッチする">
+-    タスクを説明するプロンプトを入力して `Enter` を押します。新しいバックグラウンドセッションがそのタスクで開始され、作業中か、入力を待機中か、完了しているかを示す行として表示されます。新しいセッションはエージェントビューヘッダーに表示されているモデルと、そのディレクトリで `claude` を実行する場合と同じ[パーミッションモード](#permission-mode-model-and-effort)を使用します。
++    タスクを説明するプロンプトを入力して `Enter` を押します。新しいバックグラウンドセッションがそのタスクで開始され、作業中か、入力を待機中か、完了しているかを示す行として表示されます。新しいセッションはエージェントビューヘッダーに表示されているモデルと、そのディレクトリで `claude` を実行する場合と同じ[権限モード](#permission-mode-model-and-effort)を使用します。
+ 
+     ここで入力するすべてのプロンプトは独自の新しいセッションを開始します。別のプロンプトを入力して `Enter` を押すと、最初のセッションへのフォローアップを送信するのではなく、最初のセッションと並行して 2 番目のセッションが起動します。この方法で複数を並行して実行できます。
+@@ -77,5 +77,5 @@ Claude が複数の独立したタスクに対して、あなたが毎ステッ
+ `claude agents` を実行してエージェントビューを開きます。ターミナル全体を占有し、状態でグループ化されたすべてのセッションをリストします。ピン留めされたセッションと入力が必要なセッションが上部に表示されます。各行はセッションの名前、現在のアクティビティ、最後に変更されてからの経過時間を表示します。
+ 
+-デフォルトでは、リストはすべてのプロジェクト全体で開始したすべてのバックグラウンドセッションを表示します。1 つのリポジトリで作業しているセッションと別のワークツリーで作業している別のセッションの両方がここに表示されます。エージェントビューを開いたディレクトリに関係なく表示されます。リストを 1 つのプロジェクトに絞り込むには、`--cwd` を渡します（Claude Code v2.1.141 以降が必要です）。
++デフォルトでは、リストはすべてのプロジェクト全体で開始したすべてのバックグラウンドセッションを表示します。1 つのリポジトリで作業しているセッションと別のワークツリーで作業している別のセッションの両方がここに表示されます。エージェントビューを開いたディレクトリに関係なく表示されます。リストを 1 つのプロジェクトに絞り込むには、`--cwd` を渡します：
+ 
+ ```bash theme={null}
+@@ -144,5 +144,5 @@ Completed
+ 各行の 1 行の概要は [Haiku クラスモデル](/ja/model-config) によって生成されるため、行はトランスクリプトを開かずにセッションが何をしているか、何が必要か、または何を生成したかを伝えることができます。セッションがアクティブに作業している間、概要は最大 15 秒ごとに 1 回、および各ターンが終了したときに 1 回更新されます。
+ 
+-v2.1.161 以降では、セッションが subagents、バックグラウンドシェルコマンド、またはモニターなど、2 つ以上の並列作業項目を実行している場合、`2/5` などの `done/total` カウントが概要テキストの前に表示されます。
++セッションが subagents、バックグラウンドシェルコマンド、またはモニターなど、2 つ以上の並列作業項目を実行している場合、`2/5` などの `done/total` カウントが概要テキストの前に表示されます。
+ 
+ 各更新は通常のプロバイダーを通じた 1 つの短い Haiku クラスリクエストであり、セッション自体と同じ [データ使用条件](/ja/data-usage) の下で請求および処理されます。Bedrock、Vertex AI、Microsoft Foundry、カスタムゲートウェイなどのサードパーティプロバイダーでは、Haiku モデルが設定されていない場合、リクエストはセッションのメインモデルにフォールバックします。これらのプロバイダーでこれらの概要のモデルを選択するには、[`ANTHROPIC_DEFAULT_HAIKU_MODEL`](/ja/model-config#environment-variables) を設定します。
+@@ -158,5 +158,5 @@ v2.1.161 以降では、セッションが subagents、バックグラウンド
+ プルリクエスト番号はそのステータスで色付けされます。
+ 
+-| 色   | プルリクエストステータス               |
++| カラー | プルリクエストステータス               |
+```
+
+</details>
+
+<details>
+<summary>amazon-bedrock-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/amazon-bedrock-ja.md b/docs-ja/pages/amazon-bedrock-ja.md
+index b6fd13f..f7a17ca 100644
+--- a/docs-ja/pages/amazon-bedrock-ja.md
++++ b/docs-ja/pages/amazon-bedrock-ja.md
+@@ -398,7 +398,7 @@ Claude Code に必要な権限を持つ IAM ポリシーを作成します。
+ </h2>
+ 
+-Claude Opus 4.6 以降および Sonnet 4.6 は、Amazon Bedrock で [1M トークンコンテキストウィンドウ](https://platform.claude.com/docs/ja/build-with-claude/context-windows#1m-token-context-window)をサポートしています。Claude Code は、1M モデルバリアントを選択すると、拡張コンテキストウィンドウを自動的に有効にします。
++Claude Sonnet 5、Opus 4.6 以降、および Sonnet 4.6 は、Amazon Bedrock で [1M トークンコンテキストウィンドウ](https://platform.claude.com/docs/ja/build-with-claude/context-windows#1m-token-context-window)をサポートしています。Sonnet 5 は [Mantle エンドポイント](#use-the-mantle-endpoint)を通じて提供され、常に 1M ウィンドウで実行されます。選択する `[1m]` バリアントはありません。その他のモデルについては、Claude Code は 1M モデルバリアントを選択すると、拡張コンテキストウィンドウを自動的に有効にします。
+ 
+-[セットアップウィザード](#sign-in-with-bedrock)は、モデルをピン留めするときに 1M コンテキストオプションを提供します。手動でピン留めされたモデルの代わりに有効にするには、モデル ID に `[1m]` を追加します。詳細については、[Pin models for third-party deployments](/ja/model-config#pin-models-for-third-party-deployments) を参照してください。
++[セットアップウィザード](#sign-in-with-bedrock)は、モデルをピン留めするときに 1M コンテキストオプションを提供します。手動でピン留めされたモデルの代わりに有効にするには、モデル ID に `[1m]` を追加します。詳細については、[サードパーティデプロイメント用のモデルをピン留めする](/ja/model-config#pin-models-for-third-party-deployments)を参照してください。
+ 
+ <h2 id="service-tiers">
+@@ -431,5 +431,5 @@ Claude Code は、各リクエストで `X-Amzn-Bedrock-Service-Tier` ヘッダ
+ 
+ <h2 id="use-the-mantle-endpoint">
+-  Mantle エンドポイントを使用
++  Mantle エンドポイントを使用する
+ </h2>
+ 
+@@ -456,8 +456,8 @@ Claude Code 内で `/status` を実行して確認します。Mantle がアク
+ 
+ <h3 id="select-a-mantle-model">
+-  Mantle モデルを選択
++  Mantle モデルを選択する
+ </h3>
+ 
+-Mantle は `anthropic.` で始まり、バージョンサフィックスのないモデル ID を使用します。例えば `anthropic.claude-haiku-4-5`。アカウントで利用可能なモデルは、組織に付与されたものに依存します。追加のモデル ID は AWS からのオンボーディング資料に記載されています。AWS アカウントチームに連絡して、許可リストされたモデルへのアクセスをリクエストしてください。
++Mantle は `anthropic.` で始まり、バージョンサフィックスのないモデル ID を使用します。例えば `anthropic.claude-sonnet-5` または `anthropic.claude-haiku-4-5` です。アカウントで利用可能なモデルは、組織に付与されたものに依存します。追加のモデル ID は AWS からのオンボーディング資料に記載されています。AWS アカウントチームに連絡して、許可リストされたモデルへのアクセスをリクエストしてください。
+```
+
+</details>
+
+<details>
+<summary>authentication-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/authentication-ja.md b/docs-ja/pages/authentication-ja.md
+index 6810308..3306636 100644
+--- a/docs-ja/pages/authentication-ja.md
++++ b/docs-ja/pages/authentication-ja.md
+@@ -25,4 +25,5 @@ Claude Code は、セットアップに応じて複数の認証方法をサポ
+ * **Claude Console**: Console 認証情報でログインします。管理者が事前に[招待](#claude-console-authentication)している必要があります。
+ * **クラウドプロバイダー**: 組織が [Amazon Bedrock](/ja/amazon-bedrock)、[Google Vertex AI](/ja/google-vertex-ai)、または [Microsoft Foundry](/ja/microsoft-foundry) を使用している場合は、`claude` を実行する前に必要な環境変数を設定してください。ブラウザログインは不要です。
++* **クラウドゲートウェイ**: 組織がセルフホストされた [Claude apps gateway](/ja/claude-apps-gateway) を実行している場合は、`/login` を通じて企業 SSO でサインインします。ゲートウェイが発行したトークンはセッションの唯一の認証情報です。
+ 
+ ログアウトして再認証するには、Claude Code プロンプトで `/logout` と入力します。
+@@ -38,4 +39,5 @@ Claude Code は、セットアップに応じて複数の認証方法をサポ
+ * [Claude for Teams または Enterprise](#claude-for-teams-or-enterprise)（ほとんどのチームに推奨）
+ * [Claude Console](#claude-console-authentication)
++* [Claude apps gateway](/ja/claude-apps-gateway)（開発者を IdP でサインインさせ、設定したクラウドプロバイダーに推論をルーティングする自己ホスト型ゲートウェイ）
+ * [Amazon Bedrock](/ja/amazon-bedrock)
+ * [Google Vertex AI](/ja/google-vertex-ai)
+@@ -132,5 +134,5 @@ Claude Code は認証情報を安全に管理します。
+   * Linux または Windows で `CLAUDE_CONFIG_DIR` 環境変数を設定している場合、`.credentials.json` ファイルはそのディレクトリの下に配置されます。
+   * Claude Code は `/login` と `/logout` を通じて `.credentials.json` を管理します。リクエストをカスタム API エンドポイント経由でルーティングするには、代わりに [`ANTHROPIC_BASE_URL`](/ja/env-vars) 環境変数を設定してください。
+-* **サポートされている認証タイプ**: Claude.ai 認証情報、Claude API 認証情報、Azure Auth、Bedrock Auth、および Vertex Auth。
++* **サポートされている認証タイプ**: Claude.ai 認証情報、Claude API 認証情報、Azure Auth、Bedrock Auth、Vertex Auth、および [Claude apps gateway](/ja/claude-apps-gateway) セッショントークン。
+ * **カスタム認証情報スクリプト**: [`apiKeyHelper`](/ja/settings#available-settings) 設定は、API キーを返すシェルスクリプトを実行するように設定できます。
+ * **更新間隔**: デフォルトでは、`apiKeyHelper` は 5 分後または HTTP 401 レスポンス時に呼び出されます。カスタム更新間隔の場合は、`CLAUDE_CODE_API_KEY_HELPER_TTL_MS` 環境変数を設定してください。
+@@ -152,4 +154,6 @@ Claude Code は認証情報を安全に管理します。
+ 6. `/login` からのサブスクリプション OAuth 認証情報。これは Claude Pro、Max、Team、および Enterprise ユーザーのデフォルトです。
+ 
++署名済みの [Claude apps gateway](/ja/claude-apps-gateway) セッションはこのリストの外に位置します。これは Bedrock または Vertex のようなプロバイダー選択であり、それらより優先されます。ゲートウェイセッションが存在する場合、CLI は `CLAUDE_CODE_USE_BEDROCK`、`CLAUDE_CODE_USE_VERTEX`、または `CLAUDE_CODE_USE_FOUNDRY` が設定されていても、ゲートウェイトークンで認証され、上記のベアラートークン、API キー、および `apiKeyHelper` エントリは使用されません。
++
+ アクティブな Claude サブスクリプションがあり、環境に `ANTHROPIC_API_KEY` も設定されている場合、API キーは承認されると優先されます。キーが無効または期限切れの組織に属している場合、これは認証エラーを引き起こす可能性があります。`unset ANTHROPIC_API_KEY` を実行してサブスクリプションにフォールバックし、`/status` をチェックしてどの方法がアクティブであるかを確認します。
+ 
+```
+
+</details>
+
+<details>
+<summary>auto-mode-config-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/auto-mode-config-ja.md b/docs-ja/pages/auto-mode-config-ja.md
+index 2fd488c..ca66c7c 100644
+--- a/docs-ja/pages/auto-mode-config-ja.md
++++ b/docs-ja/pages/auto-mode-config-ja.md
+@@ -10,5 +10,5 @@
+ 
+ <Note>
+-  オートモードは、Anthropic API を通じてすべてのユーザーが利用できます。Amazon Bedrock、Google Cloud Vertex AI、Microsoft Foundry では、まず [`CLAUDE_CODE_ENABLE_AUTO_MODE`](/ja/permission-modes#enable-auto-mode-on-bedrock-vertex-ai-or-foundry) を[設定](/ja/permission-modes#enable-auto-mode-on-bedrock-vertex-ai-or-foundry)する必要があります。Claude Code がアカウントでオートモードが利用不可と報告する場合は、[完全な要件](/ja/permission-modes#eliminate-prompts-with-auto-mode)を確認してください。これには、サポートされているモデルと Team および Enterprise プランの管理者有効化も含まれます。
++  オートモードは、Anthropic API を通じてすべてのユーザーが利用できます。Amazon Bedrock、Google Cloud Vertex AI、Microsoft Foundry、およびサインイン済みの[Claude アプリゲートウェイ](/ja/claude-apps-gateway)セッションでは、まず [`CLAUDE_CODE_ENABLE_AUTO_MODE`](/ja/permission-modes#enable-auto-mode-on-bedrock-vertex-ai-or-foundry) を[設定](/ja/permission-modes#enable-auto-mode-on-bedrock-vertex-ai-or-foundry)する必要があります。Claude Code がアカウントでオートモードが利用不可と報告する場合は、[完全な要件](/ja/permission-modes#eliminate-prompts-with-auto-mode)を確認してください。これには、サポートされているモデルと Team および Enterprise プランの Owner 有効化も含まれます。
+ </Note>
+ 
+@@ -22,4 +22,5 @@
+ * [`autoMode.environment` で信頼できるインフラストラクチャを定義する](#define-trusted-infrastructure)
+ * [デフォルトが適切でない場合、ブロックルールと許可ルールをオーバーライドする](#override-the-block-and-allow-rules)
++* [`autoMode.classifyAllShell` ですべてのシェルコマンドを分類器にルーティングする](#route-all-shell-commands-through-the-classifier)
+ * [`claude auto-mode` サブコマンドで有効な設定を確認する](#inspect-the-defaults-and-your-effective-config)
+ * [拒否を確認する](#review-denials)（次に何を追加するかを知るため）
+@@ -54,5 +55,14 @@
+ ほとんどの組織では、`autoMode.environment` が設定する必要がある唯一のフィールドです。これは、分類器に、どのリポジトリ、バケット、ドメインが信頼できるかを指定します。分類器はこれを使用して「外部」が何を意味するかを決定するため、リストに記載されていない宛先は潜在的な流出ターゲットです。
+ 
+-デフォルトの環境リストは、作業リポジトリとその設定されたリモートを信頼します。そのデフォルトと一緒に独自のエントリを追加するには、配列にリテラル文字列 `"$defaults"` を含めます。デフォルトエントリはその位置に挿入されるため、カスタムエントリはそれらの前後に配置できます。
++Claude Code v2.1.195 以降、`claude auto-mode defaults` は 2 種類の環境エントリを出力します。
++
++* **信頼スロット**：分類器が境界内として扱うものを指定します。スロットは「信頼できるリポジトリ」、「ソース管理」、「信頼できる内部ドメイン」、「信頼できるクラウドバケット」、「主要な内部サービス」、および「内部パッケージレジストリ」です。リポジトリとソース管理エントリはデフォルトで作業リポジトリとその設定されたリモートになります。他のすべての信頼スロットはデフォルトで `None configured` になるため、追加するまで他には何も信頼されません。
++* **感度スロット**：保護ルールが高リスクとして扱うものを指定します。スロットは「PII / 規制対象データの場所」、「機密リモートターゲット」、および「保護された IaC スコープ」です。各スロットはデフォルトで広いヒューリスティックになります。例えば、名前に `prod` または `production` を含むホストまたはネームスペースを機密リモートターゲットとして扱うため、保護ルールは何も設定する前にアクティブになります。感度スロットで具体的なターゲットを指定すると、これらのルールはヒューリスティックではなく指定されたターゲットに適用されます。
++
++v2.1.195 より前のバージョンは、最初の 5 つの信頼スロットのみを出力します。
++
++デフォルトと一緒に独自のエントリを追加するには、配列にリテラル文字列 `"$defaults"` を含めます。デフォルトエントリはその位置に挿入されるため、カスタムエントリはそれらの前後に配置できます。
++
+```
+
+</details>
+
+*...以降省略*
+
+</details>
+
+
+<details>
 <summary>2026-06-30</summary>
 
 **変更ファイル:**
@@ -2416,257 +2716,6 @@ index 2575a95..608eab8 100644
 +  --cs-border-default: rgba(240, 238, 230, 0.14);
 +}
 +.cc-cs-card {
-```
-
-</details>
-
-*...以降省略*
-
-</details>
-
-
-<details>
-<summary>2026-06-11</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/amazon-bedrock-ja.md           |   72 --
- docs-ja/pages/changelog.md                   |   33 +
- docs-ja/pages/claude-directory-ja.md         | 1426 -----------------------
- docs-ja/pages/claude-platform-on-aws-ja.md   |  182 ---
- docs-ja/pages/context-window-ja.md           | 1564 --------------------------
- docs-ja/pages/google-vertex-ai-ja.md         |   72 --
- docs-ja/pages/microsoft-foundry-ja.md        |   72 --
- docs-ja/pages/prompt-library-ja.md           | 1319 ----------------------
- docs-ja/pages/third-party-integrations-ja.md |   72 --
- 9 files changed, 33 insertions(+), 4779 deletions(-)
-```
-
-<details>
-<summary>amazon-bedrock-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/amazon-bedrock-ja.md b/docs-ja/pages/amazon-bedrock-ja.md
-index c411db1..6eac9dc 100644
---- a/docs-ja/pages/amazon-bedrock-ja.md
-+++ b/docs-ja/pages/amazon-bedrock-ja.md
-@@ -7,76 +7,4 @@
- > Amazon Bedrock を通じた Claude Code の設定方法（セットアップ、IAM 設定、トラブルシューティングを含む）について学習します。
- 
--export const ContactSalesCard = ({surface}) => {
--  const utm = content => `utm_source=claude_code&utm_medium=docs&utm_content=${surface}_${content}`;
--  const iconArrowRight = (size = 13) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
--      <line x1="5" y1="12" x2="19" y2="12" />
--      <polyline points="12 5 19 12 12 19" />
--    </svg>;
--  const STYLES = `
--.cc-cs {
--  --cs-slate: #141413;
--  --cs-clay: #d97757;
--  --cs-clay-deep: #c6613f;
--  --cs-gray-000: #ffffff;
--  --cs-gray-700: #3d3d3a;
--  --cs-border-default: rgba(31, 30, 29, 0.15);
--  font-family: inherit;
--}
--.dark .cc-cs {
--  --cs-slate: #f0eee6;
--  --cs-gray-000: #262624;
--  --cs-gray-700: #bfbdb4;
--  --cs-border-default: rgba(240, 238, 230, 0.14);
--}
--.cc-cs-card {
-```
-
-</details>
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index 5b4fcd8..f1d4f8d 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,37 @@
- # Changelog
- 
-+## 2.1.172
-+
-+- Sub-agents can now spawn their own sub-agents (up to 5 levels deep)
-+- Amazon Bedrock now reads the AWS region from `~/.aws` config files when `AWS_REGION` isn't set, matching AWS SDK precedence; `/status` shows where the region came from
-+- Added a search bar when browsing a marketplace's plugins in `/plugin`
-+- Added `model` attribute to the `claude_code.lines_of_code.count` OTEL metric
-+- Fixed sessions using 1M context without usage credits getting permanently stuck — the session now automatically compacts back under the standard context limit
-+- Fixed a repeating "an image in the conversation could not be processed and was removed" error when the conversation contained multiple images
-+- Fixed the agents view keeping a session under Working with a busy spinner for up to 30 seconds after the worker replied
-+- Fixed background agents potentially reading another directory's project settings (`.mcp.json` approvals, trust) when dispatched onto a pre-warmed worker
-+- Fixed background-session attach failing with EAUTH for sessions started on an older version after the daemon auto-updated
-+- Fixed a background sub-agent staying stuck as "active" in the agent panel after a nested agent it spawned was stopped
-+- Fixed `/model` suggestions in the `claude agents` dispatch input rendering with a misleading slash prefix and showing models disabled for your org
-+- Fixed `availableModels` restrictions not being applied to subagent model overrides, the agent dispatch model picker, and the advisor model
-+- Fixed `availableModels` allowlists hiding the `/model` picker's Opus and Sonnet 1M rows when entries use version-specific IDs like `claude-opus-4-8`
-+- Fixed the `/model` picker on Bedrock offering models the provider doesn't serve — selecting one silently switched the session model and lit the selection marker on multiple rows
-+- Fixed model IDs getting a doubled 1M-context suffix (e.g. `[1M][1m]`) when `ANTHROPIC_DEFAULT_OPUS_MODEL` already includes one
-+- Fixed `opusplan` model setting not shipping with 1M context in plan mode for entitled users; the `opusplan[1m]` workaround now also correctly switches to Opus in plan mode
-+- Fixed `WebFetch(domain:*.example.com)` wildcard domain rules never matching subdomains in allow, deny, and ask position, and file permission rules with mid-pattern wildcards (e.g. `Read(secrets-*/config.json)`) being rejected at startup
-+- Fixed up-arrow prompt history showing the main agent's prompts while a subagent's chat tab is open
-+- Fixed memory recall not finding mounted team memory stores (`CLAUDE_MEMORY_STORES`) in remote sessions
-+- Fixed workflow validation rejecting scripts whose prompt strings or comments merely mention `Date.now()`/`Math.random()`
-+- Disable mouse tracking on Windows consoles that don't fully support it
-```
-
-</details>
-
-<details>
-<summary>claude-directory-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/claude-directory-ja.md b/docs-ja/pages/claude-directory-ja.md
-index 467b49d..0ab4439 100644
---- a/docs-ja/pages/claude-directory-ja.md
-+++ b/docs-ja/pages/claude-directory-ja.md
-@@ -7,1428 +7,4 @@
- > Claude Code が CLAUDE.md、settings.json、hooks、skills、commands、subagents、workflows、rules、auto memory を読み込む場所。プロジェクト内の .claude ディレクトリとホームディレクトリの ~/.claude を探索します。
- 
--export const ClaudeExplorer = () => {
--  const A = useMemo(() => ({href, children}) => <a href={href} style={{
--    color: 'var(--ce-accent)',
--    textDecoration: 'none',
--    borderBottom: '1px dotted var(--ce-accent)'
--  }}>{children}</a>, []);
--  const C = useMemo(() => ({children}) => <code style={{
--    fontFamily: 'var(--ce-mono)',
--    fontSize: '0.92em',
--    padding: '1px 4px',
--    borderRadius: '3px',
--    background: 'var(--ce-surface)',
--    border: '0.5px solid var(--ce-border-subtle)'
--  }}>{children}</code>, []);
--  const commandsNote = useMemo(() => <>Commands and skills are now the same mechanism. For new workflows, use <A href="/en/skills">skills/</A> instead: same <C>/name</C> invocation, plus you can bundle supporting files.</>, []);
--  const FILE_TREE = useMemo(() => ({
--    project: {
--      label: 'your-project/',
--      children: [{
--        id: 'claude-md',
--        label: 'CLAUDE.md',
--        type: 'file',
--        icon: 'md',
-```
-
-</details>
-
-<details>
-<summary>claude-platform-on-aws-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/claude-platform-on-aws-ja.md b/docs-ja/pages/claude-platform-on-aws-ja.md
-index 1c2ff61..ada8273 100644
---- a/docs-ja/pages/claude-platform-on-aws-ja.md
-+++ b/docs-ja/pages/claude-platform-on-aws-ja.md
-@@ -7,186 +7,4 @@
- > AWS 認証、IAM アクセス制御、AWS Marketplace 請求を使用して、Anthropic が運営する Claude API を使用するように Claude Code を設定します。
- 
--export const ContactSalesCard = ({surface}) => {
--  const utm = content => `utm_source=claude_code&utm_medium=docs&utm_content=${surface}_${content}`;
--  const iconArrowRight = (size = 13) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
--      <line x1="5" y1="12" x2="19" y2="12" />
--      <polyline points="12 5 19 12 12 19" />
--    </svg>;
--  const STYLES = `
--.cc-cs {
--  --cs-slate: #141413;
--  --cs-clay: #d97757;
--  --cs-clay-deep: #c6613f;
--  --cs-gray-000: #ffffff;
--  --cs-gray-700: #3d3d3a;
--  --cs-border-default: rgba(31, 30, 29, 0.15);
--  font-family: inherit;
--}
--.dark .cc-cs {
--  --cs-slate: #f0eee6;
--  --cs-gray-000: #262624;
--  --cs-gray-700: #bfbdb4;
--  --cs-border-default: rgba(240, 238, 230, 0.14);
--}
--.cc-cs-card {
-```
-
-</details>
-
-<details>
-<summary>context-window-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/context-window-ja.md b/docs-ja/pages/context-window-ja.md
-index 04ca98c..17cb163 100644
---- a/docs-ja/pages/context-window-ja.md
-+++ b/docs-ja/pages/context-window-ja.md
-@@ -7,1570 +7,6 @@
- > Claude Code のコンテキストウィンドウがセッション中にどのように満たされるかのインタラクティブなシミュレーション。自動的に読み込まれるもの、各ファイル読み込みのコスト、ルールとフックが発火するタイミングを確認できます。
- 
--export const ContextWindow = () => {
--  const MAX = 200000;
--  const STARTUP_END = 0.2;
--  {}
--  const EVENTS = useMemo(() => [{}, {
--    t: 0.015,
--    kind: 'auto',
--    label: 'System prompt',
--    tokens: 4200,
--    color: '#6B6964',
--    vis: 'hidden',
--    desc: 'Core instructions for behavior, tool use, and response formatting. Always loaded first. You never see it.',
--    link: null
--  }, {
--    t: 0.035,
--    kind: 'auto',
--    label: 'Auto memory (MEMORY.md)',
--    tokens: 680,
--    color: '#E8A45C',
--    vis: 'hidden',
--    desc: "Claude's notes to itself from previous sessions: build commands it learned, patterns it noticed, mistakes to avoid. The first 200 lines or 25KB, whichever comes first, are loaded into the conversation context.",
--    link: '/en/memory#auto-memory'
--  }, {
-```
-
-</details>
-
-<details>
-<summary>google-vertex-ai-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/google-vertex-ai-ja.md b/docs-ja/pages/google-vertex-ai-ja.md
-index 608eab8..2575a95 100644
---- a/docs-ja/pages/google-vertex-ai-ja.md
-+++ b/docs-ja/pages/google-vertex-ai-ja.md
-@@ -7,76 +7,4 @@
- > Google Vertex AI を通じた Claude Code の設定方法について学びます。セットアップ、IAM 設定、トラブルシューティングを含みます。
- 
--export const ContactSalesCard = ({surface}) => {
--  const utm = content => `utm_source=claude_code&utm_medium=docs&utm_content=${surface}_${content}`;
--  const iconArrowRight = (size = 13) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
--      <line x1="5" y1="12" x2="19" y2="12" />
--      <polyline points="12 5 19 12 12 19" />
--    </svg>;
--  const STYLES = `
--.cc-cs {
--  --cs-slate: #141413;
--  --cs-clay: #d97757;
--  --cs-clay-deep: #c6613f;
--  --cs-gray-000: #ffffff;
--  --cs-gray-700: #3d3d3a;
--  --cs-border-default: rgba(31, 30, 29, 0.15);
--  font-family: inherit;
--}
--.dark .cc-cs {
--  --cs-slate: #f0eee6;
--  --cs-gray-000: #262624;
--  --cs-gray-700: #bfbdb4;
--  --cs-border-default: rgba(240, 238, 230, 0.14);
--}
--.cc-cs-card {
 ```
 
 </details>

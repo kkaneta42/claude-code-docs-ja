@@ -88,6 +88,7 @@ advisor はメインモデル以上の機能を持つ必要があります。各
 | ----------------------------------------------- | -------------------------- | ----------------------------------------------------- |
 | Haiku 4.5                                       | Fable、Opus、Sonnet          | Haiku は advisor を呼び出すことはできますが、advisor として機能することはできません |
 | Sonnet 4.6                                      | Fable、Opus、Sonnet          |                                                       |
+| Sonnet 5                                        | Fable、Opus、Sonnet 5        | Sonnet 4.6 advisor は拒否されます                            |
 | Opus 4.6 以降                                     | Fable、メインモデルのバージョン以上の Opus | Opus 4.7 メインと Opus 4.6 advisor は拒否されます                |
 | Fable 5 ({/* min-version: 2.1.170 */}v2.1.170+) | Fable                      | Opus または Sonnet advisor は拒否されます                       |
 
@@ -161,7 +162,7 @@ advisor ツールには、以下のすべてが必要です。
 
 * **Claude Code v2.1.98 以降**：`claude update` を実行してアップグレードします。
 * **Anthropic API のみ**：advisor はサーバー実行ツールです。Amazon Bedrock、Google Vertex AI、または Microsoft Foundry では利用できません。[LLM ゲートウェイ](/ja/llm-gateway)を通じて `ANTHROPIC_BASE_URL` で構成されている場合、利用可能性はゲートウェイがリクエストを Anthropic API に完全に転送するかどうかに依存します。
-* **サポートされているメインモデル**：Opus 4.6 以降、Sonnet 4.6、または Haiku 4.5。{/* min-version: 2.1.170 */}Fable 5 も Claude Code v2.1.170 以降で適格です。
+* **サポートされているメインモデル**：Opus 4.6 以降、Sonnet 4.6 以降、または Haiku 4.5。{/* min-version: 2.1.170 */}Fable 5 も Claude Code v2.1.170 以降で適格です。
 
 <h2 id="turn-the-advisor-off">
   advisor をオフにする

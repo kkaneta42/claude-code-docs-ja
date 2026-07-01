@@ -40,6 +40,7 @@
 | `Your organization has disabled API key authentication`                                       | [認証](#your-organization-has-disabled-api-key-authentication)                                  |
 | `Your organization has disabled Claude subscription access`                                   | [認証](#your-organization-has-disabled-claude-subscription-access)                              |
 | `Routines are disabled by your organization's policy`                                         | [認証](#routines-are-disabled-by-your-organization%E2%80%99s-policy)                            |
+| `Remote Control is only available when using Claude via api.anthropic.com`                    | [認証](#remote-control-requires-the-anthropic-api)                                              |
 | `OAuth token revoked` / `OAuth token has expired`                                             | [認証](#oauth-token-revoked-or-expired)                                                         |
 | `does not meet scope requirement user:profile`                                                | [認証](#oauth-scope-requirement)                                                                |
 | `Unable to connect to API`                                                                    | [ネットワーク](#unable-to-connect-to-api)                                                           |
@@ -426,6 +427,23 @@ Routines are disabled by your organization's policy.
 * 組織の Owner に [claude.ai/admin-settings/claude-code](https://claude.ai/admin-settings/claude-code) で **Routines** トグルを有効にするよう依頼してください
 * 組織レベルのルーチンを必要としない 1 回限りのスケジュール済み作業については、[スケジュール済みタスク](/ja/scheduled-tasks)を参照してください
 
+<h3 id="remote-control-requires-the-anthropic-api">
+  Remote Control requires the Anthropic API
+</h3>
+
+セッションが Anthropic API と直接通信していないため、[Remote Control](/ja/remote-control)がペアリングする claude.ai バックエンドがありません。
+
+```text theme={null}
+Remote Control is only available when using Claude via api.anthropic.com.
+```
+
+これは Amazon Bedrock、Google Vertex AI、Microsoft Foundry に表示されます。{/* min-version: 2.1.196 */}v2.1.196 以降では、[`ANTHROPIC_BASE_URL`](/ja/env-vars)が `api.anthropic.com` 以外のホスト（[LLM ゲートウェイ](/ja/llm-gateway)やプロキシなど）を指している場合にも表示されます。claude.ai でサインインしている場合でも表示されます。
+
+**対応方法：**
+
+* `ANTHROPIC_BASE_URL` をアンセットしてセッションを再起動するか、Anthropic API と直接通信するセッションから Remote Control を起動してください
+* このおよび他の Remote Control スタートアップメッセージについては、[Remote Control のトラブルシューティング](/ja/remote-control#troubleshooting)を参照してください
+
 <h3 id="oauth-token-revoked-or-expired">
   OAuth token revoked or expired
 </h3>
@@ -727,7 +745,7 @@ Model "claude-opus-4-8" is restricted by your organization's settings. Using cla
   thinking.type.enabled is not supported for this model
 </h3>
 
-Claude Code バージョンが Opus 4.7 または Opus 4.8 の最小値より古いです。CLI は、モデルが受け入れなくなった思考設定を送信しました。
+Claude Code バージョンが Sonnet 5、Opus 4.8、または Opus 4.7 の最小値より古いです。CLI は、モデルが受け入れなくなった思考設定を送信しました。
 
 ```text theme={null}
 API Error: 400 ... "thinking.type.enabled" is not supported for this model. Use "thinking.type.adaptive" and "output_config.effort" to control thinking behavior.
@@ -735,9 +753,9 @@ API Error: 400 ... "thinking.type.enabled" is not supported for this model. Use 
 
 **対応方法：**
 
-* `claude update` を実行して Claude Code を再起動してください。Opus 4.7 は v2.1.111 以降が必要です。Opus 4.8 は v2.1.154 以降が必要です
-* アップグレードできない場合は、`/model` を実行して Opus 4.6 または Sonnet を選択してください
-* Agent SDK でこれに遭遇した場合は、[SDK トラブルシューティング](/ja/agent-sdk/quickstart#troubleshooting)を参照してください
+* `claude update` を実行して Claude Code を再起動してください。Opus 4.7 は v2.1.111 以降が必要です。Opus 4.8 は v2.1.154 以降が必要です。Sonnet 5 は v2.1.197 以降が必要です
+* アップグレードできない場合は、`/model` を実行して Opus 4.6 または Sonnet 4.6 を選択してください
+* {/* min-version: agent-sdk@0.3.197 */}[Agent SDK](/ja/agent-sdk/overview)でこれに遭遇した場合は、SDK パッケージをアップグレードしてください。Opus 4.8 は TypeScript SDK v0.3.154 以降と Python SDK v0.2.88 以降が必要です。Sonnet 5 は TypeScript SDK v0.3.197 以降が必要です
 
 <h3 id="thinking-budget-exceeds-output-limit">
   Thinking budget exceeds output limit

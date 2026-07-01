@@ -48,7 +48,12 @@ Claude Code offers three ways to schedule recurring or one-off work:
 | プロンプトのみ      | `/loop check the deploy`    | プロンプトは各反復で[Claude が選択した間隔](#let-claude-choose-the-interval)で実行されます                       |
 | 間隔のみ、または何もなし | `/loop`                     | [組み込みメンテナンスプロンプト](#run-the-built-in-maintenance-prompt)が実行されるか、存在する場合は `loop.md` が実行されます |
 
-別のコマンドをプロンプトとして渡すこともできます。例えば `/loop 20m /review-pr 1234` は、各反復でパッケージ化されたワークフローを再実行します。
+スキルをプロンプトとして渡すこともできます。例えば `/loop 20m /review-pr 1234` は、各反復でそのスキルを再実行します。{/* min-version: 2.1.196 */}v2.1.196 以降、スケジュール済みの実行は Claude が[独自に呼び出すことを許可されているスキル](/ja/skills#control-who-invokes-a-skill)のみを実行します。以下は Claude にプレーンテキストとして到達し、実行されません。
+
+* `/permissions`、`/model`、`/clear` などの組み込みコマンド
+* [`disable-model-invocation: true`](/ja/skills#frontmatter-reference) とマークされたスキル
+* [`skillOverrides`](/ja/skills#override-skill-visibility-from-settings) 設定または `Skill` [拒否ルール](/ja/skills#restrict-claude’s-skill-access)によって Claude から保留されたスキル
+* [MCP プロンプト](/ja/mcp#use-mcp-prompts-as-commands)（`/mcp__github__list_prs` など）。MCP サーバーが公開するスキルは引き続き実行されます
 
 <h3 id="run-on-a-fixed-interval">
   固定間隔で実行する
@@ -238,7 +243,7 @@ cancel the deploy check job
 
 セッションスコープのスケジューリングには固有の制約があります。
 
-* タスクは Claude Code が実行中でアイドル状態の場合にのみ実行されます。ターミナルを閉じるか、セッションを終了すると、タスクは実行を停止します。
+* タスクは Claude Code が実行中でアイドル状態の場合にのみ実行されます。ターミナルを閉じるか、セッションを終了すると、タスクは実行を停止します。[セッションをバックグラウンドで実行する](/ja/agent-view#from-inside-a-session)と、`/loop` タスクがバックグラウンドセッションに引き継がれ、ターミナルなしで実行を続けます。
 * 見落とされた実行のキャッチアップはありません。タスクのスケジュール済み時間が Claude が長時間実行されるリクエストでビジーの間に経過した場合、Claude がアイドル状態になったときに 1 回実行され、見落とされた間隔ごとに 1 回ではありません。
 * 新しい会話を開始すると、すべてのセッションスコープのタスクがクリアされます。`claude --resume` または `claude --continue` で再開すると、有効期限切れになっていないタスクが復元されます。過去 7 日以内に作成された定期的なタスク、およびスケジュール済み時間がまだ経過していない 1 回限りのタスク。バックグラウンド Bash およびモニタータスクは再開時に復元されることはありません。
 

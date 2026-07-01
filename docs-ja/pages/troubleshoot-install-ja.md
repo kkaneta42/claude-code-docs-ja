@@ -32,7 +32,7 @@
 | `Error loading shared library`                                                               | [システムに対応したバイナリバリアント](#linux-musl-or-glibc-binary-mismatch)                                        |
 | `Illegal instruction`                                                                        | [アーキテクチャまたは CPU 命令セットの不一致](#illegal-instruction)                                                  |
 | WSL での `cannot execute binary file: Exec format error`                                       | [WSL1 ネイティブバイナリ回帰](#exec-format-error-on-wsl1)                                                    |
-| PowerShell インストーラーが完了しても `claude` が見つからないか古いバージョンが表示される                                      | [ターミナルを再起動して PATH を確認する](#verify-your-path)                                                       |
+| PowerShell インストーラーが完了しても `claude` が見つからないか古いバージョンが表示される                                      | [インストールディレクトリを PATH に追加する](#verify-your-path)、その後新しいターミナルを開く                                      |
 | macOS での `dyld: cannot load`、`dyld: Symbol not found`、または `Abort trap`                       | [バイナリ互換性](#dyld-cannot-load-on-macos)                                                             |
 | `Invoke-Expression: Missing argument in parameter list`                                      | [インストールスクリプトが HTML を返す](#install-script-returns-html-instead-of-a-shell-script)                   |
 | `App unavailable in region`                                                                  | Claude Code はお客様の国では利用できません。[サポートされている国](https://www.anthropic.com/supported-countries)を参照してください。 |
@@ -45,7 +45,7 @@
 問題がリストに記載されていない場合は、以下の診断チェックを実行して、原因を特定してください。
 
 <Tip>
-  ターミナルをスキップしたい場合は、[Claude Code Desktop アプリ](/ja/desktop-quickstart)を使用して、グラフィカルインターフェイスを通じて Claude Code をインストールして使用できます。[macOS](https://claude.ai/api/desktop/darwin/universal/dmg/latest/redirect?utm_source=claude_code\&utm_medium=docs) または [Windows](https://claude.com/download?utm_source=claude_code\&utm_medium=docs) 用にダウンロードして、コマンドラインセットアップなしでコーディングを開始してください。
+  ターミナルをスキップしたい場合は、[Claude Code Desktop アプリ](/ja/desktop-quickstart)を使用して、グラフィカルインターフェイスを通じて Claude Code をインストールして使用できます。[macOS](https://claude.ai/api/desktop/darwin/universal/dmg/latest/redirect?utm_source=claude_code\&utm_medium=docs)、[Windows](https://claude.com/download?utm_source=claude_code\&utm_medium=docs)、または [Linux](https://claude.com/download?utm_source=claude_code\&utm_medium=docs) 用にダウンロードして、コマンドラインセットアップなしでコーディングを開始してください。
 </Tip>
 
 <h2 id="run-diagnostic-checks">

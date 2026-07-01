@@ -8,7 +8,7 @@
 
 デスクトップアプリは、複数のセッションを並行して実行するために構築されたグラフィカルインターフェース付きの Claude Code を提供します。並列作業を管理するためのサイドバー、統合ターミナルとファイルエディター付きのドラッグアンドドロップレイアウト、ビジュアル diff レビュー、ライブアプリプレビュー、自動マージ機能付きの GitHub PR 監視、スケジュール済みタスクがあります。ターミナルは不要です。
 
-<CardGroup cols={2}>
+<CardGroup cols={3}>
   <Card title="Download for macOS" icon="apple" href="https://claude.ai/api/desktop/darwin/universal/dmg/latest/redirect?utm_source=claude_code&utm_medium=docs">
     Universal build for Intel and Apple Silicon
   </Card>
@@ -16,9 +16,13 @@
   <Card title="Download for Windows" icon="windows" href="https://claude.ai/api/desktop/win32/x64/setup/latest/redirect?utm_source=claude_code&utm_medium=docs">
     For x64 processors
   </Card>
+
+  <Card title="Get Claude for Linux (beta)" icon="linux" href="/en/desktop-linux">
+    apt or .deb for Ubuntu and Debian
+  </Card>
 </CardGroup>
 
-For Windows ARM64, download the [ARM64 installer](https://claude.ai/api/desktop/win32/arm64/setup/latest/redirect?utm_source=claude_code\&utm_medium=docs). The desktop app is not available on Linux; use the [CLI](/en/quickstart) instead.
+For Windows ARM64, download the [ARM64 installer](https://claude.ai/api/desktop/win32/arm64/setup/latest/redirect?utm_source=claude_code\&utm_medium=docs). On Linux, install with apt; see [Claude Desktop on Linux](/en/desktop-linux).
 
 <Note>
   Claude Code には [Pro、Max、Team、または Enterprise サブスクリプション](https://claude.com/pricing?utm_source=claude_code\&utm_medium=docs\&utm_content=desktop_quickstart_pricing)が必要です。
@@ -40,7 +44,7 @@ Chat と Cowork は [Claude Desktop サポート記事](https://support.claude.c
 
 <Steps>
   <Step title="インストールしてサインインする">
-    上記のリンクからお使いのプラットフォーム用のインストーラーをダウンロードして実行します。macOS の Applications フォルダまたは Windows の Start メニューから Claude を起動し、Anthropic アカウントでサインインします。
+    macOS と Windows では、上記のリンクからインストーラーをダウンロードして実行します。Linux では、[Claude Desktop on Linux](/ja/desktop-linux) のインストール手順に従ってください。macOS の Applications フォルダ、Windows の Start メニュー、または Linux のアプリケーションランチャーから Claude を起動し、Anthropic アカウントでサインインします。
   </Step>
 
   <Step title="Code タブを開く">
