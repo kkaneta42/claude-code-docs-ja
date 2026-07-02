@@ -17,6 +17,293 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-07-02</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/advisor-ja.md              | 14 ++++++-------
+ docs-ja/pages/agent-teams-ja.md          |  2 ++
+ docs-ja/pages/agent-view-ja.md           | 28 ++++++++++++-------------
+ docs-ja/pages/changelog.md               | 35 ++++++++++++++++++++++++++++++++
+ docs-ja/pages/env-vars-ja.md             |  3 ++-
+ docs-ja/pages/llm-gateway-protocol-ja.md |  2 +-
+ docs-ja/pages/monitoring-usage-ja.md     |  2 +-
+ docs-ja/pages/skills-ja.md               |  2 ++
+ docs-ja/pages/tools-reference-ja.md      |  2 +-
+ docs-ja/pages/troubleshoot-install-ja.md |  8 +++++++-
+ docs-ja/pages/vs-code-ja.md              |  2 ++
+ 11 files changed, 74 insertions(+), 26 deletions(-)
+```
+
+<details>
+<summary>advisor-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/advisor-ja.md b/docs-ja/pages/advisor-ja.md
+index 7269a1a..159eea2 100644
+--- a/docs-ja/pages/advisor-ja.md
++++ b/docs-ja/pages/advisor-ja.md
+@@ -85,11 +85,11 @@ claude --advisor opus
+ advisor はメインモデル以上の機能を持つ必要があります。各メインモデルで受け入れられる advisor は次のとおりです。
+ 
+-| メインモデル                                          | 受け入れられる advisor            | 注記                                                    |
+-| ----------------------------------------------- | -------------------------- | ----------------------------------------------------- |
+-| Haiku 4.5                                       | Fable、Opus、Sonnet          | Haiku は advisor を呼び出すことはできますが、advisor として機能することはできません |
+-| Sonnet 4.6                                      | Fable、Opus、Sonnet          |                                                       |
+-| Sonnet 5                                        | Fable、Opus、Sonnet 5        | Sonnet 4.6 advisor は拒否されます                            |
+-| Opus 4.6 以降                                     | Fable、メインモデルのバージョン以上の Opus | Opus 4.7 メインと Opus 4.6 advisor は拒否されます                |
+-| Fable 5 ({/* min-version: 2.1.170 */}v2.1.170+) | Fable                      | Opus または Sonnet advisor は拒否されます                       |
++| メインモデル                                          | 受け入れられる advisor            | 注記                                                                            |
++| ----------------------------------------------- | -------------------------- | ----------------------------------------------------------------------------- |
++| Haiku 4.5                                       | Fable、Opus、Sonnet          | Haiku は advisor を呼び出すことはできますが、advisor として機能することはできません                         |
++| Sonnet 4.6                                      | Fable、Opus、Sonnet          |                                                                               |
++| Sonnet 5                                        | Fable、Opus、Sonnet 5        | Sonnet 4.6 advisor は拒否されます                                                    |
++| Opus 4.6 以降                                     | Fable、メインモデルのバージョン以上の Opus | Opus 4.7 メインと Opus 4.6 advisor は拒否されます。Opus 4.6 メインは Sonnet 5 advisor も受け入れます |
++| Fable 5 ({/* min-version: 2.1.170 */}v2.1.170+) | Fable                      | Opus または Sonnet advisor は拒否されます                                               |
+ 
+ Fable 5 は、メインモデルとして機能するか advisor として機能するかに関わらず、Claude Code v2.1.170 以降と Fable 5 アクセスが必要です。
+```
+
+</details>
+
+<details>
+<summary>agent-teams-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/agent-teams-ja.md b/docs-ja/pages/agent-teams-ja.md
+index 544d62a..984c277 100644
+--- a/docs-ja/pages/agent-teams-ja.md
++++ b/docs-ja/pages/agent-teams-ja.md
+@@ -285,4 +285,6 @@ Spawn a teammate using the security-reviewer agent type to audit the auth module
+ チームメンバーはリーダーの権限設定で開始します。リーダーが `--dangerously-skip-permissions` で実行する場合、すべてのチームメンバーも同様に実行します。生成後、個別のチームメンバーモードを変更できますが、生成時にチームメンバーごとのモードを設定することはできません。
+ 
++1 つのエージェントが `SendMessage` 経由で別のエージェントにメッセージを送信する場合、受信エージェントには、あなたからではなく別の Claude セッションから来たことが通知されます。チームメンバーは権限プロンプトを承認したり、あなたに代わって同意を提供したりすることはできません。また、アクションが拒否されたチームメンバーは、チェックをバイパスするために別のチームメンバーにそれをリレーすることはできません。[auto mode](/ja/permission-modes#eliminate-prompts-with-auto-mode) では、別のエージェントからリレーされた承認クレームは、あなたからの確認ではなく、信頼できない入力として分類器によって扱われます。チームメンバーの権限プロンプトはリーダーセッションにバブルアップするため、そこで自分で承認してください。
++
+ <h3 id="context-and-communication">
+   コンテキストと通信
+```
+
+</details>
+
+<details>
+<summary>agent-view-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/agent-view-ja.md b/docs-ja/pages/agent-view-ja.md
+index c8b6854..26f438b 100644
+--- a/docs-ja/pages/agent-view-ja.md
++++ b/docs-ja/pages/agent-view-ja.md
+@@ -272,15 +272,15 @@ Completed
+ プロンプトの一部をプレフィックスまたは言及してセッションの開始方法を制御します：
+ 
+-| 入力                               | 効果                                                                                                       |
+-| :------------------------------- | :------------------------------------------------------------------------------------------------------- |
+-| `<agent-name> <prompt>`          | 最初の単語がカスタム [subagent](/ja/sub-agents) 名と一致する場合、その subagent はセッションのメインエージェントとして実行され、frontmatter の設定を使用します |
+-| `@<agent-name>`                  | プロンプト内の任意の場所でカスタム subagent を言及してメインエージェントとして実行                                                           |
+-| `@<repo>`                        | エージェントビューを開いたディレクトリの下のリポジトリを言及してセッションをそこで実行                                                              |
+-| `/<command>`                     | [skills](/ja/skills) および [commands](/ja/commands) をディスパッチプロンプトとして提案                                      |
+-| `! <command>`                    | Claude セッションを開始する代わりに、シェルコマンドをバックグラウンドジョブとして実行します。ジョブは行として表示され、アタッチ、監視、デタッチできます                          |
+-| `#<number>` または pull request URL | セッションが既にその PR で作業している場合は、ディスパッチの代わりに選択                                                                   |
+-| `Shift+Enter`                    | ディスパッチして新しいセッションに直ちにアタッチ                                                                                 |
+-
+-エージェントビュー自体で実行される少数のコマンドがあります。ディスパッチの代わりに：`/exit` および `/quit` はエージェントビューを閉じ、`/logout` はサインアウトします。`/model` はディスパッチモデルを設定します。skills、独自のコマンド、および `/init` などのプロンプト展開組み込みは、新しいバックグラウンドセッションにその最初のプロンプトとして送信されます。その他の組み込みコマンドは、代わりに `attach to a session to run it` ヒントを表示します。
++| 入力                               | 効果                                                                                                              |
++| :------------------------------- | :-------------------------------------------------------------------------------------------------------------- |
++| `<agent-name> <prompt>`          | 最初の単語がカスタム [subagent](/ja/sub-agents) 名と一致する場合、その subagent はセッションのメインエージェントとして実行され、frontmatter の設定を使用します        |
++| `@<agent-name>`                  | プロンプト内の任意の場所でカスタム subagent を言及してメインエージェントとして実行                                                                  |
++| `@<repo>`                        | リポジトリを言及してセッションをそこで実行します。どのリポジトリがリストされるかについては、[特定のディレクトリにディスパッチする](#dispatch-to-a-specific-directory) を参照してください |
++| `/<command>`                     | [skills](/ja/skills) および [commands](/ja/commands) をディスパッチプロンプトとして提案                                             |
++| `! <command>`                    | Claude セッションを開始する代わりに、シェルコマンドをバックグラウンドジョブとして実行します。ジョブは行として表示され、アタッチ、監視、デタッチできます                                 |
++| `#<number>` または pull request URL | セッションが既にその PR で作業している場合は、ディスパッチの代わりに選択                                                                          |
++| `Shift+Enter`                    | ディスパッチして新しいセッションに直ちにアタッチ                                                                                        |
++
++エージェントビュー自体で実行される少数のコマンドがあります。ディスパッチの代わりに：`/exit` および `/quit` はエージェントビューを閉じ、`/logout` はサインアウトします。`/model` は [ディスパッチモデル](#set-the-model) を設定します。skills、独自のコマンド、および `/init` などのプロンプト展開組み込みは、新しいバックグラウンドセッションにその最初のプロンプトとして送信されます。その他の組み込みコマンドは、代わりに `attach to a session to run it` ヒントを表示します。
+ 
+```
+
+</details>
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index 5615452..642541c 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,39 @@
+ # Changelog
+ 
++## 2.1.198
++
++- Claude in Chrome is now generally available
++- Added background agent notifications in `claude agents` — sessions that need input or finish now fire the `Notification` hook (`agent_needs_input` / `agent_completed`)
++- Added `/dataviz` skill for chart and dashboard design guidance with a runnable color-palette validator
++- Gateway: added Claude Platform on AWS (anthropicAws) as an upstream provider; model-not-found responses now advance the failover chain
++- Background agents launched from `claude agents` now commit, push, and open a draft PR when they finish code work in a worktree, instead of stopping to ask
++- The built-in Explore agent now inherits the main session's model (capped at opus) instead of running on haiku
++- Subagents and context compaction now inherit the session's extended thinking configuration, improving output quality on delegated tasks
++- Fixed brief network drops mid-response aborting the turn — transient errors like ECONNRESET now retry with backoff instead of failing
++- Fixed excessive background classifier requests when sandboxed processes repeatedly accessed the same network host
++- Fixed background tasks in web, desktop, and VS Code task panels getting stuck on "Running" after they finish or after resuming a session
++- Fixed agent teams: a teammate that dies on an API error now reports "failed" to the lead, and messaging a stuck teammate wakes it to retry immediately
++- Fixed the `/diff` panel not refreshing when you switch branches or commit outside the session
++- Fixed markdown tables overflowing and wrapping their right border when rendered in fullscreen mode
++- Fixed Claude Platform on AWS and Mantle sessions dead-ending with "Please run /login" when the STS token expires — `awsAuthRefresh` now runs automatically
++- Fixed "no route to host" for local-network hosts in macOS background agent sessions by declaring Local Network entitlements
++- Fixed `/desktop` failing with "Cannot determine working directory" after entering and exiting a worktree
++- Fixed background agents repeatedly showing "Reconnecting…" every ~52 seconds on macOS while the agents view was open
++- Fixed pressing `←` inside `claude attach <id>` exiting to the shell instead of opening the agent view
++- Fixed `claude --bg` silently creating an unattachable session when combined with `--print`/`-p`; the conflicting flags are now rejected up front
++- Fixed the workflow progress view dropping the earliest agents from the list while the phase counter stayed correct in SDK and desktop-app sessions
++- Fixed `.claude/rules/` conditional rules not loading when the target file is reached via a symlinked path
+```
+
+</details>
+
+<details>
+<summary>env-vars-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/env-vars-ja.md b/docs-ja/pages/env-vars-ja.md
+index 574d0dd..bd22524 100644
+--- a/docs-ja/pages/env-vars-ja.md
++++ b/docs-ja/pages/env-vars-ja.md
+@@ -269,5 +269,5 @@ Claude Code は起動時に環境変数を読み取るため、変更は `claude
+ | `CLAUDE_CODE_SESSIONEND_HOOKS_TIMEOUT_MS`               | [SessionEnd](/ja/hooks#sessionend) フックの時間予算をオーバーライドします（ミリ秒）。セッション終了、`/clear`、および対話的な `/resume` を通じたセッション切り替えに適用されます。デフォルトでは予算は 1.5 秒で、設定ファイルで設定されたフックごとの最高 `timeout` に自動的に引き上げられます。最大 60 秒。プラグイン提供フックのタイムアウトは予算を引き上げません                                                                                                                                                                                                                                                                                                                                                                                          |
+ | `CLAUDE_CODE_SESSION_ID`                                | Bash と PowerShell ツールサブプロセスで現在のセッション ID に自動的に設定されます。[フック](/ja/hooks) コマンドサブプロセスと stdio [MCP サーバー](/ja/mcp) サブプロセスでも設定されます。フックに渡される `session_id` フィールドと一致します。`/clear` で更新されます。スクリプトと外部ツールを Claude Code セッションと相関させるために使用します                                                                                                                                                                                                                                                                                                                                                                                        |
+-| `CLAUDE_CODE_SHELL`                                     | 自動シェル検出をオーバーライドします。ログインシェルが優先作業シェルと異なる場合に役立ちます（例：`bash` vs `zsh`）                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
++| `CLAUDE_CODE_SHELL`                                     | Claude Code が Bash ツールコマンドを実行するために使用するシェルを設定します。`bash` または `zsh` バイナリへのパス（例：`/opt/homebrew/bin/bash`）を受け入れます。`fish` などの他のシェルはサポートされていません。値が機能する `bash` または `zsh` パスでない場合、Claude Code はそれを無視し、自動検出にフォールバックします。自動検出は、`bash` または `zsh` を指している場合に `$SHELL` を使用します。それ以外の場合は、PATH と標準インストール場所で見つかった最初の機能する `zsh` を選択し、次に `bash` を選択します                                                                                                                                                                                                                                                                                 |
+ | `CLAUDE_CODE_SHELL_PREFIX`                              | Claude Code がスポーンするシェルコマンドをラップするコマンドプレフィックス：Bash ツール呼び出し、[フック](/ja/hooks) コマンド、[ステータスライン](/ja/statusline) コマンド、stdio [MCP サーバー](/ja/mcp) スタートアップコマンド。PowerShell フックと exec 形式フックはプレフィックスなしで実行されます。ログまたは監査に役立ちます。`/path/to/logger.sh` などの裸の実行可能ファイルパスを設定すると、各コマンドが `/path/to/logger.sh '<command>'` として実行されます。ラッパーはコマンドラインを `$1` の単一シェルクォート引数として受け取るため、ラッパーは `$1` を `exec bash -c "$1"` などのシェルで再評価する必要があります。`$1` を裸の実行可能ファイルパスとして扱うと、`npx -y <package>` などの引数を渡す stdio MCP サーバーが壊れます。Bash ツール呼び出しの場合、`$1` には Claude が組み立てた完全なシェル呼び出しが含まれます。環境セットアップを含みます。Claude が実行したコマンドのみではありません                                 |
+ | `CLAUDE_CODE_SIMPLE`                                    | 最小限のシステムプロンプトと Bash、ファイル読み取り、ファイル編集ツールのみで実行するには `1` に設定します。`--mcp-config` からの MCP ツールは引き続き利用可能です。フック、スキル、プラグイン、MCP サーバー、自動メモリ、CLAUDE.md の自動検出を無効にします。OAuth トークンとキーチェーン認証情報は読み取られないため、Anthropic 認証は `ANTHROPIC_API_KEY` または `--settings` の `apiKeyHelper` から取得する必要があります。[`--bare`](/ja/headless#start-faster-with-bare-mode) CLI フラグと同等です                                                                                                                                                                                                                                                                         |
+@@ -379,4 +379,5 @@ Claude Code は起動時に環境変数を読み取るため、変更は `claude
+ | `VERTEX_REGION_CLAUDE_4_7_OPUS`                         | {/* min-version: 2.1.111 */}Vertex AI を使用する場合、Claude Opus 4.7 のリージョンをオーバーライドします。v2.1.111 で追加されました                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+ | `VERTEX_REGION_CLAUDE_4_8_OPUS`                         | {/* min-version: 2.1.154 */}Vertex AI を使用する場合、Claude Opus 4.8 のリージョンをオーバーライドします。v2.1.154 で追加されました                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
++| `VERTEX_REGION_CLAUDE_5_SONNET`                         | {/* min-version: 2.1.197 */}Vertex AI を使用する場合、Claude Sonnet 5 のリージョンをオーバーライドします。v2.1.197 で追加されました                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+ | `VERTEX_REGION_CLAUDE_FABLE_5`                          | {/* min-version: 2.1.170 */}Vertex AI を使用する場合、Claude Fable 5 のリージョンをオーバーライドします。v2.1.170 で追加されました                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+ | `VERTEX_REGION_CLAUDE_HAIKU_4_5`                        | Vertex AI を使用する場合、Claude Haiku 4.5 のリージョンをオーバーライドします                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+```
+
+</details>
+
+<details>
+<summary>llm-gateway-protocol-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/llm-gateway-protocol-ja.md b/docs-ja/pages/llm-gateway-protocol-ja.md
+index a003766..b451358 100644
+--- a/docs-ja/pages/llm-gateway-protocol-ja.md
++++ b/docs-ja/pages/llm-gateway-protocol-ja.md
+@@ -196,5 +196,5 @@ Claude Code はレスポンスの `data` 配列の各エントリから `id` と
+ ピッカーは、開発者が Claude Code で `/model` を実行するときに開く対話型モデルリストです。各検出されたエントリは「ゲートウェイから」とラベル付けされ、提供されている場合は `display_name` を使用します。[`availableModels` マネージド設定](/ja/settings#available-settings)は検出が追加できるものを制限します。
+ 
+-検出された ID は、ピッカーに既に存在する行と正確に一致する場合、または検出されたものと既存の ID の両方が [Fable](/ja/model-config#work-with-fable-5) に解決される場合のみスキップされます。組み込み行は `sonnet` などのエイリアスをキーとするため、`claude-sonnet-4-6` などの検出された ID は、組み込みエントリの横に独自の「ゲートウェイから」行を追加します。
++検出された ID は、ピッカーに既に存在する行と正確に一致する場合、または検出されたものと既存の ID の両方が [Fable](/ja/model-config#work-with-fable-5) に解決される場合のみスキップされます。{/* min-version: 2.1.197 */}Claude Code v2.1.197 以降では、検出された明示的な ID は、両方が同じモデルに解決される場合、組み込みエントリに折りたたまれます。組み込み行は `sonnet` などのエイリアスをキーとするため、エイリアスが現在解決するモデルの検出された明示的な ID（`claude-sonnet-5` など）は `sonnet` 行に折りたたまれ、エイリアスが解決しない ID（`claude-sonnet-4-6` など）は組み込みエントリの横に独自の「ゲートウェイから」行を追加します。
+ 
+ 結果は `~/.claude/cache/gateway-models.json` にキャッシュされます。Windows では `%USERPROFILE%\.claude\cache\gateway-models.json`。各スタートアップで更新されます。リクエストが失敗するか、ゲートウェイが `/v1/models` を実装しない場合、ピッカーは前回のスタートアップからのキャッシュリストまたは組み込みモデルリストにフォールバックします。ゲートウェイが検出フィルターと一致しないエイリアスの下で Claude モデルを提供する場合、開発者は [モデル設定](/ja/model-config)変数を使用してそれらのエイリアスを手動で追加できます。
+```
+
+</details>
+
+<details>
+<summary>monitoring-usage-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/monitoring-usage-ja.md b/docs-ja/pages/monitoring-usage-ja.md
+index 23ac919..7f259a8 100644
+--- a/docs-ja/pages/monitoring-usage-ja.md
++++ b/docs-ja/pages/monitoring-usage-ja.md
+@@ -629,5 +629,5 @@ Claude Code は、OpenTelemetry ログ/イベント経由で以下のイベン
+ * `response_length`: レスポンステキストの長さ (文字単位)
+ * `response`: レスポンステキスト。60 KB で切り詰められます。デフォルトでは `<REDACTED>` にマスクされます。`OTEL_LOG_ASSISTANT_RESPONSES=1` で有効化します。`OTEL_LOG_ASSISTANT_RESPONSES` が設定されていない場合、`OTEL_LOG_USER_PROMPTS` が代わりに制御するため、プロンプトログが有効な場合でもレスポンスをマスクしたままにするには `OTEL_LOG_ASSISTANT_RESPONSES=0` を設定します
+-* `model`: モデル識別子 (例: "claude-sonnet-4-6")
++* `model`: モデル識別子 (例: "claude-sonnet-5")
+ * `request_id`: レスポンスの `request-id` ヘッダーからの Anthropic API リクエスト ID。API が返す場合のみ存在します
+ * `query_source`: リクエストを発行したサブシステム。例: `"repl_main_thread"`、`"compact"`、またはサブエージェント名
+```
+
+</details>
+
+<details>
+<summary>skills-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/skills-ja.md b/docs-ja/pages/skills-ja.md
+index 9c7f4a3..d52a0c6 100644
+--- a/docs-ja/pages/skills-ja.md
++++ b/docs-ja/pages/skills-ja.md
+@@ -130,4 +130,6 @@ Claude Code には、[`disableBundledSkills`](/ja/settings#available-settings) 
+ `/deploy` を入力するとプロジェクトルートスキルが実行されます。修飾名 `/apps/web:deploy` を入力してネストされたバリアントを明示的に実行します。
+ 
++`<skill-name>` エントリは enterprise、personal、またはプロジェクトの場所にあり、ディスク上の別の場所のディレクトリへのシンボリックリンクにすることができます。Claude Code はシンボリックリンクをたどり、ターゲットディレクトリから `SKILL.md` を読み取ります。同じターゲットが複数の場所から到達可能な場合、Claude Code はスキルを 1 回だけ読み込みます。プラグインスキルはシンボリックリンクを異なる方法で処理します。[シンボリックリンクを使用してマーケットプレイス内でファイルを共有する](/ja/plugins-reference#share-files-within-a-marketplace-with-symlinks)を参照してください。
++
+ <Note>
+   スキルフォルダに `.claude-plugin/plugin.json` を追加すると、`<name>@skills-dir` という名前の[プラグイン](/ja/plugins-reference#skills-directory-plugins)として読み込まれるため、エージェント、hooks、および MCP サーバーをバンドルできます。プロジェクトの `.claude/skills/` では、これはまずワークスペーストラストダイアログを受け入れる必要があります。
+```
+
+</details>
+
+<details>
+<summary>tools-reference-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/tools-reference-ja.md b/docs-ja/pages/tools-reference-ja.md
+index bf025af..ca65fea 100644
+--- a/docs-ja/pages/tools-reference-ja.md
++++ b/docs-ja/pages/tools-reference-ja.md
+@@ -362,5 +362,5 @@ WebSearch 権限ルールは指定子を取りません。`allow` または `den
+ 
+ <Note>
+-  WebSearch は Claude API と Microsoft Foundry で利用可能です。Google Cloud Vertex AI では、Opus、Sonnet、Haiku を含む Claude 4 モデルで機能します。Amazon Bedrock はサーバー側の Web 検索ツールを公開していません。
++  WebSearch は Claude API と Microsoft Foundry で利用可能です。Google Cloud Vertex AI では、Opus、Sonnet、Haiku を含む Claude 4 モデル以降で機能します。Amazon Bedrock はサーバー側の Web 検索ツールを公開していません。
+ </Note>
+ 
+```
+
+</details>
+
+<details>
+<summary>troubleshoot-install-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/troubleshoot-install-ja.md b/docs-ja/pages/troubleshoot-install-ja.md
+index 4bffa7b..9293217 100644
+--- a/docs-ja/pages/troubleshoot-install-ja.md
++++ b/docs-ja/pages/troubleshoot-install-ja.md
+@@ -27,4 +27,5 @@
+ | `Cask 'claude-code' is unavailable: No Cask with this name exists`                           | [Homebrew を更新する](#homebrew-cask-unavailable-or-outdated)                                          |
+ | `'bash' is not recognized as the name of a cmdlet`                                           | [Windows インストーラーコマンドを使用する](#wrong-install-command-on-windows)                                     |
++| `A parameter cannot be found that matches parameter name 'fsSL'`                             | [Windows インストーラーコマンドを使用する](#wrong-install-command-on-windows)                                     |
+ | `Claude Code on Windows requires either Git for Windows (for bash) or PowerShell`            | [シェルをインストールする](#claude-code-on-windows-requires-either-git-for-windows-for-bash-or-powershell)    |
+ | `Claude Code does not support 32-bit Windows`                                                | [Windows PowerShell を開く（x86 エントリではなく）](#claude-code-does-not-support-32-bit-windows)              |
+@@ -490,5 +491,5 @@ Homebrew が予想より古い Claude Code バージョンをインストール
+ </h3>
+ 
+-`'irm' is not recognized`、`The token '&&' is not valid`、または `'bash' is not recognized as the name of a cmdlet` が表示される場合、別のシェルまたはオペレーティングシステムのインストールコマンドをコピーしました。
++`'irm' is not recognized`、`The token '&&' is not valid`、`A parameter cannot be found that matches parameter name 'fsSL'`、または `'bash' is not recognized as the name of a cmdlet` が表示される場合、別のシェルまたはオペレーティングシステムのインストールコマンドをコピーしました。
+ 
+ * **`irm` が認識されない**：CMD にいて、PowerShell ではありません。2 つのオプションがあります：
+@@ -511,4 +512,9 @@ Homebrew が予想より古い Claude Code バージョンをインストール
+   ```
+ 
++* **`A parameter cannot be found that matches parameter name 'fsSL'`**：Windows PowerShell で macOS/Linux `curl -fsSL ... | bash` インストーラーを実行しました。ここで `curl` は `Invoke-WebRequest` のエイリアスであり、`-fsSL` フラグを拒否します。代わりに PowerShell インストーラーを使用してください：
++  ```powershell theme={null}
++  irm https://claude.ai/install.ps1 | iex
++  ```
++
+ * **`bash` が認識されない**：Windows で macOS/Linux インストーラーを実行しました。代わりに PowerShell インストーラーを使用してください：
+   ```powershell theme={null}
+```
+
+</details>
+
+*...以降省略*
+
+</details>
+
+
+<details>
 <summary>2026-07-01</summary>
 
 **変更ファイル:**
@@ -2388,341 +2675,5 @@ index 26e7444..3f99680 100644
 ```
 
 </details>
-
-<details>
-<summary>how-claude-code-works-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/how-claude-code-works-ja.md b/docs-ja/pages/how-claude-code-works-ja.md
-index 4f8ec8e..02352f8 100644
---- a/docs-ja/pages/how-claude-code-works-ja.md
-+++ b/docs-ja/pages/how-claude-code-works-ja.md
-@@ -17,5 +17,5 @@ Claude Code はターミナルで実行される agentic アシスタントで
- Claude にタスクを与えると、3 つのフェーズを通じて作業します。**コンテキストの収集**、**アクションの実行**、**結果の検証** です。これらのフェーズは相互に融合します。Claude はツールを使用して、コードを理解するためのファイル検索、変更を加えるための編集、作業を確認するためのテスト実行など、様々な場面で活用します。
- 
--<img src="https://mintcdn.com/claude-code/c5r9_6tjPMzFdDDT/images/agentic-loop.svg?fit=max&auto=format&n=c5r9_6tjPMzFdDDT&q=85&s=5f1827dec8539f38adee90ead3a85a38" alt="agentic ループ：プロンプトから Claude がコンテキストを収集し、アクションを実行し、結果を検証し、タスク完了まで繰り返します。任意の時点で中断できます。" width="720" height="280" data-path="images/agentic-loop.svg" />
-+<img src="https://mintcdn.com/claude-code/ikqp3_70mqIahteV/images/agentic-loop.svg?fit=max&auto=format&n=ikqp3_70mqIahteV&q=85&s=4a30fb7ce2815012a9f27c955e2c6bb0" alt="agentic ループ：プロンプトから Claude がコンテキストを収集し、アクションを実行し、結果を検証し、タスク完了まで繰り返します。任意の時点で中断できます。" width="720" height="280" data-path="images/agentic-loop.svg" />
- 
- ループは、あなたが何を求めるかに応じて適応します。コードベースに関する質問は、コンテキスト収集だけで済むかもしれません。バグ修正は 3 つのフェーズすべてを繰り返し循環します。リファクタリングは広範な検証を伴うかもしれません。Claude は前のステップから学んだことに基づいて各ステップが何を必要とするかを判断し、数十のアクションを連鎖させ、途中で軌道修正します。
-@@ -131,5 +131,5 @@ Claude は現在のブランチのファイルを見ます。ブランチを切
- `claude --continue` または `claude --resume` でセッションを再開すると、同じセッション ID を使用して中断したところから再開し、新しいメッセージを既存の会話に追加します。`--fork-session` または `/branch` でフォークすると、履歴を新しいセッション ID にコピーし、元のセッションは変更されません。
- 
--<img src="https://mintcdn.com/claude-code/c5r9_6tjPMzFdDDT/images/session-continuity.svg?fit=max&auto=format&n=c5r9_6tjPMzFdDDT&q=85&s=fa41d12bfb57579cabfeece907151d30" alt="セッション継続性：再開は同じセッションを続行し、フォークは新しい ID で新しいブランチを作成します。" width="560" height="280" data-path="images/session-continuity.svg" />
-+<img src="https://mintcdn.com/claude-code/ikqp3_70mqIahteV/images/session-continuity.svg?fit=max&auto=format&n=ikqp3_70mqIahteV&q=85&s=04ed0984a58e4127e05b3640265241a3" alt="セッション継続性：再開は同じセッションを続行し、フォークは新しい ID で新しいブランチを作成します。" width="560" height="280" data-path="images/session-continuity.svg" />
- 
- 再開フラグ、`/resume` ピッカー、命名、同じセッションが 2 つのターミナルで開いている場合の動作については、[セッションを管理する](/ja/sessions) を参照してください。
-```
-
-</details>
-
-<details>
-<summary>legal-and-compliance-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/legal-and-compliance-ja.md b/docs-ja/pages/legal-and-compliance-ja.md
-index 95ca6ae..2402304 100644
---- a/docs-ja/pages/legal-and-compliance-ja.md
-+++ b/docs-ja/pages/legal-and-compliance-ja.md
-@@ -7,8 +7,4 @@
- > Claude Code の法的契約、規制認証、およびセキュリティ情報。
- 
--<Note>
--  Starting June 15, 2026, Agent SDK and `claude -p` usage on subscription plans will draw from a new monthly Agent SDK credit, separate from your interactive usage limits. See [Use the Claude Agent SDK with your Claude plan](https://support.claude.com/en/articles/15036540-use-the-claude-agent-sdk-with-your-claude-plan) for details.
--</Note>
--
- <h2 id="legal-agreements">
-   法的契約
-```
-
-</details>
-
-</details>
-
-
-<details>
-<summary>2026-06-13</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/changelog.md | 45 +++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 45 insertions(+)
-```
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index 3aa61b1..478b0ad 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,49 @@
- # Changelog
- 
-+## 2.1.176
-+
-+- Session titles are now generated in the language of your conversation (set the `language` setting to pin a specific language)
-+- Added `footerLinksRegexes` setting for regex-matched link badges in the footer row, configurable via user or managed settings
-+- Improved Bedrock credential caching: credentials from `awsCredentialExport` are now cached until their `Expiration` instead of a fixed 1 hour
-+- Fixed `availableModels` enforcement: alias model picks can no longer be redirected to a blocked model via `ANTHROPIC_DEFAULT_*_MODEL` environment variables, and `/fast` now refuses to toggle when it would switch to a model outside the allowlist
-+- Fixed auto mode failing on Fable 5 for organizations without Opus 4.8 enabled — the classifier now falls back to the best available Opus model
-+- Fixed hook `if` conditions for Read/Edit/Write tool paths: documented patterns like `Edit(src/**)`, `Read(~/.ssh/**)`, and `Read(.env)` now match correctly
-+- Fixed Linux sandbox failing to start when `.claude/settings.json` is a symlink with an absolute target
-+- Fixed `/copy` and mouse-selection copy not reaching the system clipboard inside tmux over SSH, and tmux paste buffer not loading on versions older than 3.2
-+- Fixed Remote Control connecting from web/mobile silently switching the session's model
-+- Fixed Remote Control disconnect notifications showing a bare numeric code instead of a human-readable reason, and connection failures adding a duplicate line to the conversation transcript
-+- Fixed Remote Control sessions not disconnecting when you sign in to a different account
-+- Fixed `/cd` and worktree moves leaving the session reporting the previous directory's git branch
-+- Fixed `claude agents`: pressing back in one window no longer detaches other windows attached to the same session
-+- Fixed backgrounded sessions showing "Working" forever when `/bg` mid-turn had nothing left to continue
-+- Fixed background agent search by PR URL: PRs opened during scheduled wakeups or while a job was blocked now appear in `claude agents` search
-+- Fixed the agents view input showing no text cursor on Windows
-+- Fixed `claude --bg -cn <name>` not seeding the session name
-+- Fixed background sessions to neutralize Windows network paths in persisted state before respawn
-+- Fixed background-session respawn rejecting malformed resume IDs from corrupted state files
-+- Fixed the Windows background-service daemon not starting when `~/.claude/daemon` has the ReadOnly attribute set
-+- Fixed cloud sessions failing with "Could not resolve authentication method" when idle for too long before being claimed
-```
-
-</details>
-
-</details>
-
-
-<details>
-<summary>2026-06-12</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/amazon-bedrock-ja.md           |   72 ++
- docs-ja/pages/changelog.md                   |    5 +
- docs-ja/pages/claude-directory-ja.md         | 1426 +++++++++++++++++++++++
- docs-ja/pages/claude-platform-on-aws-ja.md   |  182 +++
- docs-ja/pages/context-window-ja.md           | 1564 ++++++++++++++++++++++++++
- docs-ja/pages/google-vertex-ai-ja.md         |   72 ++
- docs-ja/pages/microsoft-foundry-ja.md        |   72 ++
- docs-ja/pages/prompt-library-ja.md           | 1319 ++++++++++++++++++++++
- docs-ja/pages/third-party-integrations-ja.md |   72 ++
- 9 files changed, 4784 insertions(+)
-```
-
-<details>
-<summary>amazon-bedrock-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/amazon-bedrock-ja.md b/docs-ja/pages/amazon-bedrock-ja.md
-index 6eac9dc..c411db1 100644
---- a/docs-ja/pages/amazon-bedrock-ja.md
-+++ b/docs-ja/pages/amazon-bedrock-ja.md
-@@ -7,4 +7,76 @@
- > Amazon Bedrock を通じた Claude Code の設定方法（セットアップ、IAM 設定、トラブルシューティングを含む）について学習します。
- 
-+export const ContactSalesCard = ({surface}) => {
-+  const utm = content => `utm_source=claude_code&utm_medium=docs&utm_content=${surface}_${content}`;
-+  const iconArrowRight = (size = 13) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-+      <line x1="5" y1="12" x2="19" y2="12" />
-+      <polyline points="12 5 19 12 12 19" />
-+    </svg>;
-+  const STYLES = `
-+.cc-cs {
-+  --cs-slate: #141413;
-+  --cs-clay: #d97757;
-+  --cs-clay-deep: #c6613f;
-+  --cs-gray-000: #ffffff;
-+  --cs-gray-700: #3d3d3a;
-+  --cs-border-default: rgba(31, 30, 29, 0.15);
-+  font-family: inherit;
-+}
-+.dark .cc-cs {
-+  --cs-slate: #f0eee6;
-+  --cs-gray-000: #262624;
-+  --cs-gray-700: #bfbdb4;
-+  --cs-border-default: rgba(240, 238, 230, 0.14);
-+}
-+.cc-cs-card {
-```
-
-</details>
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index f1d4f8d..3aa61b1 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,9 @@
- # Changelog
- 
-+## 2.1.173
-+
-+- Fixed Fable 5 model names with a `[1m]` suffix not being normalized — Fable 5 includes 1M context by default, so the suffix is now stripped automatically
-+- Fixed a spurious "sandbox dependencies missing" startup warning on Windows when sandbox was enabled in settings
-+
- ## 2.1.172
- 
-```
-
-</details>
-
-<details>
-<summary>claude-directory-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/claude-directory-ja.md b/docs-ja/pages/claude-directory-ja.md
-index 0ab4439..467b49d 100644
---- a/docs-ja/pages/claude-directory-ja.md
-+++ b/docs-ja/pages/claude-directory-ja.md
-@@ -7,4 +7,1428 @@
- > Claude Code が CLAUDE.md、settings.json、hooks、skills、commands、subagents、workflows、rules、auto memory を読み込む場所。プロジェクト内の .claude ディレクトリとホームディレクトリの ~/.claude を探索します。
- 
-+export const ClaudeExplorer = () => {
-+  const A = useMemo(() => ({href, children}) => <a href={href} style={{
-+    color: 'var(--ce-accent)',
-+    textDecoration: 'none',
-+    borderBottom: '1px dotted var(--ce-accent)'
-+  }}>{children}</a>, []);
-+  const C = useMemo(() => ({children}) => <code style={{
-+    fontFamily: 'var(--ce-mono)',
-+    fontSize: '0.92em',
-+    padding: '1px 4px',
-+    borderRadius: '3px',
-+    background: 'var(--ce-surface)',
-+    border: '0.5px solid var(--ce-border-subtle)'
-+  }}>{children}</code>, []);
-+  const commandsNote = useMemo(() => <>Commands and skills are now the same mechanism. For new workflows, use <A href="/en/skills">skills/</A> instead: same <C>/name</C> invocation, plus you can bundle supporting files.</>, []);
-+  const FILE_TREE = useMemo(() => ({
-+    project: {
-+      label: 'your-project/',
-+      children: [{
-+        id: 'claude-md',
-+        label: 'CLAUDE.md',
-+        type: 'file',
-+        icon: 'md',
-```
-
-</details>
-
-<details>
-<summary>claude-platform-on-aws-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/claude-platform-on-aws-ja.md b/docs-ja/pages/claude-platform-on-aws-ja.md
-index ada8273..1c2ff61 100644
---- a/docs-ja/pages/claude-platform-on-aws-ja.md
-+++ b/docs-ja/pages/claude-platform-on-aws-ja.md
-@@ -7,4 +7,186 @@
- > AWS 認証、IAM アクセス制御、AWS Marketplace 請求を使用して、Anthropic が運営する Claude API を使用するように Claude Code を設定します。
- 
-+export const ContactSalesCard = ({surface}) => {
-+  const utm = content => `utm_source=claude_code&utm_medium=docs&utm_content=${surface}_${content}`;
-+  const iconArrowRight = (size = 13) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-+      <line x1="5" y1="12" x2="19" y2="12" />
-+      <polyline points="12 5 19 12 12 19" />
-+    </svg>;
-+  const STYLES = `
-+.cc-cs {
-+  --cs-slate: #141413;
-+  --cs-clay: #d97757;
-+  --cs-clay-deep: #c6613f;
-+  --cs-gray-000: #ffffff;
-+  --cs-gray-700: #3d3d3a;
-+  --cs-border-default: rgba(31, 30, 29, 0.15);
-+  font-family: inherit;
-+}
-+.dark .cc-cs {
-+  --cs-slate: #f0eee6;
-+  --cs-gray-000: #262624;
-+  --cs-gray-700: #bfbdb4;
-+  --cs-border-default: rgba(240, 238, 230, 0.14);
-+}
-+.cc-cs-card {
-```
-
-</details>
-
-<details>
-<summary>context-window-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/context-window-ja.md b/docs-ja/pages/context-window-ja.md
-index 17cb163..04ca98c 100644
---- a/docs-ja/pages/context-window-ja.md
-+++ b/docs-ja/pages/context-window-ja.md
-@@ -7,6 +7,1570 @@
- > Claude Code のコンテキストウィンドウがセッション中にどのように満たされるかのインタラクティブなシミュレーション。自動的に読み込まれるもの、各ファイル読み込みのコスト、ルールとフックが発火するタイミングを確認できます。
- 
-+export const ContextWindow = () => {
-+  const MAX = 200000;
-+  const STARTUP_END = 0.2;
-+  {}
-+  const EVENTS = useMemo(() => [{}, {
-+    t: 0.015,
-+    kind: 'auto',
-+    label: 'System prompt',
-+    tokens: 4200,
-+    color: '#6B6964',
-+    vis: 'hidden',
-+    desc: 'Core instructions for behavior, tool use, and response formatting. Always loaded first. You never see it.',
-+    link: null
-+  }, {
-+    t: 0.035,
-+    kind: 'auto',
-+    label: 'Auto memory (MEMORY.md)',
-+    tokens: 680,
-+    color: '#E8A45C',
-+    vis: 'hidden',
-+    desc: "Claude's notes to itself from previous sessions: build commands it learned, patterns it noticed, mistakes to avoid. The first 200 lines or 25KB, whichever comes first, are loaded into the conversation context.",
-+    link: '/en/memory#auto-memory'
-+  }, {
-```
-
-</details>
-
-<details>
-<summary>google-vertex-ai-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/google-vertex-ai-ja.md b/docs-ja/pages/google-vertex-ai-ja.md
-index 2575a95..608eab8 100644
---- a/docs-ja/pages/google-vertex-ai-ja.md
-+++ b/docs-ja/pages/google-vertex-ai-ja.md
-@@ -7,4 +7,76 @@
- > Google Vertex AI を通じた Claude Code の設定方法について学びます。セットアップ、IAM 設定、トラブルシューティングを含みます。
- 
-+export const ContactSalesCard = ({surface}) => {
-+  const utm = content => `utm_source=claude_code&utm_medium=docs&utm_content=${surface}_${content}`;
-+  const iconArrowRight = (size = 13) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-+      <line x1="5" y1="12" x2="19" y2="12" />
-+      <polyline points="12 5 19 12 12 19" />
-+    </svg>;
-+  const STYLES = `
-+.cc-cs {
-+  --cs-slate: #141413;
-+  --cs-clay: #d97757;
-+  --cs-clay-deep: #c6613f;
-+  --cs-gray-000: #ffffff;
-+  --cs-gray-700: #3d3d3a;
-+  --cs-border-default: rgba(31, 30, 29, 0.15);
-+  font-family: inherit;
-+}
-+.dark .cc-cs {
-+  --cs-slate: #f0eee6;
-+  --cs-gray-000: #262624;
-+  --cs-gray-700: #bfbdb4;
-+  --cs-border-default: rgba(240, 238, 230, 0.14);
-+}
-+.cc-cs-card {
-```
-
-</details>
-
-*...以降省略*
-
-</details>
-
 
 <!-- UPDATE_LOG_END -->

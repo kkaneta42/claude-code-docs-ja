@@ -361,7 +361,7 @@ WebSearch は Anthropic の [web search](https://platform.claude.com/docs/ja/age
 WebSearch 権限ルールは指定子を取りません。`allow` または `deny` の裸の `WebSearch` エントリのみが唯一の形式です。
 
 <Note>
-  WebSearch は Claude API と Microsoft Foundry で利用可能です。Google Cloud Vertex AI では、Opus、Sonnet、Haiku を含む Claude 4 モデルで機能します。Amazon Bedrock はサーバー側の Web 検索ツールを公開していません。
+  WebSearch は Claude API と Microsoft Foundry で利用可能です。Google Cloud Vertex AI では、Opus、Sonnet、Haiku を含む Claude 4 モデル以降で機能します。Amazon Bedrock はサーバー側の Web 検索ツールを公開していません。
 </Note>
 
 <h2 id="write-tool-behavior">
