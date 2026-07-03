@@ -334,7 +334,7 @@ Claude Code v2.1.195 以降はデフォルトでこれらも許可します。
   dontAsk モードで事前承認済みツールのみを許可する
 </h2>
 
-`dontAsk` モードはプロンプトが表示されるすべてのツール呼び出しを自動的に拒否します。`permissions.allow` ルールと [読み取り専用 Bash コマンド](/ja/permissions#read-only-commands)に一致するアクションのみが実行できます。明示的な [`ask` ルール](/ja/permissions#manage-permissions)はプロンプトするのではなく拒否されます。これにより、モードは CI パイプラインまたは Claude が実行を許可されているものを事前に定義する制限環境で完全に非対話的になります。[Claude Code on the web](/ja/claude-code-on-the-web)上のクラウドセッションは `defaultMode: "dontAsk"` を無視します。詳細は [bypassPermissions](#skip-all-checks-with-bypasspermissions-mode)を参照してください。
+`dontAsk` モードはプロンプトが表示されるすべてのツール呼び出しを自動的に拒否します。このモードがアクティブな間、ステータスバーに `⏵⏵ don't ask on` が表示されます。`permissions.allow` ルールと [読み取り専用 Bash コマンド](/ja/permissions#read-only-commands)に一致するアクションのみが実行できます。明示的な [`ask` ルール](/ja/permissions#manage-permissions)はプロンプトするのではなく拒否されます。これにより、モードは CI パイプラインまたは Claude が実行を許可されているものを事前に定義する制限環境で完全に非対話的になります。[Claude Code on the web](/ja/claude-code-on-the-web)上のクラウドセッションは `defaultMode: "dontAsk"` を無視します。詳細は [bypassPermissions](#skip-all-checks-with-bypasspermissions-mode)を参照してください。
 
 フラグで起動時に設定します。
 
