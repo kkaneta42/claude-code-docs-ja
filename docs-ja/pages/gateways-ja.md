@@ -44,7 +44,7 @@ Claude Code は Anthropic 独自のゲートウェイ、または組織が既に
   Claude apps ゲートウェイ
 </h3>
 
-Claude apps ゲートウェイは Anthropic の自社ホスト型ゲートウェイで、`claude` バイナリに含まれています。Amazon Bedrock、Google Cloud、Microsoft Foundry、または Anthropic API にアップストリームとしてルーティングします。開発者は `/login` を通じて企業の ID プロバイダーでサインインし、ゲートウェイは IdP グループによってモデルアクセスと [管理設定](/ja/permissions#managed-settings) を強制し、[OpenTelemetry Protocol（OTLP）](/ja/monitoring-usage) 使用状況メトリクスを独自の可観測性スタックに出力します。
+Claude apps ゲートウェイは Anthropic の自社ホスト型ゲートウェイで、`claude` バイナリに含まれています。Amazon Bedrock、Claude Platform on AWS、Google Cloud、Microsoft Foundry、または Anthropic API にアップストリームとしてルーティングします。開発者は `/login` を通じて企業の ID プロバイダーでサインインし、ゲートウェイは IdP グループによってモデルアクセスと [管理設定](/ja/permissions#managed-settings) を強制し、[OpenTelemetry Protocol（OTLP）](/ja/monitoring-usage) 使用状況メトリクスを独自の可観測性スタックに出力します。
 
 これは各 Claude Code リリースと共にビルドおよびテストされるため、Claude Code が送信するヘッダーとリクエストフィールドを転送します。別途保守されるゲートウェイは、各リリースでそれらのヘッダーとフィールドが変更されるため、[転送ルールを更新](/ja/llm-gateway-protocol#forward-as-open-lists) する必要があります。Claude apps ゲートウェイは CLI と共にリリースされるため、最新の状態を保つリストはありません。[可用性と制限事項](/ja/claude-apps-gateway#availability-and-limitations) を参照して、ゲートウェイセッションで異なる動作をする機能の小さなセットを確認してください。
 

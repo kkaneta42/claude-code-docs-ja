@@ -97,6 +97,8 @@
 /branch try-streaming-approach
 ```
 
+名前を省略した場合、Claude Code は会話の最初のプロンプトに基づいて新しいブランチに名前を付けます。v2.1.198 以降では、これは[コンパクション](/ja/how-claude-code-works#when-context-fills-up)後にも適用されます。それより前のバージョンでは、元の最初のプロンプトを超えてコンパクション要約を参照する代わりに、リテラル名 `Branched conversation` にフォールバックしていました。
+
 コマンドラインから、`--continue` または `--resume` を `--fork-session` と組み合わせます。
 
 ```bash theme={null}

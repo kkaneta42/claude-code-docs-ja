@@ -36,6 +36,8 @@ claude --worktree
 
 セッション中に Claude に「worktree で作業する」と指示することもでき、[`EnterWorktree`](/ja/tools-reference) ツールを使用して作成します。Worktree に入ると、Claude は `.claude/worktrees/` の下の別の worktree に `EnterWorktree` をターゲットパスで呼び出すことで直接切り替えることができます。前の worktree はディスク上に変更されずに残ります。
 
+{/* min-version: 2.1.198 */}v2.1.198 以降、worktree に入るか出るかは、セッショントランスクリプトをそのディレクトリのプロジェクトストレージに再配置します。これは [`/cd`](/ja/commands)と同じ方法で行われるため、`/desktop` と `--resume` はその後そこでセッションを見つけます。[`WorktreeCreate` フック](#non-git-version-control)によって作成された Worktree は除外され、トランスクリプトを起動ディレクトリに保持します。
+
 初めてディレクトリで `--worktree` をインタラクティブに使用する前に、そのディレクトリで `claude` を 1 回実行してワークスペース信頼ダイアログを受け入れてください。信頼がまだ受け入れられていない場合、`--worktree` はエラーで終了し、最初にディレクトリで `claude` を実行するよう求めるプロンプトが表示されます。`-p` を使用した非インタラクティブ実行は[信頼チェック](/ja/security)をスキップするため、`claude -p --worktree` はそれなしで進行します。
 
 <Tip>

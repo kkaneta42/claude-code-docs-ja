@@ -230,7 +230,7 @@ export AWS_PROFILE=my-profile
 
 CI と自動化の場合、Anthropic サービスを呼び出す権限を持つ IAM ロールをランナーに付与し、`AWS_REGION` を設定します。認証情報チェーンはロールを自動的に取得します。
 
-SSO 認証情報がセッション中に期限切れになった場合、[`awsAuthRefresh`](/ja/amazon-bedrock#advanced-credential-configuration) を設定して、Claude Code がログインコマンドを再実行し、失敗する代わりに再試行するようにします。コマンドを `settings.json` に追加します。
+SSO 認証情報がセッション中に期限切れになった場合、[`awsAuthRefresh`](/ja/amazon-bedrock#advanced-credential-configuration) を設定して、Claude Code がログインコマンドを再実行し、失敗する代わりに再試行するようにします。AWS 上の Claude Platform での自動更新には Claude Code v2.1.198 以降が必要です。それより前のバージョンは `/login` を実行するプロンプトで停止します。これは AWS 認証情報を更新できません。コマンドを `settings.json` に追加します。
 
 ```json theme={null}
 {
