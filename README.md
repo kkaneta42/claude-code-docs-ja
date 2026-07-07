@@ -17,6 +17,57 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-07-07</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md | 21 +++++++++++++++++++++
+ 1 file changed, 21 insertions(+)
+```
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index 4bfce89..6d222e9 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,25 @@
+ # Changelog
+ 
++## 2.1.202
++
++- Added a "Dynamic workflow size" setting in `/config` for controlling how large Claude generally makes dynamic workflows (small/medium/large agent counts) — an advisory guideline, not an enforced cap
++- Added `workflow.run_id` and `workflow.name` OpenTelemetry attributes to telemetry emitted by workflow-spawned agents, so a workflow run's activity can be reconstructed from OTel data
++- Fixed a crash in the inline Ctrl+R history search when accepting or cancelling while the search was still scanning the history file
++- Fixed `/rename` on background sessions being reverted when the job restarts, which broke addressing the session by its new name
++- Fixed transient mTLS handshake failures when settings were re-applied during an in-place client certificate rotation
++- Fixed commands sent from Remote Control (mobile/web) into an interactive session failing with "Unknown command"
++- Fixed images and files sent from the Remote Control mobile or web app without a caption being silently dropped
++- Fixed the sign-in URL printed by `claude auth login` and `claude mcp login --no-browser` not being reliably clickable when it wraps over SSH — it is now emitted as a single hyperlink
++- Fixed opening a chat from `claude agents` sometimes failing with "currently running as a background agent" followed by a worker crash/respawn loop
++- Fixed workflow scripts with unicode quote escapes in strings being corrupted before parsing; workflow parse errors now show the offending line instead of always blaming TypeScript
++- Fixed voice dictation retrying in an unbounded loop when the microphone or audio recorder fails — repeated capture failures now pause voice input
++- Fixed `/remote-control` sessions showing the wrong permission mode in the mobile and web apps
++- Fixed resuming a session by name, or opening the resume picker, taking minutes and using a large amount of memory in repositories with many git worktrees
++- Fixed installer and updater downloads failing immediately with "aborted" when a proxy or network drops the connection mid-download — transient connection drops now retry
++- Fixed re-invoking an already-loaded skill appending a duplicate copy of its instructions to context
++- Improved `/workflows` agent list layout: wider titles, a dedicated time column, shorter model names, and no per-row tool-call counts
++- Improved MCP error messages: clearer error when a server config has `url` but no `type`, suggesting `"type": "http"` instead of the misleading "command: expected string"
++- Changed `/review <pr>` back to a fast single-pass review; use `/code-review <level> <pr#>` for the multi-agent review at a chosen effort level
++
+ ## 2.1.201
+ 
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-07-04</summary>
 
 **変更ファイル:**
@@ -2605,59 +2656,5 @@ index 2551042..40c2515 100644
  docs-ja/pages/changelog.md | 20 ++++++++++++++++++++
  1 file changed, 20 insertions(+)
 ```
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index b19e538..2551042 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,24 @@
- # Changelog
- 
-+## 2.1.183
-+
-+- Improved auto mode safety: destructive git commands (`git reset --hard`, `git checkout -- .`, `git clean -fd`, `git stash drop`) are now blocked when you didn't ask to discard local work, `git commit --amend` is blocked when the commit wasn't made by the agent this session, and `terraform destroy`/`pulumi destroy`/`cdk destroy` are blocked unless you asked for the specific stack
-+- Added a warning when the requested model is deprecated or automatically updated to a newer model, shown on stderr in print mode (`-p`) and now also covering models set in agent frontmatter
-+- Added `attribution.sessionUrl` setting to omit the claude.ai session link from commits and PRs in web and Remote Control sessions
-+- Added `/config --help` to list all available shorthand keys for `/config key=value`
-+- Changed `/config` toggle behavior: Enter and Space both change the selected setting, and Esc now saves and closes instead of reverting
-+- Removed the startup "setup issues" line under the logo — run `/doctor` to see configuration issues or use `--debug`
-+- Fixed `thinking.disabled.display: Extra inputs are not permitted` 400 errors on subagent spawns and session-title generation for affected configurations
-+- Fixed WebSearch returning empty results in subagents
-+- Fixed the terminal cursor being stranded above the prompt after navigating history in vim mode with the native cursor enabled
-+- Fixed fullscreen TUI corruption (statusline mid-screen, duplicated spinner rows, merged text) in Windows Terminal under heavy nested-subagent load
-+- Fixed turns silently completing with no visible output when the model returned only a thinking block; Claude now re-prompts once
-+- Fixed user-level skills appearing multiple times in slash-command autocomplete when multiple plugins are enabled
-+- Fixed MCP servers requiring authentication exposing auth-stub tools to the model in headless/SDK mode
-+- Fixed tmux teammate panes failing to launch when the shell has slow rc-file initialization, and keystrokes typed during agent spawn leaking into the new tmux pane instead of the leader prompt
-+- Fixed background tasks started by a teammate being killed when the teammate finishes a turn
-+- Fixed scheduled task and webhook trigger deliveries being treated as keyboard input; they now classify as task notifications and can no longer approve a pending action or set the session title in auto mode
-+- Fixed focus mode showing "Ran N PostToolUse hooks" timing lines under each response
-+
- ## 2.1.181
- 
-```
-
-</details>
-
-</details>
-
-
-<details>
-<summary>2026-06-19</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/changelog.md | 1 +
- docs-ja/pages/memory-ja.md | 2 ++
- 2 files changed, 3 insertions(+)
-```
-
-**新規追加:**
-
 
 <!-- UPDATE_LOG_END -->
