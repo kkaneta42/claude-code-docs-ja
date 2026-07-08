@@ -17,6 +17,57 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-07-08</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md | 40 ++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 40 insertions(+)
+```
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index 6d222e9..3281a9a 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,44 @@
+ # Changelog
+ 
++## 2.1.203
++
++- Added a warning when your login is about to expire, so you can re-authenticate before background sessions are interrupted
++- Added a grey ⏸ badge to the footer when in manual permission mode, making the active mode always visible
++- Added the session's additional working directories to MCP `roots/list`, with `notifications/roots/list_changed` sent when the set changes
++- Fixed opening or switching background agent sessions on macOS stalling for 15–20 seconds due to a false low-memory detection (regression in 2.1.196)
++- Fixed background sessions becoming permanently unresponsive to attach, replies, and stop when the daemon's session token went stale — the session now recovers automatically
++- Fixed returning to `claude agents` silently stopping running subagents and re-running the prompt from scratch — their work now carries over
++- Fixed a memory and per-turn CPU regression in interactive sessions: the context-usage indicator no longer re-analyzes the entire transcript after every turn
++- Fixed background agents inheriting a stale `PATH` from the daemon instead of the dispatching shell, causing missing tools on Windows
++- Fixed background and agent-view sessions dropping a shell-exported `ANTHROPIC_BASE_URL`, which sent API keys to the default endpoint and failed with 401
++- Fixed Bash failing with "argument list too long" in repos with many git worktrees
++- Fixed worktree-isolated subagents sometimes running shell commands in the parent checkout instead of their own worktree
++- Fixed worktree creation rejecting nested repositories in multi-repo workspaces, leaving background sessions unable to isolate and edit
++- Fixed background agents crash-looping when their working directory was deleted, replaced by a file, or became an invalid path — they now fail once with a clear error
++- Fixed a background daemon auto-upgrade failure silently killing all running background sessions
++- Fixed `TaskStop` and `TaskOutput` failing to find background agents spawned by another agent — errors now list running agents by id and description
++- Fixed the `claude agents` composer discarding your typed message when a slash command isn't available there
++- Fixed the agent list crashing when opening a stopped session whose conversation was already open in another session
++- Fixed background sessions showing "Needs input" in the agent list after the question was already answered
++- Fixed background agent startup failures showing only "exit_with_message" instead of the actual error
++- Fixed background sessions ignoring `effortLevel` changes in settings.json when forked through the daemon
++- Fixed attached background sessions ignoring `CLAUDE_CODE_DISABLE_MOUSE` and `CLAUDE_CODE_DISABLE_MOUSE_CLICKS` opt-outs
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-07-07</summary>
 
 **変更ファイル:**
@@ -2621,40 +2672,6 @@ index affb61d..ff8fc31 100644
 ```
  docs-ja/pages/changelog.md | 4 ++++
  1 file changed, 4 insertions(+)
-```
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index 2551042..40c2515 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,8 @@
- # Changelog
- 
-+## 2.1.185
-+
-+- The stream-stall hint now reads "Waiting for API response · will retry in …" instead of "No response from API · Retrying in …", and triggers after 20s of silence instead of 10s
-+
- ## 2.1.183
- 
-```
-
-</details>
-
-</details>
-
-
-<details>
-<summary>2026-06-20</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/changelog.md | 20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
 ```
 
 <!-- UPDATE_LOG_END -->
