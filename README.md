@@ -17,6 +17,57 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-07-10</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md | 30 ++++++++++++++++++++++++++++++
+ 1 file changed, 30 insertions(+)
+```
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index 9049203..a1320bd 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,34 @@
+ # Changelog
+ 
++## 2.1.206
++
++- Added directory path suggestions to `/cd`, matching `/add-dir` behavior
++- Added a `/doctor` check that proposes trimming checked-in `CLAUDE.md` files by cutting content Claude could derive from the codebase
++- `/commit-push-pr` now auto-allows `git push` to the repo's configured push remote (`remote.pushDefault`, or the sole remote when only one is configured) in addition to `origin`
++- Gateway: `/login` now supports Anthropic-operated public gateway endpoints
++- `EnterWorktree` now asks for confirmation before entering a git worktree outside the project's `.claude/worktrees/` directory
++- Background agents now upgrade to a new version in the background right after a Claude Code update, instead of paying a slow stale-session upgrade when you attach
++- Fixed an expired login failing every model with a misleading "There's an issue with the selected model" error instead of prompting to run `/login`
++- Fixed `claude --resume` and `--continue` not responding to keyboard input on startup
++- Fixed MCP servers configured via `--mcp-config` or `.mcp.json` ignoring a per-server `request_timeout_ms`, which caused long-running MCP tool calls to time out at the 60s default in fresh sessions
++- Fixed `CLAUDE_CODE_EXTRA_BODY` being silently ignored by `claude agents` / `--bg` background workers; the shell-exported override now follows the dispatching session
++- Fixed OAuth MCP servers requiring manual re-authentication after a single failed token refresh
++- Fixed `--permission-prompt-tool` pointing at an MCP server crashing with "MCP tool not found" on cold start before the server finishes connecting
++- Fixed `/model` picker rows printing a price for a different model than the row named, and stopped quoting first-party list prices on providers that don't bill them
++- Fixed server-provided model rows being misplaced in the `/model` picker when an entitlement or allowlist restriction drops the row they were positioned against
++- Fixed desktop sessions getting stuck showing "running" after a slash command was sent mid-turn
++- Fixed keyboard input being ignored in the agents view when a setup prompt appeared before a bare `claude --resume` on Windows
++- Fixed `claude rm` leaving the removed job in the daemon roster, causing the row to reappear in `claude agents`
++- Fixed `/remote-control` showing "Unknown command" when logged out — it now explains how to sign in
++- Fixed left arrow not stepping back out of a phase or agent in the workflow detail view
++- Fixed `/status` listing the same broken-install warning twice
++- Fixed false "disused plugin" tips and skewed disuse telemetry for LSP plugins
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-07-09</summary>
 
 **変更ファイル:**
@@ -2611,64 +2662,6 @@ index 0c40dbf..3058b3c 100644
 +コミットまたは PR 以外のもの（Claude が投稿する Slack メッセージやそれが書き込むレポートファイルなど）にセッションリンクを含めるには、Claude に次のコマンドを実行させ、その出力を使用してください。このコマンドは環境変数の値の `cse_` プレフィックスをトランスクリプト URL が期待する `session_` プレフィックスに変換します：
  
  ```bash theme={null}
-```
-
-</details>
-
-<details>
-<summary>claude-platform-on-aws-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/claude-platform-on-aws-ja.md b/docs-ja/pages/claude-platform-on-aws-ja.md
-index 6b1d64d..262c879 100644
---- a/docs-ja/pages/claude-platform-on-aws-ja.md
-+++ b/docs-ja/pages/claude-platform-on-aws-ja.md
-@@ -239,4 +239,6 @@ SSO 認証情報がセッション中に期限切れになった場合、[`awsAu
- ```
- 
-+`awsAuthRefresh` が設定されている場合、`/login` は **Using 3rd-party platforms** の下に **Claude Platform on AWS · refresh credentials** オプションを表示します。これを選択すると、設定されたコマンドが実行され、Claude Code を再起動せずに AWS 認証情報が再度読み込まれます。
-+
- **オプション B: ワークスペース API キー**
- 
-@@ -252,5 +254,5 @@ export ANTHROPIC_AWS_API_KEY=sk-ant-xxxxx
- 
- <Note>
--  `/login` および `/logout` コマンドは AWS 上の Claude Platform 認証を変更しません。認証は AWS 認証情報またはワークスペース API キーを通じて実行され、Claude.ai サブスクリプションを通じてではありません。
-+  `/login` および `/logout` コマンドは Claude.ai サブスクリプションに対してサインインしません。AWS 上の Claude Platform の場合、認証は AWS 認証情報またはワークスペース API キーを通じて実行されます。例外は、`awsAuthRefresh` が設定されている場合に `/login` が表示する **refresh credentials** オプションで、これは上記で説明したように AWS 認証情報を再度読み込みます。
- </Note>
- 
-```
-
-</details>
-
-<details>
-<summary>cli-reference-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/cli-reference-ja.md b/docs-ja/pages/cli-reference-ja.md
-index 0384265..a83f835 100644
---- a/docs-ja/pages/cli-reference-ja.md
-+++ b/docs-ja/pages/cli-reference-ja.md
-@@ -34,4 +34,6 @@
- | `claude logs <id>`              | [バックグラウンドセッション](/ja/agent-view#manage-sessions-from-the-shell) からの最近の出力を出力します                                                                                                                                                                                                                                                                                                                                                                                                             | `claude logs 7c5dcf5d`                                      |
- | `claude mcp`                    | Model Context Protocol（MCP）サーバーを設定                                                                                                                                                                                                                                                                                                                                                                                                                                                        | [Claude Code MCP ドキュメント](/ja/mcp) を参照してください。                |
-+| `claude mcp login <name>`       | {/* min-version: 2.1.186 */}設定済み MCP サーバーの OAuth フローを実行します。インタラクティブな `/mcp` パネルを開きません。HTTP、SSE、および claude.ai コネクタサーバーで機能します。SSH 経由で `--no-browser` を追加して、ブラウザを開く代わりに認可 URL を出力し、リダイレクト URL をプロンプトに貼り付けます。Claude Code v2.1.186 以降が必要です。[コマンドラインから認証](/ja/mcp#authenticate-from-the-command-line) を参照してください                                                                                                                                                                                 | `claude mcp login sentry`                                   |
-+| `claude mcp logout <name>`      | {/* min-version: 2.1.186 */}MCP サーバーの保存された OAuth 認証情報をクリアします。Claude Code v2.1.186 以降が必要です                                                                                                                                                                                                                                                                                                                                                                                                 | `claude mcp logout sentry`                                  |
- | `claude plugin`                 | Claude Code [plugins](/ja/plugins) を管理します。エイリアス：`claude plugins`。サブコマンドについては [plugin reference](/ja/plugins-reference#cli-commands-reference) を参照してください                                                                                                                                                                                                                                                                                                                                   | `claude plugin install code-review@claude-plugins-official` |
- | `claude project purge [path]`   | プロジェクトのすべてのローカル Claude Code 状態を削除します：トランスクリプト、タスクリスト、デバッグログ、ファイル編集履歴、プロンプト履歴行、および `~/.claude.json` 内のプロジェクトエントリ。`[path]` を省略して、インタラクティブリストから選択します。フラグ：`--dry-run` でプレビュー、`-y`/`--yes` で確認をスキップ、`-i`/`--interactive` で各項目を確認、`--all` ですべてのプロジェクト。[ローカルデータをクリア](/ja/claude-directory#clear-local-data) を参照してください                                                                                                                                                                            | `claude project purge ~/work/repo --dry-run`                |
-@@ -61,4 +63,5 @@
- | `--append-system-prompt`                        | デフォルトシステムプロンプトの末尾にカスタムテキストを追加します                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | `claude --append-system-prompt "Always use TypeScript"`                                             |
- | `--append-system-prompt-file`                   | ファイルから追加のシステムプロンプトテキストを読み込み、デフォルトプロンプトに追加します                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | `claude --append-system-prompt-file ./extra-rules.txt`                                              |
-+| `--ax-screen-reader`                            | {/* min-version: 2.1.181 */}スクリーンリーダーフレンドリーな出力をレンダリングします：装飾的なボーダーやアニメーションなしのフラットテキスト。クラシックレンダラーを強制するため、このセッションでは [`tui`](/ja/settings#available-settings) 設定は効果がありません。[`CLAUDE_AX_SCREEN_READER`](/ja/env-vars) と [`axScreenReader`](/ja/settings#available-settings) 設定より優先されます。Claude Code v2.1.181 以降が必要です                                                                                                                                                                                                                                                                 | `claude --ax-screen-reader`                                                                         |
- | `--bare`                                        | 最小限モード：hooks、skills、plugins、MCP サーバー、自動メモリ、CLAUDE.md の自動検出をスキップして、スクリプト化された呼び出しをより高速に開始します。Claude は Bash、ファイル読み取り、ファイル編集ツールにアクセスできます。[`CLAUDE_CODE_SIMPLE`](/ja/env-vars) を設定します。[bare mode](/ja/headless#start-faster-with-bare-mode) を参照してください                                                                                                                                                                                                                                                                                                                              | `claude --bare -p "query"`                                                                          |
- | `--betas`                                       | API リクエストに含めるベータヘッダー（API キーユーザーのみ）                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | `claude --betas interleaved-thinking`                                                               |
-@@ -115,5 +118,5 @@
- | `--system-prompt-file`                          | ファイルからシステムプロンプトを読み込み、デフォルトプロンプトを置き換えます                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | `claude --system-prompt-file ./custom-prompt.txt`                                                   |
- | `--teleport`                                    | [Web セッション](/ja/claude-code-on-the-web) をローカルターミナルで再開します                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | `claude --teleport`                                                                                 |
--| `--teammate-mode`                               | [エージェントチーム](/ja/agent-teams) のチームメイトの表示方法を設定します：`auto`（デフォルト）、`in-process`、または `tmux`。このセッションの [`teammateMode`](/ja/settings#available-settings) 設定をオーバーライドします。[ディスプレイモードを選択](/ja/agent-teams#choose-a-display-mode) を参照してください                                                                                                                                                                                                                                                                                                                                                | `claude --teammate-mode in-process`                                                                 |
-+| `--teammate-mode`                               | [エージェントチーム](/ja/agent-teams) のチームメイトの表示方法を設定します：`in-process`（デフォルト）、`auto`、`tmux`、または {/* min-version: 2.1.186 */}`iterm2`（v2.1.186 で追加）。デフォルトは v2.1.179 で `auto` から変更されました。このセッションの [`teammateMode`](/ja/settings#available-settings) 設定をオーバーライドします。[ディスプレイモードを選択](/ja/agent-teams#choose-a-display-mode) を参照してください                                                                                                                                                                                                                                                          | `claude --teammate-mode auto`                                                                       |
- | `--tmux`                                        | worktree 用に tmux セッションを作成します。`--worktree` が必要です。利用可能な場合は iTerm2 ネイティブペインを使用します。従来の tmux の場合は `--tmux=classic` を渡します                                                                                                                                                                                                                                                                                                                                                                                                                                                           | `claude -w feature-auth --tmux`                                                                     |
- | `--tools`                                       | Claude が使用できる組み込みツールを制限します。`""` を使用してすべてを無効にし、`"default"` を使用してすべてを有効にするか、`"Bash,Edit,Read"` のようなツール名を使用します。MCP ツールは影響を受けません。それらも拒否するには、`--disallowedTools "mcp__*"` を使用するか、`--mcp-config` なしで `--strict-mcp-config` を渡して、MCP サーバーが読み込まれないようにします                                                                                                                                                                                                                                                                                                                              | `claude --tools "Bash,Edit,Read"`                                                                   |
 ```
 
 </details>
