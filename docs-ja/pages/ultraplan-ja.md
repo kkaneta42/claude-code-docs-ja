@@ -18,7 +18,7 @@ Ultraplan は、ローカル CLI からの計画タスクを、[plan mode](/ja/p
 * **ハンズオフ下書き**: 計画はリモートで生成されるため、ターミナルは他の作業に使用できます
 * **柔軟な実行**: ウェブで実行するプルリクエストを承認するか、ターミナルに送り返すことができます
 
-Ultraplan には、[ウェブ上の Claude Code](/ja/claude-code-on-the-web) アカウントと GitHub リポジトリが必要です。Anthropic のクラウドインフラストラクチャで実行されるため、Amazon Bedrock、Google Cloud Vertex AI、または Microsoft Foundry を使用している場合は利用できません。クラウドセッションは、アカウントのデフォルト[クラウド環境](/ja/claude-code-on-the-web#the-cloud-environment)で実行されます。クラウド環境がまだない場合、ultraplan は初回起動時に自動的に作成します。
+Ultraplan には、[ウェブ上の Claude Code](/ja/claude-code-on-the-web) アカウントと GitHub リポジトリが必要です。Anthropic のクラウドインフラストラクチャで実行されるため、Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry を使用している場合は利用できません。クラウドセッションは、アカウントのデフォルト[クラウド環境](/ja/claude-code-on-the-web#the-cloud-environment)で実行されます。クラウド環境がまだない場合、ultraplan は初回起動時に自動的に作成します。
 
 <h2 id="launch-ultraplan-from-the-cli">
   CLI から ultraplan を起動する

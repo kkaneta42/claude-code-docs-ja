@@ -240,7 +240,7 @@ macOS は、Screen Recording を付与した後、リクエストプロセスの
 * macOS を使用しています。コンピュータ使用は Linux または Windows では利用できません。Windows では、代わりに [Desktop でのコンピュータ使用](/ja/desktop#let-claude-use-your-computer)を使用してください。
 * Claude Code v2.1.85 以降を実行しています。`claude --version` を実行して確認します。
 * Pro または Max プランを使用しています。`/status` を実行してサブスクリプションを確認します。
-* claude.ai を通じて認証されています。コンピュータ使用は Amazon Bedrock、Google Cloud Vertex AI、Microsoft Foundry などのサードパーティプロバイダーでは利用できません。サードパーティプロバイダーのみを通じて Claude にアクセスする場合、この機能を使用するには別の claude.ai アカウントが必要です。
+* claude.ai を通じて認証されています。コンピュータ使用は Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry などのサードパーティプロバイダーでは利用できません。サードパーティプロバイダーのみを通じて Claude にアクセスする場合、この機能を使用するには別の claude.ai アカウントが必要です。
 * インタラクティブセッションを使用しています。コンピュータ使用は `-p` フラグを使用した非インタラクティブモードでは利用できません。
 
 <h2 id="see-also">

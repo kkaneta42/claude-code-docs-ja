@@ -270,7 +270,7 @@ export AWS_REGION=us-east-1
 
 `ANTHROPIC_AWS_WORKSPACE_ID` は必須であり、すべてのリクエストで `anthropic-workspace-id` ヘッダーとして送信されます。ベース URL は `AWS_REGION` から `https://aws-external-anthropic.{region}.api.aws` として計算されます。URL を直接オーバーライドするには、`ANTHROPIC_AWS_BASE_URL` を設定します。
 
-AWS 上の Claude Platform は、環境に AWS 認証情報が存在する場合でもオプトインです。Bedrock と Foundry はプロバイダールーティングで優先されるため、設定されている場合は `CLAUDE_CODE_USE_BEDROCK` と `CLAUDE_CODE_USE_FOUNDRY` をアンセットします。
+AWS 上の Claude Platform は、環境に AWS 認証情報が存在する場合でもオプトインです。Amazon Bedrock と Microsoft Foundry はプロバイダールーティングで優先されるため、設定されている場合は `CLAUDE_CODE_USE_BEDROCK` と `CLAUDE_CODE_USE_FOUNDRY` をアンセットします。
 
 <h3 id="3-pin-model-versions">
   3. モデルバージョンをピン留めする

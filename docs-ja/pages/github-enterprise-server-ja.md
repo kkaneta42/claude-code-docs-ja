@@ -10,7 +10,7 @@
   GitHub Enterprise Server サポートは Team プランと Enterprise プランで利用できます。
 </Note>
 
-GitHub Enterprise Server（GHES）サポートにより、組織は github.com ではなく自社管理の GitHub インスタンスでホストされているリポジトリで Claude Code を使用できます。管理者が GHES インスタンスを接続すると、開発者はリポジトリごとの設定なしで Web セッションを実行し、自動コードレビューを取得し、内部マーケットプレイスからプラグインをインストールできます。
+GitHub Enterprise Server（GHES）サポートにより、組織は github.com ではなく自社管理の GitHub インスタンスでホストされているリポジトリで Claude Code を使用できます。管理者が GHES インスタンスを接続すると、開発者はリポジトリごとの設定なしで Web セッションを実行し、自動コードレビューを取得できます。インスタンスでホストされているプラグインマーケットプレイスもサポートされており、認証情報の要件は [GHES 上のプラグインマーケットプレイス](#plugin-marketplaces-on-ghes) で説明されているように、サーフェスによって異なります。
 
 github.com 上のリポジトリについては、[Claude Code on the web](/ja/claude-code-on-the-web) および [Code Review](/ja/code-review) を参照してください。Claude を独自の CI インフラストラクチャで実行するには、[GitHub Actions](/ja/github-actions) を参照してください。
 
@@ -20,16 +20,16 @@ github.com 上のリポジトリについては、[Claude Code on the web](/ja/c
 
 以下の表は、Claude Code のどの機能が GHES をサポートしているか、および github.com の動作との違いを示しています。
 
-| 機能                     | GHES サポート | 注記                                                                                                         |
-| :--------------------- | :-------- | :--------------------------------------------------------------------------------------------------------- |
-| Claude Code on the web | ✅ サポート    | 管理者が GHES インスタンスを 1 回接続すると、開発者は通常通り `claude --remote` または [claude.ai/code](https://claude.ai/code) を使用できます |
-| Code Review            | ✅ サポート    | github.com と同じ自動 PR レビュー                                                                                   |
-| Claude Security        | ✅ サポート    | Enterprise プランの公開ベータで [claude.ai/security](https://claude.ai/security) で利用可能                               |
-| Teleport セッション         | ✅ サポート    | `--teleport` で Web とターミナル間でセッションを移動                                                                        |
-| プラグインマーケットプレイス         | ✅ サポート    | `owner/repo` ショートハンドの代わりに完全な git URL を使用                                                                   |
-| 貢献度メトリクス               | ✅ サポート    | [分析ダッシュボード](/ja/analytics) への Webhook 経由で配信                                                                |
-| GitHub Actions         | ✅ サポート    | 手動ワークフロー設定が必要。`/install-github-app` は github.com のみ                                                        |
-| GitHub MCP サーバー        | ❌ サポートなし  | GitHub MCP サーバーは GHES インスタンスでは動作しません                                                                       |
+| 機能                     | GHES サポート | 注記                                                                                                        |
+| :--------------------- | :-------- | :-------------------------------------------------------------------------------------------------------- |
+| Claude Code on the web | ✅ サポート    | 管理者が GHES インスタンスを 1 回接続すると、開発者は通常通り `claude --cloud` または [claude.ai/code](https://claude.ai/code) を使用できます |
+| Code Review            | ✅ サポート    | github.com と同じ自動 PR レビュー                                                                                  |
+| Claude Security        | ✅ サポート    | Enterprise プランの公開ベータで [claude.ai/security](https://claude.ai/security) で利用可能                              |
+| Teleport セッション         | ✅ サポート    | `--teleport` で Web とターミナル間でセッションを移動                                                                       |
+| プラグインマーケットプレイス         | ✅ サポート    | 表面によって認証情報の要件が異なります。[GHES 上のプラグインマーケットプレイス](#plugin-marketplaces-on-ghes)を参照してください                        |
+| 貢献度メトリクス               | ✅ サポート    | [分析ダッシュボード](/ja/analytics) への Webhook 経由で配信                                                               |
+| GitHub Actions         | ✅ サポート    | 手動ワークフロー設定が必要。`/install-github-app` は github.com のみ                                                       |
+| GitHub MCP サーバー        | ❌ サポートなし  | GitHub MCP サーバーは GHES インスタンスでは動作しません                                                                      |
 
 <h2 id="admin-setup">
   管理者セットアップ
@@ -107,7 +107,7 @@ cd api-service
 次に Web セッションを開始します。Claude は git リモートから GHES ホストを検出し、セッションを組織の設定されたインスタンスを通じてルーティングします。
 
 ```bash theme={null}
-claude --remote "Add retry logic to the payment webhook handler"
+claude --cloud "Add retry logic to the payment webhook handler"
 ```
 
 セッションは Anthropic インフラストラクチャで実行され、GHES からリポジトリをクローンし、変更をブランチにプッシュバックします。`/tasks` で、または [claude.ai/code](https://claude.ai/code) で進捗を監視します。diff レビュー、自動修正、ルーチンを含む完全なクラウドセッションワークフローについては、[Claude Code on the web](/ja/claude-code-on-the-web) を参照してください。[Claude Code on the web](/ja/claude-code-on-the-web) を参照してください。
@@ -122,25 +122,65 @@ claude --remote "Add retry logic to the payment webhook handler"
   GHES 上のプラグインマーケットプレイス
 </h2>
 
-GHES インスタンスでプラグインマーケットプレイスをホストして、組織全体に内部ツールを配布します。マーケットプレイス構造は github.com でホストされているマーケットプレイスと同じです。唯一の違いはそれらを参照する方法です。
+GHES インスタンスでプラグインマーケットプレイスをホストして、組織全体に内部ツールを配布します。マーケットプレイス構造は github.com でホストされているマーケットプレイスと同じですが、マーケットプレイスを追加する場所によってインストール方法が異なり、サーフェス全体で認証情報が異なります。
+
+| サーフェス                          | インストール方法                                                                                                                        | 各ユーザーに必要なもの                                                                                                                    |
+| :----------------------------- | :------------------------------------------------------------------------------------------------------------------------------ | :----------------------------------------------------------------------------------------------------------------------------- |
+| Claude Code CLI とデスクトップ        | Claude Code はマシンの既存の git 認証情報を使用してマーケットプレイスリポジトリをクローンします                                                                        | マシンから GHES ホストへの Git アクセス                                                                                                      |
+| 管理設定（`extraKnownMarketplaces`） | Claude Code はエントリを登録し、マシンの既存の git 認証情報を使用してリポジトリをクローンします                                                                        | マシンから GHES ホストへの Git アクセス                                                                                                      |
+| claude.ai 組織プラグイン設定            | Owner が GHES インスタンスをソースとして選択します。Anthropic のバックエンドが [admin setup](#admin-setup) の GitHub App を使用してリポジトリをフェッチして同期します              | 追加後はユーザーごとに不要です。それを追加する Owner は、アクセスチェックとして独自の GitHub Enterprise アカウントを接続する必要があり、GitHub App をマーケットプレイスリポジトリにインストールする必要があります    |
+| claude.ai ユーザー設定               | Anthropic のバックエンドが送信ユーザーの GitHub Enterprise 接続を使用してリポジトリをフェッチします                                                                | Claude に接続された独自の GitHub Enterprise アカウント                                                                                       |
+| Claude Code on the web         | クラウドセッションはセッションサンドボックス内でマーケットプレイスをクローンします。サンドボックスは、セッションのリポジトリが同じインスタンス上にある場合にのみ GHES インスタンスに到達でき、git 認証情報はセッションのリポジトリにスコープされます | GHES でホストされているマーケットプレイスには信頼できません。セッションのリポジトリとは異なるホストに到達できず、同じインスタンスのインストールでも失敗する可能性があります。代わりに CLI、管理設定、または claude.ai を使用してください |
+
+<Warning>
+  claude.ai 上の GitHub Enterprise 接続は、ユーザー設定からマーケットプレイスが追加される場合、ユーザーごとです。[admin setup](#admin-setup) は GHES インスタンスを組織に接続しますが、個別のユーザーアカウントは接続しません。独自の設定から GHES マーケットプレイスを追加する各ユーザーは、最初に独自の GitHub Enterprise アカウントを接続する必要があり、Owner を含む 1 人のユーザーの接続は他のユーザーをカバーしません。組織プラグイン設定で Owner が追加したマーケットプレイスは、継続的なフェッチが組織の GitHub App を使用するため、ユーザーにこの要件を課しません。マーケットプレイスを追加する Owner は、追加時に独自の GitHub Enterprise アカウントを接続する必要があります。
+</Warning>
 
 <h3 id="add-a-ghes-marketplace">
   GHES マーケットプレイスを追加
 </h3>
 
-`owner/repo` ショートハンドは常に github.com に解決されます。GHES でホストされているマーケットプレイスの場合は、完全な git URL を使用します。
-
-```bash theme={null}
-/plugin marketplace add git@github.example.com:platform/claude-plugins.git
-```
-
-HTTPS URL も機能します。
+`owner/repo` ショートハンドは常に github.com に解決されます。GHES でホストされているマーケットプレイスの場合は、完全な git URL を使用します。HTTPS URL が推奨されます。
 
 ```bash theme={null}
 /plugin marketplace add https://github.example.com/platform/claude-plugins.git
 ```
 
+マシンが既に GHES ホストを信頼している場合、SSH URL が機能します。
+
+```bash theme={null}
+/plugin marketplace add git@github.example.com:platform/claude-plugins.git
+```
+
+Claude Code は git を非対話的に実行し、マシンの `known_hosts` ファイルにないホストへの SSH 接続を拒否します。git 認証情報ヘルパーを備えた HTTPS URL は `known_hosts` 要件を回避します。
+
 マーケットプレイスの構築の完全なガイドについては、[プラグインマーケットプレイスの作成と配布](/ja/plugin-marketplaces) を参照してください。
+
+<h3 id="pre-register-ghes-marketplaces-with-managed-settings">
+  管理設定で GHES マーケットプレイスを事前登録
+</h3>
+
+`extraKnownMarketplaces` 設定はマーケットプレイスを事前登録して、開発者が手動セットアップなしでそれを取得できるようにします。これは [任意の設定ファイル](/ja/settings#extraknownmarketplaces) から機能します。リポジトリの `.claude/settings.json` を含めて、管理設定はそれを組織全体に配信します。
+
+```json theme={null}
+{
+  "extraKnownMarketplaces": {
+    "internal-tools": {
+      "source": {
+        "source": "git",
+        "url": "https://github.example.com/platform/claude-plugins.git"
+      }
+    }
+  }
+}
+```
+
+Claude Code はこれらのマーケットプレイスをローカルにインストールします。各エントリを登録し、マシンの既存の git 認証情報を使用してリポジトリをクローンします。このパスは claude.ai を通過しないため、ユーザーごとの GitHub Enterprise 接続は不要です。成功したロールアウトのために。
+
+* **完全な git URL を使用します。** `owner/repo` ショートハンドは常に github.com に解決され、GHES ホストを参照できません。
+* **HTTPS URL を優先します。** SSH クローンは GHES ホストキーを既に信頼していないマシンで失敗します。組織の標準 git 認証情報ヘルパーを備えた HTTPS URL は、認証情報が設定されているすべてのマシンで機能します。
+* **各マシンが GHES ホストからクローンできることを確認します。** マシンに認証情報がない場合、マーケットプレイスは登録されますが、インストールされず、そのプラグインは認証情報を求めるのではなく見つからないと報告されます。
+* **設定が各マシンに到達することを確認します。** 管理設定ファイルは、デバイス管理システムを通じて配置されたマシンなど、配置されたマシンにのみ有効です。[管理設定](/ja/settings#settings-files) のファイルの場所を参照してください。
 
 <h3 id="allowlist-ghes-marketplaces-in-managed-settings">
   管理設定で GHES マーケットプレイスをホワイトリストに登録
@@ -156,21 +196,6 @@ HTTPS URL も機能します。
       "hostPattern": "^github\\.example\\.com$"
     }
   ]
-}
-```
-
-開発者向けにマーケットプレイスを事前登録して、手動セットアップなしで表示されるようにすることもできます。この例は、内部ツールマーケットプレイスを組織全体で利用可能にします。
-
-```json theme={null}
-{
-  "extraKnownMarketplaces": {
-    "internal-tools": {
-      "source": {
-        "source": "git",
-        "url": "git@github.example.com:platform/claude-plugins.git"
-      }
-    }
-  }
 }
 ```
 
@@ -193,13 +218,23 @@ HTTPS URL も機能します。
   Web セッションがリポジトリのクローンに失敗
 </h3>
 
-`claude --remote` がクローンエラーで失敗する場合は、Owner が GHES インスタンスのセットアップを完了し、GitHub App が作業しているリポジトリにインストールされていることを確認してください。インスタンスを接続した Owner に確認して、Claude 設定に登録されているホスト名が git リモートのホスト名と一致することを確認してください。
+`claude --cloud` がクローンエラーで失敗する場合は、Owner が GHES インスタンスのセットアップを完了し、GitHub App が作業しているリポジトリにインストールされていることを確認してください。インスタンスを接続した Owner に確認して、Claude 設定に登録されているホスト名が git リモートのホスト名と一致することを確認してください。
 
 <h3 id="marketplace-add-fails-with-a-policy-error">
   マーケットプレイス追加がポリシーエラーで失敗
 </h3>
 
 GHES URL の `/plugin marketplace add` がブロックされている場合、組織はマーケットプレイスソースを制限しています。管理者に [管理設定](#allowlist-ghes-marketplaces-in-managed-settings) で GHES ホスト名の `hostPattern` エントリを追加するよう依頼してください。
+
+<h3 id="marketplace-add-on-claude-ai-fails-with-a-github-access-error">
+  claude.ai でのマーケットプレイス追加が GitHub アクセスエラーで失敗
+</h3>
+
+ユーザー設定から GHES マーケットプレイスを追加する際に「Marketplace couldn't be added」のような一般的なエラーで失敗する場合は、まず GitHub Enterprise 接続を確認してください。これは、組織の GHES インスタンスが設定されており他のユーザーが接続されている場合でも、独自の GitHub Enterprise アカウントが Claude に接続されていない場合に表示されます。ダイアログは GitHub Enterprise 接続フローを指していません。また、Browse タブの「Connect to GitHub」オプションは github.com にサインインするため、GHES リポジトリへのアクセス権を付与しません。
+
+GitHub Enterprise アカウントを接続するには、[claude.ai/code](https://claude.ai/code) のリポジトリピッカーが設定済みの各 GHES インスタンスの接続オプションを提供します。また、Owner は [Claude Code 管理設定](https://claude.ai/admin-settings/claude-code) の GitHub Enterprise セクションからも接続できます。その後、マーケットプレイスを再度追加してください。または、Owner に組織プラグイン設定でマーケットプレイスを追加するよう依頼してください。これにより、ユーザーごとの接続要件が削除されます。
+
+他の claude.ai サーフェスでは、GHES マーケットプレイスの「Repository not found. If it's private, GitHub access is required」エラーは通常、同じ接続の欠落を示しています。上記のいずれかのパスを通じて GitHub Enterprise アカウントを接続してから、もう一度試してください。
 
 <h3 id="ghes-instance-not-reachable">
   GHES インスタンスに到達不可

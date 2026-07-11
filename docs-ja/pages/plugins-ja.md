@@ -203,6 +203,8 @@ claude plugin init my-tool
 
 <Warning>
   **よくある間違い**：`commands/`、`agents/`、`skills/`、`hooks/` を `.claude-plugin/` ディレクトリ内に配置しないでください。`plugin.json` のみが `.claude-plugin/` 内に入ります。他のすべてのディレクトリはプラグインルートレベルにある必要があります。
+
+  プラグインルートは個別プラグイン自体のディレクトリです。`.claude-plugin/plugin.json` を含むディレクトリです。`~/.claude/` ではありません。例えば、Claude Code は `~/.claude/.mcp.json` に配置された `.mcp.json` を読み込みません。
 </Warning>
 
 | ディレクトリ            | 場所       | 目的                                                        |
