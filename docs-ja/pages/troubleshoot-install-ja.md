@@ -46,7 +46,7 @@
 問題がリストに記載されていない場合は、以下の診断チェックを実行して、原因を特定してください。
 
 <Tip>
-  ターミナルをスキップしたい場合は、[Claude Code Desktop アプリ](/ja/desktop-quickstart)を使用して、グラフィカルインターフェイスを通じて Claude Code をインストールして使用できます。[macOS](https://claude.ai/api/desktop/darwin/universal/dmg/latest/redirect?utm_source=claude_code\&utm_medium=docs)、[Windows](https://claude.com/download?utm_source=claude_code\&utm_medium=docs)、または [Linux](https://claude.com/download?utm_source=claude_code\&utm_medium=docs) 用にダウンロードして、コマンドラインセットアップなしでコーディングを開始してください。
+  ターミナルをスキップしたい場合は、[Claude Code Desktop アプリ](/ja/desktop-quickstart)を使用して、グラフィカルインターフェイスを通じて Claude Code をインストールして使用できます。[macOS](https://claude.ai/api/desktop/darwin/universal/dmg/latest/redirect?utm_source=claude_code\&utm_medium=docs)、[Windows](https://claude.com/download?utm_source=claude_code\&utm_medium=docs)、または [Linux](/ja/desktop-linux)用にダウンロードして、コマンドラインセットアップなしでコーディングを開始してください。Linux では、[Linux インストール手順](/ja/desktop-linux)に従って apt でアプリをインストールしてください。
 </Tip>
 
 <h2 id="run-diagnostic-checks">

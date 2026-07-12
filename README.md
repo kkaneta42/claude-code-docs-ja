@@ -17,6 +17,264 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-07-12</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/amazon-bedrock-ja.md         | 10 +++++-----
+ docs-ja/pages/changelog.md                 | 27 +++++++++++++++++++++++++++
+ docs-ja/pages/claude-platform-on-aws-ja.md |  4 ++--
+ docs-ja/pages/communications-kit-ja.md     | 24 ++++++++++++------------
+ docs-ja/pages/desktop-ja.md                |  2 +-
+ docs-ja/pages/desktop-linux-ja.md          | 12 ++++++++++--
+ docs-ja/pages/errors-ja.md                 | 26 +++++++++++++-------------
+ docs-ja/pages/glossary-ja.md               |  2 +-
+ docs-ja/pages/google-vertex-ai-ja.md       | 10 +++++-----
+ docs-ja/pages/how-claude-code-works-ja.md  |  2 +-
+ docs-ja/pages/model-config-ja.md           | 22 +++++++++++++++-------
+ docs-ja/pages/permission-modes-ja.md       |  2 +-
+ docs-ja/pages/permissions-ja.md            | 12 ++++++------
+ docs-ja/pages/security-ja.md               |  4 ++--
+ docs-ja/pages/setup-ja.md                  |  2 +-
+ docs-ja/pages/tools-reference-ja.md        |  2 ++
+ docs-ja/pages/troubleshoot-install-ja.md   |  2 +-
+ docs-ja/pages/troubleshooting-ja.md        |  2 +-
+ docs-ja/pages/vs-code-ja.md                |  4 ++--
+ 19 files changed, 108 insertions(+), 63 deletions(-)
+```
+
+<details>
+<summary>amazon-bedrock-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/amazon-bedrock-ja.md b/docs-ja/pages/amazon-bedrock-ja.md
+index 1b124cd..a50c82f 100644
+--- a/docs-ja/pages/amazon-bedrock-ja.md
++++ b/docs-ja/pages/amazon-bedrock-ja.md
+@@ -268,5 +268,5 @@ Claude Code で Amazon Bedrock を有効にする場合は、以下に注意し
+ これらの環境変数を特定の Amazon Bedrock モデル ID に設定します。
+ 
+-`ANTHROPIC_DEFAULT_OPUS_MODEL` なしでは、Amazon Bedrock の `opus` エイリアスは Opus 4.6 に解決されます。最新モデルを使用するには、Opus 4.8 ID に設定します。
++これらの変数がない場合、Amazon Bedrock の `opus` エイリアスは Opus 4.8 に解決され、`sonnet` エイリアスは Sonnet 4.5 に解決されます。各変数を設定して、そのエイリアスを特定のバージョンにピン留めします。
+ 
+ ```bash theme={null}
+@@ -280,8 +280,8 @@ export ANTHROPIC_DEFAULT_HAIKU_MODEL='us.anthropic.claude-haiku-4-5-20251001-v1:
+ ピン留め変数が設定されていない場合、Claude Code はこれらのデフォルトモデルを使用します。
+ 
+-| モデルタイプ   | デフォルト値                                         |
+-| :------- | :--------------------------------------------- |
+-| プライマリモデル | `us.anthropic.claude-sonnet-4-5-20250929-v1:0` |
+-| 小型/高速モデル | プライマリモデルと同じ                                    |
++| モデルタイプ   | デフォルト値                         |
++| :------- | :----------------------------- |
++| プライマリモデル | `us.anthropic.claude-opus-4-8` |
++| 小型/高速モデル | プライマリモデルと同じ                    |
+ 
+ セッションタイトル生成などのバックグラウンドタスクは、小型/高速モデル（通常は Haiku クラスモデル）を使用します。Amazon Bedrock では、すべてのアカウントまたはリージョンで Haiku が有効になっていない可能性があるため、Claude Code はこれをプライマリモデルにデフォルト設定します。バックグラウンドタスクに Haiku を使用するには、`ANTHROPIC_DEFAULT_HAIKU_MODEL` をアカウントで利用可能なモデル ID に設定してください。
+```
+
+</details>
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index a1320bd..2438058 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,31 @@
+ # Changelog
+ 
++## 2.1.207
++
++- Auto mode is now available without `CLAUDE_CODE_ENABLE_AUTO_MODE` opt-in on Bedrock, Vertex AI, and Foundry; disable via `disableAutoMode` in settings
++- Fixed the terminal freezing and keystrokes lagging while streaming responses containing very long lists, tables, paragraphs, or code blocks
++- Fixed remote managed settings from a non-interactive run (`claude -p`, the SDK) being permanently recorded as consented without ever showing the security consent dialog
++- Fixed spurious prompt-injection warnings triggered by benign system-generated conversation updates
++- Fixed the auto-updater overwriting a custom launcher script or symlink at `~/.local/bin/claude` on every release; `/doctor` now reports an externally managed launcher
++- Fixed compound commands with `cd` prompting for permission when the only output redirect was to `/dev/null`
++- Fixed the transcript jumping above the start of the answer when a response finishes streaming
++- Fixed `extensions.worktreeConfig` being left in the repo's `.git/config` (breaking go-git tools like `tea`) after the last `worktree.sparsePaths` worktree was removed
++- Fixed malformed bracket patterns in rules globs, skill paths, `.ignore`, and `.worktreeinclude` breaking file reads, file suggestions, and worktree creation
++- Fixed a crash loop in agent teams where a malformed teammate mailbox message caused repeated errors every second until the mailbox file was manually deleted
++- Fixed background sessions auto-named by accepting a plan not showing that name on their agent-view row
++- Fixed background sessions that entered a git worktree resuming blank after a cold reopen from the agent list
++- Fixed Remote Control task status updates being lost when the connection recovered from a network interruption or credential refresh
++- Fixed Remote Control sessions hosted by the desktop app not showing background agent and workflow progress on mobile and web
++- Fixed Deep research runs labeling every Fetch-phase agent "unknown" — chips now show the source hostname
++- Fixed Bedrock repeatedly requesting fresh AWS SSO credentials from IAM Identity Center on every API request
++- Improved agent view: pasting the same text again now expands the collapsed `[Pasted text #N]` placeholder instead of adding a second one
++- Improved agent view: blocked session peeks now lead with the question and show a worded staleness clock (`waiting 3m`) instead of the same timestamp twice
++- Changed Bedrock, Vertex, and Claude Platform on AWS to default to Claude Opus 4.8
++- Changed auto mode to no longer read `autoMode` from `.claude/settings.local.json` (repo-resident); use `~/.claude/settings.json` instead
++- Fixed an indefinite hang on Windows when AWS credential resolution stalls (e.g. a stuck `credential_process`): the 60-second stall guard now fires instead of waiting forever.
+```
+
+</details>
+
+<details>
+<summary>claude-platform-on-aws-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/claude-platform-on-aws-ja.md b/docs-ja/pages/claude-platform-on-aws-ja.md
+index 1b02308..17daf8b 100644
+--- a/docs-ja/pages/claude-platform-on-aws-ja.md
++++ b/docs-ja/pages/claude-platform-on-aws-ja.md
+@@ -277,5 +277,5 @@ AWS 上の Claude Platform は、環境に AWS 認証情報が存在する場合
+ </h3>
+ 
+-AWS 上の Claude Platform は、直接 Claude API と同じモデル ID を使用します。デフォルトのエイリアス `fable`、`opus`、`sonnet`、`haiku` は Claude Code の AWS 上の Claude Platform 用の組み込みデフォルトに解決されます。これは最新リリースより遅れる可能性があります。`ANTHROPIC_DEFAULT_OPUS_MODEL` がない場合、`opus` エイリアスは Opus 4.7 に解決されます。
++AWS 上の Claude Platform は、直接 Claude API と同じモデル ID を使用します。デフォルトのエイリアス `fable`、`opus`、`sonnet`、`haiku` は Claude Code の AWS 上の Claude Platform 用の組み込みデフォルトに解決されます。これは最新リリースより遅れる可能性があります。`ANTHROPIC_DEFAULT_OPUS_MODEL` がない場合、`opus` エイリアスは Opus 4.8 に解決されます。
+ 
+ Claude Code をチームにデプロイする場合、モデル ID を明示的にピン留めして、新しいリリースがすべてのユーザーを一度に移動しないようにします。
+@@ -283,5 +283,5 @@ Claude Code をチームにデプロイする場合、モデル ID を明示的
+ ```bash theme={null}
+ export ANTHROPIC_DEFAULT_FABLE_MODEL=claude-fable-5
+-export ANTHROPIC_DEFAULT_OPUS_MODEL=claude-opus-4-7
++export ANTHROPIC_DEFAULT_OPUS_MODEL=claude-opus-4-8
+ export ANTHROPIC_DEFAULT_SONNET_MODEL=claude-sonnet-5
+ export ANTHROPIC_DEFAULT_HAIKU_MODEL=claude-haiku-4-5
+```
+
+</details>
+
+<details>
+<summary>communications-kit-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/communications-kit-ja.md b/docs-ja/pages/communications-kit-ja.md
+index 3ed2b52..30abae1 100644
+--- a/docs-ja/pages/communications-kit-ja.md
++++ b/docs-ja/pages/communications-kit-ja.md
+@@ -329,8 +329,8 @@ Claude が「見る」ことができるようにコンポーネントの 200 
+ 
+ *Shift+Tab* は Claude が得る権限の量を循環させます。*Manual*（`default` 設定値）
+-は各アクションの前に尋ね、*acceptEdits* はファイル編集と一般的なファイル
+-システムコマンドがフローを通して流れることを許可しながら、他のシェル
+-コマンドの前にチェックし、*plan* は何かに触れる前に承認のための変更を
+-提案します。Plan モードは信頼構築者なので、複数のファイルに触れるもの
++はファイル編集とほとんどのシェルコマンドの前に尋ね、*acceptEdits* はファイル
++編集と一般的なファイルシステムコマンドがフローを通して流れることを許可しながら、
++他のシェルコマンドの前にチェックし、*plan* は何かに触れる前に承認のための
++変更を提案します。Plan モードは信頼構築者なので、複数のファイルに触れるもの
+ については最初にそこから始めてください。
+ 
+@@ -545,12 +545,12 @@ Claude Code から跳ね返るほとんどの人は、これらの 1 つをス
+ 最も頻繁に聞かれる質問への 1 行の返信。
+ 
+-| 質問                      | 回答                                                                                                                                       |
+-| ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+-| 「VS Code で動作しますか？」      | はい。VS Code 拡張機能と JetBrains プラグインがあり、エディタに埋め込まれた同じ機能があります。[VS Code →](/ja/vs-code)                                                        |
+-| 「最初に何かを設定する必要がありますか？」   | いいえ。インストールしてから、任意のリポジトリで `claude` を実行してください。`/init` を 1 回実行すれば完了です。[クイックスタート →](/ja/quickstart)                                          |
+-| 「私のコードはどこに行きますか？」       | CLI はターミナルで実行され、コンテキストを Anthropic の API に送信して推論を行い、第三者のサーバーはありません。エンタープライズプランの下では、コードとプロンプトはモデルのトレーニングに使用されません。[データ使用 →](/ja/data-usage) |
+-| 「リポジトリ全体を見ることができますか？」   | アクセス権を与えたものを読みます。作業ディレクトリ内のファイル読み取りはプロンプトしません。許可プロンプトはゲート編集、シェルコマンド、およびそのディレクトリの外側のすべてです。[許可 →](/ja/permissions)                         |
+-| 「これは Copilot とどう違いますか？」 | Copilot は行を自動補完します。Claude Code はファイルを読み、コマンドを実行し、マルチファイル編集を行うエージェントです。[概要 →](/ja/overview)                                               |
+-| 「最初に何を試すべきですか？」         | 退屈だから先延ばしにしていたバグ。「\[ファイル] のテストは不安定です、理由を調べてください。」[クイックスタート →](/ja/quickstart)                                                            |
++| 質問                      | 回答                                                                                                                                                                                                                                                            |
++| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+```
+
+</details>
+
+<details>
+<summary>desktop-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/desktop-ja.md b/docs-ja/pages/desktop-ja.md
+index 9354858..825d8c8 100644
+--- a/docs-ja/pages/desktop-ja.md
++++ b/docs-ja/pages/desktop-ja.md
+@@ -95,5 +95,5 @@ Code タブの以前のバージョンでは、これらのモードを Ask perm
+ <span id="auto-mode-availability" />
+ 
+-Auto mode は Anthropic API のすべてのユーザーが利用できる研究プレビューです。Claude Opus 4.6 以降、または Sonnet 4.6 以降が必要です。Google Cloud の Agent Platform にルーティングするエンタープライズデプロイメントでは、[`CLAUDE_CODE_ENABLE_AUTO_MODE`を設定](/ja/permission-modes#enable-auto-mode-on-bedrock-agent-platform-or-foundry)するまで auto mode はオフになり、そこでは Claude Sonnet 5、Opus 4.7、および Opus 4.8 のみがサポートされています。
++Auto mode は Anthropic API のすべてのユーザーが利用でき、Claude Opus 4.6 以降、または Sonnet 4.6 以降が必要です。Google Cloud の Agent Platform にルーティングするエンタープライズデプロイメントでは、[`CLAUDE_CODE_ENABLE_AUTO_MODE`を設定](/ja/permission-modes#enable-auto-mode-on-bedrock-agent-platform-or-foundry)するまで auto mode はオフになり、そこでは Claude Sonnet 5、Opus 4.7、および Opus 4.8 のみがサポートされています。
+ 
+ <Tip title="ベストプラクティス">
+```
+
+</details>
+
+<details>
+<summary>desktop-linux-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/desktop-linux-ja.md b/docs-ja/pages/desktop-linux-ja.md
+index 3142b4f..0f8fb38 100644
+--- a/docs-ja/pages/desktop-linux-ja.md
++++ b/docs-ja/pages/desktop-linux-ja.md
+@@ -76,5 +76,13 @@ Anthropic の apt リポジトリからインストールして、更新がシ
+ </h3>
+ 
+-apt リポジトリを使用できない場合は、まず [claude.com/download](https://claude.com/download) からアーキテクチャ（x64 または arm64）に対応した `.deb` パッケージをダウンロードしてから、ダウンロードしたファイルをソフトウェアインストーラーで開くか、ダウンロードしたファイルが含まれているディレクトリから apt でインストールします。
++apt リポジトリを使用できない場合は、リポジトリのパッケージプールから `.deb` パッケージを直接ダウンロードしてください。このコマンドはリポジトリインデックスでアーキテクチャに対応した最新パッケージを検索し、現在のディレクトリにダウンロードします。
++
++```bash theme={null}
++curl -fLO "https://downloads.claude.ai/claude-desktop/apt/stable/$(curl -s "https://downloads.claude.ai/claude-desktop/apt/stable/dists/stable/main/binary-$(dpkg --print-architecture)/Packages" | grep '^Filename: pool/main/c/claude-desktop/claude-desktop_' | sort -V | tail -n 1 | cut -d' ' -f2)"
++```
++
++コマンドが `Remote file name has no length` で失敗する場合、検索がパッケージパスを返しませんでした。これはリポジトリインデックスを取得できなかった場合（例えば、ネットワークが `downloads.claude.ai` をブロックしている場合）、またはアーキテクチャに対応したパッケージが存在しない場合を意味します。ネットワークが `downloads.claude.ai` に到達できることを確認し、`dpkg --print-architecture` が `amd64` または `arm64` を出力することを確認してください。リポジトリは他のアーキテクチャのパッケージを公開していません。
++
++次に、ダウンロードしたファイルをソフトウェアインストーラー（GNOME Software など）で開くか、ダウンロードしたファイルが含まれているディレクトリから apt でインストールします。
+ 
+ ```bash theme={null}
+@@ -84,5 +92,5 @@ sudo apt install ./claude-desktop_*.deb
+ apt が `E: Unsupported file ./claude-desktop_*.deb given on commandline` を報告する場合、パターンが現在のディレクトリ内の `.deb` ファイルと一致しませんでした。ダウンロードが完了したことを確認してから、ファイルが含まれているディレクトリからコマンドを再度実行してください。
+ 
+-この方法でインストールされた `.deb` は更新を受け取りません。apt を通じて更新を取得するには、上記のようにリポジトリを追加するか、パッケージが `/etc/apt/sources.list.d/claude-desktop.list` に書き込むプレースホルダーエントリの `deb` 行をコメント解除します。
++この方法でインストールされた `.deb` は更新を受け取りません。apt を通じて更新を取得するには、[Anthropic の apt リポジトリを追加する](#install) ステップからリポジトリを登録してください。パッケージは `/etc/apt/sources.list.d/claude-desktop.list` にコメントアウトされたリポジトリエントリも書き込みます。その `deb` 行をコメント解除することと同等です。
+ 
+ <h2 id="update">
+```
+
+</details>
+
+<details>
+<summary>errors-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/errors-ja.md b/docs-ja/pages/errors-ja.md
+index 5c35a94..b56042e 100644
+--- a/docs-ja/pages/errors-ja.md
++++ b/docs-ja/pages/errors-ja.md
+@@ -32,5 +32,5 @@
+ | `Auto mode classifier transcript exceeded context window`                                     | [サーバーエラー](#auto-mode-cannot-determine-the-safety-of-an-action)                                |
+ | `Agent terminated early due to an API error`                                                  | [サーバーエラー](#agent-terminated-early-due-to-an-api-error)                                        |
+-| `You've hit your session limit` / `You've hit your weekly limit`                              | [使用制限](#you%E2%80%99ve-hit-your-session-limit)                                                |
++| `You've hit your session limit` / `You've hit your weekly limit`                              | [使用制限](#youve-hit-your-session-limit)                                                         |
+ | `Usage credits required for 1M context`                                                       | [使用制限](#usage-credits-required-for-1m-context)                                                |
+ | `Server is temporarily limiting requests`                                                     | [使用制限](#server-is-temporarily-limiting-requests)                                              |
+@@ -43,5 +43,5 @@
+ | `Your organization has disabled API key authentication`                                       | [認証](#your-organization-has-disabled-api-key-authentication)                                  |
+ | `Your organization has disabled Claude subscription access`                                   | [認証](#your-organization-has-disabled-claude-subscription-access)                              |
+-| `Routines are disabled by your organization's policy`                                         | [認証](#routines-are-disabled-by-your-organization%E2%80%99s-policy)                            |
++| `Routines are disabled by your organization's policy`                                         | [認証](#routines-are-disabled-by-your-organizations-policy)                                     |
+ | `Remote Control is only available when using Claude via api.anthropic.com`                    | [認証](#remote-control-requires-the-anthropic-api)                                              |
+ | `OAuth token revoked` / `OAuth token has expired`                                             | [認証](#oauth-token-revoked-or-expired)                                                         |
+@@ -54,5 +54,5 @@
+ | `SSL certificate error (...)` during login or startup                                         | [ネットワーク](#ssl-certificate-errors)                                                             |
+ | `403` with `x-deny-reason: host_not_allowed` in a cloud or routine session                    | [ネットワーク](#host-not-allowed-in-a-cloud-session)                                                |
+-| `Couldn't reconnect to your Remote Control session`                                           | [ネットワーク](#couldn%E2%80%99t-reconnect-to-your-remote-control-session)                          |
++| `Couldn't reconnect to your Remote Control session`                                           | [ネットワーク](#couldnt-reconnect-to-your-remote-control-session)                                   |
+ | `Prompt is too long`                                                                          | [リクエストエラー](#prompt-is-too-long)                                                               |
+ | `Error during compaction: Conversation too long`                                              | [リクエストエラー](#error-during-compaction-conversation-too-long)                                    |
+@@ -62,8 +62,8 @@
+ | `PDF too large` / `PDF is password protected`                                                 | [リクエストエラー](#pdf-errors)                                                                       |
+ | `Extra inputs are not permitted`                                                              | [リクエストエラー](#extra-inputs-are-not-permitted)                                                   |
+-| `There's an issue with the selected model`                                                    | [リクエストエラー](#there%E2%80%99s-an-issue-with-the-selected-model)                                 |
++| `There's an issue with the selected model`                                                    | [リクエストエラー](#theres-an-issue-with-the-selected-model)                                          |
+```
+
+</details>
+
+*...以降省略*
+
+</details>
+
+
+<details>
 <summary>2026-07-11</summary>
 
 **変更ファイル:**
@@ -2504,250 +2762,6 @@ index 8292c40..4a6bb5b 100644
 +  "availableModels": ["opus", "sonnet", "claude-haiku-4-5", "anthropic.claude-haiku-4-5"]
  }
  ```
-```
-
-</details>
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index 3507be5..98d57ef 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,31 @@
- # Changelog
- 
-+## 2.1.191
-+
-+- Added `/rewind` support for resuming a conversation from before `/clear` was run
-+- Fixed scroll position jumping to the bottom while reading earlier output during a streaming response
-+- Fixed background agents resurrecting after being stopped — stopping an agent from the tasks panel is now permanent
-+- Fixed `/voice` showing a generic "not available" message when disabled by an organization's policy — it now explains the restriction
-+- Fixed `/login` URL opening truncated in Windows Terminal when it wraps across lines
-+- Fixed Cmd+click on links in fullscreen mode for Ghostty over ssh/tmux
-+- Fixed `claude agents` sending builtin slash commands like `/usage` to background sessions as prompt text instead of showing a hint
-+- Fixed `claude agents` job rows showing full filesystem paths for pasted images instead of the `[Image #N]` placeholder
-+- Fixed hooks with comma-separated matchers (e.g. `"Bash,PowerShell"`) silently never firing
-+- Fixed `/permissions` Recently-denied tab: approving a denial now persists on close instead of being silently discarded
-+- Fixed the agent panel jumping by one row when scrolling the roster past the overflow cap
-+- Fixed the welcome splash art overflowing the default 80×24 macOS Terminal window
-+- Fixed managed settings: `forceRemoteSettingsRefresh` now takes effect when set via MDM or file policy, and the fetch sends `Cache-Control: no-cache` to prevent proxies from serving stale responses
-+- Improved sandbox network permission dialog: hosts you allow with "Yes" are now remembered for the rest of the session instead of re-prompting on every connection
-+- Improved MCP server reliability: capability discovery (`tools/list`, `prompts/list`, `resources/list`) now retries transient network errors with short backoff
-+- Improved MCP OAuth: discovery and token requests now retry once after transient network errors, and headless environments skip the browser popup and go straight to the paste-the-URL prompt
-+- Improved MCP error messages: HTTP 404 errors now show the URL and point to your MCP config
-+- Improved vim mode prompt-history search (NORMAL `/`) to hint how to reach slash commands
-+- Reduced CPU usage during streaming responses by ~37% by coalescing text updates to 100ms
-+- Reduced long-session memory growth from terminal output cache
-+
-```
-
-</details>
-
-<details>
-<summary>claude-code-on-the-web-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/claude-code-on-the-web-ja.md b/docs-ja/pages/claude-code-on-the-web-ja.md
-index 6d126df..acd0c35 100644
---- a/docs-ja/pages/claude-code-on-the-web-ja.md
-+++ b/docs-ja/pages/claude-code-on-the-web-ja.md
-@@ -64,22 +64,23 @@ Team および Enterprise 管理者は [claude.ai/admin-settings/claude-code](ht
- </h3>
- 
--クラウドセッションはリポジトリの新しいクローンから開始されます。リポジトリにコミットされたものはすべて利用可能です。自分のマシンにのみインストールまたは設定したものは利用できません。
--
--|                                                                    | クラウドセッションで利用可能 | 理由                                                                                                         |
--| :----------------------------------------------------------------- | :------------- | :--------------------------------------------------------------------------------------------------------- |
--| リポジトリの `CLAUDE.md`                                                 | はい             | クローンの一部                                                                                                    |
--| リポジトリの `.claude/settings.json` フック                                 | はい             | クローンの一部                                                                                                    |
--| リポジトリの `.mcp.json` MCP サーバー                                        | はい             | クローンの一部                                                                                                    |
--| リポジトリの `.claude/rules/`                                            | はい             | クローンの一部                                                                                                    |
--| リポジトリの `.claude/skills/`、`.claude/agents/`、`.claude/commands/`     | はい             | クローンの一部                                                                                                    |
--| `.claude/settings.json` で宣言されたプラグイン                                | はい             | 宣言した[マーケットプレイス](/ja/plugin-marketplaces)からセッション開始時にインストールされます。マーケットプレイスソースに到達するためにはネットワークアクセスが必要です         |
--| ユーザー `~/.claude/CLAUDE.md`                                         | いいえ            | マシンに存在し、リポジトリには存在しません                                                                                      |
--| ユーザー `~/.claude/skills/`、`~/.claude/agents/`、`~/.claude/commands/` | いいえ            | マシンに存在し、リポジトリには存在しません。代わりにリポジトリの `.claude/` ディレクトリにコミットしてください。claude.ai で有効にしたスキルはクラウドセッションに自動的にロードされます    |
--| ユーザー設定でのみ有効なプラグイン                                                  | いいえ            | ユーザースコープの `enabledPlugins` は `~/.claude/settings.json` に存在します。代わりにリポジトリの `.claude/settings.json` で宣言してください |
--| `claude mcp add` で追加した MCP サーバー                                    | いいえ            | これらはローカルユーザー設定に書き込まれ、リポジトリには書き込まれません。代わりに [`.mcp.json`](/ja/mcp#project-scope) でサーバーを宣言してください              |
--| 静的 API トークンと認証情報                                                   | いいえ            | 専用シークレットストアはまだ存在しません。以下を参照してください                                                                           |
--| AWS SSO のようなインタラクティブ認証                                             | いいえ            | サポートされていません。SSO はクラウドセッションで実行できないブラウザベースのログインが必要です                                                         |
--
--クラウドセッションで設定を利用可能にするには、リポジトリにコミットしてください。専用シークレットストアはまだ利用できません。環境変数とセットアップスクリプトの両方は環境設定に保存され、その環境を編集できる誰もが見ることができます。クラウドセッションでシークレットが必要な場合は、その可視性を念頭に置いて環境変数として追加してください。
-+クラウドセッションはリポジトリの新しいクローンから開始されます。リポジトリにコミットされたものはすべて利用可能です。自分のマシンにのみインストールまたは設定したものは利用できません。組織のポリシーは [サーバー管理設定](/ja/server-managed-settings)を通じて別途到着します。
-+
-+|                                                                    | クラウドセッションで利用可能 | 理由                                                                                                                                                                                                                         |
-+| :----------------------------------------------------------------- | :------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-+| リポジトリの `CLAUDE.md`                                                 | はい             | クローンの一部                                                                                                                                                                                                                    |
-```
-
-</details>
-
-<details>
-<summary>commands-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/commands-ja.md b/docs-ja/pages/commands-ja.md
-index ff8fc31..13d234b 100644
---- a/docs-ja/pages/commands-ja.md
-+++ b/docs-ja/pages/commands-ja.md
-@@ -89,5 +89,5 @@
- | `/init`                                                                            | `CLAUDE.md` ガイドでプロジェクトを初期化します。スキル、フック、個人メモリファイルをウォークスルーするインタラクティブフローについては、`CLAUDE_CODE_NEW_INIT=1` を設定します                                                                                                                                                                                                                                                                                                                                                                                                      |
- | `/insights`                                                                        | Claude Code セッションを分析するレポートを生成します。プロジェクト領域、相互作用パターン、および摩擦点を含みます                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
--| `/install-github-app`                                                              | リポジトリ用の [Claude GitHub Actions](/ja/github-actions) アプリをセットアップします。リポジトリを選択して統合を構成するプロセスをガイドします                                                                                                                                                                                                                                                                                                                                                                                                                 |
-+| `/install-github-app`                                                              | リポジトリ用の Claude GitHub App をインストールします。オプションで [GitHub Actions](/ja/github-actions) ワークフローとシークレットをセットアップするステップを含みます。リポジトリを選択して統合を構成するプロセスをガイドします                                                                                                                                                                                                                                                                                                                                                                  |
- | `/install-slack-app`                                                               | Claude Slack アプリをインストールします。OAuth フローを完了するためにブラウザを開きます                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
- | `/keybindings`                                                                     | キーバインディング設定ファイルを開きます                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-```
-
-</details>
-
-<details>
-<summary>desktop-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/desktop-ja.md b/docs-ja/pages/desktop-ja.md
-index dbaf842..587803f 100644
---- a/docs-ja/pages/desktop-ja.md
-+++ b/docs-ja/pages/desktop-ja.md
-@@ -692,16 +692,20 @@ Team または Enterprise プランの組織は、管理コンソールコント
- </h3>
- 
--管理設定はプロジェクトおよびユーザー設定をオーバーライドし、Desktop が CLI セッションを生成するときに適用されます。これらのキーを組織の[管理設定](/ja/settings#settings-precedence)ファイルで設定するか、管理コンソールを通じてリモートでプッシュできます。
--
--| キー                                         | 説明                                                                                                                                                                                              |
--| ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
--| `permissions.disableBypassPermissionsMode` | ユーザーが Bypass permissions モードを有効にするのを防ぐには`"disable"`に設定します。                                                                                                                                      |
--| `disableAutoMode`                          | ユーザーが[Auto](/ja/permission-modes#eliminate-prompts-with-auto-mode)モードを有効にするのを防ぐには`"disable"`に設定します。モードセレクタから Auto を削除します。`permissions`の下でも受け入れられます。                                             |
--| `autoMode`                                 | 組織全体で auto mode 分類器が信頼およびブロックするものをカスタマイズします。[auto mode を設定する](/ja/auto-mode-config)を参照してください。                                                                                                   |
--| `sshConfigs`                               | 環境ドロップダウンに表示される[SSH 接続](#pre-configure-ssh-connections-for-your-team)を事前設定します。ユーザーは管理接続を編集または削除できません。                                                                                           |
--| `sshHostAllowlist`                         | [SSH セッション](#restrict-which-ssh-hosts-users-can-connect-to)を、解決されたホスト名がこれらのパターンのいずれかと一致するホストに制限します。空の配列は SSH セッションを無効にします。管理設定からのみ読み取られます。                                                      |
--| `managedMcpServers`                        | MCP サーバー設定をサードパーティデプロイメント内のすべてのユーザーにプッシュします。各エントリは`"http"`、`"sse"`、または`"stdio"`のトランスポート、接続詳細、およびオプションで、そのサーバー内のどのツールをユーザーが呼び出せるかを制限する`toolPolicy`マップを指定します。サードパーティ（3P）Desktop デプロイメントでのみ利用可能です。 |
--
--ディスク上の各マシンにデプロイされた管理設定ファイルは Desktop セッションに適用されます。管理コンソールを通じてリモートでプッシュされた管理設定は、現在 CLI および IDE セッションにのみ適用されるため、Desktop デプロイメントの場合は MDM 経由でファイルを配布するか、上記の[管理コンソールコントロール](#admin-console-controls)を使用してください。
-+管理設定はプロジェクトおよびユーザー設定をオーバーライドし、Claude Code セッションに Desktop で適用されます。これらのキーを組織の[管理設定](/ja/settings#settings-precedence)ファイルで設定するか、管理コンソールを通じてリモートでプッシュできます。
-+
-+| キー                                         | 説明                                                                                                                                                                                                                                                                    |
-+| ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-+| `permissions.disableBypassPermissionsMode` | ユーザーが Bypass permissions モードを有効にするのを防ぐには`"disable"`に設定します。                                                                                                                                                                                                            |
-+| `disableAutoMode`                          | ユーザーが[Auto](/ja/permission-modes#eliminate-prompts-with-auto-mode)モードを有効にするのを防ぐには`"disable"`に設定します。モードセレクタから Auto を削除します。`permissions`の下でも受け入れられます。                                                                                                                   |
-+| `autoMode`                                 | 組織全体で auto mode 分類器が信頼およびブロックするものをカスタマイズします。[auto mode を設定する](/ja/auto-mode-config)を参照してください。                                                                                                                                                                         |
-+| `sshConfigs`                               | 環境ドロップダウンに表示される[SSH 接続](#pre-configure-ssh-connections-for-your-team)を事前設定します。ユーザーは管理接続を編集または削除できません。                                                                                                                                                                 |
-+| `sshHostAllowlist`                         | [SSH セッション](#restrict-which-ssh-hosts-users-can-connect-to)を、解決されたホスト名がこれらのパターンのいずれかと一致するホストに制限します。空の配列は SSH セッションを無効にします。管理設定からのみ読み取られます。                                                                                                                            |
-+| `managedMcpServers`                        | MCP サーバー設定をサードパーティデプロイメント内のすべてのユーザーにプッシュします。各エントリは`"http"`、`"sse"`、または`"stdio"`のトランスポート、接続詳細、およびオプションで、そのサーバー内のどのツールをユーザーが呼び出せるかを制限する`toolPolicy`マップを指定します。サードパーティ（3P）Desktop デプロイメントでのみ利用可能です。管理設定ファイルまたは MDM を通じてこのキーを配信してください。サードパーティデプロイメントは管理コンソール設定を受け取らないためです。 |
-+
-```
-
-</details>
-
-*...以降省略*
-
-</details>
-
-
-<details>
-<summary>2026-06-24</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/agent-view-ja.md             | 35 +++++++++++++++++++++++++++---
- docs-ja/pages/changelog.md                 | 24 ++++++++++++++++++++
- docs-ja/pages/claude-code-on-the-web-ja.md |  1 +
- docs-ja/pages/skills-ja.md                 |  1 +
- docs-ja/pages/slack-ja.md                  | 16 +++++++++++++-
- 5 files changed, 73 insertions(+), 4 deletions(-)
-```
-
-<details>
-<summary>agent-view-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/agent-view-ja.md b/docs-ja/pages/agent-view-ja.md
-index 6333b01..55f5768 100644
---- a/docs-ja/pages/agent-view-ja.md
-+++ b/docs-ja/pages/agent-view-ja.md
-@@ -282,5 +282,5 @@ v2.1.145 以降では、[音声ディクテーション](/ja/voice-dictation) 
- | `Shift+Enter`                    | ディスパッチして新しいセッションに直ちにアタッチ                                                                                 |
- 
--エージェントビュー自体で実行される少数のコマンドがあります。ディスパッチの代わりに：`/exit` および `/quit` はエージェントビューを閉じ、`/logout` はサインアウトします。その他のすべてのコマンドとスキルは、新しいバックグラウンドセッションにその最初のプロンプトとして送信されます。
-+エージェントビュー自体で実行される少数のコマンドがあります。ディスパッチの代わりに：`/exit` および `/quit` はエージェントビューを閉じ、`/logout` はサインアウトします。`/model` はディスパッチモデルを設定します。skills、独自のコマンド、および `/init` などのプロンプト展開組み込みは、新しいバックグラウンドセッションにその最初のプロンプトとして送信されます。その他の組み込みコマンドは、代わりに `attach to a session to run it` ヒントを表示します。
- 
- 繰り返しタスクを [skill](/ja/skills) としてパッケージ化すると、プロンプトを再入力せずにエージェントビューから同じワークフローを何度も開始できます。
-@@ -413,4 +413,13 @@ git リポジトリの外では、セッションは作業ディレクトリに
- エージェントビューヘッダーに表示されるモデル名はディスパッチのデフォルトです。入力から開始する新しいセッションはこのモデルを使用します。これは [`model` setting](/ja/settings#available-settings) からユーザー設定で取得されます。[`/model` picker](/ja/model-config) でモデルを選択して設定するか、設定を直接編集します。エージェントビューセッション全体でオーバーライドするには、エージェントビューを開く際に `--model` を渡します。[パーミッションモード、モデル、および努力](#permission-mode-model-and-effort) を参照してください。
- 
-+エージェントビューの入力でディスパッチモデルを変更するには、ディスパッチ入力に `/model` の後にモデル名を入力して `Enter` を押します。ヘッダーは `(session)` マーカー付きでそのモデルを表示するように更新され、その後ディスパッチするセッションはそれを使用します。`/model default` と入力してオーバーライドをクリアし、ディスパッチのデフォルトに戻します。このオーバーライドは現在の `claude agents` 実行の残りの間続き、設定ファイルに書き込まれず、Claude Code v2.1.172 以降が必要です。{/* min-version: 2.1.172 */} 次の例は、1 つのセッションを Opus でディスパッチし、次のセッションを Sonnet でディスパッチします：
-+
-+```text theme={null}
-+/model opus
-+refactor auth
-+/model sonnet
-+run the test suite
-+```
-+
- 各バックグラウンドセッションは異なるモデルで実行できます。1 つのセッションでオーバーライドするには：
- 
-@@ -423,5 +432,7 @@ git リポジトリの外では、セッションは作業ディレクトリに
- </h3>
- 
--バックグラウンドセッションは、そこで `claude` を開始した場合と同じように、実行されるディレクトリから [settings](/ja/settings) を読み取ります。
-+バックグラウンドセッションは、そこで `claude` を開始した場合と同じように、実行されるディレクトリから [settings](/ja/settings) を読み取ります。これには、プロジェクト設定の [`env` values](/ja/settings#available-settings) が含まれるため、そこで設定された `ANTHROPIC_MODEL` またはプロバイダー変数がそのディレクトリのバックグラウンドセッションに適用されます。
-```
-
-</details>
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index 3c832a7..3507be5 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,28 @@
- # Changelog
- 
-+## 2.1.187
-+
-+- Added `sandbox.credentials` setting to block sandboxed commands from reading credential files and secret environment variables
-+- Added org-configured model restrictions to the model picker, `--model`, `/model`, and `ANTHROPIC_MODEL`, with a "restricted by your organization's settings" message when a restricted model is selected
-+- Added mouse click support to select menus (permission prompts, `/model`, `/config`, etc.) in fullscreen mode
-+- Fixed `--resume` failing with "No conversation found" when the original `-p` run produced no model turns
-+- Fixed `--json-schema` and workflow `agent({schema})` structured output: the model can no longer re-call `StructuredOutput` indefinitely after a successful call, and follow-up turns now reliably return structured output
-+- Fixed remote MCP tool calls that hang with no response for 5 minutes — they now abort with an error instead of blocking indefinitely (override with `CLAUDE_CODE_MCP_TOOL_IDLE_TIMEOUT`)
-+- Fixed Claude Code Remote sessions taking ~2.7s longer to start after the agent proxy CA system-trust install was added
-+- Fixed pasted Korean/CJK text turning into mojibake in terminals that deliver paste as per-byte extended-key events
-+- Fixed `/update` over Remote Control hanging when a startup trust dialog would have shown
-+- Fixed background jobs in the agents view getting stuck in "working" indefinitely when the agent ended a turn without producing structured output
-+- Fixed channel connections dropping after navigating to the agents view and back, and after `/bg`, `/tui`, or `/update`
-+- Fixed agent stop notifications not correctly attributing who stopped the agent, and improved wording ("finished"/"stopped" instead of "came to rest")
-+- Fixed subagent depth tracking: resumed subagents now restore their original spawn depth, and forked subagents now count toward the depth cap
-+- Fixed leaked agent worktree registrations: locked `.git/worktrees/` entries from killed agents are now cleaned up automatically
-+- Fixed Cmd+click not opening URLs in fullscreen mode in Ghostty on macOS
-+- Fixed `claude --help` not listing the `--bg`/`--background` flag
-+- Fixed Esc, Ctrl-C, and Ctrl-D not working while `/share` is uploading
-+- Improved `/install-github-app`: GitHub Actions workflow setup is now optional — you can install just the GitHub App and skip the workflow/secret steps
-+- Improved `/btw` with ←/→ arrow navigation to step through earlier answers
-+- Improved `/plugin` to surface plugins you haven't used recently so you can clean them up
-+- [VSCode] Fixed extension becoming unresponsive when resuming a large session
-```
-
-</details>
-
-<details>
-<summary>claude-code-on-the-web-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/claude-code-on-the-web-ja.md b/docs-ja/pages/claude-code-on-the-web-ja.md
-index 3058b3c..6d126df 100644
---- a/docs-ja/pages/claude-code-on-the-web-ja.md
-+++ b/docs-ja/pages/claude-code-on-the-web-ja.md
-@@ -905,2 +905,3 @@ Claude は PR を解決する際に GitHub のレビューコメントスレッ
- * [セキュリティ](/ja/security)：分離保証とデータ処理
- * [データ使用](/ja/data-usage)：Anthropic がクラウドセッションから保持するもの
-+* [Claude Tag](https://claude.com/docs/claude-tag/overview)：Slack で実行される組織管理の @Claude で、同じクラウド環境で動作
 ```
 
 </details>
