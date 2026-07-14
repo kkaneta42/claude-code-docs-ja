@@ -6,10 +6,6 @@
 
 > キーボードショートカットをカスタマイズして、Claude Code でキーバインディング設定ファイルを使用します。
 
-<Note>
-  カスタマイズ可能なキーボードショートカットには Claude Code v2.1.18 以降が必要です。`claude --version` でバージョンを確認してください。
-</Note>
-
 Claude Code はカスタマイズ可能なキーボードショートカットをサポートしています。`/keybindings` を実行して、`~/.claude/keybindings.json` に設定ファイルを作成または開きます。
 
 <h2 id="configuration-file">

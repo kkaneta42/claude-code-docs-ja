@@ -17,6 +17,297 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-07-14</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/admin-setup-ja.md             |  28 +-
+ docs-ja/pages/advisor-ja.md                 |   5 +-
+ docs-ja/pages/amazon-bedrock-ja.md          |   6 +-
+ docs-ja/pages/analytics-ja.md               |   6 +-
+ docs-ja/pages/best-practices-ja.md          |   4 +-
+ docs-ja/pages/channels-ja.md                |   2 +-
+ docs-ja/pages/channels-reference-ja.md      |   6 +-
+ docs-ja/pages/checkpointing-ja.md           |   4 +-
+ docs-ja/pages/chrome-ja.md                  |   2 +-
+ docs-ja/pages/cli-reference-ja.md           |   4 +-
+ docs-ja/pages/commands-ja.md                |   2 +-
+ docs-ja/pages/common-workflows-ja.md        |   2 +-
+ docs-ja/pages/computer-use-ja.md            |   5 +-
+ docs-ja/pages/costs-ja.md                   |  71 +++-
+ docs-ja/pages/deep-links-ja.md              |   4 -
+ docs-ja/pages/desktop-ja.md                 |  11 +-
+ docs-ja/pages/desktop-quickstart-ja.md      |   1 +
+ docs-ja/pages/discover-plugins-ja.md        |   2 +-
+ docs-ja/pages/env-vars-ja.md                | 582 ++++++++++++++--------------
+ docs-ja/pages/errors-ja.md                  |   3 +-
+ docs-ja/pages/fast-mode-ja.md               |   8 +-
+ docs-ja/pages/feature-availability-ja.md    |   5 +-
+ docs-ja/pages/fullscreen-ja.md              |  29 +-
+ docs-ja/pages/glossary-ja.md                |   2 +-
+ docs-ja/pages/google-vertex-ai-ja.md        |   6 +-
+ docs-ja/pages/hooks-guide-ja.md             |   4 -
+ docs-ja/pages/hooks-ja.md                   |   4 -
+ docs-ja/pages/how-claude-code-works-ja.md   |   4 +-
+ docs-ja/pages/keybindings-ja.md             |   4 -
+ docs-ja/pages/mcp-ja.md                     |   2 +-
+ docs-ja/pages/memory-ja.md                  |   4 -
+ docs-ja/pages/permission-modes-ja.md        |   6 +-
+ docs-ja/pages/plugin-marketplaces-ja.md     |  48 ++-
+ docs-ja/pages/plugins-ja.md                 |   2 +-
+ docs-ja/pages/prompt-caching-ja.md          |   4 -
+ docs-ja/pages/remote-control-ja.md          |   6 +-
+ docs-ja/pages/routines-ja.md                |   1 -
+ docs-ja/pages/sandboxing-ja.md              |   2 +-
+ docs-ja/pages/scheduled-tasks-ja.md         |   4 -
+ docs-ja/pages/server-managed-settings-ja.md |   1 -
+ docs-ja/pages/settings-ja.md                |  10 +-
+ docs-ja/pages/sub-agents-ja.md              |   4 +-
+ docs-ja/pages/terminal-config-ja.md         |   2 +-
+ docs-ja/pages/tools-reference-ja.md         |   4 -
+ docs-ja/pages/ultraplan-ja.md               |   2 +-
+ docs-ja/pages/ultrareview-ja.md             |   2 +-
+ docs-ja/pages/voice-dictation-ja.md         |   2 +-
+ docs-ja/pages/web-quickstart-ja.md          |   2 +-
+ 48 files changed, 489 insertions(+), 435 deletions(-)
+```
+
+**新規追加:**
+
+
+<details>
+<summary>admin-setup-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/admin-setup-ja.md b/docs-ja/pages/admin-setup-ja.md
+index 654e47d..78d75b8 100644
+--- a/docs-ja/pages/admin-setup-ja.md
++++ b/docs-ja/pages/admin-setup-ja.md
+@@ -70,4 +70,17 @@ plist と HKLM レジストリの場所は任意のプロバイダーで機能
+ [Server-managed settings](/ja/server-managed-settings) と [Settings files and precedence](/ja/settings#settings-files) を参照してください。
+ 
++<h3 id="wsl-sessions-in-claude-code-desktop">
++  Claude Code Desktop の WSL セッション
++</h3>
++
++Windows では、[Claude Code Desktop は WSL 2 ディストリビューション内で Code セッションを実行できます](/ja/desktop-wsl)。セッションの Claude Code プロセスはディストリビューション内で実行されるため、上記の WSL 検出パスを通じてマネージド設定を解決します。`wslInheritsWindowsSettings: true` が展開されていない限り、Windows のみのソースはそれに到達しません。
++
++マネージド設定が存在するデバイスでは、Desktop WSL セッションはデフォルトで利用できません。組織がそれらを有効にしたい場合は、Anthropic アカウントチームに連絡してください。有効にされた場合：
++
++* HKLM レジストリまたは `C:\Program Files\ClaudeCode` ファイルを通じて `wslInheritsWindowsSettings: true` を展開して、WSL セッションがホストセッションと同じポリシーを継承するようにしてください。
++* WSL セッション内で `/status` を実行して検証してください。`Setting sources` 行は、展開した Windows ソース（`(HKLM)` または `(file)`）を含む `Enterprise managed settings` を表示する必要があります。
++
++WSL 2 ユーティリティ VM 内のプロセスは、Windows 側のエンドポイント検出センサーに表示されません。CrowdStrike Falcon を使用する場合は、CrowdStrike の WSL ドキュメントが必要とする 2 つの除外（WSL 仮想マシンプロセスと VM ディスクイメージ）を使用して、WSL 2 で Linux 用 Falcon センサーを有効にしてください。これにより、ディストリビューション内のプロセスとファイルアクティビティが観察可能になります。Claude Code の [OpenTelemetry ツール実行テレメトリ](/ja/monitoring-usage) は WSL とネイティブセッションで同じように出力されます。
++
+ <h2 id="decide-what-to-enforce">
+   実行する内容を決定する
+@@ -101,13 +114,14 @@ claude.ai または Anthropic API を通じて認証するメンバーを持つ
+ </h2>
+ 
+-必要なレポート内容に基づいて監視を選択してください。
++必要なレポート内容に基づいて監視を選択してください。ダッシュボード、API、支出管理は Claude for Teams または Enterprise プランと Claude Console 組織で異なるため、機能に基づいてレポートを計画する前に「利用可能性」列を確認してください。
+ 
+-| 機能                  | 取得内容                                 | 利用可能性                                                                                                                                   | 開始場所                                     |
+-| :------------------ | :----------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------- | :--------------------------------------- |
+```
+
+</details>
+
+<details>
+<summary>advisor-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/advisor-ja.md b/docs-ja/pages/advisor-ja.md
+index 3d40e5f..c27253d 100644
+--- a/docs-ja/pages/advisor-ja.md
++++ b/docs-ja/pages/advisor-ja.md
+@@ -7,8 +7,6 @@
+ > メインモデルをより強力な advisor モデルと組み合わせて、タスク中の重要な瞬間に Claude が相談できるようにします。
+ 
+-{/* plan-availability: feature=advisor providers=anthropic */}
+-
+ <Note>
+-  advisor ツールは実験的機能であり、Anthropic API を使用する Claude Code v2.1.98 以降が必要です。Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry では利用できません。動作、価格設定、および利用可能性は変更される可能性があります。
++  advisor ツールは実験的機能であり、Anthropic API が必要です。Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry では利用できません。動作、価格設定、および利用可能性は変更される可能性があります。
+ </Note>
+ 
+@@ -162,5 +160,4 @@ advisor モデル自体の会話の読み取りはキャッシュされません
+ advisor ツールには、以下のすべてが必要です。
+ 
+-* **Claude Code v2.1.98 以降**：`claude update` を実行してアップグレードします。
+ * **Anthropic API のみ**：advisor はサーバー実行ツールです。Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry では利用できません。[LLM ゲートウェイ](/ja/llm-gateway)を通じて `ANTHROPIC_BASE_URL` で構成されている場合、利用可能性はゲートウェイがリクエストを Anthropic API に完全に転送するかどうかに依存します。
+ * **サポートされているメインモデル**：Opus 4.6 以降、Sonnet 4.6 以降、または Haiku 4.5。{/* min-version: 2.1.170 */}Fable 5 も Claude Code v2.1.170 以降で適格です。
+```
+
+</details>
+
+<details>
+<summary>amazon-bedrock-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/amazon-bedrock-ja.md b/docs-ja/pages/amazon-bedrock-ja.md
+index a50c82f..ccb026a 100644
+--- a/docs-ja/pages/amazon-bedrock-ja.md
++++ b/docs-ja/pages/amazon-bedrock-ja.md
+@@ -333,5 +333,5 @@ export ENABLE_PROMPT_CACHING_1H=1
+ </h2>
+ 
+-Claude Code が Amazon Bedrock で設定されて起動すると、使用するモデルがアカウントでアクセス可能であることを確認します。このチェックには Claude Code v2.1.94 以降が必要です。
++Claude Code が Amazon Bedrock で設定されて起動すると、使用するモデルがアカウントでアクセス可能であることを確認します。
+ 
+ 現在の Claude Code デフォルトより古いモデルバージョンをピン留めしていて、アカウントが新しいバージョンを呼び出せる場合、Claude Code はピンを更新するよう促します。受け入れると、新しいモデル ID が [user settings file](/ja/settings) に書き込まれ、Claude Code が再起動されます。拒否すると、次のデフォルトバージョン変更まで記憶されます。[アプリケーション推論プロファイル ARN](#map-each-model-version-to-an-inference-profile)を指す PIN は、管理者によって管理されるため、スキップされます。
+@@ -436,8 +436,4 @@ Claude Code は、各リクエストで `X-Amzn-Bedrock-Service-Tier` ヘッダ
+ Mantle は、Bedrock Invoke API ではなく、ネイティブ Anthropic API シェイプを通じて Claude モデルを提供する Amazon Bedrock エンドポイントです。同じ AWS 認証情報、IAM 権限、および `awsAuthRefresh` 設定を使用します。このページで前述したものです。
+ 
+-<Note>
+-  Mantle には Claude Code v2.1.94 以降が必要です。確認するには `claude --version` を実行してください。
+-</Note>
+-
+ <h3 id="enable-mantle">
+   Mantle を有効にする
+```
+
+</details>
+
+<details>
+<summary>analytics-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/analytics-ja.md b/docs-ja/pages/analytics-ja.md
+index 741d0b1..e6e77eb 100644
+--- a/docs-ja/pages/analytics-ja.md
++++ b/docs-ja/pages/analytics-ja.md
+@@ -27,5 +27,5 @@ Team と Enterprise ダッシュボードには以下が含まれます。
+ * **データエクスポート**：カスタムレポート用に貢献データを CSV としてダウンロード
+ 
+-ユーザーごとのトークン数とコスト推定については、[OpenTelemetry エクスポート](/ja/monitoring-usage)を構成してください。
++ユーザーごとのトークン数とコスト推定については、[OpenTelemetry エクスポート](/ja/monitoring-usage)を構成するか、組織の分析設定から[支出レポート](https://support.claude.com/en/articles/12883420-view-usage-analytics-for-team-and-enterprise-plans)をエクスポートしてください。これはユーザーごと、モデルごとのトークン使用量と推定使用クレジット支出を一覧表示します。
+ 
+ <h3 id="enable-contribution-metrics">
+@@ -229,4 +229,6 @@ PR マージ日の 21 日前から 2 日後のセッションが属性マッチ
+ </h4>
+ 
++Enterprise プランでは、[Claude Enterprise Analytics API](https://support.claude.com/en/articles/13703965-claude-enterprise-analytics-api-reference-guide) は、Claude Code を含む Claude サーフェス全体で、組織のユーザーごとのエンゲージメント、使用状況、コストレポートを返します。プライマリオーナーが [claude.ai/analytics/api-keys](https://claude.ai/analytics/api-keys) で `read:analytics` スコープを持つキーを作成します。API は Teams プランでは利用できません。
++
+ GitHub を通じてこのデータをクエリするには、`claude-code-assisted` でラベル付けされた PR を検索します。
+ 
+@@ -235,5 +237,5 @@ GitHub を通じてこのデータをクエリするには、`claude-code-assist
+ </h2>
+ 
+-Claude Console を使用している API カスタマーは、[platform.claude.com/claude-code](https://platform.claude.com/claude-code) で分析にアクセスできます。ダッシュボードにアクセスするには UsageView 権限が必要です。これは Developer、Billing、Admin、Owner、Primary Owner ロールに付与されます。
++Claude Console を使用している API カスタマーは、[platform.claude.com/claude-code](https://platform.claude.com/claude-code) で分析にアクセスできます。ダッシュボードにアクセスするには UsageView 権限が必要です。これは Developer、Billing、Admin、Owner、Primary Owner ロールに付与されます。同じ日次ユーザーごとのメトリクスをプログラムで取得するには、Admin API キーを使用して [Claude Code Analytics API](https://platform.claude.com/docs/ja/build-with-claude/claude-code-analytics-api) を使用してください。
+ 
+ <Note>
+```
+
+</details>
+
+<details>
+<summary>best-practices-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/best-practices-ja.md b/docs-ja/pages/best-practices-ja.md
+index 2b85e48..8b11ac2 100644
+--- a/docs-ja/pages/best-practices-ja.md
++++ b/docs-ja/pages/best-practices-ja.md
+@@ -482,5 +482,5 @@ Claude は変更前に自動的にファイルをスナップショットする
+ 
+ <Warning>
+-  チェックポイントは Claude が行った変更のみを追跡します。外部プロセスではありません。これは git の代替ではありません。
++  チェックポイントは Claude が行った変更のみを追跡します。Bash コマンドまたは外部プロセスを通じて行われた変更はキャプチャされません。これは git の代替ではありません。
+ </Warning>
+ 
+@@ -513,5 +513,5 @@ Claude Code は会話をローカルに保存するため、タスクが複数
+ </Tip>
+ 
+-`claude -p "your prompt"` を使用すると、セッションなしで Claude を非対話的に実行できます。[非対話型モード](/ja/headless)は、Claude を CI パイプライン、プリコミットフック、または自動化されたワークフローに統合する方法です。出力形式を使用すると、結果をプログラムで解析できます。プレーンテキスト、JSON、またはストリーミング JSON です。
++`claude -p "your prompt"` を使用すると、セッションなしで Claude を非対話的に実行できます。実行は `--no-session-persistence` を渡さない限り、再開可能なセッションを作成します。[非対話型モード](/ja/headless)は、Claude を CI パイプライン、プリコミットフック、または自動化されたワークフローに統合する方法です。出力形式を使用すると、結果をプログラムで解析できます。プレーンテキスト、JSON、またはストリーミング JSON です。
+ 
+ ```bash theme={null}
+```
+
+</details>
+
+<details>
+<summary>channels-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/channels-ja.md b/docs-ja/pages/channels-ja.md
+index fa35a06..c25f963 100644
+--- a/docs-ja/pages/channels-ja.md
++++ b/docs-ja/pages/channels-ja.md
+@@ -8,5 +8,5 @@
+ 
+ <Note>
+-  チャネルは[リサーチプレビュー](#research-preview)段階にあり、Claude Code v2.1.80 以降が必要です。Anthropic 認証が claude.ai または Console API キーを通じて必要で、Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry では利用できません。Team および Enterprise 組織は[明示的に有効にする](#enterprise-controls)必要があります。
++  チャネルは[リサーチプレビュー](#research-preview)段階にあります。Anthropic 認証が claude.ai または Console API キーを通じて必要で、Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry では利用できません。Team および Enterprise 組織は[明示的に有効にする](#enterprise-controls)必要があります。
+ </Note>
+ 
+```
+
+</details>
+
+<details>
+<summary>channels-reference-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/channels-reference-ja.md b/docs-ja/pages/channels-reference-ja.md
+index b4e2b2e..b947579 100644
+--- a/docs-ja/pages/channels-reference-ja.md
++++ b/docs-ja/pages/channels-reference-ja.md
+@@ -8,5 +8,5 @@
+ 
+ <Note>
+-  チャネルは[リサーチプレビュー](/ja/channels#research-preview)段階にあり、Claude Code v2.1.80 以降が必要です。Team および Enterprise 組織は[明示的に有効化](/ja/channels#enterprise-controls)する必要があります。
++  チャネルは[リサーチプレビュー](/ja/channels#research-preview)段階にあります。Team および Enterprise 組織は[明示的に有効化](/ja/channels#enterprise-controls)する必要があります。
+ </Note>
+ 
+@@ -454,8 +454,4 @@ await mcp.notification({ ... })
+ </h2>
+ 
+-<Note>
+-  権限リレーには Claude Code v2.1.81 以降が必要です。以前のバージョンは `claude/channel/permission` 機能を無視します。
+-</Note>
+-
+ Claude が承認が必要なツールを呼び出すと、ローカルターミナルダイアログが開き、セッションが待機します。双方向チャネルは、同じプロンプトを並行して受け取り、別のデバイスでそれをリレーすることを選択できます。両方がライブのままです：ターミナルまたは電話で答えることができ、Claude Code は最初に到着した答えを適用し、もう一方を閉じます。
+ 
+```
+
+</details>
+
+<details>
+<summary>checkpointing-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/checkpointing-ja.md b/docs-ja/pages/checkpointing-ja.md
+index 4611de8..adfc41b 100644
+--- a/docs-ja/pages/checkpointing-ja.md
++++ b/docs-ja/pages/checkpointing-ja.md
+@@ -13,5 +13,5 @@ Claude Code は、作業中に Claude が行ったファイルエディットを
+ </h2>
+ 
+-Claude で作業する際、チェックポイント機能は各エディット前のコード状態を自動的にキャプチャします。このセーフティネットにより、野心的で大規模なタスクを実行する際に、いつでも以前のコード状態に戻ることができるという安心感を持って作業できます。
++Claude で作業する際、チェックポイント機能は各ユーザープロンプト前のコード状態を自動的にキャプチャします。このセーフティネットにより、野心的で大規模なタスクを実行する際に、いつでも以前のコード状態に戻ることができるという安心感を持って作業できます。
+ 
+ <h3 id="automatic-tracking">
+@@ -22,5 +22,5 @@ Claude Code は、ファイル編集ツールで行われたすべての変更
+ 
+ * ユーザープロンプトごとに新しいチェックポイントが作成されます
+-* チェックポイントはセッション間で保持されるため、再開した会話でアクセスできます
++* チェックポイントはセッションと共に保存されるため、再開したセッションでも `/rewind` で戻ることができます
+ * セッション終了後 30 日後に自動的にクリーンアップされます（設定可能）
+ 
+```
+
+</details>
+
+*...以降省略*
+
+</details>
+
+
+<details>
 <summary>2026-07-12</summary>
 
 **変更ファイル:**
@@ -2502,266 +2793,6 @@ index fb172dc..6810308 100644
 +`apiKeyHelper`、`ANTHROPIC_API_KEY`、および `ANTHROPIC_AUTH_TOKEN` は CLI およびそれをラップするサーフェス（VS Code 拡張機能、Agent SDK、GitHub Actions を含む）に適用されます。Claude Desktop とクラウドセッションは `apiKeyHelper` を呼び出したり、これらの環境変数を読み込んだりしません。OAuth を使用します。ただし、[組織配布のサードパーティ推論設定](/ja/llm-gateway-connect#desktop-app)を実行しているデスクトップセッションは、その設定の認証情報で認証します。
  
  <h3 id="authentication-precedence">
-```
-
-</details>
-
-<details>
-<summary>best-practices-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/best-practices-ja.md b/docs-ja/pages/best-practices-ja.md
-index e548ab6..2b85e48 100644
---- a/docs-ja/pages/best-practices-ja.md
-+++ b/docs-ja/pages/best-practices-ja.md
-@@ -594,5 +594,5 @@ claude -p "<your prompt>" --output-format json | your_command
- </h3>
- 
--無中断の実行と背景のセーフティチェックについては、[auto mode](/ja/permission-modes#eliminate-prompts-with-auto-mode) を使用します。分類器モデルはコマンドを実行前にレビューし、スコープエスカレーション、未知のインフラストラクチャ、敵対的なコンテンツ駆動のアクションをブロックしながら、ルーチンワークをプロンプトなしで進めさせます。
-+無中断の実行とバックグラウンドのセーフティチェックについては、[auto mode](/ja/permission-modes#eliminate-prompts-with-auto-mode) を使用します。分類器モデルはコマンドを実行前にレビューし、スコープエスカレーション、未知のインフラストラクチャ、敵対的なコンテンツ駆動のアクションをブロックしながら、ルーチンワークをプロンプトなしで進めさせます。
- 
- ```bash theme={null}
-```
-
-</details>
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index 98d57ef..534a987 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,22 @@
- # Changelog
- 
-+## 2.1.193
-+
-+- Added `autoMode.classifyAllShell` setting to route all Bash/PowerShell commands through the auto-mode classifier instead of only arbitrary-code-execution patterns
-+- Added auto-mode denial reasons to the transcript, the denial toast, and `/permissions` recent denials
-+- Added `claude_code.assistant_response` OpenTelemetry log event containing the model's response text. Redacted unless `OTEL_LOG_ASSISTANT_RESPONSES=1`; when that var is unset it follows `OTEL_LOG_USER_PROMPTS`, so deployments that already log prompt content will start receiving response content on upgrade — set `OTEL_LOG_ASSISTANT_RESPONSES=0` to keep prompts-only.
-+- Added live file path autocomplete to bash mode (`!`)
-+- Added a startup notice when MCP servers need authentication, pointing at `/mcp`
-+- Added automatic memory-pressure reaping for idle background shell commands (disable with `CLAUDE_CODE_DISABLE_BG_SHELL_PRESSURE_REAP=1`)
-+- Fixed `/model` and other client-data-gated UI showing stale/empty state immediately after `/login`
-+- Fixed backgrounding (←←) spuriously cancelling with "N background tasks would be abandoned" when all running tasks carry over to the new session
-+- Fixed pinned background agents being re-prompted to "Continue from where you left off" after every auto-update
-+- Fixed backgrounding the main turn spawning a phantom "general-purpose (resumed)" subagent that re-ran the main conversation
-+- Fixed agent panel hiding sibling agents when viewing a subagent
-+- Improved background agents: the launch result no longer instructs Claude to "end your response" — it keeps working on other tasks while the agent runs
-+- Improved MCP `headersHelper` auth: the helper now re-runs and reconnects automatically when a tool call returns 401/403
-+- Improved plugin auto-rename: marketplace `renames` maps are now followed automatically, updating your settings to the new name
-+- Improved `/add-dir` message when the directory is already a working directory
-+
- ## 2.1.191
- 
-```
-
-</details>
-
-<details>
-<summary>channels-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/channels-ja.md b/docs-ja/pages/channels-ja.md
-index 32b82d0..9579881 100644
---- a/docs-ja/pages/channels-ja.md
-+++ b/docs-ja/pages/channels-ja.md
-@@ -301,5 +301,5 @@ iMessage は異なります。自分自身にテキストを送信するとゲ
- 管理者は 2 つの[管理設定](/ja/settings)を通じて可用性を制御します。ユーザーはこれらをオーバーライドできません。デフォルトは認証方法によって異なります。
- 
--* **claude.ai Team および Enterprise**：チャネルは管理者が有効にするまでブロックされます。
-+* **claude.ai Team および Enterprise**：チャネルは Owner が有効にするまでブロックされます。
- * **Anthropic Console と API キー認証**：チャネルはデフォルトで許可されます。組織が管理設定をデプロイする場合のみこの設定が必要です。
- 
-@@ -317,5 +317,5 @@ iMessage は異なります。自分自身にテキストを送信するとゲ
- </h3>
- 
--管理者は [**claude.ai → Admin settings → Claude Code → Channels**](https://claude.ai/admin-settings/claude-code) からチャネルを有効にするか、管理設定で `channelsEnabled` を `true` に設定できます。
-+[**claude.ai → Admin settings → Claude Code → Channels**](https://claude.ai/admin-settings/claude-code) から組織のチャネルを有効にします。これには Owner ロールが必要です。または、管理設定で `channelsEnabled` を `true` に設定します。
- 
- 有効にすると、組織内のユーザーは `--channels` を使用して個別のセッションにチャネルサーバーをオプトインできます。設定が無効または未設定の場合、MCP サーバーは接続され、そのツールは機能しますが、チャネルメッセージは到着しません。スタートアップ警告は、ユーザーに管理者が設定を有効にするよう指示します。
-```
-
-</details>
-
-<details>
-<summary>checkpointing-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/checkpointing-ja.md b/docs-ja/pages/checkpointing-ja.md
-index 20adba9..4611de8 100644
---- a/docs-ja/pages/checkpointing-ja.md
-+++ b/docs-ja/pages/checkpointing-ja.md
-@@ -48,4 +48,10 @@ Claude Code は、ファイル編集ツールで行われたすべての変更
- 「ここまで要約」を選択すると、会話の最後に留まり、入力フィールドは空になります。
- 
-+<h4 id="rewind-past-a-cleared-conversation">
-+  クリアされた会話を超えて巻き戻す
-+</h4>
-+
-+同じ Claude Code プロセスの前の段階で `/clear` を実行した場合、巻き戻しメニューはリストの最上部に `/resume <session-id>（前のセッション）` というラベルの追加エントリを表示します。これを選択して、`/clear` が実行される前にアクティブだった会話を再開します。このエントリは Claude Code を終了するか別のセッションを再開するまで利用可能であり、Claude Code v2.1.191 以降が必要です。以前のバージョンでは、`/resume` を実行してリストから前のセッションを選択してください。
-+
- <h4 id="restore-vs-summarize">
-   復元と要約の違い
-```
-
-</details>
-
-<details>
-<summary>claude-code-on-the-web-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/claude-code-on-the-web-ja.md b/docs-ja/pages/claude-code-on-the-web-ja.md
-index acd0c35..001aade 100644
---- a/docs-ja/pages/claude-code-on-the-web-ja.md
-+++ b/docs-ja/pages/claude-code-on-the-web-ja.md
-@@ -874,5 +874,5 @@ Claude は PR を解決する際に GitHub のレビューコメントスレッ
- * ローカルで `/login` を実行して認証情報をリフレッシュし、再接続してください
- * セッションを所有する同じアカウントにサインインしていることを確認してください
--* `Remote Control may not be available for this organization` が表示される場合、管理者がプランのクラウドセッションを有効にしていません
-+* `Remote Control may not be available for this organization` が表示される場合、Owner がクラウドセッションを組織に対して有効にしていません
- 
- <h3 id="environment-expired">
-```
-
-</details>
-
-*...以降省略*
-
-</details>
-
-
-<details>
-<summary>2026-06-25</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/admin-setup-ja.md             | 29 ++++++-----
- docs-ja/pages/advisor-ja.md                 | 16 +++---
- docs-ja/pages/amazon-bedrock-ja.md          |  4 +-
- docs-ja/pages/changelog.md                  | 27 ++++++++++
- docs-ja/pages/claude-code-on-the-web-ja.md  | 39 +++++++-------
- docs-ja/pages/commands-ja.md                |  2 +-
- docs-ja/pages/desktop-ja.md                 | 28 +++++-----
- docs-ja/pages/discover-plugins-ja.md        |  4 ++
- docs-ja/pages/env-vars-ja.md                |  1 +
- docs-ja/pages/errors-ja.md                  | 17 ++++++
- docs-ja/pages/fast-mode-ja.md               |  2 +-
- docs-ja/pages/fullscreen-ja.md              |  1 +
- docs-ja/pages/github-actions-ja.md          |  4 +-
- docs-ja/pages/glossary-ja.md                |  4 +-
- docs-ja/pages/interactive-mode-ja.md        |  3 +-
- docs-ja/pages/mcp-ja.md                     |  2 +
- docs-ja/pages/monitoring-usage-ja.md        |  2 +-
- docs-ja/pages/permission-modes-ja.md        |  8 +--
- docs-ja/pages/sandboxing-ja.md              | 34 +++++++++++-
- docs-ja/pages/server-managed-settings-ja.md | 21 ++++----
- docs-ja/pages/settings-ja.md                | 81 ++++++++++++++++-------------
- docs-ja/pages/skills-ja.md                  | 36 ++++++-------
- docs-ja/pages/sub-agents-ja.md              |  4 ++
- docs-ja/pages/voice-dictation-ja.md         |  4 +-
- 24 files changed, 237 insertions(+), 136 deletions(-)
-```
-
-<details>
-<summary>admin-setup-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/admin-setup-ja.md b/docs-ja/pages/admin-setup-ja.md
-index a692aae..78221e8 100644
---- a/docs-ja/pages/admin-setup-ja.md
-+++ b/docs-ja/pages/admin-setup-ja.md
-@@ -64,5 +64,5 @@ plist と HKLM レジストリの場所は任意のプロバイダーで機能
- デフォルトでは WSL は `/etc/claude-code` の Linux ファイルパスのみを読み取ります。同じマシン上の WSL に Windows レジストリと `C:\Program Files\ClaudeCode` ポリシーを拡張するには、これらの管理者のみが使用できる Windows ソースのいずれかで [`wslInheritsWindowsSettings: true`](/ja/settings#available-settings) を設定してください。
- 
--どのメカニズムを選択しても、マネージド値はユーザーおよびプロジェクト設定よりも優先されます。`permissions.allow` や `permissions.deny` などの配列設定は、すべてのソースからのエントリをマージするため、開発者はマネージドリストを拡張できますが、削除することはできません。
-+どのメカニズムを選択しても、マネージド値はユーザーおよびプロジェクト設定よりも優先されます。`permissions.allow` や `permissions.deny` などの配列設定は、すべてのソースからのエントリをマージするため、開発者はマネージドリストを拡張できますが、削除することはできません。[2 つの例外](/ja/settings#settings-precedence) があります。`fallbackModel` と `availableModels` では、マネージド値は下位レイヤーとマージするのではなく、置き換えます。
- 
- [Server-managed settings](/ja/server-managed-settings) と [Settings files and precedence](/ja/settings#settings-files) を参照してください。
-@@ -74,17 +74,18 @@ plist と HKLM レジストリの場所は任意のプロバイダーで機能
- マネージド設定は、ツール、サンドボックス実行、MCP サーバーとプラグインソースへのアクセスをロックダウンし、実行されるフックを制御できます。各行は、それを駆動する設定キーを持つ制御サーフェスです。
- 
--| 制御                                                                                     | 機能                                                                                | キー設定                                                                                                   |
--| :------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------- |
--| [Permission rules](/ja/permissions)                                                    | 特定のツールとコマンドを許可、確認、または拒否する                                                         | `permissions.allow`、`permissions.deny`                                                                 |
--| [Permission lockdown](/ja/permissions#managed-only-settings)                           | マネージドパーミッションルールのみが適用される。`--dangerously-skip-permissions` を無効化する                   | `allowManagedPermissionRulesOnly`、`permissions.disableBypassPermissionsMode`                           |
--| [Sandboxing](/ja/sandboxing)                                                           | ドメイン許可リスト付きの OS レベルのファイルシステムとネットワーク分離                                             | `sandbox.enabled`、`sandbox.network.allowedDomains`                                                     |
--| [Managed policy CLAUDE.md](/ja/memory#deploy-organization-wide-claude-md)              | すべてのセッションで読み込まれる組織全体の指示。除外できない                                                    | マネージドポリシーパスのファイル                                                                                       |
--| [MCP server control](/ja/managed-mcp)                                                  | ユーザーが追加または接続できる MCP サーバーを制限するか、固定セットをデプロイする                                       | `allowedMcpServers`、`deniedMcpServers`、`allowManagedMcpServersOnly`、またはデプロイされた `managed-mcp.json` ファイル |
--| [Plugin marketplace control](/ja/plugin-marketplaces#managed-marketplace-restrictions) | ユーザーが追加およびインストールできるマーケットプレイスソースを制限する                                              | `strictKnownMarketplaces`、`blockedMarketplaces`                                                        |
--| [Customization lockdown](/ja/settings#strictpluginonlycustomization)                   | スキル、エージェント、フック、および MCP サーバーをユーザーおよびプロジェクトソースからブロックし、プラグインまたはマネージド設定からのみ取得できるようにする | `strictPluginOnlyCustomization`                                                                        |
--| [Hook restrictions](/ja/settings#hook-configuration)                                   | マネージドフックのみが読み込まれる。HTTP フック URL を制限する                                              | `allowManagedHooksOnly`、`allowedHttpHookUrls`                                                          |
--| [Disable agent view](/ja/agent-view#how-background-sessions-are-hosted)                | `claude agents`、`--bg`、`/background`、およびオンデマンドスーパーバイザーをオフにする                      | `disableAgentView`                                                                                     |
--| [Version floor](/ja/settings)                                                          | 自動更新が組織全体の最小値より下にインストールされるのを防ぐ                                                    | `minimumVersion`                                                                                       |
--| [Required version range](/ja/settings)                                                 | 実行中のバージョンが組織承認の範囲外の場合、まったく起動を拒否する。`minimumVersion` より強力で、ダウングレードのみをブロックする         | `requiredMinimumVersion`、`requiredMaximumVersion`                                                      |
-+| 制御                                                                                     | 機能                                                                                                                                                | キー設定                                                                                                   |
-+| :------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------ | :----------------------------------------------------------------------------------------------------- |
-+| [Permission rules](/ja/permissions)                                                    | 特定のツールとコマンドを許可、確認、または拒否する                                                                                                                         | `permissions.allow`、`permissions.deny`                                                                 |
-```
-
-</details>
-
-<details>
-<summary>advisor-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/advisor-ja.md b/docs-ja/pages/advisor-ja.md
-index e404b48..0445cf9 100644
---- a/docs-ja/pages/advisor-ja.md
-+++ b/docs-ja/pages/advisor-ja.md
-@@ -53,5 +53,5 @@ advisor モデルは 3 つの方法で設定できます。
- ```
- 
--選択は、ユーザー設定の `advisorModel` に保存され、セッション全体で保持されます。現在のメインモデルが advisor をサポートしていない場合、選択は引き続き保存され、[`/model`](/ja/model-config#setting-your-model)で[互換性のあるメインモデル](#choose-an-advisor-model)に切り替えるときにアクティブになります。
-+選択は、ユーザー設定の `advisorModel` に保存され、セッション全体で保持されます。組織の [`availableModels`](/ja/model-config#restrict-model-selection)許可リストが保存された advisor モデルを除外している場合、`/advisor` で許可されたモデルを選択するまで advisor は呼び出されません。現在のメインモデルが advisor をサポートしていない場合、選択は引き続き保存され、[`/model`](/ja/model-config#setting-your-model)で[互換性のあるメインモデル](#choose-an-advisor-model)に切り替えるときにアクティブになります。
- 
- <h3 id="set-advisormodel-in-settings">
-@@ -77,5 +77,5 @@ claude --advisor opus
- ```
- 
--フラグはそのセッションの `advisorModel` 設定よりも優先されます。`/advisor` とは異なり、セッションのメインモデルが advisor をサポートしていない場合、フラグはエラーで終了します。
-+フラグはそのセッションの `advisorModel` 設定よりも優先されます。セッションのメインモデルが advisor をサポートしていない場合、またはリクエストされた advisor モデルが組織の [`availableModels`](/ja/model-config#restrict-model-selection)許可リストで除外されている場合、エラーで終了します。
- 
- <h2 id="choose-an-advisor-model">
-@@ -182,10 +182,10 @@ advisor ツール全体（`/advisor` コマンドと `--advisor` フラグを含
- advisor は、モデルの強みを組み合わせるいくつかの方法の 1 つです。2 番目のモデルをいつ関与させるかに基づいて選択します。
- 
--| アプローチ                                                 | より強力なモデルが実行される場合                | 開始方法                          |
--| ----------------------------------------------------- | ------------------------------- | ----------------------------- |
--| Advisor ツール                                           | タスク中の決定ポイント                     | Claude がガイダンスが必要な場合に呼び出します    |
--| [`opusplan`](/ja/model-config#opusplan-model-setting) | プランモード中、その後実行用に Sonnet に切り替わります | プランモードに入ります                   |
--| [サブエージェント](/ja/sub-agents#choose-a-model)（`model` 設定） | 委任されたサブタスク全体                    | Claude が委任するか、サブエージェントを呼び出します |
--| [`/model`](/ja/model-config#setting-your-model)       | 後続のすべてのターン                      | モデルを切り替えます                    |
-+| アプローチ                                                 | より強力なモデルが実行される場合                                                                                          | 開始方法                          |
-+| ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------- | ----------------------------- |
-+| Advisor ツール                                           | タスク中の決定ポイント                                                                                               | Claude がガイダンスが必要な場合に呼び出します    |
-```
-
-</details>
-
-<details>
-<summary>amazon-bedrock-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/amazon-bedrock-ja.md b/docs-ja/pages/amazon-bedrock-ja.md
-index 8292c40..4a6bb5b 100644
---- a/docs-ja/pages/amazon-bedrock-ja.md
-+++ b/docs-ja/pages/amazon-bedrock-ja.md
-@@ -478,9 +478,9 @@ export CLAUDE_CODE_USE_MANTLE=1
- ```
- 
--Mantle モデルを `/model` ピッカーに表示するには、[settings file](/ja/settings) の `availableModels` にその ID をリストします。この設定はピッカーをリストされたエントリに制限するため、保持したいすべてのエイリアスを含めます。
-+Mantle モデルを `/model` ピッカーに表示するには、[settings file](/ja/settings) の `availableModels` にその ID をリストします。この設定はピッカーをリストされたエントリに制限するため、保持したいバージョンのバージョンプレフィックスまたは完全な ID もリストします。[Merge behavior](/ja/model-config#merge-behavior) を参照してください。
- 
- ```json theme={null}
- {
--  "availableModels": ["opus", "sonnet", "haiku", "anthropic.claude-haiku-4-5"]
-+  "availableModels": ["opus", "sonnet", "claude-haiku-4-5", "anthropic.claude-haiku-4-5"]
- }
- ```
 ```
 
 </details>

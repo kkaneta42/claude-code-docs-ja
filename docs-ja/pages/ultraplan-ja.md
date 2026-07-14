@@ -7,7 +7,7 @@
 > CLI から計画を開始し、ウェブ上の Claude Code で下書きを作成してから、リモートで実行するか、ターミナルで実行します
 
 <Note>
-  Ultraplan はリサーチプレビュー段階であり、Claude Code v2.1.91 以降が必要です。フィードバックに基づいて、動作と機能が変更される可能性があります。
+  Ultraplan はリサーチプレビュー段階です。フィードバックに基づいて、動作と機能が変更される可能性があります。
 </Note>
 
 Ultraplan は、ローカル CLI からの計画タスクを、[plan mode](/ja/permission-modes#analyze-before-you-edit-with-plan-mode) で実行されている[ウェブ上の Claude Code](/ja/claude-code-on-the-web) セッションに渡します。Claude はクラウドで計画を下書きしている間、ターミナルで作業を続けることができます。計画の準備ができたら、ブラウザで開いて特定のセクションにコメントを付けたり、修正をリクエストしたり、実行場所を選択したりできます。

@@ -169,7 +169,7 @@ Desktop は部分的な例外です：Enterprise デプロイメントは、[管
   <tbody>
     <tr>
       <td>[アナリティクスダッシュボードと API](/ja/analytics)</td>
-      <td>✓（Team および Enterprise）</td>
+      <td>✓（ダッシュボード：Team および Enterprise、API：Enterprise）</td>
       <td>✓ <sup><a href="#fn5">5</a></sup></td>
       <td>✗</td>
       <td>✗</td>
@@ -287,7 +287,8 @@ Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、または
 | Dispatch（[Desktop](/ja/desktop#sessions-from-dispatch)）                                 | ✓   | ✓   | ✗             | ✗                                 |
 | [Code Review](/ja/code-review)                                                          | ✗   | ✗   | ✓             | ✓                                 |
 | [Artifacts](/ja/artifacts)                                                              | ✓   | ✓   | ✓             | Admin-enabled                     |
-| [アナリティクスダッシュボード、API、および貢献メトリクス](/ja/analytics)                                          | ✗   | ✗   | ✓             | ✓                                 |
+| [アナリティクスダッシュボードと貢献メトリクス](/ja/analytics)                                                 | ✗   | ✗   | ✓             | ✓                                 |
+| [Enterprise Analytics API](/ja/analytics#access-data-programmatically)                  | ✗   | ✗   | ✗             | ✓                                 |
 | [サーバー管理設定](/ja/server-managed-settings)                                                 | ✗   | ✗   | ✓             | ✓                                 |
 | [SSO](https://support.claude.com/en/articles/9266767-what-is-the-team-plan)             | ✗   | ✗   | ✓             | ✓                                 |
 | SCIM                                                                                    | ✗   | ✗   | ✗             | ✓                                 |

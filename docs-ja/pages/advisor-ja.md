@@ -6,10 +6,8 @@
 
 > メインモデルをより強力な advisor モデルと組み合わせて、タスク中の重要な瞬間に Claude が相談できるようにします。
 
-{/* plan-availability: feature=advisor providers=anthropic */}
-
 <Note>
-  advisor ツールは実験的機能であり、Anthropic API を使用する Claude Code v2.1.98 以降が必要です。Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry では利用できません。動作、価格設定、および利用可能性は変更される可能性があります。
+  advisor ツールは実験的機能であり、Anthropic API が必要です。Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry では利用できません。動作、価格設定、および利用可能性は変更される可能性があります。
 </Note>
 
 advisor ツールを使用すると、Claude はタスク中の重要な瞬間（アプローチをコミットする前、繰り返し発生するエラーで行き詰まった場合、またはタスク完了を宣言する前など）に、通常はより強力な 2 番目のモデルに相談できます。advisor は、すべてのツール呼び出しと結果を含む完全な会話を受け取り、Claude が続行する前に適用するガイダンスを返します。
@@ -161,7 +159,6 @@ advisor モデル自体の会話の読み取りはキャッシュされません
 
 advisor ツールには、以下のすべてが必要です。
 
-* **Claude Code v2.1.98 以降**：`claude update` を実行してアップグレードします。
 * **Anthropic API のみ**：advisor はサーバー実行ツールです。Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry では利用できません。[LLM ゲートウェイ](/ja/llm-gateway)を通じて `ANTHROPIC_BASE_URL` で構成されている場合、利用可能性はゲートウェイがリクエストを Anthropic API に完全に転送するかどうかに依存します。
 * **サポートされているメインモデル**：Opus 4.6 以降、Sonnet 4.6 以降、または Haiku 4.5。{/* min-version: 2.1.170 */}Fable 5 も Claude Code v2.1.170 以降で適格です。
 

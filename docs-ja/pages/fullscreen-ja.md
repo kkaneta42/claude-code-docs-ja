@@ -7,7 +7,7 @@
 > マウスサポートと安定したメモリ使用量を備えた、より滑らかでちらつきのないレンダリングモードを有効にします。
 
 <Note>
-  フルスクリーンレンダリングはオプトイン形式の[リサーチプレビュー](#research-preview)であり、Claude Code v2.1.89 以降が必要です。現在の会話で `/tui fullscreen` を実行して切り替えるか、v2.1.110 より前のバージョンで `CLAUDE_CODE_NO_FLICKER=1` を設定してください。フィードバックに基づいて動作が変わる可能性があります。
+  フルスクリーンレンダリングはオプトイン形式の[リサーチプレビュー](#research-preview)です。現在の会話で `/tui fullscreen` を実行して切り替えるか、v2.1.110 より前のバージョンで `CLAUDE_CODE_NO_FLICKER=1` を設定してください。フィードバックに基づいて動作が変わる可能性があります。
 </Note>
 
 フルスクリーンレンダリングは Claude Code CLI の代替レンダリングパスで、ちらつきを排除し、長い会話でもメモリ使用量を一定に保ち、マウスサポートを追加します。`vim` や `htop` のようにターミナルの代替スクリーンバッファにインターフェースを描画し、現在表示されているメッセージのみをレンダリングします。これにより、各更新時にターミナルに送信されるデータ量が削減されます。
@@ -210,6 +210,33 @@ CLAUDE_CODE_NO_FLICKER=1 CLAUDE_CODE_DISABLE_MOUSE=1 claude
 ホイールスクロールを保持しながらクリック、ドラッグ、ホバー処理をオフにするには、代わりに `CLAUDE_CODE_DISABLE_MOUSE_CLICKS=1` を設定します。Claude Code v2.1.195 以降が必要です。両方の変数が設定されている場合、`CLAUDE_CODE_DISABLE_MOUSE` が優先されます。
 
 クリックが無効な場合、Claude Code はまだマウスをキャプチャするため、ホイールとタッチパッドは会話をスクロールしますが、左クリックは Claude Code 内では何もしません。ネイティブなクリックアンドドラッグ選択のためにターミナルのキーを押し続ける必要があります。右クリックと中クリックペーストは、それをサポートするターミナルで引き続き機能します。
+
+<h2 id="troubleshooting">
+  トラブルシューティング
+</h2>
+
+<h3 id="stale-or-misplaced-text-on-screen">
+  画面上のテキストが古い、または配置がずれている
+</h3>
+
+フルスクリーン レンダリングは、フレーム間で変更されたセルのみを送信します。Windows Terminal や他の ConPTY ベースのホストなど、一部のターミナルではこれらの位置指定書き込みが正しく統合されず、ウィンドウをリサイズするまで以前の出力の断片が画面に残ります。
+
+[`CLAUDE_CODE_ALT_SCREEN_FULL_REPAINT=1`](/ja/env-vars) を設定して、増分更新を送信する代わりに、フレームごとにすべてのセルを再描画します。
+
+Windows PowerShell の場合：
+
+```powershell theme={null}
+$env:CLAUDE_CODE_ALT_SCREEN_FULL_REPAINT = "1"
+claude
+```
+
+macOS または Linux の場合：
+
+```bash theme={null}
+CLAUDE_CODE_ALT_SCREEN_FULL_REPAINT=1 claude
+```
+
+Windows では、Claude Code はバックグラウンド セッションと [agent view](/ja/agent-view) に対して既に自動的にフル リペイントを有効にしているため、直接起動したインタラクティブ フルスクリーン セッションに対してのみ変数を設定する必要があります。
 
 <h2 id="research-preview">
   リサーチプレビュー

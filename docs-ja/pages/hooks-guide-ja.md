@@ -747,10 +747,6 @@ Hooks with `type: "prompt"` handle output differently: see [Prompt-based hooks](
   `if` フィールドでツール名と引数でフィルタリングする
 </h4>
 
-<Note>
-  `if` フィールドには Claude Code v2.1.85 以降が必要です。以前のバージョンはそれを無視し、マッチしたすべての呼び出しで hook を実行します。
-</Note>
-
 `if` フィールドは [許可ルール構文](/ja/permissions) を使用して、ツール名と引数の両方で hooks をフィルタリングするため、hook プロセスはツール呼び出しがマッチするときにのみ生成されます。これは `matcher` を超えており、ツール名のみでグループレベルでフィルタリングします。
 
 たとえば、すべての Bash コマンドではなく、Claude が `git` コマンドを使用するときにのみ hook を実行するには：

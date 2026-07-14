@@ -283,11 +283,12 @@ You've hit your weekly limit · resets Mon 12:00am
 You've hit your Opus limit · resets 3:45pm
 ```
 
-Claude Code は、メッセージに表示されたリセット時刻までさらなるリクエストをブロックします。
+Claude Code は、メッセージに表示されたリセット時刻までさらなるリクエストをブロックします。セッションおよび週間制限はすべてのモデル間で共有されるため、モデルを切り替えてもアクセスは復元されません。Opus 制限は Opus リクエストにのみ適用されるため、`/model` で別のモデルに切り替えると作業を続行できます。
 
 **対応方法：**
 
 * エラーに表示されたリセット時刻まで待機してください
+* Opus 制限の場合は、`/model` を実行して別のモデルに切り替えて作業を続行してください
 * `/usage` を実行して、プランの制限と、それらがいつリセットされるかを確認してください
 * `/usage-credits` を実行して、Pro および Max で追加使用量を購入するか、Team および Enterprise で管理者にリクエストしてください。この請求方法については、[有料プランの使用クレジット](https://support.claude.com/en/articles/12429409-extra-usage-for-paid-claude-plans)を参照してください。
 * より高い基本制限のためにプランをアップグレードするには、[claude.com/pricing](https://claude.com/pricing) を参照してください。

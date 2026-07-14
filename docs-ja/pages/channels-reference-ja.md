@@ -7,7 +7,7 @@
 > webhook、アラート、チャットメッセージを Claude Code セッションにプッシュする MCP サーバーを構築します。チャネルコントラクトのリファレンス：機能宣言、通知イベント、返信ツール、送信者ゲーティング、権限リレー。
 
 <Note>
-  チャネルは[リサーチプレビュー](/ja/channels#research-preview)段階にあり、Claude Code v2.1.80 以降が必要です。Team および Enterprise 組織は[明示的に有効化](/ja/channels#enterprise-controls)する必要があります。
+  チャネルは[リサーチプレビュー](/ja/channels#research-preview)段階にあります。Team および Enterprise 組織は[明示的に有効化](/ja/channels#enterprise-controls)する必要があります。
 </Note>
 
 チャネルは、Claude Code セッションにイベントをプッシュする MCP サーバーで、Claude がターミナルの外で発生していることに反応できるようにします。
@@ -452,10 +452,6 @@ await mcp.notification({ ... })
 <h2 id="relay-permission-prompts">
   権限プロンプトをリレー
 </h2>
-
-<Note>
-  権限リレーには Claude Code v2.1.81 以降が必要です。以前のバージョンは `claude/channel/permission` 機能を無視します。
-</Note>
 
 Claude が承認が必要なツールを呼び出すと、ローカルターミナルダイアログが開き、セッションが待機します。双方向チャネルは、同じプロンプトを並行して受け取り、別のデバイスでそれをリレーすることを選択できます。両方がライブのままです：ターミナルまたは電話で答えることができ、Claude Code は最初に到着した答えを適用し、もう一方を閉じます。
 

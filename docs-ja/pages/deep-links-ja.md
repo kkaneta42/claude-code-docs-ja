@@ -19,10 +19,6 @@
 
 このページでは、[リンクの構築方法](#build-a-link)、[ランブックに埋め込む方法またはシェルからトリガーする方法](#examples)、および[各プラットフォームでハンドラー登録を管理または無効化する方法](#registration-and-supported-platforms)について説明します。
 
-<Note>
-  ディープリンクには Claude Code v2.1.91 以降が必要です。
-</Note>
-
 <h2 id="how-it-works">
   仕組み
 </h2>

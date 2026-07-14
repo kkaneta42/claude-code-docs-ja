@@ -21,10 +21,6 @@ Remote Control は [claude.ai/code](https://claude.ai/code) または Claude ア
 
 クラウドインフラストラクチャで実行される [Web 上の Claude Code](/ja/claude-code-on-the-web) とは異なり、Remote Control セッションはマシン上で直接実行され、ローカルファイルシステムと相互作用します。Web およびモバイルインターフェースは、そのローカルセッションへのウィンドウにすぎません。
 
-<Note>
-  Remote Control には Claude Code v2.1.51 以降が必要です。`claude --version` でバージョンを確認してください。
-</Note>
-
 このページでは、セットアップ、セッションの開始と接続方法、および Remote Control と Web 上の Claude Code の比較について説明します。
 
 <h2 id="requirements">
@@ -104,7 +100,7 @@ CLI または VS Code 拡張機能から Remote Control セッションを開始
   </Tab>
 
   <Tab title="VS Code">
-    [Claude Code VS Code 拡張機能](/ja/vs-code)で、プロンプトボックスに `/remote-control` または `/rc` を入力するか、`/` でコマンドメニューを開いて選択します。Claude Code v2.1.79 以降が必要です。
+    [Claude Code VS Code 拡張機能](/ja/vs-code)で、プロンプトボックスに `/remote-control` または `/rc` を入力するか、`/` でコマンドメニューを開いて選択します。
 
     ```text theme={null}
     /remote-control

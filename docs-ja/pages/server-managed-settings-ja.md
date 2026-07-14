@@ -22,7 +22,6 @@
 
 * Claude for Teams または Claude for Enterprise プラン
 * Claude 組織の Owner または Primary Owner ロール（設定を表示および編集するため）
-* Claude for Teams の場合はバージョン 2.1.38 以降、Claude for Enterprise の場合はバージョン 2.1.30 以降の Claude Code
 * `api.anthropic.com` へのネットワークアクセス
 
 <h2 id="choose-between-server-managed-and-endpoint-managed-settings">

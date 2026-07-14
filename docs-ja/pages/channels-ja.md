@@ -7,7 +7,7 @@
 > チャネルを使用して、MCP サーバーから実行中の Claude Code セッションにメッセージ、アラート、ウェブフックをプッシュします。CI 結果、チャットメッセージ、監視イベントを転送して、あなたが不在の間に Claude が対応できるようにします。
 
 <Note>
-  チャネルは[リサーチプレビュー](#research-preview)段階にあり、Claude Code v2.1.80 以降が必要です。Anthropic 認証が claude.ai または Console API キーを通じて必要で、Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry では利用できません。Team および Enterprise 組織は[明示的に有効にする](#enterprise-controls)必要があります。
+  チャネルは[リサーチプレビュー](#research-preview)段階にあります。Anthropic 認証が claude.ai または Console API キーを通じて必要で、Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry では利用できません。Team および Enterprise 組織は[明示的に有効にする](#enterprise-controls)必要があります。
 </Note>
 
 チャネルは MCP サーバーで、実行中の Claude Code セッションにイベントをプッシュするため、あなたがターミナルにいない間に起こることに Claude が対応できます。チャネルは双方向にすることができます。Claude がイベントを読み取り、同じチャネルを通じて返信します。チャットブリッジのようなものです。イベントはセッションが開いている間だけ到着するため、常時稼働セットアップの場合は、Claude をバックグラウンドプロセスまたは永続的なターミナルで実行します。
