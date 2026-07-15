@@ -17,6 +17,57 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-07-15</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md | 90 +++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 89 insertions(+), 1 deletion(-)
+```
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index 2438058..61050ed 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,92 @@
+ # Changelog
+ 
++## 2.1.210
++
++- Added a live elapsed-time counter to the collapsed tool summary line so long-running tool calls visibly tick instead of looking stuck
++- Added a startup warning for `Write(path)`, `NotebookEdit(path)`, and `Glob(path)` permission rules — use `Edit(path)` or `Read(path)` instead
++- Fixed `isolation: 'worktree'` subagents being able to run git-mutating commands against the main repo checkout instead of their own isolated worktree
++- Fixed the `ultracode` keyword opt-in firing on non-human-originated input such as webhook payloads and relayed PR comments
++- Fixed a rendered text fragment leaking into crash telemetry when a UI component returned content outside a styled text element
++- Fixed paste markers leaking into external editors opened from Claude Code, which could appear as stray È/É characters around pasted text
++- Fixed `claude attach` sometimes failing with "job not found" or "agent is still starting" errors during session transitions — attach now waits for the daemon to settle, and terminal resizes during a slow attach are applied once it completes
++- Fixed a session crash when a tool's result renderer returned a numeric bigint value or plain text instead of a UI element
++- Fixed a hook callback timeout being misreported to the model as a user rejection, which made unattended sessions stop and wait
++- Fixed Claude assuming a `cd` took effect after its command was moved to the background; the tool result now states the working directory is unchanged
++- Fixed plugin-provided MCP servers being torn down when MCP servers are re-synced mid-session
++- Fixed plan approvals without edits being labeled "(edited by user)" and overwriting the plan file with a stale snapshot
++- Fixed `/doctor` skipping its auto-mode-default proposal on Bedrock, Vertex, and Foundry, where auto mode no longer needs an opt-in
++- Fixed Grep content mode claiming "No matches found" when paginating past the end of results
++- Fixed unmatched `$1`/`$2` positional placeholders in skills and commands being silently stripped; they are now preserved verbatim
++- Fixed plugin cache writes leaving temp files behind on failure and failing on locked-file renames on Windows and network filesystems
++- Fixed background workers crash-looping when a client resets its connection to the background service
++- Fixed `claude agents --effort ultracode` not reaching dispatched sessions; the value was silently dropped
++- Fixed pressing ← to open the agents view dropping the task tracker when returning to the session
++- Fixed the agents dashboard retaining pasted images from abandoned reply drafts after their session was deleted
++- Fixed killed background sessions leaving a permanent `git worktree lock` behind; the periodic sweep now releases locks whose owning process is gone
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-07-14</summary>
 
 **変更ファイル:**
@@ -2755,44 +2806,6 @@ index 4a6bb5b..b6fd13f 100644
 +Mantle モデルを `/model` ピッカーに表示するには、[settings file](/ja/settings) の `availableModels` にその ID をリストします。この設定はピッカーをリストされたエントリに制限するため、保持したいバージョンのバージョンプレフィックスまたは完全な ID もリストします。Mantle ID と `haiku` エイリアスは同じモデルファミリーに解決されるため、マージは より具体的なエントリのみを保持します。[Merge behavior](/ja/model-config#merge-behavior) を参照してください。
  
  ```json theme={null}
-```
-
-</details>
-
-<details>
-<summary>artifacts-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/artifacts-ja.md b/docs-ja/pages/artifacts-ja.md
-index 4001ea7..46a22fc 100644
---- a/docs-ja/pages/artifacts-ja.md
-+++ b/docs-ja/pages/artifacts-ja.md
-@@ -200,5 +200,5 @@ Claude はデザインシステムを独自の選択よりも高い優先度と
- | 要件        | 利用可能な場合                                                                                                                                                                                                                |
- | :-------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
--| プラン       | Team または Enterprise。Team プランでは、アーティファクトはデフォルトで有効です。Enterprise プランでは、管理者が claude.ai 管理設定で[有効にします](#manage-artifacts-for-your-organization)。                                                                             |
-+| プラン       | Team または Enterprise。Team プランでは、アーティファクトはデフォルトで有効です。Enterprise プランでは、Owner が claude.ai 管理設定で[有効にします](#manage-artifacts-for-your-organization)。                                                                          |
- | 認証        | `/login` で claude.ai にサインインしています。API キー、[ゲートウェイトークン](/ja/llm-gateway)、またはクラウドプロバイダー認証情報を使用するセッションは公開できません。                                                                                                             |
- | モデルプロバイダー | Anthropic API。[Amazon Bedrock](/ja/amazon-bedrock)、[Google Cloud Vertex AI](/ja/google-vertex-ai)、または [Microsoft Foundry](/ja/microsoft-foundry) では利用できません。                                                            |
-```
-
-</details>
-
-<details>
-<summary>authentication-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/authentication-ja.md b/docs-ja/pages/authentication-ja.md
-index fb172dc..6810308 100644
---- a/docs-ja/pages/authentication-ja.md
-+++ b/docs-ja/pages/authentication-ja.md
-@@ -137,5 +137,5 @@ Claude Code は認証情報を安全に管理します。
- * **遅いヘルパー通知**: `apiKeyHelper` がキーを返すのに 10 秒以上かかる場合、Claude Code はプロンプトバーに経過時間を表示する警告通知を表示します。この通知が定期的に表示される場合は、認証情報スクリプトを最適化できるかどうかを確認してください。
- 
--`apiKeyHelper`、`ANTHROPIC_API_KEY`、および `ANTHROPIC_AUTH_TOKEN` はターミナル CLI セッションにのみ適用されます。Claude Desktop とクラウドセッションは OAuth のみを使用し、`apiKeyHelper` を呼び出したり、API キー環境変数を読み込んだりしません。
-+`apiKeyHelper`、`ANTHROPIC_API_KEY`、および `ANTHROPIC_AUTH_TOKEN` は CLI およびそれをラップするサーフェス（VS Code 拡張機能、Agent SDK、GitHub Actions を含む）に適用されます。Claude Desktop とクラウドセッションは `apiKeyHelper` を呼び出したり、これらの環境変数を読み込んだりしません。OAuth を使用します。ただし、[組織配布のサードパーティ推論設定](/ja/llm-gateway-connect#desktop-app)を実行しているデスクトップセッションは、その設定の認証情報で認証します。
- 
- <h3 id="authentication-precedence">
 ```
 
 </details>
