@@ -17,6 +17,57 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-07-16</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md | 40 ++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 40 insertions(+)
+```
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index 61050ed..9daf8f0 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,44 @@
+ # Changelog
+ 
++## 2.1.211
++
++- Added `--forward-subagent-text` flag and `CLAUDE_CODE_FORWARD_SUBAGENT_TEXT` environment variable to include subagent text and thinking in stream-json output
++- Fixed permission previews relayed to chat channels not neutralizing bidirectional-override, zero-width, and look-alike quote characters, so tool inputs cannot visually alter the approval message
++- Fixed auto mode overriding a PreToolUse hook's `ask` decision for unsandboxed Bash — a hook `ask` now floors the decision at a prompt
++- Fixed parallel Claude Code sessions all logging out simultaneously after wake-from-sleep when many sessions share one credential store
++- Fixed plugin MCP servers not reconnecting after an idle web session woke, leaving MCP calls failing until the next message
++- Fixed Claude Code on Vertex and Bedrock attempting the default Opus model at startup and printing a spurious fallback notice when a model is explicitly configured
++- Fixed subagents spawned with an explicit model override reverting to the parent's model when resumed or sent a follow-up message
++- Fixed nested `.claude/rules/*.md` files loading even when setting sources exclude project settings
++- Fixed file upload validation: filenames ending in a DOS device suffix (`.prn`) or trailing dot are now accepted, and files with multiple hard links are refused
++- Fixed file uploads to Claude in Chrome from remote and CLI sessions
++- Fixed edits that leave the input as "?" being silently swallowed and toggling the shortcuts panel
++- Fixed a startup hang when the Claude in Chrome extension is enabled but Chrome is not running
++- Fixed a 300ms delay revealing async content (Settings tabs, Stats, diff views, and other loading states)
++- Fixed reopening a just-stopped background session from the agents view starting a blank conversation under the same session id
++- Fixed `/loop` hiding the session from `/resume` after a single use
++- Fixed screen reader users losing the audible terminal bell after `/terminal-setup` or onboarding terminal setup
++- Fixed background jobs on LLM gateway auth (`ANTHROPIC_AUTH_TOKEN` + `ANTHROPIC_BASE_URL`) coming back "Not logged in" after the daemon respawns them
++- Fixed `claude agents` jobs becoming permanently undeletable when git no longer recognizes their worktree — the row now shows why the delete was refused instead of silently reappearing
++- Fixed `/clear` not resetting the session cost counter — the statusline's cost now starts at $0 after `/clear`
++- Fixed Claude in Chrome setup pages failing to open in the browser on Windows
++- Fixed headless print-mode sessions on Windows crashing or silently exiting when stdin is unreadable
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-07-15</summary>
 
 **変更ファイル:**
@@ -2768,44 +2819,6 @@ index 1c4a354..87f5a87 100644
 +
  <h3 id="require-plan-approval-for-teammates">
    チームメンバーのプラン承認を要求する
-```
-
-</details>
-
-<details>
-<summary>agent-view-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/agent-view-ja.md b/docs-ja/pages/agent-view-ja.md
-index 55f5768..90fe71c 100644
---- a/docs-ja/pages/agent-view-ja.md
-+++ b/docs-ja/pages/agent-view-ja.md
-@@ -325,5 +325,5 @@ v2.1.145 以降では、[音声ディクテーション](/ja/voice-dictation) 
- </h3>
- 
--`--bg` を渡してセッションを直接バックグラウンドに送信します：
-+`--bg` またはその長い形式 `--background` を渡してセッションを直接バックグラウンドに送信します：
- 
- ```bash theme={null}
-```
-
-</details>
-
-<details>
-<summary>amazon-bedrock-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/amazon-bedrock-ja.md b/docs-ja/pages/amazon-bedrock-ja.md
-index 4a6bb5b..b6fd13f 100644
---- a/docs-ja/pages/amazon-bedrock-ja.md
-+++ b/docs-ja/pages/amazon-bedrock-ja.md
-@@ -478,5 +478,5 @@ export CLAUDE_CODE_USE_MANTLE=1
- ```
- 
--Mantle モデルを `/model` ピッカーに表示するには、[settings file](/ja/settings) の `availableModels` にその ID をリストします。この設定はピッカーをリストされたエントリに制限するため、保持したいバージョンのバージョンプレフィックスまたは完全な ID もリストします。[Merge behavior](/ja/model-config#merge-behavior) を参照してください。
-+Mantle モデルを `/model` ピッカーに表示するには、[settings file](/ja/settings) の `availableModels` にその ID をリストします。この設定はピッカーをリストされたエントリに制限するため、保持したいバージョンのバージョンプレフィックスまたは完全な ID もリストします。Mantle ID と `haiku` エイリアスは同じモデルファミリーに解決されるため、マージは より具体的なエントリのみを保持します。[Merge behavior](/ja/model-config#merge-behavior) を参照してください。
- 
- ```json theme={null}
 ```
 
 </details>
