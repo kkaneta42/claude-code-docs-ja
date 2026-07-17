@@ -214,7 +214,7 @@ claude -p "Reply with one word: connected"
 
 一部の環境には個別の配信が必要です。
 
-* デスクトップアプリはゲートウェイルーティングをマネージド設定ファイルの MDM 配信サードパーティ推論設定からのみ読み取ります。デスクトップセッションもゲートウェイを通じてルーティングするように、マネージド設定と一緒にそのファイルをデプロイします。[デスクトップサードパーティ設定ドキュメント](https://claude.com/docs/third-party/claude-desktop/configuration)と [デスクトップゲートウェイドキュメント](https://claude.com/docs/third-party/claude-desktop/gateway)を参照してください
+* デスクトップアプリはゲートウェイルーティングをマネージド設定ではなく、サードパーティ推論設定から読み取ります。デスクトップセッションもゲートウェイを通じてルーティングするように、マネージド設定と一緒にそのファイルを MDM 経由でデプロイします。[デスクトップサードパーティ設定ドキュメント](https://claude.com/docs/third-party/claude-desktop/configuration)と [デスクトップゲートウェイドキュメント](https://claude.com/docs/third-party/claude-desktop/gateway)を参照してください
 * CI ランナーは [ランナーの環境](/ja/llm-gateway-connect#configure-each-surface)で `ANTHROPIC_BASE_URL` と認証情報を設定する必要があります
 * マネージド Windows マシン上の WSL は、[`wslInheritsWindowsSettings`](/ja/settings#available-settings) が `true` の場合にのみ Windows マネージド設定を読み取ります
 

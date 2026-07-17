@@ -188,7 +188,7 @@ export const Experiment = ({flag, treatment, children}) => {
 
 <Experiment flag="docs-contact-sales-cta" treatment={<ContactSalesCard surface="claude_platform_on_aws" />} />
 
-AWS 上の Claude Platform は、AWS 認証、IAM アクセス制御、AWS Marketplace 請求を備えた Anthropic が運営する Claude API です。リクエストは Anthropic の API に直接到達するため、[Claude API](https://platform.claude.com/docs) と同じモデルと機能を同じリリーススケジュールで取得できます。AWS 認証情報またはワークスペース API キーで認証し、AWS Marketplace を通じて支払います。
+AWS 上の Claude Platform は、AWS 認証、IAM アクセス制御、AWS Marketplace 請求を備えた Anthropic が運営する Claude API です。リクエストは Anthropic の API に直接到達するため、[Claude API](https://platform.claude.com/docs) と同じモデルと API 機能を同じリリーススケジュールで取得できます。Claude Code が Anthropic の機能フラグサービスを通じてオンにするクライアント側機能（[`/loop` 自動ペーシング](/ja/scheduled-tasks#let-claude-choose-the-interval)など）はデフォルトではオフであり、[アドバイザーツール](/ja/advisor)は利用できません。完全なリストについては、[機能可用性マトリックス](/ja/feature-availability#summary-by-provider)を参照してください。AWS 認証情報またはワークスペース API キーで認証し、AWS Marketplace を通じて支払います。
 
 このガイドを使用して、AWS 上の Claude Platform を通じてすでにプロビジョニングしたワークスペースに Claude Code をポイントします。このガイドの前に行う AWS サブスクリプションとワークスペースのセットアップについては、[AWS 上の Claude Platform ドキュメント](https://platform.claude.com/docs/en/build-with-claude/claude-platform-on-aws)を参照してください。
 
@@ -276,7 +276,9 @@ AWS 上の Claude Platform は、環境に AWS 認証情報が存在する場合
   3. モデルバージョンをピン留めする
 </h3>
 
-AWS 上の Claude Platform は、直接 Claude API と同じモデル ID を使用します。デフォルトのエイリアス `fable`、`opus`、`sonnet`、`haiku` は Claude Code の AWS 上の Claude Platform 用の組み込みデフォルトに解決されます。これは最新リリースより遅れる可能性があります。`ANTHROPIC_DEFAULT_OPUS_MODEL` がない場合、`opus` エイリアスは Opus 4.8 に解決されます。
+AWS 上の Claude Platform は、直接 Claude API と同じモデル ID を使用します。
+
+デフォルトのエイリアス `fable`、`opus`、`sonnet`、`haiku` は Claude Code の AWS 上の Claude Platform 用の組み込みデフォルトに解決されます。これは最新リリースより遅れる可能性があります。`ANTHROPIC_DEFAULT_OPUS_MODEL` がない場合、`opus` エイリアスは Opus 4.8 に解決されます。{/* min-version: 2.1.207 */}v2.1.207 より前では、Opus 4.7 に解決されていました。
 
 Claude Code をチームにデプロイする場合、モデル ID を明示的にピン留めして、新しいリリースがすべてのユーザーを一度に移動しないようにします。
 

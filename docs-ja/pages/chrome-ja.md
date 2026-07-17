@@ -65,6 +65,8 @@ Claude Code を Chrome で使用する前に、以下が必要です。
     Go to code.claude.com/docs, click on the search box,
     type "hooks", and tell me what results appear
     ```
+
+    最初のブラウザアクションは、`claude-in-chrome` スキルを使用する権限を求めます。それを承認すると、Claude は新しいタブを開いてタスクを開始します。
   </Step>
 </Steps>
 
@@ -105,7 +107,7 @@ v2.1.199 以降、`tabs_context_mcp` の `createIfEmpty`、コンソールおよ
   ワークフロー例
 </h2>
 
-これらの例は、ブラウザアクションとコーディングタスクを組み合わせる一般的な方法を示しています。`/mcp` を実行して `claude-in-chrome` を選択すると、利用可能なブラウザツールの完全なリストが表示されます。
+これらの例は、ブラウザアクションとコーディングタスクを組み合わせる一般的な方法を示しています。`/mcp` を実行して `claude-in-chrome` を選択し、**View tools** を選択すると、利用可能なブラウザツールの完全なリストが表示されます。
 
 <h3 id="test-a-local-web-application">
   ローカル Web アプリケーションをテストする

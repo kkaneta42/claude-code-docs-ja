@@ -33,10 +33,10 @@ For Windows ARM64, download the [ARM64 installer](https://claude.ai/api/desktop/
 デスクトップアプリには 3 つのタブがあります。
 
 * **Chat**: ファイルアクセスなしの一般的な会話。claude.ai と同様です。
-* **Cowork**: クラウド VM で独自の環境を持つ自律型バックグラウンドエージェント。あなたが他の作業をしている間も独立して実行できます。
+* **Cowork**: サンドボックス化された仮想マシン内で独自の環境を持つ自律型バックグラウンドエージェント。あなたが他の作業をしている間も独立して実行できます。オンデバイス Cowork セッションはコンピューター上で VM を実行します。リモート Cowork セッションは代わりに Anthropic 管理の VM 上で実行されます。
 * **Code**: ローカルファイルへの直接アクセスを備えたインタラクティブなコーディングアシスタント。各変更をリアルタイムでレビューして承認します。
 
-Chat と Cowork は [Claude Desktop サポート記事](https://support.claude.com/en/collections/16163169-claude-desktop)で説明されています。このページは **Code** タブに焦点を当てています。
+Chat と Cowork は [Claude ヘルプセンター](https://support.claude.com/)で説明されています。デスクトップアプリのインストールとデプロイは [Claude Desktop サポート記事](https://support.claude.com/en/collections/16163169-claude-desktop)で説明されています。このページは **Code** タブに焦点を当てています。
 
 <h2 id="install">
   インストール

@@ -261,7 +261,7 @@ Fakechat デモを試すには、以下が必要です。
   </Step>
 </Steps>
 
-Claude がターミナルから離れている間にパーミッションプロンプトにヒットした場合、セッションは応答するまで一時停止します。[パーミッションリレー機能](/ja/channels-reference#relay-permission-prompts)を宣言するチャネルサーバーは、これらのプロンプトをあなたに転送して、リモートで承認または拒否できるようにします。無人使用の場合、[`--dangerously-skip-permissions`](/ja/permission-modes#skip-all-checks-with-bypasspermissions-mode) はプロンプトを完全にバイパスしますが、信頼できる環境でのみ使用してください。
+Claude がターミナルから離れている間に権限プロンプトにヒットした場合、セッションは応答するまで一時停止します。[権限リレー機能](/ja/channels-reference#relay-permission-prompts)を宣言するチャネルサーバーは、これらのプロンプトをあなたに転送して、リモートで承認または拒否できるようにします。無人使用の場合、[`--dangerously-skip-permissions`](/ja/permission-modes#skip-all-checks-with-bypasspermissions-mode) はほとんどのプロンプトをバイパスしますが、信頼できる環境でのみ使用してください。明示的な ask ルール、コネクタツール[組織が `ask` に設定したもの](/ja/mcp#organization-controls-on-connector-tools)、および MCP ツール[`requiresUserInteraction`](/ja/mcp#require-approval-for-a-specific-tool)でマークされたものは、引き続きプロンプトが表示されます。
 
 非対話型モードで `-p` でチャネルを実行する場合、複数選択質問や Plan Mode 承認など、ターミナル入力が必要なツールは無効になるため、セッションは入力を待つことで停止することはありません。
 

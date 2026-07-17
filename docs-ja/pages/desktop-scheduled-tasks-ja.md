@@ -93,6 +93,8 @@ Schedule コントロールからプリセットを選択します。
 
 停止を避けるには、タスクを作成した後に **Run now** をクリックし、権限プロンプトを監視し、各プロンプトに対して「常に許可」を選択します。そのタスクの将来の実行は、プロンプトなしで同じツールを自動承認します。タスクの詳細ページからこれらの承認をレビューして取り消すことができます。
 
+Connector ツール [組織が `ask` に設定](/ja/mcp#organization-controls-on-connector-tools) および [`requiresUserInteraction`](/ja/mcp#require-approval-for-a-specific-tool) とマークされた MCP ツールは、毎回呼び出しのたびにプロンプトが表示され、常に許可オプションは提供されません。これらのツールを呼び出す実行は毎回停止します。
+
 <h2 id="manage-scheduled-tasks">
   スケジュール設定されたタスクを管理する
 </h2>

@@ -115,7 +115,7 @@ claude --continue --fork-session
 
 これらのコマンドは、セッションを離れることなくコンテキストウィンドウ内の内容を制御します。
 
-* **`/clear`**：空のコンテキストで新たに開始します。以前の会話は保存され、再開可能です
+* **`/clear`**：空のコンテキストで新たに開始します。以前の会話は保存され、`/resume` で再開可能です。または、同じ Claude Code プロセス内では、{/* min-version: 2.1.191 */}[rewind メニューの前のセッションエントリ](/ja/checkpointing#rewind-past-a-cleared-conversation)から再開できます
 * **`/compact [instructions]`**：履歴を概要に置き換え、オプションで指定した内容に焦点を当てます
 * **`/context`**：現在コンテキストを消費しているものを表示します
 

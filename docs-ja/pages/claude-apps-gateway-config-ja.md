@@ -190,6 +190,8 @@ upstreams:
 
 空の `auth` ブロックは AWS SDK のデフォルト認証情報チェーンを使用します：env vars、`~/.aws/credentials`、ECS タスクロール、EC2 インスタンスメタデータ、または EKS の IRSA。本番環境では、コンテナイメージに静的キーを埋め込むのではなく、ゲートウェイポッドに IAM ロールを付与します。
 
+明示的な認証情報は完全である必要があります：`aws_access_key_id` と `aws_secret_access_key` が一緒に設定されていない場合、または `aws_session_token` が設定されていない場合、ゲートウェイはブート時に失敗します。v2.1.207 より前では、部分的な `auth:` ブロックは検証に合格しました。
+
 | セットアップ    | 方法                                                                                                                                                                                                                                                                |
 | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | IAM 権限    | ゲートウェイのプリンシパルに `bedrock:InvokeModel` と `bedrock:InvokeModelWithResponseStream` を推論プロファイル ARN と基盤モデル ARN の両方に付与します。US リージョンの組み込みカタログの場合：`arn:aws:bedrock:<region>:<account>:inference-profile/us.anthropic.*` と `arn:aws:bedrock:*::foundation-model/anthropic.*`。 |
@@ -527,7 +529,9 @@ managed:
 * **セーフリスト上**：自動更新とモデル名変数
 * **セーフリストにない**：プロキシ変数、ベース URL 変数、`OTEL_EXPORTER_OTLP_ENDPOINT`
 
-ゲートウェイの [テレメトリ](#telemetry) 設定は `OTEL_EXPORTER_OTLP_ENDPOINT` をプッシュするため、`telemetry.forward_to` を設定すると、各インタラクティブクライアントで承認ダイアログがトリガーされます。`-p` フラグを使用した非インタラクティブ実行は、ダイアログをスキップし、承認なしで設定を適用します。ダイアログは、組織から開発者を保護するのではなく、開発者のマシンを侵害または敵対的なゲートウェイから保護するため、`-p` スキップは意図的なギャップではなく意図的です。
+ゲートウェイの [テレメトリ](#telemetry) 設定は `OTEL_EXPORTER_OTLP_ENDPOINT` をプッシュするため、`telemetry.forward_to` を設定すると、各インタラクティブクライアントで承認ダイアログがトリガーされます。ダイアログは、組織から開発者を保護するのではなく、開発者のマシンを侵害または敵対的なゲートウェイから保護します。
+
+`-p` フラグを使用した非インタラクティブ実行はダイアログを表示できません。その実行のみのためにプッシュされた設定を適用し、それらを承認済みとして記録しないため、開発者の次のインタラクティブセッションはまだダイアログを表示します。v2.1.207 より前では、非インタラクティブ実行は設定を承認済みとして保存し、後のインタラクティブセッションはそれらのダイアログを表示しませんでした。
 
 開発者が拒否した場合、Claude Code は設定を適用せずに終了します。新しいフックまたは非セーフ env var を広いポリシーにプッシュすることは、マッチする開発者の次の起動時に承認プロンプトを意味します。
 
@@ -552,8 +556,9 @@ managed:
 * `sandbox.network.allowManagedDomainsOnly` と `sandbox.filesystem.allowManagedReadPathsOnly`：ロックされている場合、対応する許可リストはソース全体で和集合されます。
 * [`allowAllClaudeAiMcps`](/ja/settings#available-settings)：claude.ai MCP サーバー許可リストの許可のみオーバーライド
 * `sandbox.bwrapPath` と `sandbox.socatPath`：[サンドボックス](/ja/sandboxing)ヘルパーバイナリへのファイルシステムパス
+* [`forceRemoteSettingsRefresh`](/ja/server-managed-settings)：スタートアップをブロックして、リモートマネージド設定を新しく取得するため、キーが不足しているキャッシュされたリモートペイロードが最優先ソースである場合でも、MDM またはファイルポリシーがそれを設定することが尊重されます。
 
-`allowManagedPermissionRulesOnly` と `disableBypassPermissionsMode` はクロスソースではないため、勝利ソースの値のみが適用されます。[設定の優先順位](/ja/settings#settings-precedence)で、設定ページの同じルールを参照してください。
+`allowManagedPermissionRulesOnly` と `disableBypassPermissionsMode` を含むすべての他のキーは、最優先ソースのみから来ます。[設定の優先順位](/ja/settings#settings-precedence)で、設定ページの同じルールを参照してください。
 
 ゲートウェイポリシーはマシン上のすべての Claude Code 呼び出しに適用されます。非インタラクティブ `claude -p` 実行と Agent SDK によって生成されたセッションを含みます。ゲートウェイがスタートアップ時に到達不可能な場合、署名されたセッションはポリシーなしで実行するのではなく、エラーで終了します。
 
@@ -619,7 +624,7 @@ protobuf と JSON OTLP エンコーディングの両方がリレーされ、Ope
 | `limits`         | `max_request_bytes`                            | 32 MiB   | 最大インバウンドリクエストボディ。サイズを超えるリクエストはボディがバッファリングされる前に `413` を取得します。大きなファイルまたは画像リクエストの場合は増やします。                                                                                                                                               |
 | `limits`         | `max_request_header_bytes`                     | 未設定      | 設定すると、サイズを超えるヘッダーは `431` を返します。                                                                                                                                                                                                       |
 | `limits`         | `max_url_length`                               | 未設定      | 設定すると、長すぎる URL は `414` を返します。                                                                                                                                                                                                         |
-| `timeouts`       | `upstream_ttfb_ms`                             | 120000   | アップストリームのレスポンスヘッダー（初バイト時間）を待つ最大時間。レスポンスボディはその後、ウォールクロックキャップなしでストリーミングされます。直接 Anthropic アップストリームパスに適用されます。Bedrock、Agent Platform、Foundry はプロバイダー SDK 独自のタイムアウトで制限されます。                                                                 |
+| `timeouts`       | `upstream_ttfb_ms`                             | 120000   | アップストリームのレスポンスヘッダー（初バイト時間）を待つ最大時間。レスポンスボディはその後、ウォールクロックキャップなしでストリーミングされます。直接 Anthropic アップストリームパスに適用されます。他のすべてのプロバイダーはプロバイダー SDK 独自のタイムアウトで制限されます。                                                                                    |
 | `rate_limits`    | `device_authorization.max` / `.window_seconds` | 30 / 600 | 認証されていないデバイス認可エンドポイントの IP ごとのレート制限。共有エグレス IP または NAT の背後にある大規模な組織の場合は増やします。これらの制限は、デバイスグラント サインインフローにのみ適用され、`/v1/messages` 推論には適用されません。[ユーザーコードブルートフォース耐性](/ja/claude-apps-gateway-deploy#user-code-brute-force-resistance)を参照してください。 |
 | `rate_limits`    | `device_verify.max` / `.window_seconds`        | 10 / 600 | `/device` での `user_code` 送信の IP ごとのレート制限。                                                                                                                                                                                             |
 

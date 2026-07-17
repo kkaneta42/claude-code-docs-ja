@@ -36,7 +36,11 @@ claude --worktree
 
 セッション中に Claude に「worktree で作業する」と指示することもでき、[`EnterWorktree`](/ja/tools-reference)ツールを使用して作成します。Worktree に入ると、Claude は `.claude/worktrees/` の下の別の worktree に `EnterWorktree` をターゲットパスで呼び出すことで直接切り替えることができます。前の worktree はディスク上に変更されずに残ります。
 
+リポジトリの `.claude/worktrees/` ディレクトリの外のパスに入ると、セッションの作業ディレクトリ、書き込みアクセス、および `CLAUDE.md` や設定などのプロジェクト設定をその場所に移動するため、最初に承認を求めます。`EnterWorktree` [権限ルール](/ja/permissions)または「今後は聞かない」を選択しても、このプロンプトは表示されません。`bypassPermissions` モードのみがスキップします。v2.1.206 より前は、Claude は既存の worktree パスに承認なく入ることができました。
+
 {/* min-version: 2.1.198 */}v2.1.198 以降、worktree に入るか出るかは、セッショントランスクリプトをそのディレクトリのプロジェクトストレージに再配置します。これは [`/cd`](/ja/commands)と同じ方法で行われるため、`/desktop` と `--resume` はその後そこでセッションを見つけます。[`WorktreeCreate` フック](#non-git-version-control)によって作成された Worktree は除外され、トランスクリプトを起動ディレクトリに保持します。
+
+Worktree は[サンドボックス](/ja/sandboxing#filesystem-isolation)が有効な状態で動作します。サンドボックスはメインリポジトリの共有 `.git` ディレクトリへの書き込みを許可するため、`git commit` などのコマンドはリンクされた worktree 内からリファレンスとインデックスを更新できます。
 
 初めてディレクトリで `--worktree` をインタラクティブに使用する前に、そのディレクトリで `claude` を 1 回実行してワークスペース信頼ダイアログを受け入れてください。信頼がまだ受け入れられていない場合、`--worktree` はエラーで終了し、最初にディレクトリで `claude` を実行するよう求めるプロンプトが表示されます。`-p` を使用した非インタラクティブ実行は[信頼チェック](/ja/security)をスキップするため、`claude -p --worktree` はそれなしで進行します。
 
@@ -52,7 +56,11 @@ claude --worktree
   ベースブランチを選択する
 </h3>
 
-Worktree はリポジトリのデフォルトブランチ `origin/HEAD` からブランチするため、リモートと一致するクリーンなツリーから開始します。リモートが設定されていない場合、またはフェッチが失敗した場合、worktree は現在のローカル `HEAD` にフォールバックします。代わりにローカル `HEAD` から常にブランチするには、[設定](/ja/settings#worktree-settings)で `worktree.baseRef` を `"head"` に設定します。`baseRef` を `"head"` に設定すると、新しい worktree はプッシュされていないコミットと機能ブランチの状態を保持します。これは、進行中の作業で動作する必要がある subagent を分離する場合に便利です。この設定は `"fresh"` または `"head"` のみを受け入れ、任意の git ref は受け入れません。
+Worktree はリポジトリのデフォルトブランチ `origin/HEAD` からブランチするため、リモートと一致するクリーンなツリーから開始します。過去 24 時間でリポジトリをフェッチしたことがない場合、Claude Code は `origin/HEAD` をデフォルトブランチのフェッチで更新し、5 秒でキャップされ、フェッチが失敗した場合はローカルキャッシュされたリファレンスを使用します。リモートが設定されていない場合、または `origin/HEAD` がローカルキャッシュされておらずフェッチできない場合、worktree は現在のローカル `HEAD` にフォールバックします。
+
+更新には Claude Code v2.1.208 以降が必要です。それより前は、新しい worktree は既にローカルキャッシュされていた `origin/HEAD` を使用していました。
+
+代わりにローカル `HEAD` から常にブランチするには、[設定](/ja/settings#worktree-settings)で `worktree.baseRef` を `"head"` に設定します。`baseRef` を `"head"` に設定すると、新しい worktree はプッシュされていないコミットと機能ブランチの状態を保持します。これは、進行中の作業で動作する必要がある subagent を分離する場合に便利です。セッションがリンクされた worktree 内で実行されている場合、`"head"` はメインチェックアウトの `HEAD` ではなく、その worktree の `HEAD` に解決されます。この設定は `"fresh"` または `"head"` のみを受け入れ、任意の git ref は受け入れません。
 
 ```json theme={null}
 {
@@ -69,6 +77,20 @@ claude --worktree "#1234"
 ```
 
 Worktree の作成方法を完全に制御するには、[`WorktreeCreate` フック](/ja/hooks#worktreecreate)を設定します。これはデフォルトの `git worktree` ロジックを完全に置き換えます。
+
+<h3 id="reuse-a-worktree-name">
+  Worktree 名を再利用する
+</h3>
+
+既に存在するディレクトリを持つ worktree 名を再利用すると、その worktree が再開されます。
+
+再開された worktree は、以下のすべてが当てはまる場合、古いチップで再開する代わりに[現在のベース](#choose-the-base-branch)にリセットされます。
+
+* コミットされていない変更または追跡されていないファイルがない。
+* Claude Code が作成したブランチ上にまだある。
+* コミットしたことがないか、プルリクエストがマージされ、リモートブランチが削除された。
+
+v2.1.208 より前は、再利用された名前は常に古い worktree を古いチップで再開していました。
 
 <h2 id="copy-gitignored-files-into-worktrees">
   gitignore されたファイルを worktree にコピーする
