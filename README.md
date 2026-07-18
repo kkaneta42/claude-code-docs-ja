@@ -17,6 +17,60 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-07-18</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md | 51 ++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 51 insertions(+)
+```
+
+**新規追加:**
+
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index 9daf8f0..b5bb90e 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,55 @@
+ # Changelog
+ 
++## 2.1.212
++
++- `/fork` now copies your conversation into a new background session (its own row in `claude agents`) while you keep working; the in-session subagent it used to launch is now `/subtask`
++- Added `claude auto-mode reset` to restore the default auto-mode configuration, with a confirmation prompt (pass `--yes` to skip)
++- Added a session-wide limit on WebSearch tool calls (default 200, tunable via `CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION`) to stop runaway search loops
++- Added a per-session cap on subagent spawns (default 200, override with `CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION`) to stop runaway delegation loops; `/clear` resets the budget
++- MCP tool calls running longer than 2 minutes now move to the background automatically so the session stays usable; configure the threshold or disable with `CLAUDE_CODE_MCP_AUTO_BACKGROUND_MS`
++- Typing `/resume` in the agent view now opens a picker of past sessions — including sessions deleted from the list — and resumes your pick as a background session
++- Fixed plan mode auto-running file-modifying Bash commands (e.g. `touch`, `rm`) without a permission prompt or SDK `canUseTool` callback
++- Fixed worktree creation following a repository-committed symlink at `.claude/worktrees`, which could create files outside the repository
++- Fixed a `continue:false` hook's halt being dropped when the tool fails or completes mid-stream, and hook infrastructure errors being misreported as user rejections
++- Fixed SIGTERM during a running Bash tool orphaning the command's process tree in print/SDK mode; the CLI now aborts the turn, kills the tree, and exits 143
++- Fixed `/background` and `claude --bg` failing with "EUNKNOWN: unknown error, uv_spawn" on Windows when Group Policy blocks PowerShell 5.1; the daemon now prefers PowerShell 7
++- Fixed shell mode (`!`) not executing commands containing file paths while the path autocomplete popup was open
++- Fixed auto-mode denial notifications rendering broken characters when a long denial reason was truncated mid-emoji
++- Fixed Ctrl+J not inserting a newline in the agent view dispatch input on terminals with extended key reporting, and surfaced the newline shortcut in the `?` help overlay
++- Fixed `/ultrareview` rejecting PR references like `#123`, `PR 123`, and pasted PR URLs; error hints now name the command you actually typed
++- Fixed `/ultrareview <branch>` not fetching the branch from origin when it exists remotely; it now suggests the closest branch name on typos
++- Fixed `/ultrareview` skipping the billing confirmation in a new conversation after `/clear`
++- Fixed `/ultrareview`'s "not a git repository" error on Claude Desktop now suggesting the project's repository folder instead of terminal commands
++- Fixed hosted (host-managed) sessions failing at startup when repository settings configured mTLS certs, extra CA bundles, or OAuth scopes; these transport settings are now ignored with a warning
++- Fixed a spurious "File has not been read yet" error when editing a file that had been read with offset/limit before resuming a session
++- Fixed `ExitWorktree` failing with "no active EnterWorktree session" after resuming a session with `--continue`/`--resume` in print/SDK mode
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-07-17</summary>
 
 **変更ファイル:**
@@ -2823,64 +2877,6 @@ index 87f5a87..544d62a 100644
 -
  <h2 id="when-to-use-agent-teams">
    エージェントチームを使用する場合
-```
-
-</details>
-
-<details>
-<summary>artifacts-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/artifacts-ja.md b/docs-ja/pages/artifacts-ja.md
-index 46a22fc..10fb365 100644
---- a/docs-ja/pages/artifacts-ja.md
-+++ b/docs-ja/pages/artifacts-ja.md
-@@ -19,13 +19,4 @@
- </Frame>
- 
--このページでは、以下の内容について説明します。
--
--* [アーティファクトを使用する時期](#when-to-use-an-artifact)を判断する
--* アーティファクトを[作成](#create-an-artifact)、[更新](#update-an-artifact)、[共有](#share-an-artifact)する
--* より豊かなページのための[プロンプティングパターン](#what-you-can-build)を適用する
--* [ビジュアルデザインを改善](#improve-the-visual-design)して、アーティファクトが製品のブランディングと一致するようにする
--* [ページの制約](#page-constraints)と[利用可能性の要件](#availability)を理解する
--* アーティファクトを[無効にする](#disable-artifacts)か、[組織のアーティファクトを管理](#manage-artifacts-for-your-organization)する
--
- <h2 id="when-to-use-an-artifact">
-   アーティファクトを使用する時期
-```
-
-</details>
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index 534a987..3fa4a5d 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,19 @@
- # Changelog
- 
-+## 2.1.195
-+
-+- Added `CLAUDE_CODE_DISABLE_MOUSE_CLICKS` to disable mouse click/drag/hover in fullscreen mode while keeping wheel scroll
-+- Fixed hook matchers with hyphenated identifiers (e.g. `code-reviewer`, `mcp__brave-search`) accidentally substring-matching — they now exact-match. Use `mcp__brave-search__.*` to match all tools from a hyphenated MCP server.
-+- Fixed voice dictation on macOS capturing silence in long-running sessions after the default input device changes
-+- Fixed voice dictation auto-submit never firing for languages written without spaces (Japanese, Chinese, Thai)
-+- Fixed external plugins enabled only by project `.claude/settings.json` not requiring explicit install consent on every loader path
-+- Fixed `/plugin` Enable/Disable not working when a plugin's `plugin.json` `name` differs from its marketplace entry name
-+- Fixed background jobs disappearing from `claude agents` or losing data when written by a newer Claude Code version
-+- Fixed reopening a crashed background task showing a blank screen for up to 5 seconds instead of its restart
-+- Fixed background agent daemons running unreachable when the control socket fails to start, blocking restarts
-+- Improved voice mode on Linux: now distinguishes "no microphone" from "SoX not installed" when SoX is present but no audio capture device exists
-+- Improved `claude agents` completed list to fill available vertical space; on short terminals the header compacts so live sessions stay visible
-+- Improved Remote session startup with a provisioning checklist while the container starts
-+
- ## 2.1.193
- 
 ```
 
 </details>
