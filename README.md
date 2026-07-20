@@ -17,6 +17,40 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-07-20</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md | 4 ++++
+ 1 file changed, 4 insertions(+)
+```
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index 245fbdf..dccd1b0 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,8 @@
+ # Changelog
+ 
++## 2.1.215
++
++- Claude no longer runs the `/verify` and `/code-review` skills on its own; invoke them with `/verify` or `/code-review` when you want them
++
+ ## 2.1.214
+ 
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-07-19</summary>
 
 **変更ファイル:**
@@ -2821,66 +2855,6 @@ index 2fd488c..ca66c7c 100644
 ```
 
 **新規追加:**
-
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index 3fa4a5d..8152155 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,34 @@
- # Changelog
- 
-+## 2.1.196
-+
-+- Added support for organization default models — admins set it in the org console; it shows as "Org default" (or "Role default") in `/model` when you haven't picked one yourself
-+- Added readable default names for sessions at start, making them easier to identify and message
-+- Added clickable file attachments in chat — Cmd/Ctrl-click reveals the file in Finder/Explorer
-+- Security: `claude mcp list`/`get` no longer spawn `.mcp.json` servers that a repo self-approved via a committed `.claude/settings.json`; untrusted workspaces show `⏸ Pending approval`
-+- Fixed waking a background job permanently deleting its conversation and re-running the original prompt when the transcript probe misread a real transcript; the file is now set aside, never deleted
-+- Fixed the rate-limit warning flickering off and rate-limit telemetry being over-counted when multiple parallel requests were in flight at the moment a usage limit was hit
-+- Fixed duplicate recap lines after a background session's turn: a schema-rejected StructuredOutput attempt no longer renders alongside its retry
-+- Fixed PowerShell `git diff`/`git grep`, `egrep`/`fgrep`, and quoted search patterns containing `|` being reported as failures when they exit 1, matching Bash behavior
-+- Fixed multiple `claude agents` side panel issues: keyboard focus getting stuck when opening an agent, background jobs losing their subagent types on every open, and sessions showing incorrect status while actively running
-+- Fixed `claude agents --dangerously-skip-permissions` silently falling back to auto mode instead of showing the bypass disclaimer and applying bypass mode to spawned agents
-+- Fixed mid-turn crash recovery for Remote sessions — sessions interrupted by a server restart now auto-resume on the next worker
-+- Fixed sessions moved with `/cd` reappearing in the old directory's resume list after a non-graceful exit when the old path contained special characters
-+- Fixed `claude plugin validate` skipping local plugins whose source is "." and stopping after the first error class
-+- Fixed Esc Esc at an idle prompt not opening the rewind menu (regression); use Ctrl+C or Ctrl+X Ctrl+K to stop background agents
-+- Fixed MCP OAuth requesting the authorization server's full `scopes_supported` catalog when no scope is specified, causing `invalid_scope` failures on GitLab self-hosted and other enterprise IdPs
-+- Fixed `/context` showing 0 tokens for all tool groups on Bedrock
-+- Fixed `/deep-research` misreporting verifier failures as "all claims refuted" instead of `unverified`
-+- Fixed plugin dependency version pins not being honored when the marketplace was added as a local folder path backed by a git repo
-+- Fixed `claude agents` session status: completed rows no longer flip between "Done" and "Needs your input", stalled agents are now labeled "Needs attention", and results that mention a PR show a clickable link
-+- Fixed voice dictation swallowing spaces and spuriously starting a recording during very fast typing when voice mode is enabled
-+- Improved background session reliability: long-running commands and workflows now survive the session's process being stopped, restarted, or updated — including on Windows, where background shells are handed off instead of being killed
-```
-
-</details>
-
-<details>
-<summary>llm-gateway-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/llm-gateway-ja.md b/docs-ja/pages/llm-gateway-ja.md
-index cb3e944..aaa9867 100644
---- a/docs-ja/pages/llm-gateway-ja.md
-+++ b/docs-ja/pages/llm-gateway-ja.md
-@@ -40,5 +40,5 @@ LLM gateway は、Claude Code とモデルプロバイダー間に組織が実
- 
- <Frame>
--  <img src="https://mintcdn.com/claude-code/zIcIE_SQv4Z0Zbhc/images/llm-gateway-flow.svg?fit=max&auto=format&n=zIcIE_SQv4Z0Zbhc&q=85&s=490607d033d235694efb49a73a5b9e4b" alt="Claude Code が LLM gateway 経由でルーティングされることを示す図。開発者マシンゾーンでは、Claude Code CLI、VS Code 拡張機能、CI またはエージェント SDK クライアントがゲートウェイにリクエストを送信し、ゲートウェイの API 形式のベース URL 変数がそれを指し、各開発者が開発者ごとの認証情報を保持し、デスクトップアプリは組織が配布した設定を通じて同じゲートウェイに到達します。あなたのインフラストラクチャというラベルが付いたゾーンでは、LLM gateway が認証、使用状況追跡、予算、ルーティングを処理し、組織の認証情報を使用してリクエストを転送します。モデルプロバイダーゾーンでは、実線矢印が設定したプロバイダー（Anthropic API として表示）に向かい、破線矢印が他のプロバイダーオプション（Amazon Bedrock、Google Vertex AI、Microsoft Foundry の例として示されている）に向かいます。" width="780" height="322" data-path="images/llm-gateway-flow.svg" />
-+  <img src="https://mintcdn.com/claude-code/-uq-4JE0W_JO5Er5/images/llm-gateway-flow.svg?fit=max&auto=format&n=-uq-4JE0W_JO5Er5&q=85&s=1c1a8dcc0cfcc3a58652cc8e28cd3e20" alt="Claude Code が LLM gateway 経由でルーティングされることを示す図。開発者マシンゾーンでは、Claude Code CLI、VS Code 拡張機能、CI またはエージェント SDK クライアントがゲートウェイにリクエストを送信し、ゲートウェイの API 形式のベース URL 変数がそれを指し、各開発者が開発者ごとの認証情報を保持し、デスクトップアプリは組織が配布した設定を通じて同じゲートウェイに到達します。あなたのインフラストラクチャというラベルが付いたゾーンでは、LLM gateway が認証、使用状況追跡、予算、ルーティングを処理し、組織の認証情報を使用してリクエストを転送します。モデルプロバイダーゾーンでは、実線矢印が設定したプロバイダー（Anthropic API として表示）に向かい、破線矢印が他のプロバイダーオプション（Amazon Bedrock、Google Vertex AI、Microsoft Foundry の例として示されている）に向かいます。" width="780" height="322" data-path="images/llm-gateway-flow.svg" />
- </Frame>
- 
-```
-
-</details>
-
-</details>
 
 
 <!-- UPDATE_LOG_END -->
