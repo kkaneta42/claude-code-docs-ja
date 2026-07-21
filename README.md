@@ -17,6 +17,57 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-07-21</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md | 43 +++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 43 insertions(+)
+```
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index dccd1b0..835feec 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,47 @@
+ # Changelog
+ 
++## 2.1.216
++
++- Added `sandbox.filesystem.disabled` setting to skip filesystem isolation while keeping network egress control
++- Fixed a slowdown in long sessions where message normalization cost grew quadratically with the number of turns, causing multi-second stalls and slow resumes
++- Fixed auto mode denying commands with "HTTP 401" classifier errors after the OAuth token expired or rotated mid-session
++- Fixed AskUserQuestion telling Claude to continue even when your answer asked it to wait or explain first — free-text answers now get neutral wording
++- Fixed Claude Code on the web re-asking the same question and dropping your answer after the session sat idle for a few minutes
++- Fixed @-mentions silently attaching nothing after file-modifying hooks, vim dot-repeat of `c`-operators and paste, statusline running twice on resume, and resume-picker hangs on failure
++- Fixed resumed background agent sessions reverting to the default agent: the agent's prompt and tool restrictions are now restored
++- Fixed worktree-isolated subagents redirecting git into the shared checkout via `git -C`, `--git-dir`, or `GIT_DIR`/`GIT_WORK_TREE`
++- Fixed worktree sessions landing in another project's leftover worktree when the working directory did not match the selected project
++- Fixed background sessions whose worktree has no git repository being undeletable
++- Fixed `claude daemon stop --any` potentially terminating an unrelated process via a stale legacy daemon lockfile
++- Fixed Esc-Esc at an idle prompt not opening the rewind picker in long-running sessions with background tasks
++- Fixed Bash command permission checking for compound statements with redirects inside `&&` lists or negations
++- Fixed pressing Ctrl+X twice in the agent list failing to delete a session, and deleted sessions reappearing when their background worker had died
++- Fixed background subagents getting cancelled when a high-priority message arrives during their startup window
++- Fixed mouse and focus garbage in the terminal while a GUI editor from `/memory`, `/plan`, `/keybindings`, or Ctrl+G is open; `/memory` no longer waits for the editor to close
++- Fixed Claude-in-Chrome 403-looping on reconnect when the session's OAuth token lacks a required scope
++- Fixed workflow saves and scheduled-task writes following a symlink at `.claude`, which could redirect writes outside the project
++- Fixed MCP re-authenticate revoking working credentials before the new sign-in succeeds, and the reconnect needs-auth message in background sessions pointing at an unusable command
++- Fixed read-only commands on Windows accessing network paths without a permission prompt
++- Fixed Bash command parsing of non-ASCII characters to match real shell word boundaries
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-07-20</summary>
 
 **変更ファイル:**
@@ -2799,62 +2850,5 @@ index 6810308..3306636 100644
 ```
 
 </details>
-
-<details>
-<summary>auto-mode-config-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/auto-mode-config-ja.md b/docs-ja/pages/auto-mode-config-ja.md
-index 2fd488c..ca66c7c 100644
---- a/docs-ja/pages/auto-mode-config-ja.md
-+++ b/docs-ja/pages/auto-mode-config-ja.md
-@@ -10,5 +10,5 @@
- 
- <Note>
--  オートモードは、Anthropic API を通じてすべてのユーザーが利用できます。Amazon Bedrock、Google Cloud Vertex AI、Microsoft Foundry では、まず [`CLAUDE_CODE_ENABLE_AUTO_MODE`](/ja/permission-modes#enable-auto-mode-on-bedrock-vertex-ai-or-foundry) を[設定](/ja/permission-modes#enable-auto-mode-on-bedrock-vertex-ai-or-foundry)する必要があります。Claude Code がアカウントでオートモードが利用不可と報告する場合は、[完全な要件](/ja/permission-modes#eliminate-prompts-with-auto-mode)を確認してください。これには、サポートされているモデルと Team および Enterprise プランの管理者有効化も含まれます。
-+  オートモードは、Anthropic API を通じてすべてのユーザーが利用できます。Amazon Bedrock、Google Cloud Vertex AI、Microsoft Foundry、およびサインイン済みの[Claude アプリゲートウェイ](/ja/claude-apps-gateway)セッションでは、まず [`CLAUDE_CODE_ENABLE_AUTO_MODE`](/ja/permission-modes#enable-auto-mode-on-bedrock-vertex-ai-or-foundry) を[設定](/ja/permission-modes#enable-auto-mode-on-bedrock-vertex-ai-or-foundry)する必要があります。Claude Code がアカウントでオートモードが利用不可と報告する場合は、[完全な要件](/ja/permission-modes#eliminate-prompts-with-auto-mode)を確認してください。これには、サポートされているモデルと Team および Enterprise プランの Owner 有効化も含まれます。
- </Note>
- 
-@@ -22,4 +22,5 @@
- * [`autoMode.environment` で信頼できるインフラストラクチャを定義する](#define-trusted-infrastructure)
- * [デフォルトが適切でない場合、ブロックルールと許可ルールをオーバーライドする](#override-the-block-and-allow-rules)
-+* [`autoMode.classifyAllShell` ですべてのシェルコマンドを分類器にルーティングする](#route-all-shell-commands-through-the-classifier)
- * [`claude auto-mode` サブコマンドで有効な設定を確認する](#inspect-the-defaults-and-your-effective-config)
- * [拒否を確認する](#review-denials)（次に何を追加するかを知るため）
-@@ -54,5 +55,14 @@
- ほとんどの組織では、`autoMode.environment` が設定する必要がある唯一のフィールドです。これは、分類器に、どのリポジトリ、バケット、ドメインが信頼できるかを指定します。分類器はこれを使用して「外部」が何を意味するかを決定するため、リストに記載されていない宛先は潜在的な流出ターゲットです。
- 
--デフォルトの環境リストは、作業リポジトリとその設定されたリモートを信頼します。そのデフォルトと一緒に独自のエントリを追加するには、配列にリテラル文字列 `"$defaults"` を含めます。デフォルトエントリはその位置に挿入されるため、カスタムエントリはそれらの前後に配置できます。
-+Claude Code v2.1.195 以降、`claude auto-mode defaults` は 2 種類の環境エントリを出力します。
-+
-+* **信頼スロット**：分類器が境界内として扱うものを指定します。スロットは「信頼できるリポジトリ」、「ソース管理」、「信頼できる内部ドメイン」、「信頼できるクラウドバケット」、「主要な内部サービス」、および「内部パッケージレジストリ」です。リポジトリとソース管理エントリはデフォルトで作業リポジトリとその設定されたリモートになります。他のすべての信頼スロットはデフォルトで `None configured` になるため、追加するまで他には何も信頼されません。
-+* **感度スロット**：保護ルールが高リスクとして扱うものを指定します。スロットは「PII / 規制対象データの場所」、「機密リモートターゲット」、および「保護された IaC スコープ」です。各スロットはデフォルトで広いヒューリスティックになります。例えば、名前に `prod` または `production` を含むホストまたはネームスペースを機密リモートターゲットとして扱うため、保護ルールは何も設定する前にアクティブになります。感度スロットで具体的なターゲットを指定すると、これらのルールはヒューリスティックではなく指定されたターゲットに適用されます。
-+
-+v2.1.195 より前のバージョンは、最初の 5 つの信頼スロットのみを出力します。
-+
-+デフォルトと一緒に独自のエントリを追加するには、配列にリテラル文字列 `"$defaults"` を含めます。デフォルトエントリはその位置に挿入されるため、カスタムエントリはそれらの前後に配置できます。
-+
-```
-
-</details>
-
-*...以降省略*
-
-</details>
-
-
-<details>
-<summary>2026-06-30</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/changelog.md      | 30 ++++++++++++++++++++++++++++++
- docs-ja/pages/llm-gateway-ja.md |  2 +-
- 2 files changed, 31 insertions(+), 1 deletion(-)
-```
-
-**新規追加:**
-
 
 <!-- UPDATE_LOG_END -->
