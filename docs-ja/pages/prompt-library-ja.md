@@ -998,7 +998,7 @@ export const PromptLibrary = ({text = {}, labels = {}, tagLabels = {}, phaseLabe
 
 これは Claude Code にコピーして使用するプロンプトのライブラリです。試したことのない作業方法を探索したり、どこから始めたらよいかわからない場合に使用してください。
 
-プロンプトは、[一般的なワークフロー](/ja/common-workflows)、[ベストプラクティス](/ja/best-practices)、[Anthropic チームが Claude Code をどのように使用しているか](https://claude.com/blog/how-anthropic-teams-use-claude-code)など、様々な Anthropic ガイドから収集されています。これらはスクリプトではなく、出発点です。任意のプロンプトの下にある **このプロンプトが機能する理由** を開くと、その背後にあるパターンを確認できるため、独自のプロンプトを作成できます。
+プロンプトは、[一般的なワークフロー](/docs/ja/common-workflows)、[ベストプラクティス](/docs/ja/best-practices)、[Anthropic チームが Claude Code をどのように使用しているか](https://claude.com/blog/how-anthropic-teams-use-claude-code)など、様々な Anthropic ガイドから収集されています。これらはスクリプトではなく、出発点です。任意のプロンプトの下にある **このプロンプトが機能する理由** を開くと、その背後にあるパターンを確認できるため、独自のプロンプトを作成できます。
 
 export const labels = {
   startHere: "ここから始める",
@@ -1029,10 +1029,10 @@ export const labels = {
   },
   needsLabel: "必要なもの",
   needs: {
-    tracker: "[claude.ai コネクタ](/ja/mcp#use-mcp-servers-from-claude-ai)または [MCP サーバー](/ja/mcp)として追加されたイシュートラッカー。",
-    gh: "[gh CLI](https://cli.github.com) が認証されているか、GitHub が [claude.ai コネクタ](/ja/mcp#use-mcp-servers-from-claude-ai)として追加されていること。",
-    browser: "Claude が結果をレンダリングしてスクリーンショットを撮る方法。[デスクトップアプリ](/ja/desktop#preview-your-app)にはこれが組み込まれています。ターミナルでは、[Chrome 拡張機能](/ja/chrome)または Playwright [MCP](/ja/mcp) サーバーをインストールしてください。",
-    db: "[claude.ai コネクタ](/ja/mcp#use-mcp-servers-from-claude-ai)または [MCP サーバー](/ja/mcp)として追加されたデータウェアハウスまたはログストア。"
+    tracker: "[claude.ai コネクタ](/docs/ja/mcp#use-mcp-servers-from-claude-ai)または [MCP サーバー](/docs/ja/mcp)として追加されたイシュートラッカー。",
+    gh: "[gh CLI](https://cli.github.com) が認証されているか、GitHub が [claude.ai コネクタ](/docs/ja/mcp#use-mcp-servers-from-claude-ai)として追加されていること。",
+    browser: "Claude が結果をレンダリングしてスクリーンショットを撮る方法。[デスクトップアプリ](/docs/ja/desktop#preview-your-app)にはこれが組み込まれています。ターミナルでは、[Chrome 拡張機能](/docs/ja/chrome)または Playwright [MCP](/docs/ja/mcp) サーバーをインストールしてください。",
+    db: "[claude.ai コネクタ](/docs/ja/mcp#use-mcp-servers-from-claude-ai)または [MCP サーバー](/docs/ja/mcp)として追加されたデータウェアハウスまたはログストア。"
   }
 };
 
@@ -1127,7 +1127,7 @@ export const text = {
   },
   "plan-a-multi-file": {
     title: "コードに触れる前に複数ファイルの変更を計画する",
-    teaches: "「まだ編集しないでください」を追加すると、探索と変更が分離されるため、コードが移動する前にアプローチが表示されます。すべてのプロンプトでプラン優先をデフォルトにするには、Shift+Tab を押して [プランモード](/ja/permission-modes#analyze-before-you-edit-with-plan-mode)を使用してください。"
+    teaches: "「まだ編集しないでください」を追加すると、探索と変更が分離されるため、コードが移動する前にアプローチが表示されます。すべてのプロンプトでプラン優先をデフォルトにするには、Shift+Tab を押して [プランモード](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode)を使用してください。"
   },
   "draft-a-spec-by": {
     title: "インタビューでスペックを作成する",
@@ -1136,7 +1136,7 @@ export const text = {
   },
   "turn-a-meeting-into": {
     title: "ミーティングをチケットに変換する",
-    teaches: "トランスクリプションステップをスキップしてください。Claude は非構造化入力からアクション項目を抽出し、[MCP](/ja/mcp)経由でトラッカーに直接書き込むため、トランスクリプトではなくチケットをレビューします。",
+    teaches: "トランスクリプションステップをスキップしてください。Claude は非構造化入力からアクション項目を抽出し、[MCP](/docs/ja/mcp)経由でトラッカーに直接書き込むため、トランスクリプトではなくチケットをレビューします。",
     next: "これを `/tickets` スキルとして保存してください"
   },
   "map-edge-cases-before": {
@@ -1230,7 +1230,7 @@ export const text = {
   },
   "run-a-security-review": {
     title: "サブエージェントでセキュリティレビューを実行する",
-    teaches: "[サブエージェント](/ja/sub-agents)は独自のコンテキストウィンドウで監査を実行し、概要を報告するため、長いセキュリティレビューがメインセッションを満たしません。組み込みの汎用サブエージェントは追加のセットアップなしでこれを処理します。",
+    teaches: "[サブエージェント](/docs/ja/sub-agents)は独自のコンテキストウィンドウで監査を実行し、概要を報告するため、長いセキュリティレビューがメインセッションを満たしません。組み込みの汎用サブエージェントは追加のセットアップなしでこれを処理します。",
     next: "チーム全体が使用できる専用のセキュリティレビューサブエージェントをセットアップしてください"
   },
   "review-content-before-sending": {
@@ -1249,7 +1249,7 @@ export const text = {
   },
   "turn-a-correction-into": {
     title: "修正をルールに変える",
-    teaches: "チャットの修正はチーム全体と共有されません。プロジェクトの [CLAUDE.md](/ja/memory)のルールはコミットすると共有され、Claude はすべてのセッションの開始時にそれを読みます。",
+    teaches: "チャットの修正はチーム全体と共有されません。プロジェクトの [CLAUDE.md](/docs/ja/memory)のルールはコミットすると共有され、Claude はすべてのセッションの開始時にそれを読みます。",
     next: "`/memory` を開いて、Claude が書いたものをレビューしてください"
   },
   "resolve-merge-conflicts": {
@@ -1311,19 +1311,19 @@ export const text = {
   },
   "turn-a-recurring-task": {
     title: "繰り返しタスクをスキルに変える",
-    teaches: "ステップに一度名前を付けてください。コマンドとして再利用してください。Claude はチーム内の誰でも実行できる [スキル](/ja/skills)を書きます。"
+    teaches: "ステップに一度名前を付けてください。コマンドとして再利用してください。Claude はチーム内の誰でも実行できる [スキル](/docs/ja/skills)を書きます。"
   },
   "add-a-hook-for": {
     title: "繰り返し動作のためのフックを追加する",
-    teaches: "フックは、覚えておく必要があるものではなく、動作を自動にします。トリガーとアクションを説明し、Claude が [フック](/ja/hooks)設定を書きます。"
+    teaches: "フックは、覚えておく必要があるものではなく、動作を自動にします。トリガーとアクションを説明し、Claude が [フック](/docs/ja/hooks)設定を書きます。"
   },
   "connect-a-tool-with": {
     title: "MCP でツールを接続する",
-    teaches: "毎回のセッションでデータをペーストする代わりに、ソースを一度接続してください。[MCP](/ja/mcp)セットアップ後、Claude はそれについて尋ねるときにツールから直接読みます。"
+    teaches: "毎回のセッションでデータをペーストする代わりに、ソースを一度接続してください。[MCP](/docs/ja/mcp)セットアップ後、Claude はそれについて尋ねるときにツールから直接読みます。"
   },
   "capture-what-to-remember": {
     title: "次回のために覚えておくべきことをキャプチャする",
-    teaches: "忘れる前に尋ねてください。Claude はこのセッションで何を理解する必要があったかを知っており、次のセッションがその文脈で開始されるように [CLAUDE.md](/ja/memory)エントリを提案します。"
+    teaches: "忘れる前に尋ねてください。Claude はこのセッションで何を理解する必要があったかを知っており、次のセッションがその文脈で開始されるように [CLAUDE.md](/docs/ja/memory)エントリを提案します。"
   }
 };
 
@@ -1365,13 +1365,13 @@ get the bundle size under 200KB and show me what you removed
 why is the build failing? @build.log
 ```
 
-**答えてほしい方法を言ってください。** 形式、長さ、または対象者に名前を付けて、説明がどのように使用するかに適合するようにしてください。すべての応答のデフォルトとして形式を作成するには、[出力スタイル](/ja/output-styles)を設定してください。
+**答えてほしい方法を言ってください。** 形式、長さ、または対象者に名前を付けて、説明がどのように使用するかに適合するようにしてください。すべての応答のデフォルトとして形式を作成するには、[出力スタイル](/docs/ja/output-styles)を設定してください。
 
 ```text theme={null}
 explain how the payment retry logic works as an HTML page with a diagram, then open it in my browser
 ```
 
-各パターンの詳細については、[ベストプラクティス](/ja/best-practices)を参照してください。
+各パターンの詳細については、[ベストプラクティス](/docs/ja/best-practices)を参照してください。
 
 <h2 id="where-these-come-from">
   これらはどこから来ているのか
@@ -1379,8 +1379,8 @@ explain how the payment retry logic works as an HTML page with a diagram, then o
 
 これらのプロンプトは、公開されている Anthropic リソースのパターンに基づいています。各カードはそのソースにリンクしています:
 
-* [一般的なワークフロー](/ja/common-workflows): コアタスクのステップバイステップガイド
-* [ベストプラクティス](/ja/best-practices): プロンプティングパターンとプロジェクトセットアップ
+* [一般的なワークフロー](/docs/ja/common-workflows): コアタスクのステップバイステップガイド
+* [ベストプラクティス](/docs/ja/best-practices): プロンプティングパターンとプロジェクトセットアップ
 * [Anthropic チームが Claude Code をどのように使用しているか](https://claude.com/blog/how-anthropic-teams-use-claude-code): エンジニアリング、プロダクト、デザイン、データチームからの実際のワークフロー。[法務](https://claude.com/blog/how-anthropic-uses-claude-legal)、[マーケティング](https://claude.com/blog/how-anthropic-uses-claude-marketing)、[サイバーセキュリティ](https://claude.com/blog/how-anthropic-uses-claude-cybersecurity)の詳細なダイブ
 * [agentic coding スケーリングガイド](https://resources.anthropic.com/hubfs/Scaling%20agentic%20coding%20across%20your%20organization.pdf): エンタープライズ採用ガイド
 
@@ -1390,6 +1390,6 @@ explain how the payment retry logic works as an HTML page with a diagram, then o
   関連リソース
 </h2>
 
-このページのプロンプトは出発点です。1 つがプロジェクトで機能したら、次のステップはそれを繰り返し可能にすることです。[スキル](/ja/skills)として保存して、チーム内の誰でも `/command` として実行でき、Claude が学習したコンベンションを [CLAUDE.md](/ja/memory)に記録して、すべてのセッションがその文脈で開始されるようにしてください。より大きなまたはより危険な変更については、[プランモード](/ja/permission-modes#analyze-before-you-edit-with-plan-mode)は編集が発生する前にファイルリストを表示します。
+このページのプロンプトは出発点です。1 つがプロジェクトで機能したら、次のステップはそれを繰り返し可能にすることです。[スキル](/docs/ja/skills)として保存して、チーム内の誰でも `/command` として実行でき、Claude が学習したコンベンションを [CLAUDE.md](/docs/ja/memory)に記録して、すべてのセッションがその文脈で開始されるようにしてください。より大きなまたはより危険な変更については、[プランモード](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode)は編集が発生する前にファイルリストを表示します。
 
-チーム全体に Claude Code を導入している場合は、管理設定とポリシーについては [管理](/ja/admin-setup)を、このワークがプランでどのように請求されるかについては [コストと使用状況](/ja/costs)を参照してください。
+チーム全体に Claude Code を導入している場合は、管理設定とポリシーについては [管理](/docs/ja/admin-setup)を、このワークがプランでどのように請求されるかについては [コストと使用状況](/docs/ja/costs)を参照してください。

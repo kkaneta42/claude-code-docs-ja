@@ -188,7 +188,7 @@ export const Experiment = ({flag, treatment, children}) => {
 
 <Experiment flag="docs-contact-sales-cta" treatment={<ContactSalesCard surface="claude_platform_on_aws" />} />
 
-AWS 上の Claude Platform は、AWS 認証、IAM アクセス制御、AWS Marketplace 請求を備えた Anthropic が運営する Claude API です。リクエストは Anthropic の API に直接到達するため、[Claude API](https://platform.claude.com/docs) と同じモデルと API 機能を同じリリーススケジュールで取得できます。Claude Code が Anthropic の機能フラグサービスを通じてオンにするクライアント側機能（[`/loop` 自動ペーシング](/ja/scheduled-tasks#let-claude-choose-the-interval)など）はデフォルトではオフであり、[アドバイザーツール](/ja/advisor)は利用できません。完全なリストについては、[機能可用性マトリックス](/ja/feature-availability#summary-by-provider)を参照してください。AWS 認証情報またはワークスペース API キーで認証し、AWS Marketplace を通じて支払います。
+AWS 上の Claude Platform は、AWS 認証、IAM アクセス制御、AWS Marketplace 請求を備えた Anthropic が運営する Claude API です。リクエストは Anthropic の API に直接到達するため、[Claude API](https://platform.claude.com/docs) と同じモデルと API 機能を同じリリーススケジュールで取得できます。Claude Code が Anthropic の機能フラグサービスを通じてオンにするクライアント側機能（[`/loop` 自動ペーシング](/docs/ja/scheduled-tasks#let-claude-choose-the-interval)など）はデフォルトではオフであり、[アドバイザーツール](/docs/ja/advisor)は利用できません。完全なリストについては、[機能可用性マトリックス](/docs/ja/feature-availability#summary-by-provider)を参照してください。AWS 認証情報またはワークスペース API キーで認証し、AWS Marketplace を通じて支払います。
 
 このガイドを使用して、AWS 上の Claude Platform を通じてすでにプロビジョニングしたワークスペースに Claude Code をポイントします。このガイドの前に行う AWS サブスクリプションとワークスペースのセットアップについては、[AWS 上の Claude Platform ドキュメント](https://platform.claude.com/docs/en/build-with-claude/claude-platform-on-aws)を参照してください。
 
@@ -230,7 +230,7 @@ export AWS_PROFILE=my-profile
 
 CI と自動化の場合、Anthropic サービスを呼び出す権限を持つ IAM ロールをランナーに付与し、`AWS_REGION` を設定します。認証情報チェーンはロールを自動的に取得します。
 
-SSO 認証情報がセッション中に期限切れになった場合、[`awsAuthRefresh`](/ja/amazon-bedrock#advanced-credential-configuration) を設定して、Claude Code がログインコマンドを再実行し、失敗する代わりに再試行するようにします。AWS 上の Claude Platform での自動更新には Claude Code v2.1.198 以降が必要です。それより前のバージョンは `/login` を実行するプロンプトで停止します。これは AWS 認証情報を更新できません。コマンドを `settings.json` に追加します。
+SSO 認証情報がセッション中に期限切れになった場合、[`awsAuthRefresh`](/docs/ja/amazon-bedrock#advanced-credential-configuration) を設定して、Claude Code がログインコマンドを再実行し、失敗する代わりに再試行するようにします。AWS 上の Claude Platform での自動更新には Claude Code v2.1.198 以降が必要です。それより前のバージョンは `/login` を実行するプロンプトで停止します。これは AWS 認証情報を更新できません。コマンドを `settings.json` に追加します。
 
 ```json theme={null}
 {
@@ -250,7 +250,7 @@ export ANTHROPIC_AWS_API_KEY=sk-ant-xxxxx
 
 キーは `x-api-key` として送信され、SigV4 よりも優先されるため、環境内の AWS 認証情報は無視されます。別の Claude Console 組織からの API キーはここでは機能しません。
 
-ワークスペース API キーは他の本番認証情報と同様に扱ってください。[ユーザー設定ファイル](/ja/settings) の `env` ブロックは、グローバルにエクスポートせずにキーをマシンにスコープするための便利な方法です。
+ワークスペース API キーは他の本番認証情報と同様に扱ってください。[ユーザー設定ファイル](/docs/ja/settings) の `env` ブロックは、グローバルにエクスポートせずにキーをマシンにスコープするための便利な方法です。
 
 <Note>
   `/login` および `/logout` コマンドは Claude.ai サブスクリプションに対してサインインしません。AWS 上の Claude Platform の場合、認証は AWS 認証情報またはワークスペース API キーを通じて実行されます。例外は、`awsAuthRefresh` が設定されている場合に `/login` が表示する **refresh credentials** オプションで、これは上記で説明したように AWS 認証情報を再度読み込みます。
@@ -289,15 +289,15 @@ export ANTHROPIC_DEFAULT_SONNET_MODEL=claude-sonnet-5
 export ANTHROPIC_DEFAULT_HAIKU_MODEL=claude-haiku-4-5
 ```
 
-モデル ID とエイリアスの完全なリストについては、[モデル概要](https://platform.claude.com/docs/en/about-claude/models/overview) を参照してください。その他のモデル関連の変数については、[モデル設定](/ja/model-config) を参照してください。
+モデル ID とエイリアスの完全なリストについては、[モデル概要](https://platform.claude.com/docs/en/about-claude/models/overview) を参照してください。その他のモデル関連の変数については、[モデル設定](/docs/ja/model-config) を参照してください。
 
-[プロンプトキャッシング](/ja/prompt-caching) は自動的に有効になります。5 分のデフォルトの代わりに 1 時間のキャッシュ TTL をリクエストするには、`ENABLE_PROMPT_CACHING_1H=1` を設定します。API は 1 時間のキャッシュ書き込みをより高いレートで請求します。レートについては、[プロンプトキャッシング価格](https://platform.claude.com/docs/en/build-with-claude/prompt-caching#pricing) を参照してください。
+[プロンプトキャッシング](/docs/ja/prompt-caching) は自動的に有効になります。5 分のデフォルトの代わりに 1 時間のキャッシュ TTL をリクエストするには、`ENABLE_PROMPT_CACHING_1H=1` を設定します。API は 1 時間のキャッシュ書き込みをより高いレートで請求します。レートについては、[プロンプトキャッシング価格](https://platform.claude.com/docs/en/build-with-claude/prompt-caching#pricing) を参照してください。
 
 <h2 id="use-the-agent-sdk">
   Agent SDK を使用する
 </h2>
 
-[Agent SDK](/ja/agent-sdk/overview) は CLI と同じ環境変数を読み取るため、Claude Code サブプロセスを生成するプログラムは、呼び出しの前に `CLAUDE_CODE_USE_ANTHROPIC_AWS`、`ANTHROPIC_AWS_WORKSPACE_ID`、および `ANTHROPIC_AWS_API_KEY` または AWS 認証情報をエクスポートすることで AWS 上の Claude Platform をターゲットにできます。
+[Agent SDK](/docs/ja/agent-sdk/overview) は CLI と同じ環境変数を読み取るため、Claude Code サブプロセスを生成するプログラムは、呼び出しの前に `CLAUDE_CODE_USE_ANTHROPIC_AWS`、`ANTHROPIC_AWS_WORKSPACE_ID`、および `ANTHROPIC_AWS_API_KEY` または AWS 認証情報をエクスポートすることで AWS 上の Claude Platform をターゲットにできます。
 
 ```typescript theme={null}
 import { query } from "@anthropic-ai/claude-agent-sdk";
@@ -311,13 +311,13 @@ for await (const msg of query({ prompt: "What's in this repo?" })) {
 }
 ```
 
-この例は SigV4 のアンビエント AWS 認証情報チェーンに依存しています。代わりにワークスペース API キーで認証するには、同じ方法で `ANTHROPIC_AWS_API_KEY` を設定します。より広い Agent SDK サーフェスについては、[Agent SDK 概要](/ja/agent-sdk/overview)を参照してください。
+この例は SigV4 のアンビエント AWS 認証情報チェーンに依存しています。代わりにワークスペース API キーで認証するには、同じ方法で `ANTHROPIC_AWS_API_KEY` を設定します。より広い Agent SDK サーフェスについては、[Agent SDK 概要](/docs/ja/agent-sdk/overview)を参照してください。
 
 <h2 id="route-through-a-corporate-proxy">
   企業プロキシを通じてルーティングする
 </h2>
 
-プロキシまたは [LLM ゲートウェイ](/ja/llm-gateway)を通じてトラフィックをルーティングするには、`ANTHROPIC_AWS_BASE_URL` をプロキシのアドレスに設定します。Claude Code は同じワークスペースと認証ヘッダーを使用してそのアドレスにリクエストを送信するため、それらを変更せずに転送するゲートウェイが機能します。
+プロキシまたは [LLM ゲートウェイ](/docs/ja/llm-gateway)を通じてトラフィックをルーティングするには、`ANTHROPIC_AWS_BASE_URL` をプロキシのアドレスに設定します。Claude Code は同じワークスペースと認証ヘッダーを使用してそのアドレスにリクエストを送信するため、それらを変更せずに転送するゲートウェイが機能します。
 
 ```bash theme={null}
 export CLAUDE_CODE_USE_ANTHROPIC_AWS=1

@@ -6,9 +6,9 @@
 
 > /loop と cron スケジューリングツールを使用して、Claude Code セッション内でプロンプトを繰り返し実行したり、ステータスをポーリングしたり、1 回限りのリマインダーを設定したりします。
 
-スケジュール済みタスクを使用すると、Claude は一定の間隔でプロンプトを自動的に再実行できます。デプロイメントをポーリングしたり、PR を監視したり、長時間実行されるビルドをチェックバックしたり、後でセッション内で何かを実行するようにリマインダーを設定したりするために使用します。イベントが発生したときにポーリングする代わりに反応するには、[Channels](/ja/channels) を参照してください。CI はセッションに直接失敗をプッシュできます。セッションが条件を満たすまで一定の間隔ではなくターンごとに動作し続けるようにするには、[`/goal`](/ja/goal) を参照してください。
+スケジュール済みタスクを使用すると、Claude は一定の間隔でプロンプトを自動的に再実行できます。デプロイメントをポーリングしたり、PR を監視したり、長時間実行されるビルドをチェックバックしたり、後でセッション内で何かを実行するようにリマインダーを設定したりするために使用します。イベントが発生したときにポーリングする代わりに反応するには、[Channels](/docs/ja/channels) を参照してください。CI はセッションに直接失敗をプッシュできます。セッションが条件を満たすまで一定の間隔ではなくターンごとに動作し続けるようにするには、[`/goal`](/docs/ja/goal) を参照してください。
 
-タスクはセッションスコープです。現在の会話に存在し、新しい会話を開始すると停止します。`--resume` または `--continue` で再開すると、[有効期限切れ](#seven-day-expiry)になっていないタスクが復元されます。過去 7 日以内に作成された定期的なタスク、またはスケジュール済み時間がまだ経過していない 1 回限りのタスクです。セッションとは独立して存在する永続的なスケジューリングについては、[Routines](/ja/routines) を使用して Anthropic 管理インフラストラクチャ上にルーチンを作成するか、[Desktop スケジュール済みタスク](/ja/desktop-scheduled-tasks) をセットアップするか、[GitHub Actions](/ja/github-actions) を使用してください。
+タスクはセッションスコープです。現在の会話に存在し、新しい会話を開始すると停止します。`--resume` または `--continue` で再開すると、[有効期限切れ](#seven-day-expiry)になっていないタスクが復元されます。過去 7 日以内に作成された定期的なタスク、またはスケジュール済み時間がまだ経過していない 1 回限りのタスクです。セッションとは独立して存在する永続的なスケジューリングについては、[Routines](/docs/ja/routines) を使用して Anthropic 管理インフラストラクチャ上にルーチンを作成するか、[Desktop スケジュール済みタスク](/docs/ja/desktop-scheduled-tasks) をセットアップするか、[GitHub Actions](/docs/ja/github-actions) を使用してください。
 
 <h2 id="compare-scheduling-options">
   スケジューリングオプションを比較する
@@ -16,14 +16,14 @@
 
 Claude Code offers three ways to schedule recurring or one-off work:
 
-|                            | [Cloud](/en/routines)          | [Desktop](/en/desktop-scheduled-tasks) | [`/loop`](/en/scheduled-tasks)      |
+|                            | [Cloud](/docs/en/routines)          | [Desktop](/docs/en/desktop-scheduled-tasks) | [`/loop`](/docs/en/scheduled-tasks)      |
 | :------------------------- | :----------------------------- | :------------------------------------- | :---------------------------------- |
 | Runs on                    | Anthropic cloud                | Your machine                           | Your machine                        |
 | Requires machine on        | No                             | Yes                                    | Yes                                 |
 | Requires open session      | No                             | No                                     | Yes                                 |
 | Persistent across restarts | Yes                            | Yes                                    | Restored on `--resume` if unexpired |
 | Access to local files      | No (fresh clone)               | Yes                                    | Yes                                 |
-| MCP servers                | Connectors configured per task | [Config files](/en/mcp) and connectors | Inherits from session               |
+| MCP servers                | Connectors configured per task | [Config files](/docs/en/mcp) and connectors | Inherits from session               |
 | Permission prompts         | No (runs autonomously)         | Configurable per task                  | Inherits from session               |
 | Customizable schedule      | Via `/schedule` in the CLI     | Yes                                    | Yes                                 |
 | Minimum interval           | 1 hour                         | 1 minute                               | 1 minute                            |
@@ -36,7 +36,7 @@ Claude Code offers three ways to schedule recurring or one-off work:
   /loop で定期的にプロンプトを実行する
 </h2>
 
-`/loop` [バンドルスキル](/ja/commands) は、セッションが開いている間、プロンプトを繰り返し実行する最速の方法です。間隔とプロンプトの両方はオプションであり、提供する内容によってループの動作が決まります。
+`/loop` [バンドルスキル](/docs/ja/commands) は、セッションが開いている間、プロンプトを繰り返し実行する最速の方法です。間隔とプロンプトの両方はオプションであり、提供する内容によってループの動作が決まります。
 
 | 提供する内容       | 例                           | 動作                                                                                       |
 | :----------- | :-------------------------- | :--------------------------------------------------------------------------------------- |
@@ -44,12 +44,12 @@ Claude Code offers three ways to schedule recurring or one-off work:
 | プロンプトのみ      | `/loop check the deploy`    | プロンプトは各反復で[Claude が選択した間隔](#let-claude-choose-the-interval)で実行されます                       |
 | 間隔のみ、または何もなし | `/loop`                     | [組み込みメンテナンスプロンプト](#run-the-built-in-maintenance-prompt)が実行されるか、存在する場合は `loop.md` が実行されます |
 
-スキルをプロンプトとして渡すこともできます。例えば `/loop 20m /review-pr 1234` は、各反復でそのスキルを再実行します。{/* min-version: 2.1.196 */}v2.1.196 以降、スケジュール済みの実行は Claude が[独自に呼び出すことを許可されているスキル](/ja/skills#control-who-invokes-a-skill)のみを実行します。以下は Claude にプレーンテキストとして到達し、実行されません。
+スキルをプロンプトとして渡すこともできます。例えば `/loop 20m /review-pr 1234` は、各反復でそのスキルを再実行します。{/* min-version: 2.1.196 */}v2.1.196 以降、スケジュール済みの実行は Claude が[独自に呼び出すことを許可されているスキル](/docs/ja/skills#control-who-invokes-a-skill)のみを実行します。以下は Claude にプレーンテキストとして到達し、実行されません。
 
 * `/permissions`、`/model`、`/clear` などの組み込みコマンド
-* [`disable-model-invocation: true`](/ja/skills#frontmatter-reference) とマークされたスキル
-* [`skillOverrides`](/ja/skills#override-skill-visibility-from-settings) 設定または `Skill` [拒否ルール](/ja/skills#restrict-claude’s-skill-access)によって Claude から保留されたスキル
-* [MCP プロンプト](/ja/mcp#use-mcp-prompts-as-commands)（`/mcp__github__list_prs` など）。MCP サーバーが公開するスキルは引き続き実行されます
+* [`disable-model-invocation: true`](/docs/ja/skills#frontmatter-reference) とマークされたスキル
+* [`skillOverrides`](/docs/ja/skills#override-skill-visibility-from-settings) 設定または `Skill` [拒否ルール](/docs/ja/skills#restrict-claude’s-skill-access)によって Claude から保留されたスキル
+* [MCP プロンプト](/docs/ja/mcp#use-mcp-prompts-as-commands)（`/mcp__github__list_prs` など）。MCP サーバーが公開するスキルは引き続き実行されます
 
 <h3 id="run-on-a-fixed-interval">
   固定間隔で実行する
@@ -77,7 +77,7 @@ Claude Code offers three ways to schedule recurring or one-off work:
 /loop check whether CI passed and address any review comments
 ```
 
-動的な `/loop` スケジュールをリクエストすると、Claude は [Monitor ツール](/ja/tools-reference#monitor-tool) を直接使用する場合があります。Monitor はバックグラウンドスクリプトを実行し、各出力行をストリーミングバックします。これにより、ポーリングを完全に回避でき、プロンプトを間隔で再実行するよりも多くの場合、トークン効率が高く、応答性が高くなります。
+動的な `/loop` スケジュールをリクエストすると、Claude は [Monitor ツール](/docs/ja/tools-reference#monitor-tool) を直接使用する場合があります。Monitor はバックグラウンドスクリプトを実行し、各出力行をストリーミングバックします。これにより、ポーリングを完全に回避でき、プロンプトを間隔で再実行するよりも多くの場合、トークン効率が高く、応答性が高くなります。
 
 動的にスケジュールされたループは、他のタスクと同様に[スケジュール済みタスクリスト](#manage-scheduled-tasks)に表示されるため、同じ方法でリストまたはキャンセルできます。[ジッタールール](#jitter)は適用されませんが、[7 日間の有効期限](#seven-day-expiry)は適用されます。ループは開始後 7 日で自動的に終了します。
 
@@ -141,7 +141,7 @@ quiet, say so in one line.
 
 `/loop` が次の反復を待機している間に停止するには、`Esc` を押してください。これにより、保留中のウェイクアップがクリアされるため、ループは再度実行されません。[Claude に直接依頼](#manage-scheduled-tasks)してスケジュールしたタスクは `Esc` の影響を受けず、削除するまで存在し続けます。
 
-[自分のペースモード](#let-claude-choose-the-interval)では、Claude はタスクが完了したら自分でループを終了することもできます。Claude は [`ScheduleWakeup` ツール](/ja/tools-reference)を `stop: true` で呼び出し、保留中のウェイクアップを直ちにキャンセルします。反復がスケジュール変更またはスケジュール停止のいずれも行わずに終了した場合、Claude Code は約 20 分後にフォールバックウェイクアップをスケジュールし、その反復がスケジュール変更も行わない場合にループを終了します。v2.1.202 より前は、スケジュール変更を行わないことが Claude がループを自分で終了できる唯一の方法でした。
+[自分のペースモード](#let-claude-choose-the-interval)では、Claude はタスクが完了したら自分でループを終了することもできます。Claude は [`ScheduleWakeup` ツール](/docs/ja/tools-reference)を `stop: true` で呼び出し、保留中のウェイクアップを直ちにキャンセルします。反復がスケジュール変更またはスケジュール停止のいずれも行わずに終了した場合、Claude Code は約 20 分後にフォールバックウェイクアップをスケジュールし、その反復がスケジュール変更も行わない場合にループを終了します。v2.1.202 より前は、スケジュール変更を行わないことが Claude がループを自分で終了できる唯一の方法でした。
 
 固定間隔のループは、停止するか[7 日が経過](#seven-day-expiry)するまで実行し続けます。
 
@@ -208,7 +208,7 @@ cancel the deploy check job
   7 日間の有効期限
 </h3>
 
-定期的なタスクは作成後 7 日で自動的に期限切れになります。タスクは最後に 1 回実行され、その後自身を削除します。これにより、忘れられたループが実行できる期間が制限されます。定期的なタスクをより長く続ける必要がある場合は、期限切れになる前にキャンセルして再作成するか、永続的なスケジューリングのために [Routines](/ja/routines) または [Desktop スケジュール済みタスク](/ja/desktop-scheduled-tasks) を使用してください。
+定期的なタスクは作成後 7 日で自動的に期限切れになります。タスクは最後に 1 回実行され、その後自身を削除します。これにより、忘れられたループが実行できる期間が制限されます。定期的なタスクをより長く続ける必要がある場合は、期限切れになる前にキャンセルして再作成するか、永続的なスケジューリングのために [Routines](/docs/ja/routines) または [Desktop スケジュール済みタスク](/docs/ja/desktop-scheduled-tasks) を使用してください。
 
 <h2 id="cron-expression-reference">
   Cron 式リファレンス
@@ -233,7 +233,7 @@ cancel the deploy check job
   スケジュール済みタスクを無効にする
 </h2>
 
-環境で `CLAUDE_CODE_DISABLE_CRON=1` を設定して、スケジューラ全体を無効にします。cron ツールと `/loop` は利用できなくなり、既にスケジュール済みのタスクは実行を停止します。無効化フラグの完全なリストについては、[環境変数](/ja/env-vars) を参照してください。
+環境で `CLAUDE_CODE_DISABLE_CRON=1` を設定して、スケジューラ全体を無効にします。cron ツールと `/loop` は利用できなくなり、既にスケジュール済みのタスクは実行を停止します。無効化フラグの完全なリストについては、[環境変数](/docs/ja/env-vars) を参照してください。
 
 <h2 id="limitations">
   制限事項
@@ -241,12 +241,12 @@ cancel the deploy check job
 
 セッションスコープのスケジューリングには固有の制約があります。
 
-* タスクは Claude Code が実行中でアイドル状態の場合にのみ実行されます。ターミナルを閉じるか、セッションを終了すると、タスクは実行を停止します。[セッションをバックグラウンドで実行する](/ja/agent-view#from-inside-a-session)と、`/loop` タスクがバックグラウンドセッションに引き継がれ、ターミナルなしで実行を続けます。
+* タスクは Claude Code が実行中でアイドル状態の場合にのみ実行されます。ターミナルを閉じるか、セッションを終了すると、タスクは実行を停止します。[セッションをバックグラウンドで実行する](/docs/ja/agent-view#from-inside-a-session)と、`/loop` タスクがバックグラウンドセッションに引き継がれ、ターミナルなしで実行を続けます。
 * 見落とされた実行のキャッチアップはありません。タスクのスケジュール済み時間が Claude が長時間実行されるリクエストでビジーの間に経過した場合、Claude がアイドル状態になったときに 1 回実行され、見落とされた間隔ごとに 1 回ではありません。
 * 新しい会話を開始すると、すべてのセッションスコープのタスクがクリアされます。`claude --resume` または `claude --continue` で再開すると、有効期限切れになっていないタスクが復元されます。過去 7 日以内に作成された定期的なタスク、およびスケジュール済み時間がまだ経過していない 1 回限りのタスク。バックグラウンド Bash およびモニタータスクは再開時に復元されることはありません。
 
 無人で実行する必要がある cron 駆動オートメーションの場合は、以下を使用してください。
 
-* [Routines](/ja/routines)：Anthropic 管理インフラストラクチャでスケジュールに従って実行、API 呼び出し、または GitHub イベント時に実行
-* [GitHub Actions](/ja/github-actions)：CI で `schedule` トリガーを使用
-* [Desktop スケジュール済みタスク](/ja/desktop-scheduled-tasks)：マシン上でローカルに実行
+* [Routines](/docs/ja/routines)：Anthropic 管理インフラストラクチャでスケジュールに従って実行、API 呼び出し、または GitHub イベント時に実行
+* [GitHub Actions](/docs/ja/github-actions)：CI で `schedule` トリガーを使用
+* [Desktop スケジュール済みタスク](/docs/ja/desktop-scheduled-tasks)：マシン上でローカルに実行

@@ -13,7 +13,7 @@
 </Info>
 
 <Note>
-  この統合は [Claude Code CLI and Agent SDK](/ja/agent-sdk/overview) の上に構築されており、CI/CD ジョブとカスタム自動化ワークフローで Claude をプログラム的に使用できます。
+  この統合は [Claude Code CLI and Agent SDK](/docs/ja/agent-sdk/overview) の上に構築されており、CI/CD ジョブとカスタム自動化ワークフローで Claude をプログラム的に使用できます。
 </Note>
 
 <h2 id="why-use-claude-code-with-gitlab">

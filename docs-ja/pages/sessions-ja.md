@@ -8,7 +8,7 @@
 
 セッションはプロジェクトディレクトリに紐付けられた保存済みの会話です。Claude Code はローカルに保存されるため、中断したところから再開したり、別のアプローチを試すために分岐したり、タスク間を切り替えたりできます。
 
-[デスクトップアプリ](/ja/desktop#work-in-parallel-with-sessions)、[Web 上の Claude Code](/ja/claude-code-on-the-web)、および [VS Code 拡張機能](/ja/vs-code#resume-past-conversations)はそれぞれ独自のセッション履歴を保持しています。このページでは CLI について説明します。
+[デスクトップアプリ](/docs/ja/desktop#work-in-parallel-with-sessions)、[Web 上の Claude Code](/docs/ja/claude-code-on-the-web)、および [VS Code 拡張機能](/docs/ja/vs-code#resume-past-conversations)はそれぞれ独自のセッション履歴を保持しています。このページでは CLI について説明します。
 
 <h2 id="resume-a-session">
   セッションを再開する
@@ -24,7 +24,7 @@
 | `claude --from-pr <number>` | そのプルリクエストにリンクされたセッションを再開します               |
 | `/resume`                   | アクティブなセッション内から別の会話に切り替えます                 |
 
-[`claude -p`](/ja/headless)または [Agent SDK](/ja/agent-sdk/overview)で作成されたセッションはセッションピッカーに表示されませんが、セッション ID を `claude --resume <session-id>` に渡すことで再開できます。セッションが開始されたディレクトリから実行してください。セッション ID ルックアップは現在のプロジェクトディレクトリとその git worktrees にスコープされているため、他の場所で作成されたセッションは `No conversation found with session ID: <session-id>` と報告されます。
+[`claude -p`](/docs/ja/headless)または [Agent SDK](/docs/ja/agent-sdk/overview)で作成されたセッションはセッションピッカーに表示されませんが、セッション ID を `claude --resume <session-id>` に渡すことで再開できます。セッションが開始されたディレクトリから実行してください。セッション ID ルックアップは現在のプロジェクトディレクトリとその git worktrees にスコープされているため、他の場所で作成されたセッションは `No conversation found with session ID: <session-id>` と報告されます。
 
 <h3 id="where-the-session-picker-looks">
   セッションピッカーが検索する場所
@@ -32,7 +32,7 @@
 
 セッションはプロジェクトディレクトリごとに保存されます。デフォルトでは、セッションピッカーは現在の worktree からのインタラクティブセッション、および `/add-dir` で現在のディレクトリを追加した他の場所で開始されたセッションを表示します。`Ctrl+W` を使用してリポジトリのすべての worktree に拡張するか、`Ctrl+A` を使用してこのマシン上のすべてのプロジェクトに拡張します。
 
-{/* min-version: 2.1.169 */}v2.1.169 以降、[`/cd`](/ja/commands)でセッションを移動すると、新しいディレクトリのプロジェクトストレージに再配置されるため、その後そのディレクトリのピッカーに表示されます。{/* min-version: 2.1.196 */}v2.1.196 以降、移動されたセッションはクラッシュまたは強制終了後も古いディレクトリのピッカーから除外されたままになります。以前のバージョンでは、古いパスにアンダースコアなどの特殊文字が含まれている場合、クリーンでない終了後に古いディレクトリのリストに再度表示される可能性がありました。
+{/* min-version: 2.1.169 */}v2.1.169 以降、[`/cd`](/docs/ja/commands)でセッションを移動すると、新しいディレクトリのプロジェクトストレージに再配置されるため、その後そのディレクトリのピッカーに表示されます。{/* min-version: 2.1.196 */}v2.1.196 以降、移動されたセッションはクラッシュまたは強制終了後も古いディレクトリのピッカーから除外されたままになります。以前のバージョンでは、古いパスにアンダースコアなどの特殊文字が含まれている場合、クリーンでない終了後に古いディレクトリのリストに再度表示される可能性がありました。
 
 同じリポジトリの別の worktree からセッションを選択すると、そこで再開されます。関連のないプロジェクトからセッションを選択すると、`cd` と再開コマンドがクリップボードにコピーされます。
 
@@ -54,11 +54,11 @@
 | 起動時         | `claude -n auth-refactor`                                                                                                 |
 | セッション中      | `/rename auth-refactor`。名前はプロンプトバーにも表示されます                                                                                |
 | セッションピッカーから | セッションをハイライトして `Ctrl+R` を押します                                                                                              |
-| プラン受け入れ時    | [Plan Mode](/ja/permission-modes#analyze-before-you-edit-with-plan-mode)でプランを受け入れると、既に設定していない限り、プランコンテンツからセッションに名前が付けられます |
+| プラン受け入れ時    | [Plan Mode](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode)でプランを受け入れると、既に設定していない限り、プランコンテンツからセッションに名前が付けられます |
 
 セッションに名前が付けられたら、`claude --resume <name>` または `/resume <name>` で再開できます。worktree 全体での名前解決の動作については、[セッションを再開する](#resume-a-session)を参照してください。
 
-{/* min-version: 2.1.196 */}名前を付けないインタラクティブセッションでも、起動時にデフォルトの表示名が自動的に付けられます。Claude Code v2.1.196 以降が必要です。デフォルト名は、作業ディレクトリの名前と 2 文字のサフィックスを組み合わせたもので、例えば `my-app-3f` のようになり、[agent view](/ja/agent-view)や `claude agents --json` 出力などの実行中セッションのリストでセッションを識別します。
+{/* min-version: 2.1.196 */}名前を付けないインタラクティブセッションでも、起動時にデフォルトの表示名が自動的に付けられます。Claude Code v2.1.196 以降が必要です。デフォルト名は、作業ディレクトリの名前と 2 文字のサフィックスを組み合わせたもので、例えば `my-app-3f` のようになり、[agent view](/docs/ja/agent-view)や `claude agents --json` 出力などの実行中セッションのリストでセッションを識別します。
 
 デフォルト名は再開ハンドルではありません。`claude --resume <name>`、`/resume <name>`、およびセッションピッカーは、設定した名前のみと一致します。セッションに名前を付けるとデフォルト名が置き換わります。
 
@@ -97,7 +97,7 @@
 /branch try-streaming-approach
 ```
 
-名前を省略した場合、Claude Code は会話の最初のプロンプトに基づいて新しいブランチに名前を付けます。v2.1.198 以降では、これは[コンパクション](/ja/how-claude-code-works#when-context-fills-up)後にも適用されます。それより前のバージョンでは、元の最初のプロンプトを超えてコンパクション要約を参照する代わりに、リテラル名 `Branched conversation` にフォールバックしていました。
+名前を省略した場合、Claude Code は会話の最初のプロンプトに基づいて新しいブランチに名前を付けます。v2.1.198 以降では、これは[コンパクション](/docs/ja/how-claude-code-works#when-context-fills-up)後にも適用されます。それより前のバージョンでは、元の最初のプロンプトを超えてコンパクション要約を参照する代わりに、リテラル名 `Branched conversation` にフォールバックしていました。
 
 コマンドラインから、`--continue` または `--resume` を `--fork-session` と組み合わせます。
 
@@ -107,7 +107,7 @@ claude --continue --fork-session
 
 元のセッションは変更されず、セッションピッカーで利用可能なままです。`/branch` 確認は 2 つのセッション ID を出力します。現在いる新しいブランチと元のセッションです。元のセッションに戻るには、その ID を `/resume` に渡すか、セッションピッカーを使用するか、`/resume <original-name>` を実行します。「このセッションで許可」で承認したアクセス許可は新しいブランチに引き継がれません。2 つのターミナルで分岐せずに同じセッションを再開すると、両方からのメッセージが 1 つのトランスクリプトにインターリーブされます。
 
-単一セッション内のチェックポイントベースの巻き戻しについては、[チェックポイント](/ja/checkpointing)を参照してください。
+単一セッション内のチェックポイントベースの巻き戻しについては、[チェックポイント](/docs/ja/checkpointing)を参照してください。
 
 <h2 id="manage-context-within-a-session">
   セッション内でコンテキストを管理する
@@ -115,11 +115,11 @@ claude --continue --fork-session
 
 これらのコマンドは、セッションを離れることなくコンテキストウィンドウ内の内容を制御します。
 
-* **`/clear`**：空のコンテキストで新たに開始します。以前の会話は保存され、`/resume` で再開可能です。または、同じ Claude Code プロセス内では、{/* min-version: 2.1.191 */}[rewind メニューの前のセッションエントリ](/ja/checkpointing#rewind-past-a-cleared-conversation)から再開できます
+* **`/clear`**：空のコンテキストで新たに開始します。以前の会話は保存され、`/resume` で再開可能です。または、同じ Claude Code プロセス内では、{/* min-version: 2.1.191 */}[rewind メニューの前のセッションエントリ](/docs/ja/checkpointing#rewind-past-a-cleared-conversation)から再開できます
 * **`/compact [instructions]`**：履歴を概要に置き換え、オプションで指定した内容に焦点を当てます
 * **`/context`**：現在コンテキストを消費しているものを表示します
 
-圧縮が CLAUDE.md、スキル、およびルールとどのように相互作用するかについては、[コンテキストウィンドウガイド](/ja/context-window)を参照してください。クリアと圧縮のどちらを使用するかについての戦略については、[ベストプラクティス](/ja/best-practices#manage-your-session)を参照してください。
+圧縮が CLAUDE.md、スキル、およびルールとどのように相互作用するかについては、[コンテキストウィンドウガイド](/docs/ja/context-window)を参照してください。クリアと圧縮のどちらを使用するかについての戦略については、[ベストプラクティス](/docs/ja/best-practices#manage-your-session)を参照してください。
 
 <h2 id="export-and-locate-session-data">
   セッションデータをエクスポートして見つける
@@ -133,10 +133,10 @@ claude --continue --fork-session
 
 `/export` は人が読むためのレンダリングされたトランスクリプトを生成します。以下のインターフェースはスクリプトが解析するための構造化データを生成します。実行からの JSON 結果、セッションのトランスクリプトファイルへのパス、またはイベントのライブストリームです。スクリプトをトリガーするものによって選択してください。
 
-* **Claude を 1 回実行して結果をキャプチャする**: [`--output-format json` または `stream-json`](/ja/headless#get-structured-output) で `claude -p` を呼び出して、非インタラクティブ実行の結果、セッション ID、使用状況、およびコストを構造化 JSON としてキャプチャします。
-* **既存のセッションに質問する**: [`claude -p --resume`](/ja/headless#continue-conversations) にセッション ID を渡して、フォローアップ プロンプト（要約リクエストなど）を送信し、構造化された応答をキャプチャします。
-* **セッションイベントに反応する**: [hooks](/ja/hooks#common-input-fields) と [status line commands](/ja/statusline#available-data) が入力として受け取る `transcript_path` フィールドを読みます。`SessionEnd` hook はセッションが終了したときにトランスクリプトをアーカイブできます。
-* **TypeScript または Python アプリに Claude を埋め込む**: [Agent SDK](/ja/agent-sdk/overview) を使用して、各メッセージをプログラムで受け取ります。
+* **Claude を 1 回実行して結果をキャプチャする**: [`--output-format json` または `stream-json`](/docs/ja/headless#get-structured-output) で `claude -p` を呼び出して、非インタラクティブ実行の結果、セッション ID、使用状況、およびコストを構造化 JSON としてキャプチャします。
+* **既存のセッションに質問する**: [`claude -p --resume`](/docs/ja/headless#continue-conversations) にセッション ID を渡して、フォローアップ プロンプト（要約リクエストなど）を送信し、構造化された応答をキャプチャします。
+* **セッションイベントに反応する**: [hooks](/docs/ja/hooks#common-input-fields) と [status line commands](/docs/ja/statusline#available-data) が入力として受け取る `transcript_path` フィールドを読みます。`SessionEnd` hook はセッションが終了したときにトランスクリプトをアーカイブできます。
+* **TypeScript または Python アプリに Claude を埋め込む**: [Agent SDK](/docs/ja/agent-sdk/overview) を使用して、各メッセージをプログラムで受け取ります。
 
 以下の例は 2 番目のインターフェースを使用しています。既存のセッションにフォローアップ プロンプトを送信し、`jq` で答えを読みます。
 
@@ -154,10 +154,10 @@ claude -p --resume <session-id> --output-format json "summarize what we changed"
 
 | 目的                        | 設定                                                     | 場所                        |
 | ------------------------- | ------------------------------------------------------ | ------------------------- |
-| `~/.claude` からストレージを移動する  | [`CLAUDE_CONFIG_DIR`](/ja/env-vars)                    | 環境変数                      |
-| 30 日間の保持期間を変更する           | [`cleanupPeriodDays`](/ja/settings#available-settings) | `settings.json`           |
-| すべてのモードでトランスクリプト書き込みを抑制する | [`CLAUDE_CODE_SKIP_PROMPT_HISTORY`](/ja/env-vars)      | 環境変数                      |
-| 1 つの非インタラクティブ実行の書き込みを抑制する | [`--no-session-persistence`](/ja/cli-reference)        | `claude -p` を使用した CLI フラグ |
+| `~/.claude` からストレージを移動する  | [`CLAUDE_CONFIG_DIR`](/docs/ja/env-vars)                    | 環境変数                      |
+| 30 日間の保持期間を変更する           | [`cleanupPeriodDays`](/docs/ja/settings#available-settings) | `settings.json`           |
+| すべてのモードでトランスクリプト書き込みを抑制する | [`CLAUDE_CODE_SKIP_PROMPT_HISTORY`](/docs/ja/env-vars)      | 環境変数                      |
+| 1 つの非インタラクティブ実行の書き込みを抑制する | [`--no-session-persistence`](/docs/ja/cli-reference)        | `claude -p` を使用した CLI フラグ |
 
 <h2 id="see-also">
   関連項目
@@ -165,7 +165,7 @@ claude -p --resume <session-id> --output-format json "summarize what we changed"
 
 これらのページは関連するセッションと並列処理のメカニクスについて説明しています。
 
-* [Worktrees](/ja/worktrees)：別のブランチで分離された並列セッションを実行します
-* [Checkpointing](/ja/checkpointing)：コードと会話を以前のポイントに巻き戻します
-* [Context window](/ja/context-window)：コンテキストを満たすもの、圧縮後に残るもの
-* [Non-interactive mode](/ja/headless)：`claude -p` の下でのセッション動作
+* [Worktrees](/docs/ja/worktrees)：別のブランチで分離された並列セッションを実行します
+* [Checkpointing](/docs/ja/checkpointing)：コードと会話を以前のポイントに巻き戻します
+* [Context window](/docs/ja/context-window)：コンテキストを満たすもの、圧縮後に残るもの
+* [Non-interactive mode](/docs/ja/headless)：`claude -p` の下でのセッション動作

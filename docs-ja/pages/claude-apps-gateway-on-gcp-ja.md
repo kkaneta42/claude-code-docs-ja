@@ -7,10 +7,10 @@
 > Google Cloud で Claude apps gateway を実行する実装例：Cloud Run または GKE、Cloud SQL for PostgreSQL、Secret Manager、および Agent Platform への service account 認証。
 
 <Note>
-  このページでは、Google Cloud で Claude apps gateway を実行する 1 つの方法を説明します。この設定は、サポートされている本番環境デプロイメントではなく、カスタマー管理インフラストラクチャの実装例です。各部分がどのように組み合わさるかを確認してから、自分の環境に適応させてください。プラットフォーム非依存の要件については、[デプロイメントガイド](/ja/claude-apps-gateway-deploy)を参照してください。
+  このページでは、Google Cloud で Claude apps gateway を実行する 1 つの方法を説明します。この設定は、サポートされている本番環境デプロイメントではなく、カスタマー管理インフラストラクチャの実装例です。各部分がどのように組み合わさるかを確認してから、自分の環境に適応させてください。プラットフォーム非依存の要件については、[デプロイメントガイド](/docs/ja/claude-apps-gateway-deploy)を参照してください。
 </Note>
 
-この例では、Google Cloud の Agent Platform をモデルアップストリームとして使用し、Cloud Run または GKE をコンピュートに使用して、Google Cloud に Claude apps gateway をプロビジョニングします。Google Workspace は例の ID プロバイダー（IdP）ですが、OpenID Connect（OIDC）準拠の任意の IdP が機能します。`oidc` ブロックのみが変わります。IdP ごとの詳細については、[ID プロバイダーのセットアップ](/ja/claude-apps-gateway-deploy#identity-provider-setup)を参照してください。
+この例では、Google Cloud の Agent Platform をモデルアップストリームとして使用し、Cloud Run または GKE をコンピュートに使用して、Google Cloud に Claude apps gateway をプロビジョニングします。Google Workspace は例の ID プロバイダー（IdP）ですが、OpenID Connect（OIDC）準拠の任意の IdP が機能します。`oidc` ブロックのみが変わります。IdP ごとの詳細については、[ID プロバイダーのセットアップ](/docs/ja/claude-apps-gateway-deploy#identity-provider-setup)を参照してください。
 
 <h2 id="what-you’ll-build">
   構築内容
@@ -24,7 +24,7 @@
 
 * ゲートウェイコンテナを実行する **Cloud Run** サービスまたは **GKE** Deployment
 * ゲートウェイイメージ用の **Artifact Registry** リポジトリ
-* ゲートウェイの[ストア](/ja/claude-apps-gateway-config#store)用のプライベート IP のみの **Cloud SQL for PostgreSQL** インスタンス
+* ゲートウェイの[ストア](/docs/ja/claude-apps-gateway-config#store)用のプライベート IP のみの **Cloud SQL for PostgreSQL** インスタンス
 * `gateway.yaml`、JWT 署名キー、OIDC クライアントシークレット、および Postgres URL 用の **Secret Manager** シークレット
 * `roles/aiplatform.user` を持つ **Service account**、Cloud Run に直接アタッチされるか、GKE 上で Workload Identity 経由でバインドされます
 * Cloud Run 上の **Internal Application Load Balancer**、または GKE 上のクラス `gce-internal` の内部 **GKE Ingress**（HTTPS 用）
@@ -37,7 +37,7 @@
 * `gcloud auth login` で認証された `gcloud` CLI、およびローカルにインストールされた Docker
 * GKE トラック用：`kubectl`、および以下のウォークスルーで作成された VPC 上の GKE クラスタ
 * Model Garden で必要な Claude モデルへのアクセス、それらを公開している地域内
-* リダイレクト URI が `https://<gateway-host>/oauth/callback` の Google Workspace OAuth 2.0 ウェブアプリケーションクライアント。[ID プロバイダーのセットアップ](/ja/claude-apps-gateway-deploy#identity-provider-setup)を参照してください
+* リダイレクト URI が `https://<gateway-host>/oauth/callback` の Google Workspace OAuth 2.0 ウェブアプリケーションクライアント。[ID プロバイダーのセットアップ](/docs/ja/claude-apps-gateway-deploy#identity-provider-setup)を参照してください
 * ゲートウェイ用の TLS ホスト名。通常はロードバランサーを指すプライベート DNS 名
 
 プロジェクトと地域を一度設定します：
@@ -94,7 +94,7 @@ gcloud config set project "$PROJECT_ID"
   </Step>
 
   <Step title="イメージをビルドして Artifact Registry にプッシュする">
-    [コンテナイメージ要件](/ja/claude-apps-gateway-deploy#container-image)に従ってイメージをビルドし、`linux-x64` glibc バイナリを使用してプッシュします：
+    [コンテナイメージ要件](/docs/ja/claude-apps-gateway-deploy#container-image)に従ってイメージをビルドし、`linux-x64` glibc バイナリを使用してプッシュします：
 
     ```bash theme={null}
     gcloud artifacts repositories create claude-gateway \
@@ -141,14 +141,14 @@ gcloud config set project "$PROJECT_ID"
   </Step>
 
   <Step title="gateway.yaml を書き込む">
-    `upstreams` ブロックは `auth: {}` で Agent Platform を指すため、ゲートウェイはランタイム service account からの Application Default Credentials 経由で認証します。すべてのフィールドについては、[設定リファレンス](/ja/claude-apps-gateway-config)を参照してください。
+    `upstreams` ブロックは `auth: {}` で Agent Platform を指すため、ゲートウェイはランタイム service account からの Application Default Credentials 経由で認証します。すべてのフィールドについては、[設定リファレンス](/docs/ja/claude-apps-gateway-config)を参照してください。
 
     2 つの `listen` フィールドはゲートウェイの前にあるものに依存します：
 
     * `public_url`：Cloud Run または GKE Ingress の背後で必須。ゲートウェイは IdP `redirect_uri` と検出ドキュメントをこの値からのみビルドし、`X-Forwarded-*` ヘッダーからは決してビルドしません。
     * `trusted_proxies`：フロントエンドのソース範囲。ゲートウェイは TCP ピアがこのリストにある場合にのみ `X-Forwarded-For` を尊重し、信頼できるホップを超えてチェーンを歩くため、IP ごとのサインイン レート制限と監査イベントはロードバランサーの IP ではなく開発者 IP を記録します。
 
-    フロントエンドに合わせて `trusted_proxies` を設定します。クラス `gce` の外部 GKE Ingress はリストされていません。パブリック転送ルールアドレスをプロビジョニングし、`/login` [プライベートネットワークチェック](/ja/claude-apps-gateway#prerequisites)がこれを拒否します。
+    フロントエンドに合わせて `trusted_proxies` を設定します。クラス `gce` の外部 GKE Ingress はリストされていません。パブリック転送ルールアドレスをプロビジョニングし、`/login` [プライベートネットワークチェック](/docs/ja/claude-apps-gateway#prerequisites)がこれを拒否します。
 
     | フロントエンド                                          | `trusted_proxies`                     |
     | ------------------------------------------------ | ------------------------------------- |
@@ -188,7 +188,7 @@ gcloud config set project "$PROJECT_ID"
     ```
 
     <Note>
-      Google id\_tokens は `groups` クレームを含みません。Google Workspace を IdP として [`managed.policies`](/ja/claude-apps-gateway-config#managed) でグループベースのポリシーを使用するには、[`oidc.google_groups`](/ja/claude-apps-gateway-config#oidc) を設定します。これは Admin SDK Directory API を使用してドメイン全体の委任を持つ service account を使用して各ユーザーのグループを検索します。これなしで、代わりに `email_domain` で一致させます。
+      Google id\_tokens は `groups` クレームを含みません。Google Workspace を IdP として [`managed.policies`](/docs/ja/claude-apps-gateway-config#managed) でグループベースのポリシーを使用するには、[`oidc.google_groups`](/docs/ja/claude-apps-gateway-config#oidc) を設定します。これは Admin SDK Directory API を使用してドメイン全体の委任を持つ service account を使用して各ユーザーのグループを検索します。これなしで、代わりに `email_domain` で一致させます。
     </Note>
   </Step>
 
@@ -237,7 +237,7 @@ gcloud config set project "$PROJECT_ID"
 
         `--ingress` 経由のイングレス制限は invoker チェックから独立した別のレイヤーです。サービスを企業ネットワークに制限するために設定したままにしておきます。
 
-        デフォルトでは、Cloud Run `*.run.app` URL はパブリックアドレスに解決され、`/login` [プライベートネットワークチェック](/ja/claude-apps-gateway#prerequisites)がこれを拒否します。2 つのトポロジーは開発者にプライベートに解決可能なホスト名を提供し、Cloud Run はどちらもプロビジョニングしません：
+        デフォルトでは、Cloud Run `*.run.app` URL はパブリックアドレスに解決され、`/login` [プライベートネットワークチェック](/docs/ja/claude-apps-gateway#prerequisites)がこれを拒否します。2 つのトポロジーは開発者にプライベートに解決可能なホスト名を提供し、Cloud Run はどちらもプロビジョニングしません：
 
         * **Internal Application Load Balancer**、上記のデプロイコマンドが想定するトポロジー：`--ingress=internal-and-cloud-load-balancing` でデプロイし、サービスの前に内部 Application Load Balancer をプロビジョニングして内部 DNS 名と証明書を使用し、`listen.public_url` をそのホスト名に設定します。
         * **ロードバランサーなしの内部のみイングレス**：`--ingress=internal` でデプロイし、`listen.public_url` を `*.run.app` URL（以下の[リファレンスアセット](#terraform-reference)のデフォルト）のままにします。`*.run.app` がプライベートに解決するには、ネットワークチームが既に Google API 用の Private Service Connect エンドポイント、`*.run.app` をそれに解決する Cloud DNS プライベートゾーン、およびそのエンドポイントへのオンプレミスルーティングを運用している必要があります。
@@ -272,7 +272,7 @@ gcloud config set project "$PROJECT_ID"
           iam.gke.io/gcp-service-account="claude-gateway@${PROJECT_ID}.iam.gserviceaccount.com"
         ```
 
-        [Kubernetes デプロイメント](/ja/claude-apps-gateway-deploy#kubernetes)で説明されているように、ゲートウェイを標準 Deployment、Service、および内部 Ingress（クラス `gce-internal`）としてデプロイします。以下を使用します：
+        [Kubernetes デプロイメント](/docs/ja/claude-apps-gateway-deploy#kubernetes)で説明されているように、ゲートウェイを標準 Deployment、Service、および内部 Ingress（クラス `gce-internal`）としてデプロイします。以下を使用します：
 
         * `serviceAccountName: gateway`
         * Secret Manager CSI ドライバーが `/secrets` にシークレットをマウント
@@ -280,7 +280,7 @@ gcloud config set project "$PROJECT_ID"
 
         ゲートウェイ Service に BackendConfig をアタッチして、`timeoutSec` を上げます。GKE Ingress の背後のロードバランサーバックエンドサービスはデフォルトで 30 秒のタイムアウトで、長いストリーミング応答を切断します。
 
-        Workload Identity クラスタで `169.254.169.254` をブロックするエグレス NetworkPolicy を適用しないでください。ポッドは認証情報のためにメタデータサーバーに到達する必要があります。ゲートウェイの組み込み [SSRF ガード](/ja/claude-apps-gateway-deploy#threat-model-summary)がそこでの防御です。
+        Workload Identity クラスタで `169.254.169.254` をブロックするエグレス NetworkPolicy を適用しないでください。ポッドは認証情報のためにメタデータサーバーに到達する必要があります。ゲートウェイの組み込み [SSRF ガード](/docs/ja/claude-apps-gateway-deploy#threat-model-summary)がそこでの防御です。
 
         ゲートウェイはメタデータエンドポイントに到達可能であることを示すブート警告をログに記録し、エグレス NetworkPolicy を適用することを提案します。Workload Identity の下では、ポッドがエンドポイントを必要とするため、その警告は予想されます。
       </Tab>
@@ -288,7 +288,7 @@ gcloud config set project "$PROJECT_ID"
   </Step>
 
   <Step title="ゲートウェイ URL を開発者マシンにプッシュする">
-    ゲートウェイは実行されていますが、開発者は `/login` からゲートウェイ URL がマシンに配置されるまでそれに到達できません。MDM 経由で各デバイスにデプロイする[管理設定ファイル](/ja/claude-apps-gateway#set-the-gateway-url)で `forceLoginMethod` および `forceLoginGatewayUrl` を設定します。開発者が手動で選択できるログインピッカーのゲートウェイオプションはありません。
+    ゲートウェイは実行されていますが、開発者は `/login` からゲートウェイ URL がマシンに配置されるまでそれに到達できません。MDM 経由で各デバイスにデプロイする[管理設定ファイル](/docs/ja/claude-apps-gateway#set-the-gateway-url)で `forceLoginMethod` および `forceLoginGatewayUrl` を設定します。開発者が手動で選択できるログインピッカーのゲートウェイオプションはありません。
   </Step>
 </Steps>
 
@@ -310,7 +310,7 @@ gcloud config set project "$PROJECT_ID"
   トラブルシューティング
 </h2>
 
-ゲートウェイブートとログインエラーについては、プラットフォーム非依存の[トラブルシューティングテーブル](/ja/claude-apps-gateway-deploy#troubleshooting)を参照してください。以下のエントリは Google Cloud に固有です。
+ゲートウェイブートとログインエラーについては、プラットフォーム非依存の[トラブルシューティングテーブル](/docs/ja/claude-apps-gateway-deploy#troubleshooting)を参照してください。以下のエントリは Google Cloud に固有です。
 
 | 症状                                                                                  | 原因                                                                                     | 修正                                                                                                                                                                                          |
 | ----------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -325,6 +325,6 @@ gcloud config set project "$PROJECT_ID"
   次のステップ
 </h2>
 
-* [設定リファレンス](/ja/claude-apps-gateway-config)：すべての `gateway.yaml` オプション（`managed.policies` および `telemetry` を含む）
-* [デプロイメントと運用](/ja/claude-apps-gateway-deploy)：IdP セットアップ、ヘルスチェック、JWT シークレットローテーション、アップグレード、およびセキュリティモデル
-* [Claude apps gateway 概要](/ja/claude-apps-gateway)：クイックスタートと開発者の接続
+* [設定リファレンス](/docs/ja/claude-apps-gateway-config)：すべての `gateway.yaml` オプション（`managed.policies` および `telemetry` を含む）
+* [デプロイメントと運用](/docs/ja/claude-apps-gateway-deploy)：IdP セットアップ、ヘルスチェック、JWT シークレットローテーション、アップグレード、およびセキュリティモデル
+* [Claude apps gateway 概要](/docs/ja/claude-apps-gateway)：クイックスタートと開発者の接続

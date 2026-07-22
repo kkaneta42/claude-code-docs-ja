@@ -7,7 +7,7 @@
 > webhook、アラート、チャットメッセージを Claude Code セッションにプッシュする MCP サーバーを構築します。チャネルコントラクトのリファレンス：機能宣言、通知イベント、返信ツール、送信者ゲーティング、権限リレー。
 
 <Note>
-  チャネルは[リサーチプレビュー](/ja/channels#research-preview)段階にあります。Team および Enterprise 組織は[明示的に有効化](/ja/channels#enterprise-controls)する必要があります。
+  チャネルは[リサーチプレビュー](/docs/ja/channels#research-preview)段階にあります。Team および Enterprise 組織は[明示的に有効化](/docs/ja/channels#enterprise-controls)する必要があります。
 </Note>
 
 チャネルは、Claude Code セッションにイベントをプッシュする MCP サーバーで、Claude がターミナルの外で発生していることに反応できるようにします。
@@ -25,7 +25,7 @@
 * [インバウンドメッセージをゲート](#gate-inbound-messages)：プロンプトインジェクションを防ぐための送信者チェック
 * [権限プロンプトをリレー](#relay-permission-prompts)：ツール承認プロンプトをリモートチャネルに転送
 
-既存のチャネルを使用する場合は、[チャネル](/ja/channels)を参照してください。Telegram、Discord、iMessage、および fakechat はリサーチプレビューに含まれています。
+既存のチャネルを使用する場合は、[チャネル](/docs/ja/channels)を参照してください。Telegram、Discord、iMessage、および fakechat はリサーチプレビューに含まれています。
 
 <h2 id="overview">
   概要
@@ -52,7 +52,7 @@
 
 [サーバーオプション](#server-options)と[通知フォーマット](#notification-format)セクションでは、これらのそれぞれについて詳しく説明しています。完全なウォークスルーについては、[例：webhook レシーバーを構築](#example-build-a-webhook-receiver)を参照してください。
 
-リサーチプレビュー中、カスタムチャネルは[承認許可リスト](/ja/channels#supported-channels)にありません。ローカルでテストするには `--dangerously-load-development-channels` を使用してください。詳細については、[リサーチプレビュー中のテスト](#test-during-the-research-preview)を参照してください。
+リサーチプレビュー中、カスタムチャネルは[承認許可リスト](/docs/ja/channels#supported-channels)にありません。ローカルでテストするには `--dangerously-load-development-channels` を使用してください。詳細については、[リサーチプレビュー中のテスト](#test-during-the-research-preview)を参照してください。
 
 <h2 id="example-build-a-webhook-receiver">
   例：webhook レシーバーを構築
@@ -148,7 +148,7 @@
 
     スタートアップバナーの下の薄い通知がチャネルが登録されたことを確認します：`Channels (experimental) messages from server:webhook inject directly in this session · restart without --dangerously-load-development-channels to stop`。
 
-    '組織ポリシーによってブロックされています'が表示される場合は、組織管理者が最初に [チャネルを有効化](/ja/channels#enterprise-controls) する必要があります。
+    '組織ポリシーによってブロックされています'が表示される場合は、組織管理者が最初に [チャネルを有効化](/docs/ja/channels#enterprise-controls) する必要があります。
 
     別のターミナルで、HTTP POST でメッセージを送信して webhook をシミュレートします。この例は、CI 失敗アラートをポート 8788（または設定したポート）に送信します：
 
@@ -177,7 +177,7 @@
   リサーチプレビュー中のテスト
 </h2>
 
-リサーチプレビュー中、すべてのチャネルは登録するために[承認許可リスト](/ja/channels#research-preview)にある必要があります。開発フラグは、確認プロンプトの後、特定のエントリの許可リストをバイパスします。この例は両方のエントリタイプを示しています：
+リサーチプレビュー中、すべてのチャネルは登録するために[承認許可リスト](/docs/ja/channels#research-preview)にある必要があります。開発フラグは、確認プロンプトの後、特定のエントリの許可リストをバイパスします。この例は両方のエントリタイプを示しています：
 
 ```bash theme={null}
 # 開発中のプラグインをテスト
@@ -771,17 +771,17 @@ curl -d "yes <id>" -H "X-Sender: dev" localhost:8788
   プラグインとしてパッケージ化
 </h2>
 
-チャネルをインストール可能で共有可能にするには、[プラグイン](/ja/plugins)でラップして[マーケットプレイス](/ja/plugin-marketplaces)に公開します。ユーザーは `/plugin install` でインストールし、`--channels plugin:<name>@<marketplace>` でセッションごとに有効化します。
+チャネルをインストール可能で共有可能にするには、[プラグイン](/docs/ja/plugins)でラップして[マーケットプレイス](/docs/ja/plugin-marketplaces)に公開します。ユーザーは `/plugin install` でインストールし、`--channels plugin:<name>@<marketplace>` でセッションごとに有効化します。
 
-独自のマーケットプレイスに公開されたチャネルは、[承認許可リスト](/ja/channels#supported-channels)にないため、実行するには `--dangerously-load-development-channels` が必要です。デフォルトの許可リストは `claude-plugins-official` のチャネルプラグインで、Anthropic がその裁量で管理しています。[アプリ内送信フォーム](/ja/plugins#submit-your-plugin-to-the-community-marketplace)はプラグインをコミュニティマーケットプレイスに追加しますが、これはチャネル許可リストにはありません。
+独自のマーケットプレイスに公開されたチャネルは、[承認許可リスト](/docs/ja/channels#supported-channels)にないため、実行するには `--dangerously-load-development-channels` が必要です。デフォルトの許可リストは `claude-plugins-official` のチャネルプラグインで、Anthropic がその裁量で管理しています。[アプリ内送信フォーム](/docs/ja/plugins#submit-your-plugin-to-the-community-marketplace)はプラグインをコミュニティマーケットプレイスに追加しますが、これはチャネル許可リストにはありません。
 
-Anthropic パートナー連絡先と協力している場合は、公式マーケットプレイスリストを調整するために彼らに連絡してください。Team および Enterprise プランでは、管理者は代わりにプラグインを組織の独自の [`allowedChannelPlugins`](/ja/channels#restrict-which-channel-plugins-can-run) リストに含めることができます。これはデフォルトの Anthropic 許可リストを置き換えます。
+Anthropic パートナー連絡先と協力している場合は、公式マーケットプレイスリストを調整するために彼らに連絡してください。Team および Enterprise プランでは、管理者は代わりにプラグインを組織の独自の [`allowedChannelPlugins`](/docs/ja/channels#restrict-which-channel-plugins-can-run) リストに含めることができます。これはデフォルトの Anthropic 許可リストを置き換えます。
 
 <h2 id="see-also">
   関連項目
 </h2>
 
-* [チャネル](/ja/channels)：Telegram、Discord、iMessage、または fakechat デモをインストールして使用し、Team または Enterprise 組織のチャネルを有効化
+* [チャネル](/docs/ja/channels)：Telegram、Discord、iMessage、または fakechat デモをインストールして使用し、Team または Enterprise 組織のチャネルを有効化
 * [チャネル実装の動作](https://github.com/anthropics/claude-plugins-official/tree/main/external_plugins)：ペアリングフロー、返信ツール、ファイル添付を含む完全なサーバーコード
-* [MCP](/ja/mcp)：チャネルサーバーが実装する基礎となるプロトコル
-* [プラグイン](/ja/plugins)：チャネルをパッケージ化して、ユーザーが `/plugin install` でインストールできるようにする
+* [MCP](/docs/ja/mcp)：チャネルサーバーが実装する基礎となるプロトコル
+* [プラグイン](/docs/ja/plugins)：チャネルをパッケージ化して、ユーザーが `/plugin install` でインストールできるようにする

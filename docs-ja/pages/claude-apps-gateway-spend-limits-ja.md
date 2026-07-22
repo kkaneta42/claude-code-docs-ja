@@ -6,7 +6,7 @@
 
 > Claude apps gateway を通じて各開発者の支出を日単位、週単位、または月単位で制限します。Admin API で制限を設定すると、gateway はすべてのリクエストでそれらを実行します。
 
-支出制限は、各開発者が指定された日、週、または月の間に [Claude apps gateway](/ja/claude-apps-gateway) を通じて支出できる金額の上限を設定します。開発者が上限に達すると、gateway は次のリクエストで `429` を返し、期間がリセットされるか管理者が上限を引き上げるまで、その開発者をブロックします。支出制限を使用して、各開発者、グループ、または組織全体に対して、全員が共有する認証情報の上限を設定できます。
+支出制限は、各開発者が指定された日、週、または月の間に [Claude apps gateway](/docs/ja/claude-apps-gateway) を通じて支出できる金額の上限を設定します。開発者が上限に達すると、gateway は次のリクエストで `429` を返し、期間がリセットされるか管理者が上限を引き上げるまで、その開発者をブロックします。支出制限を使用して、各開発者、グループ、または組織全体に対して、全員が共有する認証情報の上限を設定できます。
 
 Claude apps gateway は、すべての推論を 1 つの共有アップストリーム認証情報を通じて転送するため、プロバイダーの請求書はすべてをその認証情報に属するものとして記録し、個々の開発者には記録しません。開発者ごとの制限がない場合、1 つの暴走したエージェント フリートが組織全体のコミットメントを使い果たす可能性があります。支出制限は、その共有請求書の上に gateway の開発者ごとのビューとサーキット ブレーカーです。
 
@@ -14,7 +14,7 @@ Claude apps gateway は、すべての推論を 1 つの共有アップストリ
   上限を設定する
 </h2>
 
-`gateway.yaml` で [`admin:`](/ja/claude-apps-gateway-config#admin) ブロックが設定されている場合、gateway は `/v1/organizations/spend_limits` で管理 API を提供し、すべての推論リクエストで上限をリアルタイムに適用します。上限自体は `gateway.yaml` ではなく、その API を通じて設定されます。各 `POST /v1/organizations/spend_limits` リクエストは `{scope, amount, period}` から 1 つの上限を作成または置き換えます。API は Anthropic の公開 [Admin API](https://platform.claude.com/docs/en/manage-claude/admin-api) 支出制限エンドポイントのワイヤー形状をミラーリングするため、そのコントラクトに対して記述された HTTP クライアントは、ベース URL を変更することで gateway をターゲットにできます。
+`gateway.yaml` で [`admin:`](/docs/ja/claude-apps-gateway-config#admin) ブロックが設定されている場合、gateway は `/v1/organizations/spend_limits` で管理 API を提供し、すべての推論リクエストで上限をリアルタイムに適用します。上限自体は `gateway.yaml` ではなく、その API を通じて設定されます。各 `POST /v1/organizations/spend_limits` リクエストは `{scope, amount, period}` から 1 つの上限を作成または置き換えます。API は Anthropic の公開 [Admin API](https://platform.claude.com/docs/en/manage-claude/admin-api) 支出制限エンドポイントのワイヤー形状をミラーリングするため、そのコントラクトに対して記述された HTTP クライアントは、ベース URL を変更することで gateway をターゲットにできます。
 
 このリクエストは、すべての開発者に対して月額 500 ドルの組織全体のデフォルトを設定します。
 
@@ -36,11 +36,11 @@ curl -sS https://claude-gateway.internal.example.com/v1/organizations/spend_limi
 
 | フィールド        | 値                                  | 説明                                                                                                                                                                                                                                                                                                                    |
 | ------------ | ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `scope.type` | `user`、`rbac_group`、`organization` | `user` は OpenID Connect（OIDC）`sub` で 1 人の開発者をターゲットにします。これは ID プロバイダーが割り当てる安定したユーザー ID です。`scope.user_id` として渡します。`rbac_group` は [IdP グループ](/ja/claude-apps-gateway-config#managed) を名前でターゲットにします。`scope.rbac_group_id` として渡します。`organization` は組織全体のデフォルトです。gateway は 3 つすべてを受け入れます。Anthropic の公開 `POST` は現在ユーザーのみです。 |
+| `scope.type` | `user`、`rbac_group`、`organization` | `user` は OpenID Connect（OIDC）`sub` で 1 人の開発者をターゲットにします。これは ID プロバイダーが割り当てる安定したユーザー ID です。`scope.user_id` として渡します。`rbac_group` は [IdP グループ](/docs/ja/claude-apps-gateway-config#managed) を名前でターゲットにします。`scope.rbac_group_id` として渡します。`organization` は組織全体のデフォルトです。gateway は 3 つすべてを受け入れます。Anthropic の公開 `POST` は現在ユーザーのみです。 |
 | `amount`     | USD セントの整数文字列、または `null`           | `null` は無制限です。`"0"` はゼロ上限で、すべてのリクエストをブロックします。                                                                                                                                                                                                                                                                         |
 | `period`     | `daily`、`weekly`、`monthly`         | スコープは期間ごとに 1 つの上限を保持でき、各々は独立して適用されます。開発者は、いずれかの上限を超えている場合、ブロックされます。                                                                                                                                                                                                                                                   |
 
-グループまたは組織の上限は、各メンバーが継承する座席ごとのデフォルトであり、共有プールではありません。期間ごとに、開発者の有効な上限は次の順序で解決されます。ユーザーごとのオーバーライド、次に最も制限的なグループ上限、次に組織のデフォルト、次に無制限。[`admin.group_limit_mode: max`](/ja/claude-apps-gateway-config#admin) は、複数グループのタイブレークを最も制限的ではないものに反転させます。
+グループまたは組織の上限は、各メンバーが継承する座席ごとのデフォルトであり、共有プールではありません。期間ごとに、開発者の有効な上限は次の順序で解決されます。ユーザーごとのオーバーライド、次に最も制限的なグループ上限、次に組織のデフォルト、次に無制限。[`admin.group_limit_mode: max`](/docs/ja/claude-apps-gateway-config#admin) は、複数グループのタイブレークを最も制限的ではないものに反転させます。
 
 <h3 id="authenticate-to-the-admin-api">
   管理 API に認証する
@@ -48,14 +48,14 @@ curl -sS https://claude-gateway.internal.example.com/v1/organizations/spend_limi
 
 次のいずれかを送信します。
 
-* [`admin.write_keys`](/ja/claude-apps-gateway-config#admin) のキーと一致する `x-api-key` ヘッダー（フルアクセス）、または `admin.read_keys`（`GET` のみアクセス）。各キーは監査ログに `admin-key:<id>` として表示される `id` を持つため、Terraform、CI、および各自動化に独自のキーを付与します。
-* `groups` クレームが [`admin.admin_groups`](/ja/claude-apps-gateway-config#admin) のいずれかを含む gateway ベアラートークン。これはフルアクセスで、`oidc:<sub>` として監査されるため、人間の管理者には推奨されます。
+* [`admin.write_keys`](/docs/ja/claude-apps-gateway-config#admin) のキーと一致する `x-api-key` ヘッダー（フルアクセス）、または `admin.read_keys`（`GET` のみアクセス）。各キーは監査ログに `admin-key:<id>` として表示される `id` を持つため、Terraform、CI、および各自動化に独自のキーを付与します。
+* `groups` クレームが [`admin.admin_groups`](/docs/ja/claude-apps-gateway-config#admin) のいずれかを含む gateway ベアラートークン。これはフルアクセスで、`oidc:<sub>` として監査されるため、人間の管理者には推奨されます。
 
 <h2 id="how-enforcement-works">
   適用方法
 </h2>
 
-各 `/v1/messages` リクエストで、gateway は開発者の上限と期間から現在までの支出を 1 つの Postgres クエリで解決します。いずれかの上限を超えている場合、リクエストは `429` を返し、`error.type: billing_error` と `x-should-retry: false` ヘッダーが付きます。メッセージは `spend limit reached` で、その後に [`admin.blocked_message`](/ja/claude-apps-gateway-config#admin) が設定されている場合はそれが続きます。
+各 `/v1/messages` リクエストで、gateway は開発者の上限と期間から現在までの支出を 1 つの Postgres クエリで解決します。いずれかの上限を超えている場合、リクエストは `429` を返し、`error.type: billing_error` と `x-should-retry: false` ヘッダーが付きます。メッセージは `spend limit reached` で、その後に [`admin.blocked_message`](/docs/ja/claude-apps-gateway-config#admin) が設定されている場合はそれが続きます。
 
 `/v1/messages/count_tokens` は除外されます。トークンカウントは無料なので、上限状態に関係なく実行されます。
 
@@ -71,7 +71,7 @@ curl -sS https://claude-gateway.internal.example.com/v1/organizations/spend_limi
   Postgres の可用性
 </h3>
 
-事前チェッククエリは 2 秒のタイムアウトで Postgres にクエリします。ストアに到達できない場合またはタイムアウトする場合、デフォルトでは適用は開いた状態で失敗します。リクエストは進行し、gateway は警告をログに記録します。[`enforcement.fail_closed_on_error: true`](/ja/claude-apps-gateway-config#enforcement) を設定して、代わりに閉じた状態で失敗させます。これは同じ `429 billing_error` を返し、メッセージは `spend limit unavailable` です。フェイルオープンはストア停止が推論停止になるのを防ぎます。フェイルクローズは計測されていない支出がないことを保証します。
+事前チェッククエリは 2 秒のタイムアウトで Postgres にクエリします。ストアに到達できない場合またはタイムアウトする場合、デフォルトでは適用は開いた状態で失敗します。リクエストは進行し、gateway は警告をログに記録します。[`enforcement.fail_closed_on_error: true`](/docs/ja/claude-apps-gateway-config#enforcement) を設定して、代わりに閉じた状態で失敗させます。これは同じ `429 billing_error` を返し、メッセージは `spend limit unavailable` です。フェイルオープンはストア停止が推論停止になるのを防ぎます。フェイルクローズは計測されていない支出がないことを保証します。
 
 <h2 id="admin-api-reference">
   管理 API リファレンス
@@ -145,10 +145,10 @@ gateway は 4 つの支出関連テーブルを保持します。時間ごとの
 
 | テーブル               | 内容                                             | 保持期間                                                                                          |
 | ------------------ | ---------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| `spend`            | プリンシパルごとの期間から現在までのカウンター（セント）                   | [`admin.spend_retention_months`](/ja/claude-apps-gateway-config#admin)、デフォルト 13               |
+| `spend`            | プリンシパルごとの期間から現在までのカウンター（セント）                   | [`admin.spend_retention_months`](/docs/ja/claude-apps-gateway-config#admin)、デフォルト 13               |
 | `spend_limits`     | 設定された上限                                        | API 経由で削除されるまで                                                                                |
-| `admin_audit`      | 変更トレイル                                         | [`admin.audit_retention_days`](/ja/claude-apps-gateway-config#admin)、デフォルト 365                |
-| `principal_emails` | 各プリンシパルの最後に見られたメール、表示名、および IdP グループ。PII を含みます。 | [`admin.identity_retention_days`](/ja/claude-apps-gateway-config#admin) 最後のアクティビティ以降、デフォルト 90 |
+| `admin_audit`      | 変更トレイル                                         | [`admin.audit_retention_days`](/docs/ja/claude-apps-gateway-config#admin)、デフォルト 365                |
+| `principal_emails` | 各プリンシパルの最後に見られたメール、表示名、および IdP グループ。PII を含みます。 | [`admin.identity_retention_days`](/docs/ja/claude-apps-gateway-config#admin) 最後のアクティビティ以降、デフォルト 90 |
 
 `identity_retention_days` は意図的に `spend_retention_months` より短いです。プロビジョニング解除されたアイデンティティは更新を停止して期限切れになり、その匿名支出カウンターは年間比較レポート用に残ります。
 
@@ -158,5 +158,5 @@ gateway は 4 つの支出関連テーブルを保持します。時間ごとの
   関連
 </h2>
 
-* [`admin` と `enforcement` 設定](/ja/claude-apps-gateway-config#admin)：管理 API の有効化と保持のチューニング
-* [デプロイメントガイド](/ja/claude-apps-gateway-deploy#postgres)：Postgres スキーマとバックアップガイダンス
+* [`admin` と `enforcement` 設定](/docs/ja/claude-apps-gateway-config#admin)：管理 API の有効化と保持のチューニング
+* [デプロイメントガイド](/docs/ja/claude-apps-gateway-deploy#postgres)：Postgres スキーマとバックアップガイダンス

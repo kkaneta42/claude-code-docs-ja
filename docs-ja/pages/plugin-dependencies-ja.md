@@ -10,7 +10,7 @@
 
 依存関係を宣言するプラグインをインストールすると、Claude Code は依存関係を自動的に解決してインストールし、インストール出力の最後に追加された依存関係をリストします。依存関係が後で見つからなくなった場合、`/reload-plugins` とバックグラウンドプラグイン自動更新により、設定済みマーケットプレイスにそのマーケットプレイスが既にある場合は、それを再インストールします。依存プラグインで `claude plugin install` を再実行するか、`claude plugin marketplace add` でマーケットプレイスを追加することでも、未解決の依存関係が解決されます。追加していないマーケットプレイスからの依存関係は未解決のままになります。
 
-このガイドは、`plugin.json` で依存関係を宣言するプラグイン作成者と、リリースにタグを付けるマーケットプレイス保守者向けです。依存関係を持つプラグインをインストールするには、[プラグインの検出とインストール](/ja/discover-plugins) を参照してください。完全なマニフェストスキーマについては、[プラグインリファレンス](/ja/plugins-reference) を参照してください。
+このガイドは、`plugin.json` で依存関係を宣言するプラグイン作成者と、リリースにタグを付けるマーケットプレイス保守者向けです。依存関係を持つプラグインをインストールするには、[プラグインの検出とインストール](/docs/ja/discover-plugins) を参照してください。完全なマニフェストスキーマについては、[プラグインリファレンス](/docs/ja/plugins-reference) を参照してください。
 
 <h2 id="why-constrain-dependency-versions">
   依存関係のバージョンを制約する理由
@@ -80,7 +80,7 @@
 * `/plugin` でマーケットプレイスの自動更新を有効にします。次の自動更新によってバンドルが新しいバージョンに移動し、追加される依存関係がインストールされます。
 * `claude plugin update backend-standard` を実行してから、`/reload-plugins` を実行して、新しく追加された依存関係をインストールします。
 
-組織全体にバンドルをロールアウトするには、バンドルプラグインを [管理設定](/ja/settings#enabledplugins) の `enabledPlugins` に追加します。
+組織全体にバンドルをロールアウトするには、バンドルプラグインを [管理設定](/docs/ja/settings#enabledplugins) の `enabledPlugins` に追加します。
 
 <h2 id="depend-on-a-plugin-from-another-marketplace">
   別のマーケットプレイスからプラグインに依存する
@@ -171,7 +171,7 @@ claude plugin tag --push
 | 依存関係が、ターゲットスコープより優先度の高いスコープで `false` に設定されている | 有効化が失敗します。そのスコープで依存関係を有効にするか、`--scope` を渡してそこに書き込みます。         |
 | すべての依存関係がインストールされ、許可されている                     | 有効化が成功し、プラグインと、ターゲットスコープでまだ有効になっていない各依存関係に対して `true` を書き込みます。 |
 
-これは、依存関係がマニフェストで [`defaultEnabled: false`](/ja/plugins-reference#default-enablement) を設定している場合でも当てはまります。Claude Code はそれに対して明示的な `true` を書き込むためです。同じことがインストール時にも適用されます。アクティブなプラグインを満たすために取得された依存関係は、独自のデフォルトに関係なく `true` でインストールされます。
+これは、依存関係がマニフェストで [`defaultEnabled: false`](/docs/ja/plugins-reference#default-enablement) を設定している場合でも当てはまります。Claude Code はそれに対して明示的な `true` を書き込むためです。同じことがインストール時にも適用されます。アクティブなプラグインを満たすために取得された依存関係は、独自のデフォルトに関係なく `true` でインストールされます。
 
 プラグインを無効にすると、別の有効なプラグインがまだそれに依存している場合、Claude Code は拒否します。エラーはそれに依存するプラグインに名前を付け、正しい順序でそれらを無効にする連鎖コマンドを提供します。
 
@@ -223,7 +223,7 @@ claude plugin uninstall deploy-kit --prune
   関連項目
 </h2>
 
-* [プラグインの作成](/ja/plugins): スキル、エージェント、フックを使用してプラグインを構築します
-* [プラグインマーケットプレイスの作成と配布](/ja/plugin-marketplaces): チーム向けのプラグインをホストします
-* [プラグインリファレンス](/ja/plugins-reference#plugin-manifest-schema): 完全な `plugin.json` スキーマ
-* [バージョン管理](/ja/plugins-reference#version-management): プラグイン独自のバージョンがどのように解決され、キャッシュキーとして使用されるか
+* [プラグインの作成](/docs/ja/plugins): スキル、エージェント、フックを使用してプラグインを構築します
+* [プラグインマーケットプレイスの作成と配布](/docs/ja/plugin-marketplaces): チーム向けのプラグインをホストします
+* [プラグインリファレンス](/docs/ja/plugins-reference#plugin-manifest-schema): 完全な `plugin.json` スキーマ
+* [バージョン管理](/docs/ja/plugins-reference#version-management): プラグイン独自のバージョンがどのように解決され、キャッシュキーとして使用されるか

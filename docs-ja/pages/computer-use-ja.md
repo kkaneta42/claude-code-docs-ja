@@ -12,7 +12,7 @@
 
 コンピュータ使用により、Claude はアプリを開き、スクリーンを制御し、あなたが行うのと同じ方法でマシンで作業できます。CLI から、Claude は Swift アプリをコンパイルし、起動し、すべてのボタンをクリックして、結果をスクリーンショットできます。これらはすべて、コードを書いた同じ会話内で行われます。
 
-このページでは、CLI でコンピュータ使用がどのように機能するかについて説明します。Desktop アプリについては、[Desktop でのコンピュータ使用](/ja/desktop#let-claude-use-your-computer)を参照してください。
+このページでは、CLI でコンピュータ使用がどのように機能するかについて説明します。Desktop アプリについては、[Desktop でのコンピュータ使用](/docs/ja/desktop#let-claude-use-your-computer)を参照してください。
 
 <h2 id="what-you-can-do-with-computer-use">
   コンピュータ使用でできること
@@ -31,9 +31,9 @@
 
 Claude はアプリやサービスと対話するいくつかの方法があります。コンピュータ使用は最も広く、最も遅いため、Claude は最初に最も正確なツールを試します。
 
-* サービスの [MCP サーバー](/ja/mcp)がある場合、Claude はそれを使用します。
+* サービスの [MCP サーバー](/docs/ja/mcp)がある場合、Claude はそれを使用します。
 * タスクがシェルコマンドの場合、Claude は Bash を使用します。
-* タスクがブラウザ作業で、[Chrome の Claude](/ja/chrome)がセットアップされている場合、Claude はそれを使用します。
+* タスクがブラウザ作業で、[Chrome の Claude](/docs/ja/chrome)がセットアップされている場合、Claude はそれを使用します。
 * これらのいずれも適用されない場合、Claude はコンピュータ使用を使用します。
 
 スクリーン制御は、他に何も到達できないもの（ネイティブアプリ、シミュレータ、API のないツール）のために予約されています。
@@ -98,7 +98,7 @@ sure nothing crashes. Screenshot any error states you find.
 
 これらのアプリはブロックされていません。警告により、タスクがそのレベルのアクセスを必要とするかどうかを決定できます。
 
-Claude の制御レベルはアプリカテゴリによっても異なります。ブラウザと取引プラットフォームはビューのみ、ターミナルと IDE はクリックのみ、その他すべてはフルコントロールを取得します。完全なティア分類については、[Desktop でのアプリのアクセス許可](/ja/desktop#app-permissions)を参照してください。
+Claude の制御レベルはアプリカテゴリによっても異なります。ブラウザと取引プラットフォームはビューのみ、ターミナルと IDE はクリックのみ、その他すべてはフルコントロールを取得します。完全なティア分類については、[Desktop でのアプリのアクセス許可](/docs/ja/desktop#app-permissions)を参照してください。
 
 <h2 id="how-claude-works-on-your-screen">
   Claude がスクリーンでどのように機能するか
@@ -141,7 +141,7 @@ Claude が完了したときに 2 番目の通知が表示されます。
 </h2>
 
 <Warning>
-  [サンドボックス化された Bash ツール](/ja/sandboxing)とは異なり、コンピュータ使用は実際のデスクトップで実行され、承認したアプリへのアクセスがあります。Claude は各アクションをチェックし、オンスクリーンコンテンツからの潜在的なプロンプトインジェクションにフラグを立てますが、信頼の境界は異なります。ベストプラクティスについては、[コンピュータ使用セーフティガイド](https://support.claude.com/en/articles/14128542)を参照してください。
+  [サンドボックス化された Bash ツール](/docs/ja/sandboxing)とは異なり、コンピュータ使用は実際のデスクトップで実行され、承認したアプリへのアクセスがあります。Claude は各アクションをチェックし、オンスクリーンコンテンツからの潜在的なプロンプトインジェクションにフラグを立てますが、信頼の境界は異なります。ベストプラクティスについては、[コンピュータ使用セーフティガイド](https://support.claude.com/en/articles/14128542)を参照してください。
 </Warning>
 
 組み込みのガードレールは、設定を必要とせずにリスクを軽減します。
@@ -235,7 +235,7 @@ macOS は、Screen Recording を付与した後、リクエストプロセスの
 
 サーバーは適格なセットアップにのみ表示されます。以下を確認してください。
 
-* macOS を使用しています。コンピュータ使用は Linux または Windows では利用できません。Windows では、代わりに [Desktop でのコンピュータ使用](/ja/desktop#let-claude-use-your-computer)を使用してください。
+* macOS を使用しています。コンピュータ使用は Linux または Windows では利用できません。Windows では、代わりに [Desktop でのコンピュータ使用](/docs/ja/desktop#let-claude-use-your-computer)を使用してください。
 * Pro または Max プランを使用しています。`/status` を実行してサブスクリプションを確認します。
 * claude.ai を通じて認証されています。コンピュータ使用は Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry などのサードパーティプロバイダーでは利用できません。サードパーティプロバイダーのみを通じて Claude にアクセスする場合、この機能を使用するには別の claude.ai アカウントが必要です。
 * インタラクティブセッションを使用しています。コンピュータ使用は `-p` フラグを使用した非インタラクティブモードでは利用できません。
@@ -244,8 +244,8 @@ macOS は、Screen Recording を付与した後、リクエストプロセスの
   関連項目
 </h2>
 
-* [Desktop でのコンピュータ使用](/ja/desktop#let-claude-use-your-computer): グラフィカル設定ページを備えた同じ機能
-* [Chrome の Claude](/ja/chrome): Web ベースのタスク用のブラウザ自動化
-* [MCP](/ja/mcp): Claude を構造化ツールと API に接続する
-* [サンドボックス化](/ja/sandboxing): Claude の Bash ツールがファイルシステムとネットワークアクセスを分離する方法
+* [Desktop でのコンピュータ使用](/docs/ja/desktop#let-claude-use-your-computer): グラフィカル設定ページを備えた同じ機能
+* [Chrome の Claude](/docs/ja/chrome): Web ベースのタスク用のブラウザ自動化
+* [MCP](/docs/ja/mcp): Claude を構造化ツールと API に接続する
+* [サンドボックス化](/docs/ja/sandboxing): Claude の Bash ツールがファイルシステムとネットワークアクセスを分離する方法
 * [コンピュータ使用セーフティガイド](https://support.claude.com/en/articles/14128542): 安全なコンピュータ使用のためのベストプラクティス
