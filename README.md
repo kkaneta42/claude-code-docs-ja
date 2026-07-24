@@ -17,6 +17,58 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-07-24</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/claude-security-en.md       | 2 ++
+ docs-ja/pages/desktop-ios-simulator-en.md | 2 +-
+ 2 files changed, 3 insertions(+), 1 deletion(-)
+```
+
+<details>
+<summary>claude-security-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/claude-security-en.md b/docs-ja/pages/claude-security-en.md
+index 58b5b3b..911c523 100644
+--- a/docs-ja/pages/claude-security-en.md
++++ b/docs-ja/pages/claude-security-en.md
+@@ -135,4 +135,6 @@ The plugin doesn't replace your existing source-code security tools. Run it alon
+ **The `/claude-security` menu opens with a Python warning.** The plugin needs `python3` 3.9.6 or later on your `PATH`. When it can't find `python3` at all, the menu warns that Claude Security won't work until one is installed; when the first `python3` on your `PATH` is older, the warning names the version it found. Install Python 3, or put a newer `python3` first on your `PATH`, then start a new session.
+ 
++**You may see "Fable 5's safeguards flagged this message" when using Fable 5.** Due to Fable 5's cybersecurity safety classifiers, certain model activities will be blocked and automatically downgraded to Opus.  This is expected, and the scan should still complete successfully.
++
+ ## Related resources
+ 
+```
+
+</details>
+
+<details>
+<summary>desktop-ios-simulator-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/desktop-ios-simulator-en.md b/docs-ja/pages/desktop-ios-simulator-en.md
+index 85accff..643eb5d 100644
+--- a/docs-ja/pages/desktop-ios-simulator-en.md
++++ b/docs-ja/pages/desktop-ios-simulator-en.md
+@@ -104,5 +104,5 @@ You can turn Claude's simulator access off in the desktop app's settings. Organi
+ 
+ * The `disableMobileSimulatorTools` [managed setting](/docs/en/desktop#managed-settings) blocks Claude's simulator tools. The simulator pane stays usable for your own taps, and the setting can't be overridden from within the app.
+-* A policy that requires sessions to run inside an isolated virtual machine disables the pane and the tools entirely.
++* The `requireCoworkFullVmSandbox` policy key, which runs Claude's tools inside an isolated virtual machine instead of on your Mac, disables the simulator pane and Claude's simulator tools entirely, so the pane can't attach a device while it's set.
+ 
+ Claude tells you when either applies.
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-07-23</summary>
 
 **変更ファイル:**
@@ -2870,69 +2922,6 @@ index 5615452..642541c 100644
 +- Fixed `claude --bg` silently creating an unattachable session when combined with `--print`/`-p`; the conflicting flags are now rejected up front
 +- Fixed the workflow progress view dropping the earliest agents from the list while the phase counter stayed correct in SDK and desktop-app sessions
 +- Fixed `.claude/rules/` conditional rules not loading when the target file is reached via a symlinked path
-```
-
-</details>
-
-<details>
-<summary>env-vars-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/env-vars-ja.md b/docs-ja/pages/env-vars-ja.md
-index 574d0dd..bd22524 100644
---- a/docs-ja/pages/env-vars-ja.md
-+++ b/docs-ja/pages/env-vars-ja.md
-@@ -269,5 +269,5 @@ Claude Code は起動時に環境変数を読み取るため、変更は `claude
- | `CLAUDE_CODE_SESSIONEND_HOOKS_TIMEOUT_MS`               | [SessionEnd](/ja/hooks#sessionend) フックの時間予算をオーバーライドします（ミリ秒）。セッション終了、`/clear`、および対話的な `/resume` を通じたセッション切り替えに適用されます。デフォルトでは予算は 1.5 秒で、設定ファイルで設定されたフックごとの最高 `timeout` に自動的に引き上げられます。最大 60 秒。プラグイン提供フックのタイムアウトは予算を引き上げません                                                                                                                                                                                                                                                                                                                                                                                          |
- | `CLAUDE_CODE_SESSION_ID`                                | Bash と PowerShell ツールサブプロセスで現在のセッション ID に自動的に設定されます。[フック](/ja/hooks) コマンドサブプロセスと stdio [MCP サーバー](/ja/mcp) サブプロセスでも設定されます。フックに渡される `session_id` フィールドと一致します。`/clear` で更新されます。スクリプトと外部ツールを Claude Code セッションと相関させるために使用します                                                                                                                                                                                                                                                                                                                                                                                        |
--| `CLAUDE_CODE_SHELL`                                     | 自動シェル検出をオーバーライドします。ログインシェルが優先作業シェルと異なる場合に役立ちます（例：`bash` vs `zsh`）                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-+| `CLAUDE_CODE_SHELL`                                     | Claude Code が Bash ツールコマンドを実行するために使用するシェルを設定します。`bash` または `zsh` バイナリへのパス（例：`/opt/homebrew/bin/bash`）を受け入れます。`fish` などの他のシェルはサポートされていません。値が機能する `bash` または `zsh` パスでない場合、Claude Code はそれを無視し、自動検出にフォールバックします。自動検出は、`bash` または `zsh` を指している場合に `$SHELL` を使用します。それ以外の場合は、PATH と標準インストール場所で見つかった最初の機能する `zsh` を選択し、次に `bash` を選択します                                                                                                                                                                                                                                                                                 |
- | `CLAUDE_CODE_SHELL_PREFIX`                              | Claude Code がスポーンするシェルコマンドをラップするコマンドプレフィックス：Bash ツール呼び出し、[フック](/ja/hooks) コマンド、[ステータスライン](/ja/statusline) コマンド、stdio [MCP サーバー](/ja/mcp) スタートアップコマンド。PowerShell フックと exec 形式フックはプレフィックスなしで実行されます。ログまたは監査に役立ちます。`/path/to/logger.sh` などの裸の実行可能ファイルパスを設定すると、各コマンドが `/path/to/logger.sh '<command>'` として実行されます。ラッパーはコマンドラインを `$1` の単一シェルクォート引数として受け取るため、ラッパーは `$1` を `exec bash -c "$1"` などのシェルで再評価する必要があります。`$1` を裸の実行可能ファイルパスとして扱うと、`npx -y <package>` などの引数を渡す stdio MCP サーバーが壊れます。Bash ツール呼び出しの場合、`$1` には Claude が組み立てた完全なシェル呼び出しが含まれます。環境セットアップを含みます。Claude が実行したコマンドのみではありません                                 |
- | `CLAUDE_CODE_SIMPLE`                                    | 最小限のシステムプロンプトと Bash、ファイル読み取り、ファイル編集ツールのみで実行するには `1` に設定します。`--mcp-config` からの MCP ツールは引き続き利用可能です。フック、スキル、プラグイン、MCP サーバー、自動メモリ、CLAUDE.md の自動検出を無効にします。OAuth トークンとキーチェーン認証情報は読み取られないため、Anthropic 認証は `ANTHROPIC_API_KEY` または `--settings` の `apiKeyHelper` から取得する必要があります。[`--bare`](/ja/headless#start-faster-with-bare-mode) CLI フラグと同等です                                                                                                                                                                                                                                                                         |
-@@ -379,4 +379,5 @@ Claude Code は起動時に環境変数を読み取るため、変更は `claude
- | `VERTEX_REGION_CLAUDE_4_7_OPUS`                         | {/* min-version: 2.1.111 */}Vertex AI を使用する場合、Claude Opus 4.7 のリージョンをオーバーライドします。v2.1.111 で追加されました                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
- | `VERTEX_REGION_CLAUDE_4_8_OPUS`                         | {/* min-version: 2.1.154 */}Vertex AI を使用する場合、Claude Opus 4.8 のリージョンをオーバーライドします。v2.1.154 で追加されました                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-+| `VERTEX_REGION_CLAUDE_5_SONNET`                         | {/* min-version: 2.1.197 */}Vertex AI を使用する場合、Claude Sonnet 5 のリージョンをオーバーライドします。v2.1.197 で追加されました                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
- | `VERTEX_REGION_CLAUDE_FABLE_5`                          | {/* min-version: 2.1.170 */}Vertex AI を使用する場合、Claude Fable 5 のリージョンをオーバーライドします。v2.1.170 で追加されました                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
- | `VERTEX_REGION_CLAUDE_HAIKU_4_5`                        | Vertex AI を使用する場合、Claude Haiku 4.5 のリージョンをオーバーライドします                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-```
-
-</details>
-
-<details>
-<summary>llm-gateway-protocol-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/llm-gateway-protocol-ja.md b/docs-ja/pages/llm-gateway-protocol-ja.md
-index a003766..b451358 100644
---- a/docs-ja/pages/llm-gateway-protocol-ja.md
-+++ b/docs-ja/pages/llm-gateway-protocol-ja.md
-@@ -196,5 +196,5 @@ Claude Code はレスポンスの `data` 配列の各エントリから `id` と
- ピッカーは、開発者が Claude Code で `/model` を実行するときに開く対話型モデルリストです。各検出されたエントリは「ゲートウェイから」とラベル付けされ、提供されている場合は `display_name` を使用します。[`availableModels` マネージド設定](/ja/settings#available-settings)は検出が追加できるものを制限します。
- 
--検出された ID は、ピッカーに既に存在する行と正確に一致する場合、または検出されたものと既存の ID の両方が [Fable](/ja/model-config#work-with-fable-5) に解決される場合のみスキップされます。組み込み行は `sonnet` などのエイリアスをキーとするため、`claude-sonnet-4-6` などの検出された ID は、組み込みエントリの横に独自の「ゲートウェイから」行を追加します。
-+検出された ID は、ピッカーに既に存在する行と正確に一致する場合、または検出されたものと既存の ID の両方が [Fable](/ja/model-config#work-with-fable-5) に解決される場合のみスキップされます。{/* min-version: 2.1.197 */}Claude Code v2.1.197 以降では、検出された明示的な ID は、両方が同じモデルに解決される場合、組み込みエントリに折りたたまれます。組み込み行は `sonnet` などのエイリアスをキーとするため、エイリアスが現在解決するモデルの検出された明示的な ID（`claude-sonnet-5` など）は `sonnet` 行に折りたたまれ、エイリアスが解決しない ID（`claude-sonnet-4-6` など）は組み込みエントリの横に独自の「ゲートウェイから」行を追加します。
- 
- 結果は `~/.claude/cache/gateway-models.json` にキャッシュされます。Windows では `%USERPROFILE%\.claude\cache\gateway-models.json`。各スタートアップで更新されます。リクエストが失敗するか、ゲートウェイが `/v1/models` を実装しない場合、ピッカーは前回のスタートアップからのキャッシュリストまたは組み込みモデルリストにフォールバックします。ゲートウェイが検出フィルターと一致しないエイリアスの下で Claude モデルを提供する場合、開発者は [モデル設定](/ja/model-config)変数を使用してそれらのエイリアスを手動で追加できます。
-```
-
-</details>
-
-<details>
-<summary>monitoring-usage-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/monitoring-usage-ja.md b/docs-ja/pages/monitoring-usage-ja.md
-index 23ac919..7f259a8 100644
---- a/docs-ja/pages/monitoring-usage-ja.md
-+++ b/docs-ja/pages/monitoring-usage-ja.md
-@@ -629,5 +629,5 @@ Claude Code は、OpenTelemetry ログ/イベント経由で以下のイベン
- * `response_length`: レスポンステキストの長さ (文字単位)
- * `response`: レスポンステキスト。60 KB で切り詰められます。デフォルトでは `<REDACTED>` にマスクされます。`OTEL_LOG_ASSISTANT_RESPONSES=1` で有効化します。`OTEL_LOG_ASSISTANT_RESPONSES` が設定されていない場合、`OTEL_LOG_USER_PROMPTS` が代わりに制御するため、プロンプトログが有効な場合でもレスポンスをマスクしたままにするには `OTEL_LOG_ASSISTANT_RESPONSES=0` を設定します
--* `model`: モデル識別子 (例: "claude-sonnet-4-6")
-+* `model`: モデル識別子 (例: "claude-sonnet-5")
- * `request_id`: レスポンスの `request-id` ヘッダーからの Anthropic API リクエスト ID。API が返す場合のみ存在します
- * `query_source`: リクエストを発行したサブシステム。例: `"repl_main_thread"`、`"compact"`、またはサブエージェント名
 ```
 
 </details>
