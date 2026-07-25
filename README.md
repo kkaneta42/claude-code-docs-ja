@@ -17,6 +17,77 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-07-25</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md                 | 31 +++++++++++++++++++++++++++++-
+ docs-ja/pages/claude-code-on-the-web-ja.md |  2 --
+ 2 files changed, 30 insertions(+), 3 deletions(-)
+```
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index 7b4d63a..97c4a8e 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,34 @@
+ # Changelog
+ 
++## 2.1.219
++
++- Added Claude Opus 5 (`claude-opus-5`), now the default Opus model — 1M context, fast mode at $10/$50 per Mtok
++- Added `sandbox.network.strictAllowlist` setting to deny non-allowlisted hosts for sandboxed commands without prompting
++- Added `DirectoryAdded` hook that fires after `/add-dir` or the SDK `register_repo_root` control request registers a new working directory mid-session
++- Added `mcp_server_errors` to the headless stream-json init event, listing `--mcp-config` entries skipped by config validation; terminal runs print a startup warning
++- Added the `workflowSizeGuideline` settings key so the advisory Dynamic workflow size guideline can be set from any settings file; the `/config` row is hidden while one does
++- Added nested subagent forwarding in stream-json: subagents spawned at depth-2+ now appear when `--forward-subagent-text` is set, keyed by their spawning Agent `tool_use` id
++- Fixed `claude -p` text output dropping the answer already produced when a turn dies on a mid-stream API error
++- Added HTTP status and error text to `claude mcp list` and `/mcp` when a server fails to connect, and a warning for MCP config values with hidden leading or trailing whitespace
++- Fixed a permission you approved while a self-hosted runner was restarting being dropped when the session resumed, so the approved action now runs
++- Fixed the Fable model row showing "Requires usage credits" for plans that include it, when a stale cache had baked the label in
++- Fixed a SIGTERM arriving while a self-hosted runner was starting up leaving a stale active row until the lease expired; it now deregisters cleanly
++- Added structured failure categories to self-hosted runner spawn and session failures, so hook errors, runner crashes and config errors can be told apart
++- Fixed the `/model` picker showing the merged Opus row as plain "Opus" instead of "Opus (1M context)"
++- Fixed copy-on-select inside GNU screen printing base64 into the terminal instead of copying the selection
++- Fixed Remote Control clients keeping a stale fast-mode status after a model switch, reconnect, or failed org check
++- Fixed `CLAUDE_CODE_GIT_BASH_PATH` on Windows exiting or being used as bash when the path isn't a bash/sh binary; it's now ignored with a warning
++- Fixed Vim mode: pressing ← on an empty prompt now returns to the agent view from NORMAL mode, not just INSERT
++- Fixed screen-reader mode rewriting the entire input line on every keystroke instead of echoing only the typed character
++- Improved the "Remote Control is only available via api.anthropic.com" error to name the specific setting that caused it
++- Improved `claude --teleport` to show which repo your current checkout points at when it doesn't match the session's repo
++- Changed dynamic workflows to default to a medium size guideline (aim for fewer than 15 agents); pick another size or unrestricted with Dynamic workflow size in `/config`
+```
+
+</details>
+
+<details>
+<summary>claude-code-on-the-web-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/claude-code-on-the-web-ja.md b/docs-ja/pages/claude-code-on-the-web-ja.md
+index ba9465b..a97e97e 100644
+--- a/docs-ja/pages/claude-code-on-the-web-ja.md
++++ b/docs-ja/pages/claude-code-on-the-web-ja.md
+@@ -215,6 +215,4 @@ Team および Enterprise プランのオーナーと管理者は、組織のす
+ 共有環境の値はその環境のすべてのメンバーのセッションに到達します。個人環境と同様に、共有環境には専用シークレットストアがないため、シークレットを含めないでください。
+ 
+-セルフホストランナープログラムの組織は、同じページからランナープールも管理します。
+-
+ <h2 id="setup-scripts">
+   セットアップスクリプト
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-07-24</summary>
 
 **変更ファイル:**
@@ -2827,101 +2898,6 @@ index 7269a1a..159eea2 100644
 +| Fable 5 ({/* min-version: 2.1.170 */}v2.1.170+) | Fable                      | Opus または Sonnet advisor は拒否されます                                               |
  
  Fable 5 は、メインモデルとして機能するか advisor として機能するかに関わらず、Claude Code v2.1.170 以降と Fable 5 アクセスが必要です。
-```
-
-</details>
-
-<details>
-<summary>agent-teams-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/agent-teams-ja.md b/docs-ja/pages/agent-teams-ja.md
-index 544d62a..984c277 100644
---- a/docs-ja/pages/agent-teams-ja.md
-+++ b/docs-ja/pages/agent-teams-ja.md
-@@ -285,4 +285,6 @@ Spawn a teammate using the security-reviewer agent type to audit the auth module
- チームメンバーはリーダーの権限設定で開始します。リーダーが `--dangerously-skip-permissions` で実行する場合、すべてのチームメンバーも同様に実行します。生成後、個別のチームメンバーモードを変更できますが、生成時にチームメンバーごとのモードを設定することはできません。
- 
-+1 つのエージェントが `SendMessage` 経由で別のエージェントにメッセージを送信する場合、受信エージェントには、あなたからではなく別の Claude セッションから来たことが通知されます。チームメンバーは権限プロンプトを承認したり、あなたに代わって同意を提供したりすることはできません。また、アクションが拒否されたチームメンバーは、チェックをバイパスするために別のチームメンバーにそれをリレーすることはできません。[auto mode](/ja/permission-modes#eliminate-prompts-with-auto-mode) では、別のエージェントからリレーされた承認クレームは、あなたからの確認ではなく、信頼できない入力として分類器によって扱われます。チームメンバーの権限プロンプトはリーダーセッションにバブルアップするため、そこで自分で承認してください。
-+
- <h3 id="context-and-communication">
-   コンテキストと通信
-```
-
-</details>
-
-<details>
-<summary>agent-view-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/agent-view-ja.md b/docs-ja/pages/agent-view-ja.md
-index c8b6854..26f438b 100644
---- a/docs-ja/pages/agent-view-ja.md
-+++ b/docs-ja/pages/agent-view-ja.md
-@@ -272,15 +272,15 @@ Completed
- プロンプトの一部をプレフィックスまたは言及してセッションの開始方法を制御します：
- 
--| 入力                               | 効果                                                                                                       |
--| :------------------------------- | :------------------------------------------------------------------------------------------------------- |
--| `<agent-name> <prompt>`          | 最初の単語がカスタム [subagent](/ja/sub-agents) 名と一致する場合、その subagent はセッションのメインエージェントとして実行され、frontmatter の設定を使用します |
--| `@<agent-name>`                  | プロンプト内の任意の場所でカスタム subagent を言及してメインエージェントとして実行                                                           |
--| `@<repo>`                        | エージェントビューを開いたディレクトリの下のリポジトリを言及してセッションをそこで実行                                                              |
--| `/<command>`                     | [skills](/ja/skills) および [commands](/ja/commands) をディスパッチプロンプトとして提案                                      |
--| `! <command>`                    | Claude セッションを開始する代わりに、シェルコマンドをバックグラウンドジョブとして実行します。ジョブは行として表示され、アタッチ、監視、デタッチできます                          |
--| `#<number>` または pull request URL | セッションが既にその PR で作業している場合は、ディスパッチの代わりに選択                                                                   |
--| `Shift+Enter`                    | ディスパッチして新しいセッションに直ちにアタッチ                                                                                 |
--
--エージェントビュー自体で実行される少数のコマンドがあります。ディスパッチの代わりに：`/exit` および `/quit` はエージェントビューを閉じ、`/logout` はサインアウトします。`/model` はディスパッチモデルを設定します。skills、独自のコマンド、および `/init` などのプロンプト展開組み込みは、新しいバックグラウンドセッションにその最初のプロンプトとして送信されます。その他の組み込みコマンドは、代わりに `attach to a session to run it` ヒントを表示します。
-+| 入力                               | 効果                                                                                                              |
-+| :------------------------------- | :-------------------------------------------------------------------------------------------------------------- |
-+| `<agent-name> <prompt>`          | 最初の単語がカスタム [subagent](/ja/sub-agents) 名と一致する場合、その subagent はセッションのメインエージェントとして実行され、frontmatter の設定を使用します        |
-+| `@<agent-name>`                  | プロンプト内の任意の場所でカスタム subagent を言及してメインエージェントとして実行                                                                  |
-+| `@<repo>`                        | リポジトリを言及してセッションをそこで実行します。どのリポジトリがリストされるかについては、[特定のディレクトリにディスパッチする](#dispatch-to-a-specific-directory) を参照してください |
-+| `/<command>`                     | [skills](/ja/skills) および [commands](/ja/commands) をディスパッチプロンプトとして提案                                             |
-+| `! <command>`                    | Claude セッションを開始する代わりに、シェルコマンドをバックグラウンドジョブとして実行します。ジョブは行として表示され、アタッチ、監視、デタッチできます                                 |
-+| `#<number>` または pull request URL | セッションが既にその PR で作業している場合は、ディスパッチの代わりに選択                                                                          |
-+| `Shift+Enter`                    | ディスパッチして新しいセッションに直ちにアタッチ                                                                                        |
-+
-+エージェントビュー自体で実行される少数のコマンドがあります。ディスパッチの代わりに：`/exit` および `/quit` はエージェントビューを閉じ、`/logout` はサインアウトします。`/model` は [ディスパッチモデル](#set-the-model) を設定します。skills、独自のコマンド、および `/init` などのプロンプト展開組み込みは、新しいバックグラウンドセッションにその最初のプロンプトとして送信されます。その他の組み込みコマンドは、代わりに `attach to a session to run it` ヒントを表示します。
- 
-```
-
-</details>
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index 5615452..642541c 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,39 @@
- # Changelog
- 
-+## 2.1.198
-+
-+- Claude in Chrome is now generally available
-+- Added background agent notifications in `claude agents` — sessions that need input or finish now fire the `Notification` hook (`agent_needs_input` / `agent_completed`)
-+- Added `/dataviz` skill for chart and dashboard design guidance with a runnable color-palette validator
-+- Gateway: added Claude Platform on AWS (anthropicAws) as an upstream provider; model-not-found responses now advance the failover chain
-+- Background agents launched from `claude agents` now commit, push, and open a draft PR when they finish code work in a worktree, instead of stopping to ask
-+- The built-in Explore agent now inherits the main session's model (capped at opus) instead of running on haiku
-+- Subagents and context compaction now inherit the session's extended thinking configuration, improving output quality on delegated tasks
-+- Fixed brief network drops mid-response aborting the turn — transient errors like ECONNRESET now retry with backoff instead of failing
-+- Fixed excessive background classifier requests when sandboxed processes repeatedly accessed the same network host
-+- Fixed background tasks in web, desktop, and VS Code task panels getting stuck on "Running" after they finish or after resuming a session
-+- Fixed agent teams: a teammate that dies on an API error now reports "failed" to the lead, and messaging a stuck teammate wakes it to retry immediately
-+- Fixed the `/diff` panel not refreshing when you switch branches or commit outside the session
-+- Fixed markdown tables overflowing and wrapping their right border when rendered in fullscreen mode
-+- Fixed Claude Platform on AWS and Mantle sessions dead-ending with "Please run /login" when the STS token expires — `awsAuthRefresh` now runs automatically
-+- Fixed "no route to host" for local-network hosts in macOS background agent sessions by declaring Local Network entitlements
-+- Fixed `/desktop` failing with "Cannot determine working directory" after entering and exiting a worktree
-+- Fixed background agents repeatedly showing "Reconnecting…" every ~52 seconds on macOS while the agents view was open
-+- Fixed pressing `←` inside `claude attach <id>` exiting to the shell instead of opening the agent view
-+- Fixed `claude --bg` silently creating an unattachable session when combined with `--print`/`-p`; the conflicting flags are now rejected up front
-+- Fixed the workflow progress view dropping the earliest agents from the list while the phase counter stayed correct in SDK and desktop-app sessions
-+- Fixed `.claude/rules/` conditional rules not loading when the target file is reached via a symlinked path
 ```
 
 </details>
