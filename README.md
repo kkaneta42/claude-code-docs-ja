@@ -17,6 +17,55 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-07-26</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+```
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index 97c4a8e..7ca26b5 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,8 @@
+ # Changelog
+ 
++## 2.1.220
++
++- Bug fixes and reliability improvements
++
+ ## 2.1.219
+ 
+@@ -11,8 +15,5 @@
+ - Fixed `claude -p` text output dropping the answer already produced when a turn dies on a mid-stream API error
+ - Added HTTP status and error text to `claude mcp list` and `/mcp` when a server fails to connect, and a warning for MCP config values with hidden leading or trailing whitespace
+-- Fixed a permission you approved while a self-hosted runner was restarting being dropped when the session resumed, so the approved action now runs
+ - Fixed the Fable model row showing "Requires usage credits" for plans that include it, when a stale cache had baked the label in
+-- Fixed a SIGTERM arriving while a self-hosted runner was starting up leaving a stale active row until the lease expired; it now deregisters cleanly
+-- Added structured failure categories to self-hosted runner spawn and session failures, so hook errors, runner crashes and config errors can be told apart
+ - Fixed the `/model` picker showing the merged Opus row as plain "Opus" instead of "Opus (1M context)"
+ - Fixed copy-on-select inside GNU screen printing base64 into the terminal instead of copying the selection
+@@ -954,5 +955,4 @@
+ ## 2.1.169
+ 
+-- Self-hosted runner: added a `post-session` lifecycle hook that runs after the session ends and before the workspace is deleted, so you can snapshot uncommitted work or export logs; also made the child-process SIGTERM→SIGKILL window configurable (default unchanged at 5s)
+ - Added `--safe-mode` flag (and `CLAUDE_CODE_SAFE_MODE`) to start Claude Code with all customizations (CLAUDE.md, plugins, skills, hooks, MCP servers) disabled for troubleshooting
+ - Added `/cd` command to move a session to a new working directory without breaking the prompt cache mid-session
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-07-25</summary>
 
 **変更ファイル:**
@@ -2850,56 +2899,5 @@ index cb4f485..2fcd922 100644
 
 </details>
 
-
-<details>
-<summary>2026-07-02</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/advisor-ja.md              | 14 ++++++-------
- docs-ja/pages/agent-teams-ja.md          |  2 ++
- docs-ja/pages/agent-view-ja.md           | 28 ++++++++++++-------------
- docs-ja/pages/changelog.md               | 35 ++++++++++++++++++++++++++++++++
- docs-ja/pages/env-vars-ja.md             |  3 ++-
- docs-ja/pages/llm-gateway-protocol-ja.md |  2 +-
- docs-ja/pages/monitoring-usage-ja.md     |  2 +-
- docs-ja/pages/skills-ja.md               |  2 ++
- docs-ja/pages/tools-reference-ja.md      |  2 +-
- docs-ja/pages/troubleshoot-install-ja.md |  8 +++++++-
- docs-ja/pages/vs-code-ja.md              |  2 ++
- 11 files changed, 74 insertions(+), 26 deletions(-)
-```
-
-<details>
-<summary>advisor-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/advisor-ja.md b/docs-ja/pages/advisor-ja.md
-index 7269a1a..159eea2 100644
---- a/docs-ja/pages/advisor-ja.md
-+++ b/docs-ja/pages/advisor-ja.md
-@@ -85,11 +85,11 @@ claude --advisor opus
- advisor はメインモデル以上の機能を持つ必要があります。各メインモデルで受け入れられる advisor は次のとおりです。
- 
--| メインモデル                                          | 受け入れられる advisor            | 注記                                                    |
--| ----------------------------------------------- | -------------------------- | ----------------------------------------------------- |
--| Haiku 4.5                                       | Fable、Opus、Sonnet          | Haiku は advisor を呼び出すことはできますが、advisor として機能することはできません |
--| Sonnet 4.6                                      | Fable、Opus、Sonnet          |                                                       |
--| Sonnet 5                                        | Fable、Opus、Sonnet 5        | Sonnet 4.6 advisor は拒否されます                            |
--| Opus 4.6 以降                                     | Fable、メインモデルのバージョン以上の Opus | Opus 4.7 メインと Opus 4.6 advisor は拒否されます                |
--| Fable 5 ({/* min-version: 2.1.170 */}v2.1.170+) | Fable                      | Opus または Sonnet advisor は拒否されます                       |
-+| メインモデル                                          | 受け入れられる advisor            | 注記                                                                            |
-+| ----------------------------------------------- | -------------------------- | ----------------------------------------------------------------------------- |
-+| Haiku 4.5                                       | Fable、Opus、Sonnet          | Haiku は advisor を呼び出すことはできますが、advisor として機能することはできません                         |
-+| Sonnet 4.6                                      | Fable、Opus、Sonnet          |                                                                               |
-+| Sonnet 5                                        | Fable、Opus、Sonnet 5        | Sonnet 4.6 advisor は拒否されます                                                    |
-+| Opus 4.6 以降                                     | Fable、メインモデルのバージョン以上の Opus | Opus 4.7 メインと Opus 4.6 advisor は拒否されます。Opus 4.6 メインは Sonnet 5 advisor も受け入れます |
-+| Fable 5 ({/* min-version: 2.1.170 */}v2.1.170+) | Fable                      | Opus または Sonnet advisor は拒否されます                                               |
- 
- Fable 5 は、メインモデルとして機能するか advisor として機能するかに関わらず、Claude Code v2.1.170 以降と Fable 5 アクセスが必要です。
-```
-
-</details>
 
 <!-- UPDATE_LOG_END -->
