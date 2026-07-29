@@ -17,6 +17,163 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-07-29</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/claude-directory-ja.md  | 6 +++---
+ docs-ja/pages/claude-security-en.md   | 7 ++++---
+ docs-ja/pages/hooks-guide-ja.md       | 2 +-
+ docs-ja/pages/hooks-ja.md             | 2 +-
+ docs-ja/pages/mobile-en.md            | 5 +++--
+ docs-ja/pages/plugins-reference-ja.md | 2 +-
+ 6 files changed, 13 insertions(+), 11 deletions(-)
+```
+
+**新規追加:**
+
+
+<details>
+<summary>claude-directory-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/claude-directory-ja.md b/docs-ja/pages/claude-directory-ja.md
+index 3f63d72..d4a46d5 100644
+--- a/docs-ja/pages/claude-directory-ja.md
++++ b/docs-ja/pages/claude-directory-ja.md
+@@ -103,5 +103,5 @@ config/secrets.json`,
+         color: 'var(--ce-accent)',
+         oneLiner: 'Project-level configuration, rules, and extensions',
+-        description: 'Everything Claude Code reads that is specific to this project. If you use git, commit most files here so your team shares them; a few, like settings.local.json, are automatically gitignored. Each file badge shows which.',
++        description: 'Everything Claude Code reads that is specific to this project. If you use git, commit most files here so your team shares them; a few, like settings.local.json, are gitignored when Claude Code saves settings to them. Each file badge shows which.',
+         children: [{
+           id: 'settings-json',
+@@ -147,6 +147,6 @@ config/secrets.json`,
+           oneLiner: 'Your personal settings overrides for this project',
+           when: 'Highest of the user-editable settings files; CLI flags and managed settings still take precedence',
+-          description: 'Personal settings that take precedence over the project defaults. Same JSON format as settings.json, but not committed. Use this when you need different permissions or defaults than the team config.',
+-          tips: [<>Same schema as settings.json. Array settings like <C>permissions.allow</C> combine across scopes; scalar settings like <C>model</C> use the local value</>, <>Claude Code adds this file to <C>~/.config/git/ignore</C> the first time it writes one. If you use a custom <C>core.excludesFile</C>, add the pattern there too. To share the ignore rule with your team, also add it to the project <C>.gitignore</C></>],
++          description: 'Personal settings that take precedence over the project defaults. Same JSON format as settings.json, gitignored when Claude Code saves a setting to it. Use this when you need different permissions or defaults than the team config.',
++          tips: [<>Same schema as settings.json. Array settings like <C>permissions.allow</C> combine across scopes; scalar settings like <C>model</C> use the local value</>, <>When Claude Code saves a setting to this file in a repository that doesn't already ignore it, it adds <C>**/.claude/settings.local.json</C> to your global git excludes file: <C>core.excludesFile</C> from your global git config when it's set to an absolute or <C>~</C>-prefixed path, otherwise <C>$XDG_CONFIG_HOME/git/ignore</C>, or <C>~/.config/git/ignore</C>. To share the ignore rule with your team, also add it to the project <C>.gitignore</C></>],
+           exampleIntro: 'This example adds Docker permissions on top of whatever the team settings.json allows.',
+           example: `{
+```
+
+</details>
+
+<details>
+<summary>claude-security-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/claude-security-en.md b/docs-ja/pages/claude-security-en.md
+index 911c523..f98988a 100644
+--- a/docs-ja/pages/claude-security-en.md
++++ b/docs-ja/pages/claude-security-en.md
+@@ -30,7 +30,8 @@ In a Claude Code session, install from the [official Anthropic marketplace](/doc
+ ```
+ 
+-<Note>
+-  If Claude Code reports that the marketplace is not found, run `/plugin marketplace add anthropics/claude-plugins-official` first, then retry the install.
+-</Note>
++If the install fails, the fix depends on which message Claude Code reports:
++
++* If it reports `Marketplace "claude-plugins-official" not found`, add the marketplace with `/plugin marketplace add anthropics/claude-plugins-official`, then retry the install.
++* If it reports that it can't find the plugin in the marketplace, check the plugin name for a typo, then refresh your local copy of the marketplace with `/plugin marketplace update claude-plugins-official` and retry the install.
+ 
+ Then activate the plugin in the current session with `/reload-plugins`, which applies pending plugin changes without a restart:
+```
+
+</details>
+
+<details>
+<summary>hooks-guide-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/hooks-guide-ja.md b/docs-ja/pages/hooks-guide-ja.md
+index d49c8ce..d56587d 100644
+--- a/docs-ja/pages/hooks-guide-ja.md
++++ b/docs-ja/pages/hooks-guide-ja.md
+@@ -466,5 +466,5 @@ Hook イベントは Claude Code のライフサイクルの特定のポイン
+ | `UserPromptExpansion` | When a user-typed command expands into a prompt, before it reaches Claude. Can block the expansion                                                     |
+ | `PreToolUse`          | Before a tool call executes. Can block it                                                                                                              |
+-| `PermissionRequest`   | When a permission dialog appears                                                                                                                       |
++| `PermissionRequest`   | When a tool call needs a permission decision                                                                                                           |
+ | `PermissionDenied`    | When a tool call is denied by the auto mode classifier. Return `{retry: true}` to tell the model it may retry the denied tool call                     |
+ | `PostToolUse`         | After a tool call succeeds                                                                                                                             |
+```
+
+</details>
+
+<details>
+<summary>hooks-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/hooks-ja.md b/docs-ja/pages/hooks-ja.md
+index ca87be6..b71be52 100644
+--- a/docs-ja/pages/hooks-ja.md
++++ b/docs-ja/pages/hooks-ja.md
+@@ -40,5 +40,5 @@
+ | `UserPromptExpansion` | When a user-typed command expands into a prompt, before it reaches Claude. Can block the expansion                                                     |
+ | `PreToolUse`          | Before a tool call executes. Can block it                                                                                                              |
+-| `PermissionRequest`   | When a permission dialog appears                                                                                                                       |
++| `PermissionRequest`   | When a tool call needs a permission decision                                                                                                           |
+ | `PermissionDenied`    | When a tool call is denied by the auto mode classifier. Return `{retry: true}` to tell the model it may retry the denied tool call                     |
+ | `PostToolUse`         | After a tool call succeeds                                                                                                                             |
+```
+
+</details>
+
+<details>
+<summary>mobile-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/mobile-en.md b/docs-ja/pages/mobile-en.md
+index 02e18b2..627011e 100644
+--- a/docs-ja/pages/mobile-en.md
++++ b/docs-ja/pages/mobile-en.md
+@@ -53,5 +53,5 @@ Cloud sessions and Remote Control run from the **Code** tab and are covered belo
+ Claude Code on the web runs tasks on Anthropic-managed cloud infrastructure, so a session continues after you put your phone away. From the Code tab, select a repository and branch, describe the task, and submit it. Sessions persist across devices: a task you start on your laptop is ready to review from your phone, and one you start from your phone is waiting when you're back at your desk.
+ 
+-Open a session in the app to check progress, answer Claude's questions, or steer it in a new direction. You can also tell Claude to [watch a pull request](/docs/en/claude-code-on-the-web#auto-fix-pull-requests) and fix CI failures or review comments as they arrive. To connect GitHub and create your first environment, follow the [web quickstart](/docs/en/web-quickstart), and see [Claude Code on the web](/docs/en/claude-code-on-the-web) for everything cloud sessions can do.
++Open a session in the app to check progress, answer Claude's questions, or steer it in a new direction. You can also tell Claude to [watch a pull request](/docs/en/claude-code-on-the-web#auto-fix-pull-requests) and fix CI failures or review comments as they arrive. To connect GitHub and set up your environment, follow the [web quickstart](/docs/en/web-quickstart), and see [Claude Code on the web](/docs/en/claude-code-on-the-web) for everything cloud sessions can do.
+ 
+ ### Continue a local session with Remote Control
+@@ -78,5 +78,6 @@ The mobile client covers most of what a session needs, with a few limitations:
+ 
+ * [Platforms and integrations](/docs/en/platforms): compare every surface Claude Code runs on
+-* [Claude Code on the web](/docs/en/claude-code-on-the-web): how cloud sessions run, network access, and moving work to and from your terminal
++* [Claude Code on the web](/docs/en/claude-code-on-the-web): how cloud sessions run and how to move work to and from your terminal
++* [Configure cloud environments](/docs/en/cloud-environments): network access levels, environment variables, and setup scripts for cloud sessions
+ * [Remote Control](/docs/en/remote-control): continue a local session from any device
+ * [Sessions from Dispatch](/docs/en/desktop#sessions-from-dispatch): how Dispatch tasks become Code sessions in the Desktop app
+```
+
+</details>
+
+<details>
+<summary>plugins-reference-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/plugins-reference-ja.md b/docs-ja/pages/plugins-reference-ja.md
+index 2db4760..4cb1e94 100644
+--- a/docs-ja/pages/plugins-reference-ja.md
++++ b/docs-ja/pages/plugins-reference-ja.md
+@@ -126,5 +126,5 @@ disallowedTools: Write, Edit
+ | `UserPromptExpansion` | When a user-typed command expands into a prompt, before it reaches Claude. Can block the expansion                                                     |
+ | `PreToolUse`          | Before a tool call executes. Can block it                                                                                                              |
+-| `PermissionRequest`   | When a permission dialog appears                                                                                                                       |
++| `PermissionRequest`   | When a tool call needs a permission decision                                                                                                           |
+ | `PermissionDenied`    | When a tool call is denied by the auto mode classifier. Return `{retry: true}` to tell the model it may retry the denied tool call                     |
+ | `PostToolUse`         | After a tool call succeeds                                                                                                                             |
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-07-26</summary>
 
 **変更ファイル:**
@@ -2692,212 +2849,5 @@ index 26f438b..eaa1e35 100644
 ```
 
 </details>
-
-<details>
-<summary>artifacts-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/artifacts-ja.md b/docs-ja/pages/artifacts-ja.md
-index 10fb365..f018128 100644
---- a/docs-ja/pages/artifacts-ja.md
-+++ b/docs-ja/pages/artifacts-ja.md
-@@ -5,13 +5,13 @@
- # セッション出力をアーティファクトとして共有する
- 
--> アーティファクトは Claude Code の作業をライブでインタラクティブなページに変え、組織内で共有できるプライベート URL で利用できます。
-+> アーティファクトは Claude Code の作業をライブでインタラクティブなページに変え、claude.ai 上のプライベート URL で利用できます。
- 
--{/* plan-availability: feature=artifacts plans=team,enterprise providers=anthropic */}
-+{/* plan-availability: feature=artifacts plans=pro,max,team,enterprise providers=anthropic */}
- 
- <Note>
--  アーティファクトはベータ版です。Team または Enterprise プランと、[`/login`](/ja/setup#authenticate) でサインインしたセッションが必要です。要件の完全なセットについては、[利用可能性](#availability)を参照してください。
-+  アーティファクトは Pro、Max、Team、および Enterprise プランで利用でき、[`/login`](/ja/setup#authenticate) でサインインしたセッションが必要です。要件の完全なセットについては、[利用可能性](#availability)を参照してください。
- </Note>
- 
--アーティファクトは、Claude Code がセッションから claude.ai のプライベート URL に公開するライブでインタラクティブなウェブページです。ブラウザで開くと、セッションが続く間、ページはその場で更新されます。ページヘッダーから共有して、チームメイトにも見てもらうことができます。たとえば、アーティファクトを使用して、注釈付きの差分でプルリクエストをレビュアーに説明したり、セッションデータからダッシュボードを構築したり、Claude が作業する際に埋まっていく調査タイムラインを保持したりできます。
-+アーティファクトは、Claude Code がセッションから claude.ai のプライベート URL に公開するライブでインタラクティブなウェブページです。ブラウザで開くと、セッションが続く間、ページはその場で更新されます。Team および Enterprise プランでは、ページヘッダーから共有して、チームメイトにも見てもらうことができます。たとえば、アーティファクトを使用して、注釈付きの差分でプルリクエストをレビュアーに説明したり、セッションデータからダッシュボードを構築したり、Claude が作業する際に埋まっていく調査タイムラインを保持したりできます。
- 
- <Frame>
-@@ -85,5 +85,5 @@ https://claude.ai/code/artifact/5fbea6f3-... を今日の数字で更新して
- </h2>
- 
--新しいアーティファクトは、あなただけに表示されます。ブラウザで開き、ページヘッダーの **Share** コントロールを使用して、組織内の特定の人またはすべての人にアクセス権を付与します。ヘッダーはあなたをアーティファクトの作成者として名前を付けるため、共有した人は誰がページを公開したかを見ることができます。また、[claude.ai/code/artifacts](https://claude.ai/code/artifacts) のギャラリーにリンクしており、作成したすべてのアーティファクトが一覧表示されます。
-+新しいアーティファクトは、あなただけに表示されます。Pro プランと Max プランでは、アーティファクトはあなたのみに非公開のままです。Team プランと Enterprise プランでは、ブラウザでアーティファクトを開き、ページヘッダーの **Share** コントロールを使用して、組織内の特定の人またはすべての人にアクセス権を付与します。ヘッダーはあなたをアーティファクトの作成者として名前を付けるため、共有した人は誰がページを公開したかを見ることができます。また、[claude.ai/code/artifacts](https://claude.ai/code/artifacts) のギャラリーにリンクしており、作成したすべてのアーティファクトが一覧表示されます。
- 
- 共有は組織で停止します。ビューアは、アーティファクトを公開した同じ組織のメンバーとして claude.ai にサインインする必要があり、組織外で表示可能にするオプションはありません。組織外の人に基になるコンテンツを送信するには、Claude に HTML ファイルを依頼し、そのファイルを直接共有してください。
-@@ -191,5 +191,5 @@ Claude はデザインシステムを独自の選択よりも高い優先度と
-```
-
-</details>
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index 642541c..05e2d78 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,6 +1,34 @@
- # Changelog
- 
-+## 2.1.199
-+
-+- Stacked slash-skill invocations like `/skill-a /skill-b do XYZ` now load all leading skills (up to 5), not just the first
-+- Fixed SSL certificate errors (TLS-inspecting proxies, missing `NODE_EXTRA_CA_CERTS`, expired certs) burning retries before showing actionable guidance — they now fail immediately with the fix hint
-+- Fixed streaming responses being discarded when the API emits a mid-stream overloaded/server error after partial output — the partial is now kept with an incomplete-response notice
-+- Fixed subagents cut off by a rate limit or server error silently failing instead of returning their partial work to the parent
-+- Fixed subagents reporting API errors (e.g. usage limit reached) as successful results — the error is now reported to the parent agent
-+- Fixed the background-agent daemon on Linux killing itself and every running agent every ~50 seconds after an unclean shutdown left a corrupted worker record
-+- Fixed background agents failing to cold-start over SSH on macOS with "Could not switch to audit session" (regression in 2.1.196)
-+- Fixed `claude stop` being silently undone when it raced a background-agent respawn — the respawn now honors the stop
-+- Fixed background job progress indicators stalling for minutes while the job ran long commands
-+- Fixed background sessions on memory-starved machines showing a generic error — they now indicate low memory and suggest freeing resources
-+- Fixed remote sessions briefly flapping between Working and Idle in the agent view when a background agent completes
-+- Fixed idle subagents vanishing from the agent panel while other subagents were still working; surplus idle agents now collapse into an expandable summary row
-+- Fixed typing `/model` or `/fast` while viewing a subagent silently opening the lead's model picker — a notice now explains the command applies to the lead
-+- Fixed `SessionStart`, `Setup`, and `SubagentStart` hooks silently hiding stderr when exiting with code 2 — the error is now shown in the transcript
-+- Fixed `claude --dangerously-skip-permissions daemon <subcommand>` being treated as a chat prompt instead of running the subcommand
-+- Fixed `SendMessage` silently misrouting when a re-spawned agent reuses a previous agent's name — the tool now detects the mismatch and asks the caller to retarget
-+- Fixed opening or resuming a session with no new messages needlessly growing the transcript file
-+- Fixed backgrounding a session with `←` or `/background` dropping its `/color` from the agent view row
-+- Fixed resetting a corrupted config file from the startup recovery dialog destroying it unrecoverably — it now backs up the file first
-+- Fixed Claude in Chrome repeatedly opening the reconnect page when sessions run from different builds or config directories
-+- Fixed plan mode not prompting for state-changing browser tool calls; read-only `browser_batch` calls are now correctly auto-allowed
-```
-
-</details>
-
-<details>
-<summary>costs-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/costs-ja.md b/docs-ja/pages/costs-ja.md
-index d3358dc..e1dd691 100644
---- a/docs-ja/pages/costs-ja.md
-+++ b/docs-ja/pages/costs-ja.md
-@@ -108,5 +108,5 @@ Bedrock、Vertex、および Foundry では、Claude Code はクラウドから
- * **カスタムコンパクション指示を追加する**: `/compact Focus on code samples and API usage` は、要約中に保持する内容を Claude に指示します。
- 
--CLAUDE.md でコンパクション動作をカスタマイズすることもできます。
-+プロジェクトのルートにある CLAUDE.md ファイルでコンパクション動作をカスタマイズすることもできます。
- 
- ```markdown theme={null}
-@@ -171,5 +171,5 @@ MCP ツール定義は [デフォルトで遅延](/ja/mcp#scale-with-mcp-tool-se
- 
-   <Tab title="filter-test-output.sh">
--    フックはこのスクリプトを呼び出し、コマンドがテストランナーであるかどうかを確認し、失敗のみを表示するように変更します。
-+    フックはこのスクリプトを呼び出します。`mkdir -p ~/.claude/hooks` でフォルダを作成し、以下のスクリプトを `~/.claude/hooks/filter-test-output.sh` として保存し、`chmod +x ~/.claude/hooks/filter-test-output.sh` で実行可能にします。コマンドがテストランナーであるかどうかを確認し、失敗のみを表示するように変更します。
- 
-     ```bash theme={null}
-@@ -199,5 +199,5 @@ MCP ツール定義は [デフォルトで遅延](/ja/mcp#scale-with-mcp-tool-se
- </h3>
- 
--拡張思考はデフォルトで有効になっています。これは複雑な計画と推論タスクのパフォーマンスを大幅に向上させるためです。思考トークンは出力トークンとして課金され、デフォルト予算はモデルに応じて数万トークンになる場合があります。深い推論が必要ない単純なタスクの場合、`/effort` で [努力レベル](/ja/model-config#adjust-effort-level) を低下させるか、`/model` で、`/config` で思考を無効にするか、`MAX_THINKING_TOKENS=8000` で予算を低下させることでコストを削減できます。適応推論モデルはゼロ以外の予算を無視するため、代わりに努力レベルを使用します。Fable 5 では思考を無効にすることはできません。これは常に拡張思考を使用します。
-+拡張思考はデフォルトで有効になっています。これは複雑な計画と推論タスクのパフォーマンスを大幅に向上させるためです。思考トークンは出力トークンとして課金され、デフォルト予算はモデルに応じて数万トークンになる場合があります。深い推論が必要ない単純なタスクの場合、`/effort` で [努力レベル](/ja/model-config#adjust-effort-level) を低下させるか、`/model` で、`/config` で思考を無効にするか、[固定思考予算](/ja/model-config#adaptive-reasoning-and-fixed-thinking-budgets) を持つモデルで、`MAX_THINKING_TOKENS=8000` などの `MAX_THINKING_TOKENS` [環境変数](/ja/env-vars) を設定して予算を低下させることでコストを削減できます。適応推論モデルはゼロ以外の予算を無視するため、代わりに努力レベルを使用します。Fable 5 では思考を無効にすることはできません。これは常に拡張思考を使用します。
- 
- <h3 id="delegate-verbose-operations-to-subagents">
-```
-
-</details>
-
-<details>
-<summary>desktop-linux-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/desktop-linux-ja.md b/docs-ja/pages/desktop-linux-ja.md
-index dc8eaad..429ea53 100644
---- a/docs-ja/pages/desktop-linux-ja.md
-+++ b/docs-ja/pages/desktop-linux-ja.md
-@@ -51,4 +51,6 @@ Anthropic の apt リポジトリからインストールして、更新がシ
-   <Step title="起動してサインインする">
-     アプリケーションランチャーから **Claude** を起動するか、ターミナルから `claude-desktop` を実行して、Anthropic アカウントでサインインします。
-+
-+    Linux アプリは macOS と Windows と同じ方法でサインインします。claude.ai サブスクリプション、または組織の SSO を通じてサインインします。Desktop は Claude Console API キーを直接受け入れません。API キー認証には [CLI](/ja/quickstart) を使用してください。Google Cloud の Agent Platform または LLM ゲートウェイに Desktop をルーティングするエンタープライズデプロイメントについては、[エンタープライズ設定ガイド](https://support.claude.com/en/articles/12622667-enterprise-configuration) および [ネットワーク設定](/ja/network-config) を参照してください。
-   </Step>
- </Steps>
-```
-
-</details>
-
-<details>
-<summary>env-vars-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/env-vars-ja.md b/docs-ja/pages/env-vars-ja.md
-index bd22524..b1e096d 100644
---- a/docs-ja/pages/env-vars-ja.md
-+++ b/docs-ja/pages/env-vars-ja.md
-@@ -346,5 +346,5 @@ Claude Code は起動時に環境変数を読み取るため、変更は `claude
- | `MAX_THINKING_TOKENS`                                   | [拡張思考](https://platform.claude.com/docs/en/build-with-claude/extended-thinking) トークン予算をオーバーライドします。上限はモデルの [最大出力トークン](https://platform.claude.com/docs/en/about-claude/models/overview#latest-models-comparison) から 1 を引いた値です。Anthropic API で思考を完全に無効にするには `0` に設定します。Fable 5 を除く。思考をオフにすることはできません。[サードパーティプロバイダー](/ja/third-party-integrations) では、`0` 同様にパラメータを省略するため、2 つの変数はそこで同じ動作をします。[適応的推論](/ja/model-config#adjust-effort-level) を備えたモデルでは、非ゼロ値の場合、`CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING` を通じて適応的推論が無効にされない限り、予算は無視されます                                                                                  |
- | `MCP_CLIENT_SECRET`                                     | [事前設定された認証情報](/ja/mcp#use-pre-configured-oauth-credentials) が必要な MCP サーバーの OAuth クライアントシークレット。`--client-secret` でサーバーを追加するときに対話的なプロンプトを回避します                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
--| `MCP_CONNECTION_NONBLOCKING`                            | スタートアップが最初のクエリの前に MCP サーバーの接続を待機するかどうかを制御します。{/* min-version: 2.1.142 */}Claude Code v2.1.142 以降、MCP スタートアップはデフォルトで非ブ ロッキングです：サーバーはバックグラウンドで接続し、完了するとそのツールが利用可能になります。`0` に設定してブロッキング 5 秒接続待機を復元します。[`alwaysLoad: true`](/ja/mcp#exempt-a-server-from-deferral) で設定されたサーバーは、ツールが最初のプロンプトが構築されるときに存在する必要があるため、この設定に関係なく常にブロックします                                                                                                                                                                                                                                                                                   |
-+| `MCP_CONNECTION_NONBLOCKING`                            | スタートアップが最初のクエリの前に MCP サーバーの接続を待機するかどうかを制御します。{/* min-version: 2.1.142 */}Claude Code v2.1.142 以降、MCP スタートアップはデフォルトで非ブロッキングです：サーバーはバックグラウンドで接続し、完了するとそのツールが利用可能になります。`0` に設定してブロッキング 5 秒接続待機を復元します。[`alwaysLoad: true`](/ja/mcp#exempt-a-server-from-deferral) で設定されたサーバーは、ツールが最初のプロンプトが構築されるときに存在する必要があるため、この設定に関係なく常にブロックします                                                                                                                                                                                                                                                                                    |
- | `MCP_CONNECT_TIMEOUT_MS`                                | ブロッキング MCP スタートアップが接続バッチを待機する時間（ミリ秒）。ツールリストをスナップショットする前のデフォルト：5000。`MCP_CONNECTION_NONBLOCKING=0` の場合、または [`alwaysLoad: true`](/ja/mcp#exempt-a-server-from-deferral) でマークされたサーバーに適用されます。期限で保留中のサーバーはバックグラウンドで接続し続けますが、次のクエリまで表示されません。`MCP_TIMEOUT` とは異なります。これは個別のサーバーの接続試行を制限します                                                                                                                                                                                                                                                                                                                                |
- | `MCP_OAUTH_CALLBACK_PORT`                               | OAuth リダイレクトコールバック用の固定ポート。[事前設定された認証情報](/ja/mcp#use-pre-configured-oauth-credentials) で MCP サーバーを追加する場合の `--callback-port` の代替                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-```
-
-</details>
-
-<details>
-<summary>feature-availability-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/feature-availability-ja.md b/docs-ja/pages/feature-availability-ja.md
-index 3f8fde5..98ef5fd 100644
---- a/docs-ja/pages/feature-availability-ja.md
-+++ b/docs-ja/pages/feature-availability-ja.md
-@@ -51,5 +51,5 @@ Claude Code CLI とローカルで実行されるすべてのものは、すべ
- * [Chrome 拡張機能](/ja/chrome)
- * [Computer use](/ja/computer-use)：Pro および Max プラン
--* [Artifacts](/ja/artifacts)：Team および Enterprise プラン
-+* [Artifacts](/ja/artifacts)：Pro、Max、Team、および Enterprise プラン
- * [Voice dictation](/ja/voice-dictation)
- 
-@@ -287,5 +287,5 @@ Bedrock、Vertex AI、Foundry、または Anthropic Console API キーを通じ
- | Dispatch（[Desktop](/ja/desktop#sessions-from-dispatch)）                                 | ✓   | ✓   | ✗             | ✗                                 |
- | [Code Review](/ja/code-review)                                                          | ✗   | ✗   | ✓             | ✓                                 |
--| [Artifacts](/ja/artifacts)                                                              | ✗   | ✗   | ✓             | Admin-enabled                     |
-+| [Artifacts](/ja/artifacts)                                                              | ✓   | ✓   | ✓             | Admin-enabled                     |
- | [アナリティクスダッシュボード、API、および貢献メトリクス](/ja/analytics)                                          | ✗   | ✗   | ✓             | ✓                                 |
- | [サーバー管理設定](/ja/server-managed-settings)                                                 | ✗   | ✗   | ✓             | ✓                                 |
-```
-
-</details>
-
-<details>
-<summary>interactive-mode-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/interactive-mode-ja.md b/docs-ja/pages/interactive-mode-ja.md
-index cb4f485..2fcd922 100644
---- a/docs-ja/pages/interactive-mode-ja.md
-+++ b/docs-ja/pages/interactive-mode-ja.md
-@@ -38,5 +38,5 @@
- | `Ctrl+V` または `Cmd+V`（iTerm2）または `Alt+V`（Windows および WSL） | クリップボードから画像を貼り付け                                                                                                  | カーソルに `[Image #N]` チップを挿入して、プロンプト内で位置的に参照できます。WSL では、`Ctrl+V` と `Alt+V` の両方がバインドされています。ターミナルが `Ctrl+V` をインターセプトする場合は `Alt+V` を使用してください                                                 |
- | `Ctrl+B`                                                 | バックグラウンドで実行中のタスク                                                                                                  | bash コマンドとエージェントをバックグラウンドで実行します。Tmux ユーザーは 2 回押す                                                                                                                                       |
--| `Ctrl+T`                                                 | タスクリストを切り替え                                                                                                       | ターミナルステータス領域の [タスクリスト](#task-list) を表示または非表示                                                                                                                                           |
-+| `Ctrl+T`                                                 | Claude のタスクチェックリストを切り替え                                                                                           | ステータス領域の [Claude のタスクチェックリスト](#task-list) を表示または非表示にします。これはバックグラウンドタスクビューではありません。実行中のシェルとサブエージェントを確認するには [`/tasks`](/ja/commands) を使用してください                                            |
- | `Left/Right 矢印`                                          | ダイアログタブを循環                                                                                                        | 権限ダイアログとメニューのタブ間を移動                                                                                                                                                                    |
- | `Up/Down 矢印` または `Ctrl+P`/`Ctrl+N`                       | カーソルを移動またはコマンド履歴を移動                                                                                               | 複数行入力では、最初にカーソルをプロンプト内で移動します。カーソルが既に上端または下端にある場合、もう一度押すとコマンド履歴を移動します。{/* min-version: 2.1.169 */}v2.1.169 以降、折り返された単一行入力は複数行入力と同じように動作します                                              |
-@@ -390,7 +390,7 @@ export CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION=false
- </h2>
- 
--複雑なマルチステップ作業に取り組む場合、Claude はタスクリストを作成して進捗を追跡します。タスクはターミナルのステータス領域に表示され、保留中、進行中、または完了を示すインジケータが表示されます。
-+タスクリストは Claude のやることリストです。マルチステップ作業を計画するために Claude が作成したアイテムで、保留中、進行中、または完了を示すインジケータが表示されます。これはバックグラウンドタスクビューとは別です。実行中のシェルとサブエージェントを確認するには、代わりに [`/tasks`](/ja/commands) を使用してください。
- 
--* `Ctrl+T` を押してタスクリストビューを切り替えます。表示は一度に最大 5 個のタスクを表示します
-+* `Ctrl+T` を押してタスクリストビューを切り替えます。表示は一度に最大 5 個のタスクを表示します。Claude がまだチェックリストアイテムを作成していない場合、トグルは表示する内容がないため目に見える効果がありません
- * すべてのタスクを表示するか、クリアするには、Claude に直接質問します：「すべてのタスクを表示して」または「すべてのタスクをクリアして」
- * タスクはコンテキストコンパクション全体で保持され、Claude がより大きなプロジェクトで整理された状態を保つのに役立ちます
-```
-
-</details>
-
-*...以降省略*
-
-</details>
-
 
 <!-- UPDATE_LOG_END -->
