@@ -20,7 +20,7 @@ API は、プリフィックスと呼ばれる各リクエストの開始を、�
 
 <img src="https://mintcdn.com/claude-code/VbDJw--l6T9a9Wvm/images/prompt-caching-prefix.svg?fit=max&auto=format&n=VbDJw--l6T9a9Wvm&q=85&s=f2e8f0b8298a50305fe428ca3f1d1594" className="dark:hidden" alt="4 つのターンが成長する水平バーとして表示されます。各ターンのリクエストには、前のターンのすべてと最新の交換が最後に追加されたものが含まれます。ターン 2 と 3 では、変更されていないプリフィックスはキャッシュから読み取られ、新しい交換のみが処理されます。ターン 4 では、システムプロンプトが変更されたため、プリフィックスは一致しなくなり、リクエスト全体が再処理されて書き込まれます。" width="720" height="454" data-path="images/prompt-caching-prefix.svg" />
 
-<img src="https://mintcdn.com/claude-code/VbDJw--l6T9a9Wvm/images/prompt-caching-prefix-dark.svg?fit=max&auto=format&n=VbDJw--l6T9a9Wvm&q=85&s=7434a04e08187edd26ec6c3dd332f624" className="hidden dark:block" alt="4 つのターンが成長する水平バーとして表示されます。各ターンのリクエストには、前のターンのすべてと最新の交換が最後に追加されたものが含まれます。ターン 2 と 3 では、変更されていないプリフィックスはキャッシュから読み取られ、新しい交換のみが処理されます。ターン 4 では、システムプロンプトが変更されたため、プリフィックスは一致しなくなり、リクエスト全体が再処理されて書き込まれます。" width="720" height="454" data-path="images/prompt-caching-prefix-dark.svg" />
+<img src="https://mintcdn.com/claude-code/_xqph1dUOslCOwsj/images/prompt-caching-prefix-dark.svg?fit=max&auto=format&n=_xqph1dUOslCOwsj&q=85&s=297dc1c639f0915cae858d0c4b6f3be5" className="hidden dark:block" alt="4 つのターンが成長する水平バーとして表示されます。各ターンのリクエストには、前のターンのすべてと最新の交換が最後に追加されたものが含まれます。ターン 2 と 3 では、変更されていないプリフィックスはキャッシュから読み取られ、新しい交換のみが処理されます。ターン 4 では、システムプロンプトが変更されたため、プリフィックスは一致しなくなり、リクエスト全体が再処理されて書き込まれます。" width="720" height="454" data-path="images/prompt-caching-prefix-dark.svg" />
 
 プリフィックスマッチングを最大限に活用するために、Claude Code は各リクエストを順序付けして、ターン間で変更されることがめったにないコンテンツが最初に来るようにします。
 

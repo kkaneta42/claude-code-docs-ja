@@ -17,6 +17,61 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-07-30</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/devcontainer-ja.md   | 2 +-
+ docs-ja/pages/prompt-caching-ja.md | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+```
+
+**新規追加:**
+
+
+<details>
+<summary>devcontainer-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/devcontainer-ja.md b/docs-ja/pages/devcontainer-ja.md
+index 7b8062e..e354b12 100644
+--- a/docs-ja/pages/devcontainer-ja.md
++++ b/docs-ja/pages/devcontainer-ja.md
+@@ -21,5 +21,5 @@
+   <img src="https://mintcdn.com/claude-code/YvJyjZfd9yMihr0i/images/devcontainer-architecture.svg?fit=max&auto=format&n=YvJyjZfd9yMihr0i&q=85&s=9017b1d16a446c6cc37ba562f35b9aae" className="dark:hidden" alt="ホスト上のエディタが Docker 開発コンテナに接続する図。Claude Code、ターミナル、ビルドツールはコンテナ内で実行されます。ホストリポジトリはコンテナにバインドマウントされ、ワークスペースとして機能します。" width="640" height="300" data-path="images/devcontainer-architecture.svg" />
+ 
+-  <img src="https://mintcdn.com/claude-code/YvJyjZfd9yMihr0i/images/devcontainer-architecture-dark.svg?fit=max&auto=format&n=YvJyjZfd9yMihr0i&q=85&s=ef00c8e25b1ea7a3a152895f1488831b" className="hidden dark:block" alt="ホスト上のエディタが Docker 開発コンテナに接続する図。Claude Code、ターミナル、ビルドツールはコンテナ内で実行されます。ホストリポジトリはコンテナにバインドマウントされ、ワークスペースとして機能します。" width="640" height="300" data-path="images/devcontainer-architecture-dark.svg" />
++  <img src="https://mintcdn.com/claude-code/_xqph1dUOslCOwsj/images/devcontainer-architecture-dark.svg?fit=max&auto=format&n=_xqph1dUOslCOwsj&q=85&s=a0a340b1f2afc6a590696102c8acaaca" className="hidden dark:block" alt="ホスト上のエディタが Docker 開発コンテナに接続する図。Claude Code、ターミナル、ビルドツールはコンテナ内で実行されます。ホストリポジトリはコンテナにバインドマウントされ、ワークスペースとして機能します。" width="640" height="300" data-path="images/devcontainer-architecture-dark.svg" />
+ 
+   開発コンテナは Docker コンテナとして実行され、マシン上または GitHub Codespaces などのクラウドホスト上で実行されます。Dev Containers 仕様をサポートするエディタ（VS Code、GitHub Codespaces、JetBrains IDE、Cursor など）がそのコンテナに接続します。通常どおりエディタでファイルを参照および編集しますが、統合ターミナル、言語サーバー、ビルドツールはすべてホストではなくコンテナ内で実行されます。プレーン Vim などの開発コンテナをサポートしていないエディタはこのワークフローの対象外です。
+```
+
+</details>
+
+<details>
+<summary>prompt-caching-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/prompt-caching-ja.md b/docs-ja/pages/prompt-caching-ja.md
+index 3fb3401..262aef4 100644
+--- a/docs-ja/pages/prompt-caching-ja.md
++++ b/docs-ja/pages/prompt-caching-ja.md
+@@ -21,5 +21,5 @@ API は、プリフィックスと呼ばれる各リクエストの開始を、
+ <img src="https://mintcdn.com/claude-code/VbDJw--l6T9a9Wvm/images/prompt-caching-prefix.svg?fit=max&auto=format&n=VbDJw--l6T9a9Wvm&q=85&s=f2e8f0b8298a50305fe428ca3f1d1594" className="dark:hidden" alt="4 つのターンが成長する水平バーとして表示されます。各ターンのリクエストには、前のターンのすべてと最新の交換が最後に追加されたものが含まれます。ターン 2 と 3 では、変更されていないプリフィックスはキャッシュから読み取られ、新しい交換のみが処理されます。ターン 4 では、システムプロンプトが変更されたため、プリフィックスは一致しなくなり、リクエスト全体が再処理されて書き込まれます。" width="720" height="454" data-path="images/prompt-caching-prefix.svg" />
+ 
+-<img src="https://mintcdn.com/claude-code/VbDJw--l6T9a9Wvm/images/prompt-caching-prefix-dark.svg?fit=max&auto=format&n=VbDJw--l6T9a9Wvm&q=85&s=7434a04e08187edd26ec6c3dd332f624" className="hidden dark:block" alt="4 つのターンが成長する水平バーとして表示されます。各ターンのリクエストには、前のターンのすべてと最新の交換が最後に追加されたものが含まれます。ターン 2 と 3 では、変更されていないプリフィックスはキャッシュから読み取られ、新しい交換のみが処理されます。ターン 4 では、システムプロンプトが変更されたため、プリフィックスは一致しなくなり、リクエスト全体が再処理されて書き込まれます。" width="720" height="454" data-path="images/prompt-caching-prefix-dark.svg" />
++<img src="https://mintcdn.com/claude-code/_xqph1dUOslCOwsj/images/prompt-caching-prefix-dark.svg?fit=max&auto=format&n=_xqph1dUOslCOwsj&q=85&s=297dc1c639f0915cae858d0c4b6f3be5" className="hidden dark:block" alt="4 つのターンが成長する水平バーとして表示されます。各ターンのリクエストには、前のターンのすべてと最新の交換が最後に追加されたものが含まれます。ターン 2 と 3 では、変更されていないプリフィックスはキャッシュから読み取られ、新しい交換のみが処理されます。ターン 4 では、システムプロンプトが変更されたため、プリフィックスは一致しなくなり、リクエスト全体が再処理されて書き込まれます。" width="720" height="454" data-path="images/prompt-caching-prefix-dark.svg" />
+ 
+ プリフィックスマッチングを最大限に活用するために、Claude Code は各リクエストを順序付けして、ターン間で変更されることがめったにないコンテンツが最初に来るようにします。
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-07-29</summary>
 
 **変更ファイル:**
@@ -2780,74 +2835,5 @@ index 05e2d78..4bfce89 100644
 
 </details>
 
-
-<details>
-<summary>2026-07-03</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/advisor-ja.md              |  2 +-
- docs-ja/pages/agent-view-ja.md           |  4 +-
- docs-ja/pages/artifacts-ja.md            | 12 ++--
- docs-ja/pages/changelog.md               | 28 ++++++++++
- docs-ja/pages/costs-ja.md                |  6 +-
- docs-ja/pages/desktop-linux-ja.md        |  2 +
- docs-ja/pages/env-vars-ja.md             |  2 +-
- docs-ja/pages/feature-availability-ja.md |  4 +-
- docs-ja/pages/interactive-mode-ja.md     |  6 +-
- docs-ja/pages/keybindings-ja.md          | 14 ++---
- docs-ja/pages/model-config-ja.md         |  6 +-
- docs-ja/pages/permission-modes-ja.md     |  2 +-
- docs-ja/pages/plugins-ja.md              |  6 +-
- docs-ja/pages/tools-reference-ja.md      |  2 +-
- docs-ja/pages/workflows-ja.md            | 95 +++++++++++++++++++++++++++++++-
- 15 files changed, 159 insertions(+), 32 deletions(-)
-```
-
-<details>
-<summary>advisor-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/advisor-ja.md b/docs-ja/pages/advisor-ja.md
-index 159eea2..9fde894 100644
---- a/docs-ja/pages/advisor-ja.md
-+++ b/docs-ja/pages/advisor-ja.md
-@@ -175,5 +175,5 @@ advisor の使用を停止し、保存された `advisorModel` をクリアす
- ```
- 
--advisor ツール全体（`/advisor` コマンドと `--advisor` フラグを含む）を無効にするには、`CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1` を設定します。[環境変数](/ja/env-vars)を参照してください。
-+advisor ツール全体を無効にするには、`CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1` を設定します。`/advisor` コマンドは利用できなくなり、設定された `advisorModel` は無視されます。`--advisor` フラグは受け入れられますが、効果はありません。このフラグを渡す既存のスクリプトはエラーなしで動作し続けます。[環境変数](/ja/env-vars)を参照してください。
- 
- <h2 id="compare-with-related-features">
-```
-
-</details>
-
-<details>
-<summary>agent-view-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/agent-view-ja.md b/docs-ja/pages/agent-view-ja.md
-index 26f438b..eaa1e35 100644
---- a/docs-ja/pages/agent-view-ja.md
-+++ b/docs-ja/pages/agent-view-ja.md
-@@ -65,5 +65,5 @@ Claude が複数の独立したタスクに対して、あなたが毎ステッ
- 
-   <Step title="既存のセッションを持ち込む">
--    既に開いているセッションをエージェントビューに移動するには、セッション内で `/bg` を実行するか、空のプロンプトで `←` を押してセッションをバックグラウンドにし、1 ステップでエージェントビューを開きます。セッションは実行し続け、ディスパッチしたセッションと並行して行として表示されます。
-+    このステップは実行中のセッションが必要です。前のステップに従った場合、このターミナルで開いているセッションはないため、別のターミナルで通常の `claude` セッションを開き、最初にメッセージを送信してください。既に開いているセッションをエージェントビューに移動するには、セッション内で `/bg` を実行するか、空のプロンプトで `←` を押してセッションをバックグラウンドにし、1 ステップでエージェントビューを開きます。セッションは実行し続け、ディスパッチしたセッションと並行して行として表示されます。
-   </Step>
- </Steps>
-@@ -295,5 +295,5 @@ Completed
- 
- * そのディレクトリで `claude agents` を開きます。
--* 親ディレクトリで `claude agents` を開き、プロンプトで `@<repo>` を使用して子リポジトリを言及してセッションをそこで実行します。`@` を入力すると、起動ディレクトリの 1 レベル下の git リポジトリ、およびリスト内に既にセッションがあるディレクトリがリストされます。名前にスペースが含まれるディレクトリはリストされません。
-+* 親ディレクトリで `claude agents` を開き、プロンプトで `@<repo>` を使用して子リポジトリを言及します。`@` を入力すると、起動ディレクトリの 1 レベル下の git リポジトリ、およびリスト内に既にセッションがあるディレクトリがリストされます。名前にスペースが含まれるディレクトリはリストされません。
- * シェルから、ディレクトリに `cd` して `claude --bg "<prompt>"` を実行します。
- 
-```
-
-</details>
 
 <!-- UPDATE_LOG_END -->
