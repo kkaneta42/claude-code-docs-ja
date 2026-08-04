@@ -17,6 +17,96 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-08-04</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md                | 42 +++++++++++++++++++++++++++++++
+ docs-ja/pages/desktop-ios-simulator-en.md | 17 +++++++++++--
+ 2 files changed, 57 insertions(+), 2 deletions(-)
+```
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index 7ca26b5..389a1ae 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,46 @@
+ # Changelog
+ 
++## 2.1.221
++
++- [VSCode] Added Focus view: a chat-menu toggle that hides tool activity behind an expandable per-turn summary with a live running-tool indicator, toggled with `Ctrl+Alt+F` or the "Claude Code: Toggle Focus view" command
++- Added `mode: "mask"` for sandbox credential files on Linux and WSL — sandboxed commands read a sentinel copy (the whole file, or just the spans captured by an `extract` regex) while the sandbox proxy substitutes the real value on egress; on macOS file masking falls back to `deny`
++- Added warnings to `claude plugin validate` when a marketplace or plugin name would be rejected by Claude Desktop's managed marketplace sync
++- Added a `prompt-audit` subcommand to the `claude-api` skill for auditing prompts and tool descriptions for patterns written for older models
++- Fixed a Bash tool permission-check bypass where zsh could execute hidden commands in `[[ ]]` regex conditionals; affected commands now prompt for permission
++- Fixed PowerShell permission checks mishandling paths containing quote characters on Windows; such paths now prompt for approval
++- Fixed the thinking toggle having no effect for the rest of a session that started with thinking off; disabling an MCP server mid-connect no longer silently reverts
++- Fixed MCP servers from `--mcp-config` not being connected before the first turn in print mode (`-p`), which made the model emit tool calls as literal text
++- Fixed @-mentioned files being silently dropped when pressing Esc to retract a prompt and resubmitting it
++- Fixed a crash when preparing API requests for SDK MCP tools named after built-in object properties such as `constructor`
++- Fixed WebSearch failing with a 400 error at effort `xhigh`/`max` when thinking is disabled
++- Fixed sandboxed large uploads failing with TLS errors through the sandbox proxy
++- Fixed Team and Enterprise spend-limit message incorrectly blaming the org's monthly limit instead of your individual spend limit
++- Fixed Bedrock authentication with AWS SSO named profiles failing in desktop-managed sessions on Windows machines that set a stray `HOME` environment variable
++- Fixed `CLAUDE_CODE_RESUME_INTERRUPTED_TURN=0` not disabling interrupted-turn auto-resume; falsy values are now honored
++- Fixed a rare wake-from-sleep race where two Claude Code processes could both refresh the same MCP connector or WIF OAuth token at once, forcing re-authentication
++- Fixed renaming a session from Claude Code Desktop or claude.ai not updating the CLI's session name; session names from every rename surface are now sanitized
++- Fixed plugin- and org-delivered skills named after terminal-only built-ins (e.g. `/help`, `/feedback`) being un-invocable in non-interactive sessions
++- Fixed the "Plugins changed" notification lingering after plugins were reloaded instead of clearing
++- Fixed Vim mode: the yank register now survives dialogs, history search, and the transcript view instead of being silently emptied
++- Fixed Vim mode: undoing back to an empty prompt now arms the "press ← again" confirm before returning to the agent view
+```
+
+</details>
+
+<details>
+<summary>desktop-ios-simulator-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/desktop-ios-simulator-en.md b/docs-ja/pages/desktop-ios-simulator-en.md
+index 643eb5d..e662a3d 100644
+--- a/docs-ja/pages/desktop-ios-simulator-en.md
++++ b/docs-ja/pages/desktop-ios-simulator-en.md
+@@ -22,4 +22,5 @@ The simulator pane uses Apple's simulator tooling, which the desktop app doesn't
+ * A Mac, since Apple's iOS Simulator runs only on macOS
+ * [Xcode](https://developer.apple.com/xcode/) with the iOS platform installed, which provides the simulator devices. If Xcode lists no simulators yet, see [The simulator pane says no simulators were found](#the-simulator-pane-says-no-simulators-were-found)
++  * Use Xcode 26.x. The pane doesn't yet work with Xcode 27, which replaces the Simulator app with Device Hub. If `xcode-select` points at Xcode 27 on your Mac, see [The simulator pane fails with Xcode 27](#the-simulator-pane-fails-with-xcode-27)
+ 
+ <Note>
+@@ -119,5 +120,5 @@ Claude may not have recognized that you wanted to run or test the app, or the si
+ 
+ * State the goal explicitly, for example "run the app in the iOS Simulator and tap through the signup flow".
+-* Confirm Xcode and the iOS Simulator are installed by launching the Simulator app on its own.
++* Confirm Xcode and the iOS simulators are installed and that your Xcode version meets the [requirements](#requirements).
+ * If your organization manages Claude Code, the [simulator tools may be disabled by policy](#turn-off-simulator-access).
+ * The simulator pane requires Claude Desktop v1.24012.0 or later. Open **Claude → Check for Updates**, then restart the app.
+@@ -125,5 +126,17 @@ Claude may not have recognized that you wanted to run or test the app, or the si
+ ### The simulator pane says no simulators were found
+ 
+-Xcode is installed but has no iOS simulators to list. The simulator pane shows the setup steps to follow and checks them off as each one completes. To install the missing piece manually, download the iOS simulator runtime from Xcode's settings, or run `xcodebuild -downloadPlatform iOS`.
++If `xcode-select` points at Xcode 27, the pane can report no simulators even though devices exist; see [The simulator pane fails with Xcode 27](#the-simulator-pane-fails-with-xcode-27). Otherwise, Xcode is installed but has no iOS simulators to list. The simulator pane shows the setup steps to follow and checks them off as each one completes. To install the missing piece manually, download the iOS simulator runtime from Xcode's settings, or run `xcodebuild -downloadPlatform iOS`.
++
++### The simulator pane fails with Xcode 27
++
++The pane doesn't yet work with Xcode 27, which replaces the Simulator app with Device Hub. With Xcode 27 selected, attaching a device fails, or the pane reports that no simulators were found even though devices exist.
++
++The pane uses whichever Xcode `xcode-select` points at. If Xcode 27 is your only install, install Xcode 26.x alongside it first. Then select the 26.x install by its path. For example, if it's installed as `/Applications/Xcode-26.4.app`:
++
++```bash theme={null}
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-08-03</summary>
 
 **変更ファイル:**
@@ -2681,114 +2771,6 @@ index 2e42a33..45b4031 100644
 +
  パーミッションルールとサンドボックスは異なるレイヤーをカバーします。WebFetch を拒否すると Claude の fetch ツールがブロックされますが、Bash が許可されている場合、`curl` と `wget` は依然として任意の URL に到達できます。サンドボックスは OS レベルで実行されるネットワークドメイン許可リストでそのギャップを閉じます。
  
-```
-
-</details>
-
-<details>
-<summary>advisor-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/advisor-ja.md b/docs-ja/pages/advisor-ja.md
-index 9fde894..7162342 100644
---- a/docs-ja/pages/advisor-ja.md
-+++ b/docs-ja/pages/advisor-ja.md
-@@ -85,11 +85,12 @@ claude --advisor opus
- advisor はメインモデル以上の機能を持つ必要があります。各メインモデルで受け入れられる advisor は次のとおりです。
- 
--| メインモデル                                          | 受け入れられる advisor            | 注記                                                                            |
--| ----------------------------------------------- | -------------------------- | ----------------------------------------------------------------------------- |
--| Haiku 4.5                                       | Fable、Opus、Sonnet          | Haiku は advisor を呼び出すことはできますが、advisor として機能することはできません                         |
--| Sonnet 4.6                                      | Fable、Opus、Sonnet          |                                                                               |
--| Sonnet 5                                        | Fable、Opus、Sonnet 5        | Sonnet 4.6 advisor は拒否されます                                                    |
--| Opus 4.6 以降                                     | Fable、メインモデルのバージョン以上の Opus | Opus 4.7 メインと Opus 4.6 advisor は拒否されます。Opus 4.6 メインは Sonnet 5 advisor も受け入れます |
--| Fable 5 ({/* min-version: 2.1.170 */}v2.1.170+) | Fable                      | Opus または Sonnet advisor は拒否されます                                               |
-+| メインモデル                                          | 受け入れられる advisor         | 注記                                                                                                                    |
-+| ----------------------------------------------- | ----------------------- | --------------------------------------------------------------------------------------------------------------------- |
-+| Haiku 4.5                                       | Fable、Opus、Sonnet       | Haiku は advisor を呼び出すことはできますが、advisor として機能することはできません                                                                 |
-+| Sonnet 4.6                                      | Fable、Opus、Sonnet       |                                                                                                                       |
-+| Sonnet 5                                        | Fable、Opus、Sonnet 5     | Sonnet 4.6 advisor は拒否されます                                                                                            |
-+| Opus 4.6                                        | Fable、Opus、Sonnet 5     | Sonnet 5 と Opus 4.6 は同等の機能として評価されるため、Opus 4.6 メインは Sonnet 5 advisor を受け入れます                                           |
-+| Opus 4.7 以降                                     | Fable、Opus 4.7、Opus 4.8 | Opus 4.7 と Opus 4.8 は同等の機能として評価されるため、どちらでも他方を advisor として受け入れます。Opus 4.6 または Sonnet 5 advisor を持つ Opus 4.7 メインは拒否されます |
-+| Fable 5 ({/* min-version: 2.1.170 */}v2.1.170+) | Fable                   | Opus または Sonnet advisor は拒否されます                                                                                       |
- 
- Fable 5 は、メインモデルとして機能するか advisor として機能するかに関わらず、Claude Code v2.1.170 以降と Fable 5 アクセスが必要です。
-```
-
-</details>
-
-<details>
-<summary>agent-teams-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/agent-teams-ja.md b/docs-ja/pages/agent-teams-ja.md
-index 984c277..97ea6f6 100644
---- a/docs-ja/pages/agent-teams-ja.md
-+++ b/docs-ja/pages/agent-teams-ja.md
-@@ -90,5 +90,7 @@ one on UX, one on technical architecture, one playing devil's advocate.
- * **Escape**: 選択したチームメンバーの現在のターンを中断する
- 
--{/* min-version: 2.1.181 */}v2.1.181 以降、アイドル状態のチームメンバーの行は 30 秒後に非表示になり、次のターンで再表示されます。チームメンバーは非表示中も実行中で対応可能な状態が続きます。
-+{/* min-version: 2.1.199 */}v2.1.199 以降、アイドル状態のチームメンバーの行は、他のチームメンバーまたはサブエージェントがまだ作業中の間、パネルに留まるため、トランスクリプトを確認したり、さらに作業を割り当てたりするために選択できます。パネル内のすべてのエージェントがアイドル状態になると、アイドル行は 30 秒後に非表示になり、チームメンバーの次のターンで再表示されます。チームメンバーは非表示中も実行中で対応可能な状態が続きます。v2.1.181 から v2.1.198 では、アイドル行は他のチームメンバーがまだ作業中であっても、独自のターンが終了してから 30 秒後に非表示になりました。v2.1.181 より前のバージョンではアイドル行は非表示になりません。
-+
-+3 人以上のチームメンバーが同時にアイドル状態の場合、最初の 3 行を超える行は、折りたたまれたチームメンバーをカウントする単一の行に折りたたまれます。例えば、5 人がアイドル状態の場合は `2 idle agents` のようになります。それを選択して Enter キーを押すと折りたたまれた行が展開され、Esc キーを押すと再び折りたたまれます。作業中のチームメンバー、失敗したチームメンバー、および表示中のチームメンバーは常に独自の行を保持します。
- 
- 各チームメンバーを独自の分割ペインに配置したい場合は、[表示モードを選択](#choose-a-display-mode)を参照してください。
-@@ -175,4 +177,8 @@ Require plan approval before they make any changes.
- * **分割ペインモード**：チームメンバーのペインをクリックして、セッションと直接対話してください。各チームメンバーは独自のターミナルの完全なビューを持っています。
- 
-+In-process チームメンバーを表示している間、プレーンテキストと [skills](/ja/skills) はそのチームメンバーに送信されますが、組み込みコマンドはリーダーのセッションで実行されます。
-+
-+チームメンバーのモデルと高速モードはそれが生成されるときに固定されるため、`/model` と `/fast` はリーダーの設定のみを変更します。{/* min-version: 2.1.199 */}v2.1.199 以降、チームメンバーを表示している間にいずれかのコマンドを入力すると、変更がリーダーに適用されることを示す通知が表示されます。それより前のバージョンでは、指示なしでリーダーに適用されました。`/effort` はチームメンバーの後続のターンに適用されます。これはチームメンバーがリーダーの[努力レベル](/ja/model-config#adjust-effort-level)に従うためです。
-+
- <h3 id="assign-and-claim-tasks">
-   タスクを割り当てて要求する
-@@ -296,5 +302,5 @@ Spawn a teammate using the security-reviewer agent type to audit the auth module
- 
- * **自動メッセージ配信**：チームメンバーがメッセージを送信すると、受信者に自動的に配信されます。リーダーは更新をポーリングする必要はありません。
--* **アイドル通知**：チームメンバーが完了して停止すると、リーダーに自動的に通知します。
-+* **アイドル通知**：チームメンバーが完了して停止すると、リーダーに自動的に通知します。{/* min-version: 2.1.198 */}v2.1.198 以降、ターンが API エラーで終了するチームメンバーは、通常に完了したように見えるのではなく、失敗したことをリーダーに通知し、エラーテキストを含めます。
- * **共有タスクリスト**：すべてのエージェントはタスクステータスを表示でき、利用可能な作業を要求できます。
- * **チームメンバーメッセージング**：その名前で特定のチームメンバーにメッセージを送信します。全員に到達するには、受信者ごとに 1 つのメッセージを送信してください。
-@@ -431,5 +437,5 @@ Claude にチームメンバーを生成するよう指示した後、チーム
-```
-
-</details>
-
-<details>
-<summary>agent-view-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/agent-view-ja.md b/docs-ja/pages/agent-view-ja.md
-index eaa1e35..7fe5e50 100644
---- a/docs-ja/pages/agent-view-ja.md
-+++ b/docs-ja/pages/agent-view-ja.md
-@@ -28,5 +28,5 @@ Claude が複数の独立したタスクに対して、あなたが毎ステッ
- * [エージェントビューでセッションを監視する](#monitor-sessions-with-agent-view)。状態アイコン、ピーク表示と返信、アタッチ、整理、キーボードショートカットを含みます
- * [新しいエージェントをディスパッチする](#dispatch-new-agents)。エージェントビューから、セッション内から、またはシェルから
--* [シェルからセッションを管理する](#manage-sessions-from-the-shell)
-+* [シェルからセッションを管理する](#manage-sessions-from-the-shell)。`claude agents`、`claude attach`、および関連コマンドを使用して
- * [バックグラウンドセッションがどのようにホストされるか](#how-background-sessions-are-hosted)。スーパーバイザープロセスによって
- 
-@@ -77,4 +77,6 @@ Claude が複数の独立したタスクに対して、あなたが毎ステッ
- `claude agents` を実行してエージェントビューを開きます。ターミナル全体を占有し、状態でグループ化されたすべてのセッションをリストします。ピン留めされたセッションと入力が必要なセッションが上部に表示されます。各行はセッションの名前、現在のアクティビティ、最後に変更されてからの経過時間を表示します。
- 
-+名前は、そのセッションで [`/color`](/ja/commands) によって設定されたカラーで色付けされます。{/* min-version: 2.1.199 */}v2.1.199 以降、`←` または `/background` で [セッションをバックグラウンドにする](#from-inside-a-session) ときにカラーが引き継がれます。
-+
- デフォルトでは、リストはすべてのプロジェクト全体で開始したすべてのバックグラウンドセッションを表示します。1 つのリポジトリで作業しているセッションと別のワークツリーで作業している別のセッションの両方がここに表示されます。エージェントビューを開いたディレクトリに関係なく表示されます。リストを 1 つのプロジェクトに絞り込むには、`--cwd` を渡します：
- 
-@@ -92,5 +94,5 @@ Pinned
- 
- Ready for review
--  ∙ jump physics              Opened PR with collision fix              PR #2048  2h
-+  ∙ jump physics              Opened PR with collision fix                 #2048  2h
- 
- Needs input
-@@ -111,5 +113,5 @@ Completed
- </h3>
- 
--各行は、セッションの状態を示すアイコンで始まります。アイコンの色とアニメーションはセッションの状態を示します。
-+各行は、セッションの状態を示すアイコンで始まります。アイコンの色とアニメーションはセッションの状態を示します：
 ```
 
 </details>
