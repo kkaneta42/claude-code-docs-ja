@@ -278,7 +278,7 @@ AWS 上の Claude Platform は、環境に AWS 認証情報が存在する場合
 
 AWS 上の Claude Platform は、直接 Claude API と同じモデル ID を使用します。
 
-デフォルトのエイリアス `fable`、`opus`、`sonnet`、`haiku` は Claude Code の AWS 上の Claude Platform 用の組み込みデフォルトに解決されます。これは最新リリースより遅れる可能性があります。`ANTHROPIC_DEFAULT_OPUS_MODEL` がない場合、`opus` エイリアスは Opus 4.8 に解決されます。{/* min-version: 2.1.207 */}v2.1.207 より前では、Opus 4.7 に解決されていました。
+デフォルトのエイリアス `fable`、`opus`、`sonnet`、`haiku` は Claude Code の AWS 上の Claude Platform 用の組み込みデフォルトに解決されます。これは最新リリースより遅れる可能性があります。`ANTHROPIC_DEFAULT_OPUS_MODEL` がない場合、`opus` エイリアスは Opus 4.8 に解決されます。v2.1.207 より前では、Opus 4.7 に解決されていました。
 
 Claude Code をチームにデプロイする場合、モデル ID を明示的にピン留めして、新しいリリースがすべてのユーザーを一度に移動しないようにします。
 

@@ -93,7 +93,7 @@ Claude Code は、Bash ツール、フック、MCP サーバー、言語サー�
 | `OTEL_METRIC_EXPORT_INTERVAL`                       | エクスポート間隔 (ミリ秒単位、デフォルト: 60000)                                                                                                                                                                                                                     | `5000`、`60000`                                                                              |
 | `OTEL_LOGS_EXPORT_INTERVAL`                         | ログエクスポート間隔 (ミリ秒単位、デフォルト: 5000)                                                                                                                                                                                                                    | `1000`、`10000`                                                                              |
 | `OTEL_LOG_USER_PROMPTS`                             | ユーザープロンプトコンテンツのログを有効にする (デフォルト: 無効)                                                                                                                                                                                                               | `1` で有効化                                                                                    |
-| `OTEL_LOG_ASSISTANT_RESPONSES`                      | `assistant_response` イベントでアシスタント応答テキストのログを有効にする (デフォルト: 無効)。設定されていない場合、`OTEL_LOG_USER_PROMPTS` の値にフォールバックします。{/* min-version: 2.1.193 */}Claude Code v2.1.193 以降が必要です                                                                             | `1` で有効化、`0` でマスク状態を保持                                                                      |
+| `OTEL_LOG_ASSISTANT_RESPONSES`                      | `assistant_response` イベントでアシスタント応答テキストのログを有効にする (デフォルト: 無効)。設定されていない場合、`OTEL_LOG_USER_PROMPTS` の値にフォールバックします。Claude Code v2.1.193 以降が必要です                                                                                                         | `1` で有効化、`0` でマスク状態を保持                                                                      |
 | `OTEL_LOG_TOOL_DETAILS`                             | ツールイベントでツールパラメーターと入力引数のログを有効にする: Bash コマンド、MCP サーバーとツール名、スキル名、ユーザー作成ワークフロー名、ツール入力。また、`user_prompt` イベントでカスタム、プラグイン、MCP コマンド名を有効にします (デフォルト: 無効)                                                                                                   | `1` で有効化                                                                                    |
 | `OTEL_LOG_TOOL_CONTENT`                             | スパンイベントでツール入力と出力コンテンツのログを有効にする (デフォルト: 無効)。[トレース](#traces-beta)が必要です。コンテンツは 60 KB で切り詰められます                                                                                                                                                       | `1` で有効化                                                                                    |
 | `OTEL_LOG_RAW_API_BODIES`                           | Anthropic Messages API リクエストとレスポンス JSON 全体を `api_request_body` / `api_response_body` ログイベントとして出力します (デフォルト: 無効)。ボディには会話履歴全体が含まれます。これを有効にすることは、`OTEL_LOG_USER_PROMPTS`、`OTEL_LOG_TOOL_DETAILS`、および `OTEL_LOG_TOOL_CONTENT` が明かすすべてのものに同意することを意味します | `1` で 60 KB で切り詰められたインラインボディ、または `file:<dir>` でディスク上の切り詰められていないボディと、イベント内の `body_ref` ポインター |
@@ -447,8 +447,8 @@ Claude Code が [Claude apps gateway](/docs/ja/claude-apps-gateway) にサイン
 
 * `prompt.id`: ユーザープロンプトを次のプロンプトまでのすべての後続イベントと相関させる UUID。[イベント相関属性](#event-correlation-attributes)を参照してください。
 * `workspace.host_paths`: デスクトップアプリで選択されたホストワークスペースディレクトリ (文字列配列として)
-* `workflow.run_id`: 実行識別子。プレフィックス `wf_` が付いており、API とツールイベントで出力されます。[Workflow](/docs/ja/workflows) ツール実行に属するエージェントによって出力されます。1 つの `workflow.run_id` でイベントをフィルタリングすると、その実行の API リクエストとツール結果が再構成されます。識別子は、ワークフロースクリプトがスポーンするエージェントと、それらがスポーンするエージェント (スキル呼び出しなど) をカバーします。Workflow ツール結果で報告される実行識別子と一致します。他のすべてのイベントには存在しません。{/* min-version: 2.1.202 */}Claude Code v2.1.202 以降が必要です
-* `workflow.name`: ワークフローの名前。スクリプトの `meta.name`。`workflow.run_id` と一緒に出力されます。組み込みワークフロー名は、実行が変更されていない組み込みスクリプトを実行する場合、そのまま表示されます。ユーザー作成の名前 (組み込みスクリプトの編集されたコピーを含む) は、`OTEL_LOG_TOOL_DETAILS=1` が設定されていない限り `custom` に置き換えられます。{/* min-version: 2.1.202 */}Claude Code v2.1.202 以降が必要です
+* `workflow.run_id`: 実行識別子。プレフィックス `wf_` が付いており、API とツールイベントで出力されます。[Workflow](/docs/ja/workflows) ツール実行に属するエージェントによって出力されます。1 つの `workflow.run_id` でイベントをフィルタリングすると、その実行の API リクエストとツール結果が再構成されます。識別子は、ワークフロースクリプトがスポーンするエージェントと、それらがスポーンするエージェント (スキル呼び出しなど) をカバーします。Workflow ツール結果で報告される実行識別子と一致します。他のすべてのイベントには存在しません。Claude Code v2.1.202 以降が必要です
+* `workflow.name`: ワークフローの名前。スクリプトの `meta.name`。`workflow.run_id` と一緒に出力されます。組み込みワークフロー名は、実行が変更されていない組み込みスクリプトを実行する場合、そのまま表示されます。ユーザー作成の名前 (組み込みスクリプトの編集されたコピーを含む) は、`OTEL_LOG_TOOL_DETAILS=1` が設定されていない限り `custom` に置き換えられます。Claude Code v2.1.202 以降が必要です
 
 <h3 id="metrics">
   メトリクス
@@ -622,7 +622,7 @@ Claude Code は、OpenTelemetry ログ/イベント経由で以下のイベン�
   アシスタント応答イベント
 </h4>
 
-モデルからテキストコンテンツを返す各 API リクエスト後にログされます。レスポンスのテキストブロックのみが含まれます。思考ブロックとツール使用ブロックは除外されます。{/* min-version: 2.1.193 */}Claude Code v2.1.193 以降が必要です。
+モデルからテキストコンテンツを返す各 API リクエスト後にログされます。レスポンスのテキストブロックのみが含まれます。思考ブロックとツール使用ブロックは除外されます。Claude Code v2.1.193 以降が必要です。
 
 **イベント名**: `claude_code.assistant_response`
 
@@ -945,11 +945,11 @@ Claude Code が予期しない内部エラーをキャッチするときにロ�
 * `plugin_id_hash`: プラグイン名とマーケットプレイスの決定論的ハッシュ。設定されたエクスポーターにのみ送信されます。フリート全体で読み込まれているサードパーティプラグインの数をカウントできます。その名前を記録することなく
 * `has_hooks`: プラグインがフックに貢献するかどうか
 * `has_mcp`: プラグインが MCP サーバーに貢献するかどうか
-* `host_owned_mcp`: SDK ホストがこのプラグインの MCP 接続を管理し、Claude Code がプラグインの MCP サーバー設定の読み取りをスキップした場合は `true`、そうでない場合は `false`。{/* min-version: 2.1.172 */}Claude Code v2.1.172 以降が必要です
+* `host_owned_mcp`: SDK ホストがこのプラグインの MCP 接続を管理し、Claude Code がプラグインの MCP サーバー設定の読み取りをスキップした場合は `true`、そうでない場合は `false`。Claude Code v2.1.172 以降が必要です
 * `skill_path_count`: プラグインが宣言するスキルディレクトリの数
 * `command_path_count`: プラグインが宣言するコマンドディレクトリの数
 * `agent_path_count`: プラグインが宣言するエージェントディレクトリの数
-* `safe_mode`: セッションが [`--safe-mode`](/docs/ja/cli-reference) で開始された場合は `"true"`、そうでない場合は `"false"`。セーフモードでは、このイベントは設定されたインベントリのみを報告します。プラグインのコマンド、スキル、フック、MCP サーバーは読み込まれません。{/* min-version: 2.1.169 */}Claude Code v2.1.169 以降が必要です
+* `safe_mode`: セッションが [`--safe-mode`](/docs/ja/cli-reference) で開始された場合は `"true"`、そうでない場合は `"false"`。セーフモードでは、このイベントは設定されたインベントリのみを報告します。プラグインのコマンド、スキル、フック、MCP サーバーは読み込まれません。Claude Code v2.1.169 以降が必要です
 
 <h4 id="skill-activated-event">
   スキル有効化イベント
@@ -1027,7 +1027,7 @@ API リクエストが複数回の試行後に失敗した場合に 1 回ログ�
 * `hook_event`: フックイベントタイプ。例: `"PreToolUse"` または `"PostToolUse"`
 * `hook_type`: フック実装タイプ: `"command"`、`"prompt"`、`"mcp_tool"`、`"http"`、または `"agent"`
 * `hook_source`: フックが定義されている場所: `"userSettings"`、`"projectSettings"`、`"localSettings"`、`"flagSettings"`、`"policySettings"`、または `"pluginHook"`
-* `safe_mode`: セッションが [`--safe-mode`](/docs/ja/cli-reference) で開始された場合は `"true"`、そうでない場合は `"false"`。{/* min-version: 2.1.169 */}Claude Code v2.1.169 以降が必要です
+* `safe_mode`: セッションが [`--safe-mode`](/docs/ja/cli-reference) で開始された場合は `"true"`、そうでない場合は `"false"`。Claude Code v2.1.169 以降が必要です
 * `hook_matcher` (`OTEL_LOG_TOOL_DETAILS=1` の場合): フック設定から設定されている場合のマッチャー文字列
 * `plugin.name` (`hook_source` が `"pluginHook"` の場合): 貢献するプラグインの名前。公式マーケットプレイスおよび組み込みバンドルの外部にあるプラグインの場合、`OTEL_LOG_TOOL_DETAILS=1` が設定されていない限り値は `"third-party"` です
 * `plugin_id_hash` (`hook_source` が `"pluginHook"` の場合): プラグイン名とマーケットプレイスの決定論的ハッシュ。設定されたエクスポーターにのみ送信されます。その名前を記録することなく、貢献するプラグインの数をカウントできます
@@ -1051,7 +1051,7 @@ API リクエストが複数回の試行後に失敗した場合に 1 回ログ�
 * `num_hooks`: 一致するフックコマンドの数
 * `managed_only`: 管理ポリシーフックのみが許可されている場合は `"true"`
 * `hook_source`: `"policySettings"` または `"merged"`
-* `safe_mode`: セッションが [`--safe-mode`](/docs/ja/cli-reference) で開始された場合は `"true"`、そうでない場合は `"false"`。{/* min-version: 2.1.169 */}Claude Code v2.1.169 以降が必要です
+* `safe_mode`: セッションが [`--safe-mode`](/docs/ja/cli-reference) で開始された場合は `"true"`、そうでない場合は `"false"`。Claude Code v2.1.169 以降が必要です
 * `hook_definitions`: JSON シリアル化されたフック設定。詳細なベータトレースと `OTEL_LOG_TOOL_DETAILS=1` の両方が有効な場合にのみ含まれます
 
 <h4 id="hook-execution-complete-event">
@@ -1078,7 +1078,7 @@ API リクエストが複数回の試行後に失敗した場合に 1 回ログ�
 * `total_duration_ms`: すべての一致するフックの実時間
 * `managed_only`: 管理ポリシーフックのみが許可されている場合は `"true"`
 * `hook_source`: `"policySettings"` または `"merged"`
-* `safe_mode`: セッションが [`--safe-mode`](/docs/ja/cli-reference) で開始された場合は `"true"`、そうでない場合は `"false"`。{/* min-version: 2.1.169 */}Claude Code v2.1.169 以降が必要です
+* `safe_mode`: セッションが [`--safe-mode`](/docs/ja/cli-reference) で開始された場合は `"true"`、そうでない場合は `"false"`。Claude Code v2.1.169 以降が必要です
 * `hook_definitions`: JSON シリアル化されたフック設定。詳細なベータトレースと `OTEL_LOG_TOOL_DETAILS=1` の両方が有効な場合にのみ含まれます
 
 <h4 id="hook-plugin-metrics-event">
@@ -1119,7 +1119,7 @@ API リクエストが複数回の試行後に失敗した場合に 1 回ログ�
 * `pre_tokens`: 圧縮前のおおよそのトークン数
 * `post_tokens`: 圧縮後のおおよそのトークン数
 * `error`: 圧縮が失敗した場合のエラーメッセージ
-* `precompute_reuse`: `trigger` が `"manual"` の場合のみ設定されます。自動圧縮は、コンテキストウィンドウが満杯になる前に、バックグラウンドで概要を準備できます。この属性は、`/compact` がその準備された概要を再利用したかどうかを記録します。`"hit"` は再利用されたことを意味します。`"miss_custom_instructions"`、`"miss_hook"`、および `"miss_not_ready"` は、代わりに新しい概要が計算された理由を示します。{/* min-version: 2.1.153 */}Claude Code v2.1.153 以降が必要です
+* `precompute_reuse`: `trigger` が `"manual"` の場合のみ設定されます。自動圧縮は、コンテキストウィンドウが満杯になる前に、バックグラウンドで概要を準備できます。この属性は、`/compact` がその準備された概要を再利用したかどうかを記録します。`"hit"` は再利用されたことを意味します。`"miss_custom_instructions"`、`"miss_hook"`、および `"miss_not_ready"` は、代わりに新しい概要が計算された理由を示します。Claude Code v2.1.153 以降が必要です
 
 <h4 id="feedback-survey-event">
   フィードバック調査イベント

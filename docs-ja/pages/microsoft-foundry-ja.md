@@ -139,7 +139,7 @@ az login
 
 **オプション C：ベアラートークン認証**
 
-{/* min-version: 2.1.203 */}Claude Code は、すべてのリクエストで `ANTHROPIC_FOUNDRY_AUTH_TOKEN` の値を `Authorization: Bearer` ヘッダーとして送信します。ホストアプリケーションやサインインスクリプトなど、別のプロセスがすでにアクセストークンを取得している場合に、このオプションを使用します。Claude Code v2.1.203 以降が必要です。
+Claude Code は、すべてのリクエストで `ANTHROPIC_FOUNDRY_AUTH_TOKEN` の値を `Authorization: Bearer` ヘッダーとして送信します。ホストアプリケーションやサインインスクリプトなど、別のプロセスがすでにアクセストークンを取得している場合に、このオプションを使用します。Claude Code v2.1.203 以降が必要です。
 
 変数を、Microsoft Entra ID がリソース用に発行したベアラートークンに設定します：
 

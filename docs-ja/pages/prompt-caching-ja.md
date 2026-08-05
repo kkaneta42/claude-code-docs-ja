@@ -116,7 +116,7 @@ MCP 設定を編集しても、それ自体ではキャッシュは変更され�
 
 例外は[MCP サーバー](/docs/ja/plugins-reference#mcp-servers)を提供するプラグインです。1 つを有効化または無効化することは、[MCP サーバーの接続または切断](#connecting-or-disconnecting-an-mcp-server)と同じルールに従います。サーバーのツールが遅延されるとキャッシュが保持され、プリフィックスに読み込まれると次のリクエストは会話全体を再度読み取ります。
 
-プラグインの変更は、[`/reload-plugins`](/docs/ja/discover-plugins#apply-plugin-changes-without-restarting)を実行するか、新しいセッションを開始するときに適用されます。コスト（追加されたアナウンスメントまたは完全な再読み取り）は、`/plugin install`、`/plugin enable`、または `/plugin disable` を実行するときではなく、リロード後の最初のターンに表示されます。{/* min-version: 2.1.163 */}v2.1.163 以降、リロードが完全な再読み取りをトリガーする場合、`/reload-plugins` は警告を表示し、リロードを適用しません。`--force` を渡して、とにかく適用します。
+プラグインの変更は、[`/reload-plugins`](/docs/ja/discover-plugins#apply-plugin-changes-without-restarting)を実行するか、新しいセッションを開始するときに適用されます。コスト（追加されたアナウンスメントまたは完全な再読み取り）は、`/plugin install`、`/plugin enable`、または `/plugin disable` を実行するときではなく、リロード後の最初のターンに表示されます。v2.1.163 以降、リロードが完全な再読み取りをトリガーする場合、`/reload-plugins` は警告を表示し、リロードを適用しません。`--force` を渡して、とにかく適用します。
 
 セッションの前半で有効にしたプラグインを無効にすると、以前のリクエスト形状が復元されます。そのプリフィックスがまだ[キャッシュライフタイム](#cache-lifetime)内にある場合、次のリクエストは再構築するのではなく、古いキャッシュエントリを読み取ります。
 

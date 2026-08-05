@@ -38,15 +38,15 @@ claude --worktree
 
 リポジトリの `.claude/worktrees/` ディレクトリの外のパスに入ると、セッションの作業ディレクトリ、書き込みアクセス、および `CLAUDE.md` や設定などのプロジェクト設定をその場所に移動するため、最初に承認を求めます。`EnterWorktree` [権限ルール](/docs/ja/permissions)または「今後は聞かない」を選択しても、このプロンプトは表示されません。`bypassPermissions` モードのみがスキップします。v2.1.206 より前は、Claude は既存の worktree パスに承認なく入ることができました。
 
-{/* min-version: 2.1.198 */}v2.1.198 以降、worktree に入るか出るかは、セッショントランスクリプトをそのディレクトリのプロジェクトストレージに再配置します。これは [`/cd`](/docs/ja/commands)と同じ方法で行われるため、`/desktop` と `--resume` はその後そこでセッションを見つけます。[`WorktreeCreate` フック](#non-git-version-control)によって作成された Worktree は除外され、トランスクリプトを起動ディレクトリに保持します。
+v2.1.198 以降、worktree に入るか出るかは、セッショントランスクリプトをそのディレクトリのプロジェクトストレージに再配置します。これは [`/cd`](/docs/ja/commands)と同じ方法で行われるため、`/desktop` と `--resume` はその後そこでセッションを見つけます。[`WorktreeCreate` フック](#non-git-version-control)によって作成された Worktree は除外され、トランスクリプトを起動ディレクトリに保持します。
 
 Worktree は[サンドボックス](/docs/ja/sandboxing#filesystem-isolation)が有効な状態で動作します。サンドボックスはメインリポジトリの共有 `.git` ディレクトリへの書き込みを許可するため、`git commit` などのコマンドはリンクされた worktree 内からリファレンスとインデックスを更新できます。
 
 初めてディレクトリで `--worktree` をインタラクティブに使用する前に、そのディレクトリで `claude` を 1 回実行してワークスペース信頼ダイアログを受け入れてください。信頼がまだ受け入れられていない場合、`--worktree` はエラーで終了し、最初にディレクトリで `claude` を実行するよう求めるプロンプトが表示されます。`-p` を使用した非インタラクティブ実行は[信頼チェック](/docs/ja/security)をスキップするため、`claude -p --worktree` はそれなしで進行します。
 
-{/* min-version: 2.1.205 */}Claude Code が起動時に worktree ディレクトリに入ることができない場合、たとえば [`WorktreeCreate` フック](/docs/ja/hooks#worktreecreate)が作成したディレクトリ以外のものを出力した場合、またはセットアップ後にディレクトリが削除された場合、Claude Code はパスを名前として付けたエラーを出力し、コード 1 で終了します。v2.1.205 より前は、これはセッションをクラッシュさせ、`-p` を使用すると約 30 秒間スタールしてからコード 0 で終了していました。
+Claude Code が起動時に worktree ディレクトリに入ることができない場合、たとえば [`WorktreeCreate` フック](/docs/ja/hooks#worktreecreate)が作成したディレクトリ以外のものを出力した場合、またはセットアップ後にディレクトリが削除された場合、Claude Code はパスを名前として付けたエラーを出力し、コード 1 で終了します。v2.1.205 より前は、これはセッションをクラッシュさせ、`-p` を使用すると約 30 秒間スタールしてからコード 0 で終了していました。
 
-{/* min-version: 2.1.200 */}メインチェックアウトから[プロジェクトスコープ](/docs/ja/plugins-reference#plugin-installation-scopes)でインストールされたプラグインは、同じリポジトリの worktree でも読み込まれるため、worktree ごとに再インストールする必要はありません。これは `--worktree` で worktree を作成する場合でも、`git worktree add` で作成する場合でも適用されます。Claude Code v2.1.200 以降が必要です。
+メインチェックアウトから[プロジェクトスコープ](/docs/ja/plugins-reference#plugin-installation-scopes)でインストールされたプラグインは、同じリポジトリの worktree でも読み込まれるため、worktree ごとに再インストールする必要はありません。これは `--worktree` で worktree を作成する場合でも、`git worktree add` で作成する場合でも適用されます。Claude Code v2.1.200 以降が必要です。
 
 <Tip>
   `.claude/worktrees/` を `.gitignore` に追加して、worktree の内容がメインのチェックアウトで追跡されていないファイルとして表示されないようにします。

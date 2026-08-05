@@ -39,7 +39,7 @@
 * **アップストリームエラーを変更せずに返す**：Claude Code の自動復旧はエラーの文言に一致するため、ゲートウェイ独自のエンベロープでエラーをラップすると破損します
 * **リクエスト本文 WAF 検査からパスを除外する**：Claude Code プロンプトはソースコードと XML スタイルのタグを含み、クロスサイトスクリプティング本文ルールに一致します。ゲートウェイの前の WAF は実際のセッションで `403` を返しますが、短いテストリクエストは通ります
 
-オプションで、`GET /v1/models` を提供して、Claude Code が [モデル検出](/docs/ja/llm-gateway-protocol#model-discovery)でゲートウェイからモデルピッカーを入力できるようにします。{/* min-version: 2.1.129 */}
+オプションで、`GET /v1/models` を提供して、Claude Code が [モデル検出](/docs/ja/llm-gateway-protocol#model-discovery)でゲートウェイからモデルピッカーを入力できるようにします。
 
 <h2 id="rollout-steps">
   ロールアウト手順
@@ -206,7 +206,7 @@ claude -p "Reply with one word: connected"
 
 テーブルから条件付き変数を同じ `env` ブロックに追加します。マネージド `ANTHROPIC_BASE_URL` は強制され、Claude Code がプロセス環境と低優先度の設定の上に適用するため、開発者のシェルエクスポートでオーバーライドできません。
 
-マネージド設定にゲートウェイ認証情報と一緒に `forceLoginMethod` または `forceLoginOrgUUID` を含めないでください。Claude Code v2.1.146 以降では、どちらのキーも起動時に `ANTHROPIC_API_KEY`、`ANTHROPIC_AUTH_TOKEN`、および `apiKeyHelper` をブロックするため、開発者は `This machine's managed settings require a first-party login` を見て進むことができません。{/* min-version: 2.1.146 */}
+マネージド設定にゲートウェイ認証情報と一緒に `forceLoginMethod` または `forceLoginOrgUUID` を含めないでください。Claude Code v2.1.146 以降では、どちらのキーも起動時に `ANTHROPIC_API_KEY`、`ANTHROPIC_AUTH_TOKEN`、および `apiKeyHelper` をブロックするため、開発者は `This machine's managed settings require a first-party login` を見て進むことができません。
 
 [サーバー管理設定](/docs/ja/server-managed-settings#platform-availability)配信には `api.anthropic.com` への直接接続が必要なため、ゲートウェイルーティングセッションに到達しません。ゲートウェイデプロイメントはこのファイルベースのマネージド設定パスを使用し、同じキーを強制します。
 

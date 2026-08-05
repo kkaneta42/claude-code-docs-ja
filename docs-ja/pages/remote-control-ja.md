@@ -15,9 +15,9 @@ Remote Control は [claude.ai/code](https://claude.ai/code) または Claude ア
 マシン上で Remote Control セッションを開始すると、Claude はローカルで実行され続けるため、コード実行とファイルシステムアクセスはマシン上に留まります。Remote Control を使用すると、以下のことができます。
 
 * **ローカル環境全体をリモートで使用する**: ファイルシステム、[MCP サーバー](/docs/ja/mcp)、ツール、プロジェクト設定がすべて利用可能なままです。また、`@` を入力するとローカルプロジェクトのファイルパスが自動補完されます
-* **両方のサーフェスから同時に作業する**: 会話と [subagents](/docs/ja/sub-agents) および [dynamic workflows](/docs/ja/workflows) の進捗がすべての接続されたデバイス間で同期されるため、ターミナル、ブラウザ、電話から相互に交換可能にメッセージを送信できます。{/* min-version: 2.1.207 */}v2.1.207 より前では、[Desktop app](/docs/ja/desktop) でホストされたセッションは接続されたデバイスに subagent またはワークフローの進捗を送信しませんでした。
-* **電話またはブラウザから画像とファイルを送信する**: Claude アプリまたは claude.ai/code に添付ファイルを追加すると、Claude Code はそれをマシンにダウンロードし、キャプション付きまたはキャプションなしで `@` ファイル参照として Claude に渡します。{/* min-version: 2.1.202 */}v2.1.202 より前では、キャプションなしで送信された添付ファイルがセッションに到達する前に Claude Code がドロップする可能性がありました。
-* **中断に対応する**: ラップトップがスリープ状態になったり、ネットワークが切断されたりした場合、マシンがオンラインに戻ると、セッションは自動的に再接続されます。Claude Code は再接続中に subagents およびワークフローからのステータス更新をキューに入れ、復旧後に配信します。{/* min-version: 2.1.207 */}v2.1.207 より前では、再接続または認証情報の更新中に送信された更新が失われる可能性があり、接続されたデバイスは完了したタスクが実行中として表示され続けていました。
+* **両方のサーフェスから同時に作業する**: 会話と [subagents](/docs/ja/sub-agents) および [dynamic workflows](/docs/ja/workflows) の進捗がすべての接続されたデバイス間で同期されるため、ターミナル、ブラウザ、電話から相互に交換可能にメッセージを送信できます。v2.1.207 より前では、[Desktop app](/docs/ja/desktop) でホストされたセッションは接続されたデバイスに subagent またはワークフローの進捗を送信しませんでした。
+* **電話またはブラウザから画像とファイルを送信する**: Claude アプリまたは claude.ai/code に添付ファイルを追加すると、Claude Code はそれをマシンにダウンロードし、キャプション付きまたはキャプションなしで `@` ファイル参照として Claude に渡します。v2.1.202 より前では、キャプションなしで送信された添付ファイルがセッションに到達する前に Claude Code がドロップする可能性がありました。
+* **中断に対応する**: ラップトップがスリープ状態になったり、ネットワークが切断されたりした場合、マシンがオンラインに戻ると、セッションは自動的に再接続されます。Claude Code は再接続中に subagents およびワークフローからのステータス更新をキューに入れ、復旧後に配信します。v2.1.207 より前では、再接続または認証情報の更新中に送信された更新が失われる可能性があり、接続されたデバイスは完了したタスクが実行中として表示され続けていました。
 
 クラウドインフラストラクチャで実行される [Web 上の Claude Code](/docs/ja/claude-code-on-the-web) とは異なり、Remote Control セッションはマシン上で直接実行され、ローカルファイルシステムと相互作用します。Web およびモバイルインターフェースは、そのローカルセッションへのウィンドウにすぎません。
 
@@ -31,7 +31,7 @@ Remote Control を使用する前に、環境が以下の条件を満たして�
 
 * **サブスクリプション**: Pro、Max、Team、および Enterprise プランで利用可能です。API キーはサポートされていません。Team および Enterprise では、Owner が [Claude Code 管理設定](https://claude.ai/admin-settings/claude-code) で Remote Control トグルを最初に有効にする必要があります。
 * **認証**: `claude` を実行し、まだサインインしていない場合は `/login` を使用して claude.ai 経由でサインインします。
-* **API エンドポイント**: Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry では利用できません。{/* min-version: 2.1.196 */}v2.1.196 以降、[`ANTHROPIC_BASE_URL`](/docs/ja/env-vars) が `api.anthropic.com` 以外のホスト（[LLM gateway](/docs/ja/llm-gateway) やプロキシなど）を指している場合、Remote Control も無効になります。Remote Control を使用するには、この変数を設定解除してください。
+* **API エンドポイント**: Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry では利用できません。v2.1.196 以降、[`ANTHROPIC_BASE_URL`](/docs/ja/env-vars) が `api.anthropic.com` 以外のホスト（[LLM gateway](/docs/ja/llm-gateway) やプロキシなど）を指している場合、Remote Control も無効になります。Remote Control を使用するには、この変数を設定解除してください。
 * **ワークスペース信頼**: プロジェクトディレクトリで少なくとも 1 回 `claude` を実行して、ワークスペース信頼ダイアログを受け入れます。
 
 <h2 id="start-a-remote-control-session">
@@ -56,8 +56,8 @@ CLI または VS Code 拡張機能から Remote Control セッションを開始
     | ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
     | `--name "My Project"`                           | claude.ai/code のセッションリストに表示されるカスタムセッションタイトルを設定します。                                                                                                                                                                                                                                                                                     |
     | `--remote-control-session-name-prefix <prefix>` | 明示的な名前が設定されていない場合の自動生成セッション名のプレフィックス。デフォルトはマシンのホスト名で、`myhost-graceful-unicorn` のような名前が生成されます。同じ効果のために `CLAUDE_REMOTE_CONTROL_SESSION_NAME_PREFIX` を設定します。                                                                                                                                                                              |
-    | `-c`, `--continue`                              | {/* min-version: 2.1.200 */}このディレクトリから開始された最新の Remote Control セッションを再開します。新しいセッションを作成する代わりに使用します。`--session-id`、`--spawn`、`--capacity`、または `--create-session-in-dir` と組み合わせることはできません。Claude Code v2.1.200 以降が必要です。それより前のバージョンはこのフラグを未知の引数として拒否します。                                                                                     |
-    | `--session-id <id>`                             | {/* min-version: 2.1.200 */}特定の Remote Control セッションをその ID で再開します。`--continue`、`--spawn`、`--capacity`、または `--create-session-in-dir` と組み合わせることはできません。Claude Code v2.1.200 以降が必要です。それより前のバージョンはこのフラグを未知の引数として拒否します。                                                                                                                      |
+    | `-c`, `--continue`                              | このディレクトリから開始された最新の Remote Control セッションを再開します。新しいセッションを作成する代わりに使用します。`--session-id`、`--spawn`、`--capacity`、または `--create-session-in-dir` と組み合わせることはできません。Claude Code v2.1.200 以降が必要です。それより前のバージョンはこのフラグを未知の引数として拒否します。                                                                                                                 |
+    | `--session-id <id>`                             | 特定の Remote Control セッションをその ID で再開します。`--continue`、`--spawn`、`--capacity`、または `--create-session-in-dir` と組み合わせることはできません。Claude Code v2.1.200 以降が必要です。それより前のバージョンはこのフラグを未知の引数として拒否します。                                                                                                                                                  |
     | `--spawn <mode>`                                | サーバーがセッションを作成する方法。<br />• `same-dir`（デフォルト）: すべてのセッションが現在の作業ディレクトリを共有するため、同じファイルを編集している場合は競合する可能性があります。<br />• `worktree`: オンデマンドセッションごとに独自の [git worktree](/docs/ja/worktrees) を取得します。git リポジトリが必要です。<br />• `session`: シングルセッションモード。正確に 1 つのセッションを提供し、追加の接続を拒否します。スタートアップ時にのみ設定します。<br />実行時に `w` を押して `same-dir` と `worktree` の間でトグルします。 |
     | `--capacity <N>`                                | 同時セッションの最大数。デフォルトは 32 です。`--spawn=session` では使用できません。                                                                                                                                                                                                                                                                                  |
     | `--[no-]create-session-in-dir`                  | サーバーの起動時に現在のディレクトリに 1 つのセッションを事前作成し、すぐに入力できる場所を用意します。`worktree` モードでは、このセッションは現在のディレクトリに留まり、オンデマンドセッションは分離された worktree を取得します。デフォルトではオンです。`--no-create-session-in-dir` を渡して、何も作成しない状態で開始します。                                                                                                                                           |
@@ -132,7 +132,7 @@ Remote Control セッションがアクティブになったら、別のデバ�
 * **QR コードをスキャンする**: セッション URL の横に表示される QR コードをスキャンして、Claude アプリで直接開きます。`claude remote-control` を使用する場合は、スペースバーを押して QR コード表示をトグルします。
 * **[claude.ai/code](https://claude.ai/code)または Claude アプリを開く**: セッションリストで名前でセッションを見つけます。Claude モバイルアプリでは、ナビゲーションの **Code** をタップしてセッションリストに到達します。Remote Control セッションはオンラインの場合、コンピュータアイコンと緑色のステータスドットを表示します。
 
-接続すると、デバイスはセッションが既にバックグラウンドで実行しているサブエージェントとワークフローを表示します。{/* min-version: 2.1.208 */}v2.1.208 より前では、対話型ターミナルでホストされているセッションに接続するデバイスは、既に実行されていたサブエージェントとワークフローを、それらの 1 つが開始または停止されるまで表示しませんでした。
+接続すると、デバイスはセッションが既にバックグラウンドで実行しているサブエージェントとワークフローを表示します。v2.1.208 より前では、対話型ターミナルでホストされているセッションに接続するデバイスは、既に実行されていたサブエージェントとワークフローを、それらの 1 つが開始または停止されるまで表示しませんでした。
 
 リモートセッションのタイトルは、この順序で選択されます。
 
@@ -141,7 +141,7 @@ Remote Control セッションがアクティブになったら、別のデバ�
 3. 既存の会話履歴の最後の意味のあるメッセージ
 4. `myhost-graceful-unicorn` のような自動生成名。ここで `myhost` はマシンのホスト名または `--remote-control-session-name-prefix` で設定したプレフィックスです
 
-明示的な名前を設定しなかった場合、プロンプトを送信するとタイトルが更新されて反映されます。{/* min-version: 2.1.176 */}Claude Code v2.1.176 以降、自動生成されたタイトルは会話の言語、または設定されている場合は [`language`](/docs/ja/settings#available-settings) 設定に一致します。claude.ai または Claude アプリからセッションの名前を変更すると、`claude --resume` に表示されるローカルタイトルも更新されます。
+明示的な名前を設定しなかった場合、プロンプトを送信するとタイトルが更新されて反映されます。Claude Code v2.1.176 以降、自動生成されたタイトルは会話の言語、または設定されている場合は [`language`](/docs/ja/settings#available-settings) 設定に一致します。claude.ai または Claude アプリからセッションの名前を変更すると、`claude --resume` に表示されるローカルタイトルも更新されます。
 
 環境に既にアクティブなセッションがある場合は、それを続行するか新しいセッションを開始するかを尋ねられます。
 
@@ -151,7 +151,7 @@ Claude アプリをまだ持っていない場合は、Claude Code 内で `/mobi
   すべてのセッションで Remote Control を有効にする
 </h3>
 
-Remote Control のみ、`claude remote-control`、`claude --remote-control`、または `/remote-control` を明示的に実行した場合、またはオートコネクトがオンになっている場合にアクティブになります。すべての対話型セッションで自動的に有効にするには、Claude Code 内で `/config` を実行し、**Enable Remote Control for all sessions** を `true` に設定します。無効にするには `false` に設定するか、組織のデフォルトに従うために設定しないままにします。Desktop アプリでは、**Settings → Claude Code → Enable remote control by default** からこれをトグルすることもできます。{/* min-version: 2.1.203 */}[VS Code 拡張機能](/docs/ja/vs-code#use-the-prompt-box)では、同じトグルがコマンドメニューの Settings セクションに **Enable Remote Control for all sessions** として表示されます。Claude Code v2.1.203 以降が必要です。
+Remote Control のみ、`claude remote-control`、`claude --remote-control`、または `/remote-control` を明示的に実行した場合、またはオートコネクトがオンになっている場合にアクティブになります。すべての対話型セッションで自動的に有効にするには、Claude Code 内で `/config` を実行し、**Enable Remote Control for all sessions** を `true` に設定します。無効にするには `false` に設定するか、組織のデフォルトに従うために設定しないままにします。Desktop アプリでは、**Settings → Claude Code → Enable remote control by default** からこれをトグルすることもできます。[VS Code 拡張機能](/docs/ja/vs-code#use-the-prompt-box)では、同じトグルがコマンドメニューの Settings セクションに **Enable Remote Control for all sessions** として表示されます。Claude Code v2.1.203 以降が必要です。
 
 この設定がオンの場合、各対話型 Claude Code プロセスは 1 つのリモートセッションを登録します。複数のインスタンスを実行する場合、各インスタンスは独自の環境とセッションを取得します。単一のプロセスから複数の同時セッションを実行するには、[サーバーモード](#start-a-remote-control-session)を使用します。
 
@@ -272,7 +272,7 @@ Claude がプッシュを送信するタイミングを決定します。通常�
 * iOS では、フォーカスモードと通知サマリーがプッシュを抑制または遅延させることができます。Settings → Notifications → Claude を確認してください。
 * Android では、積極的なバッテリー最適化が配信を遅延させることができます。システム設定で Claude アプリをバッテリー最適化から除外します。
 
-Claude Code は、ターミナルに入力中またはターミナルにフォーカスしている間、モバイルプッシュ通知をスキップします。{/* min-version: 2.1.181 */}v2.1.181 以降では、[`CLAUDE_CLIENT_PRESENCE_FILE`](/docs/ja/env-vars) をマーカーファイルパスに設定して、別のウィンドウにいる場合でも、マシンにいるときはいつでもこれを拡張できます。ファイルが存在する間は通知がスキップされます。スクリーンロックリスナーまたは同様のツールを設定して、スクリーンがロック解除されたときにファイルを作成し、スクリーンがロックされたときにファイルを削除します。
+Claude Code は、ターミナルに入力中またはターミナルにフォーカスしている間、モバイルプッシュ通知をスキップします。v2.1.181 以降では、[`CLAUDE_CLIENT_PRESENCE_FILE`](/docs/ja/env-vars) をマーカーファイルパスに設定して、別のウィンドウにいる場合でも、マシンにいるときはいつでもこれを拡張できます。ファイルが存在する間は通知がスキップされます。スクリーンロックリスナーまたは同様のツールを設定して、スクリーンがロック解除されたときにファイルを作成し、スクリーンがロックされたときにファイルを削除します。
 
 <h2 id="limitations">
   制限事項
@@ -285,8 +285,8 @@ Claude Code は、ターミナルに入力中またはターミナルにフォ�
 * **一部のコマンドはローカルのみです**: ターミナルインターフェースでのみ実行されるコマンド（`/plugin` や `/resume` など）は、引数を渡すかどうかに関わらず、ローカル CLI からのみ機能します。以下がモバイルと Web から機能します：
   * テキスト出力コマンド: `/compact`、`/clear`、`/context`、`/usage`、`/exit`、`/usage-credits`（CLI 内ダイアログを開く代わりにテキスト形式を実行します）、`/recap`、`/reload-plugins`
   * `/model`、`/effort`、`/fast`、`/color`、`/rename`: 値を引数として渡します。例えば `/model sonnet` または `/effort high` のようにします。モバイルと Web からは、`/model` と `/effort` は、ターミナルピッカーまたはスライダーの代わりに引数を受け取ります。
-  * {/* min-version: 2.1.166 */}`/mcp`、v2.1.166 以降: モバイルアプリからは、ピッカーを開く代わりにサーバーステータスのテキスト概要を返します。Web では、`/mcp` 単独で概要を返す代わりに [claude.ai コネクタ](/docs/ja/mcp#use-mcp-servers-from-claude-ai)のディレクトリを開きます。`reconnect`、`enable`、`disable` [サブコマンド](/docs/ja/commands#all-commands)は両方から機能します。ローカル CLI と異なり、サーバー名なしで `/mcp reconnect` を実行すると、失敗したか認証が必要なすべてのサーバーを再接続します。
-  * {/* min-version: 2.1.181 */}`/config`、v2.1.181 以降: モバイルアプリからは、`key=value` を渡して設定を行うか、引数なしで実行して設定できるキーのリストを表示します。Web では、`/config` は設定の Claude Code セクションを開く代わりに、コマンドの後のテキストを無視します。
+  * `/mcp`、v2.1.166 以降: モバイルアプリからは、ピッカーを開く代わりにサーバーステータスのテキスト概要を返します。Web では、`/mcp` 単独で概要を返す代わりに [claude.ai コネクタ](/docs/ja/mcp#use-mcp-servers-from-claude-ai)のディレクトリを開きます。`reconnect`、`enable`、`disable` [サブコマンド](/docs/ja/commands#all-commands)は両方から機能します。ローカル CLI と異なり、サーバー名なしで `/mcp reconnect` を実行すると、失敗したか認証が必要なすべてのサーバーを再接続します。
+  * `/config`、v2.1.181 以降: モバイルアプリからは、`key=value` を渡して設定を行うか、引数なしで実行して設定できるキーのリストを表示します。Web では、`/config` は設定の Claude Code セクションを開く代わりに、コマンドの後のテキストを無視します。
 
 <h2 id="troubleshooting">
   トラブルシューティング
@@ -298,7 +298,7 @@ Claude Code は、ターミナルに入力中またはターミナルにフォ�
 
 claude.ai アカウントで認証されていません。`claude auth login` を実行して claude.ai オプションを選択してください。`ANTHROPIC_API_KEY` が環境に設定されている場合は、最初に設定を解除してください。
 
-{/* min-version: 2.1.206 */}v2.1.206 より前では、サインアウト状態で `/remote-control` を実行すると、このメッセージの代わりに `Unknown command: /remote-control` が報告されていました。
+v2.1.206 より前では、サインアウト状態で `/remote-control` を実行すると、このメッセージの代わりに `Unknown command: /remote-control` が報告されていました。
 
 <h3 id="remote-control-requires-a-full-scope-login-token">
   「Remote Control には完全スコープのログイントークンが必要です」
@@ -328,7 +328,7 @@ Claude Code は Remote Control がアカウントで有効になっているか�
   「Remote Control は Claude 経由で api.anthropic.com を使用している場合にのみ利用可能です」
 </h3>
 
-セッションが Anthropic API に直接通信していないため、ペアリングする claude.ai バックエンドがありません。これは Amazon Bedrock、Google Cloud の Agent Platform、および Microsoft Foundry で発生します。{/* min-version: 2.1.196 */}v2.1.196 以降、[`ANTHROPIC_BASE_URL`](/docs/ja/env-vars) が `api.anthropic.com` 以外のホスト（[LLM ゲートウェイ](/docs/ja/llm-gateway)やプロキシなど）を指している場合にも発生します。claude.ai でサインインしている場合でも同様です。`ANTHROPIC_BASE_URL` を設定解除してセッションを再開し、Remote Control を使用してください。
+セッションが Anthropic API に直接通信していないため、ペアリングする claude.ai バックエンドがありません。これは Amazon Bedrock、Google Cloud の Agent Platform、および Microsoft Foundry で発生します。v2.1.196 以降、[`ANTHROPIC_BASE_URL`](/docs/ja/env-vars) が `api.anthropic.com` 以外のホスト（[LLM ゲートウェイ](/docs/ja/llm-gateway)やプロキシなど）を指している場合にも発生します。claude.ai でサインインしている場合でも同様です。`ANTHROPIC_BASE_URL` を設定解除してセッションを再開し、Remote Control を使用してください。
 
 <h3 id="remote-control-is-disabled-by-your-organization’s-policy">
   「Remote Control は組織のポリシーで無効になっています」
@@ -365,7 +365,7 @@ claude remote-control --verbose
 
 ローカルセッションは Remote Control なしで実行を続けます。`/remote-control` を実行して接続を再試行するか、`--resume` なしで Claude Code を開始して新しい Remote Control セッションを作成してください。
 
-{/* min-version: 2.1.200 */}v2.1.200 より前では、再接続の失敗により新しい Remote Control セッションが作成され、このメッセージが表示されず、claude.ai/code のセッションリストに余分なセッションが残されていました。
+v2.1.200 より前では、再接続の失敗により新しい Remote Control セッションが作成され、このメッセージが表示されず、claude.ai/code のセッションリストに余分なセッションが残されていました。
 
 <h3 id="your-organization-requires-trusted-devices-for-remote-control-but-this-device-is-not-enrolled">
   「組織は Remote Control に信頼できるデバイスを要求していますが、このデバイスは登録されていません」

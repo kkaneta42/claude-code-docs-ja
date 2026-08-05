@@ -341,7 +341,7 @@ steps:
 
 ゲートウェイが Claude Code の組み込みリストにないモデル名を提供し、ピッカーから選択したい場合は、それを有効にします。組み込みモデルが使用するものである場合、検出は不要です。管理者は管理設定を通じてすでに有効にしている可能性があります。
 
-有効にするには、シェルまたは `~/.claude/settings.json` の `env` ブロックで `CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY=1` を設定します。検出には Claude Code v2.1.129 以降が必要です。{/* min-version: 2.1.129 */}
+有効にするには、シェルまたは `~/.claude/settings.json` の `env` ブロックで `CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY=1` を設定します。検出には Claude Code v2.1.129 以降が必要です。
 
 検出されたモデルは `From gateway` というラベルの追加 `/model` エントリとして表示されます。検出が実行されたことを確認するには、`claude --debug` を起動して `[gatewayDiscovery]` 行を探します。成功はキャッシュされたモデル数をログに記録し、`404`、タイムアウト、またはリダイレクトもそこに記録されます。検出が実行される場合、フィルタリング内容、ゲートウェイが提供するレスポンス形式については、[モデル検出リファレンス](/docs/ja/llm-gateway-protocol#model-discovery)を参照してください。
 
@@ -432,7 +432,7 @@ Claude Code はデフォルトでヘルパーの出力を 5 分間キャッシ�
 
 ゲートウェイチームが Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、または AWS 上の Claude Platform という名前を付けた場合のみ 1 つを使用します。上記の[検証リクエスト](#verify-the-connection)が JSON を返した場合、このセクションをスキップできます。
 
-ゲートウェイチームが名前を付けたプロバイダーのブロックを設定します。skip-auth 変数は Claude Code にプロバイダー認証情報でリクエストに署名しないよう指示します。ゲートウェイがそれらを保持しているため。ゲートウェイが独自のトークンが必要な場合、Foundry を除いて、ブロックの後に `ANTHROPIC_AUTH_TOKEN` を追加します。Microsoft Foundry は示されているように `ANTHROPIC_FOUNDRY_API_KEY` を使用します。{/* min-version: 2.1.203 */}Bearer トークンを期待する Microsoft Foundry ゲートウェイは、代わりに [`ANTHROPIC_FOUNDRY_AUTH_TOKEN`](/docs/ja/env-vars) を使用できます。これは両方が設定されている場合、`ANTHROPIC_FOUNDRY_API_KEY` より優先されます。`ANTHROPIC_FOUNDRY_AUTH_TOKEN` には Claude Code v2.1.203 以降が必要です。
+ゲートウェイチームが名前を付けたプロバイダーのブロックを設定します。skip-auth 変数は Claude Code にプロバイダー認証情報でリクエストに署名しないよう指示します。ゲートウェイがそれらを保持しているため。ゲートウェイが独自のトークンが必要な場合、Foundry を除いて、ブロックの後に `ANTHROPIC_AUTH_TOKEN` を追加します。Microsoft Foundry は示されているように `ANTHROPIC_FOUNDRY_API_KEY` を使用します。Bearer トークンを期待する Microsoft Foundry ゲートウェイは、代わりに [`ANTHROPIC_FOUNDRY_AUTH_TOKEN`](/docs/ja/env-vars) を使用できます。これは両方が設定されている場合、`ANTHROPIC_FOUNDRY_API_KEY` より優先されます。`ANTHROPIC_FOUNDRY_AUTH_TOKEN` には Claude Code v2.1.203 以降が必要です。
 
 <h4 id="amazon-bedrock">
   Amazon Bedrock
@@ -486,9 +486,9 @@ Claude Code はデフォルトでヘルパーの出力を 5 分間キャッシ�
   Microsoft Foundry
 </h4>
 
-ゲートウェイの認証情報を `ANTHROPIC_FOUNDRY_API_KEY` に入れます。`x-api-key` ヘッダーとしてゲートウェイに送信されます。{/* min-version: 2.1.203 */}Bearer トークンを期待するゲートウェイは、代わりに [`ANTHROPIC_FOUNDRY_AUTH_TOKEN`](/docs/ja/env-vars) を使用できます。Claude Code はその値を `Authorization: Bearer` ヘッダーとして送信し、両方が設定されている場合、`ANTHROPIC_FOUNDRY_API_KEY` より優先されます。Claude Code v2.1.203 以降が必要です。
+ゲートウェイの認証情報を `ANTHROPIC_FOUNDRY_API_KEY` に入れます。`x-api-key` ヘッダーとしてゲートウェイに送信されます。Bearer トークンを期待するゲートウェイは、代わりに [`ANTHROPIC_FOUNDRY_AUTH_TOKEN`](/docs/ja/env-vars) を使用できます。Claude Code はその値を `Authorization: Bearer` ヘッダーとして送信し、両方が設定されている場合、`ANTHROPIC_FOUNDRY_API_KEY` より優先されます。Claude Code v2.1.203 以降が必要です。
 
-独自の `Authorization` ヘッダーを挿入するゲートウェイの場合、`CLAUDE_CODE_SKIP_FOUNDRY_AUTH=1` を設定し、両方の認証情報変数を設定しないままにします。Claude Code はその後、Azure 認証情報なしでリクエストを送信し、たとえば `ANTHROPIC_CUSTOM_HEADERS` を通じて提供する `Authorization` ヘッダーを保持します。{/* min-version: 2.1.203 */}v2.1.203 より前では、API キーなしの `CLAUDE_CODE_SKIP_FOUNDRY_AUTH` は Microsoft Foundry クライアントがリクエストを送信できないままにしました。
+独自の `Authorization` ヘッダーを挿入するゲートウェイの場合、`CLAUDE_CODE_SKIP_FOUNDRY_AUTH=1` を設定し、両方の認証情報変数を設定しないままにします。Claude Code はその後、Azure 認証情報なしでリクエストを送信し、たとえば `ANTHROPIC_CUSTOM_HEADERS` を通じて提供する `Authorization` ヘッダーを保持します。v2.1.203 より前では、API キーなしの `CLAUDE_CODE_SKIP_FOUNDRY_AUTH` は Microsoft Foundry クライアントがリクエストを送信できないままにしました。
 
 <Tabs>
   <Tab title="Bash または Zsh">

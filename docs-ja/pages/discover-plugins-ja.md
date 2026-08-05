@@ -169,15 +169,15 @@ Anthropic は、プラグインシステムで何が可能かを示す例プラ�
     * **Marketplaces**: 追加したマーケットプレイスを追加、削除、または更新
     * **Errors**: プラグイン読み込みエラーを表示
 
-    **Discover** タブに移動して、追加したばかりのマーケットプレイスからプラグインを確認してください。{/* min-version: 2.1.154 */}管理者が [`pluginSuggestionMarketplaces`](/docs/ja/settings#available-settings) マネージド設定を通じてマーケットプレイスをホワイトリストに登録している場合、現在の作業ディレクトリに関連するとマークされたプラグインは、**suggested for this directory** ラベル付きで上部に固定されます。
+    **Discover** タブに移動して、追加したばかりのマーケットプレイスからプラグインを確認してください。管理者が [`pluginSuggestionMarketplaces`](/docs/ja/settings#available-settings) マネージド設定を通じてマーケットプレイスをホワイトリストに登録している場合、現在の作業ディレクトリに関連するとマークされたプラグインは、**suggested for this directory** ラベル付きで上部に固定されます。
   </Step>
 
   <Step title="プラグインをインストールする">
     プラグインを選択してその詳細を表示します。詳細ペインには、プラグインに含まれるもの、およびそのコストが表示されます：
 
-    * {/* min-version: 2.1.143 */}**Context cost** の推定値。毎ターン [コンテキストウィンドウ](/docs/ja/features-overview#understand-context-costs) にプラグインが追加するトークン数を確認できます（Claude Code v2.1.143 以降）
-    * {/* min-version: 2.1.144 */}プラグインの **Last updated** 日付（v2.1.144 以降）
-    * {/* min-version: 2.1.145 */}プラグインのコマンド、エージェント、スキル、フック、MCP および LSP サーバーをリストアップする **Will install** セクション。インストール前に正確に何が追加されるかを確認できます（v2.1.145 以降）
+    * **Context cost** の推定値。毎ターン [コンテキストウィンドウ](/docs/ja/features-overview#understand-context-costs) にプラグインが追加するトークン数を確認できます（Claude Code v2.1.143 以降）
+    * プラグインの **Last updated** 日付（v2.1.144 以降）
+    * プラグインのコマンド、エージェント、スキル、フック、MCP および LSP サーバーをリストアップする **Will install** セクション。インストール前に正確に何が追加されるかを確認できます（v2.1.145 以降）
 
     インストールスコープを選択します：
 
@@ -402,7 +402,7 @@ claude plugin uninstall formatter@your-org --scope project
 
 Claude Code はすべてのアクティブなプラグインをリロードし、プラグイン、skills、agents、hooks、プラグイン MCP サーバー、プラグイン LSP サーバーのカウントを表示します。
 
-リロードには次のリクエストでトークンコストがあります。新しくロードされたコンポーネントは会話に追加されたコンテンツで自身を発表し、既存の履歴はプロンプトキャッシュから読み込まれたままです。MCP サーバーを提供するプラグインは、そのツールが [tool search](/docs/ja/mcp#scale-with-mcp-tool-search) によって遅延されていない場合、より多くのコストがかかります。変更はキャッシュを無効にし、次のリクエストは会話全体を再度読み込みます。{/* min-version: 2.1.163 */}その場合、`/reload-plugins` は警告を表示し、リロードを適用しません。`--force` を渡して、とにかく適用します。詳細については、[プラグインの有効化または無効化](/docs/ja/prompt-caching#enabling-or-disabling-a-plugin) を参照してください。
+リロードには次のリクエストでトークンコストがあります。新しくロードされたコンポーネントは会話に追加されたコンテンツで自身を発表し、既存の履歴はプロンプトキャッシュから読み込まれたままです。MCP サーバーを提供するプラグインは、そのツールが [tool search](/docs/ja/mcp#scale-with-mcp-tool-search) によって遅延されていない場合、より多くのコストがかかります。変更はキャッシュを無効にし、次のリクエストは会話全体を再度読み込みます。その場合、`/reload-plugins` は警告を表示し、リロードを適用しません。`--force` を渡して、とにかく適用します。詳細については、[プラグインの有効化または無効化](/docs/ja/prompt-caching#enabling-or-disabling-a-plugin) を参照してください。
 
 <h2 id="manage-marketplaces">
   マーケットプレイスを管理する

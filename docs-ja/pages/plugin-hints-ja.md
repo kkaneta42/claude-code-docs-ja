@@ -16,7 +16,7 @@ Claude Code はコマンド出力からヒント行を削除してからモデ�
   仕組み
 </h2>
 
-Claude Code は、Bash および PowerShell ツールを通じて実行するすべてのコマンド、および [hook](/docs/ja/hooks) コマンドに対して、[`CLAUDECODE`](/docs/ja/env-vars) 環境変数を `1` に設定します。{/* min-version: 2.1.172 */}v2.1.172 以降では、同じサブプロセスで [`CLAUDE_CODE_CHILD_SESSION`](/docs/ja/env-vars) も `1` に設定します。CLI がこれらの変数のいずれかを検出すると、自己終了型の `<claude-code-hint />` タグを stderr に書き込みます。hook コマンドではヒントタグは削除され、無視されます。Bash および PowerShell ツール出力のみがインストールプロンプトをトリガーします。
+Claude Code は、Bash および PowerShell ツールを通じて実行するすべてのコマンド、および [hook](/docs/ja/hooks) コマンドに対して、[`CLAUDECODE`](/docs/ja/env-vars) 環境変数を `1` に設定します。v2.1.172 以降では、同じサブプロセスで [`CLAUDE_CODE_CHILD_SESSION`](/docs/ja/env-vars) も `1` に設定します。CLI がこれらの変数のいずれかを検出すると、自己終了型の `<claude-code-hint />` タグを stderr に書き込みます。hook コマンドではヒントタグは削除され、無視されます。Bash および PowerShell ツール出力のみがインストールプロンプトをトリガーします。
 
 Claude Code がコマンド出力を受け取ると、以下を実行します。
 
@@ -36,7 +36,7 @@ Claude Code はプラグインを自動的にインストールすることは�
 環境変数でゲートを設定して、マーカーが人間のユーザーが CLI を直接実行するときに表示されないようにします。次に、タグを stderr に独立した行として書き込みます。チェックする変数を選択してください。
 
 * `CLAUDECODE`: Claude Code のすべてのバージョンで設定されるため、最も多くのセッションに到達します。Claude Code が起動する tmux セッションと stdio MCP サーバーサブプロセスでも設定され、IDE 拡張機能は統合ターミナルで設定します。人間のユーザーが CLI を直接実行する可能性があります。
-* {/* min-version: 2.1.172 */}`CLAUDE_CODE_CHILD_SESSION`: Claude Code 自体が生成するサブプロセス（ツール呼び出し、hook コマンド、[status line](/docs/ja/statusline) コマンドなど）でのみ設定されるため、タグは通常、人間のターミナルに到達しません。セッション内で開始された長時間実行されるプロセス（tmux サーバーなど）は変数をキャプチャするため、そのプロセスから後で起動されたシェルは依然として生のタグを表示します。Claude Code v2.1.172 以降が必要なため、古いバージョンのセッションではヒントが表示されません。
+* `CLAUDE_CODE_CHILD_SESSION`: Claude Code 自体が生成するサブプロセス（ツール呼び出し、hook コマンド、[status line](/docs/ja/statusline) コマンドなど）でのみ設定されるため、タグは通常、人間のターミナルに到達しません。セッション内で開始された長時間実行されるプロセス（tmux サーバーなど）は変数をキャプチャするため、そのプロセスから後で起動されたシェルは依然として生のタグを表示します。Claude Code v2.1.172 以降が必要なため、古いバージョンのセッションではヒントが表示されません。
 
 以下の例は、最大限のリーチのために `CLAUDECODE` でゲートを設定し、公式マーケットプレイスの `example-cli` という名前のプラグインのヒントを出力します。
 

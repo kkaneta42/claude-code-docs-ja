@@ -44,7 +44,7 @@ Claude Code offers three ways to schedule recurring or one-off work:
 | プロンプトのみ      | `/loop check the deploy`    | プロンプトは各反復で[Claude が選択した間隔](#let-claude-choose-the-interval)で実行されます                       |
 | 間隔のみ、または何もなし | `/loop`                     | [組み込みメンテナンスプロンプト](#run-the-built-in-maintenance-prompt)が実行されるか、存在する場合は `loop.md` が実行されます |
 
-スキルをプロンプトとして渡すこともできます。例えば `/loop 20m /review-pr 1234` は、各反復でそのスキルを再実行します。{/* min-version: 2.1.196 */}v2.1.196 以降、スケジュール済みの実行は Claude が[独自に呼び出すことを許可されているスキル](/docs/ja/skills#control-who-invokes-a-skill)のみを実行します。以下は Claude にプレーンテキストとして到達し、実行されません。
+スキルをプロンプトとして渡すこともできます。例えば `/loop 20m /review-pr 1234` は、各反復でそのスキルを再実行します。v2.1.196 以降、スケジュール済みの実行は Claude が[独自に呼び出すことを許可されているスキル](/docs/ja/skills#control-who-invokes-a-skill)のみを実行します。以下は Claude にプレーンテキストとして到達し、実行されません。
 
 * `/permissions`、`/model`、`/clear` などの組み込みコマンド
 * [`disable-model-invocation: true`](/docs/ja/skills#frontmatter-reference) とマークされたスキル

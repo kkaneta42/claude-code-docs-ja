@@ -220,7 +220,7 @@ Claude Code 内で入力してコマンドメニューが `/web-setup` に対し
   `--cloud` または ultraplan を使用する場合に「Could not create a cloud environment」または「No cloud environment available」
 </h3>
 
-Remote セッション機能は、cloud 環境がない場合、デフォルトの cloud 環境を自動的に作成します。「Could not create a cloud environment」が表示される場合、自動作成に失敗しました。{/* max-version: 2.1.100 */}「No cloud environment available」が表示される場合、CLI は自動作成より前のものです。どちらの場合でも、Claude Code CLI で `/web-setup` を実行して手動で作成するか、[claude.ai/code](https://claude.ai/code) にアクセスして上記の **Create your environment** ステップに従ってください。
+Remote セッション機能は、cloud 環境がない場合、デフォルトの cloud 環境を自動的に作成します。「Could not create a cloud environment」が表示される場合、自動作成に失敗しました。「No cloud environment available」が表示される場合、CLI は自動作成より前のものです。どちらの場合でも、Claude Code CLI で `/web-setup` を実行して手動で作成するか、[claude.ai/code](https://claude.ai/code) にアクセスして上記の **Create your environment** ステップに従ってください。
 
 <h3 id="setup-script-failed">
   Setup script が失敗

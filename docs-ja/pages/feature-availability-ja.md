@@ -206,7 +206,7 @@ Desktop は部分的な例外です：[ゲートウェイルーティングは�
 </table>
 
 <span id="fn1" style={{display: 'block', position: 'relative', top: '-120px'}} /><sup>1</sup> Google Cloud の Agent Platform では、Claude 4 モデル以降で Web 検索が利用可能です。<br />
-<span id="fn2" style={{display: 'block', position: 'relative', top: '-120px'}} /><sup>2</sup> これらのプロバイダーでは、Auto mode は Claude Sonnet 5、Opus 4.7、および Opus 4.8 のみをサポートしています。[Auto mode 設定](/docs/ja/auto-mode-config)を参照してください。{/* min-version: 2.1.207 */}v2.1.158 から v2.1.206 では、これらのプロバイダーの Auto mode は `CLAUDE_CODE_ENABLE_AUTO_MODE=1` の設定も必要でしたが、v2.1.207 でその要件が削除されました。<br />
+<span id="fn2" style={{display: 'block', position: 'relative', top: '-120px'}} /><sup>2</sup> これらのプロバイダーでは、Auto mode は Claude Sonnet 5、Opus 4.7、および Opus 4.8 のみをサポートしています。[Auto mode 設定](/docs/ja/auto-mode-config)を参照してください。v2.1.158 から v2.1.206 では、これらのプロバイダーの Auto mode は `CLAUDE_CODE_ENABLE_AUTO_MODE=1` の設定も必要でしたが、v2.1.207 でその要件が削除されました。<br />
 <span id="fn3" style={{display: 'block', position: 'relative', top: '-120px'}} /><sup>3</sup> `/loop every 2 hours` などの明示的な間隔はすべてのプロバイダーで動作します。Amazon Bedrock、Claude Platform on AWS、Google Cloud の Agent Platform、および Microsoft Foundry では、`/loop` は独自の間隔を選択したり、デフォルトのメンテナンスプロンプトを提供したりできないため、間隔のないプロンプトは 10 分ごとに実行され、引数のない `/loop` は使用メッセージを表示します。[スケジュール済みタスク](/docs/ja/scheduled-tasks)を参照してください。<br />
 <span id="fn4" style={{display: 'block', position: 'relative', top: '-120px'}} /><sup>4</sup> クラウドプロバイダーとの契約に従います。<br />
 <span id="fn5" style={{display: 'block', position: 'relative', top: '-120px'}} /><sup>5</sup> ダッシュボードと API のみ。[貢献メトリクス](/docs/ja/analytics#enable-contribution-metrics)には claude.ai Team または Enterprise 組織が必要です。

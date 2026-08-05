@@ -97,27 +97,27 @@
   自動リトライ
 </h2>
 
-Claude Code は、エラーを表示する前に一時的な障害をリトライします。サーバーエラー、オーバーロードレスポンス、リクエストタイムアウト、一時的な 429 スロットル、および接続の切断はすべて、指数バックオフで最大 10 回リトライされます。{/* min-version: 2.1.198 */}v2.1.198 以降では、これは、表示可能な出力がストリームされる前に応答の途中で切断される接続をカバーしています。Claude Code は同じバックオフでリクエストを再発行し、接続エラーで停止する代わりにターンが続行されます。{/* min-version: 2.1.199 */}v2.1.199 以降では、プランのクォータヘッダーを持たない一時的な 429 スロットルも、claude.ai サブスクリプションでサインインしている場合にリトライされます。それより前のバージョンでは、API キーおよびエンタープライズサインインの場合のみリトライされました。
+Claude Code は、エラーを表示する前に一時的な障害をリトライします。サーバーエラー、オーバーロードレスポンス、リクエストタイムアウト、一時的な 429 スロットル、および接続の切断はすべて、指数バックオフで最大 10 回リトライされます。v2.1.198 以降では、これは、表示可能な出力がストリームされる前に応答の途中で切断される接続をカバーしています。Claude Code は同じバックオフでリクエストを再発行し、接続エラーで停止する代わりにターンが続行されます。v2.1.199 以降では、プランのクォータヘッダーを持たない一時的な 429 スロットルも、claude.ai サブスクリプションでサインインしている場合にリトライされます。それより前のバージョンでは、API キーおよびエンタープライズサインインの場合のみリトライされました。
 
 リトライが成功できないため、リトライされない障害クラスがあります。
 
-* {/* min-version: 2.1.199 */}v2.1.199 以降では、TLS 証明書検証の失敗（TLS 検査プロキシ、不足している `NODE_EXTRA_CA_CERTS` バンドル、または期限切れの証明書など）は最初の試行で失敗するため、完全なリトライ予算の後ではなく、修正がすぐに表示されます。[SSL 証明書エラー](#ssl-certificate-errors)を参照してください。ハンドシェイクタイムアウトなどの一時的な TLS 条件はまだリトライされます。
-* {/* min-version: 2.1.199 */}v2.1.199 以降では、Claude が既に表示可能な出力をストリームした後に到着するサーバーエラーは、部分的なレスポンスを保持し、リトライする代わりに[不完全なレスポンス通知](#the-response-above-may-be-incomplete)を追加します。同じツール呼び出しを 2 回実行する可能性があるためです。それより前のバージョンでは、部分的な出力を破棄し、ターン全体をエラーとして報告しました。
-* {/* min-version: 2.1.208 */}[Amazon Bedrock ストリーミングレスポンスに予期しないコンテンツタイプがある](#bedrock-streaming-response-has-an-unexpected-content-type)場合は最初の試行で失敗します。ゲートウェイまたはプロキシがレスポンスを書き換えると、リトライも同じ方法で書き換えるためです。Claude Code v2.1.208 以降が必要です。
+* v2.1.199 以降では、TLS 証明書検証の失敗（TLS 検査プロキシ、不足している `NODE_EXTRA_CA_CERTS` バンドル、または期限切れの証明書など）は最初の試行で失敗するため、完全なリトライ予算の後ではなく、修正がすぐに表示されます。[SSL 証明書エラー](#ssl-certificate-errors)を参照してください。ハンドシェイクタイムアウトなどの一時的な TLS 条件はまだリトライされます。
+* v2.1.199 以降では、Claude が既に表示可能な出力をストリームした後に到着するサーバーエラーは、部分的なレスポンスを保持し、リトライする代わりに[不完全なレスポンス通知](#the-response-above-may-be-incomplete)を追加します。同じツール呼び出しを 2 回実行する可能性があるためです。それより前のバージョンでは、部分的な出力を破棄し、ターン全体をエラーとして報告しました。
+* [Amazon Bedrock ストリーミングレスポンスに予期しないコンテンツタイプがある](#bedrock-streaming-response-has-an-unexpected-content-type)場合は最初の試行で失敗します。ゲートウェイまたはプロキシがレスポンスを書き換えると、リトライも同じ方法で書き換えるためです。Claude Code v2.1.208 以降が必要です。
 
-リトライ中、スピナーはエラーラベルの後に `Retrying in Ns · attempt x/y` カウントダウンを表示します。ラベルは、すぐに対応できる障害の最初の試行からの具体的な理由を示します。ネットワークがダウンしている、TLS ハンドシェイクが失敗した、またはレート制限に達しました。他のエラーの場合は、最初は `API error` と表示されます。{/* min-version: 2.1.198 */}v2.1.198 以降では、3 番目の試行からの具体的な理由に切り替わるか、`CLAUDE_CODE_MAX_RETRIES` が 3 未満の試行を許可する場合は最終試行時に切り替わります。それより前のバージョンでは、最終試行時のみ切り替わります。
+リトライ中、スピナーはエラーラベルの後に `Retrying in Ns · attempt x/y` カウントダウンを表示します。ラベルは、すぐに対応できる障害の最初の試行からの具体的な理由を示します。ネットワークがダウンしている、TLS ハンドシェイクが失敗した、またはレート制限に達しました。他のエラーの場合は、最初は `API error` と表示されます。v2.1.198 以降では、3 番目の試行からの具体的な理由に切り替わるか、`CLAUDE_CODE_MAX_RETRIES` が 3 未満の試行を許可する場合は最終試行時に切り替わります。それより前のバージョンでは、最終試行時のみ切り替わります。
 
-{/* min-version: 2.1.198 */}v2.1.198 以降では、通常のスピナーチップはリトライ中に抑制されます。エラーの理由が明らかになると、障害が 529 オーバーロードの場合、カウントダウンの下の行はサービスステータスを確認する場所も示します。Anthropic API では `status.claude.com`、または他の設定ではメッセージに示されているプロバイダーまたはゲートウェイホスト。
+v2.1.198 以降では、通常のスピナーチップはリトライ中に抑制されます。エラーの理由が明らかになると、障害が 529 オーバーロードの場合、カウントダウンの下の行はサービスステータスを確認する場所も示します。Anthropic API では `status.claude.com`、または他の設定ではメッセージに示されているプロバイダーまたはゲートウェイホスト。
 
-{/* min-version: 2.1.185 */}リクエストがまだ保留中の状態で、レスポンスストリームで 20 秒間データが到着しない場合、スピナーは `Waiting for API response · will retry in … · check your network` を表示します。これはリトライが開始される前です。リクエストはまだ失敗していません。カウントダウンは Claude Code が停止した接続を中止してリトライする時点まで実行されるため、データが再開されるか、リトライが成功するとバナーは自動的にクリアされます。v2.1.185 以降、閾値は 20 秒です。それより前のバージョンでは、異なる表現でバナーが 10 秒後に表示されます。すべての試行で再度表示される場合は、[ネットワークの問題](#unable-to-connect-to-api)として扱ってください。
+リクエストがまだ保留中の状態で、レスポンスストリームで 20 秒間データが到着しない場合、スピナーは `Waiting for API response · will retry in … · check your network` を表示します。これはリトライが開始される前です。リクエストはまだ失敗していません。カウントダウンは Claude Code が停止した接続を中止してリトライする時点まで実行されるため、データが再開されるか、リトライが成功するとバナーは自動的にクリアされます。v2.1.185 以降、閾値は 20 秒です。それより前のバージョンでは、異なる表現でバナーが 10 秒後に表示されます。すべての試行で再度表示される場合は、[ネットワークの問題](#unable-to-connect-to-api)として扱ってください。
 
 このページのエラーの 1 つが表示されている場合、これらのリトライはすでに使い果たされています。ただし、証明書検証の失敗など、リトライされないクラスに属する場合は除きます。これらの環境変数で動作をチューニングできます。
 
-| 変数                                           | デフォルト  | 効果                                                                                                                                                                                                                                                                                  |
-| :------------------------------------------- | :----- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [`CLAUDE_CODE_MAX_RETRIES`](/docs/ja/env-vars)    | 10     | リトライ試行回数。{/* min-version: 2.1.186 */}v2.1.186 以降、15 に制限されています。{/* min-version: 2.1.199 */}v2.1.199 以降では `CLAUDE_CODE_RETRY_WATCHDOG` がデフォルトを上げ、キャップを削除します。スクリプトで障害をより速く表示するには低くします。                                                                                                 |
-| [`CLAUDE_CODE_RETRY_WATCHDOG`](/docs/ja/env-vars) | 未設定    | CI ジョブなどの無人セッションで `1` に設定して、`CLAUDE_CODE_MAX_RETRIES` 試行後に失敗する代わりに、`429` および `529` キャパシティエラーを無限にリトライします。{/* min-version: 2.1.199 */}v2.1.199 以降では、サーバーエラー、タイムアウト、接続の切断などの他の一時的なエラーのデフォルトリトライ数も上げ、バックオフの約 3 時間である 300 に上げ、変数を明示的に設定した場合は `CLAUDE_CODE_MAX_RETRIES` の 15 のキャップを削除します。 |
-| [`API_TIMEOUT_MS`](/docs/ja/env-vars)             | 600000 | リクエストごとのタイムアウト（ミリ秒単位）。遅いネットワークまたはプロキシの場合は高くします。                                                                                                                                                                                                                                     |
+| 変数                                           | デフォルト  | 効果                                                                                                                                                                                                                                                      |
+| :------------------------------------------- | :----- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| [`CLAUDE_CODE_MAX_RETRIES`](/docs/ja/env-vars)    | 10     | リトライ試行回数。v2.1.186 以降、15 に制限されています。v2.1.199 以降では `CLAUDE_CODE_RETRY_WATCHDOG` がデフォルトを上げ、キャップを削除します。スクリプトで障害をより速く表示するには低くします。                                                                                                                             |
+| [`CLAUDE_CODE_RETRY_WATCHDOG`](/docs/ja/env-vars) | 未設定    | CI ジョブなどの無人セッションで `1` に設定して、`CLAUDE_CODE_MAX_RETRIES` 試行後に失敗する代わりに、`429` および `529` キャパシティエラーを無限にリトライします。v2.1.199 以降では、サーバーエラー、タイムアウト、接続の切断などの他の一時的なエラーのデフォルトリトライ数も上げ、バックオフの約 3 時間である 300 に上げ、変数を明示的に設定した場合は `CLAUDE_CODE_MAX_RETRIES` の 15 のキャップを削除します。 |
+| [`API_TIMEOUT_MS`](/docs/ja/env-vars)             | 600000 | リクエストごとのタイムアウト（ミリ秒単位）。遅いネットワークまたはプロキシの場合は高くします。                                                                                                                                                                                                         |
 
 <h2 id="server-errors">
   サーバーエラー
@@ -196,7 +196,7 @@ API Error: Connection closed mid-response. The response above may be incomplete.
 API Error: Response stalled mid-stream. The response above may be incomplete.
 ```
 
-* {/* min-version: 2.1.199 */}`Server error mid-response`：ストリーム中のオーバーロードまたは 5xx サーバーエラー。このバリアントには Claude Code v2.1.199 以降が必要です。それ以前は、その場合は部分的な出力を破棄し、ターン全体をエラーとして報告していました。
+* `Server error mid-response`：ストリーム中のオーバーロードまたは 5xx サーバーエラー。このバリアントには Claude Code v2.1.199 以降が必要です。それ以前は、その場合は部分的な出力を破棄し、ターン全体をエラーとして報告していました。
 * `Connection closed mid-response`：接続が切断されました。
 * `Response stalled mid-stream`：ストリームがデータの送信を停止しました。
 
@@ -266,7 +266,7 @@ Auto mode classifier transcript exceeded context window — falling back to manu
   Agent terminated early due to an API error
 </h3>
 
-{/* min-version: 2.1.199 */}[subagent](/docs/ja/sub-agents)の API リクエストが終了的に失敗しました。例えば、使用制限に達したか、サーバーエラーの再試行が終了したため、subagent はタスクを完了する前に停止しました。このメッセージには Claude Code v2.1.199 以降が必要です。それ以前は、API エラーテキストが subagent の結果であるかのように Claude に返されていました。
+[subagent](/docs/ja/sub-agents)の API リクエストが終了的に失敗しました。例えば、使用制限に達したか、サーバーエラーの再試行が終了したため、subagent はタスクを完了する前に停止しました。このメッセージには Claude Code v2.1.199 以降が必要です。それ以前は、API エラーテキストが subagent の結果であるかのように Claude に返されていました。
 
 ```text theme={null}
 Agent terminated early due to an API error: <error detail>
@@ -277,7 +277,7 @@ Agent terminated early due to an API error: <error detail>
 * コロンの後のエラー詳細をこのページの独自のセクション（[使用制限](#usage-limits)または[サーバーエラー](#server-errors)など）と照合し、そのセクションの手順に従ってください
 * 基になるエラーがクリアされたら、Claude にタスクを再試行するか、[subagent を再開](/docs/ja/sub-agents#resume-subagents)するよう依頼してください
 
-レート制限、オーバーロード、またはサーバーエラーが既にテキスト出力を生成したフォアグラウンド subagent を中断する場合、Claude はその部分的な出力を不完全としてマークされたものを受け取り、このエラーは受け取りません。{/* min-version: 2.1.200 */}唯一の出力がツール呼び出しだった subagent もこのエラーを取得します。v2.1.199 ではその形状は空の部分的な結果を返していました。[subagent の API エラー](/docs/ja/sub-agents#api-errors-in-subagents)を参照してください。
+レート制限、オーバーロード、またはサーバーエラーが既にテキスト出力を生成したフォアグラウンド subagent を中断する場合、Claude はその部分的な出力を不完全としてマークされたものを受け取り、このエラーは受け取りません。唯一の出力がツール呼び出しだった subagent もこのエラーを取得します。v2.1.199 ではその形状は空の部分的な結果を返していました。[subagent の API エラー](/docs/ja/sub-agents#api-errors-in-subagents)を参照してください。
 
 <h2 id="usage-limits">
   使用制限
@@ -323,7 +323,7 @@ API Error: Usage credits required for 1M context · run /usage-credits to turn t
 
 これはクォータ枯渇ではなく、エンタイトルメント チェックです。セッションおよび週間許容量に容量が残っている場合でも発火します。[拡張コンテキスト](/docs/ja/model-config#extended-context)で、どのプランが 1M コンテキストを直接含み、どのプランが使用クレジットを必要とするかを確認してください。
 
-{/* min-version: 2.1.172 */}このエラーがコンテキストが 200K トークンを超えて成長したため会話の途中に表示される場合、Claude Code は自動的に会話を標準コンテキスト制限以下にコンパクト化し、その後セッションをその制限に保つため、アクションは不要です。v2.1.172 より前のバージョンでは、エラーは `/compact` を含むその後のすべてのリクエストで繰り返されました。これらのバージョンで復旧するには `/clear` を実行してください。以下の手順は、明示的に `[1m]` モデルを選択した場合に適用されます。
+このエラーがコンテキストが 200K トークンを超えて成長したため会話の途中に表示される場合、Claude Code は自動的に会話を標準コンテキスト制限以下にコンパクト化し、その後セッションをその制限に保つため、アクションは不要です。v2.1.172 より前のバージョンでは、エラーは `/compact` を含むその後のすべてのリクエストで繰り返されました。これらのバージョンで復旧するには `/clear` を実行してください。以下の手順は、明示的に `[1m]` モデルを選択した場合に適用されます。
 
 **対応方法：**
 
@@ -342,7 +342,7 @@ API は、プランクォータとは無関係の短期的なスロットルを�
 API Error: Server is temporarily limiting requests (not your usage limit)
 ```
 
-Claude Code は、実際の制限応答が持つ統一クォータヘッダーの不在によって、これらをプラン制限と区別します。{/* min-version: 2.1.199 */}v2.1.199 以降、これは認証方法に関係なく、表示される前に[自動的に再試行](#automatic-retries)されます（バックオフ付き）。以前のバージョンでは、claude.ai サブスクリプションでサインインしたセッションは最初の発生時にターンに失敗しました。API キーと Enterprise サインインのみがこれを再試行しました。
+Claude Code は、実際の制限応答が持つ統一クォータヘッダーの不在によって、これらをプラン制限と区別します。v2.1.199 以降、これは認証方法に関係なく、表示される前に[自動的に再試行](#automatic-retries)されます（バックオフ付き）。以前のバージョンでは、claude.ai サブスクリプションでサインインしたセッションは最初の発生時にターンに失敗しました。API キーと Enterprise サインインのみがこれを再試行しました。
 
 **対応方法：**
 
@@ -419,7 +419,7 @@ Not logged in · Please run /login
 Could not resolve authentication method. Expected one of apiKey, authToken, credentials, config, or profile to be set. Or for one of the "X-Api-Key" or "Authorization" headers to be explicitly omitted
 ```
 
-{/* min-version: 2.1.174 */}v2.1.174 より前では、アイドル状態の事前初期化ワーカーに割り当てられたバックグラウンドまたはクラウドセッションは、有効な認証情報が設定されていても、このように失敗する可能性がありました。アップグレードして復旧します。現在のバージョンでは、このエラーはワーカープロセスで認証情報が利用できなかったことを意味します。
+v2.1.174 より前では、アイドル状態の事前初期化ワーカーに割り当てられたバックグラウンドまたはクラウドセッションは、有効な認証情報が設定されていても、このように失敗する可能性がありました。アップグレードして復旧します。現在のバージョンでは、このエラーはワーカープロセスで認証情報が利用できなかったことを意味します。
 
 **対応方法：**
 
@@ -456,7 +456,7 @@ Invalid API key · Fix external API key
 Your apiKeyHelper script is failing · This usually means you need to re-authenticate with your provider · Run /status to see the script's error output
 ```
 
-Claude Code はスクリプトを再実行し、このメッセージを表示する前に最大 2 回までリクエストを再試行するため、障害は 3 回の試行内に表示されます。{/* min-version: 2.1.208 */}v2.1.208 より前では、Claude Code は完全な [再試行予算](#automatic-retries) を費やしてプレースホルダー認証情報でリクエストを再送信し、スクリプト障害の代わりに汎用の `401` 認証エラーを報告していました。
+Claude Code はスクリプトを再実行し、このメッセージを表示する前に最大 2 回までリクエストを再試行するため、障害は 3 回の試行内に表示されます。v2.1.208 より前では、Claude Code は完全な [再試行予算](#automatic-retries) を費やしてプレースホルダー認証情報でリクエストを再送信し、スクリプト障害の代わりに汎用の `401` 認証エラーを報告していました。
 
 `/login` を実行しても役に立ちません。ここでは、ヘルパーの出力が [優先順位](/docs/ja/authentication#authentication-precedence) を取り、設定が存在する限り保存されたログインより優先されます。
 
@@ -556,7 +556,7 @@ Routines are disabled by your organization's policy.
 Remote Control is only available when using Claude via api.anthropic.com.
 ```
 
-これは Amazon Bedrock、Google Cloud の Agent Platform、および Microsoft Foundry に表示されます。{/* min-version: 2.1.196 */}v2.1.196 以降では、[`ANTHROPIC_BASE_URL`](/docs/ja/env-vars) が `api.anthropic.com` 以外のホスト（[LLM ゲートウェイ](/docs/ja/llm-gateway) やプロキシなど）を指している場合にも表示されます。claude.ai でサインインしている場合でも表示されます。
+これは Amazon Bedrock、Google Cloud の Agent Platform、および Microsoft Foundry に表示されます。v2.1.196 以降では、[`ANTHROPIC_BASE_URL`](/docs/ja/env-vars) が `api.anthropic.com` 以外のホスト（[LLM ゲートウェイ](/docs/ja/llm-gateway) やプロキシなど）を指している場合にも表示されます。claude.ai でサインインしている場合でも表示されます。
 
 **対応方法：**
 
@@ -588,7 +588,7 @@ API Error: 401 ... authentication_error
   ログイン期限切れ
 </h3>
 
-Claude Code は保存された claude.ai または Claude Console ログインを更新しようとしましたが、OAuth サービスが保存されたリフレッシュトークンを拒否したため、Claude Code は保存された認証情報をクリアしました。その後、新しい認証情報を作成できるのは `/login` だけであるため、各リクエストはローカルで停止し、API に到達しません。{/* min-version: 2.1.206 */}v2.1.206 より前では、Claude Code はリクエストを送信し、ログインを求めるプロンプトの代わりに、残っている認証情報で [選択されたモデルに問題があります](#theres-an-issue-with-the-selected-model) または 401 で失敗していました。
+Claude Code は保存された claude.ai または Claude Console ログインを更新しようとしましたが、OAuth サービスが保存されたリフレッシュトークンを拒否したため、Claude Code は保存された認証情報をクリアしました。その後、新しい認証情報を作成できるのは `/login` だけであるため、各リクエストはローカルで停止し、API に到達しません。v2.1.206 より前では、Claude Code はリクエストを送信し、ログインを求めるプロンプトの代わりに、残っている認証情報で [選択されたモデルに問題があります](#theres-an-issue-with-the-selected-model) または 401 で失敗していました。
 
 ```text theme={null}
 Login expired · Please run /login
@@ -628,7 +628,7 @@ OAuth token does not meet scope requirement: user:profile
   AWS 認証情報の有効期限切れまたは無効
 </h3>
 
-{/* min-version: 2.1.198 */}このメッセージには Claude Code v2.1.198 以降が必要で、設定ファイルで [`awsAuthRefresh`](/docs/ja/amazon-bedrock#advanced-credential-configuration) が設定されている場合にのみ表示されます。AWS セッショントークンの有効期限が切れたか、拒否され、Claude Code が既に実行した自動更新が API が受け入れる認証情報を生成しませんでした。[AWS 上の Claude Platform](/docs/ja/claude-platform-on-aws) または [Mantle エンドポイント](/docs/ja/amazon-bedrock#use-the-mantle-endpoint) からの 401 に表示されます。これらのプロバイダーが期限切れのセキュリティトークンを報告する方法です。
+このメッセージには Claude Code v2.1.198 以降が必要で、設定ファイルで [`awsAuthRefresh`](/docs/ja/amazon-bedrock#advanced-credential-configuration) が設定されている場合にのみ表示されます。AWS セッショントークンの有効期限が切れたか、拒否され、Claude Code が既に実行した自動更新が API が受け入れる認証情報を生成しませんでした。[AWS 上の Claude Platform](/docs/ja/claude-platform-on-aws) または [Mantle エンドポイント](/docs/ja/amazon-bedrock#use-the-mantle-endpoint) からの 401 に表示されます。これらのプロバイダーが期限切れのセキュリティトークンを報告する方法です。
 
 中央のアクションヒントは設定からの `awsAuthRefresh` コマンドに名前を付けるため、異なります。安定した部分は先頭の `AWS credentials expired or invalid` です：
 
@@ -648,7 +648,7 @@ AWS credentials expired or invalid · run /login and select "Claude Platform on 
   AWS 認証に失敗しました
 </h3>
 
-{/* min-version: 2.1.198 */}このメッセージには Claude Code v2.1.198 以降が必要で、設定ファイルで [`awsAuthRefresh`](/docs/ja/amazon-bedrock#advanced-credential-configuration) が設定されている場合にのみ表示されます。AWS プロバイダーが 403 を返したか、[Amazon Bedrock](/docs/ja/amazon-bedrock) が 401 を返しました。
+このメッセージには Claude Code v2.1.198 以降が必要で、設定ファイルで [`awsAuthRefresh`](/docs/ja/amazon-bedrock#advanced-credential-configuration) が設定されている場合にのみ表示されます。AWS プロバイダーが 403 を返したか、[Amazon Bedrock](/docs/ja/amazon-bedrock) が 401 を返しました。
 
 Claude Code はどの原因に当たったかを判断できません。Amazon Bedrock は期限切れのセキュリティトークンを 403 として報告しますが、403 は認可拒否（IAM 権限の欠落またはアカウントで有効になっていないモデルからの `AccessDeniedException` など）を報告する方法でもあります。
 
@@ -678,7 +678,7 @@ AWS デフォルト認証情報プロバイダーチェーンが 60 秒以内に
 API Error: AWS default-chain credential resolve timed out
 ```
 
-一般的な原因は、AWS プロファイルの `credential_process` コマンドが受け取ることができない入力を待機していることと、インスタンスメタデータサービス（IMDS）がチェーンのプローブに応答しないコンテナまたは VM です。{/* min-version: 2.1.207 */}v2.1.207 より前では、スタックしたチェーンはリクエストを無期限に待機させ、このメッセージで失敗する代わりに待機させていました。
+一般的な原因は、AWS プロファイルの `credential_process` コマンドが受け取ることができない入力を待機していることと、インスタンスメタデータサービス（IMDS）がチェーンのプローブに応答しないコンテナまたは VM です。v2.1.207 より前では、スタックしたチェーンはリクエストを無期限に待機させ、このメッセージで失敗する代わりに待機させていました。
 
 **対応方法：**
 
@@ -733,7 +733,7 @@ Claude Code と [Amazon Bedrock](/docs/ja/amazon-bedrock) の間のゲートウ�
 Bedrock streaming response has content-type "text/event-stream"; expected "application/vnd.amazon.eventstream". A gateway or proxy between Claude Code and Bedrock is likely transforming the response body — Bedrock's binary event-stream format must be passed through unmodified. Set CLAUDE_CODE_DISABLE_BEDROCK_CONTENT_TYPE_GUARD=1 to suppress this check while the gateway is being fixed.
 ```
 
-{/* min-version: 2.1.208 */}v2.1.208 より前では、同じ設定ミスが、応答全体がバッファリングされた後に `API Error: Truncated event message received` として表示されました。
+v2.1.208 より前では、同じ設定ミスが、応答全体がバッファリングされた後に `API Error: Truncated event message received` として表示されました。
 
 **対応方法：**
 
@@ -751,7 +751,7 @@ Unable to connect to API: SSL certificate verification failed. Check your proxy 
 Unable to connect to API: Self-signed certificate detected
 ```
 
-{/* min-version: 2.1.199 */}v2.1.199 以降、証明書検証の失敗は再試行されないため、このエラーは完全な[再試行予算](#automatic-retries)の後ではなく、最初の試行時に表示されます。以前のバージョンでは、表示する前に数分間再試行していました。ハンドシェイクタイムアウトなどの一時的な TLS 条件は、引き続き再試行されます。
+v2.1.199 以降、証明書検証の失敗は再試行されないため、このエラーは完全な[再試行予算](#automatic-retries)の後ではなく、最初の試行時に表示されます。以前のバージョンでは、表示する前に数分間再試行していました。ハンドシェイクタイムアウトなどの一時的な TLS 条件は、引き続き再試行されます。
 
 `/login` とスタートアップ接続チェック中に、同じ障害が OpenSSL コードとインラインの修正とともに報告されます：
 
@@ -804,7 +804,7 @@ Couldn't reconnect to your Remote Control session. Retry, or start a fresh sessi
 * `--resume` なしで Claude Code を開始して、新しい Remote Control セッションを作成してください。
 * その他の Remote Control スタートアップメッセージについては、[Remote Control のトラブルシューティング](/docs/ja/remote-control#troubleshooting)を参照してください。
 
-サーバーが前のセッションがもう存在しないことを確認した場合、このメッセージは表示されません。Claude Code はその場合に新しいセッションを作成します。{/* min-version: 2.1.200 */}v2.1.200 より前では、再接続の失敗により新しい Remote Control セッションが作成され、claude.ai/code のセッションリストに余分なセッションが残されました。
+サーバーが前のセッションがもう存在しないことを確認した場合、このメッセージは表示されません。Claude Code はその場合に新しいセッションを作成します。v2.1.200 より前では、再接続の失敗により新しい Remote Control セッションが作成され、claude.ai/code のセッションリストに余分なセッションが残されました。
 
 <h2 id="request-errors">
   リクエストエラー
@@ -879,7 +879,7 @@ Image was too large. Double press esc to go back and try again with a smaller im
 API Error: 400 ... image dimensions exceed max allowed size
 ```
 
-{/* min-version: 2.1.142 */}Claude Code は処理できない画像をテキストプレースホルダーに置き換えて再試行するため、後続のメッセージは成功します。2.1.142 より前のバージョンでは、ペーストされた画像が会話に残り、後続のすべてのメッセージで同じエラーが繰り返される可能性がありました。これらのバージョンで復旧するには、Esc キーを 2 回押して、画像が追加されたターンを戻ります。
+Claude Code は処理できない画像をテキストプレースホルダーに置き換えて再試行するため、後続のメッセージは成功します。2.1.142 より前のバージョンでは、ペーストされた画像が会話に残り、後続のすべてのメッセージで同じエラーが繰り返される可能性がありました。これらのバージョンで復旧するには、Esc キーを 2 回押して、画像が追加されたターンを戻ります。
 
 **対処方法：**
 
@@ -959,7 +959,7 @@ There's an issue with the selected model (claude-...). It may not exist or you m
 * **Agent SDK**：モデルがプログラムで設定されているため、エラーテキストはヒントを省略します。TypeScript で [`Options` の `model`](/docs/ja/agent-sdk/typescript#options) を設定するか、Python で [`ClaudeAgentOptions(model=...)`](/docs/ja/agent-sdk/python#claudeagentoptions) を設定し、構造化された `model_not_found` エラーを処理して、独自の再試行またはモデルピッカーを表示します
 * 完全なバージョン付き ID ではなく、`sonnet` や `opus` などのエイリアスを使用します。エイリアスは保守されたデフォルトに解決されるため、古くなりません。[モデル設定](/docs/ja/model-config) を参照してください
 * CLI で間違ったモデルが戻り続ける場合は、どこかに古い ID が設定されています。[優先順位順](/docs/ja/model-config#setting-your-model) で確認します：`--model` フラグ、`ANTHROPIC_MODEL` 環境変数、次に `.claude/settings.local.json` の `model` フィールド、プロジェクトの `.claude/settings.json`、および `~/.claude/settings.json`。古い値を削除すると、Claude Code はアカウントのデフォルトにフォールバックします
-* {/* min-version: 2.1.206 */}Claude Code は期限切れの claude.ai ログインを [ログイン期限切れ](#login-expired) として報告します。これはこのエラーではありません。v2.1.206 より前は、更新できなくなった期限切れのログインがすべてのモデルで失敗しました。古いバージョンでこれが表示される場合は、`/login` を実行してください
+* Claude Code は期限切れの claude.ai ログインを [ログイン期限切れ](#login-expired) として報告します。これはこのエラーではありません。v2.1.206 より前は、更新できなくなった期限切れのログインがすべてのモデルで失敗しました。古いバージョンでこれが表示される場合は、`/login` を実行してください
 * Google Cloud の Agent Platform デプロイメントについては、[Google Cloud の Agent Platform トラブルシューティング](/docs/ja/google-vertex-ai#troubleshooting) を参照してください
 
 <h3 id="model-is-not-a-recognized-model-id">
@@ -1031,7 +1031,7 @@ API Error: 400 ... "thinking.type.enabled" is not supported for this model. Use 
 
 * `claude update` を実行して Claude Code を再起動します。Opus 4.7 には v2.1.111 以降が必要です。Opus 4.8 には v2.1.154 以降が必要です。Sonnet 5 には v2.1.197 以降が必要です
 * アップグレードできない場合は、`/model` を実行して Opus 4.6 または Sonnet 4.6 を選択します
-* {/* min-version: agent-sdk@0.3.197 */}[Agent SDK](/docs/ja/agent-sdk/overview) でこれが発生した場合は、SDK パッケージをアップグレードします。Opus 4.8 には TypeScript SDK v0.3.154 以降と Python SDK v0.2.88 以降が必要です。Sonnet 5 には TypeScript SDK v0.3.197 以降が必要です
+* [Agent SDK](/docs/ja/agent-sdk/overview) でこれが発生した場合は、SDK パッケージをアップグレードします。Opus 4.8 には TypeScript SDK v0.3.154 以降と Python SDK v0.2.88 以降が必要です。Sonnet 5 には TypeScript SDK v0.3.197 以降が必要です
 
 <h3 id="thinking-budget-exceeds-output-limit">
   思考予算が出力制限を超えています
@@ -1066,7 +1066,7 @@ API Error: 400 ... thinking blocks ... cannot be modified
 
 **対処方法：**
 
-* {/* max-version: 2.1.155 */}Opus 4.7 または Opus 4.8 を使用している場合は、最初に `claude update` を実行します。v2.1.156 より前のバージョンは、通常のツール使用中にこのエラーをトリガーでき、`/rewind` はそれをクリアしません
+* Opus 4.7 または Opus 4.8 を使用している場合は、最初に `claude update` を実行します。v2.1.156 より前のバージョンは、通常のツール使用中にこのエラーをトリガーでき、`/rewind` はそれをクリアしません
 * `/rewind` を実行するか、Esc キーを 2 回押して、破損したターンの前のチェックポイントに戻り、そこから続行します。チェックポイントがどのように作成および復元されるかについては、[チェックポイント](/docs/ja/checkpointing) を参照してください
 
 <h3 id="usage-policy-refusal">
@@ -1106,7 +1106,7 @@ If you were not engaging in a cybersecurity topic, please send feedback via /fee
 * [Amazon Bedrock](/docs/ja/amazon-bedrock)、[Google Cloud の Agent Platform](/docs/ja/google-vertex-ai)、および [Microsoft Foundry](/docs/ja/microsoft-foundry) では、サイバーセキュリティフラグは代わりに [使用ポリシー拒否](#usage-policy-refusal) メッセージを生成します
 * [非対話型モード](/docs/ja/headless) は `/feedback` 文を省略します
 
-{/* max-version: 2.1.202 */}v2.1.203 より前は、メッセージは `<model>'s safeguards flagged this message for a cybersecurity topic. If your work requires this access, you can apply for an exemption:` の後に免除フォームリンクが続きました。
+v2.1.203 より前は、メッセージは `<model>'s safeguards flagged this message for a cybersecurity topic. If your work requires this access, you can apply for an exemption:` の後に免除フォームリンクが続きました。
 
 **対処方法：**
 
@@ -1142,7 +1142,7 @@ Claude Code needs roughly 512MB of free memory to install. Free up memory, then 
   更新のダウンロード中に接続が切断されました
 </h3>
 
-`claude install`、`claude update`、または[自動アップデーター](/docs/ja/setup#auto-updates)が Claude Code バイナリをフェッチしている間にダウンロードサーバーへの接続が閉じられ、リトライが回復しませんでした。Claude Code は、接続がドロップされた場合、転送が停止した場合、またはダウンロードされたファイルがチェックサムに失敗した場合、最大 3 回の試行でダウンロードを再試行します。404 などの完了した HTTP エラーは、サーバーが既に応答しているため再試行されません。{/* min-version: 2.1.202 */}v2.1.202 より前では、単一の接続ドロップはダウンロードを即座に失敗させ、リトライの代わりに単なるエラー `aborted` を表示していました。
+`claude install`、`claude update`、または[自動アップデーター](/docs/ja/setup#auto-updates)が Claude Code バイナリをフェッチしている間にダウンロードサーバーへの接続が閉じられ、リトライが回復しませんでした。Claude Code は、接続がドロップされた場合、転送が停止した場合、またはダウンロードされたファイルがチェックサムに失敗した場合、最大 3 回の試行でダウンロードを再試行します。404 などの完了した HTTP エラーは、サーバーが既に応答しているため再試行されません。v2.1.202 より前では、単一の接続ドロップはダウンロードを即座に失敗させ、リトライの代わりに単なるエラー `aborted` を表示していました。
 
 ```text theme={null}
 The connection dropped while downloading the update (attempt 3/3: aborted). Check your network — proxies sometimes cut off large downloads.
@@ -1223,7 +1223,7 @@ Could not import my server: Invalid name my server. Names can only contain lette
   MCP 権限プロンプトツールが見つかりません
 </h3>
 
-[`--permission-prompt-tool`](/docs/ja/cli-reference#cli-flags) に渡したツールは、実行が最初に権限決定を必要とした時点で接続された MCP ツールの中にありませんでした。これは、そのサーバーが接続されなかったか、接続されたサーバーがその名前のツールを公開していないためです。Claude Code はプロンプトを送信します。[非対話的](/docs/ja/headless) な実行は、承認が必要なツール呼び出しで最初にこのエラーで終了し、終了コード 1 で終了するため、リクエストが行われたにもかかわらず答えを生成しません。最初のプロンプトの前に、Claude Code は [`MCP_TIMEOUT`](/docs/ja/env-vars) で設定された 30 秒のサーバーごとの接続タイムアウトまでそのサーバーの接続を待ちます。{/* min-version: 2.1.206 */}v2.1.206 より前では、スタートアップはサーバーの接続完了を待たなかったため、遅く開始しても健全なサーバーはこのエラーを生成していました。
+[`--permission-prompt-tool`](/docs/ja/cli-reference#cli-flags) に渡したツールは、実行が最初に権限決定を必要とした時点で接続された MCP ツールの中にありませんでした。これは、そのサーバーが接続されなかったか、接続されたサーバーがその名前のツールを公開していないためです。Claude Code はプロンプトを送信します。[非対話的](/docs/ja/headless) な実行は、承認が必要なツール呼び出しで最初にこのエラーで終了し、終了コード 1 で終了するため、リクエストが行われたにもかかわらず答えを生成しません。最初のプロンプトの前に、Claude Code は [`MCP_TIMEOUT`](/docs/ja/env-vars) で設定された 30 秒のサーバーごとの接続タイムアウトまでそのサーバーの接続を待ちます。v2.1.206 より前では、スタートアップはサーバーの接続完了を待たなかったため、遅く開始しても健全なサーバーはこのエラーを生成していました。
 
 ```text theme={null}
 Error: MCP tool mcp__permissions__approve (passed via --permission-prompt-tool) not found. Available MCP tools: none
@@ -1337,7 +1337,7 @@ File is covered by a Read deny rule in your permission settings and cannot be ed
 </h3>
 
 インタラクティブダイアログを開くコマンドはバックグラウンドセッションで拒否され、そこで機能するフォームの名前を示すメッセージ、またはコマンドを通常のターミナルから実行するよう指示するメッセージが表示されます。`/install-github-app`、`/mcp` 設定リスト、および MCP サーバーメニューの認証アクションはすべてこのように拒否されます。v2.1.208 より前では、これらはバックグラウンドセッション内でダイアログを開いていました。
-{/* max-version: 2.1.208 */}v2.1.208 のみでは、`/model` ピッカーもバックグラウンドセッションで拒否され、`/upgrade` はブラウザを開く代わりにアップグレード URL を出力していました。
+v2.1.208 のみでは、`/model` ピッカーもバックグラウンドセッションで拒否され、`/upgrade` はブラウザを開く代わりにアップグレード URL を出力していました。
 
 メッセージの文言は拒否されたコマンドの名前を示します。`/mcp` 設定リストは以下を報告します：
 
@@ -1386,9 +1386,9 @@ Ignoring 2 permissions.allow entries from .claude/settings.local.json: this work
 
 **対応方法：**
 
-* ディレクトリで `claude` を実行し、信頼ダイアログを受け入れます。{/* min-version: 2.1.200 */}親ディレクトリが既に信頼されている場合でも、ダイアログが表示され、保留中のルールが一覧表示され、それらなしで作業を続けることを拒否できます。v2.1.200 より前では、その状況ではダイアログが表示されなかったため、そこではこのステップを完了できませんでした。
+* ディレクトリで `claude` を実行し、信頼ダイアログを受け入れます。親ディレクトリが既に信頼されている場合でも、ダイアログが表示され、保留中のルールが一覧表示され、それらなしで作業を続けることを拒否できます。v2.1.200 より前では、その状況ではダイアログが表示されなかったため、そこではこのステップを完了できませんでした。
 * [非対話型モード](/docs/ja/headless)で `-p` を使用する場合、ダイアログは表示されません。メッセージが出力する正確な `projects` キーを使用して、`~/.claude.json` の `hasTrustDialogAccepted` エントリを設定します。
-* {/* min-version: 2.1.200 */}メッセージが `.claude/settings.local.json` という名前で、Claude Code を git リポジトリの外部またはホームディレクトリで起動した場合は、v2.1.200 以降に更新してください。バージョン 2.1.196 から 2.1.199 では、これらのワークスペースで独自の `.claude/settings.local.json` をリポジトリ提供として扱いました。{/* min-version: 2.1.207 */}v2.1.207 以降では、git リポジトリの外部でフォルダを信頼していない場合、更新だけでは不十分です。フォルダがリポジトリ内にないことを判断するには git を実行する必要があり、Claude Code はその確認を信頼ダイアログを受け入れた後にのみ実行するため、最初のステップを使用してください。ホームディレクトリおよび他の[設定ホーム](/docs/ja/permissions#project-allow-rules-and-workspace-trust)は除外され、ダイアログを待ちません。[プロジェクト allow ルールとワークスペースの信頼](/docs/ja/permissions#project-allow-rules-and-workspace-trust)を参照してください。
+* メッセージが `.claude/settings.local.json` という名前で、Claude Code を git リポジトリの外部またはホームディレクトリで起動した場合は、v2.1.200 以降に更新してください。バージョン 2.1.196 から 2.1.199 では、これらのワークスペースで独自の `.claude/settings.local.json` をリポジトリ提供として扱いました。v2.1.207 以降では、git リポジトリの外部でフォルダを信頼していない場合、更新だけでは不十分です。フォルダがリポジトリ内にないことを判断するには git を実行する必要があり、Claude Code はその確認を信頼ダイアログを受け入れた後にのみ実行するため、最初のステップを使用してください。ホームディレクトリおよび他の[設定ホーム](/docs/ja/permissions#project-allow-rules-and-workspace-trust)は除外され、ダイアログを待ちません。[プロジェクト allow ルールとワークスペースの信頼](/docs/ja/permissions#project-allow-rules-and-workspace-trust)を参照してください。
 
 <h2 id="responses-seem-lower-quality-than-usual">
   応答の品質がいつもより低いように見える
@@ -1407,13 +1407,13 @@ Claude の回答がいつもより能力が低いように見えるが、エラ�
 * **モデル選択**: `/model` を実行して、期待するモデルにいることを確認します。以前の `/model` の選択または `ANTHROPIC_MODEL` 環境変数により、意図したより小さいモデルにいる可能性があります。
 * **努力レベル**: `/effort` を実行して現在の推論レベルを確認し、難しいデバッグまたは設計作業のためにそれを上げます。デフォルトはモデルによって異なるため、最大値以下であると仮定する前に確認してください。[努力レベルを調整](/docs/ja/model-config#adjust-effort-level) でモデルごとのデフォルトと `ultrathink` ショートカットを参照してください。
 * **コンテキスト圧力**: `/context` を実行してウィンドウがどの程度満杯かを確認します。容量に近い場合は、自然な区切り点で `/compact` を実行するか、`/clear` を実行して新たに開始します。[コンテキストウィンドウを探索](/docs/ja/context-window) で自動コンパクトが以前のターンにどのように影響するかを参照してください。
-* **古い指示**: 大きいまたは古い `CLAUDE.md` ファイルと MCP ツール定義はコンテキストを消費し、応答を操作できます。{/* min-version: 2.1.205 */}`/doctor` チェックアップは過度に大きいメモリファイルと未使用の拡張機能にフラグを立て、`/context` は MCP ツールトークン使用量を表示します。v2.1.205 より前では、`/doctor` は過度に大きいメモリファイルとサブエージェント定義にフラグを立てた診断画面を開きました。
+* **古い指示**: 大きいまたは古い `CLAUDE.md` ファイルと MCP ツール定義はコンテキストを消費し、応答を操作できます。`/doctor` チェックアップは過度に大きいメモリファイルと未使用の拡張機能にフラグを立て、`/context` は MCP ツールトークン使用量を表示します。v2.1.205 より前では、`/doctor` は過度に大きいメモリファイルとサブエージェント定義にフラグを立てた診断画面を開きました。
 
 応答がうまくいかない場合、修正で返信するよりも巻き戻しの方が通常はうまく機能します。Esc を 2 回押すか `/rewind` を実行して悪いターンの前に戻り、より具体的なプロンプトで言い換えます。スレッド内で修正すると、間違った試みがコンテキストに残り、後の回答をそれに固定する可能性があります。[チェックポイント](/docs/ja/checkpointing) を参照してください。
 
 上記を確認した後も品質がまだおかしいように見える場合は、`/feedback` を実行して、期待したものと得たものを説明してください。この方法で送信されたフィードバックには会話トランスクリプトが含まれており、Anthropic が実際の回帰を診断する最速の方法です。環境で `/feedback` が利用できない場合は、[エラーを報告](#report-an-error) を参照してください。
 
-Claude が疑わしいプロンプトインジェクションについて警告する場合、または疑わしいインジェクションのためにリクエストを拒否する場合、警告が名前を付けるテキストがファイルまたはウェブコンテンツではなく Claude Code が会話に自動的に追加するコンテキストである場合は、`claude update` を実行して再試行してください。更新後に警告が繰り返される場合は、フラグが付いたコンテンツをプロンプトに貼り付け直すのではなく、[報告](#report-an-error) してください。{/* min-version: 2.1.201 */}v2.1.201 より前では、Sonnet 5 は同じ方法でいくつかのリクエストを拒否しました。
+Claude が疑わしいプロンプトインジェクションについて警告する場合、または疑わしいインジェクションのためにリクエストを拒否する場合、警告が名前を付けるテキストがファイルまたはウェブコンテンツではなく Claude Code が会話に自動的に追加するコンテキストである場合は、`claude update` を実行して再試行してください。更新後に警告が繰り返される場合は、フラグが付いたコンテンツをプロンプトに貼り付け直すのではなく、[報告](#report-an-error) してください。v2.1.201 より前では、Sonnet 5 は同じ方法でいくつかのリクエストを拒否しました。
 
 <h2 id="report-an-error">
   エラーを報告する

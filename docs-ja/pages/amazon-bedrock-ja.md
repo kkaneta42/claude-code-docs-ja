@@ -162,7 +162,7 @@ aws sso login --profile=your-profile-name
 export AWS_PROFILE=your-profile-name
 ```
 
-Claude Code は、IAM Identity Center リージョンから役割認証情報をリクエストします。このリージョンはプロファイルの `sso_region` で指定されており、Amazon Bedrock を実行するリージョンと一致する必要はありません。{/* min-version: 2.1.208 */}v2.1.207 では、Amazon Bedrock リージョンが `sso_region` をオーバーライドしていたため、IAM Identity Center インスタンスが別のリージョンにあるプロファイルは `Session token not found or invalid` エラーで認証に失敗しました。
+Claude Code は、IAM Identity Center リージョンから役割認証情報をリクエストします。このリージョンはプロファイルの `sso_region` で指定されており、Amazon Bedrock を実行するリージョンと一致する必要はありません。v2.1.207 では、Amazon Bedrock リージョンが `sso_region` をオーバーライドしていたため、IAM Identity Center インスタンスが別のリージョンにあるプロファイルは `Session token not found or invalid` エラーで認証に失敗しました。
 
 **オプション D：AWS Management Console 認証情報**
 
@@ -186,11 +186,11 @@ Amazon Bedrock API キーは、完全な AWS 認証情報を必要としない�
 
 Claude Code は AWS デフォルト認証情報プロバイダーチェーンを 1 回解決し、解決された認証情報をメモリに保持します。有効期限の 5 分前まで、または有効期限がない場合は 1 時間の間、それらを再利用するため、SSO バックアップ プロファイルは IAM Identity Center から認証情報を約 1 回リクエストします。API からの認証情報エラーはキャッシュをクリアし、再試行は新しい認証情報を解決します。
 
-{/* min-version: 2.1.207 */}v2.1.207 より前では、Claude Code は API リクエストのたびにチェーンを解決していたため、SSO バックアップ プロファイルは毎回 IAM Identity Center から新しい認証情報をリクエストでき、大規模なデプロイメントでスロットルされる可能性がありました。
+v2.1.207 より前では、Claude Code は API リクエストのたびにチェーンを解決していたため、SSO バックアップ プロファイルは毎回 IAM Identity Center から新しい認証情報をリクエストでき、大規模なデプロイメントでスロットルされる可能性がありました。
 
 キャッシュは上記のすべての認証情報オプションをカバーしていますが、Amazon Bedrock API キーはプロバイダーチェーンを使用しないため除外されます。代わりにすべてのリクエストでチェーンを解決するには、[`CLAUDE_CODE_SKIP_AWS_CRED_CACHE=1`](/docs/ja/env-vars) を設定してください。
 
-{/* min-version: 2.1.207 */}チェーンの各解決は 60 秒後にタイムアウトします。チェーン内のステップが停止した場合、例えば受け取ることができない入力を待つ `credential_process` ヘルパーの場合、リクエストは [`AWS default-chain credential resolve timed out`](/docs/ja/errors#aws-default-chain-credential-resolve-timed-out) で失敗します。チェーンが `aws-vault` などのラッパーを通じた MFA を使用したブラウザベースの SSO など、正当に長い時間が必要な対話的サインインを実行する場合は、[`CLAUDE_CODE_AWS_CHAIN_RESOLVE_TIMEOUT_MS`](/docs/ja/env-vars) でミリ秒単位で制限を上げてください。v2.1.207 より前では、停止した認証情報解決はリクエストを無期限に待機させていました。
+チェーンの各解決は 60 秒後にタイムアウトします。チェーン内のステップが停止した場合、例えば受け取ることができない入力を待つ `credential_process` ヘルパーの場合、リクエストは [`AWS default-chain credential resolve timed out`](/docs/ja/errors#aws-default-chain-credential-resolve-timed-out) で失敗します。チェーンが `aws-vault` などのラッパーを通じた MFA を使用したブラウザベースの SSO など、正当に長い時間が必要な対話的サインインを実行する場合は、[`CLAUDE_CODE_AWS_CHAIN_RESOLVE_TIMEOUT_MS`](/docs/ja/env-vars) でミリ秒単位で制限を上げてください。v2.1.207 より前では、停止した認証情報解決はリクエストを無期限に待機させていました。
 
 <h4 id="advanced-credential-configuration">
   高度な認証情報設定
@@ -235,9 +235,9 @@ Claude Code は、AWS SSO および企業 ID プロバイダーの自動認証�
 }
 ```
 
-{/* min-version: 2.1.181 */}`aws configure export-credentials --format process` からのフラット出力も受け入れられます。`Credentials` の下にネストされるのではなく、同じキーがトップレベルにあります。
+`aws configure export-credentials --format process` からのフラット出力も受け入れられます。`Credentials` の下にネストされるのではなく、同じキーがトップレベルにあります。
 
-`Expiration` はオプションです。{/* min-version: 2.1.176 */}Claude Code v2.1.176 以降では、コマンドが有効な ISO 8601 `Expiration` を返す場合、Claude Code はその時刻の 5 分前までの認証情報をキャッシュします。それがない場合、または以前のバージョンでは、認証情報は 1 時間キャッシュされます。
+`Expiration` はオプションです。Claude Code v2.1.176 以降では、コマンドが有効な ISO 8601 `Expiration` を返す場合、Claude Code はその時刻の 5 分前までの認証情報をキャッシュします。それがない場合、または以前のバージョンでは、認証情報は 1 時間キャッシュされます。
 
 `awsCredentialExport` を `awsAuthRefresh` なしで設定する場合、Claude Code はエクスポートされた認証情報を直接使用し、スタートアップで AWS デフォルト認証情報プロバイダーチェーンを再解決しません。v2.1.206 より前では、スタートアップはデフォルトプロバイダーチェーンも再解決していたため、プロキシ設定外でライブ SSO または STS 呼び出しを行い、制限されたエグレスを持つネットワークで最初のプロンプトを数分間ブロックする可能性がありました。
 
@@ -263,7 +263,7 @@ export ANTHROPIC_SMALL_FAST_MODEL_AWS_REGION=us-west-2
 
 Claude Code で Amazon Bedrock を有効にする場合は、以下に注意してください。
 
-* {/* min-version: 2.1.172 */}v2.1.172 以降では、AWS プロファイルのリージョンをオーバーライドする場合、またはプロファイルにリージョンがない場合にのみ `AWS_REGION` を設定する必要があります。Claude Code はこの順序でリージョンを解決します。
+* v2.1.172 以降では、AWS プロファイルのリージョンをオーバーライドする場合、またはプロファイルにリージョンがない場合にのみ `AWS_REGION` を設定する必要があります。Claude Code はこの順序でリージョンを解決します。
 
   * `AWS_REGION`
   * `AWS_DEFAULT_REGION`
@@ -311,7 +311,7 @@ export ANTHROPIC_DEFAULT_HAIKU_MODEL='us.anthropic.claude-haiku-4-5-20251001-v1:
   Opus モデルは Sonnet モデルより高いトークンあたりの価格を持つため、プライマリモデルをピン留めしないデプロイメントは v2.1.207 以降に更新されると Opus レートで課金されます。Sonnet 4.5 をプライマリモデルとして保つには、`ANTHROPIC_MODEL` をその完全なモデル ID に設定してください。`ANTHROPIC_DEFAULT_SONNET_MODEL` で デフォルトを操舵し、`ANTHROPIC_DEFAULT_OPUS_MODEL` を設定しないデプロイメントは、操舵された Sonnet モデルをデフォルトとして保持します。
 </Warning>
 
-{/* min-version: 2.1.207 */}v2.1.207 より前では、Amazon Bedrock のプライマリモデルは Sonnet 4.5 にデフォルト設定され、`opus` エイリアスは Opus 4.6 に解決され、バックグラウンドタスクは常にプライマリモデルを使用していました。
+v2.1.207 より前では、Amazon Bedrock のプライマリモデルは Sonnet 4.5 にデフォルト設定され、`opus` エイリアスは Opus 4.6 に解決され、バックグラウンドタスクは常にプライマリモデルを使用していました。
 
 モデルをさらにカスタマイズするには、以下のいずれかの方法を使用します。
 
@@ -353,7 +353,7 @@ export ENABLE_PROMPT_CACHING_1H=1
 }
 ```
 
-ユーザーが `/model` でこれらのバージョンのいずれかを選択すると、Claude Code はマップされた ARN で Amazon Bedrock を呼び出します。{/* min-version: 2.1.200 */}同じマッピングは、`--model` または `ANTHROPIC_MODEL` を通じて Anthropic モデル ID を直接渡す場合にも適用されます。オーバーライドのないバージョンは、組み込みの Amazon Bedrock モデル ID またはスタートアップで検出された一致する推論プロファイルにフォールバックします。v2.1.200 より前では、`--model` および `ANTHROPIC_MODEL` の値はオーバーライドマップを通さずに Amazon Bedrock に到達しました。オーバーライドが `availableModels` および他のモデル設定とどのように相互作用するかについては、[Override model IDs per version](/docs/ja/model-config#override-model-ids-per-version) を参照してください。
+ユーザーが `/model` でこれらのバージョンのいずれかを選択すると、Claude Code はマップされた ARN で Amazon Bedrock を呼び出します。同じマッピングは、`--model` または `ANTHROPIC_MODEL` を通じて Anthropic モデル ID を直接渡す場合にも適用されます。オーバーライドのないバージョンは、組み込みの Amazon Bedrock モデル ID またはスタートアップで検出された一致する推論プロファイルにフォールバックします。v2.1.200 より前では、`--model` および `ANTHROPIC_MODEL` の値はオーバーライドマップを通さずに Amazon Bedrock に到達しました。オーバーライドが `availableModels` および他のモデル設定とどのように相互作用するかについては、[Override model IDs per version](/docs/ja/model-config#override-model-ids-per-version) を参照してください。
 
 <h2 id="startup-model-checks">
   スタートアップモデルチェック
@@ -473,7 +473,7 @@ export CLAUDE_CODE_USE_MANTLE=1
 export AWS_REGION=us-east-1
 ```
 
-Claude Code は AWS リージョンからエンドポイント URL を構築します。{/* min-version: 2.1.172 */}v2.1.172 以降では、リージョンは [上記の Amazon Bedrock](#3-configure-claude-code) と同じ優先順位で解決されます。以前のバージョンは `AWS_REGION` のみを使用します。カスタムエンドポイントまたはゲートウェイの URL をオーバーライドするには、`ANTHROPIC_BEDROCK_MANTLE_BASE_URL` を設定します。
+Claude Code は AWS リージョンからエンドポイント URL を構築します。v2.1.172 以降では、リージョンは [上記の Amazon Bedrock](#3-configure-claude-code) と同じ優先順位で解決されます。以前のバージョンは `AWS_REGION` のみを使用します。カスタムエンドポイントまたはゲートウェイの URL をオーバーライドするには、`ANTHROPIC_BEDROCK_MANTLE_BASE_URL` を設定します。
 
 Claude Code 内で `/status` を実行して確認します。Mantle がアクティブな場合、プロバイダー行は `Amazon Bedrock (Mantle)` を表示します。
 
@@ -579,7 +579,7 @@ v2.1.208 より前では、同じ設定ミスは、レスポンス全体がバ�
   /context でのゼロトークンカウント
 </h3>
 
-`/context` コマンドは、ツールスキーマを Amazon Bedrock count-tokens API に送信することで、各ツールグループのトークンをカウントします。{/* min-version: 2.1.196 */}Claude Code v2.1.196 より前のバージョンでは、スキーマが count-tokens API が受け入れないフィールドを含んでいたため、Amazon Bedrock がそのリクエストを拒否し、すべてのツールグループが 0 トークンを表示していました。メッセージやメモリファイルなど、内訳の他の行は影響を受けません。
+`/context` コマンドは、ツールスキーマを Amazon Bedrock count-tokens API に送信することで、各ツールグループのトークンをカウントします。Claude Code v2.1.196 より前のバージョンでは、スキーマが count-tokens API が受け入れないフィールドを含んでいたため、Amazon Bedrock がそのリクエストを拒否し、すべてのツールグループが 0 トークンを表示していました。メッセージやメモリファイルなど、内訳の他の行は影響を受けません。
 
 v2.1.196 以降に更新してください。
 

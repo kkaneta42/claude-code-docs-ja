@@ -168,7 +168,7 @@ Claude Code は、この設定を管理者制御のポリシー層からのみ�
 
 `serverName` の検証は 2 つのリスト間で異なります。
 
-* {/* min-version: 2.1.182 */}`deniedMcpServers` では、`serverName` は任意の空でない文字列を受け入れるため、[claude.ai コネクタ](/docs/ja/mcp#use-mcp-servers-from-claude-ai)をその表示名でブロックできます。たとえば、`{ "serverName": "claude.ai Slack" }` は Slack コネクタをブロックします。ブロックが名前変更に対して堅牢である必要がある場合、またはコネクタ名が衝突して ` (N)` サフィックスを取得する場合は、`serverUrl` エントリを優先します。
+* `deniedMcpServers` では、`serverName` は任意の空でない文字列を受け入れるため、[claude.ai コネクタ](/docs/ja/mcp#use-mcp-servers-from-claude-ai)をその表示名でブロックできます。たとえば、`{ "serverName": "claude.ai Slack" }` は Slack コネクタをブロックします。ブロックが名前変更に対して堅牢である必要がある場合、またはコネクタ名が衝突して ` (N)` サフィックスを取得する場合は、`serverUrl` エントリを優先します。
 * `allowedMcpServers` では、`serverName` は文字、数字、ハイフン、アンダースコアに限定されます。claude.ai コネクタをホワイトリストに登録するには `serverUrl` を使用します。
 
 すべての claude.ai コネクタをオフにするには、[`disableClaudeAiConnectors`](/docs/ja/mcp#disable-claude-ai-connectors) を参照してください。

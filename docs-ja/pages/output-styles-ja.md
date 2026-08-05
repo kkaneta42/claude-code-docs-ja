@@ -32,7 +32,7 @@ Claude Code の **Default** 出力スタイルは既存のシステムプロン�
 
 `/config` を実行し、**Output style** を選択してメニューからスタイルを選択します。選択内容は [ローカルプロジェクトレベル](/docs/ja/settings) の `.claude/settings.local.json` に保存されます。
 
-<Note>{/* max-version: 2.1.90 */}スタンドアロン `/output-style` コマンドは v2.1.73 で廃止され、v2.1.91 で削除されました。`/config` を使用するか、`outputStyle` 設定を直接編集してください。</Note>
+<Note>スタンドアロン `/output-style` コマンドは v2.1.73 で廃止され、v2.1.91 で削除されました。`/config` を使用するか、`outputStyle` 設定を直接編集してください。</Note>
 
 メニューなしでスタイルを設定するには、設定ファイルの `outputStyle` フィールドを直接編集します。
 
@@ -58,7 +58,7 @@ Claude Code の **Default** 出力スタイルは既存のシステムプロン�
     * プロジェクト: `.claude/output-styles`
     * 管理ポリシー: [管理設定ディレクトリ](/docs/ja/settings#settings-files) 内の `.claude/output-styles`
 
-    プロジェクト出力スタイルは、作業ディレクトリとリポジトリルートの間のすべての `.claude/output-styles/` から読み込まれます。{/* min-version: 2.1.178 */}v2.1.178 以降、これらのネストされたディレクトリの複数が同じ名前のスタイルを定義する場合、Claude Code は作業ディレクトリに最も近いものを使用します。
+    プロジェクト出力スタイルは、作業ディレクトリとリポジトリルートの間のすべての `.claude/output-styles/` から読み込まれます。v2.1.178 以降、これらのネストされたディレクトリの複数が同じ名前のスタイルを定義する場合、Claude Code は作業ディレクトリに最も近いものを使用します。
   </Step>
 
   <Step title="Frontmatter と指示を追加する">

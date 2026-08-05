@@ -6,8 +6,6 @@
 
 > アーティファクトは Claude Code の作業をライブでインタラクティブなページに変え、claude.ai 上で非公開に保つか、組織と共有するか、公開リンクに公開できます。
 
-{/* plan-availability: feature=artifacts plans=pro,max,team,enterprise providers=anthropic */}
-
 <Note>
   アーティファクトは Pro、Max、Team、および Enterprise プランで利用でき、[`/login`](/docs/ja/setup#authenticate) でサインインしたセッションが必要です。要件の完全なセットについては、[利用可能性](#availability)を参照してください。
 </Note>
@@ -103,8 +101,6 @@ https://claude.ai/code/artifact/5fbea6f3-... を今日の数字で更新して�
 <h2 id="pull-live-data-with-mcp-connectors">
   MCP コネクタで ライブデータを取得する
 </h2>
-
-{/* plan-availability: feature=artifact-mcp plans=pro,max,team,enterprise providers=anthropic */}
 
 アーティファクトは、ページを表示するたびに [MCP コネクタ](/docs/ja/mcp#use-mcp-servers-from-claude-ai) を呼び出すことができるため、ページはセッションで構築されたスナップショットではなく、現在のデータを表示します。アーティファクトからのコネクタ呼び出しは Pro、Max、Team、Enterprise プランで利用可能であり、Claude Code v2.1.209 以降が必要です。以前のバージョンでは、Claude はセッション中に収集されたデータでページを公開します。
 

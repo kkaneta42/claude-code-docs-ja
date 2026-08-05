@@ -254,7 +254,7 @@ Claude Code は、ピン留め変数が設定されていない場合、これ�
   Opus モデルは Sonnet モデルより高いトークンあたりの価格を持つため、プライマリモデルをピン留めしないデプロイメントは v2.1.207 以降に更新されると Opus レートで課金されます。Sonnet 4.5 をプライマリモデルとして保つには、`ANTHROPIC_MODEL` をその完全なモデル ID に設定します。`ANTHROPIC_DEFAULT_SONNET_MODEL` でデフォルトを制御し、`ANTHROPIC_DEFAULT_OPUS_MODEL` を設定しないデプロイメントは、制御された Sonnet モデルをデフォルトとして保ちます。
 </Warning>
 
-{/* min-version: 2.1.207 */}v2.1.207 より前は、Google Cloud の Agent Platform 上のプライマリモデルは Sonnet 4.5 にデフォルト設定され、`opus` エイリアスは Opus 4.6 に解決され、バックグラウンドタスクは常にプライマリモデルを使用していました。
+v2.1.207 より前は、Google Cloud の Agent Platform 上のプライマリモデルは Sonnet 4.5 にデフォルト設定され、`opus` エイリアスは Opus 4.6 に解決され、バックグラウンドタスクは常にプライマリモデルを使用していました。
 
 モデルをさらにカスタマイズするには、以下を実行します。
 

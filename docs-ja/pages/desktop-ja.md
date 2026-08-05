@@ -98,7 +98,7 @@ Code タブの以前のバージョンでは、これらのモードを Ask perm
 
 Auto mode は Anthropic API のすべてのユーザーが利用でき、Claude Opus 4.6 以降、または Sonnet 4.6 以降が必要です。組織管理者は[マネージド設定](#managed-settings)の`disableAutoMode`キーで auto mode をオフにできます。
 
-Google Cloud の Agent Platform にルーティングするエンタープライズデプロイメントでは、auto mode は[デフォルトで利用可能](/docs/ja/permission-modes#enable-auto-mode-on-bedrock-agent-platform-or-foundry)であり、そこでは Claude Sonnet 5、Opus 4.7、および Opus 4.8 のみがサポートされています。{/* min-version: 2.1.207 */}Claude Code v2.1.207 より前では、Google Cloud の Agent Platform 上のエンタープライズデプロイメントは auto mode を有効にするために`CLAUDE_CODE_ENABLE_AUTO_MODE`を設定する必要がありました。
+Google Cloud の Agent Platform にルーティングするエンタープライズデプロイメントでは、auto mode は[デフォルトで利用可能](/docs/ja/permission-modes#enable-auto-mode-on-bedrock-agent-platform-or-foundry)であり、そこでは Claude Sonnet 5、Opus 4.7、および Opus 4.8 のみがサポートされています。Claude Code v2.1.207 より前では、Google Cloud の Agent Platform 上のエンタープライズデプロイメントは auto mode を有効にするために`CLAUDE_CODE_ENABLE_AUTO_MODE`を設定する必要がありました。
 
 <Tip title="ベストプラクティス">
   複雑なタスクを Plan で開始して、Claude が変更を加える前にアプローチをマップアウトするようにします。プランを承認したら、Accept edits または Manual に切り替えて実行します。このワークフローの詳細については、[最初に探索してからプランしてからコード化する](/docs/ja/best-practices#explore-first-then-plan-then-code)を参照してください。
@@ -758,7 +758,7 @@ Desktop セッションがどこで実行されるかに応じて、どの管理
 
 `permissions.disableBypassPermissionsMode`と`disableAutoMode`はユーザーおよびプロジェクト設定でも機能しますが、管理設定に配置するとユーザーがそれらをオーバーライドするのを防ぎます。
 
-{/* min-version: 2.1.207 */}Claude Code は`autoMode`をユーザー設定、`--settings`フラグ、および管理設定から読み取りますが、`.claude/settings.json`または`.claude/settings.local.json`からは読み取りません：両方のファイルはリポジトリディレクトリに存在するため、クローンされたリポジトリまたはビルドステップは独自の分類器ルールを注入できません。v2.1.207 より前は、Claude Code は`.claude/settings.local.json`も読み取っていました。
+Claude Code は`autoMode`をユーザー設定、`--settings`フラグ、および管理設定から読み取りますが、`.claude/settings.json`または`.claude/settings.local.json`からは読み取りません：両方のファイルはリポジトリディレクトリに存在するため、クローンされたリポジトリまたはビルドステップは独自の分類器ルールを注入できません。v2.1.207 より前は、Claude Code は`.claude/settings.local.json`も読み取っていました。
 
 `allowManagedPermissionRulesOnly`と`allowManagedHooksOnly`を含む管理専用設定の完全なリストについては、[管理専用設定](/docs/ja/permissions#managed-only-settings)を参照してください。
 

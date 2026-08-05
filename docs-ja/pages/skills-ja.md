@@ -40,7 +40,7 @@ Claude Code には、[`disableBundledSkills`](/docs/ja/settings#available-settin
 | `/verify`              | アプリをビルドして実行し、コード変更が期待通りに機能することを確認する。テストや型チェックにフォールバックしない |
 | `/run-skill-generator` | `/run` と `/verify` にプロジェクトをビルドして起動する方法を教える               |
 
-{/* min-version: 2.1.145 */}3 つのスキルすべてに Claude Code v2.1.145 以降が必要です。
+3 つのスキルすべてに Claude Code v2.1.145 以降が必要です。
 
 `/run` と `/verify` はセットアップなしで機能します。プロジェクトタイプ（CLI、サーバー、TUI、ブラウザ駆動）と README、`package.json`、または `Makefile` の内容から起動を推測します。その推測は、標準的な起動を超えた何かが必要なプロジェクト（データベース、env ファイル、グラフィカルセッション、マルチステップビルド）では信頼性が低くなります。
 

@@ -31,7 +31,7 @@ Claude Code には、ビジュアルターミナルインターフェースを�
 SSH 経由で Claude Code を使用する場合は、Claude Code が実行されるリモートマシンで環境変数または設定を設定します。
 
 モードがオンの場合、Claude Code が最初に出力するのは、それをオンにした方法を名前付けする確認行です。`[Screen Reader Mode: on via flag]`、`[Screen Reader Mode: on via env]`、または `[Screen Reader Mode: on via settings]` です。このメソッド命名形式には Claude Code v2.1.206 以降が必要です。Claude Code が自身を再起動する場合（例えば、アップデートのインストールを完了するため）、新しいプロセスは `CLAUDE_AX_SCREEN_READER` 環境変数を通じてモードを継承するため、使用した方法に関係なく、その確認行は `[Screen Reader Mode: on via env]` と表示されます。
-{/* max-version: 2.1.205 */}以前のバージョンは `[Accessible screen reader mode: on]` を出力します。
+以前のバージョンは `[Accessible screen reader mode: on]` を出力します。
 
 <h2 id="turn-off-screen-reader-mode">
   スクリーンリーダーモードをオフにする
@@ -48,7 +48,7 @@ SSH 経由で Claude Code を使用する場合は、Claude Code が実行され
 * インターフェースクロムのボックス描画文字なし
 * 色のみのキューなし
 * 変更されていないコンテンツの再描画なし。プログレススピナーは静的テキストとしてレンダリングされます
-* Claude の返信のテーブルは、ボックス文字グリッドの代わりに `Header: value` 文として読み上げられます。{/* min-version: 2.1.198 */}Claude Code v2.1.198 以降が必要です。以前のバージョンはスクリーンリーダーモードでもテーブルをグリッドとして描画します。
+* Claude の返信のテーブルは、ボックス文字グリッドの代わりに `Header: value` 文として読み上げられます。Claude Code v2.1.198 以降が必要です。以前のバージョンはスクリーンリーダーモードでもテーブルをグリッドとして描画します。
 
 出力はターミナルのスクロールバックに蓄積されるため、スクリーンリーダーのレビューコマンドまたはターミナルの検索を使用して以前のターンを再度読むことができます。
 
