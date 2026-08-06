@@ -17,6 +17,60 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-08-06</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md | 22 ++++++++++++++++++++++
+ 1 file changed, 22 insertions(+)
+```
+
+**新規追加:**
+
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index b80eb1e..a903062 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,26 @@
+ # Changelog
+ 
++## 2.1.223
++
++- Added owner wildcard entries (`"owner/*"`) to the `strictKnownMarketplaces` and `blockedMarketplaces` managed settings for allowing or blocking all marketplace repos under a GitHub org
++- Added a warning when workflow agents, forked skills, slash commands, or resumed background agents' requested subagent model is restricted and the parent model runs instead
++- Added a `/teleport` hint in cloud sessions showing how to continue locally with `claude --teleport <session id>`
++- Fixed a Bash permission bypass where a crafted command could hide parts of itself from permission checks
++- Fixed permission prompts so commands padded with tabs or invisible Unicode can no longer hide part of the command from the approval dialog
++- Fixed workflow scripts being able to use dynamic `import()` to run code outside the workflow sandbox
++- Fixed a permission gap where an agent definition's `bypassPermissions` mode ignored the org bypass-permissions disable policy
++- Fixed resuming a session after a mid-session `/cd` coming back empty
++- Fixed gateway model discovery hiding Claude models registered under provider-prefixed IDs such as `vertex_ai/claude-*` or `bedrock/anthropic.claude-*`
++- Fixed `modelOverrides` keys that aren't Anthropic model IDs being treated as the session's canonical model ID; unknown keys are now ignored as documented
++- Fixed managed settings: server-delivered settings no longer disable the env block of a machine-local `managed-settings.json` or MDM profile; admin env now merges per key
++- Fixed sandboxed commands failing to start on Linux when `sandbox.filesystem.denyWrite` covers the working directory
++- Fixed forked background agents getting stuck "already resuming" for the rest of the session when rebuilding the fork's parent prompt failed during resume
++- Fixed a resumed session failing every turn, or leaving the interactive app on an unresponsive error screen, when its history held a malformed diagnostics attachment
++- Fixed a rare hang when parsing unusual `git push` output
++- Changed `CLAUDE_CODE_DISABLE_1M_CONTEXT` to hold every Claude model with a native 1M window to 200K via auto-compaction, not just a fixed list; a startup warning now appears when auto-compaction isn't holding the session to 200K
++- Changed auto-compact to keep sessions on unrecognized model IDs within the assumed context window instead of letting them grow past it; set `CLAUDE_CODE_DISABLE_UNKNOWN_MODEL_WINDOW_ENFORCEMENT=1` to restore the previous behavior
++- Changed `/review` to be an alias of `/code-review`, which reviews the current diff or a PR (`/code-review <level> <pr#>`); use `/code-review ultra` for a deep cloud review
++- Changed `/code-review` with no effort level to reuse the level you typed last; type a level like `/code-review high` to change it
++
+ ## 2.1.222
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-08-05</summary>
 
 **変更ファイル:**
@@ -2804,57 +2858,6 @@ index eedc4be..095011f 100644
 </details>
 
 *...以降省略*
-
-</details>
-
-
-<details>
-<summary>2026-07-10</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/changelog.md | 30 ++++++++++++++++++++++++++++++
- 1 file changed, 30 insertions(+)
-```
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index 9049203..a1320bd 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,34 @@
- # Changelog
- 
-+## 2.1.206
-+
-+- Added directory path suggestions to `/cd`, matching `/add-dir` behavior
-+- Added a `/doctor` check that proposes trimming checked-in `CLAUDE.md` files by cutting content Claude could derive from the codebase
-+- `/commit-push-pr` now auto-allows `git push` to the repo's configured push remote (`remote.pushDefault`, or the sole remote when only one is configured) in addition to `origin`
-+- Gateway: `/login` now supports Anthropic-operated public gateway endpoints
-+- `EnterWorktree` now asks for confirmation before entering a git worktree outside the project's `.claude/worktrees/` directory
-+- Background agents now upgrade to a new version in the background right after a Claude Code update, instead of paying a slow stale-session upgrade when you attach
-+- Fixed an expired login failing every model with a misleading "There's an issue with the selected model" error instead of prompting to run `/login`
-+- Fixed `claude --resume` and `--continue` not responding to keyboard input on startup
-+- Fixed MCP servers configured via `--mcp-config` or `.mcp.json` ignoring a per-server `request_timeout_ms`, which caused long-running MCP tool calls to time out at the 60s default in fresh sessions
-+- Fixed `CLAUDE_CODE_EXTRA_BODY` being silently ignored by `claude agents` / `--bg` background workers; the shell-exported override now follows the dispatching session
-+- Fixed OAuth MCP servers requiring manual re-authentication after a single failed token refresh
-+- Fixed `--permission-prompt-tool` pointing at an MCP server crashing with "MCP tool not found" on cold start before the server finishes connecting
-+- Fixed `/model` picker rows printing a price for a different model than the row named, and stopped quoting first-party list prices on providers that don't bill them
-+- Fixed server-provided model rows being misplaced in the `/model` picker when an entitlement or allowlist restriction drops the row they were positioned against
-+- Fixed desktop sessions getting stuck showing "running" after a slash command was sent mid-turn
-+- Fixed keyboard input being ignored in the agents view when a setup prompt appeared before a bare `claude --resume` on Windows
-+- Fixed `claude rm` leaving the removed job in the daemon roster, causing the row to reappear in `claude agents`
-+- Fixed `/remote-control` showing "Unknown command" when logged out — it now explains how to sign in
-+- Fixed left arrow not stepping back out of a phase or agent in the workflow detail view
-+- Fixed `/status` listing the same broken-install warning twice
-+- Fixed false "disused plugin" tips and skewed disuse telemetry for LSP plugins
-```
-
-</details>
 
 </details>
 
