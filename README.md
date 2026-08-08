@@ -17,6 +17,204 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-08-08</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md                  | 34 +++++++++++++++++++++++++++++
+ docs-ja/pages/desktop-scheduled-tasks-ja.md | 22 +++++++++----------
+ docs-ja/pages/platforms-ja.md               | 15 +++++++------
+ docs-ja/pages/remote-control-ja.md          | 15 +++++++------
+ docs-ja/pages/scheduled-tasks-ja.md         | 22 +++++++++----------
+ 5 files changed, 72 insertions(+), 36 deletions(-)
+```
+
+**新規追加:**
+
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index a903062..ac7d9ca 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,38 @@
+ # Changelog
+ 
++## 2.1.224
++
++- Added self-hosted environments: `claude self-hosted-runner` turns your own machines or containers into a place Claude Code web, mobile, and desktop sessions can run, on Team and Enterprise plans
++- Added `archive` plugin source: install plugins from a zip over HTTPS without git or npm, with optional SHA-256 pinning
++- Added a cancel-and-confirm step when removing an unavailable paste changes a command's text
++- Added `ANTHROPIC_BEDROCK_REGION_PREFIX` env var for Bedrock to prefer a specific cross-region inference profile over the `AWS_REGION`-derived one
++- Added `crossSessionInbound` and `dialogExpiry` settings: cross-session messages sent to a session running with bypassed permissions are held for your approval, and messages to other sessions auto-deliver
++- Added sandbox credential-masking options: `extract` and `onExtractNoMatch` for structured env values, `decode: "jwt"` with `maskClaims` for JWT-aware masking, and `awsPairs`/`sigv4` for AWS SigV4 re-signing; these need `network.tlsTerminate` and are honored only from user, managed, or `--settings` settings
++- Added cross-session `SendMessage`: Claude Code sessions can now message each other, on any of your machines, with `ListAgents` to discover them (macOS and Linux)
++- Fixed long (>200 char) project paths resolving to another project's session directory under a shared sanitized prefix; session list, rename, fork, delete and `/resume` no longer cross projects
++- Fixed `SendMessage` reporting "Message sent" when the write to a teammate's inbox had actually failed; failed deliveries are now reported as errors
++- Fixed sandbox filesystem deny entries written with a trailing slash (e.g. `denyRead: "~/.aws/"`) being silently bypassable on Linux and macOS
++- Fixed sandbox violation details never appearing in Bash tool results; Claude now sees which file or network access was denied and why
++- Fixed MCP tools that connect mid-turn being deferred for tool search without their names announced to the model
++- Fixed plugin install records being silently corrupted when the same plugin is installed in multiple projects
++- Fixed recalled or restored paste content occasionally attaching wrong data or silently losing text when the paste had aged out or placeholder numbers collided
++- Fixed copy-on-select on Wayland sometimes not reaching the clipboard; the two selection writes no longer race
++- Fixed the feedback survey's transcript share silently failing on long sessions; a failed share now shows an error instead of a success message
++- Fixed Remote Control auto-start intermittently failing with "Remote credentials fetch failed" on a cold start with a stale login token
++- Fixed Remote Control and SDK clients showing a blank "(no content)" message after `/clear` and other output-less commands
++- Fixed a Remote Control session recreated after its server session expired uploading prior local conversation history into the new session
++- Improved fullscreen mode to keep the full pre-compaction history in scrollback across repeated compactions, instead of only the most recent interval
++- Improved Remote Control: attached web and mobile clients now see compaction progress and the post-compaction boundary instead of a silent pause; `/clear` resets now propagate to attached clients
+```
+
+</details>
+
+<details>
+<summary>desktop-scheduled-tasks-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/desktop-scheduled-tasks-ja.md b/docs-ja/pages/desktop-scheduled-tasks-ja.md
+index c4f67f6..f3a8aea 100644
+--- a/docs-ja/pages/desktop-scheduled-tasks-ja.md
++++ b/docs-ja/pages/desktop-scheduled-tasks-ja.md
+@@ -17,15 +17,15 @@ Desktop アプリの **Routines** ページでは、ローカルスケジュー
+ Claude Code offers three ways to schedule recurring or one-off work:
+ 
+-|                            | [Cloud](/docs/en/routines)          | [Desktop](/docs/en/desktop-scheduled-tasks) | [`/loop`](/docs/en/scheduled-tasks)      |
+-| :------------------------- | :----------------------------- | :------------------------------------- | :---------------------------------- |
+-| Runs on                    | Anthropic cloud                | Your machine                           | Your machine                        |
+-| Requires machine on        | No                             | Yes                                    | Yes                                 |
+-| Requires open session      | No                             | No                                     | Yes                                 |
+-| Persistent across restarts | Yes                            | Yes                                    | Restored on `--resume` if unexpired |
+-| Access to local files      | No (fresh clone)               | Yes                                    | Yes                                 |
+-| MCP servers                | Connectors configured per task | [Config files](/docs/en/mcp) and connectors | Inherits from session               |
+-| Permission prompts         | No (runs autonomously)         | Configurable per task                  | Inherits from session               |
+-| Customizable schedule      | Via `/schedule` in the CLI     | Yes                                    | Yes                                 |
+-| Minimum interval           | 1 hour                         | 1 minute                               | 1 minute                            |
++|                            | [Cloud](/docs/en/routines)               | [Desktop](/docs/en/desktop-scheduled-tasks) | [`/loop`](/docs/en/scheduled-tasks)      |
++| :------------------------- | :---------------------------------- | :------------------------------------- | :---------------------------------- |
++| Runs on                    | Cloud, Anthropic-managed by default | Your machine                           | Your machine                        |
++| Requires machine on        | No                                  | Yes                                    | Yes                                 |
++| Requires open session      | No                                  | No                                     | Yes                                 |
++| Persistent across restarts | Yes                                 | Yes                                    | Restored on `--resume` if unexpired |
++| Access to local files      | No (fresh clone)                    | Yes                                    | Yes                                 |
++| MCP servers                | Connectors configured per task      | [Config files](/docs/en/mcp) and connectors | Inherits from session               |
++| Permission prompts         | No (runs autonomously)              | Configurable per task                  | Inherits from session               |
++| Customizable schedule      | Via `/schedule` in the CLI          | Yes                                    | Yes                                 |
++| Minimum interval           | 1 hour                              | 1 minute                               | 1 minute                            |
+ 
+```
+
+</details>
+
+<details>
+<summary>platforms-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/platforms-ja.md b/docs-ja/pages/platforms-ja.md
+index 625631e..0567ebc 100644
+--- a/docs-ja/pages/platforms-ja.md
++++ b/docs-ja/pages/platforms-ja.md
+@@ -50,11 +50,12 @@ CLI はターミナルネイティブな作業に最も完全なサーフェス
+ Claude Code offers several ways to work when you're not at your terminal. They differ in what triggers the work, where Claude runs, and how much you need to set up.
+ 
+-|                                                | Trigger                                                                                        | Claude runs on                                                                               | Setup                                                                                                                                | Best for                                                      |
+-| :--------------------------------------------- | :--------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------ |
+-| [Dispatch](/docs/en/desktop#sessions-from-dispatch) | Message a task from the Claude mobile app                                                      | Your machine (Desktop)                                                                       | [Pair the mobile app with Desktop](https://support.claude.com/en/articles/13947068)                                                  | Delegating work while you're away, minimal setup              |
+-| [Remote Control](/docs/en/remote-control)           | Drive a running session from [claude.ai/code](https://claude.ai/code) or the Claude mobile app | Your machine (CLI or VS Code)                                                                | Run `claude remote-control`                                                                                                          | Steering in-progress work from another device                 |
+-| [Channels](/docs/en/channels)                       | Push events from a chat app like Telegram or Discord, or your own server                       | Your machine (CLI)                                                                           | [Install a channel plugin](/docs/en/channels#quickstart) or [build your own](/docs/en/channels-reference)                                      | Reacting to external events like CI failures or chat messages |
+-| [Slack](/docs/en/slack)                             | Mention `@Claude` in a team channel                                                            | Anthropic cloud                                                                              | [Install the Slack app](/docs/en/slack#setting-up-claude-code-in-slack) with [Claude Code on the web](/docs/en/claude-code-on-the-web) enabled | PRs and reviews from team chat                                |
+-| [Scheduled tasks](/docs/en/scheduled-tasks)         | Set a schedule                                                                                 | [CLI](/docs/en/scheduled-tasks), [Desktop](/docs/en/desktop-scheduled-tasks), or [cloud](/docs/en/routines) | Pick a frequency                                                                                                                     | Recurring automation like daily reviews                       |
++|                                                          | Trigger                                                                                        | Claude runs on                                                                               | Setup                                                                                                                                | Best for                                                      |
++| :------------------------------------------------------- | :--------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------ |
++| [Dispatch](/docs/en/desktop#sessions-from-dispatch)           | Message a task from the Claude mobile app                                                      | Your machine (Desktop)                                                                       | [Pair the mobile app with Desktop](https://support.claude.com/en/articles/13947068)                                                  | Delegating work while you're away, minimal setup              |
++| [Remote Control](/docs/en/remote-control)                     | Drive a running session from [claude.ai/code](https://claude.ai/code) or the Claude mobile app | Your machine (CLI or VS Code)                                                                | Run `claude remote-control`                                                                                                          | Steering in-progress work from another device                 |
++| [Channels](/docs/en/channels)                                 | Push events from a chat app like Telegram or Discord, or your own server                       | Your machine (CLI)                                                                           | [Install a channel plugin](/docs/en/channels#quickstart) or [build your own](/docs/en/channels-reference)                                      | Reacting to external events like CI failures or chat messages |
++| [Slack](/docs/en/slack)                                       | Mention `@Claude` in a team channel                                                            | Anthropic cloud                                                                              | [Install the Slack app](/docs/en/slack#setting-up-claude-code-in-slack) with [Claude Code on the web](/docs/en/claude-code-on-the-web) enabled | PRs and reviews from team chat                                |
++| [Self-hosted environments](/docs/en/self-hosted-environments) | Start a [cloud session](/docs/en/claude-code-on-the-web) and pick your organization's environment   | Your organization's infrastructure                                                           | [Deploy runners](/docs/en/self-hosted-environments-quickstart), on Team and Enterprise plans                                              | Cloud sessions that must run inside your network              |
++| [Scheduled tasks](/docs/en/scheduled-tasks)                   | Set a schedule                                                                                 | [CLI](/docs/en/scheduled-tasks), [Desktop](/docs/en/desktop-scheduled-tasks), or [cloud](/docs/en/routines) | Pick a frequency                                                                                                                     | Recurring automation like daily reviews                       |
+ 
+ どこから始めるべきか不確かな場合は、[CLI をインストール](/docs/ja/quickstart)してプロジェクトディレクトリで実行します。ターミナルを使用したくない場合は、[Desktop](/docs/ja/desktop-quickstart) がグラフィカルインターフェースで同じエンジンを提供します。
+```
+
+</details>
+
+<details>
+<summary>remote-control-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/remote-control-ja.md b/docs-ja/pages/remote-control-ja.md
+index 3eb81ea..6ba1236 100644
+--- a/docs-ja/pages/remote-control-ja.md
++++ b/docs-ja/pages/remote-control-ja.md
+@@ -386,11 +386,12 @@ v2.1.200 より前では、再接続の失敗により新しい Remote Control 
+ Claude Code offers several ways to work when you're not at your terminal. They differ in what triggers the work, where Claude runs, and how much you need to set up.
+ 
+-|                                                | Trigger                                                                                        | Claude runs on                                                                               | Setup                                                                                                                                | Best for                                                      |
+-| :--------------------------------------------- | :--------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------ |
+-| [Dispatch](/docs/en/desktop#sessions-from-dispatch) | Message a task from the Claude mobile app                                                      | Your machine (Desktop)                                                                       | [Pair the mobile app with Desktop](https://support.claude.com/en/articles/13947068)                                                  | Delegating work while you're away, minimal setup              |
+-| [Remote Control](/docs/en/remote-control)           | Drive a running session from [claude.ai/code](https://claude.ai/code) or the Claude mobile app | Your machine (CLI or VS Code)                                                                | Run `claude remote-control`                                                                                                          | Steering in-progress work from another device                 |
+-| [Channels](/docs/en/channels)                       | Push events from a chat app like Telegram or Discord, or your own server                       | Your machine (CLI)                                                                           | [Install a channel plugin](/docs/en/channels#quickstart) or [build your own](/docs/en/channels-reference)                                      | Reacting to external events like CI failures or chat messages |
+-| [Slack](/docs/en/slack)                             | Mention `@Claude` in a team channel                                                            | Anthropic cloud                                                                              | [Install the Slack app](/docs/en/slack#setting-up-claude-code-in-slack) with [Claude Code on the web](/docs/en/claude-code-on-the-web) enabled | PRs and reviews from team chat                                |
+-| [Scheduled tasks](/docs/en/scheduled-tasks)         | Set a schedule                                                                                 | [CLI](/docs/en/scheduled-tasks), [Desktop](/docs/en/desktop-scheduled-tasks), or [cloud](/docs/en/routines) | Pick a frequency                                                                                                                     | Recurring automation like daily reviews                       |
++|                                                          | Trigger                                                                                        | Claude runs on                                                                               | Setup                                                                                                                                | Best for                                                      |
++| :------------------------------------------------------- | :--------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------ |
++| [Dispatch](/docs/en/desktop#sessions-from-dispatch)           | Message a task from the Claude mobile app                                                      | Your machine (Desktop)                                                                       | [Pair the mobile app with Desktop](https://support.claude.com/en/articles/13947068)                                                  | Delegating work while you're away, minimal setup              |
++| [Remote Control](/docs/en/remote-control)                     | Drive a running session from [claude.ai/code](https://claude.ai/code) or the Claude mobile app | Your machine (CLI or VS Code)                                                                | Run `claude remote-control`                                                                                                          | Steering in-progress work from another device                 |
++| [Channels](/docs/en/channels)                                 | Push events from a chat app like Telegram or Discord, or your own server                       | Your machine (CLI)                                                                           | [Install a channel plugin](/docs/en/channels#quickstart) or [build your own](/docs/en/channels-reference)                                      | Reacting to external events like CI failures or chat messages |
++| [Slack](/docs/en/slack)                                       | Mention `@Claude` in a team channel                                                            | Anthropic cloud                                                                              | [Install the Slack app](/docs/en/slack#setting-up-claude-code-in-slack) with [Claude Code on the web](/docs/en/claude-code-on-the-web) enabled | PRs and reviews from team chat                                |
++| [Self-hosted environments](/docs/en/self-hosted-environments) | Start a [cloud session](/docs/en/claude-code-on-the-web) and pick your organization's environment   | Your organization's infrastructure                                                           | [Deploy runners](/docs/en/self-hosted-environments-quickstart), on Team and Enterprise plans                                              | Cloud sessions that must run inside your network              |
++| [Scheduled tasks](/docs/en/scheduled-tasks)                   | Set a schedule                                                                                 | [CLI](/docs/en/scheduled-tasks), [Desktop](/docs/en/desktop-scheduled-tasks), or [cloud](/docs/en/routines) | Pick a frequency                                                                                                                     | Recurring automation like daily reviews                       |
+ 
+ <h2 id="related-resources">
+```
+
+</details>
+
+<details>
+<summary>scheduled-tasks-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/scheduled-tasks-ja.md b/docs-ja/pages/scheduled-tasks-ja.md
+index d9bf144..0f55909 100644
+--- a/docs-ja/pages/scheduled-tasks-ja.md
++++ b/docs-ja/pages/scheduled-tasks-ja.md
+@@ -17,15 +17,15 @@
+ Claude Code offers three ways to schedule recurring or one-off work:
+ 
+-|                            | [Cloud](/docs/en/routines)          | [Desktop](/docs/en/desktop-scheduled-tasks) | [`/loop`](/docs/en/scheduled-tasks)      |
+-| :------------------------- | :----------------------------- | :------------------------------------- | :---------------------------------- |
+-| Runs on                    | Anthropic cloud                | Your machine                           | Your machine                        |
+-| Requires machine on        | No                             | Yes                                    | Yes                                 |
+-| Requires open session      | No                             | No                                     | Yes                                 |
+-| Persistent across restarts | Yes                            | Yes                                    | Restored on `--resume` if unexpired |
+-| Access to local files      | No (fresh clone)               | Yes                                    | Yes                                 |
+-| MCP servers                | Connectors configured per task | [Config files](/docs/en/mcp) and connectors | Inherits from session               |
+-| Permission prompts         | No (runs autonomously)         | Configurable per task                  | Inherits from session               |
+-| Customizable schedule      | Via `/schedule` in the CLI     | Yes                                    | Yes                                 |
+-| Minimum interval           | 1 hour                         | 1 minute                               | 1 minute                            |
++|                            | [Cloud](/docs/en/routines)               | [Desktop](/docs/en/desktop-scheduled-tasks) | [`/loop`](/docs/en/scheduled-tasks)      |
++| :------------------------- | :---------------------------------- | :------------------------------------- | :---------------------------------- |
++| Runs on                    | Cloud, Anthropic-managed by default | Your machine                           | Your machine                        |
++| Requires machine on        | No                                  | Yes                                    | Yes                                 |
++| Requires open session      | No                                  | No                                     | Yes                                 |
++| Persistent across restarts | Yes                                 | Yes                                    | Restored on `--resume` if unexpired |
++| Access to local files      | No (fresh clone)                    | Yes                                    | Yes                                 |
++| MCP servers                | Connectors configured per task      | [Config files](/docs/en/mcp) and connectors | Inherits from session               |
++| Permission prompts         | No (runs autonomously)              | Configurable per task                  | Inherits from session               |
++| Customizable schedule      | Via `/schedule` in the CLI          | Yes                                    | Yes                                 |
++| Minimum interval           | 1 hour                              | 1 minute                               | 1 minute                            |
+ 
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-08-06</summary>
 
 **変更ファイル:**
@@ -2659,207 +2857,5 @@ index 45b4031..654e47d 100644
 ```
 
 </details>
-
-<details>
-<summary>advisor-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/advisor-ja.md b/docs-ja/pages/advisor-ja.md
-index 7162342..3d40e5f 100644
---- a/docs-ja/pages/advisor-ja.md
-+++ b/docs-ja/pages/advisor-ja.md
-@@ -10,5 +10,5 @@
- 
- <Note>
--  advisor ツールは実験的機能であり、Anthropic API を使用する Claude Code v2.1.98 以降が必要です。Amazon Bedrock、Google Vertex AI、Microsoft Foundry では利用できません。動作、価格設定、および利用可能性は変更される可能性があります。
-+  advisor ツールは実験的機能であり、Anthropic API を使用する Claude Code v2.1.98 以降が必要です。Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry では利用できません。動作、価格設定、および利用可能性は変更される可能性があります。
- </Note>
- 
-@@ -163,5 +163,5 @@ advisor ツールには、以下のすべてが必要です。
- 
- * **Claude Code v2.1.98 以降**：`claude update` を実行してアップグレードします。
--* **Anthropic API のみ**：advisor はサーバー実行ツールです。Amazon Bedrock、Google Vertex AI、または Microsoft Foundry では利用できません。[LLM ゲートウェイ](/ja/llm-gateway)を通じて `ANTHROPIC_BASE_URL` で構成されている場合、利用可能性はゲートウェイがリクエストを Anthropic API に完全に転送するかどうかに依存します。
-+* **Anthropic API のみ**：advisor はサーバー実行ツールです。Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry では利用できません。[LLM ゲートウェイ](/ja/llm-gateway)を通じて `ANTHROPIC_BASE_URL` で構成されている場合、利用可能性はゲートウェイがリクエストを Anthropic API に完全に転送するかどうかに依存します。
- * **サポートされているメインモデル**：Opus 4.6 以降、Sonnet 4.6 以降、または Haiku 4.5。{/* min-version: 2.1.170 */}Fable 5 も Claude Code v2.1.170 以降で適格です。
- 
-```
-
-</details>
-
-<details>
-<summary>agent-view-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/agent-view-ja.md b/docs-ja/pages/agent-view-ja.md
-index 7fe5e50..319446e 100644
---- a/docs-ja/pages/agent-view-ja.md
-+++ b/docs-ja/pages/agent-view-ja.md
-@@ -91,5 +91,5 @@ claude agents --cwd ~/projects/my-app
- ```text theme={null}
- Pinned
--  ✽ clawd walk cycle          Write assets/sprites/clawd-walk.png           3m
-+  ✽ clawd walk cycle          Drawing the walk-cycle sprite frames          3m
- 
- Ready for review
-@@ -97,8 +97,8 @@ Ready for review
- 
- Needs input
--  ✻ power-up design           needs input: double jump or wall climb?       1m
-+  ✻ power-up design           double jump or wall climb?                    1m
- 
- Working
--  ✽ collision detection       Edit src/physics/CollisionSystem.ts           2m
-+  ✽ collision detection       Adding swept-AABB checks to CollisionSystem   2m
-   ✢ playtest level 3          run 12 · all checkpoints cleared           in 4m
- 
-@@ -142,13 +142,19 @@ v2.1.198 以降、エージェントビューが開いている間、Claude Code
- セッション状態はディスク上に永続化され、自動更新とスーパーバイザー再起動を通じて保存されます。セッションはマシンがスリープするときも保存されます。プロセスはウェイク時に再開され、スーパーバイザーはアイドルとして時間ギャップを扱う代わりにそれらに再接続します。シャットダウンはまだ実行中のセッションを停止します。[シャットダウン後にセッションが失敗として表示される](#sessions-show-as-failed-after-shutdown) を参照して、それらを復旧する方法を確認してください。
- 
-+応答しなくなったセッションを開くと、スーパーバイザーはそのプロセスを再起動し、セッションは中断した応答を中断したところから続行します。マシンがスリープしている間に応答の途中でセッションがその状態になる可能性があります。Claude Code v2.1.200 以降が必要です。
-+
- <h3 id="row-summaries">
-   行の概要
- </h3>
-```
-
-</details>
-
-<details>
-<summary>amazon-bedrock-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/amazon-bedrock-ja.md b/docs-ja/pages/amazon-bedrock-ja.md
-index db66d71..1b124cd 100644
---- a/docs-ja/pages/amazon-bedrock-ja.md
-+++ b/docs-ja/pages/amazon-bedrock-ja.md
-@@ -83,12 +83,12 @@ export const ContactSalesCard = ({surface}) => {
- </h2>
- 
--Claude Code を Bedrock で設定する前に、以下を確認してください。
-+Claude Code を Amazon Bedrock で設定する前に、以下を確認してください。
- 
--* Bedrock アクセスが有効になっている AWS アカウント
--* Bedrock で目的の Claude モデル（例：Claude Sonnet 4.6）へのアクセス
-+* Amazon Bedrock アクセスが有効になっている AWS アカウント
-+* Amazon Bedrock で目的の Claude モデル（例：Claude Sonnet 4.6）へのアクセス
- * AWS CLI がインストールされ、設定されていること（オプション - 認証情報を取得する別のメカニズムがない場合のみ必要）
- * 適切な IAM 権限
- 
--Bedrock 認証情報を使用してサインインするには、以下の [Bedrock でサインイン](#sign-in-with-bedrock)に従ってください。チーム全体に Claude Code をデプロイするには、[手動でセットアップ](#set-up-manually)の手順を使用し、ロールアウト前に[モデルバージョンをピン留め](#4-pin-model-versions)してください。
-+Amazon Bedrock 認証情報を使用してサインインするには、以下の [Amazon Bedrock でサインイン](#sign-in-with-bedrock)に従ってください。チーム全体に Claude Code をデプロイするには、[手動でセットアップ](#set-up-manually)の手順を使用し、ロールアウト前に[モデルバージョンをピン留め](#4-pin-model-versions)してください。
- 
- <h2 id="sign-in-with-bedrock">
-@@ -96,5 +96,5 @@ Bedrock 認証情報を使用してサインインするには、以下の [Bedr
- </h2>
- 
--AWS 認証情報を持っていて、Bedrock を通じて Claude Code の使用を開始したい場合、ログインウィザードがそれをガイドします。AWS 側の前提条件はアカウントごとに 1 回完了します。ウィザードは Claude Code 側を処理します。
-+AWS 認証情報を持っていて、Amazon Bedrock を通じて Claude Code の使用を開始したい場合、ログインウィザードがそれをガイドします。AWS 側の前提条件はアカウントごとに 1 回完了します。ウィザードは Claude Code 側を処理します。
- 
- <Steps>
-@@ -103,10 +103,10 @@ AWS 認証情報を持っていて、Bedrock を通じて Claude Code の使用
-   </Step>
-```
-
-</details>
-
-<details>
-<summary>artifacts-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/artifacts-ja.md b/docs-ja/pages/artifacts-ja.md
-index f018128..62ba0ca 100644
---- a/docs-ja/pages/artifacts-ja.md
-+++ b/docs-ja/pages/artifacts-ja.md
-@@ -193,5 +193,5 @@ Claude はデザインシステムを独自の選択よりも高い優先度と
- | プラン       | Pro、Max、Team、または Enterprise。Pro および Max プランでは、アーティファクトはプライベートであり、管理者管理は適用されません。Team プランでは、アーティファクトはデフォルトで有効です。Enterprise プランでは、Owner が claude.ai 管理設定で[有効にします](#manage-artifacts-for-your-organization)。               |
- | 認証        | `/login` で claude.ai にサインインしています。API キー、[ゲートウェイトークン](/ja/llm-gateway)、またはクラウドプロバイダー認証情報を使用するセッションは公開できません。                                                                                                             |
--| モデルプロバイダー | Anthropic API。[Amazon Bedrock](/ja/amazon-bedrock)、[Google Cloud Vertex AI](/ja/google-vertex-ai)、または [Microsoft Foundry](/ja/microsoft-foundry) では利用できません。                                                            |
-+| モデルプロバイダー | Anthropic API。[Amazon Bedrock](/ja/amazon-bedrock)、[Google Cloud の Agent Platform](/ja/google-vertex-ai)、または [Microsoft Foundry](/ja/microsoft-foundry) では利用できません。                                                     |
- | 組織ポリシー    | カスタマー管理暗号化キー（CMEK）、HIPAA、および [Zero Data Retention](/ja/zero-data-retention) は組織で有効になっていません。                                                                                                                            |
- | サーフェス     | Claude Code CLI、または Claude デスクトップアプリバージョン 1.13576.0 以降。[Agent SDK](/ja/agent-sdk/overview)、GitHub Action、MCP サーバーコンテキストではデフォルトでオフになっており、[`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`](/ja/env-vars) が設定されている場合もオフになります。 |
-```
-
-</details>
-
-<details>
-<summary>authentication-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/authentication-ja.md b/docs-ja/pages/authentication-ja.md
-index 3306636..fd09223 100644
---- a/docs-ja/pages/authentication-ja.md
-+++ b/docs-ja/pages/authentication-ja.md
-@@ -7,5 +7,5 @@
- > Claude Code にログインし、個人、チーム、組織向けの認証を設定します。
- 
--Claude Code は、セットアップに応じて複数の認証方法をサポートしています。個人ユーザーは Claude.ai アカウントでログインでき、チームは Claude for Teams または Enterprise、Claude Console、または Amazon Bedrock、Google Vertex AI、Microsoft Foundry などのクラウドプロバイダーを使用できます。
-+Claude Code は、セットアップに応じて複数の認証方法をサポートしています。個人ユーザーは Claude.ai アカウントでログインでき、チームは Claude for Teams または Enterprise、Claude Console、または Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry などのクラウドプロバイダーを使用できます。
- 
- <h2 id="log-in-to-claude-code">
-@@ -24,5 +24,5 @@ Claude Code は、セットアップに応じて複数の認証方法をサポ
- * **Claude for Teams または Enterprise**: チーム管理者が招待した Claude.ai アカウントでログインします。
- * **Claude Console**: Console 認証情報でログインします。管理者が事前に[招待](#claude-console-authentication)している必要があります。
--* **クラウドプロバイダー**: 組織が [Amazon Bedrock](/ja/amazon-bedrock)、[Google Vertex AI](/ja/google-vertex-ai)、または [Microsoft Foundry](/ja/microsoft-foundry) を使用している場合は、`claude` を実行する前に必要な環境変数を設定してください。ブラウザログインは不要です。
-+* **クラウドプロバイダー**: 組織が [Amazon Bedrock](/ja/amazon-bedrock)、[Google Cloud の Agent Platform](/ja/google-vertex-ai)、または [Microsoft Foundry](/ja/microsoft-foundry) を使用している場合は、`claude` を実行する前に必要な環境変数を設定してください。ブラウザログインは不要です。
- * **クラウドゲートウェイ**: 組織がセルフホストされた [Claude apps gateway](/ja/claude-apps-gateway) を実行している場合は、`/login` を通じて企業 SSO でサインインします。ゲートウェイが発行したトークンはセッションの唯一の認証情報です。
- 
-@@ -41,5 +41,5 @@ Claude Code は、セットアップに応じて複数の認証方法をサポ
- * [Claude apps gateway](/ja/claude-apps-gateway)（開発者を IdP でサインインさせ、設定したクラウドプロバイダーに推論をルーティングする自己ホスト型ゲートウェイ）
- * [Amazon Bedrock](/ja/amazon-bedrock)
--* [Google Vertex AI](/ja/google-vertex-ai)
-+* [Google Cloud の Agent Platform](/ja/google-vertex-ai)
- * [Microsoft Foundry](/ja/microsoft-foundry)
- 
-@@ -106,9 +106,9 @@ API ベースの請求を希望する組織の場合、Claude Console を通じ
- </h3>
- 
--Amazon Bedrock、Google Vertex AI、または Microsoft Foundry を使用するチームの場合。
-+Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry を使用するチームの場合。
-```
-
-</details>
-
-<details>
-<summary>auto-mode-config-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/auto-mode-config-ja.md b/docs-ja/pages/auto-mode-config-ja.md
-index eedc4be..095011f 100644
---- a/docs-ja/pages/auto-mode-config-ja.md
-+++ b/docs-ja/pages/auto-mode-config-ja.md
-@@ -10,5 +10,5 @@
- 
- <Note>
--  オートモードは、Anthropic API を通じてすべてのユーザーが利用できます。Amazon Bedrock、Google Cloud Vertex AI、Microsoft Foundry、およびサインイン済みの[Claude アプリゲートウェイ](/ja/claude-apps-gateway)セッションでは、まず [`CLAUDE_CODE_ENABLE_AUTO_MODE`](/ja/permission-modes#enable-auto-mode-on-bedrock-vertex-ai-or-foundry) を[設定](/ja/permission-modes#enable-auto-mode-on-bedrock-vertex-ai-or-foundry)する必要があります。Claude Code がアカウントでオートモードが利用不可と報告する場合は、[完全な要件](/ja/permission-modes#eliminate-prompts-with-auto-mode)を確認してください。これには、サポートされているモデルと Team および Enterprise プランの Owner 有効化も含まれます。
-+  オートモードは、Anthropic API を通じてすべてのユーザーが利用できます。Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、およびサインイン済みの[Claude アプリゲートウェイ](/ja/claude-apps-gateway)セッションでは、まず [`CLAUDE_CODE_ENABLE_AUTO_MODE`](/ja/permission-modes#enable-auto-mode-on-bedrock-agent-platform-or-foundry) を[設定](/ja/permission-modes#enable-auto-mode-on-bedrock-agent-platform-or-foundry)する必要があります。Claude Code がアカウントでオートモードが利用不可と報告する場合は、[完全な要件](/ja/permission-modes#eliminate-prompts-with-auto-mode)を確認してください。これには、サポートされているモデルと Team および Enterprise プランの Owner 有効化も含まれます。
- </Note>
- 
-@@ -61,5 +61,5 @@ Claude Code v2.1.198 以降、`claude auto-mode defaults` は 3 種類の環境
-   * **Primary use of Claude Code**：デフォルトはソフトウェア開発
-   * **Cloud provider(s)**
--  * **Repository visibility**：リポジトリはリモートホストと名前が別途示さない限り、プライベートと見なされます
-+  * **Repository visibility**：リポジトリはリモートホストと名前が別途示さない限り、プライベートと見なされます。{/* min-version: 2.1.200 */}または、会話内で分類器が読み込む前のトランスクリプト内の可視性チェックがそれが公開されていることを示している場合。分類器はメッセージと Claude が実行するコマンドを読み込みますが、その出力は読み込みません。そのため、証拠はリポジトリを公開として指定するあなた自身のメッセージなど、読み込める何かである必要があります。`gh repo view` の出力だけではそこに到達しません。トランスクリプト証拠チェックには Claude Code v2.1.200 以降が必要です
-   * **Internal sharing / snippet hosting**：パブリックペーストおよび gist サービスは、指定するまで信頼境界の外側として扱われます
-   * **Org-specific CLIs**
-@@ -70,5 +70,5 @@ Claude Code v2.1.198 以降、`claude auto-mode defaults` は 3 種類の環境
-   * **Protected deployment namespaces / environments**：指定するまで、機密リモートターゲットヒューリスティックにフォールバックします
-   * **Data retention / declassification**
--* **信頼スロット**：分類器が境界内として扱うものを指定します。スロットは「信頼できるリポジトリ」、「ソース管理」、「信頼できる内部ドメイン」、「信頼できるクラウドバケット」、「主要な内部サービス」、および「内部パッケージレジストリ」です。リポジトリとソース管理エントリはデフォルトで作業リポジトリとその設定されたリモートになります。他のすべての信頼スロットはデフォルトで `None configured` になるため、追加するまで他には何も信頼されません。
-+* **信頼スロット**：分類器が境界内として扱うものを指定します。スロットは「信頼できるリポジトリ」、「ソース管理」、「信頼できる内部ドメイン」、「信頼できるクラウドバケット」、「主要な内部サービス」、および「内部パッケージレジストリ」です。リポジトリとソース管理エントリはデフォルトで作業リポジトリとその設定されたリモートになります。他のすべての信頼スロットはデフォルトで `None configured` になるため、追加するまで他には何も信頼されません。{/* min-version: 2.1.203 */}リポジトリの可視性は機密情報のみをスコープします。プライベートリポジトリは機密情報の許容可能な宛先ですが、リポジトリをプライベートにしても、秘密、個人データ、または信頼されたデータをそこにクリアすることはなく、分類器は、作業リポジトリの外から移植、再ポイント、または最初に読み込まれたコンテンツを、そのリポジトリ自体の作業として扱いません。このスコープには Claude Code v2.1.203 以降が必要です。
- * **感度スロット**：保護ルールが高リスクとして扱うものを指定します。スロットは「機密データの場所とオーディエンス」、「機密リモートターゲット」、および「保護された IaC スコープ」です。各スロットはデフォルトで広いヒューリスティックになります。例えば、名前に `prod` または `production` を含むホストまたはネームスペースを機密リモートターゲットとして扱うため、保護ルールは何も設定する前にアクティブになります。感度スロットで具体的なターゲットを指定すると、これらのルールはヒューリスティックではなく指定されたターゲットに適用されます。
- 
-@@ -99,5 +99,5 @@ Claude Code v2.1.198 以降、`claude auto-mode defaults` は 3 種類の環境
- * **主要な内部サービス**：CI、アーティファクトレジストリ、内部パッケージインデックス、インシデント対応ツール
- * **内部パッケージレジストリ**：インストールがルーティングされるべき private npm、PyPI、またはその他のレジストリ。パブリックレジストリをバイパスするインストールはブロックされます
--* **Sensitive data locations & audiences**：個人データ、機密ビジネスデータ、認証情報、規制対象データ、または同様に機密性の高い情報を保持するバケット、データベース、またはパス。各場所のデータが共有される可能性があるオーディエンス。分類器がコンテンツから推測する代わりにこれらの場所を保護します。{/* min-version: 2.1.195 */}{/* max-version: 2.1.197 */}Claude Code v2.1.195 から v2.1.197 はこのエントリを PII / 規制対象データの場所として指定し、オーディエンスディメンションなしで個人データまたは規制対象データを保持する場所のみをカバーします
-+* **機密データの場所とオーディエンス**：個人データ、機密ビジネスデータ、認証情報、規制対象データ、または同様に機密性の高い情報を保持するバケット、データベース、またはパス。各場所のデータが共有される可能性があるオーディエンス。分類器がコンテンツから推測する代わりにこれらの場所を保護します。{/* min-version: 2.1.195 */}{/* max-version: 2.1.197 */}Claude Code v2.1.195 から v2.1.197 はこのエントリを PII / 規制対象データの場所として指定し、オーディエンスディメンションなしで個人データまたは規制対象データを保持する場所のみをカバーします
-```
-
-</details>
-
-*...以降省略*
-
-</details>
-
 
 <!-- UPDATE_LOG_END -->
