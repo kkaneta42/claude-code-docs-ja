@@ -17,6 +17,57 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-08-09</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md | 21 +++++++++++++++++++++
+ 1 file changed, 21 insertions(+)
+```
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index ac7d9ca..f22a5fb 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,25 @@
+ # Changelog
+ 
++## 2.1.226
++
++- Bug fixes and reliability improvements
++
++## 2.1.225
++
++- Added gateway spend-limit support to Claude Code's usage warning; the limit-reached message now names the cap, its reset time, and the operator's message (requires the gateway on 2.1.225)
++- Added a workspace trust prompt to `claude agents` for untrusted directories, matching the behavior of `claude`
++- Fixed a transient 401 replacing a long-lived `CLAUDE_CODE_OAUTH_TOKEN` with a stored login's short-lived token, breaking headless sessions until restart
++- Fixed MCP OAuth servers on macOS intermittently failing with a burst of 401 errors, as if never authenticated, after a keychain read timed out
++- Fixed auto mode counting a safety-filter refusal of its own permission check toward the consecutive-block limit; the action is still denied, but the model is now told to move on rather than retry
++- Fixed cross-session messages staying parked without a notice or expiry in headless sessions and during startup
++- Fixed conversation history breaking on Remote Control session resume after very large conversations were compacted
++- Fixed hovering over a session in another project in the agents list changing the directory the next agent starts in
++- Fixed `claude self-hosted-runner` registering and then failing every session when `--base-dir` cannot be created or written; it now exits at startup with a clear error
++- Fixed Claude Code on the web sessions being misreported as stuck, re-sending a growing event backlog on every reconnect
++- Improved Remote Control: photos attached from the Claude app are now shown to Claude directly instead of being read from disk with a separate tool call
++- [VSCode] Fixed Focus view folding away the latest to-do list, a pending question's context, and settled answers; thinking-only folds show "Thought for Ns" and re-collapse when their turn completes
++- SendMessage can now start a conversation with your Remote Control sessions on other machines by name (`ListAgents` shows them as `name [ref]`), instead of only replying after they message you first
++- SendMessage: a Remote Control recipient you already confirmed is never swapped for a same-named session on this machine when its own list couldn't be checked
++
+ ## 2.1.224
+ 
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-08-08</summary>
 
 **変更ファイル:**
@@ -2721,141 +2772,5 @@ index 5c35a94..b56042e 100644
 
 </details>
 
-
-<details>
-<summary>2026-07-11</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/admin-setup-ja.md                    |  22 +-
- docs-ja/pages/advisor-ja.md                        |   4 +-
- docs-ja/pages/agent-view-ja.md                     | 102 ++-
- docs-ja/pages/amazon-bedrock-ja.md                 |  66 +-
- docs-ja/pages/artifacts-ja.md                      |   2 +-
- docs-ja/pages/authentication-ja.md                 |  24 +-
- docs-ja/pages/auto-mode-config-ja.md               |   8 +-
- docs-ja/pages/channels-ja.md                       |   2 +-
- docs-ja/pages/channels-reference-ja.md             |   4 +-
- docs-ja/pages/chrome-ja.md                         |   2 +-
- docs-ja/pages/claude-apps-gateway-config-ja.md     |  30 +-
- docs-ja/pages/claude-apps-gateway-deploy-ja.md     |   2 +-
- docs-ja/pages/claude-apps-gateway-ja.md            |  50 +-
- .../pages/claude-apps-gateway-spend-limits-ja.md   |   4 +-
- docs-ja/pages/claude-code-on-the-web-ja.md         |  48 +-
- docs-ja/pages/claude-platform-on-aws-ja.md         |   2 +-
- docs-ja/pages/cli-reference-ja.md                  |  17 +-
- docs-ja/pages/code-review-ja.md                    |   2 +-
- docs-ja/pages/commands-ja.md                       | 210 +++---
- docs-ja/pages/common-workflows-ja.md               |   2 +-
- docs-ja/pages/communications-kit-ja.md             |   6 +-
- docs-ja/pages/computer-use-ja.md                   |   2 +-
- docs-ja/pages/costs-ja.md                          |   2 +-
- docs-ja/pages/data-usage-ja.md                     |  24 +-
- docs-ja/pages/debug-your-config-ja.md              |  34 +-
- docs-ja/pages/desktop-ja.md                        | 110 ++-
- docs-ja/pages/desktop-linux-ja.md                  |  28 +-
- docs-ja/pages/desktop-quickstart-ja.md             |  12 +-
- docs-ja/pages/devcontainer-ja.md                   |   4 +-
- docs-ja/pages/discover-plugins-ja.md               |  13 +-
- docs-ja/pages/errors-ja.md                         | 770 +++++++++++++--------
- docs-ja/pages/fast-mode-ja.md                      |   6 +-
- docs-ja/pages/feature-availability-ja.md           |  32 +-
- docs-ja/pages/fullscreen-ja.md                     |   4 +-
- docs-ja/pages/github-actions-ja.md                 |  82 +--
- docs-ja/pages/github-enterprise-server-ja.md       | 101 ++-
- docs-ja/pages/gitlab-ci-cd-ja.md                   |  60 +-
- docs-ja/pages/glossary-ja.md                       |   4 +-
- docs-ja/pages/google-vertex-ai-ja.md               |  76 +-
- docs-ja/pages/headless-ja.md                       |  12 +-
- docs-ja/pages/hooks-guide-ja.md                    |   2 +-
- docs-ja/pages/hooks-ja.md                          |  58 +-
- docs-ja/pages/how-claude-code-works-ja.md          |  10 +-
- docs-ja/pages/interactive-mode-ja.md               |  42 +-
- docs-ja/pages/keybindings-ja.md                    |  25 +-
- docs-ja/pages/legal-and-compliance-ja.md           |   2 +-
- docs-ja/pages/llm-gateway-connect-ja.md            |  14 +-
- docs-ja/pages/llm-gateway-ja.md                    |   2 +-
- docs-ja/pages/llm-gateway-protocol-ja.md           |  40 +-
- docs-ja/pages/llm-gateway-rollout-ja.md            |  22 +-
- docs-ja/pages/mcp-ja.md                            |  57 +-
- docs-ja/pages/mcp-quickstart-ja.md                 |   2 +-
- docs-ja/pages/microsoft-foundry-ja.md              |  18 +-
- docs-ja/pages/model-config-ja.md                   | 207 ++++--
- docs-ja/pages/monitoring-usage-ja.md               |  70 +-
- docs-ja/pages/network-config-ja.md                 |   4 +-
- docs-ja/pages/overview-ja.md                       |   6 +-
- docs-ja/pages/permission-modes-ja.md               |  65 +-
- docs-ja/pages/permissions-ja.md                    |  46 +-
- docs-ja/pages/platforms-ja.md                      |   2 +-
- docs-ja/pages/plugin-dependencies-ja.md            |   4 +-
- docs-ja/pages/plugin-marketplaces-ja.md            |   4 +-
- docs-ja/pages/plugins-ja.md                        |   2 +
- docs-ja/pages/plugins-reference-ja.md              |  16 +-
- docs-ja/pages/prompt-caching-ja.md                 |  10 +-
- docs-ja/pages/quickstart-ja.md                     |   2 +-
- docs-ja/pages/remote-control-ja.md                 |  27 +-
- docs-ja/pages/routines-ja.md                       |   2 +-
- docs-ja/pages/sandboxing-ja.md                     |   2 +-
- docs-ja/pages/scheduled-tasks-ja.md                |  10 +-
- docs-ja/pages/security-guidance-ja.md              |   2 +-
- docs-ja/pages/server-managed-settings-ja.md        |   4 +-
- docs-ja/pages/settings-ja.md                       | 345 ++++-----
- docs-ja/pages/setup-ja.md                          |  12 +-
- docs-ja/pages/skills-ja.md                         |  18 +-
- docs-ja/pages/statusline-ja.md                     |   4 +-
- docs-ja/pages/sub-agents-ja.md                     |  48 +-
- docs-ja/pages/third-party-integrations-ja.md       |  28 +-
- docs-ja/pages/tools-reference-ja.md                |  92 +--
- docs-ja/pages/troubleshoot-install-ja.md           |  79 ++-
- docs-ja/pages/troubleshooting-ja.md                |  29 +-
- docs-ja/pages/ultraplan-ja.md                      |   2 +-
- docs-ja/pages/ultrareview-ja.md                    |   8 +-
- docs-ja/pages/voice-dictation-ja.md                |   5 +-
- docs-ja/pages/vs-code-ja.md                        |  46 +-
- docs-ja/pages/web-quickstart-ja.md                 |  30 +-
- docs-ja/pages/workflows-ja.md                      |  46 +-
- docs-ja/pages/worktrees-ja.md                      |  16 +-
- docs-ja/pages/zero-data-retention-ja.md            |   2 +-
- 89 files changed, 2110 insertions(+), 1464 deletions(-)
-```
-
-<details>
-<summary>admin-setup-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/admin-setup-ja.md b/docs-ja/pages/admin-setup-ja.md
-index 45b4031..654e47d 100644
---- a/docs-ja/pages/admin-setup-ja.md
-+++ b/docs-ja/pages/admin-setup-ja.md
-@@ -15,11 +15,11 @@ Claude Code は、ローカル開発者設定よりも優先されるマネー
- </Note>
- 
--| 決定                                                        | 選択内容                      | 参照                                                                                                                                    |
--| :-------------------------------------------------------- | :------------------------ | :------------------------------------------------------------------------------------------------------------------------------------ |
--| [API プロバイダーを選択する](#choose-your-api-provider)              | Claude Code が認証される場所と課金方法 | [Authentication](/ja/authentication)、[Bedrock](/ja/amazon-bedrock)、[Vertex AI](/ja/google-vertex-ai)、[Foundry](/ja/microsoft-foundry) |
--| [設定がデバイスに到達する方法を決定する](#decide-how-settings-reach-devices) | マネージドポリシーが開発者マシンに到達する方法   | [Server-managed settings](/ja/server-managed-settings)、[Settings files](/ja/settings#settings-files)                                  |
--| [実行する内容を決定する](#decide-what-to-enforce)                    | どのツール、コマンド、統合が許可されるか      | [Permissions](/ja/permissions)、[Sandboxing](/ja/sandboxing)                                                                           |
--| [使用状況の可視性をセットアップする](#set-up-usage-visibility)             | 支出と採用を追跡する方法              | [Analytics](/ja/analytics)、[Monitoring](/ja/monitoring-usage)、[Costs](/ja/costs)                                                      |
--| [データ処理を確認する](#review-data-handling)                       | データ保持とコンプライアンス体制          | [Data usage](/ja/data-usage)、[Security](/ja/security)                                                                                 |
-+| 決定                                                        | 選択内容                      | 参照                                                                                                                                                                         |
-+| :-------------------------------------------------------- | :------------------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-+| [API プロバイダーを選択する](#choose-your-api-provider)              | Claude Code が認証される場所と課金方法 | [Authentication](/ja/authentication)、[Amazon Bedrock](/ja/amazon-bedrock)、[Google Cloud の Agent Platform](/ja/google-vertex-ai)、[Microsoft Foundry](/ja/microsoft-foundry) |
-+| [設定がデバイスに到達する方法を決定する](#decide-how-settings-reach-devices) | マネージドポリシーが開発者マシンに到達する方法   | [Server-managed settings](/ja/server-managed-settings)、[Settings files](/ja/settings#settings-files)                                                                       |
-+| [実行する内容を決定する](#decide-what-to-enforce)                    | どのツール、コマンド、統合が許可されるか      | [Permissions](/ja/permissions)、[Sandboxing](/ja/sandboxing)                                                                                                                |
-+| [使用状況の可視性をセットアップする](#set-up-usage-visibility)             | 支出と採用を追跡する方法              | [Analytics](/ja/analytics)、[Monitoring](/ja/monitoring-usage)、[Costs](/ja/costs)                                                                                           |
-+| [データ処理を確認する](#review-data-handling)                       | データ保持とコンプライアンス体制          | [Data usage](/ja/data-usage)、[Security](/ja/security)                                                                                                                      |
- 
- <h2 id="choose-your-api-provider">
-@@ -34,8 +34,8 @@ Claude Code は複数の API プロバイダーのいずれかを通じて Claud
- | Claude Console                | API ファーストまたは従量課金を希望する場合                                                                    |
- | Amazon Bedrock                | 既存の AWS コンプライアンス制御と課金を継承したい場合                                                              |
--| Google Vertex AI              | 既存の GCP コンプライアンス制御と課金を継承したい場合                                                              |
-+| Google Cloud の Agent Platform | 既存の GCP コンプライアンス制御と課金を継承したい場合                                                              |
- | Microsoft Foundry             | 既存の Azure コンプライアンス制御と課金を継承したい場合                                                            |
- 
-```
-
-</details>
 
 <!-- UPDATE_LOG_END -->
