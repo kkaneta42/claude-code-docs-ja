@@ -17,6 +17,103 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-08-11</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md                  |  8 ++++++
+ docs-ja/pages/claude-tag-en.md              |  2 +-
+ docs-ja/pages/cross-session-messaging-en.md | 42 ++++++++++++++++++-----------
+ 3 files changed, 36 insertions(+), 16 deletions(-)
+```
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index f22a5fb..0f47adb 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,12 @@
+ # Changelog
+ 
++## 2.1.227
++
++- Fixed feature flags being evaluated without the user's subscription tier when a session started with an expired login token, which could wrongly prompt Max plan users to enable usage credits for Fable
++- Fixed every Bash command failing under `claude-code-action` with `allowed_non_write_users` on GitHub-hosted runners
++- Fixed `/tui` bringing back a conversation that had been rewound to before its first message
++- Improved slash-command menu: blue now marks only the selected row, matched characters are bolded instead of recolored, and emoji or accented names keep their glyphs
++- Improved performance: fewer event-loop stalls on file-not-found suggestions and at-mention size checks
++
+ ## 2.1.226
+ 
+```
+
+</details>
+
+<details>
+<summary>claude-tag-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/claude-tag-en.md b/docs-ja/pages/claude-tag-en.md
+index 1949ed3..c099d8c 100644
+--- a/docs-ja/pages/claude-tag-en.md
++++ b/docs-ja/pages/claude-tag-en.md
+@@ -7,5 +7,5 @@
+ > Bring Claude into your team's Slack channels with Claude Tag and find its setup and usage documentation on claude.com.
+ 
+-Claude Tag is a Slack integration that runs `@Claude` in your team's channels as your organization's shared identity with admin-configured access. Anyone in a channel can tag `@Claude` into a thread and assign it a task. Read the [Claude Tag documentation](https://claude.com/docs/claude-tag/overview) on claude.com to set it up and start using it.
++[Claude Tag](https://claude.com/product/tag) is a Slack integration that runs `@Claude` in your team's channels as your organization's shared identity with admin-configured access. Anyone in a channel can tag `@Claude` into a thread and assign it a task. Read the [Claude Tag documentation](https://claude.com/docs/claude-tag/overview) on claude.com to set it up and start using it.
+ 
+ Claude Tag is available on Team and Enterprise plans, and is distinct from the earlier [Claude Code in Slack](/docs/en/slack), which runs each session under an individual user's account. On Pro and Max plans, where Claude Tag isn't available, Claude Code in Slack remains the setup path.
+```
+
+</details>
+
+<details>
+<summary>cross-session-messaging-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/cross-session-messaging-en.md b/docs-ja/pages/cross-session-messaging-en.md
+index 31b5985..71d4945 100644
+--- a/docs-ja/pages/cross-session-messaging-en.md
++++ b/docs-ja/pages/cross-session-messaging-en.md
+@@ -5,5 +5,5 @@
+ # Message your other Claude Code sessions
+ 
+-> Let Claude list and message your other Claude Code sessions on one machine, and reply to your sessions on other machines or on the web through Remote Control.
++> Let Claude list and message your other Claude Code sessions on this machine, and reach your sessions on other machines or on the web.
+ 
+ <Note>
+@@ -24,5 +24,5 @@ Use messaging when one of your sessions has something another session needs mid-
+ * **Coordinate parallel worktrees**: when sessions work the same repository in separate [worktrees](/docs/en/worktrees), Claude can tell the other sessions what landed.
+ * **Get status from long-running work**: have a migration or test run report back to the session you're watching, or ask it yourself from there.
+-* **Reply across machines**: answer a message that arrived from one of your sessions on another machine or on the web. Across machines, Claude can only reply. It can't start the exchange.
++* **Message across machines**: reach one of your sessions on another machine or on the web.
+ 
+ Use messaging between independent sessions that you start and steer yourself. Claude Code has a dedicated feature for each of the other ways to run or reach multiple sessions, so use the one built for what you're doing instead:
+@@ -72,5 +72,8 @@ Claude finds a message's target on its own, so you don't need to run anything be
+ * **Subagents**: agents running inside the current session. [Agent team](/docs/en/agent-teams) teammates aren't listed; Claude messages them through the team's own roster.
+ * **Your other local sessions**: Claude Code sessions running on the same machine, including [background sessions](/docs/en/agent-view). A session appears only when it binds an [inbox socket](#the-sessions-inbox-socket).
+-* **Sessions beyond this machine**: shown while [Remote Control](/docs/en/remote-control) is connected and labeled `Remote Control`. These are your sessions on other machines and your [Claude Code on the web](/docs/en/claude-code-on-the-web) sessions. Claude can't send a message to start a conversation with one of these sessions. It can only reply to a message that arrived from one of them. See [Message sessions on other machines](#message-sessions-on-other-machines).
++* **Your cloud sessions**: your [Claude Code on the web](/docs/en/claude-code-on-the-web) sessions. These appear when this session has cloud access: a claude.ai login on the first-party Anthropic API and an organization policy that allows cloud sessions.
++* **Your Remote Control sessions on other machines**: shown while this session is connected to [Remote Control](/docs/en/remote-control), and labeled `Remote Control`.
++
++Claude addresses a session beyond this machine by name, the same as a local session. See [Message sessions on other machines](#message-sessions-on-other-machines) for how those messages travel.
+ 
+ A session answers to the name you set with the [`/rename`](/docs/en/commands) command or the [`--name`](/docs/en/cli-reference#cli-flags) flag. When you don't set one, Claude Code names the session itself. An interactive session gets a name derived from its working directory's folder name, such as `myapp-3f`.
+@@ -80,15 +83,17 @@ Two sessions can end up with the same name. The `/list-agents` output shows each
+ ### Message sessions on other machines
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-08-09</summary>
 
 **変更ファイル:**
@@ -2638,139 +2735,5 @@ index 1b02308..17daf8b 100644
 ```
 
 </details>
-
-<details>
-<summary>communications-kit-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/communications-kit-ja.md b/docs-ja/pages/communications-kit-ja.md
-index 3ed2b52..30abae1 100644
---- a/docs-ja/pages/communications-kit-ja.md
-+++ b/docs-ja/pages/communications-kit-ja.md
-@@ -329,8 +329,8 @@ Claude が「見る」ことができるようにコンポーネントの 200 
- 
- *Shift+Tab* は Claude が得る権限の量を循環させます。*Manual*（`default` 設定値）
--は各アクションの前に尋ね、*acceptEdits* はファイル編集と一般的なファイル
--システムコマンドがフローを通して流れることを許可しながら、他のシェル
--コマンドの前にチェックし、*plan* は何かに触れる前に承認のための変更を
--提案します。Plan モードは信頼構築者なので、複数のファイルに触れるもの
-+はファイル編集とほとんどのシェルコマンドの前に尋ね、*acceptEdits* はファイル
-+編集と一般的なファイルシステムコマンドがフローを通して流れることを許可しながら、
-+他のシェルコマンドの前にチェックし、*plan* は何かに触れる前に承認のための
-+変更を提案します。Plan モードは信頼構築者なので、複数のファイルに触れるもの
- については最初にそこから始めてください。
- 
-@@ -545,12 +545,12 @@ Claude Code から跳ね返るほとんどの人は、これらの 1 つをス
- 最も頻繁に聞かれる質問への 1 行の返信。
- 
--| 質問                      | 回答                                                                                                                                       |
--| ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
--| 「VS Code で動作しますか？」      | はい。VS Code 拡張機能と JetBrains プラグインがあり、エディタに埋め込まれた同じ機能があります。[VS Code →](/ja/vs-code)                                                        |
--| 「最初に何かを設定する必要がありますか？」   | いいえ。インストールしてから、任意のリポジトリで `claude` を実行してください。`/init` を 1 回実行すれば完了です。[クイックスタート →](/ja/quickstart)                                          |
--| 「私のコードはどこに行きますか？」       | CLI はターミナルで実行され、コンテキストを Anthropic の API に送信して推論を行い、第三者のサーバーはありません。エンタープライズプランの下では、コードとプロンプトはモデルのトレーニングに使用されません。[データ使用 →](/ja/data-usage) |
--| 「リポジトリ全体を見ることができますか？」   | アクセス権を与えたものを読みます。作業ディレクトリ内のファイル読み取りはプロンプトしません。許可プロンプトはゲート編集、シェルコマンド、およびそのディレクトリの外側のすべてです。[許可 →](/ja/permissions)                         |
--| 「これは Copilot とどう違いますか？」 | Copilot は行を自動補完します。Claude Code はファイルを読み、コマンドを実行し、マルチファイル編集を行うエージェントです。[概要 →](/ja/overview)                                               |
--| 「最初に何を試すべきですか？」         | 退屈だから先延ばしにしていたバグ。「\[ファイル] のテストは不安定です、理由を調べてください。」[クイックスタート →](/ja/quickstart)                                                            |
-+| 質問                      | 回答                                                                                                                                                                                                                                                            |
-+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-```
-
-</details>
-
-<details>
-<summary>desktop-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/desktop-ja.md b/docs-ja/pages/desktop-ja.md
-index 9354858..825d8c8 100644
---- a/docs-ja/pages/desktop-ja.md
-+++ b/docs-ja/pages/desktop-ja.md
-@@ -95,5 +95,5 @@ Code タブの以前のバージョンでは、これらのモードを Ask perm
- <span id="auto-mode-availability" />
- 
--Auto mode は Anthropic API のすべてのユーザーが利用できる研究プレビューです。Claude Opus 4.6 以降、または Sonnet 4.6 以降が必要です。Google Cloud の Agent Platform にルーティングするエンタープライズデプロイメントでは、[`CLAUDE_CODE_ENABLE_AUTO_MODE`を設定](/ja/permission-modes#enable-auto-mode-on-bedrock-agent-platform-or-foundry)するまで auto mode はオフになり、そこでは Claude Sonnet 5、Opus 4.7、および Opus 4.8 のみがサポートされています。
-+Auto mode は Anthropic API のすべてのユーザーが利用でき、Claude Opus 4.6 以降、または Sonnet 4.6 以降が必要です。Google Cloud の Agent Platform にルーティングするエンタープライズデプロイメントでは、[`CLAUDE_CODE_ENABLE_AUTO_MODE`を設定](/ja/permission-modes#enable-auto-mode-on-bedrock-agent-platform-or-foundry)するまで auto mode はオフになり、そこでは Claude Sonnet 5、Opus 4.7、および Opus 4.8 のみがサポートされています。
- 
- <Tip title="ベストプラクティス">
-```
-
-</details>
-
-<details>
-<summary>desktop-linux-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/desktop-linux-ja.md b/docs-ja/pages/desktop-linux-ja.md
-index 3142b4f..0f8fb38 100644
---- a/docs-ja/pages/desktop-linux-ja.md
-+++ b/docs-ja/pages/desktop-linux-ja.md
-@@ -76,5 +76,13 @@ Anthropic の apt リポジトリからインストールして、更新がシ
- </h3>
- 
--apt リポジトリを使用できない場合は、まず [claude.com/download](https://claude.com/download) からアーキテクチャ（x64 または arm64）に対応した `.deb` パッケージをダウンロードしてから、ダウンロードしたファイルをソフトウェアインストーラーで開くか、ダウンロードしたファイルが含まれているディレクトリから apt でインストールします。
-+apt リポジトリを使用できない場合は、リポジトリのパッケージプールから `.deb` パッケージを直接ダウンロードしてください。このコマンドはリポジトリインデックスでアーキテクチャに対応した最新パッケージを検索し、現在のディレクトリにダウンロードします。
-+
-+```bash theme={null}
-+curl -fLO "https://downloads.claude.ai/claude-desktop/apt/stable/$(curl -s "https://downloads.claude.ai/claude-desktop/apt/stable/dists/stable/main/binary-$(dpkg --print-architecture)/Packages" | grep '^Filename: pool/main/c/claude-desktop/claude-desktop_' | sort -V | tail -n 1 | cut -d' ' -f2)"
-+```
-+
-+コマンドが `Remote file name has no length` で失敗する場合、検索がパッケージパスを返しませんでした。これはリポジトリインデックスを取得できなかった場合（例えば、ネットワークが `downloads.claude.ai` をブロックしている場合）、またはアーキテクチャに対応したパッケージが存在しない場合を意味します。ネットワークが `downloads.claude.ai` に到達できることを確認し、`dpkg --print-architecture` が `amd64` または `arm64` を出力することを確認してください。リポジトリは他のアーキテクチャのパッケージを公開していません。
-+
-+次に、ダウンロードしたファイルをソフトウェアインストーラー（GNOME Software など）で開くか、ダウンロードしたファイルが含まれているディレクトリから apt でインストールします。
- 
- ```bash theme={null}
-@@ -84,5 +92,5 @@ sudo apt install ./claude-desktop_*.deb
- apt が `E: Unsupported file ./claude-desktop_*.deb given on commandline` を報告する場合、パターンが現在のディレクトリ内の `.deb` ファイルと一致しませんでした。ダウンロードが完了したことを確認してから、ファイルが含まれているディレクトリからコマンドを再度実行してください。
- 
--この方法でインストールされた `.deb` は更新を受け取りません。apt を通じて更新を取得するには、上記のようにリポジトリを追加するか、パッケージが `/etc/apt/sources.list.d/claude-desktop.list` に書き込むプレースホルダーエントリの `deb` 行をコメント解除します。
-+この方法でインストールされた `.deb` は更新を受け取りません。apt を通じて更新を取得するには、[Anthropic の apt リポジトリを追加する](#install) ステップからリポジトリを登録してください。パッケージは `/etc/apt/sources.list.d/claude-desktop.list` にコメントアウトされたリポジトリエントリも書き込みます。その `deb` 行をコメント解除することと同等です。
- 
- <h2 id="update">
-```
-
-</details>
-
-<details>
-<summary>errors-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/errors-ja.md b/docs-ja/pages/errors-ja.md
-index 5c35a94..b56042e 100644
---- a/docs-ja/pages/errors-ja.md
-+++ b/docs-ja/pages/errors-ja.md
-@@ -32,5 +32,5 @@
- | `Auto mode classifier transcript exceeded context window`                                     | [サーバーエラー](#auto-mode-cannot-determine-the-safety-of-an-action)                                |
- | `Agent terminated early due to an API error`                                                  | [サーバーエラー](#agent-terminated-early-due-to-an-api-error)                                        |
--| `You've hit your session limit` / `You've hit your weekly limit`                              | [使用制限](#you%E2%80%99ve-hit-your-session-limit)                                                |
-+| `You've hit your session limit` / `You've hit your weekly limit`                              | [使用制限](#youve-hit-your-session-limit)                                                         |
- | `Usage credits required for 1M context`                                                       | [使用制限](#usage-credits-required-for-1m-context)                                                |
- | `Server is temporarily limiting requests`                                                     | [使用制限](#server-is-temporarily-limiting-requests)                                              |
-@@ -43,5 +43,5 @@
- | `Your organization has disabled API key authentication`                                       | [認証](#your-organization-has-disabled-api-key-authentication)                                  |
- | `Your organization has disabled Claude subscription access`                                   | [認証](#your-organization-has-disabled-claude-subscription-access)                              |
--| `Routines are disabled by your organization's policy`                                         | [認証](#routines-are-disabled-by-your-organization%E2%80%99s-policy)                            |
-+| `Routines are disabled by your organization's policy`                                         | [認証](#routines-are-disabled-by-your-organizations-policy)                                     |
- | `Remote Control is only available when using Claude via api.anthropic.com`                    | [認証](#remote-control-requires-the-anthropic-api)                                              |
- | `OAuth token revoked` / `OAuth token has expired`                                             | [認証](#oauth-token-revoked-or-expired)                                                         |
-@@ -54,5 +54,5 @@
- | `SSL certificate error (...)` during login or startup                                         | [ネットワーク](#ssl-certificate-errors)                                                             |
- | `403` with `x-deny-reason: host_not_allowed` in a cloud or routine session                    | [ネットワーク](#host-not-allowed-in-a-cloud-session)                                                |
--| `Couldn't reconnect to your Remote Control session`                                           | [ネットワーク](#couldn%E2%80%99t-reconnect-to-your-remote-control-session)                          |
-+| `Couldn't reconnect to your Remote Control session`                                           | [ネットワーク](#couldnt-reconnect-to-your-remote-control-session)                                   |
- | `Prompt is too long`                                                                          | [リクエストエラー](#prompt-is-too-long)                                                               |
- | `Error during compaction: Conversation too long`                                              | [リクエストエラー](#error-during-compaction-conversation-too-long)                                    |
-@@ -62,8 +62,8 @@
- | `PDF too large` / `PDF is password protected`                                                 | [リクエストエラー](#pdf-errors)                                                                       |
- | `Extra inputs are not permitted`                                                              | [リクエストエラー](#extra-inputs-are-not-permitted)                                                   |
--| `There's an issue with the selected model`                                                    | [リクエストエラー](#there%E2%80%99s-an-issue-with-the-selected-model)                                 |
-+| `There's an issue with the selected model`                                                    | [リクエストエラー](#theres-an-issue-with-the-selected-model)                                          |
-```
-
-</details>
-
-*...以降省略*
-
-</details>
-
 
 <!-- UPDATE_LOG_END -->
