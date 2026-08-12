@@ -17,6 +17,265 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-08-12</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md                          | 21 +++++++++++++++++++++
+ docs-ja/pages/cross-session-messaging-en.md         | 13 ++++++++++---
+ docs-ja/pages/hooks-guide-ja.md                     |  4 ++--
+ docs-ja/pages/hooks-ja.md                           |  4 ++--
+ docs-ja/pages/plugins-reference-ja.md               |  4 ++--
+ docs-ja/pages/self-hosted-environments-deploy-en.md | 11 +++++++----
+ docs-ja/pages/self-hosted-environments-en.md        |  2 +-
+ .../pages/self-hosted-environments-quickstart-en.md |  6 ++----
+ .../pages/self-hosted-environments-reference-en.md  |  2 +-
+ .../pages/self-hosted-environments-testing-en.md    |  6 ++++++
+ 10 files changed, 54 insertions(+), 19 deletions(-)
+```
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index 0f47adb..0b73c3b 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,25 @@
+ # Changelog
+ 
++## 2.1.228
++
++- Fixed interactive sessions that could stop redrawing entirely, while the process kept running, after a rare internal layout error
++- Fixed `git` / Git Bash not being found on Windows when Claude Code is launched from a parent folder of the git installation
++- Fixed `/tui` reverting the session to an earlier model when `/model` had been changed since the last response
++- Fixed cross-session messaging sometimes starting without an inbox in the first session after install or upgrade
++- Fixed Remote Control `/resume` while connected leaking the resumed conversation's title or history into the connected session
++- Fixed `claude self-hosted-runner` sessions failing on every fresh runner when the `checkout` hook fails for a repository the session doesn't push to; that repository is now skipped with a warning
++- Fixed self-hosted runners ending sessions in the gap between a background task finishing and the follow-up turn starting
++- Fixed session cleanup deleting contents inside a project's memory folder
++- Fixed background plugin-cache cleanup deleting a plugin's cache when its only version is a symlinked development checkout
++- Fixed a settings-merge issue where a marketplace entry redefined in a higher-precedence settings tier could inherit another tier's custom headers; marketplace entries now merge as whole entries
++- Fixed the deferred-tools reminder occasionally being sent to the model twice after a skill invocation
++- Hardened skills synced from claude.ai: they no longer shadow local commands or MCP prompts, their descriptions are sanitized and labeled, and on your machine their bodies don't run `!` commands or expand `@` files
++- Improved cross-session messages: the sender and body now display inline instead of a collapsed line, and messages to Remote Control sessions on other machines show your Remote Control session name as the sender
++- Improved Vertex AI credential handling: expired or missing Google Cloud credentials now fail within seconds instead of retrying for minutes
++- Improved compaction progress: the retry countdown and stall hint now appear during compaction instead of only a progress bar
++- Updated terminal title busy-spinner glyphs to reduce tab-bar jitter on some terminals
++- Changed the Write tool so newer models can overwrite an existing file they haven't read this session, matching the Edit tool's rules; older models still require the read first
++- Removed the outdated note about auto mode sessions costing slightly more from the first-use notice for Pro, Max, and Team plans
++
+ ## 2.1.227
+ 
+```
+
+</details>
+
+<details>
+<summary>cross-session-messaging-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/cross-session-messaging-en.md b/docs-ja/pages/cross-session-messaging-en.md
+index 71d4945..4eeb030 100644
+--- a/docs-ja/pages/cross-session-messaging-en.md
++++ b/docs-ja/pages/cross-session-messaging-en.md
+@@ -141,5 +141,5 @@ When the default holds a message, Claude Code opens an approval dialog in the re
+ * **Approve** delivers that one message to Claude.
+ * **Deny**, or dismissing the dialog, drops it.
+-* Left unanswered past the [`dialogExpiry`](/docs/en/settings#available-settings) deadline, the dialog closes and Claude Code drops the message. The deadline defaults to five minutes.
++* When the dialog stays unanswered past the [`dialogExpiry`](/docs/en/settings#available-settings) deadline, Claude Code closes it and drops the message. The deadline defaults to five minutes. While no terminal is attached to a [background session](/docs/en/agent-view), Claude Code leaves the dialog open past the deadline. After you attach, Claude Code closes the dialog and drops the message only if it stays unanswered for a full deadline period.
+ * If this session's permission-mode class changes while messages are held, Claude Code re-applies the inbound rules, delivers the messages they now accept, and shows a notice.
+ * If a change makes `refuse` apply while messages are held, Claude Code drops every held message and reports a denial to each sender it can reach.
+@@ -153,5 +153,12 @@ Claude Code holds at most 100 messages, separately from the delivery queue, and
+ Claude Code binds an inbox socket for a [`claude -p`](/docs/en/headless) session like an interactive one, so a long-running `-p` worker can receive messages and appears in the listing. When you start a session in [bare mode](/docs/en/headless#start-faster-with-bare-mode), Claude Code doesn't bind the socket, so that session can't receive messages and doesn't appear in the agent list.
+ 
+-A `-p` session can't show the approval dialog. When the [inbound default](#control-inbound-messages) holds a message there, Claude Code delivers it if a later mode or settings change allows it, and otherwise drops it when the [`dialogExpiry`](/docs/en/settings#available-settings) deadline passes and reports the expiry to the sender. Before v2.1.225, a held message stayed held in a `-p` session, with no sender notice and no expiry.
++A `-p` session can't show the approval dialog. When the [inbound default](#control-inbound-messages) holds a message there, Claude Code keeps it for the same [`dialogExpiry`](/docs/en/settings#available-settings) deadline the dialog uses, five minutes by default:
++
++* **Before the deadline**: if a mode or settings change allows the message, Claude Code delivers it.
++* **Past the deadline**: Claude Code drops the message and reports it as expired to a sender it can reach.
++
++Set `dialogExpiry` to `"never"` to keep default-held messages until the session ends. A message held by an explicit `hold` setting doesn't expire; Claude Code delivers it only when an `accept` later applies.
++
++When the session ends with messages still held, Claude Code reports them as expired to each sender it can reach. Before v2.1.225, no deadline applied in a `-p` session: a held message stayed held unless a permission-mode change during the run delivered it, and a session that ended with held messages reported nothing to their senders.
+ 
+ To let a `-p` worker take messages unattended, start it with `crossSessionInbound` set to `accept` in its `--settings` value. An `accept` in your user settings also works but applies to every session you run.
+@@ -189,5 +196,5 @@ Set [`isolatePeerMachines`](/docs/en/settings#available-settings) to `true` to r
+ ```
+ 
+-With this set, Claude Code asks for your approval before Claude's message to a session beyond this machine leaves, even in `bypassPermissions` mode, which skips ordinary permission prompts. A `true` from any settings scope applies, so a checked-in project file can turn the requirement on but not off. Messages between sessions on the same machine don't prompt.
++With this set, Claude Code asks for your approval before Claude's message to a session beyond this machine leaves, even in `bypassPermissions` mode, which skips ordinary permission prompts. A `true` from any settings scope applies, so a checked-in project file can turn the requirement on but not off. Claude Code doesn't prompt for messages between sessions on the same machine.
+```
+
+</details>
+
+<details>
+<summary>hooks-guide-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/hooks-guide-ja.md b/docs-ja/pages/hooks-guide-ja.md
+index ec8b480..630d881 100644
+--- a/docs-ja/pages/hooks-guide-ja.md
++++ b/docs-ja/pages/hooks-guide-ja.md
+@@ -467,5 +467,5 @@ Hook イベントは Claude Code のライフサイクルの特定のポイン
+ | `PreToolUse`          | Before a tool call executes. Can block it                                                                                                              |
+ | `PermissionRequest`   | When a tool call needs a permission decision                                                                                                           |
+-| `PermissionDenied`    | When a tool call is denied by the auto mode classifier. Return `{retry: true}` to tell the model it may retry the denied tool call                     |
++| `PermissionDenied`    | When a tool call is denied by the auto mode classifier. Use JSON `hookSpecificOutput.retry: true` to tell the model it may retry the denied tool call  |
+ | `PostToolUse`         | After a tool call succeeds                                                                                                                             |
+ | `PostToolUseFailure`  | After a tool call fails                                                                                                                                |
+@@ -478,5 +478,5 @@ Hook イベントは Claude Code のライフサイクルの特定のポイン
+ | `TaskCompleted`       | When a task is being marked as completed                                                                                                               |
+ | `Stop`                | When Claude finishes responding                                                                                                                        |
+-| `StopFailure`         | When the turn ends due to an API error. Output and exit code are ignored                                                                               |
++| `StopFailure`         | When the turn ends due to an API error                                                                                                                 |
+ | `TeammateIdle`        | When an [agent team](/docs/en/agent-teams) teammate is about to go idle                                                                                     |
+ | `InstructionsLoaded`  | When a CLAUDE.md or `.claude/rules/*.md` file is loaded into context. Fires at session start and when files are lazily loaded during a session         |
+```
+
+</details>
+
+<details>
+<summary>hooks-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/hooks-ja.md b/docs-ja/pages/hooks-ja.md
+index 4d90d15..05ad6a3 100644
+--- a/docs-ja/pages/hooks-ja.md
++++ b/docs-ja/pages/hooks-ja.md
+@@ -41,5 +41,5 @@
+ | `PreToolUse`          | Before a tool call executes. Can block it                                                                                                              |
+ | `PermissionRequest`   | When a tool call needs a permission decision                                                                                                           |
+-| `PermissionDenied`    | When a tool call is denied by the auto mode classifier. Return `{retry: true}` to tell the model it may retry the denied tool call                     |
++| `PermissionDenied`    | When a tool call is denied by the auto mode classifier. Use JSON `hookSpecificOutput.retry: true` to tell the model it may retry the denied tool call  |
+ | `PostToolUse`         | After a tool call succeeds                                                                                                                             |
+ | `PostToolUseFailure`  | After a tool call fails                                                                                                                                |
+@@ -52,5 +52,5 @@
+ | `TaskCompleted`       | When a task is being marked as completed                                                                                                               |
+ | `Stop`                | When Claude finishes responding                                                                                                                        |
+-| `StopFailure`         | When the turn ends due to an API error. Output and exit code are ignored                                                                               |
++| `StopFailure`         | When the turn ends due to an API error                                                                                                                 |
+ | `TeammateIdle`        | When an [agent team](/docs/en/agent-teams) teammate is about to go idle                                                                                     |
+ | `InstructionsLoaded`  | When a CLAUDE.md or `.claude/rules/*.md` file is loaded into context. Fires at session start and when files are lazily loaded during a session         |
+```
+
+</details>
+
+<details>
+<summary>plugins-reference-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/plugins-reference-ja.md b/docs-ja/pages/plugins-reference-ja.md
+index 122d4dd..e7cc998 100644
+--- a/docs-ja/pages/plugins-reference-ja.md
++++ b/docs-ja/pages/plugins-reference-ja.md
+@@ -127,5 +127,5 @@ disallowedTools: Write, Edit
+ | `PreToolUse`          | Before a tool call executes. Can block it                                                                                                              |
+ | `PermissionRequest`   | When a tool call needs a permission decision                                                                                                           |
+-| `PermissionDenied`    | When a tool call is denied by the auto mode classifier. Return `{retry: true}` to tell the model it may retry the denied tool call                     |
++| `PermissionDenied`    | When a tool call is denied by the auto mode classifier. Use JSON `hookSpecificOutput.retry: true` to tell the model it may retry the denied tool call  |
+ | `PostToolUse`         | After a tool call succeeds                                                                                                                             |
+ | `PostToolUseFailure`  | After a tool call fails                                                                                                                                |
+@@ -138,5 +138,5 @@ disallowedTools: Write, Edit
+ | `TaskCompleted`       | When a task is being marked as completed                                                                                                               |
+ | `Stop`                | When Claude finishes responding                                                                                                                        |
+-| `StopFailure`         | When the turn ends due to an API error. Output and exit code are ignored                                                                               |
++| `StopFailure`         | When the turn ends due to an API error                                                                                                                 |
+ | `TeammateIdle`        | When an [agent team](/docs/en/agent-teams) teammate is about to go idle                                                                                     |
+ | `InstructionsLoaded`  | When a CLAUDE.md or `.claude/rules/*.md` file is loaded into context. Fires at session start and when files are lazily loaded during a session         |
+```
+
+</details>
+
+<details>
+<summary>self-hosted-environments-deploy-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/self-hosted-environments-deploy-en.md b/docs-ja/pages/self-hosted-environments-deploy-en.md
+index 515cb55..2f99e19 100644
+--- a/docs-ja/pages/self-hosted-environments-deploy-en.md
++++ b/docs-ja/pages/self-hosted-environments-deploy-en.md
+@@ -63,5 +63,5 @@ Whether these hosts are needed depends on your configuration:
+ | `*.frame.claudeusercontent.com`      | 443  | Only when the [Artifact tool](/docs/en/artifacts#availability) is available for sessions in your organization; defaults vary by plan, per the availability table there. Set `CLAUDE_CODE_DISABLE_ARTIFACT=1` on the runner to keep the tool disabled regardless of the organization setting. |
+ | `raw.githubusercontent.com`          | 443  | Only for the changelog fetch behind `/release-notes` and the release notes shown after a CLI version change. Suppressed by `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1`.                                                                                                                |
+-| `registry.npmjs.org`                 | 443  | Only when a session installs a plugin that includes Node.js dependencies, or when an `npx`-launched MCP server runs                                                                                                                                                                     |
++| `registry.npmjs.org`                 | 443  | When a session installs a plugin, both for fetching npm-source plugin packages and for installing a plugin's Node.js dependencies, or when an `npx`-launched MCP server runs                                                                                                            |
+ | `http-intake.logs.us5.datadoghq.com` | 443  | Anthropic operational metrics. Only when `CLAUDE_CODE_BYOC_ENABLE_DATADOG=1` is set; off by default in self-hosted environments.                                                                                                                                                        |
+ | `browser-intake-us5-datadoghq.com`   | 443  | Anthropic error-report uploads, sent only when [error reporting](/docs/en/data-usage#telemetry-services) is enabled for the session's account. Suppressed by `DISABLE_ERROR_REPORTING=1` or `DISABLE_TELEMETRY=1`.                                                                           |
+@@ -277,5 +277,7 @@ On the first `SIGTERM`, and again on a forced exit, the runner logs how many `po
+ If a runner dies mid-session, the server requeues the session and another runner in the environment picks it up. That runner derives the checkout path from its own `--base-dir` and `--capacity`: `--capacity 1` checks out directly under `--base-dir`, and a `--capacity` above `1` uses per-session worktrees instead. When runners in the same environment use different values for either flag, the resumed session's working directory changes, and absolute paths the agent recorded earlier, in edits, tool calls, or its own notes, point at a location that no longer exists.
+ 
+-Use the same `--base-dir` and `--capacity` on every runner in an environment, and don't use a per-host value such as an instance ID or hostname. The base directory must be writable by the user the runner runs as: the runner creates per-session directories under it when each session starts and doesn't check it at startup, so a missing or read-only base directory typically shows up as sessions that fail immediately after pickup rather than as a startup error. The default is `/workspace`, which a runner running as root creates on first use; for a non-root runner, create the directory and give that user ownership before starting the runner, or point `--base-dir` at a directory the user already owns.
++Use the same `--base-dir` and `--capacity` on every runner in an environment, and don't use a per-host value such as an instance ID or hostname.
++
++The base directory defaults to `/workspace`. The runner needs write access to it. At startup, before registering, the runner creates the directory and confirms it can write to it, and exits with `cannot create or write to base directory` when it can't. A runner started as root creates the default `/workspace` itself. For a non-root runner, create the directory and give the runner's user ownership before starting the runner, or point `--base-dir` at a directory that user already owns.
+ 
+ ## Reuse a pre-warmed checkout
+@@ -340,11 +342,12 @@ Common issues:
+ 
+ * **Runner doesn't appear in the environment**: confirm the host can reach `api.anthropic.com` over HTTPS, the environment secret is current, and the host clock is within five minutes of real time; larger skew causes authentication to fail. The runner logs `[runner:fatal]` with the rejection reason on auth failure.
++* **Runner exits at startup with `cannot create or write to base directory`**: the runner can't create or write to `--base-dir`, which defaults to `/workspace`. Fix the directory's ownership or point `--base-dir` at a writable path, as described in [Keep the base directory and capacity identical across runners](#keep-the-base-directory-and-capacity-identical-across-runners). If the runner instead logs `[runner:fatal]` saying the base directory check timed out, the directory is on a hung NFS or CSI mount. Check mount health rather than permissions. The runner prints both of these startup failures to stderr before it opens `--log-file`, so look for them in the terminal or your platform's container logs rather than the log file. Before v2.1.225, the runner didn't check the base directory at startup, and this misconfiguration failed sessions after pickup instead.
+ * **Sessions stay queued**: every online runner may be locked to a different account. Check each runner's `claude_code_self_hosted_runner_locked_account` [metric](/docs/en/self-hosted-environments-reference#prometheus-metrics) or its `Picked up session` log lines to see which account holds it. Add replicas, or wait for an existing runner to drain and restart. If the environment uses on-demand runners, check the orchestrator instead; see [On-demand runners](/docs/en/self-hosted-environments-configuration#on-demand-runners).
+-* **Sessions fail immediately after pickup**: open the session in claude.ai/code to see the error. The most common causes are missing [git credentials](#configure-git) in the runner image, build tools that aren't installed, and a base directory the runner's user can't write to. For the last one the error is `EACCES` on a path under `--base-dir`, default `/workspace`; fix the directory's ownership or point `--base-dir` at a writable path, as described in [Keep the base directory and capacity identical across runners](#keep-the-base-directory-and-capacity-identical-across-runners).
++* **Sessions fail immediately after pickup**: open the session in claude.ai/code to see the error. The most common causes are missing [git credentials](#configure-git) in the runner image and build tools that aren't installed. An unwritable base directory stops the runner at startup instead of failing sessions. See the **Runner exits at startup with `cannot create or write to base directory`** entry in this list.
+ * **A session's branch no longer exists on the remote**: for a git source the session only reads from, the runner skips that source and continues on the remaining ones. For the source the session pushes results to, a deleted branch, typically because it was merged and auto-deleted, fails the session with an error naming the repository and branch and asking you to restore the branch and retry.
+ * **Sessions take minutes to start**: the initial clone usually dominates. Watch the `claude_code_self_hosted_runner_session_init_duration_seconds` [metric](/docs/en/self-hosted-environments-reference#prometheus-metrics) to confirm, and cut the clone with a [pre-warmed checkout](#reuse-a-pre-warmed-checkout) or a smaller `CLAUDE_RUNNER_FETCH_DEPTH`.
+ * **Pod is killed mid-drain**: raise `terminationGracePeriodSeconds` to at least the value the runner logs at startup. See [Shutdown timing](#shutdown-timing).
+```
+
+</details>
+
+<details>
+<summary>self-hosted-environments-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/self-hosted-environments-en.md b/docs-ja/pages/self-hosted-environments-en.md
+index eedefdb..d89f297 100644
+--- a/docs-ja/pages/self-hosted-environments-en.md
++++ b/docs-ja/pages/self-hosted-environments-en.md
+@@ -44,5 +44,5 @@ Check these before planning a rollout:
+ * **Zero Data Retention**: unavailable for organizations with [Zero Data Retention](/docs/en/zero-data-retention) enabled.
+ * **Model inference**: sessions use the Anthropic API, and inference can't be routed through [Amazon Bedrock, Google Cloud's Agent Platform, Microsoft Foundry](/docs/en/third-party-integrations), or an [LLM gateway](/docs/en/llm-gateway).
+-* **Surfaces**: sessions started from [Claude Code on the web](/docs/en/claude-code-on-the-web), the mobile and desktop apps, [scheduled routines](/docs/en/routines), and the terminal, with [`claude --cloud`](/docs/en/claude-code-on-the-web#from-terminal-to-web) or a scripted [`--environment` dispatch](/docs/en/self-hosted-environments-testing#run-the-test-loop), can run in self-hosted environments. [Claude Tag](https://claude.com/docs/claude-tag/overview), [Claude Security](/docs/en/claude-security), and [Code Review](/docs/en/code-review) sessions don't route to them yet; support for those surfaces follows separately.
++* **Surfaces**: sessions started from [Claude Code on the web](/docs/en/claude-code-on-the-web), the mobile and desktop apps, [scheduled routines](/docs/en/routines), and the terminal, with [`claude --cloud`](/docs/en/claude-code-on-the-web#from-terminal-to-web) or an [`--environment` dispatch](/docs/en/self-hosted-environments-testing#run-the-test-loop), can run in self-hosted environments. [Claude Tag](https://claude.com/docs/claude-tag/overview), [Claude Security](/docs/en/claude-security), and [Code Review](/docs/en/code-review) sessions don't route to them yet. Support for those surfaces follows separately.
+ * **Repositories**: sessions check out repositories from GitHub; see [GitHub authentication options](/docs/en/claude-code-on-the-web#github-authentication-options).
+ * **Billing**: sessions in a self-hosted environment consume your organization's Claude Code usage the same way sessions in Anthropic-hosted environments do.
+```
+
+</details>
+
+<details>
+<summary>self-hosted-environments-quickstart-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/self-hosted-environments-quickstart-en.md b/docs-ja/pages/self-hosted-environments-quickstart-en.md
+index c54ec47..6b379b4 100644
+--- a/docs-ja/pages/self-hosted-environments-quickstart-en.md
++++ b/docs-ja/pages/self-hosted-environments-quickstart-en.md
+@@ -76,9 +76,7 @@ To set up manually instead:
+     ```
+ 
+-    Create the base directory, replacing `<writable-dir>` here and in the next command with an absolute path that the user running the runner can write to. The runner checks repositories out and creates per-session directories under this path. Without `--base-dir` it uses `/workspace`, which only works if that directory already exists and is writable or the runner runs as root.
++    Choose a base directory, replacing `<writable-dir>` in the runner command below with an absolute path that the runner can write to or create. The runner creates the directory at startup, then checks repositories out and creates per-session directories under it. Without `--base-dir` it uses `/workspace`, which only works if that directory already exists and is writable or you start the runner as root.
+ 
+-    ```bash theme={null}
+-    mkdir -p '<writable-dir>'
+-    ```
++    If the runner can't create or write to the path, it exits at startup with an error naming the directory instead of registering. See [Troubleshooting](/docs/en/self-hosted-environments-deploy#troubleshooting).
+ 
+     Then start the runner with `--environment-secret-file` and `--base-dir`. The runner registers with your environment and begins polling for work. If the runner exits, restart it by hand. Production deployments run the runner under an orchestrator that restarts exited runners, normally with a fresh filesystem per restart; [Reuse a pre-warmed checkout](/docs/en/self-hosted-environments-deploy#reuse-a-pre-warmed-checkout) covers the supported persistent-disk setup.
+```
+
+</details>
+
+*...以降省略*
+
+</details>
+
+
+<details>
 <summary>2026-08-11</summary>
 
 **変更ファイル:**
@@ -2471,267 +2730,6 @@ index a50c82f..ccb026a 100644
 -
  <h3 id="enable-mantle">
    Mantle を有効にする
-```
-
-</details>
-
-<details>
-<summary>analytics-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/analytics-ja.md b/docs-ja/pages/analytics-ja.md
-index 741d0b1..e6e77eb 100644
---- a/docs-ja/pages/analytics-ja.md
-+++ b/docs-ja/pages/analytics-ja.md
-@@ -27,5 +27,5 @@ Team と Enterprise ダッシュボードには以下が含まれます。
- * **データエクスポート**：カスタムレポート用に貢献データを CSV としてダウンロード
- 
--ユーザーごとのトークン数とコスト推定については、[OpenTelemetry エクスポート](/ja/monitoring-usage)を構成してください。
-+ユーザーごとのトークン数とコスト推定については、[OpenTelemetry エクスポート](/ja/monitoring-usage)を構成するか、組織の分析設定から[支出レポート](https://support.claude.com/en/articles/12883420-view-usage-analytics-for-team-and-enterprise-plans)をエクスポートしてください。これはユーザーごと、モデルごとのトークン使用量と推定使用クレジット支出を一覧表示します。
- 
- <h3 id="enable-contribution-metrics">
-@@ -229,4 +229,6 @@ PR マージ日の 21 日前から 2 日後のセッションが属性マッチ
- </h4>
- 
-+Enterprise プランでは、[Claude Enterprise Analytics API](https://support.claude.com/en/articles/13703965-claude-enterprise-analytics-api-reference-guide) は、Claude Code を含む Claude サーフェス全体で、組織のユーザーごとのエンゲージメント、使用状況、コストレポートを返します。プライマリオーナーが [claude.ai/analytics/api-keys](https://claude.ai/analytics/api-keys) で `read:analytics` スコープを持つキーを作成します。API は Teams プランでは利用できません。
-+
- GitHub を通じてこのデータをクエリするには、`claude-code-assisted` でラベル付けされた PR を検索します。
- 
-@@ -235,5 +237,5 @@ GitHub を通じてこのデータをクエリするには、`claude-code-assist
- </h2>
- 
--Claude Console を使用している API カスタマーは、[platform.claude.com/claude-code](https://platform.claude.com/claude-code) で分析にアクセスできます。ダッシュボードにアクセスするには UsageView 権限が必要です。これは Developer、Billing、Admin、Owner、Primary Owner ロールに付与されます。
-+Claude Console を使用している API カスタマーは、[platform.claude.com/claude-code](https://platform.claude.com/claude-code) で分析にアクセスできます。ダッシュボードにアクセスするには UsageView 権限が必要です。これは Developer、Billing、Admin、Owner、Primary Owner ロールに付与されます。同じ日次ユーザーごとのメトリクスをプログラムで取得するには、Admin API キーを使用して [Claude Code Analytics API](https://platform.claude.com/docs/ja/build-with-claude/claude-code-analytics-api) を使用してください。
- 
- <Note>
-```
-
-</details>
-
-<details>
-<summary>best-practices-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/best-practices-ja.md b/docs-ja/pages/best-practices-ja.md
-index 2b85e48..8b11ac2 100644
---- a/docs-ja/pages/best-practices-ja.md
-+++ b/docs-ja/pages/best-practices-ja.md
-@@ -482,5 +482,5 @@ Claude は変更前に自動的にファイルをスナップショットする
- 
- <Warning>
--  チェックポイントは Claude が行った変更のみを追跡します。外部プロセスではありません。これは git の代替ではありません。
-+  チェックポイントは Claude が行った変更のみを追跡します。Bash コマンドまたは外部プロセスを通じて行われた変更はキャプチャされません。これは git の代替ではありません。
- </Warning>
- 
-@@ -513,5 +513,5 @@ Claude Code は会話をローカルに保存するため、タスクが複数
- </Tip>
- 
--`claude -p "your prompt"` を使用すると、セッションなしで Claude を非対話的に実行できます。[非対話型モード](/ja/headless)は、Claude を CI パイプライン、プリコミットフック、または自動化されたワークフローに統合する方法です。出力形式を使用すると、結果をプログラムで解析できます。プレーンテキスト、JSON、またはストリーミング JSON です。
-+`claude -p "your prompt"` を使用すると、セッションなしで Claude を非対話的に実行できます。実行は `--no-session-persistence` を渡さない限り、再開可能なセッションを作成します。[非対話型モード](/ja/headless)は、Claude を CI パイプライン、プリコミットフック、または自動化されたワークフローに統合する方法です。出力形式を使用すると、結果をプログラムで解析できます。プレーンテキスト、JSON、またはストリーミング JSON です。
- 
- ```bash theme={null}
-```
-
-</details>
-
-<details>
-<summary>channels-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/channels-ja.md b/docs-ja/pages/channels-ja.md
-index fa35a06..c25f963 100644
---- a/docs-ja/pages/channels-ja.md
-+++ b/docs-ja/pages/channels-ja.md
-@@ -8,5 +8,5 @@
- 
- <Note>
--  チャネルは[リサーチプレビュー](#research-preview)段階にあり、Claude Code v2.1.80 以降が必要です。Anthropic 認証が claude.ai または Console API キーを通じて必要で、Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry では利用できません。Team および Enterprise 組織は[明示的に有効にする](#enterprise-controls)必要があります。
-+  チャネルは[リサーチプレビュー](#research-preview)段階にあります。Anthropic 認証が claude.ai または Console API キーを通じて必要で、Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry では利用できません。Team および Enterprise 組織は[明示的に有効にする](#enterprise-controls)必要があります。
- </Note>
- 
-```
-
-</details>
-
-<details>
-<summary>channels-reference-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/channels-reference-ja.md b/docs-ja/pages/channels-reference-ja.md
-index b4e2b2e..b947579 100644
---- a/docs-ja/pages/channels-reference-ja.md
-+++ b/docs-ja/pages/channels-reference-ja.md
-@@ -8,5 +8,5 @@
- 
- <Note>
--  チャネルは[リサーチプレビュー](/ja/channels#research-preview)段階にあり、Claude Code v2.1.80 以降が必要です。Team および Enterprise 組織は[明示的に有効化](/ja/channels#enterprise-controls)する必要があります。
-+  チャネルは[リサーチプレビュー](/ja/channels#research-preview)段階にあります。Team および Enterprise 組織は[明示的に有効化](/ja/channels#enterprise-controls)する必要があります。
- </Note>
- 
-@@ -454,8 +454,4 @@ await mcp.notification({ ... })
- </h2>
- 
--<Note>
--  権限リレーには Claude Code v2.1.81 以降が必要です。以前のバージョンは `claude/channel/permission` 機能を無視します。
--</Note>
--
- Claude が承認が必要なツールを呼び出すと、ローカルターミナルダイアログが開き、セッションが待機します。双方向チャネルは、同じプロンプトを並行して受け取り、別のデバイスでそれをリレーすることを選択できます。両方がライブのままです：ターミナルまたは電話で答えることができ、Claude Code は最初に到着した答えを適用し、もう一方を閉じます。
- 
-```
-
-</details>
-
-<details>
-<summary>checkpointing-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/checkpointing-ja.md b/docs-ja/pages/checkpointing-ja.md
-index 4611de8..adfc41b 100644
---- a/docs-ja/pages/checkpointing-ja.md
-+++ b/docs-ja/pages/checkpointing-ja.md
-@@ -13,5 +13,5 @@ Claude Code は、作業中に Claude が行ったファイルエディットを
- </h2>
- 
--Claude で作業する際、チェックポイント機能は各エディット前のコード状態を自動的にキャプチャします。このセーフティネットにより、野心的で大規模なタスクを実行する際に、いつでも以前のコード状態に戻ることができるという安心感を持って作業できます。
-+Claude で作業する際、チェックポイント機能は各ユーザープロンプト前のコード状態を自動的にキャプチャします。このセーフティネットにより、野心的で大規模なタスクを実行する際に、いつでも以前のコード状態に戻ることができるという安心感を持って作業できます。
- 
- <h3 id="automatic-tracking">
-@@ -22,5 +22,5 @@ Claude Code は、ファイル編集ツールで行われたすべての変更
- 
- * ユーザープロンプトごとに新しいチェックポイントが作成されます
--* チェックポイントはセッション間で保持されるため、再開した会話でアクセスできます
-+* チェックポイントはセッションと共に保存されるため、再開したセッションでも `/rewind` で戻ることができます
- * セッション終了後 30 日後に自動的にクリーンアップされます（設定可能）
- 
-```
-
-</details>
-
-*...以降省略*
-
-</details>
-
-
-<details>
-<summary>2026-07-12</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/amazon-bedrock-ja.md         | 10 +++++-----
- docs-ja/pages/changelog.md                 | 27 +++++++++++++++++++++++++++
- docs-ja/pages/claude-platform-on-aws-ja.md |  4 ++--
- docs-ja/pages/communications-kit-ja.md     | 24 ++++++++++++------------
- docs-ja/pages/desktop-ja.md                |  2 +-
- docs-ja/pages/desktop-linux-ja.md          | 12 ++++++++++--
- docs-ja/pages/errors-ja.md                 | 26 +++++++++++++-------------
- docs-ja/pages/glossary-ja.md               |  2 +-
- docs-ja/pages/google-vertex-ai-ja.md       | 10 +++++-----
- docs-ja/pages/how-claude-code-works-ja.md  |  2 +-
- docs-ja/pages/model-config-ja.md           | 22 +++++++++++++++-------
- docs-ja/pages/permission-modes-ja.md       |  2 +-
- docs-ja/pages/permissions-ja.md            | 12 ++++++------
- docs-ja/pages/security-ja.md               |  4 ++--
- docs-ja/pages/setup-ja.md                  |  2 +-
- docs-ja/pages/tools-reference-ja.md        |  2 ++
- docs-ja/pages/troubleshoot-install-ja.md   |  2 +-
- docs-ja/pages/troubleshooting-ja.md        |  2 +-
- docs-ja/pages/vs-code-ja.md                |  4 ++--
- 19 files changed, 108 insertions(+), 63 deletions(-)
-```
-
-<details>
-<summary>amazon-bedrock-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/amazon-bedrock-ja.md b/docs-ja/pages/amazon-bedrock-ja.md
-index 1b124cd..a50c82f 100644
---- a/docs-ja/pages/amazon-bedrock-ja.md
-+++ b/docs-ja/pages/amazon-bedrock-ja.md
-@@ -268,5 +268,5 @@ Claude Code で Amazon Bedrock を有効にする場合は、以下に注意し
- これらの環境変数を特定の Amazon Bedrock モデル ID に設定します。
- 
--`ANTHROPIC_DEFAULT_OPUS_MODEL` なしでは、Amazon Bedrock の `opus` エイリアスは Opus 4.6 に解決されます。最新モデルを使用するには、Opus 4.8 ID に設定します。
-+これらの変数がない場合、Amazon Bedrock の `opus` エイリアスは Opus 4.8 に解決され、`sonnet` エイリアスは Sonnet 4.5 に解決されます。各変数を設定して、そのエイリアスを特定のバージョンにピン留めします。
- 
- ```bash theme={null}
-@@ -280,8 +280,8 @@ export ANTHROPIC_DEFAULT_HAIKU_MODEL='us.anthropic.claude-haiku-4-5-20251001-v1:
- ピン留め変数が設定されていない場合、Claude Code はこれらのデフォルトモデルを使用します。
- 
--| モデルタイプ   | デフォルト値                                         |
--| :------- | :--------------------------------------------- |
--| プライマリモデル | `us.anthropic.claude-sonnet-4-5-20250929-v1:0` |
--| 小型/高速モデル | プライマリモデルと同じ                                    |
-+| モデルタイプ   | デフォルト値                         |
-+| :------- | :----------------------------- |
-+| プライマリモデル | `us.anthropic.claude-opus-4-8` |
-+| 小型/高速モデル | プライマリモデルと同じ                    |
- 
- セッションタイトル生成などのバックグラウンドタスクは、小型/高速モデル（通常は Haiku クラスモデル）を使用します。Amazon Bedrock では、すべてのアカウントまたはリージョンで Haiku が有効になっていない可能性があるため、Claude Code はこれをプライマリモデルにデフォルト設定します。バックグラウンドタスクに Haiku を使用するには、`ANTHROPIC_DEFAULT_HAIKU_MODEL` をアカウントで利用可能なモデル ID に設定してください。
-```
-
-</details>
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index a1320bd..2438058 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,31 @@
- # Changelog
- 
-+## 2.1.207
-+
-+- Auto mode is now available without `CLAUDE_CODE_ENABLE_AUTO_MODE` opt-in on Bedrock, Vertex AI, and Foundry; disable via `disableAutoMode` in settings
-+- Fixed the terminal freezing and keystrokes lagging while streaming responses containing very long lists, tables, paragraphs, or code blocks
-+- Fixed remote managed settings from a non-interactive run (`claude -p`, the SDK) being permanently recorded as consented without ever showing the security consent dialog
-+- Fixed spurious prompt-injection warnings triggered by benign system-generated conversation updates
-+- Fixed the auto-updater overwriting a custom launcher script or symlink at `~/.local/bin/claude` on every release; `/doctor` now reports an externally managed launcher
-+- Fixed compound commands with `cd` prompting for permission when the only output redirect was to `/dev/null`
-+- Fixed the transcript jumping above the start of the answer when a response finishes streaming
-+- Fixed `extensions.worktreeConfig` being left in the repo's `.git/config` (breaking go-git tools like `tea`) after the last `worktree.sparsePaths` worktree was removed
-+- Fixed malformed bracket patterns in rules globs, skill paths, `.ignore`, and `.worktreeinclude` breaking file reads, file suggestions, and worktree creation
-+- Fixed a crash loop in agent teams where a malformed teammate mailbox message caused repeated errors every second until the mailbox file was manually deleted
-+- Fixed background sessions auto-named by accepting a plan not showing that name on their agent-view row
-+- Fixed background sessions that entered a git worktree resuming blank after a cold reopen from the agent list
-+- Fixed Remote Control task status updates being lost when the connection recovered from a network interruption or credential refresh
-+- Fixed Remote Control sessions hosted by the desktop app not showing background agent and workflow progress on mobile and web
-+- Fixed Deep research runs labeling every Fetch-phase agent "unknown" — chips now show the source hostname
-+- Fixed Bedrock repeatedly requesting fresh AWS SSO credentials from IAM Identity Center on every API request
-+- Improved agent view: pasting the same text again now expands the collapsed `[Pasted text #N]` placeholder instead of adding a second one
-+- Improved agent view: blocked session peeks now lead with the question and show a worded staleness clock (`waiting 3m`) instead of the same timestamp twice
-+- Changed Bedrock, Vertex, and Claude Platform on AWS to default to Claude Opus 4.8
-+- Changed auto mode to no longer read `autoMode` from `.claude/settings.local.json` (repo-resident); use `~/.claude/settings.json` instead
-+- Fixed an indefinite hang on Windows when AWS credential resolution stalls (e.g. a stuck `credential_process`): the 60-second stall guard now fires instead of waiting forever.
-```
-
-</details>
-
-<details>
-<summary>claude-platform-on-aws-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/claude-platform-on-aws-ja.md b/docs-ja/pages/claude-platform-on-aws-ja.md
-index 1b02308..17daf8b 100644
---- a/docs-ja/pages/claude-platform-on-aws-ja.md
-+++ b/docs-ja/pages/claude-platform-on-aws-ja.md
-@@ -277,5 +277,5 @@ AWS 上の Claude Platform は、環境に AWS 認証情報が存在する場合
- </h3>
- 
--AWS 上の Claude Platform は、直接 Claude API と同じモデル ID を使用します。デフォルトのエイリアス `fable`、`opus`、`sonnet`、`haiku` は Claude Code の AWS 上の Claude Platform 用の組み込みデフォルトに解決されます。これは最新リリースより遅れる可能性があります。`ANTHROPIC_DEFAULT_OPUS_MODEL` がない場合、`opus` エイリアスは Opus 4.7 に解決されます。
-+AWS 上の Claude Platform は、直接 Claude API と同じモデル ID を使用します。デフォルトのエイリアス `fable`、`opus`、`sonnet`、`haiku` は Claude Code の AWS 上の Claude Platform 用の組み込みデフォルトに解決されます。これは最新リリースより遅れる可能性があります。`ANTHROPIC_DEFAULT_OPUS_MODEL` がない場合、`opus` エイリアスは Opus 4.8 に解決されます。
- 
- Claude Code をチームにデプロイする場合、モデル ID を明示的にピン留めして、新しいリリースがすべてのユーザーを一度に移動しないようにします。
-@@ -283,5 +283,5 @@ Claude Code をチームにデプロイする場合、モデル ID を明示的
- ```bash theme={null}
- export ANTHROPIC_DEFAULT_FABLE_MODEL=claude-fable-5
--export ANTHROPIC_DEFAULT_OPUS_MODEL=claude-opus-4-7
-+export ANTHROPIC_DEFAULT_OPUS_MODEL=claude-opus-4-8
- export ANTHROPIC_DEFAULT_SONNET_MODEL=claude-sonnet-5
- export ANTHROPIC_DEFAULT_HAIKU_MODEL=claude-haiku-4-5
 ```
 
 </details>
