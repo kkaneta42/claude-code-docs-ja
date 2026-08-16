@@ -17,6 +17,44 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-08-16</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/self-hosted-environments-deploy-en.md | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+```
+
+<details>
+<summary>self-hosted-environments-deploy-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/self-hosted-environments-deploy-en.md b/docs-ja/pages/self-hosted-environments-deploy-en.md
+index 505f1d2..fecb58d 100644
+--- a/docs-ja/pages/self-hosted-environments-deploy-en.md
++++ b/docs-ja/pages/self-hosted-environments-deploy-en.md
+@@ -327,5 +327,11 @@ The following are the limitations in this release, with workarounds where one ex
+ ### Connector traffic leaves your network
+ 
+-Connector tools, such as GitHub, Slack, Linear, and the other claude.ai connectors, are called from Anthropic's side rather than from your runner, so when a self-hosted session uses a connector, that traffic routes through `api.anthropic.com`, not from inside your network boundary. To keep a connector out of self-hosted sessions, filter it like any other MCP server with the [`allowedMcpServers` and `deniedMcpServers` policy settings](/docs/en/managed-mcp#policy-based-control-with-allowlists-and-denylists), which apply to server-delivered connectors too. An allowlist you deploy for other servers also blocks delivered connectors. To keep connectors available alongside a URL-based allowlist, add an entry matching the session proxy URL, such as `https://api.anthropic.com/v2/ccr-sessions/*`. If tool traffic must stay inside your network, run the equivalent tools as local MCP servers on the runner image instead. See [MCP servers](/docs/en/self-hosted-environments-configuration#mcp-servers).
++Connector tools, such as GitHub, Slack, Linear, and the other claude.ai connectors, are called from Anthropic's side rather than from your runner, so when a self-hosted session uses a connector, that traffic routes through `api.anthropic.com`, not from inside your network boundary. To keep a connector out of self-hosted sessions, filter it like any other MCP server with the [`allowedMcpServers` and `deniedMcpServers` policy settings](/docs/en/managed-mcp#policy-based-control-with-allowlists-and-denylists), which apply to server-delivered connectors too. An allowlist you deploy for other servers also blocks delivered connectors. To keep connectors available alongside a URL-based allowlist, add entries that match the Anthropic proxy paths for server-delivered MCP servers:
++
++* `https://api.anthropic.com/v2/ccr-sessions/*`
++* `https://api.anthropic.com/v1/code/sessions/*`
++* `https://api.anthropic.com/v1/code/mcp/*`
++
++If tool traffic must stay inside your network, run the equivalent tools as local MCP servers on the runner image instead. See [MCP servers](/docs/en/self-hosted-environments-configuration#mcp-servers).
+ 
+ ### Some sessions don't count as idle
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-08-15</summary>
 
 **変更ファイル:**
@@ -2629,144 +2667,6 @@ index b5bb90e..245fbdf 100644
 ```
  docs-ja/pages/changelog.md | 51 ++++++++++++++++++++++++++++++++++++++++++++++
  1 file changed, 51 insertions(+)
-```
-
-**新規追加:**
-
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index 9daf8f0..b5bb90e 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,55 @@
- # Changelog
- 
-+## 2.1.212
-+
-+- `/fork` now copies your conversation into a new background session (its own row in `claude agents`) while you keep working; the in-session subagent it used to launch is now `/subtask`
-+- Added `claude auto-mode reset` to restore the default auto-mode configuration, with a confirmation prompt (pass `--yes` to skip)
-+- Added a session-wide limit on WebSearch tool calls (default 200, tunable via `CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION`) to stop runaway search loops
-+- Added a per-session cap on subagent spawns (default 200, override with `CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION`) to stop runaway delegation loops; `/clear` resets the budget
-+- MCP tool calls running longer than 2 minutes now move to the background automatically so the session stays usable; configure the threshold or disable with `CLAUDE_CODE_MCP_AUTO_BACKGROUND_MS`
-+- Typing `/resume` in the agent view now opens a picker of past sessions — including sessions deleted from the list — and resumes your pick as a background session
-+- Fixed plan mode auto-running file-modifying Bash commands (e.g. `touch`, `rm`) without a permission prompt or SDK `canUseTool` callback
-+- Fixed worktree creation following a repository-committed symlink at `.claude/worktrees`, which could create files outside the repository
-+- Fixed a `continue:false` hook's halt being dropped when the tool fails or completes mid-stream, and hook infrastructure errors being misreported as user rejections
-+- Fixed SIGTERM during a running Bash tool orphaning the command's process tree in print/SDK mode; the CLI now aborts the turn, kills the tree, and exits 143
-+- Fixed `/background` and `claude --bg` failing with "EUNKNOWN: unknown error, uv_spawn" on Windows when Group Policy blocks PowerShell 5.1; the daemon now prefers PowerShell 7
-+- Fixed shell mode (`!`) not executing commands containing file paths while the path autocomplete popup was open
-+- Fixed auto-mode denial notifications rendering broken characters when a long denial reason was truncated mid-emoji
-+- Fixed Ctrl+J not inserting a newline in the agent view dispatch input on terminals with extended key reporting, and surfaced the newline shortcut in the `?` help overlay
-+- Fixed `/ultrareview` rejecting PR references like `#123`, `PR 123`, and pasted PR URLs; error hints now name the command you actually typed
-+- Fixed `/ultrareview <branch>` not fetching the branch from origin when it exists remotely; it now suggests the closest branch name on typos
-+- Fixed `/ultrareview` skipping the billing confirmation in a new conversation after `/clear`
-+- Fixed `/ultrareview`'s "not a git repository" error on Claude Desktop now suggesting the project's repository folder instead of terminal commands
-+- Fixed hosted (host-managed) sessions failing at startup when repository settings configured mTLS certs, extra CA bundles, or OAuth scopes; these transport settings are now ignored with a warning
-+- Fixed a spurious "File has not been read yet" error when editing a file that had been read with offset/limit before resuming a session
-+- Fixed `ExitWorktree` failing with "no active EnterWorktree session" after resuming a session with `--continue`/`--resume` in print/SDK mode
-```
-
-</details>
-
-</details>
-
-
-<details>
-<summary>2026-07-17</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/accessibility-ja.md              |   2 +-
- docs-ja/pages/admin-setup-ja.md                |  17 +-
- docs-ja/pages/advisor-ja.md                    |   4 +-
- docs-ja/pages/agent-teams-ja.md                |   6 +-
- docs-ja/pages/agent-view-ja.md                 | 104 +++++--
- docs-ja/pages/agents-ja.md                     |   2 +-
- docs-ja/pages/amazon-bedrock-ja.md             |  57 +++-
- docs-ja/pages/analytics-ja.md                  |   2 +-
- docs-ja/pages/artifacts-ja.md                  | 112 +++++--
- docs-ja/pages/authentication-ja.md             |  21 +-
- docs-ja/pages/auto-mode-config-ja.md           |  76 +++--
- docs-ja/pages/channels-ja.md                   |   2 +-
- docs-ja/pages/checkpointing-ja.md              |   1 +
- docs-ja/pages/chrome-ja.md                     |   4 +-
- docs-ja/pages/claude-apps-gateway-config-ja.md |  11 +-
- docs-ja/pages/claude-apps-gateway-deploy-ja.md |  46 +--
- docs-ja/pages/claude-apps-gateway-ja.md        |  22 +-
- docs-ja/pages/claude-code-on-the-web-ja.md     |  44 ++-
- docs-ja/pages/claude-directory-ja.md           |  40 +--
- docs-ja/pages/claude-platform-on-aws-ja.md     |   6 +-
- docs-ja/pages/cli-reference-ja.md              |   6 +-
- docs-ja/pages/commands-ja.md                   | 210 ++++++-------
- docs-ja/pages/costs-ja.md                      |  33 +-
- docs-ja/pages/data-usage-ja.md                 |  33 +-
- docs-ja/pages/debug-your-config-ja.md          |   2 +-
- docs-ja/pages/desktop-ja.md                    | 149 ++++++---
- docs-ja/pages/desktop-linux-ja.md              |   2 +-
- docs-ja/pages/desktop-quickstart-ja.md         |   4 +-
- docs-ja/pages/desktop-scheduled-tasks-ja.md    |   2 +
- docs-ja/pages/discover-plugins-ja.md           |   6 +-
- docs-ja/pages/errors-ja.md                     | 402 +++++++++++++++++++------
- docs-ja/pages/fast-mode-ja.md                  |   4 +-
- docs-ja/pages/feature-availability-ja.md       |  76 +++--
- docs-ja/pages/features-overview-ja.md          |   2 +-
- docs-ja/pages/fullscreen-ja.md                 |  23 +-
- docs-ja/pages/glossary-ja.md                   |   4 +-
- docs-ja/pages/goal-ja.md                       |  12 +-
- docs-ja/pages/google-vertex-ai-ja.md           |  29 +-
- docs-ja/pages/headless-ja.md                   |  11 +-
- docs-ja/pages/hooks-guide-ja.md                |  21 +-
- docs-ja/pages/hooks-ja.md                      |  40 ++-
- docs-ja/pages/interactive-mode-ja.md           |  25 +-
- docs-ja/pages/jetbrains-ja.md                  |  26 ++
- docs-ja/pages/keybindings-ja.md                |  41 +--
- docs-ja/pages/large-codebases-ja.md            |   2 +
- docs-ja/pages/legal-and-compliance-ja.md       |   2 +-
- docs-ja/pages/llm-gateway-connect-ja.md        |  48 ++-
- docs-ja/pages/llm-gateway-protocol-ja.md       |  16 +-
- docs-ja/pages/llm-gateway-rollout-ja.md        |   2 +-
- docs-ja/pages/managed-mcp-ja.md                |   9 +-
- docs-ja/pages/mcp-ja.md                        |  44 ++-
- docs-ja/pages/memory-ja.md                     |   4 +
- docs-ja/pages/microsoft-foundry-ja.md          |  10 +-
- docs-ja/pages/model-config-ja.md               |  71 +++--
- docs-ja/pages/network-config-ja.md             |  32 +-
- docs-ja/pages/overview-ja.md                   |   1 +
- docs-ja/pages/permission-modes-ja.md           |  78 +++--
- docs-ja/pages/permissions-ja.md                |  38 ++-
- docs-ja/pages/platforms-ja.md                  |   2 +-
- docs-ja/pages/plugin-dependencies-ja.md        |  37 ++-
- docs-ja/pages/plugin-hints-ja.md               |   2 +
- docs-ja/pages/plugin-marketplaces-ja.md        |  12 +-
- docs-ja/pages/plugins-reference-ja.md          |  55 +++-
- docs-ja/pages/prompt-caching-ja.md             |   2 +-
- docs-ja/pages/remote-control-ja.md             |  24 +-
- docs-ja/pages/routines-ja.md                   |  18 +-
- docs-ja/pages/sandbox-environments-ja.md       |   2 +-
- docs-ja/pages/sandboxing-ja.md                 |  21 +-
- docs-ja/pages/scheduled-tasks-ja.md            |   6 +-
- docs-ja/pages/security-ja.md                   |   2 +-
- docs-ja/pages/server-managed-settings-ja.md    |   6 +-
- docs-ja/pages/sessions-ja.md                   |   2 +-
- docs-ja/pages/settings-ja.md                   | 286 ++++++++++--------
- docs-ja/pages/setup-ja.md                      |   6 +
- docs-ja/pages/slack-ja.md                      |   2 +-
- docs-ja/pages/sub-agents-ja.md                 |  25 +-
- docs-ja/pages/terminal-config-ja.md            |   6 +-
- docs-ja/pages/third-party-integrations-ja.md   |  17 +-
- docs-ja/pages/tools-reference-ja.md            | 116 +++----
- docs-ja/pages/troubleshoot-install-ja.md       |  10 +-
- docs-ja/pages/troubleshooting-ja.md            |   6 +
- docs-ja/pages/vs-code-ja.md                    |  42 +--
- docs-ja/pages/workflows-ja.md                  |  30 +-
- docs-ja/pages/worktrees-ja.md                  |  24 +-
- docs-ja/pages/zero-data-retention-ja.md        |   1 +
- 85 files changed, 1927 insertions(+), 934 deletions(-)
 ```
 
 **新規追加:**
