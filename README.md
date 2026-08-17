@@ -17,6 +17,38 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-08-17</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/self-hosted-environments-deploy-en.md | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+```
+
+<details>
+<summary>self-hosted-environments-deploy-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/self-hosted-environments-deploy-en.md b/docs-ja/pages/self-hosted-environments-deploy-en.md
+index fecb58d..a13a8fb 100644
+--- a/docs-ja/pages/self-hosted-environments-deploy-en.md
++++ b/docs-ja/pages/self-hosted-environments-deploy-en.md
+@@ -327,5 +327,5 @@ The following are the limitations in this release, with workarounds where one ex
+ ### Connector traffic leaves your network
+ 
+-Connector tools, such as GitHub, Slack, Linear, and the other claude.ai connectors, are called from Anthropic's side rather than from your runner, so when a self-hosted session uses a connector, that traffic routes through `api.anthropic.com`, not from inside your network boundary. To keep a connector out of self-hosted sessions, filter it like any other MCP server with the [`allowedMcpServers` and `deniedMcpServers` policy settings](/docs/en/managed-mcp#policy-based-control-with-allowlists-and-denylists), which apply to server-delivered connectors too. An allowlist you deploy for other servers also blocks delivered connectors. To keep connectors available alongside a URL-based allowlist, add entries that match the Anthropic proxy paths for server-delivered MCP servers:
++Anthropic calls connector tools, such as GitHub, Slack, Linear, and the other claude.ai connectors, from its own infrastructure rather than from your runner, so when Claude uses a connector in a self-hosted session, that traffic goes through `api.anthropic.com` rather than originating inside your network boundary. To keep a connector out of self-hosted sessions, filter it like any other MCP server with the [`allowedMcpServers` and `deniedMcpServers` policy settings](/docs/en/managed-mcp#policy-based-control-with-allowlists-and-denylists). Claude Code applies these settings to the connectors Anthropic delivers as well as to the servers you configure, so if you deploy an allowlist for other servers, Claude Code blocks delivered connectors too. To keep connectors available alongside a URL-based allowlist, add entries that match the Anthropic proxy paths for delivered connectors:
+ 
+ * `https://api.anthropic.com/v2/ccr-sessions/*`
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-08-16</summary>
 
 **変更ファイル:**
@@ -2617,59 +2649,5 @@ index 245fbdf..dccd1b0 100644
  docs-ja/pages/changelog.md | 50 ++++++++++++++++++++++++++++++++++++++++++++++
  1 file changed, 50 insertions(+)
 ```
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index b5bb90e..245fbdf 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,54 @@
- # Changelog
- 
-+## 2.1.214
-+
-+- Fixed single-segment `dir/**` allow rules like `Edit(src/**)` auto-approving writes to nested `dir/` directories anywhere in the tree instead of only `<cwd>/dir`
-+- Fixed a permission-check bypass affecting commands run in Windows PowerShell 5.1 sessions
-+- Fixed Bash permission checks to fail closed on file-descriptor redirect forms that bash parses differently than the permission analyzer
-+- Fixed Bash permission checks misjudging very long commands — commands over 10,000 characters now always prompt instead of running automatically
-+- Fixed Bash permission checks treating zsh variable subscripts and modifiers in `[[ ]]` comparisons as inert text — these commands now prompt for approval
-+- Fixed Bash permission checks to no longer auto-approve certain `help` and `man` commands that could run unsafe options, command substitutions, or backslash paths
-+- Fixed permission prompts on remote sessions that could proceed before the local confirmation dialog
-+- Added the EndConversation tool: Claude can end sessions with highly abusive users or jailbreak attempts, as on claude.ai since 2025 — see https://www.anthropic.com/research/end-subset-conversations
-+- Added a periodic progress heartbeat for long-running tool calls that previously went silent
-+- Added an ISO `modified` timestamp to memory file frontmatter
-+- Added `message.uuid`, `client_request_id`, and `tool_source` attributes to OpenTelemetry log events for message-level correlation and tool provenance
-+- Added `CLAUDE_CODE_OTEL_CONTENT_MAX_LENGTH` to configure the 60 KB truncation limit on OpenTelemetry content attributes
-+- Added reasoning effort to the `subagentStatusLine` payload, so custom agent rows can render model and effort
-+- Added permission prompts for `docker` commands (including the Podman `docker` shim) carrying daemon-redirect flags (`--url`, `--connection`, `--identity`, and Podman's remote mode) that previously ran without one
-+- Fixed a crash when a GrowthBook feature evaluates to null, and a bug where a malformed flag payload could wipe the cached feature flags
-+- Fixed Bash tool killing the Claude session when a `pkill -f` pattern accidentally matched the CLI's own process (Linux)
-+- Fixed unbounded memory growth when `--settings` points at a device file or multi-GB file; oversized (>2 MiB) settings files now fail at startup with a clear error
-+- Fixed streaming turns failing with "Socket is closed" behind corporate proxies on Windows
-+- Fixed stream-json output truncation at exit for slow-reading SDK/pipeline consumers; the exit drain now scales with queued bytes instead of a flat 2s cap
-+- Fixed scheduled tasks refusing their own configured prompt as untrusted input — the fired prompt is now delivered as the session's assigned task
-+- Fixed PowerShell tool commands hanging until timeout when a child process waited on standard input (Windows)
-```
-
-</details>
-
-</details>
-
-
-<details>
-<summary>2026-07-18</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/changelog.md | 51 ++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 51 insertions(+)
-```
-
-**新規追加:**
-
 
 <!-- UPDATE_LOG_END -->
