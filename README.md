@@ -17,6 +17,57 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-08-18</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md | 54 ++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 54 insertions(+)
+```
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index eaf481e..d4b7b0d 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,58 @@
+ # Changelog
+ 
++## 2.1.234
++
++- Added the optional `CLAUDE_CODE_PROJECT_DIR_NAME` environment variable: hosts that give each session its own config directory can choose a short name for the per-project transcript directory
++- Added the `selection:clear` keybinding action, so a key can be bound to clear an in-app text selection; also works in the agents view
++- Added a GitLab merge request badge to the footer and statusline: repos with a GitLab remote and an authenticated glab CLI show MR !N with draft/pending/green states
++- Claude Code now continues your session automatically when a claude.ai usage limit resets; turn it off in `/config` ("Continue automatically at usage limit")
++- Claude is now told to use your account email only to identify you, and not to send it to unrelated services unless you ask
++- Security: remote file reads, session restore, CLAUDE.md includes, workflow scripts and file uploads now reject Windows NT-namespace (`\??\`) paths, hardening the remaining pre-approval file accesses against the NTLM credential-leak vector
++- Fixed auto mode in very long sessions repeatedly re-checking and denying sandboxed commands' network access after the conversation had been compacted
++- Fixed session-scoped permission answers (including denies) being dropped when answering background subagent tool permission prompts
++- Fixed a crash when an API response on the non-streaming fallback path (typically via third-party gateways) contained a thinking block missing its thinking field or a text block missing its text field
++- Fixed markdown rendering becoming extremely slow for some messages containing unusual Unicode sequences
++- Fixed `SendMessage` rejecting a recipient copied from `ListAgents` when the session name is at the 200-character cap or emoji-heavy
++- Fixed repository detection mis-reading the host of git remotes with unusual userinfo, producing links and repo-specific behavior for the wrong host
++- Fixed MCP diagnostics printing resolved secrets: scope-conflict warnings now show the configured `${VAR}` form, and connection-failure details show only the server origin
++- Fixed `strictKnownMarketplaces` allowlists accepting SCP-style git marketplace sources whose host differs from the one git would actually connect to
++- Fixed modal text such as the `/login` OAuth URL losing characters when copied in fullscreen
++- Fixed a `---` horizontal rule in rendered markdown running into the line after it
++- Fixed consecutive shell commands splitting into multiple "Ran 1 shell command" rows when todo/task updates were interleaved between them
++- Fixed dialogs like `/permissions` opened while a `!` shell command was running being dismissed when the command finished
++- Fixed a queued `!` shell command being sent to the model as plain text after pressing up-arrow to edit the queued input
++- Fixed queued messages reappearing in the prompt history while still queued, Esc while selecting a queued message no longer interrupts the turn, and `!` mode no longer sticks after a mid-turn submit
++- Fixed accepting the "Try the new fullscreen renderer?" prompt restarting the session without its permission mode (e.g. `--dangerously-skip-permissions`), tool allow/deny rules, model or effort flags
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-08-17</summary>
 
 **変更ファイル:**
@@ -2614,40 +2665,6 @@ index dccd1b0..835feec 100644
 ```
  docs-ja/pages/changelog.md | 4 ++++
  1 file changed, 4 insertions(+)
-```
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index 245fbdf..dccd1b0 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,8 @@
- # Changelog
- 
-+## 2.1.215
-+
-+- Claude no longer runs the `/verify` and `/code-review` skills on its own; invoke them with `/verify` or `/code-review` when you want them
-+
- ## 2.1.214
- 
-```
-
-</details>
-
-</details>
-
-
-<details>
-<summary>2026-07-19</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/changelog.md | 50 ++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 50 insertions(+)
 ```
 
 <!-- UPDATE_LOG_END -->
