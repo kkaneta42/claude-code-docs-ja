@@ -17,6 +17,83 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-08-19</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md                  | 22 ++++++++++++++++++++++
+ docs-ja/pages/cross-session-messaging-en.md |  3 ++-
+ 2 files changed, 24 insertions(+), 1 deletion(-)
+```
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index d4b7b0d..17b8091 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,26 @@
+ # Changelog
+ 
++## 2.1.235
++
++- Added an optional `spellcheck` setting that underlines misspelled words in the prompt input as you type, using your installed `aspell`, `hunspell`, or `ispell`
++- Fixed whole-prompt-cache invalidation when a language server disconnected or reconnected mid-session
++- Fixed nested markdown list items misaligning at depth 3+ and added a hanging indent to wrapped list items in the terminal UI
++- Fixed prompt input highlights (slash commands, keywords, mentions) appearing shifted by one or more characters in some multi-line prompts
++- Fixed Shift+Tab inside the permission prompt's comment field approving the edit and granting session-wide edit permission instead of closing the field
++- Fixed the Agent tool advertising a general-purpose default in sessions where that agent is unavailable: an omitted `subagent_type` there now gets a clear error listing the available agents
++- Fixed notebook cell delete/replace approval dialogs silently omitting the existing cell content when the notebook or cell could not be read; the dialog now says why
++- Fixed slash commands run while Claude is responding showing HTML entities instead of the actual characters
++- Fixed the prompt footer not showing the "Update installed" restart notice after a background auto-update
++- Fixed the expanded task list (`ctrl+t`) always starting collapsed when resuming or relaunching into a session that still has open tasks
++- Improved memory and CPU usage while cloud sessions such as `/ultrareview` or `/autofix-pr` run in the background — their event streams are no longer re-scanned and re-rendered on every update
++- Improved permission dialogs: display text and "don't ask again" options now always match what a grant would cover, and "don't ask again" is withheld when contents cannot be fully displayed
++- Improved the embedded `grep` in native macOS/Linux builds: pathological patterns now fail fast instead of exhausting memory, and `-m N` with `-A/-C` prints correct context
++- Improved the context-limit error to say when auto-compact is off and point to `/config` to re-enable it
++- Vim mode: NORMAL mode and cursor position are now preserved when toggling the detailed transcript (ctrl+o) or closing a panel
++- Dialogs: arrow keys and Enter pressed in quick succession now select the option you navigated to instead of the previously highlighted one
++- `SendMessage` now refuses messages too large for cross-session delivery up front instead of silently dropping them
++- Remote Control: `claude rc` now applies the same enterprise-gateway availability check as interactive startup
++- [VSCode] Fixed focus jumping between open Claude tabs on its own when a window with several Claude panels is restored or reloaded
++
+ ## 2.1.234
+```
+
+</details>
+
+<details>
+<summary>cross-session-messaging-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/cross-session-messaging-en.md b/docs-ja/pages/cross-session-messaging-en.md
+index 42ae59c..65e69b5 100644
+--- a/docs-ja/pages/cross-session-messaging-en.md
++++ b/docs-ja/pages/cross-session-messaging-en.md
+@@ -64,5 +64,5 @@ For what the message Claude writes looks like when it arrives, including an exam
+ The receiving Claude reads the message between tool calls during an active turn, so a running tool is never interrupted. When the receiving session is idle, Claude Code starts a new turn with the message.
+ 
+-Between two ordinary interactive sessions with default settings, Claude Code delivers the message. Delivery isn't guaranteed in every configuration, though. The receiving session checks each arriving message against its own [inbound controls](#control-inbound-messages), and the check ends in one of three outcomes:
++Between two ordinary interactive sessions with default settings, Claude Code delivers the message. Delivery isn't guaranteed in every configuration, though. Claude Code refuses a message [over the size cap](#limitations) in the sending session, before it leaves. The receiving session checks each arriving message against its own [inbound controls](#control-inbound-messages), and the check ends in one of three outcomes:
+ 
+ * **Delivered**: Claude Code passes the message to the receiving Claude.
+@@ -266,4 +266,5 @@ The limits here are properties of the messaging channel itself and apply whereve
+ 
+ * **Plain text only**: Claude sends only plain text across sessions. Structured [agent team](/docs/en/agent-teams) protocol messages stay within a team.
++* **Same-machine message size is capped**: Claude Code refuses a message to a session on this machine once its serialized form passes about a million characters. The refusal [names the exact sizes](/docs/en/errors#message-too-large-for-cross-session-delivery). Nothing reaches the receiving session.
+ * **Message loops are throttled**: Claude Code rate-limits repeated messages per sender, drops identical repeats arriving within a short window, and caps accepted messages waiting for Claude to read them at 50 per session. A message loop between two sessions therefore stops on its own.
+ 
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-08-18</summary>
 
 **変更ファイル:**
@@ -2605,66 +2682,5 @@ index 7b0bd36..d4b308a 100644
 
 </details>
 
-
-<details>
-<summary>2026-07-21</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/changelog.md | 43 +++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 43 insertions(+)
-```
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index dccd1b0..835feec 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,47 @@
- # Changelog
- 
-+## 2.1.216
-+
-+- Added `sandbox.filesystem.disabled` setting to skip filesystem isolation while keeping network egress control
-+- Fixed a slowdown in long sessions where message normalization cost grew quadratically with the number of turns, causing multi-second stalls and slow resumes
-+- Fixed auto mode denying commands with "HTTP 401" classifier errors after the OAuth token expired or rotated mid-session
-+- Fixed AskUserQuestion telling Claude to continue even when your answer asked it to wait or explain first — free-text answers now get neutral wording
-+- Fixed Claude Code on the web re-asking the same question and dropping your answer after the session sat idle for a few minutes
-+- Fixed @-mentions silently attaching nothing after file-modifying hooks, vim dot-repeat of `c`-operators and paste, statusline running twice on resume, and resume-picker hangs on failure
-+- Fixed resumed background agent sessions reverting to the default agent: the agent's prompt and tool restrictions are now restored
-+- Fixed worktree-isolated subagents redirecting git into the shared checkout via `git -C`, `--git-dir`, or `GIT_DIR`/`GIT_WORK_TREE`
-+- Fixed worktree sessions landing in another project's leftover worktree when the working directory did not match the selected project
-+- Fixed background sessions whose worktree has no git repository being undeletable
-+- Fixed `claude daemon stop --any` potentially terminating an unrelated process via a stale legacy daemon lockfile
-+- Fixed Esc-Esc at an idle prompt not opening the rewind picker in long-running sessions with background tasks
-+- Fixed Bash command permission checking for compound statements with redirects inside `&&` lists or negations
-+- Fixed pressing Ctrl+X twice in the agent list failing to delete a session, and deleted sessions reappearing when their background worker had died
-+- Fixed background subagents getting cancelled when a high-priority message arrives during their startup window
-+- Fixed mouse and focus garbage in the terminal while a GUI editor from `/memory`, `/plan`, `/keybindings`, or Ctrl+G is open; `/memory` no longer waits for the editor to close
-+- Fixed Claude-in-Chrome 403-looping on reconnect when the session's OAuth token lacks a required scope
-+- Fixed workflow saves and scheduled-task writes following a symlink at `.claude`, which could redirect writes outside the project
-+- Fixed MCP re-authenticate revoking working credentials before the new sign-in succeeds, and the reconnect needs-auth message in background sessions pointing at an unusable command
-+- Fixed read-only commands on Windows accessing network paths without a permission prompt
-+- Fixed Bash command parsing of non-ASCII characters to match real shell word boundaries
-```
-
-</details>
-
-</details>
-
-
-<details>
-<summary>2026-07-20</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/changelog.md | 4 ++++
- 1 file changed, 4 insertions(+)
-```
 
 <!-- UPDATE_LOG_END -->
