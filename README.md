@@ -17,6 +17,57 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-08-20</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md | 36 ++++++++++++++++++++++++++++++++++++
+ 1 file changed, 36 insertions(+)
+```
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index 17b8091..a0737ac 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,40 @@
+ # Changelog
+ 
++## 2.1.236
++
++- Added `ANTHROPIC_DEFAULT_MODEL` environment variable: sets the model new sessions start on, while a `/model` pick still overrides it and persists across restarts (unlike `ANTHROPIC_MODEL`)
++- Added `notify_when_idle` to cross-session `SendMessage`: ask another Claude Code session on this machine to send one notice when it next goes idle — opt-in, one-shot, no polling (macOS and Linux)
++- Sandbox: on macOS, wildcard read-deny rules (e.g. `**/.env`) now take precedence inside allowed read regions, cover matched directories' contents, and can't be bypassed by renaming the denied file
++- Fixed clipboard copy, background housekeeping, background sessions, and local MCP logs breaking after the directory a session had switched into was removed (since 2.1.229)
++- Fixed the fullscreen renderer failing permanently after a single failed start: it now falls back to the classic renderer instead of exiting on every subsequent launch
++- Fixed the `/model` picker rendering taller than the terminal: it now shows only as many models as fit the window, with the rest reachable by scrolling
++- Fixed `SendMessage` calls being rejected when a malformed closing tag left the message text inside the summary field
++- Fixed unhandled promise rejections when a subprocess fails to start, for example `powershell.exe` on WSL with Windows interop disabled (regression in 2.1.234)
++- Fixed fullscreen mode sometimes not showing a newly sent message until the next update after the terminal was resized
++- Fixed a blank band that could remain above the prompt after clearing a multi-line prompt, and panes not repainting after resizing the terminal away and back, in fullscreen mode
++- Fixed the managed-settings approval prompt sometimes not appearing at startup while still capturing the first keypress as approval
++- Fixed terminal tab titles jumping in tmux (iTerm tmux integration): the title is now written only when its text changes instead of animating every 960ms
++- Fixed an unclear error when the cloud environments list came back empty or malformed
++- Fixed the Fable 5 first-time usage-credits prompt auto-selecting the fallback model after 60 seconds with no answer when using Remote Control
++- Fixed spinner tips never appearing, with a repeated background error, when the cached guest-pass reward in `~/.claude.json` was malformed
++- Fixed skills hot-reload in SDK/VS Code sessions raising an error on every skills change after the session's working directory was deleted (2.1.229+)
++- Fixed self-hosted runner sessions released on idle, retire, or startup timeout occasionally resuming on another runner before the post-session hook had finished
++- Fixed the Clawd mascot's eyes and feet rendering unevenly in iTerm2 at some font sizes
++- Fixed occasional runaway session recaps: recap text (automatic and `/recap`) is now capped at 400 characters, cut at a word boundary
++- Improved startup performance: the session counter is now written in the background
++- Improved auto mode: `Monitor` allow rules are now set aside while auto mode is active, so Monitor commands are reviewed the same way Bash commands are
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-08-19</summary>
 
 **変更ファイル:**
@@ -2601,86 +2652,5 @@ index b982eb4..c1ba8ec 100644
 ```
 
 </details>
-
-<details>
-<summary>agent-view-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/agent-view-ja.md b/docs-ja/pages/agent-view-ja.md
-index 2e85a74..e7c7da8 100644
---- a/docs-ja/pages/agent-view-ja.md
-+++ b/docs-ja/pages/agent-view-ja.md
-@@ -17,5 +17,5 @@ Claude が複数の独立したタスクに対して、あなたが毎ステッ
- 任意のエージェントのセッションでより直接的に作業したい場合は、行にアタッチして完全な会話に入ります。
- 
--エージェントビューを subagents、agent teams、worktrees と比較するには、[エージェントを並列で実行する](/ja/agents)を参照してください。
-+エージェントビューを subagents、agent teams、worktrees と比較するには、[エージェントを並列で実行する](/docs/ja/agents)を参照してください。
- 
- <Note>
-@@ -71,5 +71,5 @@ Claude が複数の独立したタスクに対して、あなたが毎ステッ
- `claude agents` を `claude` の代わりにプライマリエントリーポイントとして使用できます。エージェントビューからすべてのタスクをディスパッチし、フル会話が必要な場合はアタッチし、`←` を押してテーブルに戻ります。
- 
--{/* min-version: 2.1.205 */}通常の `claude` セッション内では、プロンプトフッターの `←` ヒントは、`← 2 agents` のように入力を待機中のバックグラウンドエージェントの数をカウントし、入力が必要なエージェントがない場合は `← for agents` に戻ります。99 を超えるカウントは `99+` として表示されます。カウントはターミナルがフォーカスされている間は約 10 秒ごとに更新され、フォーカスが戻ると即座に更新されます。カウントが移動したときとエージェントが完了したときに色が一時的に変わります。ただし、[`prefersReducedMotion` 設定](/ja/settings#available-settings)がオンの場合は除きます。また、[スクリーンリーダーモード](/ja/accessibility)では非表示になります。[Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry](/ja/third-party-integrations)では、ヒントはカウントなしの通常の `← for agents` 形式のままです。Claude Code v2.1.205 以降が必要です。
-+{/* min-version: 2.1.205 */}通常の `claude` セッション内では、プロンプトフッターの `←` ヒントは、`← 2 agents` のように入力を待機中のバックグラウンドエージェントの数をカウントし、入力が必要なエージェントがない場合は `← for agents` に戻ります。99 を超えるカウントは `99+` として表示されます。カウントはターミナルがフォーカスされている間は約 10 秒ごとに更新され、フォーカスが戻ると即座に更新されます。カウントが移動したときとエージェントが完了したときに色が一時的に変わります。ただし、[`prefersReducedMotion` 設定](/docs/ja/settings#available-settings)がオンの場合は除きます。また、[スクリーンリーダーモード](/docs/ja/accessibility)では非表示になります。[Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry](/docs/ja/third-party-integrations)では、ヒントはカウントなしの通常の `← for agents` 形式のままです。Claude Code v2.1.205 以降が必要です。
- 
- <h2 id="monitor-sessions-with-agent-view">
-@@ -79,5 +79,5 @@ Claude が複数の独立したタスクに対して、あなたが毎ステッ
- `claude agents` を実行してエージェントビューを開きます。ターミナル全体を占有し、状態でグループ化されたすべてのセッションをリストします。ピン留めされたセッションと入力が必要なセッションが上部に表示されます。各行はセッションの名前、現在のアクティビティ、およびセッションが作成されてからの経過時間を表示します。完了したセッションの経過時間は、実行にかかった時間で固定されます。
- 
--名前は、そのセッションで [`/color`](/ja/commands) によって設定されたカラーで色付けされます。{/* min-version: 2.1.199 */}v2.1.199 以降、`←` または `/background` で [セッションをバックグラウンドにする](#from-inside-a-session) ときにカラーが引き継がれます。
-+名前は、そのセッションで [`/color`](/docs/ja/commands) によって設定されたカラーで色付けされます。{/* min-version: 2.1.199 */}v2.1.199 以降、`←` または `/background` で [セッションをバックグラウンドにする](#from-inside-a-session) ときにカラーが引き継がれます。
- 
- デフォルトでは、リストはすべてのプロジェクト全体で開始したすべてのバックグラウンドセッションを表示します。1 つのリポジトリで作業しているセッションと別のワークツリーで作業している別のセッションの両方がここに表示されます。エージェントビューを開いたディレクトリに関係なく表示されます。リストを 1 つのプロジェクトに絞り込むには、`--cwd` を渡します：
-@@ -89,5 +89,5 @@ claude agents --cwd ~/projects/my-app
- これはそのディレクトリの下で開始されたセッションのみを表示します。`~/projects/my-app/.claude/worktrees/` の下の [ワークツリーに移動した](#how-file-edits-are-isolated) セッションは、`~/projects/my-app` に属するものとしてカウントされます。
- 
--他のターミナルで開いているインタラクティブセッションは、[バックグラウンドにする](#from-inside-a-session) までは表示されません。[Subagents](/ja/sub-agents) と [teammates](/ja/agent-teams) はセッションが生成しても個別の行としてリストされません。
-+他のターミナルで開いているインタラクティブセッションは、[バックグラウンドにする](#from-inside-a-session) までは表示されません。[Subagents](/docs/ja/sub-agents) と [teammates](/docs/ja/agent-teams) はセッションが生成しても個別の行としてリストされません。
-```
-
-</details>
-
-<details>
-<summary>agents-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/agents-ja.md b/docs-ja/pages/agents-ja.md
-index 7b0bd36..d4b308a 100644
---- a/docs-ja/pages/agents-ja.md
-+++ b/docs-ja/pages/agents-ja.md
-@@ -7,28 +7,28 @@
- > Claude Code が複数のタスクを同時に実行する方法を比較します。サブエージェント、エージェントビュー、エージェントチーム、および動的ワークフローについて説明します。
- 
--[サブエージェント](/ja/sub-agents)、[エージェントビュー](/ja/agent-view)、[エージェントチーム](/ja/agent-teams)、および [動的ワークフロー](/ja/workflows) は、それぞれ異なる方法で作業を並列化します。どれを選ぶかは、各会話に自分で留まりたいのか、タスクを引き継いで後で確認したいのか、それとも Claude に一群のワーカーを調整させたいのかによって異なります。
-+[サブエージェント](/docs/ja/sub-agents)、[エージェントビュー](/docs/ja/agent-view)、[エージェントチーム](/docs/ja/agent-teams)、および [動的ワークフロー](/docs/ja/workflows) は、それぞれ異なる方法で作業を並列化します。どれを選ぶかは、各会話に自分で留まりたいのか、タスクを引き継いで後で確認したいのか、それとも Claude に一群のワーカーを調整させたいのかによって異なります。
- 
- | アプローチ                        | 提供内容                                                                    | 使用する場合                                                                      |
- | :--------------------------- | :---------------------------------------------------------------------- | :-------------------------------------------------------------------------- |
--| [サブエージェント](/ja/sub-agents)   | 1 つのセッション内で委任されたワーカーが、独自のコンテキストでサイドタスクを実行し、サマリーを返す                      | サイドタスクが検索結果、ログ、またはファイルコンテンツで主な会話を埋め尽くす場合（再度参照しない）                           |
--| [エージェントビュー](/ja/agent-view)  | `claude agents` で開く、バックグラウンドで実行されているセッションをディスパッチして監視する 1 つの画面。リサーチプレビュー | 複数の独立したタスクがあり、それらを引き継いで、一目で状態を確認し、必要な場合のみ介入したい場合                            |
--| [エージェントチーム](/ja/agent-teams) | 共有タスクリストとエージェント間メッセージングを備えた複数の調整されたセッション。リーダーによって管理される。実験的で、デフォルトでは無効   | Claude にプロジェクトを分割させ、割り当てさせ、ワーカーを同期させたい場合                                    |
--| [動的ワークフロー](/ja/workflows)    | 多くのサブエージェントを実行し、その結果をチェックするスクリプト。1 回のターンで調整するには大きすぎるジョブ向け               | タスクが大きすぎてサブエージェント数個では対応できない場合。コードベース全体の監査、500 ファイルのマイグレーション、または相互検証が必要な調査など |
-+| [サブエージェント](/docs/ja/sub-agents)   | 1 つのセッション内で委任されたワーカーが、独自のコンテキストでサイドタスクを実行し、サマリーを返す                      | サイドタスクが検索結果、ログ、またはファイルコンテンツで主な会話を埋め尽くす場合（再度参照しない）                           |
-+| [エージェントビュー](/docs/ja/agent-view)  | `claude agents` で開く、バックグラウンドで実行されているセッションをディスパッチして監視する 1 つの画面。リサーチプレビュー | 複数の独立したタスクがあり、それらを引き継いで、一目で状態を確認し、必要な場合のみ介入したい場合                            |
-+| [エージェントチーム](/docs/ja/agent-teams) | 共有タスクリストとエージェント間メッセージングを備えた複数の調整されたセッション。リーダーによって管理される。実験的で、デフォルトでは無効   | Claude にプロジェクトを分割させ、割り当てさせ、ワーカーを同期させたい場合                                    |
-+| [動的ワークフロー](/docs/ja/workflows)    | 多くのサブエージェントを実行し、その結果をチェックするスクリプト。1 回のターンで調整するには大きすぎるジョブ向け               | タスクが大きすぎてサブエージェント数個では対応できない場合。コードベース全体の監査、500 ファイルのマイグレーション、または相互検証が必要な調査など |
- 
--すべてのアプローチにおいて、ワーカーは Claude セッションです。別のツールを関与させるには、それを Claude に [MCP サーバー](/ja/mcp) として公開します。
-+すべてのアプローチにおいて、ワーカーは Claude セッションです。別のツールを関与させるには、それを Claude に [MCP サーバー](/docs/ja/mcp) として公開します。
- 
- この作業をサポートする 2 つの追加ツールがありますが、エージェント自体を実行する方法ではありません。
- 
--* [ワークツリー](/ja/worktrees) は各セッションに個別の git チェックアウトを提供するため、並列セッションが同じファイルを編集することはありません。自分で実行するセッションに使用します。エージェントビューは、ディスパッチされた各セッションを自動的に独自のワークツリーに移動し、スポーンするサブエージェントも各々独自のワークツリーを取得できます。
--* [`/batch`](/ja/commands) は、1 つの大きな変更を 5 ～ 30 個のワークツリー分離サブエージェントに分割し、各エージェントがプルリクエストを開く [skill](/ja/skills) です。これはサブエージェントとワークツリーのパッケージ化された使用法であり、別の調整スタイルではありません。
-+* [ワークツリー](/docs/ja/worktrees) は各セッションに個別の git チェックアウトを提供するため、並列セッションが同じファイルを編集することはありません。自分で実行するセッションに使用します。エージェントビューは、ディスパッチされた各セッションを自動的に独自のワークツリーに移動し、スポーンするサブエージェントも各々独自のワークツリーを取得できます。
-+* [`/batch`](/docs/ja/commands) は、1 つの大きな変更を 5 ～ 30 個のワークツリー分離サブエージェントに分割し、各エージェントがプルリクエストを開く [skill](/docs/ja/skills) です。これはサブエージェントとワークツリーのパッケージ化された使用法であり、別の調整スタイルではありません。
-```
-
-</details>
-
-*...以降省略*
-
-</details>
-
 
 <!-- UPDATE_LOG_END -->
