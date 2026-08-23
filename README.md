@@ -17,6 +17,271 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-08-23</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md                         |  4 ++
+ docs-ja/pages/claude-apps-gateway-ja.md            |  2 +-
+ docs-ja/pages/cross-session-messaging-en.md        | 18 +++++----
+ docs-ja/pages/managed-settings-en.md               | 44 +++++++++++-----------
+ .../self-hosted-environments-configuration-en.md   |  6 +--
+ .../pages/self-hosted-environments-deploy-en.md    |  4 +-
+ docs-ja/pages/self-hosted-environments-en.md       |  2 +-
+ .../pages/self-hosted-environments-identity-en.md  |  2 +-
+ .../self-hosted-environments-quickstart-en.md      |  4 +-
+ .../pages/self-hosted-environments-reference-en.md |  4 +-
+ .../pages/self-hosted-environments-testing-en.md   |  6 +--
+ docs-ja/pages/settings-reference-en.md             | 39 +++++++------------
+ 12 files changed, 66 insertions(+), 69 deletions(-)
+```
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index b05c306..e3a480a 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,8 @@
+ # Changelog
+ 
++## 2.1.240
++
++- Bug fixes and reliability improvements
++
+ ## 2.1.239
+ 
+```
+
+</details>
+
+<details>
+<summary>claude-apps-gateway-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/claude-apps-gateway-ja.md b/docs-ja/pages/claude-apps-gateway-ja.md
+index f4cd226..79d34a6 100644
+--- a/docs-ja/pages/claude-apps-gateway-ja.md
++++ b/docs-ja/pages/claude-apps-gateway-ja.md
+@@ -37,5 +37,5 @@ Claude アプリゲートウェイは、開発者の Claude Code クライアン
+ 
+ <Frame>
+-  <img src="https://mintcdn.com/claude-code/st9_ZQOFsZa3cKFl/images/claude-gateway-architecture.svg?fit=max&auto=format&n=st9_ZQOFsZa3cKFl&q=85&s=560770d8f49bbd6f1ca7090ed1f13c03" alt="Claude Code クライアントがベアラートークンを使用して HTTPS 経由でインフラストラクチャ内の自己ホスト型 Claude apps ゲートウェイに接続し、IdP に対してユーザーにサインインし、PostgreSQL に認証状態を保存し、テレメトリを OTLP コレクターにリレーし、Amazon Bedrock、Claude Platform on AWS、Google Cloud、Microsoft Foundry、または Anthropic API に推論を転送する図" width="760" height="320" data-path="images/claude-gateway-architecture.svg" />
++  <img src="https://mintcdn.com/claude-code/VbyXug8hBU9UK6oT/images/claude-gateway-architecture.svg?fit=max&auto=format&n=VbyXug8hBU9UK6oT&q=85&s=9e4f1190fc56718144190a3db61c63af" alt="Claude Code クライアントがベアラートークンを使用して HTTPS 経由でインフラストラクチャ内の自己ホスト型 Claude apps ゲートウェイに接続し、IdP に対してユーザーにサインインし、PostgreSQL に認証状態を保存し、テレメトリを OTLP コレクターにリレーし、Amazon Bedrock、Claude Platform on AWS、Google Cloud、Microsoft Foundry、または Anthropic API に推論を転送する図" width="760" height="320" data-path="images/claude-gateway-architecture.svg" />
+ </Frame>
+ 
+```
+
+</details>
+
+<details>
+<summary>cross-session-messaging-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/cross-session-messaging-en.md b/docs-ja/pages/cross-session-messaging-en.md
+index b476ac6..e9f6ce3 100644
+--- a/docs-ja/pages/cross-session-messaging-en.md
++++ b/docs-ja/pages/cross-session-messaging-en.md
+@@ -69,4 +69,5 @@ Claude Code refuses a message in the following cases:
+ * A rapid burst to a session on this machine has reached [what that session's inbox accepts](#limitations). Claude Code refuses further messages to that session.
+ * The reply target on this machine fails a safety check, such as a symlinked target or an endpoint that isn't the expected process. [Refusing to send a cross-session message](/docs/en/errors#refusing-to-send-a-cross-session-message) lists these checks.
++* Claude addresses the message to this session's own name, as described under [See which sessions Claude can reach](#see-which-sessions-claude-can-reach).
+ 
+ The receiving session checks each arriving message against its own [inbound controls](#control-inbound-messages), and the check ends in one of three outcomes:
+@@ -111,11 +112,14 @@ Only the Claude in your main conversation can subscribe, and only to your sessio
+ ### See which sessions Claude can reach
+ 
+-Claude finds a message's target on its own, so you don't need to run anything before asking it to send. To see for yourself which sessions Claude can reach, run the `/list-agents` command. It lists each session with the name it answers to, and that name is where Claude addresses a message. The listing covers:
++Claude finds a message's target on its own, so you don't need to run anything before asking it to send. To see for yourself which sessions Claude can reach, run the `/list-agents` command. The first line is this session's own name, the one your other sessions use to message it. The rows below it are the sessions Claude can reach, each with the name it answers to:
+ 
+-* **Subagents**: agents running inside the current session. [Agent team](/docs/en/agent-teams) teammates aren't listed; Claude messages them through the team's own roster.
++* **Subagents**: agents running inside the current session.
++* **Teammates**: this session's own [agent team](/docs/en/agent-teams) teammates. Before v2.1.239, teammates didn't appear in the listing, though Claude could already message them by name.
+ * **Your other local sessions**: Claude Code sessions running on the same machine, including [background sessions](/docs/en/agent-view). A session appears only when it binds an [inbox socket](#the-sessions-inbox-socket). The worker process that the [supervisor process](/docs/en/agent-view#the-supervisor-process) keeps ready for your next background session appears once you dispatch work to it.
+ * **Your cloud sessions**: your [Claude Code on the web](/docs/en/claude-code-on-the-web) sessions, shown while this session is connected to [Remote Control](/docs/en/remote-control). Claude Code labels them `cloud` in the listing.
+ * **Your Remote Control sessions on other machines**: shown while this session is connected to [Remote Control](/docs/en/remote-control), and labeled `Remote Control`. Claude Code shows `offline` as the status of a session whose Remote Control connection has dropped.
+ 
++This session isn't one of the rows. If Claude addresses a message to this session's own name, Claude Code refuses it and tells Claude the target is the current session. Before v2.1.239, the listing didn't show this session's name, and Claude Code reported a message sent to it as an agent it couldn't find.
++
+ Claude Code reads your cloud and Remote Control session lists newest first and stops after a bounded number of pages for each. If your account has more of those sessions than fit, Claude Code doesn't list the older ones, and Claude can't message them by name. When this happens, Claude Code says so in the listing, and Claude sees the same note when it sends a message.
+ 
+@@ -133,9 +137,9 @@ When you rename a session, or start or resume an interactive one, with a name an
+ How a message travels, and whether it passes through Anthropic servers, depends on where the target session runs:
+ 
+```
+
+</details>
+
+<details>
+<summary>managed-settings-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/managed-settings-en.md b/docs-ja/pages/managed-settings-en.md
+index 8b6b232..19f2f2c 100644
+--- a/docs-ja/pages/managed-settings-en.md
++++ b/docs-ja/pages/managed-settings-en.md
+@@ -83,5 +83,5 @@ A deployed policy reaches the developer's sessions as follows:
+ 
+ * **Surfaces**: every surface that runs Claude Code on the machine reads these sources: the terminal, the VS Code and JetBrains extensions, the desktop app, and [Agent SDK](/docs/en/agent-sdk/typescript) sessions, which load managed settings even when `settingSources` excludes the user, project, and local files.
+-* **Cloud sessions**: a session in an Anthropic-hosted environment doesn't read a device's MDM profile or file, so policy for it has to come from server-managed settings. A session in a [self-hosted environment](/docs/en/self-hosted-environments) reads the managed settings file in its runner image only when server-managed settings deliver no keys.
++* **Cloud sessions**: a session in an Anthropic-hosted environment doesn't read a device's MDM profile or file, so policy for it has to come from server-managed settings. A session in a [self-hosted environment](/docs/en/self-hosted-environments) reads the managed settings file in its runner image only when server-managed settings deliver no keys, apart from the [keys Claude Code reads from every admin source](#keys-read-from-every-admin-source).
+ * **Running sessions**: a session picks up most changes on the schedule in the table without a restart. Claude Code reads [`forceRemoteSettingsRefresh`](/docs/en/settings-reference#forceremotesettingsrefresh) and [`requiredMinimumVersion`](/docs/en/settings-reference#requiredminimumversion) only at session start, arms a new or changed [`policyHelper`](/docs/en/settings-reference#policyhelper) entry at the next launch, and reads [some user-editable keys once at session start](/docs/en/settings#when-edits-take-effect).
+ * **Changes that need approval**: a server-managed change to a setting that [needs approval](/docs/en/server-managed-settings#security-approval-dialogs), such as a hook or an `env` variable, waits for the developer to accept the dialog in an interactive session, and applies for the current run in a session an IDE extension or the Agent SDK hosts. Other server-managed changes apply on the next poll.
+@@ -265,25 +265,25 @@ Most of them are locks: the value a lock governs, such as permission rules or `s
+ The table covers the permission, plugin, and delivery controls. For any key not listed here, the Scope column of the [settings reference](/docs/en/settings-reference#all-settings) index says whether it's managed-only; the remaining managed-only keys there include the gateway login URL, version, browser, mobile-simulator, SSH host, sandbox binary path, and CLAUDE.md controls.
+ 
+-| Setting                                                                                                               | Description                                                                                                                                                                                                                                 |
+-| :-------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+-| [`allowAllClaudeAiMcps`](/docs/en/settings-reference#allowallclaudeaimcps)                                                 | Load the claude.ai connectors alongside a deployed `managed-mcp.json` instead of suppressing them                                                                                                                                           |
+-| [`allowedChannelPlugins`](/docs/en/settings-reference#allowedchannelplugins)                                               | Allowlist of channel plugins that may push messages. Replaces the default Anthropic allowlist when set. Requires `channelsEnabled: true`. See [Restrict which channel plugins can run](/docs/en/channels#restrict-which-channel-plugins-can-run) |
+-| [`allowManagedHooksOnly`](/docs/en/settings-reference#allowmanagedhooksonly)                                               | When `true`, restricts which hooks run; see [what runs under `allowManagedHooksOnly`](/docs/en/settings-reference#what-runs-under-allowmanagedhooksonly) for the full effect list                                                                |
+-| [`allowManagedMcpServersOnly`](/docs/en/settings-reference#allowmanagedmcpserversonly)                                     | When `true`, only `allowedMcpServers` from managed settings are respected. `deniedMcpServers` still merges from all sources. See [Managed MCP configuration](/docs/en/managed-mcp)                                                               |
+-| [`allowManagedPermissionRulesOnly`](/docs/en/settings-reference#allowmanagedpermissionrulesonly)                           | Only managed permission rules apply; the entry lists every source it ignores                                                                                                                                                                |
+-| [`blockedMarketplaces`](/docs/en/settings-reference#blockedmarketplaces)                                                   | Blocklist of marketplace sources. Blocked sources are checked before downloading, so they never touch the filesystem. See [managed marketplace restrictions](/docs/en/plugin-marketplaces#managed-marketplace-restrictions)                      |
+-| [`channelsEnabled`](/docs/en/settings-reference#channelsenabled)                                                           | Allow [channels](/docs/en/channels) for the organization. See [enterprise controls](/docs/en/channels#enterprise-controls) for the default on each plan                                                                                               |
+-| [`disableCommandPluginSources`](/docs/en/settings-reference#disablecommandpluginsources)                                   | When `true`, blocks [`command` plugin sources](/docs/en/plugin-marketplaces#command-sources) entirely, so the marketplace-declared command never runs. When unset, follows `allowManagedHooksOnly`. Requires Claude Code v2.1.229 or later       |
+-| [`disableSideloadFlags`](/docs/en/settings-reference#disablesideloadflags)                                                 | Reject the `--plugin-dir`, `--plugin-url`, `--agents`, and `--mcp-config` flags at startup. Requires Claude Code v2.1.193 or later                                                                                                          |
+-| [`forceRemoteSettingsRefresh`](/docs/en/settings-reference#forceremotesettingsrefresh)                                     | When `true`, blocks CLI startup until remote managed settings are freshly fetched and exits if the fetch fails. See [fail-closed enforcement](/docs/en/server-managed-settings#enforce-fail-closed-startup)                                      |
+-| [`parentSettingsBehavior`](/docs/en/settings-reference#parentsettingsbehavior)                                             | Whether host-supplied parent settings merge under the managed policy                                                                                                                                                                        |
+-| [`pluginSuggestionMarketplaces`](/docs/en/settings-reference#pluginsuggestionmarketplaces)                                 | Marketplaces whose plugins Claude Code may suggest to users                                                                                                                                                                                 |
+-| [`pluginTrustMessage`](/docs/en/settings-reference#plugintrustmessage)                                                     | Custom message appended to the plugin trust warning shown before installation                                                                                                                                                               |
+-| [`policyHelper`](/docs/en/settings-reference#policyhelper)                                                                 | Executable that computes managed settings at startup; see [Compute managed settings with a policy helper](/docs/en/settings-reference#policyhelper)                                                                                              |
+```
+
+</details>
+
+<details>
+<summary>self-hosted-environments-configuration-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/self-hosted-environments-configuration-en.md b/docs-ja/pages/self-hosted-environments-configuration-en.md
+index 27ac571..b5360a1 100644
+--- a/docs-ja/pages/self-hosted-environments-configuration-en.md
++++ b/docs-ja/pages/self-hosted-environments-configuration-en.md
+@@ -8,5 +8,5 @@
+ 
+ <Note>
+-  Self-hosted environments are in public beta on Team and Enterprise plans; an [Owner or admin](/docs/en/cloud-environments#organization-shared-environments) enables them by turning on **Allow self-hosted environments** on the [**Cloud environments** admin page](https://claude.ai/admin-settings/cloud-environments). This page assumes a working runner; see the [quickstart](/docs/en/self-hosted-environments-quickstart) for setup and [Deploy to production](/docs/en/self-hosted-environments-deploy) for the fleet recipes.
++  Self-hosted environments are in public beta on Team and Enterprise plans; an [Owner](/docs/en/cloud-environments#organization-shared-environments) enables them by turning on **Allow self-hosted environments** on the [**Cloud environments** admin page](https://claude.ai/admin-settings/cloud-environments). This page assumes a working runner; see the [quickstart](/docs/en/self-hosted-environments-quickstart) for setup and [Deploy to production](/docs/en/self-hosted-environments-deploy) for the fleet recipes.
+ </Note>
+ 
+@@ -226,5 +226,5 @@ The contract has four provisioner-agnostic rules:
+ 1. **Be idempotent on `CLAUDE_RUNNER_ORDER_ID`.** Redelivery of the same request must spawn at most one runner. Derive a deterministic resource name from the ID and let your platform reject the duplicate.
+ 2. **Don't retry the workload.** One order ID means at most one created workload. If the runner never registers, Anthropic re-requests with a fresh order ID after `--expected-spawn-seconds`.
+-3. **Use the exit-code contract.** Exit 0 means submitted. Exit 1 means retryable failure; the session backs off and is re-offered. Exit 2 or higher means non-retryable; the session is blocked from spawning again until an [Owner or admin](/docs/en/cloud-environments#organization-shared-environments) selects **Retry** on it in the environment's **Activity** tab. On non-zero exit, the tail of the hook's stderr appears there as the failure reason, so write the actionable error to stderr and never secrets. For a pre-warming request there is no session to fail: the orchestrator logs a non-zero exit locally only, and the server re-requests the spawn after the lease.
++3. **Use the exit-code contract.** Exit 0 means submitted. Exit 1 means retryable failure; the session backs off and is re-offered. Exit 2 or higher means non-retryable; the session is blocked from spawning again until an [Owner](/docs/en/cloud-environments#organization-shared-environments) selects **Retry** on it in the environment's **Activity** tab. On non-zero exit, the tail of the hook's stderr appears there as the failure reason, so write the actionable error to stderr and never secrets. For a pre-warming request there is no session to fail: the orchestrator logs a non-zero exit locally only, and the server re-requests the spawn after the lease.
+ 4. **Set `--expected-spawn-seconds` to at least your p99 boot time.** This is the server-side lease. All orchestrator replicas must use the same value.
+ 
+@@ -379,5 +379,5 @@ To pre-approve specific tools instead, append `--allowed-tools` with your rules,
+ The runner gives each session its own config directory, seeded from an in-memory snapshot of the host's `~/.claude/` that the runner captures once at startup: `settings.json`, `CLAUDE.md`, hooks, agents, commands, and skills in your runner image apply to every session as the user-level baseline. Because the snapshot is taken at startup, config changes on a running host take effect only after a runner restart. Set `SELF_HOSTED_RUNNER_HOST_CONFIG_DIR` to seed from a different path, or point it at an empty directory to disable seeding.
+ 
+-Repository-committed `.claude/settings.json` layers on top as project settings. Sessions also read [`managed-settings.json`](/docs/en/settings#where-settings-live) from the standard system path in your runner image, but the managed tier uses one source at a time, and [server-managed settings](/docs/en/server-managed-settings) are checked first: if your organization delivers any server-managed keys, sessions ignore the runner image's managed file, except that `env` blocks merge per key across managed sources. See [settings precedence](/docs/en/settings#settings-precedence).
++Repository-committed `.claude/settings.json` layers on top as project settings. Sessions also read [`managed-settings.json`](/docs/en/settings#where-settings-live) from the standard system path in your runner image, but the managed tier uses one source at a time, and [server-managed settings](/docs/en/server-managed-settings) are checked first: if your organization delivers any server-managed keys, sessions ignore the runner image's managed file except for its cross-source keys. Claude Code still reads the `env` block and the other [keys it reads from every admin source](/docs/en/managed-settings#keys-read-from-every-admin-source) from that file, such as the sandbox locks, the sandbox binary paths, and `forceRemoteSettingsRefresh`. See [settings precedence](/docs/en/settings#settings-precedence).
+ 
+ When Anthropic's control plane supplies a session with [Claude Code hooks](/docs/en/hooks), the runner installs them alongside, not over, your own configuration. Requires Claude Code v2.1.229 or later.
+```
+
+</details>
+
+<details>
+<summary>self-hosted-environments-deploy-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/self-hosted-environments-deploy-en.md b/docs-ja/pages/self-hosted-environments-deploy-en.md
+index de3dca9..4e41400 100644
+--- a/docs-ja/pages/self-hosted-environments-deploy-en.md
++++ b/docs-ja/pages/self-hosted-environments-deploy-en.md
+@@ -30,5 +30,5 @@ A self-hosted runner executes arbitrary, model-directed code on your infrastruct
+   The block applies to your wrapper script and lifecycle hooks too, since they share the container. Authenticate any token exchange with the [session JWT](/docs/en/self-hosted-environments-identity) against your own token service over allowlisted egress, or use a file-based web identity such as IAM Roles for Service Accounts (IRSA) on Amazon EKS.
+ * **Per-runner filesystem isolation**: each runner process gets its own working directory that no other process on the host can read or write. Make `--hooks-dir`, the wrapper script, and the host's `~/.claude/` read-only to the session, either built into the image or mounted read-only.
+-* **Dispatch is organization-wide**: any member of your Anthropic organization can dispatch a session to any of its environments, and there's no per-environment access control on dispatch. Treat every runner host as reachable for code execution by every org member, and place data or credentials on a runner host only if every org member is allowed to read them. [`--lock-to-account`](/docs/en/self-hosted-environments-reference#runner-cli-flags) bounds which account's sessions a given host executes, but dispatch into the environment itself stays organization-wide. To make self-hosted environments the only picker option, an [Owner or admin](/docs/en/cloud-environments#organization-shared-environments) can hide Anthropic-hosted environments for the whole organization from the [**Cloud environments** page](https://claude.ai/admin-settings/cloud-environments).
++* **Dispatch is organization-wide**: any member of your Anthropic organization can dispatch a session to any of its environments, and there's no per-environment access control on dispatch. Treat every runner host as reachable for code execution by every org member, and place data or credentials on a runner host only if every org member is allowed to read them. [`--lock-to-account`](/docs/en/self-hosted-environments-reference#runner-cli-flags) bounds which account's sessions a given host executes, but dispatch into the environment itself stays organization-wide. To make self-hosted environments the only picker option, an [Owner](/docs/en/cloud-environments#organization-shared-environments) can hide Anthropic-hosted environments for the whole organization from the [**Cloud environments** page](https://claude.ai/admin-settings/cloud-environments).
+ * **Enforce the repo-settings guard**: choose the guard mode with [`--confine-repo-settings`](/docs/en/self-hosted-environments-reference#runner-cli-flags). The default `warn` logs a violation and still spawns the session, `enforce` refuses the session, and `off` disables the scan. The runner scans each repository's committed settings for:
+ 
+@@ -59,5 +59,5 @@ Whether these hosts are needed depends on your configuration:
+ | :----------------------------------- | :--- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+ | `downloads.claude.ai`                | 443  | At install time, when you install or update Claude Code on the host with the native installer; the `install.sh` script itself is served from `claude.ai`. At session runtime, only when sessions install plugins from the official Anthropic marketplace.                               |
+-| `storage.googleapis.com`             | 443  | At session runtime, for marketplace plugin catalog fetches and Artifact publishing when the Artifact tool is enabled; Artifact publishing falls back to `api.anthropic.com` when this host is blocked.                                                                                  |
++| `storage.googleapis.com`             | 443  | At session runtime, for the plugin install counts and metadata shown in `/plugin`.                                                                                                                                                                                                      |
+ | `code.claude.com` and `claude.com`   | 443  | Documentation lookups by the built-in claude-code-guide agent and pre-approved WebFetch requests during sessions. Blocking these hosts only affects documentation lookups.                                                                                                              |
+ | `*.frame.claudeusercontent.com`      | 443  | Only when the [Artifact tool](/docs/en/artifacts#availability) is available for sessions in your organization; defaults vary by plan, per the availability table there. Set `CLAUDE_CODE_DISABLE_ARTIFACT=1` on the runner to keep the tool disabled regardless of the organization setting. |
+```
+
+</details>
+
+<details>
+<summary>self-hosted-environments-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/self-hosted-environments-en.md b/docs-ja/pages/self-hosted-environments-en.md
+index b136be1..99069ca 100644
+--- a/docs-ja/pages/self-hosted-environments-en.md
++++ b/docs-ja/pages/self-hosted-environments-en.md
+@@ -41,5 +41,5 @@ You can start runners yourself and keep them running, or run the [autoscaling or
+ Check these before planning a rollout:
+ 
+-* **Plans**: public beta for Team and Enterprise organizations. Self-hosted environments are off by default; an [Owner or admin](/docs/en/cloud-environments#organization-shared-environments) turns on **Allow self-hosted environments** on the [**Cloud environments** admin page](https://claude.ai/admin-settings/cloud-environments), which requires [Claude Code on the web](/docs/en/claude-code-on-the-web) to be enabled for the organization.
++* **Plans**: public beta for Team and Enterprise organizations. Self-hosted environments are off by default; an [Owner](/docs/en/cloud-environments#organization-shared-environments) turns on **Allow self-hosted environments** on the [**Cloud environments** admin page](https://claude.ai/admin-settings/cloud-environments), which requires [Claude Code on the web](/docs/en/claude-code-on-the-web) to be enabled for the organization.
+ * **Zero Data Retention**: unavailable for organizations with [Zero Data Retention](/docs/en/zero-data-retention) enabled.
+ * **Model inference**: sessions use the Anthropic API, and inference can't be routed through [Amazon Bedrock, Google Cloud's Agent Platform, Microsoft Foundry](/docs/en/third-party-integrations), or an [LLM gateway](/docs/en/llm-gateway).
+```
+
+</details>
+
+<details>
+<summary>self-hosted-environments-identity-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/self-hosted-environments-identity-en.md b/docs-ja/pages/self-hosted-environments-identity-en.md
+index 6784e5b..a134453 100644
+--- a/docs-ja/pages/self-hosted-environments-identity-en.md
++++ b/docs-ja/pages/self-hosted-environments-identity-en.md
+@@ -8,5 +8,5 @@
+ 
+ <Note>
+-  Self-hosted environments are in public beta on Team and Enterprise plans; an [Owner or admin](/docs/en/cloud-environments#organization-shared-environments) enables them by turning on **Allow self-hosted environments** on the [**Cloud environments** admin page](https://claude.ai/admin-settings/cloud-environments). This page covers session identity verification; see the [quickstart](/docs/en/self-hosted-environments-quickstart) for setup and [Deploy to production](/docs/en/self-hosted-environments-deploy) for the fleet recipes.
++  Self-hosted environments are in public beta on Team and Enterprise plans; an [Owner](/docs/en/cloud-environments#organization-shared-environments) enables them by turning on **Allow self-hosted environments** on the [**Cloud environments** admin page](https://claude.ai/admin-settings/cloud-environments). This page covers session identity verification; see the [quickstart](/docs/en/self-hosted-environments-quickstart) for setup and [Deploy to production](/docs/en/self-hosted-environments-deploy) for the fleet recipes.
+ </Note>
+ 
+```
+
+</details>
+
+<details>
+<summary>self-hosted-environments-quickstart-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/self-hosted-environments-quickstart-en.md b/docs-ja/pages/self-hosted-environments-quickstart-en.md
+index 6b379b4..82aac37 100644
+--- a/docs-ja/pages/self-hosted-environments-quickstart-en.md
++++ b/docs-ja/pages/self-hosted-environments-quickstart-en.md
+@@ -21,5 +21,5 @@ By the end you'll have an environment on the [**Cloud environments** admin page]
+ The claude.ai side needs:
+ 
+-* **Allow self-hosted environments** turned on by an [Owner or admin](/docs/en/cloud-environments#organization-shared-environments) on the [**Cloud environments** admin page](https://claude.ai/admin-settings/cloud-environments); the **New** button doesn't appear until it is. If you don't hold the role, someone who does can create the environment and hand you its secret; the runner and terminal steps on this page need no claude.ai role, and where a step checks status in the admin UI, the runner's own log lines give you the same signal.
++* **Allow self-hosted environments** turned on by an [Owner](/docs/en/cloud-environments#organization-shared-environments) on the [**Cloud environments** admin page](https://claude.ai/admin-settings/cloud-environments); the **New** button doesn't appear until it is. If you don't hold the role, someone who does can create the environment and hand you its secret; the runner and terminal steps on this page need no claude.ai role, and where a step checks status in the admin UI, the runner's own log lines give you the same signal.
+ * A [GitHub connection](/docs/en/claude-code-on-the-web#github-authentication-options) for your organization, so developers can pick repositories when they start sessions.
+ 
+@@ -48,5 +48,5 @@ A ready host prints the runner's usage text, listing flags such as `--environmen
+ ## Set up an environment and runner
+ 
+-Claude Code includes a guided setup: an interactive Claude Code session that walks you through creating the environment in the admin UI, starts a local runner with the secret file you save, confirms that the runner registers, and writes a cheat sheet to `./runner-setup/CHEAT-SHEET.md`. Run it on a machine where you've signed in with `claude auth login` using an account that holds an Owner or admin role; it isn't available with API keys or third-party model providers. On hosts where an interactive session isn't possible, use the manual steps below instead. Confirm the [version check](#software-on-the-runner-host) passed first: on versions older than 2.1.224, this command starts an ordinary Claude session with the words as the prompt instead of the guided setup. To start the guided setup, run the setup subcommand and follow the prompts:
++Claude Code includes a guided setup: an interactive Claude Code session that walks you through creating the environment in the admin UI, starts a local runner with the secret file you save, confirms that the runner registers, and writes a cheat sheet to `./runner-setup/CHEAT-SHEET.md`. Run it on a machine where you've signed in with `claude auth login` using an account that holds an Owner role; it isn't available with API keys or third-party model providers. On hosts where an interactive session isn't possible, use the manual steps below instead. Confirm the [version check](#software-on-the-runner-host) passed first: on versions older than 2.1.224, this command starts an ordinary Claude session with the words as the prompt instead of the guided setup. To start the guided setup, run the setup subcommand and follow the prompts:
+ 
+ ```bash theme={null}
+```
+
+</details>
+
+*...以降省略*
+
+</details>
+
+
+<details>
 <summary>2026-08-22</summary>
 
 **変更ファイル:**
@@ -2371,233 +2636,5 @@ index 7b8062e..e354b12 100644
 ```
 
 </details>
-
-<details>
-<summary>prompt-caching-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/prompt-caching-ja.md b/docs-ja/pages/prompt-caching-ja.md
-index 3fb3401..262aef4 100644
---- a/docs-ja/pages/prompt-caching-ja.md
-+++ b/docs-ja/pages/prompt-caching-ja.md
-@@ -21,5 +21,5 @@ API は、プリフィックスと呼ばれる各リクエストの開始を、
- <img src="https://mintcdn.com/claude-code/VbDJw--l6T9a9Wvm/images/prompt-caching-prefix.svg?fit=max&auto=format&n=VbDJw--l6T9a9Wvm&q=85&s=f2e8f0b8298a50305fe428ca3f1d1594" className="dark:hidden" alt="4 つのターンが成長する水平バーとして表示されます。各ターンのリクエストには、前のターンのすべてと最新の交換が最後に追加されたものが含まれます。ターン 2 と 3 では、変更されていないプリフィックスはキャッシュから読み取られ、新しい交換のみが処理されます。ターン 4 では、システムプロンプトが変更されたため、プリフィックスは一致しなくなり、リクエスト全体が再処理されて書き込まれます。" width="720" height="454" data-path="images/prompt-caching-prefix.svg" />
- 
--<img src="https://mintcdn.com/claude-code/VbDJw--l6T9a9Wvm/images/prompt-caching-prefix-dark.svg?fit=max&auto=format&n=VbDJw--l6T9a9Wvm&q=85&s=7434a04e08187edd26ec6c3dd332f624" className="hidden dark:block" alt="4 つのターンが成長する水平バーとして表示されます。各ターンのリクエストには、前のターンのすべてと最新の交換が最後に追加されたものが含まれます。ターン 2 と 3 では、変更されていないプリフィックスはキャッシュから読み取られ、新しい交換のみが処理されます。ターン 4 では、システムプロンプトが変更されたため、プリフィックスは一致しなくなり、リクエスト全体が再処理されて書き込まれます。" width="720" height="454" data-path="images/prompt-caching-prefix-dark.svg" />
-+<img src="https://mintcdn.com/claude-code/_xqph1dUOslCOwsj/images/prompt-caching-prefix-dark.svg?fit=max&auto=format&n=_xqph1dUOslCOwsj&q=85&s=297dc1c639f0915cae858d0c4b6f3be5" className="hidden dark:block" alt="4 つのターンが成長する水平バーとして表示されます。各ターンのリクエストには、前のターンのすべてと最新の交換が最後に追加されたものが含まれます。ターン 2 と 3 では、変更されていないプリフィックスはキャッシュから読み取られ、新しい交換のみが処理されます。ターン 4 では、システムプロンプトが変更されたため、プリフィックスは一致しなくなり、リクエスト全体が再処理されて書き込まれます。" width="720" height="454" data-path="images/prompt-caching-prefix-dark.svg" />
- 
- プリフィックスマッチングを最大限に活用するために、Claude Code は各リクエストを順序付けして、ターン間で変更されることがめったにないコンテンツが最初に来るようにします。
-```
-
-</details>
-
-</details>
-
-
-<details>
-<summary>2026-07-29</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/claude-directory-ja.md  | 6 +++---
- docs-ja/pages/claude-security-en.md   | 7 ++++---
- docs-ja/pages/hooks-guide-ja.md       | 2 +-
- docs-ja/pages/hooks-ja.md             | 2 +-
- docs-ja/pages/mobile-en.md            | 5 +++--
- docs-ja/pages/plugins-reference-ja.md | 2 +-
- 6 files changed, 13 insertions(+), 11 deletions(-)
-```
-
-**新規追加:**
-
-
-<details>
-<summary>claude-directory-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/claude-directory-ja.md b/docs-ja/pages/claude-directory-ja.md
-index 3f63d72..d4a46d5 100644
---- a/docs-ja/pages/claude-directory-ja.md
-+++ b/docs-ja/pages/claude-directory-ja.md
-@@ -103,5 +103,5 @@ config/secrets.json`,
-         color: 'var(--ce-accent)',
-         oneLiner: 'Project-level configuration, rules, and extensions',
--        description: 'Everything Claude Code reads that is specific to this project. If you use git, commit most files here so your team shares them; a few, like settings.local.json, are automatically gitignored. Each file badge shows which.',
-+        description: 'Everything Claude Code reads that is specific to this project. If you use git, commit most files here so your team shares them; a few, like settings.local.json, are gitignored when Claude Code saves settings to them. Each file badge shows which.',
-         children: [{
-           id: 'settings-json',
-@@ -147,6 +147,6 @@ config/secrets.json`,
-           oneLiner: 'Your personal settings overrides for this project',
-           when: 'Highest of the user-editable settings files; CLI flags and managed settings still take precedence',
--          description: 'Personal settings that take precedence over the project defaults. Same JSON format as settings.json, but not committed. Use this when you need different permissions or defaults than the team config.',
--          tips: [<>Same schema as settings.json. Array settings like <C>permissions.allow</C> combine across scopes; scalar settings like <C>model</C> use the local value</>, <>Claude Code adds this file to <C>~/.config/git/ignore</C> the first time it writes one. If you use a custom <C>core.excludesFile</C>, add the pattern there too. To share the ignore rule with your team, also add it to the project <C>.gitignore</C></>],
-+          description: 'Personal settings that take precedence over the project defaults. Same JSON format as settings.json, gitignored when Claude Code saves a setting to it. Use this when you need different permissions or defaults than the team config.',
-+          tips: [<>Same schema as settings.json. Array settings like <C>permissions.allow</C> combine across scopes; scalar settings like <C>model</C> use the local value</>, <>When Claude Code saves a setting to this file in a repository that doesn't already ignore it, it adds <C>**/.claude/settings.local.json</C> to your global git excludes file: <C>core.excludesFile</C> from your global git config when it's set to an absolute or <C>~</C>-prefixed path, otherwise <C>$XDG_CONFIG_HOME/git/ignore</C>, or <C>~/.config/git/ignore</C>. To share the ignore rule with your team, also add it to the project <C>.gitignore</C></>],
-           exampleIntro: 'This example adds Docker permissions on top of whatever the team settings.json allows.',
-           example: `{
-```
-
-</details>
-
-<details>
-<summary>claude-security-en.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/claude-security-en.md b/docs-ja/pages/claude-security-en.md
-index 911c523..f98988a 100644
---- a/docs-ja/pages/claude-security-en.md
-+++ b/docs-ja/pages/claude-security-en.md
-@@ -30,7 +30,8 @@ In a Claude Code session, install from the [official Anthropic marketplace](/doc
- ```
- 
--<Note>
--  If Claude Code reports that the marketplace is not found, run `/plugin marketplace add anthropics/claude-plugins-official` first, then retry the install.
--</Note>
-+If the install fails, the fix depends on which message Claude Code reports:
-+
-+* If it reports `Marketplace "claude-plugins-official" not found`, add the marketplace with `/plugin marketplace add anthropics/claude-plugins-official`, then retry the install.
-+* If it reports that it can't find the plugin in the marketplace, check the plugin name for a typo, then refresh your local copy of the marketplace with `/plugin marketplace update claude-plugins-official` and retry the install.
- 
- Then activate the plugin in the current session with `/reload-plugins`, which applies pending plugin changes without a restart:
-```
-
-</details>
-
-<details>
-<summary>hooks-guide-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/hooks-guide-ja.md b/docs-ja/pages/hooks-guide-ja.md
-index d49c8ce..d56587d 100644
---- a/docs-ja/pages/hooks-guide-ja.md
-+++ b/docs-ja/pages/hooks-guide-ja.md
-@@ -466,5 +466,5 @@ Hook イベントは Claude Code のライフサイクルの特定のポイン
- | `UserPromptExpansion` | When a user-typed command expands into a prompt, before it reaches Claude. Can block the expansion                                                     |
- | `PreToolUse`          | Before a tool call executes. Can block it                                                                                                              |
--| `PermissionRequest`   | When a permission dialog appears                                                                                                                       |
-+| `PermissionRequest`   | When a tool call needs a permission decision                                                                                                           |
- | `PermissionDenied`    | When a tool call is denied by the auto mode classifier. Return `{retry: true}` to tell the model it may retry the denied tool call                     |
- | `PostToolUse`         | After a tool call succeeds                                                                                                                             |
-```
-
-</details>
-
-<details>
-<summary>hooks-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/hooks-ja.md b/docs-ja/pages/hooks-ja.md
-index ca87be6..b71be52 100644
---- a/docs-ja/pages/hooks-ja.md
-+++ b/docs-ja/pages/hooks-ja.md
-@@ -40,5 +40,5 @@
- | `UserPromptExpansion` | When a user-typed command expands into a prompt, before it reaches Claude. Can block the expansion                                                     |
- | `PreToolUse`          | Before a tool call executes. Can block it                                                                                                              |
--| `PermissionRequest`   | When a permission dialog appears                                                                                                                       |
-+| `PermissionRequest`   | When a tool call needs a permission decision                                                                                                           |
- | `PermissionDenied`    | When a tool call is denied by the auto mode classifier. Return `{retry: true}` to tell the model it may retry the denied tool call                     |
- | `PostToolUse`         | After a tool call succeeds                                                                                                                             |
-```
-
-</details>
-
-<details>
-<summary>mobile-en.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/mobile-en.md b/docs-ja/pages/mobile-en.md
-index 02e18b2..627011e 100644
---- a/docs-ja/pages/mobile-en.md
-+++ b/docs-ja/pages/mobile-en.md
-@@ -53,5 +53,5 @@ Cloud sessions and Remote Control run from the **Code** tab and are covered belo
- Claude Code on the web runs tasks on Anthropic-managed cloud infrastructure, so a session continues after you put your phone away. From the Code tab, select a repository and branch, describe the task, and submit it. Sessions persist across devices: a task you start on your laptop is ready to review from your phone, and one you start from your phone is waiting when you're back at your desk.
- 
--Open a session in the app to check progress, answer Claude's questions, or steer it in a new direction. You can also tell Claude to [watch a pull request](/docs/en/claude-code-on-the-web#auto-fix-pull-requests) and fix CI failures or review comments as they arrive. To connect GitHub and create your first environment, follow the [web quickstart](/docs/en/web-quickstart), and see [Claude Code on the web](/docs/en/claude-code-on-the-web) for everything cloud sessions can do.
-+Open a session in the app to check progress, answer Claude's questions, or steer it in a new direction. You can also tell Claude to [watch a pull request](/docs/en/claude-code-on-the-web#auto-fix-pull-requests) and fix CI failures or review comments as they arrive. To connect GitHub and set up your environment, follow the [web quickstart](/docs/en/web-quickstart), and see [Claude Code on the web](/docs/en/claude-code-on-the-web) for everything cloud sessions can do.
- 
- ### Continue a local session with Remote Control
-@@ -78,5 +78,6 @@ The mobile client covers most of what a session needs, with a few limitations:
- 
- * [Platforms and integrations](/docs/en/platforms): compare every surface Claude Code runs on
--* [Claude Code on the web](/docs/en/claude-code-on-the-web): how cloud sessions run, network access, and moving work to and from your terminal
-+* [Claude Code on the web](/docs/en/claude-code-on-the-web): how cloud sessions run and how to move work to and from your terminal
-+* [Configure cloud environments](/docs/en/cloud-environments): network access levels, environment variables, and setup scripts for cloud sessions
- * [Remote Control](/docs/en/remote-control): continue a local session from any device
- * [Sessions from Dispatch](/docs/en/desktop#sessions-from-dispatch): how Dispatch tasks become Code sessions in the Desktop app
-```
-
-</details>
-
-<details>
-<summary>plugins-reference-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/plugins-reference-ja.md b/docs-ja/pages/plugins-reference-ja.md
-index 2db4760..4cb1e94 100644
---- a/docs-ja/pages/plugins-reference-ja.md
-+++ b/docs-ja/pages/plugins-reference-ja.md
-@@ -126,5 +126,5 @@ disallowedTools: Write, Edit
- | `UserPromptExpansion` | When a user-typed command expands into a prompt, before it reaches Claude. Can block the expansion                                                     |
- | `PreToolUse`          | Before a tool call executes. Can block it                                                                                                              |
--| `PermissionRequest`   | When a permission dialog appears                                                                                                                       |
-+| `PermissionRequest`   | When a tool call needs a permission decision                                                                                                           |
- | `PermissionDenied`    | When a tool call is denied by the auto mode classifier. Return `{retry: true}` to tell the model it may retry the denied tool call                     |
- | `PostToolUse`         | After a tool call succeeds                                                                                                                             |
-```
-
-</details>
-
-</details>
-
-
-<details>
-<summary>2026-07-26</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/changelog.md | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
-```
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index 97c4a8e..7ca26b5 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,8 @@
- # Changelog
- 
-+## 2.1.220
-+
-+- Bug fixes and reliability improvements
-+
- ## 2.1.219
- 
-@@ -11,8 +15,5 @@
- - Fixed `claude -p` text output dropping the answer already produced when a turn dies on a mid-stream API error
- - Added HTTP status and error text to `claude mcp list` and `/mcp` when a server fails to connect, and a warning for MCP config values with hidden leading or trailing whitespace
--- Fixed a permission you approved while a self-hosted runner was restarting being dropped when the session resumed, so the approved action now runs
- - Fixed the Fable model row showing "Requires usage credits" for plans that include it, when a stale cache had baked the label in
--- Fixed a SIGTERM arriving while a self-hosted runner was starting up leaving a stale active row until the lease expired; it now deregisters cleanly
--- Added structured failure categories to self-hosted runner spawn and session failures, so hook errors, runner crashes and config errors can be told apart
- - Fixed the `/model` picker showing the merged Opus row as plain "Opus" instead of "Opus (1M context)"
- - Fixed copy-on-select inside GNU screen printing base64 into the terminal instead of copying the selection
-@@ -954,5 +955,4 @@
- ## 2.1.169
- 
--- Self-hosted runner: added a `post-session` lifecycle hook that runs after the session ends and before the workspace is deleted, so you can snapshot uncommitted work or export logs; also made the child-process SIGTERM→SIGKILL window configurable (default unchanged at 5s)
- - Added `--safe-mode` flag (and `CLAUDE_CODE_SAFE_MODE`) to start Claude Code with all customizations (CLAUDE.md, plugins, skills, hooks, MCP servers) disabled for troubleshooting
- - Added `/cd` command to move a session to a new working directory without breaking the prompt cache mid-session
-```
-
-</details>
-
-</details>
-
 
 <!-- UPDATE_LOG_END -->
