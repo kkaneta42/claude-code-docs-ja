@@ -17,6 +17,40 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-08-24</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md | 4 ++++
+ 1 file changed, 4 insertions(+)
+```
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index e3a480a..0280e56 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,8 @@
+ # Changelog
+ 
++## 2.1.241
++
++- Bug fixes and reliability improvements
++
+ ## 2.1.240
+ 
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-08-23</summary>
 
 **変更ファイル:**
@@ -2603,38 +2637,5 @@ index 4cb1e94..5ea7ddc 100644
 
 </details>
 
-
-<details>
-<summary>2026-07-30</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/devcontainer-ja.md   | 2 +-
- docs-ja/pages/prompt-caching-ja.md | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
-```
-
-**新規追加:**
-
-
-<details>
-<summary>devcontainer-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/devcontainer-ja.md b/docs-ja/pages/devcontainer-ja.md
-index 7b8062e..e354b12 100644
---- a/docs-ja/pages/devcontainer-ja.md
-+++ b/docs-ja/pages/devcontainer-ja.md
-@@ -21,5 +21,5 @@
-   <img src="https://mintcdn.com/claude-code/YvJyjZfd9yMihr0i/images/devcontainer-architecture.svg?fit=max&auto=format&n=YvJyjZfd9yMihr0i&q=85&s=9017b1d16a446c6cc37ba562f35b9aae" className="dark:hidden" alt="ホスト上のエディタが Docker 開発コンテナに接続する図。Claude Code、ターミナル、ビルドツールはコンテナ内で実行されます。ホストリポジトリはコンテナにバインドマウントされ、ワークスペースとして機能します。" width="640" height="300" data-path="images/devcontainer-architecture.svg" />
- 
--  <img src="https://mintcdn.com/claude-code/YvJyjZfd9yMihr0i/images/devcontainer-architecture-dark.svg?fit=max&auto=format&n=YvJyjZfd9yMihr0i&q=85&s=ef00c8e25b1ea7a3a152895f1488831b" className="hidden dark:block" alt="ホスト上のエディタが Docker 開発コンテナに接続する図。Claude Code、ターミナル、ビルドツールはコンテナ内で実行されます。ホストリポジトリはコンテナにバインドマウントされ、ワークスペースとして機能します。" width="640" height="300" data-path="images/devcontainer-architecture-dark.svg" />
-+  <img src="https://mintcdn.com/claude-code/_xqph1dUOslCOwsj/images/devcontainer-architecture-dark.svg?fit=max&auto=format&n=_xqph1dUOslCOwsj&q=85&s=a0a340b1f2afc6a590696102c8acaaca" className="hidden dark:block" alt="ホスト上のエディタが Docker 開発コンテナに接続する図。Claude Code、ターミナル、ビルドツールはコンテナ内で実行されます。ホストリポジトリはコンテナにバインドマウントされ、ワークスペースとして機能します。" width="640" height="300" data-path="images/devcontainer-architecture-dark.svg" />
- 
-   開発コンテナは Docker コンテナとして実行され、マシン上または GitHub Codespaces などのクラウドホスト上で実行されます。Dev Containers 仕様をサポートするエディタ（VS Code、GitHub Codespaces、JetBrains IDE、Cursor など）がそのコンテナに接続します。通常どおりエディタでファイルを参照および編集しますが、統合ターミナル、言語サーバー、ビルドツールはすべてホストではなくコンテナ内で実行されます。プレーン Vim などの開発コンテナをサポートしていないエディタはこのワークフローの対象外です。
-```
-
-</details>
 
 <!-- UPDATE_LOG_END -->
