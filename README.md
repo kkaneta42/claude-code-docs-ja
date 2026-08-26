@@ -17,6 +17,123 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-08-26</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md             | 68 ++++++++++++++++++++++++++++++++++
+ docs-ja/pages/managed-settings-en.md   |  4 +-
+ docs-ja/pages/settings-reference-en.md | 66 +++++++++++++++++++++++++++++++++
+ 3 files changed, 136 insertions(+), 2 deletions(-)
+```
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index 4728175..8862f0c 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,72 @@
+ # Changelog
+ 
++## 2.1.246
++
++- Added a startup warning for Bash allow rules with a wildcard before the subcommand (e.g. `Bash(git * main)`), since they also match options inserted before the subcommand
++- Added an Auto mode tab to `/permissions` for viewing and editing auto mode classifier rules
++- Added the turn's completion time to the end-of-turn duration line, e.g. `✻ Sautéed for 23s · done 6:05 PM`
++- Fixed fullscreen mode showing a blank transcript after resizing the terminal and jumping to the bottom until the next keypress
++- Fixed a severe transcript slowdown when a diff contained a very long single line (e.g. a base64 string); such lines now render truncated with a marker
++- Fixed erratic fullscreen scrolling when positioned at an earlier message, including jump-to-bottom getting stuck mid-transcript
++- Fixed background sessions failing to open after 45 seconds when Claude Code's starting directory had been deleted, the machine had slept, or the host is slow to start processes
++- Fixed background sessions failing to open with "Couldn't start the background service … EACCES" when another Claude Code process was re-installing the npm package at that moment
++- Fixed markdown rendering being disabled for a whole message when its first 500 characters contained no markdown, and for `+`/`N)` lists and setext headings
++- Fixed MCP tool calls interrupted by an incoming message in headless/remote sessions being reported to the model as "completed with no output" instead of an explicit interrupted error
++- Fixed MCP tool arguments being sent as JSON strings when the parameter's schema is empty (`{}`), instead of their real type
++- Fixed a command interrupted mid-run showing as "Ran 1 shell command" with no sign it was cut
++- Fixed pressing ← or running `/background` during a dynamic workflow restarting its finished subagents; it now asks first and says how many subagents would restart
++- Fixed opening a just-started session in `claude agents` while its worker was still booting (common on Windows) stopping it with "was stopped while the respawn was in flight"
++- Fixed `claude agents` listing a backgrounded named session twice; backgrounding the same conversation again now numbers the new row (e.g. `my-session (2)`)
++- Fixed the background retention sweep removing git worktrees under `.claude/worktrees/` that you created yourself when an old background-session record pointed at them
++- Fixed auto mode tool calls being denied as "temporarily unavailable" on very large sessions by scaling the safety-check deadline with prompt size
++- Fixed the plugin cache creating duplicate SHA-named directories for the same plugin
++- Fixed plugin skills whose frontmatter `name` already includes the `<plugin>:` prefix showing it doubled in the slash menu (e.g. `/plugin:plugin:skill`)
++- Fixed `claude plugin update` failing for an installed plugin given its bare name (only the fully-qualified name worked)
++- Fixed plugin installation failing when `plugin.json` was saved with a UTF-8 byte-order mark (BOM)
+```
+
+</details>
+
+<details>
+<summary>managed-settings-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/managed-settings-en.md b/docs-ja/pages/managed-settings-en.md
+index 341641a..7c2bfa0 100644
+--- a/docs-ja/pages/managed-settings-en.md
++++ b/docs-ja/pages/managed-settings-en.md
+@@ -85,5 +85,5 @@ A deployed policy reaches the developer's sessions as follows:
+ * **Cloud sessions**: a session in an Anthropic-hosted environment doesn't read a device's MDM profile or file, so policy for it has to come from server-managed settings. A session in a [self-hosted environment](/docs/en/self-hosted-environments) reads the managed settings file in its runner image only when server-managed settings deliver no keys, apart from the [keys Claude Code reads from every admin source](#keys-read-from-every-admin-source).
+ * **Running sessions**: a session picks up most changes on the schedule in the table without a restart. Claude Code reads [`forceRemoteSettingsRefresh`](/docs/en/settings-reference#forceremotesettingsrefresh) and [`requiredMinimumVersion`](/docs/en/settings-reference#requiredminimumversion) only at session start, arms a new or changed [`policyHelper`](/docs/en/settings-reference#policyhelper) entry at the next launch, and reads [some user-editable keys once at session start](/docs/en/settings#when-edits-take-effect).
+-* **Changes that need approval**: a server-managed change to a setting that [needs approval](/docs/en/server-managed-settings#security-approval-dialogs), such as a hook or an `env` variable, waits for the developer to accept the dialog in an interactive session, and applies for the current run in a session an IDE extension or the Agent SDK hosts. Other server-managed changes apply on the next poll.
++* **Changes that need approval**: apart from the [updates that wait for the next launch](/docs/en/server-managed-settings#fetch-and-caching-behavior), a server-managed change to a setting that [needs approval](/docs/en/server-managed-settings#security-approval-dialogs), such as a hook or an `env` variable, waits for the developer to accept the dialog in an interactive session, and applies for the current run in a session an IDE extension or the Agent SDK hosts. Other server-managed changes apply on the next poll.
+ * **Long-lived sessions**: a session left open for weeks can still lag a rollout. [`requiredMinimumVersion`](/docs/en/settings-reference#requiredminimumversion) blocks an outdated binary from starting and doesn't end a session that's already running.
+ 
+@@ -264,5 +264,5 @@ Claude Code reads the following keys only from a managed source; placing them in
+ Most of them are locks: the value a lock governs, such as permission rules or `sandbox.network.allowedDomains`, is an ordinary key that any level can set, and the lock tells Claude Code to honor only the managed value.
+ 
+-The table covers the permission, plugin, and delivery controls. For any key not listed here, the Scope column of the [settings reference](/docs/en/settings-reference#all-settings) index says whether it's managed-only; the remaining managed-only keys there include the gateway login URL, version, browser, mobile-simulator, SSH host, sandbox binary path, and CLAUDE.md controls.
++The table covers the permission, plugin, and delivery controls. For any key not listed here, the Scope column of the [settings reference](/docs/en/settings-reference#all-settings) index says whether it's managed-only; the remaining managed-only keys there include the gateway login URL, version, browser, mobile-simulator, SSH host, Desktop local-session, sandbox binary path, and CLAUDE.md controls.
+ 
+ | Setting                                                                                                               | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+```
+
+</details>
+
+<details>
+<summary>settings-reference-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/settings-reference-en.md b/docs-ja/pages/settings-reference-en.md
+index 4fce887..4da059b 100644
+--- a/docs-ja/pages/settings-reference-en.md
++++ b/docs-ja/pages/settings-reference-en.md
+@@ -641,4 +641,5 @@ scope: "Which settings files can set the key: user (~/.claude/settings.json), pr
+ | [`disableCommandPluginSources`](#disablecommandpluginsources)                                   | Block [plugins](/docs/en/plugins) that install by running a marketplace-declared command                                                                                                                                         | Plugins and skills                 | Managed                 |
+ | [`disableDeepLinkRegistration`](#disabledeeplinkregistration)                                   | Stop Claude Code from registering the [`claude-cli://` handler](/docs/en/deep-links)                                                                                                                                             | Remote, desktop, and notifications | Any file                |
++| [`disableDesktopLocalSessions`](#disabledesktoplocalsessions)                                   | Turn off [Desktop Code sessions](/docs/en/desktop#local-sessions-on-managed-devices) that run on the device, leaving SSH to other hosts and cloud                                                                                | Remote, desktop, and notifications | Managed                 |
+ | [`disabledMcpjsonServers`](#disabledmcpjsonservers)                                             | Reject specific servers from a project's [`.mcp.json`](/docs/en/mcp#project-scope)                                                                                                                                               | MCP                                | Any file                |
+ | [`disableMobileSimulatorTools`](#disablemobilesimulatortools)                                   | Block Claude's tools in the [desktop](/docs/en/desktop) iOS Simulator pane                                                                                                                                                       | Tools                              | Managed                 |
+@@ -705,4 +706,5 @@ scope: "Which settings files can set the key: user (~/.claude/settings.json), pr
+ | [`prefersReducedMotion`](#prefersreducedmotion)                                                 | [Reduce or turn off](/docs/en/accessibility#accessibility-settings) spinner, shimmer, and flash animations                                                                                                                       | Interface and terminal             | Any file                |
+ | [`processWrapper`](#processwrapper)                                                             | Run Claude Code's background processes through a [corporate launcher](/docs/en/corporate-launcher) on macOS and Linux                                                                                                            | Agents, sessions, and worktrees    | User or managed         |
++| [`promptCacheTtl`](#promptcachettl)                                                             | Choose the [prompt cache lifetime](/docs/en/prompt-caching#cache-lifetime) for the main conversation                                                                                                                             | Model and responses                | Any file                |
+ | [`promptSuggestionEnabled`](#promptsuggestionenabled)                                           | Hide the grayed-out [prompt suggestions](/docs/en/interactive-mode#prompt-suggestions) in the input box                                                                                                                          | Interface and terminal             | Any file                |
+ | [`prUrlTemplate`](#prurltemplate)                                                               | Point PR links at an internal code-review tool instead of github.com                                                                                                                                                        | Git and attribution                | Any file                |
+@@ -773,4 +775,5 @@ scope: "Which settings files can set the key: user (~/.claude/settings.json), pr
+ | [`strictPluginOnlyCustomization.mcp`](#strictpluginonlycustomization-mcp)                       | Lock [MCP servers](/docs/en/mcp) to plugin and managed sources                                                                                                                                                                   | Plugins and skills                 | Managed                 |
+ | [`strictPluginOnlyCustomization.skills`](#strictpluginonlycustomization-skills)                 | Lock [skills](/docs/en/skills) to plugin and managed sources                                                                                                                                                                     | Plugins and skills                 | Managed                 |
++| [`subagentPromptCacheTtl`](#subagentpromptcachettl)                                             | Choose the [prompt cache lifetime](/docs/en/prompt-caching#cache-lifetime) for subagents and other requests outside the main conversation                                                                                        | Model and responses                | Any file                |
+ | [`subagentStatusLine`](#subagentstatusline)                                                     | Rewrite rows in the [subagent](/docs/en/sub-agents) task display with your own command                                                                                                                                           | Interface and terminal             | Any file                |
+ | [`switchModelsOnFlag`](#switchmodelsonflag)                                                     | Switch models automatically or pause when a [safety classifier](/docs/en/model-config#ask-before-switching) flags a request                                                                                                      | Model and responses                | Any file                |
+@@ -1079,4 +1082,26 @@ This example selects the built-in Explanatory style, which adds educational insi
+ ```
+ 
++### `promptCacheTtl`
++
++Choose how long the [prompt cache](/docs/en/prompt-caching) holds the main conversation. This key applies to your interactive, `-p`, and Agent SDK turns, together with the helpers Claude Code runs inline with them. The one-hour lifetime keeps the cache warm across longer breaks, and the API [bills each cache write at a higher rate](https://platform.claude.com/docs/en/build-with-claude/prompt-caching#pricing) than at the five-minute lifetime. Requires Claude Code v2.1.242 or later.
++
++* **Scope**: [`Any file`](#scopes)
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-08-25</summary>
 
 **変更ファイル:**
@@ -2567,124 +2684,6 @@ index d4b308a..929a33a 100644
 +* 現在のセッション内のサブエージェントの場合、名前付きバックグラウンドサブエージェントは @-メンション入力補完に状態とともに表示されます。v2.1.198 以降、`/agents` はパネルを開かなくなり、サブエージェントファイルの場所を指すお知らせを出力します。[カスタムサブエージェントを作成および編集](/docs/ja/sub-agents#configure-subagents) するには、Claude に質問するか、ファイルを直接編集してください。名前は似ていますが、`/agents` は `claude agents` とは別です。
  * 現在のセッションのバックグラウンドで実行されているもの場合、`/tasks` は各項目をリストし、確認、アタッチ、または停止できます。リストには完了したサブエージェントも含まれます。
  * 動的ワークフローの場合、`/workflows` は実行中および完了した実行、各実行がある段階、および完了したエージェント数をリストします。
-```
-
-</details>
-
-<details>
-<summary>amazon-bedrock-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/amazon-bedrock-ja.md b/docs-ja/pages/amazon-bedrock-ja.md
-index a9d7bb2..71a1b00 100644
---- a/docs-ja/pages/amazon-bedrock-ja.md
-+++ b/docs-ja/pages/amazon-bedrock-ja.md
-@@ -163,5 +163,5 @@ export AWS_PROFILE=your-profile-name
- ```
- 
--Claude Code は、IAM Identity Center リージョンから役割認証情報をリクエストします。このリージョンはプロファイルの `sso_region` で指定されており、Amazon Bedrock を実行するリージョンと一致する必要はありません。{/* min-version: 2.1.208 */}v2.1.207 では、Amazon Bedrock リージョンが `sso_region` をオーバーライドしていたため、IAM Identity Center インスタンスが別のリージョンにあるプロファイルは `Session token not found or invalid` エラーで認証に失敗しました。
-+Claude Code は、IAM Identity Center リージョンから役割認証情報をリクエストします。このリージョンはプロファイルの `sso_region` で指定されており、Amazon Bedrock を実行するリージョンと一致する必要はありません。v2.1.207 では、Amazon Bedrock リージョンが `sso_region` をオーバーライドしていたため、IAM Identity Center インスタンスが別のリージョンにあるプロファイルは `Session token not found or invalid` エラーで認証に失敗しました。
- 
- **オプション D：AWS Management Console 認証情報**
-@@ -187,9 +187,9 @@ Amazon Bedrock API キーは、完全な AWS 認証情報を必要としない
- Claude Code は AWS デフォルト認証情報プロバイダーチェーンを 1 回解決し、解決された認証情報をメモリに保持します。有効期限の 5 分前まで、または有効期限がない場合は 1 時間の間、それらを再利用するため、SSO バックアップ プロファイルは IAM Identity Center から認証情報を約 1 回リクエストします。API からの認証情報エラーはキャッシュをクリアし、再試行は新しい認証情報を解決します。
- 
--{/* min-version: 2.1.207 */}v2.1.207 より前では、Claude Code は API リクエストのたびにチェーンを解決していたため、SSO バックアップ プロファイルは毎回 IAM Identity Center から新しい認証情報をリクエストでき、大規模なデプロイメントでスロットルされる可能性がありました。
-+v2.1.207 より前では、Claude Code は API リクエストのたびにチェーンを解決していたため、SSO バックアップ プロファイルは毎回 IAM Identity Center から新しい認証情報をリクエストでき、大規模なデプロイメントでスロットルされる可能性がありました。
- 
- キャッシュは上記のすべての認証情報オプションをカバーしていますが、Amazon Bedrock API キーはプロバイダーチェーンを使用しないため除外されます。代わりにすべてのリクエストでチェーンを解決するには、[`CLAUDE_CODE_SKIP_AWS_CRED_CACHE=1`](/docs/ja/env-vars) を設定してください。
- 
--{/* min-version: 2.1.207 */}チェーンの各解決は 60 秒後にタイムアウトします。チェーン内のステップが停止した場合、例えば受け取ることができない入力を待つ `credential_process` ヘルパーの場合、リクエストは [`AWS default-chain credential resolve timed out`](/docs/ja/errors#aws-default-chain-credential-resolve-timed-out) で失敗します。チェーンが `aws-vault` などのラッパーを通じた MFA を使用したブラウザベースの SSO など、正当に長い時間が必要な対話的サインインを実行する場合は、[`CLAUDE_CODE_AWS_CHAIN_RESOLVE_TIMEOUT_MS`](/docs/ja/env-vars) でミリ秒単位で制限を上げてください。v2.1.207 より前では、停止した認証情報解決はリクエストを無期限に待機させていました。
-+チェーンの各解決は 60 秒後にタイムアウトします。チェーン内のステップが停止した場合、例えば受け取ることができない入力を待つ `credential_process` ヘルパーの場合、リクエストは [`AWS default-chain credential resolve timed out`](/docs/ja/errors#aws-default-chain-credential-resolve-timed-out) で失敗します。チェーンが `aws-vault` などのラッパーを通じた MFA を使用したブラウザベースの SSO など、正当に長い時間が必要な対話的サインインを実行する場合は、[`CLAUDE_CODE_AWS_CHAIN_RESOLVE_TIMEOUT_MS`](/docs/ja/env-vars) でミリ秒単位で制限を上げてください。v2.1.207 より前では、停止した認証情報解決はリクエストを無期限に待機させていました。
- 
- <h4 id="advanced-credential-configuration">
-@@ -236,7 +236,7 @@ Claude Code は、AWS SSO および企業 ID プロバイダーの自動認証
- ```
- 
--{/* min-version: 2.1.181 */}`aws configure export-credentials --format process` からのフラット出力も受け入れられます。`Credentials` の下にネストされるのではなく、同じキーがトップレベルにあります。
-+`aws configure export-credentials --format process` からのフラット出力も受け入れられます。`Credentials` の下にネストされるのではなく、同じキーがトップレベルにあります。
- 
--`Expiration` はオプションです。{/* min-version: 2.1.176 */}Claude Code v2.1.176 以降では、コマンドが有効な ISO 8601 `Expiration` を返す場合、Claude Code はその時刻の 5 分前までの認証情報をキャッシュします。それがない場合、または以前のバージョンでは、認証情報は 1 時間キャッシュされます。
-```
-
-</details>
-
-<details>
-<summary>artifacts-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/artifacts-ja.md b/docs-ja/pages/artifacts-ja.md
-index 1fa0a3a..0585728 100644
---- a/docs-ja/pages/artifacts-ja.md
-+++ b/docs-ja/pages/artifacts-ja.md
-@@ -7,6 +7,4 @@
- > アーティファクトは Claude Code の作業をライブでインタラクティブなページに変え、claude.ai 上で非公開に保つか、組織と共有するか、公開リンクに公開できます。
- 
--{/* plan-availability: feature=artifacts plans=pro,max,team,enterprise providers=anthropic */}
--
- <Note>
-   アーティファクトは Pro、Max、Team、および Enterprise プランで利用でき、[`/login`](/docs/ja/setup#authenticate) でサインインしたセッションが必要です。要件の完全なセットについては、[利用可能性](#availability)を参照してください。
-@@ -105,6 +103,4 @@ https://claude.ai/code/artifact/5fbea6f3-... を今日の数字で更新して
- </h2>
- 
--{/* plan-availability: feature=artifact-mcp plans=pro,max,team,enterprise providers=anthropic */}
--
- アーティファクトは、ページを表示するたびに [MCP コネクタ](/docs/ja/mcp#use-mcp-servers-from-claude-ai) を呼び出すことができるため、ページはセッションで構築されたスナップショットではなく、現在のデータを表示します。アーティファクトからのコネクタ呼び出しは Pro、Max、Team、Enterprise プランで利用可能であり、Claude Code v2.1.209 以降が必要です。以前のバージョンでは、Claude はセッション中に収集されたデータでページを公開します。
- 
-```
-
-</details>
-
-*...以降省略*
-
-</details>
-
-
-<details>
-<summary>2026-08-04</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/changelog.md                | 42 +++++++++++++++++++++++++++++++
- docs-ja/pages/desktop-ios-simulator-en.md | 17 +++++++++++--
- 2 files changed, 57 insertions(+), 2 deletions(-)
-```
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index 7ca26b5..389a1ae 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,46 @@
- # Changelog
- 
-+## 2.1.221
-+
-+- [VSCode] Added Focus view: a chat-menu toggle that hides tool activity behind an expandable per-turn summary with a live running-tool indicator, toggled with `Ctrl+Alt+F` or the "Claude Code: Toggle Focus view" command
-+- Added `mode: "mask"` for sandbox credential files on Linux and WSL — sandboxed commands read a sentinel copy (the whole file, or just the spans captured by an `extract` regex) while the sandbox proxy substitutes the real value on egress; on macOS file masking falls back to `deny`
-+- Added warnings to `claude plugin validate` when a marketplace or plugin name would be rejected by Claude Desktop's managed marketplace sync
-+- Added a `prompt-audit` subcommand to the `claude-api` skill for auditing prompts and tool descriptions for patterns written for older models
-+- Fixed a Bash tool permission-check bypass where zsh could execute hidden commands in `[[ ]]` regex conditionals; affected commands now prompt for permission
-+- Fixed PowerShell permission checks mishandling paths containing quote characters on Windows; such paths now prompt for approval
-+- Fixed the thinking toggle having no effect for the rest of a session that started with thinking off; disabling an MCP server mid-connect no longer silently reverts
-+- Fixed MCP servers from `--mcp-config` not being connected before the first turn in print mode (`-p`), which made the model emit tool calls as literal text
-+- Fixed @-mentioned files being silently dropped when pressing Esc to retract a prompt and resubmitting it
-+- Fixed a crash when preparing API requests for SDK MCP tools named after built-in object properties such as `constructor`
-+- Fixed WebSearch failing with a 400 error at effort `xhigh`/`max` when thinking is disabled
-+- Fixed sandboxed large uploads failing with TLS errors through the sandbox proxy
-+- Fixed Team and Enterprise spend-limit message incorrectly blaming the org's monthly limit instead of your individual spend limit
-+- Fixed Bedrock authentication with AWS SSO named profiles failing in desktop-managed sessions on Windows machines that set a stray `HOME` environment variable
-+- Fixed `CLAUDE_CODE_RESUME_INTERRUPTED_TURN=0` not disabling interrupted-turn auto-resume; falsy values are now honored
-+- Fixed a rare wake-from-sleep race where two Claude Code processes could both refresh the same MCP connector or WIF OAuth token at once, forcing re-authentication
-+- Fixed renaming a session from Claude Code Desktop or claude.ai not updating the CLI's session name; session names from every rename surface are now sanitized
-+- Fixed plugin- and org-delivered skills named after terminal-only built-ins (e.g. `/help`, `/feedback`) being un-invocable in non-interactive sessions
-+- Fixed the "Plugins changed" notification lingering after plugins were reloaded instead of clearing
-+- Fixed Vim mode: the yank register now survives dialogs, history search, and the transcript view instead of being silently emptied
-+- Fixed Vim mode: undoing back to an empty prompt now arms the "press ← again" confirm before returning to the agent view
 ```
 
 </details>
