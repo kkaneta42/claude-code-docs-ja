@@ -17,6 +17,77 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-08-31</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/managed-settings-en.md   |  2 +-
+ docs-ja/pages/settings-reference-en.md | 38 +++++++++++++++++++++++++++-------
+ 2 files changed, 32 insertions(+), 8 deletions(-)
+```
+
+<details>
+<summary>managed-settings-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/managed-settings-en.md b/docs-ja/pages/managed-settings-en.md
+index 3b35769..f9aa752 100644
+--- a/docs-ja/pages/managed-settings-en.md
++++ b/docs-ja/pages/managed-settings-en.md
+@@ -193,5 +193,5 @@ To confirm which sources combined on a machine, [read the `Setting sources` line
+ A [`policyHelper`](/docs/en/settings-reference#policyhelper) is an executable your MDM policy or managed settings file names, and Claude Code runs it to compute managed settings at startup. When the selected source configures one and the helper emits a `managedSettings` object, that output changes what Claude Code reads:
+ 
+-* **The emitted `managedSettings` object is the only managed settings for the session**, including for the [keys it otherwise reads from every admin source](#keys-read-from-every-admin-source), apart from `forceRemoteSettingsRefresh`, which Claude Code checks in every admin source at startup before the helper runs. A helper that exits 0 without emitting one contributes nothing, and the sources apply as usual; a helper that fails stops Claude Code from starting, as the [`policyHelper`](/docs/en/settings-reference#policyhelper) entry describes
++* **The emitted `managedSettings` object is the only managed settings for the session**, including for the [keys it otherwise reads from every admin source](#keys-read-from-every-admin-source), apart from `forceRemoteSettingsRefresh`, which Claude Code checks in every admin source at startup before the helper runs. For which helper runs fail, and what Claude Code does when one does, see [Helper failures](/docs/en/settings-reference#helper-failures)
+ 
+ Claude Code selects the source at startup, and that selection decides whether a helper runs. The [`policyHelper`](/docs/en/settings-reference#policyhelper) entry says which sources can configure a helper.
+```
+
+</details>
+
+<details>
+<summary>settings-reference-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/settings-reference-en.md b/docs-ja/pages/settings-reference-en.md
+index 3860dde..8f9c399 100644
+--- a/docs-ja/pages/settings-reference-en.md
++++ b/docs-ja/pages/settings-reference-en.md
+@@ -1668,5 +1668,5 @@ An unsandboxed retry goes through the regular permission flow: a prompt in Manua
+ ### `sandbox.filesystem`
+ 
+-Control which paths sandboxed commands can read and write. By default they can write to the working directory, any directories you add with `--add-dir`, and the session temp directory, and can read the rest of the filesystem, including credential files. Widen or narrow that with the four path lists, or switch the filesystem layer off with `disabled`. See [Filesystem isolation](/docs/en/sandboxing#filesystem-isolation) for the default boundaries.
++Control which paths sandboxed commands can read and write. By default they can write to the working directory, the session temp directory, and directories you add with `--add-dir`, `/add-dir`, or `permissions.additionalDirectories`, and can read the rest of the filesystem, including credential files. Widen or narrow that with the four path lists, or switch the filesystem layer off with `disabled`. See [Filesystem isolation](/docs/en/sandboxing#filesystem-isolation) for the default boundaries.
+ 
+ * **Scope**: [`Any file`](#scopes)
+@@ -1714,9 +1714,9 @@ Claude Code also removes a trailing `/**`, so `~/build/**` and `~/build` cover t
+ ### `sandbox.filesystem.allowWrite`
+ 
+-Add paths where sandboxed commands can write, beyond the working directory, the directories you've added with `--add-dir` or `/add-dir`, and the session temp directory. Use it when a subprocess such as `kubectl` or a build tool needs to write outside the project.
++Add paths where sandboxed commands can write, beyond the working directory, the session temp directory, and the directories you've added with `--add-dir`, `/add-dir`, or `permissions.additionalDirectories`. Use it when a subprocess such as `kubectl` or a build tool needs to write outside the project.
+ 
+ * **Scope**: [`Any file`](#scopes)
+ * **Type**: array of path strings, using the [sandbox path prefixes](#sandbox-path-prefixes)
+-* **Default**: unset, so sandboxed commands can write only to the working directory, any directories you've added with `--add-dir` or `/add-dir`, and the session temp directory
++* **Default**: unset, so sandboxed commands can write to the working directory, the session temp directory, directories you've added with `--add-dir` or `/add-dir`, and directories in [`permissions.additionalDirectories`](#permissions-additionaldirectories)
+ 
+ This lets a build write under `/tmp/build` and lets `kubectl` update your kubeconfig:
+@@ -5470,5 +5470,7 @@ This example runs the helper with a 5-second timeout and re-runs it every five m
+ #### Write the helper output
+ 
+-Claude Code runs the helper with no arguments, sets `CLAUDE_CODE_VERSION` in its environment, and reads a JSON envelope from stdout, capped at 1 MB. Put the settings under a `managedSettings` key. A bare settings object with no `managedSettings` key parses with `managedSettings` undefined and applies nothing, and Claude Code reports no error:
++Claude Code runs the helper with no arguments, sets `CLAUDE_CODE_VERSION` in its environment, and reads a JSON envelope from stdout, capped at 1 MiB.
++
++Put the settings under a `managedSettings` key. A bare settings object with no `managedSettings` key parses with `managedSettings` undefined and applies nothing, and Claude Code reports no error:
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-08-30</summary>
 
 **変更ファイル:**
@@ -2500,105 +2571,5 @@ index 05ad6a3..8f46884 100644
 ```
 
 </details>
-
-<details>
-<summary>plugins-reference-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/plugins-reference-ja.md b/docs-ja/pages/plugins-reference-ja.md
-index e7cc998..9a064ae 100644
---- a/docs-ja/pages/plugins-reference-ja.md
-+++ b/docs-ja/pages/plugins-reference-ja.md
-@@ -119,37 +119,37 @@ disallowedTools: Write, Edit
- プラグイン hooks は[ユーザー定義 hooks](/docs/ja/hooks)と同じライフサイクルイベントに応答します:
- 
--| Event                 | When it fires                                                                                                                                          |
--| :-------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------- |
--| `SessionStart`        | When a session begins or resumes                                                                                                                       |
--| `Setup`               | When you start Claude Code with `--init-only`, or with `--init` or `--maintenance` in `-p` mode. For one-time preparation in CI or scripts             |
--| `UserPromptSubmit`    | When you submit a prompt, before Claude processes it                                                                                                   |
--| `UserPromptExpansion` | When a user-typed command expands into a prompt, before it reaches Claude. Can block the expansion                                                     |
--| `PreToolUse`          | Before a tool call executes. Can block it                                                                                                              |
--| `PermissionRequest`   | When a tool call needs a permission decision                                                                                                           |
--| `PermissionDenied`    | When a tool call is denied by the auto mode classifier. Use JSON `hookSpecificOutput.retry: true` to tell the model it may retry the denied tool call  |
--| `PostToolUse`         | After a tool call succeeds                                                                                                                             |
--| `PostToolUseFailure`  | After a tool call fails                                                                                                                                |
--| `PostToolBatch`       | After a full batch of parallel tool calls resolves, before the next model call                                                                         |
--| `Notification`        | When Claude Code sends a notification                                                                                                                  |
--| `MessageDisplay`      | While assistant message text is displayed                                                                                                              |
--| `SubagentStart`       | When a subagent is spawned                                                                                                                             |
--| `SubagentStop`        | When a subagent finishes                                                                                                                               |
--| `TaskCreated`         | When a task is being created via `TaskCreate`                                                                                                          |
--| `TaskCompleted`       | When a task is being marked as completed                                                                                                               |
--| `Stop`                | When Claude finishes responding                                                                                                                        |
--| `StopFailure`         | When the turn ends due to an API error                                                                                                                 |
--| `TeammateIdle`        | When an [agent team](/docs/en/agent-teams) teammate is about to go idle                                                                                     |
--| `InstructionsLoaded`  | When a CLAUDE.md or `.claude/rules/*.md` file is loaded into context. Fires at session start and when files are lazily loaded during a session         |
--| `ConfigChange`        | When a configuration file changes during a session                                                                                                     |
-```
-
-</details>
-
-<details>
-<summary>self-hosted-environments-configuration-en.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/self-hosted-environments-configuration-en.md b/docs-ja/pages/self-hosted-environments-configuration-en.md
-index 0a13a4c..5dea269 100644
---- a/docs-ja/pages/self-hosted-environments-configuration-en.md
-+++ b/docs-ja/pages/self-hosted-environments-configuration-en.md
-@@ -101,5 +101,12 @@ The script must leave a working tree at `CLAUDE_RUNNER_CHECKOUT_PATH` checked ou
- The runner doesn't pass a git credential to the hook. Instead, mint a per-session clone credential from the session's identity: verify `CLAUDE_CODE_SESSION_ACCESS_TOKEN` with a standard JWT library against the JWKS endpoint under `CLAUDE_RUNNER_API_BASE_URL`, as described in [Verify the token from your service](/docs/en/self-hosted-environments-identity#verify-the-token-from-your-service), then have your credential service issue a short-lived clone credential for the identity in the token's `act` claim. `CLAUDE_RUNNER_CLAUDE_BIN` isn't set in the checkout-hook environment, so the `decode-token` subcommand isn't available here. Falling back to whatever git authentication the host already has, such as an SSH agent, credential helper, or `.netrc`, is also an option.
- 
--A non-zero exit fails the session, and the tail of the script's stderr is surfaced to the user. The runner removes the checkout path after the session ends.
-+When the hook exits non-zero, or exits 0 without leaving a usable checkout behind, what the runner does depends on the repository:
-+
-+* **A repository the session pushes results to**: the runner fails the session, and on a non-zero exit surfaces the tail of the script's stderr to the user.
-+* **A repository the session only reads from**, such as a repository added to a running session: the runner logs a `[runner:warn]` line with the failure detail, posts a `Skipped` step to the session, removes whatever the hook left at the checkout path, and continues with the remaining repositories. When the runner can't remove the path immediately, it retries the removal at session end. If skipping leaves the session with no repository at all, the runner fails the session anyway.
-+
-+Before v2.1.228, the runner failed the session on a hook failure for any repository, so a read-only repository the hook couldn't serve failed the session again on every fresh runner the session resumed on.
-+
-+The runner removes the checkout path after the session ends.
- 
- ### post-session
-@@ -177,5 +184,5 @@ The orchestrator keeps no state between polls, so you can run two or more replic
- ### The spawn-runner hook
- 
--The orchestrator runs `${hooks-dir}/spawn-runner` once per spawn request. The hook must submit work asynchronously and return within `--hook-timeout`, 60 seconds by default. It must not wait for the runner to boot. The hook receives:
-+The orchestrator runs `${hooks-dir}/spawn-runner` once per spawn request. The hook must submit work asynchronously, without waiting for the runner to boot, and return within `--hook-timeout`, 60 seconds by default. The hook receives:
- 
- | Variable                              | Description                                                                                                                                                                                                                                                |
-@@ -220,5 +227,5 @@ RUN claude mcp add --scope user --transport http internal http://mcp-gateway.svc
- ```
- 
--The runner snapshots the host's config once at startup. The snapshot captures the `mcpServers` key from the host's `.claude.json`, which lives next to rather than inside `~/.claude/`, and the runner seeds only that key into each session's isolated config; account state and project history are dropped. To confirm the servers reached sessions, start a session on the environment and ask Claude to list its MCP tools; the runner also logs a startup warning for any captured entry whose `type` it doesn't recognize and drops the entry, so the drop is visible instead of the server silently failing to load. When `SELF_HOSTED_RUNNER_HOST_CONFIG_DIR` is set, the runner reads `.claude.json` from that directory instead, so pointing the variable at an empty directory disables MCP seeding too.
-+The runner snapshots the host's config once at startup. The snapshot captures the `mcpServers` key from the host's `.claude.json`, which lives next to rather than inside `~/.claude/`, and the runner seeds only that key into each session's isolated config; account state and project history are dropped. To confirm the servers reached sessions, start a session on the environment and ask Claude to list its MCP tools; the runner also logs a startup warning for any captured entry whose `type` it doesn't recognize and drops the entry, so you can see why that server is missing from sessions. When `SELF_HOSTED_RUNNER_HOST_CONFIG_DIR` is set, the runner reads `.claude.json` from that directory instead, so pointing the variable at an empty directory disables MCP seeding too.
-```
-
-</details>
-
-*...以降省略*
-
-</details>
-
-
-<details>
-<summary>2026-08-12</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/changelog.md                          | 21 +++++++++++++++++++++
- docs-ja/pages/cross-session-messaging-en.md         | 13 ++++++++++---
- docs-ja/pages/hooks-guide-ja.md                     |  4 ++--
- docs-ja/pages/hooks-ja.md                           |  4 ++--
- docs-ja/pages/plugins-reference-ja.md               |  4 ++--
- docs-ja/pages/self-hosted-environments-deploy-en.md | 11 +++++++----
- docs-ja/pages/self-hosted-environments-en.md        |  2 +-
- .../pages/self-hosted-environments-quickstart-en.md |  6 ++----
- .../pages/self-hosted-environments-reference-en.md  |  2 +-
- .../pages/self-hosted-environments-testing-en.md    |  6 ++++++
- 10 files changed, 54 insertions(+), 19 deletions(-)
-```
 
 <!-- UPDATE_LOG_END -->
