@@ -17,6 +17,158 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-09-01</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md                         |  7 ++
+ docs-ja/pages/managed-settings-en.md               |  4 +-
+ .../pages/self-hosted-environments-testing-en.md   |  6 +-
+ docs-ja/pages/settings-example-en.md               |  2 +-
+ docs-ja/pages/settings-reference-en.md             | 89 ++++++++++++++++------
+ 5 files changed, 81 insertions(+), 27 deletions(-)
+```
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index b986e00..921b4fb 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,11 @@
+ # Changelog
+ 
++## 2.1.252
++
++- Fixed Bash commands failing with "task output swap refused (tasks dir moved or linked)" on some Macs
++- Fixed "always allow" not saving in a project that has no .claude/settings.local.json yet
++- Fixed Remote Control sessions hosted by Claude Desktop or VS Code stalling for minutes after a tool finished when the connection to claude.ai was degraded
++- Fixed background task notifications with very large failure output (for example git errors on a full disk) making the conversation exceed the API request size limit
++
+ ## 2.1.251
+ 
+```
+
+</details>
+
+<details>
+<summary>managed-settings-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/managed-settings-en.md b/docs-ja/pages/managed-settings-en.md
+index f9aa752..502de9a 100644
+--- a/docs-ja/pages/managed-settings-en.md
++++ b/docs-ja/pages/managed-settings-en.md
+@@ -284,4 +284,6 @@ When the policy isn't applying, the `Setting sources` line tells you which of tw
+ When a managed settings file, MDM profile, registry value, or server-managed payload fails schema validation, Claude Code first skips the individual entries it can repair, such as one invalid permission rule, with a warning for each, then drops any top-level key whose value still fails and keeps enforcing every remaining valid key. Claude Code is stricter with the `managedSettings` a [`policyHelper`](/docs/en/settings-reference#policyhelper) emits: it makes the same entry repairs, but any schema violation that survives fails the whole helper run, and at startup Claude Code refuses to start, the same as for a helper that exits non-zero. A managed settings file or drop-in file that isn't valid JSON contributes no settings at all; Claude Code reports it with the other validation errors and reads the remaining sources as usual.
+ 
++If a managed settings file or drop-in file can't be read or parsed and no other admin source supplies a policy, sessions signed in with claude.ai or Claude Console credentials exit at startup with a message to contact an administrator.
++
+ To find a dropped entry, look in one of three places:
+ 
+@@ -307,5 +309,5 @@ A few enforcement keys aren't dropped when invalid. Claude Code enforces a stric
+ | `sandbox.credentials`         | A recoverable invalid entry is degraded to `mode: "deny"` with a warning; an unrecoverable one is stripped; valid entries stay enforced. See [invalid credential entries](/docs/en/settings-reference#invalid-credential-entries-in-managed-settings)                                   |
+ 
+-`requiredMinimumVersion` and `requiredMaximumVersion` fail open by design: an invalid value is dropped rather than enforced, so a bad policy push can't prevent Claude Code from starting.
++`requiredMinimumVersion` and `requiredMaximumVersion` fail open by design: an invalid value is dropped rather than enforced.
+ 
+ This tolerance applies only to managed settings. User, project, and local settings files remain strict: a file whose JSON or top-level shape fails validation is rejected as a whole and reported, and an individual entry that fails, such as a malformed permission rule, is skipped with a warning while the rest of the file applies.
+```
+
+</details>
+
+<details>
+<summary>self-hosted-environments-testing-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/self-hosted-environments-testing-en.md b/docs-ja/pages/self-hosted-environments-testing-en.md
+index 6413d48..4271fed 100644
+--- a/docs-ja/pages/self-hosted-environments-testing-en.md
++++ b/docs-ja/pages/self-hosted-environments-testing-en.md
+@@ -189,5 +189,7 @@ Both `claude -p ... --environment` and `claude -p ... --cloud` authenticate with
+ ### Long-lived CI host
+ 
+-Run `claude auth login` once interactively on the machine that executes the script, using a dedicated user account for automation. The token lives in the OS keychain on macOS, or in `~/.claude/.credentials.json` on Linux and Windows. The CLI refreshes the short-lived access token automatically on each invocation, but the underlying refresh-token grant is capped at 30 days from the initial login, so re-run `claude auth login` interactively on that host every 30 days.
++Run `claude auth login` once interactively on the machine that executes the script, using a dedicated user account for automation. Claude Code stores the token in the OS keychain on macOS, or in `~/.claude/.credentials.json` on Linux and Windows. On a macOS host whose Keychain can't be written, as is typical in an SSH session where the login Keychain stays locked, Claude Code stores the token in `~/.claude/.credentials.json` there too. See [Credential management](/docs/en/authentication#credential-management).
++
++The CLI refreshes the short-lived access token automatically on each invocation, but the underlying refresh-token grant is capped at 30 days from the initial login, so re-run `claude auth login` interactively on that host every 30 days.
+ 
+ ### Ephemeral CI runners
+@@ -205,5 +207,5 @@ Create and delete environments programmatically so each CI run gets a clean one;
+ `$ADMIN_TOKEN` is a claude.ai OAuth access token for an account that holds an Owner role, minted the same way as [Authenticate from CI](#authenticate-from-ci):
+ 
+-* **Mint it**: run `claude auth login` with an account that holds an Owner role, then read the current access token from the OS keychain on macOS or `~/.claude/.credentials.json` on Linux and Windows.
++* **Mint it**: run `claude auth login` with an account that holds an Owner role, then read the current access token from wherever [Long-lived CI host](#long-lived-ci-host) says Claude Code stored it.
+ * **Read it fresh each run**: the CLI rotates the access token, and the same 30-day refresh-grant cap applies, so don't store a copy.
+ * **Pass it via stdin**: as the example does, so the token never lands in curl's argument list or your build log.
+```
+
+</details>
+
+<details>
+<summary>settings-example-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/settings-example-en.md b/docs-ja/pages/settings-example-en.md
+index 96e3bfc..e78fca8 100644
+--- a/docs-ja/pages/settings-example-en.md
++++ b/docs-ja/pages/settings-example-en.md
+@@ -57,5 +57,5 @@ One developer's personal settings. It picks a model and effort, adjusts the term
+       // Start every session on Sonnet 5
+       "model": "claude-sonnet-5",
+-      // Reason more deeply than the default high level; /effort saves a new level, and --effort overrides it for one session
++      // Reason more deeply than the default high level on models without a saved level; /effort saves a level per model, and --effort sets one for a single session
+       "effortLevel": "xhigh",
+       // Vim keybindings in the prompt
+```
+
+</details>
+
+<details>
+<summary>settings-reference-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/settings-reference-en.md b/docs-ja/pages/settings-reference-en.md
+index 8f9c399..cf6b752 100644
+--- a/docs-ja/pages/settings-reference-en.md
++++ b/docs-ja/pages/settings-reference-en.md
+@@ -651,5 +651,5 @@ scope: "Which settings files can set the key: user (~/.claude/settings.json), pr
+ | [`disableWorkflows`](#disableworkflows)                                                         | Turn [dynamic workflows](/docs/en/workflows) off for everyone; use `enableWorkflows` for yourself                                                                                                                                | Hooks and automation               | Any file                |
+ | [`editorMode`](#editormode)                                                                     | Use [vim key bindings](/docs/en/interactive-mode#vim-editor-mode) in the input prompt                                                                                                                                            | Interface and terminal             | Any file                |
+-| [`effortLevel`](#effortlevel)                                                                   | Save the [`/effort` level](/docs/en/model-config#adjust-effort-level) so future sessions reason more or less deeply                                                                                                              | Model and responses                | Any file                |
++| [`effortLevel`](#effortlevel)                                                                   | Set a default [effort level](/docs/en/model-config#adjust-effort-level) for models without a saved level of their own                                                                                                            | Model and responses                | Any file                |
+ | [`emojiCompletionEnabled`](#emojicompletionenabled)                                             | Turn off [`:shortcode:` emoji suggestions and replacement](/docs/en/interactive-mode#emoji-shortcodes) in the prompt input                                                                                                       | Interface and terminal             | Any file                |
+ | [`enableAllProjectMcpServers`](#enableallprojectmcpservers)                                     | Approve every server in project [`.mcp.json`](/docs/en/mcp#project-server-approvals-and-workspace-trust) files without a prompt                                                                                                  | MCP                                | Any file                |
+@@ -689,4 +689,5 @@ scope: "Which settings files can set the key: user (~/.claude/settings.json), pr
+ | [`modelPicker`](#modelpicker)                                                                   | Choose which models the [`/model` picker](/docs/en/model-config#available-models) lists, in your own order and with your own labels                                                                                              | Model and responses                | User or managed         |
+ | [`modelPricing`](#modelpricing)                                                                 | Report spend at your organization's contracted rates instead of list price                                                                                                                                                  | Model and responses                | Managed                 |
++| [`modelSettings`](#modelsettings)                                                               | Keep a saved [effort level](/docs/en/model-config#adjust-effort-level) per model, which Claude Code writes when you run `/effort`                                                                                                | Model and responses                | Any file                |
+ | [`otelHeadersHelper`](#otelheadershelper)                                                       | Generate rotating [OpenTelemetry](/docs/en/monitoring-usage#dynamic-headers) headers with your own command                                                                                                                       | Authentication and providers       | Any file                |
+ | [`outputStyle`](#outputstyle)                                                                   | Change Claude's role, tone, and output format with an [output style](/docs/en/output-styles)                                                                                                                                     | Model and responses                | Any file                |
+@@ -785,5 +786,5 @@ scope: "Which settings files can set the key: user (~/.claude/settings.json), pr
+ | [`syncClaudeAiSkills`](#syncclaudeaiskills)                                                     | Stop downloading the [skills enabled on your claude.ai account](/docs/en/skills#how-synced-skills-behave) and hide the ones already synced                                                                                       | Plugins and skills                 | User, local, or managed |
+ | [`syntaxHighlightingDisabled`](#syntaxhighlightingdisabled)                                     | Turn off syntax highlighting in diffs and code blocks                                                                                                                                                                       | Interface and terminal             | Any file                |
+-| [`teammateDefaultModel`](#teammatedefaultmodel)                                                 | Removed in v2.1.234; [teammates](/docs/en/agent-teams#specify-teammates-and-models) follow the lead's model                                                                                                                      | Global config settings             | Global config           |
++| [`teammateDefaultModel`](#teammatedefaultmodel)                                                 | Removed in v2.1.234; see [Specify teammates and models](/docs/en/agent-teams#specify-teammates-and-models) for how Claude Code picks a teammate's model                                                                          | Global config settings             | Global config           |
+ | [`teammateMode`](#teammatemode)                                                                 | Choose how [agent team teammates display](/docs/en/agent-teams#choose-a-display-mode)                                                                                                                                            | Agents, sessions, and worktrees    | Any file                |
+ | [`terminalProgressBarEnabled`](#terminalprogressbarenabled)                                     | Hide the terminal progress bar in terminals that support it                                                                                                                                                                 | Interface and terminal             | Any file                |
+@@ -872,5 +873,7 @@ See [Restrict model selection](/docs/en/model-config#restrict-model-selection).
+ ### `effortLevel`
+ 
+-Keep an [effort level](/docs/en/model-config#adjust-effort-level) across sessions. Lower levels are faster and cheaper on straightforward tasks, and higher levels reason more deeply on complex problems. Claude Code writes this key to your user settings when you run `/effort low`, `medium`, `high`, or `xhigh` in an interactive session on your machine. In a `-p` run, the Agent SDK, or a session attached to a remote worker, `/effort` applies to that session only. The message `/effort` prints says which happened.
++Set a default [effort level](/docs/en/model-config#adjust-effort-level) for models you haven't saved a level for. Lower levels are faster and cheaper on straightforward tasks, and higher levels reason more deeply on complex problems.
++
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-08-31</summary>
 
 **変更ファイル:**
@@ -2357,217 +2509,6 @@ index dc84067..505f1d2 100644
 +The base directory defaults to `/workspace`, with the exception the [`--base-dir` reference row](/docs/en/self-hosted-environments-reference#runner-cli-flags) records. The runner needs write access to it. At startup, before registering, the runner creates the directory and confirms it can write to it, and exits with `cannot create or write to base directory` when it can't. A runner started as root creates the default `/workspace` itself. For a non-root runner, create the directory and give the runner's user ownership before starting the runner, or point `--base-dir` at a directory that user already owns.
  
  ## Reuse a pre-warmed checkout
-```
-
-</details>
-
-<details>
-<summary>self-hosted-environments-reference-en.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/self-hosted-environments-reference-en.md b/docs-ja/pages/self-hosted-environments-reference-en.md
-index c033b5f..ecb3e25 100644
---- a/docs-ja/pages/self-hosted-environments-reference-en.md
-+++ b/docs-ja/pages/self-hosted-environments-reference-en.md
-@@ -19,33 +19,33 @@ Metric series and a few API fields still use `pool` for what these pages call an
- Most flags have a corresponding environment variable. When both are set, the flag takes precedence. Duration flags take minutes or seconds on the CLI, but the paired environment variable is always in milliseconds, indicated by the `_MS` suffix, and the Default column shows the flag's unit: `--exit-if-unused-min 10` is equivalent to `SELF_HOSTED_RUNNER_IDLE_SHUTDOWN_MS=600000`, and a Helm value like `SELF_HOSTED_RUNNER_STARTUP_TIMEOUT_MS: "15"` means 15 milliseconds, not the 15-minute default.
- 
--| Flag                                  | Env var                                           | Default                     | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
--| :------------------------------------ | :------------------------------------------------ | :-------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
--| `--api-url <url>`                     | none                                              | `https://api.anthropic.com` | API base URL. Override only for testing.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
--| `--base-dir <path>`                   | `SELF_HOSTED_RUNNER_BASE_DIR`                     | `/workspace`                | Directory for repository checkouts and per-session working directories. The runner needs write access to this path or its parent. The runner creates the directory at startup and exits with `cannot create or write to base directory` when it can't create or write to it. Before v2.1.225, the runner created the directory when the first session started, so an unusable path failed sessions rather than startup. Use the same value on every runner in an environment. See [Keep the base directory and capacity identical across runners](/docs/en/self-hosted-environments-deploy#keep-the-base-directory-and-capacity-identical-across-runners).                                                                                                           |
--| `--capacity <n>`                      | none                                              | `1`                         | Maximum concurrent sessions this runner handles. All sessions belong to the same locked account. Use the same value on every runner in an environment; see [Keep the base directory and capacity identical across runners](/docs/en/self-hosted-environments-deploy#keep-the-base-directory-and-capacity-identical-across-runners).                                                                                                                                                                                                                                                                                                                                                                                                                                  |
--| `--configure-git`                     | `SELF_HOSTED_RUNNER_CONFIGURE_GIT=1`              | off                         | Write global git identity and enable Anthropic commit signing at startup. See [Configure git](/docs/en/self-hosted-environments-deploy#configure-git).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
--| `--confine-repo-settings <mode>`      | `SELF_HOSTED_RUNNER_CONFINE_REPO_SETTINGS`        | `warn`                      | Sets the mode of the guard that flags a session when a repository's committed settings try to grant write or read access outside that session's own workspace, set environment variables, or override the operator's sandbox or hooks posture, such as `sandbox.enabled: false` or `disableAllHooks`. The default `warn` logs the violation and still starts the session, `enforce` refuses the session, and `off` disables the scan. See [Harden your deployment](/docs/en/self-hosted-environments-deploy#harden-your-deployment).                                                                                                                                                                                                                                 |
--| `--debug-token-dir <path>`            | `SELF_HOSTED_RUNNER_DEBUG_TOKEN_DIR`              | unset                       | Write live tokens to disk for inspection. Debug only; don't use in production.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
--| `--drain-grace-sec <n>`               | `SELF_HOSTED_RUNNER_DRAIN_GRACE_MS`               | `0`                         | Controls when the runner exits after its active sessions finish: `0` exits immediately without polling for more, and a positive value keeps the runner alive and re-polling the locked account's queue for that many seconds first, at the cost of the per-session container isolation described in the [hardening section](/docs/en/self-hosted-environments-deploy#harden-your-deployment)                                                                                                                                                                                                                                                                                                                                                                         |
--| `--drain-wait-sec <n>`                | `SELF_HOSTED_RUNNER_DRAIN_WAIT_MS`                | `0`                         | On `SIGTERM`, wait up to N seconds for each session's in-flight turn and background tasks to finish before terminating the child. During this wait, the runner counts a background task that has just finished as still running until the follow-up turn that reads its result starts, for at most the [`SELF_HOSTED_RUNNER_BG_RESULT_GRACE_MS`](#environment-variable-only-settings) window.                                                                                                                                                                                                                                                                                                                                                                   |
--| `--environment-secret-file <path>`    | `SELF_HOSTED_RUNNER_ENVIRONMENT_SECRET`           | required                    | Path to a file containing the environment secret, or, for runners spawned by the [orchestrator](/docs/en/self-hosted-environments-configuration#on-demand-runners), the single-use work-order JWT. `SELF_HOSTED_RUNNER_ENVIRONMENT_SECRET` carries the secret value directly, not a file path. The older `--pool-secret-file` flag and `SELF_HOSTED_RUNNER_POOL_SECRET` variable still work and print a deprecation notice to stderr; preview-program runner builds older than 2.1.216 only recognize those older names.                                                                                                                                                                                                                                             |
--| `--exec-path <path>`                  | `SELF_HOSTED_RUNNER_EXEC_PATH`                    | own binary                  | Binary or wrapper script to spawn for each session. See [Wrapper scripts](/docs/en/self-hosted-environments-configuration#wrapper-scripts).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
--| `--exit-if-unused-min <n>`            | `SELF_HOSTED_RUNNER_IDLE_SHUTDOWN_MS`             | `0`                         | Exit after N minutes of polling with no work ever assigned, for autoscaler scale-down. `0` disables.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
--| `--git-host-rewrite <from>=<to>`      | none                                              | unset                       | Rewrite `https://<from>/...` source URLs to `https://<to>/...` before cloning, for split-horizon DNS. Repeatable; flag only.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
--| `--git-ssh-rewrite <host>`            | none                                              | unset                       | Rewrite `https://<host>/...` source URLs to `git@<host>:...` before cloning, for SSH-only git hosts. Repeatable; flag only.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
--| `--health-port <port>`                | `SELF_HOSTED_RUNNER_HEALTH_PORT`                  | `8080`                      | Port for the `/healthz` and `/metrics` listener. Set `0` to disable.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
--| `--hooks-dir <path>`                  | `SELF_HOSTED_RUNNER_HOOKS_DIR`                    | unset                       | Directory of lifecycle hook scripts. See [Lifecycle hooks](/docs/en/self-hosted-environments-configuration#lifecycle-hooks).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
--| `--kill-session-after-min <n>`        | `SELF_HOSTED_RUNNER_MAX_LIFETIME_MS`              | `0`                         | Terminate a session child once it has lived N minutes wall-clock, as a safety limit for stuck sessions. A kill that falls mid-turn is deferred until the turn finishes, bounded by a grace window. `0` disables.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
--| `--lock-to-account <id>`              | `SELF_HOSTED_RUNNER_LOCK_TO_ACCOUNT`              | unset                       | Pre-lock the runner to a specific account at startup instead of locking on first session. Accepts an email address or `user_...` ID in the environment's organization.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
--| `--log-file <path>`                   | `SELF_HOSTED_RUNNER_LOG_FILE`                     | unset                       | Mirror runner logs to a file in addition to stdout and stderr, created with `0600` permissions. Required for `self-hosted-runner doctor` to tail logs locally.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
--| `--log-level <level>`                 | none                                              | `info`                      | `info` or `debug`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
--| `--post-session-hook-timeout-sec <n>` | `SELF_HOSTED_RUNNER_POST_SESSION_HOOK_TIMEOUT_MS` | `60`                        | Budget for the [`post-session` hook](/docs/en/self-hosted-environments-configuration#post-session) on every session end, including runner shutdown                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
--| `--push-outcome-on-release`           | `SELF_HOSTED_RUNNER_PUSH_OUTCOME_ON_RELEASE`      | off                         | On a runner-initiated session end such as a drain or idle release, push tracked outcome branches to `origin` before deleting the workspace, so in-flight commits survive a restart. Best-effort; adds 30 seconds to the shutdown budget, and requires git 2.29 or newer to resume from the pushed branch. Restrict push access to `claude/*` refs before enabling; see [Resumed sessions lose unpushed work](/docs/en/self-hosted-environments-deploy#additional-limitations). Repositories checked out via a `checkout` lifecycle hook aren't pushed; snapshot those from the [`post-session` hook](/docs/en/self-hosted-environments-configuration#post-session) instead.                                                                                               |
-```
-
-</details>
-
-</details>
-
-
-<details>
-<summary>2026-08-13</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/changelog.md                         | 35 ++++++++++
- docs-ja/pages/cross-session-messaging-en.md        | 24 +++++--
- docs-ja/pages/hooks-guide-ja.md                    | 66 +++++++++----------
- docs-ja/pages/hooks-ja.md                          | 66 +++++++++----------
- docs-ja/pages/plugins-reference-ja.md              | 66 +++++++++----------
- .../self-hosted-environments-configuration-en.md   | 13 +++-
- .../pages/self-hosted-environments-deploy-en.md    | 11 ++--
- docs-ja/pages/self-hosted-environments-en.md       |  6 +-
- .../pages/self-hosted-environments-reference-en.md | 77 +++++++++++-----------
- 9 files changed, 211 insertions(+), 153 deletions(-)
-```
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index 0b73c3b..a18a9d3 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,39 @@
- # Changelog
- 
-+## 2.1.229
-+
-+- Documented `claude remote-control --continue` for resuming the most recent Remote Control session
-+- Added server-supplied Claude Code hook support for self-hosted runner sessions, matching managed-environment behavior
-+- Added SSE keepalive pings to gateway streaming responses during long thinking pauses, preventing idle-timeout disconnects on Vertex and Bedrock upstreams
-+- Added plugin marketplace `command` sources: a local command (e.g. an IDE) prints the plugin directory, which is re-resolved each session and applied without a restart; `mode: "link"` uses it in place
-+- `ListAgents` now marks disconnected Remote Control sessions as `offline` and labels your cloud sessions as `cloud`
-+- Fixed long responses partly disappearing while streaming and being printed twice in the terminal
-+- Fixed a crash to the error screen (including on `--resume` of the affected session) when a tool call had a non-string `glob`, `file_path`, or `command` value
-+- Fixed a RangeError crash when a progress bar or markdown table rendered in a very narrow terminal window (could also crash `claude --continue`/`--resume` at startup)
-+- Fixed a crash on Windows when a tool call or message referenced a file by an extended-length (`\\?\`) or UNC path
-+- Fixed auto mode failing on every tool call for users who disable the attribution header via `CLAUDE_CODE_ATTRIBUTION_HEADER` (direct Anthropic API connections)
-+- Fixed `/model` rejecting Sonnet/Opus 1M for claude.ai subscribers using a custom `ANTHROPIC_BASE_URL` gateway
-+- Fixed MCP OAuth with strict authorization servers by using `127.0.0.1` instead of `localhost` in the redirect URI
-+- Fixed Remote Control clients showing a stuck working spinner after a slash command typed in the laptop terminal
-+- Fixed the Claude Code Review workflow generated by `/install-github-app` completing without posting its review on the pull request
-+- Fixed multi-second UI stalls after editing a file with thousands of IDE diagnostics while the IDE extension is connected
-+- Fixed one-shot `claude plugin` commands leaving a stray liveness file that could prevent cleanup of outdated plugin versions
-+- Fixed dynamic workflows inside CPU-limited containers using the host machine's core count instead of the container's CPU limit
-+- Fixed a file-watcher handle leak after atomic file replacements, and an uncaught error on Windows when the scheduled-tasks watcher failed on a network or virtual filesystem
-+- Fixed SDK and `--input-format stream-json` sessions getting a 400 API error when a whitespace-only message was submitted
-+- Fixed conversations whose messages alone exceed the API's 32 MB request limit retrying compaction when no images or documents can be stripped; they now fail once with a clear message
-+- Fixed OpenTelemetry export from Claude Desktop sessions being rejected by the Desktop-managed gateway when that gateway is also the telemetry endpoint
-```
-
-</details>
-
-<details>
-<summary>cross-session-messaging-en.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/cross-session-messaging-en.md b/docs-ja/pages/cross-session-messaging-en.md
-index 4eeb030..893889f 100644
---- a/docs-ja/pages/cross-session-messaging-en.md
-+++ b/docs-ja/pages/cross-session-messaging-en.md
-@@ -72,5 +72,5 @@ Claude finds a message's target on its own, so you don't need to run anything be
- * **Subagents**: agents running inside the current session. [Agent team](/docs/en/agent-teams) teammates aren't listed; Claude messages them through the team's own roster.
- * **Your other local sessions**: Claude Code sessions running on the same machine, including [background sessions](/docs/en/agent-view). A session appears only when it binds an [inbox socket](#the-sessions-inbox-socket).
--* **Your cloud sessions**: your [Claude Code on the web](/docs/en/claude-code-on-the-web) sessions. These appear when this session has cloud access: a claude.ai login on the first-party Anthropic API and an organization policy that allows cloud sessions.
-+* **Your cloud sessions**: your [Claude Code on the web](/docs/en/claude-code-on-the-web) sessions, shown while this session is connected to [Remote Control](/docs/en/remote-control).
- * **Your Remote Control sessions on other machines**: shown while this session is connected to [Remote Control](/docs/en/remote-control), and labeled `Remote Control`.
- 
-@@ -95,5 +95,7 @@ Starting a conversation with a session on another of your machines requires Clau
- Same-machine delivery works wherever the feature is enabled. Each session registers itself in files on disk and binds its inbox socket there. When Claude lists or messages your local sessions, Claude Code reads those files to find them, so two sessions can reach each other only when they can see the same files. A container has its own filesystem, so a session inside it and a session on the host can't reach each other. Two sessions inside the same container can still message each other, including on a [self-hosted runner](/docs/en/self-hosted-environments).
- 
--A reply needs a [reply address](#what-a-message-looks-like), and almost every message carries one. A message to a session beyond this machine, sent while the sending session isn't connected to Remote Control, still goes through as a direct request to Anthropic servers, but it arrives without a reply address, so the receiver can't answer it. Claude is told as much when it sends.
-+While this session is connected to Remote Control, when you message a session on another of your machines, Claude Code shows the message in that session's conversation under this session's Remote Control name. The Claude on that machine can reply to that name. For example, when this session is connected to Remote Control as `laptop-graceful-unicorn` and you message your desktop, you see the message in the desktop session under `laptop-graceful-unicorn`.
-+
-+If this session isn't connected to Remote Control when Claude sends to a session beyond this machine, the message still goes through, but without a [reply address](#what-a-message-looks-like), so the receiving Claude can't answer it. Claude is told as much when it sends.
- 
- To require your approval before any message goes beyond this machine, set [`isolatePeerMachines`](#require-approval-for-cross-machine-messages).
-@@ -112,5 +114,5 @@ When session A messages session B, Claude Code tells B's Claude that the message
- </h3>
- 
--When the message arrives, it appears in the conversation with its sender, queued while Claude is mid-turn or starting a new turn right away when the session is idle. Once Claude has read it, Claude Code collapses it to a one-line `Message from` row, which `Ctrl+O` expands.
-+When the message arrives, it appears in the conversation under the sender's session name and stays there. Claude Code queues it while Claude is mid-turn, or starts a new turn with it right away when the session is idle.
- 
- A message is a piece of text one Claude writes to another. Claude receives it with the sender's name and a reply address, except for a [one-way cross-machine message](#message-sessions-on-other-machines), which carries no reply address. You see the name and the text, and the receiving session gets only that text, never the sender's conversation history or files.
-@@ -175,9 +177,17 @@ You can find the path in two places:
- 
- * `/status` shows it in the `Peer address` row. The path is prefixed with `uds:`.
-```
-
-</details>
-
-<details>
-<summary>hooks-guide-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/hooks-guide-ja.md b/docs-ja/pages/hooks-guide-ja.md
-index 630d881..ca3cd7b 100644
---- a/docs-ja/pages/hooks-guide-ja.md
-+++ b/docs-ja/pages/hooks-guide-ja.md
-@@ -459,37 +459,37 @@ Hook が承認すると、Claude Code は Plan Mode を終了し、Plan Mode に
- Hook イベントは Claude Code のライフサイクルの特定のポイントで発火します。イベントが発火すると、すべてのマッチングする hooks が並列で実行され、同一の hook コマンドは自動的に重複排除されます。以下の表は各イベントとそれがトリガーされるときを示しています：
- 
--| Event                 | When it fires                                                                                                                                          |
--| :-------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------- |
--| `SessionStart`        | When a session begins or resumes                                                                                                                       |
--| `Setup`               | When you start Claude Code with `--init-only`, or with `--init` or `--maintenance` in `-p` mode. For one-time preparation in CI or scripts             |
--| `UserPromptSubmit`    | When you submit a prompt, before Claude processes it                                                                                                   |
--| `UserPromptExpansion` | When a user-typed command expands into a prompt, before it reaches Claude. Can block the expansion                                                     |
--| `PreToolUse`          | Before a tool call executes. Can block it                                                                                                              |
--| `PermissionRequest`   | When a tool call needs a permission decision                                                                                                           |
--| `PermissionDenied`    | When a tool call is denied by the auto mode classifier. Use JSON `hookSpecificOutput.retry: true` to tell the model it may retry the denied tool call  |
--| `PostToolUse`         | After a tool call succeeds                                                                                                                             |
--| `PostToolUseFailure`  | After a tool call fails                                                                                                                                |
--| `PostToolBatch`       | After a full batch of parallel tool calls resolves, before the next model call                                                                         |
--| `Notification`        | When Claude Code sends a notification                                                                                                                  |
--| `MessageDisplay`      | While assistant message text is displayed                                                                                                              |
--| `SubagentStart`       | When a subagent is spawned                                                                                                                             |
--| `SubagentStop`        | When a subagent finishes                                                                                                                               |
--| `TaskCreated`         | When a task is being created via `TaskCreate`                                                                                                          |
--| `TaskCompleted`       | When a task is being marked as completed                                                                                                               |
--| `Stop`                | When Claude finishes responding                                                                                                                        |
--| `StopFailure`         | When the turn ends due to an API error                                                                                                                 |
--| `TeammateIdle`        | When an [agent team](/docs/en/agent-teams) teammate is about to go idle                                                                                     |
--| `InstructionsLoaded`  | When a CLAUDE.md or `.claude/rules/*.md` file is loaded into context. Fires at session start and when files are lazily loaded during a session         |
--| `ConfigChange`        | When a configuration file changes during a session                                                                                                     |
-```
-
-</details>
-
-<details>
-<summary>hooks-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/hooks-ja.md b/docs-ja/pages/hooks-ja.md
-index 05ad6a3..8f46884 100644
---- a/docs-ja/pages/hooks-ja.md
-+++ b/docs-ja/pages/hooks-ja.md
-@@ -33,37 +33,37 @@
- 以下の表は、各イベントがいつ発火するかをまとめています。[フック イベント](#hook-events)セクションでは、各イベントの完全な入力スキーマと決定制御オプションについて説明しています。
- 
--| Event                 | When it fires                                                                                                                                          |
--| :-------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------- |
--| `SessionStart`        | When a session begins or resumes                                                                                                                       |
--| `Setup`               | When you start Claude Code with `--init-only`, or with `--init` or `--maintenance` in `-p` mode. For one-time preparation in CI or scripts             |
--| `UserPromptSubmit`    | When you submit a prompt, before Claude processes it                                                                                                   |
--| `UserPromptExpansion` | When a user-typed command expands into a prompt, before it reaches Claude. Can block the expansion                                                     |
--| `PreToolUse`          | Before a tool call executes. Can block it                                                                                                              |
--| `PermissionRequest`   | When a tool call needs a permission decision                                                                                                           |
--| `PermissionDenied`    | When a tool call is denied by the auto mode classifier. Use JSON `hookSpecificOutput.retry: true` to tell the model it may retry the denied tool call  |
--| `PostToolUse`         | After a tool call succeeds                                                                                                                             |
--| `PostToolUseFailure`  | After a tool call fails                                                                                                                                |
--| `PostToolBatch`       | After a full batch of parallel tool calls resolves, before the next model call                                                                         |
--| `Notification`        | When Claude Code sends a notification                                                                                                                  |
--| `MessageDisplay`      | While assistant message text is displayed                                                                                                              |
--| `SubagentStart`       | When a subagent is spawned                                                                                                                             |
--| `SubagentStop`        | When a subagent finishes                                                                                                                               |
--| `TaskCreated`         | When a task is being created via `TaskCreate`                                                                                                          |
--| `TaskCompleted`       | When a task is being marked as completed                                                                                                               |
--| `Stop`                | When Claude finishes responding                                                                                                                        |
--| `StopFailure`         | When the turn ends due to an API error                                                                                                                 |
--| `TeammateIdle`        | When an [agent team](/docs/en/agent-teams) teammate is about to go idle                                                                                     |
--| `InstructionsLoaded`  | When a CLAUDE.md or `.claude/rules/*.md` file is loaded into context. Fires at session start and when files are lazily loaded during a session         |
--| `ConfigChange`        | When a configuration file changes during a session                                                                                                     |
 ```
 
 </details>
