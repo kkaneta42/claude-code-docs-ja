@@ -17,6 +17,170 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-09-02</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md             | 112 +++++++++++++++++++++++++++++++++
+ docs-ja/pages/context-window-ja.md     |   4 +-
+ docs-ja/pages/managed-settings-en.md   |   2 +-
+ docs-ja/pages/settings-example-en.md   |   4 +-
+ docs-ja/pages/settings-reference-en.md | 101 ++++++++++++++++++++++-------
+ 5 files changed, 194 insertions(+), 29 deletions(-)
+```
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index 921b4fb..b7cc83a 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,116 @@
+ # Changelog
+ 
++## 2.1.258
++
++- Fixed Claude Code failing to launch on macOS 12 (Monterey), a regression introduced in 2.1.255
++- Fixed remote and scheduled sessions failing with "user messages must have non-empty content" after a re-sent permission approval could not be applied
++
++## 2.1.257
++
++- Added Claude Fable 5.1 (`claude-fable-5-1`), now the default Fable model — 1M context, $10/$50 per Mtok with $0.25/Mtok cache reads
++- Added "Time format" (`timeFormat`) and `timeZone` settings: 12-hour, 24-hour, 24-hour UTC, or a strftime pattern for the turn-end clock and transcript-view timestamps
++- Added a Containment Escape rule to auto mode so cloud metadata-credential fetches, egress evasion, and cross-tenant reach are no longer auto-approved unless your environment marks them expected
++- Added `CLAUDE_CODE_SUBAGENT_MODEL_FORCE` to apply `CLAUDE_CODE_SUBAGENT_MODEL` (or the main model) to every subagent, ignoring per-spawn and agent-definition model overrides
++- Added `s` in `/effort` to change effort for the current session only, matching `/model`
++- Added a `/doctor` warning for stale sandbox mask files left by a killed session
++- Added a one-time prompt in auto mode before the first file read outside the working directories, with the option to block such reads (`permissions.blockReadsOutsideWorkingDirectories`)
++- Added support for a gateway-supplied `description` on discovered `/model` picker entries (`CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY`); entries without one still read "From gateway"
++- Fixed settings in a `.claude/` folder created after startup not being picked up until restart
++- Fixed sessions dispatched from an agent view opened with `←` always starting in the original session's permission mode, overriding the target directory's `defaultMode` and the agent's `permissionMode`
++- Fixed `keybindings.json` rebinds of Ctrl+G being ignored in `claude agents`; its Ctrl+S / Ctrl+T are now rebindable via the new `Agents` context
++- Fixed background sessions failing to start on macOS npm installs during a self-update, and on Windows when a stale daemon lock file pointed at a reused process id
++- Fixed the working spinner stopping while a response streams behind a slash-command panel
++- Fixed a background session's `state.json` `detail` repeating its own dispatch prompt after a scheduled wake-up
++- Fixed `claude agents` keeping a background session you re-prompted buried in Completed after it finished again; Completed now orders by the latest finish
++- Fixed `claude --bg` from a directory that was just deleted reporting "backgrounded" and leaving a crashed session row; it now prints the reason and exits 1
+```
+
+</details>
+
+<details>
+<summary>context-window-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/context-window-ja.md b/docs-ja/pages/context-window-ja.md
+index 860a385..44d79e6 100644
+--- a/docs-ja/pages/context-window-ja.md
++++ b/docs-ja/pages/context-window-ja.md
+@@ -181,5 +181,5 @@ export const ContextWindow = () => {
+     vis: 'hidden',
+     desc: 'A PostToolUse hook in `settings.json` runs prettier after every file edit and reports back via `hookSpecificOutput.additionalContext`. That field enters Claude\'s context. Plain stdout on exit 0 does not. It is written to the debug log only.',
+-    tip: 'Output JSON with `additionalContext` to send info to Claude. For PostToolUse hooks, exit code 2 surfaces stderr as an error but cannot block since the tool already ran. Keep output concise since it enters context without truncation.',
++    tip: 'Output JSON with `additionalContext` to send info to Claude. For PostToolUse hooks, exit code 2 surfaces stderr as an error but cannot block since the tool already ran. Output over 10,000 characters is saved to a file; Claude gets a preview and the file path instead.',
+     link: '/en/hooks-guide'
+   }, {
+@@ -334,5 +334,5 @@ export const ContextWindow = () => {
+     vis: 'full',
+     desc: "You ran a shell command with the ! prefix to see which files Claude modified. The command and its output both enter context as part of your message. Useful for grounding Claude in command output without Claude running it.",
+-    link: '/en/interactive-mode#bash-mode-with-prefix'
++    link: '/en/interactive-mode#shell-mode-with-prefix'
+   }, {
+     t: 0.89,
+```
+
+</details>
+
+<details>
+<summary>managed-settings-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/managed-settings-en.md b/docs-ja/pages/managed-settings-en.md
+index 502de9a..7b21823 100644
+--- a/docs-ja/pages/managed-settings-en.md
++++ b/docs-ja/pages/managed-settings-en.md
+@@ -329,5 +329,5 @@ The table covers the permission, plugin, and delivery controls. For any key not
+ | [`allowManagedHooksOnly`](/docs/en/settings-reference#allowmanagedhooksonly)                                               | When `true`, restricts which hooks run; see [what runs under `allowManagedHooksOnly`](/docs/en/settings-reference#what-runs-under-allowmanagedhooksonly) for the full effect list                                                                                                                                                                                                                                                                                                   |
+ | [`allowManagedMcpServersOnly`](/docs/en/settings-reference#allowmanagedmcpserversonly)                                     | When `true`, only `allowedMcpServers` from managed settings are respected. `deniedMcpServers` still merges from all sources. See [Managed MCP configuration](/docs/en/managed-mcp)                                                                                                                                                                                                                                                                                                  |
+-| [`allowManagedPermissionRulesOnly`](/docs/en/settings-reference#allowmanagedpermissionrulesonly)                           | Only managed permission rules apply; the entry lists every source it ignores                                                                                                                                                                                                                                                                                                                                                                                                   |
++| [`allowManagedPermissionRulesOnly`](/docs/en/settings-reference#allowmanagedpermissionrulesonly)                           | Makes managed settings the only settings source of permission rules. The entry lists every source it ignores                                                                                                                                                                                                                                                                                                                                                                   |
+ | [`blockedMarketplaces`](/docs/en/settings-reference#blockedmarketplaces)                                                   | Blocklist of marketplace sources. Blocked sources are checked before downloading, so they never touch the filesystem. See [managed marketplace restrictions](/docs/en/plugin-marketplaces#managed-marketplace-restrictions)                                                                                                                                                                                                                                                         |
+ | [`channelsEnabled`](/docs/en/settings-reference#channelsenabled)                                                           | Allow [channels](/docs/en/channels) for the organization. See [enterprise controls](/docs/en/channels#enterprise-controls) for the default on each plan                                                                                                                                                                                                                                                                                                                                  |
+```
+
+</details>
+
+<details>
+<summary>settings-example-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/settings-example-en.md b/docs-ja/pages/settings-example-en.md
+index e78fca8..fa6917c 100644
+--- a/docs-ja/pages/settings-example-en.md
++++ b/docs-ja/pages/settings-example-en.md
+@@ -253,5 +253,5 @@ A `managed-settings.json` file that shows the shape of the managed keys, with on
+ * `availableModels` and `enforceAvailableModels` restrict which models sessions can use
+ * `permissions.deny` blocks two file reads and `curl`, and `disableBypassPermissionsMode` removes the bypass permission mode
+-* `allowManagedPermissionRulesOnly` and `allowManagedMcpServersOnly` make the managed permission and MCP allowlists the only ones that apply
++* [`allowManagedPermissionRulesOnly`](/docs/en/settings-reference#allowmanagedpermissionrulesonly) and [`allowManagedMcpServersOnly`](/docs/en/settings-reference#allowmanagedmcpserversonly) make the managed permission and MCP allowlists the only ones that apply
+ * `allowedMcpServers` pins the MCP server by URL
+ * `strictKnownMarketplaces` allows one plugin marketplace
+@@ -346,5 +346,5 @@ Administrators deploy a file like this as `managed-settings.json`, or the same J
+         "disableBypassPermissionsMode": "disable"
+       },
+-      // Only managed permission rules apply
++      // Ignore permission rules from user, project, and local settings
+       "allowManagedPermissionRulesOnly": true,
+       // Only the GitHub MCP server, matched by URL rather than by name, since a user can
+```
+
+</details>
+
+<details>
+<summary>settings-reference-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/settings-reference-en.md b/docs-ja/pages/settings-reference-en.md
+index cf6b752..f125a13 100644
+--- a/docs-ja/pages/settings-reference-en.md
++++ b/docs-ja/pages/settings-reference-en.md
+@@ -597,5 +597,5 @@ scope: "Which settings files can set the key: user (~/.claude/settings.json), pr
+ | [`allowManagedHooksOnly`](#allowmanagedhooksonly)                                               | Run only the [hooks](/docs/en/hooks) your organization deploys                                                                                                                                                                   | Hooks and automation               | Managed                 |
+ | [`allowManagedMcpServersOnly`](#allowmanagedmcpserversonly)                                     | Make the managed [MCP](/docs/en/mcp) allowlist the only one that applies                                                                                                                                                         | MCP                                | Managed                 |
+-| [`allowManagedPermissionRulesOnly`](#allowmanagedpermissionrulesonly)                           | Make [managed settings](/docs/en/managed-settings) the only source of [permission rules](/docs/en/permissions#managed-settings)                                                                                                       | Permission settings                | Managed                 |
++| [`allowManagedPermissionRulesOnly`](#allowmanagedpermissionrulesonly)                           | Make [managed settings](/docs/en/managed-settings) the only settings source of [permission rules](/docs/en/permissions#managed-settings)                                                                                              | Permission settings                | Managed                 |
+ | [`alwaysThinkingEnabled`](#alwaysthinkingenabled)                                               | Turn [extended thinking](/docs/en/model-config#extended-thinking) off for every session                                                                                                                                          | Model and responses                | Any file                |
+ | [`apiKeyHelper`](#apikeyhelper)                                                                 | Generate the [API credential](/docs/en/authentication#credential-management) with your own command                                                                                                                               | Authentication and providers       | Any file                |
+@@ -693,5 +693,5 @@ scope: "Which settings files can set the key: user (~/.claude/settings.json), pr
+ | [`outputStyle`](#outputstyle)                                                                   | Change Claude's role, tone, and output format with an [output style](/docs/en/output-styles)                                                                                                                                     | Model and responses                | Any file                |
+ | [`parentSettingsBehavior`](#parentsettingsbehavior)                                             | Apply or drop restrictions an [SDK or IDE host](/docs/en/managed-settings#let-an-embedding-host-add-policy) passes when you deploy [managed settings](/docs/en/managed-settings)                                                      | Enterprise and managed settings    | Managed                 |
+-| [`permissionExplainerEnabled`](#permissionexplainerenabled)                                     | Turn off the Ctrl+E command explanation on shell [permission prompts](/docs/en/permissions#permission-system)                                                                                                                    | Global config settings             | Global config           |
++| [`permissionExplainerEnabled`](#permissionexplainerenabled)                                     | Removed in v2.1.257, together with the `Ctrl+E` command explanation on shell permission prompts                                                                                                                             | Global config settings             | Global config           |
+ | [`permissions`](#permissions)                                                                   | Set allow, ask, and deny rules and the starting [permission mode](/docs/en/permission-modes)                                                                                                                                     | Permission settings                | Any file                |
+ | [`permissions.additionalDirectories`](#permissions-additionaldirectories)                       | Give Claude file access to [directories outside the current one](/docs/en/permissions#working-directories)                                                                                                                       | Permission settings                | Any file                |
+@@ -791,4 +791,6 @@ scope: "Which settings files can set the key: user (~/.claude/settings.json), pr
+ | [`terminalTitleFromRename`](#terminaltitlefromrename)                                           | Stop [`/rename`](/docs/en/sessions#name-your-sessions) and `--name` from changing the terminal tab title                                                                                                                         | Interface and terminal             | Any file                |
+ | [`theme`](#theme)                                                                               | Pick the interface [color theme](/docs/en/terminal-config#match-the-color-theme), built-in or custom                                                                                                                             | Interface and terminal             | Any file                |
++| [`timeFormat`](#timeformat)                                                                     | Show the times in the interface on a 12-hour or 24-hour clock, in UTC, or with a strftime pattern                                                                                                                           | Interface and terminal             | Any file                |
++| [`timeZone`](#timezone)                                                                         | Show the times in the interface in a time zone other than your system's                                                                                                                                                     | Interface and terminal             | Any file                |
+ | [`tui`](#tui)                                                                                   | Choose the [fullscreen](/docs/en/fullscreen) or classic terminal renderer                                                                                                                                                        | Interface and terminal             | Any file                |
+ | [`ultracode`](#ultracode)                                                                       | Have Claude plan a [workflow](/docs/en/workflows#let-claude-decide-with-ultracode) for each substantive task without being asked                                                                                                 | Model and responses                | Any file                |
+@@ -819,5 +821,5 @@ Pick which model answers when Claude calls the server-side [advisor tool](/docs/
+ You don't usually edit this key by hand. Run `/advisor` to open a picker that shows the current choice, the models that can advise, and **No advisor**. Claude Code saves your pick to this key in `~/.claude/settings.json`. In a session attached to a remote worker, the pick applies to that session only.
+ 
+-To pick Fable, first accept the [usage-credits consent](/docs/en/advisor#fable-advisor-and-usage-credits) by running `/model fable`. Until you do, picking Fable in `/advisor` saves nothing and Claude Code tells you to run `/model fable` first.
++If your account requires the [usage-credits consent](/docs/en/advisor#fable-advisor-and-usage-credits), accept it first by running `/model fable`. Until you do, picking Fable in `/advisor` saves nothing and Claude Code tells you to run `/model fable` first.
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-09-01</summary>
 
 **変更ファイル:**
@@ -2326,189 +2490,6 @@ index bf6c837..eaf481e 100644
 +- Windows: fixed auto mode repeatedly stopping for manual approval on ordinary `cd <dir> && <command> > file` Bash commands (a 2.1.232 regression)
 +- Reverted the 2.1.232 Bash permission changes for Cygwin-style symlinks on Windows and for input redirections (`< file`); a narrower version will return in a later release
 +
-```
-
-</details>
-
-<details>
-<summary>self-hosted-environments-configuration-en.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/self-hosted-environments-configuration-en.md b/docs-ja/pages/self-hosted-environments-configuration-en.md
-index 3ceedc1..735eae8 100644
---- a/docs-ja/pages/self-hosted-environments-configuration-en.md
-+++ b/docs-ja/pages/self-hosted-environments-configuration-en.md
-@@ -354,5 +354,5 @@ A self-hosted session has no terminal attached, so an unanswered permission prom
- 
- <Note>
--  Only enable auto mode on an environment whose session containers run with [default-deny network egress](/docs/en/self-hosted-environments-deploy#default-deny-egress) and the rest of the [hardening section](/docs/en/self-hosted-environments-deploy#harden-your-deployment) in place. Routine tool calls, including `Bash` network requests, run without a human in the loop on both the default pre-approved tool set and in auto mode, so the network boundary is what limits where those calls can reach.
-+  Only pin auto mode on an environment whose session containers run with [default-deny network egress](/docs/en/self-hosted-environments-deploy#default-deny-egress) and the rest of the [hardening section](/docs/en/self-hosted-environments-deploy#harden-your-deployment) in place. Routine tool calls, including `Bash` network requests, run without a human in the loop on both the default pre-approved tool set and in auto mode, so the network boundary is what limits where those calls can reach.
- </Note>
- 
-```
-
-</details>
-
-</details>
-
-
-<details>
-<summary>2026-08-14</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/changelog.md                         | 56 ++++++++++++++++
- docs-ja/pages/cross-session-messaging-en.md        | 21 ++++--
- .../self-hosted-environments-configuration-en.md   | 78 ++++++++++++----------
- .../pages/self-hosted-environments-deploy-en.md    | 11 ++-
- .../pages/self-hosted-environments-reference-en.md | 60 ++++++++---------
- 5 files changed, 157 insertions(+), 69 deletions(-)
-```
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index a18a9d3..bf6c837 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,60 @@
- # Changelog
- 
-+## 2.1.232
-+
-+- Subagent forking is now on by default: a `subagent_type: "fork"` subagent inherits the full conversation and prompt cache, and non-teammate agent spawns in interactive sessions now run in the background by default
-+- Type `@` in the prompt to mention another Claude session by name; Claude then uses `SendMessage` to reach that session directly
-+- `SendMessage` now delivers to a bare name that exactly matches one live session, instead of asking to confirm with a ref first
-+- Interactive sessions on one machine now keep unique names: starting or renaming a session to a name another live session already uses gives it a `name-word-word` variant and tells you
-+- Added `/config` rows for "Dialog expiry" and "Messages from your other sessions" (cross-session inbound accept/hold/refuse)
-+- Added secret redaction for GitLab token families (`glrt-`, `gloas-`, `glptt-`, `glagent-`, `glimt-`, `glsoat-`, `glcbt-`, `glft-`, `glffct-`) and full redaction of routable `glpat-`/`gldt-` tokens; the `glab` CLI config store gets the same sandbox and credential-path protection as `gh`
-+- Added GitLab support to plugin marketplaces: bare `gitlab.com` repo URLs (including nested subgroups) now clone like `github.com` URLs, and clone auth-failure hints name your actual git host
-+- Settings: `additionalMarketplaces` and `allowedMarketplaces` are now accepted as friendlier aliases for `extraKnownMarketplaces` and `strictKnownMarketplaces`
-+- Enterprise policy: a url-typed `blockedMarketplaces` entry for a bare repo URL keeps blocking that URL when the CLI classifies it as a git clone
-+- Gateway: the `desktop:` overlay now accepts every released Desktop setting (was 11 hand-listed keys), validated at boot against Desktop's own schema; unknown or invalid keys fail boot
-+- Gateway: empty `managed.policies[].match.groups`/`admin.admin_groups` entries and malformed `email_domain` values (empty, or containing `@`, whitespace, or commas) now fail at boot instead of silently matching no one or granting admin access
-+- Fable 5 is offered as an advisor in `/advisor` again for organizations with Fable access, with usage-credits consent set up through `/model fable`
-+- Fixed a PowerShell permission bypass where variable-writing parameters could silently overwrite `$PSDefaultParameterValues` and redirect later commands' file access
-+- Fixed a Windows permission bypass where Git Bash followed Cygwin-style symlinks that path validation saw as regular files; writes through them now require permission approval
-+- Fixed nested git repositories inheriting trust from a parent directory; each repository now requires its own trust confirmation
-+- Fixed MCP connections hanging for the full 30-second connect timeout when a server fails to answer or sends a malformed reply to the protocol-version probe
-+- Fixed Remote Control sessions hosted by a bridge inside a cloud session inheriting that session's transcript or credentials
-+- Fixed Remote Control sessions started from Claude Desktop or an IDE appearing as a new claude.ai session each time the local session was resumed; they now reattach to the existing one
-+- Fixed Remote Control sessions appearing unreachable to newly attached clients while idle
-+- Fixed Remote Control bridge sessions not restoring conversation history when the session worker restarts
-+- Remote Control: resuming a conversation whose session was deleted from claude.ai or the app now starts a replacement instead of failing with a message about your login (regressed in v2.1.227)
-```
-
-</details>
-
-<details>
-<summary>cross-session-messaging-en.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/cross-session-messaging-en.md b/docs-ja/pages/cross-session-messaging-en.md
-index 893889f..42ae59c 100644
---- a/docs-ja/pages/cross-session-messaging-en.md
-+++ b/docs-ja/pages/cross-session-messaging-en.md
-@@ -50,4 +50,12 @@ Explain what we just did to the session working on the payments API
- ```
- 
-+To name the target yourself, mention the session in your prompt: type `@` followed by the first letters of the session's name and pick the session from the typeahead, the same way you [@-mention a subagent](/docs/en/sub-agents#invoke-subagents-explicitly). Requires Claude Code v2.1.232 or later. Claude Code inserts the mention, such as `@api-worker`, and tells Claude which session it names, so Claude can message that session without listing your sessions first. This prompt names the target with a mention:
-+
-+```text wrap theme={null}
-+Let @api-worker know the schema migration finished
-+```
-+
-+Once you type at least one letter after the `@`, Claude Code suggests your other live sessions on this machine; after a bare `@`, session rows don't appear. A cloud or Remote Control session appears in the suggestions only after Claude has already listed or messaged your sessions beyond this machine. You can also type the mention without the picker. When more than one live session answers to the mentioned name, Claude asks you which one you mean before sending.
-+
- For what the message Claude writes looks like when it arrives, including an example of one, see [what a message looks like](#what-a-message-looks-like).
- 
-@@ -72,12 +80,15 @@ Claude finds a message's target on its own, so you don't need to run anything be
- * **Subagents**: agents running inside the current session. [Agent team](/docs/en/agent-teams) teammates aren't listed; Claude messages them through the team's own roster.
- * **Your other local sessions**: Claude Code sessions running on the same machine, including [background sessions](/docs/en/agent-view). A session appears only when it binds an [inbox socket](#the-sessions-inbox-socket).
--* **Your cloud sessions**: your [Claude Code on the web](/docs/en/claude-code-on-the-web) sessions, shown while this session is connected to [Remote Control](/docs/en/remote-control).
--* **Your Remote Control sessions on other machines**: shown while this session is connected to [Remote Control](/docs/en/remote-control), and labeled `Remote Control`.
-+* **Your cloud sessions**: your [Claude Code on the web](/docs/en/claude-code-on-the-web) sessions, shown while this session is connected to [Remote Control](/docs/en/remote-control). Claude Code labels them `cloud` in the listing.
-+* **Your Remote Control sessions on other machines**: shown while this session is connected to [Remote Control](/docs/en/remote-control), and labeled `Remote Control`. Claude Code shows `offline` as the status of a session whose Remote Control connection has dropped.
- 
- Claude addresses a session beyond this machine by name, the same as a local session. See [Message sessions on other machines](#message-sessions-on-other-machines) for how those messages travel.
- 
--A session answers to the name you set with the [`/rename`](/docs/en/commands) command or the [`--name`](/docs/en/cli-reference#cli-flags) flag. When you don't set one, Claude Code names the session itself. An interactive session gets a name derived from its working directory's folder name, such as `myapp-3f`.
-+A session answers to the name you set with the [`/rename`](/docs/en/commands) command or the [`--name`](/docs/en/cli-reference#cli-flags) flag. When you don't set one, Claude Code names the session itself. For an interactive session, Claude Code derives the name from the working directory's folder name, such as `my-app-3f` in a `my-app` directory.
-+
-```
-
-</details>
-
-<details>
-<summary>self-hosted-environments-configuration-en.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/self-hosted-environments-configuration-en.md b/docs-ja/pages/self-hosted-environments-configuration-en.md
-index 5dea269..3ceedc1 100644
---- a/docs-ja/pages/self-hosted-environments-configuration-en.md
-+++ b/docs-ja/pages/self-hosted-environments-configuration-en.md
-@@ -31,4 +31,5 @@ The runner sets the following in the wrapper's environment:
- | `CLAUDE_CODE_SESSION_ACCESS_TOKEN`  | The session JWT, prefixed `sk-ant-cc-`. Its `act` claim identifies the session creator, with the creator's email and upstream identity-provider subject when the creating surface recorded them. The value is the token at spawn time; refreshes arrive over the child's stdin, so a wrapper sees only the initial value. See [Verify session identity](/docs/en/self-hosted-environments-identity).                                                                                                                                                                                                                              |
- | `CCR_SESSION_ACCOUNT_EMAIL`         | The session creator's email, pre-extracted by the runner from the token's `act.email` claim without signature verification. Suitable for labelling, such as commit trailers. When the email gates credential issuance, verify the token and read the claim from it instead; see [Provision credentials scoped to the session creator](#provision-credentials-scoped-to-the-session-creator). Unset when the token carries no creator email. Treat as personally identifiable information.                                                                                                                                    |
-+| `CLAUDE_RUNNER_CLIENT_PLATFORM`     | The client surface that created the session, such as `web_claude_ai`, `desktop_app`, `ios`, `claude_code_cli`, or `scheduled_trigger`. Anthropic records the value once at session creation, so the wrapper and every lifecycle hook see the same value. Use it for adoption analytics and labelling only, not as an authorization signal. Unset when the session has no recorded or recognized surface, so reference it as `${CLAUDE_RUNNER_CLIENT_PLATFORM:-}` under `set -u`. Requires Claude Code v2.1.229 or later.                                                                                                     |
- | `CLAUDE_RUNNER_CLAUDE_BIN`          | Absolute path to the runner's own Claude Code binary. End your wrapper with `exec "$CLAUDE_RUNNER_CLAUDE_BIN" "$@"` to hand off to the pinned binary without hardcoding an install path.                                                                                                                                                                                                                                                                                                                                                                                                                                     |
- | `CLAUDE_CODE_REMOTE_SESSION_ID`     | Session ID in the tagged `cse_...` form. This is the same session the [lifecycle hooks](#lifecycle-hooks) see as `CLAUDE_RUNNER_SESSION_ID` in `session_...` form; the UUID variables match across both, and substituting the `cse_` prefix with `session_` yields the ID shown in the session URL.                                                                                                                                                                                                                                                                                                                          |
-@@ -87,13 +88,14 @@ These hooks are distinct from [Claude Code hooks](/docs/en/hooks), which run ins
- Runs once per repository, in place of the runner's built-in clone and fetch. Use the hook to clone from a read-through mirror, seed a working tree from an archive, or apply per-session git auth. The runner sets:
- 
--| Variable                           | Description                                                                                                                 |
--| :--------------------------------- | :-------------------------------------------------------------------------------------------------------------------------- |
--| `CLAUDE_RUNNER_REPO_URL`           | Repository URL to clone, after any `--git-host-rewrite` and `--git-ssh-rewrite` have been applied                           |
--| `CLAUDE_RUNNER_REPO_REF`           | Revision to check out: branch, tag, or commit SHA as the session requested it. Empty means the repository's default branch. |
--| `CLAUDE_RUNNER_CHECKOUT_PATH`      | Absolute path where the working tree must be left                                                                           |
--| `CLAUDE_RUNNER_SESSION_ID`         | Session ID in the tagged `session_...` form, for logging and correlation                                                    |
--| `CLAUDE_RUNNER_SESSION_UUID`       | The same session ID in canonical UUID form                                                                                  |
--| `CLAUDE_RUNNER_API_BASE_URL`       | Anthropic API base URL for session-scoped calls                                                                             |
--| `CLAUDE_CODE_SESSION_ACCESS_TOKEN` | The session access token, for session-scoped API calls                                                                      |
-+| Variable                           | Description                                                                                                                                                  |
-+| :--------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-+| `CLAUDE_RUNNER_REPO_URL`           | Repository URL to clone, after any `--git-host-rewrite` and `--git-ssh-rewrite` have been applied                                                            |
-+| `CLAUDE_RUNNER_REPO_REF`           | Revision to check out: branch, tag, or commit SHA as the session requested it. Empty means the repository's default branch.                                  |
-+| `CLAUDE_RUNNER_CHECKOUT_PATH`      | Absolute path where the working tree must be left                                                                                                            |
-+| `CLAUDE_RUNNER_SESSION_ID`         | Session ID in the tagged `session_...` form, for logging and correlation                                                                                     |
-+| `CLAUDE_RUNNER_SESSION_UUID`       | The same session ID in canonical UUID form                                                                                                                   |
-+| `CLAUDE_RUNNER_API_BASE_URL`       | Anthropic API base URL for session-scoped calls                                                                                                              |
-```
-
-</details>
-
-<details>
-<summary>self-hosted-environments-deploy-en.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/self-hosted-environments-deploy-en.md b/docs-ja/pages/self-hosted-environments-deploy-en.md
-index dc84067..505f1d2 100644
---- a/docs-ja/pages/self-hosted-environments-deploy-en.md
-+++ b/docs-ja/pages/self-hosted-environments-deploy-en.md
-@@ -112,4 +112,13 @@ If you must configure push credentials at the image level, for example for a rea
- * `GIT_SSH_COMMAND` pointing at a narrowly-scoped key
- 
-+Whichever mechanism you configure must work without a prompt, because the runner's built-in clone and fetch disable the prompts that git, SSH, and Git Credential Manager would otherwise show:
-+
-+* The runner sets `GIT_TERMINAL_PROMPT=0`, so git doesn't ask for a username or password.
-+* The runner runs SSH with `BatchMode=yes`, appended to your `GIT_SSH_COMMAND` if you set one, so SSH doesn't ask for a passphrase or host confirmation.
-+* The runner sets `GCM_INTERACTIVE=never`, so Git Credential Manager doesn't open a sign-in dialog.
-+* The runner clears `core.askPass`, so if you use an askpass helper, set it through the `GIT_ASKPASS` environment variable instead.
-+
-+If your git host rejects the credential, or you didn't configure one, the runner retries a few times and then fails repository preparation. The runner doesn't pass these settings into the session's environment.
-+
- If checkout directories are owned by a different uid than the runner process, git refuses to operate on them; add `safe.directory`:
- 
-@@ -282,5 +291,5 @@ If a runner dies mid-session, the server requeues the session and another runner
- Use the same `--base-dir` and `--capacity` on every runner in an environment, and don't use a per-host value such as an instance ID or hostname.
- 
--The base directory defaults to `/workspace`. The runner needs write access to it. At startup, before registering, the runner creates the directory and confirms it can write to it, and exits with `cannot create or write to base directory` when it can't. A runner started as root creates the default `/workspace` itself. For a non-root runner, create the directory and give the runner's user ownership before starting the runner, or point `--base-dir` at a directory that user already owns.
-+The base directory defaults to `/workspace`, with the exception the [`--base-dir` reference row](/docs/en/self-hosted-environments-reference#runner-cli-flags) records. The runner needs write access to it. At startup, before registering, the runner creates the directory and confirms it can write to it, and exits with `cannot create or write to base directory` when it can't. A runner started as root creates the default `/workspace` itself. For a non-root runner, create the directory and give the runner's user ownership before starting the runner, or point `--base-dir` at a directory that user already owns.
- 
- ## Reuse a pre-warmed checkout
 ```
 
 </details>
