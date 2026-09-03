@@ -17,6 +17,77 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-09-03</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md                  | 40 +++++++++++++++++++++++++++++
+ docs-ja/pages/cross-session-messaging-en.md |  2 +-
+ 2 files changed, 41 insertions(+), 1 deletion(-)
+```
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index b7cc83a..b580854 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,44 @@
+ # Changelog
+ 
++## 2.1.259
++
++- Added `managedMcpServers` managed setting: organizations can provide HTTP/SSE MCP servers to every user (same entry shape as `.mcp.json`); entries that name a command to run are skipped
++- Added `--permission-prompts none` for unattended headless hosts: anything that would prompt is denied automatically while the active permission mode (including auto mode) keeps deciding
++- Added recognition of `glab mr create/merge/close/reopen/note/update` so GitLab merge requests show as `MR !N` in the collapsed tool summary and refresh the footer MR badge
++- Added `--json` to `claude plugin validate` for a machine-readable validation report
++- Fixed concurrent sessions silently reverting each other's `~/.claude.json` changes — workspace trust no longer resets and MCP/project state is no longer lost when running many sessions at once
++- Fixed a conversation whose thinking was rejected once being rejected again on every later turn
++- Fixed Bash `Read()` deny rules not covering files given as option values (`--ignore-revs-file=.env`, `-f.env`, `@file`), `git diff`/`git grep` file operands, or `cd DIR && cat FILE` compounds; `grep -r`/`cp -r` over a directory holding a denied file now asks
++- Fixed the prompt cache being invalidated when the OAuth token refreshed in sessions with telemetry disabled
++- Fixed fullscreen mode showing a blank conversation after a long turn with hundreds of tool calls
++- Fixed auto mode running a turn on a model it doesn't support when a command or skill's frontmatter `model:` named one; the turn now keeps the session model
++- Fixed `CLAUDE_CODE_MAX_CONTEXT_TOKENS` being ignored for Vertex-style model IDs (`@YYYYMMDD` suffix) of model versions Claude Code doesn't recognize
++- Fixed the live output preview of a running shell command hiding its newest lines when an earlier line wrapped
++- Fixed a background GitHub connection check that ran on every launch for claude.ai users; the result is now remembered across launches
++- Fixed `--resume` failing (and `--continue` opening an empty conversation) when a saved session contains an attachment entry with no payload
++- Fixed frontmatter `model:` on custom commands and skills being ignored in interactive sessions
++- Fixed Artifact publishing failing once with an "unexpected parameter `note`" error in conversations continued from an older version
++- Fixed managed `forceRemoteSettingsRefresh` being ignored at startup when a policy helper configured by MDM or the managed settings file had already run
++- Fixed worktree isolation refusing hook-created worktrees on machines where `git rev-parse` fails with a message other than "not a git repository"
++- Fixed OpenTelemetry metrics and events from cloud sessions missing the `user.email`, `organization.id`, and `user.account_uuid` attributes
++- Fixed MCP servers that disconnect while their tools are being listed at startup showing as connected with no tools instead of reporting the error
++- Fixed the file edit permission dialog sometimes showing a changed line cut short with no indication
+```
+
+</details>
+
+<details>
+<summary>cross-session-messaging-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/cross-session-messaging-en.md b/docs-ja/pages/cross-session-messaging-en.md
+index f9f1019..132778f 100644
+--- a/docs-ja/pages/cross-session-messaging-en.md
++++ b/docs-ja/pages/cross-session-messaging-en.md
+@@ -123,5 +123,5 @@ Claude finds a message's target on its own, so you don't need to run anything be
+ * **Subagents**: agents running inside the current session.
+ * **Teammates**: this session's own [agent team](/docs/en/agent-teams) teammates. Before v2.1.239, teammates didn't appear in the listing, though Claude could already message them by name.
+-* **Your other local sessions**: Claude Code sessions running on the same machine, including [background sessions](/docs/en/agent-view). A session appears only when it binds an [inbox socket](#the-sessions-inbox-socket). The worker process that the [supervisor process](/docs/en/agent-view#the-supervisor-process) keeps ready for your next background session appears once you dispatch work to it.
++* **Your other local sessions**: Claude Code sessions running on the same machine, including [background sessions](/docs/en/agent-view). A session appears only when it binds an [inbox socket](#the-sessions-inbox-socket).
+ * **Your cloud sessions**: your [Claude Code on the web](/docs/en/claude-code-on-the-web) sessions, shown while this session is connected to [Remote Control](/docs/en/remote-control). Claude Code labels them `cloud` in the listing.
+ * **Your Remote Control sessions on other machines**: shown while this session is connected to [Remote Control](/docs/en/remote-control), and labeled `Remote Control`. Claude Code shows `offline` as the status of a session whose Remote Control connection has dropped.
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-09-02</summary>
 
 **変更ファイル:**
@@ -2416,82 +2487,5 @@ index fecb58d..a13a8fb 100644
  docs-ja/pages/self-hosted-environments-deploy-en.md | 8 +++++++-
  1 file changed, 7 insertions(+), 1 deletion(-)
 ```
-
-<details>
-<summary>self-hosted-environments-deploy-en.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/self-hosted-environments-deploy-en.md b/docs-ja/pages/self-hosted-environments-deploy-en.md
-index 505f1d2..fecb58d 100644
---- a/docs-ja/pages/self-hosted-environments-deploy-en.md
-+++ b/docs-ja/pages/self-hosted-environments-deploy-en.md
-@@ -327,5 +327,11 @@ The following are the limitations in this release, with workarounds where one ex
- ### Connector traffic leaves your network
- 
--Connector tools, such as GitHub, Slack, Linear, and the other claude.ai connectors, are called from Anthropic's side rather than from your runner, so when a self-hosted session uses a connector, that traffic routes through `api.anthropic.com`, not from inside your network boundary. To keep a connector out of self-hosted sessions, filter it like any other MCP server with the [`allowedMcpServers` and `deniedMcpServers` policy settings](/docs/en/managed-mcp#policy-based-control-with-allowlists-and-denylists), which apply to server-delivered connectors too. An allowlist you deploy for other servers also blocks delivered connectors. To keep connectors available alongside a URL-based allowlist, add an entry matching the session proxy URL, such as `https://api.anthropic.com/v2/ccr-sessions/*`. If tool traffic must stay inside your network, run the equivalent tools as local MCP servers on the runner image instead. See [MCP servers](/docs/en/self-hosted-environments-configuration#mcp-servers).
-+Connector tools, such as GitHub, Slack, Linear, and the other claude.ai connectors, are called from Anthropic's side rather than from your runner, so when a self-hosted session uses a connector, that traffic routes through `api.anthropic.com`, not from inside your network boundary. To keep a connector out of self-hosted sessions, filter it like any other MCP server with the [`allowedMcpServers` and `deniedMcpServers` policy settings](/docs/en/managed-mcp#policy-based-control-with-allowlists-and-denylists), which apply to server-delivered connectors too. An allowlist you deploy for other servers also blocks delivered connectors. To keep connectors available alongside a URL-based allowlist, add entries that match the Anthropic proxy paths for server-delivered MCP servers:
-+
-+* `https://api.anthropic.com/v2/ccr-sessions/*`
-+* `https://api.anthropic.com/v1/code/sessions/*`
-+* `https://api.anthropic.com/v1/code/mcp/*`
-+
-+If tool traffic must stay inside your network, run the equivalent tools as local MCP servers on the runner image instead. See [MCP servers](/docs/en/self-hosted-environments-configuration#mcp-servers).
- 
- ### Some sessions don't count as idle
-```
-
-</details>
-
-</details>
-
-
-<details>
-<summary>2026-08-15</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/changelog.md                         | 23 ++++++++++++++++++++++
- .../self-hosted-environments-configuration-en.md   |  2 +-
- 2 files changed, 24 insertions(+), 1 deletion(-)
-```
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index bf6c837..eaf481e 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,27 @@
- # Changelog
- 
-+## 2.1.233
-+
-+- Added GitLab merge request URL support to the `--worktree` flag and the `claude agents` view (where MRs display as `!N`)
-+- Added an opt-in `forward_user_identity` apps gateway setting on Anthropic upstreams that sends the signed-in user's identity as headers, so a proxy behind the gateway can attribute spend per user
-+- Added opt-in memory cgroup support for Bash tool commands on Linux (`CLAUDE_CODE_TOOL_MEMORY_LIMIT`) so a runaway build can't stall the session
-+- Added `CLAUDE_CODE_WEBFETCH_CACHE_TTL_MS` environment variable to configure the WebFetch session URL cache TTL (default unchanged: 15 minutes)
-+- Fixed cloud sessions occasionally being marked as lost when the environment shut down while Claude was waiting on a permission prompt
-+- Fixed MCP v2 connections endlessly reopening the subscriptions/listen stream against servers that terminate long-held streams on a fixed timeout (e.g. serverless hosts)
-+- Fixed Notification hooks not firing for permission prompts when running under Claude Desktop or VS Code
-+- Fixed idle sessions on Linux sometimes keeping one CPU core at 100% when sandboxing is enabled
-+- Fixed bundled skill aliases like `/checkup` and `/review` reporting "Unknown command" in `-p` mode or with plugins/MCP loaded when a user or project skill shadows the bundled skill
-+- Fixed skill/command argument substitution to prevent argument values from being re-expanded as template markers
-+- Fixed Windows paths spelled with the NT `\??\` device prefix bypassing UNC path validation, closing an NTLM credential-leak vector
-+- Improved `claude self-hosted-runner` session start time: the session branch is now created without rewriting the working tree, and two server round trips no longer block the agent's launch
-+- Improved apps gateway error forwarding: 400/413 errors from Vertex, Foundry, and Claude Platform on AWS upstreams now carry the upstream's own message; fixes a bug with auto-compact on apps gateway
-+- Improved `claude plugin validate` to check a bare `.claude/skills` directory, reporting SKILL.md files whose frontmatter fails to parse
-+- Improved screen reader mode: the `/effort` selector renders as a numbered list with a typed-number prompt, and hint and dialog text is no longer clipped
-+- Improved print mode diagnostics: a `[claude-code:unrecognized_model]` line is written to stderr when a request goes out for a model ID Claude Code doesn't recognize; map it with `modelOverrides` to silence
-+- Changed the GitHub app setup tip to no longer appear in repositories whose origin remote is on gitlab.com or bitbucket.org; the enterprise marketplace tip now covers non-GitHub internal git hosts
-+- Todo/task-tracking tools (TaskCreate/Get/Update/List, TodoWrite) are no longer available on Opus 4.8, Sonnet 5, Fable 5, Mythos 5, and newer models; set `CLAUDE_CODE_ENABLE_TODO_TOOLS=1` to bring them back
-+- Windows: fixed auto mode repeatedly stopping for manual approval on ordinary `cd <dir> && <command> > file` Bash commands (a 2.1.232 regression)
-+- Reverted the 2.1.232 Bash permission changes for Cygwin-style symlinks on Windows and for input redirections (`< file`); a narrower version will return in a later release
-+
-```
-
-</details>
 
 <!-- UPDATE_LOG_END -->
