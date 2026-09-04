@@ -17,6 +17,175 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-09-04</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md                         |  69 +++
+ docs-ja/pages/managed-settings-en.md               |  22 +-
+ .../pages/self-hosted-environments-deploy-en.md    |   2 +
+ .../pages/self-hosted-environments-reference-en.md |   2 +-
+ docs-ja/pages/settings-reference-en.md             | 483 +++++++++++----------
+ 5 files changed, 346 insertions(+), 232 deletions(-)
+```
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index b580854..3bd3615 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,73 @@
+ # Changelog
+ 
++## 2.1.260
++
++- Added a diff panel that opens beside the conversation in fullscreen mode and shows your uncommitted changes as Claude edits; toggle it with `/diff`
++- Added a likely cause for prompt-cache misses (e.g. tool definitions or system prompt changed, idle past the TTL) to `/cost` and the status line's `prompt_cache` field
++- Added `/reload-plugins` to headless sessions, so it appears in the Claude Code Desktop and SDK command lists
++- Added a text form of `/advisor` (`/advisor`, `/advisor <model>`, `/advisor off`) for the desktop app, Remote Control, and other headless (`-p`/Agent SDK) sessions
++- Added `oidc.scope_on_refresh` to the Claude apps gateway for IdPs that return an id_token on refresh only when asked for `openid` again
++- Added Claude apps gateway support for newer Claude Desktop keys in `desktop` policy blocks, including `userPluginMarketplacesEnabled` and `userPluginUploadsEnabled`
++- Fixed `Edit`/`Write`/`Read` permission rules whose path contains parentheses being dropped as invalid or ignored by the Bash sandbox, which left "read-only" folders writable
++- Fixed one file permission rule with an uncompilable pattern (e.g. an unclosed `[`) making every file edit fail with `Invalid regular expression`; such a deny rule now guards the literal path it spells
++- Fixed Bash permission checks auto-approving zsh commands that hide a command substitution in a REPORTTIME, REPORTMEMORY or DIRSTACKSIZE assignment; these now prompt for approval
++- Fixed Bedrock model discovery, token counting and AWS SSO/STS credential calls failing with "unable to get local issuer certificate" when the corporate root CA is only in the OS certificate store
++- Fixed `permissions.blockReadsOutsideWorkingDirectories` on macOS hiding the user's git config from sandboxed git and hiding a worktree-isolated sub-agent's own checkout
++- Fixed managed settings not loading for claude.ai Enterprise/Team users who also had a leftover API key from an earlier `/login`
++- Fixed `/status` listing a signed-in claude.ai account and a configured API key as if both were in effect; the credential not in use is now marked
++- Fixed managed `skillOverrides` entries keyed on a bundled skill's alias (e.g. `checkup` for `/doctor`) not applying, and `Skill(name)` deny rules not covering a nested skill listed as `<dir>:name`
++- Fixed `model: fable` agents ignoring the `[1m]` tag on an `ANTHROPIC_DEFAULT_FABLE_MODEL` pin and silently running with a 200K context window
++- Fixed the `/model` picker not showing Fable 5.1 for organizations that can use it, which was only accepted when typed as `/model claude-fable-5-1`
++- Fixed prompt caching on Claude Fable 5.1 not covering the context attached after tool results, so it was re-sent as uncached input on every tool-call turn
++- Fixed model switching staying blocked for the rest of the session after a plugin hook load failure; each switch now re-checks and the refusal names the cause
++- Fixed model switching being blocked for the session when an organization-managed plugin's marketplace could not be loaded
++- Fixed SDK-provided MCP servers (e.g. Desktop connectors) sometimes missing from the first turn and only appearing on the next one
++- Fixed Claude in Chrome tools failing with "Not connected" mid-task in cloud-hosted claude.ai sessions when a connector was added or removed
+```
+
+</details>
+
+<details>
+<summary>managed-settings-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/managed-settings-en.md b/docs-ja/pages/managed-settings-en.md
+index 7b21823..f396f95 100644
+--- a/docs-ja/pages/managed-settings-en.md
++++ b/docs-ja/pages/managed-settings-en.md
+@@ -273,5 +273,7 @@ When Claude Code found a managed source on the machine and didn't select it, a s
+ When the policy isn't applying, the `Setting sources` line tells you which of two problems you have:
+ 
+-* **The line is missing**: Claude Code found no managed source that delivers a policy key. If you deployed a managed settings file, check that it sits at the path for the OS, that it's valid JSON, and that it contains a [policy key](#how-claude-code-combines-managed-sources) rather than only the control keys.
++* **The line is missing**: Claude Code found no managed source that delivers a policy key.
++
++  If you deployed a managed settings file, check that it sits at the path for the OS and that it contains a [policy key](#how-claude-code-combines-managed-sources) rather than only the control keys. A file that isn't valid JSON doesn't produce this state; Claude Code [refuses to start](#find-entries-claude-code-dropped) instead.
+ 
+   When you deployed through server-managed settings instead, run `claude doctor`, which reports the [fetch outcome](/docs/en/server-managed-settings#verify-settings-delivery).
+@@ -282,7 +284,21 @@ When the policy isn't applying, the `Setting sources` line tells you which of tw
+ ### Find entries Claude Code dropped
+ 
+-When a managed settings file, MDM profile, registry value, or server-managed payload fails schema validation, Claude Code first skips the individual entries it can repair, such as one invalid permission rule, with a warning for each, then drops any top-level key whose value still fails and keeps enforcing every remaining valid key. Claude Code is stricter with the `managedSettings` a [`policyHelper`](/docs/en/settings-reference#policyhelper) emits: it makes the same entry repairs, but any schema violation that survives fails the whole helper run, and at startup Claude Code refuses to start, the same as for a helper that exits non-zero. A managed settings file or drop-in file that isn't valid JSON contributes no settings at all; Claude Code reports it with the other validation errors and reads the remaining sources as usual.
++When a managed settings file, MDM profile, registry value, or server-managed payload fails schema validation, Claude Code first skips the individual entries it can repair, such as one invalid permission rule, with a warning for each, then drops any top-level key whose value still fails and keeps enforcing every remaining valid key.
++
++Claude Code is stricter with the `managedSettings` a [`policyHelper`](/docs/en/settings-reference#policyhelper) emits: it makes the same entry repairs, but any schema violation that survives fails the whole helper run, and at startup Claude Code refuses to start, the same as for a helper that exits non-zero.
++
++When a managed settings file, drop-in file, MDM plist, or HKLM registry value is present but can't be parsed as a JSON object, Claude Code refuses to start and prints [an error naming the source](/docs/en/errors#managed-settings-document-could-not-be-parsed), even when another admin source delivers a valid policy. Each source fails this way when:
++
++* **Managed settings file or drop-in file**: the file isn't valid JSON, or its top level isn't an object
++* **MDM plist**: macOS's `plutil` reports the plist malformed, or its converted content isn't a JSON object
++* **HKLM registry value**: the `Settings` value isn't a string, is empty, or doesn't hold a JSON object
++
++Three source states don't cause this refusal:
++
++* An absent file, profile, or registry value isn't a failure; Claude Code runs without that source.
+```
+
+</details>
+
+<details>
+<summary>self-hosted-environments-deploy-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/self-hosted-environments-deploy-en.md b/docs-ja/pages/self-hosted-environments-deploy-en.md
+index 186f418..13c08c3 100644
+--- a/docs-ja/pages/self-hosted-environments-deploy-en.md
++++ b/docs-ja/pages/self-hosted-environments-deploy-en.md
+@@ -423,4 +423,6 @@ If tool traffic must stay inside your network, run the equivalent tools as local
+ A session holding a background task that never finishes doesn't count as idle, so `--release-idle-session-min` won't release that session's slot. A session that's waiting on an approval requested from inside a running tool call also doesn't count as idle. Always set `--kill-session-after-min` alongside it as a hard backstop so no session can hold a slot indefinitely.
+ 
++`--kill-session-after-min` is a backstop for runaway sessions. The runner terminates any session that reaches the limit, even one someone is still using, so set the flag well above your longest expected session, such as `--kill-session-after-min 480` for 8 hours. To free slots from conversations that go idle, use `--release-idle-session-min` instead.
++
+ ### Additional limitations
+ 
+```
+
+</details>
+
+<details>
+<summary>self-hosted-environments-reference-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/self-hosted-environments-reference-en.md b/docs-ja/pages/self-hosted-environments-reference-en.md
+index 4d1a4d3..4ee3e7c 100644
+--- a/docs-ja/pages/self-hosted-environments-reference-en.md
++++ b/docs-ja/pages/self-hosted-environments-reference-en.md
+@@ -38,5 +38,5 @@ Most flags have a corresponding environment variable. When both are set, the fla
+ | `--health-port <port>`                    | `SELF_HOSTED_RUNNER_HEALTH_PORT`                  | `8080`                        | Port for the `/healthz` and `/metrics` listener. Set `0` to disable.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+ | `--hooks-dir <path>`                      | `SELF_HOSTED_RUNNER_HOOKS_DIR`                    | unset                         | Directory of lifecycle hook scripts. See [Lifecycle hooks](/docs/en/self-hosted-environments-configuration#lifecycle-hooks).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+-| `--kill-session-after-min <n>`            | `SELF_HOSTED_RUNNER_MAX_LIFETIME_MS`              | `0`                           | Terminate a session child once it has lived N minutes wall-clock, as a safety limit for stuck sessions. The runner terminates the session's process tree, including any commands the session left running. The runner defers a kill that falls mid-turn until the turn finishes, for at most the [`SELF_HOSTED_RUNNER_MAX_LIFETIME_GRACE_MS`](#environment-variable-only-settings) window. `0` disables.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
++| `--kill-session-after-min <n>`            | `SELF_HOSTED_RUNNER_MAX_LIFETIME_MS`              | `0`                           | Terminate a session child once it has lived N minutes wall-clock, as a safety limit for stuck sessions. The runner terminates the session's process tree, including any commands the session left running. The runner defers a kill that falls mid-turn until the turn finishes, for at most the [`SELF_HOSTED_RUNNER_MAX_LIFETIME_GRACE_MS`](#environment-variable-only-settings) window. To choose a value, see [Some sessions don't count as idle](/docs/en/self-hosted-environments-deploy#some-sessions-don’t-count-as-idle). `0` disables.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+ | `--lock-to-account <id>`                  | `SELF_HOSTED_RUNNER_LOCK_TO_ACCOUNT`              | unset                         | Pre-lock the runner to a specific account at startup instead of locking on first session. Accepts an email address or `user_...` ID in the environment's organization. A pre-locked runner never picks up Claude Tag channel sessions, which have no account.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+ | `--log-file <path>`                       | `SELF_HOSTED_RUNNER_LOG_FILE`                     | unset                         | Mirror runner logs to a file in addition to stdout and stderr, created with `0600` permissions. Required for `self-hosted-runner doctor` to tail logs locally.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+```
+
+</details>
+
+<details>
+<summary>settings-reference-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/settings-reference-en.md b/docs-ja/pages/settings-reference-en.md
+index f125a13..1f21e0c 100644
+--- a/docs-ja/pages/settings-reference-en.md
++++ b/docs-ja/pages/settings-reference-en.md
+@@ -586,228 +586,229 @@ scope: "Which settings files can set the key: user (~/.claude/settings.json), pr
+ />
+ 
+-| Key                                                                                             | Description                                                                                                                                                                                                                 | Topic                              | Scope                   |
+-| :---------------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :--------------------------------- | :---------------------- |
+-| [`advisorModel`](#advisormodel)                                                                 | Pick which model answers when Claude asks the [advisor tool](/docs/en/advisor)                                                                                                                                                   | Model and responses                | Any file                |
+-| [`agent`](#agent)                                                                               | Start every session as a named [subagent](/docs/en/sub-agents) with its prompt, tools, and model                                                                                                                                 | Agents, sessions, and worktrees    | Any file                |
+-| [`agentPushNotifEnabled`](#agentpushnotifenabled)                                               | Let Claude send a [push notification to your phone](/docs/en/remote-control#mobile-push-notifications) when it decides to                                                                                                        | Remote, desktop, and notifications | Any file                |
+-| [`allowAllClaudeAiMcps`](#allowallclaudeaimcps)                                                 | Load the [claude.ai connectors](/docs/en/mcp) Claude Code fetches itself alongside a deployed [`managed-mcp.json`](/docs/en/managed-mcp#exclusive-control-with-managed-mcp-json)                                                      | MCP                                | Managed                 |
+-| [`allowedChannelPlugins`](#allowedchannelplugins)                                               | Replace the default allowlist of [channel plugins](/docs/en/channels#restrict-which-channel-plugins-can-run) that can push messages                                                                                              | Plugins and skills                 | Managed                 |
+-| [`allowedHttpHookUrls`](#allowedhttphookurls)                                                   | Limit which URLs [HTTP hooks](/docs/en/hooks) can target                                                                                                                                                                         | Hooks and automation               | Any file                |
+-| [`allowedMcpServers`](#allowedmcpservers)                                                       | Allowlist which [MCP servers](/docs/en/mcp) people can use                                                                                                                                                                       | MCP                                | Any file                |
+-| [`allowManagedHooksOnly`](#allowmanagedhooksonly)                                               | Run only the [hooks](/docs/en/hooks) your organization deploys                                                                                                                                                                   | Hooks and automation               | Managed                 |
+-| [`allowManagedMcpServersOnly`](#allowmanagedmcpserversonly)                                     | Make the managed [MCP](/docs/en/mcp) allowlist the only one that applies                                                                                                                                                         | MCP                                | Managed                 |
+-| [`allowManagedPermissionRulesOnly`](#allowmanagedpermissionrulesonly)                           | Make [managed settings](/docs/en/managed-settings) the only settings source of [permission rules](/docs/en/permissions#managed-settings)                                                                                              | Permission settings                | Managed                 |
+-| [`alwaysThinkingEnabled`](#alwaysthinkingenabled)                                               | Turn [extended thinking](/docs/en/model-config#extended-thinking) off for every session                                                                                                                                          | Model and responses                | Any file                |
+-| [`apiKeyHelper`](#apikeyhelper)                                                                 | Generate the [API credential](/docs/en/authentication#credential-management) with your own command                                                                                                                               | Authentication and providers       | Any file                |
+-| [`askUserQuestionTimeout`](#askuserquestiontimeout)                                             | Let an unanswered question [auto-continue](/docs/en/tools-reference#question-auto-continue-timeout) after idle time                                                                                                              | Interface and terminal             | User or managed         |
+-| [`attribution`](#attribution)                                                                   | Customize the attribution Claude Code adds to commits and pull requests                                                                                                                                                     | Git and attribution                | Any file                |
+-| [`attribution.commit`](#attribution-commit)                                                     | Change or hide the trailer Claude Code adds to commits                                                                                                                                                                      | Git and attribution                | Any file                |
+-| [`attribution.pr`](#attribution-pr)                                                             | Change or hide the attribution line in pull request descriptions                                                                                                                                                            | Git and attribution                | Any file                |
+-| [`attribution.sessionUrl`](#attribution-sessionurl)                                             | Omit the claude.ai session link from [cloud](/docs/en/claude-code-on-the-web) and [Remote Control](/docs/en/remote-control) commits                                                                                                   | Git and attribution                | Any file                |
+-| [`autoCompactEnabled`](#autocompactenabled)                                                     | Turn [automatic compaction](/docs/en/context-window) off or on                                                                                                                                                                   | Memory and context                 | Any file                |
+-| [`autoCompactWindow`](#autocompactwindow)                                                       | Set how full the context gets before Claude Code [compacts](/docs/en/context-window)                                                                                                                                             | Memory and context                 | Any file                |
+-| [`autoConnectIde`](#autoconnectide)                                                             | Connect to a running [VS Code](/docs/en/vs-code) or [JetBrains](/docs/en/jetbrains#from-external-terminals) IDE automatically from an external terminal                                                                               | Global config settings             | Global config           |
+-| [`autoContinueAtUsageLimit`](#autocontinueatusagelimit)                                         | Wait in the open session and [continue the task automatically](/docs/en/interactive-mode#wait-for-a-usage-limit-to-reset) after a claude.ai usage limit resets                                                                   | Interface and terminal             | User or managed         |
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-09-03</summary>
 
 **変更ファイル:**
@@ -2366,126 +2535,5 @@ index d4b7b0d..17b8091 100644
 ```
 
 </details>
-
-<details>
-<summary>cross-session-messaging-en.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/cross-session-messaging-en.md b/docs-ja/pages/cross-session-messaging-en.md
-index 42ae59c..65e69b5 100644
---- a/docs-ja/pages/cross-session-messaging-en.md
-+++ b/docs-ja/pages/cross-session-messaging-en.md
-@@ -64,5 +64,5 @@ For what the message Claude writes looks like when it arrives, including an exam
- The receiving Claude reads the message between tool calls during an active turn, so a running tool is never interrupted. When the receiving session is idle, Claude Code starts a new turn with the message.
- 
--Between two ordinary interactive sessions with default settings, Claude Code delivers the message. Delivery isn't guaranteed in every configuration, though. The receiving session checks each arriving message against its own [inbound controls](#control-inbound-messages), and the check ends in one of three outcomes:
-+Between two ordinary interactive sessions with default settings, Claude Code delivers the message. Delivery isn't guaranteed in every configuration, though. Claude Code refuses a message [over the size cap](#limitations) in the sending session, before it leaves. The receiving session checks each arriving message against its own [inbound controls](#control-inbound-messages), and the check ends in one of three outcomes:
- 
- * **Delivered**: Claude Code passes the message to the receiving Claude.
-@@ -266,4 +266,5 @@ The limits here are properties of the messaging channel itself and apply whereve
- 
- * **Plain text only**: Claude sends only plain text across sessions. Structured [agent team](/docs/en/agent-teams) protocol messages stay within a team.
-+* **Same-machine message size is capped**: Claude Code refuses a message to a session on this machine once its serialized form passes about a million characters. The refusal [names the exact sizes](/docs/en/errors#message-too-large-for-cross-session-delivery). Nothing reaches the receiving session.
- * **Message loops are throttled**: Claude Code rate-limits repeated messages per sender, drops identical repeats arriving within a short window, and caps accepted messages waiting for Claude to read them at 50 per session. A message loop between two sessions therefore stops on its own.
- 
-```
-
-</details>
-
-</details>
-
-
-<details>
-<summary>2026-08-18</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/changelog.md | 54 ++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 54 insertions(+)
-```
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index eaf481e..d4b7b0d 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,58 @@
- # Changelog
- 
-+## 2.1.234
-+
-+- Added the optional `CLAUDE_CODE_PROJECT_DIR_NAME` environment variable: hosts that give each session its own config directory can choose a short name for the per-project transcript directory
-+- Added the `selection:clear` keybinding action, so a key can be bound to clear an in-app text selection; also works in the agents view
-+- Added a GitLab merge request badge to the footer and statusline: repos with a GitLab remote and an authenticated glab CLI show MR !N with draft/pending/green states
-+- Claude Code now continues your session automatically when a claude.ai usage limit resets; turn it off in `/config` ("Continue automatically at usage limit")
-+- Claude is now told to use your account email only to identify you, and not to send it to unrelated services unless you ask
-+- Security: remote file reads, session restore, CLAUDE.md includes, workflow scripts and file uploads now reject Windows NT-namespace (`\??\`) paths, hardening the remaining pre-approval file accesses against the NTLM credential-leak vector
-+- Fixed auto mode in very long sessions repeatedly re-checking and denying sandboxed commands' network access after the conversation had been compacted
-+- Fixed session-scoped permission answers (including denies) being dropped when answering background subagent tool permission prompts
-+- Fixed a crash when an API response on the non-streaming fallback path (typically via third-party gateways) contained a thinking block missing its thinking field or a text block missing its text field
-+- Fixed markdown rendering becoming extremely slow for some messages containing unusual Unicode sequences
-+- Fixed `SendMessage` rejecting a recipient copied from `ListAgents` when the session name is at the 200-character cap or emoji-heavy
-+- Fixed repository detection mis-reading the host of git remotes with unusual userinfo, producing links and repo-specific behavior for the wrong host
-+- Fixed MCP diagnostics printing resolved secrets: scope-conflict warnings now show the configured `${VAR}` form, and connection-failure details show only the server origin
-+- Fixed `strictKnownMarketplaces` allowlists accepting SCP-style git marketplace sources whose host differs from the one git would actually connect to
-+- Fixed modal text such as the `/login` OAuth URL losing characters when copied in fullscreen
-+- Fixed a `---` horizontal rule in rendered markdown running into the line after it
-+- Fixed consecutive shell commands splitting into multiple "Ran 1 shell command" rows when todo/task updates were interleaved between them
-+- Fixed dialogs like `/permissions` opened while a `!` shell command was running being dismissed when the command finished
-+- Fixed a queued `!` shell command being sent to the model as plain text after pressing up-arrow to edit the queued input
-+- Fixed queued messages reappearing in the prompt history while still queued, Esc while selecting a queued message no longer interrupts the turn, and `!` mode no longer sticks after a mid-turn submit
-+- Fixed accepting the "Try the new fullscreen renderer?" prompt restarting the session without its permission mode (e.g. `--dangerously-skip-permissions`), tool allow/deny rules, model or effort flags
-```
-
-</details>
-
-</details>
-
-
-<details>
-<summary>2026-08-17</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/self-hosted-environments-deploy-en.md | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-```
-
-<details>
-<summary>self-hosted-environments-deploy-en.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/self-hosted-environments-deploy-en.md b/docs-ja/pages/self-hosted-environments-deploy-en.md
-index fecb58d..a13a8fb 100644
---- a/docs-ja/pages/self-hosted-environments-deploy-en.md
-+++ b/docs-ja/pages/self-hosted-environments-deploy-en.md
-@@ -327,5 +327,5 @@ The following are the limitations in this release, with workarounds where one ex
- ### Connector traffic leaves your network
- 
--Connector tools, such as GitHub, Slack, Linear, and the other claude.ai connectors, are called from Anthropic's side rather than from your runner, so when a self-hosted session uses a connector, that traffic routes through `api.anthropic.com`, not from inside your network boundary. To keep a connector out of self-hosted sessions, filter it like any other MCP server with the [`allowedMcpServers` and `deniedMcpServers` policy settings](/docs/en/managed-mcp#policy-based-control-with-allowlists-and-denylists), which apply to server-delivered connectors too. An allowlist you deploy for other servers also blocks delivered connectors. To keep connectors available alongside a URL-based allowlist, add entries that match the Anthropic proxy paths for server-delivered MCP servers:
-+Anthropic calls connector tools, such as GitHub, Slack, Linear, and the other claude.ai connectors, from its own infrastructure rather than from your runner, so when Claude uses a connector in a self-hosted session, that traffic goes through `api.anthropic.com` rather than originating inside your network boundary. To keep a connector out of self-hosted sessions, filter it like any other MCP server with the [`allowedMcpServers` and `deniedMcpServers` policy settings](/docs/en/managed-mcp#policy-based-control-with-allowlists-and-denylists). Claude Code applies these settings to the connectors Anthropic delivers as well as to the servers you configure, so if you deploy an allowlist for other servers, Claude Code blocks delivered connectors too. To keep connectors available alongside a URL-based allowlist, add entries that match the Anthropic proxy paths for delivered connectors:
- 
- * `https://api.anthropic.com/v2/ccr-sessions/*`
-```
-
-</details>
-
-</details>
-
-
-<details>
-<summary>2026-08-16</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/self-hosted-environments-deploy-en.md | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
-```
 
 <!-- UPDATE_LOG_END -->
