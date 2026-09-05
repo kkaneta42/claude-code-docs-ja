@@ -17,6 +17,57 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-09-05</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md | 70 ++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 70 insertions(+)
+```
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index 3bd3615..8d3f6a0 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,74 @@
+ # Changelog
+ 
++## 2.1.261
++
++- Added an "Organization policy" line to `/status` and `claude doctor` that says why your organization's policy could not be loaded, such as a proxy not passing the endpoint through
++- Added `bashOutputMaxChars` and `taskOutputMaxChars` settings to raise how much command and background-task output Claude receives inline before it is saved to a file, up to 128K characters
++- Added `--append-subagent-system-prompt-file` to read the subagent system prompt from a file, for prompts too large to pass on the command line
++- Added `/skill-doctor` to show which loaded skills go unused and what they cost in context, so you can prune them
++- Fixed typed or pasted characters occasionally landing out of order or being dropped during fast input or key repeat
++- Fixed `/add-dir <subdirectory>` printing a false "couldn't be resolved" error when the working directory is on a `/net` automount
++- Fixed the Bedrock setup wizard hanging when AWS or an AWS credential helper never responds (it now times out with a clear error), and its model checks failing behind a TLS-inspecting proxy
++- Fixed cloud sessions discarding a plugin synced from claude.ai when managed settings force-enable it in `enabledPlugins`, then falling back to a marketplace clone that could fail
++- Fixed being unable to delete the character immediately before an inline `[Image #N]` chip in the prompt input
++- Fixed resuming a session losing hook output and other context around parallel tool calls, which changed the resumed request
++- Fixed Remote Control showing a stale permission mode when a phone, browser, or claude.ai app attaches to a terminal session or after the mode changes in the terminal
++- Fixed Remote Control sessions showing as still working (stuck spinner and Stop button) after stopping a turn from a connected phone or browser, or after a local slash command like `/clear`
++- Fixed SDK and cloud sessions ignoring a Stop or interrupt sent just after the first prompt, before the turn had started; the turn now stops instead of running to completion
++- Fixed Remote Control uploading a session pulled with `/teleport` into the connected session, which appeared appended to the original on phone and web
++- Fixed Remote Control's inbound event stream failing behind TLS-inspecting corporate proxies on native Windows
++- Fixed Remote Control sessions showing the default effort level on claude.ai when the effort comes from settings
++- Fixed `gcpAuthRefresh` opening a browser at startup when the Google credential check was slow, even though the credential was still valid
++- Fixed claude.ai connectors staying absent for the whole session when the startup connector fetch timed out — the CLI now retries in the background
++- Fixed sustained high CPU usage when a background agent could not be resumed and its wake-up was retried in a tight loop
++- Fixed feature flags gated to a newer version occasionally applying to an older Claude Code version running on the same machine
++- Fixed `/usage` and the VS Code usage panel dropping a model-specific weekly limit row when the usage endpoint is rate limited or when opened right after startup
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-09-04</summary>
 
 **変更ファイル:**
@@ -2486,54 +2537,5 @@ index 17b8091..a0737ac 100644
 
 </details>
 
-
-<details>
-<summary>2026-08-19</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/changelog.md                  | 22 ++++++++++++++++++++++
- docs-ja/pages/cross-session-messaging-en.md |  3 ++-
- 2 files changed, 24 insertions(+), 1 deletion(-)
-```
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index d4b7b0d..17b8091 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,26 @@
- # Changelog
- 
-+## 2.1.235
-+
-+- Added an optional `spellcheck` setting that underlines misspelled words in the prompt input as you type, using your installed `aspell`, `hunspell`, or `ispell`
-+- Fixed whole-prompt-cache invalidation when a language server disconnected or reconnected mid-session
-+- Fixed nested markdown list items misaligning at depth 3+ and added a hanging indent to wrapped list items in the terminal UI
-+- Fixed prompt input highlights (slash commands, keywords, mentions) appearing shifted by one or more characters in some multi-line prompts
-+- Fixed Shift+Tab inside the permission prompt's comment field approving the edit and granting session-wide edit permission instead of closing the field
-+- Fixed the Agent tool advertising a general-purpose default in sessions where that agent is unavailable: an omitted `subagent_type` there now gets a clear error listing the available agents
-+- Fixed notebook cell delete/replace approval dialogs silently omitting the existing cell content when the notebook or cell could not be read; the dialog now says why
-+- Fixed slash commands run while Claude is responding showing HTML entities instead of the actual characters
-+- Fixed the prompt footer not showing the "Update installed" restart notice after a background auto-update
-+- Fixed the expanded task list (`ctrl+t`) always starting collapsed when resuming or relaunching into a session that still has open tasks
-+- Improved memory and CPU usage while cloud sessions such as `/ultrareview` or `/autofix-pr` run in the background — their event streams are no longer re-scanned and re-rendered on every update
-+- Improved permission dialogs: display text and "don't ask again" options now always match what a grant would cover, and "don't ask again" is withheld when contents cannot be fully displayed
-+- Improved the embedded `grep` in native macOS/Linux builds: pathological patterns now fail fast instead of exhausting memory, and `-m N` with `-A/-C` prints correct context
-+- Improved the context-limit error to say when auto-compact is off and point to `/config` to re-enable it
-+- Vim mode: NORMAL mode and cursor position are now preserved when toggling the detailed transcript (ctrl+o) or closing a panel
-+- Dialogs: arrow keys and Enter pressed in quick succession now select the option you navigated to instead of the previously highlighted one
-+- `SendMessage` now refuses messages too large for cross-session delivery up front instead of silently dropping them
-+- Remote Control: `claude rc` now applies the same enterprise-gateway availability check as interactive startup
-+- [VSCode] Fixed focus jumping between open Claude tabs on its own when a window with several Claude panels is restored or reloaded
-+
- ## 2.1.234
-```
-
-</details>
 
 <!-- UPDATE_LOG_END -->
