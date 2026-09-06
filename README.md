@@ -17,6 +17,101 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-09-06</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/managed-settings-en.md   |  2 ++
+ docs-ja/pages/settings-example-en.md   |  6 ++--
+ docs-ja/pages/settings-reference-en.md | 66 ++++++++++++++++++++++++----------
+ 3 files changed, 53 insertions(+), 21 deletions(-)
+```
+
+<details>
+<summary>managed-settings-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/managed-settings-en.md b/docs-ja/pages/managed-settings-en.md
+index f396f95..be02788 100644
+--- a/docs-ja/pages/managed-settings-en.md
++++ b/docs-ja/pages/managed-settings-en.md
+@@ -364,4 +364,6 @@ The table covers the permission, plugin, and delivery controls. For any key not
+ <Note>
+   On Team and Enterprise plans, an Owner enables or disables [Remote Control](/docs/en/remote-control) and [web sessions](/docs/en/claude-code-on-the-web) organization-wide in [Claude Code admin settings](https://claude.ai/admin-settings/claude-code). Remote Control can additionally be disabled per device with the [`disableRemoteControl`](/docs/en/settings-reference#disableremotecontrol) setting. Web sessions have no per-device managed settings key.
++
++  To check whether these organization settings reached a given machine, run `claude doctor` there and read the `Organization policy` line, which says where Claude Code loaded the policy from or why it didn't load. Requires Claude Code v2.1.261 or later. In a running session, `/status` shows the same line when the policy didn't load.
+ </Note>
+ 
+```
+
+</details>
+
+<details>
+<summary>settings-example-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/settings-example-en.md b/docs-ja/pages/settings-example-en.md
+index fa6917c..8bfb572 100644
+--- a/docs-ja/pages/settings-example-en.md
++++ b/docs-ja/pages/settings-example-en.md
+@@ -365,7 +365,7 @@ Administrators deploy a file like this as `managed-settings.json`, or the same J
+         }
+       ],
+-      // Sandbox every command, refuse to start if the sandbox can't be set up, and
+-      // never let a blocked command retry outside the sandbox; network limited to
+-      // npm and GitHub, and users can't add domains
++      // Sandbox every command Claude runs, refuse to start if the sandbox can't be
++      // set up, and never let a blocked command retry outside the sandbox; network
++      // limited to npm and GitHub, and users can't add domains
+       "sandbox": {
+         "enabled": true,
+```
+
+</details>
+
+<details>
+<summary>settings-reference-en.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/settings-reference-en.md b/docs-ja/pages/settings-reference-en.md
+index 1f21e0c..96e423c 100644
+--- a/docs-ja/pages/settings-reference-en.md
++++ b/docs-ja/pages/settings-reference-en.md
+@@ -621,4 +621,5 @@ scope: "Which settings files can set the key: user (~/.claude/settings.json), pr
+ | [`awsCredentialExport`](#awscredentialexport)                                                         | Supply [Bedrock credentials](/docs/en/amazon-bedrock#advanced-credential-configuration) as JSON from your own command                                                                                                            | Authentication and providers       | Any file                |
+ | [`axScreenReader`](#axscreenreader)                                                                   | Render [screen-reader friendly output](/docs/en/accessibility)                                                                                                                                                                   | Interface and terminal             | Any file                |
++| [`bashOutputMaxChars`](#bashoutputmaxchars)                                                           | Set how much of a successful command's [output](/docs/en/tools-reference#output-limits) Claude receives inline                                                                                                                   | Memory and context                 | Any file                |
+ | [`blockedMarketplaces`](#blockedmarketplaces)                                                         | Block [plugin marketplace](/docs/en/plugin-marketplaces) sources for your organization                                                                                                                                           | Plugins and skills                 | Managed                 |
+ | [`browserExternalPageTools`](#browserexternalpagetools)                                               | Keep Claude's tools off external pages in the [desktop](/docs/en/desktop) Browser pane                                                                                                                                           | Tools                              | Managed                 |
+@@ -681,5 +682,5 @@ scope: "Which settings files can set the key: user (~/.claude/settings.json), pr
+ | [`inputNeededNotifEnabled`](#inputneedednotifenabled)                                                 | Get a [push notification](/docs/en/remote-control#mobile-push-notifications) when Claude is waiting on you                                                                                                                       | Remote, desktop, and notifications | Any file                |
+ | [`isolatePeerMachines`](#isolatepeermachines)                                                         | Ask you before Claude [messages one of your sessions on another machine](/docs/en/cross-session-messaging#require-approval-for-cross-machine-messages)                                                                           | Agents, sessions, and worktrees    | Any file                |
+-| [`keybindingFlavor`](#keybindingflavor)                                                               | Make `Ctrl+W` [delete back to the previous whitespace](/docs/en/interactive-mode#make-ctrl-w-delete-back-to-whitespace), as Bash does                                                                                            | Interface and terminal             | Any file                |
++| [`keybindingFlavor`](#keybindingflavor)                                                               | Deprecated and has no effect; the word-editing shortcuts always [follow readline conventions](/docs/en/interactive-mode#make-ctrl-w-delete-back-to-whitespace)                                                                   | Interface and terminal             | Any file                |
+ | [`language`](#language)                                                                               | Have Claude respond in a language other than English                                                                                                                                                                        | Model and responses                | Any file                |
+ | [`managedSourcesBehavior`](#managedsourcesbehavior)                                                   | Compose every [managed source](/docs/en/managed-settings#how-claude-code-combines-managed-sources) you deploy instead of using the highest-priority one alone                                                                    | Enterprise and managed settings    | Managed                 |
+@@ -787,4 +788,5 @@ scope: "Which settings files can set the key: user (~/.claude/settings.json), pr
+ | [`syncClaudeAiSkills`](#syncclaudeaiskills)                                                           | Stop downloading the [skills enabled on your claude.ai account](/docs/en/skills#how-synced-skills-behave) and hide the ones already synced                                                                                       | Plugins and skills                 | User, local, or managed |
+ | [`syntaxHighlightingDisabled`](#syntaxhighlightingdisabled)                                           | Turn off syntax highlighting in diffs and code blocks                                                                                                                                                                       | Interface and terminal             | Any file                |
++| [`taskOutputMaxChars`](#taskoutputmaxchars)                                                           | Set how much of a [background task's](/docs/en/tools-reference#background-commands) output Claude receives inline                                                                                                                | Memory and context                 | Any file                |
+ | [`teammateDefaultModel`](#teammatedefaultmodel)                                                       | Removed in v2.1.234; see [Specify teammates and models](/docs/en/agent-teams#specify-teammates-and-models) for how Claude Code picks a teammate's model                                                                          | Global config settings             | Global config           |
+ | [`teammateMode`](#teammatemode)                                                                       | Choose how [agent team teammates display](/docs/en/agent-teams#choose-a-display-mode)                                                                                                                                            | Agents, sessions, and worktrees    | Any file                |
+@@ -1441,5 +1443,5 @@ List the tool uses that prompt you for confirmation even in a permission mode th
+ ### `permissions.deny`
+ 
+-List the tool uses Claude Code blocks. Use it for files that hold API keys, secrets, or environment values: Claude Code excludes matching files from file discovery and search results, denies reads of them, and blocks the [Edit and Write tools](/docs/en/permissions#read-and-edit) on the matching paths. Read and Edit deny rules apply to Claude's built-in file tools and to file commands Claude Code recognizes in Bash, such as `cat`, `head`, `tail`, and `sed`; they don't apply to arbitrary subprocesses, so for OS-level enforcement [enable the sandbox](/docs/en/sandboxing).
++List the tool uses Claude Code blocks. Use it for files that hold API keys, secrets, or environment values: Claude Code excludes matching files from file discovery and search results, denies reads of them, and blocks the [Edit and Write tools](/docs/en/permissions#read-and-edit) on the matching paths. Read and Edit deny rules apply to Claude's built-in file tools, to file commands Claude Code recognizes in Bash, such as `cat`, `head`, `tail`, and `sed`, and to the targets of Bash [redirections](/docs/en/permissions#redirections) such as `> file` and `< file`; they don't apply to arbitrary subprocesses, so for OS-level enforcement [enable the sandbox](/docs/en/sandboxing).
+ 
+ * **Scope**: [`Any file`](#scopes)
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-09-05</summary>
 
 **変更ファイル:**
@@ -2431,111 +2526,5 @@ index 65e69b5..b132368 100644
 ```
 
 </details>
-
-<details>
-<summary>self-hosted-environments-configuration-en.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/self-hosted-environments-configuration-en.md b/docs-ja/pages/self-hosted-environments-configuration-en.md
-index 735eae8..a4a947e 100644
---- a/docs-ja/pages/self-hosted-environments-configuration-en.md
-+++ b/docs-ja/pages/self-hosted-environments-configuration-en.md
-@@ -133,5 +133,5 @@ The hook fires on every session end where a child process was spawned, whatever
- * `completed`: a clean exit, including a session archived or deleted while the child was still connected.
- * `failed`: a child crash or a setup failure after spawn.
--* `interrupted`: an idle release, startup timeout, server deassign, drain, watchdog kill, or the [`released=false` backstop](/docs/en/self-hosted-environments-reference#session-lifecycle-counter-semantics).
-+* `interrupted`: an idle release, startup timeout, server deassign, drain, or watchdog kill.
- * `abandoned`: reserved for sessions another runner claimed; the hook doesn't currently fire in that case.
- 
-@@ -163,4 +163,13 @@ done
- The hook pushes with whatever git credentials are available in its own environment on the runner host. Under the [no-credentials-in-the-image posture](/docs/en/self-hosted-environments-deploy#configure-git), including when the built-in clone goes through the Anthropic git proxy, there are none, so mint a short-lived push credential inside the hook before pushing: exchange the session token the hook receives in `CLAUDE_CODE_SESSION_ACCESS_TOKEN` with your own token service, verifying it as [Verify session identity](/docs/en/self-hosted-environments-identity) describes. When the hook holds a credential the session didn't, also pin where it pushes: replace `origin` with an operator-supplied URL and pass `-c credential.helper=` plus your own helper, so repo-local config the session wrote can't redirect the credentialed push.
- 
-+#### Hook timing when the runner releases a session
-+
-+A released session can resume on another runner. On a runner on v2.1.236 or later, what the session was doing at release decides whether it can resume before this hook finishes:
-+
-+* **Idle after a turn, or timed out at startup**: the runner stops the child and runs this hook to completion. Only then does it release the session. A user message sent while the hook runs can't resume the session on another runner before the hook finishes.
-+* **Waiting for the user to answer a prompt, such as a permission prompt**: the runner releases the session first, then runs this hook. A user message sent while the hook runs can resume the session on another runner before the hook finishes.
-+
-+A release at the [`--retire-at`](/docs/en/self-hosted-environments-reference#runner-cli-flags) time follows the same two paths. During a `SIGTERM` drain, the runner holds the session lease until the hook finishes; see [Shutdown timing](/docs/en/self-hosted-environments-deploy#shutdown-timing). Before v2.1.236, the runner released the session first and then ran this hook on both paths.
-+
- ### command
- 
-```
-
-</details>
-
-<details>
-<summary>self-hosted-environments-reference-en.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/self-hosted-environments-reference-en.md b/docs-ja/pages/self-hosted-environments-reference-en.md
-index ecb3e25..bfe0a56 100644
---- a/docs-ja/pages/self-hosted-environments-reference-en.md
-+++ b/docs-ja/pages/self-hosted-environments-reference-en.md
-@@ -289,5 +289,5 @@ The `sessions_started_total`, `sessions_completed_total`, `sessions_failed_total
- * `completed`: the session ended cleanly. This covers the child exiting on its own with code `0`, the session being archived or deleted while the child was still connected, and the runner releasing the slot as a clean handoff: an idle release, a startup timeout, or a server-side deassign the poll loop noticed before the child exited. Increments `sessions_completed_total`.
- * `failed`: the child exited on its own with a non-zero code, either a crash or a setup failure after spawn. Increments `sessions_failed_total`.
--* `interrupted`: the runner terminated the child for an operational reason that's neither a session success nor a runner fault, such as a drain, for example a Kubernetes rolling restart sending `SIGTERM`, the max-lifetime watchdog `--kill-session-after-min`, or the `released=false` backstop: the runner terminates the child after the control plane declines three consecutive idle-release requests, each because a user message was still waiting to be processed. Increments `sessions_interrupted_total`.
-+* `interrupted`: the runner terminated the child for an operational reason that's neither a session success nor a runner fault, such as a drain or the max-lifetime watchdog `--kill-session-after-min`. A Kubernetes rolling restart sending `SIGTERM` is one example of a drain. Increments `sessions_interrupted_total`.
- 
- The [`post-session` hook](/docs/en/self-hosted-environments-configuration#post-session)'s `CLAUDE_RUNNER_EXIT_REASON` doesn't use this classification for clean handoffs. The hook reports an idle release, a startup timeout, and a server deassign as `interrupted`, since from the hook's perspective the runner killed the child, while the counters above record those same events as `completed`, since nothing went wrong and the slot was handed back cleanly. If you reconcile hook receipts against `sessions_completed_total` directly, you undercount completions. Use the hook for per-session guarantees and the counters for aggregate rates.
-```
-
-</details>
-
-</details>
-
-
-<details>
-<summary>2026-08-20</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/changelog.md | 36 ++++++++++++++++++++++++++++++++++++
- 1 file changed, 36 insertions(+)
-```
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index 17b8091..a0737ac 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,40 @@
- # Changelog
- 
-+## 2.1.236
-+
-+- Added `ANTHROPIC_DEFAULT_MODEL` environment variable: sets the model new sessions start on, while a `/model` pick still overrides it and persists across restarts (unlike `ANTHROPIC_MODEL`)
-+- Added `notify_when_idle` to cross-session `SendMessage`: ask another Claude Code session on this machine to send one notice when it next goes idle — opt-in, one-shot, no polling (macOS and Linux)
-+- Sandbox: on macOS, wildcard read-deny rules (e.g. `**/.env`) now take precedence inside allowed read regions, cover matched directories' contents, and can't be bypassed by renaming the denied file
-+- Fixed clipboard copy, background housekeeping, background sessions, and local MCP logs breaking after the directory a session had switched into was removed (since 2.1.229)
-+- Fixed the fullscreen renderer failing permanently after a single failed start: it now falls back to the classic renderer instead of exiting on every subsequent launch
-+- Fixed the `/model` picker rendering taller than the terminal: it now shows only as many models as fit the window, with the rest reachable by scrolling
-+- Fixed `SendMessage` calls being rejected when a malformed closing tag left the message text inside the summary field
-+- Fixed unhandled promise rejections when a subprocess fails to start, for example `powershell.exe` on WSL with Windows interop disabled (regression in 2.1.234)
-+- Fixed fullscreen mode sometimes not showing a newly sent message until the next update after the terminal was resized
-+- Fixed a blank band that could remain above the prompt after clearing a multi-line prompt, and panes not repainting after resizing the terminal away and back, in fullscreen mode
-+- Fixed the managed-settings approval prompt sometimes not appearing at startup while still capturing the first keypress as approval
-+- Fixed terminal tab titles jumping in tmux (iTerm tmux integration): the title is now written only when its text changes instead of animating every 960ms
-+- Fixed an unclear error when the cloud environments list came back empty or malformed
-+- Fixed the Fable 5 first-time usage-credits prompt auto-selecting the fallback model after 60 seconds with no answer when using Remote Control
-+- Fixed spinner tips never appearing, with a repeated background error, when the cached guest-pass reward in `~/.claude.json` was malformed
-+- Fixed skills hot-reload in SDK/VS Code sessions raising an error on every skills change after the session's working directory was deleted (2.1.229+)
-+- Fixed self-hosted runner sessions released on idle, retire, or startup timeout occasionally resuming on another runner before the post-session hook had finished
-+- Fixed the Clawd mascot's eyes and feet rendering unevenly in iTerm2 at some font sizes
-+- Fixed occasional runaway session recaps: recap text (automatic and `/recap`) is now capped at 400 characters, cut at a word boundary
-+- Improved startup performance: the session counter is now written in the background
-+- Improved auto mode: `Monitor` allow rules are now set aside while auto mode is active, so Monitor commands are reviewed the same way Bash commands are
-```
-
-</details>
-
-</details>
-
 
 <!-- UPDATE_LOG_END -->
