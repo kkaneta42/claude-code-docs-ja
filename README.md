@@ -17,6 +17,59 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-09-07</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md                         |    4 +
+ docs-ja/pages/claude-tag-en.md                     |   11 -
+ docs-ja/pages/cross-session-messaging-en.md        |  365 --
+ docs-ja/pages/github-actions-cloud-providers-en.md |  320 --
+ docs-ja/pages/managed-settings-en.md               |  396 --
+ .../self-hosted-environments-configuration-en.md   |  400 --
+ .../pages/self-hosted-environments-deploy-en.md    |  463 --
+ docs-ja/pages/self-hosted-environments-en.md       |  144 -
+ .../pages/self-hosted-environments-identity-en.md  |  248 -
+ .../self-hosted-environments-quickstart-en.md      |  114 -
+ .../pages/self-hosted-environments-reference-en.md |  318 --
+ .../pages/self-hosted-environments-testing-en.md   |  241 -
+ docs-ja/pages/settings-example-en.md               |  393 --
+ docs-ja/pages/settings-reference-en.md             | 5861 --------------------
+ 14 files changed, 4 insertions(+), 9274 deletions(-)
+```
+
+**新規追加:**
+
+
+**削除:**
+
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index 8d3f6a0..77bbc03 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,8 @@
+ # Changelog
+ 
++## 2.1.263
++
++- Bug fixes and reliability improvements
++
+ ## 2.1.261
+ 
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-09-06</summary>
 
 **変更ファイル:**
@@ -2450,81 +2503,5 @@ index bfe0a56..38e4cfd 100644
  .../pages/self-hosted-environments-reference-en.md |  2 +-
  4 files changed, 88 insertions(+), 3 deletions(-)
 ```
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index a0737ac..e347b6d 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,51 @@
- # Changelog
- 
-+## 2.1.238
-+
-+- Added a `keybindingFlavor` setting: set it to `"readline"` to make Ctrl+W in the prompt delete back to the previous whitespace, as in Bash; the default (`"classic"`) is unchanged
-+- Plugin marketplaces: `headersHelper` on a url marketplace or a catalog entry runs a command that mints HTTP headers (e.g. a short-lived token) for catalog and same-origin archive fetches
-+- A catalog entry's `headersHelper` runs only when you install or update that plugin, after its command is shown; `claude plugin install/update` ask `[y/N]` (or pass `-y`)
-+- Added `claude self-hosted-runner --defer-shutdown-max-min <minutes>`: on SIGTERM, keep serving attached sessions, park what is left after that many minutes, then exit
-+- Added `claude self-hosted-runner --proxy-authorization-command` / `--proxy-authorization-file` for egress proxies that require a freshly issued `Proxy-Authorization` header on every connection
-+- Fixed unbounded memory growth in long interactive sessions: subagent tool results are now released once they leave the recent display window
-+- Fixed custom, project, and plugin output styles drifting back to the default voice mid-session
-+- Fixed `CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION=true` not keeping prompt suggestions on when your account is near, but not over, its usage limit
-+- Fixed worktree-isolation Bash refusals telling you to remove a redirect when the command had none
-+- Fixed self-hosted runners occasionally being removed by the server after a single slow or lost poll request, handing their healthy session to another runner
-+- Fixed MCP elicitation dialogs showing nothing for URLs longer than 4,096 characters, and permission prompts dropping the "don't ask again" option when the project path didn't fit the terminal width
-+- Fixed leftover `/tmp/claude-*-cwd` files when a Bash command is killed, times out, or is interrupted
-+- Fixed held Backspace being ignored on terminals that send Ctrl+H for Backspace when keystrokes arrive in large bursts (slow SSH/mosh links)
-+- Fixed text-wrapping in permission prompt diffs: lines containing wide multi-code-point characters (such as emoji) or tabs are no longer clipped
-+- Fixed killing a suspended (Ctrl+Z) session sometimes leaving the terminal in bracketed-paste mode with the cursor hidden
-+- Fixed stdio MCP servers receiving a `server/discover` request before `initialize`, forcing lazy servers to start their backend on every session open
-+- Fixed a proxy's refusal of a connection being reported as a generic network error instead of naming the proxy
-+- Fixed the `/model` and `/effort` cache-miss warning appearing when the prompt cache had already expired
-+- Fixed per-task Stop from the Remote Control tasks panel doing nothing on CLI-hosted sessions
-+- Fixed remote sessions exiting when a client delivered a user message without a valid role
-+- Fixed Remote Control sessions started by `claude remote-control` inheriting session-scoped environment variables from the launching shell
-```
-
-</details>
-
-<details>
-<summary>cross-session-messaging-en.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/cross-session-messaging-en.md b/docs-ja/pages/cross-session-messaging-en.md
-index 65e69b5..b132368 100644
---- a/docs-ja/pages/cross-session-messaging-en.md
-+++ b/docs-ja/pages/cross-session-messaging-en.md
-@@ -23,5 +23,5 @@ Use messaging when one of your sessions has something another session needs mid-
- * **Hand over a finding**: when one session discovers a breaking change or makes a decision, Claude summarizes it for the session working on the affected area, instead of you re-explaining it there.
- * **Coordinate parallel worktrees**: when sessions work the same repository in separate [worktrees](/docs/en/worktrees), Claude can tell the other sessions what landed.
--* **Get status from long-running work**: have a migration or test run report back to the session you're watching, or ask it yourself from there.
-+* **Get status from long-running work**: have a migration or test run report back to the session you're watching, or ask it yourself from there. If that session is on this machine, Claude can also [ask it for one notice when it next goes idle or exits](#get-a-notice-when-another-session-goes-idle).
- * **Message across machines**: reach one of your sessions on another machine or on the web.
- 
-@@ -74,4 +74,33 @@ Once delivered, the message counts toward [usage](/docs/en/costs) like a prompt
- Permission boundaries stay per-session. Claude is instructed never to ask another session for an action that was denied or blocked in its own session, or that its own permission settings would block, and to route that work back to you instead. On the receiving side, the [receiving session's own permission prompts and rules still apply](#how-a-session-treats-an-incoming-message) to anything the message asks for.
- 
-+### Get a notice when another session goes idle
-+
-+Claude can ask one of your sessions on this machine to send back one notice when that session next goes idle or exits. Idle here means the session finished a turn with nothing queued. Use it when you're waiting on a long task in another session and want to hear when it's done instead of checking. Requires Claude Code v2.1.236 or later in both sessions.
-+
-+#### Ask for a notice
-+
-+Tell Claude what you're waiting on. This prompt asks for a notice from the migration session:
-+
-+```text wrap theme={null}
-+Tell me when the migration session finishes what it's working on
-+```
-+
-+Claude subscribes with the `SendMessage` tool's `notify_when_idle` input, either attached to a message it's sending anyway or on its own. On its own, Claude Code subscribes without starting a turn or spending tokens in the watched session, and sends the notice right away if that session is already idle. Attached to a message, Claude Code delivers the message first and sends the notice later.
-+
-+#### What each session shows
-+
-```
-
-</details>
 
 <!-- UPDATE_LOG_END -->
