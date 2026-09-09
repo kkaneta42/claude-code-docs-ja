@@ -9,6 +9,6 @@ The requested page could not be found.
 
 ## Related topics
 
-- [Claude Code settings reference](https://code.claude.com/docs/en/settings-reference.md)
 - [Hooks reference](https://code.claude.com/docs/en/hooks.md#configchange)
 - [Plugins reference](https://code.claude.com/docs/en/plugins-reference.md#user-configuration)
+- [Error reference](https://code.claude.com/docs/en/errors.md#settings-file-exceeds-the-2mib-limit)

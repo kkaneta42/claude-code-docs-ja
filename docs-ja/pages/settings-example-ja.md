@@ -10,5 +10,5 @@ The requested page could not be found.
 ## Related topics
 
 - [Example settings files](https://code.claude.com/docs/en/settings-example.md)
+- [All settings](https://code.claude.com/docs/en/settings-reference.md#sshhostallowlist)
 - [Examples](https://code.claude.com/docs/en/agent-sdk/examples.md)
-- [Claude Code settings reference](https://code.claude.com/docs/en/settings-reference.md#sshhostallowlist)

@@ -11,4 +11,4 @@ The requested page could not be found.
 
 - [Message your other Claude Code sessions](https://code.claude.com/docs/en/cross-session-messaging.md#restrict-cross-session-messaging)
 - [Orchestrate teams of Claude Code sessions](https://code.claude.com/docs/en/agent-teams.md#next-steps)
-- [Claude Code settings reference](https://code.claude.com/docs/en/settings-reference.md#agents-sessions-and-worktrees)
+- [All settings](https://code.claude.com/docs/en/settings-reference.md#agents-sessions-and-worktrees)

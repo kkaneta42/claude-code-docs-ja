@@ -11,4 +11,4 @@ The requested page could not be found.
 
 - [Deploy managed settings](https://code.claude.com/docs/en/managed-settings.md#deploy-a-managed-settings-file)
 - [Configure server-managed settings](https://code.claude.com/docs/en/server-managed-settings.md#choose-between-server-managed-and-endpoint-managed-settings)
-- [Claude Code settings](https://code.claude.com/docs/en/settings.md#exceptions-to-managed-settings-precedence)
+- [All settings](https://code.claude.com/docs/en/settings-reference.md#allowmanagedmcpserversonly)

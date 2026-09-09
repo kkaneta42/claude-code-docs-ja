@@ -17,6 +17,162 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-09-09</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md                  | 57 +++++++++++++++++++++++++++++
+ docs-ja/pages/claude-directory-ja.md        |  6 +--
+ docs-ja/pages/cross-session-messaging-ja.md |  2 +-
+ docs-ja/pages/managed-settings-ja.md        |  2 +-
+ docs-ja/pages/settings-example-ja.md        |  2 +-
+ docs-ja/pages/settings-reference-ja.md      |  2 +-
+ 6 files changed, 64 insertions(+), 7 deletions(-)
+```
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index 77bbc03..32c20ac 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,61 @@
+ # Changelog
+ 
++## 2.1.266
++
++- Fixed a 2.1.265 regression affecting LLM-gateway and proxy setups: the undocumented `CLAUDE_CODE_USE_GATEWAY` environment variable, previously ignored unless `ANTHROPIC_BASE_URL` and `ANTHROPIC_AUTH_TOKEN` were both set, began forcing Cloud-gateway sign-in on its own in 2.1.265, so configurations that set it alongside an API key, `apiKeyHelper`, or custom auth headers failed every request with "Not signed in to the Cloud gateway". The variable on its own is ignored again; no configuration change is needed
++
++## 2.1.265
++
++- Added `user.email` and `user.groups` to the telemetry Claude Desktop and Cowork send through a Claude apps gateway, matching terminal sessions
++- Added support for pointing `--plugin-dir` at a folder of plugins: each child folder with a manifest loads, and children added or removed while running are picked up
++- Added a 1 GB cap on tool results saved to disk; the in-conversation preview says when a saved file was truncated
++- Fixed resuming a foreground-spawned subagent changing its tool list and system prompt prefix, which broke prompt-cache reuse for that agent
++- Fixed agent teammates and resumed subagents moving SubagentStart hook context and preloaded skills out of the prompt prefix on later turns, which broke prompt-cache reuse
++- Fixed resume after the previous process died while a tool was running: the last prompt is no longer rewritten, and the interrupted tool call is kept and marked interrupted
++- Fixed `/model opusplan[1m]` being rejected with "Model not found"
++- Fixed syntax-highlighted code in permission prompts and messages sometimes omitting a character after a Ruby `?`, Erlang `$`, or Perl `$` sigil
++- Fixed the fullscreen transcript jumping by one row whenever the slash-command or @-file suggestion list opened or closed
++- Fixed a plugin path containing a backslash bypassing the symlink containment check on macOS and Linux
++- Fixed plugin directories whose names begin with two dots being wrongly refused as outside the plugin root
++- Fixed VS Code and SDK sessions occasionally requiring re-login when a session was closed while refreshing its token
++- Fixed Remote Control sessions sending the end-of-turn signal before the reply's last message, which could show a reply as finished in the Claude app before its last part arrived
++- Fixed background (`--bg`) sessions occasionally being retired mid-turn when a message arrived just before the idle timeout
++- Fixed Claude Code's own git status and diff probes running clean filters configured by a nested repository inside the working tree
++- Fixed the advisor tool and its instructions being re-decided per request from the request's model; the decision is now made once and announced in the conversation when it changes
++- Fixed artifact publish accepting connector tool names the connector doesn't expose; the publish is now refused when none of the declared tools exist, and warned when only some don't
+```
+
+</details>
+
+<details>
+<summary>claude-directory-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/claude-directory-ja.md b/docs-ja/pages/claude-directory-ja.md
+index febde4e..8ea2b35 100644
+--- a/docs-ja/pages/claude-directory-ja.md
++++ b/docs-ja/pages/claude-directory-ja.md
+@@ -323,5 +323,5 @@ Investigate and fix the issue above.
+           color: '#5AA7A7',
+           oneLiner: 'Project-scoped output styles, if your team shares any',
+-          when: 'Applied at session start when selected via the outputStyle setting',
++          when: 'Files read at startup; the style you select with outputStyle is added to the system prompt every turn',
+           description: <>Output styles are usually personal, so most live in <C>~/.claude/output-styles/</C>. Put one here if your team shares a style, like a review mode everyone uses. See <A href="#ce-global-output-styles">the Global tab</A> for the full explanation and example.</>,
+           docsLink: '/en/output-styles',
+@@ -640,7 +640,7 @@ type: reference
+           color: '#5AA7A7',
+           oneLiner: 'Custom system-prompt sections that adjust how Claude works',
+-          when: 'Applied at session start when selected via the outputStyle setting',
++          when: 'Files read at startup; the style you select with outputStyle is added to the system prompt every turn',
+           description: [<>Each markdown file defines an output style: a section appended to the system prompt that, by default, also drops the built-in software-engineering task instructions. Use this to adapt Claude Code for uses beyond coding, or to add teaching or review modes.</>, <>Select a built-in or custom style with <C>/config</C> or the <C>outputStyle</C> key in settings. Styles here are available in every project; project-level styles with the same name take precedence.</>],
+-          tips: ['Built-in styles Default, Proactive, Concise, Explanatory, and Learning are included with Claude Code; custom styles go here', <>Set <C>keep-coding-instructions: true</C> in frontmatter to keep the default task instructions alongside your additions</>, 'Changes take effect on the next session since the system prompt is fixed at startup for caching'],
++          tips: ['Built-in styles Default, Proactive, Concise, Explanatory, and Learning are included with Claude Code; custom styles go here', <>Set <C>keep-coding-instructions: true</C> in frontmatter to keep the default task instructions alongside your additions</>, 'Switching styles mid-session applies from your next message and rebuilds the prompt cache once; in the terminal, a style file you create or edit mid-session is picked up after a restart'],
+           docsLink: '/en/output-styles',
+           children: [{
+```
+
+</details>
+
+<details>
+<summary>cross-session-messaging-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/cross-session-messaging-ja.md b/docs-ja/pages/cross-session-messaging-ja.md
+index 61b1d4f..82a59e2 100644
+--- a/docs-ja/pages/cross-session-messaging-ja.md
++++ b/docs-ja/pages/cross-session-messaging-ja.md
+@@ -12,3 +12,3 @@ The requested page could not be found.
+ - [Message your other Claude Code sessions](https://code.claude.com/docs/en/cross-session-messaging.md#restrict-cross-session-messaging)
+ - [Orchestrate teams of Claude Code sessions](https://code.claude.com/docs/en/agent-teams.md#next-steps)
+-- [Claude Code settings reference](https://code.claude.com/docs/en/settings-reference.md#agents-sessions-and-worktrees)
++- [All settings](https://code.claude.com/docs/en/settings-reference.md#agents-sessions-and-worktrees)
+```
+
+</details>
+
+<details>
+<summary>managed-settings-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/managed-settings-ja.md b/docs-ja/pages/managed-settings-ja.md
+index 3de9224..5098468 100644
+--- a/docs-ja/pages/managed-settings-ja.md
++++ b/docs-ja/pages/managed-settings-ja.md
+@@ -12,3 +12,3 @@ The requested page could not be found.
+ - [Deploy managed settings](https://code.claude.com/docs/en/managed-settings.md#deploy-a-managed-settings-file)
+ - [Configure server-managed settings](https://code.claude.com/docs/en/server-managed-settings.md#choose-between-server-managed-and-endpoint-managed-settings)
+-- [Claude Code settings](https://code.claude.com/docs/en/settings.md#exceptions-to-managed-settings-precedence)
++- [All settings](https://code.claude.com/docs/en/settings-reference.md#allowmanagedmcpserversonly)
+```
+
+</details>
+
+<details>
+<summary>settings-example-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/settings-example-ja.md b/docs-ja/pages/settings-example-ja.md
+index 52f1ab3..14959bf 100644
+--- a/docs-ja/pages/settings-example-ja.md
++++ b/docs-ja/pages/settings-example-ja.md
+@@ -11,4 +11,4 @@ The requested page could not be found.
+ 
+ - [Example settings files](https://code.claude.com/docs/en/settings-example.md)
++- [All settings](https://code.claude.com/docs/en/settings-reference.md#sshhostallowlist)
+ - [Examples](https://code.claude.com/docs/en/agent-sdk/examples.md)
+-- [Claude Code settings reference](https://code.claude.com/docs/en/settings-reference.md#sshhostallowlist)
+```
+
+</details>
+
+<details>
+<summary>settings-reference-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/settings-reference-ja.md b/docs-ja/pages/settings-reference-ja.md
+index 613db36..ae8199a 100644
+--- a/docs-ja/pages/settings-reference-ja.md
++++ b/docs-ja/pages/settings-reference-ja.md
+@@ -10,5 +10,5 @@ The requested page could not be found.
+ ## Related topics
+ 
+-- [Claude Code settings reference](https://code.claude.com/docs/en/settings-reference.md)
+ - [Hooks reference](https://code.claude.com/docs/en/hooks.md#configchange)
+ - [Plugins reference](https://code.claude.com/docs/en/plugins-reference.md#user-configuration)
++- [Error reference](https://code.claude.com/docs/en/errors.md#settings-file-exceeds-the-2mib-limit)
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-09-07</summary>
 
 **変更ファイル:**
@@ -2282,226 +2438,5 @@ index e347b6d..b05c306 100644
 ```
 
 </details>
-
-<details>
-<summary>claude-directory-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/claude-directory-ja.md b/docs-ja/pages/claude-directory-ja.md
-index d4a46d5..e57e910 100644
---- a/docs-ja/pages/claude-directory-ja.md
-+++ b/docs-ja/pages/claude-directory-ja.md
-@@ -114,5 +114,5 @@ config/secrets.json`,
-           when: <>Overrides global <C>~/.claude/settings.json</C>. Local settings, CLI flags, and managed settings override this</>,
-           description: 'Settings that Claude Code applies directly. Permissions control which commands and tools Claude can use; hooks run your scripts at specific points in a session. Unlike CLAUDE.md, which Claude reads as guidance, these are enforced whether Claude follows them or not.',
--          contains: [<><A href="/docs/en/permissions">permissions</A>: allow, deny, or prompt before Claude uses specific tools or commands</>, <><A href="/docs/en/hooks">hooks</A>: run your own scripts on events like before a tool call or after a file edit</>, <><A href="/docs/en/statusline">statusLine</A>: customize the line shown at the bottom while Claude works</>, <><A href="/docs/en/settings#available-settings">model</A>: pick a default model for this project</>, <><A href="/docs/en/settings#environment-variables">env</A>: environment variables set in every session</>, <><A href="/docs/en/output-styles">outputStyle</A>: select a custom system-prompt style from output-styles/</>],
-+          contains: [<><A href="/docs/en/permissions">permissions</A>: allow, deny, or prompt before Claude uses specific tools or commands</>, <><A href="/docs/en/hooks">hooks</A>: run your own scripts on events like before a tool call or after a file edit</>, <><A href="/docs/en/statusline">statusLine</A>: customize the line shown at the bottom while Claude works</>, <><A href="/docs/en/settings-reference#available-settings">model</A>: pick a default model for this project</>, <><A href="/docs/en/settings-reference#environment-variables">env</A>: environment variables set in every session</>, <><A href="/docs/en/output-styles">outputStyle</A>: select a custom system-prompt style from output-styles/</>],
-           tips: [<>Bash permission patterns support wildcards: <C>Bash(npm test *)</C> matches any command starting with <C>npm test</C></>, <>Array settings like <C>permissions.allow</C> combine across all scopes; scalar settings like <C>model</C> use the most specific value</>],
-           exampleIntro: <>This example allows <C>npm test</C> and <C>npm run</C> commands without prompting, blocks <C>rm -rf</C>, and runs Prettier on files after Claude edits or writes them.</>,
-@@ -442,5 +442,5 @@ Every finding must include a concrete fix.`
-   }
- }`,
--        docsLink: '/en/settings#global-config-settings'
-+        docsLink: '/en/settings-reference#global-config-settings'
-       }, {
-         id: 'global-dot-claude',
-```
-
-</details>
-
-<details>
-<summary>cross-session-messaging-en.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/cross-session-messaging-en.md b/docs-ja/pages/cross-session-messaging-en.md
-index b132368..b476ac6 100644
---- a/docs-ja/pages/cross-session-messaging-en.md
-+++ b/docs-ja/pages/cross-session-messaging-en.md
-@@ -8,5 +8,5 @@
- 
- <Note>
--  Cross-session messaging requires Claude Code v2.1.224 or later and runs on macOS and Linux. When a session meets the requirements, messaging is on with nothing to enable. See [Availability](#availability) for provider requirements and how to confirm a session has it.
-+  Cross-session messaging requires Claude Code v2.1.224 or later on macOS and Linux, including Linux inside WSL 2. On native Windows, it requires Claude Code v2.1.234 or later. When a session meets the requirements, messaging is on with nothing to enable. See [Availability](#availability) for provider requirements and how to confirm a session has it.
- </Note>
- 
-@@ -64,5 +64,11 @@ For what the message Claude writes looks like when it arrives, including an exam
- The receiving Claude reads the message between tool calls during an active turn, so a running tool is never interrupted. When the receiving session is idle, Claude Code starts a new turn with the message.
- 
--Between two ordinary interactive sessions with default settings, Claude Code delivers the message. Delivery isn't guaranteed in every configuration, though. Claude Code refuses a message [over the size cap](#limitations) in the sending session, before it leaves. The receiving session checks each arriving message against its own [inbound controls](#control-inbound-messages), and the check ends in one of three outcomes:
-+Claude Code refuses a message in the following cases:
-+
-+* The message is [over the size cap](#limitations). Claude Code refuses it in the sending session, before it leaves.
-+* A rapid burst to a session on this machine has reached [what that session's inbox accepts](#limitations). Claude Code refuses further messages to that session.
-+* The reply target on this machine fails a safety check, such as a symlinked target or an endpoint that isn't the expected process. [Refusing to send a cross-session message](/docs/en/errors#refusing-to-send-a-cross-session-message) lists these checks.
-+
-+The receiving session checks each arriving message against its own [inbound controls](#control-inbound-messages), and the check ends in one of three outcomes:
- 
- * **Delivered**: Claude Code passes the message to the receiving Claude.
-@@ -108,11 +114,13 @@ Claude finds a message's target on its own, so you don't need to run anything be
- 
- * **Subagents**: agents running inside the current session. [Agent team](/docs/en/agent-teams) teammates aren't listed; Claude messages them through the team's own roster.
--* **Your other local sessions**: Claude Code sessions running on the same machine, including [background sessions](/docs/en/agent-view). A session appears only when it binds an [inbox socket](#the-sessions-inbox-socket).
-+* **Your other local sessions**: Claude Code sessions running on the same machine, including [background sessions](/docs/en/agent-view). A session appears only when it binds an [inbox socket](#the-sessions-inbox-socket). The worker process that the [supervisor process](/docs/en/agent-view#the-supervisor-process) keeps ready for your next background session appears once you dispatch work to it.
- * **Your cloud sessions**: your [Claude Code on the web](/docs/en/claude-code-on-the-web) sessions, shown while this session is connected to [Remote Control](/docs/en/remote-control). Claude Code labels them `cloud` in the listing.
-```
-
-</details>
-
-<details>
-<summary>self-hosted-environments-configuration-en.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/self-hosted-environments-configuration-en.md b/docs-ja/pages/self-hosted-environments-configuration-en.md
-index a4a947e..27ac571 100644
---- a/docs-ja/pages/self-hosted-environments-configuration-en.md
-+++ b/docs-ja/pages/self-hosted-environments-configuration-en.md
-@@ -379,5 +379,5 @@ To pre-approve specific tools instead, append `--allowed-tools` with your rules,
- The runner gives each session its own config directory, seeded from an in-memory snapshot of the host's `~/.claude/` that the runner captures once at startup: `settings.json`, `CLAUDE.md`, hooks, agents, commands, and skills in your runner image apply to every session as the user-level baseline. Because the snapshot is taken at startup, config changes on a running host take effect only after a runner restart. Set `SELF_HOSTED_RUNNER_HOST_CONFIG_DIR` to seed from a different path, or point it at an empty directory to disable seeding.
- 
--Repository-committed `.claude/settings.json` layers on top as project settings. Sessions also read [`managed-settings.json`](/docs/en/settings#settings-files) from the standard system path in your runner image, but the managed tier uses one source at a time, and [server-managed settings](/docs/en/server-managed-settings) are checked first: if your organization delivers any server-managed keys, sessions ignore the runner image's managed file, except that `env` blocks merge per key across managed sources. See [settings precedence](/docs/en/settings#settings-precedence).
-+Repository-committed `.claude/settings.json` layers on top as project settings. Sessions also read [`managed-settings.json`](/docs/en/settings#where-settings-live) from the standard system path in your runner image, but the managed tier uses one source at a time, and [server-managed settings](/docs/en/server-managed-settings) are checked first: if your organization delivers any server-managed keys, sessions ignore the runner image's managed file, except that `env` blocks merge per key across managed sources. See [settings precedence](/docs/en/settings#settings-precedence).
- 
- When Anthropic's control plane supplies a session with [Claude Code hooks](/docs/en/hooks), the runner installs them alongside, not over, your own configuration. Requires Claude Code v2.1.229 or later.
-@@ -385,5 +385,5 @@ When Anthropic's control plane supplies a session with [Claude Code hooks](/docs
- * **Where they land**: the runner writes each supplied hook script to a reserved `hooks/.ccr-launcher/` subdirectory of the session's config directory and registers the scripts in a separate settings file it passes to the session with `--settings`, leaving the seeded `settings.json` and your own scripts at `hooks/<name>` untouched. The runner recreates the reserved subdirectory for each session and doesn't seed host content at `~/.claude/hooks/.ccr-launcher/` into sessions.
- * **Who authors them**: the control plane populates the scripts from fixed constants in its own deployment, never from per-session or third-party input.
--* **What still governs them**: hooks delivered through `--settings` enter the ordinary merged hook configuration, not the managed tier, so your managed settings still apply. `disableAllHooks` disables them, and they are not among the categories [`allowManagedHooksOnly`](/docs/en/settings#hook-configuration) keeps loaded.
-+* **What still governs them**: hooks delivered through `--settings` enter the ordinary merged hook configuration, not the managed tier, so your managed settings still apply. `disableAllHooks` disables them, and they are not among the categories [`allowManagedHooksOnly`](/docs/en/settings-reference#allowmanagedhooksonly) keeps loaded.
- 
- ### Repository-committed permission rules
-```
-
-</details>
-
-<details>
-<summary>self-hosted-environments-deploy-en.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/self-hosted-environments-deploy-en.md b/docs-ja/pages/self-hosted-environments-deploy-en.md
-index a13a8fb..de3dca9 100644
---- a/docs-ja/pages/self-hosted-environments-deploy-en.md
-+++ b/docs-ja/pages/self-hosted-environments-deploy-en.md
-@@ -75,4 +75,33 @@ Deploy runner and session containers in a network segment or namespace whose out
- For details on which telemetry each session emits and how to turn it off, see [Telemetry](/docs/en/self-hosted-environments-reference#telemetry).
- 
-+### Authenticate to an egress proxy
-+
-+Some corporate egress proxies require a `Proxy-Authorization` header on every connection. The token in that header often rotates too fast to write into the proxy URL you set in `HTTPS_PROXY`. Set `HTTPS_PROXY` or `HTTP_PROXY` to your proxy's URL as usual, then set `--proxy-authorization-command` or `--proxy-authorization-file` to tell the runner where to read the header value from. Both flags require Claude Code v2.1.238 or later.
-+
-+#### Choose where the `Proxy-Authorization` value comes from
-+
-+Pick the flag that matches how you produce the `Proxy-Authorization` token:
-+
-+* **[`--proxy-authorization-command <command>`](/docs/en/self-hosted-environments-reference#runner-cli-flags)**: choose this for a token you generate on demand. The runner runs the shell command and uses its trimmed stdout as the header value, for example `Bearer <token>`.
-+* **[`--proxy-authorization-file <path>`](/docs/en/self-hosted-environments-reference#runner-cli-flags)**: choose this for a token another process rotates in place. The runner reads the file and uses its trimmed contents as the header value.
-+
-+#### Configurations the runner refuses to start with
-+
-+Each flag also has an environment variable form, listed beside it in the [runner CLI flags reference](/docs/en/self-hosted-environments-reference#runner-cli-flags). Before the runner contacts your proxy or the control plane, it checks the flags and their variables, and refuses to start in three cases:
-+
-+* **Both flags set**: one flag plus the other flag's environment variable counts as setting both.
-+* **No proxy URL**: neither `HTTPS_PROXY` nor `HTTP_PROXY` holds an `http://` or `https://` URL. The runner reads both variables in upper or lower case, and doesn't consult `ALL_PROXY`.
-+* **Either flag passed to the orchestrator subcommand**: `self-hosted-runner orchestrator` doesn't accept the flags or their environment variables. Pass the flag to each runner the orchestrator starts instead.
-+
-+#### What the runner changes while a proxy-authorization flag is set
-+
-+With either flag set, the runner starts a listener of its own and sends proxy traffic from itself, its lifecycle hooks, and its sessions through that listener. The listener adds the `Proxy-Authorization` header on the way to your proxy.
-+
-```
-
-</details>
-
-<details>
-<summary>self-hosted-environments-en.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/self-hosted-environments-en.md b/docs-ja/pages/self-hosted-environments-en.md
-index 90f1970..b136be1 100644
---- a/docs-ja/pages/self-hosted-environments-en.md
-+++ b/docs-ja/pages/self-hosted-environments-en.md
-@@ -86,7 +86,9 @@ When a developer starts a session and selects your environment, Anthropic's cont
- 4. If the runner stops polling for about 60 seconds, the server requeues the session for another runner.
- 
-+The runner gives each poll request 10 seconds. When a request times out or is lost, the runner retries after a second or two instead of waiting for the next scheduled poll. Each further request that times out or is lost doubles the gap before the next retry, up to 20 seconds, and the runner shortens the gap whenever the lease is close to expiring.
-+
- ### Runner lifecycle
- 
--The first session a runner picks up locks the runner to the account of the user who started that session, and the runner runs up to `--capacity` concurrent sessions for that account. While the runner has active sessions, the runner keeps claiming the locked account's queued work. What happens once they finish depends on [`--drain-grace-sec`](/docs/en/self-hosted-environments-reference#runner-cli-flags):
-+The first session a runner picks up locks the runner to the account of the user who started that session, and the runner runs up to `--capacity` concurrent sessions for that account. While the runner has active sessions and hasn't received a shutdown signal or reached its retire time, the runner keeps claiming the locked account's queued work. What happens once they finish depends on [`--drain-grace-sec`](/docs/en/self-hosted-environments-reference#runner-cli-flags):
- 
- * **At the default of `0`**: the runner exits as soon as its active sessions finish, without polling for more, so the orchestrator you deploy it under, such as Kubernetes, can restart it with a fresh disk, ready to serve any account.
-@@ -95,5 +97,5 @@ The first session a runner picks up locks the runner to the account of the user
- This lifecycle isolates each user's checked-out code without requiring the runner to delete disk state between users.
- 
--A kill that delivers `SIGTERM` needs no flag: the runner drains as [Shutdown timing](/docs/en/self-hosted-environments-deploy#shutdown-timing) describes. If your infrastructure instead destroys hosts at a known wall-clock time without a signal, or with a grace period too short to drain, such as a sandbox lifetime cap or spot-instance reclamation, pass `--retire-at <epoch-seconds>` set to a few minutes before that time. At the retire time:
-+How your infrastructure stops a runner decides whether you need `--retire-at`. A kill that delivers `SIGTERM` needs no flag: the runner drains as [Shutdown timing](/docs/en/self-hosted-environments-deploy#shutdown-timing) describes, or keeps serving the sessions it already holds when you set [`--defer-shutdown-max-min`](/docs/en/self-hosted-environments-deploy#defer-the-drain-past-the-first-signal). If your infrastructure instead destroys hosts at a known wall-clock time without a signal, or with a grace period too short to drain, such as a sandbox lifetime cap or spot-instance reclamation, pass `--retire-at <epoch-seconds>` set to a few minutes before that time. At the retire time:
- 
- 1. The runner stops taking new work.
-@@ -118,4 +120,6 @@ Model inference uses the Anthropic API. The control plane delivers the API endpo
- Corporate egress proxies are supported. The runner and the optional [autoscaling orchestrator](/docs/en/self-hosted-environments-configuration#on-demand-runners) honor the proxy and mTLS environment variables described in [Network configuration](/docs/en/network-config), such as `HTTPS_PROXY` and `NO_PROXY`; set them in each process's environment. The variables cover control-plane calls, the orchestrator's [SCM connector](/docs/en/self-hosted-environments-reference#scm-connector-flags) WebSocket, and the built-in clone for HTTPS remotes, and sessions inherit them from the runner. Session streaming uses server-sent events over HTTPS, so a proxy in the path must not buffer responses.
- 
-+If your proxy also requires a `Proxy-Authorization` header, the runner can add it to each connection it opens to the proxy; see [Authenticate to an egress proxy](/docs/en/self-hosted-environments-deploy#authenticate-to-an-egress-proxy).
-+
- ## What stays on your infrastructure
- 
-```
-
-</details>
-
-<details>
-<summary>self-hosted-environments-reference-en.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/self-hosted-environments-reference-en.md b/docs-ja/pages/self-hosted-environments-reference-en.md
-index bfe0a56..38e4cfd 100644
---- a/docs-ja/pages/self-hosted-environments-reference-en.md
-+++ b/docs-ja/pages/self-hosted-environments-reference-en.md
-@@ -19,33 +19,36 @@ Metric series and a few API fields still use `pool` for what these pages call an
- Most flags have a corresponding environment variable. When both are set, the flag takes precedence. Duration flags take minutes or seconds on the CLI, but the paired environment variable is always in milliseconds, indicated by the `_MS` suffix, and the Default column shows the flag's unit: `--exit-if-unused-min 10` is equivalent to `SELF_HOSTED_RUNNER_IDLE_SHUTDOWN_MS=600000`, and a Helm value like `SELF_HOSTED_RUNNER_STARTUP_TIMEOUT_MS: "15"` means 15 milliseconds, not the 15-minute default.
- 
--| Flag                                  | Env var                                           | Default                       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
--| :------------------------------------ | :------------------------------------------------ | :---------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
--| `--api-url <url>`                     | none                                              | `https://api.anthropic.com`   | API base URL. Override only for testing.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
--| `--base-dir <path>`                   | `SELF_HOSTED_RUNNER_BASE_DIR`                     | `/workspace`; none on Windows | Directory for repository checkouts and per-session working directories. The runner needs write access to this path or its parent. The runner creates the directory at startup and exits with `cannot create or write to base directory` when it can't create or write to it. Before v2.1.225, the runner created the directory when the first session started, so an unusable path failed sessions rather than startup. On Windows, which isn't a supported runner host, there is no default: the runner exits at startup unless you pass the flag or set the variable. Use the same value on every runner in an environment. See [Keep the base directory and capacity identical across runners](/docs/en/self-hosted-environments-deploy#keep-the-base-directory-and-capacity-identical-across-runners). |
--| `--capacity <n>`                      | none                                              | `1`                           | Maximum concurrent sessions this runner handles. All sessions belong to the same locked account. Use the same value on every runner in an environment; see [Keep the base directory and capacity identical across runners](/docs/en/self-hosted-environments-deploy#keep-the-base-directory-and-capacity-identical-across-runners).                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
--| `--configure-git`                     | `SELF_HOSTED_RUNNER_CONFIGURE_GIT=1`              | off                           | Write global git identity and enable Anthropic commit signing at startup. See [Configure git](/docs/en/self-hosted-environments-deploy#configure-git).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
--| `--confine-repo-settings <mode>`      | `SELF_HOSTED_RUNNER_CONFINE_REPO_SETTINGS`        | `warn`                        | Sets the mode of the guard that flags a session when a repository's committed settings try to grant write or read access outside that session's own workspace, set environment variables, or override the operator's sandbox or hooks posture, such as `sandbox.enabled: false` or `disableAllHooks`. The default `warn` logs the violation and still starts the session, `enforce` refuses the session, and `off` disables the scan. See [Harden your deployment](/docs/en/self-hosted-environments-deploy#harden-your-deployment).                                                                                                                                                                                                                                                                       |
--| `--debug-token-dir <path>`            | `SELF_HOSTED_RUNNER_DEBUG_TOKEN_DIR`              | unset                         | Write live tokens to disk for inspection. Debug only; don't use in production.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
--| `--drain-grace-sec <n>`               | `SELF_HOSTED_RUNNER_DRAIN_GRACE_MS`               | `0`                           | Controls when the runner exits after its active sessions finish: `0` exits immediately without polling for more, and a positive value keeps the runner alive and re-polling the locked account's queue for that many seconds first, at the cost of the per-session container isolation described in the [hardening section](/docs/en/self-hosted-environments-deploy#harden-your-deployment)                                                                                                                                                                                                                                                                                                                                                                                                               |
--| `--drain-wait-sec <n>`                | `SELF_HOSTED_RUNNER_DRAIN_WAIT_MS`                | `0`                           | On `SIGTERM`, wait up to N seconds for each session's in-flight turn and background tasks to finish before terminating the child. During this wait, the runner counts a background task that has just finished as still running until the follow-up turn that reads its result starts, for at most the [`SELF_HOSTED_RUNNER_BG_RESULT_GRACE_MS`](#environment-variable-only-settings) window.                                                                                                                                                                                                                                                                                                                                                                                                         |
--| `--environment-secret-file <path>`    | `SELF_HOSTED_RUNNER_ENVIRONMENT_SECRET`           | required                      | Path to a file containing the environment secret, or, for runners spawned by the [orchestrator](/docs/en/self-hosted-environments-configuration#on-demand-runners), the single-use work-order JWT. `SELF_HOSTED_RUNNER_ENVIRONMENT_SECRET` carries the secret value directly, not a file path. The older `--pool-secret-file` flag and `SELF_HOSTED_RUNNER_POOL_SECRET` variable still work and print a deprecation notice to stderr; preview-program runner builds older than 2.1.216 only recognize those older names.                                                                                                                                                                                                                                                                                   |
--| `--exec-path <path>`                  | `SELF_HOSTED_RUNNER_EXEC_PATH`                    | own binary                    | Binary or wrapper script to spawn for each session. See [Wrapper scripts](/docs/en/self-hosted-environments-configuration#wrapper-scripts).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
--| `--exit-if-unused-min <n>`            | `SELF_HOSTED_RUNNER_IDLE_SHUTDOWN_MS`             | `0`                           | Exit after N minutes of polling with no work ever assigned, for autoscaler scale-down. `0` disables.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
--| `--git-host-rewrite <from>=<to>`      | none                                              | unset                         | Rewrite `https://<from>/...` source URLs to `https://<to>/...` before cloning, for split-horizon DNS. Repeatable; flag only.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
--| `--git-ssh-rewrite <host>`            | none                                              | unset                         | Rewrite `https://<host>/...` source URLs to `git@<host>:...` before cloning, for SSH-only git hosts. Repeatable; flag only.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
--| `--health-port <port>`                | `SELF_HOSTED_RUNNER_HEALTH_PORT`                  | `8080`                        | Port for the `/healthz` and `/metrics` listener. Set `0` to disable.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
--| `--hooks-dir <path>`                  | `SELF_HOSTED_RUNNER_HOOKS_DIR`                    | unset                         | Directory of lifecycle hook scripts. See [Lifecycle hooks](/docs/en/self-hosted-environments-configuration#lifecycle-hooks).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
--| `--kill-session-after-min <n>`        | `SELF_HOSTED_RUNNER_MAX_LIFETIME_MS`              | `0`                           | Terminate a session child once it has lived N minutes wall-clock, as a safety limit for stuck sessions. A kill that falls mid-turn is deferred until the turn finishes, bounded by a grace window. `0` disables.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
--| `--lock-to-account <id>`              | `SELF_HOSTED_RUNNER_LOCK_TO_ACCOUNT`              | unset                         | Pre-lock the runner to a specific account at startup instead of locking on first session. Accepts an email address or `user_...` ID in the environment's organization.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
--| `--log-file <path>`                   | `SELF_HOSTED_RUNNER_LOG_FILE`                     | unset                         | Mirror runner logs to a file in addition to stdout and stderr, created with `0600` permissions. Required for `self-hosted-runner doctor` to tail logs locally.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
--| `--log-level <level>`                 | none                                              | `info`                        | `info` or `debug`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
--| `--post-session-hook-timeout-sec <n>` | `SELF_HOSTED_RUNNER_POST_SESSION_HOOK_TIMEOUT_MS` | `60`                          | Budget for the [`post-session` hook](/docs/en/self-hosted-environments-configuration#post-session) on every session end, including runner shutdown                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
--| `--push-outcome-on-release`           | `SELF_HOSTED_RUNNER_PUSH_OUTCOME_ON_RELEASE`      | off                           | On a runner-initiated session end such as a drain or idle release, push tracked outcome branches to `origin` before deleting the workspace, so in-flight commits survive a restart. Best-effort; adds 30 seconds to the shutdown budget, and requires git 2.29 or newer to resume from the pushed branch. Restrict push access to `claude/*` refs before enabling; see [Resumed sessions lose unpushed work](/docs/en/self-hosted-environments-deploy#additional-limitations). Repositories checked out via a `checkout` lifecycle hook aren't pushed; snapshot those from the [`post-session` hook](/docs/en/self-hosted-environments-configuration#post-session) instead.                                                                                                                                     |
-```
-
-</details>
-
-*...以降省略*
-
-</details>
-
-
-<details>
-<summary>2026-08-21</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/changelog.md                         | 47 ++++++++++++++++++++++
- docs-ja/pages/cross-session-messaging-en.md        | 31 +++++++++++++-
- .../self-hosted-environments-configuration-en.md   | 11 ++++-
- .../pages/self-hosted-environments-reference-en.md |  2 +-
- 4 files changed, 88 insertions(+), 3 deletions(-)
-```
 
 <!-- UPDATE_LOG_END -->
