@@ -47,19 +47,19 @@ To install Claude Code, use one of the following methods:
   <Tab title="Native Install (Recommended)">
     **macOS, Linux, WSL:**
 
-    ```bash theme={null}
+    ```bash theme={null} theme={null} theme={null} theme={null}
     curl -fsSL https://claude.ai/install.sh | bash
     ```
 
     **Windows PowerShell:**
 
-    ```powershell theme={null}
+    ```powershell theme={null} theme={null} theme={null} theme={null}
     irm https://claude.ai/install.ps1 | iex
     ```
 
     **Windows CMD:**
 
-    ```batch theme={null}
+    ```batch theme={null} theme={null} theme={null} theme={null}
     curl -fsSL https://claude.ai/install.cmd -o install.cmd && install.cmd && del install.cmd
     ```
 
@@ -75,7 +75,7 @@ To install Claude Code, use one of the following methods:
   </Tab>
 
   <Tab title="Homebrew">
-    ```bash theme={null}
+    ```bash theme={null} theme={null} theme={null} theme={null}
     brew install --cask claude-code
     ```
 
@@ -87,7 +87,7 @@ To install Claude Code, use one of the following methods:
   </Tab>
 
   <Tab title="WinGet">
-    ```powershell theme={null}
+    ```powershell theme={null} theme={null} theme={null} theme={null}
     winget install Anthropic.ClaudeCode
     ```
 
@@ -104,6 +104,8 @@ You can also install with [apt, dnf, or apk](/docs/en/setup#install-with-linux-p
 ```bash theme={null}
 claude
 ```
+
+Claude Code はターミナルで対話的なセッションを開きます。
 
 インストール中に問題が発生した場合は、[インストールとログインのトラブルシューティング](/docs/ja/troubleshoot-install)を参照してください。
 
@@ -138,7 +140,7 @@ PowerShell または CMD からインストールするかどうかは、実行�
   }
   ```
 
-Git for Windows がインストールされている場合、PowerShell ツールは Bash と並行して追加オプションとして段階的にロールアウトされています。オプトインするには `CLAUDE_CODE_USE_POWERSHELL_TOOL=1` を設定するか、オプトアウトするには `0` を設定します。セットアップと制限については、[PowerShell ツール](/docs/ja/tools-reference#powershell-tool)を参照してください。
+Git for Windows がインストールされている場合、PowerShell ツールは Bash と並行して利用可能です。claude.ai と Console アカウントではデフォルトで有効になっており、Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry セッションでは `CLAUDE_CODE_USE_POWERSHELL_TOOL=1` で有効になります。`0` に設定してツールをオフにします。セットアップと制限については、[PowerShell ツール](/docs/ja/tools-reference#powershell-tool)を参照してください。
 
 **オプション 2: WSL**
 
@@ -148,15 +150,23 @@ WSL ディストリビューションを開き、上記の[インストール手
   Alpine Linux と musl ベースのディストリビューション
 </h3>
 
-Alpine およびその他の musl/uClibc ベースのディストリビューション上のネイティブインストーラーには、`libgcc`、`libstdc++`、および `ripgrep` が必要です。ディストリビューションのパッケージマネージャーを使用してこれらをインストールしてから、`USE_BUILTIN_RIPGREP=0` を設定します。
+Alpine およびその他の musl/uClibc ベースのディストリビューション上に Claude Code をインストールするには、インストールコマンド用に `bash` と `curl` が必要であり、実行時に `libgcc`、`libstdc++`、および `ripgrep` が必要です。Alpine はデフォルトで `bash` と `curl` を含まないため、ドキュメント化されたインストールコマンドは `not found` エラーで失敗します。これらをインストールするまで、ディストリビューションのパッケージマネージャーを使用してこれらのパッケージをインストールしてから、`USE_BUILTIN_RIPGREP=0` を設定します。
 
 この例は Alpine で必要なパッケージをインストールします。
 
 ```bash theme={null}
-apk add libgcc libstdc++ ripgrep
+apk add bash curl libgcc libstdc++ ripgrep
 ```
 
-次に、[`settings.json`](/docs/ja/settings#available-settings)ファイルで `USE_BUILTIN_RIPGREP` を `0` に設定します。
+Alpine では、`ripgrep` はコミュニティリポジトリにあります。`apk` がパッケージが見つからないと報告する場合は、Alpine バージョンを使用して `/etc/apk/repositories` にコミュニティリポジトリを追加します。
+
+```bash theme={null}
+echo "https://dl-cdn.alpinelinux.org/alpine/v3.22/community" >> /etc/apk/repositories
+```
+
+`apk update` を実行してパッケージインデックスを更新し、`apk add` コマンドを再試行します。
+
+次に、[`settings.json`](/docs/ja/settings-reference#all-settings)ファイルで `USE_BUILTIN_RIPGREP` を `0` に設定します。
 
 ```json theme={null}
 {
@@ -176,6 +186,8 @@ apk add libgcc libstdc++ ripgrep
 claude --version
 ```
 
+正常にインストールされている場合は、`2.1.211 (Claude Code)` のようなバージョン番号が表示されます。
+
 これが `command not found` または別のエラーで失敗する場合は、[インストールとログインのトラブルシューティング](/docs/ja/troubleshoot-install)を参照してください。
 
 インストールと構成をより詳しく確認するには、[`claude doctor`](/docs/ja/troubleshooting#get-more-help)を実行します。
@@ -184,13 +196,15 @@ claude --version
 claude doctor
 ```
 
+`claude doctor` は、セッションを開始せずに読み取り専用のインストールと設定の診断を出力します。これには、インストールの正常性、設定ファイルの検証エラー、および推奨される修正を含む警告が含まれます。
+
 <h2 id="authenticate">
   認証
 </h2>
 
 Claude Code には、Pro、Max、Team、Enterprise、または Console アカウントが必要です。無料の Claude.ai プランには Claude Code アクセスは含まれていません。[Amazon Bedrock](/docs/ja/amazon-bedrock)、[Google Cloud の Agent Platform](/docs/ja/google-vertex-ai)、または[Microsoft Foundry](/docs/ja/microsoft-foundry)などのサードパーティ API プロバイダーで Claude Code を使用することもできます。
 
-インストール後、`claude` を実行してブラウザーのプロンプトに従ってログインします。すべてのアカウントタイプとチームセットアップオプションについては、[認証](/docs/ja/authentication)を参照してください。
+インストール後、`claude` を実行してブラウザーのプロンプトに従ってログインします。`ANTHROPIC_API_KEY` 環境変数が設定されている場合、Claude Code はブラウザーを開く代わりに、キーを承認するよう 1 回プロンプトを表示します。すべてのアカウントタイプとチームセットアップオプションについては、[認証](/docs/ja/authentication)を参照してください。
 
 <h2 id="update-claude-code">
   Claude Code を更新
@@ -243,7 +257,7 @@ npm グローバルインストールが npm グローバルディレクトリ�
 }
 ```
 
-エンタープライズデプロイメントの場合、[管理設定](/docs/ja/permissions#managed-settings)を使用して、組織全体で一貫したリリースチャネルを適用できます。
+エンタープライズデプロイメントの場合、[管理設定](/docs/ja/managed-settings)を使用して、組織全体で一貫したリリースチャネルを適用できます。
 
 Homebrew インストールは、この設定ではなく cask 名でチャネルを選択します。`claude-code` は安定版を追跡し、`claude-code@latest` は最新版を追跡します。
 
@@ -264,15 +278,15 @@ Homebrew インストールは、この設定ではなく cask 名でチャネ�
 }
 ```
 
-[管理設定](/docs/ja/permissions#managed-settings)では、これはユーザーおよびプロジェクト設定がオーバーライドできない組織全体の最小値を適用します。
+[管理設定](/docs/ja/managed-settings)では、これはユーザーおよびプロジェクト設定がオーバーライドできない組織全体の最小値を適用します。
 
-`minimumVersion` ピンは更新のみを制約します。Claude Code がバージョン範囲外で起動することを拒否するようにするには、代わりに管理設定の `requiredMinimumVersion` と `requiredMaximumVersion` を使用します。更新は `requiredMaximumVersion` の上限も尊重します。[利用可能な設定](/docs/ja/settings#available-settings)を参照してください。
+`minimumVersion` ピンは更新のみを制約します。Claude Code がバージョン範囲外で起動することを拒否するようにするには、代わりに管理設定の `requiredMinimumVersion` と `requiredMaximumVersion` を使用します。更新は `requiredMaximumVersion` の上限も尊重します。[`requiredMinimumVersion`](/docs/ja/settings-reference#requiredminimumversion)と[`requiredMaximumVersion`](/docs/ja/settings-reference#requiredmaximumversion)を参照してください。
 
 <h3 id="disable-auto-updates">
   自動更新を無効にする
 </h3>
 
-[`settings.json`](/docs/ja/settings#available-settings)ファイルの `env` キーで `DISABLE_AUTOUPDATER` を `"1"` に設定します。
+[`settings.json`](/docs/ja/settings-reference#all-settings)ファイルの `env` キーで `DISABLE_AUTOUPDATER` を `"1"` に設定します。
 
 ```json theme={null}
 {
@@ -293,6 +307,8 @@ Homebrew インストールは、この設定ではなく cask 名でチャネ�
 ```bash theme={null}
 claude update
 ```
+
+更新がインストールされると、コマンドは `Successfully updated from <old version> to version <new version>` を報告します。既に最新バージョンを使用している場合は、`Claude Code is up to date (<version>)` を報告します。Homebrew、WinGet、または apk で管理されるインストールは、代わりに `Claude is up to date!` を報告します。
 
 <h2 id="advanced-installation-options">
   高度なインストールオプション
@@ -372,6 +388,8 @@ claude update
   </Tab>
 </Tabs>
 
+インストールされたバージョンを確認するには、`claude --version` を実行します。このコマンドは、`2.1.89 (Claude Code)` など、渡した正確なバージョンを出力します。
+
 <h3 id="install-with-linux-package-managers">
   Linux パッケージマネージャーでのインストール
 </h3>
@@ -382,18 +400,31 @@ Claude Code は署名付き apt、dnf、および apk リポジトリを公開�
 
 <Tabs>
   <Tab title="apt">
-    Debian および Ubuntu 用です。以下のインストールコマンドは `curl` で署名キーをダウンロードします。新しい Debian および Ubuntu インストールには `curl` が含まれていない場合があります。ダウンロードが `sudo: curl: command not found` で失敗する場合は、まず curl をインストールしてください:
+    Debian および Ubuntu 用です。以下のインストールコマンドは `curl` で署名キーをダウンロードし、`gpg` で検証します。新しい Debian および Ubuntu インストールには `curl` と `gpg` が含まれていない場合があります。いずれかのコマンドが `command not found` を報告する場合は、まず両方をインストールしてください:
 
     ```bash theme={null}
-    sudo apt install curl
+    sudo apt install curl gnupg
     ```
 
-    以下のコマンドは `stable` チャネルを構成します:
+    署名キーをダウンロードします:
 
     ```bash theme={null}
     sudo install -d -m 0755 /etc/apt/keyrings
     sudo curl -fsSL https://downloads.claude.ai/keys/claude-code.asc \
       -o /etc/apt/keyrings/claude-code.asc
+    ```
+
+    このダウンロードが失敗した場合、後で `apt update` が `NO_PUBKEY BAA929FF1A7ECACE` で失敗します。キーがダウンロードされ、Anthropic に属していることを確認してから続行します:
+
+    ```bash theme={null}
+    gpg --show-keys /etc/apt/keyrings/claude-code.asc
+    ```
+
+    gpg が出力するフィンガープリントは `31DDDE24DDFAB679F42D7BD2BAA929FF1A7ECACE` である必要があります。gpg がファイルを開けない、または有効な OpenPGP データが含まれていないと報告する場合、ダウンロードが失敗したか、間違ったコンテンツが返されました。ネットワークが `downloads.claude.ai` に到達できることを確認してから、ダウンロードコマンドを再実行します。
+
+    `stable` チャネルでリポジトリを登録してインストールします:
+
+    ```bash theme={null}
     echo "deb [signed-by=/etc/apt/keyrings/claude-code.asc] https://downloads.claude.ai/claude-code/apt/stable stable main" \
       | sudo tee /etc/apt/sources.list.d/claude-code.list
     sudo apt update
@@ -406,8 +437,6 @@ Claude Code は署名付き apt、dnf、および apk リポジトリを公開�
     echo "deb [signed-by=/etc/apt/keyrings/claude-code.asc] https://downloads.claude.ai/claude-code/apt/latest latest main" \
       | sudo tee /etc/apt/sources.list.d/claude-code.list
     ```
-
-    信頼する前に GPG キーフィンガープリントを検証します。`gpg --show-keys /etc/apt/keyrings/claude-code.asc` は `31DD DE24 DDFA B679 F42D 7BD2 BAA9 29FF 1A7E CACE` を報告する必要があります。
 
     後で更新するには、`sudo apt update && sudo apt upgrade claude-code` を実行します。
   </Tab>

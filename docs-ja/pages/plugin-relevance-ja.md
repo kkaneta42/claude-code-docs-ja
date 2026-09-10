@@ -8,9 +8,7 @@
 
 組織向けプラグインマーケットプレイスを運営している場合、ユーザーが何に取り組んでいるかに基づいて、Claude Code が特定のプラグインをユーザーに提案するようにできます。`marketplace.json` のプラグインエントリに `relevance` ブロックを追加してから、マネージド設定でマーケットプレイスをホワイトリストに登録します。ユーザーのセッションが宣言されたシグナルのいずれかと一致すると、Claude Code はそのプラグインのインストール提案を表示します。
 
-マーケットプレイスで宣言された提案は、[マネージド設定](/docs/ja/settings#settings-files)を通じてマーケットプレイスごとにオプトインです。管理者がそれを許可リストに追加するまで、マーケットプレイスの `relevance` 宣言は提案を生成しません。これには公式の Anthropic マーケットプレイスも含まれます。Claude Code には、この許可リストとは無関係の組み込み提案も 1 つ含まれています。その提案とすべてのマーケットプレイス宣言の提案は、[`spinnerTipsEnabled`](/docs/ja/settings#available-settings) が `false` に設定されている場合は無効になります。
-
-この機能には Claude Code v2.1.152 以降が必要です。古いクライアントは `relevance` フィールドを無視します。
+マーケットプレイスで宣言された提案は、[マネージド設定](/docs/ja/managed-settings)を通じてマーケットプレイスごとにオプトインです。管理者がそれを許可リストに追加するまで、マーケットプレイスの `relevance` 宣言は提案を生成しません。これには公式の Anthropic マーケットプレイスも含まれます。Claude Code には、この許可リストとは無関係の組み込み提案も 1 つ含まれています。その提案とすべてのマーケットプレイス宣言の提案は、[`spinnerTipsEnabled`](/docs/ja/settings-reference#spinnertipsenabled) が `false` に設定されている場合は無効になります。
 
 このページはマーケットプレイス運営者とエンタープライズ管理者向けです。プラグインのインストールを探している場合は、[プラグインの検出とインストール](/docs/ja/discover-plugins)を参照してください。
 
@@ -25,10 +23,12 @@
 シグナルが一致し、プラグインがまだインストールされていない場合、Claude Code はプラグインを 3 つの場所に表示します。
 
 * **スピナーチップ**: Claude が応答している間、スピナーの下に「*topic* で作業していますか？*plugin* プラグインをインストール」というメッセージが `/plugin install` コマンドとともに表示されます。
-* **セッション開始提案**: `cwd` シグナルが作業ディレクトリと一致する場合、最初のターンの前に「`plugin suggestion: <name>@<marketplace> · /plugin`」という 1 行の通知が表示されます。このサーフェスには Claude Code v2.1.153 以降が必要です。
-* **`/plugin` Discover タブ**: プラグインは「このディレクトリで推奨」または「stripe コマンドで推奨」などの注釈とともに Discover リストの上部に固定されます。このサーフェスには Claude Code v2.1.154 以降が必要です。
+* **セッション開始提案**: `cwd` シグナルが作業ディレクトリと一致する場合、最初のターンの前に「`plugin suggestion: <name>@<marketplace> · /plugin`」という 1 行の通知が表示されます。
+* **`/plugin` Discover タブ**: プラグインは「このディレクトリで推奨」または「stripe コマンドで推奨」などの注釈とともに Discover リストの上部に固定されます。
 
-スピナーチップとセッション開始通知はスピナーチップシステムの一部です。ユーザーまたはプロジェクトが `spinnerTipsEnabled` を `false` に設定した場合、または `excludeDefault` を使用してカスタム `spinnerTipsOverride` が設定されている場合、両方とも無効になります。Discover タブピンはチップ設定とは無関係です。
+スピナーチップとセッション開始通知はスピナーチップシステムの一部です。Claude Code は、設定ファイル全体で `spinnerTipsEnabled` が `false` に解決される場合、または設定ファイル全体で `excludeDefault` が `true` に解決される場合、両方を無効にします。ユーザー、`--settings`、および管理設定の [`spinnerTipsOverride`](/docs/ja/settings-reference#spinnertipsoverride) キーでは、少なくとも 1 つのチップまたは `tipsFile` を設定します。
+
+Discover タブピンはチップ設定とは無関係です。
 
 Claude Code はプラグインを自動的にインストールしません。ユーザーが常に確認します。
 
@@ -86,7 +86,7 @@ Claude Code はプラグインを自動的にインストールしません。�
 | `filesRead`    | array of strings | Claude がこのセッションで読んだファイルのパスに対してマッチされるグロブパターン（例：`["**/*.tf"]`）。フォワードスラッシュで正規化され、大文字と小文字を区別しません。最大 10 パターン、各 256 文字。                                                                                                                                                                                                                                                                                                                                                                               |
 | `manifestDeps` | array of objects | Claude がこのセッションで読んだパッケージマニフェストで宣言された依存関係。各エントリは `{ "file": "...", "pattern": "..." }` です。ここで `file` はマニフェストファイルのパスに対してマッチされた正規表現で、通常は絶対パスとしてセッション状態に記録され、`pattern` はそのファイルの内容に対してマッチされた正規表現です。`file` を末尾にアンカーします（例：JSON エスケープ形式で `[/\\\\]package\\.json$`）。開始アンカー付きパターンは絶対パスと決してマッチしないためです。パスはこのシグナルに対して区切り文字で正規化されないため、Windows パスはバックスラッシュを使用します。512 KB を超えるマニフェストファイルはスキップされます。両方の値は最大 256 文字の JavaScript `RegExp` ソース文字列です。`file` は大文字と小文字を区別しないでマッチします。`pattern` は大文字と小文字を区別します。最大 10 エントリ。 |
 
-`cli`、`hosts`、`filesRead`、および `manifestDeps` シグナルはセッション履歴が必要なため、スピナーチップと Discover タブでのみマッチできます。セッション開始時にマッチできるのは `cwd` のみです。`filesRead` および `manifestDeps` シグナルはセッションの記録されたファイル状態をテストします。これには、Claude が書き込みまたは編集したファイルと自動読み込みされた `CLAUDE.md` メモリファイルも含まれます。
+`cli`、`hosts`、`filesRead`、および `manifestDeps` シグナルはセッション履歴が必要なため、スピナーチップと Discover タブでのみマッチできます。`filesRead` および `manifestDeps` シグナルはセッションの記録されたファイル状態をテストします。これには、Claude が書き込みまたは編集したファイルと自動読み込みされた `CLAUDE.md` メモリファイルも含まれます。
 
 次の例は `manifestDeps` を使用して、Claude が `stripe` に依存する `package.json` を読んだ後に Stripe プラグインを提案します。`file` パターンは `[/\\\\]` を使用するため、フォワードスラッシュとバックスラッシュの両方のパス区切り文字にマッチし、`\\.` はドットがリテラルであることを示します。JSON では、正規表現の各バックスラッシュは 2 回書き込まれます。
 
@@ -109,14 +109,14 @@ Claude Code はプラグインを自動的にインストールしません。�
 ```
 
 <Note>
-  `relevance` および `relevance.signals` の下の未知のフィールドは読み込み時に無視されるため、古い Claude Code クライアントはマーケットプレイスを読み込み続けます。`claude plugin validate` を実行して、それらを警告として表示します。
+  Claude Code は読み込み時に `relevance` および `relevance.signals` の下の未知のフィールドを無視するため、古いクライアントはマーケットプレイスを読み込み続けます。
 </Note>
 
 <h2 id="enable-suggestions-in-managed-settings">
   マネージドセッティングで提案を有効にする
 </h2>
 
-`marketplace.json` で `relevance` を宣言するだけでは十分ではありません。管理者は、提案がユーザーに表示される前に、[マネージドセッティング](/docs/ja/settings#settings-files)でマーケットプレイスをホワイトリストに登録する必要があります。
+`marketplace.json` で `relevance` を宣言するだけでは十分ではありません。管理者は、提案がユーザーに表示される前に、[マネージドセッティング](/docs/ja/managed-settings)でマーケットプレイスをホワイトリストに登録する必要があります。
 
 マーケットプレイス名を `pluginSuggestionMarketplaces` に追加します。公式 Anthropic マーケットプレイス以外のマーケットプレイスの場合は、同じマネージドセッティングでマーケットプレイスソースを宣言します。その名前の `extraKnownMarketplaces` のエントリとして、または `strictKnownMarketplaces` のエントリとして宣言します。ホワイトリストに登録された名前は、マーケットプレイスが別のソースから登録された場合は無視されます。これにより、関連のないソースが組織全体でプラグインを提案するためにホワイトリストに登録された名前で登録されるのを防ぎます。
 
@@ -144,8 +144,6 @@ Claude Code はプラグインを自動的にインストールしません。�
 }
 ```
 
-`pluginSuggestionMarketplaces` および [`extraKnownMarketplaces`](/docs/ja/settings#extraknownmarketplaces) の完全な設定詳細については、[セッティングリファレンス](/docs/ja/settings)を参照してください。
-
 <h2 id="what-the-user-sees">
   ユーザーに表示される内容
 </h2>
@@ -165,7 +163,7 @@ plugin suggestion: terraform-helpers@acme-corp-plugins · /plugin
 
 特定のプラグインの提案は、スピナーチップとセッション開始通知を合わせて、最大 3 セッションごとに 1 回表示され、プラグインがインストールされると、どちらも繰り返されません。セッション開始通知は、提案が 2 回表示された後、さらに表示されなくなります。
 
-`/plugin` Discover タブでは、プラグインは「このディレクトリで推奨」または「terraform コマンドで推奨」などの一致するシグナルを指定する注釈とともに、他の結果の上に固定されます。Discover タブは特定のプラグインを 1 回固定します。その後のアクセスは通常の順序でリストします。Discover タブピンには Claude Code v2.1.154 以降が必要です。v2.1.152 ではスピナーチップのみが表示されます。セッション開始通知は v2.1.153 で追加されます。
+`/plugin` Discover タブでは、プラグインは「このディレクトリで推奨」または「terraform コマンドで推奨」などの一致するシグナルを指定する注釈とともに、他の結果の上に固定されます。Discover タブは特定のプラグインを 1 回固定します。その後のアクセスは通常の順序でリストします。
 
 <h2 id="validate-your-marketplace">
   マーケットプレイスを検証する
@@ -185,4 +183,4 @@ claude plugin validate ./my-marketplace
 
 * [プラグインマーケットプレイスを作成および配布する](/docs/ja/plugin-marketplaces): プラグインをホストするマーケットプレイスを構築します
 * [CLI からプラグインを推奨する](/docs/ja/plugin-hints): Claude Code のセッションシグナルではなく、独自の CLI からユーザーにプロンプトを表示します
-* [セッティング](/docs/ja/settings): `pluginSuggestionMarketplaces` および `extraKnownMarketplaces` の完全なリファレンス
+* [すべてのセッティング](/docs/ja/settings-reference#pluginsuggestionmarketplaces): `pluginSuggestionMarketplaces` および `extraKnownMarketplaces`

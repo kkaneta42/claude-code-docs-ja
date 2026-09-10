@@ -45,7 +45,7 @@ github.com 上のリポジトリについては、[Claude Code on the web](/docs
   </Step>
 
   <Step title="ガイド付きセットアップを開始">
-    **Connect** をクリックします。接続の表示名と GHES ホスト名（例：`github.example.com`）を入力します。GHES インスタンスが自己署名証明書またはプライベート認証局を使用している場合は、CA 証明書をオプションフィールドに貼り付けます。
+    **Connect** をクリックします。接続の表示名（最大 20 文字）と GHES ホスト名（例：`github.example.com`）を入力します。GHES インスタンスが自己署名証明書またはプライベート認証局を使用している場合は、CA 証明書をオプションフィールドに貼り付けます。
   </Step>
 
   <Step title="GitHub App を作成">
@@ -65,31 +65,37 @@ github.com 上のリポジトリについては、[Claude Code on the web](/docs
   GitHub App の権限
 </h3>
 
-マニフェストは、Web セッション、Code Review、Claude Security、および貢献度メトリクス全体で Claude が必要とする権限と Webhook イベントで GitHub App を設定します。
+マニフェストは、Web セッション、Code Review、Claude Security、プラグインマーケットプレイス、および貢献度メトリクスをカバーする権限と Webhook イベントで GitHub App を設定します。
 
-| 権限               | アクセス      | 用途                    |
-| :--------------- | :-------- | :-------------------- |
-| Contents         | 読み取りと書き込み | リポジトリのクローンとブランチのプッシュ  |
-| Pull requests    | 読み取りと書き込み | PR の作成とレビューコメントの投稿    |
-| Issues           | 読み取りと書き込み | Issue メンションへの応答       |
-| Checks           | 読み取りと書き込み | Code Review チェック実行の投稿 |
-| Actions          | 読み取り      | 自動修正用の CI ステータスの読み取り  |
-| Repository hooks | 読み取りと書き込み | 貢献度メトリクス用の Webhook 受信 |
-| Metadata         | 読み取り      | すべてのアプリで GitHub が必須   |
+| 権限                   | アクセス      | 用途                                                                                                                                                            |
+| :------------------- | :-------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Contents             | 読み取りと書き込み | リポジトリのクローンとブランチのプッシュ                                                                                                                                          |
+| Pull requests        | 読み取りと書き込み | PR の作成とレビューコメントの投稿                                                                                                                                            |
+| Issues               | 読み取りと書き込み | Issue メンションへの応答                                                                                                                                               |
+| Checks               | 読み取りと書き込み | Code Review チェック実行の投稿                                                                                                                                         |
+| Actions              | 読み取り      | 自動修正用の CI ステータスの読み取り                                                                                                                                          |
+| Commit statuses      | 読み取り      | チェック実行の代わりにコミットステータスを報告するプロバイダーから CI ステータスを読み取る                                                                                                               |
+| Repository hooks     | 読み取りと書き込み | [Organization settings > Plugins](https://claude.ai/admin-settings/plugins) でマーケットプレイスの **Sync automatically** がオンになっている場合、プラグインマーケットプレイスリポジトリに Webhook を作成する |
+| Metadata             | 読み取り      | すべてのアプリで GitHub が必須                                                                                                                                           |
+| Organization members | 読み取り      | github.com の Claude GitHub App と一致させます。これは接続ユーザーの組織ロールをチェックするときにインストールをリンクするために使用されます                                                                         |
 
-アプリは `pull_request`、`issue_comment`、`pull_request_review_comment`、`pull_request_review`、および `check_run` イベントをサブスクライブします。
+アプリは `pull_request`、`issue_comment`、`pull_request_review_comment`、`pull_request_review`、`check_run`、および `status` イベントをサブスクライブします。
+
+GitHub はマニフェストをアプリ作成時にのみ適用するため、マニフェストの以前のバージョンから作成されたアプリは、作成時の権限とイベントを保持します。アプリが上記の権限またはイベントのいずれかが不足している場合は、GHES インスタンスのアプリ設定で追加してください。その後、GitHub は各インストールの所有者に新しい権限を承認するよう求め、インストールは承認されるまで古い権限を保持します。
 
 <h3 id="manual-setup">
   手動セットアップ
 </h3>
 
-ネットワーク設定によってガイド付きリダイレクトフローがブロックされている場合は、Connect の代わりに **Add manually** をクリックします。[上記の権限とイベント](#github-app-permissions) を使用して GHES インスタンスで GitHub App を作成し、フォームにアプリ認証情報を入力します。ホスト名、OAuth クライアント ID とシークレット、GitHub App ID、クライアント ID、クライアントシークレット、Webhook シークレット、および秘密鍵です。
+ネットワーク設定によってガイド付きリダイレクトフローがブロックされている場合は、Connect の代わりに **Add manually** をクリックします。[上記の権限とイベント](#github-app-permissions) を使用して GHES インスタンスで GitHub App を作成し、フォームに接続詳細を入力します。表示名、GHES ホスト名とオプションのポート、およびアプリの ID、クライアント ID、クライアントシークレット、Webhook シークレット、および秘密鍵です。フォームはオプションのカスタム CA 証明書と読み取りレプリカホスト名も受け入れます。
+
+Claude は接続を保存するときにアプリの Webhook URL を生成します。**Add configuration** をクリックした後、接続の **More options** メニューを開き、**Copy webhook URL** を選択して、URL をアプリの Webhook 設定に貼り付けます。フォームに入力したのと同じ Webhook シークレットを使用してください。
 
 <h3 id="network-requirements">
   ネットワーク要件
 </h3>
 
-GHES インスタンスは Anthropic インフラストラクチャから到達可能である必要があります。これにより Claude はリポジトリをクローンしてレビューコメントを投稿できます。GHES インスタンスがファイアウォールの背後にある場合は、[Anthropic API IP アドレス](https://platform.claude.com/docs/en/api/ip-addresses) をホワイトリストに登録します。
+Anthropic ホスト型セッションの場合、GHES インスタンスは Anthropic インフラストラクチャから到達可能である必要があります。これにより Claude はリポジトリをクローンしてレビューコメントを投稿できます。GHES インスタンスがファイアウォールの背後にある場合は、Anthropic の [アウトバウンド IP アドレス](https://platform.claude.com/docs/en/api/ip-addresses#outbound-ip-addresses) をホワイトリストに登録します。[自己ホスト型環境](/docs/ja/self-hosted-environments-deploy#configure-git) のセッションは、ランナーが [Anthropic git プロキシ](/docs/ja/self-hosted-environments-deploy#use-the-anthropic-git-proxy) にオプトインしない限り、ネットワーク内からクローンします。Anthropic git プロキシは Anthropic 側からフェッチし、同じ到達可能性が必要です。[SCM コネクタ](/docs/ja/self-hosted-environments-reference#scm-connector-flags) は、内部的にのみルーティング可能な GHES ホストのリポジトリピッカーなどのホスト型プリセッションフローをカバーします。
 
 <h2 id="developer-workflow">
   開発者ワークフロー
@@ -97,7 +103,7 @@ GHES インスタンスは Anthropic インフラストラクチャから到達�
 
 管理者が GHES インスタンスを接続した後、開発者側の設定は不要です。Claude Code は作業ディレクトリの git リモートから GHES ホスト名を自動的に検出します。
 
-通常通り GHES インスタンスからリポジトリをクローンします。
+通常通り GHES インスタンスからリポジトリをクローンします。`github.example.com` とリポジトリパスを GHES ホスト名とリポジトリに置き換えてください。
 
 ```bash theme={null}
 git clone git@github.example.com:platform/api-service.git
@@ -110,7 +116,7 @@ cd api-service
 claude --cloud "Add retry logic to the payment webhook handler"
 ```
 
-セッションは Anthropic インフラストラクチャで実行され、GHES からリポジトリをクローンし、変更をブランチにプッシュバックします。`/tasks` で、または [claude.ai/code](https://claude.ai/code) で進捗を監視します。diff レビュー、自動修正、ルーチンを含む完全なクラウドセッションワークフローについては、[Claude Code on the web](/docs/ja/claude-code-on-the-web) を参照してください。[Claude Code on the web](/docs/ja/claude-code-on-the-web) を参照してください。
+セッションは GHES からリポジトリをクローンし、変更をブランチにプッシュバックします。`/tasks` で、または [claude.ai/code](https://claude.ai/code) で進捗を監視します。diff レビュー、自動修正、ルーチンを含む完全なクラウドセッションワークフローについては、[Claude Code on the web](/docs/ja/claude-code-on-the-web) を参照してください。
 
 <h3 id="teleport-sessions-to-your-terminal">
   セッションをターミナルに Teleport する
@@ -140,7 +146,7 @@ GHES インスタンスでプラグインマーケットプレイスをホスト
   GHES マーケットプレイスを追加
 </h3>
 
-`owner/repo` ショートハンドは常に github.com に解決されます。GHES でホストされているマーケットプレイスの場合は、完全な git URL を使用します。HTTPS URL が推奨されます。
+`owner/repo` ショートハンドは常に github.com に解決されます。GHES でホストされているマーケットプレイスの場合は、完全な git URL を使用して、`github.example.com` とリポジトリパスを自分のものに置き換えます。HTTPS URL が推奨されます。
 
 ```bash theme={null}
 /plugin marketplace add https://github.example.com/platform/claude-plugins.git
@@ -160,7 +166,7 @@ Claude Code は git を非対話的に実行し、マシンの `known_hosts` フ
   管理設定で GHES マーケットプレイスを事前登録
 </h3>
 
-`extraKnownMarketplaces` 設定はマーケットプレイスを事前登録して、開発者が手動セットアップなしでそれを取得できるようにします。これは [任意の設定ファイル](/docs/ja/settings#extraknownmarketplaces) から機能します。リポジトリの `.claude/settings.json` を含めて、管理設定はそれを組織全体に配信します。
+`extraKnownMarketplaces` 設定はマーケットプレイスを事前登録して、開発者が手動セットアップなしでそれを取得できるようにします。これは [任意の設定ファイル](/docs/ja/settings-reference#extraknownmarketplaces) から機能します。リポジトリの `.claude/settings.json` を含めて、管理設定はそれを組織全体に配信します。
 
 ```json theme={null}
 {
@@ -180,13 +186,13 @@ Claude Code はこれらのマーケットプレイスをローカルにイン�
 * **完全な git URL を使用します。** `owner/repo` ショートハンドは常に github.com に解決され、GHES ホストを参照できません。
 * **HTTPS URL を優先します。** SSH クローンは GHES ホストキーを既に信頼していないマシンで失敗します。組織の標準 git 認証情報ヘルパーを備えた HTTPS URL は、認証情報が設定されているすべてのマシンで機能します。
 * **各マシンが GHES ホストからクローンできることを確認します。** マシンに認証情報がない場合、マーケットプレイスは登録されますが、インストールされず、そのプラグインは認証情報を求めるのではなく見つからないと報告されます。
-* **設定が各マシンに到達することを確認します。** 管理設定ファイルは、デバイス管理システムを通じて配置されたマシンなど、配置されたマシンにのみ有効です。[管理設定](/docs/ja/settings#settings-files) のファイルの場所を参照してください。
+* **設定が各マシンに到達することを確認します。** 管理設定ファイルは、デバイス管理システムを通じて配置されたマシンなど、配置されたマシンにのみ有効です。[管理設定の配信メカニズム](/docs/ja/managed-settings#delivery-mechanisms) のファイルの場所を参照してください。
 
 <h3 id="allowlist-ghes-marketplaces-in-managed-settings">
   管理設定で GHES マーケットプレイスをホワイトリストに登録
 </h3>
 
-組織が [管理設定](/docs/ja/settings) を使用して開発者が追加できるマーケットプレイスを制限している場合は、`hostPattern` ソースタイプを使用して、各リポジトリを列挙することなく GHES インスタンスからすべてのマーケットプレイスを許可します。
+組織が [管理設定](/docs/ja/settings) を使用して開発者が追加できるマーケットプレイスを制限している場合は、`hostPattern` ソースタイプを使用して、各リポジトリを列挙することなく GHES インスタンスからすべてのマーケットプレイスを許可します。各プラットフォームのファイルの場所については、[配信メカニズム](/docs/ja/managed-settings#delivery-mechanisms) を参照してください。JSON を `managed-settings.json` ファイルまたは同等の MDM ポリシーに追加します。
 
 ```json theme={null}
 {
@@ -199,7 +205,7 @@ Claude Code はこれらのマーケットプレイスをローカルにイン�
 }
 ```
 
-完全なスキーマについては、[strictKnownMarketplaces](/docs/ja/settings#strictknownmarketplaces) および [extraKnownMarketplaces](/docs/ja/settings#extraknownmarketplaces) 設定リファレンスを参照してください。
+完全なスキーマについては、[strictKnownMarketplaces](/docs/ja/settings-reference#strictknownmarketplaces) および [extraKnownMarketplaces](/docs/ja/settings-reference#extraknownmarketplaces) 設定リファレンスを参照してください。
 
 <h2 id="limitations">
   制限事項
@@ -240,7 +246,13 @@ GitHub Enterprise アカウントを接続するには、[claude.ai/code](https:
   GHES インスタンスに到達不可
 </h3>
 
-レビューまたは Web セッションがタイムアウトする場合、GHES インスタンスは Anthropic インフラストラクチャから到達不可能な可能性があります。ファイアウォールが [Anthropic API IP アドレス](https://platform.claude.com/docs/ja/api/ip-addresses) からのインバウンド接続を許可していることを確認してください。
+レビューまたは Anthropic ホスト型 Web セッションがタイムアウトする場合、GHES インスタンスは Anthropic インフラストラクチャから到達不可能な可能性があります。ファイアウォールが Anthropic の [アウトバウンド IP アドレス](https://platform.claude.com/docs/en/api/ip-addresses#outbound-ip-addresses) からのインバウンド接続を許可していることを確認してください。[セルフホスト環境](/docs/ja/self-hosted-environments) のセッションは、ネットワーク内から GHES に到達するため、代わりにランナー自体のネットワークパスと [SCM コネクタ](/docs/ja/self-hosted-environments-reference#scm-connector-flags) を確認してください。
+
+<h3 id="session-start-fails-with-unable-to-get-organization-uuid">
+  セッション開始が `Unable to get organization UUID` で失敗
+</h3>
+
+Web セッションには Team または Enterprise 組織が必要です。組織アカウントで `/login` を使用してサインインしてください。代わりに API キーで認証する場合、Web セッションは `/login` を実行するよう求めるメッセージで早期に失敗します。
 
 <h2 id="related-resources">
   関連リソース

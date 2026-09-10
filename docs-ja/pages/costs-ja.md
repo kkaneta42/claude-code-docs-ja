@@ -24,41 +24,104 @@ Claude Code は API トークン消費によって課金されます。サブス
   `/usage` のセッションブロックは API トークン使用量を表示し、API ユーザーを対象としています。Claude Max および Pro サブスクライバーはサブスクリプションに使用量が含まれているため、セッションコスト数値は請求目的では関連がありません。サブスクライバーは同じ画面でプラン使用量バー、アクティビティ統計、および使用量の内訳を表示します。
 </Note>
 
-`/usage` の上部のセッションブロックは、現在のセッションの詳細なトークン使用統計を表示します。ドル数値はトークン数から局所的に計算された推定値であり、実際の請求書と異なる場合があります。権限のある請求については、[Claude Console](https://platform.claude.com/usage) の使用量ページを参照してください。
+`/usage` の上部のセッションブロックは、現在のセッションの詳細なトークン使用統計を表示します。Claude Code はトークン数からドル数値をローカルで計算します。ただし、[`modelPricing`](/docs/ja/settings-reference#modelpricing) テーブルが有効な場合は除きます。管理者は組織の管理設定でテーブルを設定し、数値が契約レートを使用するようにします。テーブルが有効な場合、`Total cost` 行には `at your organization's configured rates` という注記が付きます。この数値は推定値であるため、権限のある請求については [Claude Console](https://platform.claude.com/usage) の使用量ページを参照してください。
 
 ```text theme={null}
 Total cost:            $0.55
-Total duration (API):  6m 19.7s
-Total duration (wall): 6h 33m 10.2s
+Total duration (API):  6m 20s
+Total duration (wall): 6h 33m 10s
 Total code changes:    0 lines added, 0 lines removed
+Usage by model:
+   claude-sonnet-4-6:  1.2k input, 5.3k output, 940.0k cache read, 50.0k cache write ($0.55)
 ```
 
-Pro、Max、Team、または Enterprise プランでは、`/usage` はプラン制限に対してカウントされるものの内訳も表示します。最近の使用量をスキル、サブエージェント、プラグイン、および個別の MCP サーバーに属性付けし、それぞれが合計のパーセンテージとして表示されます。`d` または `w` を押して、過去 24 時間と過去 7 日間を切り替えることができます。数値は概算であり、このマシン上のローカルセッション履歴から計算されるため、他のデバイスまたは claude.ai からの使用量は含まれていません。
+これらの合計は `/clear` が新しいセッションを開始するとリセットされるため、次のセッションの合計コストは \$0 から始まります。v2.1.211 より前では、`/clear` 全体で累積し続け、Claude Code プロセスの存続期間中に蓄積されていました。
+
+1.1× [データレジデンシーレート](https://platform.claude.com/docs/en/about-claude/pricing#data-residency-pricing) で請求される Claude API からの応答の場合、Claude Code はその応答のトークンのリスト価格に 1.1 を乗じてセッションコスト数値に反映します。Claude Code は [ステータス行のコストフィールド](/docs/ja/statusline#cost-and-duration-tracking) に同じ合計を報告し、[`--max-budget-usd`](/docs/ja/cli-reference#cli-flags) と比較します。v2.1.239 より前では、Claude Code はこれらの応答に 1.1× を適用しなかったため、セッションコスト数値は請求額より低くなっていました。
+
+<h4 id="prompt-cache-statistics">
+  プロンプトキャッシュ統計
+</h4>
+
+メイン会話の最初の API 応答の後、Claude Code はセッションブロックに `Prompt cache (main)` 行も追加します。これはセッションの [プロンプトキャッシュ](/docs/ja/prompt-caching) 使用量をまとめたものです。リクエスト数、キャッシュから提供された入力トークンのシェア、キャッシュミス、およびキャッシュが現在ウォーム状態かどうかです。Claude Code v2.1.251 以降が必要です。
+
+```text theme={null}
+Prompt cache (main):   14 requests · 91% of input tokens from cache · 2 misses (last 6m 10s ago, 310.2k tokens re-cached) · 1 expected rebuild (compaction or tool-result clearing) · warm (1h TTL, last activity 40s ago)
+```
+
+行のミス、予想される再構築、およびウォーム状態またはコールド状態の部分は以下を意味します。
+
+* **ミス**: キャッシュが既に保持していたコンテンツを再処理したリクエスト。最後のミスの時刻と、それらのリクエストがキャッシュに書き戻したトークン数が表示されます。Claude Code は、リクエストがキャッシュから読み取ることができた内容の 5% 以上かつ最低 2,000 トークン以上を再処理した場合、そのリクエストをミスとしてカウントします。[キャッシュを無効化するアクション](/docs/ja/prompt-caching#actions-that-invalidate-the-cache) は通常の原因をリストしています。
+  Claude Code が最後のミスの可能性のある原因を特定できる場合、行はそれも名前を付けます。例えば `likely cause: tool definitions changed` のようにです。可能性のある原因テキストには Claude Code v2.1.260 以降が必要です。
+* **予想される再構築**: Claude Code が会話を再度書き直した場合。[圧縮](/docs/ja/prompt-caching#compacting-the-conversation) またはコンテキストから古いツール結果をクリアすることで、同じ種類のミスを予想される再構築としてカウントします。この部分は、少なくとも 1 つの予想される再構築が発生した後にのみ表示されます。
+* **ウォーム状態またはコールド状態**: キャッシュされたプレフィックスが [キャッシュ有効期間](/docs/ja/prompt-caching#cache-lifetime) 内にあるかどうか。有効な TTL が表示されます。キャッシュがコールド状態の場合、行はセッションがアイドル状態だった期間を表示します。API がキャッシュトークンを報告していない場合、行は代わりに `no prompt caching reported by the API` で終わります。
+
+カウントは API の応答のキャッシュトークンフィールドから取得されるため、行はすべてのプロバイダーとゲートウェイで機能します。メイン会話のみをカバーし、サブエージェントはカバーしません。`/clear` はセッションブロックの残りとともにリセットします。
+
+ステータス行スクリプトは [`prompt_cache` オブジェクト](/docs/ja/statusline#prompt-cache-fields) から同じ数値を読み取ることができます。
+
+<h4 id="plan-usage-breakdown">
+  プラン使用量の内訳
+</h4>
+
+Pro、Max、Team、または Enterprise プランでは、`/usage` はプラン制限に対してカウントされるものの内訳も表示します。
+
+* **属性**: スキル、サブエージェント、プラグイン、および個別の MCP サーバーに属性付けされた最近の使用量。それぞれが合計のパーセンテージとして表示されます。
+  MCP サーバーのシェアは、そのツール結果の 1 つを消費したリクエストのみをカウントします。v2.1.222 より前では、MCP サーバーへの 1 回の呼び出しの後、Claude Code はその後のすべてのリクエストをそのサーバーに属性付けし、そのシェアを過大評価していました。
+* **動作フラグ**: 長いコンテキストやキャッシュミスなどの動作。最近の使用量の 10% 以上を占める場合にフラグが付けられます。
+* **ループ**: 最近実行された最も負荷の高い [`/loop` またはその他のスケジュール済みタスク](/docs/ja/scheduled-tasks) の行。合計トークン数で順序付けられ、残りのカウントが表示されます。Claude Code は各タスクの実行頻度、実行回数、合計トークンと実行ごとのトークン、および最後の実行時刻を報告します。Claude Code はタスクのプロンプトで行をキーにするため、停止して再作成したループは 1 つの行のままです。
+  Claude Code v2.1.242 以降が必要です。
+
+`d` または `w` を押して、過去 24 時間と過去 7 日間を切り替えます。数値は概算であり、このマシン上のローカルセッション履歴から計算されるため、他のデバイスまたは claude.ai からの使用量は含まれていません。
+
+[VS Code 拡張機能](/docs/ja/vs-code#check-account-and-usage) では、属性シェアと動作フラグが Account & usage ダイアログに Day および Week トグルとともに表示されます。ループ行は含まれません。Claude Code v2.1.174 以降が必要です。
+
+<h4 id="check-your-usage-credits-spend">
+  使用量クレジット支出を確認する
+</h4>
+
+`/usage` は [使用量クレジット](#add-usage-credits-to-your-subscription) がオンの間、使用量クレジット行も表示します。行に表示される内容はプランによって異なります。
+
+* **Pro および Max**: 月間支出制限を設定している場合、その月間支出制限に対して測定された現在の月の支出。制限を設定していない場合、行は `Unlimited` を表示し、支出数値は表示されません。
+* **Team および Enterprise**: 組織が設定した [制限](#claude-for-teams-and-enterprise) が適用される場合、現在の月の自分の支出。組織全体をカバーする制限は行に表示されません。自分の制限がない場合、行は制限なしで支出を表示します。使用量クレジットがオフの場合、`/usage` は使用量クレジット行を表示しません。
+
+支出制限がある場合、使用量クレジットがオンになるとすぐに行が表示され、最初に使用量クレジットを支出するまで 0% を表示します。v2.1.236 より前では、`/usage` は Pro および Max プランでのみ行を表示し、支出制限のある行は何かを支出するまで非表示のままでした。
+
+<h4 id="when-the-usage-request-fails">
+  使用量リクエストが失敗した場合
+</h4>
 
 プラン制限のリクエストが失敗した場合（ほとんどの場合、使用量エンドポイントがレート制限されているため）、`/usage` は過去 60 分以内にこのマシンで読み込んだ最後の使用量バーを表示し、そのデータがいつ取得されたかを示す `Showing last-known usage` ノートが表示されます。`r` を押して再試行します。再試行が成功すると、最後に認識されたバーが新しいデータに置き換わります。過去 60 分以内のスナップショットがない場合、`/usage` は使用量エンドポイントがレート制限されていることを報告し、同じ再試行ショートカットを提供します。v2.1.208 より前では、使用量をまだ読み込んでいないセッションでレート制限されたリクエストは常にバーなしでエラーを表示していました。
 
-[VS Code 拡張機能](/docs/ja/vs-code#check-account-and-usage) では、同じ内訳が Account & usage ダイアログに Day および Week トグルとともに表示されます。Claude Code v2.1.174 以降が必要です。
-
-<h3 id="set-a-spend-limit-on-pro-and-max">
-  Pro および Max で支出制限を設定する
+<h3 id="analyze-your-usage-patterns">
+  使用パターンを分析する
 </h3>
 
-Pro および Max プランでは、`/usage-credits` コマンドを使用して CLI でダイアログを開き、[使用量クレジット](https://support.claude.com/en/articles/12429409-extra-usage-for-paid-claude-plans) を管理できます。ダイアログから以下を実行できます。
+[`/insights`](/docs/ja/commands#all-commands) を実行して、使用したトークン数ではなく、作業方法に関するレポートを取得します。このマシン上の最近のセッションを分析し、作業内容、誤解されたリクエストやバグのあるコードなどの摩擦点、および Claude Code をより効果的に使用するための提案をカバーする HTML レポートを作成します。1 回の実行は、まだ見たことのない最大 200 セッションを分析し、非常に短いセッションはスキップします。セッションが除外される場合、レポートヘッダーは分析されたカウントを括弧内の合計とともに表示します。例えば `200 sessions (412 total)` のようにです。
 
-* アカウントの使用量クレジットをオンにする
-* より多くの使用量クレジットを購入する（リストされたバンドルまたはカスタム金額）
-* 月間支出制限を設定、変更、または削除する
-* オートリロードを設定する。これにより、残高が設定したしきい値を下回ると、自動的により多くの使用量クレジットが購入されます
+Claude Code は最新のレポートを `~/.claude/usage-data/report.html` に書き込み、各実行のタイムスタンプ付きコピーを同じディレクトリに保存するため、以前のレポートは上書きされません。Claude Code はセッションデータの残りと同じスケジュールでレポートを削除します。起動時に、[`cleanupPeriodDays`](/docs/ja/claude-directory#cleaned-up-automatically) より古いファイルを削除します。デフォルトは 30 日です。
 
-Claude Code v2.1.207 より前のバージョンおよび CLI 内ダイアログが利用できないアカウントでは、`/usage-credits` はブラウザで使用量クレジット請求ページを開きます。Team および Enterprise プランでは、請求アクセス権を持つメンバーは同じブラウザページを取得し、請求アクセス権を持たないメンバーは CLI から使用量クレジットをオンにするか制限を引き上げるよう管理者に要求を送信します。
+任意のプランおよび任意のプロバイダーで `/insights` を実行できます。分析は通常のセッションと同じプロバイダーとアカウントを通じて実行され、トークンはプランまたは API 使用量に対してカウントされます。他のデバイスおよび claude.ai からのセッションは含まれていません。
 
-月間支出制限の変更にはアカウントの請求アクセスが必要です。制限に達しても使用量クレジットがまだ利用可能な場合、Claude Code は制限を引き上げるか削除するよう促し、CLI を離れることなく続行できます。
+<h3 id="add-usage-credits-to-your-subscription">
+  サブスクリプションに使用量クレジットを追加する
+</h3>
 
-カスタム購入金額、月間支出制限、またはオートリロードしきい値とターゲットなど、ダイアログに入力する金額は、数字である必要があり、オプションでピリオドと 1 つまたは 2 つの小数点以下の数字が続きます。例えば `20` または `20.50` です。コンマを含むその他の入力は、インラインエラーを表示し、保存されません。v2.1.207 より前のバージョンはダイアログを表示せず、代わりに請求ページを開きます。
+[使用量クレジット](https://support.claude.com/en/articles/12429409-extra-usage-for-paid-claude-plans) を使用すると、プランの使用量制限を超えて作業を続けることができます。これらを管理するには、`/login` を通じて claude.ai サブスクリプションにサインインした後、`/usage-credits` を実行します。このコマンドは API キー認証では利用できません。
+セルフサービス Enterprise 組織、Enterprise トライアル、および AWS Marketplace を通じて請求される Enterprise 組織では、コマンドには Claude Code v2.1.248 以降が必要です。以前のバージョンは [`Unknown command: /usage-credits`](/docs/ja/errors#unknown-command) で拒否します。開かれるものはロールによって異なります。
 
-Claude Code は、金額に関係なく、すべての購入とすべてのオートリロード変更を確認するために `yes` を入力するよう求め、購入確認は承認する税後の合計を表示します。月間支出制限の変更は、\$1,000 を超える場合、または米国ドル以外の請求通貨の 1,000 ユニットを超える場合にのみ、同じ入力確認を求めます。v2.1.208 より前では、購入とオートリロード変更はそのしきい値も使用していたため、より小さい金額は追加の入力 `yes` ステップなしで標準ダイアログフローを通過していました。
+| ロール                                                                             | `/usage-credits` の動作                                                                                                                                        |
+| :------------------------------------------------------------------------------ | :---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Pro または Max サブスクライバー                                                            | ブラウザで [**Settings > Usage**](https://claude.ai/settings/usage) を claude.ai で開きます。**Usage credits** セクションで、使用量クレジットをオンまたはオフにし、クレジット残高、今月の支出、および月間支出制限を確認できます |
+| 請求アクセス権を持つ Team または Enterprise メンバー                                             | 組織の使用量設定 [**Admin settings > Usage**](https://claude.ai/admin-settings/usage) をブラウザで開きます                                                                    |
+| 請求アクセス権を持たない Team または Enterprise メンバー                                           |                                                                                                                                                             |
+| 確認を求めてから、組織の管理者にリクエストを送信します。v2.1.211 より前では、Claude Code は確認ステップなしでリクエストを送信していました |                                                                                                                                                             |
 
-金額フィールドは提案値で事前に入力された状態で開き、入力する最初の数字は提案に追加するのではなく、提案を置き換えます。使用量クレジットをオンにする画面は Cancel が選択された状態で開くため、それらをオンにするには意図的な選択が必要です。どちらも Claude Code v2.1.208 以降が必要です。
+請求アクセス権を持たない Team および Enterprise メンバーの場合、確認はインタラクティブセッションでのみ表示されます。`-p` フラグを使用した非インタラクティブモードおよび [Remote Control](/docs/ja/remote-control) からは、コマンドはリクエストを送信せず、インタラクティブセッションで実行するよう指示します。
+
+以前のリクエストが管理者を待機している間に `/usage-credits` を再度実行した場合、Claude Code はリクエストが既に送信されたことを通知し、重複を送信しません。管理者がリクエストを却下した後、コマンドを再度実行すると新しいリクエストが送信されます。v2.1.222 より前では、却下されたリクエストも新しいリクエストをブロックしていました。
+
+Pro および Max プランでは、支出制限に達しても使用量クレジットがまだ利用可能な場合、Claude Code は制限を引き上げるか削除するよう促し、CLI を離れることなく続行できます。サーバーが変更を拒否した場合、[Could not update your spend limit](/docs/ja/errors#could-not-update-your-spend-limit) を参照してください。
 
 <h2 id="manage-costs-for-your-organization">
   組織のコストを管理する
@@ -66,7 +129,7 @@ Claude Code は、金額に関係なく、すべての購入とすべてのオ�
 
 Claude Code にアクセスする方法によって、利用可能なコントロールが異なります。Claude for Teams または Enterprise プラン、Claude Console、またはクラウドプロバイダーです。Teams および Enterprise プランでは、使用量は各メンバーのシート割り当てから引き出されます。Console およびクラウドプロバイダーでは、使用量はトークンごとに組織に請求されます。組織がサインイン方法を混在させている場合、各開発者は認証した方法に従ってメーター化されます。
 
-次の表は、各セットアップを、支出を確認する場所、支出をキャップする場所、およびユーザーごとの数値を取得する方法にマップしています。
+次の表は、各セットアップを、支出を確認する場所、支出をキャップする場所、およびユーザーごとの数値を取得する方法にマップしています。個別の Pro または Max プランでは、管理する組織がないため、[fast mode](/docs/ja/fast-mode#see-where-fast-mode-spend-appears) を含む [サブスクリプションに使用クレジットを追加](#add-usage-credits-to-your-subscription) の下で、独自の使用クレジット支出を追跡してください。
 
 | セットアップ                                                                                 | 支出を確認                                                                                                                       | 支出をキャップ       | ユーザーごとのレポート                                                                                                                                                                                                       |
 | :------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------- | :------------ | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -75,6 +138,28 @@ Claude Code にアクセスする方法によって、利用可能なコント�
 | [Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry](#cloud-providers) | クラウド請求コンソール                                                                                                                 | クラウドの予算コントロール | [OpenTelemetry](/docs/ja/monitoring-usage) または [LLM gateway](/docs/ja/llm-gateway)                                                                                                                                          |
 
 [OpenTelemetry エクスポート](/docs/ja/monitoring-usage) はすべてのセットアップで機能し、ユーザーごとのトークンおよびコストメトリクスをほぼリアルタイムで独自の可観測性スタックにストリーミングする唯一のオプションです。
+
+<h3 id="report-spend-at-your-contracted-rates">
+  契約レートで支出をレポートする
+</h3>
+
+デフォルトでは、Claude Code は開発者に表示するすべてのコスト数値を定価で計算するため、組織が契約レートを支払う場合、`/usage`、ステータス行、および OpenTelemetry の数値は請求書と一致しません。一致させるには、[`modelPricing`](/docs/ja/settings-reference#modelpricing) マネージド設定をレートに設定してください。この設定は Claude Code が報告する内容を変更し、Anthropic が請求する内容ではありません。Claude Code v2.1.242 以降が必要です。
+
+<Steps>
+  <Step title="契約からレートを取得する">
+    契約からのトークンあたり百万単位のレートを入力してください。Claude Code は Claude Console から取得しないため、契約が変更されたときに設定を更新してください。
+  </Step>
+
+  <Step title="設定を書き込む">
+    定価からのフラット割引率に対して `multiplier` を設定するか、`overrides` の下に各モデルの 4 つのトークンあたりレートをリストするか、またはその両方を実行してください。[`modelPricing` エントリ](/docs/ja/settings-reference#modelpricing) には形状とペースト可能な例があります。
+  </Step>
+
+  <Step title="マネージド設定を通じてデプロイする">
+    [マネージド設定](/docs/ja/managed-settings) として配信してください。サーバー管理設定、MDM ポリシー、`managed-settings.json`、または [ポリシーヘルパー](/docs/ja/managed-settings#compute-the-policy-with-a-helper-program)。Claude Code はユーザー、プロジェクト、ローカル設定、および `--settings` のキーを無視します。
+  </Step>
+</Steps>
+
+レートが有効であることを確認するには、[マネージド設定を受け取った](/docs/ja/managed-settings#read-the-source-in-%2Fstatus) セッションで `/usage` を実行してください。Session ブロックの `Total cost` 行には `at your organization's configured rates` という注記が付きます。数値はまだ推定値であり、請求書ではありません。`/model` ピッカーのトークンあたり百万単位の価格は定価のままです。
 
 <h3 id="claude-for-teams-and-enterprise">
   Claude for Teams および Enterprise
@@ -98,7 +183,7 @@ API 組織は [ワークスペース](https://platform.claude.com/docs/en/build-
 <Note>
   Claude Code を Claude Console アカウントで初めて認証すると、「Claude Code」というワークスペースが自動的に作成されます。このワークスペースは、組織内のすべての Claude Code 使用量の一元化されたコスト追跡と管理を提供します。このワークスペースの API キーを作成することはできません。これは Claude Code 認証と使用量専用です。
 
-  カスタムレート制限を持つ組織の場合、このワークスペースの Claude Code トラフィックは組織全体の API レート制限にカウントされます。Claude Console の Limits ページでこのワークスペースに [ワークスペースレート制限](https://platform.claude.com/docs/ja/api/rate-limits#setting-lower-limits-for-workspaces) を設定して、Claude Code の共有をキャップし、他の本番ワークロードを保護できます。
+  カスタムレート制限を持つ組織の場合、このワークスペースの Claude Code トラフィックは組織全体の API レート制限にカウントされます。Claude Console の Limits ページでこのワークスペースに [ワークスペースレート制限](https://platform.claude.com/docs/en/api/rate-limits#setting-lower-limits-for-workspaces) を設定して、Claude Code の共有をキャップし、他の本番ワークロードを保護できます。
 </Note>
 
 ユーザーごとのレポートについては、[Console ダッシュボード](https://platform.claude.com/claude-code) はメンバーごとの支出と受け入れられた行を表示し、[Claude Code Analytics API](https://platform.claude.com/docs/en/build-with-claude/claude-code-analytics-api) は [Admin API キー](https://platform.claude.com/settings/admin-keys) を使用してプログラムで同じ日次ユーザーごとのメトリクスを返します。[API カスタマー向けの analytics](/docs/ja/analytics#access-analytics-for-api-customers) を参照してください。
@@ -142,10 +227,13 @@ Amazon Bedrock、Google Cloud の Agent Platform、および Microsoft Foundry �
   開発者が制限について質問する場合
 </h3>
 
-開発者は通常、制限に関する質問を管理者に持ち込むため、どの上限に達したかを知ることが役立ちます。3 つの状況は異なることを意味します。
+開発者は通常、制限に関する質問を管理者に持ち込むため、どの上限に達したかを知ることが役立ちます。4 つの状況は異なることを意味します。
 
-* **「セッション制限に達しました」または「週間制限に達しました」**: サブスクリプションプランのシートベースの使用ウィンドウ。これらのウィンドウはすべてのモデル全体で共有されるため、`/model` でモデルを切り替えてもアクセスは復元されませんが、モデル固有の「Opus 制限に達しました」メッセージの後、開発者は作業を続けることができます。メッセージはウィンドウがリセットされるときを表示し、開発者は [使用クレジット](https://support.claude.com/en/articles/12429409-extra-usage-for-paid-claude-plans) がオンになっている場合、`/usage-credits` を実行して割り当てを超えた使用をリクエストできます。[使用制限エラー](/docs/ja/errors#youve-hit-your-session-limit) を参照してください。
-* **コンテキストまたは auto-compact 警告**: 使用制限ではありません。会話がモデルの最大入力サイズに近づいており、Claude Code は古い履歴を要約して領域を解放します。開発者を [トークン使用量を削減](#reduce-token-usage) に指してください。
+* **「セッション制限に達しました」または「週間制限に達しました」**: サブスクリプションプランのシートベースの使用ウィンドウ。これらのウィンドウはすべてのモデル全体で共有されるため、開発者は `/model` でモデルを切り替えてアクセスを復元することはできません。メッセージはウィンドウがリセットされるときを表示します。モデル固有の「Opus 制限に達しました」または「Sonnet 制限に達しました」メッセージの後、`/model` でそのファミリー外のモデルに切り替えると、開発者は作業を続けることができます。[使用制限エラー](/docs/ja/errors#youve-hit-your-session-limit) を参照してください。開発者がその間にできることは以下の通りです。
+  * [使用クレジット](https://support.claude.com/en/articles/12429409-extra-usage-for-paid-claude-plans) がオンになっている場合、`/usage-credits` を実行して割り当てを超えた使用をリクエストしてください。
+  * Claude Code v2.1.234 以降では、[リセット後に中断されたタスクを自動的に待機して続行](/docs/ja/interactive-mode#wait-for-a-usage-limit-to-reset) してください。そのセクションでは、Claude Code がいつ自動的に待機を開始するか、および開発者が `/rate-limit-options` からそれを選択するときを一覧表示しています。フリート全体で Claude Code が自動的に待機を開始するかどうかを制御するには、[マネージド設定](/docs/ja/settings#settings-precedence) で [`autoContinueAtUsageLimit`](/docs/ja/settings-reference#autocontinueatusagelimit) を設定してください。
+* **[Claude apps gateway](/docs/ja/claude-apps-gateway) からの支出制限メッセージ**: 開発者はセルフホストされたゲートウェイに設定した支出上限を超過し、ゲートウェイは期間がリセットされるか上限が引き上げられるまでリクエストをブロックします。[ゲートウェイ支出制限](/docs/ja/claude-apps-gateway-spend-limits) で上限、リセットスケジュール、および開発者が見るメッセージを参照してください。
+* **コンテキストまたは auto-compact 警告**: 使用制限ではありません。会話がセッションの [auto-compact ウィンドウ](/docs/ja/model-config#set-the-auto-compact-window) に近づいており、Claude Code が古い履歴を要約して領域を解放するしきい値です。開発者を [トークン使用量を削減](#reduce-token-usage) に指してください。
 * **API またはクラウドプロバイダープランで予期しない高い支出**: 通常、クリアされたことのない長いセッション、または Opus がデフォルトモデルとして残されていることに遡ります。共有する最も影響の大きい習慣は、関連のないタスク間でクリアすることとジョブにモデルを一致させることの両方で、[トークン使用量を削減](#reduce-token-usage) でカバーされています。
 
 <h3 id="agent-team-token-costs">
@@ -177,7 +265,7 @@ Amazon Bedrock、Google Cloud の Agent Platform、および Microsoft Foundry �
 `/usage` を使用して現在のトークン使用量を確認するか、[ステータスラインを設定](/docs/ja/statusline#context-window-usage) してそれを継続的に表示します。
 
 * **タスク間でクリアする**: 関連のない作業に切り替える場合は `/clear` を使用して新しく開始します。古いコンテキストは後続のすべてのメッセージでトークンを浪費します。クリアする前に `/rename` を使用してセッションに名前を付けると、後で簡単に見つけることができます。その後、`/resume` を使用して戻ります。
-* **カスタムコンパクション指示を追加する**: `/compact Focus on code samples and API usage` は、要約中に保持する内容を Claude に指示します。
+* **カスタムコンパクション指示を追加する**: `/compact Focus on code samples and API usage` は、要約中に保持する内容を Claude に指示します。新しいセッションでは、`/compact` は `Not enough messages to compact.` と出力します。これは、まだ要約する会話履歴がないためです。
 
 プロジェクトのルートにある CLAUDE.md ファイルでコンパクション動作をカスタマイズすることもできます。
 
@@ -197,7 +285,7 @@ Sonnet はほとんどのコーディングタスクをうまく処理し、Opus
   MCP サーバーのオーバーヘッドを削減する
 </h3>
 
-MCP ツール定義は [デフォルトで遅延](/docs/ja/mcp#scale-with-mcp-tool-search) されるため、Claude が特定のツールを使用するまで、ツール名のみがコンテキストに入ります。`/context` を実行して、何がスペースを消費しているかを確認します。
+MCP ツール定義は [デフォルトで遅延](/docs/ja/mcp#scale-with-mcp-tool-search) されるため、Claude が特定のツールを使用するまで、ツール名とサーバー指示のみがコンテキストに入ります。`/context` を実行して、何がスペースを消費しているかを確認します。
 
 * **利用可能な場合は CLI ツールを優先する**: `gh`、`aws`、`gcloud`、`sentry-cli` などのツールは、ツールごとのリストを追加しないため、MCP サーバーよりもコンテキスト効率が高くなります。Claude はオーバーヘッドなしで CLI コマンドを直接実行できます。
 * **未使用のサーバーを無効にする**: `/mcp` を実行して設定されたサーバーを確認し、積極的に使用していないサーバーを無効にします。
@@ -220,7 +308,7 @@ MCP ツール定義は [デフォルトで遅延](/docs/ja/mcp#scale-with-mcp-to
 
 <Tabs>
   <Tab title="settings.json">
-    これを [settings.json](/docs/ja/settings#settings-files) に追加して、すべての Bash コマンドの前にフックを実行します。
+    これを [settings.json](/docs/ja/settings#where-settings-live) に追加して、すべての Bash コマンドの前にフックを実行します。
 
     ```json theme={null}
     {
@@ -252,13 +340,16 @@ MCP ツール定義は [デフォルトで遅延](/docs/ja/mcp#scale-with-mcp-to
     # If running tests, filter to show only failures
     if [[ "$cmd" =~ ^(npm test|pytest|go test) ]]; then
       filtered_cmd="$cmd 2>&1 | grep -A 5 -E '(FAIL|ERROR|error:)' | head -100"
-      echo "{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"allow\",\"updatedInput\":{\"command\":\"$filtered_cmd\"}}}"
+      echo "$input" | jq --arg filtered "$filtered_cmd" \
+        '{hookSpecificOutput: {hookEventName: "PreToolUse", permissionDecision: "allow", updatedInput: (.tool_input + {command: $filtered})}}'
     else
       echo "{}"
     fi
     ```
   </Tab>
 </Tabs>
+
+セットアップを確認するには、`/hooks` を実行して、フックが PreToolUse の下に表示されることを確認します。また、`claude --debug-file ./claude-debug.txt` で Claude Code を起動し、Claude に `npm test` を実行するよう依頼することもできます。フックがコマンドを書き直すと、そのログファイルには `command` と他の Bash 入力フィールドをリストする `modified tool input keys` 行が含まれます。
 
 <h3 id="move-instructions-from-claude-md-to-skills">
   CLAUDE.md からスキルに指示を移動する
@@ -270,7 +361,7 @@ MCP ツール定義は [デフォルトで遅延](/docs/ja/mcp#scale-with-mcp-to
   拡張思考を調整する
 </h3>
 
-拡張思考はデフォルトで有効になっています。これは複雑な計画と推論タスクのパフォーマンスを大幅に向上させるためです。思考トークンは出力トークンとして課金され、デフォルト予算はモデルに応じて数万トークンになる場合があります。深い推論が必要ない単純なタスクの場合、`/effort` で [努力レベル](/docs/ja/model-config#adjust-effort-level) を低下させるか、`/model` で、`/config` で思考を無効にするか、[固定思考予算](/docs/ja/model-config#adaptive-reasoning-and-fixed-thinking-budgets) を持つモデルで、`MAX_THINKING_TOKENS=8000` などの `MAX_THINKING_TOKENS` [環境変数](/docs/ja/env-vars) を設定して予算を低下させることでコストを削減できます。適応推論モデルはゼロ以外の予算を無視するため、代わりに努力レベルを使用します。Fable 5 では思考を無効にすることはできません。これは常に拡張思考を使用します。
+拡張思考はデフォルトで有効になっています。これは複雑な計画と推論タスクのパフォーマンスを大幅に向上させるためです。思考トークンは出力トークンとして課金され、デフォルト予算はモデルに応じて数万トークンになる場合があります。深い推論が必要ない単純なタスクの場合、`/effort` で [努力レベル](/docs/ja/model-config#adjust-effort-level) を低下させるか、`/model` で、または `/config` で思考を無効にすることでコストを削減できます。[固定思考予算](/docs/ja/model-config#adaptive-reasoning-and-fixed-thinking-budgets) を持つモデルでは、`MAX_THINKING_TOKENS=8000` などの `MAX_THINKING_TOKENS` [環境変数](/docs/ja/env-vars) を設定して予算を低下させることもできます。適応推論モデルはゼロ以外の予算を無視するため、代わりに努力レベルを使用します。
 
 <h3 id="delegate-verbose-operations-to-subagents">
   詳細な操作を subagent に委任する
@@ -312,8 +403,31 @@ Claude Code はアイドル状態でも、バックグラウンド機能にト�
 
 これらのバックグラウンドプロセスは、アクティブなインタラクションがなくても、少量のトークン（通常はセッションあたり \$0.04 未満）を消費します。
 
+<h2 id="why-usage-climbs-in-a-long-session">
+  長いセッションで使用量が増加する理由
+</h2>
+
+数時間開いているセッションは、アクティビティが示唆するよりもはるかに多くのプラン制限を使用する可能性があります。通常、以下のいずれかの理由によります。
+
+* **長いコンテキスト**: Claude Code はすべてのリクエストで完全な会話を送信し、Claude がツールを使用するたびに、そのツール結果のバッチを含む別のリクエストを送信します。[プロンプトキャッシング](/docs/ja/prompt-caching)を使用すると、Claude Code はその履歴を[キャッシュされたトークンレート](https://platform.claude.com/docs/en/about-claude/pricing)で再度読み込むため、一日中開いているセッションの 1 行の質問でも、会話全体の使用量が発生します。コンテキストを小さく保つ方法については、[コンテキストを積極的に管理する](#manage-context-proactively)を参照してください。
+* **キャッシュミス**: [キャッシュライフタイム](/docs/ja/prompt-caching#cache-lifetime)より長い休止後の最初のメッセージはキャッシュをミスし、完全なコンテキストを再処理します。ライフタイムはサブスクリプションで 1 時間で、[使用クレジット](https://support.claude.com/en/articles/12429409-extra-usage-for-paid-claude-plans)を使用している場合は 5 分に短縮されます。API キーまたはクラウドプロバイダーでは、デフォルトで 5 分です。使用クレジットを使用しながら 1 時間のライフタイムを保つには、[TTL を自分で選択](/docs/ja/prompt-caching#choose-the-ttl-yourself)してください。Pro および Max プランでは、長い休止後に大規模なセッションを再開する場合、Claude Code は[サマリーから再開することを提案](/docs/ja/sessions#resume-from-a-summary)し、後のリクエストが完全な履歴を含まないようにします。
+* **スケジュール済みタスク**: [スケジュール済みタスク](/docs/ja/scheduled-tasks)はセッションがアイドル状態でも間隔で実行され、毎回完全なコンテキストを送信します。
+* **クロスセッションメッセージ**: Claude Code は[別のセッションからのメッセージ](/docs/ja/cross-session-messaging)をこのセッションがアイドル状態のときに新しいターンとして配信し、毎回完全なコンテキストを送信します。受信メッセージを配信する代わりに保持するには、[`crossSessionInbound`](/docs/ja/settings-reference#crosssessioninbound)を`hold`に設定してください。
+* **ゴールチェックイン**: バックグラウンド作業がアクティブな[ゴール](/docs/ja/goal)を待機させている間、Claude Code はセッションがアイドル状態でも[その作業をチェックするよう Claude に要求](/docs/ja/goal#background-work-defers-evaluation)し、完全なコンテキストを送信する新しいターンを開始します。Claude Code はプロンプト間で最大 3 つのアイドルチェックインをゴールごとに開始します。v2.1.246 より前は、アイドルチェックインは無制限でした。チェックインをオフにするには、[`CLAUDE_CODE_GOAL_CHECKIN_MINUTES`](/docs/ja/env-vars)を`0`に設定してください。アイドルチェックインには Claude Code v2.1.236 以降が必要です。
+* **エージェントチームメイト**: アクティブな[チームメイト](#agent-team-token-costs)ごとに、終了するまでトークンを消費し続けます。
+* **コンパクション**: `/compact`は要約するコンテキストを読み込むため、[大規模なコンテキストをコンパクトにする](/docs/ja/prompt-caching#compacting-the-conversation)こと自体が大規模なリクエストです。継続性ではなく新しいスタートが必要な場合、`/clear`はコストがかかりません。
+
+Pro、Max、Team、または Enterprise プランでは、`/usage`の内訳は長いコンテキストやキャッシュミスなど、最近の使用量の 10% 以上を占める動作にフラグを立て、それぞれ削減するためのヒントを提供します。
+
 <h2 id="understanding-changes-in-claude-code-behavior">
   Claude Code の動作の変更を理解する
 </h2>
 
-Claude Code は、コスト報告を含む機能の動作方法を変更する可能性のある定期的な更新を受け取ります。`claude --version` を実行して現在のバージョンを確認してください。特定の請求に関する質問については、[Console アカウント](https://platform.claude.com/login)を通じて Anthropic サポートに連絡してください。
+Claude Code は定期的に更新を受け取り、機能の動作方法（コスト報告を含む）が変わる可能性があります。`claude --version` を実行して、現在のバージョンを確認してください。
+
+アカウント固有の請求に関する質問については、製品内メッセンジャーを通じて Anthropic サポートにお問い合わせください。
+
+* **サブスクリプションプラン**（Pro、Max、Team、Enterprise）：[claude.ai](https://claude.ai) にサインインし、左下のイニシャルをクリックして、**Get help** を選択してください
+* **Console（API）請求**：[platform.claude.com](https://platform.claude.com) にサインインし、イニシャルをクリックして、**Get help** を選択してください
+
+各プランで人間のエージェントに連絡できるユーザーを含む完全なフローについては、[How to get support](https://support.claude.com/en/articles/9015913-how-to-get-support) を参照してください。

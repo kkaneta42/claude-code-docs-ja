@@ -6,7 +6,7 @@
 
 > Claude Code の用語の定義。agentic loop、compaction、CLAUDE.md、hooks、subagents、MCP などのコア概念の意味を学びます。
 
-この用語集は Claude Code の用語を定義しています。各エントリは、その概念について詳しく説明されているページにリンクしています。トークン、temperature、RAG などのモデルレベルの概念については、[プラットフォーム用語集](https://platform.claude.com/docs/ja/about-claude/glossary)を参照してください。
+この用語集は Claude Code の用語を定義しています。各エントリは、その概念について詳しく説明されているページにリンクしています。トークン、temperature、RAG などのモデルレベルの概念については、[プラットフォーム用語集](https://platform.claude.com/docs/ja/about-claude/glossary)を参照してください。Claude Desktop のデスクトップ拡張機能、MCPB、DXT などの用語については、[Claude ヘルプセンター](https://support.claude.com/)を参照してください。
 
 <h2 id="a">
   A
@@ -16,7 +16,7 @@
   Agent teams
 </h3>
 
-複数の独立した Claude Code セッションがチームリーダーによって調整され、共有タスクリストとピアツーピアメッセージングを備えています。単一のセッション内で実行され、親にのみレポートする [subagents](#subagent) とは異なり、チームメイトはそれぞれ独自のコンテキストウィンドウを持ち、任意のメンバーと直接対話できます。Agent teams は実験的機能であり、`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` を設定して有効にする必要があります。
+複数の独立した Claude Code セッションがチームリーダーによって調整され、共有タスクリストとピアツーピアメッセージングを備えています。単一のセッション内で実行され、親にのみレポートする [subagents](#subagent) とは異なり、チームメイトはそれぞれ独自のコンテキストウィンドウを持ち、任意のメンバーと直接対話できます。Agent teams は実験的機能であり、デフォルトでは無効になっています。[Enable agent teams](/docs/ja/agent-teams#enable-agent-teams) を参照してください。
 
 詳細情報: [Run agent teams](/docs/ja/agent-teams)
 
@@ -64,7 +64,7 @@ Claude が自分自身のために書いたメモ。あなたの修正と設定�
   Auto mode
 </h3>
 
-[permission mode](#permission-mode) の一種。承認プロンプトを表示する代わりに、別の分類器モデルがバックグラウンドで各アクションをレビューします。分類器はスコープエスカレーション、信頼されていないインフラストラクチャ、および [prompt injection](#prompt-injection) をブロックします。ツール結果を見ることはないため、注入された指示がその決定に影響を与えることはできません。
+[permission mode](#permission-mode) の一種。承認プロンプトを表示する代わりに、別の分類器モデルが各アクションをレビューするため、Claude Code はほとんどのアクションをあなたに尋ねることなく実行できます。Claude Code は、あなたの明示的な ask ルールに一致するアクションの前にはあなたに尋ねます。Pro、Max、Team プランでは、auto mode は [built-in starting permission mode](/docs/ja/permission-modes#which-mode-a-session-starts-in) です。インタラクティブターミナルと VS Code セッションの場合。分類器はスコープエスカレーション、信頼されていないインフラストラクチャ、および [prompt injection](#prompt-injection) をブロックします。ツール結果はそれが見るものから削除されるため、ファイルまたは Web ページ内の悪意のあるコンテンツはそれを直接操作することはできません。
 
 詳細情報: [Eliminate prompts with auto mode](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)
 
@@ -76,7 +76,7 @@ Claude が自分自身のために書いたメモ。あなたの修正と設定�
   Bare mode
 </h3>
 
-スタートアップフラグ `--bare`。hooks、skills、plugins、MCP servers、auto memory、CLAUDE.md の自動検出をスキップします。明示的に渡したフラグのみが有効になります。ローカル設定に関係なく、マシン間で同じ動作が必要な CI とスクリプト呼び出しに推奨されます。
+`--bare` を使用すると、Claude Code は hooks、skills、カスタムコマンド、subagents、plugins、MCP servers、auto memory、CLAUDE.md を読み込まずに起動します。ただし、`--add-dir` で渡したディレクトリ内の skills は除きます。CI とスクリプト呼び出しで、すべてのマシンで同じ結果が必要な場合に推奨されます。
 
 詳細情報: [Start faster with bare mode](/docs/ja/headless#start-faster-with-bare-mode)
 
@@ -132,6 +132,8 @@ CLAUDE.md は `./CLAUDE.md` または `./.claude/CLAUDE.md` のプロジェク�
 
 プロンプトに `/name` と入力して呼び出す再利用可能な指示。`/clear`、`/model`、`/compact` などの組み込みコマンドはセッションを制御します。`.claude/commands/` のファイルとして独自のコマンドを定義するか、[plugin](#plugin) からインストールできます。[Skills](#skill) は複数ステップのコマンドをパッケージ化するための推奨される方法です。
 
+この単語の他の 2 つの用途は関連がありません。`claude mcp add` などの `claude` CLI サブコマンド（[CLI reference](/docs/ja/cli-reference#cli-commands) に記載）と、stdio [MCP server](#mcp-server) エントリの `command` フィールド（Claude Code が起動するために起動する実行可能ファイルを指定）です。
+
 詳細情報: [Commands](/docs/ja/commands) · [Skills](/docs/ja/skills)
 
 <h3 id="compaction">
@@ -141,6 +143,14 @@ CLAUDE.md は `./CLAUDE.md` または `./.claude/CLAUDE.md` のプロジェク�
 [context window](#context-window) がその制限に近づくときの会話の自動要約。古いツール出力が最初にクリアされ、次に会話が要約されます。プロジェクトルート CLAUDE.md と auto memory は compaction を生き残り、ディスクから再ロードされます。会話でのみ与えられた指示は失われる可能性があります。`/compact` を手動でトリガーするか、オプションで `/compact focus on the API changes` のようなフォーカスを指定します。
 
 詳細情報: [What survives compaction](/docs/ja/context-window#what-survives-compaction) · [When context fills up](/docs/ja/how-claude-code-works#when-context-fills-up)
+
+<h3 id="connector">
+  Connector
+</h3>
+
+[MCP server](#mcp-server) の一種。Claude Code ではなく claude.ai アカウントに追加されます。そのアカウントで Claude Code にサインインすると、コネクタは `/mcp` にローカルで追加したサーバーと一緒に表示されます。組織はコネクタをプロビジョニングし、それらに対してツール単位の制御を設定することもできます。
+
+詳細情報: [Use MCP servers from claude.ai](/docs/ja/mcp#use-mcp-servers-from-claude-ai)
 
 <h3 id="context-window">
   Context window
@@ -170,7 +180,7 @@ CLAUDE.md は `./CLAUDE.md` または `./.claude/CLAUDE.md` のプロジェク�
   Effort level
 </h3>
 
-各ターンで Claude が適応的推論思考予算をどの程度使用するかを制御する設定です。より高い努力はより多くの思考トークンとより深い推論を意味し、より低い努力はより速く、より安価です。Effort は Fable 5、Opus 4.6 以降、および Sonnet 4.6 以降でサポートされています。
+各ステップで適応的推論を行うかどうか、またどの程度行うかをモデルが決定できるようにする設定です。より高い努力はより多くの思考トークンとより深い推論を意味し、より低い努力はより速く、より安価です。Effort は Fable モデル、Opus 4.6 以降、および Sonnet 4.6 以降でサポートされています。
 
 詳細情報: [Adjust effort level](/docs/ja/model-config#adjust-effort-level)
 
@@ -210,7 +220,7 @@ Claude Code のライフサイクルの特定のポイント（ツール実行�
 
 IT または DevOps によって組織全体で実施される設定。Anthropic のサーバーから管理コンソール経由で配信されるか、`~/.claude` の外の OS レベルパスにデバイスにデプロイされます。ユーザーおよびプロジェクト設定は managed settings をオーバーライドすることはできません。サーバー管理配信は[対象となる構成](/docs/ja/server-managed-settings#platform-availability)に適用されます。[セキュリティに関する考慮事項](/docs/ja/server-managed-settings#security-considerations)を参照してください。セキュリティポリシー、コンプライアンス要件、またはフロート全体の標準化されたツールに使用します。
 
-詳細情報: [Server-managed settings](/docs/ja/server-managed-settings) · [Settings files](/docs/ja/settings#settings-files)
+詳細情報: [Server-managed settings](/docs/ja/server-managed-settings) · [Settings files](/docs/ja/settings#where-settings-live)
 
 <h3 id="mcp-model-context-protocol">
   MCP (Model Context Protocol)
@@ -220,11 +230,19 @@ AI ツールを外部データソースとサービスに接続するための�
 
 詳細情報: [Model Context Protocol](/docs/ja/mcp)
 
+<h3 id="mcp-server">
+  MCP server
+</h3>
+
+Claude に [MCP](#mcp-model-context-protocol) 経由でツール、プロンプト、またはリソースを提供するプログラム。`claude mcp add` を使用して、`.mcp.json` で、[plugin](#plugin) を通じて、または claude.ai [connector](#connector) としてサーバーを追加します。ローカル stdio サーバーは Claude Code がその構成の `command` および `args` フィールドから開始するプロセスとして実行されます。これはプロンプトで入力する [commands](#command) とは関係ありません。
+
+詳細情報: [Model Context Protocol](/docs/ja/mcp)
+
 <h3 id="mcp-tool-search">
   MCP Tool Search
 </h3>
 
-コンテキスト節約メカニズム。MCP ツールスキーマを必要になるまで遅延させます。スタートアップ時にはツール名のみがロードされます。Claude は特定のツールを使用することを決定したときにオンデマンドで完全なスキーマを取得します。これにより、アイドル MCP servers がコンテキストをあまり消費しないようにします。
+コンテキスト節約メカニズム。MCP ツールスキーマを必要になるまで遅延させます。スタートアップ時にはツール名とサーバー命令のみがロードされます。Claude は特定のツールを使用することを決定したときにオンデマンドで完全なスキーマを取得します。これにより、アイドル MCP servers がコンテキストをあまり消費しないようにします。
 
 詳細情報: [Scale with MCP Tool Search](/docs/ja/mcp#scale-with-mcp-tool-search)
 
@@ -248,7 +266,7 @@ AI ツールを外部データソースとサービスに接続するための�
   Output style
 </h3>
 
-Claude のシステムプロンプトを変更して応答動作、トーン、または形式を変更する設定です。Output styles は、システムプロンプトの後にユーザーメッセージとして配信される [CLAUDE.md](#claude-md) とは異なり、デフォルトシステムプロンプトのソフトウェアエンジニアリング固有の部分をオフにします。組み込みスタイルには Default、Proactive、Explanatory、Learning が含まれます。
+Claude のシステムプロンプトを変更して応答動作、トーン、または形式を変更する設定です。[CLAUDE.md](#claude-md) とは異なり、Claude Code がシステムプロンプトの後にユーザーメッセージとして配信する output style は、システムプロンプト自体を変更します。
 
 詳細情報: [Output styles](/docs/ja/output-styles)
 
@@ -294,7 +312,7 @@ skills、hooks、subagents、MCP servers のバンドル。単一のインスト
   Project trust
 </h3>
 
-Claude Code がその設定をロードする前に、ディレクトリを受け入れるダイアログ。受け入れはプロジェクトディレクトリごとに保存されます。ただし、ホームディレクトリの場合は、信頼は現在のセッションのみ保持され、起動するたびにプロンプトが再度表示されます。Trust は marketplace プラグインの自動インストールとプロジェクト定義フックの実行をゲートします。ディレクトリを信頼することは、その `.claude/settings.json`、`.mcp.json`、および他の設定ファイルが有効になることを意味します。
+Claude Code がその設定をロードする前に、ディレクトリを受け入れるダイアログ。受け入れはプロジェクトディレクトリごとに保存されます。ただし、ホームディレクトリの場合は、信頼は現在のセッションのみ保持され、起動するたびにプロンプトが再度表示されます。ディレクトリを信頼するまで、Claude Code はそのリポジトリが提供するコンテンツの一部（`.claude/settings.json` のプロジェクト許可ルールや marketplace など）を保留します。[フォルダーを信頼する前に実行されるもの](/docs/ja/permissions#what-runs-before-you-trust-a-folder) には、各種類のコンテンツが記載されており、`-p` セッションがダイアログなしで実行するものも含まれます。
 
 詳細情報: [`.claude` ディレクトリ](/docs/ja/claude-directory)
 
@@ -302,7 +320,7 @@ Claude Code がその設定をロードする前に、ディレクトリを受�
   Prompt injection
 </h3>
 
-ファイル、ウェブページ、またはツール結果に埋め込まれた敵対的な指示。Claude を、あなたが決して求めなかったアクションにリダイレクトしようとします。Claude Code の防御には、権限システム、コマンドインジェクション検出、信頼検証が含まれます。[Auto mode](#auto-mode) は、ツール結果の疑わしいコンテンツをスキャンするサーバー側プローブと、ツール結果を見ない分類器を追加します。そのため、注入されたテキストが承認決定に影響を与えることはできません。
+ファイル、ウェブページ、またはツール結果に埋め込まれた敵対的な指示。Claude を、あなたが決して求めなかったアクションにリダイレクトしようとします。Claude Code の防御には、権限システム、コマンドインジェクション検出、信頼検証が含まれます。[Auto mode](#auto-mode) は、ツール結果の疑わしいコンテンツをスキャンするサーバー側プローブと、ツール結果を見ない分類器を追加します。そのため、注入されたテキストが直接それを操作することはできません。
 
 詳細情報: [Prompt injection から保護する](/docs/ja/security#protect-against-prompt-injection)
 
@@ -350,9 +368,9 @@ Bash ツールの OS レベルのファイルシステムおよびネットワ�
   Settings layers
 </h3>
 
-Claude Code が設定を読み取る階層。優先順位の高い順から低い順: [managed policy](#managed-settings)、コマンドライン引数、`.claude/settings.local.json` のローカル設定、`.claude/settings.json` のプロジェクト設定、`~/.claude/settings.json` のユーザー設定。配列はレイヤー全体でマージされます。スカラーは高いレイヤーで低いレイヤーをオーバーライドします。
+Claude Code が設定を読み取る階層。優先順位の高い順から低い順: [managed policy](#managed-settings)、コマンドライン引数、`.claude/settings.local.json` のローカル設定、`.claude/settings.json` のプロジェクト設定、`~/.claude/settings.json` のユーザー設定。配列はレイヤー全体でマージされます。スカラーは高いレイヤーで低いレイヤーをオーバーライドします。[Settings precedence](/docs/ja/settings#settings-precedence) を参照してください。
 
-詳細情報: [Settings files](/docs/ja/settings#settings-files)
+詳細情報: [Settings files](/docs/ja/settings#where-settings-live)
 
 <h3 id="skill">
   Skill
@@ -368,7 +386,7 @@ Skills は custom commands の推奨される後継者です。`.claude/commands
   Subagent
 </h3>
 
-独自のコンテキストウィンドウ、カスタムシステムプロンプト、特定のツールアクセス、独立した権限で実行される特化した AI アシスタント。委任されたタスクで機能し、メイン会話に要約を返します。大規模な探索をプライマリコンテキストから除外するか、並列研究を実行するために subagents を使用します。各エージェントが直接対話できる完全な独立したセッションである [agent teams](#agent-teams) とは異なります。
+独自のコンテキストウィンドウ、カスタムシステムプロンプト、特定のツールアクセス、独立した権限で実行される特化した AI アシスタント。委任されたタスクで機能し、メイン会話に要約を返します。大規模な探索をプライマリコンテキストから除外するか、並列研究を実行するために subagents を使用します。subagent は、それを生成したセッション内に留まります。別々のセッション間で調査結果を渡すには、自分で実行する場合は [cross-session messaging](/docs/ja/cross-session-messaging) を使用してください。
 
 組み込み subagents には Explore、Plan、汎用があります。
 
@@ -378,7 +396,7 @@ Skills は custom commands の推奨される後継者です。`.claude/commands
   Surface
 </h3>
 
-Claude Code にアクセスする任意の場所: CLI、VS Code、JetBrains、Desktop、または claude.ai。すべてのサーフェスは同じエンジンを共有するため、CLAUDE.md、設定、スキルはすべてのサーフェスで同じように機能します。Slack と Chrome 拡張機能は、サーフェス自体ではなくサーフェスに接続する統合です。
+Claude Code にアクセスする任意の場所: CLI、VS Code、JetBrains、Desktop、または claude.ai。すべてのサーフェスは同じエンジンを共有します。マシン上のセッションはローカルの CLAUDE.md、設定、スキルを読み取ります。[cloud sessions](/docs/ja/cloud-environments#what-carries-over-from-your-setup) はリポジトリの新しいクローンから開始され、マシン上の `~/.claude/` を読み取りません。Slack と Chrome 拡張機能は、サーフェス自体ではなくサーフェスに接続する統合です。
 
 詳細情報: [Platforms and integrations](/docs/ja/platforms)
 

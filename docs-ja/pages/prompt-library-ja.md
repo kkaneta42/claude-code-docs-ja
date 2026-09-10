@@ -1202,7 +1202,7 @@ export const text = {
   },
   "migrate-a-pattern-across": {
     title: "コードベース全体でパターンを移行する",
-    teaches: "古いパターンと新しいパターンを説明してください。Claude に最初にすべての場所を識別するよう依頼すると、呼び出しサイトが応答にリストアップされるため、何も見落とされていないことを確認できます。"
+    teaches: "古いパターンと新しいパターンを説明してください。Claude に最初にすべての場所を識別するよう依頼すると、呼び出しサイトが応答にリストアップされるため、何も見落とされていないことを確認できます。多くのファイルにわたる移行の場合は、[/batch](/docs/ja/commands)を実行してください。Claude は作業を承認用のユニットに分割し、バックグラウンドサブエージェントが変更を加えて、ユニットごとに 1 つのプルリクエストを開きます。"
   },
   "optimize-against-a-measurable": {
     title: "測定可能なターゲットに対して最適化する",
@@ -1337,37 +1337,37 @@ export const text = {
 
 **ステップではなく結果を説明してください。** 何をしたいかを言い、Claude にファイルを見つけさせてください。以下のプロンプトは、単一のファイルパスを名前付けなくても機能します。
 
-```text theme={null}
+```text wrap theme={null}
 add rate limiting to the public API and make sure existing tests still pass
 ```
 
-**自分の作業をチェックする方法を与えてください。** 同じプロンプトで実行、テスト、比較、または検証を依頼して、Claude が 1 回の試行後に停止する代わりに反復するようにしてください。
+**自分の作業をチェックする方法を与えてください。** 同じプロンプトで実行、テスト、比較、または検証を依頼して、Claude が 1 回の試行後に停止する代わりに反復するようにしてください。完成した変更を実行中のアプリに対してチェックするには、[`/verify`](/docs/ja/skills#run-and-verify-your-app)を実行してください。
 
-```text theme={null}
+```text wrap theme={null}
 write the migration, run it against the dev database, and confirm the schema matches
 ```
 
 **参照を指してください。** 既存のファイル、テスト、またはパターンに名前を付けて、新しいコードが既に持っているものと一致するようにしてください。
 
-```text theme={null}
+```text wrap theme={null}
 add a settings page that follows the same layout as the profile page
 ```
 
 **測定可能なターゲットを述べてください。** 目標がパフォーマンスまたはカバレッジの場合、メトリックとしきい値を指定して、完了が明確になるようにしてください。
 
-```text theme={null}
+```text wrap theme={null}
 get the bundle size under 200KB and show me what you removed
 ```
 
 **アーティファクトを与えてください。** エラー、ログ、スクリーンショット、プラン出力をプロンプトに直接ペーストするか、`@` を入力してファイルを参照してください。Claude はあなたの説明ではなくソースを読みます。
 
-```text theme={null}
+```text wrap theme={null}
 why is the build failing? @build.log
 ```
 
 **答えてほしい方法を言ってください。** 形式、長さ、または対象者に名前を付けて、説明がどのように使用するかに適合するようにしてください。すべての応答のデフォルトとして形式を作成するには、[出力スタイル](/docs/ja/output-styles)を設定してください。
 
-```text theme={null}
+```text wrap theme={null}
 explain how the payment retry logic works as an HTML page with a diagram, then open it in my browser
 ```
 

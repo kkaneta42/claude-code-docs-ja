@@ -6,7 +6,7 @@
 
 > Claude アプリ for iOS と Android を使用して、携帯電話から Claude Code タスクを開始、監視、操作します。
 
-Claude アプリ for [iOS](https://apps.apple.com/us/app/claude-by-anthropic/id6473753684) と [Android](https://play.google.com/store/apps/details?id=com.anthropic.claude) は、コードが実行される場所ではなく、Claude Code セッションのクライアントです。携帯電話から Anthropic が管理するインフラストラクチャ上の [クラウドセッション](#start-and-monitor-cloud-sessions)、[リモートコントロール](#continue-a-local-session-with-remote-control) を通じて自分のマシンで実行されているセッション、または [Dispatch](/docs/ja/desktop#sessions-from-dispatch) を通じて Desktop アプリにアクセスできます。
+Claude アプリ for [iOS](https://apps.apple.com/us/app/claude-by-anthropic/id6473753684) と [Android](https://play.google.com/store/apps/details?id=com.anthropic.claude) は、コードが実行される場所ではなく、Claude Code セッションのクライアントです。携帯電話からクラウドインフラストラクチャ上の [クラウドセッション](#start-and-monitor-cloud-sessions)、[リモートコントロール](#continue-a-local-session-with-remote-control) を通じて自分のマシンで実行されているセッション、または [Dispatch](/docs/ja/desktop#sessions-from-dispatch) を通じて Desktop アプリにアクセスできます。
 
 <Note>
   Claude Code には別のモバイルアプリはありません。クラウドセッションとリモートコントロールは両方とも Claude アプリの **Code** タブに存在し、Dispatch はアプリでメッセージを送って依頼するタスクです。
@@ -40,17 +40,15 @@ Claude アプリ for [iOS](https://apps.apple.com/us/app/claude-by-anthropic/id6
 
 アプリからクラウドセッションを開始したり、コンピュータで実行されている Claude Code セッションを操作したり、Dispatch にタスクをメッセージで送ったりできます。アプリはすべての 3 つで同じですが、作業が行われる場所が異なります。
 
-| 機能                                              | 接続先                                  | 使用時期                                                                                                        |
-| :---------------------------------------------- | :----------------------------------- | :---------------------------------------------------------------------------------------------------------- |
-| [Web の Claude Code](/docs/ja/claude-code-on-the-web) | Anthropic が管理するインフラストラクチャ上のクラウドセッション | リポジトリが GitHub 上にあり、スマートフォンを置いた後もタスクが実行され続ける必要がある場合。セットアップについては [Web クイックスタート](/docs/ja/web-quickstart)を参照してください。 |
-| [リモートコントロール](/docs/ja/remote-control)                | コンピュータで実行されている Claude Code セッション     | 作業にローカルファイルシステム、ツール、または MCP サーバーが必要な場合。                                                                     |
-| [Dispatch](/docs/ja/desktop#sessions-from-dispatch)  | コンピュータの Desktop アプリ                  | タスクをメッセージで送信し、Dispatch に実行方法を決定させたい場合。Pro または Max プランが必要です。                                                 |
+| 機能                                              | 接続先                                      | 使用時期                                                                                                        |
+| :---------------------------------------------- | :--------------------------------------- | :---------------------------------------------------------------------------------------------------------- |
+| [Web の Claude Code](/docs/ja/claude-code-on-the-web) | Anthropic が管理するクラウドインフラストラクチャ上のクラウドセッション | リポジトリが GitHub 上にあり、スマートフォンを置いた後もタスクが実行され続ける必要がある場合。セットアップについては [Web クイックスタート](/docs/ja/web-quickstart)を参照してください。 |
+| [リモートコントロール](/docs/ja/remote-control)                | コンピュータで実行されている Claude Code セッション         | 作業にローカルファイルシステム、ツール、または MCP サーバーが必要な場合。                                                                     |
+| [Dispatch](/docs/ja/desktop#sessions-from-dispatch)  | コンピュータの Desktop アプリ                      | タスクをメッセージで送信し、Dispatch に実行方法を決定させたい場合。Pro または Max プランが必要です。                                                 |
 
-コンピュータがオフになる場合は、クラウドセッションを使用してください。クラウドセッションは Anthropic のインフラストラクチャで実行され、ラップトップを閉じた後も続行されます。リモートコントロールと Dispatch は自分のマシンを操作するため、Claude Code または Desktop アプリが実行されている状態を保つ必要があります。リモートコントロールセッション中にマシンがスリープ状態になった場合、セッションはマシンがオンラインに戻ったときに再接続されます。
+コンピュータがオフになる場合は、クラウドセッションを使用してください。クラウドセッションはクラウドで実行され、ラップトップを閉じた後も続行されます。リモートコントロールと Dispatch は自分のマシンを操作するため、Claude Code または Desktop アプリが実行されている状態を保つ必要があります。リモートコントロールセッション中にマシンがスリープ状態になった場合、Claude Code はマシンがオンラインに戻ったときに再接続されます。より詳細な比較については、[ターミナルから離れているときに作業する](/docs/ja/platforms#work-when-you-are-away-from-your-terminal)を参照してください。
 
-Channels、Slack、スケジュール済みタスクもカバーするより詳細な比較については、[ターミナルから離れているときに作業する](/docs/ja/platforms#work-when-you-are-away-from-your-terminal)を参照してください。
-
-クラウドセッションとリモートコントロールは **Code** タブから実行され、以下で説明されています。アプリでタスクとしてメッセージを送る Dispatch については、[Dispatch からのセッション](/docs/ja/desktop#sessions-from-dispatch)を参照してください。
+クラウドセッションとリモートコントロールは **Code** タブから実行されます。アプリでタスクとしてメッセージを送る Dispatch については、[Dispatch からのセッション](/docs/ja/desktop#sessions-from-dispatch)を参照してください。
 
 <h3 id="start-and-monitor-cloud-sessions">
   クラウドセッションを開始および監視する
@@ -58,7 +56,7 @@ Channels、Slack、スケジュール済みタスクもカバーするより詳�
 
 Web 上の Claude Code は Anthropic が管理するクラウドインフラストラクチャでタスクを実行するため、スマートフォンを置いた後もセッションが続行されます。Code タブからリポジトリとブランチを選択し、タスクを説明して送信します。セッションはデバイス間で永続化されます。ラップトップで開始したタスクはスマートフォンから確認できる状態で待機し、スマートフォンから開始したタスクはデスクに戻ったときに待機しています。
 
-アプリでセッションを開いて進捗を確認したり、Claude の質問に答えたり、新しい方向に操作したりできます。Claude に[プルリクエストを監視](/docs/ja/claude-code-on-the-web#auto-fix-pull-requests)させて、CI の失敗やレビューコメントが到着したときに修正することもできます。GitHub を接続して環境をセットアップするには、[Web クイックスタート](/docs/ja/web-quickstart)に従い、クラウドセッションで実行できるすべてのことについては [Web の Claude Code](/docs/ja/claude-code-on-the-web)を参照してください。
+アプリでセッションを開いて進捗を確認したり、Claude の質問に答えたり、新しい方向に操作したりできます。Claude に [プルリクエストを監視](/docs/ja/claude-code-on-the-web#auto-fix-pull-requests)させて、CI の失敗やレビューコメントが到着したときに修正することもできます。GitHub を接続して環境をセットアップするには、[Web クイックスタート](/docs/ja/web-quickstart)に従い、クラウドセッションで実行できるすべてのことについては [Web の Claude Code](/docs/ja/claude-code-on-the-web)を参照してください。
 
 <h3 id="continue-a-local-session-with-remote-control">
   リモートコントロールでローカルセッションを続行する
@@ -66,7 +64,12 @@ Web 上の Claude Code は Anthropic が管理するクラウドインフラス�
 
 リモートコントロールは Claude アプリをマシンで実行されている Claude Code セッションに接続するため、コード実行とファイルシステムアクセスはローカルのままで、スマートフォンからセッションを操作できます。コンピュータで `claude remote-control` を使用してセッションを開始するか、既に開いているセッションで `/remote-control` を実行します。その後、ターミナルが表示できるセッション QR コードをスキャンするか、Claude アプリを開いて **Code** をタップし、リストからセッションを選択します。各オプションについては、[別のデバイスから接続](/docs/ja/remote-control#connect-from-another-device)を参照してください。
 
-Claude アプリで追加した添付ファイルもローカルセッションに到達します。Claude Code は画像またはファイルをマシンにダウンロードし、`@` ファイル参照として Claude に渡します。要件、呼び出しモード、トラブルシューティングについては、[リモートコントロール概要](/docs/ja/remote-control)を参照してください。
+Claude アプリで添付ファイルを追加すると、ローカルセッションにも到達します。
+
+* **写真**: Claude は添付された写真をメッセージの一部として直接見ることができます。Claude Code は各写真を `~/.claude/uploads/` の下に保存し、Claude に保存されたファイルパスを伝えるため、Claude はその画像をそれが作成するファイルにコピーできます。
+* **その他のファイル**: Claude Code はそれらをマシンにダウンロードし、`@` ファイル参照として Claude に渡します。
+
+要件、呼び出しモード、トラブルシューティングについては、[リモートコントロール概要](/docs/ja/remote-control)を参照してください。
 
 <h3 id="get-push-notifications">
   プッシュ通知を取得する

@@ -8,7 +8,7 @@
 
 Claude Security プラグインは、Claude Code セッション内でコードベースのマルチエージェント脆弱性スキャンを実行します。Claude エージェントのチームがアーキテクチャをマッピングし、脅威モデルを構築し、脆弱性を検出し、すべての検出結果を独立してレビューしてからレポートを作成します。プラグインを使用して、リポジトリ全体をスキャンするか、[変更のみをスキャン](#scan-only-your-changes)することができます。例えば、ブランチの diff、プルリクエストの diff、または単一のコミットなど、選択した検出結果をレビューして自分で適用できるパッチに変換します。
 
-プラグインはセッション内でローカルに実行され、各スキャンはプランの使用制限にカウントされます。リポジトリを監視するマネージドサービスが必要な場合は、Enterprise プランで利用可能な [Claude Security](https://claude.com/product/claude-security) プロダクトを参照してください。プラグインは、GitLab や Bitbucket でホストされているリポジトリ、または受信接続を許可しないネットワーク上のリポジトリなど、マネージドプロダクトが到達できないコードに到達します。
+プラグインはセッション内でローカルに実行され、Claude Code で利用可能なモデルを使用し、各スキャンはプランの使用制限にカウントされます。リポジトリを監視するマネージドサービスが必要な場合、または [Claude Mythos 5](https://platform.claude.com/docs/en/about-claude/models/introducing-claude-fable-5-and-claude-mythos-5) でスキャンを実行したい場合は、Enterprise プランで利用可能な [Claude Security](https://claude.com/product/claude-security) プロダクトを参照してください。プラグインは、GitLab や Bitbucket でホストされているリポジトリ、または受信接続を許可しないネットワーク上のリポジトリなど、マネージドプロダクトが到達できないコードに到達します。
 
 プラグインは、Claude Code に既に存在するレビューツールとも異なります。[security guidance プラグイン](/docs/ja/security-guidance)は Claude が記述するコードをレビューし、[`/security-review`](/docs/ja/commands#all-commands)はブランチに対して単一パスを実行し、[Code Review](/docs/ja/code-review)はプルリクエストをレビューします。レイヤーがどのようにスタックするかについては、[プラグインが他のセキュリティツールとどのように適合するか](#how-the-plugin-fits-with-other-security-tools)を参照してください。
 
@@ -18,8 +18,8 @@ Claude Security プラグインは、Claude Code セッション内でコード�
 
 プラグインを実行するには、以下が必要です。
 
-* Claude Code v2.1.154 以降（有料プランで）、スキャンがエージェントをオーケストレーションするために使用する [動的ワークフロー](/docs/ja/workflows)用です。Pro では、`/config` の Dynamic workflows 行から有効にしてください。
-* Python 3.9.6 以降が `PATH` で `python3` として利用可能です。`python3 --version` で確認してください。プラグインのツーリングは Python 標準ライブラリのみを使用するため、何もインストールされません。
+* 有料プラン。スキャンがエージェントをオーケストレーションするために使用する [動的ワークフロー](/docs/ja/workflows)用です。Pro では、`/config` の Dynamic workflows 行から有効にしてください。
+* Python 3.9 以降が `PATH` で `python3` として利用可能です。`python3 --version` で確認してください。プラグインのツーリングは Python 標準ライブラリのみを使用するため、何もインストールされません。
 * Linux、macOS、または Windows。
 * Git（変更スキャンおよび検出結果をパッチに変換するため）。これらのジョブは他のバージョン管理システムをサポートしていません。完全スキャンは、バージョン管理の有無にかかわらず、任意のディレクトリで機能します。
 
@@ -33,12 +33,14 @@ Claude Code セッションで、[公式 Anthropic マーケットプレイス](
 /plugin install claude-security@claude-plugins-official
 ```
 
+コマンドはプラグインの詳細を開き、[インストールスコープ](/docs/ja/discover-plugins#install-plugins)を選択してインストールを開始します。
+
 インストールが失敗した場合、修正は Claude Code が報告するメッセージによって異なります。
 
 * `Marketplace "claude-plugins-official" not found` と報告された場合は、`/plugin marketplace add anthropics/claude-plugins-official` でマーケットプレイスを追加してから、インストールを再試行してください。
-* マーケットプレイスでプラグインが見つからないと報告された場合は、プラグイン名のタイプミスを確認してから、`/plugin marketplace update claude-plugins-official` でマーケットプレイスのローカルコピーを更新して、インストールを再試行してください。
+* マーケットプレイスで [プラグインが見つからないと報告された](/docs/ja/discover-plugins#install-plugins)場合は、プラグイン名のタイプミスを確認してください。
 
-次に、`/reload-plugins` で現在のセッションでプラグインをアクティブにします。これは再起動なしで保留中のプラグイン変更を適用します。
+インストール概要を確認してください。`Run /reload-plugins to activate.` と報告された場合は、再起動なしで保留中の変更を適用してください。
 
 ```text theme={null}
 /reload-plugins
@@ -84,7 +86,7 @@ Claude Code セッションで、[公式 Anthropic マーケットプレイス](
   </Step>
 </Steps>
 
-メニューから開始する必要はありません。コマンドの引数として直接ジョブを要求することができます。例えば `/claude-security scan my branch` のように、またはプレーンテキストで「scan commit abc1234」のように要求できます。プラグインは [auto mode](/docs/ja/permission-modes) で最適に機能します。これにより、スキャンのエージェントは各ステップで権限プロンプトなしで進行できます。プラグインはジョブが開始されるときに有効にする方法を思い出させます。
+メニューから開始する必要はありません。コマンドの引数として直接ジョブを要求することができます。例えば `/claude-security scan my branch` のように、またはプレーンテキストで「scan commit abc1234」のように要求できます。プラグインは [auto mode](/docs/ja/permission-modes) で最適に機能します。これにより、スキャンのエージェントは各ステップで権限プロンプトなしで進行できます。
 
 <h3 id="scan-only-your-changes">
   変更のみをスキャンする
@@ -108,6 +110,7 @@ Claude Code セッションで、[公式 Anthropic マーケットプレイス](
 
 * **`CLAUDE-SECURITY-RESULTS.md`**: レポート。各検出結果の ID（`F1` など）、影響、悪用シナリオ、重大度、信頼度、推奨事項が含まれています。
 * **`CLAUDE-SECURITY-RESULTS.jsonl`**: 同じ検出結果を機械可読形式で、1 行に 1 つの JSON オブジェクト。
+* **`CLAUDE-SECURITY-RESULTS.sarif`**: 同じ検出結果を [SARIF 2.1.0](https://docs.oasis-open.org/sarif/sarif/v2.1.0/sarif-v2.1.0.html) ログとして。GitHub コードスキャンおよび標準を読む他のツール用です。スキャンは検出結果を [CWE](https://cwe.mitre.org/) 弱点カテゴリの下に分類します。
 * **`CLAUDE-SECURITY-REVISION-<commit>.json`**: リビジョンスタンプ。スキャンされたコミット、どの程度の労力で、コミットされていない変更がスキャンされたツリーの一部であったかどうか、実行がどの程度徹底的に検証されたかを記録します。これにより、レポートは常にそれが説明するコードに関連付けられます。バージョン管理外のスキャンは、コミットの代わりに `UNVERSIONED` をスタンプします。
 
 そのディレクトリはスキャンがチェックアウトに加える唯一の変更であり、独自の `.gitignore` を含むため、迷った `git add` がレポートをコミットに掃き込むことはありません。監査証跡のためにレポートを履歴に保持するには、その 1 つの `.gitignore` ファイルを削除して、ディレクトリを他のものと同様にコミットします。
@@ -155,9 +158,9 @@ Claude Security プラグインは、[セキュリティガイダンスプラグ
   トラブルシューティング
 </h2>
 
-**`/claude-security` メニューが Python 警告で開きます。** プラグインは `PATH` に Python 3.9.6 以降の `python3` が必要です。`python3` がまったく見つからない場合、メニューは Claude Security がインストールされるまで機能しないことを警告します。`PATH` の最初の `python3` が古い場合、警告は見つかったバージョンを名前で指定します。Python 3 をインストールするか、新しい `python3` を `PATH` の最初に配置してから、新しいセッションを開始してください。
+**`/claude-security` メニューが Python 警告で開きます。** プラグインは `PATH` に Python 3.9 以降の `python3` が必要です。`python3` がまったく見つからない場合、メニューは Claude Security がインストールされるまで機能しないことを警告します。`PATH` の最初の `python3` が古い場合、警告は見つかったバージョンを名前で指定します。Python 3 をインストールするか、新しい `python3` を `PATH` の最初に配置してから、新しいセッションを開始してください。
 
-**Fable 5 を使用するときに「Fable 5's safeguards flagged this message」が表示される場合があります。** Fable 5 のサイバーセキュリティ安全分類器により、特定のモデルアクティビティがブロックされ、自動的に Opus にダウングレードされます。これは予想されており、スキャンは引き続き正常に完了するはずです。
+**Fable モデルでスキャンするときに「safeguards flagged this message」という通知が表示される場合があります。** メッセージはモデルを名前で指定します。例えば「Fable 5.1's safeguards flagged this message」。Fable のサイバーセキュリティ安全分類器により、特定のリクエストがフラグされ、Claude Code は [自動モデルフォールバック](/docs/ja/model-config#automatic-model-fallback)を通じてフラグされたリクエストを Opus モデルで再実行します。これは予想されており、スキャンは引き続き正常に完了するはずです。
 
 <h2 id="related-resources">
   関連リソース

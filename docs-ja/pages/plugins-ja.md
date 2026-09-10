@@ -21,21 +21,6 @@ Claude Code では、カスタムスキル、エージェント、フックを�
 | **スタンドアロン**（`.claude/` ディレクトリ）                                                  | `/hello`             | 個人的なワークフロー、プロジェクト固有のカスタマイズ、クイック実験                    |
 | **プラグイン**（スキル、エージェント、フック、または `.claude-plugin/plugin.json` マニフェストを含む自己完結型ディレクトリ） | `/plugin-name:hello` | チームメンバーとの共有、コミュニティへの配布、バージョン管理されたリリース、プロジェクト全体で再利用可能 |
 
-**スタンドアロン設定を使用する場合**：
-
-* 単一のプロジェクト用に Claude Code をカスタマイズしている
-* 設定が個人的で共有する必要がない
-* スキルやフックをパッケージ化する前に実験している
-* `/hello` や `/deploy` のような短いスキル名が必要
-
-**プラグインを使用する場合**：
-
-* 機能をチームまたはコミュニティと共有したい
-* 複数のプロジェクト全体で同じスキル/エージェントが必要
-* 拡張機能のバージョン管理と簡単な更新が必要
-* マーケットプレイスを通じて配布している
-* `/my-plugin:hello` のような名前空間付きスキルで問題ない（名前空間はプラグイン間の競合を防ぎます）
-
 <Tip>
   `.claude/` でスタンドアロン設定を使用してクイック反復を行い、共有する準備ができたら[既存の設定をプラグインに変換](#convert-existing-configurations-to-plugins)してください。
 </Tip>
@@ -51,10 +36,6 @@ Claude Code では、カスタムスキル、エージェント、フックを�
 </h3>
 
 * Claude Code [インストール済みで認証済み](/docs/ja/quickstart#step-1-install-claude-code)
-
-<Note>
-  `/plugin` コマンドが表示されない場合は、Claude Code を最新バージョンに更新してください。アップグレード手順については、[トラブルシューティング](/docs/ja/troubleshooting)を参照してください。
-</Note>
 
 <h3 id="create-your-first-plugin">
   最初のプラグインを作成する
@@ -93,12 +74,12 @@ Claude Code では、カスタムスキル、エージェント、フックを�
     }
     ```
 
-    | フィールド         | 目的                                                                                                                                                                                    |
-    | :------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-    | `name`        | 一意の識別子とスキル名前空間。スキルにはこれが接頭辞として付きます（例：`/my-first-plugin:hello`）。                                                                                                                        |
-    | `description` | プラグインマネージャーでプラグインを参照またはインストールするときに表示されます。                                                                                                                                             |
-    | `version`     | オプション。設定されている場合、ユーザーはこのフィールドをバンプしたときにのみ更新を受け取ります。省略され、プラグインが git 経由で配布される場合、コミット SHA が使用され、すべてのコミットが新しいバージョンとしてカウントされます。[バージョン管理](/docs/ja/plugins-reference#version-management)を参照してください。 |
-    | `author`      | オプション。属性に役立ちます。                                                                                                                                                                       |
+    | フィールド         | 目的                                                                                                                                                                                                                                                           |
+    | :------------ | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+    | `name`        | 一意の識別子とスキル名前空間。スキルにはこれが接頭辞として付きます（例：`/my-first-plugin:hello`）。                                                                                                                                                                                               |
+    | `description` | プラグインマネージャーでプラグインを参照またはインストールするときに表示されます。                                                                                                                                                                                                                    |
+    | `version`     | オプション。設定されている場合、ユーザーはこのフィールドをバンプしたときにのみ更新を受け取ります。[`command` ソース](/docs/ja/plugin-marketplaces#command-sources)を除きます。[バージョン管理](/docs/ja/plugins-reference#version-management)を参照してください。省略された場合、バージョンは[バージョン管理](/docs/ja/plugins-reference#version-management)の次のソースから取得されます。 |
+    | `author`      | オプション。属性に役立ちます。                                                                                                                                                                                                                                              |
 
     `homepage`、`repository`、`license` などの追加フィールドについては、[完全なマニフェストスキーマ](/docs/ja/plugins-reference#plugin-manifest-schema)を参照してください。
   </Step>
@@ -137,7 +118,7 @@ Claude Code では、カスタムスキル、エージェント、フックを�
     /my-first-plugin:hello
     ```
 
-    Claude がグリーティングで応答します。`/help` を実行して、プラグイン名前空間の下にリストされたスキルを確認してください。
+    Claude がグリーティングで応答します。`/help` を実行して、**カスタムコマンド**タブを開き、プラグイン名前空間の下にリストされたスキルを確認してください。
 
     <Note>
       **名前空間を使う理由は？** プラグインスキルは常に名前空間が付きます（`/my-first-plugin:hello` など）。複数のプラグインが同じ名前のスキルを持つ場合の競合を防ぐためです。
@@ -171,12 +152,6 @@ Claude Code では、カスタムスキル、エージェント、フックを�
   </Step>
 </Steps>
 
-これらの主要なコンポーネントを使用してプラグインを正常に作成およびテストしました。
-
-* **プラグインマニフェスト**（`.claude-plugin/plugin.json`）：プラグインのメタデータを説明します
-* **スキルディレクトリ**（`skills/`）：カスタムスキルを含みます
-* **スキル引数**（`$ARGUMENTS`）：動的な動作のためにユーザー入力をキャプチャします
-
 <Tip>
   `--plugin-dir` フラグは開発とテストに役立ちます。プラグインを他のユーザーと共有する準備ができたら、[プラグインマーケットプレイスを作成して配布する](/docs/ja/plugin-marketplaces)を参照してください。
 </Tip>
@@ -204,27 +179,23 @@ claude plugin init my-tool
 <Warning>
   **よくある間違い**：`commands/`、`agents/`、`skills/`、`hooks/` を `.claude-plugin/` ディレクトリ内に配置しないでください。`plugin.json` のみが `.claude-plugin/` 内に入ります。他のすべてのディレクトリはプラグインルートレベルにある必要があります。
 
-  プラグインルートは個別プラグイン自体のディレクトリです。`.claude-plugin/plugin.json` を含むディレクトリです。`~/.claude/` ではありません。例えば、Claude Code は `~/.claude/.mcp.json` に配置された `.mcp.json` を読み込みません。
+  プラグインルートは個別プラグイン自体のディレクトリです。`--plugin-dir` に渡すディレクトリ、または `.claude-plugin/plugin.json` を含むディレクトリです。`~/.claude/` ではありません。例えば、Claude Code は `~/.claude/.mcp.json` に配置された `.mcp.json` を読み込みません。
 </Warning>
 
-| ディレクトリ            | 場所       | 目的                                                        |
-| :---------------- | :------- | :-------------------------------------------------------- |
-| `.claude-plugin/` | プラグインルート | `plugin.json` マニフェストを含みます（コンポーネントがデフォルトの場所を使用する場合はオプション）  |
-| `skills/`         | プラグインルート | `<name>/SKILL.md` ディレクトリとしてのスキル                           |
-| `commands/`       | プラグインルート | フラットな Markdown ファイルとしてのスキル。新しいプラグインには `skills/` を使用してください |
-| `agents/`         | プラグインルート | カスタムエージェント定義                                              |
-| `hooks/`          | プラグインルート | `hooks.json` のイベントハンドラー                                   |
-| `.mcp.json`       | プラグインルート | MCP サーバー設定                                                |
-| `.lsp.json`       | プラグインルート | コード インテリジェンス用の LSP サーバー設定                                 |
-| `monitors/`       | プラグインルート | `monitors.json` のバックグラウンドモニター設定                           |
-| `bin/`            | プラグインルート | プラグインが有効になっている間に Bash ツールの `PATH` に追加される実行可能ファイル          |
-| `settings.json`   | プラグインルート | プラグインが有効になったときに適用されるデフォルト[設定](/docs/ja/settings)               |
+| ディレクトリ            | 場所       | 目的                                                                                                                                                                                |
+| :---------------- | :------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `.claude-plugin/` | プラグインルート | `plugin.json` マニフェストを含みます（コンポーネントがデフォルトの場所を使用する場合はオプション）                                                                                                                          |
+| `skills/`         | プラグインルート | `<name>/SKILL.md` ディレクトリとしてのスキル                                                                                                                                                   |
+| `commands/`       | プラグインルート | フラットな Markdown ファイルとしてのスキル。新しいプラグインには `skills/` を使用してください                                                                                                                         |
+| `agents/`         | プラグインルート | カスタムエージェント定義                                                                                                                                                                      |
+| `hooks/`          | プラグインルート | `hooks.json` のイベントハンドラー                                                                                                                                                           |
+| `.mcp.json`       | プラグインルート | MCP サーバー設定                                                                                                                                                                        |
+| `.lsp.json`       | プラグインルート | コード インテリジェンス用の LSP サーバー設定                                                                                                                                                         |
+| `monitors/`       | プラグインルート | `monitors.json` のバックグラウンドモニター設定                                                                                                                                                   |
+| `bin/`            | プラグインルート | プラグインが有効になっている間に Bash ツールの `PATH` に追加される実行可能ファイル。[Claude.ai 組織設定を通じて配布するプラグインにはこのディレクトリを含めることはできません](/docs/ja/plugin-marketplaces#keep-executables-out-of-the-top-level-bin-directory) |
+| `settings.json`   | プラグインルート | プラグインが有効になったときに適用されるデフォルト[設定](/docs/ja/settings)                                                                                                                                       |
 
 正確に 1 つのスキルを含むプラグインは、`skills/` ディレクトリを作成する代わりに、`SKILL.md` をプラグインルートに直接配置できます。Claude Code はそれを単一のスキルとして読み込み、フロントマター `name` フィールドを呼び出し名として使用します。複数のスキルに成長する可能性があるプラグインには、`skills/` レイアウトを使用してください。
-
-<Note>
-  **次のステップ**：さらに多くの機能を追加する準備ができましたか？[より複雑なプラグインを開発する](#develop-more-complex-plugins)にジャンプして、エージェント、フック、MCP サーバー、LSP サーバーを追加してください。すべてのプラグインコンポーネントの完全な技術仕様については、[プラグインリファレンス](/docs/ja/plugins-reference)を参照してください。
-</Note>
 
 <h2 id="develop-more-complex-plugins">
   より複雑なプラグインを開発する
@@ -263,7 +234,7 @@ When reviewing code, check for:
 4. Test coverage
 ```
 
-プラグインをインストールした後、`/reload-plugins` を実行してスキルを読み込みます。段階的な開示とツール制限を含む完全なスキル作成ガイダンスについては、[エージェントスキル](/docs/ja/skills)を参照してください。
+プラグインをインストールした後、インストール概要を確認してください。`Run /reload-plugins to activate.` と報告されている場合は、そのコマンドを実行してスキルを読み込みます。段階的な開示とツール制限を含む完全なスキル作成ガイダンスについては、[エージェントスキル](/docs/ja/skills)を参照してください。
 
 <h3 id="add-lsp-servers-to-your-plugin">
   プラグインに LSP サーバーを追加する
@@ -288,6 +259,8 @@ LSP（Language Server Protocol）プラグインは Claude にリアルタイム
 ```
 
 プラグインをインストールするユーザーは、言語サーバーバイナリをマシンにインストールしておく必要があります。
+
+サーバーが起動することを確認するには、プラグインを有効にして Claude Code を起動し、`/plugin` エラータブを確認してください。起動に失敗した言語サーバーはそこに表示されます。例えば、バイナリがインストールされていない場合は `Executable not found in $PATH` と表示されます。無効な設定を持つエントリはスキップされます。理由を確認するには `claude --debug` を実行してください。
 
 完全な LSP 設定オプションについては、[LSP サーバー](/docs/ja/plugins-reference#lsp-servers)を参照してください。
 
@@ -343,7 +316,7 @@ LSP（Language Server Protocol）プラグインは Claude にリアルタイム
 claude --plugin-dir ./my-plugin
 ```
 
-このフラグはプラグインディレクトリの `.zip` アーカイブも受け入れます。これには Claude Code v2.1.128 以降が必要です。
+このフラグはプラグインディレクトリの `.zip` アーカイブも受け入れます。
 
 ```bash theme={null}
 claude --plugin-dir ./my-plugin.zip
@@ -351,11 +324,11 @@ claude --plugin-dir ./my-plugin.zip
 
 `--plugin-dir` プラグインがインストール済みのマーケットプレイスプラグインと同じ名前を持つ場合、そのセッション中はローカルコピーが優先されます。これにより、最初にアンインストールしなくても、既にインストール済みのプラグインへの変更をテストできます。マネージド設定によって強制的に有効にされたマーケットプレイスプラグインは唯一の例外であり、オーバーライドできません。
 
-プラグインに変更を加えると、`/reload-plugins` を実行して再起動せずに更新を反映させます。これにより、プラグイン、スキル、エージェント、フック、プラグイン MCP サーバー、プラグイン LSP サーバーが再読み込みされます。プラグインコンポーネントをテストします。
+プラグインに変更を加えると、`/reload-plugins` を実行して再起動せずに更新を反映させます。これにより、プラグイン、スキル、エージェント、フック、プラグイン MCP サーバー、プラグイン LSP サーバーが再読み込みされます。インタラクティブターミナルのないセッションでは、プラグイン MCP サーバーの変更は[次のセッションを待ちます](/docs/ja/discover-plugins#apply-plugin-changes-without-restarting)。プラグインコンポーネントをテストします。
 
 * `/plugin-name:skill-name` でスキルを試す
 * `/context` でエージェントがカスタムエージェントの下に表示されることを確認するか、スコープ付き名でエージェントを @-mention する
-* フックが期待どおりに機能することを確認する
+* 各フックが一致するイベントをトリガーします。例えば、`PostToolUse` フックの場合はファイルを編集するよう Claude に依頼し、その効果を確認します。Claude Code は、[デバッグログ](/docs/ja/hooks#debug-hooks)で、どのフックが一致したか、終了コード、出力を記録します。
 
 <Tip>
   フラグを複数回指定することで、複数のプラグインを一度に読み込むことができます。
@@ -363,9 +336,11 @@ claude --plugin-dir ./my-plugin.zip
   ```bash theme={null}
   claude --plugin-dir ./plugin-one --plugin-dir ./plugin-two
   ```
+
+  プラグインとそれが依存するプラグインを一緒にテストするには、[プラグインとその依存関係をローカルでテストする](/docs/ja/plugin-dependencies#test-a-plugin-and-its-dependency-locally)を参照してください。
 </Tip>
 
-URL でホストされている `.zip` アーカイブとしてパッケージ化されているプラグイン（CI ビルドアーティファクトなど）をテストするには、代わりに `--plugin-url` を使用してください。Claude Code はスタートアップ時にアーカイブをフェッチし、そのセッションのみ読み込みます。フェッチが失敗するか、アーカイブが無効な場合、Claude Code はプラグイン読み込みエラーを報告し、それなしで開始します。[信頼に関する考慮事項](/docs/ja/discover-plugins#security)と同じものが、プラグインソースに適用されます。このフラグは、制御または信頼するアーカイブのみを指してください。
+URL でホストされている `.zip` アーカイブとしてパッケージ化されているプラグイン（CI ビルドアーティファクトなど）をテストするには、代わりに `--plugin-url` を使用してください。Claude Code はスタートアップ時にアーカイブをフェッチし、そのセッションのみ読み込みます。Claude Code がアーカイブをフェッチできない場合、またはアーカイブが無効な場合、プラグインなしで開始し、`/plugin` マネージャーの**エラー**タブで確認できるプラグイン読み込みエラーを記録します。プラグインソースに対して同じ[信頼に関する考慮事項](/docs/ja/discover-plugins#security)が適用されます。このフラグは、制御または信頼するアーカイブのみを指してください。
 
 複数のプラグインを読み込むには、各 URL に対してフラグを繰り返します。
 
@@ -396,7 +371,7 @@ claude --plugin-url "https://example.com/my-plugin.zip https://example.com/other
 プラグインを共有する準備ができたら：
 
 1. **ドキュメントを追加する**：インストールと使用方法の指示を含む `README.md` を含めます
-2. **バージョン管理戦略を選択する**：明示的な `version` を設定するか、git コミット SHA に依存するかを決定してください。[バージョン管理](/docs/ja/plugins-reference#version-management)を参照してください
+2. **バージョン管理戦略を選択する**：明示的な `version` を設定するか、[バージョン管理](/docs/ja/plugins-reference#version-management)で説明されているフォールバックに依存するかを決定してください。
 3. **マーケットプレイスを作成または使用する**：[プラグインマーケットプレイス](/docs/ja/plugin-marketplaces)を通じて配布してインストールします
 4. **他のユーザーでテストする**：より広い配布の前に、チームメンバーにプラグインをテストしてもらいます
 
@@ -408,7 +383,7 @@ claude --plugin-url "https://example.com/my-plugin.zip https://example.com/other
 
 Anthropic は Claude Code プラグイン用に 2 つの公開マーケットプレイスを管理しています。
 
-* **`claude-plugins-official`**：Anthropic によって管理されているキュレーションされたプラグインセット。初めて Claude Code をインタラクティブに起動したときに自動的に登録されます。最初の起動前に実行される非インタラクティブスクリプトは、`claude plugin marketplace add anthropics/claude-plugins-official` で明示的に追加する必要があります。
+* **`claude-plugins-official`**：Anthropic によって管理されているキュレーションされたプラグインセット。初めて Claude Code をインタラクティブに起動したときに自動的に登録されます。最初のインタラクティブ起動の前に Claude Code を非インタラクティブに実行した場合、または[マーケットプレイスポリシー](/docs/ja/plugin-marketplaces#managed-marketplace-restrictions)が以前の試みをブロックした場合は、`claude plugin marketplace add anthropics/claude-plugins-official` で自分で登録してください。
 * **`claude-community`**：レビュー後にサードパーティの送信が登録される公開コミュニティマーケットプレイス。ユーザーは `/plugin marketplace add anthropics/claude-plugins-community` で追加し、`@claude-community` としてインストールします。
 
 プラグインをコミュニティマーケットプレイスレビュー用に送信するには、アプリ内フォームの 1 つを使用してください。
@@ -418,17 +393,13 @@ Anthropic は Claude Code プラグイン用に 2 つの公開マーケットプ
 
 claude.ai フォームには Team または Enterprise 組織とディレクトリ管理アクセスが必要です。組織の所有者はデフォルトでこのアクセス権を持っています。Team または Enterprise 組織に属していない個別の作成者は、代わりに Console フォームを使用できます。
 
-送信する前に、ローカルで `claude plugin validate` を実行してください。レビューパイプラインはすべての送信に対して同じチェックを実行し、自動化されたセーフティスクリーニングも行います。
+送信する前に、ローカルで `claude plugin validate ./your-plugin` を実行してください。`./your-plugin` をプラグインディレクトリへのパスに置き換えてください。レビューパイプラインはすべての送信に対して同じチェックを実行し、自動化されたセーフティスクリーニングも行います。検証が成功すると、Claude Code は `✔ Validation passed` を出力します。警告がある場合は `✔ Validation passed with warnings` を出力します。警告は検証を失敗させません。`--strict` を追加して、警告をエラーとして扱ってください。
 
 承認されたプラグインは、[`anthropics/claude-plugins-community`](https://github.com/anthropics/claude-plugins-community) カタログ内の特定のコミット SHA にピン留めされ、CI はリポジトリに新しいコミットをプッシュするたびに自動的にピンをバンプします。公開カタログはレビューパイプラインから毎晩同期されるため、承認と `marketplace.json` にプラグインが表示されるまでの間に遅延が生じる可能性があります。プラグインがインストール可能かどうかを確認するには、[コミュニティカタログ](https://github.com/anthropics/claude-plugins-community/blob/main/.claude-plugin/marketplace.json)でその名前を検索してください。
 
 公式マーケットプレイス `claude-plugins-official` は別途キュレーションされています。Anthropic はどのプラグインを含めるかを裁量で決定します。申請プロセスはなく、送信フォームは公式マーケットプレイスにプラグインを追加しません。
 
 Anthropic がプラグインを公式マーケットプレイスにリストしている場合、CLI は Claude Code ユーザーにインストールを促すことができます。[CLI からプラグインを推奨する](/docs/ja/plugin-hints)を参照してください。
-
-<Note>
-  完全な技術仕様、デバッグ技術、配布戦略については、[プラグインリファレンス](/docs/ja/plugins-reference)を参照してください。
-</Note>
 
 <h2 id="convert-existing-configurations-to-plugins">
   既存の設定をプラグインに変換する
@@ -460,18 +431,17 @@ Anthropic がプラグインを公式マーケットプレイスにリストし�
   </Step>
 
   <Step title="既存のファイルをコピーする">
-    既存の設定をプラグインディレクトリにコピーします。
+    既存の各設定ディレクトリをプラグインルートにコピーします。3 つすべてがない場合もあります。ディレクトリが存在しない場合、`cp` は `No such file or directory` を出力してコピーしないため、そのコマンドをスキップするか、エラーを無視してください。
 
     ```bash theme={null}
-    # Copy commands
     cp -r .claude/commands my-plugin/
 
-    # Copy agents (if any)
     cp -r .claude/agents my-plugin/
 
-    # Copy skills (if any)
     cp -r .claude/skills my-plugin/
     ```
+
+    プラグインには、`.claude/` の下にあったディレクトリのコピーが含まれるようになりました。`ls my-plugin` を実行して確認します。コピーした各ディレクトリが表示されるはずです。
   </Step>
 
   <Step title="フックを移行する">
@@ -504,7 +474,7 @@ Anthropic がプラグインを公式マーケットプレイスにリストし�
     claude --plugin-dir ./my-plugin
     ```
 
-    各コンポーネントをテストします。コマンドを実行し、`/context` にエージェントが表示されることを確認し、フックが正しくトリガーされることを確認します。
+    各コンポーネントをテストします。コマンドを実行し、`/context` にエージェントが表示されることを確認し、フックが一致するイベントをトリガーして、その効果を確認します。Claude Code は、どのフックが一致し、どのように終了したかを [デバッグログ](/docs/ja/hooks#debug-hooks) に記録します。
   </Step>
 </Steps>
 

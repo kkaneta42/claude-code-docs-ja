@@ -10,7 +10,7 @@
   ルーティンはリサーチプレビュー段階です。動作、制限、API サーフェスは変更される可能性があります。
 </Note>
 
-ルーティンは保存された Claude Code 構成です。プロンプト、1 つ以上のリポジトリ、および一連の [コネクタ](/docs/ja/mcp) をパッケージ化して、1 回定義し、自動的に実行します。ルーティンは Anthropic が管理するクラウドインフラストラクチャで実行されるため、ラップトップを閉じても動作し続けます。
+ルーティンは保存された Claude Code 構成です。プロンプト、1 つ以上のリポジトリ、および一連の [コネクタ](/docs/ja/mcp) をパッケージ化して、1 回定義し、自動的に実行します。ルーティンは Anthropic が管理するクラウドインフラストラクチャで実行されるか、ルーティングされた場合は組織の [自己ホスト環境](/docs/ja/self-hosted-environments) で実行されるため、ラップトップを閉じても動作し続けます。
 
 各ルーティンには、1 つ以上のトリガーを接続できます。
 
@@ -20,9 +20,9 @@
 
 1 つのルーティンは複数のトリガーを組み合わせることができます。たとえば、PR レビュールーティンは毎晩実行でき、デプロイスクリプトからトリガーでき、新しい PR すべてに反応することもできます。
 
-ルーティンは Pro、Max、Team、Enterprise プランで利用可能です。[Claude Code on the web](/docs/ja/claude-code-on-the-web) が有効になっている必要があります。[claude.ai/code/routines](https://claude.ai/code/routines) で作成・管理するか、CLI で `/schedule` を使用して管理できます。
+ルーティンは Pro、Max、Team、Enterprise プランで利用可能です。[claude.ai/code/routines](https://claude.ai/code/routines) で作成・管理するか、CLI で `/schedule` を使用して管理できます。
 
-Team および Enterprise 管理者は、[claude.ai/admin-settings/claude-code](https://claude.ai/admin-settings/claude-code) の Routines トグルを使用して、すべてのメンバーのルーティンを無効にできます。無効にすると、既存のルーティンは実行を停止し、メンバーは新しいルーティンを作成できません。
+Team および Enterprise オーナーは、[claude.ai/admin-settings/claude-code](https://claude.ai/admin-settings/claude-code) の Routines トグルを使用して、すべてのメンバーのルーティンを無効にできます。無効にすると、既存のルーティンは実行を停止し、メンバーは新しいルーティンを作成できません。
 
 このページでは、ルーティンの作成、各トリガータイプの構成、実行の管理、および使用制限の適用方法について説明します。
 
@@ -34,7 +34,7 @@ Team および Enterprise 管理者は、[claude.ai/admin-settings/claude-code](
 
 **バックログメンテナンス。** スケジュールトリガーは毎週夜間にコネクタ経由で問題追跡ツールに対して実行されます。ルーティンは最後の実行以降にオープンされた問題を読み取り、ラベルを適用し、参照されているコード領域に基づいて所有者を割り当て、Slack に概要を投稿して、チームが 1 日を整理されたキューで開始できるようにします。
 
-**アラートトリアージ。** 監視ツールがエラー閾値を超えたときにルーティンの API エンドポイントを呼び出し、アラート本文を `text` として渡します。ルーティンはスタックトレースを取得し、リポジトリの最近のコミットと相関させ、提案された修正とアラートへのリンク付きのドラフトプルリクエストを開きます。オンコール担当者は空のターミナルから始めるのではなく PR をレビューします。
+**アラートトリアージ。** 監視ツールがエラー閾値を超えたときにルーティンの API エンドポイントを呼び出し、アラート本文を `text` として渡します。ルーティンのプロンプトは Claude にアラートを調査するよう指示し、スタックトレースを取得し、リポジトリの最近のコミットと相関させ、提案された修正とアラートへのリンク付きのドラフトプルリクエストを開きます。オンコール担当者は空のターミナルから始めるのではなく PR をレビューします。
 
 **カスタムコードレビュー。** GitHub トリガーは `pull_request.opened` で実行されます。ルーティンはチームの独自のレビューチェックリストを適用し、セキュリティ、パフォーマンス、スタイルの問題についてインラインコメントを残し、概要コメントを追加して、人間のレビュアーが機械的なチェックではなく設計に焦点を当てられるようにします。
 
@@ -44,17 +44,15 @@ Team および Enterprise 管理者は、[claude.ai/admin-settings/claude-code](
 
 **ライブラリポート。** GitHub トリガーは `pull_request.closed` で実行され、1 つの SDK リポジトリのマージされた PR にフィルタリングされます。ルーティンは別の言語の並列 SDK に変更をポートし、マッチング PR を開き、人間が各変更を再実装することなく 2 つのライブラリを同期させます。
 
-以下のセクションでは、ルーティンの作成と各トリガータイプの構成について説明します。
-
 <h2 id="create-a-routine">
   ルーティンを作成する
 </h2>
 
-Web の [claude.ai/code/routines](https://claude.ai/code/routines)、Desktop アプリ、または CLI からルーティンを作成します。3 つのサーフェスすべてが同じクラウドアカウントに書き込むため、1 つで作成したルーティンは他のサーフェスに即座に表示されます。Desktop アプリで、サイドバーの **Routines** をクリックしてから **New routine** をクリックし、**Remote** を選択します。代わりに **Local** を選択すると、[Desktop スケジュール済みタスク](/docs/ja/desktop-scheduled-tasks) が作成されます。これはクラウドではなくマシンで実行されます。
+Web の [claude.ai/code/routines](https://claude.ai/code/routines)、Desktop アプリ、または CLI からルーティンを作成します。3 つのサーフェスすべてが同じクラウドアカウントに書き込むため、1 つで作成したルーティンは他のサーフェスに即座に表示されます。Desktop アプリの **Code** タブで、サイドバーの **Routines** をクリックするか、サイドバーの **More** メニューで **New routine** をクリックしてから、**Cloud** を選択します。代わりに **Local** を選択すると、[Desktop スケジュール済みタスク](/docs/ja/desktop-scheduled-tasks) が作成されます。これはクラウドではなくマシンで実行されます。
 
 作成フォームは、ルーティンのプロンプト、リポジトリ、環境、コネクタ、トリガーを設定します。
 
-ルーティンは完全な Claude Code クラウドセッションとして自律的に実行されます。パーミッションモードピッカーはなく、実行中の承認プロンプトもありません。セッションはシェルコマンドを実行でき、クローンされたリポジトリにコミットされた [スキル](/docs/ja/skills) を使用でき、含めたすべてのコネクタを呼び出すことができます。ルーティンが到達できるものは、選択したリポジトリとそのブランチプッシュ設定、[環境](/docs/ja/claude-code-on-the-web#the-cloud-environment) のネットワークアクセスと変数、および含めたコネクタによって決定されます。これらのそれぞれをルーティンが実際に必要とするものにスコープします。
+ルーティンは完全な Claude Code クラウドセッションとして自律的に実行されます。権限モードピッカーはなく、実行中の承認プロンプトもありません。セッションはシェルコマンドを実行でき、クローンされたリポジトリにコミットされた [スキル](/docs/ja/skills) を使用でき、含めたすべてのコネクタを呼び出すことができます。ルーティンが到達できるものは、選択したリポジトリ、[環境](/docs/ja/cloud-environments) のネットワークアクセスと変数、および含めたコネクタによって決定されます。これらのそれぞれをルーティンが実際に必要とするものにスコープします。
 
 ルーティンは個別の claude.ai アカウントに属します。チームメイトと共有されず、アカウントの日次実行許容量に対してカウントされます。ルーティンが接続された GitHub ID またはコネクタを通じて行うことはすべて、あなたとして表示されます。コミットとプルリクエストは GitHub ユーザーを持ち、Slack メッセージ、Linear チケット、またはその他のコネクタアクションはそれらのサービスのリンクされたアカウントを使用します。
 
@@ -70,6 +68,8 @@ Web の [claude.ai/code/routines](https://claude.ai/code/routines)、Desktop ア
   <Step title="ルーティンに名前を付けてプロンプトを書く">
     ルーティンに説明的な名前を付け、Claude が毎回実行するプロンプトを書きます。プロンプトが最も重要な部分です。ルーティンは自律的に実行されるため、プロンプトは自己完結型で、何をするか、成功がどのように見えるかについて明示的である必要があります。
 
+    トリガーが発火すると、セッションはルーティンの保存されたプロンプトを割り当てられたタスクとして受け取り、会話の途中に到着した信頼できないコンテンツとして扱うのではなく、それを実行します。トリガーは、プロンプトがあなたのアカウント上の認可されたセッションによって事前に保存されたことのみを証明するため、発火したプロンプトはライブユーザー入力ではなく、実行中のアクションの承認または同意として機能することはできません。セッションが実行中に取得するコンテンツは、通常の処理を保持します。v2.1.213 より前では、セッションは同じプロンプトを信頼できないバックグラウンド通知としてフレーム化して受け取り、それに対して行動することを拒否する可能性がありました。
+
     プロンプト入力にはモデルセレクタが含まれます。Claude は毎回実行時に選択されたモデルを使用します。
   </Step>
 
@@ -78,13 +78,13 @@ Web の [claude.ai/code/routines](https://claude.ai/code/routines)、Desktop ア
   </Step>
 
   <Step title="環境を選択する">
-    ルーティン用に [クラウド環境](/docs/ja/claude-code-on-the-web#the-cloud-environment) を選択します。環境は、クラウドセッションがアクセスできるものを制御します。
+    ルーティン用に [クラウド環境](/docs/ja/cloud-environments) を選択します。環境は、クラウドセッションがアクセスできるものを制御します。
 
     * **ネットワークアクセス**: 各実行中に利用可能なインターネットアクセスのレベルを設定
-    * **環境変数**: Claude が使用できる API キー、トークン、またはその他のシークレットを提供
-    * **セットアップスクリプト**: ルーティンが必要とする依存関係とツールをインストールします。結果は [キャッシュされ](/docs/ja/claude-code-on-the-web#environment-caching)、スクリプトはすべてのセッションで再実行されません
+    * **環境変数**: Claude が実行中に使用できる値を提供します。これらは [環境を使用する誰にでも表示される](/docs/ja/cloud-environments#what-carries-over-from-your-setup) ため、Pro および Max プランでは、Claude が実行中に呼び出す API のキーを [API 認証情報](/docs/ja/cloud-environments#add-api-credentials) として保存します。そのセクションには、認証情報を取得しないリクエストもリストされています。
+    * **セットアップスクリプト**: ルーティンが必要とする依存関係とツールをインストールします。結果は [キャッシュされ](/docs/ja/cloud-environments#environment-caching)、スクリプトはすべてのセッションで再実行されません。
 
-    **Default** 環境が提供されており、**Trusted** ネットワークアクセスがあります。これにより、[デフォルトセット](/docs/ja/claude-code-on-the-web#default-allowed-domains) のパッケージレジストリ、クラウドプロバイダー API、コンテナレジストリ、および一般的な開発ドメインが許可されますが、その他すべてはブロックされます。ルーティンが独自のサービスまたはそのリストの外のドメインに到達する必要がある場合は、実行前に環境の [ネットワークアクセス](/docs/ja/claude-code-on-the-web#network-access) を編集します。別の環境を使用するには、[最初に 1 つを作成](/docs/ja/claude-code-on-the-web#configure-your-environment) します。
+    **Default** 環境が提供されており、**Trusted** ネットワークアクセスがあります。これにより、[デフォルト許可リスト](/docs/ja/cloud-environments#default-allowed-domains) のパッケージレジストリ、クラウドプロバイダー API、コンテナレジストリ、および一般的な開発ドメインのみがセッションのネットワークを通じて許可されます。ルーティンに追加するコネクタは Anthropic のサーバーを通じてそれらのサービスに到達するため、許可リストの変更は必要ありません。ルーティンが独自のサービスまたはそのリストの外のドメインに直接到達する必要がある場合は、実行前に環境の [ネットワークアクセス](/docs/ja/cloud-environments#network-access) を編集します。別の環境を使用するには、[最初に 1 つを作成](/docs/ja/cloud-environments#configure-your-environment) します。
   </Step>
 
   <Step title="トリガーを選択する">
@@ -105,12 +105,8 @@ Web の [claude.ai/code/routines](https://claude.ai/code/routines)、Desktop ア
     </Tabs>
   </Step>
 
-  <Step title="コネクタとパーミッションをレビューする">
-    フォームの下部にある **Connectors** タブと **Permissions** タブは、ルーティンが到達できるものを制御します。
-
-    Connectors の下で、接続されたすべての [MCP コネクタ](/docs/ja/mcp) はデフォルトで含まれます。ルーティンが必要としないものを削除します。Claude は実行中にパーミッションを求めることなく、含まれたコネクタからすべてのツール（書き込みを含む）を使用できます。
-
-    Permissions の下で、Claude が `claude/` プレフィックス付きブランチのみではなく既存ブランチにプッシュできるようにするリポジトリについて、**Allow unrestricted branch pushes** を有効にします。
+  <Step title="コネクタをレビューする">
+    フォームの下部にある **Connectors** で、接続されたすべての [MCP コネクタ](/docs/ja/mcp) はデフォルトで含まれます。ルーティンが必要としないものを削除します。Claude は実行中にパーミッションを求めることなく、含まれたコネクタからすべてのツール（書き込みを含む）を使用できます。
   </Step>
 
   <Step title="ルーティンを作成する">
@@ -124,13 +120,13 @@ Web の [claude.ai/code/routines](https://claude.ai/code/routines)、Desktop ア
   CLI から作成する
 </h3>
 
-任意のセッションで `/schedule` を実行して、スケジュール済みルーティンを会話形式で作成します。`/schedule daily PR review at 9am` のような定期ルーティンや `/schedule clean up feature flag in one week` のような 1 回限りのルーティンのように、説明を直接渡すこともできます。Claude は Web フォームが収集するのと同じ情報を通じて、ルーティンをアカウントに保存します。
+任意のセッションで `/schedule` を実行して、スケジュール済みルーティンを会話形式で作成します。`/schedule daily PR review at 9am` のような定期ルーティンや `/schedule clean up feature flag in one week` のような 1 回限りのルーティンのように、説明を直接渡すこともできます。Claude は Web フォームが収集するのと同じ情報を通じて、ルーティンをアカウントに保存します。コマンドはエイリアス `/routines` でも利用可能です。
 
 成功した開始は会話のように見えます。Claude はスケジュール、リポジトリ、プロンプトについてのフォローアップ質問をしてから保存します。代わりに Claude が認証が必要であるか、リモート claude.ai アカウントに接続できないと返信した場合、ルーティンは作成されていません。[トラブルシューティング](#troubleshooting) を参照してください。
 
-CLI の `/schedule` はスケジュール済みルーティンのみを作成します。API または GitHub トリガーを追加するには、[claude.ai/code/routines](https://claude.ai/code/routines) で Web 上のルーティンを編集します。
+CLI の `/schedule` はスケジュール済みルーティンを作成します。API トリガーを追加するには、[claude.ai/code/routines](https://claude.ai/code/routines) で Web 上のルーティンを編集します。[GitHub トリガー](#add-a-github-trigger) は Web または CLI から追加できます。CLI パスには Claude Code v2.1.225 以降が必要です。
 
-CLI は既存のルーティンの管理もサポートしています。`/schedule list` を実行してすべてのルーティンを表示し、`/schedule update` を実行して 1 つを変更するか、`/schedule run` を実行してすぐにトリガーします。
+スケジュールトリガーがないルーティン（API 呼び出しまたは GitHub イベントのみで開始されるもの）には次の実行時刻がなく、Claude がそれを保存または更新するときに CLI は何も表示しません。v2.1.211 より前では、CLI はこれらのルーティンについて年 1 の次の実行時刻を報告していました。
 
 <h2 id="configure-triggers">
   トリガーを構成する
@@ -154,10 +150,6 @@ CLI は既存のルーティンの管理もサポートしています。`/sched
 
 1 回限りのスケジュールは、特定のタイムスタンプでルーティンを 1 回だけ実行します。週の後半に自分自身に通知したり、ロールアウトが完了した後にクリーンアップ PR を開いたり、アップストリームの変更がランディングしたときにフォローアップタスクをキックオフしたりするために使用します。ルーティンが実行された後、自動的に無効になり、Web UI は **Ran** としてマークします。再度実行するには、ルーティンを編集して新しい 1 回限りの時刻を設定します。
 
-<Note>
-  CLI からの 1 回限りのスケジューリングは段階的にロールアウト中であり、アカウントではまだ利用できない可能性があります。`/schedule` が定期的なスケジュールのみを提供する場合は、代わりに [claude.ai/code/routines](https://claude.ai/code/routines) の Web から 1 回限りの実行を作成してください。
-</Note>
-
 CLI から 1 回限りの実行を作成するには、自然言語で時刻を説明します。Claude は現在の時刻に対してフレーズを解決し、保存する前に絶対タイムスタンプを確認します。
 
 ```text theme={null}
@@ -170,7 +162,7 @@ CLI から 1 回限りの実行を作成するには、自然言語で時刻を�
 
 定期的なスケジュールと同じローカル UTC 変換が 1 回限りのタイムスタンプに適用されます。
 
-1 回限りの実行は日次ルーティン実行上限にカウントされません。これらは他のセッションと同様に、プランの通常のサブスクリプション使用量を消費します。詳細については、[使用量と制限](#usage-and-limits) を参照してください。
+1 回限りの実行は日次ルーティン実行上限にカウントされません。詳細については、[使用量と制限](#usage-and-limits) を参照してください。
 
 <h3 id="add-an-api-trigger">
   API トリガーを追加する
@@ -206,6 +198,10 @@ API トリガーは Web から既存のルーティンに追加されます。CL
 
 `Authorization` ヘッダーのベアラートークンで `/fire` エンドポイントに POST リクエストを送信します。リクエスト本文は、アラート本文またはログの失敗など、実行固有のコンテキスト用のオプションの `text` フィールドを受け入れます。保存されたプロンプトと共にルーティンに渡されます。値はフリーフォームテキストで、解析されません。JSON または別の構造化ペイロードを送信する場合、ルーティンはリテラル文字列として受け取ります。
 
+`text` 値は、ルーティンに裸のメッセージとして到達しません。これは `<routine-fire-payload>` ブロックでラップされて到達し、信頼できないデータとしてラベル付けされ、ルーティン独自のプロンプトが言わない限り、Claude にその中の指示に従わないよう指示します。同じラップが Web UI の **Run now** で提供されるテキストに適用されます。
+
+これは、ルーティンの保存されたプロンプトが火災テキストに対して行動するためにオプトインする必要があることを意味します。プロンプトを書いて、ペイロードを明示的に参照するか、例えば「routine-fire-payload ブロックで説明されているアラートを調査する」、またはルーティンはテキストを不活性コンテキストとして扱います。ベアラートークンを保持している人は誰でも `text` を送信できるため、ラッパーは漏洩したトークンからの火災テキストが、ルーティンへの直接指示ではなく、信頼できないデータとしてラベル付けされて到達するようにします。
+
 以下の例は、シェルからルーティンをトリガーします。表示されているルーティン ID とトークンはプレースホルダーです。[API トリガーを追加する](#add-an-api-trigger) 時にコピーした URL とトークンで置き換えてください。そうしないと、リクエストは `401` 認証エラーで失敗します。
 
 ```bash theme={null}
@@ -237,7 +233,7 @@ curl -X POST https://api.anthropic.com/v1/claude_code/routines/trig_01ABCDEFGHJK
   API リファレンス
 </h4>
 
-すべてのエラー応答、検証ルール、フィールド制限を含む完全な API リファレンスについては、Claude Platform ドキュメントの [API 経由でルーティンをトリガーする](https://platform.claude.com/docs/ja/api/claude-code/routines-fire) を参照してください。
+すべてのエラー応答、検証ルール、フィールド制限を含む完全な API リファレンスについては、Claude Platform ドキュメントの [API 経由でルーティンをトリガーする](https://platform.claude.com/docs/en/api/claude-code/routines-fire) を参照してください。
 
 `/fire` エンドポイントは claude.ai ユーザーのみが利用でき、Claude Platform API サーフェスの一部ではありません。
 
@@ -245,13 +241,16 @@ curl -X POST https://api.anthropic.com/v1/claude_code/routines/trig_01ABCDEFGHJK
   GitHub トリガーを追加する
 </h3>
 
-GitHub トリガーは、接続されたリポジトリで一致するイベントが発生したときに、新しいセッションを自動的に開始します。一致する各イベントは独自のセッションを開始します。
+GitHub トリガーは、接続されたリポジトリで一致するイベントが発生したときに、新しいセッションを自動的に開始します。Claude Code はイベント間でセッションを再利用しないため、2 つの PR 更新は 2 つの独立したセッションを生成します。
 
 <Note>
   リサーチプレビュー中、GitHub webhook イベントはルーティンごとおよびアカウントごとの時間単位の上限の対象です。制限を超えるイベントはウィンドウがリセットされるまでドロップされます。現在の制限は [claude.ai/code/routines](https://claude.ai/code/routines) で確認してください。
 </Note>
 
-GitHub トリガーは Web UI からのみ構成されます。
+Claude GitHub App は、サブスクライブするリポジトリにインストールする必要があります。
+
+* Web UI から GitHub トリガーを構成します。これは、アプリがない場合はインストールするよう促します。以下の手順に従って、Web から 1 つを構成してください。
+* CLI から、最初に [GitHub App ページ](https://github.com/apps/claude) からアプリをインストールしてから、Claude に既存のルーティンに GitHub トリガーを接続するよう依頼します。例えば `/schedule add a GitHub trigger to my nightly review for pull requests opened in acme/webapp`。CLI パスには Claude Code v2.1.225 以降が必要です。Claude がトリガーを追加すると、トリガーが発火するルーティンへのリンクで返信します。
 
 <Steps>
   <Step title="ルーティンを編集用に開く">
@@ -260,13 +259,9 @@ GitHub トリガーは Web UI からのみ構成されます。
 
   <Step title="GitHub イベントトリガーを追加する">
     **Select a trigger** セクションまでスクロールし、**Add another trigger** をクリックして、**GitHub event** を選択します。
-  </Step>
-
-  <Step title="Claude GitHub App をインストールする">
-    Claude GitHub App は、サブスクライブするリポジトリにインストールする必要があります。トリガーセットアップは、まだインストールされていない場合はインストールするよう促します。
 
     <Note>
-      CLI で `/web-setup` を実行するとリポジトリアクセスがクローン用に付与されますが、Claude GitHub App はインストールされず、webhook 配信は有効になりません。GitHub トリガーは Claude GitHub App をインストールする必要があり、トリガーセットアップはそれを行うよう促します。
+      CLI で `/web-setup` を実行するとリポジトリアクセスがクローン用に付与されますが、Claude GitHub App はインストールされず、webhook 配信は有効になりません。
     </Note>
   </Step>
 
@@ -313,12 +308,6 @@ GitHub トリガーは、次のいずれかのイベントカテゴリにサブ�
 * **レビュー準備完了のみ**: ドラフト `false`。ドラフトをスキップして、ルーティンが PR がレビュー準備完了のときのみ実行されるようにします。
 * **ラベルゲート付きバックポート**: ラベルに `needs-backport` を含む。メンテナーが PR にタグを付けたときのみ、別のブランチへのポートルーティンをトリガーします。
 
-<h4 id="how-sessions-map-to-events">
-  セッションがイベントにマップされる方法
-</h4>
-
-一致する各 GitHub イベントは新しいセッションを開始します。GitHub トリガー付きルーティンではイベント間のセッション再利用は利用できないため、2 つの PR 更新は 2 つの独立したセッションを生成します。
-
 <h2 id="manage-routines">
   ルーティンを管理する
 </h2>
@@ -341,20 +330,32 @@ GitHub トリガーは、次のいずれかのイベントカテゴリにサブ�
 
 ルーティン詳細ページから以下を実行できます。
 
-* **Run now** をクリックして、次のスケジュール時刻を待たずにすぐに実行を開始します。
+* **Run now** をクリックして、次のスケジュール時刻を待たずにすぐに実行を開始します。オプションで実行固有のテキストを指定できます。これは API トリガーの `text` フィールドと同じ方法でルーティンに到達します。
 * **Repeats** セクションのトグルを使用して、スケジュールを一時停止または再開します。一時停止されたルーティンは構成を保持しますが、再度有効にするまで実行されません。
 * 鉛筆アイコンをクリックして **Edit routine** を開き、名前、プロンプト、リポジトリ、環境、コネクタ、またはルーティンのトリガーを変更します。**Select a trigger** セクションは、スケジュール、API トークン、GitHub イベントトリガーを追加または削除する場所です。
 * 削除アイコンをクリックしてルーティンを削除します。ルーティンによって作成された過去のセッションはセッションリストに残ります。
+
+<h3 id="manage-routines-from-the-cli">
+  CLI からルーティンを管理する
+</h3>
+
+CLI は既存のルーティンの管理をサポートしています。`/schedule list` を実行してすべてのルーティンを表示し、`/schedule update` を実行して 1 つを変更するか、`/schedule run` を実行してすぐにトリガーします。
+
+また、ルーティンの実行履歴について質問することもできます。たとえば `/schedule why did my nightly review do nothing this morning?` のようにです。Claude はルーティンの最近の実行をステータスと共にリストし、[web 上で各実行を開く](#view-and-interact-with-runs) ためのリンクを提供し、実行のログを読んで、ツールエラー、権限拒否、最終結果を含めて何が起こったかを説明します。Claude Code v2.1.227 以降が必要です。
 
 <h3 id="repositories-and-branch-permissions">
   リポジトリとブランチパーミッション
 </h3>
 
-ルーティンはリポジトリをクローンするために GitHub アクセスが必要です。CLI で `/schedule` を使用してルーティンを作成する場合、Claude はアカウントに GitHub が接続されているかどうかを確認し、接続されていない場合は `/web-setup` を実行するよう促します。[GitHub 認証オプション](/docs/ja/claude-code-on-the-web#github-authentication-options) を参照して、アクセスを付与する 2 つの方法を確認してください。
+ルーティンはリポジトリをクローンするために GitHub アクセスが必要です。CLI で `/schedule` を使用してルーティンを作成する場合、Claude はアカウントに実行元のリポジトリに対する GitHub アクセスがあるかどうかを確認し、ない場合はアクセスを付与する方法を名前で示すセットアップノートを追加します。[GitHub 認証オプション](/docs/ja/claude-code-on-the-web#github-authentication-options) を参照して、アクセスを付与する 2 つの方法を確認してください。
 
 追加する各リポジトリは毎回実行時にクローンされます。Claude は、プロンプトで別の指定がない限り、リポジトリのデフォルトブランチから開始されます。
 
-デフォルトでは、Claude は `claude/` プレフィックス付きブランチにのみプッシュできます。これにより、ルーティンが保護されたまたは長期的なブランチを誤って変更するのを防ぎます。特定のリポジトリのこの制限を削除するには、ルーティンを作成または編集するときにそのリポジトリに対して **Allow unrestricted branch pushes** を有効にします。
+Claude は `claude/` プレフィックス付きブランチにプッシュします。これらは常に受け入れられます。プロンプトが Claude に別のブランチへのプッシュを指示する場合、Claude Code はプッシュを最初にチェックし、以下のいずれかが当てはまる場合は拒否します。
+
+* ブランチは GitHub で保護されている
+* 他の誰かがそのブランチからのオープンプルリクエストを持っている
+* ブランチは自分以外の誰かによって作成されたコミットを含んでいる
 
 <h3 id="connectors">
   コネクタ
@@ -366,15 +367,15 @@ GitHub トリガーは、次のいずれかのイベントカテゴリにサブ�
 
 ルーティンを作成するときに、現在接続されているすべてのコネクタがデフォルトで含まれます。実行中に Claude がアクセスできるツールを制限するために、必要でないものを削除します。ルーティンフォームから直接コネクタを追加することもできます。
 
-ルーティンフォームの外でコネクタを管理または追加するには、claude.ai で **Settings > Connectors** にアクセスするか、CLI で `/schedule update` を使用してください。
+ルーティンフォームの外でコネクタを管理または追加するには、[claude.ai/customize/connectors](https://claude.ai/customize/connectors) にアクセスするか、CLI で `/schedule update` を使用してください。
 
 <h3 id="environments-and-network-access">
   環境とネットワークアクセス
 </h3>
 
-各ルーティンは、ネットワークアクセス、環境変数、セットアップスクリプトを制御する [クラウド環境](/docs/ja/claude-code-on-the-web#the-cloud-environment) で実行されます。ルーティンは毎回実行時に環境のネットワークポリシーを継承します。
+各ルーティンは、ネットワークアクセス、環境変数、セットアップスクリプトを制御する [クラウド環境](/docs/ja/cloud-environments) を使用します。ルーティンは毎回実行時に環境のネットワークポリシーを継承します。
 
-**Default** 環境は **Trusted** ネットワークアクセスを使用します。パッケージレジストリ、クラウドプロバイダー API、コンテナレジストリ、および一般的な開発ドメインの [デフォルト許可リスト](/docs/ja/claude-code-on-the-web#default-allowed-domains) に到達可能ですが、任意のドメインには到達できません。他のホストへのアウトバウンドリクエストは `403` および `x-deny-reason: host_not_allowed` で失敗します。MCP コネクタトラフィックは Anthropic のサーバーを通じてルーティングされるため、ルーティンに追加するコネクタは **Allowed domains** にホストを追加しなくても機能します。[コネクタ](#connectors) の下で必要でないコネクタを削除してください。
+**Default** 環境は **Trusted** ネットワークアクセスを使用します。これにより、セッションのネットワークを通じて [デフォルト許可リスト](/docs/ja/cloud-environments#default-allowed-domains) のみが許可されます。その経路上のホストの許可リスト外へのリクエストは `403` および `x-deny-reason: host_not_allowed` で失敗します。MCP コネクタトラフィックは Anthropic のサーバーを通じてルーティングされるため、ルーティンに追加するコネクタは **Allowed domains** にホストを追加しなくても機能します。[コネクタ](#connectors) の下で必要でないコネクタを削除してください。
 
 追加のドメインを許可するには：
 
@@ -392,7 +393,7 @@ GitHub トリガーは、次のいずれかのイベントカテゴリにサブ�
   </Step>
 
   <Step title="ネットワークアクセスレベルを変更する">
-    **Update cloud environment** ダイアログで、**Network access** を **Custom** に変更し、**Allowed domains** にドメインを入力します。**Also include default list of common package managers** をチェックして、カスタムドメインと共に [デフォルト許可リスト](/docs/ja/claude-code-on-the-web#default-allowed-domains) を保持します。代わりに **Full** を選択して、無制限のアクセスを取得します。
+    **Update cloud environment** ダイアログで、**Network access** を **Custom** に変更し、**Allowed domains** にドメインを入力します。**Also include default list of common package managers** をチェックして、カスタムドメインと共に [デフォルト許可リスト](/docs/ja/cloud-environments#default-allowed-domains) を保持します。代わりに **Full** を選択して、無制限のアクセスを取得します。
   </Step>
 
   <Step title="保存">
@@ -400,7 +401,7 @@ GitHub トリガーは、次のいずれかのイベントカテゴリにサブ�
   </Step>
 </Steps>
 
-アクセスレベルとデフォルト許可リストの詳細については、[ネットワークアクセス](/docs/ja/claude-code-on-the-web#network-access) を参照してください。
+アクセスレベルとデフォルト許可リストの詳細については、[ネットワークアクセス](/docs/ja/cloud-environments#network-access) を参照してください。
 
 <h2 id="usage-and-limits">
   使用と制限
@@ -408,25 +409,26 @@ GitHub トリガーは、次のいずれかのイベントカテゴリにサブ�
 
 ルーティンは対話型セッションと同じ方法でサブスクリプション使用量を削減します。標準的なサブスクリプション制限に加えて、ルーティンはアカウントごとに 1 日に開始できる実行数の上限があります。現在の消費と残りの日次ルーティン実行数は [claude.ai/code/routines](https://claude.ai/code/routines) または [claude.ai/settings/usage](https://claude.ai/settings/usage) で確認してください。
 
-ルーティンが日次上限またはサブスクリプション使用制限に達したとき、使用クレジットが有効な組織は、メーター付きオーバーエッジでルーティンを実行し続けることができます。使用クレジットがない場合、ウィンドウがリセットされるまで追加実行は拒否されます。claude.ai で **Settings > Billing** から使用クレジットを有効にします。
+ルーティンが日次上限またはサブスクリプション使用制限に達したとき、使用クレジットが有効な組織は、メーター付きオーバーエッジでルーティンを実行し続けることができます。使用クレジットがない場合、ウィンドウがリセットされるまで追加実行は拒否されます。[claude.ai/settings/usage](https://claude.ai/settings/usage) で使用クレジットを有効にしてください。Team プランと Enterprise プランでは、管理者が [claude.ai/admin-settings/usage](https://claude.ai/admin-settings/usage) で組織の使用クレジットを有効にします。
 
-1 回限りの実行は日次ルーティン実行上限にはカウントされません。他のセッションと同じように通常のサブスクリプション使用量を削減しますが、アカウントごとの日次ルーティン実行許容量から除外されます。
+1 回限りの実行は日次ルーティン実行上限にはカウントされません。他のセッションと同じように通常のサブスクリプション使用量を削減します。
 
 <h2 id="troubleshooting">
   トラブルシューティング
 </h2>
 
-<h3 id="/schedule-returns-unknown-command">
+<h3 id="schedule-returns-unknown-command">
   `/schedule` が「Unknown command」を返す
 </h3>
 
-CLI は、その要件の 1 つが満たされていない場合、`/schedule` を非表示にします。入力中はコマンドメニューに `No commands match "/schedule"` が表示され、送信すると `Unknown command: /schedule` が返されます。原因は通常、以下のいずれかです。
+CLI は、その要件の 1 つが満たされていない場合、`/schedule` を非表示にします。入力中はコマンドメニューに `No commands match "/schedule"` が表示され、送信すると以下のすべてのケースを除いて `Unknown command: /schedule` が返されます（Console API キーまたは機能フラグ取得が有効な Anthropic プロファイルの場合を除く）。原因は通常、以下のいずれかです。
 
-* Console API キーまたは Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry などのクラウドプロバイダーで認証されています。`/schedule` には claude.ai サブスクリプションログインが必要です。`ANTHROPIC_API_KEY` または `ANTHROPIC_AUTH_TOKEN` がシェルに設定されている場合、または `apiKeyHelper` が `settings.json` に設定されている場合は、これらが claude.ai ログインより優先されるため、まず削除してください
-* `DISABLE_TELEMETRY`、`DO_NOT_TRACK`、`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`、または `DISABLE_GROWTHBOOK` がシェル環境または [`settings.json` ファイル](/docs/ja/settings#available-settings)の `env` ブロックに設定されています。これらは機能フラグの取得を無効にします。`/schedule` はこれに依存しています
-* Claude Code のウェブセッション内にいます。代わりに [ウェブ UI](https://claude.ai/code/routines) からルーティンを管理してください
+* Console API キー、[Anthropic プロファイルまたはフェデレーション認証情報](/docs/ja/authentication#anthropic-profiles-and-federation-credentials)、または Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry などのクラウドプロバイダーで認証されています。`/schedule` には claude.ai サブスクリプションログインが必要です。Console API キーまたはプロファイルを使用している場合、`/schedule` を送信すると代わりに `/schedule is available with Claude for Enterprise — ask your admin about migrating from API-key access` が表示されます。クラウドプロバイダーログインを使用している場合、`Unknown command: /schedule` が表示されます。シェルに `ANTHROPIC_API_KEY` または `ANTHROPIC_AUTH_TOKEN` が設定されている場合、または `settings.json` に `apiKeyHelper` が設定されている場合は、これらが claude.ai ログインより優先されるため、まず削除してください。プロファイルまたはフェデレーション認証情報も優先されるため、それもオフに切り替えてください
+* Claude Code のウェブセッション内にいます。代わりに[ウェブ UI](https://claude.ai/code/routines)からルーティンを管理してください
+* 組織のポリシーが[Claude Code on the web](/docs/ja/claude-code-on-the-web)を無効にしており、ルーティンはこれで実行されます
+* Owner が Team または Enterprise 組織の[ルーティンを無効にしました](#routines-are-disabled-by-your-organizations-policy)。v2.1.227 より前では、このケースでもコマンドが表示されていました。Claude がルーティンを作成または実行しようとすると、claude.ai がそれを拒否しました
 
-CLI がどのように構成されているかに関わらず、[claude.ai/code/routines](https://claude.ai/code/routines) でいつでもルーティンを作成および管理できます。
+組織のポリシーがルーティンまたは Claude Code on the web を無効にしていない限り、CLI がどのように構成されているかに関わらず、[claude.ai/code/routines](https://claude.ai/code/routines) でいつでもルーティンを作成および管理できます。
 
 <h3 id="/schedule-asks-you-to-authenticate">
   `/schedule` が認証を求める
@@ -434,11 +436,11 @@ CLI がどのように構成されているかに関わらず、[claude.ai/code/
 
 `/schedule` は実行されますが、Claude が最初に claude.ai アカウントで認証する必要があると応答する場合、CLI に保存された claude.ai ログインがありません。API アカウントはルーティンではサポートされていません。`/login` を実行し、claude.ai アカウントでサインインしてから、`/schedule` を再度実行してください。
 
-<h3 id="routines-are-disabled-by-your-organization’s-policy">
+<h3 id="routines-are-disabled-by-your-organizations-policy">
   「ルーティンは組織のポリシーによって無効になっています」
 </h3>
 
-Team または Enterprise 組織の Owner が [claude.ai/admin-settings/claude-code](https://claude.ai/admin-settings/claude-code) の **Routines** トグルをオフにしている可能性があります。これはサーバー側の組織設定であるため、ローカル構成からオーバーライドすることはできません。組織のルーティンを有効にするよう Owner に依頼してください。
+Team または Enterprise 組織の Owner が [claude.ai/admin-settings/claude-code](https://claude.ai/admin-settings/claude-code) の **Routines** トグルをオフにしている可能性があります。Claude Code v2.1.227 以降では、同じトグルが CLI の `/schedule` も非表示にします。これはサーバー側の組織設定であるため、ローカル構成からオーバーライドすることはできません。組織のルーティンを有効にするよう Owner に依頼してください。
 
 <h2 id="related-resources">
   関連リソース
@@ -446,6 +448,6 @@ Team または Enterprise 組織の Owner が [claude.ai/admin-settings/claude-c
 
 * [`/loop` とセッション内スケジューリング](/docs/ja/scheduled-tasks): オープン CLI セッション内でローカルタスクをスケジュール
 * [Desktop スケジュール済みタスク](/docs/ja/desktop-scheduled-tasks): マシンで実行され、ローカルファイルへのアクセスを持つローカルスケジュール済みタスク
-* [クラウド環境](/docs/ja/claude-code-on-the-web#the-cloud-environment): クラウドセッションのランタイム環境を構成
+* [クラウド環境](/docs/ja/cloud-environments): クラウドセッションのネットワークアクセス、環境変数、セットアップスクリプトを構成
 * [MCP コネクタ](/docs/ja/mcp): Slack、Linear、Google Drive などの外部サービスを接続
 * [GitHub Actions](/docs/ja/github-actions): リポジトリイベントで CI パイプラインで Claude を実行

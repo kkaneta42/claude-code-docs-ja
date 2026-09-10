@@ -17,6 +17,362 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-09-10</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/accessibility-ja.md                  |  138 +-
+ docs-ja/pages/admin-setup-ja.md                    |   75 +-
+ docs-ja/pages/advisor-ja.md                        |   85 +-
+ docs-ja/pages/agent-teams-ja.md                    |  183 +-
+ docs-ja/pages/agents-ja.md                         |    9 +-
+ docs-ja/pages/amazon-bedrock-ja.md                 |  229 +-
+ docs-ja/pages/authentication-ja.md                 |  124 +-
+ docs-ja/pages/auto-mode-config-ja.md               |  265 +-
+ docs-ja/pages/best-practices-ja.md                 |  101 +-
+ docs-ja/pages/champion-kit-ja.md                   |    6 +-
+ docs-ja/pages/changelog.md                         |   56 +
+ docs-ja/pages/channels-ja.md                       |   54 +-
+ docs-ja/pages/channels-reference-ja.md             |   94 +-
+ docs-ja/pages/checkpointing-ja.md                  |   46 +-
+ docs-ja/pages/claude-apps-gateway-config-ja.md     |  451 ++-
+ docs-ja/pages/claude-apps-gateway-deploy-ja.md     |  131 +-
+ docs-ja/pages/claude-apps-gateway-ja.md            |  213 +-
+ docs-ja/pages/claude-apps-gateway-on-aws-ja.md     |   36 +-
+ .../pages/claude-apps-gateway-spend-limits-ja.md   |   66 +-
+ docs-ja/pages/claude-code-on-the-web-ja.md         |  761 +---
+ docs-ja/pages/claude-directory-ja.md               |  166 +-
+ docs-ja/pages/claude-platform-on-aws-ja.md         |   34 +-
+ docs-ja/pages/claude-security-ja.md                |   19 +-
+ docs-ja/pages/claude-tag-ja.md                     |   13 +-
+ docs-ja/pages/cli-reference-ja.md                  |  162 +-
+ docs-ja/pages/cloud-environments-ja.md             |  249 +-
+ docs-ja/pages/commands-ja.md                       |  262 +-
+ docs-ja/pages/common-workflows-ja.md               |  115 +-
+ docs-ja/pages/communications-kit-ja.md             |  173 +-
+ docs-ja/pages/computer-use-ja.md                   |    6 +-
+ docs-ja/pages/context-window-ja.md                 |   35 +-
+ docs-ja/pages/corporate-launcher-ja.md             |   41 +-
+ docs-ja/pages/costs-ja.md                          |  172 +-
+ docs-ja/pages/data-usage-ja.md                     |   38 +-
+ docs-ja/pages/debug-your-config-ja.md              |   73 +-
+ docs-ja/pages/deep-links-ja.md                     |   40 +-
+ docs-ja/pages/desktop-ios-simulator-ja.md          |    5 +-
+ docs-ja/pages/desktop-ja.md                        |  303 +-
+ docs-ja/pages/desktop-linux-ja.md                  |   73 +-
+ docs-ja/pages/desktop-quickstart-ja.md             |   83 +-
+ docs-ja/pages/desktop-scheduled-tasks-ja.md        |   14 +-
+ docs-ja/pages/devcontainer-ja.md                   |   27 +-
+ docs-ja/pages/discover-plugins-ja.md               |  135 +-
+ docs-ja/pages/errors-ja.md                         | 3751 ++++++++++++++++----
+ docs-ja/pages/fast-mode-ja.md                      |   99 +-
+ docs-ja/pages/feature-availability-ja.md           |   94 +-
+ docs-ja/pages/features-overview-ja.md              |  110 +-
+ docs-ja/pages/fullscreen-ja.md                     |  250 +-
+ docs-ja/pages/gateways-ja.md                       |   11 +-
+ docs-ja/pages/github-actions-cloud-providers-ja.md |  326 +-
+ docs-ja/pages/github-actions-ja.md                 |  850 ++---
+ docs-ja/pages/github-enterprise-server-ja.md       |   56 +-
+ docs-ja/pages/gitlab-ci-cd-ja.md                   |  333 +-
+ docs-ja/pages/glossary-ja.md                       |   46 +-
+ docs-ja/pages/goal-ja.md                           |   80 +-
+ docs-ja/pages/google-vertex-ai-ja.md               |   64 +-
+ docs-ja/pages/headless-ja.md                       |  173 +-
+ docs-ja/pages/hooks-guide-ja.md                    |  250 +-
+ docs-ja/pages/how-claude-code-works-ja.md          |   88 +-
+ docs-ja/pages/interactive-mode-ja.md               |  787 ++--
+ docs-ja/pages/jetbrains-ja.md                      |   28 +-
+ docs-ja/pages/keybindings-ja.md                    |  243 +-
+ docs-ja/pages/large-codebases-ja.md                |  107 +-
+ docs-ja/pages/legal-and-compliance-ja.md           |   19 +-
+ docs-ja/pages/llm-gateway-ja.md                    |    2 +-
+ docs-ja/pages/llm-gateway-protocol-ja.md           |  100 +-
+ docs-ja/pages/managed-mcp-ja.md                    |  430 ++-
+ docs-ja/pages/managed-settings-ja.md               |  441 ++-
+ docs-ja/pages/mcp-quickstart-ja.md                 |   65 +-
+ docs-ja/pages/memory-ja.md                         |  111 +-
+ docs-ja/pages/microsoft-foundry-ja.md              |    7 +-
+ docs-ja/pages/mobile-ja.md                         |   27 +-
+ docs-ja/pages/network-config-ja.md                 |  192 +-
+ docs-ja/pages/overview-ja.md                       |   55 +-
+ docs-ja/pages/permission-modes-ja.md               |  482 ++-
+ docs-ja/pages/permissions-ja.md                    |  479 ++-
+ docs-ja/pages/platforms-ja.md                      |   24 +-
+ docs-ja/pages/plugin-dependencies-ja.md            |   74 +-
+ docs-ja/pages/plugin-hints-ja.md                   |   11 +-
+ docs-ja/pages/plugin-relevance-ja.md               |   24 +-
+ docs-ja/pages/plugins-ja.md                        |  102 +-
+ docs-ja/pages/plugins-reference-ja.md              |  921 ++---
+ docs-ja/pages/prompt-caching-ja.md                 |  206 +-
+ docs-ja/pages/prompt-library-ja.md                 |   16 +-
+ docs-ja/pages/quickstart-ja.md                     |  111 +-
+ docs-ja/pages/routines-ja.md                       |  120 +-
+ docs-ja/pages/sandbox-environments-ja.md           |   74 +-
+ docs-ja/pages/sandboxing-ja.md                     |  437 ++-
+ docs-ja/pages/scheduled-tasks-ja.md                |   37 +-
+ docs-ja/pages/security-guidance-ja.md              |   54 +-
+ docs-ja/pages/security-ja.md                       |   34 +-
+ .../self-hosted-environments-configuration-ja.md   |  439 ++-
+ .../pages/self-hosted-environments-identity-ja.md  |  272 +-
+ docs-ja/pages/self-hosted-environments-ja.md       |  166 +-
+ .../self-hosted-environments-quickstart-ja.md      |  130 +-
+ .../pages/self-hosted-environments-reference-ja.md |  338 +-
+ .../pages/self-hosted-environments-testing-ja.md   |  271 +-
+ docs-ja/pages/sessions-ja.md                       |  196 +-
+ docs-ja/pages/settings-example-ja.md               |  392 +-
+ docs-ja/pages/settings-ja.md                       | 1689 ++++-----
+ docs-ja/pages/setup-ja.md                          |   67 +-
+ docs-ja/pages/slack-ja.md                          |   57 +-
+ docs-ja/pages/statusline-ja.md                     |  227 +-
+ docs-ja/pages/terminal-config-ja.md                |  231 +-
+ docs-ja/pages/third-party-integrations-ja.md       |  121 +-
+ docs-ja/pages/tools-reference-ja.md                |  659 +++-
+ docs-ja/pages/troubleshoot-install-ja.md           |  469 ++-
+ docs-ja/pages/troubleshooting-ja.md                |   55 +-
+ docs-ja/pages/ultrareview-ja.md                    |  159 +-
+ docs-ja/pages/voice-dictation-ja.md                |   24 +-
+ docs-ja/pages/vs-code-ja.md                        |  492 +--
+ docs-ja/pages/web-quickstart-ja.md                 |   95 +-
+ docs-ja/pages/workflows-ja.md                      |  226 +-
+ docs-ja/pages/zero-data-retention-ja.md            |   15 +-
+ 114 files changed, 16413 insertions(+), 8139 deletions(-)
+```
+
+<details>
+<summary>accessibility-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/accessibility-ja.md b/docs-ja/pages/accessibility-ja.md
+index 06739d2..32668f1 100644
+--- a/docs-ja/pages/accessibility-ja.md
++++ b/docs-ja/pages/accessibility-ja.md
+@@ -7,11 +7,9 @@
+ > VoiceOver や NVDA などのスクリーンリーダー、スクリーン拡大鏡、モーション削減、色覚異常対応テーマの設定で Claude Code をセットアップします。
+ 
+-Claude Code には、ビジュアルターミナルインターフェースをプレーンな線形テキストに置き換えるスクリーンリーダーモードがあります。ボックス、プログレスアニメーション、インプレース再描画の代わりに、このモードはラベル付きの行を出力し、VoiceOver や NVDA などのスクリーンリーダーが順番に読み上げるため、完全な会話を保持し、ツール権限を承認し、出力を最後まで確認できます。
++Claude Code には、ビジュアルターミナルインターフェースをプレーンな線形テキストに置き換えるスクリーンリーダーモードがあります。ボックス、プログレスアニメーション、インプレース再描画の代わりに、Claude Code はラベル付きの行を出力し、VoiceOver や NVDA などのスクリーンリーダーが順番に読み上げます。完全な会話を保持し、ツール権限を承認し、出力を最後まで確認できます。
+ 
+-スクリーンリーダーモードはオプトインです。スクリーン拡大鏡、モーション削減、またはスクリーンリーダーの代わりにカラーブラインド対応テーマを使用する場合は、[スクリーンリーダーモード以外のアクセシビリティ設定](#accessibility-settings-beyond-screen-reader-mode)を参照してください。
++スクリーンリーダーモードはオプトインです。スクリーン拡大鏡、モーション削減、またはスクリーンリーダーの代わりにカラーブラインド対応テーマを使用する場合は、[アクセシビリティ設定](#accessibility-settings)テーブルから `CLAUDE_CODE_ACCESSIBILITY`、`prefersReducedMotion`、または `theme` を設定してください。スクリーンリーダーモードはターミナルインターフェースのみを適応させるため、VS Code 拡張機能のチャットパネルではこれを必要としません。Claude Code v2.1.236 以降では、拡張機能は設定なしで[スクリーンリーダーにコンバーセーション活動を通知](/docs/ja/vs-code#use-a-screen-reader)します。
+ 
+-<Note>
+-  スクリーンリーダーモードには Claude Code v2.1.181 以降が必要です。以前のバージョンは `--ax-screen-reader` フラグを `error: unknown option '--ax-screen-reader'` で拒否します。
+-</Note>
++スクリーンリーダーモードには Claude Code v2.1.181 以降が必要です。以前のバージョンは `--ax-screen-reader` フラグを `error: unknown option '--ax-screen-reader'` で拒否します。
+ 
+ <h2 id="turn-on-screen-reader-mode">
+@@ -22,15 +20,12 @@ Claude Code には、ビジュアルターミナルインターフェースを
+ 
+ * 1 つのセッション用：`claude --ax-screen-reader` を実行します。
+-* 1 つのシェルから開始されたセッション用：`CLAUDE_AX_SCREEN_READER` 環境変数を `1` に設定します。Bash または Zsh では `export CLAUDE_AX_SCREEN_READER=1` を実行し、PowerShell では `$env:CLAUDE_AX_SCREEN_READER = "1"` を実行します。すべてのシェルをカバーするために、シェルプロファイルに行を追加します。
+-* マシン上のすべてのセッション用：ユーザー[設定ファイル](/docs/ja/settings)に `"axScreenReader": true` を追加します。これは VS Code 統合ターミナルを含むすべてのターミナルをカバーします。
++* 1 つのシェルから開始されたセッション用：`CLAUDE_AX_SCREEN_READER` 環境変数を `1` に設定します。Bash または Zsh では `export CLAUDE_AX_SCREEN_READER=1` を実行し、PowerShell では `$env:CLAUDE_AX_SCREEN_READER = "1"` を実行します。シェルプロファイルにその行を追加して、今後のシェルでも保持します。
++* マシン上のすべてのセッション用：ユーザー[設定ファイル](/docs/ja/settings)に `"axScreenReader": true` を追加します。この設定は VS Code 統合ターミナルを含むすべてのターミナルに適用されます。
+ 
+-<Note>
+-  メソッドは優先順位順にリストされています。[`--ax-screen-reader`](/docs/ja/cli-reference#cli-flags) フラグは [`CLAUDE_AX_SCREEN_READER`](/docs/ja/env-vars) 環境変数をオーバーライドし、これは [`axScreenReader`](/docs/ja/settings#available-settings) 設定をオーバーライドします。
+-</Note>
+```
+
+</details>
+
+<details>
+<summary>admin-setup-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/admin-setup-ja.md b/docs-ja/pages/admin-setup-ja.md
+index e4a104e..994e983 100644
+--- a/docs-ja/pages/admin-setup-ja.md
++++ b/docs-ja/pages/admin-setup-ja.md
+@@ -18,5 +18,5 @@ Claude Code は、ローカル開発者設定よりも優先されるマネー
+ | :-------------------------------------------------------- | :------------------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+ | [API プロバイダーを選択する](#choose-your-api-provider)              | Claude Code が認証される場所と課金方法 | [Authentication](/docs/ja/authentication)、[Amazon Bedrock](/docs/ja/amazon-bedrock)、[Google Cloud の Agent Platform](/docs/ja/google-vertex-ai)、[Microsoft Foundry](/docs/ja/microsoft-foundry) |
+-| [設定がデバイスに到達する方法を決定する](#decide-how-settings-reach-devices) | マネージドポリシーが開発者マシンに到達する方法   | [Server-managed settings](/docs/ja/server-managed-settings)、[Settings files](/docs/ja/settings#settings-files)                                                                       |
++| [設定がデバイスに到達する方法を決定する](#decide-how-settings-reach-devices) | マネージドポリシーが開発者マシンに到達する方法   | [Server-managed settings](/docs/ja/server-managed-settings)、[Delivery mechanisms](/docs/ja/managed-settings#delivery-mechanisms)                                                     |
+ | [実行する内容を決定する](#decide-what-to-enforce)                    | どのツール、コマンド、統合が許可されるか      | [Permissions](/docs/ja/permissions)、[Sandboxing](/docs/ja/sandboxing)                                                                                                                |
+ | [使用状況の可視性をセットアップする](#set-up-usage-visibility)             | 支出と採用を追跡する方法              | [Analytics](/docs/ja/analytics)、[Monitoring](/docs/ja/monitoring-usage)、[Costs](/docs/ja/costs)                                                                                           |
+@@ -47,5 +47,5 @@ Claude Code は複数の API プロバイダーのいずれかを通じて Claud
+ </h2>
+ 
+-マネージド設定は、ローカル開発者設定よりも優先されるポリシーを定義します。Claude Code は以下の 4 つのソースを優先順位順にチェックし、空でない設定を返す最初のものを適用します。ただし 1 つの例外があります。[クロスソースロックキー](/docs/ja/settings#settings-precedence)（サンドボックス許可リストロックなど）の小さなセットは、管理者が制御するソースがそれらを設定する場合に尊重されます。
++マネージド設定は、組織ポリシーを定義します。Claude Code は以下の表に示す 4 つのソースを優先順位順にチェックします。[Claude Code がマネージドソースを組み合わせる方法](/docs/ja/managed-settings#precedence-within-the-managed-tier)は、どのソースが適用されるか、ポリシーヘルパーが何を変更するか、およびすべてのソースを構成する方法を説明しています。この表は決定マップです。
+ 
+ | メカニズム                   | 配信                                                                                                                                                                                                  | 優先度 | プラットフォーム      |
+@@ -56,17 +56,13 @@ Claude Code は複数の API プロバイダーのいずれかを通じて Claud
+ | Windows user registry   | `HKCU\SOFTWARE\Policies\ClaudeCode`                                                                                                                                                                 | 最低  | Windows のみ    |
+ 
+-設定済みの [`policyHelper`](/docs/ja/settings#compute-managed-settings-with-a-policy-helper) は 4 つのソースすべてに優先します。その出力は実行時のマネージド設定の唯一のものになります。[設定の優先度](/docs/ja/settings#settings-precedence) を参照してください。
++Claude Code はスタートアップ時に server-managed 設定をフェッチし、セッション中は 1 時間ごとに更新します。デプロイするエンドポイントインフラストラクチャはありません。claude.ai 管理コンソール経由の配信には Claude for Teams または Enterprise プランが必要です。Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry でのデプロイメントは、[Claude apps gateway](/docs/ja/claude-apps-gateway) を実行することで同じリモート配信を取得できます。または、ファイルベースまたは OS レベルのメカニズムのいずれかを代わりに使用してください。
+ 
+-Server-managed 設定はデバイスが認証されるときに到達し、アクティブなセッション中は 1 時間ごとに更新されます。エンドポイントインフラストラクチャは不要です。claude.ai 管理コンソール経由の配信には Claude for Teams または Enterprise プランが必要です。Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry での展開は、[Claude apps gateway](/docs/ja/claude-apps-gateway) を実行することで同じリモート配信を取得できます。または、代わりにファイルベースまたは OS レベルのメカニズムのいずれかを使用してください。
+-
+-組織が複数のプロバイダーを混在させている場合、claude.ai ユーザー向けに [server-managed settings](/docs/ja/server-managed-settings) を設定し、他のユーザーがマネージドポリシーを受け取るように [ファイルベースまたは plist/registry フォールバック](/docs/ja/settings#settings-files) を設定してください。
++組織が複数のプロバイダーを混在させている場合、claude.ai ユーザー向けに [server-managed settings](/docs/ja/server-managed-settings) を設定し、他のユーザーがマネージドポリシーを受け取るように [ファイルベースまたは plist/registry フォールバック](/docs/ja/managed-settings#delivery-mechanisms)を設定してください。
+ 
+ plist と HKLM レジストリの場所は任意のプロバイダーで機能し、書き込みに管理者権限が必要なため、改ざんに強いです。HKCU の Windows ユーザーレジストリは昇格なしで書き込み可能なため、実行チャネルではなく便利なデフォルトとして扱ってください。
+```
+
+</details>
+
+<details>
+<summary>advisor-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/advisor-ja.md b/docs-ja/pages/advisor-ja.md
+index 8a36aeb..949378a 100644
+--- a/docs-ja/pages/advisor-ja.md
++++ b/docs-ja/pages/advisor-ja.md
+@@ -35,9 +35,7 @@ advisor モデルは 3 つの方法で設定できます。
+ * **`--advisor` フラグ**：起動時に単一セッションの advisor を設定します
+ 
+-これらのいずれかが advisor モデルを設定する場合、advisor はメインモデルが[それをサポートしている](#choose-an-advisor-model)セッションで有効になります。使用を停止するには、[advisor をオフにする](#turn-the-advisor-off)を参照してください。
++これらのいずれかが advisor を有効にするのは、メインモデルが[それをサポートしている](#choose-an-advisor-model)セッションです。セッションが開始されると、Claude Code は `Advisor Tool (experimental) is on and may use more tokens · /advisor` 通知を表示します。advisor の使用を停止するには、[advisor をオフにする](#turn-the-advisor-off)を参照してください。
+ 
+-<Note>
+-  Fable 5 を advisor として使用するには、Claude Code v2.1.170 以降と、組織の [Fable 5 アクセス](/docs/ja/model-config#work-with-fable-5)が必要です。
+-</Note>
++一部のプランでは、Fable を advisor として使用する場合、Fable の使用を使用クレジットに請求することへの 1 回限りの[同意](/docs/ja/model-config#fable-and-usage-credits)も必要です。その同意を与える前に何が起こるかについては、[Fable advisor と使用クレジット](#fable-advisor-and-usage-credits)を参照してください。
+ 
+ <h3 id="use-the-/advisor-command">
+@@ -51,5 +49,9 @@ advisor モデルは 3 つの方法で設定できます。
+ ```
+ 
+-選択は、ユーザー設定の `advisorModel` に保存され、セッション全体で保持されます。組織の [`availableModels`](/docs/ja/model-config#restrict-model-selection)許可リストが保存された advisor モデルを除外している場合、`/advisor` で許可されたモデルを選択するまで advisor は呼び出されません。現在のメインモデルが advisor をサポートしていない場合、選択は引き続き保存され、[`/model`](/docs/ja/model-config#setting-your-model)で[互換性のあるメインモデル](#choose-an-advisor-model)に切り替えるときにアクティブになります。
++コマンドは `Advisor set to` で確認し、その後に advisor モデル名が続きます。選択はユーザー設定の `advisorModel` に保存され、セッション全体で保持されます。
++
++Claude Code は、組織の [`availableModels`](/docs/ja/model-config#restrict-model-selection)許可リストが除外した保存済み advisor を呼び出しません。advisor を使用するには、`/advisor` で許可されたモデルを選択してください。Claude Code は、現在のメインモデルがサポートしていない advisor を引き続き保存します。その advisor は、[`/model`](/docs/ja/model-config#setting-your-model)で[互換性のあるメインモデル](#choose-an-advisor-model)に切り替えた後にアクティブになります。
++
++一部のプランでは、Fable を advisor として使用する場合、Fable の使用を使用クレジットに請求することへの 1 回限りの[同意](/docs/ja/model-config#fable-and-usage-credits)も必要です。その同意を与える前に `/advisor fable` が何をするかについては、[Fable advisor と使用クレジット](#fable-advisor-and-usage-credits)を参照してください。
+ 
+ <h3 id="set-advisormodel-in-settings">
+@@ -75,5 +77,12 @@ claude --advisor opus
+ ```
+ 
+```
+
+</details>
+
+<details>
+<summary>agent-teams-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/agent-teams-ja.md b/docs-ja/pages/agent-teams-ja.md
+index 79b1162..1f6564f 100644
+--- a/docs-ja/pages/agent-teams-ja.md
++++ b/docs-ja/pages/agent-teams-ja.md
+@@ -8,10 +8,10 @@
+ 
+ <Warning>
+-  エージェントチームは実験的機能であり、デフォルトでは無効になっています。[settings.json](/docs/ja/settings) または環境に `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` を追加して有効にしてください。その変数がない場合、セッション開始時にチームが設定されず、チームディレクトリが書き込まれず、Claude はチームメンバーをスポーンまたは提案しません。エージェントチームには、セッション再開、タスク調整、シャットダウン動作に関する[既知の制限](#limitations)があります。
++  エージェントチームは実験的機能であり、デフォルトでは無効になっています。[settings.json](/docs/ja/settings) または環境に `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` を設定して有効にしてください。その変数がない場合、セッション開始時にチームが設定されず、チームディレクトリが書き込まれず、Claude はチームメンバーをスポーンまたは提案しません。エージェントチームには、セッション再開、タスク調整、シャットダウン動作に関する[既知の制限](#limitations)があります。
+ </Warning>
+ 
+-エージェントチームを使用すると、複数の Claude Code インスタンスが連携して動作するように調整できます。1 つのセッションがチームリーダーとして機能し、作業を調整し、タスクを割り当て、結果を統合します。チームメンバーは独立して動作し、それぞれ独自のコンテキストウィンドウで動作し、互いに直接通信します。
++エージェントチームを使用すると、複数の Claude Code インスタンスが連携して動作するように調整できます。1 つのセッションがチームリーダーとして機能し、作業を調整し、タスクを割り当て、結果を統合します。チームメンバーは独立して動作し、それぞれ独自のコンテキストウィンドウで動作し、互いに直接通信します。リーダーを経由せずに、任意のチームメンバーと直接対話することもできます。
+ 
+-[subagents](/docs/ja/sub-agents)（単一セッション内で実行され、メインエージェントにのみ報告できる）とは異なり、リーダーを経由せずに個別のチームメンバーと直接対話することもできます。
++チームを設定する前に、より軽量なオプションで十分かどうかを確認してください。[Subagents](/docs/ja/sub-agents) は単一セッション内で動作し、[クロスセッションメッセージング](/docs/ja/cross-session-messaging) を使用すると Claude は自分で実行するセッション間で検出結果を渡すことができます。
+ 
+ <Note>
+@@ -36,7 +36,7 @@
+ </h3>
+ 
+-エージェントチームと [subagents](/docs/ja/sub-agents) の両方を使用すると、作業を並列化できますが、動作方法が異なります。ワーカーが互いに通信する必要があるかどうかに基づいて選択してください。
++エージェントチームと [subagents](/docs/ja/sub-agents) の両方を使用すると、作業を並列化できますが、動作方法が異なります。チームなしでメッセージを相互に渡す別々のセッションについては、[クロスセッションメッセージング](/docs/ja/cross-session-messaging)を参照してください。
+ 
+-<Frame caption="Subagents は結果をメインエージェントに報告するだけで、互いに通信することはありません。エージェントチームでは、チームメンバーがタスクリストを共有し、作業を要求し、互いに直接通信します。">
++<Frame caption="Subagents は結果をメインエージェントに報告します。エージェントチームでは、チームメンバーがタスクリストを共有し、作業を要求し、互いに直接通信します。">
+   <img src="https://mintcdn.com/claude-code/nsvRFSDNfpSU5nT7/images/subagents-vs-agent-teams-light.png?fit=max&auto=format&n=nsvRFSDNfpSU5nT7&q=85&s=2f8db9b4f3705dd3ab931fbe2d96e42a" className="dark:hidden" alt="Subagent とエージェントチームのアーキテクチャを比較する図。Subagents はメインエージェントによって生成され、作業を実行し、結果を報告します。エージェントチームは共有タスクリストを通じて調整され、チームメンバーが互いに直接通信します。" width="4245" height="1615" data-path="images/subagents-vs-agent-teams-light.png" />
+ 
+@@ -44,11 +44,11 @@
+ </Frame>
+```
+
+</details>
+
+<details>
+<summary>agents-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/agents-ja.md b/docs-ja/pages/agents-ja.md
+index 929a33a..25b169f 100644
+--- a/docs-ja/pages/agents-ja.md
++++ b/docs-ja/pages/agents-ja.md
+@@ -18,7 +18,8 @@
+ すべてのアプローチにおいて、ワーカーは Claude セッションです。別のツールを関与させるには、それを Claude に [MCP サーバー](/docs/ja/mcp) として公開します。
+ 
+-この作業をサポートする 2 つの追加ツールがありますが、エージェント自体を実行する方法ではありません。
++この作業をサポートする 3 つの追加ツールがありますが、エージェント自体を実行する方法ではありません。
+ 
+ * [ワークツリー](/docs/ja/worktrees) は各セッションに個別の git チェックアウトを提供するため、並列セッションが同じファイルを編集することはありません。自分で実行するセッションに使用します。エージェントビューは、ディスパッチされた各セッションを自動的に独自のワークツリーに移動し、スポーンするサブエージェントも各々独自のワークツリーを取得できます。
++* [クロスセッションメッセージング](/docs/ja/cross-session-messaging) により、Claude はこのマシン上、別のマシン上、または [Claude Code on the web](/docs/ja/claude-code-on-the-web) 上の他の Claude Code セッションをリストして、メッセージを送信できます。自分で実行するセッションは、検出結果とステータスを相互に渡すことができます。
+ * [`/batch`](/docs/ja/commands) は、1 つの大きな変更を 5 ～ 30 個のワークツリー分離サブエージェントに分割し、各エージェントがプルリクエストを開く [skill](/docs/ja/skills) です。これはサブエージェントとワークツリーのパッケージ化された使用法であり、別の調整スタイルではありません。
+ 
+@@ -26,6 +27,6 @@
+ 
+ * [バックグラウンド bash コマンド](/docs/ja/interactive-mode#background-bash-commands) は、会話をブロックすることなく 1 つのシェルコマンドを実行します。エージェントをスポーンしません。
+-* [フォークされたサブエージェント](/docs/ja/sub-agents#fork-the-current-conversation) は、新規に開始する代わりに完全な会話コンテキストを継承するサブエージェントです。これはサブエージェントをスポーンする方法であり、別のサーフェスではありません。
+-* [ルーチン](/docs/ja/routines) は、マシン上で並列に実行するのではなく、Anthropic のクラウドでスケジュールに従ってセッションを実行します。
++* [フォークされたサブエージェント](/docs/ja/sub-agents#fork-the-current-conversation) は、新規に開始する代わりに完全な会話コンテキストを継承するサブエージェントです。これはサブエージェントをスポーンする方法であり、別のサーフェスではありません。`/subtask` で開始します。Claude は [フォークモード](/docs/ja/sub-agents#turn-fork-mode-on-or-off) がオンの場合、自身でもスポーンします。完全なセッションを、それと並行して実行する新しい [バックグラウンドセッション](/docs/ja/agent-view#from-inside-a-session) にコピーするには、`/fork` を使用します。[エージェントビューがオフ](/docs/ja/agent-view#turn-off-agent-view) の場合、フォークされたサブエージェントコマンドは `/fork` に変わり、`/subtask` は利用できません。
++* [ルーチン](/docs/ja/routines) は、マシン上で並列に実行するのではなく、クラウドでスケジュールに従ってセッションを実行します。
+ 
+ <Note>
+@@ -44,5 +45,5 @@
+   * Claude がワーカーのグループを計画、割り当て、監督する場合：[エージェントチーム](/docs/ja/agent-teams)（実験的で、デフォルトでは無効）
+   * スクリプトが Claude のターンバイターン判断の代わりに計画を保持する場合：[動的ワークフロー](/docs/ja/workflows)。[ワークフローがサブエージェントとスキルとどのように比較されるか](/docs/ja/workflows#when-to-use-a-workflow)を参照してください
+-* **ワーカーが互いに通信する必要があるか？** サブエージェントは結果をそれらを生成した会話に報告し、エージェントビューセッションはあなたにのみ報告します。エージェントチームのチームメイトはタスクリストを共有し、互いに直接メッセージを送信します。
++* **ワーカーが互いに通信する必要があるか？** Claude は [クロスセッションメッセージング](/docs/ja/cross-session-messaging)を使用して、自分で実行するセッション（エージェントビューから派遣するセッションを含む）間で調査結果を渡すことができます。サブエージェントは結果をそれらを生成した会話に報告し、エージェントビューセッションはあなたにのみ報告します。エージェントチームのチームメイトは互いに直接メッセージを送信し、[Task ツールを持つ場合](/docs/ja/tools-reference#task-tool-availability)、タスクリストを共有します。
+ * **タスクが同じファイルに触れるか？** [ワークツリー](/docs/ja/worktrees)で作業を分離します。サブエージェントと自分で実行するセッションは、それぞれ個別のワークツリーを使用できます。エージェントチームはチームメイトをワークツリーで分離しないため、[作業を分割](/docs/ja/agent-teams#avoid-file-conflicts)して、各チームメイトが異なるファイルセットを所有するようにします。
+ 
+```
+
+</details>
+
+<details>
+<summary>amazon-bedrock-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/amazon-bedrock-ja.md b/docs-ja/pages/amazon-bedrock-ja.md
+index 71a1b00..a37fe98 100644
+--- a/docs-ja/pages/amazon-bedrock-ja.md
++++ b/docs-ja/pages/amazon-bedrock-ja.md
+@@ -96,48 +96,48 @@ Amazon Bedrock 認証情報を使用してサインインするには、以下
+ </h2>
+ 
+-AWS 認証情報を持っていて、Amazon Bedrock を通じて Claude Code の使用を開始したい場合、ログインウィザードがそれをガイドします。AWS 側の前提条件はアカウントごとに 1 回完了します。ウィザードは Claude Code 側を処理します。
++AWS 認証情報を持っていて、Amazon Bedrock を通じて Claude Code の使用を開始したい場合、ログインウィザードがその手順を案内します。AWS 側の前提条件はアカウントごとに 1 回完了します。ウィザードが Claude Code 側を処理します。
+ 
+ <Steps>
+   <Step title="AWS アカウントで Anthropic モデルを有効にする">
+-    [Amazon Bedrock コンソール](https://console.aws.amazon.com/bedrock/)で、モデルカタログを開き、Anthropic モデルを選択して、ユースケースフォームを送信します。送信直後にアクセスが付与されます。AWS Organizations については[ユースケースの詳細を送信](#1-submit-use-case-details)を、権限については [IAM 設定](#iam-configuration)を参照してください。
++    [Amazon Bedrock コンソール](https://console.aws.amazon.com/bedrock/)で、モデルカタログを開き、Anthropic モデルを選択して、ユースケースフォームを送信します。送信直後にアクセスが許可されます。AWS Organizations については[ユースケースの詳細を送信](#1-submit-use-case-details)を、権限については[IAM 設定](#iam-configuration)を参照してください。
+   </Step>
+ 
+-  <Step title="Claude Code を開始して Amazon Bedrock を選択する">
+-    `claude` を実行します。ログインプロンプトで、**3rd-party platform**、次に **Amazon Bedrock** を選択します。
++  <Step title="Claude Code を起動して Amazon Bedrock を選択する">
++    `claude` を実行します。ログインプロンプトで、**3rd-party platform** を選択してから、**Amazon Bedrock** を選択します。既にサインインしていてチャットプロンプトが表示されている場合は、`/setup-bedrock` を実行してウィザードを開きます。`CLAUDE_CODE_USE_BEDROCK=1` が設定されるまで、Claude Code は[コマンドメニューからコマンドを非表示にします](/docs/ja/commands#how-the-command-menu-matches-what-you-type)。完全に入力してください。
+   </Step>
+ 
+   <Step title="ウィザードプロンプトに従う">
+-    AWS に認証する方法を選択します。`~/.aws` ディレクトリから検出された AWS プロファイル、Amazon Bedrock API キー、アクセスキーとシークレット、または環境内に既にある認証情報です。ウィザードはリージョンを取得し、アカウントが呼び出せる Claude モデルを確認し、それらをピン留めできます。結果は [user settings file](/docs/ja/settings) の `env` ブロックに保存されるため、環境変数を自分でエクスポートする必要はありません。
++    AWS への認証方法を選択します。`~/.aws` ディレクトリから検出された AWS プロファイル、Amazon Bedrock API キー、アクセスキーとシークレット、または環境に既に存在する認証情報です。ウィザードはリージョンを要求し、アカウントが呼び出せる Claude モデルを確認し、それらをピン留めできます。結果は[ユーザー設定ファイル](/docs/ja/settings)の `env` ブロックに保存されるため、環境変数を自分でエクスポートする必要はありません。
+   </Step>
+ </Steps>
+ 
+-サインイン後、いつでも `/setup-bedrock` を実行してウィザードを再度開き、認証情報、リージョン、またはモデルピンを変更できます。モデルピンステップは、現在ピン留めされているモデルから開始されます。ウィザードは `~/.claude/settings.json` に書き込むか、[`CLAUDE_CONFIG_DIR`](/docs/ja/env-vars#variables) が設定されている場合は `$CLAUDE_CONFIG_DIR/settings.json` に書き込みます。
++サインイン後、いつでも `/setup-bedrock` を実行してウィザードを再度開き、認証情報、リージョン、またはモデルピンを変更できます。モデルピンステップは、現在ピン留めされているモデルから開始します。ウィザードは `~/.claude/settings.json` に書き込むか、[`CLAUDE_CONFIG_DIR`](/docs/ja/env-vars#variables) が設定されている場合は `$CLAUDE_CONFIG_DIR/settings.json` に書き込みます。
+```
+
+</details>
+
+*...以降省略*
+
+</details>
+
+
+<details>
 <summary>2026-09-09</summary>
 
 **変更ファイル:**
@@ -2249,192 +2605,6 @@ index 8b6b232..19f2f2c 100644
 -| [`pluginSuggestionMarketplaces`](/docs/en/settings-reference#pluginsuggestionmarketplaces)                                 | Marketplaces whose plugins Claude Code may suggest to users                                                                                                                                                                                 |
 -| [`pluginTrustMessage`](/docs/en/settings-reference#plugintrustmessage)                                                     | Custom message appended to the plugin trust warning shown before installation                                                                                                                                                               |
 -| [`policyHelper`](/docs/en/settings-reference#policyhelper)                                                                 | Executable that computes managed settings at startup; see [Compute managed settings with a policy helper](/docs/en/settings-reference#policyhelper)                                                                                              |
-```
-
-</details>
-
-<details>
-<summary>self-hosted-environments-configuration-en.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/self-hosted-environments-configuration-en.md b/docs-ja/pages/self-hosted-environments-configuration-en.md
-index 27ac571..b5360a1 100644
---- a/docs-ja/pages/self-hosted-environments-configuration-en.md
-+++ b/docs-ja/pages/self-hosted-environments-configuration-en.md
-@@ -8,5 +8,5 @@
- 
- <Note>
--  Self-hosted environments are in public beta on Team and Enterprise plans; an [Owner or admin](/docs/en/cloud-environments#organization-shared-environments) enables them by turning on **Allow self-hosted environments** on the [**Cloud environments** admin page](https://claude.ai/admin-settings/cloud-environments). This page assumes a working runner; see the [quickstart](/docs/en/self-hosted-environments-quickstart) for setup and [Deploy to production](/docs/en/self-hosted-environments-deploy) for the fleet recipes.
-+  Self-hosted environments are in public beta on Team and Enterprise plans; an [Owner](/docs/en/cloud-environments#organization-shared-environments) enables them by turning on **Allow self-hosted environments** on the [**Cloud environments** admin page](https://claude.ai/admin-settings/cloud-environments). This page assumes a working runner; see the [quickstart](/docs/en/self-hosted-environments-quickstart) for setup and [Deploy to production](/docs/en/self-hosted-environments-deploy) for the fleet recipes.
- </Note>
- 
-@@ -226,5 +226,5 @@ The contract has four provisioner-agnostic rules:
- 1. **Be idempotent on `CLAUDE_RUNNER_ORDER_ID`.** Redelivery of the same request must spawn at most one runner. Derive a deterministic resource name from the ID and let your platform reject the duplicate.
- 2. **Don't retry the workload.** One order ID means at most one created workload. If the runner never registers, Anthropic re-requests with a fresh order ID after `--expected-spawn-seconds`.
--3. **Use the exit-code contract.** Exit 0 means submitted. Exit 1 means retryable failure; the session backs off and is re-offered. Exit 2 or higher means non-retryable; the session is blocked from spawning again until an [Owner or admin](/docs/en/cloud-environments#organization-shared-environments) selects **Retry** on it in the environment's **Activity** tab. On non-zero exit, the tail of the hook's stderr appears there as the failure reason, so write the actionable error to stderr and never secrets. For a pre-warming request there is no session to fail: the orchestrator logs a non-zero exit locally only, and the server re-requests the spawn after the lease.
-+3. **Use the exit-code contract.** Exit 0 means submitted. Exit 1 means retryable failure; the session backs off and is re-offered. Exit 2 or higher means non-retryable; the session is blocked from spawning again until an [Owner](/docs/en/cloud-environments#organization-shared-environments) selects **Retry** on it in the environment's **Activity** tab. On non-zero exit, the tail of the hook's stderr appears there as the failure reason, so write the actionable error to stderr and never secrets. For a pre-warming request there is no session to fail: the orchestrator logs a non-zero exit locally only, and the server re-requests the spawn after the lease.
- 4. **Set `--expected-spawn-seconds` to at least your p99 boot time.** This is the server-side lease. All orchestrator replicas must use the same value.
- 
-@@ -379,5 +379,5 @@ To pre-approve specific tools instead, append `--allowed-tools` with your rules,
- The runner gives each session its own config directory, seeded from an in-memory snapshot of the host's `~/.claude/` that the runner captures once at startup: `settings.json`, `CLAUDE.md`, hooks, agents, commands, and skills in your runner image apply to every session as the user-level baseline. Because the snapshot is taken at startup, config changes on a running host take effect only after a runner restart. Set `SELF_HOSTED_RUNNER_HOST_CONFIG_DIR` to seed from a different path, or point it at an empty directory to disable seeding.
- 
--Repository-committed `.claude/settings.json` layers on top as project settings. Sessions also read [`managed-settings.json`](/docs/en/settings#where-settings-live) from the standard system path in your runner image, but the managed tier uses one source at a time, and [server-managed settings](/docs/en/server-managed-settings) are checked first: if your organization delivers any server-managed keys, sessions ignore the runner image's managed file, except that `env` blocks merge per key across managed sources. See [settings precedence](/docs/en/settings#settings-precedence).
-+Repository-committed `.claude/settings.json` layers on top as project settings. Sessions also read [`managed-settings.json`](/docs/en/settings#where-settings-live) from the standard system path in your runner image, but the managed tier uses one source at a time, and [server-managed settings](/docs/en/server-managed-settings) are checked first: if your organization delivers any server-managed keys, sessions ignore the runner image's managed file except for its cross-source keys. Claude Code still reads the `env` block and the other [keys it reads from every admin source](/docs/en/managed-settings#keys-read-from-every-admin-source) from that file, such as the sandbox locks, the sandbox binary paths, and `forceRemoteSettingsRefresh`. See [settings precedence](/docs/en/settings#settings-precedence).
- 
- When Anthropic's control plane supplies a session with [Claude Code hooks](/docs/en/hooks), the runner installs them alongside, not over, your own configuration. Requires Claude Code v2.1.229 or later.
-```
-
-</details>
-
-<details>
-<summary>self-hosted-environments-deploy-en.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/self-hosted-environments-deploy-en.md b/docs-ja/pages/self-hosted-environments-deploy-en.md
-index de3dca9..4e41400 100644
---- a/docs-ja/pages/self-hosted-environments-deploy-en.md
-+++ b/docs-ja/pages/self-hosted-environments-deploy-en.md
-@@ -30,5 +30,5 @@ A self-hosted runner executes arbitrary, model-directed code on your infrastruct
-   The block applies to your wrapper script and lifecycle hooks too, since they share the container. Authenticate any token exchange with the [session JWT](/docs/en/self-hosted-environments-identity) against your own token service over allowlisted egress, or use a file-based web identity such as IAM Roles for Service Accounts (IRSA) on Amazon EKS.
- * **Per-runner filesystem isolation**: each runner process gets its own working directory that no other process on the host can read or write. Make `--hooks-dir`, the wrapper script, and the host's `~/.claude/` read-only to the session, either built into the image or mounted read-only.
--* **Dispatch is organization-wide**: any member of your Anthropic organization can dispatch a session to any of its environments, and there's no per-environment access control on dispatch. Treat every runner host as reachable for code execution by every org member, and place data or credentials on a runner host only if every org member is allowed to read them. [`--lock-to-account`](/docs/en/self-hosted-environments-reference#runner-cli-flags) bounds which account's sessions a given host executes, but dispatch into the environment itself stays organization-wide. To make self-hosted environments the only picker option, an [Owner or admin](/docs/en/cloud-environments#organization-shared-environments) can hide Anthropic-hosted environments for the whole organization from the [**Cloud environments** page](https://claude.ai/admin-settings/cloud-environments).
-+* **Dispatch is organization-wide**: any member of your Anthropic organization can dispatch a session to any of its environments, and there's no per-environment access control on dispatch. Treat every runner host as reachable for code execution by every org member, and place data or credentials on a runner host only if every org member is allowed to read them. [`--lock-to-account`](/docs/en/self-hosted-environments-reference#runner-cli-flags) bounds which account's sessions a given host executes, but dispatch into the environment itself stays organization-wide. To make self-hosted environments the only picker option, an [Owner](/docs/en/cloud-environments#organization-shared-environments) can hide Anthropic-hosted environments for the whole organization from the [**Cloud environments** page](https://claude.ai/admin-settings/cloud-environments).
- * **Enforce the repo-settings guard**: choose the guard mode with [`--confine-repo-settings`](/docs/en/self-hosted-environments-reference#runner-cli-flags). The default `warn` logs a violation and still spawns the session, `enforce` refuses the session, and `off` disables the scan. The runner scans each repository's committed settings for:
- 
-@@ -59,5 +59,5 @@ Whether these hosts are needed depends on your configuration:
- | :----------------------------------- | :--- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
- | `downloads.claude.ai`                | 443  | At install time, when you install or update Claude Code on the host with the native installer; the `install.sh` script itself is served from `claude.ai`. At session runtime, only when sessions install plugins from the official Anthropic marketplace.                               |
--| `storage.googleapis.com`             | 443  | At session runtime, for marketplace plugin catalog fetches and Artifact publishing when the Artifact tool is enabled; Artifact publishing falls back to `api.anthropic.com` when this host is blocked.                                                                                  |
-+| `storage.googleapis.com`             | 443  | At session runtime, for the plugin install counts and metadata shown in `/plugin`.                                                                                                                                                                                                      |
- | `code.claude.com` and `claude.com`   | 443  | Documentation lookups by the built-in claude-code-guide agent and pre-approved WebFetch requests during sessions. Blocking these hosts only affects documentation lookups.                                                                                                              |
- | `*.frame.claudeusercontent.com`      | 443  | Only when the [Artifact tool](/docs/en/artifacts#availability) is available for sessions in your organization; defaults vary by plan, per the availability table there. Set `CLAUDE_CODE_DISABLE_ARTIFACT=1` on the runner to keep the tool disabled regardless of the organization setting. |
-```
-
-</details>
-
-<details>
-<summary>self-hosted-environments-en.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/self-hosted-environments-en.md b/docs-ja/pages/self-hosted-environments-en.md
-index b136be1..99069ca 100644
---- a/docs-ja/pages/self-hosted-environments-en.md
-+++ b/docs-ja/pages/self-hosted-environments-en.md
-@@ -41,5 +41,5 @@ You can start runners yourself and keep them running, or run the [autoscaling or
- Check these before planning a rollout:
- 
--* **Plans**: public beta for Team and Enterprise organizations. Self-hosted environments are off by default; an [Owner or admin](/docs/en/cloud-environments#organization-shared-environments) turns on **Allow self-hosted environments** on the [**Cloud environments** admin page](https://claude.ai/admin-settings/cloud-environments), which requires [Claude Code on the web](/docs/en/claude-code-on-the-web) to be enabled for the organization.
-+* **Plans**: public beta for Team and Enterprise organizations. Self-hosted environments are off by default; an [Owner](/docs/en/cloud-environments#organization-shared-environments) turns on **Allow self-hosted environments** on the [**Cloud environments** admin page](https://claude.ai/admin-settings/cloud-environments), which requires [Claude Code on the web](/docs/en/claude-code-on-the-web) to be enabled for the organization.
- * **Zero Data Retention**: unavailable for organizations with [Zero Data Retention](/docs/en/zero-data-retention) enabled.
- * **Model inference**: sessions use the Anthropic API, and inference can't be routed through [Amazon Bedrock, Google Cloud's Agent Platform, Microsoft Foundry](/docs/en/third-party-integrations), or an [LLM gateway](/docs/en/llm-gateway).
-```
-
-</details>
-
-<details>
-<summary>self-hosted-environments-identity-en.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/self-hosted-environments-identity-en.md b/docs-ja/pages/self-hosted-environments-identity-en.md
-index 6784e5b..a134453 100644
---- a/docs-ja/pages/self-hosted-environments-identity-en.md
-+++ b/docs-ja/pages/self-hosted-environments-identity-en.md
-@@ -8,5 +8,5 @@
- 
- <Note>
--  Self-hosted environments are in public beta on Team and Enterprise plans; an [Owner or admin](/docs/en/cloud-environments#organization-shared-environments) enables them by turning on **Allow self-hosted environments** on the [**Cloud environments** admin page](https://claude.ai/admin-settings/cloud-environments). This page covers session identity verification; see the [quickstart](/docs/en/self-hosted-environments-quickstart) for setup and [Deploy to production](/docs/en/self-hosted-environments-deploy) for the fleet recipes.
-+  Self-hosted environments are in public beta on Team and Enterprise plans; an [Owner](/docs/en/cloud-environments#organization-shared-environments) enables them by turning on **Allow self-hosted environments** on the [**Cloud environments** admin page](https://claude.ai/admin-settings/cloud-environments). This page covers session identity verification; see the [quickstart](/docs/en/self-hosted-environments-quickstart) for setup and [Deploy to production](/docs/en/self-hosted-environments-deploy) for the fleet recipes.
- </Note>
- 
-```
-
-</details>
-
-<details>
-<summary>self-hosted-environments-quickstart-en.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/self-hosted-environments-quickstart-en.md b/docs-ja/pages/self-hosted-environments-quickstart-en.md
-index 6b379b4..82aac37 100644
---- a/docs-ja/pages/self-hosted-environments-quickstart-en.md
-+++ b/docs-ja/pages/self-hosted-environments-quickstart-en.md
-@@ -21,5 +21,5 @@ By the end you'll have an environment on the [**Cloud environments** admin page]
- The claude.ai side needs:
- 
--* **Allow self-hosted environments** turned on by an [Owner or admin](/docs/en/cloud-environments#organization-shared-environments) on the [**Cloud environments** admin page](https://claude.ai/admin-settings/cloud-environments); the **New** button doesn't appear until it is. If you don't hold the role, someone who does can create the environment and hand you its secret; the runner and terminal steps on this page need no claude.ai role, and where a step checks status in the admin UI, the runner's own log lines give you the same signal.
-+* **Allow self-hosted environments** turned on by an [Owner](/docs/en/cloud-environments#organization-shared-environments) on the [**Cloud environments** admin page](https://claude.ai/admin-settings/cloud-environments); the **New** button doesn't appear until it is. If you don't hold the role, someone who does can create the environment and hand you its secret; the runner and terminal steps on this page need no claude.ai role, and where a step checks status in the admin UI, the runner's own log lines give you the same signal.
- * A [GitHub connection](/docs/en/claude-code-on-the-web#github-authentication-options) for your organization, so developers can pick repositories when they start sessions.
- 
-@@ -48,5 +48,5 @@ A ready host prints the runner's usage text, listing flags such as `--environmen
- ## Set up an environment and runner
- 
--Claude Code includes a guided setup: an interactive Claude Code session that walks you through creating the environment in the admin UI, starts a local runner with the secret file you save, confirms that the runner registers, and writes a cheat sheet to `./runner-setup/CHEAT-SHEET.md`. Run it on a machine where you've signed in with `claude auth login` using an account that holds an Owner or admin role; it isn't available with API keys or third-party model providers. On hosts where an interactive session isn't possible, use the manual steps below instead. Confirm the [version check](#software-on-the-runner-host) passed first: on versions older than 2.1.224, this command starts an ordinary Claude session with the words as the prompt instead of the guided setup. To start the guided setup, run the setup subcommand and follow the prompts:
-+Claude Code includes a guided setup: an interactive Claude Code session that walks you through creating the environment in the admin UI, starts a local runner with the secret file you save, confirms that the runner registers, and writes a cheat sheet to `./runner-setup/CHEAT-SHEET.md`. Run it on a machine where you've signed in with `claude auth login` using an account that holds an Owner role; it isn't available with API keys or third-party model providers. On hosts where an interactive session isn't possible, use the manual steps below instead. Confirm the [version check](#software-on-the-runner-host) passed first: on versions older than 2.1.224, this command starts an ordinary Claude session with the words as the prompt instead of the guided setup. To start the guided setup, run the setup subcommand and follow the prompts:
- 
- ```bash theme={null}
-```
-
-</details>
-
-*...以降省略*
-
-</details>
-
-
-<details>
-<summary>2026-08-22</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/changelog.md                         | 62 +++++++++++++++++
- docs-ja/pages/claude-directory-ja.md               |  4 +-
- docs-ja/pages/cross-session-messaging-en.md        | 77 ++++++++++++++--------
- .../self-hosted-environments-configuration-en.md   |  4 +-
- .../pages/self-hosted-environments-deploy-en.md    | 57 +++++++++++++++-
- docs-ja/pages/self-hosted-environments-en.md       |  8 ++-
- .../pages/self-hosted-environments-reference-en.md | 61 +++++++++--------
- .../pages/self-hosted-environments-testing-en.md   |  2 +-
- 8 files changed, 207 insertions(+), 68 deletions(-)
-```
-
-**新規追加:**
-
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index e347b6d..b05c306 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,66 @@
- # Changelog
- 
-+## 2.1.239
-+
-+- Cost estimates (`/cost`, status line, `--max-budget-usd`) now include the 1.1× US-only-inference premium for data-residency workspaces
-+- Added the one-time fullscreen renderer offer on Bedrock, Vertex, Foundry and other previously excluded setups; new installs there now start in fullscreen
-+- Added `/claude-api upgrade` to migrate Python projects from `anthropic` 0.x to 1.x, and updated the skill's Python reference for 1.x (timeouts use `anthropic.Timeout`, not `httpx.Timeout`)
-+- Cloud sessions: plugins synced from claude.ai now show as `name@synced`, work with `claude plugin enable/disable <name>@synced`, and never override a same-named plugin you installed
-+- Alpine/musl builds: native image paste, clipboard, and audio-capture add-ons now load (musl-built binaries instead of glibc ones refused by the runtime)
-+- The usage-limit message shown when your monthly spend limit is already used up now also says when your session or weekly limit resets
-+- Fixed Bedrock streaming behind proxies that strip the response Content-Type header, which silently doubled billed API calls by re-running every turn non-streaming
-+- Fixed Claude Code hanging at startup behind an HTTPS proxy when using Bedrock with an SSO profile and `awsAuthRefresh` — the credential pre-check now honors `HTTPS_PROXY`
-+- Fixed a raw crash dump when starting Claude Code from a directory that no longer exists; it now prints a clear message
-+- Fixed Edit and Write calls pausing for about 5 seconds in JetBrains IDE terminals when the Claude Code plugin is connected
-+- Fixed a race where pressing Esc with a prompt queued could let the next turn finish early, leaving the session idle while Claude was still working and letting a later resubmit repeat actions
-+- Fixed WebFetch retaining expired page content in memory for the whole session instead of the intended 15 minutes
-+- Fixed cloud sessions (Claude Code on the web, desktop and mobile apps) resuming out of plan mode after an idle worker restart
-+- Fixed MCP elicitation forms taller than the terminal being clipped in fullscreen mode: the form now fits the window, with hidden fields reachable by scrolling and Accept/Decline always visible
-+- Fixed remote MCP servers staying failed after a transient 5xx on a mid-session reconnect in cloud sessions or via SDK `setMcpServers()`
-+- Fixed custom session titles disappearing from `/resume` after more than ~64 KB of conversation was written following the rename
-+- Fixed `claude -c`/resume picking up sessions from a different directory whose path differed only by characters like `_`, `-`, or `.`
-+- Fixed `/resume` and the agents view showing a session as recently changed (and reordering it) when only its file was touched or it was merely reopened
-+- Fixed `/resume` in all-projects mode telling you to `cd` into a deleted directory (e.g. a removed worktree); such sessions now resume in the current directory
-+- Fixed the `dark-ansi` theme rendering expanded tool results in fullscreen mode with text the same color as the background
-+- Fixed the fullscreen renderer prompt reappearing on every launch when it could never be answered; it now stops after being shown on three launches
 ```
 
 </details>
