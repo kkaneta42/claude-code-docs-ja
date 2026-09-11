@@ -24,7 +24,7 @@ Manual モードでは、Claude Code は読み取り専用の権限で開始さ�
 
 Manual モードでは、Claude Code はシステムを変更できる Bash コマンドを実行する前にも確認します。`ls`、`cat`、`git status` などの [読み取り専用コマンド](/docs/ja/permissions#read-only-commands) の組み込みセットは、確認なしで実行されます。あなたと組織は、これらの権限を直接設定します。
 
-[auto モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode) では、別の分類器モデルがあなたの代わりにアクションをレビューし、安全でないと判断したものをブロックします。[分類器がアクションを評価する方法](/docs/ja/permission-modes#how-the-classifier-evaluates-actions) では、Claude Code が直接承認するアクション、分類器に送信するアクション、およびあなたに確認するアクションを一覧表示しています。明示的な許可と拒否のルールは引き続き適用され、組織は [auto モードをオフにする](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode) ことができます。
+[auto モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode) では、別の分類器モデルがあなたの代わりにアクションをレビューし、安全でないと判断したものをブロックします。[分類器がアクションを評価する方法](/docs/ja/permission-modes#how-the-classifier-evaluates-actions) では、Claude Code が直接承認するアクション、分類器に送信するアクション、およびあなたに確認するアクションを一覧表示しています。明示的な ask ルールと deny ルールは引き続き適用され、組織は [auto モードをオフにする](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode) ことができます。
 
 セッションが開始される権限モードは、プラン、開始するサーフェス、設定、および組織の設定によって異なります。[権限モード](/docs/ja/permission-modes#which-mode-a-session-starts-in) を参照してください。
 
@@ -60,7 +60,7 @@ Claude Code は、ユーザーが付与したパーミッションのみを持�
 * **権限モード**: Manual モードでは、機密操作には明示的な承認が必要です
 * **コンテキスト認識分析**: 完全なリクエストを分析して潜在的に有害な指示を検出します
 * **入力サニタイゼーション**: ユーザー入力を処理することでコマンドインジェクションを防止します
-* **ネットワークコマンド承認**: `curl` や `wget` などのウェブからコンテンツを取得するコマンドはデフォルトでは自動承認されません。Manual モードでは他の読み取り専用以外の Bash コマンドと同様にプロンプトが表示されるため、一度承認するか、`Bash(curl *)` のような明示的な許可ルールを追加できます。完全にブロックするには、[`permissions.deny`](/docs/ja/permissions#tool-specific-permission-rules) に追加してください
+* **ネットワークコマンド承認**: `curl` や `wget` などのウェブからコンテンツを取得するコマンドはデフォルトでは自動承認されません。Manual モードでは他の読み取り専用以外の Bash コマンドと同様にプロンプトが表示されるため、一度承認するか、`Bash(curl *)` のような明示的な許可ルールを追加できます。Claude がこれらを実行しないようにするには、[`permissions.deny`](/docs/ja/permissions#tool-specific-permission-rules) に追加してください。deny ルールは[書かれたとおりの](/docs/ja/permissions#bash-rule-limits)コマンドにマッチします。コマンドテキストに依存しないネットワーク強制については、[sandbox ネットワーク分離](/docs/ja/sandboxing#network-isolation) を参照してください
 
 <h3 id="privacy-safeguards">
   プライバシーセーフガード

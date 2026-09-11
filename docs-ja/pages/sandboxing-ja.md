@@ -44,7 +44,7 @@ macOS では、インストールするものはありません。サンドボ�
   <Step title="Bash コマンドを実行する">
     Claude にコマンド（ビルドやテストスイートなど）を実行するよう依頼します。デフォルトでは、サンドボックス内のコマンドは作業ディレクトリ、セッション一時ディレクトリ、および `--add-dir`、`/add-dir`、または `permissions.additionalDirectories` で[追加したディレクトリ](/docs/ja/permissions#additional-directories-grant-file-access-not-configuration)に書き込みできます。コマンドが新しいネットワークドメインにアクセスする必要がある場合、Claude Code は承認を求めるか、[自動モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)では分類器にリクエストを送信します。
 
-    サンドボックス化されていない状態で実行できないコマンドは、通常の許可フローにフォールバックします。Claude Code はそれらの許可プロンプトを「Bash command」ではなく「Bash command (unsandboxed)」というタイトルで表示するため、どのコマンドがサンドボックス外で実行されたかを判断できます。サンドボックスが許可する内容を広げたり狭めたりするには、[サンドボックス化を設定](#configure-sandboxing)を参照してください。
+    サンドボックス化された状態で実行できないコマンドは、通常の許可フローにフォールバックします。Claude Code はそれらの許可プロンプトを「Bash command」ではなく「Bash command (unsandboxed)」というタイトルで表示するため、どのコマンドがサンドボックス外で実行されたかを判断できます。サンドボックスが許可する内容を広げたり狭めたりするには、[サンドボックス化を設定](#configure-sandboxing)を参照してください。
 
     サンドボックス化されたコマンドがコンテナ内で `Operation not permitted` で失敗する場合は、[トラブルシューティング](#troubleshooting)の Bubblewrap エントリを参照してください。
   </Step>
@@ -506,7 +506,7 @@ JWT を保持するファイルの場合、`extract` の代わりに、または
   Claude Code は、読み取りブロックが実施されない場合は常に `deny` を `error` として扱います。[ファイルシステム分離を無効にする](#disable-filesystem-isolation) 場合、および任意の設定ソースからの `filesystem.allowRead` エントリがファイルのパスを再度開く場合です。
 * `maskDuplicates` はまた、マスク済み認証情報値の逐語的コピーを置き換えます。これは `extract` キャプチャまたは `decode` 検証済みトークンであり、マッチした範囲外で見つかります。短いまたは一般的な値は出現するすべての場所で置き換えられるため、長く高エントロピーのシークレット用に予約します。デフォルト：false。
 
-`mask` は単一のファイルに適用されるため、各認証情報ファイルを個別にリストします。Claude Code は安全にマスクできない `mask` エントリにフォールバックします。ディレクトリパス、グロブパターン、8 MiB より大きいファイル、または UTF-8 テキストではないファイルです。代わりにディレクトリを明示的な `deny` エントリとして書き込みます。[どの設定がそれを無効にできるか](#which-settings-can-disable-it) の下の表は、各形式が `filesystem.disabled` をピンするかどうかと、ファイルシステム分離がオフの場合にどのように動作するかをカバーしています。
+`mask` は単一のファイルに適用されるため、各認証情報ファイルを個別にリストします。Claude Code は、安全にマスクできない `mask` エントリ、つまりディレクトリパス、グロブパターン、8 MiB より大きいファイル、または UTF-8 テキストではないファイルについては `deny` にフォールバックします。ディレクトリは代わりに明示的な `deny` エントリとして記述してください。[どの設定がそれを無効にできるか](#which-settings-can-disable-it) の下の表は、各形式が `filesystem.disabled` をピンするかどうかと、ファイルシステム分離がオフの場合にどのように動作するかをカバーしています。
 
 <h2 id="how-sandboxing-works">
   サンドボックス化の仕組み
@@ -559,7 +559,7 @@ JWT を保持するファイルの場合、`extract` の代わりに、または
 `WebFetch(domain:...)` ルールでは、サンドボックスは 2 つのワイルドカード形式を尊重します。`*.example.com` などの先頭の `*.` とベアの `*`。ベアの `*` 形式には Claude Code v2.1.186 以降が必要です。`WebFetch(domain:example.*)` などの他の位置のワイルドカードはフェッチに一致しますが、サンドボックス化されたコマンドには効果がありません。
 
 <Note>
-  組み込みプロキシは要求されたホスト名に基づいて許可リストを実施し、デフォルトでは TLS トラフィックを終了または検査しません。Claude Code v2.1.199 以降で利用可能な実験的な [`network.tlsTerminate`](/docs/ja/settings-reference#sandbox-network-tlsterminate) 設定により、組み込みプロキシが TLS 自体を終了するようになり、[`mask` 認証情報エントリ](#mask-credentials)が必要になります。デフォルトの影響については [Security limitations](#security-limitations) を参照してください。脅威モデルが TLS 検査を必要とする場合は、[Custom proxy configuration](#custom-proxy-configuration) を参照してください。
+  組み込みプロキシは要求されたホスト名に基づいて許可リストを実施し、デフォルトでは TLS トラフィックを終了または検査しません。Claude Code v2.1.199 以降で利用可能な実験的な [`network.tlsTerminate`](/docs/ja/settings-reference#sandbox-network-tlsterminate) 設定により、組み込みプロキシ自体が TLS を終了するようになります。[`mask` 認証情報エントリ](#mask-credentials)にはこの動作が必要です。デフォルトの影響については [Security limitations](#security-limitations) を参照してください。脅威モデルが TLS 検査を必要とする場合は、[Custom proxy configuration](#custom-proxy-configuration) を参照してください。
 </Note>
 
 <h4 id="ipv6-addresses-in-domain-lists">
@@ -603,7 +603,7 @@ WSL1 は bubblewrap が WSL2 でのみ利用可能なカーネル機能を必要
 
 許可ルールとサンドボックス化は異なるものを制御します。
 
-* **許可ルール**は Claude Code が使用できるツールを制御し、任意のツールが実行される前に評価されます。これらは Bash、Read、Edit、WebFetch、MCP、およびその他のツールを含むすべてのツールに適用されます。ただし、deny ルールまたは ask ルールが [`EndConversation`](/docs/ja/tools-reference#endconversation-tool-behavior) をブロックすることはできません。その他のツールが残っている場合は除きます。
+* **許可ルール**は Claude Code が使用できるツールを制御し、任意のツールが実行される前に評価されます。これらは Bash、Read、Edit、WebFetch、MCP、およびその他のツールを含むすべてのツールに適用されます。ただし、他のツールが 1 つでも残っている間は、deny ルールまたは ask ルールで [`EndConversation`](/docs/ja/tools-reference#endconversation-tool-behavior) をブロックすることはできません。
 * **サンドボックス化**は、Bash コマンドがファイルシステムとネットワークレベルでアクセスできるものを制限する OS レベルの実施を提供します。これは Bash コマンドとその子プロセスにのみ適用されます。
 
 2 つのレイヤーは実施方法も異なります。Claude Code はコマンド文字列に基づいて、また自動モードでは、コマンドが安全かどうかについての別の分類器の判断に基づいて、コマンドが実行される前に許可決定を評価します。オペレーティングシステムは実行中のプロセスにサンドボックス境界を実施するため、モデルが何を実行することを選択したかに関係なく、許可されたコマンドが名前が示唆するもの以上のことを行う場合でも、それは保持されます。
@@ -727,6 +727,9 @@ Claude Code をプロキシにポイントするには、[サンドボックス�
 
   失敗後、Claude は[コマンドをサンドボックス外で再実行することを提案](#the-unsandboxed-retry-escape-hatch)する場合があります。その再試行を承認するか、別のターミナルで git コマンドを自分で実行してください。`allowUnsandboxedCommands` を `false` に設定している場合、Claude は再試行を提案できないため、コマンドを自分で実行してください。同じ git コマンドが頻繁に失敗する場合は、[`excludedCommands`](/docs/ja/settings-reference#sandbox-excludedcommands) に追加してください。
 * **Bubblewrap がコンテナ内で起動に失敗する**：非特権コンテナでは、bubblewrap は新しい `/proc` ファイルシステムをマウントできないため、サンドボックス化されたコマンドは `bwrap` エラー（`Can't mount proc on /newroot/proc: Operation not permitted` など）で失敗します。[`enableWeakerNestedSandbox`](/docs/ja/settings-reference#sandbox-enableweakernestedsandbox) を `true` に設定して、内部サンドボックスがコンテナの既存の `/proc` をバインドマウントするようにしてください。このオプションは、外部コンテナが既に必要な分離境界を提供する場合にのみ使用してください。新しい `/proc` マウントが隠すサンドボックス化されたコマンドにプロセス情報を公開するためです。
+* **0 バイトの読み取り専用ファイルが `.claude` 設定パスに表示され、「はい、今後は聞かない」が保存されない**：Linux と WSL2 では、サンドボックスはサンドボックス化されたコマンドが実行されている間に、まだ存在しないファイルに対する書き込み拒否を保持するために、そこに 0 バイトの読み取り専用プレースホルダーを作成します。サンドボックスはその後プレースホルダーを削除します。SIGKILL などによってセッションがそのクリーンアップが実行される前に強制終了された場合、プレースホルダーは残ります。後のセッションは毎回起動時にそれらを読み取り専用で再度バインドするため、プレースホルダーが残っている箇所では、権限の選択を保存するなどの設定書き込みが失敗します。
+
+  `claude doctor` を実行して、残されたプレースホルダーファイルをリストアップしてください。[`Stale sandbox mask files left by a killed session`](/docs/ja/errors#stale-sandbox-mask-files-left-by-a-killed-session) 警告は最大 3 つの名前を表示し、残りをカウントします。そのプロジェクトで他の Claude Code セッションが実行されていない間に、`rm` で各ファイルを削除してください。v2.1.257 より前では、Claude Code は同じプレースホルダーを残していましたが、フラグを立てていませんでした。
 * **`--dangerously-skip-permissions` が root として失敗する**：このフラグは Linux と macOS で root として実行するか sudo 経由で実行する場合にブロックされます。root アクセスと許可プロンプトなしを組み合わせるとシステム上のあらゆるファイルまたはサービスを変更できるためです。チェックは認識されたサンドボックス内で自動的にスキップされます。コンテナで自律的に実行するには、[dev container](/docs/ja/devcontainer) 設定を使用してください。これは Claude Code を非 root ユーザーとして実行します。
 
 <h2 id="limitations">
@@ -747,7 +750,7 @@ Claude Code をプロキシにポイントするには、[サンドボックス�
 
 * **Unix ソケットを通じた権限昇格**：`allowUnixSockets` 設定は、サンドボックスバイパスにつながる可能性のあるシステムサービスへのアクセスを不注意に付与する可能性があります。たとえば、`/var/run/docker.sock` へのアクセスを許可すると、Docker ソケットを通じてホストシステムへのアクセスが効果的に付与されます。サンドボックスを通じて許可する Unix ソケットを慎重に検討してください。
 * **ファイルシステム権限昇格**：過度に広いファイルシステム書き込み権限は権限昇格攻撃を有効にする可能性があります。`$PATH` の実行可能ファイルを含むディレクトリ、システム設定ディレクトリ、またはユーザーシェル設定ファイル（`.bashrc` または `.zshrc`）への書き込みを許可すると、他のユーザーまたはシステムプロセスがこれらのファイルにアクセスするときに異なるセキュリティコンテキストでコード実行につながる可能性があります。
-* **Linux サンドボックス強度**：Linux 実装は強力なファイルシステムとネットワーク分離を提供しますが、特権のない名前空間なしで Docker 環境内で動作できるようにする `enableWeakerNestedSandbox` モードが含まれています。このオプションはセキュリティを大幅に弱め、追加の分離が別の方法で実施される場合にのみ使用する必要があります。
+* **Linux サンドボックス強度**：Linux 実装は強力なファイルシステムとネットワーク分離を提供しますが、特権付き名前空間のない Docker 環境内、または特権のないユーザー名前空間が sysctl で無効化されている Linux ホスト上で動作できるようにする `enableWeakerNestedSandbox` モードが含まれています。このオプションはセキュリティを大幅に弱め、追加の分離が別の方法で実施される場合にのみ使用する必要があります。
 * **macOS での Apple Events**：macOS サンドボックスはデフォルトで Apple Events をブロックします。`allowAppleEvents` 設定はこの制限を解除して、`open` や `osascript` などのツールが動作するようにしますが、コード実行分離を削除します。サンドボックス化されたコマンドは、ユーザープロンプトなしで他のアプリケーションをサンドボックス化されていない状態で起動でき、実行中のアプリケーションに AppleScript コマンドを送信できます。これはアプリごとの macOS オートメーション同意プロンプト（TCC）の対象です。これはユーザー、管理、または CLI 設定からのみ有効です。プロジェクト設定では有効にできません。
 
 <h3 id="platform-and-tool-compatibility">

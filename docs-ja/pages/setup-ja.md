@@ -47,19 +47,19 @@ To install Claude Code, use one of the following methods:
   <Tab title="Native Install (Recommended)">
     **macOS, Linux, WSL:**
 
-    ```bash theme={null} theme={null} theme={null} theme={null}
+    ```bash theme={null}
     curl -fsSL https://claude.ai/install.sh | bash
     ```
 
     **Windows PowerShell:**
 
-    ```powershell theme={null} theme={null} theme={null} theme={null}
+    ```powershell theme={null}
     irm https://claude.ai/install.ps1 | iex
     ```
 
     **Windows CMD:**
 
-    ```batch theme={null} theme={null} theme={null} theme={null}
+    ```batch theme={null}
     curl -fsSL https://claude.ai/install.cmd -o install.cmd && install.cmd && del install.cmd
     ```
 
@@ -75,7 +75,7 @@ To install Claude Code, use one of the following methods:
   </Tab>
 
   <Tab title="Homebrew">
-    ```bash theme={null} theme={null} theme={null} theme={null}
+    ```bash theme={null}
     brew install --cask claude-code
     ```
 
@@ -87,7 +87,7 @@ To install Claude Code, use one of the following methods:
   </Tab>
 
   <Tab title="WinGet">
-    ```powershell theme={null} theme={null} theme={null} theme={null}
+    ```powershell theme={null}
     winget install Anthropic.ClaudeCode
     ```
 
@@ -494,7 +494,7 @@ Claude Code は署名付き apt、dnf、および apk リポジトリを公開�
   npm でのインストール
 </h3>
 
-Claude Code をグローバル npm パッケージとしてインストールすることもできます。v2.1.198 以降、npm パッケージには [Node.js 22 以上](https://nodejs.org/en/download)が必要です。古い Node.js バージョンでは、npm はインストール中に `EBADENGINE` 警告を出力するのではなく失敗します。インストールは完了し、パッケージがランタイムで Node.js を使用しないネイティブバイナリをダウンロードするため、`claude` は引き続き実行されます。
+Claude Code をグローバル npm パッケージとしてインストールすることもできます。v2.1.198 以降、npm パッケージには [Node.js 22 以上](https://nodejs.org/en/download)が必要です。古い Node.js バージョンでは、npm はインストール中に失敗するのではなく `EBADENGINE` 警告を出力します。インストールは完了し、パッケージがランタイムで Node.js を使用しないネイティブバイナリをダウンロードするため、`claude` は引き続き実行されます。
 
 ```bash theme={null}
 npm install -g @anthropic-ai/claude-code

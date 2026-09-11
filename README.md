@@ -17,6 +17,250 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-09-11</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md                         |  99 +++++++++++++++++
+ docs-ja/pages/claude-apps-gateway-ja.md            |  10 +-
+ docs-ja/pages/costs-ja.md                          |  13 ++-
+ docs-ja/pages/desktop-scheduled-tasks-ja.md        |  22 ++--
+ docs-ja/pages/discover-plugins-ja.md               |   4 +-
+ docs-ja/pages/interactive-mode-ja.md               |  39 ++++++-
+ docs-ja/pages/overview-ja.md                       |  10 +-
+ docs-ja/pages/permission-modes-ja.md               |  50 ++++-----
+ docs-ja/pages/permissions-ja.md                    |  65 ++++++++----
+ docs-ja/pages/quickstart-ja.md                     |  10 +-
+ docs-ja/pages/sandbox-environments-ja.md           |  38 +++----
+ docs-ja/pages/sandboxing-ja.md                     |  13 ++-
+ docs-ja/pages/scheduled-tasks-ja.md                |  24 ++---
+ docs-ja/pages/security-ja.md                       |   4 +-
+ .../pages/self-hosted-environments-reference-ja.md |  38 ++++---
+ docs-ja/pages/settings-ja.md                       |  15 +--
+ docs-ja/pages/setup-ja.md                          |  12 +--
+ docs-ja/pages/tools-reference-ja.md                | 118 ++++++++++-----------
+ 18 files changed, 375 insertions(+), 209 deletions(-)
+```
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index 0b4c5e0..44dc4fd 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,103 @@
+ # Changelog
+ 
++## 2.1.268
++
++- Added to the Claude apps gateway: with `pricing:` set in `gateway.yaml`, signed-in Claude Code clients receive the same rates through managed settings, so `/cost` and telemetry match the spend meter
++- Added a startup warning for gateways when `access_control.allow_cidrs` is empty, and a one-time warning the first time a request arrives from a public address
++- Added the `gatewayInternalNetworks` managed setting, letting administrators allow `/login` to a Claude apps gateway on their organization's own public IPv4 block
++- Added `claude self-hosted-runner --remove-session-state` (default off): delete each session's per-session directories under `<base-dir>/_sessions/` when the session ends
++- Added `configDirectory` to the output of `claude auth status --json`
++- Added `--json` to `claude plugin install`, `uninstall`, `update`, `enable` and `disable`, and `errorDetails`/`noteDetails` to each row of `claude plugin list --json`
++- Added browser-tab icons for published artifacts, chosen by Claude to match each page
++- Fixed every turn failing with HTTP 400 on third-party Anthropic-compatible endpoints (`ANTHROPIC_BASE_URL`) since 2.1.265: a regex in the Artifact tool's input schema that those endpoints reject
++- Fixed WebFetch hanging indefinitely on a server that keeps the response open without finishing; a fetch now fails after 300 seconds. Set `CLAUDE_CODE_WEBFETCH_DEADLINE_MS` to override the deadline (0 turns it off)
++- Fixed a respawned in-process teammate picking up tools or a system prompt from a same-named agent file in a folder you have not trusted
++- Fixed sustained high CPU usage: a busy loop in long-running idle sessions no longer pins a CPU core, and rapid terminal focus reports during a session recap no longer keep the CPU high
++- Fixed Claude sometimes replying "your message came through empty" after an MCP tool call
++- Fixed deny and ask permission rules on symlinked directories (`/etc`, `/tmp`, `/var` on macOS; `/bin` on Linux) not applying when a path was given by its real location, and Bash commands ignoring deny rules written on a symlinked path spelling
++- Fixed a case where a Read or Edit deny rule did not apply when an `env -C`, `eval` or similar command the permission checker cannot analyze was on the same line
++- Fixed plugin and marketplace errors showing a token or password from a git source URL
++- Fixed `/mcp` and `/plugin` server details, `claude mcp list`/`get`, and MCP login errors showing secrets resolved from `${VAR}` placeholders in MCP configs
++- Fixed prompt caching and extended thinking breaking mid-session for SDK sessions using `excludeDynamicSections`: the first message is no longer re-rendered each request
++- Fixed entitled users being told a model is restricted after restart or in the Desktop Code tab when a cached model-access denial was stale
++- Fixed a running session silently switching to the organization's default model when another Claude Code process refreshed a stale model-access entry
++- Fixed long-context 429s on Fable models showing the usage-credits consent prompt instead of the 1M-context message on Pro and Team plans
++- Fixed workload identity federation via a profile (as claude-code-action configures it): processes sharing the profile could fail mid-run with `401 … jti reused`
+```
+
+</details>
+
+<details>
+<summary>claude-apps-gateway-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/claude-apps-gateway-ja.md b/docs-ja/pages/claude-apps-gateway-ja.md
+index 87b4f21..edb5a6f 100644
+--- a/docs-ja/pages/claude-apps-gateway-ja.md
++++ b/docs-ja/pages/claude-apps-gateway-ja.md
+@@ -136,5 +136,7 @@ Claude アプリゲートウェイは、開発者の Claude Code クライアン
+ 
+     <Note>
+-      Amazon Bedrock アップストリームは、`inference-profile/us.anthropic.*` ARN と基礎となる `foundation-model/anthropic.*` ARN の両方に対して `bedrock:InvokeModel` と `bedrock:InvokeModelWithResponseStream` を持つ AWS プリンシパルが必要であり、Bedrock コンソールのモデルカタログから Anthropic の一度限りのユースケースフォームが提出されています。EKS の IRSA、ECS タスクロール、または EC2 インスタンスプロファイルではなく、静的キーを使用して認証情報を提供します。[`upstreams` リファレンス](/docs/ja/claude-apps-gateway-config#upstreams)には、完全な IAM 詳細、クロスクラウド認証情報マトリックス、および他のプロバイダーの `auth` ブロックがあります。
++      Amazon Bedrock アップストリームは、`inference-profile/us.anthropic.*` ARN と基礎となる `foundation-model/anthropic.*` ARN の両方に対して `bedrock:InvokeModel` と `bedrock:InvokeModelWithResponseStream` を持つ AWS プリンシパルが必要です。また、そのアカウントについて、Bedrock コンソールのモデルカタログから Anthropic の一度限りのユースケースフォームが提出されている必要もあります。
++
++      静的キーではなく、EKS の IRSA、ECS タスクロール、または EC2 インスタンスプロファイルを使用して認証情報を提供します。[`upstreams` リファレンス](/docs/ja/claude-apps-gateway-config#upstreams)には、完全な IAM 詳細、クロスクラウド認証情報マトリックス、および他のプロバイダーの `auth` ブロックがあります。
+     </Note>
+   </Step>
+@@ -288,5 +290,5 @@ MDM 経由またはディスク上で直接デプロイする OS ごとの[管
+ ```
+ 
+-開発者は Enter キーを押して接続します。[最初の接続 TLS フィンガープリントプロンプト](#connect-developers)は引き続き表示されます。
++開発者は Enter キーを押して接続します。[最初の接続 TLS フィンガープリントプロンプト](#connect-developers)は引き続き表示されます。ファイルがマシンに配置されると、ゲートウェイサインインを完了していない開発者は、[Administrator policy requires a Cloud gateway sign-in](/docs/ja/errors#administrator-policy-requires-a-cloud-gateway-sign-in)で説明されているメッセージの 1 つを見ます。`CLAUDE_CODE_USE_BEDROCK` などの環境変数を通じてクラウドプロバイダーを選択する開発者はゲートウェイサインインを必要としません。
+ 
+ 開発者はこれを手動で設定することはできません。ログインピッカーにはゲートウェイオプションがなく、`forceLoginGatewayUrl` は開発者独自の設定ファイルでは無視されます。URL なしの `forceLoginMethod` のみでは、開発者を「IT 管理者に連絡してください」メッセージのままにします。ログインキーは、マシンにプッシュするファイルに属し、ゲートウェイの `managed.policies[].cli` ブロックには属しません。このブロックは既に接続されているクライアントにのみ到達します。
+@@ -425,8 +427,8 @@ Claude Desktop は同じブラウザ SSO ステップでゲートウェイのア
+ * **モデルアクセス**：ポリシーが許可しないモデルのリクエストは 400 を返し、`/model` ピッカーはポリシーの `availableModels` 許可リストにフィルタリングされます。ポリシーで [`enforceAvailableModels: true`](/docs/ja/model-config#default-model-behavior) を設定して、Default オプションが Claude Code の組み込みデフォルトではなく `availableModels` 内のモデルに解決されるようにします。なしでは、Default は選択可能なままであり、そのモデルが許可されていない場合、リクエスト時に拒否されます。
+ * **テレメトリ宛先**：`/login` を通じてサインインしたセッションでは、CLI はローカルに設定された `OTEL_EXPORTER_OTLP_ENDPOINT` に関係なく、OTLP/HTTP エクスポートをゲートウェイに送信し、ゲートウェイは [`telemetry.forward_to`](/docs/ja/claude-apps-gateway-config#telemetry) の宛先にそれらをリレーします。[Claude Desktop が起動する](#connect-claude-desktop)埋め込みセッションでは、CLI はエクスポートを設定された `OTEL_EXPORTER_OTLP_ENDPOINT` に送信します。CLI はそのエンドポイントがゲートウェイ自体を指す場合にのみ、ゲートウェイセッショントークンをそれらのエクスポートに添付します。信号に設定された宛先がない場合、ゲートウェイはそれを受け入れて破棄するため、既に Claude Code テレメトリを直接収集する場合は、コレクターを `forward_to` 宛先として追加します。
+-* **認証情報**：ゲートウェイトークンはセッションの唯一の認証情報です。`ANTHROPIC_AUTH_TOKEN`、`ANTHROPIC_API_KEY`、`apiKeyHelper`、[Anthropic プロファイル](/docs/ja/authentication#anthropic-profiles-and-federation-credentials)、および以前の claude.ai ログインはサインイン中は無視されるため、開発者は最初に claude.ai からログアウトする必要はありません。
++* **認証情報**：ゲートウェイトークンはセッションの唯一の認証情報です。[Anthropic プロファイル](/docs/ja/authentication#anthropic-profiles-and-federation-credentials)および以前の claude.ai ログインはサインイン中は無視されるため、開発者は最初に claude.ai からログアウトする必要はありません。設定された `ANTHROPIC_API_KEY`、`ANTHROPIC_AUTH_TOKEN`、または `apiKeyHelper` 認証情報については、[Administrator policy requires a Cloud gateway sign-in](/docs/ja/errors#administrator-policy-requires-a-cloud-gateway-sign-in)を参照してください。
+ * **管理設定**：ロックされたキーはローカルでオーバーライドできません。CLI はポリシーを起動時に適用し、[次の起動時にのみ適用される変更](/docs/ja/server-managed-settings#fetch-and-caching-behavior)を除いて、毎時間のポーリングで変更を適用します。
+ * **ゲートウェイが到達不可能な状態での起動**：サインイン済みセッションは、設定なしで起動するのではなく、約 10 秒後に起動時にエラーで終了します。
+-* **ゲートウェイがセッションを終了した後の起動**：[起動時の失敗クローズを強制する](/docs/ja/server-managed-settings#enforce-fail-closed-startup)を参照して、どの起動がゲートウェイから署名なしで開き、どの起動がゲートウェイが `401` で応答するときに終了するかを確認します。
++* **ゲートウェイがセッションを終了した後の起動**：[起動時の失敗クローズを強制する](/docs/ja/server-managed-settings#enforce-fail-closed-startup)を参照して、どの起動がゲートウェイからサインアウトした状態で開き、どの起動がゲートウェイが `401` で応答するときに終了するかを確認します。
+ * **プロビジョニング解除**：ユーザーが IdP で無効化されたセッションは、次の更新が失敗したときに `ttl_hours` 内に期限切れになります。
+```
+
+</details>
+
+<details>
+<summary>costs-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/costs-ja.md b/docs-ja/pages/costs-ja.md
+index d4703c0..fb8b62e 100644
+--- a/docs-ja/pages/costs-ja.md
++++ b/docs-ja/pages/costs-ja.md
+@@ -111,10 +111,9 @@ Claude Code は最新のレポートを `~/.claude/usage-data/report.html` に
+ セルフサービス Enterprise 組織、Enterprise トライアル、および AWS Marketplace を通じて請求される Enterprise 組織では、コマンドには Claude Code v2.1.248 以降が必要です。以前のバージョンは [`Unknown command: /usage-credits`](/docs/ja/errors#unknown-command) で拒否します。開かれるものはロールによって異なります。
+ 
+-| ロール                                                                             | `/usage-credits` の動作                                                                                                                                        |
+-| :------------------------------------------------------------------------------ | :---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+-| Pro または Max サブスクライバー                                                            | ブラウザで [**Settings > Usage**](https://claude.ai/settings/usage) を claude.ai で開きます。**Usage credits** セクションで、使用量クレジットをオンまたはオフにし、クレジット残高、今月の支出、および月間支出制限を確認できます |
+-| 請求アクセス権を持つ Team または Enterprise メンバー                                             | 組織の使用量設定 [**Admin settings > Usage**](https://claude.ai/admin-settings/usage) をブラウザで開きます                                                                    |
+-| 請求アクセス権を持たない Team または Enterprise メンバー                                           |                                                                                                                                                             |
+-| 確認を求めてから、組織の管理者にリクエストを送信します。v2.1.211 より前では、Claude Code は確認ステップなしでリクエストを送信していました |                                                                                                                                                             |
++| ロール                                   | `/usage-credits` の動作                                                                                                                                        |
++| :------------------------------------ | :---------------------------------------------------------------------------------------------------------------------------------------------------------- |
++| Pro または Max サブスクライバー                  | ブラウザで [**Settings > Usage**](https://claude.ai/settings/usage) を claude.ai で開きます。**Usage credits** セクションで、使用量クレジットをオンまたはオフにし、クレジット残高、今月の支出、および月間支出制限を確認できます |
++| 請求アクセス権を持つ Team または Enterprise メンバー   | 組織の使用量設定 [**Admin settings > Usage**](https://claude.ai/admin-settings/usage) をブラウザで開きます                                                                    |
++| 請求アクセス権を持たない Team または Enterprise メンバー | 確認を求めてから、組織の管理者にリクエストを送信します。v2.1.211 より前では、Claude Code は確認ステップなしでリクエストを送信していました                                                                             |
+ 
+ 請求アクセス権を持たない Team および Enterprise メンバーの場合、確認はインタラクティブセッションでのみ表示されます。`-p` フラグを使用した非インタラクティブモードおよび [Remote Control](/docs/ja/remote-control) からは、コマンドはリクエストを送信せず、インタラクティブセッションで実行するよう指示します。
+@@ -362,5 +361,5 @@ MCP ツール定義は [デフォルトで遅延](/docs/ja/mcp#scale-with-mcp-to
+ </h3>
+ 
+-拡張思考はデフォルトで有効になっています。これは複雑な計画と推論タスクのパフォーマンスを大幅に向上させるためです。思考トークンは出力トークンとして課金され、デフォルト予算はモデルに応じて数万トークンになる場合があります。深い推論が必要ない単純なタスクの場合、`/effort` で [努力レベル](/docs/ja/model-config#adjust-effort-level) を低下させるか、`/model` で、または `/config` で思考を無効にすることでコストを削減できます。[固定思考予算](/docs/ja/model-config#adaptive-reasoning-and-fixed-thinking-budgets) を持つモデルでは、`MAX_THINKING_TOKENS=8000` などの `MAX_THINKING_TOKENS` [環境変数](/docs/ja/env-vars) を設定して予算を低下させることもできます。適応推論モデルはゼロ以外の予算を無視するため、代わりに努力レベルを使用します。
++拡張思考はデフォルトで有効になっています。これは複雑な計画と推論タスクのパフォーマンスを大幅に向上させるためです。思考トークンは出力トークンとして課金され、デフォルト予算はモデルに応じて数万トークンになる場合があります。深い推論が必要ない単純なタスクの場合、`/effort` または `/model` で [努力レベル](/docs/ja/model-config#adjust-effort-level) を低下させるか、`/config` で思考を無効にすることでコストを削減できます。Fable モデルは常に拡張思考を使用するため、思考をオフにすることはできません。[固定思考予算](/docs/ja/model-config#adaptive-reasoning-and-fixed-thinking-budgets) を持つモデルでは、`MAX_THINKING_TOKENS=8000` などの `MAX_THINKING_TOKENS` [環境変数](/docs/ja/env-vars) を設定して予算を低下させることもできます。適応推論モデルはゼロ以外の予算を無視するため、代わりに努力レベルを使用します。
+ 
+ <h3 id="delegate-verbose-operations-to-subagents">
+```
+
+</details>
+
+<details>
+<summary>desktop-scheduled-tasks-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/desktop-scheduled-tasks-ja.md b/docs-ja/pages/desktop-scheduled-tasks-ja.md
+index 9903b6b..a8516bb 100644
+--- a/docs-ja/pages/desktop-scheduled-tasks-ja.md
++++ b/docs-ja/pages/desktop-scheduled-tasks-ja.md
+@@ -17,15 +17,15 @@ Desktop アプリの **Routines** ページでは、ローカルスケジュー
+ Claude Code offers three ways to schedule recurring or one-off work:
+ 
+-|                            | [Cloud](/docs/en/routines)               | [Desktop](/docs/en/desktop-scheduled-tasks) | [`/loop`](/docs/en/scheduled-tasks)      |
+-| :------------------------- | :---------------------------------- | :------------------------------------- | :---------------------------------- |
+-| Runs on                    | Cloud, Anthropic-managed by default | Your machine                           | Your machine                        |
+-| Requires machine on        | No                                  | Yes                                    | Yes                                 |
+-| Requires open session      | No                                  | No                                     | Yes                                 |
+-| Persistent across restarts | Yes                                 | Yes                                    | Restored on `--resume` if unexpired |
+-| Access to local files      | No (fresh clone)                    | Yes                                    | Yes                                 |
+-| MCP servers                | Connectors configured per task      | [Config files](/docs/en/mcp) and connectors | Inherits from session               |
+-| Permission prompts         | No (runs autonomously)              | Configurable per task                  | Inherits from session               |
+-| Customizable schedule      | Via `/schedule` in the CLI          | Yes                                    | Yes                                 |
+-| Minimum interval           | 1 hour                              | 1 minute                               | 1 minute                            |
++|                            | [Cloud](/docs/en/routines)               | [Desktop](/docs/en/desktop-scheduled-tasks) | [`/loop`](/docs/en/scheduled-tasks)                                             |
++| :------------------------- | :---------------------------------- | :------------------------------------- | :------------------------------------------------------------------------- |
++| Runs on                    | Cloud, Anthropic-managed by default | Your machine                           | Your machine                                                               |
++| Requires machine on        | No                                  | Yes                                    | Yes                                                                        |
++| Requires open session      | No                                  | No                                     | Yes                                                                        |
++| Persistent across restarts | Yes                                 | Yes                                    | Restored on `--resume`, with [exceptions](/docs/en/scheduled-tasks#limitations) |
++| Access to local files      | No (fresh clone)                    | Yes                                    | Yes                                                                        |
++| MCP servers                | Connectors configured per task      | [Config files](/docs/en/mcp) and connectors | Inherits from session                                                      |
++| Permission prompts         | No (runs autonomously)              | Configurable per task                  | Inherits from session                                                      |
++| Customizable schedule      | Via `/schedule` in the CLI          | Yes                                    | Yes                                                                        |
++| Minimum interval           | 1 hour                              | 1 minute                               | 1 minute                                                                   |
+ 
+```
+
+</details>
+
+<details>
+<summary>discover-plugins-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/discover-plugins-ja.md b/docs-ja/pages/discover-plugins-ja.md
+index df5f039..65720aa 100644
+--- a/docs-ja/pages/discover-plugins-ja.md
++++ b/docs-ja/pages/discover-plugins-ja.md
+@@ -338,10 +338,10 @@ Claude Code はローカル マーケットプレイス カタログのコピー
+ 
+ * **マーケットプレイス名を含む場合**: セッションで `plugin-name@marketplace-name` をインストールするか、`claude plugin install` で実行すると、Claude Code はルックアップの前にそのマーケットプレイスを更新します。Claude Code は、マーケットプレイスの[自動更新](#configure-auto-updates)をオフにしたか、`DISABLE_AUTOUPDATER` を設定した場合でも、更新を実行します。v2.1.232 より前では、Claude Code はルックアップの前にマーケットプレイスを更新しませんでした。Claude Code は以下の場合、この更新をスキップします：
+-  * マーケットプレイスが[GitHub、別の Git ホスト、またはリモート URL から追加](/docs/ja/plugin-marketplaces#pre-populate-plugins-for-containers)されていない。
++  * マーケットプレイスが[GitHub、別の Git ホスト、またはリモート URL から追加](#add-marketplaces)されていない。
+   * [シード ディレクトリ](/docs/ja/plugin-marketplaces#pre-populate-plugins-for-containers)がマーケットプレイスを提供している。
+   * Claude Code が過去 30 秒以内にマーケットプレイスを更新した。
+   * [`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`](/docs/ja/env-vars)を設定した。
+   * [管理設定](/docs/ja/plugin-marketplaces#managed-marketplace-restrictions)がマーケットプレイスをブロックしている。この場合、Claude Code はインストールも拒否します。
+-* **プラグイン名のみ**: セッションで `/plugin install plugin-name` を実行すると、Claude Code は[バックグラウンドでも更新](/docs/ja/plugin-marketplaces#configure-auto-updates)するマーケットプレイスのみを更新し、ルックアップが失敗した後のみです。`claude plugin install plugin-name` を実行すると、Claude Code は更新なしでキャッシュされたカタログを読み取ります。最後の更新後に公開されたプラグインをインストールするには、セッションで `/plugin marketplace update <marketplace-name>` を実行するか、シェルで [`claude plugin marketplace update <marketplace-name>`](/docs/ja/plugin-marketplaces#plugin-marketplace-update)を実行してから、インストールを再試行します。
++* **プラグイン名のみ**: セッションで `/plugin install plugin-name` を実行すると、Claude Code は[バックグラウンドでも更新](#configure-auto-updates)するマーケットプレイスのみを更新し、ルックアップが失敗した後のみです。`claude plugin install plugin-name` を実行すると、Claude Code は更新なしでキャッシュされたカタログを読み取ります。最後の更新後に公開されたプラグインをインストールするには、セッションで `/plugin marketplace update <marketplace-name>` を実行するか、シェルで [`claude plugin marketplace update <marketplace-name>`](/docs/ja/plugin-marketplaces#plugin-marketplace-update)を実行してから、インストールを再試行します。
+ 
+ 名前付きインストール前の更新が失敗した場合（例えば、オフラインの場合）、Claude Code はキャッシュされたカタログでプラグインを検索します。`claude plugin install` は成功メッセージで `marketplace not refreshed` を報告し、`/plugin install` はプラグインの詳細の上または見つからないメッセージでエラーを表示します。
+```
+
+</details>
+
+<details>
+<summary>interactive-mode-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/interactive-mode-ja.md b/docs-ja/pages/interactive-mode-ja.md
+index 061db85..261b95c 100644
+--- a/docs-ja/pages/interactive-mode-ja.md
++++ b/docs-ja/pages/interactive-mode-ja.md
+@@ -142,4 +142,17 @@ Claude Code で `/` と入力すると、利用可能なコマンドが表示さ
+ Claude Code に含まれるコマンドの完全なリストについては、[コマンドリファレンス](/docs/ja/commands) を参照してください。
+ 
++<h3 id="complete-a-command-mid-prompt">
++  プロンプトの途中でコマンドを完成させる
++</h3>
++
++コマンド補完はプロンプトの途中でも機能します。スペースの後に `/` を入力し、その後に名前の最初の文字を入力します。例えば `run the tests, then /com` のようにします。名前がそれらの文字で始まるコマンドのみが一致するため、`/tmp/notes.md` のようなファイルパスではリストが開いたままになりません。Claude Code がコマンド自体を実行するのは、コマンドが [メッセージを開始する](/docs/ja/commands) 場合のみです。
++
++* **[フルスクリーンレンダリング](/docs/ja/fullscreen) の場合**：入力中に一致するコマンドがリストとして開き、行がハイライトされていないため、`Enter` キーを押すとプロンプトがそのまま送信されます。`Tab` キーを押すと最上位の一致が挿入されます。または矢印キーと `Enter` キーで行を選択します。
++* **フルスクリーン外の場合**：最上位の一致の残りがカーソルでゴーストテキストとして表示され、複数のコマンドが一致する場合は `+2` などのカウントが表示されます。`Tab` キーを押すと唯一の一致が挿入されるか、複数が一致する場合はリストが開き、矢印キーと `Enter` キーで行を選択します。
++
++両方のレンダラーで、プロンプトの途中の裸の `/` で `Tab` キーを押すと、すべてのコマンドがリストされます。
++
++プラグインスキルはその裸の名前でも一致するため、`/deploy` は `myplugin:deploy-app` という名前のスキルを見つけます。一致を挿入すると、Claude Code は完全な `/myplugin:deploy-app` を書き込みます。
++
+ <h2 id="vim-editor-mode">
+   Vim エディタモード
+@@ -337,5 +350,5 @@ Claude Code がコマンドをバックグラウンドで実行する場合、
+ * 出力が 5GB を超える場合、バックグラウンドタスクは自動的に終了され、stderr に理由を説明するメモが表示されます
+ * macOS と Linux では、セッションが少なくとも 30 分間アイドル状態にあり、ターンまたはサブエージェントが実行されていない場合、Claude Code はオペレーティングシステムがメモリプレッシャーを通知するときに実行中のバックグラウンドタスクを終了します。[`CLAUDE_CODE_DISABLE_BG_SHELL_PRESSURE_REAP`](/docs/ja/env-vars) を `1` に設定してこれをオフにします。Claude Code v2.1.193 以降が必要です
+-* [サブエージェント](/docs/ja/sub-agents)が所有するバックグラウンドコマンドには時間制限がありません。ただし、フォアグラウンドで実行されているサブエージェントが所有するコマンドは、そのサブエージェントが最終応答を行うときに終了します。ツール参照の[バックグラウンドコマンド](/docs/ja/tools-reference#background-commands)を参照してください。v2.1.218 より前では、メモリプレッシャーリープも、`Ctrl+B` でバックグラウンドに移動されたコマンドに対する以前の 60 分制限も、サブエージェントコマンドをカバーしていませんでした
++* [サブエージェント](/docs/ja/sub-agents)が所有するバックグラウンドコマンドには時間制限がありません。ただし、フォアグラウンドで実行されているサブエージェントが所有するコマンドは、そのサブエージェントが最終応答を行うときに終了します。ツール参照の[バックグラウンドコマンド](/docs/ja/tools-reference#background-commands)を参照してください。v2.1.218 より前では、メモリプレッシャーリープも、サブエージェントコマンドに対する以前の 60 分制限も、`Ctrl+B` でバックグラウンドに移動されたコマンドをカバーしていませんでした
+ 
+ すべてのバックグラウンドタスク機能を無効にするには、`CLAUDE_CODE_DISABLE_BACKGROUND_TASKS` 環境変数を `1` に設定します。詳細は[環境変数](/docs/ja/env-vars)を参照してください。
+@@ -578,4 +591,6 @@ Claude Code がチェッカーを実行し続けることができない場合
+```
+
+</details>
+
+*...以降省略*
+
+</details>
+
+
+<details>
 <summary>2026-09-10</summary>
 
 **変更ファイル:**
@@ -2437,176 +2681,5 @@ index 0a73d0a..4fce887 100644
 
 </details>
 
-
-<details>
-<summary>2026-08-24</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/changelog.md | 4 ++++
- 1 file changed, 4 insertions(+)
-```
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index e3a480a..0280e56 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,8 @@
- # Changelog
- 
-+## 2.1.241
-+
-+- Bug fixes and reliability improvements
-+
- ## 2.1.240
- 
-```
-
-</details>
-
-</details>
-
-
-<details>
-<summary>2026-08-23</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/changelog.md                         |  4 ++
- docs-ja/pages/claude-apps-gateway-ja.md            |  2 +-
- docs-ja/pages/cross-session-messaging-en.md        | 18 +++++----
- docs-ja/pages/managed-settings-en.md               | 44 +++++++++++-----------
- .../self-hosted-environments-configuration-en.md   |  6 +--
- .../pages/self-hosted-environments-deploy-en.md    |  4 +-
- docs-ja/pages/self-hosted-environments-en.md       |  2 +-
- .../pages/self-hosted-environments-identity-en.md  |  2 +-
- .../self-hosted-environments-quickstart-en.md      |  4 +-
- .../pages/self-hosted-environments-reference-en.md |  4 +-
- .../pages/self-hosted-environments-testing-en.md   |  6 +--
- docs-ja/pages/settings-reference-en.md             | 39 +++++++------------
- 12 files changed, 66 insertions(+), 69 deletions(-)
-```
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index b05c306..e3a480a 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,8 @@
- # Changelog
- 
-+## 2.1.240
-+
-+- Bug fixes and reliability improvements
-+
- ## 2.1.239
- 
-```
-
-</details>
-
-<details>
-<summary>claude-apps-gateway-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/claude-apps-gateway-ja.md b/docs-ja/pages/claude-apps-gateway-ja.md
-index f4cd226..79d34a6 100644
---- a/docs-ja/pages/claude-apps-gateway-ja.md
-+++ b/docs-ja/pages/claude-apps-gateway-ja.md
-@@ -37,5 +37,5 @@ Claude アプリゲートウェイは、開発者の Claude Code クライアン
- 
- <Frame>
--  <img src="https://mintcdn.com/claude-code/st9_ZQOFsZa3cKFl/images/claude-gateway-architecture.svg?fit=max&auto=format&n=st9_ZQOFsZa3cKFl&q=85&s=560770d8f49bbd6f1ca7090ed1f13c03" alt="Claude Code クライアントがベアラートークンを使用して HTTPS 経由でインフラストラクチャ内の自己ホスト型 Claude apps ゲートウェイに接続し、IdP に対してユーザーにサインインし、PostgreSQL に認証状態を保存し、テレメトリを OTLP コレクターにリレーし、Amazon Bedrock、Claude Platform on AWS、Google Cloud、Microsoft Foundry、または Anthropic API に推論を転送する図" width="760" height="320" data-path="images/claude-gateway-architecture.svg" />
-+  <img src="https://mintcdn.com/claude-code/VbyXug8hBU9UK6oT/images/claude-gateway-architecture.svg?fit=max&auto=format&n=VbyXug8hBU9UK6oT&q=85&s=9e4f1190fc56718144190a3db61c63af" alt="Claude Code クライアントがベアラートークンを使用して HTTPS 経由でインフラストラクチャ内の自己ホスト型 Claude apps ゲートウェイに接続し、IdP に対してユーザーにサインインし、PostgreSQL に認証状態を保存し、テレメトリを OTLP コレクターにリレーし、Amazon Bedrock、Claude Platform on AWS、Google Cloud、Microsoft Foundry、または Anthropic API に推論を転送する図" width="760" height="320" data-path="images/claude-gateway-architecture.svg" />
- </Frame>
- 
-```
-
-</details>
-
-<details>
-<summary>cross-session-messaging-en.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/cross-session-messaging-en.md b/docs-ja/pages/cross-session-messaging-en.md
-index b476ac6..e9f6ce3 100644
---- a/docs-ja/pages/cross-session-messaging-en.md
-+++ b/docs-ja/pages/cross-session-messaging-en.md
-@@ -69,4 +69,5 @@ Claude Code refuses a message in the following cases:
- * A rapid burst to a session on this machine has reached [what that session's inbox accepts](#limitations). Claude Code refuses further messages to that session.
- * The reply target on this machine fails a safety check, such as a symlinked target or an endpoint that isn't the expected process. [Refusing to send a cross-session message](/docs/en/errors#refusing-to-send-a-cross-session-message) lists these checks.
-+* Claude addresses the message to this session's own name, as described under [See which sessions Claude can reach](#see-which-sessions-claude-can-reach).
- 
- The receiving session checks each arriving message against its own [inbound controls](#control-inbound-messages), and the check ends in one of three outcomes:
-@@ -111,11 +112,14 @@ Only the Claude in your main conversation can subscribe, and only to your sessio
- ### See which sessions Claude can reach
- 
--Claude finds a message's target on its own, so you don't need to run anything before asking it to send. To see for yourself which sessions Claude can reach, run the `/list-agents` command. It lists each session with the name it answers to, and that name is where Claude addresses a message. The listing covers:
-+Claude finds a message's target on its own, so you don't need to run anything before asking it to send. To see for yourself which sessions Claude can reach, run the `/list-agents` command. The first line is this session's own name, the one your other sessions use to message it. The rows below it are the sessions Claude can reach, each with the name it answers to:
- 
--* **Subagents**: agents running inside the current session. [Agent team](/docs/en/agent-teams) teammates aren't listed; Claude messages them through the team's own roster.
-+* **Subagents**: agents running inside the current session.
-+* **Teammates**: this session's own [agent team](/docs/en/agent-teams) teammates. Before v2.1.239, teammates didn't appear in the listing, though Claude could already message them by name.
- * **Your other local sessions**: Claude Code sessions running on the same machine, including [background sessions](/docs/en/agent-view). A session appears only when it binds an [inbox socket](#the-sessions-inbox-socket). The worker process that the [supervisor process](/docs/en/agent-view#the-supervisor-process) keeps ready for your next background session appears once you dispatch work to it.
- * **Your cloud sessions**: your [Claude Code on the web](/docs/en/claude-code-on-the-web) sessions, shown while this session is connected to [Remote Control](/docs/en/remote-control). Claude Code labels them `cloud` in the listing.
- * **Your Remote Control sessions on other machines**: shown while this session is connected to [Remote Control](/docs/en/remote-control), and labeled `Remote Control`. Claude Code shows `offline` as the status of a session whose Remote Control connection has dropped.
- 
-+This session isn't one of the rows. If Claude addresses a message to this session's own name, Claude Code refuses it and tells Claude the target is the current session. Before v2.1.239, the listing didn't show this session's name, and Claude Code reported a message sent to it as an agent it couldn't find.
-+
- Claude Code reads your cloud and Remote Control session lists newest first and stops after a bounded number of pages for each. If your account has more of those sessions than fit, Claude Code doesn't list the older ones, and Claude can't message them by name. When this happens, Claude Code says so in the listing, and Claude sees the same note when it sends a message.
- 
-@@ -133,9 +137,9 @@ When you rename a session, or start or resume an interactive one, with a name an
- How a message travels, and whether it passes through Anthropic servers, depends on where the target session runs:
- 
-```
-
-</details>
-
-<details>
-<summary>managed-settings-en.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/managed-settings-en.md b/docs-ja/pages/managed-settings-en.md
-index 8b6b232..19f2f2c 100644
---- a/docs-ja/pages/managed-settings-en.md
-+++ b/docs-ja/pages/managed-settings-en.md
-@@ -83,5 +83,5 @@ A deployed policy reaches the developer's sessions as follows:
- 
- * **Surfaces**: every surface that runs Claude Code on the machine reads these sources: the terminal, the VS Code and JetBrains extensions, the desktop app, and [Agent SDK](/docs/en/agent-sdk/typescript) sessions, which load managed settings even when `settingSources` excludes the user, project, and local files.
--* **Cloud sessions**: a session in an Anthropic-hosted environment doesn't read a device's MDM profile or file, so policy for it has to come from server-managed settings. A session in a [self-hosted environment](/docs/en/self-hosted-environments) reads the managed settings file in its runner image only when server-managed settings deliver no keys.
-+* **Cloud sessions**: a session in an Anthropic-hosted environment doesn't read a device's MDM profile or file, so policy for it has to come from server-managed settings. A session in a [self-hosted environment](/docs/en/self-hosted-environments) reads the managed settings file in its runner image only when server-managed settings deliver no keys, apart from the [keys Claude Code reads from every admin source](#keys-read-from-every-admin-source).
- * **Running sessions**: a session picks up most changes on the schedule in the table without a restart. Claude Code reads [`forceRemoteSettingsRefresh`](/docs/en/settings-reference#forceremotesettingsrefresh) and [`requiredMinimumVersion`](/docs/en/settings-reference#requiredminimumversion) only at session start, arms a new or changed [`policyHelper`](/docs/en/settings-reference#policyhelper) entry at the next launch, and reads [some user-editable keys once at session start](/docs/en/settings#when-edits-take-effect).
- * **Changes that need approval**: a server-managed change to a setting that [needs approval](/docs/en/server-managed-settings#security-approval-dialogs), such as a hook or an `env` variable, waits for the developer to accept the dialog in an interactive session, and applies for the current run in a session an IDE extension or the Agent SDK hosts. Other server-managed changes apply on the next poll.
-@@ -265,25 +265,25 @@ Most of them are locks: the value a lock governs, such as permission rules or `s
- The table covers the permission, plugin, and delivery controls. For any key not listed here, the Scope column of the [settings reference](/docs/en/settings-reference#all-settings) index says whether it's managed-only; the remaining managed-only keys there include the gateway login URL, version, browser, mobile-simulator, SSH host, sandbox binary path, and CLAUDE.md controls.
- 
--| Setting                                                                                                               | Description                                                                                                                                                                                                                                 |
--| :-------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
--| [`allowAllClaudeAiMcps`](/docs/en/settings-reference#allowallclaudeaimcps)                                                 | Load the claude.ai connectors alongside a deployed `managed-mcp.json` instead of suppressing them                                                                                                                                           |
--| [`allowedChannelPlugins`](/docs/en/settings-reference#allowedchannelplugins)                                               | Allowlist of channel plugins that may push messages. Replaces the default Anthropic allowlist when set. Requires `channelsEnabled: true`. See [Restrict which channel plugins can run](/docs/en/channels#restrict-which-channel-plugins-can-run) |
--| [`allowManagedHooksOnly`](/docs/en/settings-reference#allowmanagedhooksonly)                                               | When `true`, restricts which hooks run; see [what runs under `allowManagedHooksOnly`](/docs/en/settings-reference#what-runs-under-allowmanagedhooksonly) for the full effect list                                                                |
--| [`allowManagedMcpServersOnly`](/docs/en/settings-reference#allowmanagedmcpserversonly)                                     | When `true`, only `allowedMcpServers` from managed settings are respected. `deniedMcpServers` still merges from all sources. See [Managed MCP configuration](/docs/en/managed-mcp)                                                               |
--| [`allowManagedPermissionRulesOnly`](/docs/en/settings-reference#allowmanagedpermissionrulesonly)                           | Only managed permission rules apply; the entry lists every source it ignores                                                                                                                                                                |
--| [`blockedMarketplaces`](/docs/en/settings-reference#blockedmarketplaces)                                                   | Blocklist of marketplace sources. Blocked sources are checked before downloading, so they never touch the filesystem. See [managed marketplace restrictions](/docs/en/plugin-marketplaces#managed-marketplace-restrictions)                      |
--| [`channelsEnabled`](/docs/en/settings-reference#channelsenabled)                                                           | Allow [channels](/docs/en/channels) for the organization. See [enterprise controls](/docs/en/channels#enterprise-controls) for the default on each plan                                                                                               |
--| [`disableCommandPluginSources`](/docs/en/settings-reference#disablecommandpluginsources)                                   | When `true`, blocks [`command` plugin sources](/docs/en/plugin-marketplaces#command-sources) entirely, so the marketplace-declared command never runs. When unset, follows `allowManagedHooksOnly`. Requires Claude Code v2.1.229 or later       |
--| [`disableSideloadFlags`](/docs/en/settings-reference#disablesideloadflags)                                                 | Reject the `--plugin-dir`, `--plugin-url`, `--agents`, and `--mcp-config` flags at startup. Requires Claude Code v2.1.193 or later                                                                                                          |
--| [`forceRemoteSettingsRefresh`](/docs/en/settings-reference#forceremotesettingsrefresh)                                     | When `true`, blocks CLI startup until remote managed settings are freshly fetched and exits if the fetch fails. See [fail-closed enforcement](/docs/en/server-managed-settings#enforce-fail-closed-startup)                                      |
--| [`parentSettingsBehavior`](/docs/en/settings-reference#parentsettingsbehavior)                                             | Whether host-supplied parent settings merge under the managed policy                                                                                                                                                                        |
--| [`pluginSuggestionMarketplaces`](/docs/en/settings-reference#pluginsuggestionmarketplaces)                                 | Marketplaces whose plugins Claude Code may suggest to users                                                                                                                                                                                 |
--| [`pluginTrustMessage`](/docs/en/settings-reference#plugintrustmessage)                                                     | Custom message appended to the plugin trust warning shown before installation                                                                                                                                                               |
--| [`policyHelper`](/docs/en/settings-reference#policyhelper)                                                                 | Executable that computes managed settings at startup; see [Compute managed settings with a policy helper](/docs/en/settings-reference#policyhelper)                                                                                              |
-```
-
-</details>
 
 <!-- UPDATE_LOG_END -->

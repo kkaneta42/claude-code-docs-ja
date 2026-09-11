@@ -135,7 +135,9 @@ Claude アプリゲートウェイは、開発者の Claude Code クライアン
     この設定は、デフォルト Amazon Bedrock モデルカタログを使用した動作するサインインループに十分です。実行されたら、[`managed.policies`](/docs/ja/claude-apps-gateway-config#managed) 経由でグループごとの RBAC と管理設定を追加し、[`telemetry`](/docs/ja/claude-apps-gateway-config#telemetry) 経由でテレメトリファンアウトを追加し、[`models`](/docs/ja/claude-apps-gateway-config#models) 経由でマルチアップストリームフェイルオーバー、プロビジョニング済みスループット ARN、または非米国リージョンを追加します。
 
     <Note>
-      Amazon Bedrock アップストリームは、`inference-profile/us.anthropic.*` ARN と基礎となる `foundation-model/anthropic.*` ARN の両方に対して `bedrock:InvokeModel` と `bedrock:InvokeModelWithResponseStream` を持つ AWS プリンシパルが必要であり、Bedrock コンソールのモデルカタログから Anthropic の一度限りのユースケースフォームが提出されています。EKS の IRSA、ECS タスクロール、または EC2 インスタンスプロファイルではなく、静的キーを使用して認証情報を提供します。[`upstreams` リファレンス](/docs/ja/claude-apps-gateway-config#upstreams)には、完全な IAM 詳細、クロスクラウド認証情報マトリックス、および他のプロバイダーの `auth` ブロックがあります。
+      Amazon Bedrock アップストリームは、`inference-profile/us.anthropic.*` ARN と基礎となる `foundation-model/anthropic.*` ARN の両方に対して `bedrock:InvokeModel` と `bedrock:InvokeModelWithResponseStream` を持つ AWS プリンシパルが必要です。また、そのアカウントについて、Bedrock コンソールのモデルカタログから Anthropic の一度限りのユースケースフォームが提出されている必要もあります。
+
+      静的キーではなく、EKS の IRSA、ECS タスクロール、または EC2 インスタンスプロファイルを使用して認証情報を提供します。[`upstreams` リファレンス](/docs/ja/claude-apps-gateway-config#upstreams)には、完全な IAM 詳細、クロスクラウド認証情報マトリックス、および他のプロバイダーの `auth` ブロックがあります。
     </Note>
   </Step>
 
@@ -287,7 +289,7 @@ MDM 経由またはディスク上で直接デプロイする OS ごとの[管�
 }
 ```
 
-開発者は Enter キーを押して接続します。[最初の接続 TLS フィンガープリントプロンプト](#connect-developers)は引き続き表示されます。
+開発者は Enter キーを押して接続します。[最初の接続 TLS フィンガープリントプロンプト](#connect-developers)は引き続き表示されます。ファイルがマシンに配置されると、ゲートウェイサインインを完了していない開発者は、[Administrator policy requires a Cloud gateway sign-in](/docs/ja/errors#administrator-policy-requires-a-cloud-gateway-sign-in)で説明されているメッセージの 1 つを見ます。`CLAUDE_CODE_USE_BEDROCK` などの環境変数を通じてクラウドプロバイダーを選択する開発者はゲートウェイサインインを必要としません。
 
 開発者はこれを手動で設定することはできません。ログインピッカーにはゲートウェイオプションがなく、`forceLoginGatewayUrl` は開発者独自の設定ファイルでは無視されます。URL なしの `forceLoginMethod` のみでは、開発者を「IT 管理者に連絡してください」メッセージのままにします。ログインキーは、マシンにプッシュするファイルに属し、ゲートウェイの `managed.policies[].cli` ブロックには属しません。このブロックは既に接続されているクライアントにのみ到達します。
 
@@ -424,10 +426,10 @@ Claude Desktop は同じブラウザ SSO ステップでゲートウェイのア
 
 * **モデルアクセス**：ポリシーが許可しないモデルのリクエストは 400 を返し、`/model` ピッカーはポリシーの `availableModels` 許可リストにフィルタリングされます。ポリシーで [`enforceAvailableModels: true`](/docs/ja/model-config#default-model-behavior) を設定して、Default オプションが Claude Code の組み込みデフォルトではなく `availableModels` 内のモデルに解決されるようにします。なしでは、Default は選択可能なままであり、そのモデルが許可されていない場合、リクエスト時に拒否されます。
 * **テレメトリ宛先**：`/login` を通じてサインインしたセッションでは、CLI はローカルに設定された `OTEL_EXPORTER_OTLP_ENDPOINT` に関係なく、OTLP/HTTP エクスポートをゲートウェイに送信し、ゲートウェイは [`telemetry.forward_to`](/docs/ja/claude-apps-gateway-config#telemetry) の宛先にそれらをリレーします。[Claude Desktop が起動する](#connect-claude-desktop)埋め込みセッションでは、CLI はエクスポートを設定された `OTEL_EXPORTER_OTLP_ENDPOINT` に送信します。CLI はそのエンドポイントがゲートウェイ自体を指す場合にのみ、ゲートウェイセッショントークンをそれらのエクスポートに添付します。信号に設定された宛先がない場合、ゲートウェイはそれを受け入れて破棄するため、既に Claude Code テレメトリを直接収集する場合は、コレクターを `forward_to` 宛先として追加します。
-* **認証情報**：ゲートウェイトークンはセッションの唯一の認証情報です。`ANTHROPIC_AUTH_TOKEN`、`ANTHROPIC_API_KEY`、`apiKeyHelper`、[Anthropic プロファイル](/docs/ja/authentication#anthropic-profiles-and-federation-credentials)、および以前の claude.ai ログインはサインイン中は無視されるため、開発者は最初に claude.ai からログアウトする必要はありません。
+* **認証情報**：ゲートウェイトークンはセッションの唯一の認証情報です。[Anthropic プロファイル](/docs/ja/authentication#anthropic-profiles-and-federation-credentials)および以前の claude.ai ログインはサインイン中は無視されるため、開発者は最初に claude.ai からログアウトする必要はありません。設定された `ANTHROPIC_API_KEY`、`ANTHROPIC_AUTH_TOKEN`、または `apiKeyHelper` 認証情報については、[Administrator policy requires a Cloud gateway sign-in](/docs/ja/errors#administrator-policy-requires-a-cloud-gateway-sign-in)を参照してください。
 * **管理設定**：ロックされたキーはローカルでオーバーライドできません。CLI はポリシーを起動時に適用し、[次の起動時にのみ適用される変更](/docs/ja/server-managed-settings#fetch-and-caching-behavior)を除いて、毎時間のポーリングで変更を適用します。
 * **ゲートウェイが到達不可能な状態での起動**：サインイン済みセッションは、設定なしで起動するのではなく、約 10 秒後に起動時にエラーで終了します。
-* **ゲートウェイがセッションを終了した後の起動**：[起動時の失敗クローズを強制する](/docs/ja/server-managed-settings#enforce-fail-closed-startup)を参照して、どの起動がゲートウェイから署名なしで開き、どの起動がゲートウェイが `401` で応答するときに終了するかを確認します。
+* **ゲートウェイがセッションを終了した後の起動**：[起動時の失敗クローズを強制する](/docs/ja/server-managed-settings#enforce-fail-closed-startup)を参照して、どの起動がゲートウェイからサインアウトした状態で開き、どの起動がゲートウェイが `401` で応答するときに終了するかを確認します。
 * **プロビジョニング解除**：ユーザーが IdP で無効化されたセッションは、次の更新が失敗したときに `ttl_hours` 内に期限切れになります。
 
 <h3 id="what-the-organization-can-see">

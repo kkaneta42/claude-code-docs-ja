@@ -110,12 +110,11 @@ Claude Code は最新のレポートを `~/.claude/usage-data/report.html` に�
 [使用量クレジット](https://support.claude.com/en/articles/12429409-extra-usage-for-paid-claude-plans) を使用すると、プランの使用量制限を超えて作業を続けることができます。これらを管理するには、`/login` を通じて claude.ai サブスクリプションにサインインした後、`/usage-credits` を実行します。このコマンドは API キー認証では利用できません。
 セルフサービス Enterprise 組織、Enterprise トライアル、および AWS Marketplace を通じて請求される Enterprise 組織では、コマンドには Claude Code v2.1.248 以降が必要です。以前のバージョンは [`Unknown command: /usage-credits`](/docs/ja/errors#unknown-command) で拒否します。開かれるものはロールによって異なります。
 
-| ロール                                                                             | `/usage-credits` の動作                                                                                                                                        |
-| :------------------------------------------------------------------------------ | :---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Pro または Max サブスクライバー                                                            | ブラウザで [**Settings > Usage**](https://claude.ai/settings/usage) を claude.ai で開きます。**Usage credits** セクションで、使用量クレジットをオンまたはオフにし、クレジット残高、今月の支出、および月間支出制限を確認できます |
-| 請求アクセス権を持つ Team または Enterprise メンバー                                             | 組織の使用量設定 [**Admin settings > Usage**](https://claude.ai/admin-settings/usage) をブラウザで開きます                                                                    |
-| 請求アクセス権を持たない Team または Enterprise メンバー                                           |                                                                                                                                                             |
-| 確認を求めてから、組織の管理者にリクエストを送信します。v2.1.211 より前では、Claude Code は確認ステップなしでリクエストを送信していました |                                                                                                                                                             |
+| ロール                                   | `/usage-credits` の動作                                                                                                                                        |
+| :------------------------------------ | :---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Pro または Max サブスクライバー                  | ブラウザで [**Settings > Usage**](https://claude.ai/settings/usage) を claude.ai で開きます。**Usage credits** セクションで、使用量クレジットをオンまたはオフにし、クレジット残高、今月の支出、および月間支出制限を確認できます |
+| 請求アクセス権を持つ Team または Enterprise メンバー   | 組織の使用量設定 [**Admin settings > Usage**](https://claude.ai/admin-settings/usage) をブラウザで開きます                                                                    |
+| 請求アクセス権を持たない Team または Enterprise メンバー | 確認を求めてから、組織の管理者にリクエストを送信します。v2.1.211 より前では、Claude Code は確認ステップなしでリクエストを送信していました                                                                             |
 
 請求アクセス権を持たない Team および Enterprise メンバーの場合、確認はインタラクティブセッションでのみ表示されます。`-p` フラグを使用した非インタラクティブモードおよび [Remote Control](/docs/ja/remote-control) からは、コマンドはリクエストを送信せず、インタラクティブセッションで実行するよう指示します。
 
@@ -361,7 +360,7 @@ MCP ツール定義は [デフォルトで遅延](/docs/ja/mcp#scale-with-mcp-to
   拡張思考を調整する
 </h3>
 
-拡張思考はデフォルトで有効になっています。これは複雑な計画と推論タスクのパフォーマンスを大幅に向上させるためです。思考トークンは出力トークンとして課金され、デフォルト予算はモデルに応じて数万トークンになる場合があります。深い推論が必要ない単純なタスクの場合、`/effort` で [努力レベル](/docs/ja/model-config#adjust-effort-level) を低下させるか、`/model` で、または `/config` で思考を無効にすることでコストを削減できます。[固定思考予算](/docs/ja/model-config#adaptive-reasoning-and-fixed-thinking-budgets) を持つモデルでは、`MAX_THINKING_TOKENS=8000` などの `MAX_THINKING_TOKENS` [環境変数](/docs/ja/env-vars) を設定して予算を低下させることもできます。適応推論モデルはゼロ以外の予算を無視するため、代わりに努力レベルを使用します。
+拡張思考はデフォルトで有効になっています。これは複雑な計画と推論タスクのパフォーマンスを大幅に向上させるためです。思考トークンは出力トークンとして課金され、デフォルト予算はモデルに応じて数万トークンになる場合があります。深い推論が必要ない単純なタスクの場合、`/effort` または `/model` で [努力レベル](/docs/ja/model-config#adjust-effort-level) を低下させるか、`/config` で思考を無効にすることでコストを削減できます。Fable モデルは常に拡張思考を使用するため、思考をオフにすることはできません。[固定思考予算](/docs/ja/model-config#adaptive-reasoning-and-fixed-thinking-budgets) を持つモデルでは、`MAX_THINKING_TOKENS=8000` などの `MAX_THINKING_TOKENS` [環境変数](/docs/ja/env-vars) を設定して予算を低下させることもできます。適応推論モデルはゼロ以外の予算を無視するため、代わりに努力レベルを使用します。
 
 <h3 id="delegate-verbose-operations-to-subagents">
   詳細な操作を subagent に委任する

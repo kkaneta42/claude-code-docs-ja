@@ -56,7 +56,7 @@ Claude Code は、`bypassPermissions` を含むどのモードでも、以下を
 | ローカルで反復、分類器なしでプロンプトを減らす | Manual モード + [auto-allow モード](/docs/ja/sandboxing#sandbox-modes)の Bash サンドボックス：`claude --permission-mode default`、その後 `/sandbox` を実行して auto-allow を選択 | 組み込み Bash サンドボックス、macOS、Linux、WSL2 上                                                                                                                     | 拒否ルールは依然として適用され、`Bash(git push *)` のようなコマンドに名前を付ける ask ルールは依然としてプロンプトを表示します。代わりに設定ファイルからサンドボックスをオンにするには、[`sandbox.enabled`](/docs/ja/settings-reference#sandbox-enabled) を `true` に設定します |
 | 何かを変更する前に探索             | `claude --permission-mode plan`                                                                                                                  | なし                                                                                                                                                       | Claude Code は[計画を承認](#review-and-approve-a-plan)するまで編集をブロックします                                                                                                                      |
 | auto モードでハンズオフで作業       | `claude --permission-mode auto`、Pro、Max、Team の[組み込み開始権限モード](#which-mode-a-session-starts-in)                                                     | なし。サンドボックスまたはコンテナは防御の深さを追加                                                                                                                               | [サポートされているモデル](#eliminate-prompts-with-auto-mode)が必要で、組織は [auto モードをオフ](#eliminate-prompts-with-auto-mode)にできます                                                                     |
-| 正確な許可リストで CI で実行        | `claude -p "run the test suite" --permission-mode dontAsk --allowedTools "Bash(npm test)" "Read"`                                                | CI ランナーが提供するもの以上                                                                                                                                         | [Web 上の Claude Code](/docs/ja/claude-code-on-the-web)は設定ファイルから `dontAsk` を無視します                                                                                                          |
+| 正確な許可リストで CI で実行        | `claude -p "run the test suite" --permission-mode dontAsk --allowedTools "Bash(npm test)" "Read"`                                                | CI ランナーが提供するもの以外はなし                                                                                                                                      | [Web 上の Claude Code](/docs/ja/claude-code-on-the-web)は設定ファイルから `dontAsk` を無視します                                                                                                          |
 | コンテナ内で完全に無人で実行          | `claude -p "<prompt>" --dangerously-skip-permissions`                                                                                            | 必須：コンテナ、VM、または[サンドボックスランタイム](/docs/ja/sandbox-environments#sandbox-runtime)。Linux と macOS では、[非 root ユーザー](#skip-all-checks-with-bypasspermissions-mode)として実行 | Web 上の Claude Code は設定ファイルからこのモードを無視します。この `-p` 実行では、[依然としてプロンプトが表示される少数の呼び出し](#skip-all-checks-with-bypasspermissions-mode)は代わりに拒否されます                                             |
 
 Bash サンドボックスと auto モードは独立して機能し、プラン モードを除いて組み合わさります。プラン モードでは、[auto-allow は承認を広げません](/docs/ja/sandboxing#sandbox-modes)。完全な相互作用については、[サンドボックスが権限と権限モードにどのように関連するか](/docs/ja/sandboxing#how-sandboxing-relates-to-permissions-and-permission-modes)および[隔離が権限モードにどのように関連するか](/docs/ja/sandbox-environments#how-isolation-relates-to-permission-modes)を参照してください。
@@ -81,15 +81,15 @@ VS Code 拡張機能が開始する会話は、[権限モードを切り替え�
 
 組み込みデフォルトは、Claude Code の実行方法、プラン、および Claude Code がフィーチャーフラグを取得できるかどうかに依存します。セッションに一致する最初の行が適用されます。表は、ターミナルまたは VS Code 拡張機能を通じて開始するセッションをカバーしています。デスクトップアプリと claude.ai については、[権限モードを切り替える](#switch-permission-modes)の Desktop と Web タブを参照してください。
 
-| Claude Code の実行方法                                                                                                                                                               | 組み込み開始権限モード |
-| :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | :---------- |
-| 設定ファイルが `disableAutoMode` を `"disable"` に設定                                                                                                                                     | `default`   |
-| [フィーチャーフラグ取得](/docs/ja/env-vars#features-that-need-feature-flag-fetching)がオフ                                                                                                         | `default`   |
-| [Claude Code をインストールまたはアップグレード](/docs/ja/env-vars#first-session-after-an-install-or-upgrade)した後の最初のセッション。このデフォルトを追加するバージョンへ。ただし、新規インストール後、Claude Code がフラグを時間内に取得した場合を除く             | `default`   |
-| `claude -p` または [Agent SDK](/docs/ja/agent-sdk/permissions)                                                                                                                          | `default`   |
-| Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、[Claude Platform on AWS](/docs/ja/claude-platform-on-aws)、または署名済み [Claude apps gateway](/docs/ja/claude-apps-gateway)セッション | `default`   |
-| Pro、Max、または Team プラン。ターミナルまたは [VS Code 拡張機能](/docs/ja/vs-code)を通じて                                                                                                                   | `auto`      |
-| Enterprise プランまたは Claude Console API キー                                                                                                                                         | `default`   |
+| Claude Code の実行方法                                                                                                                                                                   | 組み込み開始権限モード |
+| :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :---------- |
+| 設定ファイルが `disableAutoMode` を `"disable"` に設定                                                                                                                                         | `default`   |
+| [フィーチャーフラグ取得](/docs/ja/env-vars#features-that-need-feature-flag-fetching)がオフ                                                                                                             | `default`   |
+| [Claude Code をインストールまたはアップグレード](/docs/ja/env-vars#first-session-after-an-install-or-upgrade)した後の最初のセッション。このデフォルトを追加するバージョンへ。ただし、新規インストール後、Claude Code がフラグを時間内に取得した場合を除く                 | `default`   |
+| `claude -p` または [Agent SDK](/docs/ja/agent-sdk/permissions)                                                                                                                              | `default`   |
+| Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、[Claude Platform on AWS](/docs/ja/claude-platform-on-aws)、またはサインイン済みの [Claude apps gateway](/docs/ja/claude-apps-gateway)セッション | `default`   |
+| Pro、Max、または Team プラン。ターミナルまたは [VS Code 拡張機能](/docs/ja/vs-code)を通じて                                                                                                                       | `auto`      |
+| Enterprise プランまたは Claude Console API キー                                                                                                                                             | `default`   |
 
 フィーチャーフラグ取得がオフの場合、または [インストールまたはアップグレード後の最初のセッション](/docs/ja/env-vars#first-session-after-an-install-or-upgrade)でフラグがまだ到達していない場合、VS Code 拡張機能は開始権限モードを選択するときにすべての設定ファイルを無視します。
 
@@ -131,7 +131,7 @@ Pro、Max、Team プランでは、`~/.claude/settings.json` が `auto` 以外�
   権限モードを切り替える
 </h2>
 
-各インターフェースには、セッション中に権限モードを切り替えるための独自のコントロールと、新しいセッションが開始する権限モードを選択するための独自の方法があります。Claude にチャットで権限モードを変更するよう求めることは機能しません。インターフェースを選択して、そのコントロールを確認してください。
+各インターフェースには、セッション中に権限モードを切り替えるための独自のコントロールと、新しいセッションが開始する権限モードを選択するための独自の方法があります。インターフェースを選択して、そのコントロールを確認してください。
 
 <Tabs>
   <Tab title="CLI">
@@ -211,8 +211,8 @@ Pro、Max、Team プランでは、`~/.claude/settings.json` が `auto` 以外�
   <Tab title="Web and mobile">
     [claude.ai/code](https://claude.ai/code) のプロンプトボックスの横またはモバイルアプリのモードドロップダウンを使用します。権限プロンプトは承認のために claude.ai に表示されます。どのモードが表示されるかはセッションが実行される場所によります。
 
-    * **[Claude Code on the web](/docs/ja/claude-code-on-the-web)のクラウドセッション**：Edit automatically、Plan、Auto。Edit automatically は `default` モードに対応します。クラウドセッションはモードに関係なくファイル編集を事前承認するため、ドロップダウンは Manual の代わりに Edit automatically を表示します。設定からの `defaultMode: "acceptEdits"` は依然として尊重されます。Auto モードは組織がそれを許可し、選択されたモデルがそれをサポートする場合にのみ表示されます。Bypass permissions は利用できません。
-    * **ローカルマシンの [Remote Control](/docs/ja/remote-control)セッション**：Manual、Edit automatically、Plan。アプリから Auto または Bypass permissions を選択することはできません。
+    * **[Claude Code on the web](/docs/ja/claude-code-on-the-web)のクラウドセッション**：Accept edits、Plan、Auto。Accept edits は `default` モードに対応します。クラウドセッションはモードに関係なくファイル編集を事前承認するため、ドロップダウンは Manual の代わりに Accept edits を表示します。設定からの `defaultMode: "acceptEdits"` は依然として尊重されます。Auto モードは組織がそれを許可し、選択されたモデルがそれをサポートする場合にのみ表示されます。Bypass permissions は利用できません。
+    * **ローカルマシンの [Remote Control](/docs/ja/remote-control)セッション**：Manual、Accept edits、Plan。アプリから Auto または Bypass permissions を選択することはできません。
       * Bypass permissions を除き、ドロップダウンはローカルセッションが実行されているモードを表示します。これにはターミナルから設定されたモードが含まれ、アプリまたはターミナルでモードが変更されると更新されます。セッションは Bypass permissions を claude.ai に報告することはないため、ターミナルからそれに切り替えてもドロップダウンに表示される内容は変わりません。
       * [デスクトップアプリ](/docs/ja/desktop)または [VS Code 拡張機能](/docs/ja/vs-code)でホストされるセッションは、アプリで発生するのと同じように権限モード変更を claude.ai に報告します。
       * v2.1.202 より前では、`/remote-control` または `claude --remote-control` で接続されたセッションはモードをまったく報告しなかったため、claude.ai とモバイルアプリはセッションが実行されていないモードを表示する可能性がありました。不一致はラベルのみに影響しました。Claude Code は権限プロンプトをセッションの実際のモードから生成し、それらは依然としてアプリに表示されて承認されました。
@@ -303,8 +303,8 @@ Auto モードはアカウントがこれらすべての要件を満たす場合
 
 * **プラン**：すべてのプラン。
 * **組織**：Team と Enterprise では、auto モードはデフォルトで利用可能です。管理者は [管理設定](/docs/ja/managed-settings)で `permissions.disableAutoMode` を `"disable"` に設定することでそれをオフにできます。
-* **モデル**：Anthropic API と [Claude Platform on AWS](/docs/ja/claude-platform-on-aws)では、Claude Opus 4.6 以降、Sonnet 4.6 以降、または [Fable モデル](/docs/ja/model-config#work-with-fable)。Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、および署名済み [Claude apps gateway](/docs/ja/claude-apps-gateway)セッションでは、Claude Sonnet 5、Opus 4.7 以降、および Fable モデルのみ。Sonnet 4.5、Opus 4.5、Haiku、claude-3 モデルを含む古いモデルはどのプロバイダーでもサポートされていません。
-* **プロバイダー**：Anthropic API、Claude Platform on AWS、Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、および署名済み Claude apps gateway セッションではデフォルトで利用可能です。
+* **モデル**：Anthropic API と [Claude Platform on AWS](/docs/ja/claude-platform-on-aws)では、Claude Opus 4.6 以降、Sonnet 4.6 以降、または [Fable モデル](/docs/ja/model-config#work-with-fable)。Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、およびサインイン済みの [Claude apps gateway](/docs/ja/claude-apps-gateway)セッションでは、Claude Sonnet 5、Opus 4.7 以降、および Fable モデルのみ。Sonnet 4.5、Opus 4.5、Haiku、claude-3 モデルを含む古いモデルはどのプロバイダーでもサポートされていません。
+* **プロバイダー**：Anthropic API、Claude Platform on AWS、Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、およびサインイン済みの Claude apps gateway セッションではデフォルトで利用可能です。
 
 Claude Code が auto モードを利用不可と報告する場合、最初にこれらの要件と設定ファイルが [`disableAutoMode`](/docs/ja/settings-reference#disableautomode)を設定しているかどうかを確認してください。Anthropic はまた、サーバー側で auto モードをオフにしたか、サーバーがアカウントに対して auto モードを拒否した可能性があります。どちらかの回答を受け取ったセッションは、セッションが終了するまで auto モードをオフに保つため、後で新しいセッションを開始してください。
 
@@ -316,7 +316,7 @@ Claude Code が auto モードを利用不可と報告する場合、最初に�
   Bedrock、Agent Platform、または Foundry で auto モードを有効にする
 </h3>
 
-[Amazon Bedrock](/docs/ja/amazon-bedrock)、[Google Cloud の Agent Platform](/docs/ja/google-vertex-ai)、[Microsoft Foundry](/docs/ja/microsoft-foundry)、および署名済み [Claude apps gateway](/docs/ja/claude-apps-gateway)セッションでは、auto モードはデフォルトで `Shift+Tab` サイクルに表示されます。サイクルに表示されることはセッションが開始するモードを変更しません。ターミナルセッションはユーザーの [`defaultMode`](/docs/ja/settings-reference#permissions-defaultmode)で開始します。これは変更しない限り Manual です。[VS Code 拡張機能](/docs/ja/vs-code)の会話は、設定を変更しない限り Manual で開始します。これらのプロバイダーでは Claude Sonnet 5、Opus 4.7 以降、および Fable モデルのみがサポートされています。
+[Amazon Bedrock](/docs/ja/amazon-bedrock)、[Google Cloud の Agent Platform](/docs/ja/google-vertex-ai)、[Microsoft Foundry](/docs/ja/microsoft-foundry)、およびサインイン済みの [Claude apps gateway](/docs/ja/claude-apps-gateway)セッションでは、auto モードはデフォルトで `Shift+Tab` サイクルに表示されます。サイクルに表示されることはセッションが開始するモードを変更しません。ターミナルセッションはユーザーの [`defaultMode`](/docs/ja/settings-reference#permissions-defaultmode)で開始します。これは変更しない限り Manual です。[VS Code 拡張機能](/docs/ja/vs-code)の会話は、`claudeCode.initialPermissionMode` または拡張機能で選択したモードによって別のモードが設定されない限り、Manual で開始します。これらのプロバイダーでは Claude Sonnet 5、Opus 4.7 以降、および Fable モデルのみがサポートされています。
 
 Auto モードをデフォルトの開始権限モードにするには、ユーザーまたは管理設定で `"permissions": {"defaultMode": "auto"}` を設定します。VS Code 拡張機能が開始する会話では、代わりにモード指示器から **Auto** を選択します。[権限モードを切り替える](#switch-permission-modes)は、その選択より優先されるものをカバーしています。
 
@@ -394,7 +394,7 @@ Claude Code v2.1.257 以降はこれらもデフォルトでブロックしま�
 
 * `169.254.169.254` のようなクラウドインスタンスメタデータエンドポイントから認証情報をリクエスト、またはマシン独自のサービスアカウントまたはノード ID でクラウド、クラスタ、またはレジストリ呼び出しを明示的に認証
 * トンネル、リバースシェル、または書き直されたリゾルバーまたはプロキシ設定を通じて、パブリックホストに直接リクエスト以外のルートで到達
-* ホストに属する認証情報を読み取る。ノード証明書またはノードのコンテナレジストリ認証ではなく、タスクに属する認証情報
+* ノード証明書やノードのコンテナレジストリ認証など、タスクではなくホストに属する認証情報を読み取る
 * Claude が開始しなかったシブリングコンテナ、ポッド、または VM に接続またはスキャン、またはその下のノード
 
 Claude Code がそれらの 1 つを許可することを意図した場所で実行される場合、[ホスト格納エントリ](/docs/ja/auto-mode-config#define-trusted-infrastructure)で `autoMode.environment` にそのセットアップを説明します。
@@ -409,7 +409,7 @@ Claude Code v2.1.261 以降はこれらもデフォルトでブロックしま�
 * ロックファイルまたはマニフェストで宣言されている依存関係のインストール
 * `.env` を読み取り、認証情報を一致する API に送信
 * 読み取り専用 HTTP リクエスト
-* リポジトリの任意のブランチへのプッシュ。デフォルトブランチを含む。デフォルトブランチ以外のブランチで、`production` または `gh-pages` のようなデプロイまたは公開ターゲットとしてマークされた名前は、カバーされません。分類器はそこへのプッシュを独自の条件で判断します。プッシュのコンテンツは依然として他のルールに対してチェックされ、[`permissions.deny` ルール](/docs/ja/permissions#manage-permissions)は依然としてすべてのモードで特定のブランチへのプッシュを完全にブロックでき、リモート独自のブランチ保護は依然として適用されます。v2.1.211 より前では、開始したブランチ、Claude が作成したブランチ、およびデフォルトブランチへのルーチンプッシュのみが許可されていました。v2.1.203 より前では、デフォルトブランチへの直接プッシュはすべてブロックされていました
+* リポジトリの任意のブランチへのプッシュ。デフォルトブランチを含む。デフォルトブランチ以外のブランチで、`production` または `gh-pages` のようなデプロイまたは公開ターゲットとしてマークされた名前は、カバーされません。分類器はそこへのプッシュを独自の条件で判断します。プッシュのコンテンツは依然として他のルールに対してチェックされ、[`permissions.deny` ルール](/docs/ja/permissions#manage-permissions)は依然としてすべてのモードで [書かれたとおり](/docs/ja/permissions#bash-rule-limits)プッシュコマンドをブロックでき、リモート独自のブランチ保護は依然として適用されます。v2.1.211 より前では、開始したブランチ、Claude が作成したブランチ、およびデフォルトブランチへのルーチンプッシュのみが許可されていました。v2.1.203 より前では、デフォルトブランチへの直接プッシュはすべてブロックされていました
 
 Claude Code v2.1.195 以降はデフォルトでこれらも許可します。
 
@@ -428,7 +428,7 @@ Claude Code v2.1.195 以降はデフォルトでこれらも許可します。
 
 `claude auto-mode defaults` を実行して完全なルールリストを JSON として印刷します。日常的なアクションがブロックされている場合、管理者は `autoMode.environment` 設定を通じて信頼できるリポジトリ、バケット、サービスを追加できます。[auto モードを設定](/docs/ja/auto-mode-config)を参照してください。
 
-リポジトリの任意のブランチへのプッシュおよびリクエストに一致するプルリクエストの作成はプロンプトなしで実行されます。ただし、プッシュまたはプルリクエストが[ブロックリスト](#what-the-classifier-blocks-by-default)に該当する場合（シークレットまたは機密データがリポジトリを離れる場合、またはプルリクエストが異なるリポジトリまたは組織をターゲットにする場合など）を除きます。auto モードにとどまりながらこれらのアクション前に人間のチェックポイントを要求するには、`permissions.ask` ルールを追加します。[一般的な境界](/docs/ja/auto-mode-config#common-boundaries)を参照してください。
+リポジトリの任意のブランチへのプッシュおよびリクエストに一致するプルリクエストの作成はプロンプトなしで実行されます。ただし、プッシュまたはプルリクエストが[ブロックリスト](#what-the-classifier-blocks-by-default)に該当する場合（シークレットまたは機密データがリポジトリを離れる場合、またはプルリクエストが異なるリポジトリまたは組織をターゲットにする場合など）を除きます。auto モードにとどまりながらこれらのコマンドの前に人間のチェックポイントを要求するには、`permissions.ask` ルールを追加します。このルールは[書かれたとおりの](/docs/ja/permissions#bash-rule-limits)コマンドに一致します。[一般的な境界](/docs/ja/auto-mode-config#common-boundaries)を参照してください。
 
 <h3 id="first-read-outside-the-working-directories">
   作業ディレクトリ外の最初の読み取り
@@ -520,9 +520,9 @@ Auto モードがセッションのアクションを承認できない場合、
 
 `dontAsk` モードを設定すると、Claude Code はプロンプトが表示されるすべてのツール呼び出しを自動的に拒否します。Claude は `permissions.allow` ルール、[読み取り専用 Bash コマンド](/docs/ja/permissions#read-only-commands)、および [PreToolUse フック](/docs/ja/permissions#extend-permissions-with-hooks)によって承認された呼び出しに一致するアクションのみを実行します。このモードは CI パイプラインまたは Claude が実行を許可されているものを事前に定義する制限環境で使用します。セッションは入力を待つことはありません。このモードがアクティブな間、ステータスバーに `⏵⏵ don't ask on` が表示されます。
 
-Claude Code は明示的な [`ask` ルール](/docs/ja/permissions#manage-permissions)に一致するプロンプトするのではなく呼び出しを拒否します。また、組み込みの `AskUserQuestion` ツールと [組織が `ask`](/docs/ja/mcp#organization-controls-on-connector-tools)に設定したコネクタツールも拒否します。これは allow ルールが一致する場合でも同じです。[`requiresUserInteraction`](/docs/ja/mcp#require-approval-for-a-specific-tool)でマークされた MCP ツールも同じ方法で拒否されます。これは、その承認カードがこのモードが収集することのない回答を必要とするためです。これには Claude Code v2.1.199 以降が必要です。
+Claude Code は明示的な [`ask` ルール](/docs/ja/permissions#manage-permissions)に一致する呼び出しを、プロンプトを表示するのではなく拒否します。また、組み込みの `AskUserQuestion` ツールは allow ルールが一致する場合でも拒否し、[組織が `ask`](/docs/ja/mcp#organization-controls-on-connector-tools)に設定したコネクタツールも、その設定が Claude Code に届くセッションでは同様に拒否します。[`_meta["anthropic/requiresUserInteraction"]`](/docs/ja/mcp#require-approval-for-a-specific-tool)でマークされた MCP ツールも同じ方法で拒否されます。これは、その承認カードがこのモードが収集することのない回答を必要とするためです。これには Claude Code v2.1.199 以降が必要です。
 
-`rm` と `rmdir` の削除が[重要なパス](#critical-paths)をターゲットにしている場合（`rm -rf /` や `rm -rf ~` など）は、allow ルールが一致する場合でも、または `PreToolUse` フック `"allow"` が許可する場合でも拒否されます。
+`rm` と `rmdir` の削除が[重要なパス](#critical-paths)をターゲットにしている場合（`rm -rf /` や `rm -rf ~` など）は、allow ルールが一致する場合でも、または `PreToolUse` フックが許可する場合でも拒否されます。
 
 [Web 上の Claude Code](/docs/ja/claude-code-on-the-web)は設定ファイルから `defaultMode: "dontAsk"` を無視します。[bypassPermissions](#skip-all-checks-with-bypasspermissions-mode)の詳細を参照してください。
 
@@ -540,18 +540,18 @@ claude --permission-mode dontAsk
 
 [アクションがどのモードも自動承認しない](#actions-no-mode-auto-approves)は依然としてこのモードでプロンプトを表示します。
 
-2 つの[クロスセッションメッセージング](/docs/ja/cross-session-messaging)セーフガードはこのモードおよび [bypass permissions が利用可能](#skip-all-checks-with-bypasspermissions-mode)なプラン モード セッションで依然として適用されます。
+2 つの[クロスセッションメッセージング](/docs/ja/cross-session-messaging)セーフガードはこのモードおよび bypass permissions が利用可能なプラン モード セッションで依然として適用されます。
 
 * このマシンを超えたセッションへのメッセージの [`isolatePeerMachines`](/docs/ja/settings-reference#isolatepeermachines)承認プロンプトは依然として表示されます。
 * [`crossSessionInbound`](/docs/ja/cross-session-messaging#control-inbound-messages)値が適用されない場合、Claude Code はセッションの別のものからのインバウンドメッセージを承認のために保持し、送信セッションが権限プロンプトもバイパスしていることを識別する場合にのみ確認なしで配信します。権限モードを終了する間、メッセージが保持されている場合、Claude Code はインバウンドルールを再適用し、それらが受け入れるすべての保持メッセージを配信します。
 
-bypass permissions が利用可能なセッションでは、Claude Code は[計画モード](#analyze-before-you-edit-with-plan-mode)のブロックも実行しません。Claude はプランなしで編集するよう指示されたままですが、計画中に試みるファイル編集またはシェルコマンドはプロンプトなしで実行されます。明示的な [ask ルール](/docs/ja/permissions#manage-permissions)および `rm` と `rmdir` の削除が[重要なパス](#critical-paths)をターゲットにしている場合は依然としてプロンプトを表示します。
+bypass permissions が利用可能なセッションでは、Claude Code は[計画モード](#analyze-before-you-edit-with-plan-mode)のブロックも実行しません。Claude は編集せずに計画するよう指示されたままですが、計画中に試みるファイル編集またはシェルコマンドはプロンプトなしで実行されます。明示的な [ask ルール](/docs/ja/permissions#manage-permissions)および `rm` と `rmdir` の削除が[重要なパス](#critical-paths)をターゲットにしている場合は依然としてプロンプトを表示します。
 
 <Warning>
   このモードはコンテナ、VM、またはインターネットアクセスのない dev container のような隔離環境でのみ使用してください。Claude Code はホストシステムに損害を与えることができません。
 </Warning>
 
-有効にするフラグの 1 つで開始したセッションから `bypassPermissions` に入ることはできません。有効にするために起動時に設定します。
+有効にせずに開始したセッションから `bypassPermissions` に入ることはできません。起動時に [`permissions.defaultMode: "bypassPermissions"`](/docs/ja/settings-reference#permissions-defaultmode) または有効にするフラグを使って有効にします。
 
 ```bash theme={null}
 claude --permission-mode bypassPermissions
@@ -561,7 +561,7 @@ claude --permission-mode bypassPermissions
 
 Claude Code は [`--restricted`](/docs/ja/cli-reference#cli-flags)で開始するセッションで `bypassPermissions` を拒否します。`--restricted` には Claude Code v2.1.248 以降が必要です。
 
-このモードを有効にして対話的セッションを初めて開始するとき、Claude Code は、権限チェックなしで実行されるアクションに対して責任を受け入れるよう求める警告ダイアログを表示します。Claude Code はユーザー設定にあなたの受け入れを保存するため、ダイアログは 1 回だけ表示されます。却下した場合、Claude Code は終了します。[非対話的モード](/docs/ja/headless)ではダイアログは表示されず、[バックグラウンドセッション](/docs/ja/agent-view)は `--bg` で開始されるまで、対話的セッションでダイアログを受け入れるまで拒否されます。
+このモードを有効にして対話的セッションを初めて開始するとき、Claude Code は、権限チェックなしで実行されるアクションに対して責任を受け入れるよう求める警告ダイアログを表示します。Claude Code はユーザー設定にあなたの受け入れを保存するため、ダイアログは 1 回だけ表示されます。却下した場合、Claude Code は終了します。[非対話的モード](/docs/ja/headless)ではダイアログは表示されず、`--bg` で開始した[バックグラウンドセッション](/docs/ja/agent-view)は、対話的セッションでダイアログを受け入れるまで拒否されます。
 
 Linux と macOS では、Claude Code は root として実行されている場合、またはこのモードで `sudo` の下で実行されている場合、起動を拒否します。
 

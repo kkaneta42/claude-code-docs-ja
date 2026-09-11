@@ -337,12 +337,12 @@ URL 経由でリモート `marketplace.json` ファイルを追加します：
 Claude Code はローカル マーケットプレイス カタログのコピーでプラグインを検索します。プラグインの名前の付け方によって、Claude Code がそのコピーを最初に更新するかどうかが決まります：
 
 * **マーケットプレイス名を含む場合**: セッションで `plugin-name@marketplace-name` をインストールするか、`claude plugin install` で実行すると、Claude Code はルックアップの前にそのマーケットプレイスを更新します。Claude Code は、マーケットプレイスの[自動更新](#configure-auto-updates)をオフにしたか、`DISABLE_AUTOUPDATER` を設定した場合でも、更新を実行します。v2.1.232 より前では、Claude Code はルックアップの前にマーケットプレイスを更新しませんでした。Claude Code は以下の場合、この更新をスキップします：
-  * マーケットプレイスが[GitHub、別の Git ホスト、またはリモート URL から追加](/docs/ja/plugin-marketplaces#pre-populate-plugins-for-containers)されていない。
+  * マーケットプレイスが[GitHub、別の Git ホスト、またはリモート URL から追加](#add-marketplaces)されていない。
   * [シード ディレクトリ](/docs/ja/plugin-marketplaces#pre-populate-plugins-for-containers)がマーケットプレイスを提供している。
   * Claude Code が過去 30 秒以内にマーケットプレイスを更新した。
   * [`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`](/docs/ja/env-vars)を設定した。
   * [管理設定](/docs/ja/plugin-marketplaces#managed-marketplace-restrictions)がマーケットプレイスをブロックしている。この場合、Claude Code はインストールも拒否します。
-* **プラグイン名のみ**: セッションで `/plugin install plugin-name` を実行すると、Claude Code は[バックグラウンドでも更新](/docs/ja/plugin-marketplaces#configure-auto-updates)するマーケットプレイスのみを更新し、ルックアップが失敗した後のみです。`claude plugin install plugin-name` を実行すると、Claude Code は更新なしでキャッシュされたカタログを読み取ります。最後の更新後に公開されたプラグインをインストールするには、セッションで `/plugin marketplace update <marketplace-name>` を実行するか、シェルで [`claude plugin marketplace update <marketplace-name>`](/docs/ja/plugin-marketplaces#plugin-marketplace-update)を実行してから、インストールを再試行します。
+* **プラグイン名のみ**: セッションで `/plugin install plugin-name` を実行すると、Claude Code は[バックグラウンドでも更新](#configure-auto-updates)するマーケットプレイスのみを更新し、ルックアップが失敗した後のみです。`claude plugin install plugin-name` を実行すると、Claude Code は更新なしでキャッシュされたカタログを読み取ります。最後の更新後に公開されたプラグインをインストールするには、セッションで `/plugin marketplace update <marketplace-name>` を実行するか、シェルで [`claude plugin marketplace update <marketplace-name>`](/docs/ja/plugin-marketplaces#plugin-marketplace-update)を実行してから、インストールを再試行します。
 
 名前付きインストール前の更新が失敗した場合（例えば、オフラインの場合）、Claude Code はキャッシュされたカタログでプラグインを検索します。`claude plugin install` は成功メッセージで `marketplace not refreshed` を報告し、`/plugin install` はプラグインの詳細の上または見つからないメッセージでエラーを表示します。
 
