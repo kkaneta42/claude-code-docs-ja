@@ -227,12 +227,7 @@ Amazon Bedrock と Google Vertex AI の場合、ログインプロンプトで `
   ドキュメントとメモリに投資する
 </h3>
 
-Claude Code がコードベースを理解できるようにドキュメントに投資することを強くお勧めします。組織は複数のレベルで CLAUDE.md ファイルをデプロイできます。
-
-* **組織全体**: macOS の `/Library/Application Support/ClaudeCode/CLAUDE.md`、Linux と WSL の `/etc/claude-code/CLAUDE.md`、Windows の `C:\Program Files\ClaudeCode\CLAUDE.md` などのシステムディレクトリにデプロイして、会社全体の標準を設定します
-* **リポジトリレベル**: プロジェクトアーキテクチャ、ビルドコマンド、貢献ガイドラインを含むリポジトリルートに `CLAUDE.md` ファイルを作成します。ソース管理にチェックインして、すべてのユーザーが利益を得られるようにします
-
-[メモリと CLAUDE.md ファイル](/docs/ja/memory)で詳細をご覧ください。
+Claude Code がコードベースを理解できるようにドキュメントに投資することを強くお勧めします。組織は複数のレベルで CLAUDE.md ファイルをデプロイできます。[CLAUDE.md ファイルをどこに配置できるか](/docs/ja/memory#choose-where-to-put-claude-md-files)と[組織全体の CLAUDE.md をデプロイする方法](/docs/ja/memory#deploy-organization-wide-claude-md)をご覧ください。
 
 <h3 id="simplify-deployment">
   デプロイメントを簡素化する

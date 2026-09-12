@@ -96,35 +96,35 @@ Claude Code に含まれるプロンプトベースのプレイブック。`/bat
   Channel
 </h3>
 
-[MCP server](#mcp-model-context-protocol) の一種。実行中のセッションにイベントをプッシュして、Claude がターミナルから離れている間に発生することに反応できるようにします。チャネルは双方向にできます。Claude は受信イベントを読み取り、同じチャネルを通じて返信します。Telegram、Discord、iMessage は研究プレビューに含まれています。
+イベントを実行中のセッションにプッシュする [MCP サーバー](#mcp-model-context-protocol) で、ターミナルから離れている間に発生したことに Claude が反応できるようにします。チャネルは双方向にすることができます。Claude は受信イベントを読み取り、同じチャネルを通じて返信します。Telegram、Discord、iMessage は研究プレビューに含まれています。
 
-詳細情報: [Channels](/docs/ja/channels)
+詳細情報：[Channels](/docs/ja/channels)
 
 <h3 id="checkpoint">
   Checkpoint
 </h3>
 
-各プロンプト送信時に作成されたリストアポイント。Claude Code はすべての編集の前にファイルをスナップショットするため、チェックポイントでそれらを復元できます。`Esc` を 2 回押すか `/rewind` を実行して、コード、会話、またはその両方を以前のポイントに復元するか、選択したメッセージから会話の一部を要約します。チェックポイントはセッションに対してローカルであり、git とは別であり、Bash ツールを通じて行われた変更は追跡しません。
+送信するプロンプトごとにターンを開始する復元ポイント。Claude Code はすべての編集の前にファイルをスナップショットするため、チェックポイントはそれらを復元できます。`Esc` キーを 2 回押すか `/rewind` を実行して、コード、会話、またはその両方を以前のポイントに復元するか、選択したメッセージから会話の一部を要約します。チェックポイントは会話とともに保存されるため、再開されたセッションでも `/rewind` でそれらに戻ることができます。これらは git とは別で、Bash ツールを通じて行われた変更は追跡しません。
 
-詳細情報: [Checkpointing](/docs/ja/checkpointing)
+詳細情報：[Checkpointing](/docs/ja/checkpointing)
 
 <h3 id="claude-directory">
-  `.claude` directory
+  `.claude` ディレクトリ
 </h3>
 
-Claude Code がプロジェクトスコープの設定を読み取るディレクトリ: 設定、hooks、skills、subagents、rules、auto memory。プロジェクトはそのルートに `.claude/` を持ちます。ユーザーレベルのデフォルトは `~/.claude/` にあります。
+Claude Code がプロジェクトスコープの設定を読み取るディレクトリ。設定、フック、スキル、サブエージェント、ルール、自動メモリが含まれます。プロジェクトはそのルートに `.claude/` を持ち、ユーザーレベルのデフォルトは `~/.claude/` にあります。
 
-詳細情報: [The `.claude` directory](/docs/ja/claude-directory)
+詳細情報：[The `.claude` directory](/docs/ja/claude-directory)
 
 <h3 id="claude-md">
   CLAUDE.md
 </h3>
 
-Claude のために書く永続的な指示のマークダウンファイル。システムプロンプトの後、ユーザーメッセージとしてすべてのセッションの開始時にロードされます。プロジェクト規約、アーキテクチャノート、「常に X を行う」ルールをここに配置します。プロジェクトルート CLAUDE.md は [compaction](#compaction) を生き残り、その後ディスクから新しく再読み込みされます。
+Claude 用に作成する永続的な指示のマークダウンファイル。システムプロンプトの後、ユーザーメッセージとしてすべてのセッションの開始時に読み込まれます。プロジェクト規約、アーキテクチャノート、「常に X を行う」ルールをここに記述します。プロジェクトルート CLAUDE.md は [compaction](#compaction) を通じて保存され、その後ディスクから新たに読み込まれます。
 
-CLAUDE.md は `./CLAUDE.md` または `./.claude/CLAUDE.md` のプロジェクトスコープに、`~/.claude/CLAUDE.md` のユーザースコープに、または組織の [managed policy](#managed-settings) として配置できます。検出されたすべてのファイルは、互いにオーバーライドするのではなく、最も広いスコープから最も具体的なスコープへの順序で、コンテキストに連結されます。
+CLAUDE.md は `./CLAUDE.md` または `./.claude/CLAUDE.md` でプロジェクトスコープに、`~/.claude/CLAUDE.md` でユーザースコープに、または組織の [managed policy](#managed-settings) として配置できます。検出されたすべてのファイルは相互にオーバーライドするのではなく、最も広いスコープから最も具体的なスコープの順に、コンテキストに連結されます。
 
-詳細情報: [CLAUDE.md files](/docs/ja/memory#claude-md-files)
+詳細情報：[CLAUDE.md files](/docs/ja/memory#claude-md-files)
 
 <h3 id="command">
   Command
@@ -132,33 +132,33 @@ CLAUDE.md は `./CLAUDE.md` または `./.claude/CLAUDE.md` のプロジェク�
 
 プロンプトに `/name` と入力して呼び出す再利用可能な指示。`/clear`、`/model`、`/compact` などの組み込みコマンドはセッションを制御します。`.claude/commands/` のファイルとして独自のコマンドを定義するか、[plugin](#plugin) からインストールできます。[Skills](#skill) は複数ステップのコマンドをパッケージ化するための推奨される方法です。
 
-この単語の他の 2 つの用途は関連がありません。`claude mcp add` などの `claude` CLI サブコマンド（[CLI reference](/docs/ja/cli-reference#cli-commands) に記載）と、stdio [MCP server](#mcp-server) エントリの `command` フィールド（Claude Code が起動するために起動する実行可能ファイルを指定）です。
+この単語の他の 2 つの用途は関連がありません。`claude` CLI サブコマンド（`claude mcp add` など）は [CLI reference](/docs/ja/cli-reference#cli-commands) に記載されており、stdio [MCP server](#mcp-server) エントリの `command` フィールドは、Claude Code が起動するために起動する実行可能ファイルを指定します。
 
-詳細情報: [Commands](/docs/ja/commands) · [Skills](/docs/ja/skills)
+詳細情報：[Commands](/docs/ja/commands) · [Skills](/docs/ja/skills)
 
 <h3 id="compaction">
   Compaction
 </h3>
 
-[context window](#context-window) がその制限に近づくときの会話の自動要約。古いツール出力が最初にクリアされ、次に会話が要約されます。プロジェクトルート CLAUDE.md と auto memory は compaction を生き残り、ディスクから再ロードされます。会話でのみ与えられた指示は失われる可能性があります。`/compact` を手動でトリガーするか、オプションで `/compact focus on the API changes` のようなフォーカスを指定します。
+[context window](#context-window) がその制限に近づくときの会話の自動要約。古いツール出力が最初にクリアされ、その後会話が要約されます。プロジェクトルート CLAUDE.md と自動メモリは compaction を通じて保存され、ディスクから再度読み込まれます。会話でのみ与えられた指示は失われる可能性があります。`/compact` を手動でトリガーするか、オプションで `/compact focus on the API changes` のようなフォーカスを指定します。
 
-詳細情報: [What survives compaction](/docs/ja/context-window#what-survives-compaction) · [When context fills up](/docs/ja/how-claude-code-works#when-context-fills-up)
+詳細情報：[What survives compaction](/docs/ja/context-window#what-survives-compaction) · [When context fills up](/docs/ja/how-claude-code-works#when-context-fills-up)
 
 <h3 id="connector">
   Connector
 </h3>
 
-[MCP server](#mcp-server) の一種。Claude Code ではなく claude.ai アカウントに追加されます。そのアカウントで Claude Code にサインインすると、コネクタは `/mcp` にローカルで追加したサーバーと一緒に表示されます。組織はコネクタをプロビジョニングし、それらに対してツール単位の制御を設定することもできます。
+Claude Code ではなく claude.ai アカウントに追加される [MCP server](#mcp-server)。そのアカウントで Claude Code にサインインすると、コネクタはローカルに追加したサーバーと一緒に `/mcp` に表示されます。組織はコネクタをプロビジョニングし、それらに対するツール単位の制御を設定することもできます。
 
-詳細情報: [Use MCP servers from claude.ai](/docs/ja/mcp#use-mcp-servers-from-claude-ai)
+詳細情報：[Use MCP servers from claude.ai](/docs/ja/mcp#use-mcp-servers-from-claude-ai)
 
 <h3 id="context-window">
   Context window
 </h3>
 
-セッションの作業メモリ。会話履歴、ファイルコンテンツ、コマンド出力、CLAUDE.md、auto memory、ロードされたスキル、システム指示を保持します。作業を進めるにつれて、コンテキストが満杯になるまで [compaction](#compaction) がそれを要約します。`/context` を実行して、スペースを使用しているものを確認します。基礎となるモデル概念については、[プラットフォーム用語集](https://platform.claude.com/docs/ja/about-claude/glossary#context-window)を参照してください。
+セッションの作業メモリ。会話履歴、ファイルコンテンツ、コマンド出力、CLAUDE.md、自動メモリ、読み込まれたスキル、システム指示を保持します。作業を進めると、[compaction](#compaction) がそれを要約するまでコンテキストが満杯になります。`/context` を実行してスペースを使用しているものを確認します。基盤となるモデルの概念については、[platform glossary](https://platform.claude.com/docs/ja/about-claude/glossary#context-window) を参照してください。
 
-詳細情報: [Explore the context window](/docs/ja/context-window)
+詳細情報：[Explore the context window](/docs/ja/context-window)
 
 <h2 id="d">
   D
@@ -266,7 +266,7 @@ Claude に [MCP](#mcp-model-context-protocol) 経由でツール、プロンプ�
   Output style
 </h3>
 
-Claude のシステムプロンプトを変更して応答動作、トーン、または形式を変更する設定です。[CLAUDE.md](#claude-md) とは異なり、Claude Code がシステムプロンプトの後にユーザーメッセージとして配信する output style は、システムプロンプト自体を変更します。
+Claude Code が Claude に与える指示を変更して、応答動作、トーン、または形式を設定する設定です。プロジェクトコンテキストを Claude Code のデフォルト指示と一緒に追加する [CLAUDE.md](#claude-md) とは異なり、カスタム output style はデフォルトのソフトウェアエンジニアリング指示を置き換えることができます。
 
 詳細情報: [Output styles](/docs/ja/output-styles)
 

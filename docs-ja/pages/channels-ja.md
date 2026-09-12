@@ -47,7 +47,7 @@ Team、Enterprise、または Console 組織を管理している場合は、[�
         * `Marketplace "claude-plugins-official" not found`：`/plugin marketplace add anthropics/claude-plugins-official` でマーケットプレイスを追加してから、インストールを再試行してください。
         * プラグインが[マーケットプレイスで見つかりません](/docs/ja/discover-plugins#install-plugins)：プラグイン名を確認してください。
 
-        インストールがインストールスコープを求めるとき、ユーザースコープオプションを選択して、プラグインがすべてのプロジェクト全体で利用可能になるようにしてください。インストール概要を確認してください。`Run /reload-plugins to activate.` と報告されている場合は、そのコマンドを実行してプラグインの設定コマンドをアクティブにしてください。
+        インストールがインストールスコープを求めるとき、ユーザースコープオプションを選択して、プラグインがすべてのプロジェクト全体で利用可能になるようにしてください。インストール概要を確認してください。`Run /reload-plugins to activate.` と報告されている場合は、[プラグイン変更を再起動なしで適用する](/docs/ja/discover-plugins#apply-plugin-changes-without-restarting)を参照して、プラグインの設定コマンドを利用可能にしてください。
       </Step>
 
       <Step title="トークンを設定する">
@@ -125,7 +125,7 @@ Team、Enterprise、または Console 組織を管理している場合は、[�
         * `Marketplace "claude-plugins-official" not found`：`/plugin marketplace add anthropics/claude-plugins-official` でマーケットプレイスを追加してから、インストールを再試行してください。
         * プラグインが[マーケットプレイスで見つかりません](/docs/ja/discover-plugins#install-plugins)：プラグイン名を確認してください。
 
-        インストールがインストールスコープを求めるとき、ユーザースコープオプションを選択して、プラグインがすべてのプロジェクト全体で利用可能になるようにしてください。インストール概要を確認してください。`Run /reload-plugins to activate.` と報告されている場合は、そのコマンドを実行してプラグインの設定コマンドをアクティブにしてください。
+        インストールがインストールスコープを求めるとき、ユーザースコープオプションを選択して、プラグインがすべてのプロジェクト全体で利用可能になるようにしてください。インストール概要を確認してください。`Run /reload-plugins to activate.` と報告されている場合は、[プラグイン変更を再起動なしで適用する](/docs/ja/discover-plugins#apply-plugin-changes-without-restarting)を参照して、プラグインの設定コマンドを利用可能にしてください。
       </Step>
 
       <Step title="トークンを設定する">

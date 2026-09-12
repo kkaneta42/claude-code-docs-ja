@@ -99,7 +99,7 @@ Jamf、Iru、Intune、グループポリシーのスターターテンプレー�
 * **実行中のセッション**: ほとんどの変更は、[配信メカニズムテーブル](#choose-a-delivery-mechanism) のスケジュールに従って、再起動なしで実行中のセッションに到達します。
   * [`forceRemoteSettingsRefresh`](/docs/ja/settings-reference#forceremotesettingsrefresh)、[`requiredMinimumVersion`](/docs/ja/settings-reference#requiredminimumversion)、および [いくつかのユーザー編集可能キー](/docs/ja/settings#when-edits-take-effect) への変更は、次のセッション開始時に有効になります。
   * 新規または変更された [`policyHelper`](/docs/ja/settings-reference#policyhelper) エントリは次の起動時に有効になります。ただし、起動時にサーバーマネージド設定によってシャドウされたヘルパーは、フェッチがそれらの設定が削除されたことを報告するとすぐに実行されます。
-* **承認が必要な変更**: [次の起動を待つ更新](/docs/ja/server-managed-settings#fetch-and-caching-behavior) とは別に、[承認が必要な](/docs/ja/server-managed-settings#security-approval-dialogs) 設定（フックまたは `env` 変数など）へのサーバーマネージド変更は、開発者がインタラクティブセッションでダイアログを受け入れるのを待ち、IDE 拡張機能またはAgent SDK がホストするセッションの現在の実行に適用されます。その他のサーバーマネージド変更は次のポーリングで適用されます。
+* **承認が必要な変更**: [次の起動を待つ更新](/docs/ja/server-managed-settings#fetch-and-caching-behavior) とは別に、[承認が必要な](/docs/ja/server-managed-settings#security-approval-dialogs) 設定（フックまたは `env` 変数など）へのサーバーマネージド変更は、開発者がインタラクティブセッションでダイアログを受け入れるのを待ち、IDE 拡張機能または Agent SDK がホストするセッションの現在の実行に適用されます。その他のサーバーマネージド変更は次のポーリングで適用されます。
 * **長時間実行セッション**: 数週間開いたままのセッションはロールアウトに遅れることができます。[`requiredMinimumVersion`](/docs/ja/settings-reference#requiredminimumversion) は古いバイナリが開始されるのをブロックし、既に実行中のセッションを終了しません。
 
 <span id="format-the-policy-for-each-platform" />
@@ -181,6 +181,7 @@ Claude Code はこれらのソースを確認します。最初に最高優先�
 * `sandbox.filesystem.disabled` および `sandbox.network.strictAllowlist`
 * [`useAutoModeDuringPlan`](/docs/ja/settings-reference#useautomodeduringplan) および [`syncClaudeAiSkills`](/docs/ja/settings-reference#syncclaudeaiskills)。任意の管理ソースの `false` が動作をオフにします。開発者のユーザーまたはローカル設定の `false` もそれをオフにします。各キーは拒否のみできます
 * [`enableArtifact`](/docs/ja/settings-reference#enableartifact)。任意の管理ソースの `false` が [Artifact ツール](/docs/ja/artifacts) をオフにします。開発者のユーザー、プロジェクト、またはローカル設定の `false` もそれをオフにし、ソースはそれをオンに戻しません。[下位レベルの値がまだカウントされる](/docs/ja/settings#exceptions-to-managed-settings-precedence) を参照してください。Claude Code v2.1.242 以降が必要です
+* [`maxEffortLevel`](/docs/ja/settings-reference#maxeffortlevel)。任意の管理ソースの最も低いキャップが適用されます。開発者が自分の設定または `--settings` で低いキャップを設定する場合、Claude Code はそれを適用します。ソースはキャップを上げることはできません。Claude Code v2.1.267 以降が必要です
 * `attribution` のコミットトレーラー opt-out、または非推奨の `includeCoAuthoredBy` から任意のティア
 * [`forceRemoteSettingsRefresh`](/docs/ja/server-managed-settings)
 * 管理ソース全体で変数ごとにマージされた `env`: 各変数は、それを定義する最高優先度のソースから来るため、下位のソースは高位のソースが設定しないままにした変数を埋めます。いくつかの変数は独自のルールに従います。[マネージドソース全体のキーごとの例外](/docs/ja/server-managed-settings#per-key-exceptions-across-managed-sources) は各変数に名前を付けます。Claude Code v2.1.223 以降が必要です。v2.1.223 より前では、Claude Code は選択されたソースの全体 `env` ブロックのみを適用しました
@@ -350,6 +351,9 @@ Claude Code は [`policyHelper`](/docs/ja/settings-reference#policyhelper) が�
 | フィールド                         | 存在するが無効な場合の動作                                                                                                                                                                                                                                                                 |
 | :---------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `allowedMcpServers`           | ユーザーが追加する MCP サーバーが許可されないように、値が修正されるまで空のアローリストとして適用されます。組織が [`managedMcpServers`](/docs/ja/settings-reference#managedmcpservers) を通じて配信するサーバーは引き続きロードされ、`managed-mcp.json` サーバーは[サーバーの評価方法](/docs/ja/managed-mcp#how-a-server-is-evaluated)に従ってロードされます。個別の無効なエントリは削除され、有効なサブセットが適用されます。 |
+| `allowedHttpHookUrls`         | Claude Code は値を修正するまで空の管理[アローリスト](/docs/ja/settings-reference#allowedhttphookurls)を適用するため、HTTP フックは別の設定ファイルがその URL をリストしている場合にのみ実行されます。無効なエントリが 1 つだけの場合、Claude Code はそのエントリを削除し、残りを適用します。                                                                                         |
+| `httpHookAllowedEnvVars`      | Claude Code は値を修正するまで空の管理[アローリスト](/docs/ja/settings-reference#httphookallowedenvvars)を適用するため、ヘッダー変数は別の設定ファイルがそれを名前で示している場合にのみ補間されます。無効なエントリが 1 つだけの場合、Claude Code はそのエントリを削除し、残りを適用します。                                                                                            |
+| `allowedChannelPlugins`       | 値を修正するまで空のアローリストとして適用されるため、`--channels` に渡されるチャネル プラグインは許可されません。無効なエントリが 1 つだけの場合、それを削除し、残りを適用します。                                                                                                                                                                            |
 | `allowManagedHooksOnly`       | 修正されるまで `true` として扱われます。[フック制限](/docs/ja/settings-reference#allowmanagedhooksonly)が適用され、`disableCommandPluginSources` が明示的に `false` でない限り、コマンドソースのプラグインは無効になります。                                                                                                                   |
 | `allowManagedMcpServersOnly`  | `true` として扱われます。                                                                                                                                                                                                                                                              |
 | `disableCommandPluginSources` | `true` として扱われるため、値が修正されるまでコマンドソースのプラグインは無効のままです。                                                                                                                                                                                                                              |
@@ -359,6 +363,8 @@ Claude Code は [`policyHelper`](/docs/ja/settings-reference#policyhelper) が�
 | `crossSessionInbound`         | 最も制限的な値である `refuse` として扱われるため、値が修正されるまで[クロスセッション メッセージ](/docs/ja/cross-session-messaging#control-inbound-messages)のインバウンドは拒否されます。開発者は[警告](/docs/ja/errors#crosssessioninbound-must-be-one-of-accept-hold-refuse)を見ます。                                                                   |
 | `deniedMcpServers`            | 個別の無効なエントリは削除され、有効なサブセットが適用されます。完全に無効な値は警告とともにドロップされます。すべてのサーバーを拒否するとポリシーが名前を付けなかったサーバーがブロックされるためです。                                                                                                                                                                          |
 | `sandbox.credentials`         | 回復可能な無効なエントリは `mode: "deny"` に低下し、警告が表示されます。回復不可能なエントリは削除されます。有効なエントリは適用されたままです。[管理対象設定の無効な認証情報エントリ](/docs/ja/settings-reference#invalid-credential-entries-in-managed-settings)を参照してください                                                                                          |
+
+`allowedHttpHookUrls` と `httpHookAllowedEnvVars` は設定ファイル全体でマージされるため、管理対象リストが空の間、ユーザー、プロジェクト、またはローカル設定のエントリは引き続き適用されます。これら 2 つのキーと `allowedChannelPlugins` のフォールバックには Claude Code v2.1.267 以降が必要です。以前のバージョンは、値またはエントリが無効な場合、キー全体をドロップします。
 
 `requiredMinimumVersion` と `requiredMaximumVersion` は設計上オープンに失敗します。無効な値は適用されるのではなくドロップされます。
 

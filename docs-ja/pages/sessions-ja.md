@@ -37,14 +37,14 @@ Claude Code は [`claude -p`](/docs/ja/headless)または [Agent SDK](/docs/ja/a
 
 再開されたセッションは、会話とそれに保存された状態を復元します。
 
-* 会話履歴：ツール呼び出しと結果を含む完全な履歴。
+* 会話履歴：ツール呼び出しと結果を含む完全な履歴。前のプロセスが終了したときに実行中だったツール（例えばクラッシュ）は、再開時に完了または再実行されません。Claude はその出力なしで続行します。
 * モデル：セッションは使用していたモデルで続行されます。モデルが廃止されたか `availableModels` で許可されていない場合、`--model` フラグまたは `ANTHROPIC_MODEL` ファミリー環境変数が起動時に 1 つを選択する場合、または [Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry](/docs/ja/third-party-integrations)などのプロバイダー固有のデプロイ ID を使用するプロバイダーの場合は復元されません。[モデル設定](/docs/ja/model-config#setting-your-model)の解決順序を参照してください。
-* エージェント：[`--agent`](/docs/ja/sub-agents#invoke-subagents-explicitly)または `agent` 設定で開始されたセッションはそのエージェントとして続行され、システムプロンプト、ツール制限、およびモデルを保持します。再開時に `--agent` を渡して別のエージェントを選択します。Claude Code は 2 つの場所でエージェントを検索します。セッションの元のディレクトリ（[そのワークスペースを信頼している](/docs/ja/permissions#project-allow-rules-and-workspace-trust)場合）、次に再開するディレクトリ。プロジェクトスコープのエージェントは別のディレクトリから再開する場合でも読み込まれます。Claude Code がどちらの場所でもエージェントを見つけられない場合、セッションはデフォルトのツールとシステムプロンプトで再開され、[エージェントに名前を付けた警告](/docs/ja/errors#session-agent-no-longer-available)が表示されます。
+* エージェント：[`--agent`](/docs/ja/sub-agents#invoke-subagents-explicitly)または `agent` 設定で開始されたセッションはそのエージェントとして続行され、ツール制限とモデルを保持します。再開時に `--agent` を渡して別のエージェントを選択します。どちらの場合のシステムプロンプトについては、[再開された会話のシステムプロンプトフラグ](/docs/ja/cli-reference#system-prompt-flags-in-resumed-conversations)を参照してください。Claude Code は 2 つの場所でエージェントを検索します。セッションの元のディレクトリ（[そのワークスペースを信頼している](/docs/ja/permissions#project-allow-rules-and-workspace-trust)場合）、次に再開するディレクトリ。プロジェクトスコープのエージェントは別のディレクトリから再開する場合でも読み込まれます。Claude Code がどちらの場所でもエージェントを見つけられない場合、セッションはデフォルトのツールで再開され、[エージェントに名前を付けた警告](/docs/ja/errors#session-agent-no-longer-available)が表示されます。
 * 権限モード：`claude --continue`、`claude --resume <session-id>`、または `claude --resume <name>`（名前が 1 つのセッションと一致する場合）で `-p` なしでターミナルから再開する場合、Claude Code はセッションが存在していた権限モードを復元します。ただし、[再開時の権限モード](#permission-mode-on-resume)の場合は除きます。これはセッションピッカー、`/resume`、および `claude -p` で再開する場合もカバーします。`--permission-mode` または `--dangerously-skip-permissions` を渡して復元されたモードをオーバーライドします。
 * アクティブなゴール：セッションが終了したときにまだアクティブだった [ゴール](/docs/ja/goal#resume-with-an-active-goal)は引き継がれます。ターン数、タイマー、およびトークン支出ベースラインはリセットされます。
 * スケジュール済みタスク：[有効期限が切れていない](/docs/ja/scheduled-tasks#limitations)タスクが復元されます。バックグラウンド Bash およびモニタータスクは復元されません。
 
-元の起動からのすべての設定フラグが復元されるわけではありません。セッションが `--mcp-config`、`--settings`、`--plugin-dir`、`--fallback-model`、または `--add-dir` で追加されたディレクトリに依存していた場合、再開時に再度渡します。セッション中に `/add-dir` で追加されたディレクトリは復元されませんが、セッションピッカーはセッションを見つけるためにそれらを使用します。`settings.json` や `settings.local.json` などの標準設定ファイルは起動時に再度読み込まれるため、それらに存在する設定を再度渡す必要はありません。
+元の起動からのすべての設定フラグが復元されるわけではありません。セッションが `--mcp-config`、`--settings`、`--plugin-dir`、`--fallback-model`、または `--add-dir` で追加されたディレクトリに依存していた場合、再開時に再度渡します。セッション中に `/add-dir` で追加されたディレクトリは復元されませんが、セッションピッカーはセッションを見つけるためにそれらを使用します。`settings.json` や `settings.local.json` などの標準設定ファイルは起動時に再度読み込まれるため、それらに存在する設定を再度渡す必要はありません。`--system-prompt` および `--append-system-prompt` については、[再開された会話のシステムプロンプトフラグ](/docs/ja/cli-reference#system-prompt-flags-in-resumed-conversations)を参照してください。
 
 <h4 id="permission-mode-on-resume">
   再開時の権限モード

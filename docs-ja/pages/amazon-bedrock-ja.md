@@ -190,6 +190,8 @@ Claude Code は AWS デフォルト認証情報プロバイダーチェーンを
 
 チェーンの各解決は 60 秒後にタイムアウトします。チェーン内のステップが停止した場合（例えば、受け取ることができない入力を待つ `credential_process` ヘルパー）、リクエストは [`AWS default-chain credential resolve timed out`](/docs/ja/errors#aws-default-chain-credential-resolve-timed-out) で失敗します。チェーンが正当に長い時間が必要なインタラクティブサインイン（`aws-vault` のようなラッパーを使用した MFA 付きブラウザベースの SSO など）を実行する場合、[`CLAUDE_CODE_AWS_CHAIN_RESOLVE_TIMEOUT_MS`](/docs/ja/env-vars) でミリ秒単位で制限を引き上げてください。v2.1.207 より前では、停止した認証情報解決はリクエストを無期限に待機させていました。
 
+Amazon Bedrock API キーで認証しない場合を除き、[セットアップウィザード](#sign-in-with-bedrock)は認証情報を検証する際に行う各 AWS 呼び出しに同じ制限を適用し、各モデルチェック前の認証情報ルックアップにも適用します。認証情報検証中に、制限を超えるチェックは [`Timed out after 60s waiting for AWS`](/docs/ja/errors#bedrock-setup-verification-timed-out-waiting-for-aws) で失敗します。
+
 <h4 id="advanced-credential-configuration">
   高度な認証情報設定
 </h4>
@@ -263,7 +265,7 @@ export ANTHROPIC_SMALL_FAST_MODEL_AWS_REGION=us-west-2
 
 Claude Code で Amazon Bedrock を有効にする場合、以下の点に注意してください。
 
-* v2.1.172 以降、AWS プロファイルのリージョンをオーバーライドする場合、またはプロファイルにリージョンがない場合にのみ `AWS_REGION` を設定する必要があります。Claude Code はこの順序でリージョンを解決します。
+* `AWS_REGION` を設定する必要があるのは、AWS プロファイルのリージョンをオーバーライドする場合、またはプロファイルにリージョンがない場合のみです。Claude Code はこの順序でリージョンを解決します。
 
   * `AWS_REGION`
   * `AWS_DEFAULT_REGION`
@@ -274,7 +276,7 @@ Claude Code で Amazon Bedrock を有効にする場合、以下の点に注意�
 
   アクティブなプロファイルは、設定されている場合は `AWS_PROFILE`、そうでない場合は `default` です。`AWS_SHARED_CREDENTIALS_FILE` または `AWS_CONFIG_FILE` を設定して、デフォルト以外のファイルパスを指定してください。
 
-  `/status` を実行して、解決されたリージョンを確認してください。リージョンが AWS 設定ファイルまたはデフォルトフォールバックから来た場合、Claude Code は `/status` 出力でソースも記載します。v2.1.171 以前では、Claude Code は AWS 設定ファイルを読み込まないため、`AWS_REGION` を明示的に設定してください。
+  `/status` を実行して、解決されたリージョンを確認してください。リージョンが AWS 設定ファイルまたはデフォルトフォールバックから来た場合、Claude Code は `/status` 出力でソースも記載します。
 * Amazon Bedrock を使用する場合、認証は AWS 認証情報を通じて処理されるため、`/logout` コマンドは利用できません。
 * WebSearch ツールは Amazon Bedrock では利用できません。[WebSearch ツールの動作](/docs/ja/tools-reference#websearch-tool-behavior)を参照してください。
 * `AWS_PROFILE` のような他のプロセスにリークしたくない環境変数に設定ファイルを使用できます。詳細については [Settings](/docs/ja/settings) を参照してください。
@@ -530,7 +532,7 @@ export CLAUDE_CODE_USE_MANTLE=1
 export AWS_REGION=us-east-1
 ```
 
-Claude Code は AWS リージョンからエンドポイント URL を構築します。v2.1.172 以降では、リージョンは [上記の Amazon Bedrock](#3-configure-claude-code) と同じ優先順位で解決されます。以前のバージョンは `AWS_REGION` のみを使用します。カスタムエンドポイントまたはゲートウェイの URL をオーバーライドするには、`ANTHROPIC_BEDROCK_MANTLE_BASE_URL` を設定します。
+Claude Code は AWS リージョンからエンドポイント URL を構築します。リージョンは [上記の Amazon Bedrock](#3-configure-claude-code) と同じ優先順位で解決されます。カスタムエンドポイントまたはゲートウェイの URL をオーバーライドするには、`ANTHROPIC_BEDROCK_MANTLE_BASE_URL` を設定します。
 
 Claude Code 内で `/status` を実行して確認します。Mantle がアクティブな場合、プロバイダー行は `Amazon Bedrock (Mantle)` を表示します。
 
@@ -605,6 +607,23 @@ export ANTHROPIC_BEDROCK_MANTLE_BASE_URL=https://your-gateway.example.com
 AWS SSO を使用する場合にブラウザタブが繰り返し生成される場合は、[settings file](/docs/ja/settings) から `awsAuthRefresh` 設定を削除してください。これは、企業 VPN または TLS 検査プロキシが SSO ブラウザフローを中断した場合に発生する可能性があります。Claude Code は中断された接続を認証失敗として扱い、`awsAuthRefresh` を再実行し、無限ループします。
 
 ネットワーク環境が自動ブラウザベースの SSO フローに干渉する場合は、`awsAuthRefresh` に依存する代わりに、Claude Code を開始する前に手動で `aws sso login` を使用してください。
+
+<h3 id="certificate-errors-behind-a-tls-inspecting-proxy">
+  TLS 検査プロキシの背後での証明書エラー
+</h3>
+
+Claude Code は、[CA certificate store](/docs/ja/network-config#ca-certificate-store) 設定を AWS へのリクエストに適用します。これには以下が含まれます：
+
+* モデル検出
+* トークンカウント
+* AWS 認証情報を解決する STS および SSO ロール認証情報呼び出し
+* [setup wizard](#sign-in-with-bedrock) の認証情報検証とモデルチェック
+
+これらのリクエストについては、OS トラストストアまたは `NODE_EXTRA_CA_CERTS` バンドル内の企業ルート証明書には、Amazon Bedrock 固有のセットアップは必要ありません。
+
+v2.1.260 より前では、Claude Code は設定されたプロキシを通過するリクエストにのみ CA 設定を適用し、直接接続では実行時のデフォルト証明書ストアのみを信頼していました。
+
+v2.1.261 より前では、**Use credentials already in my environment** オプションを使用した setup wizard のモデルチェックの背後での認証情報ルックアップは、実行時のデフォルト証明書ストアのみを信頼していました。ルート証明書が OS ストアにのみある TLS 検査プロキシの背後では、影響を受けるリクエストは `unable to get local issuer certificate` で失敗するか、ウィザードはモデルを `unreachable` として表示していましたが、推論リクエストは成功していました。v2.1.261 以降に更新してください。
 
 <h3 id="region-issues">
   リージョンの問題

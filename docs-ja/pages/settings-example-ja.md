@@ -94,15 +94,16 @@
   チームの共有設定
 </h2>
 
-1 つのチームの共有設定は、リポジトリにコミットされるため、それをクローンした全員が同じ権限、hooks、テレメトリ、プラグインマーケットプレイスを取得します。リポジトリのトップに `.claude/settings.json` のようなファイルを保存してください。コミットする前に知っておくべき 3 つのことがあります。
+1 つのチームの共有設定は、リポジトリにコミットされるため、それをクローンした全員が同じ権限、hooks、テレメトリ、プラグインマーケットプレイスを取得します。リポジトリのトップレベルに `.claude/settings.json` のようなファイルを保存してください。コミットする前に知っておくべきことは以下の通りです。
 
-* **クラウドセッションもそれを読みます。** Claude Code ウェブ上の[クラウドセッション](/docs/ja/settings#settings-in-cloud-sessions)はリポジトリのクローンから開始されるため、コミットされたファイルはそこにも適用されます。
-* **許可ルールは信頼を待ちます。** 許可ルールと `extraKnownMarketplaces` エントリは、各ユーザーが[このフォルダ自体を信頼](/docs/ja/permissions#project-allow-rules-and-workspace-trust)した後に有効になります。親フォルダだけではなく、拒否ルールと確認ルールはすべてのセッション（信頼されているかどうかに関わらず）で適用されます。
-* **hook はリポジトリ内のスクリプトです。** このファイルの hook は `.claude/hooks/block-rm.sh` を実行します。[hook がどのように解決されるか](/docs/ja/hooks#how-a-hook-resolves)は、それを書く方法を説明しています。
+* **クラウドセッションもこれを読みます。** Claude Code ウェブ上の[クラウドセッション](/docs/ja/settings#settings-in-cloud-sessions)はリポジトリのクローンから開始されるため、コミットされたファイルはそこにも適用されます。
+* **許可ルールは信頼を待ちます。** 許可ルールと `extraKnownMarketplaces` エントリは、各ユーザーが[このフォルダ自体を信頼](/docs/ja/permissions#project-allow-rules-and-workspace-trust)した後に有効になります。親フォルダだけではなく、このフォルダ自体を信頼する必要があります。拒否ルールと確認ルールは、信頼されているセッションでもそうでないセッションでも、すべてのセッションで適用されます。
+* **hook はリポジトリ内のスクリプトです。** このファイルの hook は `.claude/hooks/block-rm.sh` を実行します。[hook がどのように解決されるか](/docs/ja/hooks#how-a-hook-resolves)では、これを書く方法について説明しています。
+* **ルールはコマンドとパスを記述されたとおりにマッチします。** `Bash(git push *)` は [`git -C . push`](/docs/ja/permissions#bash-rule-limits) にはマッチしません。`Read(./.env)` 単独では、ファイルツールと `cat .env` のようにファイルを名前で指定するコマンドを停止しますが、[`grep -r` をディレクトリ上で実行](/docs/ja/permissions#read-and-edit)することは停止しません。このファイルの `sandbox` ブロックはそのギャップを埋めます。sandbox は[あなたの `Read` 拒否パス](/docs/ja/settings-reference#sandbox-filesystem-denyread)をすべてのサンドボックス化されたコマンドが読み取れないものに追加するためです。
 
 <Tabs>
   <Tab title="コピー可能な設定ファイル">
-    これをリポジトリのトップに `.claude/settings.json` として保存してコミットしてください。コメントのない有効な JSON なので、そのまま貼り付けて、不要なキーを削除できます。
+    これをリポジトリのトップレベルに `.claude/settings.json` として保存してコミットしてください。コメントのない有効な JSON なので、そのまま貼り付けて、不要なキーを削除できます。
 
     ```json .claude/settings.json theme={null}
     {
@@ -168,8 +169,8 @@
     ```
   </Tab>
 
-  <Tab title="各キーの役割">
-    各キーの上にコメントがある同じファイルです。ここで読んでください。Claude Code は設定ファイルのコメントを受け入れないため、別のタブからコピーしてください。
+  <Tab title="各キーの機能">
+    各キーの上にコメントが付いた同じファイルです。ここで読んでください。Claude Code は設定ファイルのコメントを受け入れないため、他のタブからコピーしてください。
 
     ```jsonc .claude/settings.json theme={null}
     {
@@ -178,11 +179,11 @@
         "allow": [
           "Bash(npm run *)"
         ],
-        // プッシュする前に常に確認
+        // git push コマンドの前に確認
         "ask": [
           "Bash(git push *)"
         ],
-        // env ファイルと secrets フォルダを読まない
+        // ファイルツールとファイル読み取りコマンドによる env ファイルと secrets フォルダの読み取りを拒否
         "deny": [
           "Read(./.env)",
           "Read(./.env.*)",
@@ -219,11 +220,11 @@
           }
         }
       },
-      // そのマーケットプレイスから 1 つのプラグインを有効にします。GitHub リポジトリなどの外部ソースからのプラグインは、各ユーザーが 1 回インストールする必要があります
+      // そのマーケットプレイスから 1 つのプラグインを有効化。GitHub リポジトリなどの外部ソースからのプラグインは、各ユーザーが 1 回インストールする必要があります
       "enabledPlugins": {
         "code-formatter@acme-tools": true
       },
-      // サンドボックスコマンド：書き込み可能なビルドディレクトリ。npm と example.com は事前に許可されており、他のホストはまだプロンプトが表示されます
+      // サンドボックスコマンド：書き込み可能なビルドディレクトリ。npm と example.com は事前に許可、他のホストはまだプロンプト表示
       "sandbox": {
         "enabled": true,
         "filesystem": {
@@ -253,7 +254,7 @@
 
 * `forceLoginMethod` と `forceLoginOrgUUID` はログイン方法と組織を固定します
 * `availableModels` と `enforceAvailableModels` はセッションが使用できるモデルを制限します
-* `permissions.deny` は 2 つのファイル読み取りと `curl` をブロックし、`disableBypassPermissionsMode` は権限モードのバイパスを削除します
+* `permissions.deny` は 2 つのファイル読み取りと `curl` コマンドをブロックし（[Claude が記述する方法](/docs/ja/permissions#bash-rule-limits)）、`disableBypassPermissionsMode` は権限モードのバイパスを削除します
 * [`allowManagedPermissionRulesOnly`](/docs/ja/settings-reference#allowmanagedpermissionrulesonly) と [`allowManagedMcpServersOnly`](/docs/ja/settings-reference#allowmanagedmcpserversonly) は、管理権限と MCP 許可リストのみを適用対象にします
 * `allowedMcpServers` は MCP サーバーを URL で固定します
 * `strictKnownMarketplaces` は 1 つのプラグインマーケットプレイスを許可します

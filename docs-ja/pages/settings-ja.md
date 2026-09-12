@@ -794,7 +794,7 @@ Claude Code 内から新しいセッションの選択を保存する場合（`/
 | [`syncClaudeAiSkills`](/docs/ja/settings-reference#syncclaudeaiskills)               | 任意の管理ソース、`--settings`、`~/.claude/settings.json`、または `.claude/settings.local.json` からの `false`           | 勝利した管理ソースが `true` を設定する場合でも優先されます。`.claude/settings.json` の `false` は無視されます                                           |
 | [`maxEffortLevel`](/docs/ja/settings-reference#maxeffortlevel)                       | `--settings` を含む任意のスコープからの、より低い上限                                                                       | Claude Code が適用する管理設定がより高い上限を設定している場合でも優先されます。最も低い上限が適用されます。Claude Code v2.1.267 以降が必要です                              |
 
-Claude Code を実行し、[`CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST`](/docs/ja/env-vars) を設定するアプリも例外です。Claude Code はそのアプリのモデル構成を、すべての管理ソースからの `model`、`fallbackModel`、および `modelOverrides` キーより優先し、管理 `env` ブロック内のモデル選択変数（`ANTHROPIC_MODEL` および `ANTHROPIC_DEFAULT_*_MODEL` ファミリーなど）より優先します。Claude Code は、アプリが独自のものを提供しない限り、管理 [`availableModels`](/docs/ja/settings-reference#availablemodels) 許可リストを有効に保ちます。
+Claude Code を実行し、[`CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST`](/docs/ja/env-vars) を設定するアプリも例外です。Claude Code はそのアプリのモデル構成を、すべての管理ソースからの `model`、`fallbackModel`、`modelPicker`、および `modelOverrides` キーより優先し、管理 `env` ブロック内のモデル選択変数（`ANTHROPIC_MODEL` および `ANTHROPIC_DEFAULT_*_MODEL` ファミリーなど）より優先します。Claude Code は、アプリが独自のものを提供しない限り、管理 [`availableModels`](/docs/ja/settings-reference#availablemodels) 許可リストを有効に保ちます。
 
 <h2 id="settings-in-cloud-sessions">
   クラウドセッションの設定

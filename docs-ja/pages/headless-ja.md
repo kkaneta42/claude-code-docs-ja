@@ -207,9 +207,14 @@ claude -p "Write a poem" --output-format stream-json --verbose --include-partial
 
 [サブエージェント](/docs/ja/sub-agents) からのメッセージは、ストリームに `assistant` および `user` メッセージとして表示され、その `parent_tool_use_id` フィールドはサブエージェントを生成したツール呼び出しの ID です。メインの会話からのメッセージはそのフィールドに `null` を含みます。
 
-デフォルトでは、Claude Code はサブエージェント `tool_use` および `tool_result` ブロックのみを発行します。[`--forward-subagent-text`](/docs/ja/cli-reference#cli-flags) を渡すか、[`CLAUDE_CODE_FORWARD_SUBAGENT_TEXT`](/docs/ja/env-vars) を設定して、サブエージェントのテキストおよび思考ブロックも発行し、各サブエージェントのトランスクリプトを再構築できるようにします。これには Claude Code v2.1.211 以降が必要です。
+[フォアグラウンド](/docs/ja/sub-agents#run-subagents-in-foreground-or-background) で実行されているサブエージェントからの最初のメッセージは、それを駆動するプロンプトを含む `user` メッセージです。その最初のメッセージの後、Claude Code は以下を発行します。
+
+* **デフォルトでは**：サブエージェントの `tool_use` および `tool_result` ブロック。
+* **[`--forward-subagent-text`](/docs/ja/cli-reference#cli-flags) または [`CLAUDE_CODE_FORWARD_SUBAGENT_TEXT`](/docs/ja/env-vars) を使用する場合**：サブエージェントのテキストおよび思考ブロックも含まれるため、各サブエージェントのトランスクリプトを再構築できます。これには Claude Code v2.1.211 以降が必要です。
 
 いずれかのオプションを有効にすると、Claude Code は [すべてのネストの深さのサブエージェント](/docs/ja/sub-agents#let-subagents-spawn-their-own-subagents) からのメッセージを転送します。サブエージェントが独自のサブエージェントを生成する場合、ネストされたサブエージェントのメッセージは、それを生成した Agent ツール呼び出しの ID を `parent_tool_use_id` に含むため、これらの ID をフォローして完全なネストツリーを再構築できます。v2.1.219 より前では、ネストされたサブエージェントからのメッセージはストリームに表示されませんでした。
+
+[サブエージェントで実行される](/docs/ja/skills#run-skills-in-a-subagent) スキルは、ストリームに同じ方法で表示されます。フォークされたスキルの最初のメッセージは、実行を駆動するスキルコンテンツを含む `user` メッセージです。いずれかのオプションを有効にすると、ストリームはフォークされたスキルのテキストおよび思考ブロックも含みます。v2.1.265 より前では、フォークされたスキルの `tool_use` および `tool_result` ブロックのみがストリームに表示されていました。
 
 <h4 id="handle-api-retries">
   API 再試行を処理する
@@ -222,11 +227,11 @@ API リクエストが再試行可能なエラーで失敗すると、Claude Cod
 | `type`           | `"system"`    | メッセージタイプ                                                                                                                                                                                                                             |
 | `subtype`        | `"api_retry"` | これが再試行イベントであることを識別します                                                                                                                                                                                                                |
 | `attempt`        | 整数            | 現在の試行番号（1 から開始）                                                                                                                                                                                                                      |
-| `max_retries`    | 整数            | 許可される再試行の合計                                                                                                                                                                                                                          |
+| `max_retries`    | 整数            | この失敗の原因に対して許可される再試行の合計。セッション全体の予算より少ない場合があります                                                                                                                                                                                        |
 | `retry_delay_ms` | 整数            | 次の試行までのミリ秒                                                                                                                                                                                                                           |
-| `error_status`   | 整数または null    | HTTP ステータスコード、または HTTP レスポンスのない接続エラーの場合は `null`                                                                                                                                                                                      |
+| `error_status`   | 整数または null    | HTTP ステータスコード、または API からの HTTP レスポンスがない場合は `null`                                                                                                                                                                                    |
 | `no_response`    | オブジェクト（オプション） | 失敗した試行が [時間内にレスポンスヘッダーを取得しなかった](/docs/ja/errors#no-response-from-api) 場合にのみ存在します。`waited_ms` はその試行が待機した時間で、`retry_wait_ms` は再試行が待機する時間です。これらのイベントでは、`max_retries` はこの原因が通常取得する 1 回の再試行を反映し、セッション全体の予算ではありません。Claude Code v2.1.261 以降が必要です |
-| `error`          | 文字列           | エラーカテゴリ：`authentication_failed`、`oauth_org_not_allowed`、`billing_error`、`rate_limit`、`overloaded`、`invalid_request`、`model_not_found`、`server_error`、`max_output_tokens`、または `unknown`                                               |
+| `error`          | 文字列           | エラーカテゴリ：`authentication_failed`、`oauth_org_not_allowed`、`account_on_hold`、`billing_error`、`rate_limit`、`overloaded`、`invalid_request`、`model_not_found`、`server_error`、`max_output_tokens`、`cloud_credential_error`、または `unknown`    |
 | `uuid`           | 文字列           | 一意のイベント識別子                                                                                                                                                                                                                           |
 | `session_id`     | 文字列           | イベントが属するセッション                                                                                                                                                                                                                        |
 
@@ -293,7 +298,7 @@ claude -p "Run the test suite and fix any failures" \
 セッション全体のベースラインを設定する代わりに個別のツールをリストするには、[権限モード](/docs/ja/permission-modes) を渡します。`-p` の場合、[組み込みの開始権限モード](/docs/ja/permission-modes#which-mode-a-session-starts-in) はすべてのプランで Manual であるため、希望する権限モードを渡します。
 
 * **`auto`**：`--permission-mode auto` を渡して、ほとんどのアクションをあなたの代わりに分類器にレビューさせます
-* **`dontAsk`**：Claude Code は `permissions.allow` ルールまたは [読み取り専用コマンドセット](/docs/ja/permissions#read-only-commands) にないものをすべて拒否します。これはロックダウンされた CI 実行に役立ちます。`AskUserQuestion`、組織が [`ask`](/docs/ja/mcp#organization-controls-on-connector-tools) に設定したコネクタツール、および [`requiresUserInteraction`](/docs/ja/mcp#require-approval-for-a-specific-tool) とマークされた MCP ツールは、許可ルールが一致する場合でも拒否されます
+* **`dontAsk`**：Claude Code はプロンプトが表示されるすべての呼び出しを拒否します。これはロックダウンされた CI 実行に役立ちます。Manual モードで承認が不要なアクション（作業ディレクトリでのファイル読み取りや [読み取り専用コマンドセット](/docs/ja/permissions#read-only-commands) など）はまだ実行され、`--allowedTools` エントリまたは `permissions.allow` ルールがカバーするアクションも実行されます。`AskUserQuestion`、組織が [`ask`](/docs/ja/mcp#organization-controls-on-connector-tools) に設定したコネクタツール、および [`requiresUserInteraction`](/docs/ja/mcp#require-approval-for-a-specific-tool) とマークされた MCP ツールは、許可ルールが一致する場合でも拒否されます
 * **`acceptEdits`**：Claude はプロンプトなしでファイルを書き込み、Claude Code は `mkdir`、`touch`、`mv`、`cp` などの一般的なファイルシステムコマンドを自動承認します。[モードが自動承認しないアクション](/docs/ja/permission-modes#actions-no-mode-auto-approves) はまだ適用されます。読み取り専用コマンドセット以外に、その他のシェルコマンドとネットワークリクエストは `--allowedTools` エントリまたは `permissions.allow` ルールが必要です。[`acceptEdits` が自動承認するもの](/docs/ja/permission-modes#auto-approve-file-edits-with-acceptedits-mode) の完全なリストについては、「何を `acceptEdits` が自動承認するか」を参照してください
 
 この例は `acceptEdits` をベースラインとしてリント修正を適用します。

@@ -123,6 +123,8 @@ claude --plugin-dir ./my-dependency --plugin-dir ./my-plugin
 
 依存関係のローカルコピーは、エントリがマーケットプレイスを指定している場合でも、プラグインの依存関係エントリを満たします。そのため、マーケットプレイスから依存関係をインストールする必要はありません。Claude Code は、ローカルコピーに対して[バージョン制約](#declare-a-dependency-with-a-version-constraint)をチェックしないため、ローカルの `plugin.json` には `version` が不要です。v2.1.242 より前では、マーケットプレイスを指定する依存関係エントリはローカルコピーと一致せず、Claude Code はロード時にプラグインを無効にしていました。
 
+両方のプラグインが 1 つの親フォルダに存在する場合、そのフォルダを `--plugin-dir` に 1 回渡すことができます。フォルダ自体がプラグインでない場合、Claude Code は `.claude-plugin/plugin.json` を持つ各子フォルダをロードします。Claude Code v2.1.265 以降が必要です。
+
 マーケットプレイスから依存関係をインストールしていない場合、ローカルコピーがなくなるとプラグインのロードが停止します。
 
 * **ローカルコピーを無効にした場合**: Claude Code は次のプラグインロード時にプラグインを無効にします。マーケットプレイスを指定する依存関係エントリの場合、Claude Code は `Dependency "<name>@inline" is disabled — enable it or remove the dependency` と報告します。ベアネームエントリの場合は、依存関係をベアネームで報告します。`<name>@inline` は、Claude Code がすべての `--plugin-dir` および `--plugin-url` プラグインを識別する方法です。

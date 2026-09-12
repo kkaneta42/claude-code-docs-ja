@@ -70,9 +70,11 @@ GitHub への接続は 1 回限りのステップです。既に GitHub CLI を�
   </Step>
 
   <Step title="GitHub でサインイン">
-    サインイン後、claude.ai/code は GitHub を接続するよう促します。プロンプトに従うと、claude.ai/code は GitHub の認可ページに移動します。認可リクエストを承認すると、GitHub は claude.ai/code に戻ります。Cloud セッションは既存の GitHub リポジトリで機能し、GitHub アカウントが見ることができるすべてのリポジトリに到達できます。新しいプロジェクトを開始するには、まず [GitHub に空のリポジトリを作成](https://github.com/new) してください。
+    サインイン後、claude.ai/code は GitHub を接続するよう促します。プロンプトに従うと、claude.ai/code は GitHub の認可ページに移動します。認可リクエストを承認すると、GitHub は claude.ai/code に戻ります。Cloud セッションは既存の GitHub リポジトリで機能します。新しいプロジェクトを開始するには、まず [GitHub に空のリポジトリを作成](https://github.com/new) してください。
 
-    Quick web setup がオフの場合（Team および Enterprise プランではデフォルトでオフ）、claude.ai/code はまだインストールされていない場合、リポジトリに Claude GitHub App をインストールするよう求めます。CI の失敗と pull request のレビューコメントに Claude が応答できる [Auto-fix](/docs/ja/claude-code-on-the-web#auto-fix-pull-requests) が必要な場合はインストールしてください。それ以外の場合は **Skip** をクリックします。どちらの場合でも、セッションは同じリポジトリに到達できます。
+    この接続により、セッションは任意のパブリックリポジトリをクローンできますが、プライベートリポジトリで機能するのは Claude GitHub App がインストールされている場合のみです。[App をインストール](https://github.com/apps/claude/installations/new) してください。使用したいプライベートリポジトリを持つ各 GitHub アカウントまたは Organization に対してインストールします。GitHub Organization では、Organization オーナーがインストールを承認する必要がある場合があります。App をインストールすると、[Auto-fix](/docs/ja/claude-code-on-the-web#auto-fix-pull-requests) も有効になります。これにより、Claude はこれらのリポジトリの pull request の CI 失敗とレビューコメントに応答できます。
+
+    オンボーディングがこの時点で App をインストールするよう促し、後で実行したい場合は、**Skip** をクリックします。
   </Step>
 
   <Step title="デフォルト環境をセットアップ">
@@ -91,7 +93,11 @@ GitHub への接続は 1 回限りのステップです。既に GitHub CLI を�
   ターミナルから接続
 </h3>
 
-既に GitHub CLI（`gh`）を使用している場合は、ブラウザを開かずに Claude Code on the web をセットアップできます。これには [Claude Code CLI](/docs/ja/quickstart) が必要です。`/web-setup` を実行すると、Claude Code はローカルの `gh` トークンを読み取り、claude.ai アカウントにリンクし、cloud 環境がない場合は **Default** cloud 環境を作成します。Team および Enterprise プランでは、`/web-setup` は Owner が [Quick web setup](/docs/ja/claude-code-on-the-web#github-authentication-options) をオンにした後にのみ利用可能です。
+既に GitHub CLI（`gh`）を使用している場合は、ブラウザを開かずに Claude Code on the web をセットアップできます。これには [Claude Code CLI](/docs/ja/quickstart) が必要です。Team および Enterprise プランでは、`/web-setup` は Owner が [Quick web setup](/docs/ja/claude-code-on-the-web#github-authentication-options) をオンにした後にのみ利用可能です。
+
+`/web-setup` を実行すると、Claude Code は `gh auth token` が出力するトークンを読み取り、確認を求め、トークンを Anthropic に送信します。Anthropic はそれを claude.ai アカウントで暗号化して保存し、cloud セッションはそれを GitHub アクセスに使用します。これは [削除](#remove-the-web-setup-token) するまで続きます。Cloud セッションはそのトークンがアクセスできる任意のリポジトリにアクセスでき、Claude GitHub App をインストールする必要はありません。
+
+既にブラウザで GitHub を接続している場合、`/web-setup` は続行すると cloud セッションの接続が置き換わることを警告します。
 
 <Note>
   [Zero Data Retention](/docs/ja/zero-data-retention) が有効な Organization は `/web-setup` または他の cloud セッション機能を使用できません。GitHub CLI がインストールされていない、または認証されていない場合、Claude Code はブラウザオンボーディングフローを開きます。
@@ -117,9 +123,17 @@ GitHub への接続は 1 回限りのステップです。既に GitHub CLI を�
     /web-setup
     ```
 
-    これにより、`gh` トークンが Claude アカウントに同期されます。成功すると、Claude Code は `Connected as <your-github-username>` を出力し、[claude.ai/code](https://claude.ai/code) をブラウザで開きます。cloud 環境がまだない場合、`/web-setup` は Trusted ネットワークアクセスと setup script なしで環境を作成します。後で [環境を編集したり、変数を追加](/docs/ja/cloud-environments#configure-your-environment) できます。`/web-setup` が完了したら、[`--cloud`](/docs/ja/claude-code-on-the-web#from-terminal-to-web) でターミナルから cloud セッションを開始するか、[`/schedule`](/docs/ja/routines) で定期的なタスクをセットアップできます。
+    `gh` トークンを Claude アカウントに送信するプロンプトを確認します。成功すると、Claude Code は `Connected as <your-github-username>` を出力し、[claude.ai/code](https://claude.ai/code) をブラウザで開きます。cloud 環境がまだない場合、`/web-setup` は Trusted ネットワークアクセスと setup script なしで環境を作成します。後で [環境を編集したり、変数を追加](/docs/ja/cloud-environments#configure-your-environment) できます。`/web-setup` が完了したら、[`--cloud`](/docs/ja/claude-code-on-the-web#from-terminal-to-web) でターミナルから cloud セッションを開始するか、[`/schedule`](/docs/ja/routines) で定期的なタスクをセットアップできます。
   </Step>
 </Steps>
+
+<h4 id="remove-the-web-setup-token">
+  `/web-setup` トークンを削除
+</h4>
+
+Claude アカウントからトークンを削除するには、[claude.ai/customize/connectors](https://claude.ai/customize/connectors) で GitHub を切断します。切断すると、ブラウザから来たか `/web-setup` から来たかに関わらず、cloud セッションが使用する GitHub 認証情報が削除されるため、cloud セッションは再度接続するまで GitHub アクセスを失います。ローカルの `gh` はサインインしたままで、トークンは GitHub で有効なままです。
+
+トークン自体を無効にするには、GitHub でそれを取り消します。ブラウザを通じて `gh` にサインインした場合、トークンは GitHub の [**Settings > Applications > Authorized OAuth Apps**](https://github.com/settings/applications) の **GitHub CLI** エントリに属し、そのエントリを取り消すと、マシン上の GitHub CLI もサインアウトします。Cloud セッションは `gh auth login` と `/web-setup` を再度実行するまで GitHub アクセスを失います。
 
 <h2 id="start-a-task">
   タスクを開始
@@ -204,77 +218,79 @@ Claude が完了したら、変更をレビューし、特定の行にフィー�
   GitHub 接続後にリポジトリが表示されない
 </h3>
 
-cloud セッションは、接続された GitHub アカウントが見ることができるすべてのリポジトリを使用できます。Claude GitHub App がインストールされているリポジトリに関係なく。リポジトリが見つからない場合は、接続された GitHub アカウントが GitHub でそれにアクセスできることを確認してください。また、リポジトリの [Auto-fix](/docs/ja/claude-code-on-the-web#auto-fix-pull-requests) が必要な場合は、App をインストールしてください：github.com で **Settings → Applications → Claude → Configure** を開き、リポジトリが **Repository access** の下にリストされていることを確認します。Private リポジトリは public リポジトリと同じ認可が必要です。
+ブラウザで GitHub を接続した場合、セッションはすべてのパブリックリポジトリをクローンできますが、プライベートリポジトリは Claude GitHub App がそれを所有するアカウントまたは組織にインストールされており、インストールのリポジトリアクセスにそれが含まれている場合にのみ表示されます。[Claude GitHub App をインストール](https://github.com/apps/claude/installations/new)するか、組織の所有者にインストールまたは承認を依頼してください。
+
+`/web-setup` で接続した場合、セッションは `gh` トークンがアクセスできるすべてのリポジトリに到達できます。シェルで `gh repo view OWNER/REPO` を実行して、GitHub CLI ログインがリポジトリを見ることができることを確認し、接続以降に `gh` アカウントを切り替えた場合は `/web-setup` を再度実行してください。
 
 <h3 id="the-page-only-shows-a-github-login-button">
   ページに GitHub ログインボタンのみが表示される
 </h3>
 
-Cloud セッションには接続された GitHub アカウントが必要です。上記のブラウザフローで接続するか、GitHub CLI を使用している場合はターミナルから `/web-setup` を実行します。GitHub をまったく接続したくない場合は、[Remote Control](/docs/ja/remote-control) を参照して、独自のマシンで Claude Code を実行し、ウェブから監視します。
+クラウドセッションには接続された GitHub アカウントが必要です。上記のブラウザフローで接続するか、GitHub CLI を使用する場合はターミナルから `/web-setup` を実行してください。GitHub をまったく接続したくない場合は、[Remote Control](/docs/ja/remote-control) を参照して、自分のマシンで Claude Code を実行し、ウェブから監視してください。
 
 <h3 id="not-available-for-the-selected-organization">
-  「Not available for the selected organization」
+  「選択した組織では利用できません」
 </h3>
 
-Enterprise Organization では、Owner が Claude Code on the web を有効にする必要がある場合があります。Anthropic アカウントチームに連絡してください。
+エンタープライズ組織では、所有者が Claude Code をウェブで有効にする必要がある場合があります。Anthropic アカウントチームにお問い合わせください。
 
 <h3 id="/web-setup-says-not-signed-in-to-claude">
-  `/web-setup` が「Not signed in to Claude」と表示される
+  `/web-setup` が「Claude にサインインしていません」と表示される
 </h3>
 
-`/web-setup` が「Not signed in to Claude. Run /login first.」と応答する場合、CLI は有効な claude.ai サインインを持っていません。これは以前のサインインが期限切れになった場合にも発生する可能性があります。`/login` を実行して、claude.ai アカウントでサインインしてから、`/web-setup` を再度実行します。
+`/web-setup` が「Not signed in to Claude. Run /login first.」と応答する場合、CLI には有効な claude.ai サインインがありません。これは以前のサインインの有効期限が切れた場合にも発生する可能性があります。`/login` を実行し、claude.ai アカウントでサインインしてから、`/web-setup` を再度実行してください。
 
 <h3 id="/web-setup-warns-that-your-token-doesn’t-have-the-workflow-scope">
-  `/web-setup` が、トークンに `workflow` スコープがないことを警告する
+  `/web-setup` がトークンに `workflow` スコープがないことを警告する
 </h3>
 
-`/web-setup` が GitHub CLI トークンに `workflow` スコープがないと表示される場合、続行できますが、GitHub はそのトークンで行われた一部のプッシュを拒否する可能性があります。たとえば、GitHub Actions ワークフローファイルを変更するプッシュなどです。スコープを追加するには、シェルで `gh auth refresh -s workflow` を実行してから、`/web-setup` を再度実行します。
+`/web-setup` が GitHub CLI トークンに `workflow` スコープがないと表示される場合、続行できますが、GitHub はそのトークンで行われた一部のプッシュ（GitHub Actions ワークフローファイルを変更するプッシュなど）を拒否する可能性があります。スコープを追加するには、シェルで `gh auth refresh -s workflow` を実行してから、`/web-setup` を再度実行してください。
 
 <h3 id="web-setup-shows-no-commands-match-or-unknown-command">
   `/web-setup` が「No commands match」または「Unknown command」を表示する
 </h3>
 
-`/web-setup` はシェルではなく Claude Code CLI 内で実行されます。まず `claude` を起動し、プロンプトで `/web-setup` を入力します。
+`/web-setup` は Claude Code CLI 内で実行され、シェルではありません。まず `claude` を起動してから、プロンプトで `/web-setup` と入力してください。
 
-Claude Code 内で入力してコマンドメニューが `/web-setup` に対して「No commands match "/web-setup"」を表示するか、送信すると「Unknown command: /web-setup」が返される場合、要件が満たされていないため、コマンドは非表示になっています。原因は通常、API キーまたはサードパーティプロバイダーではなく claude.ai サブスクリプションで認証されていることです。`/login` を実行して、claude.ai アカウントでサインインします。
+Claude Code 内に入力した場合、コマンドメニューが「No commands match "/web-setup"」を表示するか、送信すると「Unknown command: /web-setup」が返される場合、要件が満たされていないため、コマンドは非表示になっています。通常の原因は、claude.ai サブスクリプションではなく API キーまたはサードパーティプロバイダーで認証されていることです。`/login` を実行して claude.ai アカウントでサインインしてください。
 
-Team および Enterprise プランでは、コマンドはデフォルトで非表示になっています：[Quick web setup toggle](/docs/ja/claude-code-on-the-web#github-authentication-options) は Owner がオンにするまでオフになっています。オフになっている間は、[ブラウザから GitHub を接続](#connect-github) してください。管理者が組織の Claude Code on the web を無効にした場合、またはエンタープライズ組織が [Zero Data Retention](/docs/ja/zero-data-retention) を有効にしている場合、コマンドも非表示になります。これにより Claude Code on the web は利用できなくなります。
+Team および Enterprise プランでは、コマンドはデフォルトで非表示になっています。[Quick web setup トグル](/docs/ja/claude-code-on-the-web#github-authentication-options)は、所有者がオンにするまでオフになっています。オフの間は、代わりに[ブラウザから GitHub を接続](#connect-github)してください。管理者が組織の Claude Code をウェブで無効にした場合、または Enterprise 組織が [Zero Data Retention](/docs/ja/zero-data-retention) を有効にしている場合（Claude Code をウェブで利用できなくする）、コマンドも非表示になります。
 
 <h3 id="could-not-create-a-cloud-environment-or-no-cloud-environment-available-when-using-cloud">
-  `--cloud` を使用する場合に「Could not create a cloud environment」または「No cloud environment available」
+  `--cloud` を使用する場合に「Could not create a cloud environment」または「No cloud environment available」が表示される
 </h3>
 
-Remote セッション機能は、cloud 環境がない場合、デフォルトの cloud 環境を自動的に作成します。「Could not create a cloud environment」が表示される場合、自動作成に失敗しました。「No cloud environment available」が表示される場合、CLI は自動作成より前のものです。どちらの場合でも、Claude Code CLI で `/web-setup` を実行するか、[environment selector](/docs/ja/cloud-environments#configure-your-environment) から [claude.ai/code](https://claude.ai/code) で環境を追加します。
+リモートセッション機能は、環境がない場合、デフォルトのクラウド環境を自動的に作成します。「Could not create a cloud environment」が表示される場合、自動作成に失敗しました。「No cloud environment available」が表示される場合、CLI は自動作成より前のバージョンです。どちらの場合でも、Claude Code CLI で `/web-setup` を実行するか、[claude.ai/code](https://claude.ai/code) の[環境セレクター](/docs/ja/cloud-environments#configure-your-environment)から環境を追加してください。
 
 <h3 id="setup-script-failed">
-  Setup script が失敗
+  セットアップスクリプトが失敗した
 </h3>
 
-Setup script は 0 以外のステータスで終了し、セッションの開始をブロックします。一般的な原因：
+セットアップスクリプトがゼロ以外のステータスで終了し、セッションの開始がブロックされました。一般的な原因は以下の通りです。
 
-* レジストリが [network access level](/docs/ja/cloud-environments#access-levels) にないため、パッケージのインストールに失敗しました。`Trusted` はほとんどのパッケージマネージャーをカバーします。`None` はすべてをブロックします。
-* スクリプトは新規クローンに存在しないファイルまたはパスを参照しています。
-* ローカルで機能するコマンドは Ubuntu で異なる呼び出しが必要です。
+* パッケージインストールが失敗しました。レジストリが[ネットワークアクセスレベル](/docs/ja/cloud-environments#access-levels)にないためです。`Trusted` はほとんどのパッケージマネージャーをカバーしており、`None` はすべてをブロックします。
+* スクリプトが新しいクローンに存在しないファイルまたはパスを参照しています。
+* ローカルで機能するコマンドが Ubuntu では異なる呼び出しが必要です。
 
-デバッグするには、スクリプトの上部に `set -x` を追加して、どのコマンドが失敗したかを確認します。重要でないコマンドの場合は、`|| true` を追加してセッション開始をブロックしないようにします。
+デバッグするには、スクリプトの先頭に `set -x` を追加して、どのコマンドが失敗したかを確認してください。重要でないコマンドの場合は、セッション開始をブロックしないように `|| true` を追加してください。
 
 <h3 id="new-sessions-hang-or-time-out-during-setup">
   新しいセッションがセットアップ中にハングするか、タイムアウトする
 </h3>
 
-新しいセッションが setup script ステップで停止するか、スクリプトが完了する前に一般的なコンテナエラーで失敗する場合、スクリプトは [environment cache](/docs/ja/cloud-environments#environment-caching) を構築するための約 5 分間の時間予算を超えている可能性があります。大きな Docker イメージの取得、完全な依存関係ツリーの同期、またはモデルの重みのダウンロードなどの重い手順は、特に 1 つずつ実行される場合、合計を制限を超えることがよくあります。
+新しいセッションがセットアップスクリプトステップで停止するか、スクリプトが完了する前に一般的なコンテナエラーで失敗する場合、スクリプトは[環境キャッシュ](/docs/ja/cloud-environments#environment-caching)を構築するための約 5 分間の時間予算を超えている可能性があります。大きな Docker イメージのプル、完全な依存関係ツリーの同期、モデルの重みのダウンロードなどの重い手順は、特に連続して実行される場合、合計を制限を超えることがよくあります。
 
-これを修正するには、スクリプトをトリミングして、5 分以内に確実に完了するようにします：
+これを修正するには、スクリプトを調整して、5 分以内に確実に完了するようにしてください。
 
-* `&` と最終的な `wait` を使用して独立したインストールを並列で実行し、それらを順序立てて実行する代わりに。
-* 最大のダウンロードを setup script から [SessionStart hook](/docs/ja/cloud-environments#setup-scripts-vs-sessionstart-hooks) に移動して、バックグラウンドで起動するため、セッションは完了中に使用可能になります。
-* setup script から長い再試行スリープを削除します。停止した再試行ループは予算に対してカウントされるためです。
+* `&` と最終的な `wait` を使用して独立したインストールを並列で実行し、順序に実行する代わりに実行します。
+* 最大のダウンロードをセットアップスクリプトから[SessionStart hook](/docs/ja/cloud-environments#setup-scripts-vs-sessionstart-hooks)に移動して、バックグラウンドで起動し、セッションが完了中に使用可能になるようにします。
+* セットアップスクリプトから長い再試行スリープを削除してください。停止した再試行ループは予算に対してカウントされるためです。
 
 <h3 id="session-keeps-running-after-closing-the-tab">
   タブを閉じた後もセッションが実行され続ける
 </h3>
 
-これは仕様です。タブを閉じたり、移動したりしてもセッションは停止しません。Claude が現在のタスクを完了するまでバックグラウンドで実行され、その後アイドル状態になります。サイドバーから、セッションをリストから非表示にするために [archive a session](/docs/ja/claude-code-on-the-web#archive-sessions) するか、永久に削除するために [delete it](/docs/ja/claude-code-on-the-web#delete-sessions) できます。
+これは仕様です。タブを閉じたり、移動したりしてもセッションは停止しません。Claude が現在のタスクを完了するまでバックグラウンドで実行され続け、その後アイドル状態になります。サイドバーから、セッションをリストから非表示にするために[セッションをアーカイブ](/docs/ja/claude-code-on-the-web#archive-sessions)するか、永続的に削除するために[削除](/docs/ja/claude-code-on-the-web#delete-sessions)できます。
 
 <h2 id="next-steps">
   次のステップ

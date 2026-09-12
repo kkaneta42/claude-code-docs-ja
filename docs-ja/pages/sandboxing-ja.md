@@ -52,6 +52,12 @@ macOS では、インストールするものはありません。サンドボ�
 
 パネルでモードを選択すると、Claude Code はそれをプロジェクトのローカル設定 `.claude/settings.local.json` に保存します。これは現在のプロジェクトに適用されます。Claude Code はそこに設定を保存する際に、そのファイルをグローバル gitignore に追加します。すべてのプロジェクトでサンドボックスを有効化するには、ユーザー設定 `~/.claude/settings.json` で [`sandbox.enabled`](/docs/ja/settings-reference#sandbox-enabled) を `true` に設定します。組織内のすべての開発者にサンドボックス化を実施するには、[管理設定で実施](#enforce-sandboxing-with-managed-settings)を使用します。
 
+1 つのセッションのみでサンドボックスを変更し、設定ファイルに書き込まないようにするには、Claude Code を [`--settings`](/docs/ja/settings#change-a-setting-for-one-session) で起動します。たとえば、このコマンドは、Claude がブロックされたコマンドをサンドボックス外で再試行できないサンドボックス化されたセッションを開始します。
+
+```bash theme={null}
+claude --settings '{"sandbox": {"enabled": true, "allowUnsandboxedCommands": false}}'
+```
+
 <Warning>
   デフォルトでは、依存関係が不足しているか、プラットフォームがサポートされていないためにサンドボックスが起動できない場合、Claude Code は警告を表示してサンドボックス化なしでコマンドを実行します。これをハード失敗にするには、[`sandbox.failIfUnavailable`](/docs/ja/settings-reference#sandbox-failifunavailable) を `true` に設定します。これは、セキュリティゲートとしてサンドボックス化を必要とする管理デプロイメント向けです。
 </Warning>

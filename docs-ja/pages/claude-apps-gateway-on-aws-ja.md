@@ -30,7 +30,7 @@
 * **Amazon ECR** リポジトリ（ゲートウェイイメージ用）
 * **Amazon RDS for PostgreSQL** インスタンス（プライベートサブネット内、公開アクセス不可、ゲートウェイの[ストア](/docs/ja/claude-apps-gateway-config#store)用）
 * **AWS Secrets Manager** シークレット（JWT 署名キー、OIDC クライアントシークレット、Postgres URL 用）
-* **IAM ロール**（`bedrock:InvokeModel` および `bedrock:InvokeModelWithResponseStream` 権限付き、ECS タスクロールとしてアタッチされるか、EKS 上の IAM Roles for Service Accounts（IRSA）経由でバインドされる）
+* **IAM ロール**（`bedrock:InvokeModel`、`bedrock:InvokeModelWithResponseStream`、`bedrock:CountTokens` 権限付き、ECS タスクロールとしてアタッチされるか、EKS 上の IAM Roles for Service Accounts（IRSA）経由でバインドされる）
 * **内部アプリケーションロードバランサー**（HTTPS 用）
 
 <h2 id="prerequisites">
@@ -111,7 +111,7 @@ export PRIVATE_SUBNETS="<subnet-id-a> <subnet-id-b>"
       "Version": "2012-10-17",
       "Statement": [{
         "Effect": "Allow",
-        "Action": ["bedrock:InvokeModel", "bedrock:InvokeModelWithResponseStream"],
+        "Action": ["bedrock:InvokeModel", "bedrock:InvokeModelWithResponseStream", "bedrock:CountTokens"],
         "Resource": [
           "arn:aws:bedrock:${AWS_REGION}:${ACCOUNT_ID}:inference-profile/us.anthropic.*",
           "arn:aws:bedrock:*::foundation-model/anthropic.*"
@@ -226,6 +226,8 @@ export PRIVATE_SUBNETS="<subnet-id-a> <subnet-id-b>"
     * `trusted_proxies`：フロントエンドのソース範囲。ゲートウェイは TCP ピアがこのリストにある場合にのみ `X-Forwarded-For` を尊重し、信頼できるホップを過ぎてチェーンをウォークします。IP ごとのサインイン率制限と監査イベントは、ロードバランサーの代わりに開発者 IP を記録します。
 
     両方のトラックでフロントエンドは内部 ALB です。直接作成されるか、AWS Load Balancer Controller によって作成されるかは関係ありません。ALB のノードはアタッチされたサブネットからアドレスを取得するため、`trusted_proxies` をそれらのサブネットの CIDR に設定します。これはそれらのサブネット内のすべてのホストをプロキシとして信頼します。ALB のイングレスソース（企業 CIDR）がそれらと重複しないようにし、`X-Forwarded-For` を介してクライアント IP をスプーフできる信頼できないワークロードとサブネットを共有しないでください。
+
+    ALB のクライアントポート保存属性 `routing.http.xff_client_port.enabled` は、どちらの設定でも保つことができます。オンの場合、ALB はクライアントを `203.0.113.7:54321` または `[2001:db8::1]:54321` として書き込み、ゲートウェイはポートをドロップして両方を読み取ります。
 
     ```yaml gateway.yaml theme={null}
     listen:

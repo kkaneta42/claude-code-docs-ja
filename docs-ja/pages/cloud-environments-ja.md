@@ -44,22 +44,22 @@
   環境を設定する
 </h2>
 
-[claude.ai/code](https://claude.ai/code) の環境セレクターから環境を作成、編集、アーカイブできます。このセレクターには [ウェブオンボーディング](/docs/ja/web-quickstart) の後にアクセスできます。作成した環境はアカウントに個人的なものです。[共有環境](#organization-shared-environments) はオーナーが作成したものが同じセレクターに表示されます。設定なしで利用可能なものについては [インストール済みツール](#installed-tools) を参照してください。
+[web onboarding](/docs/ja/web-quickstart) 後に [claude.ai/code](https://claude.ai/code) で、または [Desktop app](/docs/ja/desktop#cloud-sessions) のプロンプトボックスから環境セレクターにアクセスして、環境を作成、編集、アーカイブできます。作成した環境はアカウントに個人的なものです。Owner が作成した [共有環境](#organization-shared-environments) は同じセレクターに表示されます。設定なしで利用可能な内容については、[インストール済みツール](#installed-tools) を参照してください。
 
 <Steps>
   <Step title="環境セレクターを開く">
-    [claude.ai/code](https://claude.ai/code) で、メッセージボックスの上の行にある現在の環境名を表示するクラウドアイコンを選択します。セレクターの設定ページや直接 URL はありません。
+    [claude.ai/code](https://claude.ai/code) で、メッセージボックスの上の行にある現在の環境名を表示するクラウドアイコンを選択します。セレクターの設定ページまたは直接 URL はありません。
 
     <Frame>
-      <img src="https://mintcdn.com/claude-code/ZFId6l95856c5LSw/images/cloud-environment-selector.png?fit=max&auto=format&n=ZFId6l95856c5LSw&q=85&s=cc2813a5664519eaf5a89d793ce5af26" alt="claude.ai/code のメッセージボックスの上に開いた環境セレクター。環境名 Default を表示するクラウドボタンがメッセージボックスの上の行にあります。開いたメニューには Download と Desktop only ラベルが付いた Local 行、Default 環境がチェックマークで選択され、ホバー時に設定ギアアイコンが表示される Cloud セクション、クラウド環境を追加するオプション、セットアップ手順を含む Remote Control セクションが表示されます。" width="1672" height="682" data-path="images/cloud-environment-selector.png" />
+      <img src="https://mintcdn.com/claude-code/ZFId6l95856c5LSw/images/cloud-environment-selector.png?fit=max&auto=format&n=ZFId6l95856c5LSw&q=85&s=cc2813a5664519eaf5a89d793ce5af26" alt="claude.ai/code のメッセージボックスの上に開いた環境セレクター。環境名 Default を表示するクラウドボタンがメッセージボックスの上の行に位置します。開いたメニューには、Download と Desktop only ラベルを持つ Local 行、Default 環境がチェックマークで選択され、ホバー時に設定ギアアイコンを表示する Cloud セクション、Add cloud environment オプション、セットアップ手順を含む Remote Control セクションが表示されます。" width="1672" height="682" data-path="images/cloud-environment-selector.png" />
     </Frame>
   </Step>
 
   <Step title="環境を追加または編集する">
-    **クラウド環境を追加** を選択するか、既存の環境にホバーして右側に表示される設定アイコンを選択します。ダイアログには名前、ネットワークアクセスレベル、環境変数、セットアップスクリプトが含まれます。Pro または Max プランで既存のクラウド環境を編集する場合、ダイアログには [API 認証情報](#add-api-credentials) も含まれます。
+    **Add cloud environment** を選択するか、既存の環境にホバーして右側に表示される設定アイコンを選択します。ダイアログには名前、ネットワークアクセスレベル、環境変数、セットアップスクリプトが含まれます。Pro または Max プランで既存のクラウド環境を編集する場合、ダイアログには [API 認証情報](#add-api-credentials) も含まれます。
 
     <Frame>
-      <img src="https://mintcdn.com/claude-code/ZFId6l95856c5LSw/images/cloud-environment-dialog.png?fit=max&auto=format&n=ZFId6l95856c5LSw&q=85&s=30d4478b31d1f879f7ee287ddab32505" alt="新しいクラウド環境ダイアログ。プレースホルダー Default を持つ Name フィールド、ネットワークポリシーとアクセスレベルへのリンク付きで Trusted に設定された Network access セレクター、.env 形式のプレースホルダーテキストを表示し、値は環境を使用する誰もが見ることができるというメモが付いた Environment variables ボックス、新しいセッションが開始され Claude Code が起動する前に実行される Bash スクリプトとして説明されている Setup script ボックス、および Cancel と Create environment ボタン。" width="874" height="1372" data-path="images/cloud-environment-dialog.png" />
+      <img src="https://mintcdn.com/claude-code/ZFId6l95856c5LSw/images/cloud-environment-dialog.png?fit=max&auto=format&n=ZFId6l95856c5LSw&q=85&s=30d4478b31d1f879f7ee287ddab32505" alt="New cloud environment ダイアログ。プレースホルダー Default を持つ Name フィールド、Trusted に設定されたネットワークアクセスセレクター（ネットワークポリシーとアクセスレベルへのリンク付き）、.env 形式のプレースホルダーテキストを表示する Environment variables ボックス（値は環境を使用する誰もが見ることができるという注記付き）、新しいセッション開始時に Claude Code が起動する前に実行される Bash スクリプトとして説明される Setup script ボックス、および Cancel と Create environment ボタン。" width="874" height="1372" data-path="images/cloud-environment-dialog.png" />
     </Frame>
   </Step>
 </Steps>
@@ -68,9 +68,9 @@
   環境変数を設定する
 </h3>
 
-環境変数は `.env` 形式を使用し、1 行に 1 つの `KEY=value` ペアです。プレーンな値は引用符が不要で、一致するペアで値を引用符で囲むと、引用符は値の一部にはなりません。複数行にまたがる値または `#` を含む値を引用符で囲みます。引用符なしの値では、`#` はコメントを開始し、行の残りは削除されます。
+環境変数は `.env` 形式を使用し、1 行に 1 つの `KEY=value` ペアです。プレーン値は引用符が不要で、一致するペアで値を引用符で囲む場合、引用符は値の一部にはなりません。複数行にまたがる値または `#` を含む値を引用符で囲みます。引用符なしの値では、`#` はコメントを開始し、行の残りは削除されます。
 
-次の例は 3 つの変数を定義しています。
+次の例は 3 つの変数を定義します。
 
 ```text theme={null}
 NODE_ENV=development
@@ -78,19 +78,19 @@ LOG_LEVEL=debug
 DATABASE_URL=postgres://localhost:5432/myapp
 ```
 
-各セッションは起動時に環境の値を 1 回コピーして、Claude が実行するコマンドが読み取ることができる通常の環境変数にします。実行中のセッションは設定を再度読み込まないため、変数を編集または追加すると、その後に開始するセッションに影響します。既に実行中のセッションは開始時の値を保持します。
+各セッションは起動時に環境の値を 1 回コピーして、Claude が実行するコマンドが読み取ることができる通常の環境変数にします。実行中のセッションは設定を再度読み込まないため、変数の編集または追加は、その後に開始するセッションに影響します。既に実行中のセッションは、開始時の値を保持します。
 
-Web 上の Claude Code は、セッションを開始するときに独自にいくつかの変数を設定します。[`CLAUDE_AUTOCOMPACT_PCT_OVERRIDE`](/docs/ja/claude-code-on-the-web#manage-context) の場合、Web 上の Claude Code が設定する値は、ここで追加したものをオーバーライドするため、ここでそのキーを追加しても効果がありません。
+Web 上の Claude Code は、セッション開始時に自身でいくつかの変数も設定します。[`CLAUDE_AUTOCOMPACT_PCT_OVERRIDE`](/docs/ja/claude-code-on-the-web#manage-context) の場合、Web 上の Claude Code が設定する値は、ここで追加する値をオーバーライドするため、ここでこのキーを追加しても効果がありません。
 
-環境を使用する誰もが値を読み取ることができます。Pro および Max プランでは、エージェントプロキシがリクエストに接続できるキーの場合は [API 認証情報](#add-api-credentials) を代わりに使用します。[認証情報を取得しないリクエスト](#requests-that-never-get-the-credential) はそこにリストされています。
+環境を使用する誰もが値を読み取ることができます。Pro および Max プランでは、エージェントプロキシがリクエストに添付できるキーについて、代わりに [API 認証情報](#add-api-credentials) を使用してください。[認証情報を取得しないリクエスト](#requests-that-never-get-the-credential) はそこにリストされています。
 
 <h3 id="add-api-credentials">
   API 認証情報を追加する
 </h3>
 
-API 認証情報は、クラウド環境に保存する API キーまたはトークンであり、Claude はキーを見ずに環境内のセッションからそのAPI を呼び出すことができます。Anthropic のエージェントプロキシは、各リクエストがセッションの VM を離れた後、リストしたホストへのリクエストにキーを追加します。キーは Claude、実行するコマンド、またはセッションの環境変数に到達しません。
+API 認証情報は、クラウド環境に保存する API キーまたはトークンで、Claude が環境内の任意のセッションからそのキーを見ることなく API を呼び出すことができます。Anthropic のエージェントプロキシは、リストしたホストへのリクエストにキーを追加します。各リクエストがセッションの VM を離れた後です。キーは Claude、実行するコマンド、またはセッションの環境変数に到達しません。
 
-API 認証情報は Pro および Max プランで利用可能です。Team または Enterprise プランではまだ利用できないため、**API credentials** セクションはこれらのプランの環境ダイアログに表示されません。
+API 認証情報は Pro および Max プランで利用可能です。Team および Enterprise プランではまだ利用できないため、**API credentials** セクションはこれらのプランの環境ダイアログに表示されません。
 
 <h4 id="requirements">
   要件
@@ -98,13 +98,13 @@ API 認証情報は Pro および Max プランで利用可能です。Team ま�
 
 これらのうち 2 つは認証情報を追加できるかどうかを決定し、2 つは追加後にエージェントプロキシがそれを使用できるかどうかを決定します。
 
-* **ロール**：claude.ai 組織の組織管理者ロール
-  * Team および Enterprise では、オーナーがそれを保持し、管理者は保持しません
-  * Pro および Max では、独自の組織でそれを保持します
-  * これがない場合、独自の環境でも認証情報リストの代わりにメモが表示されます。オーナーに認証情報を共有環境に追加してセッションをそこで実行するよう依頼します
-* **環境タイプ**：既に存在する Anthropic ホスト クラウド環境。[セルフホスト環境](/docs/ja/self-hosted-environments) には API 認証情報がありません
-* **API 到達可能性**：API はインターネットからの接続を受け入れます。リクエストは Anthropic のネットワークから離れるためです
-* **暗号化キー**：組織がカスタマー管理暗号化キーを使用する場合、認証情報を保存できません
+* **Role**: claude.ai 組織の組織管理者ロール
+  * Team および Enterprise では、Owner がこれを保持し、Admin は保持しません
+  * Pro および Max では、独自の組織でこれを保持します
+  * これがない場合、独自の環境でも認証情報リストの代わりにメモが表示されます。Owner に共有環境に認証情報を追加してそこでセッションを実行するよう依頼してください
+* **Environment type**: 既に存在する Anthropic ホスト型クラウド環境。[self-hosted environment](/docs/ja/self-hosted-environments) には API 認証情報がありません
+* **API reachability**: API がインターネットからの接続を受け入れます。リクエストは Anthropic のネットワークから離れるためです
+* **Encryption keys**: 組織がカスタマー管理暗号化キーを使用する場合、認証情報を保存できません
 
 <h4 id="add-a-credential">
   認証情報を追加する
@@ -114,83 +114,83 @@ API 認証情報は Pro および Max プランで利用可能です。Team ま�
 
 <Steps>
   <Step title="環境の API 認証情報を開く">
-    [claude.ai/code](https://claude.ai/code) で [編集用に環境を開きます](#configure-your-environment)。**クラウド環境を更新** ダイアログで、**環境変数** の下の **API credentials** を見つけます。環境に既にある認証情報が表示され、それが適用されるホストが表示されます。
+    [claude.ai/code](https://claude.ai/code) で [環境を編集用に開きます](#configure-your-environment)。**Update cloud environment** ダイアログで、**Environment variables** の下の **API credentials** を見つけます。環境に既にある認証情報が表示され、それぞれが適用されるホストが表示されます。
   </Step>
 
   <Step title="認証情報を追加する">
-    **認証情報を追加** を選択してフォームに入力します。デフォルトの **認証情報タイプ** の **Bearer** を保持します。これはリクエストヘッダーで移動する API キーの場合であり、これらのフィールドに入力します。
+    **Add credential** を選択してフォームに入力します。リクエストヘッダーで移動する API キーについてはデフォルトの **Credential type**、**Bearer** を保持し、これらのフィールドに入力します。
 
-    * **名前**：認証情報のラベル（例：`Internal billing API`）
-    * **許可されたウェブサイト**：API のホスト（例：`api.example.com`）。先頭の `*.` はすべてのサブドメインと一致します
-    * **カスタムヘッダー**：キーを運ぶヘッダーの 1 行。行は `Authorization` をヘッダーの **名前** として、`Bearer` を **プレフィックス** として開始します。キー自体を **値** として貼り付けます。`X-Api-Key` のようなベア値を取るヘッダーの場合、名前を変更してプレフィックスをクリアします
+    * **Name**: `Internal billing API` などの認証情報のラベル
+    * **Allowed websites**: `api.example.com` などの API のホスト。先頭の `*.` はすべてのサブドメインに一致します
+    * **Custom headers**: キーを運ぶヘッダーの 1 行。行は `Authorization` をヘッダーの **Name** として、`Bearer` を **Prefix** として開始します。キー自体を **Value** として貼り付けます。`X-Api-Key` のようなベア値を取るヘッダーの場合、名前を変更してプレフィックスをクリアします
 
-    別の方法で認証する API の場合、別の **認証情報タイプ** を選択します。リストは [Claude Tag](https://claude.com/docs/claude-tag/overview) が [接続](https://claude.com/docs/claude-tag/admins/add-connections) に提供するものと同じです。
+    別の方法で認証する API の場合、別の **Credential type** を選択します。リストは [Claude Tag](https://claude.com/docs/claude-tag/overview)（Team および Enterprise プランの Slack 統合）が [connections](https://claude.com/docs/claude-tag/admins/add-connections) に提供するものと同じです。
   </Step>
 
   <Step title="認証情報を保存する">
-    **接続** を選択します。認証情報はリストにホストと共に表示され、ダイアログの **変更を保存** ボタンなしで保存されます。保存後に値を再度表示することはできません。
+    **Connect** を選択します。認証情報はリストにホストと共に表示され、ダイアログの **Save changes** ボタンなしで保存されます。保存後に値を再度表示することはできません。
   </Step>
 </Steps>
 
-認証情報が機能することを確認するには、環境でセッションを開始して、Claude に API を呼び出すよう依頼します。例えば `curl` を使用します。API はキーがリクエストにあるかのように応答し、キーはセッションの環境変数またはファイルに表示されません。リストが認証情報を **送信されていません** とマークしている場合、その下のメモは理由と対処方法を説明しています。ホストが正確に一致しないで重複する 2 つの認証情報はマーカーを取得しません。エージェントプロキシはそのうちの 1 つだけを送信します。
+認証情報が機能することを確認するには、環境でセッションを開始して、Claude に API を呼び出すよう依頼します。例えば `curl` を使用します。API はキーがリクエストにあるかのように応答し、キーはセッションの環境変数またはファイルに表示されません。リストが認証情報を **Not sent** としてマークする場合、その下のメモは理由と対処方法を説明します。ホストが正確に一致せずに重複する 2 つの認証情報はマーカーを取得せず、エージェントプロキシはそのうちの 1 つだけを送信します。
 
 <h4 id="which-requests-get-the-credential">
   どのリクエストが認証情報を取得するか
 </h4>
 
-エージェントプロキシは、リクエストのホストがその認証情報にリストしたものと一致する場合、認証情報をリクエストに接続します。セッションは、環境の [ネットワークアクセスレベル](#access-levels) がそれ以外の場合は許可しない場合でも、これらのホストに到達できます。ただし [エージェントプロキシがスキップするホスト](#requests-that-never-get-the-credential) は除きます。認証情報は、削除するまで、それを開始した人に関係なく、環境で実行されるすべてのセッションに適用されます。
+エージェントプロキシは、リクエストのホストがその認証情報にリストしたものと一致する場合、リクエストに認証情報を添付します。セッションは、環境の [network access level](#access-levels) がそれ以外の場合は許可しないホストに到達できます。ただし、[認証情報を取得しないホスト](#requests-that-never-get-the-credential) は除きます。認証情報は、削除するまで、それを開始した人に関係なく、環境で実行されるすべてのセッションに適用されます。
 
 <h4 id="requests-that-never-get-the-credential">
   認証情報を取得しないリクエスト
 </h4>
 
-エージェントプロキシは、追加した認証情報をこれらのリクエストに接続しません。
+エージェントプロキシは、これらのリクエストに追加する認証情報を決してアタッチしません。
 
-* **GitHub**：[GitHub プロキシ](#github-proxy) は代わりに GitHub へのリクエストを認証するため、GitHub の API 認証情報は必要ありません
-* **Anthropic API とパブリックパッケージレジストリ**：`api.anthropic.com`、`registry.npmjs.org`、`jsr.io`、`npm.jsr.io`、`pypi.org`、`files.pythonhosted.org`、`index.crates.io`、`proxy.golang.org` へのリクエストはエージェントプロキシを通じません
-* **セットアップスクリプトリクエスト**：Claude Code は [セットアップスクリプト](#setup-scripts) が実行された後、起動時にエージェントプロキシに接続します
+* **GitHub**: [GitHub proxy](#github-proxy) は代わりに GitHub へのリクエストを認証するため、GitHub の API 認証情報は不要です
+* **Anthropic API およびパブリックパッケージレジストリ**: `api.anthropic.com`、`registry.npmjs.org`、`jsr.io`、`npm.jsr.io`、`pypi.org`、`files.pythonhosted.org`、`index.crates.io`、および `proxy.golang.org`
+* **Setup script requests**: Claude Code は [setup script](#setup-scripts) が実行された後、起動時にエージェントプロキシに接続します
 
 <h3 id="select-an-environment-from-the-cli">
   CLI から環境を選択する
 </h3>
 
-ターミナルで `/remote-env` を実行して、[`claude --cloud`](/docs/ja/claude-code-on-the-web#from-terminal-to-web) などの CLI から作成するクラウドセッションのデフォルト環境を選択します。コマンドは既存の環境のピッカーを開き、選択を [ユーザー設定](/docs/ja/settings#where-settings-live) の `remote.defaultEnvironmentId` キーに保存するため、より高い優先度の [設定レイヤー](/docs/ja/settings#settings-precedence) （リポジトリのプロジェクト設定など）で同じキーが設定されていない限り、マシン上のすべてのプロジェクトで変更するまで適用されます。
+ターミナルで `/remote-env` を実行して、[`claude --cloud`](/docs/ja/claude-code-on-the-web#from-terminal-to-web) などの CLI から作成するクラウドセッションのデフォルト環境を選択します。コマンドは既存の環境のピッカーを開き、選択を [user settings](/docs/ja/settings#where-settings-live) の `remote.defaultEnvironmentId` キーに保存するため、設定を変更するまで、マシン上のすべてのプロジェクトで適用されます。ただし、リポジトリのプロジェクト設定などの高い優先度の [settings layer](/docs/ja/settings#settings-precedence) で同じキーが設定されている場合を除きます。
 
-[セルフホスト環境](/docs/ja/self-hosted-environments) ID（`ccpool_...` の形式）は、より厳密なソースルールに従います。Claude Code がそれを尊重する設定レイヤーについては [`remote.defaultEnvironmentId`](/docs/ja/settings-reference#remote-defaultenvironmentid) を参照してください。
+[self-hosted environment](/docs/ja/self-hosted-environments) ID（`ccpool_...` の形式）は、より厳密なソースルールに従います。Claude Code がそれを受け入れる設定レイヤーについては、[`remote.defaultEnvironmentId`](/docs/ja/settings-reference#remote-defaultenvironmentid) を参照してください。
 
-`/remote-env` はデフォルトのみを設定します。セッションを開始せず、環境を追加または編集することはできません。[claude.ai/code](https://claude.ai/code) で管理してください。
+`/remote-env` はデフォルトのみを設定します。セッションを開始せず、環境を追加または編集することはできません。[environment selector](#configure-your-environment) から管理します。
 
 <h3 id="archive-an-environment">
   環境をアーカイブする
 </h3>
 
-環境をアーカイブするには、編集用に開いて **アーカイブ** を選択します。環境を削除することはできず、アーカイブのみできます。
+環境をアーカイブするには、編集用に開いて **Archive** を選択します。環境を削除することはできず、アーカイブのみできます。
 
 アーカイブは新しいセッションに影響し、実行中のセッションには影響しません。
 
 * 環境で既に実行中のセッションは引き続き機能します。
-* 環境はセレクターと `/remote-env` から消えるため、新しいセッション用に選択できません。
-* 環境の API 認証情報は実行中のセッションに接続されたままです。アーカイブする前に不要なものを削除します。
-* アーカイブされた環境では、どのサーフェスでも新しいセッションを開始できません。環境が保存された [CLI デフォルト](#select-an-environment-from-the-cli) だった場合、Claude Code はリストに 1 つある場合は Anthropic ホスト環境で CLI クラウドセッションを開始し、そうでない場合はリスト内の最初の環境で [Remote Control ブリッジ環境](#the-default-environment) ではないものを開始します。[ルーチン](/docs/ja/routines#environments-and-network-access) など、環境で明示的に設定されたものは、その中で新しいセッションを開始できません。別の環境を指定してください。
+* 環境はセレクターと `/remote-env` から消えるため、新しいセッションに選択できません。
+* 環境の API 認証情報は実行中のセッションに添付されたままです。アーカイブする前に、不要になったものを削除してください。
+* アーカイブされた環境では、どのサーフェスでも新しいセッションを開始できません。環境が保存された [CLI default](#select-an-environment-from-the-cli) だった場合、リストに 1 つがある場合は Anthropic ホスト型環境で Claude Code が CLI クラウドセッションを開始し、そうでない場合は [Remote Control bridge environment](#the-default-environment) ではないリスト内の最初の環境で開始します。[routine](/docs/ja/routines#environments-and-network-access) など環境で明示的に設定されたものは、新しいセッションをそこで開始できません。別の環境を指してください。
 
 <h3 id="organization-shared-environments">
   組織共有環境
 </h3>
 
-Team および Enterprise プランでは、オーナーは組織のすべてのメンバーと共有されるクラウド環境を作成できます。同じロールは **クラウド環境** 管理ページで他のすべてを管理します。[セルフホスト環境](/docs/ja/self-hosted-environments) を含みます。管理者ロールはページを開くことができません。ページを開くことができるロールの完全なリストは [サーバー管理設定を管理する](/docs/ja/server-managed-settings#access-control) ためのものです。共有環境は各メンバーの環境セレクターに個人的なものと一緒に表示されるため、チームは各メンバーが再作成する代わりに 1 つの設定で標準化できます。
+Team および Enterprise プランでは、Owner は組織のすべてのメンバーと共有されるクラウド環境を作成できます。同じロールは **Cloud environments** 管理ページで他のすべてを管理します。[self-hosted environments](/docs/ja/self-hosted-environments) を含みます。Admin ロールはページを開くことができません。それを開くことができるロールの完全なリストは、[managing server-managed settings](/docs/ja/server-managed-settings#access-control) のものです。共有環境は各メンバーの環境セレクターに個人的なものと一緒に表示されるため、チームは各メンバーが再作成する代わりに 1 つの設定で標準化できます。
 
-[管理設定](https://claude.ai/admin-settings) の **クラウド環境** ページから共有環境を作成、編集、アーカイブします。共有環境は [claude.ai/code](https://claude.ai/code) の [環境セレクター](#configure-your-environment) からも開きます。オーナーはそこで編集できます。他のメンバーは読み取り専用で表示します。各共有環境には名前、[ネットワークアクセスレベル](#access-levels)、`.env` 形式の [環境変数](#set-environment-variables)、[セットアップスクリプト](#setup-scripts) があります。オーナーは [claude.ai/admin-settings/claude-code](https://claude.ai/admin-settings/claude-code) で組織の [デフォルト環境](#the-default-environment) を別途選択します。
+[admin settings](https://claude.ai/admin-settings) の **Cloud environments** ページから共有環境を作成、編集、アーカイブします。共有環境は [claude.ai/code](https://claude.ai/code) の [environment selector](#configure-your-environment) からも開きます。Owner はそこで編集できます。他のメンバーは読み取り専用で表示します。各共有環境には名前、[network access level](#access-levels)、`.env` 形式の [environment variables](#set-environment-variables)、および [setup script](#setup-scripts) があります。Owner は [claude.ai/admin-settings/claude-code](https://claude.ai/admin-settings/claude-code) で組織の [default environment](#the-default-environment) を別途選択します。
 
-すべてのメンバーのセッションが共有環境の変数を読み取るため、シークレットを含めないでください。[API 認証情報](#add-api-credentials)（セッションが読み取ることができないキーを提供）は Team または Enterprise プランではまだ利用できません。
+すべてのメンバーのセッションは共有環境でその変数を読み取るため、シークレットを含めないでください。[API credentials](#add-api-credentials)（セッションに読み取ることができないキーを与える）は Team および Enterprise プランではまだ利用できません。
 
 <h3 id="set-the-environment-a-claude-tag-channel-uses">
   Claude Tag チャネルが使用する環境を設定する
 </h3>
 
-[Claude Tag](https://claude.com/docs/claude-tag/overview) チャネルでは、Claude はメンバーではなく組織の共有アイデンティティとして機能するため、チャネルセッションは組織レベルの環境のみを使用します。共有環境または [セルフホスト環境](/docs/ja/self-hosted-environments) のいずれかです。チャネルに [プリインストール](#installed-tools) されていない .NET などのツールチェーンを提供するには、オーナーは **クラウド環境** 管理ページから [共有環境](#organization-shared-environments) を作成し、[セットアップスクリプト](#setup-scripts) でそれをインストールできます。チャネルを環境に指定する 2 つの方法があります。
+[Claude Tag](https://claude.com/docs/claude-tag/overview) チャネルでは、Claude は任意のメンバーではなく組織の共有アイデンティティとして機能するため、チャネルセッションは組織レベルの環境のみを使用します。共有環境または [self-hosted environments](/docs/ja/self-hosted-environments)。チャネルに [pre-installed](#installed-tools) ではないツールチェーン（.NET など）を与えるには、Owner は **Cloud environments** 管理ページから [shared environment](#organization-shared-environments) を作成し、[setup script](#setup-scripts) でそれをインストールできます。チャネルを環境に指す方法は 2 つあります。
 
-* [claude.ai/admin-settings/claude-code](https://claude.ai/admin-settings/claude-code) で共有またはセルフホスト環境を組織の [デフォルト環境](#the-default-environment) として設定します。
-* Claude Tag 管理設定で [チャネルにピン留めします](https://claude.com/docs/claude-tag/admins/troubleshooting#channel-sessions-use-the-wrong-environment-or-can%E2%80%99t-find-one)。
+* 共有環境または self-hosted 環境を [claude.ai/admin-settings/claude-code](https://claude.ai/admin-settings/claude-code) で組織の [default environment](#the-default-environment) として設定します。
+* [Claude Tag 管理設定でチャネルに 1 つをピンします](https://claude.com/docs/claude-tag/admins/troubleshooting#channel-sessions-use-the-wrong-environment-or-can%E2%80%99t-find-one)。
 
 <h2 id="network-access">
   ネットワークアクセス

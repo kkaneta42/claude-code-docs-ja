@@ -505,6 +505,8 @@ v2.1.247 より前では、Ghostty、Kitty、WezTerm、iTerm2 などの Kitty �
 ctrl+k ctrl+s   Ctrl+K を押して、リリースしてから Ctrl+S
 ```
 
+各キーストロークは、その前のキーストロークから 3 秒以内に押してください。それより長く待つと、Claude Code はコードをキャンセルし、そのことを示す簡潔な通知を表示します。
+
 <h3 id="special-keys">
   特殊キー
 </h3>
@@ -540,7 +542,7 @@ ctrl+k ctrl+s   Ctrl+K を押して、リリースしてから Ctrl+S
 
 これはコード バインディングでも機能します。プレフィックスを共有するすべてのコードをアンバインドすると、そのプレフィックスを単一キー バインディングとして使用できるようになります。コード バインディングは任意のアクティブなコンテキストに存在し、そのプレフィックスを予約したままにするため、それを定義するコンテキストで各コードをアンバインドする必要があります。
 
-Claude Code は `ctrl+x` プレフィックスに以下のデフォルトコードをバインドします。`Chat` では `ctrl+x ctrl+k`、`ctrl+x ctrl+e`、`ctrl+x enter`、`Task` では `ctrl+x ctrl+b`、`DiffPanel` では `ctrl+x b` です。`ctrl+x enter` コードは v2.1.247 以降が必要で、`ctrl+x b` は v2.1.260 以降が必要です。`ctrl+x` 自体を単一キー バインディングとして再利用するには、すべてをアンバインドします。
+Claude Code は `ctrl+x` プレフィックスに以下のデフォルトコードをバインドします。`Chat` では `ctrl+x ctrl+k`、`ctrl+x ctrl+e`、`ctrl+x enter`、`ctrl+x ctrl+a`、`ctrl+x tab`、`Task` では `ctrl+x ctrl+b`、`DiffPanel` では `ctrl+x b` です。`ctrl+x enter` コードは v2.1.247 以降が必要で、`ctrl+x b`、`ctrl+x ctrl+a`、`ctrl+x tab` は v2.1.260 以降が必要です。`ctrl+x` 自体を単一キー バインディングとして再利用するには、すべてをアンバインドします。
 
 ```json theme={null}
 {
@@ -563,6 +565,8 @@ Claude Code は `ctrl+x` プレフィックスに以下のデフォルトコー�
         "ctrl+x ctrl+k": null,
         "ctrl+x ctrl+e": null,
         "ctrl+x enter": null,
+        "ctrl+x ctrl+a": null,
+        "ctrl+x tab": null,
         "ctrl+x": "chat:newline"
       }
     }

@@ -121,41 +121,41 @@ Claude Code は、frontmatter に `name` がない場合またはパースに失
 
 プラグイン hooks は、[ユーザー定義 hooks](/docs/ja/hooks) と同じライフサイクルイベントに応答します。
 
-| Event                 | When it fires                                                                                                                                                                                                                                         |
-| :-------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `SessionStart`        | When a session begins or resumes                                                                                                                                                                                                                      |
-| `Setup`               | When you start Claude Code with `--init-only`, or with `--init` or `--maintenance` in `-p` mode. For one-time preparation in CI or scripts                                                                                                            |
-| `UserPromptSubmit`    | When you submit a prompt, before Claude processes it                                                                                                                                                                                                  |
-| `UserPromptExpansion` | When a user-typed command expands into a prompt, before it reaches Claude. Can block the expansion                                                                                                                                                    |
-| `PreToolUse`          | Before a tool call executes. Can block it                                                                                                                                                                                                             |
-| `PermissionRequest`   | When a tool call needs a permission decision                                                                                                                                                                                                          |
-| `PermissionDenied`    | When auto mode denies a tool call, including denials without a classifier verdict. Use JSON `hookSpecificOutput.retry: true` to tell the model it may retry the denied tool call. Claude Code ignores `retry` when the classifier produced no verdict |
-| `PostToolUse`         | After a tool call succeeds                                                                                                                                                                                                                            |
-| `PostToolUseFailure`  | After a tool call fails                                                                                                                                                                                                                               |
-| `PostToolBatch`       | After a full batch of parallel tool calls resolves, before the next model call                                                                                                                                                                        |
-| `Notification`        | When Claude Code sends a notification                                                                                                                                                                                                                 |
-| `MessageDisplay`      | While assistant message text is displayed                                                                                                                                                                                                             |
-| `SubagentStart`       | When a subagent is spawned                                                                                                                                                                                                                            |
-| `SubagentStop`        | When a subagent finishes                                                                                                                                                                                                                              |
-| `TaskCreated`         | When a task is being created via `TaskCreate`                                                                                                                                                                                                         |
-| `TaskCompleted`       | When a task is being marked as completed                                                                                                                                                                                                              |
-| `Stop`                | When Claude finishes responding                                                                                                                                                                                                                       |
-| `StopFailure`         | When the turn ends due to an API error                                                                                                                                                                                                                |
-| `TeammateIdle`        | When an [agent team](/docs/en/agent-teams) teammate is about to go idle                                                                                                                                                                                    |
-| `InstructionsLoaded`  | When a CLAUDE.md or `.claude/rules/*.md` file is loaded into context. Fires at session start and when files are lazily loaded during a session                                                                                                        |
-| `ConfigChange`        | When a configuration file changes during a session                                                                                                                                                                                                    |
-| `CwdChanged`          | When the working directory changes, for example when Claude executes a `cd` command. Useful for reactive environment management with tools like direnv                                                                                                |
-| `DirectoryAdded`      | When a working directory is added mid-session via `/add-dir` or the SDK `register_repo_root` control request                                                                                                                                          |
-| `FileChanged`         | When a watched file changes on disk. The `matcher` field specifies which filenames to watch                                                                                                                                                           |
-| `WorktreeCreate`      | When a worktree is being created via `--worktree`, `isolation: "worktree"`, or for a background session. Replaces default git behavior                                                                                                                |
-| `WorktreeRemove`      | When a worktree is being removed at session exit, when a subagent finishes, or when you delete a background session                                                                                                                                   |
-| `PreCompact`          | Before context compaction                                                                                                                                                                                                                             |
-| `PostCompact`         | After context compaction completes                                                                                                                                                                                                                    |
-| `PreModelSwitch`      | Before Claude Code applies a model switch that you or a client requested. Can block the switch                                                                                                                                                        |
-| `PostModelSwitch`     | After the session's model changes, including changes Claude Code makes on its own, such as restoring the model when you resume a session                                                                                                              |
-| `Elicitation`         | When an MCP server requests user input during a tool call                                                                                                                                                                                             |
-| `ElicitationResult`   | After a user responds to an MCP elicitation, before the response is sent back to the server                                                                                                                                                           |
-| `SessionEnd`          | When a session terminates                                                                                                                                                                                                                             |
+| イベント                  | 発火するタイミング                                                                                                                                                     |
+| :-------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `SessionStart`        | セッションが開始または再開されたとき                                                                                                                                            |
+| `Setup`               | `--init-only` で Claude Code を起動するとき、または `-p` モードで `--init` または `--maintenance` を使用するとき。CI またはスクリプトでの 1 回限りの準備用                                                |
+| `UserPromptSubmit`    | プロンプトを送信するとき、Claude が処理する前                                                                                                                                    |
+| `UserPromptExpansion` | ユーザーが入力したコマンドがプロンプトに展開されるとき、Claude に到達する前。展開をブロックできます                                                                                                         |
+| `PreToolUse`          | ツール呼び出しが実行される前。ブロックできます                                                                                                                                       |
+| `PermissionRequest`   | ツール呼び出しが権限決定を必要とするとき                                                                                                                                          |
+| `PermissionDenied`    | オートモードがツール呼び出しを拒否するとき、分類器の判定がない拒否を含みます。JSON `hookSpecificOutput.retry: true` を使用して、モデルが拒否されたツール呼び出しを再試行できることを伝えます。Claude Code は分類器が判定を出さなかった場合、`retry` を無視します |
+| `PostToolUse`         | ツール呼び出しが成功した後                                                                                                                                                 |
+| `PostToolUseFailure`  | ツール呼び出しが失敗した後                                                                                                                                                 |
+| `PostToolBatch`       | 並列ツール呼び出しの完全なバッチが解決した後、次のモデル呼び出しの前                                                                                                                            |
+| `Notification`        | Claude Code が通知を送信するとき                                                                                                                                        |
+| `MessageDisplay`      | アシスタントメッセージテキストが表示されている間                                                                                                                                      |
+| `SubagentStart`       | サブエージェントがスポーンされるとき                                                                                                                                            |
+| `SubagentStop`        | サブエージェントが終了するとき                                                                                                                                               |
+| `TaskCreated`         | `TaskCreate` 経由でタスクが作成されるとき                                                                                                                                   |
+| `TaskCompleted`       | タスクが完了としてマークされるとき                                                                                                                                             |
+| `Stop`                | Claude が応答を終了するとき                                                                                                                                             |
+| `StopFailure`         | API エラーが原因でターンが終了するとき                                                                                                                                         |
+| `TeammateIdle`        | [エージェントチーム](/docs/ja/agent-teams) のチームメイトがアイドル状態になろうとするとき                                                                                                          |
+| `InstructionsLoaded`  | CLAUDE.md または `.claude/rules/*.md` ファイルがコンテキストに読み込まれるとき。セッション開始時およびセッション中にファイルが遅延読み込みされるときに発火します                                                              |
+| `ConfigChange`        | セッション中に設定ファイルが変更されるとき                                                                                                                                         |
+| `CwdChanged`          | 作業ディレクトリが変更されるとき、例えば Claude が `cd` コマンドを実行するとき。direnv などのツールを使用したリアクティブな環境管理に便利です                                                                             |
+| `DirectoryAdded`      | `/add-dir` または SDK `register_repo_root` コントロールリクエスト経由でセッション中盤に作業ディレクトリが追加されるとき                                                                                |
+| `FileChanged`         | 監視対象ファイルがディスク上で変更されるとき。`matcher` フィールドは監視するファイル名を指定します                                                                                                        |
+| `WorktreeCreate`      | `--worktree`、`isolation: "worktree"`、またはバックグラウンドセッション経由で worktree が作成されるとき。デフォルトの git 動作を置き換えます                                                               |
+| `WorktreeRemove`      | セッション終了時、サブエージェント終了時、またはバックグラウンドセッションを削除するときに worktree が削除されるとき                                                                                               |
+| `PreCompact`          | コンテキスト圧縮の前                                                                                                                                                    |
+| `PostCompact`         | コンテキスト圧縮が完了した後                                                                                                                                                |
+| `PreModelSwitch`      | Claude Code があなたまたはクライアントがリクエストしたモデルスイッチを適用する前。スイッチをブロックできます                                                                                                  |
+| `PostModelSwitch`     | セッションのモデルが変更された後、Claude Code が独自に行う変更（セッションを再開するときのモデル復元など）を含みます                                                                                              |
+| `Elicitation`         | MCP サーバーがツール呼び出し中にユーザー入力をリクエストするとき                                                                                                                            |
+| `ElicitationResult`   | ユーザーが MCP エリシテーションに応答した後、レスポンスがサーバーに送り返される前                                                                                                                   |
+| `SessionEnd`          | セッションが終了するとき                                                                                                                                                  |
 
 **Hook タイプ**:
 
@@ -488,7 +488,8 @@ claude plugin disable my-tool@skills-dir
   "lspServers": "./.lsp.json",
   "experimental": {
     "themes": "./themes/",
-    "monitors": "./monitors.json"
+    "monitors": "./monitors.json",
+    "evals": "quality/evals"
   },
   "dependencies": [
     "helper-lib",
@@ -535,7 +536,7 @@ claude plugin validate ./my-plugin --strict
 | フィールド            | 型       | 説明                                                                                                                                                                                                                                                                                              | 例                                                                 |
 | :--------------- | :------ | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :---------------------------------------------------------------- |
 | `$schema`        | string  | エディタのオートコンプリートと検証用の JSON Schema URL。Claude Code は読み込み時にこのフィールドを無視します。                                                                                                                                                                                                                           | `"https://json.schemastore.org/claude-code-plugin-manifest.json"` |
-| `displayName`    | string  | `/plugin` ピッカーおよび他の UI サーフェスに表示される人間が読める名前。省略した場合は `name` にフォールバックします。`name` とは異なり、スペースと任意の大文字小文字を含むことができます。名前空間またはルックアップには使用されません。                                                                                                                                                             | `"Deployment Tools"`                                              |
+| `displayName`    | string  | `/plugin` ピッカーおよび他の UI サーフェスに表示される人間が読める名前。マーケットプレイスインストール済みプラグインの場合、[マーケットプレイスエントリ](/docs/ja/plugin-marketplaces#optional-plugin-fields)の `displayName` はこの値より優先されます。どちらの場所にも表示名が設定されていない場合、ユーザーは `name` を見ます。`name` とは異なり、スペースと任意の大文字小文字を含むことができます。名前空間またはルックアップには使用されません。                         | `"Deployment Tools"`                                              |
 | `version`        | string  | オプション。セマンティックバージョン。これを設定するとプラグインをそのバージョン文字列にピンします。ユーザーはバージョンをバンプしたときのみ更新を受け取ります。[`command` ソース](/docs/ja/plugin-marketplaces#command-sources)を除きます。[バージョン管理](#version-management)を参照してください。マーケットプレイスエントリにも設定されている場合、`plugin.json` が優先されます。省略した場合、バージョンは[バージョン管理](#version-management)の次のソースから取得されます。 | `"2.1.0"`                                                         |
 | `description`    | string  | プラグインの目的の簡潔な説明                                                                                                                                                                                                                                                                                  | `"Deployment automation tools"`                                   |
 | `author`         | object  | 著者情報                                                                                                                                                                                                                                                                                            | `{"name": "Dev Team", "email": "dev@company.com"}`                |
@@ -563,21 +564,22 @@ claude plugin validate ./my-plugin --strict
   コンポーネントパスフィールド
 </h3>
 
-| フィールド                   | 型                     | 説明                                                                                                                         | 例                                                    |
-| :---------------------- | :-------------------- | :------------------------------------------------------------------------------------------------------------------------- | :--------------------------------------------------- |
-| `skills`                | string\|array         | `<name>/SKILL.md` を含むカスタムスキルディレクトリ。デフォルト `skills/` スキャンに追加されます。マーケットプレイスルート例外については[パス動作ルール](#path-behavior-rules)を参照してください | `"./custom/skills/"`                                 |
-| `commands`              | string\|array         | カスタムフラット `.md` スキルファイルまたはディレクトリ（デフォルト `commands/` を置き換え）                                                                   | `"./custom/cmd.md"` または `["./cmd1.md"]`              |
-| `agents`                | string\|array         | カスタムエージェントファイル（デフォルト `agents/` を置き換え）                                                                                      | `"./custom/agents/reviewer.md"`                      |
-| `workflows`             | string\|array         | カスタム[ワークフロー](/docs/ja/workflows)スクリプトファイルまたはディレクトリ（デフォルト `workflows/` を置き換え）                                                    | `"./custom/workflows/"`                              |
-| `hooks`                 | string\|array\|object | フックコンフィグパスまたはインラインコンフィグ                                                                                                    | `"./my-extra-hooks.json"`                            |
-| `mcpServers`            | string\|array\|object | MCP コンフィグパスまたはインラインコンフィグ                                                                                                   | `"./my-extra-mcp-config.json"`                       |
-| `outputStyles`          | string\|array         | カスタム出力スタイルファイル/ディレクトリ（デフォルト `output-styles/` を置き換え）                                                                        | `"./styles/"`                                        |
-| `lspServers`            | string\|array\|object | コード知能（定義へ移動、参照を検索など）用の[Language Server Protocol](https://microsoft.github.io/language-server-protocol/)コンフィグ               | `"./.lsp.json"`                                      |
-| `experimental.themes`   | string\|array         | カラーテーマファイル/ディレクトリ（デフォルト `themes/` を置き換え）。[テーマ](#themes)を参照してください                                                           | `"./themes/"`                                        |
-| `experimental.monitors` | string\|array         | プラグインがアクティブな場合に自動的に開始されるバックグラウンド[Monitor](/docs/ja/tools-reference#monitor-tool)コンフィグ。[モニター](#monitors)を参照してください                | `"./monitors.json"`                                  |
-| `userConfig`            | object                | 有効化時にプロンプトされるユーザー設定可能な値。[ユーザー設定](#user-configuration)を参照してください                                                             | 以下を参照                                                |
-| `channels`              | array                 | メッセージ注入用のチャネル宣言（Telegram、Slack、Discord スタイル）。[チャネル](#channels)を参照してください                                                    | 以下を参照                                                |
-| `dependencies`          | array                 | このプラグインが必要とする他のプラグイン。オプションで semver バージョン制約付き。[プラグイン依存関係バージョンを制約する](/docs/ja/plugin-dependencies)を参照してください                       | `[{ "name": "secrets-vault", "version": "~2.1.0" }]` |
+| フィールド                   | 型                     | 説明                                                                                                                                                             | 例                                                    |
+| :---------------------- | :-------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------- | :--------------------------------------------------- |
+| `skills`                | string\|array         | `<name>/SKILL.md` を含むカスタムスキルディレクトリ。デフォルト `skills/` スキャンに追加されます。マーケットプレイスルート例外については[パス動作ルール](#path-behavior-rules)を参照してください                                     | `"./custom/skills/"`                                 |
+| `commands`              | string\|array         | カスタムフラット `.md` スキルファイルまたはディレクトリ（デフォルト `commands/` を置き換え）                                                                                                       | `"./custom/cmd.md"` または `["./cmd1.md"]`              |
+| `agents`                | string\|array         | カスタムエージェントファイル（デフォルト `agents/` を置き換え）                                                                                                                          | `"./custom/agents/reviewer.md"`                      |
+| `workflows`             | string\|array         | カスタム[ワークフロー](/docs/ja/workflows)スクリプトファイルまたはディレクトリ（デフォルト `workflows/` を置き換え）                                                                                        | `"./custom/workflows/"`                              |
+| `hooks`                 | string\|array\|object | フックコンフィグパスまたはインラインコンフィグ                                                                                                                                        | `"./my-extra-hooks.json"`                            |
+| `mcpServers`            | string\|array\|object | MCP コンフィグパスまたはインラインコンフィグ                                                                                                                                       | `"./my-extra-mcp-config.json"`                       |
+| `outputStyles`          | string\|array         | カスタム出力スタイルファイル/ディレクトリ（デフォルト `output-styles/` を置き換え）                                                                                                            | `"./styles/"`                                        |
+| `lspServers`            | string\|array\|object | コード知能（定義へ移動、参照を検索など）用の[Language Server Protocol](https://microsoft.github.io/language-server-protocol/)コンフィグ                                                   | `"./.lsp.json"`                                      |
+| `experimental.themes`   | string\|array         | カラーテーマファイル/ディレクトリ（デフォルト `themes/` を置き換え）。[テーマ](#themes)を参照してください                                                                                               | `"./themes/"`                                        |
+| `experimental.monitors` | string\|array         | プラグインがアクティブな場合に自動的に開始されるバックグラウンド[Monitor](/docs/ja/tools-reference#monitor-tool)コンフィグ。[モニター](#monitors)を参照してください                                                    | `"./monitors.json"`                                  |
+| `experimental.evals`    | string\|array         | プラグインルートの下のディレクトリ。プラグインの[eval ケース](/docs/ja/plugin-evals#use-a-different-eval-directory)を保持します。デフォルト `evals/` ではない場合。`claude plugin eval --eval-dir` はそれをオーバーライドします | `"quality/evals"`                                    |
+| `userConfig`            | object                | 有効化時にプロンプトされるユーザー設定可能な値。[ユーザー設定](#user-configuration)を参照してください                                                                                                 | 以下を参照                                                |
+| `channels`              | array                 | メッセージ注入用のチャネル宣言（Telegram、Slack、Discord スタイル）。[チャネル](#channels)を参照してください                                                                                        | 以下を参照                                                |
+| `dependencies`          | array                 | このプラグインが必要とする他のプラグイン。オプションで semver バージョン制約付き。[プラグイン依存関係バージョンを制約する](/docs/ja/plugin-dependencies)を参照してください                                                           | `[{ "name": "secrets-vault", "version": "~2.1.0" }]` |
 
 <h3 id="experimental-components">
   実験的コンポーネント
@@ -861,7 +863,7 @@ Claude Code はこの依存関係インストールを制約して、プラグ�
 * **ライフサイクルスクリプトなし:** `--ignore-scripts` は `preinstall`、`install`、および `postinstall` スクリプトが実行されないようにするため、これらのスクリプトでネイティブモジュールをビルドする依存関係はダウンロードされますが、このインストール中にはコンパイルされません。
 * **60 秒のタイムアウト:** Claude Code は実行時間が長いインストールを停止し、失敗として扱います。
 
-npm ソースプラグイン自体をフェッチすると、この依存関係インストールが実行される前に、ライフサイクルスクリプルが有効な状態で `npm install` が実行されます。
+npm ソースプラグイン自体をフェッチすると、この依存関係インストールが実行される前に、ライフサイクルスクリプトが有効な状態で `npm install` が実行されます。
 
 失敗またはスキップされたインストールはプラグインをブロックすることはありません。インストールが失敗した場合、または Claude Code が yarn または pnpm ロックファイルをスキップした場合、理由は [デバッグ出力](#debugging-commands)の警告として記録されます。`package.json` とロックファイルがないプラグインはログエントリなしでスキップされます。タイムアウトしたインストールは、キャッシュされたコピーに部分的な `node_modules` ツリーを残すことができます。
 
@@ -874,6 +876,8 @@ npm ソースプラグイン自体をフェッチすると、この依存関係�
 </h3>
 
 Claude Code はプラグインが独自のディレクトリ外のファイルを参照することを許可しません。プラグインルートの外に解決されるコンポーネントパスを拒否します。パスが `plugin.json` で宣言されているか、[マーケットプレイスエントリ](/docs/ja/plugin-marketplaces#plugin-entries)で宣言されているかに関わらず。これは、`../shared-utils` などのように書かれたプラグインの外を指すパス、および [1 つのマーケットプレイス内のリンク](#share-files-within-a-marketplace-with-symlinks)以外のプラグインの外につながるシンボリックリンクをカバーします。
+
+macOS と Linux では、Claude Code はコンポーネントパスにバックスラッシュが含まれている場合も拒否します。バックスラッシュパスで宣言されたコンポーネントは、Windows でのみロードされます。`./commands/deploy.md` などのようにフォワードスラッシュを使用してコンポーネントパスを記述してください。
 
 Claude Code がパスを拒否すると、[`path escapes plugin directory`](/docs/ja/errors#path-escapes-plugin-directory) エラーを報告し、そのコンポーネントなしでプラグインをロードします。
 
@@ -996,11 +1000,11 @@ Claude Code は、非対話的なプラグイン管理用の CLI コマンドを
 claude plugin init <name> [options]
 ```
 
-**引数:**
+コマンドは以下の引数を取ります:
 
 * `<name>`: プラグイン名。スキル名前空間と `~/.claude/skills/` の下のディレクトリ名になるため、スペースやパス区切り文字を含めることはできません。
 
-**オプション:**
+コマンドは以下のオプションを受け入れます:
 
 | オプション                    | 説明                                                                                          | デフォルト                   |
 | :----------------------- | :------------------------------------------------------------------------------------------ | :---------------------- |
@@ -1011,7 +1015,7 @@ claude plugin init <name> [options]
 | `-f, --force`            | ターゲットの既存 `.claude-plugin/` を上書きします                                                          |                         |
 | `-h, --help`             | コマンドのヘルプを表示                                                                                 |                         |
 
-**エイリアス:** `new`
+`claude plugin new` はこのコマンドのエイリアスです。
 
 各 `--with` 値は、そのコンポーネント用のスターターファイルを追加し、編集可能な状態にします:
 
@@ -1027,7 +1031,7 @@ claude plugin init <name> [options]
 
 スキャフォルドされたプラグインは、マーケットプレイスではなく `@skills-dir` ソースを使用します。管理者は `strictKnownMarketplaces` でこのソースをブロックするか、[管理設定](/docs/ja/plugin-marketplaces#managed-marketplace-restrictions)の `blockedMarketplaces` に `{"source": "skills-dir"}` を追加することでブロックできます。ブロックされている場合、`plugin init` は書き込み前に失敗します。
 
-**例:**
+これらの例は一般的な呼び出しを示しています:
 
 ```bash theme={null}
 # 最小限のプラグインをスキャフォルド
@@ -1050,22 +1054,31 @@ claude plugin init my-helper --force
 claude plugin install <plugin> [options]
 ```
 
-**引数:**
+コマンドは以下の引数を取ります:
 
 * `<plugin>`: プラグイン名、または特定のマーケットプレイス用の `plugin-name@marketplace-name`
 
-**オプション:**
+コマンドは以下のオプションを受け入れます:
 
 | オプション                  | 説明                                                                                                                                                                                                                                                                                                                                                                                       | デフォルト  |
 | :--------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----- |
 | `-s, --scope <scope>`  | インストールスコープ: `user`、`project`、または `local`                                                                                                                                                                                                                                                                                                                                                 | `user` |
 | `--config <key=value>` | プラグインのマニフェストで宣言された[`userConfig`](#user-configuration)オプションを設定します。複数のオプションを設定するにはフラグを繰り返します                                                                                                                                                                                                                                                                                               |        |
 | `-y, --yes`            | 確認プロンプトなしで、プラグインのマーケットプレイスが宣言するコマンドを受け入れます: [`command` ソース](/docs/ja/plugin-marketplaces#command-sources)を持つプラグインを生成するコマンド、またはアーカイブダウンロードを認証する[`headersHelper`](/docs/ja/plugin-marketplaces#authenticate-archive-downloads)。`headersHelper` を受け入れるには Claude Code v2.1.238 以降が必要です。Claude Code はまずコマンドを出力します。stdin または stdout が TTY でない場合は必須です。Claude Code セッション内では効果がないため、独自のターミナルからコマンドを実行してください |        |
+| `--json`               | 結果を stdout の最後の行に 1 つの JSON オブジェクトとして出力します。スクリプトで使用するための人間が読める形式の代わりに。[JSON 結果形式](#plugin-json-result)を参照してください。Claude Code v2.1.268 以降が必須です                                                                                                                                                                                                                                             |        |
 | `-h, --help`           | コマンドのヘルプを表示                                                                                                                                                                                                                                                                                                                                                                              |        |
 
 スコープは、インストールされたプラグインが追加される設定ファイルを決定します。たとえば、`--scope project` は .claude/settings.json の `enabledPlugins` に書き込み、プロジェクトリポジトリをクローンした全員がプラグインを利用できるようにします。
 
-**例:**
+<span id="plugin-json-result" />`--json` を使用すると、stdout の最後の行は 1 つの JSON オブジェクトです。マーケットプレイスが宣言するコマンドが前に出力される可能性があるため、その行のみを解析してください。3 つのフィールドは常に存在します:
+
+* `command`: 実行されたサブコマンド（`install` など）
+* `outcome`: `ok` または `failed`
+* `message`: 結果の人間が読める説明
+
+`pluginId`、`scope`、`failureCode` などの他のフィールドは、適用される場合にのみ表示されます。`plugin uninstall`、`plugin update`、`plugin enable`、および `plugin disable` の `--json` オプションは、そのサブコマンド独自のフィールドを持つ同じオブジェクトを出力します。`--scope` が無効な場合などの使用エラーは、結果行を出力せず、終了コード 1 で理由を stderr に出力します。
+
+これらの例は一般的な呼び出しを示しています:
 
 ```bash theme={null}
 # ユーザースコープにインストール（デフォルト）
@@ -1088,21 +1101,22 @@ claude plugin install formatter@my-marketplace --scope local
 claude plugin uninstall <plugin> [options]
 ```
 
-**引数:**
+コマンドは以下の引数を取ります:
 
 * `<plugin>`: プラグイン名、または `plugin-name@marketplace-name`
 
-**オプション:**
+コマンドは以下のオプションを受け入れます:
 
-| オプション                 | 説明                                                                 | デフォルト  |
-| :-------------------- | :----------------------------------------------------------------- | :----- |
-| `-s, --scope <scope>` | スコープからアンインストール: `user`、`project`、または `local`                       | `user` |
-| `--keep-data`         | プラグインの[永続データディレクトリ](#persistent-data-directory)を保持します              |        |
-| `--prune`             | 他のプラグインが必要としない自動インストール依存関係も削除します。[plugin prune](#plugin-prune) を参照 |        |
-| `-y, --yes`           | `--prune` 確認プロンプトをスキップします。stdin または stdout が TTY でない場合は必須          |        |
-| `-h, --help`          | コマンドのヘルプを表示                                                        |        |
+| オプション                 | 説明                                                                                                                                                     | デフォルト  |
+| :-------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------- | :----- |
+| `-s, --scope <scope>` | スコープからアンインストール: `user`、`project`、または `local`                                                                                                           | `user` |
+| `--keep-data`         | プラグインの[永続データディレクトリ](#persistent-data-directory)を保持します                                                                                                  |        |
+| `--prune`             | 他のプラグインが必要としない自動インストール依存関係も削除します。[plugin prune](#plugin-prune) を参照                                                                                     |        |
+| `-y, --yes`           | `--prune` 確認プロンプトをスキップします。stdin または stdout が TTY でない場合は必須                                                                                              |        |
+| `--json`              | 結果を stdout の最後の行に 1 つの JSON オブジェクトとして出力します。[`plugin install --json`](#plugin-json-result)と同じ形式で。`--prune` と組み合わせることはできません。Claude Code v2.1.268 以降が必須です |        |
+| `-h, --help`          | コマンドのヘルプを表示                                                                                                                                            |        |
 
-**エイリアス:** `remove`、`rm`
+`claude plugin remove` と `claude plugin rm` はこのコマンドのエイリアスです。
 
 デフォルトでは、最後に残ったスコープからアンインストールすると、プラグインの `${CLAUDE_PLUGIN_DATA}` ディレクトリも削除されます。新しいバージョンをテストした後に再インストールする場合など、保持するには `--keep-data` を使用します。
 
@@ -1120,7 +1134,7 @@ claude plugin uninstall <plugin> [options]
 claude plugin prune [options]
 ```
 
-**オプション:**
+コマンドは以下のオプションを受け入れます:
 
 | オプション                 | 説明                                              | デフォルト  |
 | :-------------------- | :---------------------------------------------- | :----- |
@@ -1129,7 +1143,7 @@ claude plugin prune [options]
 | `-y, --yes`           | 確認プロンプトをスキップします。stdin または stdout が TTY でない場合は必須 |        |
 | `-h, --help`          | コマンドのヘルプを表示                                     |        |
 
-**エイリアス:** `autoremove`
+`claude plugin autoremove` はこのコマンドのエイリアスです。
 
 コマンドは孤立した依存関係をリストし、削除前に確認を求めます。プラグインを削除し、その依存関係をワンステップでクリーンアップするには、`claude plugin uninstall <plugin> --prune` を実行します。
 
@@ -1143,16 +1157,17 @@ claude plugin prune [options]
 claude plugin enable <plugin> [options]
 ```
 
-**引数:**
+コマンドは以下の引数を取ります:
 
 * `<plugin>`: プラグイン名、または `plugin-name@marketplace-name`
 
-**オプション:**
+コマンドは以下のオプションを受け入れます:
 
-| オプション                 | 説明                                                                                      | デフォルト |
-| :-------------------- | :-------------------------------------------------------------------------------------- | :---- |
-| `-s, --scope <scope>` | 有効にするスコープ: `user`、`project`、または `local`。省略した場合、Claude Code はプラグインがインストールされているスコープを検出します | 自動検出  |
-| `-h, --help`          | コマンドのヘルプを表示                                                                             |       |
+| オプション                 | 説明                                                                                                                           | デフォルト |
+| :-------------------- | :--------------------------------------------------------------------------------------------------------------------------- | :---- |
+| `-s, --scope <scope>` | 有効にするスコープ: `user`、`project`、または `local`。省略した場合、Claude Code はプラグインがインストールされているスコープを検出します                                      | 自動検出  |
+| `--json`              | 結果を stdout の最後の行に 1 つの JSON オブジェクトとして出力します。[`plugin install --json`](#plugin-json-result)と同じ形式で。Claude Code v2.1.268 以降が必須です |       |
+| `-h, --help`          | コマンドのヘルプを表示                                                                                                                  |       |
 
 <h3 id="plugin-disable">
   plugin disable
@@ -1164,17 +1179,18 @@ claude plugin enable <plugin> [options]
 claude plugin disable [plugin] [options]
 ```
 
-**引数:**
+コマンドは以下の引数を取ります:
 
 * `[plugin]`: プラグイン名、または `plugin-name@marketplace-name`。`--all` を使用する場合はオプション
 
-**オプション:**
+コマンドは以下のオプションを受け入れます:
 
-| オプション                 | 説明                                                                                      | デフォルト |
-| :-------------------- | :-------------------------------------------------------------------------------------- | :---- |
-| `-a, --all`           | すべての有効なプラグインを無効にします。`--scope` と組み合わせることはできません                                           |       |
-| `-s, --scope <scope>` | 無効にするスコープ: `user`、`project`、または `local`。省略した場合、Claude Code はプラグインがインストールされているスコープを検出します | 自動検出  |
-| `-h, --help`          | コマンドのヘルプを表示                                                                             |       |
+| オプション                 | 説明                                                                                                                           | デフォルト |
+| :-------------------- | :--------------------------------------------------------------------------------------------------------------------------- | :---- |
+| `-a, --all`           | すべての有効なプラグインを無効にします。`--scope` と組み合わせることはできません                                                                                |       |
+| `-s, --scope <scope>` | 無効にするスコープ: `user`、`project`、または `local`。省略した場合、Claude Code はプラグインがインストールされているスコープを検出します                                      | 自動検出  |
+| `--json`              | 結果を stdout の最後の行に 1 つの JSON オブジェクトとして出力します。[`plugin install --json`](#plugin-json-result)と同じ形式で。Claude Code v2.1.268 以降が必須です |       |
+| `-h, --help`          | コマンドのヘルプを表示                                                                                                                  |       |
 
 <h3 id="plugin-update">
   plugin update
@@ -1186,16 +1202,17 @@ claude plugin disable [plugin] [options]
 claude plugin update <plugin> [options]
 ```
 
-**引数:**
+コマンドは以下の引数を取ります:
 
 * `<plugin>`: プラグイン名、または `plugin-name@marketplace-name`
 
-**オプション:**
+コマンドは以下のオプションを受け入れます:
 
 | オプション                 | 説明                                                                                                                                                                                                                                                                                                                                                                                       | デフォルト  |
 | :-------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----- |
 | `-s, --scope <scope>` | 更新するスコープ: `user`、`project`、`local`、または `managed`                                                                                                                                                                                                                                                                                                                                         | `user` |
 | `-y, --yes`           | 確認プロンプトなしで、プラグインのマーケットプレイスが宣言するコマンドを受け入れます: [`command` ソース](/docs/ja/plugin-marketplaces#command-sources)を持つプラグインを生成するコマンド、またはアーカイブダウンロードを認証する[`headersHelper`](/docs/ja/plugin-marketplaces#authenticate-archive-downloads)。`headersHelper` を受け入れるには Claude Code v2.1.238 以降が必要です。Claude Code はまずコマンドを出力します。stdin または stdout が TTY でない場合は必須です。Claude Code セッション内では効果がないため、独自のターミナルからコマンドを実行してください |        |
+| `--json`              | 結果を stdout の最後の行に 1 つの JSON オブジェクトとして出力します。[`plugin install --json`](#plugin-json-result)と同じ形式で。Claude Code v2.1.268 以降が必須です                                                                                                                                                                                                                                                             |        |
 | `-h, --help`          | コマンドのヘルプを表示                                                                                                                                                                                                                                                                                                                                                                              |        |
 
 <Note>
@@ -1214,13 +1231,13 @@ claude plugin update <plugin> [options]
 claude plugin list [options]
 ```
 
-**オプション:**
+コマンドは以下のオプションを受け入れます:
 
-| オプション         | 説明                                      | デフォルト |
-| :------------ | :-------------------------------------- | :---- |
-| `--json`      | JSON として出力                              |       |
-| `--available` | マーケットプレイスから利用可能なプラグインを含めます。`--json` が必須 |       |
-| `-h, --help`  | コマンドのヘルプを表示                             |       |
+| オプション         | 説明                                                                                                                                                                                                          | デフォルト |
+| :------------ | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :---- |
+| `--json`      | JSON として出力します。読み込み問題またはオーサリング警告を含むプラグイン行は `errors` または `notes` 文字列配列を含みます。Claude Code v2.1.268 以降では、並列 `errorDetails` および `noteDetails` 配列は各エントリの診断 `type` と、プラグイン、マーケットプレイス、サーバー、またはファイルなど、それが参照する名前を提供します |       |
+| `--available` | マーケットプレイスから利用可能なプラグインを含めます。`--json` が必須                                                                                                                                                                     |       |
+| `-h, --help`  | コマンドのヘルプを表示                                                                                                                                                                                                 |       |
 
 対話的セッション内では、`/plugin list` は同様のリストをインラインで出力しますが、マーケットプレイスからインストールされたプラグインのみをカバーします:
 
@@ -1240,11 +1257,11 @@ claude plugin list [options]
 claude plugin details <name>
 ```
 
-**引数:**
+コマンドは以下の引数を取ります:
 
 * `<name>`: プラグイン名、または `plugin-name@marketplace-name`
 
-**オプション:**
+コマンドは以下のオプションを受け入れます:
 
 | オプション        | 説明          | デフォルト |
 | :----------- | :---------- | :---- |
@@ -1295,11 +1312,11 @@ Per-component (rounded)
 claude plugin validate <path> [options]
 ```
 
-**引数:**
+コマンドは以下の引数を取ります:
 
 * `<path>`: プラグインディレクトリまたはマーケットプレイスディレクトリへのパス。プラグイン実行がカバーするファイルについては、[マニフェストなしでプラグインまたはディレクトリを検証](/docs/ja/plugin-marketplaces#validate-a-plugin-or-a-directory-without-a-manifest)を参照してください。
 
-**オプション:**
+コマンドは以下のオプションを受け入れます:
 
 | オプション        | 説明                                                                                                 | デフォルト |
 | :----------- | :------------------------------------------------------------------------------------------------- | :---- |
@@ -1319,6 +1336,59 @@ claude plugin validate <path> [options]
 
 対話的セッション内では、`/plugin validate <path>` は同じチェックをインラインで実行します。
 
+<h3 id="plugin-eval">
+  plugin eval
+</h3>
+
+プラグインの[eval ケース](/docs/ja/plugin-evals)を実行し、スコア付き結果をレポートします。Claude Code v2.1.269 以降が必須です。各ケースはプロンプトとグレーダーです。Claude Code はターゲットプラグインのみが読み込まれた分離されたセッションで複数回実行し、デフォルトではプラグインなしでも実行するため、レポートは差を示します。ケース形式、グレーダー、結果、および CI 使用については、[プラグインを eval でテストする](/docs/ja/plugin-evals)を参照してください。
+
+```bash theme={null}
+claude plugin eval [target] [options]
+```
+
+オプションの `target` は、プラグインディレクトリ、単一の `prompt.md` または `case.yaml` ファイル、`name` または `name@marketplace` としてインストールされたプラグイン、または `name@skills-dir` であり、デフォルトは現在のディレクトリです。`--tag`、`--allow-tools`、および `--json` の前に配置します。
+
+このテーブルは、ほとんどの実行が使用するオプションをリストします。`claude plugin eval --help` を実行して、`--case`、`--tag`、`--output-dir`、`--report`、`--allow-real-servers`、`--keep-temp`、および `--verbose` を含む完全なセットを確認してください。
+
+| オプション                      | 説明                                                                                                                                  | デフォルト                                                                        |
+| :------------------------- | :---------------------------------------------------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------- |
+| `--runs <n>`               | アーム当たりケース当たりの実行                                                                                                                     | 各ケースの `runs`、それ以外は 3                                                         |
+| `-j, --concurrency <n>`    | 一度に実行するエージェントセッション、1 から 8。レート制限を共有します                                                                                               | `1`                                                                          |
+| `--model <model>`          | テスト対象のエージェント用モデル                                                                                                                    | 各ケースの `model`、それ以外は `ANTHROPIC_MODEL` が設定されている場合はそれ、それ以外は Claude Code のデフォルト |
+| `--judge-model <model>`    | `llm` および `baseline` グレーダー用モデル                                                                                                      | 小さく高速なモデル                                                                    |
+| `--ablation <mode>`        | `none` または `with-without`。[プラグインなしベースラインと比較する](/docs/ja/plugin-evals#compare-against-a-no-plugin-baseline)を参照                            | プラグインが解決される場合は `with-without`、それ以外は `none`                                   |
+| `--threshold <0..1>`       | いずれかのケースがこれ以下でスコアされた場合は終了コード 1                                                                                                      | `1.0`                                                                        |
+| `--max-cost-usd <usd>`     | 支出がこれに達したら次の実行前に停止し、終了コード 2 を返し、部分的な結果をレポート                                                                                         | 上限なし                                                                         |
+| `--allow-tools <tools...>` | `Bash`、`Write`、`Edit`、または `"mcp__plugin_<plugin>_<server>__*"` など、読み取り専用セット以外のツールを付与します。[ツールを付与する](/docs/ja/plugin-evals#grant-tools)を参照 |                                                                              |
+| `--scaffold`               | 各ケースの[`scaffold_script`](/docs/ja/plugin-evals#add-setup-or-history-with-case-yaml)を実行                                                   | オフ                                                                           |
+| `--trust-plugin`           | 最初の実行信頼プロンプトをスキップします。CI 用。[実行がアクセスできるもの](/docs/ja/plugin-evals#security)を参照                                                              | オフ                                                                           |
+| `--mocks <mode>`           | `record` または `off`。[MCP サーバーをモック](/docs/ja/plugin-evals#mock-mcp-servers)を参照                                                             | `record`                                                                     |
+| `--eval-dir <dir>`         | ケースを保持するプラグイン下のディレクトリ                                                                                                               | マニフェストの `experimental.evals`、それ以外は `evals`                                   |
+| `--json [path]`            | [結果ドキュメント](/docs/ja/plugin-evals#json-result)を stdout に出力するか、`.json` パスに書き込み                                                             |                                                                              |
+| `--no-publish`             | HTML レポートをローカルに保持                                                                                                                   |                                                                              |
+| `-h, --help`               | コマンドのヘルプを表示                                                                                                                         |                                                                              |
+
+コマンドは、すべてのケースがしきい値を満たす場合は終了コード 0、失敗したケース、読み込みエラー、または信頼されていないプラグインディレクトリの場合は 1、部分的な実行の場合は 2、中断された場合は 130、終了された場合は 143 で終了します。[CI で eval を実行する](/docs/ja/plugin-evals#run-evals-in-ci)を参照してください。
+
+<h3 id="plugin-eval-init">
+  plugin eval init
+</h3>
+
+現在のディレクトリのプラグイン用の eval スイートを作成します。Claude Code v2.1.269 以降が必須です。ターミナルでは、これはプラグインを読み取り、ケースとグレーダーを提案し、それらをパイロットし、ファイルを書き込むオーサリングインタビューを開始します。`--bare` を使用するか、ターミナルなしで、代わりに空白の単一ケーステンプレートを書き込みます。対話的な Claude Code セッション内から実行すると、そのセッションが従うべきインタビュー指示を出力します。[最初の eval スイートを作成する](/docs/ja/plugin-evals#create-your-first-eval-suite)を参照してください。
+
+```bash theme={null}
+claude plugin eval init [name] [options]
+```
+
+オプションの `name` はケース名です: インタビューは 1 つを必要としませんが、`--bare` とターミナルなしテンプレートパスはそれを必要とします。これらのオプションを受け入れます:
+
+| オプション               | 説明                                                          | デフォルト                                      |
+| :------------------ | :---------------------------------------------------------- | :----------------------------------------- |
+| `--bare`            | `<name>` の代わりに空白の `prompt.md` と `graders/criteria.md` を書き込み |                                            |
+| `-i, --interactive` | インタビューを必須にします。テンプレートを書き込む代わりにターミナルなしで失敗                     |                                            |
+| `--eval-dir <dir>`  | ケースを書き込む現在のディレクトリ下のディレクトリ                                   | マニフェストの `experimental.evals`、それ以外は `evals` |
+| `-h, --help`        | コマンドのヘルプを表示                                                 |                                            |
+
 <h3 id="plugin-tag">
   plugin tag
 </h3>
@@ -1329,11 +1399,11 @@ claude plugin validate <path> [options]
 claude plugin tag [path] [options]
 ```
 
-**引数:**
+コマンドは以下の引数を取ります:
 
 * `[path]`: プラグインディレクトリへのパス。デフォルトは現在のディレクトリです。
 
-**オプション:**
+コマンドは以下のオプションを受け入れます:
 
 | オプション                 | 説明                                           | デフォルト    |
 | :-------------------- | :------------------------------------------- | :------- |

@@ -14,22 +14,22 @@ Desktop アプリの **Routines** ページでは、ローカルスケジュー�
   スケジュール設定オプションの比較
 </h2>
 
-Claude Code offers three ways to schedule recurring or one-off work:
+Claude Code は、定期的または 1 回限りの作業をスケジュールするための 3 つの方法を提供します。
 
-|                            | [Cloud](/docs/en/routines)               | [Desktop](/docs/en/desktop-scheduled-tasks) | [`/loop`](/docs/en/scheduled-tasks)                                             |
-| :------------------------- | :---------------------------------- | :------------------------------------- | :------------------------------------------------------------------------- |
-| Runs on                    | Cloud, Anthropic-managed by default | Your machine                           | Your machine                                                               |
-| Requires machine on        | No                                  | Yes                                    | Yes                                                                        |
-| Requires open session      | No                                  | No                                     | Yes                                                                        |
-| Persistent across restarts | Yes                                 | Yes                                    | Restored on `--resume`, with [exceptions](/docs/en/scheduled-tasks#limitations) |
-| Access to local files      | No (fresh clone)                    | Yes                                    | Yes                                                                        |
-| MCP servers                | Connectors configured per task      | [Config files](/docs/en/mcp) and connectors | Inherits from session                                                      |
-| Permission prompts         | No (runs autonomously)              | Configurable per task                  | Inherits from session                                                      |
-| Customizable schedule      | Via `/schedule` in the CLI          | Yes                                    | Yes                                                                        |
-| Minimum interval           | 1 hour                              | 1 minute                               | 1 minute                                                                   |
+|                 | [Cloud](/docs/ja/routines)      | [Desktop](/docs/ja/desktop-scheduled-tasks) | [`/loop`](/docs/ja/scheduled-tasks)                         |
+| :-------------- | :------------------------- | :------------------------------------- | :----------------------------------------------------- |
+| 実行場所            | Cloud、デフォルトでは Anthropic 管理 | お客様のマシン                                | お客様のマシン                                                |
+| マシンの起動が必要       | いいえ                        | はい                                     | はい                                                     |
+| オープンセッションが必要    | いいえ                        | いいえ                                    | はい                                                     |
+| 再起動後も永続         | はい                         | はい                                     | `--resume` で復元、[例外](/docs/ja/scheduled-tasks#limitations)あり |
+| ローカルファイルへのアクセス  | いいえ（新規クローン）                | はい                                     | はい                                                     |
+| MCP サーバー        | タスクごとに設定されたコネクタ            | [設定ファイル](/docs/ja/mcp)とコネクタ                 | セッションから継承                                              |
+| 権限プロンプト         | いいえ（自律的に実行）                | タスクごとに設定可能                             | セッションから継承                                              |
+| カスタマイズ可能なスケジュール | CLI の `/schedule` 経由       | はい                                     | はい                                                     |
+| 最小間隔            | 1 時間                       | 1 分                                    | 1 分                                                    |
 
 <Tip>
-  Use **cloud tasks** for work that should run reliably without your machine. Use **Desktop tasks** when you need access to local files and tools. Use **`/loop`** for quick polling during a session.
+  マシンなしで確実に実行する必要がある作業には**クラウドタスク**を使用します。ローカルファイルとツールへのアクセスが必要な場合は**デスクトップタスク**を使用します。セッション中の迅速なポーリングには\*\*`/loop`\*\*を使用します。
 </Tip>
 
 <Note>

@@ -69,6 +69,8 @@
 | `OAuth token revoked` / `OAuth token has expired`                                                                                                                                                     | [認証](#oauth-token-revoked-or-expired)                                                             |
 | `API Error: 401 Invalid authentication credentials`                                                                                                                                                   | [認証](#api-error-401-invalid-authentication-credentials)                                           |
 | `Login expired · Please run /login`                                                                                                                                                                   | [認証](#login-expired)                                                                              |
+| `Not signed in to the Cloud gateway — run /login.`                                                                                                                                                    | [認証](#administrator-policy-requires-a-cloud-gateway-sign-in)                                      |
+| `Administrator policy requires a Cloud gateway sign-in on this machine`                                                                                                                               | [認証](#administrator-policy-requires-a-cloud-gateway-sign-in)                                      |
 | `Failed to authenticate: OAuth session expired and could not be refreshed`                                                                                                                            | [認証](#login-expired)                                                                              |
 | `Your account is on hold and can't use Claude Code. View details or appeal: https://claude.ai/restricted`                                                                                             | [認証](#your-account-is-on-hold)                                                                    |
 | `Your account is on hold and can't sign in to Claude Code. View details or appeal: https://claude.ai/restricted`                                                                                      | [認証](#your-account-is-on-hold)                                                                    |
@@ -81,8 +83,11 @@
 | `Cloud gateway <url> no longer accepts this session`                                                                                                                                                  | [認証](#cloud-gateway-session-expired)                                                              |
 | `AWS credentials expired or invalid`                                                                                                                                                                  | [認証](#aws-credentials-expired-or-invalid)                                                         |
 | `AWS authentication failed`                                                                                                                                                                           | [認証](#aws-authentication-failed)                                                                  |
+| `Could not load AWS credentials` / `Could not load Google Cloud credentials`                                                                                                                          | [認証](#could-not-load-aws-or-google-cloud-credentials)                                             |
 | `AWS default-chain credential resolve timed out`                                                                                                                                                      | [認証](#aws-default-chain-credential-resolve-timed-out)                                             |
-| `Could not load the default credentials` on Google Cloud's Agent Platform                                                                                                                             | [自動再試行](#automatic-retries)                                                                       |
+| `Timed out after 60s waiting for AWS`                                                                                                                                                                 | [認証](#bedrock-setup-verification-timed-out-waiting-for-aws)                                       |
+| `A request to AWS timed out. Check your network and proxy settings, then try again.`                                                                                                                  | [認証](#bedrock-setup-verification-timed-out-waiting-for-aws)                                       |
+| `Could not load the default credentials` on Google Cloud's Agent Platform                                                                                                                             | [認証](#could-not-load-aws-or-google-cloud-credentials)                                             |
 | `Unable to connect to API`                                                                                                                                                                            | [ネットワーク](#unable-to-connect-to-api)                                                               |
 | `Connection refused —` / `Can't reach the API server —` / `No internet route —` / `Couldn't connect through your proxy` / `Connection dropped`、各々括弧内のエラーコードで終わる                                       | [ネットワーク](#unable-to-connect-to-api)                                                               |
 | `Unable to connect to Anthropic services` during setup                                                                                                                                                | [ネットワーク](#unable-to-connect-to-anthropic-services)                                                |
@@ -93,6 +98,7 @@
 | `Bedrock streaming response has content-type "..."; expected "application/vnd.amazon.eventstream"`                                                                                                    | [ネットワーク](#bedrock-streaming-response-has-an-unexpected-content-type)                              |
 | `SSL certificate verification failed`                                                                                                                                                                 | [ネットワーク](#ssl-certificate-errors)                                                                 |
 | `SSL certificate error (...)` during login or startup                                                                                                                                                 | [ネットワーク](#ssl-certificate-errors)                                                                 |
+| `unable to get local issuer certificate`                                                                                                                                                              | [ネットワーク](#ssl-certificate-errors)                                                                 |
 | `403` with `x-deny-reason: host_not_allowed` in a cloud or routine session                                                                                                                            | [ネットワーク](#host-not-allowed-in-a-cloud-session)                                                    |
 | `proxy refused the connection`                                                                                                                                                                        | [ネットワーク](#the-proxy-refused-the-connection)                                                       |
 | `403` with `This GraphQL query is not enabled for this session` in a cloud session                                                                                                                    | [GitHub proxy](/docs/ja/cloud-environments#github-proxy)                                               |
@@ -109,6 +115,7 @@
 | `upstream rejected the request` / `request too large for this upstream` on a Claude apps gateway session                                                                                              | [Upstream error messages](/docs/ja/claude-apps-gateway-config#upstream-error-messages)                 |
 | `upstream rate limit exceeded` on a Claude apps gateway session                                                                                                                                       | [Upstream error messages](/docs/ja/claude-apps-gateway-config#upstream-error-messages)                 |
 | `all upstreams failed (N attempted)` on a Claude apps gateway session                                                                                                                                 | [Upstream error messages](/docs/ja/claude-apps-gateway-config#upstream-error-messages)                 |
+| `Claude Code may not be enabled for your organization` after a Claude apps gateway sign-in                                                                                                            | [Claude apps gateway troubleshooting](/docs/ja/claude-apps-gateway-deploy#troubleshooting)             |
 | `Context exceeds the ...-token limit by ... tokens` in `/context` output                                                                                                                              | [リクエストエラー](#context-exceeds-the-token-limit)                                                      |
 | `Error during compaction: Conversation too long`                                                                                                                                                      | [リクエストエラー](#error-during-compaction-conversation-too-long)                                        |
 | `Request too large`                                                                                                                                                                                   | [リクエストエラー](#request-too-large)                                                                    |
@@ -120,10 +127,13 @@
 | `API Error: 400 ... tools.N.custom.input_schema: JSON schema is invalid` / `Property keys should match pattern`                                                                                       | [リクエストエラー](#tool-input-schema-is-invalid)                                                         |
 | `There's an issue with the selected model`                                                                                                                                                            | [リクエストエラー](#theres-an-issue-with-the-selected-model)                                              |
 | `Model ... is not a recognized model id`                                                                                                                                                              | [リクエストエラー](#model-is-not-a-recognized-model-id)                                                   |
+| `Model ... not found`                                                                                                                                                                                 | [リクエストエラー](#model-not-found)                                                                      |
 | `Claude Opus is not available with the Claude Pro plan`                                                                                                                                               | [リクエストエラー](#claude-opus-is-not-available-with-the-claude-pro-plan)                                |
 | `Claude Code ... does not support this model; version ... or newer is required`                                                                                                                       | [リクエストエラー](#claude-code-does-not-support-this-model)                                              |
+| `Claude Code ... is older than the minimum version required by your organization's policy`                                                                                                            | [リクエストエラー](#claude-code-does-not-support-this-model)                                              |
 | `Model ... is restricted by your organization's settings`                                                                                                                                             | [リクエストエラー](#model-is-restricted-by-your-organizations-settings)                                   |
 | `Model switch ... blocked by a PreModelSwitch hook`                                                                                                                                                   | [リクエストエラー](#model-switch-was-blocked-by-a-premodelswitch-hook)                                    |
+| `couldn't save it as your default` / `couldn't confirm it was saved as your default`                                                                                                                  | [リクエストエラー](#couldnt-save-it-as-your-default)                                                      |
 | `thinking.type.enabled is not supported for this model`                                                                                                                                               | [リクエストエラー](#thinking-type-enabled-is-not-supported-for-this-model)                                |
 | `Effort '<level>' isn't available with thinking turned off on this model`                                                                                                                             | [リクエストエラー](#effort-isnt-available-with-thinking-turned-off)                                       |
 | `effort '<level>' is not supported when thinking is disabled`                                                                                                                                         | [リクエストエラー](#effort-isnt-available-with-thinking-turned-off)                                       |
@@ -144,20 +154,25 @@
 | `Error: Invalid --agents configuration:`                                                                                                                                                              | [コマンドラインエラー](#invalid-agents-configuration)                                                       |
 | `Error: Settings file exceeds the 2MiB limit`                                                                                                                                                         | [コマンドラインエラー](#settings-file-exceeds-the-2mib-limit)                                               |
 | `The current directory no longer exists (it was deleted or moved)` / `Can't read the current directory`                                                                                               | [コマンドラインエラー](#the-current-directory-no-longer-exists)                                             |
+| `couldn't be resolved to a real location, so its skills, commands, and agents weren't loaded`                                                                                                         | [コマンドラインエラー](#directory-couldnt-be-resolved-to-a-real-location)                                   |
 | `Error: Workspace not trusted` when starting Remote Control                                                                                                                                           | [コマンドラインエラー](#workspace-not-trusted-when-starting-remote-control)                                 |
 | `` `<flag>` before `remote-control` is not carried over to the sessions Remote Control starts ``                                                                                                      | [コマンドラインエラー](#not-carried-over-to-the-sessions-remote-control-starts)                             |
 | `` `claude import` is not yet available in this build ``                                                                                                                                              | [コマンドラインエラー](#claude-import-is-not-yet-available-in-this-build)                                   |
 | `Could not read Claude Code config`                                                                                                                                                                   | [コマンドラインエラー](#could-not-read-claude-code-config)                                                  |
 | `Could not import <server>: <reason>`                                                                                                                                                                 | [コマンドラインエラー](#could-not-import-a-server-from-claude-desktop)                                      |
+| `Cannot add MCP server to scope: managed`                                                                                                                                                             | [コマンドラインエラー](#cannot-add-mcp-server-to-the-managed-scope)                                         |
 | `is Anthropic-hosted and doesn't support local OAuth`                                                                                                                                                 | [コマンドラインエラー](#anthropic-hosted-and-doesnt-support-local-oauth)                                    |
+| `Can't read .mcp.json: it isn't a regular file or is larger than 2097152 bytes`                                                                                                                       | [コマンドラインエラー](#cant-read-mcp-json)                                                                 |
 | `Server rejected the Authorization header minted by the configured headersHelper`                                                                                                                     | [コマンドラインエラー](#server-rejected-the-authorization-header-minted-by-the-configured-headershelper)    |
 | `Error: MCP tool <name> (passed via --permission-prompt-tool) not found`                                                                                                                              | [コマンドラインエラー](#mcp-permission-prompt-tool-not-found)                                               |
+| `OAuth callback port <port> is already in use — another process may be holding it`                                                                                                                    | [コマンドラインエラー](#oauth-callback-port-is-already-in-use)                                              |
 | `Shell command failed for pattern "..."`, from `/security-review` or any skill that injects dynamic context                                                                                           | [コマンドラインエラー](#security-review-fails-without-origin-head)                                          |
 | `Shell command permission check failed for pattern "..."`, from a skill that injects dynamic context                                                                                                  | [コマンドラインエラー](#security-review-fails-without-origin-head)                                          |
 | ``Skill <name> requires bash (`shell: bash` in frontmatter) but Git Bash was not found``                                                                                                              | [コマンドラインエラー](#security-review-fails-without-origin-head)                                          |
 | `Input must be provided either through stdin or as a prompt argument when using --print`                                                                                                              | [コマンドラインエラー](#input-must-be-provided-when-using-print)                                            |
 | `Error: Input contained only whitespace`                                                                                                                                                              | [コマンドラインエラー](#input-contained-only-whitespace)                                                    |
 | `Blank prompt — the message was only whitespace, so nothing was sent to the model.`                                                                                                                   | [コマンドラインエラー](#input-contained-only-whitespace)                                                    |
+| `Error: stream-json input carried over 256M characters with no newline`                                                                                                                               | [コマンドラインエラー](#stream-json-input-carried-over-256m-characters-with-no-newline)                     |
 | `Unknown command: /<name>`, with or without a `Did you mean` suggestion                                                                                                                               | [コマンドラインエラー](#unknown-command)                                                                    |
 | `Diff is too large for ultrareview` / `PR #<N> is too large for ultrareview`                                                                                                                          | [コマンドラインエラー](#diff-is-too-large-for-ultrareview)                                                  |
 | `Could not find merge-base with <branch>`                                                                                                                                                             | [コマンドラインエラー](#could-not-find-merge-base-with-the-base-branch)                                     |
@@ -172,12 +187,16 @@
 | `Couldn't read your Zed keymap` / `Couldn't back up your Zed keymap` / `Couldn't update your Zed keymap`                                                                                              | [コマンドラインエラー](#terminal-setup-left-your-zed-keymap-unchanged)                                      |
 | `Your Zed keymap isn't a readable list of keybindings`                                                                                                                                                | [コマンドラインエラー](#terminal-setup-left-your-zed-keymap-unchanged)                                      |
 | `Skill usage reports are not available on this connection.`                                                                                                                                           | [コマンドラインエラー](#skill-usage-reports-are-not-available-on-this-connection)                           |
+| `` `plugin eval` is currently in early access `` / `` `plugin eval` is currently unavailable ``                                                                                                       | [プラグインエラー](#plugin-eval-is-currently-in-early-access)                                             |
 | `Marketplace "<name>" is registered from an untrusted source`                                                                                                                                         | [プラグインエラー](#marketplace-is-registered-from-an-untrusted-source)                                   |
 | `references ${user_config.*} in a shell-form command`                                                                                                                                                 | [プラグインエラー](#plugin-command-references-user-config)                                                |
 | `Monitor "<name>" from plugin <plugin> references ${user_config.*} in its command`                                                                                                                    | [プラグインエラー](#plugin-command-references-user-config)                                                |
 | `headersHelper for MCP server '<name>' references ${user_config.*}`                                                                                                                                   | [プラグインエラー](#plugin-command-references-user-config)                                                |
 | `Plugin archive integrity check failed`                                                                                                                                                               | [プラグインエラー](#plugin-archive-integrity-check-failed)                                                |
 | `path escapes plugin directory`                                                                                                                                                                       | [プラグインエラー](#path-escapes-plugin-directory)                                                        |
+| `path could not be checked`                                                                                                                                                                           | [プラグインエラー](#path-could-not-be-checked)                                                            |
+| `its marketplace entry path does not stay inside the marketplace directory`                                                                                                                           | [プラグインエラー](#marketplace-entry-path-does-not-stay-inside-the-marketplace-directory)                |
+| `Plugin source path refused`                                                                                                                                                                          | [プラグインエラー](#marketplace-entry-path-does-not-stay-inside-the-marketplace-directory)                |
 | `Failed to load marketplace configuration`                                                                                                                                                            | [プラグインエラー](#failed-to-load-marketplace-configuration)                                             |
 | `Marketplace configuration file is corrupted`                                                                                                                                                         | [プラグインエラー](#failed-to-load-marketplace-configuration)                                             |
 | `would be spawned with zero tools — refusing`                                                                                                                                                         | [ツールエラー](#agent-would-be-spawned-with-zero-tools)                                                 |
@@ -198,6 +217,9 @@
 | `Refusing to search <path>: a path one of its Read deny rules is written through changed while the search was being prepared` / `Refusing to search <path>: it could not be opened`                   | [ツールエラー](#refusing-after-a-symlink-changed)                                                       |
 | `its permission check expired before it ran (too many concurrent file operations)` / `ripgrep was found only by name on PATH`                                                                         | [ツールエラー](#refusing-after-a-symlink-changed)                                                       |
 | `task output swap refused (tasks dir moved or linked)`                                                                                                                                                | [ツールエラー](#task-output-swap-refused)                                                               |
+| `Command killed: its output file was replaced or could no longer be verified`                                                                                                                         | [ツールエラー](#task-output-swap-refused)                                                               |
+| `the source file is not valid UTF-8 text` / `the source file is not valid UTF-16 text`                                                                                                                | [ツールエラー](#the-source-file-is-not-valid-utf-8-text)                                                |
+| `the source file has the replacement character U+FFFD`                                                                                                                                                | [ツールエラー](#the-source-file-is-not-valid-utf-8-text)                                                |
 | `Can't open MCP settings while no terminal is attached to this background session`                                                                                                                    | [バックグラウンドセッションエラー](#commands-refused-in-a-background-session)                                     |
 | `Can't open MCP settings in a background session`                                                                                                                                                     | [バックグラウンドセッションエラー](#commands-refused-in-a-background-session)                                     |
 | `blocked because the path is spelled in a form that cannot be safely resolved`                                                                                                                        | [バックグラウンドセッションエラー](#write-or-command-blocked-because-the-path-cannot-be-safely-resolved)          |
@@ -206,6 +228,7 @@
 | `Can't open — this session is running in another terminal`                                                                                                                                            | [バックグラウンドセッションエラー](#this-session-is-running-in-another-terminal)                                  |
 | `This conversation is already open in another running Claude session`                                                                                                                                 | [バックグラウンドセッションエラー](#this-session-is-running-in-another-terminal)                                  |
 | `This session's saved conversation is no longer on disk`                                                                                                                                              | [バックグラウンドセッションエラー](#this-sessions-saved-conversation-is-no-longer-on-disk)                        |
+| `kept <id> — <n> unpushed commits on <branch>`                                                                                                                                                        | [バックグラウンドセッションエラー](#worktree-has-commits-that-are-not-pushed-anywhere)                            |
 | `kept <id> — worktree has commits that are not pushed anywhere`                                                                                                                                       | [バックグラウンドセッションエラー](#worktree-has-commits-that-are-not-pushed-anywhere)                            |
 | `terminal host process died — press Enter to restart` / `This session's terminal host process died`                                                                                                   | [バックグラウンドセッションエラー](#terminal-host-process-died)                                                   |
 | `Session isn't responding` / `Press enter again to restart this session — it isn't responding`                                                                                                        | [バックグラウンドセッションエラー](#session-isnt-responding)                                                      |
@@ -215,6 +238,7 @@
 | `EUNKNOWN: unknown error, uv_spawn`                                                                                                                                                                   | [バックグラウンドセッションエラー](#eunknown-when-starting-a-background-session)                                  |
 | `EACCES: permission denied, posix_spawn`                                                                                                                                                              | [バックグラウンドセッションエラー](#eacces-when-starting-a-background-session)                                    |
 | `exited before it became reachable`                                                                                                                                                                   | [バックグラウンドセッションエラー](#background-service-exited-before-it-became-reachable)                         |
+| `Couldn't start a background session (working directory no longer exists or is not accessible: ...)`                                                                                                  | [バックグラウンドセッションエラー](#working-directory-no-longer-exists-when-starting-a-background-session)        |
 | `Claude Code is being updated by npm on this machine (still not runnable after 2 min, ...)`                                                                                                           | [バックグラウンドセッションエラー](#eacces-when-starting-a-background-session)                                    |
 | `Claude Code process exited with code N`                                                                                                                                                              | [ラッパーと IDE エラー](#claude-code-process-exited-with-code-n)                                          |
 | `Could not locate the Claude CLI on PATH`                                                                                                                                                             | [ラッパーと IDE エラー](#could-not-locate-the-claude-cli-on-path)                                         |
@@ -240,6 +264,7 @@
 | `... has a wildcard before the rest of the command`                                                                                                                                                   | [設定の警告](#has-a-wildcard-before-the-rest-of-the-command)                                           |
 | `CLAUDE_CODE_DISABLE_1M_CONTEXT is set, but the 200K limit isn't enforced`                                                                                                                            | [設定の警告](#the-200k-limit-isnt-enforced)                                                            |
 | `[claude-code:unrecognized_model]`                                                                                                                                                                    | [設定の警告](#unrecognized-model-id-on-a-request)                                                      |
+| `Stale sandbox mask files left by a killed session`                                                                                                                                                   | [設定の警告](#stale-sandbox-mask-files-left-by-a-killed-session)                                       |
 | Responses seem lower quality than usual                                                                                                                                                               | [応答品質](#responses-seem-lower-quality-than-usual)                                                  |
 
 <h2 id="automatic-retries">
@@ -260,7 +285,7 @@ Claude Code がリトライする障害：
 * 入力と `max_tokens` がコンテキスト制限を超えるため拒否されたリクエスト。変更されていない状態で再送信すると同じ方法で失敗するため、Claude Code は削減された `max_tokens` でリトライし、2 つのケースでリトライを停止してコンパクト化します：
   * 削減が適合できない場合。たとえば、会話自体がコンテキストウィンドウをほぼ満たしている場合。
   * リトライが `max_tokens` をこれ以上縮小できない場合。v2.1.218 より前は、Claude Code は拡張思考予算が残りのコンテキストを超えた場合など、削減されたリクエストを再送信できましたが、それでも適合しませんでした。リトライ予算が尽きるまで。
-* [Google Cloud の Agent Platform](/docs/ja/google-vertex-ai) 上の期限切れまたは欠落している Google Cloud 認証情報。`Could not load the default credentials` などのエラーとして表示されます。Claude Code はキャッシュされた認証情報を破棄し、最大 2 回リトライし、設定した場合は [`gcpAuthRefresh`](/docs/ja/google-vertex-ai#advanced-credential-configuration) コマンドを実行し、エラーを報告して、すぐに再認証できるようにします。[Google Cloud の Agent Platform トラブルシューティング](/docs/ja/google-vertex-ai#troubleshooting)は再認証をカバーしています。v2.1.228 より前は、Claude Code はエラーを表示する前に、失敗した認証情報を完全なリトライ予算を通じてリトライしました。
+* 期限切れまたは欠落している Google Cloud 認証情報（[Google Cloud の Agent Platform](/docs/ja/google-vertex-ai) 上）、またはマシンで読み込みに失敗した AWS 認証情報。Claude Code はキャッシュされた認証情報を破棄し、最大 2 回リトライしてからエラーを報告するため、[Could not load AWS or Google Cloud credentials](#could-not-load-aws-or-google-cloud-credentials) で説明されているようにすぐに再認証できます。v2.1.228 より前は、Claude Code はエラーを表示する前に、失敗した Google Cloud 認証情報を完全なリトライ予算を通じてリトライしました。
 * Anthropic API から直接、または [LLM ゲートウェイ](/docs/ja/llm-gateway) を通じて、[`apiKeyHelper`](/docs/ja/settings-reference#apikeyhelper) スクリプトが認証情報を提供している間の `401` または `403`。Claude Code はスクリプトを再実行し、完全なリトライ予算内でその新しい出力でリトライします。スクリプト自体が再実行時に失敗した場合、Claude Code は [Your apiKeyHelper script is failing](#your-apikeyhelper-script-is-failing) を代わりに表示します。
 
 v2.1.227 より前は、`Connection lost before a response was produced` は `Connection closed while thinking, before producing a response` と読み、`The response stalled before a response was produced` は `Response stalled while thinking, before producing a response` と読みました。
@@ -1070,6 +1095,36 @@ API キー、[`CLAUDE_CODE_OAUTH_TOKEN`](/docs/ja/env-vars)、またはサード
 * 非対話モードでは、同じ環境で `claude` を実行し、`/login` を完了してから、コマンドを再実行してください。対話的にサインインできない自動化については、`ANTHROPIC_API_KEY` で認証するか、[`claude setup-token`](/docs/ja/authentication#generate-a-long-lived-token) で長命トークンを生成してください。
 * サインインが失敗し続ける場合は、[ログインと認証](/docs/ja/troubleshoot-install#login-and-authentication) を参照してください
 
+<h3 id="administrator-policy-requires-a-cloud-gateway-sign-in">
+  管理者ポリシーがクラウドゲートウェイサインインを必要とします
+</h3>
+
+管理者の [管理設定](/docs/ja/managed-settings) がこのマシンで [`forceLoginMethod`](/docs/ja/settings-reference#forceloginmethod) を `"gateway"` に設定したか、[`forceLoginGatewayUrl`](/docs/ja/settings-reference#forcelogingatewayurl) を設定しました。`CLAUDE_CODE_USE_BEDROCK` などの変数を通じてクラウドプロバイダーを選択しない限り、Claude Code は [Claude apps ゲートウェイ](/docs/ja/claude-apps-gateway) サインインのみを受け入れます。2 つのメッセージのいずれかが表示されます：
+
+```text theme={null}
+Not signed in to the Cloud gateway — run /login.
+```
+
+セッションにゲートウェイサインインがない場合（例えば、ポリシーがマシンに到達してから `/login` を実行していない場合）、モデルリクエストはこのメッセージで失敗します。
+
+`ANTHROPIC_API_KEY`、`ANTHROPIC_AUTH_TOKEN`、または `apiKeyHelper` 認証情報も設定されており、管理設定が `forceLoginMethod` を設定している場合、Claude Code は代わりに起動時に以下で始まるメッセージで終了します：
+
+```text theme={null}
+Administrator policy requires a Cloud gateway sign-in on this machine; the
+Anthropic-issued credential configured here (ANTHROPIC_API_KEY,
+ANTHROPIC_AUTH_TOKEN, or apiKeyHelper) is not used.
+```
+
+**対応方法：**
+
+* `/login` を実行し、**Cloud gateway** 画面でサインインを完了してください
+* 起動メッセージについては、設定した `ANTHROPIC_API_KEY`、`ANTHROPIC_AUTH_TOKEN`、または `apiKeyHelper` 設定を削除してから、`claude` を開始して `/login` を実行してください
+* マシンがゲートウェイを必要としないと思われる場合は、それを管理する管理者に、管理設定から `forceLoginMethod` と `forceLoginGatewayUrl` を削除するよう依頼してください
+
+v2.1.265 では、回帰により、API キー、`apiKeyHelper`、またはカスタムヘッダーで認証する一部の LLM ゲートウェイおよびプロキシ設定でも、マシンに管理者要件がない場合でも、最初のメッセージが表示されました。v2.1.266 以降にアップグレードしてください。設定を変更する必要はありません。
+
+v2.1.261 より前は、`forceLoginMethod` を `"gateway"` に設定したマシンでは、Claude Code はモデルリクエストに失敗する代わりに、残っているサインイン済みログインを使用し、設定された環境認証情報を `This machine's managed settings require a first-party login` で報告していました。v2.1.265 より前は、管理設定が `forceLoginGatewayUrl` のみを設定したマシンはゲートウェイサインインを必要とせず、Claude Code はそこで残っている認証情報を使用していました。
+
 <h3 id="your-account-is-on-hold">
   アカウントが保留中です
 </h3>
@@ -1208,23 +1263,72 @@ AWS authentication failed · run /login and select "Claude Platform on AWS · re
 * 認証情報が現在の場合は、[IAM 設定](/docs/ja/amazon-bedrock#iam-configuration) の IAM 権限が使用している ID に接続されていることを確認し、選択されたモデルがアカウントとリージョンで有効化されていることを確認してください
 * `aws sts get-caller-identity` を実行して、リクエストがどの ID を使用するかを確認してください。古い `AWS_PROFILE` またはデフォルトプロファイルは、権限の不一致の一般的な原因です
 
+<h3 id="could-not-load-aws-or-google-cloud-credentials">
+  AWS または Google Cloud 認証情報をロードできませんでした
+</h3>
+
+Claude Code は、マシンで実行されている AWS 認証情報プロバイダーチェーンから、または Google アプリケーションのデフォルト認証情報から、使用可能な認証情報を取得できなかったため、クラウドプロバイダーにリクエストが到達しませんでした。Claude Code はキャッシュされた認証情報をクリアし、このメッセージを表示する前に 2 回再試行します。`·` の後の詳細は、期限切れ SSO セッション、`Could not load the default credentials` として報告されている見つからないアプリケーションのデフォルト認証情報、または `invalid_grant` として報告されている取り消されたサインインなど、特定の原因を名前付けします：
+
+```text theme={null}
+API Error: Could not load AWS credentials · Could not load credentials from any providers. Check or refresh your AWS credentials and try again.
+API Error: Could not load Google Cloud credentials · invalid_grant. Check or refresh your Google Cloud credentials and try again.
+```
+
+[非対話モード](/docs/ja/headless) で `-p` を使用する場合と [Agent SDK](/docs/ja/agent-sdk/overview) では、構造化エラーコードは `cloud_credential_error` です。v2.1.267 より前は、メッセージは `API Error:` の後のテキストのみを表示し、構造化コードは `server_error` または `unknown` でした。
+
+**対応方法：**
+
+* `aws sso login --profile myprofile` または `gcloud auth application-default login` などのプロバイダーのサインインコマンドを実行してから、再試行してください。[Bedrock、Agent Platform、または Foundry 認証情報がロードされていない](/docs/ja/troubleshoot-install#bedrock-agent-platform-or-foundry-credentials-not-loading) は、Claude Code の外で認証情報を確認する方法を示しています
+* 詳細が `AWS default-chain credential resolve timed out` と読む場合は、チェーンが失敗するのではなくハングしたため、代わりに [AWS デフォルトチェーン認証情報解決がタイムアウトしました](#aws-default-chain-credential-resolve-timed-out) に従ってください
+
 <h3 id="aws-default-chain-credential-resolve-timed-out">
   AWS デフォルトチェーン認証情報解決がタイムアウトしました
 </h3>
 
-AWS デフォルト認証情報プロバイダーチェーンは 60 秒以内に認証情報を生成しなかったため、Claude Code は解決を停止し、リクエストに失敗しました。失敗はローカル認証情報解決です。リクエストは [Amazon Bedrock](/docs/ja/amazon-bedrock)、[Claude Platform on AWS](/docs/ja/claude-platform-on-aws)、または [Mantle エンドポイント](/docs/ja/amazon-bedrock#use-the-mantle-endpoint) に到達しませんでした。Claude Code はこのエラーが表面化する前に [認証情報キャッシュ](/docs/ja/amazon-bedrock#credential-caching-and-resolution-timeout) をクリアして再試行するため、このメッセージが表示されるまでにチェーンは繰り返された試行でスタールしています。
+AWS デフォルト認証情報プロバイダーチェーンは 60 秒以内に認証情報を生成しなかったため、Claude Code は解決を停止し、リクエストに失敗しました。このタイムアウトは [AWS または Google Cloud 認証情報をロードできませんでした](#could-not-load-aws-or-google-cloud-credentials) の 1 つの原因です。失敗はローカル認証情報解決です。リクエストは [Amazon Bedrock](/docs/ja/amazon-bedrock)、[Claude Platform on AWS](/docs/ja/claude-platform-on-aws)、または [Mantle エンドポイント](/docs/ja/amazon-bedrock#use-the-mantle-endpoint) に到達しませんでした。Claude Code はこのエラーが表面化する前に [認証情報キャッシュ](/docs/ja/amazon-bedrock#credential-caching-and-resolution-timeout) をクリアして再試行するため、このメッセージが表示されるまでにチェーンは繰り返された試行でスタールしています。
 
 ```text theme={null}
-API Error: AWS default-chain credential resolve timed out
+API Error: Could not load AWS credentials · AWS default-chain credential resolve timed out. Check or refresh your AWS credentials and try again.
 ```
 
-一般的な原因は、AWS プロファイルの `credential_process` コマンドが受け取ることができない入力を待機し、インスタンスメタデータサービス（IMDS）がチェーンのプローブに応答しないコンテナまたは VM です。v2.1.207 より前は、スタールしたチェーンはリクエストを無期限に待機させ、このメッセージで失敗する代わりに失敗しました。
+一般的な原因は、AWS プロファイルの `credential_process` コマンドが受け取ることができない入力を待機し、インスタンスメタデータサービス（IMDS）がチェーンのプローブに応答しないコンテナまたは VM です。
+
+v2.1.267 より前は、メッセージは `API Error: AWS default-chain credential resolve timed out` と読みました。
+v2.1.207 より前は、スタールしたチェーンはリクエストを無期限に待機させ、このメッセージで失敗する代わりに失敗しました。
 
 **対応方法：**
 
 * 同じシェルで同じ `AWS_PROFILE` で `aws sts get-caller-identity` を実行してください。それもハングする場合は、プロファイルを修正してください。対話的にプロンプトを表示する `credential_process` コマンドは一般的な原因です。
 * Claude Code を開始する前にサインインステップを完了してください。例えば `aws sso login --profile myprofile`。チェーンはブラウザーフローを待機する代わりにローカル SSO キャッシュから解決するため
 * チェーンが `aws-vault` などのラッパーを使用した MFA を使用した SSO などの正当に 60 秒以上を必要とする対話的サインインを実行する場合は、ミリ秒単位で [`CLAUDE_CODE_AWS_CHAIN_RESOLVE_TIMEOUT_MS`](/docs/ja/env-vars) で制限を上げてください
+
+<h3 id="bedrock-setup-verification-timed-out-waiting-for-aws">
+  Bedrock セットアップ検証が AWS を待機中にタイムアウトしました
+</h3>
+
+[Bedrock セットアップウィザード](/docs/ja/amazon-bedrock#sign-in-with-bedrock) の認証情報検証中の AWS への呼び出し（認証情報ルックアップまたは ID チェックなど）が 60 秒の制限内に完了しませんでした。ウィザードは待機を停止し、検証ステップに失敗します：
+
+```text theme={null}
+Timed out after 60s waiting for AWS. Check your network and proxy settings; if a credential helper needs longer to prompt you, raise CLAUDE_CODE_AWS_CHAIN_RESOLVE_TIMEOUT_MS.
+```
+
+数値は制限を反映しています。デフォルトでは 60 秒、または [`CLAUDE_CODE_AWS_CHAIN_RESOLVE_TIMEOUT_MS`](/docs/ja/env-vars) で設定した値。
+
+一般的な原因は、SSO トークン更新を含む AWS へのリクエストをスタールさせるネットワークまたはプロキシ、および見えない入力を待機しているまま認証情報ヘルパーです。制限を上げるのは、ヘルパーが正当にさらに時間を必要とする場合のみです。
+
+AWS への単一のスタールしたリクエストは、独自のリクエストごとのタイムアウトで失敗することもあります。これは同じステップで短いメッセージを表示します：
+
+```text theme={null}
+A request to AWS timed out. Check your network and proxy settings, then try again.
+```
+
+同じタイムアウトがモデルピンステップで発生する場合、ウィザードはモデルを `unreachable` としてマークし、どちらのメッセージも表示しません。
+
+**対応方法：**
+
+* 同じシェルで `aws sts get-caller-identity` を実行してください。それもハングする場合、スタールは Claude Code の外にあります。ネットワーク、プロキシ、または AWS プロファイルの認証情報ヘルパーで。最初にそれを修正してください。
+* ウィザードを開く前に対話的サインインを完了してください。例えば `aws sso login --profile myprofile`
+* AWS プロファイルの認証情報ヘルパーが正当に 60 秒以上を必要とする場合、ミリ秒単位で [`CLAUDE_CODE_AWS_CHAIN_RESOLVE_TIMEOUT_MS`](/docs/ja/env-vars) で制限を上げてください
 
 <h3 id="cloud-gateway-session-expired">
   クラウドゲートウェイセッション期限切れ
@@ -1407,6 +1511,8 @@ v2.1.199 以降、証明書検証の失敗は再試行されないため、こ�
 ```text theme={null}
 SSL certificate error (UNABLE_TO_GET_ISSUER_CERT_LOCALLY). If you are behind a corporate proxy or TLS-intercepting firewall, set NODE_EXTRA_CA_CERTS to your CA bundle path, or ask IT to allowlist *.anthropic.com. Run `claude doctor` for details.
 ```
+
+[Amazon Bedrock](/docs/ja/amazon-bedrock) では、Claude Code 自体が AWS に送信するリクエスト（STS および SSO ロール認証情報呼び出し、モデル検出、セットアップウィザードのチェックなど）は、同じ証明書設定に依存しています。[TLS 検査プロキシの背後での証明書エラー](/docs/ja/amazon-bedrock#certificate-errors-behind-a-tls-inspecting-proxy) を参照してください。
 
 **対応方法：**
 
@@ -1706,14 +1812,18 @@ Unable to resize image — image processing is unavailable and dimensions could 
 Unable to resize image — dimensions exceed the 2000x2000px limit and image processing failed. Please resize the image to reduce its pixel dimensions.
 Unable to resize image (… raw, … base64). The image exceeds the … API limit and compression failed. Please resize the image manually or use a smaller image.
 Unable to resize image — could not verify image dimensions are within the 2000x2000px API limit.
+Unable to resize image — it is a CMYK JPEG, which Claude Code cannot decode, and at …px it is over the 2000x2000px limit, so it cannot be sent. Re-save it as an RGB PNG or JPEG and try again.
+Unable to resize image — it is an animated WebP whose first frame Claude Code cannot decode, and at …px it is over the 2000x2000px limit, so it cannot be sent. Save its first frame as a PNG or JPEG and try again.
+Unable to resize image — its pixels could not be decoded (the file may be damaged, or use an encoding Claude Code cannot read), and it is over the … API limit (… raw, … base64), so it cannot be sent. Re-save it as a PNG or JPEG and try again.
 ```
 
-Claude Code は通常、大きな画像を自動的にリサイズします。これらのエラーは、ネイティブ画像プロセッサが読み込みに失敗したか、エラーを返したため、画像を API 制限内に収まるようにリサイズできなかったことを意味します。
+Claude Code は通常、大きな画像を自動的にリサイズします。これらのエラーは、画像をデコードまたはリサイズして API 制限内に収まるようにできなかったことを意味します。
 
 **対応方法：**
 
-* メッセージが画像を変換するよう求めている場合は、PNG、JPEG、GIF、または WebP に変換して、再度添付してください。Claude Code はこれらの形式の寸法を画像プロセッサなしで検証できます。
+* メッセージが画像を変換するよう求めている場合は、PNG、JPEG、GIF、または WebP に変換して、再度添付してください。Claude Code はこれらの形式の寸法をファイルヘッダーから検証でき、画像をデコードする必要はありません。
 * メッセージが寸法またはサイズ制限を報告している場合は、その制限以下に画像をリサイズまたは再圧縮してから添付してください。
+* メッセージが CMYK JPEG、アニメーション WebP、または破損している可能性のあるファイルなどの原因を名前付けしている場合は、メッセージが提案する形式で画像を再度保存して添付してください。
 
 <h3 id="pdf-errors">
   PDF エラー
@@ -1810,7 +1920,7 @@ Model "claud-sonnet-5" is not a recognized model id. Did you mean 'claude-sonnet
 
 末尾のヒントは、最も近いマッチングエイリアスまたはモデル ID を名前付けします。十分に近いものがない場合は、代わりに `Run /model to see available models.` と読みます。
 
-Claude Code はこのエラーをローカルで生成します。スイッチが要求された時点で、API リクエストが行われる前です。これは、[Agent SDK](/docs/ja/agent-sdk/typescript) `setModel()` メソッドを通じてモデルが設定されるか、Claude Code CLI を実行する [Desktop app](/docs/ja/desktop)などのアプリによって適用されます。
+Claude Code はこのエラーをローカルで生成します。スイッチが要求された時点で、API リクエストが行われる前です。これは、[Agent SDK](/docs/ja/agent-sdk/typescript) `setModel()` メソッドを通じてモデルが設定されるか、Claude Code CLI を実行する [Desktop app](/docs/ja/desktop)などのアプリによって適用されます。または、[Remote Control](/docs/ja/remote-control)を通じて接続されたデバイスからモデルを選択するときに適用されます。v2.1.260 より前では、チェックは Remote Control ピックをカバーしなかったため、Claude Code はピックを適用し、次のリクエストは [選択されたモデルに問題があります](#theres-an-issue-with-the-selected-model)で失敗しました。
 
 **対応方法：**
 
@@ -1818,6 +1928,24 @@ Claude Code はこのエラーをローカルで生成します。スイッチ�
 * 新しい Claude Code バージョンがサポートするエイリアスを使用した場合は、`claude update` を実行してください。`claude-` で始まる完全な ID はこのローカルチェックを通過します。サーバーはそのモデルに最小バージョンを要求する可能性があります。[Claude Code はこのモデルをサポートしていません](#claude-code-does-not-support-this-model)を参照してください。
 * v2.1.200 より前に保存されたモデルはこのチェックで修復されません。古い値が戻り続ける場合は、[モデルの設定](/docs/ja/model-config#setting-your-model)の下にリストされている場所から削除してください。
 * チェックは Anthropic API でのみ実行されます。カスタム `ANTHROPIC_BASE_URL` を含む他のプロバイダーまたはゲートウェイでは、プロバイダーがモデル名を定義するため、Claude Code は任意の文字列を受け入れて渡します。Claude Code は依然として、すべてのプロバイダーで、リクエスト時に [認識されないモデル診断行](#unrecognized-model-id-on-a-request)を書き込むことができます。
+
+<h3 id="model-not-found">
+  モデルが見つかりません
+</h3>
+
+`/model <name>` でモデルを選択し、Claude Code がそのモデルが存在することを確認できませんでした。名前が [モデルエイリアス](/docs/ja/model-config#model-aliases)または Claude Code がローカルで受け入れる別のスペルではない場合、`/model` は最小限の API リクエストで検証し、このエラーは通常、API エンドポイントの応答です。スペースを含むものなど、モデル ID になることができない名前は同じメッセージを取得します。
+
+```text theme={null}
+Model 'claude-opus-9' not found
+```
+
+プロバイダー固有のモデル ID を持つプロバイダーでは、メッセージはフォールバックモデルのプロバイダーの ID を名前付けする `Try '...' instead` 提案を追加する場合があります。
+
+**対応方法：**
+
+* 引数なしで `/model` を実行して、アカウントで利用可能なモデルから選択するか、`sonnet` などの [モデルエイリアス](/docs/ja/model-config#model-aliases)を使用してください。これは保守されたデフォルトに解決されます
+* 完全な ID を入力した場合は、プロバイダーのモデルカタログに対して確認してください。新しく起動されたモデルは、プロバイダーまたは地域が提供する前に Anthropic API で利用可能になる可能性があります。
+* v2.1.265 より前では、`/model` は `opusplan[1m]` エイリアススペルもこのエラーで拒否しました。これらのバージョンでは、Claude Code を更新するか、[設定](/docs/ja/model-config#setting-your-model)または `--model` でモデルを設定してください。
 
 <h3 id="claude-opus-is-not-available-with-the-claude-pro-plan">
   Claude Opus は Claude Pro プランでは利用できません
@@ -1839,16 +1967,23 @@ Claude Opus is not available with the Claude Pro plan. If you have updated your 
   Claude Code はこのモデルをサポートしていません
 </h3>
 
-選択したモデルには、リクエストを行っている Claude Code バージョンより新しいバージョンが必要です。サーバーはモデルごとにこれをチェックします。
+API は、選択したモデルに必要な最小値より下の Claude Code バージョンであるため、400 でリクエストを拒否しました。サーバーはモデルごとにこれをチェックするか、組織のポリシーが 1 つを要求します。400 はエラーコード `claude_code_version_too_old` を含み、メッセージは適用される最小値を示します。
 
 ```text theme={null}
 API Error: 400 Claude Code 2.1.219 does not support this model; version 2.1.255 or newer is required. Run 'claude update', or update the Claude desktop app, then try again.
 ```
 
+組織ポリシーの表現は次のように読みます。
+
+```text theme={null}
+API Error: 400 Claude Code 2.1.240 is older than the minimum version required by your organization's policy. Run 'claude update', or update the Claude desktop app, to continue.
+```
+
 **対応方法：**
 
-* `claude update` を実行するか、Claude デスクトップアプリを更新してから、モデルで新しいセッションを開始してください
-* 現在のセッションで作業を続けるには、`/model` で別のモデルに切り替えてください
+* `claude update` を実行するか、Claude デスクトップアプリを更新してから、新しいセッションを開始してください
+* モデルごとの表現については、`/model` で別のモデルに切り替えて、現在のセッションで作業を続けることができます
+* 組織ポリシーの表現については、続行する前に更新してください
 
 <h3 id="model-is-restricted-by-your-organizations-settings">
   モデルは組織の設定によって制限されています
@@ -1889,6 +2024,25 @@ Model switch to Opus 4.6 was blocked by a PreModelSwitch hook: Opus 4.6 is retir
 * **`a PreModelSwitch hook failed before answering`** または **`PreModelSwitch hooks were cancelled (the control stream closed) before answering`**：フック実行は判定なしで終了し、Claude Code はそれを承認として扱いません。`claude --debug` を実行して失敗したものを確認してから、再度スイッチしてください。
 
 v2.1.260 より前では、マネージドプラグイン拒否は `plugin hooks could not be loaded, so PreModelSwitch hooks could not be checked; see the debug log` と読みました。Claude Code はプラグイン読み込みを 1 回再試行してから、セッション内の後のスイッチを拒否しました。組織がプラグインを管理していない場合でも同様です。これらのバージョンでセッションを再開して、プラグイン読み込みを再度実行してください。
+
+<h3 id="couldnt-save-it-as-your-default">
+  Couldn't save it as your default
+</h3>
+
+モデルをデフォルトとして保存するために選択しました。たとえば、`/model <name>` または `/model` ピッカーで `Enter` を使用して、Claude Code はユーザー設定ファイル `~/.claude/settings.json` に選択を書き込むことができませんでした。スイッチ自体が適用されたため、現在のセッションは選択したモデルで実行されますが、デフォルトは変わらず、次のセッションは古い値で開始されます。
+
+```text theme={null}
+Set model to Fable 5.1 for this session only · couldn't save it as your default: ~/.claude/settings.json can't be written (EROFS)
+```
+
+ファイルパスの後の理由は、失敗したものを示しています。
+
+* **`can't be written (<code>)`**：書き込みは、`EROFS` などのオペレーティングシステムエラーコードで失敗しました。ファイルまたはそれがリンクするファイルが、書き込みを拒否するファイルシステムに存在する場合です。ファイルを書き込み可能にしてスイッチしてください。別のツールがファイルを生成する場合は、代わりにそのツールで `model` キーを設定してください。[Claude Code で行った変更は新しいセッションで失われます](/docs/ja/settings#a-change-you-made-in-claude-code-is-lost-in-new-sessions)を参照してください。
+* **`isn't valid JSON`**：ディスク上のファイルが解析されず、Claude Code は読み戻すことができないコンテンツを上書きするのではなく、それを手つかずのままにします。構文エラーを修正してからスイッチしてください。[破損した設定ファイルを修正](/docs/ja/settings#fix-a-broken-settings-file)を参照してください。
+
+`couldn't confirm it was saved as your default (~/.claude/settings.json is still being written)` で終わるお知らせは、書き込みが 3 秒後に完了していなかったことを意味します。バックグラウンドで続行されるため、デフォルトは依然として保存される可能性があります。次のセッションが開始するモデルを確認するか、`/model <name>` を再度実行してください。
+
+v2.1.265 より前では、お知らせは、書き込みが失敗した場合でも、モデルが `saved as your default for new sessions` であると述べていました。
 
 <h3 id="thinking-type-enabled-is-not-supported-for-this-model">
   thinking.type.enabled はこのモデルではサポートされていません
@@ -2183,10 +2337,32 @@ error: The current working directory was deleted, so that command didn't work. P
 
 Claude Code が別の理由（権限の変更など）で作業ディレクトリを読み取ることができない場合、メッセージはエラーコードを示します。`Can't read the current directory (EACCES). Start Claude Code from a different directory.`
 
+macOS では、`~/Desktop`、`~/Documents`、`~/Downloads`、または iCloud Drive のディレクトリの `EPERM` は通常、macOS がターミナルアプリをそのフォルダからブロックしていることを意味します。そのフォルダを読み取る他のコマンドも同じ方法で失敗します。`ls` はそこで `Operation not permitted` を報告し、`sudo` でも同じです。
+
 **対処方法：**
 
 * ホームディレクトリやプロジェクトディレクトリなど、存在するディレクトリに変更してから、`claude` を再度実行してください。
 * ディレクトリが同じパスで再作成された場合、シェルは削除されたものを保持しています。`cd "$PWD"` を実行するか、ディレクトリを出て再度入ってから、`claude` を再度実行してください。
+* macOS の `EPERM` の場合は、Cmd+Q でターミナルアプリを終了し、再度開いて、そのフォルダに戻り、`claude` を実行してください。そのフォルダで `ls` がまだ失敗する場合は、**System Settings > Privacy & Security > Files and Folders** を開き、ターミナルアプリのフォルダをオンにしてから、ターミナルを再度開いてください。
+
+<h3 id="directory-couldnt-be-resolved-to-a-real-location">
+  ディレクトリを実際の場所に解決できませんでした
+</h3>
+
+作業ディレクトリのサブディレクトリに対して `/add-dir` を実行し、Claude Code はディレクトリを実際の場所に解決できませんでした。
+
+作業ディレクトリのサブディレクトリへのファイルアクセスは既にあるため、`/add-dir` はスキル、コマンド、エージェントのみを読み込みます。読み込む前に、Claude Code はディレクトリの実際の場所（シンボリックリンクが解決されている）が作業ディレクトリ内にあることを確認します。Claude Code がその場所を解決できない場合、何も読み込まず、このメッセージを表示します。
+
+```text theme={null}
+packages/app couldn't be resolved to a real location, so its skills, commands, and agents weren't loaded. Check that it is a directory inside the working directory and try again.
+```
+
+**対処方法：**
+
+* パスが作業ディレクトリ内の実際のディレクトリを示していることを確認してから、`/add-dir` を再度実行してください。
+* メッセージはファイルアクセスを変更しません。ディレクトリの `.claude/` コンテンツが読み込まれなかったことのみを報告します。
+
+v2.1.261 より前は、このメッセージは、作業ディレクトリが `/net/<host>` オートマウント上にあるときに、すべての `/add-dir <subdirectory>` に対して表示されました。Claude Code は設計上パスを解決することを拒否します。ディレクトリは問題なく、再試行は役に立ちません。
 
 <h3 id="workspace-not-trusted-when-starting-remote-control">
   Remote Control 開始時にワークスペースが信頼されていません
@@ -2243,7 +2419,7 @@ v2.1.248 より前は、`claude remote-control` はグローバルフラグが�
 Claude Code は `claude import` をフィーチャーフラグを通じてオンにします。このフラグは Anthropic から取得してディスクにキャッシュされます。このメッセージはキャッシュされた値がオフであることを意味します。原因は通常、以下のいずれかです。
 
 * インストール後にセッションを開始していないため、Claude Code はまだフラグを取得していません。最初の `claude import` は、フィーチャーが利用可能な場合でもこれを出力できます。
-* Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、または Claude Platform on AWS を通じて Claude Code を使用しています。Claude Code はこれらのプロバイダーでフィーチャーフラグを取得しないため、`claude import` は利用不可のままです。
+* Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、Claude Platform on AWS、または [Claude apps gateway](/docs/ja/claude-apps-gateway#availability-and-limitations) を通じて Claude Code を使用しています。Claude Code はこれらのセッションでフィーチャーフラグを取得しないため、`claude import` は利用不可のままです。
 * `DISABLE_TELEMETRY`、`DO_NOT_TRACK`、`DISABLE_GROWTHBOOK`、または [`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`](/docs/ja/env-vars) を設定しました。これらはフィーチャーフラグ取得をオフにするため、`claude import` は利用不可のままです。
 
 **対処方法：**
@@ -2255,7 +2431,7 @@ Claude Code は `claude import` をフィーチャーフラグを通じてオン
   Claude Code 設定を読み込めませんでした
 </h3>
 
-[`claude import`](/docs/ja/cli-reference#cli-commands) を実行しましたが、Claude Code はログインと プロジェクトごとの状態を保存する `~/.claude.json` を解析できませんでした。サブコマンドはその可用性をチェックするためにそのファイルを読み込みますが、インタラクティブセッションが表示する復旧ダイアログを表示しないため、終了コード 1 で終了します。v2.1.222 より前は、読み込み不可能な設定ファイルを持つ `claude import` はインタラクティブセッションを開始し、その復旧ダイアログがファイルを処理していました。
+[`claude import`](/docs/ja/cli-reference#cli-commands) を実行しましたが、Claude Code はログインとプロジェクトごとの状態を保存する `~/.claude.json` を解析できませんでした。サブコマンドはその可用性をチェックするためにそのファイルを読み込みますが、インタラクティブセッションが表示する復旧ダイアログを表示しないため、終了コード 1 で終了します。v2.1.222 より前は、読み込み不可能な設定ファイルを持つ `claude import` はインタラクティブセッションを開始し、その復旧ダイアログがファイルを処理していました。
 
 ```text theme={null}
 Could not read Claude Code config — run `claude` with no arguments to recover it.
@@ -2282,6 +2458,37 @@ Could not import my server: Invalid name my server. Names can only contain lette
 
 * `claude_desktop_config.json` でサーバーの名前を変更して、文字、数字、ハイフン、アンダースコアのみを使用してから、`claude mcp add-from-claude-desktop` を再度実行してください。
 * そのサーバーを `claude mcp add` または `claude mcp add-json` で有効な名前の下に直接追加してください。[Claude Desktop から MCP サーバーをインポートする](/docs/ja/mcp#import-mcp-servers-from-claude-desktop) を参照してください。
+
+<h3 id="cannot-add-mcp-server-to-the-managed-scope">
+  MCP サーバーを管理スコープに追加できません
+</h3>
+
+`claude mcp add` または `claude mcp add-json` を `--scope managed` で実行しました。そのスコープは、組織が [`managedMcpServers`](/docs/ja/settings-reference#managedmcpservers) 管理設定を通じて提供するサーバーを保持しています。Claude Code はそれらを管理設定からのみ読み込むため、コマンドはそのスコープにサーバーを書き込むことができません。
+
+```text theme={null}
+Cannot add MCP server to scope: managed
+```
+
+**対処方法：**
+
+* 書き込み可能なスコープにサーバーを追加してください。`local`、`user`、または `project`。`--scope` なしで、コマンドは `local` を使用します。[MCP インストールスコープ](/docs/ja/mcp#mcp-installation-scopes) を参照してください。
+* 組織内のすべてのユーザーにサーバーを提供するには、デプロイする管理設定の [`managedMcpServers`](/docs/ja/settings-reference#managedmcpservers) に追加してください。
+
+<h3 id="cant-read-mcp-json">
+  .mcp.json を読み込めません
+</h3>
+
+プロジェクトの [`.mcp.json`](/docs/ja/mcp#project-scope) を読み込むコマンド（`--scope project` を使用した `claude mcp add` または `claude mcp add-json`、または `claude mcp remove` など）は、現在のディレクトリのファイルが通常ファイルではないか、2 MiB より大きいことを検出したため、ファイルを読み込む代わりにこのエラーで終了します。
+
+```text theme={null}
+Can't read .mcp.json: it isn't a regular file or is larger than 2097152 bytes. Fix or remove it, then run the command again.
+```
+
+v2.1.257 より前は、`.mcp.json` の FIFO はコマンドを無期限に待機させ、出力がなく、`/dev/zero` などのデバイスファイルへのシンボリックリンクはメモリを増やし、プロセスが強制終了されるまで続きました。
+
+**対処方法：**
+
+* 現在のディレクトリの `.mcp.json` に何があるかを確認してください。[プロジェクトスコープ形式](/docs/ja/mcp#project-scope) の通常の JSON ファイルに置き換えるか、削除してから、コマンドを再度実行してください。
 
 <h3 id="anthropic-hosted-and-doesnt-support-local-oauth">
   サーバーは Anthropic ホストで、ローカル OAuth をサポートしていません
@@ -2337,6 +2544,24 @@ Error: MCP tool mcp__permissions__approve (passed via --permission-prompt-tool) 
 * ツール名がサーバーが公開する `mcp__<server>__<tool>` 名と一致することを確認してください。
 * サーバーが開始するのに 30 秒以上かかる場合は、[`MCP_TIMEOUT`](/docs/ja/env-vars) を上げてください。
 
+<h3 id="oauth-callback-port-is-already-in-use">
+  OAuth コールバックポートは既に使用中です
+</h3>
+
+OAuth で遠隔 MCP サーバーにサインインすると、Claude Code はサインインコールバックを受け取るためのローカルリスナーを開始します。そのリスナーが必要とするポートが別のプロセスに保持されている場合、サインインはこのメッセージで失敗します。これは主に [固定コールバックポート](/docs/ja/mcp#use-a-fixed-oauth-callback-port) で発生します。これは [`MCP_OAUTH_CALLBACK_PORT`](/docs/ja/env-vars) 変数または `--callback-port` を通じて設定されます。1 つなしで Claude Code は利用可能なポートを選択するためです。
+
+```text theme={null}
+OAuth callback port <port> is already in use — another process may be holding it. Run `lsof -ti:<port> -sTCP:LISTEN` to find it.
+```
+
+Windows では、提案されたコマンドは代わりに `netstat -ano | findstr :<port>` です。
+
+**対処方法：**
+
+* メッセージからコマンドを実行して、ポートを保持しているプロセスを見つけ、停止するか、完了するまで待ってください。
+* 別のプログラムがそのポートを永続的に必要とする場合は、サーバーに別のリダイレクト URI を登録し、`MCP_OAUTH_CALLBACK_PORT` または `--callback-port` を使用してそのポートを設定してください。どちらを使用するかは関係ありません。
+* その後、サインインを再度開始してください。例えば、`/mcp` でサーバーを選択してください。
+
 <h3 id="security-review-fails-without-origin-head">
   /security-review は origin/HEAD なしで失敗します
 </h3>
@@ -2346,7 +2571,7 @@ Error: MCP tool mcp__permissions__approve (passed via --permission-prompt-tool) 
 ```text theme={null}
 Error: Shell command failed for pattern "!`git diff --name-only origin/HEAD...`": [stderr]
 fatal: ambiguous argument 'origin/HEAD...': unknown revision or path not in the working tree.
-Use '---- to separate paths from revisions, like this:
+Use '--' to separate paths from revisions, like this:
 'git <command> [<revision>...] -- [<file>...]'
 ```
 
@@ -2392,6 +2617,23 @@ v2.1.229 より前は、Claude Code は空白のみのメッセージを API に
 **対処方法：**
 
 * プロンプトに目に見えるテキストを含めてください。スクリプトが変数またはファイルからプロンプトを構築する場合は、Claude Code を呼び出す前にソースが空でないことを確認してください。
+
+<h3 id="stream-json-input-carried-over-256m-characters-with-no-newline">
+  stream-json 入力は改行なしで 256M 文字を超えました
+</h3>
+
+プログラムは `claude -p --input-format stream-json` 実行に stdin で改行なしで 268,435,456 文字以上を送信したため、Claude Code はこのエラーを stderr に出力し、終了コード 1 で終了します。メッセージはこの予算を `256M` として示します。v2.1.257 より前は、Claude Code はそのような入力を無制限にバッファリングし、プロセスがクラッシュするか強制終了されるまでメモリを増やしていました。
+
+```text theme={null}
+Error: stream-json input carried over 256M characters with no newline. Each stream-json message must be a single newline-terminated JSON line: either the producer is not newline-terminating its messages, or one message exceeded this budget.
+```
+
+改行なしでこの長さの入力は通常、プロデューサーが stream-json プロデューサーではないことを意味します。例えば、バイナリファイルまたは誤ってパイプされた通常のログ出力です。予算を超える単一のメッセージは同じチェックに失敗します。
+
+**対処方法：**
+
+* stdin にパイプされているものを確認してください。[`--input-format stream-json`](/docs/ja/cli-reference#cli-flags) では、すべてのメッセージは 1 つの改行で終了する JSON 行である必要があります。
+* 通常のテキストを代わりに送信するには、`--input-format stream-json` を削除してください。`claude -p` はデフォルトで stdin から通常のテキストプロンプトを読み込みます。
 
 <h3 id="unknown-command">
   不明なコマンド
@@ -2479,14 +2721,14 @@ v2.1.221 より前は、Claude Code はこのチェックアウトのすべて�
 `/code-review ultra <PR#>` または `claude ultrareview <PR#>` を実行し、クラウドセッションを作成する前に Claude Code はサーバーに [Claude アカウントに接続された GitHub アカウント](/docs/ja/ultrareview#review-a-pull-request) が PR のリポジトリに到達できるかどうかを尋ねます。アカウントが接続されていないか、接続が期限切れになったため、クラウドクローンは失敗し、Claude Code は起動を拒否します。Claude Code は無料実行を使用したり、使用クレジットを請求したりしません。
 
 ```text theme={null}
-Ultrareview clones <owner>/<repo> in the cloud with the GitHub account connected to your Claude account, and none is connected (or the connection expired). To fix: run /web-setup to reuse your GitHub CLI login, or connect an account at https://claude.ai/code/onboarding?step=alt-auth — then re-run /code-review ultra 1234 (allow a minute after connecting).
+Ultrareview clones <owner>/<repo> in the cloud with the GitHub account connected to your Claude account, and none is connected (or the connection expired). To fix: run /web-setup to reuse your GitHub CLI login, or connect an account at https://claude.ai/connect-github — then re-run /code-review ultra 1234 (allow a minute after connecting).
 ```
 
 [`/web-setup`](/docs/ja/web-quickstart#connect-from-your-terminal) がセッションで利用できない場合、メッセージは claude.ai リンクのみを示します。
 
 **対処方法：**
 
-* `/web-setup` を実行して GitHub CLI ログインを Claude アカウントに接続するか、[claude.ai/code/onboarding](https://claude.ai/code/onboarding?step=alt-auth) でアカウントを接続してください。
+* `/web-setup` を実行して GitHub CLI ログインを Claude アカウントに接続するか、[claude.ai/connect-github](https://claude.ai/connect-github) でアカウントを接続してください。
 * 接続後 1 分後にレビューを再度実行してください。
 
 v2.1.248 より前は、Claude Code は起動前にこれをチェックしませんでした。
@@ -2643,6 +2885,27 @@ Skill usage reports are not available on this connection.
 
 これらのエラーは、[プラグイン](/docs/ja/plugins)と[マーケットプレイス](/docs/ja/plugin-marketplaces)の設定から発生します。このページのメッセージを生成しないプラグインの問題（マーケットプレイス URL が読み込まれない、またはプラグインがインストールされても表示されないなど）については、[プラグインのトラブルシューティング](/docs/ja/discover-plugins#troubleshooting)を参照してください。
 
+<h3 id="plugin-eval-is-currently-in-early-access">
+  plugin eval は現在早期アクセス段階です
+</h3>
+
+[`claude plugin eval`](/docs/ja/plugin-evals)または `claude plugin eval init` を実行し、何もする前に終了コード 1 で次のいずれかのメッセージが表示されました：
+
+```text theme={null}
+`plugin eval` is currently in early access
+```
+
+```text theme={null}
+`plugin eval` is currently unavailable
+```
+
+最初のメッセージは、ビルドがコマンドが一般的に利用可能になった最初のバージョンである v2.1.269 より古いことを意味します。2 番目のメッセージは、Anthropic がサーバー側でコマンドをオフにしたことを意味します。マシン上の何もそれをオンに戻しません。
+
+**対処方法：**
+
+* `claude --version` を実行してから `claude update` を実行し、新しいセッションでコマンドを再度実行してください。[プラグイン eval の要件](/docs/ja/plugin-evals#requirements)を参照してください
+* 現在のビルドで 2 番目のメッセージが表示される場合は、別の `claude update` の後で後で再度試してください
+
 <h3 id="marketplace-is-registered-from-an-untrusted-source">
   マーケットプレイスが信頼されていないソースから登録されている
 </h3>
@@ -2729,6 +2992,12 @@ Claude Code は、`../shared-utils` のようにプラグインの外を指す�
 commands path escapes plugin directory: ./commands/deploy.md — it resolves to /home/user/shared/deploy.md, outside the plugin directory
 ```
 
+macOS と Linux では、Claude Code はコンポーネントパスにバックスラッシュが含まれている場合も拒否します。パスがプラグイン内に留まっていても、Windows スタイルのセパレータを使用するコンポーネントパスを持つプラグインは Windows で読み込まれ、他のプラットフォームではこの拒否をトリガーします：
+
+```text theme={null}
+commands path escapes plugin directory: ./commands\deploy.md — its path contains a backslash, which is not resolved reliably on this platform
+```
+
 v2.1.251 より前は、Claude Code はマーケットプレイスエントリで宣言された `commands` パスを、プラグインディレクトリの外を指している場合でも読み込みました。Claude Code は既に `plugin.json` で宣言されたパスとマーケットプレイスエントリの他のコンポーネントパスを拒否していました。
 
 v2.1.257 より前は、チェックはパスのスペルのみを確認し、シンボリックリンクがどこにつながるかは確認しませんでした。
@@ -2737,7 +3006,67 @@ v2.1.257 より前は、チェックはパスのスペルのみを確認し、�
 
 * 参照されたファイルをプラグインディレクトリ内に移動し、`./` 相対パスでそれを指すようにしてください
 * パスがプラグイン外のファイルへのシンボリックリンクの場合は、シンボリックリンクをファイルのコピーに置き換えてください
+* メッセージがパスにバックスラッシュが含まれていると言う場合は、例えば `./commands/deploy.md` のようにフォワードスラッシュでパスを記述してください
 * 同じマーケットプレイス内の他のプラグインとファイルを共有するには、プラグインディレクトリ内のシンボリックリンクを使用してリンクし、[シンボリックリンクルール](/docs/ja/plugins-reference#share-files-within-a-marketplace-with-symlinks)に従ってください
+
+<h3 id="path-could-not-be-checked">
+  パスをチェックできませんでした
+</h3>
+
+Claude Code はプラグインパスが存在するかどうかをオペレーティングシステムに問い合わせ、「見つかりません」以外のエラーを受け取ったため、パスが名前を付けるものを読み込みません。プラグインのどの程度が読み込まれるかは、どのパスが失敗したかによって異なります：
+
+* プラグインの [デフォルトコンポーネントフォルダ](/docs/ja/plugins-reference#file-locations-reference)の 1 つ（`skills/` や `commands/` など）：プラグインの他のコンポーネントは引き続き読み込まれます
+* プラグイン自体のディレクトリ：そのプラグインからは何も読み込まれません
+
+存在しないパスについてはこのエラーは表示されません。`/plugin` では、エラーはプラグインの下に表示され、パスとオペレーティングシステムが返したコードに名前を付けます：
+
+```text theme={null}
+skills path could not be checked: /home/user/my-plugin/skills (ELOOP)
+```
+
+`claude plugin list` では、同じエラーは `Path not found: /home/user/my-plugin/skills (skills, ELOOP)` と表示されます。
+
+このエラーを生成する原因には以下が含まれます：
+
+* `ELOOP`：パス内のシンボリックリンクが自分自身を指しているか、ループを形成している
+* `EIO` または `ESTALE`：パスが壊れているか古いネットワークマウント上にある
+* `EACCES`：パスの上のディレクトリの 1 つがそれを通過する権限を拒否している
+
+**対処方法：**
+
+* 自分自身を指すシンボリックリンクを実フォルダに置き換えるか、削除してください
+* パスがネットワークマウント上にある場合は、共有を再マウントしてください
+* コードが `EACCES` の場合は、パスの上のディレクトリに対する実行権限を復元してください
+* パスを修正した後、`/reload-plugins` を実行するか、Claude Code を再起動して、プラグインまたはコンポーネントを読み込んでください
+
+v2.1.265 より前は、Claude Code はチェックできないデフォルトコンポーネントフォルダを存在しないものとして扱い、エラーなしでそのコンポーネントなしでプラグインを読み込みました。
+
+<h3 id="marketplace-entry-path-does-not-stay-inside-the-marketplace-directory">
+  マーケットプレイスエントリパスがマーケットプレイスディレクトリ内に留まらない
+</h3>
+
+プラグインの[マーケットプレイスエントリ](/docs/ja/plugin-marketplaces#plugin-entries)は、Claude Code がマーケットプレイス自体のディレクトリ内の場所に解決できないソースパスを宣言しているため、プラグインはインストールまたは読み込まれません。拒否は以下をカバーしています：
+
+* 絶対パス、`..` でマーケットプレイスから抜け出す、またはネットワークパスのようにスペルされたエントリパス
+* git または URL などのリモートソースから取得されたマーケットプレイス内のエントリで、マーケットプレイスディレクトリの外に解決するシンボリックリンクを通じてターゲットに到達する
+* マーケットプレイスの `marketplace.json` への直接 URL から追加された相対エントリ：Claude Code はそのファイルのみをダウンロードするため、パスが名前を付けるローカルプラグインファイルは存在しません。[相対パスを持つプラグインが URL ベースのマーケットプレイスで失敗する](/docs/ja/plugin-marketplaces#plugins-with-relative-paths-fail-in-url-based-marketplaces)を参照してください
+
+`claude plugin install` は拒否を次のように報告します：
+
+```text theme={null}
+Cannot install my-plugin@my-marketplace: its marketplace entry path does not stay inside the marketplace directory (an absolute, climbing, network-shaped or link-traversing entry, an entry of a fetched marketplace that resolves outside its tree — or a relative entry in a url-catalog marketplace, which has no local directory)
+```
+
+既にインストールされているプラグインのエントリが同じチェックに失敗した場合、`claude plugin list` はプラグインを `failed to load` として表示します：
+
+```text theme={null}
+Plugin source path refused: ./my-plugin does not stay inside its marketplace directory. Check that the marketplace entry has a plain relative path.
+```
+
+**対処方法：**
+
+* マーケットプレイスを保守する場合は、エントリの `source` を `./plugins/my-plugin` のようなプレーンな相対パスとして記述し、それが通過するシンボリックリンクをマーケットプレイスディレクトリ内を指すようにしてください
+* マーケットプレイスを直接 URL から追加した場合、相対エントリは解決できません。マーケットプレイス作成者に [別のプラグインソース](/docs/ja/plugin-marketplaces#plugin-sources)を使用するよう依頼するか、代わりに git リポジトリからマーケットプレイスを追加してください
 
 <h3 id="failed-to-load-marketplace-configuration">
   マーケットプレイス設定の読み込みに失敗した
@@ -2985,6 +3314,7 @@ Refusing to read /path/to/file: its symlink resolution changed after permission 
 
 * 通常は何もしません。拒否は Claude にツール結果として到達し、拒否された操作は実行されません
 * シンボリックリンク拒否が 1 つのパスで繰り返される場合、ビルドツールやファイルウォッチャーなど、リンクをそこで書き直し続けるものを見つけるか、Claude にリンクされたものの代わりにファイルの解決されたパスを使用するよう依頼します
+* Claude Code が Windows 内の AppContainer または制限トークンサンドボックスで実行されている場合、この拒否がすべてのファイルに対して表示される場合は、v2.1.265 以降にアップグレードします
 * ripgrep 拒否の場合、パッケージマネージャーで ripgrep をインストールして、`rg` が `PATH` 上の絶対パスに解決されるようにするか、作業ディレクトリの下で検索を保持します
 
 v2.1.251 より前は、Claude Code はファイル書き込みに対してのみパスの解決を再チェックしたため、権限チェック後に置き換えられたリンクは、メッセージなしで読み取りまたは検索を別の場所にリダイレクトする可能性がありました。これらの拒否のうち、親ディレクトリ書き込み拒否のみが以前のバージョンに表示されます。
@@ -2993,10 +3323,18 @@ v2.1.251 より前は、Claude Code はファイル書き込みに対しての�
   Task output swap refused
 </h3>
 
-Claude Code は各 Bash コマンドの出力をその一時ディレクトリの下のファイルに保存します。このメッセージは、そのファイルのパス上のディレクトリがシンボリックリンクであるか移動されたことを意味するため、Claude Code はそのパスを通じて出力を書き込むのではなく、コマンドの実行を拒否しました。メッセージは Bash ツール結果に表示されます。
+Claude Code は各 Bash コマンドの出力をその一時ディレクトリの下のファイルに保存します。このファイルを開くたびに、パスがまだ Claude Code が作成したファイルにつながっていることを確認します。シンボリックリンク、追加のハードリンク、または移動されたディレクトリがそれをリダイレクトしていません。このメッセージは、そのチェックが失敗したことを意味するため、Claude Code はそのパスを通じて出力を書き込むのではなく、操作を拒否しました。メッセージは Bash ツール結果に表示されます。
 
 ```text wrap theme={null}
 task output swap refused (tasks dir moved or linked): /private/tmp/claude-501/-Users-you-my-project/1f0e62dc-4b0a-4f5e-9c2d-8a7b6c5d4e3f/tasks/b7k2f9m3q.output. To recover: restart Claude Code with CLAUDE_CODE_TMPDIR set to a fresh directory; or, if /private/tmp/claude-501/-Users-you-my-project is a stray directory or a symbolic link that should not be there, remove that entry itself (not what it points to) and restart.
+```
+
+括弧内のテキストは、失敗したチェックに名前を付けます。`output symlink was re-pointed`、`output file identity changed`、`not a regular file` などの理由はすべて同じ条件を報告します。出力パスのどこかまたはその沿いに何かがもはや Claude Code が作成したファイルではありません。一部の理由のみが `To recover:` 文を持ちます。
+
+コマンドがまだ実行中にチェックが失敗した場合、Claude Code はコマンドを停止し、その結果は以下を報告します。
+
+```text theme={null}
+Command killed: its output file was replaced or could no longer be verified
 ```
 
 **What to do:**
@@ -3004,6 +3342,29 @@ task output swap refused (tasks dir moved or linked): /private/tmp/claude-501/-U
 * v2.1.260 以降にアップグレードします。以前のバージョンは、リンクまたは移動されたディレクトリが存在しない場合でも、このメッセージを表示することがあります
 * [`CLAUDE_CODE_TMPDIR`](/docs/ja/env-vars)を新しいディレクトリに設定して Claude Code を再起動します
 * または、プロジェクトのディレクトリを Claude Code 一時ディレクトリの下で確認します。例のメッセージでは `/private/tmp/claude-501/-Users-you-my-project` です。そのパスがシンボリックリンクであるか、そこにあるべきではないディレクトリである場合、リンクのターゲットではなく、リンクまたはディレクトリ自体を削除して、Claude Code を再起動します
+* 拒否が繰り返される場合、セッションが実行されている間に、プロセスが Claude Code の一時ディレクトリの下のエントリを置き換え、リンク、または削除しています。[`CLAUDE_CODE_TMPDIR`](/docs/ja/env-vars)を他に何も管理しないディレクトリに設定して再起動します
+
+<h3 id="the-source-file-is-not-valid-utf-8-text">
+  The source file is not valid UTF-8 text
+</h3>
+
+Claude は、バイトがテキストとしてデコードされないファイルから [artifact](/docs/ja/artifacts)を公開しようとしました。または、テキストにはすでに置換文字 `U+FFFD` が含まれているため、Claude Code は何もアップロードする前に公開を拒否しました。メッセージは Artifact ツール結果に表示され、修正する最初の位置に名前を付けます。
+
+```text wrap theme={null}
+file_path: the source file is not valid UTF-8 text (first invalid byte at line 12, column 40). It may be saved in another encoding or contain binary data. Rewrite it as UTF-8, then publish again. Nothing was published.
+
+file_path: the source file has the replacement character U+FFFD at line 12, column 40, usually left where an earlier edit or paste lost a character. Replace it with the intended text (in HTML, write an intended U+FFFD as &#xFFFD;), then publish again. Nothing was published.
+```
+
+Claude Code はファイルを UTF-8 としてデコードするか、リトルエンディアン UTF-16 バイト順マークで始まる場合は UTF-16 としてデコードします。そのような UTF-16 ファイルがデコードされない場合、最初のメッセージは `UTF-16` に名前を付け、ファイルを UTF-8 として書き直すよう指示します。名前の後に複数の位置が続く場合、メッセージは位置の後に `(+2 more)` などのカウントを追加します。
+
+**What to do:**
+
+* 通常は何もしません。Claude はファイルを書き直して公開します
+* ファイルが自分で書いたか、エクスポートしたものである場合は、UTF-8 として再度保存し、各 `U+FFFD` を以前の編集、貼り付け、または変換で失われた文字に置き換えます
+* ページに意図的な `U+FFFD` を表示するには、リテラル文字の代わりに HTML で `&#xFFFD;` として書き込みます
+
+v2.1.267 より前は、Claude Code はそのようなファイルをチェックなしでアップロードし、サーバーは代わりに公開を拒否しました。
 
 <h2 id="background-session-errors">
   バックグラウンドセッションエラー
@@ -3336,6 +3697,22 @@ Claude Code はサービスのエラー行で失敗を報告します。v2.1.246
 * メッセージが行を引用する場合、それが名前を付けるものを修正してから、セッションを開くか再度ディスパッチします。次の試行はサービスを再度開始します
 * `claude daemon status` を実行して、サービスが現在実行されているかどうかをチェックします
 
+<h3 id="working-directory-no-longer-exists-when-starting-a-background-session">
+  バックグラウンドセッションを開始するときに作業ディレクトリが存在しなくなりました
+</h3>
+
+[バックグラウンドセッション](/docs/ja/agent-view)を開始しようとしました。そのセッションは、もう存在しないディレクトリで実行されます。これは、エージェントビューからディスパッチするか、作業中のディレクトリが削除または移動された後に `/background` を実行するときに発生します。また、プロセスが終了し、そのディレクトリが消えたセッションに接続または再開するときにも発生します。新しいプロセスは同じディレクトリで開始するためです。Claude Code はセッションを開始せず、メッセージは見つからないディレクトリに名前を付けます：
+
+```text theme={null}
+Couldn't start a background session (working directory no longer exists or is not accessible: /tmp/demo)
+```
+
+v2.1.257 より前では、セッションは開始されたように見え、その後エージェントビューで同じ理由で失敗した行として表示されました。
+
+**対処方法：**
+
+* メッセージが名前を付けるディレクトリを再作成するか、存在するディレクトリからディスパッチしてから、再度試してください
+
 <h2 id="wrapper-and-ide-errors">
   ラッパーと IDE エラー
 </h2>
@@ -3600,7 +3977,7 @@ v2.1.257 より前では、Claude Code は到達可能なネットワークパ�
 
 **対応方法：**
 
-* メッセージが名前を付ける原因に対応してください。ネットワーク原因の場合は、このマシンが `api.anthropic.com` に到達できることを確認してください。認証原因の場合は、`/status` で サインインを確認してください。
+* メッセージが名前を付ける原因に対応してください。ネットワーク原因の場合は、このマシンが `api.anthropic.com` に到達できることを確認してください。認証原因の場合は、`/status` でサインインを確認してください。
 * `/status` または `claude doctor` を実行して、完全な診断を取得してください。
 
 v2.1.248 より前では、Claude Code は失敗した設定取得をデバッグログにのみ報告していました。
@@ -3660,9 +4037,9 @@ v2.1.257 より前では、`/mcp` での **再接続** と再度有効化は、�
 * macOS 管理設定プロファイル、`ユーザーごとの管理設定` または `デバイスレベルの管理設定`
 * Windows レジストリ値、`Registry: HKLM\SOFTWARE\Policies\ClaudeCode\Settings`
 
-[Claude Code がドロップした エントリを検索](/docs/ja/managed-settings#find-entries-claude-code-dropped) は、各ソースを解析不可能にするものをリストしています。
+[Claude Code がドロップしたエントリを検索](/docs/ja/managed-settings#find-entries-claude-code-dropped) は、各ソースを解析不可能にするものをリストしています。
 
-Claude Code は、別の管理ソースが有効なポリシーを配信する場合でも、起動を拒否します。この エラーは対話型セッション、`claude -p`、Agent SDK セッション、[バックグラウンドセッション](/docs/ja/agent-view)、およびほとんどのサブコマンド（`claude doctor` を含む）で表示されます。拒否は意図的に閉じられます。Claude Code が解析できないドキュメント内の設定は強制できず、とにかく起動すると、組織の制御なしでセッションが実行されます。
+Claude Code は、別の管理ソースが有効なポリシーを配信する場合でも、起動を拒否します。このエラーは対話型セッション、`claude -p`、Agent SDK セッション、[バックグラウンドセッション](/docs/ja/agent-view)、およびほとんどのサブコマンド（`claude doctor` を含む）で表示されます。拒否は意図的に閉じられます。Claude Code が解析できないドキュメント内の設定は強制できず、とにかく起動すると、組織の制御なしでセッションが実行されます。
 
 解析可能なドキュメント内のスキーマ問題はこのエラーを生成しません。[Claude Code がドロップしたエントリを検索](/docs/ja/managed-settings#find-entries-claude-code-dropped) は、Claude Code が 1 つで何を行うかをカバーしています。
 
@@ -3706,7 +4083,7 @@ Invalid permission rule "Bash(ls) x" was skipped: Malformed Tool(content) rule. 
 **対応方法：**
 
 * メッセージでリストされた設定ファイルで、ルールを閉じ括弧で終わるように書き直してください。例えば、`Bash(ls) x` の代わりに `Bash(ls *)` を使用してください。
-* コンテンツ内の括弧はそのままにしてください。それらはリテラルなので、`Edit(./Finance (2024)/**)` などのルールは エスケープなしで有効です。
+* コンテンツ内の括弧はそのままにしてください。それらはリテラルなので、`Edit(./Finance (2024)/**)` などのルールはエスケープなしで有効です。
 
 v2.1.260 より前では、Claude Code は一致しない括弧を持つルールを `Mismatched parentheses` として報告していました。
 
@@ -3749,7 +4126,7 @@ Permission allow rule (.claude/settings.json): Bash(git -C * status *) has a wil
 * 警告が括弧内に名前を付けるソースでルールを修正してください。設定ファイルパス、または `--allowed-tools` フラグ自体。ディスク上に存在しない `claude-settings-<hash>.json` パスはインライン `--settings` 値を表します。そのフラグに渡す JSON を修正してください。
 * ソースが `managed policy settings` と読む場合は、警告を管理設定を保守している人に転送してください。自分でそれをクリアすることはできません。
 
-Claude Code は同じ形状の deny および ask ルールについて警告しません。それらが一致する追加コマンドを拒否またはプロンプトします。また、サブコマンドが最初の `*` の前に来るルール（`Bash(git commit *)` など）、または `*` の後に オプション以外の単語がないルール（`Bash(git *)` など）、または `:*` プレフィックスルール（`Bash(git:*)` など）についても警告しません。
+Claude Code は同じ形状の deny および ask ルールについて警告しません。それらが一致する追加コマンドを拒否またはプロンプトします。また、サブコマンドが最初の `*` の前に来るルール（`Bash(git commit *)` など）、または `*` の後にオプション以外の単語がないルール（`Bash(git *)` など）、または `:*` プレフィックスルール（`Bash(git:*)` など）についても警告しません。
 
 [バックグラウンドセッション](/docs/ja/agent-view) または `--output-format json` または `stream-json` では、Claude Code は警告をデバッグログに stderr の代わりに書き込むため、マシン読み取り出力はクリーンなままです。`--debug` で `~/.claude/debug/<session-id>.txt` でキャプチャしてください。v2.1.246 より前では、Claude Code はこれらのルールを警告なしで受け入れていました。
 
@@ -3838,6 +4215,26 @@ Claude Code は、Amazon Bedrock `us.anthropic.claude-...` ID、Google Cloud の
 * ID がタイプミスの場合は、[モデルを設定できる場所](/docs/ja/model-config#setting-your-model) または [エイリアス変数](/docs/ja/model-config#environment-variables) のいずれかで保持する場所で修正してください。`query_source` が `agent:` で始まる場合は、代わりに [サブエージェントのモデル](/docs/ja/sub-agents#choose-a-model) を設定する場所で修正してください。
 
 v2.1.233 より前では、Claude Code は認識しないモデル ID のリクエストを送信したときに行を書き込みませんでした。
+
+<h3 id="stale-sandbox-mask-files-left-by-a-killed-session">
+  殺されたセッションによって残された古いサンドボックスマスクファイル
+</h3>
+
+`claude doctor` はその診断でこの警告を出力し、`/status` は同じ行をリストします。これは、[サンドボックス](/docs/ja/sandboxing) がファイルシステム分離をオンにして有効になっている Linux および WSL2 に表示されます。
+
+サンドボックスコマンドが実行されている間、サンドボックスはまだ存在しないファイルへの書き込み拒否を保持し、そこに 0 バイトの読み取り専用プレースホルダーを作成し、その後削除します。SIGKILL によって殺されたセッションなど、そのクリーンアップが実行される前に、プレースホルダーが残ります。後のセッションは、起動するたびにそれらを読み取り専用で再度バインドするため、「はい、今後は尋ねない」を保存するなどの設定書き込みは、そこに座っているものが失敗します。
+
+```text theme={null}
+- Stale sandbox mask files left by a killed session: /home/you/project/.claude/settings.local.json
+  Fix: Remove each with `rm <path>` while no other Claude Code session is running in that project — a 0-byte read-only file where a settings file belongs makes "Yes, and don't ask again" fail to save, and the sandbox binds it read-only again on every start
+```
+
+**対応方法：**
+
+* そのプロジェクトで実行されている他の Claude Code セッションを終了し、`rm` で各リストされたファイルを削除してください。警告は最大 3 つのファイルに名前を付け、残りをカウントするため、削除されるまで `claude doctor` を再度実行してください。別のセッションのサンドボックスがまだ使用しているプレースホルダーは、そのセッションの書き込み保護の生きた部分です。
+* 「はい、今後は尋ねない」で保存した権限の選択が固定されなかった場合は、プレースホルダーを削除した後、再度保存してください。
+
+v2.1.257 より前では、`claude doctor` はこれらのファイルにフラグを立てませんでした。以前のバージョンは、セッションが殺されたときに同じプレースホルダーを残します。
 
 <h2 id="responses-seem-lower-quality-than-usual">
   応答の品質がいつもより低いように見える

@@ -41,7 +41,7 @@ Claude Code CLI とローカルで実行されるすべてのものは、すべ�
 * **MCP サーバー**：[claude.ai からのコネクタ](/docs/ja/mcp#use-mcp-servers-from-claude-ai)は、claude.ai サブスクリプションがアクティブな認証方法である場合にのみロードされます。[ツール検索](/docs/ja/mcp#configure-tool-search)は `ANTHROPIC_BASE_URL` がファーストパーティ以外のホストを指している場合、デフォルトでオフになり、Google Cloud の Agent Platform の Claude 4.5 世代より前のモデルまたは Microsoft Foundry の [Azure でホストされているデプロイメント](https://platform.claude.com/docs/en/build-with-claude/claude-in-microsoft-foundry#hosting-options)ではサポートされていません
 * **Subagents**：組み込みの [Explore subagent](/docs/ja/sub-agents#built-in-subagents)は、Claude API で継承されたモデルを Opus に制限し、他のプロバイダー（Claude Platform on AWS を含む）では直接メイン会話のモデルを継承します
 * **[Commands](/docs/ja/commands#all-commands)**：
-  * `/design-sync` と `/import` およびその `claude import` サブコマンド形式は、Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、および Claude Platform on AWS では利用不可です
+  * `/design-sync` と `/import` およびその `claude import` サブコマンド形式は、Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、および Claude Platform on AWS では利用不可です。また、[Claude apps gateway](/docs/ja/claude-apps-gateway#availability-and-limitations) を通じても利用不可です
   * `/voice` には claude.ai アカウントが必要です
   * `/list-agents` およびそのエイリアス `/peers` は、[クロスセッションメッセージング](/docs/ja/cross-session-messaging#availability)が有効になっているセッションでのみ利用可能です
 

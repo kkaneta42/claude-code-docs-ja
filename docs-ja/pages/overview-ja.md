@@ -18,36 +18,36 @@ Claude Code は複数のサーフェスで実行されます。ターミナル�
   <Tab title="Terminal">
     ターミナルで Claude Code を直接操作するための機能豊富な CLI です。ファイルを編集し、コマンドを実行し、コマンドラインからプロジェクト全体を管理できます。
 
-    To install Claude Code, use one of the following methods:
+    Claude Code をインストールするには、以下のいずれかの方法を使用してください。
 
     <Tabs>
-      <Tab title="Native Install (Recommended)">
-        **macOS, Linux, WSL:**
+      <Tab title="ネイティブインストール（推奨）">
+        **macOS、Linux、WSL：**
 
         ```bash theme={null}
         curl -fsSL https://claude.ai/install.sh | bash
         ```
 
-        **Windows PowerShell:**
+        **Windows PowerShell：**
 
         ```powershell theme={null}
         irm https://claude.ai/install.ps1 | iex
         ```
 
-        **Windows CMD:**
+        **Windows CMD：**
 
         ```batch theme={null}
         curl -fsSL https://claude.ai/install.cmd -o install.cmd && install.cmd && del install.cmd
         ```
 
-        If you see `The token '&&' is not a valid statement separator`, you're in PowerShell, not CMD. If you see `'irm' is not recognized as an internal or external command`, you're in CMD, not PowerShell. Your prompt shows `PS C:\` when you're in PowerShell and `C:\` without the `PS` when you're in CMD.
+        `The token '&&' is not a valid statement separator` というエラーが表示される場合は、CMD ではなく PowerShell を使用しています。`'irm' is not recognized as an internal or external command` というエラーが表示される場合は、PowerShell ではなく CMD を使用しています。PowerShell を使用している場合、プロンプトに `PS C:\` と表示され、CMD を使用している場合は `PS` なしで `C:\` と表示されます。
 
-        If the install command fails with `syntax error near unexpected token '<'`, a `403`, or another curl error, see [Troubleshoot installation](/docs/en/troubleshoot-install#find-your-error) to match the error to a fix and for alternative install methods.
+        インストールコマンドが `syntax error near unexpected token '<'`、`403`、またはその他の curl エラーで失敗する場合は、[インストールのトラブルシューティング](/docs/ja/troubleshoot-install#find-your-error)を参照して、エラーを修正方法に照合し、代替インストール方法を確認してください。
 
-        [Git for Windows](https://git-scm.com/downloads/win) is recommended on native Windows so Claude Code can use the Bash tool. If Git for Windows is not installed, Claude Code uses PowerShell as the shell tool instead. WSL setups do not need Git for Windows.
+        [Git for Windows](https://git-scm.com/downloads/win) は、Claude Code が Bash ツールを使用できるようにネイティブ Windows で推奨されます。Git for Windows がインストールされていない場合、Claude Code はシェルツールとして PowerShell を代わりに使用します。WSL セットアップは Git for Windows を必要としません。
 
         <Info>
-          Native installations automatically update in the background to keep you on the latest version.
+          ネイティブインストールは、最新バージョンに保つために自動的にバックグラウンドで更新されます。
         </Info>
       </Tab>
 
@@ -56,10 +56,10 @@ Claude Code は複数のサーフェスで実行されます。ターミナル�
         brew install --cask claude-code
         ```
 
-        Homebrew offers two casks. `claude-code` tracks the stable release channel, which is typically about a week behind and skips releases with major regressions. `claude-code@latest` tracks the latest channel and receives new versions as soon as they ship.
+        Homebrew は 2 つの cask を提供しています。`claude-code` は安定リリースチャネルを追跡しており、通常は約 1 週間遅れており、大きな回帰を伴うリリースをスキップします。`claude-code@latest` は最新チャネルを追跡し、新しいバージョンが出荷されるとすぐに受け取ります。
 
         <Info>
-          Homebrew installations do not auto-update. Run `brew upgrade claude-code` or `brew upgrade claude-code@latest`, depending on which cask you installed, to get the latest features and security fixes.
+          Homebrew インストールは自動更新されません。インストールした cask に応じて、`brew upgrade claude-code` または `brew upgrade claude-code@latest` を実行して、最新の機能とセキュリティ修正を取得してください。
         </Info>
       </Tab>
 
@@ -69,12 +69,12 @@ Claude Code は複数のサーフェスで実行されます。ターミナル�
         ```
 
         <Info>
-          WinGet installations do not auto-update. Run `winget upgrade Anthropic.ClaudeCode` periodically to get the latest features and security fixes.
+          WinGet インストールは自動更新されません。最新の機能とセキュリティ修正を取得するために、定期的に `winget upgrade Anthropic.ClaudeCode` を実行してください。
         </Info>
       </Tab>
     </Tabs>
 
-    You can also install with [apt, dnf, or apk](/docs/en/setup#install-with-linux-package-managers) on Debian, Fedora, RHEL, and Alpine.
+    また、Debian、Fedora、RHEL、Alpine で [apt、dnf、または apk](/docs/ja/setup#install-with-linux-package-managers) を使用してインストールすることもできます。
 
     その後、任意のプロジェクトで Claude Code を開始します。`your-project` をマシン上のプロジェクトディレクトリへのパスに置き換えてください：
 

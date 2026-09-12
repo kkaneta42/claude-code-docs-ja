@@ -9,20 +9,20 @@
 Claude Desktop アプリには 3 つのタブがあります：**Chat** は会話用、**Cowork** は [Dispatch とより長い agentic work](https://claude.com/product/cowork) 用、**Code** はソフトウェア開発用です。このページは Code タブのリファレンスです。
 
 <CardGroup cols={3}>
-  <Card title="Download for macOS" icon="apple" href="https://claude.ai/api/desktop/darwin/universal/dmg/latest/redirect?utm_source=claude_code&utm_medium=docs">
-    Universal build for Intel and Apple Silicon
+  <Card title="macOS 用にダウンロード" icon="apple" href="https://claude.ai/api/desktop/darwin/universal/dmg/latest/redirect?utm_source=claude_code&utm_medium=docs">
+    Intel と Apple Silicon 向けのユニバーサルビルド
   </Card>
 
-  <Card title="Download for Windows" icon="windows" href="https://claude.ai/api/desktop/win32/x64/setup/latest/redirect?utm_source=claude_code&utm_medium=docs">
-    For x64 processors
+  <Card title="Windows 用にダウンロード" icon="windows" href="https://claude.ai/api/desktop/win32/x64/setup/latest/redirect?utm_source=claude_code&utm_medium=docs">
+    x64 プロセッサ向け
   </Card>
 
-  <Card title="Get Claude for Linux (beta)" icon="linux" href="/docs/en/desktop-linux">
-    apt or .deb for Ubuntu and Debian
+  <Card title="Linux 用 Claude を入手（ベータ版）" icon="linux" href="/docs/ja/desktop-linux">
+    Ubuntu と Debian 向けの apt または .deb
   </Card>
 </CardGroup>
 
-For Windows ARM64, download the [ARM64 installer](https://claude.ai/api/desktop/win32/arm64/setup/latest/redirect?utm_source=claude_code\&utm_medium=docs). On Linux, install with apt; see [Claude Desktop on Linux](/docs/en/desktop-linux).
+Windows ARM64 の場合は、[ARM64 インストーラー](https://claude.ai/api/desktop/win32/arm64/setup/latest/redirect?utm_source=claude_code\&utm_medium=docs)をダウンロードしてください。Linux では apt でインストールします。[Claude Desktop on Linux](/docs/ja/desktop-linux)を参照してください。
 
 インストール後、Claude を起動してサインインし、**Code** タブをクリックします。Windows で初めて開く場合、[Git for Windows](https://git-scm.com/downloads/win) がインストールされている必要があります。インストール後、アプリを再起動してください。最初のセッションのウォークスルーについては、[はじめにガイド](/docs/ja/desktop-quickstart)を参照してください。
 
@@ -743,7 +743,12 @@ Claude が別のポートを選択すると、割り当てられたポートを 
 
 クラウドセッションはアプリを閉じても、バックグラウンドで続行されます。使用状況は[サブスクリプションプランの制限](/docs/ja/costs)にカウントされ、別の計算料金はありません。
 
-異なるネットワークアクセスレベルと環境変数を持つカスタムクラウド環境を作成できます。クラウドセッションを開始するときに環境ドロップダウンを選択し、**Add cloud environment** を選択します。ネットワークアクセスと環境変数の設定の詳細については、[クラウド環境を設定する](/docs/ja/cloud-environments)を参照してください。
+異なるネットワークアクセスレベルと環境変数を持つカスタムクラウド環境を作成できます。クラウドセッションを開始するときに、プロンプトボックスの環境ドロップダウンを開いてそれらを管理します：
+
+* **環境を追加する**：**Add cloud environment** を選択します
+* **自分の環境の 1 つを編集またはアーカイブする**：それにマウスを合わせて、ギアアイコンをクリックします
+
+ネットワークアクセスと環境変数の設定の詳細については、[クラウド環境を設定する](/docs/ja/cloud-environments)を参照してください。
 
 <h3 id="ssh-sessions">
   SSH セッション

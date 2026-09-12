@@ -181,7 +181,7 @@ Claude Code は、独自のネットワークポリシー、マウントされ�
 
 [Web 上の Claude Code](/docs/ja/claude-code-on-the-web)は、各セッションを分離された Anthropic 管理の仮想マシンで実行します。ネットワークプロキシはデフォルト許可リストを強制し、別のプロキシはサンドボックス内のリポジトリアクセスのためにスコープ付き認証情報を発行しながら、GitHub トークンをサンドボックスの外に保持します。組織が[セルフホスト環境](/docs/ja/self-hosted-environments)にルーティングするセッションは、代わりにユーザーがプロビジョニングするインフラストラクチャ上で実行され、分離、エグレス制御、および git 認証情報はデプロイメントの責任です。
 
-インフラストラクチャを自分でプロビジョニングせずに完全な VM 分離が必要な場合、またはローカル開発環境がないデバイスからタスクを委任する場合に、このアプローチを使用します。Claude サブスクリプションが必要です。Web インターフェースからセッションを起動する場合、サンドボックスがリポジトリをクローンできるように、接続された GitHub アカウントも必要です。`--cloud`を使用して CLI から起動する場合、GitHub が接続されていなければ、Claude Code は代わりに[ローカルリポジトリをバンドルしてアップロード](/docs/ja/claude-code-on-the-web#send-local-repositories-without-github)できます。プラン可用性と GitHub 認証オプションについては、[Web 上の Claude Code](/docs/ja/claude-code-on-the-web)を参照してください。
+インフラストラクチャを自分でプロビジョニングせずに完全な VM 分離が必要な場合、またはローカル開発環境がないデバイスからタスクを委任する場合に、このアプローチを使用します。Claude サブスクリプションが必要です。Web インターフェースからセッションを起動する場合、サンドボックスがリポジトリをクローンできるように、接続された GitHub アカウントも必要です。`--cloud`を使用して CLI から起動する場合、Claude Code は代わりに[ローカルリポジトリをバンドルしてアップロード](/docs/ja/claude-code-on-the-web#send-local-repositories-without-github)できます。プラン可用性と GitHub 認証オプションについては、[Web 上の Claude Code](/docs/ja/claude-code-on-the-web)を参照してください。
 
 <h2 id="enforce-isolation-across-an-organization">
   組織全体で分離を強制する

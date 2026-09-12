@@ -207,7 +207,7 @@ Anthropic は、プラグインシステムで何が可能かを示す例プラ�
   </Step>
 
   <Step title="新しいプラグインを使用する">
-    インストール概要を確認します。`Run /reload-plugins to activate.` と報告されている場合は、`/reload-plugins` を実行してください。リロードが会話を再読み込みすることを警告する場合は、`/reload-plugins --force` として再実行してください。
+    インストール概要が `Run /reload-plugins to activate.` と報告されている場合、Claude Code はそのリロードを自動的に実行します。リロードが会話を再読み込みすることを警告する場合は、`/reload-plugins --force` を実行してプラグインをアクティベートしてください。
 
     プラグインスキルはプラグイン名でネームスペース化されているため、**commit-commands** は `/commit-commands:commit` のようなスキルを提供します。
 
@@ -311,7 +311,7 @@ URL 経由でリモート `marketplace.json` ファイルを追加します：
 ```
 
 <Note>
-  URL ベースのマーケットプレイスは、Git ベースのマーケットプレイスと比べていくつかの制限があります。プラグインをインストールするときに「path not found」エラーが発生した場合は、[トラブルシューティング](/docs/ja/plugin-marketplaces#plugins-with-relative-paths-fail-in-url-based-marketplaces)を参照してください。
+  URL ベースのマーケットプレイスは、Git ベースのマーケットプレイスと比べていくつかの制限があります。URL ベースのマーケットプレイスからのプラグインのインストールが失敗する場合は、[トラブルシューティング](/docs/ja/plugin-marketplaces#plugins-with-relative-paths-fail-in-url-based-marketplaces)を参照してください。
 </Note>
 
 <h2 id="install-plugins">
@@ -349,7 +349,7 @@ Claude Code はローカル マーケットプレイス カタログのコピー
 `/plugin` インターフェイスからインストールすると、インストール サマリーは、プラグインが現在のセッションでアクティブかどうかを示します：
 
 * `Plugin is now active.`: Claude Code はインストールの一部としてプラグインをアクティブにしました。
-* `Run /reload-plugins to activate.`: プラグインはまだアクティブではありません。これは、アクティブ化すると[プロンプト キャッシュが無効になる](/docs/ja/prompt-caching#enabling-or-disabling-a-plugin)か、アクティブ化の試行が失敗したためです。コマンドを実行してプラグインをアクティブにします。
+* `Run /reload-plugins to activate.`: プラグインはまだアクティブではありません。これは、アクティブ化すると[プロンプト キャッシュが無効になる](/docs/ja/prompt-caching#enabling-or-disabling-a-plugin)か、アクティブ化の試行が失敗したためです。Claude Code はその後、`/reload-plugins` を実行します。そのリロードがプロンプト キャッシュについて警告する場合、[プラグインをとにかくアクティブにする](#apply-plugin-changes-without-restarting)には `/reload-plugins --force` を実行してください。
 * プラグインの読み込みに失敗した場合、サマリーは失敗を報告し、`/plugin` **Errors** タブに詳細が表示されます。
 
 v2.1.221 より前では、`/reload-plugins` を実行するか再起動するまで、現在のセッションでインストールが有効になりませんでした。
@@ -393,7 +393,7 @@ Claude Code はまた、マーケットプレイスから自分でインスト�
 
 直接コマンドでプラグインを管理することもできます：
 
-* `/plugin disable`、`/plugin enable`、または `/plugin uninstall` を実行すると、Claude Code はプラグインパネルを開いて変更を適用し、パネルを開いたままにします。別のコマンドを入力する前に **Esc** を押してパネルを閉じます。
+* `/plugin disable`、`/plugin enable`、または `/plugin uninstall` を実行すると、Claude Code はプラグインパネルを開いて変更を適用し、パネルを開いたままにします。別のコマンドを入力する前に **Esc** を押してパネルを閉じます。[プラグインの変更をリスタートなしで適用する](#apply-plugin-changes-without-restarting) では、変更がセッションでいつ有効になるかについて説明しています。
 * スクリプティングの場合は、代わりに `claude plugin` シェルコマンドを使用します。これらはパネルを開きません。
 
 メニューを開かずにインストール済みプラグインを一覧表示します：
@@ -437,13 +437,16 @@ claude plugin uninstall formatter@your-org --scope project
   プラグインの変更をリスタートなしで適用する
 </h3>
 
-[インストール概要](#install-plugins) が `Plugin is now active.` を報告する場合、Claude Code はすでにプラグインをアクティブ化しており、このステップをスキップできます。その他すべての場合、セッション中に有効化または無効化したプラグイン、およびインストール概要が `Run /reload-plugins to activate.` を報告するインストールについては、すべての変更をリスタートなしで適用します：
+`/plugin` メニューを閉じると、Claude Code はインストール、有効化、無効化、アンインストールなど、メニューで行った変更を適用するために `/reload-plugins` を実行します。リロードが [プロンプトキャッシュを無効にする](/docs/ja/prompt-caching#enabling-or-disabling-a-plugin) 場合、警告を表示し、変更を保留のままにします。代わりに `/reload-plugins --force` を実行して適用します。Claude がまだ応答中の場合、リロードは応答が終了した後に実行されます。
 
-```shell theme={null}
-/reload-plugins
-```
+メニューの外で発生するプラグイン変更については、`/reload-plugins` を自分で実行します。これらの変更には以下が含まれます：
 
-リロードがプロンプトキャッシュを無効にする場合、コマンドは警告を表示し、`--force` を使用して再実行するまでスキップします。
+* 別のターミナルで実行した `claude plugin` コマンド
+* 開発中に [`--plugin-dir`](/docs/ja/plugins#test-your-plugins-locally) で読み込んだプラグインへの編集
+* 再度読み込むよう求める通知を表示するプラグイン [自動更新](#configure-auto-updates)
+* Claude Code が保留していた [`--plugin-dir` フォルダ](/docs/ja/plugins#test-your-plugins-locally) の変更。これは、適用するとプロンプトキャッシュが無効になるため
+
+v2.1.268 より前では、メニューで有効化、無効化、またはアンインストールしたプラグイン、およびインストール中にアクティブ化されなかったインストールは、`/reload-plugins` を実行するまで保留のままでした。
 
 `/reload-plugins` はまた、デスクトップアプリ、Agent SDK、および [`-p` を使用した非対話型モード](/docs/ja/headless) など、対話型ターミナルのないセッションでも実行されます。Claude Code v2.1.260 以降が必要です。これらのセッションでは 2 つの制限が適用されます：
 

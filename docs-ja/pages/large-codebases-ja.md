@@ -176,19 +176,19 @@ Claude のコンテンツ検索はデフォルトで `.gitignore` を尊重す�
 拒否ルールは、リポジトリで作業するすべての人、あなただけ、またはマシン上のすべてのセッションに適用できます。これは、どの設定ファイルに配置するかによって異なります。
 
 * **リポジトリで作業するすべての人**: ルールを `.claude/settings.json` にコミットします。Claude をそこから開始する場合はリポジトリルートに配置するか、サブディレクトリから開始する場合は各パッケージの `.claude/` に配置します。このページの他のプロジェクト設定と同様に、そのファイルは親ディレクトリから継承されません。
-* **あなただけ**: リポジトリルートで `.claude/settings.local.json` を使用します。これは開始ディレクトリに関係なく、リポジトリ内のすべての CLI セッションで読み込まれます。ただし、Windows など Claude Code が [リポジトリルートを使用しない](/docs/ja/settings#where-claude-code-looks-for-each-file)場合は除きます。例の `Read(./vendor/**)` のような相対パターンは、[セッションの現在の作業ディレクトリ](/docs/ja/permissions#read-and-edit)ではなく、リポジトリルートではなく、セッションの現在の作業ディレクトリにアンカーされます。サブディレクトリからセッションを開始する場合は、このファイルのルールを `//` 絶対パスとして記述します。例えば `Read(//absolute/path/to/repo/vendor/**)` のようにします。v2.1.211 より前では、`.claude/settings.local.json` は開始ディレクトリからのみ読み込まれていました。
+* **あなただけ**: リポジトリルートで `.claude/settings.local.json` を使用します。これは開始ディレクトリに関係なく、リポジトリ内のすべての CLI セッションで読み込まれます。ただし、Windows など Claude Code が [リポジトリルートを使用しない](/docs/ja/settings#where-claude-code-looks-for-each-file)場合は除きます。例の `Read(./**/vendor/**/*)` のような相対パターンは、[セッションの現在の作業ディレクトリ](/docs/ja/permissions#read-and-edit)ではなく、リポジトリルートではなく、セッションの現在の作業ディレクトリにアンカーされます。サブディレクトリからセッションを開始する場合は、このファイルのルールを `//` 絶対パスとして記述します。例えば `Read(//absolute/path/to/repo/**/vendor/**/*)` のようにします。v2.1.211 より前では、`.claude/settings.local.json` は開始ディレクトリからのみ読み込まれていました。
 * **すべての人、すべてのセッションで強制**: [管理設定](/docs/ja/managed-settings)でルールを設定します。ユーザーとプロジェクト設定はこれをオーバーライドできません。
 
-以下の例はビルドアーティファクトとベンダー SDK をブロックします。
+以下の例はビルドアーティファクトとベンダー SDK をブロックします。そのディレクトリパターンは `/**` ではなく `/**/*` で終わるため、各ルールはディレクトリ内のすべてをカバーしますが、ディレクトリ自体はカバーしません。Claude はその後、`ls dist` や `cd build` などでこれらのディレクトリをリストしたり、変更したりできます。
 
 ```json .claude/settings.json theme={null}
 {
   "permissions": {
     "deny": [
-      "Read(./**/dist/**)",
-      "Read(./**/build/**)",
+      "Read(./**/dist/**/*)",
+      "Read(./**/build/**/*)",
       "Read(./**/*.generated.*)",
-      "Read(./vendor/**)"
+      "Read(./**/vendor/**/*)"
     ]
   }
 }
@@ -446,8 +446,8 @@ description: API パッケージのテストパターン。packages/api/ でテ�
       "../shared"
     ],
     "deny": [
-      "Read(./**/dist/**)",
-      "Read(./**/build/**)"
+      "Read(./**/dist/**/*)",
+      "Read(./**/build/**/*)"
     ]
   }
 }
@@ -461,8 +461,8 @@ description: API パッケージのテストパターン。packages/api/ でテ�
 {
   "permissions": {
     "deny": [
-      "Read(./**/dist/**)",
-      "Read(./**/build/**)"
+      "Read(./**/dist/**/*)",
+      "Read(./**/build/**/*)"
     ]
   }
 }

@@ -54,7 +54,12 @@ Microsoft Foundry および [AWS 上の Claude Platform](/docs/ja/claude-platfor
   オプションエンドポイントとスタートアップトラフィック
 </h3>
 
-トークンカウントエンドポイントは唯一のオプションです。存在しない場合、Claude Code は推論エンドポイントを通じてコンテキスト使用量をカウントすることにフォールバックします。推論リクエストは `/v1/messages?beta=true` に POST されるため、完全な URL ではなくパスで一致させてください。Google Cloud の Agent Platform メソッドのサフィックスは、`/projects/{project}/locations/{location}/publishers/anthropic/models/{model}:streamRawPredict` のようにパブリッシャーモデルパスに付加されます。
+トークンカウントエンドポイントは唯一のオプションです。存在しない場合、Claude Code は文字ベースのコンテキスト使用量の推定にフォールバックします。
+
+パスで一致させてください。完全な URL ではなく：
+
+* 推論リクエストは `/v1/messages?beta=true` に POST されます
+* Google Cloud の Agent Platform メソッドのサフィックスは、`/projects/{project}/locations/{location}/publishers/anthropic/models/{model}:streamRawPredict` のようにパブリッシャーモデルパスに付加されます
 
 ゲートウェイは、拒否しても何も壊さないベストエフォート型のスタートアップトラフィックも受け取ります。Anthropic Messages フォーマットゲートウェイは `HEAD /api/hello` 接続ウォーミングプローブを受け取ります。これは HTTP プロキシまたはクライアント証明書が設定されている場合、Claude Code はスキップします。Amazon Bedrock フォーマットゲートウェイは `GET /inference-profiles?type=SYSTEM_DEFINED` リクエストを受け取り、設定されたモデルが推論プロファイルの場合、`GET /inference-profiles/{profile}` ルックアップを受け取ります。
 
@@ -152,7 +157,7 @@ Claude Code は `ANTHROPIC_BASE_URL` ゲートウェイを Anthropic フォー�
 | ベータ[ツールフィールド](https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview)                                                                                                                                       | ツール関連ベータヘッダーは `strict` および `defer_loading` などのツールスキーマフィールドと組み合わされます                                                          | ボディがヘッダーなしで渡される場合、認識されないツールスキーマフィールドを命名する `400`                                                                               | 両方を転送するか、[`CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1`](#disable-pre-release-capabilities)                     |
 | [努力](https://platform.claude.com/docs/en/build-with-claude/effort)および[構造化出力](https://platform.claude.com/docs/en/build-with-claude/structured-outputs)                                                                      | `output_config` ボディフィールドは努力、構造化出力フォーマット、およびタスク予算設定を含みます。各々は独自のベータヘッダーと組み合わされます                                               | `output_config` を命名する `400`。多くの場合 `Extra inputs are not permitted`。Amazon Bedrock および Google Cloud の Agent Platform アップストリーム上 | フィールドとそのヘッダーを一緒に転送してください                                                                                     |
 | [プロンプトキャッシング](/docs/ja/prompt-caching)                                                                                                                                                                                           | ベータペアリングなし。Claude Code は `cache_control` マーカーを `system` ブロックおよび `messages` エントリ（会話の途中で追加される `role: "system"` エントリを含む）に付加します  | エラーなし。会話は毎ターン、キャッシュされていない入力として課金されます。`usage` でキャッシュアクティビティがほとんどまたはまったくない高い `input_tokens` として表示されます                           | `cache_control` が表示される場所ならどこでも変更なしで転送し、ブロック形式の `system` またはメッセージコンテンツをプレーン文字列に変換しないでください                     |
-| [トークンカウント](https://platform.claude.com/docs/en/build-with-claude/token-counting)                                                                                                                                            | ベータペアリングなし。`count_tokens` エンドポイントを使用します                                                                                      | Claude Code はメッセージエンドポイントを通じてコンテキスト使用量をカウントするようにフォールバックします                                                                    | トークンカウントが推論リクエストを消費しないようにエンドポイントを公開してください                                                                    |
+| [トークンカウント](https://platform.claude.com/docs/en/build-with-claude/token-counting)                                                                                                                                            | ベータペアリングなし。`count_tokens` エンドポイントを使用します                                                                                      | エラーなし。Claude Code は文字ベースの推定にフォールバックするため、`/context` は概算カウントを表示します                                                              | 正確なトークンカウントのためにエンドポイントを公開してください                                                                              |
 
 `ANTHROPIC_DEFAULT_*_MODEL_SUPPORTED_CAPABILITIES` [変数](/docs/ja/model-config)は、プロバイダー設定でのみモデル機能を宣言します：`CLAUDE_CODE_USE_BEDROCK`、`CLAUDE_CODE_USE_VERTEX`、`CLAUDE_CODE_USE_FOUNDRY`、および [`CLAUDE_CODE_USE_MANTLE`](/docs/ja/amazon-bedrock#use-the-mantle-endpoint)。`ANTHROPIC_BASE_URL` ゲートウェイの背後では効果がありません。
 
@@ -160,7 +165,11 @@ Claude Code は `ANTHROPIC_BASE_URL` ゲートウェイを Anthropic フォー�
   自動リトライとエラー転送
 </h3>
 
-アップストリームが `thinking` フィールド、[思考署名](https://platform.claude.com/docs/en/build-with-claude/extended-thinking)、会話中のシステムメッセージ、またはそれらのメッセージの 1 つの `cache_control` マーカーを拒否する場合、Claude Code はリクエストをリトライし、拒否された機能を会話の残りの部分で無効にします。Claude Code はコンテキスト管理またはツールスキーマフィールド拒否をリトライしません。それらの `400` エラーは開発者に到達します。
+アップストリーム拒否後に Claude Code が実行する内容は、何が拒否されたかによって異なります：
+
+* アップストリームが `thinking` フィールド、会話中のシステムメッセージ、またはそのようなメッセージの `cache_control` マーカーを拒否する場合、Claude Code はリクエストをリトライし、拒否された機能を会話の残りの部分で無効にします
+* アップストリームが[思考署名](https://platform.claude.com/docs/en/build-with-claude/extended-thinking)を拒否する場合、Claude Code はリクエストを会話の以前の思考ブロックなしでリトライし、それらを後のすべてのリクエストから除外します。新しい応答には依然として思考が含まれます
+* Claude Code はコンテキスト管理またはツールスキーマフィールド拒否をリトライしません。それらの `400` エラーは開発者に到達します
 
 リトライロジックはアップストリームのエラー文言に一致するため、アップストリームエラーレスポンスボディを変更なしで転送してください。アップストリームエラーを独自のエンベロープでラップするゲートウェイは、ステータスコードを保持する場合でも回復パスを壊します。ただし、エンベロープのメッセージが安定した `capability_rejected:` トークンを含む場合は除きます。[Claude apps ゲートウェイはクラウドプロバイダーのエラー文言をそれらのトークンに置き換えます](/docs/ja/claude-apps-gateway-config#upstream-error-messages)。例えば `capability_rejected: prompt_too_long` です。
 

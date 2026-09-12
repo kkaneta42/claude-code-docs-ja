@@ -110,6 +110,19 @@ Claude の出力をクリップボードに配置するには、Claude に応答
 
 パイプされたコマンドが代わりにクリップボードに直接到達できるようにするには、`pbcopy *`、`wl-copy *`、または `xclip *` を [`excludedCommands`](/docs/ja/settings-reference#sandbox-excludedcommands) に追加して、コマンドがサンドボックスの外で実行されるようにします。
 
+<h3 id="copied-text-doesn’t-reach-your-local-clipboard-over-ssh">
+  SSH 経由でコピーされたテキストがローカルクリップボードに到達しない
+</h3>
+
+Claude Code がリモートマシンで SSH 経由で実行されている場合、ローカルマシンでクリップボードツールを実行できません。tmux の外では、[フルスクリーンレンダリング](/docs/ja/fullscreen)でテキストを選択するか `/copy` を実行すると、Claude Code はテキストを OSC 52 エスケープシーケンスとしてターミナルに送信します。ターミナルがそれをクリップボードに配置するかどうかを決定します。`/copy` は、テキストが到達したかどうかに関わらず `Copied to clipboard` を報告し、tmux の外では選択通知は `sent N chars via OSC 52` と表示されます。
+
+一部のターミナルは OSC 52 に対応していません。iTerm2 は **Settings > General > Selection > Applications in terminal may access clipboard** をオンにするまで無視し、macOS Terminal.app はそれをサポートしていません。
+
+OSC 52 なしでテキストを取得するには：
+
+* ターミナルのネイティブ選択キーを押しながらドラッグしてから、ターミナルの通常のショートカット（`Cmd+C` など）でコピーします。キーは Terminal.app では `Fn`、iTerm2 では `Option` です。[ネイティブテキスト選択を保持](/docs/ja/fullscreen#keep-native-text-selection)で他のターミナルのキーを一覧表示します。
+* リモートマシンで [`CLAUDE_CODE_DISABLE_MOUSE=1`](/docs/ja/env-vars) を設定して、ターミナルがセッション全体の選択を処理するようにします。
+
 <h3 id="search-and-discovery-issues">
   検索と発見の問題
 </h3>
