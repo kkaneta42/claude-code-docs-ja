@@ -1186,7 +1186,7 @@ OAuth token does not meet scope requirement: user:profile
   claude.ai がセッショントークンを拒否しました
 </h3>
 
-[claude.ai コネクター](/docs/ja/mcp#use-mcp-servers-from-claude-ai) リクエストが失敗しました。claude.ai が Claude Code ログインからのトークンを拒否したため。通常、期限切れになり、更新できなかったログイン。拒否されたトークンはコネクターのログイン、コネクターの claude.ai での独自の認可ではないため、コネクターを再度認可してもそれは解決しません。`/mcp` では、コネクターは `connected · session token rejected` として表示され、その詳細ビューは以下のように読みます：
+[claude.ai コネクター](/docs/ja/mcp#use-mcp-servers-from-claude-ai) リクエストが失敗しました。claude.ai が Claude Code ログインからのトークンを拒否したため。通常、期限切れになり、更新できなかったログイン。拒否されたトークンはあなたのログインであり、コネクターの claude.ai での独自の認可ではないため、コネクターを再度認可してもそれは解決しません。`/mcp` では、コネクターは `connected · session token rejected` として表示され、その詳細ビューは以下のように読みます：
 
 ```text theme={null}
 claude.ai rejected the session token. Run /login, then reconnect.
@@ -1411,7 +1411,7 @@ A proxy is configured via HTTPS_PROXY. Check that it allows connections to the h
 
 Claude Code は、API リクエストと同じ [プロキシ設定](/docs/ja/network-config) を通じてチェックを送信し、各プローブに 10 秒を与えます。失敗したプローブがプロキシを通過した場合、メッセージは `HTTPS_PROXY` などの環境変数を名前で指定します。v2.1.222 より前では、チェックはタイムアウトなしの異なるプロキシトランスポートを使用していました。`https://` スキーム付きのプロキシ URL の背後では、`Checking connectivity...` で無期限に停止してから失敗する可能性があり、同じプロキシを通じた API リクエストが成功しても失敗します。
 
-Claude Code は、[管理設定ファイル、MDM ポリシー、またはポリシーヘルパー](/docs/ja/managed-settings) が [`forceLoginMethod`](/docs/ja/settings-reference#forceloginmethod) を `"gateway"` に設定するか、`forceLoginMethod` なしで [`forceLoginGatewayUrl`](/docs/ja/settings-reference#forcelogingatewayurl) を設定する場合、このチェックをスキップします。どちらかの設定では、Claude Code は **Cloud gateway** 画面ではなく Anthropic サインイン方法でサインインステップを開きます。マシン上の管理設定ソースが存在するが読み取れない場合、Claude Code はチェックをスキップします。そのソースはゲートウェイ設定を保持する可能性があるためです。v2.1.247 より前では、Claude Code はこの設定下でもチェックを実行し、Anthropic のエンドポイントに到達できない場合、このエラーで終了しました。
+Claude Code は、[管理設定ファイル、MDM ポリシー、またはポリシーヘルパー](/docs/ja/managed-settings) が [`forceLoginMethod`](/docs/ja/settings-reference#forceloginmethod) を `"gateway"` に設定するか、`forceLoginMethod` なしで [`forceLoginGatewayUrl`](/docs/ja/settings-reference#forcelogingatewayurl) を設定する場合、このチェックをスキップします。どちらの設定でも、Claude Code は Anthropic サインイン方法ではなく **Cloud gateway** 画面でサインインステップを開きます。マシン上の管理設定ソースが存在するが読み取れない場合も、Claude Code はチェックをスキップします。そのソースはゲートウェイ設定を保持する可能性があるためです。v2.1.247 より前では、Claude Code はこの設定下でもチェックを実行し、Anthropic のエンドポイントに到達できない場合、このエラーで終了しました。
 
 **対応方法：**
 
@@ -1719,7 +1719,7 @@ v2.1.162 より前では、Claude Code は圧縮を試行し、失敗時に裸�
   コンテキストがトークン制限を超えています
 </h3>
 
-`/context` は、会話がモデルのコンテキストウィンドウを超えて成長した場合、その出力の上部にこの警告を表示します。[`Prompt is too long`](#prompt-is-too-long) でリクエストが失敗するまで、スペースを解放してください。インタラクティブセッションは、そのエラーを `Context limit reached` 行として表示します。
+`/context` は、会話がモデルのコンテキストウィンドウを超えて成長した場合、その出力の上部にこの警告を表示します。スペースを解放するまで、リクエストは [`Prompt is too long`](#prompt-is-too-long) で失敗します。インタラクティブセッションは、そのエラーを `Context limit reached` 行として表示します。
 
 ```text theme={null}
 Context exceeds the 200k-token limit by 94k tokens — run /compact or /clear to continue.
@@ -2238,7 +2238,7 @@ The connection dropped while downloading the update (attempt 3/3: aborted). Chec
 このメッセージには Claude Code v2.1.198 以降が必要です。同じ `claude` 呼び出しで `--bg` を `-p` または `--print` と組み合わせました。`--bg` は [バックグラウンドセッション](/docs/ja/agent-view#from-your-shell) を開始し、後で `claude agents` で接続できます。一方、`--print` は [非対話的に](/docs/ja/headless) 実行され、`claude agents` が接続するインタラクティブセッションを開始しません。v2.1.198 より前は、この組み合わせは無言でバックグラウンドジョブを作成し、接続できなくなりました。
 
 ```text theme={null}
---bg と --print が競合しています。--print は `claude agents` が接続するインタラクティブセッションを開始しないため、ジョブは接続不可になります。プロンプトは位置引数です。--print を削除してください。`claude --bg '<task>'` です。
+--bg and --print conflict: --print never starts the interactive session that `claude agents` attaches to, so the job would be unattachable. The prompt is the positional — drop --print: `claude --bg '<task>'`.
 ```
 
 **対処方法：**

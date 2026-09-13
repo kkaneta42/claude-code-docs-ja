@@ -177,7 +177,7 @@ Claude Code は `ANTHROPIC_BASE_URL` ゲートウェイを Anthropic フォー�
   プレリリース機能を無効化
 </h3>
 
-`CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1` は Claude Code がすべてのプロバイダーでプレリリース機能とそのボディフィールドを送信するのを停止します。コンテキスト管理とベータツールフィールドを含みます。適応的推論には影響しません。これはモデルではなくベータで選択されるため、サブスクリプション認証が必要とする OAuth 機能を抑制することはありません。
+`CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1` は Claude Code がすべてのプロバイダーでプレリリース機能とそのボディフィールドを送信するのを停止します。コンテキスト管理とベータツールフィールドを含みます。適応的推論には影響しません。適応的推論はベータではなくモデルによって選択されるためです。この変数は、サブスクリプション認証が必要とする OAuth 機能を抑制することもありません。
 
 Claude Code v2.1.227 以降では、組織は [MCP ツール検索](/docs/ja/mcp#scale-with-mcp-tool-search)を[管理設定](/docs/ja/managed-settings)を通じてこの変数の下で有効に保つことができます。このオーバーライドが有効な場合に Claude Code が送信する内容は、接続方法によって異なります：
 

@@ -1100,7 +1100,7 @@ fi
 
 `$-` 変数はシェルフラグを含み、`i` はインタラクティブを意味します。Hooks は非インタラクティブシェルで実行されるため、echo はスキップされます。
 
-Hook が `permissionDecision` または `additionalContext` をトップレベルではなく `hookSpecificOutput` の内部に返す場合、JSON は依然として解析され、Claude Code は誤配置されたフィールドを報告なしで無視します。どのフィールドが無視されたかを確認するには、`claude --debug` で Claude Code を開始し、[デバッグログ](/docs/ja/hooks#debug-hooks)で `Hook JSON output had unrecognized keys` を検索します。
+Hook が `permissionDecision` または `additionalContext` を `hookSpecificOutput` の内部ではなくトップレベルに返す場合、JSON は依然として解析され、Claude Code は誤配置されたフィールドを報告なしで無視します。どのフィールドが無視されたかを確認するには、`claude --debug` で Claude Code を開始し、[デバッグログ](/docs/ja/hooks#debug-hooks)で `Hook JSON output had unrecognized keys` を検索します。
 
 <h3 id="debug-techniques">
   デバッグ技術

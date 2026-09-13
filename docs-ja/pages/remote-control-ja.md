@@ -374,7 +374,7 @@ Claude Code は、ターミナルに入力中またはターミナルにフォ�
   * テキスト出力コマンド: `/compact`、`/clear`、`/context`、`/usage`、`/exit`、`/usage-credits`、`/recap`、`/reload-plugins`。`/usage-credits` はブラウザを開く代わりに請求 URL を出力します。`/reload-plugins` はセッションが対話型ターミナルで実行されている場合にのみ機能します。セッションがない場合は拒否されます。
   * `/model`、`/effort`、`/fast`、`/color`、`/rename`: 値を引数として渡します。例えば `/model sonnet` または `/effort high` のようにします。モバイルと Web からは、`/model` と `/effort` はターミナルピッカーまたはスライダーの代わりに引数を受け取ります。
   * `/mcp`: モバイルアプリからは、ピッカーを開く代わりにサーバーステータスのテキスト概要を返します。Web では、`/mcp` 単独で概要を返す代わりに [claude.ai コネクタ](/docs/ja/mcp#use-mcp-servers-from-claude-ai)のディレクトリを開きます。`reconnect`、`enable`、`disable` [サブコマンド](/docs/ja/commands#all-commands)は両方から機能します。ローカル CLI と異なり、サーバー名なしで `/mcp reconnect` を実行すると、失敗したか認証が必要なすべてのサーバーを再接続します。
-  * `/config`、v2.1.181 以降: モバイルアプリからは、`key=value` を渡して設定を行うか、引数なしで実行して設定できるキーのリストを表示します。Web では、`/config` は設定の Claude Code セクションを開く代わりに、コマンドの後のテキストを無視します。
+  * `/config`、v2.1.181 以降: モバイルアプリからは、`key=value` を渡して設定を行うか、引数なしで実行して設定できるキーのリストを表示します。Web では、`/config` は代わりに設定の Claude Code セクションを開き、コマンドの後のテキストを無視します。
   * Team と Enterprise では、モバイルまたは Web から `/usage-credits` を実行しても、[管理者への使用クレジットリクエスト](/docs/ja/costs#add-usage-credits-to-your-subscription)は送信されません。送信には対話型 CLI にのみ表示される確認が必要なため、コマンドはそこで実行するよう指示します。v2.1.211 より前は、テキスト形式は確認なしでリクエストを送信していました。
   * `/autocompact`、v2.1.221 以降: ウィンドウサイズを引数として渡します。例えば `/autocompact 500k` のようにします。引数がない場合、ターミナルセッションで表示されるダイアログを開く代わりに、現在のウィンドウサイズをテキストとして出力します。
   * `/advisor`、v2.1.260 以降: モデルを引数として渡します。例えば `/advisor opus` のようにします。または `off` を渡してアドバイザーをオフにします。両方の形式は現在のセッションにのみ適用され、保存されたデフォルトは変わりません。引数がない場合、ピッカーを開く代わりに、現在のアドバイザーをテキストとして出力します。
@@ -467,7 +467,7 @@ claude remote-control --verbose
 * ネットワークまたはプロキシの問題：ファイアウォールまたはプロキシがアウトバウンド HTTPS リクエストをブロックしている可能性があります。Remote Control はポート 443 で Anthropic API へのアクセスが必要です。
 * セッション作成に失敗：`Session creation failed — see debug log` も表示される場合、失敗はセットアップの前の段階で発生しました。サブスクリプションがアクティブであることを確認してください。
 
-古いログイントークンはこのエラーを引き起こしません。Anthropic API が保存されたトークンを拒否する場合（例えば、別の Claude Code プロセスがすでにそれを更新したため）、Claude Code はトークンを更新して自動的に再試行します。v2.1.224 より前では、古いトークンはこのメッセージで Remote Control スタートアップに失敗し、[自動的に接続するように設定](/docs/ja/errors#enable-remote-control-for-all-sessions)されたセッションは起動時に断続的に失敗する可能性がありました。
+古いログイントークンはこのエラーを引き起こしません。Anthropic API が保存されたトークンを拒否する場合（例えば、別の Claude Code プロセスがすでにそれを更新したため）、Claude Code はトークンを更新して自動的に再試行します。v2.1.224 より前では、古いトークンはこのメッセージで Remote Control スタートアップに失敗し、[自動的に接続するように設定](#enable-remote-control-for-all-sessions)されたセッションは起動時に断続的に失敗する可能性がありました。
 
 <h3 id="couldn’t-reconnect-to-your-remote-control-session">
   「Remote Control セッションに再接続できませんでした」

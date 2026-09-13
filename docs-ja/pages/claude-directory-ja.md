@@ -1672,7 +1672,7 @@ claude project purge ~/work/my-repo --yes
 | `~/.claude/cache/changelog.md`                                                                                                            | なし。バックグラウンドで更新されます。                                                                           |
 | `~/.claude/policy-limits.json`                                                                                                            | なし。自動的に更新されます。                                                                                |
 | `~/.claude/tasks/`                                                                                                                        | 再開されたセッションが取得するタスクリスト                                                                         |
-| `~/.claude/debug/`、`~/.claude/plans/`、`~/.claude/image-cache/`、`~/.claude/session-env/`、`~/.claude/shell-snapshots/`、`~/.claude/backups/` | ユーザー向けのもの                                                                                     |
+| `~/.claude/debug/`、`~/.claude/plans/`、`~/.claude/image-cache/`、`~/.claude/session-env/`、`~/.claude/shell-snapshots/`、`~/.claude/backups/` | ユーザー向けのものはなし                                                                                  |
 | `~/.claude/todos/`、`~/.claude/statsig/`、`~/.claude/logs/`                                                                                 | なし。現在のバージョンでは書き込まれないレガシーディレクトリ。                                                               |
 
 `~/.claude.json`、`~/.claude/settings.json`、または `~/.claude/plugins/` は削除しないでください。これらは認証、設定、インストール済みプラグインを保持しています。
