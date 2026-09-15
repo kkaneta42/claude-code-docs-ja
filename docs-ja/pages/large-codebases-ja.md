@@ -334,9 +334,9 @@ CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1 claude --add-dir ../shared
   ディレクトリごとのスキルを追加する
 </h2>
 
-任意のサブディレクトリは、独自のスタックにスコープされた [スキル](/docs/ja/skills) を定義できます。スキルは Claude がそれが関連していると判断したときにオンデマンドで読み込まれるため、API 固有のツーリングはフロントエンド作業中にコンテキストを消費しません。
+任意のサブディレクトリは、独自のスタックにスコープされた[スキル](/docs/ja/skills)を定義できます。スキルは Claude が関連性があると判断したときにオンデマンドで読み込まれるため、API 固有のツーリングはフロントエンド作業中にコンテキストを消費しません。
 
-スキルはディレクトリ内の `.claude/skills/` の下に存在します。そのエリアのコードと一緒にコミットして、リポジトリをクローンする人は誰でもそれらを取得します。モノレポではこれはパッケージごとに 1 つのスキルセットになります。大規模シングルツリーコードベースでは、`src/db/.claude/skills/` などのサブシステムごとに 1 つです。
+スキルはディレクトリ内の `.claude/skills/` の下に存在します。その領域のコードと一緒にコミットして、リポジトリをクローンした誰もがそれらを取得できるようにします。モノレポでは、パッケージごとに 1 つのスキルセットを持つことができます。大規模な単一ツリーコードベースでは、`src/db/.claude/skills/` などのサブシステムごとに 1 つのセットを持つことができます。
 
 サブディレクトリ内にスキルディレクトリを作成します。
 
@@ -344,60 +344,60 @@ CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1 claude --add-dir ../shared
 mkdir -p packages/api/.claude/skills/api-testing
 ```
 
-その後、そのディレクトリ内に `SKILL.md` を書き込みます。ここでは `packages/api/.claude/skills/api-testing/SKILL.md`。この例は Claude に API パッケージのテストパターンを教えます。
+次に、そのディレクトリ内に `SKILL.md` を書きます。ここでは `packages/api/.claude/skills/api-testing/SKILL.md` です。この例は Claude に API パッケージのテストパターンを教えます。
 
 ```markdown packages/api/.claude/skills/api-testing/SKILL.md theme={null}
 ---
 name: api-testing
-description: API パッケージのテストパターン。packages/api/ でテストを書き込み、または変更するときに使用します。
+description: Testing patterns for the API package. Use when writing or modifying tests in packages/api/.
 ---
 
-## テスト構造
+## Test structure
 
-テストは `src/__tests__/` にあり、`src/` ディレクトリ構造をミラーリングしています。
-各ルートファイルには対応する `.test.ts` ファイルがあります。
+Tests are in `src/__tests__/` mirroring the `src/` directory structure.
+Each route file has a corresponding `.test.ts` file.
 
-## テストを実行
+## Running tests
 
-- すべてのテスト: `npm test`
-- 単一ファイル: `npm test -- src/__tests__/routes/users.test.ts`
-- ウォッチモード: `npm test -- --watch`
+- All tests: `npm test`
+- Single file: `npm test -- src/__tests__/routes/users.test.ts`
+- Watch mode: `npm test -- --watch`
 
-## テストユーティリティ
+## Test utilities
 
-- `src/__tests__/helpers/db.ts`: データベーステスト用に `setupTestDb()` と `teardownTestDb()` を提供
-- `src/__tests__/helpers/auth.ts`: 認証されたエンドポイント用に `createTestUser()` と `getAuthToken()` を提供
+- `src/__tests__/helpers/db.ts`: provides `setupTestDb()` and `teardownTestDb()` for database tests
+- `src/__tests__/helpers/auth.ts`: provides `createTestUser()` and `getAuthToken()` for authenticated endpoints
 
-## パターン
+## Patterns
 
-- HTTP アサーションには生の fetch ではなく `supertest` を使用
-- データベーステストを常にロールバックするトランザクションでラップ
-- `src/__tests__/mocks/` で外部サービスをモック
+- Use `supertest` for HTTP assertions, not raw fetch
+- Always wrap database tests in a transaction that rolls back
+- Mock external services in `src/__tests__/mocks/`
 ```
 
-別のサブディレクトリは同じ方法で異なるスキルを保持します。`packages/web/.claude/skills/component-patterns/` はテストの代わりにフロントエンドのコンポーネント規約を説明します。Claude が `packages/api/` のファイルで動作するとき、api-testing スキルを読み込みます。`packages/web/` で動作するとき、component-patterns を読み込みます。どちらのディレクトリのスキルも他のタスク中に読み込まれません。
+別のサブディレクトリは同じ方法で異なるスキルを保持します。`packages/web/.claude/skills/component-patterns/` はテストの代わりにフロントエンドのコンポーネント規約を説明します。Claude が `packages/api/` のファイルで作業するとき、api-testing スキルを読み込みます。`packages/web/` で作業するとき、component-patterns を読み込みます。どちらのディレクトリのスキルも他方のタスク中には読み込まれません。
 
-ファイルパターンで配置の代わりにスキルをスコープすることもできます。[`paths` frontmatter フィールド](/docs/ja/skills#frontmatter-reference) はグロブパターンを取り、Claude はマッチするファイルで動作するときのみ自動的にスキルを読み込みます。これは、リポジトリルートの `.claude/skills/` に存在するが、データベースマイグレーションスキルなど、`**/migrations/**` にスコープされた特定のファイルにのみ適用されるスキルに使用します。
+配置の代わりにファイルパターンでスキルをスコープすることもできます。[`paths` frontmatter フィールド](/docs/ja/skills#frontmatter-reference)はグロブパターンを受け取り、Claude は一致するファイルで作業するときのみ自動的にスキルを読み込みます。これをリポジトリルートの `.claude/skills/` に存在するスキルに使用して、データベースマイグレーションスキルなど `**/migrations/**` にスコープされた特定のファイルにのみ適用します。
 
-スキルの作成と整理の詳細については、[スキル](/docs/ja/skills) を参照してください。
+スキルの作成と整理の詳細については、[スキル](/docs/ja/skills)を参照してください。
 
 <h3 id="keep-skills-discoverable">
   スキルを発見可能に保つ
 </h3>
 
-多くのディレクトリに分散されたスキルでは、Claude が選択できるリストは大きくなる可能性があります。Claude は発見されたすべてのスキルの名前と説明を読むことでスキルを選択し、選択されたスキルのフルコンテンツのみがコンテキストに読み込まれます。このセクションでは、そのリストを小さく保つ方法と、短縮に耐える説明を書く方法をカバーしています。
+スキルが多くのディレクトリに分散すると、Claude が選択できるリストが大きくなる可能性があります。Claude は発見されたすべてのスキルの名前と説明を読むことでスキルを選択し、選択されたスキルの完全なコンテンツのみがコンテキストに読み込まれます。このセクションでは、そのリストを小さく保つ方法について説明します。
 
-スコープ内のスキルは、Claude を開始する場所によって異なります。
+スコープ内のスキルは、Claude をどこから開始するかによって異なります。
 
 * **`packages/api/` などのサブディレクトリから**: そのディレクトリのスキル、リポジトリルートまでのすべての親、およびユーザーとエンタープライズレベル
-* **リポジトリルートから**: ルートスキル、およびセッション中に Claude が触れるすべてのサブディレクトリのスキル。数百に蓄積する可能性があります
-* **[`--add-dir`](#grant-access-across-packages-or-repositories) で兄弟を追加した後**: そのスキルのスキルも読み込まれます。`additionalDirectories` 設定はファイルアクセスのみを付与し、スキルを読み込みません
+* **リポジトリルートから**: ルートスキル、およびセッション中に Claude が接触するすべてのサブディレクトリのスキル。これは数百に蓄積する可能性があります
+* **[`--add-dir`](#grant-access-across-packages-or-repositories)でシブリングを追加した後**: そのシブリングのスキルも読み込まれます。`additionalDirectories` 設定はファイルアクセスのみを付与し、スキルは読み込みません
 
-名前は常に読み込まれますが、[多くの場合、説明は短縮されます](/docs/ja/skills#skill-descriptions-are-cut-short)。これは Claude がスキルが適用されるかどうかを決定するために使用するキーワードを削除する可能性があります。説明を短く保ち、「`packages/api/` でテストを書き込み、または変更する」などのリクエストに含まれる単語で先頭に配置します。
+名前は常に読み込まれますが、[多くの場合、一部のスキルはその説明全体を失う可能性があります](/docs/ja/skills#skill-descriptions-are-cut-short)。これにより、Claude がスキルを適用するかどうかを決定するために使用するキーワードが削除される可能性があります。説明を短く保ち、「`packages/api/` でテストを書いたり変更したりするとき」のようなリクエストに含まれる単語で始めます。
 
-多くのディレクトリが共有するスキル（PR 規約やデプロイチェックリストなど）については、リポジトリルートの `.claude/skills/` に配置して、任意の開始ディレクトリから読み込まれるようにします。共有スキルが独自のバージョン履歴を必要とするか、リポジトリ全体で動作する必要がある場合は、代わりに [プラグイン](/docs/ja/plugins) としてパッケージ化します。プラグインスキルは `plugin-name:skill-name` 名前空間を使用するため、ディレクトリごとのスキルと衝突することはありません。プラットフォームチームは 1 つの場所でそれらをバージョン管理し、更新できます。
+PR 規約やデプロイチェックリストなど、多くのディレクトリが共有するスキルの場合、リポジトリルートの `.claude/skills/` に配置して、任意の開始ディレクトリから読み込まれるようにします。共有スキルが独自のバージョン履歴を必要とするか、リポジトリ間で機能する必要がある場合は、代わりに[プラグイン](/docs/ja/plugins)としてパッケージ化します。プラグインスキルは `plugin-name:skill-name` 名前空間を使用するため、ディレクトリごとのスキルと衝突することはありません。プラットフォームチームは 1 つの場所でそれらをバージョン管理および更新できます。
 
-使用されていないスキルを見つけるには、OpenTelemetry [ログエクスポーター](/docs/ja/monitoring-usage) を有効にし、`OTEL_LOG_TOOL_DETAILS=1` を設定して、スキル名が編集されずに記録されるようにします。[`skill_activated` イベント](/docs/ja/monitoring-usage#skill-activated-event) は `skill.name` 属性のすべての呼び出しを記録し、`invocation_trigger` はコマンド、Claude、またはネストされたスキルが呼び出したかどうかを記録します。これは統合または廃止するものを示します。
+使用されていないスキルを見つけるには、OpenTelemetry [ログエクスポーター](/docs/ja/monitoring-usage)を有効にして `OTEL_LOG_TOOL_DETAILS=1` を設定し、スキル名が編集されずに逐語的に記録されるようにします。[`skill_activated` イベント](/docs/ja/monitoring-usage#skill-activated-event)はその `skill.name` 属性のすべての呼び出しを記録し、`invocation_trigger` はコマンド、Claude、またはネストされたスキルが呼び出したかどうかを記録します。これにより、統合または廃止するものを判断できます。
 
 <h2 id="centralize-conventions-when-layering-stops-scaling">
   レイアリングが拡張を停止したときに規約を一元化する

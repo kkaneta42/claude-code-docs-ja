@@ -67,7 +67,9 @@ Claude Code は、回答方法に応じてコメントを異なる方法で配�
 
 `Bash(aws *)` のような広い deny ルールは、`Bash(aws s3 ls)` のようなより狭い allow ルールにもマッチする呼び出しを含む、マッチするすべての呼び出しをブロックするため、deny ルールはアローリスト例外を含むことはできません。ask と allow の間にも同じ優先順位が適用されます。マッチする ask ルールは、同じ呼び出しにマッチするより具体的な allow ルールがある場合でも、プロンプトを表示します。
 
-Deny ルールは、ツール名を指定するか、ツール内のパターンをスコープするかによって異なる動作をします。`Bash` のようなベアツール名は、ツールを Claude のコンテキストから完全に削除するため、Claude はそれを見ることはありません。ベア名削除はすべてのツールに適用されます（[`EndConversation`](/docs/ja/tools-reference#endconversation-tool-behavior) を除く）。deny ルールは他のツールが残っている間はそれを削除できず、ask ルールはそれに対してプロンプトを表示しません。`Bash(rm *)` のようなスコープ付きルールは、ツールを利用可能なままにし、Claude が試みたときにマッチする呼び出しをブロックします。
+Deny ルールは、ツール名を指定するか、ツール内のパターンをスコープするかによって異なる動作をします。`Bash` のようなベアツール名は、ツールを Claude のコンテキストから完全に削除するため、Claude はそれを見ることはありません。セッション中にそのようなルールを追加する場合、Claude は次のツール呼び出しからそのツールを呼び出すことができません。[ツール全体を拒否する](/docs/ja/prompt-caching#denying-an-entire-tool)では、Claude が既に見た定義に何が起こるかについて説明しています。`Bash(rm *)` のようなスコープ付きルールは、ツールを利用可能なままにし、Claude が試みたときにマッチする呼び出しをブロックします。
+
+ベア名削除はすべてのツールに適用されます（[`EndConversation`](/docs/ja/tools-reference#endconversation-tool-behavior) を除く）。deny ルールは他のツールが残っている間はそれを削除できず、ask ルールはそれに対してプロンプトを表示しません。
 
 <Note>
   権限ルールは Claude Code によって実装されており、モデルによってではありません。プロンプトまたは `CLAUDE.md` の指示は、Claude が何をしようとするかを形作りますが、Claude Code が許可する内容は変わりません。アクセスを付与または取り消すには、`/permissions`、ここで説明されているルール、[permission mode](/docs/ja/permission-modes)、または [PreToolUse hook](#extend-permissions-with-hooks) を使用してください。
@@ -81,14 +83,14 @@ Deny ルールは、ツール名を指定するか、ツール内のパターン
 
 Claude Code は、ツール呼び出しの承認方法を制御するいくつかの権限モードをサポートしています。[権限モード](/docs/ja/permission-modes)を参照して、各モードをいつ使用するかを確認してください。セッションが開始される際のモードを変更するには、[設定ファイル](/docs/ja/settings#where-settings-live)で `defaultMode` を設定してください。[セッションが開始されるモード](/docs/ja/permission-modes#which-mode-a-session-starts-in)では、各プランの組み込みデフォルトと VS Code 拡張機能が読み込む内容について説明しています。
 
-| モード                 | 説明                                                                                                                                                                                                                                                                                                                    |
-| :------------------ | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `default`           | 各ツールの最初の使用時に権限を促します。CLI、VS Code と JetBrains 拡張機能、およびデスクトップアプリでは Manual とラベル付けされており、Claude Code は `manual` をエイリアスとして受け入れます。ラベルとエイリアスには Claude Code v2.1.200 以降が必要です。デスクトップアプリのラベルは CLI バージョンに依存しません                                                                                                                    |
-| `acceptEdits`       | ファイル編集と一般的なファイルシステムコマンド（`mkdir`、`touch`、`mv`、`cp` など）を、作業ディレクトリまたは `additionalDirectories` 内のパスに対して自動的に受け入れます                                                                                                                                                                                                         |
-| `plan`              | Claude はファイルを読み取り、読み取り専用シェルコマンドを実行して探索しますが、ソースファイルを編集しません。[auto モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)が利用可能で、分類器が承認したコマンドも実行されます。CLI および VS Code 拡張機能では Plan とラベル付けされています                                                                                                                        |
-| `auto`              | バックグラウンド安全チェック付きでツール呼び出しを自動承認し、アクションがリクエストと一致することを確認します                                                                                                                                                                                                                                                               |
-| `dontAsk`           | `/permissions` または `permissions.allow` ルールで事前に承認されていない限り、ツールを自動的に拒否します。`AskUserQuestion`、MCP ツール（[`requiresUserInteraction`](/docs/ja/mcp#require-approval-for-a-specific-tool)とマークされたもの）、およびコネクタツール（[組織が `ask` に設定したもの](/docs/ja/mcp#organization-controls-on-connector-tools)）は、許可していてもセッションでその設定が Claude Code に到達する場合は拒否されます |
-| `bypassPermissions` | 権限プロンプトをスキップします。ただし、[どのモードも自動承認しないアクション](/docs/ja/permission-modes#actions-no-mode-auto-approves)は除きます                                                                                                                                                                                                                     |
+| モード                 | 説明                                                                                                                                                                                                                                                                                                                                                                                               |
+| :------------------ | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `default`           | 各ツールの最初の使用時に権限を促します。CLI、VS Code と JetBrains 拡張機能、およびデスクトップアプリでは Manual とラベル付けされており、Claude Code は `manual` をエイリアスとして受け入れます。ラベルとエイリアスには Claude Code v2.1.200 以降が必要です。デスクトップアプリのラベルは CLI バージョンに依存しません                                                                                                                                                                                               |
+| `acceptEdits`       | ファイル編集と一般的なファイルシステムコマンド（`mkdir`、`touch`、`mv`、`cp` など）を、作業ディレクトリまたは `additionalDirectories` 内のパスに対して自動的に受け入れます                                                                                                                                                                                                                                                                                    |
+| `plan`              | Claude はファイルを読み取り、読み取り専用シェルコマンドを実行して探索しますが、ソースファイルを編集しません。[auto モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)が利用可能で、分類器が承認したコマンドも実行されます。CLI および VS Code 拡張機能では Plan とラベル付けされています                                                                                                                                                                                                   |
+| `auto`              | バックグラウンド安全チェック付きでツール呼び出しを自動承認し、アクションがリクエストと一致することを確認します                                                                                                                                                                                                                                                                                                                                          |
+| `dontAsk`           | その他の場合はプロンプトを表示するすべての呼び出しを自動的に拒否します。作業ディレクトリ内のファイル読み取りおよび承認が不要なその他のアクションは実行されます。`/permissions` または `permissions.allow` ルール経由で事前に承認されたツールも実行されます。`AskUserQuestion`、MCP ツール（[`requiresUserInteraction`](/docs/ja/mcp#require-approval-for-a-specific-tool)とマークされたもの）、およびコネクタツール（[組織が `ask` に設定したもの](/docs/ja/mcp#organization-controls-on-connector-tools)）は、その設定が Claude Code に到達するセッションでは、許可していてもすべて拒否されます |
+| `bypassPermissions` | 権限プロンプトをスキップします。ただし、[どのモードも自動承認しないアクション](/docs/ja/permission-modes#actions-no-mode-auto-approves)は除きます                                                                                                                                                                                                                                                                                                |
 
 <Warning>
   `bypassPermissions` モードでは、Claude Code は権限プロンプトをスキップします。これには [保護されたパス](/docs/ja/permission-modes#protected-paths)（`.git` や `.claude` など）への書き込みも含まれます。[クロスセッションメッセージングセーフガード](/docs/ja/permission-modes#skip-all-checks-with-bypasspermissions-mode)は引き続き適用されます。このモードは、Claude Code が損害を引き起こせないコンテナや VM などの隔離された環境でのみ使用してください。
@@ -463,6 +465,8 @@ Claude がシンボリックリンクにアクセスするとき、権限ルー�
 
 Grep と Glob は `path` 引数が解決するディレクトリを検索します。Claude Code はそのディレクトリに `Read` deny ルールを適用します。
 
+macOS と Linux では、シンボリックリンク付きディレクトリを通じて記述された deny または ask ルール（`//`、`~/`、または `/` パターン）は、そのディレクトリの実際の場所にも適用されます。たとえば macOS では、`/etc` が `/private/etc` に解決される場合、`Read(//etc/**)` は `/private/etc/hosts` もブロックします。v2.1.268 より前では、シンボリックリンク付きディレクトリを通じて記述された deny または ask ルールは、その実際の場所で指定されたパスに適用されませんでした。
+
 <h3 id="webfetch">
   WebFetch
 </h3>
@@ -489,6 +493,10 @@ WebFetch ルールのワイルドカードは、フェッチをマッチさせ�
 | :------------------- | :------------------------------------------------------- | :----------------------------------------------------------------------------------------- |
 | `WebFetch`           | Claude はプロンプトなしでフェッチします。サンドボックス化されたコマンドが到達できるホストを変更しません。 | Claude Code は `WebFetch` ツールを削除するため、Claude はまったくフェッチできません。サンドボックス化されたコマンドが到達できるホストを変更しません。 |
 | `WebFetch(domain:*)` | Claude はプロンプトなしでフェッチし、サンドボックス化されたコマンドは任意のホストに到達できます。     | Claude Code はツールを保持し、各フェッチを拒否し、サンドボックス化されたコマンドはホストに到達できません。                                |
+
+2 つの形式は [artifacts](/docs/ja/artifacts)（Artifact ツールが claude.ai に公開するページ）の読み取りについても異なります。ベア `WebFetch` deny または ask ルールはこれらの読み取りに適用されません。`claude.ai` または `*.claudeusercontent.com` コンテンツホストをカバーする `domain:` ルール（`WebFetch(domain:claude.ai)` または `WebFetch(domain:*)` など）は、各読み取りを拒否するか、その前にプロンプトを表示します。[`Artifact` ルール](/docs/ja/artifacts#disable-artifacts)も同じことを行います。
+
+ルールが読み取りをブロックするとき、拒否はルールを指定します。v2.1.268 より前では、ベア `WebFetch` deny ルールはすべての artifact 読み取りをブロックし、ベア ask ルールはそれぞれの前にプロンプトを表示していました。
 
 Claude がフェッチを自由に行えるようにしながら、サンドボックス許可リストをそのままにするには、ベア形式を使用してください。この `settings.json` はそれを行います。
 

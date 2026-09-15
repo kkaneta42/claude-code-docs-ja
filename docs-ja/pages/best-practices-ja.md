@@ -489,7 +489,7 @@ Claude Code は会話をローカルに保存するため、タスクが複数�
   CI、プリコミットフック、またはスクリプトで `claude -p "prompt"` を使用します。ストリーミング JSON 出力の場合は `--output-format stream-json --verbose` を追加します。
 </Tip>
 
-`claude -p "your prompt"` を使用すると、セッションなしで Claude を非対話的に実行できます。実行は `--no-session-persistence` を渡さない限り、再開可能なセッションを作成します。[非対話型モード](/docs/ja/headless)は、Claude を CI パイプライン、プリコミットフック、または自動化されたワークフローに統合する方法です。出力形式を使用すると、結果をプログラムで解析できます。プレーンテキスト、JSON、またはストリーミング JSON です。
+`claude -p "your prompt"` を使用すると、対話型プロンプトなしで Claude を非対話的に実行できます。実行は `--no-session-persistence` を渡さない限り、再開可能なセッションを作成します。[非対話型モード](/docs/ja/headless)は、Claude を CI パイプライン、プリコミットフック、または自動化されたワークフローに統合する方法です。出力形式を使用すると、結果をプログラムで解析できます。プレーンテキスト、JSON、またはストリーミング JSON です。
 
 ```bash theme={null}
 # One-off queries
@@ -538,7 +538,7 @@ claude -p "Analyze this log file" --output-format stream-json --verbose
 </h3>
 
 <Tip>
-  各タスクに対して `claude -p` を呼び出すループを実行します。バッチ操作のスコープパーミッションに `--allowedTools` を使用します。
+  各タスクに対して `claude -p` を呼び出すループを実行します。バッチ操作のスコープ権限に `--allowedTools` を使用します。
 </Tip>
 
 大規模な移行または分析の場合、多くの並列 Claude 呼び出し全体で作業を配布できます。git リポジトリでは、[`/batch <instruction>`](/docs/ja/commands#all-commands) を実行して、Claude が変更を 5～30 個のサブエージェント全体に分割させます。各サブエージェントは独自の worktree で作業し、プルリクエストを開きます。代わりに独自のスクリプトからファンアウトを駆動するには、`claude -p` をループします。
@@ -567,8 +567,6 @@ Claude を既存のデータ/処理パイプラインに統合することもで
 ```bash theme={null}
 claude -p "<your prompt>" --output-format json | your_command
 ```
-
-開発中は `--verbose` を使用し、本番環境ではオフにします。
 
 <h3 id="run-autonomously-with-auto-mode">
   auto mode で自律的に実行する

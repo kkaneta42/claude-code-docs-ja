@@ -116,7 +116,7 @@ cd api-service
 claude --cloud "Add retry logic to the payment webhook handler"
 ```
 
-セッションは GHES からリポジトリをクローンし、変更をブランチにプッシュバックします。`/tasks` で、または [claude.ai/code](https://claude.ai/code) で進捗を監視します。diff レビュー、自動修正、ルーチンを含む完全なクラウドセッションワークフローについては、[Claude Code on the web](/docs/ja/claude-code-on-the-web) を参照してください。
+セッションは GHES からリポジトリをクローンし、変更をブランチにプッシュバックします。[claude.ai/code](https://claude.ai/code) で進捗を監視します。diff レビュー、自動修正、ルーチンを含む完全なクラウドセッションワークフローについては、[Claude Code on the web](/docs/ja/claude-code-on-the-web) を参照してください。
 
 <h3 id="teleport-sessions-to-your-terminal">
   セッションをターミナルに Teleport する

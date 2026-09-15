@@ -42,16 +42,14 @@
 
 クラウドセッションはコードをクローンしてブランチをプッシュするために GitHub リポジトリへのアクセスが必要です。2 つの方法でアクセスを許可できます：
 
-| 方法               | 仕組み                                                               | 最適な用途                                                     |
-| :--------------- | :---------------------------------------------------------------- | :-------------------------------------------------------- |
-| **GitHub App**   | [ウェブオンボーディング](/docs/ja/web-quickstart)中に Claude GitHub App を認可します。     | ブラウザオンボーディング；[Auto-fix](#auto-fix-pull-requests) を希望するチーム |
-| **`/web-setup`** | ターミナルで `/web-setup` を実行して、ローカル `gh` CLI トークンを Claude アカウントに同期します。 | すでに `gh` を使用している個別開発者                                     |
+| 方法               | 接続方法                                                             | セッションが到達できるリポジトリ                                            | 最適な用途                                                     |
+| :--------------- | :--------------------------------------------------------------- | :---------------------------------------------------------- | :-------------------------------------------------------- |
+| **GitHub App**   | [ウェブオンボーディング](/docs/ja/web-quickstart)中に Claude GitHub App を認可します     | 任意のパブリックリポジトリ、および Claude GitHub App がインストールされているプライベートリポジトリ | ブラウザオンボーディング；[Auto-fix](#auto-fix-pull-requests) を希望するチーム |
+| **`/web-setup`** | ターミナルで `/web-setup` を実行して、ローカル `gh` CLI トークンを Claude アカウントに送信します | `gh` トークンがアクセスできる任意のリポジトリ（App がインストールされているかどうかに関わらず）        | すでに `gh` を使用している個別開発者                                     |
 
-<Note>
-  どちらの方法でも、クラウドセッションは Claude GitHub App がインストールされているリポジトリだけでなく、接続している GitHub アカウントが見ることができるすべてのリポジトリにアクセスできます。App インストールは [Auto-fix](#auto-fix-pull-requests) の PR webhook を有効にします；これはセッションレベルのアクセス制御ではありません。クラウドセッションからチームが到達できるリポジトリを制限するには、GitHub 自体でアクセスを制限してください。たとえば、接続している GitHub アカウントのチームまたはリポジトリメンバーシップを制限することで実現できます。
-</Note>
+Claude GitHub App をリポジトリにインストールすると、そのリポジトリのプルリクエストに対して [Auto-fix](#auto-fix-pull-requests) も有効になります。
 
-どちらの方法でも機能します。`/schedule` がアクセスをチェックしてからルーチンを作成する方法については、[リポジトリとブランチの権限](/docs/ja/routines#repositories-and-branch-permissions)を参照してください。[ターミナルから接続](/docs/ja/web-quickstart#connect-from-your-terminal)で `/web-setup` のウォークスルーを参照してください。
+`/schedule` がルーチンを作成する前にリポジトリアクセスをチェックする方法については、[リポジトリとブランチの権限](/docs/ja/routines#repositories-and-branch-permissions)を参照してください。`/web-setup` のウォークスルー（`/web-setup` が保存する内容と削除方法を含む）については、[ターミナルから接続](/docs/ja/web-quickstart#connect-from-your-terminal)を参照してください。
 
 Quick web setup は、メンバーが `/web-setup` で GitHub を接続できるようにする組織設定で、ブラウザオンボーディング中に Claude GitHub App インストールプロンプトをスキップし、環境フォームを表示する代わりに、ブラウザオンボーディングが [**Default** 環境](/docs/ja/cloud-environments#the-default-environment)を作成するようにします。Team および Enterprise プランではデフォルトでオフになっており、`/web-setup` を非表示にします。[Owner](/docs/ja/server-managed-settings#access-control) は [**Admin settings > Claude Code**](https://claude.ai/admin-settings/claude-code) の **Quick web setup** トグルでオンにします。
 
@@ -79,15 +77,17 @@ Quick web setup は、メンバーが `/web-setup` で GitHub を接続できる
 claude --cloud "Fix the authentication bug in src/auth/login.ts"
 ```
 
-これにより claude.ai 上に新しいクラウドセッションが作成されます。クラウド VM はローカルチェックアウトではなく、現在のブランチで現在のディレクトリの GitHub リモートをクローンするため、ローカルコミットがある場合は最初にプッシュしてください。`--cloud` は一度に 1 つのリポジトリで機能します。タスクはクラウドで実行され、ローカルで作業を続行できます。古い `--remote` スペルは `--cloud` の非推奨エイリアスとしてまだ機能します。
+これにより claude.ai 上に新しいクラウドセッションが作成されます。クラウド VM はローカルチェックアウトではなく、現在のブランチで現在のディレクトリの GitHub リモートをクローンするため、ローカルコミットがある場合は最初にプッシュしてください。[ローカルリポジトリを GitHub なしで送信](#send-local-repositories-without-github)を参照して、Claude Code がリモートをクローンする代わりにローカルリポジトリをアップロードする場合を確認してください。
 
-クラウドコンテナが起動している間、CLI はリポジトリのクローンやセットアップスクリプトの実行などのセットアップステップのライブチェックリストを表示します。プロビジョニング中に入力したメッセージはキューに入れられ、セッションの準備ができたら送信されます。
+`--cloud` は一度に 1 つのリポジトリで機能します。タスクはクラウドで実行され、ローカルで作業を続行できます。古い `--remote` スペルは `--cloud` の非推奨エイリアスとしてまだ機能します。
+
+クラウドコンテナが起動している間、CLI はリポジトリのクローンや[セットアップスクリプト](/docs/ja/cloud-environments#setup-scripts)の実行などのセットアップステップのライブチェックリストを表示します。プロビジョニング中に入力したメッセージはキューに入れられ、セッションの準備ができたら送信されます。
 
 <Note>
   `--cloud` はクラウドセッションを作成します。`--remote-control` は無関係です：ウェブから監視するためにローカル CLI セッションを公開します。[Remote Control](/docs/ja/remote-control)を参照してください。
 </Note>
 
-Claude Code CLI で `/tasks` を使用して進捗をチェックするか、claude.ai または Claude モバイルアプリでセッションを開いて直接対話します。そこから Claude を操舵し、フィードバックを提供するか、他のすべての会話と同じように質問に答えることができます。
+claude.ai または Claude モバイルアプリでセッションを開いて進捗をチェックするか、直接対話します。そこから Claude を操舵し、フィードバックを提供するか、他のすべての会話と同じように質問に答えることができます。
 
 Claude が質問をして、セッションがアイドル状態のままの場合、[環境の有効期限切れ](#environment-expired)まで戻ってきたときに答えることができ、セッションはあなたの答えから続行されます。
 
@@ -115,17 +115,17 @@ claude --cloud "Update the API documentation"
 claude --cloud "Refactor the logger to use structured output"
 ```
 
-Claude Code CLI で `/tasks` を使用してすべてのセッションを監視します。セッションが完了したら、ウェブインターフェースから PR を作成するか、[セッションをテレポート](#from-web-to-terminal)してターミナルで作業を続行できます。
+セッションが完了したら、ウェブインターフェースから PR を作成するか、[セッションをテレポート](#from-web-to-terminal)してターミナルで作業を続行できます。
 
 <h4 id="send-local-repositories-without-github">
   GitHub なしでローカルリポジトリを送信
 </h4>
 
-GitHub に接続されていないリポジトリから `claude --cloud` を実行する場合、Claude Code はローカルリポジトリをバンドルしてクラウドセッションに直接アップロードします。バンドルにはすべてのブランチ全体のリポジトリ履歴と、追跡されたファイルへのコミットされていない変更が含まれます。
+git リモートがないリポジトリから `claude --cloud` を実行する場合、または Claude GitHub App がインストールされていない github.com リポジトリから実行する場合、Claude Code はローカルリポジトリをバンドルしてクラウドセッションに直接アップロードします。これは `/web-setup` で GitHub を接続した場合でも適用されます。バンドルにはすべてのブランチ全体のリポジトリ履歴と、追跡されたファイルへのコミットされていない変更が含まれます。
 
 macOS、Linux、WSL では、Claude Code は認証情報またはキーのような名前のファイルへのコミットされていない変更をアップロードから除外し、除外したファイルに名前を付けます。これは `.env` ファイル、Terraform `*.tfvars` ファイル、および `id_rsa` や `*.pem` などのキーファイルをカバーしています。セッションは各のコミットされたバージョンで開始するか、コミットされたものがない場合はファイルなしで開始されます。リンクされたワーキングツリー、サブモジュール、または同様のレイアウトでは、Claude Code はこれらの変更を残りと一緒にアップロードし、アップロードしたファイルに名前を付けます。
 
-GitHub アクセスが利用できない場合、このフォールバックは自動的にアクティブになります。GitHub が接続されている場合でも強制するには、`CCR_FORCE_BUNDLE=1` を設定します：
+Claude Code がリモートからクローンする場合でも強制するには、`CCR_FORCE_BUNDLE=1` を設定します：
 
 ```bash theme={null}
 CCR_FORCE_BUNDLE=1 claude --cloud "Run the test suite and fix any failures"
@@ -136,7 +136,7 @@ CCR_FORCE_BUNDLE=1 claude --cloud "Run the test suite and fix any failures"
 * ディレクトリは少なくとも 1 つのコミットを持つ git リポジトリである必要があります
 * バンドルされたリポジトリは 100 MB 未満である必要があります。より大きなリポジトリは現在のブランチのみをバンドルすることにフォールバックし、その後ワーキングツリーの単一の圧縮スナップショットにフォールバックし、スナップショットがまだ大きすぎる場合のみ失敗します
 * 追跡されていないファイルは含まれません。クラウドセッションが見るべきファイルで `git add` を実行します
-* バンドルから作成されたセッションは、[GitHub 認証](#github-authentication-options)も設定されていない限り、リモートにプッシュバックできません
+* バンドルから作成されたセッションは、[GitHub 接続](#github-authentication-options)が そのリポジトリへのプッシュアクセスを持つ場合にのみ、GitHub リモートにプッシュバックできます
 
 <h3 id="send-follow-ups-from-the-cli">
   CLI からフォローアップを送信
@@ -195,7 +195,7 @@ CLI はエラーの前に `Error: ` を付けます。失敗した配信は `fai
 * **ウェブインターフェースから**：セッションメニューから **Open in > Terminal** を選択して、ターミナルに貼り付けられるコマンドをコピーします。
 * **クラウドセッション内から**：`/teleport` を入力すると、Claude Code はそのセッションの正確な `claude --teleport <session-id>` コマンドで返信し、リポジトリのチェックアウトから実行する準備ができています。セッションの環境で Claude Code v2.1.223 以降が必要です。
 
-セッションをテレポートすると、Claude は正しいリポジトリにいることを確認し、クラウドセッションからブランチをフェッチしてチェックアウトし、完全な会話履歴をターミナルに読み込みます。ターミナルはセッションの独自のコピーを取得します：そこでの新しい作業はローカルのままで、claude.ai または Claude モバイルアプリのクラウドセッションに表示されません。テレポート後に電話から操舵を続けるには、ローカルセッションで [`/remote-control`](/docs/ja/remote-control) を開始します。
+セッションをテレポートすると、Claude はあなたが正しいリポジトリにいることを確認し、クラウドセッションからブランチをフェッチしてチェックアウトし、完全な会話履歴をターミナルに読み込みます。ターミナルはセッションの独自のコピーを取得します：そこでの新しい作業はローカルのままで、claude.ai または Claude モバイルアプリのクラウドセッションに表示されません。テレポート後に電話から操舵を続けるには、ローカルセッションで [`/remote-control`](/docs/ja/remote-control) を開始します。
 
 `--teleport` は `--resume` とは異なります。`--resume` はこのマシンのローカル履歴から会話を再開し、クラウドセッションをリストしません。`--teleport` はクラウドセッションとそのブランチをプルします。
 
@@ -243,7 +243,7 @@ CLI はエラーの前に `Error: ` を付けます。失敗した配信は `fai
 
 自動圧縮はコンテキストウィンドウが容量に近づくと自動的に実行されます。Claude Code on the web は [`CLAUDE_AUTOCOMPACT_PCT_OVERRIDE`](/docs/ja/env-vars) をクラウドセッションで自身で設定するため、圧縮はウィンドウが満杯になるのではなく、[自動圧縮ウィンドウ](/docs/ja/model-config#set-the-auto-compact-window)の途中でトリガーされます。その値は[環境変数](/docs/ja/cloud-environments#set-environment-variables)に追加するものをオーバーライドするため、そこに変数を追加しても圧縮がトリガーされるタイミングは変わりません。
 
-自動圧縮ウィンドウを変更するには、[環境変数](/docs/ja/cloud-environments#set-environment-variables)で [`CLAUDE_CODE_AUTO_COMPACT_WINDOW`](/docs/ja/env-vars) を設定するか、変数が設定されていないセッションで [`/autocompact`](/docs/ja/commands#all-commands) をトークン数で実行します。
+自動圧縮ウィンドウを変更するには、環境変数で [`CLAUDE_CODE_AUTO_COMPACT_WINDOW`](/docs/ja/env-vars) を設定するか、変数が設定されていないセッションで [`/autocompact`](/docs/ja/commands#all-commands) をトークン数で実行します。
 
 [Subagents](/docs/ja/sub-agents)はローカルと同じように機能します。Claude は Agent ツールでそれらをスポーンして、研究または並列作業を別のコンテキストウィンドウにオフロードし、メイン会話を軽くすることができます。リポジトリの `.claude/agents/` で定義された Subagents は自動的にピックアップされます。
 
@@ -261,9 +261,9 @@ CLI はエラーの前に `Error: ` を付けます。失敗した配信は `fai
 
 各セッションは追加および削除された行数を示す diff インジケーター（例：`+42 -18`）を表示します。それを選択して diff ビューを開き、特定の行にインラインコメントを残し、次のメッセージで Claude に送信します。
 
-Claude Code はこれらの diff を計算します。これには Claude が編集するときに表示される per-file diff が含まれます。これは raw git blob コンテンツから計算されるため、リポジトリで設定された diff ドライバーと `textconv` フィルターは適用されません。
+Claude Code はこれらの diff を計算します。これには Claude が編集するときに表示される per-file diff が含まれます。これは raw git blob コンテンツから計算されるため、リポジトリで設定された diff ドライバーと `textconv` フィルターは適用されません。セッション自体のチェックアウトではないリポジトリ内のファイル（セッション中にワークスペース内にクローンされたファイルなど）の場合、per-file diff は git 比較ではなく Claude の編集そのものを表示します。
 
-PR 作成を含む完全なウォークスルーについては [Review and iterate](/docs/ja/web-quickstart#review-and-iterate) を参照してください。Claude が PR の CI 失敗とレビューコメントを自動的に監視するようにするには、[プルリクエストの自動修正](#auto-fix-pull-requests)を参照してください。
+完全なウォークスルー（PR 作成を含む）については [Review and iterate](/docs/ja/web-quickstart#review-and-iterate) を参照してください。Claude が PR の CI 失敗とレビューコメントを自動的に監視するようにするには、[プルリクエストの自動修正](#auto-fix-pull-requests)を参照してください。
 
 <h3 id="share-sessions">
   セッションを共有
@@ -352,7 +352,7 @@ Claude は PR を解決する際に GitHub のレビューコメントスレッ�
 各クラウドセッションはいくつかのレイヤーを通じてマシンおよび他のセッションから分離されます：
 
 * **分離された仮想マシン**：各セッションは分離された Anthropic 管理 VM で実行されます。セッションが組織によってルーティングされる[セルフホスト環境](/docs/ja/self-hosted-environments)は、代わりに独自のインフラストラクチャで実行され、分離はデプロイメントの責任です
-* **ネットワークアクセス制御**：Anthropic ホスト型環境では、ネットワークアクセスはデフォルトで制限され、無効にできます。セルフホスト型環境では、独自のネットワーク境界でセッション出力を制限します。ネットワークアクセスを無効にして実行する場合、Claude Code は Anthropic API と通信できます。これにより VM からデータが出ることを許可する可能性があります。
+* <span id="default-allowed-domains" />**ネットワークアクセス制御**：Anthropic ホスト型環境では、ネットワークアクセスはデフォルトで制限され、無効にできます。[ネットワークアクセス](/docs/ja/cloud-environments#network-access)でアクセスレベル、[デフォルト許可ドメイン](/docs/ja/cloud-environments#default-allowed-domains)、および許可リストを通過しないトラフィックを参照してください。セルフホスト型環境では、独自のネットワーク境界でセッション出力を制限します。ネットワークアクセスを無効にして実行する場合、Claude Code は Anthropic API と通信できます。これにより VM からデータが出ることを許可する可能性があります。
 * **認証情報保護**：Anthropic ホスト型環境では、git 認証情報と署名キーはサンドボックスの外に留まり、プロキシはスコープ付き認証情報で認証します。セルフホスト型環境では、デプロイメントが git 認証情報を提供します；[git を設定](/docs/ja/self-hosted-environments-deploy#configure-git)を参照してください
 * **API 認証情報**：Anthropic ホスト型環境の Pro および Max プランでは、[クラウド環境に追加](/docs/ja/cloud-environments#add-api-credentials)するキーはサンドボックスの外に留まり、セッションを離れた後、一致するリクエストに添付されます。セルフホスト型環境には API 認証情報がなく、Team および Enterprise プランはまだそれらを持っていません
 * **セキュアな分析**：コードは PR を作成する前に分離されたセッション環境内で分析および変更されます
@@ -367,11 +367,11 @@ Claude は PR を解決する際に GitHub のレビューコメントスレッ�
   セッション作成に失敗
 </h3>
 
-新しいセッションが `Session creation failed` で開始に失敗するか、プロビジョニングで停止する場合、Claude Code はクラウド環境を割り当てることができませんでした。
+新しいセッションが `Session creation failed` で開始に失敗するか、プロビジョニングで停止する場合、Claude Code は VM をセッションに割り当てることができませんでした。
 
 * [status.claude.com](https://status.claude.com) でクラウドセッションインシデントを確認してください
 * 1 分後に再試行してください。容量はオンデマンドでプロビジョニングされます
-* リポジトリが到達可能であることを確認してください。接続している GitHub アカウントは、Claude GitHub App 認可またはオンデマンドで `/web-setup` 経由で同期された `gh` トークンのいずれかを通じて、GitHub 上のリポジトリへのアクセス権を持つ必要があります。リポジトリに App をインストールする必要はありません。[GitHub 認証オプション](#github-authentication-options)を参照してください。
+* [GitHub 接続後にリポジトリが表示されない](/docs/ja/web-quickstart#no-repositories-appear-after-connecting-github)に従って、GitHub 接続がリポジトリに到達できることを確認してください
 
 <h3 id="unable-to-get-organization-uuid">
   組織 UUID を取得できない
@@ -395,7 +395,7 @@ Claude は PR を解決する際に GitHub のレビューコメントスレッ�
   環境の有効期限切れ
 </h3>
 
-クラウドセッションは非アクティブ期間後に停止し、セッションの VM は回収されます。ウェブでは、セッションはセッションリストで期限切れとしてマークされます。
+クラウドセッションは非アクティブ期間後に停止し、セッションの VM は回収されます。セッションは [MCP コネクタ](/docs/ja/cloud-environments#network-access)ツール呼び出しを承認するか、MCP サーバーにサインインするのを待っている間、非アクティブとしてカウントされ、その待機中に有効期限が切れる可能性があります。ウェブでは、セッションはセッションリストで期限切れとしてマークされます。
 
 [claude.ai/code](https://claude.ai/code) からセッションを再度開いて、会話履歴が復元された新しい VM をプロビジョニングしてください。VM が回収されたときにまだ実行されていたバックグラウンド作業（subagents やシェルコマンドなど）は復元されません。
 
@@ -403,12 +403,12 @@ Claude は PR を解決する際に GitHub のレビューコメントスレッ�
   制限事項
 </h2>
 
-クラウドセッションをワークフローに依存させる前に、これらの制約を考慮してください：
+クラウドセッションをワークフローに組み込む前に、以下の制約を考慮してください。
 
-* **レート制限**：ウェブ上の Claude Code はアカウント内のすべての他の Claude および Claude Code 使用とレート制限を共有します。複数のタスクを並列で実行すると、レート制限をより多く消費します。クラウド VM に対する個別のコンピュート料金はありません。
-* **リポジトリ認証**：ウェブからローカルにセッションを移動できるのは、同じアカウントに認証されている場合のみです
-* **プラットフォーム制限**：リポジトリのクローンとプルリクエストの作成には GitHub が必要です。セルフホスト型の [GitHub Enterprise Server](/docs/ja/github-enterprise-server) インスタンスは Team および Enterprise プランでサポートされています。GitLab、Bitbucket、およびその他の非 GitHub リポジトリは[ローカルバンドル](#send-local-repositories-without-github)としてクラウドセッションに送信できますが、セッションはリモートに結果をプッシュバックできません
-* **組織 IP 許可リスト**：クラウドセッションは Anthropic 管理インフラストラクチャから Anthropic API を呼び出すため、ネットワークからではありません。セッションが[セルフホスト環境](/docs/ja/self-hosted-environments)にルーティングされている場合、独自のネットワークから呼び出します。組織が [IP 許可リスト](https://support.claude.com/en/articles/13200993-restrict-access-to-claude-with-ip-allowlisting)を有効にしている場合、すべての Anthropic ホスト型クラウドセッションは認証エラーで失敗します。同じことが [Code Review](/docs/ja/code-review) および Anthropic ホスト型環境で実行される[ルーチン](/docs/ja/routines)に適用されます；セルフホスト型環境にルーティングされたルーチンは独自のネットワークから API を呼び出します。[Anthropic サポート](https://support.claude.com/)に連絡して、Anthropic ホスト型サービスを組織の IP 許可リストから除外してください。
+* **レート制限**: Claude Code ウェブ版は、アカウント内のすべての Claude および Claude Code の使用状況とレート制限を共有します。複数のタスクを並行実行すると、レート制限がそれに応じてより多く消費されます。クラウド VM に対する個別の計算料金はありません。
+* **リポジトリ認証**: セッションをウェブからローカルに移動できるのは、同じアカウントで認証されている場合のみです。
+* **プラットフォーム制限**: リポジトリのクローンとプルリクエストの作成には GitHub が必要です。自己ホスト型の [GitHub Enterprise Server](/docs/ja/github-enterprise-server) インスタンスは Team および Enterprise プランでサポートされています。GitLab、Bitbucket、またはその他の非 GitHub リポジトリをクラウドセッションに [ローカルバンドル](#send-local-repositories-without-github) として送信できます。これは `CCR_FORCE_BUNDLE=1` を設定することで実現できますが、セッションはその結果をリモートにプッシュバックできません。
+* **組織 IP 許可リスト**: クラウドセッションは Anthropic 管理インフラストラクチャから Anthropic API を呼び出します。これはお客様のネットワークからではなく、[自己ホスト環境](/docs/ja/self-hosted-environments) のセッションはお客様自身のネットワークから呼び出します。組織で [IP 許可リスト](https://support.claude.com/en/articles/13200993-restrict-access-to-claude-with-ip-allowlisting) が有効になっている場合、Anthropic ホスト型のすべてのクラウドセッションは認証エラーで失敗します。同じことが [Code Review](/docs/ja/code-review) および Anthropic ホスト環境で実行される [routines](/docs/ja/routines) にも適用されます。自己ホスト環境にルーティングされたルーチンは、お客様自身のネットワークから API を呼び出します。Anthropic ホスト型サービスを組織の IP 許可リストから除外するには、[Anthropic サポート](https://support.claude.com/) にお問い合わせください。
 
 <h2 id="related-resources">
   関連リソース

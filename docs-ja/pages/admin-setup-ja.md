@@ -83,9 +83,7 @@ Desktop は WSL セッションが開始されるたびにポリシーを読み�
 WSL セッションが有効になった後、マネージド設定をそれらに拡張します。
 
 * HKLM レジストリまたは `C:\Program Files\ClaudeCode` ファイルを通じて `wslInheritsWindowsSettings: true` をデプロイして、WSL セッションがホストセッションと同じポリシーを継承するようにしてください。
-* WSL セッション内で `/status` を実行して検証してください。`Setting sources` 行を読んでください。Claude Code は [選択したマネージドソース](/docs/ja/server-managed-settings#settings-precedence)のみを名前付けするため、行が何を示すかはセッションによって異なります。
-  * **[server-managed settings をフェッチし](/docs/ja/server-managed-settings#platform-availability)、任意のキーを受け取るセッション内**: `Enterprise managed settings (remote)` です。Claude Code は Windows ソースより前にそれらを選択するため、行は フラグが到達したかどうかを示しません。
-  * **その他のセッション内**: `Enterprise managed settings (HKLM)` はレジストリデプロイメントを確認します。`(file)` は Windows ファイルまたはディストリビューション独自の `/etc/claude-code/managed-settings.json` を名前付けるため、ディストリビューションが独自のマネージドファイルを持たない場合にのみ Windows ファイルデプロイメントを確認します。
+* WSL セッション内で `/status` を実行して検証し、`Setting sources` 行を読んでください。それを解釈する方法については、[/status で出力を読む](/docs/ja/managed-settings#read-the-source-in-/status)を参照してください。
 
 WSL 2 ユーティリティ VM 内のプロセスは、Windows 側のエンドポイント検出センサーに表示されません。ディストリビューション内のプロセスとファイルアクティビティを観察するには、エンドポイント検出ベンダーの WSL ガイダンスで、ディストリビューション内で実行できる Linux センサーと、それが必要とする除外を確認してください。Claude Code の [OpenTelemetry ツール実行テレメトリ](/docs/ja/monitoring-usage)は WSL とネイティブセッションで同じように出力されます。
 

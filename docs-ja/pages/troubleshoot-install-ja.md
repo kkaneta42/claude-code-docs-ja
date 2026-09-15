@@ -417,35 +417,7 @@ curl: (22) The requested URL returned error: 403
 
 `curl ... | bash` コマンドはスクリプトをダウンロードして Bash にパイプして実行します。このエラーと関連する `curl: (23) Failure writing output to destination` は、Bash がスクリプト全体を受け取らなかったことを意味します。終了コード 56 はダウンロード自体が中断されたことを示し、終了コード 23 は curl がパイプに受け取ったものを書き込めなかったことを示します。通常は Bash が早期に終了したためです。
 
-**解決策：**
-
-1. **ネットワークの安定性を確認してください**：Claude Code バイナリは `downloads.claude.ai` でホストされています。到達可能であることをテストしてください：
-
-   ```bash theme={null}
-   curl -sI https://downloads.claude.ai/claude-code-releases/latest
-   ```
-
-   `HTTP/2 200` という行はサーバーに到達したことを意味し、元の失敗は一時的なものである可能性があります。インストールコマンドを再試行してください。他の結果は原因を指します：
-
-   * `403`：通常はプロキシまたはネットワークフィルターがホストをブロックしているか、Claude Code が[お客様の地域では利用できません](https://www.anthropic.com/supported-countries)
-   * `5xx`：通常は一時的なサービス問題です。数分待ってから再試行してください
-   * `Could not resolve host` または接続タイムアウト：ネットワークがダウンロードをブロックしています
-
-2. **別のインストール方法を試してください**：
-
-   macOS では：
-
-   ```bash theme={null}
-   brew install --cask claude-code
-   ```
-
-   Windows では：
-
-   ```powershell theme={null}
-   winget install Anthropic.ClaudeCode
-   ```
-
-   その後、`claude --version` を実行して確認してください。コマンドは `2.1.211 (Claude Code)` などのバージョン番号を出力します。シェルが `claude` が見つからないと報告する場合は、新しいターミナルウィンドウを開いて再試行してください。インストール元のセッションは古い `PATH` を保持しています。
+[ネットワーク接続を確認する](#check-network-connectivity)のチェックで `downloads.claude.ai` に到達できることをテストしてください。サーバーに到達した場合、元の失敗は一時的なものである可能性があります。インストールコマンドを再試行してください。[別のインストール方法を試す](/docs/ja/setup#install-claude-code)こともできます。
 
 <h3 id="homebrew-cask-unavailable-or-outdated">
   Homebrew cask が利用できないか古い

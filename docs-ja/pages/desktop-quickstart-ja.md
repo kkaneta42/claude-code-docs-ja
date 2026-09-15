@@ -65,7 +65,7 @@ Code タブを開いた状態で、プロジェクトを選択し、Claude に�
     **Local** を選択して、Claude をマシン上で実行し、ファイルを直接使用します。**Select folder** をクリックして、プロジェクトディレクトリを選択します。
 
     <Tip>
-      よく知っている小さなプロジェクトから始めてください。Claude Code が何ができるかを見る最速の方法です。Windows では、ローカルセッションが機能するために [Git](https://git-scm.com/downloads/win) をインストールする必要があります。ほとんどの Mac には Git がデフォルトで含まれています。
+      よく知っている小さなプロジェクトから始めてください。Claude Code が何ができるかを見る最速の方法です。
     </Tip>
 
     次のオプションも選択できます。
@@ -86,7 +86,7 @@ Code タブを開いた状態で、プロジェクトを選択し、Claude に�
     * `main 関数のテストを追加する`
     * `このコードベースの手順を含む CLAUDE.md を作成する`
 
-    [session](/docs/ja/desktop#work-in-parallel-with-sessions) は、コードについて Claude との会話です。各セッションは独自のコンテキストと変更を追跡するため、複数のタスクに取り組むことができ、相互に干渉しません。
+    [session](/docs/ja/desktop#work-in-parallel-with-sessions) は、コードについて Claude との会話です。各セッションは独自のコンテキストと変更を追跡します。
   </Step>
 
   <Step title="変更を確認して受け入れる">

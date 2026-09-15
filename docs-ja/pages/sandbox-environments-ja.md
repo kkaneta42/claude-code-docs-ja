@@ -83,7 +83,7 @@ Claude Code は、軽量なコマンド単位のサンドボックスから完�
 コマンド単位のサンドボックスはセッションで実行されるすべてをカバーしていません。
 
 * Read、Edit、WebFetch などの他の [組み込みツール](/docs/ja/tools-reference)は Claude Code プロセス内で実行され、任意のコードを生成しません。[権限ルール](/docs/ja/permissions)がパスまたはドメインでそれらをゲートします。
-* [MCP](/docs/ja/mcp)サーバーと hooks は、ホスト上で制約なく実行される別のプロセスです。
+* [MCP](/docs/ja/mcp)サーバーと [command hooks](/docs/ja/hooks#command-hook-fields)は、ホスト上で制約なく実行される別のプロセスです。
 
 組み込みツール、MCP サーバー、hooks をすべて 1 つの OS 境界の背後に配置するには、Claude Code プロセス全体を [サンドボックスランタイム](#sandbox-runtime)、[dev コンテナ](#dev-containers)、または [カスタムコンテナ](#custom-container)内で実行してください。
 

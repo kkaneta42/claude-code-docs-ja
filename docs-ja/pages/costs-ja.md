@@ -74,7 +74,7 @@ Pro、Max、Team、または Enterprise プランでは、`/usage` はプラン�
 
 `d` または `w` を押して、過去 24 時間と過去 7 日間を切り替えます。数値は概算であり、このマシン上のローカルセッション履歴から計算されるため、他のデバイスまたは claude.ai からの使用量は含まれていません。
 
-[VS Code 拡張機能](/docs/ja/vs-code#check-account-and-usage) では、属性シェアと動作フラグが Account & usage ダイアログに Day および Week トグルとともに表示されます。ループ行は含まれません。Claude Code v2.1.174 以降が必要です。
+[VS Code 拡張機能](/docs/ja/vs-code#check-account-and-usage) では、属性シェアと動作フラグが Account & usage ダイアログに Day および Week トグルとともに表示されます。ループ行は含まれません。
 
 <h4 id="check-your-usage-credits-spend">
   使用量クレジット支出を確認する
@@ -226,11 +226,12 @@ Amazon Bedrock、Google Cloud の Agent Platform、および Microsoft Foundry �
   開発者が制限について質問する場合
 </h3>
 
-開発者は通常、制限に関する質問を管理者に持ち込むため、どの上限に達したかを知ることが役立ちます。4 つの状況は異なることを意味します。
+開発者は通常、制限に関する質問を管理者に持ち込むため、どの上限に達したかを知ることが役立ちます。これらの状況は異なることを意味します。
 
 * **「セッション制限に達しました」または「週間制限に達しました」**: サブスクリプションプランのシートベースの使用ウィンドウ。これらのウィンドウはすべてのモデル全体で共有されるため、開発者は `/model` でモデルを切り替えてアクセスを復元することはできません。メッセージはウィンドウがリセットされるときを表示します。モデル固有の「Opus 制限に達しました」または「Sonnet 制限に達しました」メッセージの後、`/model` でそのファミリー外のモデルに切り替えると、開発者は作業を続けることができます。[使用制限エラー](/docs/ja/errors#youve-hit-your-session-limit) を参照してください。開発者がその間にできることは以下の通りです。
   * [使用クレジット](https://support.claude.com/en/articles/12429409-extra-usage-for-paid-claude-plans) がオンになっている場合、`/usage-credits` を実行して割り当てを超えた使用をリクエストしてください。
   * Claude Code v2.1.234 以降では、[リセット後に中断されたタスクを自動的に待機して続行](/docs/ja/interactive-mode#wait-for-a-usage-limit-to-reset) してください。そのセクションでは、Claude Code がいつ自動的に待機を開始するか、および開発者が `/rate-limit-options` からそれを選択するときを一覧表示しています。フリート全体で Claude Code が自動的に待機を開始するかどうかを制御するには、[マネージド設定](/docs/ja/settings#settings-precedence) で [`autoContinueAtUsageLimit`](/docs/ja/settings-reference#autocontinueatusagelimit) を設定してください。
+* **「個別支出制限に達しました」、「組織の月間支出制限」、または「チームの共有予算」**: 開発者のリクエストは使用クレジットに請求され、それらのクレジットは設定した支出制限に達しています。開発者が続行できるようにするには、[**管理者設定 > 使用状況**](https://claude.ai/admin-settings/usage) に移動して、メッセージが名前を付ける制限を増やしてください。メッセージがプラン リセット時間も名前を付ける場合、開発者は代わりにそれまで待つことができます。各バリアントについては、[エラー リファレンス](/docs/ja/errors#youve-hit-your-monthly-spend-limit) を参照してください。
 * **[Claude apps gateway](/docs/ja/claude-apps-gateway) からの支出制限メッセージ**: 開発者はセルフホストされたゲートウェイに設定した支出上限を超過し、ゲートウェイは期間がリセットされるか上限が引き上げられるまでリクエストをブロックします。[ゲートウェイ支出制限](/docs/ja/claude-apps-gateway-spend-limits) で上限、リセットスケジュール、および開発者が見るメッセージを参照してください。
 * **コンテキストまたは auto-compact 警告**: 使用制限ではありません。会話がセッションの [auto-compact ウィンドウ](/docs/ja/model-config#set-the-auto-compact-window) に近づいており、Claude Code が古い履歴を要約して領域を解放するしきい値です。開発者を [トークン使用量を削減](#reduce-token-usage) に指してください。
 * **API またはクラウドプロバイダープランで予期しない高い支出**: 通常、クリアされたことのない長いセッション、または Opus がデフォルトモデルとして残されていることに遡ります。共有する最も影響の大きい習慣は、関連のないタスク間でクリアすることとジョブにモデルを一致させることの両方で、[トークン使用量を削減](#reduce-token-usage) でカバーされています。

@@ -186,6 +186,8 @@ Claude Code はこれらのソースを確認します。最初に最高優先�
 * [`forceRemoteSettingsRefresh`](/docs/ja/server-managed-settings)
 * 管理ソース全体で変数ごとにマージされた `env`: 各変数は、それを定義する最高優先度のソースから来るため、下位のソースは高位のソースが設定しないままにした変数を埋めます。いくつかの変数は独自のルールに従います。[マネージドソース全体のキーごとの例外](/docs/ja/server-managed-settings#per-key-exceptions-across-managed-sources) は各変数に名前を付けます。Claude Code v2.1.223 以降が必要です。v2.1.223 より前では、Claude Code は選択されたソースの全体 `env` ブロックのみを適用しました
 
+[ゲートウェイログインキー](#choose-a-delivery-mechanism)、[`forceLoginGatewayUrl`](/docs/ja/settings-reference#forcelogingatewayurl) および [`forceLoginMethod`](/docs/ja/settings-reference#forceloginmethod) の `"gateway"` 値は、別のルールに従います。Claude Code はサーバーマネージド設定からそれらを読み取ることはありません。サーバーマネージド設定が選択されたソースである間、ポリシーキーを持つマシン上の最高ランクの管理ソースはそれらを提供します。それより下にランク付けされた管理ソースの値、または HKCU レジストリの値は無視されます。
+
 <h3 id="compose-every-managed-source">
   すべてのマネージドソースを構成する
 </h3>

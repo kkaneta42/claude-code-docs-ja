@@ -26,13 +26,14 @@ Enter キーを押すとメッセージが送信されます。送信せずに�
 
 ほとんどのターミナルでは Shift+Enter を押すこともできますが、サポートはターミナルエミュレータによって異なります。
 
-| ターミナル                                                             | 改行用の Shift+Enter                  |
-| :---------------------------------------------------------------- | :-------------------------------- |
-| Ghostty、Kitty、iTerm2、WezTerm、Warp、Apple Terminal、Windows Terminal | セットアップなしで機能                       |
-| VS Code、Cursor、Devin Desktop、Alacritty、Zed                        | 1 回 `/terminal-setup` を実行         |
-| gnome-terminal、PyCharm や Android Studio などの JetBrains IDE         | 利用不可。Ctrl+J または `\` の後に Enter を使用 |
+| ターミナル                                                             | 改行用の Shift+Enter                         |
+| :---------------------------------------------------------------- | :--------------------------------------- |
+| Ghostty、Kitty、iTerm2、WezTerm、Warp、Apple Terminal、Windows Terminal | セットアップなしで機能                              |
+| kitty キーボードプロトコルをサポートする他のターミナル（foot や Alacritty 0.16 以降など）        | セットアップなしで機能。Claude Code v2.1.269 以降が必要です |
+| VS Code、Cursor、Devin Desktop、Alacritty 0.16 より前のバージョン、Zed         | 1 回 `/terminal-setup` を実行                |
+| gnome-terminal、PyCharm や Android Studio などの JetBrains IDE         | 利用不可。Ctrl+J または `\` の後に Enter を使用        |
 
-VS Code、Cursor、Devin Desktop、Alacritty、Zed の場合、`/terminal-setup` はターミナルの設定ファイルに Shift+Enter キーバインディングを書き込みます。初回実行時には `Installed VSCode terminal Shift+Enter key binding` などの確認メッセージが表示されます。既存のバインディングはそのまま保持されます。`VSCode terminal Shift+Enter key binding already configured` などのメッセージが表示される場合は、変更は加えられていません。`/terminal-setup` は tmux または screen の内部ではなく、ホストターミナル内で直接実行してください。ホストターミナルの設定に書き込む必要があるためです。
+VS Code、Cursor、Devin Desktop、Alacritty 0.16 より前のバージョン、Zed の場合、`/terminal-setup` はターミナルの設定ファイルに Shift+Enter キーバインディングを書き込みます。初回実行時には `Installed VSCode terminal Shift+Enter key binding` などの確認メッセージが表示されます。既存のバインディングはそのまま保持されます。`VSCode terminal Shift+Enter key binding already configured` などのメッセージが表示される場合は、変更は加えられていません。`/terminal-setup` は tmux または screen の内部ではなく、ホストターミナル内で直接実行してください。ホストターミナルの設定に書き込む必要があるためです。
 
 VS Code、Cursor、Devin Desktop では、`/terminal-setup` は 2 つのエディタ設定も更新します。統合ターミナルでのテキストの乱れを防ぐために `terminal.integrated.gpuAcceleration` を `"off"` に設定し、[フルスクリーンモード](/docs/ja/fullscreen)でのスムーズなスクロールのために `terminal.integrated.mouseWheelScrollSensitivity` を設定します。GPU アクセラレーション変更を元に戻すには、`"auto"` に設定し直してエディタウィンドウをリロードしてください。
 

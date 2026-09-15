@@ -58,7 +58,7 @@ IDE のリンクをクリックして直接インストールします。
 
     * **アクティビティバー**：左サイドバーの Spark アイコンをクリックしてセッションリストを開きます。任意のセッションをクリックして[優先位置](#extension-settings)で開くか、新しいセッションを開始します。このアイコンはアクティビティバーに常に表示されます。
     * **コマンドパレット**：`Cmd+Shift+P`（Mac）または `Ctrl+Shift+P`（Windows/Linux）を押し、「Claude Code」と入力して、「Open in New Tab」などのオプションを選択します。
-    * **ステータスバー**：[`preferredLocation`](#extension-settings) を `sidebar` に設定した場合、または **Claude Code: Open in Side Bar** で Claude を開いた場合、ウィンドウの右下隅の **✱ Claude Code** をクリックします。ファイルが開いていない場合でも機能します。
+    * **ステータスバー**：[`preferredLocation`](#extension-settings) を `sidebar` に設定した場合、または **Claude Code: Open in Side Bar** で Claude を開いた場合、ウィンドウの右下隅の **✻ Claude Code** をクリックします。ファイルが開いていない場合でも機能します。
 
     Claude パネルをドラッグして VS Code 内の任意の場所に移動できます。詳細は[ワークフローをカスタマイズする](#customize-your-workflow)を参照してください。
   </Step>
@@ -116,13 +116,20 @@ Claude Code でできることについてのアイデアについては、[一�
   * Customize セクションで **Output styles** を選択して、カスタムスタイルを含む [output style](/docs/ja/output-styles) を選択します。Claude Code v2.1.257 以降が必要です。
 
     代わりにカスタムスタイルを作成するには、**Output styles** メニューから **Build a custom style** を選択します。Claude Code はプロジェクトまたはユーザーレベルで [style file](/docs/ja/output-styles#create-a-custom-output-style) を作成します。Claude Code v2.1.261 以降が必要です。
+  * Customize セクションで **Hooks** を選択して、セッションに読み込まれた [hooks](/docs/ja/hooks) をイベント別にグループ化して表示します。ユーザー、プロジェクト、ローカル設定ファイルに保存された hooks を追加、編集、削除できます。マネージド設定やプラグインなどの他のソースからの Hooks は読み取り専用です。Claude Code v2.1.269 以降が必要です。
+  * Customize セクションで **Permissions** を選択して、セッションの [permission rules](/docs/ja/permissions) を Allow、Ask、Deny にグループ化して表示します。ユーザー、プロジェクト、ローカル設定にルールを追加し、そこに保存されたルールを削除できます。マネージド設定やこのセッションのみに対して行われた承認などの他のソースからのルールは読み取り専用です。Claude Code v2.1.269 以降が必要です。
   * Settings セクションには **Enable Remote Control for all sessions** が含まれており、これは [`remoteControlAtStartup`](/docs/ja/settings-reference#remotecontrolatstartup) を設定して、[新しいインタラクティブセッションが Remote Control に自動的に接続するかどうか](/docs/ja/remote-control#enable-remote-control-for-all-sessions)を制御します。Claude Code v2.1.203 以降が必要です。
 
     VS Code ウィンドウでトグルをオンまたはオフにすると、その変更は、その後に開始するセッションだけでなく、その VS Code ウィンドウで既に開いているセッションに適用されます。オフにすると、開いているセッションは切断されます。Claude Code v2.1.261 以降では、その変更は他の VS Code ウィンドウで開いているセッションにも到達します。
-  * Settings セクションには **Focus view** も含まれており、これはツール呼び出し、ツール結果、思考を展開可能な行の背後に隠し、プロンプトと Claude の応答を残します。Claude の最新の to-do リストは表示されたままで、Claude からの保留中の質問が尋ねているテキストも表示されます。これには Claude Code v2.1.225 以降が必要です。そこでトグルするか、`Ctrl+Option+F`（Mac）/ `Ctrl+Alt+F`（Windows/Linux）で、またはコマンドパレットから **Claude Code: Toggle Focus view** で切り替えます。変更はすべての開いているセッションに適用され、セッション全体で保持されます。Claude Code v2.1.221 以降が必要です。
+  * Settings セクションには **Focus view** も含まれており、これはツール呼び出し、ツール結果、思考を展開可能な行の背後に隠し、プロンプトと Claude の応答を残します。そこでトグルするか、`Ctrl+Option+F`（Mac）/ `Ctrl+Alt+F`（Windows/Linux）で、またはコマンドパレットから **Claude Code: Toggle Focus view** で切り替えます。変更はすべての開いているセッションに適用され、セッション全体で保持されます。Claude Code v2.1.221 以降が必要です。
+
+    Claude の最新の to-do リストは表示されたままで、Claude からの保留中の質問が尋ねているテキストも表示されます。これには Claude Code v2.1.225 以降が必要です。Claude が [subagents](/docs/ja/sub-agents) を実行している間、最新のアクティビティを含むライブ進捗行は、それらを開始したツール呼び出しグループの下に表示されます。これには Claude Code v2.1.269 以降が必要です。
   * バグを報告するには、メニューの下部にある **Report a problem** をクリックするか、`/bug` または `/feedback` をオプションの説明と共に入力して、レポートに事前入力します。レポートを送信し、ファーストパーティ接続で Anthropic にサインインしている場合、Claude Code はそれを Anthropic に送信します。サードパーティプロバイダーまたは Anthropic 認証情報がない場合、ダイアログは引き続き開きますが、送信するとエラーが表示され、何も送信されません。CLI の `/bug` とは異なり、拡張機能はローカルアーカイブを作成しません。Claude Code v2.1.229 以降が必要です。
 * **Side questions**: `/btw` の後に質問を入力して、[会話に追加せずに](/docs/ja/interactive-mode#side-questions-with-%2Fbtw)セッションについて質問します。答えはチャットの横のパネルで開き、そこでフォローアップ質問をすることができます。スレッドはウィンドウの再読み込みを生き残ります。Claude Code は最新の 20 回の交換を保持し、Claude Code が [安全に保持期間を決定できる](/docs/ja/claude-directory#cleaned-up-automatically)限り、[`cleanupPeriodDays`](/docs/ja/settings-reference#cleanupperioddays) スケジュールで保存されたスレッドを期限切れにします。スレッドをクリアするには、パネルのゴミ箱アイコンをクリックします。Claude Code v2.1.227 以降が必要です。
 * **Context indicator**: プロンプトボックスは Claude のコンテキストウィンドウをどのくらい使用しているかを表示します。Claude は必要に応じて自動的にコンパクトにするか、`/compact` を手動で実行できます。
+* **Agent map**: 会話に [subagents](/docs/ja/sub-agents) が含まれている場合、プロンプトボックスの下部に **2 agents** などのエージェント数が表示されます。そのドットは、subagent が動作しているか、あなたの権限を待っているかを示します。
+
+  エージェント数をクリックしてエージェントマップを開きます。これは会話の subagents をメインエージェントの下のツリーとして描画し、各エージェントのステータス、経過時間、トークン数を表示します。subagent をクリックして、そのプロンプトとツール呼び出しを表示し、読み取り専用トランスクリプトを開くか、実行中に停止します。Claude Code v2.1.269 以降が必要です。
 * **Extended thinking**: Claude が複雑な問題を推論するのに時間をかけることができます。コマンドメニュー（`/`）経由でオンに切り替えます。Claude の推論は会話に折りたたまれたブロックとして表示されます。ブロックをクリックして読むか、`Ctrl+O` を押してセッション内のすべての思考ブロックを展開または折りたたみます。詳細については、[Extended thinking](/docs/ja/model-config#extended-thinking) を参照してください。
 * **Multi-line input**: `Shift+Enter` を押して、送信せずに新しい行を追加します。これは質問ダイアログの「Other」フリーテキスト入力でも機能します。
 
@@ -139,7 +146,7 @@ What's in @src/components/ (include a trailing slash for folders)
 
 大きな PDF の場合、ファイル全体ではなく特定のページを読むよう Claude に依頼できます。単一ページ、1～10 ページのような範囲、またはページ 3 以降のようなオープンエンド範囲です。
 
-エディターでテキストを選択すると、Claude は強調表示されたコードを自動的に見ることができます。プロンプトボックスのフッターは、選択されている行数を表示します。`Option+K`（Mac）/ `Alt+K`（Windows/Linux）を押して、ファイルパスと行番号を含む @-mention を挿入します（例：`@app.ts#5-10`）。選択指示器をクリックして、Claude が強調表示されたテキストを見ることができるかどうかを切り替えます。目のスラッシュアイコンは、選択が Claude から隠されていることを意味します。
+エディターでテキストを選択すると、Claude は強調表示されたコードを自動的に見ることができます。プロンプトボックスのフッターは、選択されている行数を表示します。`Option+K`（Mac）/ `Alt+K`（Windows/Linux）を押して、ファイルパスと行番号を含む @-mention を挿入します（例：`@app.ts#5-10`）。選択指示器の **X** をクリックして、Claude が選択を受け取らないようにします。別のテキストを選択するか、別のファイルに切り替えると、指示器が戻ります。
 
 画像を添付するには、クリップボードからプロンプトボックスに貼り付けます。また、`Shift` を押しながらファイルをプロンプトボックスにドラッグして、添付ファイルとして追加することもできます。任意の添付ファイルの X をクリックして、コンテキストから削除します。
 
@@ -193,7 +200,7 @@ Claude Code パネルの上部にある **Session history** ボタンをクリ�
 
 `/usage` を実行して、Account & usage ダイアログを開きます。ダイアログは claude.ai サインインが必要なため、[サードパーティプロバイダー](#use-third-party-providers)では提供されません。サインインしたアカウント、プラン、現在のセッションと週の使用状況バーを表示します。各バーは、制限がリセットされるまでの時間を表示します。
 
-ダイアログは、プラン制限に貢献しているものを詳細に説明します。キャッシュミス、長いコンテキスト、subagent が多い、または高度に並列なセッションなど、最近の使用状況の 10% 以上を占める動作にフラグを立てます。各動作には、それを削減するためのヒントが付いています。Attribution テーブルは、各スキル、subagent、プラグイン、MCP サーバーからどのくらいの使用状況が来たかを示します。Claude Code v2.1.174 以降が必要です。
+ダイアログは、プラン制限に貢献しているものを詳細に説明します。キャッシュミス、長いコンテキスト、subagent が多い、または高度に並列なセッションなど、最近の使用状況の 10% 以上を占める動作にフラグを立てます。各動作には、それを削減するためのヒントが付いています。Attribution テーブルは、各スキル、subagent、プラグイン、MCP サーバーからどのくらいの使用状況が来たかを示します。
 
 Day と Week トグルを使用して、過去 24 時間と過去 7 日間を切り替えます。数値は概算であり、このマシン上のローカルセッションから計算されるため、他のデバイスまたは claude.ai からの使用状況は含まれません。使用状況の追跡と削減の詳細については、[Track your costs](/docs/ja/costs#track-your-costs) を参照してください。
 
@@ -238,7 +245,7 @@ Claude パネルを VS Code 内の任意の場所に移動できます。パネ�
 
 * **セッションをグループ化または非グループ化する**: セッションを右クリックしてそれからグループを作成したり、既存のグループに移動したり、グループから削除したりします。各セッションは一度に 1 つのグループに属するため、別のグループに移動すると最初のグループから削除されます。
 * **複数のセッションを一度に移動する**: `Cmd` キー（Mac）/ `Ctrl` キー（Windows/Linux）を押しながら各セッションをクリックするか、`Shift` キーを押しながらクリックして範囲を選択してから、選択内容を右クリックします。
-* **タブからセッションをグループ化する**: コマンドパレットから **Claude Code: Add Session Tab to Group** を実行するか、セッションのエディタタブを右クリックしてから、グループを選択または作成します。Claude Code v2.1.257 以降が必要です。
+* **タブからセッションをグループ化する**: コマンドパレットから **Claude Code: Add Session Tab to Group** を実行してからグループを選択または作成します。Claude Code v2.1.257 以降が必要です。
 * **グループの名前を変更または削除する**: グループヘッダーを右クリックします。グループを削除するとグループのみが削除され、そのセッションは非グループ化されたリストに戻ります。
 
 拡張機能はワークスペースフォルダごとにグループを保存するため、ウィンドウの再読み込み後も保持され、同じフォルダを開くすべてのウィンドウに表示されます。リストを検索すると、拡張機能はすべてのグループ全体で 1 つのフラットリストに一致するものを表示します。
@@ -348,22 +355,22 @@ Claude はブラウザタスク用に新しいタブを開き、ブラウザの�
   これらは拡張機能を制御するための VS Code コマンドです。組み込みの Claude Code コマンドのすべてが拡張機能で利用可能なわけではありません。詳細については、[VS Code 拡張機能と Claude Code CLI](#vs-code-extension-vs-claude-code-cli) を参照してください。
 </Note>
 
-| コマンド                       | ショートカット                                               | 説明                                                                                                                                          |
-| -------------------------- | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| Focus Input                | `Cmd+Esc`（Mac）/ `Ctrl+Esc`（Windows/Linux）             | エディターと Claude 間のフォーカスを切り替えます                                                                                                                |
-| Open in Side Bar           | -                                                     | Claude をサイドバーで開きます                                                                                                                          |
-| Open in Terminal           | -                                                     | Claude をターミナルモードで開きます                                                                                                                       |
-| Open in New Tab            | `Cmd+Shift+Esc`（Mac）/ `Ctrl+Shift+Esc`（Windows/Linux） | 新しい会話をエディタータブとして開きます                                                                                                                        |
-| Open in New Window         | -                                                     | 新しい会話を別のウィンドウで開きます                                                                                                                          |
-| New Conversation           | `Cmd+N`（Mac）/ `Ctrl+N`（Windows/Linux）                 | 新しい会話を開始します。Claude がフォーカスされており、`enableNewConversationShortcut` が `true` に設定されている必要があります                                                     |
-| Reopen Closed Session      | `Cmd+Shift+T`（Mac）/ `Ctrl+Shift+T`（Windows/Linux）     | 最近閉じた Claude セッションタブを再度開きます。最後に閉じたタブが Claude セッションではない場合、VS Code の通常の再度開く機能にフォールスルーします。`enableReopenClosedSessionShortcut` で無効にできます         |
-| Insert @-Mention Reference | `Option+K`（Mac）/ `Alt+K`（Windows/Linux）               | 現在のファイルと選択範囲への参照を挿入します（エディターがフォーカスされている必要があります）                                                                                             |
-| Toggle Focus view          | `Ctrl+Option+F`（Mac）/ `Ctrl+Alt+F`（Windows/Linux）     | 会話内のツールアクティビティを非表示にするか表示します。Claude パネルまたはサイドバーが表示されている間に機能します。Claude Code v2.1.221 以降が必要です                                                  |
-| Rename Session Tab         | -                                                     | アクティブな Claude タブのセッションの名前を変更します。このコマンドはタブの右クリックメニューにも表示されます。Claude Code v2.1.257 以降が必要です                                                    |
-| Add Session Tab to Group   | -                                                     | アクティブな Claude タブのセッションを、選択または作成する[セッショングループ](#organize-sessions-into-groups)に追加します。このコマンドはタブの右クリックメニューにも表示されます。Claude Code v2.1.257 以降が必要です |
-| Mark Session as Unread     | -                                                     | アクティブな Claude タブのセッションをセッションリストで未読としてマークします。このコマンドはタブの右クリックメニューにも表示されます。Claude Code v2.1.257 以降が必要です                                        |
-| Show Logs                  | -                                                     | 拡張機能のデバッグログを表示します                                                                                                                           |
-| Logout                     | -                                                     | Anthropic アカウントからサインアウトします                                                                                                                  |
+| コマンド                       | ショートカット                                               | 説明                                                                                                                                  |
+| -------------------------- | ----------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| Focus Input                | `Cmd+Esc`（Mac）/ `Ctrl+Esc`（Windows/Linux）             | エディターと Claude 間のフォーカスを切り替えます                                                                                                        |
+| Open in Side Bar           | -                                                     | Claude をサイドバーで開きます                                                                                                                  |
+| Open in Terminal           | -                                                     | Claude をターミナルモードで開きます                                                                                                               |
+| Open in New Tab            | `Cmd+Shift+Esc`（Mac）/ `Ctrl+Shift+Esc`（Windows/Linux） | 新しい会話をエディタータブとして開きます                                                                                                                |
+| Open in New Window         | -                                                     | 新しい会話を別のウィンドウで開きます                                                                                                                  |
+| New Conversation           | `Cmd+N`（Mac）/ `Ctrl+N`（Windows/Linux）                 | 新しい会話を開始します。Claude がフォーカスされており、`enableNewConversationShortcut` が `true` に設定されている必要があります                                             |
+| Reopen Closed Session      | `Cmd+Shift+T`（Mac）/ `Ctrl+Shift+T`（Windows/Linux）     | 最近閉じた Claude セッションタブを再度開きます。最後に閉じたタブが Claude セッションではない場合、VS Code の通常の再度開く機能にフォールスルーします。`enableReopenClosedSessionShortcut` で無効にできます |
+| Insert @-Mention Reference | `Option+K`（Mac）/ `Alt+K`（Windows/Linux）               | 現在のファイルと選択範囲への参照を挿入します（エディターがフォーカスされている必要があります）                                                                                     |
+| Toggle Focus view          | `Ctrl+Option+F`（Mac）/ `Ctrl+Alt+F`（Windows/Linux）     | 会話内のツールアクティビティを非表示にするか表示します。Claude パネルまたはサイドバーが表示されている間に機能します。Claude Code v2.1.221 以降が必要です                                          |
+| Rename Session Tab         | -                                                     | アクティブな Claude タブのセッションの名前を変更します。Claude Code v2.1.257 以降が必要です                                                                        |
+| Add Session Tab to Group   | -                                                     | アクティブな Claude タブのセッションを、選択または作成する[セッショングループ](#organize-sessions-into-groups)に追加します。Claude Code v2.1.257 以降が必要です                     |
+| Mark Session as Unread     | -                                                     | アクティブな Claude タブのセッションをセッションリストで未読としてマークします。Claude Code v2.1.257 以降が必要です                                                            |
+| Show Logs                  | -                                                     | 拡張機能のデバッグログを表示します                                                                                                                   |
+| Logout                     | -                                                     | Anthropic アカウントからサインアウトします                                                                                                          |
 
 <h3 id="launch-a-vs-code-tab-from-other-tools">
   他のツールから VS Code タブを起動する
@@ -424,7 +431,7 @@ vscode://anthropic.claude-code/open?prompt=review%20my%20changes
 
 拡張機能には 2 つのタイプの設定があります。
 
-* **VS Code の拡張機能設定**：VS Code 内での拡張機能の動作を制御します。`Cmd+,`（Mac）または `Ctrl+,`（Windows/Linux）で開き、Extensions → Claude Code に移動します。`/` を入力して **General Config** を選択して設定を開くこともできます。
+* **VS Code の拡張機能設定**：VS Code 内での拡張機能の動作を制御します。`Cmd+,`（Mac）または `Ctrl+,`（Windows/Linux）で開き、Extensions → Claude Code に移動します。`/` を入力して **General config…** を選択して設定を開くこともできます。
 * **`~/.claude/settings.json` の Claude Code 設定**：拡張機能と CLI 間で共有されます。許可されたコマンド、環境変数、hooks、MCP サーバーに使用します。Pro、Max、Team プランでは、権限モード会話が開始される入力の 1 つでもあります。[Switch permission modes](/docs/ja/permission-modes#switch-permission-modes) に順序が記載されています。詳細は [Settings](/docs/ja/settings) を参照してください。
 
 <Tip>
@@ -659,7 +666,7 @@ Spark アイコンは、ファイルを開いているときに **Editor Toolbar
 4. **競合する拡張機能を無効にする**：他の AI 拡張機能（Cline、Continue など）を一時的に無効にしてください
 5. **ワークスペースの信頼を確認する**：拡張機能は制限モードでは動作しません
 
-または、[`preferredLocation`](#extension-settings) を `sidebar` に設定している場合、または **Claude Code: Open in Side Bar** で Claude を開いている場合は、**Status Bar**（右下隅）の「✱ Claude Code」をクリックしてください。これはファイルを開いていなくても動作します。**Command Palette**（`Cmd+Shift+P` / `Ctrl+Shift+P`）を使用して「Claude Code」と入力することもできます。
+または、[`preferredLocation`](#extension-settings) を `sidebar` に設定している場合、または **Claude Code: Open in Side Bar** で Claude を開いている場合は、**Status Bar**（右下隅）の「✻ Claude Code」をクリックしてください。これはファイルを開いていなくても動作します。**Command Palette**（`Cmd+Shift+P` / `Ctrl+Shift+P`）を使用して「Claude Code」と入力することもできます。
 
 <h3 id="cmd-esc-does-nothing-on-macos">
   macOS で Cmd+Esc が機能しない

@@ -123,7 +123,7 @@ Claude Code は、モデル切り替え、再接続、または失敗した[可�
 高速モードには以下のすべてが必要です：
 
 * **Anthropic API またはサブスクリプションのみ**：高速モードは Anthropic Console API および使用量クレジットを使用する Claude サブスクリプションプランで利用可能です。Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、または AWS 上の Claude Platform では利用できません。Console 組織は、[高速モードアクセスをプロビジョニング](#enable-fast-mode-for-your-organization)する必要もあります。
-* **サブスクリプションプランで使用量クレジットが有効**：Pro、Max、Team、または Enterprise プランでは、アカウントに[使用量クレジット](/docs/ja/costs#add-usage-credits-to-your-subscription)が有効になっている必要があります。これにより、プランに含まれる使用量を超えて請求できます。有効になるまで、`/fast` は「Fast mode requires usage credits · /usage-credits to turn them on」と表示されます。有効にする方法はプランによって異なります：
+* **サブスクリプションプランで使用量クレジットが有効**：Pro、Max、Team、または Enterprise プランでは、アカウントに[使用量クレジット](/docs/ja/costs#add-usage-credits-to-your-subscription)が有効になっている必要があります。これにより、プランに含まれる使用量を超えて請求できます。有効になるまで、`/fast` は「Fast mode requires usage credits」と表示されます。有効にする方法はプランによって異なります：
   * Pro および Max では、[**Settings > Usage**](https://claude.ai/settings/usage) の **Usage credits** セクションで claude.ai で有効にするか、`/usage-credits` を実行してそのページを開きます。
   * Team および Enterprise では、請求アクセス権を持つメンバーが [**Admin settings > Usage**](https://claude.ai/admin-settings/usage) で組織の使用量クレジットを有効にし、アクセス権を持たないメンバーが `/usage-credits` を実行して組織の管理者にリクエストを送信します。
 

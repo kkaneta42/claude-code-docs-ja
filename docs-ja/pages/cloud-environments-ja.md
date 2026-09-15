@@ -540,7 +540,6 @@ SessionStart フックはクラウドでローカルと同じように動作し�
 <AccordionGroup>
   <Accordion title="Anthropic サービス">
     * api.anthropic.com
-    * statsig.anthropic.com
     * docs.claude.com
     * platform.claude.com
     * code.claude.com
@@ -612,6 +611,7 @@ SessionStart フックはクラウドでローカルと同じように動作し�
     * [www.java.net](http://www.java.net)
     * download.oracle.com
     * yum.oracle.com
+    * \*.r2.cloudflarestorage.com
   </Accordion>
 
   <Accordion title="JavaScript と Node パッケージマネージャー">
@@ -622,6 +622,8 @@ SessionStart フックはクラウドでローカルと同じように動作し�
     * npmjs.org
     * yarnpkg.com
     * registry.yarnpkg.com
+    * jsr.io
+    * npm.jsr.io
   </Accordion>
 
   <Accordion title="Python パッケージマネージャー">
@@ -676,11 +678,13 @@ SessionStart フックはクラウドでローカルと同じように動作し�
     * central.maven.org
     * repo1.maven.org
     * repo.maven.apache.org
+    * maven.google.com
     * jcenter.bintray.com
     * gradle.org
     * [www.gradle.org](http://www.gradle.org)
     * services.gradle.org
     * plugins.gradle.org
+    * plugins-artifacts.gradle.org
     * kotlinlang.org
     * [www.kotlinlang.org](http://www.kotlinlang.org)
     * spring.io
@@ -758,14 +762,7 @@ SessionStart フックはクラウドでローカルと同じように動作し�
   </Accordion>
 
   <Accordion title="クラウドサービスと監視">
-    * statsig.com
-    * [www.statsig.com](http://www.statsig.com)
-    * api.statsig.com
-    * sentry.io
-    * \*.sentry.io
-    * downloads.sentry-cdn.com
     * http-intake.logs.datadoghq.com
-    * browser-intake-us5-datadoghq.com
     * \*.datadoghq.com
     * \*.datadoghq.eu
     * api.honeycomb.io
