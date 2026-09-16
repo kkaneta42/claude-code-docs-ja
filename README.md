@@ -17,6 +17,96 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-09-16</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/changelog.md         | 67 ++++++++++++++++++++++++++++++++++++++
+ docs-ja/pages/context-window-ja.md |  8 ++---
+ 2 files changed, 70 insertions(+), 5 deletions(-)
+```
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index 62e075d..b2323fc 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,71 @@
+ # Changelog
+ 
++## 2.1.273
++
++- Added `x-claude-code-request-class`, `x-claude-code-agent-type`, `x-claude-code-prev-tool-durations`, `x-claude-code-compaction` and `x-claude-code-context-compacted` request headers for LLM gateways; opt in with `CLAUDE_CODE_GATEWAY_HINT_HEADERS=1`
++- Added a notification when an MCP server disconnects mid-session and automatic reconnection gives up, pointing at `/mcp`
++- Added forking a session started with `claude --remote-control` or `/remote-control` from the Claude app; the fork runs as a background session on your computer
++- Fixed Bash commands the permission checker cannot fully analyze skipping the prompt under `permissions.blockReadsOutsideWorkingDirectories`, and a subshell hiding a dangerous `rm` in bypass mode
++- Fixed skills synced from claude.ai staying available after your organization turns Skills off; they now move to the recoverable trash
++- Fixed `allowManagedMcpServersOnly`, `deniedMcpServers` and `disableClaudeAiConnectors` set via MDM or `managed-settings.json` being ignored when server-managed settings are also present
++- Fixed 401/403 errors on Bedrock, Vertex and Foundry, and Claude apps gateway 403s, telling you to run `/login`; the message now names the credential to refresh or points to your gateway administrator
++- Fixed `/login`, `/upgrade`, and `/extra-usage` discarding earlier thinking from the conversation, which forced a full prompt-cache rewrite on the next request
++- Fixed auto mode stopping for approval when the Artifact tool uploads a file you attached to the chat in a cloud or Remote Control session
++- Fixed a long-running session recreating a stub `.git/info/exclude` after the repository's `.git` directory was removed or moved away
++- Fixed the main prompt dropping a `!` typed at the start while already in shell mode, so negated commands like `! grep …` can be typed
++- Fixed Read on macOS refusing a dragged-in screenshot, or any file the system reports under a second path, with "symlink resolution changed after permission was checked"
++- Fixed `permissions.blockReadsOutsideWorkingDirectories`: a memory directory chosen by a repository's settings is no longer loaded into the prompt, recalled, indexed, or used by memory extraction
++- Fixed sub-agents and background agents being reported as failed, with their result never delivered, when the final streamed reply omitted token usage or carried no model id
++- Fixed the context meter and auto-compact counting advisor-tool turns at roughly twice their real context size, which made auto-compact fire at about half the real window
++- Fixed `/tui` refusing to restart because of an agent-team teammate that had already finished its work and was no longer shown in the agents panel
++- Fixed saved scheduled tasks running in the wrong session after `.claude/scheduled_tasks.json` was copied into another folder, such as a new worktree
++- Fixed SDK and `--output-format stream-json` output dropping a subagent's remaining messages and final report after it is moved to the background mid-run (e.g. by `CLAUDE_AUTO_BACKGROUND_TASKS`)
++- Fixed `/install-github-app` reporting a SAML single sign-on block as "admin permissions required"
++- Fixed Remote Control clients attached to a Claude Desktop, VS Code or JetBrains session being refused when they ask for the session's context window usage
++- Fixed the spinner showing a doubled ellipsis ("……") on compaction status lines such as "Running PreCompact hooks…"
+```
+
+</details>
+
+<details>
+<summary>context-window-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/context-window-ja.md b/docs-ja/pages/context-window-ja.md
+index 6df7f47..e40d673 100644
+--- a/docs-ja/pages/context-window-ja.md
++++ b/docs-ja/pages/context-window-ja.md
+@@ -113,5 +113,4 @@ export const ContextWindow = () => {
+     color: '#4A9B8E',
+     vis: 'brief',
+-    restoredAfterCompact: true,
+     desc: 'This rule in `.claude/rules/` has a `paths:` pattern matching `src/api/**`. It loaded automatically when Claude read a file in that directory. You see "Loaded .claude/rules/api-conventions.md" in your terminal, but not the rule content.',
+     link: '/en/memory#path-specific-rules'
+@@ -143,5 +142,4 @@ export const ContextWindow = () => {
+     color: '#4A9B8E',
+     vis: 'brief',
+-    restoredAfterCompact: true,
+     desc: 'Another path-scoped rule, this one matching `*.test.ts` files. Triggered when Claude read auth.test.ts. Shown as a one-line "Loaded" notice.',
+     link: '/en/memory#path-specific-rules'
+@@ -626,6 +624,6 @@ export const ContextWindow = () => {
+   }, [hovEvent]);
+   const focusT = hovEvent ? hovEvent.t : time;
+-  const takeaway = isCompacted ? 'Compaction replaces the conversation with a structured summary. System prompt, CLAUDE.md, memory, and MCP tools reload automatically. Claude Code also re-reads up to five of the files modified most recently, reloads the rules that match them, and re-injects the skills you invoked. The skill listing does not reload.' : focusT < STARTUP_END ? 'A lot loads before you type anything. CLAUDE.md, memory, skills, and MCP tools are all in context before your first prompt.' : focusT < 0.28 ? "Your prompt is tiny compared to what's already loaded. Most of Claude's context is project knowledge, not your words." : focusT < 0.50 ? 'Each file Claude reads grows the context. Path-scoped rules load automatically alongside matching files.' : focusT < 0.71 ? 'Hooks fire automatically on tool events. Output reaches Claude via additionalContext JSON. Exit code 2 surfaces stderr to Claude. Plain stdout on exit 0 goes to the debug log, not the transcript.' : focusT < 0.79 ? 'Follow-up questions keep building on the same context. Everything from earlier is still there.' : focusT < 0.87 ? "The subagent works in its own separate context window. None of its file reads touch yours. Only the final summary comes back." : focusT < 0.88 ? 'Bang commands run in your shell and prefix the output to your next message. Useful for grounding Claude in command results without it running them.' : focusT < 0.90 ? 'User-only skills stay out of context entirely until you invoke them. The skill index at startup only lists skills Claude can call on its own.' : '/compact summarizes the conversation to free space while keeping key information. In a real session, run it when context starts affecting performance or before a long new task.';
+-  const terminalView = isCompacted ? 'A "Conversation compacted" message, then a one-line "Read auth.ts" for each re-read file and "Skills restored (commit-push)". The rules show as "Loaded" lines on Claude\'s next turn. None of the content itself appears.' : focusT < STARTUP_END ? 'The input box, waiting for your first message. Everything above loads silently before you type anything.' : focusT < 0.28 ? 'Your prompt. Claude hasn\'t started working yet.' : focusT < 0.52 ? 'Your prompt and "Reading files...". Rules show as one-line "Loaded" notices, not their content.' : focusT < 0.72 ? "Claude's response and file diffs. Hooks fire silently. Tool output like npm test shows as a brief summary, not the full content." : focusT < 0.79 ? 'Your follow-up prompt.' : focusT < 0.86 ? "A brief notice that a subagent is working, then its result. You don't see the subagent's individual file reads." : focusT < 0.90 ? "Claude's response, your git status output, and the commit-push skill running." : 'Your full conversation. /compact is available to run.';
++  const takeaway = isCompacted ? 'Compaction replaces the conversation with a structured summary. System prompt, CLAUDE.md, memory, and MCP tools reload automatically. Claude Code also re-reads up to five of the files modified most recently and re-injects the skills you invoked. The skill listing does not reload.' : focusT < STARTUP_END ? 'A lot loads before you type anything. CLAUDE.md, memory, skills, and MCP tools are all in context before your first prompt.' : focusT < 0.28 ? "Your prompt is tiny compared to what's already loaded. Most of Claude's context is project knowledge, not your words." : focusT < 0.50 ? 'Each file Claude reads grows the context. Path-scoped rules load automatically alongside matching files.' : focusT < 0.71 ? 'Hooks fire automatically on tool events. Output reaches Claude via additionalContext JSON. Exit code 2 surfaces stderr to Claude. Plain stdout on exit 0 goes to the debug log, not the transcript.' : focusT < 0.79 ? 'Follow-up questions keep building on the same context. Everything from earlier is still there.' : focusT < 0.87 ? "The subagent works in its own separate context window. None of its file reads touch yours. Only the final summary comes back." : focusT < 0.88 ? 'Bang commands run in your shell and prefix the output to your next message. Useful for grounding Claude in command results without it running them.' : focusT < 0.90 ? 'User-only skills stay out of context entirely until you invoke them. The skill index at startup only lists skills Claude can call on its own.' : '/compact summarizes the conversation to free space while keeping key information. In a real session, run it when context starts affecting performance or before a long new task.';
++  const terminalView = isCompacted ? 'A "Conversation compacted" message, then a one-line "Read auth.ts" for each re-read file and "Skills restored (commit-push)". None of the content itself appears.' : focusT < STARTUP_END ? 'The input box, waiting for your first message. Everything above loads silently before you type anything.' : focusT < 0.28 ? 'Your prompt. Claude hasn\'t started working yet.' : focusT < 0.52 ? 'Your prompt and "Reading files...". Rules show as one-line "Loaded" notices, not their content.' : focusT < 0.72 ? "Claude's response and file diffs. Hooks fire silently. Tool output like npm test shows as a brief summary, not the full content." : focusT < 0.79 ? 'Your follow-up prompt.' : focusT < 0.86 ? "A brief notice that a subagent is working, then its result. You don't see the subagent's individual file reads." : focusT < 0.90 ? "Claude's response, your git status output, and the commit-push skill running." : 'Your full conversation. /compact is available to run.';
+   const mono = 'var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace)';
+   const renderWithCode = s => s.split('`').map((part, i) => i % 2 === 1 ? <code key={i} style={{
+@@ -953,5 +951,5 @@ export const ContextWindow = () => {
+     marginTop: 4
+   }}>
+-                This is what's left in context: startup content, which lives outside the message history and reloads after compaction, a structured summary of the entire conversation, the files modified most recently, which Claude Code re-reads along with the rules that match them, and the body of each skill you invoked. Skill descriptions don't reload.
++                This is what's left in context: startup content, which lives outside the message history and reloads after compaction, a structured summary of the entire conversation, the files modified most recently, and the body of each skill you invoked. Skill descriptions don't reload.
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-09-15</summary>
 
 **変更ファイル:**
@@ -2604,102 +2694,6 @@ index 550f7ed..186f418 100644
 +* **Dispatch has no per-environment access control**: any member of your Anthropic organization can dispatch a session to any of its environments. If an Owner [routes Claude Tag channels to the environment](/docs/en/cloud-environments#set-the-environment-a-claude-tag-channel-uses), anyone the [Claude Tag access setting](https://claude.com/docs/claude-tag/admins/restrict-access#restrict-who-can-use-claude) admits can start channel sessions that run there. By default that's anyone in the connected Slack workspace, with or without a Claude account. Treat every runner host as reachable for code execution by everyone who can dispatch to it, and place on a runner host only data and credentials that all of those people are allowed to read. [`--lock-to-account`](/docs/en/self-hosted-environments-reference#runner-cli-flags) bounds which account's sessions a given host executes, but it doesn't narrow who can dispatch into the environment. To make self-hosted environments the only picker option, an [Owner](/docs/en/cloud-environments#organization-shared-environments) can hide Anthropic-hosted environments for the whole organization from the [**Cloud environments** page](https://claude.ai/admin-settings/cloud-environments).
  * **Enforce the repo-settings guard**: choose the guard mode with [`--confine-repo-settings`](/docs/en/self-hosted-environments-reference#runner-cli-flags). The default `warn` logs a violation and still spawns the session, `enforce` refuses the session, and `off` disables the scan. The runner scans each repository's committed settings for:
  
-```
-
-</details>
-
-<details>
-<summary>settings-reference-en.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/settings-reference-en.md b/docs-ja/pages/settings-reference-en.md
-index eea7069..3860dde 100644
---- a/docs-ja/pages/settings-reference-en.md
-+++ b/docs-ja/pages/settings-reference-en.md
-@@ -631,4 +631,5 @@ scope: "Which settings files can set the key: user (~/.claude/settings.json), pr
- | [`defaultShell`](#defaultshell)                                                                 | Choose whether Bash or PowerShell runs the shell commands you type with the [`!` prefix](/docs/en/interactive-mode#shell-mode-with-prefix)                                                                                       | Interface and terminal             | Any file                |
- | [`deniedMcpServers`](#deniedmcpservers)                                                         | Block specific [MCP servers](/docs/en/mcp) by URL, command, or name                                                                                                                                                              | MCP                                | Any file                |
-+| [`desktopSessionCleanupPeriodDays`](#desktopsessioncleanupperioddays)                           | Set an age limit in days for [Claude Desktop and Cowork transcripts](/docs/en/claude-directory#cleaned-up-automatically)                                                                                                         | Privacy and telemetry              | User or managed         |
- | [`dialogExpiry`](#dialogexpiry)                                                                 | Set how long Claude Code waits for [Remote Control](/docs/en/remote-control) or an SDK host to answer a forwarded dialog before it cancels the dialog                                                                            | Interface and terminal             | User or managed         |
- | [`diffTool`](#difftool)                                                                         | Choose whether Claude's proposed file changes open in the [VS Code](/docs/en/vs-code) or [JetBrains](/docs/en/jetbrains#features) diff viewer or stay in the terminal                                                                 | Global config settings             | Global config           |
-@@ -5274,4 +5275,18 @@ Set how many days Claude Code keeps [session transcripts and other application d
- Setting `0` fails validation, so pick a large value such as `3650` for long retention. To stop Claude Code from writing transcripts at all, see [Plaintext storage](/docs/en/claude-directory#plaintext-storage).
- 
-+### `desktopSessionCleanupPeriodDays`
-+
-+Set an age limit in days for the transcripts of sessions you started or most recently continued in Claude Desktop or Cowork. Without this key, Claude Code [keeps those transcripts at any age](/docs/en/claude-directory#cleaned-up-automatically). Claude Code deletes each one once it's older than both this limit and [`cleanupPeriodDays`](#cleanupperioddays), so with `cleanupPeriodDays` at its default of 30, a value of `7` still keeps them 30 days. When managed settings set `cleanupPeriodDays`, that period applies instead and this key is ignored. Requires Claude Code v2.1.248 or later.
-+
-+* **Scope**: [`User or managed`](#scopes). Claude Code also reads the key from a file you pass with `--settings`, and ignores it in project and local settings.
-+* **Type**: number of days, a whole number, minimum `0`
-+* **Default**: `0`, which sets no age limit
-+
-+```json settings.json theme={null}
-+{
-+  "desktopSessionCleanupPeriodDays": 90
-+}
-+```
-+
- ### `feedbackDrafts`
- 
-```
-
-</details>
-
-</details>
-
-
-<details>
-<summary>2026-08-29</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/changelog.md                         | 74 ++++++++++++++++++++++
- docs-ja/pages/cross-session-messaging-en.md        |  6 +-
- docs-ja/pages/managed-settings-en.md               |  4 +-
- .../self-hosted-environments-configuration-en.md   |  2 +-
- .../pages/self-hosted-environments-deploy-en.md    |  8 ++-
- docs-ja/pages/self-hosted-environments-en.md       |  2 +-
- .../pages/self-hosted-environments-identity-en.md  |  2 +-
- .../pages/self-hosted-environments-reference-en.md |  3 +-
- docs-ja/pages/settings-reference-en.md             | 72 ++++++++++++++++++---
- 9 files changed, 152 insertions(+), 21 deletions(-)
-```
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index 2ac5610..b986e00 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,78 @@
- # Changelog
- 
-+## 2.1.251
-+
-+- Added `PreModelSwitch` and `PostModelSwitch` hook events (block, confirm, or annotate a model switch); `SessionStart` resume hooks now receive session staleness and the estimated re-cache cost
-+- Added live streaming of a foreground subagent's tool calls and results to Remote Control clients (background subagents, the default, still show status only)
-+- Added a Spend limit bar to `/usage` and a `rate_limits.spend_limit` status line field for developers behind a Claude apps gateway with spend limits
-+- Added a per-session prompt-cache line to `/cost` (hit ratio, misses, tokens re-cached, warm/cold) and a matching `prompt_cache` object for status line scripts
-+- Added `attach`, `logs`, `stop`, `respawn`, and `rm` to `claude --help`; the `--resume` message for a running background session now names the exact `claude attach <id>` command
-+- Fixed file tools (Read, Write, Edit) following a symlink swapped inside the working directory after the permission check, which could read or write outside the approved location
-+- Fixed plugin commands declared in a marketplace entry being able to point outside the plugin directory; such paths are now rejected with a path-traversal error
-+- Fixed project settings being able to enable detailed beta tracing or raw API body logging, and a lower-scope beta tracing endpoint bypassing an OTLP collector pinned by managed settings or a host app
-+- Fixed the Workflow tool reading (and quoting in errors) a `scriptPath` outside what the session may read before the permission check ran
-+- Fixed Grep and Glob not applying `Read(...)` deny rules to files reached through a symlinked search path
-+- Fixed conversations getting stuck on "text content blocks must be non-empty" errors after a turn where the model produced only thinking
-+- Fixed the first launch on a fresh install starting in default mode instead of auto mode for accounts whose startup default is auto mode
-+- Fixed Opus 5 requests failing with "effort … is not supported when thinking is disabled" when effort was xhigh/max and thinking was turned off; effort is now sent as `high` in that case
-+- Fixed replying to a message Claude Desktop delivered from another session: `SendMessage` to that session id now delivers through Claude Desktop instead of failing with "not reachable"
-+- Fixed TUI lag with many parallel subagents: per-second progress ticks now replace their predecessor instead of piling up in the transcript
-+- Fixed agent teams: a teammate's final answer not reaching the team lead — it now arrives in the idle notification instead of a content-free "available" notice
-+- Fixed background subagents being unable to reply to a message from an unnamed sibling or parent agent (`from` was the agent type, which is not an address)
-+- Fixed managed-settings `disableAutoMode` arriving mid-session not moving an already-running auto-mode session back to default mode
-+- Fixed a "switch to Opus 1M for 5x more context" tip that appeared even when the current Opus model already has a 1M context window
-+- Fixed Claude apps gateway sessions treating a stored Anthropic profile (e.g. a Console sign-in) as active: listing it in `/status` and retrying gateway 401s with it, though requests never use it
-+- Fixed cloud sessions telling Claude the model had changed when the host was only setting the session's initial model
 ```
 
 </details>
