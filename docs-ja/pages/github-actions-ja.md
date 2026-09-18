@@ -11,7 +11,7 @@
 複数の製品が Claude Code という名前を共有しています。このページは、リポジトリ内のワークフローファイルで設定する `claude-code-action` ワークフロー統合について説明しています。関連製品については、以下を参照してください。
 
 * [Code Review](/docs/ja/code-review)：ワークフローを記述せずに、すべてのプルリクエストで自動レビュー
-* [Claude Code on the web](/docs/ja/claude-code-on-the-web)：ブラウザまたは電話から Claude Code セッション
+* [Claude Code in the cloud](/docs/ja/claude-code-on-the-web)：クラウドインフラストラクチャで実行される Claude Code セッション（マシンではなく）
 * [Claude Agent SDK](/docs/ja/agent-sdk/overview)：GitHub Actions 外のカスタム自動化。Claude Code GitHub Action は SDK の上に構築されています
 * [GitHub Enterprise Server](/docs/ja/github-enterprise-server)：自己ホスト型 GitHub での Claude Code
 
@@ -131,7 +131,7 @@ Claude Code GitHub Action を削除するには、インストールに適用さ
   GitHub App 権限
 </h3>
 
-[Claude GitHub App](https://github.com/apps/claude) は、Claude Code GitHub Action、[Code Review](/docs/ja/code-review)、Claude Code on the web の [プルリクエストの auto-fix](/docs/ja/claude-code-on-the-web#auto-fix-pull-requests) など、GitHub と統合するすべての Claude 機能で共有されます。GitHub App は、すべての機能をカバーする単一の権限セットを持つため、セットには Claude Code GitHub Action が使用しない権限が含まれます。
+[Claude GitHub App](https://github.com/apps/claude) は、Claude Code GitHub Action、[Code Review](/docs/ja/code-review)、cloud sessions の Claude Code on the web の [プルリクエストの auto-fix](/docs/ja/claude-code-on-the-web#auto-fix-pull-requests) など、GitHub と統合するすべての Claude 機能で共有されます。GitHub App は、すべての機能をカバーする単一の権限セットを持つため、セットには Claude Code GitHub Action が使用しない権限が含まれます。
 
 アプリをインストールすると、以下の権限を付与します。
 

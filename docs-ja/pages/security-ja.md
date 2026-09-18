@@ -122,7 +122,7 @@ IDE で Claude Code を実行する場合の詳細については、[VS Code sec
   クラウド実行セキュリティ
 </h2>
 
-[Claude Code on the web](/docs/ja/claude-code-on-the-web) を使用する場合、追加のセキュリティ制御が実施されます。組織が [self-hosted environment](/docs/ja/self-hosted-environments) にルーティングするセッションは独自のインフラストラクチャで実行され、分離、ネットワーク出力、および Git 認証情報は展開の責任です。Anthropic ホスト環境では：
+[クラウドセッション](/docs/ja/claude-code-on-the-web) を使用する場合、追加のセキュリティ制御が実施されます。組織が [self-hosted environment](/docs/ja/self-hosted-environments) にルーティングするセッションは独自のインフラストラクチャで実行され、分離、ネットワーク出力、および Git 認証情報は展開の責任です。Anthropic ホスト環境では：
 
 * **分離された仮想マシン**: 各クラウドセッションは分離された Anthropic 管理 VM で実行されます
 * **ネットワークアクセス制御**: ネットワークアクセスはデフォルトで制限され、無効にするか特定のドメインのみを許可するように設定できます
@@ -131,7 +131,7 @@ IDE で Claude Code を実行する場合の詳細については、[VS Code sec
 * **監査ログ**: クラウドセッション内のすべての操作はコンプライアンスと監査目的でログされます
 * **自動クリーンアップ**: セッション VM は非アクティブ期間後に回収されます
 
-クラウド実行の詳細については、[Claude Code on the web](/docs/ja/claude-code-on-the-web) を参照してください。クラウドセッションのネットワークアクセスを設定するには、[Configure cloud environments](/docs/ja/cloud-environments#network-access) を参照してください。
+クラウド実行の詳細については、[Claude Code をクラウドで使用する](/docs/ja/claude-code-on-the-web) を参照してください。クラウドセッションのネットワークアクセスを設定するには、[クラウド環境を設定する](/docs/ja/cloud-environments#network-access) を参照してください。
 
 [Remote Control](/docs/ja/remote-control) セッションは異なる方法で動作します：Web インターフェースはローカルマシンで実行されている Claude Code プロセスに接続します。すべてのコード実行とファイルアクセスはローカルに留まり、セッショントラフィックは TLS 経由で Anthropic API を通じて流れます。接続中、セッショントランスクリプトはデバイス間で会話を同期するために Anthropic サーバーに保存されます。これは [Connection and security](/docs/ja/remote-control#connection-and-security) で説明されています。クラウド VM またはサンドボックスは関与しません。接続は複数の短命で狭くスコープされた認証情報を使用し、各認証情報は特定の目的に限定され、独立して有効期限が切れ、単一の侵害された認証情報のブラストラディウスを制限します。
 

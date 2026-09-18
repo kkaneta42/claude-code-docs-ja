@@ -2,19 +2,19 @@
 > Fetch the complete documentation index at: https://code.claude.com/docs/llms.txt
 > Use this file to discover all available pages before exploring further.
 
-# Claude Code をウェブで始める
+# Claude Code をクラウドで始める
 
 > ブラウザまたはスマートフォンからクラウドで Claude Code を実行します。GitHub リポジトリを接続し、タスクを送信し、ローカルセットアップなしで PR をレビューします。
 
 <Note>
-  Claude Code on the web は、Pro、Max、Team ユーザー、および premium seats または Chat + Claude Code seats を持つ Enterprise ユーザーを対象とした研究プレビュー版です。
+  クラウドセッションは、Pro、Max、Team ユーザー、および premium seats または Chat + Claude Code seats を持つ Enterprise ユーザーを対象とした研究プレビュー版です。
 </Note>
 
-Claude Code on the web は、あなたのマシンではなく Anthropic が管理するクラウドインフラストラクチャで実行されます。ブラウザまたは Claude モバイルアプリから [claude.ai/code](https://claude.ai/code) でタスクを送信します。
+クラウドセッションは、あなたのマシンではなく Anthropic が管理するクラウドインフラストラクチャで Claude Code を実行します。このクイックスタートでは、ブラウザから [claude.ai/code](https://claude.ai/code) で開始します。Claude モバイルアプリ、Desktop アプリ、またはターミナルから `claude --cloud` で開始することもできます。
 
 [始めるには](#connect-github) GitHub リポジトリが必要です。Claude はそれを分離された仮想マシンにクローンし、変更を加え、レビュー用のブランチをプッシュします。セッションはデバイス間で永続化されるため、ラップトップで開始したタスクは後でスマートフォンからレビューする準備ができています。
 
-Claude Code on the web は以下に適しています：
+クラウドセッションは以下に適しています：
 
 * **並列タスク**：複数の worktrees を管理することなく、複数の独立したタスクを同時に実行し、それぞれ独自のセッションとブランチで実行します
 * **ローカルにないリポジトリ**：Claude はセッションごとにリポジトリを新規クローンするため、チェックアウトする必要がありません
@@ -40,19 +40,20 @@ Claude Code on the web は以下に適しています：
   Claude Code を実行する方法を比較
 </h2>
 
-Claude Code はどこでも同じように動作します。変わるのは、コードが実行される場所とローカル設定が利用可能かどうかです。Desktop app は local と cloud の両方のセッションを提供するため、以下の回答はどちらを選択するかによって異なります：
+Claude Code はどこでも同じように動作します。変わるのは、セッションが実行される場所とローカル設定が利用可能かどうかです。
 
-|                                              | On the web                                                                                                     | Remote Control             | Terminal CLI           | Desktop app                 |
-| :------------------------------------------- | :------------------------------------------------------------------------------------------------------------- | :------------------------- | :--------------------- | :-------------------------- |
-| **Code runs on**                             | Cloud VM、Anthropic 管理（デフォルト）                                                                                   | Your machine               | Your machine           | Your machine or cloud VM    |
-| **You chat from**                            | claude.ai or mobile app                                                                                        | claude.ai or mobile app    | Your terminal          | The Desktop UI              |
-| **Uses your local config**                   | No, repo only                                                                                                  | Yes                        | Yes                    | Yes for local, no for cloud |
-| **Requires GitHub**                          | Yes, or [bundle a local repo](/docs/ja/claude-code-on-the-web#send-local-repositories-without-github) via `--cloud` | No                         | No                     | Only for cloud sessions     |
-| **Keeps running if you disconnect**          | Yes                                                                                                            | While terminal stays open  | No                     | Depends on session type     |
-| **[Permission modes](/docs/ja/permission-modes)** | Accept edits, Plan, Auto                                                                                       | Manual, Accept edits, Plan | All modes              | Depends on session type     |
-| **Network access**                           | Configurable per environment                                                                                   | Your machine's network     | Your machine's network | Depends on session type     |
+|                                   | クラウドセッション                                                                                               | ローカルセッション                                                                                                 | [リモートコントロール](/docs/ja/remote-control)を使用したローカルセッション |
+| :-------------------------------- | :------------------------------------------------------------------------------------------------------ | :-------------------------------------------------------------------------------------------------------- | :--------------------------------------------- |
+| **コードが実行される場所**                   | クラウド VM、Anthropic 管理（デフォルト）                                                                             | お客様のマシン                                                                                                   | お客様のマシン                                        |
+| **セッションを開始する場所**                  | claude.ai/code、Claude モバイルアプリ、**Cloud** が選択された Desktop app、または `claude --cloud`                         | お客様のターミナル、お客様の IDE、または **Local** が選択された Desktop app                                                       | お客様のターミナル、VS Code 拡張機能、または Desktop app         |
+| **チャットを行う場所**                     | claude.ai、モバイルアプリ、または Desktop app                                                                       | セッションを開始した場所                                                                                              | claude.ai またはモバイルアプリ、およびセッションを開始した場所           |
+| **ローカル設定を使用**                     | いいえ、リポジトリのみ                                                                                             | はい                                                                                                        | はい                                             |
+| **GitHub が必要**                    | はい、または `--cloud` 経由で[ローカルリポジトリをバンドル](/docs/ja/claude-code-on-the-web#send-local-repositories-without-github) | いいえ                                                                                                       | いいえ                                            |
+| **切断時に実行を継続**                     | はい                                                                                                      | いいえ                                                                                                       | セッションがお客様のマシンで開いている間                           |
+| **[権限モード](/docs/ja/permission-modes)** | 編集を受け入れる、Plan、Auto                                                                                      | ターミナルのすべてのモード。IDE と Desktop app については[権限モードを切り替える](/docs/ja/permission-modes#switch-permission-modes)を参照してください | claude.ai とモバイルアプリから Manual、編集を受け入れる、または Plan  |
+| **ネットワークアクセス**                    | 環境ごとに設定可能                                                                                               | お客様のマシンのネットワーク                                                                                            | お客様のマシンのネットワーク                                 |
 
-[terminal quickstart](/docs/ja/quickstart)、[Desktop app](/docs/ja/desktop)、または [Remote Control](/docs/ja/remote-control) ドキュメントを参照して、それらをセットアップしてください。
+ローカルセッションをセットアップするには、[ターミナルクイックスタート](/docs/ja/quickstart)、[Desktop app](/docs/ja/desktop)、または [リモートコントロール](/docs/ja/remote-control) ドキュメントを参照してください。
 
 <h2 id="connect-github">
   GitHub を接続
@@ -72,9 +73,9 @@ GitHub への接続は 1 回限りのステップです。既に GitHub CLI を�
   <Step title="GitHub でサインイン">
     サインイン後、claude.ai/code は GitHub を接続するよう促します。プロンプトに従うと、claude.ai/code は GitHub の認可ページに移動します。認可リクエストを承認すると、GitHub は claude.ai/code に戻ります。Cloud セッションは既存の GitHub リポジトリで機能します。新しいプロジェクトを開始するには、まず [GitHub に空のリポジトリを作成](https://github.com/new) してください。
 
-    この接続により、セッションは任意のパブリックリポジトリをクローンできますが、プライベートリポジトリで機能するのは Claude GitHub App がインストールされている場合のみです。[App をインストール](https://github.com/apps/claude/installations/new) してください。使用したいプライベートリポジトリを持つ各 GitHub アカウントまたは Organization に対してインストールします。GitHub Organization では、Organization オーナーがインストールを承認する必要がある場合があります。App をインストールすると、[Auto-fix](/docs/ja/claude-code-on-the-web#auto-fix-pull-requests) も有効になります。これにより、Claude はこれらのリポジトリの pull request の CI 失敗とレビューコメントに応答できます。
+    この接続により、セッションは任意のパブリックリポジトリをクローンできますが、プライベートリポジトリで機能するのは Claude GitHub App がインストールされている場合のみです。[Claude GitHub App をインストール](https://github.com/apps/claude/installations/new) してください。使用したいプライベートリポジトリを持つ各 GitHub アカウントまたは Organization に対してインストールします。GitHub Organization では、Organization オーナーがインストールを承認する必要がある場合があります。App をインストールすると、[Auto-fix](/docs/ja/claude-code-on-the-web#auto-fix-pull-requests) も有効になります。これにより、Claude はこれらのリポジトリの pull request の CI 失敗とレビューコメントに応答できます。
 
-    オンボーディングがこの時点で App をインストールするよう促し、後で実行したい場合は、**Skip** をクリックします。
+    オンボーディングがこの時点で Claude GitHub App をインストールするよう促し、後で実行したい場合は、**Skip** をクリックします。
   </Step>
 
   <Step title="デフォルト環境をセットアップ">
@@ -93,9 +94,9 @@ GitHub への接続は 1 回限りのステップです。既に GitHub CLI を�
   ターミナルから接続
 </h3>
 
-既に GitHub CLI（`gh`）を使用している場合は、ブラウザを開かずに Claude Code on the web をセットアップできます。これには [Claude Code CLI](/docs/ja/quickstart) が必要です。Team および Enterprise プランでは、`/web-setup` は Owner が [Quick web setup](/docs/ja/claude-code-on-the-web#github-authentication-options) をオンにした後にのみ利用可能です。
+既に GitHub CLI（`gh`）を使用している場合は、ターミナルから cloud セッション用に GitHub を接続できます。これには [Claude Code CLI](/docs/ja/quickstart) が必要です。Team および Enterprise プランでは、`/web-setup` は Owner が [Quick web setup](/docs/ja/claude-code-on-the-web#github-authentication-options) をオンにした後にのみ利用可能です。
 
-`/web-setup` を実行すると、Claude Code は `gh auth token` が出力するトークンを読み取り、確認を求め、トークンを Anthropic に送信します。Anthropic はそれを claude.ai アカウントで暗号化して保存し、cloud セッションはそれを GitHub アクセスに使用します。これは [削除](#remove-the-web-setup-token) するまで続きます。Cloud セッションはそのトークンがアクセスできる任意のリポジトリにアクセスでき、Claude GitHub App をインストールする必要はありません。
+`/web-setup` を実行すると、Claude Code は `gh auth token` が出力するトークンを読み取り、確認を求め、トークンを Anthropic に送信します。Anthropic はそれを claude.ai アカウントで暗号化して保存し、cloud セッションはそれを GitHub アクセスに使用します。これは [削除](#remove-the-web-setup-token) するまで続きます。自分で開始した cloud セッションは、そのトークンがアクセスできる任意のリポジトリにアクセスでき、Claude GitHub App をインストールする必要はありません。[project](/docs/ja/claude-projects#set-up-github-access) 内のスレッドは引き続き Claude GitHub App が必要です。
 
 既にブラウザで GitHub を接続している場合、`/web-setup` は続行すると cloud セッションの接続が置き換わることを警告します。
 
@@ -117,13 +118,13 @@ GitHub への接続は 1 回限りのステップです。既に GitHub CLI を�
   </Step>
 
   <Step title="/web-setup を実行">
-    Claude Code CLI で以下を実行します。
+    Claude Code CLI で以下を実行します：
 
     ```text theme={null}
     /web-setup
     ```
 
-    `gh` トークンを Claude アカウントに送信するプロンプトを確認します。成功すると、Claude Code は `Connected as <your-github-username>` を出力し、[claude.ai/code](https://claude.ai/code) をブラウザで開きます。cloud 環境がまだない場合、`/web-setup` は Trusted ネットワークアクセスと setup script なしで環境を作成します。後で [環境を編集したり、変数を追加](/docs/ja/cloud-environments#configure-your-environment) できます。`/web-setup` が完了したら、[`--cloud`](/docs/ja/claude-code-on-the-web#from-terminal-to-web) でターミナルから cloud セッションを開始するか、[`/schedule`](/docs/ja/routines) で定期的なタスクをセットアップできます。
+    `gh` トークンを Claude アカウントに送信するプロンプトを確認します。成功すると、Claude Code は `Connected as <your-github-username>` を出力し、[claude.ai/code](https://claude.ai/code) をブラウザで開きます。cloud 環境がまだない場合、`/web-setup` は Trusted ネットワークアクセスと setup script なしで環境を作成します。後で [環境を編集したり、変数を追加](/docs/ja/cloud-environments#configure-your-environment) できます。`/web-setup` が完了したら、[`--cloud`](/docs/ja/claude-code-on-the-web#from-terminal-to-cloud) でターミナルから cloud セッションを開始するか、[`/schedule`](/docs/ja/routines) で定期的なタスクをセットアップできます。
   </Step>
 </Steps>
 
@@ -226,13 +227,13 @@ Claude が完了したら、変更をレビューし、特定の行にフィー�
   ページに GitHub ログインボタンのみが表示される
 </h3>
 
-クラウドセッションには接続された GitHub アカウントが必要です。上記のブラウザフローで接続するか、GitHub CLI を使用する場合はターミナルから `/web-setup` を実行してください。GitHub をまったく接続したくない場合は、[Remote Control](/docs/ja/remote-control) を参照して、自分のマシンで Claude Code を実行し、ウェブから監視してください。
+クラウドセッションには接続された GitHub アカウントが必要です。上記のブラウザフローで接続するか、GitHub CLI を使用する場合はターミナルから `/web-setup` を実行してください。GitHub をまったく接続したくない場合は、[Remote Control](/docs/ja/remote-control) を参照して、自分のマシンで Claude Code を実行し、ブラウザまたは電話から監視してください。
 
 <h3 id="not-available-for-the-selected-organization">
   「選択した組織では利用できません」
 </h3>
 
-エンタープライズ組織では、所有者が Claude Code をウェブで有効にする必要がある場合があります。Anthropic アカウントチームにお問い合わせください。
+エンタープライズ組織では、所有者がクラウドセッションを有効にする必要がある場合があります。Anthropic アカウントチームにお問い合わせください。
 
 <h3 id="/web-setup-says-not-signed-in-to-claude">
   `/web-setup` が「Claude にサインインしていません」と表示される
@@ -254,13 +255,18 @@ Claude が完了したら、変更をレビューし、特定の行にフィー�
 
 Claude Code 内に入力した場合、コマンドメニューが「No commands match "/web-setup"」を表示するか、送信すると「Unknown command: /web-setup」が返される場合、要件が満たされていないため、コマンドは非表示になっています。通常の原因は、claude.ai サブスクリプションではなく API キーまたはサードパーティプロバイダーで認証されていることです。`/login` を実行して claude.ai アカウントでサインインしてください。
 
-Team および Enterprise プランでは、コマンドはデフォルトで非表示になっています。[Quick web setup トグル](/docs/ja/claude-code-on-the-web#github-authentication-options)は、所有者がオンにするまでオフになっています。オフの間は、代わりに[ブラウザから GitHub を接続](#connect-github)してください。管理者が組織の Claude Code をウェブで無効にした場合、または Enterprise 組織が [Zero Data Retention](/docs/ja/zero-data-retention) を有効にしている場合（Claude Code をウェブで利用できなくする）、コマンドも非表示になります。
+Team および Enterprise プランでは、コマンドはデフォルトで非表示になっています。[Quick web setup トグル](/docs/ja/claude-code-on-the-web#github-authentication-options)は、所有者がオンにするまでオフになっています。オフの間は、代わりに[ブラウザから GitHub を接続](#connect-github)してください。
+
+コマンドは他の 2 つのケースでも非表示になります。
+
+* 管理者が組織のクラウドセッションを無効にしました。この場合、`/web-setup` を送信すると [`Cloud sessions are disabled by your organization's policy`](/docs/ja/errors#cloud-sessions-are-disabled-by-your-organizations-policy) が返されます。v2.1.268 より前では、このケースも `Unknown command: /web-setup` を返していました。
+* Enterprise 組織が [Zero Data Retention](/docs/ja/zero-data-retention) を有効にしており、これによりクラウドセッションが利用できなくなります。
 
 <h3 id="could-not-create-a-cloud-environment-or-no-cloud-environment-available-when-using-cloud">
   `--cloud` を使用する場合に「Could not create a cloud environment」または「No cloud environment available」が表示される
 </h3>
 
-リモートセッション機能は、環境がない場合、デフォルトのクラウド環境を自動的に作成します。「Could not create a cloud environment」が表示される場合、自動作成に失敗しました。「No cloud environment available」が表示される場合、CLI は自動作成より前のバージョンです。どちらの場合でも、Claude Code CLI で `/web-setup` を実行するか、[claude.ai/code](https://claude.ai/code) の[環境セレクター](/docs/ja/cloud-environments#configure-your-environment)から環境を追加してください。
+クラウドセッション機能は、環境がない場合、デフォルトのクラウド環境を自動的に作成します。「Could not create a cloud environment」が表示される場合、自動作成に失敗しました。「No cloud environment available」が表示される場合、CLI は自動作成より前のバージョンです。どちらの場合でも、Claude Code CLI で `/web-setup` を実行するか、[claude.ai/code](https://claude.ai/code) の[環境セレクター](/docs/ja/cloud-environments#configure-your-environment)から環境を追加してください。
 
 <h3 id="setup-script-failed">
   セットアップスクリプトが失敗した
@@ -298,8 +304,8 @@ Team および Enterprise プランでは、コマンドはデフォルトで非
 
 タスクを送信してレビューできるようになったので、これらのページは次に来るものをカバーしています：ターミナルから cloud セッションを開始し、定期的な作業をスケジュールし、Claude に常設の指示を与えます。
 
-* [Use Claude Code on the web](/docs/ja/claude-code-on-the-web)：完全なリファレンス。セッションをターミナルにテレポートする、セッション共有、auto-fixing pull requests を含みます
-* [Configure cloud environments](/docs/ja/cloud-environments)：ネットワークアクセスレベル、環境変数、cloud セッション用のセットアップスクリプト
+* [Claude Code をクラウドで使用する](/docs/ja/claude-code-on-the-web)：完全なリファレンス。セッションをターミナルにテレポートする、セッション共有、auto-fixing pull requests を含みます
+* [クラウド環境を設定する](/docs/ja/cloud-environments)：ネットワークアクセスレベル、環境変数、cloud セッション用のセットアップスクリプト
 * [Routines](/docs/ja/routines)：スケジュール、API 呼び出し、または GitHub イベントへの応答で作業を自動化します
 * [CLAUDE.md](/docs/ja/memory)：すべてのセッションの開始時に読み込まれる永続的な指示とコンテキストを Claude に提供します
-* [iOS](https://apps.apple.com/us/app/claude-by-anthropic/id6473753684) または [Android](https://play.google.com/store/apps/details?id=com.anthropic.claude) 用の Claude モバイルアプリをインストールして、スマートフォンからセッションを監視します。Claude Code CLI から、`/mobile` は QR コードを表示します。
+* [iOS](https://apps.apple.com/us/app/claude-by-anthropic/id6473753684) または [Android](https://play.google.com/store/apps/details?id=com.anthropic.claude) 用の Claude モバイルアプリをインストールして、スマートフォンからセッションを監視します。Claude Code CLI から、`/mobile` は [claude.ai/mobile](https://claude.ai/mobile) 用の QR コードを表示します。これはお使いのスマートフォンに適切なアプリストアを開きます。

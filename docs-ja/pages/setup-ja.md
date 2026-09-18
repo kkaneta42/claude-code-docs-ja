@@ -202,7 +202,7 @@ claude doctor
   認証
 </h2>
 
-Claude Code には、Pro、Max、Team、Enterprise、または Console アカウントが必要です。無料の Claude.ai プランには Claude Code アクセスは含まれていません。[Amazon Bedrock](/docs/ja/amazon-bedrock)、[Google Cloud の Agent Platform](/docs/ja/google-vertex-ai)、または[Microsoft Foundry](/docs/ja/microsoft-foundry)などのサードパーティ API プロバイダーで Claude Code を使用することもできます。
+Claude Code には、Pro、Max、Team、Enterprise、または Console アカウントが必要です。無料の claude.ai プランには Claude Code アクセスは含まれていません。[Amazon Bedrock](/docs/ja/amazon-bedrock)、[Google Cloud の Agent Platform](/docs/ja/google-vertex-ai)、または[Microsoft Foundry](/docs/ja/microsoft-foundry)などのサードパーティ API プロバイダーで Claude Code を使用することもできます。
 
 インストール後、`claude` を実行してブラウザーのプロンプトに従ってログインします。`ANTHROPIC_API_KEY` 環境変数が設定されている場合、Claude Code はブラウザーを開く代わりに、キーを承認するよう 1 回プロンプトを表示します。すべてのアカウントタイプとチームセットアップオプションについては、[認証](/docs/ja/authentication)を参照してください。
 

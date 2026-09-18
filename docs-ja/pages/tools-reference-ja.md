@@ -10,7 +10,7 @@ Claude Code は、コードベースを理解および変更するのに役立�
 
 Claude が使用できるツールと、いつ最初に確認するかを制御するには、設定、[フック](/docs/ja/hooks)、または[サブエージェントのツールリスト](/docs/ja/sub-agents#supported-frontmatter-fields)で[権限ルール](/docs/ja/permissions#tool-specific-permission-rules)を設定します。ツール名を受け入れる各場所については、[権限ルールとフックでツールを設定する](#configure-tools-with-permission-rules-and-hooks)を参照してください。
 
-カスタムツールを追加するには、[MCP サーバー](/docs/ja/mcp)を接続します。再利用可能なプロンプトベースのワークフローで Claude を拡張するには、[スキル](/docs/ja/skills)を作成します。これは新しいツールエントリを追加するのではなく、既存の `Skill` ツールを通じて実行されます。
+カスタムツールを追加するには、[MCP サーバー](/docs/ja/mcp)を接続します。再利用可能なプロンプトベースのワークフローで Claude を拡張するには、[スキル](/docs/ja/skills#control-who-invokes-a-skill)を作成します。これは新しいツールエントリを追加するのではなく、既存の `Skill` ツールを通じて実行されます。
 
 <Info>
   Pro、Max、Team プランでは、Claude Code は[オートモード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)でセッションを開始します。ここでは、分類器がこれらのプロンプトのほとんどを決定します。`Permission required` 列は、ツールが[マニュアルモード](/docs/ja/permission-modes)でワーキングディレクトリ内のパスに対してプロンプトを表示するかどうかを示します。`Read`、`Grep`、`Glob` を含むファイルアクセスツールは「いいえ」とマークされていますが、[ワーキングディレクトリと追加ディレクトリ](/docs/ja/permissions#working-directories)外のパスに対してはプロンプトを表示します。`Bash` は「はい」とマークされていますが、プロンプトなしで組み込みの[読み取り専用コマンド](/docs/ja/permissions#read-only-commands)セットを実行します。
@@ -50,6 +50,7 @@ Claude が使用できるツールと、いつ最初に確認するかを制御�
 | `SendUserFile`         | セッションからファイルをオプションのキャプション付きで送信します。生成されたレポート、図、スクリーンショット、または構築されたアーティファクトがトランスクリプトでのみ言及されるのではなく、デバイスに到達するようにします。v2.1.196 以降、オプションの `display` 入力はプレゼンテーションを制御します。`render` はファイルをクライアントにインラインで開き、`attach` はダウンロードカードのみを表示し、設定されていない場合、クライアントはファイルタイプで決定します。[リモートコントロール](/docs/ja/remote-control)クライアントが接続されている場合、またはセッションが[ウェブ上の Claude Code](/docs/ja/claude-code-on-the-web)などのマネージドクラウド環境で実行されている場合に利用可能です。配信は Anthropic ホスト型インフラストラクチャを通じて実行されるため、このツールは Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry では利用できません                                                                                                                                                                                                         | いいえ   |
 | `ShareOnboardingGuide` | ガイドが作成された後、`ONBOARDING.md` をアップロードし、チームメイトが Claude Code で開くことができる共有リンクを返します。`/team-onboarding` から呼び出されます。claude.ai サブスクライバーが Pro、Max、Team、Enterprise プランで利用可能です                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | はい    |
 | `Skill`                | メイン会話内で[スキル](/docs/ja/skills#control-who-invokes-a-skill)を実行します                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | はい    |
+| `SubagentHandback`     | サブエージェントの最終レポートを、そのサブエージェントの結果を受け取る会話に配信します。[オートモード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)でのみ提供され、Agent ツールがローカルで実行するサブエージェント（[フォーク](/docs/ja/sub-agents#fork-the-current-conversation)以外）に提供され、ターミナル CLI、IDE 拡張機能、クラウドセッション、および Agent SDK で利用可能です。分類器はレポートが配信される前にレビューします。Claude Code v2.1.271 以降が必要です                                                                                                                                                                                                                                                                                                                                                                                                                 | いいえ   |
 | `TaskCreate`           | タスクリストに新しいタスクを作成します。[タスクツール利用可能性](#task-tool-availability)の下にリストされているモデルでデフォルトで提供され、他のモデルではオプトインした場合に提供されます                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | いいえ   |
 | `TaskGet`              | 特定のタスクの完全な詳細を取得します。[タスクツール利用可能性](#task-tool-availability)の下にリストされているモデルでデフォルトで提供され、他のモデルではオプトインした場合に提供されます                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | いいえ   |
 | `TaskList`             | すべてのタスクを現在のステータスでリストします。[タスクツール利用可能性](#task-tool-availability)の下にリストされているモデルでデフォルトで提供され、他のモデルではオプトインした場合に提供されます                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | いいえ   |
@@ -99,7 +100,7 @@ Claude が使用できるツールと、いつ最初に確認するかを制御�
   Agent ツールの動作
 </h2>
 
-Agent ツールは、別のコンテキストウィンドウでサブエージェントを起動します。サブエージェントはそのタスクを自律的に処理し、親の会話に単一のテキスト結果を返します。親はサブエージェントの中間的なツール呼び出しや出力を見ることはなく、最終的な結果のみを見ます。[agent teams](/docs/ja/agent-teams) が有効な場合、`name` を持つ呼び出しは [teammate](/docs/ja/agent-teams#how-claude-starts-agent-teams) を起動することができ、結果を返す代わりにチームメッセージを通じて報告します。
+Agent ツールは、別のコンテキストウィンドウでサブエージェントを起動します。サブエージェントはそのタスクを自律的に処理し、親の会話に結果を返します。親はサブエージェントの中間的なツール呼び出しや出力を見ることはなく、最終的な結果のみを見ます。[agent teams](/docs/ja/agent-teams) が有効な場合、`name` を持つ呼び出しは [teammate](/docs/ja/agent-teams#how-claude-starts-agent-teams) を起動することができ、結果を返す代わりにチームメッセージを通じて報告します。
 
 サブエージェントが実行するターン数を制限するには、[subagent definition](/docs/ja/sub-agents#supported-frontmatter-fields) で `maxTurns` を設定します。サブエージェントが制限に達すると、Claude Code は返された結果を部分的な出力としてマークし、Claude は [subagent を再開](/docs/ja/sub-agents#resume-subagents) して続行することができます。
 
@@ -112,7 +113,7 @@ Agent ツールは、別のコンテキストウィンドウでサブエージ�
 * **`disallowedTools` のみ**: subagent はリストされたツール以外のすべての親ツールを取得します。
 * **両方設定されている場合**: `disallowedTools` が優先されます。両方にリストされているツールは削除されます。
 
-すべての場合において、解決されたセットは [subagent で利用可能なツール](/docs/ja/sub-agents#available-tools) に制限されます。subagent で利用可能でないツールは、`tools` にリストされている場合でも付与されることはありません。
+すべての場合において、解決されたセットは [subagent で利用可能なツール](/docs/ja/sub-agents#available-tools) に制限されます。subagent で利用可能でないツールは、`tools` にリストされている場合でも付与されることはありません。`SubagentHandback` ツールテーブルエントリの条件が成立する場合、Claude Code は `tools` から除外されているか `disallowedTools` にリストされている場合でも、subagent にそのツールを付与します。
 
 subagent の `tools` リスト内のすべてのエントリが使用可能なツールと一致しない場合、Agent ツールは通常、subagent を起動する代わりにエントリを名前で指定するエラーを返します。[Agent would be spawned with zero tools](/docs/ja/errors#agent-would-be-spawned-with-zero-tools) でメッセージと各エントリの修正方法を参照してください。
 
@@ -363,6 +364,10 @@ Monitor ツールは Claude がバックグラウンドで何かを監視し、�
 
 同じセッションで作業を続けることができ、イベントが到着すると Claude が割り込みます。
 
+Claude が開始するすべての監視には期限があります。デフォルトでは 5 分、最大 30 分、および `-p` で単一のプロンプトが与えられた [非対話型](/docs/ja/headless) 実行では最大 10 分です。
+
+期限に達すると監視が終了します。Claude は 1 つの通知を受け取るため、必要に応じて監視を再度開始できます。
+
 Monitor をキャンセルするよう Claude に依頼するか、セッションを終了することで Monitor を停止できます。例えば `/tasks` から開始された Monitor を停止する [subagent](/docs/ja/sub-agents) を停止すると、それらの Monitor も一緒に停止します。
 
 Monitor がコマンドを実行するとき、[Bash と同じ権限ルール](/docs/ja/permissions#tool-specific-permission-rules) を使用するため、Bash に設定した `allow` および `deny` パターンがここにも適用されます。[auto mode](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode) がアクティブな場合、Claude Code は `Monitor` 自体を名前に含む allow ルール、および [削除する他のブロード allow ルール](/docs/ja/permission-modes#how-the-classifier-evaluates-actions) を脇に置くため、分類器は Monitor コマンドを Bash コマンドと同じ方法で確認します。
@@ -395,7 +400,7 @@ WebSocket 監視は `command` の代わりに `ws` 入力を取り、単一の M
 | `url`       | はい  | 接続するエンドポイント。埋め込まれた認証情報またはホワイトスペースなしで、ASCII 文字のみを使用する `ws://` または `wss://` URL である必要があります |
 | `protocols` | いいえ | ハンドシェイク中に提供する WebSocket サブプロトコル名。各エントリは有効なサブプロトコル トークンである必要があり、リストに重複を含めることはできません        |
 
-`timeout_ms` および `persistent` 入力は、コマンドの場合と同じように動作します。`persistent` が設定されていない限り、監視はデッドラインで終了し、`TaskStop` は早期にキャンセルします。
+`timeout_ms` 期限は WebSocket 監視にも適用されます。監視は期限で終了し、`TaskStop` は早期にキャンセルします。
 
 WebSocket を開くと承認を求めるプロンプトが表示されます。[auto mode](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode) では分類器が代わりに決定します。プロンプトは同じホストの将来のプロンプトをスキップするオプションを提供しません。
 
@@ -582,20 +587,20 @@ Claude Code には、Claude API を使用する独自のマシン上のインタ
   Task ツールの利用可能性
 </h2>
 
-Task トラッキングツール（`TaskCreate`、`TaskGet`、`TaskUpdate`、`TaskList`、および `TodoWrite`）は、デフォルトでは Claude 3.x モデル、Opus 4 から 4.7、Sonnet 4 から 4.6、および Haiku 4.5 でのみ利用可能です。ツールが利用可能な場所では、4 つの Task ツール、または [`CLAUDE_CODE_ENABLE_TASKS=0`](/docs/ja/env-vars)を設定した場合は `TodoWrite` が提供されます。
+Task トラッキングツール（`TaskCreate`、`TaskGet`、`TaskUpdate`、`TaskList`、および `TodoWrite`）は、デフォルトでは Claude 3.x モデル、Opus 4 から 4.7、Sonnet 4 から 4.6、および Haiku 4.5 でのみ利用可能です。ツールが利用可能な場所では、4 つの Task ツール、または [`CLAUDE_CODE_ENABLE_TASKS=0`](/docs/ja/env-vars) を設定した場合は `TodoWrite` が提供されます。
 
-他のすべてのモデルでは、Claude Code はオプトインしない限りツールを除外します。Claude Code が認識しないモデル ID（[LLM ゲートウェイ](/docs/ja/llm-gateway)を通じて提供されるカスタムモデル名など）にも同じことが当てはまります。新しいモデルでは、Claude は書かれたチェックリストなしで複数ステップの作業を追跡でき、ツールの定義とリマインダーはコンテキストを占有します。ツールがない場合、Claude は作業中に[タスクリスト](/docs/ja/interactive-mode#task-list)に何も追加しません。
+他のすべてのモデルでは、Claude Code はオプトインしない限りツールを除外します。Claude Code が認識しないモデル ID（[LLM ゲートウェイ](/docs/ja/llm-gateway) を通じて提供されるカスタムモデル名など）にも同じことが当てはまります。新しいモデルでは、Claude は書かれたチェックリストなしで複数ステップの作業を追跡でき、ツールの定義とリマインダーはコンテキストを占有します。ツールがない場合、Claude は作業中に[タスクリスト](/docs/ja/interactive-mode#task-list)に何も追加しません。
 
 デフォルトではこれらのツールを持たないモデルでこれらのツールを使用したい場合は、以下のいずれかを実行してください：
 
-* Claude Code を開始する前に [`CLAUDE_CODE_ENABLE_TODO_TOOLS=1`](/docs/ja/env-vars)をエクスポートします。例えば `CLAUDE_CODE_ENABLE_TODO_TOOLS=1 claude`。Claude Code はすべてのモデルとすべてのプロバイダーで同じツールを提供します
-* [`--allowedTools`](/docs/ja/cli-reference#cli-flags)で、例えば `claude --allowedTools TaskCreate` のようにツールの 1 つを指定します
-* [`--tools`](/docs/ja/cli-reference#cli-flags)でツールをリストします。これはセッションの組み込みツールを指定されたものに制限します。使用する他の組み込みツールと一緒に必要なツールを含めます
-* Agent SDK では、[`allowedTools` と `tools` オプション](/docs/ja/agent-sdk/todo-tracking#model-availability)は 2 つのフラグと同じように機能します
+* Claude Code を開始する前に [`CLAUDE_CODE_ENABLE_TODO_TOOLS=1`](/docs/ja/env-vars) をエクスポートします。例えば `CLAUDE_CODE_ENABLE_TODO_TOOLS=1 claude`。Claude Code はすべてのモデルとすべてのプロバイダーで同じツールを提供します
+* [`--allowedTools`](/docs/ja/cli-reference#cli-flags) で、例えば `claude --allowedTools TaskCreate` のようにツールの 1 つを指定します
+* [`--tools`](/docs/ja/cli-reference#cli-flags) でツールをリストします。これはセッションの組み込みツールを指定されたものに制限します。使用する他の組み込みツールと一緒に必要なツールを含めます
+* Agent SDK では、[`allowedTools` と `tools` オプション](/docs/ja/agent-sdk/todo-tracking#model-availability) は 2 つのフラグと同じように機能します
 
-[バックグラウンドセッション](/docs/ja/agent-view)および[ウェブ上の Claude Code](/docs/ja/claude-code-on-the-web)では、Claude Code はリストされているかどうかに関わらず、すべてのモデルで同じツールを提供します。
+[バックグラウンドセッション](/docs/ja/agent-view) および[ウェブ上の Claude Code](/docs/ja/claude-code-on-the-web) では、Claude Code はリストされているかどうかに関わらず、すべてのモデルで同じツールを提供します。
 
-Claude Code はサブエージェントにツールを提供するのは、セッションがそれらを持っている場合のみです。サブエージェントが異なるモデルを実行している場合でも同じです。プロセス内の[エージェントチーム](/docs/ja/agent-teams)メンバーはセッションと同じ方法で従いますが、独自の[分割ペイン](/docs/ja/agent-teams#choose-a-display-mode)にいるメンバーは別の Claude Code プロセスとして実行されるため、独自のモデルが決定します。Task ツールがない場合、エージェントは[共有タスクリスト](/docs/ja/agent-teams#assign-and-claim-tasks)の代わりにメッセージを通じてチームと調整します。
+Claude Code はサブエージェントにツールを提供するのは、セッションがそれらを持っている場合のみです。サブエージェントが異なるモデルを実行している場合でも同じです。プロセス内の[エージェントチーム](/docs/ja/agent-teams) メンバーはセッションと同じ方法で従いますが、独自の[分割ペイン](/docs/ja/agent-teams#choose-a-display-mode) にいるメンバーは別の Claude Code プロセスとして実行されるため、独自のモデルが決定します。Task ツールがない場合、エージェントは[共有タスクリスト](/docs/ja/agent-teams#assign-and-claim-tasks) の代わりにメッセージを通じてチームと調整します。
 
 ここで説明されているデフォルトセットは Claude Code v2.1.268 以降に適用されます。
 

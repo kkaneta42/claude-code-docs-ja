@@ -73,7 +73,8 @@ Claude Code は、ターミナルにいない時に作業するための複数�
 * [Desktop](/docs/ja/desktop)：ビジュアル Diff レビュー、並列セッション、コンピューター使用、Dispatch
 * [VS Code](/docs/ja/vs-code)：エディター内の Claude Code 拡張機能
 * [JetBrains](/docs/ja/jetbrains)：IntelliJ、PyCharm、およびその他の JetBrains IDE の拡張機能
-* [Claude Code on the web](/docs/ja/claude-code-on-the-web)：切断後も実行し続けるクラウドセッション
+* [Web](/docs/ja/claude-code-on-the-web)：切断後も実行し続ける claude.ai/code のクラウドセッション
+* [Projects](/docs/ja/claude-projects)：Claude が多くのクラウドセッションを調整し、作業内容について報告する 1 つの会話
 * [モバイル](/docs/ja/mobile)：コンピューターから離れている間にタスクを開始および監視するための [iOS](https://apps.apple.com/us/app/claude-by-anthropic/id6473753684) および [Android](https://play.google.com/store/apps/details?id=com.anthropic.claude) 用 Claude アプリ
 
 <h3 id="integrations">

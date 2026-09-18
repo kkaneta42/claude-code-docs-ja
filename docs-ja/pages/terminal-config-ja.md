@@ -126,7 +126,7 @@ Claude がタスクを完了するか権限プロンプトで一時停止し、�
   tmux を設定する
 </h2>
 
-Claude Code が tmux 内で実行される場合、デフォルトでは 2 つの問題が発生します。Shift+Enter が改行を挿入する代わりに送信してしまい、デスクトップ通知と[プログレスバー](/docs/ja/settings-reference#terminalprogressbarenabled)が外側のターミナルに到達しません。これらの行を `~/.tmux.conf` に追加してから、`tmux source-file ~/.tmux.conf` を実行して、実行中のサーバーに適用してください。
+Claude Code が tmux 内で実行される場合、デフォルトでは Shift+Enter が改行を挿入する代わりに送信してしまい、デスクトップ通知と[プログレスバー](/docs/ja/settings-reference#terminalprogressbarenabled)が外側のターミナルに到達しません。これらの行を `~/.tmux.conf` に追加してから、`tmux source-file ~/.tmux.conf` を実行して、実行中のサーバーに適用してください。
 
 ```bash ~/.tmux.conf theme={null}
 set -g allow-passthrough on

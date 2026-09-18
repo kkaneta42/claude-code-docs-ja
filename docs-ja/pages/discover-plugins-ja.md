@@ -8,6 +8,8 @@
 
 プラグインは Claude Code をスキル、エージェント、フック、MCP サーバーで拡張します。プラグインマーケットプレイスは、これらの拡張機能を自分で構築することなく発見してインストールするのに役立つカタログです。
 
+claude.ai でプラグインを有効にすることもできます。自分自身のため、または組織を通じて有効にできます。Claude Code はそれらをマーケットプレイスのインストールなしにセッションに同期します。[claude.ai から同期されたプラグイン](/docs/ja/plugins-reference#synced-plugins)で説明されているとおりです。
+
 独自のマーケットプレイスを作成して配布したいですか？[プラグインマーケットプレイスを作成して配布する](/docs/ja/plugin-marketplaces)を参照してください。
 
 <h2 id="how-marketplaces-work">
@@ -57,7 +59,7 @@ Claude Code は初めて対話的に起動すると、公式 Anthropic マーケ
   コード インテリジェンス
 </h3>
 
-コード インテリジェンス プラグインは Claude Code の組み込み LSP ツールを有効にし、Claude が定義にジャンプしたり、参照を見つけたり、編集直後に型エラーを確認したりできるようにします。これらのプラグインは [Language Server Protocol](https://microsoft.github.io/language-server-protocol/) 接続を構成します。これは VS Code のコード インテリジェンスを強化する同じテクノロジーです。[クラウドセッション](/docs/ja/claude-code-on-the-web)では、Claude Code はプラグイン言語サーバーを起動しないため、Claude はそこで LSP ツールを取得しません。
+[コード インテリジェンス](#code-intelligence)プラグインは Claude Code の組み込み LSP ツールを有効にし、Claude が定義にジャンプしたり、参照を見つけたり、編集直後に型エラーを確認したりできるようにします。これらのプラグインは [Language Server Protocol](https://microsoft.github.io/language-server-protocol/) 接続を構成します。これは VS Code のコード インテリジェンスを強化する同じテクノロジーです。[クラウドセッション](/docs/ja/claude-code-on-the-web)では、Claude Code はプラグイン言語サーバーを起動しないため、Claude はそこで LSP ツールを取得しません。
 
 これらのプラグインを使用する前に、以下の表から言語サーバーバイナリをインストールしてください。プラグインはそれをインストールしません。言語サーバーが既にインストールされている場合、プロジェクトを開くと Claude は対応するプラグインをインストールするよう促す場合があります。
 
@@ -372,6 +374,8 @@ v2.1.221 より前では、`/reload-plugins` を実行するか再起動する�
 * 入力してプラグイン名または説明でフィルタリング
 * Enter を押してプラグインの詳細ビューを開き、有効化、無効化、またはアンインストール
 
+Claude Code はまた、[claude.ai アカウントから同期されたプラグイン](/docs/ja/plugins-reference#synced-plugins) を **Installed** タブに一覧表示します。ソースは `synced` です。組織がそれを必須としてマークしていない限り、そこで有効化または無効化できます。削除するには、claude.ai でオフにします。同期されたプラグインは Claude Code v2.1.273 以降のターミナルセッションに表示されます。
+
 プロジェクトの `.claude/settings.json` が有効化しているプラグインをアンインストールすると、Claude Code はどのスコープを意図しているかを尋ねます。自分だけのために無効化する場合は、`.claude/settings.local.json` にオーバーライドを書き込み、プラグインはプロジェクトにインストールされたままになります。または、すべてのユーザーのためにアンインストールする場合は、共有の `.claude/settings.json` から削除されます。
 
 詳細ビューには、プラグインが提供するコンポーネントが表示されます。コマンド、skills、agents、hooks、MCP サーバー、LSP サーバーです。同じインベントリは、コマンドラインから `claude plugin details` で利用できます。
@@ -444,6 +448,7 @@ claude plugin uninstall formatter@your-org --scope project
 * 別のターミナルで実行した `claude plugin` コマンド
 * 開発中に [`--plugin-dir`](/docs/ja/plugins#test-your-plugins-locally) で読み込んだプラグインへの編集
 * 再度読み込むよう求める通知を表示するプラグイン [自動更新](#configure-auto-updates)
+* [claude.ai アカウントからの同期](/docs/ja/plugins-reference#synced-plugins) がプラグインを追加、更新、または削除し、再度読み込むよう求める通知を表示した
 * Claude Code が保留していた [`--plugin-dir` フォルダ](/docs/ja/plugins#test-your-plugins-locally) の変更。これは、適用するとプロンプトキャッシュが無効になるため
 
 v2.1.268 より前では、メニューで有効化、無効化、またはアンインストールしたプラグイン、およびインストール中にアクティブ化されなかったインストールは、`/reload-plugins` を実行するまで保留のままでした。

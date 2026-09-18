@@ -303,7 +303,7 @@ Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、または
 
 | 機能                                                                          | Pro | Max | Team          | Enterprise                        |
 | :-------------------------------------------------------------------------- | :-- | :-- | :------------ | :-------------------------------- |
-| [Web 上の Claude Code](/docs/ja/claude-code-on-the-web)                            | ✓   | ✓   | ✓             | ✓ <sup><a href="#fn6">6</a></sup> |
+| [クラウドセッション](/docs/ja/claude-code-on-the-web)                                     | ✓   | ✓   | ✓             | ✓ <sup><a href="#fn6">6</a></sup> |
 | [Routines](/docs/ja/routines)                                                    | ✓   | ✓   | ✓             | ✓                                 |
 | [Remote Control](/docs/ja/remote-control)                                        | ✓   | ✓   | Admin-enabled | Admin-enabled                     |
 | [Channels](/docs/ja/channels)                                                    | ✓   | ✓   | Admin-enabled | Admin-enabled                     |
@@ -319,7 +319,7 @@ Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、または
 | [Compliance API](https://platform.claude.com/docs/en/api/compliance)        | ✗   | ✗   | ✗             | ✓                                 |
 | [Zero Data Retention](/docs/ja/zero-data-retention)                              | ✗   | ✗   | ✗             | ✓ <sup><a href="#fn7">7</a></sup> |
 
-<span id="fn6" style={{display: 'block', position: 'relative', top: '-120px'}} /><sup>6</sup> Enterprise では、プレミアムシートまたは Chat + Claude Code シートが必要です。[Web 上の Claude Code](/docs/ja/claude-code-on-the-web)を参照してください。<br />
+<span id="fn6" style={{display: 'block', position: 'relative', top: '-120px'}} /><sup>6</sup> Enterprise では、プレミアムシートまたは Chat + Claude Code シートが必要です。[クラウド上で Claude Code を使用する](/docs/ja/claude-code-on-the-web)を参照してください。<br />
 <span id="fn7" style={{display: 'block', position: 'relative', top: '-120px'}} /><sup>7</sup> 標準 Enterprise プランに含まれていません。適格なアカウントについては Anthropic による個別の有効化が必要です。[Zero Data Retention](/docs/ja/zero-data-retention)を参照してください。
 
 価格設定と完全なプラン比較については、[Team プラン](https://support.claude.com/en/articles/9266767-what-is-the-team-plan)と [Enterprise プラン](https://support.claude.com/en/articles/9797531-what-is-the-enterprise-plan)を参照してください。

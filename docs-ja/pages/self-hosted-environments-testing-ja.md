@@ -74,7 +74,7 @@ exit 0
   実行イメージを開始する前に
 </h3>
 
-フックが依存する 2 つのこと：
+フックには以下の要件があります。
 
 * 実行イメージを開始する前にインストールします。実行イメージは起動時に `~/.claude/` をスナップショットするため、実行中の実行イメージに追加されたフックは再起動後にのみ有効になります。
 * 実行イメージプロセスに `E2E_REPLY_DIR` をエクスポートします。フックは変数が未設定または ディレクトリが存在しない場合は no-op です。実行イメージを開始する場所（systemd ユニット、pod spec、CI ステップなど）で設定します。以下のテストスクリプトもこれが必要です。
@@ -206,7 +206,7 @@ exit 0
   長期間存続する CI ホスト
 </h3>
 
-スクリプトを実行するマシン上で、自動化用の専用ユーザーアカウントを使用して、`claude auth login` を 1 回対話的に実行します。Claude Code はトークンを macOS ではOS キーチェーンに、Linux と Windows では `~/.claude/.credentials.json` に保存します。キーチェーンに書き込みできない macOS ホスト（SSH セッションでログインキーチェーンがロックされたままの場合など）では、Claude Code はトークンを `~/.claude/.credentials.json` にも保存します。[認証情報管理](/docs/ja/authentication#credential-management)を参照してください。
+スクリプトを実行するマシン上で、自動化用の専用ユーザーアカウントを使用して、`claude auth login` を 1 回対話的に実行します。Claude Code はトークンを macOS では OS キーチェーンに、Linux と Windows では `~/.claude/.credentials.json` に保存します。キーチェーンに書き込みできない macOS ホスト（SSH セッションでログインキーチェーンがロックされたままの場合など）では、Claude Code はトークンを `~/.claude/.credentials.json` にも保存します。[認証情報管理](/docs/ja/authentication#credential-management)を参照してください。
 
 CLI は各呼び出しで短期アクセストークンを自動的に更新しますが、基盤となるリフレッシュトークングラントは初期ログインから 30 日間に制限されているため、そのホストで 30 日ごとに `claude auth login` を対話的に再実行してください。
 
@@ -214,7 +214,7 @@ CLI は各呼び出しで短期アクセストークンを自動的に更新し�
   エフェメラル CI 実行イメージ
 </h3>
 
-現在、これに対する長期間存続する CI トークンはありません。リモートセッション制御を付与するスコープ `user:sessions:claude_code` はサーバー側で 30 日間に制限されているため、1 年間の推論のみのトークンを発行する `claude setup-token` はこれをカバーしていません。[環境シークレット](/docs/ja/self-hosted-environments-quickstart#set-up-an-environment-and-runner)も受け入れられません。これは実行イメージが環境に登録することのみを認可し、セッションを作成することは認可しないためです。
+現在、これに対する長期間存続する CI トークンはありません。クラウドセッション制御を付与するスコープ `user:sessions:claude_code` はサーバー側で 30 日間に制限されているため、1 年間の推論のみのトークンを発行する `claude setup-token` はこれをカバーしていません。[環境シークレット](/docs/ja/self-hosted-environments-quickstart#set-up-an-environment-and-runner)も受け入れられません。これは実行イメージが環境に登録することのみを認可し、セッションを作成することは認可しないためです。
 
 エフェメラル実行イメージに保存されたログインをプロビジョニングするには、[`CLAUDE_CODE_OAUTH_REFRESH_TOKEN` と `CLAUDE_CODE_OAUTH_SCOPES`](/docs/ja/env-vars#variables) を設定して、`claude auth login` がブラウザなしでトークンを交換できるようにします。リフレッシュグラントに対して同じ 30 日間の上限が適用されます。人間のアカウントにバインドされていないマシンアイデンティティパスが必要な場合は、Anthropic アカウントチームにお問い合わせください。
 

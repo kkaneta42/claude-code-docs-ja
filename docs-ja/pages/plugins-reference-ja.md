@@ -40,7 +40,7 @@ skills/
 
 Skills と commands は、プラグインがインストールされると自動的に検出されます。
 
-プラグインに `skills/` ディレクトリがなく、`skills` マニフェストフィールドもない場合、プラグインルートの `SKILL.md` は単一の skill として読み込まれます。frontmatter の `name` フィールドを設定して、skill の呼び出し名を制御します。これがない場合、Claude Code はインストールディレクトリ名にフォールバックします。マーケットプレイスからインストールされたプラグインの場合、これは更新のたびに変わるバージョン文字列です。複数の skill を含むプラグインの場合は、上記の `skills/` ディレクトリレイアウトを使用します。
+プラグインに `skills/` ディレクトリがなく、`skills` マニフェストフィールドもない場合、プラグインルートの `SKILL.md` は単一の skill として読み込まれます。frontmatter の `name` フィールドを設定して、skill の呼び出し名を制御します。これがない場合、Claude Code はインストールディレクトリ名にフォールバックします。[キャッシュにコピーされたプラグイン](#plugin-caching-and-file-resolution)の場合、その名前は更新のたびに変わるバージョン文字列です。複数の skill を含むプラグインの場合は、上記の `skills/` ディレクトリレイアウトを使用します。
 
 プラグイン skills と commands では、`disable-model-invocation` などのブール値 frontmatter フィールドが、`true` と `false` に加えて、任意の大文字小文字で `yes`、`no`、`on`、`off`、`1`、`0` を受け入れます。v2.1.218 より前では、Claude Code は `true` と `false` のみを認識していました。
 
@@ -71,7 +71,9 @@ disallowedTools: Write, Edit
 エージェントの役割、専門知識、および動作を説明する詳細なシステムプロンプト。
 ```
 
-プラグインエージェントは、`name`、`description`、`model`、`effort`、`maxTurns`、`tools`、`disallowedTools`、`skills`、`memory`、`background`、および `isolation` frontmatter フィールドをサポートしています。唯一の有効な `isolation` 値は `"worktree"` です。セキュリティ上の理由から、`hooks`、`mcpServers`、および `permissionMode` はプラグイン提供エージェントではサポートされていません。
+プラグインエージェントは、`name`、`description`、`model`、`effort`、`maxTurns`、`tools`、`disallowedTools`、`skills`、`memory`、`background`、[`omitClaudeMd`](/docs/ja/sub-agents#supported-frontmatter-fields)、および `isolation` frontmatter フィールドをサポートしています。唯一の有効な `isolation` 値は `"worktree"` です。
+
+セキュリティ上の理由から、プラグイン提供エージェントは `hooks`、`mcpServers`、または `permissionMode` をサポートしていません。
 
 Claude Code は、frontmatter に `name` がない場合またはパースに失敗した場合でも、プラグインエージェントを読み込みます。
 
@@ -440,14 +442,29 @@ claude plugin disable my-tool@skills-dir
   claude.ai から同期されたプラグイン
 </h2>
 
-[Cowork](https://claude.com/product/cowork) と[クラウドセッション](/docs/ja/cloud-environments#what-carries-over-from-your-setup)では、Claude Code はカスタマーの claude.ai アカウント用に有効化されたプラグインをセッション独自の環境内の `~/.claude/plugins/synced/` にダウンロードし、各プラグインを `<name>@synced` として読み込みます。マーケットプレイスはなく、インストール記録もありません。Claude Code はカスタマーが独自のターミナルで開始したセッションではこれらのプラグインを読み込みません。その Cowork またはクラウド環境内では、`claude plugin list` はダウンロードされたコピーを `Synced from claude.ai` という見出しの下に表示します。v2.1.239 より前では、Claude Code はこれらのプラグインを `<name>@inline` として読み込んでいました。これは `--plugin-dir` プラグインが使用する ID です。
+Claude Code は claude.ai アカウント用に有効化されたプラグインを読み込みます。これには、組織がメンバー向けに有効化するプラグインと、マーケットプレイスからインストールするプラグインが含まれます。各プラグインを `~/.claude/plugins/synced/` にダウンロードし、`<name>@synced` として読み込みます。マーケットプレイスはなく、インストール記録もありません。同期されたプラグインは、インストールしたマーケットプレイスプラグインと同じ信頼レベルで実行されます。スキル、エージェント、フック、MCP サーバー、LSP サーバーはすべて読み込まれます。
 
-同期されたプラグインを `claude plugin list` が出力する `<name>@synced` ID で管理します。
+Claude Code がこれらのプラグインを同期する場所はセッションによって異なります。
 
-* **プラグインをオフにする**: 同期されたセッション内で `claude plugin disable <name>@synced` を実行するか、Claude に実行するよう依頼します。Claude Code はこの選択を、その環境のユーザーレベルの [`enabledPlugins`](/docs/ja/settings-reference#enabledplugins) に `"<name>@synced": false` として保存します。プラグインを再度オンにするには、同じセッション内で `claude plugin enable <name>@synced` を実行します。すべての同期されたセッションからプラグインを除外するには、[claude.ai アカウント用にプラグインをオフにします](/docs/ja/desktop#extend-claude-code)。1 つのプロジェクトのすべての環境での同期されたセッションからプラグインを除外するには、そのプロジェクトのコミットされた `.claude/settings.json` の `enabledPlugins` の下に `"<name>@synced": false` を設定します。
-* **claude.ai でプラグイン自体を管理する**: `claude plugin install`、`update`、`uninstall` は同期されたプラグインには適用されません。プラグインを削除するには、claude.ai アカウント用にプラグインをオフにします。次の同期されたセッションはそれなしで開始されます。
+* [Cowork](https://claude.com/product/cowork) と[クラウドセッション](/docs/ja/cloud-environments#what-carries-over-from-your-setup)では、Claude Code はセッション開始時にセッション独自の環境にダウンロードします。v2.1.239 より前では、Claude Code はこれらのプラグインを `<name>@inline` として読み込んでいました。これは `--plugin-dir` プラグインが使用する ID です。
+* claude.ai アカウントでサインインするターミナルセッションでは、Claude Code は起動時にアカウントを 1 回チェックし、新しいプラグインと更新されたプラグインをダウンロードし、ユーザーまたは組織がオフにしたプラグインを削除します。すべてバックグラウンドで実行されます。ターミナルセッションでの同期には Claude Code v2.1.273 以降が必要です。
 
-マーケットプレイスインストール、[スキルディレクトリプラグイン](#skills-directory-plugins)、または `--plugin-dir` プラグインなど、他のソースからの有効化されたプラグインが同期されたプラグインの名前と一致する場合、Claude Code はそのプラグインを読み込み、同期されたコピーが読み込まれていないと報告します。claude.ai のコピーを代わりに使用するには、独自のコピーを無効化します。v2.1.239 より前では、Claude Code は同じ名前のマーケットプレイスインストールの代わりに同期されたコピーを読み込んでいました。
+起動チェックはバックグラウンドで実行されるため、セッション開始後に完了することがあります。インタラクティブセッションで同期されたプラグインを追加、更新、または削除する場合、Claude Code は `Plugins changed. Run /reload-plugins to activate.` と表示します。[`/reload-plugins`](/docs/ja/discover-plugins#apply-plugin-changes-without-restarting) を実行してそのセッションで変更を読み込むか、次回 Claude Code を起動するまで待つことができます。セッション実行中に claude.ai でプラグインを有効化した場合、Claude Code は次回起動時にダウンロードします。
+
+ターミナルセッションでのプラグイン同期は、[claude.ai から同期されたスキル](/docs/ja/skills#where-synced-skills-load)と同じサインイン条件下で実行されます。また、Claude Code がアカウントのプラグインにアクセスできるようにするサインインが必要です。
+
+Claude Code の以前のバージョンからのサインインは、Claude Code がバックグラウンドでそのサインインを更新する次回（数時間以内）、または `/login` を再度実行した場合はすぐに、プラグインアクセスを取得します。その後、Claude Code を起動する次回にプラグイン同期が開始されます。
+
+`claude plugin list` は同期されたプラグインを `Synced from claude.ai` という見出しの下に表示し、`/plugin` **Installed** タブはソースとして `synced` を使用してリストアップします。`claude plugin list` が出力する `<name>@synced` ID で同期されたプラグインを管理します。
+
+* **1 つをオフにする**: `claude plugin disable <name>@synced` を実行するか、`/plugin` **Installed** タブから無効化します。Claude Code はこの選択をユーザーレベルの [`enabledPlugins`](/docs/ja/settings-reference#enabledplugins) に `"<name>@synced": false` として保存します。プラグインを再度オンにするには、`claude plugin enable <name>@synced` を実行します。
+* **すべての場所から除外する**: [claude.ai アカウント用にプラグインをオフにします](/docs/ja/desktop#extend-claude-code)。すべての環境で 1 つのプロジェクトから除外するには、そのプロジェクトのコミットされた `.claude/settings.json` の `enabledPlugins` の下に `"<name>@synced": false` を設定します。
+* **claude.ai でプラグイン自体を管理する**: `claude plugin install`、`update`、`uninstall` は同期されたプラグインには適用されません。Claude Code はプラグインの更新を次の同期時にダウンロードします。削除するには、claude.ai アカウント用にプラグインをオフにし、Claude Code は次の同期時に削除します。
+* **マシンでの同期を停止する**: ユーザー設定で [`syncClaudeAiPlugins`](/docs/ja/settings-reference#syncclaudeaiplugins) を `false` に設定します。Claude Code はダウンロードを停止し、次回起動時に既に同期したプラグインを `~/.claude/plugins/.trash/` に移動し、それ以上読み込みません。組織は[マネージド設定](/docs/ja/managed-settings)で同じキーを設定するか、claude.ai でスキルをオフにすることができます。これはプラグインの同期も停止します。
+
+組織が claude.ai で必須とマークしたプラグインをオフにすることはできません。Claude Code は以前無効化した場合でも読み込み、`claude plugin disable` は `Plugin "<name>@synced" is required by your organization and can't be disabled here. Contact your admin to change it.` で拒否します。`claude plugin list` では、これらのプラグインは `required by your org` とマークされています。
+
+他のソースからの有効化されたプラグインが同期されたプラグインの名前と一致する場合、Claude Code はそのプラグインを読み込み、同期されたコピーが読み込まれていないと報告します。他のソースにはマーケットプレイスインストール、[スキルディレクトリプラグイン](#skills-directory-plugins)、`--plugin-dir` プラグイン、Claude Code に組み込まれたプラグインが含まれます。claude.ai のコピーを代わりに使用するには、独自のコピーを無効化します。v2.1.239 より前では、Claude Code は同じ名前のマーケットプレイスインストールの代わりに同期されたコピーを読み込んでいました。
 
 ***
 
@@ -533,19 +550,19 @@ claude plugin validate ./my-plugin --strict
   メタデータフィールド
 </h3>
 
-| フィールド            | 型       | 説明                                                                                                                                                                                                                                                                                              | 例                                                                 |
-| :--------------- | :------ | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :---------------------------------------------------------------- |
-| `$schema`        | string  | エディタのオートコンプリートと検証用の JSON Schema URL。Claude Code は読み込み時にこのフィールドを無視します。                                                                                                                                                                                                                           | `"https://json.schemastore.org/claude-code-plugin-manifest.json"` |
-| `displayName`    | string  | `/plugin` ピッカーおよび他の UI サーフェスに表示される人間が読める名前。マーケットプレイスインストール済みプラグインの場合、[マーケットプレイスエントリ](/docs/ja/plugin-marketplaces#optional-plugin-fields)の `displayName` はこの値より優先されます。どちらの場所にも表示名が設定されていない場合、ユーザーは `name` を見ます。`name` とは異なり、スペースと任意の大文字小文字を含むことができます。名前空間またはルックアップには使用されません。                         | `"Deployment Tools"`                                              |
-| `version`        | string  | オプション。セマンティックバージョン。これを設定するとプラグインをそのバージョン文字列にピンします。ユーザーはバージョンをバンプしたときのみ更新を受け取ります。[`command` ソース](/docs/ja/plugin-marketplaces#command-sources)を除きます。[バージョン管理](#version-management)を参照してください。マーケットプレイスエントリにも設定されている場合、`plugin.json` が優先されます。省略した場合、バージョンは[バージョン管理](#version-management)の次のソースから取得されます。 | `"2.1.0"`                                                         |
-| `description`    | string  | プラグインの目的の簡潔な説明                                                                                                                                                                                                                                                                                  | `"Deployment automation tools"`                                   |
-| `author`         | object  | 著者情報                                                                                                                                                                                                                                                                                            | `{"name": "Dev Team", "email": "dev@company.com"}`                |
-| `homepage`       | string  | ドキュメント URL                                                                                                                                                                                                                                                                                      | `"https://docs.example.com"`                                      |
-| `repository`     | string  | ソースコード URL                                                                                                                                                                                                                                                                                      | `"https://github.com/user/plugin"`                                |
-| `license`        | string  | ライセンス識別子                                                                                                                                                                                                                                                                                        | `"MIT"`、`"Apache-2.0"`                                            |
-| `keywords`       | array   | 検出タグ                                                                                                                                                                                                                                                                                            | `["deployment", "ci-cd"]`                                         |
-| `metadata`       | object  | 権利付与またはカタログフィールドなど、独自のデータ用のフリーフォームオブジェクト。Claude Code はこれを読まないため、値はプラグインの動作に影響しません。Claude Code は非オブジェクト値を無視し、`claude plugin validate` は警告として報告します。v2.1.222 より前では、Claude Code はキーを[認識されないフィールド](#unrecognized-fields)として扱いました。                                                                    | `{"catalogId": "cat-123"}`                                        |
-| `defaultEnabled` | boolean | ユーザーが設定を設定していない場合、プラグインが有効な状態で開始するかどうか。デフォルトは `true` です。[デフォルト有効化](#default-enablement)を参照してください。                                                                                                                                                                                               | `false`                                                           |
+| フィールド            | 型       | 説明                                                                                                                                                                                                                                                                                                                         | 例                                                                 |
+| :--------------- | :------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :---------------------------------------------------------------- |
+| `$schema`        | string  | エディタのオートコンプリートと検証用の JSON Schema URL。Claude Code は読み込み時にこのフィールドを無視します。                                                                                                                                                                                                                                                      | `"https://json.schemastore.org/claude-code-plugin-manifest.json"` |
+| `displayName`    | string  | `/plugin` ピッカーおよび他の UI サーフェスに表示される人間が読める名前。マーケットプレイスインストール済みプラグインの場合、[マーケットプレイスエントリ](/docs/ja/plugin-marketplaces#optional-plugin-fields)の `displayName` はこの値より優先されます。どちらの場所にも表示名が設定されていない場合、ユーザーは `name` を見ます。`name` とは異なり、スペースと任意の大文字小文字を含むことができます。名前空間またはルックアップには使用されません。                                                    | `"Deployment Tools"`                                              |
+| `version`        | string  | オプション。セマンティックバージョン。これを設定するとプラグインをそのバージョン文字列にピンします。ユーザーはバージョンをバンプしたときのみ更新を受け取ります。[`command` ソース](/docs/ja/plugin-marketplaces#command-sources)を除きます。[プラグインキャッシングとファイル解決](#plugin-caching-and-file-resolution)を参照してください。マーケットプレイスエントリにも設定されている場合、`plugin.json` が優先されます。省略した場合、バージョンは[バージョン管理](#version-management)の次のソースから取得されます。 | `"2.1.0"`                                                         |
+| `description`    | string  | プラグインの目的の簡潔な説明                                                                                                                                                                                                                                                                                                             | `"Deployment automation tools"`                                   |
+| `author`         | object  | 著者情報                                                                                                                                                                                                                                                                                                                       | `{"name": "Dev Team", "email": "dev@company.com"}`                |
+| `homepage`       | string  | ドキュメント URL                                                                                                                                                                                                                                                                                                                 | `"https://docs.example.com"`                                      |
+| `repository`     | string  | ソースコード URL                                                                                                                                                                                                                                                                                                                 | `"https://github.com/user/plugin"`                                |
+| `license`        | string  | ライセンス識別子                                                                                                                                                                                                                                                                                                                   | `"MIT"`、`"Apache-2.0"`                                            |
+| `keywords`       | array   | 検出タグ                                                                                                                                                                                                                                                                                                                       | `["deployment", "ci-cd"]`                                         |
+| `metadata`       | object  | 権利付与またはカタログフィールドなど、独自のデータ用のフリーフォームオブジェクト。Claude Code はこれを読まないため、値はプラグインの動作に影響しません。Claude Code は非オブジェクト値を無視し、`claude plugin validate` は警告として報告します。v2.1.222 より前では、Claude Code はキーを[認識されないフィールド](#unrecognized-fields)として扱いました。                                                                                               | `{"catalogId": "cat-123"}`                                        |
+| `defaultEnabled` | boolean | ユーザーが設定を設定していない場合、プラグインが有効な状態で開始するかどうか。デフォルトは `true` です。[デフォルト有効化](#default-enablement)を参照してください。                                                                                                                                                                                                                          | `false`                                                           |
 
 <h3 id="default-enablement">
   デフォルト有効化
@@ -577,8 +594,8 @@ claude plugin validate ./my-plugin --strict
 | `experimental.themes`   | string\|array         | カラーテーマファイル/ディレクトリ（デフォルト `themes/` を置き換え）。[テーマ](#themes)を参照してください                                                                                               | `"./themes/"`                                        |
 | `experimental.monitors` | string\|array         | プラグインがアクティブな場合に自動的に開始されるバックグラウンド[Monitor](/docs/ja/tools-reference#monitor-tool)コンフィグ。[モニター](#monitors)を参照してください                                                    | `"./monitors.json"`                                  |
 | `experimental.evals`    | string\|array         | プラグインルートの下のディレクトリ。プラグインの[eval ケース](/docs/ja/plugin-evals#use-a-different-eval-directory)を保持します。デフォルト `evals/` ではない場合。`claude plugin eval --eval-dir` はそれをオーバーライドします | `"quality/evals"`                                    |
-| `userConfig`            | object                | 有効化時にプロンプトされるユーザー設定可能な値。[ユーザー設定](#user-configuration)を参照してください                                                                                                 | 以下を参照                                                |
-| `channels`              | array                 | メッセージ注入用のチャネル宣言（Telegram、Slack、Discord スタイル）。[チャネル](#channels)を参照してください                                                                                        | 以下を参照                                                |
+| `userConfig`            | object                | 有効化時にプロンプトされるユーザー設定可能な値。[ユーザー設定](#user-configuration)を参照してください                                                                                                 |                                                      |
+| `channels`              | array                 | メッセージ注入用のチャネル宣言（Telegram、Slack、Discord スタイル）。[チャネル](#channels)を参照してください                                                                                        |                                                      |
 | `dependencies`          | array                 | このプラグインが必要とする他のプラグイン。オプションで semver バージョン制約付き。[プラグイン依存関係バージョンを制約する](/docs/ja/plugin-dependencies)を参照してください                                                           | `[{ "name": "secrets-vault", "version": "~2.1.0" }]` |
 
 <h3 id="experimental-components">
@@ -613,16 +630,19 @@ claude plugin validate ./my-plugin --strict
 
 キーは有効な識別子である必要があります。各オプションはこれらのフィールドをサポートします。
 
-| フィールド         | 必須  | 説明                                                         |
-| :------------ | :-- | :--------------------------------------------------------- |
-| `type`        | はい  | `string`、`number`、`boolean`、`directory`、または `file` のいずれか   |
-| `title`       | はい  | 設定ダイアログに表示されるラベル                                           |
-| `description` | はい  | フィールドの下に表示されるヘルプテキスト                                       |
-| `sensitive`   | いいえ | `true` の場合、入力をマスクし、値を `settings.json` の代わりにセキュアストレージに保存します |
-| `required`    | いいえ | `true` の場合、フィールドが空の場合は検証が失敗します                             |
-| `default`     | いいえ | ユーザーが何も提供しない場合に使用される値                                      |
-| `multiple`    | いいえ | `string` 型の場合、文字列の配列を許可します                                 |
-| `min` / `max` | いいえ | `number` 型の境界                                              |
+| フィールド         | 必須  | 説明                                                                               |
+| :------------ | :-- | :------------------------------------------------------------------------------- |
+| `type`        | はい  | `string`、`number`、`boolean`、`directory`、または `file` のいずれか                         |
+| `title`       | はい  | 設定ダイアログに表示されるラベル                                                                 |
+| `description` | はい  | フィールドの下に表示されるヘルプテキスト                                                             |
+| `sensitive`   | いいえ | `true` の場合、入力をマスクし、値を `settings.json` の代わりにセキュアストレージに保存します                       |
+| `required`    | いいえ | `true` の場合、フィールドが空の場合は検証が失敗します                                                   |
+| `default`     | いいえ | ユーザーが何も提供しない場合に使用される値                                                            |
+| `options`     | いいえ | `string` 型の場合、フィールドが受け入れる値。`/config` でピッカーとして表示されます。Claude Code v2.1.271 以降が必要です |
+| `multiple`    | いいえ | `string` 型の場合、文字列の配列を許可します                                                       |
+| `min` / `max` | いいえ | `number` 型の境界                                                                    |
+
+`sensitive` フィールドと `multiple` リストを除き、有効化された各プラグインの各フィールドは `/config` パネルの行としても表示されます。行には Claude Code v2.1.269 以降が必要です。
 
 各値は MCP および LSP サーバーコンフィグとフックコマンドで `${user_config.KEY}` として置換可能です。機密でない値はスキルおよびエージェントコンテンツでも置換できます。すべての値は `CLAUDE_PLUGIN_OPTION_<KEY>` 環境変数としてフックプロセスにエクスポートされます。ここで `<KEY>` はオプションキーを大文字にしたものです。
 
@@ -762,7 +782,7 @@ Claude Code は 3 つのパス参照用変数を提供します。
 }
 ```
 
-`${CLAUDE_PLUGIN_ROOT}` はプラグインが更新されるときに変更されます。前のバージョンのディレクトリは更新後の猶予期間ディスク上に残りますが、それを一時的なものとして扱い、そこに状態を書き込まないでください。クリーンアップセマンティクスについては[プラグインキャッシング](#plugin-caching-and-file-resolution)を参照してください。
+`${CLAUDE_PLUGIN_ROOT}` はプラグインが更新されるときに変更されます。前のバージョンのディレクトリは更新後の猶予期間ディスク上に残りますが、それを一時的なものとして扱い、そこに状態を書き込まないでください。[プラグインキャッシングとファイル解決](#plugin-caching-and-file-resolution)を参照してください。クリーンアップセマンティクスについては[プラグインキャッシング](#plugin-caching-and-file-resolution)を参照してください。
 
 プラグインがセッション中に更新される場合、フックコマンド、モニター、MCP サーバー、および LSP サーバーは前のバージョンのパスを使用し続けます。`/reload-plugins` を実行して、フック、MCP サーバー、および LSP サーバーを新しいパスに切り替えます。モニターはセッション再開が必要です。インタラクティブターミナルのないセッションでは、リロードはプラグイン MCP サーバーを次のセッションまで古いパスに残します。
 
@@ -825,12 +845,15 @@ MCP サーバーは実行時にセッションの作業ディレクトリを読�
   プラグインのキャッシングとファイル解決
 </h2>
 
-プラグインは以下の 2 つの方法のいずれかで指定されます。
+プラグインは以下の 3 つの方法のいずれかで指定されます。
 
 * `claude --plugin-dir` または `claude --plugin-url` を通じて、セッションの期間中。
 * マーケットプレイスを通じて、今後のセッション用にインストール。
+* claude.ai アカウントを通じて、[同期](#synced-plugins)されて `~/.claude/plugins/synced/` に。
 
-セキュリティと検証の目的で、Claude Code はマーケットプレイス プラグインをユーザーのローカル **プラグインキャッシュ** （`~/.claude/plugins/cache`）にコピーします。ただし、[リンクモードの `command` ソース](/docs/ja/plugin-marketplaces#copy-mode-and-link-mode)は例外で、Claude Code はキャッシュエントリ内のリンクを通じてこれらをインプレイスで使用します。
+セキュリティと検証の目的で、Claude Code はマーケットプレイス プラグインをユーザーのローカル **プラグインキャッシュ** （`~/.claude/plugins/cache`）にコピーします。ただし、プラグインがインプレイスでロードされる場合を除きます。[リンクモードの `command` ソース](/docs/ja/plugin-marketplaces#copy-mode-and-link-mode)はキャッシュエントリ内のリンクを通じてインプレイスでロードされます。[ローカルディレクトリから追加されたマーケットプレイスの相対パスソース](/docs/ja/plugin-marketplaces#relative-paths)はマーケットプレイスフォルダからインプレイスでロードされます。
+
+ローカルディレクトリマーケットプレイスからインプレイスでロードされたプラグインの場合、ソースディレクトリへの編集は次のセッション開始時または `/reload-plugins` で有効になります。バージョンバンプは不要です。プラグインのフックプロセスと MCP および LSP サーバーは、ソースディレクトリを指す `CLAUDE_PLUGIN_ROOT` を受け取ります。Claude Code はプラグインの [Node.js パッケージ依存関係](#node-js-package-dependencies)をソースディレクトリにインストールしません。それらを自分でインストールするか、[永続データディレクトリ](#persistent-data-directory)へのフックからインストールしてください。
 
 コピーされたプラグインの場合、インストールされた各バージョンはキャッシュ内の個別のディレクトリであり、マーケットプレイスとプラグインでグループ化され、解決されたバージョンに対して名前が付けられ、プラグインのファイルと [Node.js パッケージ依存関係](#node-js-package-dependencies)の独自のコピーを持ちます。[リリースタグ](/docs/ja/plugin-dependencies#tag-plugin-releases-for-version-resolution)から解決された依存関係は、コミット SHA サフィックス付きのディレクトリ名を取得します。
 
@@ -844,7 +867,7 @@ Claude の Glob および Grep ツールは検索中に孤立したバージョ�
   Node.js パッケージ依存関係
 </h3>
 
-Claude Code がプラグインをキャッシュにコピーするとき、プラグインの Node.js パッケージ依存関係もそこにインストールするため、プラグインのフック と MCP サーバーはそれらをロードできます。このセクションでは、プラグインが独自の `package.json` で宣言する npm および Bun パッケージについて説明します。他のプラグインに依存するプラグインについては、[プラグイン依存関係バージョン](/docs/ja/plugin-dependencies)を参照してください。
+Claude Code がプラグインをキャッシュにコピーするとき、プラグインの Node.js パッケージ依存関係もそこにインストールするため、プラグインのフックと MCP サーバーはそれらをロードできます。このセクションでは、プラグインが独自の `package.json` で宣言する npm および Bun パッケージについて説明します。他のプラグインに依存するプラグインについては、[プラグイン依存関係バージョン](/docs/ja/plugin-dependencies)を参照してください。
 
 Claude Code は、コピーされたバージョンディレクトリを作成するたびに、その内部でインストールを実行します。プラグインをインストールするとき、Claude Code がプラグインを新しいバージョンに更新するとき、および有効なプラグインがまだキャッシュされていない場合のセッション開始時（新しいマシンなど）です。インストールは、プラグインのルートディレクトリに `package.json` とサポートされているロックファイルの両方が含まれている場合にのみ実行されます。
 
@@ -1060,13 +1083,14 @@ claude plugin install <plugin> [options]
 
 コマンドは以下のオプションを受け入れます:
 
-| オプション                  | 説明                                                                                                                                                                                                                                                                                                                                                                                       | デフォルト  |
-| :--------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----- |
-| `-s, --scope <scope>`  | インストールスコープ: `user`、`project`、または `local`                                                                                                                                                                                                                                                                                                                                                 | `user` |
-| `--config <key=value>` | プラグインのマニフェストで宣言された[`userConfig`](#user-configuration)オプションを設定します。複数のオプションを設定するにはフラグを繰り返します                                                                                                                                                                                                                                                                                               |        |
-| `-y, --yes`            | 確認プロンプトなしで、プラグインのマーケットプレイスが宣言するコマンドを受け入れます: [`command` ソース](/docs/ja/plugin-marketplaces#command-sources)を持つプラグインを生成するコマンド、またはアーカイブダウンロードを認証する[`headersHelper`](/docs/ja/plugin-marketplaces#authenticate-archive-downloads)。`headersHelper` を受け入れるには Claude Code v2.1.238 以降が必要です。Claude Code はまずコマンドを出力します。stdin または stdout が TTY でない場合は必須です。Claude Code セッション内では効果がないため、独自のターミナルからコマンドを実行してください |        |
-| `--json`               | 結果を stdout の最後の行に 1 つの JSON オブジェクトとして出力します。スクリプトで使用するための人間が読める形式の代わりに。[JSON 結果形式](#plugin-json-result)を参照してください。Claude Code v2.1.268 以降が必須です                                                                                                                                                                                                                                             |        |
-| `-h, --help`           | コマンドのヘルプを表示                                                                                                                                                                                                                                                                                                                                                                              |        |
+| オプション                       | 説明                                                                                                                                                                                                                                                                                                                                                                                       | デフォルト  |
+| :-------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----- |
+| `-s, --scope <scope>`       | インストールスコープ: `user`、`project`、または `local`                                                                                                                                                                                                                                                                                                                                                 | `user` |
+| `--config <key=value>`      | プラグインのマニフェストで宣言された[`userConfig`](#user-configuration)オプションを設定します。複数のオプションを設定するにはフラグを繰り返します                                                                                                                                                                                                                                                                                               |        |
+| `-y, --yes`                 | 確認プロンプトなしで、プラグインのマーケットプレイスが宣言するコマンドを受け入れます: [`command` ソース](/docs/ja/plugin-marketplaces#command-sources)を持つプラグインを生成するコマンド、またはアーカイブダウンロードを認証する[`headersHelper`](/docs/ja/plugin-marketplaces#authenticate-archive-downloads)。`headersHelper` を受け入れるには Claude Code v2.1.238 以降が必要です。Claude Code はまずコマンドを出力します。stdin または stdout が TTY でない場合は必須です。Claude Code セッション内では効果がないため、独自のターミナルからコマンドを実行してください |        |
+| `--accept-command <sha256>` | 前の[`--json` 実行](#plugin-json-result)が `shownCommand` で報告した `sha256` を持つマーケットプレイス宣言コマンドを受け入れます。`-y` の代わりに使用します。受け入れは、正確にそのコマンド、プラグイン、およびマーケットプレイスカタログに対してカウントされます。コマンドが表示されてから変更された場合（実行自体のマーケットプレイス更新を含む）、Claude Code はダイジェストを受け入れず、コマンドを再度表示します。`-y` と組み合わせることはできません。Claude Code セッション内では効果がないため、独自のターミナルからコマンドを実行してください。Claude Code v2.1.271 以降が必須です                                   |        |
+| `--json`                    | 結果を stdout の最後の行に 1 つの JSON オブジェクトとして出力します。スクリプトで使用するための人間が読める形式の代わりに。[JSON 結果形式](#plugin-json-result)を参照してください。Claude Code v2.1.268 以降が必須です                                                                                                                                                                                                                                             |        |
+| `-h, --help`                | コマンドのヘルプを表示                                                                                                                                                                                                                                                                                                                                                                              |        |
 
 スコープは、インストールされたプラグインが追加される設定ファイルを決定します。たとえば、`--scope project` は .claude/settings.json の `enabledPlugins` に書き込み、プロジェクトリポジトリをクローンした全員がプラグインを利用できるようにします。
 
@@ -1077,6 +1101,10 @@ claude plugin install <plugin> [options]
 * `message`: 結果の人間が読める説明
 
 `pluginId`、`scope`、`failureCode` などの他のフィールドは、適用される場合にのみ表示されます。`plugin uninstall`、`plugin update`、`plugin enable`、および `plugin disable` の `--json` オプションは、そのサブコマンド独自のフィールドを持つ同じオブジェクトを出力します。`--scope` が無効な場合などの使用エラーは、結果行を出力せず、終了コード 1 で理由を stderr に出力します。
+
+実行がマーケットプレイス宣言コマンドを表示し、それを実行しない場合、`failed` 結果は、表示されたコマンド、それが属するプラグイン、およびコマンドの `sha256` を含むフィールドを持つ `shownCommand` オブジェクトも含みます。正確にそのコマンドを受け入れるには、その `sha256` を `--accept-command` として再実行します。Claude Code v2.1.271 以降が必須です。
+
+`shownCommand.acceptCommandMatched` が `false` の場合、渡したダイジェストは現在表示されているコマンドと一致しません。そのコマンドを人に見せてから、その `sha256` を渡してください。
 
 これらの例は一般的な呼び出しを示しています:
 
@@ -1159,7 +1187,7 @@ claude plugin enable <plugin> [options]
 
 コマンドは以下の引数を取ります:
 
-* `<plugin>`: プラグイン名、または `plugin-name@marketplace-name`
+* `<plugin>`: プラグイン名、`plugin-name@marketplace-name`、または[claude.ai から同期されたプラグイン](#synced-plugins)用の `plugin-name@synced`
 
 コマンドは以下のオプションを受け入れます:
 
@@ -1173,7 +1201,11 @@ claude plugin enable <plugin> [options]
   plugin disable
 </h3>
 
-プラグインをアンインストールせずに無効にします。ターゲットがマーケットプレイスからインストールされている場合、別の有効なプラグインが[それに依存](/docs/ja/plugin-dependencies#enable-or-disable-a-plugin-with-dependencies)している場合、コマンドは失敗します。エラーメッセージには、最初にすべての依存プラグインを無効にするチェーンコマンドが含まれます。
+プラグインをアンインストールせずに無効にします。
+
+ターゲットがマーケットプレイスからインストールされている場合、別の有効なプラグインが[それに依存](/docs/ja/plugin-dependencies#enable-or-disable-a-plugin-with-dependencies)している場合、コマンドは失敗します。エラーメッセージには、最初にすべての依存プラグインを無効にするチェーンコマンドが含まれます。
+
+組織が必須とする[同期プラグイン](#synced-plugins)の場合、コマンドは失敗し、何も保存しません。
 
 ```bash theme={null}
 claude plugin disable [plugin] [options]
@@ -1181,7 +1213,7 @@ claude plugin disable [plugin] [options]
 
 コマンドは以下の引数を取ります:
 
-* `[plugin]`: プラグイン名、または `plugin-name@marketplace-name`。`--all` を使用する場合はオプション
+* `[plugin]`: プラグイン名、`plugin-name@marketplace-name`、または[claude.ai から同期されたプラグイン](#synced-plugins)用の `plugin-name@synced`。`--all` を使用する場合はオプション
 
 コマンドは以下のオプションを受け入れます:
 
@@ -1208,12 +1240,13 @@ claude plugin update <plugin> [options]
 
 コマンドは以下のオプションを受け入れます:
 
-| オプション                 | 説明                                                                                                                                                                                                                                                                                                                                                                                       | デフォルト  |
-| :-------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----- |
-| `-s, --scope <scope>` | 更新するスコープ: `user`、`project`、`local`、または `managed`                                                                                                                                                                                                                                                                                                                                         | `user` |
-| `-y, --yes`           | 確認プロンプトなしで、プラグインのマーケットプレイスが宣言するコマンドを受け入れます: [`command` ソース](/docs/ja/plugin-marketplaces#command-sources)を持つプラグインを生成するコマンド、またはアーカイブダウンロードを認証する[`headersHelper`](/docs/ja/plugin-marketplaces#authenticate-archive-downloads)。`headersHelper` を受け入れるには Claude Code v2.1.238 以降が必要です。Claude Code はまずコマンドを出力します。stdin または stdout が TTY でない場合は必須です。Claude Code セッション内では効果がないため、独自のターミナルからコマンドを実行してください |        |
-| `--json`              | 結果を stdout の最後の行に 1 つの JSON オブジェクトとして出力します。[`plugin install --json`](#plugin-json-result)と同じ形式で。Claude Code v2.1.268 以降が必須です                                                                                                                                                                                                                                                             |        |
-| `-h, --help`          | コマンドのヘルプを表示                                                                                                                                                                                                                                                                                                                                                                              |        |
+| オプション                       | 説明                                                                                                                                                                                                                                                                                                                                                                                       | デフォルト  |
+| :-------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----- |
+| `-s, --scope <scope>`       | 更新するスコープ: `user`、`project`、`local`、または `managed`                                                                                                                                                                                                                                                                                                                                         | `user` |
+| `-y, --yes`                 | 確認プロンプトなしで、プラグインのマーケットプレイスが宣言するコマンドを受け入れます: [`command` ソース](/docs/ja/plugin-marketplaces#command-sources)を持つプラグインを生成するコマンド、またはアーカイブダウンロードを認証する[`headersHelper`](/docs/ja/plugin-marketplaces#authenticate-archive-downloads)。`headersHelper` を受け入れるには Claude Code v2.1.238 以降が必要です。Claude Code はまずコマンドを出力します。stdin または stdout が TTY でない場合は必須です。Claude Code セッション内では効果がないため、独自のターミナルからコマンドを実行してください |        |
+| `--accept-command <sha256>` | 前の[`--json` 実行](#plugin-json-result)が `shownCommand` で報告した `sha256` を持つマーケットプレイス宣言コマンドを受け入れます。`-y` の代わりに使用します。受け入れは、正確にそのコマンド、プラグイン、およびマーケットプレイスカタログに対してカウントされます。コマンドが表示されてから変更された場合（実行自体のマーケットプレイス更新を含む）、Claude Code はダイジェストを受け入れず、コマンドを再度表示します。`-y` と組み合わせることはできません。Claude Code セッション内では効果がないため、独自のターミナルからコマンドを実行してください。Claude Code v2.1.271 以降が必須です                                   |        |
+| `--json`                    | 結果を stdout の最後の行に 1 つの JSON オブジェクトとして出力します。[`plugin install --json`](#plugin-json-result)と同じ形式で。Claude Code v2.1.268 以降が必須です                                                                                                                                                                                                                                                             |        |
+| `-h, --help`                | コマンドのヘルプを表示                                                                                                                                                                                                                                                                                                                                                                              |        |
 
 <Note>
   Claude Code は、インストール済みプラグインに対して修飾されていないプラグイン名を解決します。異なるマーケットプレイスからインストールされたプラグインが名前を共有する場合、Claude Code は更新を拒否し、代わりに実行する修飾 `plugin-name@marketplace-name` コマンドをリストします。v2.1.246 より前は、Claude Code は修飾形式のみを受け入れ、修飾されていない名前を見つからないものとして拒否していました。
@@ -1242,7 +1275,7 @@ claude plugin list [options]
 対話的セッション内では、`/plugin list` は同様のリストをインラインで出力しますが、マーケットプレイスからインストールされたプラグインのみをカバーします:
 
 * スキルディレクトリから読み込まれたプラグインは `/plugin` インターフェイスと `claude plugin list` に表示されますが、インラインの `/plugin list` 出力には表示されません。
-* Claude Code v2.1.239 以降では、[claude.ai から同期されたプラグイン](#synced-plugins)は、同期されたセッションがそれらをダウンロードした環境で `claude plugin list` を実行するときに表示されます。インラインの `/plugin list` 出力には表示されません。
+* [claude.ai から同期されたプラグイン](#synced-plugins)は Claude Code v2.1.239 以降で `claude plugin list` に表示され、`/plugin` インターフェイスに表示されますが、インラインの `/plugin list` 出力には表示されません。
 * `--plugin-dir` または `--plugin-url` でセッション用に読み込まれたプラグインは `/plugin` インターフェイスに表示され、`claude --plugin-dir <dir> plugin list` のように同じフラグがサブコマンドの前にある場合にのみ `claude plugin list` に表示されます。フラグ名のみがそれらの場所を指定するため、修飾されていない `claude plugin list` は同期されたプラグインとスキルディレクトリプラグインとは異なり、Claude Code がスキャンする固定ディレクトリを持たないため、それらを見つけることができません。
 
 対話的形式は、`--enabled` または `--disabled` を受け入れてそのスタイルのプラグインのみを表示し、`ls` を `list` の短縮形として受け入れます。
@@ -1520,7 +1553,7 @@ claude plugin tag [path] [options]
   バージョン管理
 </h3>
 
-Claude Code はプラグインのバージョンをキャッシュキーとして使用し、アップデートが利用可能かどうかを判断します。`/plugin update` を実行するか自動アップデートが実行されると、Claude Code は現在のバージョンを計算し、既にインストールされているものと一致する場合はアップデートをスキップします。
+Claude Code はプラグインのバージョンをキャッシュキーとして使用し、アップデートが利用可能かどうかを判断します。`/plugin update` を実行するか自動アップデートが実行されると、Claude Code は現在のバージョンを計算し、既にインストールされているものと一致する場合はアップデートをスキップします。[ローカルディレクトリマーケットプレイスから所定の場所に読み込まれた](#plugin-caching-and-file-resolution)プラグインは、バージョン文字列が何を示していても、セッション開始時に現在のソースファイルを読み込みます。
 
 `command` 以外のすべてのソースタイプについて、Claude Code は以下の最初に設定されたものからバージョンを解決します。
 
@@ -1534,11 +1567,11 @@ Claude Code はプラグインのバージョンをキャッシュキーとし�
 
 これらのソースタイプについて、プラグインをバージョン管理する 3 つの方法があります。
 
-| アプローチ              | 方法                                                                                                        | アップデート動作                                                                                             | 最適な用途                                         |
-| :----------------- | :-------------------------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------- | :-------------------------------------------- |
-| **明示的なバージョン**      | `plugin.json` で `"version": "2.1.0"` を設定                                                                  | ユーザーはこのフィールドをバンプした場合のみアップデートを取得します。バンプせずに新しいコミットをプッシュしても効果がなく、`/plugin update` は「既に最新バージョンです」と報告します。 | 安定したリリースサイクルを持つ公開プラグイン                        |
-| **コミット SHA バージョン** | `plugin.json` とマーケットプレイスエントリの両方から `version` を省略                                                           | ユーザーはソースの解決されたコミットが変更されるたびにアップデートを取得します                                                              | アクティブに開発中の内部またはチームプラグイン                       |
-| **ダイジェストバージョン**    | [`archive` ソース](/docs/ja/plugin-marketplaces#zip-archives)を使用し、`plugin.json` とマーケットプレイスエントリの両方から `version` を省略 | `sha256` ピンを使用する場合、ユーザーはピンを変更するとアップデートを取得します。ピンがない場合、ユーザーはホストされている zip ファイルのバイトが変更されるたびにアップデートを取得します | 静的サーバーまたはアーティファクトリポジトリに zip ファイルとして公開されるプラグイン |
+| アプローチ              | 方法                                                                                                        | アップデート動作                                                                                                                                                                          | 最適な用途                                         |
+| :----------------- | :-------------------------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :-------------------------------------------- |
+| **明示的なバージョン**      | `plugin.json` で `"version": "2.1.0"` を設定                                                                  | ユーザーはこのフィールドをバンプした場合のみアップデートを取得します。バンプせずに新しいコミットをプッシュしても効果がなく、`/plugin update` は「既に最新バージョンです」と報告します。[所定の場所に読み込まれたプラグイン](#plugin-caching-and-file-resolution)の場合、新しいコンテンツは読み込まれます。 | 安定したリリースサイクルを持つ公開プラグイン                        |
+| **コミット SHA バージョン** | `plugin.json` とマーケットプレイスエントリの両方から `version` を省略                                                           | ユーザーはソースの解決されたコミットが変更されるたびにアップデートを取得します                                                                                                                                           | アクティブに開発中の内部またはチームプラグイン                       |
+| **ダイジェストバージョン**    | [`archive` ソース](/docs/ja/plugin-marketplaces#zip-archives)を使用し、`plugin.json` とマーケットプレイスエントリの両方から `version` を省略 | `sha256` ピンを使用する場合、ユーザーはピンを変更するとアップデートを取得します。ピンがない場合、ユーザーはホストされている zip ファイルのバイトが変更されるたびにアップデートを取得します                                                                              | 静的サーバーまたはアーティファクトリポジトリに zip ファイルとして公開されるプラグイン |
 
 明示的なバージョンを使用する場合は、[セマンティックバージョニング](https://semver.org)（`MAJOR.MINOR.PATCH`）に従ってください。破壊的な変更の場合は MAJOR をバンプし、新機能の場合は MINOR をバンプし、バグ修正の場合は PATCH をバンプします。`CHANGELOG.md` で変更を文書化します。
 

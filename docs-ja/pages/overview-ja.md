@@ -117,7 +117,7 @@ Claude Code は複数のサーフェスで実行されます。ターミナル�
   </Tab>
 
   <Tab title="Web">
-    ローカルセットアップなしでブラウザで Claude Code を実行します。長時間実行されるタスクを開始して完了を待つ、ローカルにないリポジトリで作業する、または複数のタスクを並行実行できます。デスクトップブラウザと [iOS および Android 用 Claude アプリ](/docs/ja/mobile)で利用できます。
+    ローカルセットアップなしでブラウザで Claude Code を実行します。長時間実行されるタスクを開始して完了を待つ、ローカルにないリポジトリで作業する、または複数のタスクを並行実行できます。長期的な作業の場合は、[プロジェクト](/docs/ja/claude-projects)を作成して、Claude に複数のセッションを調整させることができます。デスクトップブラウザと [iOS および Android 用 Claude アプリ](/docs/ja/mobile)で利用できます。
 
     [claude.ai/code](https://claude.ai/code) でコーディングを開始します。
 
@@ -226,17 +226,17 @@ Claude Code を使用できるいくつかの方法を紹介します：
 
 上記の [Terminal](/docs/ja/quickstart)、[VS Code](/docs/ja/vs-code)、[JetBrains](/docs/ja/jetbrains)、[Desktop](/docs/ja/desktop)、[Web](/docs/ja/claude-code-on-the-web) サーフェスを超えて、Claude Code は CI/CD、チャット、ブラウザワークフローと統合します：
 
-| 実現したいこと                                                      | 最適なオプション                                                                                             |
-| ------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------- |
-| ローカルセッションを電話または別のデバイスから続行する                                  | [リモートコントロール](/docs/ja/remote-control)                                                                     |
-| Telegram、Discord、iMessage、または独自の webhook からセッションにイベントをプッシュする | [チャネル](/docs/ja/channels)                                                                                 |
-| ローカルでタスクを開始し、モバイルで続行する                                       | [`claude --cloud`](/docs/ja/claude-code-on-the-web#from-terminal-to-web)、その後 [Claude モバイルアプリ](/docs/ja/mobile) |
-| 定期的なスケジュールで Claude を実行する                                     | [ルーティン](/docs/ja/routines) または [デスクトップスケジュール済みタスク](/docs/ja/desktop-scheduled-tasks)                           |
-| PR レビューと問題トリアージを自動化する                                        | [GitHub Actions](/docs/ja/github-actions) または [GitLab CI/CD](/docs/ja/gitlab-ci-cd)                            |
-| すべての PR で自動コードレビューを取得する                                      | [GitHub Code Review](/docs/ja/code-review)                                                                |
-| Slack からプルリクエストへバグレポートをルーティングする                              | [Slack](/docs/ja/slack)                                                                                   |
-| ライブ Web アプリケーションをデバッグする                                      | [Chrome](/docs/ja/chrome)                                                                                 |
-| 独自のワークフロー用のカスタムエージェントを構築する                                   | [Agent SDK](/docs/ja/agent-sdk/overview)                                                                  |
+| 実現したいこと                                                      | 最適なオプション                                                                                               |
+| ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------ |
+| ローカルセッションを電話または別のデバイスから続行する                                  | [リモートコントロール](/docs/ja/remote-control)                                                                       |
+| Telegram、Discord、iMessage、または独自の webhook からセッションにイベントをプッシュする | [チャネル](/docs/ja/channels)                                                                                   |
+| ローカルでタスクを開始し、モバイルで続行する                                       | [`claude --cloud`](/docs/ja/claude-code-on-the-web#from-terminal-to-cloud)、その後 [Claude モバイルアプリ](/docs/ja/mobile) |
+| 定期的なスケジュールで Claude を実行する                                     | [ルーティン](/docs/ja/routines) または [デスクトップスケジュール済みタスク](/docs/ja/desktop-scheduled-tasks)                             |
+| PR レビューと問題トリアージを自動化する                                        | [GitHub Actions](/docs/ja/github-actions) または [GitLab CI/CD](/docs/ja/gitlab-ci-cd)                              |
+| すべての PR で自動コードレビューを取得する                                      | [GitHub Code Review](/docs/ja/code-review)                                                                  |
+| Slack からプルリクエストへバグレポートをルーティングする                              | [Slack](/docs/ja/slack)                                                                                     |
+| ライブ Web アプリケーションをデバッグする                                      | [Chrome](/docs/ja/chrome)                                                                                   |
+| 独自のワークフロー用のカスタムエージェントを構築する                                   | [Agent SDK](/docs/ja/agent-sdk/overview)                                                                    |
 
 <h2 id="next-steps">
   次のステップ

@@ -126,6 +126,14 @@ CLAUDE.md は `./CLAUDE.md` または `./.claude/CLAUDE.md` でプロジェク�
 
 詳細情報：[CLAUDE.md files](/docs/ja/memory#claude-md-files)
 
+<h3 id="cloud-session">
+  Cloud session
+</h3>
+
+claude.ai/code、Claude モバイルアプリ、**Cloud** が選択された Desktop アプリ、`claude --cloud`、または [routine](/docs/ja/routines) から開始する Claude Code セッションで、ラップトップを閉じた後も実行を続けます。これはクラウドインフラストラクチャで実行されるためです。デフォルトでは Anthropic が管理するか、組織が運用する [self-hosted environment](/docs/ja/self-hosted-environments) です。ターミナル、IDE、または **Local** が選択された Desktop アプリ内のセッションはローカルセッションです。別のデバイスからローカルセッションに到達するには、[Remote Control](#remote-control) を使用します。
+
+詳細情報：[Use Claude Code in the cloud](/docs/ja/claude-code-on-the-web)
+
 <h3 id="command">
   Command
 </h3>
@@ -332,7 +340,7 @@ Claude Code がその設定をロードする前に、ディレクトリを受�
   Remote Control
 </h3>
 
-ローカル Claude Code セッションを電話またはブラウザから claude.ai 経由で続行する方法です。コード実行とファイルはマシンに留まります。インターフェースはリモートです。クラウドサンドボックスで実行される web 上の Claude Code とは異なります。
+ローカル Claude Code セッションを電話またはブラウザから claude.ai 経由で続行する方法です。コード実行とファイルはマシンに留まります。インターフェースはリモートです。クラウドサンドボックスで実行される [cloud session](/docs/ja/claude-code-on-the-web) とは異なります。
 
 詳細情報: [Remote Control](/docs/ja/remote-control)
 
@@ -408,9 +416,9 @@ Claude Code にアクセスする任意の場所: CLI、VS Code、JetBrains、De
   Teleport
 </h3>
 
-コマンド `/teleport`。クラウド Claude Code セッションをローカルターミナルにプルします。Claude はブランチをフェッチし、会話履歴をロードし、web セッションの最後の状態から再開します。逆方向は `--cloud` です。ローカルタスクを web で実行するために送信します。
+コマンド `/teleport`。クラウド Claude Code セッションをローカルターミナルにプルします。Claude はブランチをフェッチし、会話履歴をロードし、クラウドセッションの最後の状態から再開します。逆方向は `--cloud` です。ローカルタスクをクラウドで実行するために送信します。
 
-詳細情報: [From web to terminal](/docs/ja/claude-code-on-the-web#from-web-to-terminal)
+詳細情報: [クラウドからターミナルへ](/docs/ja/claude-code-on-the-web#from-cloud-to-terminal)
 
 <h3 id="tool">
   Tool
@@ -460,8 +468,9 @@ Claude を `.claude/worktrees/` の別の git worktree で実行する分離モ�
 
 これらの用語は古いドキュメント、ブログ投稿、コミュニティコンテンツに表示されます。このサイトを検索するときは現在の名前を使用してください。
 
-| 古い用語            | 現在の呼び方                                        | 注記                              |
-| --------------- | --------------------------------------------- | ------------------------------- |
-| Headless mode   | [Non-interactive mode](#non-interactive-mode) | 同じ `-p` フラグ、同じ動作                |
-| Custom commands | [Skills](#skill)                              | `.claude/commands/` ファイルは引き続き機能 |
-| Slash commands  | Commands                                      | 製品コピーから「Slash」を削除               |
+| 古い用語                                                                    | 現在の呼び方                                        | 注記                                                           |
+| ----------------------------------------------------------------------- | --------------------------------------------- | ------------------------------------------------------------ |
+| Headless mode                                                           | [Non-interactive mode](#non-interactive-mode) | 同じ `-p` フラグ、同じ動作                                             |
+| Web session; "Claude Code on the web" as the name for any cloud session | [Cloud session](#cloud-session)               | 「Claude Code on the web」は現在、claude.ai/code のブラウザサーフェスのみを指します |
+| Custom commands                                                         | [Skills](#skill)                              | `.claude/commands/` ファイルは引き続き機能                              |
+| Slash commands                                                          | Commands                                      | 製品コピーから「Slash」を削除                                            |

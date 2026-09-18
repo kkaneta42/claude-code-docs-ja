@@ -14,35 +14,37 @@ Pro、Max、Team プランでは、組み込みの開始権限モードは auto 
   利用可能なモード
 </h2>
 
-各モードは利便性と監視のバランスが異なります。以下の表は、各モードで権限プロンプトなしで Claude が実行できることを示しています。Manual モードはその設定値 `default` の下に表示されます。
+各モードは、利便性と監視のバランスを異なる方法で取ります。以下の表は、各モードで Claude がパーミッション プロンプトなしで実行できることを示しています。Manual モードはその設定値である `default` の下に表示されます。
 
-| モード                                                                 | 確認なしで実行されるもの                                                         | 最適な用途                  |
-| :------------------------------------------------------------------ | :------------------------------------------------------------------- | :--------------------- |
-| `default`                                                           | 読み取りのみ                                                               | すべてのアクションを自分でレビュー、機密作業 |
-| [`acceptEdits`](#auto-approve-file-edits-with-acceptedits-mode)     | 読み取り、ファイル編集、一般的なファイルシステムコマンド（`mkdir`、`touch`、`mv`、`cp` など）           | レビュー中のコードの反復処理         |
-| [`plan`](#analyze-before-you-edit-with-plan-mode)                   | 読み取り、[auto モード](#eliminate-prompts-with-auto-mode)が利用可能な場合の分類器承認コマンド | コードベースの探索、変更前          |
-| [`auto`](#eliminate-prompts-with-auto-mode)                         | すべて、バックグラウンド安全チェック付き                                                 | 長時間タスク、プロンプト疲労の軽減      |
-| [`dontAsk`](#allow-only-pre-approved-tools-with-dontask-mode)       | 事前承認済みツールのみ                                                          | ロックダウン CI とスクリプト       |
-| [`bypassPermissions`](#skip-all-checks-with-bypasspermissions-mode) | すべて                                                                  | 隔離されたコンテナと VM のみ       |
+| モード                                                                 | 確認なしで実行されるもの                                                              | 最適な用途                      |
+| :------------------------------------------------------------------ | :------------------------------------------------------------------------ | :------------------------- |
+| `default`                                                           | 読み取りのみ                                                                    | すべてのアクションを自分で確認する、機密性の高い作業 |
+| [`acceptEdits`](#auto-approve-file-edits-with-acceptedits-mode)     | 読み取り、ファイル編集、一般的なファイルシステム コマンド（`mkdir`、`touch`、`mv`、`cp` など）               | 確認中のコードを反復処理する             |
+| [`plan`](#analyze-before-you-edit-with-plan-mode)                   | 読み取り、および [auto モード](#eliminate-prompts-with-auto-mode) が利用可能な場合の分類器承認コマンド | コードベースを変更する前に探索する          |
+| [`auto`](#eliminate-prompts-with-auto-mode)                         | すべて、バックグラウンド安全性チェック付き                                                     | 長いタスク、プロンプト疲労の軽減           |
+| [`dontAsk`](#allow-only-pre-approved-tools-with-dontask-mode)       | 読み取りと事前承認ツール。プロンプトが表示されるものはすべて拒否                                          | ロックダウン CI とスクリプト           |
+| [`bypassPermissions`](#skip-all-checks-with-bypasspermissions-mode) | すべて                                                                       | 分離されたコンテナと VM のみ           |
 
-すべてのアクションをレビューするモードは、CLI、`claude --help`、VS Code と JetBrains 拡張機能、およびデスクトップアプリでは **Manual** という名前です。その設定値は `default` で、これは hooks と SDK 統合が使用するものです。CLI は値を入力する場所ならどこでも `manual` をエイリアスとして受け入れます。例えば `claude --permission-mode manual` または `"defaultMode": "manual"` です。Manual ラベルと `manual` エイリアスには Claude Code v2.1.200 以降が必要です。デスクトップアプリのラベルは CLI バージョンに依存しません。
+すべてのアクションを確認するモードは、CLI では **Manual** という名前で、`claude --help` では、VS Code および JetBrains 拡張機能では、デスクトップ アプリでは Manual という名前です。その設定値は `default` で、これは hooks と SDK 統合が使用するものです。CLI は、値を入力する場所ならどこでも `manual` をエイリアスとして受け入れます。例えば `claude --permission-mode manual` または `"defaultMode": "manual"` です。Manual ラベルと `manual` エイリアスには Claude Code v2.1.200 以降が必要です。デスクトップ アプリのラベルはお使いの CLI バージョンに依存しません。
 
-[保護されたパス](#protected-paths)への書き込みは、`bypassPermissions` モードおよび [モードサイクルに `bypassPermissions` を配置する](#switch-permission-modes)方法で開始されたプラン モード セッションを除き、自動承認されることはありません。
+[保護されたパス](#protected-paths) への書き込みは、`bypassPermissions` モードおよび bypass 権限が利用可能な plan モード セッション（つまり、[`bypassPermissions` をモード サイクルに含める](#switch-permission-modes) 方法で開始されたインタラクティブ ターミナル セッション）を除いて、自動承認されることはありません。
 
-モードはベースラインを設定します。[権限ルール](/docs/ja/permissions#manage-permissions)を上に層状にして、特定のツールを事前承認またはブロックします。拒否ルールはすべてのモード（`bypassPermissions` を含む）でブロックします。拒否ルールと ask ルールは、Claude が少なくとも 1 つの他のツールを呼び出すことができる限り、[`EndConversation`](/docs/ja/tools-reference#endconversation-tool-behavior)には適用されません。許可ルールは `bypassPermissions` では効果がありません。
+モードはベースラインを設定します。特定のツールを事前承認またはブロックするために、[権限ルール](/docs/ja/permissions#manage-permissions) を上に重ねます。拒否ルールは `bypassPermissions` を含むすべてのモードでブロックします。拒否ルールと確認ルールは、Claude が呼び出せる他のツールが少なくとも 1 つある限り、[`EndConversation`](/docs/ja/tools-reference#endconversation-tool-behavior) には適用されません。許可ルールは `bypassPermissions` では効果がありません。
 
 <h3 id="actions-no-mode-auto-approves">
   どのモードも自動承認しないアクション
 </h3>
 
-Claude Code は、`bypassPermissions` を含むどのモードでも、以下を自動承認しません。各箇条書きは、各モードで代わりに何が起こるかを説明するセクションにリンクしています。
+Claude Code は、`bypassPermissions` を含むどのモードでも、以下を自動承認しません。各項目は、各モードで代わりに何が起こるかを説明するセクションにリンクしています。
 
-* 明示的な [ask ルール](/docs/ja/permissions#manage-permissions)に一致するツール
-* 組織が [`ask`](/docs/ja/mcp#organization-controls-on-connector-tools) に設定したコネクタツール。その設定が Claude Code に到達するセッションで
-* ユーザーインタラクションが必要なツール：組み込みの `AskUserQuestion` ツールと [`requiresUserInteraction`](/docs/ja/mcp#require-approval-for-a-specific-tool) でマークされた MCP ツール
-* [重要なパス](#critical-paths)をターゲットにした `rm` と `rmdir` の削除。許可ルールまたは `PreToolUse` フック `"allow"` は承認しません
-* [クロスセッションメッセージングセーフガード](#skip-all-checks-with-bypasspermissions-mode)
-* [`permissions.blockReadsOutsideWorkingDirectories`](/docs/ja/settings-reference#permissions-blockreadsoutsideworkingdirectories) がオンの場合、作業ディレクトリ外の読み取り：認識されたファイル読み取り Bash コマンドおよび auto モードと `bypassPermissions` モードでも承認が必要な[サンドボックス外の再試行](/docs/ja/sandboxing#the-unsandboxed-retry-escape-hatch)。Claude Code v2.1.257 以降が必要です
+* 明示的な [確認ルール](/docs/ja/permissions#manage-permissions) に一致するツール
+* 組織が [`ask`](/docs/ja/mcp#organization-controls-on-connector-tools) に設定したコネクタ ツール（その設定が Claude Code に到達するセッション内）
+* ユーザー インタラクションが必要なツール：組み込みの `AskUserQuestion` ツールと [`requiresUserInteraction`](/docs/ja/mcp#require-approval-for-a-specific-tool) でマークされた MCP ツール
+* [重要なパス](#critical-paths) をターゲットとする `rm` および `rmdir` 削除。許可ルールまたは `PreToolUse` hook `"allow"` では承認されません
+* [クロス セッション メッセージング セーフガード](#skip-all-checks-with-bypasspermissions-mode)
+* [`permissions.blockReadsOutsideWorkingDirectories`](/docs/ja/settings-reference#permissions-blockreadsoutsideworkingdirectories) がオンの場合、作業ディレクトリ外の読み取り：認識されたファイル読み取り Bash コマンドおよび auto モードおよび `bypassPermissions` モードでもサンドボックス外で実行するために承認が必要な [unsandboxed retry](/docs/ja/sandboxing#the-unsandboxed-retry-escape-hatch)。Claude Code v2.1.257 以降が必要です
+
+  シェル パーサーが追跡できないコマンド（例えば、複数回ディレクトリを変更したり、サブシェルを実行したりするコマンド）は、外部パスを指定しない場合でも同じ方法でプロンプトが表示されます。このプロンプトは、コマンドが [sandbox](/docs/ja/sandboxing) で実行され、sandbox がブロックを強制する場合には適用されません。
 
 <h2 id="common-setups">
   一般的なセットアップ
@@ -59,7 +61,7 @@ Claude Code は、`bypassPermissions` を含むどのモードでも、以下を
 | 正確な許可リストで CI で実行        | `claude -p "run the test suite" --permission-mode dontAsk --allowedTools "Bash(npm test)" "Read"`                                                | CI ランナーが提供するもの以外はなし                                                                                                                                      | [Web 上の Claude Code](/docs/ja/claude-code-on-the-web)は設定ファイルから `dontAsk` を無視します                                                                                                          |
 | コンテナ内で完全に無人で実行          | `claude -p "<prompt>" --dangerously-skip-permissions`                                                                                            | 必須：コンテナ、VM、または[サンドボックスランタイム](/docs/ja/sandbox-environments#sandbox-runtime)。Linux と macOS では、[非 root ユーザー](#skip-all-checks-with-bypasspermissions-mode)として実行 | Web 上の Claude Code は設定ファイルからこのモードを無視します。この `-p` 実行では、[依然としてプロンプトが表示される少数の呼び出し](#skip-all-checks-with-bypasspermissions-mode)は代わりに拒否されます                                             |
 
-Bash サンドボックスと auto モードは独立して機能し、プラン モードを除いて組み合わさります。プラン モードでは、[auto-allow は承認を広げません](/docs/ja/sandboxing#sandbox-modes)。完全な相互作用については、[サンドボックスが権限と権限モードにどのように関連するか](/docs/ja/sandboxing#how-sandboxing-relates-to-permissions-and-permission-modes)および[隔離が権限モードにどのように関連するか](/docs/ja/sandbox-environments#how-isolation-relates-to-permission-modes)を参照してください。
+Bash サンドボックスと auto モードは独立して機能し、[Sandbox modes](/docs/ja/sandboxing#sandbox-modes)の下にリストされている例外を除いて組み合わさります。完全な相互作用については、[サンドボックスが権限と権限モードにどのように関連するか](/docs/ja/sandboxing#how-sandboxing-relates-to-permissions-and-permission-modes)および[隔離が権限モードにどのように関連するか](/docs/ja/sandbox-environments#how-isolation-relates-to-permission-modes)を参照してください。
 
 <h2 id="which-mode-a-session-starts-in">
   セッションが開始するモード
@@ -247,9 +249,9 @@ claude --permission-mode acceptEdits
   計画モードで編集前に分析する
 </h2>
 
-計画モードは Claude に変更を加えずに調査と提案を行うよう指示します。Claude はファイルを読み、シェルコマンドを実行して探索し、計画を書きますが、ソースを編集しません。[bypass permissions が利用可能](#skip-all-checks-with-bypasspermissions-mode)なセッションを除き、編集は計画を承認するまでブロックされたままです。
+計画モードは Claude に変更を加えずに調査と提案を行うよう指示します。Claude はファイルを読み、シェルコマンドを実行して探索し、計画を書きますが、ソースを編集しません。[bypass permissions が利用可能](#skip-all-checks-with-bypasspermissions-mode)なインタラクティブターミナルセッションを除き、編集は計画を承認するまでブロックされたままです。
 
-[auto モード](/docs/ja/auto-mode-config)が利用可能で `useAutoModeDuringPlan` 設定がオンの場合（デフォルト）、分類器は計画中にシェルコマンドをレビューし、プロンプトの代わりに承認します。承認されたコマンドは実行され、拒否されたコマンドはブロックされます。そうでない場合、[読み取り専用コマンド](/docs/ja/permissions#read-only-commands)の外側のコマンドはプロンプトが表示されます。これはサンドボックスの [auto-allow モード](/docs/ja/sandboxing#sandbox-modes)が有効な場合も含まれます。bypass permissions が利用可能なセッションでは、分類器もプロンプトも計画コマンドに適用されません。[bypassPermissions モードですべてのチェックをスキップする](#skip-all-checks-with-bypasspermissions-mode)は、計画中に依然としてプロンプトが表示される少数のものをカバーしています。v2.1.212 から v2.1.217 では、bypass permissions のないセッションは、auto モードが利用可能かどうかに関係なく、読み取り専用セット外のすべてのコマンドをプロンプトしました。
+[auto モード](/docs/ja/auto-mode-config)が利用可能で `useAutoModeDuringPlan` 設定がオンの場合（デフォルト）、分類器は計画中にシェルコマンドをレビューし、プロンプトの代わりに承認します。承認されたコマンドは実行され、拒否されたコマンドはブロックされます。そうでない場合、[読み取り専用コマンド](/docs/ja/permissions#read-only-commands)の外側のコマンドはプロンプトが表示されます。これはサンドボックスの [auto-allow モード](/docs/ja/sandboxing#sandbox-modes)が有効な場合も含まれます。bypass permissions が利用可能なインタラクティブターミナルセッションでは、分類器もプロンプトも計画コマンドに適用されません。[bypassPermissions モードですべてのチェックをスキップする](#skip-all-checks-with-bypasspermissions-mode)は、計画中に依然としてプロンプトが表示される少数のものをカバーしています。v2.1.212 から v2.1.217 では、bypass permissions のないセッションは、auto モードが利用可能かどうかに関係なく、読み取り専用セット外のすべてのコマンドをプロンプトしました。
 
 `Shift+Tab` を押すか、単一のプロンプトに `/plan` をプレフィックスして計画モードに入ります。CLI から計画モードで開始することもできます。
 
@@ -282,235 +284,242 @@ claude --permission-mode plan
 プロジェクトのターミナルセッションのデフォルトとして計画モードを設定するには、`.claude/settings.json` で `defaultMode` を `plan` に設定します。[異なる権限モードで開始する](#start-in-a-different-mode)の例が示すように配置します。[VS Code 拡張機能](/docs/ja/vs-code)が開始する会話はプロジェクト設定を開始権限モードに読み込みません。そこで、VS Code ユーザー設定で `claudeCode.initialPermissionMode` を `plan` に設定します。
 
 <h2 id="eliminate-prompts-with-auto-mode">
-  auto モードで権限プロンプトを排除する
+  権限プロンプトを自動モードで排除する
 </h2>
 
-auto モードを使用すると、Claude は日常的な権限プロンプトなしで実行できます。別のクラシファイアモデルが実行前にアクションをレビューし、リクエストを超えるエスカレーション、認識されていないインフラストラクチャをターゲットにしたもの、または Claude が読んだ敵対的なコンテンツによって駆動されているように見えるものをブロックします。明示的な[ask ルール](/docs/ja/permissions#manage-permissions)は依然としてプロンプトを強制します。
+自動モードを使用すると、Claude は日常的な権限プロンプトなしで実行できます。別のクラシファイアモデルが実行前にアクションをレビューし、リクエストを超えるエスカレーション、認識されていないインフラストラクチャをターゲットにする、または Claude が読んだ敵対的なコンテンツによって駆動されているように見えるものをブロックします。明示的な[質問ルール](/docs/ja/permissions#manage-permissions)は依然としてプロンプトを強制します。
 
-Pro、Max、Team プランでは、auto モードは[セッションが開始する組み込みの開始権限モード](#which-mode-a-session-starts-in)です。
+Pro、Max、Team プランでは、自動モードは[セッションが開始される組み込みの開始権限モード](#which-mode-a-session-starts-in)です。
 
-クラシファイアは、auto モードと[プランモードでクラシファイアがコマンドをレビューしている間](#analyze-before-you-edit-with-plan-mode)の両方で、Claude が [`SendMessage`](/docs/ja/tools-reference) を使用して別のエージェントに送信する各メッセージ（プレーンテキストまたは構造化された[エージェントチーム](/docs/ja/agent-teams)メッセージ）をレビューします。送信レビューには Claude Code v2.1.222 以降が必要です。
+クラシファイアは、Claude が [`SendMessage`](/docs/ja/tools-reference) で別のエージェントに送信する各メッセージもレビューします。プレーンテキストまたは構造化された[エージェントチーム](/docs/ja/agent-teams)メッセージのいずれかで、自動モードと[クラシファイアがコマンドをレビューしている間のプランモード](#analyze-before-you-edit-with-plan-mode)の両方で、Claude Code がそれを配信する前にレビューします。送信レビューには Claude Code v2.1.222 以降が必要です。
 
-クラシファイアは、`rm -rf /` や `rm -rf ~` などの[重要なパス](#critical-paths)をターゲットにした `rm` および `rmdir` の削除もレビューおよび承認またはブロックします。これには、削除がコマンドまたはプロセス置換内にある場合も含まれます。
+クラシファイアは、`rm` と `rmdir` の削除もレビューして承認またはブロックします。これは[重要なパス](#critical-paths)をターゲットにしています。例えば `rm -rf /` と `rm -rf ~` のように、削除がコマンドまたはプロセス置換内にある場合も含みます。
 
-auto モードはまた、Claude が明確な質問のために停止することなく作業を続けるよう促しますが、プロンプトまたはスキルが明示的にそれに依存している場合は、Claude は引き続き質問します。より強力な自律動作を、依然としてプロンプトを表示するモードで実現するには、代わりに[プロアクティブ出力スタイル](/docs/ja/output-styles)を設定してください。
+自動モードはまた、Claude が明確な質問のために停止することなく作業を続けるよう促します。ただし、Claude はプロンプトまたはスキルが明示的にそれに依存している場合は依然として質問します。モードでプロンプトを表示しながらより強力な自律動作を実現するには、代わりに[プロアクティブ出力スタイル](/docs/ja/output-styles)を設定します。
 
 <Warning>
-  auto モードは権限プロンプトを削減しますが、安全性を保証しません。一般的な方向を信頼するタスクに使用してください。機密操作のレビューの代わりとしてではなく使用してください。
+  自動モードは権限プロンプトを減らしますが、安全性を保証しません。一般的な方向を信頼するタスクに使用してください。機密操作のレビューの代わりではありません。
 </Warning>
 
-auto モードは、アカウントが以下のすべての要件を満たす場合にのみ利用可能です。
+自動モードは、アカウントがこれらすべての要件を満たす場合にのみ利用可能です。
 
 * **プラン**: すべてのプラン。
-* **組織**: Team および Enterprise では、auto モードはデフォルトで利用可能です。管理者は、[管理設定](/docs/ja/managed-settings)で `permissions.disableAutoMode` を `"disable"` に設定することで、組織の auto モードをオフにできます。
-* **モデル**: Anthropic API および[AWS 上の Claude Platform](/docs/ja/claude-platform-on-aws) では、Claude Opus 4.6 以降、Sonnet 4.6 以降、または[Fable モデル](/docs/ja/model-config#work-with-fable)。Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、およびサインイン済みの[Claude apps gateway](/docs/ja/claude-apps-gateway) セッションでは、Claude Sonnet 5、Opus 4.7 以降、および Fable モデルのみ。Sonnet 4.5、Opus 4.5、Haiku、claude-3 モデルを含む古いモデルは、どのプロバイダーでもサポートされていません。
+* **組織**: Team と Enterprise では、自動モードはデフォルトで利用可能です。管理者は、[管理設定](/docs/ja/managed-settings)で `permissions.disableAutoMode` を `"disable"` に設定することで、組織の自動モードをオフにできます。
+* **モデル**: Anthropic API と[AWS 上の Claude Platform](/docs/ja/claude-platform-on-aws) では、Claude Opus 4.6 以降、Sonnet 4.6 以降、または[Fable モデル](/docs/ja/model-config#work-with-fable)。Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、およびサインイン済みの[Claude apps gateway](/docs/ja/claude-apps-gateway) セッションでは、Claude Sonnet 5、Opus 4.7 以降、および Fable モデルのみです。Sonnet 4.5、Opus 4.5、Haiku、claude-3 モデルを含む古いモデルは、どのプロバイダーでもサポートされていません。
 * **プロバイダー**: Anthropic API、AWS 上の Claude Platform、Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、およびサインイン済みの Claude apps gateway セッションでデフォルトで利用可能です。
 
-Claude Code が auto モードを利用不可と報告する場合は、まずこれらの要件と、設定ファイルが [`disableAutoMode`](/docs/ja/settings-reference#disableautomode) を設定しているかどうかを確認してください。Anthropic がサーバー側で auto モードをオフにしたか、サーバーがアカウントの auto モードを拒否した可能性があります。いずれかの回答を受け取ったセッションは、セッションが終了するまで auto モードをオフのままにするため、後で新しいセッションを開始してください。
+Claude Code が自動モードを利用不可と報告する場合は、まずこれらの要件を確認し、設定ファイルが [`disableAutoMode`](/docs/ja/settings-reference#disableautomode) を設定しているかどうかを確認してください。Anthropic がサーバー側で自動モードをオフにしたか、サーバーがアカウントの自動モードを拒否した可能性があります。どちらかの回答を受け取ったセッションは、セッションが終了するまで自動モードをオフのままにするため、後で新しいセッションを開始してください。
 
-モデルに名前を付けて、auto モードがアクションの安全性を「判定できない」と言う別のメッセージは、クラシファイアリクエストが失敗したことを意味します。その失敗は通常は一時的ですが、Amazon Bedrock では、アカウントが指定されたモデルを呼び出せるようになるまで繰り返される可能性があります。原因と対処方法については、[エラーリファレンス](/docs/ja/errors#auto-mode-cannot-determine-the-safety-of-an-action)を参照してください。
+モデルに名前を付けて、自動モードがアクションの安全性を「判定できない」と言う別のメッセージは、クラシファイアリクエストが失敗したことを意味します。その失敗は通常は一時的ですが、Amazon Bedrock では、アカウントが指定されたモデルを呼び出せるようになるまで繰り返される可能性があります。原因と対処方法については、[エラーリファレンス](/docs/ja/errors#auto-mode-cannot-determine-the-safety-of-an-action)を参照してください。
 
-[設定](/docs/ja/settings-reference#all-settings)で `defaultMode: "auto"` を設定し、ターミナルセッションがエラーなしで Manual モードで開始する場合、設定は `.claude/settings.json` または `.claude/settings.local.json` にある可能性があります。`auto` はこれらのファイルから有効になりません。`~/.claude/settings.json` に移動してください。VS Code 拡張機能が開始した会話の場合は、代わりに拡張機能自体のリストを[権限モードの切り替え](#switch-permission-modes)で確認してください。
+[設定](/docs/ja/settings-reference#all-settings)で `defaultMode: "auto"` を設定し、ターミナルセッションがエラーなしで Manual モードで開始される場合、設定は `.claude/settings.json` または `.claude/settings.local.json` にある可能性があります。`auto` はこれらのファイルから有効になりません。`~/.claude/settings.json` に移動してください。VS Code 拡張機能が開始した会話の場合は、代わりに[権限モードの切り替え](#switch-permission-modes)で拡張機能自体のリストを確認してください。
 
 <h3 id="enable-auto-mode-on-bedrock-agent-platform-or-foundry">
-  Bedrock、Agent Platform、または Foundry での auto モード
+  Bedrock、Agent Platform、または Foundry での自動モード
 </h3>
 
-[Amazon Bedrock](/docs/ja/amazon-bedrock)、[Google Cloud の Agent Platform](/docs/ja/google-vertex-ai)、[Microsoft Foundry](/docs/ja/microsoft-foundry)、およびサインイン済みの[Claude apps gateway](/docs/ja/claude-apps-gateway) セッションでは、auto モードはデフォルトで `Shift+Tab` サイクルに表示されます。サイクルに表示されることは、セッションが開始する権限モードを変更しません。これらのプロバイダーでは、ターミナルセッションは [`defaultMode`](/docs/ja/settings-reference#permissions-defaultmode) で開始します。これは変更しない限り Manual であり、[VS Code 拡張機能](/docs/ja/vs-code)の会話は、`claudeCode.initialPermissionMode` または拡張機能で選択したモードが設定しない限り Manual で開始します。これらのプロバイダーでは、Claude Sonnet 5、Opus 4.7 以降、および Fable モデルのみがサポートされています。
+[Amazon Bedrock](/docs/ja/amazon-bedrock)、[Google Cloud の Agent Platform](/docs/ja/google-vertex-ai)、[Microsoft Foundry](/docs/ja/microsoft-foundry)、およびサインイン済みの[Claude apps gateway](/docs/ja/claude-apps-gateway) セッションでは、自動モードはデフォルトで `Shift+Tab` サイクルに表示されます。サイクルに表示されることは、セッションが開始される権限モードを変更しません。これらのプロバイダーでは、ターミナルセッションは [`defaultMode`](/docs/ja/settings-reference#permissions-defaultmode) で開始されます。これは変更しない限り Manual です。[VS Code 拡張機能](/docs/ja/vs-code)の会話は、`claudeCode.initialPermissionMode` または拡張機能で選択したモードが設定しない限り Manual で開始されます。これらのプロバイダーでは、Claude Sonnet 5、Opus 4.7 以降、および Fable モデルのみがサポートされています。
 
-auto モードをデフォルトの開始権限モードにするには、ユーザーまたは管理設定で `"permissions": {"defaultMode": "auto"}` を設定してください。VS Code 拡張機能が開始するセッションでは、代わりにモード指示器から **Auto** を選択してください。[権限モードの切り替え](#switch-permission-modes)は、その選択を上回るものについて説明しています。
+自動モードをデフォルトの開始権限モードにするには、ユーザーまたは管理設定で `"permissions": {"defaultMode": "auto"}` を設定します。VS Code 拡張機能が開始するセッションでは、モード指示器から **Auto** を選択します。[権限モードの切り替え](#switch-permission-modes)は、その選択を上回るものをカバーしています。
 
 [`/doctor`](/docs/ja/commands#all-commands) チェックアップは、Anthropic API と同じ方法で、これらのプロバイダーのユーザー設定デフォルトを提案します。
 
-開発者が auto モードを使用するのを防ぐには、[管理設定](/docs/ja/managed-settings)で `disableAutoMode` を `"disable"` に設定してください。これにより `auto` が `Shift+Tab` サイクルから削除され、`--permission-mode auto` で開始されたセッションは Manual で開始されます。既に auto モードで実行中のセッションは、設定が[管理者がデプロイしたソース](/docs/ja/managed-settings#which-managed-source-claude-code-uses)からそのセッションに到達すると、auto モードを離れ、`auto mode disabled by settings` を表示します。v2.1.251 より前では、実行中のセッションはセッションが終了するまで auto モードを保持していました。
+開発者が自動モードを使用するのを防ぐには、[管理設定](/docs/ja/managed-settings)で `disableAutoMode` を `"disable"` に設定します。これにより `auto` が `Shift+Tab` サイクルから削除され、`--permission-mode auto` で開始されたセッションは Manual で開始されます。既に自動モードで実行されているセッションは、設定が[管理者がデプロイしたソース](/docs/ja/managed-settings#which-managed-source-claude-code-uses)からそのセッションに到達すると、自動モードを離れ、`auto mode disabled by settings` を表示します。v2.1.251 より前では、実行中のセッションは終了するまで自動モードを保持していました。
 
-v2.1.158 から v2.1.206 では、`CLAUDE_CODE_ENABLE_AUTO_MODE=1` を設定するまで、これらのプロバイダーで auto モードはオフでした。また、Claude Code は変数が設定されていない限り、これらのプロバイダーで `defaultMode: "auto"` を無視していました。変数は互換性のために引き続き受け入れられ、v2.1.207 以降は効果がありません。
+v2.1.158 から v2.1.206 では、これらのプロバイダーで自動モードはオフでした。`CLAUDE_CODE_ENABLE_AUTO_MODE=1` を設定するまで、Claude Code はこれらのプロバイダーで `defaultMode: "auto"` を無視していました。変数は互換性のために依然として受け入れられ、v2.1.207 以降は効果がありません。
+
+<h4 id="server-side-classifier-review">
+  サーバー側クラシファイアレビュー
+</h4>
+
+Amazon Bedrock、Google Cloud の Agent Platform、および Microsoft Foundry では、Claude Code はデフォルトで独自のクラシファイアリクエストで自動モードアクションをレビューします。プラットフォームのサーバー側クラシファイアが[クラシファイアに送信されるアクション](#how-the-classifier-evaluates-actions)をセッションのモデルリクエストの一部としてレビューするようにするには、[`CLAUDE_CODE_AUTO_MODE_SERVER=1`](/docs/ja/env-vars) を設定します。プラットフォームがクラシファイアを実行する場所では、その判定がこれらのアクションを決定します。実行しない場所では、Claude Code は独自のクラシファイアリクエストにフォールバックします。v2.1.271 と v2.1.272 では、プラットフォームに質問することがこれらのプロバイダーのデフォルトでした。
 
 <h3 id="what-the-classifier-blocks-by-default">
   クラシファイアがデフォルトでブロックするもの
 </h3>
 
-クラシファイアは、ワーキングディレクトリとセッション開始時にそれに対して設定されたリモートを信頼します。セッション中に `git remote add` または `git remote set-url` で追加またはリポイントされたリモートは信頼されず、[信頼できるインフラストラクチャを設定](/docs/ja/auto-mode-config)するまで、他のすべてが外部として扱われます。v2.1.200 より前では、セッション中に追加されたリモートも信頼されていました。
+クラシファイアは、作業ディレクトリとセッション開始時にそれに対して構成されたリモートを信頼します。セッション中に `git remote add` または `git remote set-url` で追加またはリポイントされたリモートは信頼されず、[信頼できるインフラストラクチャを構成](/docs/ja/auto-mode-config)するまで、他のすべてが外部として扱われます。v2.1.200 より前では、セッション中に追加されたリモートも信頼されていました。
 
 **デフォルトでブロック**:
 
-* `curl | bash` などのコードのダウンロードと実行
-* 機密データを外部エンドポイントに送信
+* `curl | bash` のようなコードのダウンロードと実行
+* 外部エンドポイントへの機密データの送信
 * 本番環境へのデプロイとマイグレーション
 * クラウドストレージでの大量削除
 * IAM またはリポジトリ権限の付与
 * 共有インフラストラクチャの変更
-* セッション前に存在していたファイルを不可逆的に破壊
+* セッション前に存在していたファイルの不可逆的な破壊
 * Force push
-* 実行時にシークレットまたは機密データをリポジトリの外に送信するか、デプロイが公開するものを拡大する変更をコミットまたはプッシュ。これは、シークレットをまだ受け取っていない宛先にシークレットを渡す CI ワークフローまたはデプロイ設定、シークレットストアを読み取ってデータを送信するスクリプトまたはセットアップステップ、およびデプロイが公開するものを拡大する設定変更（レジストリ、可視性、アーティファクト、またはソースマップ設定など）をカバーします。チェックはすべてのブランチに適用され、リポジトリが公開されている場合でも適用され、ランディングがパイプラインをトリガーするかどうかに関わらず、ランディング時に発火します。クリアするには、コミットまたはプッシュだけでなく、実行効果に名前を付ける必要があります。v2.1.211 より前では、このチェックはデフォルトブランチにスコープされていました。そこへのプッシュは、機密コンテンツを含む場合、リクエストに対して隠蔽または誤説明されたコンテンツ、リポジトリの外からポートされたコンテンツ、またはリクエストしたレビューの周りをルーティングされたコンテンツを含む場合にブロックされました
+* 実行時にシークレットまたは機密データをリポジトリの外に送信するか、デプロイが公開するものを拡大する変更のコミットまたはプッシュ。これは、シークレットをまだ受け取っていない宛先にシークレットを渡す CI ワークフローまたはデプロイ構成、シークレットストアを読み取ってデータを送信するスクリプトまたはセットアップステップ、およびデプロイが公開するものを拡大する構成変更（レジストリ、可視性、アーティファクト、またはソースマップ設定など）をカバーします。チェックはすべてのブランチに適用され、リポジトリが公開されている場合でも適用され、コミットまたはプッシュがパイプラインをトリガーするかどうかに関係なく、コミットまたはプッシュされるときに発火します。クリアするには、コミットまたはプッシュだけでなく、実行効果に名前を付ける必要があります。v2.1.211 より前では、このチェックはデフォルトブランチにスコープされていました。そこへのプッシュは、機密コンテンツを含む場合、要求したものに対して隠蔽または誤表示されたコンテンツ、リポジトリの外からポーティングされたコンテンツ、またはリクエストしたレビューの周りをルーティングされたコンテンツを含む場合にブロックされました
 * `git reset --hard`、`git checkout -- .`、`git restore .`、`git clean -fd`、`git stash drop`、または `git stash clear`。クラシファイアはこれらがコミットされていない変更を破棄すると推定します
-* HEAD のコミットがこのセッションで作成されていない場合の `git commit --amend`
-* v2.1.198 から、HEAD のコミットが既にプッシュされている場合の `git commit --amend`。メッセージのみの言い換えはブロックされません。`--amend -m` で新しくステージされたものがなく、Claude がこのセッション中に作成したコミット上
-* `terraform destroy`、`pulumi destroy`、`cdk destroy`、または `terragrunt destroy`、およびリソースを破壊するプランの適用
+* `git commit --amend`。HEAD のコミットがこのセッションで作成されていない場合
+* v2.1.198 から、HEAD のコミットが既にプッシュされている場合の `git commit --amend`。メッセージのみの言い換えはブロックされません。`--amend -m`。新しくステージされたものはなく、Claude がこのセッション中に作成したコミット上
+* `terraform destroy`、`pulumi destroy`、`cdk destroy`、または `terragrunt destroy`。リソースを破壊するプランの適用
 
-Claude Code v2.1.195 以降は、デフォルトでより多くのカテゴリをブロックします。いくつかは、機密リモートターゲットや保護された IaC スコープなど、具体的な名前に絞り込むことができる[環境](/docs/ja/auto-mode-config#define-trusted-infrastructure)エントリに依存しています。
+Claude Code v2.1.195 以降は、デフォルトでより多くのカテゴリをブロックします。いくつかは、機密リモートターゲットや保護された IaC スコープなど、具体的な名前に絞ることができる[環境](/docs/ja/auto-mode-config#define-trusted-infrastructure)エントリに依存しています。
 
 * シークレットマネージャーへの書き込み、または DNS レコードまたは TLS 証明書の変更
 * 人間が承認していないプルリクエストのマージ、Claude 自身のプルリクエストの承認、または CI チェックの無効化
-* `atlantis apply` やボットの `/deploy` または `/merge` などのオートメーションへのコマンド自体であるコメントの投稿
-* 本番環境機能フラグのトグル、ランプ、または削除
+* `atlantis apply` や bot の `/deploy` や `/merge` などの自動化へのコマンド自体であるコメントの投稿
+* 本番環境機能フラグの切り替え、ランプ、または削除
 * 保護された IaC スコープへのインフラストラクチャ変更の適用、またはクラスタノードのドレインと削除
 * ラベルセレクタや `--all` など、他のユーザーのジョブをキャッチする、指定したリソースを超えて到達する共有コンピュートクラスタへの書き込み
-* DaemonSets やアドミッションウェブフックなど、すべてのノードで実行されるか、クラスタトラフィックをインターセプトする Kubernetes リソースの作成
+* すべてのノードで実行されるか、クラスタトラフィックをインターセプトする Kubernetes リソースの作成（DaemonSets や admission webhooks など）
 * 機密リモートターゲットへのインタラクティブシェルまたはポートフォワード
 * ローカルサービスをパブリックインターネットから到達可能にするトンネルまたはリバースシェルの開設
 * ライブ認証情報またはトークンをトランスクリプトまたはファイルに出力
-* [環境](/docs/ja/auto-mode-config#define-trusted-infrastructure)で機密データロケーションとしてリストされている場所へのアクセス、またはそこからのデータのコピー。v2.1.198 以降、これはエントリが除外する対象者へのデータ送信もブロックします
-* 内部パッケージレジストリの周りにパッケージインストールをルーティングしてパブリックレジストリに。v2.1.198 以降、これは環境にリストされている場合だけでなく、会話で内部レジストリまたはミラーが存在することを Claude に伝えた場合にも適用されます
-* `--insecure` などの安全ガードを解除するフラグを使用してコマンドを実行
-* `--dangerously-skip-permissions` または `--no-sandbox` で開始されたものなど、人間の承認またはサンドボックスなしで実行される自律エージェントループの起動。v2.1.198 以降、これは `--yes-always` で開始されたランナーなど、分離とアクション単位の承認を無効にして、サードパーティエージェントまたは eval ハーネスを実行することもカバーしています
-* ページコンテンツ、クッキー、または認証情報をオリジン外に送信する可能性のある[Chrome の Claude](/docs/ja/chrome) ブラウザアクション
+* [環境](/docs/ja/auto-mode-config#define-trusted-infrastructure)で機密データロケーションとしてリストされている場所へのアクセス、またはそこからのデータのコピー。v2.1.198 以降、これはエントリが除外する対象者にそこからデータを送信することもブロックします
+* 内部パッケージレジストリの周りにパッケージインストールをルーティングしてパブリックレジストリに送信。v2.1.198 以降、これは会話で内部レジストリまたはミラーが存在することを Claude に伝えた場合にも適用されます。環境にリストされている場合だけではなく
+* `--insecure` のような安全ガードを解除するフラグでコマンドを実行
+* `--dangerously-skip-permissions` または `--no-sandbox` で開始されたものなど、人間の承認またはサンドボックスなしで実行される自律エージェントループの起動。v2.1.198 以降、これは `--yes-always` で開始されたランナーなど、分離とアクション単位の承認を無効にして、サードパーティエージェントまたは eval ハーネスを実行することもカバーします
+* [Chrome の Claude](/docs/ja/chrome)ブラウザアクション。ページコンテンツ、クッキー、または認証情報をオリジン外に送信する可能性があります
 
-Claude Code v2.1.198 以降は、これらもデフォルトでブロックします。
+Claude Code v2.1.198 以降もこれらをデフォルトでブロックします。
 
 * ワイルドカード、glob、または年齢フィルタではなく、特定の名前付きパスによって `/tmp`、`$TMPDIR`、または別の共有スクラッチまたはキャッシュディレクトリ内のファイルを削除
-* 独自のメッセージがその詳細をその受信者に対して認可しなかった場合、送信、アップロード、公開、または他の人または共有システムに書き込まれるコンテンツに機密詳細を含める。リポジトリが信頼境界の外または公開されている場合、PR およびイシュー本文、コミットメッセージ、およびコメントはこの種の送信コンテンツとしてカウントされます。内部ファイルパス、コード名、ライブ API レスポンスデータ（メールやアカウント識別子など）、およびインフラストラクチャ識別子は機密詳細としてカウントされます。PR、イシュー、およびコミットメッセージのスコープには Claude Code v2.1.200 以降が必要です。PR またはイシュー本文の API レスポンスからのライブ個人データ（メールアドレス、アカウントまたは組織識別子、または使用メトリックなど）には、リポジトリの可視性または信頼境界に関わらず、これらの詳細と受信者に名前を付ける必要があります。そのチェックには Claude Code v2.1.203 以降が必要です
-* Claude Code 自体の tmux ペインにキーストロークを送信して、独自のインターフェースを駆動します。クラシファイアはこれを Claude が独自の権限または監視を変更することとして扱います
+* 独自のメッセージがそれらの詳細をその受信者に対して認可しなかった場合、送信、アップロード、公開、または他の人または共有システムに書き込まれるコンテンツに機密詳細を含める。PR および issue 本文、コミットメッセージ、およびコメントは、リポジトリが信頼境界の外にあるか公開されている場合、組織自体の公開リポジトリを含む、この種のアウトバウンドコンテンツとしてカウントされます。内部ファイルパス、コード名、ライブ API レスポンスデータ（メールやアカウント識別子など）、およびインフラストラクチャ識別子は機密詳細としてカウントされます。PR、issue、およびコミットメッセージのスコープには Claude Code v2.1.200 以降が必要です。PR または issue 本文内のライブ個人データ（メールアドレス、アカウントまたは組織識別子、使用メトリックなど）には、リポジトリの可視性または信頼境界に関係なく、それらの詳細と受信者に名前を付ける必要があります。そのチェックには Claude Code v2.1.203 以降が必要です
+* Claude Code 自体の tmux ペインにキーストロークを送信して、独自のインターフェースを駆動。クラシファイアはこれを Claude が独自の権限または監視を変更することとして扱います
 
-Claude Code v2.1.200 以降は、これらもデフォルトでブロックします。
+Claude Code v2.1.200 以降もこれらをデフォルトでブロックします。
 
-* セキュリティ動作を保護するテストまたはアサーション（認証、アクセス制御、入力検証、またはサンドボックスなど）をコメントアウト、削除、または強制的にパス
-* セッションで Claude が作成しなかった状態リソースを削除またはティアダウンし、より具体的な削除ルールが適用されず、リソースに名前を付けなかった場合
-* API ベース URL、プロキシエンドポイント、ウェブフックレシーバー、またはレジストリミラーを、タスクに適さないサードパーティホスト（`.env.example` などのサンプルファイルを含む）にリポイント
-* `git remote set-url` または `git remote add` で pushes の行き先を変更します。新しいリモートに名前を付けない限り
-* シークレットまたは個人または信頼されたデータを公開されていることが知られているリポジトリにプッシュ、またはそのリポジトリ自体の作業の一部ではない機密資料をそこにプッシュ。dotfiles リポジトリ自体の主題は個人または信頼されたデータの唯一の例外であり、プライベートリポジトリからのコンテンツがパブリックサーフェスに到達することは同じ方法でブロックされます。両方の改善には Claude Code v2.1.203 以降が必要です。v2.1.203 より前では、個人データは機密資料とグループ化され、そのリポジトリ自体の作業の一部ではない場合にのみブロックされました。リポジトリの可視性が確立されていない場合、クラシファイアはそれだけではブロックしません。代わりに他のルールに対してコンテンツを判定します
+* セキュリティ動作を保護するテストまたはアサーション（認証、アクセス制御、入力検証、またはサンドボックスなど）をコメントアウト、削除、または force-pass
+* セッションで Claude が作成しなかった stateful リソースを削除またはティアダウン。より具体的な削除ルールが適用されず、そのリソースに名前を付けなかった場合
+* API ベース URL、プロキシエンドポイント、webhook レシーバー、またはレジストリミラーを、タスクに適さないサードパーティホスト（`.env.example` のようなサンプルファイルを含む）にリポイント
+* `git remote set-url` または `git remote add` で pushes の行き先を変更。新しいリモートに名前を付けない限り
+* 公開されていることが知られているリポジトリにシークレットまたは個人または信頼されたデータをプッシュ、またはそのリポジトリ自体の作業の一部ではない機密資料をそこにプッシュ。dotfiles リポジトリ自体の主題は個人または信頼されたデータの唯一の例外であり、プライベートリポジトリからのコンテンツが公開サーフェスに到達することは同じ方法でブロックされます。両方の改善には Claude Code v2.1.203 以降が必要です。v2.1.203 より前では、個人データは機密資料とグループ化され、そのリポジトリ自体の作業の一部ではない場合にのみブロックされました。リポジトリの可視性が確立されていない場合、クラシファイアはそれだけではブロックしません。代わりに他のルールに対してコンテンツを判定します
 * 別のリポジトリまたは組織に対するプルリクエストの開設、`gh repo fork` でのフォーク、またはサードパーティリポジトリへのプッシュ。その外部ターゲットに名前を付けない限り
 
-Claude Code v2.1.203 以降は、これらもデフォルトでブロックします。
+Claude Code v2.1.203 以降もこれらをデフォルトでブロックします。
 
-* 機密ローカルストアからのコンテンツ、またはファイル名、パス、またはタイプが機密としてマークしているファイルからのコンテンツが、コミット、プッシュ、PR またはイシューテキスト、gist またはペースト、またはパッケージ公開に入ります。ソースと宛先の両方に名前を付けない限り。セッショントランスクリプトと会話ログ、SSH キー、クラウド認証情報、ブラウザプロファイル、シェル履歴などの認証情報と設定ドットフォルダ、およびユーザーデータエクスポートはすべてカウントされ、リポジトリがプライベートであることはそれをクリアしません
+* 機密ローカルストアからのコンテンツ、またはファイル名、パス、またはタイプが機密としてマークしているファイルからのコンテンツ。コミット、プッシュ、PR または issue テキスト、gist または paste、またはパッケージ公開に入る。ソースと宛先の両方に名前を付けない限り。セッショントランスクリプトと会話ログ、SSH キー、クラウド認証情報、ブラウザプロファイル、シェル履歴などの認証情報と構成ドットフォルダ、およびユーザーデータエクスポートはすべてカウントされ、リポジトリがプライベートであることはそれをクリアしません
 
-Claude Code v2.1.205 以降は、これらもデフォルトでブロックします。
+Claude Code v2.1.205 以降もこれらをデフォルトでブロックします。
 
-* Claude Code セッショントランスクリプト、`~/.claude/projects/` またはカスタマイズされた設定ディレクトリの下の `.jsonl` 履歴ファイルへの書き込み。直接またはシェルコマンドを通じて。ルールはまた、Claude Code が独自のチェック用に各トランスクリプトエントリに追加するメタデータ行もカバーしています。トランスクリプトの読み取りはブロックされません
-* `rm -rf "$VAR"` または `Remove-Item -Recurse -Force $dir` などのシェル変数であるターゲット、またはそれをルートとする glob を持つ再帰的な強制削除。クラシファイアが見るコンバーセーションのどこにも割り当てられていません。値は以前のコマンド出力からのみ来ました。クラシファイアは決してそれを受け取らないため、クラシファイアは削除ターゲットを他の削除ルールに対して検証できません。削除されるパスに名前を付けるか、Claude が削除をコマンドに書き込まれた解決されたリテラルパスで再実行するとブロックがクリアされます。クラシファイアが解決できるターゲットを持つ削除は影響を受けません。ベア `*` または `/*` または `\*` で終わる `Remove-Item` ターゲットはクラシファイアに到達しません。Claude Code は[それらを直接拒否します](#remove-item-in-powershell)
+* Claude Code セッショントランスクリプト、`~/.claude/projects/` または構成ディレクトリの下の `.jsonl` 履歴ファイルへの書き込み。シェルコマンドを通じて直接または間接的に。ルールはまた、Claude Code が独自のチェック用に各トランスクリプトエントリに追加するメタデータ行もカバーします。トランスクリプトの読み取りはブロックされません
+* `rm -rf "$VAR"` または `Remove-Item -Recurse -Force $dir` のような再帰的な force delete。ターゲットはシェル変数であり、会話でクラシファイアが見るどこにも割り当てられていません。値は以前のコマンド出力からのみ来ました。クラシファイアは決してそれを受け取らないため、クラシファイアは削除ターゲットを他の削除ルールに対して検証できません。ブロックは、削除されている正確なパスに名前を付けるか、Claude が解決されたリテラルパスが書き込まれたコマンドで削除を再実行するときにクリアされます。クラシファイアが解決できるターゲットを持つ削除は影響を受けません。`Remove-Item` ターゲットが裸の `*` または `/*` または `\*` で終わる場合、クラシファイアに到達しません。Claude Code は[それらを直接拒否します](#remove-item-in-powershell)
 
-Claude Code v2.1.257 以降は、これらもデフォルトでブロックします。
+Claude Code v2.1.257 以降もこれらをデフォルトでブロックします。
 
 * `169.254.169.254` などのクラウドインスタンスメタデータエンドポイントから認証情報をリクエスト、またはマシン自体のサービスアカウントまたはノード ID でクラウド、クラスタ、またはレジストリコールを明示的に認証
-* トンネル、リバースシェル、または外部を指すように書き直されたリゾルバーまたはプロキシ設定など、直接リクエスト以外のルートでパブリックホストに到達
+* トンネル、リバースシェル、または外部を指すようにリライトされたリゾルバーまたはプロキシ構成など、直接リクエスト以外のルートでパブリックホストに到達
 * ノード証明書やノードのコンテナレジストリ認証など、タスクではなくホストに属する認証情報を読み取る
-* Claude が開始しなかったシブリングコンテナ、ポッド、または VM、またはコンテナの下のノードに接続またはスキャン
+* Claude が開始しなかった兄弟コンテナ、ポッド、または VM、またはコンテナの下のノードに接続またはスキャン
 
-Claude Code がこれらの 1 つを許可することを意図した場所で実行される場合は、`autoMode.environment` の[ホストコンテインメントエントリ](/docs/ja/auto-mode-config#define-trusted-infrastructure)でそのセットアップを説明してください。
+Claude Code がこれらの 1 つを許可することを意図した場所で実行される場合は、`autoMode.environment` の[ホスト containment エントリ](/docs/ja/auto-mode-config#define-trusted-infrastructure)でそのセットアップを説明してください。
 
-Claude Code v2.1.261 以降は、これらもデフォルトでブロックします。
+Claude Code v2.1.261 以降もこれらをデフォルトでブロックします。
 
-* パブリックペースト、ダイアグラム、またはデータ共有サービスへのリンクをメッセージ、PR またはイシューテキスト、ドキュメント、またはリンクが開かれたり取得されたりする他の場所に投稿または書き込み。URL 自体が共有されるコンテンツを含む場合。そのサービスに名前を付けない限り
+* メッセージ、PR または issue テキスト、ドキュメント、またはリンクが開かれるか取得される他の場所で、パブリック paste、図、またはデータ共有サービスへのリンクを投稿または書き込み。URL 自体が共有されているコンテンツを含む場合。そのサービスに名前を付けない限り
 
 **デフォルトで許可**:
 
-* ワーキングディレクトリ内のローカルファイル操作
+* 作業ディレクトリ内のローカルファイル操作
 * ロックファイルまたはマニフェストで宣言された依存関係のインストール
-* `.env` の読み取りと、マッチング API への認証情報の送信
+* `.env` の読み取りと一致する API への認証情報の送信
 * 読み取り専用 HTTP リクエスト
-* デフォルトブランチを含む、作業中のリポジトリのすべてのブランチへのプッシュ。`production` や `gh-pages` などのデプロイまたは公開ターゲットとしてマークされた非デフォルトブランチの名前は、カバーされていません。クラシファイアはそこへのプッシュを独自の条件で判定します。プッシュのコンテンツは依然として他のルールに対してチェックされ、[`permissions.deny` ルール](/docs/ja/permissions#manage-permissions)は依然として[書き込まれたとおり](/docs/ja/permissions#bash-rule-limits)すべてのモードでプッシュコマンドをブロックでき、リモート自体のブランチ保護は依然として適用されます。v2.1.211 より前では、開始したブランチへのプッシュ、Claude が作成したブランチ、および定期的なデフォルトブランチへのプッシュのみがデフォルトで許可されていました。v2.1.203 より前では、デフォルトブランチへの直接プッシュはブロックされていました
+* 作業しているリポジトリのすべてのブランチへのプッシュ。デフォルトブランチを含む。デプロイまたは公開ターゲットとしてマークされた非デフォルトブランチ（`production` や `gh-pages` など）は対象外です。クラシファイアはそこへのプッシュを独自の条件で判定します。プッシュのコンテンツは依然として他のルールに対してチェックされ、[`permissions.deny` ルール](/docs/ja/permissions#manage-permissions)は依然として[書き込まれたとおり](/docs/ja/permissions#bash-rule-limits)すべてのモードでプッシュコマンドをブロックでき、リモート自体のブランチ保護は依然として適用されます。v2.1.211 より前では、開始したブランチ、Claude が作成したブランチ、およびデフォルトブランチへのルーチンプッシュへのプッシュのみがデフォルトで許可されていました。v2.1.203 より前では、デフォルトブランチへの直接プッシュはブロックされていました
 
-Claude Code v2.1.195 以降は、これらもデフォルトで許可します。
+Claude Code v2.1.195 以降もこれらをデフォルトで許可します。
 
 * 同じセッションで前に Claude が作成した正確なジョブの削除
-* セキュリティ関連のコード、設定、および脅威モデルの読み取り、レビュー、または書き込み。タスクの一部として
+* セキュリティ関連のコード、構成、および脅威モデルの読み取り、レビュー、または書き込み。タスクの一部として
 * 同じマルチエージェントセッションで一緒に作業しているエージェント間のメッセージ
 * [`environment`](/docs/ja/auto-mode-config#define-trusted-infrastructure) にリストされている信頼できるドメイン、バケット、およびサービスへのデータ送信。これはデータフローのみをカバーし、同じインフラストラクチャ上の破壊的または認証情報操作ではありません
-* [Chrome の Claude](/docs/ja/chrome) が信頼できる内部ドメイン、localhost、または指定した URL にナビゲート
+* [Chrome の Claude](/docs/ja/chrome)。信頼できる内部ドメイン、localhost、または指定した URL へのナビゲーション
 
-サンドボックスネットワークアクセスリクエストは、デフォルトで許可されるのではなく、クラシファイアを通じてルーティングされます。v2.1.198 以降、クラシファイアはネットワークホストとポートの判定を再利用し、すべての接続で再実行するのではなく。
+サンドボックス化されたコマンドはデフォルトではネットワークアクセスを取得しません。Claude はコマンドが必要とするホストをコマンド自体に名前を付け、クラシファイアはそれらをコマンドでレビューし、承認されたリストはそのコマンドのみのためにそれらのホストを開きます。[コマンドごとの許可ドメイン](/docs/ja/sandboxing#per-command-allowed-domains-in-auto-mode)は、リストが何を開くことができるか、できないか、およびコマンドがリストされていないホストに到達するときに何が起こるかをカバーしています。
 
-* 許可は新しいコンテンツが会話に入るまで再利用され、その時点でそのホストが再度チェックされます
-* Claude Code v2.1.234 以降は、会話がクラシファイアのコンテキストウィンドウを超えて成長したことによる拒否を再利用し、新しいコンテンツが会話に入るか、[コンパクション](/docs/ja/costs#reduce-token-usage)がクラシファイアが読むものを縮小するまで。Claude Code はホストを再度チェックします
-* クラシファイアがリクエストを評価することで到達した拒否は、インタラクティブ CLI のターンに続きます。[非インタラクティブモード](/docs/ja/headless)および Agent SDK セッションでは、Claude Code はセッションの残りの間、その拒否を再利用します。これらのセッションにはターン境界がないため
-* 権限モードまたはルールを変更すると、すべてのキャッシュされた判定がドロップされます
+`claude auto-mode defaults` を実行して、完全なルールリストを JSON として出力します。ルーチンアクションがブロックされる場合、管理者は `autoMode.environment` 設定を通じて信頼できるリポジトリ、バケット、およびサービスを追加できます。[自動モードの構成](/docs/ja/auto-mode-config)を参照してください。
 
-`claude auto-mode defaults` を実行して、完全なルールリストを JSON として出力します。日常的なアクションがブロックされる場合、管理者は `autoMode.environment` 設定を通じて信頼できるリポジトリ、バケット、およびサービスを追加できます。[auto モードの設定](/docs/ja/auto-mode-config)を参照してください。
-
-リポジトリの作業中のすべてのブランチへのプッシュとリクエストに一致するプルリクエストの作成は、プッシュまたはプルリクエストが[ブロックリスト](#what-the-classifier-blocks-by-default)（リポジトリを離れるシークレットまたは機密データ、または別のリポジトリまたは組織をターゲットにするプルリクエストなど）に該当しない限り、プロンプトなしで実行されます。auto モードにとどまりながら、これらのコマンドの前に人間のチェックポイントを要求するには、`permissions.ask` ルールを追加します。これはコマンド[書き込まれたとおり](/docs/ja/permissions#bash-rule-limits)に一致します。[一般的な境界](/docs/ja/auto-mode-config#common-boundaries)を参照してください。
+リポジトリで作業しているすべてのブランチへのプッシュとリクエストに一致するプルリクエストの作成は、プッシュまたはプルリクエストが[ブロックリスト](#what-the-classifier-blocks-by-default)に該当しない限り、プロンプトなしで実行されます。例えば、リポジトリを離れるシークレットまたは機密データ、または別のリポジトリまたは組織をターゲットにするプルリクエストなど。自動モードにとどまりながらこれらのコマンドの前に人間のチェックポイントを要求するには、`permissions.ask` ルールを追加します。これは[書き込まれたとおり](/docs/ja/permissions#bash-rule-limits)コマンドに一致します。[一般的な境界](/docs/ja/auto-mode-config#common-boundaries)を参照してください。
 
 <h3 id="first-read-outside-the-working-directories">
-  ワーキングディレクトリの外での最初の読み取り
+  作業ディレクトリ外の最初の読み取り
 </h3>
 
-[`permissions.blockReadsOutsideWorkingDirectories`](/docs/ja/settings-reference#permissions-blockreadsoutsideworkingdirectories) がオフの間、ファイル読み取りは auto モードでプロンプトなしで実行されます。これには[ワーキングディレクトリ](/docs/ja/permissions#working-directories)の外での読み取りも含まれます。Claude が Read、Grep、または Glob ツールを初めて使用するときは、それらの外のパスで、Claude Code はそれらの読み取りを許可し続けるかどうかを尋ねます。
+[`permissions.blockReadsOutsideWorkingDirectories`](/docs/ja/settings-reference#permissions-blockreadsoutsideworkingdirectories) がオフの間、ファイル読み取りは自動モードでプロンプトなしで実行されます。[作業ディレクトリ](/docs/ja/permissions#working-directories)外のパスを含む。Claude が Read、Grep、または Glob ツールを初めて使用するとき。外側のパスで、Claude Code はそれらの読み取りを許可し続けるかどうかを尋ねます。
 
-プロンプトは非インタラクティブ `-p` 実行またはバックグラウンドセッションには表示されません。そこでの読み取りは以前と同じように実行されます。
+プロンプトは非インタラクティブな `-p` 実行またはバックグラウンドセッションには表示されません。そこでの読み取りは以前と同じように実行されます。
 
-答えに関わらず、Claude は作業を続けます。
+答えに関係なく、Claude は作業を続けます。
 
-* **許可し続ける**: 読み取りが実行され、ワーキングディレクトリの外での後の読み取りは以前と同じように実行され、Claude Code は答えを記録するため、プロンプトは再度表示されません
-* **今からブロック**: 読み取りが拒否され、Claude Code は [`permissions.blockReadsOutsideWorkingDirectories`](/docs/ja/settings-reference#permissions-blockreadsoutsideworkingdirectories) をユーザー設定で `true` に設定します。これにより、ファイルツールはすべての後のセッションおよびすべての権限モードでそのような読み取りを拒否します。後で Claude がそのようなパスを読み取ることを許可するには、`/add-dir` でディレクトリを追加するか、設定を削除してください。
-* **次回また尋ねる**: 読み取りが拒否され、ワーキングディレクトリの外での次の読み取りが再度プロンプトします
+* **許可し続ける**: 読み取りが実行され、作業ディレクトリ外の後の読み取りは以前と同じように実行され、Claude Code は答えを記録するため、プロンプトは再度表示されません
+* **今からブロック**: 読み取りが拒否され、Claude Code は [`permissions.blockReadsOutsideWorkingDirectories`](/docs/ja/settings-reference#permissions-blockreadsoutsideworkingdirectories) をユーザー設定で `true` に設定します。これにより、ファイルツールはすべての後のセッションとすべての権限モードでそのような読み取りを拒否します。後で Claude がそのようなパスを読み取ることを許可するには、`/add-dir` でそのディレクトリを追加するか、設定を削除します。
+* **次回また質問**: 読み取りが拒否され、作業ディレクトリ外の次の読み取りが再度プロンプトします
 
 <h3 id="boundaries-you-state-in-conversation">
   会話で述べた境界
 </h3>
 
-クラシファイアは、会話で述べた境界をブロック信号として扱います。「プッシュしないで」または「デプロイする前にレビューを待つ」と Claude に伝えた場合、クラシファイアはデフォルトルールが許可する場合でも、マッチングアクションをブロックします。境界は、後のメッセージでそれを解除するまで有効です。Claude 自身の条件が満たされたという判定は、それを解除しません。
+クラシファイアは、会話で述べた境界をブロック信号として扱います。Claude に「プッシュしないで」または「デプロイする前にレビューを待つ」と言う場合、クラシファイアはデフォルトルールが許可する場合でも一致するアクションをブロックします。境界は、後のメッセージでそれを解除するまで有効です。Claude 自身の条件が満たされたという判定はそれを解除しません。
 
-境界はルールとして保存されません。クラシファイアはチェックのたびにトランスクリプトから再度読み取るため、[コンテキストコンパクション](/docs/ja/costs#reduce-token-usage)が境界を述べたメッセージを削除すると、境界が失われる可能性があります。ハード保証の場合は、代わりに[deny ルール](/docs/ja/permissions#permission-rule-syntax)を追加してください。
+境界はルールとして保存されません。クラシファイアはチェックのたびにトランスクリプトから再度読み取るため、[コンテキストコンパクション](/docs/ja/costs#reduce-token-usage)が境界を述べたメッセージを削除する場合、境界は失われる可能性があります。ハード保証の場合は、代わりに[拒否ルール](/docs/ja/permissions#permission-rule-syntax)を追加します。
 
 <h3 id="when-auto-mode-falls-back">
-  auto モードがフォールバックするとき
+  自動モードがフォールバックするとき
 </h3>
 
-auto モードがセッションのアクションを承認できない場合、何が起こるかはケースによって異なります。
+自動モードがセッションのアクションを承認できない場合、何が起こるかはケースによって異なります。
 
-* **ブロックされたアクション**: Claude Code は通知を表示し、`/permissions` の下の **Recently denied** タブにアクションをリストします。そこで `r` を押して、手動承認でそれを再試行できます。クラシファイアが[アクションに判定を出さない](/docs/ja/errors#auto-mode-cannot-determine-the-safety-of-an-action)場合。auto モードとは別の安全チェックがクラシファイアのリクエスト自体を拒否したか、その応答が解析されなかったため、Claude Code は通知または **Recently denied** エントリなしでアクションを拒否します。
-* **繰り返されるブロック**: クラシファイアが連続して 3 回またはセッション全体で 20 回アクションをブロックする場合、auto モードは一時停止し、Claude Code はプロンプトを再開します。プロンプトされたアクションを承認すると、auto モードが再開されます。これらのしきい値は設定不可能です。許可されたアクションは連続カウンターをリセットしますが、合計カウンターはセッション用に保持され、独自のリミットがフォールバックをトリガーするときのみリセットされます。Claude Code は、[auto モードとは別の安全チェックがクラシファイアのリクエストを拒否する](/docs/ja/errors#auto-mode-cannot-determine-the-safety-of-an-action)場合、拒否をいずれのしきい値にもカウントしません。リンクされたエントリは、Claude Code がそれらの拒否をどのように処理するかについて説明しています。
-* **プロンプトできないセッション**: [`--permission-prompt-tool`](/docs/ja/cli-reference#cli-flags) のない[非インタラクティブ](/docs/ja/headless) `-p` 実行には、フォールバックするプロンプトがありません。繰り返されるブロックがしきい値に到達すると、アクションは実行されず、Claude は作業を続けます。[auto モードとは別の安全チェックがクラシファイアのリクエストを拒否する](/docs/ja/errors#auto-mode-cannot-determine-the-safety-of-an-action)場合も同じことが適用されます。Claude Code はどちらの場合もランを停止しません。
-* **チェック中のモード切り替え**: クラシファイアチェックが保留中に権限モードを切り替える場合、Claude Code は新しいモードが要求しなかった判定を破棄し、それを適用するのではなく。代わりに、プロンプトされるか、[`dontAsk` モード](#allow-only-pre-approved-tools-with-dontask-mode)でアクションが自動拒否されます。
+* **ブロックされたアクション**: Claude Code は通知を表示し、`/permissions` の下の **Recently denied** タブにアクションをリストします。そこで `r` を押して、手動承認で再試行できます。クラシファイアが[アクションに対して判定を出さない](/docs/ja/errors#auto-mode-cannot-determine-the-safety-of-an-action)場合。自動モードとは別の安全チェックがクラシファイアのリクエスト自体を拒否したか、その応答が解析されなかったため、Claude Code は通知または **Recently denied** エントリなしでアクションを拒否します。
+* **繰り返されるブロック**: クラシファイアが連続して 3 回またはセッション全体で 20 回アクションをブロックする場合、自動モードは一時停止し、Claude Code はプロンプトを再開します。プロンプトされたアクションを承認すると、自動モードが再開されます。これらのしきい値は構成不可能です。許可されたアクションは連続カウンターをリセットしますが、合計カウンターはセッション用に保持され、独自のリミットがフォールバックをトリガーするときのみリセットされます。Claude Code は、[自動モードとは別の安全チェックがクラシファイアのリクエストを拒否する](/docs/ja/errors#auto-mode-cannot-determine-the-safety-of-an-action)場合、拒否をどちらのしきい値にもカウントしません。リンクされたエントリは Claude Code がそれらの拒否をどのように処理するかをカバーしています。
+* **プロンプトできないセッション**: [`--permission-prompt-tool`](/docs/ja/cli-reference#cli-flags) のない[非インタラクティブ](/docs/ja/headless) `-p` 実行にはフォールバックするプロンプトがありません。繰り返されるブロックがしきい値に到達すると、アクションは実行されず、Claude は作業を続けます。[自動モードとは別の安全チェックがクラシファイアのリクエストを拒否する](/docs/ja/errors#auto-mode-cannot-determine-the-safety-of-an-action)場合も同じです。Claude Code はどちらの場合もランを停止しません。
+* **チェック中のモード切り替え**: クラシファイアチェックが保留中に権限モードを切り替える場合、Claude Code は新しいモードが要求しなかった判定を破棄します。代わりにプロンプトされるか、[`dontAsk` モード](#allow-only-pre-approved-tools-with-dontask-mode)でアクションが自動拒否されます。
 
-繰り返されるブロックは通常、クラシファイアがインフラストラクチャについてのコンテキストを欠いていることを意味します。`/feedback` を使用して誤検知を報告するか、管理者に[信頼できるインフラストラクチャを設定](/docs/ja/auto-mode-config)させてください。
+繰り返されるブロックは通常、クラシファイアがインフラストラクチャについてのコンテキストを欠いていることを意味します。`/feedback` を使用して偽陽性を報告するか、管理者に[信頼できるインフラストラクチャを構成](/docs/ja/auto-mode-config)させてください。
 
 <span id="how-the-classifier-evaluates-actions" />
 
 <AccordionGroup>
   <Accordion title="クラシファイアがアクションを評価する方法">
-    各アクションは固定の決定順序を通過します。最初にマッチするステップが勝ちます。
+    各アクションは固定の決定順序を通過します。最初に一致するステップが勝ちます。
 
-    1. [allow、ask、または deny ルール](/docs/ja/permissions#manage-permissions)に一致するアクションは直ちに解決されます。[保護されたパス](#protected-paths)への書き込みは allow ルールが一致する場合でもクラシファイアにルーティングされます。また、Claude Code v2.1.218 以降では、[重要なパス](#critical-paths)をターゲットにした `rm` および `rmdir` 削除も同様です。[`requiresUserInteraction`](/docs/ja/mcp#require-approval-for-a-specific-tool) とマークされた MCP ツールは allow ルールが一致する場合でも直接プロンプトします。また、セッションでそのセッティングが Claude Code に到達する[組織が `ask` に設定したコネクタツール](/docs/ja/mcp#organization-controls-on-connector-tools)も同様です。`Bash(git push *)` などのコマンドのコンテンツで一致する ask ルールは、権限プロンプトにフォールバックします
-    2. 読み取り専用アクションとワーキングディレクトリ内のファイル編集は自動承認されます。ただし、[保護されたパス](#protected-paths)および[ワーキングディレクトリの外での最初の読み取り](#first-read-outside-the-working-directories)への書き込みは除きます。これはプロンプトします
-    3. その他すべてはクラシファイアに送られます。ステップ 1 で直接プロンプトするコネクタツールおよび` requiresUserInteraction` MCP ツールはクラシファイアに到達しないため、組織が必要とする承認も同意ステップも自動承認されません
-    4. クラシファイアがブロックする場合、Claude は理由を受け取り、代替を試みます。ほとんどのセッションでは、理由は `[Data Exfiltration]` などのクラシファイアが一致したルールに名前を付けます。書き込まれた説明ではなく。[拒否をレビュー](/docs/ja/auto-mode-config#review-denials)を参照してください
+    1. [許可、質問、または拒否ルール](/docs/ja/permissions#manage-permissions)に一致するアクションは、これらの例外を除いて直ちに解決されます。
+       * [保護されたパス](#protected-paths)への書き込みは、許可ルールが一致する場合でもクラシファイアにルーティングされます。`rm` と `rmdir` の削除も Claude Code v2.1.218 以降で[重要なパス](#critical-paths)をターゲットにしている場合もそうです
+       * [`requiresUserInteraction`](/docs/ja/mcp#require-approval-for-a-specific-tool) とマークされた MCP ツール。許可ルールが一致する場合でも直接プロンプトします。コネクタツール[組織が `ask` に設定](/docs/ja/mcp#organization-controls-on-connector-tools)したもの。その設定が Claude Code に到達するセッションでも
+       * [コマンドごとの許可ドメイン](/docs/ja/sandboxing#per-command-allowed-domains-in-auto-mode)を含むシェルコマンド。許可ルールが一致する場合でもクラシファイアにルーティングされます。ルールはコマンドを承認するため、そのホストではなく
+       * `Bash(git push *)` のようなコマンドのコンテンツで一致する質問ルール。権限プロンプトにフォールバック
+    2. 読み取り専用アクションと作業ディレクトリ内のファイル編集は自動承認されます。[保護されたパス](#protected-paths)と[作業ディレクトリ外の最初の読み取り](#first-read-outside-the-working-directories)への書き込みを除く。プロンプトします
+    3. その他すべてはクラシファイアに送信されます。ステップ 1 でプロンプトするコネクタツールと`requiresUserInteraction` MCP ツールはクラシファイアに到達しません。組織が必要な承認も同意ステップも自動承認されません
+    4. クラシファイアがブロックする場合、Claude は理由を受け取り、代替を試みます。ほとんどのセッションでは、理由は `[Data Exfiltration]` のようにクラシファイアが一致したルールに名前を付けます。書かれた説明ではなく。[拒否をレビュー](/docs/ja/auto-mode-config#review-denials)を参照してください
 
-    auto モードに入ると、任意のコード実行を許可する広いルールがドロップされます。
+    自動モードに入ると、任意のコード実行を許可する広いルールが削除されます。
 
     * ブランケット `Bash(*)` または `PowerShell(*)`
-    * `Bash(python*)` などのワイルドカードインタープリタ
+    * `Bash(python*)` のようなワイルドカードインタープリタ
     * パッケージマネージャー実行コマンド
-    * `Agent` allow ルール
-    * [`Monitor`](/docs/ja/tools-reference#monitor-tool) allow ルール。Claude Code は Monitor コマンドをシェルを通じて実行するため
+    * `Agent` 許可ルール
+    * [`Monitor`](/docs/ja/tools-reference#monitor-tool) 許可ルール。Claude Code は Monitor コマンドをシェルを通じて実行するため
 
-    `Bash(npm test)` などの狭いルールは有効なままです。Claude Code は auto モードを離れるときにドロップされたルールを復元します。v2.1.236 より前では、Claude Code は auto モードで `Monitor` allow ルールを有効なままにしていたため、ツール全体に一致するルールは分類器レビューなしで Monitor コマンドを承認しました。
+    `Bash(npm test)` のような狭いルールは有効なままです。Claude Code は自動モードを離れるときに削除されたルールを復元します。v2.1.236 より前では、Claude Code は自動モードで `Monitor` 許可ルールを有効なままにしていたため、ツール全体に一致するルールは分類器レビューなしで Monitor コマンドを承認しました。
 
-    Claude Code はまた、`git reset --hard` や `rm -rf` などのコミットされていない作業を破棄するコマンドの前に `git status` を実行し、ステージされた、変更された、または追跡されていない作業が存在するかどうかをクラシファイアに表示します。Claude Code は、リポジトリの git 設定が `status.showUntrackedFiles=no` を設定する場合でも、そのチェックで追跡されていないファイルを報告します。
+    Claude Code はまた、`git reset --hard` や `rm -rf` のようなコミットされていない作業を破棄するコマンドの前に `git status` 自体を実行し、ステージされた、変更された、または追跡されていない作業が存在するかどうかをクラシファイアに表示します。Claude Code は、リポジトリの git 構成が `status.showUntrackedFiles=no` を設定する場合でも、そのチェックで追跡されていないファイルを報告します。
 
-    クラシファイアはユーザーメッセージ、ファイル読み取りや検索などの読み取り専用ルックアップ以外のツール呼び出し、および CLAUDE.md コンテンツを見ます。ツール結果は削除されるため、ファイルまたはウェブページの敵対的なコンテンツはそれを直接操作できません。呼び出しの結果に[PostToolUse フック の `classifierContext` フィールド](/docs/ja/hooks#annotate-a-result-for-the-auto-mode-classifier)で注釈を付けることができます。クラシファイアはアプリケーション提供のコンテキストとして読み取ります。
+    Claude Code 自体が送信するクラシファイアリクエストでは、クラシファイアはユーザーメッセージ、ファイル読み取りや検索などの読み取り専用ルックアップ以外のツール呼び出し、および CLAUDE.md コンテンツを見ます。ツール結果はそれらのリクエストから削除されるため、ファイルまたは web ページ内の敵対的なコンテンツはクラシファイアを直接操作できません。
 
-    別のサーバー側プローブは、受信ツール結果をスキャンし、Claude がそれを読む前に疑わしいコンテンツにフラグを立てます。これらのレイヤーがどのように連携するかについての詳細は、[auto モードアナウンスメント](https://claude.com/blog/auto-mode)および[エンジニアリング深掘り](https://www.anthropic.com/engineering/claude-code-auto-mode)を参照してください。
+    [PostToolUse hook の `classifierContext` フィールド](/docs/ja/hooks#annotate-a-result-for-the-auto-mode-classifier)で呼び出しの結果に注釈を付けることができます。クラシファイアはアプリケーション提供のコンテキストとして読み取ります。フィールドには Claude Code v2.1.236 以降が必要です。
+
+    別のサーバー側プローブは、Claude がそれを読む前に、受信ツール結果をスキャンして疑わしいコンテンツにフラグを立てます。これらのレイヤーがどのように連携するかについての詳細は、[自動モードアナウンスメント](https://claude.com/blog/auto-mode)と[エンジニアリング深掘り](https://www.anthropic.com/engineering/claude-code-auto-mode)を参照してください。
   </Accordion>
 
-  <Accordion title="auto モードがサブエージェントを処理する方法">
+  <Accordion title="自動モードがサブエージェントを処理する方法">
     クラシファイアは[サブエージェント](/docs/ja/sub-agents)作業を 3 つのポイントでチェックします。
 
     1. サブエージェントが開始する前に、委任されたタスク説明が評価されるため、危険に見えるタスクはスポーン時にブロックされます。
-    2. サブエージェントが実行中の間、その各アクションはクラシファイアを通じて親セッションと同じルールで通過し、サブエージェントのフロントマターの `permissionMode` は無視されます。
-    3. サブエージェントが完了すると、クラシファイアはその完全なアクション履歴をレビューします。その戻りチェックが懸念にフラグを立てる場合、セキュリティ警告がサブエージェントの結果の前に付加されます。別の API 安全チェックがレビューリクエスト自体を拒否する場合、Claude Code は依然としてサブエージェントの結果を返し、作業がレビューされていないため信頼されていないものとして扱うべきという警告が前に付加されます。
+    2. サブエージェントが実行されている間、その各アクションはクラシファイアを通じて親セッションと同じルールで実行され、サブエージェントの frontmatter の `permissionMode` は無視されます。
+    3. サブエージェントが終了すると、クラシファイアはその作業と最終レポートをレビューしてから、親がレポートを読みます。クラシファイアがサブエージェントの作業またはレポートにフラグを立てるか、別の API 安全チェックがレビューを拒否する場合、レポートは依然として配信されます。セキュリティ警告が前に付きます。クラシファイアがレビューに利用できない場合、レポートはサブエージェントの作業を検証してから行動する前に確認するメモと共に到着します。
 
     ステップ 1 には Claude Code v2.1.178 以降が必要です。以前のバージョンはステップ 2 と 3 でクラシファイアを適用しましたが、サブエージェントが開始する前にタスク説明を評価しませんでした。
   </Accordion>
 
   <Accordion title="コストとレイテンシ">
-    クラシファイアはデフォルトでは `/model` 選択ではなく Claude Sonnet 5 で実行されます。Anthropic がサーバー側で設定するクラシファイアモデルは、そのデフォルトより優先されます。セッションのモデルが Claude Sonnet 4.6 の場合、または [`availableModels`](/docs/ja/model-config#restrict-model-selection) が Sonnet 5 を除外する場合、クラシファイアは代わりにセッションのモデルで実行されます。またはセッションが[Fable モデル](/docs/ja/model-config#work-with-fable)で実行される場合は Opus モデルで。Anthropic API 以外のプロバイダーでは、その Opus フォールバックはプロバイダーのデフォルト Opus モデルです。
+    クラシファイアはデフォルトでは `/model` 選択ではなく Claude Sonnet 5 で実行されます。Anthropic がサーバー側で構成するクラシファイアモデルはそのデフォルトより優先されます。セッションのモデルが Claude Sonnet 4.6 の場合、または [`availableModels`](/docs/ja/model-config#restrict-model-selection) が Sonnet 5 を除外する場合、クラシファイアは代わりにセッションのモデルで実行されます。またはセッションが[Fable モデル](/docs/ja/model-config#work-with-fable)で実行される場合は Opus モデルで。Anthropic API 以外のプロバイダーでは、その Opus フォールバックはプロバイダーのデフォルト Opus モデルです。
 
-    セッションの最初の auto モードリクエストは Sonnet 5 デフォルトを検証します。リクエストが成功する場合、Sonnet 5 はセッションのクラシファイアモデルのままであり、モデルが利用不可であるため失敗する場合、セッションは代わりにフォールバックを使用します。その検証が解決した後、クラシファイアのモデルはセッション用に変更されません。
+    セッションの最初の自動モードリクエストは Sonnet 5 デフォルトを検証します。リクエストが成功する場合、Sonnet 5 はセッションのクラシファイアモデルのままです。リクエストがモデルが利用できないため失敗する場合、セッションは代わりにフォールバックを使用します。その検証が解決した後、クラシファイアのモデルはセッション用に変更されません。
 
-    Enterprise プランおよび Claude API を使用するアカウント、[AWS 上の Claude Platform](/docs/ja/claude-platform-on-aws)、Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry では、クラシファイア呼び出しはトークン使用量にカウントされます。各チェックはトランスクリプトの一部と保留中のアクションを送信し、実行前にラウンドトリップを追加します。読み取りと保護されたパス外のワーキングディレクトリ編集はクラシファイアをスキップするため、オーバーヘッドは主にシェルコマンドとネットワーク操作から来ます。
+    Enterprise プランおよび Claude API を使用するアカウント、[AWS 上の Claude Platform](/docs/ja/claude-platform-on-aws)、Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry では、クラシファイア呼び出しはトークン使用量にカウントされます。各チェックはトランスクリプトの一部と保留中のアクションを送信し、実行前にラウンドトリップを追加します。読み取りと保護されたパス外の作業ディレクトリ編集はクラシファイアをスキップするため、オーバーヘッドは主にシェルコマンドとネットワーク操作から来ます。Amazon Bedrock、Google Cloud の Agent Platform、および Microsoft Foundry では、レビューをセッションのモデルリクエストに移動できます。[サーバー側クラシファイアレビュー](#server-side-classifier-review)を参照してください。
 
-    クラシファイアはホストとポートのサンドボックスネットワーク判定を再利用するため、同じホストへの繰り返された接続は各々チェックを追加しません。[クラシファイアがデフォルトでブロックするもの](#what-the-classifier-blocks-by-default)は、許可と拒否がどのくらい続くかについて説明しています。
+    サンドボックス化されたネットワークアクセスは、コマンドごとのクラシファイアリクエストを追加しません。クラシファイアは[コマンドが名前を付けるホスト](/docs/ja/sandboxing#per-command-allowed-domains-in-auto-mode)をコマンドと一緒に判定し、Claude Code は承認されたリストに対して各接続をチェックします。クラシファイアを再度呼び出さずに。
   </Accordion>
 </AccordionGroup>
 
@@ -536,22 +545,24 @@ claude --permission-mode dontAsk
   bypassPermissions モードですべてのチェックをスキップする
 </h2>
 
-`bypassPermissions` モードは権限プロンプトと安全チェックを無効にするため、ツール呼び出しは即座に実行されます。これには[保護されたパス](#protected-paths)への書き込みが含まれます。
+`bypassPermissions` モードは権限プロンプトとセーフティチェックを無効にするため、[保護されたパス](#protected-paths)への書き込みを含むツール呼び出しが即座に実行されます。
 
-[アクションがどのモードも自動承認しない](#actions-no-mode-auto-approves)は依然としてこのモードでプロンプトを表示します。
+[アクション no モードが自動承認する](#actions-no-mode-auto-approves)アクションはこのモードでもプロンプトが表示されます。
 
-2 つの[クロスセッションメッセージング](/docs/ja/cross-session-messaging)セーフガードはこのモードおよび bypass permissions が利用可能なプラン モード セッションで依然として適用されます。
+このモードでは、および権限バイパスが利用可能なインタラクティブターミナルプランモードセッションでは、2 つの[クロスセッションメッセージング](/docs/ja/cross-session-messaging)セーフガードが引き続き適用されます。
 
-* このマシンを超えたセッションへのメッセージの [`isolatePeerMachines`](/docs/ja/settings-reference#isolatepeermachines)承認プロンプトは依然として表示されます。
-* [`crossSessionInbound`](/docs/ja/cross-session-messaging#control-inbound-messages)値が適用されない場合、Claude Code はセッションの別のものからのインバウンドメッセージを承認のために保持し、送信セッションが権限プロンプトもバイパスしていることを識別する場合にのみ確認なしで配信します。権限モードを終了する間、メッセージが保持されている場合、Claude Code はインバウンドルールを再適用し、それらが受け入れるすべての保持メッセージを配信します。
+* このマシンを超えたセッションへのメッセージに対する [`isolatePeerMachines`](/docs/ja/settings-reference#isolatepeermachines) 承認プロンプトが引き続き表示されます。
+* [`crossSessionInbound`](/docs/ja/cross-session-messaging#control-inbound-messages) 値が適用されない場合、Claude Code は別のセッションからのインバウンドメッセージを承認待ちで保持し、送信セッションが権限プロンプトもバイパスしていることを識別した場合にのみ確認なしで配信します。権限モードを終了してメッセージが保持されている場合、Claude Code はインバウンドルールを再適用し、保持されているメッセージのうち現在受け入れるものを配信します。
 
-bypass permissions が利用可能なセッションでは、Claude Code は[計画モード](#analyze-before-you-edit-with-plan-mode)のブロックも実行しません。Claude は編集せずに計画するよう指示されたままですが、計画中に試みるファイル編集またはシェルコマンドはプロンプトなしで実行されます。明示的な [ask ルール](/docs/ja/permissions#manage-permissions)および `rm` と `rmdir` の削除が[重要なパス](#critical-paths)をターゲットにしている場合は依然としてプロンプトを表示します。
+権限バイパスが利用可能なインタラクティブターミナルセッションでは、Claude Code は[プランモードの](#analyze-before-you-edit-with-plan-mode)ブロックも強制しません。Claude はまだ編集なしでプランするよう指示されていますが、プランニング中に試みるファイル編集またはシェルコマンドはプロンプトなしで実行されます。明示的な[質問ルール](/docs/ja/permissions#manage-permissions)および `rm` と `rmdir` の削除で[クリティカルパス](#critical-paths)をターゲットにしたものはまだプロンプトが表示されます。
+
+プランモードは Claude Code がインタラクティブターミナルなしで実行される場所ではブロックを保持します。これには `-p` を使用した[非インタラクティブ実行](/docs/ja/headless)、[Agent SDK](/docs/ja/agent-sdk/permissions#plan-mode-plan) セッション、および [VS Code 拡張機能](/docs/ja/vs-code)のチャットパネルでの会話が含まれます。そこでは、`--allow-dangerously-skip-permissions` により `bypassPermissions` が後で選択可能になります。
 
 <Warning>
-  このモードはコンテナ、VM、またはインターネットアクセスのない dev container のような隔離環境でのみ使用してください。Claude Code はホストシステムに損害を与えることができません。
+  このモードはコンテナ、VM、またはインターネットアクセスのない dev コンテナなどの隔離された環境でのみ使用してください。そのような環境では Claude Code がホストシステムに損害を与えることができません。
 </Warning>
 
-有効にせずに開始したセッションから `bypassPermissions` に入ることはできません。起動時に [`permissions.defaultMode: "bypassPermissions"`](/docs/ja/settings-reference#permissions-defaultmode) または有効にするフラグを使って有効にします。
+このモードを有効にせずに開始したセッションから `bypassPermissions` に入ることはできません。[`permissions.defaultMode: "bypassPermissions"`](/docs/ja/settings-reference#permissions-defaultmode) で起動時に有効にするか、有効化フラグを使用して有効にしてください。
 
 ```bash theme={null}
 claude --permission-mode bypassPermissions
@@ -559,22 +570,22 @@ claude --permission-mode bypassPermissions
 
 `--dangerously-skip-permissions` フラグは同等です。
 
-Claude Code は [`--restricted`](/docs/ja/cli-reference#cli-flags)で開始するセッションで `bypassPermissions` を拒否します。`--restricted` には Claude Code v2.1.248 以降が必要です。
+Claude Code は [`--restricted`](/docs/ja/cli-reference#cli-flags) で開始したセッションで `bypassPermissions` を拒否します。`--restricted` には Claude Code v2.1.248 以降が必要です。
 
-このモードを有効にして対話的セッションを初めて開始するとき、Claude Code は、権限チェックなしで実行されるアクションに対して責任を受け入れるよう求める警告ダイアログを表示します。Claude Code はユーザー設定にあなたの受け入れを保存するため、ダイアログは 1 回だけ表示されます。却下した場合、Claude Code は終了します。[非対話的モード](/docs/ja/headless)ではダイアログは表示されず、`--bg` で開始した[バックグラウンドセッション](/docs/ja/agent-view)は、対話的セッションでダイアログを受け入れるまで拒否されます。
+このモードを有効にしてインタラクティブセッションを初めて開始すると、Claude Code は権限チェックなしで実行されたアクションの責任を受け入れるよう求める警告ダイアログを表示します。Claude Code はユーザー設定に受け入れを保存するため、ダイアログは 1 回だけ表示されます。拒否した場合、Claude Code は終了します。[非インタラクティブモード](/docs/ja/headless)ではダイアログは表示されず、`--bg` で開始した[バックグラウンドセッション](/docs/ja/agent-view)はインタラクティブセッションでダイアログを受け入れるまで拒否されます。
 
-Linux と macOS では、Claude Code は root として実行されている場合、またはこのモードで `sudo` の下で実行されている場合、起動を拒否します。
+Linux と macOS では、Claude Code はこのモードで root として、または `sudo` の下で実行されている場合、起動を拒否します。
 
 ```text theme={null}
 --dangerously-skip-permissions cannot be used with root/sudo privileges for security reasons
 ```
 
-チェックは認識されたサンドボックス内で自動的にスキップされます。コンテナで自律的に実行するには、[dev container](/docs/ja/devcontainer)設定を使用してください。これは Claude Code を非 root ユーザーとして実行します。
+チェックは認識されたサンドボックス内では自動的にスキップされます。コンテナで自律的に実行するには、[dev コンテナ](/docs/ja/devcontainer)設定を使用してください。これは Claude Code を非 root ユーザーとして実行します。
 
-[Web 上の Claude Code](/docs/ja/claude-code-on-the-web)は設定ファイルから `defaultMode: "bypassPermissions"` または `"dontAsk"` を尊重しません。そのため、リポジトリのチェックイン済み設定はクラウドセッションを bypass-permissions モードで開始することはできません。設定は無視され、セッションはモードドロップダウンに表示されるモードで開始されます。[権限モードを切り替える](#switch-permission-modes)でクラウドセッションが提供するモードを参照してください。
+[Web 上の Claude Code](/docs/ja/claude-code-on-the-web) は設定ファイルから `defaultMode: "bypassPermissions"` または `"dontAsk"` を尊重しないため、リポジトリのチェックイン設定はクラウドセッションをバイパス権限モードで開始できません。設定は無視され、セッションはモードドロップダウンに表示される権限モードで開始されます。[権限モードを切り替える](#switch-permission-modes)を参照して、クラウドセッションが提供するモードを確認してください。
 
 <Warning>
-  `bypassPermissions` はプロンプトインジェクションまたは意図しないアクションに対する保護を提供しません。権限プロンプトが大幅に少ないバックグラウンド安全チェックの場合は、代わりに [auto モード](#eliminate-prompts-with-auto-mode)を使用してください。管理者は [管理設定](/docs/ja/managed-settings)で `permissions.disableBypassPermissionsMode` を `"disable"` に設定することでこのモードをブロックできます。
+  `bypassPermissions` はプロンプトインジェクションまたは意図しないアクションに対する保護を提供しません。権限プロンプトがはるかに少ないバックグラウンドセーフティチェックの場合は、代わりに[オートモード](#eliminate-prompts-with-auto-mode)を使用してください。管理者は [管理設定](/docs/ja/managed-settings)で `permissions.disableBypassPermissionsMode` を `"disable"` に設定することでこのモードをブロックできます。
 </Warning>
 
 <h2 id="protected-paths">

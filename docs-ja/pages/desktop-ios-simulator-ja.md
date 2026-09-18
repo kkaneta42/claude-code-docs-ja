@@ -29,7 +29,7 @@ iOS シミュレータペインは、Claude Code Desktop の会話の横に Appl
   このページでは、「デバイス」はシミュレートされた iPhone または iPad を指し、Xcode の **Window → Devices and Simulators** で管理するのと同じシミュレータデバイスの 1 つであり、物理ハードウェアではありません。
 </Note>
 
-シミュレータペインはローカルセッションでのみ利用可能です。[クラウド](/docs/ja/desktop#run-long-running-tasks-remotely)および [SSH](/docs/ja/desktop#ssh-sessions) セッションでは、Claude は Mac 上のシミュレータに到達できないマシン上で実行されます。
+シミュレータペインはローカルセッションでのみ利用可能です。[クラウド](/docs/ja/desktop#run-long-running-tasks-in-the-cloud)および [SSH](/docs/ja/desktop#ssh-sessions) セッションでは、Claude は Mac 上のシミュレータに到達できないマシン上で実行されます。
 
 <h2 id="run-your-app-in-the-simulator">
   シミュレータでアプリを実行する

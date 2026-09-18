@@ -4,15 +4,15 @@
 
 # Claude Code と GitHub Enterprise Server
 
-> Claude Code を自社ホストの GitHub Enterprise Server インスタンスに接続して、Web セッション、コードレビュー、プラグインマーケットプレイスを利用できます。
+> Claude Code を自社ホストの GitHub Enterprise Server インスタンスに接続して、クラウドセッション、コードレビュー、プラグインマーケットプレイスを利用できます。
 
 <Note>
   GitHub Enterprise Server サポートは Team プランと Enterprise プランで利用できます。
 </Note>
 
-GitHub Enterprise Server（GHES）サポートにより、組織は github.com ではなく自社管理の GitHub インスタンスでホストされているリポジトリで Claude Code を使用できます。管理者が GHES インスタンスを接続すると、開発者はリポジトリごとの設定なしで Web セッションを実行し、自動コードレビューを取得できます。インスタンスでホストされているプラグインマーケットプレイスもサポートされており、認証情報の要件は [GHES 上のプラグインマーケットプレイス](#plugin-marketplaces-on-ghes) で説明されているように、サーフェスによって異なります。
+GitHub Enterprise Server（GHES）サポートにより、組織は github.com ではなく自社管理の GitHub インスタンスでホストされているリポジトリで Claude Code を使用できます。Owner が GHES インスタンスを接続すると、開発者はリポジトリごとの設定なしでクラウドセッションを実行し、自動コードレビューを取得できます。インスタンスでホストされているプラグインマーケットプレイスもサポートされており、認証情報の要件は [GHES 上のプラグインマーケットプレイス](#plugin-marketplaces-on-ghes) で説明されているように、サーフェスによって異なります。
 
-github.com 上のリポジトリについては、[Claude Code on the web](/docs/ja/claude-code-on-the-web) および [Code Review](/docs/ja/code-review) を参照してください。Claude を独自の CI インフラストラクチャで実行するには、[GitHub Actions](/docs/ja/github-actions) を参照してください。
+github.com 上のリポジトリについては、[クラウドで Claude Code を使用する](/docs/ja/claude-code-on-the-web) および [コードレビュー](/docs/ja/code-review) を参照してください。Claude を独自の CI インフラストラクチャで実行するには、[GitHub Actions](/docs/ja/github-actions) を参照してください。
 
 <h2 id="what-works-with-github-enterprise-server">
   GitHub Enterprise Server で動作する機能
@@ -20,16 +20,16 @@ github.com 上のリポジトリについては、[Claude Code on the web](/docs
 
 以下の表は、Claude Code のどの機能が GHES をサポートしているか、および github.com の動作との違いを示しています。
 
-| 機能                     | GHES サポート | 注記                                                                                                        |
-| :--------------------- | :-------- | :-------------------------------------------------------------------------------------------------------- |
-| Claude Code on the web | ✅ サポート    | 管理者が GHES インスタンスを 1 回接続すると、開発者は通常通り `claude --cloud` または [claude.ai/code](https://claude.ai/code) を使用できます |
-| Code Review            | ✅ サポート    | github.com と同じ自動 PR レビュー                                                                                  |
-| Claude Security        | ✅ サポート    | Enterprise プランの公開ベータで [claude.ai/security](https://claude.ai/security) で利用可能                              |
-| Teleport セッション         | ✅ サポート    | `--teleport` で Web とターミナル間でセッションを移動                                                                       |
-| プラグインマーケットプレイス         | ✅ サポート    | 表面によって認証情報の要件が異なります。[GHES 上のプラグインマーケットプレイス](#plugin-marketplaces-on-ghes)を参照してください                        |
-| 貢献度メトリクス               | ✅ サポート    | [分析ダッシュボード](/docs/ja/analytics) への Webhook 経由で配信                                                               |
-| GitHub Actions         | ✅ サポート    | 手動ワークフロー設定が必要。`/install-github-app` は github.com のみ                                                       |
-| GitHub MCP サーバー        | ❌ サポートなし  | GitHub MCP サーバーは GHES インスタンスでは動作しません                                                                      |
+| 機能              | GHES サポート | 注記                                                                                                        |
+| :-------------- | :-------- | :-------------------------------------------------------------------------------------------------------- |
+| Cloud セッション     | ✅ サポート    | 所有者が GHES インスタンスを 1 回接続すると、開発者は通常通り `claude --cloud` または [claude.ai/code](https://claude.ai/code) を使用できます |
+| Code Review     | ✅ サポート    | github.com と同じ自動 PR レビュー                                                                                  |
+| Claude Security | ✅ サポート    | Enterprise プランの公開ベータで [claude.ai/security](https://claude.ai/security) で利用可能                              |
+| Teleport セッション  | ✅ サポート    | `--teleport` で Cloud とターミナル間でセッションを移動                                                                     |
+| プラグインマーケットプレイス  | ✅ サポート    | 表面によって認証情報の要件が異なります。[GHES 上のプラグインマーケットプレイス](#plugin-marketplaces-on-ghes)を参照してください                        |
+| 貢献度メトリクス        | ✅ サポート    | [分析ダッシュボード](/docs/ja/analytics) への Webhook 経由で配信                                                               |
+| GitHub Actions  | ✅ サポート    | 手動ワークフロー設定が必要。`/install-github-app` は github.com のみ                                                       |
+| GitHub MCP サーバー | ❌ サポートなし  | GitHub MCP サーバーは GHES インスタンスでは動作しません                                                                      |
 
 <h2 id="admin-setup">
   管理者セットアップ
@@ -65,7 +65,7 @@ github.com 上のリポジトリについては、[Claude Code on the web](/docs
   GitHub App の権限
 </h3>
 
-マニフェストは、Web セッション、Code Review、Claude Security、プラグインマーケットプレイス、および貢献度メトリクスをカバーする権限と Webhook イベントで GitHub App を設定します。
+マニフェストは、クラウドセッション、Code Review、Claude Security、プラグインマーケットプレイス、および貢献度メトリクスをカバーする権限と Webhook イベントで GitHub App を設定します。
 
 | 権限                   | アクセス      | 用途                                                                                                                                                            |
 | :------------------- | :-------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -110,7 +110,7 @@ git clone git@github.example.com:platform/api-service.git
 cd api-service
 ```
 
-次に Web セッションを開始します。Claude は git リモートから GHES ホストを検出し、セッションを組織の設定されたインスタンスを通じてルーティングします。
+次にクラウドセッションを開始します。Claude は git リモートから GHES ホストを検出し、セッションを組織の設定されたインスタンスを通じてルーティングします。
 
 ```bash theme={null}
 claude --cloud "Add retry logic to the payment webhook handler"
@@ -122,7 +122,7 @@ claude --cloud "Add retry logic to the payment webhook handler"
   セッションをターミナルに Teleport する
 </h3>
 
-`claude --teleport` で Web セッションをローカルターミナルにプルします。Teleport は、ブランチをフェッチしてセッション履歴を読み込む前に、同じ GHES リポジトリのチェックアウトにいることを確認します。詳細については、[teleport 要件](/docs/ja/claude-code-on-the-web#teleport-requirements) を参照してください。
+クラウドセッションをローカルターミナルに `claude --teleport` でプルします。Teleport は、ブランチをフェッチしてセッション履歴を読み込む前に、同じ GHES リポジトリのチェックアウトにいることを確認します。詳細については、[teleport 要件](/docs/ja/claude-code-on-the-web#teleport-requirements) を参照してください。
 
 <h2 id="plugin-marketplaces-on-ghes">
   GHES 上のプラグインマーケットプレイス
@@ -136,7 +136,7 @@ GHES インスタンスでプラグインマーケットプレイスをホスト
 | 管理設定（`extraKnownMarketplaces`） | Claude Code はエントリを登録し、マシンの既存の git 認証情報を使用してリポジトリをクローンします                                                                        | マシンから GHES ホストへの Git アクセス                                                                                                      |
 | claude.ai 組織プラグイン設定            | Owner が GHES インスタンスをソースとして選択します。Anthropic のバックエンドが [admin setup](#admin-setup) の GitHub App を使用してリポジトリをフェッチして同期します              | 追加後はユーザーごとに不要です。それを追加する Owner は、アクセスチェックとして独自の GitHub Enterprise アカウントを接続する必要があり、GitHub App をマーケットプレイスリポジトリにインストールする必要があります    |
 | claude.ai ユーザー設定               | Anthropic のバックエンドが送信ユーザーの GitHub Enterprise 接続を使用してリポジトリをフェッチします                                                                | Claude に接続された独自の GitHub Enterprise アカウント                                                                                       |
-| Claude Code on the web         | クラウドセッションはセッションサンドボックス内でマーケットプレイスをクローンします。サンドボックスは、セッションのリポジトリが同じインスタンス上にある場合にのみ GHES インスタンスに到達でき、git 認証情報はセッションのリポジトリにスコープされます | GHES でホストされているマーケットプレイスには信頼できません。セッションのリポジトリとは異なるホストに到達できず、同じインスタンスのインストールでも失敗する可能性があります。代わりに CLI、管理設定、または claude.ai を使用してください |
+| Cloud sessions                 | クラウドセッションはセッションサンドボックス内でマーケットプレイスをクローンします。サンドボックスは、セッションのリポジトリが同じインスタンス上にある場合にのみ GHES インスタンスに到達でき、git 認証情報はセッションのリポジトリにスコープされます | GHES でホストされているマーケットプレイスには信頼できません。セッションのリポジトリとは異なるホストに到達できず、同じインスタンスのインストールでも失敗する可能性があります。代わりに CLI、管理設定、または claude.ai を使用してください |
 
 <Warning>
   claude.ai 上の GitHub Enterprise 接続は、ユーザー設定からマーケットプレイスが追加される場合、ユーザーごとです。[admin setup](#admin-setup) は GHES インスタンスを組織に接続しますが、個別のユーザーアカウントは接続しません。独自の設定から GHES マーケットプレイスを追加する各ユーザーは、最初に独自の GitHub Enterprise アカウントを接続する必要があり、Owner を含む 1 人のユーザーの接続は他のユーザーをカバーしません。組織プラグイン設定で Owner が追加したマーケットプレイスは、継続的なフェッチが組織の GitHub App を使用するため、ユーザーにこの要件を課しません。マーケットプレイスを追加する Owner は、追加時に独自の GitHub Enterprise アカウントを接続する必要があります。
@@ -220,8 +220,8 @@ Claude Code はこれらのマーケットプレイスをローカルにイン�
   トラブルシューティング
 </h2>
 
-<h3 id="web-session-fails-to-clone-repository">
-  Web セッションがリポジトリのクローンに失敗
+<h3 id="cloud-session-fails-to-clone-repository">
+  クラウドセッションがリポジトリのクローンに失敗
 </h3>
 
 `claude --cloud` がクローンエラーで失敗する場合は、Owner が GHES インスタンスのセットアップを完了し、GitHub App が作業しているリポジトリにインストールされていることを確認してください。インスタンスを接続した Owner に確認して、Claude 設定に登録されているホスト名が git リモートのホスト名と一致することを確認してください。
@@ -246,13 +246,13 @@ GitHub Enterprise アカウントを接続するには、[claude.ai/code](https:
   GHES インスタンスに到達不可
 </h3>
 
-レビューまたは Anthropic ホスト型 Web セッションがタイムアウトする場合、GHES インスタンスは Anthropic インフラストラクチャから到達不可能な可能性があります。ファイアウォールが Anthropic の [アウトバウンド IP アドレス](https://platform.claude.com/docs/en/api/ip-addresses#outbound-ip-addresses) からのインバウンド接続を許可していることを確認してください。[セルフホスト環境](/docs/ja/self-hosted-environments) のセッションは、ネットワーク内から GHES に到達するため、代わりにランナー自体のネットワークパスと [SCM コネクタ](/docs/ja/self-hosted-environments-reference#scm-connector-flags) を確認してください。
+レビューまたは Anthropic ホスト型クラウドセッションがタイムアウトする場合、GHES インスタンスは Anthropic インフラストラクチャから到達不可能な可能性があります。ファイアウォールが Anthropic の [アウトバウンド IP アドレス](https://platform.claude.com/docs/en/api/ip-addresses#outbound-ip-addresses) からのインバウンド接続を許可していることを確認してください。[セルフホスト環境](/docs/ja/self-hosted-environments) のセッションは、ネットワーク内から GHES に到達するため、代わりにランナー自体のネットワークパスと [SCM コネクタ](/docs/ja/self-hosted-environments-reference#scm-connector-flags) を確認してください。
 
 <h3 id="session-start-fails-with-unable-to-get-organization-uuid">
   セッション開始が `Unable to get organization UUID` で失敗
 </h3>
 
-Web セッションには Team または Enterprise 組織が必要です。組織アカウントで `/login` を使用してサインインしてください。代わりに API キーで認証する場合、Web セッションは `/login` を実行するよう求めるメッセージで早期に失敗します。
+クラウドセッションには Team または Enterprise 組織が必要です。組織アカウントで `/login` を使用してサインインしてください。代わりに API キーで認証する場合、クラウドセッションは `/login` を実行するよう求めるメッセージで早期に失敗します。
 
 <h2 id="related-resources">
   関連リソース
@@ -260,7 +260,7 @@ Web セッションには Team または Enterprise 組織が必要です。組�
 
 これらのページは、このガイド全体で参照されている機能をより詳しく説明しています。
 
-* [Claude Code on the web](/docs/ja/claude-code-on-the-web)：クラウドインフラストラクチャで Claude Code セッションを実行
+* [クラウドで Claude Code を使用](/docs/ja/claude-code-on-the-web)：クラウドインフラストラクチャで Claude Code セッションを実行
 * [Code Review](/docs/ja/code-review)：自動 PR レビュー
 * [プラグインマーケットプレイス](/docs/ja/plugin-marketplaces)：プラグインカタログの構築と配布
 * [分析](/docs/ja/analytics)：使用状況と貢献度メトリクスの追跡

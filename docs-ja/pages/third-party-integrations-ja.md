@@ -152,7 +152,7 @@ export const ContactSalesCard = ({surface}) => {
 
     <tr>
       <td>認証</td>
-      <td>Claude.ai SSO またはメール</td>
+      <td>claude.ai SSO またはメール</td>
       <td>API キーまたは [API キーなしのコンソールサインイン](/docs/ja/authentication#sign-in-without-an-api-key)</td>
       <td>API キーまたは AWS 認証情報</td>
       <td>API キーまたは AWS 認証情報</td>

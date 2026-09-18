@@ -10,15 +10,15 @@
   Ultrareview はリサーチプレビュー機能です。機能、価格、および利用可能性はフィードバックに基づいて変更される可能性があります。コマンドは `/code-review ultra` です。ultrareview がアカウントで利用可能な場合、`/ultrareview` はエイリアスです。
 </Note>
 
-Ultrareview は Claude Code のウェブインフラストラクチャ上で実行される深いコードレビューです。`/code-review ultra` を実行すると、Claude Code はリモートサンドボックスでレビュアーエージェントのフリートを起動し、ブランチまたはプルリクエストのバグを見つけます。
+Ultrareview は [クラウドセッション](/docs/ja/claude-code-on-the-web) として Anthropic のインフラストラクチャ上で実行される深いコードレビューです。`/code-review ultra` を実行すると、Claude Code はクラウドサンドボックスでレビュアーエージェントのフリートを起動し、ブランチまたはプルリクエストのバグを見つけます。
 
 ローカルの `/code-review` と比較して、ultrareview は以下を提供します。
 
 * **より高いシグナル**: 報告されたすべての検出結果は独立して再現および検証されるため、結果はスタイル提案ではなく実際のバグに焦点を当てています
 * **より広いカバレッジ**: より大規模なレビュアーエージェントのフリートが並行して変更を探索するため、ローカルレビューでは見落とされる可能性のある問題が浮かび上がります
-* **ローカルリソースの使用なし**: レビューはリモートサンドボックスで完全に実行されるため、実行中はターミナルが他の作業に使用可能なままです
+* **ローカルリソースの使用なし**: レビューはクラウドサンドボックスで完全に実行されるため、実行中はターミナルが他の作業に使用可能なままです
 
-Ultrareview は Claude Code のウェブインフラストラクチャ上で実行されるため、claude.ai アカウントでの認証が必要です。API キーのみで署名している場合は、`/login` を実行して claude.ai で認証してください。Ultrareview は Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry で Claude Code を使用する場合は利用できず、Zero Data Retention を有効にしている組織でも利用できません。ultrareview が利用できない場合、`/code-review ultra` はセッション内でローカルレビューを実行します。
+Ultrareview は Anthropic のインフラストラクチャ上でクラウドセッションとして実行されるため、claude.ai アカウントでの認証が必要です。API キーのみで署名している場合は、`/login` を実行して claude.ai で認証してください。Ultrareview は Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry で Claude Code を使用する場合は利用できず、Zero Data Retention を有効にしている組織でも利用できません。ultrareview が利用できない場合、`/code-review ultra` はセッション内でローカルレビューを実行します。
 
 <h2 id="run-ultrareview-from-the-cli">
   CLI から ultrareview を実行する
@@ -32,7 +32,7 @@ Ultrareview は Claude Code のウェブインフラストラクチャ上で実�
 
 引数なしの場合、ultrareview は現在のブランチとデフォルトブランチ間の差分をレビューします。これには、コミットされていない変更とステージされた変更が含まれます。`.env` や `*.tfvars` ファイルなど、認証情報やキーのような名前のファイルに対するコミットされていない変更については、Claude Code は [ローカルリポジトリをクラウドセッションにアップロードするためのルール](/docs/ja/claude-code-on-the-web#send-local-repositories-without-github)に従います。
 
-ブランチレビューの場合、Claude Code はリポジトリの状態をバンドルしてリモートサンドボックスにアップロードします。[プルリクエストをレビュー](#review-a-pull-request)する場合、Claude Code はマシンから何もアップロードしません。
+ブランチレビューの場合、Claude Code はリポジトリの状態をバンドルしてクラウドサンドボックスにアップロードします。[プルリクエストをレビュー](#review-a-pull-request)する場合、Claude Code はマシンから何もアップロードしません。
 
 起動前に、Claude Code はレビュー範囲、残りの無料実行回数、および推定コストを含む確認ダイアログを表示します。ブランチレビューの場合、スコープにはファイルと行数が含まれます。確認後、レビューはバックグラウンドで続行され、セッションを引き続き使用できます。
 
@@ -62,7 +62,7 @@ GitHub プルリクエストをレビューするには、PR 番号を渡しま�
 
 このコマンドは `#1234`、`PR 1234`、および貼り付けられた PR URL も受け入れます。貼り付けられた URL は現在のディレクトリ内のリポジトリを指す必要があります。
 
-PR モードでは、リモートサンドボックスはローカルの作業ツリーをバンドルするのではなく、ホストから直接プルリクエストをクローンします。PR モードは `github.com` 上のリポジトリおよび Claude Code に接続されている Owner が設定した [GitHub Enterprise Server](/docs/ja/github-enterprise-server) インスタンスで機能します。
+PR モードでは、クラウドサンドボックスはローカルの作業ツリーをバンドルするのではなく、ホストから直接プルリクエストをクローンします。PR モードは `github.com` 上のリポジトリおよび Claude Code に接続されている Owner が設定した [GitHub Enterprise Server](/docs/ja/github-enterprise-server) インスタンスで機能します。
 
 `github.com` 上のリポジトリの場合、サンドボックスは Claude アカウントに接続された GitHub アカウントでクローンするため、そのアカウントは PR のリポジトリを読み取ることができる必要があります。Claude Code は [`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`](/docs/ja/env-vars#variables) を設定していない限り、クラウドセッションを作成する前にこれをチェックし、[アカウントが接続されていない](/docs/ja/errors#no-github-account-is-connected-to-your-claude-account)場合または [アカウントがリポジトリを見ることができない](/docs/ja/errors#your-connected-github-account-cant-see-the-repository)場合に起動を拒否します。拒否は修正を名前付けします。v2.1.248 より前では、Claude Code は起動前にこれをチェックしませんでした。
 
@@ -79,7 +79,7 @@ Claude Code は選択しない限り投稿しません。`--no-post` がデフ�
 * **インタラクティブ**: 起動ダイアログで **Run and post the findings to the PR as me** を選択します。コマンドに `/code-review ultra 1234 --post` のように `--post` を追加すると、Claude Code はその選択を事前選択し、起動前に確認を求めます。
 * **非インタラクティブ**: `--post` フラグを使用して [claude ultrareview サブコマンド](#run-ultrareview-non-interactively)を実行します。フラグを使用してサブコマンドを実行することで投稿に同意するため、Claude Code は確認なしに投稿します。`claude -p '/code-review ultra'` 実行では、Claude Code は検出結果が到着する前に終了するため、何も投稿しません。代わりにサブコマンドを使用してください。
 
-Claude Code はマシンから投稿しません。検出結果を [Claude Code on the web](/docs/ja/claude-code-on-the-web) 上のセッションに送信し、Claude に接続した GitHub アカウントを通じてコメントを投稿します。投稿にはレビュー自体と同じ claude.ai サインインが必要です。投稿は Claude Code on the web を通じて実行されるため、サードパーティプロバイダーでは利用できず、[`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`](/docs/ja/env-vars) を設定した場合も利用できません。
+Claude Code はマシンから投稿しません。検出結果を [クラウドセッション](/docs/ja/claude-code-on-the-web)に送信し、Claude に接続した GitHub アカウントを通じてコメントを投稿します。投稿にはレビュー自体と同じ claude.ai サインインが必要です。投稿はクラウドセッションを通じて実行されるため、サードパーティプロバイダーでは利用できず、[`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`](/docs/ja/env-vars) を設定した場合も利用できません。
 
 インタラクティブセッションでは、Claude Code は検出結果が到着したときに投稿を開始するため、レビューが完了するまでセッションを開いたままにしてください。Claude Code は投稿の選択をそのセッションにのみ保持します。セッションがレビューの完了前に終了した場合、後で会話を再開しても、Claude Code は何も投稿しません。
 
@@ -195,20 +195,20 @@ GitHub プルリクエストの自動レビューについては、[Code Review]
 
 どちらのレビューもコードを検査しますが、ワークフローの異なるステージで使用します。
 
-|       | `/code-review`               | `/code-review ultra`            |
-| ----- | ---------------------------- | ------------------------------- |
-| ターゲット | 作業中の diff、プルリクエスト、ブランチ、またはパス | 作業中の diff またはプルリクエスト            |
-| 実行場所  | セッション内でローカルに実行               | クラウドサンドボックスでリモートに実行             |
-| 深さ    | effort 引数でスケール               | 独立した検証を備えた複数エージェントフリート          |
-| 期間    | 数秒から数分                       | 約 5 ～ 10 分                      |
-| コスト   | 通常の使用量にカウント                  | 無料実行回数、その後使用量クレジットとして約 $5 ～ $25 |
-| 最適な用途 | 反復中の迅速なフィードバック               | 実質的な変更のマージ前の信頼度                 |
+|       | `/code-review`               | `/code-review ultra`              |
+| ----- | ---------------------------- | --------------------------------- |
+| 対象    | 作業中の diff、プルリクエスト、ブランチ、またはパス | 作業中の diff またはプルリクエスト              |
+| 実行場所  | セッション内でローカルに実行               | クラウドサンドボックスで実行                    |
+| 深さ    | effort 引数でスケール               | 独立した検証を備えたマルチエージェントフリート           |
+| 所要時間  | 数秒から数分                       | 約 5 ～ 10 分                        |
+| コスト   | 通常の使用量にカウント                  | 無料実行、その後使用クレジットで約 $5 ～ $25 / レビュー |
+| 最適な用途 | 反復中の迅速なフィードバック               | 大幅な変更のマージ前の確信度向上                  |
 
-作業中の迅速なフィードバックには `/code-review` を使用するか、マージ前にチームメイトのプルリクエストをレビューするために PR 番号を渡します。ローカルレビューで見落とされる可能性のある問題をキャッチするより深いパスが必要な場合は、実質的な変更をマージする前に `/code-review ultra` を使用します。
+作業中の迅速なフィードバックには `/code-review` を使用するか、チームメイトのプルリクエストを承認する前にレビューするために PR 番号を渡してください。実質的な変更をマージする前に、ローカルレビューでは見落とす可能性のある問題をキャッチするためのより深い検査が必要な場合は、`/code-review ultra` を使用してください。
 
 <h2 id="related-resources">
   関連リソース
 </h2>
 
-* [Claude Code on the web](/docs/ja/claude-code-on-the-web): クラウドセッションとクラウドサンドボックスの仕組みについて学習します
+* [クラウドで Claude Code を使用する](/docs/ja/claude-code-on-the-web): クラウドセッションとクラウドサンドボックスの仕組みについて学習します
 * [Manage costs effectively](/docs/ja/costs): 使用量を追跡し、支出制限を設定します

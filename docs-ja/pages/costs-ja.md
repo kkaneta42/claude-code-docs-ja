@@ -150,7 +150,7 @@ Claude Code にアクセスする方法によって、利用可能なコント�
   </Step>
 
   <Step title="設定を書き込む">
-    定価からのフラット割引率に対して `multiplier` を設定するか、`overrides` の下に各モデルの 4 つのトークンあたりレートをリストするか、またはその両方を実行してください。[`modelPricing` エントリ](/docs/ja/settings-reference#modelpricing) には形状とペースト可能な例があります。
+    定価からのフラット割引に対して `multiplier` を 1 未満に設定するか、マークアップに対して 1 を超えて設定し、`overrides` の下に各モデルの 4 つのトークンあたりレートをリストするか、またはその両方を実行してください。マークアップには Claude Code v2.1.271 以降が必要です。[`modelPricing` エントリ](/docs/ja/settings-reference#modelpricing) には形状とペースト可能な例があります。
   </Step>
 
   <Step title="マネージド設定を通じてデプロイする">

@@ -138,7 +138,7 @@ Dockerfile はリポジトリに存在するため、書き込みアクセス権
 
 `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` は、[Remote Control](/docs/ja/remote-control#requirements)と他の[フィーチャーフラグ取得が必要な機能](/docs/ja/env-vars#features-that-need-feature-flag-fetching)が依存するフィーチャーフラグ評価も無効にするため、コンテナ内のセッションはそれらを使用できません。
 
-Dev Container Feature は常に最新の Claude Code リリースをインストールします。再現可能なビルドのために特定の Claude Code バージョンをピン留めするには、機能を使用する代わりに Dockerfile から `npm install -g @anthropic-ai/claude-code@X.Y.Z` でインストールし、上記のように `DISABLE_AUTOUPDATER` を設定します。
+Dev Container Feature は常に最新の Claude Code リリースをインストールします。再現可能なビルドのために特定の Claude Code バージョンをピン留めするには、機能を使用する代わりに Dockerfile から `npm install -g @anthropic-ai/claude-code@X.Y.Z` でインストールし、`containerEnv` で `DISABLE_AUTOUPDATER` を `1` に設定します。
 
 権限ルール、ツール制限、MCP サーバーアローリストを含むポリシーコントロールの完全なリストについては、[組織向けに Claude Code をセットアップする](/docs/ja/admin-setup)を参照してください。
 
@@ -203,7 +203,7 @@ Dev Container Feature は常に最新の Claude Code リリースをインスト
 Claude Code が開発コンテナで実行されたら、以下のページは組織ロールアウトの残りの部分をカバーしています。認証パスの選択、リポジトリ外での管理ポリシーの配信、使用状況の監視、Claude Code が保存および送信するものの理解です。
 
 * [組織向けに Claude Code をセットアップする](/docs/ja/admin-setup)：認証プロバイダーを選択し、ポリシーがデバイスに到達する方法を決定し、ロールアウトを計画します
-* [サーバー管理設定](/docs/ja/server-managed-settings)：Claude.ai 管理コンソールから管理ポリシーを配信して、エンジニアがリポジトリファイルを編集してバイパスできないようにします
+* [サーバー管理設定](/docs/ja/server-managed-settings)：claude.ai 管理コンソールから管理ポリシーを配信して、エンジニアがリポジトリファイルを編集してバイパスできないようにします
 * [使用状況の監視と監査アクティビティ](/docs/ja/monitoring-usage)：OpenTelemetry メトリクスをエクスポートして、チームが実行しているものを確認します
 * [ネットワークアクセス要件](/docs/ja/network-config#network-access-requirements)：プロキシとファイアウォール用の完全なドメインアローリスト
 * [テレメトリサービスとオプトアウト](/docs/ja/data-usage#telemetry-services)：Claude Code がデフォルトで送信するもの、およびそれを無効にする環境変数

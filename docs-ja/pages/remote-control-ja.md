@@ -46,7 +46,7 @@ CLI または VS Code 拡張機能から Remote Control セッションを開始
 
 <Tabs>
   <Tab title="サーバーモード">
-    プロジェクトディレクトリに移動して、以下を実行します。
+    プロジェクトディレクトリで、以下を実行します。
 
     ```bash theme={null}
     claude remote-control
@@ -132,17 +132,13 @@ CLI または VS Code 拡張機能から Remote Control セッションを開始
   接続ステータスを確認する
 </h3>
 
-対話型ターミナルセッションでは、接続がアップしている間、`/rc active` インジケーターが表示され、ターミナルが狭すぎる場合は非表示になります。[フルスクリーンレンダリング](/docs/ja/fullscreen)では、スタートアップヘッダーの作業ディレクトリ行の末尾に配置され、それなしでは、入力ボックスの下のフッターに配置されます。
+対話型セッションでは、Remote Control が接続されている間、ターミナルは `/rc active` インジケーターを表示し、claude.ai のセッションへのリンクになります。ターミナルが狭すぎる場合、インジケーターは非表示になります。セッション URL と [別のデバイスから接続](#connect-from-another-device)するために使用できる QR コードを表示するには、`/remote-control` を再度実行してステータスパネルを開きます。パネルは切断オプションも提供し、これにより Remote Control をオフにしながらローカルセッションはターミナルで実行され続けます。
 
-インジケーターテキストは claude.ai のセッションへのリンクです。`/remote-control` を再度実行して、セッション URL と [別のデバイスから接続](#connect-from-another-device)するために使用できる QR コードを含むステータスパネルを開きます。インジケーターがフッターにある場合、下矢印キーでインジケーターを選択して Enter キーを押すことでパネルを開くこともできます。パネルは切断オプションも提供し、これにより Remote Control をオフにしながらローカルセッションはターミナルで実行され続けます。
+<span id="session-ended-elsewhere" />対話型セッションで接続に失敗した場合、インジケーターは失敗を表示するように変わり、Claude Code は理由を通知で表示し、会話に追加します。`/remote-control` を実行して再接続します。ただし、理由がセッションが別の場所で引き継がれたか終了したか、またはサーバーがそれを見つけられないと言っている場合を除きます。
 
-接続に失敗した場合、Claude Code は失敗の理由を含む通知を表示し、理由を含む警告行を会話に追加し、インジケーターを失敗状態に切り替えます。これは所定の位置に留まります。再接続するには、`/remote-control` を実行します。ただし、[理由がセッションが別の場所で引き継がれたか終了したか、またはサーバーがそれを見つけられないと言っている](#session-ended-elsewhere)場合を除きます。
-
-<span id="session-ended-elsewhere" />再接続する前に理由を読んでください。セッションが別のデバイス、アプリ、または Claude Code セッションから引き継がれたか、別の場所で終了したか、またはサーバーがそれを見つけられない場合、理由はどちらかを言い、Claude Code は通常の `/remote-control` を実行するアドバイスを省略します。
-
-* **別のデバイスまたは Claude Code セッションがセッションを引き継いだ**: そのデバイスからセッションを取り戻したい場合のみ `/remote-control` を実行します。
-* **別のデバイスまたはアプリからセッションを終了またはアーカイブした**: それを戻したい場合のみ `/remote-control` を実行します。Claude Code はアーカイブされたセッションを再度開きます。
-* **サーバーがセッションを見つけられない**: 別のデバイスまたはアプリから削除されている可能性があります。
+* **別の接続がこのセッションを引き継いだ**: 別のデバイスまたは Claude Code セッションがそれを持っています。セッションを取り戻したい場合のみ `/remote-control` を実行します。
+* **このセッションは別のデバイスまたはアプリから終了またはアーカイブされました**: セッションを戻したい場合のみ `/remote-control` を実行します。Claude Code はアーカイブされたセッションを再度開きます。
+* **サーバーはこのセッションを見つけられなくなりました**: 別のデバイスまたはアプリから削除されている可能性があります。
 
 <h3 id="session-url-reminders">
   セッション URL リマインダー
@@ -150,7 +146,7 @@ CLI または VS Code 拡張機能から Remote Control セッションを開始
 
 Remote Control が接続されている間、Claude Code は電話またはブラウザに切り替えるのが最も役立つときにセッション URL を思い出させるため、リンクを `/remote-control` で見つける必要がありません。リマインダーは次のいずれかの瞬間にプロンプトボックスの上に表示されます。
 
-* **長いターン**: ターン がサーバーチューニングされたしきい値より長く実行される場合、Claude Code は **Still working** 通知と **Check in from your phone** リンクを表示し、ターミナルで待つ代わりに電話またはブラウザからターンをフォローできます。Claude Code はターンが終了するとそれを削除します。
+* **長いターン**: ターンがサーバーチューニングされたしきい値より長く実行される場合、Claude Code は **Still working** 通知と **Check in from your phone** リンクを表示し、ターミナルで待つ代わりに電話またはブラウザからターンをフォローできます。Claude Code はターンが終了するとそれを削除します。
 * **繰り返される権限プロンプト**: セッションで複数の[権限プロンプト](/docs/ja/permissions)に答えた後、**Approve tool calls from your phone** 通知がセッション URL を表示します。Claude Code は次のターンが開始されるとそれを削除します。
 
 リマインダーは、Remote Control が[自動的に接続](#enable-remote-control-for-all-sessions)する場合を含む、接続されたセッションに表示される可能性があります。これらの条件が発生するたびに表示されるわけではなく、各条件はセッション全体で数回だけ表示されます。それらを設定または無効にすることはできません。各条件は独自にクリアされます。
@@ -176,9 +172,9 @@ Remote Control セッションがアクティブになったら、別のデバ�
 
 明示的な名前を設定しなかった場合、Claude Code はプロンプトを送信するとタイトルを更新して反映します。Claude Code は自動生成されたタイトルを会話の言語、または設定されている場合は [`language`](/docs/ja/settings-reference#language) 設定に一致させます。
 
-claude.ai または Claude アプリからセッションの名前を変更すると、Claude Code は `claude --resume` に表示されるローカルタイトルも更新します。Claude Code は同じ名前変更をプロンプトバーに表示されるセッション名に適用し、セッションが[バックグラウンドで実行](/docs/ja/agent-view)される場合は `claude agents` リストに適用します。v2.1.221 より前では、claude.ai またはClaudeアプリのセッションリストから名前を変更するとタイトルのみが更新され、CLI は前のセッション名を保持していました。CLI 自体で実行される `/rename` は任意のバージョンで名前を設定します。
+claude.ai または Claude アプリからセッションの名前を変更すると、Claude Code は `claude --resume` に表示されるローカルタイトルも更新します。Claude Code は同じ名前変更をプロンプトバーに表示されるセッション名に適用し、セッションが[バックグラウンドで実行](/docs/ja/agent-view)される場合は `claude agents` リストに適用します。v2.1.221 より前では、claude.ai または Claude アプリのセッションリストから名前を変更するとタイトルのみが更新され、CLI は前のセッション名を保持していました。CLI 自体で実行される `/rename` は任意のバージョンで名前を設定します。
 
-Claude アプリをまだ持っていない場合は、Claude Code 内で `/mobile` コマンドを使用して、[iOS](https://apps.apple.com/us/app/claude-by-anthropic/id6473753684)または [Android](https://play.google.com/store/apps/details?id=com.anthropic.claude)のダウンロード QR コードを表示します。
+Claude アプリをまだ持っていない場合は、Claude Code 内で `/mobile` を実行して、[claude.ai/mobile](https://claude.ai/mobile)の QR コードを表示します。これにより、お使いの電話に適切なアプリストアが開きます。
 
 <h3 id="what-connected-devices-see">
   接続されたデバイスが見るもの
@@ -188,7 +184,7 @@ Claude アプリをまだ持っていない場合は、Claude Code 内で `/mobi
 
 * **圧縮と `/clear`**: Claude Code が[会話を圧縮](/docs/ja/context-window#what-survives-compaction)している間、接続されたデバイスは進捗を表示し、その後会話が圧縮された場所を表示します。`/clear` を実行すると、会話は接続されたデバイスでもリセットされます。
 * **`/resume` で会話を切り替える**: 接続されたデバイスは切り替えられた会話のタイトルまたは以前の履歴を受け取りませんが、双方向の新しいメッセージはターミナルで開いている会話に対して行き来します。デバイスから元の会話で再度作業するには、ターミナルで `/resume` を実行して戻します。
-* **`/teleport` でセッションをプルする**: [Claude Code on the web セッション](/docs/ja/claude-code-on-the-web#from-web-to-terminal)をターミナルに `/teleport` でプルする場合、接続されたデバイスはプルされた会話の以前の履歴を受け取りません。双方向の新しいメッセージはプルされた会話に対して行き来し、これはターミナルで開いている会話になります。
+* **`/teleport` でセッションをプルする**: [クラウドセッション](/docs/ja/claude-code-on-the-web#from-cloud-to-terminal)をターミナルに `/teleport` でプルする場合、接続されたデバイスはプルされた会話の以前の履歴を受け取りません。双方向の新しいメッセージはプルされた会話に対して行き来し、これはターミナルで開いている会話になります。
 * **他のセッションからのメッセージ**: [クロスセッションメッセージング](/docs/ja/cross-session-messaging)では、同じ接続が異なるマシン上の独自のセッション間のメッセージと [Claude Code on the web](/docs/ja/claude-code-on-the-web) セッションからのメッセージを、Remote Control トラフィックの残りのように Anthropic サーバーを通じて運びます。[他のマシンのメッセージセッション](/docs/ja/cross-session-messaging#message-sessions-on-other-machines)は配信ルールをカバーし、[インバウンドメッセージを制御](/docs/ja/cross-session-messaging#control-inbound-messages)はインバウンドコントロールをカバーします。Claude Code v2.1.224 以降が必要です。
 * **ターン中に送信されたプロンプト**: 現在のターンが終了する前に接続されたデバイスからプロンプトを送信する場合、Claude Code はそれをキューに入れ、そのターンが終了した後、デバイスのトランスクリプトに保持します。
 * **変更の差分**: セッションのディレクトリが git リポジトリにある場合、接続されたデバイスの差分ペインはコミットされていない変更の差分を表示します。デバイスは接続を通じて差分をリクエストし、Claude Code はマシンで計算します。作業ツリーがクリーンな場合、Claude Code は代わりにデフォルトブランチから分岐した以来のブランチの変更を提供します。v2.1.247 より前では、Claude Code は `claude remote-control` で提供されるセッションでのみ接続されたデバイスに差分を報告していました。
@@ -312,13 +308,13 @@ Owner は Claude Code 管理コンソールから設定を有効にします。
 
 紛失または盗難されたデバイスの場合、メンバーはこのページから削除します。メンバーがサインインできない場合、管理者は管理コンソールで **Sign out everywhere** を使用してそのメンバーのすべてのセッションと登録されたデバイスを取り消すことができます。その後、メンバーは保持しているデバイスを再登録します。
 
-<h2 id="remote-control-vs-claude-code-on-the-web">
-  Remote Control と Web 上の Claude Code
+<h2 id="remote-control-vs-cloud-sessions">
+  Remote Control とクラウドセッション
 </h2>
 
-Remote Control と [Web 上の Claude Code](/docs/ja/claude-code-on-the-web) の両方が claude.ai/code インターフェースを使用します。主な違いはセッションが実行される場所です。Remote Control はマシン上で実行されるため、ローカル MCP サーバー、ツール、プロジェクト設定が利用可能なままです。Web 上の Claude Code はクラウドで実行されます。
+Remote Control と [クラウドセッション](/docs/ja/claude-code-on-the-web) の両方が claude.ai/code インターフェースを使用します。主な違いはセッションが実行される場所です。Remote Control はマシン上で実行されるため、ローカル MCP サーバー、ツール、プロジェクト設定が利用可能なままです。クラウドセッションはクラウドインフラストラクチャ上で実行され、デフォルトでは Anthropic が管理します。
 
-ローカル作業の途中で別のデバイスから続行したい場合は Remote Control を使用します。ローカルセットアップなしでタスクを開始したい場合、クローンしていないリポジトリで作業したい場合、または複数のタスクを並列で実行したい場合は Web 上の Claude Code を使用します。
+ローカル作業の途中で別のデバイスから続行したい場合は Remote Control を使用します。ローカルセットアップなしでタスクを開始したい場合、クローンしていないリポジトリで作業したい場合、または複数のタスクを並列で実行したい場合はクラウドセッションを使用します。
 
 <h2 id="mobile-push-notifications">
   モバイルプッシュ通知
@@ -389,7 +385,7 @@ Claude Code は、ターミナルに入力中またはターミナルにフォ�
 
 claude.ai アカウントで認証されていないか、別の認証情報がログインより優先されています。メッセージは以下のいずれかの形式になります。
 
-* サインアウト状態で `/remote-control` または `--remote-control` から：「Remote Control requires a claude.ai subscription.」
+* サインアウト状態で `/remote-control` または `--remote-control` から：「Remote Control requires a claude.ai subscription.」または「/remote-control requires a claude.ai subscription.」
 * サインアウト状態で `claude remote-control` から：「You must be logged in to use Remote Control. Remote Control is only available with claude.ai subscriptions.」
 * サインイン状態だが API キーまたはトークンが使用中：「Remote Control requires claude.ai subscription auth.」の後に、`ANTHROPIC_API_KEY is set, so this session is using API-key auth` などの使用中の認証情報が続きます。`apiKeyHelper` 設定と `ANTHROPIC_AUTH_TOKEN` は同じ方法で名前が付けられます。
 
@@ -536,10 +532,10 @@ Claude Code は、ターミナルにいない時に作業するための複数�
 </h2>
 
 * [Web 上の Claude Code](/docs/ja/claude-code-on-the-web): マシン上ではなくクラウドでセッションを実行します。[クラウド環境](/docs/ja/cloud-environments)を通じて設定します
-* [クロスセッションメッセージング](/docs/ja/cross-session-messaging): Claude が他のマシンまたは [Web 上の Claude Code](/docs/ja/claude-code-on-the-web) 上のセッションにメッセージを送信できるようにします
+* [クロスセッションメッセージング](/docs/ja/cross-session-messaging): Claude が他のマシンまたは [クラウドセッション](/docs/ja/claude-code-on-the-web)上のセッションにメッセージを送信できるようにします
 * [チャネル](/docs/ja/channels): Telegram、Discord、または iMessage をセッションに転送して、Claude が離席中にメッセージに反応するようにします
 * [Dispatch](/docs/ja/desktop#sessions-from-dispatch): 電話からタスクをメッセージして、Desktop セッションを生成して処理できます
 * [認証](/docs/ja/authentication): `/login` をセットアップし、claude.ai の認証情報を管理します
 * [CLI リファレンス](/docs/ja/cli-reference): `claude remote-control` を含むフラグとコマンドの完全なリスト
 * [セキュリティ](/docs/ja/security): Remote Control セッションが Claude Code セキュリティモデルにどのように適合するか
-* [データ使用](/docs/ja/data-usage): ローカルおよびリモートセッション中に Anthropic API を通じてどのようなデータが流れるか
+* [データ使用](/docs/ja/data-usage): ローカル、Remote Control、およびクラウドセッション中に Anthropic API を通じてどのようなデータが流れるか

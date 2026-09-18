@@ -66,7 +66,7 @@
 
 <Steps>
   <Step title="プロジェクトを作成">
-    このページの後半にある権限リレーの例は `zod` を直接インポートするため、MCP SDK と一緒にインストールされます。新しいディレクトリを作成して両方をインストールします：
+    [権限リレー](#relay-permission-prompts) の例は `zod` を直接インポートするため、MCP SDK と一緒にインストールされます。新しいディレクトリを作成して両方をインストールします：
 
     ```bash theme={null}
     mkdir webhook-channel && cd webhook-channel

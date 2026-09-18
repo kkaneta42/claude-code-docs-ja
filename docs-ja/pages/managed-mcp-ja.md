@@ -129,7 +129,8 @@ Claude Code は、さまざまな制限レベルをサポートしています�
 
 ファイルが有効であることを確認するには、マネージドマシン上で 2 つのチェックを実行してください。
 
-1. `claude mcp list` は `managed-mcp.json` 内のサーバーのみを表示します。`managedMcpServers` を通じて提供するサーバーも表示されます。ユーザー独自のサーバーがまだ表示される場合、ファイルが読み込まれていません。パスと権限を確認してください。
+1. `claude mcp list` は `managed-mcp.json` 内のサーバーのみを表示します。`managedMcpServers` を通じて提供するサーバーも表示されます。ユーザー独自のサーバーがまだ表示される場合、Claude Code はファイルを読み込んでいません。そのパスと親ディレクトリの権限を確認してください。
+   * ファイルのサーバーが表示されず、`MCP config diagnostics` セクションがエンタープライズ構成の解析失敗をマークしている場合、Claude Code はファイルを読み込むか解析できません。そのセクションが名前を付けるエラーを修正してから、ユーザーに Claude Code を再起動させてください。
 2. `claude mcp add --transport http test https://example.com/mcp` は `Cannot add MCP server: enterprise MCP configuration is active and has exclusive control over MCP servers` で失敗します。ポリシーチェックが何かに接続される前にコマンドを拒否するため、URL は実際のサーバーである必要はありません。
 
 <h3 id="disable-mcp-entirely">
@@ -503,7 +504,7 @@ Claude Code v2.1.219 以降が必要です。
 | サーバーがデニーリストにあり、ユーザーが `claude mcp add` を実行する                      | `Cannot add MCP server "<name>": server is explicitly blocked by enterprise policy`                                          |
 | サーバーがアローリストになく、ユーザーが `claude mcp add` を実行する                      | `Cannot add MCP server "<name>": not allowed by enterprise policy`                                                           |
 | ユーザーが `managedMcpServers` のサーバーで `claude mcp remove` を実行する       | `MCP server "<name>" is provided by your organization (managed settings) and cannot be removed locally.`                     |
-| 以前に設定されたサーバーがポリシーによってブロックされるようになった                               | サーバーは警告なく `/mcp` と `claude mcp list` から静かに消える                                                                                |
+| 以前に設定されたサーバーがポリシーによってブロックされるようになった                               | サーバーは `/mcp` と `claude mcp list` から消える                                                                                       |
 | セッション実行中にサーバーがブロックされ、ユーザーが **Reconnect** を選択するか、`/mcp` でそれをオンに戻す | [`MCP server <name> is blocked by enterprise managed policy`](/docs/ja/errors#mcp-server-is-blocked-by-enterprise-managed-policy) |
 
 サーバーが静かに消える場合、ユーザーはポリシーが理由であるという信号を受け取らないため、変更をロールアウトする際に影響を受けるユーザーにどのサーバーがブロックされているかを伝えてください。

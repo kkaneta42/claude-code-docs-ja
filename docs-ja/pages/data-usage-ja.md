@@ -85,37 +85,37 @@ Web 上の個別の Claude Code セッションはいつでも削除できます
   ローカル Claude Code：データフローと依存関係
 </h2>
 
-以下の図は、インストール中および通常の操作中に Claude Code が外部サービスにどのように接続するかを示しています。実線は必須の接続を示し、破線はオプションまたはユーザーが開始したデータフローを表します。
+下の図は、Claude Code がインストール中および通常の操作中に外部サービスにどのように接続するかを示しています。実線は必須の接続を示し、破線はオプションまたはユーザーが開始するデータフローを表します。
 
-<img src="https://mintcdn.com/claude-code/YR4DRZyI3CdsXkiT/images/claude-code-data-flow.svg?fit=max&auto=format&n=YR4DRZyI3CdsXkiT&q=85&s=2846ea92cfc2297b8620c31c82b482ad" className="dark:hidden" alt="Claude Code の外部接続を示す図：インストール/更新は配布サーバーに接続し、ユーザーリクエストは Anthropic の Console 認証および public-api に接続し、オプションでメトリクスとエラーレポートを Anthropic およびサードパーティサービスに送信するテレメトリフローがあります。/feedback で送信されたフィードバックは Google Cloud Storage に送信され、オプションで GitHub issue を作成します" width="720" height="520" data-path="images/claude-code-data-flow.svg" />
+<img src="https://mintcdn.com/claude-code/YR4DRZyI3CdsXkiT/images/claude-code-data-flow.svg?fit=max&auto=format&n=YR4DRZyI3CdsXkiT&q=85&s=2846ea92cfc2297b8620c31c82b482ad" className="dark:hidden" alt="Claude Code の外部接続を示す図：インストール/更新は配布サーバーに接続し、ユーザーリクエストは Anthropic の Console 認証と public-api に接続します。オプションのテレメトリフローはメトリクスとエラーレポートを Anthropic とサードパーティサービスに送信します。/feedback で送信されたフィードバックは Google Cloud Storage に送信され、オプションで GitHub issue を作成します" width="720" height="520" data-path="images/claude-code-data-flow.svg" />
 
-<img src="https://mintcdn.com/claude-code/_xqph1dUOslCOwsj/images/claude-code-data-flow-dark.svg?fit=max&auto=format&n=_xqph1dUOslCOwsj&q=85&s=4fb6e8c88a9740845217bf2a2b040877" className="hidden dark:block" alt="Claude Code の外部接続を示す図：インストール/更新は配布サーバーに接続し、ユーザーリクエストは Anthropic の Console 認証および public-api に接続し、オプションでメトリクスとエラーレポートを Anthropic およびサードパーティサービスに送信するテレメトリフローがあります。/feedback で送信されたフィードバックは Google Cloud Storage に送信され、オプションで GitHub issue を作成します" width="720" height="520" data-path="images/claude-code-data-flow-dark.svg" />
+<img src="https://mintcdn.com/claude-code/_xqph1dUOslCOwsj/images/claude-code-data-flow-dark.svg?fit=max&auto=format&n=_xqph1dUOslCOwsj&q=85&s=4fb6e8c88a9740845217bf2a2b040877" className="hidden dark:block" alt="Claude Code の外部接続を示す図：インストール/更新は配布サーバーに接続し、ユーザーリクエストは Anthropic の Console 認証と public-api に接続します。オプションのテレメトリフローはメトリクスとエラーレポートを Anthropic とサードパーティサービスに送信します。/feedback で送信されたフィードバックは Google Cloud Storage に送信され、オプションで GitHub issue を作成します" width="720" height="520" data-path="images/claude-code-data-flow-dark.svg" />
 
-Claude Code はローカルで実行されます。LLM と対話するために、Claude Code はネットワーク経由でデータを送信します。このデータには、すべてのユーザープロンプトとモデル出力が含まれます。データは TLS 1.2 以上で転送中に暗号化されます。Claude Code はほとんどの一般的な VPN および LLM プロキシと互換性があります。
+Claude Code はローカルで実行されます。LLM と相互作用するために、Claude Code はネットワーク経由でデータを送信します。このデータには、すべてのユーザープロンプトとモデル出力が含まれ、TLS 1.2 以上で転送中に暗号化されます。Claude Code はほとんどの一般的な VPN と LLM プロキシと互換性があります。
 
 保存時の暗号化はモデルプロバイダーによって異なります：
 
-| プロバイダー                        | 保存時の暗号化                                                                                                                                                                                                                                                                                                                                             |
-| ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Anthropic API                 | インフラストラクチャレベルのディスク暗号化（AES-256）。サーバー側の永続化がない場合は [Zero Data Retention](/docs/ja/zero-data-retention) を有効にしてください。                                                                                                                                                                                                                                           |
-| Amazon Bedrock                | AWS 管理キーを使用した AES-256。AWS KMS を通じてカスタマー管理キーが利用可能です。                                                                                                                                                                                                                                                                                                 |
-| Google Cloud's Agent Platform | Google 管理の暗号化キー。CMEK が利用可能です。                                                                                                                                                                                                                                                                                                                       |
-| Microsoft Foundry             | デプロイメントの [ホスティングオプション](https://platform.claude.com/docs/en/build-with-claude/claude-in-microsoft-foundry#hosting-options) によって異なります。Azure でホストされているデプロイメントの場合、プロンプトと完成は Azure 内に留まります。Anthropic のセーフティシステムによってフラグが付けられたコンテンツと使用メタデータのみが Anthropic に送信されます。Anthropic でホストされているデプロイメントの場合、リクエストは AES-256 ディスク暗号化を備えた Anthropic インフラストラクチャにルーティングされます。 |
+| プロバイダー                        | 保存時の暗号化                                                                                                                                                                                                                                                                                                                                          |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Anthropic API                 | インフラストラクチャレベルのディスク暗号化（AES-256）。サーバー側の永続化がないようにするには、[Zero Data Retention](/docs/ja/zero-data-retention) を有効にしてください。                                                                                                                                                                                                                                    |
+| Amazon Bedrock                | AWS 管理キーを使用した AES-256。AWS KMS 経由でカスタマー管理キーを利用可能です。                                                                                                                                                                                                                                                                                               |
+| Google Cloud の Agent Platform | Google 管理の暗号化キー。CMEK を利用可能です。                                                                                                                                                                                                                                                                                                                    |
+| Microsoft Foundry             | デプロイメントの[ホスティングオプション](https://platform.claude.com/docs/en/build-with-claude/claude-in-microsoft-foundry#hosting-options)によって異なります。Azure でホストされているデプロイメントの場合、プロンプトと完了は Azure 内に留まり、使用状況メタデータと Anthropic のセーフティシステムでフラグが付けられたコンテンツのみが Anthropic に送信されます。Anthropic でホストされているデプロイメントの場合、リクエストは AES-256 ディスク暗号化を使用して Anthropic インフラストラクチャにルーティングされます。 |
 
-Claude Code は Anthropic の API 上に構築されています。API のセキュリティ制御（API ロギング手順を含む）の詳細については、[Anthropic Trust Center](https://trust.anthropic.com) のコンプライアンスアーティファクトを参照してください。
+Claude Code は Anthropic の API 上に構築されています。API ロギング手順を含む API セキュリティコントロールの詳細については、[Anthropic Trust Center](https://trust.anthropic.com) のコンプライアンスアーティファクトを参照してください。
 
 <h3 id="cloud-execution-data-flow-and-dependencies">
   クラウド実行：データフローと依存関係
 </h3>
 
-[Claude Code on the web](/docs/ja/claude-code-on-the-web) を使用する場合、セッションはデフォルトではローカルではなく Anthropic が管理する仮想マシンで実行されます。組織が [self-hosted environment](/docs/ja/self-hosted-environments) にルーティングするセッションは、制御するインフラストラクチャ上で実行されます。マシン上に留まるもの、および Anthropic に送信されるものについては、[What stays on your infrastructure](/docs/ja/self-hosted-environments#what-stays-on-your-infrastructure) を参照してください。Anthropic がホストするクラウドセッションでは：
+[クラウドセッション](/docs/ja/claude-code-on-the-web)は、デフォルトではローカルではなく Anthropic 管理の仮想マシンで実行されます。組織が[自己ホスト環境](/docs/ja/self-hosted-environments)にルーティングするセッションは、制御するインフラストラクチャ上で実行されます。マシン上に留まるもの、および Anthropic に送信されるものについては、[インフラストラクチャに留まるもの](/docs/ja/self-hosted-environments#what-stays-on-your-infrastructure)を参照してください。Anthropic ホスト型クラウドセッションでは：
 
-* **コードとデータストレージ**：リポジトリは分離された VM にクローンされます。コードとセッションデータは、アカウントタイプのデータ保持および使用ポリシーの対象となります（上記のデータ保持セクションを参照）
-* **認証情報**：GitHub 認証はセキュアプロキシを通じて処理されます。GitHub 認証情報がサンドボックスに入ることはありません
-* **ネットワークトラフィック**：すべてのアウトバウンドトラフィックは、監査ログと不正使用防止のためのセキュリティプロキシを通じて行われます
-* **セッションデータ**：プロンプト、コード変更、出力は、ローカル Claude Code 使用と同じデータポリシーに従います
+* **コードとデータストレージ：** リポジトリは分離された VM にクローンされます。コードとセッションデータは、アカウントタイプの保持および使用ポリシーの対象となります（上記のデータ保持セクションを参照）
+* **認証情報：** GitHub 認証はセキュアプロキシを通じて処理されます。GitHub 認証情報がサンドボックスに入ることはありません
+* **ネットワークトラフィック：** すべてのアウトバウンドトラフィックは、監査ログと不正使用防止のためのセキュリティプロキシを通じて送信されます
+* **セッションデータ：** プロンプト、コード変更、および出力は、ローカル Claude Code 使用と同じデータポリシーに従います
 
-クラウド実行のセキュリティの詳細については、[Security](/docs/ja/security#cloud-execution-security) を参照してください。
+クラウド実行のセキュリティの詳細については、[セキュリティ](/docs/ja/security#cloud-execution-security)を参照してください。
 
 <h2 id="telemetry-services">
   テレメトリサービス

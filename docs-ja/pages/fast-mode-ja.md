@@ -32,7 +32,9 @@ CLI では、次のいずれかの方法で高速モードを切り替えます�
 * `/fast` と入力して Tab キーを押してオンまたはオフに切り替える
 * [ユーザー設定ファイル](/docs/ja/settings)で `"fastMode": true` を設定する
 
-デフォルトでは、インタラクティブセッションで有効にした高速モードはセッション全体で保持されます。[非インタラクティブモード](/docs/ja/headless)では、`-p` フラグを使用して、`/fast` は [`--settings`](/docs/ja/cli-reference#cli-flags) 値で高速モードを使用して起動されたセッションでのみ機能します。例えば `claude -p --settings '{"fastMode": true}'` のように使用します。その場合、切り替えはそのセッションにのみ適用され、デフォルトとして保存されず、他の非インタラクティブセッションではコマンドが高速モードが利用できないことを報告します。高速モードを各セッションでリセットするように構成できます。詳細は[セッションごとのオプトインが必要](#require-per-session-opt-in)を参照してください。
+デフォルトでは、インタラクティブセッションで有効にした高速モードはセッション全体で保持されます。高速モードを各セッションでリセットするように構成できます。詳細は[セッションごとのオプトインが必要](#require-per-session-opt-in)を参照してください。
+
+[クラウドセッション](#use-fast-mode-in-cloud-sessions)の外では、[非インタラクティブモード](/docs/ja/headless)で `-p` フラグを使用する場合、`/fast` は [`--settings`](/docs/ja/cli-reference#cli-flags) 値で高速モードを使用して起動されたセッションでのみ機能します。例えば `claude -p --settings '{"fastMode": true}'` のように使用します。その場合、切り替えはそのセッションにのみ適用され、デフォルトとして保存されません。`-p` 形式には Claude Code v2.1.205 以降が必要です。非インタラクティブモードの他の場所では、コマンドが高速モードが利用できないことを報告します。
 
 Claude が処理中に `/fast` を実行でき、Claude Code は処理の終了を待たずに高速モードを切り替えます。Claude Code は実行中のターンを元の速度で完了するため、速度の変更は次のターンから有効になります。現在のモデルが高速モードをサポートしていない場合、有効にするとモデルも切り替わり、Claude Code はそのターン内の次のリクエストから新しいモデルを使用します。
 
@@ -61,6 +63,14 @@ Opus 5 は Claude Code v2.1.219 以降の高速モードのデフォルトです
 モデル切り替えが高速モードをオンまたはオフにするたびに、Claude Code は `Fast mode ON` または `Fast mode OFF` の確認を表示し、高速モードがオンの間は `↯` アイコンが表示されます。これは `/model` で切り替える場合、[`/config model=<model>`](/docs/ja/settings)で切り替える場合、または [Remote Control](/docs/ja/remote-control)を通じて接続されたデバイスから切り替える場合に当てはまります。
 
 Claude Code は、モデル切り替え、再接続、または失敗した[可用性チェック](#use-fast-mode-behind-proxies-and-llm-gateways)の後、Remote Control を通じて接続されたデバイスにセッションの高速モード状態を再送信します。
+
+<h3 id="use-fast-mode-in-cloud-sessions">
+  クラウドセッションで高速モードを使用する
+</h3>
+
+高速モードは[クラウドセッション](/docs/ja/claude-code-on-the-web)で機能します。アカウントで利用可能な場合、セッションが Anthropic 管理インフラストラクチャで実行されるか、[セルフホストランナー](/docs/ja/self-hosted-environments)で実行されるかに関わらず機能します。セッションの環境で Claude Code v2.1.271 以降が必要です。
+
+セッションで `/fast on` と入力して高速モードをオンにします。そのセッションのみオンのままで、デフォルトとして保存されません。[要件](#requirements)はクラウドセッションにも適用されます。
 
 <h2 id="understand-the-cost-tradeoff">
   コストのトレードオフを理解する
@@ -135,7 +145,10 @@ Claude Code は、モデル切り替え、再接続、または失敗した[可�
 * **Team および Enterprise の所有者による有効化**：高速モードは Team および Enterprise 組織ではデフォルトで無効になっています。ユーザーがアクセスできるようにするには、所有者が明示的に[高速モードを有効にする](#enable-fast-mode-for-your-organization)必要があります。
 
 <Note>
-  組織で高速モードが有効になっていない場合、`/fast` コマンドは「Fast mode has been disabled by your organization.」と表示されます。組織の [`availableModels`](/docs/ja/model-config#restrict-model-selection) 許可リストが高速モード Opus モデルを除外している場合、`/fast` は「is not in your organization's allowed models」で拒否されます。例外は、高速モードをサポートする許可された Opus モデルで既に実行中のセッションです：`/fast` はモデルを切り替える代わりに現在のモデルで高速モードを有効にします。
+  2 つの組織設定が `/fast` で高速モードをオンにすることをブロックできます：
+
+  * **高速モードが有効になっていない**：組織で高速モードが有効になっていない場合、`/fast` で高速モードをオンにすると「Fast mode has been disabled by your organization.」と表示されます。
+  * **高速モードモデルが許可されていない**：組織の [`availableModels`](/docs/ja/model-config#restrict-model-selection) 許可リストが高速モード Opus モデルを除外している場合、オンにすることは「is not in your organization's allowed models」で拒否されます。高速モードをサポートする許可された Opus モデルで既に実行中のセッションでは、`/fast` はモデルを切り替える代わりに現在のモデルで高速モードを有効にします。
 </Note>
 
 <h3 id="enable-fast-mode-for-your-organization">
@@ -173,7 +186,7 @@ Claude Code は、モデル切り替え、再接続、または失敗した[可�
 
 どちらの場合も、`CLAUDE_CODE_SKIP_FAST_MODE_ORG_CHECK=1` を設定して高速モードを復元します。`CLAUDE_CODE_SKIP_FAST_MODE_NETWORK_ERRORS` は失敗したチェックのみをバイパスし、これら両方は無効化応答を生成するため、どちらのケースにも適用されません。ホワイトリストに登録する直接エグレスは、リクエストを送信しないベアラートークンケースには役に立ちません。
 
-変数はクライアント側のチェックのみに影響します。組織で高速モードが無効化されている場合、設定されているかどうかに関わらず、API は高速モードリクエストを拒否します。
+変数はクライアント側のチェックのみに影響します。組織で高速モードが無効化されている場合、設定されているかどうかに関わらず、API は高速モードリクエストを拒否します。API からの拒否は、スキップ変数が設定されていても有効です。Claude Code は拒否されたリクエストを標準速度で再試行し、高速モードをオフにして、`/fast` は組織が高速モードを無効化したことを報告します。
 
 `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` を設定すると、可用性チェックも抑制されます。以前にキャッシュされた成功したチェックがない場合、`/fast` は「Fast mode is currently unavailable」と報告します。両方のスキップ変数はその構成でも高速モードを復元します。
 

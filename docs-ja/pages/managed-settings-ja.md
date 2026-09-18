@@ -60,7 +60,7 @@
 上記のステップのファイルは、マネージド設定をマシンに取得する 4 つの方法の 1 つです。すべてのメカニズムは `settings.json` ファイルと同じポリシーキーを持つため、[設定リファレンス](/docs/ja/settings-reference) はすべてに適用されます。いくつかのキーは特定のソースに関連付けられており、各エントリの Scope 行はどれかを示しています。
 
 * **配信コントロール**: [`policyHelper`](/docs/ja/settings-reference#policyhelper)、[`wslInheritsWindowsSettings`](/docs/ja/settings-reference#wslinheritswindowssettings)、および [`managedSourcesBehavior`](/docs/ja/settings-reference#managedsourcesbehavior)
-* **ゲートウェイログインキー**: [`forceLoginGatewayUrl`](/docs/ja/settings-reference#forcelogingatewayurl) および [`forceLoginMethod`](/docs/ja/settings-reference#forceloginmethod) の `"gateway"` 値
+* **ゲートウェイログインキー**: [`forceLoginGatewayUrl`](/docs/ja/settings-reference#forcelogingatewayurl)、[`gatewayInternalNetworks`](/docs/ja/settings-reference#gatewayinternalnetworks)、および [`forceLoginMethod`](/docs/ja/settings-reference#forceloginmethod) の `"gateway"` 値
 
 マネージド設定ファイル、MDM プロファイル、または claude.ai コンソールは、それが到達するすべてのユーザーに 1 つのポリシーを適用します。開発者の 1 つのグループに異なるポリシーを提供するには、異なるファイルまたはプロファイルをそのグループにデプロイします。claude.ai コンソール [はまだグループをターゲットにできません](/docs/ja/server-managed-settings#current-limitations)。一方、自己ホスト型の [Claude apps gateway](/docs/ja/claude-apps-gateway) は IdP グループごとにマネージド設定を配信します。
 
@@ -146,7 +146,7 @@ Claude Code は `managed-settings.json` を最初にマージし、次にディ�
 * **`"first-wins"`、デフォルト**: Claude Code は少なくとも 1 つのポリシーキーを配信する最高ランクのソースを使用し、[すべての管理ソースから読み取るキー](#keys-read-from-every-admin-source) の少数を除いて、残りを無視します。Claude Code はスキップするソースの警告を表示しません。`/status` [使用したソースとスキップしたソースの名前](#read-the-source-in-/status)。
 * **`"merge"`**: Claude Code はポリシーキーを配信するすべての管理ソースを適用し、キーの種類で組み合わせます。ほとんどのキーでは高ランクのソースの値が適用され、リストは結合され、ロックは最も厳密な値を取ります。[すべてのマネージドソースを構成する](#compose-every-managed-source) はキーを設定する場所と各キーの種類がどのように組み合わされるかを示しています。Claude Code v2.1.242 以降が必要です。
 
-両方の設定はソースを同じ方法でランク付けします。このセクションでは 2 つの用語が繰り返されます。
+両方の設定はソースを同じ方法でランク付けします。このセクションでは以下の用語が繰り返されます。
 
 * **ポリシーキー**: 2 つのコントロールキー（[`wslInheritsWindowsSettings`](/docs/ja/settings-reference#wslinheritswindowssettings) および [`managedSourcesBehavior`](/docs/ja/settings-reference#managedsourcesbehavior)）以外の設定キー。これらのみを含むマネージド設定ファイルまたは MDM ポリシーはカウントされず、Claude Code は次のソースに移動します。
 * **管理ソース**: 以下の最初の 3 つのソースの 1 つ。HKCU レジストリはユーザー書き込み可能であり、1 つではありません。
@@ -179,14 +179,14 @@ Claude Code はこれらのソースを確認します。最初に最高優先�
 * サンドボックスバイナリパス `sandbox.bwrapPath` および `sandbox.socatPath`
 * サンドボックス `ripgrep` バイナリ、[`sandbox.ripgrep`](/docs/ja/settings-reference#sandbox-ripgrep)
 * `sandbox.filesystem.disabled` および `sandbox.network.strictAllowlist`
-* [`useAutoModeDuringPlan`](/docs/ja/settings-reference#useautomodeduringplan) および [`syncClaudeAiSkills`](/docs/ja/settings-reference#syncclaudeaiskills)。任意の管理ソースの `false` が動作をオフにします。開発者のユーザーまたはローカル設定の `false` もそれをオフにします。各キーは拒否のみできます
+* [`useAutoModeDuringPlan`](/docs/ja/settings-reference#useautomodeduringplan)、[`syncClaudeAiSkills`](/docs/ja/settings-reference#syncclaudeaiskills)、および [`syncClaudeAiPlugins`](/docs/ja/settings-reference#syncclaudeaiplugins)。任意の管理ソースの `false` が動作をオフにします。開発者のユーザーまたはローカル設定の `false` もそれをオフにします。各キーは拒否のみできます
 * [`enableArtifact`](/docs/ja/settings-reference#enableartifact)。任意の管理ソースの `false` が [Artifact ツール](/docs/ja/artifacts) をオフにします。開発者のユーザー、プロジェクト、またはローカル設定の `false` もそれをオフにし、ソースはそれをオンに戻しません。[下位レベルの値がまだカウントされる](/docs/ja/settings#exceptions-to-managed-settings-precedence) を参照してください。Claude Code v2.1.242 以降が必要です
 * [`maxEffortLevel`](/docs/ja/settings-reference#maxeffortlevel)。任意の管理ソースの最も低いキャップが適用されます。開発者が自分の設定または `--settings` で低いキャップを設定する場合、Claude Code はそれを適用します。ソースはキャップを上げることはできません。Claude Code v2.1.267 以降が必要です
 * `attribution` のコミットトレーラー opt-out、または非推奨の `includeCoAuthoredBy` から任意のティア
 * [`forceRemoteSettingsRefresh`](/docs/ja/server-managed-settings)
 * 管理ソース全体で変数ごとにマージされた `env`: 各変数は、それを定義する最高優先度のソースから来るため、下位のソースは高位のソースが設定しないままにした変数を埋めます。いくつかの変数は独自のルールに従います。[マネージドソース全体のキーごとの例外](/docs/ja/server-managed-settings#per-key-exceptions-across-managed-sources) は各変数に名前を付けます。Claude Code v2.1.223 以降が必要です。v2.1.223 より前では、Claude Code は選択されたソースの全体 `env` ブロックのみを適用しました
 
-[ゲートウェイログインキー](#choose-a-delivery-mechanism)、[`forceLoginGatewayUrl`](/docs/ja/settings-reference#forcelogingatewayurl) および [`forceLoginMethod`](/docs/ja/settings-reference#forceloginmethod) の `"gateway"` 値は、別のルールに従います。Claude Code はサーバーマネージド設定からそれらを読み取ることはありません。サーバーマネージド設定が選択されたソースである間、ポリシーキーを持つマシン上の最高ランクの管理ソースはそれらを提供します。それより下にランク付けされた管理ソースの値、または HKCU レジストリの値は無視されます。
+[ゲートウェイログインキー](#choose-a-delivery-mechanism) は別のルールに従います。Claude Code はサーバーマネージド設定からそれらを読み取ることはありません。サーバーマネージド設定が選択されたソースである間、ポリシーキーを持つマシン上の最高ランクの管理ソースはそれらを提供します。それより下にランク付けされた管理ソースの値、または HKCU レジストリの値は無視されます。
 
 <h3 id="compose-every-managed-source">
   すべてのマネージドソースを構成する
@@ -272,7 +272,7 @@ Claude Desktop アプリの [Cowork](https://claude.com/docs/cowork/overview) �
   開発者が変更できるもの
 </h3>
 
-開発者自身の設定ファイル、`--settings` 値、およびプロジェクトファイルはマネージド値をオーバーライドしません。[例外](/docs/ja/settings#exceptions-to-managed-settings-precedence) は下位レベルからのより厳密な値のみをカウントさせます。4 つのことはそのルールの外に座ります。
+開発者自身の設定ファイル、`--settings` 値、およびプロジェクトファイルはマネージド値をオーバーライドしません。[例外](/docs/ja/settings#exceptions-to-managed-settings-precedence) は下位レベルからのより厳密な値のみをカウントさせます。これらのケースはそのルールの外に座ります。
 
 * **セッションのモデル**: マネージド `model` はロックではなくデフォルトです。`--model` および `ANTHROPIC_MODEL` はそのセッションのモデルを選択します。[`availableModels`](/docs/ja/settings-reference#availablemodels) をデプロイして選択を制限します。
 * **ローカル管理者権限**: マシンの管理者である開発者はマネージドソース自体を編集できます。これが MDM ツールがスケジュールでプロファイルまたはファイルを再デプロイでき、HKLM レジストリおよび macOS マネージド設定ドメインが存在する理由です。
@@ -362,6 +362,7 @@ Claude Code は [`policyHelper`](/docs/ja/settings-reference#policyhelper) が�
 | `availableModels`             | 修正されるまで空のアローリストとして適用されるため、デフォルト モデルのみが利用可能です。文字列以外のエントリは削除され、有効なサブセットが適用されます。                                                                                                                                                                                                 |
 | `enforceAvailableModels`      | `true` として扱われます。                                                                                                                                                                                                                                                              |
 | `forceLoginOrgUUID`           | 値が修正されるまで、組織がログインすることは許可されません。                                                                                                                                                                                                                                                |
+| `gatewayInternalNetworks`     | 無効な値が最も高い管理対象ソースから来ている場合、そのマシン上の `/login` は値が修正されるまで、すべての新しい[クラウド ゲートウェイ](/docs/ja/claude-apps-gateway#allow-a-gateway-on-public-address-space-you-own)サインインを拒否します。                                                                                                                |
 | `crossSessionInbound`         | 最も制限的な値である `refuse` として扱われるため、値が修正されるまで[クロスセッション メッセージ](/docs/ja/cross-session-messaging#control-inbound-messages)のインバウンドは拒否されます。開発者は[警告](/docs/ja/errors#crosssessioninbound-must-be-one-of-accept-hold-refuse)を見ます。                                                                   |
 | `deniedMcpServers`            | 個別の無効なエントリは削除され、有効なサブセットが適用されます。完全に無効な値は警告とともにドロップされます。すべてのサーバーを拒否するとポリシーが名前を付けなかったサーバーがブロックされるためです。                                                                                                                                                                          |
 | `sandbox.credentials`         | 回復可能な無効なエントリは `mode: "deny"` に低下し、警告が表示されます。回復不可能なエントリは削除されます。有効なエントリは適用されたままです。[管理対象設定の無効な認証情報エントリ](/docs/ja/settings-reference#invalid-credential-entries-in-managed-settings)を参照してください                                                                                          |

@@ -36,7 +36,7 @@ Code タブでは、各会話は **セッション** です：独自のチャッ
 * Claude に[他のセッションを確認、メッセージ送信、またはアーカイブ](#work-across-sessions)させる
 * [外部ツールを接続](#connect-external-tools)（GitHub、Slack、Linear など）
 * Claude に[アプリを開いてスクリーンを制御](#let-claude-use-your-computer)させる
-* マシン上、[クラウド](#run-long-running-tasks-remotely)上、または [SSH](#ssh-sessions) 上で実行
+* マシン上、[クラウド](#run-long-running-tasks-in-the-cloud)上、または [SSH](#ssh-sessions) 上で実行
 
 [スケジュール済みの定期的な作業](/docs/ja/desktop-scheduled-tasks)、[キーボードショートカット](#keyboard-shortcuts)、または[電話からタスクを送信](#sessions-from-dispatch)については、リンクされたページとセクションを参照してください。既にターミナルベースの CLI を使用している場合は、[CLI 比較](#coming-from-the-cli)を参照して、何が引き継がれるかを確認してください。
 
@@ -47,7 +47,7 @@ Code タブでは、各会話は **セッション** です：独自のチャッ
 最初のメッセージを送信する前に、プロンプト領域で 4 つのことを設定してください：
 
 * **環境**：Claude が実行される場所を選択します。ローカルマシンの場合は**Local**、[クラウドセッション](#cloud-sessions)の場合は**Cloud**、管理するリモートマシンの場合は[**SSH 接続**](#ssh-sessions)を選択するか、Windows の場合は[**WSL ディストリビューション**](/docs/ja/desktop-wsl)を選択します。[環境設定](#environment-configuration)を参照してください。
-* **プロジェクトフォルダ**：Claude が作業するフォルダまたはリポジトリを選択します。クラウドセッションの場合、[複数のリポジトリ](#run-long-running-tasks-remotely)を追加できます。
+* **プロジェクトフォルダ**：Claude が作業するフォルダまたはリポジトリを選択します。クラウドセッションの場合、[複数のリポジトリ](#run-long-running-tasks-in-the-cloud)を追加できます。
 * **モデル**：送信ボタンの横のドロップダウンから[モデル](/docs/ja/model-config#available-models)を選択します。セッション中にこれを変更できます。
 * **権限モード**：[モードセレクタ](#choose-a-permission-mode)から Claude がどの程度の自律性を持つかを選択します。セッション中にこれを変更できます。
 
@@ -80,7 +80,7 @@ Claude に実行させたいことを入力して**Enter**キーを押して送�
   権限モードを選択する
 </h3>
 
-権限モードは、セッション中に Claude がどの程度の自律性を持つかを制御します：ファイルの編集、コマンドの実行、またはその両方の前に確認するかどうかです。送信ボタンの横のモードセレクタを使用して、いつでもモードを切り替えることができます。権限プロンプトを削減しながら監視を維持するには、Auto に切り替えます。各変更を自分で承認するには、Manual に切り替えます。
+権限モードは、セッション中に Claude がどの程度の自律性を持つかを制御します：ファイルの編集、コマンドの実行、またはその両方の前に確認するかどうかです。送信ボタンの横のモードセレクタを使用して、いつでもモードを切り替えることができます。送信ボタンの横のモードセレクタを使用して、いつでも権限モードを切り替えることができます。各変更を自分で承認するには、Manual に切り替えます。
 
 新しいローカルセッションのデフォルトモードを設定するには、[設定ファイル](/docs/ja/settings#where-settings-live)に`permissions.defaultMode`を追加します。デスクトップアプリは CLI と同じ設定ファイルを読み取ります。セレクタで選択したモードはフォルダごとに記憶され、そのフォルダの`defaultMode`より優先されます。ただし Plan は現在のセッションにのみ適用されます。
 
@@ -207,6 +207,8 @@ CI ステータスバーの**Auto-fix**および**Auto-merge**トグルを使用
 
 Code タブはペインを任意のレイアウトで配置できるように構築されています：チャット、diff、ブラウザ、ターミナル、ファイル、プラン、タスク、およびサブエージェント。macOS では [iOS Simulator](/docs/ja/desktop-ios-simulator) も含まれます。ペインをヘッダーでドラッグして位置を変更するか、ペインエッジをドラッグしてサイズを変更します。macOS では**Cmd+\\**を、Windows では**Ctrl+\\**を押してフォーカスされたペインを閉じます。セッションツールバーの**Views**メニューから追加のペインを開きます。
 
+複数の画面で作業するには、diff やターミナルなどのペインをポップアウトして独立したウィンドウにし、完了したらドックバックします。Claude はメインウィンドウで作業を続けます。
+
 <Note>
   このセクションのペインレイアウト、ターミナル、ファイルエディタ、およびビューモードには Claude Desktop v1.2581.0 以降が必要です。macOS では**Claude → Check for Updates**を、Windows では**Help → Check for Updates**を開いて更新してください。
 </Note>
@@ -295,6 +297,8 @@ macOS で**Cmd+/**を、Windows で**Ctrl+/**を押して、Code タブで利用
 </Note>
 
 コンピュータ使用はデフォルトでオフです。[設定で有効にして](#enable-computer-use)、Claude がスクリーンを制御する前に必要な権限を付与してください。macOS では、Accessibility と Screen Recording の権限も付与する必要があります。
+
+macOS では、コンピュータ使用はバックグラウンドで実行することもできます。Claude は承認したアプリで作業しながら、あなたは作業を続けることができます。
 
 <Warning>
   [サンドボックス化された Bash ツール](/docs/ja/sandboxing)とは異なり、コンピュータ使用は実際のデスクトップで実行され、承認したものへのアクセス権があります。Claude は各アクションをチェックし、オンスクリーンコンテンツからの潜在的なプロンプトインジェクションにフラグを立てますが、信頼境界は異なります。ベストプラクティスについては、[コンピュータ使用安全ガイド](https://support.claude.com/en/articles/14128542)を参照してください。
@@ -388,7 +392,7 @@ gitignored ファイル（`.env`など）を新しい worktrees に含めるに�
 
 コンテキスト使用状況を確認するには、[使用状況を確認する](#check-usage)を参照してください。コンテキストがいっぱいになると、Claude は自動的に会話を要約して作業を続けます。`/compact`を入力して要約をより早くトリガーし、コンテキストスペースを解放することもできます。[コンテキストウィンドウ](/docs/ja/how-claude-code-works#the-context-window)を参照して、圧縮がどのように機能するかについての詳細を確認してください。
 
-デスクトップアプリは、Code セッションがタスクを完了し、現在そのセッションを表示していない場合に OS 通知を送信します。
+デスクトップアプリは、Code セッションがタスクを完了し、現在そのセッションを表示していない場合に OS 通知を送信します。[プロジェクト](/docs/ja/claude-projects#see-what-needs-you-in-overview)に属するセッションの場合、代わりにプロジェクトの通知を受け取ります。
 
 <h3 id="ask-a-side-question-without-derailing-the-session">
   メインセッションを脱線させずにサイドクエスチョンを尋ねる
@@ -427,15 +431,15 @@ Claude Code はセッション間で 4 つの安全動作を適用します：
 
 Claude は新しいセッションを提案することもできます。現在のタスクの範囲外で修正する価値があるものに気付くと、作業をチャットのタスクチップとして提供します。チップをクリックして、独自の worktree を持つ新しいセッションでその作業を開始します。Claude は現在のセッションを中断なく続行します。
 
-<h3 id="run-long-running-tasks-remotely">
-  長時間実行されるタスクをリモートで実行する
+<h3 id="run-long-running-tasks-in-the-cloud">
+  長時間実行されるタスクをクラウドで実行する
 </h3>
 
 大規模なリファクタリング、テストスイート、マイグレーション、またはその他の長時間実行されるタスクの場合、セッションを開始するときに**Local**の代わりに**Cloud**を選択します。Cloud セッションはデフォルトで Anthropic が管理するインフラストラクチャで実行され、アプリを閉じたりコンピュータをシャットダウンしたりしても続行します。いつでも戻ってきて進捗を確認するか、Claude を別の方向に導くことができます。[claude.ai/code](https://claude.ai/code)または[Claude モバイルアプリ](/docs/ja/mobile)から Cloud セッションを監視することもできます。
 
-Cloud セッションは複数のリポジトリもサポートしています。クラウド環境を選択した後、リポジトリピルの横の\*\*+\*\*ボタンをクリックして、セッションに追加のリポジトリを追加します。各リポジトリは独自のブランチセレクタを取得します。これは共有ライブラリとそのコンシューマーの更新など、複数のコードベースにまたがるタスクに便利です。
+Cloud セッションは複数のリポジトリもサポートしています。クラウド環境を選択した後、選択されたリポジトリの横の\*\*+\*\*ボタンをクリックして、セッションに追加のリポジトリを追加します。各リポジトリは独自のブランチセレクタを取得します。これは共有ライブラリとそのコンシューマーの更新など、複数のコードベースにまたがるタスクに便利です。
 
-Cloud セッションがどのように機能するかについての詳細については、[Web 上の Claude Code](/docs/ja/claude-code-on-the-web)を参照してください。
+Cloud セッションがどのように機能するかについての詳細については、[Web 上の Claude Code](/docs/ja/claude-code-on-the-web)を参照してください。1 つの作業本体が多くの Cloud セッションを必要とする場合、サイドバーで**Projects**を選択して[プロジェクト](/docs/ja/claude-projects)を作成します。Claude はそこから 1 つの会話でセッションを開始して追跡します。
 
 <h3 id="continue-in-another-surface">
   別のサーフェスで続行する
@@ -443,7 +447,7 @@ Cloud セッションがどのように機能するかについての詳細に�
 
 セッションツールバーの右下の VS Code アイコンからアクセスできる**Continue in**メニューを使用すると、セッションを別のサーフェスに移動できます：
 
-* **Claude Code on the Web**：ローカルセッションをリモートで実行し続けるために送信します。Desktop はブランチをプッシュし、会話の要約を生成し、完全なコンテキストを持つ新しい Cloud セッションを作成します。その後、ローカルセッションをアーカイブするか保持するかを選択できます。これはクリーンなワーキングツリーが必要であり、SSH セッションでは利用できません。
+* **Claude Code on the Web**：ローカルセッションをクラウドで実行し続けるために送信します。Desktop はブランチをプッシュし、会話の要約を生成し、完全なコンテキストを持つ新しい Cloud セッションを作成します。その後、ローカルセッションをアーカイブするか保持するかを選択できます。これはクリーンなワーキングツリーが必要であり、SSH セッションでは利用できません。
 * **Your IDE**：現在の作業ディレクトリでサポートされている IDE でプロジェクトを開きます。
 
 <h3 id="sessions-from-dispatch">
@@ -468,6 +472,8 @@ Dispatch は、ターミナルから離れているときに Claude で作業す
 
 外部サービスを接続し、再利用可能なワークフローを追加し、Claude の動作をカスタマイズし、プレビューサーバーを設定します。コネクタ、スキル、プラグインを 1 か所で管理するには、サイドバーの**Customize**をクリックします。Desktop アプリの [Cowork](https://claude.com/product/cowork) タブは、CLI の `~/.claude` ディレクトリではなく、この Customize 設定からスキル、プラグイン、コネクタをソースとし、claude.ai アカウント経由で同期します。
 
+Claude Code はまた、同じアカウントでサインインしたターミナルセッションで、claude.ai アカウント用に有効化されたスキルとプラグインもロードします。[claude.ai から同期されたスキル](/docs/ja/skills#how-synced-skills-behave)および [claude.ai から同期されたプラグイン](/docs/ja/plugins-reference#synced-plugins)を参照してください。
+
 <h3 id="connect-external-tools">
   外部ツールを接続する
 </h3>
@@ -488,7 +494,9 @@ Dispatch は、ターミナルから離れているときに Claude で作業す
 
 Claude が作業中でも、他のメッセージと同じようにコマンドを送信でき、ターンが終了するとセッションはアイドル状態に戻ります。v2.1.206 より前では、ターン中に送信されたコマンドはセッションを実行中として表示したままにし、その後に送信したメッセージは配信されませんでした。
 
-`~/.claude/skills/` 内のパーソナルスキルはローカルセッションに適用されます。[SSH](#ssh-sessions) セッションは、マシンからではなく、リモートホストのホームディレクトリから `~/.claude/skills/` を読み取ります。クラウドセッションは、代わりに claude.ai アカウント用に有効化されたスキルをロードします。[Cowork およびクラウドセッションのスキル](/docs/ja/skills#skills-in-cowork-and-cloud-sessions)を参照してください。
+ローカルセッションは `~/.claude/skills/` からパーソナルスキルをロードします。[SSH](#ssh-sessions) セッションは、マシンからではなく、リモートホストのホームディレクトリから `~/.claude/skills/` を読み取ります。
+
+ローカルおよびクラウドセッションは、claude.ai アカウント用に有効化されたスキルもロードします。クラウドセッションは、[Cowork およびクラウドセッションのスキル](/docs/ja/skills#skills-in-cowork-and-cloud-sessions)で説明されているように、`~/.claude/skills/` の代わりにそれらをロードします。
 
 <h3 id="install-plugins">
   プラグインをインストールする
@@ -565,7 +573,7 @@ Auto-verify はデフォルトで有効です。`.claude/launch.json` に `"auto
 | `port`              | number    | サーバーがリッスンするポート。デフォルトは 3000                                                                                                                                |
 | `cwd`               | string    | プロジェクトルートに相対的な作業ディレクトリ。デフォルトはプロジェクトルート。プロジェクトルートを明示的に参照するには `${workspaceFolder}` を使用します                                                                   |
 | `env`               | object    | `{ "NODE_ENV": "development" }` などのキーと値のペアとしての追加環境変数。このファイルはリポジトリにコミットされるため、ここにシークレットを入れないでください。dev サーバーにシークレットを渡すには、[ローカル環境エディタ](#local-sessions)で設定します。 |
-| `autoPort`          | boolean   | ポート競合の処理方法。以下を参照してください                                                                                                                                    |
+| `autoPort`          | boolean   | ポート競合の処理方法。[ポート競合](#port-conflicts)を参照してください                                                                                                              |
 | `program`           | string    | `node` で実行するスクリプト。[`program` と `runtimeExecutable` を使用する場合](#when-to-use-program-vs-runtimeexecutable)を参照してください                                           |
 | `args`              | string\[] | `program` に渡される引数。`program` が設定されている場合のみ使用されます                                                                                                            |
 | `url`               | string    | `http://localhost:<port>` の代わりにプレビューが開くアドレス。[特定の URL でプレビューを開く](#open-the-preview-at-a-specific-url)を参照してください                                             |
@@ -822,7 +830,7 @@ Team または Enterprise プランの組織は、管理コンソールコント
 これらの設定は[管理設定コンソール](https://claude.ai/admin-settings/claude-code)を通じて設定されます：
 
 * **Code in the desktop**：組織内のユーザーがデスクトップアプリで Claude Code にアクセスできるかどうかを制御します
-* **Code in the web**：組織の[Web セッション](/docs/ja/claude-code-on-the-web)を有効または無効にします
+* **Code in the web**：組織の[クラウドセッション](/docs/ja/claude-code-on-the-web)を有効または無効にします
 * **Remote Control**：組織の[Remote Control](/docs/ja/remote-control)を有効または無効にします
 * **Disable Bypass permissions mode**：組織内のユーザーが bypass permissions モードを有効にするのを防ぎます
 
@@ -953,6 +961,8 @@ Desktop はエンタープライズデプロイメントツールを通じて配
 
 CLI セッションを Desktop に移動するには、ターミナルで `/desktop` を実行します。Claude はセッションを保存し、デスクトップアプリで開いてから CLI を終了します。このコマンドは macOS と x64 Windows でのみ利用可能です。Claude サブスクリプションでサインインしている場合に利用できます。API キー認証では利用できず、Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry でも利用できません。
 
+Desktop から CLI セッションを再開するには、プロンプトボックスに `/resume` と入力します。Desktop は CLI から開始したセッションをリストアップし、タイトル、フォルダ、またはブランチで検索でき、各セッションがどこで終了したかをプレビューできます。セッションを選択すると、アプリで完全な会話とコンテキストを含めて続行されます。
+
 <Tip>
   Desktop と CLI をいつ使用するか：並列セッションをウィンドウで管理したい場合、ペインを並べて配置したい場合、または変更をビジュアルで確認したい場合は Desktop を使用します。スクリプト、自動化、またはターミナルワークフローが必要な場合は CLI を使用します。
 </Tip>
@@ -966,7 +976,7 @@ CLI セッションを Desktop に移動するには、ターミナルで `/desk
 | CLI                                  | Desktop の同等物                                                                                                                                   |
 | ------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------- |
 | `--model sonnet`                     | 送信ボタンの横のモデルドロップダウン                                                                                                                             |
-| `--resume`、`--continue`              | サイドバーのセッションをクリック                                                                                                                               |
+| `--resume`、`--continue`              | サイドバーのセッションをクリック、またはプロンプトボックスに `/resume` と入力して CLI から開始したセッションを選択                                                                              |
 | `--permission-mode`                  | 送信ボタンの横のモードセレクタ                                                                                                                                |
 | `--dangerously-skip-permissions`     | Bypass permissions モード。Pro と Max プランでは Settings → Claude Code → 「Allow bypass permissions mode」で有効にします。Team と Enterprise プランでは、組織ポリシーがこれを制御します |
 | `--add-dir`                          | クラウドセッションで **+** ボタンで複数のリポジトリを追加                                                                                                               |

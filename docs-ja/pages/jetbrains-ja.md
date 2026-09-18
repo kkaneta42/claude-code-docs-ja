@@ -231,7 +231,7 @@ Claude アイコンをクリックして「command not found」が表示され�
   セキュリティに関する考慮事項
 </h2>
 
-Claude Code が [`acceptEdits` 権限モード](/docs/ja/permission-modes#auto-approve-file-edits-with-acceptedits-mode)で JetBrains IDE で実行される場合、IDE によって自動的に実行される可能性のある IDE 設定ファイルを変更できる場合があります。これにより、`acceptEdits` モードで Claude Code を実行するリスクが増加し、bash 実行に対する Claude Code の権限プロンプトをバイパスできる可能性があります。
+Claude Code が [`acceptEdits` 権限モード](/docs/ja/permission-modes#auto-approve-file-edits-with-acceptedits-mode)で JetBrains IDE で実行される場合、IDE によって自動的に実行される可能性のある IDE 設定ファイルを変更できる場合があります。これにより、`acceptEdits` モードで Claude Code を実行するリスクが増加し、Bash 実行に対する Claude Code の権限プロンプトをバイパスできる可能性があります。
 
 JetBrains IDEs で実行する場合は、以下を検討してください。
 

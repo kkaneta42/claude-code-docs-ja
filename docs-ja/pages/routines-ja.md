@@ -309,83 +309,83 @@ GitHub トリガーは、次のいずれかのイベントカテゴリにサブ�
 * **ラベルゲート付きバックポート**: ラベルに `needs-backport` を含む。メンテナーが PR にタグを付けたときのみ、別のブランチへのポートルーティンをトリガーします。
 
 <h2 id="manage-routines">
-  ルーティンを管理する
+  ルーチンを管理する
 </h2>
 
-リストのルーティンをクリックして、詳細ページを開きます。詳細ページには、ルーティンのリポジトリ、コネクタ、プロンプト、スケジュール、API トークン、GitHub トリガー、および過去の実行のリストが表示されます。
+リストのルーチンをクリックして、その詳細ページを開きます。詳細ページには、ルーチンのリポジトリ、コネクタ、プロンプト、スケジュール、API トークン、GitHub トリガー、および過去の実行のリストが表示されます。
 
 <h3 id="view-and-interact-with-runs">
   実行を表示して操作する
 </h3>
 
-任意の実行をクリックして、完全なセッションとして開きます。そこから Claude が何をしたかを確認し、変更をレビューし、プルリクエストを作成するか、会話を続行できます。各実行セッションは他のセッションと同じように機能します。セッションタイトルの横のドロップダウンメニューを使用して、名前変更、アーカイブ、または削除します。
+任意の実行をクリックして、フルセッションとして開きます。そこから Claude が何をしたかを確認し、変更をレビューし、プルリクエストを作成するか、会話を続けることができます。各実行セッションは他のセッションと同じように機能します。セッションタイトルの横のドロップダウンメニューを使用して、名前変更、アーカイブ、または削除を行います。
 
 <Note>
-  実行リストの緑色のステータスは、セッションが開始され、インフラストラクチャエラーなしで終了したことを意味します。プロンプト内のタスクが成功したことを意味するものではありません。実行を開く際にトランスクリプトを読み、Claude が実際に何をしたかを確認してください。ブロックされたネットワークリクエスト、欠落しているコネクタツール、およびタスクレベルの失敗はすべて、ステータスインジケータではなくそこに表示されます。
+  実行リストの緑色のステータスは、セッションが開始され、インフラストラクチャエラーなしで終了したことを意味します。これはプロンプト内のタスクが成功したことを意味しません。実行を開いてトランスクリプトを読み、Claude が実際に何をしたかを確認してください。ブロックされたネットワークリクエスト、不足しているコネクタツール、およびタスクレベルの失敗はすべて、ステータスインジケータではなくそこに表示されます。
 </Note>
 
 <h3 id="edit-and-control-routines">
-  ルーティンを編集して制御する
+  ルーチンを編集して制御する
 </h3>
 
-ルーティン詳細ページから以下を実行できます。
+ルーチン詳細ページから、以下を実行できます。
 
-* **Run now** をクリックして、次のスケジュール時刻を待たずにすぐに実行を開始します。オプションで実行固有のテキストを指定できます。これは API トリガーの `text` フィールドと同じ方法でルーティンに到達します。
-* **Repeats** セクションのトグルを使用して、スケジュールを一時停止または再開します。一時停止されたルーティンは構成を保持しますが、再度有効にするまで実行されません。
-* 鉛筆アイコンをクリックして **Edit routine** を開き、名前、プロンプト、リポジトリ、環境、コネクタ、またはルーティンのトリガーを変更します。**Select a trigger** セクションは、スケジュール、API トークン、GitHub イベントトリガーを追加または削除する場所です。
-* 削除アイコンをクリックしてルーティンを削除します。ルーティンによって作成された過去のセッションはセッションリストに残ります。
+* **Run now** をクリックして、次のスケジュール時刻を待たずに実行を直ちに開始します。オプションで実行固有のテキストを指定できます。これは API トリガーの `text` フィールドと同じ方法でルーチンに到達します。
+* **Repeats** セクションのトグルを使用して、スケジュールを一時停止または再開します。一時停止されたルーチンは設定を保持しますが、再度有効にするまで実行されません。
+* 鉛筆アイコンをクリックして **Edit routine** を開き、名前、プロンプト、リポジトリ、環境、コネクタ、またはルーチンのトリガーのいずれかを変更します。**Select a trigger** セクションは、スケジュール、API トークン、および GitHub イベントトリガーを追加または削除する場所です。
+* 削除アイコンをクリックしてルーチンを削除します。ルーチンによって作成された過去のセッションはセッションリストに残ります。
 
 <h3 id="manage-routines-from-the-cli">
-  CLI からルーティンを管理する
+  CLI からルーチンを管理する
 </h3>
 
-CLI は既存のルーティンの管理をサポートしています。`/schedule list` を実行してすべてのルーティンを表示し、`/schedule update` を実行して 1 つを変更するか、`/schedule run` を実行してすぐにトリガーします。
+CLI は既存のルーチンの管理をサポートしています。`/schedule list` を実行してすべてのルーチンを表示し、`/schedule update` で 1 つを変更するか、`/schedule run` で直ちにトリガーします。
 
-また、ルーティンの実行履歴について質問することもできます。たとえば `/schedule why did my nightly review do nothing this morning?` のようにです。Claude はルーティンの最近の実行をステータスと共にリストし、[web 上で各実行を開く](#view-and-interact-with-runs) ためのリンクを提供し、実行のログを読んで、ツールエラー、権限拒否、最終結果を含めて何が起こったかを説明します。Claude Code v2.1.227 以降が必要です。
+また、ルーチンの実行履歴について質問することもできます。例えば `/schedule why did my nightly review do nothing this morning?` のようにです。Claude はルーチンの最近の実行をステータスと共にリストし、[各実行をウェブで開く](#view-and-interact-with-runs)ためのリンクを提供し、実行のログを読んでツールエラー、権限拒否、最終結果を含めて何が起こったかを説明します。Claude Code v2.1.227 以降が必要です。
 
 <h3 id="repositories-and-branch-permissions">
-  リポジトリとブランチパーミッション
+  リポジトリとブランチの権限
 </h3>
 
-ルーティンはリポジトリをクローンするために GitHub アクセスが必要です。CLI で `/schedule` を使用してルーティンを作成する場合、Claude はアカウントに実行元のリポジトリに対する GitHub アクセスがあるかどうかを確認し、ない場合はアクセスを付与する方法を名前で示すセットアップノートを追加します。[GitHub 認証オプション](/docs/ja/claude-code-on-the-web#github-authentication-options) を参照して、アクセスを付与する 2 つの方法を確認してください。
+ルーチンはリポジトリをクローンするために GitHub アクセスが必要です。CLI で `/schedule` を使用してルーチンを作成する場合、Claude はアカウントが実行元のリポジトリに対して GitHub アクセスを持っているかどうかを確認し、持っていない場合はアクセスを許可する方法を名前付きで示すセットアップノートを追加します。アクセスを許可する 2 つの方法については、[GitHub 認証オプション](/docs/ja/claude-code-on-the-web#github-authentication-options)を参照してください。
 
-追加する各リポジトリは毎回実行時にクローンされます。Claude は、プロンプトで別の指定がない限り、リポジトリのデフォルトブランチから開始されます。
+追加する各リポジトリは、すべての実行でクローンされます。Claude はリポジトリのデフォルトブランチから開始します。ただし、プロンプトで別の方法を指定する場合を除きます。
 
-Claude は `claude/` プレフィックス付きブランチにプッシュします。これらは常に受け入れられます。プロンプトが Claude に別のブランチへのプッシュを指示する場合、Claude Code はプッシュを最初にチェックし、以下のいずれかが当てはまる場合は拒否します。
+Claude はその作業を `claude/` で始まるブランチにプッシュします。これらは常に受け入れられます。プロンプトが Claude に別のブランチにプッシュするよう指示する場合、Claude Code は最初にプッシュをチェックし、以下のいずれかが当てはまる場合は拒否します。
 
 * ブランチは GitHub で保護されている
-* 他の誰かがそのブランチからのオープンプルリクエストを持っている
+* 他の誰かがそのブランチからのオープンなプルリクエストを持っている
 * ブランチは自分以外の誰かによって作成されたコミットを含んでいる
 
 <h3 id="connectors">
   コネクタ
 </h3>
 
-ルーティンは接続された MCP コネクタを使用して、各実行中に外部サービスから読み取り、外部サービスに書き込むことができます。たとえば、サポートリクエストをトリアージするルーティンは Slack チャネルから読み取り、Linear で問題を作成する可能性があります。
+ルーチンは接続された MCP コネクタを使用して、各実行中に外部サービスから読み取り、外部サービスに書き込むことができます。例えば、サポートリクエストをトリアージするルーチンは Slack チャネルから読み取り、Linear で問題を作成する可能性があります。
 
-コネクタは、アカウント上の [claude.ai インテグレーション](/docs/ja/mcp#use-mcp-servers-from-claude-ai) です。CLI で `claude mcp add` を使用してローカルに追加した MCP サーバーはマシンに保存され、claude.ai アカウントには保存されないため、コネクタリストに表示されません。ルーティンでそれらのサーバーの 1 つを使用するには、[claude.ai/customize/connectors](https://claude.ai/customize/connectors) でコネクタとして追加するか、コミットされた [`.mcp.json`](/docs/ja/mcp#project-scope) で宣言して、クローンされたリポジトリの一部にします。
+コネクタは、アカウント上の [claude.ai インテグレーション](/docs/ja/mcp#use-mcp-servers-from-claude-ai)です。CLI で `claude mcp add` を使用してローカルに追加した MCP サーバーはマシンに保存されており、claude.ai アカウントには保存されないため、コネクタリストに表示されません。ルーチンでそれらのサーバーの 1 つを使用するには、[claude.ai/customize/connectors](https://claude.ai/customize/connectors) でコネクタとして追加します。1 つのリポジトリを持つルーチンの場合、代わりにコミットされた [`.mcp.json`](/docs/ja/mcp#project-scope) で宣言できます。これはクローンされたリポジトリの一部です。
 
-ルーティンを作成するときに、現在接続されているすべてのコネクタがデフォルトで含まれます。実行中に Claude がアクセスできるツールを制限するために、必要でないものを削除します。ルーティンフォームから直接コネクタを追加することもできます。
+ルーチンを作成する場合、現在接続されているすべてのコネクタがデフォルトで含まれます。実行中に Claude がアクセスできるツールを制限するために、不要なものを削除します。ルーチンフォームから直接コネクタを追加することもできます。
 
-ルーティンフォームの外でコネクタを管理または追加するには、[claude.ai/customize/connectors](https://claude.ai/customize/connectors) にアクセスするか、CLI で `/schedule update` を使用してください。
+ルーチンフォーム外でコネクタを管理または追加するには、[claude.ai/customize/connectors](https://claude.ai/customize/connectors) にアクセスするか、CLI で `/schedule update` を使用します。
 
 <h3 id="environments-and-network-access">
   環境とネットワークアクセス
 </h3>
 
-各ルーティンは、ネットワークアクセス、環境変数、セットアップスクリプトを制御する [クラウド環境](/docs/ja/cloud-environments) を使用します。ルーティンは毎回実行時に環境のネットワークポリシーを継承します。
+各ルーチンは、ネットワークアクセス、環境変数、およびセットアップスクリプトを制御する [クラウド環境](/docs/ja/cloud-environments)を使用します。ルーチンはすべての実行でその環境のネットワークポリシーを継承します。
 
-**Default** 環境は **Trusted** ネットワークアクセスを使用します。これにより、セッションのネットワークを通じて [デフォルト許可リスト](/docs/ja/cloud-environments#default-allowed-domains) のみが許可されます。その経路上のホストの許可リスト外へのリクエストは `403` および `x-deny-reason: host_not_allowed` で失敗します。MCP コネクタトラフィックは Anthropic のサーバーを通じてルーティングされるため、ルーティンに追加するコネクタは **Allowed domains** にホストを追加しなくても機能します。[コネクタ](#connectors) の下で必要でないコネクタを削除してください。
+**Default** 環境は **Trusted** ネットワークアクセスを使用します。これにより、セッションのネットワークを通じて [デフォルト許可リスト](/docs/ja/cloud-environments#default-allowed-domains)のみが許可されます。そのパスの外のホストへのリクエストは `403` と `x-deny-reason: host_not_allowed` で失敗します。MCP コネクタトラフィックは Anthropic のサーバーを通じてルーティングされるため、ルーチンに追加するコネクタは **Allowed domains** にホストを追加しなくても機能します。[コネクタ](#connectors)の下で不要なコネクタを削除します。
 
-追加のドメインを許可するには：
+追加のドメインを許可するには、以下を実行します。
 
 <Steps>
-  <Step title="ルーティンを編集用に開く">
-    ルーティンの詳細ページで、鉛筆アイコンをクリックして **Edit routine** を開きます。
+  <Step title="ルーチンを編集用に開く">
+    ルーチンの詳細ページで、鉛筆アイコンをクリックして **Edit routine** を開きます。
   </Step>
 
   <Step title="環境セレクタを開く">
-    **Instructions** ボックスの下で、**Default** などの環境の名前を表示するクラウドアイコンを選択します。
+    **Instructions** ボックスの下で、**Default** などの環境の名前を示すクラウドアイコンを選択します。
   </Step>
 
   <Step title="環境設定を開く">
@@ -393,7 +393,7 @@ Claude は `claude/` プレフィックス付きブランチにプッシュし�
   </Step>
 
   <Step title="ネットワークアクセスレベルを変更する">
-    **Update cloud environment** ダイアログで、**Network access** を **Custom** に変更し、**Allowed domains** にドメインを入力します。**Also include default list of common package managers** をチェックして、カスタムドメインと共に [デフォルト許可リスト](/docs/ja/cloud-environments#default-allowed-domains) を保持します。代わりに **Full** を選択して、無制限のアクセスを取得します。
+    **Update cloud environment** ダイアログで、**Network access** を **Custom** に変更し、**Allowed domains** にドメインを入力します。**Also include default list of common package managers** をチェックして、カスタムドメインと共に [デフォルト許可リスト](/docs/ja/cloud-environments#default-allowed-domains)を保持します。制限のないアクセスの場合は、代わりに **Full** を選択します。
   </Step>
 
   <Step title="保存">
@@ -401,7 +401,7 @@ Claude は `claude/` プレフィックス付きブランチにプッシュし�
   </Step>
 </Steps>
 
-アクセスレベルとデフォルト許可リストの詳細については、[ネットワークアクセス](/docs/ja/cloud-environments#network-access) を参照してください。
+アクセスレベルとデフォルト許可リストの詳細については、[ネットワークアクセス](/docs/ja/cloud-environments#network-access)を参照してください。
 
 <h2 id="usage-and-limits">
   使用と制限
@@ -421,26 +421,23 @@ Claude は `claude/` プレフィックス付きブランチにプッシュし�
   `/schedule` が「Unknown command」を返す
 </h3>
 
-CLI は、その要件の 1 つが満たされていない場合、`/schedule` を非表示にします。入力中はコマンドメニューに `No commands match "/schedule"` が表示され、送信すると以下のすべてのケースを除いて `Unknown command: /schedule` が返されます（Console API キーまたは機能フラグ取得が有効な Anthropic プロファイルの場合を除く）。原因は通常、以下のいずれかです。
+CLI は `/schedule` の要件の 1 つが満たされていない場合、このコマンドを非表示にします。コマンドメニューは入力中に「No commands match "/schedule"」と表示され、送信すると `Unknown command: /schedule` が返されます。ただし、以下のケースのうち異なる回答を示すものは除きます。
 
-* Console API キー、[Anthropic プロファイルまたはフェデレーション認証情報](/docs/ja/authentication#anthropic-profiles-and-federation-credentials)、または Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry などのクラウドプロバイダーで認証されています。`/schedule` には claude.ai サブスクリプションログインが必要です。Console API キーまたはプロファイルを使用している場合、`/schedule` を送信すると代わりに `/schedule is available with Claude for Enterprise — ask your admin about migrating from API-key access` が表示されます。クラウドプロバイダーログインを使用している場合、`Unknown command: /schedule` が表示されます。シェルに `ANTHROPIC_API_KEY` または `ANTHROPIC_AUTH_TOKEN` が設定されている場合、または `settings.json` に `apiKeyHelper` が設定されている場合は、これらが claude.ai ログインより優先されるため、まず削除してください。プロファイルまたはフェデレーション認証情報も優先されるため、それもオフに切り替えてください
-* Claude Code のウェブセッション内にいます。代わりに[ウェブ UI](https://claude.ai/code/routines)からルーティンを管理してください
-* 組織のポリシーが[Claude Code on the web](/docs/ja/claude-code-on-the-web)を無効にしており、ルーティンはこれで実行されます
-* Owner が Team または Enterprise 組織の[ルーティンを無効にしました](#routines-are-disabled-by-your-organizations-policy)。v2.1.227 より前では、このケースでもコマンドが表示されていました。Claude がルーティンを作成または実行しようとすると、claude.ai がそれを拒否しました
+原因は通常、以下のいずれかです。
 
-組織のポリシーがルーティンまたは Claude Code on the web を無効にしていない限り、CLI がどのように構成されているかに関わらず、[claude.ai/code/routines](https://claude.ai/code/routines) でいつでもルーティンを作成および管理できます。
+* Console API キー、[Anthropic プロフィールまたはフェデレーション認証情報](/docs/ja/authentication#anthropic-profiles-and-federation-credentials)、または Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry などのクラウドプロバイダーで認証されている。`/schedule` には claude.ai サブスクリプションログインが必要です。Console API キーまたはプロフィールを使用していて、フィーチャーフラグ取得が有効な場合、`/schedule` を送信すると代わりに `/schedule is available with Claude for Enterprise — ask your admin about migrating from API-key access` と表示されます。クラウドプロバイダーログインの場合、`Unknown command: /schedule` が表示されます。シェルで `ANTHROPIC_API_KEY` または `ANTHROPIC_AUTH_TOKEN` が設定されている場合、または `settings.json` で `apiKeyHelper` が設定されている場合は、これらが claude.ai ログインより優先されるため、まず削除してください。プロフィールまたはフェデレーション認証情報も優先されるため、それも無効にしてください
+* 完全にサインアウトしており、API キーまたは他の認証情報がない。フィーチャーフラグ取得が有効な場合、`/schedule` を送信すると `/schedule requires a claude.ai subscription. Run /login to sign in with your claude.ai account.` と表示されます。v2.1.268 より前では、サインアウトしたセッションは Console API キーと同じ Claude for Enterprise メッセージを表示していました
+* Claude Code on the web セッション内にいる。代わりに[ウェブ UI](https://claude.ai/code/routines) からルーチンを管理してください
+* 組織のポリシーが[Claude Code on the web](/docs/ja/claude-code-on-the-web) を無効にしており、ルーチンはこれで実行されます。この場合、`/schedule` を送信すると [`Cloud sessions are disabled by your organization's policy`](/docs/ja/errors#cloud-sessions-are-disabled-by-your-organizations-policy) と回答されます。v2.1.268 より前は、`Unknown command: /schedule` が返されていました
+* Owner がチームまたはエンタープライズ組織の[ルーチンを無効にしました](#routines-are-disabled-by-your-organizations-policy)。v2.1.227 より前は、このケースでもコマンドがまだ表示されており、Claude がルーチンを作成または実行しようとするときに claude.ai がそれを拒否していました
 
-<h3 id="/schedule-asks-you-to-authenticate">
-  `/schedule` が認証を求める
-</h3>
-
-`/schedule` は実行されますが、Claude が最初に claude.ai アカウントで認証する必要があると応答する場合、CLI に保存された claude.ai ログインがありません。API アカウントはルーティンではサポートされていません。`/login` を実行し、claude.ai アカウントでサインインしてから、`/schedule` を再度実行してください。
+組織のポリシーがルーチンまたは Claude Code on the web を無効にしていない限り、CLI がどのように設定されているかに関わらず、[claude.ai/code/routines](https://claude.ai/code/routines) でルーチンを作成および管理できます。
 
 <h3 id="routines-are-disabled-by-your-organizations-policy">
-  「ルーティンは組織のポリシーによって無効になっています」
+  「Routines are disabled by your organization's policy」
 </h3>
 
-Team または Enterprise 組織の Owner が [claude.ai/admin-settings/claude-code](https://claude.ai/admin-settings/claude-code) の **Routines** トグルをオフにしている可能性があります。Claude Code v2.1.227 以降では、同じトグルが CLI の `/schedule` も非表示にします。これはサーバー側の組織設定であるため、ローカル構成からオーバーライドすることはできません。組織のルーティンを有効にするよう Owner に依頼してください。
+チームまたはエンタープライズ組織の Owner が [claude.ai/admin-settings/claude-code](https://claude.ai/admin-settings/claude-code) で **Routines** トグルをオフにしている可能性があります。Claude Code v2.1.227 以降では、同じトグルが CLI の `/schedule` も非表示にします。これはサーバー側の組織設定であるため、ローカル設定から上書きすることはできません。Owner に組織のルーチンを有効にするよう依頼してください。
 
 <h2 id="related-resources">
   関連リソース
@@ -449,5 +446,6 @@ Team または Enterprise 組織の Owner が [claude.ai/admin-settings/claude-c
 * [`/loop` とセッション内スケジューリング](/docs/ja/scheduled-tasks): オープン CLI セッション内でローカルタスクをスケジュール
 * [Desktop スケジュール済みタスク](/docs/ja/desktop-scheduled-tasks): マシンで実行され、ローカルファイルへのアクセスを持つローカルスケジュール済みタスク
 * [クラウド環境](/docs/ja/cloud-environments): クラウドセッションのネットワークアクセス、環境変数、セットアップスクリプトを構成
+* [Projects](/docs/ja/claude-projects): Claude が複数のクラウドセッション全体で調整する継続的な作業。プロジェクトから作成されたルーチンはその **Routines** タブに表示されます
 * [MCP コネクタ](/docs/ja/mcp): Slack、Linear、Google Drive などの外部サービスを接続
 * [GitHub Actions](/docs/ja/github-actions): リポジトリイベントで CI パイプラインで Claude を実行

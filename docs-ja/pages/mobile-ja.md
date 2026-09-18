@@ -21,7 +21,7 @@ Claude アプリ for [iOS](https://apps.apple.com/us/app/claude-by-anthropic/id6
     Claude アプリを [iOS](https://apps.apple.com/us/app/claude-by-anthropic/id6473753684) または [Android](https://play.google.com/store/apps/details?id=com.anthropic.claude) にインストールします。iPad では同じ iOS アプリをインストールしてください。
 
     <Tip>
-      Claude Code セッションで `/mobile` を実行すると、スキャンできるダウンロード QR コードが表示されます。`/ios` と `/android` も同じ機能です。
+      Claude Code セッションで `/mobile` を実行すると、[claude.ai/mobile](https://claude.ai/mobile) のスキャン可能な QR コードが表示されます。これはお客様の電話に適切なアプリストアを開きます。`/ios` と `/android` も同じ機能です。
     </Tip>
   </Step>
 
@@ -40,11 +40,11 @@ Claude アプリ for [iOS](https://apps.apple.com/us/app/claude-by-anthropic/id6
 
 アプリからクラウドセッションを開始したり、コンピュータで実行されている Claude Code セッションを操作したり、Dispatch にタスクをメッセージで送ったりできます。アプリはすべての 3 つで同じですが、作業が行われる場所が異なります。
 
-| 機能                                              | 接続先                                      | 使用時期                                                                                                        |
-| :---------------------------------------------- | :--------------------------------------- | :---------------------------------------------------------------------------------------------------------- |
-| [Web の Claude Code](/docs/ja/claude-code-on-the-web) | Anthropic が管理するクラウドインフラストラクチャ上のクラウドセッション | リポジトリが GitHub 上にあり、スマートフォンを置いた後もタスクが実行され続ける必要がある場合。セットアップについては [Web クイックスタート](/docs/ja/web-quickstart)を参照してください。 |
-| [リモートコントロール](/docs/ja/remote-control)                | コンピュータで実行されている Claude Code セッション         | 作業にローカルファイルシステム、ツール、または MCP サーバーが必要な場合。                                                                     |
-| [Dispatch](/docs/ja/desktop#sessions-from-dispatch)  | コンピュータの Desktop アプリ                      | タスクをメッセージで送信し、Dispatch に実行方法を決定させたい場合。Pro または Max プランが必要です。                                                 |
+| 機能                                             | 接続先                                  | 使用時期                                                                                                        |
+| :--------------------------------------------- | :----------------------------------- | :---------------------------------------------------------------------------------------------------------- |
+| [クラウドセッション](/docs/ja/claude-code-on-the-web)        | Anthropic が管理するクラウドインフラストラクチャ上のセッション | リポジトリが GitHub 上にあり、スマートフォンを置いた後もタスクが実行され続ける必要がある場合。セットアップについては [クラウドクイックスタート](/docs/ja/web-quickstart)を参照してください。 |
+| [リモートコントロール](/docs/ja/remote-control)               | コンピュータで実行されている Claude Code セッション     | 作業にローカルファイルシステム、ツール、または MCP サーバーが必要な場合。                                                                     |
+| [Dispatch](/docs/ja/desktop#sessions-from-dispatch) | コンピュータの Desktop アプリ                  | タスクをメッセージで送信し、Dispatch に実行方法を決定させたい場合。Pro または Max プランが必要です。                                                 |
 
 コンピュータがオフになる場合は、クラウドセッションを使用してください。クラウドセッションはクラウドで実行され、ラップトップを閉じた後も続行されます。リモートコントロールと Dispatch は自分のマシンを操作するため、Claude Code または Desktop アプリが実行されている状態を保つ必要があります。リモートコントロールセッション中にマシンがスリープ状態になった場合、Claude Code はマシンがオンラインに戻ったときに再接続されます。より詳細な比較については、[ターミナルから離れているときに作業する](/docs/ja/platforms#work-when-you-are-away-from-your-terminal)を参照してください。
 
@@ -54,9 +54,9 @@ Claude アプリ for [iOS](https://apps.apple.com/us/app/claude-by-anthropic/id6
   クラウドセッションを開始および監視する
 </h3>
 
-Web 上の Claude Code は Anthropic が管理するクラウドインフラストラクチャでタスクを実行するため、スマートフォンを置いた後もセッションが続行されます。Code タブからリポジトリとブランチを選択し、タスクを説明して送信します。セッションはデバイス間で永続化されます。ラップトップで開始したタスクはスマートフォンから確認できる状態で待機し、スマートフォンから開始したタスクはデスクに戻ったときに待機しています。
+クラウドセッションはクラウドインフラストラクチャでタスクを実行し、Anthropic が管理するため、スマートフォンを置いた後もセッションが続行されます。Code タブからリポジトリとブランチを選択し、タスクを説明して送信します。セッションはデバイス間で永続化されます。ラップトップで開始したタスクはスマートフォンから確認できる状態で待機し、スマートフォンから開始したタスクはデスクに戻ったときに待機しています。
 
-アプリでセッションを開いて進捗を確認したり、Claude の質問に答えたり、新しい方向に操作したりできます。Claude に [プルリクエストを監視](/docs/ja/claude-code-on-the-web#auto-fix-pull-requests)させて、CI の失敗やレビューコメントが到着したときに修正することもできます。GitHub を接続して環境をセットアップするには、[Web クイックスタート](/docs/ja/web-quickstart)に従い、クラウドセッションで実行できるすべてのことについては [Web の Claude Code](/docs/ja/claude-code-on-the-web)を参照してください。
+アプリでセッションを開いて進捗を確認したり、Claude の質問に答えたり、新しい方向に操作したりできます。Claude に [プルリクエストを監視](/docs/ja/claude-code-on-the-web#auto-fix-pull-requests)させて、CI の失敗やレビューコメントが到着したときに修正することもできます。GitHub を接続して環境をセットアップするには、[クラウドクイックスタート](/docs/ja/web-quickstart)に従い、クラウドセッションで実行できるすべてのことについては [クラウドで Claude Code を使用する](/docs/ja/claude-code-on-the-web)を参照してください。
 
 <h3 id="continue-a-local-session-with-remote-control">
   リモートコントロールでローカルセッションを続行する

@@ -88,7 +88,7 @@ Claude Code は会話中にシステムコンテキスト（ファイル変更�
 
 各モデルには独自のキャッシュがあります。[`/model`](/docs/ja/model-config#setting-your-model) で切り替えると、コンテンツが同じであっても、次のリクエストはキャッシュヒットなしで会話履歴全体を読み込みます。
 
-ターミナルで `/model` を実行すると、キャッシュがまだ温かい間は、Claude Code はスイッチの確認を求めます。キャッシュは、Claude Code がこの会話で最後にリクエストを送信した後、または Claude が最後に応答した後、1 つの[キャッシュ TTL](#cache-lifetime) の間、温かいままです。その時間が経過すると、キャッシュは期限切れになるため、Claude Code は確認を求めずに切り替えます。
+ターミナルで `/model` を実行すると、キャッシュがまだ温かい間は、Claude Code はスイッチの確認を求めます。ただし、新しいモデルが最後のレスポンスを生成したモデルではない場合に限ります。キャッシュは、Claude Code がこの会話で最後にリクエストを送信した後、または Claude が最後に応答した後、1 つの[キャッシュ TTL](#cache-lifetime) の間、温かいままです。その時間が経過すると、キャッシュは期限切れになるため、Claude Code は確認を求めずに切り替えます。
 
 v2.1.238 より前では、Claude Code はキャッシュ TTL をチェックせず、キャッシュが期限切れになった後でも確認を求めていました。
 
@@ -294,7 +294,7 @@ v2.1.251 より前では、セッション中のスタイル切り替えはキ�
 
 [セッションを再開](/docs/ja/sessions#resume-a-session)する場合、Claude Code は会話全体を再度送信し、リクエストはキャッシュから、そのプレフィックスの変更されていない部分で、かつ [キャッシュの有効期限](#cache-lifetime)内にある部分を読み込みます。このページの上部にあるレイヤーテーブルは、各レイヤーで何が変わるかを示しています。
 
-システムプロンプトは [Claude Code のアップグレード](#upgrading-claude-code)後、または再開時に異なる [`--append-system-prompt`](/docs/ja/cli-reference#system-prompt-flags) テキストがある場合に変更されます。デフォルトでは、再開された会話は開始時のシステムプロンプトを保持するため、その履歴は同じプロンプトの背後にあり、会話がコンパクト化されるか新しい会話で変更が有効になります。[再開されたセッションのシステムプロンプトフラグ](/docs/ja/cli-reference#system-prompt-flags-in-resumed-conversations)は `--system-prompt-snapshot off` とベアモードをカバーしており、これらは適用されません。
+システムプロンプトは [Claude Code のアップグレード](#upgrading-claude-code)後、または再開時に異なる [`--append-system-prompt`](/docs/ja/cli-reference#system-prompt-flags) テキストがある場合に変更されます。デフォルトでは、再開された会話は開始時のシステムプロンプトを保持するため、その履歴は同じプロンプトの背後にあり、会話がコンパクト化されるか新しい会話で変更が有効になります。[再開されたセッションのシステムプロンプトフラグ](/docs/ja/cli-reference#system-prompt-flags-in-resumed-conversations)は Claude Code がすべてのリクエストでプロンプトを再構築する場合をカバーしています。
 
 <h2 id="cache-lifetime">
   キャッシュライフタイム

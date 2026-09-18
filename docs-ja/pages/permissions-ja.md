@@ -65,7 +65,7 @@ Claude Code は、回答方法に応じてコメントを異なる方法で配�
 
 ルールは順序で評価されます。deny、ask、allow の順です。その順序での最初のマッチがアウトカムを決定し、ルールの特異性は順序を変更しません。
 
-`Bash(aws *)` のような広い deny ルールは、`Bash(aws s3 ls)` のようなより狭い allow ルールにもマッチする呼び出しを含む、マッチするすべての呼び出しをブロックするため、deny ルールはアローリスト例外を含むことはできません。ask と allow の間にも同じ優先順位が適用されます。マッチする ask ルールは、同じ呼び出しにマッチするより具体的な allow ルールがある場合でも、プロンプトを表示します。
+`Bash(aws *)` のような広い deny ルールは、`Bash(aws s3 ls)` のようなより狭い allow ルールにもマッチする呼び出しを含む、マッチするすべての呼び出しをブロックします。allow ルールは deny ルールから例外を作成することはできません。ask と allow の間にも同じ優先順位が適用されます。マッチする ask ルールは、同じ呼び出しにマッチするより具体的な allow ルールがある場合でも、プロンプトを表示します。
 
 Deny ルールは、ツール名を指定するか、ツール内のパターンをスコープするかによって異なる動作をします。`Bash` のようなベアツール名は、ツールを Claude のコンテキストから完全に削除するため、Claude はそれを見ることはありません。セッション中にそのようなルールを追加する場合、Claude は次のツール呼び出しからそのツールを呼び出すことができません。[ツール全体を拒否する](/docs/ja/prompt-caching#denying-an-entire-tool)では、Claude が既に見た定義に何が起こるかについて説明しています。`Bash(rm *)` のようなスコープ付きルールは、ツールを利用可能なままにし、Claude が試みたときにマッチする呼び出しをブロックします。
 
@@ -333,6 +333,8 @@ Manual モードでは、このセットのコマンドは以下の場合にも�
 
 ターゲットの背後にファイルがない場合はチェックされません。`/dev/null`、`2>&1` や `<&3` などのファイルディスクリプタ形式、および here-docs と here-strings です。
 
+Claude Code はまた、`tee` コマンドが書き込むファイルをチェックします。これには `make | tee build.log` などのパイプラインが含まれます。チェックは `Edit` allow ルールと deny ルール、[保護されたパス](/docs/ja/permission-modes#protected-paths)、および[作業ディレクトリ](#working-directories)をカバーします。`Bash(tee *)` のような allow ルールは、作業ディレクトリの外の宛先をカバーしません。Claude Code は v2.1.269 以降で `tee` ターゲットをチェックします。
+
 <h3 id="powershell">
   PowerShell
 </h3>
@@ -454,12 +456,19 @@ Windows では、パスはマッチング前に POSIX 形式に正規化され�
 
 パスが gitignore パターンとして使用可能でない deny または ask ルールは、その正確なパスを保護します。使用可能でないパターンを持つ allow ルールは何も承認しません。
 
+deny または ask パターンが `!` で始まる場合、gitignore 否定です。それは、その前にリストされた `path` または `./path` ルールから、それがマッチするパスを削除します。1 つの設定ファイルの `deny` リストで、`Read(*.env)` の後に `Read(!sample.env)` が続く場合、名前が `.env` で終わるすべてのファイルを任意の深さでブロックしますが、`sample.env` という名前のファイルは除きます。最初にリストされた `!` ルールは何も削除しません。
+
+削除は同じソースからのルールにのみ到達します。プロジェクト設定または `--disallowedTools` の `Read(!.env)` は、管理設定または他の設定ファイルからの `Read(./.env)` deny をキャンセルしません。
+
+2 つの制限は、`!` パターンが削除できるものを狭めます。
+
+* Claude Code は、`!` の後に `/`、`~/`、または `//` が続く場合でも、`!` パターンを現在のディレクトリから相対的に読み取るため、パターンはこれらのプレフィックスの 1 つでアンカーされたルールに到達できません。`Read(!~/notes/public/**)` は `Read(~/notes/**)` から何も削除しません。
+* 削除は、ルールが全体としてブロックするディレクトリ内のファイルを再度開くことはできません。`Read(secrets/**)` と `Read(!secrets/public/**)` では、Claude Code は `secrets/public` をそれ以外の `secrets` と一緒にブロックします。
+
 Claude がシンボリックリンクにアクセスするとき、権限ルールは 2 つのパスをチェックします。シンボリックリンク自体と、それが解決するファイルです。Allow ルールと deny ルールはそのペアを異なる方法で扱います。allow ルールはプロンプトにフォールバックし、deny ルールは完全にブロックします。
 
 * **Allow ルール**：シンボリックリンクパスとそのターゲットの両方がマッチする場合にのみ適用されます。許可されたディレクトリ内のシンボリックリンクがそれの外を指している場合でも、プロンプトが表示されます。
-* **Deny ルール**：シンボリックリンクパスまたはそのターゲットのいずれかがマッチする場合に適用されます。拒否されたファイルを指すシンボリックリンク自体が拒否されます。
-
-たとえば、`Read(./project/**)` が許可され、`Read(~/.ssh/**)` が拒否されている場合、`./project/key` にあるシンボリックリンクが `~/.ssh/id_rsa` を指している場合、ターゲットが allow ルールに失敗し、deny ルールにマッチするため、ブロックされます。
+* **Deny ルール**：シンボリックリンクパスまたはそのターゲットのいずれかがマッチする場合に適用されます。拒否されたファイルを指すシンボリックリンク自体が拒否されます。たとえば、`Read(./project/**)` が許可され、`Read(~/.ssh/**)` が拒否されている場合、`./project/key` にあるシンボリックリンクが `~/.ssh/id_rsa` を指している場合、ターゲットが allow ルールに失敗し、deny ルールにマッチするため、ブロックされます。
 
 ツールが承認されたファイルを開くとき、Claude Code は [パスが権限チェックが承認した場所にまだ解決されることを確認](/docs/ja/errors#refusing-after-a-symlink-changed)します。
 
@@ -508,7 +517,9 @@ Claude がフェッチを自由に行えるようにしながら、サンドボ�
 }
 ```
 
-Claude にページをフェッチするよう求めると、プロンプトなしでフェッチします。[サンドボックス化](/docs/ja/sandboxing)された `curl` をサンドボックス許可リストの外のホストに対して実行するよう求めると、Claude Code はそのホストに対してプロンプトを表示するか、[auto モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)で分類器にリクエストを送信します。ベア形式はホストを許可リストに追加しなかったためです。
+Claude にページをフェッチするよう求めると、プロンプトなしでフェッチします。[サンドボックス化](/docs/ja/sandboxing)された `curl` をサンドボックス許可リストの外のホストに対して実行するよう求めると、Claude Code はそのホストに対してプロンプトを表示します。ベア形式はホストを許可リストに追加しなかったためです。
+
+[auto モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)では、Claude は代わりにホストを分類器がレビューするコマンドの [per-command allowed domains](/docs/ja/sandboxing#per-command-allowed-domains-in-auto-mode) に指定します。
 
 <h3 id="mcp">
   MCP
@@ -534,7 +545,7 @@ Claude Desktop アプリの [Cowork](https://claude.com/docs/cowork/overview)セ
 * `Agent(Plan)` は Plan subagent をマッチさせます
 * `Agent(my-custom-agent)` は `my-custom-agent` という名前のカスタム subagent をマッチさせます
 
-これらのルールを設定の `deny` 配列に追加するか、`--disallowedTools` CLI フラグを使用して特定のエージェントを無効にします。Explore エージェントを無効にするには。
+これらのルールを設定の `deny` 配列に追加するか、`--disallowedTools` CLI フラグを使用して特定のエージェントを無効にします。Explore エージェントを無効にするには：
 
 ```json theme={null}
 {
@@ -642,27 +653,27 @@ Claude Code は現在の作業ディレクトリとその親、`~/.claude/` の�
 * **設定ディレクトリから起動する**：使用する `.claude/` 設定を含むディレクトリから Claude Code を実行します
 
 <h2 id="how-permissions-interact-with-sandboxing">
-  権限がサンドボックスとどのように相互作用するか
+  権限とサンドボックス化がどのように相互作用するか
 </h2>
 
-権限と[サンドボックス](/docs/ja/sandboxing)は、補完的なセキュリティレイヤーです。
+権限と[サンドボックス化](/docs/ja/sandboxing)は補完的なセキュリティレイヤーです。
 
-* **権限**は、Claude Code が使用できるツール、およびアクセスできるファイルまたはドメインを制御します。Bash、Read、Edit、WebFetch、MCP、およびその他すべてのツールに適用されます。ただし、他のツールが残っている場合、deny または ask ルールは[`EndConversation`](/docs/ja/tools-reference#endconversation-tool-behavior)をブロックできません。
-* **サンドボックス**は、Bash ツールのファイルシステムとネットワークアクセスを制限する OS レベルの強制を提供します。Bash コマンドとその子プロセスにのみ適用されます。
+* **権限**は Claude Code が使用できるツール、およびアクセスできるファイルやドメインを制御します。これらは Bash、Read、Edit、WebFetch、MCP、およびその他すべてのツールに適用されます。ただし、他のツールが残っている場合、deny ルールまたは ask ルールは[`EndConversation`](/docs/ja/tools-reference#endconversation-tool-behavior)をブロックできません。
+* **サンドボックス化**は OS レベルの強制を提供し、シェルコマンドのファイルシステムとネットワークアクセスを制限します。これは Bash、PowerShell、および[Monitor](/docs/ja/tools-reference#monitor-tool)コマンドとその子プロセスにのみ適用されます。
 
-防御を深くするために両方を使用します。サンドボックス制限は、プロンプトインジェクションが Claude の意思決定をバイパスしても適用されます。パスとドメインは、サンドボックス設定と権限ルールの両方から[最終的なサンドボックス構成にマージされます](/docs/ja/sandboxing#permission-rules)。
+防御の多層化のために両方を使用してください。プロンプトインジェクションが Claude の意思決定をバイパスしても、サンドボックス制限は引き続き適用されます。サンドボックス設定と権限ルールからのパスとドメインは[最終的なサンドボックス構成にマージされます](/docs/ja/sandboxing#permission-rules)。
 
-サンドボックスを有効にして `autoAllowBashIfSandboxed` をデフォルトの `true` のままにしておくと、サンドボックス化された Bash コマンドは、権限に bare `Bash` ask ルール、または[同等の `Bash(*)` 形式](#match-all-uses-of-a-tool)が含まれている場合でもプロンプトなしで実行されます。サンドボックス境界は、そのツール全体のプロンプトの代わりになります。
+サンドボックス化を有効にして `autoAllowBashIfSandboxed` をデフォルトの `true` のままにすると、サンドボックス化された Bash コマンドは、権限に bare `Bash` ask ルール、または[同等の `Bash(*)` フォーム](#match-all-uses-of-a-tool)が含まれている場合でも、プロンプトなしで実行されます。サンドボックス境界がそのツール全体のプロンプトの代わりになります。
 
-[プランモード](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode)では、Claude Code はこの置換をスキップします。ask ルールがない場合、[組み込みの読み取り専用コマンド](#read-only-commands)は引き続きプロンプトなしで実行され、その他のシェルコマンドはプランニング中に通常の権限フローを通過します。プランモードの詳細については、[プランモード](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode)を参照して、Claude Code がそこでコマンドをどのようにゲートするかを確認してください。bare `Bash` ask ルールがある場合、サンドボックス化された読み取り専用コマンドを含むすべての Bash コマンドがプロンプトされます。これはサンドボックスの外と同じです。v2.1.212 より前では、置換はプランモードでも適用されていました。
+[プランモード](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode)では、Claude Code はこの置き換えをスキップします。ask ルールがない場合、[組み込みの読み取り専用コマンド](#read-only-commands)は引き続きプロンプトなしで実行され、その他のシェルコマンドはプランニング中に通常の権限フローを通過します。プランモードの詳細については、[プランモード](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode)を参照して、Claude Code がそこでコマンドをどのようにゲートするかを確認してください。bare `Bash` ask ルールがある場合、サンドボックス化された読み取り専用コマンドを含むすべての Bash コマンドがプロンプトされます。これはサンドボックス化の外側と同じです。v2.1.212 より前では、置き換えはプランモードでも適用されていました。
 
 これらのチェックは引き続き適用されます。
 
-* `Bash(git push *)` のようなコンテンツスコープ ask ルールは、引き続きプロンプトを強制します
+* `Bash(git push *)` のようなコンテンツスコープの ask ルールは引き続きプロンプトを強制します
 * 明示的な deny ルールは引き続き適用されます
-* [重要なパス](/docs/ja/permission-modes#critical-paths)をターゲットとする `rm` または `rmdir` コマンドは、引き続き通常の権限フローを通過します
+* [重要なパス](/docs/ja/permission-modes#critical-paths)をターゲットとする `rm` または `rmdir` コマンドは引き続き通常の権限フローを通過します
 
-除外されたコマンドなど、サンドボックス化されて実行されないコマンドは、通常どおり bare `Bash` ask ルールを尊重します。[サンドボックスモード](/docs/ja/sandboxing#sandbox-modes)を参照して、この動作を変更してください。
+除外されたコマンドなど、サンドボックス化されて実行されないコマンドは、通常どおり bare `Bash` ask ルールを尊重します。この動作を変更するには、[サンドボックスモード](/docs/ja/sandboxing#sandbox-modes)を参照してください。
 
 <span id="managed-only-settings" />
 

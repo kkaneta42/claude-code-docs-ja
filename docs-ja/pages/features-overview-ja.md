@@ -294,7 +294,7 @@ Claude Code は、コードについて推論するモデルと、ファイル�
 
     * エージェント独自のシステムプロンプト（Claude Code システムプロンプトではない）
     * エージェントの `skills:` フィールドにリストされているスキルの完全なコンテンツ
-    * CLAUDE.md と git ステータス（ただし、組み込みの Explore および Plan エージェントは[両方を省略](/docs/ja/sub-agents#what-loads-at-startup)）
+    * CLAUDE.md と git ステータス（ただし、組み込みの Explore および Plan エージェントは[両方を省略](/docs/ja/sub-agents#what-loads-at-startup) し、エージェント定義が [`omitClaudeMd`](/docs/ja/sub-agents#supported-frontmatter-fields) を設定する場合はユーザー、プロジェクト、ローカル CLAUDE.md ファイルをスキップします）
     * リードエージェントがプロンプトで渡すコンテキスト
 
     [fork](/docs/ja/sub-agents#fork-the-current-conversation) の場合、Claude Code は親の会話（これまでのところ）、システムプロンプト、ツールをロードします。

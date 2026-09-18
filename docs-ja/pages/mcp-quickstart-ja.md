@@ -308,8 +308,8 @@ Claude Code がプロジェクトスコープのサーバーを初めて見る�
 * **Claude Code デスクトップアプリ**：[Connectors UI](/docs/ja/desktop#connect-external-tools)を通じてサーバーを追加します。
 * **Claude Desktop チャットアプリ**：Claude Code とは別のアプリです。`claude_desktop_config.json` からサーバーを CLI にコピーするには、macOS または WSL で `claude mcp add-from-claude-desktop` を実行します。
 * **VS Code**：[MCP で外部ツールに接続する](/docs/ja/vs-code#connect-to-external-tools-with-mcp)を参照してください。
-* **Web 上の Claude Code**：リポジトリから `.mcp.json` を読み込みます。[.mcp.json を直接編集する](#edit-mcp-json-directly)を参照してください。
-* **Claude.ai**：[claude.ai/customize/connectors](https://claude.ai/customize/connectors) で追加したコネクタは、そのアカウントでサインインするとき CLI に自動的に読み込まれます。[Claude.ai から MCP サーバーを使用する](/docs/ja/mcp#use-mcp-servers-from-claude-ai)を参照してください。
+* **クラウドセッション**：リポジトリに `.mcp.json` をコミットします。1 つのリポジトリを持つセッションはそれを読み込みます。[.mcp.json を直接編集する](#edit-mcp-json-directly)と[セットアップから引き継がれるもの](/docs/ja/cloud-environments#what-carries-over-from-your-setup)を参照してください。
+* **Claude.ai**：[claude.ai/customize/connectors](https://claude.ai/customize/connectors)で追加したコネクタは、そのアカウントでサインインするとき CLI に自動的に読み込まれます。[Claude.ai から MCP サーバーを使用する](/docs/ja/mcp#use-mcp-servers-from-claude-ai)を参照してください。
 
 <h2 id="troubleshooting">
   トラブルシューティング

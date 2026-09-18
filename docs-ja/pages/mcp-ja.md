@@ -323,7 +323,7 @@ Claude Code は以下の設定の問題について警告します。各エン�
 * **隠れた空白**: Claude Code は MCP 設定値が隠れた先頭または末尾の空白を持つときに警告します。これはしばしば末尾の改行を持つトークンを貼り付けることから来ます。Claude Code は `command`、`url`、各 `args` エントリ、および `env` と `headers` の下の値とキー名をチェックします。Claude Code は警告を `claude mcp list` 出力と `/mcp` に表示し、影響を受けたフィールドに名前を付けます。例えば `Leading or trailing whitespace in: headers.Authorization`。Claude Code は空白をトリムしません。書き込まれたとおりに値を使用するため、設定を編集してそれを削除してください。
 * **複数のスコープで同じ名前**: 異なるエンドポイントで複数の [スコープ](#mcp-installation-scopes) で同じサーバー名を定義する場合、Claude Code は `claude mcp list` 出力と `/mcp` で競合について警告します。Claude Code は OAuth サインインをエンドポイントごとに保存するため、1 つのプロジェクトで読み込まれる定義を認証すると、別の定義が読み込まれるプロジェクトで別にサインインする必要があります。必要なエンドポイントを保持し、他を `claude mcp remove <name> --scope <scope>` で削除してください。警告では、Claude Code は各スコープのエンドポイントを設定に書き込まれたとおりに引用します。[`${VAR}` 参照](#environment-variable-expansion-in-mcp-json) は展開されないため、API キーなどの解決された値を表示しません。
 * **予約名**: Claude Code は `workspace`、`claude-in-chrome`、`computer-use`、`Claude Preview`、`Claude Browser` を含む組み込みサーバーの名前を予約しています。設定が予約名を持つサーバーを定義する場合、Claude Code はロード時にそれをスキップし、名前を変更するよう求める警告を表示します。`claude mcp add` は予約名を拒否します。`Claude Preview` と `Claude Browser` は両方とも [Claude Code デスクトップアプリのプレビューペイン](/docs/ja/desktop#preview-your-app) が使用する組み込みサーバーに名前を付けます。v2.1.205 より前では、`Claude Browser` は予約されていなかったため、ユーザー設定サーバーはその名前で登録できました。
-* **環境変数の欠落**: サーバーの設定の [`${VAR}` 参照](#environment-variable-expansion-in-mcp-json) が設定されていない変数に名前を付け、`:-default` がない場合、Claude Code は `claude mcp list` 出力と `/mcp` で警告し、変数に名前を付けます。`${VAR}` テキストは展開されないままサーバーを読み込みます。変数を設定するか、`${VAR:-default}` フォールバックを追加してください。
+* **環境変数の欠落**: サーバーの設定の [`${VAR}` 参照](#environment-variable-expansion-in-mcp-json) が設定されていない変数に名前を付け、`:-default` がない場合、Claude Code は `claude mcp list` 出力と `/mcp` で警告し、変数に名前を付けます。`${VAR}` テキストは展開されないままサーバーを読み込みます。変数を設定するか、`${VAR:-default}` フォールバックを追加してください。リモートサーバーの `url` と `headers` では、一部の認証情報変数 [空として読み込まれます](#credential-variables-that-read-as-empty) 代わりに、警告なしで。
 
 <h4 id="tool-availability">
   ツール可用性
@@ -360,22 +360,24 @@ Claude Code は各サーバーに対して 2 つのリストの 1 つを正確�
 
 Claude Code は 2 つのクライアントランタイムの 1 つを通じて MCP サーバーに接続します。v1 ランタイムは MCP TypeScript SDK 1.x に基づいています。v2 ランタイムは [MCP TypeScript SDK 2.0](https://ts.sdk.modelcontextprotocol.io/v2/) 上の同じコードで、MCP プロトコルリビジョン 2026-07-28 を追加します。このページの残りは両方のランタイムに適用されます。ただし、セクションが v2 ランタイムに名前を付ける場合を除きます。
 
-Claude Code v2.1.232 以降では、Claude Code は v2 ランタイムを使用します。起動するたびにランタイムを選択し、終了するまで保持します。これを実行する場合は v1 を使用します。
+Claude Code は起動するたびにランタイムを選択し、終了するまで保持します。[フィーチャーフラグを取得](/docs/ja/env-vars#features-that-need-feature-flag-fetching) するセッションでは、Claude Code v2.1.232 以降で v2 ランタイムを使用します。
 
-* Amazon Bedrock、Claude Platform on AWS、Google Cloud の Agent Platform、または Microsoft Foundry で。ただし、Claude Code を埋め込むホストプラットフォームが [`CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST`](/docs/ja/env-vars) を設定する場合を除きます
-* [Claude apps gateway](/docs/ja/claude-apps-gateway) を通じてサインイン
-* [フィーチャーフラグ取得がオフ](/docs/ja/env-vars#features-that-need-feature-flag-fetching)
+フィーチャーフラグを取得しないセッションでは、Claude Code は Claude Code v2.1.274 以降でデフォルトで v2 ランタイムを使用します。
+
+* Amazon Bedrock、Claude Platform on AWS、Google Cloud の Agent Platform、または Microsoft Foundry のセッション。ただし、Claude Code を埋め込むホストプラットフォームが [`CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST`](/docs/ja/env-vars) を設定する場合を除きます
+* [Claude apps gateway](/docs/ja/claude-apps-gateway) を通じてサインインしたセッション
+* テレメトリまたはフィーチャーフラグ取得をオフにしたセッション。例えば `DISABLE_TELEMETRY` を使用
 
 v2 では、Claude Code も：
 
-* HTTP と claude.ai コネクタサーバーに新しいリビジョンをサポートするかどうかを尋ね、それをサポートするサーバーで使用します。Stdio サーバーに尋ねるのは [`MCP_PROTOCOL_NEGOTIATION`](/docs/ja/env-vars) を `auto` に設定する場合のみで、他のすべてのサーバーに v1 のように接続します。
+* HTTP サーバーに新しいリビジョンをサポートするかどうかを尋ね、それをサポートするサーバーで使用します。フィーチャーフラグを取得するセッションで claude.ai コネクタサーバーにも尋ねます。Stdio サーバーに尋ねるか、すべてのセッションでコネクタサーバーに尋ねるには、[`MCP_PROTOCOL_NEGOTIATION`](/docs/ja/env-vars) を `auto` に設定してください。他のすべてのサーバーに v1 のように接続します。
 * 新しいリビジョンのサーバーから [ストリームを保持](#notification-streams-on-the-v2-runtime) 上で `list_changed` 通知を受け取ります。
 * 新しいリビジョンで接続する [チャネル](#push-messages-with-channels) サーバーを登録しません。そのリビジョンはチャネルメッセージを運ぶことができないためです。
 * 予期しない発行者に名前を付ける認可応答の [MCP OAuth サインイン](#authenticate-with-remote-mcp-servers) に失敗します。
 
 Anthropic は特定のサーバーを以前のプロトコルに保つか、Claude Code が取得するフィーチャーフラグでそのストリームをオフにすることができます。
 
-ランタイムを自分で選択するには、[`MCP_SDK_GENERATION`](/docs/ja/env-vars) を `v1` または `v2` に設定してください。Claude Code が尋ねるかどうかを決定するには、[`MCP_PROTOCOL_NEGOTIATION`](/docs/ja/env-vars) を `auto` または `legacy` に設定してください。Claude Code がデフォルトで v1 を使用する場合、`v2` をピン留めしても尋ねません。`auto` も設定してください。
+ランタイムを自分で選択するには、[`MCP_SDK_GENERATION`](/docs/ja/env-vars) を `v1` または `v2` に設定してください。Claude Code が尋ねるかどうかを決定するには、[`MCP_PROTOCOL_NEGOTIATION`](/docs/ja/env-vars) を `auto` または `legacy` に設定してください。
 
 <h3 id="dynamic-tool-updates">
   動的ツール更新
@@ -679,12 +681,17 @@ claude mcp add --transport http hubspot --scope user https://mcp.hubspot.com/ant
 
 Claude Code は `.mcp.json` ファイルの環境変数の展開をサポートしており、チームが設定を共有しながら、マシン固有のパスと API キーなどの機密値の柔軟性を維持できます。
 
-**サポートされている構文：**
+<h4 id="supported-syntax">
+  サポートされている構文
+</h4>
 
 * `${VAR}` - 環境変数 `VAR` の値に展開されます
 * `${VAR:-default}` - `VAR` が設定されている場合は `VAR` に展開され、そうでない場合はデフォルトを使用します
 
-**展開場所：**
+<h4 id="expansion-locations">
+  展開場所
+</h4>
+
 環境変数は以下で展開できます：
 
 * `command` - サーバー実行可能ファイルのパス
@@ -693,7 +700,9 @@ Claude Code は `.mcp.json` ファイルの環境変数の展開をサポート�
 * `url` - HTTP サーバータイプの場合
 * `headers` - HTTP サーバー認証の場合
 
-**変数展開を使用した例：**
+<h4 id="example-with-variable-expansion">
+  変数展開を使用した例
+</h4>
 
 ```json theme={null}
 {
@@ -709,7 +718,44 @@ Claude Code は `.mcp.json` ファイルの環境変数の展開をサポート�
 }
 ```
 
-参照される環境変数が設定されておらず、デフォルト値がない場合、設定はまだロードされます。Claude Code はそのサーバーに対して `claude mcp list` 出力で欠落変数の警告を報告し、展開されていない `${VAR}` テキストをそのまま使用します。変数を設定するか、`:-default` フォールバックを追加して、サーバーが意図した値で起動するようにしてください。
+<h4 id="unset-variables-without-a-default">
+  デフォルトなしの未設定変数
+</h4>
+
+参照される環境変数が設定されておらず、デフォルト値がない場合、設定はまだロードされます。Claude Code はそのサーバーに対して `claude mcp list` 出力で欠落変数の警告を報告し、展開されていない `${VAR}` テキストをそのまま使用します。変数を設定するか、`:-default` フォールバックを追加して、サーバーが意図した値で起動するようにしてください。リモートサーバーの `url` と `headers` では、一部の認証情報変数は[空として読み込まれます](#credential-variables-that-read-as-empty)。警告はありません。
+
+<h4 id="credential-variables-that-read-as-empty">
+  空として読み込まれる認証情報変数
+</h4>
+
+リモートサーバーの `url` と `headers` では、Claude Code は環境から認証情報変数を空として読み込みます。これは、プロジェクトの `.mcp.json` またはプラグインが Claude Code またはクラウドプロバイダーの認証情報をそれが指定するサーバーに送信するのを防ぎます。`Bearer ${ANTHROPIC_AUTH_TOKEN}` と書いた場合、サーバーは認証情報なしで `Bearer ` を受け取り、通常は `401` でリクエストを拒否します。Claude Code はそれを接続失敗として報告します。
+
+対象となる名前は：
+
+* Claude Code 独自の認証情報（`ANTHROPIC_API_KEY` や `ANTHROPIC_AUTH_TOKEN` など）
+* クラウドプロバイダーの認証情報（`AWS_BEARER_TOKEN_BEDROCK` など）
+* 環境が保持する他の認証情報（`HTTPS_PROXY` や `NPM_TOKEN` など）
+
+対象となる名前は、変数を設定しているかどうかに関わらず空として読み込まれ、それに対する `:-default` フォールバックは無視されます。`ANTHROPIC_BASE_URL` などのプロバイダーベース URL はまだ展開されるため、`"url": "${ANTHROPIC_BASE_URL}/mcp"` は機能します。ただし、URL の値自体がユーザー名とパスワードなどの認証情報を埋め込んでいない限りです。
+
+`API_KEY` などこのセットの外にある名前は、書かれたとおりに展開されます。サーバーに対象となる認証情報の 1 つを提供するには、それを自分の名前の変数にコピーして、その名前を参照してください。
+
+リモートサーバーの `url` または `headers` が設定した対象変数を参照する場合、Claude Code はデバッグログ行でそれを指定します。行を読むには、`claude --debug-file /tmp/claude-debug.log` を実行して、そのファイルで `never expanded toward a remote server` を検索してください。
+
+<h4 id="how-references-appear-in-/mcp-and-cli-output">
+  `/mcp` と CLI 出力での参照の表示方法
+</h4>
+
+ローカル、プロジェクト、またはユーザー[スコープ](#mcp-installation-scopes)内のサーバーの場合、以下のサーフェスは `${VAR}` 参照を解決された値ではなく名前で表示します：
+
+* サーバーの `/mcp` 詳細ビューの URL またはコマンドライン
+* `claude mcp list` と `claude mcp get` の出力
+
+`/mcp` 詳細ビューは Claude Code v2.1.268 以降でこの方法で参照を表示します。
+
+組織が `managedMcpServers` 設定を通じて提供するサーバーの場合、これらのサーフェスは[URL のホストのみ](/docs/ja/managed-mcp#what-users-can-see-and-change)を表示します。
+
+接続が失敗した場合に `claude mcp list`、`claude mcp get`、および `/mcp` が何を表示するかを確認するには、[サーバーステータスの詳細](#server-status-detail)を参照してください。
 
 <h2 id="practical-examples">
   実践的な例
@@ -779,7 +825,7 @@ Claude Code は、サーバーが `401 Unauthorized` または `403 Forbidden` �
 
 * サインインしていないサーバーの場合、どちらのステータスコードでも `/mcp` でフラグが立てられるため、OAuth フローを完了できます。
 * [claude.ai コネクタ](#use-mcp-servers-from-claude-ai)の場合、claude.ai がセッショントークンを拒否することによる `401` はコネクタにフラグを立てません。コネクタを再認可してもログインを修正できないためです。Claude Code は代わりに[セッショントークン拒否状態](/docs/ja/errors#claude-ai-rejected-the-session-token)を表示します。
-* `Authorization` ヘッダーを設定したサーバーの場合、`headers` または [`headersHelper`](#use-dynamic-headers-for-custom-authentication) を通じて、接続中の `401` または `403` はサーバーにフラグを立てません。修正する認証情報は設定した認証情報だからです。Claude Code は代わりに接続が失敗したことを報告します。
+* `Authorization` ヘッダーを設定したサーバーの場合、`headers` または [`headersHelper`](#use-dynamic-headers-for-custom-authentication) を通じて、接続中の `401` または `403` はサーバーにフラグを立てません。修正する認証情報は設定した認証情報だからです。Claude Code は代わりに接続が失敗したことを報告します。設定したヘッダーが `${VAR}` 参照から設定されている場合は、その変数が Claude Code が[空として読み込む](#credential-variables-that-read-as-empty)変数の 1 つであるかどうかを確認してください。
 * [クラウドセッションに配信されたコネクタ](#how-connectors-reach-claude-code)の場合、Claude Code はサインインフローを実行しません。セッションのプロキシが claude.ai で付与した認可を使用してコネクタに認証するためです。そこでコネクタが再度認可が必要な場合、セッションからではなく [claude.ai/customize/connectors](https://claude.ai/customize/connectors) で再接続してください。
 
 既にサインインした OAuth サーバーへのリクエストが `401 Unauthorized` を返すとき、Claude Code は保存されたトークンをリフレッシュし、再接続して、リクエストを 1 回再試行します。その再試行も失敗した場合にのみ、`/mcp` でサーバーにフラグを立てます。v2.1.206 より前は、ネットワークエラーなどの一時的な理由でトークンリフレッシュが失敗した場合、リフレッシュトークンがまだ有効であっても、OAuth サーバーは残りのセッション中、認証が必要としてフラグが立てられていました。
@@ -789,6 +835,8 @@ Claude Code は、サーバーが `401 Unauthorized` または `403 Forbidden` �
 `WWW-Authenticate` ヘッダーを返すカスタムサーバーは、その認可サーバーを指し、他のリモートサーバーと同じ自動検出を取得します。
 
 Claude Code は、1 つ以上の設定されたサーバーが認証を必要とするときにスタートアップ通知も表示するため、`/mcp` を開いて認証が必要なサーバーを検出する必要がありません。この通知には Claude Code v2.1.193 以降が必要です。Claude Code からサインインできるサーバーのみをカウントします。v2.1.218 より前は、claude.ai で接続されていない [claude.ai コネクタ](#use-mcp-servers-from-claude-ai)もカウントされていました。これらは claude.ai 設定からのみ接続できます。
+
+通知は各サーバーを 1 回アナウンスし、そのサーバーが接続して再度サインインが必要になるまで、後の起動時のカウントから除外します。`/mcp` は依然としてサインインが必要なすべてのサーバーをリストします。
 
 非対話モードでは `/mcp` パネルがないため、Claude Code は OAuth フローを実行できません。v2.1.196 以降、[ツール検索](#scale-with-mcp-tool-search)が有効な（デフォルト）`claude -p` または Agent SDK 実行中に設定されたサーバーが認証を必要とするとき、Claude Code はサーバーのツールが認可されるまで利用できないことを Claude に伝えます。Claude はサーバーが設定されていないかのように応答する代わりに、サインインが必要なサーバーに名前を付けることができます。対話セッションから `/mcp` または `claude mcp login <name>` でサインインを完了してください。
 
@@ -1222,7 +1270,7 @@ claude.ai connector を管理する設定は、セッションが実行される
 | セッションが実行される場所                                                                                                        | Connector がどのように到達するか        | 何が connector を管理するか                                                                                                                                           |
 | :------------------------------------------------------------------------------------------------------------------- | :--------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | Terminal、[VS Code](/docs/ja/vs-code)、[JetBrains](/docs/ja/jetbrains)、および [Agent SDK](/docs/ja/agent-sdk/claude-code-features) セッション | Claude Code が claude.ai から取得 | このセクションの設定および [managed MCP configuration](/docs/ja/managed-mcp)                                                                                                    |
-| [Cloud sessions](/docs/ja/claude-code-on-the-web)                                                                         | リモートホストが渡す                   | claude.ai 組織設定、および [allowlist と denylist](/docs/ja/managed-mcp#policy-based-control-with-allowlists-and-denylists) 設定がセッションに到達し、セッションを実行するホスト上の `managed-mcp.json` |
+| [Cloud sessions](/docs/ja/claude-code-on-the-web)                                                                         | クラウドホストが渡す                   | claude.ai 組織設定、および [allowlist と denylist](/docs/ja/managed-mcp#policy-based-control-with-allowlists-and-denylists) 設定がセッションに到達し、セッションを実行するホスト上の `managed-mcp.json` |
 | [desktop app](/docs/ja/desktop) のローカルおよび SSH セッション                                                                        | デスクトップアプリが in-process で配信    | 組織の [connector tool controls](#organization-controls-on-connector-tools) の `blocked` エントリ                                                                     |
 
 [`disableClaudeAiConnectors`](#disable-claude-ai-connectors)、`ENABLE_CLAUDEAI_MCP_SERVERS`、および [`allowAllClaudeAiMcps`](/docs/ja/settings-reference#allowallclaudeaimcps) は最初の行のみに作用します。Claude Code が自体で取得する connector です。他の 2 つの行は次の点で異なります。

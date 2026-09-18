@@ -224,15 +224,15 @@ Team、Enterprise、または Console 組織を管理している場合は、[�
   クイックスタート
 </h2>
 
-Fakechat は公式にサポートされているデモチャネルで、localhost でチャット UI を実行し、認証は不要で、設定する外部サービスもありません。
+Fakechat は公式にサポートされているデモチャネルで、localhost 上でチャット UI を実行し、認証が不要で外部サービスの設定も必要ありません。
 
-Fakechat をインストールして有効にすると、ブラウザで入力でき、メッセージが Claude Code セッションに到着します。Claude が返信し、返信がブラウザに戻ります。Fakechat インターフェイスをテストした後、[Telegram](https://github.com/anthropics/claude-plugins-official/tree/main/external_plugins/telegram)、[Discord](https://github.com/anthropics/claude-plugins-official/tree/main/external_plugins/discord)、または [iMessage](https://github.com/anthropics/claude-plugins-official/tree/main/external_plugins/imessage) を試してください。
+Fakechat をインストールして有効にすると、ブラウザで入力したメッセージが Claude Code セッションに到着します。Claude が返信し、その返信がブラウザに表示されます。Fakechat インターフェースをテストした後、[Telegram](https://github.com/anthropics/claude-plugins-official/tree/main/external_plugins/telegram)、[Discord](https://github.com/anthropics/claude-plugins-official/tree/main/external_plugins/discord)、または [iMessage](https://github.com/anthropics/claude-plugins-official/tree/main/external_plugins/imessage) を試してみてください。
 
 Fakechat デモを試すには、以下が必要です。
 
-* Claude Code が[インストールされ、認証されている](/docs/ja/quickstart#step-1-install-claude-code)（claude.ai アカウントまたは Claude Console API キー）
-* [Bun](https://bun.sh) がインストールされている。事前構築されたチャネルプラグインは Bun スクリプトです。`bun --version` で確認します。失敗する場合は、[Bun をインストール](https://bun.sh/docs/installation)します。
-* **Team、Enterprise、または管理 Console 組織**：管理者が[チャネルを有効にする](#enterprise-controls)必要があります。
+* Claude Code が [インストールされて認証済み](/docs/ja/quickstart#step-1-install-claude-code)（claude.ai アカウントまたは Claude Console API キーを使用）
+* [Bun](https://bun.sh) がインストール済み。事前構築されたチャネルプラグインは Bun スクリプトです。`bun --version` で確認してください。失敗する場合は、[Bun をインストール](https://bun.sh/docs/installation)してください。
+* **Team、Enterprise、または管理対象 Console org**：管理者が管理設定で[チャネルを有効にする](#enterprise-controls)必要があります
 
 <Steps>
   <Step title="Fakechat チャネルプラグインをインストールする">
@@ -242,12 +242,14 @@ Fakechat デモを試すには、以下が必要です。
     /plugin install fakechat@claude-plugins-official
     ```
 
-    インストールが失敗した場合、Claude Code が報告するメッセージに一致させてください。
+    インストールが失敗した場合は、Claude Code が報告するメッセージに一致させてください。
 
-    * `Marketplace "claude-plugins-official" not found`：`/plugin marketplace add anthropics/claude-plugins-official` でマーケットプレイスを追加してから、インストールを再試行します。
+    * `Marketplace "claude-plugins-official" not found`：`/plugin marketplace add anthropics/claude-plugins-official` でマーケットプレイスを追加してから、インストールを再試行してください。
     * プラグインが[マーケットプレイスで見つからない](/docs/ja/discover-plugins#install-plugins)：プラグイン名を確認してください。
 
-    インストールがインストールスコープを求めるとき、ユーザースコープオプションを選択して、プラグインがすべてのプロジェクト全体で利用可能になるようにします。インストール概要が `Run /reload-plugins to activate.` を報告する場合、次のステップで再起動するとプラグインが取得されるため、ここではスキップできます。
+    インストールがインストールスコープを求めるとき、ユーザースコープオプションを選択して、プラグインがすべてのプロジェクト全体で利用可能になるようにしてください。
+
+    インストール概要が `Run /reload-plugins to activate.` を報告する場合、ここで対応する必要はありません。次のステップで再起動するときにプラグインが取得されるためです。
   </Step>
 
   <Step title="チャネルを有効にして再起動する">
@@ -257,27 +259,27 @@ Fakechat デモを試すには、以下が必要です。
     claude --channels plugin:fakechat@claude-plugins-official
     ```
 
-    Fakechat サーバーが自動的に起動します。スタートアップ画面には、`plugin:fakechat@claude-plugins-official` からのメッセージがこのセッションに直接注入されることを示すチャネル通知が表示されます。プラグインがインストールされていないか、承認されたアローリストにない場合、その通知の下に問題を名前付けする警告行が表示されます。
+    Fakechat サーバーが自動的に起動します。スタートアップ画面には、`plugin:fakechat@claude-plugins-official` からのメッセージがこのセッションに直接注入されることを示すチャネル通知が表示されます。プラグインがインストールされていないか、承認許可リストにない場合、その問題を示す警告行がその通知の下に表示されます。
 
     <Tip>
-      複数のプラグインを `--channels` に渡すことができます（スペース区切り）。
+      複数のプラグインを `--channels` に渡すことができます。スペース区切りです。
     </Tip>
   </Step>
 
-  <Step title="メッセージをプッシュする">
+  <Step title="メッセージを送信する">
     [http://localhost:8787](http://localhost:8787) で Fakechat UI を開き、メッセージを入力します。
 
     ```text theme={null}
     what's in my working directory?
     ```
 
-    メッセージが Claude Code セッションに到着します。ターミナルは `← fakechat · web: what's in my working directory?` のようなインバウンドチャネル行として表示され、モデルはプラグインのスコープ付きサーバー名を使用して `<channel source="plugin:fakechat:fakechat">` イベントとして受け取ります。Claude がそれを読み取り、作業を行い、Fakechat の `reply` ツールを呼び出します。Claude Code が最初の返信の権限を求める場合、それを承認します。答えがチャット UI に表示されます。
+    メッセージが Claude Code セッションに到着します。ターミナルには `← fakechat · web: what's in my working directory?` のようなインバウンドチャネル行として表示されます。一方、モデルはプラグインのスコープ付きサーバー名を使用して `<channel source="plugin:fakechat:fakechat">` イベントとして受け取ります。Claude がそれを読み、作業を実行し、Fakechat の `reply` ツールを呼び出します。Claude Code が最初の返信の権限を求める場合、それを承認してください。答えがチャット UI に表示されます。
   </Step>
 </Steps>
 
-Claude がターミナルから離れている間に権限プロンプトにヒットした場合、セッションは応答するまで一時停止します。[権限リレー機能](/docs/ja/channels-reference#relay-permission-prompts)を宣言するチャネルサーバーは、これらのプロンプトをあなたに転送して、リモートで承認または拒否できるようにします。無人使用の場合、[`--dangerously-skip-permissions`](/docs/ja/permission-modes#skip-all-checks-with-bypasspermissions-mode) はほとんどのプロンプトをバイパスしますが、信頼できる環境でのみ使用してください。それでも、[actions no モードが自動承認する](/docs/ja/permission-modes#actions-no-mode-auto-approves)アクションが適用されます。
+Claude がターミナルから離れている間に権限プロンプトに達した場合、セッションは応答するまで一時停止します。[権限リレー機能](/docs/ja/channels-reference#relay-permission-prompts)を宣言するチャネルサーバーは、これらのプロンプトをあなたに転送して、リモートで承認または拒否できるようにします。無人使用の場合、[`--dangerously-skip-permissions`](/docs/ja/permission-modes#skip-all-checks-with-bypasspermissions-mode) はほとんどのプロンプトをバイパスしますが、信頼できる環境でのみ使用してください。それでも、[actions no モードが自動承認する](/docs/ja/permission-modes#actions-no-mode-auto-approves)アクションは引き続き適用されます。
 
-非対話型モードで `-p` でチャネルを実行する場合、複数選択質問や Plan Mode 承認など、ターミナル入力が必要なツールは無効になるため、セッションは入力を待つことで停止することはありません。
+非対話モードで `-p` でチャネルを実行する場合、複数選択質問やプランモード承認など、ターミナル入力が必要なツールは無効になり、セッションは入力を待つために停止することはありません。
 
 <h2 id="security">
   セキュリティ
@@ -370,7 +372,7 @@ Claude Code のいくつかの機能はターミナルの外のシステムに�
 | 機能                                              | 何をするか                                      | 適している用途                                  |
 | ----------------------------------------------- | ------------------------------------------ | ---------------------------------------- |
 | [ウェブ上の Claude Code](/docs/ja/claude-code-on-the-web) | GitHub からクローンされた新しいクラウドサンドボックスでタスクを実行      | 後で確認する自己完結型の非同期作業を委任する                   |
-| [Slack の Claude](/docs/ja/slack)                     | チャネルまたはスレッドの `@Claude` メンションからウェブセッションを生成  | チームの会話コンテキストから直接タスクを開始する                 |
+| [Slack の Claude](/docs/ja/slack)                     | チャネルまたはスレッドの `@Claude` メンションからクラウドセッションを生成 | チームの会話コンテキストから直接タスクを開始する                 |
 | 標準 [MCP サーバー](/docs/ja/mcp)                          | Claude はタスク中にそれをクエリします。セッションには何もプッシュされません  | Claude にシステムを読み取るまたはクエリするオンデマンドアクセスを提供する |
 | [リモートコントロール](/docs/ja/remote-control)                | claude.ai または Claude モバイルアプリからローカルセッションを駆動 | デスクから離れている間に進行中のセッションを操舵する               |
 
