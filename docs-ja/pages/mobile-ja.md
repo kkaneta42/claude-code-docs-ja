@@ -6,7 +6,7 @@
 
 > Claude アプリ for iOS と Android を使用して、携帯電話から Claude Code タスクを開始、監視、操作します。
 
-Claude アプリ for [iOS](https://apps.apple.com/us/app/claude-by-anthropic/id6473753684) と [Android](https://play.google.com/store/apps/details?id=com.anthropic.claude) は、コードが実行される場所ではなく、Claude Code セッションのクライアントです。携帯電話からクラウドインフラストラクチャ上の [クラウドセッション](#start-and-monitor-cloud-sessions)、[リモートコントロール](#continue-a-local-session-with-remote-control) を通じて自分のマシンで実行されているセッション、または [Dispatch](/docs/ja/desktop#sessions-from-dispatch) を通じて Desktop アプリにアクセスできます。
+Claude アプリ for [iOS](https://apps.apple.com/us/app/claude-by-anthropic/id6473753684) と [Android](https://play.google.com/store/apps/details?id=com.anthropic.claude) は、コードが実行される場所ではなく、Claude Code セッションのクライアントです。携帯電話からクラウド上の [クラウドセッション](#start-and-monitor-cloud-sessions) と [プロジェクト](/docs/ja/claude-projects)、[リモートコントロール](#continue-a-local-session-with-remote-control) を通じて自分のマシンで実行されているセッション、または [Dispatch](/docs/ja/desktop#sessions-from-dispatch) を通じて Desktop アプリにアクセスできます。
 
 <Note>
   Claude Code には別のモバイルアプリはありません。クラウドセッションとリモートコントロールは両方とも Claude アプリの **Code** タブに存在し、Dispatch はアプリでメッセージを送って依頼するタスクです。
@@ -38,15 +38,18 @@ Claude アプリ for [iOS](https://apps.apple.com/us/app/claude-by-anthropic/id6
   スマートフォンから作業する
 </h2>
 
-アプリからクラウドセッションを開始したり、コンピュータで実行されている Claude Code セッションを操作したり、Dispatch にタスクをメッセージで送ったりできます。アプリはすべての 3 つで同じですが、作業が行われる場所が異なります。
+アプリからクラウドセッションを開始したり、プロジェクトを開いたり、コンピュータで実行されている Claude Code セッションを操作したり、Dispatch にタスクをメッセージで送ったりできます。アプリはすべてで同じですが、作業が行われる場所が異なります。
 
 | 機能                                             | 接続先                                  | 使用時期                                                                                                        |
 | :--------------------------------------------- | :----------------------------------- | :---------------------------------------------------------------------------------------------------------- |
 | [クラウドセッション](/docs/ja/claude-code-on-the-web)        | Anthropic が管理するクラウドインフラストラクチャ上のセッション | リポジトリが GitHub 上にあり、スマートフォンを置いた後もタスクが実行され続ける必要がある場合。セットアップについては [クラウドクイックスタート](/docs/ja/web-quickstart)を参照してください。 |
+| [プロジェクト](/docs/ja/claude-projects)                  | Claude が並列クラウドセッションをスレッドとして調整する会話    | 1 つのタスクではなく関連する作業のストリームがあり、どのスレッドが完了したか、または自分の対応が必要かを確認したい場合。                                               |
 | [リモートコントロール](/docs/ja/remote-control)               | コンピュータで実行されている Claude Code セッション     | 作業にローカルファイルシステム、ツール、または MCP サーバーが必要な場合。                                                                     |
 | [Dispatch](/docs/ja/desktop#sessions-from-dispatch) | コンピュータの Desktop アプリ                  | タスクをメッセージで送信し、Dispatch に実行方法を決定させたい場合。Pro または Max プランが必要です。                                                 |
 
-コンピュータがオフになる場合は、クラウドセッションを使用してください。クラウドセッションはクラウドで実行され、ラップトップを閉じた後も続行されます。リモートコントロールと Dispatch は自分のマシンを操作するため、Claude Code または Desktop アプリが実行されている状態を保つ必要があります。リモートコントロールセッション中にマシンがスリープ状態になった場合、Claude Code はマシンがオンラインに戻ったときに再接続されます。より詳細な比較については、[ターミナルから離れているときに作業する](/docs/ja/platforms#work-when-you-are-away-from-your-terminal)を参照してください。
+コンピュータがオフになる場合は、クラウドセッションまたはプロジェクトを使用してください。これらはクラウドで実行され、ラップトップを閉じた後も続行されます。リモートコントロールと Dispatch は自分のマシンを操作するため、Claude Code または Desktop アプリが実行されている状態を保つ必要があります。リモートコントロールセッション中にマシンがスリープ状態になった場合、Claude Code はマシンがオンラインに戻ったときに再接続されます。
+
+より詳細な比較については、[ターミナルから離れているときに作業する](/docs/ja/platforms#work-when-you-are-away-from-your-terminal)を参照してください。
 
 クラウドセッションとリモートコントロールは **Code** タブから実行されます。アプリでタスクとしてメッセージを送る Dispatch については、[Dispatch からのセッション](/docs/ja/desktop#sessions-from-dispatch)を参照してください。
 

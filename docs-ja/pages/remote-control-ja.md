@@ -370,10 +370,11 @@ Claude Code は、ターミナルに入力中またはターミナルにフォ�
   * テキスト出力コマンド: `/compact`、`/clear`、`/context`、`/usage`、`/exit`、`/usage-credits`、`/recap`、`/reload-plugins`。`/usage-credits` はブラウザを開く代わりに請求 URL を出力します。`/reload-plugins` はセッションが対話型ターミナルで実行されている場合にのみ機能します。セッションがない場合は拒否されます。
   * `/model`、`/effort`、`/fast`、`/color`、`/rename`: 値を引数として渡します。例えば `/model sonnet` または `/effort high` のようにします。モバイルと Web からは、`/model` と `/effort` はターミナルピッカーまたはスライダーの代わりに引数を受け取ります。
   * `/mcp`: モバイルアプリからは、ピッカーを開く代わりにサーバーステータスのテキスト概要を返します。Web では、`/mcp` 単独で概要を返す代わりに [claude.ai コネクタ](/docs/ja/mcp#use-mcp-servers-from-claude-ai)のディレクトリを開きます。`reconnect`、`enable`、`disable` [サブコマンド](/docs/ja/commands#all-commands)は両方から機能します。ローカル CLI と異なり、サーバー名なしで `/mcp reconnect` を実行すると、失敗したか認証が必要なすべてのサーバーを再接続します。
-  * `/config`、v2.1.181 以降: モバイルアプリからは、`key=value` を渡して設定を行うか、引数なしで実行して設定できるキーのリストを表示します。Web では、`/config` は代わりに設定の Claude Code セクションを開き、コマンドの後のテキストを無視します。
+  * `/config`: モバイルアプリからは、`key=value` を渡して設定を行うか、引数なしで実行して設定できるキーのリストを表示します。Web では、`/config` は代わりに設定の Claude Code セクションを開き、コマンドの後のテキストを無視します。
   * Team と Enterprise では、モバイルまたは Web から `/usage-credits` を実行しても、[管理者への使用クレジットリクエスト](/docs/ja/costs#add-usage-credits-to-your-subscription)は送信されません。送信には対話型 CLI にのみ表示される確認が必要なため、コマンドはそこで実行するよう指示します。v2.1.211 より前は、テキスト形式は確認なしでリクエストを送信していました。
   * `/autocompact`、v2.1.221 以降: ウィンドウサイズを引数として渡します。例えば `/autocompact 500k` のようにします。引数がない場合、ターミナルセッションで表示されるダイアログを開く代わりに、現在のウィンドウサイズをテキストとして出力します。
   * `/advisor`、v2.1.260 以降: モデルを引数として渡します。例えば `/advisor opus` のようにします。または `off` を渡してアドバイザーをオフにします。両方の形式は現在のセッションにのみ適用され、保存されたデフォルトは変わりません。引数がない場合、ピッカーを開く代わりに、現在のアドバイザーをテキストとして出力します。
+  * `/output-style`、v2.1.269 以降: スタイル名を引数として渡します。例えば `/output-style concise` のようにします。または引数なしで実行してスタイルのリストを表示します。モバイルと Web からは、[組み込みスタイル](/docs/ja/output-styles#built-in-output-styles)のみをリストして選択できます。[カスタムスタイル](/docs/ja/output-styles#create-a-custom-output-style)を使用するには、セッション自体で選択します。
 
 <h2 id="troubleshooting">
   トラブルシューティング

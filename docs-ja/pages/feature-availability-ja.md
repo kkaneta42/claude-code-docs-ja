@@ -36,8 +36,9 @@ Claude Code CLI とローカルで実行されるすべてのものは、すべ�
 * [Checkpoints](/docs/ja/checkpointing)、[sandboxing](/docs/ja/sandboxing)、および [Workflows](/docs/ja/workflows)
 * [OpenTelemetry メトリクス](/docs/ja/monitoring-usage) と [管理設定ファイル](/docs/ja/managed-settings#delivery-mechanisms)
 
-これらの 3 つには、プロバイダー固有の違いがあります：
+これらにはプロバイダー固有の違いがあります：
 
+* **CLAUDE.md メモリ**：`CLAUDE.md` ファイルはすべてのプロバイダーでロードされます。[`AGENTS.md` ファイル](/docs/ja/memory#agents-md)をプロジェクト指示として読み込むには、[機能フラグを取得](/docs/ja/env-vars#features-that-need-feature-flag-fetching)するセッションも必要です
 * **MCP サーバー**：[claude.ai からのコネクタ](/docs/ja/mcp#use-mcp-servers-from-claude-ai)は、claude.ai サブスクリプションがアクティブな認証方法である場合にのみロードされます。[ツール検索](/docs/ja/mcp#configure-tool-search)は `ANTHROPIC_BASE_URL` がファーストパーティ以外のホストを指している場合、デフォルトでオフになり、Google Cloud の Agent Platform の Claude 4.5 世代より前のモデルまたは Microsoft Foundry の [Azure でホストされているデプロイメント](https://platform.claude.com/docs/en/build-with-claude/claude-in-microsoft-foundry#hosting-options)ではサポートされていません
 * **Subagents**：組み込みの [Explore subagent](/docs/ja/sub-agents#built-in-subagents)は、Claude API で継承されたモデルを Opus に制限し、他のプロバイダー（Claude Platform on AWS を含む）では直接メイン会話のモデルを継承します
 * **[Commands](/docs/ja/commands#all-commands)**：
@@ -226,6 +227,8 @@ Desktop は部分的な例外です：[ゲートウェイルーティングは�
 
 <Note>
   [LLM ゲートウェイ](/docs/ja/llm-gateway)を通じて認証する場合、機能の利用可能性はゲートウェイが転送する基盤となるプロバイダーと一致します。ただし、Claude Code 自体がオフにする機能は除きます。`ANTHROPIC_BASE_URL` が `api.anthropic.com` 以外のホストを指している場合、Claude Code は [Remote Control](/docs/ja/remote-control#requirements) や [サーバー管理設定](/docs/ja/server-managed-settings#platform-availability)などの機能をオフにします。ゲートウェイが転送するものに関係なく、[Advisor](/docs/ja/advisor) などの一部の Anthropic 専用機能は、ゲートウェイが要求を Anthropic API に完全に転送する場合にのみ機能します。
+
+  Claude Code が送信するリクエストが Amazon Bedrock または Agent Platform 形式のゲートウェイ、`ANTHROPIC_BASE_URL` ゲートウェイ、および Claude apps gateway サインインの間でどのように異なるかについては、[接続方法によるクライアント動作](/docs/ja/llm-gateway-protocol#how-the-connection-method-changes-client-behavior)を参照してください。
 </Note>
 
 <h3 id="summary-by-provider">

@@ -169,7 +169,7 @@ Claude Code を使用できるいくつかの方法を紹介します：
   </Accordion>
 
   <Accordion title="指示、スキル、フックでカスタマイズする" icon="sliders">
-    [`CLAUDE.md`](/docs/ja/memory) はプロジェクトルートに追加するマークダウンファイルで、Claude Code はすべてのセッションの開始時に読み取ります。コーディング標準、アーキテクチャの決定、推奨ライブラリ、レビューチェックリストを設定するために使用します。Claude は [自動メモリ](/docs/ja/memory#auto-memory) も構築し、セッション間で学習内容を保存し、何も書かずに共有します。
+    [`CLAUDE.md`](/docs/ja/memory) はプロジェクトルートに追加するマークダウンファイルで、Claude Code はすべてのセッションの開始時に読み取ります。コーディング標準、アーキテクチャの決定、推奨ライブラリ、レビューチェックリストを設定するために使用します。リポジトリに他のコーディングエージェント用の `AGENTS.md` が既にある場合、Claude Code は [それを読み取ることができます](/docs/ja/memory#agents-md) 。Claude は [自動メモリ](/docs/ja/memory#auto-memory) も構築し、セッション間で学習内容を保存し、何も書かずに共有します。
 
     [スキル](/docs/ja/skills) を作成して、チームが共有できる反復可能なワークフローをパッケージ化します（`/review-pr` や `/deploy-staging` など）。
 

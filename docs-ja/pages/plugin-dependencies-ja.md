@@ -75,12 +75,12 @@
 
 `backend-standard` をインストールすると、4 つの依存関係すべてが解決され、インストールされます。
 
-後で標準セットにツールを追加するには、追加の依存関係を含む新しい `backend-standard` バージョンを公開します。非 Anthropic マーケットプレイスではデフォルトで自動更新がオフになっているため、エンジニアは次の 2 つの方法のいずれかで新しいバージョンを取得します。
+後で標準セットにツールを追加するには、追加の依存関係を含む新しい `backend-standard` バージョンを公開します。マーケットプレイスが [自動更新](/docs/ja/discover-plugins#configure-auto-updates) しない限り、エンジニアは次の 2 つの方法のいずれかで新しいバージョンを取得します。
 
-* `/plugin` でマーケットプレイスの自動更新を有効にします。次の自動更新によってバンドルが新しいバージョンに移動し、追加される依存関係がインストールされます。
+* `/plugin` でマーケットプレイスの自動更新を有効にします。次の自動更新でバンドルが新しいバージョンに移動し、追加される依存関係がインストールされます。
 * `claude plugin update backend-standard` を実行してから、`/reload-plugins` を実行して、新しく追加された依存関係をインストールします。
 
-組織全体にバンドルをロールアウトするには、バンドルプラグインを [管理設定](/docs/ja/settings-reference#enabledplugins) の `enabledPlugins` に追加します。
+バンドルを組織全体にロールアウトするには、[管理設定](/docs/ja/settings-reference#enabledplugins) の `enabledPlugins` にバンドルプラグインを追加します。
 
 <h2 id="depend-on-a-plugin-from-another-marketplace">
   別のマーケットプレイスからプラグインに依存する

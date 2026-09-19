@@ -176,6 +176,12 @@ Claude Code はこれらのソースを確認します。最初に最高優先�
 
 * `sandbox.network.allowManagedDomainsOnly` および `sandbox.filesystem.allowManagedReadPathsOnly`: 任意の管理ソースの `true` がロックをオンにします。ロックがオンの間、Claude Code は許可リストをロックします。`sandbox.network.allowedDomains` を `WebFetch(domain:...)` 許可ルール、または `sandbox.filesystem.allowRead` と一緒に、すべての管理ソース全体で結合します。ロックがない場合、Claude Code は許可リストを他のキーのように扱うため、`"first-wins"` の下では、選択されていない管理ソースの許可リストは無視されます
 * `allowAllClaudeAiMcps`
+* `allowManagedMcpServersOnly`: 任意の管理ソースの `true` が MCP 許可リストロックをオンにします。ロックがオンの間、マネージド `allowedMcpServers` リストは、1 つを設定する最高ランクの管理ソースから来ます。サーバーマネージドリストは下位のソースのリストを置き換え、それと組み合わせません。
+
+  管理ソースがリストを設定しない場合、[親設定](#let-an-embedding-host-add-policy) がリストを提供しない限り、すべてのサーバーが拒否リストを通過してロードされます。
+
+  ロックがない場合、Claude Code は適用するマネージドソースから `allowedMcpServers` を読み取るため、`"first-wins"` の下では、選択されていない管理ソースのリストは無視されます。Claude Code v2.1.273 以降が必要です
+* `deniedMcpServers` および [`disableClaudeAiConnectors`](/docs/ja/settings-reference#disableclaudeaiconnectors): 任意の管理ソースのエントリまたは `true` が適用されます。Claude Code v2.1.273 以降が必要です
 * サンドボックスバイナリパス `sandbox.bwrapPath` および `sandbox.socatPath`
 * サンドボックス `ripgrep` バイナリ、[`sandbox.ripgrep`](/docs/ja/settings-reference#sandbox-ripgrep)
 * `sandbox.filesystem.disabled` および `sandbox.network.strictAllowlist`
@@ -187,6 +193,8 @@ Claude Code はこれらのソースを確認します。最初に最高優先�
 * 管理ソース全体で変数ごとにマージされた `env`: 各変数は、それを定義する最高優先度のソースから来るため、下位のソースは高位のソースが設定しないままにした変数を埋めます。いくつかの変数は独自のルールに従います。[マネージドソース全体のキーごとの例外](/docs/ja/server-managed-settings#per-key-exceptions-across-managed-sources) は各変数に名前を付けます。Claude Code v2.1.223 以降が必要です。v2.1.223 より前では、Claude Code は選択されたソースの全体 `env` ブロックのみを適用しました
 
 [ゲートウェイログインキー](#choose-a-delivery-mechanism) は別のルールに従います。Claude Code はサーバーマネージド設定からそれらを読み取ることはありません。サーバーマネージド設定が選択されたソースである間、ポリシーキーを持つマシン上の最高ランクの管理ソースはそれらを提供します。それより下にランク付けされた管理ソースの値、または HKCU レジストリの値は無視されます。
+
+管理ソースが `allowManagedMcpServersOnly` を設定するか、`allowedMcpServers` リストを設定し、その値が実行中でない場合、`/status` および `claude doctor` はそのソースとキーに名前を付けます。
 
 <h3 id="compose-every-managed-source">
   すべてのマネージドソースを構成する
@@ -244,8 +252,10 @@ Claude Code はホストの値のうち、Claude ができることを制限す�
 Claude Code はこれらのチェックを親提供の値に単独で適用します。
 
 * 任意の管理ソースが `allowManagedPermissionRulesOnly` を設定する場合、Claude Code は [親提供の](/docs/ja/claude-apps-gateway#restrict-parent-settings) 権限許可ルールおよび `additionalDirectories` を読み取るときにドロップします。高優先度のソースがキーを設定しないままにしても。キーの効果は、Claude Code が適用するマネージド設定、または親設定からマージすることを選択したものから来ます
-* Claude Code は適用するマネージド設定の `forceLoginOrgUUID` または `allowedMcpServers` 値を強制し、親提供のものをブロックします。Claude Code が適用しない下位管理ソースの値は適用も、ブロックもしません。[`managedSourcesBehavior`](/docs/ja/settings-reference#managedsourcesbehavior) エントリは `"merge"` の下で各キーを提供するソースを示しています。v2.1.223 より前では、任意の管理ソースの値が親のものをブロックしました
-* `availableModels` 値は `allowedMcpServers` と同じルールに従います
+* Claude Code は適用するマネージド設定の `forceLoginOrgUUID` または `allowedMcpServers` 値を強制し、親提供のものをブロックします。Claude Code が適用しない下位管理ソースの値は適用も、ブロックもしません。
+
+  Claude Code v2.1.273 以降では、`allowManagedMcpServersOnly` がオンの間、1 つを設定する最高ランクの管理ソースからの `allowedMcpServers` リストが適用され、親のものをブロックします。[クロスソースキー](#keys-read-from-every-admin-source) として。親のリストは、管理ソースがリストを設定しない場合のみ適用されます。[`managedSourcesBehavior`](/docs/ja/settings-reference#managedsourcesbehavior) エントリは `"merge"` の下で各キーを提供するソースを示しています。v2.1.223 より前では、任意の管理ソースの値が親のものをブロックしました
+* `availableModels` の場合、Claude Code は適用するマネージド設定の値を強制し、親提供のリストをブロックします
 
 <h4 id="keep-cowork-folder-access-when-only-managed-rules-apply">
   マネージドルールのみが適用される場合に Cowork フォルダアクセスを保持する
@@ -390,7 +400,7 @@ Claude Code は次のキーをマネージドソースからのみ読み取り�
 | [`allowAllClaudeAiMcps`](/docs/ja/settings-reference#allowallclaudeaimcps)                                                 | Claude Code が自身でフェッチする claude.ai コネクタをデプロイされた `managed-mcp.json` と一緒にロードします。それらを抑制する代わりに                                                                                                                                                                                                                                                                     |
 | [`allowedChannelPlugins`](/docs/ja/settings-reference#allowedchannelplugins)                                               | メッセージをプッシュできるチャネルプラグインの許可リスト。設定されている場合、デフォルト Anthropic 許可リストを置き換えます。`channelsEnabled: true` が必要です。[実行できるチャネルプラグインを制限する](/docs/ja/channels#restrict-which-channel-plugins-can-run) を参照してください                                                                                                                                                                       |
 | [`allowManagedHooksOnly`](/docs/ja/settings-reference#allowmanagedhooksonly)                                               | `true` の場合、実行するフックを制限します。[`allowManagedHooksOnly` の下で実行するもの](/docs/ja/settings-reference#what-runs-under-allowmanagedhooksonly) の完全な効果リストを参照してください                                                                                                                                                                                                                |
-| [`allowManagedMcpServersOnly`](/docs/ja/settings-reference#allowmanagedmcpserversonly)                                     | `true` の場合、マネージド設定からの `allowedMcpServers` のみが尊重されます。`deniedMcpServers` はすべてのソースからマージされます。[マネージド MCP 構成](/docs/ja/managed-mcp) を参照してください                                                                                                                                                                                                                           |
+| [`allowManagedMcpServersOnly`](/docs/ja/settings-reference#allowmanagedmcpserversonly)                                     | `true` の場合、マネージド設定からの `allowedMcpServers` のみが尊重されます。`deniedMcpServers` はすべてのソースからマージされます。[すべての管理ソースから読み取られるキー](#keys-read-from-every-admin-source) でどのマネージドソースがそれを設定できるかを参照し、[マネージド MCP 構成](/docs/ja/managed-mcp) を参照してください                                                                                                                                       |
 | [`allowManagedPermissionRulesOnly`](/docs/ja/settings-reference#allowmanagedpermissionrulesonly)                           | マネージド設定を権限ルールの唯一の設定ソースにします。エントリは無視するすべてのソースをリストします                                                                                                                                                                                                                                                                                                           |
 | [`blockedMarketplaces`](/docs/ja/settings-reference#blockedmarketplaces)                                                   | マーケットプレイスソースのブロックリスト。ブロックされたソースはダウンロード前にチェックされるため、ファイルシステムに触れません。[マネージドマーケットプレイス制限](/docs/ja/plugin-marketplaces#managed-marketplace-restrictions) を参照してください                                                                                                                                                                                                      |
 | [`channelsEnabled`](/docs/ja/settings-reference#channelsenabled)                                                           | 組織の [チャネル](/docs/ja/channels) を許可します。各プランのデフォルトについては [エンタープライズコントロール](/docs/ja/channels#enterprise-controls) を参照してください                                                                                                                                                                                                                                                 |

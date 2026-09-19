@@ -12,6 +12,14 @@
   A
 </h2>
 
+<h3 id="agents-md">
+  AGENTS.md
+</h3>
+
+AI コーディングエージェント向けに作成するプロジェクト指示のマークダウンファイル。リポジトリに AGENTS.md があり、[CLAUDE.md](#claude-md) がない場合、Claude はこれをプロジェクト指示として読み込みます。別のファイルを追加する必要はありません。`/config` の **Project instructions** 設定を変更して、Claude が両方のファイルを読み込むか、CLAUDE.md のみを読み込むかを指定できます。AGENTS.md を直接読み込むには、Claude Code v2.1.277 以降がセッション内で機能フラグを取得する必要があります。その他のバージョンでは、CLAUDE.md からインポートしてください。
+
+詳細情報: [AGENTS.md](/docs/ja/memory#agents-md)
+
 <h3 id="agent-teams">
   Agent teams
 </h3>
@@ -122,7 +130,7 @@ Claude Code がプロジェクトスコープの設定を読み取るディレ�
 
 Claude 用に作成する永続的な指示のマークダウンファイル。システムプロンプトの後、ユーザーメッセージとしてすべてのセッションの開始時に読み込まれます。プロジェクト規約、アーキテクチャノート、「常に X を行う」ルールをここに記述します。プロジェクトルート CLAUDE.md は [compaction](#compaction) を通じて保存され、その後ディスクから新たに読み込まれます。
 
-CLAUDE.md は `./CLAUDE.md` または `./.claude/CLAUDE.md` でプロジェクトスコープに、`~/.claude/CLAUDE.md` でユーザースコープに、または組織の [managed policy](#managed-settings) として配置できます。検出されたすべてのファイルは相互にオーバーライドするのではなく、最も広いスコープから最も具体的なスコープの順に、コンテキストに連結されます。
+CLAUDE.md は `./CLAUDE.md` または `./.claude/CLAUDE.md` でプロジェクトスコープに、`~/.claude/CLAUDE.md` でユーザースコープに、または組織の [managed policy](#managed-settings) として配置できます。検出されたすべてのファイルは相互にオーバーライドするのではなく、最も広いスコープから最も具体的なスコープの順に、コンテキストに連結されます。Claude Code は、プロジェクトの [AGENTS.md](#agents-md) ファイルも読み込むことができます。これは単独で、または CLAUDE.md と一緒に読み込まれます。
 
 詳細情報：[CLAUDE.md files](/docs/ja/memory#claude-md-files)
 

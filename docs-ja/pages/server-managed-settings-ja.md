@@ -165,7 +165,9 @@ Claude Code は、一元的な構成のための 2 つのアプローチをサ�
 
 3 つの種類のキーがマージなしルールの例外です。
 
-* **クロスソースロックキー**：サンドボックスホワイトリストロックなど、[管理設定ページに記載されている](/docs/ja/managed-settings#precedence-within-the-managed-tier)小さなキーセット。Claude Code は、管理者が管理する管理ソースがそれらを設定する場合にそれらを尊重します。ユーザーが書き込み可能な HKCU レジストリ層は除外されます。[`policyHelper`](/docs/ja/settings-reference#policyhelper) が管理設定を提供する場合、その出力はこれらのチェックが読み取る唯一のソースです。ただし、[`forceRemoteSettingsRefresh`](/docs/ja/settings-reference#forceremotesettingsrefresh) は除きます。これは Claude Code が起動時に管理ソースから直接読み取ります。
+* **クロスソースロックキー**：サンドボックスホワイトリストロックなど、[管理設定ページに記載されている](/docs/ja/managed-settings#precedence-within-the-managed-tier)小さなキーセット。Claude Code は、管理者が管理する管理ソースがそれらを設定する場合にそれらを尊重します。ユーザーが書き込み可能な HKCU レジストリ層は除外されます。
+
+  [`policyHelper`](/docs/ja/settings-reference#policyhelper) が管理設定を提供する場合、その出力はこれらのチェックが読み取る唯一のソースです。ただし、[`forceRemoteSettingsRefresh`](/docs/ja/settings-reference#forceremotesettingsrefresh) は除きます。これは Claude Code が起動時に管理ソースから直接読み取ります。
 * **`env` ブロック**：テレメトリユニットと認証情報キーとペアになったルーティング変数を除き、以下で説明するように、管理者が管理するソース全体でキーごとにマージされます。各環境変数について、それを定義する最優先ソースが優先され、下位の管理ソースは上位のソースが設定しない変数を埋めます。したがって、エンドポイント管理 `env` エントリは、サーバー管理構成がその変数を設定しない場合、またはキャッシュされたサーバー値が[サーバー確認待ちで保留中](#fetch-and-caching-behavior)の場合に適用されます。Claude Code v2.1.223 以降が必要です。v2.1.223 より前は、Claude Code は選択されたソースの全体 `env` ブロックのみを適用します。
   * **テレメトリユニット**：`OTEL_EXPORTER_OTLP_*` エクスポーターキー、`OTEL_LOG_*` コンテンツキャプチャトグル、`OTEL_LOGS_EXPORTER`、およびベータトレーシング変数 `ENABLE_BETA_TRACING_DETAILED` と `BETA_TRACING_ENDPOINT` は、それらのいずれかを設定する最優先ソースをユニットとして従います。`otelHeadersHelper` 認証情報キーを配信するソースもユニットを要求しますが、これらの変数は選択されたソースである場合にのみ配置されます。選択されていないが、キーを配信するソースはそれらのいずれも提供せず、下位のソースがそれらを埋めるのをブロックします。いずれにせよ、1 つのソースからのエクスポーターエンドポイントは、別のソースからの認証情報とペアになることはできません。
   * **認証情報ペアのルーティング**：`apiKeyHelper` または `otelHeadersHelper` などの選択されたソースのみの認証情報キーとペアになったルーティング変数を配信するソースは、それがスロットに勝つ場合にのみそれらのルーティング変数を提供します。

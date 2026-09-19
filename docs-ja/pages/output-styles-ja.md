@@ -34,11 +34,12 @@ Claude Code の **Default** 出力スタイルは標準的な指示セットで�
 
 以下のいずれかの方法でスタイルを選択します。
 
+* **`/output-style` コマンド**: `/output-style <style>` を実行してスタイルを切り替えます。例えば `/output-style concise` のように使用します。引数なしで実行すると、選択可能なスタイルが一覧表示され、現在のスタイルがマークされます。Claude Code は選択内容を [ローカルプロジェクトレベル](/docs/ja/settings) の `.claude/settings.local.json` に保存します。
+
+  このコマンドは [非対話型モード](/docs/ja/headless) と Agent SDK セッション、およびモバイルアプリまたは Web から [リモートコントロール](/docs/ja/remote-control#limitations) 経由でも機能します。この場合、[組み込みスタイル](#built-in-output-styles) のみをリストして選択できます。Claude Code v2.1.269 以降が必要です。
 * **Terminal**: `/config` を実行し、**Output style** を選択してメニューからスタイルを選択します。Claude Code は選択内容を [ローカルプロジェクトレベル](/docs/ja/settings) の `.claude/settings.local.json` に保存します。
 * **VS Code extension**: [コマンドメニュー](/docs/ja/vs-code#use-the-prompt-box) を `/` で開き、**Output styles** を選択してスタイルを選択します。カスタムスタイルも含まれます。Claude Code は選択内容を `.claude/settings.local.json` に保存します。これはターミナルメニューが書き込むのと同じファイルです。Claude Code v2.1.257 以降が必要です。
 * **Desktop app**: 設定ファイル（例えば `.claude/settings.local.json`、ターミナルメニューが書き込むファイル）の `outputStyle` フィールドを設定します。`/config` を実行すると、Claude Code は [**Settings > Claude Code**](/docs/ja/desktop#what%E2%80%99s-not-available-in-desktop) を開きます。メニューではなく設定画面が開きます。
-
-<Note>スタンドアロン `/output-style` コマンドは v2.1.73 で廃止され、v2.1.91 で削除されました。`/config` を使用するか、`outputStyle` 設定を直接編集してください。</Note>
 
 メニューなしでスタイルを設定するには、設定ファイルの `outputStyle` フィールドを直接編集します。
 
@@ -90,7 +91,7 @@ VS Code 拡張機能では、手書きではなく [**Output styles** メニュ�
   </Step>
 
   <Step title="スタイルに切り替える">
-    ターミナルで `/config` を実行し、**Output style** でスタイルを選択します。Claude は次のメッセージから新しいスタイルを使用します。ターミナルでは、Claude Code はスタイルファイルを起動時に読み込むため、実行中のセッション中に作成または編集した場合は、Claude Code を再起動して変更を反映させてください。
+    ターミナルで `/output-style <style>` を実行するか、`/config` を実行して **Output style** でスタイルを選択します。Claude は次のメッセージから新しいスタイルを使用します。ターミナルでは、Claude Code はスタイルファイルを起動時に読み込むため、実行中のセッション中に作成または編集した場合は、Claude Code を再起動して変更を反映させてください。
   </Step>
 </Steps>
 

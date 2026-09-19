@@ -125,6 +125,8 @@ Claude Code でできることについてのアイデアについては、[一�
 
     Claude の最新の to-do リストは表示されたままで、Claude からの保留中の質問が尋ねているテキストも表示されます。これには Claude Code v2.1.225 以降が必要です。Claude が [subagents](/docs/ja/sub-agents) を実行している間、最新のアクティビティを含むライブ進捗行は、それらを開始したツール呼び出しグループの下に表示されます。これには Claude Code v2.1.269 以降が必要です。
   * バグを報告するには、メニューの下部にある **Report a problem** をクリックするか、`/bug` または `/feedback` をオプションの説明と共に入力して、レポートに事前入力します。レポートを送信し、ファーストパーティ接続で Anthropic にサインインしている場合、Claude Code はそれを Anthropic に送信します。サードパーティプロバイダーまたは Anthropic 認証情報がない場合、ダイアログは引き続き開きますが、送信するとエラーが表示され、何も送信されません。CLI の `/bug` とは異なり、拡張機能はローカルアーカイブを作成しません。Claude Code v2.1.229 以降が必要です。
+
+    組織のポリシーが製品フィードバックをオフにしている場合、**Report a problem** はメニューに表示されず、`/bug` と `/feedback` はレポートを開く代わりに `Feedback is turned off by your organization's policy or this environment's settings.` という通知を表示します。
 * **Side questions**: `/btw` の後に質問を入力して、[会話に追加せずに](/docs/ja/interactive-mode#side-questions-with-%2Fbtw)セッションについて質問します。答えはチャットの横のパネルで開き、そこでフォローアップ質問をすることができます。スレッドはウィンドウの再読み込みを生き残ります。Claude Code は最新の 20 回の交換を保持し、Claude Code が [安全に保持期間を決定できる](/docs/ja/claude-directory#cleaned-up-automatically)限り、[`cleanupPeriodDays`](/docs/ja/settings-reference#cleanupperioddays) スケジュールで保存されたスレッドを期限切れにします。スレッドをクリアするには、パネルのゴミ箱アイコンをクリックします。Claude Code v2.1.227 以降が必要です。
 * **Context indicator**: プロンプトボックスは Claude のコンテキストウィンドウをどのくらい使用しているかを表示します。Claude は必要に応じて自動的にコンパクトにするか、`/compact` を手動で実行できます。
 * **Prompt cache clock**: コンテキスト指示器の横にあるクロックアイコンは、会話の [prompt cache](/docs/ja/prompt-caching) がキャッシュの 5 分または 1 時間の [lifetime](/docs/ja/prompt-caching#cache-lifetime) の前に期限切れになるまでの時間を推定します。キャッシュの有効期間からカウントダウンし、キャッシュを使用する各応答がカウントダウンを再開します。コンパクション以外に、[キャッシュを無効にするアクション](/docs/ja/prompt-caching#actions-that-invalidate-the-cache)はクロックをリセットしないため、モデルを切り替えた後でも残り時間を表示できます。

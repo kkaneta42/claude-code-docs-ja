@@ -97,7 +97,7 @@ Claude Code は、さまざまな制限レベルをサポートしています�
 
 * [環境変数展開](/docs/ja/mcp#environment-variable-expansion-in-mcp-json)を使用して、各ユーザーの環境からシークレットを読み込む。
 * [OAuth またはユーザーごとのヘッダー](/docs/ja/mcp#authenticate-with-remote-mcp-servers)を使用して、各ユーザーが自分自身として認証する。
-* [動的ヘッダーをカスタム認証に使用する](/docs/ja/mcp#use-dynamic-headers-for-custom-authentication)ために `headersHelper` を使用して、接続時に認証情報を生成する。
+* [`headersHelper`](/docs/ja/mcp#use-dynamic-headers-for-custom-authentication)を使用して、接続時に認証情報を生成する。
 
 <h3 id="servers-passed-with-mcp-config-or-strict-mcp-config">
   `--mcp-config` または `--strict-mcp-config` で渡されたサーバー
@@ -108,7 +108,7 @@ Claude Code は、さまざまな制限レベルをサポートしています�
 * ワークステーション上では、Claude Code は `You cannot dynamically configure MCP servers when an enterprise MCP config is present` というメッセージで起動時に終了します。
 * ファイルがデプロイされているホスト上の[クラウドセッション](/docs/ja/claude-code-on-the-web)（[セルフホストランナー](/docs/ja/self-hosted-environments-configuration#mcp-servers)など）では、Claude Code はマネージドサーバーのみで起動し、claude.ai コネクタおよびクラウドホストが `--mcp-config` を通じて配信するその他のサーバーをスキップします。セッション内のどのサーバーが除外されたかをユーザーに伝えるものはありません。Claude Code はそれらを stderr の警告で名前を付けます。これはセルフホストランナーが `debug` ログレベルで記録します。
 
-ユーザーが `--strict-mcp-config` を渡す場合、Claude Code はワークステーション上とクラウドセッション上の両方で起動時に終了します。このフラグはマネージドセットを置き換えるよう要求するためです。
+`--strict-mcp-config` フラグはマネージドセットを置き換えるよう要求します。ユーザーがそのようなファイルがデプロイされている間にそれを渡す場合、Claude Code はワークステーション上とクラウドセッション上の両方で起動時に終了します。
 
 <h3 id="how-allowlists-and-denylists-apply-to-the-managed-set">
   許可リストと拒否リストがマネージドセットに適用される方法
@@ -129,7 +129,8 @@ Claude Code は、さまざまな制限レベルをサポートしています�
 
 ファイルが有効であることを確認するには、マネージドマシン上で 2 つのチェックを実行してください。
 
-1. `claude mcp list` は `managed-mcp.json` 内のサーバーのみを表示します。`managedMcpServers` を通じて提供するサーバーも表示されます。ユーザー独自のサーバーがまだ表示される場合、Claude Code はファイルを読み込んでいません。そのパスと親ディレクトリの権限を確認してください。
+1. `claude mcp list` は `managed-mcp.json` 内のサーバーのみを表示します。`managedMcpServers` を通じて提供するサーバーも表示されます。2 つの他の結果は何かが間違っていることを意味します。
+   * ユーザー独自のサーバーがまだ表示される場合、Claude Code はファイルを読み込んでいません。そのパスと親ディレクトリの権限を確認してください。
    * ファイルのサーバーが表示されず、`MCP config diagnostics` セクションがエンタープライズ構成の解析失敗をマークしている場合、Claude Code はファイルを読み込むか解析できません。そのセクションが名前を付けるエラーを修正してから、ユーザーに Claude Code を再起動させてください。
 2. `claude mcp add --transport http test https://example.com/mcp` は `Cannot add MCP server: enterprise MCP configuration is active and has exclusive control over MCP servers` で失敗します。ポリシーチェックが何かに接続される前にコマンドを拒否するため、URL は実際のサーバーである必要はありません。
 
@@ -268,7 +269,13 @@ allowlist と denylist は、設定されたサーバーのうちどれをロー
 
 サーバーをユーザーに配信するには、[`managed-mcp.json`](#exclusive-control-with-managed-mcp-json) または [`managedMcpServers`](#provide-servers-through-managed-settings) を使用します。両方のリストは、インプロセス `type: "sdk"` エントリを除き、[`--mcp-config` CLI フラグ](/docs/ja/cli-reference#cli-flags)で渡されたサーバーもフィルタリングします。`--strict-mcp-config` はどの設定ファイルをロードするかを制限し、どちらのリストもバイパスしません。
 
-allowlist を権限あるものにするには、[管理設定ソース](/docs/ja/admin-setup#decide-how-settings-reach-devices)（サーバー管理設定や配信された `managed-settings.json` ファイルなど）で `allowedMcpServers` と `allowManagedMcpServersOnly: true` を一緒に設定します。[allowlist を管理設定のみに制限する](#restrict-the-allowlist-to-managed-settings-only)は設定を示しています。`allowManagedMcpServersOnly` がない場合、ユーザー自身の `~/.claude/settings.json` を含むすべての設定スコープから allowlist がマージされるため、ユーザーは allowlist が許可するものを広げることができます。denylist はスコープに関係なくマージされます。
+allowlist を権限あるものにするには、[管理設定ソース](/docs/ja/admin-setup#decide-how-settings-reach-devices)（サーバー管理設定や配信された `managed-settings.json` ファイルなど）で `allowedMcpServers` と `allowManagedMcpServersOnly: true` を一緒に設定します。
+
+ロックはすべての管理者制御の管理ソースから適用されるため、配信されたファイル内のロックダウンは、MCP に言及しないサーバー管理設定も使用されている場合でも適用されます。ロックがオンの場合、管理 allowlist は、1 つを設定する最も高いランクの管理ソースから取得されます。ソース全体でロックと allowlist を読み取るには、Claude Code v2.1.273 以降が必要です。
+
+[allowlist を管理設定のみに制限する](#restrict-the-allowlist-to-managed-settings-only)は設定を示しています。
+
+`allowManagedMcpServersOnly` がない場合、ユーザー自身の `~/.claude/settings.json` を含むすべての設定スコープから allowlist がマージされるため、ユーザーは allowlist が許可するものを広げることができます。denylist はスコープに関係なくマージされます。
 
 <Note>
   `allowManagedMcpServersOnly` は `allowManagedPermissionRulesOnly` とは別であり、後者は[権限ルール](/docs/ja/permissions#managed-settings)のみをロックダウンします。そのフラグを設定しても MCP allowlist は強制されません。
@@ -301,7 +308,7 @@ allowlist を権限あるものにするには、[管理設定ソース](/docs/j
 
 `serverName` の検証は 2 つのリスト間で異なります。
 
-* `deniedMcpServers` では、`serverName` は空でない任意の文字列を受け入れるため、[claude.ai コネクタ](/docs/ja/mcp#use-mcp-servers-from-claude-ai)を表示名でブロックできます。たとえば、`{ "serverName": "claude.ai Slack" }` は Slack コネクタをブロックします。deny が名前変更に対して堅牢である必要がある場合、またはコネクタ名が衝突して ` (N)` サフィックスを取得する場合は、`serverUrl` エントリを優先します。
+* `deniedMcpServers` では、`serverName` は先頭または末尾に空白がない空でない任意の文字列を受け入れるため、[claude.ai コネクタ](/docs/ja/mcp#use-mcp-servers-from-claude-ai)を表示名でブロックできます。たとえば、`{ "serverName": "claude.ai Slack" }` は Slack コネクタをブロックします。deny が名前変更に対して堅牢である必要がある場合、またはコネクタ名が衝突して ` (N)` サフィックスを取得する場合は、`serverUrl` エントリを優先します。
 * `allowedMcpServers` では、`serverName` は文字、数字、ハイフン、アンダースコアに限定されます。Claude Code が自身でフェッチする claude.ai コネクタを allowlist に追加するには `serverUrl` を使用します。クラウドホストが自己ホスト型セッションに配信するコネクタの場合は、代わりに[コネクタトラフィックがネットワークを離れる](/docs/ja/self-hosted-environments-deploy#connector-traffic-leaves-your-network)の下にリストされているエントリを使用します。
 
 Claude Code がフェッチするすべての claude.ai コネクタをオフにするには、[`disableClaudeAiConnectors`](/docs/ja/mcp#disable-claude-ai-connectors)を参照してください。
@@ -312,7 +319,7 @@ Claude Code がフェッチするすべての claude.ai コネクタをオフに
 
 サーバーをロードする前に、`managed-mcp.json` からのサーバーを含めて、Claude Code は以下の 3 つのチェックを順番に実行します。ユーザーがサーバーを再接続するか、`/mcp` で無効なサーバーをオンに戻すときに再度実行されます。インプロセス `type: "sdk"` サーバー（[セッションを開始したアプリが登録](/docs/ja/mcp#how-connectors-reach-claude-code)）は、3 つすべてをスキップします。
 
-1. **リストをマージします。** すべての設定スコープからの allowlist と denylist エントリが 1 つの allowlist と 1 つの denylist に結合され、管理スコープのリストは [Claude Code が適用する管理ソースまたはソース](/docs/ja/managed-settings#how-claude-code-combines-managed-sources)から取得されます。`allowManagedMcpServersOnly` が `true` の場合、管理 allowlist のみが保持されます。denylist は常にすべてのスコープからマージされます。
+1. **リストをマージします。** すべての設定スコープからの allowlist と denylist エントリが 1 つの allowlist と 1 つの denylist に結合されます。`allowManagedMcpServersOnly` が `true` の場合、管理 allowlist のみが保持されます。denylist は常にすべてのスコープからマージされます。複数の管理ソースが存在する場合、[すべての管理ソースから読み取られるキー](/docs/ja/managed-settings#keys-read-from-every-admin-source)は、管理スコープのリストを提供するソースを示しています。
 2. **denylist をチェックします。** URL、コマンド、または名前で denylist エントリにマッチするサーバーはブロックされます。denylist マッチをオーバーライドするものはありません。
 3. **allowlist をチェックします。** `allowedMcpServers` がどこにも設定されていない場合、denylist を通過したすべてのサーバーがロードされます。設定されている場合、サーバーがマッチする必要があるものはそのタイプに依存し、以下の表に示されています。
 
@@ -519,16 +526,16 @@ Claude Code v2.1.219 以降が必要です。
   設定の概要
 </h2>
 
-このページで説明するすべてのファイルと設定、それが制御するもの、および配信方法：
+このページで扱うすべてのファイルと設定、それらが制御する内容、および配信方法：
 
-| サーフェス                        | 制御するもの                                                                                                                                                                                  | 場所                                                                                                                                                                                                                                                                                    | 配信方法                                                                                                                               |
-| :--------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | :--------------------------------------------------------------------------------------------------------------------------------- |
-| `managed-mcp.json`           | 固定サーバーセット、排他的制御                                                                                                                                                                         | システムパス：`/Library/Application Support/ClaudeCode/`、`/etc/claude-code/`、または `C:\Program Files\ClaudeCode\`                                                                                                                                                                              | MDM、GPO、フリート管理、または管理者権限を持つプロセス。サーバー管理設定を通じて設定することはできません                                                                            |
-| `managedMcpServers`          | すべてのユーザーに提供されるリモートサーバー（ユーザー自身のサーバーと一緒に）                                                                                                                                                 | 管理設定ソースのみ。設定は他の場所では効果がありません                                                                                                                                                                                                                                                           | [管理設定ソース](/docs/ja/admin-setup#decide-how-settings-reach-devices)：サーバー管理設定、ゲートウェイポリシー、`managed-settings.json`、MDM プロファイル、または HKLM レジストリ |
-| `allowedMcpServers`          | 許可されたサーバーの許可リスト                                                                                                                                                                         | 任意の [設定スコープ](/docs/ja/settings#where-settings-live)。`allowManagedMcpServersOnly` が設定されていない限り、Claude Code はすべてのスコープからのリストをマージし、管理スコープからのリストは [選択する](/docs/ja/managed-settings#precedence-within-the-managed-tier) または [構成する](/docs/ja/managed-settings#compose-every-managed-source) 1 つの管理ソースから取得します | 実施のため、[管理設定ソース](/docs/ja/admin-setup#decide-how-settings-reach-devices)：サーバー管理設定、`managed-settings.json`、MDM プロファイル、またはレジストリ            |
-| `deniedMcpServers`           | ブロックされたサーバーのブロックリスト                                                                                                                                                                     | 任意の設定スコープ。Claude Code はすべてのスコープからのリストをマージし、[Claude Code が管理ソースを組み合わせる方法](/docs/ja/managed-settings#how-claude-code-combines-managed-sources) で説明されているように管理ソース全体でマージします                                                                                                                     | `allowedMcpServers` と同じ                                                                                                            |
-| `allowManagedMcpServersOnly` | 許可リストを管理ソースのみにロックします                                                                                                                                                                    | 管理設定ソースのみ。設定は他の場所では効果がありません                                                                                                                                                                                                                                                           | `allowedMcpServers` と同じ                                                                                                            |
-| `allowAllClaudeAiMcps`       | Claude Code が自身で取得する claude.ai コネクタを `managed-mcp.json` と一緒に読み込みます。[クラウドセッションを実行するホスト上の `managed-mcp.json` は、そのセッションのコネクタを抑制します](#allow-claude-ai-connectors-alongside-the-managed-set) | 管理設定ソースのみ。設定は他の場所では効果がありません                                                                                                                                                                                                                                                           | `allowedMcpServers` と同じ                                                                                                            |
+| サーフェス                        | 制御内容                                                                                                                                                                                          | 保存場所                                                                                                                                       | 配信方法                                                                                                                               |
+| :--------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------- |
+| `managed-mcp.json`           | 固定サーバーセット、排他的制御                                                                                                                                                                               | システムパス：`/Library/Application Support/ClaudeCode/`、`/etc/claude-code/`、または `C:\Program Files\ClaudeCode\`                                   | MDM、GPO、フリート管理、または管理者権限を持つプロセス。サーバー管理設定を通じて設定することはできません                                                                            |
+| `managedMcpServers`          | すべてのユーザーに提供されるリモートサーバー（ユーザー自身のサーバーと並行）                                                                                                                                                        | 管理設定ソースのみ。この設定は他の場所では効果がありません                                                                                                              | [管理設定ソース](/docs/ja/admin-setup#decide-how-settings-reach-devices)：サーバー管理設定、ゲートウェイポリシー、`managed-settings.json`、MDM プロファイル、または HKLM レジストリ |
+| `allowedMcpServers`          | 許可されたサーバーのホワイトリスト                                                                                                                                                                             | 任意の[設定スコープ](/docs/ja/settings#where-settings-live)。[サーバーの評価方法](#how-a-server-is-evaluated)に、複数のスコープと管理ソースからのリストがどのように組み合わされるかが記載されています          | 強制するには、[管理設定ソース](/docs/ja/admin-setup#decide-how-settings-reach-devices)：サーバー管理設定、`managed-settings.json`、MDM プロファイル、またはレジストリ           |
+| `deniedMcpServers`           | ブロックされたサーバーのブラックリスト                                                                                                                                                                           | 任意の設定スコープ。[サーバーの評価方法](#how-a-server-is-evaluated)に、複数のスコープと管理ソースからのリストがどのように組み合わされるかが記載されています                                              | `allowedMcpServers` と同じ                                                                                                            |
+| `allowManagedMcpServersOnly` | ホワイトリストを管理ソースのみにロック                                                                                                                                                                           | 管理設定ソースのみ。[すべての管理ソースから読み込まれるキー](/docs/ja/managed-settings#keys-read-from-every-admin-source)に、どの管理ソースがこれをオンにできるかが記載されています。この設定は他のスコープでは効果がありません | `allowedMcpServers` と同じ                                                                                                            |
+| `allowAllClaudeAiMcps`       | Claude Code が自身で取得する claude.ai コネクタを `managed-mcp.json` と並行して読み込みます。[クラウドセッションを実行するホスト上の `managed-mcp.json` は、そのセッションのコネクタを依然として抑制します](#allow-claude-ai-connectors-alongside-the-managed-set) | 管理設定ソースのみ。この設定は他の場所では効果がありません                                                                                                              | `allowedMcpServers` と同じ                                                                                                            |
 
 <h2 id="related-resources">
   関連リソース

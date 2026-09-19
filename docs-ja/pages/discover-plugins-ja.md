@@ -239,6 +239,7 @@ Anthropic は、プラグインシステムで何が可能かを示す例プラ�
 * **Git URL**: 任意の git リポジトリ URL（GitLab、Bitbucket、自己ホスト）
 * **ローカル パス**: ディレクトリまたは `marketplace.json` ファイルへの直接パス
 * **リモート URL**: ホストされた `marketplace.json` ファイルへの直接 URL
+* **claude.ai**: claude.ai でホストされているマーケットプレイス（組織のプラグイン ライブラリなど）。これらは [**Marketplaces** タブまたはシェルから名前で追加](#add-from-claude-ai)します。ソースではなく名前で追加します。
 
 <h3 id="add-from-github">
   GitHub から追加する
@@ -316,11 +317,31 @@ URL 経由でリモート `marketplace.json` ファイルを追加します：
   URL ベースのマーケットプレイスは、Git ベースのマーケットプレイスと比べていくつかの制限があります。URL ベースのマーケットプレイスからのプラグインのインストールが失敗する場合は、[トラブルシューティング](/docs/ja/plugin-marketplaces#plugins-with-relative-paths-fail-in-url-based-marketplaces)を参照してください。
 </Note>
 
+<h3 id="add-from-claude-ai">
+  claude.ai から追加する
+</h3>
+
+[プラグインが claude.ai アカウントから同期されるターミナル セッション](/docs/ja/plugins-reference#synced-plugins)では、claude.ai はマーケットプレイスをリストアップすることもできます。組織のプラグイン ライブラリや独自の claude.ai アップロードなど。`claude plugin marketplace list` は `From claude.ai:` セクションでそれらを出力し、`/plugin` **Marketplaces** タブにもリストされます。そこから 1 つを選択して追加します。claude.ai からマーケットプレイスを追加するには、Claude Code v2.1.273 以降が必要です。
+
+シェルから追加するには、`claude plugin marketplace add` を `--claudeai` フラグとリストに表示されている名前で実行します：
+
+```bash theme={null}
+claude plugin marketplace add --claudeai claudeai-organization-library
+```
+
+Claude Code はマーケットプレイスをローカル名で登録します。これは claude.ai がリストアップしている名前から派生した `claudeai-` で始まる名前です。「Organization library」としてリストされているマーケットプレイスは `claudeai-organization-library` として登録されます。その名前でプラグインをインストールします。たとえば `claude plugin install <plugin>@claudeai-organization-library` を使用します。
+
+サインアウトするか別のアカウントでサインインすると、マーケットプレイスは設定されたままですがプラグインが表示されず、既にそこからインストールしたプラグインは引き続き読み込まれます。
+
+`From claude.ai:` セクションは、claude.ai を通じて共有されている git ベースのマーケットプレイスもリストアップできます。これらは通常の `marketplace add` コマンドで追加します。リストが出力するソースを使用します。
+
 <h2 id="install-plugins">
   プラグインをインストールする
 </h2>
 
-マーケットプレイスを追加したら、プラグインを名前でインストールできます：
+マーケットプレイスを追加したら、プラグインを名前でインストールできます。まだ追加していないマーケットプレイスの場合は、代わりに[1 つのコマンドでマーケットプレイスを追加してインストール](#add-a-marketplace-and-install-in-one-command)できます。
+
+名前でインストールするには：
 
 ```shell theme={null}
 /plugin install plugin-name@marketplace-name
@@ -361,6 +382,20 @@ v2.1.221 より前では、`/reload-plugins` を実行するか再起動する�
 <Warning>
   プラグインをインストールする前に、それを信頼していることを確認してください。Anthropic はプラグインに含まれる MCP サーバー、ファイル、またはその他のソフトウェアを制御せず、意図したとおりに機能することを確認できません。詳細については、各プラグインのホームページを確認してください。
 </Warning>
+
+<h3 id="add-a-marketplace-and-install-in-one-command">
+  1 つのコマンドでマーケットプレイスを追加してインストールする
+</h3>
+
+まだ追加していないマーケットプレイスからプラグインをインストールするには、`--marketplace` でマーケットプレイス ソースを指定します。Claude Code v2.1.275 以降が必要です。
+
+```shell theme={null}
+/plugin install quality-review-plugin --marketplace your-org/plugins
+```
+
+ソースは[`/plugin marketplace add`](#add-marketplaces)と同じ形式を取ります。例えば、GitHub の `owner/repo`、git URL、またはローカル パスなど。ただし、スペースを含むことはできません。プラグイン名は `@marketplace` サフィックスなしで指定します。
+
+そのマーケットプレイスをまだ追加していない場合、Claude Code は解決されたソースを表示し、追加する前に確認を求めます。キャンセルするとインストールがキャンセルされ、何も追加されません。マーケットプレイスが追加されると、プラグインの詳細が開き、[インストール スコープ](/docs/ja/settings#where-settings-live)を選択できます。
 
 <h2 id="manage-installed-plugins">
   インストール済みプラグインを管理する
@@ -526,7 +561,7 @@ UI を通じて個別のマーケットプレイスの自動更新を切り替�
 3. リストからマーケットプレイスを選択
 4. **Enable auto-update** または **Disable auto-update** を選択
 
-`claude-plugins-official` および他のほとんどの公式 Anthropic マーケットプレイスはデフォルトで自動更新が有効になっています。サードパーティおよびローカル開発マーケットプレイスはデフォルトで自動更新が無効になっています。
+`claude-plugins-official`、その他のほとんどの公式 Anthropic マーケットプレイス、および [claude.ai から追加されたマーケットプレイス](#add-from-claude-ai)はデフォルトで自動更新が有効になっています。その他のサードパーティ マーケットプレイスおよびローカル開発マーケットプレイスはデフォルトで自動更新が無効になっています。
 
 管理者は、マネージド設定で各 [`extraKnownMarketplaces`](/docs/ja/settings-reference#extraknownmarketplaces) エントリに `"autoUpdate": true` を設定して、各ユーザーが切り替える必要なく、組織マーケットプレイスの自動更新を有効にすることもできます。
 

@@ -1116,7 +1116,7 @@ Claude Code は、プロンプト入力の下のサブエージェントパネ�
 
 * **システムプロンプト**: エージェント独自のプロンプトと Claude Code が追加する環境詳細。Claude Code システムプロンプトではありません。カスタムサブエージェントは [マークダウン本体](#write-subagent-files) または `prompt` フィールドで定義します。組み込みエージェントは事前定義されたプロンプトを持ちます。
 * **タスクメッセージ**: Claude が作業を引き継ぐときに作成する委譲プロンプト。
-* **CLAUDE.md ファイル**: メイン会話が読み込む [CLAUDE.md 階層](/docs/ja/memory#how-claude-md-files-load) のすべてのレベル。`~/.claude/CLAUDE.md`、プロジェクトルール、`CLAUDE.local.md`、および管理ポリシーファイルを含みます。組み込みの Explore および Plan エージェントはこれをスキップします。定義が [`omitClaudeMd`](#supported-frontmatter-fields) を設定するサブエージェントは、管理ポリシーファイルのみを読み込むか、定義が [管理設定](#choose-the-subagent-scope) から来る場合は何も読み込みません。
+* **CLAUDE.md ファイル**: メイン会話が読み込む [CLAUDE.md 階層](/docs/ja/memory#how-claude-md-files-load) のすべてのレベル。`~/.claude/CLAUDE.md`、プロジェクトルール、`CLAUDE.local.md`、管理ポリシーファイル、および [AGENTS.md ファイル](/docs/ja/memory#agents-md) を含みます。組み込みの Explore および Plan エージェントはこれをスキップします。定義が [`omitClaudeMd`](#supported-frontmatter-fields) を設定するサブエージェントは、管理ポリシーファイルのみを読み込むか、定義が [管理設定](#choose-the-subagent-scope) から来る場合は何も読み込みません。
 * **Git ステータス**: 親セッションの開始時に取得されたスナップショット。作業ディレクトリが Git リポジトリでない場合、または [`includeGitInstructions`](/docs/ja/settings-reference#includegitinstructions) が `false` の場合は不在です。Explore および Plan はそれをスキップします。
 * **事前読み込みスキル**: エージェントの [`skills` フィールド](#preload-skills-into-subagents) に名前が付いているスキルの完全なコンテンツ。組み込みエージェントはスキルを事前読み込みしません。
 * **兄弟名簿**: `main` とセッション内のすべての他の名前付きエージェントをリストするシステムリマインダー。各エージェントは [`SendMessage`](#resume-subagents) の有効な `to` 値です。Claude Code v2.1.206 以降が必要です。名簿は、サブエージェントのツールに `SendMessage` が含まれ、少なくとも 1 つの他のエージェントに名前がある場合にのみ表示されます。Claude が生成時に名前を付けたか、[エージェントチーム](/docs/ja/agent-teams) チームメイトとして実行されるかに関わらず。これはサブエージェントが開始するときに取得されたスナップショットであるため、後で名前が付けられたエージェントは表示されません。

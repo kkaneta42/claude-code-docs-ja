@@ -328,11 +328,13 @@ Claude Code が自動モードを利用不可と報告する場合は、まず�
 
 v2.1.158 から v2.1.206 では、これらのプロバイダーで自動モードはオフでした。`CLAUDE_CODE_ENABLE_AUTO_MODE=1` を設定するまで、Claude Code はこれらのプロバイダーで `defaultMode: "auto"` を無視していました。変数は互換性のために依然として受け入れられ、v2.1.207 以降は効果がありません。
 
-<h4 id="server-side-classifier-review">
+<h3 id="server-side-classifier-review">
   サーバー側クラシファイアレビュー
-</h4>
+</h3>
 
-Amazon Bedrock、Google Cloud の Agent Platform、および Microsoft Foundry では、Claude Code はデフォルトで独自のクラシファイアリクエストで自動モードアクションをレビューします。プラットフォームのサーバー側クラシファイアが[クラシファイアに送信されるアクション](#how-the-classifier-evaluates-actions)をセッションのモデルリクエストの一部としてレビューするようにするには、[`CLAUDE_CODE_AUTO_MODE_SERVER=1`](/docs/ja/env-vars) を設定します。プラットフォームがクラシファイアを実行する場所では、その判定がこれらのアクションを決定します。実行しない場所では、Claude Code は独自のクラシファイアリクエストにフォールバックします。v2.1.271 と v2.1.272 では、プラットフォームに質問することがこれらのプロバイダーのデフォルトでした。
+Anthropic API、[AWS 上の Claude Platform](/docs/ja/claude-platform-on-aws)、Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、および `ANTHROPIC_BASE_URL` を[LLM ゲートウェイまたはプロキシ](/docs/ja/llm-gateway)に指す場合、自動モードの Claude Code はサーバーに[クラシファイアに送信されるアクション](#how-the-classifier-evaluates-actions)をセッションのモデルリクエストの一部としてレビューするよう要求します。サーバーがそれらをレビューする場所では、その判定がこれらのアクションを決定します。レビューしない場所では、通常はゲートウェイまたはプロキシがトラフィックに干渉するため、Claude Code は独自のクラシファイアリクエストにフォールバックします。そのフォールバックがセッションの残りの間保持されると、これらのリクエストが請求されるアカウントで[クラシファイアリクエスト料金に関する 1 回限りのダイアログ](/docs/ja/auto-mode-classifier-billing)を表示します。サーバーに質問することをスキップして、常に Claude Code 独自のクラシファイアリクエストを使用するには、[`CLAUDE_CODE_AUTO_MODE_SERVER=0`](/docs/ja/env-vars) を設定します。変数は Anthropic API への直接接続では読み取られません。`CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1` を設定し、`CLAUDE_CODE_AUTO_MODE_SERVER` を設定しないままにする場合、Claude Code もサーバーに質問することを停止します。
+
+デフォルトでサーバーに質問することには Claude Code v2.1.278 以降が必要です。
 
 <h3 id="what-the-classifier-blocks-by-default">
   クラシファイアがデフォルトでブロックするもの
@@ -517,7 +519,7 @@ Claude Code v2.1.195 以降もこれらをデフォルトで許可します。
 
     セッションの最初の自動モードリクエストは Sonnet 5 デフォルトを検証します。リクエストが成功する場合、Sonnet 5 はセッションのクラシファイアモデルのままです。リクエストがモデルが利用できないため失敗する場合、セッションは代わりにフォールバックを使用します。その検証が解決した後、クラシファイアのモデルはセッション用に変更されません。
 
-    Enterprise プランおよび Claude API を使用するアカウント、[AWS 上の Claude Platform](/docs/ja/claude-platform-on-aws)、Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry では、クラシファイア呼び出しはトークン使用量にカウントされます。各チェックはトランスクリプトの一部と保留中のアクションを送信し、実行前にラウンドトリップを追加します。読み取りと保護されたパス外の作業ディレクトリ編集はクラシファイアをスキップするため、オーバーヘッドは主にシェルコマンドとネットワーク操作から来ます。Amazon Bedrock、Google Cloud の Agent Platform、および Microsoft Foundry では、レビューをセッションのモデルリクエストに移動できます。[サーバー側クラシファイアレビュー](#server-side-classifier-review)を参照してください。
+    Enterprise プランおよび Claude API を使用するアカウント、[AWS 上の Claude Platform](/docs/ja/claude-platform-on-aws)、Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry では、クラシファイア呼び出しはトークン使用量にカウントされます。各チェックはトランスクリプトの一部と保留中のアクションを送信し、実行前にラウンドトリップを追加します。読み取りと保護されたパス外の作業ディレクトリ編集はクラシファイアをスキップするため、オーバーヘッドは主にシェルコマンドとネットワーク操作から来ます。サーバーがアクションをレビューする場所では、セッションのモデルリクエストの一部として行われるため、カウントする別のクラシファイア呼び出しはありません。[サーバー側クラシファイアレビュー](#server-side-classifier-review)を参照してください。
 
     サンドボックス化されたネットワークアクセスは、コマンドごとのクラシファイアリクエストを追加しません。クラシファイアは[コマンドが名前を付けるホスト](/docs/ja/sandboxing#per-command-allowed-domains-in-auto-mode)をコマンドと一緒に判定し、Claude Code は承認されたリストに対して各接続をチェックします。クラシファイアを再度呼び出さずに。
   </Accordion>
@@ -660,7 +662,7 @@ Claude Code は、`rm` または `rmdir` ターゲットが以下のいずれか
 
 Claude Code は、`rm -rf "$DIR"/*` のようなシェル変数の直下のグロブまたは末尾のスラッシュも重要なパスの削除として扱います。変数が空の場合、コマンドはファイルシステムルートからの削除になるためです。
 
-`$(...)` またはバッククォート、あるいはプロセス置換 `<(...)` を使用してコマンド置換内に削除を隠すことは、チェックをスキップしません。Claude Code は、`echo "$(rm -rf ~)"` のように置換内にある重要なパスの削除、または同じコマンド内の他の場所にある削除を見つけます。
+`(...)` を使用したサブシェル、`{ ...; }` を使用したブレースグループ、`$(...)` またはバッククォートを使用したコマンド置換、あるいは `<(...)` を使用したプロセス置換内に削除を隠すことは、チェックをスキップしません。Claude Code は、`(rm -rf ~)` や `echo "$(rm -rf ~)"` のように置換内にある重要なパスの削除、または同じコマンド内の他の場所にある削除を見つけます。
 
 <h3 id="remove-item-in-powershell">
   PowerShell の Remove-Item

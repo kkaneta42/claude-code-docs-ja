@@ -231,7 +231,9 @@ Enterprise および Team アカウントの場合、Slack の Claude から作�
 
 このエントリは [Claude Tag](https://claude.com/docs/claude-tag/overview) を使用しているワークスペースに適用されます。Claude Tag では、Claude はメンバーのアカウントではなく、組織の共有 ID としてチャネルで機能します。[claude.ai/code](https://claude.ai/code) でチャネルのクラウド環境を作成した場合、それはあなたの個人アカウントに属しており、Claude は個人環境でチャネルセッションを開始できません。Claude Code はセッションを直ちに失敗させ、再試行しても役に立ちません。
 
-Owner の場合は、[admin settings](https://claude.ai/admin-settings) の **Cloud environments** ページから環境を [organization-shared environment](/docs/ja/cloud-environments#organization-shared-environments) として再作成してください。次の 2 つの方法で適用できます。
+Owner の場合で環境があなたのものである場合は、環境セレクターから [組織と共有](/docs/ja/cloud-environments#organization-shared-environments)してください。それ以外の場合は、Owner が [admin settings](https://claude.ai/admin-settings) の **Cloud environments** ページから組織共有環境として再作成します。
+
+次の 2 つの方法で適用できます。
 
 * [claude.ai/admin-settings/claude-code](https://claude.ai/admin-settings/claude-code) で組織のデフォルトとして設定します。
 * Claude Tag admin settings で [チャネルに設定](https://claude.com/docs/claude-tag/admins/troubleshooting#channel-sessions-use-the-wrong-environment-or-can%E2%80%99t-find-one)します。

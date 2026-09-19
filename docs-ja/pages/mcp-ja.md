@@ -1031,7 +1031,9 @@ v2.1.196 以降、`oauth.scopes` が設定されていない場合、Claude Code
 
 認可サーバーが `scopes_supported` で `offline_access` をアドバタイズする場合、Claude Code はそれをピン留めされたスコープに追加して、新しいブラウザーサインインなしでアクセストークンをリフレッシュできるようにします。
 
-サーバーが後でツール呼び出しに対して 403 `insufficient_scope` を返す場合、Claude Code は同じピン留めされたスコープで再認証します。ピン留めされたセット外のスコープが必要なツールが必要な場合は、`oauth.scopes` を拡張してください。
+サーバーが後でツール呼び出しに対して 403 `insufficient_scope` を返す場合、呼び出しは[追加の権限が必要](/docs/ja/errors#mcp-server-needs-you-to-sign-in-again)というメッセージで失敗し、サーバーが要求するスコープに名前を付けます。サーバーは `/mcp` で認証が必要として表示されます。
+
+そのスコープがピン留めされた `oauth.scopes` にない場合は、それを追加してから `/mcp` を実行し、サーバーを再度認証してください。Claude Code はサーバーが名前を付けたスコープではなく、ピン留めされたスコープをリクエストするため、それを追加せずに再度認証する場合、取得するトークンはまだそれを欠いています。
 
 <h3 id="use-dynamic-headers-for-custom-authentication">
   カスタム認証に動的ヘッダーを使用する

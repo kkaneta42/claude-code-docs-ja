@@ -614,6 +614,7 @@ WebFetch は URL とそこから抽出する内容を説明するプロンプト
 
 Claude が受け取るレスポンスを形作るいくつかの動作があります。
 
+* WebFetch は `localhost` およびドットのない他のホスト名（ベアなイントラネット名など）をリクエストを行う前に拒否します。[返されるエラー](/docs/ja/errors#webfetch-cannot-fetch-localhost) は Claude に Bash 経由で `curl` を使用してローカルサーバーに到達するよう指示します。
 * HTTP URL は自動的に HTTPS にアップグレードされます。
 * 大きなページは処理前に固定文字数制限に切り詰められます。
 * WebFetch はデフォルトで各レスポンスを 15 分間キャッシュするため、同じ URL の繰り返しフェッチは迅速に返されます。Claude Code v2.1.233 以降では、[`CLAUDE_CODE_WEBFETCH_CACHE_TTL_MS`](/docs/ja/env-vars#variables) を設定して、WebFetch が各レスポンスを保持する期間を変更できます。

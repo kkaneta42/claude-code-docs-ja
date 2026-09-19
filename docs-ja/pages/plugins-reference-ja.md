@@ -101,6 +101,8 @@ Claude Code は、frontmatter に `name` がない場合またはパースに失
 
 **形式**: イベントマッチャーとアクションを含む JSON 設定
 
+`hooks/hooks.json` は、エディターのオートコンプリートと検証用に JSON Schema URL を指定する最上位の `$schema` キーを含むことができます。Claude Code は読み込み時にこのキーを無視します。
+
 **Hook 設定**:
 
 ```json theme={null}
@@ -876,7 +878,12 @@ Claude Code は、コピーされたバージョンディレクトリを作成�
 | `bun.lock` または `bun.lockb`                    | `bun install --frozen-lockfile --ignore-scripts` |
 | `npm-shrinkwrap.json` または `package-lock.json` | `npm ci --ignore-scripts`                        |
 
-プラグインにこれらのロックファイルが複数含まれている場合、Claude Code は最初のマッチを使用し、順序をチェックします。`bun.lock`、`bun.lockb`、`npm-shrinkwrap.json`、`package-lock.json`。Claude Code は `yarn.lock` と `pnpm-lock.yaml` をスキップします。Yarn と pnpm は `--ignore-scripts` をバイパスする解決時間設定フックをサポートしているためです。
+プラグインにこれらのロックファイルが複数含まれている場合、Claude Code は最初のマッチを使用し、順序をチェックします。`bun.lock`、`bun.lockb`、`npm-shrinkwrap.json`、`package-lock.json`。
+
+Claude Code は 2 つのケースでインストールをスキップします。それぞれ独自の修正があります。
+
+* プラグインが `yarn.lock` または `pnpm-lock.yaml` のみを配布している場合は、npm ロックファイルに置き換えてください。
+* `bunfig.toml` が bun ロックファイルの横にある場合は、`bunfig.toml` を削除するか、bun ロックファイルを npm ロックファイルに置き換えてください。
 
 最も広いリーチのために npm ロックファイルを配布してください。Claude Code はマッチされたロックファイルのパッケージマネージャーをユーザーの PATH から実行し、ロックファイルが見つからない場合は他のロックファイルにフォールバックしません。npm ソースを通じて配布されるプラグインの場合は、`npm-shrinkwrap.json` を使用してください。npm は公開されたパッケージから `package-lock.json` を除外します。
 
@@ -886,9 +893,9 @@ Claude Code はこの依存関係インストールを制約して、プラグ�
 * **ライフサイクルスクリプトなし:** `--ignore-scripts` は `preinstall`、`install`、および `postinstall` スクリプトが実行されないようにするため、これらのスクリプトでネイティブモジュールをビルドする依存関係はダウンロードされますが、このインストール中にはコンパイルされません。
 * **60 秒のタイムアウト:** Claude Code は実行時間が長いインストールを停止し、失敗として扱います。
 
-npm ソースプラグイン自体をフェッチすると、この依存関係インストールが実行される前に、ライフサイクルスクリプトが有効な状態で `npm install` が実行されます。
+Claude Code は npm ソースプラグインをこの依存関係インストールの前にフェッチし、このフェッチ中にパッケージ独自のインストールスクリプトは実行されません。[npm パッケージ](/docs/ja/plugin-marketplaces#npm-packages)を参照してください。
 
-失敗またはスキップされたインストールはプラグインをブロックすることはありません。インストールが失敗した場合、または Claude Code が yarn または pnpm ロックファイルをスキップした場合、理由は [デバッグ出力](#debugging-commands)の警告として記録されます。`package.json` とロックファイルがないプラグインはログエントリなしでスキップされます。タイムアウトしたインストールは、キャッシュされたコピーに部分的な `node_modules` ツリーを残すことができます。
+失敗またはスキップされたインストールはプラグインをブロックすることはありません。インストールが失敗した場合、または Claude Code が yarn または pnpm ロックファイルをスキップした場合、または `bunfig.toml` が横にある場合、理由は [デバッグ出力](#debugging-commands)の警告として記録されます。`package.json` とロックファイルがないプラグインはログエントリなしでスキップされます。タイムアウトしたインストールは、キャッシュされたコピーに部分的な `node_modules` ツリーを残すことができます。
 
 自動インストールをオフにすることはできません。設定または環境変数はそれを無効にしません。制限されたネットワークでは、[ネットワークアクセス要件](/docs/ja/network-config#network-access-requirements)を参照して、許可するホストを確認してください。
 
@@ -1561,7 +1568,7 @@ Claude Code はプラグインのバージョンをキャッシュキーとし�
 2. `marketplace.json` のプラグインのマーケットプレイスエントリの `version` フィールド
 3. git ホストマーケットプレイス内の `github`、`url`、`git-subdir`、および相対パスソースのプラグインの git コミット SHA
 4. [`archive` ソース](/docs/ja/plugin-marketplaces#zip-archives)の SHA-256 ダイジェスト。マーケットプレイスエントリの `sha256` ピン、またはピンを設定しない場合はダウンロードされたファイルのダイジェスト。Claude Code はこれを最初の 12 文字に短縮します
-5. `npm` ソースまたは git リポジトリ内にないローカルディレクトリの場合は `unknown`
+5. `npm` ソースまたは git リポジトリ内にないローカルディレクトリの場合は `unknown`。Claude Code は、`~/.claude` のような git 管理されたインストールパスを囲むリポジトリからバージョンを取得しません
 
 [`command` ソース](/docs/ja/plugin-marketplaces#command-sources)の場合、Claude Code は常にコマンドが生成したものからバージョンを導出します。単独の 12 文字のコンテンツハッシュ、または 1 つが設定されている場合は `plugin.json` バージョンに `<version>-<hash>` として追加されます。Claude Code はコマンドソースのマーケットプレイスエントリの `version` フィールドを無視します。ハッシュされた出力が変更されるコマンドは、作成されたバージョン文字列が同じままでも、新しいバージョンを生成します。[リンクモード](/docs/ja/plugin-marketplaces#copy-mode-and-link-mode)では、ハッシュはファイルコンテンツではなく、印刷されたディレクトリの実際のパスとそのトップレベルエントリをカバーします。
 

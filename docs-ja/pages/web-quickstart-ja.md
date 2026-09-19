@@ -67,7 +67,7 @@ GitHub への接続は 1 回限りのステップです。既に GitHub CLI を�
 
 <Steps>
   <Step title="claude.ai/code にアクセス">
-    [claude.ai/code](https://claude.ai/code) にアクセスし、claude.ai アカウントでサインインします。macOS または Windows では、最初の画面に Claude Code デスクトップアプリと Claude Code をインストールする他の方法が表示されます。ブラウザに留まるには、ページの下部にある **Continue on web** をクリックします。
+    [claude.ai/code](https://claude.ai/code) にアクセスし、claude.ai アカウントでサインインします。
   </Step>
 
   <Step title="GitHub でサインイン">
@@ -196,10 +196,12 @@ Claude が完了したら、変更をレビューし、特定の行にフィー�
 <Steps>
   <Step title="diff ビューを開く">
     diff インジケーターはセッション全体で追加および削除された行を表示します（例：`+42 -18`）。それを選択して diff ビューを開き、左側にファイルリスト、右側に変更が表示されます。
+
+    diff はデフォルトではセッションの変更をベースブランチと比較します。別のブランチと比較するには、**Compare against** を選択して 1 つを選びます。
   </Step>
 
   <Step title="インラインコメントを残す">
-    diff 内の任意の行を選択し、フィードバックを入力して Enter キーを押します。コメントは次のメッセージを送信するまでキューに入り、その後バンドルされます。Claude は'`src/auth.ts:47` で、ここでエラーをキャッチしないでください'をメインの指示と一緒に見るため、問題がどこにあるかを説明する必要はありません。
+    diff 内の任意の行を選択し、フィードバックを入力して Enter キーを押します。コメントは次のメッセージを送信するまでキューに入り、その後バンドルされます。Claude は「`src/auth.ts:47` で、ここでエラーをキャッチしないでください」をメインの指示と一緒に見るため、問題がどこにあるかを説明する必要はありません。
   </Step>
 
   <Step title="pull request を作成">

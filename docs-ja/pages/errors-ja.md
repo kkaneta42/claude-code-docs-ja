@@ -70,6 +70,7 @@
 | `OAuth token revoked` / `OAuth token has expired`                                                                                                                                                                                                                    | [認証](#oauth-token-revoked-or-expired)                                                             |
 | `API Error: 401 Invalid authentication credentials`                                                                                                                                                                                                                  | [認証](#api-error-401-invalid-authentication-credentials)                                           |
 | `Login expired · Please run /login`                                                                                                                                                                                                                                  | [認証](#login-expired)                                                                              |
+| `Claude login not accepted · Run /login, then try again`                                                                                                                                                                                                             | [認証](#claude-login-not-accepted)                                                                  |
 | `Not signed in to the Cloud gateway — run /login.`                                                                                                                                                                                                                   | [認証](#administrator-policy-requires-a-cloud-gateway-sign-in)                                      |
 | `Administrator policy requires a Cloud gateway sign-in on this machine`                                                                                                                                                                                              | [認証](#administrator-policy-requires-a-cloud-gateway-sign-in)                                      |
 | `Failed to authenticate: OAuth session expired and could not be refreshed`                                                                                                                                                                                           | [認証](#login-expired)                                                                              |
@@ -79,11 +80,19 @@
 | `Anthropic profile login expired · Run /login to use your claude.ai account instead, or re-authenticate the profile`                                                                                                                                                 | [認証](#anthropic-profile-login-expired)                                                            |
 | `does not meet scope requirement user:profile`                                                                                                                                                                                                                       | [認証](#oauth-scope-requirement)                                                                    |
 | `claude.ai rejected the session token` / `session token rejected`                                                                                                                                                                                                    | [認証](#claude-ai-rejected-the-session-token)                                                       |
+| `MCP server "<name>" needs you to sign in again (run /mcp to re-authenticate)`                                                                                                                                                                                       | [認証](#mcp-server-needs-you-to-sign-in-again)                                                      |
+| `rejected the credential from its headersHelper` / `rejected the Authorization header in its config`                                                                                                                                                                 | [認証](#mcp-server-needs-you-to-sign-in-again)                                                      |
+| `MCP server "<name>" needs additional permissions (scope: "<scope>") — run /mcp to re-authenticate`                                                                                                                                                                  | [認証](#mcp-server-needs-you-to-sign-in-again)                                                      |
+| `MCP server "<name>" requires re-authorization (token expired)`                                                                                                                                                                                                      | [認証](#mcp-server-needs-you-to-sign-in-again)                                                      |
 | `Issuer mismatch in authorization response (RFC 9207)`                                                                                                                                                                                                               | [認証](#issuer-mismatch-in-authorization-response)                                                  |
 | `Cloud gateway session expired — run /login to reconnect.`                                                                                                                                                                                                           | [認証](#cloud-gateway-session-expired)                                                              |
 | `Cloud gateway <url> no longer accepts this session`                                                                                                                                                                                                                 | [認証](#cloud-gateway-session-expired)                                                              |
 | `AWS credentials expired or invalid`                                                                                                                                                                                                                                 | [認証](#aws-credentials-expired-or-invalid)                                                         |
 | `AWS authentication failed`                                                                                                                                                                                                                                          | [認証](#aws-authentication-failed)                                                                  |
+| `Google Cloud credentials expired or invalid`                                                                                                                                                                                                                        | [認証](#google-cloud-credentials-expired-or-invalid)                                                |
+| `Google Cloud authentication failed`                                                                                                                                                                                                                                 | [認証](#google-cloud-authentication-failed)                                                         |
+| `Microsoft Foundry authentication failed`                                                                                                                                                                                                                            | [認証](#microsoft-foundry-authentication-failed)                                                    |
+| `Gateway refused the request`                                                                                                                                                                                                                                        | [認証](#gateway-refused-the-request)                                                                |
 | `Could not load AWS credentials` / `Could not load Google Cloud credentials`                                                                                                                                                                                         | [認証](#could-not-load-aws-or-google-cloud-credentials)                                             |
 | `AWS default-chain credential resolve timed out`                                                                                                                                                                                                                     | [認証](#aws-default-chain-credential-resolve-timed-out)                                             |
 | `Timed out after 60s waiting for AWS`                                                                                                                                                                                                                                | [認証](#bedrock-setup-verification-timed-out-waiting-for-aws)                                       |
@@ -185,6 +194,7 @@
 | `Your connected GitHub account can't see <owner>/<repo>`                                                                                                                                                                                                             | [コマンドラインエラー](#your-connected-github-account-cant-see-the-repository)                              |
 | `The GitHub App preflight failed transiently (network or service hiccup) — retry in a moment to start from GitHub instead`                                                                                                                                           | [コマンドラインエラー](#the-github-app-preflight-failed-transiently)                                        |
 | `GitHub isn't connected to your Claude account, so this repository can't be cloned in the cloud`                                                                                                                                                                     | [コマンドラインエラー](#github-isnt-connected-to-your-claude-account)                                       |
+| `Single sign-on authorization needed`                                                                                                                                                                                                                                | [コマンドラインエラー](#single-sign-on-authorization-needed)                                                |
 | `Failed to resume the conversation`                                                                                                                                                                                                                                  | [コマンドラインエラー](#failed-to-resume-the-conversation)                                                  |
 | `No conversation found with session ID: <session-id>`                                                                                                                                                                                                                | [コマンドラインエラー](#no-conversation-found-with-the-session-id)                                          |
 | `Cannot switch renderers in this session`                                                                                                                                                                                                                            | [コマンドラインエラー](#cannot-switch-renderers-in-this-session)                                            |
@@ -192,6 +202,8 @@
 | `Couldn't read your Zed keymap` / `Couldn't back up your Zed keymap` / `Couldn't update your Zed keymap`                                                                                                                                                             | [コマンドラインエラー](#terminal-setup-left-your-zed-keymap-unchanged)                                      |
 | `Your Zed keymap isn't a readable list of keybindings`                                                                                                                                                                                                               | [コマンドラインエラー](#terminal-setup-left-your-zed-keymap-unchanged)                                      |
 | `Skill usage reports are not available on this connection.`                                                                                                                                                                                                          | [コマンドラインエラー](#skill-usage-reports-are-not-available-on-this-connection)                           |
+| `Custom output styles can't be selected over Remote Control or from a relayed message`                                                                                                                                                                               | [コマンドラインエラー](#custom-output-styles-cant-be-selected-over-remote-control)                          |
+| `Output styles are saved to local settings (.claude/settings.local.json), which this session doesn't load`                                                                                                                                                           | [コマンドラインエラー](#output-styles-are-saved-to-local-settings-which-this-session-doesnt-load)           |
 | `` `plugin eval` is currently in early access `` / `` `plugin eval` is currently unavailable ``                                                                                                                                                                      | [プラグインエラー](#plugin-eval-is-currently-in-early-access)                                             |
 | `Marketplace "<name>" is registered from an untrusted source`                                                                                                                                                                                                        | [プラグインエラー](#marketplace-is-registered-from-an-untrusted-source)                                   |
 | `references ${user_config.*} in a shell-form command`                                                                                                                                                                                                                | [プラグインエラー](#plugin-command-references-user-config)                                                |
@@ -218,8 +230,9 @@
 | `Refusing to send: connected endpoint is not the expected process` / `Refusing to send: connected endpoint identity could not be read`                                                                                                                               | [ツールエラー](#refusing-to-send-a-cross-session-message)                                               |
 | `Refusing to send: connected endpoint is not owned by this user` / `Refusing to send: connected endpoint owner could not be read`                                                                                                                                    | [ツールエラー](#refusing-to-send-a-cross-session-message)                                               |
 | `Refusing to send: connected endpoint is a different process with the expected pid`                                                                                                                                                                                  | [ツールエラー](#refusing-to-send-a-cross-session-message)                                               |
-| `Refusing to read <path>: its symlink resolution changed after permission was checked` / `Refusing to search <path>: its symlink resolution changed after permission was checked`                                                                                    | [ツールエラー](#refusing-after-a-symlink-changed)                                                       |
+| `Refusing to read <path>: its symlink resolution changed after permission was checked (<reason>)` / `Refusing to search <path>: its symlink resolution changed after permission was checked`                                                                         | [ツールエラー](#refusing-after-a-symlink-changed)                                                       |
 | `Refusing to write <path>: its parent-directory symlink resolution changed after permission was checked` / `Refusing to write <path>: it is a symbolic link. Write to the link's target path instead`                                                                | [ツールエラー](#refusing-after-a-symlink-changed)                                                       |
+| `Refusing to write through symlink: <path>` / `Refusing to write into symlinked directory: <path>`                                                                                                                                                                   | [ツールエラー](#refusing-after-a-symlink-changed)                                                       |
 | `Refusing to search <path>: a path one of its Read deny rules is written through changed while the search was being prepared` / `Refusing to search <path>: it could not be opened`                                                                                  | [ツールエラー](#refusing-after-a-symlink-changed)                                                       |
 | `its permission check expired before it ran (too many concurrent file operations)` / `ripgrep was found only by name on PATH`                                                                                                                                        | [ツールエラー](#refusing-after-a-symlink-changed)                                                       |
 | `task output swap refused (tasks dir moved or linked)`                                                                                                                                                                                                               | [ツールエラー](#task-output-swap-refused)                                                               |
@@ -251,6 +264,7 @@
 | `Couldn't start a background session (working directory no longer exists or is not accessible: ...)`                                                                                                                                                                 | [バックグラウンドセッションエラー](#working-directory-no-longer-exists-when-starting-a-background-session)        |
 | `Claude Code is being updated by npm on this machine (still not runnable after 2 min, ...)`                                                                                                                                                                          | [バックグラウンドセッションエラー](#eacces-when-starting-a-background-session)                                    |
 | `Claude Code process exited with code N`                                                                                                                                                                                                                             | [ラッパーと IDE エラー](#claude-code-process-exited-with-code-n)                                          |
+| `The connection to Claude Code ended before this message completed`                                                                                                                                                                                                  | [ラッパーと IDE エラー](#the-connection-to-claude-code-ended-before-this-message-completed)               |
 | `Could not locate the Claude CLI on PATH`                                                                                                                                                                                                                            | [ラッパーと IDE エラー](#could-not-locate-the-claude-cli-on-path)                                         |
 | `Restored the code, but skipped N files`                                                                                                                                                                                                                             | [Rewind の警告とエラー](#restored-the-code-but-skipped-files)                                            |
 | `No files were restored: N files failed (backup missing, or the file could not be updated)`                                                                                                                                                                          | [Rewind の警告とエラー](#no-files-were-restored)                                                         |
@@ -762,13 +776,13 @@ Could not update your spend limit: <reason from the server>
   認証エラー
 </h2>
 
-これらのエラーは、Claude Code が API に対してあなたの身元を証明できないことを意味します。任意の時点で `/status` を実行して、現在アクティブな認証情報を確認してください。
+これらのエラーは、Claude Code が API に対してあなたの身元を証明できないことを意味します。任意の時点で `/status` を実行して、現在アクティブな認証情報を確認できます。
 
 <h3 id="not-logged-in">
   ログインしていない
 </h3>
 
-このセッションに有効な認証情報がありません。
+このセッションで有効な認証情報が利用できません。
 
 ```text theme={null}
 Not logged in · Please run /login
@@ -776,37 +790,37 @@ Not logged in · Please run /login
 
 **対応方法：**
 
-* `/login` を実行して、Claude サブスクリプションまたは Console アカウントで認証してください
-* 環境変数で認証されることを想定していた場合は、`ANTHROPIC_API_KEY` が `claude` を起動したシェルで設定およびエクスポートされていることを確認してください
-* CI または自動化で対話的なログインが不可能な場合は、起動時にキーを取得する [`apiKeyHelper`](/docs/ja/settings-reference#apikeyhelper) スクリプトを設定してください
-* [認証の優先順位](/docs/ja/authentication#authentication-precedence) を参照して、複数の認証情報が存在する場合に Claude Code がどの認証情報を使用するかを理解してください
+* `/login` を実行して、Claude サブスクリプションまたは Console アカウントで認証します
+* 環境変数で認証されることを想定していた場合は、`ANTHROPIC_API_KEY` が `claude` を起動したシェルで設定およびエクスポートされていることを確認します
+* CI または自動化で対話的ログインが不可能な場合は、起動時にキーを取得する [`apiKeyHelper`](/docs/ja/settings-reference#apikeyhelper) スクリプトを設定します
+* [認証の優先順位](/docs/ja/authentication#authentication-precedence) を参照して、複数の認証情報が存在する場合に Claude Code が使用する認証情報を理解します
 
-ログインを繰り返し求められる場合は、[ログインしていないまたはトークンの有効期限が切れている](/docs/ja/troubleshoot-install#not-logged-in-or-token-expired) を参照して、システムクロックの確認と macOS 認証情報ストレージの復旧手順を確認してください。
+ログインを繰り返し求められる場合は、[ログインしていないか、トークンの有効期限が切れている](/docs/ja/troubleshoot-install#not-logged-in-or-token-expired) を参照して、システムクロックの確認と macOS 認証情報ストレージの復旧手順を確認してください。
 
 <h3 id="could-not-resolve-authentication-method">
   認証方法を解決できませんでした
 </h3>
 
-セッションが認証情報なしで API クライアントに到達しました。[バックグラウンドセッション](/docs/ja/agent-view) とクラウドセッションは、ワーカーが認証情報なしで起動したときにこのメッセージを表示します。対話的、`-p`、および Agent SDK の実行は、[ログインしていない](#not-logged-in) と同じ条件を報告し、この文字列をデバッグログにのみ書き込みます。そこで見つけた場合は、代わりにそのエントリに従ってください。
+セッションが認証情報なしで API クライアントに到達しました。[バックグラウンドセッション](/docs/ja/agent-view) とクラウドセッションは、ワーカーが認証情報なしで起動したときにこのメッセージを表示します。対話的、`-p`、および Agent SDK の実行は、同じ条件を [ログインしていない](#not-logged-in) として報告し、この文字列をデバッグログにのみ書き込みます。そこで見つけた場合は、代わりにそのエントリに従ってください。
 
 ```text theme={null}
 Could not resolve authentication method. Expected one of apiKey, authToken, credentials, config, or profile to be set. Or for one of the "X-Api-Key" or "Authorization" headers to be explicitly omitted
 ```
 
-現在のバージョンでは、エラーはワーカープロセスで利用可能な認証情報がなかったことを意味します。v2.1.174 より前では、アイドル状態の事前初期化されたワーカーに割り当てられたバックグラウンドセッションは、有効な認証情報が設定されていても、この方法で失敗する可能性がありました。v2.1.176 より前では、クレームされる前にアイドル状態だったクラウドセッションも同様でした。アップグレードして復旧してください。
+現在のバージョンでは、エラーはワーカープロセスで認証情報が利用できなかったことを意味します。v2.1.174 より前では、有効な認証情報が設定されていても、アイドル状態の事前初期化されたワーカーに割り当てられたバックグラウンドセッションがこの方法で失敗する可能性がありました。v2.1.176 より前では、クラウドセッションがアイドル状態で要求される前に失敗する可能性もありました。アップグレードして復旧してください。
 
 **対応方法：**
 
-* バックグラウンドまたはクラウドセッションに表示され、認証情報が既に設定されている場合は、v2.1.176 以降にアップグレードしてください
-* `ANTHROPIC_API_KEY`、`CLAUDE_CODE_OAUTH_TOKEN`、またはクラウドプロバイダーの認証情報が、ワーカーを起動する環境で設定されていることを確認してください。対話的シェルだけではなく
+* バックグラウンドまたはクラウドセッションでこれが表示され、認証情報が既に設定されている場合は、v2.1.176 以降にアップグレードします
+* `ANTHROPIC_API_KEY`、`CLAUDE_CODE_OAUTH_TOKEN`、またはクラウドプロバイダーの認証情報が、対話的シェルだけでなく、ワーカーを起動する環境で設定されていることを確認します
 * Agent SDK については、[クイックスタートの認証設定](/docs/ja/agent-sdk/quickstart#setup) を参照してください
-* 同じ環境の対話的セッションで `/status` を実行して、どの認証情報ソースが解決されるかを確認してください
+* 同じ環境の対話的セッションで `/status` を実行して、どの認証情報ソースが解決されるかを確認します
 
 <h3 id="invalid-api-key">
   無効な API キー
 </h3>
 
-`ANTHROPIC_API_KEY` 環境変数または `apiKeyHelper` スクリプトが API に拒否されたキーを返しました。または Claude Code が `ANTHROPIC_API_KEY` からのキーを送信前にブロックしました。
+`ANTHROPIC_API_KEY` 環境変数または `apiKeyHelper` スクリプトが API に拒否されたキーを返しました。または Claude Code が `ANTHROPIC_API_KEY` からのキーをブロックしてから送信しました。
 
 ```text theme={null}
 Invalid API key · Fix external API key
@@ -816,44 +830,44 @@ Invalid API key · Fix external API key
 
 **対応方法：**
 
-* タイプミスがないか確認し、[Console](https://platform.claude.com/settings/keys) でキーが取り消されていないことを確認してください
-* 同じシェルで `env | grep ANTHROPIC` を実行するか、PowerShell で `Get-ChildItem Env:ANTHROPIC*` を実行してください。direnv、dotenv シェルプラグイン、IDE ターミナルなどのツールは、明示的に設定しなくても、プロジェクト内の `.env` ファイルから古いキーをロードできます
-* `ANTHROPIC_API_KEY` をアンセットして `/login` を実行し、代わりにサブスクリプション認証を使用してください
-* キーが [`apiKeyHelper`](/docs/ja/settings-reference#apikeyhelper) スクリプトから来ている場合は、スクリプトを直接実行して、stdout に有効なキーを出力することを確認してください
-* `/status` を実行して、Claude Code が実際に使用している認証情報ソースを確認してください
+* タイプミスがないか確認し、[Console](https://platform.claude.com/settings/keys) でキーが取り消されていないことを確認します
+* 同じシェルで `env | grep ANTHROPIC` を実行するか、PowerShell で `Get-ChildItem Env:ANTHROPIC*` を実行します。direnv、dotenv シェルプラグイン、IDE ターミナルなどのツールは、プロジェクト内の `.env` ファイルから古いキーを明示的に設定せずに読み込むことができます
+* `ANTHROPIC_API_KEY` をアンセットして `/login` を実行し、代わりにサブスクリプション認証を使用します
+* キーが [`apiKeyHelper`](/docs/ja/settings-reference#apikeyhelper) スクリプトから来ている場合は、スクリプトを直接実行して、stdout に有効なキーを出力することを確認します
+* `/status` を実行して、Claude Code が実際に使用している認証情報ソースを確認します
 
 <h3 id="your-apikeyhelper-script-is-failing">
   apiKeyHelper スクリプトが失敗しています
 </h3>
 
-Claude Code が [`apiKeyHelper`](/docs/ja/settings-reference#apikeyhelper) 設定のコマンドを実行しましたが、キーを取得できませんでした。キーがないと、リクエストはプレースホルダー認証情報で API に到達し、API は `401` で拒否します。ターミナルの `Authentication` パネルは、以下のいずれが発生したかを示します：
+Claude Code が [`apiKeyHelper`](/docs/ja/settings-reference#apikeyhelper) 設定でコマンドを実行しましたが、キーを取得できませんでした。キーがないと、リクエストはプレースホルダー認証情報で API に到達し、API は `401` で拒否します。ターミナルの `Authentication` パネルには、以下のいずれが発生したかが表示されます：
 
 * コマンドがエラーで終了したか、タイムアウトしました
 * コマンドが stdout に何も出力しませんでした
-* コマンドがキー以外の何かを出力しました。ログインバナーやログ行など。パネルは `returned output that cannot be used as an API key` を表示し、何が間違っているかを示します。出力は繰り返しません。v2.1.227 より前では、Claude Code は周囲の空白をトリミングした後、コマンドが出力したものを送信していました。
+* コマンドがキー以外の何かを出力しました。ログイン バナーやログ行など。パネルは `returned output that cannot be used as an API key` を表示し、何が間違っているかを示します。v2.1.227 より前では、Claude Code は周囲の空白をトリミングした後、コマンドが出力したものを送信していました。
 
 ```text theme={null}
 Your apiKeyHelper script is failing · This usually means you need to re-authenticate with your provider · Run /status to see the script's error output
 ```
 
-[非対話モード](/docs/ja/headless) では、stderr も特定の理由を `apiKeyHelper failed:` というプレフィックス付きで運びます。
+[非対話モード](/docs/ja/headless) では、stderr も `apiKeyHelper failed:` というプレフィックス付きの具体的な理由を含みます。
 
-Claude Code はスクリプトを再実行し、このメッセージを表示する前に最大 2 回までリクエストを再試行するため、失敗は 3 回の試行内に表面化します。v2.1.208 より前では、Claude Code は完全な [再試行予算](#automatic-retries) を費やしてプレースホルダー認証情報でリクエストを再送信し、スクリプト失敗の代わりに汎用 `401` 認証エラーを報告していました。
+Claude Code はスクリプトを再実行し、このメッセージを表示する前にリクエストを最大 2 回まで再試行するため、失敗は 3 回の試行以内に表面化します。v2.1.208 より前では、Claude Code は完全な [再試行予算](#automatic-retries) を使用してプレースホルダー認証情報でリクエストを再送信し、その後、スクリプト失敗ではなく一般的な `401` 認証エラーを報告していました。
 
-`/login` を実行しても役に立ちません。ヘルパーの出力は、設定が存在する限り、保存されたログインより [優先されます](/docs/ja/authentication#authentication-precedence)。
+`/login` を実行しても役に立ちません。ここでは、ヘルパーの出力が [優先順位](/docs/ja/authentication#authentication-precedence) で保存されたログインより優先されます。設定が存在する限り。
 
 **対応方法：**
 
-* `apiKeyHelper` で設定されたコマンドをシェルで直接実行して、失敗を再現してください
-* コマンドが期限切れセッションを報告する場合は、SSO または秘密保管庫に再度サインインするなど、認証情報プロバイダーで再認証してください
-* コマンドを修正して、stdout にのみキーを出力するようにしてください。単一のトークンとして、最大 16,384 文字の印字可能 ASCII で、終了コード 0 で。[apiKeyHelper で認証情報をローテーションする](/docs/ja/llm-gateway-connect#rotate-credentials-with-apikeyhelper) を参照して、動作するセットアップを確認してください
-* `/status` を実行して、`apiKeyHelper` がアクティブな認証情報ソースであることを確認してください。コマンドが失敗するたびに、その終了コードとエラー出力がターミナルの `Authentication` パネルに表示されます。v2.1.212 より前では、パネルは `Cloud authentication` というタイトルでした。
+* `apiKeyHelper` で設定されたコマンドをシェルで直接実行して、失敗を再現します
+* コマンドが期限切れのセッションを報告する場合は、認証情報プロバイダーで再認証します。たとえば、SSO またはシークレットボールトに再度サインインします
+* コマンドを修正して、stdout にのみキーを出力するようにします。単一のトークンとして、最大 16,384 文字の印字可能 ASCII で、終了コード 0 で終了します。[apiKeyHelper で認証情報をローテーションする](/docs/ja/llm-gateway-connect#rotate-credentials-with-apikeyhelper) を参照して、動作するセットアップを確認してください。
+* `/status` を実行して、`apiKeyHelper` がアクティブな認証情報ソースであることを確認します。コマンドが失敗するたびに、その終了コードとエラー出力がターミナルの `Authentication` パネルに表示されます。v2.1.212 より前では、パネルは `Cloud authentication` というタイトルでした。
 
 <h3 id="invalid-request-header-value">
   無効なリクエストヘッダー値
 </h3>
 
-Claude Code がリクエストヘッダーとして送信しようとしていた値に、HTTP ヘッダーが運べない文字が含まれています。改行、NUL バイト、または `U+00FF` より上の文字（カーリークォートやゼロ幅スペースなど）。Claude Code はリクエストを停止し、修正する変数または設定を名前付けます。通常の原因は、見えない文字または迷走した改行を運んだドキュメントまたはチャットから貼り付けられた認証情報です。
+Claude Code がリクエストヘッダーとして送信しようとしていた値に、HTTP ヘッダーが運べない文字が含まれています。改行、NUL バイト、または `U+00FF` より上の文字（カーリークォートやゼロ幅スペースなど）。Claude Code は何も送信される前にリクエストを停止し、修正する変数または設定に名前を付けます。通常の原因は、ドキュメントまたはチャットから貼り付けられた認証情報で、目に見えない文字または迷走改行が含まれていることです。
 
 Claude Code は Claude API に直接リクエストを送信するとき、または [LLM ゲートウェイ](/docs/ja/llm-gateway) を通じてリクエストを送信するときにこのチェックを実行します。[Amazon Bedrock](/docs/ja/amazon-bedrock) などのサードパーティクラウドプロバイダーでは、Claude Code は送信前にこれを実行しません。
 
@@ -866,10 +880,10 @@ Invalid request header from the environment · Fix the environment variable
 メッセージの最初の部分は、不正な値がどこから来たかによって異なります：
 
 * `Invalid auth token`：[`ANTHROPIC_AUTH_TOKEN`](/docs/ja/env-vars) または [`CLAUDE_CODE_OAUTH_TOKEN`](/docs/ja/env-vars) からのベアラートークン
-* `Invalid ANTHROPIC_CUSTOM_HEADERS`：[`ANTHROPIC_CUSTOM_HEADERS`](/docs/ja/env-vars) で設定したヘッダー名または値。説明は、`distinct header 2 of 3 parsed from ANTHROPIC_CUSTOM_HEADERS` など、どの `Name: Value` ペアが問題かをカウントします。名前または値を繰り返さずに、両方を選択したため
-* `Invalid request header from the environment`：Claude Code が別の環境変数（`CLAUDE_AGENT_SDK_CLIENT_APP` など）からリクエストヘッダーにコピーする値。説明は修正する変数を名前付けます。
+* `Invalid ANTHROPIC_CUSTOM_HEADERS`：[`ANTHROPIC_CUSTOM_HEADERS`](/docs/ja/env-vars) で設定したヘッダー名または値。説明は、`distinct header 2 of 3 parsed from ANTHROPIC_CUSTOM_HEADERS` など、どの `Name: Value` ペアが問題かをカウントします。名前または値を繰り返さずに、両方を選択したため。
+* `Invalid request header from the environment`：Claude Code が別の環境変数（`CLAUDE_AGENT_SDK_CLIENT_APP` など）からリクエストヘッダーにコピーする値。説明は修正する変数に名前を付けます。
 
-Claude Code は、このチェックで検出された不正な `ANTHROPIC_API_KEY` を [無効な API キー](#invalid-api-key) として報告します。同じ末尾の説明付きで。保存された `/login` 認証情報の不正な値を [ログインしていない](#not-logged-in) として報告します。代わりに `/login` を実行して新しいものを保存してください。[`apiKeyHelper`](/docs/ja/settings-reference#apikeyhelper) スクリプトの出力はこのチェックに到達しません。Claude Code はスクリプトが実行されるときに検証し、HTTP ヘッダーが運べない出力は [apiKeyHelper スクリプトが失敗しています](#your-apikeyhelper-script-is-failing) で失敗します。
+Claude Code は、このチェックで検出された不正な `ANTHROPIC_API_KEY` を [無効な API キー](#invalid-api-key) として報告します。同じ末尾の説明付き。不正な保存された `/login` 認証情報を [ログインしていない](#not-logged-in) として報告します。代わりに `/login` を実行して新しいものを保存してください。[`apiKeyHelper`](/docs/ja/settings-reference#apikeyhelper) スクリプトの出力はこのチェックに到達しません。Claude Code はスクリプトが実行されるときに検証し、HTTP ヘッダーが運べない出力は [apiKeyHelper スクリプトが失敗しています](#your-apikeyhelper-script-is-failing) で失敗します。
 
 2 番目の `·` の後、メッセージは問題を説明します。この完全な例のように：
 
@@ -877,19 +891,19 @@ Claude Code は、このチェックで検出された不正な `ANTHROPIC_API_K
 Invalid auth token · Fix external auth token · Invalid Authorization header value from ANTHROPIC_AUTH_TOKEN: it contains a line break at character 41 (120 characters on 2 lines).
 ```
 
-位置は 1 から始まる文字をカウントします。説明は固定フレーズと文字カウントから構築されるため、値自体は含まれません。バイト順マーク、ゼロ幅スペース、カーリークォートなど、よく知られている見えない文字または活字文字である場合にのみ、問題のある文字を名前付けます。その他は `a non-ASCII character` として報告します。
+位置は 1 から始まる文字をカウントします。説明は固定フレーズと文字数から構築されるため、値自体は含まれません。バイト順マーク、ゼロ幅スペース、カーリークォートなど、よく知られている目に見えない文字または活字文字である場合にのみ、問題のある文字に名前を付けます。その他はすべて `a non-ASCII character` として報告されます。
 
 **対応方法：**
 
-* メッセージが名前付けする変数または設定を再設定し、報告された位置の周囲の文字を再入力してください。同じソースから貼り付けないでください
-* `ANTHROPIC_CUSTOM_HEADERS` の場合は、1 行に 1 つの `Name: Value` ペアを保持し、メッセージがカウントするペアを書き直してください
-* `/status` を実行して、どの認証情報ソースがアクティブであるかを確認してください
+* メッセージが名前を付ける変数または設定を再設定し、同じソースから貼り付けるのではなく、報告された位置の周囲の文字を再入力します
+* `ANTHROPIC_CUSTOM_HEADERS` の場合は、1 行に 1 つの `Name: Value` ペアを保持し、メッセージがカウントするペアを書き直します
+* `/status` を実行して、どの認証情報ソースがアクティブであるかを確認します
 
 <h3 id="this-organization-has-been-disabled">
-  この組織は無効化されています
+  このオーガニゼーションは無効になっています
 </h3>
 
-Claude Code は、無効化された Console 組織からの古い `ANTHROPIC_API_KEY` を使用しています。保存されたサブスクリプションログインがある場合、キーはそれをオーバーライドします。
+Claude Code は、無効な Console オーガニゼーションから古い `ANTHROPIC_API_KEY` を使用しています。保存されたサブスクリプションログインがある場合、キーはそれをオーバーライドします。
 
 ```text theme={null}
 Your ANTHROPIC_API_KEY belongs to a disabled organization · Unset the environment variable to use your subscription instead
@@ -897,22 +911,22 @@ Your ANTHROPIC_API_KEY belongs to a disabled organization · Update or unset the
 API Error: 400 ... This organization has been disabled.
 ```
 
-`·` の後のヒントは、保存された認証情報によって異なります。最初の形式は、保存された `/login` がキーをアンセット後に引き継ぐことができるときに表示され、2 番目はキーが唯一の認証情報である場合に表示されます。
+`·` の後のヒントは、保存された認証情報によって異なります。最初の形式は、保存された `/login` がキーをアンセットした後に引き継ぐことができるときに表示され、2 番目はキーが唯一の認証情報である場合に表示されます。
 
-環境変数は `/login` より優先されるため、シェルプロファイルでエクスポートされたキーまたは `.env` ファイルからロードされたキーは、動作する Pro または Max サブスクリプションがある場合でも使用されます。非対話モード（`-p`）では、キーが存在する場合は常に使用されます。
+環境変数は `/login` より優先されるため、シェルプロファイルでエクスポートされたキーまたは `.env` ファイルから読み込まれたキーは、動作する Pro または Max サブスクリプションがある場合でも使用されます。非対話モード（`-p`）では、キーが存在する場合は常に使用されます。
 
 **対応方法：**
 
-* 現在のシェルで `ANTHROPIC_API_KEY` をアンセットし、シェルプロファイルから削除してから、`claude` を再起動してください
-* メッセージが `Update or unset` と言う場合、フォールバックする保存されたログインがありません。キーをアンセットして `/login` を実行するか、アクティブな Console 組織からのキーに置き換えてください
-* その後 `/status` を実行して、アクティブな認証情報がサブスクリプションであることを確認してください
-* 環境変数が設定されておらず、エラーが続く場合、無効化された組織は `/login` に関連付けられたものです。サポートに連絡するか、別のアカウントでサインインしてください
+* 現在のシェルで `ANTHROPIC_API_KEY` をアンセットし、シェルプロファイルから削除してから、`claude` を再起動します
+* メッセージが `Update or unset` と言う場合、フォールバックする保存されたログインがありません。キーをアンセットして `/login` を実行するか、アクティブな Console オーガニゼーションからのキーに置き換えます
+* その後 `/status` を実行して、アクティブな認証情報がサブスクリプションであることを確認します
+* 環境変数が設定されておらず、エラーが続く場合、無効なオーガニゼーションは `/login` に関連付けられたものです。サポートに連絡するか、別のアカウントでサインインしてください。
 
 <h3 id="your-organization-has-disabled-api-key-authentication">
-  組織が API キー認証を無効化しました
+  オーガニゼーションが API キー認証を無効にしました
 </h3>
 
-このメッセージには Claude Code v2.1.169 以降が必要です。Console 組織の管理者が API キー認証をオフにしたため、API は Claude Code が送信しているキーを拒否します。`·` の後の復旧ヒントは、キーがどこから来たかによって異なります：
+このメッセージには Claude Code v2.1.169 以降が必要です。Console オーガニゼーションの管理者が API キー認証をオフにしたため、API は Claude Code が送信しているキーを拒否します。`·` の後の復旧ヒントは、キーがどこから来たかによって異なります：
 
 ```text theme={null}
 Your organization has disabled API key authentication · Run /login to sign in with your claude.ai account
@@ -921,85 +935,85 @@ Your organization has disabled API key authentication · Unset ANTHROPIC_API_KEY
 Your organization has disabled API key authentication · Unset the apiKeyHelper setting and run /login to sign in with your claude.ai account
 ```
 
-環境変数と `apiKeyHelper` は `/login` より優先されるため、どちらかがキーを供給している間は `/login` を実行するだけでは役に立ちません。[認証の優先順位](/docs/ja/authentication#authentication-precedence) を参照してください。
+環境変数と `apiKeyHelper` は `/login` より優先されるため、どちらかがまだキーを供給している間は `/login` を実行するだけでは役に立ちません。[認証の優先順位](/docs/ja/authentication#authentication-precedence) を参照してください。
 
 **対応方法：**
 
-* メッセージが `ANTHROPIC_API_KEY` を名前付けする場合、現在のシェルでアンセットし、シェルプロファイルまたは `.env` ファイルから削除してから、`claude` を再起動してください
-* メッセージが `apiKeyHelper` を名前付けする場合、`settings.json` から [`apiKeyHelper`](/docs/ja/settings-reference#apikeyhelper) 設定を削除してください
-* `/login` を実行して claude.ai アカウントでサインインしてください
-* その後 `/status` を実行して、アクティブな認証情報が API キーではなくサブスクリプションであることを確認してください
-* 自動化に API キー認証が必要な場合は、組織管理者に Console で再度有効化するよう依頼してください
+* メッセージが `ANTHROPIC_API_KEY` に名前を付ける場合は、現在のシェルでアンセットし、シェルプロファイルまたは `.env` ファイルから削除してから、`claude` を再起動します
+* メッセージが `apiKeyHelper` に名前を付ける場合は、`settings.json` から [`apiKeyHelper`](/docs/ja/settings-reference#apikeyhelper) 設定を削除します
+* `/login` を実行して claude.ai アカウントでサインインします
+* その後 `/status` を実行して、アクティブな認証情報が API キーではなくサブスクリプションであることを確認します
+* 自動化に API キー認証が必要な場合は、オーガニゼーション管理者に Console で再度有効にするよう依頼してください
 
 <h3 id="your-organization-has-disabled-claude-subscription-access">
-  組織が Claude サブスクリプションアクセスを無効化しました
+  オーガニゼーションが Claude サブスクリプションアクセスを無効にしました
 </h3>
 
-Claude 組織は、Claude Code へのサブスクリプションログインでのサインインを許可していません。同じアカウントで `/login` を再度実行すると、同じエラーが返されます。
+Claude オーガニゼーションは、サブスクリプションログインで Claude Code にサインインすることを許可していません。同じアカウントで `/login` を再度実行すると、同じエラーが返されます。
 
 ```text theme={null}
 Your organization has disabled Claude subscription access for Claude Code · Use an Anthropic API key instead, or ask your admin to enable access
 ```
 
-これはサーバー側の組織設定であるため、ローカル設定、環境変数、または CLI フラグからオーバーライドできません。
+これはサーバー側のオーガニゼーション設定であるため、ローカル設定、環境変数、または CLI フラグからオーバーライドすることはできません。
 
-Agent SDK と `-p` 非対話モードは、これを `oauth_org_not_allowed` エラーコードとして表面化します。
+Agent SDK と `-p` 非対話モードは、これを `oauth_org_not_allowed` エラーコードとして表示します。
 
 **対応方法：**
 
-* 組織管理者に Claude Code アクセスを有効化するよう依頼してください
-* サブスクリプションの代わりに Console API キーで認証してください。[Claude Console 認証](/docs/ja/authentication#claude-console-authentication) を参照してセットアップしてください
-* あなたが管理者で、アクセスを有効化するオプションが表示されない場合は、[Anthropic サポート](https://support.claude.com) に連絡してください
+* 管理者にオーガニゼーションの Claude Code アクセスを有効にするよう依頼してください
+* サブスクリプションの代わりに Console API キーで認証します。セットアップについては、[Claude Console 認証](/docs/ja/authentication#claude-console-authentication) を参照してください
+* あなたが管理者で、アクセスを有効にするオプションが表示されない場合は、[Anthropic サポート](https://support.claude.com) に連絡してください
 
 <h3 id="routines-are-disabled-by-your-organizations-policy">
-  ルーチンは組織のポリシーで無効化されています
+  ルーチンはオーガニゼーションのポリシーで無効になっています
 </h3>
 
-Team または Enterprise 組織の所有者がルーチンを組織レベルで無効化しました。エラーは、[Routines](/docs/ja/routines) UI on claude.ai/code からなど、ルーチンを作成または実行しようとするときに表示されます。Claude Code v2.1.227 以降では、同じ設定が CLI で [`/schedule` も非表示にします](/docs/ja/routines#troubleshooting)。
+Team または Enterprise オーガニゼーションの Owner がオーガニゼーションレベルでルーチンをオフにしました。エラーは、[Routines](/docs/ja/routines) UI on claude.ai/code などからルーチンを作成または実行しようとするときに表示されます。Claude Code v2.1.227 以降では、同じ設定が CLI で [`/schedule` も非表示にします](/docs/ja/routines#troubleshooting)。
 
 ```text theme={null}
 Routines are disabled by your organization's policy.
 ```
 
-これはサーバー側の設定であるため、ローカル設定、環境変数、または CLI フラグからオーバーライドできません。
+これはサーバー側の設定であるため、ローカル設定、環境変数、または CLI フラグからオーバーライドすることはできません。
 
 **対応方法：**
 
-* 組織の所有者に [claude.ai/admin-settings/claude-code](https://claude.ai/admin-settings/claude-code) で **Routines** トグルを有効化するよう依頼してください
-* 組織レベルのルーチンを必要としない 1 回限りのスケジュール作業については、[スケジュール済みタスク](/docs/ja/scheduled-tasks) を参照してください
+* オーガニゼーションの Owner に [claude.ai/admin-settings/claude-code](https://claude.ai/admin-settings/claude-code) で **Routines** トグルを有効にするよう依頼してください
+* オーガニゼーションレベルのルーチンを必要としない 1 回限りのスケジュール作業については、[スケジュール済みタスク](/docs/ja/scheduled-tasks) を参照してください
 
 <h3 id="remote-control-requires-the-anthropic-api">
-  リモートコントロールは Anthropic API が必要です
+  Remote Control には Anthropic API が必要です
 </h3>
 
-セッションが Anthropic API に直接通信していないため、[リモートコントロール](/docs/ja/remote-control) がペアリングする claude.ai バックエンドがありません。
+セッションが Anthropic API に直接通信していないため、[Remote Control](/docs/ja/remote-control) がペアリングする claude.ai バックエンドがありません。
 
 ```text theme={null}
 Remote Control is only available when using Claude via api.anthropic.com. CLAUDE_CODE_USE_BEDROCK is set, so this session is using Amazon Bedrock — unset it (or run in a shell without it) to use Remote Control.
 ```
 
-2 番目の文は、セッションを Anthropic API から遠ざけた原因を説明します。v2.1.219 より前は、メッセージは最初の文だけでした。原因によって、メッセージは以下を名前付けします：
+2 番目の文は、セッションを Anthropic API から遠ざけた原因を説明します。v2.1.219 より前では、メッセージは最初の文だけでした。原因によって、メッセージは以下に名前を付けます：
 
 * `CLAUDE_CODE_USE_*` プロバイダー変数。[Amazon Bedrock](/docs/ja/amazon-bedrock) の `CLAUDE_CODE_USE_BEDROCK` または [Google Cloud の Agent Platform](/docs/ja/google-vertex-ai) の `CLAUDE_CODE_USE_VERTEX` など
-* [`ANTHROPIC_BASE_URL`](/docs/ja/env-vars) が `api.anthropic.com` 以外のホストを指しています。[LLM ゲートウェイ](/docs/ja/llm-gateway) またはプロキシなど。claude.ai でサインインしている場合でも。v2.1.196 より前は、カスタムベース URL はリモートコントロールをブロックしませんでした
+* [`ANTHROPIC_BASE_URL`](/docs/ja/env-vars) が `api.anthropic.com` 以外のホストを指しています。[LLM ゲートウェイ](/docs/ja/llm-gateway) またはプロキシなど。claude.ai でサインインしている場合でも。v2.1.196 より前では、カスタムベース URL は Remote Control をブロックしませんでした
 * `ANTHROPIC_UNIX_SOCKET` が設定されているため、セッションは `api.anthropic.com` ではなくローカルソケットを通じてリクエストを送信します
-* エンタープライズ [クラウドゲートウェイ](/docs/ja/claude-apps-gateway) サインイン。`/login` を通じて行われ、リモートコントロールをサポートしておらず、アンセットする変数がありません
+* `/login` を通じた enterprise [クラウドゲートウェイ](/docs/ja/claude-apps-gateway) サインイン。Remote Control をサポートしておらず、アンセットする変数がありません
 
 **対応方法：**
 
-* メッセージが名前付けする変数（`CLAUDE_CODE_USE_BEDROCK` または `ANTHROPIC_BASE_URL` など）をアンセットし、セッションを再起動するか、Anthropic API に直接通信するセッションからリモートコントロールを開始してください
+* メッセージが名前を付ける変数（`CLAUDE_CODE_USE_BEDROCK` または `ANTHROPIC_BASE_URL` など）をアンセットし、セッションを再起動するか、Anthropic API に直接通信するセッションから Remote Control を起動します
 * 変数がシェルで設定されていない場合は、[設定ファイル](/docs/ja/settings#where-settings-live) の `env` キーを確認してください。これはすべてのセッションに環境変数を適用します
-* このおよび他のリモートコントロール起動メッセージについては、[リモートコントロールのトラブルシューティング](/docs/ja/remote-control#troubleshooting) を参照してください
+* この他の Remote Control スタートアップメッセージについては、[Remote Control のトラブルシューティング](/docs/ja/remote-control#troubleshooting) を参照してください
 
 <h3 id="remote-control-couldnt-refresh-your-login">
-  リモートコントロールがログインを更新できませんでした
+  Remote Control がログインを更新できませんでした
 </h3>
 
-Claude Code は、保存された claude.ai ログインを使用して取得および更新する短命の認証情報で、ライブ [リモートコントロール](/docs/ja/remote-control) 接続を実行します。claude.ai がそのログインを受け入れなくなったとき、または Claude Code に保存されたログインが残っていないとき、Claude Code はリモートコントロールを停止し、再度サインインするよう求めます。どちらの失敗も Claude Code がまだ接続しているときに発生するか、後で認証情報を更新するときに発生する可能性があります。
+Claude Code は、保存された claude.ai ログインを使用して取得および更新する短命の認証情報で、ライブ [Remote Control](/docs/ja/remote-control) 接続を実行します。claude.ai がそのログインの受け入れを停止するか、Claude Code に保存されたログインが残っていない場合、Claude Code は Remote Control を停止し、再度サインインするよう求めます。どちらの失敗も、Claude Code がまだ接続しているときまたは後で認証情報を更新するときに発生する可能性があります。
 
-Claude Code がログインサービスに保存されたログインを更新するよう要求し、応答がないとき、リモートコントロールを実行し続け、接続の現在の認証情報がまだ有効な間に更新を再試行します。更新が応答を得られないのは、Claude Code がログインサービスに到達できない、リクエストがタイムアウトする、またはサービスがログインを拒否せずに失敗するときです。その認証情報が期限切れになるときにログインサービスがまだ応答していない場合、Claude Code はリモートコントロールを停止し、`OAuth token refresh failed` を報告します。
+Claude Code がログインサービスに保存されたログインの更新を要求し、応答がない場合、Remote Control を実行し続け、接続の現在の認証情報がまだ有効な間に更新を再試行します。Claude Code がログインサービスに到達できない、リクエストがタイムアウトする、またはサービスがログインを拒否せずに失敗する場合、更新は応答を取得しません。ログインサービスがその認証情報の有効期限が切れるときにまだ応答していない場合、Claude Code は Remote Control を停止し、`OAuth token refresh failed` を報告します。
 
-Claude Code がリモートコントロールを停止するとき、警告とトランスクリプト行に理由を表示します。トランスクリプト行は `Remote Control disconnected` で始まります。ローカルセッションはリモートコントロールなしで実行し続けます。このセクションはこれらの行をカバーしています：
+Claude Code が Remote Control を停止すると、警告と `Remote Control disconnected` で始まるトランスクリプト行に理由が表示されます。ローカルセッションは Remote Control なしで実行し続けます。このセクションでは、これらの行をカバーしています：
 
 ```text theme={null}
 Remote Control disconnected — Claude.ai login expired — run /login to restore Remote Control
@@ -1011,71 +1025,71 @@ Remote Control disconnected — JWT refresh failed: no OAuth token — run /logi
 Remote Control disconnected — Signed out of Claude — run /login, then /remote-control
 ```
 
-Claude Code はメッセージの中央に原因を名前付けします：
+Claude Code はメッセージの中央に原因に名前を付けます：
 
-* ` Claude.ai login expired` および `Claude.ai login was rejected`：claude.ai はもはや保存されたログイントークンを受け入れません。期限切れまたは取り消されたため
-* ` OAuth token unavailable`：Claude Code は接続の認証情報が更新期限に来たときに保存されたログイントークンを持っていませんでした
-* ` OAuth token refresh failed`：claude.ai は Claude Code が再接続しているときに保存されたログイントークンを拒否し、トークンを更新しても新しいものが生成されませんでした
-* ` JWT refresh failed: no OAuth token`：Claude Code は保存されたログイントークンを更新するために見つけられませんでした
-* ` Signed out of Claude`：別のターミナルで `/logout` を実行するなど、このマシンで署名を解除したため、Claude Code は接続を更新するために保存されたログインが残っていません
+* ` Claude.ai login expired` および `Claude.ai login was rejected`：claude.ai はもはや保存されたログイントークンを受け入れません。有効期限が切れたか取り消されたため
+* ` OAuth token unavailable`：接続の認証情報が更新期限に達したときに、Claude Code に保存されたログイントークンがありませんでした
+* ` OAuth token refresh failed`：claude.ai が Claude Code が再接続しているときに保存されたログイントークンを拒否し、トークンの更新は新しいものを生成しませんでした
+* ` JWT refresh failed: no OAuth token`：Claude Code は更新するための保存されたログイントークンを見つけませんでした
+* ` Signed out of Claude`：このマシンで、たとえば別のターミナルで `/logout` を実行してサインアウトしたため、Claude Code は接続を更新するための保存されたログインが残っていません
 
 **対応方法：**
 
-* `/login` を実行して再度サインインしてください
-* `/remote-control` を実行してセッションを再接続してください。` run /login to restore Remote Control` で終わるメッセージはこのステップを必要としません。Claude Code はサインイン後に自動的に再接続します。
+* `/login` を実行して再度サインインします
+* `/remote-control` を実行してセッションを再接続します。` run /login to restore Remote Control` で終わるメッセージはこのステップを必要としません。Claude Code はサインイン後に自動的に再接続します。
 
-v2.1.224 より前は、`OAuth token refresh failed — run /login to re-authenticate` は `OAuth token refresh failed — re-authenticate, then re-enable Remote Control` と読み、`JWT refresh failed: no OAuth token — run /login` は `no OAuth token available for recovery (code <N>)` と読みました。` Claude.ai login expired`、`Claude.ai login was rejected`、および `OAuth token unavailable` メッセージは v2.1.225 で追加されました。
+v2.1.224 より前では、`OAuth token refresh failed — run /login to re-authenticate` は `OAuth token refresh failed — re-authenticate, then re-enable Remote Control` と読み、`JWT refresh failed: no OAuth token — run /login` は `no OAuth token available for recovery (code <N>)` と読みました。` Claude.ai login expired`、`Claude.ai login was rejected`、および `OAuth token unavailable` メッセージは v2.1.225 で追加されました。
 
-v2.1.238 より前は、Claude Code は現在 `Signed out of Claude` と言うケースを `JWT refresh failed: no OAuth token — run /login` として報告し、1 つのログイン更新が応答を得られないとすぐに `Claude.ai login expired — run /login to restore Remote Control` でリモートコントロールを停止しました。
+v2.1.238 より前では、Claude Code は現在 `Signed out of Claude` と言うケースを `JWT refresh failed: no OAuth token — run /login` として報告し、1 つのログイン更新が応答を取得しないとすぐに Remote Control を停止しました。`Claude.ai login expired — run /login to restore Remote Control` で。
 
 <h3 id="remote-control-stopped-because-the-signed-in-account-changed">
-  サインイン済みアカウントが変更されたため、リモートコントロールが停止しました
+  サインイン済みアカウントが変更されたため Remote Control が停止しました
 </h3>
 
-Claude Code は、このマシンで別の claude.ai アカウントまたは組織にサインインしたときに、[リモートコントロール](/docs/ja/remote-control) セッション中にこの行を表示します。別のターミナルで `/login` を実行するなど、Claude Code セッションの外でスイッチを行いました。
+Claude Code は、このマシンで別の claude.ai アカウントまたはオーガニゼーションにサインインしたときに、[Remote Control](/docs/ja/remote-control) セッション中にこの行を表示します。別のターミナルで `/login` を実行するなど、Claude Code セッションの外でスイッチを作成しました。
 
-サインイン時に `/login` を通じて開始したリモートコントロールセッションは、その時点でサインインしていた claude.ai アカウントと組織に属しています。
+`/login` でサインインしている間に開始した Remote Control セッションは、その時点でサインインしていた claude.ai アカウントとオーガニゼーションに属しています。
 
 ```text theme={null}
 Remote Control disconnected — signed-in claude.ai account or organization changed on this machine — run /remote-control to start a session for the current account, or /login to switch back, then /remote-control
 ```
 
-Claude Code は、claude.ai がアカウントまたは組織の変更を確認するとすぐにリモートコントロールセッションを停止します。ローカルセッションはリモートコントロールなしで実行し続けます。
+Claude Code は claude.ai がアカウントまたはオーガニゼーションが変更されたことを確認するとすぐに Remote Control セッションを停止します。ローカルセッションは Remote Control なしで実行し続けます。
 
 **対応方法：**
 
-* `/remote-control` を実行して、現在のアカウントまたは組織の下で新しいリモートコントロールセッションを開始してください
-* 戻すには、`/login` を実行して前のアカウントまたは組織に再度サインインしてください。その後 `/remote-control` を実行してください。
+* `/remote-control` を実行して、現在のアカウントまたはオーガニゼーションの下で新しい Remote Control セッションを開始します
+* 戻すには、`/login` を実行して前のアカウントまたはオーガニゼーションに再度サインインします。その後、`/remote-control` を実行します。
 
-v2.1.234 より前は、Claude Code は Claude Code セッションの外でアカウントまたは組織を切り替えたときに気付きませんでした。Claude Code はリモートコントロールセッションを接続したままにしておき、後でリモートコントロールサーバーへのリクエストが `Remote Control server rejected the request (HTTP 404)` で失敗するまで。その失敗はスイッチの数時間後に来る可能性がありました。
+v2.1.234 より前では、Claude Code は Claude Code セッションの外でアカウントまたはオーガニゼーションを切り替えたときに気付きませんでした。Claude Code は Remote Control セッションを接続したままにしておきました。Remote Control サーバーへの後のリクエストが `Remote Control server rejected the request (HTTP 404)` で失敗するまで。その失敗はスイッチの数時間後に来る可能性があります。
 
 <h3 id="remote-control-stopped-because-the-app-running-the-session-signed-out-or-switched-accounts">
-  セッションを実行しているアプリが署名を解除したか、アカウントを切り替えたため、リモートコントロールが停止しました
+  セッションを実行しているアプリがサインアウトしたか、アカウントを切り替えたため Remote Control が停止しました
 </h3>
 
-Claude デスクトップアプリまたは IDE がセッションをホストしている場合、Claude Code は `/login` ではなくそのアプリからログイントークンを取得します。claude.ai がそのトークンを拒否するとき、Claude Code はアプリに新しいものを要求します。アプリが署名を解除したこと、または別の Claude アカウントにサインインしたことを答える場合、Claude Code は [リモートコントロール](/docs/ja/remote-control) セッションを終了し、アプリにこれらの行のいずれかを送信します：
+Claude デスクトップアプリまたは IDE がセッションをホストしている場合、Claude Code は `/login` ではなくそのアプリからログイントークンを取得します。claude.ai がそのトークンを拒否すると、Claude Code はアプリに新しいものを要求します。アプリが、サインアウトしたか、別の Claude アカウントにサインインしたと答える場合、Claude Code は [Remote Control](/docs/ja/remote-control) セッションを終了し、アプリに次のいずれかの行を送信します：
 
 ```text theme={null}
 Remote Control stopped — the app running this session is now signed in to a different Claude account
 Remote Control stopped — the app running this session is signed out of Claude. Sign in there, then turn Remote Control back on
 ```
 
-ローカルセッションはリモートコントロールなしで実行し続けます。
+ローカルセッションは Remote Control なしで実行し続けます。
 
 **対応方法：**
 
-* アプリが署名を解除している場合は、再度サインインしてから、リモートコントロールを再度オンにしてください
-* アプリがアカウントを切り替えた場合、Claude Code は終了したセッションを新しいアカウントの下で続行できません。そのアカウントの下で新しいリモートコントロールセッションを開始してください。
+* アプリがサインアウトしている場合は、再度サインインしてから、アプリで Remote Control をオンに戻します
+* アプリがアカウントを切り替えた場合、Claude Code は終了したセッションを新しいアカウントの下で続行できません。そのアカウントの下で新しい Remote Control セッションを開始します。
 
-v2.1.238 より前は、Claude Code は両方のケースでアプリに [リモートコントロールがログインを更新できませんでした](#remote-control-couldnt-refresh-your-login) の下にリストされている `run /login` メッセージを送信していました。
+v2.1.238 より前では、Claude Code は両方のケースで [Remote Control がログインを更新できませんでした](#remote-control-couldnt-refresh-your-login) の下にリストされている `run /login` メッセージをアプリに送信していました。
 
 <h3 id="oauth-token-revoked-or-expired">
-  OAuth トークンが取り消されたか、期限切れです
+  OAuth トークンが取り消されたか、有効期限が切れています
 </h3>
 
-保存されたログインはもはや有効ではありません。取り消されたトークンはどこでも署名を解除したか、管理者がアクセスを削除したことを意味します。期限切れトークンは自動更新がセッション中に失敗したことを意味します。
+保存されたログインは有効ではなくなりました。取り消されたトークンは、どこからでもサインアウトしたか、管理者がアクセスを削除したことを意味します。有効期限が切れたトークンは、自動更新がセッション中に失敗したことを意味します。
 
-両方のメッセージは、Claude Code が送信したリクエストに対して API が返した拒否を報告します。保存されたログインが失敗した更新後に既にクリアされている場合、代わりに [ログイン期限切れ](#login-expired) が表示されます。[`CLAUDE_CODE_OAUTH_TOKEN`](/docs/ja/env-vars) で長命トークンで認証する場合、そのトークンが期限切れまたは取り消されたときに同じメッセージが表示されます。
+どちらのメッセージも、Claude Code が送信したリクエストに対して API が返した拒否を報告します。保存されたログインが失敗した更新後に既にクリアされている場合、代わりに [ログインの有効期限が切れています](#login-expired) が表示されます。[`CLAUDE_CODE_OAUTH_TOKEN`](/docs/ja/env-vars) で長命トークンで認証する場合、そのトークンが有効期限切れまたは取り消されたときに同じメッセージが表示されます。
 
 ```text theme={null}
 OAuth token revoked · Please run /login
@@ -1084,17 +1098,17 @@ Please run /login · API Error: 401 OAuth token has expired ...
 
 **対応方法：**
 
-* `/login` を実行して再度サインインしてください
-* エラーが再認証後の同じセッション内で返される場合は、最初に `/logout` を実行して保存されたトークンを完全にクリアしてから、`/login` を実行してください
-* ` CLAUDE_CODE_OAUTH_TOKEN` 環境変数で認証する場合、Claude Code はリクエストが 401 で失敗した後、保存されたログインのトークンに切り替えるのではなく、設定した値を送信し続けます。[`/status`](/docs/ja/commands) はこの認証情報を `Auth token` 行として表示し、`CLAUDE_CODE_OAUTH_TOKEN` を読みます。[`claude setup-token`](/docs/ja/authentication#generate-a-long-lived-token) で新しいトークンを生成し、それで再起動するか、変数をアンセットして `/login` を実行してください。v2.1.225 より前は、Claude Code はセッション中に変数の値を保存されたログインからの短命アクセストークンに置き換える可能性があり、そのトークンが期限切れになると、セッションは再び 401 エラーで失敗しました。
-* ログイン全体で繰り返されるプロンプトについては、[トラブルシューティング](/docs/ja/troubleshoot-install#not-logged-in-or-token-expired) のシステムクロック確認と macOS 認証情報ストレージ復旧手順を参照してください
-* `403 Forbidden` および OAuth ブラウザーの問題を含む他の失敗については、[ログインと認証](/docs/ja/troubleshoot-install#login-and-authentication) を参照してください
+* `/login` を実行して再度サインインします
+* 再認証後、同じセッション内でエラーが返される場合は、最初に `/logout` を実行して保存されたトークンを完全にクリアしてから、`/login` を実行します
+* ` CLAUDE_CODE_OAUTH_TOKEN` 環境変数で認証する場合、Claude Code はリクエストが 401 で失敗した後、保存されたログインのトークンに切り替えるのではなく、設定した値を送信し続けます。[`/status`](/docs/ja/commands) はこの認証情報を `Auth token` 行として表示します。`CLAUDE_CODE_OAUTH_TOKEN` を読みます。[`claude setup-token`](/docs/ja/authentication#generate-a-long-lived-token) で新しいトークンを生成して再起動するか、変数をアンセットして `/login` を実行します。v2.1.225 より前では、Claude Code はセッション中に変数の値を保存されたログインからの短命アクセストークンに置き換える可能性があり、そのトークンの有効期限が切れるとセッションは再び 401 エラーで失敗しました。
+* 起動全体でログインを繰り返し求められる場合は、[トラブルシューティング](/docs/ja/troubleshoot-install#not-logged-in-or-token-expired) のシステムクロック確認と macOS 認証情報ストレージ復旧手順を参照してください
+* `403 Forbidden` や OAuth ブラウザの問題を含む他の失敗については、[ログインと認証](/docs/ja/troubleshoot-install#login-and-authentication) を参照してください
 
 <h3 id="api-error-401-invalid-authentication-credentials">
   API エラー：401 無効な認証認証情報
 </h3>
 
-API は認証情報の形式を認識しましたが、その背後にあるアカウントまたは組織を拒否しました。Anthropic は、認証情報が最近取り消されたとき、組織が無効化されたか、アクセスを削除したとき、またはアカウント自体が無効化されたときにこのメッセージを返すため、期限切れトークンは原因ではありません。認証情報は保存されたログインまたは承認された `ANTHROPIC_API_KEY` である可能性があり、修正は異なるため、`/status` を実行してどちらがアクティブであるかを確認することから始めてください。
+API は認証情報の形式を認識しましたが、その背後にあるアカウントまたはオーガニゼーションを拒否しました。Anthropic は、認証情報が最近取り消されたとき、オーガニゼーションが無効になったか、アクセスが削除されたとき、またはアカウント自体が非アクティブ化されたときにこのメッセージを返します。有効期限切れトークンが原因ではありません。認証情報は保存されたログインまたは承認された `ANTHROPIC_API_KEY` である可能性があり、修正は異なるため、まず `/status` を実行してどちらがアクティブであるかを確認してください。
 
 ```text theme={null}
 Please run /login · API Error: 401 Invalid authentication credentials
@@ -1102,54 +1116,70 @@ Please run /login · API Error: 401 Invalid authentication credentials
 
 **対応方法：**
 
-* `/status` が `API key` 行を表示する場合、承認された [`ANTHROPIC_API_KEY`](/docs/ja/authentication#authentication-precedence) がアクティブな認証情報であり、ログインより優先されるため、`/login` はそれを置き換えません。Claude Console でキーをローテーションするか、`unset ANTHROPIC_API_KEY` を実行するか、PowerShell で `Remove-Item Env:ANTHROPIC_API_KEY` を実行してサブスクリプションにフォールバックしてください。
-* `/status` がログインのみを表示する場合、`/login` を 1 回実行してください。認証情報が取り消された場合、新しいログインがそれを置き換えます。
-* 同じログインアカウントに対して同じメッセージが返される場合、アカウントまたは組織はもはやアクティブではありません。`/status` が報告するアカウントと組織を確認し、組織管理者にアクセスを復元するよう依頼してください。
+* `/status` が `API key` 行を表示し、使用中でないとマークされていない場合、承認された [`ANTHROPIC_API_KEY`](/docs/ja/authentication#authentication-precedence) がアクティブな認証情報であり、ログインより優先されるため、`/login` はそれを置き換えません。Claude Console でキーをローテーションするか、`unset ANTHROPIC_API_KEY` を実行するか、PowerShell で `Remove-Item Env:ANTHROPIC_API_KEY` を実行してサブスクリプションにフォールバックします。
+* `/status` がログインのみを表示する場合は、`/login` を 1 回実行します。認証情報が取り消された場合、新しいログインがそれを置き換えます。
+* 同じログインアカウントで同じメッセージが返される場合、アカウントまたはオーガニゼーションはアクティブではなくなりました。`/status` が報告するアカウントとオーガニゼーションを確認し、オーガニゼーション管理者にアクセスを復元するよう依頼してください。
 * [`ANTHROPIC_BASE_URL`](/docs/ja/env-vars) が [LLM ゲートウェイ](/docs/ja/llm-gateway) を指している場合、`401` の後のテキストは Anthropic のメッセージではなくゲートウェイのメッセージであり、`/login` はそれを変更しません。代わりにゲートウェイが期待する認証情報を修正してください。
 
 <h3 id="login-expired">
-  ログイン期限切れ
+  ログインの有効期限が切れています
 </h3>
 
-Claude Code は保存された claude.ai または Claude Console ログインを更新しようとし、OAuth サービスは保存されたリフレッシュトークンを拒否したため、Claude Code は保存された認証情報をクリアしました。その後、各モデルリクエストは API に到達する前にこのメッセージでローカルに停止します。`/login` だけが新しい認証情報を作成できるため。
+Claude Code は保存された claude.ai または Claude Console ログインを更新しようとしましたが、OAuth サービスは保存された更新トークンを拒否したため、Claude Code は保存された認証情報をクリアしました。その後、各モデルリクエストは、`/login` のみが新しい認証情報を作成できるため、API に到達する前にローカルで停止します。
 
-v2.1.206 より前は、Claude Code はモデルリクエストを環境に残っている認証情報で送信し、すべてのモデルは [選択されたモデルに問題があります](#theres-an-issue-with-the-selected-model) または 401 で失敗し、サインインを求めるプロンプトの代わりに失敗しました。
+v2.1.206 より前では、Claude Code はモデルリクエストを環境に残っている認証情報で送信し、すべてのモデルは [選択されたモデルに問題があります](#theres-an-issue-with-the-selected-model) または 401 で失敗しました。サインインを求めるプロンプトの代わりに。
 
 ```text theme={null}
 Login expired · Please run /login
 ```
 
-[非対話モード](/docs/ja/headless)（`-p`）および [Agent SDK](/docs/ja/agent-sdk/overview) では、メッセージは以下のように読み、構造化エラーコードは `authentication_failed` です：
+[非対話モード](/docs/ja/headless)（`-p`）および [Agent SDK](/docs/ja/agent-sdk/overview) では、メッセージは次のように読み、構造化エラーコードは `authentication_failed` です：
 
 ```text theme={null}
 Failed to authenticate: OAuth session expired and could not be refreshed
 ```
 
-これは [OAuth トークンが取り消されたか、期限切れです](#oauth-token-revoked-or-expired) と同じ状態ではありません。これらのメッセージは API が返した拒否を報告します。Claude Code 自体は既に更新に失敗したログインに対して `Login expired` を生成するため、リクエストを送信しません。更新がトークンが古いのではなくアカウント自体が中断されたために失敗する場合、Claude Code は代わりに [アカウントが保留中です](#your-account-is-on-hold) を表示します。
+これは [OAuth トークンが取り消されたか、有効期限が切れています](#oauth-token-revoked-or-expired) と同じ状態ではありません。これらのメッセージは API が返した拒否を報告します。Claude Code 自体は、既に更新に失敗したログインに対して `Login expired` を生成するため、リクエストを送信しません。更新が失敗する理由がログインが古いのではなくアカウント自体が中断されている場合、Claude Code は代わりに [アカウントが保留中です](#your-account-is-on-hold) を表示します。
 
-API キー、[`CLAUDE_CODE_OAUTH_TOKEN`](/docs/ja/env-vars)、またはサードパーティプロバイダーで認証されたセッションは保存されたログインを使用せず、このメッセージを見ることはありません。
+API キー、[`CLAUDE_CODE_OAUTH_TOKEN`](/docs/ja/env-vars)、またはサードパーティプロバイダーで認証されたセッションは、保存されたログインを使用せず、このメッセージを表示しません。
 
-リクエストが失敗する前にこの状態を確認できます。[`/status`](/docs/ja/commands) は `Login` 行を表示し、`Expired — log in again` を読み、期限切れログインに対して保存された組織とメールを加えます。行は保存されたログインがアクティブな認証情報であり、もはや更新できない場合にのみ表示されます。別の方法で認証されたセッションは、期限切れログインが保存されたままであっても、行を表示しません。v2.1.210 より前は、`/status` はこの状態で、クリアされた認証情報がそれを報告するものが何もなかったため、ログインが存在したことを示していませんでした。
+リクエストが失敗する前にこの状態を確認できます。[`/status`](/docs/ja/commands) は `Login` 行を表示します。`Expired — log in again` を読み、保存されている有効期限切れログインのオーガニゼーションとメールを読みます。行は、保存されたログインがアクティブな認証情報であり、もはや更新できない場合にのみ表示されます。別の方法で認証されたセッションは、有効期限切れログインが保存されたままであっても、行を表示しません。v2.1.210 より前では、`/status` はこの状態で、クリアされた認証情報がそれを報告するものが何もないため、ログインが存在したことを示していません。
 
 **対応方法：**
 
-* `/login` を実行して再度サインインしてください。サインインせずに再試行すると、すべてのリクエストで同じメッセージが表示されます。
-* 非対話モードでは、同じ環境で `claude` を実行し、`/login` を完了してから、コマンドを再実行してください。対話的にサインインできない自動化については、`ANTHROPIC_API_KEY` で認証するか、[`claude setup-token`](/docs/ja/authentication#generate-a-long-lived-token) で長命トークンを生成してください。
+* `/login` を実行して再度サインインします。サインインせずに再試行すると、すべてのリクエストで同じメッセージが表示されます。
+* 非対話モードでは、同じ環境で `claude` を実行し、`/login` を完了してから、コマンドを再実行します。対話的にサインインできない自動化の場合は、`ANTHROPIC_API_KEY` で認証するか、[`claude setup-token` で長命トークンを生成します](/docs/ja/authentication#generate-a-long-lived-token)。
 * サインインが失敗し続ける場合は、[ログインと認証](/docs/ja/troubleshoot-install#login-and-authentication) を参照してください
+
+<h3 id="claude-login-not-accepted">
+  Claude ログインが受け入れられません
+</h3>
+
+[クラウドセッション](/docs/ja/claude-code-on-the-web) を開始しようとしましたが、サーバーは 401 で作成を拒否しました。このマシンが送信した Claude ログインを受け入れませんでした。通常、ログインが有効期限切れまたは取り消されたためです。
+
+行の最初の部分は、サーバーが 1 つを与える場合はサーバー自身の理由です。それ以外の場合、行は次のように読みます：
+
+```text theme={null}
+Claude login not accepted · Run /login, then try again
+```
+
+**対応方法：**
+
+* `/login` を実行し、サインインを完了してから、セッションを再度開始します
 
 <h3 id="administrator-policy-requires-a-cloud-gateway-sign-in">
   管理者ポリシーがクラウドゲートウェイサインインを必要とします
 </h3>
 
-管理者の [管理設定](/docs/ja/managed-settings) がこのマシンで [`forceLoginMethod`](/docs/ja/settings-reference#forceloginmethod) を `"gateway"` に設定したか、[`forceLoginGatewayUrl`](/docs/ja/settings-reference#forcelogingatewayurl) を設定しました。`CLAUDE_CODE_USE_BEDROCK` などの変数を通じてクラウドプロバイダーを選択しない限り、Claude Code は [Claude apps ゲートウェイ](/docs/ja/claude-apps-gateway) サインインのみを受け入れます。2 つのメッセージのいずれかが表示されます：
+このマシンの管理者の [管理設定](/docs/ja/managed-settings) が [`forceLoginMethod`](/docs/ja/settings-reference#forceloginmethod) を `"gateway"` に設定したか、[`forceLoginGatewayUrl`](/docs/ja/settings-reference#forcelogingatewayurl) を設定しました。`CLAUDE_CODE_USE_BEDROCK` などの変数を通じてクラウドプロバイダーを選択しない限り、Claude Code は [Claude apps gateway](/docs/ja/claude-apps-gateway) サインインのみを受け入れます。2 つのメッセージのいずれかが表示されます：
 
 ```text theme={null}
 Not signed in to the Cloud gateway — run /login.
 ```
 
-セッションにゲートウェイサインインがない場合（例えば、ポリシーがマシンに到達してから `/login` を実行していない場合）、モデルリクエストはこのメッセージで失敗します。
+セッションにゲートウェイサインインがない場合、モデルリクエストはこのメッセージで失敗します。たとえば、ポリシーがマシンに到達してから `/login` を実行していないため。
 
-`ANTHROPIC_API_KEY`、`ANTHROPIC_AUTH_TOKEN`、または `apiKeyHelper` 認証情報も設定されており、管理設定が `forceLoginMethod` を設定している場合、Claude Code は代わりに起動時に以下で始まるメッセージで終了します：
+`ANTHROPIC_API_KEY`、`ANTHROPIC_AUTH_TOKEN`、または `apiKeyHelper` 認証情報も設定されており、管理設定が `forceLoginMethod` を設定している場合、Claude Code は代わりに起動時に次のメッセージで終了します：
 
 ```text theme={null}
 Administrator policy requires a Cloud gateway sign-in on this machine; the
@@ -1159,62 +1189,62 @@ ANTHROPIC_AUTH_TOKEN, or apiKeyHelper) is not used.
 
 **対応方法：**
 
-* `/login` を実行し、**Cloud gateway** 画面でサインインを完了してください
-* 起動メッセージについては、設定した `ANTHROPIC_API_KEY`、`ANTHROPIC_AUTH_TOKEN`、または `apiKeyHelper` 設定を削除してから、`claude` を開始して `/login` を実行してください
+* `/login` を実行し、**Cloud gateway** 画面でサインインを完了します
+* スタートアップメッセージについては、設定した `ANTHROPIC_API_KEY`、`ANTHROPIC_AUTH_TOKEN`、または `apiKeyHelper` 設定を削除し、`claude` を起動して `/login` を実行します
 * マシンがゲートウェイを必要としないと思われる場合は、それを管理する管理者に、管理設定から `forceLoginMethod` と `forceLoginGatewayUrl` を削除するよう依頼してください
 
-v2.1.265 では、回帰により、API キー、`apiKeyHelper`、またはカスタムヘッダーで認証する一部の LLM ゲートウェイおよびプロキシ設定でも、マシンに管理者要件がない場合でも、最初のメッセージが表示されました。v2.1.266 以降にアップグレードしてください。設定を変更する必要はありません。
+v2.1.265 では、回帰により、API キー、`apiKeyHelper`、またはカスタムヘッダーで認証し、マシンに管理者要件がない一部の LLM ゲートウェイおよびプロキシ設定でも最初のメッセージが表示されました。v2.1.266 以降に更新してください。設定を変更する必要はありません。
 
-v2.1.261 より前は、`forceLoginMethod` を `"gateway"` に設定したマシンでは、Claude Code はモデルリクエストに失敗する代わりに、残っているサインイン済みログインを使用し、設定された環境認証情報を `This machine's managed settings require a first-party login` で報告していました。v2.1.265 より前は、管理設定が `forceLoginGatewayUrl` のみを設定したマシンはゲートウェイサインインを必要とせず、Claude Code はそこで残っている認証情報を使用していました。
+v2.1.261 より前では、`forceLoginMethod` を `"gateway"` に設定したマシンでは、Claude Code は古い保存されたログインを使用し、モデルリクエストを失敗させず、設定された環境認証情報を `This machine's managed settings require a first-party login` で報告しました。スタートアップメッセージの代わりに。v2.1.265 より前では、管理設定が `forceLoginGatewayUrl` のみを設定したマシンはゲートウェイサインインを必要とせず、Claude Code はそこで古い認証情報を使用していました。
 
 <h3 id="your-account-is-on-hold">
   アカウントが保留中です
 </h3>
 
-ログインの背後にある Claude アカウントが中断されています。Claude Code は最初のメッセージを保存されたログインを更新しようとして保留を学ぶときに表示し、2 番目をブラウザーで完了したサインインが報告するときに表示します：
+Claude アカウントがサスペンドされています。Claude Code は、保存されたログインを更新しようとして保留について学ぶときに最初のメッセージを表示し、2 番目はブラウザで完了したサインインが報告するときに表示されます：
 
 ```text theme={null}
 Your account is on hold and can't use Claude Code. View details or appeal: https://claude.ai/restricted
 Your account is on hold and can't sign in to Claude Code. View details or appeal: https://claude.ai/restricted
 ```
 
-同じアカウントで再度サインインしても、メッセージはクリアされません。保留はアカウントにあり、ログインではなく。[非対話モード](/docs/ja/headless)（`-p`）および [Agent SDK](/docs/ja/agent-sdk/overview) では、構造化エラーコードは `account_on_hold` です。v2.1.235 より前は、Claude Code は保留中のアカウントを [ログイン期限切れ · /login を実行してください](#login-expired) として報告し、その復旧手順は保留をクリアできません。
+同じアカウントで再度サインインしても、保留がアカウントにあるため、メッセージはクリアされません。ログインではなく。[非対話モード](/docs/ja/headless)（`-p`）および [Agent SDK](/docs/ja/agent-sdk/overview) では、構造化エラーコードは `account_on_hold` です。v2.1.235 より前では、Claude Code は保留中のアカウントを [ログインの有効期限が切れています · /login を実行してください](#login-expired) として報告しました。その復旧手順は保留をクリアできません。
 
 **対応方法：**
 
-* メッセージのリンクを開いて、保留の詳細を表示するか、それに異議を唱えてください
-* 保留の影響を受けない別の Claude アカウントまたは API キーがある場合、保留が解決されている間、作業を続けることができます。そのアカウントで `/login` を実行するか、`ANTHROPIC_API_KEY` でキーを設定してください
+* メッセージのリンクを開いて、保留の詳細を表示するか、それに異議を唱えます
+* 保留の影響を受けない別の Claude アカウントまたは API キーがある場合は、保留が解決されている間、作業を続けることができます。そのアカウントで `/login` を実行するか、`ANTHROPIC_API_KEY` でキーを設定します
 
 <h3 id="anthropic-profile-login-expired">
-  Anthropic プロファイルログイン期限切れ
+  Anthropic プロファイルログインの有効期限が切れています
 </h3>
 
-Claude Code は、保存されたログイン認証情報が期限切れになった Anthropic 認証情報プロファイルを通じて認証しており、プロファイルは Claude Code が更新するために使用できるリフレッシュ認証情報を保持していません。Claude Code は、同じ期限切れ認証情報を読むため、リトライなしで各リクエストをローカルで停止します。
+Claude Code は、保存されたログイン認証情報が有効期限切れの Anthropic 認証情報プロファイルを通じて認証しており、プロファイルは Claude Code が更新するために使用できる更新認証情報を保持していません。Claude Code は、同じ有効期限切れ認証情報を読み取るため、各リクエストをローカルで停止します。
 
 ```text theme={null}
 Anthropic profile login expired · Re-authenticate your Anthropic profile
 Anthropic profile login expired · Run /login to use your claude.ai account instead, or re-authenticate the profile
 ```
 
-これは、アクティブな認証情報が Anthropic 認証情報プロファイルから来ている場合にのみ表示されます。`ANTHROPIC_PROFILE` 環境変数で選択するもの、Claude Code が Anthropic 設定ディレクトリでアクティブなプロファイルとして発見するもの、または Claude Code が [API キーなしでサインイン](/docs/ja/authentication#sign-in-without-an-api-key) したときに書き込むもの。`/login` の claude.ai オプション、API キー、`ANTHROPIC_AUTH_TOKEN` などのベアラートークン、またはサードパーティプロバイダーで認証するセッションは、このメッセージを見ることはありません。
+これは、アクティブな認証情報が Anthropic 認証情報プロファイルから来ている場合にのみ表示されます。`ANTHROPIC_PROFILE` 環境変数で選択するもの。Claude Code が Anthropic 設定ディレクトリでアクティブなプロファイルとして発見するもの。または Claude Code が [API キーなしでサインイン](/docs/ja/authentication#sign-in-without-an-api-key) したときに書き込んだもの。`/login` の claude.ai オプション、API キー、`ANTHROPIC_AUTH_TOKEN` などのベアラートークン、またはサードパーティプロバイダーで認証されたセッションは、このメッセージを表示しません。
 
-キーレスサインインを [提供する](/docs/ja/authentication#sign-in-without-an-api-key) マシンでは、`/login` を実行し、Anthropic Console アカウントを選択して、プロファイルを更新するために再度サインインしてください。キーレス Console サインインまたは Claude Platform CLI の `ant auth login` が書き込んだもの。Claude Code はそのプロファイルの期限切れ認証情報を置き換えます。フェデレーションプロファイルまたは別のツールが作成したもの、`/login` は認証情報を更新しません。表示されるフォームは、プロファイルを選択したか、Claude Code が発見したかによって異なります：
+[キーレスサインインを提供する](/docs/ja/authentication#sign-in-without-an-api-key) マシンでは、`/login` を実行し、Anthropic Console アカウントを選択して、再度サインインして、キーレス Console サインインまたは Claude Platform CLI の `ant auth login` が書き込んだプロファイルを更新します。Claude Code はそのプロファイルの有効期限切れ認証情報を置き換えます。フェデレーションプロファイルまたは別のツールが作成したプロファイルの場合、`/login` は認証情報を更新しません。表示されるフォームは、プロファイルを明示的に選択したか、Claude Code がそれを発見したかによって異なります：
 
-* `ANTHROPIC_PROFILE` を明示的に設定した場合、メッセージは `Re-authenticate your Anthropic profile` で終わります。
-* Claude Code が設定ディレクトリからプロファイルを発見した場合、メッセージは `/login` を提供します。Claude Code は動作する `/login` を発見されたプロファイルより優先し、代わりに claude.ai または Console アカウントで認証するため。v2.1.234 より前は、Claude Code はこのケースでも `Re-authenticate your Anthropic profile` フォームを表示していました。
+* `ANTHROPIC_PROFILE` を明示的に設定すると、メッセージは `Re-authenticate your Anthropic profile` で終わります。
+* Claude Code が設定ディレクトリからプロファイルを発見した場合、メッセージは `/login` を提供します。Claude Code は動作する `/login` を発見されたプロファイルより優先し、claude.ai または Console アカウントで認証します。v2.1.234 より前では、Claude Code はこのケースでも `Re-authenticate your Anthropic profile` フォームを表示していました。
 
 **対応方法：**
 
-* プロファイルに再度サインインしてから、再試行してください。キーレスサインインを [提供する](/docs/ja/authentication#sign-in-without-an-api-key) マシンでは、`/login` を実行し、キーレス Console サインインまたは Claude Platform CLI の `ant auth login` が書き込んだプロファイルの Anthropic Console アカウントを選択してください。他のプロファイルについては、それらを作成したツールを使用してください
+* プロファイルに再度サインインしてから、再試行します。[キーレスサインインを提供する](/docs/ja/authentication#sign-in-without-an-api-key) マシンでは、`/login` を実行し、キーレス Console サインインまたは Claude Platform CLI の `ant auth login` が書き込んだプロファイルの Anthropic Console アカウントを選択します。他のプロファイルの場合は、それらを作成したツールを使用します
 * 管理者がプロファイルの認証情報をプロビジョニングした場合は、新しいものを発行するよう依頼してください
-* `/status` を実行してアクティブな認証情報ソースとプロファイル名を確認してください
-* プロファイルの使用を停止するには、設定した場合は `ANTHROPIC_PROFILE` をアンセットし、`/login` または `ANTHROPIC_API_KEY` などの別の方法で認証してください
+* `/status` を実行してアクティブな認証情報ソースとプロファイル名を確認します
+* プロファイルの使用を停止するには、設定した場合は `ANTHROPIC_PROFILE` をアンセットし、`/login` または `ANTHROPIC_API_KEY` などの別の方法で認証します
 
 <h3 id="oauth-scope-requirement">
   OAuth スコープ要件
 </h3>
 
-保存されたトークンは、新しい機能が必要とする権限スコープより前のものです。`/usage` とステータス行の使用インジケーターから最も頻繁にこれが表示されます：
+保存されたトークンは、新しい機能が必要とする権限スコープより前のものです。これは `/usage` とステータス行の使用状況インジケーターから最も頻繁に表示されます：
 
 ```text theme={null}
 OAuth token does not meet scope requirement: user:profile
@@ -1222,13 +1252,13 @@ OAuth token does not meet scope requirement: user:profile
 
 **対応方法：**
 
-* `/login` を実行して、現在のスコープで新しいトークンを取得してください。最初にログアウトする必要はありません。
+* `/login` を実行して、現在のスコープで新しいトークンを取得します。最初にログアウトする必要はありません。
 
 <h3 id="claude-ai-rejected-the-session-token">
   claude.ai がセッショントークンを拒否しました
 </h3>
 
-[claude.ai コネクター](/docs/ja/mcp#use-mcp-servers-from-claude-ai) リクエストが失敗しました。claude.ai が Claude Code ログインからのトークンを拒否したため。通常、期限切れになり、更新できなかったログイン。拒否されたトークンはコネクターのログイン、コネクターの claude.ai での独自の認可ではないため、コネクターを再度認可してもそれは解決しません。`/mcp` では、コネクターは `connected · session token rejected` として表示され、その詳細ビューは以下のように読みます：
+[claude.ai コネクタ](/docs/ja/mcp#use-mcp-servers-from-claude-ai) リクエストが失敗しました。claude.ai が Claude Code ログインからのトークンを拒否したため。通常、有効期限切れのログイン。更新できませんでした。拒否されたトークンはコネクタ自身の claude.ai での認可ではなく、ログインであるため、コネクタを再度認可しても解決しません。`/mcp` では、コネクタは `connected · session token rejected` として表示され、その詳細ビューは次のように読みます：
 
 ```text theme={null}
 claude.ai rejected the session token. Run /login, then reconnect.
@@ -1236,98 +1266,208 @@ claude.ai rejected the session token. Run /login, then reconnect.
 
 **対応方法：**
 
-* `/login` を実行して再度サインインしてください
-* `/mcp` からコネクターを再接続するか、`/mcp reconnect <server>` を実行してください。再度サインインする前に再接続すると、コネクターは同じ状態のままになります。`/mcp` パネルの **Reconnect** オプションは `your claude.ai session token was rejected` を報告します。入力された `/mcp reconnect <server>` フォームは、トークンがまだ拒否されていても、成功した再接続を報告します。
+* `/login` を実行して再度サインインします
+* `/mcp` からコネクタを再接続するか、`/mcp reconnect <server>` を実行します。再度サインインする前に再接続すると、コネクタは同じ状態のままになります。`/mcp` パネルの **Reconnect** オプションは `your claude.ai session token was rejected` を報告します。入力された `/mcp reconnect <server>` フォームは、トークンがまだ拒否されていても、成功した再接続を報告します。
 
-v2.1.222 より前は、Claude Code はコネクターを認証が必要として標記し、完了してもそれが状態を解決しなかったにもかかわらず、コネクターの認可フローを指しました。
+v2.1.222 より前では、Claude Code はコネクタを認証が必要として標記しました。これはコネクタの認可フローを指しましたが、完了してもこの状態は解決しませんでした。
 
-<h3 id="issuer-mismatch-in-authorization-response">
-  認可応答の発行者の不一致
+<h3 id="mcp-server-needs-you-to-sign-in-again">
+  MCP サーバーがもう一度サインインするよう求めています
 </h3>
 
-[MCP OAuth サインイン](/docs/ja/mcp#authenticate-with-remote-mcp-servers) 中に、認可サーバーは Claude Code に `iss` パラメーターでリダイレクトバックしました。これは Claude Code がサーバーの OAuth メタデータから期待していた発行者を名前付けしません。このステップでの間違った発行者は、認可サーバーの混合攻撃がどのように見えるかであるため、Claude Code は認可コードを交換する代わりにサインインに失敗します。Claude Code はブラウザーサインイン後の `/mcp` サーバーメニューにエラーを表示します：
+リモート [MCP サーバー](/docs/ja/mcp) がセッション中のツール呼び出しで認証情報を拒否しました。通常、サインインまたはトークンが有効期限切れになったため。ツール呼び出しは失敗し、`/mcp` はサーバーを [認証が必要](/docs/ja/mcp#authenticate-with-remote-mcp-servers) として標記します。
+
+Claude Code からサインインするサーバー（claude.ai コネクタを含む）の場合、サインインが有効期限切れまたは取り消されました：
+
+```text theme={null}
+MCP server "<name>" needs you to sign in again (run /mcp to re-authenticate)
+```
+
+`/mcp` を実行し、サーバーを選択し、そのメニューから再度サインインします。
+
+[`headersHelper`](/docs/ja/mcp#use-dynamic-headers-for-custom-authentication) スクリプトで設定されたサーバーの場合、Claude Code はこれを表示する前にヘルパーを再実行し、呼び出しを 1 回再試行しました：
+
+```text theme={null}
+MCP server "<name>" rejected the credential from its headersHelper (check the helper and run /mcp to reconnect, or to authenticate if the server also uses OAuth)
+```
+
+ヘルパーがサーバーが受け入れる認証情報を返すことを確認してから、`/mcp` から再接続します。これはヘルパーを再実行します。
+
+設定に静的な `Authorization` ヘッダーを持つサーバーの場合：
+
+```text theme={null}
+MCP server "<name>" rejected the Authorization header in its config (update it, then run /mcp to reconnect)
+```
+
+サーバーが設定されている場所でヘッダー値を更新してから、`/mcp` から再接続します。
+
+v2.1.273 より前では、3 つのケースすべてが `MCP server "<name>" requires re-authorization (token expired)` を表示していました。
+
+サーバーは、HTTP 403 `insufficient_scope` でツール呼び出しを拒否して、スコープを認可するよう求めることもできます。時々、トークンが既にリストしているもの。メッセージはそのスコープに名前を付けます：
+
+```text theme={null}
+MCP server "<name>" needs additional permissions (scope: "<scope>") — run /mcp to re-authenticate
+```
+
+`/mcp` を実行し、サーバーを選択し、そのメニューから再度認証します。
+
+サーバーの設定が [`oauth.scopes`](/docs/ja/mcp#restrict-oauth-scopes) も [`authServerMetadataUrl`](/docs/ja/mcp#override-oauth-metadata-discovery) も設定しない場合、Claude Code はサーバーが名前を付けたスコープをリクエストします。どちらかの設定を使用すると、Claude Code はその設定のスコープをリクエストします。`oauth.scopes` をピン留めした場合は、再度認証する前にそのリストに欠落しているスコープを追加します。
+
+v2.1.274 より前では、このケースは `needs you to sign in again` メッセージを表示し、v2.1.273 より前は他のケースのように `requires re-authorization (token expired)` を表示していました。
+
+<h3 id="issuer-mismatch-in-authorization-response">
+  認可応答での発行者の不一致
+</h3>
+
+[MCP OAuth サインイン](/docs/ja/mcp#authenticate-with-remote-mcp-servers) 中に、認可サーバーは Claude Code に `iss` パラメーターでリダイレクトバックしました。これは Claude Code がサーバーの OAuth メタデータから期待していた発行者に名前を付けていません。このステップでの間違った発行者は、認可サーバーの混合攻撃がどのように見えるかです。Claude Code は認可コードを交換する代わりにサインインを失敗させます。Claude Code はブラウザサインイン後の `/mcp` サーバーメニューにエラーを表示します：
 
 ```text theme={null}
 Issuer mismatch in authorization response (RFC 9207): expected "https://auth.example.com", received "https://other.example.com"
 ```
 
-`expected` はサーバーの OAuth メタデータからの発行者であり、`received` はリダイレクトが運んだ `iss` 値です。`iss` パラメーターを運ばないサインインは、サーバーのメタデータが `authorization_response_iss_parameter_supported` を設定しない限り、チェックに合格します。その場合、Claude Code はサインインに失敗します。
+`expected` はサーバーの OAuth メタデータからの発行者であり、`received` はリダイレクトが運んだ `iss` 値です。リダイレクトが `iss` パラメーターを運ばないサインインはチェックに合格します。サーバーのメタデータが `authorization_response_iss_parameter_supported` を設定しない限り。その場合、Claude Code はサインインを失敗させます。
 
 **対応方法：**
 
 * `/mcp` からサインインを再度試してください
 * エラーが繰り返される場合は、サーバーオペレーターに報告してください。修正はサーバー側です。認可サーバーは、メタデータで宣伝する同じ発行者を `iss` パラメーターで返す必要があります
-* サーバーが修正されている間に接続するには、[`MCP_SDK_GENERATION=v1`](/docs/ja/env-vars) で Claude Code を開始してください。その [ランタイム](/docs/ja/mcp#mcp-client-runtimes) はこのチェックを実行しません。これは混合攻撃に対する保護を削除するため、サーバー側の修正を優先してください
+* サーバーが修正されている間に接続するには、[`MCP_SDK_GENERATION=v1`](/docs/ja/env-vars) で Claude Code を起動します。その [ランタイム](/docs/ja/mcp#mcp-client-runtimes) はこのチェックを実行しません。これは混合攻撃に対する保護を削除するため、サーバー側の修正を優先してください
 
-v2.1.232 より前は、Claude Code は段階的なロールアウトでのみ v2 ランタイムを使用するか、`MCP_SDK_GENERATION=v2` を設定したときに使用していました。
+v2.1.232 より前では、Claude Code は段階的なロールアウトでのみ v2 ランタイムを使用するか、`MCP_SDK_GENERATION=v2` を設定したときに使用していました。
 
 <h3 id="aws-credentials-expired-or-invalid">
-  AWS 認証情報が期限切れまたは無効です
+  AWS 認証情報が有効期限切れまたは無効です
 </h3>
 
-このメッセージには Claude Code v2.1.198 以降が必要で、[`awsAuthRefresh`](/docs/ja/amazon-bedrock#advanced-credential-configuration) が設定ファイルで設定されている場合にのみ表示されます。AWS セッショントークンが期限切れになったか、拒否されました。Claude Code が既に実行した自動更新は、API が受け入れる認証情報を生成しませんでした。[Claude Platform on AWS](/docs/ja/claude-platform-on-aws) または [Mantle エンドポイント](/docs/ja/amazon-bedrock#use-the-mantle-endpoint) からの 401 に表示されます。これらのプロバイダーが期限切れセキュリティトークンを報告する方法です。
+AWS セッショントークンが有効期限切れまたは拒否されました。このメッセージは [Claude Platform on AWS](/docs/ja/claude-platform-on-aws) または [Mantle エンドポイント](/docs/ja/amazon-bedrock#use-the-mantle-endpoint) からの 401 に表示されます。これらのプロバイダーが有効期限切れのセキュリティトークンを報告する方法です。
 
-中央のアクション ヒントは設定ファイルの `awsAuthRefresh` コマンドを名前付けするため、異なります。安定した部分は先頭の `AWS credentials expired or invalid` です：
+中央のアクション ヒントはセットアップによって異なります。安定した部分は先頭の `AWS credentials expired or invalid` です：
 
 ```text theme={null}
 AWS credentials expired or invalid · run /login and select "Claude Platform on AWS · refresh credentials", or run `aws sso login --profile myprofile` in another terminal · API Error: 401 ...
 ```
 
-`awsAuthRefresh` が設定されていない場合、同じ 401 は代わりに汎用 `Please run /login` メッセージを表示し、AWS 認証情報を更新できません。
+v2.1.273 より前では、このメッセージは `awsAuthRefresh` が設定されている場合にのみ表示されました。
 
 **対応方法：**
 
-* メッセージで名前付けされた `awsAuthRefresh` コマンド（`aws sso login --profile myprofile` など）を別のターミナルで実行し、ブラウザーサインインを完了してから、再試行してください
-* 対話的セッションでは、`/login` を実行し、**3rd-party platform** を選択してから、**Using 3rd-party platforms** の下で **Claude Platform on AWS · refresh credentials** を選択して、Claude Code を再起動せずに同じコマンドを実行してください。[AWS 認証情報を設定する](/docs/ja/claude-platform-on-aws#1-configure-aws-credentials) を参照してください
-* 更新コマンドが成功した後もエラーが繰り返される場合は、同じシェルとプロファイルで `aws sts get-caller-identity` を使用して Claude Code の外で ID が有効であることを確認してください
+* ヒントが認証情報がこの環境で管理されていると言う場合、Claude Code を起動したアプリが認証情報を所有し、ここの他のステップは適用されません。再試行するか、管理者に連絡してください
+* [`awsAuthRefresh`](/docs/ja/amazon-bedrock#advanced-credential-configuration) が設定されている場合は、メッセージで名前が付けられたコマンド（`aws sso login --profile myprofile` など）を別のターミナルで実行し、ブラウザサインインを完了してから、再試行します。それ以外の場合は、自分で使用する AWS 認証情報を更新します。SSO サインイン、アクセスキー、API キー、またはプロキシトークン
+* 対話的セッションで `awsAuthRefresh` が設定されている場合は、代わりに `/login` を実行し、**3rd-party platform** を選択してから、**Using 3rd-party platforms** の下で **Claude Platform on AWS · refresh credentials** を選択して、Claude Code を再起動せずに同じコマンドを実行できます。[AWS 認証情報を設定する](/docs/ja/claude-platform-on-aws#1-configure-aws-credentials) を参照してください
+* 更新コマンドが成功した後もエラーが繰り返される場合は、同じシェルとプロファイルで `aws sts get-caller-identity` を使用して Claude Code の外で ID が有効であることを確認します
 
 <h3 id="aws-authentication-failed">
   AWS 認証が失敗しました
 </h3>
 
-このメッセージには Claude Code v2.1.198 以降が必要で、[`awsAuthRefresh`](/docs/ja/amazon-bedrock#advanced-credential-configuration) が設定ファイルで設定されている場合にのみ表示されます。AWS プロバイダーが 403 を返したか、[Amazon Bedrock](/docs/ja/amazon-bedrock) が 401 を返しました。
+AWS プロバイダーが 403 を返したか、[Amazon Bedrock](/docs/ja/amazon-bedrock) が 401 を返しました。
 
-Claude Code はどちらの原因に当たったかを判断できません。Amazon Bedrock は期限切れセキュリティトークンを 403 として報告しますが、403 は認可拒否（IAM 権限の欠落またはアカウントで有効化されていないモデルなど、`AccessDeniedException` など）を報告する方法でもあります。
+Amazon Bedrock は有効期限切れのセキュリティトークンを 403 として報告しますが、403 は認可拒否（IAM 権限の欠落など `AccessDeniedException`）を報告する方法でもあります。Claude Code はこれら 2 つの原因を区別できません。
 
-Amazon Bedrock からの 401 も [AWS 認証情報が期限切れまたは無効です](#aws-credentials-expired-or-invalid) の下ではなくここに着地します。Amazon Bedrock はそのエンドポイントから期限切れトークンを 401 として報告しないため。そのエンドポイントからの 401 は通常、リクエストパスの他の何か（企業プロキシなど）から来ます。
+Amazon Bedrock からの 401 は、リクエストパスの他の何か（企業プロキシなど）から来ているため、[AWS 認証情報が有効期限切れまたは無効です](#aws-credentials-expired-or-invalid) の下ではなくここに着地します。そのエンドポイントからの 401 は通常、他の何かから来ています。
 
-認証情報更新は期限切れトークンを修正し、他の原因を修正できないため、メッセージは両方を提供します：
+認証情報の更新は有効期限切れトークンを修正でき、他の原因を修正できないため、メッセージは両方を提供します：
 
 ```text theme={null}
 AWS authentication failed · run /login and select "Claude Platform on AWS · refresh credentials", or run `aws sso login --profile myprofile` in another terminal · if credentials are current, check AWS permissions and model access · API Error: 403 ...
 ```
 
-中央のアクション ヒントは設定ファイルの `awsAuthRefresh` コマンドを名前付けするため、異なります。安定した部分は先頭の `AWS authentication failed` です。
+中央のアクション ヒントはセットアップによって異なります。安定した部分は先頭の `AWS authentication failed` です。
+
+403 が、指定されたモデル ID でモデルへのアクセス権がないという Amazon Bedrock の答えである場合、ヒントは代わりに Amazon Bedrock コンソールでアカウントとリージョンのモデルを有効にするよう指示します。
+
+v2.1.273 より前では、このメッセージは `awsAuthRefresh` が設定されている場合にのみ表示されました。
 
 **対応方法：**
 
-* メッセージで名前付けされた `awsAuthRefresh` コマンドを実行するか、`aws sso login` を実行してください。期限切れ認証情報が原因である場合に備えて
-* 認証情報が現在の場合は、[IAM 設定](/docs/ja/amazon-bedrock#iam-configuration) の IAM 権限が使用している ID に接続されていることを確認し、選択されたモデルがアカウントとリージョンで有効化されていることを確認してください
-* `aws sts get-caller-identity` を実行して、リクエストがどの ID を使用するかを確認してください。古い `AWS_PROFILE` またはデフォルトプロファイルは、権限の不一致の一般的な原因です
+* ヒントが認証情報がこの環境で管理されていると言う場合、Claude Code を起動したアプリが認証情報を所有し、ここの他のステップは適用されません。再試行するか、管理者に連絡してください
+* 有効期限切れ認証情報が原因である可能性があるため、AWS 認証情報を更新します。設定されている場合は [`awsAuthRefresh`](/docs/ja/amazon-bedrock#advanced-credential-configuration) コマンドで名前が付けられたコマンドを実行するか、SSO サインイン、アクセスキー、API キー、またはプロキシトークンを自分で更新します
+* 認証情報が最新の場合は、[IAM 設定](/docs/ja/amazon-bedrock#iam-configuration) の IAM 権限が使用している ID に接続されていることを確認し、選択されたモデルがアカウントとリージョンで有効になっていることを確認します
+* `aws sts get-caller-identity` を実行してリクエストが使用する ID を確認します。古い `AWS_PROFILE` またはデフォルトプロファイルは権限の不一致の一般的な原因です
 
-<h3 id="could-not-load-aws-or-google-cloud-credentials">
-  AWS または Google Cloud 認証情報をロードできませんでした
+<h3 id="google-cloud-credentials-expired-or-invalid">
+  Google Cloud 認証情報が有効期限切れまたは無効です
 </h3>
 
-Claude Code は、マシンで実行されている AWS 認証情報プロバイダーチェーンから、または Google アプリケーションのデフォルト認証情報から、使用可能な認証情報を取得できなかったため、クラウドプロバイダーにリクエストが到達しませんでした。Claude Code はキャッシュされた認証情報をクリアし、このメッセージを表示する前に 2 回再試行します。`·` の後の詳細は、期限切れ SSO セッション、`Could not load the default credentials` として報告されている見つからないアプリケーションのデフォルト認証情報、または `invalid_grant` として報告されている取り消されたサインインなど、特定の原因を名前付けします：
+[Google Cloud の Agent Platform](/docs/ja/google-vertex-ai) の Google Cloud 認証情報が有効期限切れまたは拒否されました。リクエストが 401 を返しました。これは Agent Platform が認証情報の有効期限切れを報告する方法です。
+
+中央のアクション ヒントはセットアップによって異なります。安定した部分は先頭の `Google Cloud credentials expired or invalid` です：
+
+```text theme={null}
+Google Cloud credentials expired or invalid · refresh your Google Cloud credentials (application default sign-in, or the key file in GOOGLE_APPLICATION_CREDENTIALS) and retry · API Error: 401 ...
+```
+
+**対応方法：**
+
+* ヒントが認証情報がこの環境で管理されていると言う場合、Claude Code を起動したアプリが認証情報を所有し、ここの他のステップは適用されません。再試行するか、管理者に連絡してください
+* アプリケーションデフォルト認証情報で認証する場合は、メッセージで名前が付けられた [`gcpAuthRefresh`](/docs/ja/google-vertex-ai#advanced-credential-configuration) コマンドまたは `gcloud auth application-default login` を実行し、サインインを完了してから、再試行します
+* [LLM ゲートウェイ](/docs/ja/llm-gateway) を通じてルーティングし、`CLAUDE_CODE_SKIP_VERTEX_AUTH` が設定されている場合は、`ANTHROPIC_AUTH_TOKEN` または `ANTHROPIC_CUSTOM_HEADERS` のゲートウェイトークンを更新してから、再試行します
+* サービスアカウントキーファイルで認証する場合は、`GOOGLE_APPLICATION_CREDENTIALS` が有効なキーを指していることを確認します。[GCP 認証情報を設定する](/docs/ja/google-vertex-ai#3-configure-gcp-credentials) を参照してください
+* 更新後もエラーが繰り返される場合は、同じシェルで `gcloud auth application-default print-access-token` を使用して Claude Code の外で ID が機能することを確認します
+
+v2.1.273 より前では、Agent Platform からの 401 は、Google Cloud 認証情報を更新できない一般的な `Please run /login` または `Failed to authenticate` メッセージを表示していました。
+
+<h3 id="google-cloud-authentication-failed">
+  Google Cloud 認証が失敗しました
+</h3>
+
+[Google Cloud の Agent Platform](/docs/ja/google-vertex-ai) が 403 を返しました。これは有効期限切れ認証情報ではなく認可拒否に使用します。通常、認証する ID に IAM 権限がないか、モデルがプロジェクトで有効になっていません。
+
+中央のアクション ヒントはセットアップによって異なります。安定した部分は先頭の `Google Cloud authentication failed` です：
+
+```text theme={null}
+Google Cloud authentication failed · refresh your Google Cloud credentials (application default sign-in, or the key file in GOOGLE_APPLICATION_CREDENTIALS) and retry · if credentials are current, check GCP IAM permissions and Vertex AI model access · API Error: 403 ...
+```
+
+**対応方法：**
+
+* ヒントが認証情報がこの環境で管理されていると言う場合、Claude Code を起動したアプリが認証情報を所有し、ここの他のステップは適用されません。再試行するか、管理者に連絡してください
+* 認証する ID に [IAM 設定](/docs/ja/google-vertex-ai#iam-configuration) のロールが付与されていることを確認します
+* モデルがプロジェクトで有効になっていることを確認します。[モデルアクセスをリクエストする](/docs/ja/google-vertex-ai#2-request-model-access) を参照してください
+
+v2.1.273 より前では、Agent Platform からの 403 は、Google Cloud 認証情報を更新できない一般的な `Please run /login` または `Failed to authenticate` メッセージを表示していました。
+
+<h3 id="microsoft-foundry-authentication-failed">
+  Microsoft Foundry 認証が失敗しました
+</h3>
+
+[Microsoft Foundry](/docs/ja/microsoft-foundry) が 401 または 403 を返しました。リクエストの Azure 認証情報が拒否されたか、その背後にある ID が Foundry リソースへのアクセス権を持っていません。`/login` は Azure 認証情報をミントできません。中央のアクション ヒントはセットアップによって異なります。安定した部分は先頭の `Microsoft Foundry authentication failed` です：
+
+```text theme={null}
+Microsoft Foundry authentication failed · refresh your Foundry credential (ANTHROPIC_FOUNDRY_AUTH_TOKEN, ANTHROPIC_FOUNDRY_API_KEY, Azure sign-in for Entra, or your proxy token) and retry · if credentials are current, check access to the Foundry resource · API Error: 401 ...
+```
+
+**対応方法：**
+
+* ヒントが認証情報がこの環境で管理されていると言う場合、Claude Code を起動したアプリが認証情報を所有し、ここの他のステップは適用されません。再試行するか、管理者に連絡してください
+* [Azure 認証情報を設定する](/docs/ja/microsoft-foundry#2-configure-azure-credentials) で設定した認証情報を更新します。`ANTHROPIC_FOUNDRY_API_KEY` をローテーションするか、新しい `ANTHROPIC_FOUNDRY_AUTH_TOKEN` をミントするか、`az login` を実行してデフォルト Microsoft Entra 認証情報チェーンが再度サインインできるようにします
+* 認証情報が最新の場合は、ID が Foundry リソースへのアクセス権を持っていることを確認します。[Azure RBAC 設定](/docs/ja/microsoft-foundry#azure-rbac-configuration) を参照してください
+
+v2.1.273 より前では、Microsoft Foundry からの 401 または 403 は、Azure 認証情報を更新できない一般的な `Please run /login` または `Failed to authenticate` メッセージを表示していました。
+
+<h3 id="could-not-load-aws-or-google-cloud-credentials">
+  AWS またはGoogle Cloud 認証情報を読み込めませんでした
+</h3>
+
+Claude Code は、実行されているマシンの AWS 認証情報プロバイダーチェーンまたは Google アプリケーションデフォルト認証情報から使用可能な認証情報を取得できなかったため、クラウドプロバイダーにリクエストが到達しませんでした。Claude Code はキャッシュされた認証情報をクリアし、表示する前に 2 回再試行します。`·` の後の詳細は、有効期限切れの SSO セッション、`Could not load the default credentials` として報告される欠落アプリケーションデフォルト認証情報、または `invalid_grant` として報告される取り消されたサインインなど、特定の原因に名前を付けます：
 
 ```text theme={null}
 API Error: Could not load AWS credentials · Could not load credentials from any providers. Check or refresh your AWS credentials and try again.
 API Error: Could not load Google Cloud credentials · invalid_grant. Check or refresh your Google Cloud credentials and try again.
 ```
 
-[非対話モード](/docs/ja/headless) で `-p` を使用する場合と [Agent SDK](/docs/ja/agent-sdk/overview) では、構造化エラーコードは `cloud_credential_error` です。v2.1.267 より前は、メッセージは `API Error:` の後のテキストのみを表示し、構造化コードは `server_error` または `unknown` でした。
+[非対話モード](/docs/ja/headless) で `-p` を使用し、[Agent SDK](/docs/ja/agent-sdk/overview) では、構造化エラーコードは `cloud_credential_error` です。v2.1.267 より前では、メッセージは `API Error:` の後の詳細テキストのみを表示し、構造化コードは `server_error` または `unknown` でした。
 
 **対応方法：**
 
-* `aws sso login --profile myprofile` または `gcloud auth application-default login` などのプロバイダーのサインインコマンドを実行してから、再試行してください。[Bedrock、Agent Platform、または Foundry 認証情報がロードされていない](/docs/ja/troubleshoot-install#bedrock-agent-platform-or-foundry-credentials-not-loading) は、Claude Code の外で認証情報を確認する方法を示しています
-* 詳細が `AWS default-chain credential resolve timed out` と読む場合は、チェーンが失敗するのではなくハングしたため、代わりに [AWS デフォルトチェーン認証情報解決がタイムアウトしました](#aws-default-chain-credential-resolve-timed-out) に従ってください
+* `aws sso login --profile myprofile` または `gcloud auth application-default login` などのプロバイダーのサインインコマンドを実行してから、再試行します。[Bedrock、Agent Platform、または Foundry 認証情報が読み込まれていない](/docs/ja/troubleshoot-install#bedrock-agent-platform-or-foundry-credentials-not-loading) は、Claude Code の外で認証情報を確認する方法を示しています
+* 詳細が `AWS default-chain credential resolve timed out` と読む場合は、チェーンが失敗するのではなくハングしたため、代わりに [AWS default-chain credential resolve timed out](#aws-default-chain-credential-resolve-timed-out) に従ってください
 
 <h3 id="aws-default-chain-credential-resolve-timed-out">
-  AWS デフォルトチェーン認証情報解決がタイムアウトしました
+  AWS default-chain credential resolve がタイムアウトしました
 </h3>
 
-AWS デフォルト認証情報プロバイダーチェーンは 60 秒以内に認証情報を生成しなかったため、Claude Code は解決を停止し、リクエストに失敗しました。このタイムアウトは [AWS または Google Cloud 認証情報をロードできませんでした](#could-not-load-aws-or-google-cloud-credentials) の 1 つの原因です。失敗はローカル認証情報解決です。リクエストは [Amazon Bedrock](/docs/ja/amazon-bedrock)、[Claude Platform on AWS](/docs/ja/claude-platform-on-aws)、または [Mantle エンドポイント](/docs/ja/amazon-bedrock#use-the-mantle-endpoint) に到達しませんでした。Claude Code はこのエラーが表面化する前に [認証情報キャッシュ](/docs/ja/amazon-bedrock#credential-caching-and-resolution-timeout) をクリアして再試行するため、このメッセージが表示されるまでにチェーンは繰り返された試行でスタールしています。
+AWS デフォルト認証情報プロバイダーチェーンが 60 秒以内に認証情報を生成しなかったため、Claude Code は解決を停止し、リクエストを失敗させました。このタイムアウトは [AWS またはGoogle Cloud 認証情報を読み込めませんでした](#could-not-load-aws-or-google-cloud-credentials) の 1 つの原因です。失敗はローカル認証情報解決です。リクエストは [Amazon Bedrock](/docs/ja/amazon-bedrock)、[Claude Platform on AWS](/docs/ja/claude-platform-on-aws)、または [Mantle エンドポイント](/docs/ja/amazon-bedrock#use-the-mantle-endpoint) に到達しませんでした。Claude Code は [認証情報キャッシュ](/docs/ja/amazon-bedrock#credential-caching-and-resolution-timeout) をクリアし、このエラーが表示される前に再試行するため、このエラーが表示されるまでにチェーンは繰り返された試行でスタールしています。
 
 ```text theme={null}
 API Error: Could not load AWS credentials · AWS default-chain credential resolve timed out. Check or refresh your AWS credentials and try again.
@@ -1335,20 +1475,20 @@ API Error: Could not load AWS credentials · AWS default-chain credential resolv
 
 一般的な原因は、AWS プロファイルの `credential_process` コマンドが受け取ることができない入力を待機し、インスタンスメタデータサービス（IMDS）がチェーンのプローブに応答しないコンテナまたは VM です。
 
-v2.1.267 より前は、メッセージは `API Error: AWS default-chain credential resolve timed out` と読みました。
-v2.1.207 より前は、スタールしたチェーンはリクエストを無期限に待機させ、このメッセージで失敗する代わりに失敗しました。
+v2.1.267 より前では、メッセージは `API Error: AWS default-chain credential resolve timed out` と読みました。
+v2.1.207 より前では、スタールしたチェーンはリクエストを無期限に待機したままにしておきました。
 
 **対応方法：**
 
-* 同じシェルで同じ `AWS_PROFILE` で `aws sts get-caller-identity` を実行してください。それもハングする場合は、プロファイルを修正してください。対話的にプロンプトを表示する `credential_process` コマンドは一般的な原因です。
-* Claude Code を開始する前にサインインステップを完了してください。例えば `aws sso login --profile myprofile`。チェーンはブラウザーフローを待機する代わりにローカル SSO キャッシュから解決するため
-* チェーンが `aws-vault` などのラッパーを使用した MFA を使用した SSO などの正当に 60 秒以上を必要とする対話的サインインを実行する場合は、ミリ秒単位で [`CLAUDE_CODE_AWS_CHAIN_RESOLVE_TIMEOUT_MS`](/docs/ja/env-vars) で制限を上げてください
+* 同じシェルで同じ `AWS_PROFILE` を使用して `aws sts get-caller-identity` を実行します。それもハングする場合は、プロファイルを修正します。対話的にプロンプトを表示する `credential_process` コマンドが一般的な原因です。
+* Claude Code を起動する前にサインインステップを完了します。たとえば `aws sso login --profile myprofile`。これにより、チェーンはブラウザフローを待機する代わりにローカル SSO キャッシュから解決されます
+* チェーンが `aws-vault` などのラッパーを使用した MFA を使用した SSO など、60 秒以上の正当なインタラクティブサインインを実行する場合は、ミリ秒単位で制限を上げます。[`CLAUDE_CODE_AWS_CHAIN_RESOLVE_TIMEOUT_MS`](/docs/ja/env-vars)
 
 <h3 id="bedrock-setup-verification-timed-out-waiting-for-aws">
   Bedrock セットアップ検証が AWS を待機中にタイムアウトしました
 </h3>
 
-[Bedrock セットアップウィザード](/docs/ja/amazon-bedrock#sign-in-with-bedrock) の認証情報検証中の AWS への呼び出し（認証情報ルックアップまたは ID チェックなど）が 60 秒の制限内に完了しませんでした。ウィザードは待機を停止し、検証ステップに失敗します：
+[Bedrock セットアップウィザード](/docs/ja/amazon-bedrock#sign-in-with-bedrock) の認証情報検証中の AWS への呼び出し（認証情報ルックアップまたは ID チェックなど）が 60 秒の制限内に完了しませんでした。ウィザードは待機を停止し、検証ステップを失敗させます：
 
 ```text theme={null}
 Timed out after 60s waiting for AWS. Check your network and proxy settings; if a credential helper needs longer to prompt you, raise CLAUDE_CODE_AWS_CHAIN_RESOLVE_TIMEOUT_MS.
@@ -1356,35 +1496,35 @@ Timed out after 60s waiting for AWS. Check your network and proxy settings; if a
 
 数値は制限を反映しています。デフォルトでは 60 秒、または [`CLAUDE_CODE_AWS_CHAIN_RESOLVE_TIMEOUT_MS`](/docs/ja/env-vars) で設定した値。
 
-一般的な原因は、SSO トークン更新を含む AWS へのリクエストをスタールさせるネットワークまたはプロキシ、および見えない入力を待機しているまま認証情報ヘルパーです。制限を上げるのは、ヘルパーが正当にさらに時間を必要とする場合のみです。
+一般的な原因は、SSO トークン更新を含む AWS へのリクエストをスタールさせるネットワークまたはプロキシ、および見えない入力を待機しているまだ認証情報ヘルパーです。ヘルパーが正当にもっと時間が必要な場合にのみ制限を上げます。
 
-AWS への単一のスタールしたリクエストは、独自のリクエストごとのタイムアウトで失敗することもあります。これは同じステップで短いメッセージを表示します：
+AWS への単一のスタールしたリクエストは、独自のリクエストごとのタイムアウトで失敗することもあります。これは同じステップでより短いメッセージを表示します：
 
 ```text theme={null}
 A request to AWS timed out. Check your network and proxy settings, then try again.
 ```
 
-同じタイムアウトがモデルピンステップで発生する場合、ウィザードはモデルを `unreachable` としてマークし、どちらのメッセージも表示しません。
+同じタイムアウトがモデルピンステップで発生する場合、ウィザードはモデルを `unreachable` としてマークします。どちらのメッセージも表示する代わりに。
 
 **対応方法：**
 
-* 同じシェルで `aws sts get-caller-identity` を実行してください。それもハングする場合、スタールは Claude Code の外にあります。ネットワーク、プロキシ、または AWS プロファイルの認証情報ヘルパーで。最初にそれを修正してください。
-* ウィザードを開く前に対話的サインインを完了してください。例えば `aws sso login --profile myprofile`
-* AWS プロファイルの認証情報ヘルパーが正当に 60 秒以上を必要とする場合、ミリ秒単位で [`CLAUDE_CODE_AWS_CHAIN_RESOLVE_TIMEOUT_MS`](/docs/ja/env-vars) で制限を上げてください
+* 同じシェルで `aws sts get-caller-identity` を実行します。それもハングする場合、スタールは Claude Code の外にあります。ネットワーク、プロキシ、または AWS プロファイルの認証情報ヘルパーで。最初にそれを修正します。
+* ウィザードを開く前にインタラクティブサインインを完了します。たとえば `aws sso login --profile myprofile`
+* AWS プロファイルの認証情報ヘルパーが正当に 60 秒以上の時間が必要な場合は、ミリ秒単位で制限を上げます。[`CLAUDE_CODE_AWS_CHAIN_RESOLVE_TIMEOUT_MS`](/docs/ja/env-vars)
 
 <h3 id="cloud-gateway-session-expired">
-  クラウドゲートウェイセッション期限切れ
+  クラウドゲートウェイセッションが有効期限切れです
 </h3>
 
-[Claude apps ゲートウェイ](/docs/ja/claude-apps-gateway) を通じてサインインし、このマシンに保存されたゲートウェイセッションが期限切れになり、更新できなかったか、ゲートウェイはそれを受け入れなくなりました。例えば、ゲートウェイの [JWT シークレットが置き換えられた](/docs/ja/claude-apps-gateway-deploy#jwt-secret-rotation) 後。`claude` を対話的に開始するときにこの行が表示される場合、セッションはゲートウェイから署名を解除して開いています：
+[Claude apps gateway](/docs/ja/claude-apps-gateway) を通じてサインインし、このマシンに保存されたゲートウェイセッションが有効期限切れになり、更新できなかったか、ゲートウェイはそれを受け入れなくなりました。たとえば、ゲートウェイの [JWT シークレットが置き換えられた](/docs/ja/claude-apps-gateway-deploy#jwt-secret-rotation) 後。対話的に `claude` を起動するときにこの行が表示される場合、セッションはゲートウェイからサインアウトして開いています：
 
 ```text theme={null}
 Cloud gateway session expired — run /login to reconnect.
 ```
 
-同じ行はセッション中に表示される可能性があります。ゲートウェイ認証情報が期限切れになり、Claude Code が更新できない場合。
+同じ行はセッション中に表示される場合があります。ゲートウェイ認証情報が有効期限切れになり、Claude Code が更新できないとき。
 
-[非対話的](/docs/ja/headless) 実行、バックグラウンドまたは他の無人セッション、または `claude auth` 以外の `claude` サブコマンドでは、Claude Code はゲートウェイがセッションを受け入れなくなったときに代わりにこのメッセージで終了します：
+[非対話的](/docs/ja/headless) 実行、バックグラウンドまたは他の無人セッション、または `claude` サブコマンド（`claude auth` 以外）では、ゲートウェイがセッションを受け入れなくなったときに Claude Code は代わりにこのメッセージで終了します：
 
 ```text theme={null}
 Cloud gateway <url> no longer accepts this session. Start `claude` and sign in again with /login.
@@ -1392,8 +1532,25 @@ Cloud gateway <url> no longer accepts this session. Start `claude` and sign in a
 
 **対応方法：**
 
-* セッションで `/login` を実行し、ブラウザーサインインを完了してください
-* 非対話的な起動の場合は、同じ環境で `claude` を開始し、`/login` を実行してから、コマンドを再実行してください
+* セッションで `/login` を実行し、ブラウザサインインを完了します
+* 非対話的な起動の場合は、同じ環境で `claude` を起動し、`/login` を実行してから、コマンドを再実行します
+
+<h3 id="gateway-refused-the-request">
+  ゲートウェイがリクエストを拒否しました
+</h3>
+
+[Claude apps gateway](/docs/ja/claude-apps-gateway) を通じてサインインしており、リクエストが 403 を返しました。ゲートウェイ、またはその背後にあるアップストリームがそれを拒否しました。再度サインインしても拒否は変わらないため、メッセージはゲートウェイ管理者を指しています：
+
+```text theme={null}
+Gateway refused the request · signing in again won't change this — check with your gateway administrator · API Error: 403 ...
+```
+
+**対応方法：**
+
+* ゲートウェイ管理者にリクエストを検索するよう依頼してください。`API Error:` テールはゲートウェイが返した拒否を運びます
+* 管理者の場合：ゲートウェイの [アクセス制御ルール](/docs/ja/claude-apps-gateway-config#http-tuning) は、[監査ログ](/docs/ja/claude-apps-gateway-deploy#logs) が理由を記録する 403 を返し、アップストリームの認可拒否は [アップストリームエラーメッセージ](/docs/ja/claude-apps-gateway-config#upstream-error-messages) ごとに渡されます
+
+v2.1.273 より前では、ゲートウェイセッションの 403 は一般的な `Please run /login` または `Failed to authenticate` メッセージを表示し、再度サインインしても拒否はクリアされませんでした。
 
 <h2 id="network-and-connection-errors">
   ネットワークと接続エラー
@@ -1412,7 +1569,7 @@ Unable to connect to API. Check your internet connection
 Connection refused — a firewall or proxy may be blocking it (ConnectionRefused)
 Can't reach the API server — check your internet or DNS (ENOTFOUND)
 No internet route — check your connection or VPN (EHOSTUNREACH)
-Couldn't connect through your proxy (ERR_PROXY_TUNNEL)
+Couldn't connect through your proxy (ERR_PROXY_TUNNEL) — the proxy refused the tunnel: check its credentials and that it allows this host
 Connection dropped (ECONNRESET)
 fetch failed
 Request timed out. Check your internet connection and proxy settings
@@ -1544,13 +1701,15 @@ v2.1.208 より前では、同じ設定ミスは、応答全体がバッファ�
 ネットワーク上のプロキシまたはセキュリティアプライアンスが TLS トラフィックを独自の証明書でインターセプトしており、Claude Code はそれを信頼しません。
 
 ```text theme={null}
-Unable to connect to API: SSL certificate verification failed. Check your proxy or corporate SSL certificates
-Unable to connect to API: Self-signed certificate detected. Check your proxy or corporate SSL certificates
+Unable to connect to API: SSL certificate verification failed (UNABLE_TO_GET_ISSUER_CERT_LOCALLY). The certificate comes from an authority Claude Code doesn't trust, usually a TLS-inspecting corporate proxy or a gateway signed by a private CA: set NODE_EXTRA_CA_CERTS to that CA bundle, or add it to the system certificate store · see https://code.claude.com/docs/en/network-config
+Unable to connect to API: Self-signed certificate detected (SELF_SIGNED_CERT_IN_CHAIN). The certificate comes from an authority Claude Code doesn't trust, usually a TLS-inspecting corporate proxy or a gateway signed by a private CA: set NODE_EXTRA_CA_CERTS to that CA bundle, or add it to the system certificate store · see https://code.claude.com/docs/en/network-config
 ```
+
+v2.1.273 より前では、両方のメッセージは `Check your proxy or corporate SSL certificates` で終了し、OpenSSL コードまたは `NODE_EXTRA_CA_CERTS` ヒントはありませんでした。
 
 v2.1.199 以降、証明書検証の失敗は再試行されないため、このエラーは完全な [再試行予算](#automatic-retries) の後ではなく、最初の試行時に表示されます。以前のバージョンは、表示する前に数分間再試行しました。ハンドシェイクタイムアウトなどの一時的な TLS 条件は、引き続き再試行されます。
 
-`/login` とスタートアップ接続チェック中に、同じ障害は OpenSSL コードと修正をインラインで報告されます。
+`/login` とスタートアップ接続チェック中に、同じ障害は異なるメッセージを生成します。
 
 ```text theme={null}
 SSL certificate error (UNABLE_TO_GET_ISSUER_CERT_LOCALLY). If you are behind a corporate proxy or TLS-intercepting firewall, set NODE_EXTRA_CA_CERTS to your CA bundle path, or ask IT to allowlist *.anthropic.com. Run `claude doctor` for details.
@@ -1580,6 +1739,8 @@ x-deny-reason: host_not_allowed
 これはクライアント側のネットワーク問題ではありません。クラウドセッションと [ルーチン](/docs/ja/routines) は、セッションのネットワークを通じたアウトバウンドトラフィックが [クラウド環境の](/docs/ja/cloud-environments) 許可リストにフィルタリングされるサンドボックス化された VM 内で実行されます。[GitHub 操作](/docs/ja/cloud-environments#github-proxy) と MCP コネクタトラフィックは別のチャネルを使用するため、他のホストがブロックされている間も機能し続けることができます。**Default** 環境は **Trusted** アクセスを使用し、パッケージレジストリ、クラウドプロバイダー API、コンテナレジストリ、および一般的な開発ドメインの [デフォルト許可リスト](/docs/ja/cloud-environments#default-allowed-domains) を許可し、そのパス上の他のドメインをブロックします。
 
 **対応方法：**
+
+これらのステップは、お客様自身の環境の 1 つを変更します。[組織共有環境](/docs/ja/cloud-environments#organization-shared-environments) はセレクターで読み取り専用で開くため、[管理設定](https://claude.ai/admin-settings) の **Cloud environments** ページからオーナーにネットワークアクセスを変更するよう依頼してください。
 
 * ルーチンを編集用に開くか、クラウドセッションを開始してください。**Default** などの環境の名前を示すクラウドアイコンを選択して、セレクターを開きます。環境の上にマウスを置き、設定アイコンをクリックしてください。
 * **Update cloud environment** ダイアログで、**Network access** を **Trusted** から **Custom** に変更し、ブロックされたドメインを **Allowed domains** に追加してください。1 行に 1 つのドメインを入力してください。**Also include default list of common package managers** をチェックして、カスタムドメインと共に [デフォルト許可リスト](/docs/ja/cloud-environments#default-allowed-domains) を保持してください。無制限のアクセスが必要な場合は、代わりに **Full** を選択してください。
@@ -1728,6 +1889,13 @@ Prompt is too long · automatic compaction failed: <the underlying error>
 
 名前付けされたエラーを最初に解決してください。`/compact` は解決するまで同じエラーで失敗します。v2.1.229 より前では、失敗した自動圧縮は原因なしで `Prompt is too long` を表示していました。
 
+自動圧縮がこのエラーで実行される場合、通常は最も古い交換を要約し、最新のものを保持します。最後の手段として、Claude Code は異なる方法で要約します。
+
+* 全体の交換を要約できない場合、Claude Code は最新のプロンプトをそのまま保持し、その前のすべてを要約します。
+* その場合、会話が最新のプロンプトで終わらない場合、Claude Code は代わりに会話全体を要約します。
+
+Claude Code は、転送するコンテンツがモデル応答を保持せず、短い再試行など約 1,000 トークン未満の独自のテキストを保持する場合、この回復をスキップします。`/clear` を実行して新しく開始してください。v2.1.269 より前では、全体の交換を要約できない場合は圧縮が失敗したため、その状態のセッションはすべてのターンでこのエラーに遭遇しました。
+
 単一交換の会話には要約する以前のターンがありません。自動圧縮が実行されるはずの場合、Claude Code は試行をスキップし、代わりにリクエストを何が満たしているかを説明します。API がエラーでトークン数を報告しない場合、メッセージは次のように読みます。
 
 ```text theme={null}
@@ -1750,7 +1918,7 @@ v2.1.162 より前では、Claude Code は圧縮を試行し、失敗時に裸�
 
 **対応方法：**
 
-* マルチターン会話では、`/compact` を実行して以前のターンを要約し、スペースを解放するか、`/clear` を実行して新しく開始します。単一交換の会話は圧縮できないため、代わりにリクエストを縮小してください
+* マルチターン会話では、`/compact` を実行して以前のターンを要約し、スペースを解放するか、`/clear` を実行して新しく開始します。`/compact` が `Not enough messages to compact.` と答える場合、会話は圧縮できる以前のものがない単一交換であるため、スペースはそのプロンプトと Claude Code がすべてのリクエストで送信するもので占められています。`/clear` を実行して、ペーストされたテキストが少ないか、より小さな添付ファイルで再度送信するか、以下の手順を使用してツール定義とメモリファイルを削減してください
 * `/context` を実行して、ウィンドウを消費しているものの内訳を確認します。システムプロンプト、ツール、メモリファイル、およびメッセージです
 * `/mcp disable <name>` で使用していない MCP サーバーを無効にして、コンテキストからツール定義を削除します
 * 大きな `CLAUDE.md` メモリファイルをトリミングするか、指示を [パススコープ規則](/docs/ja/memory#path-specific-rules)に移動して、関連する場合にのみ読み込みます
@@ -2269,12 +2437,6 @@ The connection dropped while downloading the update (attempt 3/3: aborted). Chec
 * 企業プロキシが転送を閉じ続ける場合は、ネットワークチームに `downloads.claude.ai` からの完全なダウンロードを許可するよう依頼します。[ネットワークアクセス要件](/docs/ja/network-config#network-access-requirements)を参照してください。
 * シェルから `claude doctor` を実行して、インストール診断を実行します
 
-***
-
-title: "コマンドラインエラー"
-description: "Claude Code のコマンドラインエラーのトラブルシューティングガイド。エラーメッセージの意味と対処方法を説明します。"
------------------------------------------------------------------------------
-
 <h2 id="command-line-errors">
   コマンドラインエラー
 </h2>
@@ -2340,7 +2502,7 @@ v2.1.248 より前は、Claude Code に `--restricted` フラグがなく、以�
   クラウドセッションは組織のポリシーで無効になっています
 </h3>
 
-組織の `allow_remote_sessions` ポリシーがオフになっているため、[Claude Code on the web](/docs/ja/claude-code-on-the-web) とそれを使用するコマンドは利用できません。
+組織の `allow_remote_sessions` ポリシーがオフになっているため、[クラウドセッション](/docs/ja/claude-code-on-the-web)とそれを使用するコマンドは利用できません。
 
 ```text theme={null}
 Cloud sessions are disabled by your organization's policy. Contact your organization admin to enable them.
@@ -2699,7 +2861,7 @@ Error: Input must be provided either through stdin or as a prompt argument when 
   入力に空白のみが含まれていました
 </h3>
 
-[非対話的モード](/docs/ja/headless)では、Claude Code は、API がテキストのない メッセージを拒否するため、空白、タブ、または改行のみで構成されるプロンプトを送信する代わりに拒否します。表示されるメッセージは、空白のプロンプトがどこから来たかによって異なります。
+[非対話的モード](/docs/ja/headless)では、Claude Code は、API がテキストのないメッセージを拒否するため、空白、タブ、または改行のみで構成されるプロンプトを送信する代わりに拒否します。表示されるメッセージは、空白のプロンプトがどこから来たかによって異なります。
 
 * **`claude -p` のプロンプト引数またはパイプされた stdin**: `claude` は `Error: Input contained only whitespace. Provide a prompt with text through stdin or as a prompt argument when using --print` で終了します。
 * **実行中の `--input-format stream-json` または [Agent SDK](/docs/ja/agent-sdk/overview) セッションに送信されたメッセージ**: Claude Code はモデルを呼び出さずにターンを終了し、セッションは使用可能なままです。拒否は情報メッセージとしてターンの結果テキストとして到着します。`Blank prompt — the message was only whitespace, so nothing was sent to the model.`
@@ -2742,6 +2904,16 @@ Claude Code は、このセッションのメニューにリストされてい�
 * `/hepl` から `/help` への入力ミスなどのタイプミス。[コマンドメニューが入力と一致する方法](/docs/ja/commands#how-the-command-menu-matches-what-you-type)は、送信する前に近い一致を選択することをカバーしています。
 * コマンドが存在しますが、プラットフォーム、プラン、認証方法などの要件が満たされていないため、このセッションでは利用できません。[`/web-setup`](/docs/ja/web-quickstart#web-setup-shows-no-commands-match-or-unknown-command) と [`/schedule`](/docs/ja/routines#schedule-returns-unknown-command) のトラブルシューティングエントリは 2 つの一般的なケースを説明しています。一部のコマンドは、組織のポリシーが無効にしている場合、[`Cloud sessions are disabled by your organization's policy`](#cloud-sessions-are-disabled-by-your-organizations-policy) などの独自のメッセージで答えます。
 * このセッションにインストールまたは接続されていない[プラグイン](/docs/ja/plugins)または [MCP サーバー](/docs/ja/mcp#use-mcp-prompts-as-commands)からのコマンド。
+
+Claude Code は、一致しない `/` 名をインタラクティブターミナルセッションでのみこのように答えます。他のすべてのセッションでは、プロンプトを通常のメッセージとして Claude に送信し、コマンドが実行されなかったこと、および Claude がセッションで実行できるコマンドのリストを示します。これらのセッションには以下が含まれます。
+
+* `-p` 実行
+* [Agent SDK](/docs/ja/agent-sdk/overview) アプリケーション
+* [Desktop app](/docs/ja/desktop) の Code タブ
+* [VS Code extension](/docs/ja/vs-code) のチャットパネル
+* [クラウドセッション](/docs/ja/claude-code-on-the-web)と[ルーチン](/docs/ja/routines)
+
+これらのセッションの 1 つで実行できない組み込みコマンドの場合、Claude Code はコマンドが利用できないことを答えます。v2.1.274 より前は、クラウドセッションとルーチンのみが一致しない名前を Claude に送信していました。v2.1.273 より前は、それらも `Unknown command` で答えていました。
 
 Claude Code は、`/` で始まるすべてのプロンプトをコマンドとして扱うわけではありません。最初の単語の後の `/` が句読点で始まる場合（Lean ドキュメントコメントを開く `/--` など）、またはパス（`/var/log/syslog` など）である場合、プロンプトを通常のメッセージとして Claude に送信します。
 
@@ -2880,6 +3052,25 @@ GitHub isn't connected to your Claude account, so this repository can't be clone
 
 v2.1.268 より前は、Claude Code はこれを Claude GitHub App チェックの一時的な失敗として報告し、再試行またはアプリのインストールを提案していました。どちらも GitHub アカウントを接続しません。
 
+<h3 id="single-sign-on-authorization-needed">
+  単一サインオン認可が必要です
+</h3>
+
+[`/install-github-app`](/docs/ja/github-actions#quick-setup) を実行し、SAML シングルサインオンを強制する組織のリポジトリを選択しました。セットアップの前に、Claude Code は GitHub CLI を使用してリポジトリへのアクセスを確認し、GitHub はあなたの `gh` トークンがまだ組織に対して認可されていないため、そのチェックを拒否しました。ウィザードは警告を表示し、認可するステップを示します。
+
+```text theme={null}
+Single sign-on authorization needed
+<owner>/<repo> belongs to an organization that enforces SAML single sign-on, and your GitHub CLI token isn't authorized for it yet.
+```
+
+**対処方法：**
+
+* `gh auth refresh -h github.com -s repo,workflow` を実行して GitHub CLI ログインを再認可し、GitHub がシングルサインオンを求めるときに組織を認可してください。
+* `GH_TOKEN` で個人アクセストークンを認証する場合は、[github.com/settings/tokens](https://github.com/settings/tokens) を開き、トークンで **Configure SSO** を選択し、組織を認可してください。
+* `/install-github-app` を再度実行してください。
+
+v2.1.273 より前は、Claude Code はこの条件に対して `Admin permissions required` 警告を表示していました。
+
 <h3 id="failed-to-resume-the-conversation">
   会話の再開に失敗しました
 </h3>
@@ -2989,6 +3180,36 @@ Skill usage reports are not available on this connection.
 **対処方法：**
 
 * セッションが実行されているマシンのターミナルで `/skill-doctor` を実行するか、そこで `claude -p "/skill-doctor"` を実行してください。
+
+<h3 id="custom-output-styles-cant-be-selected-over-remote-control">
+  カスタム出力スタイルは Remote Control 経由で選択できません
+</h3>
+
+モバイルアプリまたは [Remote Control](/docs/ja/remote-control) 経由の Web から [`/output-style`](/docs/ja/output-styles#change-your-output-style) を実行しました。またはコマンドはセッションにリレーされたメッセージで到着しました。そのようなターンはアカウント所有者から来ない可能性があるため、Claude Code は[組み込みスタイル](/docs/ja/output-styles#built-in-output-styles)のみをリストして選択し、コマンドがスタイルをリストするか、指定した名前を認識しないときはいつでもこの通知を追加します。[カスタムスタイル](/docs/ja/output-styles#create-a-custom-output-style)名は、存在しない名前と同じ返信を取得します。
+
+```text theme={null}
+Custom output styles can't be selected over Remote Control or from a relayed message. Select one in the session itself, or pick a built-in style here.
+```
+
+**対処方法：**
+
+* 組み込みスタイルを選択してください。例えば `/output-style concise`。
+* カスタムスタイルを使用するには、プロジェクトの `.claude/settings.local.json` で [`outputStyle`](/docs/ja/settings-reference#outputstyle) を設定するか、セッション自体のターミナルがある場合はそこで `/output-style <style>` を実行してください。
+
+<h3 id="output-styles-are-saved-to-local-settings-which-this-session-doesnt-load">
+  出力スタイルはこのセッションが読み込まないローカル設定に保存されます
+</h3>
+
+このセッションの設定ソースが `local` を除外する `/output-style <style>` または `/config outputStyle=<style>` で[出力スタイル](/docs/ja/output-styles)を切り替えようとしました。例は、[`settingSources`](/docs/ja/agent-sdk/typescript#options) が `"local"` を除外する [Agent SDK](/docs/ja/agent-sdk/typescript) セッション、および [`--setting-sources`](/docs/ja/cli-reference#cli-flags) 値が `local` を除外する CLI セッションです。両方のコマンドはスタイルを `.claude/settings.local.json` に保存します。そのようなセッションは読み込まないため、Claude Code は効果がない設定を書き込む代わりに拒否します。
+
+```text theme={null}
+Output styles are saved to local settings (.claude/settings.local.json), which this session doesn't load, so the style can't be changed here.
+```
+
+**対処方法：**
+
+* セッションの設定ソースに `local` を追加して、もう一度切り替えてください。
+* [`outputStyle`](/docs/ja/settings-reference#outputstyle) キーをセッションが読み込む設定ファイル（プロジェクトの `.claude/settings.json` または `~/.claude/settings.json`）に設定してください。TypeScript SDK では、代わりにインライン `settings` オブジェクト内に `outputStyle` を設定してください。[出力スタイルをアクティブにする](/docs/ja/agent-sdk/modifying-system-prompts#activate-an-output-style)を参照してください。
 
 <h2 id="plugin-errors">
   プラグインエラー
@@ -3424,15 +3645,17 @@ v2.1.248 より前は、Claude Code はエンドポイントの所有ユーザ�
 
 Claude Code はファイルパスの [permission rules](/docs/ja/permissions#read-and-edit)をチェックし、ツールがファイルを開くか検索を開始するときに解決を再度確認します。パスがチェックが承認した場所にまだ導いていることを確認できない場合、Claude Code はそれに従う代わりに操作を拒否します。拒否はツール結果に表示されます。
 
-```text theme={null}
-Refusing to read /path/to/file: its symlink resolution changed after permission was checked. If a link in the working directory is being rewritten concurrently, stop that and retry.
+```text wrap theme={null}
+Refusing to read /path/to/file: its symlink resolution changed after permission was checked (a link on the way now leads somewhere the check did not see). If a link in the working directory is being rewritten concurrently, stop that and retry.
 ```
 
-パスの後のテキストは理由に名前を付けます。
+各拒否は理由に名前を付けます。
 
-* `its symlink resolution changed after permission was checked`: パスに沿ったシンボリックリンク、または Grep または Glob 検索ルートが、権限チェックと操作の間に置き換えられました
+* `its symlink resolution changed after permission was checked`: パスに沿ったシンボリックリンク、または Grep または Glob 検索ルートが、権限チェックと操作の間に置き換えられました。読み取り拒否では、括弧内のフレーズはどの比較が失敗したかを指定します。
 * `its parent-directory symlink resolution changed after permission was checked`: 書き込みパスが通過するディレクトリは、承認された場所にもはや解決されません
-* `it is a symbolic link. Write to the link's target path instead`: シンボリックリンクが承認された書き込み場所自体にあります
+* `it is a symbolic link. Write to the link's target path instead`: シンボリックリンクが承認された書き込み場所自体にあります。例えば、`CLAUDE.md` が `AGENTS.md` へのシンボリックリンクです。メッセージは Claude をリンクのターゲットに指示します
+* `Refusing to write through symlink: <path>. Resolve the symlink and pass the real target path explicitly.`: 別のライターがファイルを開くときに捕捉された同じ条件。例えば、シンボリックリンクされた `.mcp.json` への書き込み
+* `Refusing to write into symlinked directory: <path>`: ファイルを保持するディレクトリ自体がシンボリックリンクです。例えば、プロジェクトの `.claude/` ディレクトリが別の場所にリンクされています
 * `a path one of its Read deny rules is written through changed while the search was being prepared. Retry.`: `Read` deny ルールの検索がシンボリックリンクを通過するパスに名前を付け、そのリンクが Claude Code が検索を準備している間に変更されました
 * `it could not be opened (EACCES) — it is unreadable, or is being replaced concurrently.`: 検索ルートは存在しますが、開くことができませんでした。括弧内のコードはオペレーティングシステムエラーです
 * `its permission check expired before it ran (too many concurrent file operations). Retry.`: Claude Code は多くの同時ファイル操作の下で、ツールが使用する前に承認レコードを削除しました。再試行は新しい権限チェックを実行します
@@ -3443,9 +3666,10 @@ Refusing to read /path/to/file: its symlink resolution changed after permission 
 * 通常は何もしません。拒否は Claude にツール結果として到達し、拒否された操作は実行されません
 * シンボリックリンク拒否が 1 つのパスで繰り返される場合、ビルドツールやファイルウォッチャーなど、リンクをそこで書き直し続けるものを見つけるか、Claude にリンクされたものの代わりにファイルの解決されたパスを使用するよう依頼します
 * Claude Code が Windows 内の AppContainer または制限トークンサンドボックスで実行されている場合、この拒否がすべてのファイルに対して表示される場合は、v2.1.265 以降にアップグレードします
+* macOS でこの拒否がスクリーンショットをプロンプトにドラッグしたファイルなど、何も書き直していないファイルに対して表示される場合は、v2.1.273 以降にアップグレードします
 * ripgrep 拒否の場合、パッケージマネージャーで ripgrep をインストールして、`rg` が `PATH` 上の絶対パスに解決されるようにするか、作業ディレクトリの下で検索を保持します
 
-v2.1.251 より前は、Claude Code はファイル書き込みに対してのみパスの解決を再チェックしたため、権限チェック後に置き換えられたリンクは、メッセージなしで読み取りまたは検索を別の場所にリダイレクトする可能性がありました。これらの拒否のうち、親ディレクトリ書き込み拒否のみが以前のバージョンに表示されます。
+v2.1.251 より前は、Claude Code はファイル書き込みに対してのみパスの解決を再チェックしたため、権限チェック後に置き換えられたリンクは、メッセージなしで読み取りまたは検索を別の場所にリダイレクトする可能性がありました。これらの拒否のうち、親ディレクトリ、スルーシンボリンク、およびシンボリンクディレクトリ書き込み拒否のみが以前のバージョンに表示されます。
 
 <h3 id="task-output-swap-refused">
   Task output swap refused
@@ -3894,6 +4118,10 @@ v2.1.257 より前では、セッションは開始されたように見え、�
 Error: Claude Code process exited with code 1
 ```
 
+Windows では、ネイティブビルドはターンが完了した直後にコード `4294967295` で終了することがあります。その終了がターン境界に着地し、待機中のメッセージがなく、バックグラウンドタスクが実行されていない場合、[VS Code 拡張機能](/docs/ja/vs-code) はこのエラーを表示する代わりに、セッションを静かに閉じます。次のメッセージで会話が再開されます。
+
+v2.1.273 より前では、拡張機能は何も失われていないにもかかわらず、すべてのターン境界でそのエラーを表示していました。
+
 **対応方法：**
 
 * VS Code では、エラーと共に表示される **View output logs** リンクをクリックして、基盤となるエラーを確認してください
@@ -3916,6 +4144,21 @@ Failed to run Claude Code: Error: Could not locate the Claude CLI on PATH. Launc
 * VS Code の外で新しい PowerShell ウィンドウを開き、`where.exe claude` を実行してください。パスが出力されない場合、CLI は PATH にありません。[PATH を確認する](/docs/ja/troubleshoot-install#verify-your-path) に従ってインストールディレクトリを追加してください。パスが出力される場合、エントリは PowerShell プロファイルから、または VS Code がまだ取得していない PATH 変更から来ています。次の 2 つのステップがこれらのケースをカバーしています。
 * PATH エントリを PowerShell プロファイルではなく、ユーザーまたはシステム環境変数として設定してください。拡張機能はプロファイルを実行しないため、そこにのみ存在する PATH 編集は拡張機能に到達しません。
 * PATH を変更した後、VS Code を再起動してください。拡張機能は VS Code が起動時にキャプチャした PATH をチェックするため、PATH 変更は再起動後にのみ有効になります。
+
+<h3 id="the-connection-to-claude-code-ended-before-this-message-completed">
+  Claude Code への接続がこのメッセージの完了前に終了しました
+</h3>
+
+[VS Code 拡張機能](/docs/ja/vs-code) はメッセージを `claude` プロセスに送信し、プロセスが確認または完了する前に接続がエラーなしで終了しました。拡張機能はメッセージが処理されたかどうかを判断できないため、再度送信するよう求めます。
+
+```text theme={null}
+The connection to Claude Code ended before this message completed — it may not have been processed, so please send it again.
+```
+
+**対応方法：**
+
+* メッセージを再度送信してください。次のメッセージは会話を再開する新しい `claude` プロセスを開始します。
+* 繰り返される場合は、同じプロジェクトのターミナルで `claude` を実行してください。プロセスを終了し続ける失敗は通常、そこで実際のエラーメッセージと共に再現されます。
 
 <h2 id="rewind-warnings-and-errors">
   Rewind の警告とエラー

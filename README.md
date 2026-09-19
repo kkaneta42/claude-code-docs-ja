@@ -17,6 +17,325 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-09-19</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/accessibility-ja.md                  |   2 -
+ docs-ja/pages/agent-teams-ja.md                    |   4 +
+ docs-ja/pages/amazon-bedrock-ja.md                 |   2 +-
+ docs-ja/pages/artifacts-ja.md                      |   2 +-
+ docs-ja/pages/changelog.md                         |  96 ++-
+ docs-ja/pages/channels-reference-ja.md             |   2 +-
+ docs-ja/pages/claude-apps-gateway-deploy-ja.md     | 144 +++-
+ docs-ja/pages/claude-apps-gateway-ja.md            |  14 +-
+ docs-ja/pages/claude-apps-gateway-on-aws-ja.md     |   2 +-
+ docs-ja/pages/claude-apps-gateway-on-gcp-ja.md     |   2 +-
+ docs-ja/pages/claude-code-on-the-web-ja.md         |   8 +
+ docs-ja/pages/claude-directory-ja.md               | 113 ++--
+ docs-ja/pages/claude-projects-ja.md                |  74 ++-
+ docs-ja/pages/cloud-environments-ja.md             |  99 +--
+ docs-ja/pages/commands-ja.md                       |   3 +-
+ docs-ja/pages/context-window-ja.md                 |   2 +-
+ docs-ja/pages/corporate-launcher-ja.md             |   2 +-
+ docs-ja/pages/desktop-ja.md                        |  14 +-
+ docs-ja/pages/discover-plugins-ja.md               |  39 +-
+ docs-ja/pages/env-vars-ja.md                       | 739 +++++++++++----------
+ docs-ja/pages/errors-ja.md                         | 661 ++++++++++++------
+ docs-ja/pages/feature-availability-ja.md           |   5 +-
+ docs-ja/pages/glossary-ja.md                       |  10 +-
+ docs-ja/pages/headless-ja.md                       | 179 ++---
+ docs-ja/pages/how-claude-code-works-ja.md          |   2 +-
+ docs-ja/pages/interactive-mode-ja.md               |   2 +-
+ docs-ja/pages/llm-gateway-ja.md                    |   2 +-
+ docs-ja/pages/llm-gateway-protocol-ja.md           | 102 ++-
+ docs-ja/pages/llm-gateway-rollout-ja.md            |  24 +-
+ docs-ja/pages/managed-mcp-ja.md                    |  37 +-
+ docs-ja/pages/managed-settings-ja.md               |  16 +-
+ docs-ja/pages/mcp-ja.md                            |   4 +-
+ docs-ja/pages/memory-ja.md                         | 359 ++++++----
+ docs-ja/pages/mobile-ja.md                         |   9 +-
+ docs-ja/pages/output-styles-ja.md                  |   7 +-
+ docs-ja/pages/overview-ja.md                       |   2 +-
+ docs-ja/pages/permission-modes-ja.md               |  12 +-
+ docs-ja/pages/plugin-dependencies-ja.md            |   6 +-
+ docs-ja/pages/plugin-marketplaces-ja.md            |  33 +-
+ docs-ja/pages/plugin-relevance-ja.md               |   4 +-
+ docs-ja/pages/plugins-reference-ja.md              |  15 +-
+ docs-ja/pages/prompt-caching-ja.md                 |   2 +-
+ docs-ja/pages/remote-control-ja.md                 |   3 +-
+ docs-ja/pages/routines-ja.md                       |  85 ++-
+ docs-ja/pages/scheduled-tasks-ja.md                |   2 +-
+ .../pages/self-hosted-environments-deploy-ja.md    |  14 +-
+ .../pages/self-hosted-environments-reference-ja.md |   1 +
+ docs-ja/pages/server-managed-settings-ja.md        |   4 +-
+ docs-ja/pages/settings-reference-ja.md             | 640 +++++++++---------
+ docs-ja/pages/slack-ja.md                          |   4 +-
+ docs-ja/pages/sub-agents-ja.md                     |   2 +-
+ docs-ja/pages/tools-reference-ja.md                |   1 +
+ docs-ja/pages/ultrareview-ja.md                    |  43 +-
+ docs-ja/pages/vs-code-ja.md                        |   2 +
+ docs-ja/pages/web-quickstart-ja.md                 |   6 +-
+ docs-ja/pages/workflows-ja.md                      |  18 +-
+ 56 files changed, 2244 insertions(+), 1437 deletions(-)
+```
+
+<details>
+<summary>accessibility-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/accessibility-ja.md b/docs-ja/pages/accessibility-ja.md
+index 32668f1..c79d6f1 100644
+--- a/docs-ja/pages/accessibility-ja.md
++++ b/docs-ja/pages/accessibility-ja.md
+@@ -11,6 +11,4 @@ Claude Code には、ビジュアルターミナルインターフェースを
+ スクリーンリーダーモードはオプトインです。スクリーン拡大鏡、モーション削減、またはスクリーンリーダーの代わりにカラーブラインド対応テーマを使用する場合は、[アクセシビリティ設定](#accessibility-settings)テーブルから `CLAUDE_CODE_ACCESSIBILITY`、`prefersReducedMotion`、または `theme` を設定してください。スクリーンリーダーモードはターミナルインターフェースのみを適応させるため、VS Code 拡張機能のチャットパネルではこれを必要としません。Claude Code v2.1.236 以降では、拡張機能は設定なしで[スクリーンリーダーにコンバーセーション活動を通知](/docs/ja/vs-code#use-a-screen-reader)します。
+ 
+-スクリーンリーダーモードには Claude Code v2.1.181 以降が必要です。以前のバージョンは `--ax-screen-reader` フラグを `error: unknown option '--ax-screen-reader'` で拒否します。
+-
+ <h2 id="turn-on-screen-reader-mode">
+   スクリーンリーダーモードをオンにする
+```
+
+</details>
+
+<details>
+<summary>agent-teams-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/agent-teams-ja.md b/docs-ja/pages/agent-teams-ja.md
+index a6888da..fd98969 100644
+--- a/docs-ja/pages/agent-teams-ja.md
++++ b/docs-ja/pages/agent-teams-ja.md
+@@ -311,4 +311,8 @@ Claude Code は名前を付けた subagent 定義を読み取り、これらの
+ * **`mcpServers`**：分割ペインチームメンバーの場合、Claude Code は [そのフィールドのルール](/docs/ja/sub-agents#scope-mcp-servers-to-a-subagent) に従って定義の `mcpServers` を適用します。これは `--agent` で開始されたセッションもカバーします。インプロセスチームメンバーはフィールドを無視し、プロジェクトおよびユーザー設定から MCP サーバーをロードします。
+ 
++Claude がインプロセスチームメンバーにメッセージを送信し、そのチームメンバーがもう実行されていない場合、Claude Code はそれを同じセッション内に戻し、保存されている会話を復元し、メッセージを次のプロンプトとして提供します。セッションを再開した後、チームメンバーはこの方法では戻されません。[再開の制限](#limitations) に従います。
++
++Claude Code が戻すチームメンバーについて、プロジェクトの `.claude/agents/` ディレクトリまたは `--add-dir` ディレクトリから来た定義は、[エージェントファイルが存在するフォルダを信頼している](/docs/ja/permissions#what-runs-before-you-trust-a-folder) 場合にのみ再適用されます。親フォルダを信頼することはカウントされません。それまで、チームメンバーはすべてのインプロセスチームメンバーに Claude Code が追加するツールのみを保持して、定義のツールまたは指示なしで戻ります。[チームメンバーのエージェント定義が復元されませんでした](/docs/ja/errors#teammate-agent-definition-not-restored) を参照して、通知テキストを確認してください。
++
+ <h3 id="permissions">
+   権限
+```
+
+</details>
+
+<details>
+<summary>amazon-bedrock-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/amazon-bedrock-ja.md b/docs-ja/pages/amazon-bedrock-ja.md
+index 0a62bae..b1b8203 100644
+--- a/docs-ja/pages/amazon-bedrock-ja.md
++++ b/docs-ja/pages/amazon-bedrock-ja.md
+@@ -238,5 +238,5 @@ Claude Code は AWS SSO および企業 ID プロバイダーの自動認証情
+ ```
+ 
+-Claude Code v2.1.181 以降、`aws configure export-credentials --format process` からのフラット出力も受け入れられます。同じキーが `Credentials` の下にネストされるのではなく、トップレベルにあります。
++`aws configure export-credentials --format process` からのフラット出力も受け入れられます。同じキーが `Credentials` の下にネストされるのではなく、トップレベルにあります。
+ 
+ `Expiration` はオプションです。コマンドが有効な ISO 8601 `Expiration` を返すと、Claude Code はその時刻の 5 分前まで認証情報をキャッシュします。それがない場合、認証情報は 1 時間キャッシュされます。
+```
+
+</details>
+
+<details>
+<summary>artifacts-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/artifacts-ja.md b/docs-ja/pages/artifacts-ja.md
+index 50a55ac..0d54b43 100644
+--- a/docs-ja/pages/artifacts-ja.md
++++ b/docs-ja/pages/artifacts-ja.md
+@@ -292,5 +292,5 @@ Claude はダウンロード機能を公開の一部として宣言します。
+ </h2>
+ 
+-Claude がアーティファクトを構築する際、組み込みのデザインスキルを適用するため、ページは追加のプロンプトなしで意図的なパレット、タイポグラフィ、レイアウトを取得します。Claude Code v2.1.182 以降が必要です。そのスキルはまた、独自のものを選択する前に、プロジェクト内の既存のデザインシステムを探します。デザイントークンは、デザインシステムが再利用する名前付きの色、タイポグラフィ、スペーシング値です。アーティファクトを製品のブランディングと一致させるために、Claude が見つけられる場所（プロジェクトの [CLAUDE.md](/docs/ja/memory) またはリポジトリのテーマファイルなど）に記録します。
++Claude がアーティファクトを構築する際、組み込みのデザインスキルを適用するため、ページは追加のプロンプトなしで意図的なパレット、タイポグラフィ、レイアウトを取得します。そのスキルはまた、独自のものを選択する前に、プロジェクト内の既存のデザインシステムを探します。デザイントークンは、デザインシステムが再利用する名前付きの色、タイポグラフィ、スペーシング値です。アーティファクトを製品のブランディングと一致させるために、Claude が見つけられる場所（プロジェクトの [CLAUDE.md](/docs/ja/memory) またはリポジトリのテーマファイルなど）に記録します。
+ 
+ ```markdown theme={null}
+```
+
+</details>
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index c5b586a..c8982b9 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,98 @@
+ # Changelog
+ 
++## 2.1.277
++
++- Added AGENTS.md support: in a project with no CLAUDE.md, Claude Code reads AGENTS.md instead; change it under "Project instructions" in `/config` (not yet on Bedrock, Vertex or Foundry)
++- Added `CLAUDE_GATEWAY_PROXY_IS_EGRESS_BOUNDARY=1` for Claude apps gateways whose only egress is a forward proxy: every outbound request hands the proxy the hostname instead of resolving it locally
++- Added an optional `headers:` map on Claude apps gateway upstreams, to send static headers to a proxy you run in front of a provider
++- Added a line saying a background task's update is waiting when it finishes while a panel such as `/tasks` is open
++- Fixed `claude -p` and Agent SDK sessions that could hang with no result after an internal error; they now report the error and exit with code 1
++- Fixed conversations failing every request with "text content blocks must be non-empty" when an earlier assistant turn held an empty text block beside other content, including after `--resume`
++- Fixed being unexpectedly logged out when an older Claude Code build (for example an IDE extension's bundled CLI) runs on the same machine as the current one
++- Fixed interactive start-up hanging or showing an error for `ANTHROPIC_API_KEY` users when `~/.claude.json` holds a malformed `customApiKeyResponses` value
++- Fixed update checks erroring every 30 minutes, and `claude update` hanging when a minimum or maximum version is set, if a proxy returns an invalid version; a malformed `minimumVersion` is now ignored
++- Fixed `claude update` on winget- or apk-managed installs reporting "up to date" when the version lookup failed
++- Fixed `claude plugin install` sometimes failing and breaking the installed copy when reinstalling a plugin version that a session or another program was using; an unchanged copy is now left alone
++- Fixed Grep and Glob reporting no matches when the search could not start because the system was out of processes, memory or file handles; they now return an error saying so
++- Fixed the Write tool silently ending the turn as a declined permission when the target path is an existing directory; it now reports a clear error
++- Fixed the Edit tool treating an escaped backslash followed by `uXXXX` text as a `\uXXXX` escape, which could make an edit of a non-ASCII character rewrite an escaped backslash sequence instead
++- Fixed the Edit tool reporting "Invalid regular expression: regular expression too large" instead of "String not found in file" when a very large edit containing non-ASCII text did not match the file
++- Fixed a turn ending early with "Path contains null bytes" when a tool call's file path contained `\u0000` written as an escape sequence; escaped control characters now stay as literal text
++- Fixed background sessions (`claude --bg`) exiting when a plugin's LSP server exited or closed its stdin
++- Fixed a crash ("Type error") when opening `/mcp` or `/plugin manage` with a malformed `claudeAiMcpEverConnected` value in `~/.claude.json`
++- Fixed a crash at launch when `~/.claude.json` holds a malformed `theme` value
++- Fixed a crash ("unrecoverable interface error") when the prompt held text containing terminal color codes, for example a prompt recalled from history or text loaded from the external editor
++- Fixed a crash when resuming a session whose saved history holds an assistant message stored as a plain string
+```
+
+</details>
+
+<details>
+<summary>channels-reference-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/channels-reference-ja.md b/docs-ja/pages/channels-reference-ja.md
+index fe30200..3779119 100644
+--- a/docs-ja/pages/channels-reference-ja.md
++++ b/docs-ja/pages/channels-reference-ja.md
+@@ -510,5 +510,5 @@ Claude Code v2.1.234 以降のクライアントはまた、`description` と `i
+ マスキングはフィールドを受け取る人を変更しません。マスクされていない状態で残るものは、`--channels` または開発フラグでオプトインしたサーバーにのみ送信されます。両方のフィールドをクライアントフリートを制御しない限り信頼されないものとして扱います。
+ 
+-サーバーが返送する判定は `notifications/claude/channel/permission` で、2 つのフィールド：上記の ID を反映する `request_id` と、`'allow'` または `'deny'` に設定された `behavior`。Allow はツール呼び出しを続行させます。Deny はそれを拒否し、ローカルダイアログで No と答えるのと同じです。どちらの判定も将来の呼び出しに影響しません。
++サーバーが返送する判定は `notifications/claude/channel/permission` で、2 つのフィールド：上記の ID を反映する `request_id` と、`'allow'` または `'deny'` に設定された `behavior`。Allow はツール呼び出しを続行させます。Deny はそれを拒否します。どちらの判定も将来の呼び出しに影響しません。
+ 
+ <h3 id="add-relay-to-a-chat-bridge">
+```
+
+</details>
+
+<details>
+<summary>claude-apps-gateway-deploy-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/claude-apps-gateway-deploy-ja.md b/docs-ja/pages/claude-apps-gateway-deploy-ja.md
+index 87a9565..3ea1fd2 100644
+--- a/docs-ja/pages/claude-apps-gateway-deploy-ja.md
++++ b/docs-ja/pages/claude-apps-gateway-deploy-ja.md
+@@ -127,4 +127,29 @@ Google Cloud での完全な実装例（Cloud Run または GKE、Cloud SQL、Se
+ 各メカニズムがポリシーを保存する場所については [where each mechanism stores the policy](/docs/ja/managed-settings#where-each-mechanism-stores-the-policy) を参照し、Claude Desktop `bootstrapUrl` 相当については [Client-side managed settings](/docs/ja/claude-apps-gateway-config#client-side-managed-settings) を参照してください。
+ 
++<h3 id="large-rollouts">
++  大規模なロールアウト
++</h3>
++
++サインインはクライアント IP アドレスごとにレート制限されており、デフォルトは小規模なチームに適しています。各アドレスは 10 分ごとに 30 回のサインイン開始と 10 回のコード送信を取得します。数千人の開発者へのロールアウトは、次の 2 つの理由のいずれかで、最初の朝にこれらの制限に達する可能性があります：
++
++* **ゲートウェイはロードバランサーを超えて見ることができません。** [`listen.trusted_proxies`](/docs/ja/claude-apps-gateway-config#listen) がない場合、すべての開発者はロードバランサーのアドレスから来ているように見え、1 つの制限を共有します。他の何よりも先にそれを設定します。ゲートウェイは、`X-Forwarded-For` ヘッダーを無視する最初の時間に警告をログに記録します。
++* **多くの開発者が少数の NAT または VPN エグレスアドレスを共有しています。** `trusted_proxies` が正しい場合でも、それらのアドレスの制限を共有します。[`rate_limits`](/docs/ja/claude-apps-gateway-config#http-tuning) を引き上げて適合させます。
++
++`max` のサイズを決定するには、開発者をそれらが共有するエグレスアドレスで割ります。1 つの `window_seconds` 期間内にそれらのうち何人がサインインするかを推定します。デフォルトは 10 分です。その後、リトライと Claude Code と Claude Desktop の両方にサインインする開発者をカバーするために 2 倍にします。
++
++例えば、10,000 人の開発者が 4 つのエグレスアドレスの背後にあり、1 時間にわたって均等にサインインします。これは、アドレスごとに 2,500 人の開発者で、各 10 分ごとに約 420 人です。これを 2 倍にして 1,000 に切り上げます。以下の例は両方の制限を 1,000 に設定します：
++
++```yaml theme={null}
++rate_limits:
++  device_authorization: { max: 1000, window_seconds: 600 }
++  device_verify: { max: 1000, window_seconds: 600 }
++```
++
++`device_verify` は、別の開発者のサインインコードを推測するのを防ぐものであるため、推定が必要な限りだけそれを引き上げます。これらの制限でも、コードは 20 文字のアルファベットから 8 文字で、10 分後に期限切れになるため、推測は実用的なままです。[User-code brute-force resistance](#user-code-brute-force-resistance) を参照してください。
++
++IdP がリフレッシュトークンを発行する場合、Claude Code はセッションをサイレントに更新するため、ロールアウト後に制限を戻すことができます。リフレッシュトークンがない場合、開発者は [`session.ttl_hours`](/docs/ja/claude-apps-gateway-config#session) ごとに再度サインインします。その定常状態レートの両方の制限のサイズを決定し、それらを引き上げたままにします。
++
+```
+
+</details>
+
+<details>
+<summary>claude-apps-gateway-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/claude-apps-gateway-ja.md b/docs-ja/pages/claude-apps-gateway-ja.md
+index 7c73c54..438997b 100644
+--- a/docs-ja/pages/claude-apps-gateway-ja.md
++++ b/docs-ja/pages/claude-apps-gateway-ja.md
+@@ -431,7 +431,13 @@ OS ポリシー（HKLM レジストリポリシーまたは管理設定プリス
+ </h4>
+ 
+-1 つのロックを設定しても、他のロックは制限されません。各キーは[設定リファレンス](/docs/ja/settings-reference#all-settings)で文書化されています。勝者より下の管理ソースから、2 つのサンドボックスロックは引き続き適用され、`allowManagedPermissionRulesOnly` は引き続き親が提供した許可ルールと `additionalDirectories` をブロックします。hooks と MCP サーバーロック、および `allowManagedPermissionRulesOnly` の開発者独自のルールへの影響は、デフォルトで勝者ソースが必要です。[Claude Code が管理ソースを組み合わせる方法](/docs/ja/managed-settings#how-claude-code-combines-managed-sources)の `managedSourcesBehavior` マージオプトインの下で、Claude Code はすべてのロックについてすべてのソースが設定する最も厳密な値を適用します。[`policyHelper`](/docs/ja/settings-reference#policyhelper) フリートでは、ロックはヘルパーの出力からのみ読み取られます。
++1 つのロックを設定しても、他のロックは制限されません。各キーは[設定リファレンス](/docs/ja/settings-reference#all-settings)で文書化されています。勝者より下の管理ソースから、2 つのサンドボックスロックは引き続き適用され、`allowManagedPermissionRulesOnly` は引き続き親が提供した許可ルールと `additionalDirectories` をブロックします。Claude Code v2.1.273 以降では、MCP サーバーロックも勝者より下のソースから適用され、それがオンの間、管理 `allowedMcpServers` リストは最優先の管理ソースから来ます。
+ 
+-各ロックは Claude Code が開発者独自のエントリをその設定について無視するようにするため、組織の許可リストをロックの隣に含めます。空の管理ドメインリストでネットワークドメインをロックするとサンドボックス化された全アウトバウンドトラフィックがブロックされ、管理またはホストが提供した `allowedMcpServers` なしで MCP サーバーをロックすると、`deniedMcpServers` がブロックしないすべてのサーバーが読み込まれます。`allowRead` エントリは `denyRead` 領域内のパスのみを再許可するため、管理 `denyRead` とペアにします。
++hooks ロックと `allowManagedPermissionRulesOnly` の開発者独自のルールへの影響は、デフォルトで勝者ソースが必要です。[Claude Code が管理ソースを組み合わせる方法](/docs/ja/managed-settings#how-claude-code-combines-managed-sources)の `managedSourcesBehavior` マージオプトインの下で、Claude Code はすべてのロックについてすべてのソースが設定する最も厳密な値を適用します。[`policyHelper`](/docs/ja/settings-reference#policyhelper) フリートでは、ロックはヘルパーの出力からのみ読み取られます。
++
++各ロックは Claude Code が開発者独自のエントリをその設定について無視するようにするため、組織の許可リストをロックの隣に含めます。
++
++* **ネットワークドメイン**：空の管理ドメインリストでロックするとサンドボックス化された全アウトバウンドトラフィックがブロックされます。
++* **MCP サーバー**：管理またはホストが提供した `allowedMcpServers` なしでロックすると、`deniedMcpServers` がブロックしないすべてのサーバーが読み込まれます。
++* **読み取りパス**：`allowRead` エントリは `denyRead` 領域内のパスのみを再許可するため、管理 `denyRead` とペアにします。
+ 
+ <h4 id="settings-the-locks-don’t-cover">
+@@ -439,8 +445,8 @@ OS ポリシー（HKLM レジストリポリシーまたは管理設定プリス
+ </h4>
+ 
+-5 つのロックすべてが設定されていても、4 つの親が提供した設定がフィルターを通過します。デフォルトの最初の勝ちの設定の下で、親をブロックする管理値は最優先の管理ソースにあるものです。`managedSourcesBehavior` マージオプトインの下で、[Claude Code が管理ソースを組み合わせる方法](/docs/ja/managed-settings#how-claude-code-combines-managed-sources)は代わりにどのソースの値が適用されるかを示します。
++5 つのロックすべてが設定されていても、4 つの親が提供した設定がフィルターを通過します。デフォルトの最初の勝ちの設定の下で、親をブロックする管理値は最優先の管理ソースにあるものです。ただし、[MCP サーバーロック](#lock-behavior-across-sources)がオンの間は `allowedMcpServers` を除きます。`managedSourcesBehavior` マージオプトインの下で、[Claude Code が管理ソースを組み合わせる方法](/docs/ja/managed-settings#how-claude-code-combines-managed-sources)は代わりにどのソースの値が適用されるかを示します。
+ 
+ * **`forceLoginOrgUUID`**：最優先の管理ソースが組織 UUID を設定しない場合、Claude Code は親が提供した値を尊重します。ゲートウェイサインインはこのキーをチェックしないため、最初の当事者 Anthropic ログインも使用するフリートにのみ重要です。最優先の管理ソースの組織 UUID は親の値をブロックし、Claude Code が強制するものです。そこに `forceLoginOrgUUID` を設定します。
+-* **`allowedMcpServers`**：最優先の管理ソースが設定しない場合、Claude Code は親が提供した許可リストを尊重し、`allowManagedMcpServersOnly` はそれをブロックしません。ロックは勝者の許可リストを管理値として強制するため、最優先の管理ソースが設定しない場合は親が提供した許可リストを含みます。最優先の管理ソースのリストは親のリストをブロックし、Claude Code が強制するリストです。ロックの隣にそこに `allowedMcpServers` を設定します。v2.1.223 より前では、任意の管理ソースのいずれかのキーの値は親のリストをブロックしました。
++* **`allowedMcpServers`**：最優先の管理ソースが設定しない場合、Claude Code は親が提供した許可リストを尊重します。`allowManagedMcpServersOnly` はそれをブロックしません。ロックは勝者の許可リストを管理値として強制するため、最優先の管理ソースが設定しない場合は親が提供した許可リストを含みます。最優先の管理ソースのリストは親のリストをブロックし、Claude Code が強制するリストです。ロックの隣にそこに `allowedMcpServers` を設定します。v2.1.223 より前では、任意の管理ソースのいずれかのキーの値は親のリストをブロックしました。
+ * **`availableModels`**：勝者の管理ソースが設定しない場合、Claude Code は親が提供したモデルリストを尊重します。フリートがモデルを制限する場合、勝者ソースに `availableModels` を設定します。
+```
+
+</details>
+
+<details>
+<summary>claude-apps-gateway-on-aws-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/claude-apps-gateway-on-aws-ja.md b/docs-ja/pages/claude-apps-gateway-on-aws-ja.md
+index 234af77..0d91616 100644
+--- a/docs-ja/pages/claude-apps-gateway-on-aws-ja.md
++++ b/docs-ja/pages/claude-apps-gateway-on-aws-ja.md
+@@ -504,5 +504,5 @@ export PRIVATE_SUBNETS="<subnet-id-a> <subnet-id-b>"
+ | Bedrock がオンデマンドスループットがサポートされていないと言う `ValidationException` を返す                                                                              | カスタム `models:` エントリが、リージョンが推論プロファイルを通じてのみ提供する基盤モデル ID にマップされている                                                                                                                                                                                                                                                       | モデルをクロスリージョン推論プロファイル ID（`us.anthropic.*`）にマップしてください。組み込みカタログはすでにこれを行っています                                                                                                                                                                    |
+ | ECS タスクがゲートウェイがログに何も出力する前に `ResourceInitializationError` で停止する                                                                             | 実行ロールが Secrets Manager シークレットを読み取ることができない、またはプライベートサブネットが Secrets Manager または ECR へのパスを持たない                                                                                                                                                                                                                           | 実行ロールに 3 つの `gateway-` シークレット ARN に対する `secretsmanager:GetSecretValue` を付与し、NAT ゲートウェイ経由でエグレスを提供するか、NAT ゲートウェイなしで Secrets Manager、ECR、CloudWatch Logs のインターフェースエンドポイント（`awslogs` ドライバーが同じステージで必要とする）と S3 ゲートウェイエンドポイントを提供してください              |
+-| ゲートウェイブートが Postgres 接続タイムアウトエラーで終了する                                                                                                       | データベースセキュリティグループがゲートウェイのセキュリティグループを 5432 で許可していない、またはサービスがデータベースの VPC 外で実行されている。ストアは 5 秒後に待機を停止します                                                                                                                                                                                                                    | データベースのセキュリティグループでゲートウェイのセキュリティグループから 5432 を許可し、サービスを DB サブネットグループと同じ VPC で実行してください                                                                                                                                                          |
++| ゲートウェイブートが Postgres 接続タイムアウトエラーで終了する                                                                                                       | データベースセキュリティグループがゲートウェイのセキュリティグループを 5432 で許可していない、またはサービスがデータベースの VPC 外で実行されている                                                                                                                                                                                                                                       | データベースのセキュリティグループでゲートウェイのセキュリティグループから 5432 を許可し、サービスを DB サブネットグループと同じ VPC で実行してください                                                                                                                                                          |
+ | ゲートウェイブートが Postgres TLS 証明書検証エラーで終了する                                                                                                      | 接続文字列が `sslmode=verify-full` を設定しているが、イメージが RDS CA バンドルを信頼していない。バンドルがイメージにコピーされていない、または `NODE_EXTRA_CA_CERTS` がそれを指していない                                                                                                                                                                                              | ビルドステップの 2 つの Dockerfile 行を追加してバンドルをコピーし、`NODE_EXTRA_CA_CERTS` を設定してから、リビルドして新しいタグで プッシュし、再デプロイしてください                                                                                                                                        |
+ | ストリーミング応答が静止期間後にストリーム途中でドロップする                                                                                                             | v2.1.229 より前のゲートウェイが Bedrock または AWS 上の Claude Platform 上流で、上流が静止している間（例えば、ストリーム出力のない拡張思考中）は何も送信しません。ALB はデフォルトで 60 秒間データがない場合に接続を閉じるため、そのギャップでストリームを切断します。v2.1.229 以降のゲートウェイはそのタイムアウト下で静止したストリームを保持します。これらの上流では、ゲートウェイはストリームデータがない状態で約 15 秒経過すると SSE `ping` イベントを 1 回発行し、Anthropic API 上流ではゲートウェイは API 自体のピングをリレーします | ゲートウェイを v2.1.229 以降に更新するか、`idle_timeout.timeout_seconds` 属性を `3600` に設定してください。`modify-load-balancer-attributes` または EKS の `load-balancer-attributes` Ingress アノテーション経由で設定します                                                                 |
+```
+
+</details>
+
+<details>
+<summary>claude-apps-gateway-on-gcp-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/claude-apps-gateway-on-gcp-ja.md b/docs-ja/pages/claude-apps-gateway-on-gcp-ja.md
+index 488de45..c22e3cc 100644
+--- a/docs-ja/pages/claude-apps-gateway-on-gcp-ja.md
++++ b/docs-ja/pages/claude-apps-gateway-on-gcp-ja.md
+@@ -319,5 +319,5 @@ gcloud config set project "$PROJECT_ID"
+ | `--no-invoker-iam-check` が `invoker_iam_disabled is not currently available` で拒否される | `constraints/run.managed.requireInvokerIam` でブロック                                      | `--allow-unauthenticated` を使用します。`constraints/iam.allowedPolicyMemberDomains` 経由の Domain Restricted Sharing もそれをブロックする場合は、GKE トラックを使用します。これはネットワークレイヤーでゲートウェイを公開し、`allUsers` バインディングはありません。 |
+ | デプロイ時に `Container manifest type … must support amd64/linux`                         | イメージが非 amd64 ホストでビルドされたか、buildx が OCI イメージインデックスを発行した                                  | `--platform=linux/amd64 --provenance=false` でビルドします                                                                                                                                         |
+-| ゲートウェイブートが Cloud Run で Postgres 接続タイムアウトエラーで終了                                      | Service が VPC にアタッチされていないか、Cloud SQL がその VPC にプライベート IP がない。ストアは 5 秒後に待機を停止します         | Direct VPC egress 用に `--network` および `--subnet` でデプロイし、Cloud SQL インスタンスを `--no-assign-ip` および `--network` で同じ VPC を指すように作成します                                                               |
++| ゲートウェイブートが Cloud Run で Postgres 接続タイムアウトエラーで終了                                      | Service が VPC にアタッチされていないか、Cloud SQL がその VPC にプライベート IP がない                            | Direct VPC egress 用に `--network` および `--subnet` でデプロイし、Cloud SQL インスタンスを `--no-assign-ip` および `--network` で同じ VPC を指すように作成します                                                               |
+ | Agent Platform リクエストが `403 PERMISSION_DENIED` を返す                                   | ランタイムが `claude-gateway` service account を使用していないか、モデルが Model Garden でプロジェクト用に有効になっていない | Cloud Run で `--service-account` を設定するか、GKE で Workload Identity をバインドし、各 Claude モデルを Model Garden でターゲット地域用に有効にします                                                                           |
+ | ストリーミング応答が固定期間後に切断される                                                               | フロントエンドリクエストタイムアウト：GKE Ingress の背後のロードバランサーバックエンドサービスはデフォルトで 30 秒、Cloud Run は 300 秒    | GKE で `timeoutSec` を上げた BackendConfig をアタッチするか、Cloud Run で `--timeout=3600` でデプロイします                                                                                                        |
+```
+
+</details>
+
+*...以降省略*
+
+</details>
+
+
+<details>
 <summary>2026-09-18</summary>
 
 **変更ファイル:**
@@ -2551,284 +2870,6 @@ index b7cc83a..b580854 100644
 +- Fixed OpenTelemetry metrics and events from cloud sessions missing the `user.email`, `organization.id`, and `user.account_uuid` attributes
 +- Fixed MCP servers that disconnect while their tools are being listed at startup showing as connected with no tools instead of reporting the error
 +- Fixed the file edit permission dialog sometimes showing a changed line cut short with no indication
-```
-
-</details>
-
-<details>
-<summary>cross-session-messaging-en.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/cross-session-messaging-en.md b/docs-ja/pages/cross-session-messaging-en.md
-index f9f1019..132778f 100644
---- a/docs-ja/pages/cross-session-messaging-en.md
-+++ b/docs-ja/pages/cross-session-messaging-en.md
-@@ -123,5 +123,5 @@ Claude finds a message's target on its own, so you don't need to run anything be
- * **Subagents**: agents running inside the current session.
- * **Teammates**: this session's own [agent team](/docs/en/agent-teams) teammates. Before v2.1.239, teammates didn't appear in the listing, though Claude could already message them by name.
--* **Your other local sessions**: Claude Code sessions running on the same machine, including [background sessions](/docs/en/agent-view). A session appears only when it binds an [inbox socket](#the-sessions-inbox-socket). The worker process that the [supervisor process](/docs/en/agent-view#the-supervisor-process) keeps ready for your next background session appears once you dispatch work to it.
-+* **Your other local sessions**: Claude Code sessions running on the same machine, including [background sessions](/docs/en/agent-view). A session appears only when it binds an [inbox socket](#the-sessions-inbox-socket).
- * **Your cloud sessions**: your [Claude Code on the web](/docs/en/claude-code-on-the-web) sessions, shown while this session is connected to [Remote Control](/docs/en/remote-control). Claude Code labels them `cloud` in the listing.
- * **Your Remote Control sessions on other machines**: shown while this session is connected to [Remote Control](/docs/en/remote-control), and labeled `Remote Control`. Claude Code shows `offline` as the status of a session whose Remote Control connection has dropped.
-```
-
-</details>
-
-</details>
-
-
-<details>
-<summary>2026-09-02</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/changelog.md             | 112 +++++++++++++++++++++++++++++++++
- docs-ja/pages/context-window-ja.md     |   4 +-
- docs-ja/pages/managed-settings-en.md   |   2 +-
- docs-ja/pages/settings-example-en.md   |   4 +-
- docs-ja/pages/settings-reference-en.md | 101 ++++++++++++++++++++++-------
- 5 files changed, 194 insertions(+), 29 deletions(-)
-```
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index 921b4fb..b7cc83a 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,116 @@
- # Changelog
- 
-+## 2.1.258
-+
-+- Fixed Claude Code failing to launch on macOS 12 (Monterey), a regression introduced in 2.1.255
-+- Fixed remote and scheduled sessions failing with "user messages must have non-empty content" after a re-sent permission approval could not be applied
-+
-+## 2.1.257
-+
-+- Added Claude Fable 5.1 (`claude-fable-5-1`), now the default Fable model — 1M context, $10/$50 per Mtok with $0.25/Mtok cache reads
-+- Added "Time format" (`timeFormat`) and `timeZone` settings: 12-hour, 24-hour, 24-hour UTC, or a strftime pattern for the turn-end clock and transcript-view timestamps
-+- Added a Containment Escape rule to auto mode so cloud metadata-credential fetches, egress evasion, and cross-tenant reach are no longer auto-approved unless your environment marks them expected
-+- Added `CLAUDE_CODE_SUBAGENT_MODEL_FORCE` to apply `CLAUDE_CODE_SUBAGENT_MODEL` (or the main model) to every subagent, ignoring per-spawn and agent-definition model overrides
-+- Added `s` in `/effort` to change effort for the current session only, matching `/model`
-+- Added a `/doctor` warning for stale sandbox mask files left by a killed session
-+- Added a one-time prompt in auto mode before the first file read outside the working directories, with the option to block such reads (`permissions.blockReadsOutsideWorkingDirectories`)
-+- Added support for a gateway-supplied `description` on discovered `/model` picker entries (`CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY`); entries without one still read "From gateway"
-+- Fixed settings in a `.claude/` folder created after startup not being picked up until restart
-+- Fixed sessions dispatched from an agent view opened with `←` always starting in the original session's permission mode, overriding the target directory's `defaultMode` and the agent's `permissionMode`
-+- Fixed `keybindings.json` rebinds of Ctrl+G being ignored in `claude agents`; its Ctrl+S / Ctrl+T are now rebindable via the new `Agents` context
-+- Fixed background sessions failing to start on macOS npm installs during a self-update, and on Windows when a stale daemon lock file pointed at a reused process id
-+- Fixed the working spinner stopping while a response streams behind a slash-command panel
-+- Fixed a background session's `state.json` `detail` repeating its own dispatch prompt after a scheduled wake-up
-+- Fixed `claude agents` keeping a background session you re-prompted buried in Completed after it finished again; Completed now orders by the latest finish
-+- Fixed `claude --bg` from a directory that was just deleted reporting "backgrounded" and leaving a crashed session row; it now prints the reason and exits 1
-```
-
-</details>
-
-<details>
-<summary>context-window-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/context-window-ja.md b/docs-ja/pages/context-window-ja.md
-index 860a385..44d79e6 100644
---- a/docs-ja/pages/context-window-ja.md
-+++ b/docs-ja/pages/context-window-ja.md
-@@ -181,5 +181,5 @@ export const ContextWindow = () => {
-     vis: 'hidden',
-     desc: 'A PostToolUse hook in `settings.json` runs prettier after every file edit and reports back via `hookSpecificOutput.additionalContext`. That field enters Claude\'s context. Plain stdout on exit 0 does not. It is written to the debug log only.',
--    tip: 'Output JSON with `additionalContext` to send info to Claude. For PostToolUse hooks, exit code 2 surfaces stderr as an error but cannot block since the tool already ran. Keep output concise since it enters context without truncation.',
-+    tip: 'Output JSON with `additionalContext` to send info to Claude. For PostToolUse hooks, exit code 2 surfaces stderr as an error but cannot block since the tool already ran. Output over 10,000 characters is saved to a file; Claude gets a preview and the file path instead.',
-     link: '/en/hooks-guide'
-   }, {
-@@ -334,5 +334,5 @@ export const ContextWindow = () => {
-     vis: 'full',
-     desc: "You ran a shell command with the ! prefix to see which files Claude modified. The command and its output both enter context as part of your message. Useful for grounding Claude in command output without Claude running it.",
--    link: '/en/interactive-mode#bash-mode-with-prefix'
-+    link: '/en/interactive-mode#shell-mode-with-prefix'
-   }, {
-     t: 0.89,
-```
-
-</details>
-
-<details>
-<summary>managed-settings-en.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/managed-settings-en.md b/docs-ja/pages/managed-settings-en.md
-index 502de9a..7b21823 100644
---- a/docs-ja/pages/managed-settings-en.md
-+++ b/docs-ja/pages/managed-settings-en.md
-@@ -329,5 +329,5 @@ The table covers the permission, plugin, and delivery controls. For any key not
- | [`allowManagedHooksOnly`](/docs/en/settings-reference#allowmanagedhooksonly)                                               | When `true`, restricts which hooks run; see [what runs under `allowManagedHooksOnly`](/docs/en/settings-reference#what-runs-under-allowmanagedhooksonly) for the full effect list                                                                                                                                                                                                                                                                                                   |
- | [`allowManagedMcpServersOnly`](/docs/en/settings-reference#allowmanagedmcpserversonly)                                     | When `true`, only `allowedMcpServers` from managed settings are respected. `deniedMcpServers` still merges from all sources. See [Managed MCP configuration](/docs/en/managed-mcp)                                                                                                                                                                                                                                                                                                  |
--| [`allowManagedPermissionRulesOnly`](/docs/en/settings-reference#allowmanagedpermissionrulesonly)                           | Only managed permission rules apply; the entry lists every source it ignores                                                                                                                                                                                                                                                                                                                                                                                                   |
-+| [`allowManagedPermissionRulesOnly`](/docs/en/settings-reference#allowmanagedpermissionrulesonly)                           | Makes managed settings the only settings source of permission rules. The entry lists every source it ignores                                                                                                                                                                                                                                                                                                                                                                   |
- | [`blockedMarketplaces`](/docs/en/settings-reference#blockedmarketplaces)                                                   | Blocklist of marketplace sources. Blocked sources are checked before downloading, so they never touch the filesystem. See [managed marketplace restrictions](/docs/en/plugin-marketplaces#managed-marketplace-restrictions)                                                                                                                                                                                                                                                         |
- | [`channelsEnabled`](/docs/en/settings-reference#channelsenabled)                                                           | Allow [channels](/docs/en/channels) for the organization. See [enterprise controls](/docs/en/channels#enterprise-controls) for the default on each plan                                                                                                                                                                                                                                                                                                                                  |
-```
-
-</details>
-
-<details>
-<summary>settings-example-en.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/settings-example-en.md b/docs-ja/pages/settings-example-en.md
-index e78fca8..fa6917c 100644
---- a/docs-ja/pages/settings-example-en.md
-+++ b/docs-ja/pages/settings-example-en.md
-@@ -253,5 +253,5 @@ A `managed-settings.json` file that shows the shape of the managed keys, with on
- * `availableModels` and `enforceAvailableModels` restrict which models sessions can use
- * `permissions.deny` blocks two file reads and `curl`, and `disableBypassPermissionsMode` removes the bypass permission mode
--* `allowManagedPermissionRulesOnly` and `allowManagedMcpServersOnly` make the managed permission and MCP allowlists the only ones that apply
-+* [`allowManagedPermissionRulesOnly`](/docs/en/settings-reference#allowmanagedpermissionrulesonly) and [`allowManagedMcpServersOnly`](/docs/en/settings-reference#allowmanagedmcpserversonly) make the managed permission and MCP allowlists the only ones that apply
- * `allowedMcpServers` pins the MCP server by URL
- * `strictKnownMarketplaces` allows one plugin marketplace
-@@ -346,5 +346,5 @@ Administrators deploy a file like this as `managed-settings.json`, or the same J
-         "disableBypassPermissionsMode": "disable"
-       },
--      // Only managed permission rules apply
-+      // Ignore permission rules from user, project, and local settings
-       "allowManagedPermissionRulesOnly": true,
-       // Only the GitHub MCP server, matched by URL rather than by name, since a user can
-```
-
-</details>
-
-<details>
-<summary>settings-reference-en.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/settings-reference-en.md b/docs-ja/pages/settings-reference-en.md
-index cf6b752..f125a13 100644
---- a/docs-ja/pages/settings-reference-en.md
-+++ b/docs-ja/pages/settings-reference-en.md
-@@ -597,5 +597,5 @@ scope: "Which settings files can set the key: user (~/.claude/settings.json), pr
- | [`allowManagedHooksOnly`](#allowmanagedhooksonly)                                               | Run only the [hooks](/docs/en/hooks) your organization deploys                                                                                                                                                                   | Hooks and automation               | Managed                 |
- | [`allowManagedMcpServersOnly`](#allowmanagedmcpserversonly)                                     | Make the managed [MCP](/docs/en/mcp) allowlist the only one that applies                                                                                                                                                         | MCP                                | Managed                 |
--| [`allowManagedPermissionRulesOnly`](#allowmanagedpermissionrulesonly)                           | Make [managed settings](/docs/en/managed-settings) the only source of [permission rules](/docs/en/permissions#managed-settings)                                                                                                       | Permission settings                | Managed                 |
-+| [`allowManagedPermissionRulesOnly`](#allowmanagedpermissionrulesonly)                           | Make [managed settings](/docs/en/managed-settings) the only settings source of [permission rules](/docs/en/permissions#managed-settings)                                                                                              | Permission settings                | Managed                 |
- | [`alwaysThinkingEnabled`](#alwaysthinkingenabled)                                               | Turn [extended thinking](/docs/en/model-config#extended-thinking) off for every session                                                                                                                                          | Model and responses                | Any file                |
- | [`apiKeyHelper`](#apikeyhelper)                                                                 | Generate the [API credential](/docs/en/authentication#credential-management) with your own command                                                                                                                               | Authentication and providers       | Any file                |
-@@ -693,5 +693,5 @@ scope: "Which settings files can set the key: user (~/.claude/settings.json), pr
- | [`outputStyle`](#outputstyle)                                                                   | Change Claude's role, tone, and output format with an [output style](/docs/en/output-styles)                                                                                                                                     | Model and responses                | Any file                |
- | [`parentSettingsBehavior`](#parentsettingsbehavior)                                             | Apply or drop restrictions an [SDK or IDE host](/docs/en/managed-settings#let-an-embedding-host-add-policy) passes when you deploy [managed settings](/docs/en/managed-settings)                                                      | Enterprise and managed settings    | Managed                 |
--| [`permissionExplainerEnabled`](#permissionexplainerenabled)                                     | Turn off the Ctrl+E command explanation on shell [permission prompts](/docs/en/permissions#permission-system)                                                                                                                    | Global config settings             | Global config           |
-+| [`permissionExplainerEnabled`](#permissionexplainerenabled)                                     | Removed in v2.1.257, together with the `Ctrl+E` command explanation on shell permission prompts                                                                                                                             | Global config settings             | Global config           |
- | [`permissions`](#permissions)                                                                   | Set allow, ask, and deny rules and the starting [permission mode](/docs/en/permission-modes)                                                                                                                                     | Permission settings                | Any file                |
- | [`permissions.additionalDirectories`](#permissions-additionaldirectories)                       | Give Claude file access to [directories outside the current one](/docs/en/permissions#working-directories)                                                                                                                       | Permission settings                | Any file                |
-@@ -791,4 +791,6 @@ scope: "Which settings files can set the key: user (~/.claude/settings.json), pr
- | [`terminalTitleFromRename`](#terminaltitlefromrename)                                           | Stop [`/rename`](/docs/en/sessions#name-your-sessions) and `--name` from changing the terminal tab title                                                                                                                         | Interface and terminal             | Any file                |
- | [`theme`](#theme)                                                                               | Pick the interface [color theme](/docs/en/terminal-config#match-the-color-theme), built-in or custom                                                                                                                             | Interface and terminal             | Any file                |
-+| [`timeFormat`](#timeformat)                                                                     | Show the times in the interface on a 12-hour or 24-hour clock, in UTC, or with a strftime pattern                                                                                                                           | Interface and terminal             | Any file                |
-+| [`timeZone`](#timezone)                                                                         | Show the times in the interface in a time zone other than your system's                                                                                                                                                     | Interface and terminal             | Any file                |
- | [`tui`](#tui)                                                                                   | Choose the [fullscreen](/docs/en/fullscreen) or classic terminal renderer                                                                                                                                                        | Interface and terminal             | Any file                |
- | [`ultracode`](#ultracode)                                                                       | Have Claude plan a [workflow](/docs/en/workflows#let-claude-decide-with-ultracode) for each substantive task without being asked                                                                                                 | Model and responses                | Any file                |
-@@ -819,5 +821,5 @@ Pick which model answers when Claude calls the server-side [advisor tool](/docs/
- You don't usually edit this key by hand. Run `/advisor` to open a picker that shows the current choice, the models that can advise, and **No advisor**. Claude Code saves your pick to this key in `~/.claude/settings.json`. In a session attached to a remote worker, the pick applies to that session only.
- 
--To pick Fable, first accept the [usage-credits consent](/docs/en/advisor#fable-advisor-and-usage-credits) by running `/model fable`. Until you do, picking Fable in `/advisor` saves nothing and Claude Code tells you to run `/model fable` first.
-+If your account requires the [usage-credits consent](/docs/en/advisor#fable-advisor-and-usage-credits), accept it first by running `/model fable`. Until you do, picking Fable in `/advisor` saves nothing and Claude Code tells you to run `/model fable` first.
-```
-
-</details>
-
-</details>
-
-
-<details>
-<summary>2026-09-01</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/changelog.md                         |  7 ++
- docs-ja/pages/managed-settings-en.md               |  4 +-
- .../pages/self-hosted-environments-testing-en.md   |  6 +-
- docs-ja/pages/settings-example-en.md               |  2 +-
- docs-ja/pages/settings-reference-en.md             | 89 ++++++++++++++++------
- 5 files changed, 81 insertions(+), 27 deletions(-)
-```
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index b986e00..921b4fb 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,11 @@
- # Changelog
- 
-+## 2.1.252
-+
-+- Fixed Bash commands failing with "task output swap refused (tasks dir moved or linked)" on some Macs
-+- Fixed "always allow" not saving in a project that has no .claude/settings.local.json yet
-+- Fixed Remote Control sessions hosted by Claude Desktop or VS Code stalling for minutes after a tool finished when the connection to claude.ai was degraded
-+- Fixed background task notifications with very large failure output (for example git errors on a full disk) making the conversation exceed the API request size limit
-+
- ## 2.1.251
- 
-```
-
-</details>
-
-<details>
-<summary>managed-settings-en.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/managed-settings-en.md b/docs-ja/pages/managed-settings-en.md
-index f9aa752..502de9a 100644
---- a/docs-ja/pages/managed-settings-en.md
-+++ b/docs-ja/pages/managed-settings-en.md
-@@ -284,4 +284,6 @@ When the policy isn't applying, the `Setting sources` line tells you which of tw
- When a managed settings file, MDM profile, registry value, or server-managed payload fails schema validation, Claude Code first skips the individual entries it can repair, such as one invalid permission rule, with a warning for each, then drops any top-level key whose value still fails and keeps enforcing every remaining valid key. Claude Code is stricter with the `managedSettings` a [`policyHelper`](/docs/en/settings-reference#policyhelper) emits: it makes the same entry repairs, but any schema violation that survives fails the whole helper run, and at startup Claude Code refuses to start, the same as for a helper that exits non-zero. A managed settings file or drop-in file that isn't valid JSON contributes no settings at all; Claude Code reports it with the other validation errors and reads the remaining sources as usual.
- 
-+If a managed settings file or drop-in file can't be read or parsed and no other admin source supplies a policy, sessions signed in with claude.ai or Claude Console credentials exit at startup with a message to contact an administrator.
-+
- To find a dropped entry, look in one of three places:
- 
-@@ -307,5 +309,5 @@ A few enforcement keys aren't dropped when invalid. Claude Code enforces a stric
- | `sandbox.credentials`         | A recoverable invalid entry is degraded to `mode: "deny"` with a warning; an unrecoverable one is stripped; valid entries stay enforced. See [invalid credential entries](/docs/en/settings-reference#invalid-credential-entries-in-managed-settings)                                   |
- 
--`requiredMinimumVersion` and `requiredMaximumVersion` fail open by design: an invalid value is dropped rather than enforced, so a bad policy push can't prevent Claude Code from starting.
-+`requiredMinimumVersion` and `requiredMaximumVersion` fail open by design: an invalid value is dropped rather than enforced.
- 
- This tolerance applies only to managed settings. User, project, and local settings files remain strict: a file whose JSON or top-level shape fails validation is rejected as a whole and reported, and an individual entry that fails, such as a malformed permission rule, is skipped with a warning while the rest of the file applies.
-```
-
-</details>
-
-<details>
-<summary>self-hosted-environments-testing-en.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/self-hosted-environments-testing-en.md b/docs-ja/pages/self-hosted-environments-testing-en.md
-index 6413d48..4271fed 100644
---- a/docs-ja/pages/self-hosted-environments-testing-en.md
-+++ b/docs-ja/pages/self-hosted-environments-testing-en.md
-@@ -189,5 +189,7 @@ Both `claude -p ... --environment` and `claude -p ... --cloud` authenticate with
- ### Long-lived CI host
- 
--Run `claude auth login` once interactively on the machine that executes the script, using a dedicated user account for automation. The token lives in the OS keychain on macOS, or in `~/.claude/.credentials.json` on Linux and Windows. The CLI refreshes the short-lived access token automatically on each invocation, but the underlying refresh-token grant is capped at 30 days from the initial login, so re-run `claude auth login` interactively on that host every 30 days.
-+Run `claude auth login` once interactively on the machine that executes the script, using a dedicated user account for automation. Claude Code stores the token in the OS keychain on macOS, or in `~/.claude/.credentials.json` on Linux and Windows. On a macOS host whose Keychain can't be written, as is typical in an SSH session where the login Keychain stays locked, Claude Code stores the token in `~/.claude/.credentials.json` there too. See [Credential management](/docs/en/authentication#credential-management).
-+
-+The CLI refreshes the short-lived access token automatically on each invocation, but the underlying refresh-token grant is capped at 30 days from the initial login, so re-run `claude auth login` interactively on that host every 30 days.
- 
- ### Ephemeral CI runners
-@@ -205,5 +207,5 @@ Create and delete environments programmatically so each CI run gets a clean one;
- `$ADMIN_TOKEN` is a claude.ai OAuth access token for an account that holds an Owner role, minted the same way as [Authenticate from CI](#authenticate-from-ci):
- 
--* **Mint it**: run `claude auth login` with an account that holds an Owner role, then read the current access token from the OS keychain on macOS or `~/.claude/.credentials.json` on Linux and Windows.
-+* **Mint it**: run `claude auth login` with an account that holds an Owner role, then read the current access token from wherever [Long-lived CI host](#long-lived-ci-host) says Claude Code stored it.
- * **Read it fresh each run**: the CLI rotates the access token, and the same 30-day refresh-grant cap applies, so don't store a copy.
- * **Pass it via stdin**: as the example does, so the token never lands in curl's argument list or your build log.
 ```
 
 </details>

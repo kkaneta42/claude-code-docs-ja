@@ -176,6 +176,8 @@
   **予約名**：以下のマーケットプレイス名は Anthropic の公式使用のために予約されており、サードパーティのマーケットプレイスでは使用できません：`claude-code-marketplace`、`claude-code-plugins`、`claude-plugins-official`、`claude-plugins-community`、`claude-community`、`anthropic-marketplace`、`anthropic-plugins`、`agent-skills`、`anthropic-agent-skills`、`knowledge-work-plugins`、`life-sciences`、`claude-for-legal`、`claude-for-financial-services`、`financial-services-plugins`、`first-party-plugins`、`claude-tag-plugins`、`healthcare`。公式マーケットプレイスになりすましている名前（`official-claude-plugins` や `anthropic-plugins-v2` など）もブロックされています。これらの名前を予約することで、サードパーティのマーケットプレイスが Anthropic 公開ソースとして自らを提示することを防ぎます。
 
   Claude Code は、マーケットプレイスを追加するときだけでなく、マーケットプレイスをロードするたびに予約名を再チェックします。これらの名前の 1 つの下に登録されていたマーケットプレイスが、その名前が予約されるようになると、ロードが停止し、[信頼できないソースから登録されている](/docs/ja/errors#marketplace-is-registered-from-an-untrusted-source)ことを報告します。そのマーケットプレイスを削除し、公式 Anthropic ソースから再度追加してください。新しく予約された名前の影響を受けるサードパーティのマーケットプレイスは、別の名前の下で再度追加するとすぐにロードされます。v2.1.205 より前では、`first-party-plugins` と `healthcare` は予約されておらず、予約名の下に既に登録されているマーケットプレイスはロードされ続けていました。v2.1.265 より前では、`claude-tag-plugins` は予約されていませんでした。
+
+  マーケットプレイスに `npm`、`pip`、`uv`、`cargo`、`github`、または `gh` という名前を付けることもできません。大文字小文字は問いません。このチェックには Claude Code v2.1.275 以降が必要です。
 </Note>
 
 <h3 id="owner-fields">
@@ -282,7 +284,7 @@ Claude Code は、インストール済みの各プラグインをローカル�
 | `github`     | object                      | `repo`, `ref?`, `sha?`             |                                                                                                                                                                                   |
 | `url`        | object                      | `url`, `ref?`, `sha?`              | Git URL ソース                                                                                                                                                                       |
 | `git-subdir` | object                      | `url`, `path`, `ref?`, `sha?`      | git リポジトリ内のサブディレクトリ。スパース部分クローンを使用して、モノレポの帯域幅を最小化します                                                                                                                               |
-| `npm`        | object                      | `package`, `version?`, `registry?` | `npm install` でインストール                                                                                                                                                             |
+| `npm`        | object                      | `package`, `version?`, `registry?` | npm パッケージ。npm クライアントでフェッチされ、インストールスクリプトを実行せずに解凍されます                                                                                                                               |
 | `archive`    | object                      | `url`, `sha256?`                   | HTTPS でダウンロードされた zip アーカイブ。ユーザーのマシンに git や npm がなくても動作します。Claude Code v2.1.224 以降が必要です                                                                                            |
 | `command`    | object                      | `command`, `timeout?`, `mode?`     | ローカルコマンドを実行して生成されたプラグインディレクトリ。セッションごとに 1 回再実行して変更を反映します。Claude Code v2.1.229 以降が必要です                                                                                              |
 
@@ -437,7 +439,11 @@ GitHub、GitLab、Bitbucket を含むほとんどの git ホストでは、ブ�
   npm パッケージ
 </h3>
 
-npm パッケージとして配布されるプラグインは `npm install` を使用してインストールされます。これは公開 npm レジストリまたはチームがホストするプライベートレジストリ上の任意のパッケージで機能します。
+npm ソースは、公開 npm レジストリまたはチームがホストするプライベートレジストリ上の任意のパッケージに名前を付けることができます。Claude Code は npm クライアントでパッケージを解決し、tarball をダウンロードして、プラグインキャッシュに解凍します。
+
+パッケージのインストールスクリプト（`preinstall` や `postinstall` など）は実行されず、フェッチ中に依存関係はインストールされません。
+
+パッケージが `package.json` の隣にサポートされているロックファイルを配布する場合、Claude Code はそれらの[Node.js パッケージ依存関係](/docs/ja/plugins-reference#node-js-package-dependencies)を別のステップでインストールし、スクリプトも無効にします。そうでない場合は、必要なすべてのものが既に構築されたプラグインを公開します。他のパッケージが必要な MCP サーバーは、`npx` を通じて起動でき、最初の実行時にそれらをインストールします。
 
 ```json theme={null}
 {
@@ -1152,6 +1158,8 @@ GitHub 所有者の下のすべてのマーケットプレイスリポジトリ�
 
 ホワイトリストの正確なマッチングは、末尾のスラッシュ、`.git` サフィックス、または `ssh://` と `https://` スキームのみが異なる URL を異なる値として扱います。organization のマーケットプレイスが複数の URL 形式でクローンできる場合、リテラル URL よりも `hostPattern` エントリを優先して、`https://`、`ssh://`、および `user@host:path` 形式がすべてマッチするようにします。
 
+[claude.ai でホストされているマーケットプレイス](/docs/ja/discover-plugins#add-from-claude-ai) はホストでマッチされます。`hostPattern` エントリが `claude.ai` にマッチする場合、`strictKnownMarketplaces` と `blockedMarketplaces` の両方でそれを管理します。ホワイトリストでは、そのようなエントリはメンバーの個人的な claude.ai アップロードを許可しません。Claude Code v2.1.273 以降が必要です。
+
 `strictKnownMarketplaces` は [マネージド設定](/docs/ja/managed-settings) で設定されるため、個々のユーザーとプロジェクト設定はこれらの制限をオーバーライドできません。
 
 サポートされているすべてのソースタイプと `extraKnownMarketplaces` との比較を含む完全な設定詳細については、[strictKnownMarketplaces reference](/docs/ja/settings-reference#strictknownmarketplaces) を参照してください。
@@ -1353,10 +1361,11 @@ URL はスキームを含める必要があります。Claude Code v2.1.196 以�
 
 **オプション：**
 
-| オプション                 | 説明                                                                                                                         | デフォルト  |
-| :-------------------- | :------------------------------------------------------------------------------------------------------------------------- | :----- |
-| `--scope <scope>`     | マーケットプレイスを宣言する場所：`user`、`project`、または `local`。[プラグインインストールスコープ](/docs/ja/plugins-reference#plugin-installation-scopes)を参照してください | `user` |
-| `--sparse <paths...>` | Git スパースチェックアウト経由で特定のディレクトリにチェックアウトを制限します。モノレポに便利です                                                                        |        |
+| オプション                 | 説明                                                                                                                          | デフォルト  |
+| :-------------------- | :-------------------------------------------------------------------------------------------------------------------------- | :----- |
+| `--scope <scope>`     | マーケットプレイスを宣言する場所：`user`、`project`、または `local`。[プラグインインストールスコープ](/docs/ja/plugins-reference#plugin-installation-scopes)を参照してください  | `user` |
+| `--sparse <paths...>` | Git スパースチェックアウト経由で特定のディレクトリにチェックアウトを制限します。モノレポに便利です                                                                         |        |
+| `--claudeai`          | 引数をソースではなく、[claude.ai でホストされているマーケットプレイス](/docs/ja/discover-plugins#add-from-claude-ai)の名前として読み取ります。Claude Code v2.1.273 以降が必要です |        |
 
 GitHub から `owner/repo` ショートハンドを使用してマーケットプレイスを追加します。
 
@@ -1400,6 +1409,14 @@ claude plugin marketplace add acme-corp/claude-plugins --scope project
 claude plugin marketplace add acme-corp/monorepo --sparse .claude-plugin plugins
 ```
 
+`claude plugin marketplace list` の `From claude.ai:` セクションに表示されている名前で、[claude.ai でホストされているマーケットプレイス](/docs/ja/discover-plugins#add-from-claude-ai)を追加します。
+
+```bash theme={null}
+claude plugin marketplace add --claudeai claudeai-organization-library
+```
+
+`--claudeai` を使用すると、コマンドは `--scope` と `--sparse` を拒否します。マーケットプレイスはアカウント用にホストされており、設定ファイルで宣言されていないため、プロジェクトの `.claude/settings.json` 経由で共有することはできません。
+
 <h3 id="plugin-marketplace-list">
   プラグインマーケットプレイスリスト
 </h3>
@@ -1417,6 +1434,10 @@ claude plugin marketplace list [options]
 | `--json` | JSON として出力 |
 
 `--json` を使用すると、各エントリには `name`、`source`、マーケットプレイスが保存されているローカルキャッシュパスを含む `installLocation` フィールド、およびソース固有のフィールドが含まれます：GitHub ソースの場合は `repo`、Git および URL ソースの場合は `url`、ローカルソースの場合は `path`。GitHub および Git ソースには、マーケットプレイスが固定されたブランチまたはタグで追加された場合、`ref` フィールドも含まれます。
+
+追加された [claude.ai マーケットプレイス](/docs/ja/discover-plugins#add-from-claude-ai)にはローカルクローンがないため、そのエントリは `installLocation` の代わりに claude.ai 識別子である `marketplaceId` と `organizationUuid` を含みます。
+
+[プラグインが claude.ai アカウントから同期される](/docs/ja/plugins-reference#synced-plugins)ターミナルセッションでは、テキストリストの末尾に `From claude.ai:` セクションがあり、追加したマーケットプレイスを超えて claude.ai がアカウント用にリストしているものを名前で示します。それらの 1 つを追加するには、[claude.ai から追加](/docs/ja/discover-plugins#add-from-claude-ai)を参照してください。`--json` 出力は設定されたマーケットプレイスのみをカバーし、そのセクションは除外されます。Claude Code v2.1.273 以降が必要です。
 
 <h3 id="plugin-marketplace-remove">
   プラグインマーケットプレイス削除

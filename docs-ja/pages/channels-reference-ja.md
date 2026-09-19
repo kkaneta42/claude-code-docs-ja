@@ -509,7 +509,7 @@ Claude Code v2.1.234 以降のクライアントはまた、`description` と `i
 
 マスキングはフィールドを受け取る人を変更しません。マスクされていない状態で残るものは、`--channels` または開発フラグでオプトインしたサーバーにのみ送信されます。両方のフィールドをクライアントフリートを制御しない限り信頼されないものとして扱います。
 
-サーバーが返送する判定は `notifications/claude/channel/permission` で、2 つのフィールド：上記の ID を反映する `request_id` と、`'allow'` または `'deny'` に設定された `behavior`。Allow はツール呼び出しを続行させます。Deny はそれを拒否し、ローカルダイアログで No と答えるのと同じです。どちらの判定も将来の呼び出しに影響しません。
+サーバーが返送する判定は `notifications/claude/channel/permission` で、2 つのフィールド：上記の ID を反映する `request_id` と、`'allow'` または `'deny'` に設定された `behavior`。Allow はツール呼び出しを続行させます。Deny はそれを拒否します。どちらの判定も将来の呼び出しに影響しません。
 
 <h3 id="add-relay-to-a-chat-bridge">
   チャットブリッジにリレーを追加
