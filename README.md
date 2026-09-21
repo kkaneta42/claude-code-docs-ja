@@ -17,6 +17,68 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-09-21</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/artifacts-ja.md | 6 +++---
+ docs-ja/pages/commands-ja.md  | 2 +-
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+```
+
+<details>
+<summary>artifacts-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/artifacts-ja.md b/docs-ja/pages/artifacts-ja.md
+index 0d54b43..0f1b4d4 100644
+--- a/docs-ja/pages/artifacts-ja.md
++++ b/docs-ja/pages/artifacts-ja.md
+@@ -310,5 +310,5 @@ Claude はデザインシステムを独自の選択肢より高い優先度と
+ </h2>
+ 
+-UI、画面フロー、ランディングページ、またはポスターをモックアップするために、ページを構築するのではなく、`/design` をブリーフと共に実行します。Claude はデザインを 1 つのキャンバス上のアートボードとして作成し、Claude Design のエディターの研究プレビューを実行するアーティファクトとしてキャンバスを公開します。ブリーフは描画する内容を指定します。
++UI、画面フロー、ランディングページ、またはポスターをモックアップするために、ページを構築するのではなく、`/design` をブリーフと共に実行します。Claude はデザインを 1 つのキャンバス上のアートボードとして作成し、キャンバスを Design アーティファクトとして公開します。ブリーフは描画する内容を指定します。
+ 
+ ```text wrap theme={null}
+@@ -316,7 +316,7 @@ UI、画面フロー、ランディングページ、またはポスターをモ
+ ```
+ 
+-公開されたアーティファクトを開いてアートボードを確認します。アカウントで保存が有効になっている場合は、アートボード上の要素を選択して変更し、保存して新しいバージョンを公開します。それ以外の場合は、ドラフトを表示してPNG または PDF としてエクスポートします。
++公開されたアーティファクトをデスクトップブラウザーで開いてアートボードを確認します。アートボード上の要素を選択して変更すると、編集は自動的に保存されます。各アートボードを PNG または PDF としてエクスポートできます。
+ 
+-`/design` は [アーティファクトが利用可能](#availability) なセッションと Claude Code v2.1.234 以降が必要です。
++`/design` は [アーティファクトが利用可能](#availability) なセッションと Claude Code v2.1.265 以降が必要です。
+ 
+ <h2 id="page-constraints">
+```
+
+</details>
+
+<details>
+<summary>commands-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/commands-ja.md b/docs-ja/pages/commands-ja.md
+index aafb3ba..710b6c2 100644
+--- a/docs-ja/pages/commands-ja.md
++++ b/docs-ja/pages/commands-ja.md
+@@ -80,5 +80,5 @@ Claude が応答中にコマンドを送信した場合、Claude Code はそれ
+ | `/debug [description]`                                                                                       | **[Skill](/docs/ja/skills#bundled-skills).** 現在のセッションのデバッグログを有効にし、セッションデバッグログを読んで問題をトラブルシューティングします。デバッグログはデフォルトではオフです。`claude --debug` で開始した場合を除き、セッション中に `/debug` を実行するとその時点からログのキャプチャを開始します。オプションで問題を説明して分析に焦点を当てます                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+ | `/deep-research <question>`                                                                                  | **[Workflow](/docs/ja/workflows#bundled-workflows).** 質問に関する Web 検索を展開し、ソースを取得して相互確認し、引用されたレポートを合成します                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+-| `/design [brief]`                                                                                            | **[Skill](/docs/ja/skills#bundled-skills).** UI モックアップ、スクリーンフロー、ランディングページ、またはポスターを 1 つのキャンバス上のアートボードとしてドラフトし、Claude Design のエディターの研究プレビューを実行する[アーティファクト](/docs/ja/artifacts#draft-a-design-canvas)として公開します。たとえば `/design a settings screen for a mobile banking app`。アカウントで保存が有効な場合、キャンバス上のアートボードを編集して新しいバージョンを公開するために保存します。そうでない場合は、ドラフトを表示して PNG または PDF としてエクスポートします。[アーティファクトが利用可能](/docs/ja/artifacts#availability)なセッションと Claude Code v2.1.234 以降が必要です。Anthropic API で利用可能です。Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、および Claude Platform on AWS では、アーティファクトが利用できないため、コマンドはそこで利用できません                                                                                                                                                                                                                                                                                                                                                                                                                  |
++| `/design [brief]`                                                                                            | **[Skill](/docs/ja/skills#bundled-skills).** UI モックアップ、スクリーンフロー、ランディングページ、またはポスターを 1 つのキャンバス上のアートボードとしてドラフトし、Design [アーティファクト](/docs/ja/artifacts#draft-a-design-canvas)として公開します。たとえば `/design a settings screen for a mobile banking app`。デスクトップブラウザでアートボードを編集し、編集は自動的に保存されます。各アートボードを PNG または PDF としてエクスポートできます。[アーティファクトが利用可能](/docs/ja/artifacts#availability)なセッションと Claude Code v2.1.265 以降が必要です。Anthropic API で利用可能です。Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、および Claude Platform on AWS では、アーティファクトが利用できないため、コマンドはそこで利用できません                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+ | `/design-login`                                                                                              | claude.ai アカウントで `/design-sync` のデザインシステムアクセスを認可します                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+ | `/design-sync [hint]`                                                                                        | **[Skill](/docs/ja/skills#bundled-skills).** リポジトリの React デザインシステムを変換して [Claude Design](https://claude.ai/design) にアップロードし、生成するデザインが実際のコンポーネントを使用するようにします。オプションでデザインシステムに名前を付けます。たとえば `/design-sync Acme DS`。初回同期はすべてのコンポーネントを検証し、大規模なリポジトリでは数時間かかる場合があります。Anthropic API で利用可能です。Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、および Claude Platform on AWS では、基盤となるツールが claude.ai に到達できないため、コマンドは利用できません。[Claude apps gateway](/docs/ja/claude-apps-gateway#availability-and-limitations) 経由でも利用できません                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-09-20</summary>
 
 **変更ファイル:**
@@ -2759,82 +2821,6 @@ index b580854..3bd3615 100644
 +- Fixed model switching being blocked for the session when an organization-managed plugin's marketplace could not be loaded
 +- Fixed SDK-provided MCP servers (e.g. Desktop connectors) sometimes missing from the first turn and only appearing on the next one
 +- Fixed Claude in Chrome tools failing with "Not connected" mid-task in cloud-hosted claude.ai sessions when a connector was added or removed
-```
-
-</details>
-
-<details>
-<summary>managed-settings-en.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/managed-settings-en.md b/docs-ja/pages/managed-settings-en.md
-index 7b21823..f396f95 100644
---- a/docs-ja/pages/managed-settings-en.md
-+++ b/docs-ja/pages/managed-settings-en.md
-@@ -273,5 +273,7 @@ When Claude Code found a managed source on the machine and didn't select it, a s
- When the policy isn't applying, the `Setting sources` line tells you which of two problems you have:
- 
--* **The line is missing**: Claude Code found no managed source that delivers a policy key. If you deployed a managed settings file, check that it sits at the path for the OS, that it's valid JSON, and that it contains a [policy key](#how-claude-code-combines-managed-sources) rather than only the control keys.
-+* **The line is missing**: Claude Code found no managed source that delivers a policy key.
-+
-+  If you deployed a managed settings file, check that it sits at the path for the OS and that it contains a [policy key](#how-claude-code-combines-managed-sources) rather than only the control keys. A file that isn't valid JSON doesn't produce this state; Claude Code [refuses to start](#find-entries-claude-code-dropped) instead.
- 
-   When you deployed through server-managed settings instead, run `claude doctor`, which reports the [fetch outcome](/docs/en/server-managed-settings#verify-settings-delivery).
-@@ -282,7 +284,21 @@ When the policy isn't applying, the `Setting sources` line tells you which of tw
- ### Find entries Claude Code dropped
- 
--When a managed settings file, MDM profile, registry value, or server-managed payload fails schema validation, Claude Code first skips the individual entries it can repair, such as one invalid permission rule, with a warning for each, then drops any top-level key whose value still fails and keeps enforcing every remaining valid key. Claude Code is stricter with the `managedSettings` a [`policyHelper`](/docs/en/settings-reference#policyhelper) emits: it makes the same entry repairs, but any schema violation that survives fails the whole helper run, and at startup Claude Code refuses to start, the same as for a helper that exits non-zero. A managed settings file or drop-in file that isn't valid JSON contributes no settings at all; Claude Code reports it with the other validation errors and reads the remaining sources as usual.
-+When a managed settings file, MDM profile, registry value, or server-managed payload fails schema validation, Claude Code first skips the individual entries it can repair, such as one invalid permission rule, with a warning for each, then drops any top-level key whose value still fails and keeps enforcing every remaining valid key.
-+
-+Claude Code is stricter with the `managedSettings` a [`policyHelper`](/docs/en/settings-reference#policyhelper) emits: it makes the same entry repairs, but any schema violation that survives fails the whole helper run, and at startup Claude Code refuses to start, the same as for a helper that exits non-zero.
-+
-+When a managed settings file, drop-in file, MDM plist, or HKLM registry value is present but can't be parsed as a JSON object, Claude Code refuses to start and prints [an error naming the source](/docs/en/errors#managed-settings-document-could-not-be-parsed), even when another admin source delivers a valid policy. Each source fails this way when:
-+
-+* **Managed settings file or drop-in file**: the file isn't valid JSON, or its top level isn't an object
-+* **MDM plist**: macOS's `plutil` reports the plist malformed, or its converted content isn't a JSON object
-+* **HKLM registry value**: the `Settings` value isn't a string, is empty, or doesn't hold a JSON object
-+
-+Three source states don't cause this refusal:
-+
-+* An absent file, profile, or registry value isn't a failure; Claude Code runs without that source.
-```
-
-</details>
-
-<details>
-<summary>self-hosted-environments-deploy-en.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/self-hosted-environments-deploy-en.md b/docs-ja/pages/self-hosted-environments-deploy-en.md
-index 186f418..13c08c3 100644
---- a/docs-ja/pages/self-hosted-environments-deploy-en.md
-+++ b/docs-ja/pages/self-hosted-environments-deploy-en.md
-@@ -423,4 +423,6 @@ If tool traffic must stay inside your network, run the equivalent tools as local
- A session holding a background task that never finishes doesn't count as idle, so `--release-idle-session-min` won't release that session's slot. A session that's waiting on an approval requested from inside a running tool call also doesn't count as idle. Always set `--kill-session-after-min` alongside it as a hard backstop so no session can hold a slot indefinitely.
- 
-+`--kill-session-after-min` is a backstop for runaway sessions. The runner terminates any session that reaches the limit, even one someone is still using, so set the flag well above your longest expected session, such as `--kill-session-after-min 480` for 8 hours. To free slots from conversations that go idle, use `--release-idle-session-min` instead.
-+
- ### Additional limitations
- 
-```
-
-</details>
-
-<details>
-<summary>self-hosted-environments-reference-en.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/self-hosted-environments-reference-en.md b/docs-ja/pages/self-hosted-environments-reference-en.md
-index 4d1a4d3..4ee3e7c 100644
---- a/docs-ja/pages/self-hosted-environments-reference-en.md
-+++ b/docs-ja/pages/self-hosted-environments-reference-en.md
-@@ -38,5 +38,5 @@ Most flags have a corresponding environment variable. When both are set, the fla
- | `--health-port <port>`                    | `SELF_HOSTED_RUNNER_HEALTH_PORT`                  | `8080`                        | Port for the `/healthz` and `/metrics` listener. Set `0` to disable.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
- | `--hooks-dir <path>`                      | `SELF_HOSTED_RUNNER_HOOKS_DIR`                    | unset                         | Directory of lifecycle hook scripts. See [Lifecycle hooks](/docs/en/self-hosted-environments-configuration#lifecycle-hooks).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
--| `--kill-session-after-min <n>`            | `SELF_HOSTED_RUNNER_MAX_LIFETIME_MS`              | `0`                           | Terminate a session child once it has lived N minutes wall-clock, as a safety limit for stuck sessions. The runner terminates the session's process tree, including any commands the session left running. The runner defers a kill that falls mid-turn until the turn finishes, for at most the [`SELF_HOSTED_RUNNER_MAX_LIFETIME_GRACE_MS`](#environment-variable-only-settings) window. `0` disables.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-+| `--kill-session-after-min <n>`            | `SELF_HOSTED_RUNNER_MAX_LIFETIME_MS`              | `0`                           | Terminate a session child once it has lived N minutes wall-clock, as a safety limit for stuck sessions. The runner terminates the session's process tree, including any commands the session left running. The runner defers a kill that falls mid-turn until the turn finishes, for at most the [`SELF_HOSTED_RUNNER_MAX_LIFETIME_GRACE_MS`](#environment-variable-only-settings) window. To choose a value, see [Some sessions don't count as idle](/docs/en/self-hosted-environments-deploy#some-sessions-don’t-count-as-idle). `0` disables.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
- | `--lock-to-account <id>`                  | `SELF_HOSTED_RUNNER_LOCK_TO_ACCOUNT`              | unset                         | Pre-lock the runner to a specific account at startup instead of locking on first session. Accepts an email address or `user_...` ID in the environment's organization. A pre-locked runner never picks up Claude Tag channel sessions, which have no account.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
- | `--log-file <path>`                       | `SELF_HOSTED_RUNNER_LOG_FILE`                     | unset                         | Mirror runner logs to a file in addition to stdout and stderr, created with `0600` permissions. Required for `self-hosted-runner doctor` to tail logs locally.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 ```
 
 </details>
