@@ -3168,6 +3168,8 @@ claude.ai の使用制限がセッションを停止した後、開いている�
 
 Bash コマンドが Git リポジトリで変更するファイルを Claude Code が記録するかどうかを選択します。記録する場合、コマンド後にターミナルでそれらのファイルの diff が表示され、[PostToolUse Bash フック](/docs/ja/hooks#bash)は変更されたファイルのリストを受け取ります。
 
+リストされたファイルは常にコマンドが変更したものとは限りません。コマンドの実行中に別のプログラムまたは別の Bash 呼び出しが行った変更もそこに表示される可能性があります。
+
 キーを `true` に設定して、すべての権限モードで記録します。Claude Code v2.1.269 以降が必要です。
 
 * **スコープ**: [`ユーザーまたはマネージド`](#scopes)。`true` はユーザー設定、`--settings` で渡された JSON、または[マネージド設定](/docs/ja/managed-settings)からのみカウントされるため、リポジトリの `.claude/settings.json` または `.claude/settings.local.json` の `true` は記録をオンにできません。リポジトリファイルの `false` は、[より高い優先度](/docs/ja/settings#settings-precedence)のファイルが `true` を設定しない限り、引き続きオフになります。

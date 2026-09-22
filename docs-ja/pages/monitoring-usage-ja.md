@@ -123,6 +123,7 @@ v2.1.217 より前では、すべての変数は独立してキーごとの設�
 | `OTEL_LOG_ASSISTANT_RESPONSES`                      | `assistant_response` イベントでアシスタント応答テキストのログを有効にする (デフォルト: 無効)。設定されていない場合、`OTEL_LOG_USER_PROMPTS` の値にフォールバックします。Claude Code v2.1.193 以降が必要です                                                                                                                                                                                                                                                               | `1` で有効化、`0` でマスク状態を保持                                                                                     |
 | `OTEL_LOG_TOOL_DETAILS`                             | ツールイベントおよびトレーススパン属性でツールパラメーターと入力引数のログを有効にする: Bash コマンド、MCP サーバーとツール名、スキル名、ユーザー作成ワークフロー名、ツール入力。また、`user_prompt` イベントでカスタム、プラグイン、MCP コマンド名を有効にします (デフォルト: 無効)。Claude Desktop の組み込みサーバーの場合、Claude Desktop が所有するセッションでは、フラグがオフでも `mcp_server_name`/`mcp_tool_name` は `tool_decision`/`tool_result` で出力されます。この例外には Claude Code v2.1.214 以降が必要です                                                              | `1` で有効化                                                                                                   |
 | `OTEL_LOG_TOOL_CONTENT`                             | [`tool.output` スパンイベント](#tool-output-span-event)でツールコンテンツのログを有効にする (デフォルト: 無効)。スパン属性は[独自のゲート](#new-context-gates)の下でツールコンテンツを含みます。[トレース](#traces-beta)が必要です。コンテンツはコンテンツ制限で切り詰められます (デフォルト: 60 KB)                                                                                                                                                                                                       | `1` で有効化                                                                                                   |
+| `OTEL_LOG_MANAGED_SETTINGS`                         | マスク処理された管理設定と、マスク処理前の設定の SHA-256 ダイジェストを [管理設定解決](#managed-settings-resolved-event)イベントに追加します (デフォルト: 無効)。プロジェクトまたはローカル設定の値はそれをオンにしません。Claude Code v2.1.274 以降が必要です                                                                                                                                                                                                                                     | `1` で有効化                                                                                                   |
 | `OTEL_LOG_RAW_API_BODIES`                           | Anthropic Messages API リクエストとレスポンス JSON 全体を `api_request_body` / `api_response_body` ログイベントとして出力します (デフォルト: 無効)。ボディには会話履歴全体が含まれます。これを有効にすることは、`OTEL_LOG_USER_PROMPTS`、`OTEL_LOG_TOOL_DETAILS`、および `OTEL_LOG_TOOL_CONTENT` が明かすすべてのものに同意することを意味します                                                                                                                                                       | `1` でコンテンツ制限で切り詰められたインラインボディ (デフォルト: 60 KB)、または `file:<dir>` でディスク上の切り詰められていないボディと、イベント内の `body_ref` ポインター |
 | `CLAUDE_CODE_OTEL_CONTENT_MAX_LENGTH`               | コンテンツ制限: モデルレスポンス、ツールコンテンツ、システムプロンプト、生 API ボディなどのコンテンツを含む属性の最大長 (UTF-16 コード単位、デフォルト: 61440、つまり 60 KB)。デフォルトは 64 KB で属性値をキャップするバックエンド向けにサイズ設定されています。バックエンドがより大きな値を受け入れる場合はそれを上げるか、テレメトリ量を削減するために下げてください。OpenTelemetry SDK 属性制限 `OTEL_ATTRIBUTE_VALUE_LENGTH_LIMIT` またはそのログレコードおよびスパンバリアントがより低い値に設定されている場合、Claude Code はその小さい値で切り詰めるため、`[TRUNCATED ...]` マーカーは SDK 制限内に留まります。Claude Code v2.1.214 以降が必要です | `262144`                                                                                                   |
 | `OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE` | メトリクスの時間性設定 (デフォルト: `delta`)。バックエンドが累積時間性を期待する場合は `cumulative` に設定                                                                                                                                                                                                                                                                                                                                      | `delta`、`cumulative`                                                                                       |
@@ -241,6 +242,7 @@ Agent SDK および `claude -p` セッションでは、`TRACEPARENT` が環境�
 | `workflow.run_id`                | このエージェントを生成した [Workflow](/docs/ja/workflows) ツール実行の実行識別子。`wf_` で始まります。ワークフローによって生成されていないエージェントでは存在しません                                                                                                          |                                |
 | `workflow.name`                  | このエージェントを生成したワークフローの名前。ユーザー作成名はゲートが設定されていない限り `custom` に置き換えられます                                                                                                                                           | `OTEL_LOG_TOOL_DETAILS`        |
 | `speed`                          | `fast` または `normal`                                                                                                                                                                                        |                                |
+| `effort`                         | [リクエストに適用される努力レベル](/docs/ja/model-config#adjust-effort-level): `low`、`medium`、`high`、`xhigh`、または `max`。Claude Code が努力レベルを送信しない場合は存在しません。例えば、努力をサポートしていないモデルの場合。Claude Code v2.1.274 以降が必要です                    |                                |
 | `llm_request.context`            | 親スパンに応じて `interaction`、`tool`、または `standalone`                                                                                                                                                             |                                |
 | `duration_ms`                    | 再試行を含む実時間                                                                                                                                                                                                  |                                |
 | `ttft_ms`                        | 最初のトークンまでの時間 (ミリ秒単位)                                                                                                                                                                                       |                                |
@@ -708,12 +710,12 @@ Claude Code は OpenTelemetry ログ/イベント経由で以下のイベント�
 
 ユーザーがプロンプトを送信すると、Claude Code は複数の API 呼び出しを行い、いくつかのツールを実行する可能性があります。`prompt.id` 属性を使用すると、これらすべてのイベントを、それらをトリガーした単一のプロンプトに結び付けることができます。
 
-| 属性                  | 説明                                                                                                                                                                                                                                                                                                         |
-| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `prompt.id`         | 単一のユーザープロンプト処理中に生成されたすべてのイベントをリンクする UUID v4 識別子                                                                                                                                                                                                                                                            |
-| `event.sequence`    | イベントを順序付けするための 0 ベースのカウンター。セッションごとではなく Claude Code プロセスごとにカウント                                                                                                                                                                                                                                             |
-| `message.uuid`      | セッショントランスクリプト（`~/.claude/projects/*/*.jsonl` ファイル）に保持されるメッセージの UUID。`assistant_response` に存在し、コマンドディスパッチを除く `user_prompt` に存在します。コマンドディスパッチはゼロまたは多くのメッセージを生成できます。`assistant_response` では、これは応答の最終トランスクリプトエントリであり、次のターンの `parentUuid` がこれからチェーンされます。Claude Code v2.1.214 以降が必要                              |
-| `client_request_id` | `x-client-request-id` リクエストヘッダーとして送信されるクライアント生成 UUID。ファーストパーティ API 接続の `api_request` および `api_error` に存在します。サードパーティプロバイダーバックエンドおよびリクエストが非ストリーミングフォールバック経由で再試行された場合は存在しません。リクエストをその応答とペアリングし、サーバー `request_id` を生成しなかったタイムアウトなどの障害に対して利用可能なままです。`llm_request` トレーススパンの同じ属性と一致します。Claude Code v2.1.214 以降が必要 |
+| 属性                  | 説明                                                                                                                                                                                                                                                                                                                                                               |
+| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `prompt.id`         | 単一のユーザープロンプト処理中に生成されたすべてのイベントをリンクする UUID v4 識別子                                                                                                                                                                                                                                                                                                                  |
+| `event.sequence`    | イベントを順序付けするための 0 ベースのカウンター。セッションごとではなく Claude Code プロセスごとにカウント                                                                                                                                                                                                                                                                                                   |
+| `message.uuid`      | セッショントランスクリプト（`~/.claude/projects/*/*.jsonl` ファイル）に保持されるメッセージの UUID。`assistant_response`、`api_response_body` に存在し、コマンドディスパッチを除く `user_prompt` に存在します。コマンドディスパッチはゼロまたは多くのメッセージを生成できます。`assistant_response` および `api_response_body` では、これは応答の最終トランスクリプトエントリであり、次のターンの `parentUuid` がこれからチェーンされます。Claude Code v2.1.214 以降が必要。または `api_response_body` では v2.1.274 以降 |
+| `client_request_id` | `x-client-request-id` リクエストヘッダーとして送信されるクライアント生成 UUID。ファーストパーティ API 接続の `api_request` および `api_error` に存在します。サードパーティプロバイダーバックエンドおよびリクエストが非ストリーミングフォールバック経由で再試行された場合は存在しません。リクエストをその応答とペアリングし、サーバー `request_id` を生成しなかったタイムアウトなどの障害に対して利用可能なままです。`llm_request` トレーススパンの同じ属性と一致します。Claude Code v2.1.214 以降が必要                                                       |
 
 単一のプロンプトによってトリガーされたすべてのアクティビティをトレースするには、特定の `prompt.id` 値でイベントをフィルタリングします。これにより、user\_prompt イベント、すべての api\_request イベント、およびそのプロンプト処理中に発生したすべての tool\_result イベントが返されます。
 
@@ -721,8 +723,8 @@ Claude Code は OpenTelemetry ログ/イベント経由で以下のイベント�
 
 メッセージレベルの再構成の場合、各イベントクラスはセッショントランスクリプトのフィールドと一致するキーを持ちます。トランスクリプトエントリ形式は [Claude Code に内部的](/docs/ja/sessions#where-transcripts-are-stored) であり、バージョン間で変わるため、これらのフィールドで結合するパイプラインはリリースで破損する可能性があります。結合を安定した契約ではなくバージョン固有として扱います。
 
-* `message.uuid` on `user_prompt` and `assistant_response`
-* `request_id` on the API events, persisted as `requestId` on the transcript's assistant entries
+* `message.uuid` on `user_prompt`、`assistant_response`、および `api_response_body`
+* `request_id` on the API events、persisted as `requestId` on the transcript's assistant entries
 * `tool_use_id` on `tool_result` and `tool_decision` events
 
 <h4 id="user-prompt-event">
@@ -1342,6 +1344,63 @@ Claude Code が保持期間を安全に決定できない場合、スイープ�
 * `files_past_cutoff`: 保持期間より古いファイル。スイープが削除に失敗。例えば、権限エラーまたは開いているファイルのため。ゼロ以上の値は、ファイルが設定された保持期間を超えたことを意味します。ゼロは、ディレクトリ削除全体の失敗が代わりに `error_count` にカウントされるため、何もしなかったことの証明ではありません
 * `error_count`: スイープがファイルをリストまたは削除しながら遭遇したエラーの数
 
+<h4 id="managed-settings-resolved-event">
+  管理設定解決イベント
+</h4>
+
+セッションが解決した [管理設定](/docs/ja/managed-settings): セッション開始時に 1 回、セッション中に管理設定または [ポリシーヘルパー](/docs/ja/managed-settings#compute-the-policy-with-a-helper-program) の状態が変わるときに再度、Claude Code がセッションを開始することを拒否するか、`error.type` 属性がリストする理由の 1 つでセッションを終了するときに。
+このイベントを使用して、予期しない管理ソースで実行されているマシン、ポリシーヘルパーが失敗しているマシン、マシンが開始を拒否した理由を見つけます。
+Claude Code v2.1.274 以降が必要です。
+
+デフォルトでは、イベントは管理ソースとポリシーヘルパーの状態を持ちますが、設定自体は持ちません。リダクションされた `managed_settings.settings` 属性と `managed_settings.resolved_sha256` ダイジェストを追加するには、`OTEL_LOG_MANAGED_SETTINGS=1` を設定します。
+
+* 管理設定、ユーザー設定、または `--settings` の `env` ブロック、または Claude Code を起動する環境で設定します。プロジェクトまたはローカル設定の値は有効にしません。クローンされたリポジトリはそれらを書き込むことができるため。
+* サーバー管理設定は、変数が組織が既に受け取るイベントに組織自体のリダクションされたポリシーのみを追加するため、[セキュリティ承認ダイアログ](/docs/ja/server-managed-settings#security-approval-dialogs) を表示せずに設定できます。
+
+信頼していないフォルダ内のインタラクティブセッションでは、Claude Code は拒否イベントをエクスポートしません。プロジェクトおよびローカル設定はエクスポートを別のコレクターにポイントできるため、[信頼](/docs/ja/permissions#what-runs-before-you-trust-a-folder) する前に。
+
+**イベント名**: `claude_code.managed_settings_resolved`
+
+**属性**:
+
+* すべての [標準属性](#standard-attributes)
+* `event.name`: `"managed_settings_resolved"`
+* `event.timestamp`: ISO 8601 タイムスタンプ
+* `event.sequence`: イベント順序付けのためのプロセスごとのカウンター。[イベント相関属性](#event-correlation-attributes) で説明
+* `managed_settings.trigger`: セッション開始イベントの場合は `"startup"`、セッション中に管理設定またはポリシーヘルパーの状態が変わった場合は `"change"`、管理設定ポリシーがセッションを停止した場合は `"refused"`。Claude Code は、属性が前のイベントから異なる場合のみ `change` イベントを送信し、変更された設定値は `OTEL_LOG_MANAGED_SETTINGS` がオフの場合でもカウントされます
+* `error.type`: Claude Code がセッションを停止した理由。`refused` イベントにのみ存在:
+  * `"helper_failed"`: [ポリシーヘルパー実行が失敗](/docs/ja/settings-reference#helper-failures)
+  * `"policy_invalid"`: 管理設定にエラーが含まれており、Claude Code が開始できない、またはアドミンソースが読み込めないため、Claude Code は組織ログイン強制をチェックできません
+  * `"consent_rejected"`: ユーザーがサーバー管理設定の [セキュリティ承認ダイアログ](/docs/ja/server-managed-settings#security-approval-dialogs) を拒否しました
+  * `"force_refresh_failed"`: [`forceRemoteSettingsRefresh`](/docs/ja/settings-reference#forceremotesettingsrefresh) が必要とする設定フェッチが失敗しました
+  * `"gateway_rejected"`: [Claude アプリゲートウェイ](/docs/ja/claude-apps-gateway) が管理設定ロードに HTTP 403 で応答しました
+  * `"version_below_minimum"`: この Claude Code バージョンは [`requiredMinimumVersion`](/docs/ja/settings-reference#requiredminimumversion) より下、または [`requiredMaximumVersion`](/docs/ja/settings-reference#requiredmaximumversion) より上です
+  * `"_OTHER"`: Claude アプリゲートウェイ管理設定ロードが別の理由で失敗しました
+* `managed_settings.sources`: [ポリシーキー](/docs/ja/managed-settings#how-claude-code-combines-managed-sources) を少なくとも 1 つ配信するすべての管理ソース。優先度が最も高い順。`first-wins` の下で効果を持たないソースを含む。値は `"remote"`、`"plist"` または `"hklm"` は MDM または OS レベルのポリシー、`"file"` は管理設定ファイルおよびドロップイン、`"parent"` は [埋め込みホスト](/docs/ja/managed-settings#let-an-embedding-host-add-policy) が設定を提供する場合、`"hkcu"` は Claude Code が [読み取る](/docs/ja/managed-settings#how-claude-code-combines-managed-sources) 場合の [Windows HKCU レジストリ値](/docs/ja/managed-settings#where-each-mechanism-stores-the-policy)。ポリシーキーのみを持つソース、または Claude Code が読み取れなかったソースはリストされていません。文字列の配列として発行。管理ソースがポリシーキーを配信しない場合は空
+* `managed_settings.source_behavior`: Claude Code が読み取った [`managedSourcesBehavior`](/docs/ja/settings-reference#managedsourcesbehavior) 値。`"first-wins"` または `"merge"`。キーが設定されていない場合は `"first-wins"`
+* `managed_settings.helper.state`: 選択された MDM またはファイルソースが設定するポリシーヘルパーの状態:
+  * `"ok"`: ヘルパーの出力が管理設定として機能
+  * `"bad_path"`、`"not_a_file"`、`"exit_nonzero"`、`"timed_out"`、`"oversize"`、`"parse_failed"`、`"envelope_invalid"`、または `"schema_rejected"`: ヘルパーの最後の実行が失敗。[ヘルパー障害](/docs/ja/settings-reference#helper-failures) はケースを説明
+  * `"none"`: ヘルパーが設定されていない、またはそれを設定するソースが MDM ポリシーまたは管理設定ファイルではない
+* `managed_settings.helper.applied`: ヘルパーの独自の出力が管理設定として機能する場合は `"output"`。そうでない場合は `"none"`
+* `managed_settings.helper.entry`: Claude Code が [`policyHelper`](/docs/ja/settings-reference#policyhelper) を選択した場合は `"policyHelper"`。ヘルパーを選択しなかった場合は存在しません
+* `managed_settings.helper.path`: ヘルパーの設定された [`path`](/docs/ja/settings-reference#policyhelper-path)。Claude Code がヘルパーを選択したときはいつでも存在。`OTEL_LOG_MANAGED_SETTINGS` が設定されているかどうかに関わらず
+* `managed_settings.resolved_sha256`（`OTEL_LOG_MANAGED_SETTINGS=1` の場合）: リダクション前の解決された管理設定の SHA-256。JSON としてシリアル化。キーは再帰的にソートされ、空白なし。同じダイジェストを持つマシンは同じポリシーを実行します。Claude Code は短いポリシーを推測をハッシュすることで回復できるため、オプトインでのみダイジェストを送信します。管理設定が解決されない場合は存在しません。`refused` イベントでは存在しません
+* `managed_settings.settings`（`OTEL_LOG_MANAGED_SETTINGS=1` の場合）: 解決された管理設定の名前と形状。値はリダクションされます。JSON 文字列として。`refused` イベントでは存在しません。Claude Code はその設定スキーマから構築します:
+
+  * スキーマが宣言する設定名はエクスポートされ、スキーマが宣言しないキーは除外されます
+  * ブール値、数値、および文字列値。スキーマが `permissions.defaultMode` などの固定オプションセットに制限する場合、そのままエクスポートされます。`sandbox.network.httpProxyPort` および `sandbox.network.socksProxyPort` は `"[REDACTED]"` としてエクスポートされます
+  * その他のすべての文字列。`model`、`apiKeyHelper`、すべての `env` 値、すべての URL、およびすべてのコマンドは `"[REDACTED]"` としてエクスポートされます
+  * マップのエントリ名。`env` 変数名およびプラグイン ID はそのままエクスポートされます。スキーマが入力をタイプしない設定。`vimInsertModeRemaps` などは単一の `"[REDACTED]"` としてエクスポートされ、`sandbox.ignoreViolations` はコマンドパターンなしでそのパスリストのリストとしてエクスポートされます
+  * リストはその長さを保持し、各エントリは同じルールでリダクションされます
+  * `permissions.allow`、`permissions.deny`、または `permissions.ask` ルールは、ツール名がこのバージョンの Claude Code に組み込まれている場合、またはそのツール名がリダクションされたコンテンツを持つ `mcp__` 参照（`mcp__jira__create_issue` など）である場合、そのツール名としてエクスポートされます。その他のルールは `"[REDACTED]"` としてエクスポートされます
+  * フックは同じルールに従うため、`type` および `timeout` などの固定オプションおよび数値フィールドが表示されます。各コマンド、URL、`matcher`、および `if` 条件は `"[REDACTED]"` としてエクスポートされます
+
+  例えば、`apiKeyHelper`、2 つの `env` 変数、および拒否ルールを持つ管理設定は `{"apiKeyHelper":"[REDACTED]","env":{"HTTPS_PROXY":"[REDACTED]","CLAUDE_CODE_ENABLE_TELEMETRY":"[REDACTED]"},"permissions":{"deny":["Read([REDACTED])"]}}` としてエクスポートされます。
+
+  Claude Code は値を 8 KB の UTF-8 で切り詰め、切り詰められた値は有効な JSON ではありません
+* `managed_settings.settings_truncated`（`managed_settings.settings` が存在する場合）: Claude Code が `managed_settings.settings` を 8 KB で切り詰めた場合は `true`。それ以外の場合は `false`。ブール値として発行。文字列ではなく
+
 <h2 id="interpret-metrics-and-events-data">
   メトリクスとイベントデータの解釈
 </h2>
@@ -1460,15 +1519,16 @@ export OTEL_RESOURCE_ATTRIBUTES="enduser.id=jdoe@example.com,enduser.directory_i
 
 検出ルールを構築する場合、監視したいシグナルを検索し、対応するイベントと属性についてバックエンドをクエリします：
 
-| シグナル                    | イベント                                                                    | キー属性                                                       |
-| ----------------------- | ----------------------------------------------------------------------- | ---------------------------------------------------------- |
-| ツール呼び出しが許可または拒否され、何によって | `tool_decision`                                                         | `decision`、`source`、`tool_name`、`tool_parameters`          |
-| 権限モードのエスカレーション          | `permission_mode_changed`                                               | `from_mode`、`to_mode`、`trigger`                            |
-| ポリシーフックがアクションをブロック      | `hook_execution_complete`                                               | `hook_event`、`num_blocking`                                |
-| ログイン、ログアウト、認証失敗         | `auth`                                                                  | `action`、`success`、`error_category`                        |
-| MCP サーバー接続または失敗         | `mcp_server_connection`                                                 | `status`、`server_name`、`is_plugin`、`error_code`            |
-| プラグインがインストールされ、そのソース    | `plugin_installed`                                                      | `plugin.name`、`marketplace.name`、`marketplace.is_official` |
-| 実行されたコマンドとタッチされたファイル    | `tool_result`（実行）または `tool_decision`（拒否）（`OTEL_LOG_TOOL_DETAILS=1` の場合） | `tool_parameters`；`tool_input`（`tool_result` のみ）           |
+| シグナル                                               | イベント                                                                    | キー属性                                                                                                                                                                                                                                        |
+| -------------------------------------------------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ツール呼び出しが許可または拒否され、何によって                            | `tool_decision`                                                         | `decision`、`source`、`tool_name`、`tool_parameters`                                                                                                                                                                                           |
+| 権限モードのエスカレーション                                     | `permission_mode_changed`                                               | `from_mode`、`to_mode`、`trigger`                                                                                                                                                                                                             |
+| ポリシーフックがアクションをブロック                                 | `hook_execution_complete`                                               | `hook_event`、`num_blocking`                                                                                                                                                                                                                 |
+| ログイン、ログアウト、認証失敗                                    | `auth`                                                                  | `action`、`success`、`error_category`                                                                                                                                                                                                         |
+| MCP サーバー接続または失敗                                    | `mcp_server_connection`                                                 | `status`、`server_name`、`is_plugin`、`error_code`                                                                                                                                                                                             |
+| プラグインがインストールされ、そのソース                               | `plugin_installed`                                                      | `plugin.name`、`marketplace.name`、`marketplace.is_official`                                                                                                                                                                                  |
+| 実行されたコマンドとタッチされたファイル                               | `tool_result`（実行）または `tool_decision`（拒否）（`OTEL_LOG_TOOL_DETAILS=1` の場合） | `tool_parameters`；`tool_input`（`tool_result` のみ）                                                                                                                                                                                            |
+| マシンが実行する管理設定ソース、そのポリシーヘルパーが正常かどうか、およびマシンが起動を拒否した理由 | `managed_settings_resolved`                                             | `managed_settings.trigger`、`managed_settings.sources`、`managed_settings.source_behavior`、`managed_settings.helper.state`、`error.type`；`managed_settings.settings` および `managed_settings.resolved_sha256`（`OTEL_LOG_MANAGED_SETTINGS=1` の場合） |
 
 Claude Code は生のイベントストリームのみを出力します。異常検出、ベースライン化、セッション間の相関、アラートは SIEM または可観測性バックエンドの責任です。
 

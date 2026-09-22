@@ -110,7 +110,9 @@ Claude Code でできることについてのアイデアについては、[一�
   * **Manual**: Claude はファイル編集とほとんどのシェルコマンドの前に権限を求めます。
   * **Plan**: Claude は実行する内容を説明し、変更を加える前に承認を待ちます。VS Code は自動的にプランを完全な Markdown ドキュメントとして開き、Claude が開始する前にフィードバックを提供するためにインラインコメントを追加できます。
   * **Edit automatically**: Claude は尋ねることなく編集を行います。
-* **Model**: コマンドメニューから **Switch model…** を選択して、セッション中にモデルを変更します。プロンプトボックスの下部にあるモデル名をクリックして、同じピッカーを開くこともできます。現在のモデルが [effort levels](/docs/ja/model-config#adjust-effort-level) をサポートしている場合、ピッカーは **Effort** 行も表示します。モデル名ボタンと **Effort** 行には Claude Code v2.1.257 以降が必要です。
+* **Model**: コマンドメニューから **Switch model…** を選択して、セッション中にモデルを変更します。プロンプトボックスの下部にあるモデル名をクリックして、同じピッカーを開くこともできます。
+
+  現在のモデルが [effort levels](/docs/ja/model-config#adjust-effort-level) をサポートしている場合、ピッカーは **Effort** 行も表示し、モデル名ボタンは選択されたレベルを表示します。`max` 以外のレベルを選択すると、Claude Code はそれを現在のモデルのデフォルトとしてユーザー設定の [`modelSettings`](/docs/ja/settings-reference#modelsettings) に保存します。`max` は現在のセッションのみに適用されます。モデル名ボタンと **Effort** 行には Claude Code v2.1.257 以降が必要です。
 * **Command menu**: `/` をクリックするか `/` を入力してコマンドメニューを開きます。オプションには、ファイルの添付、モデルの切り替え、拡張思考の切り替えが含まれます。Customize セクションは MCP サーバー、slash commands、出力スタイル、hooks、メモリ、権限、プラグインへのアクセスを提供します。ターミナルアイコン付きのアイテムは統合ターミナルで開きます。
   * `/usage` や [`/remote-control`](/docs/ja/remote-control) などのコマンドを参照するには、Customize セクションで **Slash commands** を選択します。ダイアログはフィルターボックス付きでそれらをリストします。1 つを選択して実行します。プロンプトボックスで `/` を入力すると、引き続きコマンドをインラインで提案します。Claude Code v2.1.257 以降が必要です。
   * Customize セクションで **Output styles** を選択して、カスタムスタイルを含む [output style](/docs/ja/output-styles) を選択します。Claude Code v2.1.257 以降が必要です。
@@ -124,10 +126,12 @@ Claude Code でできることについてのアイデアについては、[一�
   * Settings セクションには **Focus view** も含まれており、これはツール呼び出し、ツール結果、思考を展開可能な行の背後に隠し、プロンプトと Claude の応答を残します。そこでトグルするか、`Ctrl+Option+F`（Mac）/ `Ctrl+Alt+F`（Windows/Linux）で、またはコマンドパレットから **Claude Code: Toggle Focus view** で切り替えます。変更はすべての開いているセッションに適用され、セッション全体で保持されます。Claude Code v2.1.221 以降が必要です。
 
     Claude の最新の to-do リストは表示されたままで、Claude からの保留中の質問が尋ねているテキストも表示されます。これには Claude Code v2.1.225 以降が必要です。Claude が [subagents](/docs/ja/sub-agents) を実行している間、最新のアクティビティを含むライブ進捗行は、それらを開始したツール呼び出しグループの下に表示されます。これには Claude Code v2.1.269 以降が必要です。
+  * Anthropic アカウントからサインアウトするには、Settings セクションで **Sign out** を選択するか、`/logout` を入力します。[サードパーティプロバイダー](#use-third-party-providers)では、メニューはどちらも提供しません。Claude Code v2.1.277 以降が必要です。
   * バグを報告するには、メニューの下部にある **Report a problem** をクリックするか、`/bug` または `/feedback` をオプションの説明と共に入力して、レポートに事前入力します。レポートを送信し、ファーストパーティ接続で Anthropic にサインインしている場合、Claude Code はそれを Anthropic に送信します。サードパーティプロバイダーまたは Anthropic 認証情報がない場合、ダイアログは引き続き開きますが、送信するとエラーが表示され、何も送信されません。CLI の `/bug` とは異なり、拡張機能はローカルアーカイブを作成しません。Claude Code v2.1.229 以降が必要です。
 
     組織のポリシーが製品フィードバックをオフにしている場合、**Report a problem** はメニューに表示されず、`/bug` と `/feedback` はレポートを開く代わりに `Feedback is turned off by your organization's policy or this environment's settings.` という通知を表示します。
 * **Side questions**: `/btw` の後に質問を入力して、[会話に追加せずに](/docs/ja/interactive-mode#side-questions-with-%2Fbtw)セッションについて質問します。答えはチャットの横のパネルで開き、そこでフォローアップ質問をすることができます。スレッドはウィンドウの再読み込みを生き残ります。Claude Code は最新の 20 回の交換を保持し、Claude Code が [安全に保持期間を決定できる](/docs/ja/claude-directory#cleaned-up-automatically)限り、[`cleanupPeriodDays`](/docs/ja/settings-reference#cleanupperioddays) スケジュールで保存されたスレッドを期限切れにします。スレッドをクリアするには、パネルのゴミ箱アイコンをクリックします。Claude Code v2.1.227 以降が必要です。
+* **Copy a response**: 応答の上にマウスを置いて **Copy response** をクリックしてクリップボードにコピーするか、`/copy` を入力して最新の応答をコピーします。`/copy 2` は 2 番目に最新のものをコピーします。Claude Code v2.1.277 以降が必要です。
 * **Context indicator**: プロンプトボックスは Claude のコンテキストウィンドウをどのくらい使用しているかを表示します。Claude は必要に応じて自動的にコンパクトにするか、`/compact` を手動で実行できます。
 * **Prompt cache clock**: コンテキスト指示器の横にあるクロックアイコンは、会話の [prompt cache](/docs/ja/prompt-caching) がキャッシュの 5 分または 1 時間の [lifetime](/docs/ja/prompt-caching#cache-lifetime) の前に期限切れになるまでの時間を推定します。キャッシュの有効期間からカウントダウンし、キャッシュを使用する各応答がカウントダウンを再開します。コンパクション以外に、[キャッシュを無効にするアクション](/docs/ja/prompt-caching#actions-that-invalidate-the-cache)はクロックをリセットしないため、モデルを切り替えた後でも残り時間を表示できます。
   * カウントダウンが終了するまで、アイコンは **12m** などの残り分数を表示します。
@@ -136,6 +140,10 @@ Claude Code でできることについてのアイデアについては、[一�
 * **Agent map**: 会話に [subagents](/docs/ja/sub-agents) が含まれている場合、プロンプトボックスの下部に **2 agents** などのエージェント数が表示されます。そのドットは、subagent が動作しているか、あなたの権限を待っているかを示します。
 
   エージェント数をクリックしてエージェントマップを開きます。これは会話の subagents をメインエージェントの下のツリーとして描画し、各エージェントのステータス、経過時間、トークン数を表示します。subagent をクリックして、そのプロンプトとツール呼び出しを表示し、読み取り専用トランスクリプトを開くか、実行中に停止します。Claude Code v2.1.269 以降が必要です。
+
+  マップはセッションの他の [background tasks](/docs/ja/tools-reference#background-commands)（バックグラウンドシェルコマンドや [monitors](/docs/ja/tools-reference#monitor-tool) など）もエージェントの下にリストします。行をクリックしてタスクのカードを開き、そこで停止します。
+
+  エージェント数が表示されていない場合（Claude がバックグラウンドシェルを開始したが subagents がない場合など）にマップを開くには、プロンプトボックスで `/tasks` を入力します。マップ内のバックグラウンドタスクと入力された `/tasks` には Claude Code v2.1.277 以降が必要です。
 * **Extended thinking**: Claude が複雑な問題を推論するのに時間をかけることができます。コマンドメニュー（`/`）経由でオンに切り替えます。Claude の推論は会話に折りたたまれたブロックとして表示されます。ブロックをクリックして読むか、`Ctrl+O` を押してセッション内のすべての思考ブロックを展開または折りたたみます。詳細については、[Extended thinking](/docs/ja/model-config#extended-thinking) を参照してください。
 * **Multi-line input**: `Shift+Enter` を押して、送信せずに新しい行を追加します。これは質問ダイアログの「Other」フリーテキスト入力でも機能します。
 
@@ -171,7 +179,7 @@ Claude Code パネルの上部にある **Session history** ボタンをクリ�
 
 デフォルトでは、14 日間アクティビティがないセッションは、開いている、未読、または [group](#organize-sessions-into-groups) にない限り、自動的に **Archived sessions** に移動します。自動アーカイブには Claude Code v2.1.265 以降が必要です。期間を変更するか、オフにするには、[Archive Inactive Sessions setting](vscode://settings/claudeCode.archiveInactiveSessions) を開き、日数を選択するか **Never** を選択します。
 
-アーカイブされたセッションを復元するには、**Archived sessions** を展開して **Unarchive session** をクリックします。v2.1.257 より前では、アクションは **Delete session** でした。これはセッションを隠し、復元する方法がありませんでした。その後削除したセッションは、アップグレード後に **Archived sessions** の下に表示されます。
+アーカイブされたセッションを復元するには、**Archived sessions** を展開して **Unarchive session** をクリックします。すべてのアーカイブされたセッションを一度に復元するには、セッションリストの Activity Bar で **Archived sessions** ヘッダーの上にマウスを置き、そのアーカイブ解除アイコンをクリックします。これには Claude Code v2.1.277 以降が必要です。v2.1.257 より前では、アクションは **Delete session** でした。これはセッションを隠し、復元する方法がありませんでした。その後削除したセッションは、アップグレード後に **Archived sessions** の下に表示されます。
 
 再開した会話が plan モードで終了した場合、Claude Code は plan モードを復元します。Claude Code v2.1.246 以降が必要です。Claude Code は 2 つのケースでは復元しません。
 
@@ -206,11 +214,17 @@ Claude Code パネルの上部にある **Session history** ボタンをクリ�
   アカウントと使用状況を確認する
 </h3>
 
-`/usage` を実行して、Account & usage ダイアログを開きます。ダイアログは claude.ai サインインが必要なため、[サードパーティプロバイダー](#use-third-party-providers)では提供されません。サインインしたアカウント、プラン、現在のセッションと週の使用状況バーを表示します。各バーは、制限がリセットされるまでの時間を表示します。
+`/usage` を実行して、Account & usage ダイアログを開きます。サインインしたアカウント、および使用状況はサインインによって異なります。
+
+* **claude.ai plan**: プランの制限（現在のセッションや週など）の使用状況バー。各バーは、制限がリセットされるまでの時間を表示します。
 
 ダイアログは、プラン制限に貢献しているものを詳細に説明します。キャッシュミス、長いコンテキスト、subagent が多い、または高度に並列なセッションなど、最近の使用状況の 10% 以上を占める動作にフラグを立てます。各動作には、それを削減するためのヒントが付いています。Attribution テーブルは、各スキル、subagent、プラグイン、MCP サーバーからどのくらいの使用状況が来たかを示します。
 
-Day と Week トグルを使用して、過去 24 時間と過去 7 日間を切り替えます。数値は概算であり、このマシン上のローカルセッションから計算されるため、他のデバイスまたは claude.ai からの使用状況は含まれません。使用状況の追跡と削減の詳細については、[Track your costs](/docs/ja/costs#track-your-costs) を参照してください。
+Day と Week トグルを使用して、過去 24 時間と過去 7 日間を切り替えます。数値は概算であり、このマシン上のローカルセッションから計算されるため、他のデバイスまたは claude.ai からの使用状況は含まれません。
+
+* **Other sign-ins**: [サードパーティプロバイダー](#use-third-party-providers)での場合やアクセスキーを使用している場合など、プラン制限がサインインに適用されない場合、Usage セクションはセッション自体のコストとトークン使用状況を代わりに表示します。CLI の `/usage` は [Session block](/docs/ja/costs#track-your-costs) で同じ合計を表示します。Activity Bar のセッションリストは、アクティブセッションの合計を **Account & usage** ヘッダーの下に表示します。Claude Code v2.1.277 以降が必要です。
+
+使用状況の追跡と削減の詳細については、[Track your costs](/docs/ja/costs#track-your-costs) を参照してください。
 
 <h2 id="customize-your-workflow">
   ワークフローをカスタマイズする
@@ -363,22 +377,23 @@ Claude はブラウザタスク用に新しいタブを開き、ブラウザの�
   これらは拡張機能を制御するための VS Code コマンドです。組み込みの Claude Code コマンドのすべてが拡張機能で利用可能なわけではありません。詳細については、[VS Code 拡張機能と Claude Code CLI](#vs-code-extension-vs-claude-code-cli) を参照してください。
 </Note>
 
-| コマンド                       | ショートカット                                               | 説明                                                                                                                                  |
-| -------------------------- | ----------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| Focus Input                | `Cmd+Esc`（Mac）/ `Ctrl+Esc`（Windows/Linux）             | エディターと Claude 間のフォーカスを切り替えます                                                                                                        |
-| Open in Side Bar           | -                                                     | Claude をサイドバーで開きます                                                                                                                  |
-| Open in Terminal           | -                                                     | Claude をターミナルモードで開きます                                                                                                               |
-| Open in New Tab            | `Cmd+Shift+Esc`（Mac）/ `Ctrl+Shift+Esc`（Windows/Linux） | 新しい会話をエディタータブとして開きます                                                                                                                |
-| Open in New Window         | -                                                     | 新しい会話を別のウィンドウで開きます                                                                                                                  |
-| New Conversation           | `Cmd+N`（Mac）/ `Ctrl+N`（Windows/Linux）                 | 新しい会話を開始します。Claude がフォーカスされており、`enableNewConversationShortcut` が `true` に設定されている必要があります                                             |
-| Reopen Closed Session      | `Cmd+Shift+T`（Mac）/ `Ctrl+Shift+T`（Windows/Linux）     | 最近閉じた Claude セッションタブを再度開きます。最後に閉じたタブが Claude セッションではない場合、VS Code の通常の再度開く機能にフォールスルーします。`enableReopenClosedSessionShortcut` で無効にできます |
-| Insert @-Mention Reference | `Option+K`（Mac）/ `Alt+K`（Windows/Linux）               | 現在のファイルと選択範囲への参照を挿入します（エディターがフォーカスされている必要があります）                                                                                     |
-| Toggle Focus view          | `Ctrl+Option+F`（Mac）/ `Ctrl+Alt+F`（Windows/Linux）     | 会話内のツールアクティビティを非表示にするか表示します。Claude パネルまたはサイドバーが表示されている間に機能します。Claude Code v2.1.221 以降が必要です                                          |
-| Rename Session Tab         | -                                                     | アクティブな Claude タブのセッションの名前を変更します。Claude Code v2.1.257 以降が必要です                                                                        |
-| Add Session Tab to Group   | -                                                     | アクティブな Claude タブのセッションを、選択または作成する[セッショングループ](#organize-sessions-into-groups)に追加します。Claude Code v2.1.257 以降が必要です                     |
-| Mark Session as Unread     | -                                                     | アクティブな Claude タブのセッションをセッションリストで未読としてマークします。Claude Code v2.1.257 以降が必要です                                                            |
-| Show Logs                  | -                                                     | 拡張機能のデバッグログを表示します                                                                                                                   |
-| Logout                     | -                                                     | Anthropic アカウントからサインアウトします                                                                                                          |
+| コマンド                       | ショートカット                                               | 説明                                                                                                                                                       |
+| -------------------------- | ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Focus Input                | `Cmd+Esc`（Mac）/ `Ctrl+Esc`（Windows/Linux）             | エディターと Claude 間のフォーカスを切り替えます                                                                                                                             |
+| Focus last message         | -                                                     | 会話内の最新メッセージ、または待機中の権限プロンプトにキーボードフォーカスを移動します。キーボードまたはスクリーンリーダーでそこから読み取ることができます。[ターミナルモード](#switch-to-terminal-mode)では利用できません。Claude Code v2.1.268 以降が必要です |
+| Open in Side Bar           | -                                                     | Claude をサイドバーで開きます                                                                                                                                       |
+| Open in Terminal           | -                                                     | Claude をターミナルモードで開きます                                                                                                                                    |
+| Open in New Tab            | `Cmd+Shift+Esc`（Mac）/ `Ctrl+Shift+Esc`（Windows/Linux） | 新しい会話をエディタータブとして開きます                                                                                                                                     |
+| Open in New Window         | -                                                     | 新しい会話を別のウィンドウで開きます                                                                                                                                       |
+| New Conversation           | `Cmd+N`（Mac）/ `Ctrl+N`（Windows/Linux）                 | 新しい会話を開始します。Claude がフォーカスされており、`enableNewConversationShortcut` が `true` に設定されている必要があります                                                                  |
+| Reopen Closed Session      | `Cmd+Shift+T`（Mac）/ `Ctrl+Shift+T`（Windows/Linux）     | 最近閉じた Claude セッションタブを再度開きます。最後に閉じたタブが Claude セッションではない場合、VS Code の通常の再度開く機能にフォールスルーします。`enableReopenClosedSessionShortcut` で無効にできます                      |
+| Insert @-Mention Reference | `Option+K`（Mac）/ `Alt+K`（Windows/Linux）               | 現在のファイルと選択範囲への参照を挿入します（エディターがフォーカスされている必要があります）                                                                                                          |
+| Toggle Focus view          | `Ctrl+Option+F`（Mac）/ `Ctrl+Alt+F`（Windows/Linux）     | 会話内のツールアクティビティを非表示にするか表示します。Claude パネルまたはサイドバーが表示されている間に機能します。Claude Code v2.1.221 以降が必要です                                                               |
+| Rename Session Tab         | -                                                     | アクティブな Claude タブのセッションの名前を変更します。Claude Code v2.1.257 以降が必要です                                                                                             |
+| Add Session Tab to Group   | -                                                     | アクティブな Claude タブのセッションを、選択または作成する[セッショングループ](#organize-sessions-into-groups)に追加します。Claude Code v2.1.257 以降が必要です                                          |
+| Mark Session as Unread     | -                                                     | アクティブな Claude タブのセッションをセッションリストで未読としてマークします。Claude Code v2.1.257 以降が必要です                                                                                 |
+| Show Logs                  | -                                                     | 拡張機能のデバッグログを表示します                                                                                                                                        |
+| Logout                     | -                                                     | Anthropic アカウントからサインアウトします                                                                                                                               |
 
 <h3 id="launch-a-vs-code-tab-from-other-tools">
   他のツールから VS Code タブを起動する
@@ -487,7 +502,14 @@ VS Code は `initialPermissionMode` をユーザー設定から読み込み、�
 * **ステータス変更**: 拡張機能は Claude が作業を開始したとき、Claude があなたの入力の準備ができたとき、および Claude Code が会話をコンパクト化し始めたときを通知します。
 * **エラーとモデルプロンプト**: 拡張機能は会話内のエラーを通知し、[使用クレジット同意プロンプト](/docs/ja/model-config#fable-and-usage-credits) または [フラグ付きリクエストプロンプト](/docs/ja/model-config#ask-before-switching) が表示されたときを通知します。
 
-トランスクリプト内の各ターンは、ターンを開始したプロンプトでラベル付けされた視覚的に隠されたヘッディングで始まるため、スクリーンリーダーのヘッディングナビゲーションを使用してターン間をジャンプできます。`Tab` でトランスクリプト自体にフォーカスを移動することもできます。拡張機能はそれをラベル付きリージョンとして公開しており、自分のペースで読むことができます。Claude が作業している間、スクリーンリーダーはプログレススピナーのアニメーションの代わりにテキストラベルを読みます。
+トランスクリプト内の各ターンは、ターンを開始したプロンプトでラベル付けされた視覚的に隠されたヘッディングで始まるため、スクリーンリーダーのヘッディングナビゲーションを使用してターン間をジャンプできます。拡張機能はトランスクリプトをラベル付きリージョンとして公開しているため、`Tab` でトランスクリプト自体にフォーカスを移動して、自分のペースで読むこともできます。
+
+キーボードから利用可能なアクションは 2 つあります。
+
+* **最新のメッセージにジャンプ**: [コマンドパレット](#vs-code-commands-and-shortcuts) から **Claude Code: Focus last message** を実行して、フォーカスを最新のメッセージまたは待機中の権限プロンプトに直接移動します。
+* **承認の保存先を変更**: 権限プロンプトのオプションが権限ルールまたはディレクトリアクセスを保存する場合、そのラベルは「すべてのプロジェクト」や「このセッション」など、承認が保存される場所を名前で指定して終了します。これらの単語をクリックして保存先を変更します。オプションにフォーカスがある場合、`Left` または `Right` 矢印キーを押すこともできます。拡張機能は、各保存先に到達するたびにそれを通知します。矢印キーには Claude Code v2.1.268 以降が必要です。
+
+Claude が作業している間、スクリーンリーダーはプログレススピナーのアニメーションの代わりにテキストラベルを読みます。
 
 セッションを再度開くか別のセッションに切り替えると、拡張機能は何も通知しません。復元された履歴、保留中の権限プロンプト、および進行中のステータスは、新しいことが発生するまで沈黙を保ちます。
 
@@ -543,7 +565,7 @@ VS Code に留まりながら CLI を使用するには、統合ターミナル�
   バックグラウンドプロセスを監視する
 </h3>
 
-拡張機能でのバックグラウンドタスクの可視性は CLI と比較して限定的です。より良い可視性を得るには、Claude にコマンドを出力させて、VS Code の統合ターミナルで実行します。
+プロンプトボックスで `/tasks` を入力して[エージェントマップ](#use-the-prompt-box)を開きます。これにより、セッションのバックグラウンドタスク（Claude がバックグラウンドシェルコマンドとして実行中の開発サーバーなど）が一覧表示されます。タスクをクリックしてそのカードを開き、そこで停止できます。Claude Code v2.1.277 以降が必要です。
 
 <h3 id="connect-to-external-tools-with-mcp">
   MCP を使用して外部ツールに接続する
@@ -610,7 +632,7 @@ summarize the changes I've made to the auth module
   </Step>
 </Steps>
 
-サードパーティプロバイダーでは、拡張機能は claude.ai アカウントが必要な機能（使用状況の追跡、[音声入力](/docs/ja/voice-dictation)、[クラウドセッション](#resume-cloud-sessions-from-claude-ai)用の Web タブなど）を提供しません。以前の `/login` から残された claude.ai サインインは未使用のままです。拡張機能はリクエストと共にそれを送信しません。
+サードパーティプロバイダーでは、拡張機能は claude.ai アカウントが必要な機能（プラン使用状況バー、[音声入力](/docs/ja/voice-dictation)、[クラウドセッション](#resume-cloud-sessions-from-claude-ai)用の Web タブなど）を提供しません。これらのサインインで Account & usage ダイアログが表示する内容については、[アカウントと使用状況を確認する](#check-account-and-usage)を参照してください。以前の `/login` から残された claude.ai サインインは未使用のままです。拡張機能はリクエストと共にそれを送信しません。
 
 <h2 id="security-and-privacy">
   セキュリティとプライバシー

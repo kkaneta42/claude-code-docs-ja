@@ -31,9 +31,10 @@ security guidance プラグインは、Claude が作業中に自身のコード�
 /plugin install security-guidance@claude-plugins-official
 ```
 
-`/plugin` はインタラクティブパネルを開き、ターミナル CLI でのみ利用可能です。Claude が `/plugin` がこの環境では利用できないと報告した場合、別の方法でインストールしてください：
+`/plugin` はターミナル CLI でインタラクティブパネルを開きます。Claude が `/plugin` がこの環境では利用できないと報告した場合、別の方法でインストールしてください：
 
 * **Claude デスクトップアプリ、ローカルまたは SSH セッション**：プロンプトの横にある **+** ボタンをクリックして[プラグインブラウザ](/docs/ja/desktop#install-plugins)を開き、**Plugins** をクリックしてから **Add plugin** をクリックします
+* **VS Code 拡張機能**：[**Manage plugins** ダイアログ](/docs/ja/vs-code#manage-plugins)からインストールします
 * **クラウドセッション**：[クラウドセッションと共有リポジトリで有効化](#enable-in-cloud-sessions-and-shared-repositories)に示すように、`.claude/settings.json` でプラグインを宣言します
 
 ターミナルインストールはスコープを求めます。ユーザースコープを選択して、プラグインをユーザー設定に書き込み、このマシンで開始するすべての新しいローカルセッションで読み込まれるようにします。

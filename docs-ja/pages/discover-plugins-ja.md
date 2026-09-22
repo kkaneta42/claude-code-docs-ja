@@ -42,7 +42,11 @@ Claude Code は初めて対話的に起動すると、公式 Anthropic マーケ
 /plugin install github@claude-plugins-official
 ```
 
-`/plugin` はターミナル CLI で対話的なパネルを開きます。Claude が `/plugin` がこの環境では利用できないと返答する場合は、Claude デスクトップアプリの[プラグインブラウザー](/docs/ja/desktop#install-plugins)を使用するか、クラウドセッションの `.claude/settings.json` で [`enabledPlugins`](/docs/ja/settings-reference#enabledplugins) の下にプラグインを宣言してください。
+`/plugin` はターミナル CLI で対話的なパネルを開きます。Claude が `/plugin` がこの環境では利用できないと返答する場合は、別の方法でプラグインをインストールしてください：
+
+* **Claude デスクトップアプリ**：[プラグインブラウザー](/docs/ja/desktop#install-plugins)を使用してください。
+* **VS Code 拡張機能**：[**Manage plugins** ダイアログ](/docs/ja/vs-code#manage-plugins)からインストールしてください。
+* **クラウドセッション**：`.claude/settings.json` で [`enabledPlugins`](/docs/ja/settings-reference#enabledplugins) の下にプラグインを宣言してください。
 
 インストールが失敗した場合は、Claude Code が報告するメッセージと照合してください：
 

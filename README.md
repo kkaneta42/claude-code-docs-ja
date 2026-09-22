@@ -17,6 +17,286 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-09-22</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/artifacts-ja.md               |  18 +--
+ docs-ja/pages/changelog.md                  |   1 -
+ docs-ja/pages/claude-apps-gateway-ja.md     |   9 +-
+ docs-ja/pages/claude-directory-ja.md        |  92 +++++++-------
+ docs-ja/pages/desktop-ja.md                 |   2 +-
+ docs-ja/pages/discover-plugins-ja.md        |   6 +-
+ docs-ja/pages/fast-mode-ja.md               |  10 +-
+ docs-ja/pages/interactive-mode-ja.md        |  17 ++-
+ docs-ja/pages/keybindings-ja.md             |  40 +++---
+ docs-ja/pages/llm-gateway-connect-ja.md     | 191 +++++++++++++++++-----------
+ docs-ja/pages/llm-gateway-protocol-ja.md    |  33 +++++
+ docs-ja/pages/managed-settings-ja.md        |  41 +++---
+ docs-ja/pages/monitoring-usage-ja.md        |  94 +++++++++++---
+ docs-ja/pages/network-config-ja.md          |   2 +-
+ docs-ja/pages/security-guidance-ja.md       |   3 +-
+ docs-ja/pages/server-managed-settings-ja.md |   2 +-
+ docs-ja/pages/settings-reference-ja.md      |   2 +
+ docs-ja/pages/vs-code-ja.md                 |  68 ++++++----
+ 18 files changed, 412 insertions(+), 219 deletions(-)
+```
+
+<details>
+<summary>artifacts-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/artifacts-ja.md b/docs-ja/pages/artifacts-ja.md
+index 0f1b4d4..77a117c 100644
+--- a/docs-ja/pages/artifacts-ja.md
++++ b/docs-ja/pages/artifacts-ja.md
+@@ -326,12 +326,12 @@ UI、画面フロー、ランディングページ、またはポスターをモ
+ 各アーティファクトは 1 つの自己完結したページです。Claude Code は公開するファイルを HTML ドキュメントシェルでラップし、厳密なコンテンツセキュリティポリシー（CSP）の下で提供します。これはページが実行できることを形作ります。
+ 
+-| 制約         | 効果                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+-| :--------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+-| 外部リクエスト    | ページは Google Fonts からタイプフェイスを読み込むことができ、[4 つのパブリック CDN ホスト](#allowlist-the-viewer-domain)からスクリプトを読み込むことができます：cdnjs、Tailwind と jQuery CDN、および jsDelivr 上の `/npm/` などの選択されたパス。CSP はすべての外部画像とその他すべての外部スクリプト、スタイルシート、フォントをブロックし、`fetch`、XHR、WebSocket 呼び出しがページ自身のオリジンと Google Fonts ホストにのみ到達できるようにします。Claude はページが必要とするライブラリをこれらの CDN の 1 つから読み込み、その他すべての CSS と JavaScript をインライン化し、画像をデータ URI として埋め込みます。[コネクタ呼び出し](#pull-live-data-with-mcp-connectors)は claude.ai を通じて行われ、ネットワーク呼び出しを自身で実行します。 |
+-| バックエンドなし   | アーティファクトは静的ページです。ビューアを自身で認証することはできません。                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+-| ダウンロード     | ページはダウンロードを自身で開始することはできません。ビューアがページが生成するファイルを保存できるようにするには、Claude はダウンロード機能を宣言します。[ファイルダウンロードを提供する](#offer-a-file-download)を参照してください。                                                                                                                                                                                                                                                                                                                                                       |
+-| シングルページ    | 相対リンクは解決されません。ページと一緒に何もデプロイされていないためです。マルチセクションコンテンツの場合、Claude は個別ファイルではなくページ内アンカーを使用します。                                                                                                                                                                                                                                                                                                                                                                                                   |
+-| ソースファイルタイプ | 公開されるファイルは `.html`、`.htm`、または `.md` である必要があり、UTF-8 として、またはバイトオーダーマークによってリトルエンディアン UTF-16 としてデコードできる必要があります。Markdown ファイルはスタイル付きドキュメントページとしてレンダリングされ、構文強調表示されたコードが含まれます。デコードできないファイル、または置換文字 `U+FFFD` を含むファイルは、[修正する行と列とともに拒否されます](/docs/ja/errors#the-source-file-is-not-valid-utf-8-text)。                                                                                                                                                                                                     |
+-| レンダリングサイズ  | レンダリングされたページは 16 MiB 以下である必要があります。大きな埋め込み画像は、公開が失敗する場合の通常の原因です。                                                                                                                                                                                                                                                                                                                                                                                                                            |
++| 制約         | 効果                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
++| :--------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
++| 外部リクエスト    | ページは Google Fonts からタイプフェイスを読み込むことができ、[5 つのパブリック CDN ホスト](#allowlist-the-viewer-domain)からスクリプトを読み込むことができます：cdnjs、unpkg、Tailwind と jQuery CDN、および jsDelivr 上の `/npm/` などの選択されたパス。CSP はすべての外部画像とその他すべての外部スクリプト、スタイルシート、フォントをブロックし、`fetch`、XHR、WebSocket 呼び出しがページ自身のオリジンと Google Fonts ホストにのみ到達できるようにします。Claude はページが必要とするライブラリをこれらの CDN の 1 つから読み込み、その他すべての CSS と JavaScript をインライン化し、画像をデータ URI として埋め込みます。[コネクタ呼び出し](#pull-live-data-with-mcp-connectors)は claude.ai を通じて行われ、ネットワーク呼び出しを自身で実行します。 |
++| バックエンドなし   | アーティファクトは静的ページです。ビューアを自身で認証することはできません。                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
++| ダウンロード     | ページはダウンロードを自身で開始することはできません。ビューアがページが生成するファイルを保存できるようにするには、Claude はダウンロード機能を宣言します。[ファイルダウンロードを提供する](#offer-a-file-download)を参照してください。                                                                                                                                                                                                                                                                                                                                                             |
++| シングルページ    | 相対リンクは解決されません。ページと一緒に何もデプロイされていないためです。マルチセクションコンテンツの場合、Claude は個別ファイルではなくページ内アンカーを使用します。                                                                                                                                                                                                                                                                                                                                                                                                         |
++| ソースファイルタイプ | 公開されるファイルは `.html`、`.htm`、または `.md` である必要があり、UTF-8 として、またはバイトオーダーマークによってリトルエンディアン UTF-16 としてデコードできる必要があります。Markdown ファイルはスタイル付きドキュメントページとしてレンダリングされ、構文強調表示されたコードが含まれます。デコードできないファイル、または置換文字 `U+FFFD` を含むファイルは、[修正する行と列とともに拒否されます](/docs/ja/errors#the-source-file-is-not-valid-utf-8-text)。                                                                                                                                                                                                           |
++| レンダリングサイズ  | レンダリングされたページは 16 MiB 以下である必要があります。大きな埋め込み画像は、公開が失敗する場合の通常の原因です。                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+ 
+ アーティファクトを生成することは、他のレスポンスと同様に出力トークンを使用し、スタイル付きページはターミナルテキストと同じコンテンツよりもトークン集約的です。インライン CSS、インタラクティブコントロール用の JavaScript、特にデータ URI として埋め込まれた画像が主な要因です。アーティファクトのトークンコストを削減するには：
+@@ -418,5 +418,5 @@ claude.ai のビューアは、サンドボックス化された `*.claudeuserco
+ [Google Fonts](#improve-the-visual-design)からタイプフェイスを読み込むアーティファクトは、`fonts.googleapis.com` と `fonts.gstatic.com` もリクエストします。どちらのホストもオプションです。ブロックすると、アーティファクトはフォールバックタイプフェイスでレンダリングされます。フォントリクエストが即座に失敗するように、サイレントドロップではなく高速拒否でブロックして、ページの最初のレンダリングが遅延しないようにします。
+ 
+-アーティファクトは、React やチャートパッケージなどの JavaScript ライブラリを `cdnjs.cloudflare.com`、`cdn.jsdelivr.net`、`cdn.tailwindcss.com`、`code.jquery.com` から読み込むことができ、他の外部ホストからは読み込めません。これらのホストをブロックすると、ライブラリに依存するアーティファクトの部分が機能しません。ブロックされたフォントとは異なり、ブロックされたライブラリにはフォールバックがありません。ブロックされたライブラリリクエストが即座に失敗するように、ここでも高速拒否でブロックして、タイムアウトするまでハングしないようにします。
++アーティファクトは、React やチャートパッケージなどの JavaScript ライブラリを `cdnjs.cloudflare.com`、`cdn.jsdelivr.net`、`cdn.tailwindcss.com`、`code.jquery.com`、および `unpkg.com` から読み込むことができ、他の外部ホストからは読み込めません。これらのホストをブロックすると、ライブラリに依存するアーティファクトの部分が機能しません。ブロックされたフォントとは異なり、ブロックされたライブラリにはフォールバックがありません。ブロックされたライブラリリクエストが即座に失敗するように、ここでも高速拒否でブロックして、タイムアウトするまでハングしないようにします。
+```
+
+</details>
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index 6d69d78..dc067eb 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -173,5 +173,4 @@
+ - [VSCode] Fixed a rare case where text selected in a git-ignored file could be sent to Claude after the extension was unresponsive for several seconds
+ - [VSCode] Fixed renaming a running session reverting to the generated name (regression in 2.1.269)
+-- [VSCode] Fixed some claude.ai/code sessions opening in VS Code as an empty conversation with no messages
+ - [VSCode] Fixed slash commands typed while Claude is responding being sent to the model as text instead of running once the response finishes
+ - [VSCode] Fixed unreadable code in the plan preview and the Hooks and Permission rules dialogs with the High Contrast Light theme
+```
+
+</details>
+
+<details>
+<summary>claude-apps-gateway-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/claude-apps-gateway-ja.md b/docs-ja/pages/claude-apps-gateway-ja.md
+index 438997b..2dbc080 100644
+--- a/docs-ja/pages/claude-apps-gateway-ja.md
++++ b/docs-ja/pages/claude-apps-gateway-ja.md
+@@ -173,5 +173,5 @@ Claude アプリゲートウェイは、開発者の Claude Code クライアン
+     ```
+ 
+-    ゲートウェイは、設定を読み取り、Postgres に接続してスキーママイグレーションを適用し、IdP に対して OIDC ディスカバリーを実行し、アップストリームクライアントを構築し、リッスンを開始する単一の Linux バイナリです。起動は設定、5 秒タイムアウト付き Postgres 接続、OIDC ディスカバリー、およびアップストリームクライアント構築に対して失敗時に閉じられます。これらのいずれかが到達不可能または設定が誤っている場合、ゲートウェイは低下した状態でトラフィックを提供するのではなく、エラーで終了します。
++    ゲートウェイは、設定を読み取り、Postgres に接続してスキーママイグレーションを適用し、IdP に対して OIDC ディスカバリーを実行し、アップストリームクライアントを構築し、リッスンを開始する単一の Linux バイナリです。起動は設定、Postgres 接続、OIDC ディスカバリー、およびアップストリームクライアント構築に対して失敗時に閉じられます。これらのいずれかが到達不可能または設定が誤っている場合、ゲートウェイは低下した状態でトラフィックを提供するのではなく、エラーで終了します。
+ 
+     成功した起動は推論パスを検証しません。Amazon Bedrock と Google Cloud の Agent Platform インスタンス認証情報は起動時ではなく最初のリクエストで解決されるためです。
+@@ -274,4 +274,8 @@ openssl x509 -noout -fingerprint -sha256 -in cert.pem | cut -d= -f2 | tr -d : |
+ 証明書がローテーションされると、すべての開発者は再度信頼プロンプトを見るため、ローテーションを計画されたイベントとして扱い、フィンガープリントを再公開します。ゲートウェイポリシーに[承認が必要な設定](/docs/ja/server-managed-settings#security-approval-dialogs)が含まれている場合、開発者は新しい証明書を受け入れた後、その承認ダイアログも再度見ます。Claude Code は[承認メモリ](/docs/ja/server-managed-settings#approval-memory)をピン留めされた証明書にキーイングするためです。
+ 
++ゲートウェイはトークンレスポンスでオプションの `email` フィールドを返して、サインインが使用したアカウントに名前を付けることができます。そうする場合、開発者は Claude Code が認証情報を保存する前にアカウントを確認します。確認されたサインイン後、`/status` はアカウントを表示します。
++
++確認には開発者マシンで Claude Code v2.1.275 以降が必要です。そのバージョンより下のクライアントはフィールドを無視します。`claude` バイナリのゲートウェイサーバーはフィールドを返さないため、そのサインインは確認なしで完了します。
++
+ 開発者がサインインすると、[モデルピッカー](/docs/ja/model-config)は開発者の `availableModels` 許可リストのモデルを表示します。管理設定は起動時に適用され、1 時間ごとに更新され、テレメトリはコレクターにルーティングされます。
+ 
+@@ -488,4 +492,7 @@ Claude Desktop は同じブラウザ SSO ステップでゲートウェイのア
+ * **ゲートウェイがセッションを終了した後の起動**：[起動時の失敗クローズを強制する](/docs/ja/server-managed-settings#enforce-fail-closed-startup)を参照して、どの起動がゲートウェイからサインアウトした状態で開き、どの起動がゲートウェイが `401` で応答するときに終了するかを確認します。
+ * **プロビジョニング解除**：ユーザーが IdP で無効化されたセッションは、次の更新が失敗したときに `ttl_hours` 内に期限切れになります。
++* **サインアウト**：`/logout` はゲートウェイ認証情報を開発者のマシンから削除します。
++  * ゲートウェイの検出ドキュメントがゲートウェイ URL 独自のスキーム、ホスト、およびポートで `revocation_endpoint` をアドバタイズする場合、`/logout` は保存されたトークンをそのエンドポイントに送信して、ゲートウェイがその側でセッションを終了できるようにします。リクエストはベストエフォートであるため、エンドポイントが応答するかどうかに関係なく、サインアウトは開発者のマシンで完了します。失効には開発者マシンで Claude Code v2.1.275 以降が必要です。
++  * `claude` バイナリのゲートウェイサーバーはアドバタイズしないため、そこからのサインアウトは開発者のマシンでのみセッションを終了します。サーバー側でセッションを強制的に終了するには、[JWT シークレットローテーション](/docs/ja/claude-apps-gateway-deploy#jwt-secret-rotation)を参照してください。
+ 
+ <h3 id="what-the-organization-can-see">
+```
+
+</details>
+
+<details>
+<summary>claude-directory-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/claude-directory-ja.md b/docs-ja/pages/claude-directory-ja.md
+index 3a153e0..486075f 100644
+--- a/docs-ja/pages/claude-directory-ja.md
++++ b/docs-ja/pages/claude-directory-ja.md
+@@ -1451,10 +1451,10 @@ Windows では、`~/.claude` は `%USERPROFILE%\.claude` に解決されます
+ エクスプローラーは、あなたが作成および編集するファイルをカバーしています。いくつかの関連ファイルは他の場所にあります。
+ 
+-| ファイル                    | 場所                                | 目的                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+-| ----------------------- | --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+-| `managed-settings.json` | システムレベル、OS によって異なる                | エンタープライズが強制する設定で、[限定的な例外](/docs/ja/settings#security-keys-where-the-stricter-value-applies)を除いてオーバーライドできません。[ファイルの保存場所](/docs/ja/managed-settings#deploy-a-managed-settings-file)と [Claude Code が使用する管理ソース](/docs/ja/managed-settings#precedence-within-the-managed-tier)を参照してください。                                                                                                                                                                                                                                                                                 |
+-| `CLAUDE.local.md`       | プロジェクトルート                         | このプロジェクトの個人的な設定で、CLAUDE.md と一緒に読み込まれます。手動で作成し、`.gitignore` に追加してください。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+-| `AGENTS.md`             | プロジェクトルート、`.claude/`、または任意のディレクトリ | AI コーディングエージェント向けに作成するプロジェクト指示。Claude Code は[それを読み込む](/docs/ja/memory#agents-md)ことができます。これは独立して、または `CLAUDE.md` と一緒に読み込まれます。                                                                                                                                                                                                                                                                                                                                                                                                                              |
+-| インストール済みプラグイン           | `~/.claude/plugins`               | クローンされたマーケットプレイス、インストール済みプラグインバージョン、およびプラグインごとのデータで、`claude plugin` コマンドで管理されます。リンクモードでマーケットプレイス [`command` ソース](/docs/ja/plugin-marketplaces#command-sources)からインストールされたプラグインの場合、Claude Code はコピーの代わりにここにリンクを保存し、プラグインのファイルはコマンドが出力するディレクトリに留まります。`command` ソースには Claude Code v2.1.229 以降が必要です。ローカルディレクトリマーケットプレイスで相対パスでリストされているプラグインも、キャッシュコピーではなく、ソースディレクトリから[その場で読み込まれます](/docs/ja/plugins-reference#plugin-caching-and-file-resolution)。[プラグインキャッシング](/docs/ja/plugins-reference#plugin-caching-and-file-resolution)を参照して、孤立したバージョンがどのようにクリーンアップされるかを確認してください。 |
++| ファイル                    | 場所                                | 目的                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
++| ----------------------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
++| `managed-settings.json` | システムレベル、OS によって異なる                | エンタープライズが強制する設定で、[限定的な例外](/docs/ja/settings#security-keys-where-the-stricter-value-applies)を除いてオーバーライドできません。[ファイルの保存場所](/docs/ja/managed-settings#deploy-a-managed-settings-file)と [Claude Code が使用する管理ソース](/docs/ja/managed-settings#precedence-within-the-managed-tier)を参照してください。                                                                                                                                                                                                                                                                                                                                                                                                |
++| `CLAUDE.local.md`       | プロジェクトルート                         | このプロジェクトの個人的な設定で、CLAUDE.md と一緒に読み込まれます。手動で作成し、`.gitignore` に追加してください。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
++| `AGENTS.md`             | プロジェクトルート、`.claude/`、または任意のディレクトリ | AI コーディングエージェント向けに作成するプロジェクト指示。Claude Code は[それを読み込む](/docs/ja/memory#agents-md)ことができます。これは独立して、または `CLAUDE.md` と一緒に読み込まれます。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
++| インストール済みプラグイン           | `~/.claude/plugins`               | クローンされたマーケットプレイス、インストール済みプラグインバージョン、およびプラグインごとのデータで、`claude plugin` コマンドで管理されます。プラグイン[あなたの claude.ai アカウントから同期](/docs/ja/plugins-reference#synced-plugins)は `~/.claude/plugins/synced/` にダウンロードされます。リンクモードでマーケットプレイス [`command` ソース](/docs/ja/plugin-marketplaces#command-sources)からインストールされたプラグインの場合、Claude Code はコピーの代わりにここにリンクを保存し、プラグインのファイルはコマンドが出力するディレクトリに留まります。`command` ソースには Claude Code v2.1.229 以降が必要です。ローカルディレクトリマーケットプレイスで相対パスでリストされているプラグインも、キャッシュコピーではなく、ソースディレクトリから[その場で読み込まれます](/docs/ja/plugins-reference#plugin-caching-and-file-resolution)。[プラグインキャッシング](/docs/ja/plugins-reference#plugin-caching-and-file-resolution)を参照して、孤立したバージョンがどのようにクリーンアップされるかを確認してください。 |
+ 
+ `~/.claude` はまた、Claude Code があなたが作業する際に書き込むデータも保持しています。トランスクリプト、プロンプト履歴、ファイルスナップショット、キャッシュ、およびログです。下記の[アプリケーションデータ](#application-data)を参照してください。
+@@ -1534,25 +1534,25 @@ Windows では、`~/.claude` は `%USERPROFILE%\.claude` に解決されます
+ Claude Code は、[`cleanupPeriodDays`](/docs/ja/settings-reference#cleanupperioddays) より古いファイルを以下のパスから削除します。ただし、保持期間を安全に判定できる場合に限ります。デフォルトは 30 日で、最小値は 1 です。`0` に設定するとバリデーションエラーが発生します。同じ経過日数の閾値が、[孤立した worktrees](/docs/ja/worktrees#clean-up-subagent-and-background-session-worktrees) の自動削除にも適用されます。
+ 
+-| `~/.claude/` 下のパス                                                                                                              | 内容                                                                                                                                                                                                            |
+-| ------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+-| `projects/<project>/<session>.jsonl`                                                                                           | 完全な会話トランスクリプト：すべてのメッセージ、ツール呼び出し、ツール結果                                                                                                                                                                         |
+-| `projects/<project>/<session>.orphaned-<timestamp>-<suffix>.jsonl`、`projects/<project>/<session>.jsonl.superseded-<timestamp>` | Claude Code が上書きまたは削除する代わりに脇に置いたセッションの前のトランスクリプト。セッションピッカーには表示されません                                                                                                                                           |
+-| `projects/<project>/<session>/subagents/`                                                                                      | [Subagent](/docs/ja/sub-agents) の会話トランスクリプト。親セッションのトランスクリプトが経過時間で削除されるときに削除されます                                                                                                                                    |
+-| `projects/<project>/<session>/tool-results/`                                                                                   | 別ファイルにこぼれた大きなツール出力                                                                                                                                                                                            |
+```
+
+</details>
+
+<details>
+<summary>desktop-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/desktop-ja.md b/docs-ja/pages/desktop-ja.md
+index 7350b3a..d99dfe2 100644
+--- a/docs-ja/pages/desktop-ja.md
++++ b/docs-ja/pages/desktop-ja.md
+@@ -927,5 +927,5 @@ Anthropic は、到着元のアドレスを使用して、組織の IP 許可リ
+ [Artifact](/docs/ja/artifacts)が[Google Fonts](/docs/ja/artifacts#improve-the-visual-design)からタイプフェイスを読み込む場合、`fonts.googleapis.com`および`fonts.gstatic.com`もリクエストします。両方のホストはオプションです。それらをブロックする場合、artifact はフォールバックタイプフェイスでレンダリングされます。フォントリクエストが即座に失敗するように、高速拒否でブロックしてください。ページの最初のレンダリングを遅延させるのではなく。
+ 
+-Artifact は、React またはチャートパッケージなどの JavaScript ライブラリを`cdnjs.cloudflare.com`、`cdn.jsdelivr.net`、`cdn.tailwindcss.com`、および`code.jquery.com`から読み込むこともできます。他の外部ホストからは読み込みません。それらのホストをブロックする場合、ライブラリに依存する artifact の部分は機能しません。ブロックされたフォントとは異なり、ブロックされたライブラリにはフォールバックがありません。ここでも高速拒否でブロックしてください。ブロックされたライブラリリクエストが即座に失敗するように。タイムアウトするまでハングするのではなく。
++Artifact は、React またはチャートパッケージなどの JavaScript ライブラリを`cdnjs.cloudflare.com`、`cdn.jsdelivr.net`、`cdn.tailwindcss.com`、`code.jquery.com`、および`unpkg.com`から読み込むこともできます。他の外部ホストからは読み込みません。それらのホストをブロックする場合、ライブラリに依存する artifact の部分は機能しません。ブロックされたフォントとは異なり、ブロックされたライブラリにはフォールバックがありません。ここでも高速拒否でブロックしてください。ブロックされたライブラリリクエストが即座に失敗するように。タイムアウトするまでハングするのではなく。
+ 
+ <h3 id="authentication-and-sso">
+```
+
+</details>
+
+<details>
+<summary>discover-plugins-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/discover-plugins-ja.md b/docs-ja/pages/discover-plugins-ja.md
+index 6c0972a..9398c2a 100644
+--- a/docs-ja/pages/discover-plugins-ja.md
++++ b/docs-ja/pages/discover-plugins-ja.md
+@@ -43,5 +43,9 @@ Claude Code は初めて対話的に起動すると、公式 Anthropic マーケ
+ ```
+ 
+-`/plugin` はターミナル CLI で対話的なパネルを開きます。Claude が `/plugin` がこの環境では利用できないと返答する場合は、Claude デスクトップアプリの[プラグインブラウザー](/docs/ja/desktop#install-plugins)を使用するか、クラウドセッションの `.claude/settings.json` で [`enabledPlugins`](/docs/ja/settings-reference#enabledplugins) の下にプラグインを宣言してください。
++`/plugin` はターミナル CLI で対話的なパネルを開きます。Claude が `/plugin` がこの環境では利用できないと返答する場合は、別の方法でプラグインをインストールしてください：
++
++* **Claude デスクトップアプリ**：[プラグインブラウザー](/docs/ja/desktop#install-plugins)を使用してください。
++* **VS Code 拡張機能**：[**Manage plugins** ダイアログ](/docs/ja/vs-code#manage-plugins)からインストールしてください。
++* **クラウドセッション**：`.claude/settings.json` で [`enabledPlugins`](/docs/ja/settings-reference#enabledplugins) の下にプラグインを宣言してください。
+ 
+ インストールが失敗した場合は、Claude Code が報告するメッセージと照合してください：
+```
+
+</details>
+
+<details>
+<summary>fast-mode-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/fast-mode-ja.md b/docs-ja/pages/fast-mode-ja.md
+index bbadc49..f42ffdc 100644
+--- a/docs-ja/pages/fast-mode-ja.md
++++ b/docs-ja/pages/fast-mode-ja.md
+@@ -15,9 +15,9 @@
+ 高速モードは異なるモデルではありません。Claude Opus を使用していますが、コスト効率よりも速度を優先する異なる API 構成です。同じ品質と機能が得られ、レスポンスが高速化されるだけです。高速モードは Opus 5 および Opus 4.8 でサポートされています。Sonnet、Haiku、または他のモデルでは利用できません。
+ 
+-Claude Code は Opus 4.7 を高速モードをサポートしていない他のモデルと同じように扱います。Opus 4.7 に切り替えると高速モードがオフになります。Opus 4.7 の高速モードは 2026 年 6 月 25 日に非推奨となり、2026 年 7 月 24 日に削除されました。
++Opus 4.7 は高速モードをサポートしていないため、それに切り替えると高速モードがオフになります。Opus 4.7 の高速モードは 2026 年 6 月 25 日に非推奨となり、2026 年 7 月 24 日に削除されました。
+ 
+ 知っておくべきこと：
+ 
+-* Claude Code CLI で `/fast` を使用して高速モードをオンにします。VS Code Extension は [`fastMode` 設定](#toggle-fast-mode)に従い、選択したモデルが高速モードをサポートしている場合は**高速モードを切り替え**コマンドを提供します。
++* Claude Code CLI で `/fast` を使用して高速モードをオンにします。[VS Code 拡張機能](/docs/ja/vs-code)は、選択したモデルが高速モードをサポートしている場合、**高速モードを切り替え**コマンドを提供します。Claude Code はそのトグルを [`fastMode` 設定](#toggle-fast-mode)に保存します。
+ * 高速モード価格は Opus 5 および Opus 4.8 で入力/出力あたり $10/$50 MTok です。
+ * サブスクリプションプラン（Pro/Max/Team/Enterprise）の Claude Code ユーザーと Claude Console のすべてのユーザーが利用可能です。Team および Enterprise 組織は Owner が最初に有効にする必要があり、Console 組織はアクセスを最初にプロビジョニングする必要があります。どちらも[要件](#requirements)に記載されています。
+@@ -146,7 +146,9 @@ Claude Code は、モデル切り替え、再接続、または失敗した[可
+ 
+ <Note>
+-  2 つの組織設定が `/fast` で高速モードをオンにすることをブロックできます：
++  4 つの組織設定が `/fast` で高速モードをオンにすることをブロックできます：
+ 
+   * **高速モードが有効になっていない**：組織で高速モードが有効になっていない場合、`/fast` で高速モードをオンにすると「Fast mode has been disabled by your organization.」と表示されます。
++  * **高速モードが管理設定によってオフにされている**：組織が [`fastMode: false`](/docs/ja/settings-reference#fastmode) を設定する[管理設定](/docs/ja/managed-settings)をデプロイしている場合、`/fast` で高速モードをオンにすると同じ「Fast mode has been disabled by your organization」メッセージが表示されます。
++  * **セッションごとのオプトインが必要**：[`fastModePerSessionOptIn: true`](#require-per-session-opt-in) を設定する管理設定は、インタラクティブターミナルセッション以外のすべての場所で `/fast on` を同じメッセージで拒否します。
+   * **高速モードモデルが許可されていない**：組織の [`availableModels`](/docs/ja/model-config#restrict-model-selection) 許可リストが高速モード Opus モデルを除外している場合、オンにすることは「is not in your organization's allowed models」で拒否されます。高速モードをサポートする許可された Opus モデルで既に実行中のセッションでは、`/fast` はモデルを切り替える代わりに現在のモデルで高速モードを有効にします。
+ </Note>
+@@ -205,4 +207,6 @@ Claude Code は、モデル切り替え、再接続、または失敗した[可
+ これは、ユーザーが複数の同時セッションを実行する組織でコストを制御するのに役立ちます。ユーザーの高速モード設定は保存されたままなので、この設定を削除するとデフォルトの永続的な動作が復元されます。
+ 
+```
+
+</details>
+
+<details>
+<summary>interactive-mode-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/interactive-mode-ja.md b/docs-ja/pages/interactive-mode-ja.md
+index 4c5b096..663d809 100644
+--- a/docs-ja/pages/interactive-mode-ja.md
++++ b/docs-ja/pages/interactive-mode-ja.md
+@@ -40,4 +40,5 @@
+ | `Esc`                                                                    | Claude を割り込むか、ダイアログを閉じる                                                                                                                                                                                    | 現在の応答またはツール呼び出しを途中で停止して、リダイレクトできます。Claude はこれまでの作業を保持します。[メッセージがキューに入っている](#queue-messages-while-claude-works)場合、Claude Code は次にそれらを送信します。ダイアログが開いている場合、`Esc` はダイアログを閉じます。権限プロンプトでは、`Esc` はアクション（[コメントなしの**いいえ**](/docs/ja/permissions#add-a-comment-when-you-answer-a-permission-prompt)と同じ）を拒否します                                                                      |
+ | `Esc` + `Esc`                                                            | 入力ドラフトをクリアするか、巻き戻す                                                                                                                                                                                         | プロンプト入力にテキストが含まれている場合、ダブル `Esc` はそれをクリアし、ドラフトを履歴に保存して `Up` で呼び出せるようにします。入力が空の場合、ダブル `Esc` は[巻き戻しメニュー](/docs/ja/checkpointing)を開いて、前の時点からコードと会話を復元または要約できます                                                                                                                                                                                                               |
++| `Ctrl+Enter` または `Ctrl+X Ctrl+S`                                         | キューに入れたメッセージを今すぐ送信                                                                                                                                                                                         | 現在のターンを割り込んで、[キューに入れたメッセージ](#queue-messages-while-claude-works)とドラフトがターン終了時ではなく直ちに送出されます。[シェルモード](#shell-mode-with-prefix)では、キーはコマンドをキューに入れて割り込みません。拡張キーを報告しないターミナルでは、`Ctrl+Enter` は通常の `Enter` として到着します。`Ctrl+X Ctrl+S` はすべてのターミナルで機能します。Claude Code v2.1.275 以降が必要です                                                                                              |
+ | `Shift+Tab`、または Node または Bun ランタイムが VT 入力モードを有効にしない場合は Windows で `Alt+M` | 権限モードを循環                                                                                                                                                                                                   | `default`（モード指標で Manual とラベル付け）、`acceptEdits`、`plan`、および利用可能な場合は `bypassPermissions` と `auto` を循環します。`auto` から、最初のプレスは `default` に切り替わります。[権限モード](/docs/ja/permission-modes)を参照してください。ファイル権限プロンプトでは、同じキーが開いている[コメントフィールド](/docs/ja/permissions#add-a-comment-when-you-answer-a-permission-prompt)を閉じます。フィールドが開いていない場合、プロンプトがそのオプションを提供するときに、セッションの残りの部分でアクションを許可するオプションを選択します |
+ | `Option+P`（macOS）または `Alt+P`（Windows/Linux）                              | モデルを切り替え                                                                                                                                                                                                   | プロンプトをクリアせずにモデルを切り替え                                                                                                                                                                                                                                                                                                                                                |
+@@ -349,5 +350,7 @@ Claude Code がコマンドをバックグラウンドで実行する場合、
+ * セッションを終了する代わりにバックグラウンドにした場合、バックグラウンドタスクはバックグラウンドセッションで実行され続けます。[実行中のセッションをバックグラウンドにする](/docs/ja/agent-view#from-inside-a-session)を参照してください
+ * 出力が 5GB を超える場合、バックグラウンドタスクは自動的に終了され、stderr に理由を説明するメモが表示されます
+-* macOS と Linux では、セッションが少なくとも 30 分間アイドル状態にあり、ターンまたはサブエージェントが実行されていない場合、Claude Code はオペレーティングシステムがメモリプレッシャーを通知するときに実行中のバックグラウンドタスクを終了します。[`CLAUDE_CODE_DISABLE_BG_SHELL_PRESSURE_REAP`](/docs/ja/env-vars) を `1` に設定してこれをオフにします。Claude Code v2.1.193 以降が必要です
++* macOS と Linux では、セッションが少なくとも 30 分間アイドル状態にあり、ターンまたはサブエージェントが実行されていない場合、Claude Code はオペレーティングシステムがメモリプレッシャーを通知するときに実行中のバックグラウンドタスクを停止します。Claude Code v2.1.193 以降が必要です
++  * [デバッグログ](/docs/ja/debug-your-config)は、タスクが停止された理由、またはプレッシャーイベントがそれらを実行し続けた理由を示します
++  * [`CLAUDE_CODE_DISABLE_BG_SHELL_PRESSURE_REAP`](/docs/ja/env-vars) を `1` に設定してメモリプレッシャー停止をオフにします
+ * [サブエージェント](/docs/ja/sub-agents)が所有するバックグラウンドコマンドには時間制限がありません。ただし、フォアグラウンドで実行されているサブエージェントが所有するコマンドは、そのサブエージェントが最終応答を行うときに終了します。ツール参照の[バックグラウンドコマンド](/docs/ja/tools-reference#background-commands)を参照してください。v2.1.218 より前では、メモリプレッシャーリープも、サブエージェントコマンドに対する以前の 60 分制限も、`Ctrl+B` でバックグラウンドに移動されたコマンドをカバーしていませんでした
+ 
+@@ -395,4 +398,6 @@ Claude はコマンド出力がトランスクリプトに到着すると自動
+ Claude が作業中に、メッセージを入力して `Enter` キーを押すと、Claude Code はターンを中断する代わりにメッセージをキューに入れ、入力ボックスの上にキューに入れられたエントリを表示します。`!` [シェルコマンド](#shell-mode-with-prefix)と、ほとんどの[コマンド](/docs/ja/commands)をキューに入れることができます。ただし、Claude Code が送信直後に実行する `/status` などのコマンドは除きます。
+ 
++送信されたメッセージとキューに入れられたメッセージは、Claude が応答を開始するまでグレーで表示されるため、Claude がまだ処理していないメッセージを判別できます。
++
+ <h3 id="when-claude-code-sends-what-you-queued">
+   Claude Code がキューに入れたものを送信するタイミング
+@@ -401,8 +406,12 @@ Claude が作業中に、メッセージを入力して `Enter` キーを押す
+ キューに入れたエントリが Claude に到達するタイミングは、何をキューに入れたかによって異なります。
+ 
+-* メッセージ：Claude がツール呼び出しを実行している間にメッセージをキューに入れた場合、Claude Code はそれらのツール呼び出しが完了するとすぐに、同じターン内で Claude に渡します。ターンがメッセージがまだキューに入った状態で終了した場合、Claude Code は次のターンで最も古いものだけを送信します。残りはキューに留まり、同じルールに従います。Claude Code はそのターンのツール呼び出しが完了したときに Claude に渡すか、その次のターンで次に古いものを送信します。
+```
+
+</details>
+
+*...以降省略*
+
+</details>
+
+
+<details>
 <summary>2026-09-21</summary>
 
 **変更ファイル:**
@@ -2602,227 +2882,5 @@ index 613db36..ae8199a 100644
 
 **削除:**
 
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index 8d3f6a0..77bbc03 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,8 @@
- # Changelog
- 
-+## 2.1.263
-+
-+- Bug fixes and reliability improvements
-+
- ## 2.1.261
- 
-```
-
-</details>
-
-</details>
-
-
-<details>
-<summary>2026-09-06</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/managed-settings-en.md   |  2 ++
- docs-ja/pages/settings-example-en.md   |  6 ++--
- docs-ja/pages/settings-reference-en.md | 66 ++++++++++++++++++++++++----------
- 3 files changed, 53 insertions(+), 21 deletions(-)
-```
-
-<details>
-<summary>managed-settings-en.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/managed-settings-en.md b/docs-ja/pages/managed-settings-en.md
-index f396f95..be02788 100644
---- a/docs-ja/pages/managed-settings-en.md
-+++ b/docs-ja/pages/managed-settings-en.md
-@@ -364,4 +364,6 @@ The table covers the permission, plugin, and delivery controls. For any key not
- <Note>
-   On Team and Enterprise plans, an Owner enables or disables [Remote Control](/docs/en/remote-control) and [web sessions](/docs/en/claude-code-on-the-web) organization-wide in [Claude Code admin settings](https://claude.ai/admin-settings/claude-code). Remote Control can additionally be disabled per device with the [`disableRemoteControl`](/docs/en/settings-reference#disableremotecontrol) setting. Web sessions have no per-device managed settings key.
-+
-+  To check whether these organization settings reached a given machine, run `claude doctor` there and read the `Organization policy` line, which says where Claude Code loaded the policy from or why it didn't load. Requires Claude Code v2.1.261 or later. In a running session, `/status` shows the same line when the policy didn't load.
- </Note>
- 
-```
-
-</details>
-
-<details>
-<summary>settings-example-en.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/settings-example-en.md b/docs-ja/pages/settings-example-en.md
-index fa6917c..8bfb572 100644
---- a/docs-ja/pages/settings-example-en.md
-+++ b/docs-ja/pages/settings-example-en.md
-@@ -365,7 +365,7 @@ Administrators deploy a file like this as `managed-settings.json`, or the same J
-         }
-       ],
--      // Sandbox every command, refuse to start if the sandbox can't be set up, and
--      // never let a blocked command retry outside the sandbox; network limited to
--      // npm and GitHub, and users can't add domains
-+      // Sandbox every command Claude runs, refuse to start if the sandbox can't be
-+      // set up, and never let a blocked command retry outside the sandbox; network
-+      // limited to npm and GitHub, and users can't add domains
-       "sandbox": {
-         "enabled": true,
-```
-
-</details>
-
-<details>
-<summary>settings-reference-en.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/settings-reference-en.md b/docs-ja/pages/settings-reference-en.md
-index 1f21e0c..96e423c 100644
---- a/docs-ja/pages/settings-reference-en.md
-+++ b/docs-ja/pages/settings-reference-en.md
-@@ -621,4 +621,5 @@ scope: "Which settings files can set the key: user (~/.claude/settings.json), pr
- | [`awsCredentialExport`](#awscredentialexport)                                                         | Supply [Bedrock credentials](/docs/en/amazon-bedrock#advanced-credential-configuration) as JSON from your own command                                                                                                            | Authentication and providers       | Any file                |
- | [`axScreenReader`](#axscreenreader)                                                                   | Render [screen-reader friendly output](/docs/en/accessibility)                                                                                                                                                                   | Interface and terminal             | Any file                |
-+| [`bashOutputMaxChars`](#bashoutputmaxchars)                                                           | Set how much of a successful command's [output](/docs/en/tools-reference#output-limits) Claude receives inline                                                                                                                   | Memory and context                 | Any file                |
- | [`blockedMarketplaces`](#blockedmarketplaces)                                                         | Block [plugin marketplace](/docs/en/plugin-marketplaces) sources for your organization                                                                                                                                           | Plugins and skills                 | Managed                 |
- | [`browserExternalPageTools`](#browserexternalpagetools)                                               | Keep Claude's tools off external pages in the [desktop](/docs/en/desktop) Browser pane                                                                                                                                           | Tools                              | Managed                 |
-@@ -681,5 +682,5 @@ scope: "Which settings files can set the key: user (~/.claude/settings.json), pr
- | [`inputNeededNotifEnabled`](#inputneedednotifenabled)                                                 | Get a [push notification](/docs/en/remote-control#mobile-push-notifications) when Claude is waiting on you                                                                                                                       | Remote, desktop, and notifications | Any file                |
- | [`isolatePeerMachines`](#isolatepeermachines)                                                         | Ask you before Claude [messages one of your sessions on another machine](/docs/en/cross-session-messaging#require-approval-for-cross-machine-messages)                                                                           | Agents, sessions, and worktrees    | Any file                |
--| [`keybindingFlavor`](#keybindingflavor)                                                               | Make `Ctrl+W` [delete back to the previous whitespace](/docs/en/interactive-mode#make-ctrl-w-delete-back-to-whitespace), as Bash does                                                                                            | Interface and terminal             | Any file                |
-+| [`keybindingFlavor`](#keybindingflavor)                                                               | Deprecated and has no effect; the word-editing shortcuts always [follow readline conventions](/docs/en/interactive-mode#make-ctrl-w-delete-back-to-whitespace)                                                                   | Interface and terminal             | Any file                |
- | [`language`](#language)                                                                               | Have Claude respond in a language other than English                                                                                                                                                                        | Model and responses                | Any file                |
- | [`managedSourcesBehavior`](#managedsourcesbehavior)                                                   | Compose every [managed source](/docs/en/managed-settings#how-claude-code-combines-managed-sources) you deploy instead of using the highest-priority one alone                                                                    | Enterprise and managed settings    | Managed                 |
-@@ -787,4 +788,5 @@ scope: "Which settings files can set the key: user (~/.claude/settings.json), pr
- | [`syncClaudeAiSkills`](#syncclaudeaiskills)                                                           | Stop downloading the [skills enabled on your claude.ai account](/docs/en/skills#how-synced-skills-behave) and hide the ones already synced                                                                                       | Plugins and skills                 | User, local, or managed |
- | [`syntaxHighlightingDisabled`](#syntaxhighlightingdisabled)                                           | Turn off syntax highlighting in diffs and code blocks                                                                                                                                                                       | Interface and terminal             | Any file                |
-+| [`taskOutputMaxChars`](#taskoutputmaxchars)                                                           | Set how much of a [background task's](/docs/en/tools-reference#background-commands) output Claude receives inline                                                                                                                | Memory and context                 | Any file                |
- | [`teammateDefaultModel`](#teammatedefaultmodel)                                                       | Removed in v2.1.234; see [Specify teammates and models](/docs/en/agent-teams#specify-teammates-and-models) for how Claude Code picks a teammate's model                                                                          | Global config settings             | Global config           |
- | [`teammateMode`](#teammatemode)                                                                       | Choose how [agent team teammates display](/docs/en/agent-teams#choose-a-display-mode)                                                                                                                                            | Agents, sessions, and worktrees    | Any file                |
-@@ -1441,5 +1443,5 @@ List the tool uses that prompt you for confirmation even in a permission mode th
- ### `permissions.deny`
- 
--List the tool uses Claude Code blocks. Use it for files that hold API keys, secrets, or environment values: Claude Code excludes matching files from file discovery and search results, denies reads of them, and blocks the [Edit and Write tools](/docs/en/permissions#read-and-edit) on the matching paths. Read and Edit deny rules apply to Claude's built-in file tools and to file commands Claude Code recognizes in Bash, such as `cat`, `head`, `tail`, and `sed`; they don't apply to arbitrary subprocesses, so for OS-level enforcement [enable the sandbox](/docs/en/sandboxing).
-+List the tool uses Claude Code blocks. Use it for files that hold API keys, secrets, or environment values: Claude Code excludes matching files from file discovery and search results, denies reads of them, and blocks the [Edit and Write tools](/docs/en/permissions#read-and-edit) on the matching paths. Read and Edit deny rules apply to Claude's built-in file tools, to file commands Claude Code recognizes in Bash, such as `cat`, `head`, `tail`, and `sed`, and to the targets of Bash [redirections](/docs/en/permissions#redirections) such as `> file` and `< file`; they don't apply to arbitrary subprocesses, so for OS-level enforcement [enable the sandbox](/docs/en/sandboxing).
- 
- * **Scope**: [`Any file`](#scopes)
-```
-
-</details>
-
-</details>
-
-
-<details>
-<summary>2026-09-05</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/changelog.md | 70 ++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 70 insertions(+)
-```
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index 3bd3615..8d3f6a0 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,74 @@
- # Changelog
- 
-+## 2.1.261
-+
-+- Added an "Organization policy" line to `/status` and `claude doctor` that says why your organization's policy could not be loaded, such as a proxy not passing the endpoint through
-+- Added `bashOutputMaxChars` and `taskOutputMaxChars` settings to raise how much command and background-task output Claude receives inline before it is saved to a file, up to 128K characters
-+- Added `--append-subagent-system-prompt-file` to read the subagent system prompt from a file, for prompts too large to pass on the command line
-+- Added `/skill-doctor` to show which loaded skills go unused and what they cost in context, so you can prune them
-+- Fixed typed or pasted characters occasionally landing out of order or being dropped during fast input or key repeat
-+- Fixed `/add-dir <subdirectory>` printing a false "couldn't be resolved" error when the working directory is on a `/net` automount
-+- Fixed the Bedrock setup wizard hanging when AWS or an AWS credential helper never responds (it now times out with a clear error), and its model checks failing behind a TLS-inspecting proxy
-+- Fixed cloud sessions discarding a plugin synced from claude.ai when managed settings force-enable it in `enabledPlugins`, then falling back to a marketplace clone that could fail
-+- Fixed being unable to delete the character immediately before an inline `[Image #N]` chip in the prompt input
-+- Fixed resuming a session losing hook output and other context around parallel tool calls, which changed the resumed request
-+- Fixed Remote Control showing a stale permission mode when a phone, browser, or claude.ai app attaches to a terminal session or after the mode changes in the terminal
-+- Fixed Remote Control sessions showing as still working (stuck spinner and Stop button) after stopping a turn from a connected phone or browser, or after a local slash command like `/clear`
-+- Fixed SDK and cloud sessions ignoring a Stop or interrupt sent just after the first prompt, before the turn had started; the turn now stops instead of running to completion
-+- Fixed Remote Control uploading a session pulled with `/teleport` into the connected session, which appeared appended to the original on phone and web
-+- Fixed Remote Control's inbound event stream failing behind TLS-inspecting corporate proxies on native Windows
-+- Fixed Remote Control sessions showing the default effort level on claude.ai when the effort comes from settings
-+- Fixed `gcpAuthRefresh` opening a browser at startup when the Google credential check was slow, even though the credential was still valid
-+- Fixed claude.ai connectors staying absent for the whole session when the startup connector fetch timed out — the CLI now retries in the background
-+- Fixed sustained high CPU usage when a background agent could not be resumed and its wake-up was retried in a tight loop
-+- Fixed feature flags gated to a newer version occasionally applying to an older Claude Code version running on the same machine
-+- Fixed `/usage` and the VS Code usage panel dropping a model-specific weekly limit row when the usage endpoint is rate limited or when opened right after startup
-```
-
-</details>
-
-</details>
-
-
-<details>
-<summary>2026-09-04</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/changelog.md                         |  69 +++
- docs-ja/pages/managed-settings-en.md               |  22 +-
- .../pages/self-hosted-environments-deploy-en.md    |   2 +
- .../pages/self-hosted-environments-reference-en.md |   2 +-
- docs-ja/pages/settings-reference-en.md             | 483 +++++++++++----------
- 5 files changed, 346 insertions(+), 232 deletions(-)
-```
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index b580854..3bd3615 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,73 @@
- # Changelog
- 
-+## 2.1.260
-+
-+- Added a diff panel that opens beside the conversation in fullscreen mode and shows your uncommitted changes as Claude edits; toggle it with `/diff`
-+- Added a likely cause for prompt-cache misses (e.g. tool definitions or system prompt changed, idle past the TTL) to `/cost` and the status line's `prompt_cache` field
-+- Added `/reload-plugins` to headless sessions, so it appears in the Claude Code Desktop and SDK command lists
-+- Added a text form of `/advisor` (`/advisor`, `/advisor <model>`, `/advisor off`) for the desktop app, Remote Control, and other headless (`-p`/Agent SDK) sessions
-+- Added `oidc.scope_on_refresh` to the Claude apps gateway for IdPs that return an id_token on refresh only when asked for `openid` again
-+- Added Claude apps gateway support for newer Claude Desktop keys in `desktop` policy blocks, including `userPluginMarketplacesEnabled` and `userPluginUploadsEnabled`
-+- Fixed `Edit`/`Write`/`Read` permission rules whose path contains parentheses being dropped as invalid or ignored by the Bash sandbox, which left "read-only" folders writable
-+- Fixed one file permission rule with an uncompilable pattern (e.g. an unclosed `[`) making every file edit fail with `Invalid regular expression`; such a deny rule now guards the literal path it spells
-+- Fixed Bash permission checks auto-approving zsh commands that hide a command substitution in a REPORTTIME, REPORTMEMORY or DIRSTACKSIZE assignment; these now prompt for approval
-+- Fixed Bedrock model discovery, token counting and AWS SSO/STS credential calls failing with "unable to get local issuer certificate" when the corporate root CA is only in the OS certificate store
-+- Fixed `permissions.blockReadsOutsideWorkingDirectories` on macOS hiding the user's git config from sandboxed git and hiding a worktree-isolated sub-agent's own checkout
-+- Fixed managed settings not loading for claude.ai Enterprise/Team users who also had a leftover API key from an earlier `/login`
-+- Fixed `/status` listing a signed-in claude.ai account and a configured API key as if both were in effect; the credential not in use is now marked
-+- Fixed managed `skillOverrides` entries keyed on a bundled skill's alias (e.g. `checkup` for `/doctor`) not applying, and `Skill(name)` deny rules not covering a nested skill listed as `<dir>:name`
-+- Fixed `model: fable` agents ignoring the `[1m]` tag on an `ANTHROPIC_DEFAULT_FABLE_MODEL` pin and silently running with a 200K context window
-+- Fixed the `/model` picker not showing Fable 5.1 for organizations that can use it, which was only accepted when typed as `/model claude-fable-5-1`
-+- Fixed prompt caching on Claude Fable 5.1 not covering the context attached after tool results, so it was re-sent as uncached input on every tool-call turn
-+- Fixed model switching staying blocked for the rest of the session after a plugin hook load failure; each switch now re-checks and the refusal names the cause
-+- Fixed model switching being blocked for the session when an organization-managed plugin's marketplace could not be loaded
-+- Fixed SDK-provided MCP servers (e.g. Desktop connectors) sometimes missing from the first turn and only appearing on the next one
-+- Fixed Claude in Chrome tools failing with "Not connected" mid-task in cloud-hosted claude.ai sessions when a connector was added or removed
-```
-
-</details>
 
 <!-- UPDATE_LOG_END -->

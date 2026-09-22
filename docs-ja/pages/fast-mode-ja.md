@@ -14,11 +14,11 @@
 
 高速モードは異なるモデルではありません。Claude Opus を使用していますが、コスト効率よりも速度を優先する異なる API 構成です。同じ品質と機能が得られ、レスポンスが高速化されるだけです。高速モードは Opus 5 および Opus 4.8 でサポートされています。Sonnet、Haiku、または他のモデルでは利用できません。
 
-Claude Code は Opus 4.7 を高速モードをサポートしていない他のモデルと同じように扱います。Opus 4.7 に切り替えると高速モードがオフになります。Opus 4.7 の高速モードは 2026 年 6 月 25 日に非推奨となり、2026 年 7 月 24 日に削除されました。
+Opus 4.7 は高速モードをサポートしていないため、それに切り替えると高速モードがオフになります。Opus 4.7 の高速モードは 2026 年 6 月 25 日に非推奨となり、2026 年 7 月 24 日に削除されました。
 
 知っておくべきこと：
 
-* Claude Code CLI で `/fast` を使用して高速モードをオンにします。VS Code Extension は [`fastMode` 設定](#toggle-fast-mode)に従い、選択したモデルが高速モードをサポートしている場合は**高速モードを切り替え**コマンドを提供します。
+* Claude Code CLI で `/fast` を使用して高速モードをオンにします。[VS Code 拡張機能](/docs/ja/vs-code)は、選択したモデルが高速モードをサポートしている場合、**高速モードを切り替え**コマンドを提供します。Claude Code はそのトグルを [`fastMode` 設定](#toggle-fast-mode)に保存します。
 * 高速モード価格は Opus 5 および Opus 4.8 で入力/出力あたり $10/$50 MTok です。
 * サブスクリプションプラン（Pro/Max/Team/Enterprise）の Claude Code ユーザーと Claude Console のすべてのユーザーが利用可能です。Team および Enterprise 組織は Owner が最初に有効にする必要があり、Console 組織はアクセスを最初にプロビジョニングする必要があります。どちらも[要件](#requirements)に記載されています。
 * サブスクリプションプラン（Pro/Max/Team/Enterprise）の Claude Code ユーザーの場合、高速モードは使用量クレジットのみで利用可能であり、サブスクリプションレート制限に含まれていません。
@@ -145,9 +145,11 @@ Claude Code は、モデル切り替え、再接続、または失敗した[可�
 * **Team および Enterprise の所有者による有効化**：高速モードは Team および Enterprise 組織ではデフォルトで無効になっています。ユーザーがアクセスできるようにするには、所有者が明示的に[高速モードを有効にする](#enable-fast-mode-for-your-organization)必要があります。
 
 <Note>
-  2 つの組織設定が `/fast` で高速モードをオンにすることをブロックできます：
+  4 つの組織設定が `/fast` で高速モードをオンにすることをブロックできます：
 
   * **高速モードが有効になっていない**：組織で高速モードが有効になっていない場合、`/fast` で高速モードをオンにすると「Fast mode has been disabled by your organization.」と表示されます。
+  * **高速モードが管理設定によってオフにされている**：組織が [`fastMode: false`](/docs/ja/settings-reference#fastmode) を設定する[管理設定](/docs/ja/managed-settings)をデプロイしている場合、`/fast` で高速モードをオンにすると同じ「Fast mode has been disabled by your organization」メッセージが表示されます。
+  * **セッションごとのオプトインが必要**：[`fastModePerSessionOptIn: true`](#require-per-session-opt-in) を設定する管理設定は、インタラクティブターミナルセッション以外のすべての場所で `/fast on` を同じメッセージで拒否します。
   * **高速モードモデルが許可されていない**：組織の [`availableModels`](/docs/ja/model-config#restrict-model-selection) 許可リストが高速モード Opus モデルを除外している場合、オンにすることは「is not in your organization's allowed models」で拒否されます。高速モードをサポートする許可された Opus モデルで既に実行中のセッションでは、`/fast` はモデルを切り替える代わりに現在のモデルで高速モードを有効にします。
 </Note>
 
@@ -203,6 +205,8 @@ Claude Code は、モデル切り替え、再接続、または失敗した[可�
 ```
 
 これは、ユーザーが複数の同時セッションを実行する組織でコストを制御するのに役立ちます。ユーザーの高速モード設定は保存されたままなので、この設定を削除するとデフォルトの永続的な動作が復元されます。
+
+管理設定がキーを設定する場合、`/fast on` はインタラクティブターミナルセッションでのみ機能します。[非インタラクティブモード](/docs/ja/headless)、[VS Code 拡張機能](/docs/ja/vs-code)、および[クラウドセッション](#use-fast-mode-in-cloud-sessions)を含むその他のすべての場所では、組織が高速モードを無効化したというメッセージで拒否されます。
 
 <h2 id="handle-rate-limits">
   レート制限の処理
