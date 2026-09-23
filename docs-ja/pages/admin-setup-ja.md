@@ -167,7 +167,7 @@ Team、Enterprise、Claude API、およびクラウドプロバイダープラ�
 
 * [クイックスタート](/docs/ja/quickstart): インストールからプロジェクトの操作まで、最初のセッションのウォークスルー
 * [一般的なワークフロー](/docs/ja/common-workflows): コードレビュー、リファクタリング、デバッグなどの日常的なタスクのパターン
-* [Claude 101](https://anthropic.skilljar.com/claude-101) と [Claude Code in Action](https://anthropic.skilljar.com/claude-code-in-action): Anthropic Academy の自習型コース
+* [Claude Code 101](https://academy.claude.com/courses/claude-code-101) と [Claude Code in Action](https://academy.claude.com/courses/claude-code-in-action): [Claude Academy](https://academy.claude.com/) の無料の自習型コース
 
 ログインの問題については、開発者に [認証のトラブルシューティング](/docs/ja/troubleshoot-install#login-and-authentication) を指してください。最も一般的な修正は次のとおりです。
 

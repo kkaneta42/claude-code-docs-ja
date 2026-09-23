@@ -246,42 +246,42 @@ claude --permission-mode acceptEdits
 ```
 
 <h2 id="analyze-before-you-edit-with-plan-mode">
-  計画モードで編集前に分析する
+  プランモードで編集前に分析する
 </h2>
 
-計画モードは Claude に変更を加えずに調査と提案を行うよう指示します。Claude はファイルを読み、シェルコマンドを実行して探索し、計画を書きますが、ソースを編集しません。[bypass permissions が利用可能](#skip-all-checks-with-bypasspermissions-mode)なインタラクティブターミナルセッションを除き、編集は計画を承認するまでブロックされたままです。
+プランモードは Claude に変更を研究して提案するよう指示しますが、実際には変更を加えません。Claude はファイルを読み込み、シェルコマンドを実行して探索し、プランを作成しますが、ソースを編集しません。[bypass 権限が利用可能](#skip-all-checks-with-bypasspermissions-mode)なインタラクティブターミナルセッションを除き、編集はプランを承認するまでブロックされたままです。
 
-[auto モード](/docs/ja/auto-mode-config)が利用可能で `useAutoModeDuringPlan` 設定がオンの場合（デフォルト）、分類器は計画中にシェルコマンドをレビューし、プロンプトの代わりに承認します。承認されたコマンドは実行され、拒否されたコマンドはブロックされます。そうでない場合、[読み取り専用コマンド](/docs/ja/permissions#read-only-commands)の外側のコマンドはプロンプトが表示されます。これはサンドボックスの [auto-allow モード](/docs/ja/sandboxing#sandbox-modes)が有効な場合も含まれます。bypass permissions が利用可能なインタラクティブターミナルセッションでは、分類器もプロンプトも計画コマンドに適用されません。[bypassPermissions モードですべてのチェックをスキップする](#skip-all-checks-with-bypasspermissions-mode)は、計画中に依然としてプロンプトが表示される少数のものをカバーしています。v2.1.212 から v2.1.217 では、bypass permissions のないセッションは、auto モードが利用可能かどうかに関係なく、読み取り専用セット外のすべてのコマンドをプロンプトしました。
+[オートモード](/docs/ja/auto-mode-config)が利用可能で、デフォルトでオンになっている `useAutoModeDuringPlan` 設定がオンの場合、分類器はプランニング中にシェルコマンドをレビューしてプロンプトを表示する代わりに確認します。承認されたコマンドは実行され、拒否されたコマンドはブロックされます。それ以外の場合、[組み込みの読み取り専用セット](/docs/ja/permissions#read-only-commands)外のコマンドはサンドボックスの[オートアロウモード](/docs/ja/sandboxing#sandbox-modes)が有効な場合を含めて承認を求めるプロンプトが表示されます。bypass 権限が利用可能なインタラクティブターミナルセッションでは、分類器もプロンプトもプランニングコマンドには適用されません。[bypassPermissions モードですべてのチェックをスキップ](#skip-all-checks-with-bypasspermissions-mode)は、そこでもまだプロンプトが表示される少数のものをカバーしています。v2.1.212 から v2.1.217 では、bypass 権限のないセッションは、オートモードが利用可能かどうかに関わらず、読み取り専用セット外のすべてのコマンドについてプロンプトを表示していました。
 
-`Shift+Tab` を押すか、単一のプロンプトに `/plan` をプレフィックスして計画モードに入ります。CLI から計画モードで開始することもできます。
+プランモードに入るには、`Shift+Tab` を押すか、単一のプロンプトに `/plan` を付けます。CLI からプランモードで開始することもできます。
 
 ```bash theme={null}
 claude --permission-mode plan
 ```
 
-計画モードを終了するには `Shift+Tab` を再度押し、計画を承認しません。
+`Shift+Tab` をもう一度押してプランを承認せずにプランモードを終了します。
 
 <h3 id="review-and-approve-a-plan">
-  計画をレビューして承認する
+  プランをレビューして承認する
 </h3>
 
-計画の準備ができたら、Claude はそれを提示し、どのように進めるかを尋ねます。そのプロンプトから以下を選択できます。
+プランの準備ができたら、Claude はそれを提示し、どのように進めるかを尋ねます。そのプロンプトから以下を選択できます。
 
-* **Yes, and use auto mode**：承認して [auto モード](#eliminate-prompts-with-auto-mode)で開始します。auto モードが利用できない場合、このオプションは **Yes, auto-accept edits** と表示されます。bypass permissions が有効な状態でセッションを開始した場合、オプションは **Yes, and switch to BYPASS PERMISSIONS (no further prompts) for this session** と表示されます。
-* **Yes, manually approve edits**：承認して各編集を手動でレビューします。
-* **No, keep planning**：計画モードにとどまり、Claude に何を変更するかを伝えます。
+* **はい、オートモードを使用する**: 承認して[オートモード](#eliminate-prompts-with-auto-mode)で開始します。オートモードがセッションで[利用可能でない](#eliminate-prompts-with-auto-mode)場合（例えば、組織がそれをオフにした場合）、このオプションは**はい、編集を自動受け入れ**と表示されます。bypass 権限を有効にしてセッションを開始した場合、オプションは代わりに**はい、このセッションで BYPASS PERMISSIONS（以降プロンプトなし）に切り替える**と表示されます。
+* **はい、編集を手動で承認する**: 承認して各編集を個別にレビューします。
+* **いいえ、プランニングを続ける**: プランモードにとどまり、Claude に何を変更するかを伝えます。
 
-計画を承認すると、計画モードを終了し、セッションを各承認オプションが説明する権限モードに切り替えるため、Claude は編集を開始します。再度計画するには、`Shift+Tab` で計画モードに戻るか、次のプロンプトに `/plan` をプレフィックスしてください。
+プランを承認するとプランモードを終了し、セッションを各承認オプションが説明する権限モードに切り替えるため、Claude は編集を開始します。再度プランを立てるには、`Shift+Tab` でプランモードに戻すか、次のプロンプトに `/plan` を付けます。
 
-`Ctrl+G` を押して、提案された計画をデフォルトのテキストエディタで開き、Claude が進める前に直接編集できます。[`showClearContextOnPlanAccept`](/docs/ja/settings-reference#showclearcontextonplanaccept)が有効な場合、リストは計画コンテキストを最初にクリアするオプションを取得します。
+`Ctrl+G` を押して、提案されたプランをデフォルトのテキストエディタで開き、Claude が進める前に直接編集します。[`showClearContextOnPlanAccept`](/docs/ja/settings-reference#showclearcontextonplanaccept)が有効な場合、リストはプランを承認してプランニングコンテキストをクリアする最初のオプションを取得します。
 
-計画を受け入れると、セッションに[生成されたタイトル](/docs/ja/sessions#name-your-sessions)が計画に基づいて付与されます。ただし、セッションに既に名前を付けている場合を除きます。
+プランを受け入れると、セッションはプランに基づいて[生成されたタイトル](/docs/ja/sessions#name-your-sessions)も取得します。ただし、セッションに既に名前を付けている場合を除きます。
 
 <h3 id="set-plan-mode-as-the-default">
-  計画モードをデフォルトとして設定する
+  プランモードをデフォルトとして設定する
 </h3>
 
-プロジェクトのターミナルセッションのデフォルトとして計画モードを設定するには、`.claude/settings.json` で `defaultMode` を `plan` に設定します。[異なる権限モードで開始する](#start-in-a-different-mode)の例が示すように配置します。[VS Code 拡張機能](/docs/ja/vs-code)が開始する会話はプロジェクト設定を開始権限モードに読み込みません。そこで、VS Code ユーザー設定で `claudeCode.initialPermissionMode` を `plan` に設定します。
+プロジェクトのターミナルセッションのデフォルトをプランモードにするには、`.claude/settings.json` で `defaultMode` を `plan` に設定します。これは[別の権限モードで開始](#start-in-a-different-mode)の下の例として配置されます。[VS Code 拡張機能](/docs/ja/vs-code)が開始する会話は、開始権限モードのプロジェクト設定を読み込みません。そこで、VS Code ユーザー設定で `claudeCode.initialPermissionMode` を `plan` に設定してください。
 
 <h2 id="eliminate-prompts-with-auto-mode">
   権限プロンプトを自動モードで排除する
@@ -305,7 +305,7 @@ Pro、Max、Team プランでは、自動モードは[セッションが開始�
 
 * **プラン**: すべてのプラン。
 * **組織**: Team と Enterprise では、自動モードはデフォルトで利用可能です。管理者は、[管理設定](/docs/ja/managed-settings)で `permissions.disableAutoMode` を `"disable"` に設定することで、組織の自動モードをオフにできます。
-* **モデル**: Anthropic API と[AWS 上の Claude Platform](/docs/ja/claude-platform-on-aws) では、Claude Opus 4.6 以降、Sonnet 4.6 以降、または[Fable モデル](/docs/ja/model-config#work-with-fable)。Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、およびサインイン済みの[Claude apps gateway](/docs/ja/claude-apps-gateway) セッションでは、Claude Sonnet 5、Opus 4.7 以降、および Fable モデルのみです。Sonnet 4.5、Opus 4.5、Haiku、claude-3 モデルを含む古いモデルは、どのプロバイダーでもサポートされていません。
+* **モデル**: Anthropic API と[AWS 上の Claude Platform](/docs/ja/claude-platform-on-aws)では、Claude Opus 4.6 以降、Sonnet 4.6 以降、または[Fable モデル](/docs/ja/model-config#work-with-fable)。Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、およびサインイン済みの[Claude apps gateway](/docs/ja/claude-apps-gateway)セッションでは、Claude Sonnet 5、Opus 4.7 以降、および Fable モデルのみです。Sonnet 4.5、Opus 4.5、Haiku、claude-3 モデルを含む古いモデルは、どのプロバイダーでもサポートされていません。
 * **プロバイダー**: Anthropic API、AWS 上の Claude Platform、Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、およびサインイン済みの Claude apps gateway セッションでデフォルトで利用可能です。
 
 Claude Code が自動モードを利用不可と報告する場合は、まずこれらの要件を確認し、設定ファイルが [`disableAutoMode`](/docs/ja/settings-reference#disableautomode) を設定しているかどうかを確認してください。Anthropic がサーバー側で自動モードをオフにしたか、サーバーがアカウントの自動モードを拒否した可能性があります。どちらかの回答を受け取ったセッションは、セッションが終了するまで自動モードをオフのままにするため、後で新しいセッションを開始してください。
@@ -318,11 +318,11 @@ Claude Code が自動モードを利用不可と報告する場合は、まず�
   Bedrock、Agent Platform、または Foundry での自動モード
 </h3>
 
-[Amazon Bedrock](/docs/ja/amazon-bedrock)、[Google Cloud の Agent Platform](/docs/ja/google-vertex-ai)、[Microsoft Foundry](/docs/ja/microsoft-foundry)、およびサインイン済みの[Claude apps gateway](/docs/ja/claude-apps-gateway) セッションでは、自動モードはデフォルトで `Shift+Tab` サイクルに表示されます。サイクルに表示されることは、セッションが開始される権限モードを変更しません。これらのプロバイダーでは、ターミナルセッションは [`defaultMode`](/docs/ja/settings-reference#permissions-defaultmode) で開始されます。これは変更しない限り Manual です。[VS Code 拡張機能](/docs/ja/vs-code)の会話は、`claudeCode.initialPermissionMode` または拡張機能で選択したモードが設定しない限り Manual で開始されます。これらのプロバイダーでは、Claude Sonnet 5、Opus 4.7 以降、および Fable モデルのみがサポートされています。
+[Amazon Bedrock](/docs/ja/amazon-bedrock)、[Google Cloud の Agent Platform](/docs/ja/google-vertex-ai)、[Microsoft Foundry](/docs/ja/microsoft-foundry)、およびサインイン済みの[Claude apps gateway](/docs/ja/claude-apps-gateway)セッションでは、自動モードはデフォルトで `Shift+Tab` サイクルに表示されます。サイクルに表示されることは、セッションが開始される権限モードを変更しません。これらのプロバイダーでは、ターミナルセッションは [`defaultMode`](/docs/ja/settings-reference#permissions-defaultmode)で開始されます。これは変更しない限り Manual です。[VS Code 拡張機能](/docs/ja/vs-code)の会話は、`claudeCode.initialPermissionMode` または拡張機能で選択したモードが設定しない限り Manual で開始されます。これらのプロバイダーでは、Claude Sonnet 5、Opus 4.7 以降、および Fable モデルのみがサポートされています。
 
 自動モードをデフォルトの開始権限モードにするには、ユーザーまたは管理設定で `"permissions": {"defaultMode": "auto"}` を設定します。VS Code 拡張機能が開始するセッションでは、モード指示器から **Auto** を選択します。[権限モードの切り替え](#switch-permission-modes)は、その選択を上回るものをカバーしています。
 
-[`/doctor`](/docs/ja/commands#all-commands) チェックアップは、Anthropic API と同じ方法で、これらのプロバイダーのユーザー設定デフォルトを提案します。
+[`/doctor`](/docs/ja/commands#all-commands)チェックアップは、Anthropic API と同じ方法で、これらのプロバイダーのユーザー設定デフォルトを提案します。
 
 開発者が自動モードを使用するのを防ぐには、[管理設定](/docs/ja/managed-settings)で `disableAutoMode` を `"disable"` に設定します。これにより `auto` が `Shift+Tab` サイクルから削除され、`--permission-mode auto` で開始されたセッションは Manual で開始されます。既に自動モードで実行されているセッションは、設定が[管理者がデプロイしたソース](/docs/ja/managed-settings#which-managed-source-claude-code-uses)からそのセッションに到達すると、自動モードを離れ、`auto mode disabled by settings` を表示します。v2.1.251 より前では、実行中のセッションは終了するまで自動モードを保持していました。
 
@@ -332,7 +332,7 @@ v2.1.158 から v2.1.206 では、これらのプロバイダーで自動モー�
   サーバー側クラシファイアレビュー
 </h3>
 
-Enterprise プランおよび Claude API を使用するアカウント、[AWS 上の Claude Platform](/docs/ja/claude-platform-on-aws)、Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、および `ANTHROPIC_BASE_URL` を[LLM ゲートウェイまたはプロキシ](/docs/ja/llm-gateway)に指す場合、自動モードの Claude Code はサーバーに[クラシファイアに送信されるアクション](#how-the-classifier-evaluates-actions)をセッションのモデルリクエストの一部としてレビューするよう要求します。サーバーがそれらをレビューする場所では、その判定がこれらのアクションを決定します。レビューしない場所では、通常はゲートウェイまたはプロキシがトラフィックに干渉するため、プラットフォーム、リージョン、または認証情報がまだサーバー側チェックを持たないため、Claude Code は独自のクラシファイアリクエストにフォールバックします。そのフォールバックがセッションの残りの間保持されると、これらのリクエストが請求されるアカウントで[クラシファイアリクエスト料金に関する通知](/docs/ja/auto-mode-classifier-billing)を表示します。サーバーに質問することをスキップして、常に Claude Code 独自のクラシファイアリクエストを使用するには、[`CLAUDE_CODE_AUTO_MODE_SERVER=0`](/docs/ja/env-vars) を設定します。変数は Anthropic API への直接接続では読み取られません。`CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1` を設定し、`CLAUDE_CODE_AUTO_MODE_SERVER` を設定しないままにする場合、Claude Code もサーバーに質問することを停止します。
+Enterprise プランおよび Claude API を使用するアカウント、[AWS 上の Claude Platform](/docs/ja/claude-platform-on-aws)、Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、および `ANTHROPIC_BASE_URL` を[LLM ゲートウェイまたはプロキシ](/docs/ja/llm-gateway)に指す場合、自動モードの Claude Code はサーバーに[クラシファイアに送信されるアクション](#how-the-classifier-evaluates-actions)をセッションのモデルリクエストの一部としてレビューするよう要求します。サーバーがそれらをレビューする場所では、その判定がこれらのアクションを決定します。レビューしない場所では、通常はゲートウェイまたはプロキシがトラフィックに干渉するため、プラットフォーム、リージョン、または認証情報がまだサーバー側チェックを持たないため、Claude Code は独自のクラシファイアリクエストにフォールバックします。そのフォールバックがセッションの残りの間保持されると、これらのリクエストが請求されるアカウントで[クラシファイアリクエスト料金に関する通知](/docs/ja/auto-mode-classifier-billing)を表示します。サーバーに質問することをスキップして、常に Claude Code 独自のクラシファイアリクエストを使用するには、[`CLAUDE_CODE_AUTO_MODE_SERVER=0`](/docs/ja/env-vars)を設定します。変数は Anthropic API への直接接続では読み取られません。`CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1` を設定し、`CLAUDE_CODE_AUTO_MODE_SERVER` を設定しないままにする場合、Claude Code もサーバーに質問することを停止します。
 
 デフォルトでサーバーに質問することには Claude Code v2.1.278 以降が必要です。
 
@@ -426,7 +426,7 @@ Claude Code v2.1.195 以降もこれらをデフォルトで許可します。
 * 同じセッションで前に Claude が作成した正確なジョブの削除
 * セキュリティ関連のコード、構成、および脅威モデルの読み取り、レビュー、または書き込み。タスクの一部として
 * 同じマルチエージェントセッションで一緒に作業しているエージェント間のメッセージ
-* [`environment`](/docs/ja/auto-mode-config#define-trusted-infrastructure) にリストされている信頼できるドメイン、バケット、およびサービスへのデータ送信。これはデータフローのみをカバーし、同じインフラストラクチャ上の破壊的または認証情報操作ではありません
+* [`environment`](/docs/ja/auto-mode-config#define-trusted-infrastructure)にリストされている信頼できるドメイン、バケット、およびサービスへのデータ送信。これはデータフローのみをカバーし、同じインフラストラクチャ上の破壊的または認証情報操作ではありません
 * [Chrome の Claude](/docs/ja/chrome)。信頼できる内部ドメイン、localhost、または指定した URL へのナビゲーション
 
 サンドボックス化されたコマンドはデフォルトではネットワークアクセスを取得しません。Claude はコマンドが必要とするホストをコマンド自体に名前を付け、クラシファイアはそれらをコマンドでレビューし、承認されたリストはそのコマンドのみのためにそれらのホストを開きます。[コマンドごとの許可ドメイン](/docs/ja/sandboxing#per-command-allowed-domains-in-auto-mode)は、リストが何を開くことができるか、できないか、およびコマンドがリストされていないホストに到達するときに何が起こるかをカバーしています。
@@ -439,14 +439,14 @@ Claude Code v2.1.195 以降もこれらをデフォルトで許可します。
   作業ディレクトリ外の最初の読み取り
 </h3>
 
-[`permissions.blockReadsOutsideWorkingDirectories`](/docs/ja/settings-reference#permissions-blockreadsoutsideworkingdirectories) がオフの間、ファイル読み取りは自動モードでプロンプトなしで実行されます。[作業ディレクトリ](/docs/ja/permissions#working-directories)外のパスを含む。Claude が Read、Grep、または Glob ツールを初めて使用するとき。外側のパスで、Claude Code はそれらの読み取りを許可し続けるかどうかを尋ねます。
+[`permissions.blockReadsOutsideWorkingDirectories`](/docs/ja/settings-reference#permissions-blockreadsoutsideworkingdirectories)がオフの間、ファイル読み取りは自動モードでプロンプトなしで実行されます。[作業ディレクトリ](/docs/ja/permissions#working-directories)外のパスを含む。Claude が Read、Grep、または Glob ツールを初めて使用するとき。外側のパスで、Claude Code はそれらの読み取りを許可し続けるかどうかを尋ねます。
 
 プロンプトは非インタラクティブな `-p` 実行またはバックグラウンドセッションには表示されません。そこでの読み取りは以前と同じように実行されます。
 
 答えに関係なく、Claude は作業を続けます。
 
 * **許可し続ける**: 読み取りが実行され、作業ディレクトリ外の後の読み取りは以前と同じように実行され、Claude Code は答えを記録するため、プロンプトは再度表示されません
-* **今からブロック**: 読み取りが拒否され、Claude Code は [`permissions.blockReadsOutsideWorkingDirectories`](/docs/ja/settings-reference#permissions-blockreadsoutsideworkingdirectories) をユーザー設定で `true` に設定します。これにより、ファイルツールはすべての後のセッションとすべての権限モードでそのような読み取りを拒否します。後で Claude がそのようなパスを読み取ることを許可するには、`/add-dir` でそのディレクトリを追加するか、設定を削除します。
+* **今からブロック**: 読み取りが拒否され、Claude Code は [`permissions.blockReadsOutsideWorkingDirectories`](/docs/ja/settings-reference#permissions-blockreadsoutsideworkingdirectories)をユーザー設定で `true` に設定します。これにより、ファイルツールはすべての後のセッションとすべての権限モードでそのような読み取りを拒否します。後で Claude がそのようなパスを読み取ることを許可するには、`/add-dir` でそのディレクトリを追加するか、設定を削除します。
 * **次回また質問**: 読み取りが拒否され、作業ディレクトリ外の次の読み取りが再度プロンプトします
 
 <h3 id="boundaries-you-state-in-conversation">
@@ -457,6 +457,16 @@ Claude Code v2.1.195 以降もこれらをデフォルトで許可します。
 
 境界はルールとして保存されません。クラシファイアはチェックのたびにトランスクリプトから再度読み取るため、[コンテキストコンパクション](/docs/ja/costs#reduce-token-usage)が境界を述べたメッセージを削除する場合、境界は失われる可能性があります。ハード保証の場合は、代わりに[拒否ルール](/docs/ja/permissions#permission-rule-syntax)を追加します。
 
+<h3 id="approvals-you-state-in-conversation">
+  会話で述べた承認
+</h3>
+
+ブロックされたアクションが許可されていることを Claude に伝える場合、クラシファイアはそれをあなたの承認として読み取り、ブロックをクリアできます。それをどのように表現したかは、アクションが実行されるかどうか、および承認がどこまで到達するかを決定します。
+
+* **アクションとその詳細に名前を付ける**: メッセージはアクションと、それを危険にする特定のもの（force push のブランチなど）に名前を付ける必要があります。動詞だけに名前を付けるとブロックはクリアされません。「force-push できます」はブロックを有効なままにします。
+* **1 つのアクションをカバーすることを期待する**: 承認は、あなたが名前を付けた破壊的なアクションをカバーするため、後のアクションは再度ブロックされます。ルーチンパターンを 1 つずつ承認することを停止するには、[`autoMode.allow`](/docs/ja/auto-mode-config#override-the-block-and-allow-rules)に追加します。
+* **いくつかのブロックは有効なままです**: [クラシファイアの優先順位](/docs/ja/auto-mode-config#override-the-block-and-allow-rules)は、あなたの承認が到達できるブロックを設定します。それがクリアしないステップを実行するには、[自動モードを離れ](#switch-permission-modes)、権限プロンプトに答えます。
+
 <h3 id="when-auto-mode-falls-back">
   自動モードがフォールバックするとき
 </h3>
@@ -465,7 +475,7 @@ Claude Code v2.1.195 以降もこれらをデフォルトで許可します。
 
 * **ブロックされたアクション**: Claude Code は通知を表示し、`/permissions` の下の **Recently denied** タブにアクションをリストします。そこで `r` を押して、手動承認で再試行できます。クラシファイアが[アクションに対して判定を出さない](/docs/ja/errors#auto-mode-cannot-determine-the-safety-of-an-action)場合。自動モードとは別の安全チェックがクラシファイアのリクエスト自体を拒否したか、その応答が解析されなかったため、Claude Code は通知または **Recently denied** エントリなしでアクションを拒否します。
 * **繰り返されるブロック**: クラシファイアが連続して 3 回またはセッション全体で 20 回アクションをブロックする場合、自動モードは一時停止し、Claude Code はプロンプトを再開します。プロンプトされたアクションを承認すると、自動モードが再開されます。これらのしきい値は構成不可能です。許可されたアクションは連続カウンターをリセットしますが、合計カウンターはセッション用に保持され、独自のリミットがフォールバックをトリガーするときのみリセットされます。Claude Code は、[自動モードとは別の安全チェックがクラシファイアのリクエストを拒否する](/docs/ja/errors#auto-mode-cannot-determine-the-safety-of-an-action)場合、拒否をどちらのしきい値にもカウントしません。リンクされたエントリは Claude Code がそれらの拒否をどのように処理するかをカバーしています。
-* **プロンプトできないセッション**: [`--permission-prompt-tool`](/docs/ja/cli-reference#cli-flags) のない[非インタラクティブ](/docs/ja/headless) `-p` 実行にはフォールバックするプロンプトがありません。繰り返されるブロックがしきい値に到達すると、アクションは実行されず、Claude は作業を続けます。[自動モードとは別の安全チェックがクラシファイアのリクエストを拒否する](/docs/ja/errors#auto-mode-cannot-determine-the-safety-of-an-action)場合も同じです。Claude Code はどちらの場合もランを停止しません。
+* **プロンプトできないセッション**: [`--permission-prompt-tool`](/docs/ja/cli-reference#cli-flags)のない[非インタラクティブ](/docs/ja/headless) `-p` 実行にはフォールバックするプロンプトがありません。繰り返されるブロックがしきい値に到達すると、アクションは実行されず、Claude は作業を続けます。[自動モードとは別の安全チェックがクラシファイアのリクエストを拒否する](/docs/ja/errors#auto-mode-cannot-determine-the-safety-of-an-action)場合も同じです。Claude Code はどちらの場合もランを停止しません。
 * **チェック中のモード切り替え**: クラシファイアチェックが保留中に権限モードを切り替える場合、Claude Code は新しいモードが要求しなかった判定を破棄します。代わりにプロンプトされるか、[`dontAsk` モード](#allow-only-pre-approved-tools-with-dontask-mode)でアクションが自動拒否されます。
 
 繰り返されるブロックは通常、クラシファイアがインフラストラクチャについてのコンテキストを欠いていることを意味します。`/feedback` を使用して偽陽性を報告するか、管理者に[信頼できるインフラストラクチャを構成](/docs/ja/auto-mode-config)させてください。
@@ -478,7 +488,7 @@ Claude Code v2.1.195 以降もこれらをデフォルトで許可します。
 
     1. [許可、質問、または拒否ルール](/docs/ja/permissions#manage-permissions)に一致するアクションは、これらの例外を除いて直ちに解決されます。
        * [保護されたパス](#protected-paths)への書き込みは、許可ルールが一致する場合でもクラシファイアにルーティングされます。`rm` と `rmdir` の削除も Claude Code v2.1.218 以降で[重要なパス](#critical-paths)をターゲットにしている場合もそうです
-       * [`requiresUserInteraction`](/docs/ja/mcp#require-approval-for-a-specific-tool) とマークされた MCP ツール。許可ルールが一致する場合でも直接プロンプトします。コネクタツール[組織が `ask` に設定](/docs/ja/mcp#organization-controls-on-connector-tools)したもの。その設定が Claude Code に到達するセッションでも
+       * [`requiresUserInteraction`](/docs/ja/mcp#require-approval-for-a-specific-tool)とマークされた MCP ツール。許可ルールが一致する場合でも直接プロンプトします。コネクタツール[組織が `ask` に設定](/docs/ja/mcp#organization-controls-on-connector-tools)したもの。その設定が Claude Code に到達するセッションでも
        * [コマンドごとの許可ドメイン](/docs/ja/sandboxing#per-command-allowed-domains-in-auto-mode)を含むシェルコマンド。許可ルールが一致する場合でもクラシファイアにルーティングされます。ルールはコマンドを承認するため、そのホストではなく
        * `Bash(git push *)` のようなコマンドのコンテンツで一致する質問ルール。権限プロンプトにフォールバック
     2. 読み取り専用アクションと作業ディレクトリ内のファイル編集は自動承認されます。[保護されたパス](#protected-paths)と[作業ディレクトリ外の最初の読み取り](#first-read-outside-the-working-directories)への書き込みを除く。プロンプトします
@@ -491,7 +501,7 @@ Claude Code v2.1.195 以降もこれらをデフォルトで許可します。
     * `Bash(python*)` のようなワイルドカードインタープリタ
     * パッケージマネージャー実行コマンド
     * `Agent` 許可ルール
-    * [`Monitor`](/docs/ja/tools-reference#monitor-tool) 許可ルール。Claude Code は Monitor コマンドをシェルを通じて実行するため
+    * [`Monitor`](/docs/ja/tools-reference#monitor-tool)許可ルール。Claude Code は Monitor コマンドをシェルを通じて実行するため
 
     `Bash(npm test)` のような狭いルールは有効なままです。Claude Code は自動モードを離れるときに削除されたルールを復元します。v2.1.236 より前では、Claude Code は自動モードで `Monitor` 許可ルールを有効なままにしていたため、ツール全体に一致するルールは分類器レビューなしで Monitor コマンドを承認しました。
 
@@ -510,12 +520,10 @@ Claude Code v2.1.195 以降もこれらをデフォルトで許可します。
     1. サブエージェントが開始する前に、委任されたタスク説明が評価されるため、危険に見えるタスクはスポーン時にブロックされます。
     2. サブエージェントが実行されている間、その各アクションはクラシファイアを通じて親セッションと同じルールで実行され、サブエージェントの frontmatter の `permissionMode` は無視されます。
     3. サブエージェントが終了すると、クラシファイアはその作業と最終レポートをレビューしてから、親がレポートを読みます。クラシファイアがサブエージェントの作業またはレポートにフラグを立てるか、別の API 安全チェックがレビューを拒否する場合、レポートは依然として配信されます。セキュリティ警告が前に付きます。クラシファイアがレビューに利用できない場合、レポートはサブエージェントの作業を検証してから行動する前に確認するメモと共に到着します。
-
-    ステップ 1 には Claude Code v2.1.178 以降が必要です。以前のバージョンはステップ 2 と 3 でクラシファイアを適用しましたが、サブエージェントが開始する前にタスク説明を評価しませんでした。
   </Accordion>
 
   <Accordion title="コストとレイテンシ">
-    クラシファイアはデフォルトでは `/model` 選択ではなく Claude Sonnet 5 で実行されます。Anthropic がサーバー側で構成するクラシファイアモデルはそのデフォルトより優先されます。セッションのモデルが Claude Sonnet 4.6 の場合、または [`availableModels`](/docs/ja/model-config#restrict-model-selection) が Sonnet 5 を除外する場合、クラシファイアは代わりにセッションのモデルで実行されます。またはセッションが[Fable モデル](/docs/ja/model-config#work-with-fable)で実行される場合は Opus モデルで。Anthropic API 以外のプロバイダーでは、その Opus フォールバックはプロバイダーのデフォルト Opus モデルです。
+    クラシファイアはデフォルトでは `/model` 選択ではなく Claude Sonnet 5 で実行されます。Anthropic がサーバー側で構成するクラシファイアモデルはそのデフォルトより優先されます。セッションのモデルが Claude Sonnet 4.6 の場合、または [`availableModels`](/docs/ja/model-config#restrict-model-selection)が Sonnet 5 を除外する場合、クラシファイアは代わりにセッションのモデルで実行されます。またはセッションが[Fable モデル](/docs/ja/model-config#work-with-fable)で実行される場合は Opus モデルで。Anthropic API 以外のプロバイダーでは、その Opus フォールバックはプロバイダーのデフォルト Opus モデルです。
 
     セッションの最初の自動モードリクエストは Sonnet 5 デフォルトを検証します。リクエストが成功する場合、Sonnet 5 はセッションのクラシファイアモデルのままです。リクエストがモデルが利用できないため失敗する場合、セッションは代わりにフォールバックを使用します。その検証が解決した後、クラシファイアのモデルはセッション用に変更されません。
 
@@ -662,7 +670,14 @@ Claude Code は、`rm` または `rmdir` ターゲットが以下のいずれか
 
 Claude Code は、`rm -rf "$DIR"/*` のようなシェル変数の直下のグロブまたは末尾のスラッシュも重要なパスの削除として扱います。変数が空の場合、コマンドはファイルシステムルートからの削除になるためです。
 
-`(...)` を使用したサブシェル、`{ ...; }` を使用したブレースグループ、`$(...)` またはバッククォートを使用したコマンド置換、あるいは `<(...)` を使用したプロセス置換内に削除を隠すことは、チェックをスキップしません。Claude Code は、`(rm -rf ~)` や `echo "$(rm -rf ~)"` のように置換内にある重要なパスの削除、または同じコマンド内の他の場所にある削除を見つけます。
+このプロンプトは、フラグが付いた `rm` に名前を付け、チェックに合格するように書き直す方法を説明します。
+
+* `$DIR` のような変数の場合、各展開をガードして、変数が設定されていないか空の場合にシェルがエラーで停止するようにします。例えば `rm -rf "${DIR:?}"/*` のように、またはリテラルパスを使用します
+* `$HOME` のような通常設定されている変数の場合、リテラルパスを使用します
+
+その方法ですべての展開がガードされている削除は重要なパスの削除ではないため、`bypassPermissions` モードではプロンプトなしで実行されます。
+
+削除を `(...)` を使用したサブシェル、`{ ...; }` を使用したブレースグループ、`$(...)` またはバッククォートを使用したコマンド置換、あるいは `<(...)` を使用したプロセス置換内に隠すことは、チェックをスキップしません。Claude Code は、`(rm -rf ~)` や `echo "$(rm -rf ~)"` のように置換内にある重要なパスの削除、または同じコマンド内の他の場所にある削除を見つけます。
 
 <h3 id="remove-item-in-powershell">
   PowerShell の Remove-Item

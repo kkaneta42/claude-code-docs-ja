@@ -339,7 +339,7 @@ Created issue #4821: {{input.title}}
   ツールを付与する
 </h3>
 
-実行は許可を求めるために停止することはありません。付与しなかった許可が必要な組み込みツール（`Bash`、`Write`、`Edit`、`WebFetch`、`WebSearch` など）はセッションから削除されるため、Claude はそれらをまったく呼び出すことができません。許可リストは、ケースが `allowed_tools` にリストする読み取り専用ツール（`Read`、`Glob`、`Grep`、`NotebookRead`、`Skill`、`Agent`、`TodoWrite`、およびタスクツール `TaskCreate`、`TaskGet`、`TaskList`、`TaskUpdate`、`TaskStop`、`TaskOutput` から）と、`--allow-tools` で付与するもの（スイート内のすべてのケースに適用）です。ケースが `Bash`、`Write`、`Edit`、`WebFetch`、`WebSearch` を使用できるようにするには、自分で付与します。
+実行は許可を求めるために停止することはありません。付与しなかった許可が必要な組み込みツール（`Bash`、`Write`、`Edit`、`WebFetch`、`WebSearch` など）はセッションから削除されるため、Claude はそれらをまったく呼び出すことができません。許可リストは、ケースが `allowed_tools` にリストする読み取り専用ツール（`Read`、`Glob`、`Grep`、`NotebookRead`、`Skill`、`Agent`、`TodoWrite`、およびタスクツール `TaskCreate`、`TaskGet`、`TaskList`、`TaskUpdate`、`TaskStop`）と、`--allow-tools` で付与するもの（スイート内のすべてのケースに適用）です。ケースが `Bash`、`Write`、`Edit`、`WebFetch`、`WebSearch` を使用できるようにするには、自分で付与します。
 
 ```bash theme={null}
 claude plugin eval . --allow-tools Write Edit "Bash(npm test *)"

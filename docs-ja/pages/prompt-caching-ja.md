@@ -37,7 +37,7 @@ API は各リクエストの開始部分（プリフィックスと呼ばれま�
 レイヤーテーブルに表示されないが、キャッシュされたままになるものに影響する 2 つの設定があります。
 
 * **モデル**：各モデルには独自のキャッシュがあります。モデルを切り替えると、コンテンツが同じであってもリクエスト全体が再計算されます。以下の [モデルの切り替え](#switching-models) を参照してください。
-* **エフォートレベル**：ほとんどのモデルでは、各エフォートレベルには独自のキャッシュがあるため、セッション中にエフォートを変更するとリクエスト全体が再計算されます。API キーまたは Claude サブスクリプションを使用した Fable 5.1 では、デフォルトではキャッシュはそのままです。以下の [エフォートレベルの変更](#changing-effort-level) を参照してください。
+* **エフォートレベル**：ほとんどのモデルでは、各エフォートレベルには独自のキャッシュがあるため、セッション中にエフォートを変更するとリクエスト全体が再計算されます。API キーまたは Claude サブスクリプションを使用した Opus 5.5 および Fable 5.1 では、デフォルトではキャッシュはそのままです。以下の [エフォートレベルの変更](#changing-effort-level) を参照してください。
 
 <Tip>
   セッションの最初にモデルとエフォートレベルを選択し、タスク間の自然な区切りのために `/compact` を保存してください。タスク中に行う変更が少ないほど、キャッシュヒット率が高くなります。
@@ -92,13 +92,13 @@ Claude Code は会話中にシステムコンテキスト（ファイル変更�
 
 v2.1.238 より前では、Claude Code はキャッシュ TTL をチェックせず、キャッシュが期限切れになった後でも確認を求めていました。
 
-[PreModelSwitch フック](/docs/ja/hooks#premodelswitch-decision-control) を使用して、この確認を必須にするか、スキップすることもできます。
+[PreModelSwitch フック](/docs/ja/hooks#premodelswitch-decision-control)を使用して、この確認を必須にするか、スキップすることもできます。
 
-[`opusplan` モデル設定](/docs/ja/model-config#opusplan-model-setting) は、プランモード中は Opus に、実行中は Sonnet に解決されるため、各プランモードの切り替えはモデルスイッチであり、新しいキャッシュを開始します。
+[`opusplan` モデル設定](/docs/ja/model-config#opusplan-model-setting)は、プランモード中は Opus に、実行中は Sonnet に解決されるため、各プランモードの切り替えはモデルスイッチであり、新しいキャッシュを開始します。
 
-Fable モデルと Opus 5 の[自動モデルフォールバック](/docs/ja/model-config#automatic-model-fallback) もモデルスイッチです。安全分類器がフォールバックモデルを持つカテゴリーでリクエストにフラグを立てると、Claude Code はそのモデルでリクエストを再実行し、セッションはそこで続行されます。
+Fable モデルと Opus 5.5 および Opus 5 の[自動モデルフォールバック](/docs/ja/model-config#automatic-model-fallback)もモデルスイッチです。安全分類器がフォールバックモデルを持つカテゴリーでリクエストにフラグを立てると、Claude Code はそのモデルでリクエストを再実行し、セッションはそこで続行されます。
 
-スキルまたはコマンドのフロントマターがセッションの現在のモデル以外の [`model`](/docs/ja/skills#frontmatter-reference) を指定する場合、そのターンもモデルスイッチです。次のリクエストはキャッシュヒットなしで会話履歴全体を読み込みます。セッションモデルは次のプロンプトで再開されます。`context: fork` スキルは、代わりに[フォークされたサブエージェントのモデル](/docs/ja/skills#run-skills-in-a-subagent)を設定します。
+スキルまたはコマンドのフロントマターがセッションの現在のモデル以外の [`model`](/docs/ja/skills#frontmatter-reference)を指定する場合、そのターンもモデルスイッチです。次のリクエストはキャッシュヒットなしで会話履歴全体を読み込みます。セッションモデルは次のプロンプトで再開されます。`context: fork` スキルは、代わりに[フォークされたサブエージェントのモデル](/docs/ja/skills#run-skills-in-a-subagent)を設定します。
 
 <h3 id="changing-effort-level">
   努力レベルの変更
@@ -106,7 +106,7 @@ Fable モデルと Opus 5 の[自動モデルフォールバック](/docs/ja/mod
 
 ほとんどのモデルでは、セッション中に[努力レベル](/docs/ja/model-config#adjust-effort-level)を変更すると、次のリクエストはキャッシュヒットなしで会話履歴全体を読み込みます。キャッシュがまだ温かい間は、Claude Code は最初に変更を確認するよう求めます。
 
-API キーまたは Claude サブスクリプションを使用した Fable 5.1 では、努力レベルの変更によってキャッシュが保持され、Claude Code は確認を求めずに新しいレベルを適用します。これは Amazon Bedrock、Google Cloud の Agent Platform、[Claude アプリゲートウェイ](/docs/ja/claude-apps-gateway)、または [`CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS`](/docs/ja/llm-gateway-protocol#disable-pre-release-capabilities) を設定した場合、あるいは組織が HIPAA 構成を持つ場合には適用されません。
+API キーまたは Claude サブスクリプションを使用した Opus 5.5 および Fable 5.1 では、努力レベルの変更によってキャッシュが保持され、Claude Code は確認を求めずに新しいレベルを適用します。これは Amazon Bedrock、Google Cloud の Agent Platform、[Claude アプリゲートウェイ](/docs/ja/claude-apps-gateway)、または [`CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS`](/docs/ja/llm-gateway-protocol#disable-pre-release-capabilities)を設定した場合、あるいは組織が HIPAA 構成を持つ場合には適用されません。
 
 v2.1.260 より前では、API キーまたは Claude サブスクリプションを使用した Fable 5.1 での努力レベルの変更もキャッシュを無効化していました。
 
@@ -125,7 +125,7 @@ v2.1.260 より前では、API キーまたは Claude サブスクリプショ�
 ツール定義はシステムプロンプトレイヤーに存在するため、ターン間でリクエスト内のツール定義のセットが変わるとキャッシュが無効化されます。[アドバイザーツール](/docs/ja/advisor)の切り替えは例外です。その定義はキャッシュブレークポイントの後に存在するため、`/advisor` を有効または無効にするとキャッシュされたプレフィックスはそのまま保持されます。[MCP サーバー](/docs/ja/mcp)の変更がこれを行うかどうかは、そのツールが[ツール検索](/docs/ja/mcp#scale-with-mcp-tool-search)によって遅延されるか、プレフィックスに読み込まれるかによって異なります。
 
 * **遅延ツール**、サポートされているモデルのデフォルト：サーバーの接続、切断、またはツールリストの変更は、新しいコンテンツを追加するだけで、既にキャッシュされているものを乱しません。
-* **プレフィックスに読み込まれるツール**：それらへの変更はキャッシュを無効化します。これは、[ツール検索が利用できないか無効になっている](/docs/ja/mcp#configure-tool-search)場合に発生します。例えば、Claude 4.5 世代より前の Google Cloud の Agent Platform モデル、カスタム `ANTHROPIC_BASE_URL` ゲートウェイ、または Claude Code がデプロイメントがツール検索を拒否することを検出した Microsoft Foundry [Azure でホストされているデプロイメント](https://platform.claude.com/docs/en/build-with-claude/claude-in-microsoft-foundry#hosting-options)の場合です。また、[`alwaysLoad`](/docs/ja/mcp#exempt-a-server-from-deferral) とマークされたサーバーまたはツール、および[閾値ベースの読み込み](/docs/ja/mcp#configure-tool-search)によって前もって保持される定義の場合にも発生します。
+* **プレフィックスに読み込まれるツール**：それらへの変更はキャッシュを無効化します。これは、[ツール検索が利用できないか無効になっている](/docs/ja/mcp#configure-tool-search)場合に発生します。例えば、Claude 4.5 世代より前の Google Cloud の Agent Platform モデル、カスタム `ANTHROPIC_BASE_URL` ゲートウェイ、または Claude Code がデプロイメントがツール検索を拒否することを検出した Microsoft Foundry [Azure でホストされているデプロイメント](https://platform.claude.com/docs/en/build-with-claude/claude-in-microsoft-foundry#hosting-options)の場合です。また、[`alwaysLoad`](/docs/ja/mcp#exempt-a-server-from-deferral)とマークされたサーバーまたはツール、および[閾値ベースの読み込み](/docs/ja/mcp#configure-tool-search)によって前もって保持される定義の場合にも発生します。
 
 ツールがプレフィックスに読み込まれる場合、無効化の最も一般的な原因は、セッション中にサーバーが接続または切断されることです。これは、あなたのアクションなしに発生する可能性があります。stdio サーバーのプロセスが終了する、HTTP セッションが期限切れになる、またはサーバーが[一時的な障害後に自動的に再接続](/docs/ja/mcp#automatic-reconnection)する場合です。接続されたサーバーは、そのツールリストを変更する[動的ツール更新](/docs/ja/mcp#dynamic-tool-updates)をプッシュすることもできます。
 
@@ -166,7 +166,7 @@ Claude Code は、プラグインのスキル、コマンド、エージェン�
 
 * `command` ソースを持つプラグインの場合、Claude Code は[プラグイン自体を再読み込みできます](/docs/ja/plugin-marketplaces#when-claude-code-re-runs-the-command)。
 * [`/plugin` インターフェースからプラグインをインストール](/docs/ja/discover-plugins#install-plugins)する場合、Claude Code はインストール中にそれを有効化できます。インストール概要は、それが行われたかどうかを示します。
-* v2.1.246 以降で [`/cd`](/docs/ja/permissions#move-the-session-to-another-directory) でセッションを移動する場合、Claude Code は新しいディレクトリの設定が有効にするプラグインを移動の一部として適用します。`/reload-plugins` が保持する完全な再読み込み警告なしで。
+* v2.1.246 以降で [`/cd`](/docs/ja/permissions#move-the-session-to-another-directory)でセッションを移動する場合、Claude Code は新しいディレクトリの設定が有効にするプラグインを移動の一部として適用します。`/reload-plugins` が保持する完全な再読み込み警告なしで。
 * インタラクティブセッションでは、`--plugin-dir` で渡した[プラグインのフォルダ](/docs/ja/plugins#test-your-plugins-locally)でプラグインを追加または削除する場合、変更は直ちに適用されます。それを適用すると完全な再読み込みがトリガーされる場合、Claude Code は変更を保持し、`/reload-plugins` を実行するための通知を表示します。Claude Code v2.1.265 以降が必要です。
 
 `/reload-plugins` が実行され、再読み込みが完全な再読み込みをトリガーする場合、Claude Code は警告を表示し、再読み込みを適用しません。`/reload-plugins --force` を実行して、とにかくそれを適用します。
@@ -366,10 +366,10 @@ Claude Code では、キャッシュは事実上 1 つのマシンとディレ�
 
 キャッシュパフォーマンスは、API がすべての応答で報告する 2 つのトークン数として表示されます。最も直接的な方法は、`current_usage` オブジェクトを読み取る[statusline スクリプト](/docs/ja/statusline)を監視することです。
 
-| フィールド                         | 意味                                           |
-| ----------------------------- | -------------------------------------------- |
-| `cache_creation_input_tokens` | このターンでキャッシュに書き込まれたトークン。キャッシュ書き込みレートで請求されます   |
-| `cache_read_input_tokens`     | このターンでキャッシュから提供されたトークン。標準入力レートの約 10% で請求されます |
+| フィールド                         | 意味                                                                                                                            |
+| ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `cache_creation_input_tokens` | このターンでキャッシュに書き込まれたトークン。キャッシュ書き込みレートで請求されます                                                                                    |
+| `cache_read_input_tokens`     | このターンでキャッシュから提供されたトークン。モデルの[キャッシュされたトークンレート](https://platform.claude.com/docs/en/about-claude/pricing)で請求されます。標準入力レートより低くなります |
 
 読み取りから作成への比率が高いほど、キャッシングが機能しています。作成がターンごとに高いままの場合、プリフィックスで何かが変更されています。[キャッシュを無効にするアクション](#actions-that-invalidate-the-cache)セクションは、通常の原因をリストします。
 

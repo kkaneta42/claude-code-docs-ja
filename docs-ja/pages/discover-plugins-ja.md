@@ -46,7 +46,7 @@ Claude Code は初めて対話的に起動すると、公式 Anthropic マーケ
 
 * **Claude デスクトップアプリ**：[プラグインブラウザー](/docs/ja/desktop#install-plugins)を使用してください。
 * **VS Code 拡張機能**：[**Manage plugins** ダイアログ](/docs/ja/vs-code#manage-plugins)からインストールしてください。
-* **クラウドセッション**：`.claude/settings.json` で [`enabledPlugins`](/docs/ja/settings-reference#enabledplugins) の下にプラグインを宣言してください。
+* **クラウドセッション**：claude.ai アカウントのプラグインを有効にして、Claude Code が[同期されたプラグイン](/docs/ja/plugins-reference#synced-plugins)として読み込むようにしてください。
 
 インストールが失敗した場合は、Claude Code が報告するメッセージと照合してください：
 
@@ -364,7 +364,7 @@ Claude Code はマーケットプレイスをローカル名で登録します�
 Claude Code はローカル マーケットプレイス カタログのコピーでプラグインを検索します。プラグインの名前の付け方によって、Claude Code がそのコピーを最初に更新するかどうかが決まります：
 
 * **マーケットプレイス名を含む場合**: セッションで `plugin-name@marketplace-name` をインストールするか、`claude plugin install` で実行すると、Claude Code はルックアップの前にそのマーケットプレイスを更新します。Claude Code は、マーケットプレイスの[自動更新](#configure-auto-updates)をオフにしたか、`DISABLE_AUTOUPDATER` を設定した場合でも、更新を実行します。v2.1.232 より前では、Claude Code はルックアップの前にマーケットプレイスを更新しませんでした。Claude Code は以下の場合、この更新をスキップします：
-  * マーケットプレイスが[GitHub、別の Git ホスト、またはリモート URL から追加](#add-marketplaces)されていない。
+  * マーケットプレイスが[GitHub、別の Git ホスト、リモート URL から追加](#add-marketplaces)されていない、または[Claude.ai から追加](#add-from-claude-ai)されていない。
   * [シード ディレクトリ](/docs/ja/plugin-marketplaces#pre-populate-plugins-for-containers)がマーケットプレイスを提供している。
   * Claude Code が過去 30 秒以内にマーケットプレイスを更新した。
   * [`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`](/docs/ja/env-vars)を設定した。
@@ -399,7 +399,7 @@ v2.1.221 より前では、`/reload-plugins` を実行するか再起動する�
 
 ソースは[`/plugin marketplace add`](#add-marketplaces)と同じ形式を取ります。例えば、GitHub の `owner/repo`、git URL、またはローカル パスなど。ただし、スペースを含むことはできません。プラグイン名は `@marketplace` サフィックスなしで指定します。
 
-そのマーケットプレイスをまだ追加していない場合、Claude Code は解決されたソースを表示し、追加する前に確認を求めます。キャンセルするとインストールがキャンセルされ、何も追加されません。マーケットプレイスが追加されると、プラグインの詳細が開き、[インストール スコープ](/docs/ja/settings#where-settings-live)を選択できます。
+Claude Code はソースが解決されたことを表示し、マーケットプレイスを追加する前に確認を求めます。キャンセルするとインストールがキャンセルされ、何も追加されません。マーケットプレイスが追加されると、プラグインの詳細が開き、[インストール スコープ](/docs/ja/settings#where-settings-live)を選択できます。ソースが既に追加したマーケットプレイスと一致する場合、Claude Code は確認をスキップし、そのマーケットプレイスでプラグインの詳細を開きます。
 
 <h2 id="manage-installed-plugins">
   インストール済みプラグインを管理する

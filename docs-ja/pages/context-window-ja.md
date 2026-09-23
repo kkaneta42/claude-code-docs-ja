@@ -35,7 +35,7 @@ export const ContextWindow = () => {
     tokens: 280,
     color: '#6B6964',
     vis: 'hidden',
-    desc: 'Working directory, platform, shell, OS version, and whether this is a git repo. Git branch, status, and recent commits load as a separate block at the very end of the system prompt.',
+    desc: 'Working directory, platform, shell, OS version, and whether this is a git repo. Git branch, status, and recent commits load as a separate block.',
     link: null
   }, {
     t: 0.08,
@@ -1602,6 +1602,7 @@ Claude Code のコンテキストウィンドウには、セッションにつ�
 | システムプロンプトと出力スタイル                                                                                                                           | 両方とも引き続き適用されます                                                        |
 | プロジェクトルート CLAUDE.md とスコープなしルール                                                                                                             | ディスクから再度注入されます                                                        |
 | 自動メモリ                                                                                                                                      | ディスクから再度注入されます                                                        |
+| [Git ステータススナップショット](/docs/ja/settings-reference#includegitinstructions)                                                                         | Claude Code はリポジトリから新しいものを読み込みます                                      |
 | [plan mode](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode)で Claude が作成したプラン                                                  | ディスクから再度注入されます                                                        |
 | `paths:` frontmatter を持つルール                                                                                                                | Claude がそれらが一致するファイルを読み込むときに Claude Code が再度読み込みます                    |
 | サブディレクトリ内のネストされた CLAUDE.md                                                                                                                 | Claude Code がそのサブディレクトリ内のファイルを読み込むときに再度読み込みます                         |

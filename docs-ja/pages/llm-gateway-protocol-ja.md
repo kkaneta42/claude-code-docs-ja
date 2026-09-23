@@ -254,6 +254,7 @@ Claude Code は `ANTHROPIC_BASE_URL` ゲートウェイを Anthropic フォー�
 
 * アップストリームが `thinking` フィールド、会話中のシステムメッセージ、またはそのようなメッセージの `cache_control` マーカーを拒否する場合、Claude Code はリクエストをリトライし、拒否された機能を会話の残りの部分で無効にします
 * アップストリームが[思考署名](https://platform.claude.com/docs/en/build-with-claude/extended-thinking)を拒否する場合（`bound to a different conversation` という `400` を含む）、Claude Code はリクエストを以前の思考ブロックなしでリトライし、それらを後のすべてのリクエストから除外します。新しい応答には依然として思考が含まれます
+* ゲートウェイまたはそのアップストリームが [advisor ツール](/docs/ja/advisor)エントリを `tools` で認識されないツールタイプとして拒否する場合、Claude Code はそのエントリとその `anthropic-beta` 値なしでリクエストを 1 回リトライします。その後のそのベース URL へのリクエストは Claude Code が終了するまで advisor を除外し、その時間は `/advisor` は開発者に利用不可です。Claude Code はこの拒否を `Input tag` の後にツールタイプを命名するメッセージを含む `400` または `422` レスポンスによって認識します。例えば `Input tag 'advisor_20260301'` です。v2.1.280 より前では、Claude Code はこの拒否をリトライしませんでした
 * Claude Code はコンテキスト管理またはツールスキーマフィールド拒否をリトライしません。それらの `400` エラーは開発者に到達します
 
 `bound to a different conversation` 拒否は API の[保存された思考](https://platform.claude.com/docs/en/build-with-claude/preserved-thinking)チェックから来ます。これは、`system`、`tools`、または以前の `messages` コンテンツが思考を生成したリクエストと異なる場合に失敗します。そのコンテンツのいずれかを書き直すゲートウェイは、拒否自体を引き起こす可能性があります。[ライブラリ、プロキシ、およびゲートウェイ](https://platform.claude.com/docs/en/build-with-claude/preserved-thinking#libraries-proxies-gateways)は、変更なしで渡すべき内容をカバーしています。

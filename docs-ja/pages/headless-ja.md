@@ -109,7 +109,7 @@ SIGTERM では、Claude Code はまだ実行中の Bash コマンドのプロセ
 cat build-error.txt | claude -p 'concisely explain the root cause of this build error' > output.txt
 ```
 
-`--output-format json` を使用すると、応答ペイロードに `total_cost_usd` とモデルごとのコスト内訳が含まれるため、スクリプト呼び出し元は [usage dashboard](/docs/ja/costs) を参照せずに呼び出しごとの支出を追跡できます。どちらの数値も [client-side estimates](/docs/ja/agent-sdk/cost-tracking) であり、実際の請求額と異なる場合があります。
+`--output-format json` を使用すると、応答ペイロードに `total_cost_usd` とモデルごとのコスト内訳が含まれるため、スクリプト呼び出し元は [usage dashboard](/docs/ja/costs) を参照せずに支出を追跡できます。`--continue` または `--resume` で以前の会話を続ける場合、実行は会話全体の合計を報告し、[以前の実行の支出を含めて](/docs/ja/agent-sdk/cost-tracking#accumulate-costs-across-multiple-calls)。両方の数値は [client-side estimates](/docs/ja/agent-sdk/cost-tracking) であり、実際の請求額と異なる場合があります。
 
 <Note>
   パイプされた stdin は 10MB に制限されています。制限を超えた場合、Claude Code は明確なエラーメッセージを表示して終了し、ゼロ以外のステータスを返します。より大きな入力を処理するには、コンテンツをファイルに書き込み、パイプする代わりにプロンプトでファイルパスを参照してください。
@@ -212,7 +212,8 @@ claude -p "Write a poem" --output-format stream-json --verbose --include-partial
 * **デフォルト**：サブエージェントの `tool_use` および `tool_result` ブロック。
 * **[`--forward-subagent-text`](/docs/ja/cli-reference#cli-flags) または [`CLAUDE_CODE_FORWARD_SUBAGENT_TEXT`](/docs/ja/env-vars) を使用**：サブエージェントのテキストおよび thinking ブロックも含まれるため、各サブエージェントのトランスクリプトを再構築できます。これには Claude Code v2.1.211 以降が必要です。
 
-いずれかのオプションを有効にすると、Claude Code は [subagents at every nesting depth](/docs/ja/sub-agents#let-subagents-spawn-their-own-subagents) からのメッセージを転送します。サブエージェントが独自のサブエージェントを生成する場合、ネストされたサブエージェントのメッセージは、`parent_tool_use_id` でそれを生成した Agent ツール呼び出しの ID を含むため、これらの ID をフォローして完全なネストツリーを再構築できます。v2.1.219 より前では、ネストされたサブエージェントからのメッセージはストリームに表示されていませんでした。
+いずれかのオプションを有効にすると、Claude Code は [subagents at every nesting depth](/docs/ja/sub-agents#let-subagents-spawn-their-own-subagents) からのメッセージを転送します。Agent ツールまたは [forked skill](/docs/ja/skills#run-skills-in-a-subagent) として開始された場合、サブエージェントが生成されたかどうかに関わらず。
+フォークされたスキルが生成するサブエージェントのメッセージ、およびサブエージェント内またはフォークされたスキル内で開始されたフォークされたスキルには、Claude Code v2.1.275 以降が必要です。`parent_tool_use_id` では、ネストされたサブエージェントのメッセージは、それを開始した Agent または Skill ツール呼び出しの ID を含むため、これらの ID をフォローして完全なネストツリーを再構築できます。v2.1.219 より前では、ネストされたサブエージェントからのメッセージはストリームに表示されていませんでした。
 
 [subagent で実行される](/docs/ja/skills#run-skills-in-a-subagent) Skills は、ストリームに同じ方法で表示されます。フォークされたスキルの最初のメッセージは、実行を駆動するスキルコンテンツを含む `user` メッセージです。いずれかのオプションを有効にすると、ストリームはフォークされたスキルのテキストおよび thinking ブロックも含みます。v2.1.265 より前では、フォークされたスキルの `tool_use` および `tool_result` ブロックのみがストリームに表示されていました。
 

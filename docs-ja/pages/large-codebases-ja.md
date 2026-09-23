@@ -255,7 +255,7 @@ Claude がワークツリーを作成するとき、フルツリーの代わり�
 
 これは特に[サブエージェント ワークツリー分離](/docs/ja/worktrees#isolate-subagents-with-worktrees)に役立ちます。サブエージェントはサブタスク用に生成される並列 Claude インスタンスで、ワークツリーで実行されるそれぞれは、フルツリーの代わりに軽量チェックアウトを取得します。セッション内のすべてのワークツリーは同じ `sparsePaths` を共有するため、1 つのサブエージェントが `packages/api/` を必要とし、別のサブエージェントが `packages/web/` を必要とする場合は、両方をリストします。
 
-`sparsePaths` にはディレクトリをリストし、個別のファイルはリストしません。`package.json`、`tsconfig.base.json`、ロックファイルなどのルートレベルのファイルは、リストするディレクトリと一緒に常にチェックアウトされます。ルートレベルのディレクトリはそうではないため、ワークツリー内でリポジトリルートの `.claude/settings.json`、`.claude/rules/`、または `.claude/skills/` を利用可能にしたい場合は、リストに `.claude` を含めます。
+`sparsePaths` にはディレクトリをリストし、個別のファイルはリストしません。`package.json`、`tsconfig.base.json`、ロックファイルなどのルートレベルのファイルは、リストするディレクトリと一緒に常にチェックアウトされます。ルートレベルのディレクトリはそうではないため、ワークツリー内でリポジトリルートの `.claude/settings.json` または `.claude/rules/` を利用可能にしたい場合は、リストに `.claude` を含めます。プロジェクトスキル、エージェント、コマンドについては、[ワークツリーがメインチェックアウトと共有するもの](/docs/ja/worktrees#what-worktrees-share-with-the-main-checkout)を参照してください。
 
 Sparse checkout では、sparse ワークツリーが存在する間、git がリポジトリの共有 `.git/config` で `extensions.worktreeConfig` を有効にする必要があります。Claude Code は最後のワークツリーが削除された後、そのエントリを削除しますが、Claude Code が追加した場合のみです。自分で設定した値は削除されません。v2.1.207 より前では、エントリは最後のワークツリーが削除された後も残り、`tea` などの go-git ベースのツールは `git config --unset extensions.worktreeConfig` を実行するまでリポジトリを開くことができませんでした。
 

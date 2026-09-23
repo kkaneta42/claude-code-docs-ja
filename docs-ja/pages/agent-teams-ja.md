@@ -14,10 +14,6 @@
 
 チームを設定する前に、より軽量なオプションで十分かどうかを確認してください。[Subagents](/docs/ja/sub-agents) は単一セッション内で動作し、[クロスセッションメッセージング](/docs/ja/cross-session-messaging) を使用すると Claude は自分で実行するセッション間で検出結果を渡すことができます。
 
-<Note>
-  このページは v2.1.178 時点のエージェントチームについて説明しています。`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` が設定されている場合、チームメンバーのスポーンにはセットアップステップが不要になり、セッション終了時にクリーンアップが自動的に行われます。v2.1.178 より前は、最初にチームを作成して名前を付けるよう Claude に依頼し、Claude は `TeamCreate` と `TeamDelete` ツールを使用してセットアップと削除を行いました。両方のツールはもう存在しません。Agent ツールの `team_name` 入力は受け入れられますが無視され、`TaskCreated`、`TaskCompleted`、および `TeammateIdle` [hook ペイロード](/docs/ja/hooks#taskcreated)の `team_name` フィールドはセッション派生名を含み、非推奨です。
-</Note>
-
 <h2 id="when-to-use-agent-teams">
   エージェントチームを使用する場合
 </h2>

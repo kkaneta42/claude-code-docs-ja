@@ -508,7 +508,7 @@ Claude が作業中でも、他のメッセージと同じようにコマンド�
 
 プラグインはユーザーアカウント、特定のプロジェクト、またはローカルのみにスコープできます。組織がプラグインを一元管理する場合、それらのプラグインは CLI と同じ方法で Desktop セッションで利用可能です。
 
-プラグインブラウザはクラウドセッションでは利用できず、デスクトップアプリからインストールしたプラグインはクラウドセッションでは利用できません。クラウドセッションでプラグインを使用するには、リポジトリの `.claude/settings.json` の [`enabledPlugins`](/docs/ja/settings-reference#enabledplugins) で宣言して Claude Code が [セッション開始時にインストール](/docs/ja/cloud-environments#what-carries-over-from-your-setup)するか、claude.ai アカウント用に有効化して Claude Code が [同期されたプラグイン](/docs/ja/plugins-reference#synced-plugins)としてロードするようにします。プラグインは WSL セッションでは利用できません。プラグインの作成を含む完全なプラグインリファレンスについては、[プラグイン](/docs/ja/plugins)を参照してください。
+プラグインブラウザはクラウドセッションでは利用できず、デスクトップアプリからインストールしたプラグインはクラウドセッションでは利用できません。クラウドセッションでプラグインを使用するには、リポジトリの `.claude/settings.json` で宣言して Claude Code が [セッション開始時にインストール](/docs/ja/cloud-environments#what-carries-over-from-your-setup)するか、claude.ai アカウント用に有効化して Claude Code が [同期されたプラグイン](/docs/ja/plugins-reference#synced-plugins)としてロードするようにします。プラグインは WSL セッションでは利用できません。プラグインの作成を含む完全なプラグインリファレンスについては、[プラグイン](/docs/ja/plugins)を参照してください。
 
 <h3 id="configure-preview-servers">
   プレビューサーバーを設定する
@@ -735,7 +735,7 @@ Claude が別のポートを選択すると、割り当てられたポートを 
 
 ローカルセッションと dev サーバーの環境変数を設定するには、プロンプトボックスの環境ドロップダウンを開き、**Local** にマウスを合わせて、ギアアイコンをクリックしてローカル環境エディタを開きます。ここで保存する変数は、マシンに暗号化されて保存され、開始するすべてのローカルセッションとプレビューサーバーに適用されます。また、`~/.claude/settings.json` ファイルの `env` キーに変数を追加することもできます。ただし、これらは Claude セッションにのみ到達し、dev サーバーには到達しません。サポートされている変数の完全なリストについては、[環境変数](/docs/ja/env-vars)を参照してください。
 
-[拡張思考](/docs/ja/model-config#extended-thinking)はデフォルトで有効になっており、複雑な推論タスクのパフォーマンスを向上させますが、追加のトークンを使用します。Anthropic API では、ローカル環境エディタで `MAX_THINKING_TOKENS` を `0` に設定して思考をオフにします。これは Fable モデルには効果がなく、常に拡張思考を使用します。Anthropic API で思考をオフにした場合、Claude Code は、Opus 5 などの[その組み合わせを受け入れない](/docs/ja/errors#effort-isnt-available-with-thinking-turned-off)ことが分かっているモデルに、より高いレベルではなく effort `high` を送信します。
+[拡張思考](/docs/ja/model-config#extended-thinking)はデフォルトで有効になっており、複雑な推論タスクのパフォーマンスを向上させますが、追加のトークンを使用します。Anthropic API では、ローカル環境エディタで `MAX_THINKING_TOKENS` を `0` に設定して思考をオフにします。これは Opus 5.5 または Fable モデルには効果がなく、常に拡張思考を使用します。Anthropic API で思考をオフにした場合、Claude Code は、Opus 5 などの[その組み合わせを受け入れない](/docs/ja/errors#effort-isnt-available-with-thinking-turned-off)ことが分かっているモデルに、より高いレベルではなく effort `high` を送信します。
 
 [適応的推論](/docs/ja/model-config#adjust-effort-level)を持つモデルでは、適応的推論が思考の深さを制御するため、`0` 以外の `MAX_THINKING_TOKENS` 値は無視されます。Opus 4.6 と Sonnet 4.6 では、固定思考予算を使用するために `CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING` を `1` に設定します。Fable モデル、Sonnet 5、および Opus 4.7 以降は常に適応的推論を使用し、固定予算モードはありません。
 

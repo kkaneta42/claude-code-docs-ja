@@ -71,6 +71,7 @@
 | `API Error: 401 Invalid authentication credentials`                                                                                                                                                                                                                  | [認証](#api-error-401-invalid-authentication-credentials)                                           |
 | `Login expired · Please run /login`                                                                                                                                                                                                                                  | [認証](#login-expired)                                                                              |
 | `Claude login not accepted · Run /login, then try again`                                                                                                                                                                                                             | [認証](#claude-login-not-accepted)                                                                  |
+| `Artifacts need a claude.ai login`                                                                                                                                                                                                                                   | [認証](#artifacts-need-a-claude-ai-login)                                                           |
 | `Not signed in to the Cloud gateway — run /login.`                                                                                                                                                                                                                   | [認証](#administrator-policy-requires-a-cloud-gateway-sign-in)                                      |
 | `Administrator policy requires a Cloud gateway sign-in on this machine`                                                                                                                                                                                              | [認証](#administrator-policy-requires-a-cloud-gateway-sign-in)                                      |
 | `Failed to authenticate: OAuth session expired and could not be refreshed`                                                                                                                                                                                           | [認証](#login-expired)                                                                              |
@@ -87,6 +88,7 @@
 | `Issuer mismatch in authorization response (RFC 9207)`                                                                                                                                                                                                               | [認証](#issuer-mismatch-in-authorization-response)                                                  |
 | `Cloud gateway session expired — run /login to reconnect.`                                                                                                                                                                                                           | [認証](#cloud-gateway-session-expired)                                                              |
 | `Cloud gateway <url> no longer accepts this session`                                                                                                                                                                                                                 | [認証](#cloud-gateway-session-expired)                                                              |
+| `Sign-in timed out while waiting for you to continue. Try again.`                                                                                                                                                                                                    | [認証](#sign-in-timed-out-while-waiting-for-you-to-continue)                                        |
 | `AWS credentials expired or invalid`                                                                                                                                                                                                                                 | [認証](#aws-credentials-expired-or-invalid)                                                         |
 | `AWS authentication failed`                                                                                                                                                                                                                                          | [認証](#aws-authentication-failed)                                                                  |
 | `Google Cloud credentials expired or invalid`                                                                                                                                                                                                                        | [認証](#google-cloud-credentials-expired-or-invalid)                                                |
@@ -149,11 +151,14 @@
 | `effort '<level>' is not supported when thinking is disabled`                                                                                                                                                                                                        | [リクエストエラー](#effort-isnt-available-with-thinking-turned-off)                                       |
 | `max_tokens must be greater than thinking.budget_tokens`                                                                                                                                                                                                             | [リクエストエラー](#thinking-budget-exceeds-output-limit)                                                 |
 | `API Error: 400 due to tool use concurrency issues`                                                                                                                                                                                                                  | [リクエストエラー](#tool-use-or-thinking-block-mismatch)                                                  |
+| `API Error: 400 orphaned tool_result in conversation history`                                                                                                                                                                                                        | [リクエストエラー](#tool-use-or-thinking-block-mismatch)                                                  |
+| `API Error: 400 duplicate tool_use ID in conversation history`                                                                                                                                                                                                       | [リクエストエラー](#tool-use-or-thinking-block-mismatch)                                                  |
 | `[Unsupported tool content removed]`                                                                                                                                                                                                                                 | [リクエストエラー](#unsupported-tool-content-removed)                                                     |
 | `server_tool_use.name: Input should be` on every turn of a resumed session                                                                                                                                                                                           | [リクエストエラー](#unsupported-tool-content-removed)                                                     |
 | `<model> can't help with this. Start a new session to continue`                                                                                                                                                                                                      | [リクエストエラー](#usage-policy-refusal)                                                                 |
 | `Claude Code is unable to respond to this request, which appears to violate our Usage Policy`                                                                                                                                                                        | [リクエストエラー](#usage-policy-refusal)                                                                 |
 | `<model>'s safeguards flagged this message`                                                                                                                                                                                                                          | [リクエストエラー](#safety-measures-flagged-a-cybersecurity-topic)                                        |
+| `Opus 5.5's safeguards flagged this session`                                                                                                                                                                                                                         | [リクエストエラー](#safety-measures-flagged-a-cybersecurity-topic)                                        |
 | `<model> has safety measures that flagged this message for a cybersecurity topic`                                                                                                                                                                                    | [リクエストエラー](#safety-measures-flagged-a-cybersecurity-topic)                                        |
 | `Installation was killed before it could finish (exit code 137)`                                                                                                                                                                                                     | [インストールエラー](#installation-was-killed-before-it-could-finish)                                      |
 | `The connection dropped while downloading the update`                                                                                                                                                                                                                | [インストールエラー](#the-connection-dropped-while-downloading-the-update)                                 |
@@ -199,6 +204,8 @@
 | `No conversation found with session ID: <session-id>`                                                                                                                                                                                                                | [コマンドラインエラー](#no-conversation-found-with-the-session-id)                                          |
 | `Cannot switch renderers in this session`                                                                                                                                                                                                                            | [コマンドラインエラー](#cannot-switch-renderers-in-this-session)                                            |
 | `Cannot switch renderers while work is running in the background`                                                                                                                                                                                                    | [コマンドラインエラー](#cannot-switch-renderers-in-this-session)                                            |
+| `Couldn't open Claude Desktop`                                                                                                                                                                                                                                       | [コマンドラインエラー](#couldnt-open-claude-desktop)                                                        |
+| `Failed to open Claude Desktop. Please try opening it manually.`                                                                                                                                                                                                     | [コマンドラインエラー](#couldnt-open-claude-desktop)                                                        |
 | `Couldn't read your Zed keymap` / `Couldn't back up your Zed keymap` / `Couldn't update your Zed keymap`                                                                                                                                                             | [コマンドラインエラー](#terminal-setup-left-your-zed-keymap-unchanged)                                      |
 | `Your Zed keymap isn't a readable list of keybindings`                                                                                                                                                                                                               | [コマンドラインエラー](#terminal-setup-left-your-zed-keymap-unchanged)                                      |
 | `Skill usage reports are not available on this connection.`                                                                                                                                                                                                          | [コマンドラインエラー](#skill-usage-reports-are-not-available-on-this-connection)                           |
@@ -206,6 +213,7 @@
 | `Output styles are saved to local settings (.claude/settings.local.json), which this session doesn't load`                                                                                                                                                           | [コマンドラインエラー](#output-styles-are-saved-to-local-settings-which-this-session-doesnt-load)           |
 | `` `plugin eval` is currently in early access `` / `` `plugin eval` is currently unavailable ``                                                                                                                                                                      | [プラグインエラー](#plugin-eval-is-currently-in-early-access)                                             |
 | `Marketplace "<name>" is registered from an untrusted source`                                                                                                                                                                                                        | [プラグインエラー](#marketplace-is-registered-from-an-untrusted-source)                                   |
+| `Marketplace "<name>" is already added from a different source`                                                                                                                                                                                                      | [プラグインエラー](#marketplace-is-already-added-from-a-different-source)                                 |
 | `references ${user_config.*} in a shell-form command`                                                                                                                                                                                                                | [プラグインエラー](#plugin-command-references-user-config)                                                |
 | `Monitor "<name>" from plugin <plugin> references ${user_config.*} in its command`                                                                                                                                                                                   | [プラグインエラー](#plugin-command-references-user-config)                                                |
 | `headersHelper for MCP server '<name>' references ${user_config.*}`                                                                                                                                                                                                  | [プラグインエラー](#plugin-command-references-user-config)                                                |
@@ -216,6 +224,7 @@
 | `Plugin source path refused`                                                                                                                                                                                                                                         | [プラグインエラー](#marketplace-entry-path-does-not-stay-inside-the-marketplace-directory)                |
 | `Failed to load marketplace configuration`                                                                                                                                                                                                                           | [プラグインエラー](#failed-to-load-marketplace-configuration)                                             |
 | `Marketplace configuration file is corrupted`                                                                                                                                                                                                                        | [プラグインエラー](#failed-to-load-marketplace-configuration)                                             |
+| `Plugin "<name>@synced" is required by your organization and can't be disabled here`                                                                                                                                                                                 | [プラグインエラー](#plugin-is-required-by-your-organization)                                              |
 | `would be spawned with zero tools — refusing`                                                                                                                                                                                                                        | [ツールエラー](#agent-would-be-spawned-with-zero-tools)                                                 |
 | `File is covered by a Read deny rule in your permission settings`                                                                                                                                                                                                    | [ツールエラー](#file-is-covered-by-a-read-deny-rule)                                                    |
 | `subagent_type is required: the general-purpose agent is not available in this session`                                                                                                                                                                              | [ツールエラー](#subagent-type-is-required)                                                              |
@@ -246,6 +255,8 @@
 | `Can't open MCP settings in a background session`                                                                                                                                                                                                                    | [バックグラウンドセッションエラー](#commands-refused-in-a-background-session)                                     |
 | `blocked because the path is spelled in a form that cannot be safely resolved`                                                                                                                                                                                       | [バックグラウンドセッションエラー](#write-or-command-blocked-because-the-path-cannot-be-safely-resolved)          |
 | `blocked because the path is network-shaped`                                                                                                                                                                                                                         | [バックグラウンドセッションエラー](#write-or-command-blocked-because-the-path-names-a-network-location)           |
+| `is isolated in the worktree <path>, but this command <reason>. Refusing to run it`                                                                                                                                                                                  | [バックグラウンドセッションエラー](#command-blocked-by-the-worktree-isolation-checks)                             |
+| `too complex to verify that it stays inside the worktree`                                                                                                                                                                                                            | [バックグラウンドセッションエラー](#command-blocked-by-the-worktree-isolation-checks)                             |
 | `This session has no saved transcript`                                                                                                                                                                                                                               | [バックグラウンドセッションエラー](#this-session-has-no-saved-transcript)                                         |
 | `Can't open — this session is running in another terminal`                                                                                                                                                                                                           | [バックグラウンドセッションエラー](#this-session-is-running-in-another-terminal)                                  |
 | `This conversation is already open in another running Claude session`                                                                                                                                                                                                | [バックグラウンドセッションエラー](#this-session-is-running-in-another-terminal)                                  |
@@ -281,6 +292,7 @@
 | `MCP server <name> is blocked by enterprise managed policy`                                                                                                                                                                                                          | [設定の警告](#mcp-server-is-blocked-by-enterprise-managed-policy)                                      |
 | `Managed settings document could not be parsed as a JSON object; none of its settings are in effect. Fix or remove it.`                                                                                                                                              | [設定の警告](#managed-settings-document-could-not-be-parsed)                                           |
 | `Managed settings drop-in directory could not be read`                                                                                                                                                                                                               | [設定の警告](#managed-settings-document-could-not-be-parsed)                                           |
+| `otelHeadersHelper failed; telemetry is not being exported. See /status: ...`                                                                                                                                                                                        | [設定の警告](#otelheadershelper-failed)                                                                |
 | `"crossSessionInbound" must be one of "accept", "hold", "refuse"`                                                                                                                                                                                                    | [設定の警告](#crosssessioninbound-must-be-one-of-accept-hold-refuse)                                   |
 | `headersHelper not run — this workspace has no persisted trust`                                                                                                                                                                                                      | [設定の警告](#headershelper-not-run)                                                                   |
 | `Invalid permission rule "..." was skipped: Malformed Tool(content) rule`                                                                                                                                                                                            | [設定の警告](#malformed-tool-content-rule)                                                             |
@@ -624,7 +636,7 @@ API Error: Usage credits required for 1M context · run /usage-credits to turn t
 **対応方法：**
 
 * `/model` を実行し、`[1m]` サフィックスなしのバリアントを選択して、標準コンテキストウィンドウにフォールバックします
-* メッセージが `/usage-credits` を指定する場合、それを実行して Pro と Max で 1M バリアントのメータリング課金をオンにするか、Team と Enterprise で管理者に使用クレジットをリクエストします。使用クレジットがオンになったら Claude Code を再起動します。再起動するまで、セッションは標準コンテキスト制限に留まります。
+* メッセージが `/usage-credits` を指定する場合、それを実行して Pro と Max で 1M バリアントのメータリング課金をオンにするか、Team と Enterprise で管理者に使用クレジットをリクエストします。使用クレジットがオンになったら Claude Code を再起動するか、新しいセッションを開始します。メッセージが指定するまで、セッションは標準コンテキスト制限に留まります。
 * `/model` の後もエラーが続く場合、1M モデル ID が他の場所に設定されている可能性があります。[モデルの設定](/docs/ja/model-config#setting-your-model) を参照して、優先順位順に確認する設定場所を確認してください。
 * モデルピッカーから 1M バリアントを完全に削除するには、[`CLAUDE_CODE_DISABLE_1M_CONTEXT=1`](/docs/ja/env-vars) を設定します
 
@@ -861,7 +873,8 @@ Claude Code はスクリプトを再実行し、このメッセージを表示�
 * `apiKeyHelper` で設定されたコマンドをシェルで直接実行して、失敗を再現します
 * コマンドが期限切れのセッションを報告する場合は、認証情報プロバイダーで再認証します。たとえば、SSO またはシークレットボールトに再度サインインします
 * コマンドを修正して、stdout にのみキーを出力するようにします。単一のトークンとして、最大 16,384 文字の印字可能 ASCII で、終了コード 0 で終了します。[apiKeyHelper で認証情報をローテーションする](/docs/ja/llm-gateway-connect#rotate-credentials-with-apikeyhelper) を参照して、動作するセットアップを確認してください。
-* `/status` を実行して、`apiKeyHelper` がアクティブな認証情報ソースであることを確認します。コマンドが失敗するたびに、その終了コードとエラー出力がターミナルの `Authentication` パネルに表示されます。v2.1.212 より前では、パネルは `Cloud authentication` というタイトルでした。
+* `/status` を実行して、`apiKeyHelper` がアクティブな認証情報ソースであることを確認します。`apiKeyHelper` 行は `Failing` を表示し、最後の失敗の詳細（終了コードとコマンドのエラー出力など）を表示し、次の成功した実行後に消えます。v2.1.274 より前では、`/status` は認証情報ソースのみを表示し、失敗を表示しませんでした。
+* コマンドが失敗するたびに、その終了コードとエラー出力がターミナルの `Authentication` パネルに表示されます。v2.1.212 より前では、パネルは `Cloud authentication` というタイトルでした。
 
 <h3 id="invalid-request-header-value">
   無効なリクエストヘッダー値
@@ -1166,6 +1179,26 @@ Claude login not accepted · Run /login, then try again
 **対応方法：**
 
 * `/login` を実行し、サインインを完了してから、セッションを再度開始します
+
+<h3 id="artifacts-need-a-claude-ai-login">
+  Artifacts には claude.ai ログインが必要です
+</h3>
+
+Claude Code は、セッションに artifacts に使用できる claude.ai ログインがないため、[Artifacts](/docs/ja/artifacts) の公開または読み取りを拒否しました。
+
+メッセージのすべての形式は同じ単語で始まり、その後にセッションの認証方法に応じた救済が続きます。競合する認証情報がない場合は、次のように読みます：
+
+```text theme={null}
+Artifacts need a claude.ai login. Run /login and select "Claude account with subscription", then retry — the "Anthropic Console account" option does not provide claude.ai credentials.
+```
+
+**対応方法：**
+
+* `/login` を実行し、**Claude account with subscription** を選択します。**Anthropic Console account** オプションは claude.ai 認証情報を提供しません。
+* メッセージが `ANTHROPIC_API_KEY`、`apiKeyHelper` 設定、または前の `/login` で保存された Console キーなど、優先順位を取る認証情報に名前を付ける場合は、メッセージが言う方法でそれを削除してから、`/login` を実行します
+* メッセージがこのリモートセッションがそれを起動したマシンを通じて認証されると言う場合は、そのマシンで claude.ai にサインインしてから、セッションを再接続します
+* メッセージが認証情報がセッションのホスト環境によって注入されると言う場合は、そのセッションでそれを変更できません。claude.ai にサインインしているセッションを開始します
+* [可用性](/docs/ja/artifacts#availability) については、プラン、モデルプロバイダー、オーガニゼーションポリシーなど、Artifacts が持つ他の要件を参照してください
 
 <h3 id="administrator-policy-requires-a-cloud-gateway-sign-in">
   管理者ポリシーがクラウドゲートウェイサインインを必要とします
@@ -1534,6 +1567,20 @@ Cloud gateway <url> no longer accepts this session. Start `claude` and sign in a
 
 * セッションで `/login` を実行し、ブラウザサインインを完了します
 * 非対話的な起動の場合は、同じ環境で `claude` を起動し、`/login` を実行してから、コマンドを再実行します
+
+<h3 id="sign-in-timed-out-while-waiting-for-you-to-continue">
+  サインイン中にタイムアウトしました。続行するのを待機しています
+</h3>
+
+[Claude apps gateway](/docs/ja/claude-apps-gateway) サインイン中に、ゲートウェイはサインインしたアカウントに名前を付け、Claude Code はそれを保存する前に確認するよう求めました。ゲートウェイの独自の有効期限を過ぎて確認を開いたままにしておき、ゲートウェイは更新トークンを発行しなかったため、続行したときに Claude Code は何も保存しませんでした：
+
+```text theme={null}
+Sign-in timed out while waiting for you to continue. Try again.
+```
+
+**対応方法：**
+
+* `/login` を再度実行し、サインインの有効期限が切れる前にアカウントを確認します
 
 <h3 id="gateway-refused-the-request">
   ゲートウェイがリクエストを拒否しました
@@ -2268,9 +2315,9 @@ API Error: 400 ... "thinking.type.enabled" is not supported for this model. Use 
 
 **対応方法：**
 
-* `claude update` を実行して Claude Code を再開してください。Opus 4.7 には v2.1.111 以降が必要です。Opus 4.8 には v2.1.154 以降が必要です。Sonnet 5 には v2.1.197 以降が必要です。Opus 5 には v2.1.219 以降が必要です
+* `claude update` を実行して Claude Code を再開してください。Opus 4.7 には v2.1.111 以降が必要です。Opus 4.8 には v2.1.154 以降が必要です。Sonnet 5 には v2.1.197 以降が必要です。Opus 5 には v2.1.219 以降が必要です。Opus 5.5 には v2.1.280 以降が必要です
 * アップグレードできない場合は、`/model` を実行して Opus 4.6 または Sonnet 4.6 を選択してください
-* [Agent SDK](/docs/ja/agent-sdk/overview)でこれに遭遇した場合は、SDK パッケージをアップグレードしてください。Opus 4.8 には TypeScript SDK v0.3.154 以降と Python SDK v0.2.88 以降が必要です。Sonnet 5 には TypeScript SDK v0.3.197 以降が必要です。Opus 5 には TypeScript SDK v0.3.219 以降が必要です
+* [Agent SDK](/docs/ja/agent-sdk/overview)でこれに遭遇した場合は、SDK パッケージをアップグレードしてください。Opus 4.8 には TypeScript SDK v0.3.154 以降と Python SDK v0.2.88 以降が必要です。Sonnet 5 には TypeScript SDK v0.3.197 以降が必要です。Opus 5 には TypeScript SDK v0.3.219 以降が必要です。Opus 5.5 には TypeScript SDK v0.3.280 以降が必要です
 
 <h3 id="effort-isnt-available-with-thinking-turned-off">
   思考がオフの場合、努力は利用できません
@@ -2314,11 +2361,13 @@ Claude Code は Anthropic API でこれらの値を自動的に調整します�
 
 ```text theme={null}
 API Error: 400 due to tool use concurrency issues. Run /rewind to recover the conversation.
+API Error: 400 orphaned tool_result in conversation history. Run /rewind to recover the conversation.
+API Error: 400 duplicate tool_use ID in conversation history. Run /rewind to recover the conversation.
 API Error: 400 ... unexpected `tool_use_id` found in `tool_result` blocks
 API Error: 400 ... thinking blocks ... cannot be modified
 ```
 
-3 つのバリアントはすべて同じことを意味します。履歴内の `tool_use`、`tool_result`、および `thinking` ブロックのシーケンスが、API が期待するものと一致しなくなりました。
+すべてのバリアントは同じことを意味します。履歴内の `tool_use`、`tool_result`、および `thinking` ブロックのシーケンスが、API が期待するものと一致しなくなりました。
 
 **対応方法：**
 
@@ -2376,7 +2425,7 @@ v2.1.219 より前では、メッセージは `Claude Code is unable to respond 
 API Error: Opus 4.8's safeguards flagged this message. Our intentionally broad safeguards allow us to deliver more capabilities faster, but can sometimes flag legitimate cybersecurity work. Apply to the Cyber Verification Program to reduce these interruptions. Send feedback with /feedback or learn more: https://support.claude.com/en/articles/14604842-real-time-cyber-safeguards-on-claude
 ```
 
-メッセージは [Cyber Verification Program](https://support.claude.com/en/articles/14604842-real-time-cyber-safeguards-on-claude)にリンクしており、正当なサイバーセキュリティ作業へのアクセスを許可します。
+メッセージは [Cyber Verification Program](https://support.claude.com/en/articles/14604842-real-time-cyber-safeguards-on-claude)にリンクしており、正当なサイバーセキュリティ作業へのアクセスを許可します。Opus 5.5 では、v2.1.280 以降が必要であり、メッセージは `Opus 5.5's safeguards flagged this session` で開始されます。フラグが立てられたカテゴリにフォールバックモデルが利用可能な場合、Claude Code は [モデルを切り替え](/docs/ja/model-config#automatic-model-fallback)ます。このエラーを表示する代わりに。
 
 [Amazon Bedrock](/docs/ja/amazon-bedrock)、[Google Cloud の Agent Platform](/docs/ja/google-vertex-ai)、および [Microsoft Foundry](/docs/ja/microsoft-foundry)では、サイバーセキュリティフラグは代わりに [使用ポリシー拒否](#usage-policy-refusal)メッセージを生成します。
 
@@ -2436,6 +2485,12 @@ The connection dropped while downloading the update (attempt 3/3: aborted). Chec
 * ネットワークがプロキシを必要とする場合は、インストーラーまたは `claude update` を実行する前に `HTTPS_PROXY` を設定します。[ネットワーク接続の確認](/docs/ja/troubleshoot-install#check-network-connectivity)を参照してください。
 * 企業プロキシが転送を閉じ続ける場合は、ネットワークチームに `downloads.claude.ai` からの完全なダウンロードを許可するよう依頼します。[ネットワークアクセス要件](/docs/ja/network-config#network-access-requirements)を参照してください。
 * シェルから `claude doctor` を実行して、インストール診断を実行します
+
+***
+
+title: "コマンドラインエラー"
+description: "Claude Code のコマンドラインエラーのトラブルシューティングガイド。エラーメッセージの意味と対処方法を説明します。"
+-----------------------------------------------------------------------------
 
 <h2 id="command-line-errors">
   コマンドラインエラー
@@ -3087,6 +3142,7 @@ Claude Code はメッセージを表示した後、終了コード 1 で終了�
 **対処方法：**
 
 * メッセージからセッション ID を使用して `claude --resume <session-id>` を実行して再試行してください。
+* 再試行が再度失敗する場合は、`claude update` を実行してから再開してください。v2.1.275 より前のバージョンは、保存されたトランスクリプトに読み込めないエントリが含まれている場合、再開に失敗します。
 * 再試行が再度失敗する場合は、`claude` を実行して新しいセッションを開始してください。
 
 <h3 id="no-conversation-found-with-the-session-id">
@@ -3138,6 +3194,23 @@ Cannot switch renderers in this session — it has restrictions a restart can't 
 **対処方法：**
 
 * これらの制限なしで開始されたセッションで、`/tui fullscreen` または `/tui default` を実行して戻してください。Claude Code はそこで [`tui` 設定](/docs/ja/settings-reference#tui)を保存します。
+
+<h3 id="couldnt-open-claude-desktop">
+  Claude Desktop を開くことができませんでした
+</h3>
+
+[`/desktop`](/docs/ja/desktop#coming-from-the-cli) またはそのエイリアス `/app` を実行しましたが、Claude Desktop を開くために Claude Code が使用するシステムコマンドが失敗しました。セッションはターミナルに留まります。
+
+```text theme={null}
+Error: Couldn't open Claude Desktop (`open` exited 1: LSOpenURLsWithRole() failed for the URL claude://resume?session=<session-id> with error -10814). Open Claude Desktop and run /desktop again.
+```
+
+**対処方法：**
+
+* Claude Desktop を自分で開いてから、`/desktop` を再度実行してください。
+* そのコマンドの完全なエラー出力を読むには、`/debug` でデバッグログをオンにし、`/desktop` を再度実行してから、デバッグログを確認してください。
+
+v2.1.275 より前は、メッセージは `Failed to open Claude Desktop. Please try opening it manually.` で、何が失敗したかを言いませんでした。
 
 <h3 id="terminal-setup-left-your-zed-keymap-unchanged">
   /terminal-setup は Zed キーマップを変更しませんでした
@@ -3255,6 +3328,21 @@ Marketplace "claude-community" is registered from an untrusted source: The name 
 * マーケットプレイスが既に登録されている場合は、`claude plugin marketplace remove <name>` を実行してから、公式の `github.com/anthropics` リポジトリから再度追加してください
 * 名前が予約される前にその名前を使用していたサードパーティマーケットプレイスを公開する場合は、名前を変更し、ユーザーにあなたのソースから再度追加するよう依頼してください
 * [マーケットプレイススキーマ](/docs/ja/plugin-marketplaces#marketplace-schema)の予約名リストを参照してください
+
+<h3 id="marketplace-is-already-added-from-a-different-source">
+  マーケットプレイスが既に別のソースから追加されている
+</h3>
+
+[`/plugin install <plugin> --marketplace <source>`](/docs/ja/discover-plugins#add-a-marketplace-and-install-in-one-command)を通じてマーケットプレイスの追加を確認し、そのソースから Claude Code が取得したカタログが、別のソースから既に追加したマーケットプレイスと同じ名前を付けています。Claude Code は既存のマーケットプレイスを保持し、それを置き換えず、プラグインはインストールされません。
+
+```text theme={null}
+Marketplace "acme-tools" is already added from a different source (github:acme/plugins). To use this source instead, remove that marketplace first with /plugin marketplace remove acme-tools.
+```
+
+**対処方法：**
+
+* 既に追加したマーケットプレイスが必要なものである場合は、名前でそこからインストールしてください：`/plugin install <plugin>@<name>`
+* 新しいソースに切り替えるには、`/plugin marketplace remove <name>` を実行してから、インストールを再試行してください
 
 <h3 id="plugin-command-references-user-config">
   プラグインコマンドがシェルコマンドで user\_config を参照している
@@ -3380,6 +3468,7 @@ v2.1.265 より前は、Claude Code はチェックできないデフォルト�
 プラグインの[マーケットプレイスエントリ](/docs/ja/plugin-marketplaces#plugin-entries)は、Claude Code がマーケットプレイス自体のディレクトリ内の場所に解決できないソースパスを宣言しているため、プラグインはインストールまたは読み込まれません。拒否は以下をカバーしています：
 
 * 絶対パス、`..` でマーケットプレイスから抜け出す、またはネットワークパスのようにスペルされたエントリパス
+* macOS と Linux では、先頭の `./` の後のどこかにバックスラッシュが含まれているエントリパス
 * git または URL などのリモートソースから取得されたマーケットプレイス内のエントリで、マーケットプレイスディレクトリの外に解決するシンボリックリンクを通じてターゲットに到達する
 * マーケットプレイスの `marketplace.json` への直接 URL から追加された相対エントリ：Claude Code はそのファイルのみをダウンロードするため、パスが名前を付けるローカルプラグインファイルは存在しません。[相対パスを持つプラグインが URL ベースのマーケットプレイスで失敗する](/docs/ja/plugin-marketplaces#plugins-with-relative-paths-fail-in-url-based-marketplaces)を参照してください
 
@@ -3424,6 +3513,24 @@ v2.1.246 より前は、`claude plugin install` はこの失敗を報告しま�
 * `~/.claude/plugins/known_marketplaces.json` を開き、JSON を修復するか、メッセージが名前を付けるエントリがレジストリスキーマと一致しないように修正してください
 * 修復できない場合は、ファイルを削除するか、その内容を `{}` に置き換えてから、`claude plugin marketplace add <source>` で各マーケットプレイスを再度追加してください。Claude Code は、信頼したフォルダで次回起動するときに、ユーザーまたはマネージド設定で [`extraKnownMarketplaces`](/docs/ja/settings-reference#extraknownmarketplaces) で宣言したマーケットプレイスを再登録します。
 
+<h3 id="plugin-is-required-by-your-organization">
+  プラグインは組織で必須です
+</h3>
+
+`claude plugin disable` を実行するか、`/plugin` **Installed** タブを使用して、組織が必須としてマークしている [claude.ai から同期されたプラグイン](/docs/ja/plugins-reference#synced-plugins)をオフにしました：
+
+```text theme={null}
+Plugin "<name>@synced" is required by your organization and can't be disabled here. Contact your admin to change it.
+```
+
+Claude Code は何も保存せず、プラグインは有効なままです。
+
+必須プラグインが依存するプラグインを無効にしようとすると、Claude Code は同じ方法で拒否し、それが必要な必須プラグインに名前を付けるメッセージを表示します。
+
+**対処方法：**
+
+* claude.ai 組織の管理者に、プラグインの必須ステータスを claude.ai で変更するよう依頼してください
+
 <h2 id="tool-errors">
   ツールエラー
 </h2>
@@ -3452,7 +3559,7 @@ Agent 'code-reviewer' would be spawned with zero tools — refusing. Its tools l
 
 * エラーが指定する各エントリを [subagent が利用可能なツール](/docs/ja/sub-agents#available-tools)に対して修正します
 * セッションが持たないツール（接続されていないサーバーからの MCP ツールなど）のエントリを削除します
-* [バックグラウンド subagent が削除する](/docs/ja/sub-agents#available-tools)ツール（`LSP` など）の場合、エントリを削除します。ツールを保持するには、[fork モードをオフにして](/docs/ja/sub-agents#turn-fork-mode-on-or-off)、Claude に subagent をフォアグラウンドで実行するよう依頼します
+* [バックグラウンド subagent が削除する](/docs/ja/sub-agents#available-tools)ツール（`CronCreate` など）の場合、エントリを削除します。ツールを保持するには、[fork モードをオフにして](/docs/ja/sub-agents#turn-fork-mode-on-or-off)、Claude に subagent をフォアグラウンドで実行するよう依頼します
 * `tools` フィールドを削除して、subagent に [subagent が利用可能なすべてのツール](/docs/ja/sub-agents#available-tools)を与えます
 * `Agent` のみを含む `tools` リストの場合、[深さ制限](/docs/ja/sub-agents#let-subagents-spawn-their-own-subagents)を上げるか、エージェントに少なくとも 1 つの他のツールを与えます。Claude Code はその制限でこの深さで `Agent` を保留するため、それ以外に何もないリストは、ツールなしに解決されます
 
@@ -3811,6 +3918,27 @@ This write was blocked because the path is network-shaped (a UNC share or /net a
 
 * 通常は何もしません：Claude はメッセージが要求するローカルスペルで再試行します
 * ファイルがローカルファイルのスペルが付いたネットワークパスではなく、ネットワーク共有上にある場合、セッションのローカルワークスペースの外にあります。通常のインタラクティブセッションから編集してください
+
+<h3 id="command-blocked-by-the-worktree-isolation-checks">
+  worktree 分離チェックによってコマンドがブロックされました
+</h3>
+
+Claude は、[worktree に分離されたセッション](/docs/ja/worktrees#how-claude-code-enforces-isolation)で Bash または Monitor コマンドを実行し、Claude Code は 2 つの理由のいずれかでそれを拒否しました：
+
+* コマンドは git をメインチェックアウトに指します。
+* Claude Code は、コマンドテキストからコマンドが実行する git が worktree 内に留まることを確認できません。git に名前を付けないコマンドでも、`${!name}` などの変数間接参照を展開するか、`${ command; }` などの Bash 関数置換を実行すると、実行時に値が生成される可能性があるため、この理由で拒否される可能性があります。
+
+メッセージの中央は、検証できなかったものに名前を付けます：
+
+```text wrap theme={null}
+This session is isolated in the worktree /path/to/worktree, but this command evaluates ${!x@P} arithmetically inside a construct too complex to verify, which can run a command hidden in a variable's value. Refusing to run it — a worktree-isolated session's git operations must target its own worktree. Split it into plain, separate commands and run them from /path/to/worktree.
+```
+
+**対処方法：**
+
+* 通常は何もしません：Claude はメッセージを読み、最後の文が要求する方法でコマンドを書き直します
+* 要求したコマンドが拒否され続ける場合、フラグが付いた値をリテラルでスペルします：間接参照または置換をその値に置き換え、git を worktree 内から独自のプレーンコマンドとして実行します
+* メインチェックアウトで意図的に動作するには、セッション外のターミナルでコマンドを自分で実行します
 
 <h3 id="this-session-has-no-saved-transcript">
   このセッションに保存されたトランスクリプトがありません
@@ -4201,6 +4329,8 @@ No files were restored: 1 file failed (backup missing, or the file could not be 
 
 Claude Code は、[retention sweep](/docs/ja/claude-directory#cleaned-up-automatically) でセッションのバックアップを削除します。デフォルトではセッションが最後にバックアップを保存してから約 30 日後です。その後にセッションを再開した場合、`/rewind` はそのチェックポイントをリストしますが、そのいずれかに rewind すると、このエラーで失敗する可能性があります。メッセージに `N paths were skipped for link safety` も表示されている場合は、これらのパスについて [Restored the code, but skipped files](#restored-the-code-but-skipped-files) を参照してください。
 
+セッションをフォークする場合（例えば [`--fork-session`](/docs/ja/cli-reference#cli-flags) または [`/branch`](/docs/ja/sessions#branch-a-session) を使用する場合）、Claude Code は元のセッションのバックアップをフォークにコピーします。Claude Code がバックアップをコピーできない場合（例えばディスクがいっぱいの場合）、そのバックアップはフォークに存在しません。それを必要とするチェックポイントに rewind すると、このエラーで失敗する可能性があります。
+
 **対応方法：**
 
 * 別の方法で変更を元に戻してください。Claude に編集を逆にするよう依頼するか、バージョン管理からファイルを復元してください。バックアップがなくなると、`/rewind` を再度実行しても同じ方法で失敗します。
@@ -4458,6 +4588,28 @@ Claude Code は、別の管理ソースが有効なポリシーを配信する�
 * マシンを管理している場合は、名前が付けられたドキュメントを JSON オブジェクトとして解析するように修正するか、ファイル、プロファイル、またはレジストリ値を削除してください。空の `managed-settings.json` は `{}` としてカウントされ、起動をブロックしません。
 * そうでない場合は、管理者に、デプロイされたドキュメントを修正するよう依頼してください。独自の設定ファイルの何もこのエラーを引き起こしたり、クリアしたりしません。
 
+<h3 id="otelheadershelper-failed">
+  otelHeadersHelper が失敗しました
+</h3>
+
+Claude Code は、[`otelHeadersHelper`](/docs/ja/settings-reference#otelheadershelper) スクリプトが失敗したか、[スクリプト要件](/docs/ja/monitoring-usage#script-requirements) を満たさない出力を出力したときに、この警告を対話型セッションで通知として表示します。
+
+スクリプトが失敗し続ける間、エクスポートは失敗し、テレメトリバックエンドはセッションから何も受け取りません。
+
+`See /status:` の後のテキストは、スクリプトの終了コードとそのエラー出力など、失敗した内容を示しています。
+
+```text theme={null}
+otelHeadersHelper failed; telemetry is not being exported. See /status: exited 1: token service unreachable
+```
+
+**対応方法：**
+
+* `/status` を実行して、失敗の詳細を読んでください。
+* スクリプトが 30 秒以内に終了コード 0 で終了し、stdout に文字列ヘッダー値の JSON オブジェクトを出力するように修正してください。[スクリプト要件](/docs/ja/monitoring-usage#script-requirements) を参照してください。
+* 組織が [管理設定](/docs/ja/managed-settings) を通じてスクリプトをデプロイしている場合は、それを保守している人にそれを修正するよう依頼してください。
+
+[非対話型モード](/docs/ja/headless) で `-p` を使用する場合、同じ失敗は stderr に `otelHeadersHelper failed (OpenTelemetry export headers unavailable): <error>` として表示されます。
+
 <h3 id="headershelper-not-run">
   headersHelper が実行されていません
 </h3>
@@ -4652,7 +4804,7 @@ Claude の回答がいつもより能力が低いように見えるが、エラ�
 
 * 設定された [`--fallback-model`](/docs/ja/cli-reference#cli-flags) は可用性エラーの後、そのターンのみ引き継ぎ、トランスクリプトに通知が表示されます
 * Amazon Bedrock または Google Cloud の Agent Platform スタートアップチェックがデフォルトモデルが利用不可であることを検出します
-* [自動モデルフォールバック](/docs/ja/model-config#automatic-model-fallback) は Fable 5.1、Fable 5、Opus 5 でセッションをフラグが付いたカテゴリのフォールバックモデルに移動し、そのカテゴリにフォールバックモデルがある場合、トランスクリプトに通知が表示されます
+* [自動モデルフォールバック](/docs/ja/model-config#automatic-model-fallback) は Fable 5.1、Fable 5、Opus 5.5、Opus 5 でセッションをフラグが付いたカテゴリのフォールバックモデルに移動し、そのカテゴリにフォールバックモデルがある場合、トランスクリプトに通知が表示されます
 
 以下のモデル選択チェックは 2 番目と 3 番目のケースをキャッチします。最初のケースはトランスクリプト通知として表示され、`/model` の変更ではなく表示されます。[モデル設定](/docs/ja/model-config) は各フォールバックが適用される時期を説明しています。
 

@@ -86,9 +86,9 @@ export const ContactSalesCard = ({surface}) => {
 
 ほとんどの組織では、Claude for Teams または Claude for Enterprise が最適なエクスペリエンスを提供します。チームメンバーは、単一のサブスクリプション、一元化された請求、インフラストラクチャセットアップが不要で、Claude Code と Web 上の Claude の両方にアクセスできます。
 
-**Claude for Teams** はセルフサービスで、コラボレーション機能、管理ツール、請求管理が含まれています。迅速に開始する必要がある小規模なチームに最適です。
+**Claude for Teams** はセルフサービスで、コラボレーション機能、管理ツール、SSO、請求管理、および[サーバー管理設定](/docs/ja/server-managed-settings)（組織全体の Claude Code 構成用）が含まれています。迅速に開始する必要がある小規模なチームに最適です。
 
-**Claude for Enterprise** は SSO とドメインキャプチャ、ロールベースの権限、コンプライアンス API アクセス、および組織全体の Claude Code 構成をデプロイするための管理ポリシー設定を追加します。セキュリティとコンプライアンス要件がある大規模な組織に最適です。
+**Claude for Enterprise** はドメインキャプチャ、ロールベースの権限、およびコンプライアンス API アクセスを追加します。セキュリティとコンプライアンス要件がある大規模な組織に最適です。
 
 [Team プラン](https://support.claude.com/en/articles/9266767-what-is-the-team-plan)と[Enterprise プラン](https://support.claude.com/en/articles/9797531-what-is-the-enterprise-plan)の詳細をご覧ください。
 

@@ -16,7 +16,7 @@ Linux 上のデスクトップアプリは、macOS と Windows と同じ Chat、
   要件
 </h2>
 
-* Ubuntu 22.04 以降、または Debian 12 以降
+* Debian ベースのディストリビューション：Ubuntu 22.04 以降、または Debian 12 以降
 * x86\_64 または arm64
 
 これらの要件を満たす他の Debian ベースのディストリビューションは動作する可能性がありますが、公式にはテストされていません。Fedora や Arch などの Debian ベース以外のディストリビューションでは、代わりに [CLI](/docs/ja/setup#system-requirements) を実行してください。Windows で WSL 2 を使用している場合は、Windows デスクトップアプリをインストールし、ディストリビューション内でセッションを実行してください。[Claude Code Desktop in WSL](/docs/ja/desktop-wsl) を参照してください。

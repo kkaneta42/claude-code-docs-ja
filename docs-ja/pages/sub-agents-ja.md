@@ -30,68 +30,68 @@ Claude は各サブエージェントの説明を使用して、タスクを委�
   組み込みサブエージェント
 </h2>
 
-Claude Code には、Claude が適切なときに自動的に使用する組み込みサブエージェントが含まれています。各サブエージェントは親の会話の権限を継承し、ほとんどは制限されたツールセットで実行されます。
+Claude Code には、Claude が必要に応じて自動的に使用する組み込みサブエージェントが含まれています。各サブエージェントは親の会話の権限を継承します。ほとんどは制限されたツールセットで実行されます。
 
-Explore と Plan は CLAUDE.md ファイルと親セッションの git ステータスをスキップして、研究を高速かつ低コストに保ちます。その他すべての組み込みおよび[カスタムサブエージェント](#configure-subagents)は両方をロードします。ただし、その定義が [`omitClaudeMd`](#supported-frontmatter-fields) フィールドを設定してユーザー、プロジェクト、およびローカル CLAUDE.md ファイルをスキップする場合を除きます。サブエージェントに到達するものの完全な内訳については、[スタートアップ時にロードされるもの](#what-loads-at-startup)を参照してください。
+Explore と Plan は、研究を高速かつ低コストに保つために、CLAUDE.md ファイルと git ステータススナップショットをスキップします。その他のすべての組み込みサブエージェントと[カスタムサブエージェント](#configure-subagents)は、その定義が[`omitClaudeMd`](#supported-frontmatter-fields)フィールドを設定してユーザー、プロジェクト、およびローカル CLAUDE.md ファイルをスキップしない限り、両方を読み込みます。サブエージェントに到達するものの完全な内訳については、[スタートアップ時に読み込まれるもの](#what-loads-at-startup)を参照してください。
 
 <Tabs>
   <Tab title="Explore">
     コードベースの検索と分析に最適化された高速な読み取り専用エージェント。
 
-    * **モデル**：メイン会話から継承され、Claude API では Opus でキャップされるため、Explore はセッション用に既に選択したモデルより高価なモデルで実行されることはありません。ただし、`CLAUDE_CODE_SUBAGENT_MODEL` を設定して[すべてのサブエージェントを 1 つのモデルで実行](#run-every-subagent-on-one-model)する場合を除きます
-    * **ツール**：読み取り専用ツール。Write と Edit は拒否されます
-    * **目的**：ファイル検出、コード検索、コードベース探索
+    * **モデル**: メイン会話から継承され、Claude API では Opus でキャップされます。つまり、Explore は、`CLAUDE_CODE_SUBAGENT_MODEL`を設定して[すべてのサブエージェントを 1 つのモデルで実行](#run-every-subagent-on-one-model)しない限り、セッション用に既に選択したモデルより高価なモデルで実行されることはありません。
+    * **ツール**: 読み取り専用ツール。Write と Edit は拒否されます。
+    * **目的**: ファイル検出、コード検索、コードベース探索
 
-    v2.1.198 以降、Explore はメイン会話のモデルを継承し、常に Haiku で実行されるわけではありません。Claude API では、継承されたモデルは Opus でキャップされます。より高いティアのメイン会話は Explore を Opus で実行し、Sonnet または Haiku のメイン会話は Explore をそのモデルで実行します。[Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、または AWS 上の Claude Platform](/docs/ja/third-party-integrations)などの他のプロバイダーでは、Explore はメイン会話のモデルを直接継承します。
+    v2.1.198 以降、Explore はメイン会話のモデルを継承し、常に Haiku で実行されるわけではありません。Claude API では、継承されたモデルは Opus でキャップされます。より高いティアのメイン会話は Explore を Opus で実行し、Sonnet または Haiku のメイン会話は Explore を同じモデルで実行します。Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、または AWS 上の Claude Platform などの[その他のプロバイダー](/docs/ja/third-party-integrations)では、Explore はメイン会話のモデルを直接継承します。
 
-    `Explore` という名前の[ユーザーまたはプロジェクトサブエージェント](#choose-the-subagent-scope)は組み込みをオーバーライドし、独自の `model` フィールドを保持するため、`model: haiku` で定義して探索を低コストモデルに保つことができます。
+    [ユーザーまたはプロジェクトサブエージェント](#choose-the-subagent-scope)として名前付けられた`Explore`は、組み込みをオーバーライドし、独自の`model`フィールドを保持します。探索をより低コストのモデルに保つために、`model: haiku`で定義します。
 
-    Claude は、変更を加えずにコードベースを検索または理解する必要があるときに Explore に委譲します。これにより、探索結果がメインの会話コンテキストから除外されます。
+    Claude は、変更を加えずにコードベースを検索または理解する必要がある場合、Explore に委譲します。これにより、探索結果がメイン会話コンテキストから除外されます。
 
-    Explore を呼び出すときに、Claude は徹底度レベルを指定します：ターゲット検索の場合は **quick**、バランスの取れた探索の場合は **medium**、包括的な分析の場合は **very thorough**。
+    Explore を呼び出すとき、Claude は徹底度レベルを指定します。ターゲット検索の場合は**quick**、バランスの取れた探索の場合は**medium**、包括的な分析の場合は**very thorough**です。
   </Tab>
 
   <Tab title="Plan">
     [プランモード](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode)中にプランを提示する前にコンテキストを収集するために使用される研究エージェント。
 
-    * **モデル**：メイン会話から継承されます。ただし、`CLAUDE_CODE_SUBAGENT_MODEL` を設定して[すべてのサブエージェントを 1 つのモデルで実行](#run-every-subagent-on-one-model)する場合を除きます
-    * **ツール**：読み取り専用ツール。Write と Edit は拒否されます
-    * **目的**：計画のためのコードベース研究
+    * **モデル**: メイン会話から継承されます。ただし、`CLAUDE_CODE_SUBAGENT_MODEL`を設定して[すべてのサブエージェントを 1 つのモデルで実行](#run-every-subagent-on-one-model)する場合を除きます。
+    * **ツール**: 読み取り専用ツール。Write と Edit は拒否されます。
+    * **目的**: 計画のためのコードベース研究
 
-    プランモード中に Claude がコードベースを理解する必要がある場合、研究を Plan サブエージェントに委譲して、探索出力がメイン会話が読み取り専用のままである間に別のコンテキストウィンドウに留まるようにします。
+    プランモード中で Claude がコードベースを理解する必要がある場合、探索出力が別のコンテキストウィンドウに留まるように、Plan サブエージェントに研究を委譲し、メイン会話は読み取り専用のままです。
   </Tab>
 
   <Tab title="General-purpose">
-    探索と実行の両方を必要とする複雑なマルチステップタスク向けの有能なエージェント。
+    探索とアクションの両方を必要とする複雑なマルチステップタスク用の有能なエージェント。
 
-    * **モデル**：[`CLAUDE_CODE_SUBAGENT_MODEL`](#choose-a-model) モデル（設定した場合で、他の方法でモデルが割り当てられていない場合）、それ以外はメイン会話のモデル。[モデルを選択](#choose-a-model)は完全な順序を示し、[すべてのサブエージェントを 1 つのモデルで実行](#run-every-subagent-on-one-model)は変数がこれらのソースをオーバーライドする方法を示します
-    * **ツール**：[サブエージェントで利用可能](#available-tools)なすべてのツール
-    * **目的**：複雑な研究、マルチステップ操作、コード変更
+    * **モデル**: [`CLAUDE_CODE_SUBAGENT_MODEL`](#choose-a-model)モデル（設定した場合で、他の何もモデルを別の方法で割り当てない場合）、それ以外の場合はメイン会話のモデル。[モデルを選択](#choose-a-model)は完全な順序を示し、[すべてのサブエージェントを 1 つのモデルで実行](#run-every-subagent-on-one-model)は変数がこれらのソースをオーバーライドする方法を示します。
+    * **ツール**: [サブエージェントで利用可能](#available-tools)なすべてのツール
+    * **目的**: 複雑な研究、マルチステップ操作、コード変更
 
-    Claude は、タスクが探索と変更の両方を必要とする場合、結果を解釈するための複雑な推論が必要な場合、または複数の依存ステップがある場合に general-purpose に委譲します。
+    Claude は、タスクが探索と変更の両方を必要とする場合、結果を解釈するための複雑な推論、または複数の依存ステップが必要な場合、general-purpose に委譲します。
   </Tab>
 
   <Tab title="Other">
-    Claude Code には、特定のタスク向けの追加のヘルパーエージェントが含まれています。これらは通常自動的に呼び出されるため、直接使用する必要はありません。
+    Claude Code には、特定のタスク用の追加のヘルパーエージェントが含まれています。これらは通常自動的に呼び出されるため、直接使用する必要はありません。
 
-    | エージェント            | モデル                                                                 | Claude が使用する場合                                                                                                                                                                                                       |
-    | :---------------- | :------------------------------------------------------------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-    | claude            | 独自のものはありません。Claude がサブエージェントとして生成する場合は[モデル順序](#choose-a-model)に従います | タスクがより特化したエージェントに適合しない場合。[サブエージェントで利用可能](#available-tools)なすべてのツールを備えたキャッチオール。また、ディスパッチされた[バックグラウンドセッション](/docs/ja/agent-view)のデフォルトエージェント。[セッションが開始される方法に応じて、開始する権限モード](/docs/ja/agent-view#permission-mode-model-and-effort) |
-    | statusline-setup  | Sonnet                                                              | `/statusline` を実行してステータスラインを設定する場合                                                                                                                                                                                   |
-    | claude-code-guide | Haiku                                                               | Claude Code 機能について質問する場合                                                                                                                                                                                             |
+    | エージェント            | モデル                                                                  | Claude が使用する場合                                                                                                                                                                                                         |
+    | :---------------- | :------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+    | claude            | 独自のモデルはありません。Claude がサブエージェントとして生成する場合は[モデル順序](#choose-a-model)に従います | タスクがより特化したエージェントに適合しない場合。[サブエージェントで利用可能](#available-tools)なすべてのツールを備えたキャッチオール。また、ディスパッチされた[バックグラウンドセッション](/docs/ja/agent-view)のデフォルトエージェント。[セッションが開始される方法に応じて、開始される権限モード](/docs/ja/agent-view#permission-mode-model-and-effort)。 |
+    | statusline-setup  | Sonnet                                                               | `/statusline`を実行してステータスラインを設定する場合                                                                                                                                                                                      |
+    | claude-code-guide | Haiku                                                                | Claude Code 機能について質問する場合                                                                                                                                                                                               |
   </Tab>
 </Tabs>
 
-組み込みサブエージェントはデフォルトでインタラクティブセッションに登録されます。これらを制限するには：
+組み込みサブエージェントはインタラクティブセッションでデフォルトで登録されます。これらを制限するには：
 
-* 特定の組み込みタイプをブロックするには、[特定のサブエージェントを無効にする](#disable-specific-subagents)に示されているように `permissions.deny` に追加します。
-* Claude がサブエージェントに委譲することを防ぐには、[`permissions.deny`](/docs/ja/permissions#tool-specific-permission-rules)で `Agent` ツール自体を拒否します。
-* 組み込みの `Explore` と `Plan` サブエージェントのみを削除するには、[`CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS=1`](/docs/ja/env-vars)を設定します。Claude はファイルを直接読み取り、探索し、サブエージェントに委譲する代わりに実行します。Claude Code v2.1.198 以降が必要です。
-* [非インタラクティブモード](/docs/ja/headless)および [Agent SDK](/docs/ja/agent-sdk/overview)では、[`CLAUDE_AGENT_SDK_DISABLE_BUILTIN_AGENTS=1`](/docs/ja/env-vars)を設定して、すべての組み込みタイプを削除し、独自のものだけを提供します。
+* 特定の組み込みタイプをブロックするには、[特定のサブエージェントを無効にする](#disable-specific-subagents)に示されているように、`permissions.deny`に追加します。
+* Claude がサブエージェントに委譲するのを防ぐには、[`permissions.deny`](/docs/ja/permissions#tool-specific-permission-rules)で`Agent`ツール自体を拒否します。
+* 組み込みの`Explore`および`Plan`サブエージェントのみを削除するには、[`CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS=1`](/docs/ja/env-vars)を設定します。Claude はファイルを直接読み取り、探索し、サブエージェントに委譲しません。Claude Code v2.1.198 以降が必要です。
+* [非インタラクティブモード](/docs/ja/headless)および[Agent SDK](/docs/ja/agent-sdk/overview)では、[`CLAUDE_AGENT_SDK_DISABLE_BUILTIN_AGENTS=1`](/docs/ja/env-vars)を設定して、すべての組み込みタイプを削除し、独自のタイプのみを提供します。
 
-`subagent_type` を省略した Agent ツール呼び出しは、セッションに [`subagent_type is required`](/docs/ja/errors#subagent-type-is-required) にフォールバックする `general-purpose` サブエージェントがない場合に失敗します。
+サブエージェント型を省略する Agent ツール呼び出しは、セッションにフォールバックする general-purpose サブエージェントがない場合、[`subagent_type is required`](/docs/ja/errors#subagent-type-is-required)で失敗します。
 
-これらの組み込みサブエージェント以外に、カスタムプロンプト、ツール制限、権限モード、hooks、および skills を使用して独自のサブエージェントを作成できます。以下のセクションでは、開始方法とサブエージェントのカスタマイズ方法を示します。
+これらの組み込みサブエージェント以外に、カスタムプロンプト、ツール制限、権限モード、フック、およびスキルを使用して独自のサブエージェントを作成できます。次のセクションでは、サブエージェントの使用を開始し、カスタマイズする方法を示します。
 
 <h2 id="quickstart-create-your-first-subagent">
   クイックスタート：最初のサブエージェントを作成する
@@ -230,7 +230,7 @@ Claude Code は `.claude/agents/` と `~/.claude/agents/` を再帰的にスキ�
   </Tab>
 </Tabs>
 
-`--agents` フラグは `prompt` フィールドと以下の [frontmatter](#supported-frontmatter-fields) フィールドを含む JSON を受け入れます。`description`、`tools`、`disallowedTools`、`model`、`permissionMode`、`mcpServers`、`hooks`、`maxTurns`、`skills`、`initialPrompt`、`memory`、`effort`、`background`、`omitClaudeMd`、および `isolation`。システムプロンプトには `prompt` を使用します。これはファイルベースのサブエージェントのマークダウン本体と同等です。
+`--agents` フラグは `prompt` フィールドと以下の [frontmatter](#supported-frontmatter-fields) フィールドを含む JSON を受け入れます。`description`、`tools`、`disallowedTools`、`model`、`permissionMode`、`mcpServers`、`hooks`、`maxTurns`、`skills`、`initialPrompt`、`memory`、`effort`、`background`、`omitClaudeMd`、および `isolation`。システムプロンプトには `prompt` を使用します。これはファイルベースのサブエージェントのマークダウン本体と同等です。`color` と `experimental` はここでは受け入れられず、拒否されるのではなく無視されます。
 
 JSON の各トップレベルキーはエージェントの名前です。名前を `-` で始めないでください。
 
@@ -295,19 +295,21 @@ Bash コマンドの場合、Claude Code はコマンド自体を 2 つの方法
 
 メイン会話自体が worktree で分離されて実行される場合、Claude Code はセッションとそれがスポーンするすべてのサブエージェント（`isolation: worktree` なしのサブエージェントを含む）に同じチェックを適用します。[Claude Code が分離を強制する方法](/docs/ja/worktrees#how-claude-code-enforces-isolation)を参照してください。
 
-<h4 id="supported-frontmatter-fields">
-  サポートされている frontmatter フィールド
-</h4>
+<h3 id="supported-frontmatter-fields">
+  Frontmatter リファレンス
+</h3>
 
-以下のフィールドは YAML frontmatter で使用できます。`name` と `description` のみが必須です。
+以下のフィールドは YAML [frontmatter](/docs/ja/glossary#frontmatter) で使用できます。`name` と `description` のみが必須です。
+
+複数単語のフィールド名は `maxTurns` や `disallowedTools` などの camelCase を使用し、テーブルと正確に一致する必要があります。Claude Code は認識しないフィールドを無視し、エラーを報告しません。サブエージェントファイルが読み込まれなかった理由を確認するには、[Claude Code がスキップするサブエージェントファイル](#subagent-files-claude-code-skips)を参照してください。
 
 | フィールド             | 必須  | 説明                                                                                                                                                                                                                                                                                                                                                |
 | :---------------- | :-- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `name`            | はい  | 小文字とハイフンを使用した一意の識別子。[Hooks](/docs/ja/hooks#subagentstart)はこの値を `agent_type` として受け取ります。ファイル名は一致する必要はありません。名前に `:` を含めることはできません。これは [plugin-scoped identifiers](/docs/ja/plugins)（`my-plugin:reviewer` など）用に予約されています。Claude Code は `:` を含む名前のファイルを読み込まず、デバッグログにエラーをログします。v2.1.218 より前では、そのような名前は受け入れられていました                                                   |
+| `name`            | はい  | 一意の識別子（`code-reviewer` や `reviewer-v2` など）。[フック](/docs/ja/hooks#subagentstart)はこの値を `agent_type` として受け取ります。ファイル名は一致する必要はありません。名前に `:` を含めることはできません。これは [plugin-scoped identifiers](/docs/ja/plugins)（`my-plugin:reviewer` など）用に予約されています。Claude Code は `:` を含む名前のファイルを読み込まず、デバッグログにエラーをログします。v2.1.218 より前では、そのような名前は受け入れられていました                              |
 | `description`     | はい  | Claude がこのサブエージェントに委任すべき場合                                                                                                                                                                                                                                                                                                                        |
-| `tools`           | いいえ | サブエージェントが使用できる[ツール](#available-tools)。省略した場合、サブエージェントで利用可能なすべてのツールを継承します。リスト内のエントリがツールに解決されない場合、サブエージェントは通常、エントリに名前を付けるエラーで[起動に失敗](/docs/ja/errors#agent-would-be-spawned-with-zero-tools)します。スキルをコンテキストにプリロードするには、ここで `Skill` をリストするのではなく、`skills` フィールドを使用します                                                                                        |
-| `disallowedTools` | いいえ | 継承または指定されたリストから削除するツール。`Bash(git push *)` などの指定子を持つエントリは、[ツール全体](#available-tools)を削除します                                                                                                                                                                                                                                                          |
-| `model`           | いいえ | 使用する[モデル](#choose-a-model)。`sonnet`、`opus`、`haiku`、`fable`、`claude-opus-5` などの完全なモデル ID、または `inherit`。省略した場合、Claude Code は[サブエージェントモデル順序](#choose-a-model)でモデルを選択します                                                                                                                                                                              |
+| `tools`           | いいえ | サブエージェントが使用できる[ツール](#available-tools)。`Read, Grep, Glob` や YAML リストなどのカンマ区切り文字列として。省略した場合、サブエージェントで利用可能なすべてのツールを継承します。リスト内のエントリがツールに解決されない場合、サブエージェントは通常、エントリに名前を付けるエラーで[起動に失敗](/docs/ja/errors#agent-would-be-spawned-with-zero-tools)します。スキルをコンテキストにプリロードするには、ここで `Skill` をリストするのではなく、`skills` フィールドを使用します                                           |
+| `disallowedTools` | いいえ | 継承または指定されたリストから削除するツール。`tools` と同じ形式。`Bash(git push *)` などの指定子を持つエントリは、[ツール全体](#available-tools)を削除します                                                                                                                                                                                                                                            |
+| `model`           | いいえ | 使用する[モデル](#choose-a-model)。`sonnet`、`opus`、`haiku`、`fable`、`claude-opus-5-5` などの完全なモデル ID、または `inherit`。省略した場合、Claude Code は[サブエージェントモデル順序](#choose-a-model)でモデルを選択します                                                                                                                                                                            |
 | `permissionMode`  | いいえ | [権限モード](#permission-modes)。`default`、`acceptEdits`、`auto`、`dontAsk`、`bypassPermissions`、`plan`、または `default` のエイリアスとしての `manual`。`manual` エイリアスには Claude Code v2.1.200 以降が必要です。[プラグインサブエージェント](#choose-the-subagent-scope)では無視されます                                                                                                                |
 | `maxTurns`        | いいえ | サブエージェントが停止する前の最大 agentic ターン数。サブエージェントが制限に達すると、Claude Code は出力を部分的としてマークして返し、Claude は[再開](#resume-subagents)して続行できます。部分的なマーキングには Claude Code v2.1.246 以降が必要です                                                                                                                                                                                    |
 | `skills`          | いいえ | 起動時にサブエージェントのコンテキストにプリロードする[スキル](/docs/ja/skills)。説明のみではなく、完全なスキルコンテンツが注入されます。サブエージェントは、Skill ツールを通じてリストされていないプロジェクト、ユーザー、およびプラグインスキルを呼び出すことができます                                                                                                                                                                                                      |
@@ -319,7 +321,7 @@ Bash コマンドの場合、Claude Code はコマンド自体を 2 つの方法
 | `effort`          | いいえ | このサブエージェントがアクティブな場合の努力レベル。セッション努力レベルをオーバーライドします。デフォルト。セッションから継承します。オプション。`low`、`medium`、`high`、`xhigh`、`max`。利用可能なレベルはモデルに依存します                                                                                                                                                                                                                   |
 | `isolation`       | いいえ | サブエージェントを一時的な[git worktree](/docs/ja/worktrees)で実行するには `worktree` に設定します。これにより、親セッションの `HEAD` ではなく、デフォルトで[デフォルトブランチ](/docs/ja/worktrees#choose-the-base-branch)からブランチされたリポジトリの分離されたコピーが提供されます。サブエージェントが変更を加えない場合、worktree は自動的にクリーンアップされます                                                                                                                  |
 | `color`           | いいえ | タスクリストとトランスクリプトでのサブエージェントの表示カラー。`red`、`blue`、`green`、`yellow`、`purple`、`orange`、`pink`、または `cyan` を受け入れます                                                                                                                                                                                                                                         |
-| `initialPrompt`   | いいえ | このエージェントがメインセッションエージェント（`--agent` または `agent` 設定経由）として実行される場合、最初のユーザーターンとして自動送信されます。[コマンド](/docs/ja/commands)と[スキル](/docs/ja/skills)が処理されます。ユーザー提供のプロンプトの前に付加されます                                                                                                                                                                                           |
+| `initialPrompt`   | いいえ | このエージェントがメインセッションエージェント（`--agent` または `agent` 設定経由）として実行される場合、最初のユーザーターンとして自動送信されます。[コマンド](/docs/ja/commands)と[スキル](/docs/ja/skills)が処理されます。ユーザー提供のプロンプトの前に付加されます。[プラグインサブエージェント](#choose-the-subagent-scope)では無視されます                                                                                                                                       |
 | `experimental`    | いいえ | 実験的オプションのマップ。その `cacheTtl` キーを `5m` または `1h` に設定して、このサブエージェントのリクエストの[プロンプトキャッシュライフタイム](/docs/ja/prompt-caching#choose-the-ttl-yourself)を選択します。frontmatter の[キャッシュライフタイム優先順位](/docs/ja/prompt-caching#choose-the-ttl-yourself)の場所。Claude Code は他の値を無視し、Claude サブスクリプションが使用クレジットを使用している間は `1h` を無視し、サブエージェントファイルからのみフィールドを読み取ります。Claude Code v2.1.248 以降が必要です |
 
 `cacheTtl` を frontmatter のトップレベルではなく、`experimental` マップ内に書き込みます。
@@ -362,7 +364,7 @@ frontmatter が解析されない `agents` ディレクトリ内のファイル�
 `model` フィールドはサブエージェントが使用するモデルを制御します。
 
 * **モデルエイリアス**。利用可能なエイリアスの 1 つを使用します。`sonnet`、`opus`、`haiku`、または `fable`
-* **完全なモデル ID**。`claude-opus-5` または `claude-sonnet-5` などの完全なモデル ID を使用します。`--model` フラグと同じ値を受け入れます
+* **完全なモデル ID**。`claude-opus-5-5` または `claude-sonnet-5` などの完全なモデル ID を使用します。`--model` フラグと同じ値を受け入れます
 * **inherit**。メイン会話と同じモデルを使用します
 
 Claude がサブエージェントを呼び出すとき、その特定の呼び出しに対して `model` パラメータを渡すこともできます。Claude Code はサブエージェントのモデルをこの順序で解決します。
@@ -371,6 +373,13 @@ Claude がサブエージェントを呼び出すとき、その特定の呼び�
 2. サブエージェント定義の `model` frontmatter。`inherit` はメイン会話のモデルを選択します
 3. [`CLAUDE_CODE_SUBAGENT_MODEL`](/docs/ja/model-config#environment-variables)環境変数。モデルエイリアスまたはモデル ID に設定した場合
 4. メイン会話のモデル
+
+2 つのケースでは、`opus` などのファミリエイリアスが、呼び出しごとのパラメータまたは frontmatter で、メイン会話のモデルの代わりに[エイリアスが指す](/docs/ja/model-config#model-aliases)バージョンに解決されます。
+
+* **メイン会話のモデルがそのファミリに属する**。サブエージェントはメイン会話の正確なモデル（`[1m]` サフィックスを含む）で実行されるため、メイン会話と同じ[拡張コンテキスト](/docs/ja/model-config#extended-context)ウィンドウを取得します。
+* **Claude Code がメイン会話のモデルファミリを判断できない。[Anthropic API 以外のプロバイダー](/docs/ja/third-party-integrations)上で**。これは Claude Code がバッキングモデルに解決していない[アプリケーション推論プロファイル ARN](/docs/ja/amazon-bedrock#iam-configuration)を持つ Amazon Bedrock で発生する可能性があります。このケースは `opus` エイリアスのみをカバーし、[`ANTHROPIC_DEFAULT_OPUS_MODEL`](/docs/ja/model-config#environment-variables)を設定した場合は適用されません。`opus` はその後、設定したモデルに解決されるため。
+
+`CLAUDE_CODE_SUBAGENT_MODEL` のエイリアスは、メイン会話のファミリに名前を付けた場合でも、常にエイリアスが指すバージョンに解決されます。
 
 `CLAUDE_CODE_SUBAGENT_MODEL` を単独で設定しても、組み込みの Explore および Plan サブエージェントが実行されるモデルは変わりません。変更するには、[すべてのサブエージェントを 1 つのモデルで実行](#run-every-subagent-on-one-model)を参照してください。
 
@@ -438,11 +447,12 @@ v2.1.198 以降、サブエージェントはメイン会話の[拡張思考](/d
 * `EnterPlanMode`
 * `ExitPlanMode`。サブエージェントの [`permissionMode`](#permission-modes)が `plan` でない限り
 * `ScheduleWakeup`
-* `TaskOutput`
 * `WaitForMcpServers`
 * `Workflow`
 
-2 番目のフィルタはバックグラウンドで実行されるサブエージェントに適用されます。`Agent` と `ExitPlanMode` を除き、これらはサブエージェントが実行される場所に関係なく最初のフィルタの条件に従います。バックグラウンドサブエージェントはすべての MCP ツールを保持しますが、これらの組み込みツールのみです。`Read`、`Grep`、`Glob`、`Bash`、`PowerShell`、`Edit`、`Write`、`NotebookEdit`、`WebFetch`、`WebSearch`、`TodoWrite`、`Skill`、`ToolSearch`、`EnterWorktree`、`ExitWorktree`、`Monitor`、`TaskStop`、`SendMessage`、および `Artifact`。それを報告するサブエージェント用の [`SubagentHandoff`](/docs/ja/tools-reference)。Claude Code はバックグラウンドサブエージェントから他のすべての組み込みツールを削除します。継承またはリストされているかどうかに関わらず、`tools` フィールドで。同じ定義はフォアグラウンドとバックグラウンドで異なるツールに解決できます。削除は、`tools` リストが[何も解決しない](/docs/ja/errors#agent-would-be-spawned-with-zero-tools)場合を除き、エラーを報告しません。
+2 番目のフィルタはバックグラウンドで実行されるサブエージェントに適用されます。`Agent` と `ExitPlanMode` を除き、これらはサブエージェントが実行される場所に関係なく最初のフィルタの条件に従います。バックグラウンドサブエージェントはすべての MCP ツールを保持しますが、これらの組み込みツールのみです。`Read`、`Grep`、`Glob`、`LSP`、`Bash`、`PowerShell`、`Edit`、`Write`、`NotebookEdit`、`WebFetch`、`WebSearch`、`TodoWrite`、`Skill`、`ToolSearch`、`EnterWorktree`、`ExitWorktree`、`Monitor`、`TaskStop`、`SendMessage`、および `Artifact`。それを報告するサブエージェント用の [`SubagentHandback`](/docs/ja/tools-reference)。Claude Code はバックグラウンドサブエージェントから他のすべての組み込みツールを削除します。継承またはリストされているかどうかに関わらず、`tools` フィールドで。同じ定義はフォアグラウンドとバックグラウンドで異なるツールに解決できます。削除は、`tools` リストが[何も解決しない](/docs/ja/errors#agent-would-be-spawned-with-zero-tools)場合を除き、エラーを報告しません。
+
+v2.1.280 より前では、バックグラウンドサブエージェントは `LSP` を使用できませんでした。
 
 [`ListAgents`](/docs/ja/cross-session-messaging)は、他の組み込みツールと同様にこれらのフィルタに従います。フォアグラウンドサブエージェントは、クロスセッションメッセージングが有効なセッションで継承し、バックグラウンドサブエージェントは保持しません。
 
@@ -988,6 +998,10 @@ Claude Code は、Claude がそれを読む前に、各サブエージェント�
 * **マーカー行**: スキャンは、`<system-reminder>` のようなタグを模倣するか、`bypassPermissions` や `--dangerously-skip-permissions` などの権限設定に言及するレポートの場合、`[harness: subagent output matched instruction-shaped pattern(s):` で始まる行を先頭に追加します。権限設定の言及はマーカー行を取得しますが、テキスト自体は書かれたままです。
 
 スキャンはコンテンツが悪意があるかどうかを判断せず、レポート内の指示が何ができるかは変わりません。レポートが Claude に行わせるツール呼び出しは、セッションの [権限チェック](/docs/ja/permissions) と [サンドボックス](/docs/ja/sandboxing) を通じて実行されます。これは [サブエージェントが到達できるものを制限](#control-subagent-capabilities) する代わりではありません。
+
+サブエージェントの結果として Claude に返されるレポートは、サブエージェント出力としてマークするヘッダーの下に到達します。ヘッダーは、レポート内の指示または承認請求がサブエージェントの言葉であり、あなたからの権限を持たないことを述べています。
+
+[バックグラウンドサブエージェントのレポート](#run-subagents-in-foreground-or-background) は完了通知内に到達し、これはあなたからのメッセージではなく自動化されたイベントとしてマークされます。
 
 <Note>
   サブエージェント出力スキャンには Claude Code v2.1.210 以降が必要です。

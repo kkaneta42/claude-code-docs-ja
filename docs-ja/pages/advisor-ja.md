@@ -56,7 +56,7 @@ advisor モデルは 3 つの方法で設定できます。
 * `/advisor opus` などのモデルを使用して `/advisor` を実行して、それを設定します。
 * `/advisor off` を実行してそれをオフにします。
 
-Claude Code は、組織の [`availableModels`](/docs/ja/model-config#restrict-model-selection)許可リストが除外した保存済み advisor を呼び出しません。advisor を使用するには、`/advisor` で許可されたモデルを選択してください。Claude Code は、現在のメインモデルがサポートしていない advisor を引き続き保存します。その advisor は、[`/model`](/docs/ja/model-config#setting-your-model)で[互換性のあるメインモデル](#choose-an-advisor-model)に切り替えた後にアクティブになります。
+Claude Code は、組織の [`availableModels`](/docs/ja/model-config#restrict-model-selection)許可リストが除外した保存済み advisor を呼び出しません。advisor を使用するには、`/advisor` で許可されたモデルを選択してください。Claude Code は、現在のメインモデルがサポートしていない advisor を引き続き保存します。その advisor は、[`/model`](/docs/ja/model-config#setting-your-model)で[互換性のあるメインモデル](#choose-an-advisor-model)に切り替えた後にアクティブになります。API がすでに現在の会話で保存済み advisor を拒否した場合、モデルを切り替えた後でも、`/clear` または `/compact` まで、それはオフのままです。
 
 一部のプランでは、Fable を advisor として使用する場合、Fable の使用を使用クレジットに請求することへの 1 回限りの[同意](/docs/ja/model-config#fable-and-usage-credits)も必要です。その同意を与える前に `/advisor fable` が何をするかについては、[Fable advisor と使用クレジット](#fable-advisor-and-usage-credits)を参照してください。
 
@@ -97,27 +97,27 @@ Claude Code はそのセッションの `advisorModel` 設定の代わりにフ�
 
 アドバイザーはメインモデル以上の能力を持つ必要があります。各メインモデルで受け入れられるアドバイザーは以下の通りです。
 
-| メインモデル                | 受け入れられるアドバイザー              | 注記                                                                                    |
-| --------------------- | -------------------------- | ------------------------------------------------------------------------------------- |
-| Haiku 4.5             | Fable、Opus、Sonnet          | Haiku はアドバイザーを呼び出すことはできますが、アドバイザーとして機能することはできません                                      |
-| Sonnet 4.6            | Fable、Opus、Sonnet          |                                                                                       |
-| Sonnet 5              | Fable、Opus 4.7 以降、Sonnet 5 | Sonnet 4.6 アドバイザーは拒否され、Opus 4.6 アドバイザーを使用したリクエストは API エラーで失敗します                       |
-| Opus 4.6              | Fable、Opus、Sonnet 5        | Sonnet 4.6 アドバイザーは拒否されます                                                              |
-| Opus 4.7 または Opus 4.8 | Fable、および Opus 4.7 以降      | Opus 4.6 または Sonnet アドバイザーは拒否されます                                                     |
-| Opus 5                | Fable、Opus 5               | Opus 4.6 または Sonnet アドバイザーは拒否され、Opus 4.7 または Opus 4.8 アドバイザーを使用したリクエストは API エラーで失敗します |
-| Fable 5               | Fable 5.1 または Fable 5      | Opus または Sonnet アドバイザーは拒否されます                                                         |
-| Fable 5.1             | Fable 5.1                  | Opus または Sonnet アドバイザーは拒否され、Fable 5 アドバイザーを使用したリクエストは API エラーで失敗します                   |
+| メインモデル                | 受け入れられるアドバイザー              | 注記                                                                       |
+| --------------------- | -------------------------- | ------------------------------------------------------------------------ |
+| Haiku 4.5             | Fable、Opus、Sonnet          | Haiku はアドバイザーを呼び出すことはできますが、アドバイザーとして機能することはできません                         |
+| Sonnet 4.6            | Fable、Opus、Sonnet          |                                                                          |
+| Sonnet 5              | Fable、Opus 4.7 以降、Sonnet 5 | Sonnet 4.6 アドバイザーは拒否され、Opus 4.6 アドバイザーを使用したリクエストは API エラーで失敗します          |
+| Opus 4.6              | Fable、Opus、Sonnet 5        | Sonnet 4.6 アドバイザーは拒否されます                                                 |
+| Opus 4.7 または Opus 4.8 | Fable、および Opus 4.7 以降      | Opus 4.6 または Sonnet アドバイザーは拒否されます                                        |
+| Opus 5.5 または Opus 5   | Fable、および Opus 5 以降        | Opus 4.6 または Sonnet アドバイザーは拒否され、API は Opus 4.7 または Opus 4.8 アドバイザーを拒否します |
+| Fable 5               | Fable 5.1 または Fable 5      | Opus または Sonnet アドバイザーは拒否されます                                            |
+| Fable 5.1             | Fable 5.1                  | Opus または Sonnet アドバイザーは拒否され、Fable 5 アドバイザーを使用したリクエストは API エラーで失敗します      |
 
 Fable 5.1 には Claude Code v2.1.257 以降が必要です。両方の Fable モデルには [Fable アクセス](/docs/ja/model-config#work-with-fable) が必要です。
 
-アドバイザーを `fable`、`opus`、または `sonnet` として設定します。これらのエイリアスは Claude Code の各モデルファミリーの組み込みデフォルトバージョンに解決され、新しい Claude Code リリースで進化します。`claude-opus-5` などの完全なモデル ID を渡すこともできます。
+アドバイザーを `fable`、`opus`、または `sonnet` として設定します。これらのエイリアスは Claude Code の各モデルファミリーの組み込みデフォルトバージョンに解決され、新しい Claude Code リリースで進化します。`claude-opus-5-5` などの完全なモデル ID を渡すこともできます。
 
 サブエージェントは設定されたアドバイザーを継承し、独自のモデルに対して同じペアリングチェックを適用します。
 
 Claude Code はリクエストを送信する前にペアリングを検証し、API が再度検証します。
 
 * テーブルで拒否されたアドバイザーの場合、Claude Code はそれをメインモデルのリクエストに添付しません。`/advisor` コマンド出力と通知がこれを表示します。独自のモデルがペアリングを満たすサブエージェントは、引き続きアドバイザーを使用できます。
-* テーブルで API エラーで失敗するとリストされているアドバイザーの場合、Claude Code はそれを添付し、API がそれを拒否します。`/advisor` でアドバイザーを変更するか、オフにするまで、すべてのリクエストが `'<advisor model>' cannot be used as an advisor when the request model is '<main model>'` で失敗します。
+* テーブルで API エラーで失敗するとリストされているアドバイザーの場合、Claude Code はそれを添付し、API がそれを拒否します。Claude Code はその後、アドバイザーなしでそのリクエストを再送信し、残りの会話はアドバイザーなしで実行されるため、エラーが表示されず、アドバイザー呼び出しが行われません。`/advisor` で受け入れられたアドバイザーを選択してください。変更は `/clear` または `/compact` の後と新しいセッションで有効になります。
 * メインモデルまたはアドバイザーが Claude Code が認識しないモデルの場合、アドバイザーは添付されません。
 
 <h3 id="fable-advisor-and-usage-credits">
@@ -195,7 +195,7 @@ advisor モデル自体の会話の読み取りはキャッシュされません
 
 advisor ツールには、以下のすべてが必要です。
 
-* **Anthropic API のみ**：advisor はサーバー実行ツールです。Amazon Bedrock、Claude Platform on AWS、Google Cloud の Agent Platform、または Microsoft Foundry では利用できません。[LLM ゲートウェイ](/docs/ja/llm-gateway)を通じて `ANTHROPIC_BASE_URL` で構成されている場合、利用可能性はゲートウェイがリクエストを Anthropic API に完全に転送するかどうかに依存します。
+* **Anthropic API のみ**：advisor はサーバー実行ツールです。Amazon Bedrock、Claude Platform on AWS、Google Cloud の Agent Platform、または Microsoft Foundry では利用できません。[LLM ゲートウェイ](/docs/ja/llm-gateway)を通じて `ANTHROPIC_BASE_URL` で構成されている場合、利用可能性はゲートウェイがリクエストを Anthropic API に完全に転送するかどうかに依存します。ゲートウェイまたはそのアップストリームが advisor ツールを認識しない場合は、[自動リトライとエラー転送](/docs/ja/llm-gateway-protocol#automatic-retry-and-error-forwarding)を参照して、Claude Code がどのように応答するかを確認してください。
 * **サポートされているメインモデル**：Fable、Opus 4.6 以降、Sonnet 4.6 以降、または Haiku 4.5。[advisor モデルを選択する](#choose-an-advisor-model)を参照して、各 advisor がどのモデルを受け入れるかを確認してください。
 * **フィーチャーフラグ取得**：Claude Code は Anthropic から取得するフィーチャーフラグを通じて advisor をオンにします。`DISABLE_TELEMETRY` など、フラグ取得をオフにする変数が設定されているセッションでは、advisor はオフのままです。[フィーチャーフラグ取得が必要な機能](/docs/ja/env-vars#features-that-need-feature-flag-fetching)を参照してください。
 

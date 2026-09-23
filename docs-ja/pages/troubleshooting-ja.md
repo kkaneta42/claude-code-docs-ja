@@ -41,6 +41,10 @@ Claude Code はほとんどの開発環境で動作するように設計され�
 3. 大規模なビルドディレクトリを `.gitignore` ファイルに追加することを検討してください
 4. [`claude --safe-mode`](/docs/ja/cli-reference#cli-flags) で再起動して、プラグイン、MCP サーバー、またはフックが原因かどうかを確認します。セッション中のすべてのカスタマイズが無効になります。使用量が低下した場合は、[設定をデバッグする](/docs/ja/debug-your-config#test-against-a-clean-configuration)を参照して、どれが原因かを特定します
 
+セッションのヒープメモリが 2.5GB を超える場合、重大なメモリ使用量警告が表示されます。メモリを解放するには、Claude Code を再起動して [`claude --continue`](/docs/ja/cli-reference#cli-flags) を実行し、新しいプロセスでカンバセーションを再開します。
+
+[フルスクリーンレンダリング](/docs/ja/fullscreen)の外では、`/compact` を実行するとメモリも解放されます。メモリ使用量が 2.5GB を下回ると、警告は消えます。
+
 これらのステップ後もメモリ使用量が高いままの場合は、`/heapdump` を実行して 2 つのファイルを `~/Desktop` に書き込みます。`<session-id>.heapsnapshot` という名前の JavaScript ヒープスナップショットと、`<session-id>-diagnostics.json` という名前のメモリ分析です。Claude Code は[コマンドメニューからコマンドを非表示にします](/docs/ja/commands#how-the-command-menu-matches-what-you-type)。完全に入力してください。Linux でデスクトップフォルダがない場合、ファイルはホームディレクトリに書き込まれます。
 
 <Warning>
@@ -108,7 +112,7 @@ VS Code、Cursor、または Devin Desktop の統合ターミナルで Claude Co
 
 Claude の出力をクリップボードに配置するには、Claude に応答でコンテンツを出力するよう依頼してから、[`/copy`](/docs/ja/commands) を実行します。`/copy` はサンドボックス化されたコマンドではなく Claude Code プロセス自体からクリップボードに書き込むため、サンドボックスはそれをブロックしません。応答全体ではなく単一のコードブロックをコピーでき、コピーしたものをファイルに書き込んで、パスを出力します。これにより、クリップボード書き込みがターミナルに到達しない場合（例えば SSH 経由）のフォールバックが提供されます。
 
-パイプされたコマンドが代わりにクリップボードに直接到達できるようにするには、`pbcopy *`、`wl-copy *`、または `xclip *` を [`excludedCommands`](/docs/ja/settings-reference#sandbox-excludedcommands) に追加して、コマンドがサンドボックスの外で実行されるようにします。
+Claude がテキストをこれらのツールにパイプする場合、`pbcopy *`、`wl-copy *`、または `xclip *` を [`excludedCommands`](/docs/ja/settings-reference#sandbox-excludedcommands) に追加しても、そのコマンドをサンドボックスの外で実行することはできません。
 
 <h3 id="copied-text-doesn’t-reach-your-local-clipboard-over-ssh">
   SSH 経由でコピーされたテキストがローカルクリップボードに到達しない

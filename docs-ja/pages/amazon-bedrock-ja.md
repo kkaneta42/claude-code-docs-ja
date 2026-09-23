@@ -291,7 +291,7 @@ Claude Code で Amazon Bedrock を有効にする場合、以下の点に注意�
 
 これらの環境変数を特定の Amazon Bedrock モデル ID に設定してください。
 
-`ANTHROPIC_DEFAULT_OPUS_MODEL` がない場合、Amazon Bedrock の `opus` エイリアスは Opus 5 に解決され、`ANTHROPIC_DEFAULT_SONNET_MODEL` がない場合、`sonnet` エイリアスは Sonnet 4.5 に解決されます。この例では各エイリアスを特定のバージョンにピンしています。
+`ANTHROPIC_DEFAULT_OPUS_MODEL` がない場合、Amazon Bedrock の `opus` エイリアスは Opus 5.5 に解決され、`ANTHROPIC_DEFAULT_SONNET_MODEL` がない場合、`sonnet` エイリアスは Sonnet 4.5 に解決されます。この例では各エイリアスを特定のバージョンにピンしています。
 
 ```bash theme={null}
 export ANTHROPIC_DEFAULT_OPUS_MODEL='us.anthropic.claude-opus-4-8'
@@ -303,10 +303,10 @@ export ANTHROPIC_DEFAULT_HAIKU_MODEL='us.anthropic.claude-haiku-4-5-20251001-v1:
 
 組み込みデフォルトモデルを保持し、優先プレフィックスのみを変更するには、ピンの代わりに [`ANTHROPIC_BEDROCK_REGION_PREFIX`](#cross-region-inference-profile-prefixes) を設定してください。`opus` エイリアスが解決する内容の違いを示します。
 
-| 設定内容                                                          | `opus` エイリアスが解決する内容                                |
-| :------------------------------------------------------------ | :------------------------------------------------- |
-| `ANTHROPIC_DEFAULT_OPUS_MODEL='us.anthropic.claude-opus-4-8'` | `us.anthropic.claude-opus-4-8`、ピンした正確な ID          |
-| `ANTHROPIC_BEDROCK_REGION_PREFIX=eu`                          | `eu.anthropic.claude-opus-5`、優先プレフィックス付きの組み込みデフォルト |
+| 設定内容                                                          | `opus` エイリアスが解決する内容                                  |
+| :------------------------------------------------------------ | :--------------------------------------------------- |
+| `ANTHROPIC_DEFAULT_OPUS_MODEL='us.anthropic.claude-opus-4-8'` | `us.anthropic.claude-opus-4-8`、ピンした正確な ID            |
+| `ANTHROPIC_BEDROCK_REGION_PREFIX=eu`                          | `eu.anthropic.claude-opus-5-5`、優先プレフィックス付きの組み込みデフォルト |
 
 現在および従来のモデル ID については、[Models overview](https://platform.claude.com/docs/en/about-claude/models/overview) を参照してください。ピン環境変数の完全なリストについては、[Model configuration](/docs/ja/model-config#pin-models-for-third-party-deployments) を参照してください。
 
@@ -314,7 +314,7 @@ export ANTHROPIC_DEFAULT_HAIKU_MODEL='us.anthropic.claude-haiku-4-5-20251001-v1:
 
 | モデルタイプ   | デフォルトモデル                                                                    |
 | :------- | :-------------------------------------------------------------------------- |
-| プライマリモデル | Opus 5、例えば `us-*` リージョンの `us.anthropic.claude-opus-5`                       |
+| プライマリモデル | Opus 5.5、例えば `us-*` リージョンの `us.anthropic.claude-opus-5-5`                   |
 | 小型/高速モデル | Sonnet 4.5、例えば `us-*` リージョンの `us.anthropic.claude-sonnet-4-5-20250929-v1:0` |
 
 セッションタイトル生成などのバックグラウンドタスクは、小型/高速モデル（通常は Haiku クラスモデル）を使用します。Amazon Bedrock では、すべてのアカウントまたはリージョンで Haiku が有効になっていない可能性があるため、Claude Code はバックグラウンドタスクにデフォルト Sonnet モデルを使用します。2 つの選択がどのモデルがそれらを実行するかを変更します。
@@ -326,7 +326,7 @@ export ANTHROPIC_DEFAULT_HAIKU_MODEL='us.anthropic.claude-haiku-4-5-20251001-v1:
   Opus モデルは Sonnet モデルより高いトークンあたりの価格を持つため、プライマリモデルをピンしないデプロイメントは v2.1.207 以降に更新されると Opus レートで請求されます。Sonnet 4.5 をプライマリモデルとして保持するには、`ANTHROPIC_MODEL` をその完全なモデル ID に設定してください。`ANTHROPIC_DEFAULT_SONNET_MODEL` で操舵され、`ANTHROPIC_DEFAULT_OPUS_MODEL` を設定しないデプロイメントは、操舵された Sonnet モデルをデフォルトとして保持します。
 </Warning>
 
-v2.1.207 から v2.1.218 では、Amazon Bedrock のプライマリモデルは Opus 4.8 にデフォルト設定され、`opus` エイリアスは Opus 4.8 に解決されました。v2.1.207 より前では、プライマリモデルは Sonnet 4.5 にデフォルト設定され、`opus` エイリアスは Opus 4.6 に解決され、バックグラウンドタスクは常にプライマリモデルを使用していました。
+v2.1.280 より前では、Amazon Bedrock のプライマリモデルは Opus 5 にデフォルト設定され、`opus` エイリアスは v2.1.219 から Opus 5 に解決されました。v2.1.207 から v2.1.218 では、Amazon Bedrock のプライマリモデルは Opus 4.8 にデフォルト設定され、`opus` エイリアスは Opus 4.8 に解決されました。v2.1.207 より前では、プライマリモデルは Sonnet 4.5 にデフォルト設定され、`opus` エイリアスは Opus 4.6 に解決され、バックグラウンドタスクは常にプライマリモデルを使用していました。
 
 モデルをさらにカスタマイズするには、以下のいずれかの方法を使用してください。
 
@@ -405,8 +405,8 @@ Amazon Bedrock の [Invoke API](https://docs.aws.amazon.com/bedrock/latest/APIRe
 ```bash theme={null}
 export ANTHROPIC_BEDROCK_REGION_PREFIX=global
 # us-* リージョンでは、プライマリモデルは
-# us.anthropic.claude-opus-5 の代わりに
-# global.anthropic.claude-opus-5 に解決されます
+# us.anthropic.claude-opus-5-5 の代わりに
+# global.anthropic.claude-opus-5-5 に解決されます
 ```
 
 優先プレフィックスは保証ではなく、リージョンから来ているか変数から来ているかに関わらず、単なる優先度です。Claude Code がそれを適用する方法は、アカウント内のプロファイル可用性を確認できるかどうかによって異なります。

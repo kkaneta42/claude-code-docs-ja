@@ -120,12 +120,12 @@
   git を設定する
 </h2>
 
-ランナーはリポジトリチェックアウトを管理しますが、デフォルトでは git ID または認証情報を設定しません。ランナーのイメージとプロセス環境を制御するため、git 設定を制御します。 2 つのアプローチのいずれかを選択してください：
+ランナーはリポジトリチェックアウトを管理しますが、デフォルトでは git ID または認証情報を設定しません。ランナーのイメージとプロセス環境を制御するため、git 設定を制御します。2 つのアプローチのいずれかを選択してください：
 
 * **ランナーに git を設定させる**：`--configure-git` でランナーを開始して、Anthropic ホストセッションが使用する同じ ID とコミット署名設定を書き込ませます
 * **イメージに git 設定を含める**：ID とプッシュ認証情報を自分で設定します。例えば、独自のボット ID でコミットするため
 
-ランナーホストの Git バージョンフロア：[`--configure-git`](#let-the-runner-configure-git) SSH コミット署名には Git 2.34 以降が必要です。[`--use-anthropic-git-proxy`](#use-the-anthropic-git-proxy) には 2.32 以降が必要です。[`--push-outcome-on-release`](/docs/ja/self-hosted-environments-reference#runner-cli-flags) でプッシュされたブランチからセッションを再開するには 2.29 以降が必要です。 3 つすべてを省略して git ID を自分で管理する場合は、Git 2.24 で十分です。
+ランナーホストの Git バージョンフロア：[`--configure-git`](#let-the-runner-configure-git) SSH コミット署名には Git 2.34 以降が必要です。[`--use-anthropic-git-proxy`](#use-the-anthropic-git-proxy) には 2.32 以降が必要です。[`--push-outcome-on-release`](/docs/ja/self-hosted-environments-reference#runner-cli-flags) でプッシュされたブランチからセッションを再開するには 2.29 以降が必要です。3 つすべてを省略して git ID を自分で管理する場合は、Git 2.24 で十分です。
 
 <h3 id="let-the-runner-configure-git">
   ランナーに git を設定させる
@@ -184,13 +184,13 @@ RUN git config --system --add safe.directory '*'
 
 プロキシは `--capacity 1` を必要とします。プロキシ URL はセッションごとであり、git 2.32 以降が必要です。古い git はプロキシがセッションを相互に分離するために使用する設定メカニズムを無視するためです。ランナーは要件のいずれかが満たされない場合、起動を拒否します。プロキシは Anthropic 側からフェッチするため、git ホストは Anthropic インフラストラクチャから到達可能である必要があります。これは Anthropic ホストセッションと同じ要件です。ネットワーク内でのみルーティング可能な git ホストの場合は、代わりに [`checkout` ライフサイクルフック](/docs/ja/self-hosted-environments-configuration#checkout)を使用してください。各ランナープロセスは一度に 1 つのセッションを処理するため、並列処理のためにより多くのレプリカを実行してください。プロキシが有効な場合、`--git-host-rewrite` と `--git-ssh-rewrite` は効果がありません：プロキシ URL は git ホストではなく `api.anthropic.com` を指します。
 
-ランナーは登録時に Anthropic にオプトインを報告し、起動時に `Registering as opted in to Anthropic-managed git (--use-anthropic-git-proxy)` を出力します。その後、オプトインランナー上の各セッションは、Anthropic 管理の git またはセッションごとのプロキシ URL のいずれかを使用します。セッションがセッションごとのプロキシ URL を使用する場合、ランナーは 1 つの `[runner:warn]` 行をログに記録します。
+ランナーは登録時に Anthropic にオプトインを報告し、起動時に `Registering as opted in to Anthropic-managed git (--use-anthropic-git-proxy)` を出力します。オプトインの報告には Claude Code v2.1.267 以降が必要です。それより前のバージョンはフラグを受け入れますが、報告しないか、その行を出力しません。その後、オプトインランナー上の各セッションは、Anthropic 管理の git またはセッションごとのプロキシ URL のいずれかを使用します。セッションがセッションごとのプロキシ URL を使用する場合、ランナーは 1 つの `[runner:warn]` 行をログに記録します。
 
 <h3 id="rewrite-git-urls-for-private-networks">
   プライベートネットワークの git URL を書き直す
 </h3>
 
-リポジトリ URL はコントロールプレーンから HTTPS として到達します。git ホストのホスト名を使用します。GitHub Enterprise の場合、Claude Code 管理設定で [GitHub Enterprise 統合](/docs/ja/github-enterprise-server)用に設定したホスト名です。 2 つの繰り返し可能なフラグはクローン前にこれらの URL を書き直します：
+リポジトリ URL はコントロールプレーンから HTTPS として到達します。git ホストのホスト名を使用します。GitHub Enterprise の場合、Claude Code 管理設定で [GitHub Enterprise 統合](/docs/ja/github-enterprise-server)用に設定したホスト名です。2 つの繰り返し可能なフラグはクローン前にこれらの URL を書き直します：
 
 * `--git-host-rewrite <from>=<to>`：スプリットホライズン DNS の場合。Anthropic は外部ホスト名を通じて git ホストに到達しますが、ランナーは内部ホスト名を使用する必要があります
 * `--git-ssh-rewrite <host>`：SSH のみを受け入れる git ホストの場合。`https://<host>/owner/repo` を `git@<host>:owner/repo` に書き直します
@@ -223,7 +223,7 @@ ENTRYPOINT ["claude"]
 ノードが ARM の場合は `linux-x64` を `linux-arm64` に、Alpine などの musl ベースのイメージの場合は `linux-x64-musl` または `linux-arm64-musl` に置き換えます。[Alpine Linux セットアップ](/docs/ja/setup#alpine-linux-and-musl-based-distributions)を参照して、musl イメージが必要とする追加パッケージについて確認してください。URL は標準 Claude Code リリースロケーションであるため、[バイナリ整合性とコード署名](/docs/ja/setup#binary-integrity-and-code-signing)で説明されているように、ダウンロードされたバイナリをリリースの署名されたマニフェストに対して検証できます。Claude Code バージョン 2.1.224 以降でイメージをビルドしてから、レジストリにプッシュし、以下のレシピで参照してください：
 
 ```bash theme={null}
-docker build --build-arg CLAUDE_CODE_VERSION=2.1.224 -t <your-registry>/claude-runner:latest .
+docker build --build-arg CLAUDE_CODE_VERSION=2.1.267 -t <your-registry>/claude-runner:latest .
 ```
 
 <h2 id="size-cpu-and-memory-for-sessions">

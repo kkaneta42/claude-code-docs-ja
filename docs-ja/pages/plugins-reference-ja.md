@@ -71,9 +71,20 @@ disallowedTools: Write, Edit
 エージェントの役割、専門知識、および動作を説明する詳細なシステムプロンプト。
 ```
 
-プラグインエージェントは、`name`、`description`、`model`、`effort`、`maxTurns`、`tools`、`disallowedTools`、`skills`、`memory`、`background`、[`omitClaudeMd`](/docs/ja/sub-agents#supported-frontmatter-fields)、および `isolation` frontmatter フィールドをサポートしています。唯一の有効な `isolation` 値は `"worktree"` です。
+<h4 id="plugin-agent-frontmatter">
+  プラグインエージェント frontmatter
+</h4>
 
-セキュリティ上の理由から、プラグイン提供エージェントは `hooks`、`mcpServers`、または `permissionMode` をサポートしていません。
+プラグインエージェントファイルは、[サブエージェントファイルと同じ frontmatter フィールド](/docs/ja/sub-agents#supported-frontmatter-fields)を使用しますが、Claude Code はプラグインから来たエージェントの場合、そのうちのいくつかのみを尊重します。
+
+* **サポート対象**: `name`、`description`、`model`、`effort`、`maxTurns`、`tools`、`disallowedTools`、`skills`、`memory`、`background`、`omitClaudeMd`、`isolation`、`color`、および `experimental`。唯一の有効な `isolation` 値は `"worktree"` です。
+* **セキュリティ上の理由からサポート対象外**: `hooks`、`mcpServers`、および `permissionMode`。Claude Code はプラグインからエージェントを読み込む場合、これらを無視します。これらを使用するには、エージェントファイルを `.claude/agents/` または `~/.claude/agents/` にコピーします。
+* **サポート対象外**: `initialPrompt`。
+
+プラグインエージェントファイルを `agents/` のサブフォルダーに配置できます。Claude Code は [それらを再帰的に読み込み](/docs/ja/sub-agents#choose-the-subagent-scope)、プラグイン名、各サブフォルダー名、およびファイル名をコロンで結合して、エージェントのスコープ付き名を形成します。たとえば、`my-plugin` という名前のプラグイン内の `agents/review/security.md` は `my-plugin:review:security` として読み込まれます。2 つの設定がその名前を変更します。
+
+* Frontmatter `name`: ファイル名のみを置き換えるため、`agents/review/security.md` の `name: audit` は `my-plugin:review:audit` として読み込まれます
+* マニフェスト [`agents`](#component-path-fields) フィールド: そこにリストされているファイルはサブフォルダー名なしで読み込まれるため、`"agents": "./custom/review/security.md"` は `my-plugin:security` として読み込まれます
 
 Claude Code は、frontmatter に `name` がない場合またはパースに失敗した場合でも、プラグインエージェントを読み込みます。
 
@@ -474,7 +485,7 @@ Claude Code の以前のバージョンからのサインインは、Claude Code
   プラグインマニフェストスキーマ
 </h2>
 
-`.claude-plugin/plugin.json` ファイルは、プラグインのメタデータと設定を定義します。
+`.claude-plugin/plugin.json` ファイルはプラグインのメタデータと設定を定義します。
 
 マニフェストはオプションです。省略した場合、Claude Code は[デフォルトの場所](#file-locations-reference)のコンポーネントを自動検出し、ディレクトリ名からプラグイン名を導出します。メタデータまたはカスタムコンポーネントパスを提供する必要がある場合は、マニフェストを使用してください。
 
@@ -527,22 +538,22 @@ Claude Code の以前のバージョンからのサインインは、Claude Code
 | :----- | :----- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------- |
 | `name` | string | ケバブケースの一意の識別子。スペース、制御文字、双方向フォーマット文字を含みません。[マーケットプレイスエントリ](/docs/ja/plugin-marketplaces#plugin-entries)がプラグインを別の名前でリストする場合、マーケットプレイスエントリ名が `enabledPlugins` キーと `/plugin` で使用されます | `"deployment-tools"` |
 
-この名前はコンポーネントの名前空間に使用されます。たとえば、UI では、名前が `plugin-dev` のプラグインのエージェント `agent-creator` は `plugin-dev:agent-creator` として表示されます。
+この名前はコンポーネントの名前空間化に使用されます。たとえば、UI では、名前が `plugin-dev` のプラグインのエージェント `agent-creator` は `plugin-dev:agent-creator` として表示されます。
 
 <h3 id="unrecognized-fields">
   認識されないフィールド
 </h3>
 
-Claude Code は認識しないトップレベルフィールドを無視します。`plugin.json` に別のエコシステムからのメタデータを保持でき、プラグインは引き続き読み込まれます。これにより、VS Code または Cursor 拡張マニフェスト、npm `package.json`、または MCPB/DXT バンドルマニフェストとして機能する 1 つのマニフェストを保守することが実用的になります。
+Claude Code は認識しないトップレベルフィールドを無視します。別のエコシステムからのメタデータを `plugin.json` に保持でき、プラグインは引き続き読み込まれます。これにより、VS Code または Cursor 拡張マニフェスト、npm `package.json`、または MCPB/DXT バンドルマニフェストとして機能する 1 つのマニフェストを保守することが実用的になります。
 
 `claude plugin validate` は認識されないフィールドを警告として報告し、エラーではありません。フィールドが認識されたフィールドから 1 文字または 2 文字異なる場合、警告は意図された名前を示唆します。認識されないフィールド警告のみを持つプラグインは検証に合格し、実行時に読み込まれます。
 
-Claude Code が認識されたフィールドを処理する方法は、値の型が間違っている場合、フィールドによって異なります。
+Claude Code が値の型が間違っている認識されたフィールドを処理する方法は、フィールドによって異なります。
 
-* **ほとんどのフィールド**: プラグインは読み込みに失敗します。たとえば、配列ではなく文字列である `keywords` 値は読み込みエラーであり、`claude plugin validate` はそれをエラーとして報告します。
+* **ほとんどのフィールド**: プラグインは読み込みに失敗します。たとえば、文字列の代わりに配列である `keywords` 値は読み込みエラーであり、`claude plugin validate` はそれをエラーとして報告します。
 * **`experimental` と `metadata`**: Claude Code は非オブジェクト値を無視し、`claude plugin validate` は警告を報告します。
 
-`--strict` を渡して、警告をエラーとして扱います。CI で使用して、公開前に別のツールのマニフェストから残されたスペルミスのあるフィールド名またはフィールドをキャッチします。ただし、プラグインは実行時に読み込まれます。
+`--strict` を渡して、警告をエラーとして扱います。CI で使用して、公開前に別のツールのマニフェストから残された綴り間違いのフィールド名またはフィールドをキャッチします。プラグインは実行時に読み込まれますが。
 
 ```bash theme={null}
 claude plugin validate ./my-plugin --strict
@@ -552,30 +563,30 @@ claude plugin validate ./my-plugin --strict
   メタデータフィールド
 </h3>
 
-| フィールド            | 型       | 説明                                                                                                                                                                                                                                                                                                                         | 例                                                                 |
-| :--------------- | :------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :---------------------------------------------------------------- |
-| `$schema`        | string  | エディタのオートコンプリートと検証用の JSON Schema URL。Claude Code は読み込み時にこのフィールドを無視します。                                                                                                                                                                                                                                                      | `"https://json.schemastore.org/claude-code-plugin-manifest.json"` |
-| `displayName`    | string  | `/plugin` ピッカーおよび他の UI サーフェスに表示される人間が読める名前。マーケットプレイスインストール済みプラグインの場合、[マーケットプレイスエントリ](/docs/ja/plugin-marketplaces#optional-plugin-fields)の `displayName` はこの値より優先されます。どちらの場所にも表示名が設定されていない場合、ユーザーは `name` を見ます。`name` とは異なり、スペースと任意の大文字小文字を含むことができます。名前空間またはルックアップには使用されません。                                                    | `"Deployment Tools"`                                              |
-| `version`        | string  | オプション。セマンティックバージョン。これを設定するとプラグインをそのバージョン文字列にピンします。ユーザーはバージョンをバンプしたときのみ更新を受け取ります。[`command` ソース](/docs/ja/plugin-marketplaces#command-sources)を除きます。[プラグインキャッシングとファイル解決](#plugin-caching-and-file-resolution)を参照してください。マーケットプレイスエントリにも設定されている場合、`plugin.json` が優先されます。省略した場合、バージョンは[バージョン管理](#version-management)の次のソースから取得されます。 | `"2.1.0"`                                                         |
-| `description`    | string  | プラグインの目的の簡潔な説明                                                                                                                                                                                                                                                                                                             | `"Deployment automation tools"`                                   |
-| `author`         | object  | 著者情報                                                                                                                                                                                                                                                                                                                       | `{"name": "Dev Team", "email": "dev@company.com"}`                |
-| `homepage`       | string  | ドキュメント URL                                                                                                                                                                                                                                                                                                                 | `"https://docs.example.com"`                                      |
-| `repository`     | string  | ソースコード URL                                                                                                                                                                                                                                                                                                                 | `"https://github.com/user/plugin"`                                |
-| `license`        | string  | ライセンス識別子                                                                                                                                                                                                                                                                                                                   | `"MIT"`、`"Apache-2.0"`                                            |
-| `keywords`       | array   | 検出タグ                                                                                                                                                                                                                                                                                                                       | `["deployment", "ci-cd"]`                                         |
-| `metadata`       | object  | 権利付与またはカタログフィールドなど、独自のデータ用のフリーフォームオブジェクト。Claude Code はこれを読まないため、値はプラグインの動作に影響しません。Claude Code は非オブジェクト値を無視し、`claude plugin validate` は警告として報告します。v2.1.222 より前では、Claude Code はキーを[認識されないフィールド](#unrecognized-fields)として扱いました。                                                                                               | `{"catalogId": "cat-123"}`                                        |
-| `defaultEnabled` | boolean | ユーザーが設定を設定していない場合、プラグインが有効な状態で開始するかどうか。デフォルトは `true` です。[デフォルト有効化](#default-enablement)を参照してください。                                                                                                                                                                                                                          | `false`                                                           |
+| フィールド            | 型       | 説明                                                                                                                                                                                                                                                                                                                                                      | 例                                                                 |
+| :--------------- | :------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | :---------------------------------------------------------------- |
+| `$schema`        | string  | エディタのオートコンプリートと検証用の JSON Schema URL。Claude Code は読み込み時にこのフィールドを無視します。                                                                                                                                                                                                                                                                                   | `"https://json.schemastore.org/claude-code-plugin-manifest.json"` |
+| `displayName`    | string  | `/plugin` ピッカーおよび他の UI サーフェスに表示される人間が読める名前。マーケットプレイスにインストールされたプラグインの場合、[マーケットプレイスエントリ](/docs/ja/plugin-marketplaces#optional-plugin-fields)の `displayName` はこの値より優先されます。どちらの場所にも表示名が設定されていない場合、ユーザーは `name` を見ます。`name` とは異なり、スペースと任意の大文字小文字を含むことができます。名前空間化またはルックアップには使用されません。                                                                              | `"Deployment Tools"`                                              |
+| `version`        | string  | オプション。セマンティックバージョン。これを設定するとプラグインをそのバージョン文字列にピン留めするため、ユーザーはバージョンをバンプしたときにのみ更新を受け取ります。[`command` ソース](/docs/ja/plugin-marketplaces#command-sources)またはプラグイン[読み込み中](#plugin-caching-and-file-resolution)を除きます。[バージョン管理](#version-management)を参照してください。マーケットプレイスエントリにも設定されている場合、`plugin.json` が優先されます。省略した場合、バージョンは[バージョン管理](#version-management)の次のソースから取得されます。 | `"2.1.0"`                                                         |
+| `description`    | string  | プラグインの目的の簡潔な説明                                                                                                                                                                                                                                                                                                                                          | `"Deployment automation tools"`                                   |
+| `author`         | object  | 著者情報                                                                                                                                                                                                                                                                                                                                                    | `{"name": "Dev Team", "email": "dev@company.com"}`                |
+| `homepage`       | string  | ドキュメント URL                                                                                                                                                                                                                                                                                                                                              | `"https://docs.example.com"`                                      |
+| `repository`     | string  | ソースコード URL                                                                                                                                                                                                                                                                                                                                              | `"https://github.com/user/plugin"`                                |
+| `license`        | string  | ライセンス識別子                                                                                                                                                                                                                                                                                                                                                | `"MIT"`、`"Apache-2.0"`                                            |
+| `keywords`       | array   | 検出タグ                                                                                                                                                                                                                                                                                                                                                    | `["deployment", "ci-cd"]`                                         |
+| `metadata`       | object  | 権利付与またはカタログフィールドなど、独自のデータ用の自由形式オブジェクト。Claude Code はこれを読まないため、値はプラグインの動作に影響しません。Claude Code は非オブジェクト値を無視し、`claude plugin validate` は警告として報告します。v2.1.222 より前では、Claude Code はキーを[認識されないフィールド](#unrecognized-fields)として扱いました。                                                                                                                               | `{"catalogId": "cat-123"}`                                        |
+| `defaultEnabled` | boolean | ユーザーが設定を設定していない場合、プラグインが有効な状態で開始するかどうか。デフォルトは `true` です。[デフォルト有効化](#default-enablement)を参照してください。                                                                                                                                                                                                                                                       | `false`                                                           |
 
 <h3 id="default-enablement">
   デフォルト有効化
 </h3>
 
-`plugin.json` で `defaultEnabled: false` を設定して、無効な状態でインストールされるプラグインを配布します。ユーザーは `claude plugin enable <plugin>` または `/plugin` インターフェースでオンにします。外部サービスに接続するなど、ユーザーがオプトインすべきコストまたはスコープを追加するプラグインに使用します。
+`plugin.json` で `defaultEnabled: false` を設定して、無効な状態でインストールされるプラグインを配布します。ユーザーは `claude plugin enable <plugin>` または `/plugin` インターフェースでオンにします。外部サービスに接続するものなど、ユーザーがオプトインすべきコストまたはスコープを追加するプラグインに使用します。
 
-`defaultEnabled` は、他に何もプラグインの状態を決定していない場合のフォールバックです。2 つのことがそれより優先されます。
+`defaultEnabled` は、他に何もプラグインの状態を決定していない場合のフォールバックです。ユーザーの設定と依存関係の要件が優先されます。
 
-* **ユーザーの設定**: 任意の設定スコープで `enabledPlugins` のプラグインエントリ。一度書き込まれると、プラグイン更新と再インストール全体で永続化されるため、後のリリースで `defaultEnabled` を変更しても既存ユーザーは反転しません。
-* **依存関係要件**: プラグインが別のアクティブなプラグインによって必要とされる場合、Claude Code はインストール時または有効化時に `true` を書き込みます。これにより明示的な設定が与えられるため、独自のデフォルトは適用されなくなります。[依存関係を持つプラグインを有効または無効にする](/docs/ja/plugin-dependencies#enable-or-disable-a-plugin-with-dependencies)を参照してください。
+* **ユーザーの設定**: 任意の設定スコープで `enabledPlugins` のプラグインのエントリ。一度書き込まれると、プラグイン更新と再インストール全体で永続化されるため、後のリリースで `defaultEnabled` を変更しても既存ユーザーは反転しません。
+* **依存関係の要件**: プラグインがアクティブな別のプラグインによって必要とされる場合、Claude Code はインストール時または有効化時に `true` を書き込みます。これにより明示的な設定が与えられるため、独自のデフォルトはもはや適用されません。[依存関係を持つプラグインを有効または無効にする](/docs/ja/plugin-dependencies#enable-or-disable-a-plugin-with-dependencies)を参照してください。
 
 同じフィールドはプラグインのマーケットプレイスエントリに表示でき、`plugin.json` の値より優先されます。[オプションプラグインフィールド](/docs/ja/plugin-marketplaces#optional-plugin-fields)を参照してください。
 
@@ -583,22 +594,22 @@ claude plugin validate ./my-plugin --strict
   コンポーネントパスフィールド
 </h3>
 
-| フィールド                   | 型                     | 説明                                                                                                                                                             | 例                                                    |
-| :---------------------- | :-------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------- | :--------------------------------------------------- |
-| `skills`                | string\|array         | `<name>/SKILL.md` を含むカスタムスキルディレクトリ。デフォルト `skills/` スキャンに追加されます。マーケットプレイスルート例外については[パス動作ルール](#path-behavior-rules)を参照してください                                     | `"./custom/skills/"`                                 |
-| `commands`              | string\|array         | カスタムフラット `.md` スキルファイルまたはディレクトリ（デフォルト `commands/` を置き換え）                                                                                                       | `"./custom/cmd.md"` または `["./cmd1.md"]`              |
-| `agents`                | string\|array         | カスタムエージェントファイル（デフォルト `agents/` を置き換え）                                                                                                                          | `"./custom/agents/reviewer.md"`                      |
-| `workflows`             | string\|array         | カスタム[ワークフロー](/docs/ja/workflows)スクリプトファイルまたはディレクトリ（デフォルト `workflows/` を置き換え）                                                                                        | `"./custom/workflows/"`                              |
-| `hooks`                 | string\|array\|object | フックコンフィグパスまたはインラインコンフィグ                                                                                                                                        | `"./my-extra-hooks.json"`                            |
-| `mcpServers`            | string\|array\|object | MCP コンフィグパスまたはインラインコンフィグ                                                                                                                                       | `"./my-extra-mcp-config.json"`                       |
-| `outputStyles`          | string\|array         | カスタム出力スタイルファイル/ディレクトリ（デフォルト `output-styles/` を置き換え）                                                                                                            | `"./styles/"`                                        |
-| `lspServers`            | string\|array\|object | コード知能（定義へ移動、参照を検索など）用の[Language Server Protocol](https://microsoft.github.io/language-server-protocol/)コンフィグ                                                   | `"./.lsp.json"`                                      |
-| `experimental.themes`   | string\|array         | カラーテーマファイル/ディレクトリ（デフォルト `themes/` を置き換え）。[テーマ](#themes)を参照してください                                                                                               | `"./themes/"`                                        |
-| `experimental.monitors` | string\|array         | プラグインがアクティブな場合に自動的に開始されるバックグラウンド[Monitor](/docs/ja/tools-reference#monitor-tool)コンフィグ。[モニター](#monitors)を参照してください                                                    | `"./monitors.json"`                                  |
-| `experimental.evals`    | string\|array         | プラグインルートの下のディレクトリ。プラグインの[eval ケース](/docs/ja/plugin-evals#use-a-different-eval-directory)を保持します。デフォルト `evals/` ではない場合。`claude plugin eval --eval-dir` はそれをオーバーライドします | `"quality/evals"`                                    |
-| `userConfig`            | object                | 有効化時にプロンプトされるユーザー設定可能な値。[ユーザー設定](#user-configuration)を参照してください                                                                                                 |                                                      |
-| `channels`              | array                 | メッセージ注入用のチャネル宣言（Telegram、Slack、Discord スタイル）。[チャネル](#channels)を参照してください                                                                                        |                                                      |
-| `dependencies`          | array                 | このプラグインが必要とする他のプラグイン。オプションで semver バージョン制約付き。[プラグイン依存関係バージョンを制約する](/docs/ja/plugin-dependencies)を参照してください                                                           | `[{ "name": "secrets-vault", "version": "~2.1.0" }]` |
+| フィールド                   | 型                     | 説明                                                                                                                                                          | 例                                                    |
+| :---------------------- | :-------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------- | :--------------------------------------------------- |
+| `skills`                | string\|array         | `<name>/SKILL.md` を含むカスタムスキルディレクトリ。デフォルト `skills/` スキャンに追加します。マーケットプレイスルート例外については[パス動作ルール](#path-behavior-rules)を参照してください                                   | `"./custom/skills/"`                                 |
+| `commands`              | string\|array         | カスタムフラット `.md` スキルファイルまたはディレクトリ（デフォルト `commands/` を置き換え）                                                                                                    | `"./custom/cmd.md"` または `["./cmd1.md"]`              |
+| `agents`                | string\|array         | カスタムエージェントファイル（デフォルト `agents/` を置き換え）                                                                                                                       | `"./custom/agents/reviewer.md"`                      |
+| `workflows`             | string\|array         | カスタム[ワークフロー](/docs/ja/workflows)スクリプトファイルまたはディレクトリ（デフォルト `workflows/` を置き換え）                                                                                     | `"./custom/workflows/"`                              |
+| `hooks`                 | string\|array\|object | フック設定パスまたはインライン設定                                                                                                                                           | `"./my-extra-hooks.json"`                            |
+| `mcpServers`            | string\|array\|object | MCP 設定パスまたはインライン設定                                                                                                                                          | `"./my-extra-mcp-config.json"`                       |
+| `outputStyles`          | string\|array         | カスタム出力スタイルファイル/ディレクトリ（デフォルト `output-styles/` を置き換え）                                                                                                         | `"./styles/"`                                        |
+| `lspServers`            | string\|array\|object | コード知能（定義へのジャンプ、参照の検索など）用の[言語サーバープロトコル](https://microsoft.github.io/language-server-protocol/)設定                                                             | `"./.lsp.json"`                                      |
+| `experimental.themes`   | string\|array         | カラーテーマファイル/ディレクトリ（デフォルト `themes/` を置き換え）。[テーマ](#themes)を参照してください                                                                                            | `"./themes/"`                                        |
+| `experimental.monitors` | string\|array         | プラグインがアクティブな場合に自動的に開始するバックグラウンド[Monitor](/docs/ja/tools-reference#monitor-tool)設定。[モニター](#monitors)を参照してください                                                     | `"./monitors.json"`                                  |
+| `experimental.evals`    | string\|array         | デフォルト `evals/` ではない場合、プラグインの[eval ケース](/docs/ja/plugin-evals#use-a-different-eval-directory)を保持するプラグインルート下のディレクトリ。`claude plugin eval --eval-dir` はこれをオーバーライドします | `"quality/evals"`                                    |
+| `userConfig`            | object                | ユーザーが有効化時にプロンプトされる設定可能な値。[ユーザー設定](#user-configuration)を参照してください                                                                                             |                                                      |
+| `channels`              | array                 | メッセージ注入用のチャネル宣言（Telegram、Slack、Discord スタイル）。[チャネル](#channels)を参照してください                                                                                     |                                                      |
+| `dependencies`          | array                 | このプラグインが必要とする他のプラグイン。オプションで semver バージョン制約付き。[プラグイン依存関係バージョンを制約する](/docs/ja/plugin-dependencies)を参照してください                                                        | `[{ "name": "secrets-vault", "version": "~2.1.0" }]` |
 
 <h3 id="experimental-components">
   実験的コンポーネント
@@ -610,7 +621,7 @@ claude plugin validate ./my-plugin --strict
   ユーザー設定
 </h3>
 
-`userConfig` フィールドは、プラグインが有効化されたときに Claude Code がユーザーにプロンプトする値を宣言します。ユーザーに `settings.json` を手動で編集させる代わりに、これを使用してください。
+`userConfig` フィールドは、プラグインが有効化されたときに Claude Code がユーザーにプロンプトする値を宣言します。ユーザーに `settings.json` を手動で編集させる代わりにこれを使用してください。
 
 ```json theme={null}
 {
@@ -632,35 +643,35 @@ claude plugin validate ./my-plugin --strict
 
 キーは有効な識別子である必要があります。各オプションはこれらのフィールドをサポートします。
 
-| フィールド         | 必須  | 説明                                                                               |
-| :------------ | :-- | :------------------------------------------------------------------------------- |
-| `type`        | はい  | `string`、`number`、`boolean`、`directory`、または `file` のいずれか                         |
-| `title`       | はい  | 設定ダイアログに表示されるラベル                                                                 |
-| `description` | はい  | フィールドの下に表示されるヘルプテキスト                                                             |
-| `sensitive`   | いいえ | `true` の場合、入力をマスクし、値を `settings.json` の代わりにセキュアストレージに保存します                       |
-| `required`    | いいえ | `true` の場合、フィールドが空の場合は検証が失敗します                                                   |
-| `default`     | いいえ | ユーザーが何も提供しない場合に使用される値                                                            |
-| `options`     | いいえ | `string` 型の場合、フィールドが受け入れる値。`/config` でピッカーとして表示されます。Claude Code v2.1.271 以降が必要です |
-| `multiple`    | いいえ | `string` 型の場合、文字列の配列を許可します                                                       |
-| `min` / `max` | いいえ | `number` 型の境界                                                                    |
+| フィールド         | 必須  | 説明                                                                                                                                              |
+| :------------ | :-- | :---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `type`        | はい  | `string`、`number`、`boolean`、`directory`、または `file` のいずれか                                                                                        |
+| `title`       | はい  | 設定ダイアログに表示されるラベル                                                                                                                                |
+| `description` | はい  | フィールドの下に表示されるヘルプテキスト                                                                                                                            |
+| `sensitive`   | いいえ | `true` の場合、入力をマスクし、値を `settings.json` の代わりにセキュアストレージに保存します                                                                                      |
+| `required`    | いいえ | `true` の場合、フィールドが空の場合は検証が失敗します                                                                                                                  |
+| `default`     | いいえ | ユーザーが何も提供しない場合に使用される値                                                                                                                           |
+| `options`     | いいえ | `string` 型の場合、フィールドが受け入れる値。`/config` にピッカーとして表示されます。[フィールドを固定オプションに制限する](#limit-a-field-to-fixed-options)を参照してください。Claude Code v2.1.271 以降が必要です |
+| `multiple`    | いいえ | `string` 型の場合、文字列の配列を許可します                                                                                                                      |
+| `min` / `max` | いいえ | `number` 型の境界                                                                                                                                   |
 
-`sensitive` フィールドと `multiple` リストを除き、有効化された各プラグインの各フィールドは `/config` パネルの行としても表示されます。行には Claude Code v2.1.269 以降が必要です。
+`sensitive` フィールドと `multiple` リストを除き、有効な各プラグインの各フィールドは `/config` パネルの行としても表示されます。行には Claude Code v2.1.269 以降が必要です。
 
-各値は MCP および LSP サーバーコンフィグとフックコマンドで `${user_config.KEY}` として置換可能です。機密でない値はスキルおよびエージェントコンテンツでも置換できます。すべての値は `CLAUDE_PLUGIN_OPTION_<KEY>` 環境変数としてフックプロセスにエクスポートされます。ここで `<KEY>` はオプションキーを大文字にしたものです。
+各値は MCP および LSP サーバー設定とフックコマンドで `${user_config.KEY}` として置換可能です。機密でない値はスキルおよびエージェントコンテンツでも置換できます。すべての値は、`<KEY>` がオプションキーを大文字にしたフックプロセスに `CLAUDE_PLUGIN_OPTION_<KEY>` 環境変数としてエクスポートされます。
 
-シェルで実行されるフィールドは `${user_config.*}` を拒否します。設定された値をシェルコマンドに置換すると、シェルはその値が含むものを実行できるため、コンポーネントは[エラー](/docs/ja/errors#plugin-command-references-user-config)で失敗します。拒否された各フィールドには、値を渡す別の方法があります。
+シェルで実行されるフィールドは `${user_config.*}` を拒否します。設定された値をシェルコマンドに置換すると、シェルはその値に含まれるものを実行できるため、コンポーネントは[エラー](/docs/ja/errors#plugin-command-references-user-config)で失敗します。拒否された各フィールドには、値を渡す別の方法があります。
 
-| 拒否されたフィールド                                                                   | 値を渡す方法                                                                                                    |
-| :--------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------- |
-| シェル形式フックコマンド                                                                 | `args` で[exec 形式](/docs/ja/hooks#exec-form-and-shell-form)を使用するか、フックの環境から `CLAUDE_PLUGIN_OPTION_<KEY>` を読み取ります |
-| [Monitor](#monitors)コマンド                                                     | スクリプトの設定ファイルから値を読み取ります                                                                                    |
-| MCP [`headersHelper`](/docs/ja/mcp#use-dynamic-headers-for-custom-authentication) | スクリプトの設定ファイルから値を読み取ります                                                                                    |
+| 拒否されたフィールド                                                                   | 値を渡す方法                                                                                                     |
+| :--------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------- |
+| シェル形式フックコマンド                                                                 | [exec 形式](/docs/ja/hooks#exec-form-and-shell-form)を `args` で使用するか、フックの環境から `CLAUDE_PLUGIN_OPTION_<KEY>` を読み取ります |
+| [Monitor](#monitors)コマンド                                                     | スクリプトの設定ファイルから値を読み取ります                                                                                     |
+| MCP [`headersHelper`](/docs/ja/mcp#use-dynamic-headers-for-custom-authentication) | スクリプトの設定ファイルから値を読み取ります                                                                                     |
 
 v2.1.207 より前では、これらのフィールドは `${user_config.KEY}` 値を置換しました。これに依存していたプラグインを更新してください。
 
 機密でない値は、ユーザー `settings.json` の [`pluginConfigs`](/docs/ja/settings-reference#pluginconfigs) キーの下に `pluginConfigs[<plugin-id>].options` として保存されます。
 
-macOS では、Claude Code は機密値を macOS キーチェーンに保存し、キーチェーンが書き込みを拒否した場合は `~/.claude/.credentials.json` にフォールバックします。サポートされているキーチェーンのないプラットフォームでは、`~/.claude/.credentials.json` に保存されます。キーチェーンストレージは OAuth トークンと共有され、約 2 KB の合計制限があるため、機密値は小さく保ってください。
+macOS では、Claude Code は macOS キーチェーンに機密値を保存し、キーチェーンが書き込みを拒否した場合は `~/.claude/.credentials.json` にフォールバックします。サポートされているキーチェーンのないプラットフォームでは、`~/.claude/.credentials.json` に保存されます。キーチェーンストレージは OAuth トークンと共有され、約 2 KB の合計制限があるため、機密値を小さく保ちます。
 
 Claude Code は 3 つの設定ソースからのみすべての `pluginConfigs` 値を読み取ります。
 
@@ -668,15 +679,52 @@ Claude Code は 3 つの設定ソースからのみすべての `pluginConfigs` 
 * **`--settings`**: CLI フラグまたは SDK インライン設定
 * **管理設定**: [組織制御ポリシー](/docs/ja/permissions#managed-settings)
 
-複数のソースが同じキーを設定する場合、管理設定が優先され、次に `--settings`、次にユーザー設定が優先されます。このリストから削除できる唯一のソースはユーザー設定です。`user` なしで [`--setting-sources`](/docs/ja/cli-reference#cli-flags) を渡すと、Claude Code はそれらをスキップします。管理設定と `--settings` は、渡すものが何であれ保持されます。SDK の [`settingSources`](/docs/ja/agent-sdk/claude-code-features#what-settingsources-does-not-control)オプションは同じリストを設定します。
+複数のソースが同じキーを設定する場合、管理設定が優先され、次に `--settings`、次にユーザー設定が優先されます。このリストから削除できる唯一のソースはユーザー設定です。[`--setting-sources`](/docs/ja/cli-reference#cli-flags)を `user` なしで渡し、Claude Code はそれらをスキップします。管理設定と `--settings` は渡すものが何であれ保持されます。SDK の [`settingSources`](/docs/ja/agent-sdk/claude-code-features#what-settingsources-does-not-control)オプションは同じリストを設定します。
 
-プロジェクトの `.claude/settings.json` または `.claude/settings.local.json` のエントリは無視されます。両方のファイルはワークスペースに存在するため、クローンされたリポジトリはそこに値を提供でき、それらの値はプラグインフックコマンド、MCP サーバーコンフィグ、LSP コマンド、およびモニターコマンドに流れます。v2.1.207 より前では、これらのエントリが読み取られました。制限は `pluginConfigs` に固有です。[`enabledPlugins`](/docs/ja/settings-reference#enabledplugins)はまだプロジェクトおよびローカル設定を尊重します。
+プロジェクトの `.claude/settings.json` または `.claude/settings.local.json` のエントリは無視されます。両方のファイルはワークスペースに存在するため、クローンされたリポジトリはそこに値を提供でき、それらの値はプラグインフックコマンド、MCP サーバー設定、LSP コマンド、およびモニターコマンドに流れます。v2.1.207 より前では、これらのエントリが読み取られました。制限は `pluginConfigs` に固有です。[`enabledPlugins`](/docs/ja/settings-reference#enabledplugins)はまだプロジェクトおよびローカル設定を尊重します。
+
+<h4 id="limit-a-field-to-fixed-options">
+  フィールドを固定オプションに制限する
+</h4>
+
+`userConfig` フィールドに `options` を設定して、ユーザーが固定リストからその値を選択するようにします。
+
+`tone` フィールドを 3 つのオプションに制限するには、`options` にそれらをリストし、`default` をそのうちの 1 つに設定します。
+
+```json theme={null}
+{
+  "userConfig": {
+    "tone": {
+      "type": "string",
+      "title": "Tone",
+      "description": "Voice for generated replies",
+      "options": ["neutral", "warm", "formal"],
+      "default": "neutral"
+    }
+  }
+}
+```
+
+任意のフィールドで `options` を宣言する場合、Claude Code v2.1.271 より前のバージョンのユーザーはプラグインを読み込むことができません。
+
+フィールドに `options` を設定する場合、これらのルールに従います。
+
+* `type` を `string` に設定します
+* `multiple` または `sensitive` を `true` に設定しません
+* `default` をオプションの 1 つに設定します
+* `default` を設定しない場合は、`required` を `true` に設定します
+* 少なくとも 1 つのオプションをリストし、各 1 〜 64 文字の長さです
+* オプションをスペースで開始または終了しません
+* 制御文字、非表示文字、テキスト方向を変更する文字、またはオプション内の通常のスペース以外のスペースを使用しません
+* 異なる大文字小文字でも同じオプションを 2 回リストしません
+
+これらのルールのいずれかを破った場合、プラグインは読み込みに失敗します。`claude plugin validate` を実行して、どのフィールドがどのルールを破るかを確認してください。
 
 <h3 id="channels">
   チャネル
 </h3>
 
-`channels` フィールドを使用すると、プラグインは 1 つ以上のメッセージチャネルを宣言でき、コンテンツを会話に注入します。各チャネルはプラグインが提供する MCP サーバーにバインドされます。
+`channels` フィールドを使用すると、プラグインは会話にコンテンツを注入する 1 つ以上のメッセージチャネルを宣言できます。各チャネルはプラグインが提供する MCP サーバーにバインドされます。
 
 ```json theme={null}
 {
@@ -709,24 +757,24 @@ Claude Code は 3 つの設定ソースからのみすべての `pluginConfigs` 
 
 カスタムパスがプラグインのデフォルトディレクトリを置き換えるか拡張するかは、フィールドによって異なります。
 
-* **デフォルトを置き換え**: `commands`、`agents`、`workflows`、`outputStyles`、`experimental.themes`、`experimental.monitors`。たとえば、マニフェストが `commands` を指定する場合、デフォルト `commands/` ディレクトリはスキャンされません。デフォルトを保持して追加するには、明示的にリストします。`"commands": ["./commands/", "./extras/"]`
-* **デフォルトに追加**: `skills`。デフォルト `skills/` ディレクトリは常にスキャンされ、`skills` にリストされているディレクトリはそれと一緒に読み込まれます。例外: [ソースがマーケットプレイスルートに解決される](/docs/ja/plugin-marketplaces#advanced-plugin-entries)マーケットプレイスエントリの場合、特定のサブディレクトリを宣言するとデフォルト `skills/` スキャンが置き換えられます
-* **独自のマージルール**: [フック](#hooks)、[MCP サーバー](#mcp-servers)、および[LSP サーバー](#lsp-servers)。各セクションで複数のソースがどのように結合されるかを参照してください
+* **デフォルトを置き換え**: `commands`、`agents`、`workflows`、`outputStyles`、`experimental.themes`、`experimental.monitors`。たとえば、マニフェストが `commands` を指定する場合、デフォルト `commands/` ディレクトリはスキャンされません。デフォルトを保持してさらに追加するには、明示的にリストします。`"commands": ["./commands/", "./extras/"]`
+* **デフォルトに追加**: `skills`。デフォルト `skills/` ディレクトリは常にスキャンされ、`skills` にリストされているディレクトリはそれと一緒に読み込まれます。例外: [ソースがマーケットプレイスルートに解決される](/docs/ja/plugin-marketplaces#advanced-plugin-entries)マーケットプレイスエントリの場合、特定のサブディレクトリを宣言するとデフォルト `skills/` スキャンが置き換わります
+* **独自のマージルール**: [フック](#hooks)、[MCP サーバー](#mcp-servers)、および [LSP サーバー](#lsp-servers)。各セクションで複数のソースがどのように結合されるかを参照してください
 
-プラグインがデフォルトフォルダと一致するマニフェストキーの両方を持つ場合、Claude Code は `claude plugin list` と `/plugin` 詳細ビューで無視されたフォルダについて警告します。プラグインはマニフェストパスを使用して読み込まれます。マニフェストキーがデフォルトフォルダを指す場合、Claude Code は警告しません。たとえば `"commands": ["./commands/deploy.md"]` の場合、そのパスはフォルダを明示的に名前付けするためです。
+プラグインにデフォルトフォルダと一致するマニフェストキーの両方がある場合、Claude Code は `claude plugin list` と `/plugin` 詳細ビューで無視されたフォルダについて警告します。プラグインはマニフェストパスを使用して引き続き読み込まれます。マニフェストキーがデフォルトフォルダを指す場合、Claude Code は警告しません。たとえば `"commands": ["./commands/deploy.md"]` は、そのパスがフォルダを明示的に名前付けするためです。
 
 すべてのパスフィールドについて。
 
 * すべてのパスはプラグインルートに相対的で `./` で始まる必要があります。ただし、`skills` フィールドは `.` も受け入れます
   * `"."` と `"./"` の両方はプラグインルート自体を示します
-  * v2.1.221 より前では、`"."` はマニフェスト検証に失敗し、プラグインは読み込まれなかったため、以前のバージョンをサポートするには `"./"` を使用してください
-* カスタムパスのコンポーネントは同じ命名および名前空間ルールを使用します
+  * v2.1.221 より前では、`"."` はマニフェスト検証に失敗し、プラグインは読み込まれなかったため、`"./"` を使用して以前のバージョンをサポートします
+* カスタムパスのコンポーネントは、エージェントファイルを除き、同じ命名および名前空間化ルールを使用します。エージェント名がどのように機能するかについては[エージェント](#agents)を参照してください
 * 複数のパスは配列として指定できます
 * スキルパスは `SKILL.md` を直接含むディレクトリを指すことができます。たとえば、プラグインルートの場合は `"skills": ["."]`
-  * Claude Code はスキルの呼び出し名を `SKILL.md` のフロントマター `name` フィールドから取得するため、インストールディレクトリの名前が何であれ、名前は安定したままです
+  * Claude Code は `SKILL.md` のフロントマター `name` フィールドからスキルの呼び出し名を取得するため、インストールディレクトリの名前が何であれ、名前は安定したままです
   * フロントマターで `name` が設定されていない場合、Claude Code はディレクトリベース名にフォールバックします
 
-プラグインがルートに `SKILL.md` を持ち、`skills/` サブディレクトリがなく、`skills` マニフェストフィールドがない場合、自動的に単一スキルプラグインとして読み込まれます。このレイアウトの場合、`plugin.json` で `"skills": ["./"]` を設定する必要はありません。
+ルートに `SKILL.md` があり、`skills/` サブディレクトリがなく、`skills` マニフェストフィールドがないプラグインは、単一スキルプラグインとして自動的に読み込まれます。このレイアウトの場合、`plugin.json` で `"skills": ["./"]` を設定する必要はありません。
 
 **パスの例**:
 
@@ -747,15 +795,15 @@ Claude Code は 3 つの設定ソースからのみすべての `pluginConfigs` 
   環境変数
 </h3>
 
-Claude Code は 3 つのパス参照用変数を提供します。
+Claude Code はパスを参照するための 3 つの変数を提供します。
 
-| 変数                      | 解決先                                                                 | 用途                                                           |
-| :---------------------- | :------------------------------------------------------------------ | :----------------------------------------------------------- |
-| `${CLAUDE_PLUGIN_ROOT}` | プラグインのインストールディレクトリへの絶対パス                                            | プラグインにバンドルされたスクリプト、バイナリ、設定ファイル                               |
-| `${CLAUDE_PLUGIN_DATA}` | プラグイン更新を超えて存続する[永続ディレクトリ](#persistent-data-directory)。最初の参照時に作成されます | `node_modules` または Python 仮想環境などのインストール済み依存関係、生成されたコード、キャッシュ |
-| `${CLAUDE_PROJECT_DIR}` | プロジェクトルート                                                           | プロジェクトローカルスクリプトと設定ファイル                                       |
+| 変数                      | 解決先                                                                 | 用途                                                              |
+| :---------------------- | :------------------------------------------------------------------ | :-------------------------------------------------------------- |
+| `${CLAUDE_PLUGIN_ROOT}` | プラグインのインストールディレクトリへの絶対パス                                            | プラグインにバンドルされたスクリプト、バイナリ、および設定ファイル                               |
+| `${CLAUDE_PLUGIN_DATA}` | プラグイン更新を超えて存続する[永続ディレクトリ](#persistent-data-directory)。最初の参照時に作成されます | `node_modules` または Python 仮想環境などのインストール済み依存関係、生成されたコード、およびキャッシュ |
+| `${CLAUDE_PROJECT_DIR}` | プロジェクトルート                                                           | プロジェクトローカルスクリプトおよび設定ファイル                                        |
 
-3 つすべてはフックプロセスおよび MCP と LSP サーバーサブプロセスに環境変数としてエクスポートされます。どのフィールドがそれらをインラインで置換するかは、プラグインコンポーネントによって異なります。
+3 つすべてが環境変数としてフックプロセスおよび MCP と LSP サーバーサブプロセスにエクスポートされます。これらはメインセッションまたはサブエージェントで Bash ツールを通じて Claude が実行するコマンドの環境には存在しません。プラグインコンテンツで、プレースホルダーを書き込み、Claude Code はコンテンツを読み込むときにパスをインラインで置換します。どのフィールドがそれらをインラインで置換するかは、プラグインコンポーネントによって異なります。
 
 | プラグインコンポーネント               | プレースホルダーが解決されるフィールド                      |
 | :------------------------- | :--------------------------------------- |
@@ -765,7 +813,7 @@ Claude Code は 3 つのパス参照用変数を提供します。
 | MCP `http`、`sse`、`ws` サーバー | `url`、`headers`、`headersHelper`          |
 | LSP サーバー                   | `command`、`args`、`env`、`workspaceFolder` |
 
-フックコマンドでは、各パスが 1 つの引数として引用符なしで渡されるように、`args` で[exec 形式](/docs/ja/hooks#exec-form-and-shell-form)を使用してください。シェル形式フックおよびモニターコマンドでは、変数を二重引用符で囲みます。`"${CLAUDE_PROJECT_DIR}/scripts/server.sh"` のように。このシェル形式フックはプラグインにバンドルされたスクリプトを実行します。
+フックコマンドで、[exec 形式](/docs/ja/hooks#exec-form-and-shell-form)を `args` で使用して、各パスが引用符なしで 1 つの引数として渡されるようにします。シェル形式フックおよびモニターコマンドで、`"${CLAUDE_PROJECT_DIR}/scripts/server.sh"` のように変数をダブルクォートで囲みます。このシェル形式フックはプラグインにバンドルされたスクリプトを実行します。
 
 ```json theme={null}
 {
@@ -784,23 +832,23 @@ Claude Code は 3 つのパス参照用変数を提供します。
 }
 ```
 
-`${CLAUDE_PLUGIN_ROOT}` はプラグインが更新されるときに変更されます。前のバージョンのディレクトリは更新後の猶予期間ディスク上に残りますが、それを一時的なものとして扱い、そこに状態を書き込まないでください。[プラグインキャッシングとファイル解決](#plugin-caching-and-file-resolution)を参照してください。クリーンアップセマンティクスについては[プラグインキャッシング](#plugin-caching-and-file-resolution)を参照してください。
+コピーされたプラグインの場合、`${CLAUDE_PLUGIN_ROOT}` はプラグインが更新されるときに変更されます。前のバージョンのディレクトリは更新後の猶予期間ディスク上に残りますが、それを一時的なものとして扱い、そこに状態を書き込まないでください。ローカルディレクトリマーケットプレイスから読み込まれたプラグインの場合、変数は安定したソースディレクトリを指します。どのプラグインがコピーされるか、およびクリーンアップセマンティクスについては、[プラグインキャッシング](#plugin-caching-and-file-resolution)を参照してください。
 
-プラグインがセッション中に更新される場合、フックコマンド、モニター、MCP サーバー、および LSP サーバーは前のバージョンのパスを使用し続けます。`/reload-plugins` を実行して、フック、MCP サーバー、および LSP サーバーを新しいパスに切り替えます。モニターはセッション再開が必要です。インタラクティブターミナルのないセッションでは、リロードはプラグイン MCP サーバーを次のセッションまで古いパスに残します。
+コピーされたプラグインがセッション中に更新される場合、フックコマンド、モニター、MCP サーバー、および LSP サーバーは前のバージョンのパスを使用し続けます。`/reload-plugins` を実行して、フック、MCP サーバー、および LSP サーバーを新しいパスに切り替えます。モニターはセッション再開が必要です。インタラクティブターミナルのないセッションでは、リロードはプラグイン MCP サーバーを次のセッションまで古いパスに残します。
 
-`command` ソースを持つプラグインの場合、Claude Code は[プラグイン自体を再実行](/docs/ja/plugin-marketplaces#when-claude-code-re-runs-the-command)できます。
+`command` ソースを持つプラグインの場合、Claude Code は[プラグイン自体を再読み込みできます](/docs/ja/plugin-marketplaces#when-claude-code-re-runs-the-command)。
 
-MCP サーバーは実行時にセッションの作業ディレクトリを読み取るために `roots/list` リクエストを呼び出すこともできます。[`roots/list` が返すもの、および Claude Code がサーバーに変更を通知するタイミング](/docs/ja/mcp#option-3-add-a-local-stdio-server)を参照してください。
+MCP サーバーは `roots/list` リクエストを呼び出して、実行時にセッションの作業ディレクトリを読み取ることもできます。[`roots/list` が返すもの、および Claude Code がサーバーに変更を通知するとき](/docs/ja/mcp#option-3-add-a-local-stdio-server)を参照してください。
 
 <h4 id="persistent-data-directory">
   永続データディレクトリ
 </h4>
 
-`${CLAUDE_PLUGIN_DATA}` ディレクトリは `~/.claude/plugins/data/{id}/` に解決されます。ここで `{id}` はプラグイン識別子で、`a-z`、`A-Z`、`0-9`、`_`、および `-` 以外の文字は `-` に置き換えられます。`formatter@my-marketplace` としてインストールされたプラグインの場合、ディレクトリは `~/.claude/plugins/data/formatter-my-marketplace/` です。
+`${CLAUDE_PLUGIN_DATA}` ディレクトリは `~/.claude/plugins/data/{id}/` に解決されます。ここで `{id}` はプラグイン識別子で、`a-z`、`A-Z`、`0-9`、`_`、および `-` の外の文字は `-` に置き換えられます。`formatter@my-marketplace` としてインストールされたプラグインの場合、ディレクトリは `~/.claude/plugins/data/formatter-my-marketplace/` です。
 
-一般的な用途は、言語依存関係を 1 回インストールし、セッションとプラグイン更新全体で再利用することです。Python 依存関係、Yarn または pnpm でロックされた依存関係、およびライフサイクルスクリプトを実行する必要があるパッケージに使用します。マーケットプレイスインストール済みプラグインの場合、それが必要ない場合があります。Claude Code はプラグインをキャッシュするときに、適格な[Node.js パッケージ依存関係](#node-js-package-dependencies)を自動的にインストールします。
+一般的な用途は、言語依存関係を 1 回インストールし、セッションとプラグイン更新全体で再利用することです。Python 依存関係、Yarn または pnpm でロックされた依存関係、およびライフサイクルスクリプトを実行する必要があるパッケージに使用します。マーケットプレイスにインストールされたプラグインの場合、それをまったく必要としない場合があります。Claude Code はキャッシュ時に適格な[Node.js パッケージ依存関係](#node-js-package-dependencies)を自動的にインストールします。
 
-データディレクトリは単一のプラグインバージョンより長く存続するため、ディレクトリ存在チェックのみでは、更新がプラグインの依存関係マニフェストを変更したときを検出できません。推奨パターンはバンドルされたマニフェストをデータディレクトリのコピーと比較し、異なる場合は再インストールします。
+データディレクトリは単一のプラグインバージョンより長く存続するため、ディレクトリ存在チェックだけでは、更新がプラグインの依存関係マニフェストを変更したときを検出できません。推奨パターンはバンドルされたマニフェストをデータディレクトリのコピーと比較し、異なる場合は再インストールします。
 
 この `SessionStart` フックは最初の実行時に `node_modules` をインストールし、プラグイン更新に変更された `package.json` が含まれるたびに再度インストールします。
 
@@ -821,7 +869,7 @@ MCP サーバーは実行時にセッションの作業ディレクトリを読�
 }
 ```
 
-`diff` はストレージコピーが見つからないか、バンドルされたものと異なる場合にゼロ以外で終了し、最初の実行と依存関係変更更新の両方をカバーします。`npm install` が失敗した場合、末尾の `rm` はコピーされたマニフェストを削除して、次のセッションが再試行されるようにします。
+`diff` は保存されたコピーが見つからないか、バンドルされたコピーと異なる場合にゼロ以外で終了し、最初の実行と依存関係変更更新の両方をカバーします。`npm install` が失敗した場合、末尾の `rm` はコピーされたマニフェストを削除して、次のセッションが再試行されるようにします。
 
 `${CLAUDE_PLUGIN_ROOT}` にバンドルされたスクリプトは、永続化された `node_modules` に対して実行できます。
 
@@ -839,7 +887,7 @@ MCP サーバーは実行時にセッションの作業ディレクトリを読�
 }
 ```
 
-データディレクトリは、プラグインをインストールされている最後のスコープからアンインストールするときに自動的に削除されます。`/plugin` インターフェースはディレクトリサイズを表示し、削除前にプロンプトします。CLI はデフォルトで削除します。[`--keep-data`](#plugin-uninstall)を渡して保持します。
+データディレクトリは、最後のスコープからプラグインをアンインストールするときに自動的に削除されます。`/plugin` インターフェースはディレクトリサイズを表示し、削除前にプロンプトします。CLI はデフォルトで削除します。[`--keep-data`](#plugin-uninstall)を渡して保持します。
 
 ***
 
@@ -959,7 +1007,9 @@ enterprise-plugin/
 ├── agents/                   # Subagent 定義
 │   ├── security-reviewer.md
 │   ├── performance-tester.md
-│   └── compliance-checker.md
+│   ├── compliance-checker.md
+│   └── review/               # ここのエージェントは enterprise-plugin:review:<name> として読み込まれます
+│       └── accessibility.md
 ├── workflows/                # ワークフロースクリプト
 │   └── release-audit.js
 ├── output-styles/            # 出力スタイル定義
@@ -999,7 +1049,7 @@ enterprise-plugin/
 | **マニフェスト**   | `.claude-plugin/plugin.json` | プラグインメタデータと設定（オプション）                                                                                                                                                                        |
 | **Skills**   | `skills/`                    | `<name>/SKILL.md` 構造の Skills                                                                                                                                                                |
 | **コマンド**     | `commands/`                  | フラット Markdown ファイルとしての Skills。新しいプラグインには `skills/` を使用してください                                                                                                                                |
-| **Agents**   | `agents/`                    | Subagent Markdown ファイル                                                                                                                                                                      |
+| **Agents**   | `agents/`                    | Subagent Markdown ファイル。サブフォルダは[エージェント名](#agents)の一部です                                                                                                                                       |
 | **ワークフロー**   | `workflows/`                 | [ワークフロー](/docs/ja/workflows) スクリプトファイル                                                                                                                                                           |
 | **出力スタイル**   | `output-styles/`             | 出力スタイル定義                                                                                                                                                                                    |
 | **テーマ**      | `themes/`                    | カラーテーマ定義                                                                                                                                                                                    |

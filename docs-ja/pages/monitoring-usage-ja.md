@@ -387,8 +387,9 @@ Claude Code はツール呼び出しの成功した戻りからこのイベン�
 echo "{\"Authorization\": \"Bearer $(get-token.sh)\", \"X-API-Key\": \"$(get-api-key.sh)\"}"
 ```
 
-ヘルパーが失敗するか、これらの要件を満たさない出力を出力する場合、Claude Code は以下のエラーを報告します:
+ヘルパーが失敗するか、これらの要件を満たさない出力を出力する場合、エクスポートは失敗し、ヘルパーが再び機能するまで、セッションからテレメトリバックエンドは何も受け取りません。Claude Code は以下の場所で失敗を報告します:
 
+* 対話型セッションの警告通知。[`otelHeadersHelper failed; telemetry is not being exported`](/docs/ja/errors#otelheadershelper-failed)。ヘルパーが最初に失敗したときにセッションごとに 1 回表示されます
 * `/status` 出力
 * [`--debug`](/docs/ja/cli-reference#cli-flags) で実行するか、セッション内で `/debug` を実行した後のデバッグログ
 * stderr、`-p` で開始された非対話型セッション内

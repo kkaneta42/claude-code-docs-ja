@@ -208,6 +208,18 @@ Claude Code ではなく claude.ai アカウントに追加される [MCP server
 
 詳細情報: [Use extended thinking](/docs/ja/model-config#extended-thinking)
 
+<h2 id="f">
+  F
+</h2>
+
+<h3 id="frontmatter">
+  Frontmatter
+</h3>
+
+Markdown ファイルの最上部にある YAML 設定ブロックで、開始の `---` 行と終了の `---` 行の間に配置されます。Skills、subagents、output styles、および rules は、それぞれ frontmatter から設定を読み込みます。例えば、skill の `description` や subagent の `tools` などであり、終了の `---` の後のすべてを指示として扱います。開始の `---` はファイルの最初の行である必要があります。各ファイルタイプは独自のフィールドセットを受け入れます。
+
+詳細情報：[Skill frontmatter](/docs/ja/skills#frontmatter-reference)、[Subagent frontmatter](/docs/ja/sub-agents#supported-frontmatter-fields)、[Output style frontmatter](/docs/ja/output-styles#frontmatter)、[Rule frontmatter](/docs/ja/memory#rules-frontmatter-reference)
+
 <h2 id="h">
   H
 </h2>

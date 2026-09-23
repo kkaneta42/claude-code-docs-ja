@@ -35,7 +35,7 @@ security guidance プラグインは、Claude が作業中に自身のコード�
 
 * **Claude デスクトップアプリ、ローカルまたは SSH セッション**：プロンプトの横にある **+** ボタンをクリックして[プラグインブラウザ](/docs/ja/desktop#install-plugins)を開き、**Plugins** をクリックしてから **Add plugin** をクリックします
 * **VS Code 拡張機能**：[**Manage plugins** ダイアログ](/docs/ja/vs-code#manage-plugins)からインストールします
-* **クラウドセッション**：[クラウドセッションと共有リポジトリで有効化](#enable-in-cloud-sessions-and-shared-repositories)に示すように、`.claude/settings.json` でプラグインを宣言します
+* **クラウドセッション**：claude.ai アカウントでプラグインを有効化して、Claude Code が[同期されたプラグイン](/docs/ja/plugins-reference#synced-plugins)として読み込むようにします。クラウドセッションは、ユーザー設定またはリポジトリの `.claude/settings.json` からプラグインを読み込みません。[セットアップから引き継がれるもの](/docs/ja/cloud-environments#what-carries-over-from-your-setup)で説明されています
 
 ターミナルインストールはスコープを求めます。ユーザースコープを選択して、プラグインをユーザー設定に書き込み、このマシンで開始するすべての新しいローカルセッションで読み込まれるようにします。
 
@@ -46,11 +46,11 @@ security guidance プラグインは、Claude が作業中に自身のコード�
 
 インストール概要を確認してください。`Run /reload-plugins to activate.` と報告された場合、[プラグイン変更を再起動なしで適用](/docs/ja/discover-plugins#apply-plugin-changes-without-restarting)を参照して、現在のセッションでプラグインを有効化してください。
 
-<h3 id="enable-in-cloud-sessions-and-shared-repositories">
-  クラウドセッションと共有リポジトリで有効化する
+<h3 id="enable-for-your-team-in-local-sessions">
+  ローカルセッションでチームに対して有効化する
 </h3>
 
-ユーザースコープのプラグインは、これらのセッションがマシンではなくクラウドで実行されるため、[クラウドセッション](/docs/ja/claude-code-on-the-web) には引き継がれません。そこで有効化するか、リポジトリをクローンするすべてのユーザーに対して有効化するには、プロジェクトのチェックイン設定で宣言します：
+リポジトリで開始するローカルセッションでプラグインをオンにするには、プロジェクトのチェックイン設定で宣言します：
 
 ```json .claude/settings.json theme={null}
 {

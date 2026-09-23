@@ -29,7 +29,9 @@
     ```json ~/.claude/settings.json theme={null}
     {
       "model": "claude-sonnet-5",
-      "effortLevel": "xhigh",
+      "modelSettings": {
+        "claude-sonnet-5": { "effortLevel": "xhigh" }
+      },
       "editorMode": "vim",
       "theme": "light-daltonized",
       "statusLine": {
@@ -58,8 +60,10 @@
     {
       // すべてのセッションを Sonnet 5 で開始
       "model": "claude-sonnet-5",
-      // 保存されたレベルのないモデルでデフォルトの高レベルより深く推論します。/effort はモデルごとにレベルを保存し、--effort は単一セッションに設定します
-      "effortLevel": "xhigh",
+      // Sonnet 5 をデフォルトの高レベルより上で実行します。/effort はモデルごとにレベルを保存し、--effort は単一セッションに設定します
+      "modelSettings": {
+        "claude-sonnet-5": { "effortLevel": "xhigh" }
+      },
       // プロンプトの Vim キーバインディング
       "editorMode": "vim",
       // 色覚異常対応のライトテーマ

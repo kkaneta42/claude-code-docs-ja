@@ -377,6 +377,7 @@ Claude と連携する方法は多数あります：
   ヘルプを取得する
 </h2>
 
-* **Claude Code 内**：`/help` を入力するか、「how do I...」と質問する
+* **Claude Code 内**：`/help` を入力するか、「how do I」という質問をする
 * **ドキュメント**：ここにいます！他のガイドを参照してください
+* **コース**：[Claude Code 101](https://academy.claude.com/courses/claude-code-101) と [Claude Academy](https://academy.claude.com/) の他の無料のセルフペースコースを受講する
 * **コミュニティ**：[Discord](https://www.anthropic.com/discord) に参加してヒントとサポートを得る
