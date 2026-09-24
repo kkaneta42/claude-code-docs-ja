@@ -110,9 +110,15 @@ Claude Code でできることについてのアイデアについては、[一�
 プロンプトボックスは複数の機能をサポートしています。
 
 * **権限モード**: プロンプトボックスの下部にあるモード表示をクリックして、権限モードを切り替えます。Pro、Max、Team プランでは、Auto が組み込みの開始権限モードです。[拡張機能が開始権限モードを選択する方法](/docs/ja/permission-modes#switch-permission-modes)と、表示されるすべての権限モードについては、こちらをご覧ください。
-  * **Auto**: ほとんどのアクションについて、分類器があなたに尋ねる代わりに確認します。[自動モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)で、確認および ブロックされる内容をご覧ください。
+  * **Auto**: ほとんどのアクションについて、分類器があなたに尋ねる代わりに確認します。[自動モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)で、確認およびブロックされる内容をご覧ください。
   * **Manual**: Claude はファイル編集とほとんどのシェルコマンドの前に権限を求めます。
   * **Plan**: Claude は変更を加える前に、実行内容を説明し、承認を待ちます。VS Code は計画を完全な Markdown ドキュメントとして自動的に開き、Claude が開始する前にフィードバックを提供するためのインラインコメントを追加できます。
+
+    プロンプトボックスで `/plan` を入力することもできます。Claude Code v2.1.280 以降が必要です。
+
+    * `/plan`: 計画モードに切り替えます。既に計画モードの場合は、現在の計画を表示します。
+    * `/plan` とタスク（例：`/plan fix the auth bug`）: 計画モードに切り替えて、そのタスクの計画を開始します。
+    * `/plan open`: 既に計画モードの場合、エディターで計画ファイルを開きます。
   * **Edit automatically**: Claude は確認を求めずに編集を行います。
 * **Model**: コマンドメニューから **Switch model…** を選択して、セッション中にモデルを変更します。プロンプトボックスの下部にあるモデル名をクリックして、同じピッカーを開くこともできます。
 
@@ -121,7 +127,9 @@ Claude Code でできることについてのアイデアについては、[一�
 
   Customize セクションは、MCP サーバー、コマンド、出力スタイル、hooks、メモリ、instructions、権限、プラグインへのアクセスを提供します。ターミナルアイコンが付いているアイテムは統合ターミナルで開きます。
 
-  * `/usage` や [`/remote-control`](/docs/ja/remote-control) などのコマンドを参照するには、Customize セクションで **Slash commands** を選択します。ダイアログにはフィルターボックス付きでそれらが一覧表示されます。実行するコマンドを選択します。プロンプトボックスで `/` を入力すると、引き続きコマンドがインラインで提案されます。Claude Code v2.1.257 以降が必要です。
+  * Customize セクションで **Slash commands** を選択して、`/usage` や [`/remote-control`](/docs/ja/remote-control) などのコマンドを参照します。ダイアログにはフィルターボックス付きでそれらが一覧表示されます。実行するコマンドを選択します。プロンプトボックスで `/` を入力すると、引き続きコマンドがインラインで提案されます。Claude Code v2.1.257 以降が必要です。
+
+    また、`/skills` を入力してもこのダイアログが開きます。各[スキル](/docs/ja/skills)行は、**On** や **Name only** などの[表示設定](/docs/ja/skills#override-skill-visibility-from-settings)を表示します。表示設定をクリックして変更できます。ただし、プラグインスキルなど **locked** とマークされた行は除きます。`/skills` ショートカットと表示設定コントロールには Claude Code v2.1.280 以降が必要です。
   * Customize セクションで **Output styles** を選択して、カスタムスタイルを含む[出力スタイル](/docs/ja/output-styles)を選択します。Claude Code v2.1.257 以降が必要です。
 
     代わりにカスタムスタイルを作成するには、**Output styles** メニューから **Build a custom style** を選択します。Claude Code はプロジェクトまたはユーザーレベルで[スタイルファイル](/docs/ja/output-styles#create-a-custom-output-style)を作成します。Claude Code v2.1.261 以降が必要です。
@@ -131,6 +139,10 @@ Claude Code でできることについてのアイデアについては、[一�
 
     保存されたメモリをクリックしてダイアログで読み取り、テキストを編集したり、メモリを削除したり、そのファイルをエディターで開いたりできます。ダイアログでメモリを表示、編集、削除するには Claude Code v2.1.275 以降が必要です。
   * Customize セクションで **Instructions** を選択して、Claude が読む[CLAUDE.md ファイル](/docs/ja/memory#claude-md-files)を編集します。ファイルを選択してエディターで開きます。ファイルがまだ存在しない場合、Claude Code は最初にそれを作成します。Claude Code v2.1.274 以降が必要です。
+  * Customize セクションで **Status** を選択するか、`/status` を入力して、セッションの Claude Code バージョン、アカウント、モデル、MCP サーバーの詳細を確認します。Claude Code v2.1.280 以降が必要です。
+  * Customize セクションで **Sandbox** を選択するか、`/sandbox` を入力して、Claude の Bash コマンドが[サンドボックス化](/docs/ja/sandboxing)されているかどうかを確認します。サンドボックスモードを切り替えたり、[除外コマンド](/docs/ja/settings-reference#sandbox-excludedcommands)を追加したりできます。Claude Code v2.1.280 以降が必要です。
+  * Customize セクションで **Claude in Chrome** を選択するか、`/chrome` を入力して、[Claude in Chrome](/docs/ja/chrome)接続を確認および管理します。どちらも claude.ai アカウントでサインインする必要があります。Claude Code v2.1.280 以降が必要です。
+  * Context セクションで **Export conversation** を選択するか、`/export` を入力して、会話をプレーンテキストとしてコピーするか、ファイルに保存します。`/export notes.txt` などのファイル名を追加して、ダイアログをスキップし、ファイルの保存場所を選択します。Claude Code v2.1.280 以降が必要です。
   * Settings セクションには **Enable Remote Control for all sessions** が含まれており、これは [`remoteControlAtStartup`](/docs/ja/settings-reference#remotecontrolatstartup) を設定して、[新しいインタラクティブセッションが Remote Control に自動的に接続するかどうか](/docs/ja/remote-control#enable-remote-control-for-all-sessions)を制御します。Claude Code v2.1.203 以降が必要です。
 
     VS Code ウィンドウでトグルをオンまたはオフにすると、その変更は、その後に開始するセッションだけでなく、その VS Code ウィンドウで既に開いているセッションに適用されます。オフにすると、開いているセッションは切断されます。Claude Code v2.1.261 以降では、その変更は他の VS Code ウィンドウで開いているセッションにも適用されます。
@@ -182,6 +194,17 @@ Claude はエディターで開いているファイルも表示します。何�
 * 画像を添付するには、クリップボードからプロンプトボックスに貼り付けます。
 * ファイルを添付するには、`Shift` を押しながらプロンプトボックスにドラッグします。
 * コンテキストから添付ファイルを削除するには、その X をクリックします。
+
+<h3 id="paste-text">
+  テキストを貼り付ける
+</h3>
+
+貼り付けたテキストはプロンプトボックスに表示されたままになり、[ターミナル](/docs/ja/terminal-config#paste-large-content)のようにプレースホルダーに折りたたまれません。Claude Code が[貼り付けたテキストをマーク](/docs/ja/terminal-config#how-claude-treats-pasted-text)するセッションでは、Claude は大きな貼り付けを入力したテキストではなく貼り付けたテキストとして認識します。
+
+Claude Code は、プロンプトボックスに貼り付けたテキストと送信するその他すべてのテキストから[目に見えない Unicode 文字](/docs/ja/interactive-mode#invisible-characters-in-prompts)も削除します。
+
+* `Removed 3 invisible characters from the pasted text` などの通知が貼り付け時に表示される場合、テキストはそれらの文字なしで入力されました。
+* 送信時に削除された文字に関する通知が表示される場合、何も送信されていません。クリーンなテキストはプロンプトボックスに戻ります。表示されたテキストを送信するために再度送信します。
 
 <h3 id="resume-past-conversations">
   過去の会話を再開する

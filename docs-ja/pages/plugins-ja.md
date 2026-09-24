@@ -340,6 +340,8 @@ claude --plugin-dir ./my-plugin.zip
   プラグインとそれが依存するプラグインをテストするには、[プラグインとその依存関係をローカルでテストする](/docs/ja/plugin-dependencies#test-a-plugin-and-its-dependency-locally) を参照してください。
 </Tip>
 
+フラグを追加できないセッションでプラグインを読み込むには、[`CLAUDE_CODE_PLUGIN_DIRS`](/docs/ja/env-vars#variables) 環境変数にそれらの絶対パスをリストします。Claude Code は各パスを `--plugin-dir` パスとして読み込みます。これらのプラグインは、`--plugin-dir` で渡したものに加えて読み込まれます。[プロジェクトとローカル設定はこの変数を設定できません](/docs/ja/settings-reference#variables-claude-code-ignores-in-env)。`CLAUDE_CODE_PLUGIN_DIRS` には Claude Code v2.1.280 以降が必要です。
+
 `--plugin-dir` でプラグインを試すことで、それが機能することがわかります。Claude が実際にどのくらいの頻度でそれに到達し、正しい結果を得るかを確認するには、[`claude plugin eval`](/docs/ja/plugin-evals) を使用してテスト プロンプトのセットに対して実行します。各プロンプトはプラグインが読み込まれた状態と読み込まれていない状態で複数回実行されるため、プラグインが何を貢献しているかを確認し、プラグインを変更したときまたは新しいモデルがリリースされたときの回帰を検出できます。
 
 複数のプラグインを 1 つの場所から読み込むには、それらを保持するフォルダを渡します（例：`--plugin-dir ./plugins`）。フォルダからプラグインを読み込むには Claude Code v2.1.265 以降が必要です。Claude Code はフォルダのトップ レベルを読み取り、どのプラグインを読み込むかを決定し、インタラクティブ セッションではフォルダの後の変更も監視します。

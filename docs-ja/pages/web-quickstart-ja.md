@@ -7,7 +7,7 @@
 > ブラウザまたはスマートフォンからクラウドで Claude Code を実行します。GitHub リポジトリを接続し、タスクを送信し、ローカルセットアップなしで PR をレビューします。
 
 <Note>
-  クラウドセッションは、Pro、Max、Team ユーザー、および premium seats または Chat + Claude Code seats を持つ Enterprise ユーザーを対象とした研究プレビュー版です。
+  クラウドセッションは、Pro、Max、Team プランおよび premium seats または Chat + Claude Code seats を持つ Enterprise ユーザーを対象としています。
 </Note>
 
 クラウドセッションは、あなたのマシンではなく Anthropic が管理するクラウドインフラストラクチャで Claude Code を実行します。このクイックスタートでは、ブラウザから [claude.ai/code](https://claude.ai/code) で開始します。Claude モバイルアプリ、Desktop アプリ、またはターミナルから `claude --cloud` で開始することもできます。

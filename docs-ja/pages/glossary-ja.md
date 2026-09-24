@@ -16,7 +16,7 @@
   AGENTS.md
 </h3>
 
-AI コーディングエージェント向けに作成するプロジェクト指示のマークダウンファイル。リポジトリに AGENTS.md があり、[CLAUDE.md](#claude-md) がない場合、Claude はこれをプロジェクト指示として読み込みます。別のファイルを追加する必要はありません。`/config` の **Project instructions** 設定を変更して、Claude が両方のファイルを読み込むか、CLAUDE.md のみを読み込むかを指定できます。AGENTS.md を直接読み込むには、Claude Code v2.1.277 以降がセッション内で機能フラグを取得する必要があります。その他のバージョンでは、CLAUDE.md からインポートしてください。
+AI コーディングエージェント向けに作成するプロジェクト指示のマークダウンファイル。リポジトリに AGENTS.md があり、[CLAUDE.md](#claude-md) がない場合、Claude はこれをプロジェクト指示として読み込みます。別のファイルを追加する必要はありません。`/config` の **Project instructions** 設定を変更して、Claude が両方のファイルを読み込むか、CLAUDE.md のみを読み込むかを指定できます。AGENTS.md を直接読み込むには、Claude Code v2.1.277 以降が必要です。一部のセッションでは Claude が [AGENTS.md を読み込めない](/docs/ja/memory#when-agents-md-support-is-unavailable) ため、代わりに [CLAUDE.md からインポート](/docs/ja/memory#share-one-file-with-other-coding-tools) してください。
 
 詳細情報: [AGENTS.md](/docs/ja/memory#agents-md)
 

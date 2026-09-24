@@ -71,6 +71,8 @@ Voice mode enabled (hold). Hold space to record. Dictation language: en (/config
 
 最初の数個のキー リピート文字はウォームアップ中に入力に入力され、録音がアクティブになると自動的に削除されます。単一の `Space` タップはスペースを入力します。長押し検出は高速リピートでのみトリガーされるためです。
 
+`Space` を長押しまたはタップして音声入力を開始するのは、キープレスがプロンプトに入力される場所のみです。[トランスクリプト ビューアー](/docs/ja/interactive-mode#transcript-viewer)では、`Space` は会話をページングし、[vim モード](/docs/ja/interactive-mode#vim-editor-mode)の INSERT 外では コマンドです。[修飾子の組み合わせにリバインド](#rebind-the-dictation-key)（`meta+k` など）は テキストを入力しないため、これらの場所からも音声入力を開始します。
+
 <Tip>
   ウォームアップをスキップするには、`/voice tap` で[タップモード](#tap-to-record-and-send)に切り替えるか、`meta+k` などの[修飾子の組み合わせにリバインド](#rebind-the-dictation-key)してください。修飾子の組み合わせは最初のキープレスで録音を開始します。
 </Tip>
@@ -79,7 +81,7 @@ Voice mode enabled (hold). Hold space to record. Dictation language: en (/config
 
 ```
 > refactor the auth middleware to ▮
-  # hold Space, speak "use the new token validation helper"
+  # hold space, speak "use the new token validation helper"
 > refactor the auth middleware to use the new token validation helper▮
 ```
 
@@ -98,6 +100,16 @@ Claude Code は文字起こしを挿入し、文字起こしが少なくとも 3
 3 語のしきい値は、スペースなしで書かれた言語の単語をカウントします。日本語、中国語、タイ語の文字起こしは個々の単語をカウントするため、タップモードおよび `autoSubmit` を使用したホールドモードで自動送信されます。
 
 最初のタップはプロンプト入力が空の場合にのみ録音を開始するため、メッセージを作成しながら通常どおりスペースを入力できます。2 番目のタップは入力内容に関係なく録音を停止します。15 秒以上の無音または 2 分間の合計の後、録音も自動的に停止します。
+
+<h2 id="cancel-a-recording">
+  録音をキャンセルする
+</h2>
+
+`Esc` キーまたは `Ctrl+C` キーを押して、ディクテーションを確定する代わりにキャンセルできます。Claude Code はマイクを停止し、トランスクリプトを破棄し、プロンプトを録音開始前の状態に復元します。
+
+両方のキーは、完了した録音のトランスクリプトがまだ処理中の場合もキャンセルできます。処理中に編集または送信したプロンプトは、そのままの状態で保持されます。
+
+どちらのキーもキャンセルを実行する以外の処理は行いません。`Esc` は Claude の応答を中断しませんし、`Ctrl+C` はプロンプトをクリアしたり、[Claude Code を終了する 2 回のプレスの最初のプレス](/docs/ja/interactive-mode#general-controls)としてカウントされません。
 
 <h2 id="change-the-dictation-language">
   音声ディクテーション言語を変更する

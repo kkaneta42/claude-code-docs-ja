@@ -1221,6 +1221,11 @@ API リクエストが複数の試行後に失敗した場合、1 回ログさ�
 * `num_non_blocking_error`: ブロッキングなしで失敗したカウント
 * `num_cancelled`: 完了前にキャンセルされたカウント
 * `total_duration_ms`: すべてのマッチするフックのウォールクロック期間
+* `stdout_chars`: 成功したマッチするフック全体の stdout の総文字数。Claude Code v2.1.280 以降が必要
+* `additional_context_chars`: マッチするフックによって返された `additionalContext` の総文字数。Claude Code v2.1.280 以降が必要
+* `system_message_chars`: マッチするフックによって返された `systemMessage` の総文字数。Claude Code v2.1.280 以降が必要
+* `initial_user_message_chars`: マッチするフックによって返された `initialUserMessage` の総文字数。Claude Code v2.1.280 以降が必要
+* `num_outputs_persisted`: [10,000 文字キャップ](/docs/ja/hooks#json-output) を超えたフック出力の数。Claude Code がファイルに保存。Claude Code v2.1.280 以降が必要
 * `managed_only`: 管理ポリシーフックのみが許可される場合は `"true"`
 * `hook_source`: `"policySettings"` または `"merged"`
 * `safe_mode`: セッションが [`--safe-mode`](/docs/ja/cli-reference) で開始された場合は `"true"`。それ以外の場合は `"false"`。Claude Code v2.1.169 以降が必要

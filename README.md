@@ -17,6 +17,268 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-09-24</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/artifacts-ja.md              |  22 ++--
+ docs-ja/pages/changelog.md                 | 179 +++++++++++++++++++++++++++++
+ docs-ja/pages/claude-code-on-the-web-ja.md |   2 +-
+ docs-ja/pages/cloud-environments-ja.md     |   2 +-
+ docs-ja/pages/env-vars-ja.md               |   9 +-
+ docs-ja/pages/feature-availability-ja.md   |   1 -
+ docs-ja/pages/glossary-ja.md               |   2 +-
+ docs-ja/pages/mcp-ja.md                    |   4 +-
+ docs-ja/pages/monitoring-usage-ja.md       |   5 +
+ docs-ja/pages/plugin-marketplaces-ja.md    |  38 ++----
+ docs-ja/pages/plugins-ja.md                |   2 +
+ docs-ja/pages/skills-ja.md                 |  10 ++
+ docs-ja/pages/ultrareview-ja.md            |  22 ++--
+ docs-ja/pages/voice-dictation-ja.md        |  14 ++-
+ docs-ja/pages/vs-code-ja.md                |  27 ++++-
+ docs-ja/pages/web-quickstart-ja.md         |   2 +-
+ 16 files changed, 284 insertions(+), 57 deletions(-)
+```
+
+<details>
+<summary>artifacts-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/artifacts-ja.md b/docs-ja/pages/artifacts-ja.md
+index 1c2771d..0ebc105 100644
+--- a/docs-ja/pages/artifacts-ja.md
++++ b/docs-ja/pages/artifacts-ja.md
+@@ -345,13 +345,17 @@ UI、画面フロー、ランディングページ、またはポスターをモ
+ </h2>
+ 
+-アーティファクトには、以下のすべての条件が必要です。いずれかが満たされていない場合、Claude はローカル HTML ファイルを書き込むか、公開できないと言います。
+-
+-| 要件        | 利用可能な場合                                                                                                                                                                                                                                                                                                                                            |
+-| :-------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+-| プラン       | Pro、Max、Team、または Enterprise。Pro および Max プランでは、アーティファクトはあなたにプライベートであり、共有するまで管理者管理は適用されません。Team プランでは、アーティファクトはデフォルトで有効です。Enterprise プランでは、Owner が claude.ai 管理設定で[有効にします](#manage-artifacts-for-your-organization)。                                                                                                                                 |
+-| 認証        | セッションは claude.ai アカウントでバックアップされています。CLI またはデスクトップアプリで `/login` でサインインしてください。Claude Tag セッションはエージェントの ID を通じてサインインするため、追加の手順は不要です。API キー、[ゲートウェイトークン](/docs/ja/llm-gateway)、またはクラウドプロバイダー認証情報を使用するセッションは公開できません。                                                                                                                                         |
+-| モデルプロバイダー | Anthropic API。[Amazon Bedrock](/docs/ja/amazon-bedrock)、[Google Cloud の Agent Platform](/docs/ja/google-vertex-ai)、または [Microsoft Foundry](/docs/ja/microsoft-foundry) では利用できません。                                                                                                                                                                                 |
+-| 組織ポリシー    | カスタマー管理暗号化キー（CMEK）、HIPAA、および [Zero Data Retention](/docs/ja/zero-data-retention) は組織で有効になっていません。                                                                                                                                                                                                                                                        |
+-| サーフェス     | Claude Code CLI、または Claude デスクトップアプリバージョン 1.13576.0 以降。[Claude Tag](https://claude.com/docs/claude-tag/overview) セッションは、Claude Tag とアーティファクトの両方が組織で有効になっている場合、アーティファクトを公開することもできます。[Agent SDK](/docs/ja/agent-sdk/overview)、GitHub Action、MCP サーバーコンテキストではデフォルトでオフになっており、[`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`](/docs/ja/env-vars) が設定されている場合もオフになります。 |
++Artifacts には以下のすべての条件が必要です。いずれかが満たされていない場合、Claude はローカル HTML ファイルを作成するか、公開できないと述べます。
++
++| 要件        | 利用可能な場合                                                                                                                                                                                                                                                                                                                                           |
++| :-------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
++| プラン       | Pro、Max、Team、または Enterprise。Pro および Max プランでは、Artifacts は共有するまであなたのみがアクセスでき、管理者管理は適用されません。Team プランでは、Artifacts はデフォルトで有効です。Enterprise プランでは、Owner が claude.ai 管理設定で[それらを有効にします](#manage-artifacts-for-your-organization)。                                                                                                                         |
++| 認証        | セッションが claude.ai アカウントでサポートされています。CLI またはデスクトップアプリで `/login` でサインインします。Claude Tag セッションはエージェントの ID を通じてサインインするため、追加の手順は不要です。API キー、[ゲートウェイトークン](/docs/ja/llm-gateway)、またはクラウドプロバイダー認証情報を使用するセッションは公開できません。                                                                                                                                             |
++| モデルプロバイダー | Anthropic API。[Amazon Bedrock](/docs/ja/amazon-bedrock)、[Google Cloud の Agent Platform](/docs/ja/google-vertex-ai)、または[Microsoft Foundry](/docs/ja/microsoft-foundry)では利用できません。                                                                                                                                                                                  |
++| 組織ポリシー    | カスタマー管理暗号化キー（CMEK）、HIPAA、および[Zero Data Retention](/docs/ja/zero-data-retention)は組織に対して有効になっていません。                                                                                                                                                                                                                                                      |
++| サーフェス     | Claude Code CLI、または Claude デスクトップアプリバージョン 1.13576.0 以降。[Claude Tag](https://claude.com/docs/claude-tag/overview) セッションは、Claude Tag と Artifacts の両方が組織に対して有効な場合にも Artifacts を公開できます。[Agent SDK](/docs/ja/agent-sdk/overview)、GitHub Action、および MCP サーバーコンテキストではデフォルトで無効です。また、[`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`](/docs/ja/env-vars)が設定されている場合も無効です。 |
++
++Artifacts が組織に対して許可されているかどうかは、Claude Code が `api.anthropic.com` から読み込む組織のポリシーから決まります。Claude Code がポリシーを読み込めない場合、Artifacts は利用できません。リクエストすると、Claude がその理由を説明します。
++
++プロキシ、VPN、またはウェブフィルターが関係している場合は、IT 管理者に `api.anthropic.com` を許可するよう依頼してください。Claude Code はバックグラウンドで再試行を続け、ポリシーが読み込まれて許可されると、Artifacts が利用可能になります。
+ 
+```
+
+</details>
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index c970aeb..288b140 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,183 @@
+ # Changelog
+ 
++## 2.1.281
++
++- Added Claude apps gateway support for newer Claude Desktop keys in `desktop` policy blocks, including `blockReadsOutsideWorkingDirectories` and `disableBypassPermissionsMode`
++- Added `assume_role` on Claude apps gateway Bedrock upstreams: the gateway calls Bedrock as an IAM role it assumes through STS, in another AWS account if needed, optionally one session per developer
++- Added `guardrail: {id, version}` on Claude apps gateway Bedrock upstreams to apply an Amazon Bedrock guardrail to every request sent through them (set it on all Bedrock upstreams or none)
++- Added `telemetry.resource_attributes` to the Claude apps gateway config, to put fixed labels on the telemetry of Claude Desktop and `/login` sessions
++- Added `"attribution": false` in `settings.json` to hide all commit and PR attribution; older CLI versions skip a settings file that holds it, so keep the object form in files shared across versions
++- Added MCP URL-mode elicitation on 2026-07-28 protocol connections, so servers can ask Claude Code to open a browser-based flow; no waiting dialog is left on screen when the server has no way to confirm completion
++- Added MCP server checks to `claude plugin validate`: it reports `.mcp.json` entries that would be silently dropped at load, undeclared `${user_config.*}` references, and insecure URLs
++- Added an auto mode recommendation to `/insights` that estimates how many permission prompts auto mode could have handled in your recent sessions
++- Added a scrollbar to the `/skills`, `/mcp` and `/plugin` Installed lists in fullscreen mode, like the one `/workflows` now has: it appears while the mouse is over the list and can be clicked or dragged
++- Fixed a crash ("unrecoverable interface error") that could end a session while an API request was being retried
++- Fixed a turn that could retry indefinitely, ignoring `--max-turns`, when the model alternated unparseable tool calls and output-limit truncation
++- Fixed resumed sessions re-sending earlier turns in a changed form (a parallel tool-call turn, an MCP tool call's input or a tool-search result while its server was still reconnecting, or a tool-search result whose loading turn was interrupted), which could make the API drop the conversation's prior reasoning
++- Fixed resuming a very large session sometimes restoring only its last few messages
++- Fixed a session resumed after a restart during a pending permission prompt sending a different history than before, which broke the prompt cache from that point
++- Fixed resuming a session that ended during a tool call: Claude now sees the call and is told its outcome is unknown, and a manual resume no longer adds a hidden "Continue" message
++- Fixed sessions with an earlier advisor result the API could no longer read failing one request every turn and repeatedly losing earlier reasoning; the history is now repaired once
++- Fixed the prompt cache being lost when an MCP server disconnects mid-conversation, or is still connecting after a resume, while tool search is off (for example behind a proxy or gateway)
++- Fixed responses cut short by a proxy or gateway that closes the stream cleanly being shown as complete with no warning, and tool calls running twice on duplicated stream events
++- Fixed responses failing with "Content block not found" when a proxy drops a stream event mid-response; the partial response is now kept, and web search keeps results that already arrived
++- Fixed an empty completed response being requested twice when the connection dropped before the stream's final event
++- Fixed the stop reason being lost when a proxy sends a trailing usage-only frame
+```
+
+</details>
+
+<details>
+<summary>claude-code-on-the-web-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/claude-code-on-the-web-ja.md b/docs-ja/pages/claude-code-on-the-web-ja.md
+index 3c4211b..9c57b1d 100644
+--- a/docs-ja/pages/claude-code-on-the-web-ja.md
++++ b/docs-ja/pages/claude-code-on-the-web-ja.md
+@@ -8,5 +8,5 @@
+ 
+ <Note>
+-  クラウドセッションは Pro、Max、Team ユーザー、および Premium シートまたは Chat + Claude Code シートを持つ Enterprise ユーザーを対象に研究プレビュー中です。
++  クラウドセッションは Pro、Max、Team プランで利用でき、Premium シートまたは Chat + Claude Code シートを持つ Enterprise ユーザーも対象です。
+ </Note>
+ 
+```
+
+</details>
+
+<details>
+<summary>cloud-environments-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/cloud-environments-ja.md b/docs-ja/pages/cloud-environments-ja.md
+index a0f8fa2..20124db 100644
+--- a/docs-ja/pages/cloud-environments-ja.md
++++ b/docs-ja/pages/cloud-environments-ja.md
+@@ -8,5 +8,5 @@
+ 
+ <Note>
+-  クラウド環境は [クラウドセッション](/docs/ja/claude-code-on-the-web) に適用されます。これは Pro、Max、Team ユーザーの研究プレビュー版であり、[プレミアムシートまたは Chat + Claude Code シートを持つ](https://support.claude.com/en/articles/11845131-use-claude-code-with-your-team-or-enterprise-plan) Enterprise ユーザー向けです。
++  クラウド環境は [クラウドセッション](/docs/ja/claude-code-on-the-web) に適用されます。これは Pro、Max、Team プランで利用可能であり、[プレミアムシートまたは Chat + Claude Code シートを持つ](https://support.claude.com/en/articles/11845131-use-claude-code-with-your-team-or-enterprise-plan) Enterprise ユーザー向けです。
+ </Note>
+ 
+```
+
+</details>
+
+<details>
+<summary>env-vars-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/env-vars-ja.md b/docs-ja/pages/env-vars-ja.md
+index c7ca51d..46a24e8 100644
+--- a/docs-ja/pages/env-vars-ja.md
++++ b/docs-ja/pages/env-vars-ja.md
+@@ -312,4 +312,5 @@ Claude Code はスタートアップ時にシェル環境変数を読み込む
+ | `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS`                  | 1 つのセッションで実行できる [サブエージェント](/docs/ja/sub-agents#concurrent-subagent-limit) の数。Agent ツールが別のセッションを生成するのを拒否する前（デフォルト：20）。平文数字で正の整数を受け入れます。その他は無視されるため、変数は上限を調整できますが、無効にすることはできません。Claude Code v2.1.217 以降が必要です                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+ | `CLAUDE_CODE_MAX_CONTEXT_TOKENS`                        | Claude Code がアクティブなモデルに対して想定するコンテキストウィンドウサイズをオーバーライドします。v2.1.193 以降、それがどのように適用されるかは Claude Code がモデル ID をどのように解決するかに依存します。[ゲートウェイまたはカスタムモデル ID のウィンドウを修正](/docs/ja/model-config#correct-the-window-for-a-gateway-or-custom-model-id) を参照してください。`ANTHROPIC_BASE_URL` を通じてモデルにルーティングする場合、その名前の組み込みサイズと一致しないコンテキストウィンドウを持つモデルの場合に使用します                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
++| `CLAUDE_CODE_MAX_MCP_DESCRIPTION_LENGTH`                | Claude Code がモデルに送信する各 MCP ツール説明と各 MCP サーバーの指示の最大長（文字単位）（デフォルト：2048）。Claude Code は [より長いテキストを切り詰めます](/docs/ja/mcp#for-mcp-server-authors)。平文数字で正の整数を受け入れます。その他は無視され、デフォルトが適用されます。Claude Code v2.1.280 以降が必要です                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+ | `CLAUDE_CODE_MAX_OUTPUT_TOKENS`                         | ほとんどのリクエストの最大出力トークン数を設定します。デフォルトと上限はモデルによって異なります。[最大出力トークン](https://platform.claude.com/docs/en/about-claude/models/overview#latest-models-comparison) を参照してください。Claude Code は、ゲートウェイ固有の名前など、認識しないモデル ID に対して 32000 にデフォルト設定し、モデルの上限を超える値をモデルの上限に低下させます。この値を増加させると、[自動圧縮](/docs/ja/costs#reduce-token-usage) がトリガーされる前に利用可能な有効なコンテキストウィンドウが減少します                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+ | `CLAUDE_CODE_MAX_RETRIES`                               | 失敗した API リクエストを再試行する回数をオーバーライドします（デフォルト：10）。v2.1.186 以降、15 でキャップされます。v2.1.199 以降、`CLAUDE_CODE_RETRY_WATCHDOG` はデフォルトを上げ、キャップを削除します。より長い停止を待つ必要がある無人セッションの場合は、代わりに `CLAUDE_CODE_RETRY_WATCHDOG` を設定します                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+@@ -341,4 +342,5 @@ Claude Code はスタートアップ時にシェル環境変数を読み込む
+ | `CLAUDE_CODE_PERFORCE_MODE`                             | Perforce 対応の書き込み保護を有効にするには `1` に設定します。設定されている場合、Edit、Write、および NotebookEdit は、所有者書き込みビットがないターゲットファイルで失敗します。Perforce は同期されたファイルでこれをクリアします。`p4 edit` がそれらを開くまで。これにより、Claude Code が Perforce 変更追跡をバイパスするのを防ぎます                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+ | `CLAUDE_CODE_PLUGIN_CACHE_DIR`                          | プラグインルートディレクトリをオーバーライドします。名前に反して、これは親ディレクトリを設定します。マーケットプレイスとプラグインキャッシュはこのパスの下のサブディレクトリに存在します。デフォルトは `~/.claude/plugins` です                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
++| `CLAUDE_CODE_PLUGIN_DIRS`                               | セッション用に読み込むプラグインディレクトリ。各ディレクトリは [`--plugin-dir`](/docs/ja/plugins#test-your-plugins-locally) フラグが読み込む方法で読み込まれます。Unix では `:` で、Windows では `;` で複数のパスを分離します。各パスを絶対パスとして指定するか、`~` で開始します。Claude Code は相対パスをスキップするため。Claude Code v2.1.280 以降が必要です                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+ | `CLAUDE_CODE_PLUGIN_GIT_TIMEOUT_MS`                     | プラグインのインストールまたは更新時の git 操作のタイムアウト（ミリ秒単位）（デフォルト：120000）。大規模なリポジトリまたは遅いネットワーク接続の場合は、この値を増加させます。[Git 操作がタイムアウト](/docs/ja/plugin-marketplaces#git-operations-time-out) を参照してください                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+ | `CLAUDE_CODE_PLUGIN_KEEP_MARKETPLACE_ON_FAILURE`        | マーケットプレイスリフレッシュがリモートに到達または認証できない場合、再複製試行をスキップし、既存のマーケットプレイスチェックアウトを使用し続けるには `1` に設定します。オフラインまたはエアギャップ環境で再複製が同じ方法で失敗する場合に便利です。[オフライン環境でのマーケットプレイス更新の失敗](/docs/ja/plugin-marketplaces#marketplace-updates-fail-in-offline-environments) を参照してください                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+@@ -348,5 +350,5 @@ Claude Code はスタートアップ時にシェル環境変数を読み込む
+ | `CLAUDE_CODE_PRINT_BG_WAIT_CEILING_MS`                  | [非対話モード](/docs/ja/headless#background-tasks-at-exit) で `-p` フラグを使用した最終ターン後、バックグラウンドサブエージェントとワークフローを待機するアイドル待機の上限（ミリ秒単位）。アイドル待機は Claude がバックグラウンド結果を処理するターンを取るたびに再開されます。デフォルト：`600000`、または 10 分。アイドル待機が上限に達すると、Claude Code は残りのバックグラウンドタスクの待機を停止して終了します。`0` に設定して無期限に待機します。このキャップは、プレーンバックグラウンドシェルに適用される 5 秒の猶予期間とは別です。Claude Code v2.1.182 以降が必要です                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+ | `CLAUDE_CODE_PROCESS_WRAPPER`                           | Claude Code が独自のバイナリから開始するプロセス（[エージェントビュー](/docs/ja/agent-view) セッションをホストするバックグラウンドサービスなど）を、`/opt/corp/launcher` などの argv プレフィックスとして指定されたコーポレートランチャーを通じて起動します。ユーザーまたは [管理設定](/docs/ja/managed-settings) の `env` ブロックで設定します。プロジェクトおよびローカル設定では設定できません。デタッチされたバックグラウンドサービスがそれを継承するため。[`processWrapper` 設定](/docs/ja/settings-reference#processwrapper) と同等です。Claude Code v2.1.210 以降が必要です。この変数は両方が設定されている場合に優先されます。VS Code 拡張機能は `claudeProcessWrapper` 設定を通じて独自のランチャーを個別に設定します。Windows では無視されます。値の形式、ランチャーがカバーするもの、ランチャーが満たす必要があるコントラクトについては、[コーポレートランチャーの背後で Claude Code を実行](/docs/ja/corporate-launcher) を参照してください。Claude Code v2.1.208 以降が必要です                                                                                                                                                                                                                                                                                                      |
+-| `CLAUDE_CODE_PROJECT_DIR_NAME`                          | `CLAUDE_CONFIG_DIR` と一緒に設定して、Claude Code がそのセッションのトランスクリプトと自動メモリを保存する `projects/` ディレクトリ名を選択します。作業ディレクトリパスから派生したものの代わりに。例えば、`CLAUDE_CONFIG_DIR=/srv/tenant-a CLAUDE_CODE_PROJECT_DIR_NAME=work claude` で開始すると、`/srv/tenant-a/projects/work/` の下に保存されます。`CLAUDE_CONFIG_DIR` が設定されていない場合、Claude Code はこの変数を無視します。また、この変数は `claude` を開始する環境からのみ読み取り、[設定ファイル `env` ブロック](#in-settings-files)からは読み取りません。[プロジェクトディレクトリを自分で名前付け](/docs/ja/sessions#name-the-project-directory-yourself) を参照してください。Claude Code v2.1.234 以降が必要です                                                                                                                                                                                                                                                                                                                                                                                                                |
++| `CLAUDE_CODE_PROJECT_DIR_NAME`                          | `CLAUDE_CONFIG_DIR` と一緒に設定して、Claude Code がそのセッションのトランスクリプトと自動メモリを保存する `projects/` ディレクトリ名を選択します。作業ディレクトリパスから派生したものの代わりに。例えば、`CLAUDE_CONFIG_DIR=/srv/tenant-a CLAUDE_CODE_PROJECT_DIR_NAME=work claude` で開始すると、`/srv/tenant-a/projects/work/` の下に保存されます。`CLAUDE_CONFIG_DIR` が設定されていない場合、Claude Code はこの変数を無視し、`claude` を開始する環境からのみ読み取ります。設定ファイル `env` ブロックからは読み取りません。[プロジェクトディレクトリを自分で名前付け](/docs/ja/sessions#name-your-project-directory-yourself) を参照してください。Claude Code v2.1.234 以降が必要です                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+ | `CLAUDE_CODE_PROMPT_CACHE_TTL`                          | `5m` または `1h` に設定します。Claude Code が受け入れる唯一の値。メイン会話の [プロンプトキャッシュ TTL](/docs/ja/prompt-caching#cache-lifetime) を選択します：対話的、`-p`、SDK ターン、およびそれらと一緒に実行されるヘルパー。`promptCacheTtl` 設定および `ENABLE_PROMPT_CACHING_1H` より優先されます。`FORCE_PROMPT_CACHING_5M` がそれをオーバーライドします。API は 1 時間のキャッシュ書き込みをより高いレートで請求します。Claude Code v2.1.242 以降が必要です                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+ | `CLAUDE_CODE_PROPAGATE_TRACEPARENT`                     | `ANTHROPIC_BASE_URL` がカスタムプロキシを指している場合、W3C トレースコンテキストを伝播するには `1` に設定します。伝播はモデルおよび HTTP MCP リクエストの `traceparent` ヘッダーと、Bash、PowerShell、フックサブプロセスの `TRACEPARENT` 環境変数をカバーします。デフォルトでは、伝播は Anthropic API への直接接続に接続されている場合にのみ有効になります。v2.1.152 で追加されました。[トレース（ベータ）](/docs/ja/monitoring-usage#traces-beta) を参照してください                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+@@ -460,5 +462,5 @@ Claude Code はスタートアップ時にシェル環境変数を読み込む
+ | `MAX_MCP_OUTPUT_TOKENS`                                 | MCP ツール応答で許可される最大トークン数。Claude Code は出力が 10,000 トークンを超える場合に警告を表示します。[`anthropic/maxResultSizeChars`](/docs/ja/mcp#raise-the-limit-for-a-specific-tool) を宣言するツールは、テキストコンテンツにはその文字制限を使用しますが、それらのツールからの画像コンテンツはこの変数の対象です（デフォルト：25000）                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+ | `MAX_STRUCTURED_OUTPUT_RETRIES`                         | 非対話モードで `-p` フラグを使用して、モデルの応答が [`--json-schema`](/docs/ja/cli-reference#cli-flags) に対する検証に失敗した場合、Claude Code が許可する試行回数。その後、有効な出力がない場合、実行は失敗します。[ワークフロー](/docs/ja/workflows) サブエージェントの構造化出力が検証に失敗した場合にも同じキャップが適用されます。デフォルト 5。最初の試行と 4 回の再試行                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+-| `MAX_THINKING_TOKENS`                                   | [拡張思考](https://platform.claude.com/docs/en/build-with-claude/extended-thinking) の固定トークン予算。Claude Code はそれを要求の最大出力トークンの 1 トークン下でキャップし、1,024 未満にはしません。そのリミットの設定方法については、`CLAUDE_CODE_MAX_OUTPUT_TOKENS` を参照してください。設定されておらず思考が有効な場合、[適応的推論](/docs/ja/model-config#adjust-effort-level) を持つモデルは独自の思考深度を選択し、他のモデルはキャップを使用します。Anthropic API で思考を無効にするには `0` に設定します。ただし、思考をオフにできない Opus 5.5 および Fable モデルは除きます。[サードパーティプロバイダー](/docs/ja/third-party-integrations) では、`0` は代わりに `thinking` パラメーターを省略します。Anthropic API で思考がオフの場合、Claude Code は、Opus 5 など、[その組み合わせを受け入れない](/docs/ja/errors#effort-isnt-available-with-thinking-turned-off) とわかっているモデルに、より高いレベルではなく努力 `high` を送信します。Claude Code は、適応的推論モデルの非ゼロ値を無視します。ただし、`CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING` が適応的推論をオフにするモデルを除きます                                                                                                                                                                       |
++| `MAX_THINKING_TOKENS`                                   | [拡張思考](https://platform.claude.com/docs/en/build-with-claude/extended-thinking) の固定トークン予算。Claude Code はそれを要求の最大出力トークンの 1 トークン下でキャップし、1,024 未満にはしません。[`CLAUDE_CODE_MAX_OUTPUT_TOKENS`](/docs/ja/model-config#adjust-effort-level) でそのリミットを設定する方法を参照してください。設定されていない場合、[適応的推論](/docs/ja/model-config#adjust-effort-level) を持つモデルは独自の思考深度を選択し、他のモデルはキャップを使用します。Anthropic API で思考を無効にするには `0` に設定します。Opus 5.5 および Fable モデルを除き、思考をオフにすることはできません。[サードパーティプロバイダー](/docs/ja/third-party-integrations) では、`0` は代わりに `thinking` パラメーターを省略します。Anthropic API で思考がオフの場合、Claude Code は、Opus 5 などの [その組み合わせを受け入れないモデル](/docs/ja/errors#effort-isnt-available-with-thinking-turned-off) に努力 `high` を送信します。Claude Code は、適応的推論モデルの非ゼロ値を無視します。ただし、`CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING` が適応的推論をオフにするモデルを除きます                                                                                                                                                          |
+ | `MCP_CLIENT_SECRET`                                     | [事前設定された認証情報](/docs/ja/mcp#use-pre-configured-oauth-credentials) が必要な MCP サーバーの OAuth クライアントシークレット。`--client-secret` でサーバーを追加するときに対話的なプロンプトを回避します                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+ | `MCP_CONNECTION_NONBLOCKING`                            | MCP サーバーが最初のクエリの前に接続するのを待機するかどうかを制御します。MCP スタートアップはデフォルトで非ブロッキングです：サーバーはバックグラウンドで接続し、完了するとそれらのツールが利用可能になります。最初のクエリの前にサーバーが接続するのを待機するには `0` に設定します。[`alwaysLoad: true`](/docs/ja/mcp#exempt-a-server-from-deferral) で設定されたサーバーは、[検出キャッシュ](/docs/ja/mcp#server-status-detail) から提供される場合を除き、関係なくスタートアップを待機させます。ツールは最初のプロンプトが構築されるときに存在する必要があります。非対話モード（`-p`）で `--input-format stream-json` がない場合、Claude Code は最初のターンの前に保留中のサーバーを待機します。[`--mcp-config`](/docs/ja/cli-reference#cli-flags) を明示的に渡すと、待機にはより長いデッドラインがあります。キャッシュされたサーバーの例外については、そのフラグのエントリを参照してください                                                                                                                                                                                                                                                                                                                                                                                      |
+```
+
+</details>
+
+<details>
+<summary>feature-availability-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/feature-availability-ja.md b/docs-ja/pages/feature-availability-ja.md
+index 542cf4b..6bc29b3 100644
+--- a/docs-ja/pages/feature-availability-ja.md
++++ b/docs-ja/pages/feature-availability-ja.md
+@@ -39,5 +39,4 @@ Claude Code CLI とローカルで実行されるすべてのものは、すべ
+ これらにはプロバイダー固有の違いがあります：
+ 
+-* **CLAUDE.md メモリ**：`CLAUDE.md` ファイルはすべてのプロバイダーでロードされます。[`AGENTS.md` ファイル](/docs/ja/memory#agents-md)をプロジェクト指示として読み込むには、[機能フラグを取得](/docs/ja/env-vars#features-that-need-feature-flag-fetching)するセッションも必要です
+ * **MCP サーバー**：[claude.ai からのコネクタ](/docs/ja/mcp#use-mcp-servers-from-claude-ai)は、claude.ai サブスクリプションがアクティブな認証方法である場合にのみロードされます。[ツール検索](/docs/ja/mcp#configure-tool-search)は `ANTHROPIC_BASE_URL` がファーストパーティ以外のホストを指している場合、デフォルトでオフになり、Google Cloud の Agent Platform の Claude 4.5 世代より前のモデルまたは Microsoft Foundry の [Azure でホストされているデプロイメント](https://platform.claude.com/docs/en/build-with-claude/claude-in-microsoft-foundry#hosting-options)ではサポートされていません
+ * **Subagents**：組み込みの [Explore subagent](/docs/ja/sub-agents#built-in-subagents)は、Claude API で継承されたモデルを Opus に制限し、他のプロバイダー（Claude Platform on AWS を含む）では直接メイン会話のモデルを継承します
+```
+
+</details>
+
+<details>
+<summary>glossary-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/glossary-ja.md b/docs-ja/pages/glossary-ja.md
+index 8e82424..a4a1cd3 100644
+--- a/docs-ja/pages/glossary-ja.md
++++ b/docs-ja/pages/glossary-ja.md
+@@ -17,5 +17,5 @@
+ </h3>
+ 
+-AI コーディングエージェント向けに作成するプロジェクト指示のマークダウンファイル。リポジトリに AGENTS.md があり、[CLAUDE.md](#claude-md) がない場合、Claude はこれをプロジェクト指示として読み込みます。別のファイルを追加する必要はありません。`/config` の **Project instructions** 設定を変更して、Claude が両方のファイルを読み込むか、CLAUDE.md のみを読み込むかを指定できます。AGENTS.md を直接読み込むには、Claude Code v2.1.277 以降がセッション内で機能フラグを取得する必要があります。その他のバージョンでは、CLAUDE.md からインポートしてください。
++AI コーディングエージェント向けに作成するプロジェクト指示のマークダウンファイル。リポジトリに AGENTS.md があり、[CLAUDE.md](#claude-md) がない場合、Claude はこれをプロジェクト指示として読み込みます。別のファイルを追加する必要はありません。`/config` の **Project instructions** 設定を変更して、Claude が両方のファイルを読み込むか、CLAUDE.md のみを読み込むかを指定できます。AGENTS.md を直接読み込むには、Claude Code v2.1.277 以降が必要です。一部のセッションでは Claude が [AGENTS.md を読み込めない](/docs/ja/memory#when-agents-md-support-is-unavailable) ため、代わりに [CLAUDE.md からインポート](/docs/ja/memory#share-one-file-with-other-coding-tools) してください。
+ 
+ 詳細情報: [AGENTS.md](/docs/ja/memory#agents-md)
+```
+
+</details>
+
+<details>
+<summary>mcp-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/mcp-ja.md b/docs-ja/pages/mcp-ja.md
+index ed7d06a..00110e1 100644
+--- a/docs-ja/pages/mcp-ja.md
++++ b/docs-ja/pages/mcp-ja.md
+@@ -1563,5 +1563,7 @@ MCP サーバーを構築している場合、ツール検索が有効になる
+ * サーバーが提供する主な機能
+ 
+-Claude Code はツール説明とサーバー指示を各 2KB で切り詰めます。切り詰めを避けるために簡潔に保ち、重要な詳細は最初の方に配置してください。
++Claude Code はツール説明とサーバー指示を各 2,048 文字でデフォルトで切り詰めます。簡潔に保ち、重要な詳細は最初の方に配置してください。
++
++セッション内のすべての MCP サーバーの上限を変更するには、[`CLAUDE_CODE_MAX_MCP_DESCRIPTION_LENGTH`](/docs/ja/env-vars#variables)を文字数に設定します。この変数には Claude Code v2.1.280 以降が必要です。
+ 
+ <h3 id="configure-tool-search">
+```
+
+</details>
+
+<details>
+<summary>monitoring-usage-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/monitoring-usage-ja.md b/docs-ja/pages/monitoring-usage-ja.md
+index dda0cf9..695f437 100644
+--- a/docs-ja/pages/monitoring-usage-ja.md
++++ b/docs-ja/pages/monitoring-usage-ja.md
+@@ -1222,4 +1222,9 @@ API リクエストが複数の試行後に失敗した場合、1 回ログさ
+ * `num_cancelled`: 完了前にキャンセルされたカウント
+ * `total_duration_ms`: すべてのマッチするフックのウォールクロック期間
++* `stdout_chars`: 成功したマッチするフック全体の stdout の総文字数。Claude Code v2.1.280 以降が必要
++* `additional_context_chars`: マッチするフックによって返された `additionalContext` の総文字数。Claude Code v2.1.280 以降が必要
++* `system_message_chars`: マッチするフックによって返された `systemMessage` の総文字数。Claude Code v2.1.280 以降が必要
++* `initial_user_message_chars`: マッチするフックによって返された `initialUserMessage` の総文字数。Claude Code v2.1.280 以降が必要
++* `num_outputs_persisted`: [10,000 文字キャップ](/docs/ja/hooks#json-output) を超えたフック出力の数。Claude Code がファイルに保存。Claude Code v2.1.280 以降が必要
+ * `managed_only`: 管理ポリシーフックのみが許可される場合は `"true"`
+ * `hook_source`: `"policySettings"` または `"merged"`
+```
+
+</details>
+
+*...以降省略*
+
+</details>
+
+
+<details>
 <summary>2026-09-23</summary>
 
 **変更ファイル:**
@@ -2505,460 +2767,6 @@ index 87b4f21..edb5a6f 100644
 -* **ゲートウェイがセッションを終了した後の起動**：[起動時の失敗クローズを強制する](/docs/ja/server-managed-settings#enforce-fail-closed-startup)を参照して、どの起動がゲートウェイから署名なしで開き、どの起動がゲートウェイが `401` で応答するときに終了するかを確認します。
 +* **ゲートウェイがセッションを終了した後の起動**：[起動時の失敗クローズを強制する](/docs/ja/server-managed-settings#enforce-fail-closed-startup)を参照して、どの起動がゲートウェイからサインアウトした状態で開き、どの起動がゲートウェイが `401` で応答するときに終了するかを確認します。
  * **プロビジョニング解除**：ユーザーが IdP で無効化されたセッションは、次の更新が失敗したときに `ttl_hours` 内に期限切れになります。
-```
-
-</details>
-
-<details>
-<summary>costs-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/costs-ja.md b/docs-ja/pages/costs-ja.md
-index d4703c0..fb8b62e 100644
---- a/docs-ja/pages/costs-ja.md
-+++ b/docs-ja/pages/costs-ja.md
-@@ -111,10 +111,9 @@ Claude Code は最新のレポートを `~/.claude/usage-data/report.html` に
- セルフサービス Enterprise 組織、Enterprise トライアル、および AWS Marketplace を通じて請求される Enterprise 組織では、コマンドには Claude Code v2.1.248 以降が必要です。以前のバージョンは [`Unknown command: /usage-credits`](/docs/ja/errors#unknown-command) で拒否します。開かれるものはロールによって異なります。
- 
--| ロール                                                                             | `/usage-credits` の動作                                                                                                                                        |
--| :------------------------------------------------------------------------------ | :---------------------------------------------------------------------------------------------------------------------------------------------------------- |
--| Pro または Max サブスクライバー                                                            | ブラウザで [**Settings > Usage**](https://claude.ai/settings/usage) を claude.ai で開きます。**Usage credits** セクションで、使用量クレジットをオンまたはオフにし、クレジット残高、今月の支出、および月間支出制限を確認できます |
--| 請求アクセス権を持つ Team または Enterprise メンバー                                             | 組織の使用量設定 [**Admin settings > Usage**](https://claude.ai/admin-settings/usage) をブラウザで開きます                                                                    |
--| 請求アクセス権を持たない Team または Enterprise メンバー                                           |                                                                                                                                                             |
--| 確認を求めてから、組織の管理者にリクエストを送信します。v2.1.211 より前では、Claude Code は確認ステップなしでリクエストを送信していました |                                                                                                                                                             |
-+| ロール                                   | `/usage-credits` の動作                                                                                                                                        |
-+| :------------------------------------ | :---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-+| Pro または Max サブスクライバー                  | ブラウザで [**Settings > Usage**](https://claude.ai/settings/usage) を claude.ai で開きます。**Usage credits** セクションで、使用量クレジットをオンまたはオフにし、クレジット残高、今月の支出、および月間支出制限を確認できます |
-+| 請求アクセス権を持つ Team または Enterprise メンバー   | 組織の使用量設定 [**Admin settings > Usage**](https://claude.ai/admin-settings/usage) をブラウザで開きます                                                                    |
-+| 請求アクセス権を持たない Team または Enterprise メンバー | 確認を求めてから、組織の管理者にリクエストを送信します。v2.1.211 より前では、Claude Code は確認ステップなしでリクエストを送信していました                                                                             |
- 
- 請求アクセス権を持たない Team および Enterprise メンバーの場合、確認はインタラクティブセッションでのみ表示されます。`-p` フラグを使用した非インタラクティブモードおよび [Remote Control](/docs/ja/remote-control) からは、コマンドはリクエストを送信せず、インタラクティブセッションで実行するよう指示します。
-@@ -362,5 +361,5 @@ MCP ツール定義は [デフォルトで遅延](/docs/ja/mcp#scale-with-mcp-to
- </h3>
- 
--拡張思考はデフォルトで有効になっています。これは複雑な計画と推論タスクのパフォーマンスを大幅に向上させるためです。思考トークンは出力トークンとして課金され、デフォルト予算はモデルに応じて数万トークンになる場合があります。深い推論が必要ない単純なタスクの場合、`/effort` で [努力レベル](/docs/ja/model-config#adjust-effort-level) を低下させるか、`/model` で、または `/config` で思考を無効にすることでコストを削減できます。[固定思考予算](/docs/ja/model-config#adaptive-reasoning-and-fixed-thinking-budgets) を持つモデルでは、`MAX_THINKING_TOKENS=8000` などの `MAX_THINKING_TOKENS` [環境変数](/docs/ja/env-vars) を設定して予算を低下させることもできます。適応推論モデルはゼロ以外の予算を無視するため、代わりに努力レベルを使用します。
-+拡張思考はデフォルトで有効になっています。これは複雑な計画と推論タスクのパフォーマンスを大幅に向上させるためです。思考トークンは出力トークンとして課金され、デフォルト予算はモデルに応じて数万トークンになる場合があります。深い推論が必要ない単純なタスクの場合、`/effort` または `/model` で [努力レベル](/docs/ja/model-config#adjust-effort-level) を低下させるか、`/config` で思考を無効にすることでコストを削減できます。Fable モデルは常に拡張思考を使用するため、思考をオフにすることはできません。[固定思考予算](/docs/ja/model-config#adaptive-reasoning-and-fixed-thinking-budgets) を持つモデルでは、`MAX_THINKING_TOKENS=8000` などの `MAX_THINKING_TOKENS` [環境変数](/docs/ja/env-vars) を設定して予算を低下させることもできます。適応推論モデルはゼロ以外の予算を無視するため、代わりに努力レベルを使用します。
- 
- <h3 id="delegate-verbose-operations-to-subagents">
-```
-
-</details>
-
-<details>
-<summary>desktop-scheduled-tasks-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/desktop-scheduled-tasks-ja.md b/docs-ja/pages/desktop-scheduled-tasks-ja.md
-index 9903b6b..a8516bb 100644
---- a/docs-ja/pages/desktop-scheduled-tasks-ja.md
-+++ b/docs-ja/pages/desktop-scheduled-tasks-ja.md
-@@ -17,15 +17,15 @@ Desktop アプリの **Routines** ページでは、ローカルスケジュー
- Claude Code offers three ways to schedule recurring or one-off work:
- 
--|                            | [Cloud](/docs/en/routines)               | [Desktop](/docs/en/desktop-scheduled-tasks) | [`/loop`](/docs/en/scheduled-tasks)      |
--| :------------------------- | :---------------------------------- | :------------------------------------- | :---------------------------------- |
--| Runs on                    | Cloud, Anthropic-managed by default | Your machine                           | Your machine                        |
--| Requires machine on        | No                                  | Yes                                    | Yes                                 |
--| Requires open session      | No                                  | No                                     | Yes                                 |
--| Persistent across restarts | Yes                                 | Yes                                    | Restored on `--resume` if unexpired |
--| Access to local files      | No (fresh clone)                    | Yes                                    | Yes                                 |
--| MCP servers                | Connectors configured per task      | [Config files](/docs/en/mcp) and connectors | Inherits from session               |
--| Permission prompts         | No (runs autonomously)              | Configurable per task                  | Inherits from session               |
--| Customizable schedule      | Via `/schedule` in the CLI          | Yes                                    | Yes                                 |
--| Minimum interval           | 1 hour                              | 1 minute                               | 1 minute                            |
-+|                            | [Cloud](/docs/en/routines)               | [Desktop](/docs/en/desktop-scheduled-tasks) | [`/loop`](/docs/en/scheduled-tasks)                                             |
-+| :------------------------- | :---------------------------------- | :------------------------------------- | :------------------------------------------------------------------------- |
-+| Runs on                    | Cloud, Anthropic-managed by default | Your machine                           | Your machine                                                               |
-+| Requires machine on        | No                                  | Yes                                    | Yes                                                                        |
-+| Requires open session      | No                                  | No                                     | Yes                                                                        |
-+| Persistent across restarts | Yes                                 | Yes                                    | Restored on `--resume`, with [exceptions](/docs/en/scheduled-tasks#limitations) |
-+| Access to local files      | No (fresh clone)                    | Yes                                    | Yes                                                                        |
-+| MCP servers                | Connectors configured per task      | [Config files](/docs/en/mcp) and connectors | Inherits from session                                                      |
-+| Permission prompts         | No (runs autonomously)              | Configurable per task                  | Inherits from session                                                      |
-+| Customizable schedule      | Via `/schedule` in the CLI          | Yes                                    | Yes                                                                        |
-+| Minimum interval           | 1 hour                              | 1 minute                               | 1 minute                                                                   |
- 
-```
-
-</details>
-
-<details>
-<summary>discover-plugins-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/discover-plugins-ja.md b/docs-ja/pages/discover-plugins-ja.md
-index df5f039..65720aa 100644
---- a/docs-ja/pages/discover-plugins-ja.md
-+++ b/docs-ja/pages/discover-plugins-ja.md
-@@ -338,10 +338,10 @@ Claude Code はローカル マーケットプレイス カタログのコピー
- 
- * **マーケットプレイス名を含む場合**: セッションで `plugin-name@marketplace-name` をインストールするか、`claude plugin install` で実行すると、Claude Code はルックアップの前にそのマーケットプレイスを更新します。Claude Code は、マーケットプレイスの[自動更新](#configure-auto-updates)をオフにしたか、`DISABLE_AUTOUPDATER` を設定した場合でも、更新を実行します。v2.1.232 より前では、Claude Code はルックアップの前にマーケットプレイスを更新しませんでした。Claude Code は以下の場合、この更新をスキップします：
--  * マーケットプレイスが[GitHub、別の Git ホスト、またはリモート URL から追加](/docs/ja/plugin-marketplaces#pre-populate-plugins-for-containers)されていない。
-+  * マーケットプレイスが[GitHub、別の Git ホスト、またはリモート URL から追加](#add-marketplaces)されていない。
-   * [シード ディレクトリ](/docs/ja/plugin-marketplaces#pre-populate-plugins-for-containers)がマーケットプレイスを提供している。
-   * Claude Code が過去 30 秒以内にマーケットプレイスを更新した。
-   * [`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`](/docs/ja/env-vars)を設定した。
-   * [管理設定](/docs/ja/plugin-marketplaces#managed-marketplace-restrictions)がマーケットプレイスをブロックしている。この場合、Claude Code はインストールも拒否します。
--* **プラグイン名のみ**: セッションで `/plugin install plugin-name` を実行すると、Claude Code は[バックグラウンドでも更新](/docs/ja/plugin-marketplaces#configure-auto-updates)するマーケットプレイスのみを更新し、ルックアップが失敗した後のみです。`claude plugin install plugin-name` を実行すると、Claude Code は更新なしでキャッシュされたカタログを読み取ります。最後の更新後に公開されたプラグインをインストールするには、セッションで `/plugin marketplace update <marketplace-name>` を実行するか、シェルで [`claude plugin marketplace update <marketplace-name>`](/docs/ja/plugin-marketplaces#plugin-marketplace-update)を実行してから、インストールを再試行します。
-+* **プラグイン名のみ**: セッションで `/plugin install plugin-name` を実行すると、Claude Code は[バックグラウンドでも更新](#configure-auto-updates)するマーケットプレイスのみを更新し、ルックアップが失敗した後のみです。`claude plugin install plugin-name` を実行すると、Claude Code は更新なしでキャッシュされたカタログを読み取ります。最後の更新後に公開されたプラグインをインストールするには、セッションで `/plugin marketplace update <marketplace-name>` を実行するか、シェルで [`claude plugin marketplace update <marketplace-name>`](/docs/ja/plugin-marketplaces#plugin-marketplace-update)を実行してから、インストールを再試行します。
- 
- 名前付きインストール前の更新が失敗した場合（例えば、オフラインの場合）、Claude Code はキャッシュされたカタログでプラグインを検索します。`claude plugin install` は成功メッセージで `marketplace not refreshed` を報告し、`/plugin install` はプラグインの詳細の上または見つからないメッセージでエラーを表示します。
-```
-
-</details>
-
-<details>
-<summary>interactive-mode-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/interactive-mode-ja.md b/docs-ja/pages/interactive-mode-ja.md
-index 061db85..261b95c 100644
---- a/docs-ja/pages/interactive-mode-ja.md
-+++ b/docs-ja/pages/interactive-mode-ja.md
-@@ -142,4 +142,17 @@ Claude Code で `/` と入力すると、利用可能なコマンドが表示さ
- Claude Code に含まれるコマンドの完全なリストについては、[コマンドリファレンス](/docs/ja/commands) を参照してください。
- 
-+<h3 id="complete-a-command-mid-prompt">
-+  プロンプトの途中でコマンドを完成させる
-+</h3>
-+
-+コマンド補完はプロンプトの途中でも機能します。スペースの後に `/` を入力し、その後に名前の最初の文字を入力します。例えば `run the tests, then /com` のようにします。名前がそれらの文字で始まるコマンドのみが一致するため、`/tmp/notes.md` のようなファイルパスではリストが開いたままになりません。Claude Code がコマンド自体を実行するのは、コマンドが [メッセージを開始する](/docs/ja/commands) 場合のみです。
-+
-+* **[フルスクリーンレンダリング](/docs/ja/fullscreen) の場合**：入力中に一致するコマンドがリストとして開き、行がハイライトされていないため、`Enter` キーを押すとプロンプトがそのまま送信されます。`Tab` キーを押すと最上位の一致が挿入されます。または矢印キーと `Enter` キーで行を選択します。
-+* **フルスクリーン外の場合**：最上位の一致の残りがカーソルでゴーストテキストとして表示され、複数のコマンドが一致する場合は `+2` などのカウントが表示されます。`Tab` キーを押すと唯一の一致が挿入されるか、複数が一致する場合はリストが開き、矢印キーと `Enter` キーで行を選択します。
-+
-+両方のレンダラーで、プロンプトの途中の裸の `/` で `Tab` キーを押すと、すべてのコマンドがリストされます。
-+
-+プラグインスキルはその裸の名前でも一致するため、`/deploy` は `myplugin:deploy-app` という名前のスキルを見つけます。一致を挿入すると、Claude Code は完全な `/myplugin:deploy-app` を書き込みます。
-+
- <h2 id="vim-editor-mode">
-   Vim エディタモード
-@@ -337,5 +350,5 @@ Claude Code がコマンドをバックグラウンドで実行する場合、
- * 出力が 5GB を超える場合、バックグラウンドタスクは自動的に終了され、stderr に理由を説明するメモが表示されます
- * macOS と Linux では、セッションが少なくとも 30 分間アイドル状態にあり、ターンまたはサブエージェントが実行されていない場合、Claude Code はオペレーティングシステムがメモリプレッシャーを通知するときに実行中のバックグラウンドタスクを終了します。[`CLAUDE_CODE_DISABLE_BG_SHELL_PRESSURE_REAP`](/docs/ja/env-vars) を `1` に設定してこれをオフにします。Claude Code v2.1.193 以降が必要です
--* [サブエージェント](/docs/ja/sub-agents)が所有するバックグラウンドコマンドには時間制限がありません。ただし、フォアグラウンドで実行されているサブエージェントが所有するコマンドは、そのサブエージェントが最終応答を行うときに終了します。ツール参照の[バックグラウンドコマンド](/docs/ja/tools-reference#background-commands)を参照してください。v2.1.218 より前では、メモリプレッシャーリープも、`Ctrl+B` でバックグラウンドに移動されたコマンドに対する以前の 60 分制限も、サブエージェントコマンドをカバーしていませんでした
-+* [サブエージェント](/docs/ja/sub-agents)が所有するバックグラウンドコマンドには時間制限がありません。ただし、フォアグラウンドで実行されているサブエージェントが所有するコマンドは、そのサブエージェントが最終応答を行うときに終了します。ツール参照の[バックグラウンドコマンド](/docs/ja/tools-reference#background-commands)を参照してください。v2.1.218 より前では、メモリプレッシャーリープも、サブエージェントコマンドに対する以前の 60 分制限も、`Ctrl+B` でバックグラウンドに移動されたコマンドをカバーしていませんでした
- 
- すべてのバックグラウンドタスク機能を無効にするには、`CLAUDE_CODE_DISABLE_BACKGROUND_TASKS` 環境変数を `1` に設定します。詳細は[環境変数](/docs/ja/env-vars)を参照してください。
-@@ -578,4 +591,6 @@ Claude Code がチェッカーを実行し続けることができない場合
-```
-
-</details>
-
-*...以降省略*
-
-</details>
-
-
-<details>
-<summary>2026-09-10</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/accessibility-ja.md                  |  138 +-
- docs-ja/pages/admin-setup-ja.md                    |   75 +-
- docs-ja/pages/advisor-ja.md                        |   85 +-
- docs-ja/pages/agent-teams-ja.md                    |  183 +-
- docs-ja/pages/agents-ja.md                         |    9 +-
- docs-ja/pages/amazon-bedrock-ja.md                 |  229 +-
- docs-ja/pages/authentication-ja.md                 |  124 +-
- docs-ja/pages/auto-mode-config-ja.md               |  265 +-
- docs-ja/pages/best-practices-ja.md                 |  101 +-
- docs-ja/pages/champion-kit-ja.md                   |    6 +-
- docs-ja/pages/changelog.md                         |   56 +
- docs-ja/pages/channels-ja.md                       |   54 +-
- docs-ja/pages/channels-reference-ja.md             |   94 +-
- docs-ja/pages/checkpointing-ja.md                  |   46 +-
- docs-ja/pages/claude-apps-gateway-config-ja.md     |  451 ++-
- docs-ja/pages/claude-apps-gateway-deploy-ja.md     |  131 +-
- docs-ja/pages/claude-apps-gateway-ja.md            |  213 +-
- docs-ja/pages/claude-apps-gateway-on-aws-ja.md     |   36 +-
- .../pages/claude-apps-gateway-spend-limits-ja.md   |   66 +-
- docs-ja/pages/claude-code-on-the-web-ja.md         |  761 +---
- docs-ja/pages/claude-directory-ja.md               |  166 +-
- docs-ja/pages/claude-platform-on-aws-ja.md         |   34 +-
- docs-ja/pages/claude-security-ja.md                |   19 +-
- docs-ja/pages/claude-tag-ja.md                     |   13 +-
- docs-ja/pages/cli-reference-ja.md                  |  162 +-
- docs-ja/pages/cloud-environments-ja.md             |  249 +-
- docs-ja/pages/commands-ja.md                       |  262 +-
- docs-ja/pages/common-workflows-ja.md               |  115 +-
- docs-ja/pages/communications-kit-ja.md             |  173 +-
- docs-ja/pages/computer-use-ja.md                   |    6 +-
- docs-ja/pages/context-window-ja.md                 |   35 +-
- docs-ja/pages/corporate-launcher-ja.md             |   41 +-
- docs-ja/pages/costs-ja.md                          |  172 +-
- docs-ja/pages/data-usage-ja.md                     |   38 +-
- docs-ja/pages/debug-your-config-ja.md              |   73 +-
- docs-ja/pages/deep-links-ja.md                     |   40 +-
- docs-ja/pages/desktop-ios-simulator-ja.md          |    5 +-
- docs-ja/pages/desktop-ja.md                        |  303 +-
- docs-ja/pages/desktop-linux-ja.md                  |   73 +-
- docs-ja/pages/desktop-quickstart-ja.md             |   83 +-
- docs-ja/pages/desktop-scheduled-tasks-ja.md        |   14 +-
- docs-ja/pages/devcontainer-ja.md                   |   27 +-
- docs-ja/pages/discover-plugins-ja.md               |  135 +-
- docs-ja/pages/errors-ja.md                         | 3751 ++++++++++++++++----
- docs-ja/pages/fast-mode-ja.md                      |   99 +-
- docs-ja/pages/feature-availability-ja.md           |   94 +-
- docs-ja/pages/features-overview-ja.md              |  110 +-
- docs-ja/pages/fullscreen-ja.md                     |  250 +-
- docs-ja/pages/gateways-ja.md                       |   11 +-
- docs-ja/pages/github-actions-cloud-providers-ja.md |  326 +-
- docs-ja/pages/github-actions-ja.md                 |  850 ++---
- docs-ja/pages/github-enterprise-server-ja.md       |   56 +-
- docs-ja/pages/gitlab-ci-cd-ja.md                   |  333 +-
- docs-ja/pages/glossary-ja.md                       |   46 +-
- docs-ja/pages/goal-ja.md                           |   80 +-
- docs-ja/pages/google-vertex-ai-ja.md               |   64 +-
- docs-ja/pages/headless-ja.md                       |  173 +-
- docs-ja/pages/hooks-guide-ja.md                    |  250 +-
- docs-ja/pages/how-claude-code-works-ja.md          |   88 +-
- docs-ja/pages/interactive-mode-ja.md               |  787 ++--
- docs-ja/pages/jetbrains-ja.md                      |   28 +-
- docs-ja/pages/keybindings-ja.md                    |  243 +-
- docs-ja/pages/large-codebases-ja.md                |  107 +-
- docs-ja/pages/legal-and-compliance-ja.md           |   19 +-
- docs-ja/pages/llm-gateway-ja.md                    |    2 +-
- docs-ja/pages/llm-gateway-protocol-ja.md           |  100 +-
- docs-ja/pages/managed-mcp-ja.md                    |  430 ++-
- docs-ja/pages/managed-settings-ja.md               |  441 ++-
- docs-ja/pages/mcp-quickstart-ja.md                 |   65 +-
- docs-ja/pages/memory-ja.md                         |  111 +-
- docs-ja/pages/microsoft-foundry-ja.md              |    7 +-
- docs-ja/pages/mobile-ja.md                         |   27 +-
- docs-ja/pages/network-config-ja.md                 |  192 +-
- docs-ja/pages/overview-ja.md                       |   55 +-
- docs-ja/pages/permission-modes-ja.md               |  482 ++-
- docs-ja/pages/permissions-ja.md                    |  479 ++-
- docs-ja/pages/platforms-ja.md                      |   24 +-
- docs-ja/pages/plugin-dependencies-ja.md            |   74 +-
- docs-ja/pages/plugin-hints-ja.md                   |   11 +-
- docs-ja/pages/plugin-relevance-ja.md               |   24 +-
- docs-ja/pages/plugins-ja.md                        |  102 +-
- docs-ja/pages/plugins-reference-ja.md              |  921 ++---
- docs-ja/pages/prompt-caching-ja.md                 |  206 +-
- docs-ja/pages/prompt-library-ja.md                 |   16 +-
- docs-ja/pages/quickstart-ja.md                     |  111 +-
- docs-ja/pages/routines-ja.md                       |  120 +-
- docs-ja/pages/sandbox-environments-ja.md           |   74 +-
- docs-ja/pages/sandboxing-ja.md                     |  437 ++-
- docs-ja/pages/scheduled-tasks-ja.md                |   37 +-
- docs-ja/pages/security-guidance-ja.md              |   54 +-
- docs-ja/pages/security-ja.md                       |   34 +-
- .../self-hosted-environments-configuration-ja.md   |  439 ++-
- .../pages/self-hosted-environments-identity-ja.md  |  272 +-
- docs-ja/pages/self-hosted-environments-ja.md       |  166 +-
- .../self-hosted-environments-quickstart-ja.md      |  130 +-
- .../pages/self-hosted-environments-reference-ja.md |  338 +-
- .../pages/self-hosted-environments-testing-ja.md   |  271 +-
- docs-ja/pages/sessions-ja.md                       |  196 +-
- docs-ja/pages/settings-example-ja.md               |  392 +-
- docs-ja/pages/settings-ja.md                       | 1689 ++++-----
- docs-ja/pages/setup-ja.md                          |   67 +-
- docs-ja/pages/slack-ja.md                          |   57 +-
- docs-ja/pages/statusline-ja.md                     |  227 +-
- docs-ja/pages/terminal-config-ja.md                |  231 +-
- docs-ja/pages/third-party-integrations-ja.md       |  121 +-
- docs-ja/pages/tools-reference-ja.md                |  659 +++-
- docs-ja/pages/troubleshoot-install-ja.md           |  469 ++-
- docs-ja/pages/troubleshooting-ja.md                |   55 +-
- docs-ja/pages/ultrareview-ja.md                    |  159 +-
- docs-ja/pages/voice-dictation-ja.md                |   24 +-
- docs-ja/pages/vs-code-ja.md                        |  492 +--
- docs-ja/pages/web-quickstart-ja.md                 |   95 +-
- docs-ja/pages/workflows-ja.md                      |  226 +-
- docs-ja/pages/zero-data-retention-ja.md            |   15 +-
- 114 files changed, 16413 insertions(+), 8139 deletions(-)
-```
-
-<details>
-<summary>accessibility-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/accessibility-ja.md b/docs-ja/pages/accessibility-ja.md
-index 06739d2..32668f1 100644
---- a/docs-ja/pages/accessibility-ja.md
-+++ b/docs-ja/pages/accessibility-ja.md
-@@ -7,11 +7,9 @@
- > VoiceOver や NVDA などのスクリーンリーダー、スクリーン拡大鏡、モーション削減、色覚異常対応テーマの設定で Claude Code をセットアップします。
- 
--Claude Code には、ビジュアルターミナルインターフェースをプレーンな線形テキストに置き換えるスクリーンリーダーモードがあります。ボックス、プログレスアニメーション、インプレース再描画の代わりに、このモードはラベル付きの行を出力し、VoiceOver や NVDA などのスクリーンリーダーが順番に読み上げるため、完全な会話を保持し、ツール権限を承認し、出力を最後まで確認できます。
-+Claude Code には、ビジュアルターミナルインターフェースをプレーンな線形テキストに置き換えるスクリーンリーダーモードがあります。ボックス、プログレスアニメーション、インプレース再描画の代わりに、Claude Code はラベル付きの行を出力し、VoiceOver や NVDA などのスクリーンリーダーが順番に読み上げます。完全な会話を保持し、ツール権限を承認し、出力を最後まで確認できます。
- 
--スクリーンリーダーモードはオプトインです。スクリーン拡大鏡、モーション削減、またはスクリーンリーダーの代わりにカラーブラインド対応テーマを使用する場合は、[スクリーンリーダーモード以外のアクセシビリティ設定](#accessibility-settings-beyond-screen-reader-mode)を参照してください。
-+スクリーンリーダーモードはオプトインです。スクリーン拡大鏡、モーション削減、またはスクリーンリーダーの代わりにカラーブラインド対応テーマを使用する場合は、[アクセシビリティ設定](#accessibility-settings)テーブルから `CLAUDE_CODE_ACCESSIBILITY`、`prefersReducedMotion`、または `theme` を設定してください。スクリーンリーダーモードはターミナルインターフェースのみを適応させるため、VS Code 拡張機能のチャットパネルではこれを必要としません。Claude Code v2.1.236 以降では、拡張機能は設定なしで[スクリーンリーダーにコンバーセーション活動を通知](/docs/ja/vs-code#use-a-screen-reader)します。
- 
--<Note>
--  スクリーンリーダーモードには Claude Code v2.1.181 以降が必要です。以前のバージョンは `--ax-screen-reader` フラグを `error: unknown option '--ax-screen-reader'` で拒否します。
--</Note>
-+スクリーンリーダーモードには Claude Code v2.1.181 以降が必要です。以前のバージョンは `--ax-screen-reader` フラグを `error: unknown option '--ax-screen-reader'` で拒否します。
- 
- <h2 id="turn-on-screen-reader-mode">
-@@ -22,15 +20,12 @@ Claude Code には、ビジュアルターミナルインターフェースを
- 
- * 1 つのセッション用：`claude --ax-screen-reader` を実行します。
--* 1 つのシェルから開始されたセッション用：`CLAUDE_AX_SCREEN_READER` 環境変数を `1` に設定します。Bash または Zsh では `export CLAUDE_AX_SCREEN_READER=1` を実行し、PowerShell では `$env:CLAUDE_AX_SCREEN_READER = "1"` を実行します。すべてのシェルをカバーするために、シェルプロファイルに行を追加します。
--* マシン上のすべてのセッション用：ユーザー[設定ファイル](/docs/ja/settings)に `"axScreenReader": true` を追加します。これは VS Code 統合ターミナルを含むすべてのターミナルをカバーします。
-+* 1 つのシェルから開始されたセッション用：`CLAUDE_AX_SCREEN_READER` 環境変数を `1` に設定します。Bash または Zsh では `export CLAUDE_AX_SCREEN_READER=1` を実行し、PowerShell では `$env:CLAUDE_AX_SCREEN_READER = "1"` を実行します。シェルプロファイルにその行を追加して、今後のシェルでも保持します。
-+* マシン上のすべてのセッション用：ユーザー[設定ファイル](/docs/ja/settings)に `"axScreenReader": true` を追加します。この設定は VS Code 統合ターミナルを含むすべてのターミナルに適用されます。
- 
--<Note>
--  メソッドは優先順位順にリストされています。[`--ax-screen-reader`](/docs/ja/cli-reference#cli-flags) フラグは [`CLAUDE_AX_SCREEN_READER`](/docs/ja/env-vars) 環境変数をオーバーライドし、これは [`axScreenReader`](/docs/ja/settings#available-settings) 設定をオーバーライドします。
--</Note>
-```
-
-</details>
-
-<details>
-<summary>admin-setup-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/admin-setup-ja.md b/docs-ja/pages/admin-setup-ja.md
-index e4a104e..994e983 100644
---- a/docs-ja/pages/admin-setup-ja.md
-+++ b/docs-ja/pages/admin-setup-ja.md
-@@ -18,5 +18,5 @@ Claude Code は、ローカル開発者設定よりも優先されるマネー
- | :-------------------------------------------------------- | :------------------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
- | [API プロバイダーを選択する](#choose-your-api-provider)              | Claude Code が認証される場所と課金方法 | [Authentication](/docs/ja/authentication)、[Amazon Bedrock](/docs/ja/amazon-bedrock)、[Google Cloud の Agent Platform](/docs/ja/google-vertex-ai)、[Microsoft Foundry](/docs/ja/microsoft-foundry) |
--| [設定がデバイスに到達する方法を決定する](#decide-how-settings-reach-devices) | マネージドポリシーが開発者マシンに到達する方法   | [Server-managed settings](/docs/ja/server-managed-settings)、[Settings files](/docs/ja/settings#settings-files)                                                                       |
-+| [設定がデバイスに到達する方法を決定する](#decide-how-settings-reach-devices) | マネージドポリシーが開発者マシンに到達する方法   | [Server-managed settings](/docs/ja/server-managed-settings)、[Delivery mechanisms](/docs/ja/managed-settings#delivery-mechanisms)                                                     |
- | [実行する内容を決定する](#decide-what-to-enforce)                    | どのツール、コマンド、統合が許可されるか      | [Permissions](/docs/ja/permissions)、[Sandboxing](/docs/ja/sandboxing)                                                                                                                |
- | [使用状況の可視性をセットアップする](#set-up-usage-visibility)             | 支出と採用を追跡する方法              | [Analytics](/docs/ja/analytics)、[Monitoring](/docs/ja/monitoring-usage)、[Costs](/docs/ja/costs)                                                                                           |
-@@ -47,5 +47,5 @@ Claude Code は複数の API プロバイダーのいずれかを通じて Claud
- </h2>
- 
--マネージド設定は、ローカル開発者設定よりも優先されるポリシーを定義します。Claude Code は以下の 4 つのソースを優先順位順にチェックし、空でない設定を返す最初のものを適用します。ただし 1 つの例外があります。[クロスソースロックキー](/docs/ja/settings#settings-precedence)（サンドボックス許可リストロックなど）の小さなセットは、管理者が制御するソースがそれらを設定する場合に尊重されます。
-+マネージド設定は、組織ポリシーを定義します。Claude Code は以下の表に示す 4 つのソースを優先順位順にチェックします。[Claude Code がマネージドソースを組み合わせる方法](/docs/ja/managed-settings#precedence-within-the-managed-tier)は、どのソースが適用されるか、ポリシーヘルパーが何を変更するか、およびすべてのソースを構成する方法を説明しています。この表は決定マップです。
- 
- | メカニズム                   | 配信                                                                                                                                                                                                  | 優先度 | プラットフォーム      |
-@@ -56,17 +56,13 @@ Claude Code は複数の API プロバイダーのいずれかを通じて Claud
- | Windows user registry   | `HKCU\SOFTWARE\Policies\ClaudeCode`                                                                                                                                                                 | 最低  | Windows のみ    |
- 
--設定済みの [`policyHelper`](/docs/ja/settings#compute-managed-settings-with-a-policy-helper) は 4 つのソースすべてに優先します。その出力は実行時のマネージド設定の唯一のものになります。[設定の優先度](/docs/ja/settings#settings-precedence) を参照してください。
-+Claude Code はスタートアップ時に server-managed 設定をフェッチし、セッション中は 1 時間ごとに更新します。デプロイするエンドポイントインフラストラクチャはありません。claude.ai 管理コンソール経由の配信には Claude for Teams または Enterprise プランが必要です。Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry でのデプロイメントは、[Claude apps gateway](/docs/ja/claude-apps-gateway) を実行することで同じリモート配信を取得できます。または、ファイルベースまたは OS レベルのメカニズムのいずれかを代わりに使用してください。
- 
--Server-managed 設定はデバイスが認証されるときに到達し、アクティブなセッション中は 1 時間ごとに更新されます。エンドポイントインフラストラクチャは不要です。claude.ai 管理コンソール経由の配信には Claude for Teams または Enterprise プランが必要です。Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry での展開は、[Claude apps gateway](/docs/ja/claude-apps-gateway) を実行することで同じリモート配信を取得できます。または、代わりにファイルベースまたは OS レベルのメカニズムのいずれかを使用してください。
--
--組織が複数のプロバイダーを混在させている場合、claude.ai ユーザー向けに [server-managed settings](/docs/ja/server-managed-settings) を設定し、他のユーザーがマネージドポリシーを受け取るように [ファイルベースまたは plist/registry フォールバック](/docs/ja/settings#settings-files) を設定してください。
-+組織が複数のプロバイダーを混在させている場合、claude.ai ユーザー向けに [server-managed settings](/docs/ja/server-managed-settings) を設定し、他のユーザーがマネージドポリシーを受け取るように [ファイルベースまたは plist/registry フォールバック](/docs/ja/managed-settings#delivery-mechanisms)を設定してください。
- 
- plist と HKLM レジストリの場所は任意のプロバイダーで機能し、書き込みに管理者権限が必要なため、改ざんに強いです。HKCU の Windows ユーザーレジストリは昇格なしで書き込み可能なため、実行チャネルではなく便利なデフォルトとして扱ってください。
-```
-
-</details>
-
-<details>
-<summary>advisor-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/advisor-ja.md b/docs-ja/pages/advisor-ja.md
-index 8a36aeb..949378a 100644
---- a/docs-ja/pages/advisor-ja.md
-+++ b/docs-ja/pages/advisor-ja.md
-@@ -35,9 +35,7 @@ advisor モデルは 3 つの方法で設定できます。
- * **`--advisor` フラグ**：起動時に単一セッションの advisor を設定します
- 
--これらのいずれかが advisor モデルを設定する場合、advisor はメインモデルが[それをサポートしている](#choose-an-advisor-model)セッションで有効になります。使用を停止するには、[advisor をオフにする](#turn-the-advisor-off)を参照してください。
-+これらのいずれかが advisor を有効にするのは、メインモデルが[それをサポートしている](#choose-an-advisor-model)セッションです。セッションが開始されると、Claude Code は `Advisor Tool (experimental) is on and may use more tokens · /advisor` 通知を表示します。advisor の使用を停止するには、[advisor をオフにする](#turn-the-advisor-off)を参照してください。
- 
--<Note>
--  Fable 5 を advisor として使用するには、Claude Code v2.1.170 以降と、組織の [Fable 5 アクセス](/docs/ja/model-config#work-with-fable-5)が必要です。
--</Note>
-+一部のプランでは、Fable を advisor として使用する場合、Fable の使用を使用クレジットに請求することへの 1 回限りの[同意](/docs/ja/model-config#fable-and-usage-credits)も必要です。その同意を与える前に何が起こるかについては、[Fable advisor と使用クレジット](#fable-advisor-and-usage-credits)を参照してください。
- 
- <h3 id="use-the-/advisor-command">
-@@ -51,5 +49,9 @@ advisor モデルは 3 つの方法で設定できます。
- ```
- 
--選択は、ユーザー設定の `advisorModel` に保存され、セッション全体で保持されます。組織の [`availableModels`](/docs/ja/model-config#restrict-model-selection)許可リストが保存された advisor モデルを除外している場合、`/advisor` で許可されたモデルを選択するまで advisor は呼び出されません。現在のメインモデルが advisor をサポートしていない場合、選択は引き続き保存され、[`/model`](/docs/ja/model-config#setting-your-model)で[互換性のあるメインモデル](#choose-an-advisor-model)に切り替えるときにアクティブになります。
-+コマンドは `Advisor set to` で確認し、その後に advisor モデル名が続きます。選択はユーザー設定の `advisorModel` に保存され、セッション全体で保持されます。
-+
-+Claude Code は、組織の [`availableModels`](/docs/ja/model-config#restrict-model-selection)許可リストが除外した保存済み advisor を呼び出しません。advisor を使用するには、`/advisor` で許可されたモデルを選択してください。Claude Code は、現在のメインモデルがサポートしていない advisor を引き続き保存します。その advisor は、[`/model`](/docs/ja/model-config#setting-your-model)で[互換性のあるメインモデル](#choose-an-advisor-model)に切り替えた後にアクティブになります。
-+
-+一部のプランでは、Fable を advisor として使用する場合、Fable の使用を使用クレジットに請求することへの 1 回限りの[同意](/docs/ja/model-config#fable-and-usage-credits)も必要です。その同意を与える前に `/advisor fable` が何をするかについては、[Fable advisor と使用クレジット](#fable-advisor-and-usage-credits)を参照してください。
- 
- <h3 id="set-advisormodel-in-settings">
-@@ -75,5 +77,12 @@ claude --advisor opus
- ```
- 
-```
-
-</details>
-
-<details>
-<summary>agent-teams-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/agent-teams-ja.md b/docs-ja/pages/agent-teams-ja.md
-index 79b1162..1f6564f 100644
---- a/docs-ja/pages/agent-teams-ja.md
-+++ b/docs-ja/pages/agent-teams-ja.md
-@@ -8,10 +8,10 @@
- 
- <Warning>
--  エージェントチームは実験的機能であり、デフォルトでは無効になっています。[settings.json](/docs/ja/settings) または環境に `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` を追加して有効にしてください。その変数がない場合、セッション開始時にチームが設定されず、チームディレクトリが書き込まれず、Claude はチームメンバーをスポーンまたは提案しません。エージェントチームには、セッション再開、タスク調整、シャットダウン動作に関する[既知の制限](#limitations)があります。
-+  エージェントチームは実験的機能であり、デフォルトでは無効になっています。[settings.json](/docs/ja/settings) または環境に `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` を設定して有効にしてください。その変数がない場合、セッション開始時にチームが設定されず、チームディレクトリが書き込まれず、Claude はチームメンバーをスポーンまたは提案しません。エージェントチームには、セッション再開、タスク調整、シャットダウン動作に関する[既知の制限](#limitations)があります。
- </Warning>
- 
--エージェントチームを使用すると、複数の Claude Code インスタンスが連携して動作するように調整できます。1 つのセッションがチームリーダーとして機能し、作業を調整し、タスクを割り当て、結果を統合します。チームメンバーは独立して動作し、それぞれ独自のコンテキストウィンドウで動作し、互いに直接通信します。
-+エージェントチームを使用すると、複数の Claude Code インスタンスが連携して動作するように調整できます。1 つのセッションがチームリーダーとして機能し、作業を調整し、タスクを割り当て、結果を統合します。チームメンバーは独立して動作し、それぞれ独自のコンテキストウィンドウで動作し、互いに直接通信します。リーダーを経由せずに、任意のチームメンバーと直接対話することもできます。
- 
--[subagents](/docs/ja/sub-agents)（単一セッション内で実行され、メインエージェントにのみ報告できる）とは異なり、リーダーを経由せずに個別のチームメンバーと直接対話することもできます。
-+チームを設定する前に、より軽量なオプションで十分かどうかを確認してください。[Subagents](/docs/ja/sub-agents) は単一セッション内で動作し、[クロスセッションメッセージング](/docs/ja/cross-session-messaging) を使用すると Claude は自分で実行するセッション間で検出結果を渡すことができます。
- 
- <Note>
-@@ -36,7 +36,7 @@
- </h3>
- 
--エージェントチームと [subagents](/docs/ja/sub-agents) の両方を使用すると、作業を並列化できますが、動作方法が異なります。ワーカーが互いに通信する必要があるかどうかに基づいて選択してください。
-+エージェントチームと [subagents](/docs/ja/sub-agents) の両方を使用すると、作業を並列化できますが、動作方法が異なります。チームなしでメッセージを相互に渡す別々のセッションについては、[クロスセッションメッセージング](/docs/ja/cross-session-messaging)を参照してください。
- 
--<Frame caption="Subagents は結果をメインエージェントに報告するだけで、互いに通信することはありません。エージェントチームでは、チームメンバーがタスクリストを共有し、作業を要求し、互いに直接通信します。">
-+<Frame caption="Subagents は結果をメインエージェントに報告します。エージェントチームでは、チームメンバーがタスクリストを共有し、作業を要求し、互いに直接通信します。">
-   <img src="https://mintcdn.com/claude-code/nsvRFSDNfpSU5nT7/images/subagents-vs-agent-teams-light.png?fit=max&auto=format&n=nsvRFSDNfpSU5nT7&q=85&s=2f8db9b4f3705dd3ab931fbe2d96e42a" className="dark:hidden" alt="Subagent とエージェントチームのアーキテクチャを比較する図。Subagents はメインエージェントによって生成され、作業を実行し、結果を報告します。エージェントチームは共有タスクリストを通じて調整され、チームメンバーが互いに直接通信します。" width="4245" height="1615" data-path="images/subagents-vs-agent-teams-light.png" />
- 
-@@ -44,11 +44,11 @@
- </Frame>
-```
-
-</details>
-
-<details>
-<summary>agents-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/agents-ja.md b/docs-ja/pages/agents-ja.md
-index 929a33a..25b169f 100644
---- a/docs-ja/pages/agents-ja.md
-+++ b/docs-ja/pages/agents-ja.md
-@@ -18,7 +18,8 @@
- すべてのアプローチにおいて、ワーカーは Claude セッションです。別のツールを関与させるには、それを Claude に [MCP サーバー](/docs/ja/mcp) として公開します。
- 
--この作業をサポートする 2 つの追加ツールがありますが、エージェント自体を実行する方法ではありません。
-+この作業をサポートする 3 つの追加ツールがありますが、エージェント自体を実行する方法ではありません。
- 
- * [ワークツリー](/docs/ja/worktrees) は各セッションに個別の git チェックアウトを提供するため、並列セッションが同じファイルを編集することはありません。自分で実行するセッションに使用します。エージェントビューは、ディスパッチされた各セッションを自動的に独自のワークツリーに移動し、スポーンするサブエージェントも各々独自のワークツリーを取得できます。
-+* [クロスセッションメッセージング](/docs/ja/cross-session-messaging) により、Claude はこのマシン上、別のマシン上、または [Claude Code on the web](/docs/ja/claude-code-on-the-web) 上の他の Claude Code セッションをリストして、メッセージを送信できます。自分で実行するセッションは、検出結果とステータスを相互に渡すことができます。
- * [`/batch`](/docs/ja/commands) は、1 つの大きな変更を 5 ～ 30 個のワークツリー分離サブエージェントに分割し、各エージェントがプルリクエストを開く [skill](/docs/ja/skills) です。これはサブエージェントとワークツリーのパッケージ化された使用法であり、別の調整スタイルではありません。
- 
-@@ -26,6 +27,6 @@
- 
- * [バックグラウンド bash コマンド](/docs/ja/interactive-mode#background-bash-commands) は、会話をブロックすることなく 1 つのシェルコマンドを実行します。エージェントをスポーンしません。
--* [フォークされたサブエージェント](/docs/ja/sub-agents#fork-the-current-conversation) は、新規に開始する代わりに完全な会話コンテキストを継承するサブエージェントです。これはサブエージェントをスポーンする方法であり、別のサーフェスではありません。
--* [ルーチン](/docs/ja/routines) は、マシン上で並列に実行するのではなく、Anthropic のクラウドでスケジュールに従ってセッションを実行します。
-+* [フォークされたサブエージェント](/docs/ja/sub-agents#fork-the-current-conversation) は、新規に開始する代わりに完全な会話コンテキストを継承するサブエージェントです。これはサブエージェントをスポーンする方法であり、別のサーフェスではありません。`/subtask` で開始します。Claude は [フォークモード](/docs/ja/sub-agents#turn-fork-mode-on-or-off) がオンの場合、自身でもスポーンします。完全なセッションを、それと並行して実行する新しい [バックグラウンドセッション](/docs/ja/agent-view#from-inside-a-session) にコピーするには、`/fork` を使用します。[エージェントビューがオフ](/docs/ja/agent-view#turn-off-agent-view) の場合、フォークされたサブエージェントコマンドは `/fork` に変わり、`/subtask` は利用できません。
-+* [ルーチン](/docs/ja/routines) は、マシン上で並列に実行するのではなく、クラウドでスケジュールに従ってセッションを実行します。
- 
- <Note>
-@@ -44,5 +45,5 @@
-   * Claude がワーカーのグループを計画、割り当て、監督する場合：[エージェントチーム](/docs/ja/agent-teams)（実験的で、デフォルトでは無効）
-   * スクリプトが Claude のターンバイターン判断の代わりに計画を保持する場合：[動的ワークフロー](/docs/ja/workflows)。[ワークフローがサブエージェントとスキルとどのように比較されるか](/docs/ja/workflows#when-to-use-a-workflow)を参照してください
--* **ワーカーが互いに通信する必要があるか？** サブエージェントは結果をそれらを生成した会話に報告し、エージェントビューセッションはあなたにのみ報告します。エージェントチームのチームメイトはタスクリストを共有し、互いに直接メッセージを送信します。
-+* **ワーカーが互いに通信する必要があるか？** Claude は [クロスセッションメッセージング](/docs/ja/cross-session-messaging)を使用して、自分で実行するセッション（エージェントビューから派遣するセッションを含む）間で調査結果を渡すことができます。サブエージェントは結果をそれらを生成した会話に報告し、エージェントビューセッションはあなたにのみ報告します。エージェントチームのチームメイトは互いに直接メッセージを送信し、[Task ツールを持つ場合](/docs/ja/tools-reference#task-tool-availability)、タスクリストを共有します。
- * **タスクが同じファイルに触れるか？** [ワークツリー](/docs/ja/worktrees)で作業を分離します。サブエージェントと自分で実行するセッションは、それぞれ個別のワークツリーを使用できます。エージェントチームはチームメイトをワークツリーで分離しないため、[作業を分割](/docs/ja/agent-teams#avoid-file-conflicts)して、各チームメイトが異なるファイルセットを所有するようにします。
- 
 ```
 
 </details>

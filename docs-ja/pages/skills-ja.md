@@ -1166,6 +1166,16 @@ Claude Code はスキル名と説明のリストをコンテキストに読み�
 
 予算を増やすには、[`skillListingBudgetFraction`](/docs/ja/settings-reference#skilllistingbudgetfraction) 設定（例：`0.02` = 2%）または `SLASH_COMMAND_TOOL_CHAR_BUDGET` 環境変数を固定文字数に設定してください。他のスキルの予算を解放するには、[`skillOverrides`](#override-skill-visibility-from-settings) で低優先度のエントリを `"name-only"` に設定して、説明なしでリストされるようにしてください。また、ソースで `description` と `when_to_use` テキストをトリミングすることもできます。各エントリの結合テキストは予算に関係なく 1,536 文字でキャップされているため、主要なユースケースを最初に配置してください。キャップは [`skillListingMaxDescChars`](/docs/ja/settings-reference#skilllistingmaxdescchars) で設定可能です。
 
+<h3 id="personal-skills-disappeared">
+  個人スキルが消えた
+</h3>
+
+`~/.claude/skills/` に作成したスキルフォルダが消えている場合は、`~/.claude/skills/.trash/` を確認してください。Claude Code が [claude.ai からスキルを同期](#how-synced-skills-behave)する場合、それらは別の `synced` サブフォルダにダウンロードされ、作成したフォルダは移動または削除されません。
+
+v2.1.280 より前は、`~/.claude/skills/` に `manifest.json` という名前のファイルがあると、Claude Code はそのファイルがリストしたスキルフォルダを `~/.claude/skills/.trash/` の下のタイムスタンプ付きフォルダに移動し、それらのスキルは読み込まれなくなりました。
+
+スキルを復元するには、タイムスタンプ付きフォルダからそのフォルダを `~/.claude/skills/` に戻してください。これは [retention sweep](/docs/ja/claude-directory#cleaned-up-automatically) がゴミ箱エントリを削除する前に行ってください。デフォルトではゴミ箱に移動されてから 30 日後に削除されます。
+
 <h2 id="related-resources">
   関連リソース
 </h2>
