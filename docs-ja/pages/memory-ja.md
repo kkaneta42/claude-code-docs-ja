@@ -379,7 +379,7 @@ Claude Code は [`AGENTS.md`](/docs/ja/glossary#agents-md) をプロジェクト
 既定の動作を変更する場合（例えば、Claude に常に両方のファイルを読み込ませたい、`CLAUDE.md` のみを読み込ませたい、または組織が管理する指示のみを読み込ませたい場合）は、[**Project instructions** セッティングを変更](#choose-which-instruction-files-load) してください。
 
 <Note>
-  `AGENTS.md` を直接読み込むには Claude Code v2.1.277 以降が必要です。Amazon Bedrock 上のセッションやテレメトリが無効になっているセッションなど、一部のセッションでは Claude が [`AGENTS.md` を読み込むことができない](#when-agents-md-support-is-unavailable) ため、代わりに [`CLAUDE.md` からインポート](#share-one-file-with-other-coding-tools) してください。
+  `AGENTS.md` を直接読み込むには Claude Code v2.1.277 以降が必要です。一部のセッションでは Claude が [`AGENTS.md` を読み込むことができない](#when-agents-md-support-is-unavailable) ため、代わりに [`CLAUDE.md` からインポート](#share-one-file-with-other-coding-tools) してください。
 </Note>
 
 <h3 id="when-claude-code-reads-agents-md">
@@ -436,11 +436,10 @@ Claude が読み込むファイルを変更するには、Claude Code セッシ�
 これらのセッションでは Claude は `CLAUDE.md` ファイルのみを読み込み、**Project instructions** は `/config` セッティングパネルに表示されません。
 
 * Claude Code v2.1.277 より前のバージョンを使用している
-* セッション が Anthropic から [フィーチャーフラグをフェッチしない](/docs/ja/env-vars#features-that-need-feature-flag-fetching)（例えば Amazon Bedrock または別のサードパーティプロバイダーを使用している、またはテレメトリを無効にしている）。リンク先のセクションに完全なリストがあります
-* `AGENTS.md` サポート付きのバージョンに [インストールまたはアップグレード](/docs/ja/env-vars#first-session-after-an-install-or-upgrade) した後の最初のセッションです。次のセッションから Claude は `AGENTS.md` を読み込みます
 * 組み込み `agents-md` プラグインを `/plugin` で無効にしました
+* 一部の場合、v2.1.276 以前から [アップグレード](/docs/ja/env-vars#first-session-after-an-install-or-upgrade) した後の最初のセッションです。次のセッションから Claude は `AGENTS.md` を読み込みます
 
-これらのセッションで Claude に `AGENTS.md` を提供するには、[`CLAUDE.md` からインポート](#share-one-file-with-other-coding-tools) してください。
+v2.1.281 より前では、Amazon Bedrock 上のセッションやテレメトリが無効になっているセッションなど、一部のセッションは `CLAUDE.md` ファイルのみを読み込みます。これらのバージョンでは Claude Code を更新してください。これらのセッションのいずれかで Claude に `AGENTS.md` を提供するには、[`CLAUDE.md` からインポート](#share-one-file-with-other-coding-tools) してください。
 
 <h3 id="where-agents-md-differs-from-claude-md">
   AGENTS.md が CLAUDE.md と異なる点
@@ -637,9 +636,8 @@ CLAUDE.md のコンテンツは、システムプロンプト自体の一部で�
 リポジトリに `AGENTS.md` があり、Claude がそれが何を言っているかを知らないようである場合、通常の原因はプロジェクトパスのどこかに `CLAUDE.md` があることです。デフォルトでは、Claude は、作業ディレクトリまたはそれより上のディレクトリに `CLAUDE.md` または `CLAUDE.local.md` がない場合にのみ `AGENTS.md` を読み込みます（`~/.claude/CLAUDE.md` を除く）。以下の順序で確認します：
 
 1. 作業ディレクトリまたはそれより上のディレクトリ（`~/.claude/CLAUDE.md` を除く）で `CLAUDE.md`、`.claude/CLAUDE.md`、または `CLAUDE.local.md` を探します。見つかった場合、**Project instructions** を `claude-md-and-agents-md` に設定しない限り、Claude はそれを `AGENTS.md` の代わりに読み込みます。
-2. `claude --version` を実行し、v2.1.277 以降であることを確認します。
-3. セッションが [AGENTS.md を読み込むことができない](#when-agents-md-support-is-unavailable) セッション（サードパーティプロバイダーのセッションやテレメトリが無効なセッションなど）であるかどうかを確認します。
-4. セッションで `/config` を入力して設定パネルを開き、**Project instructions** が `claude-md` または `managed-only` に設定されていないことを確認します。そこに設定が表示されない場合、セッションは [AGENTS.md を読み込むことができない](#when-agents-md-support-is-unavailable) セッションです。
+2. `claude --version` を実行し、v2.1.277 以降であることを確認します。v2.1.281 より前では、Amazon Bedrock 上のセッションやテレメトリが無効なセッションなど、一部のセッションは [AGENTS.md を読み込むことができない](#when-agents-md-support-is-unavailable) ため、これらのバージョンでは v2.1.281 以降に更新してください。
+3. セッションで `/config` を入力して設定パネルを開き、**Project instructions** が `claude-md` または `managed-only` に設定されていないことを確認します。そこに設定が表示されない場合、セッションは [AGENTS.md を読み込むことができない](#when-agents-md-support-is-unavailable) セッションです。
 
 Claude が `AGENTS.md` を読み込んだかどうかを確認するには、`/memory` を実行し、リストでそのパスを探します。
 

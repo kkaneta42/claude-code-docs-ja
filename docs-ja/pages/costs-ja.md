@@ -407,6 +407,8 @@ Claude Code はアイドル状態でも、バックグラウンド機能にト�
 
 これらのバックグラウンドプロセスは、アクティブなインタラクションがなくても、少量のトークン（通常はセッションあたり \$0.04 未満）を消費します。
 
+プロンプト提案がオンの場合、Claude Code は Claude が応答した後、セッションが使用しているモデルに短いリクエストを送信して、[次のプロンプトを提案](/docs/ja/interactive-mode#prompt-suggestions)します。そのリクエストは会話のプロンプトキャッシュを再利用するため、ほぼキャッシュ読み取りと少数の出力トークンです。Claude Code は[アカウントが使用量制限に近い、または達している場合、提案をスキップ](/docs/ja/interactive-mode#when-claude-code-skips-suggestions)します。これらのリクエストを停止するには、[プロンプト提案をオフにしてください](/docs/ja/interactive-mode#turn-prompt-suggestions-off)。
+
 <h2 id="why-usage-climbs-in-a-long-session">
   長いセッションで使用量が増加する理由
 </h2>

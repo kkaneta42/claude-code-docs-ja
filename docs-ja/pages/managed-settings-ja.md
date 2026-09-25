@@ -95,7 +95,7 @@ Jamf、Iru、Intune、グループポリシーのスターターテンプレー�
   * **完全な VM サンドボックス内**: Claude Desktop マネージド構成が [`requireCoworkFullVmSandbox`](https://claude.com/docs/third-party/claude-desktop/configuration#requirecoworkfullvmsandbox) を設定する場合、Claude Code は仮想マシン内で実行され、デバイスの MDM ポリシーおよびマネージド設定ファイルは存在しません。
   * **リモート Cowork セッション**: これらは Anthropic 管理 VM 上で実行され、Claude Code はデバイスポリシーを読み取ることができません。
 
-  [サーフェスカバレッジ](/docs/ja/model-config#surface-coverage) テーブルは Cowork と他のサーフェスを比較しています。
+  セッションが実行される場所に関係なく、claude.ai は管理コンソールの [`strictKnownMarketplaces`](/docs/ja/settings-reference#strictknownmarketplaces) および [`blockedMarketplaces`](/docs/ja/settings-reference#blockedmarketplaces) リストを、誰かが claude.ai 上の git リポジトリからマーケットプレイスを追加するか、Cowork タブの **Customize** から追加する場合に自動的に適用します。[制限がどのように機能するか](/docs/ja/plugin-marketplaces#how-restrictions-work) はそのチェックについて説明しています。[サーフェスカバレッジ](/docs/ja/model-config#surface-coverage) テーブルは Cowork と他のサーフェスを比較しています。
 * **実行中のセッション**: ほとんどの変更は、[配信メカニズムテーブル](#choose-a-delivery-mechanism) のスケジュールに従って、再起動なしで実行中のセッションに到達します。
   * [`forceRemoteSettingsRefresh`](/docs/ja/settings-reference#forceremotesettingsrefresh)、[`requiredMinimumVersion`](/docs/ja/settings-reference#requiredminimumversion)、および [いくつかのユーザー編集可能キー](/docs/ja/settings#when-edits-take-effect) への変更は、次のセッション開始時に有効になります。
   * 新規または変更された [`policyHelper`](/docs/ja/settings-reference#policyhelper) エントリは次の起動時に有効になります。ただし、起動時にサーバーマネージド設定によってシャドウされたヘルパーは、フェッチがそれらの設定が削除されたことを報告するとすぐに実行されます。

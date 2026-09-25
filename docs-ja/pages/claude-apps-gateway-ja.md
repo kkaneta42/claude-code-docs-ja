@@ -448,11 +448,13 @@ hooks ロックと `allowManagedPermissionRulesOnly` の開発者独自のルー
   ロックがカバーしない設定
 </h4>
 
-5 つのロックすべてが設定されていても、4 つの親が提供した設定がフィルターを通過します。デフォルトの最初の勝ちの設定の下で、親をブロックする管理値は最優先の管理ソースにあるものです。ただし、[MCP サーバーロック](#lock-behavior-across-sources)がオンの間は `allowedMcpServers` を除きます。`managedSourcesBehavior` マージオプトインの下で、[Claude Code が管理ソースを組み合わせる方法](/docs/ja/managed-settings#how-claude-code-combines-managed-sources)は代わりにどのソースの値が適用されるかを示します。
+5 つのロックすべてが設定されていても、6 つの親が提供した設定がフィルターを通過します。デフォルトの最初の勝ちの設定の下で、親をブロックする管理値は最優先の管理ソースにあるものです。ただし、[MCP サーバーロック](#lock-behavior-across-sources)がオンの間は `allowedMcpServers` を除きます。`managedSourcesBehavior` マージオプトインの下で、[Claude Code が管理ソースを組み合わせる方法](/docs/ja/managed-settings#how-claude-code-combines-managed-sources)は代わりにどのソースの値が適用されるかを示します。
 
 * **`forceLoginOrgUUID`**：最優先の管理ソースが組織 UUID を設定しない場合、Claude Code は親が提供した値を尊重します。ゲートウェイサインインはこのキーをチェックしないため、最初の当事者 Anthropic ログインも使用するフリートにのみ重要です。最優先の管理ソースの組織 UUID は親の値をブロックし、Claude Code が強制するものです。そこに `forceLoginOrgUUID` を設定します。
 * **`allowedMcpServers`**：最優先の管理ソースが設定しない場合、Claude Code は親が提供した許可リストを尊重します。`allowManagedMcpServersOnly` はそれをブロックしません。ロックは勝者の許可リストを管理値として強制するため、最優先の管理ソースが設定しない場合は親が提供した許可リストを含みます。最優先の管理ソースのリストは親のリストをブロックし、Claude Code が強制するリストです。ロックの隣にそこに `allowedMcpServers` を設定します。v2.1.223 より前では、任意の管理ソースのいずれかのキーの値は親のリストをブロックしました。
 * **`availableModels`**：勝者の管理ソースが設定しない場合、Claude Code は親が提供したモデルリストを尊重します。フリートがモデルを制限する場合、勝者ソースに `availableModels` を設定します。
+* **`strictKnownMarketplaces`**：勝者の管理ソースが設定しない場合、Claude Code は親が提供したプラグインマーケットプレイス許可リストを尊重します。フリートがマーケットプレイスを制限する場合、勝者ソースに `strictKnownMarketplaces` を設定します。Claude Code v2.1.282 以降が必要です。
+* **`blockedMarketplaces`**：親が提供したマーケットプレイスブロックリストは通過し、管理ソースが設定するブロックリストに追加されます。ブロックリストはさらに制限することのみができるためです。Claude Code v2.1.282 以降が必要です。
 * **`strictPluginOnlyCustomization`**：このキーはロックに関係なくフィルターを通過し、Claude Code が開発者独自のカスタマイズ（保護フックを含む）を無視するようにします。ロックはそれをブロックしません。
 
 <h3 id="connect-claude-desktop">
