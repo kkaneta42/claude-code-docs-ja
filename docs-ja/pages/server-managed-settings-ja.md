@@ -249,7 +249,7 @@ Claude Code はほとんどの設定更新を実行中のセッションに再�
 }
 ```
 
-[エンドポイント管理](/docs/ja/managed-settings#delivery-mechanisms)MDM プロファイルまたはシステム `managed-settings.json` ファイルでこのキーを設定して、最初の起動時にクローズされた失敗動作を適用することもできます。サーバーペイロードが配信される前です。Claude Code v2.1.191 以降では、このフラグは上記の[優先順位ルール](#settings-precedence)の例外です。Claude Code は、キャッシュされたサーバー管理ペイロードも存在する場合でも、管理者が管理する管理ソースがそれを設定する場合にそれを尊重するため、MDM 配信値はサーバー管理設定が存在する場合は無視されません。
+[エンドポイント管理](/docs/ja/managed-settings#delivery-mechanisms)MDM プロファイルまたはシステム `managed-settings.json` ファイルでこのキーを設定して、最初の起動時にクローズされた失敗動作を適用することもできます。サーバーペイロードが配信される前です。このフラグは上記の[優先順位ルール](#settings-precedence)の例外です。Claude Code は、キャッシュされたサーバー管理ペイロードも存在する場合でも、管理者が管理する管理ソースがそれを設定する場合にそれを尊重するため、MDM 配信値はサーバー管理設定が存在する場合は無視されません。
 
 [`policyHelper`](/docs/ja/settings-reference#policyhelper) が管理設定を提供する場合、その出力は起動後に Claude Code が読み取るキーのすべての他の管理ソースを置き換えます。Claude Code がこのキーを読み取るソースについては、[その設定エントリ](/docs/ja/settings-reference#forceremotesettingsrefresh)を参照してください。`policyHelper` エントリは、Claude Code がヘルパーを読み取るソースと実行時期を説明しています。
 
@@ -338,7 +338,7 @@ Claude Code は、配信値によって [`API_FORCE_IDLE_TIMEOUT`](/docs/ja/env-
 
 [`apiKeyHelper`](/docs/ja/settings-reference#apikeyhelper) スクリプトによって返されたキーも [Workload Identity Federation](https://platform.claude.com/docs/en/manage-claude/workload-identity-federation) 認証情報も設定フェッチをトリガーしません。
 
-Claude Desktop アプリの [Cowork](https://claude.com/docs/cowork/overview) セッションでは、ユーザーが Team または Enterprise アカウントでサインインしている場合でも、Claude Code は claude.ai 管理コンソールからサーバー管理設定をフェッチしません。[ポリシーが適用される場所と時期](/docs/ja/managed-settings#where-and-when-a-policy-applies) では、ユーザーのマシン上の Cowork セッションとリモート Cowork セッションにどのポリシーが適用されるかについて説明しています。claude.ai は、Cowork ユーザーが claude.ai の git リポジトリからマーケットプレイスを追加するか、Cowork タブの **Customize** から追加する場合、[`strictKnownMarketplaces`](/docs/ja/settings-reference#strictknownmarketplaces) および [`blockedMarketplaces`](/docs/ja/settings-reference#blockedmarketplaces) リストを自身で適用します。[制限がどのように機能するか](/docs/ja/plugin-marketplaces#how-restrictions-work) がそのチェックについて説明しています。
+Claude Desktop アプリの [Cowork](https://claude.com/docs/cowork/overview) セッションでは、ユーザーが Team または Enterprise アカウントでサインインしている場合でも、Claude Code は claude.ai 管理コンソールからサーバー管理設定をフェッチしません。[ポリシーが適用される場所と時期](/docs/ja/managed-settings#where-and-when-a-policy-applies) では、ユーザーのマシン上の Cowork セッションとリモート Cowork セッションにどのポリシーが適用されるかについて説明しています。claude.ai は、Cowork ユーザーが claude.ai の git リポジトリからマーケットプレイスを追加するか、Cowork タブの **Customize** から追加する場合、[`strictKnownMarketplaces`](/docs/ja/settings-reference#strictknownmarketplaces) および [`blockedMarketplaces`](/docs/ja/settings-reference#blockedmarketplaces) リストを自身で適用します。[制限がどのように機能するか](/docs/ja/plugins/org#restrict-what-users-can-install) がそのチェックについて説明しています。
 
 シェルで `CLAUDE_CODE_USE_*` プロバイダー変数またはデフォルト以外の `ANTHROPIC_BASE_URL` をエクスポートする場合、Claude Code はセッションの設定フェッチをスキップします。[`claude doctor` と `/status` はスキップされたフェッチとその原因を報告します](#verify-settings-delivery)。
 

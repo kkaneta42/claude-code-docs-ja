@@ -242,7 +242,7 @@ SSO 認証情報がセッション中に期限切れになった場合、[`awsAu
 
 Claude Code は起動時にこのコマンドを実行して既存の AWS 認証情報を検証できない場合も実行し、ログインが完了するまで `Authentication` パネルにコマンドの出力を表示します。
 
-`awsAuthRefresh` が設定されている場合、`/login` を実行し、**3rd-party platform** を選択してから、**Using 3rd-party platforms** の下で **Claude Platform on AWS · refresh credentials** を選択します。Claude Code は設定されたコマンドを実行し、再起動せずに AWS 認証情報を再度読み込みます。このオプションには Claude Code v2.1.186 以降が必要です。
+`awsAuthRefresh` が設定されている場合、`/login` を実行し、**3rd-party platform** を選択してから、**Using 3rd-party platforms** の下で **Claude Platform on AWS · refresh credentials** を選択します。Claude Code は設定されたコマンドを実行し、再起動せずに AWS 認証情報を再度読み込みます。
 
 **オプション B: ワークスペース API キー**
 

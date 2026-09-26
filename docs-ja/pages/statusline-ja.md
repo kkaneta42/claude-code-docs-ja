@@ -1140,7 +1140,7 @@ PowerShell スクリプトをステータスラインとして実行するには
 
 オーバーライドしたい各行に対して stdout に 1 つの JSON 行を書き込みます。形式は `{"id": "<task id>", "content": "<row body>"}` です。`content` 文字列はそのままレンダリングされます。ANSI 色と OSC 8 ハイパーリンクを含みます。タスクの `id` を省略して、その行のデフォルトレンダリングを保持します。空の `content` 文字列を出力して、その行を非表示にします。
 
-`statusLine` に適用される同じトラストと `disableAllHooks` および [`allowManagedHooksOnly`](/docs/ja/settings-reference#allowmanagedhooksonly) ゲートが `subagentStatusLine` に適用されます。プラグインは、[`settings.json`](/docs/ja/plugins-reference#standard-plugin-layout) でデフォルトの `subagentStatusLine` を配布できます。ただし、フックとは異なり、プラグインが管理設定で強制的に有効化されている場合でも、プラグイン値は `allowManagedHooksOnly` の下で実行されません。
+`statusLine` に適用される同じトラストと `disableAllHooks` および [`allowManagedHooksOnly`](/docs/ja/settings-reference#allowmanagedhooksonly) ゲートが `subagentStatusLine` に適用されます。プラグインは、[`settings.json`](/docs/ja/plugins/manifest-reference#standard-layout) でデフォルトの `subagentStatusLine` を配布できます。ただし、フックとは異なり、プラグインが管理設定で強制的に有効化されている場合でも、プラグイン値は `allowManagedHooksOnly` の下で実行されません。
 
 <h2 id="tips">
   ヒント

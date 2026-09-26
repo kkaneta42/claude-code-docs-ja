@@ -135,7 +135,7 @@ MCP 設定を編集しても、それ自体ではキャッシュは変わりま�
   プラグインの有効化または無効化
 </h3>
 
-[プラグイン](/docs/ja/plugins)を有効または無効にする場合、変更のコストはプラグインが提供するコンポーネントタイプによって異なります。以下のケースは、各コンポーネントタイプ、Claude Code が変更を適用するタイミング、および同じセッション内でプラグインを再度無効にする場合の動作をカバーしています。
+[プラグイン](/docs/ja/plugins/overview)を有効または無効にする場合、変更のコストはプラグインが提供するコンポーネントタイプによって異なります。以下のケースは、各コンポーネントタイプ、Claude Code が変更を適用するタイミング、および同じセッション内でプラグインを再度無効にする場合の動作をカバーしています。
 
 <h4 id="plugin-components-that-keep-the-cache">
   キャッシュを保持するプラグインコンポーネント
@@ -147,7 +147,7 @@ Claude Code は、プラグインのスキル、コマンド、エージェン�
   MCP サーバーを提供するプラグイン
 </h4>
 
-[MCP サーバー](/docs/ja/plugins-reference#mcp-servers)を提供するプラグインを有効または無効にする場合、Claude Code は[MCP サーバーを接続または切断する](#connecting-or-disconnecting-an-mcp-server)場合と同じルールに従います。
+[MCP サーバー](/docs/ja/plugins/components#mcp-servers)を提供するプラグインを有効または無効にする場合、Claude Code は[MCP サーバーを接続または切断する](#connecting-or-disconnecting-an-mcp-server)場合と同じルールに従います。
 
 * Claude Code がサーバーのツールを遅延させる場合、キャッシュを保持します。
 * Claude Code がそれらをプレフィックスに読み込む場合、次のリクエストは会話全体を再読み込みします。
@@ -156,24 +156,24 @@ Claude Code は、プラグインのスキル、コマンド、エージェン�
   コード インテリジェンス プラグイン
 </h4>
 
-[コード インテリジェンス プラグイン](/docs/ja/discover-plugins#code-intelligence)を有効にすると、Claude は[LSP ツール](/docs/ja/tools-reference#lsp-tool-behavior)を取得します。
+[コード インテリジェンス プラグイン](/docs/ja/plugins/code-intelligence)を有効にすると、Claude は[LSP ツール](/docs/ja/tools-reference#lsp-tool-behavior)を取得します。
 
 <h4 id="when-plugin-changes-apply">
   プラグイン変更が適用される場合
 </h4>
 
-`/plugin` メニューで行った変更は、[`/reload-plugins`](/docs/ja/discover-plugins#apply-plugin-changes-without-restarting)を通じて行われます。Claude Code はメニューを閉じるときにこれを実行します。追加されたアナウンスメントまたは完全な再読み込みのいずれかのコストを、変更が適用された後の最初のターンで支払います。Claude Code は変更を独自に適用することもできます。
+`/plugin` メニューで行った変更は、[`/reload-plugins`](/docs/ja/plugins/cli-reference#reload-plugins)を通じて行われます。Claude Code はメニューを閉じるときにこれを実行します。追加されたアナウンスメントまたは完全な再読み込みのいずれかのコストを、変更が適用された後の最初のターンで支払います。Claude Code は変更を独自に適用することもできます。
 
-* `command` ソースを持つプラグインの場合、Claude Code は[プラグイン自体を再読み込みできます](/docs/ja/plugin-marketplaces#when-claude-code-re-runs-the-command)。
-* [`/plugin` インターフェースからプラグインをインストール](/docs/ja/discover-plugins#install-plugins)する場合、Claude Code はインストール中にそれを有効化できます。インストール概要は、それが行われたかどうかを示します。
+* `command` ソースを持つプラグインの場合、Claude Code は[プラグイン自体を再読み込みできます](/docs/ja/plugins/loading#when-a-command-source-re-runs)。
+* [`/plugin` インターフェースからプラグインをインストール](/docs/ja/plugins/install#install-a-plugin)する場合、Claude Code はインストール中にそれを有効化できます。インストール概要は、それが行われたかどうかを示します。
 * v2.1.246 以降で [`/cd`](/docs/ja/permissions#move-the-session-to-another-directory)でセッションを移動する場合、Claude Code は新しいディレクトリの設定が有効にするプラグインを移動の一部として適用します。`/reload-plugins` が保持する完全な再読み込み警告なしで。
-* インタラクティブセッションでは、`--plugin-dir` で渡した[プラグインのフォルダ](/docs/ja/plugins#test-your-plugins-locally)でプラグインを追加または削除する場合、変更は直ちに適用されます。それを適用すると完全な再読み込みがトリガーされる場合、Claude Code は変更を保持し、`/reload-plugins` を実行するための通知を表示します。Claude Code v2.1.265 以降が必要です。
+* インタラクティブセッションでは、`--plugin-dir` で渡した[プラグインのフォルダ](/docs/ja/plugins/create#load-a-directory-or-archive-for-one-session)でプラグインを追加または削除する場合、変更は直ちに適用されます。それを適用すると完全な再読み込みがトリガーされる場合、Claude Code は変更を保持し、`/reload-plugins` を実行するための通知を表示します。Claude Code v2.1.265 以降が必要です。
 
 `/reload-plugins` が実行され、再読み込みが完全な再読み込みをトリガーする場合、Claude Code は警告を表示し、再読み込みを適用しません。`/reload-plugins --force` を実行して、とにかくそれを適用します。
 
 `/reload-plugins` は、デスクトップアプリ、Agent SDK、および [`-p` を使用した非インタラクティブモード](/docs/ja/headless)など、インタラクティブターミナルのないセッションでも実行されます。セッションに直接入力する場合です。Claude Code v2.1.260 以降が必要です。
 
-これらのセッションでは、再読み込みはプラグイン MCP サーバーの変更を除くすべてを適用します。これらは[次のセッションで有効になり](/docs/ja/discover-plugins#apply-plugin-changes-without-restarting)、セッション中に完全な再読み込みのコストは決してかかりません。
+これらのセッションでは、再読み込みはプラグイン MCP サーバーの変更を除くすべてを適用します。これらは[次のセッションで有効になり](/docs/ja/plugins/cli-reference#reload-plugins)、セッション中に完全な再読み込みのコストは決してかかりません。
 
 <h4 id="plugins-you-enable-and-then-disable-in-one-session">
   セッション内で有効化してから無効化するプラグイン

@@ -239,7 +239,7 @@ v2.1.216 より前は、Claude Code はリンクをたどり、選択した場�
   プラグインでワークフローを配布する
 </h3>
 
-チーム間またはリポジトリ間でワークフローを共有するには、[プラグイン](/docs/ja/plugins)に含めます。スクリプトをプラグインルートの `workflows/` ディレクトリに配置するか、[`workflows` マニフェストフィールド](/docs/ja/plugins-reference#component-path-fields)で別の場所を指します。
+チーム間またはリポジトリ間でワークフローを共有するには、[プラグイン](/docs/ja/plugins/overview)に含めます。スクリプトをプラグインルートの `workflows/` ディレクトリに配置するか、[`workflows` マニフェストフィールド](/docs/ja/plugins/manifest-reference#fields)で別の場所を指します。
 
 プラグインワークフローはプラグイン名でネームスペースされます。`meta.name` が `release-audit` のスクリプトを含む `acme-tools` というプラグインは `/acme-tools:release-audit` として実行されます。
 

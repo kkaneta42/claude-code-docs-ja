@@ -191,7 +191,7 @@ claude --dangerously-load-development-channels plugin:yourplugin@yourmarketplace
 claude --dangerously-load-development-channels server:webhook
 ```
 
-バイパスはエントリごとです。このフラグを `--channels` と組み合わせても、バイパスは `--channels` エントリに拡張されません。リサーチプレビュー中、承認許可リストは Anthropic がキュレーションしているため、チャネルは構築とテスト中は開発フラグに留まります。
+バイパスはエントリごとです。このフラグを `--channels` と組み合わせても、バイパスは `--channels` エントリに拡張されません。リサーチプレビュー中、あなたのチャネルは承認許可リストにないため、構築とテスト中は開発フラグに留まります。
 
 <Note>
   このフラグは許可リストのみをスキップします。`channelsEnabled` 組織ポリシーは引き続き適用されます。信頼できないソースからチャネルを実行するために使用しないでください。
@@ -801,9 +801,9 @@ curl -d "yes <id>" -H "X-Sender: dev" localhost:8788
   プラグインとしてパッケージ化
 </h2>
 
-チャネルをインストール可能で共有可能にするには、[プラグイン](/docs/ja/plugins)でラップして[マーケットプレイス](/docs/ja/plugin-marketplaces)に公開します。ユーザーは `/plugin install` でインストールし、`--channels plugin:<name>@<marketplace>` でセッションごとに有効化します。
+チャネルをインストール可能で共有可能にするには、[プラグイン](/docs/ja/plugins/overview)でラップして[マーケットプレイス](/docs/ja/plugins/overview)に公開します。ユーザーは `/plugin install` でインストールし、`--channels plugin:<name>@<marketplace>` でセッションごとに有効化します。
 
-独自のマーケットプレイスに公開されたチャネルは、[承認許可リスト](/docs/ja/channels#supported-channels)にないため、実行するには `--dangerously-load-development-channels` が必要です。デフォルトの許可リストは `claude-plugins-official` のチャネルプラグインで、Anthropic がその裁量で管理しています。[アプリ内送信フォーム](/docs/ja/plugins#submit-your-plugin-to-the-community-marketplace)はプラグインをコミュニティマーケットプレイスに追加しますが、これはチャネル許可リストにはありません。
+独自のマーケットプレイスに公開されたチャネルは、[承認許可リスト](/docs/ja/channels#supported-channels)にないため、実行するには `--dangerously-load-development-channels` が必要です。デフォルトの許可リストは `claude-plugins-official` のチャネルプラグインです。[アプリ内送信フォーム](/docs/ja/plugins/publish#submit-to-the-community-marketplace)はプラグインをコミュニティマーケットプレイスに追加しますが、これはチャネル許可リストにはありません。
 
 Anthropic パートナー連絡先と協力している場合は、公式マーケットプレイスリストを調整するために彼らに連絡してください。Team および Enterprise プランでは、管理者は代わりにプラグインを組織の独自の [`allowedChannelPlugins`](/docs/ja/channels#restrict-which-channel-plugins-can-run) リストに含めることができます。これはデフォルトの Anthropic 許可リストを置き換えます。
 
@@ -814,4 +814,4 @@ Anthropic パートナー連絡先と協力している場合は、公式マー�
 * [チャネル](/docs/ja/channels)：Telegram、Discord、iMessage、または fakechat デモをインストールして使用し、Team または Enterprise 組織のチャネルを有効化
 * [チャネル実装の動作](https://github.com/anthropics/claude-plugins-official/tree/main/external_plugins)：ペアリングフロー、返信ツール、ファイル添付を含む完全なサーバーコード
 * [MCP](/docs/ja/mcp)：チャネルサーバーが実装する基礎となるプロトコル
-* [プラグイン](/docs/ja/plugins)：チャネルをパッケージ化して、ユーザーが `/plugin install` でインストールできるようにする
+* [プラグイン](/docs/ja/plugins/overview)：チャネルをパッケージ化して、ユーザーが `/plugin install` でインストールできるようにする

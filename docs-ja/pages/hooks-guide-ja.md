@@ -10,7 +10,7 @@ Hooks はユーザー定義のシェルコマンドです。Claude Code はそ�
 
 判断が必要な決定については、決定論的なルールではなく、Claude モデルを使用して条件を評価する [プロンプトベースの hooks](#prompt-based-hooks) または [エージェントベースの hooks](#agent-based-hooks) を使用することもできます。
 
-Claude Code を拡張する他の方法については、Claude に追加の指示と実行可能なコマンドを与えるための [skills](/docs/ja/skills)、分離されたコンテキストでタスクを実行するための [subagents](/docs/ja/sub-agents)、プロジェクト全体で共有する拡張機能をパッケージ化するための [plugins](/docs/ja/plugins) を参照してください。
+Claude Code を拡張する他の方法については、Claude に追加の指示と実行可能なコマンドを与えるための [skills](/docs/ja/skills)、分離されたコンテキストでタスクを実行するための [subagents](/docs/ja/sub-agents)、プロジェクト全体で共有する拡張機能をパッケージ化するための [plugins](/docs/ja/plugins/overview) を参照してください。
 
 <Tip>
   このガイドでは一般的なユースケースと始め方をカバーしています。完全なイベントスキーマ、JSON 入力/出力形式、非同期 hooks や MCP ツール hooks などの高度な機能については、[Hooks リファレンス](/docs/ja/hooks) を参照してください。
@@ -710,7 +710,7 @@ exit 0  # exit 0 = 決定なし。通常の許可フローが適用されます
 }
 ```
 
-`"Edit|Write"` マッチャーは `Edit` または `Write` ツール呼び出しでのみ発火し、`Bash`、`Read`、または他のツールでは発火しません。Claude Code v2.1.191 以降では、カンマもまた同じ方法で代替を区切るため、`"Edit, Write"` は同等です。[マッチャーパターン](/docs/ja/hooks#matcher-patterns) を参照して、プレーン名と正規表現がどのように評価されるかを確認してください。
+`"Edit|Write"` マッチャーは `Edit` または `Write` ツール呼び出しでのみ発火し、`Bash`、`Read`、または他のツールでは発火しません。カンマもまた同じ方法で代替を区切るため、`"Edit, Write"` は同等です。[マッチャーパターン](/docs/ja/hooks#matcher-patterns) を参照して、プレーン名と正規表現がどのように評価されるかを確認してください。
 
 <Note>
   Claude はまた、シェルコマンドを実行することでファイルを作成または変更できます。コンプライアンススキャンまたは監査ログなど、hook がすべてのファイル変更を確認する必要がある場合は、ターンごとに 1 回作業ツリーをスキャンする [`Stop`](/docs/ja/hooks#stop) hook を追加してください。呼び出しごとのカバレッジの場合は、`Bash|PowerShell` もマッチさせ、スクリプトで `git status --porcelain` を使用して変更されたファイルと追跡されていないファイルをリストアップしてください。[PowerShell hook 入力セクション](/docs/ja/hooks#powershell) は、`Bash` だけをマッチさせるのが十分でない理由を説明しています。ディスク上の特定のファイルが変更されたときに hook を実行するには、それを書き込んだものが何であれ、[FileChanged](/docs/ja/hooks#filechanged) hook を使用してください。
@@ -860,15 +860,15 @@ Claude Code がどのコマンドが Bash 入力を実行するかを判断で�
 
 Hook を追加する場所がそのスコープを決定します：
 
-| 場所                                       | スコープ                                                                                      | 共有可能               |
-| :--------------------------------------- | :---------------------------------------------------------------------------------------- | :----------------- |
-| `~/.claude/settings.json`                | すべてのプロジェクト                                                                                | いいえ、マシンにローカル       |
-| `.claude/settings.json`                  | 単一プロジェクト                                                                                  | はい、リポジトリにコミット可能    |
-| `.claude/settings.local.json`            | 単一プロジェクト                                                                                  | いいえ、gitignored     |
-| 管理ポリシー設定                                 | 組織全体                                                                                      | はい、管理者制御           |
-| [Plugin](/docs/ja/plugins) `hooks/hooks.json` | プラグインが有効なとき                                                                               | はい、プラグインにバンドル      |
-| [Skill](/docs/ja/skills) frontmatter          | スキルが呼び出されたら、セッションの残り。[スキルとエージェントの Hooks](/docs/ja/hooks#hooks-in-skills-and-agents) を参照してください。 | はい、スキルファイルで定義      |
-| [Subagent](/docs/ja/sub-agents) frontmatter   | そのサブエージェントが実行されている間                                                                       | はい、サブエージェントファイルで定義 |
+| 場所                                                | スコープ                                                                                      | 共有可能               |
+| :------------------------------------------------ | :---------------------------------------------------------------------------------------- | :----------------- |
+| `~/.claude/settings.json`                         | すべてのプロジェクト                                                                                | いいえ、マシンにローカル       |
+| `.claude/settings.json`                           | 単一プロジェクト                                                                                  | はい、リポジトリにコミット可能    |
+| `.claude/settings.local.json`                     | 単一プロジェクト                                                                                  | いいえ、gitignored     |
+| 管理ポリシー設定                                          | 組織全体                                                                                      | はい、管理者制御           |
+| [Plugin](/docs/ja/plugins/overview) `hooks/hooks.json` | プラグインが有効なとき                                                                               | はい、プラグインにバンドル      |
+| [Skill](/docs/ja/skills) frontmatter                   | スキルが呼び出されたら、セッションの残り。[スキルとエージェントの Hooks](/docs/ja/hooks#hooks-in-skills-and-agents) を参照してください。 | はい、スキルファイルで定義      |
+| [Subagent](/docs/ja/sub-agents) frontmatter            | そのサブエージェントが実行されている間                                                                       | はい、サブエージェントファイルで定義 |
 
 Claude Code で [`/hooks`](/docs/ja/hooks#the-%2Fhooks-menu) を実行して、イベント別にグループ化されたすべての設定済み hooks を参照します。
 

@@ -32,7 +32,7 @@ Claude Code CLI とローカルで実行されるすべてのものは、すべ�
 * [CLI](/docs/ja/quickstart) と [Agent SDK](/docs/ja/agent-sdk/overview)
 * [VS Code](/docs/ja/vs-code) と [JetBrains](/docs/ja/jetbrains) 拡張機能
 * [Subagents](/docs/ja/sub-agents)、[hooks](/docs/ja/hooks-guide)、[commands](/docs/ja/commands)、および [skills](/docs/ja/skills)
-* [CLAUDE.md メモリ](/docs/ja/memory)、[plugins](/docs/ja/plugins)、および [MCP サーバー](/docs/ja/mcp)
+* [CLAUDE.md メモリ](/docs/ja/memory)、[plugins](/docs/ja/plugins/overview)、および [MCP サーバー](/docs/ja/mcp)
 * [Checkpoints](/docs/ja/checkpointing)、[sandboxing](/docs/ja/sandboxing)、および [Workflows](/docs/ja/workflows)
 * [OpenTelemetry メトリクス](/docs/ja/monitoring-usage) と [管理設定ファイル](/docs/ja/managed-settings#delivery-mechanisms)
 

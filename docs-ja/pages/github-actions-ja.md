@@ -50,7 +50,7 @@ Claude Code はその後、選択したワークフローファイルを含む�
 * `/install-github-app` を再度実行します。リポジトリに既に `claude.yml` がある場合は、**Update workflow file with latest version** を選択します。Claude Code は新しいブランチにワークフローファイルの新しいコピーをプッシュし、最初のインストールと同じようにプルリクエストを開きます。
 * [レビューワークフロー例](#run-a-skill)から `--comment` 引数と `claude_args` 行をチェックインファイルに自分で追加します。これにより、他の編集は保持されます。
 
-GitHub App をインストールした後、Claude Code は GitHub Actions セットアップを続行するかどうかを尋ねます。**Skip for now** を選択して、GitHub App のインストールのみで停止します。後で `/install-github-app` を再度実行してワークフローとシークレットのステップを完了します。v2.1.187 より前では、Claude Code はワークフロー選択に直接進みました。
+GitHub App をインストールした後、Claude Code は GitHub Actions セットアップを続行するかどうかを尋ねます。**Skip for now** を選択して、GitHub App のインストールのみで停止します。後で `/install-github-app` を再度実行してワークフローとシークレットのステップを完了します。
 
 <Note>
   * GitHub App をインストールすると、複数の権限を付与します。完全なセットについては [GitHub App 権限](#github-app-permissions) を参照してください
@@ -237,7 +237,7 @@ Claude は同じイシューまたは PR のコメントで応答し、作業中
 `prompt` 入力は、プレーンテキストだけでなく [スキル](/docs/ja/skills) 呼び出しも受け入れます。
 
 * リポジトリの `.claude/skills/` ディレクトリ内のスキルの場合、`anthropics/claude-code-action` ステップの前に `actions/checkout` を実行してスキルファイルをランナーで利用可能にし、`/skill-name` を `prompt` として渡します。
-* [プラグイン](/docs/ja/plugins) にパッケージされたスキルの場合、`plugin_marketplaces` と `plugins` 入力でプラグインをインストールし、名前空間付きの `/plugin-name:skill-name` を `prompt` として渡します。`plugins` 入力は `plugin-name@marketplace-name` を取ります。マーケットプレイス名はマーケットプレイスのリポジトリ URL ではなく、マーケットプレイス自体のマニフェストから取得されます。
+* [plugin](/docs/ja/plugins/overview) にパッケージされたスキルの場合、`plugin_marketplaces` と `plugins` 入力でプラグインをインストールし、名前空間付きの `/plugin-name:skill-name` を `prompt` として渡します。`plugins` 入力は `plugin-name@marketplace-name` を取ります。マーケットプレイス名はマーケットプレイスのリポジトリ URL ではなく、マーケットプレイス自体のマニフェストから取得されます。
 
 次のワークフローは `code-review` プラグインをインストールし、プルリクエストが開かれた、更新された、レビュー準備完了、または再度開かれたときにそのスキルを実行します。クイックセットアップからのレビューワークフローと同じプラグインを実行します。プロンプト、モデル、トリガーを自分で制御したい場合は、このようなワークフローを使用します。ワークフローファイルを維持せずに自動レビューするには、[Code Review](/docs/ja/code-review) を参照してください。パブリックリポジトリでは、GitHub はフォークプルリクエストでトリガーされた実行からシークレットを保留するため、レビューは同じリポジトリ内のブランチからのプルリクエストでのみ実行されます。
 

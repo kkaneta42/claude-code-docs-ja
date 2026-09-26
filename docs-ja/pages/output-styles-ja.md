@@ -171,7 +171,7 @@ VS Code 拡張機能では、手書きではなく [**Output styles** メニュ�
   </Step>
 </Steps>
 
-[プラグイン](/docs/ja/plugins-reference) は `output-styles/` ディレクトリで出力スタイルを配布することもできます。
+[プラグイン](/docs/ja/plugins/manifest-reference) は `output-styles/` ディレクトリで出力スタイルを配布することもできます。
 
 <h3 id="frontmatter">
   Frontmatter リファレンス
@@ -228,5 +228,5 @@ VS Code 拡張機能では、手書きではなく [**Output styles** メニュ�
 
 * [設定](/docs/ja/settings): `outputStyle` フィールドが存在する場所と設定の優先順位の仕組み
 * [権限モード](/docs/ja/permission-modes): Proactive スタイルがオートモードとどのように比較されるか
-* [プラグイン](/docs/ja/plugins): スキル、フック、エージェントと一緒に出力スタイルをパッケージ化して配布する
+* [プラグイン](/docs/ja/plugins/overview): スキル、フック、エージェントと一緒に出力スタイルをパッケージ化して配布する
 * [設定をデバッグする](/docs/ja/debug-your-config): 出力スタイルが有効にならない理由を診断する

@@ -331,7 +331,7 @@ VS Code 設定（Mac では `Cmd+,`、Windows/Linux では `Ctrl+,`）を開き�
   プラグインを管理する
 </h2>
 
-VS Code 拡張機能には、[プラグイン](/docs/ja/plugins)をインストールおよび管理するためのグラフィカルインターフェイスが含まれています。プロンプトボックスに `/plugins` と入力して、**プラグインを管理**インターフェイスを開きます。
+VS Code 拡張機能には、[プラグイン](/docs/ja/plugins/overview)をインストールおよび管理するためのグラフィカルインターフェイスが含まれています。プロンプトボックスに `/plugins` と入力して、**プラグインを管理**インターフェイスを開きます。
 
 <h3 id="install-plugins">
   プラグインをインストールする
@@ -394,7 +394,7 @@ GitHub README、issue、およびその他の Markdown ホストの一部は、�
   VS Code のプラグイン管理は、内部的に同じ CLI コマンドを使用しています。拡張機能で設定したプラグインとマーケットプレイスは CLI でも利用でき、その逆も同様です。
 </Note>
 
-プラグインシステムの詳細については、[プラグイン](/docs/ja/plugins)および[プラグインマーケットプレイス](/docs/ja/plugin-marketplaces)を参照してください。
+プラグインシステムの詳細については、[プラグイン](/docs/ja/plugins/overview)および[プラグインマーケットプレイス](/docs/ja/plugins/overview)を参照してください。
 
 <h2 id="automate-browser-tasks-with-chrome">
   Chrome でブラウザタスクを自動化する

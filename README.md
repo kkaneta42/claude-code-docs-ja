@@ -17,6 +17,306 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-09-26</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/admin-setup-ja.md                |  40 ++--
+ docs-ja/pages/agent-teams-ja.md                |   2 +-
+ docs-ja/pages/agents-ja.md                     |   2 +-
+ docs-ja/pages/amazon-bedrock-ja.md             |   9 +-
+ docs-ja/pages/best-practices-ja.md             |  14 +-
+ docs-ja/pages/changelog.md                     | 100 ++++++++-
+ docs-ja/pages/channels-ja.md                   |  26 +--
+ docs-ja/pages/channels-reference-ja.md         |   8 +-
+ docs-ja/pages/checkpointing-ja.md              |   2 +-
+ docs-ja/pages/claude-apps-gateway-deploy-ja.md |   2 +-
+ docs-ja/pages/claude-code-on-the-web-ja.md     |  14 +-
+ docs-ja/pages/claude-directory-ja.md           |  52 ++---
+ docs-ja/pages/claude-platform-on-aws-ja.md     |   2 +-
+ docs-ja/pages/claude-projects-ja.md            | 208 +++++++++---------
+ docs-ja/pages/claude-security-ja.md            |  20 +-
+ docs-ja/pages/claude-tag-ja.md                 |  12 +-
+ docs-ja/pages/cli-reference-ja.md              |  12 +-
+ docs-ja/pages/cloud-environments-ja.md         |   4 +-
+ docs-ja/pages/commands-ja.md                   |  14 +-
+ docs-ja/pages/common-workflows-ja.md           |   2 +-
+ docs-ja/pages/costs-ja.md                      |   2 +-
+ docs-ja/pages/debug-your-config-ja.md          |   2 +-
+ docs-ja/pages/desktop-ja.md                    |  12 +-
+ docs-ja/pages/env-vars-ja.md                   |   2 +-
+ docs-ja/pages/errors-ja.md                     |  46 ++--
+ docs-ja/pages/feature-availability-ja.md       |   2 +-
+ docs-ja/pages/features-overview-ja.md          |  34 +--
+ docs-ja/pages/fullscreen-ja.md                 |   3 +-
+ docs-ja/pages/github-actions-ja.md             |   4 +-
+ docs-ja/pages/github-enterprise-server-ja.md   |  26 +--
+ docs-ja/pages/glossary-ja.md                   |   6 +-
+ docs-ja/pages/headless-ja.md                   |   2 +-
+ docs-ja/pages/hooks-guide-ja.md                |  22 +-
+ docs-ja/pages/how-claude-code-works-ja.md      |  14 +-
+ docs-ja/pages/interactive-mode-ja.md           |  15 +-
+ docs-ja/pages/keybindings-ja.md                |  52 +++--
+ docs-ja/pages/large-codebases-ja.md            |  10 +-
+ docs-ja/pages/managed-mcp-ja.md                |   2 +-
+ docs-ja/pages/managed-settings-ja.md           | 228 ++++++++++----------
+ docs-ja/pages/mcp-ja.md                        |  34 +--
+ docs-ja/pages/monitoring-usage-ja.md           |  12 +-
+ docs-ja/pages/network-config-ja.md             |   2 +-
+ docs-ja/pages/output-styles-ja.md              |   4 +-
+ docs-ja/pages/permission-modes-ja.md           |  17 +-
+ docs-ja/pages/permissions-ja.md                |  22 +-
+ docs-ja/pages/platforms-ja.md                  |  18 +-
+ docs-ja/pages/plugin-evals-ja.md               |  91 +++++---
+ docs-ja/pages/prompt-caching-ja.md             |  16 +-
+ docs-ja/pages/prompt-library-ja.md             |   7 +-
+ docs-ja/pages/remote-control-ja.md             |  12 +-
+ docs-ja/pages/sandboxing-ja.md                 | 283 +++++++++++++------------
+ docs-ja/pages/security-guidance-ja.md          |  10 +-
+ docs-ja/pages/server-managed-settings-ja.md    |   4 +-
+ docs-ja/pages/sessions-ja.md                   |   2 +-
+ docs-ja/pages/settings-example-ja.md           |  16 +-
+ docs-ja/pages/settings-ja.md                   | 128 +++++------
+ docs-ja/pages/settings-reference-ja.md         | 126 ++++++-----
+ docs-ja/pages/skills-ja.md                     |  44 ++--
+ docs-ja/pages/statusline-ja.md                 |   2 +-
+ docs-ja/pages/sub-agents-ja.md                 |  40 ++--
+ docs-ja/pages/terminal-config-ja.md            |   2 +-
+ docs-ja/pages/tools-reference-ja.md            |  14 +-
+ docs-ja/pages/vs-code-ja.md                    |   4 +-
+ docs-ja/pages/workflows-ja.md                  |   2 +-
+ docs-ja/pages/zero-data-retention-ja.md        |   2 +-
+ 65 files changed, 1073 insertions(+), 870 deletions(-)
+```
+
+<details>
+<summary>admin-setup-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/admin-setup-ja.md b/docs-ja/pages/admin-setup-ja.md
+index 86f1c19..8b44218 100644
+--- a/docs-ja/pages/admin-setup-ja.md
++++ b/docs-ja/pages/admin-setup-ja.md
+@@ -94,24 +94,24 @@ WSL 2 ユーティリティ VM 内のプロセスは、Windows 側のエンド
+ マネージド設定は、ツール、サンドボックス実行、MCP サーバーとプラグインソース、および実行するフック を制限できます。各行は、それを駆動する設定キーを持つ制御サーフェスです。
+ 
+-| 制御                                                                           | 機能                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | キー設定                                                                                                                                |
+-| :--------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------- |
+-| [権限ルール](/docs/ja/permissions)                                                     | 特定のツールとコマンドを許可、確認、または拒否する                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | `permissions.allow`、`permissions.deny`                                                                                              |
+-| [権限ロックダウン](/docs/ja/permissions#managed-only-settings)                            | マネージド設定を[権限ルールの唯一の設定ソース](/docs/ja/settings-reference#allowmanagedpermissionrulesonly)にします。`--dangerously-skip-permissions` を無効にする                                                                                                                                                                                                                                                                                                                                                                                 | `allowManagedPermissionRulesOnly`、`permissions.disableBypassPermissionsMode`                                                        |
+-| [開始権限モード](/docs/ja/permission-modes#which-mode-a-session-starts-in)               | 組み込みの開始権限モードの代わりに、開発者のターミナルセッションが開始する権限モードを選択するか、自動モードを削除します。VS Code 拡張機能は、Pro、Max、Team プランでのみ設定した `defaultMode` を読み取ります。[権限モードの切り替え](/docs/ja/permission-modes#switch-permission-modes)は、拡張機能が読み取る内容を一覧表示します                                                                                                                                                                                                                                                                                                     | `permissions.defaultMode`、`permissions.disableAutoMode`                                                                             |
+-| [サンドボックス](/docs/ja/sandboxing)                                                    | ドメイン許可リスト付きの OS レベルのファイルシステムとネットワーク分離                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | `sandbox.enabled`、`sandbox.network.allowedDomains`                                                                                  |
+-| [マネージドポリシー CLAUDE.md](/docs/ja/memory#deploy-organization-wide-claude-md)         | すべてのセッションで読み込まれる組織全体の指示。除外できません                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | マネージドポリシーパスのファイル                                                                                                                    |
+-| [MCP サーバー制御](/docs/ja/managed-mcp)                                                | ユーザーが追加または接続できる MCP サーバーを制限し、固定セットをデプロイするか、リモートサーバーをすべてのユーザーに提供します                                                                                                                                                                                                                                                                                                                                                                                                                                           | `allowedMcpServers`、`deniedMcpServers`、`allowManagedMcpServersOnly`、`managedMcpServers`、またはデプロイされた `managed-mcp.json` ファイル          |
+-| [プラグインマーケットプレイス制御](/docs/ja/plugin-marketplaces#managed-marketplace-restrictions) | ユーザーが追加およびインストールできるマーケットプレイスソースを制限し、単一実行のためにプラグイン、エージェント、MCP サーバーをサイドロードする CLI フラグを拒否し、[`command` プラグインソース](/docs/ja/plugin-marketplaces#command-sources)をブロックし、どのマーケットプレイスのプラグインを提案できるかをホワイトリストに登録します                                                                                                                                                                                                                                                                                                            | `strictKnownMarketplaces`、`blockedMarketplaces`、`disableSideloadFlags`、`disableCommandPluginSources`、`pluginSuggestionMarketplaces` |
+-| [カスタマイズロックダウン](/docs/ja/settings-reference#strictpluginonlycustomization)         | スキル、エージェント、フック、MCP サーバーをユーザーおよびプロジェクトソースからブロックし、プラグインまたはマネージド設定からのみ取得できるようにします。スキルをロックすると、開発者が claude.ai で有効にした[スキル](/docs/ja/skills#where-synced-skills-load)の同期も停止します                                                                                                                                                                                                                                                                                                                                           | `strictPluginOnlyCustomization`                                                                                                     |
+-| [claude.ai 同期を無効にする](/docs/ja/settings-reference#syncclaudeaiskills)              | Claude Code が開発者が claude.ai で有効にした[スキル](/docs/ja/skills#how-synced-skills-behave)と[プラグイン](/docs/ja/plugins-reference#synced-plugins)を読み込むのを停止します。組織の claude.ai でスキルをオフにすると、Claude Code は両方の同期を停止します。v2.1.273 以降では、既に同期したものも削除します。スキルをオフにせずにどちらか一方を停止するには、マネージド設定でそのキーを `false` に設定します                                                                                                                                                                                                                                  | `syncClaudeAiSkills`、`syncClaudeAiPlugins`                                                                                          |
+-| [フック制限](/docs/ja/settings-reference#allowmanagedhooksonly)                        | 実行するフックを制限し、HTTP フック URL を制限します。[`allowManagedHooksOnly` で実行される内容](/docs/ja/settings-reference#what-runs-under-allowmanagedhooksonly)の完全な効果リストを参照してください                                                                                                                                                                                                                                                                                                                                                           | `allowManagedHooksOnly`、`allowedHttpHookUrls`                                                                                       |
+-| [ログイン強制](/docs/ja/settings-reference#forceloginmethod)                            | ログインを特定の方法または Anthropic 組織に制限します。メソッド制限は VS Code 拡張機能、Agent SDK、`claude setup-token`、`/install-github-app` 全体に適用され、ターミナルのインタラクティブログイン画面（`/login` または初回オンボーディングで到達）はメソッドを事前選択しますが強制しません。Claude Code は、ターミナル、VS Code 拡張機能、Agent SDK での claude.ai アカウントログインの組織を検証し、Claude Console ログインまたは[ゲートウェイ](/docs/ja/claude-apps-gateway)サインインではチェックしません。v2.1.212 より前は、ターミナルログインのみが両方のキーを適用していました。設定すると、`ANTHROPIC_API_KEY`、`ANTHROPIC_AUTH_TOKEN`、または `apiKeyHelper` によって認証されたセッションはスタートアップでブロックされます。クラウドプロバイダーセッションは影響を受けません | `forceLoginMethod`、`forceLoginOrgUUID`                                                                                              |
+-| [エージェントビューを無効にする](/docs/ja/agent-view#how-background-sessions-are-hosted)         | `claude agents`、`--bg`、`/background`、およびオンデマンドスーパーバイザーをオフにします                                                                                                                                                                                                                                                                                                                                                                                                                                                | `disableAgentView`                                                                                                                  |
+-| [企業ランチャーを構成する](/docs/ja/corporate-launcher)                                       | [バックグラウンドエージェントスーパーバイザー](/docs/ja/agent-view#how-background-sessions-are-hosted)、そのワーカー、および[その他のカバーされたバックグラウンドプロセス](/docs/ja/corporate-launcher#what-the-launcher-covers)に、エージェントビューをオフにする代わりに、必須の企業ランチャーをプレフィックスします                                                                                                                                                                                                                                                                                                   | `processWrapper`                                                                                                                    |
+-| [モデル制限](/docs/ja/model-config#restrict-model-selection)                           | `availableModels` はピッカーに表示されるモデルをフィルタリングします。`enforceAvailableModels` を追加すると、自動選択されたデフォルトモデルも制限されます。このセッティングが CLI、ウェブ、IDE にどのように到達するかについては、[サーフェスカバレッジ](/docs/ja/model-config#surface-coverage)を参照してください                                                                                                                                                                                                                                                                                                           | `availableModels`、`enforceAvailableModels`                                                                                          |
+-| [エフォートキャップ](/docs/ja/settings-reference#maxeffortlevel)                           | すべてのモデルまたはモデルごとに、すべてのプロバイダーで[エフォートレベル](/docs/ja/model-config#adjust-effort-level)をキャップします                                                                                                                                                                                                                                                                                                                                                                                                                         | `maxEffortLevel`                                                                                                                    |
+-| [バージョンフロア](/docs/ja/settings-reference#minimumversion)                            | 自動更新が組織全体の最小値以下をインストールするのを防ぎます                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | `minimumVersion`                                                                                                                    |
+-| [必須バージョン範囲](/docs/ja/settings-reference#requiredminimumversion)                   | 実行中のバージョンが組織承認範囲外の場合、まったく起動を拒否します。ダウングレードのみをブロックする `minimumVersion` より強力です                                                                                                                                                                                                                                                                                                                                                                                                                                   | `requiredMinimumVersion`、`requiredMaximumVersion`                                                                                   |
+-| [テレメトリオプトアウト](/docs/ja/data-usage#telemetry-services)                             | すべてのデバイスで Anthropic バウンドの使用メトリクス、エラーレポート、およびサーベイをオフにします                                                                                                                                                                                                                                                                                                                                                                                                                                                      | `env` に `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` を `1` に設定します。リンクされたセクションはカテゴリごとの変数を一覧表示します                                       |
++| 制御                                                                   | 機能                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | キー設定                                                                                                                                |
++| :------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------- |
++| [権限ルール](/docs/ja/permissions)                                             | 特定のツールとコマンドを許可、確認、または拒否する                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | `permissions.allow`、`permissions.deny`                                                                                              |
+```
+
+</details>
+
+<details>
+<summary>agent-teams-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/agent-teams-ja.md b/docs-ja/pages/agent-teams-ja.md
+index 7974b36..8aa560b 100644
+--- a/docs-ja/pages/agent-teams-ja.md
++++ b/docs-ja/pages/agent-teams-ja.md
+@@ -119,5 +119,5 @@ v2.1.199 以降、アイドル状態のチームメンバーの行は、他の
+ デフォルトは `"in-process"` です。`"auto"` を設定して、既に tmux セッション内で実行している場合または使用しているターミナルが iTerm2 で `it2` CLI がインストールされている場合は分割ペインを有効にし、それ以外の場合は in-process にフォールバックします。`"tmux"` 設定は分割ペインモードを有効にし、ターミナルに基づいて tmux または iTerm2 を使用するかどうかを自動検出します。
+ 
+-v2.1.186 以降、`"iterm2"` を設定して iTerm2 ネイティブ分割ペインを明示的に使用してください。このモードは [`it2` CLI](https://github.com/mkusaka/it2) が必要で、`it2` が見つからない場合はインストールコマンド付きでエラーを表示します。`it2` をインストールするか tmux に切り替えるオプションを提供するセットアッププロンプトは、ターミナルが iTerm2 で tmux がフォールバックとして利用可能な場合、`"auto"` または `"tmux"` の下に表示されます。
++`"iterm2"` を設定して iTerm2 ネイティブ分割ペインを明示的に使用してください。このモードは [`it2` CLI](https://github.com/mkusaka/it2) が必要で、`it2` が見つからない場合はインストールコマンド付きでエラーを表示します。`it2` をインストールするか tmux に切り替えるオプションを提供するセットアッププロンプトは、ターミナルが iTerm2 で tmux がフォールバックとして利用可能な場合、`"auto"` または `"tmux"` の下に表示されます。
+ 
+ デフォルトをオーバーライドするには、`~/.claude/settings.json` で [`teammateMode`](/docs/ja/settings-reference#teammatemode) を設定してください。
+```
+
+</details>
+
+<details>
+<summary>agents-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/agents-ja.md b/docs-ja/pages/agents-ja.md
+index 6faf8f2..688cc7a 100644
+--- a/docs-ja/pages/agents-ja.md
++++ b/docs-ja/pages/agents-ja.md
+@@ -23,5 +23,5 @@ Claude Code には、複数のタスクを同時に処理する 5 つの方法
+ * [ワークツリー](/docs/ja/worktrees) は各セッションに個別の git チェックアウトを提供するため、並列セッションが同じファイルを編集することはありません。自分で実行するセッションに使用します。エージェントビューからディスパッチされたセッションは、[ファイルを編集する前に独自のワークツリーに移動](/docs/ja/agent-view#how-file-edits-are-isolated) し、スポーンするサブエージェントも各々独自のワークツリーを取得できます。
+ * [クロスセッションメッセージング](/docs/ja/cross-session-messaging) により、Claude はこのマシン上、別のマシン上、または [クラウド](/docs/ja/claude-code-on-the-web) 上の他の Claude Code セッションをリストして、メッセージを送信できます。自分で実行するセッションは、検出結果とステータスを相互に渡すことができます。
+-* [`/batch`](/docs/ja/commands) は、1 つの大きな変更を 5 ～ 30 個のワークツリー分離サブエージェントに分割し、各エージェントがプルリクエストを開く [skill](/docs/ja/skills) です。これはサブエージェントとワークツリーのパッケージ化された使用法であり、別の調整スタイルではありません。
++* [`/batch`](/docs/ja/commands) は、1 つの大きな変更を 5 ～ 30 個のワークツリー分離サブエージェントに分割する [skill](/docs/ja/skills) です。これはサブエージェントとワークツリーのパッケージ化された使用法であり、別の調整スタイルではありません。
+ 
+ 他にも Claude を各ステップで駆動することなく実行する機能がいくつかありますが、これらはエージェント間で作業を分割することとは異なる問題を解決します。
+```
+
+</details>
+
+<details>
+<summary>amazon-bedrock-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/amazon-bedrock-ja.md b/docs-ja/pages/amazon-bedrock-ja.md
+index ec20931..e4551ab 100644
+--- a/docs-ja/pages/amazon-bedrock-ja.md
++++ b/docs-ja/pages/amazon-bedrock-ja.md
+@@ -520,5 +520,7 @@ Claude Code は、各リクエストで `X-Amzn-Bedrock-Service-Tier` ヘッダ
+ </h2>
+ 
+-Mantle は、Bedrock Invoke API ではなく、ネイティブ Anthropic API シェイプを通じて Claude モデルを提供する Amazon Bedrock エンドポイントです。同じ [AWS 認証情報](#2-configure-aws-credentials)、[IAM 権限](#iam-configuration)、および [`awsAuthRefresh` 設定](#advanced-credential-configuration) を使用します。
++Mantle は、Bedrock Invoke API ではなく、ネイティブ Anthropic API シェイプを通じて Claude モデルを提供する Amazon Bedrock エンドポイントです。同じ [AWS 認証情報](#2-configure-aws-credentials) と [`awsAuthRefresh` 設定](#advanced-credential-configuration) を使用します。
++
++Mantle は `bedrock-mantle:` プレフィックスの下に独自の IAM アクションを持つため、[IAM 設定](#iam-configuration) の `bedrock:` アクションはこれをカバーしていません。推論用に `bedrock-mantle:CreateInference` と、トークンカウント用に `bedrock-mantle:CountTokens` を IAM アイデンティティに付与します。AWS ドキュメントの [推論リクエストの実行](https://docs.aws.amazon.com/bedrock/latest/userguide/inference.html) と [トークンのカウント](https://docs.aws.amazon.com/bedrock/latest/userguide/count-tokens.html)、および [サービス認可リファレンス](https://docs.aws.amazon.com/service-authorization/latest/reference/list_amazonbedrockpoweredbyawsmantle.html) を参照して、すべての Mantle アクションを確認してください。
+ 
+ <h3 id="enable-mantle">
+@@ -672,5 +674,8 @@ v2.1.196 以降に更新してください。
+ `CLAUDE_CODE_USE_MANTLE` を設定した後、`/status` が `Amazon Bedrock (Mantle)` を表示しない場合、変数がプロセスに到達していません。Claude Code を起動したシェルでエクスポートされているか、[settings file](/docs/ja/settings) の `env` ブロックで設定されていることを確認してください。
+ 
+-有効な認証情報を持つ Mantle エンドポイントからの `403` は、AWS アカウントがリクエストしたモデルへのアクセスを許可されていないことを意味します。AWS アカウントチームに連絡してアクセスをリクエストしてください。
++Mantle エンドポイントからの `403` が何を意味するかは、エラーが IAM アクションを名前付けるかどうかによって異なります：
++
++* エラーが `bedrock-mantle:` アクションを名前付ける場合は、IAM アイデンティティにそのアクションを付与してください。
++* エラーがアクションを名前付けず、認証情報が有効な場合は、AWS アカウントがリクエストしたモデルへのアクセスを許可されていません。AWS アカウントチームに連絡してアクセスをリクエストしてください。
+ 
+ モデル ID を名前付ける `400` は、そのモデルが Mantle で提供されていないことを意味します。Mantle は標準 Amazon Bedrock カタログとは別の独自のモデルラインアップを持っているため、`us.anthropic.claude-sonnet-4-6` などの推論プロファイル ID は機能しません。Mantle 形式の ID を使用するか、[両方のエンドポイントを有効にして](#run-mantle-alongside-the-invoke-api)、Claude Code が各リクエストをモデルが利用可能なエンドポイントにルーティングするようにしてください。
+```
+
+</details>
+
+<details>
+<summary>best-practices-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/best-practices-ja.md b/docs-ja/pages/best-practices-ja.md
+index c4d77a4..b173ddb 100644
+--- a/docs-ja/pages/best-practices-ja.md
++++ b/docs-ja/pages/best-practices-ja.md
+@@ -203,5 +203,5 @@ CLAUDE.md ファイルは `@path/to/import` 構文を使用して追加ファイ
+ 
+ <h3 id="configure-permissions">
+-  パーミッションを設定する
++  権限モードを設定する
+ </h3>
+ 
+@@ -210,12 +210,12 @@ CLAUDE.md ファイルは `@path/to/import` 構文を使用して追加ファイ
+ </Tip>
+ 
+-Pro、Max、Team プランでは、auto mode は対話型ターミナルと VS Code セッションの[組み込みの開始パーミッションモード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)です。別の分類器モデルがほとんどのアクションをレビューし、スコープエスカレーション、未知のインフラストラクチャ、敵対的なコンテンツ駆動のアクションなど、リスクがあるように見えるものだけをブロックします。
++Pro、Max、Team プランでは、auto mode は対話型ターミナルと VS Code セッションの[組み込みの開始権限モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)です。別の分類器モデルがほとんどのアクションをレビューし、スコープエスカレーション、未知のインフラストラクチャ、敵対的なコンテンツ駆動のアクションなど、リスクがあるように見えるものだけをブロックします。
+ 
+-Manual モード（他のプランの組み込みの開始パーミッションモード）では、Claude Code はシステムを変更する可能性のあるアクション（ファイル書き込み、Bash コマンド、MCP ツール）の前に尋ねます。これは安全ですが、面倒です。10 回目の承認後、あなたはクリックしているだけで、本当にレビューしていません。これらの中断を減らす 2 つのツールがあり、Manual モードで適用され、auto mode でも同様に適用されます。
++Manual モード（他のプランの組み込みの開始権限モード）では、Claude Code はシステムを変更する可能性のあるアクション（ファイル書き込み、Bash コマンド、MCP ツール）の前に尋ねます。これは安全ですが、面倒です。10 回目の承認後、あなたはクリックしているだけで、本当にレビューしていません。これらの中断を減らす 2 つのツールがあり、Manual モードで適用され、auto mode でも同様に適用されます。
+ 
+-* **パーミッションホワイトリスト**：`npm run lint` や `git commit` など、安全であることがわかっているツールを許可します
++* **権限ホワイトリスト**：`npm run lint` や `git commit` など、安全であることがわかっているツールを許可します
+ * **サンドボックス**：OS レベルの分離を有効にして、ファイルシステムとネットワークアクセスを制限し、Claude が定義された境界内でより自由に動作できるようにします
+ 
+-[パーミッションモード](/docs/ja/permission-modes)、[パーミッションルール](/docs/ja/permissions)、[サンドボックス](/docs/ja/sandboxing)の詳細をお読みください。
++[権限モード](/docs/ja/permission-modes)、[権限ルール](/docs/ja/permissions)、[サンドボックス](/docs/ja/sandboxing)の詳細をお読みください。
+ 
+ <h3 id="use-cli-tools">
+@@ -335,5 +335,5 @@ Claude に明示的にサブエージェントを使用するよう指示しま
+ </Tip>
+```
+
+</details>
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index 92e3505..b6c326f 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,101 @@
+ # Changelog
+ 
++## 2.1.283
++
++- Added `x-claude-code-prompt-id` to the gateway hint headers so LLM gateways can group the requests that serve one user prompt; opt in with `CLAUDE_CODE_GATEWAY_HINT_HEADERS=1`
++- Added `availableModelsMatch` managed setting: with `"exact"`, an `availableModels` entry allows only the model version it names, so new releases stay blocked until listed
++- Added `deniedModels` managed setting to block specific models, even when `availableModels` allows them
++- Added MCP tool, WebFetch and WebSearch outputs to the `tool.output` OpenTelemetry span event when `OTEL_LOG_TOOL_CONTENT=1`
++- Added `/doctor prompt-audit` (also `/checkup prompt-audit`) to audit your CLAUDE.md files, skills, agents and commands for prompting patterns written for older models
++- Added click-to-expand for truncated messages from your other sessions in fullscreen mode
++- Added `path` to `--plugin-dir` load-failure entries in the stream-json `system/init` `plugin_errors`, naming the directory that did not load
++- Added an opt-in `load_test_mode` block to the Claude apps gateway config: requests are built and signed but not sent upstream, and clients get a canned reply, so a deployment can be load tested
++- Added a `mantle` upstream provider to the Claude apps gateway for Amazon Bedrock's Mantle endpoint
++- Fixed SDK sessions losing a deferred tool call or finished tool result when a turn ended early, a held approval prompt after a worker restart, and a non-streaming fallback's `result.usage`
++- Fixed MCP progress notifications being discarded once a long-running tool call moved to the background; the background task now shows the latest progress
++- Fixed stdio MCP servers being left running when the session ended while they were still starting
++- Fixed a brief HTTP 404 from a stateless remote MCP server (for example a proxy mid-redeploy) leaving that server unusable for the rest of the session while still shown as connected
++- Fixed MCP sign-in for a server with no valid URL failing with an opaque SDK error; `/mcp` no longer offers Authenticate for such servers
++- Fixed the weekly Fable limit not appearing in `/usage` and the VS Code usage meters when telemetry is disabled
++- Fixed `/model` accepting Sonnet 4.6 or Sonnet 5 with `[1m]` when the id carried a date or `-v1:0` suffix, in the cases where the plain id was refused
++- Fixed `/model` picker showing a hardcoded Haiku version and price when `ANTHROPIC_DEFAULT_HAIKU_MODEL` pins a different model
++- Fixed dynamic workflows started during a model fallback running every agent on the fallback model instead of retrying the configured model
++- Fixed `DISABLE_PROMPT_CACHING_HAIKU` having no effect when Haiku is the session's main model
++- Fixed `claude plugin validate` saying Claude Code accepts a plugin or marketplace name it cannot install; such names in `marketplace.json` now fail validation
++- Fixed `claude plugin validate` passing plugins whose `outputStyles`, `themes`, `monitors`, or `lspServers` paths are missing or point outside the plugin directory
+```
+
+</details>
+
+<details>
+<summary>channels-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/channels-ja.md b/docs-ja/pages/channels-ja.md
+index 6defd50..426efb3 100644
+--- a/docs-ja/pages/channels-ja.md
++++ b/docs-ja/pages/channels-ja.md
+@@ -46,7 +46,7 @@ Team、Enterprise、または Console 組織を管理している場合は、[
+ 
+         * `Marketplace "claude-plugins-official" not found`：`/plugin marketplace add anthropics/claude-plugins-official` でマーケットプレイスを追加してから、インストールを再試行してください。
+-        * プラグインが[マーケットプレイスで見つかりません](/docs/ja/discover-plugins#install-plugins)：プラグイン名を確認してください。
++        * プラグインが[マーケットプレイスで見つかりません](/docs/ja/plugins/install#install-a-plugin)：プラグイン名を確認してください。
+ 
+-        インストールがインストールスコープを求めるとき、ユーザースコープオプションを選択して、プラグインがすべてのプロジェクト全体で利用可能になるようにしてください。インストール概要を確認してください。`Run /reload-plugins to activate.` と報告されている場合は、[プラグイン変更を再起動なしで適用する](/docs/ja/discover-plugins#apply-plugin-changes-without-restarting)を参照して、プラグインの設定コマンドを利用可能にしてください。
++        インストールがインストールスコープを求めるとき、ユーザースコープオプションを選択して、プラグインがすべてのプロジェクト全体で利用可能になるようにしてください。インストール概要を確認してください。`Run /reload-plugins to activate.` と報告されている場合は、[プラグイン変更を再起動なしで適用する](/docs/ja/plugins/cli-reference#reload-plugins)を参照して、プラグインの設定コマンドを利用可能にしてください。
+       </Step>
+ 
+@@ -124,7 +124,7 @@ Team、Enterprise、または Console 組織を管理している場合は、[
+ 
+         * `Marketplace "claude-plugins-official" not found`：`/plugin marketplace add anthropics/claude-plugins-official` でマーケットプレイスを追加してから、インストールを再試行してください。
+-        * プラグインが[マーケットプレイスで見つかりません](/docs/ja/discover-plugins#install-plugins)：プラグイン名を確認してください。
++        * プラグインが[マーケットプレイスで見つかりません](/docs/ja/plugins/install#install-a-plugin)：プラグイン名を確認してください。
+ 
+-        インストールがインストールスコープを求めるとき、ユーザースコープオプションを選択して、プラグインがすべてのプロジェクト全体で利用可能になるようにしてください。インストール概要を確認してください。`Run /reload-plugins to activate.` と報告されている場合は、[プラグイン変更を再起動なしで適用する](/docs/ja/discover-plugins#apply-plugin-changes-without-restarting)を参照して、プラグインの設定コマンドを利用可能にしてください。
++        インストールがインストールスコープを求めるとき、ユーザースコープオプションを選択して、プラグインがすべてのプロジェクト全体で利用可能になるようにしてください。インストール概要を確認してください。`Run /reload-plugins to activate.` と報告されている場合は、[プラグイン変更を再起動なしで適用する](/docs/ja/plugins/cli-reference#reload-plugins)を参照して、プラグインの設定コマンドを利用可能にしてください。
+       </Step>
+ 
+@@ -189,7 +189,9 @@ Team、Enterprise、または Console 組織を管理している場合は、[
+ 
+         * `Marketplace "claude-plugins-official" not found`：`/plugin marketplace add anthropics/claude-plugins-official` でマーケットプレイスを追加してから、インストールを再試行してください。
+-        * プラグインが[マーケットプレイスで見つかりません](/docs/ja/discover-plugins#install-plugins)：プラグイン名を確認してください。
++        * プラグインが[マーケットプレイスで見つかりません](/docs/ja/plugins/install#install-a-plugin)：プラグイン名を確認してください。
+ 
+```
+
+</details>
+
+*...以降省略*
+
+</details>
+
+
+<details>
 <summary>2026-09-25</summary>
 
 **変更ファイル:**
@@ -2472,268 +2772,6 @@ index 53a1526..8a3feb4 100644
  ```text theme={null}
 ---bg と --print が競合しています。--print は `claude agents` が接続するインタラクティブセッションを開始しないため、ジョブは接続不可になります。プロンプトは位置引数です。--print を削除してください。`claude --bg '<task>'` です。
 +--bg and --print conflict: --print never starts the interactive session that `claude agents` attaches to, so the job would be unattachable. The prompt is the positional — drop --print: `claude --bg '<task>'`.
-```
-
-</details>
-
-<details>
-<summary>hooks-guide-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/hooks-guide-ja.md b/docs-ja/pages/hooks-guide-ja.md
-index 57170da..2ea740a 100644
---- a/docs-ja/pages/hooks-guide-ja.md
-+++ b/docs-ja/pages/hooks-guide-ja.md
-@@ -1101,5 +1101,5 @@ fi
- `$-` 変数はシェルフラグを含み、`i` はインタラクティブを意味します。Hooks は非インタラクティブシェルで実行されるため、echo はスキップされます。
- 
--Hook が `permissionDecision` または `additionalContext` をトップレベルではなく `hookSpecificOutput` の内部に返す場合、JSON は依然として解析され、Claude Code は誤配置されたフィールドを報告なしで無視します。どのフィールドが無視されたかを確認するには、`claude --debug` で Claude Code を開始し、[デバッグログ](/docs/ja/hooks#debug-hooks)で `Hook JSON output had unrecognized keys` を検索します。
-+Hook が `permissionDecision` または `additionalContext` を `hookSpecificOutput` の内部ではなくトップレベルに返す場合、JSON は依然として解析され、Claude Code は誤配置されたフィールドを報告なしで無視します。どのフィールドが無視されたかを確認するには、`claude --debug` で Claude Code を開始し、[デバッグログ](/docs/ja/hooks#debug-hooks)で `Hook JSON output had unrecognized keys` を検索します。
- 
- <h3 id="debug-techniques">
-```
-
-</details>
-
-<details>
-<summary>llm-gateway-protocol-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/llm-gateway-protocol-ja.md b/docs-ja/pages/llm-gateway-protocol-ja.md
-index 595896f..213888d 100644
---- a/docs-ja/pages/llm-gateway-protocol-ja.md
-+++ b/docs-ja/pages/llm-gateway-protocol-ja.md
-@@ -178,5 +178,5 @@ Claude Code は `ANTHROPIC_BASE_URL` ゲートウェイを Anthropic フォー
- </h3>
- 
--`CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1` は Claude Code がすべてのプロバイダーでプレリリース機能とそのボディフィールドを送信するのを停止します。コンテキスト管理とベータツールフィールドを含みます。適応的推論には影響しません。これはモデルではなくベータで選択されるため、サブスクリプション認証が必要とする OAuth 機能を抑制することはありません。
-+`CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1` は Claude Code がすべてのプロバイダーでプレリリース機能とそのボディフィールドを送信するのを停止します。コンテキスト管理とベータツールフィールドを含みます。適応的推論には影響しません。適応的推論はベータではなくモデルによって選択されるためです。この変数は、サブスクリプション認証が必要とする OAuth 機能を抑制することもありません。
- 
- Claude Code v2.1.227 以降では、組織は [MCP ツール検索](/docs/ja/mcp#scale-with-mcp-tool-search)を[管理設定](/docs/ja/managed-settings)を通じてこの変数の下で有効に保つことができます。このオーバーライドが有効な場合に Claude Code が送信する内容は、接続方法によって異なります：
-```
-
-</details>
-
-<details>
-<summary>mcp-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/mcp-ja.md b/docs-ja/pages/mcp-ja.md
-index 2f5b434..fbc02b1 100644
---- a/docs-ja/pages/mcp-ja.md
-+++ b/docs-ja/pages/mcp-ja.md
-@@ -461,5 +461,5 @@ MCP サーバーはまた、CI 結果、監視アラート、チャットメッ
- </Tip>
- 
--サーバーごとの `timeout` はツール呼び出しごとのハードウォールクロック制限であり、サーバーからの進捗通知はそれを拡張しません。1000 未満の値は無視され、`MCP_TOOL_TIMEOUT` にフォールスルーするか、その変数が設定されていない場合は約 28 時間のデフォルトにフォールスルーします。HTTP、SSE、または [claude.ai コネクタ](/docs/ja/mcp#use-mcp-servers-from-claude-ai) サーバーの場合、サーバーの最初の応答バイトまでの各リクエストをカバーする秒単位のタイマーもあります。Claude Code はそのタイマーを 3 つの値の最大値に設定します。60 秒、サーバーに適用されるツールタイムアウト、`MCP_TIMEOUT`。設定されていない `MCP_TOOL_TIMEOUT` の 28 時間デフォルトはその比較に入らず、60 秒未満の値はタイマーを短縮しません。Stdio と WebSocket サーバーには秒単位のタイマーがありません。
-+サーバーごとの `timeout` はツール呼び出しごとのハードウォールクロック制限であり、サーバーからの進捗通知はそれを拡張しません。1000 未満の値は無視され、`MCP_TOOL_TIMEOUT` にフォールスルーするか、その変数が設定されていない場合は約 28 時間のデフォルトにフォールスルーします。HTTP、SSE、または [claude.ai コネクタ](/docs/ja/mcp#use-mcp-servers-from-claude-ai) サーバーの場合、サーバーの最初の応答バイトまでの各リクエストをカバーする 2 つ目の、リクエストごとのタイマーもあります。Claude Code はそのタイマーを 3 つの値の最大値に設定します。60 秒、サーバーに適用されるツールタイムアウト、`MCP_TIMEOUT`。設定されていない `MCP_TOOL_TIMEOUT` の 28 時間デフォルトはその比較に入らず、60 秒未満の値はタイマーを短縮しません。Stdio と WebSocket サーバーにはリクエストごとのタイマーがありません。
- 
- 少なくとも 1000 のサーバーごとの `timeout` は、以下で説明されるアイドルタイムアウトのフロアとしても機能します。Claude Code はそのサーバーのツール呼び出しをサーバーごとの `timeout` より早くアイドルのために中止しません。Claude Code v2.1.203 以降が必要です。
-@@ -487,5 +487,5 @@ MCP サーバーはまた、CI 結果、監視アラート、チャットメッ
- * [非対話モード](/docs/ja/headless) での呼び出し。ただし `CLAUDE_AUTO_BACKGROUND_TASKS` が `1` に設定されている場合を除きます。1 回限りの実行は結果が到着する前に終了する可能性があるため
- 
--開いている [エリシテーションダイアログ](#respond-to-mcp-elicitation-requests) を待つ呼び出しは、ダイアログが開いている間はバックグラウンド化されません。サーバーは遅い、入力を待っているため、Claude Code はダイアログが閉じるまで移動を延期します。
-+開いている [エリシテーションダイアログ](#respond-to-mcp-elicitation-requests) を待つ呼び出しは、ダイアログが開いている間はバックグラウンド化されません。サーバーは遅いのではなく入力を待ってブロックされているため、Claude Code はダイアログが閉じるまで移動を延期します。
- 
- <h3 id="plugin-provided-mcp-servers">
-```
-
-</details>
-
-<details>
-<summary>permission-modes-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/permission-modes-ja.md b/docs-ja/pages/permission-modes-ja.md
-index 525713a..18a536d 100644
---- a/docs-ja/pages/permission-modes-ja.md
-+++ b/docs-ja/pages/permission-modes-ja.md
-@@ -294,5 +294,5 @@ Pro、Max、Team プランでは、auto モードは[セッションが開始す
- クラシファイアは、`rm -rf /` や `rm -rf ~` などの[重要なパス](#critical-paths)をターゲットにした `rm` および `rmdir` の削除もレビューおよび承認またはブロックします。これには、削除がコマンドまたはプロセス置換内にある場合も含まれます。
- 
--auto モードはまた、Claude が明確な質問のために停止することなく作業を続けるよう促しますが、Claude はプロンプトまたはスキルが明示的にそれに依存している場合でも質問します。より強力な自律動作を、依然としてプロンプトを表示するモードで実現するには、代わりに[プロアクティブ出力スタイル](/docs/ja/output-styles)を設定してください。
-+auto モードはまた、Claude が明確な質問のために停止することなく作業を続けるよう促しますが、プロンプトまたはスキルが明示的にそれに依存している場合は、Claude は引き続き質問します。より強力な自律動作を、依然としてプロンプトを表示するモードで実現するには、代わりに[プロアクティブ出力スタイル](/docs/ja/output-styles)を設定してください。
- 
- <Warning>
-```
-
-</details>
-
-<details>
-<summary>plugin-evals-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/plugin-evals-ja.md b/docs-ja/pages/plugin-evals-ja.md
-index 1620820..cbaab1c 100644
---- a/docs-ja/pages/plugin-evals-ja.md
-+++ b/docs-ja/pages/plugin-evals-ja.md
-@@ -569,5 +569,5 @@ evals/
- | :------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
- | `last_message`                   | Claude の最終応答テキスト。これがデフォルトです                                                                                                                                                                  |
--| `trace`                          | JSON としてのセッション。1 行に 1 つのメッセージ。`regex` グレーダーはすべてのメッセージを見ます。`llm` ジャッジは最初の 12 と最後の 12 を見ます。その中の引用符と改行は JSON エスケープされるため、regex は `\"` ではなく `"` にマッチします                                           |
-+| `trace`                          | JSON としてのセッション。1 行に 1 つのメッセージ。`regex` グレーダーはすべてのメッセージを見ます。`llm` ジャッジは最初の 12 と最後の 12 を見ます。その中の引用符と改行は JSON エスケープされるため、regex は `"` ではなく `\"` にマッチします                                           |
- | `files`                          | 実行中に Claude が作成したパスのリスト。1 行に 1 つ。その内容ではなく、スキャフォルドが作成したファイルや Claude が単に変更したファイルではありません                                                                                                        |
- | `{ source: file, path: <path> }` | 実行後のワークスペース内の 1 つのファイルの内容。プラグインが生成したものをグレードするために使用します。PNG、JPEG、GIF、または WebP ファイルは `llm` ジャッジに画像として表示されます。`llm` ジャッジは `.pptx` または PDF などの他のバイナリファイルを拒否します。画像にレンダリングするか、テキストとして書き出してグレードしてください |
-```
-
-</details>
-
-<details>
-<summary>plugins-reference-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/plugins-reference-ja.md b/docs-ja/pages/plugins-reference-ja.md
-index a542736..37d7c2a 100644
---- a/docs-ja/pages/plugins-reference-ja.md
-+++ b/docs-ja/pages/plugins-reference-ja.md
-@@ -521,5 +521,5 @@ Claude Code は認識しないトップレベルフィールドを無視しま
- Claude Code が認識されたフィールドを処理する方法は、値の型が間違っている場合、フィールドによって異なります。
- 
--* **ほとんどのフィールド**: プラグインは読み込みに失敗します。たとえば、文字列の代わりに配列である `keywords` 値は読み込みエラーであり、`claude plugin validate` はそれをエラーとして報告します。
-+* **ほとんどのフィールド**: プラグインは読み込みに失敗します。たとえば、配列ではなく文字列である `keywords` 値は読み込みエラーであり、`claude plugin validate` はそれをエラーとして報告します。
- * **`experimental` と `metadata`**: Claude Code は非オブジェクト値を無視し、`claude plugin validate` は警告を報告します。
- 
-@@ -1383,10 +1383,10 @@ claude plugin eval init [name] [options]
- オプションの `name` はケース名です: インタビューは 1 つを必要としませんが、`--bare` とターミナルなしテンプレートパスはそれを必要とします。これらのオプションを受け入れます:
- 
--| オプション               | 説明                                                          | デフォルト                                      |
--| :------------------ | :---------------------------------------------------------- | :----------------------------------------- |
--| `--bare`            | `<name>` の代わりに空白の `prompt.md` と `graders/criteria.md` を書き込み |                                            |
--| `-i, --interactive` | インタビューを必須にします。テンプレートを書き込む代わりにターミナルなしで失敗                     |                                            |
--| `--eval-dir <dir>`  | ケースを書き込む現在のディレクトリ下のディレクトリ                                   | マニフェストの `experimental.evals`、それ以外は `evals` |
--| `-h, --help`        | コマンドのヘルプを表示                                                 |                                            |
-+| オプション               | 説明                                                                       | デフォルト                                      |
-+| :------------------ | :----------------------------------------------------------------------- | :----------------------------------------- |
-+| `--bare`            | インタビューを実行する代わりに、`<name>` 用の空白の `prompt.md` と `graders/criteria.md` を書き込み |                                            |
-+| `-i, --interactive` | インタビューを必須にします。テンプレートを書き込む代わりにターミナルなしで失敗                                  |                                            |
-+| `--eval-dir <dir>`  | ケースを書き込む現在のディレクトリ下のディレクトリ                                                | マニフェストの `experimental.evals`、それ以外は `evals` |
-+| `-h, --help`        | コマンドのヘルプを表示                                                              |                                            |
- 
- <h3 id="plugin-tag">
-```
-
-</details>
-
-*...以降省略*
-
-</details>
-
-
-<details>
-<summary>2026-09-12</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/admin-setup-ja.md                    |   65 +-
- docs-ja/pages/advisor-ja.md                        |   35 +-
- docs-ja/pages/agent-teams-ja.md                    |   41 +-
- docs-ja/pages/agents-ja.md                         |    2 +-
- docs-ja/pages/amazon-bedrock-ja.md                 |   25 +-
- docs-ja/pages/analytics-ja.md                      |    6 -
- docs-ja/pages/authentication-ja.md                 |    6 +-
- docs-ja/pages/auto-mode-config-ja.md               |   12 +-
- docs-ja/pages/changelog.md                         |  101 +
- docs-ja/pages/channels-ja.md                       |    4 +-
- docs-ja/pages/channels-reference-ja.md             |    2 +-
- docs-ja/pages/checkpointing-ja.md                  |   14 +-
- docs-ja/pages/claude-apps-gateway-deploy-ja.md     |   91 +-
- docs-ja/pages/claude-apps-gateway-ja.md            |    9 +-
- docs-ja/pages/claude-apps-gateway-on-aws-ja.md     |    6 +-
- docs-ja/pages/claude-directory-ja.md               |    4 +-
- docs-ja/pages/claude-security-ja.md                |    6 +-
- docs-ja/pages/cli-reference-ja.md                  |  260 +-
- docs-ja/pages/cloud-environments-ja.md             |   90 +-
- docs-ja/pages/commands-ja.md                       |   12 +-
- docs-ja/pages/context-window-ja.md                 |    4 +-
- docs-ja/pages/corporate-launcher-ja.md             |    2 +-
- docs-ja/pages/debug-your-config-ja.md              |   42 +-
- docs-ja/pages/desktop-ja.md                        |   21 +-
- docs-ja/pages/desktop-quickstart-ja.md             |   14 +-
- docs-ja/pages/desktop-scheduled-tasks-ja.md        |   28 +-
- docs-ja/pages/discover-plugins-ja.md               |   21 +-
- docs-ja/pages/env-vars-ja.md                       |  780 ++-
- docs-ja/pages/errors-ja.md                         |  441 +-
- docs-ja/pages/feature-availability-ja.md           |    2 +-
- docs-ja/pages/fullscreen-ja.md                     |    6 +-
- docs-ja/pages/glossary-ja.md                       |   38 +-
- docs-ja/pages/headless-ja.md                       |   15 +-
- docs-ja/pages/hooks-guide-ja.md                    |   79 +-
- docs-ja/pages/interactive-mode-ja.md               |    4 +-
- docs-ja/pages/keybindings-ja.md                    |    6 +-
- docs-ja/pages/large-codebases-ja.md                |   18 +-
- docs-ja/pages/llm-gateway-protocol-ja.md           |   15 +-
- docs-ja/pages/managed-settings-ja.md               |    8 +-
- docs-ja/pages/mcp-ja.md                            |  948 ++-
- docs-ja/pages/network-config-ja.md                 |    1 +
- docs-ja/pages/overview-ja.md                       |   26 +-
- docs-ja/pages/permission-modes-ja.md               |  250 +-
- docs-ja/pages/platforms-ja.md                      |   20 +-
- docs-ja/pages/plugin-dependencies-ja.md            |    2 +
- docs-ja/pages/plugin-hints-ja.md                   |   14 +-
- docs-ja/pages/plugins-ja.md                        |  108 +-
- docs-ja/pages/plugins-reference-ja.md              |  268 +-
- docs-ja/pages/quickstart-ja.md                     |   26 +-
- docs-ja/pages/remote-control-ja.md                 |  255 +-
- docs-ja/pages/sandbox-environments-ja.md           |    2 +-
- docs-ja/pages/sandboxing-ja.md                     |    6 +
- docs-ja/pages/scheduled-tasks-ja.md                |   30 +-
- docs-ja/pages/security-guidance-ja.md              |    6 +-
- .../self-hosted-environments-configuration-ja.md   |  106 +-
- .../pages/self-hosted-environments-deploy-ja.md    |  543 +-
- docs-ja/pages/server-managed-settings-ja.md        |  248 +-
- docs-ja/pages/sessions-ja.md                       |    6 +-
- docs-ja/pages/settings-example-ja.md               |   25 +-
- docs-ja/pages/settings-ja.md                       |    2 +-
- docs-ja/pages/settings-reference-ja.md             | 6510 +++++++++++++++++++-
- docs-ja/pages/setup-ja.md                          |   28 +-
- docs-ja/pages/terminal-config-ja.md                |   18 +-
- docs-ja/pages/third-party-integrations-ja.md       |    7 +-
- docs-ja/pages/tools-reference-ja.md                |   47 +-
- docs-ja/pages/troubleshooting-ja.md                |   13 +
- docs-ja/pages/vs-code-ja.md                        |   53 +-
- docs-ja/pages/web-quickstart-ja.md                 |   74 +-
- docs-ja/pages/workflows-ja.md                      |  166 +-
- 69 files changed, 10306 insertions(+), 1837 deletions(-)
-```
-
-**新規追加:**
-
-
-<details>
-<summary>admin-setup-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/admin-setup-ja.md b/docs-ja/pages/admin-setup-ja.md
-index 994e983..ccaada5 100644
---- a/docs-ja/pages/admin-setup-ja.md
-+++ b/docs-ja/pages/admin-setup-ja.md
-@@ -91,35 +91,42 @@ WSL 2 ユーティリティ VM 内のプロセスは、Windows 側のエンド
- 
- <h2 id="decide-what-to-enforce">
--  実行する内容を決定する
-+  実装する内容を決定する
- </h2>
- 
--マネージド設定は、ツール、サンドボックス実行、MCP サーバーとプラグインソースへのアクセスをロックダウンし、実行されるフックを制御できます。各行は、それを駆動する設定キーを持つ制御サーフェスです。
--
--| 制御                                                                                     | 機能                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | キー設定                                                                                                                                |
--| :------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------- |
--| [Permission rules](/docs/ja/permissions)                                                    | 特定のツールとコマンドを許可、確認、または拒否する                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | `permissions.allow`、`permissions.deny`                                                                                              |
--| [Permission lockdown](/docs/ja/permissions#managed-only-settings)                           | マネージド設定を [permission ルールの唯一の設定ソース](/docs/ja/settings-reference#allowmanagedpermissionrulesonly) にする。`--dangerously-skip-permissions` を無効化する                                                                                                                                                                                                                                                                                                                                                                            | `allowManagedPermissionRulesOnly`、`permissions.disableBypassPermissionsMode`                                                        |
--| [Starting permission mode](/docs/ja/permission-modes#which-mode-a-session-starts-in)        | 開発者のターミナルセッションが開始する権限モードを選択するか、組み込みの開始権限モードの代わりに自動モードを削除する。VS Code 拡張機能は、Pro、Max、Team プランでのみ設定した `defaultMode` を読み取ります。[Switch permission modes](/docs/ja/permission-modes#switch-permission-modes) は拡張機能が読み取る内容をリストします                                                                                                                                                                                                                                                                                                | `permissions.defaultMode`、`permissions.disableAutoMode`                                                                             |
--| [Sandboxing](/docs/ja/sandboxing)                                                           | ドメイン許可リスト付きの OS レベルのファイルシステムとネットワーク分離                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | `sandbox.enabled`、`sandbox.network.allowedDomains`                                                                                  |
--| [Managed policy CLAUDE.md](/docs/ja/memory#deploy-organization-wide-claude-md)              | すべてのセッションで読み込まれる組織全体の指示。除外できない                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | マネージドポリシーパスのファイル                                                                                                                    |
--| [MCP server control](/docs/ja/managed-mcp)                                                  | ユーザーが追加または接続できる MCP サーバーを制限するか、固定セットをデプロイするか、すべてのユーザーに独自のサーバーと一緒にリモートサーバーを提供する                                                                                                                                                                                                                                                                                                                                                                                                                                    | `allowedMcpServers`、`deniedMcpServers`、`allowManagedMcpServersOnly`、`managedMcpServers`、またはデプロイされた `managed-mcp.json` ファイル          |
--| [Plugin marketplace control](/docs/ja/plugin-marketplaces#managed-marketplace-restrictions) | ユーザーが追加およびインストールできるマーケットプレイスソースを制限し、単一実行のためにプラグイン、エージェント、MCP サーバーをサイドロードする CLI フラグを拒否し、[`command` プラグインソース](/docs/ja/plugin-marketplaces#command-sources) をブロックし、どのマーケットプレイスのプラグインが提案されるかをホワイトリストに登録する                                                                                                                                                                                                                                                                                                                 | `strictKnownMarketplaces`、`blockedMarketplaces`、`disableSideloadFlags`、`disableCommandPluginSources`、`pluginSuggestionMarketplaces` |
--| [Customization lockdown](/docs/ja/settings-reference#strictpluginonlycustomization)         | スキル、エージェント、フック、および MCP サーバーをユーザーおよびプロジェクトソースからブロックし、プラグインまたはマネージド設定からのみ取得できるようにする                                                                                                                                                                                                                                                                                                                                                                                                                                 | `strictPluginOnlyCustomization`                                                                                                     |
--| [Hook restrictions](/docs/ja/settings-reference#allowmanagedhooksonly)                      | 実行されるフックを制限し、HTTP フック URL を制限する。[`allowManagedHooksOnly` の下で実行される内容](/docs/ja/settings-reference#what-runs-under-allowmanagedhooksonly) を参照して、完全な効果リストを確認してください                                                                                                                                                                                                                                                                                                                                                        | `allowManagedHooksOnly`、`allowedHttpHookUrls`                                                                                       |
--| [Login enforcement](/docs/ja/settings-reference#forceloginmethod)                           | ログインを特定の方法または Anthropic 組織に制限する。メソッド制限は VS Code 拡張機能、Agent SDK、`claude setup-token`、`/install-github-app` 全体に適用され、ターミナルのインタラクティブログイン画面は `/login` または初回オンボーディングで到達し、メソッドを強制せずに事前選択します。Claude Code は、ターミナル、VS Code 拡張機能、Agent SDK での claude.ai アカウントログインの組織を検証し、Claude Console ログインまたは [gateway](/docs/ja/claude-apps-gateway) サインインではチェックしません。v2.1.212 より前は、ターミナルログインのみが両方のキーを適用していました。設定されている場合、`ANTHROPIC_API_KEY`、`ANTHROPIC_AUTH_TOKEN`、または `apiKeyHelper` によって認証されたセッションはスタートアップでブロックされます。クラウドプロバイダーセッションは影響を受けません | `forceLoginMethod`、`forceLoginOrgUUID`                                                                                              |
--| [Disable agent view](/docs/ja/agent-view#how-background-sessions-are-hosted)                | `claude agents`、`--bg`、`/background`、およびオンデマンドスーパーバイザーをオフにする                                                                                                                                                                                                                                                                                                                                                                                                                                                      | `disableAgentView`                                                                                                                  |
--| [Configure the corporate launcher](/docs/ja/corporate-launcher)                             | [バックグラウンドエージェントスーパーバイザー](/docs/ja/agent-view#how-background-sessions-are-hosted)、そのワーカー、および [その他のカバーされたバックグラウンドプロセス](/docs/ja/corporate-launcher#what-the-launcher-covers) に、エージェントビューをオフにする代わりに、必須の企業ランチャーをプレフィックスする                                                                                                                                                                                                                                                                                                       | `processWrapper`                                                                                                                    |
--| [Model restrictions](/docs/ja/model-config#restrict-model-selection)                        | `availableModels` はピッカーに表示されるモデルをフィルタリングします。`enforceAvailableModels` を追加すると、自動選択されるデフォルトモデルも制限されます。この設定が CLI、ウェブ、IDE にどのように到達するかについては、[surface coverage](/docs/ja/model-config#surface-coverage) を参照してください                                                                                                                                                                                                                                                                                                             | `availableModels`、`enforceAvailableModels`                                                                                          |
--| [Version floor](/docs/ja/settings-reference#minimumversion)                                 | 自動更新が組織全体の最小値より下にインストールされるのを防ぐ                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | `minimumVersion`                                                                                                                    |
--| [Required version range](/docs/ja/settings-reference#requiredminimumversion)                | 実行中のバージョンが組織承認の範囲外の場合、まったく起動を拒否する。`minimumVersion` より強力で、ダウングレードのみをブロックする                                                                                                                                                                                                                                                                                                                                                                                                                                         | `requiredMinimumVersion`、`requiredMaximumVersion`                                                                                   |
 ```
 
 </details>

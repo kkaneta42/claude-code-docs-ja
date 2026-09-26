@@ -27,20 +27,20 @@ Claude Security プラグインは、Claude Code セッション内でコード�
   プラグインをインストールする
 </h2>
 
-Claude Code セッションで、[公式 Anthropic マーケットプレイス](/docs/ja/discover-plugins#official-anthropic-marketplace)からインストールします。
+Claude Code セッションで、[公式 Anthropic マーケットプレイス](/docs/ja/plugins/anthropic-marketplaces)からインストールします。
 
 ```text theme={null}
 /plugin install claude-security@claude-plugins-official
 ```
 
-コマンドはプラグインの詳細を開き、[インストールスコープ](/docs/ja/discover-plugins#install-plugins)を選択してインストールを開始します。
+コマンドはプラグインの詳細を開き、[インストールスコープ](/docs/ja/plugins/install#install-a-plugin)を選択してインストールを開始します。
 
 インストールが失敗した場合、修正は Claude Code が報告するメッセージによって異なります。
 
 * `Marketplace "claude-plugins-official" not found` と報告された場合は、`/plugin marketplace add anthropics/claude-plugins-official` でマーケットプレイスを追加してから、インストールを再試行してください。
-* マーケットプレイスで [プラグインが見つからないと報告された](/docs/ja/discover-plugins#install-plugins)場合は、プラグイン名のタイプミスを確認してください。
+* マーケットプレイスで [プラグインが見つからないと報告された](/docs/ja/plugins/install#install-a-plugin)場合は、プラグイン名のタイプミスを確認してください。
 
-インストール概要を確認してください。`Run /reload-plugins to activate.` と報告された場合は、[プラグインの変更を再起動なしで適用](/docs/ja/discover-plugins#apply-plugin-changes-without-restarting)を参照して、現在のセッションでプラグインをアクティブにしてください。
+インストール概要を確認してください。`Run /reload-plugins to activate.` と報告された場合は、[プラグインの変更を再起動なしで適用](/docs/ja/plugins/cli-reference#reload-plugins)を参照して、現在のセッションでプラグインをアクティブにしてください。
 
 プラグインがアクティブになり、[コードベースをスキャンして修正](#scan-and-fix-your-codebase)する準備ができました。
 
@@ -162,10 +162,10 @@ Claude Security プラグインは、[セキュリティガイダンスプラグ
   関連リソース
 </h2>
 
-このページが触れるピースについてさらに詳しく知るには。
+このページが触れるピースについてさらに詳しく知るには：
 
-* [セキュリティガイダンスプラグイン](/docs/ja/security-guidance): Claude が書くときにコード内の問題をキャッチします。同じセッション内。
-* [Code Review](/docs/ja/code-review): PR 時のマルチエージェントレビューをセットアップします。
-* [Claude Security](https://claude.com/product/claude-security): 接続されたリポジトリを監視するマネージドサービス。
-* [Claude Code セキュリティ](/docs/ja/security): Claude Code がトラスト、権限、セーフガードにどのようにアプローチするか。
-* [プラグインを発見してインストール](/docs/ja/discover-plugins#official-anthropic-marketplace): 他の公式プラグインを参照します。
+* [セキュリティガイダンスプラグイン](/docs/ja/security-guidance)：Claude がコードを書くときにコード内の問題をキャッチします。同じセッション内で
+* [Code Review](/docs/ja/code-review)：PR 時のマルチエージェントレビューをセットアップします
+* [Claude Security](https://claude.com/product/claude-security)：接続されたリポジトリを監視するマネージドサービス
+* [Claude Code セキュリティ](/docs/ja/security)：Claude Code がトラスト、権限、セーフガードにどのようにアプローチするか
+* [プラグインをインストールして管理](/docs/ja/plugins/install)：公式マーケットプレイスから他のプラグインを検索してインストールします

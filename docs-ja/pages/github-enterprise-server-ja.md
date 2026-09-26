@@ -67,17 +67,17 @@ github.com 上のリポジトリについては、[クラウドで Claude Code �
 
 マニフェストは、クラウドセッション、Code Review、Claude Security、プラグインマーケットプレイス、および貢献度メトリクスをカバーする権限と Webhook イベントで GitHub App を設定します。
 
-| 権限                   | アクセス      | 用途                                                                                                                                                            |
-| :------------------- | :-------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Contents             | 読み取りと書き込み | リポジトリのクローンとブランチのプッシュ                                                                                                                                          |
-| Pull requests        | 読み取りと書き込み | PR の作成とレビューコメントの投稿                                                                                                                                            |
-| Issues               | 読み取りと書き込み | Issue メンションへの応答                                                                                                                                               |
-| Checks               | 読み取りと書き込み | Code Review チェック実行の投稿                                                                                                                                         |
-| Actions              | 読み取り      | 自動修正用の CI ステータスの読み取り                                                                                                                                          |
-| Commit statuses      | 読み取り      | チェック実行の代わりにコミットステータスを報告するプロバイダーから CI ステータスを読み取る                                                                                                               |
-| Repository hooks     | 読み取りと書き込み | [Organization settings > Plugins](https://claude.ai/admin-settings/plugins) でマーケットプレイスの **Sync automatically** がオンになっている場合、プラグインマーケットプレイスリポジトリに Webhook を作成する |
-| Metadata             | 読み取り      | すべてのアプリで GitHub が必須                                                                                                                                           |
-| Organization members | 読み取り      | github.com の Claude GitHub App と一致させます。これは接続ユーザーの組織ロールをチェックするときにインストールをリンクするために使用されます                                                                         |
+| 権限                   | アクセス      | 用途                                                                                                                                                                                     |
+| :------------------- | :-------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Contents             | 読み取りと書き込み | リポジトリのクローンとブランチのプッシュ                                                                                                                                                                   |
+| Pull requests        | 読み取りと書き込み | PR の作成とレビューコメントの投稿                                                                                                                                                                     |
+| Issues               | 読み取りと書き込み | Issue メンションへの応答                                                                                                                                                                        |
+| Checks               | 読み取りと書き込み | Code Review チェック実行の投稿                                                                                                                                                                  |
+| Actions              | 読み取り      | 自動修正用の CI ステータスの読み取り                                                                                                                                                                   |
+| Commit statuses      | 読み取り      | チェック実行の代わりにコミットステータスを報告するプロバイダーから CI ステータスを読み取る                                                                                                                                        |
+| Repository hooks     | 読み取りと書き込み | [Organization settings > Plugins & skills](https://claude.ai/admin-settings/skills?tab=marketplaces) でマーケットプレイスの **Sync automatically** がオンになっている場合、プラグインマーケットプレイスリポジトリに Webhook を作成する |
+| Metadata             | 読み取り      | すべてのアプリで GitHub が必須                                                                                                                                                                    |
+| Organization members | 読み取り      | github.com の Claude GitHub App と一致させます。これは接続ユーザーの組織ロールをチェックするときにインストールをリンクするために使用されます                                                                                                  |
 
 アプリは `pull_request`、`issue_comment`、`pull_request_review_comment`、`pull_request_review`、`check_run`、および `status` イベントをサブスクライブします。
 
@@ -160,7 +160,7 @@ GHES インスタンスでプラグインマーケットプレイスをホスト
 
 Claude Code は git を非対話的に実行し、マシンの `known_hosts` ファイルにないホストへの SSH 接続を拒否します。git 認証情報ヘルパーを備えた HTTPS URL は `known_hosts` 要件を回避します。
 
-マーケットプレイスの構築の完全なガイドについては、[プラグインマーケットプレイスの作成と配布](/docs/ja/plugin-marketplaces) を参照してください。
+マーケットプレイスの構築の完全なガイドについては、[プラグインマーケットプレイスの作成と配布](/docs/ja/plugins/create-marketplace) を参照してください。
 
 <h3 id="pre-register-ghes-marketplaces-with-managed-settings">
   管理設定で GHES マーケットプレイスを事前登録
@@ -262,7 +262,7 @@ GitHub Enterprise アカウントを接続するには、[claude.ai/code](https:
 
 * [クラウドで Claude Code を使用](/docs/ja/claude-code-on-the-web)：クラウドインフラストラクチャで Claude Code セッションを実行
 * [Code Review](/docs/ja/code-review)：自動 PR レビュー
-* [プラグインマーケットプレイス](/docs/ja/plugin-marketplaces)：プラグインカタログの構築と配布
+* [プラグインマーケットプレイス](/docs/ja/plugins/host-marketplace)：プラグインカタログの構築と配布
 * [分析](/docs/ja/analytics)：使用状況と貢献度メトリクスの追跡
 * [管理設定](/docs/ja/settings)：組織全体のポリシー設定
 * [ネットワーク設定](/docs/ja/network-config)：ファイアウォールと IP ホワイトリストの要件

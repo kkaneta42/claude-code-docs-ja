@@ -202,21 +202,21 @@ Claude が 1 つの指示をスキップし続ける場合は、その行だけ�
 CLAUDE.md ファイルは `@path/to/import` 構文を使用して追加ファイルをインポートできます。インポートルールと CLAUDE.md ファイルが存在できる場所については、[CLAUDE.md ファイル](/docs/ja/memory#claude-md-files)を参照してください。
 
 <h3 id="configure-permissions">
-  パーミッションを設定する
+  権限モードを設定する
 </h3>
 
 <Tip>
   制御を失わずにプロンプトを減らすには、`/permissions` で信頼するツールを事前承認し、`/sandbox` でサンドボックス化されたコマンドを質問なしで実行させます。自分でエディットとコマンドを承認したい場合は、Manual モードに切り替えます。
 </Tip>
 
-Pro、Max、Team プランでは、auto mode は対話型ターミナルと VS Code セッションの[組み込みの開始パーミッションモード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)です。別の分類器モデルがほとんどのアクションをレビューし、スコープエスカレーション、未知のインフラストラクチャ、敵対的なコンテンツ駆動のアクションなど、リスクがあるように見えるものだけをブロックします。
+Pro、Max、Team プランでは、auto mode は対話型ターミナルと VS Code セッションの[組み込みの開始権限モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)です。別の分類器モデルがほとんどのアクションをレビューし、スコープエスカレーション、未知のインフラストラクチャ、敵対的なコンテンツ駆動のアクションなど、リスクがあるように見えるものだけをブロックします。
 
-Manual モード（他のプランの組み込みの開始パーミッションモード）では、Claude Code はシステムを変更する可能性のあるアクション（ファイル書き込み、Bash コマンド、MCP ツール）の前に尋ねます。これは安全ですが、面倒です。10 回目の承認後、あなたはクリックしているだけで、本当にレビューしていません。これらの中断を減らす 2 つのツールがあり、Manual モードで適用され、auto mode でも同様に適用されます。
+Manual モード（他のプランの組み込みの開始権限モード）では、Claude Code はシステムを変更する可能性のあるアクション（ファイル書き込み、Bash コマンド、MCP ツール）の前に尋ねます。これは安全ですが、面倒です。10 回目の承認後、あなたはクリックしているだけで、本当にレビューしていません。これらの中断を減らす 2 つのツールがあり、Manual モードで適用され、auto mode でも同様に適用されます。
 
-* **パーミッションホワイトリスト**：`npm run lint` や `git commit` など、安全であることがわかっているツールを許可します
+* **権限ホワイトリスト**：`npm run lint` や `git commit` など、安全であることがわかっているツールを許可します
 * **サンドボックス**：OS レベルの分離を有効にして、ファイルシステムとネットワークアクセスを制限し、Claude が定義された境界内でより自由に動作できるようにします
 
-[パーミッションモード](/docs/ja/permission-modes)、[パーミッションルール](/docs/ja/permissions)、[サンドボックス](/docs/ja/sandboxing)の詳細をお読みください。
+[権限モード](/docs/ja/permission-modes)、[権限ルール](/docs/ja/permissions)、[サンドボックス](/docs/ja/sandboxing)の詳細をお読みください。
 
 <h3 id="use-cli-tools">
   CLI ツールを使用する
@@ -334,7 +334,7 @@ Claude に明示的にサブエージェントを使用するよう指示しま�
   `/plugin` を実行してマーケットプレイスを参照します。プラグインは設定なしでスキル、ツール、統合を追加します。
 </Tip>
 
-[プラグイン](/docs/ja/plugins)は、コミュニティと Anthropic からの単一のインストール可能なユニットにスキル、フック、サブエージェント、MCP サーバーをバンドルします。型付き言語を使用する場合は、[コード インテリジェンス プラグイン](/docs/ja/discover-plugins#code-intelligence)をインストールして、Claude に正確なシンボルナビゲーションと編集後の自動エラー検出を提供します。
+[プラグイン](/docs/ja/plugins/overview)は、コミュニティと Anthropic からの単一のインストール可能なユニットにスキル、フック、サブエージェント、MCP サーバーをバンドルします。型付き言語を使用する場合は、[コード インテリジェンス プラグイン](/docs/ja/plugins/code-intelligence)をインストールして、Claude に正確なシンボルナビゲーションと編集後の自動エラー検出を提供します。
 
 スキル、サブエージェント、フック、MCP の選択に関するガイダンスについては、[Claude Code を拡張](/docs/ja/features-overview#match-features-to-your-goal)を参照してください。
 
@@ -541,7 +541,7 @@ claude -p "Analyze this log file" --output-format stream-json --verbose
   各タスクに対して `claude -p` を呼び出すループを実行します。バッチ操作のスコープ権限に `--allowedTools` を使用します。
 </Tip>
 
-大規模な移行または分析の場合、多くの並列 Claude 呼び出し全体で作業を配布できます。git リポジトリでは、[`/batch <instruction>`](/docs/ja/commands#all-commands) を実行して、Claude が変更を 5～30 個のサブエージェント全体に分割させます。各サブエージェントは独自の worktree で作業し、プルリクエストを開きます。代わりに独自のスクリプトからファンアウトを駆動するには、`claude -p` をループします。
+大規模な移行または分析の場合、多くの並列 Claude 呼び出し全体で作業を配布できます。[`/batch <instruction>`](/docs/ja/commands#all-commands) を実行して、Claude が変更を 5～30 個のサブエージェント全体に分割させます。各サブエージェントは独自の worktree で作業します。代わりに独自のスクリプトからファンアウトを駆動するには、`claude -p` をループします。
 
 <Steps>
   <Step title="タスクリストを生成する">

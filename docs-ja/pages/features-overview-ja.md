@@ -29,7 +29,7 @@ Claude Code は、コードについて推論するモデルと、ファイル�
 * **[Dynamic workflows](/docs/ja/workflows)** は Claude が書いたスクリプトから多くの subagents を実行し、1 つの結果を返します
 * **[Cross-session messaging](/docs/ja/cross-session-messaging)** により、Claude はあなたのセッションの 1 つから別のセッションにメッセージを渡すことができます
 * **[Hooks](/docs/ja/hooks-guide)** はライフサイクルイベントで発火し、スクリプト、HTTP リクエスト、MCP ツール呼び出し、プロンプト、または subagent を実行できます
-* **[Plugins](/docs/ja/plugins)** と **[marketplaces](/docs/ja/plugin-marketplaces)** はこれらの機能をパッケージ化して配布します
+* **[Plugins](/docs/ja/plugins/overview)** と **[marketplaces](/docs/ja/plugins/overview)** はこれらの機能をパッケージ化して配布します
 
 [Skills](/docs/ja/skills) は最も柔軟な拡張機能です。スキルは知識、ワークフロー、または指示を含むマークダウンファイルです。`/deploy` のようなコマンドでスキルを呼び出すことができます。または Claude は関連する場合に自動的にスキルをロードできます。スキルは現在の会話で実行することも、subagents を介して独立したコンテキストで実行することもできます。
 
@@ -52,7 +52,7 @@ Claude Code は、コードについて推論するモデルと、ファイル�
 | **Hook**                                                       | イベントによってトリガーされるスクリプト、HTTP リクエスト、MCP ツール呼び出し、プロンプト、または subagent | すべての一致するイベントで実行する必要がある自動化                             | すべてのファイル編集後に ESLint を実行する                                    |
 | **[Artifact](/docs/ja/artifacts)**                                  | セッション出力をプライベートでインタラクティブな Web ページとして公開する                        | ターミナルテキストではなく視覚的に表示または共有したい出力                         | Claude が調査するにつれて更新されるインシデントタイムライン                            |
 
-**[Plugins](/docs/ja/plugins)** はパッケージングレイヤーです。プラグインはスキル、フック、subagent、MCP サーバーを単一のインストール可能なユニットにバンドルします。プラグインスキルは名前空間化されているため（`/my-plugin:review` など）、複数のプラグインが共存できます。複数のリポジトリ全体で同じセットアップを再利用したい場合、または **[marketplace](/docs/ja/plugin-marketplaces)** を通じて他のユーザーに配布したい場合はプラグインを使用します。
+**[Plugins](/docs/ja/plugins/overview)** はパッケージングレイヤーです。プラグインはスキル、フック、subagent、MCP サーバーを単一のインストール可能なユニットにバンドルします。プラグインスキルは名前空間化されているため（`/my-plugin:review` など）、複数のプラグインが共存できます。複数のリポジトリ全体で同じセットアップを再利用したい場合、または **[marketplace](/docs/ja/plugins/overview)** を通じて他のユーザーに配布したい場合はプラグインを使用します。
 
 <h3 id="build-your-setup-over-time">
   セットアップを時間をかけて構築する
@@ -60,17 +60,17 @@ Claude Code は、コードについて推論するモデルと、ファイル�
 
 すべてを事前に設定する必要はありません。各機能には認識可能なトリガーがあり、ほとんどのチームはおおよそこの順序で追加します。
 
-| トリガー                                            | 追加                                                                                |
-| :---------------------------------------------- | :-------------------------------------------------------------------------------- |
-| Claude が規約またはコマンドを 2 回間違える                      | [CLAUDE.md](/docs/ja/memory) に追加する                                                     |
-| Claude をより短く、より詳しく説明するか、同じ形式で答えるよう何度も依頼している     | [output style](/docs/ja/output-styles) を設定する                                           |
-| タスクを開始するために同じプロンプトを何度も入力している                    | ユーザーが呼び出せる [skill](/docs/ja/skills) として保存する                                            |
-| 同じプレイブックまたは複数ステップの手順をチャットに 3 回目に貼り付けている         | [skill](/docs/ja/skills) としてキャプチャする                                                    |
-| Claude が見ることができないブラウザタブからデータをコピーし続けている          | そのシステムを [MCP server](/docs/ja/mcp) として接続する                                             |
-| Claude が多くのファイルを読み取ってシンボルが定義または使用されている場所を見つけている | 言語用の [code intelligence plugin](/docs/ja/discover-plugins#code-intelligence) をインストールする |
-| サイドタスクが会話に再度参照しない出力で満杯になっている                    | [subagent](/docs/ja/sub-agents) を通してルーティングする                                           |
-| 何かが毎回起こることを望んでいる（尋ねることなく）                       | [hook](/docs/ja/hooks-guide) を作成する                                                     |
-| 2 番目のリポジトリが同じセットアップを必要としている                     | [plugin](/docs/ja/plugins) としてパッケージ化する                                                 |
+| トリガー                                            | 追加                                                                       |
+| :---------------------------------------------- | :----------------------------------------------------------------------- |
+| Claude が規約またはコマンドを 2 回間違える                      | [CLAUDE.md](/docs/ja/memory) に追加する                                            |
+| Claude をより短く、より詳しく説明するか、同じ形式で答えるよう何度も依頼している     | [output style](/docs/ja/output-styles) を設定する                                  |
+| タスクを開始するために同じプロンプトを何度も入力している                    | ユーザーが呼び出せる [skill](/docs/ja/skills) として保存する                                   |
+| 同じプレイブックまたは複数ステップの手順をチャットに 3 回目に貼り付けている         | [skill](/docs/ja/skills) としてキャプチャする                                           |
+| Claude が見ることができないブラウザタブからデータをコピーし続けている          | そのシステムを [MCP server](/docs/ja/mcp) として接続する                                    |
+| Claude が多くのファイルを読み取ってシンボルが定義または使用されている場所を見つけている | 言語用の [code intelligence plugin](/docs/ja/plugins/code-intelligence) をインストールする |
+| サイドタスクが会話に再度参照しない出力で満杯になっている                    | [subagent](/docs/ja/sub-agents) を通してルーティングする                                  |
+| 何かが毎回起こることを望んでいる（尋ねることなく）                       | [hook](/docs/ja/hooks-guide) を作成する                                            |
+| 2 番目のリポジトリが同じセットアップを必要としている                     | [plugin](/docs/ja/plugins/overview) としてパッケージ化する                               |
 
 同じトリガーは、既に持っているものを更新するタイミングを示します。繰り返される間違いまたは繰り返されるレビューコメントは、チャットでの 1 回限りの修正ではなく、CLAUDE.md の編集です。手動で何度も調整するワークフローは、別の改訂が必要なスキルです。
 
@@ -207,7 +207,7 @@ Claude Code は、コードについて推論するモデルと、ファイル�
 機能は複数のレベルで定義できます。ユーザー全体、プロジェクトごと、プラグイン経由、または管理ポリシーを通じて。CLAUDE.md ファイルをサブディレクトリにネストしたり、スキルをモノレポの特定のパッケージに配置したりすることもできます。同じ機能が複数のレベルに存在する場合、以下がレイヤーする方法です。
 
 * **CLAUDE.md ファイル** は加算的です。すべてのレベルが同時に Claude のコンテキストにコンテンツを提供します。作業ディレクトリ以上のファイルは起動時に読み込まれます。サブディレクトリは作業中に読み込まれます。指示が競合する場合、Claude は判断を使用してそれらを調整します。[CLAUDE.md ファイルがどのように読み込まれるかを参照してください](/docs/ja/memory#how-claude-md-files-load)。
-* **スキルと subagent** は名前でオーバーライドします。同じ名前が複数のレベルに存在する場合、優先度に基づいて 1 つの定義が勝ちます（スキルの場合は管理 > ユーザー > プロジェクト。subagent の場合は管理 > CLI フラグ > プロジェクト > ユーザー > プラグイン）。プラグインスキルは [名前空間化](/docs/ja/plugins#add-skills-to-your-plugin) されており、競合を回避します。[スキル検出](/docs/ja/skills#resolve-skills-that-share-a-name) と [subagent スコープ](/docs/ja/sub-agents#choose-the-subagent-scope) を参照してください。
+* **スキルと subagent** は名前でオーバーライドします。同じ名前が複数のレベルに存在する場合、優先度に基づいて 1 つの定義が勝ちます（スキルの場合は管理 > ユーザー > プロジェクト。subagent の場合は管理 > CLI フラグ > プロジェクト > ユーザー > プラグイン）。プラグインスキルは [名前空間化](/docs/ja/plugins/components#skills) されており、競合を回避します。[スキル検出](/docs/ja/skills#resolve-skills-that-share-a-name) と [subagent スコープ](/docs/ja/sub-agents#choose-the-subagent-scope) を参照してください。
 * **MCP サーバー** は名前でオーバーライドします。ローカル > プロジェクト > ユーザー。[MCP スコープ](/docs/ja/mcp#scope-hierarchy-and-precedence) を参照してください。
 * **フック** はマージされます。登録されたすべてのフックは、ソースに関係なく、一致するイベントに対して発火します。[フック](/docs/ja/hooks) を参照してください。
 
@@ -304,7 +304,7 @@ Claude Code は、コードについて推論するモデルと、ファイル�
 
     **コンテキストコスト：** 低い。シンボル検索は多くの場合、広範なファイル読み取りを置き換えるため、ネットコンテキスト使用量は減少する可能性があります。
 
-    <Tip>LSP ツールは、言語の[コード intelligence プラグイン](/docs/ja/discover-plugins#code-intelligence) をインストールするまで非アクティブです。</Tip>
+    <Tip>LSP ツールは、言語の[コード intelligence プラグイン](/docs/ja/plugins/code-intelligence) をインストールするまで非アクティブです。</Tip>
   </Tab>
 
   <Tab title="Subagents">
@@ -370,11 +370,11 @@ Claude Code は、コードについて推論するモデルと、ファイル�
     フックでアクションを自動化
   </Card>
 
-  <Card title="Plugins" icon="puzzle-piece" href="/docs/ja/plugins">
+  <Card title="Plugins" icon="puzzle-piece" href="/docs/ja/plugins/overview">
     機能セットをバンドルして共有
   </Card>
 
-  <Card title="Marketplaces" icon="store" href="/docs/ja/plugin-marketplaces">
+  <Card title="Marketplaces" icon="store" href="/docs/ja/plugins/create-marketplace">
     プラグインコレクションをホストして配布
   </Card>
 </CardGroup>

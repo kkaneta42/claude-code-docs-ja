@@ -84,7 +84,7 @@ Claude が自分自身のために書いたメモ。あなたの修正と設定�
   Bare mode
 </h3>
 
-`--bare` を使用すると、Claude Code は hooks、skills、カスタムコマンド、subagents、plugins、MCP servers、auto memory、CLAUDE.md を読み込まずに起動します。ただし、`--add-dir` で渡したディレクトリ内の skills は除きます。CI とスクリプト呼び出しで、すべてのマシンで同じ結果が必要な場合に推奨されます。
+`--bare` を使用すると、Claude Code は hooks、skills、カスタムコマンド、subagents、インストール済み plugins、MCP servers、auto memory、CLAUDE.md を読み込まずに起動します。ただし、`--add-dir` で渡したディレクトリ内の skills は除きます。CI とスクリプト呼び出しで、すべてのマシンで同じ結果が必要な場合に推奨されます。
 
 詳細情報: [Start faster with bare mode](/docs/ja/headless#start-faster-with-bare-mode)
 
@@ -332,9 +332,9 @@ Claude Code が Claude に与える指示を変更して、応答動作、トー
   Plugin
 </h3>
 
-skills、hooks、subagents、MCP servers のバンドル。単一のインストール可能なユニットとしてパッケージ化されます。Plugin skills は `plugin-name:skill-name` として名前空間化されるため、複数のプラグインが共存できます。[marketplace](/docs/ja/plugin-marketplaces) を通じてチーム全体にプラグインを配布します。
+skills、hooks、subagents、MCP servers のバンドル。単一のインストール可能なユニットとしてパッケージ化されます。Plugin skills は `plugin-name:skill-name` として名前空間化されるため、複数のプラグインが共存できます。[marketplace](/docs/ja/plugins/overview) を通じてチーム全体にプラグインを配布します。
 
-詳細情報: [Plugins](/docs/ja/plugins)
+詳細情報: [Plugins](/docs/ja/plugins/overview)
 
 <h3 id="project-trust">
   Project trust

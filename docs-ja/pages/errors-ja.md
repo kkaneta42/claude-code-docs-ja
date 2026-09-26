@@ -576,7 +576,7 @@ Auto mode classifier transcript exceeded context window — falling back to manu
   The server returned no safety verdict
 </h3>
 
-[server-side classifier review](/docs/ja/permission-modes#server-side-classifier-review) では、auto mode はサーバーがそれに対して評決を与えないときにアクションを拒否します。拒否は、Claude Code が判定できる場合、`(timed out)` などの括弧内にカテゴリを示します。
+[server-side classifier review](/docs/ja/permission-modes#server-side-classifier-review) では、auto mode はサーバーがそれに対して判定を与えないときにアクションを拒否します。拒否は、Claude Code が判定できる場合（`(timed out)` など）に括弧内にカテゴリを示します。
 
 ```text theme={null}
 The server-side auto mode classifier gave no verdict (timed out), so auto mode cannot determine the safety of <tool>.
@@ -584,7 +584,7 @@ The server-side auto mode classifier gave no verdict (timed out), so auto mode c
 
 メッセージの残りの部分は、1 回の再試行が役に立つかどうかを Claude に伝えます。これらの拒否の前に、Claude Code は待機するため、Claude の次の試行は一度に続きません。インタラクティブセッションでの待機中、スピナーは `Auto mode check unavailable` とカウントダウンを表示し、`Esc` を押すとターンが中断されます。
 
-10 回連続で評決がない後、auto mode はターンを停止します。
+10 回連続で判定がない場合、auto mode はターンを停止します。
 
 ```text theme={null}
 Auto mode is unavailable — the server returned no safety verdict for the last 10 responses, so Claude stopped. Send a message to try again, or switch out of auto mode.
@@ -599,11 +599,11 @@ Auto mode is unavailable — the server returned no safety verdict for the last 
 **対応方法：**
 
 * 別のメッセージを送信して、Claude が再度試行するようにしてください。応答数のカウントはリセットされます。
-* 停止が繰り返され、リクエストが [LLM gateway or proxy](/docs/ja/llm-gateway) を通じて行われる場合は、ストリーミングレスポンスを短縮するか、書き直すかどうかを確認してください。[Server-side classifier review](/docs/ja/permission-modes#server-side-classifier-review) は、どのゲートウェイの動作が拒否を引き起こすかを示し、[gateway compatibility guide](/docs/ja/llm-gateway-protocol#feature-pass-through) は変更されないまま渡すものをリストします。
+* 停止が繰り返され、リクエストが [LLM gateway or proxy](/docs/ja/llm-gateway) を通じて行われる場合は、ストリーミングレスポンスを短縮するか、書き直すかどうかを確認してください。[Server-side classifier review](/docs/ja/permission-modes#server-side-classifier-review) はどのゲートウェイの動作が拒否を引き起こすかを示し、[gateway compatibility guide](/docs/ja/llm-gateway-protocol#feature-pass-through) は変更されないまま渡すものをリストします。
 * Claude Code を開始する前に `CLAUDE_CODE_AUTO_MODE_SERVER=0` を設定して、代わりに独自のクラシファイアーリクエストを使用してください。v2.1.281 より前では、Claude Code は Anthropic API への直接接続で変数を読み取りませんでした。
-* 代わりにアクションを自分で承認するには、[switch out of auto mode](/docs/ja/permission-modes#switch-permission-modes)
+* 代わりにアクションを自分で承認するには、[switch out of auto mode](/docs/ja/permission-modes#switch-permission-modes) してください
 
-v2.1.280 より前では、Claude Code は評決のないレスポンスからの各アクションを直ちに拒否し、ターンを停止することはありませんでした。
+v2.1.280 より前では、Claude Code は判定のないレスポンスからの各アクションを直ちに拒否し、ターンを停止することはありませんでした。
 
 <h3 id="agent-terminated-early-due-to-an-api-error">
   Agent terminated early due to an API error
@@ -2966,7 +2966,7 @@ Windows では、提案されたコマンドは代わりに `netstat -ano | find
 No available ports for OAuth redirect
 ```
 
-v2.1.268 より前は、Claude Code はオペレーティングシステムが割り当てたポートにフォールバックしなかったため、メッセージは Claude Code が選択したポートのみがバインドできない場合にも表示されていました。これは Hyper-V が Claude Code が選択するポート範囲を予約する Windows ホストで発生する可能性があります。
+v2.1.268 より前は、Claude Code はオペレーティングシステムが割り当てたポートにフォールバックしなかったため、メッセージは Claude Code が選択したポート範囲をカバーする Hyper-V が予約するポートのみがバインドできない場合にも表示されていました。これは Windows ホストで発生する可能性があります。
 
 **対処方法：**
 
@@ -3394,7 +3394,7 @@ Output styles are saved to local settings (.claude/settings.local.json), which t
   プラグインエラー
 </h2>
 
-これらのエラーは、[プラグイン](/docs/ja/plugins)と[マーケットプレイス](/docs/ja/plugin-marketplaces)の設定から発生します。このページのメッセージを生成しないプラグインの問題（マーケットプレイス URL が読み込まれない、またはプラグインがインストールされても表示されないなど）については、[プラグインのトラブルシューティング](/docs/ja/discover-plugins#troubleshooting)を参照してください。
+これらのエラーは、[プラグイン](/docs/ja/plugins/overview)と[マーケットプレイス](/docs/ja/plugins/overview)の設定から発生します。このページのメッセージを生成しないプラグインの問題（マーケットプレイス URL が読み込まれない、またはプラグインがインストールされても表示されないなど）については、[プラグインのトラブルシューティング](/docs/ja/plugins/troubleshooting)を参照してください。
 
 <h3 id="plugin-eval-is-currently-in-early-access">
   plugin eval は現在早期アクセス段階です
@@ -3421,7 +3421,7 @@ Output styles are saved to local settings (.claude/settings.local.json), which t
   マーケットプレイスが信頼されていないソースから登録されている
 </h3>
 
-マーケットプレイスは、[公式 Anthropic マーケットプレイス用に予約されている名前](/docs/ja/plugin-marketplaces#marketplace-schema)で登録されていますが、登録されたソースが `anthropics` GitHub リポジトリではありません。Claude Code は、マーケットプレイスを読み込むか更新するたびに予約名を再確認するため、マーケットプレイスとそこからインストールされたプラグインの読み込みが停止します。v2.1.205 より前は、マーケットプレイスが追加されたときにのみ名前がチェックされたため、その名前が予約される前に登録されたエントリは読み込み続けていました。
+マーケットプレイスは、[公式 Anthropic マーケットプレイス用に予約されている名前](/docs/ja/plugins/marketplace-reference#marketplace-file)で登録されていますが、登録されたソースが `anthropics` GitHub リポジトリではありません。Claude Code は、マーケットプレイスを読み込むか更新するたびに予約名を再確認するため、マーケットプレイスとそこからインストールされたプラグインの読み込みが停止します。v2.1.205 より前は、マーケットプレイスが追加されたときにのみ名前がチェックされたため、その名前が予約される前に登録されたエントリは読み込み続けていました。
 
 ```text theme={null}
 Marketplace "claude-community" is registered from an untrusted source: The name 'claude-community' is reserved for official Anthropic marketplaces. Only repositories from 'github.com/anthropics/' can use this name. To fix it, remove the marketplace and re-add it from the official source.
@@ -3433,13 +3433,13 @@ Marketplace "claude-community" is registered from an untrusted source: The name 
 
 * マーケットプレイスが既に登録されている場合は、`claude plugin marketplace remove <name>` を実行してから、公式の `github.com/anthropics` リポジトリから再度追加してください
 * 名前が予約される前にその名前を使用していたサードパーティマーケットプレイスを公開する場合は、名前を変更し、ユーザーにあなたのソースから再度追加するよう依頼してください
-* [マーケットプレイススキーマ](/docs/ja/plugin-marketplaces#marketplace-schema)の予約名リストを参照してください
+* [マーケットプレイススキーマ](/docs/ja/plugins/marketplace-reference#marketplace-file)の予約名リストを参照してください
 
 <h3 id="marketplace-name-is-another-spelling-of-a-reserved-name">
   マーケットプレイス名が予約名の別のスペルである
 </h3>
 
-マーケットプレイスの名前自体は予約名ではありませんが、Claude Code はそれを別のスペルとして扱います。[予約マーケットプレイス名](/docs/ja/plugin-marketplaces#reserved-name-spellings)は、どのスペルが予約名として数えられるかをリストしています。Claude Code はマーケットプレイスを追加するときにそのような名前を拒否します：
+マーケットプレイスの名前自体は予約名ではありませんが、Claude Code はそれを別のスペルとして扱います。[予約マーケットプレイス名](/docs/ja/plugins/marketplace-reference#reserved-name-spellings)は、どのスペルが予約名としてカウントされるかをリストしています。Claude Code はマーケットプレイスを追加するときにそのような名前を拒否します：
 
 ```text theme={null}
 Failed to add marketplace: "claude.code.plugins" is another spelling of "claude-code-plugins", a reserved marketplace name.
@@ -3459,10 +3459,10 @@ known_marketplaces.json has an entry named "claude.code.plugins", another spelli
 * 無視されたエントリの警告については、`claude plugin marketplace remove` コマンドを実行するか、`~/.claude/plugins/known_marketplaces.json` からエントリを削除してください
 
 <h3 id="marketplace-is-already-added-from-a-different-source">
-  マーケットプレイスは既に別のソースから追加されている
+  マーケットプレイスが既に別のソースから追加されている
 </h3>
 
-[`/plugin install <plugin> --marketplace <source>`](/docs/ja/discover-plugins#add-a-marketplace-and-install-in-one-command)を通じてマーケットプレイスの追加を確認し、そのソースから Claude Code が取得したカタログが、別のソースから既に追加したマーケットプレイスと同じ名前を付けています。Claude Code は既存のマーケットプレイスを保持し、それを置き換えず、プラグインはインストールされません。
+あなたは [`/plugin install <plugin> --marketplace <source>`](/docs/ja/plugins/install#add-a-marketplace-and-install-in-one-command)を通じてマーケットプレイスの追加を確認し、そのソースから Claude Code が取得したカタログが、別のソースから既に追加したマーケットプレイスと同じ名前を付けています。Claude Code は既存のマーケットプレイスを保持し、それを置き換えず、プラグインはインストールされません。
 
 ```text theme={null}
 Marketplace "acme-tools" is already added from a different source (github:acme/plugins). To use this source instead, remove that marketplace first with /plugin marketplace remove acme-tools.
@@ -3477,7 +3477,7 @@ Marketplace "acme-tools" is already added from a different source (github:acme/p
   プラグインコマンドがシェルコマンドで user\_config を参照している
 </h3>
 
-プラグインフック、[monitor](/docs/ja/plugins-reference#monitors)、または MCP [`headersHelper`](/docs/ja/mcp#use-dynamic-headers-for-custom-authentication) コマンドが `${user_config.KEY}` [プラグインオプション](/docs/ja/plugins-reference#user-configuration)を参照し、置換された文字列がシェルに渡されます。`$(...)` 、バッククォート、または `;` を含む設定値はそこでコードとして実行されるため、Claude Code は値を置換する代わりにコンポーネントの起動を拒否します。チェックはコマンドテンプレートで実行されるため、値がまだ設定されていない場合でもエラーが表示されます。v2.1.207 より前は、値がシェルコマンドに置換されていました。
+プラグインフック、[monitor](/docs/ja/plugins/components#monitors)、または MCP [`headersHelper`](/docs/ja/mcp#use-dynamic-headers-for-custom-authentication) コマンドが `${user_config.KEY}` [プラグインオプション](/docs/ja/plugins/manifest-reference#user-configuration)を参照し、置換された文字列がシェルに渡されます。`$(...)` 、バッククォート、または `;` を含む設定値はそこでコードとして実行されるため、Claude Code は値を置換する代わりにコンポーネントの起動を拒否します。チェックはコマンドテンプレートで実行されるため、値がまだ設定されていない場合でもエラーが表示されます。v2.1.207 より前は、値がシェルコマンドに置換されていました。
 
 表現は、オプションを参照したサーフェスによって異なります。シェル形式フックは以下のように報告します：
 
@@ -3507,7 +3507,7 @@ headersHelper for MCP server 'internal-api' references ${user_config.*}. The sub
   プラグインアーカイブの整合性チェックが失敗した
 </h3>
 
-プラグインのマーケットプレイスエントリは、`sha256` ピン付きの [`archive` ソース](/docs/ja/plugin-marketplaces#zip-archives)を使用しており、ダウンロードされたファイルのダイジェストがピンと一致しません。Claude Code はインストールを拒否するため、プラグインキャッシュに何も変更されません。不一致には 3 つの考えられる原因があります：
+プラグインのマーケットプレイスエントリは、`sha256` ピン付きの [`archive` ソース](/docs/ja/plugins/marketplace-reference#archive-plugin-source)を使用しており、ダウンロードされたファイルのダイジェストがピンと一致しません。Claude Code はインストールを拒否するため、プラグインキャッシュに何も変更されません。不一致には 3 つの考えられる原因があります：
 
 * 著者がピンを計算した後、URL のファイルが変更された
 * 著者がマーケットプレイスエントリに間違ったダイジェストを入力した
@@ -3527,7 +3527,7 @@ Plugin archive integrity check failed for https://artifacts.example.com/claude-p
   パスがプラグインディレクトリをエスケープしている
 </h3>
 
-プラグインコンポーネントパス（プラグインの `plugin.json` またはその[マーケットプレイスエントリ](/docs/ja/plugin-marketplaces#plugin-entries)で宣言）が、プラグイン自体のディレクトリの外に解決されます。Claude Code はそのパスを削除し、プラグインの残りを読み込みます。メッセージ内のコンポーネント名（`commands` や `hooks` など）は、パスを宣言したフィールドに名前を付けます。
+プラグインコンポーネントパス（プラグインの `plugin.json` またはその[マーケットプレイスエントリ](/docs/ja/plugins/marketplace-reference#plugin-entries)で宣言）が、プラグイン自体のディレクトリの外に解決されます。Claude Code はそのパスを削除し、プラグインの残りを読み込みます。メッセージ内のコンポーネント名（`commands` や `hooks` など）は、パスを宣言したフィールドに名前を付けます。
 
 ```text theme={null}
 commands path escapes plugin directory: ./../shared.md
@@ -3535,7 +3535,7 @@ commands path escapes plugin directory: ./../shared.md
 
 `claude plugin` コマンド出力では、同じエラーは `Path escapes plugin directory: ./../shared.md (commands)` と表示されます。
 
-Claude Code は、`../shared-utils` のようにプラグインの外を指すパスと、プラグインの外につながるシンボリックリンク（[マーケットプレイスシンボリックリンクルール](/docs/ja/plugins-reference#share-files-within-a-marketplace-with-symlinks)が許可するもの以外）の両方を拒否します。シンボリックリンクの場合、メッセージはパスが解決される場所も示します：
+Claude Code は、`../shared-utils` のようにプラグインの外を指すパスと、プラグインの外につながるシンボリックリンク（[マーケットプレイスシンボリックリンクルール](/docs/ja/plugins/host-marketplace#share-files-within-a-marketplace-with-symlinks)が許可するもの以外）の両方を拒否します。シンボリックリンクの場合、メッセージはパスが解決される場所も示します：
 
 ```text theme={null}
 commands path escapes plugin directory: ./commands/deploy.md — it resolves to /home/user/shared/deploy.md, outside the plugin directory
@@ -3556,7 +3556,7 @@ v2.1.257 より前は、チェックはパスのスペルのみを確認し、�
 * 参照されたファイルをプラグインディレクトリ内に移動し、`./` 相対パスでそれを指すようにしてください
 * パスがプラグイン外のファイルへのシンボリックリンクの場合は、シンボリックリンクをファイルのコピーに置き換えてください
 * メッセージがパスにバックスラッシュが含まれていると言う場合は、例えば `./commands/deploy.md` のようにフォワードスラッシュでパスを記述してください
-* 同じマーケットプレイス内の他のプラグインとファイルを共有するには、プラグインディレクトリ内のシンボリックリンクを使用してリンクし、[シンボリックリンクルール](/docs/ja/plugins-reference#share-files-within-a-marketplace-with-symlinks)に従ってください
+* 同じマーケットプレイス内の他のプラグインとファイルを共有するには、プラグインディレクトリ内のシンボリックリンクを使用してリンクし、[シンボリックリンクルール](/docs/ja/plugins/host-marketplace#share-files-within-a-marketplace-with-symlinks)に従ってください
 
 <h3 id="path-could-not-be-checked">
   パスをチェックできませんでした
@@ -3564,7 +3564,7 @@ v2.1.257 より前は、チェックはパスのスペルのみを確認し、�
 
 Claude Code はプラグインパスが存在するかどうかをオペレーティングシステムに問い合わせ、「見つかりません」以外のエラーを受け取ったため、パスが名前を付けるものを読み込みません。プラグインのどの程度が読み込まれるかは、どのパスが失敗したかによって異なります：
 
-* プラグインの [デフォルトコンポーネント場所](/docs/ja/plugins-reference#file-locations-reference)の 1 つ（`skills/` フォルダ、`monitors/monitors.json` ファイル、またはプラグインルートの [`SKILL.md`](/docs/ja/plugins-reference#skills)など）：プラグインの他のコンポーネントは引き続き読み込まれます
+* プラグインの [デフォルトコンポーネント場所](/docs/ja/plugins/manifest-reference#standard-layout)の 1 つ（`skills/` フォルダ、`monitors/monitors.json` ファイル、またはプラグインルートの [`SKILL.md`](/docs/ja/plugins/components#skills)など）：プラグインの他のコンポーネントは引き続き読み込まれます
 * プラグイン自体のディレクトリ：そのプラグインからは何も読み込まれません
 
 存在しないパスについてはこのエラーは表示されません。`/plugin` では、エラーはプラグインの下に表示され、パスとオペレーティングシステムが返したコードに名前を付けます：
@@ -3594,12 +3594,12 @@ v2.1.265 より前は、Claude Code はチェックできないデフォルト�
   マーケットプレイスエントリパスがマーケットプレイスディレクトリ内に留まらない
 </h3>
 
-プラグインの[マーケットプレイスエントリ](/docs/ja/plugin-marketplaces#plugin-entries)は、Claude Code がマーケットプレイス自体のディレクトリ内の場所に解決できないソースパスを宣言しているため、プラグインはインストールまたは読み込まれません。拒否は以下をカバーしています：
+プラグインの[マーケットプレイスエントリ](/docs/ja/plugins/marketplace-reference#plugin-entries)は、Claude Code がマーケットプレイス自体のディレクトリ内の場所に解決できないソースパスを宣言しているため、プラグインはインストールまたは読み込まれません。拒否は以下をカバーしています：
 
 * 絶対パス、`..` でマーケットプレイスから抜け出す、またはネットワークパスのようにスペルされたエントリパス
 * macOS と Linux では、先頭の `./` の後のどこかにバックスラッシュが含まれているエントリパス
 * git または URL などのリモートソースから取得されたマーケットプレイス内のエントリで、マーケットプレイスディレクトリの外に解決するシンボリックリンクを通じてターゲットに到達する
-* マーケットプレイスの `marketplace.json` への直接 URL から追加された相対エントリ：Claude Code はそのファイルのみをダウンロードするため、パスが名前を付けるローカルプラグインファイルは存在しません。[相対パスを持つプラグインが URL ベースのマーケットプレイスで失敗する](/docs/ja/plugin-marketplaces#plugins-with-relative-paths-fail-in-url-based-marketplaces)を参照してください
+* マーケットプレイスの `marketplace.json` への直接 URL から追加された相対エントリ：Claude Code はそのファイルのみをダウンロードするため、パスが名前を付けるローカルプラグインファイルは存在しません。[相対パスを持つプラグインが URL ベースのマーケットプレイスで失敗する](/docs/ja/plugins/troubleshooting#plugins-with-relative-paths-fail-in-url-based-marketplaces)を参照してください
 
 `claude plugin install` は拒否を次のように報告します：
 
@@ -3616,7 +3616,7 @@ Plugin source path refused: ./my-plugin does not stay inside its marketplace dir
 **対処方法：**
 
 * マーケットプレイスを保守する場合は、エントリの `source` を `./plugins/my-plugin` のようなプレーンな相対パスとして記述し、それが通過するシンボリックリンクをマーケットプレイスディレクトリ内を指すようにしてください
-* マーケットプレイスを直接 URL から追加した場合、相対エントリは解決できません。マーケットプレイス作成者に [別のプラグインソース](/docs/ja/plugin-marketplaces#plugin-sources)を使用するよう依頼するか、代わりに git リポジトリからマーケットプレイスを追加してください
+* マーケットプレイスを直接 URL から追加した場合、相対エントリは解決できません。マーケットプレイス作成者に [別のプラグインソース](/docs/ja/plugins/marketplace-reference#plugin-sources)を使用するよう依頼するか、代わりに git リポジトリからマーケットプレイスを追加してください
 
 <h3 id="failed-to-load-marketplace-configuration">
   マーケットプレイス設定の読み込みに失敗した
@@ -3640,13 +3640,13 @@ v2.1.246 より前は、`claude plugin install` はこの失敗を報告しま�
 **対処方法：**
 
 * `~/.claude/plugins/known_marketplaces.json` を開き、JSON を修復するか、メッセージが名前を付けるエントリがレジストリスキーマと一致しないように修正してください
-* 修復できない場合は、ファイルを削除するか、その内容を `{}` に置き換えてから、`claude plugin marketplace add <source>` で各マーケットプレイスを再度追加してください。Claude Code は、信頼したフォルダで次回起動するときに、ユーザーまたはマネージド設定で [`extraKnownMarketplaces`](/docs/ja/settings-reference#extraknownmarketplaces) で宣言したマーケットプレイスを再登録します。
+* 修復できない場合は、ファイルを削除するか、その内容を `{}` に置き換えてから、`claude plugin marketplace add <source>` で各マーケットプレイスを再度追加してください。Claude Code は、信頼したフォルダで次回起動するときに、ユーザーまたはマネージド設定で [`extraKnownMarketplaces`](/docs/ja/settings-reference#extraknownmarketplaces)で宣言したマーケットプレイスを再登録します。
 
 <h3 id="plugin-is-required-by-your-organization">
   プラグインは組織で必須です
 </h3>
 
-`claude plugin disable` を実行するか、`/plugin` **Installed** タブを使用して、組織が必須としてマークしている [claude.ai から同期されたプラグイン](/docs/ja/plugins-reference#synced-plugins)をオフにしました：
+`claude plugin disable` を実行するか、`/plugin` **Installed** タブを使用して、組織が必須としてマークしている [claude.ai から同期されたプラグイン](/docs/ja/plugins/loading#synced-plugins)をオフにしました：
 
 ```text theme={null}
 Plugin "<name>@synced" is required by your organization and can't be disabled here. Contact your admin to change it.

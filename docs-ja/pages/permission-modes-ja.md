@@ -332,9 +332,18 @@ v2.1.158 から v2.1.206 では、これらのプロバイダーで自動モー�
   サーバー側クラシファイアレビュー
 </h3>
 
-Enterprise プランおよび Claude API を使用するアカウント、[AWS 上の Claude Platform](/docs/ja/claude-platform-on-aws)、Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、および `ANTHROPIC_BASE_URL` を[LLM ゲートウェイまたはプロキシ](/docs/ja/llm-gateway)に指す場合、自動モードの Claude Code はサーバーに[クラシファイアに送信されるアクション](#how-the-classifier-evaluates-actions)をセッションのモデルリクエストの一部としてレビューするよう要求します。サーバーがそれらをレビューする場所では、その判定がこれらのアクションを決定します。レビューしない場所では、通常はゲートウェイまたはプロキシがトラフィックに干渉するため、プラットフォーム、リージョン、または認証情報がまだサーバー側チェックを持たないため、Claude Code は独自のクラシファイアリクエストにフォールバックします。そのフォールバックがセッションの残りの間保持されると、これらのリクエストが請求されるアカウントで[クラシファイアリクエスト料金に関する通知](/docs/ja/auto-mode-classifier-billing)を表示します。サーバーに質問することをスキップして、常に Claude Code 独自のクラシファイアリクエストを使用するには、[`CLAUDE_CODE_AUTO_MODE_SERVER=0`](/docs/ja/env-vars)を設定します。変数は Anthropic API への直接接続では読み取られません。`CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1` を設定し、`CLAUDE_CODE_AUTO_MODE_SERVER` を設定しないままにする場合、Claude Code もサーバーに質問することを停止します。
+自動モードでは、Claude Code はサーバーに[決定順序](#how-the-classifier-evaluates-actions)が送信するアクションをレビューするよう要求できます。これはセッションのモデルリクエストの一部として行われ、Claude Code 独自のクラシファイアリクエストの代わりに行われます。これらのセッションは以下を要求します。
 
-デフォルトでサーバーに質問することには Claude Code v2.1.278 以降が必要です。
+* **Anthropic API への直接接続**: インタラクティブターミナルセッションで、すべての claude.ai プランおよび Claude API を使用するアカウントで、Anthropic がロールアウトするにつれて。Pro、Max、Team プランでは Claude Code v2.1.271 以降が必要で、Enterprise プランおよび Claude API アカウントでは v2.1.278 以降が必要です。v2.1.282 から、[フィーチャーフラグをフェッチしない](/docs/ja/env-vars#features-that-need-feature-flag-fetching)セッション（例えば、テレメトリをオフにしたため）は、あらゆる種類のセッションでデフォルトでサーバーに要求します。
+* **クラウドプロバイダー、または LLM ゲートウェイまたはプロキシ**: [AWS 上の Claude Platform](/docs/ja/claude-platform-on-aws)、Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、および `ANTHROPIC_BASE_URL` を[LLM ゲートウェイまたはプロキシ](/docs/ja/llm-gateway)に指す場合、プランに関係なく。デフォルトでサーバーに要求することには Claude Code v2.1.278 以降が必要です。
+* **サインイン済みの[Claude apps gateway](/docs/ja/claude-apps-gateway)セッション**: Claude Code v2.1.280 以降が必要です
+
+サーバーがアクションをレビューする場所では、その判定がこれらのアクションを決定します。他に 2 つの結果が考えられます。
+
+* **サーバーがセッションをレビューしない**: レスポンスがレビュー結果なしで完了するか、サーバーがこのセッションをレビューしないと答えます。最も一般的な原因は、LLM ゲートウェイまたはプロキシがレビューのリクエストまたは結果をドロップすることと、プラットフォーム、リージョン、または認証情報がまだサーバー側チェックを持たないことです。Claude Code は独自のクラシファイアリクエストにフォールバックします。そのフォールバックがセッションの残りの間保持されると、これらのリクエストが請求されるアカウントで[クラシファイアリクエスト料金に関する通知](/docs/ja/auto-mode-classifier-billing)を表示します。
+* **サーバーがアクションに対して判定を出さない**: Claude Code はアクションを拒否し、レビューなしで実行しません。あらゆる接続で、これはレスポンスがレビュー結果の到着前に終了するか、結果が Claude Code が読み取れない形式で到達する場合に発生します。レスポンスを短縮またはリライトする LLM ゲートウェイまたはプロキシはどちらかを引き起こす可能性があります。Anthropic API への直接接続では、サーバーのチェックがアクション（例えば、タイムアウト）に失敗する場合にも発生します。[サーバーが安全判定を返さなかった](/docs/ja/errors#the-server-returned-no-safety-verdict)は拒否メッセージ、拒否が繰り返される場合に何が起こるか、および対処方法をカバーしています。
+
+サーバーに質問することをスキップして、常に Claude Code 独自のクラシファイアリクエストを使用するには、[`CLAUDE_CODE_AUTO_MODE_SERVER=0`](/docs/ja/env-vars)を設定します。Anthropic API への直接接続では、変数には Claude Code v2.1.281 以降が必要です。`1` に設定すると、そこでサーバーレビューをオンにします。セッションがまだそれを持たない場合（例えば、`-p` または Agent SDK セッション）。`CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1` も設定していない限り。`CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1` を設定し、`CLAUDE_CODE_AUTO_MODE_SERVER` を設定しないままにする場合、Claude Code もサーバーに質問することを停止します。
 
 <h3 id="what-the-classifier-blocks-by-default">
   クラシファイアがデフォルトでブロックするもの
@@ -476,6 +485,7 @@ Claude Code v2.1.195 以降もこれらをデフォルトで許可します。
 * **ブロックされたアクション**: Claude Code は通知を表示し、`/permissions` の下の **Recently denied** タブにアクションをリストします。そこで `r` を押して、手動承認で再試行できます。クラシファイアが[アクションに対して判定を出さない](/docs/ja/errors#auto-mode-cannot-determine-the-safety-of-an-action)場合。自動モードとは別の安全チェックがクラシファイアのリクエスト自体を拒否したか、その応答が解析されなかったため、Claude Code は通知または **Recently denied** エントリなしでアクションを拒否します。
 * **繰り返されるブロック**: クラシファイアが連続して 3 回またはセッション全体で 20 回アクションをブロックする場合、自動モードは一時停止し、Claude Code はプロンプトを再開します。プロンプトされたアクションを承認すると、自動モードが再開されます。これらのしきい値は構成不可能です。許可されたアクションは連続カウンターをリセットしますが、合計カウンターはセッション用に保持され、独自のリミットがフォールバックをトリガーするときのみリセットされます。Claude Code は、[自動モードとは別の安全チェックがクラシファイアのリクエストを拒否する](/docs/ja/errors#auto-mode-cannot-determine-the-safety-of-an-action)場合、拒否をどちらのしきい値にもカウントしません。リンクされたエントリは Claude Code がそれらの拒否をどのように処理するかをカバーしています。
 * **プロンプトできないセッション**: [`--permission-prompt-tool`](/docs/ja/cli-reference#cli-flags)のない[非インタラクティブ](/docs/ja/headless) `-p` 実行にはフォールバックするプロンプトがありません。繰り返されるブロックがしきい値に到達すると、アクションは実行されず、Claude は作業を続けます。[自動モードとは別の安全チェックがクラシファイアのリクエストを拒否する](/docs/ja/errors#auto-mode-cannot-determine-the-safety-of-an-action)場合も同じです。Claude Code はどちらの場合もランを停止しません。
+* **サーバーからの判定なし**: [サーバー側クラシファイアレビュー](#server-side-classifier-review)では、Claude Code はサーバーが判定を出さないアクションを拒否し、連続して 10 回のレスポンスで判定がない場合、ターンを停止します。[サーバーが安全判定を返さなかった](/docs/ja/errors#the-server-returned-no-safety-verdict)を参照してください。
 * **チェック中のモード切り替え**: クラシファイアチェックが保留中に権限モードを切り替える場合、Claude Code は新しいモードが要求しなかった判定を破棄します。代わりにプロンプトされるか、[`dontAsk` モード](#allow-only-pre-approved-tools-with-dontask-mode)でアクションが自動拒否されます。
 
 繰り返されるブロックは通常、クラシファイアがインフラストラクチャについてのコンテキストを欠いていることを意味します。`/feedback` を使用して偽陽性を報告するか、管理者に[信頼できるインフラストラクチャを構成](/docs/ja/auto-mode-config)させてください。
@@ -492,10 +502,11 @@ Claude Code v2.1.195 以降もこれらをデフォルトで許可します。
        * [コマンドごとの許可ドメイン](/docs/ja/sandboxing#per-command-allowed-domains-in-auto-mode)を含むシェルコマンド。許可ルールが一致する場合でもクラシファイアにルーティングされます。ルールはコマンドを承認するため、そのホストではなく
        * `Bash(git push *)` のようなコマンドのコンテンツで一致する質問ルール。権限プロンプトにフォールバック
     2. 読み取り専用アクションと作業ディレクトリ内のファイル編集は自動承認されます。[保護されたパス](#protected-paths)と[作業ディレクトリ外の最初の読み取り](#first-read-outside-the-working-directories)への書き込みを除く。プロンプトします
+       * [サーバー側クラシファイアレビュー](#server-side-classifier-review)を持つセッションでは、読み取り専用および[サンドボックス化](/docs/ja/sandboxing#sandbox-modes)シェルコマンドはそのレビューを待ち、それがそれらにフラグを立てる場合はブロックされます
     3. その他すべてはクラシファイアに送信されます。ステップ 1 でプロンプトするコネクタツールと`requiresUserInteraction` MCP ツールはクラシファイアに到達しません。組織が必要な承認も同意ステップも自動承認されません
     4. クラシファイアがブロックする場合、Claude は理由を受け取り、代替を試みます。ほとんどのセッションでは、理由は `[Data Exfiltration]` のようにクラシファイアが一致したルールに名前を付けます。書かれた説明ではなく。[拒否をレビュー](/docs/ja/auto-mode-config#review-denials)を参照してください
 
-    自動モードに入ると、任意のコード実行を許可する広いルールが削除されます。
+    自動モードに入ると、広いルールが削除されます。これらは任意のコード実行を許可します。
 
     * ブランケット `Bash(*)` または `PowerShell(*)`
     * `Bash(python*)` のようなワイルドカードインタープリタ

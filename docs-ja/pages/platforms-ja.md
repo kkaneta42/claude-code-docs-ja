@@ -33,14 +33,14 @@ CLI はターミナルネイティブな作業に最も完全なサーフェス�
 
 統合により、Claude はコードベース外のサービスと連携できます。
 
-| 統合                                   | 機能                                          | 用途                                                          |
-| :----------------------------------- | :------------------------------------------ | :---------------------------------------------------------- |
-| [Chrome](/docs/ja/chrome)                 | ログインしたセッションでブラウザを制御                         | Web アプリのテスト、フォーム入力、API なしでサイトを自動化                           |
-| [GitHub Actions](/docs/ja/github-actions) | CI パイプラインで Claude を実行                       | 自動 PR レビュー、Issue トリアージ、スケジュール済みメンテナンス                       |
-| [GitLab CI/CD](/docs/ja/gitlab-ci-cd)     | GitLab の GitHub Actions と同じ                 | GitLab での CI 駆動自動化                                          |
-| [Code Review](/docs/ja/code-review)       | すべての PR を自動的にレビュー                           | 人間によるレビュー前にバグをキャッチ                                          |
-| [Slack](/docs/ja/slack)                   | チャネルの `@Claude` メンションに応答                    | バグレポートをチームチャットから PR に変換                                     |
-| [Claude Tag](/docs/ja/claude-tag)         | 管理者が設定したアクセス権限を持つ組織の共有 ID として `@Claude` を実行 | Team および Enterprise プランでの共有チームアクセス（ユーザーごとの Slack セッションの代わり） |
+| 統合                                               | 機能                                          | 用途                                                          |
+| :----------------------------------------------- | :------------------------------------------ | :---------------------------------------------------------- |
+| [Chrome](/docs/ja/chrome)                             | ログインしたセッションでブラウザを制御                         | Web アプリのテスト、フォーム入力、API なしでサイトを自動化                           |
+| [GitHub Actions](/docs/ja/github-actions)             | CI パイプラインで Claude を実行                       | 自動 PR レビュー、Issue トリアージ、スケジュール済みメンテナンス                       |
+| [GitLab CI/CD](/docs/ja/gitlab-ci-cd)                 | GitLab の GitHub Actions と同じ                 | GitLab での CI 駆動自動化                                          |
+| [Code Review](/docs/ja/code-review)                   | すべての PR を自動的にレビュー                           | 人間によるレビュー前にバグをキャッチ                                          |
+| [Slack](/docs/ja/slack)                               | チャネルの `@Claude` メンションに応答                    | バグレポートをチームチャットから PR に変換                                     |
+| [Claude Tag](https://claude.com/docs/claude-tag) | 管理者が設定したアクセス権限を持つ組織の共有 ID として `@Claude` を実行 | Team および Enterprise プランでの共有チームアクセス（ユーザーごとの Slack セッションの代わり） |
 
 ここにリストされていない統合については、[MCP サーバー](/docs/ja/mcp)と[コネクター](/docs/ja/desktop#connect-external-tools)により、ほぼすべてのものを接続できます。Linear、Notion、Google Drive、または独自の内部 API など。
 
@@ -87,7 +87,7 @@ Claude Code は、ターミナルにいない時に作業するための複数�
 * [GitLab CI/CD](/docs/ja/gitlab-ci-cd)：GitLab の場合も同じ
 * [Code Review](/docs/ja/code-review)：すべてのプルリクエストで自動レビュー
 * [Slack](/docs/ja/slack)：チームチャットからタスクを送信、PR を取得
-* [Claude Tag](/docs/ja/claude-tag)：Team および Enterprise プランで組織の共有 ID として `@Claude` を実行
+* [Claude Tag](https://claude.com/docs/claude-tag)：Team および Enterprise プランで組織の共有 ID として `@Claude` を実行
 
 <h3 id="remote-access">
   リモートアクセス

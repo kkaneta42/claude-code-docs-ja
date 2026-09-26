@@ -626,13 +626,14 @@ export const PromptLibrary = ({text = {}, labels = {}, tagLabels = {}, phaseLabe
       return base + (href.startsWith('/en/') ? '/' + locale + href.slice(3) : href);
     };
   }, []);
+  const SAFE_HREF = /^(\/(?![\/\\\s])|#|https?:\/\/)/;
   const linkify = s => {
     const out = [];
     let last = 0;
     const re = /\[([^\]]+)\]\(([^)]+)\)/g;
     for (let m; m = re.exec(s); ) {
       if (m.index > last) out.push(s.slice(last, m.index));
-      out.push(<a key={m.index} href={doc(m[2])}>{m[1]}</a>);
+      out.push(SAFE_HREF.test(m[2]) ? <a key={m.index} href={doc(m[2])}>{m[1]}</a> : m[1]);
       last = re.lastIndex;
     }
     if (last < s.length) out.push(s.slice(last));
@@ -776,7 +777,7 @@ export const PromptLibrary = ({text = {}, labels = {}, tagLabels = {}, phaseLabe
             </div>
             <div className="pl-label">{L.whyWorks}</div>
             <div className="pl-teaches">{linkify(p.teaches)}</div>
-            {p.nextHref && p.next && <div className="pl-next">
+            {p.nextHref && p.next && SAFE_HREF.test(p.nextHref) && <div className="pl-next">
                 <span className="pl-next-label">{L.makeItStick}</span>
                 <a href={doc(p.nextHref)}>{codeify(p.next)} →</a>
               </div>}
@@ -1202,7 +1203,7 @@ export const text = {
   },
   "migrate-a-pattern-across": {
     title: "コードベース全体でパターンを移行する",
-    teaches: "古いパターンと新しいパターンを説明してください。Claude に最初にすべての場所を識別するよう依頼すると、呼び出しサイトが応答にリストアップされるため、何も見落とされていないことを確認できます。多くのファイルにわたる移行の場合は、[/batch](/docs/ja/commands)を実行してください。Claude は作業を承認用のユニットに分割し、バックグラウンドサブエージェントが変更を加えて、ユニットごとに 1 つのプルリクエストを開きます。"
+    teaches: "古いパターンと新しいパターンを説明してください。Claude に最初にすべての場所を識別するよう依頼すると、呼び出しサイトが応答にリストアップされるため、何も見落とされていないことを確認できます。多くのファイルにわたる移行の場合は、[/batch](/docs/ja/commands)を実行してください。Claude は作業を承認用のユニットに分割し、バックグラウンドサブエージェントが変更を加えます。"
   },
   "optimize-against-a-measurable": {
     title: "測定可能なターゲットに対して最適化する",

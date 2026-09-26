@@ -202,7 +202,7 @@ Claude のコンテンツ検索はデフォルトで `.gitignore` を尊重す�
   コード インテリジェンスでファイル読み取りを削減する
 </h3>
 
-大規模コードベースでは、シンボルが定義または使用されている場所を見つけることは、多くのファイル読み取りと grep 呼び出しを消費する可能性があります。[コード インテリジェンス プラグイン](/docs/ja/discover-plugins#code-intelligence)は Claude を言語サーバーに接続して、ツリーをスキャンする代わりに、定義にジャンプしたり、参照を見つけたり、型エラーを直接表示したりできます。
+大規模コードベースでは、シンボルが定義または使用されている場所を見つけることは、多くのファイル読み取りと grep 呼び出しを消費する可能性があります。[コード インテリジェンス プラグイン](/docs/ja/plugins/code-intelligence)は Claude を言語サーバーに接続して、ツリーをスキャンする代わりに、定義にジャンプしたり、参照を見つけたり、型エラーを直接表示したりできます。
 
 公式マーケットプレイスには TypeScript、Python、Go、Rust、その他の一般的な言語用のプラグインがあります。Claude Code セッション内で以下のコマンドを実行して TypeScript プラグインをインストールします。
 
@@ -213,11 +213,11 @@ Claude のコンテンツ検索はデフォルトで `.gitignore` を尊重す�
 インストールが失敗した場合は、Claude Code が報告するメッセージに一致させます。
 
 * `Marketplace "claude-plugins-official" not found`: `/plugin marketplace add anthropics/claude-plugins-official` でマーケットプレイスを追加してから、インストールを再試行します。
-* プラグインが[マーケットプレイスで見つかりません](/docs/ja/discover-plugins#install-plugins): プラグイン名を確認します。
+* プラグインが[マーケットプレイスで見つかりません](/docs/ja/plugins/install#install-a-plugin): プラグイン名を確認します。
 
 プラグインを自分でインストールするのではなく、リポジトリ内のすべての人に対して有効にするには、[`enabledPlugins` プロジェクト設定](/docs/ja/settings-reference#plugin-settings)に追加します。
 
-コード インテリジェンス プラグインには、各開発者のマシンに言語の言語サーバーバイナリが必要です。[各言語が必要とするバイナリ](/docs/ja/discover-plugins#code-intelligence)を参照してください。公式マーケットプレイスからのインストールには、マーケットプレイスがホストされている GitHub へのネットワークアクセスが必要です。制限されたネットワークでは、代わりに[内部 Git ホストまたはローカルパスからマーケットプレイスを追加](/docs/ja/discover-plugins#add-from-other-git-hosts)してください。
+コード インテリジェンス プラグインには、各開発者のマシンに言語の言語サーバーバイナリが必要です。[各言語が必要とするバイナリ](/docs/ja/plugins/code-intelligence)を参照してください。公式マーケットプレイスからのインストールには、マーケットプレイスがホストされている GitHub へのネットワークアクセスが必要です。制限されたネットワークでは、代わりに[内部 Git ホストまたはローカルパスからマーケットプレイスを追加](/docs/ja/plugins/install#add-a-marketplace)してください。
 
 これは上記の `claudeMdExcludes` と `Read` 拒否ルールとよく組み合わされます。これらは関連のないコンテンツをコンテキストから除外し、コード インテリジェンスは Claude が定義を見つけるために残りを読むのを防ぎます。
 
@@ -395,7 +395,7 @@ Each route file has a corresponding `.test.ts` file.
 
 名前は常に読み込まれますが、[多くの場合、一部のスキルはその説明全体を失う可能性があります](/docs/ja/skills#skill-descriptions-are-cut-short)。これにより、Claude がスキルを適用するかどうかを決定するために使用するキーワードが削除される可能性があります。説明を短く保ち、「`packages/api/` でテストを書いたり変更したりするとき」のようなリクエストに含まれる単語で始めます。
 
-PR 規約やデプロイチェックリストなど、多くのディレクトリが共有するスキルの場合、リポジトリルートの `.claude/skills/` に配置して、任意の開始ディレクトリから読み込まれるようにします。共有スキルが独自のバージョン履歴を必要とするか、リポジトリ間で機能する必要がある場合は、代わりに[プラグイン](/docs/ja/plugins)としてパッケージ化します。プラグインスキルは `plugin-name:skill-name` 名前空間を使用するため、ディレクトリごとのスキルと衝突することはありません。プラットフォームチームは 1 つの場所でそれらをバージョン管理および更新できます。
+PR 規約やデプロイチェックリストなど、多くのディレクトリが共有するスキルの場合、リポジトリルートの `.claude/skills/` に配置して、任意の開始ディレクトリから読み込まれるようにします。共有スキルが独自のバージョン履歴を必要とするか、リポジトリ間で機能する必要がある場合は、代わりに[プラグイン](/docs/ja/plugins/overview)としてパッケージ化します。プラグインスキルは `plugin-name:skill-name` 名前空間を使用するため、ディレクトリごとのスキルと衝突することはありません。プラットフォームチームは 1 つの場所でそれらをバージョン管理および更新できます。
 
 使用されていないスキルを見つけるには、OpenTelemetry [ログエクスポーター](/docs/ja/monitoring-usage)を有効にして `OTEL_LOG_TOOL_DETAILS=1` を設定し、スキル名が編集されずに逐語的に記録されるようにします。[`skill_activated` イベント](/docs/ja/monitoring-usage#skill-activated-event)はその `skill.name` 属性のすべての呼び出しを記録し、`invocation_trigger` はコマンド、Claude、またはネストされたスキルが呼び出したかどうかを記録します。これにより、統合または廃止するものを判断できます。
 
@@ -408,7 +408,7 @@ PR 規約やデプロイチェックリストなど、多くのディレクト�
 常に読み込まれる CLAUDE.md から規約と参照コンテンツを、タスクに関連する場合にのみ読み込まれるメカニズムに移動します。
 
 * [Skills](/docs/ja/skills): Claude がタスクに関連する場合にのみ読み込む参照資料
-* [Plugins](/docs/ja/plugins): プラットフォームチームが一元的に所有するスキル、フック、コマンドのバージョン管理されたバンドル
+* [Plugins](/docs/ja/plugins/overview): プラットフォームチームが一元的に所有するスキル、フック、コマンドのバージョン管理されたバンドル
 * [MCP servers](/docs/ja/mcp): 組織がすでにリポジトリ上でコード検索または RAG インデックスを実行している場合は、MCP ツールとして公開して、Claude がファイルを直接読む代わりにクエリを実行するようにします
 
 プラットフォームチームがこれらを一元的に適用する方法については、[server-managed or endpoint-managed settings](/docs/ja/server-managed-settings#choose-between-server-managed-and-endpoint-managed-settings)を参照してください。

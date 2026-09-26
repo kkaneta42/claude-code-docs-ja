@@ -252,10 +252,10 @@ Remote Control を完全にオフにするには、[`disableRemoteControl`](/doc
 <Note>
   信頼できるデバイスは現在ベータ版です。エクスペリエンスが改善されるにつれて、機能と機能が進化する可能性があります。
 
-  信頼できるデバイスは Team および Enterprise プランで利用可能です。デフォルトではオフになっており、Owner が有効にするまでオフのままです。
+  信頼できるデバイスは Pro、Max、Team、および Enterprise プランで利用可能であり、デフォルトではオフになっています。Team および Enterprise プランでは、Owner が組織に対してこれをオンにします。Pro および Max プランでは、設定の Cowork またはアカウントページで、自分で **信頼できるデバイスを要求** をオンにします。
 </Note>
 
-信頼できるデバイスは、メンバーが claude.ai、Claude モバイルアプリ、または Claude Desktop から Remote Control セッションを表示または操作する前に、デバイスを確認する必要がある組織全体の設定です。これは、署名されたアカウントだけでなく、既知のデバイスと最近の認証に Remote Control アクセスを結び付けます。
+信頼できるデバイスは、組織のメンバー、または Pro もしくは Max プランではあなた自身が、claude.ai、Claude モバイルアプリ、または Claude Desktop から Remote Control セッションを表示または操作する前に、デバイスを確認する必要があります。これは、署名されたアカウントだけでなく、既知のデバイスと最近の認証に Remote Control アクセスを結び付けます。
 
 設定がオンの場合、Remote Control セッションと相互作用するには、以下の両方が必要です。
 
@@ -267,14 +267,14 @@ Remote Control を完全にオフにするには、[`disableRemoteControl`](/doc
 この設定は Remote Control にのみ適用されます。通常の Claude チャット、ターミナルの Claude Code、および API 使用は影響を受けません。
 
 <h3 id="enable-trusted-devices-for-your-organization">
-  組織で信頼できるデバイスを有効にする
+  Team または Enterprise 組織で信頼できるデバイスを有効にする
 </h3>
 
-Owner は Claude Code 管理コンソールから設定を有効にします。
+Owner は claude.ai 組織設定から設定を有効にします。
 
 <Steps>
-  <Step title="Claude Code 管理設定を開く">
-    [claude.ai/admin-settings/claude-code](https://claude.ai/admin-settings/claude-code) に移動します。**Require trusted devices** トグルは Remote Control 設定の下に表示されます。
+  <Step title="Capabilities ページに移動する">
+    [**Organization settings > Capabilities > Remote sessions**](https://claude.ai/admin-settings/capabilities) に移動します。**Require trusted devices** トグルはそのセクションに表示されます。
   </Step>
 
   <Step title="信頼できるデバイスを要求をオンにする">

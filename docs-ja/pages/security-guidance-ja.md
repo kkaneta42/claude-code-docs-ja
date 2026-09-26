@@ -25,7 +25,7 @@ security guidance プラグインは、Claude が作業中に自身のコード�
   プラグインをインストールする
 </h2>
 
-ターミナル Claude Code セッションで、[公式 Anthropic マーケットプレイス](/docs/ja/discover-plugins#official-anthropic-marketplace) からインストールします：
+ターミナル Claude Code セッションで、[公式 Anthropic マーケットプレイス](/docs/ja/plugins/anthropic-marketplaces)からインストールします：
 
 ```text theme={null}
 /plugin install security-guidance@claude-plugins-official
@@ -35,16 +35,16 @@ security guidance プラグインは、Claude が作業中に自身のコード�
 
 * **Claude デスクトップアプリ、ローカルまたは SSH セッション**：プロンプトの横にある **+** ボタンをクリックして[プラグインブラウザ](/docs/ja/desktop#install-plugins)を開き、**Plugins** をクリックしてから **Add plugin** をクリックします
 * **VS Code 拡張機能**：[**Manage plugins** ダイアログ](/docs/ja/vs-code#manage-plugins)からインストールします
-* **クラウドセッション**：claude.ai アカウントでプラグインを有効化して、Claude Code が[同期されたプラグイン](/docs/ja/plugins-reference#synced-plugins)として読み込むようにします。クラウドセッションは、ユーザー設定またはリポジトリの `.claude/settings.json` からプラグインを読み込みません。[セットアップから引き継がれるもの](/docs/ja/cloud-environments#what-carries-over-from-your-setup)で説明されています
+* **クラウドセッション**：クラウドセッションは、ユーザー設定またはリポジトリの `.claude/settings.json` からプラグインを読み込みません。[セットアップから引き継がれるもの](/docs/ja/cloud-environments#what-carries-over-from-your-setup)で説明されています。組織が管理設定を通じて配布するプラグインについては、[組織のプラグインを管理](/docs/ja/plugins/org)を参照してください
 
 ターミナルインストールはスコープを求めます。ユーザースコープを選択して、プラグインをユーザー設定に書き込み、このマシンで開始するすべての新しいローカルセッションで読み込まれるようにします。
 
 インストールが失敗した場合、Claude Code が報告するメッセージに一致させてください：
 
 * `Marketplace "claude-plugins-official" not found`：`/plugin marketplace add anthropics/claude-plugins-official` でマーケットプレイスを追加してから、インストールを再試行してください。
-* [プラグインがマーケットプレイスで見つかりません](/docs/ja/discover-plugins#install-plugins)：プラグイン名を確認してください。
+* [プラグインがマーケットプレイスで見つかりません](/docs/ja/plugins/install#install-a-plugin)：プラグイン名を確認してください。
 
-インストール概要を確認してください。`Run /reload-plugins to activate.` と報告された場合、[プラグイン変更を再起動なしで適用](/docs/ja/discover-plugins#apply-plugin-changes-without-restarting)を参照して、現在のセッションでプラグインを有効化してください。
+インストール概要を確認してください。`Run /reload-plugins to activate.` と報告された場合、[プラグイン変更を再起動なしで適用](/docs/ja/plugins/cli-reference#reload-plugins)を参照して、現在のセッションでプラグインを有効化してください。
 
 <h3 id="enable-for-your-team-in-local-sessions">
   ローカルセッションでチームに対して有効化する
@@ -279,4 +279,4 @@ Claude が書いている変更ではなく、既に持っているコード内�
 
 * [Code Review](/docs/ja/code-review)：PR 時のマルチエージェントレビューをセットアップ
 * [フックでワークフローを自動化](/docs/ja/hooks-guide)：同じライフサイクルポイントで独自のチェックを構築
-* [プラグインを発見してインストール](/docs/ja/discover-plugins#official-anthropic-marketplace)：他の公式プラグインを参照
+* [公式マーケットプレイスでプラグインを検索](/docs/ja/plugins/anthropic-marketplaces#find-plugins-in-the-official-marketplace)：他の公式プラグインを参照する場所

@@ -50,7 +50,7 @@ MCP サーバーが接続されている場合、Claude Code に以下のこと�
     インストールが失敗した場合は、Claude Code が報告するメッセージに一致させてください：
 
     * `Marketplace "claude-plugins-official" not found`：`/plugin marketplace add anthropics/claude-plugins-official` でマーケットプレイスを追加してから、インストールを再試行してください。
-    * [プラグインがマーケットプレイスで見つかりません](/docs/ja/discover-plugins#install-plugins)：プラグイン名を確認してください。
+    * [プラグインがマーケットプレイスで見つかりません](/docs/ja/plugins/install#install-a-plugin)：プラグイン名を確認してください。
 
     インストール概要が `Run /reload-plugins to activate.` を報告する場合、Claude Code はその後、そのリロードを実行します。リロードが次のメッセージが会話を再度読み込むことになると警告する場合は、`/reload-plugins --force` を実行してください。
   </Step>
@@ -293,7 +293,7 @@ Claude Code はまた、追跡されていない `.claude/settings.local.json` �
   サーバーステータスの詳細
 </h4>
 
-`/mcp` で、そこにあるサーバーのメニューを含めて、[`/plugin`](/docs/ja/plugins) マネージャーで、以前使用したリモート HTTP または SSE サーバーは `cached` ステータス（`cached 2h ago · connects on first use · 5 tools` など）を表示できます。Claude Code は起動時に接続する代わりに、前のセッションで保存された検出キャッシュからサーバーのツールリストを読み込み、Claude Code はサーバーのツールの 1 つを Claude が最初に呼び出すときにサーバーを接続します。ツールは最初のメッセージから利用可能なため、何もする必要はありません。検出キャッシュとその `cached` ステータスには Claude Code v2.1.221 以降が必要です。
+`/mcp` で、そこにあるサーバーのメニューを含めて、[`/plugin`](/docs/ja/plugins/install) マネージャーで、以前使用したリモート HTTP または SSE サーバーは `cached` ステータス（`cached 2h ago · connects on first use · 5 tools` など）を表示できます。Claude Code は起動時に接続する代わりに、前のセッションで保存された検出キャッシュからサーバーのツールリストを読み込み、Claude Code はサーバーのツールの 1 つを Claude が最初に呼び出すときにサーバーを接続します。ツールは最初のメッセージから利用可能なため、何もする必要はありません。検出キャッシュとその `cached` ステータスには Claude Code v2.1.221 以降が必要です。
 
 検出キャッシュはデフォルトではオフですが、段階的なロールアウトがアカウントに対して有効にしている場合を除きます。[`MCP_DISCOVERY_CACHE=1`](/docs/ja/env-vars) を設定してオンにするか、`0` を設定してロールアウトが有効にしている場合でもオフのままにしてください。v2.1.238 より前では、キャッシュはデフォルトでオンでした。
 
@@ -312,7 +312,7 @@ Claude Code はまた、追跡されていない `.claude/settings.local.json` �
 * ローカル、プロジェクト、またはユーザー [スコープ](#mcp-installation-scopes) のサーバー、または管理 MCP 設定のサーバーの場合、起点はその設定に書き込まれたホストを表示するため、ホストの `${VAR}` 参照はメッセージで展開されません。
 * ステータスまたはエラーコードのない失敗の場合、Claude Code は起点なしでエラーテキストを表示します。
 
-設定に空の `url` を持つリモートサーバーは `/mcp`、`claude mcp list`、[`/plugin`](/docs/ja/plugins) マネージャーで `not configured` として表示され、Claude Code はそれに接続しようとしません。プラグインは後で設定するコネクタのプレースホルダーエントリをこのように含めることができるため、Claude Code はそれをエラーまたはセットアップの問題として報告しません。サーバーの詳細ビューは `/mcp` で `No URL configured for this server` を読み込みます。接続するにはエントリの `url` を設定してください。v2.1.208 より前では、Claude Code は空の `url` を設定の問題として報告し、再接続を促していました。
+設定に空の `url` を持つリモートサーバーは `/mcp`、`claude mcp list`、[`/plugin`](/docs/ja/plugins/install) マネージャーで `not configured` として表示され、Claude Code はそれに接続しようとしません。プラグインは後で設定するコネクタのプレースホルダーエントリをこのように含めることができるため、Claude Code はそれをエラーまたはセットアップの問題として報告しません。サーバーの詳細ビューは `/mcp` で `No URL configured for this server` を読み込みます。接続するにはエントリの `url` を設定してください。v2.1.208 より前では、Claude Code は空の `url` を設定の問題として報告し、再接続を促していました。
 
 <h4 id="configuration-warnings">
   設定警告
@@ -494,7 +494,7 @@ MCP サーバーはまた、CI 結果、監視アラート、チャットメッ�
   プラグイン提供の MCP サーバー
 </h3>
 
-[プラグイン](/docs/ja/plugins) は、プラグインを有効にするときにツールと統合を提供する MCP サーバーをバンドルできます。プラグイン MCP サーバーはユーザー設定サーバーと同じように機能します。
+[プラグイン](/docs/ja/plugins/overview) は、プラグインを有効にするときにツールと統合を提供する MCP サーバーをバンドルできます。プラグイン MCP サーバーはユーザー設定サーバーと同じように機能します。
 
 **プラグイン MCP サーバーの動作方法**：
 
@@ -539,11 +539,11 @@ MCP サーバーはまた、CI 結果、監視アラート、チャットメッ�
 
 * **自動ライフサイクル**: サーバーはこれらのポイントで接続および切断されます。
   * セッション起動時、Claude Code は有効なプラグインのサーバーを自動的に接続します。`/mcp` では、以前使用したリモート（HTTP または SSE）プラグインサーバーは [`cached` ステータス](#server-status-detail) を代わりに表示できます。Claude Code は Claude が最初にそのツールの 1 つを呼び出すときに接続します
-  * セッション中にプラグインを有効または無効にする場合、Claude Code はその変更が適用されるときにその MCP サーバーを接続または切断します。[プラグイン変更を再起動なしで適用](/docs/ja/discover-plugins#apply-plugin-changes-without-restarting) はいつかを説明しています。対話的なターミナルのないセッションでは、`/reload-plugins` はプラグイン MCP サーバーを接続または切断しません。これらの変更は次のセッションで有効になります
+  * セッション中にプラグインを有効または無効にする場合、Claude Code はその変更が適用されるときにその MCP サーバーを接続または切断します。[プラグイン変更を再起動なしで適用](/docs/ja/plugins/cli-reference#reload-plugins) はいつかを説明しています。対話的なターミナルのないセッションでは、`/reload-plugins` はプラグイン MCP サーバーを接続または切断しません。これらの変更は次のセッションで有効になります
   * リロードするとき、Claude Code は設定が変更されていないプラグインサーバーのライブ接続を保持し、Agent SDK から [セッションの MCP サーバーリストを置き換える](/docs/ja/agent-sdk/typescript#mcpsetserversresult) ときに同じことを行います。それらに名前を付けずに
   * v2.1.246 以降で [`/cd`](/docs/ja/permissions#move-the-session-to-another-directory) でセッションを移動するとき、Claude Code は新しいディレクトリの設定が有効にするプラグインのサーバーを接続し、有効でなくなったプラグインのサーバーを切断するため、移動後に `/reload-plugins` を実行する必要はありません
-  * [ウェブセッション](/docs/ja/claude-code-on-the-web) では、まだ接続されていないプラグインサーバーへの MCP 呼び出し（アイドルセッションが起動した直後など）は、サーバーをオンデマンドで開始し、接続を待ちます
-* **パスプレースホルダー**: `${CLAUDE_PLUGIN_ROOT}` はプラグインのインストールディレクトリに解決され、`${CLAUDE_PLUGIN_DATA}` はその [永続状態](/docs/ja/plugins-reference#persistent-data-directory) ディレクトリに解決され、`${CLAUDE_PROJECT_DIR}` は安定したプロジェクトルートに解決されます。置換は以下に適用されます。
+  * [クラウドセッション](/docs/ja/claude-code-on-the-web) では、まだ接続されていないプラグインサーバーへの MCP 呼び出し（アイドルセッションが起動した直後など）は、サーバーをオンデマンドで開始し、接続を待ちます
+* **パスプレースホルダー**: `${CLAUDE_PLUGIN_ROOT}` はプラグインのインストールディレクトリに解決され、`${CLAUDE_PLUGIN_DATA}` はその [永続状態](/docs/ja/plugins/components#path-variables-and-persistent-data) ディレクトリに解決され、`${CLAUDE_PROJECT_DIR}` は安定したプロジェクトルートに解決されます。置換は以下に適用されます。
   * `stdio` サーバー: `command`、`args`、`env`
   * `http`、`sse`、`ws` サーバー: `url`、`headers`、`headersHelper`。v2.1.195 より前では、`headersHelper` はプレースホルダーをリテラル文字列として渡していました
 * **ユーザー環境アクセス**: 手動で設定されたサーバーと同じ環境変数へのアクセス
@@ -563,7 +563,7 @@ mcp__plugin_my-plugin_database-tools__query
 
 サーバー自体は `plugin:<plugin-name>:<server-name>`（`plugin:my-plugin:database-tools` など）のスコープ付き名前で登録されます。設定されたサーバー名が予想される場所（[`mcp_tool` フックの `server` フィールド](/docs/ja/hooks#mcp-tool-hook-fields) など）でその名前を使用してください。
 
-プラグインで MCP サーバーをバンドルする詳細については、[プラグインコンポーネントリファレンス](/docs/ja/plugins-reference#mcp-servers) を参照してください。
+プラグインで MCP サーバーをバンドルする詳細については、[プラグインコンポーネントリファレンス](/docs/ja/plugins/components#mcp-servers) を参照してください。
 
 <h2 id="mcp-installation-scopes">
   MCP インストールスコープ
@@ -666,7 +666,7 @@ claude mcp add --transport http hubspot --scope user https://mcp.hubspot.com/ant
 1. ローカルスコープ
 2. プロジェクトスコープ
 3. ユーザースコープ
-4. [プラグイン提供サーバー](/docs/ja/plugins)
+4. [プラグイン提供サーバー](/docs/ja/plugins/components#mcp-servers)
 5. [claude.ai コネクタ](#use-mcp-servers-from-claude-ai)
 
 3 つのスコープは名前で重複を照合します。プラグインとコネクタはエンドポイントで照合するため、上記のサーバーと同じ URL またはコマンドを指すものは重複として扱われます。
@@ -1084,15 +1084,15 @@ Claude Code は各接続時にヘルパーを新たに実行します。セッ�
 
 Claude Code はヘルパーを実行するときに、これらの環境変数を設定します。
 
-| 変数                            | 値                                                                               |
-| :---------------------------- | :------------------------------------------------------------------------------ |
-| `CLAUDE_CODE_MCP_SERVER_NAME` | MCP サーバーの名前                                                                     |
-| `CLAUDE_CODE_MCP_SERVER_URL`  | MCP サーバーの URL                                                                   |
-| `CLAUDE_PLUGIN_ROOT`          | プラグインのルートディレクトリ。[プラグイン](/docs/ja/plugins-reference#mcp-servers)がサーバーを提供する場合にのみ設定されます |
+| 変数                            | 値                                                                                |
+| :---------------------------- | :------------------------------------------------------------------------------- |
+| `CLAUDE_CODE_MCP_SERVER_NAME` | MCP サーバーの名前                                                                      |
+| `CLAUDE_CODE_MCP_SERVER_URL`  | MCP サーバーの URL                                                                    |
+| `CLAUDE_PLUGIN_ROOT`          | プラグインのルートディレクトリ。[プラグイン](/docs/ja/plugins/components#mcp-servers)がサーバーを提供する場合にのみ設定されます |
 
 これらを使用して、複数の MCP サーバーに対応する単一のヘルパースクリプトを作成してください。
 
-プラグイン提供の `headersHelper` はプラグインの [`${user_config.*}`](/docs/ja/plugins-reference#user-configuration) 値を参照できません。コマンドはシェルを通じて実行されるためです。Claude Code はサーバーを設定ミスとして [エラー](/docs/ja/errors#plugin-command-references-user-config)で報告し、値を置換しません。代わりに、シェル解析されない `headers` フィールドに `${user_config.KEY}` を配置するか、ヘルパースクリプトに設定ファイルから値を読み込ませてください。v2.1.207 より前は、`headersHelper` は `${user_config.*}` 値を置換していました。
+プラグイン提供の `headersHelper` はプラグインの [`${user_config.*}`](/docs/ja/plugins/manifest-reference#user-configuration)値を参照できません。コマンドはシェルを通じて実行されるためです。Claude Code はサーバーを設定ミスとして[エラー](/docs/ja/errors#plugin-command-references-user-config)で報告し、値を置換しません。代わりに、シェル解析されない `headers` フィールドに `${user_config.KEY}` を配置するか、ヘルパースクリプトに設定ファイルから値を読み込ませてください。v2.1.207 より前は、`headersHelper` は `${user_config.*}` 値を置換していました。
 
 <h4 id="where-the-helper-runs">
   ヘルパーが実行される場所
@@ -1102,7 +1102,7 @@ Claude Code は、サーバーを宣言する設定から `headersHelper` コマ
 
 | サーバーを設定した場所                                                                                                                                           | 作業ディレクトリ                                                            |
 | :---------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------ |
-| [プラグイン](/docs/ja/plugins-reference#mcp-servers)                                                                                                            | プラグインのルートディレクトリ。Claude Code v2.1.195 以降が必要です                        |
+| [プラグイン](/docs/ja/plugins/components#mcp-servers)                                                                                                           | プラグインのルートディレクトリ。Claude Code v2.1.195 以降が必要です                        |
 | プロジェクト `.mcp.json` または [ローカルスコープ](#local-scope)サーバー                                                                                                   | サーバーが宣言されているプロジェクトディレクトリ                                            |
 | プロジェクト内のエージェントファイル、SDK の `mcpServers` オプションまたは `setMcpServers()` メソッドからのサーバー、または [`--mcp-config`](/docs/ja/cli-reference)                                  | セッションの[プライマリ作業ディレクトリ](/docs/ja/permissions#working-directories)          |
 | [ユーザースコープ](#user-scope)、[管理 MCP](/docs/ja/managed-mcp)、[claude.ai コネクタ](#use-mcp-servers-from-claude-ai)、またはプロジェクト外のエージェントファイル（`--add-dir` ディレクトリからのものを含む） | 設定ディレクトリ `~/.claude`（[`CLAUDE_CONFIG_DIR`](/docs/ja/env-vars)を設定していない場合） |
@@ -1235,7 +1235,7 @@ Claude Desktop で MCP サーバーを既に設定している場合は、それ
   </Step>
 </Steps>
 
-Claude Code は、組織が claude.ai で認証を管理している場合、`/mcp` および [`/plugin`](/docs/ja/plugins) マネージャーで connector を `managed` としてマークします。Managed ステータスは、Claude Code が connector に接続する方法や、組織の [tool controls](#organization-controls-on-connector-tools) を適用する方法を変更しません。
+Claude Code は、組織が claude.ai で認証を管理している場合、`/mcp` および [`/plugin`](/docs/ja/plugins/install) マネージャーで connector を `managed` としてマークします。Managed ステータスは、Claude Code が connector に接続する方法や、組織の [tool controls](#organization-controls-on-connector-tools) を適用する方法を変更しません。
 
 まだサインインしたことのない Connector は、claude.ai セクションの最後にある `Show unused connectors` 行の背後に折りたたまれているため、組織がプロビジョニングしたリストがパネルを満たしません。その行を選択して展開します。以前にサインインした Connector は、現在再認証が必要な場合でも表示されたままです。
 

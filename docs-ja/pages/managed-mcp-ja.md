@@ -41,7 +41,7 @@ Claude Code は、さまざまな制限レベルをサポートしています�
 | **制限なし**        | ユーザーは何でも追加できます                                                                                                                                                                 | マネージド MCP 設定をデプロイしないでください                                                                           |
 
 <Note>
-  Claude Code には、ユーザーが参照してインストールできる組み込み MCP サーバーレジストリはありません。承認されたカタログパターンの場合、承認されたリストとその `claude mcp add` コマンドを、内部 wiki などのユーザーが見つけやすい場所で共有するか、[マネージドプラグインマーケットプレイス](/docs/ja/plugin-marketplaces#managed-marketplace-restrictions)を通じてプラグインとしてサーバーを配布して、ユーザーが `/plugin` から参照してインストールできるようにしてください。
+  Claude Code には、ユーザーが参照してインストールできる組み込み MCP サーバーレジストリはありません。承認されたカタログパターンの場合、承認されたリストとその `claude mcp add` コマンドを、内部 wiki などのユーザーが見つけやすい場所で共有するか、[マネージドプラグインマーケットプレイス](/docs/ja/plugins/org#restrict-what-users-can-install)を通じてプラグインとしてサーバーを配布して、ユーザーが `/plugin` から参照してインストールできるようにしてください。
 </Note>
 
 <h2 id="exclusive-control-with-managed-mcp-json">

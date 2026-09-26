@@ -472,7 +472,7 @@ Dispatch は、ターミナルから離れているときに Claude で作業す
 
 外部サービスを接続し、再利用可能なワークフローを追加し、Claude の動作をカスタマイズし、プレビューサーバーを設定します。コネクタ、スキル、プラグインを 1 か所で管理するには、サイドバーの**Customize**をクリックします。Desktop アプリの [Cowork](https://claude.com/product/cowork) タブは、CLI の `~/.claude` ディレクトリではなく、この Customize 設定からスキル、プラグイン、コネクタをソースとし、claude.ai アカウント経由で同期します。
 
-Claude Code はまた、同じアカウントでサインインしたターミナルセッションで、claude.ai アカウント用に有効化されたスキルとプラグインもロードします。[claude.ai から同期されたスキル](/docs/ja/skills#how-synced-skills-behave)および [claude.ai から同期されたプラグイン](/docs/ja/plugins-reference#synced-plugins)を参照してください。
+Claude Code はまた、同じアカウントでサインインしたターミナルセッションで、claude.ai アカウント用に有効化されたスキルとプラグインもロードします。[claude.ai から同期されたスキル](/docs/ja/skills#how-synced-skills-behave)および [claude.ai から同期されたプラグイン](/docs/ja/plugins/loading#synced-plugins)を参照してください。
 
 <h3 id="connect-external-tools">
   外部ツールを接続する
@@ -490,7 +490,7 @@ Claude Code はまた、同じアカウントでサインインしたターミ�
   スキルを使用する
 </h3>
 
-[スキル](/docs/ja/skills)は Claude ができることを拡張します。Claude は関連する場合に自動的にロードするか、直接呼び出すことができます：プロンプトボックスで `/` を入力するか、**+**ボタンをクリックして**Slash commands**を選択して、利用可能なものを参照します。これには [組み込みコマンド](/docs/ja/commands)、[カスタムスキル](/docs/ja/skills#create-your-first-skill)、コードベースからのプロジェクトスキル、および [インストール済みプラグイン](/docs/ja/plugins)からのスキルが含まれます。1 つを選択すると、入力フィールドで強調表示されます。その後にタスクを入力して、通常どおり送信します。
+[スキル](/docs/ja/skills)は Claude ができることを拡張します。Claude は関連する場合に自動的にロードするか、直接呼び出すことができます：プロンプトボックスで `/` を入力するか、**+**ボタンをクリックして**Slash commands**を選択して、利用可能なものを参照します。これには [組み込みコマンド](/docs/ja/commands)、[カスタムスキル](/docs/ja/skills#create-your-first-skill)、コードベースからのプロジェクトスキル、および [インストール済みプラグイン](/docs/ja/plugins/install)からのスキルが含まれます。1 つを選択すると、入力フィールドで強調表示されます。その後にタスクを入力して、通常どおり送信します。
 
 Claude が作業中でも、他のメッセージと同じようにコマンドを送信でき、ターンが終了するとセッションはアイドル状態に戻ります。v2.1.206 より前では、ターン中に送信されたコマンドはセッションを実行中として表示したままにし、その後に送信したメッセージは配信されませんでした。
 
@@ -502,13 +502,13 @@ Claude が作業中でも、他のメッセージと同じようにコマンド�
   プラグインをインストールする
 </h3>
 
-[プラグイン](/docs/ja/plugins)は、スキル、エージェント、hooks、MCP サーバー、および LSP 設定を Claude Code に追加する再利用可能なパッケージです。ターミナルを使用せずにデスクトップアプリからプラグインをインストールできます。
+[プラグイン](/docs/ja/plugins/overview)は、スキル、エージェント、hooks、MCP サーバー、および LSP 設定を Claude Code に追加する再利用可能なパッケージです。ターミナルを使用せずにデスクトップアプリからプラグインをインストールできます。
 
-ローカルおよび [SSH](#ssh-sessions) セッションの場合、プロンプトボックスの横の\*\*+**ボタンをクリックして**Plugins**を選択して、インストール済みプラグインとそのスキルを確認します。プラグインを追加するには、サブメニューから**Add plugin\*\*を選択してプラグインブラウザを開きます。これは、公式 Anthropic マーケットプレイスを含む、設定された [マーケットプレイス](/docs/ja/plugin-marketplaces)から利用可能なプラグインを表示します。**Manage plugins**を選択して、プラグインを有効化、無効化、またはアンインストールします。
+ローカルおよび [SSH](#ssh-sessions) セッションの場合、プロンプトボックスの横の\*\*+**ボタンをクリックして**Plugins**を選択して、インストール済みプラグインとそのスキルを確認します。プラグインを追加するには、サブメニューから**Add plugin\*\*を選択してプラグインブラウザを開きます。これは、公式 Anthropic マーケットプレイスを含む、設定された [マーケットプレイス](/docs/ja/plugins/overview)から利用可能なプラグインを表示します。**Manage plugins**を選択して、プラグインを有効化、無効化、またはアンインストールします。
 
 プラグインはユーザーアカウント、特定のプロジェクト、またはローカルのみにスコープできます。組織がプラグインを一元管理する場合、それらのプラグインは CLI と同じ方法で Desktop セッションで利用可能です。
 
-プラグインブラウザはクラウドセッションでは利用できず、デスクトップアプリからインストールしたプラグインはクラウドセッションでは利用できません。クラウドセッションでプラグインを使用するには、リポジトリの `.claude/settings.json` で宣言して Claude Code が [セッション開始時にインストール](/docs/ja/cloud-environments#what-carries-over-from-your-setup)するか、claude.ai アカウント用に有効化して Claude Code が [同期されたプラグイン](/docs/ja/plugins-reference#synced-plugins)としてロードするようにします。プラグインは WSL セッションでは利用できません。プラグインの作成を含む完全なプラグインリファレンスについては、[プラグイン](/docs/ja/plugins)を参照してください。
+プラグインブラウザはクラウドセッションでは利用できず、デスクトップアプリからインストールしたプラグインはクラウドセッションでは利用できません。クラウドセッションでもプラグインをインストールしません。リポジトリの `.claude/settings.json` で宣言されているプラグインは、[セットアップから引き継がれるもの](/docs/ja/cloud-environments#what-carries-over-from-your-setup)で説明されているとおりです。プラグインは WSL セッションでは利用できません。プラグインの作成を含む完全なプラグインリファレンスについては、[プラグイン](/docs/ja/plugins/overview)を参照してください。
 
 <h3 id="configure-preview-servers">
   プレビューサーバーを設定する
@@ -1023,7 +1023,7 @@ Desktop アプリは `claude_desktop_config.json` から MCP サーバーをロ�
 | 権限モード                                         | `dontAsk` を含むすべてのモード                                           | Manual、Accept edits、Plan、および Auto。Bypass permissions はモードセレクタに表示されます。Pro と Max プランでは Settings トグルで有効にします。Team と Enterprise プランでは、組織ポリシーがこれを制御します                                                                                                                                                                |
 | [サードパーティプロバイダー](/docs/ja/third-party-integrations) | Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry | デフォルトでは Anthropic の API。ゲートウェイルーティングについては、[デスクトップアプリをゲートウェイに接続](/docs/ja/llm-gateway-connect#desktop-app)を参照してください。Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、または自己ホスト型 LLM ゲートウェイで Code タブを実行するには、[Claude Desktop on 3P](https://claude.com/docs/third-party/claude-desktop/overview)を参照してください。 |
 | [MCP サーバー](/docs/ja/mcp)                           | 設定ファイルで設定                                                      | ローカルおよび SSH セッションの Connectors UI、または設定ファイル                                                                                                                                                                                                                                                                      |
-| [Plugins](/docs/ja/plugins)                        | `/plugin` コマンド                                                 | プラグインマネージャー UI                                                                                                                                                                                                                                                                                                  |
+| [Plugins](/docs/ja/plugins/overview)               | `/plugin` コマンド                                                 | プラグインマネージャー UI                                                                                                                                                                                                                                                                                                  |
 | @mention ファイル                                 | テキストベース                                                        | オートコンプリート付き；ローカルおよび SSH セッションのみ                                                                                                                                                                                                                                                                                 |
 | ファイル添付                                        | 利用できません                                                        | 画像、PDF                                                                                                                                                                                                                                                                                                          |
 | セッション分離                                       | [`--worktree`](/docs/ja/cli-reference) フラグ                          | **worktree** オプション（セッション開始時）                                                                                                                                                                                                                                                                                    |

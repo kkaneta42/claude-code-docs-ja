@@ -129,15 +129,15 @@ Claude は、失敗したコマンドや欠落したステップなど、実行�
 | Project              | `.claude/skills/<skill-name>/SKILL.md`                                                                               | このリポジトリ内のセッション。コミットするとチームも取得できます                                                                                                                                                       |
 | Nested               | `<subdir>/.claude/skills/<skill-name>/SKILL.md`                                                                      | `<subdir>` で開始されたセッション、またはその下で開始されたセッション。その上で開始されたセッションは、Claude がそこのファイルで作業を開始すると、スキルを 1 回読み込みます。[monorepos と subdirectories](#discovery-from-parent-and-nested-directories) を参照してください |
 | Additional directory | `.claude/skills/<skill-name>/SKILL.md` in a directory you pass with `--add-dir`                                      | そのセッション。[プロジェクト外のディレクトリ](#skills-from-additional-directories) を参照してください                                                                                                                |
-| Plugin               | `<plugin>/skills/<skill-name>/SKILL.md`                                                                              | [プラグイン](/docs/ja/plugins) が有効な場所。`/plugin-name:skill-name` として                                                                                                                              |
+| Plugin               | `<plugin>/skills/<skill-name>/SKILL.md`                                                                              | [プラグイン](/docs/ja/plugins/overview) が有効な場所。`/plugin-name:skill-name` として                                                                                                                     |
 | claude.ai account    | claude.ai アカウント用に有効化されたスキル                                                                                           | Cowork セッション、クラウドセッション、およびそのアカウントでサインインするターミナルセッション。[claude.ai から同期されたスキル](#how-synced-skills-behave) を参照してください                                                                        |
 
 スキルフォルダは、これらのルールにも従います：
 
-* **シンボリックリンク付きフォルダ**: enterprise、personal、または project の場所の `<skill-name>` エントリは、ディスク上の別の場所へのシンボリックリンクにすることができます。Claude Code は、複数の場所が同じターゲットを指している場合でも、ターゲットから `SKILL.md` を読み込み、スキルを 1 回だけ読み込みます。プラグインスキルは [シンボリックリンクを異なる方法で処理します](/docs/ja/plugins-reference#share-files-within-a-marketplace-with-symlinks)。
+* **シンボリックリンク付きフォルダ**: enterprise、personal、または project の場所の `<skill-name>` エントリは、ディスク上の別の場所へのシンボリックリンクにすることができます。Claude Code は、複数の場所が同じターゲットを指している場合でも、ターゲットから `SKILL.md` を読み込み、スキルを 1 回だけ読み込みます。プラグインスキルは [シンボリックリンクを異なる方法で処理します](/docs/ja/plugins/host-marketplace#share-files-within-a-marketplace-with-symlinks)。
 * **予約名**: スキルフォルダに `synced` という名前を付けないでください。大文字小文字は問いません。Claude Code は `~/.claude/skills/synced/` を [claude.ai からダウンロードされたスキル](#where-synced-skills-load) に使用し、enterprise、personal、および project の場所でこの名前で作成したスキルをスキップします。
 * **コマンドファイル**: `.claude/commands/` 内の Markdown ファイルは古い形式ですが、まだ機能します。`name` と `paths` を除く同じ [frontmatter](#frontmatter-reference) をサポートしています。それを呼び出すために入力するコマンド名を見つけるには、[スキルがコマンド名を取得する方法](#how-a-skill-gets-its-command-name) を参照してください。新しい作業にはスキルを使用してください。スキルは [サポートファイル](#add-supporting-files) もサポートしているためです。
-* **プラグインとしてのスキルフォルダ**: `.claude-plugin/plugin.json` をスキルフォルダに追加すると、`<name>@skills-dir` という名前の [プラグイン](/docs/ja/plugins-reference#skills-directory-plugins) として読み込まれます。これにより、エージェント、hooks、および MCP サーバーをバンドルできます。プロジェクトの `.claude/skills/` では、最初にワークスペーストラストダイアログを受け入れる必要があります。
+* **プラグインとしてのスキルフォルダ**: `.claude-plugin/plugin.json` をスキルフォルダに追加すると、`<name>@skills-dir` という名前の [プラグイン](/docs/ja/plugins/loading#plugins-shared-through-a-repository) として読み込まれます。これにより、エージェント、hooks、および MCP サーバーをバンドルできます。プロジェクトの `.claude/skills/` では、最初にワークスペーストラストダイアログを受け入れる必要があります。
 
 <h3 id="discovery-from-parent-and-nested-directories">
   monorepos と subdirectories でスキルを読み込む
@@ -275,7 +275,7 @@ Claude Code が同期されたスキルの本体で何をするかは、セッ�
 
 Claude Code は [bare mode](/docs/ja/headless#start-faster-with-bare-mode) を除き、スキルディレクトリのファイル変更を監視します。`~/.claude/skills/`、プロジェクト `.claude/skills/`、または `--add-dir` ディレクトリ内の `.claude/skills/` の下のスキルを追加、編集、または削除すると、Claude Code は現在のセッション内で変更を取得します。再起動は不要です。セッション開始時に存在しなかったトップレベルスキルディレクトリを作成する場合、Claude Code を再起動して新しいディレクトリを監視できるようにします。
 
-ライブ変更検出は `SKILL.md` テキストのみをカバーします。スキルフォルダが [プラグイン](/docs/ja/plugins-reference#skills-directory-plugins) でもある場合、`hooks/`、`.mcp.json`、`agents/`、および `output-styles/` への変更は `/reload-plugins` で有効になります。
+ライブ変更検出は `SKILL.md` テキストのみをカバーします。スキルフォルダが [プラグイン](/docs/ja/plugins/loading#plugins-shared-through-a-repository) でもある場合、`hooks/`、`.mcp.json`、`agents/`、および `output-styles/` への変更は `/reload-plugins` で有効になります。
 
 <h3 id="remove-a-skill">
   スキルを削除する
@@ -285,7 +285,7 @@ Claude Code は [bare mode](/docs/ja/headless#start-faster-with-bare-mode) を�
 
 * **Personal または project スキル**: スキルのディレクトリ `~/.claude/skills/<skill-name>/` または `.claude/skills/<skill-name>/` を削除します。Claude Code は [現在のセッションの `/skills` からそれを削除します](#live-change-detection)。Claude Code が既に読み込んだコンテンツは [スキルコンテンツライフサイクル](#skill-content-lifecycle) に従います。
 * **Enterprise スキル**: 管理者が [マネージドセッティングディレクトリ](/docs/ja/managed-settings#delivery-mechanisms) 内の `.claude/skills/` からスキルのディレクトリを削除します。例えば、Linux では `/etc/claude-code/.claude/skills/<skill-name>/`。
-* **Plugin スキル**: `/plugin` メニューから、または `/plugin uninstall <plugin-name>@<marketplace-name>` でプラグインを無効化またはアンインストールします。Claude Code は [変更が適用される](/docs/ja/discover-plugins#apply-plugin-changes-without-restarting) か、再起動するときにプラグインのスキルをアンロードします。
+* **Plugin スキル**: `/plugin` メニューから、または `/plugin uninstall <plugin-name>@<marketplace-name>` でプラグインを無効化またはアンインストールします。Claude Code は [変更が適用される](/docs/ja/plugins/cli-reference#reload-plugins) か、再起動するときにプラグインのスキルをアンロードします。
 * **claude.ai から同期されたスキル**: claude.ai のスキルセッティングで、[有効化した](#skills-in-cowork-and-cloud-sessions) 同じ場所でスキルをオフにします。Claude Code は [スキルを同期する](#where-synced-skills-load) 次回にそれを `~/.claude/skills/synced/` から削除します。代わりに手動でディレクトリを削除する場合、次の同期はスキルが claude.ai で有効なままの間、それを再度ダウンロードします。
 * **バンドルされたスキル**: [`disableBundledSkills`](#bundled-skills) を `true` に設定してバンドルされたスキルをオフにするか、[`skillOverrides`](#override-skill-visibility-from-settings) で 1 つのスキルを `"off"` に設定して非表示にします。
 
@@ -389,7 +389,7 @@ Claude Code はテーブル上のすべてのフィールドを受け入れま�
 
 | 配布パス                                                                                                                        | 使用できるフロントマターフィールド                                                         |
 | :-------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------ |
-| [任意のレベル](#where-skills-live) の Claude Code スキル。[プラグイン](/docs/ja/plugins) スキルを含む                                                  | テーブル上のすべてのフィールド                                                           |
+| [任意のレベル](#where-skills-live) の Claude Code スキル。[プラグイン](/docs/ja/plugins/overview) スキルを含む                                         | テーブル上のすべてのフィールド                                                           |
 | claude.ai スキルアップロード、Skills API、および [anthropics/skills](https://github.com/anthropics/skills) の `package_skill.py` でのパッケージング | `name`、`description`、`license`、`compatibility`、`metadata`、`allowed-tools` |
 
 たとえば、[Cowork とクラウドセッション](#skills-in-cowork-and-cloud-sessions) とルーチンで使用するために個人スキルを claude.ai アカウント用に有効にする場合、それを claude.ai にアップロードするため、同じルールが適用されます。
@@ -410,15 +410,15 @@ Unexpected key(s) in SKILL.md frontmatter: argument-hint. Allowed properties are
 
 以下のテーブルは、各レイアウトのコマンド名がどこから来るかを示しています。
 
-| スキルの場所                                                                | コマンド名のソース                                                     | 例                                                                                                                    |
-| :-------------------------------------------------------------------- | :------------------------------------------------------------ | :------------------------------------------------------------------------------------------------------------------- |
-| `~/.claude/skills/` または `.claude/skills/` の下のスキルディレクトリ                | ディレクトリ名                                                       | `.claude/skills/deploy-staging/SKILL.md` → `/deploy-staging`                                                         |
-| [ネストされた](#where-skills-live) `.claude/skills/` ディレクトリ。別のスキルと名前が衝突する場合 | 作業ディレクトリに相対的なサブディレクトリパス。その後、スキルディレクトリ名                        | `apps/web/.claude/skills/deploy/SKILL.md` → `/apps/web:deploy`                                                       |
-| `.claude/commands/` の下のファイル                                           | 拡張子なしのファイル名                                                   | `.claude/commands/deploy.md` → `/deploy`                                                                             |
-| `.claude/commands/` のサブディレクトリ内のファイル                                   | `commands/` に相対的なサブディレクトリパス。各 `/` を `:` に置き換え。その後、拡張子なしのファイル名 | `.claude/commands/frontend/component.md` → `/frontend:component`                                                     |
-| プラグイン `skills/` サブディレクトリ                                              | フロントマター `name` またはディレクトリ名。プラグインでネームスペース化                      | `my-plugin/skills/review/SKILL.md` → `/my-plugin:review`。または `name: fancy` で `/my-plugin:fancy`                      |
-| プラグインルート `SKILL.md`                                                   | フロントマター `name`。フォールバックとしてプラグインディレクトリ名                         | `my-plugin/SKILL.md` と `name: review` → `/my-plugin:review`。[パス動作ルール](/docs/ja/plugins-reference#path-behavior-rules) を参照 |
-| [claude.ai から同期されたスキル](#how-synced-skills-behave)                     | claude.ai アカウント上のスキルの名前。`anthropic-skills:` でプレフィックス化         | アカウントスキル `deploy` → `/anthropic-skills:deploy`。または他のコマンドがその名前を使用していない場合は `/deploy`                                   |
+| スキルの場所                                                                | コマンド名のソース                                                     | 例                                                                                                               |
+| :-------------------------------------------------------------------- | :------------------------------------------------------------ | :-------------------------------------------------------------------------------------------------------------- |
+| `~/.claude/skills/` または `.claude/skills/` の下のスキルディレクトリ                | ディレクトリ名                                                       | `.claude/skills/deploy-staging/SKILL.md` → `/deploy-staging`                                                    |
+| [ネストされた](#where-skills-live) `.claude/skills/` ディレクトリ。別のスキルと名前が衝突する場合 | 作業ディレクトリに相対的なサブディレクトリパス。その後、スキルディレクトリ名                        | `apps/web/.claude/skills/deploy/SKILL.md` → `/apps/web:deploy`                                                  |
+| `.claude/commands/` の下のファイル                                           | 拡張子なしのファイル名                                                   | `.claude/commands/deploy.md` → `/deploy`                                                                        |
+| `.claude/commands/` のサブディレクトリ内のファイル                                   | `commands/` に相対的なサブディレクトリパス。各 `/` を `:` に置き換え。その後、拡張子なしのファイル名 | `.claude/commands/frontend/component.md` → `/frontend:component`                                                |
+| プラグイン `skills/` サブディレクトリ                                              | フロントマター `name` またはディレクトリ名。プラグインでネームスペース化                      | `my-plugin/skills/review/SKILL.md` → `/my-plugin:review`。または `name: fancy` で `/my-plugin:fancy`                 |
+| プラグインルート `SKILL.md`                                                   | フロントマター `name`。フォールバックとしてプラグインディレクトリ名                         | `my-plugin/SKILL.md` と `name: review` → `/my-plugin:review`。[プラグインルートの単一スキル](/docs/ja/plugins/components#skills) を参照 |
+| [claude.ai から同期されたスキル](#how-synced-skills-behave)                     | claude.ai アカウント上のスキルの名前。`anthropic-skills:` でプレフィックス化         | アカウントスキル `deploy` → `/anthropic-skills:deploy`。または他のコマンドがその名前を使用していない場合は `/deploy`                              |
 
 プラグインスキルでは、フロントマター `name` はコマンドの最後のセグメント内のディレクトリ名を置き換えるため、`my-plugin/skills/review/SKILL.md` と `name: fancy` は `/my-plugin:fancy` になります。別の `/fancy` もスキルを呼び出します。別のコマンドがその名前をまだ使用していない場合。書き込む `name` がプラグイン独自のプレフィックスで既に始まる場合、Claude Code は v2.1.246 以降でプレフィックスを再度追加しません。たとえば、`name: my-plugin:fancy` は依然として `/my-plugin:fancy` になります。v2.1.216 から v2.1.245 まで、Claude Code は `name` がそれを既に実行していた場合、プレフィックスを倍にしました。
 
@@ -442,8 +442,8 @@ Unexpected key(s) in SKILL.md frontmatter: argument-hint. Allowed properties are
 | `${CLAUDE_EFFORT}`      | 現在の努力レベル：`low`、`medium`、`high`、`xhigh`、または `max`。Ultracode は個別のレベルではなく、`xhigh` として報告されます。これを使用して、アクティブな努力設定にスキル指示を適応させます。                                                                                                      |
 | `${CLAUDE_SKILL_DIR}`   | スキルの `SKILL.md` ファイルを含むディレクトリ。プラグインスキルの場合、これはプラグインルートではなく、プラグイン内のスキルのサブディレクトリです。現在の作業ディレクトリに関係なく、スキルにバンドルされたスクリプトまたはファイルを参照するために bash インジェクションコマンドで使用します。                                                                      |
 | `${CLAUDE_PROJECT_DIR}` | プロジェクトルートディレクトリ。これは [フック](/docs/ja/hooks#reference-scripts-by-path) と MCP サーバーが `CLAUDE_PROJECT_DIR` として受け取るのと同じパスです。`${CLAUDE_PROJECT_DIR}/.claude/hooks/helper.sh` など、スキルがインストールされている場所に関係なく、プロジェクトローカルスクリプトまたはファイルを参照するために使用します。 |
-| `${CLAUDE_PLUGIN_ROOT}` | プラグインのインストールディレクトリ。プラグインスキルでのみ置換されます。プラグイン内の任意の場所にバンドルされたスクリプトまたはファイル（プラグインのスキル間で共有されるリソースを含む）を参照するために使用します。[プラグイン環境変数](/docs/ja/plugins-reference#environment-variables) を参照してください。                                                |
-| `${CLAUDE_PLUGIN_DATA}` | プラグインの [永続データディレクトリ](/docs/ja/plugins-reference#persistent-data-directory)。プラグイン更新を生き残ります。プラグインスキルでのみ置換されます。インストール済みの依存関係、生成されたファイル、または更新を超えて存続する必要があるキャッシュを参照するために使用します。                                                           |
+| `${CLAUDE_PLUGIN_ROOT}` | プラグインのインストールディレクトリ。プラグインスキルでのみ置換されます。プラグイン内の任意の場所にバンドルされたスクリプトまたはファイル（プラグインのスキル間で共有されるリソースを含む）を参照するために使用します。[プラグイン環境変数](/docs/ja/plugins/manifest-reference#environment-variables) を参照してください。                                       |
+| `${CLAUDE_PLUGIN_DATA}` | プラグインの [永続データディレクトリ](/docs/ja/plugins/components#path-variables-and-persistent-data)。プラグイン更新を生き残ります。プラグインスキルでのみ置換されます。インストール済みの依存関係、生成されたファイル、または更新を超えて存続する必要があるキャッシュを参照するために使用します。                                                 |
 
 Claude Code は `${CLAUDE_SKILL_DIR}` と `${CLAUDE_PROJECT_DIR}` を 2 つの場所で置換します。スキルのマークダウンコンテンツ、および [`allowed-tools`](#frontmatter-reference) フロントマターの Bash ルール。プラグインスキルでは、Claude Code は `${CLAUDE_PLUGIN_ROOT}` と `${CLAUDE_PLUGIN_DATA}` を同じ 2 つの場所で置換します。両方の場所で同じ変数を使用すると、スキルは許可プロンプトなしでバンドルされたスクリプトを実行できます。以下のスキルはパターンを示しています。
 
@@ -892,7 +892,7 @@ v2.1.199 以降、`"off"` はターミナル `/` メニューに加えて、[Rem
 
 両方をチェックするには、ベースライン比較を行います。現実的なプロンプトをいくつか収集し、スキルが利用可能な新しいセッションで各プロンプトを実行し、[無効化](#override-skill-visibility-from-settings)した状態でも実行して、結果を比較します。新しいセッションが重要なのは、スキルの作成時に残されたコンテキストが、書かれた指示のギャップをマスクするためです。
 
-その比較を自動化する 2 つのツールがあります。[プラグイン](/docs/ja/plugins)で配布されるスキルの場合、[`claude plugin eval`](/docs/ja/plugin-evals) は各プロンプトを分離されたセッションでプラグインの有無で実行し、定義したグレーダーまたはそれが作成したグレーダーでスコアリングし、閾値以下の場合はゼロ以外で終了するため、CI でそれをゲートできます。Claude Code 会話内の単一スキルを反復する場合、以下のスキル作成者プラグインは独自の `evals/evals.json` 形式で同様のループを実行します。2 つの形式は相互交換可能ではありません。
+その比較を自動化する 2 つのツールがあります。[プラグイン](/docs/ja/plugins/overview)で配布されるスキルの場合、[`claude plugin eval`](/docs/ja/plugin-evals) は各プロンプトを分離されたセッションでプラグインの有無で実行し、定義したグレーダーまたはそれが作成したグレーダーでスコアリングし、閾値以下の場合はゼロ以外で終了するため、CI でそれをゲートできます。Claude Code 会話内の単一スキルを反復する場合、以下のスキル作成者プラグインは独自の `evals/evals.json` 形式で同様のループを実行します。2 つの形式は相互交換可能ではありません。
 
 <h3 id="run-evals-with-skill-creator">
   skill-creator でエバルを実行する
@@ -907,7 +907,7 @@ v2.1.199 以降、`"off"` はターミナル `/` メニューに加えて、[Rem
 インストールが失敗した場合は、Claude Code が報告するメッセージと一致させます。
 
 * `Marketplace "claude-plugins-official" not found`：`/plugin marketplace add anthropics/claude-plugins-official` でマーケットプレイスを追加してから、インストールを再試行します。
-* [プラグインがマーケットプレイスで見つかりません](/docs/ja/discover-plugins#install-plugins)：プラグイン名を確認します。
+* [プラグインがマーケットプレイスで見つかりません](/docs/ja/plugins/install#install-a-plugin)：プラグイン名を確認します。
 
 インストール概要が `Run /reload-plugins to activate.` を報告する場合、Claude Code はそのリロードを実行します。リロードが次のメッセージが会話を再読み込みすることを警告する場合は、`/reload-plugins --force` を実行してプラグインのスキルを現在のセッションで利用可能にします。その後、Claude に既存のスキルを評価するよう依頼します。例えば `evaluate my summarize-changes skill with skill-creator` です。プラグインはテストケースの作成をガイドし、ループを実行します。
 
@@ -928,7 +928,7 @@ v2.1.199 以降、`"off"` はターミナル `/` メニューに加えて、[Rem
 スキルはオーディエンスに応じて異なるスコープで配布できます。
 
 * **プロジェクトスキル**: `.claude/skills/` をバージョン管理にコミットする
-* **プラグイン**: [プラグイン](/docs/ja/plugins)に `skills/` ディレクトリを作成する
+* **プラグイン**: [プラグイン](/docs/ja/plugins/overview)に `skills/` ディレクトリを作成する
 * **マネージド**: [マネージド設定](/docs/ja/managed-settings)を通じて組織全体にデプロイする
 
 <h3 id="generate-visual-output">
@@ -1143,7 +1143,7 @@ frontmatter YAML が不正な形式の場合、Claude Code はスキル本体を
 
 スキルがプラグインに含まれている場合、1 つずつ確認するのではなく、現実的なプロンプト全体でスキルがどのくらいの頻度でトリガーされるかを測定できます。[`tool_used: Skill` グレーダー](/docs/ja/plugin-evals#create-your-first-eval-suite)を使用して eval ケースを作成し、説明を変更するたびに `claude plugin eval` で実行してください。
 
-frontmatter がパースされない `SKILL.md` ファイルを見つけるには、スキルディレクトリで [`claude plugin validate`](/docs/ja/plugin-marketplaces#validate-a-plugin-or-a-directory-without-a-manifest) を実行してください。例えば、プロジェクトスキルの場合は `claude plugin validate .claude/skills`、個人スキルの場合は `claude plugin validate ~/.claude/skills` です。Claude Code v2.1.233 以降が必要です。
+frontmatter がパースされない `SKILL.md` ファイルを見つけるには、スキルディレクトリで [`claude plugin validate`](/docs/ja/plugins/cli-reference#validate-a-directory) を実行してください。例えば、プロジェクトスキルの場合は `claude plugin validate .claude/skills`、個人スキルの場合は `claude plugin validate ~/.claude/skills` です。Claude Code v2.1.233 以降が必要です。
 
 <h3 id="skill-triggers-too-often">
   スキルが頻繁にトリガーされる
@@ -1184,7 +1184,7 @@ v2.1.280 より前は、`~/.claude/skills/` に `manifest.json` という名前�
 * **[スキル出力品質の評価](https://agentskills.io/skill-creation/evaluating-skills)**：agentskills.io の eval ファイル形式と反復ワークフロー
 * **[スキル作成のベストプラクティス](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices)**：Claude 製品全体に適用される作成ガイダンス
 * **[サブエージェント](/docs/ja/sub-agents)**：特化したエージェントにタスクを委任する
-* **[プラグイン](/docs/ja/plugins)**：他の拡張機能でスキルをパッケージ化して配布する
+* **[プラグイン](/docs/ja/plugins/overview)**：他の拡張機能でスキルをパッケージ化して配布する
 * **[フック](/docs/ja/hooks)**：ツールイベント周辺のワークフローを自動化する
 * **[メモリ](/docs/ja/memory)**：永続的なコンテキストのための CLAUDE.md ファイルを管理する
 * **[コマンド](/docs/ja/commands)**：組み込みコマンドとバンドルされたスキルのリファレンス

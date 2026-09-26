@@ -626,7 +626,7 @@ scope: "Which settings files can set the key: user (~/.claude/settings.json), pr
 | [`axScreenReader`](#axscreenreader)                                                                   | [スクリーンリーダーフレンドリーな出力](/docs/ja/accessibility)をレンダリングします                                                                                                                                       | Interface and terminal             | Any file                |
 | [`bashEditDiffEnabled`](#basheditdiffenabled)                                                         | すべての権限モードで[Bash コマンドが変更したファイル](/docs/ja/hooks#bash)を記録します                                                                                                                                    | Interface and terminal             | User or managed         |
 | [`bashOutputMaxChars`](#bashoutputmaxchars)                                                           | 成功したコマンドの[出力](/docs/ja/tools-reference#output-limits)のうち Claude が受け取るインライン量を設定します                                                                                                            | Memory and context                 | Any file                |
-| [`blockedMarketplaces`](#blockedmarketplaces)                                                         | 組織の[プラグインマーケットプレイス](/docs/ja/plugin-marketplaces)ソースをブロックします                                                                                                                                 | Plugins and skills                 | Managed                 |
+| [`blockedMarketplaces`](#blockedmarketplaces)                                                         | 組織の[プラグインマーケットプレイス](/docs/ja/plugins/overview)ソースをブロックします                                                                                                                                    | Plugins and skills                 | Managed                 |
 | [`browserExternalPageTools`](#browserexternalpagetools)                                               | [デスクトップ](/docs/ja/desktop)ブラウザペインの外部ページで Claude のツールをオフにします                                                                                                                                  | Tools                              | Managed                 |
 | [`channelsEnabled`](#channelsenabled)                                                                 | 組織の[チャネル](/docs/ja/channels#enable-channels-for-your-organization)を許可します                                                                                                                     | Plugins and skills                 | Managed                 |
 | [`claudeMd`](#claudemd)                                                                               | マネージド設定から組織全体の[CLAUDE.md](/docs/ja/memory#deploy-organization-wide-claude-md)指示を注入します                                                                                                        | Memory and context                 | Managed                 |
@@ -647,13 +647,13 @@ scope: "Which settings files can set the key: user (~/.claude/settings.json), pr
 | [`disableBrowserExternalNavigation`](#disablebrowserexternalnavigation)                               | [デスクトップ](/docs/ja/desktop)ブラウザペインをユーザーと Claude の localhost に制限します                                                                                                                            | Tools                              | Managed                 |
 | [`disableBundledSkills`](#disablebundledskills)                                                       | Claude Code に含まれる[スキル](/docs/ja/skills#bundled-skills)および[ワークフロー](/docs/ja/workflows)をオフにします                                                                                                      | Plugins and skills                 | Any file                |
 | [`disableClaudeAiConnectors`](#disableclaudeaiconnectors)                                             | [claude.ai コネクタ](/docs/ja/mcp#disable-claude-ai-connectors)をオフにして、Claude Code がそれらを取得しないようにします                                                                                               | MCP                                | Any file                |
-| [`disableCommandPluginSources`](#disablecommandpluginsources)                                         | マーケットプレイス宣言コマンドを実行してインストールする[プラグイン](/docs/ja/plugins)をブロックします                                                                                                                                | Plugins and skills                 | Managed                 |
+| [`disableCommandPluginSources`](#disablecommandpluginsources)                                         | マーケットプレイス宣言コマンドを実行してインストールする[プラグイン](/docs/ja/plugins/overview)をブロックします                                                                                                                       | Plugins and skills                 | Managed                 |
 | [`disableDeepLinkRegistration`](#disabledeeplinkregistration)                                         | Claude Code が[`claude-cli://` ハンドラー](/docs/ja/deep-links)を登録するのを停止します                                                                                                                        | Remote, desktop, and notifications | Any file                |
 | [`disableDesktopLocalSessions`](#disabledesktoplocalsessions)                                         | デバイスで実行される[Desktop Code セッション](/docs/ja/desktop#local-sessions-on-managed-devices)をオフにして、SSH を他のホストとクラウドに残します                                                                                | Remote, desktop, and notifications | Managed                 |
 | [`disabledMcpjsonServers`](#disabledmcpjsonservers)                                                   | プロジェクトの[`.mcp.json`](/docs/ja/mcp#project-scope)から特定のサーバーを拒否します                                                                                                                              | MCP                                | Any file                |
 | [`disableMobileSimulatorTools`](#disablemobilesimulatortools)                                         | [デスクトップ](/docs/ja/desktop)iOS Simulator ペインで Claude のツールをブロックします                                                                                                                             | Tools                              | Managed                 |
 | [`disableRemoteControl`](#disableremotecontrol)                                                       | [リモートコントロール](/docs/ja/remote-control)をすべての場所でオフにします                                                                                                                                          | Remote, desktop, and notifications | Any file                |
-| [`disableSideloadFlags`](#disablesideloadflags)                                                       | [プラグイン](/docs/ja/plugins)、[サブエージェント](/docs/ja/sub-agents)、および[MCP サーバー](/docs/ja/mcp)をサイドロードする CLI フラグを拒否します                                                                                           | Enterprise and managed settings    | Managed                 |
+| [`disableSideloadFlags`](#disablesideloadflags)                                                       | [プラグイン](/docs/ja/plugins/overview)、[サブエージェント](/docs/ja/sub-agents)、および[MCP サーバー](/docs/ja/mcp)をサイドロードする CLI フラグを拒否します                                                                                  | Enterprise and managed settings    | Managed                 |
 | [`disableSkillShellExecution`](#disableskillshellexecution)                                           | [スキル](/docs/ja/skills)およびカスタムコマンドがインラインシェルを実行するのを停止します                                                                                                                                       | Plugins and skills                 | Any file                |
 | [`disableWorkflows`](#disableworkflows)                                                               | すべてのユーザーの[動的ワークフロー](/docs/ja/workflows)をオフにします。自分自身の場合は `enableWorkflows` を使用します                                                                                                             | Hooks and automation               | Any file                |
 | [`editorMode`](#editormode)                                                                           | 入力プロンプトで[vim キーバインディング](/docs/ja/interactive-mode#vim-editor-mode)を使用します                                                                                                                     | Interface and terminal             | Any file                |
@@ -662,12 +662,12 @@ scope: "Which settings files can set the key: user (~/.claude/settings.json), pr
 | [`enableAllProjectMcpServers`](#enableallprojectmcpservers)                                           | プロンプトなしでプロジェクト[`.mcp.json`](/docs/ja/mcp#project-server-approvals-and-workspace-trust)ファイル内のすべてのサーバーを承認します                                                                                   | MCP                                | Any file                |
 | [`enableArtifact`](#enableartifact)                                                                   | 任意のファイルで `false` を使用して[Artifact ツール](/docs/ja/artifacts)をオフにします。ファイルはそれをオンに戻すことはできません                                                                                                        | Remote, desktop, and notifications | Any file                |
 | [`enabledMcpjsonServers`](#enabledmcpjsonservers)                                                     | プロジェクトの[`.mcp.json`](/docs/ja/mcp#project-server-approvals-and-workspace-trust)から特定のサーバーを承認します                                                                                               | MCP                                | Any file                |
-| [`enabledPlugins`](#enabledplugins)                                                                   | スコープごとに個別の[プラグイン](/docs/ja/plugins)をオンまたはオフにします                                                                                                                                              | Plugins and skills                 | Any file                |
+| [`enabledPlugins`](#enabledplugins)                                                                   | スコープごとに個別の[プラグイン](/docs/ja/plugins/overview)をオンまたはオフにします                                                                                                                                     | Plugins and skills                 | Any file                |
 | [`enableWorkflows`](#enableworkflows)                                                                 | プランのデフォルトに対して[動的ワークフロー](/docs/ja/workflows)をオンまたはオフにします                                                                                                                                      | Hooks and automation               | Any file                |
 | [`enforceAvailableModels`](#enforceavailablemodels)                                                   | [`/model` デフォルト選択](/docs/ja/model-config#enforce-the-allowlist-for-the-default-model)を `availableModels` 許可リスト内に保ちます                                                                         | Model and responses                | Any file                |
 | [`env`](#env)                                                                                         | すべてのセッションとそのサブプロセスの[環境変数](/docs/ja/env-vars#in-settings-files)を設定します                                                                                                                         | Memory and context                 | Any file                |
 | [`externalEditorContext`](#externaleditorcontext)                                                     | [Ctrl+G](/docs/ja/interactive-mode#general-controls)を押して編集するときに Claude の最後の応答をコメントとして表示します                                                                                                   | Global config settings             | Global config           |
-| [`extraKnownMarketplaces`](#extraknownmarketplaces)                                                   | リポジトリまたは組織の[マーケットプレイス](/docs/ja/plugin-marketplaces)を登録します                                                                                                                                   | Plugins and skills                 | Any file                |
+| [`extraKnownMarketplaces`](#extraknownmarketplaces)                                                   | リポジトリまたは組織の[マーケットプレイス](/docs/ja/plugins/overview)を登録します                                                                                                                                      | Plugins and skills                 | Any file                |
 | [`fallbackModel`](#fallbackmodel)                                                                     | プライマリがオーバーロードされたときの[バックアップモデル](/docs/ja/model-config#fallback-model-chains)に名前を付けます                                                                                                          | Model and responses                | Any file                |
 | [`fastMode`](#fastmode)                                                                               | 利用可能なセッションで[高速モード](/docs/ja/fast-mode)をオンにします                                                                                                                                                | Model and responses                | Any file                |
 | [`fastModePerSessionOptIn`](#fastmodepersessionoptin)                                                 | ユーザーが各セッションで[高速モード](/docs/ja/fast-mode)をオンにすることを要求します                                                                                                                                        | Model and responses                | Any file                |
@@ -712,9 +712,9 @@ scope: "Which settings files can set the key: user (~/.claude/settings.json), pr
 | [`permissions.deny`](#permissions-deny)                                                               | リストされた[ツール使用](/docs/ja/permissions#permission-rule-syntax)をブロックします。秘密を保持するファイルの読み取りを含みます                                                                                                     | Permission settings                | Any file                |
 | [`permissions.disableBypassPermissionsMode`](#permissions-disablebypasspermissionsmode)               | 誰もが[bypassPermissions モード](/docs/ja/permission-modes#skip-all-checks-with-bypasspermissions-mode)に入るのを防ぎます                                                                                   | Permission settings                | Any file                |
 | [`plansDirectory`](#plansdirectory)                                                                   | [プランモード](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode)がプランファイルを書き込む場所を選択します                                                                                              | Memory and context                 | Any file                |
-| [`pluginConfigs`](#pluginconfigs)                                                                     | [プラグイン](/docs/ja/plugins)の設定ダイアログで提供した回答を保存します                                                                                                                                               | Plugins and skills                 | User or managed         |
-| [`pluginSuggestionMarketplaces`](#pluginsuggestionmarketplaces)                                       | `/plugin` でプラグインインストール提案を表示できる[マーケットプレイス](/docs/ja/plugin-marketplaces#managed-marketplace-restrictions)を選択します                                                                               | Plugins and skills                 | Managed                 |
-| [`pluginTrustMessage`](#plugintrustmessage)                                                           | [プラグイン](/docs/ja/plugins)信頼警告に独自のテキストを追加します                                                                                                                                                  | Plugins and skills                 | Managed                 |
+| [`pluginConfigs`](#pluginconfigs)                                                                     | [プラグイン](/docs/ja/plugins/overview)の設定ダイアログで提供した回答を保存します                                                                                                                                      | Plugins and skills                 | User or managed         |
+| [`pluginSuggestionMarketplaces`](#pluginsuggestionmarketplaces)                                       | `/plugin` でプラグインインストール提案を表示できる[マーケットプレイス](/docs/ja/plugins/org#restrict-what-users-can-install)を選択します                                                                                        | Plugins and skills                 | Managed                 |
+| [`pluginTrustMessage`](#plugintrustmessage)                                                           | [プラグイン](/docs/ja/plugins/overview)信頼警告に独自のテキストを追加します                                                                                                                                         | Plugins and skills                 | Managed                 |
 | [`policyHelper`](#policyhelper)                                                                       | スタートアップで[マネージド設定](/docs/ja/managed-settings#compute-the-policy-with-a-helper-program)を計算する実行可能ファイルを実行します                                                                                     | Enterprise and managed settings    | Managed                 |
 | [`policyHelper.path`](#policyhelper-path)                                                             | Claude Code が実行する[ヘルパー実行可能ファイル](/docs/ja/managed-settings#compute-the-policy-with-a-helper-program)に名前を付けます                                                                                  | Enterprise and managed settings    | Managed                 |
 | [`policyHelper.refreshIntervalMs`](#policyhelper-refreshintervalms)                                   | バックグラウンドで[ヘルパー](/docs/ja/managed-settings#compute-the-policy-with-a-helper-program)を間隔で再実行します                                                                                                | Enterprise and managed settings    | Managed                 |
@@ -785,7 +785,7 @@ scope: "Which settings files can set the key: user (~/.claude/settings.json), pr
 | [`sshConfigs`](#sshconfigs)                                                                           | Desktop 環境ドロップダウンに[SSH 接続](/docs/ja/desktop#pre-configure-ssh-connections-for-your-team)を追加します                                                                                               | Remote, desktop, and notifications | User or managed         |
 | [`sshHostAllowlist`](#sshhostallowlist)                                                               | [Desktop SSH セッション](/docs/ja/desktop#restrict-which-ssh-hosts-users-can-connect-to)が到達できるホストを制限します                                                                                           | Remote, desktop, and notifications | Managed                 |
 | [`statusLine`](#statusline)                                                                           | [ステータスライン](/docs/ja/statusline)をプロンプトの下にレンダリングする独自のコマンドを実行します                                                                                                                                | Interface and terminal             | Any file                |
-| [`strictKnownMarketplaces`](#strictknownmarketplaces)                                                 | ユーザーが追加およびインストールできる[マーケットプレイス](/docs/ja/plugin-marketplaces)ソースを許可リストに登録します                                                                                                                  | Plugins and skills                 | Managed                 |
+| [`strictKnownMarketplaces`](#strictknownmarketplaces)                                                 | ユーザーが追加およびインストールできる[マーケットプレイス](/docs/ja/plugins/overview)ソースを許可リストに登録します                                                                                                                     | Plugins and skills                 | Managed                 |
 | [`strictPluginOnlyCustomization`](#strictpluginonlycustomization)                                     | ユーザーおよびプロジェクトソースから[スキル](/docs/ja/skills)、[エージェント](/docs/ja/sub-agents)、[フック](/docs/ja/hooks)、[MCP サーバー](/docs/ja/mcp)をブロックします                                                                               | Plugins and skills                 | Managed                 |
 | [`strictPluginOnlyCustomization.agents`](#strictpluginonlycustomization-agents)                       | [エージェント](/docs/ja/sub-agents)をプラグインおよびマネージドソースにロックします                                                                                                                                        | Plugins and skills                 | Managed                 |
 | [`strictPluginOnlyCustomization.hooks`](#strictpluginonlycustomization-hooks)                         | [フック](/docs/ja/hooks)をプラグインおよびマネージドソースにロックします                                                                                                                                                | Plugins and skills                 | Managed                 |
@@ -794,7 +794,7 @@ scope: "Which settings files can set the key: user (~/.claude/settings.json), pr
 | [`subagentPromptCacheTtl`](#subagentpromptcachettl)                                                   | サブエージェントおよびメイン会話外の他のリクエストの[プロンプトキャッシュライフタイム](/docs/ja/prompt-caching#cache-lifetime)を選択します                                                                                                   | Model and responses                | Any file                |
 | [`subagentStatusLine`](#subagentstatusline)                                                           | [サブエージェント](/docs/ja/sub-agents)タスク表示の行を独自のコマンドで書き直します                                                                                                                                        | Interface and terminal             | Any file                |
 | [`switchModelsOnFlag`](#switchmodelsonflag)                                                           | [安全分類器](/docs/ja/model-config#ask-before-switching)がリクエストにフラグを立てたときにモデルを自動的に切り替えるか一時停止します                                                                                                    | Model and responses                | Any file                |
-| [`syncClaudeAiPlugins`](#syncclaudeaiplugins)                                                         | [claude.ai アカウントで有効になっているプラグイン](/docs/ja/plugins-reference#synced-plugins)のロードを停止し、新しいものをダウンロードするのを停止します                                                                                     | Plugins and skills                 | User, local, or managed |
+| [`syncClaudeAiPlugins`](#syncclaudeaiplugins)                                                         | [claude.ai アカウントで有効になっているプラグイン](/docs/ja/plugins/loading#synced-plugins)のロードを停止し、新しいものをダウンロードするのを停止します                                                                                       | Plugins and skills                 | User, local, or managed |
 | [`syncClaudeAiSkills`](#syncclaudeaiskills)                                                           | [claude.ai アカウントで有効になっているスキル](/docs/ja/skills#how-synced-skills-behave)のロードを停止し、新しいものをダウンロードするのを停止します                                                                                        | Plugins and skills                 | User, local, or managed |
 | [`syntaxHighlightingDisabled`](#syntaxhighlightingdisabled)                                           | diff およびコードブロックの構文強調表示をオフにします                                                                                                                                                           | Interface and terminal             | Any file                |
 | [`taskOutputMaxChars`](#taskoutputmaxchars)                                                           | v2.1.277 で削除されました。それがサイズを設定した `TaskOutput` ツールと一緒に削除されました                                                                                                                               | Memory and context                 | Any file                |
@@ -2254,7 +2254,7 @@ Linux と WSL2 のみ。
   `sandbox.credentials`
 </h3>
 
-[サンドボックス化されたコマンドから保護する](/docs/ja/sandboxing#protect-credentials)認証情報ファイルと環境変数を宣言します。各エントリはファイル `path` または変数 `name` と `mode` に名前を付けます：`deny` はサンドボックス内の認証情報を非表示にし、`mask` はサンドボックス化されたコマンドにプレースホルダーを表示します。[サンドボックスプロキシ](/docs/ja/sandboxing#mask-credentials)は送信リクエストで実際の値を置き換えます。Claude Code はリストしたエントリのみを保護します。組み込みの認証情報拒否リストはありません。Claude Code v2.1.187 以降が必要です。
+[サンドボックス化されたコマンドから保護する](/docs/ja/sandboxing#protect-credentials)認証情報ファイルと環境変数を宣言します。各エントリはファイル `path` または変数 `name` と `mode` に名前を付けます：`deny` はサンドボックス内の認証情報を非表示にし、`mask` はサンドボックス化されたコマンドにプレースホルダーを表示します。[サンドボックスプロキシ](/docs/ja/sandboxing#mask-credentials)は送信リクエストで実際の値を置き換えます。Claude Code はリストしたエントリのみを保護します。組み込みの認証情報拒否リストはありません。
 
 * **Scope**: [`Any file`](#scopes)。Claude Code は `mask` エントリ、`allowPlaintextInject`、`awsPairs`、`sigv4` をユーザー設定、管理設定、`--settings` フラグからのみ尊重します。
 * **Type**: `files`、`envVars`、`allowPlaintextInject`、`awsPairs`、`sigv4` を含むオブジェクト
@@ -2273,7 +2273,7 @@ Linux と WSL2 のみ。
 }
 ```
 
-`deny` ファイル保護はファイルシステムレイヤーの一部であるため、[ファイルシステム分離を無効にする](/docs/ja/sandboxing#disable-filesystem-isolation)場合は適用されません。環境変数保護は引き続き行われます。Claude Code v2.1.187 以降が必要です。
+`deny` ファイル保護はファイルシステムレイヤーの一部であるため、[ファイルシステム分離を無効にする](/docs/ja/sandboxing#disable-filesystem-isolation)場合は適用されません。環境変数保護は引き続き行われます。
 
 <h4 id="invalid-credential-entries-in-managed-settings">
   管理設定の無効な認証情報エントリ
@@ -2291,7 +2291,7 @@ v2.1.191 以降に適用されます。v2.1.221 より前では、すべての�
   `sandbox.credentials.files`
 </h3>
 
-認証情報ファイルまたはディレクトリをサンドボックス化されたコマンドから保護します。`"mode": "deny"` の場合、Claude Code はサンドボックス内のパスの読み取りをブロックします。これは [`sandbox.filesystem.denyRead`](#sandbox-filesystem-denyread) と同じ読み取りブロックです。` "mode": "mask"` の場合、Linux と WSL2 でサンドボックス化されたコマンドはファイルのセンチネルコピーを読み取り、サンドボックスプロキシはそのエントリの `injectHosts` への送信リクエストで実際の値を置き換えます。macOS ではファイルはサンドボックス内で読み取り不可です。Claude Code v2.1.187 以降が必要で、`"mode": "mask"` は v2.1.221 以降が必要です。
+認証情報ファイルまたはディレクトリをサンドボックス化されたコマンドから保護します。`"mode": "deny"` の場合、Claude Code はサンドボックス内のパスの読み取りをブロックします。これは [`sandbox.filesystem.denyRead`](#sandbox-filesystem-denyread) と同じ読み取りブロックです。` "mode": "mask"` の場合、Linux と WSL2 でサンドボックス化されたコマンドはファイルのセンチネルコピーを読み取り、サンドボックスプロキシはそのエントリの `injectHosts` への送信リクエストで実際の値を置き換えます。macOS ではファイルはサンドボックス内で読み取り不可です。`"mode": "mask"` は Claude Code v2.1.221 以降が必要です。
 
 * **Scope**: [`Any file`](#scopes)。Claude Code はプロジェクト `.claude/settings.json` とローカル `.claude/settings.local.json` から `mask` エントリを削除します。
 * **Type**: オブジェクトの配列。各オブジェクトは `path` と `"deny"` または `"mask"` の `mode`、および optional [ファイルのマスクフィールド](#mask-fields-for-files)
@@ -2312,7 +2312,7 @@ v2.1.191 以降に適用されます。v2.1.221 より前では、すべての�
 }
 ```
 
-パスは `sandbox.filesystem.*` 設定と同じ[プレフィックス](#sandbox-path-prefixes)を使用し、Claude Code はセッションが読み込むすべての設定スコープから配列をマージします。[認証情報を保護する](/docs/ja/sandboxing#protect-credentials)は `--setting-sources` で除外するソースから何が引き続き適用されるかをカバーしています。Claude Code v2.1.187 以降が必要です。`mask` エントリは v2.1.221 以降が必要です。
+パスは `sandbox.filesystem.*` 設定と同じ[プレフィックス](#sandbox-path-prefixes)を使用し、Claude Code はセッションが読み込むすべての設定スコープから配列をマージします。[認証情報を保護する](/docs/ja/sandboxing#protect-credentials)は `--setting-sources` で除外するソースから何が引き続き適用されるかをカバーしています。`mask` エントリは v2.1.221 以降が必要です。
 
 `mask` 置き換えはサンドボックスプロキシを通じてのみ実行されるため、[`sandbox.network.tlsTerminate`](#sandbox-network-tlsterminate) を設定するか、プレーン HTTP テストネットワークの場合は [`allowPlaintextInject`](#sandbox-credentials-allowplaintextinject) を設定してください。`mask` は単一ファイルに適用されるため、各認証情報ファイルを個別にリストしてください。Claude Code は `deny` エントリの `mask` フィールドを受け入れますが無視します。[認証情報ファイルをマスクする](/docs/ja/sandboxing#mask-credential-files)は、どの設定ソースが尊重されるか、およびエントリが `deny` にフォールバックするときをカバーしています。
 
@@ -2368,7 +2368,7 @@ v2.1.191 以降に適用されます。v2.1.221 より前では、すべての�
   `sandbox.credentials.envVars`
 </h3>
 
-環境変数をサンドボックス化されたコマンドから保護します。`"mode": "deny"` の場合、Claude Code はサンドボックス化されたコマンドの環境から変数を削除します。` "mode": "mask"` の場合、サンドボックス化されたコマンドはセッションごとのセンチネル値を見て、サンドボックスプロキシはそのエントリの `injectHosts` への送信リクエストで実際の値を置き換えます。`gh` と `npm` などのツールは実際の認証情報を保持することなく認証を続けます。Claude Code v2.1.187 以降が必要で、`"mode": "mask"` は v2.1.199 以降が必要です。
+環境変数をサンドボックス化されたコマンドから保護します。`"mode": "deny"` の場合、Claude Code はサンドボックス化されたコマンドの環境から変数を削除します。` "mode": "mask"` の場合、サンドボックス化されたコマンドはセッションごとのセンチネル値を見て、サンドボックスプロキシはそのエントリの `injectHosts` への送信リクエストで実際の値を置き換えます。`gh` と `npm` などのツールは実際の認証情報を保持することなく認証を続けます。`"mode": "mask"` は Claude Code v2.1.199 以降が必要です。
 
 * **Scope**: [`Any file`](#scopes)。Claude Code はプロジェクト `.claude/settings.json` とローカル `.claude/settings.local.json` から `mask` エントリを削除します。
 * **Type**: オブジェクトの配列。各オブジェクトは `name` と `"deny"` または `"mask"` の `mode`、および optional [環境変数のマスクフィールド](#mask-fields-for-environment-variables)
@@ -2389,7 +2389,7 @@ v2.1.191 以降に適用されます。v2.1.221 より前では、すべての�
 }
 ```
 
-`name` は文字、アンダースコアで始まり、文字、数字、アンダースコアのみを含む必要があります。Claude Code はセッションが読み込むすべての設定スコープから配列をマージし、同じ変数が両方のモードで表示される場合は `deny` を適用します。[認証情報を保護する](/docs/ja/sandboxing#protect-credentials)は `--setting-sources` で除外するソースから何が引き続き適用されるかをカバーしています。Claude Code v2.1.187 以降が必要です。`mask` エントリは v2.1.199 以降が必要です。
+`name` は文字、アンダースコアで始まり、文字、数字、アンダースコアのみを含む必要があります。Claude Code はセッションが読み込むすべての設定スコープから配列をマージし、同じ変数が両方のモードで表示される場合は `deny` を適用します。[認証情報を保護する](/docs/ja/sandboxing#protect-credentials)は `--setting-sources` で除外するソースから何が引き続き適用されるかをカバーしています。`mask` エントリは v2.1.199 以降が必要です。
 
 `mask` 置き換えはサンドボックスプロキシを通じてのみ実行されるため、[`sandbox.network.tlsTerminate`](#sandbox-network-tlsterminate) を設定するか、プレーン HTTP テストネットワークの場合は [`allowPlaintextInject`](#sandbox-credentials-allowplaintextinject) を設定してください。[環境変数をマスクする](/docs/ja/sandboxing#mask-environment-variables)を参照してください。Claude Code は `deny` エントリの `mask` フィールドを受け入れますが無視します。
 
@@ -2952,7 +2952,7 @@ Claude Code が[メモリ](/docs/ja/memory#exclude-specific-claude-md-files)を�
   `env`
 </h3>
 
-すべてのセッションと Claude Code がそこから開始するサブプロセスの環境変数を設定します。[環境変数リファレンス](/docs/ja/env-vars)の任意の変数をここに配置できます。これは 1 つをすべてのセッションに適用するか、チーム全体にロールアウトする方法です。
+すべてのセッションと Claude Code がそこから開始するサブプロセスの環境変数を設定します。[環境変数リファレンス](/docs/ja/env-vars)の任意の変数をここに配置できます。これは 1 つをすべてのセッションに適用するか、チーム全体にロールアウトする方法です。プロジェクトおよびローカル設定は[それらの一部を設定できません](#variables-claude-code-ignores-in-env)。
 
 * **スコープ**: [`任意のファイル`](#scopes)
 * **タイプ**: 変数名を文字列値にマップするオブジェクト
@@ -2973,7 +2973,7 @@ Claude Code が[メモリ](/docs/ja/memory#exclude-specific-claude-md-files)を�
   `env` 値がシェルとどのように相互作用するか
 </h4>
 
-* ここの値はシェルでエクスポートされた同じ変数を上書きします。複数の設定ファイルが変数を設定する場合、[最も優先度の高い](/docs/ja/settings#settings-precedence)ものが適用されます。
+* ここの値はシェルでエクスポートされた同じ変数を上書きします。複数の設定ファイルが変数を設定する場合、[最も優先度の高い](/docs/ja/settings#settings-precedence)ものが適用されます。[Claude Code が `env` で無視する変数](#variables-claude-code-ignores-in-env)はプロジェクトおよびローカル設定の例外をリストします。
 * シェルエクスポートをキャンセルするには、変数を `""` に設定します。Claude Code は空の値をプロバイダー選択の未設定として扱い、サブプロセスは空の値を継承します。
 * `NO_COLOR` と `FORCE_COLOR` をここで設定すると、サブプロセスにのみ到達します。Claude Code 自体のインターフェースカラーを変更するには、`claude` を起動する前にシェルで設定します。
 * ここの値は設定ファイルのプレーンテキストであり、Claude Code が開始するすべてのサブプロセスに到達します。ローテーションする OTLP ベアラートークンの場合は[`otelHeadersHelper`](#otelheadershelper)を使用します。API 認証情報の場合は[`apiKeyHelper`](#apikeyhelper)を使用します。
@@ -2984,7 +2984,7 @@ Claude Code が[メモリ](/docs/ja/memory#exclude-specific-claude-md-files)を�
 
 * ユーザー設定、`--settings`、管理設定から: 起動時、および実行中のセッションでマージされた `env` を変更する保存された変更がある場合。
 * プロジェクトおよびローカル設定から: ワークスペースを信頼した後、または `-p` モード（信頼ダイアログを表示しない）での起動時、およびマージされた `env` を変更する保存された変更がある場合。
-* Claude Code がモデル選択、タイムアウトと制限、機能トグル、テレメトリ設定などの安全として分類する変数: [プロジェクトおよびローカル設定が設定できない変数](#variables-claude-code-ignores-in-env)を除き、すべての設定ファイルから起動時。
+* Claude Code がモデル選択、タイムアウトと制限、機能トグルなどの安全として分類する変数: [プロジェクトおよびローカル設定が設定できない変数](#variables-claude-code-ignores-in-env)を除き、すべての設定ファイルから起動時。
 * v2.1.246 以降で[`/cd`](/docs/ja/permissions#move-the-session-to-another-directory)でセッションを移動した後: 新しいディレクトリのプロジェクトおよびローカル `env` 値。前のディレクトリの上に。
 
 <h4 id="variables-claude-code-ignores-in-env">
@@ -2995,9 +2995,22 @@ Claude Code が[メモリ](/docs/ja/memory#exclude-specific-claude-md-files)を�
 
   * Claude Code が独自のファイルを保存または書き込む場所を選択する変数: `CLAUDE_CONFIG_DIR`、`CLAUDE_CODE_TMPDIR`、および `HOME`、`TMPDIR`、`TMP`、`TEMP`、`XDG_*` ファミリーなどのオペレーティングシステムディレクトリ変数。
   * セッションコンテンツをエクスポートする変数: [`OTEL_LOG_RAW_API_BODIES`](/docs/ja/env-vars#variables)および詳細なベータトレーシングペア `ENABLE_BETA_TRACING_DETAILED` と `BETA_TRACING_ENDPOINT`。
+  * [OpenTelemetry エクスポーター](/docs/ja/monitoring-usage)変数。テレメトリをオンにする、どこに送信するかを選択する、またはどのコンテンツをキャプチャするかを選択します。
+
+    * `CLAUDE_CODE_ENABLE_TELEMETRY`。拡張テレメトリベータペア `CLAUDE_CODE_ENHANCED_TELEMETRY_BETA` と `ENABLE_ENHANCED_TELEMETRY_BETA`
+    * エクスポーターセレクター `OTEL_LOGS_EXPORTER`、`OTEL_METRICS_EXPORTER`、`OTEL_TRACES_EXPORTER`
+    * コンテンツ変数 `OTEL_LOG_USER_PROMPTS`、`OTEL_LOG_ASSISTANT_RESPONSES`、`OTEL_LOG_TOOL_CONTENT`、`OTEL_LOG_TOOL_DETAILS`
+    * `OTEL_EXPORTER_OTLP_*` 変数。名前が `_ENDPOINT`、`_HEADERS`、`_PROTOCOL`、`_CERTIFICATE`、`_CLIENT_KEY`、`_INSECURE` で終わります。汎用およびシグナルごとの形式。`OTEL_EXPORTER_OTLP_ENDPOINT` と `OTEL_EXPORTER_OTLP_METRICS_HEADERS` など
+    * `OTEL_EXPORTER_PROMETHEUS_HOST` と `OTEL_EXPORTER_PROMETHEUS_PORT`
+
+    これらの値のみがプロジェクトおよびローカル設定から適用されます。何かをオフにするため: 3 つのエクスポーターセレクターの場合は `none`。`OTEL_LOG_USER_PROMPTS`、`OTEL_LOG_TOOL_CONTENT`、`OTEL_LOG_TOOL_DETAILS` の場合は `0` などのオフ値。そのような値はユーザー設定で同じ変数をオーバーライドしますが、環境で Claude Code を起動するもの、`--settings` ファイル、または管理設定は設定しません。
+
+    プロジェクトまたはローカル設定ファイルがこのグループの変数を設定する場合、ローカルインタラクティブセッションは起動時に通知を表示します。`/status` または `claude doctor` を実行して、Claude Code が無視したものと、テレメトリをオフにしたものを確認します。両方とも名前をリストします。値は決してリストしません。`-p` を使用した非インタラクティブ実行または Agent SDK セッションは通知を表示しないため、アップグレード後にコレクターがデータを受け取り続けるかどうかを確認します。受け取らない場合は、ユーザー設定、管理設定、ジョブの環境、または `--settings` で渡すファイルで変数を設定します。
+
+    プロジェクトおよびローカル設定でこのグループを無視するには Claude Code v2.1.282 以降が必要です。
   * Claude Code の起動またはシンク方法を変更する変数。`CLAUDE_CODE_PROCESS_WRAPPER`、`CLAUDE_CODE_SYNC_SKILLS`、`CLAUDE_CODE_SYNC_PLUGINS`、`CLAUDE_CODE_PLUGIN_CACHE_DIR`、`CLAUDE_CODE_PLUGIN_SEED_DIR` など。
 
-  v2.1.251 より前は、プロジェクトおよびローカル設定は `HOME`、`XDG_CONFIG_HOME`、Claude Code の起動またはシンク方法を変更する変数を除き、このリストが名前を付けるすべての変数を設定できました。
+  v2.1.251 より前は、プロジェクトおよびローカル設定は `HOME` と `XDG_CONFIG_HOME` を除き、このリストが名前を付けるファイルの保存または書き込み場所を選択する変数、またはセッションコンテンツをエクスポートする変数を設定できました。
 * Claude Code のホスティング環境が所有する `CLAUDE_CODE_REMOTE` や `CLAUDE_CODE_ACCOUNT_UUID` などのアイデンティティ変数は、すべてのファイルから無視されます。
 * [`CLAUDE_CODE_MESSAGING_SOCKET` と `CLAUDE_CODE_MESSAGING_TOKEN`](/docs/ja/env-vars#variables)。Claude Code 自体がエクスポートするものは、すべてのファイルから無視されます。ソケット変数を無視するには Claude Code v2.1.224 以降が必要で、トークンを無視するには v2.1.228 以降が必要です。
 * [`CLAUDE_CODE_PROJECT_DIR_NAME`](/docs/ja/sessions#name-the-project-directory-yourself)。Claude Code は起動環境からのみ読み取ります。すべてのファイルから無視されます。v2.1.234 以降が必要です。
@@ -3462,7 +3475,7 @@ v2.1.238 から v2.1.260 では、`"readline"` に設定すると `Ctrl+W` は�
   `respondToBashCommands`
 </h3>
 
-入力ボックスで [`!` プレフィックス](/docs/ja/interactive-mode#shell-mode-with-prefix)でシェルコマンドを実行した後、Claude が応答するかどうかを選択します。デフォルトでは、Claude Code はコマンドの出力を会話に追加し、Claude がそれに応答します。このキーを `false` に設定して、応答なしでコンテキストに出力を追加し、複数のコマンドを実行して一緒に質問できるようにします。Claude Code v2.1.186 以降が必要です。
+入力ボックスで [`!` プレフィックス](/docs/ja/interactive-mode#shell-mode-with-prefix)でシェルコマンドを実行した後、Claude が応答するかどうかを選択します。デフォルトでは、Claude Code はコマンドの出力を会話に追加し、Claude がそれに応答します。このキーを `false` に設定して、応答なしでコンテキストに出力を追加し、複数のコマンドを実行して一緒に質問できるようにします。
 
 * **スコープ**: [`任意のファイル`](#scopes)
 * **タイプ**: ブール値
@@ -3476,7 +3489,7 @@ v2.1.238 から v2.1.260 では、`"readline"` に設定すると `Ctrl+W` は�
 }
 ```
 
-[`!` プレフィックスでシェルモード](/docs/ja/interactive-mode#shell-mode-with-prefix)を参照してください。Claude Code v2.1.186 以降が必要です。
+[シェルモード（`!` プレフィックス付き）](/docs/ja/interactive-mode#shell-mode-with-prefix)を参照してください。
 
 <h3 id="showclearcontextonplanaccept">
   `showClearContextOnPlanAccept`
@@ -3983,8 +3996,10 @@ Claude Code がコミットとプルリクエストに追加するアトリビ�
 Claude Code が git コミットとプルリクエストに追加するアトリビューションをカスタマイズします。コミットはデフォルトで `Co-Authored-By` などの [git トレーラー](https://git-scm.com/docs/git-interpret-trailers) を取得します。プルリクエストの説明はプレーンテキストを取得します。以下のサブキーを使用して各部分を個別に設定します。
 
 * **スコープ**: [`Any file`](#scopes)
-* **タイプ**: `commit` と `pr` 文字列および `sessionUrl` ブール値を含むオブジェクト
+* **タイプ**: `commit` と `pr` 文字列および `sessionUrl` ブール値を含むオブジェクト、または全てのアトリビューションを非表示にする `false`。`false` 値には Claude Code v2.1.281 以降が必要です。それより前のバージョンはこれを拒否し、[それを含むユーザー、プロジェクト、またはローカル設定ファイル全体をスキップします](/docs/ja/settings#fix-a-broken-settings-file)
 * **デフォルト**: 未設定。Claude Code は各サブキーの下に表示される標準アトリビューションを使用します
+
+全てのアトリビューションを非表示にするには、`attribution` を `false` に設定します。それより前のバージョンも読み込む設定ファイルでは、[`commit`](#attribution-commit) と [`pr`](#attribution-pr) を空の文字列に設定し、[`sessionUrl`](#attribution-sessionurl) を `false` に設定してください。
 
 この例はコミットアトリビューションを置き換え、プルリクエストアトリビューションを削除し、セッションリンクを削除します。
 
@@ -3998,7 +4013,7 @@ Claude Code が git コミットとプルリクエストに追加するアトリ
 }
 ```
 
-すべてのアトリビューションを非表示にするには、[`commit`](#attribution-commit) と [`pr`](#attribution-pr) を空の文字列に設定し、[`sessionUrl`](#attribution-sessionurl) を `false` に設定します。`commit` または `pr` を設定すると、Claude Code は非推奨の `includeCoAuthoredBy` 設定を無視し、設定しなかった方のデフォルトテキストを使用します。
+`commit` または `pr` を設定すると、Claude Code は非推奨の `includeCoAuthoredBy` 設定を無視し、設定しなかった方のデフォルトテキストを使用します。
 
 Claude Code は、CLAUDE.md または [memory](/docs/ja/memory) ルールなど、アトリビューションに関するカスタマー独自の命令が、[managed settings](/docs/ja/managed-settings) で設定されている場合を除き、これらのコミットおよび PR 行より優先されることを Claude に伝えます。
 
@@ -4024,7 +4039,7 @@ Claude Code は、CLAUDE.md または [memory](/docs/ja/memory) ルールなど�
 }
 ```
 
-すべてのアトリビューションを今すぐ非表示にするには、[`attribution.commit`](#attribution-commit) と [`attribution.pr`](#attribution-pr) を空の文字列に設定し、[`attribution.sessionUrl`](#attribution-sessionurl) を `false` に設定します。
+全てのアトリビューションを非表示にするには、[`attribution`](#attribution) を参照してください。
 
 <h3 id="includegitinstructions">
   `includeGitInstructions`
@@ -4182,8 +4197,8 @@ Claude Code が [クラウド](/docs/ja/claude-code-on-the-web) または [Remot
 * **管理フックと SDK フックが実行されます**: 管理設定からのフックと [Agent SDK](/docs/ja/agent-sdk/overview) がプロセス内で登録するフック
 * **強制有効プラグインフックが実行されます**: 管理設定が [`enabledPlugins`](#enabledplugins) を通じて強制有効にするプラグインからのフック。Claude Code は完全な `plugin@marketplace` ID でマッチするため、別のマーケットプレイスからの同じ名前のプラグインはブロックされたままです。これにより、組織マーケットプレイスを通じて検証済みフックを配布しながら、その他すべてをブロックできます
 * **その他すべてはブロックされます**: ユーザー、プロジェクト、ローカルフック、他のプラグインからのフック、エージェント frontmatter で宣言されたフック
-* **コマンドソースプラグインは無効になります**: Claude Code は [`command` ソース](/docs/ja/plugin-marketplaces#command-sources)を持つプラグイン（管理 `enabledPlugins` で強制有効にされたプラグインを含む）も無効にします。ただし、[`disableCommandPluginSources`](#disablecommandpluginsources) を明示的に `false` に設定した場合を除きます
-* **マーケットプレイス `headersHelper` コマンドはブロックされます**: Claude Code はマーケットプレイス [`headersHelper` コマンド](/docs/ja/plugin-marketplaces#authenticate-archive-downloads)もブロックします。ただし、[`disableCommandPluginSources`](#disablecommandpluginsources) が明示的に `false` に設定されている場合、または管理設定自体が宣言するマーケットプレイスの場合を除きます。Claude Code v2.1.238 以降が必要です
+* **コマンドソースプラグインは無効になります**: Claude Code は [`command` ソース](/docs/ja/plugins/marketplace-reference#command-plugin-source)を持つプラグイン（管理 `enabledPlugins` で強制有効にされたプラグインを含む）も無効にします。ただし、[`disableCommandPluginSources`](#disablecommandpluginsources) を明示的に `false` に設定した場合を除きます
+* **マーケットプレイス `headersHelper` コマンドはブロックされます**: Claude Code はマーケットプレイス [`headersHelper` コマンド](/docs/ja/plugins/host-marketplace#authenticate-archive-downloads)もブロックします。ただし、[`disableCommandPluginSources`](#disablecommandpluginsources) が明示的に `false` に設定されている場合、または管理設定自体が宣言するマーケットプレイスの場合を除きます。Claude Code v2.1.238 以降が必要です
 * **ステータスラインとファイル提案は管理設定に絞られます**: Claude Code は [`statusLine`](/docs/ja/statusline)、[`fileSuggestion`](#filesuggestion)、[`subagentStatusLine`](/docs/ja/statusline#subagent-status-lines) を管理設定からのみ読み込みます。[ステータスラインとファイル提案ゲート](#status-line-and-file-suggestion-gates)に従います
 
 このキーが設定されている間、[`/goal`](/docs/ja/goal) コマンドは実行できません。これはフックに依存しているためです。
@@ -4366,7 +4381,7 @@ Claude Code v2.1.219 以降が必要です。v2.1.202 から v2.1.218 では、�
   プラグインとスキル
 </h2>
 
-プラグインを有効にし、マーケットプレイスを登録し、組織が許可するプラグインソースを制限し、どのスキルを読み込むかを制御します。プラグインのインストールとビルドについては、[プラグイン](/docs/ja/plugins)を参照してください。
+プラグインを有効にし、マーケットプレイスを登録し、組織が許可するプラグインソースを制限し、どのスキルを読み込むかを制御します。プラグインのインストールとビルドについては、[プラグイン](/docs/ja/plugins/overview)を参照してください。
 
 <h3 id="disablebundledskills">
   `disableBundledSkills`
@@ -4462,7 +4477,7 @@ Claude Code に含まれる[スキル](/docs/ja/skills)とワークフローを�
   `syncClaudeAiPlugins`
 </h3>
 
-[claude.ai アカウントで有効になっているプラグイン](/docs/ja/plugins-reference#synced-plugins)のダウンロードをオフにします。Claude Code は、claude.ai アカウントでサインインするターミナルセッションの開始時、および Cowork とクラウドセッションで、それらを `~/.claude/plugins/synced/` にダウンロードし、各プラグインを `<name>@synced` として読み込みます。`false` に設定して、そのダウンロードを停止し、既に同期されたプラグインの読み込みを停止します。Claude Code は `false` のみを受け入れます。`true` は未設定と同じで、それ以外の場所でオンになっていない場合、同期をオンにしません。Claude Code v2.1.273 以降が必要です。
+[claude.ai アカウントで有効になっているプラグイン](/docs/ja/plugins/loading#synced-plugins)のダウンロードをオフにします。Claude Code は、claude.ai アカウントでサインインするターミナルセッションの開始時、および Cowork セッションで、それらを `~/.claude/plugins/synced/` にダウンロードし、各プラグインを `<name>@synced` として読み込みます。`false` に設定して、そのダウンロードを停止し、既に同期されたプラグインの読み込みを停止します。Claude Code は `false` のみを受け入れます。`true` は未設定と同じで、それ以外の場所でオンになっていない場合、同期をオンにしません。Claude Code v2.1.273 以降が必要です。
 
 * **Scope**: [`User, local, or managed`](#scopes)、および `--settings` で渡されたファイル。リポジトリはそれをオフにすることはできません。
 * **Type**: Boolean
@@ -4511,7 +4526,7 @@ Claude Code に含まれる[スキル](/docs/ja/skills)とワークフローを�
 
 組織のプラグインマーケットプレイスソースをブロックします。Claude Code はマーケットプレイスの追加時およびプラグインのインストール、更新、リフレッシュ、自動更新時にブロックリストをチェックするため、ポリシーを設定する前に誰かが追加したマーケットプレイスは、プラグインをフェッチするために使用することはできません。ブロックされたソースはダウンロード前にチェックされるため、ファイルシステムに触れることはありません。
 
-[claude.ai 管理コンソール](/docs/ja/server-managed-settings)でこのキーを設定する場合、claude.ai は、[制限の仕組み](/docs/ja/plugin-marketplaces#how-restrictions-work)で説明されているように、組織内の誰かが claude.ai から git リポジトリからマーケットプレイスを追加するときにも適用します。
+[claude.ai 管理コンソール](/docs/ja/server-managed-settings)でこのキーを設定する場合、claude.ai は、[制限の仕組み](/docs/ja/plugins/org#restrict-what-users-can-install)で説明されているように、組織内の誰かが claude.ai から git リポジトリからマーケットプレイスを追加するときにも適用します。
 
 * **Scope**: [`Managed`](#scopes)
 * **Type**: [`strictKnownMarketplaces`](#allowed-source-types) と同じ形式のマーケットプレイスソースオブジェクトの配列
@@ -4527,7 +4542,7 @@ Claude Code に含まれる[スキル](/docs/ja/skills)とワークフローを�
 }
 ```
 
-GitHub エントリは、[オーナーワイルドカード形式](#owner-wildcards) `"owner/*"` を使用して、その GitHub オーナーの下のすべてのリポジトリをブロックできます。これには Claude Code v2.1.223 以降が必要です。`{ "source": "skills-dir" }` を追加して、Claude Code が `~/.claude/skills/` から [`@skills-dir` プラグイン](/docs/ja/plugins-reference#skills-directory-plugins)を読み込むのを停止し、マーケットプレイスを制限しません。[マネージドマーケットプレイス制限](/docs/ja/plugin-marketplaces#managed-marketplace-restrictions)を参照してください。
+GitHub エントリは、[オーナーワイルドカード形式](#owner-wildcards) `"owner/*"` を使用して、その GitHub オーナーの下のすべてのリポジトリをブロックできます。これには Claude Code v2.1.223 以降が必要です。`{ "source": "skills-dir" }` を追加して、Claude Code が `~/.claude/skills/` から [`@skills-dir` プラグイン](/docs/ja/plugins/loading#plugins-shared-through-a-repository)を読み込むのを停止し、マーケットプレイスを制限しません。[マネージドマーケットプレイス制限](/docs/ja/plugins/org#restrict-what-users-can-install)を参照してください。
 
 <h3 id="channelsenabled">
   `channelsEnabled`
@@ -4553,7 +4568,7 @@ GitHub エントリは、[オーナーワイルドカード形式](#owner-wildca
   `disableCommandPluginSources`
 </h3>
 
-[`command` プラグインソース](/docs/ja/plugin-marketplaces#command-sources)をブロックします。これはユーザーのマシンでマーケットプレイス宣言コマンドを実行してプラグインをインストールします。`true` に設定すると、Claude Code はコマンドを実行せず、コマンドソースプラグインをインストールまたは更新せず、既にインストールされているプラグインの読み込みを停止します。`false` に設定して明示的に許可します。コマンドソースをブロックするときはいつでも、`true` に設定するか [`allowManagedHooksOnly`](#allowmanagedhooksonly) の下で未設定のままにするかに関わらず、マーケットプレイス [`headersHelper` コマンド](/docs/ja/plugin-marketplaces#authenticate-archive-downloads)もブロックします。ただし、マネージド設定自体が宣言するマーケットプレイスは除きます。Claude Code v2.1.229 以降が必要で、`headersHelper` ブロックには v2.1.238 以降が必要です。
+[`command` プラグインソース](/docs/ja/plugins/marketplace-reference#command-plugin-source)をブロックします。これはユーザーのマシンでマーケットプレイス宣言コマンドを実行してプラグインをインストールします。`true` に設定すると、Claude Code はコマンドを実行せず、コマンドソースプラグインをインストールまたは更新せず、既にインストールされているプラグインの読み込みを停止します。`false` に設定して明示的に許可します。コマンドソースをブロックするときはいつでも、`true` に設定するか [`allowManagedHooksOnly`](#allowmanagedhooksonly) の下で未設定のままにするかに関わらず、マーケットプレイス [`headersHelper` コマンド](/docs/ja/plugins/host-marketplace#authenticate-archive-downloads)もブロックします。ただし、マネージド設定自体が宣言するマーケットプレイスは除きます。Claude Code v2.1.229 以降が必要で、`headersHelper` ブロックには v2.1.238 以降が必要です。
 
 * **Scope**: [`Managed`](#scopes)
 * **Type**: Boolean
@@ -4585,7 +4600,7 @@ Claude Code v2.1.229 以降が必要です。
 }
 ```
 
-名前は、マーケットプレイスがマシンに登録され、その登録されたソースが同じマネージド設定でも宣言されている場合にのみ有効になります。その名前の [`extraKnownMarketplaces`](#extraknownmarketplaces) エントリとして、または [`strictKnownMarketplaces`](#strictknownmarketplaces) のエントリとして。Claude Code は、許可リストされた名前の下で別のソースから登録されたマーケットプレイスを無視します。公式マーケットプレイスはソース要件から除外されます。その名前を許可リストするだけで十分です。その名前は公式 Anthropic ソースからのみ登録できるためです。[コンテキストでプラグインを提案する](/docs/ja/plugin-relevance)を参照してください。
+名前は、マーケットプレイスがマシンに登録され、その登録されたソースが同じマネージド設定でも宣言されている場合にのみ有効になります。その名前の [`extraKnownMarketplaces`](#extraknownmarketplaces) エントリとして、または [`strictKnownMarketplaces`](#strictknownmarketplaces) のエントリとして。Claude Code は、許可リストされた名前の下で別のソースから登録されたマーケットプレイスを無視します。公式マーケットプレイスはソース要件から除外されます。その名前を許可リストするだけで十分です。その名前は公式 Anthropic ソースからのみ登録できるためです。[コンテキストでプラグインを提案する](/docs/ja/plugins/relevance)を参照してください。
 
 <h3 id="plugintrustmessage">
   `pluginTrustMessage`
@@ -4609,7 +4624,7 @@ Claude Code v2.1.229 以降が必要です。
 
 組織内のユーザーがプラグインを追加およびインストールできるプラグインマーケットプレイスソースを制限します。Claude Code はマーケットプレイスの追加時およびプラグインのインストール、更新、リフレッシュ、自動更新時に許可リストを実施します。ネットワークまたはファイルシステム操作の前に実施されるため、ポリシーを設定する前に誰かが追加したマーケットプレイスは、そのソースが一致しなくなると使用できません。ブロックされたユーザーはマネージドポリシーに名前を付けるエラーを表示します。
 
-[claude.ai 管理コンソール](/docs/ja/server-managed-settings)でこのキーを設定する場合、claude.ai は、[制限の仕組み](/docs/ja/plugin-marketplaces#how-restrictions-work)で説明されているように、組織内の誰かが claude.ai から git リポジトリからマーケットプレイスを追加するときにも適用します。
+[claude.ai 管理コンソール](/docs/ja/server-managed-settings)でこのキーを設定する場合、claude.ai は、[制限の仕組み](/docs/ja/plugins/org#restrict-what-users-can-install)で説明されているように、組織内の誰かが claude.ai から git リポジトリからマーケットプレイスを追加するときにも適用します。
 
 * **Scope**: [`Managed`](#scopes)
 * **Type**: マーケットプレイスソースオブジェクトの配列。[許可されたソースタイプ](#allowed-source-types)を参照してください
@@ -4627,7 +4642,7 @@ Claude Code v2.1.229 以降が必要です。
 }
 ```
 
-このキーを `allowedMarketplaces` として書くこともできます。[マーケットプレイスキーエイリアス](#marketplace-key-aliases)は、Claude Code がエイリアスをどのように扱うか、およびどのバージョンがそれを受け入れるかを説明しています。このキーはポリシーゲートです。ユーザーが追加できるものを制御しますが、何も登録しません。制限と事前登録を 1 つのファイルで行うには、[`extraKnownMarketplaces` と組み合わせる](#combine-with-extraknownmarketplaces)を参照してください。ユーザー向けビューについては、[マネージドマーケットプレイス制限](/docs/ja/plugin-marketplaces#managed-marketplace-restrictions)を参照してください。
+このキーを `allowedMarketplaces` として書くこともできます。[マーケットプレイスキーエイリアス](#marketplace-key-aliases)は、Claude Code がエイリアスをどのように扱うか、およびどのバージョンがそれを受け入れるかを説明しています。このキーはポリシーゲートです。ユーザーが追加できるものを制御しますが、何も登録しません。制限と事前登録を 1 つのファイルで行うには、[`extraKnownMarketplaces` と組み合わせる](#combine-with-extraknownmarketplaces)を参照してください。ユーザー向けビューについては、[マネージドマーケットプレイス制限](/docs/ja/plugins/org#restrict-what-users-can-install)を参照してください。
 
 <h4 id="allowed-source-types">
   許可されたソースタイプ
@@ -4648,7 +4663,7 @@ Claude Code v2.1.229 以降が必要です。
 
 3 つのソースタイプはテーブルを超えたルールを持ちます:
 
-* **`url`**: URL マーケットプレイスは `marketplace.json` ファイルのみをダウンロードし、Claude Code はそのサーバーから相対パスでプラグインファイルをフェッチしないため、そのプラグインは相対パス以外の[プラグインソース](/docs/ja/plugin-marketplaces#plugin-sources)（同じホストにある可能性があるアーカイブ URL など）を使用する必要があります。相対パスを持つプラグインの場合は、代わりに Git ベースのマーケットプレイスを使用してください。[相対パスを持つプラグインが URL ベースのマーケットプレイスで失敗する](/docs/ja/plugin-marketplaces#plugins-with-relative-paths-fail-in-url-based-marketplaces)を参照してください。
+* **`url`**: URL マーケットプレイスは `marketplace.json` ファイルのみをダウンロードし、Claude Code はそのサーバーから相対パスでプラグインファイルをフェッチしないため、そのプラグインは相対パス以外の[プラグインソース](/docs/ja/plugins/marketplace-reference#plugin-sources)（同じホストにある可能性があるアーカイブ URL など）を使用する必要があります。相対パスを持つプラグインの場合は、代わりに Git ベースのマーケットプレイスを使用してください。[相対パスを持つプラグインが URL ベースのマーケットプレイスで失敗する](/docs/ja/plugins/troubleshooting#plugins-with-relative-paths-fail-in-url-based-marketplaces)を参照してください。
 * **`hostPattern`**: 各リポジトリをリストせずに、内部 GitHub Enterprise または GitLab サーバー上のすべてのマーケットプレイスを許可するために使用します。Claude Code は `github` ソースを `github.com` に対して一致させ、`url` ソースからホスト名を取得し、[git URL](https://git-scm.com/docs/git-clone#_git_urls) の形式に応じて `git` ソースから取得します:
 
   * `https://` や `ssh://` などのスキーム付き URL: URL のホスト名。
@@ -4658,7 +4673,7 @@ Claude Code v2.1.229 以降が必要です。
   `file` および `directory` ソースはホストを持たず、`hostPattern` エントリと一致しません。
 * **`pathPattern`**: ネットワークソースの `hostPattern` エントリと共にファイルシステムマーケットプレイスを許可するために使用します。`".*"` はすべてのローカルパスを許可します。`"^/opt/approved/"` などのより狭いパターンはディレクトリに制限します。
 
-空の配列でも、許可リストは Claude Code が [`@skills-dir` プラグイン](/docs/ja/plugins-reference#skills-directory-plugins) を `~/.claude/skills/` から読み込むのを停止します。それらの読み込みを続けるには、`{ "source": "skills-dir" }` エントリを追加してください。このエントリはこのキーと `blockedMarketplaces` の外では意味がありません。
+空の配列でも、許可リストは Claude Code が [`@skills-dir` プラグイン](/docs/ja/plugins/loading#plugins-shared-through-a-repository) を `~/.claude/skills/` から読み込むのを停止します。それらの読み込みを続けるには、`{ "source": "skills-dir" }` エントリを追加してください。このエントリはこのキーと `blockedMarketplaces` の外では意味がありません。
 
 <h4 id="owner-wildcards">
   オーナーワイルドカード
@@ -4676,7 +4691,7 @@ Claude Code v2.1.229 以降が必要です。
 }
 ```
 
-リポジトリ名の位置全体のみがワイルドカードである可能性があります。Claude Code は `*`、`*/plugins`、または `acme-corp/tools-*` などのエントリを文字通り比較するため、リポジトリと一致しません。
+リポジトリ名の位置全体のみがワイルドカードである可能性があります。Claude Code は `*`、`*/plugins`、または `acme-corp/tools-*` などのエントリを無効として無視するため、リポジトリと一致しません。
 
 マッチングルールは 2 つの設定間で異なります:
 
@@ -4718,8 +4733,9 @@ Claude Code v2.1.229 以降が必要です。
 
 このエントリを使用すると、Claude Code は既に登録されている公式マーケットプレイスを利用可能に保ち、新しいマシンでは、最初に対話的に Claude Code を起動するときにマーケットプレイスを自動的に登録します。自動登録は最も一般的に以下を見逃します:
 
-* マシンの最初の対話的起動の前に実行される非対話型環境。
-* Claude Code が既に対話的に実行されたマシン。マーケットプレイスをブロックするポリシー（空の配列ロックダウンなど）の下。Claude Code はブロックされた試行を記録し、ポリシーが変更された後は再試行しません。
+* マシンの最初の対話的セッションの前に実行される非対話型環境。
+* Claude Code が VS Code 拡張機能を通じてのみ実行されたマシン。
+* Claude Code が既に対話的ターミナルセッションを実行したマシン。マーケットプレイスをブロックするポリシー（空の配列ロックダウンなど）の下。Claude Code はブロックされた試行を記録し、ポリシーが変更された後は再試行しません。
 
 これらのマシンでは、同じ `managed-settings.json` の [`extraKnownMarketplaces`](#extraknownmarketplaces) にマーケットプレイスを追加して Claude Code が自動的に登録するか、`claude plugin marketplace add anthropics/claude-plugins-official` を実行してください。
 
@@ -4843,7 +4859,7 @@ Claude Code v2.1.229 以降が必要です。
   `enabledPlugins`
 </h3>
 
-個別の[プラグイン](/docs/ja/plugins)をオンまたはオフにします。`plugin-name@marketplace-name` でキー付けされます。どのスコープでもエントリを持たないプラグインは、その [`defaultEnabled`](/docs/ja/plugins-reference#default-enablement) 値にフォールバックします。`/plugin` または `claude plugin enable` でプラグインを有効または無効にすると、Claude Code はこのキーを書き込みます。
+個別の[プラグイン](/docs/ja/plugins/overview)をオンまたはオフにします。`plugin-name@marketplace-name` でキー付けされます。どのスコープでもエントリを持たないプラグインは、その [`defaultEnabled`](/docs/ja/plugins/manifest-reference#fields) 値にフォールバックします。`/plugin` または `claude plugin enable` でプラグインを有効または無効にすると、Claude Code はこのキーを書き込みます。
 
 * **Scope**: [`Any file`](#scopes)
 * **Type**: `plugin-name@marketplace-name` を Boolean にマッピングするオブジェクト
@@ -4870,7 +4886,7 @@ Claude Code v2.1.229 以降が必要です。
 
 プロジェクト設定はユーザー設定より優先されるため、`~/.claude/settings.json` でプラグインを `false` に設定しても、プロジェクトの `.claude/settings.json` が有効にするプラグインは無効になりません。マシン上でプロジェクト有効プラグインをオプトアウトするには、代わりに `.claude/settings.local.json` で `false` に設定してください。マネージド設定で強制的に有効にされたプラグインは、マネージド設定がローカル設定をオーバーライドするため、この方法では無効にできません。
 
-外部ソース（GitHub リポジトリや npm パッケージなど）からのプラグインをプロジェクトの `.claude/settings.json` で有効にしても、他のユーザーにはインストールされません。プラグインを読み込むすべてのパスで、Claude Code はプラグインがインストールされていないと報告します。各ユーザーが [それ自体をインストール](/docs/ja/discover-plugins#configure-team-marketplaces)するまで。
+外部ソース（GitHub リポジトリや npm パッケージなど）からのプラグインをプロジェクトの `.claude/settings.json` で有効にしても、他のユーザーにはインストールされません。プラグインを読み込むすべてのパスで、Claude Code はプラグインがインストールされていないと報告します。各ユーザーが [それ自体をインストール](/docs/ja/plugins/org#require-plugins-per-repository)するまで。
 
 <h3 id="extraknownmarketplaces">
   `extraKnownMarketplaces`
@@ -4905,7 +4921,7 @@ Claude Code v2.1.229 以降が必要です。
 
 [フォルダーを信頼する前に実行されるもの](/docs/ja/permissions#what-runs-before-you-trust-a-folder)は信頼ゲートとリポジトリが提供できる他のコンテンツを比較します。このキーを `additionalMarketplaces` として書くこともできます。[マーケットプレイスキーエイリアス](#marketplace-key-aliases)を参照してください。
 
-`source` と共に `"autoUpdate": true` を設定して、Claude Code がスタートアップ後にバックグラウンドでそのマーケットプレイスをリフレッシュし、インストールされたプラグインを更新するようにします。省略すると、`claude-plugins-official` およびほとんどの他の公式 Anthropic マーケットプレイスはデフォルトで `true`、サードパーティマーケットプレイスはデフォルトで `false` です。[自動更新を構成する](/docs/ja/discover-plugins#configure-auto-updates)を参照してください。
+`source` と共に `"autoUpdate": true` を設定して、Claude Code がスタートアップ後にバックグラウンドでそのマーケットプレイスをリフレッシュし、インストールされたプラグインを更新するようにします。省略すると、`claude-plugins-official` およびほとんどの他の公式 Anthropic マーケットプレイスはデフォルトで `true`、サードパーティマーケットプレイスはデフォルトで `false` です。[自動更新を構成する](/docs/ja/plugins/install#keep-plugins-updated)を参照してください。
 
 複数の設定ファイルが同じ名前の下でマーケットプレイスエントリを定義する場合、Claude Code は[最高優先度ファイル](/docs/ja/settings#settings-precedence)からのエントリ全体を使用します。そのエントリは低優先度エントリを置き換え、そのフィールドを継承しないため、再定義は 1 つのファイルの `source.headers` 認証情報を別のファイルが制御する URL と組み合わせることはできません。v2.1.228 より前では、Claude Code は同じ名前のエントリをフィールドごとにマージしたため、より高い優先度ファイルのエントリは、設定しなかったフィールド（別のファイルの `headers` を含む）を継承できました。
 
@@ -4922,18 +4938,18 @@ Claude Code v2.1.229 以降が必要です。
 * **`directory`**: ローカルファイルシステムパス、`path` を使用（開発のみ）
 * **`settings`**: ホストされたリポジトリなしで設定ファイルに直接宣言されたインラインマーケットプレイス、`name` および `plugins` を使用
 
-`git` ソースタイプは、自己ホストされた GitLab や Bitbucket を含む任意の git ホスティングサービスで機能します。Claude Code はそのマシンで `git clone` が使用するのと同じ認証でリポジトリをクローンします。設定された認証ヘルパーまたは SSH キー。`GITHUB_TOKEN` などのプロバイダートークンは、それを読む認証ヘルパーを通じてのみ有効になります。セットアップの詳細については、[プライベートリポジトリ](/docs/ja/plugin-marketplaces#private-repositories)を参照してください。
+`git` ソースタイプは、自己ホストされた GitLab や Bitbucket を含む任意の git ホスティングサービスで機能します。Claude Code はそのマシンで `git clone` が使用するのと同じ認証でリポジトリをクローンします。設定された認証ヘルパーまたは SSH キー。`GITHUB_TOKEN` などのプロバイダートークンは、それを読む認証ヘルパーを通じてのみ有効になります。セットアップの詳細については、[プライベートリポジトリ](/docs/ja/plugins/host-marketplace#grant-access-to-a-private-marketplace)を参照してください。
 
 `github` および `git` ソースの場合、Claude Code はマーケットプレイスリポジトリをクローンして追加または更新するときに [Git LFS](https://git-lfs.com) コンテンツをダウンロードしません。LFS トラッキングファイルはポインターファイルとしてチェックアウトされ、追加または更新出力はいくつかのレポートを報告します。
 
 `source` オブジェクト内の `skipLfs` フィールドは受け入れられ、効果がありません。v2.1.274 より前では、Claude Code は `"skipLfs": true` を設定しない限り LFS コンテンツをダウンロードしました。
 
-URL ソースの場合、`headers` の認証情報が期限切れになり、コマンドが新しい認証情報を生成する必要がある場合は、`source` オブジェクト内に `headersHelper` を設定します。Claude Code v2.1.238 以降が必要です。コマンドが出力する必要があるもの、および Claude Code がそれを実行する場所については、[headersHelper コマンドを書く](/docs/ja/plugin-marketplaces#write-the-headershelper-command)を参照してください。Claude Code が headersHelper コマンドをスキップするか、その出力をドロップする場合については、[Claude Code が headersHelper コマンドをスキップするか、その出力をドロップする場合](/docs/ja/plugin-marketplaces#when-claude-code-skips-a-headershelper-command-or-drops-its-output)を参照してください。`https://` マーケットプレイス URL に `headersHelper` を設定すると、Claude Code は 2 つのポイントでコマンドを実行し、1 回の実行の出力を最大 60 秒間再利用します:
+URL ソースの場合、`headers` の認証情報が期限切れになり、コマンドが新しい認証情報を生成する必要がある場合は、`source` オブジェクト内に `headersHelper` を設定します。Claude Code v2.1.238 以降が必要です。コマンドが出力する必要があるもの、および Claude Code がそれを実行する場所については、[headersHelper コマンドを書く](/docs/ja/plugins/host-marketplace#write-the-headershelper-command)を参照してください。Claude Code が headersHelper コマンドをスキップするか、その出力をドロップする場合については、[Claude Code が headersHelper コマンドをスキップするか、その出力をドロップする場合](/docs/ja/plugins/host-marketplace#when-claude-code-skips-a-headershelper-command-or-drops-its-output)を参照してください。`https://` マーケットプレイス URL に `headersHelper` を設定すると、Claude Code は 2 つのポイントでコマンドを実行し、1 回の実行の出力を最大 60 秒間再利用します:
 
 * そのマーケットプレイスの `marketplace.json` の各フェッチの前（後続のリフレッシュを含む）。Claude Code はそのフェッチで出力されたヘッダーを送信します。
 * マーケットプレイス URL のオリジン上の各プラグインアーカイブダウンロードの前。つまり、同じスキーム、ホスト、ポート。Claude Code はそのダウンロードで出力を送信し、他のダウンロードはヘッダーを取得しません。
 
-Claude Code は、[`--add-dir`](/docs/ja/permissions#what-runs-before-you-trust-a-folder) で追加するディレクトリの `.claude/settings.json` または `.claude/settings.local.json` に設定された `headersHelper` を無視します。`url` ソースおよびインラインプラグインエントリの両方で、そのファイルに設定された固定 `headers` のみを送信します。[ユーザーが headersHelper コマンドを受け入れる方法](/docs/ja/plugin-marketplaces#how-users-accept-a-headershelper-command)は他の設定ファイルをカバーしています。
+Claude Code は、[`--add-dir`](/docs/ja/permissions#what-runs-before-you-trust-a-folder) で追加するディレクトリの `.claude/settings.json` または `.claude/settings.local.json` に設定された `headersHelper` を無視します。`url` ソースおよびインラインプラグインエントリの両方で、そのファイルに設定された固定 `headers` のみを送信します。[ユーザーが headersHelper コマンドを受け入れる方法](/docs/ja/plugins/host-marketplace#how-users-accept-a-headershelper-command)は他の設定ファイルをカバーしています。
 
 `settings` ソースにリストされたプラグインは、GitHub や npm などの外部ソースを参照する必要があり、`name` はマーケットプレイスキーと一致する必要があります。各プラグインを `enabledPlugins` で個別に有効にする必要があります。この例は 1 つのプラグインをインラインで宣言します:
 
@@ -4959,13 +4975,13 @@ Claude Code は、[`--add-dir`](/docs/ja/permissions#what-runs-before-you-trust-
 }
 ```
 
-独自の `source` が [`archive`](/docs/ja/plugin-marketplaces#zip-archives) である `source: 'settings'` の下のプラグインエントリは、アーカイブダウンロード用に `headers` を設定できます。`headers` に入れる値が短命の場合（レジストリがリクエストで作成するトークンなど）、代わりに `headersHelper` コマンドを設定します。エントリは両方を設定できます。両方のフィールドには Claude Code v2.1.238 以降が必要です。
+独自の `source` が [`archive`](/docs/ja/plugins/marketplace-reference#archive-plugin-source) である `source: 'settings'` の下のプラグインエントリは、アーカイブダウンロード用に `headers` を設定できます。`headers` に入れる値が短命の場合（レジストリがリクエストで作成するトークンなど）、代わりに `headersHelper` コマンドを設定します。エントリは両方を設定できます。両方のフィールドには Claude Code v2.1.238 以降が必要です。
 
-Claude Code はエントリの `headers` と、コマンドが出力するもの、そのプラグインのアーカイブダウンロードで送信し、他のダウンロードでは送信しません。Claude Code はユーザーが [そのプラグイン 1 つをインストールまたは更新する](/docs/ja/plugin-marketplaces#how-users-accept-a-headershelper-command)場合にのみコマンドを実行します。3 つのさらなるルールはエントリを保持するファイルに依存します:
+Claude Code はエントリの `headers` と、コマンドが出力するもの、そのプラグインのアーカイブダウンロードで送信し、他のダウンロードでは送信しません。Claude Code はユーザーが [そのプラグイン 1 つをインストールまたは更新する](/docs/ja/plugins/host-marketplace#how-users-accept-a-headershelper-command)場合にのみコマンドを実行します。3 つのさらなるルールはエントリを保持するファイルに依存します:
 
-* **`strict`**: マーケットプレイスの `marketplace.json` のエントリとは異なり、設定ファイルのエントリはマニフェストフィールドをインラインする必要がないため、`"strict": false` は必要ありません。[厳密モード](/docs/ja/plugin-marketplaces#strict-mode)を参照してください。
+* **`strict`**: マーケットプレイスの `marketplace.json` のエントリとは異なり、設定ファイルのエントリはマニフェストフィールドをインラインする必要がないため、`"strict": false` は必要ありません。[厳密モード](/docs/ja/plugins/marketplace-reference#strict-mode)を参照してください。
 * **Folder trust**: プロジェクトの `.claude/settings.json` または `.claude/settings.local.json` のエントリの場合、Claude Code はユーザーが [そのフォルダーも信頼した](/docs/ja/permissions#what-runs-before-you-trust-a-folder)場合にのみコマンドを実行します。
-* **Header filter**: Claude Code は、リポジトリがこれらのファイルを提供できるため、プロジェクトの `.claude/settings.json` または `.claude/settings.local.json` のエントリから [リクエストルーティングおよびクライアント ID ヘッダー名](/docs/ja/plugin-marketplaces#when-claude-code-skips-a-headershelper-command-or-drops-its-output)をドロップします。Claude Code はカタログエントリおよび `--add-dir` ディレクトリの設定のエントリに同じフィルターを適用し、ユーザー設定、`--settings` ファイル、またはマネージド設定のエントリにはフィルターを適用しません。
+* **Header filter**: Claude Code は、リポジトリがこれらのファイルを提供できるため、プロジェクトの `.claude/settings.json` または `.claude/settings.local.json` のエントリから [リクエストルーティングおよびクライアント ID ヘッダー名](/docs/ja/plugins/host-marketplace#when-claude-code-skips-a-headershelper-command-or-drops-its-output)をドロップします。Claude Code はカタログエントリおよび `--add-dir` ディレクトリの設定のエントリに同じフィルターを適用し、ユーザー設定、`--settings` ファイル、またはマネージド設定のエントリにはフィルターを適用しません。
 
 <h4 id="marketplace-key-aliases">
   マーケットプレイスキーエイリアス
@@ -4982,7 +4998,7 @@ Claude Code v2.1.232 以降では、`extraKnownMarketplaces` を `additionalMark
   `pluginConfigs`
 </h3>
 
-プラグインの [`userConfig`](/docs/ja/plugins-reference#user-configuration) 設定ダイアログに与える非機密の回答を、プラグイン ID でキー付けして保存します。Claude Code は、ダイアログに入力するときにこのキーをユーザー設定に書き込むため、手動で編集する必要はありません。Claude Code は機密オプションを macOS Keychain に保存し、Keychain が書き込みを拒否する場合は `~/.claude/.credentials.json` にフォールバックします。サポートされているキーチェーンのないプラットフォームでは、`~/.claude/.credentials.json` に保存します。
+プラグインの [`userConfig`](/docs/ja/plugins/manifest-reference#user-configuration) 設定ダイアログに与える非機密の回答を、プラグイン ID でキー付けして保存します。Claude Code は、ダイアログに入力するときにこのキーをユーザー設定に書き込むため、手動で編集する必要はありません。Claude Code は機密オプションを macOS Keychain に保存し、Keychain が書き込みを拒否する場合は `~/.claude/.credentials.json` にフォールバックします。サポートされているキーチェーンのないプラットフォームでは、`~/.claude/.credentials.json` に保存します。
 
 * **Scope**: [`User or managed`](#scopes)
 * **Type**: プラグイン ID を `options` フィールドを持つオブジェクトにマッピングするオブジェクト。各オプション名を文字列、数値、Boolean、または文字列の配列にマッピングし、オプションの `mcpServers` フィールドは同じ形状でサーバーごとのユーザー設定値を保持します
@@ -5230,7 +5246,7 @@ Claude Code は、承認ダイアログでサーバーを拒否すると、こ�
 }
 ```
 
-プラグイン独自の `settings.json` もこのキーを提供できます。[プラグインでデフォルト設定を配布する](/docs/ja/plugins#ship-default-settings-with-your-plugin)を参照してください。
+プラグイン独自の `settings.json` もこのキーを提供できます。[プラグインでデフォルト設定を配布する](/docs/ja/plugins/components#default-settings)を参照してください。
 
 <h3 id="crosssessioninbound">
   `crossSessionInbound`
@@ -5326,7 +5342,7 @@ Claude Code が[エージェントチーム](/docs/ja/agent-teams)チームメ�
   * `"in-process"`: チームメイトはメインターミナルペイン内で実行されます
   * `"auto"`: tmux 内で実行している場合、または `PATH` に `it2` がある iTerm2 内で実行している場合、または tmux がインストールされている場合は分割ペイン。それ以外の場合はインプロセス
   * `"tmux"`: ターミナルから検出された tmux または iTerm2 を使用して分割ペイン
-  * `"iterm2"`: Claude Code v2.1.186 以降で `it2` CLI を通じた iTerm2 ネイティブ分割ペイン
+  * `"iterm2"`: `it2` CLI を通じた iTerm2 ネイティブ分割ペイン
 * **デフォルト**: `"in-process"`
 * **セッションごとのオーバーライド**: `--teammate-mode` はこのキーより優先され、1 つのセッションに適用されます
 
@@ -5335,8 +5351,6 @@ Claude Code が[エージェントチーム](/docs/ja/agent-teams)チームメ�
   "teammateMode": "auto"
 }
 ```
-
-`iterm2` 値には Claude Code v2.1.186 以降が必要です。
 
 <span id="worktree-settings" />
 
@@ -6196,6 +6210,8 @@ Claude Desktop または Cowork で開始または最後に続行したセッシ
 ```
 
 Claude Code は、サーバーがすべてプロセス内の `type: "sdk"` エントリである `--mcp-config` を受け入れます。これにより、Agent SDK と VS Code 拡張機能は動作し続けます。ユーザーは `claude mcp add` またはファイル `.mcp.json` でサーバーを追加できます。サーバーごとの制御については、[`allowedMcpServers`](/docs/ja/managed-mcp) も設定してください。Claude Code v2.1.193 以降が必要です。
+
+[`CLAUDE_CODE_PLUGIN_DIRS`](/docs/ja/env-vars#variables) 環境変数で名前が付けられたプラグインフォルダーも同じチェックの対象です。Claude Code v2.1.280 以降が必要です。変数がフォルダーに名前を付ける場合、Claude Code は同じエラーで終了し、エラーは変数をアンセットするように指示します。
 
 クラウドセッションでは、Claude Code はサーバー配信のセッション中 MCP 更新も無視します。これはクラウドセッション構成と、セッションに到達する SDK `setMcpServers()` 呼び出しの背後にあるパスです。プロセス内の `type: "sdk"` エントリはそこでも除外されたままです。v2.1.239 より前では、サーバー配信の `--mcp-config` はクラウドセッションの開始をブロックしていました。
 

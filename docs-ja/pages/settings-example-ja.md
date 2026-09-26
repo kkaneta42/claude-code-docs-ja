@@ -98,9 +98,10 @@
   チームの共有設定
 </h2>
 
-1 つのチームの共有設定は、リポジトリにコミットされるため、それをクローンした全員が同じ権限、hooks、テレメトリ、プラグインマーケットプレイスを取得します。リポジトリのトップレベルに `.claude/settings.json` のようなファイルを保存してください。コミットする前に知っておくべきことは以下の通りです。
+1 つのチームの共有設定は、リポジトリにコミットされるため、それをクローンした全員が同じ権限、hooks、プラグインマーケットプレイスを取得します。リポジトリのトップレベルに `.claude/settings.json` のようなファイルを保存してください。コミットする前に知っておくべきことは以下の通りです。
 
 * **クラウドセッションもこれを読みます。** [クラウドセッション](/docs/ja/settings#settings-in-cloud-sessions)はリポジトリのクローンから開始されるため、コミットされたファイルはそこにも適用されます。
+* **テレメトリは管理設定または個人設定に入ります。** Claude Code は、リポジトリの設定ファイルの [OpenTelemetry エクスポーター変数](/docs/ja/settings-reference#variables-claude-code-ignores-in-env)を無視します。ただし、テレメトリをオフにする値は除きます。組織の[管理設定](/docs/ja/monitoring-usage#administrator-configuration)、または各ユーザーの `~/.claude/settings.json` で設定してください。
 * **許可ルールは信頼を待ちます。** 許可ルールと `extraKnownMarketplaces` エントリは、各ユーザーが[このフォルダ自体を信頼](/docs/ja/permissions#project-allow-rules-and-workspace-trust)した後に有効になります。親フォルダだけではなく、このフォルダ自体を信頼する必要があります。拒否ルールと確認ルールは、信頼されているセッションでもそうでないセッションでも、すべてのセッションで適用されます。
 * **hook はリポジトリ内のスクリプトです。** このファイルの hook は `.claude/hooks/block-rm.sh` を実行します。[hook がどのように解決されるか](/docs/ja/hooks#how-a-hook-resolves)では、これを書く方法について説明しています。
 * **ルールはコマンドとパスを記述されたとおりにマッチします。** `Bash(git push *)` は [`git -C . push`](/docs/ja/permissions#bash-rule-limits) にはマッチしません。`Read(./.env)` 単独では、ファイルツールと `cat .env` のようにファイルを名前で指定するコマンドを停止しますが、[`grep -r` をディレクトリ上で実行](/docs/ja/permissions#read-and-edit)することは停止しません。このファイルの `sandbox` ブロックはそのギャップを埋めます。sandbox は[あなたの `Read` 拒否パス](/docs/ja/settings-reference#sandbox-filesystem-denyread)をすべてのサンドボックス化されたコマンドが読み取れないものに追加するためです。
@@ -123,12 +124,6 @@
           "Read(./.env.*)",
           "Read(./secrets/**)"
         ]
-      },
-      "env": {
-        "CLAUDE_CODE_ENABLE_TELEMETRY": "1",
-        "OTEL_METRICS_EXPORTER": "otlp",
-        "OTEL_EXPORTER_OTLP_PROTOCOL": "grpc",
-        "OTEL_EXPORTER_OTLP_ENDPOINT": "http://collector.example.com:4317"
       },
       "hooks": {
         "PreToolUse": [
@@ -193,13 +188,6 @@
           "Read(./.env.*)",
           "Read(./secrets/**)"
         ]
-      },
-      // OpenTelemetry メトリクスをチームのコレクターに gRPC 経由で送信。エンドポイントをコレクターの URL に置き換えてください
-      "env": {
-        "CLAUDE_CODE_ENABLE_TELEMETRY": "1",
-        "OTEL_METRICS_EXPORTER": "otlp",
-        "OTEL_EXPORTER_OTLP_PROTOCOL": "grpc",
-        "OTEL_EXPORTER_OTLP_ENDPOINT": "http://collector.example.com:4317"
       },
       // すべての Bash コマンドの前に、リポジトリ内のスクリプトを実行してそれをブロックできます
       "hooks": {
