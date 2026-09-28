@@ -17,6 +17,36 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-09-28</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/claude-tag-ja.md | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+```
+
+<details>
+<summary>claude-tag-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/claude-tag-ja.md b/docs-ja/pages/claude-tag-ja.md
+index e589491..5b50621 100644
+--- a/docs-ja/pages/claude-tag-ja.md
++++ b/docs-ja/pages/claude-tag-ja.md
+@@ -1 +1 @@
+-<!DOCTYPE html><html lang="en-US"><head><title>Just a moment...</title><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=Edge"><meta name="robots" content="noindex,nofollow"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="content-security-policy" content="default-src &#39;none&#39;; script-src &#39;nonce-tR6BKjYD9x0BybboKCb5Xc&#39; &#39;unsafe-eval&#39; https://challenges.cloudflare.com; script-src-attr &#39;none&#39;; style-src &#39;unsafe-inline&#39;; img-src &#39;self&#39; https://challenges.cloudflare.com; connect-src &#39;self&#39; https://challenges.cloudflare.com; frame-src &#39;self&#39; https://challenges.cloudflare.com blob:; child-src &#39;self&#39; https://challenges.cloudflare.com blob:; worker-src blob:; form-action http: https:; base-uri &#39;self&#39;"><style>*{box-sizing:border-box;margin:0;padding:0}html{line-height:1.15;-webkit-text-size-adjust:100%;color:#313131;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"}body{display:flex;flex-direction:column;height:100vh;min-height:100vh}.main-content{margin:8rem auto;padding-left:1.5rem;max-width:60rem}@media (width <= 720px){.main-content{margin-top:4rem}}#challenge-error-text{background-image:url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgZmlsbD0ibm9uZSI+PHBhdGggZmlsbD0iI0IyMEYwMyIgZD0iTTE2IDNhMTMgMTMgMCAxIDAgMTMgMTNBMTMuMDE1IDEzLjAxNSAwIDAgMCAxNiAzbTAgMjRhMTEgMTEgMCAxIDEgMTEtMTEgMTEuMDEgMTEuMDEgMCAwIDEtMTEgMTEiLz48cGF0aCBmaWxsPSIjQjIwRjAzIiBkPSJNMTcuMDM4IDE4LjYxNUgxNC44N0wxNC41NjMgOS41aDIuNzgzem0tMS4wODQgMS40MjdxLjY2IDAgMS4wNTcuMzg4LjQwNy4zODkuNDA3Ljk5NCAwIC41OTYtLjQwNy45ODQtLjM5Ny4zOS0xLjA1Ny4zODktLjY1IDAtMS4wNTYtLjM4OS0uMzk4LS4zODktLjM5OC0uOTg0IDAtLjU5Ny4zOTgtLjk4NS40MDYtLjM5NyAxLjA1Ni0uMzk3Ii8+PC9zdmc+");background-repeat:no-repeat;background-size:contain;padding-left:34px}</style><meta http-equiv="refresh" content="360"></head><body><div class="main-wrapper" role="main"><div class="main-content"><noscript><div class="h2"><span id="challenge-error-text">Enable JavaScript and cookies to continue</span></div></noscript></div></div><script nonce="tR6BKjYD9x0BybboKCb5Xc">(function(){window._cf_chl_opt = {cFPWv: 'b',cH: 'mqPZrUsGLExF1TJdnG0sBliDcG1lLjQeSpnaLZlzXwQ-1790475476-1.2.1.1-wWe_cRbqwVu7KmokQL.m1p0x6Lktm3WertPBdLamPAEYUMImI5Ow.wNUO641NMwh',cITimeS: '1790475476',cN: 'tR6BKjYD9x0BybboKCb5Xc',cRay: 'a41703cda8b515e5',cTplB: '0',cTplC:0,cTplO:0,cTplV:5,cType: 'managed',cUPMDTk:"/?redirect=claude.com\u0026__cf_chl_tk=4oEuvT07_RlrOvDZF8exwKJxl0rxBQrCqnxOdITZdyA-1790475476-1.0.1.1-sRmtNrRFtwnFx1gksgmmZb6rH0loVLlrMSWyhW7ceM0",cvId: '3',cZone: 'claude.ai',fa:"/?redirect=claude.com\u0026__cf_chl_f_tk=4oEuvT07_RlrOvDZF8exwKJxl0rxBQrCqnxOdITZdyA-1790475476-1.0.1.1-sRmtNrRFtwnFx1gksgmmZb6rH0loVLlrMSWyhW7ceM0",md: 'K2ohU4NEakNy8bIEDteIqqcPfsFCJhcnqTgt0EFSgOY-1790475476-1.2.1.1-yITIewvFlh470ABl.YmIb6sonz9btRSRzgQJ62T2VPx3v0KihkUOJaZ_cdWbwW5wG.zn8lmx3Bzv8sQBa4rmNcgoD1SxM6vCVHyKLUNdzsPPWFKkWNTaGqLdLNp3kubqw1CU0oPr1p3eGibwqioWaZ4YvW6BWYYeaKA79xNigu5HK3GytGFDdI1pNDvfp6rfxeyZS1gHMimQPnNtYdFNKaBeqgkchf_i_P4_jJL9Ek7KVlsF4B7t52E_wMcReRkkiSTplwBZQ8cMt77XQVEh1Vtti.rxoDQ9RyacDIb0NEVNGIYIdzNZe6YTF50BFzEZtIAof2pW0KbDVmyrmnVIHusMy.oKABlnBzlVsIEit5akpGZ1KPmnL10AsjXAgGSJBn.ZPsPdcO6H0DtdK8bYlKHIJZo17RZM14vYKe2Kmrb73XsMtgoMHKpLPmf2yEUL4X5B6KpY45i.PighPNb4ssNJjkP_UUAVbvN1VeK8Xa8WzIc5PG4FVg8TNhTvSPbk200eP4Pas1MmPxZs138OsV3dPYICUI027WxC1fPMSF0bw.cO_jpwbAHMjpXcp0uOtTWJX.fKYcdh6q2l64CwlEDwygc2Fcr1egGGb4lCluBHett2CqhHx971Q35WPHTzTI_tVFbiR8tX9xgwolf1UcwhVf9LxzY9vTKCA9lWNF7i6JzBQ1A0huvuGfJ.kqdzK57ckWdoyxWg0pyNpBmP7QcRcu1JxeP7LXwYRJuOqeGQerjO02OAHCpNCJ7m.8n4B36VFMVqyeJf1EkOGkAQ6p6GfgWNjPgBWtYraANwTw3pXJRJ549AGkTbD2_i7HA_Eq7A55gTTfNYzhRDpJg2U6HldSl9paLKc9z2g2C2q.0eoijvp2_s5IMOww1JzLs82VDx1LRniygCCUNzS7TKfERuf5Lm1X0luhrTTjjqyc54XmqPdm1_eD.KE7GzvZVFTwRudcY1urCQuPPy.JlgV2DddDkLVJGMcEfRZsRqRMnoXa9HvjMERLnPZMBHMroTy0Z.n_sj0LOW3.EK82LV4mlOkxYQWhYZ1pbhAFZCmek',mdrd: 'lxlB2uVCdnEXyr4Sp_E_dc5mcFWtqi7lBxVc0Fxm2xc-1790475476-1.2.1.1-Ds_hMMMtqLXVlr7jntlXILUMcqeFD3CYrSo3QUgiqrOI7zf8eDkIkyvIeBV0l6QysexMmbbSiIIAqnOi4kK8_0nMAUVKwmhEk4tI2xMRceV5UvaBCADW9Yhu6CfHOa0WxRfbPe71ctCto7Cw5W9mwGWj4_PVKvyfqhuklfiOGygK8zEfWJR3msCSZhIhSXaVvJrsTFv5gErw6xM_MflVkXZLLV5GCZlVaub10jNqz8q_HZ_roDa3AD1O5WxKO1JUNJYJ6G263kcda22kH46kJMRi1Cw57uLMdQZ237SbbPeUGCrUW6fjbAa0mweHwrQsrZIGauTY2cpe6DChxxmwhrfpFUqnsyo0fKsDb.kHApomy3grEKJIPHYBf2lLKNqYQYGRyHNKEc9E81kFtbnT1mT6LZR_PxeNSebbJHzzhLAP2dZBwULb3gjnkXq8whBF',};var a = document.createElement('script');a.nonce = 'tR6BKjYD9x0BybboKCb5Xc';a.src = '/cdn-cgi/challenge-platform/h/b/orchestrate/chl_page/v1?ray=a41703cda8b515e5';window._cf_chl_opt.cOgUHash = location.hash === '' && location.href.indexOf('#') !== -1 ? '#' : location.hash;window._cf_chl_opt.cOgUQuery = location.search === '' && location.href.slice(0, location.href.length - window._cf_chl_opt.cOgUHash.length).indexOf('?') !== -1 ? '?' : location.search;if (window.history && window.history.replaceState) {var ogU = location.pathname + window._cf_chl_opt.cOgUQuery + window._cf_chl_opt.cOgUHash;history.replaceState(null, null,"/?redirect=claude.com\u0026__cf_chl_rt_tk=4oEuvT07_RlrOvDZF8exwKJxl0rxBQrCqnxOdITZdyA-1790475476-1.0.1.1-sRmtNrRFtwnFx1gksgmmZb6rH0loVLlrMSWyhW7ceM0"+ window._cf_chl_opt.cOgUHash);a.onload = function() {history.replaceState(null, null, ogU);}}document.getElementsByTagName('head')[0].appendChild(a);}());</script></body></html>
+\ No newline at end of file
++<!DOCTYPE html><html lang="en-US"><head><title>Just a moment...</title><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=Edge"><meta name="robots" content="noindex,nofollow"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="content-security-policy" content="default-src &#39;none&#39;; script-src &#39;nonce-E2y3O62FTJNX2aSdP151lw&#39; &#39;unsafe-eval&#39; https://challenges.cloudflare.com; script-src-attr &#39;none&#39;; style-src &#39;unsafe-inline&#39;; img-src &#39;self&#39; https://challenges.cloudflare.com; connect-src &#39;self&#39; https://challenges.cloudflare.com; frame-src &#39;self&#39; https://challenges.cloudflare.com blob:; child-src &#39;self&#39; https://challenges.cloudflare.com blob:; worker-src blob:; form-action http: https:; base-uri &#39;self&#39;"><style>*{box-sizing:border-box;margin:0;padding:0}html{line-height:1.15;-webkit-text-size-adjust:100%;color:#313131;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"}body{display:flex;flex-direction:column;height:100vh;min-height:100vh}.main-content{margin:8rem auto;padding-left:1.5rem;max-width:60rem}@media (width <= 720px){.main-content{margin-top:4rem}}#challenge-error-text{background-image:url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgZmlsbD0ibm9uZSI+PHBhdGggZmlsbD0iI0IyMEYwMyIgZD0iTTE2IDNhMTMgMTMgMCAxIDAgMTMgMTNBMTMuMDE1IDEzLjAxNSAwIDAgMCAxNiAzbTAgMjRhMTEgMTEgMCAxIDEgMTEtMTEgMTEuMDEgMTEuMDEgMCAwIDEtMTEgMTEiLz48cGF0aCBmaWxsPSIjQjIwRjAzIiBkPSJNMTcuMDM4IDE4LjYxNUgxNC44N0wxNC41NjMgOS41aDIuNzgzem0tMS4wODQgMS40MjdxLjY2IDAgMS4wNTcuMzg4LjQwNy4zODkuNDA3Ljk5NCAwIC41OTYtLjQwNy45ODQtLjM5Ny4zOS0xLjA1Ny4zODktLjY1IDAtMS4wNTYtLjM4OS0uMzk4LS4zODktLjM5OC0uOTg0IDAtLjU5Ny4zOTgtLjk4NS40MDYtLjM5NyAxLjA1Ni0uMzk3Ii8+PC9zdmc+");background-repeat:no-repeat;background-size:contain;padding-left:34px}</style><meta http-equiv="refresh" content="360"></head><body><div class="main-wrapper" role="main"><div class="main-content"><noscript><div class="h2"><span id="challenge-error-text">Enable JavaScript and cookies to continue</span></div></noscript></div></div><script nonce="E2y3O62FTJNX2aSdP151lw">(function(){window._cf_chl_opt = {cFPWv: 'b',cH: 'U6z6m.MJ37NJPqIqUWLYU.t9Y9g3jHfauZ8DQ7E4pfU-1790562110-1.2.1.1-KNsHmE.iSwJIDMIm642CTHnWCdeXGqLwpxxVVyQcioIkcbYRhZFq8_bvxN4dI1WO',cITimeS: '1790562110',cN: 'E2y3O62FTJNX2aSdP151lw',cRay: 'a41f46e51fa86b84',cTplB: '0',cTplC:0,cTplO:0,cTplV:5,cType: 'managed',cUPMDTk:"/?redirect=claude.com\u0026__cf_chl_tk=W1gZLLoUQrMQSAGLo2r2m7K58F5mIMzEUr9kTF_W_9U-1790562110-1.0.1.1-w6tKWQXZNth.8fGKleFejNVCHet.ghb16nOKO0mSfGA",cvId: '3',cZone: 'claude.ai',fa:"/?redirect=claude.com\u0026__cf_chl_f_tk=W1gZLLoUQrMQSAGLo2r2m7K58F5mIMzEUr9kTF_W_9U-1790562110-1.0.1.1-w6tKWQXZNth.8fGKleFejNVCHet.ghb16nOKO0mSfGA",md: '5TISfKR0eAn7qSL41KTrlCDXbcsQ4PHBwAayE1iygzA-1790562110-1.2.1.1-1cin6EqaRRChja3CCwFR3TDqrHQ2U8H022uQBMjduDfapqIQ8Ft0iDOETILmgq34LgP9m6Jgku6lrQboyfbdoo0HZHmntufaoG0_t3G35PKVeILueEu1V1pFKSNBscB5.p130gnR77DAS1phHlUl5WEgChP2wEuAiSEa0iMovCS5XeNfRwBhrJQYmXeHowVT2qprZBDka9P7cg15RxC3pzJmVLn2rlHtJc3PGkeY3jiIJ981jp1Bvy7hr1D84arUWzkWz0VifwkATl5XMYMa9xzpoKtwojfKUe8IuWsTgUipYhc57.A9JvItL7qlWrBF085BzqMPWWePH5Xah71HZtSV_UBDMs1O6mVxFhjEqyX8cwPWA_f9v23Gt58H9kfkBilqxCrc3S9qOfXKgHdNVIjG7QTstO.IsBFUTdVnzWEGu30a7OAr1xLkvgvBEyMS85hQ65PLBMP5ioE3DZ0O7.8.oHBy76oOjhx4o88POdDLVaIz2.Kbj3FmWns_tVgBLxW0nrs4g6xqWgbTWaHap3objmB9epEziuFxT.UqcFUNLady.V7cMAWp_FQ5oUWaxbKAYd4Y6DkC9xZplTyBzhY0rV5f0lRwxfevvlZ6fbolTH_kEswDqyPVcGZqRjxw.5MAvMqLDyl3mN9JkbmlQC7bWW36IU93HSs9CR4OuDwk_X.hGXXKvSk0edJX7be0W.eekAAoeqvAdhLHN0Jk6FxWTvGhcm.OurxEe0h3HfSSG_wY6EG9rUdh1m5JaSB4.7TcQQ3s0dqDDn2E8WJ6WR7123aAZkWb7Fno2Z.RcYmQ7FcAZg7NSUbKYLcE917gPTEaY_b_dJ9Y_s9hZo9xTnIstlBy6P47TvdtRmI3krTKrKY.m6SZ5KeBrGv8khyhWsVI5DtYAzxQDXeh2ISRSxvmnp7avWuH7C_Dqrk68ZFctuMWv6eRz6kUnuJn.WqE2cxBLRCpVhJZc.CLnnhAdPDx3_k.KgGoQ4iVOjqOZoU1umP0XxbqRgh3.KR6VM_.xIvJH82bHki2aZtBRE26C37Mr6pbbeGm6h42_YpXwQ25kzvkKg0ZfnAQSxKGKkp4',mdrd: 'DygGteHz2PZkHMqJzx63UK9OoqXImsOfNU2te94_USo-1790562110-1.2.1.1-vBPezzBtqhFa97BBDxdMdCn26_QFa80F1IDSNCObhMZkd9B2z6wgpcNnQ_skhgRaI10LG5_tILVdyJPcgphqPK9Aym4z7fFN49ogKYuFjhpGUTkl_juN69pF.5emxUgbGq37potgUscECmMKvzB3430yBDaQ_65f2tOoWZ8vJWXdK.cNYOb4nKdWupWggLxXqOpPR_LUmK.BfDzsxsCgZqo0WcHk5gDQ3rvhvJLy1R4_S7aWtxSwhaxj6vugQR1JC9bbXuynEyJvUGQnZyEZhqdgK7UiGHjMuNyueuG2CK9yDkMh5zRrDw5_rl72TOMgaXhUrvn6OTQF6f6lVQtA9HCJ2d_4DGEkftF3Bq_9tS2ghirD17SaYceQ7bnLAfhQffcVeBdkav2ruU4XSVMrQIcbmE2i8FYB_b6rWiqLZqqftZaDViRp1BDI8RoDohVG',};var a = document.createElement('script');a.nonce = 'E2y3O62FTJNX2aSdP151lw';a.src = '/cdn-cgi/challenge-platform/h/b/orchestrate/chl_page/v1?ray=a41f46e51fa86b84';window._cf_chl_opt.cOgUHash = location.hash === '' && location.href.indexOf('#') !== -1 ? '#' : location.hash;window._cf_chl_opt.cOgUQuery = location.search === '' && location.href.slice(0, location.href.length - window._cf_chl_opt.cOgUHash.length).indexOf('?') !== -1 ? '?' : location.search;if (window.history && window.history.replaceState) {var ogU = location.pathname + window._cf_chl_opt.cOgUQuery + window._cf_chl_opt.cOgUHash;history.replaceState(null, null,"/?redirect=claude.com\u0026__cf_chl_rt_tk=W1gZLLoUQrMQSAGLo2r2m7K58F5mIMzEUr9kTF_W_9U-1790562110-1.0.1.1-w6tKWQXZNth.8fGKleFejNVCHet.ghb16nOKO0mSfGA"+ window._cf_chl_opt.cOgUHash);a.onload = function() {history.replaceState(null, null, ogU);}}document.getElementsByTagName('head')[0].appendChild(a);}());</script></body></html>
+\ No newline at end of file
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-09-27</summary>
 
 **変更ファイル:**
@@ -2686,46 +2716,6 @@ index bbb9092..9777be4 100644
 +Amazon Bedrock API キーで認証する場合を除き、[セットアップウィザード](#sign-in-with-bedrock)は認証情報を検証する際に行う各 AWS 呼び出しに同じ制限を適用し、各モデルチェック前の認証情報ルックアップにも適用します。認証情報検証中に、制限を超えるチェックは [`Timed out after 60s waiting for AWS`](/docs/ja/errors#bedrock-setup-verification-timed-out-waiting-for-aws) で失敗します。
  
  <h4 id="advanced-credential-configuration">
-```
-
-</details>
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index 8421a9a..facb720 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,8 @@
- # Changelog
- 
-+## 2.1.270
-+
-+- Fixed read-only git commands in Bash unexpectedly asking for permission after a session had been running for a while (regression in 2.1.269)
-+
- ## 2.1.269
- 
-```
-
-</details>
-
-<details>
-<summary>claude-directory-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/claude-directory-ja.md b/docs-ja/pages/claude-directory-ja.md
-index 4a959cc..577e8aa 100644
---- a/docs-ja/pages/claude-directory-ja.md
-+++ b/docs-ja/pages/claude-directory-ja.md
-@@ -1673,5 +1673,5 @@ claude project purge ~/work/my-repo --yes
- | `~/.claude/policy-limits.json`                                                                                                            | なし。自動的に更新されます。                                                                                |
- | `~/.claude/tasks/`                                                                                                                        | 再開されたセッションが取得するタスクリスト                                                                         |
--| `~/.claude/debug/`、`~/.claude/plans/`、`~/.claude/image-cache/`、`~/.claude/session-env/`、`~/.claude/shell-snapshots/`、`~/.claude/backups/` | ユーザー向けのもの                                                                                     |
-+| `~/.claude/debug/`、`~/.claude/plans/`、`~/.claude/image-cache/`、`~/.claude/session-env/`、`~/.claude/shell-snapshots/`、`~/.claude/backups/` | ユーザー向けのものはなし                                                                                  |
- | `~/.claude/todos/`、`~/.claude/statsig/`、`~/.claude/logs/`                                                                                 | なし。現在のバージョンでは書き込まれないレガシーディレクトリ。                                                               |
- 
 ```
 
 </details>
