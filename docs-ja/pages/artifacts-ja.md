@@ -305,11 +305,35 @@ Claude はデザインシステムを独自の選択肢より高い優先度と�
 
 タイポグラフィについて、Claude は Google Fonts からタイプフェイスを読み込むことができます。これはアーティファクトページが読み込むことができる唯一の外部フォントソースです。Claude は他のタイプフェイスを `@font-face` データ URI としてインライン化し、すべてのタイプフェイスにフォールバックスタックを提供するため、フォントが読み込まれない場合でもページは引き続きレンダリングされます。特定のタイプフェイスを使用するには、プロンプトまたはデザインシステムで名前を付けます。
 
-<h2 id="draft-a-design-canvas">
-  デザインキャンバスを作成する
+<h2 id="start-from-a-slides-design-or-docs-template">
+  スライド、デザイン、またはドキュメントテンプレートから開始する
 </h2>
 
-UI、画面フロー、ランディングページ、またはポスターをモックアップするために、ページを構築するのではなく、`/design` をブリーフと共に実行します。Claude はデザインを 1 つのキャンバス上のアートボードとして作成し、キャンバスを Design アーティファクトとして公開します。ブリーフは描画する内容を指定します。
+ページをゼロから構築する代わりに、Claude は claude.ai アカウント上のテンプレートの 1 つからアーティファクトを開始できます。プレゼンテーション用の [Claude Slides](https://support.claude.com/en/articles/17153992-what-are-artifacts-and-how-do-i-use-them#h_11d5a9a5fa)、ビジュアルデザイン用の [Claude Design](https://support.claude.com/en/articles/14604416-get-started-with-claude-design)、または他の人が読んで編集するドキュメント用の [Claude Docs](https://support.claude.com/en/articles/16923645-get-started-with-claude-docs) です。各テンプレートは claude.ai 上の独自のエディターで開き、あなたとチームメンバーが直接変更するか Claude に変更を依頼でき、PowerPoint、PDF、Word などの形式にエクスポートできます。
+
+テンプレートから開始するには、「移行ノートを木曜日のレビュー用のデッキに変換する」や「このプランをチーム用のドキュメントとして作成する」など、必要な内容を説明します。Claude は一致するテンプレートを選択し、リクエストとセッションが既に持っている内容から入力し、リンクを提供します。デッキまたはデザインの場合、`/slides` または `/design` をブリーフと共に実行することもできます。
+
+<Note>
+  テンプレートはベータ版です。Pro、Max、Team プランではデフォルトで有効になっています。Enterprise プランでは、Owner が **Organization settings > Artifacts** の下で [各テンプレートを有効にします](https://support.claude.com/en/articles/16994751-artifacts-admin-guide-for-team-and-enterprise-plans)。組織で Slides テンプレートが無効になっている場合、`/slides` は表示されません。Design テンプレートが無効になっている場合、`/design` はデザインを作成しません。両方のコマンドには Claude Code v2.1.265 以降と [アーティファクトが利用可能](#availability) なセッションが必要です。
+</Note>
+
+<h3 id="make-a-slide-deck">
+  スライドデッキを作成する
+</h3>
+
+デッキが何をカバーしているか、誰のためのものかを説明するブリーフと共に `/slides` を実行します。
+
+```text wrap theme={null}
+/slides a quarterly review of the platform team's reliability work, for the engineering all-hands
+```
+
+Claude は Claude Slides アーティファクトを作成し、リンクを提供します。デスクトップブラウザーで開いてデッキを編集またはプレゼンテーションします。ブリーフなしで `/slides` を実行した場合、Claude は何かを作成する前にデッキが何についてであるべきかを尋ねます。
+
+<h3 id="draft-a-design-canvas">
+  デザインキャンバスを作成する
+</h3>
+
+UI、画面フロー、ランディングページ、またはポスターをモックアップするために、ページを構築するのではなく、`/design` をブリーフと共に実行します。Claude はデザインを 1 つのキャンバス上のアートボードとして作成し、キャンバスを Claude Design アーティファクトとして公開します。ブリーフは描画する内容を指定します。
 
 ```text wrap theme={null}
 /design a settings screen for a mobile banking app
@@ -317,7 +341,15 @@ UI、画面フロー、ランディングページ、またはポスターをモ
 
 公開されたアーティファクトをデスクトップブラウザーで開いてアートボードを確認します。アートボード上の要素を選択して変更すると、編集は自動的に保存されます。各アートボードを PNG または PDF としてエクスポートできます。
 
-`/design` は [アーティファクトが利用可能](#availability) なセッションと Claude Code v2.1.265 以降が必要です。
+<h3 id="write-a-document-with-claude-docs">
+  Claude Docs でドキュメントを作成する
+</h3>
+
+Claude Docs は Claude Code にコマンドではなく claude.ai [コネクター](/docs/ja/mcp#use-mcp-servers-from-claude-ai) として到達します。接続されている場合、`/mcp` はそれを `claude.ai Claude Docs` としてリストします。他の人のためのドキュメントのリクエストは、アーティファクトページではなく Claude Docs に送られます。仕様、提案、またはセッションで作成したプランの書き込みです。Claude はドキュメントが作成されたときにドキュメントのリンクを提供します。
+
+README などのコードベースに属するドキュメントはファイルのままです。Claude が Claude Docs に配置するであろう何かのためにファイルを取得するには、`.docx` またはリポジトリ内の Markdown ファイルなどの形式を指定します。
+
+コネクターをオフにするには、`claude.ai Claude Docs` を `deniedMcpServers` に追加するか、[claude.ai コネクターを無効にする](/docs/ja/mcp#disable-claude-ai-connectors) で説明されている `/mcp` トグルを使用します。
 
 <h2 id="page-constraints">
   ページの制約
@@ -325,14 +357,14 @@ UI、画面フロー、ランディングページ、またはポスターをモ
 
 各アーティファクトは 1 つの自己完結したページです。Claude Code は公開するファイルを HTML ドキュメントシェルでラップし、厳密なコンテンツセキュリティポリシー（CSP）の下で提供します。これはページが実行できることを形作ります。
 
-| 制約         | 効果                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| :--------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 外部リクエスト    | ページは Google Fonts からタイプフェイスを読み込むことができ、[5 つのパブリック CDN ホスト](#allowlist-the-viewer-domain)からスクリプトを読み込むことができます：cdnjs、unpkg、Tailwind と jQuery CDN、および jsDelivr 上の `/npm/` などの選択されたパス。CSP はすべての外部画像とその他すべての外部スクリプト、スタイルシート、フォントをブロックし、`fetch`、XHR、WebSocket 呼び出しがページ自身のオリジンと Google Fonts ホストにのみ到達できるようにします。Claude はページが必要とするライブラリをこれらの CDN の 1 つから読み込み、その他すべての CSS と JavaScript をインライン化し、画像をデータ URI として埋め込みます。[コネクタ呼び出し](#pull-live-data-with-mcp-connectors)は claude.ai を通じて行われ、ネットワーク呼び出しを自身で実行します。 |
-| バックエンドなし   | アーティファクトは静的ページです。ビューアを自身で認証することはできません。                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| ダウンロード     | ページはダウンロードを自身で開始することはできません。ビューアがページが生成するファイルを保存できるようにするには、Claude はダウンロード機能を宣言します。[ファイルダウンロードを提供する](#offer-a-file-download)を参照してください。                                                                                                                                                                                                                                                                                                                                                             |
-| シングルページ    | 相対リンクは解決されません。ページと一緒に何もデプロイされていないためです。マルチセクションコンテンツの場合、Claude は個別ファイルではなくページ内アンカーを使用します。                                                                                                                                                                                                                                                                                                                                                                                                         |
-| ソースファイルタイプ | 公開されるファイルは `.html`、`.htm`、または `.md` である必要があり、UTF-8 として、またはバイトオーダーマークによってリトルエンディアン UTF-16 としてデコードできる必要があります。Markdown ファイルはスタイル付きドキュメントページとしてレンダリングされ、構文強調表示されたコードが含まれます。デコードできないファイル、または置換文字 `U+FFFD` を含むファイルは、[修正する行と列とともに拒否されます](/docs/ja/errors#the-source-file-is-not-valid-utf-8-text)。                                                                                                                                                                                                           |
-| レンダリングサイズ  | レンダリングされたページは 16 MiB 以下である必要があります。大きな埋め込み画像は、公開が失敗する場合の通常の原因です。                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| 制約 | 効果 |
+| :- | :- |
+| 外部リクエスト | ページは Google Fonts からタイプフェイスを読み込むことができ、[5 つのパブリック CDN ホスト](#allowlist-the-viewer-domain)からスクリプトを読み込むことができます：cdnjs、unpkg、Tailwind と jQuery CDN、および jsDelivr 上の `/npm/` などの選択されたパス。CSP はすべての外部画像とその他すべての外部スクリプト、スタイルシート、フォントをブロックし、`fetch`、XHR、WebSocket 呼び出しがページ自身のオリジンと Google Fonts ホストにのみ到達できるようにします。Claude はページが必要とするライブラリをこれらの CDN の 1 つから読み込み、その他すべての CSS と JavaScript をインライン化し、画像をデータ URI として埋め込みます。[コネクタ呼び出し](#pull-live-data-with-mcp-connectors)は claude.ai を通じて行われ、ネットワーク呼び出しを自身で実行します。 |
+| バックエンドなし | アーティファクトは静的ページです。ビューアを自身で認証することはできません。 |
+| ダウンロード | ページはダウンロードを自身で開始することはできません。ビューアがページが生成するファイルを保存できるようにするには、Claude はダウンロード機能を宣言します。[ファイルダウンロードを提供する](#offer-a-file-download)を参照してください。 |
+| シングルページ | 相対リンクは解決されません。ページと一緒に何もデプロイされていないためです。マルチセクションコンテンツの場合、Claude は個別ファイルではなくページ内アンカーを使用します。 |
+| ソースファイルタイプ | 公開されるファイルは `.html`、`.htm`、または `.md` である必要があり、UTF-8 として、またはバイトオーダーマークによってリトルエンディアン UTF-16 としてデコードできる必要があります。Markdown ファイルはスタイル付きドキュメントページとしてレンダリングされ、構文強調表示されたコードが含まれます。デコードできないファイル、または置換文字 `U+FFFD` を含むファイルは、[修正する行と列とともに拒否されます](/docs/ja/errors#the-source-file-is-not-valid-utf-8-text)。 |
+| レンダリングサイズ | レンダリングされたページは 16 MiB 以下である必要があります。大きな埋め込み画像は、公開が失敗する場合の通常の原因です。 |
 
 アーティファクトを生成することは、他のレスポンスと同様に出力トークンを使用し、スタイル付きページはターミナルテキストと同じコンテンツよりもトークン集約的です。インライン CSS、インタラクティブコントロール用の JavaScript、特にデータ URI として埋め込まれた画像が主な要因です。アーティファクトのトークンコストを削減するには：
 
@@ -346,13 +378,13 @@ UI、画面フロー、ランディングページ、またはポスターをモ
 
 Artifacts には以下のすべての条件が必要です。いずれかが満たされていない場合、Claude はローカル HTML ファイルを作成するか、公開できないと述べます。
 
-| 要件        | 利用可能な場合                                                                                                                                                                                                                                                                                                                                           |
-| :-------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| プラン       | Pro、Max、Team、または Enterprise。Pro および Max プランでは、Artifacts は共有するまであなたのみがアクセスでき、管理者管理は適用されません。Team プランでは、Artifacts はデフォルトで有効です。Enterprise プランでは、Owner が claude.ai 管理設定で[それらを有効にします](#manage-artifacts-for-your-organization)。                                                                                                                         |
-| 認証        | セッションが claude.ai アカウントでサポートされています。CLI またはデスクトップアプリで `/login` でサインインします。Claude Tag セッションはエージェントの ID を通じてサインインするため、追加の手順は不要です。API キー、[ゲートウェイトークン](/docs/ja/llm-gateway)、またはクラウドプロバイダー認証情報を使用するセッションは公開できません。                                                                                                                                             |
-| モデルプロバイダー | Anthropic API。[Amazon Bedrock](/docs/ja/amazon-bedrock)、[Google Cloud の Agent Platform](/docs/ja/google-vertex-ai)、または[Microsoft Foundry](/docs/ja/microsoft-foundry)では利用できません。                                                                                                                                                                                  |
-| 組織ポリシー    | カスタマー管理暗号化キー（CMEK）、HIPAA、および[Zero Data Retention](/docs/ja/zero-data-retention)は組織に対して有効になっていません。                                                                                                                                                                                                                                                      |
-| サーフェス     | Claude Code CLI、または Claude デスクトップアプリバージョン 1.13576.0 以降。[Claude Tag](https://claude.com/docs/claude-tag/overview) セッションは、Claude Tag と Artifacts の両方が組織に対して有効な場合にも Artifacts を公開できます。[Agent SDK](/docs/ja/agent-sdk/overview)、GitHub Action、および MCP サーバーコンテキストではデフォルトで無効です。また、[`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`](/docs/ja/env-vars)が設定されている場合も無効です。 |
+| 要件 | 利用可能な場合 |
+| :- | :- |
+| プラン | Pro、Max、Team、または Enterprise。Pro および Max プランでは、Artifacts は共有するまであなたのみがアクセスでき、管理者管理は適用されません。Team プランでは、Artifacts はデフォルトで有効です。Enterprise プランでは、Owner が claude.ai 管理設定で[それらを有効にします](#manage-artifacts-for-your-organization)。 |
+| 認証 | セッションが claude.ai アカウントでサポートされています。CLI またはデスクトップアプリで `/login` でサインインします。Claude Tag セッションはエージェントの ID を通じてサインインするため、追加の手順は不要です。API キー、[ゲートウェイトークン](/docs/ja/llm-gateway)、またはクラウドプロバイダー認証情報を使用するセッションは公開できません。 |
+| モデルプロバイダー | Anthropic API。[Amazon Bedrock](/docs/ja/amazon-bedrock)、[Google Cloud の Agent Platform](/docs/ja/google-vertex-ai)、または[Microsoft Foundry](/docs/ja/microsoft-foundry)では利用できません。 |
+| 組織ポリシー | カスタマー管理暗号化キー（CMEK）、HIPAA、および[Zero Data Retention](/docs/ja/zero-data-retention)は組織に対して有効になっていません。 |
+| サーフェス | Claude Code CLI、または Claude デスクトップアプリバージョン 1.13576.0 以降。[Claude Tag](https://claude.com/docs/claude-tag/overview) セッションは、Claude Tag と Artifacts の両方が組織に対して有効な場合にも Artifacts を公開できます。[Agent SDK](/docs/ja/agent-sdk/overview)、GitHub Action、および MCP サーバーコンテキストではデフォルトで無効です。また、[`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`](/docs/ja/env-vars)が設定されている場合も無効です。 |
 
 Artifacts が組織に対して許可されているかどうかは、Claude Code が `api.anthropic.com` から読み込む組織のポリシーから決まります。Claude Code がポリシーを読み込めない場合、Artifacts は利用できません。リクエストすると、Claude がその理由を説明します。
 
@@ -364,12 +396,12 @@ Artifacts が組織に対して許可されているかどうかは、Claude Cod
 
 組織の設定に関わらず、自分のセッションのアーティファクトをオフにするには、以下のいずれかを使用します。
 
-| 場所                        | 実行内容                                                                                                             |
-| :------------------------ | :--------------------------------------------------------------------------------------------------------------- |
+| 場所 | 実行内容 |
+| :- | :- |
 | [`/config`](/docs/ja/commands) | **Artifacts** 行をオフにします。これにより、ユーザー設定に [`"enableArtifact": false`](/docs/ja/settings-reference#enableartifact) が書き込まれます |
-| [設定ファイル](/docs/ja/settings)    | `"enableArtifact": false` を設定します。非推奨の `"disableArtifact": true` もアーティファクトをオフにします                                 |
-| [環境変数](/docs/ja/env-vars)      | `CLAUDE_CODE_DISABLE_ARTIFACT=1` を設定します                                                                          |
-| [権限ルール](/docs/ja/permissions)  | `permissions.deny` に `Artifact` を追加します                                                                           |
+| [設定ファイル](/docs/ja/settings) | `"enableArtifact": false` を設定します。非推奨の `"disableArtifact": true` もアーティファクトをオフにします |
+| [環境変数](/docs/ja/env-vars) | `CLAUDE_CODE_DISABLE_ARTIFACT=1` を設定します |
+| [権限ルール](/docs/ja/permissions) | `permissions.deny` に `Artifact` を追加します |
 
 [`--settings`](/docs/ja/cli-reference#cli-flags) ファイルで、または `CLAUDE_CODE_DISABLE_ARTIFACT` でアーティファクトをオフにした場合、あるいは管理者が [管理設定](/docs/ja/server-managed-settings) でアーティファクトをオフにした場合、どの設定ファイルもアーティファクトを再度オンにすることはできません。v2.1.242 より前では、[優先度スタック](/docs/ja/settings#settings-precedence) の上位にあるファイルが、下位のファイルで `"enableArtifact": false` が設定されていても、アーティファクトを再度オンにすることができました。
 
@@ -429,11 +461,11 @@ claude.ai のビューアは、サンドボックス化された `*.claudeuserco
 
 [Compliance API](https://docs.claude.com/en/api/compliance)は、組織のアーティファクトをリストアップし、特定のバージョンのコンテンツを取得し、アーティファクトを削除するエンドポイントを提供します。
 
-| Method   | Endpoint                                                            |
-| :------- | :------------------------------------------------------------------ |
-| `GET`    | `/v1/compliance/code/artifacts`                                     |
-| `GET`    | `/v1/compliance/code/artifacts/{artifact_id}/versions/{version_id}` |
-| `DELETE` | `/v1/compliance/code/artifacts/{artifact_id}`                       |
+| Method | Endpoint |
+| :- | :- |
+| `GET` | `/v1/compliance/code/artifacts` |
+| `GET` | `/v1/compliance/code/artifacts/{artifact_id}/versions/{version_id}` |
+| `DELETE` | `/v1/compliance/code/artifacts/{artifact_id}` |
 
 リクエストとレスポンススキーマについては、[Compliance API リファレンス](https://docs.claude.com/en/api/compliance/code/artifacts)を参照してください。
 

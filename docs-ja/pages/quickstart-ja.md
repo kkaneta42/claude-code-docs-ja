@@ -27,7 +27,7 @@
   ステップ 1：Claude Code をインストールする
 </h2>
 
-Claude Code をインストールするには、以下のいずれかの方法を使用してください。
+Claude Code をインストールするには、ターミナルを開いてシステムのコマンドを実行してください。ターミナルを使用したことがない場合は、[ターミナルガイド](/docs/ja/terminal-guide)でターミナルを開いてコマンドを貼り付ける方法を確認できます。
 
 <Tabs>
   <Tab title="ネイティブインストール（推奨）">
@@ -48,6 +48,8 @@ Claude Code をインストールするには、以下のいずれかの方法�
     ```batch theme={null}
     curl -fsSL https://claude.ai/install.cmd -o install.cmd && install.cmd && del install.cmd
     ```
+
+    インストーラーが完了したら、新しいターミナルウィンドウを開いて `claude --version` を実行してください。インストールが正常に完了すると、バージョン番号が表示されます。シェルが `claude` が見つからない、または認識されていないと表示される場合は、インストールディレクトリがまだ PATH に含まれていません。[PATH を修正する](/docs/ja/troubleshoot-install#command-not-found-claude-after-installation)を参照してください。
 
     `The token '&&' is not a valid statement separator` というエラーが表示される場合は、CMD ではなく PowerShell を使用しています。`'irm' is not recognized as an internal or external command` というエラーが表示される場合は、PowerShell ではなく CMD を使用しています。PowerShell を使用している場合、プロンプトに `PS C:\` と表示され、CMD を使用している場合は `PS` なしで `C:\` と表示されます。
 
@@ -187,7 +189,7 @@ can Claude Code work with Docker?
 
 Claude Code は適切なファイルを見つけて、変更内容を表示します。変更を行う前に確認を求める場合は、**Yes** を選択して承認してください。
 
-Auto モードは、Pro、Max、Team プランのインタラクティブターミナルセッションの[組み込みの開始権限モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)です。分類器があなたの代わりにアクションをレビューし、Claude はほとんどのファイルを編集し、ほとんどのコマンドをあなたに尋ねることなく実行します。その他のプランでは、Manual モードが組み込みの開始権限モードです。インストール直後に開始するセッションについては、[インストールまたはアップグレード後の最初のセッション](/docs/ja/env-vars#first-session-after-an-install-or-upgrade)を参照してください。
+Claude Code v2.1.283 以降では、auto モードはインタラクティブターミナルセッションの[組み込みの開始権限モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)です。分類器があなたの代わりにアクションをレビューし、Claude はほとんどのファイルを編集し、ほとんどのコマンドをあなたに尋ねることなく実行します。それより前のバージョンでは、auto モードは Pro、Max、Team プランのみで組み込みの開始権限モードです。インストール直後に開始するセッションについては、[インストールまたはアップグレード後の最初のセッション](/docs/ja/env-vars#first-session-after-an-install-or-upgrade)を参照してください。
 
 <Note>
   設定またはお客様の組織が異なる開始権限モードを設定できます。[セッションが開始する権限モード](/docs/ja/permission-modes#which-mode-a-session-starts-in)に、その内容が記載されています。いつでも `Shift+Tab` を押して、現在のセッションの権限モードを切り替えることができます。
@@ -288,21 +290,21 @@ Claude と連携する方法は多数あります：
 
 **シェルコマンド**
 
-| コマンド                | 機能                         | 例                                   |
-| ------------------- | -------------------------- | ----------------------------------- |
-| `claude`            | インタラクティブモードを開始する           | `claude`                            |
-| `claude "task"`     | 初期プロンプト付きでインタラクティブモードを開始する | `claude "fix the build error"`      |
-| `claude -p "query"` | 1 回限りのクエリを実行してから終了する       | `claude -p "explain this function"` |
-| `claude -c`         | 現在のディレクトリで最新の会話を続行する       | `claude -c`                         |
-| `claude -r`         | 前の会話を再開する                  | `claude -r`                         |
+| コマンド | 機能 | 例 |
+| - | - | - |
+| `claude` | インタラクティブモードを開始する | `claude` |
+| `claude "task"` | 初期プロンプト付きでインタラクティブモードを開始する | `claude "fix the build error"` |
+| `claude -p "query"` | 1 回限りのクエリを実行してから終了する | `claude -p "explain this function"` |
+| `claude -c` | 現在のディレクトリで最新の会話を続行する | `claude -c` |
+| `claude -r` | 前の会話を再開する | `claude -r` |
 
 **セッションコマンド**
 
-| コマンド                   | 機能                | 例        |
-| ---------------------- | ----------------- | -------- |
-| `/clear`               | 会話履歴をクリアする        | `/clear` |
-| `/help`                | 利用可能なコマンドを表示する    | `/help`  |
-| `/exit` または Ctrl+D 2 回 | Claude Code を終了する | `/exit`  |
+| コマンド | 機能 | 例 |
+| - | - | - |
+| `/clear` | 会話履歴をクリアする | `/clear` |
+| `/help` | 利用可能なコマンドを表示する | `/help` |
+| `/exit` または Ctrl+D 2 回 | Claude Code を終了する | `/exit` |
 
 シェルコマンドの完全なリストについては [CLI リファレンス](/docs/ja/cli-reference)を、セッションコマンドの完全なリストについては [コマンドリファレンス](/docs/ja/commands)を参照してください。
 

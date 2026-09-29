@@ -190,11 +190,11 @@ Dev Container Feature は常に最新の Claude Code リリースをインスト
 
 リファレンス設定は 3 つのファイルで構成されています。機能を通じて独自の開発コンテナに Claude Code を追加する場合、これらは必須ではありませんが、ピースを組み合わせる 1 つの方法を示しています。
 
-| ファイル                                                                                                       | 目的                                                 |
-| ---------------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| ファイル | 目的 |
+| - | - |
 | [`devcontainer.json`](https://github.com/anthropics/claude-code/blob/main/.devcontainer/devcontainer.json) | ボリュームマウント、`runArgs` 機能、VS Code 拡張機能、`containerEnv` |
-| [`Dockerfile`](https://github.com/anthropics/claude-code/blob/main/.devcontainer/Dockerfile)               | ベースイメージ、開発ツール、Claude Code インストール                   |
-| [`init-firewall.sh`](https://github.com/anthropics/claude-code/blob/main/.devcontainer/init-firewall.sh)   | 許可されたドメイン以外のすべてのアウトバウンドネットワークトラフィックをブロック           |
+| [`Dockerfile`](https://github.com/anthropics/claude-code/blob/main/.devcontainer/Dockerfile) | ベースイメージ、開発ツール、Claude Code インストール |
+| [`init-firewall.sh`](https://github.com/anthropics/claude-code/blob/main/.devcontainer/init-firewall.sh) | 許可されたドメイン以外のすべてのアウトバウンドネットワークトラフィックをブロック |
 
 <h2 id="next-steps">
   次のステップ

@@ -28,18 +28,18 @@ claude self-hosted-runner --environment-secret-file /etc/claude/environment-secr
 
 ランナーはラッパーの環境に以下を設定します。
 
-| 変数                                  | 説明                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| :---------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `CLAUDE_CODE_SESSION_ACCESS_TOKEN`  | セッション JWT。プレフィックス `sk-ant-cc-` が付きます。その `act` クレームはセッション作成者を識別し、作成サーフェスが記録した場合、作成者のメールとアップストリーム ID プロバイダーサブジェクトを含みます。値はスポーン時のトークンです。更新はこどもの stdin を介して到着するため、ラッパーは初期値のみを見ます。[セッション ID を検証する](/docs/ja/self-hosted-environments-identity) を参照してください。                                                                                                                                                                               |
-| `CCR_SESSION_ACCOUNT_EMAIL`         | セッション作成者のメール。ランナーによってトークンの `act.email` クレームから署名検証なしで事前抽出されます。ラベリングなどに適しています。メールが認証情報の発行をゲートする場合、トークンを検証し、代わりにクレームから読み取ります。[セッション作成者にスコープされた認証情報をプロビジョニングする](#provision-credentials-scoped-to-the-session-creator) を参照してください。トークンが作成者メールを含まない場合は設定されません。個人識別情報として扱います。                                                                                                                                                        |
-| `CLAUDE_RUNNER_CLIENT_PLATFORM`     | セッションを作成したクライアントサーフェス（`web_claude_ai`、`desktop_app`、`ios`、`claude_code_cli`、`scheduled_trigger` など）。Anthropic はセッション作成時に値を 1 回記録するため、ラッパーとすべてのライフサイクルフックは同じ値を見ます。採用分析とラベリングにのみ使用し、認可シグナルとしては使用しないでください。セッションに記録または認識されたサーフェスがない場合は設定されないため、`set -u` の下で `${CLAUDE_RUNNER_CLIENT_PLATFORM:-}` として参照してください。Claude Code v2.1.229 以降が必要です。                                                                                       |
-| `CLAUDE_RUNNER_CLAUDE_BIN`          | ランナー自体の Claude Code バイナリへの絶対パス。`exec "$CLAUDE_RUNNER_CLAUDE_BIN" "$@"` でラッパーを終了して、インストールパスをハードコードせずにピン留めされたバイナリに制御を渡します。                                                                                                                                                                                                                                                                                                     |
-| `CLAUDE_CODE_REMOTE_SESSION_ID`     | タグ付き `cse_...` 形式のセッション ID。これは [ライフサイクルフック](#lifecycle-hooks) が `session_...` 形式の `CLAUDE_RUNNER_SESSION_ID` として見るのと同じセッションです。UUID 変数は両方で一致し、`cse_` プレフィックスを `session_` に置き換えるとセッション URL に表示される ID が得られます。                                                                                                                                                                                                                   |
-| `CLAUDE_CODE_REMOTE_SESSION_UUID`   | 正規 UUID 形式の同じセッション ID。UUID をキーとするシステム用です。                                                                                                                                                                                                                                                                                                                                                                                    |
-| `CLAUDE_SESSION_INGRESS_TOKEN_FILE` | 現在のセッション JWT を保持する、セッションごとのファイルへの絶対パス。トークン更新全体で最新に保たれます。シェルサブプロセスは、ユーザーがセッションに追加した添付ファイルをダウンロードするときに、その `Authorization` ヘッダーに対して読み取ります。`exec` は変数を自動的に保持します。子の環境を再構築するラッパーは変数を引き継ぐ必要があります。そうしないと、添付ファイルのダウンロードが静かに停止します。                                                                                                                                                                                                     |
-| `CLAUDE_CONFIG_DIR`                 | セッションごとの Claude 設定ディレクトリ。ランナーが起動時にキャプチャするランナーホストの設定のスナップショットからセッション開始時に書き込まれます。[権限とツール承認](#permissions-and-tool-approval) を参照してください。このディレクトリへの書き込みはこのセッションに分離されます。ディレクトリはセッション終了後、ランナーを [`--remove-session-state`](/docs/ja/self-hosted-environments-reference#runner-cli-flags) で起動しない限り `<base-dir>/_sessions/` の下に留まります。[事前ウォーミングされたチェックアウトを再利用する](/docs/ja/self-hosted-environments-deploy#reuse-a-pre-warmed-checkout) を参照してください。 |
-| `ANTHROPIC_BASE_URL`                | こどもが使用する API ベース URL。コントロールプレーンによってセッションごとに配信され、通常は `https://api.anthropic.com` です。オーバーライドしないでください。セッションの推論認証情報は Anthropic が発行した OAuth トークンであり、他のプロバイダーは受け入れないため、セルフホストされた環境での推論は他の場所にルーティングできません。                                                                                                                                                                                                                           |
-| `CLAUDE_CODE_OAUTH_TOKEN`           | こどもが モデル推論に使用する短期 OAuth アクセストークン。モデル推論とファイルアップロードのみにスコープされ、約 30 分の有効期限があります。ランナーは有効期限前に再発行し、こどもの stdin を介して更新を配信するため、[stdin を接続したままにしない](#keep-stdin-and-file-descriptor-3-attached) ラッパーは初期値のみを見ます。組織の IP 許可リストに依存してこのトークンの使用を制限しないでください。約 30 分間リークした場合に使用可能なままのベアラー認証情報として扱い、ログに記録したり、ディスクに書き込んだり、セッションコンテナの外に転送したりしないでください。                                                                                               |
+| 変数 | 説明 |
+| :- | :- |
+| `CLAUDE_CODE_SESSION_ACCESS_TOKEN` | セッション JWT。プレフィックス `sk-ant-cc-` が付きます。その `act` クレームはセッション作成者を識別し、作成サーフェスが記録した場合、作成者のメールとアップストリーム ID プロバイダーサブジェクトを含みます。値はスポーン時のトークンです。更新はこどもの stdin を介して到着するため、ラッパーは初期値のみを見ます。[セッション ID を検証する](/docs/ja/self-hosted-environments-identity) を参照してください。 |
+| `CCR_SESSION_ACCOUNT_EMAIL` | セッション作成者のメール。ランナーによってトークンの `act.email` クレームから署名検証なしで事前抽出されます。ラベリングなどに適しています。メールが認証情報の発行をゲートする場合、トークンを検証し、代わりにクレームから読み取ります。[セッション作成者にスコープされた認証情報をプロビジョニングする](#provision-credentials-scoped-to-the-session-creator) を参照してください。トークンが作成者メールを含まない場合は設定されません。個人識別情報として扱います。 |
+| `CLAUDE_RUNNER_CLIENT_PLATFORM` | セッションを作成したクライアントサーフェス（`web_claude_ai`、`desktop_app`、`ios`、`claude_code_cli`、`scheduled_trigger` など）。Anthropic はセッション作成時に値を 1 回記録するため、ラッパーとすべてのライフサイクルフックは同じ値を見ます。採用分析とラベリングにのみ使用し、認可シグナルとしては使用しないでください。セッションに記録または認識されたサーフェスがない場合は設定されないため、`set -u` の下で `${CLAUDE_RUNNER_CLIENT_PLATFORM:-}` として参照してください。Claude Code v2.1.229 以降が必要です。 |
+| `CLAUDE_RUNNER_CLAUDE_BIN` | ランナー自体の Claude Code バイナリへの絶対パス。`exec "$CLAUDE_RUNNER_CLAUDE_BIN" "$@"` でラッパーを終了して、インストールパスをハードコードせずにピン留めされたバイナリに制御を渡します。 |
+| `CLAUDE_CODE_REMOTE_SESSION_ID` | タグ付き `cse_...` 形式のセッション ID。これは [ライフサイクルフック](#lifecycle-hooks) が `session_...` 形式の `CLAUDE_RUNNER_SESSION_ID` として見るのと同じセッションです。UUID 変数は両方で一致し、`cse_` プレフィックスを `session_` に置き換えるとセッション URL に表示される ID が得られます。 |
+| `CLAUDE_CODE_REMOTE_SESSION_UUID` | 正規 UUID 形式の同じセッション ID。UUID をキーとするシステム用です。 |
+| `CLAUDE_SESSION_INGRESS_TOKEN_FILE` | 現在のセッション JWT を保持する、セッションごとのファイルへの絶対パス。トークン更新全体で最新に保たれます。シェルサブプロセスは、ユーザーがセッションに追加した添付ファイルをダウンロードするときに、その `Authorization` ヘッダーに対して読み取ります。`exec` は変数を自動的に保持します。子の環境を再構築するラッパーは変数を引き継ぐ必要があります。そうしないと、添付ファイルのダウンロードが静かに停止します。 |
+| `CLAUDE_CONFIG_DIR` | セッションごとの Claude 設定ディレクトリ。ランナーが起動時にキャプチャするランナーホストの設定のスナップショットからセッション開始時に書き込まれます。[権限とツール承認](#permissions-and-tool-approval) を参照してください。このディレクトリへの書き込みはこのセッションに分離されます。ディレクトリはセッション終了後、ランナーを [`--remove-session-state`](/docs/ja/self-hosted-environments-reference#runner-cli-flags) で起動しない限り `<base-dir>/_sessions/` の下に留まります。[事前ウォーミングされたチェックアウトを再利用する](/docs/ja/self-hosted-environments-deploy#reuse-a-pre-warmed-checkout) を参照してください。 |
+| `ANTHROPIC_BASE_URL` | こどもが使用する API ベース URL。コントロールプレーンによってセッションごとに配信され、通常は `https://api.anthropic.com` です。オーバーライドしないでください。セッションの推論認証情報は Anthropic が発行した OAuth トークンであり、他のプロバイダーは受け入れないため、セルフホストされた環境での推論は他の場所にルーティングできません。 |
+| `CLAUDE_CODE_OAUTH_TOKEN` | こどもが モデル推論に使用する短期 OAuth アクセストークン。モデル推論とファイルアップロードのみにスコープされ、約 30 分の有効期限があります。ランナーは有効期限前に再発行し、こどもの stdin を介して更新を配信するため、[stdin を接続したままにしない](#keep-stdin-and-file-descriptor-3-attached) ラッパーは初期値のみを見ます。組織の IP 許可リストに依存してこのトークンの使用を制限しないでください。約 30 分間リークした場合に使用可能なままのベアラー認証情報として扱い、ログに記録したり、ディスクに書き込んだり、セッションコンテナの外に転送したりしないでください。 |
 
 ラッパーはこどもの管理環境の残りの部分も継承します。これには、サーバーが提供する環境変数が含まれます。`exec` はすべてを自動的に伝播します。ラッパーが別の方法でこどもをスポーンする場合、完全な環境を転送します。
 
@@ -97,16 +97,16 @@ exec "$CLAUDE_RUNNER_CLAUDE_BIN" "$@"
 
 リポジトリごとに 1 回実行され、ランナーの組み込みクローンとフェッチの代わりになります。フックを使用して、読み取り専用ミラーからクローンしたり、アーカイブからワーキングツリーをシードしたり、セッションごとの git 認証を適用したりします。ランナーは以下を設定します。
 
-| 変数                                 | 説明                                                                                    |
-| :--------------------------------- | :------------------------------------------------------------------------------------ |
-| `CLAUDE_RUNNER_REPO_URL`           | クローンするリポジトリ URL。`--git-host-rewrite` と `--git-ssh-rewrite` が適用された後                    |
-| `CLAUDE_RUNNER_REPO_REF`           | チェックアウトするリビジョン。ブランチ、タグ、またはコミット SHA。セッションがリクエストしたとおり。空の場合はリポジトリのデフォルトブランチ              |
-| `CLAUDE_RUNNER_CHECKOUT_PATH`      | ワーキングツリーを配置する必要がある絶対パス                                                                |
-| `CLAUDE_RUNNER_SESSION_ID`         | ログと相関のための `session_...` 形式のセッション ID                                                   |
-| `CLAUDE_RUNNER_SESSION_UUID`       | 正規 UUID 形式の同じセッション ID                                                                 |
-| `CLAUDE_RUNNER_API_BASE_URL`       | セッションスコープの呼び出し用の Anthropic API ベース URL                                                |
-| `CLAUDE_RUNNER_CLIENT_PLATFORM`    | セッションを作成したクライアント表面。`web_claude_ai`、`desktop_app`、`ios` など。セッションに記録または認識された表面がない場合は未設定 |
-| `CLAUDE_CODE_SESSION_ACCESS_TOKEN` | セッションスコープの API 呼び出し用のセッションアクセストークン                                                    |
+| 変数 | 説明 |
+| :- | :- |
+| `CLAUDE_RUNNER_REPO_URL` | クローンするリポジトリ URL。`--git-host-rewrite` と `--git-ssh-rewrite` が適用された後 |
+| `CLAUDE_RUNNER_REPO_REF` | チェックアウトするリビジョン。ブランチ、タグ、またはコミット SHA。セッションがリクエストしたとおり。空の場合はリポジトリのデフォルトブランチ |
+| `CLAUDE_RUNNER_CHECKOUT_PATH` | ワーキングツリーを配置する必要がある絶対パス |
+| `CLAUDE_RUNNER_SESSION_ID` | ログと相関のための `session_...` 形式のセッション ID |
+| `CLAUDE_RUNNER_SESSION_UUID` | 正規 UUID 形式の同じセッション ID |
+| `CLAUDE_RUNNER_API_BASE_URL` | セッションスコープの呼び出し用の Anthropic API ベース URL |
+| `CLAUDE_RUNNER_CLIENT_PLATFORM` | セッションを作成したクライアント表面。`web_claude_ai`、`desktop_app`、`ios` など。セッションに記録または認識された表面がない場合は未設定 |
+| `CLAUDE_CODE_SESSION_ACCESS_TOKEN` | セッションスコープの API 呼び出し用のセッションアクセストークン |
 
 スクリプトは `CLAUDE_RUNNER_CHECKOUT_PATH` にワーキングツリーを残し、リクエストされたリビジョンでチェックアウトする必要があります。デタッチド HEAD は問題ありません。ランナーはその上にセッションのワーキングブランチを作成します。ランナーはその後、パスに `.git` が含まれていることを確認します。フックが Perforce やアンパックされたタールボールなどの非 git ソースを具体化する場合は、ランナーの環境で `CLAUDE_RUNNER_SKIP_GIT_VERIFY=1` を設定して、そのチェックをスキップしてください。ワーキングブランチの作成と結果のプッシュなどの git ベースのフローには git チェックアウトが必要なため、非 git ツリーから結果をエクスポートするには [`post-session` フック](#post-session)を使用してください。
 
@@ -129,16 +129,16 @@ v2.1.228 より前は、ランナーはどのリポジトリでもフック失�
 
 フックは子プロセスがスポーンされたセッション終了のたびに発火します。原因は何でもかまいません。以下の `CLAUDE_RUNNER_EXIT_REASON` 値がケースを列挙しています。ランナーが VM プリエンプションや停電などで突然終了する場合は発火できません。突然の終了に対する保証が必要な場合は、Claude Code `PostToolUse` フックを使用してセッション内から定期的にスナップショットを取得してください。ランナーは以下を設定します。
 
-| 変数                                 | 説明                                                                                                               |
-| :--------------------------------- | :--------------------------------------------------------------------------------------------------------------- |
-| `CLAUDE_RUNNER_SESSION_ID`         | `session_...` 形式のセッション ID                                                                                        |
-| `CLAUDE_RUNNER_SESSION_UUID`       | 正規 UUID 形式の同じセッション ID                                                                                            |
-| `CLAUDE_RUNNER_EXIT_REASON`        | セッションがどのように終了したか。テーブル下の値を参照                                                                                      |
-| `CLAUDE_RUNNER_WORKSPACE_PATHS`    | セッションのワーキングツリーのコロン区切り絶対パス。ゼロリポジトリセッションの場合は空                                                                      |
-| `CLAUDE_RUNNER_DEBUG_LOG_PATH`     | セッションのデバッグログへのパス。フック実行中もディスク上に存在                                                                                 |
-| `CLAUDE_RUNNER_API_BASE_URL`       | セッションスコープの呼び出し用の Anthropic API ベース URL                                                                           |
-| `CLAUDE_RUNNER_CLIENT_PLATFORM`    | セッションを作成したクライアント表面。`web_claude_ai`、`desktop_app`、`ios` など。セッションに記録または認識された表面がない場合は未設定。Claude Code v2.1.229 以降が必要 |
-| `CLAUDE_CODE_SESSION_ACCESS_TOKEN` | セッションスコープの API 呼び出し用のセッションアクセストークン                                                                               |
+| 変数 | 説明 |
+| :- | :- |
+| `CLAUDE_RUNNER_SESSION_ID` | `session_...` 形式のセッション ID |
+| `CLAUDE_RUNNER_SESSION_UUID` | 正規 UUID 形式の同じセッション ID |
+| `CLAUDE_RUNNER_EXIT_REASON` | セッションがどのように終了したか。テーブル下の値を参照 |
+| `CLAUDE_RUNNER_WORKSPACE_PATHS` | セッションのワーキングツリーのコロン区切り絶対パス。ゼロリポジトリセッションの場合は空 |
+| `CLAUDE_RUNNER_DEBUG_LOG_PATH` | セッションのデバッグログへのパス。フック実行中もディスク上に存在 |
+| `CLAUDE_RUNNER_API_BASE_URL` | セッションスコープの呼び出し用の Anthropic API ベース URL |
+| `CLAUDE_RUNNER_CLIENT_PLATFORM` | セッションを作成したクライアント表面。`web_claude_ai`、`desktop_app`、`ios` など。セッションに記録または認識された表面がない場合は未設定。Claude Code v2.1.229 以降が必要 |
+| `CLAUDE_CODE_SESSION_ACCESS_TOKEN` | セッションスコープの API 呼び出し用のセッションアクセストークン |
 
 `CLAUDE_RUNNER_EXIT_REASON` は 4 つの値のいずれかを取ります。
 
@@ -219,22 +219,22 @@ claude self-hosted-runner orchestrator \
 
 オーケストレーターは、スポーン要求ごとに 1 回 `${hooks-dir}/spawn-runner` を実行します。フックは非同期でワークを送信する必要があり、ランナーのブートを待たずに、`--hook-timeout`（デフォルトは 60 秒）以内に戻る必要があります。フックは以下を受け取ります。
 
-| 変数                                    | 説明                                                                                                                                                                                                                      |
-| :------------------------------------ | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `CLAUDE_RUNNER_WORK_ORDER_FILE`       | 新しいランナーが登録する署名済みワークオーダー JWT を含む一時ファイルへのパス。フック終了後に削除されます。ファイルの内容をログに記録しないでください。                                                                                                                                          |
-| `CLAUDE_RUNNER_ORDER_ID`              | 不透明なべき等性キー。スポーン要求ごとに一意で、Kubernetes リソース名に対して安全です。プロビジョナーの重複排除キーとして使用してください。                                                                                                                                             |
-| `CLAUDE_RUNNER_SESSION_ID`            | この要求が対象とするセッション。[`--min-idle`](/docs/ja/self-hosted-environments-reference#orchestrator-cli-flags) が設定されている場合、事前ウォーミング要求（特定のセッションの前にスタンバイランナーをブート）では空です。変数が設定されていると仮定しないでください。                                               |
-| `CLAUDE_RUNNER_SESSION_UUID`          | 正規 UUID 形式の同じセッション ID。事前ウォーミング要求では空です。                                                                                                                                                                                  |
-| `CLAUDE_RUNNER_ATTEMPT`               | このセッションが持つスポーン要求の数。事前ウォーミング要求では 0 です。                                                                                                                                                                                   |
-| `CLAUDE_RUNNER_ORDER_SERVER_TIME`     | ポーリング応答の HTTP `Date` ヘッダーからのサーバー時刻。フックがワークオーダー JWT の `exp` を検証する場合、ローカルクロックの代わりにこの値と比較して、スキューを許容してください。ゲートウェイがヘッダーを省略した場合は空です。                                                                                          |
-| `CLAUDE_RUNNER_POOL_ID`               | 新しいランナーが参加する環境の ID。`ccpool_...` 形式です。                                                                                                                                                                                   |
-| `CLAUDE_RUNNER_ACCOUNT_ID`            | セッションをエンキューしたアカウントのタグ付き ID。アカウントごとのルーティング、クォータ、またはチャージバック用です。利用できない場合は空で、Claude Tag チャネルセッションでは常に空です。どのアカウントもこれらのセッションをエンキューしません。                                                                                       |
-| `CLAUDE_RUNNER_ACCOUNT_EMAIL`         | セッションをエンキューしたアカウントのメール。利用できない場合は空です。メールを個人識別情報として扱い、ログに記録しないでください。                                                                                                                                                      |
-| `CLAUDE_RUNNER_PRIMARY_REPO_URL`      | セッションの最初の git ソースの URL。そのリポジトリが事前ウォーミングされたランナーへのルーティング用です。セッションに git ソースがない場合は空です。                                                                                                                                      |
-| `CLAUDE_RUNNER_PRIMARY_REPO_REVISION` | セッションの最初の git ソースのリビジョン。ブランチ、SHA、またはタグです。指定されていない場合は空です。                                                                                                                                                                |
-| `CLAUDE_RUNNER_REPO_SOURCES`          | セッションのすべての git ソースの `{url, revision}` の JSON 配列。セカンダリリポジトリでルーティングするフック用です。ソースがない場合は空です。                                                                                                                                 |
-| `CLAUDE_RUNNER_CORRELATION_ID`        | セッション作成時に提供された相関 ID。フックがこのワークオーダーをセッションを作成した要求にマップできるようにエコーバックされます。セッションに相関 ID がない場合は空です。                                                                                                                               |
-| `CLAUDE_RUNNER_CLIENT_PLATFORM`       | セッションを作成したクライアント表面。`web_claude_ai`、`desktop_app`、`ios`、`scheduled_trigger` など。採用分析用です。セッションに記録または認識された表面がない場合は未設定で、事前ウォーミング要求の場合も未設定です。`[ -n "${CLAUDE_RUNNER_CLIENT_PLATFORM:-}" ]` で確認してください。これは `set -u` の下で安全なままです。 |
+| 変数 | 説明 |
+| :- | :- |
+| `CLAUDE_RUNNER_WORK_ORDER_FILE` | 新しいランナーが登録する署名済みワークオーダー JWT を含む一時ファイルへのパス。フック終了後に削除されます。ファイルの内容をログに記録しないでください。 |
+| `CLAUDE_RUNNER_ORDER_ID` | 不透明なべき等性キー。スポーン要求ごとに一意で、Kubernetes リソース名に対して安全です。プロビジョナーの重複排除キーとして使用してください。 |
+| `CLAUDE_RUNNER_SESSION_ID` | この要求が対象とするセッション。[`--min-idle`](/docs/ja/self-hosted-environments-reference#orchestrator-cli-flags) が設定されている場合、事前ウォーミング要求（特定のセッションの前にスタンバイランナーをブート）では空です。変数が設定されていると仮定しないでください。 |
+| `CLAUDE_RUNNER_SESSION_UUID` | 正規 UUID 形式の同じセッション ID。事前ウォーミング要求では空です。 |
+| `CLAUDE_RUNNER_ATTEMPT` | このセッションが持つスポーン要求の数。事前ウォーミング要求では 0 です。 |
+| `CLAUDE_RUNNER_ORDER_SERVER_TIME` | ポーリング応答の HTTP `Date` ヘッダーからのサーバー時刻。フックがワークオーダー JWT の `exp` を検証する場合、ローカルクロックの代わりにこの値と比較して、スキューを許容してください。ゲートウェイがヘッダーを省略した場合は空です。 |
+| `CLAUDE_RUNNER_POOL_ID` | 新しいランナーが参加する環境の ID。`ccpool_...` 形式です。 |
+| `CLAUDE_RUNNER_ACCOUNT_ID` | セッションをエンキューしたアカウントのタグ付き ID。アカウントごとのルーティング、クォータ、またはチャージバック用です。利用できない場合は空で、Claude Tag チャネルセッションでは常に空です。どのアカウントもこれらのセッションをエンキューしません。 |
+| `CLAUDE_RUNNER_ACCOUNT_EMAIL` | セッションをエンキューしたアカウントのメール。利用できない場合は空です。メールを個人識別情報として扱い、ログに記録しないでください。 |
+| `CLAUDE_RUNNER_PRIMARY_REPO_URL` | セッションの最初の git ソースの URL。そのリポジトリが事前ウォーミングされたランナーへのルーティング用です。セッションに git ソースがない場合は空です。 |
+| `CLAUDE_RUNNER_PRIMARY_REPO_REVISION` | セッションの最初の git ソースのリビジョン。ブランチ、SHA、またはタグです。指定されていない場合は空です。 |
+| `CLAUDE_RUNNER_REPO_SOURCES` | セッションのすべての git ソースの `{url, revision}` の JSON 配列。セカンダリリポジトリでルーティングするフック用です。ソースがない場合は空です。 |
+| `CLAUDE_RUNNER_CORRELATION_ID` | セッション作成時に提供された相関 ID。フックがこのワークオーダーをセッションを作成した要求にマップできるようにエコーバックされます。セッションに相関 ID がない場合は空です。 |
+| `CLAUDE_RUNNER_CLIENT_PLATFORM` | セッションを作成したクライアント表面。`web_claude_ai`、`desktop_app`、`ios`、`scheduled_trigger` など。採用分析用です。セッションに記録または認識された表面がない場合は未設定で、事前ウォーミング要求の場合も未設定です。`[ -n "${CLAUDE_RUNNER_CLIENT_PLATFORM:-}" ]` で確認してください。これは `set -u` の下で安全なままです。 |
 
 スポーンされたランナーは、環境シークレットの代わりにワークオーダーで登録します。
 

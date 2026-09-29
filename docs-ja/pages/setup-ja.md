@@ -37,11 +37,9 @@ Claude Code は以下のプラットフォームと構成で実行されます�
 
 <Tip>
   グラフィカルインターフェースをお好みですか？[Desktop app](/docs/ja/desktop-quickstart)を使用すると、ターミナルなしで Claude Code を使用できます。[macOS](https://claude.ai/api/desktop/darwin/universal/dmg/latest/redirect?utm_source=claude_code\&utm_medium=docs)、[Windows](https://claude.com/download?utm_source=claude_code\&utm_medium=docs)、または[Linux](/docs/ja/desktop-linux)でダウンロードしてください。
-
-  ターミナルは初めてですか？[ターミナルガイド](/docs/ja/terminal-guide)で段階的な手順を参照してください。
 </Tip>
 
-Claude Code をインストールするには、以下のいずれかの方法を使用してください。
+Claude Code をインストールするには、ターミナルを開いてシステムのコマンドを実行してください。ターミナルを使用したことがない場合は、[ターミナルガイド](/docs/ja/terminal-guide)でターミナルを開いてコマンドを貼り付ける方法を確認できます。
 
 <Tabs>
   <Tab title="ネイティブインストール（推奨）">
@@ -62,6 +60,8 @@ Claude Code をインストールするには、以下のいずれかの方法�
     ```batch theme={null}
     curl -fsSL https://claude.ai/install.cmd -o install.cmd && install.cmd && del install.cmd
     ```
+
+    インストーラーが完了したら、新しいターミナルウィンドウを開いて `claude --version` を実行してください。インストールが正常に完了すると、バージョン番号が表示されます。シェルが `claude` が見つからない、または認識されていないと表示される場合は、インストールディレクトリがまだ PATH に含まれていません。[PATH を修正する](/docs/ja/troubleshoot-install#command-not-found-claude-after-installation)を参照してください。
 
     `The token '&&' is not a valid statement separator` というエラーが表示される場合は、CMD ではなく PowerShell を使用しています。`'irm' is not recognized as an internal or external command` というエラーが表示される場合は、PowerShell ではなく CMD を使用しています。PowerShell を使用している場合、プロンプトに `PS C:\` と表示され、CMD を使用している場合は `PS` なしで `C:\` と表示されます。
 
@@ -115,11 +115,11 @@ Claude Code はターミナルで対話的なセッションを開きます。
 
 Claude Code をネイティブに Windows で実行することも、WSL 内で実行することもできます。プロジェクトの場所と必要な機能に基づいて選択してください。
 
-| オプション         | 必須                                                            | [サンドボックス](/docs/ja/sandboxing) | 使用時期                              |
-| ------------- | ------------------------------------------------------------- | ------------------------- | --------------------------------- |
-| ネイティブ Windows | なし；[Git for Windows](https://git-scm.com/downloads/win)はオプション | サポートされていません               | Windows ネイティブプロジェクトとツール           |
-| WSL 2         | WSL 2 有効                                                      | サポートされています                | Linux ツールチェーンまたはサンドボックス化されたコマンド実行 |
-| WSL 1         | WSL 1 有効                                                      | サポートされていません               | WSL 2 が利用できない場合                   |
+| オプション | 必須 | [サンドボックス](/docs/ja/sandboxing) | 使用時期 |
+| - | - | - | - |
+| ネイティブ Windows | なし；[Git for Windows](https://git-scm.com/downloads/win)はオプション | サポートされていません | Windows ネイティブプロジェクトとツール |
+| WSL 2 | WSL 2 有効 | サポートされています | Linux ツールチェーンまたはサンドボックス化されたコマンド実行 |
+| WSL 1 | WSL 1 有効 | サポートされていません | WSL 2 が利用できない場合 |
 
 **オプション 1: ネイティブ Windows**
 

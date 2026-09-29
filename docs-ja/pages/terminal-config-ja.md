@@ -26,12 +26,12 @@ Enter キーを押すとメッセージが送信されます。送信せずに�
 
 ほとんどのターミナルでは Shift+Enter を押すこともできますが、サポートはターミナルエミュレータによって異なります。
 
-| ターミナル                                                             | 改行用の Shift+Enter                         |
-| :---------------------------------------------------------------- | :--------------------------------------- |
-| Ghostty、Kitty、iTerm2、WezTerm、Warp、Apple Terminal、Windows Terminal | セットアップなしで機能                              |
-| kitty キーボードプロトコルをサポートする他のターミナル（foot や Alacritty 0.16 以降など）        | セットアップなしで機能。Claude Code v2.1.269 以降が必要です |
-| VS Code、Cursor、Devin Desktop、Alacritty 0.16 より前のバージョン、Zed         | 1 回 `/terminal-setup` を実行                |
-| gnome-terminal、PyCharm や Android Studio などの JetBrains IDE         | 利用不可。Ctrl+J または `\` の後に Enter を使用        |
+| ターミナル | 改行用の Shift+Enter |
+| :- | :- |
+| Ghostty、Kitty、iTerm2、WezTerm、Warp、Apple Terminal、Windows Terminal | セットアップなしで機能 |
+| kitty キーボードプロトコルをサポートする他のターミナル（foot や Alacritty 0.16 以降など） | セットアップなしで機能。Claude Code v2.1.269 以降が必要です |
+| VS Code、Cursor、Devin Desktop、Alacritty 0.16 より前のバージョン、Zed | 1 回 `/terminal-setup` を実行 |
+| gnome-terminal、PyCharm や Android Studio などの JetBrains IDE | 利用不可。Ctrl+J または `\` の後に Enter を使用 |
 
 VS Code、Cursor、Devin Desktop、Alacritty 0.16 より前のバージョン、Zed の場合、`/terminal-setup` はターミナルの設定ファイルに Shift+Enter キーバインディングを書き込みます。初回実行時には `Installed VSCode terminal Shift+Enter key binding` などの確認メッセージが表示されます。既存のバインディングはそのまま保持されます。`VSCode terminal Shift+Enter key binding already configured` などのメッセージが表示される場合は、変更は加えられていません。`/terminal-setup` は tmux または screen の内部ではなく、ホストターミナル内で直接実行してください。ホストターミナルの設定に書き込む必要があるためです。
 
@@ -160,11 +160,11 @@ Backspace を押すたびにワード全体が削除される場合、ターミ�
 
 各カスタムテーマは `~/.claude/themes/` 内の JSON ファイルです。`.json` 拡張子を除いたファイル名がテーマのスラッグであり、テーマを選択すると `custom:<slug>` がテーマの設定として保存されます。ファイルには 3 つのオプションフィールドがあります。
 
-| フィールド       | タイプ    | 説明                                                                                                                 |
-| :---------- | :----- | :----------------------------------------------------------------------------------------------------------------- |
-| `name`      | string | `/theme` に表示されるラベル。デフォルトはファイル名スラッグ                                                                                 |
-| `base`      | string | テーマの開始元となる組み込みプリセット：`dark`、`light`、`dark-daltonized`、`light-daltonized`、`dark-ansi`、または `light-ansi`。デフォルトは `dark` |
-| `overrides` | object | カラートークン名をカラー値にマップします。ここにリストされていないトークンはベースプリセットにフォールスルーします                                                          |
+| フィールド | タイプ | 説明 |
+| :- | :- | :- |
+| `name` | string | `/theme` に表示されるラベル。デフォルトはファイル名スラッグ |
+| `base` | string | テーマの開始元となる組み込みプリセット：`dark`、`light`、`dark-daltonized`、`light-daltonized`、`dark-ansi`、または `light-ansi`。デフォルトは `dark` |
+| `overrides` | object | カラートークン名をカラー値にマップします。ここにリストされていないトークンはベースプリセットにフォールスルーします |
 
 カラー値は `#rrggbb`、`#rgb`、`rgb(r,g,b)`、`ansi256(n)`、または `ansi:<name>` を受け入れます。ここで `<name>` は `red` や `cyanBright` などの 16 個の標準 ANSI カラー名の 1 つです。不明なトークンと無効なカラー値は無視されるため、タイプミスはレンダリングを破壊することはできません。
 
@@ -209,16 +209,16 @@ Claude Code は `~/.claude/themes/` を監視し、ファイルが追加また�
 
   プライマリブランドアクセントと、インターフェース全体で使用されるフォアグラウンドテキストの色合いを制御します。
 
-  | トークン          | 制御対象                             |
-  | :------------ | :------------------------------- |
-  | `claude`      | プライマリブランドアクセント、スピナーとアシスタントラベルに使用 |
-  | `text`        | デフォルトのフォアグラウンドテキスト               |
-  | `inverseText` | ステータスバッジなどの色付き背景の上に描画されるテキスト     |
-  | `inactive`    | ヒント、タイムスタンプ、無効な項目などのセカンダリテキスト    |
-  | `subtle`      | 薄いボーダーと強調されていないセカンダリテキスト         |
-  | `suggestion`  | オートコンプリート候補とピッカーの選択ハイライト         |
-  | `permission`  | パーミッションプロンプトとピッカーを含むダイアログボーダー    |
-  | `remember`    | メモリと `CLAUDE.md` インジケーター         |
+  | トークン | 制御対象 |
+  | :- | :- |
+  | `claude` | プライマリブランドアクセント、スピナーとアシスタントラベルに使用 |
+  | `text` | デフォルトのフォアグラウンドテキスト |
+  | `inverseText` | ステータスバッジなどの色付き背景の上に描画されるテキスト |
+  | `inactive` | ヒント、タイムスタンプ、無効な項目などのセカンダリテキスト |
+  | `subtle` | 薄いボーダーと強調されていないセカンダリテキスト |
+  | `suggestion` | オートコンプリート候補とピッカーの選択ハイライト |
+  | `permission` | パーミッションプロンプトとピッカーを含むダイアログボーダー |
+  | `remember` | メモリと `CLAUDE.md` インジケーター |
 
   <h4 id="status-colors">
     ステータスカラー
@@ -226,12 +226,12 @@ Claude Code は `~/.claude/themes/` を監視し、ファイルが追加また�
 
   メッセージとインジケーター全体で成功、失敗、警告状態を通知します。
 
-  | トークン      | 制御対象                           |
-  | :-------- | :----------------------------- |
-  | `success` | 成功メッセージと合格チェック                 |
-  | `error`   | エラーメッセージと失敗                    |
+  | トークン | 制御対象 |
+  | :- | :- |
+  | `success` | 成功メッセージと合格チェック |
+  | `error` | エラーメッセージと失敗 |
   | `warning` | 警告、注意メッセージ、および auto モードインジケーター |
-  | `merged`  | マージされたプルリクエストステータス             |
+  | `merged` | マージされたプルリクエストステータス |
 
   <h4 id="input-box-and-mode-indicators">
     入力ボックスとモードインジケーター
@@ -239,15 +239,15 @@ Claude Code は `~/.claude/themes/` を監視し、ファイルが追加また�
 
   入力ボックスのボーダーカラーと、パーミッションモードまたはインジケーターがアクティブな間に表示されるアクセントを設定します。
 
-  | トークン           | 制御対象                                                                                                                              |
-  | :------------- | :-------------------------------------------------------------------------------------------------------------------------------- |
-  | `promptBorder` | 入力ボックスボーダー                                                                                                                        |
-  | `planMode`     | Plan モードアクセント、プランメッセージ、および Plan モードダイアログ                                                                                          |
-  | `autoAccept`   | Accept-edits モードアクセント                                                                                                             |
-  | `bashBorder`   | `!` シェルコマンドを入力するときの入力ボックスボーダー                                                                                                     |
-  | `ide`          | IDE 接続インジケーター                                                                                                                     |
-  | `fastMode`     | Fast モードインジケーター                                                                                                                   |
-  | `effortUltra`  | [ultracode](/docs/ja/model-config#adjust-effort-level) がオンの間、入力ボックスボーダーの `ultracode` タグ。このカラーのオーバーライドは Claude Code v2.1.239 以降で有効になります |
+  | トークン | 制御対象 |
+  | :- | :- |
+  | `promptBorder` | 入力ボックスボーダー |
+  | `planMode` | Plan モードアクセント、プランメッセージ、および Plan モードダイアログ |
+  | `autoAccept` | Accept-edits モードアクセント |
+  | `bashBorder` | `!` シェルコマンドを入力するときの入力ボックスボーダー |
+  | `ide` | IDE 接続インジケーター |
+  | `fastMode` | Fast モードインジケーター |
+  | `effortUltra` | [ultracode](/docs/ja/model-config#adjust-effort-level) がオンの間、入力ボックスボーダーの `ultracode` タグ。このカラーのオーバーライドは Claude Code v2.1.239 以降で有効になります |
 
   <h4 id="diff-rendering">
     Diff レンダリング
@@ -255,14 +255,14 @@ Claude Code は `~/.claude/themes/` を監視し、ファイルが追加また�
 
   ファイル編集とレビューで追加および削除されたコードを色付けします。
 
-  | トークン                | 制御対象                          |
-  | :------------------ | :---------------------------- |
-  | `diffAdded`         | 追加された行の背景                     |
-  | `diffRemoved`       | 削除された行の背景                     |
-  | `diffAddedDimmed`   | 編集を拒否した後に表示される薄い diff の追加行の背景 |
+  | トークン | 制御対象 |
+  | :- | :- |
+  | `diffAdded` | 追加された行の背景 |
+  | `diffRemoved` | 削除された行の背景 |
+  | `diffAddedDimmed` | 編集を拒否した後に表示される薄い diff の追加行の背景 |
   | `diffRemovedDimmed` | 編集を拒否した後に表示される薄い diff の削除行の背景 |
-  | `diffAddedWord`     | 追加された行内のワードレベルハイライト           |
-  | `diffRemovedWord`   | 削除された行内のワードレベルハイライト           |
+  | `diffAddedWord` | 追加された行内のワードレベルハイライト |
+  | `diffRemovedWord` | 削除された行内のワードレベルハイライト |
 
   <h4 id="fullscreen-mode">
     フルスクリーンモード
@@ -270,13 +270,13 @@ Claude Code は `~/.claude/themes/` を監視し、ファイルが追加また�
 
   Claude Code は、デフォルトとフルスクリーンレンダラーの両方で `userMessageBackground`、`bashMessageBackgroundColor`、および `memoryBackgroundColor` を描画します。[フルスクリーンレンダリングモード](/docs/ja/fullscreen)でのみ `userMessageBackgroundHover` と `selectionBg` を使用します。
 
-  | トークン                         | 制御対象                             |
-  | :--------------------------- | :------------------------------- |
-  | `userMessageBackground`      | トランスクリプト内のメッセージの背後の背景            |
-  | `userMessageBackgroundHover` | ホバーまたは展開されている間のメッセージの背後の背景       |
+  | トークン | 制御対象 |
+  | :- | :- |
+  | `userMessageBackground` | トランスクリプト内のメッセージの背後の背景 |
+  | `userMessageBackgroundHover` | ホバーまたは展開されている間のメッセージの背後の背景 |
   | `bashMessageBackgroundColor` | トランスクリプト内の `!` シェルコマンドエントリの背後の背景 |
-  | `memoryBackgroundColor`      | トランスクリプト内の `#` メモリエントリの背後の背景     |
-  | `selectionBg`                | マウスで選択されたテキストの背景                 |
+  | `memoryBackgroundColor` | トランスクリプト内の `#` メモリエントリの背後の背景 |
+  | `selectionBg` | マウスで選択されたテキストの背景 |
 
   <h4 id="usage-meter-and-speaker-labels">
     使用量メーターとスピーカーラベル
@@ -284,11 +284,11 @@ Claude Code は `~/.claude/themes/` を監視し、ファイルが追加また�
 
   `/usage` ビューに表示されるバーと、メッセージを Claude のメッセージと区別するラベルを調整します。
 
-  | トークン               | 制御対象                          |
-  | :----------------- | :---------------------------- |
-  | `rate_limit_fill`  | 使用量メーターの塗りつぶされた部分             |
-  | `rate_limit_empty` | 使用量メーターの塗りつぶされていない部分          |
-  | `briefLabelYou`    | メッセージの `You` ラベルのカラー          |
+  | トークン | 制御対象 |
+  | :- | :- |
+  | `rate_limit_fill` | 使用量メーターの塗りつぶされた部分 |
+  | `rate_limit_empty` | 使用量メーターの塗りつぶされていない部分 |
+  | `briefLabelYou` | メッセージの `You` ラベルのカラー |
   | `briefLabelClaude` | アシスタントメッセージの `Claude` ラベルのカラー |
 
   <h4 id="shimmer-variants-and-subagent-colors">
@@ -338,6 +338,12 @@ Claude Code は `~/.claude/themes/` を監視し、ファイルが追加また�
   }
   ```
 </CodeGroup>
+
+<h2 id="cap-response-width-in-wide-terminals">
+  幅広いターミナルでレスポンス幅を制限する
+</h2>
+
+幅広いターミナルでは、Claude のレスポンス内の各行のテキストがウィンドウの全幅に渡ります。代わりに設定した列数でテキストを折り返すには、設定で [`maxProseWidth`](/docs/ja/settings-reference#maxprosewidth) を設定してください。
 
 <h2 id="paste-large-content">
   大量のコンテンツを貼り付ける

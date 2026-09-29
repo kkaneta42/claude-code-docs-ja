@@ -16,14 +16,14 @@
 
 セッションは作業中に [ローカルトランスクリプトファイル](#export-and-locate-session-data)に継続的に保存されるため、終了後または `/clear` を実行した後に再開できます。これらのエントリポイントを使用します。
 
-| コマンド                                | 機能                                                                           |
-| :---------------------------------- | :--------------------------------------------------------------------------- |
-| `claude --continue`                 | 現在のディレクトリで最新のセッションを再開します                                                     |
-| `claude --resume`                   | [セッションピッカー](#use-the-session-picker)を開きます                                    |
-| `claude --resume <name>`            | 指定されたセッションを直接再開します                                                           |
+| コマンド | 機能 |
+| :- | :- |
+| `claude --continue` | 現在のディレクトリで最新のセッションを再開します |
+| `claude --resume` | [セッションピッカー](#use-the-session-picker)を開きます |
+| `claude --resume <name>` | 指定されたセッションを直接再開します |
 | `claude --resume <transcript-path>` | そのパスの `.jsonl` [トランスクリプトファイル](#where-transcripts-are-stored)に保存されている会話を再開します |
-| `claude --from-pr <number>`         | そのプルリクエストにリンクされたセッションでフィルタリングされたセッションピッカーを開きます                               |
-| `/resume`                           | アクティブなセッション内から別の会話に切り替えます                                                    |
+| `claude --from-pr <number>` | そのプルリクエストにリンクされたセッションでフィルタリングされたセッションピッカーを開きます |
+| `/resume` | アクティブなセッション内から別の会話に切り替えます |
 
 Claude Code は [`claude -p`](/docs/ja/headless)または [Agent SDK](/docs/ja/agent-sdk/overview)で作成されたセッションをセッションピッカーから除外し、`claude --continue` からも除外します。セッション ID を `claude --resume <session-id>` に渡すことで再開できます。`claude --continue` を使用する場合、Claude Code は [最初のプロンプトが `/loop` だったセッション](#where-the-session-picker-looks)もスキップします。[`claude -p --continue`](/docs/ja/headless#continue-conversations)を実行すると、Claude Code は `-p`、SDK、および `/loop` セッションを含めます。
 
@@ -43,6 +43,7 @@ Claude Code は [`claude -p`](/docs/ja/headless)または [Agent SDK](/docs/ja/a
 * 権限モード：`claude --continue`、`claude --resume <session-id>`、または `claude --resume <name>`（名前が 1 つのセッションと一致する場合）で `-p` なしでターミナルから再開する場合、Claude Code はセッションが存在していた権限モードを復元します。ただし、[再開時の権限モード](#permission-mode-on-resume)の場合は除きます。これはセッションピッカー、`/resume`、および `claude -p` で再開する場合もカバーします。`--permission-mode` または `--dangerously-skip-permissions` を渡して復元されたモードをオーバーライドします。
 * アクティブなゴール：セッションが終了したときにまだアクティブだった [ゴール](/docs/ja/goal#resume-with-an-active-goal)は引き継がれます。ターン数、タイマー、およびトークン支出ベースラインはリセットされます。
 * スケジュール済みタスク：[有効期限が切れていない](/docs/ja/scheduled-tasks#limitations)タスクが復元されます。バックグラウンド Bash およびモニタータスクは復元されません。
+* バックグラウンド作業：前のプロセスで終了した [バックグラウンドサブエージェント](/docs/ja/sub-agents#run-subagents-in-foreground-or-background)、バックグラウンド Bash コマンド、または [ワークフロー](/docs/ja/workflows)は、再開されたトランスクリプトに完了しなかったというメモとして表示されます。Claude Code はそれらのメモからターンを開始しません。Claude はそれらを次のプロンプトで読みます。
 
 元の起動からのすべての設定フラグが復元されるわけではありません。セッションが `--mcp-config`、`--settings`、`--plugin-dir`、`--fallback-model`、または `--add-dir` で追加されたディレクトリに依存していた場合、再開時に再度渡します。セッション中に `/add-dir` で追加されたディレクトリは復元されませんが、セッションピッカーはセッションを見つけるためにそれらを使用します。`settings.json` や `settings.local.json` などの標準設定ファイルは起動時に再度読み込まれるため、それらに存在する設定を再度渡す必要はありません。`--system-prompt` および `--append-system-prompt` については、[再開された会話のシステムプロンプトフラグ](/docs/ja/cli-reference#system-prompt-flags-in-resumed-conversations)を参照してください。
 
@@ -60,15 +61,15 @@ Claude Code は [`claude -p`](/docs/ja/headless)または [Agent SDK](/docs/ja/a
 
 非対話型および VS Code パスでプランモードを復元するには Claude Code v2.1.246 以降が必要です。各行は、セッションが終了した権限モード、ターミナル、非対話型、および VS Code パスのどれで再開するか、および Claude Code が再開されたセッションを開始する権限モードを示します。
 
-| セッションが終了した権限モード     | 再開方法                                       | 再開後の権限モード                                                                                                                                                                                                                                               |
-| :------------------ | :----------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `bypassPermissions` | ターミナル                                      | 新しいセッションが開始される権限モード。[権限をバイパス](/docs/ja/permission-modes#skip-all-checks-with-bypasspermissions-mode)するには、起動時に 1 つのフラグまたは [ユーザー、`--settings`、または管理設定](/docs/ja/settings-reference#permissions-defaultmode)の `permissions.defaultMode: "bypassPermissions"` で有効にします |
-| `plan`              | ターミナル                                      | 新しいセッションが開始される権限モード                                                                                                                                                                                                                                     |
-| `auto`              | ターミナル                                      | `auto`。[オートモード要件](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)をアカウントがまだ満たしている場合のみ                                                                                                                                                             |
-| Manual              | ターミナル                                      | [組み込みデフォルト](/docs/ja/permission-modes#which-mode-a-session-starts-in)から新しいセッションがオートモードで開始される場合は Manual。設定ファイルの `defaultMode` が [有効になる](/docs/ja/permission-modes#which-mode-a-session-starts-in)場合、Claude Code は再開されたセッションをそのモードで開始します                            |
-| `plan`              | 非対話型。[以下の条件](#resume-in-plan-mode-with-p)下 | プランモード                                                                                                                                                                                                                                                  |
-| Any mode            | 非対話型。その他の場合                                | 新しい `claude -p` 実行が開始される権限モード                                                                                                                                                                                                                           |
-| `plan`              | VS Code                                    | プランモード。[VS Code ページの例外](/docs/ja/vs-code#resume-past-conversations)付き                                                                                                                                                                                        |
+| セッションが終了した権限モード | 再開方法 | 再開後の権限モード |
+| :- | :- | :- |
+| `bypassPermissions` | ターミナル | 新しいセッションが開始される権限モード。[権限をバイパス](/docs/ja/permission-modes#skip-all-checks-with-bypasspermissions-mode)するには、起動時に 1 つのフラグまたは [ユーザー、`--settings`、または管理設定](/docs/ja/settings-reference#permissions-defaultmode)の `permissions.defaultMode: "bypassPermissions"` で有効にします |
+| `plan` | ターミナル | 新しいセッションが開始される権限モード |
+| `auto` | ターミナル | `auto`。[オートモード要件](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)をアカウントがまだ満たしている場合のみ |
+| Manual | ターミナル | [組み込みデフォルト](/docs/ja/permission-modes#which-mode-a-session-starts-in)から新しいセッションがオートモードで開始される場合は Manual。設定ファイルの `defaultMode` が [有効になる](/docs/ja/permission-modes#which-mode-a-session-starts-in)場合、Claude Code は再開されたセッションをそのモードで開始します |
+| `plan` | 非対話型。[以下の条件](#resume-in-plan-mode-with-p)下 | プランモード |
+| Any mode | 非対話型。その他の場合 | 新しい `claude -p` 実行が開始される権限モード |
+| `plan` | VS Code | プランモード。[VS Code ページの例外](/docs/ja/vs-code#resume-past-conversations)付き |
 
 <h5 id="resume-in-plan-mode-with-p">
   `-p` でプランモードで再開
@@ -76,7 +77,7 @@ Claude Code は [`claude -p`](/docs/ja/headless)または [Agent SDK](/docs/ja/a
 
 `claude -p --resume` または `claude -p --continue` 実行は、4 つの条件すべてが成立する場合にのみプランモードで再開されます。
 
-* [`--permission-prompt-tool`](/docs/ja/cli-reference#cli-flags)を渡すため、Claude Code は承認のためにプランを提示できます
+* [`--permission-prompt-tool`](/docs/ja/cli-reference#cli-flags)を渡し、[`--permission-prompts none`](/docs/ja/headless#turn-off-permission-prompts-in-unattended-runs)を渡さないため、Claude Code は承認のためにプランを提示できます
 * `--permission-mode` または `--dangerously-skip-permissions` を渡さない
 * `--fork-session` を渡さない
 * 実行が [チャネル](/docs/ja/channels)を通じて開始されていない
@@ -114,10 +115,10 @@ Claude Code はセッションをプロジェクトディレクトリごとに�
 
 名前で再開する場合は、現在のリポジトリとその worktree 全体で解決されます。どちらの形式も完全一致を探し、別の worktree に存在する場合でも直接再開します。
 
-| コマンド                     | 完全一致    | あいまいな名前                                         |
-| :----------------------- | :------ | :---------------------------------------------- |
-| `claude --resume <name>` | 直接再開します | セッションピッカーを開き、名前を検索用語として事前入力します                  |
-| `/resume <name>`         | 直接再開します | エラーを報告します。セッションピッカーを開くには、引数なしで `/resume` を実行します |
+| コマンド | 完全一致 | あいまいな名前 |
+| :- | :- | :- |
+| `claude --resume <name>` | 直接再開します | セッションピッカーを開き、名前を検索用語として事前入力します |
+| `/resume <name>` | 直接再開します | エラーを報告します。セッションピッカーを開くには、引数なしで `/resume` を実行します |
 
 <h2 id="name-your-sessions">
   セッションに名前を付ける
@@ -125,14 +126,14 @@ Claude Code はセッションをプロジェクトディレクトリごとに�
 
 セッションに説明的な名前を付けて、セッションピッカーで見つけやすく、名前で再開できるようにします。これは複数のタスクを並行して処理している場合に最も重要です。
 
-| 時期                         | 名前を設定する方法                                                                                                                                   |
-| :------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------ |
-| 起動時                        | `claude -n auth-refactor`                                                                                                                   |
-| セッション中                     | `/rename auth-refactor`。名前はプロンプトバーにも表示されます                                                                                                  |
-| セッションピッカーから                | セッションをハイライトして `Ctrl+R` を押します                                                                                                                |
-| プラン受け入れ時                   | [Plan Mode](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode)でプランを受け入れると、既に設定していない限り、プランに基づいて生成されたタイトルがセッションに付けられます              |
+| 時期 | 名前を設定する方法 |
+| :- | :- |
+| 起動時 | `claude -n auth-refactor` |
+| セッション中 | `/rename auth-refactor`。名前はプロンプトバーにも表示されます |
+| セッションピッカーから | セッションをハイライトして `Ctrl+R` を押します |
+| プラン受け入れ時 | [Plan Mode](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode)でプランを受け入れると、既に設定していない限り、プランに基づいて生成されたタイトルがセッションに付けられます |
 | claude.ai または Claude アプリから | [Remote Control セッション](/docs/ja/remote-control#connect-from-another-device)の名前を変更します。Claude Code は CLI でも同じ名前を適用します。Claude Code v2.1.221 以降が必要です |
-| デスクトップアプリから                | [デスクトップアプリ](/docs/ja/desktop#work-in-parallel-with-sessions)でセッションの名前を変更します                                                                      |
+| デスクトップアプリから | [デスクトップアプリ](/docs/ja/desktop#work-in-parallel-with-sessions)でセッションの名前を変更します |
 
 CLI ルートまたは claude.ai からセッションに名前を付けたら、`claude --resume <name>` または `/resume <name>` で再開できます。デスクトップアプリセッションはアプリで再開され、独自のセッション履歴が保持されます。worktree 全体での名前解決の動作については、[セッションを再開する](#resume-a-session)を参照してください。
 
@@ -161,18 +162,18 @@ Claude Code が重複の名前を変更しない場合が 3 つあり、リス�
 
 セッション内で `/resume` を実行するか、引数なしで `claude --resume` を実行して、インタラクティブセッションピッカーを開きます。これらのキーボードショートカットを使用して、ナビゲート、検索、リストを拡張します。
 
-| ショートカット                 | アクション                                                                                                                |
-| :---------------------- | :------------------------------------------------------------------------------------------------------------------- |
-| `↑` / `↓`               | セッション間をナビゲートします                                                                                                      |
-| `→` / `←`               | グループ化されたセッションを展開または折りたたみます                                                                                           |
-| `Enter`                 | ハイライトされたセッションを再開します                                                                                                  |
-| `Space`                 | セッションコンテンツをプレビューします。ターミナルが貼り付けとしてキャプチャしない場合は `Ctrl+V` も機能します                                                         |
-| `Ctrl+R`                | ハイライトされたセッションの名前を変更します                                                                                               |
+| ショートカット | アクション |
+| :- | :- |
+| `↑` / `↓` | セッション間をナビゲートします |
+| `→` / `←` | グループ化されたセッションを展開または折りたたみます |
+| `Enter` | ハイライトされたセッションを再開します |
+| `Space` | セッションコンテンツをプレビューします。ターミナルが貼り付けとしてキャプチャしない場合は `Ctrl+V` も機能します |
+| `Ctrl+R` | ハイライトされたセッションの名前を変更します |
 | `/` またはスペース以外の任意の印字可能文字 | 検索モードに入り、セッションをフィルタリングします。GitHub、GitHub Enterprise、GitLab、または Bitbucket のプルまたはマージリクエスト URL を貼り付けて、それを作成したセッションを見つけます |
-| `Ctrl+A`                | このマシン上のすべてのプロジェクトからセッションを表示します。もう一度押すと現在のリポジトリに戻ります                                                                  |
-| `Ctrl+W`                | 現在のリポジトリのすべての worktree からセッションを表示します。もう一度押すと現在の worktree に戻ります。マルチ worktree リポジトリでのみ表示されます                           |
-| `Ctrl+B`                | 現在の git ブランチからのセッションにフィルタリングします。もう一度押すとすべてのブランチを表示します                                                                |
-| `Esc`                   | セッションピッカーまたは検索モードを終了します                                                                                              |
+| `Ctrl+A` | このマシン上のすべてのプロジェクトからセッションを表示します。もう一度押すと現在のリポジトリに戻ります |
+| `Ctrl+W` | 現在のリポジトリのすべての worktree からセッションを表示します。もう一度押すと現在の worktree に戻ります。マルチ worktree リポジトリでのみ表示されます |
+| `Ctrl+B` | 現在の git ブランチからのセッションにフィルタリングします。もう一度押すとすべてのブランチを表示します |
+| `Esc` | セッションピッカーまたは検索モードを終了します |
 
 各行は、セッション名が設定されている場合はそれを表示し、そうでない場合は AI が生成したセッションタイトル、会話の概要、または最初のプロンプト、最後のアクティビティからの経過時間、git ブランチ、およびファイルサイズを表示します。`Ctrl+A` ですべてのプロジェクトに拡張して、各セッションのプロジェクトパスも表示します。
 
@@ -204,12 +205,12 @@ claude --continue --fork-session
 
 `/branch` はトランスクリプトをコピーし、実行中の Claude Code プロセスをそれに書き込むように切り替えます。この区別により、ブランチが継承するものが決まります。
 
-| 状態                                                                                                                                                   | `/branch` 後                                                                                                  |
-| :--------------------------------------------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------- |
-| 会話履歴                                                                                                                                                 | `/branch` を実行した時点までブランチにコピーされます                                                                              |
-| 「このセッションで許可」権限付与                                                                                                                                     | 引き継がれます。ブランチは同じプロセスで実行されるため、既存の付与はそのまま適用されます。`--fork-session` で別のプロセスにフォークした場合、新しいプロセスはそれらなしで開始され、そこで再度承認します |
-| 実行中の[バックグラウンドサブエージェント](/docs/ja/sub-agents#run-subagents-in-foreground-or-background)と[バックグラウンド Bash コマンド](/docs/ja/interactive-mode#background-bash-commands) | 実行を続けます。それらの出力は、元のセッションではなく、切り替えた新しいブランチに表示されます                                                              |
-| [Remote Control](/docs/ja/remote-control) 接続                                                                                                              | 接続されたままです。セッションに接続されている電話またはブラウザはブランチに従い、そこで新しいメッセージを受け取り続けます                                                |
+| 状態 | `/branch` 後 |
+| :- | :- |
+| 会話履歴 | `/branch` を実行した時点までブランチにコピーされます |
+| 「このセッションで許可」権限付与 | 引き継がれます。ブランチは同じプロセスで実行されるため、既存の付与はそのまま適用されます。`--fork-session` で別のプロセスにフォークした場合、新しいプロセスはそれらなしで開始され、そこで再度承認します |
+| 実行中の[バックグラウンドサブエージェント](/docs/ja/sub-agents#run-subagents-in-foreground-or-background)と[バックグラウンド Bash コマンド](/docs/ja/interactive-mode#background-bash-commands) | 実行を続けます。それらの出力は、元のセッションではなく、切り替えた新しいブランチに表示されます |
+| [Remote Control](/docs/ja/remote-control) 接続 | 接続されたままです。セッションに接続されている電話またはブラウザはブランチに従い、そこで新しいメッセージを受け取り続けます |
 
 フォークせずに 2 つのターミナルで同じセッションを再開すると、両方からのメッセージが 1 つのトランスクリプトにインターリーブされます。単一セッション内のチェックポイントベースの巻き戻しについては、[チェックポイント](/docs/ja/checkpointing)を参照してください。
 
@@ -258,14 +259,14 @@ claude -p --resume <session-id> --output-format json "summarize what we changed"
 
 場所、保持期間、および書き込み動作は設定可能です。
 
-| 目的                                                                                           | 設定                                                                                          | 場所                           |
-| -------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- | ---------------------------- |
-| `~/.claude` からストレージを移動する                                                                     | [`CLAUDE_CONFIG_DIR`](/docs/ja/env-vars)                                                         | 環境変数                         |
-| [`<project>` ディレクトリに自分で名前を付ける](#name-the-project-directory-yourself)                         | [`CLAUDE_CODE_PROJECT_DIR_NAME`](/docs/ja/env-vars)                                              | 環境変数                         |
-| 30 日間の保持期間を変更する                                                                              | [`cleanupPeriodDays`](/docs/ja/settings-reference#cleanupperioddays)                             | `settings.json`              |
+| 目的 | 設定 | 場所 |
+| - | - | - |
+| `~/.claude` からストレージを移動する | [`CLAUDE_CONFIG_DIR`](/docs/ja/env-vars) | 環境変数 |
+| [`<project>` ディレクトリに自分で名前を付ける](#name-the-project-directory-yourself) | [`CLAUDE_CODE_PROJECT_DIR_NAME`](/docs/ja/env-vars) | 環境変数 |
+| 30 日間の保持期間を変更する | [`cleanupPeriodDays`](/docs/ja/settings-reference#cleanupperioddays) | `settings.json` |
 | [Claude Desktop と Cowork トランスクリプト](/docs/ja/claude-directory#cleaned-up-automatically) の年齢制限を設定する | [`desktopSessionCleanupPeriodDays`](/docs/ja/settings-reference#desktopsessioncleanupperioddays) | ユーザー設定、管理設定、または `--settings` |
-| すべてのモードでトランスクリプト書き込みを抑制する                                                                    | [`CLAUDE_CODE_SKIP_PROMPT_HISTORY`](/docs/ja/env-vars)                                           | 環境変数                         |
-| 1 つの非インタラクティブ実行の書き込みを抑制する                                                                    | [`--no-session-persistence`](/docs/ja/cli-reference)                                             | `claude -p` を使用した CLI フラグ    |
+| すべてのモードでトランスクリプト書き込みを抑制する | [`CLAUDE_CODE_SKIP_PROMPT_HISTORY`](/docs/ja/env-vars) | 環境変数 |
+| 1 つの非インタラクティブ実行の書き込みを抑制する | [`--no-session-persistence`](/docs/ja/cli-reference) | `claude -p` を使用した CLI フラグ |
 
 <h3 id="delete-session-data">
   セッションデータを削除する

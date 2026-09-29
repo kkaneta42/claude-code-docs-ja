@@ -95,18 +95,18 @@ Claude Code はそのセッションの `advisorModel` 設定の代わりにフ�
   アドバイザーモデルを選択する
 </h2>
 
-アドバイザーはメインモデル以上の能力を持つ必要があります。各メインモデルで受け入れられるアドバイザーは以下の通りです。
+アドバイザーは、メインモデル以上の能力を持つ必要があります。各メインモデルで受け入れられるアドバイザーは以下の通りです。
 
-| メインモデル                | 受け入れられるアドバイザー              | 注記                                                                       |
-| --------------------- | -------------------------- | ------------------------------------------------------------------------ |
-| Haiku 4.5             | Fable、Opus、Sonnet          | Haiku はアドバイザーを呼び出すことはできますが、アドバイザーとして機能することはできません                         |
-| Sonnet 4.6            | Fable、Opus、Sonnet          |                                                                          |
-| Sonnet 5              | Fable、Opus 4.7 以降、Sonnet 5 | Sonnet 4.6 アドバイザーは拒否され、Opus 4.6 アドバイザーを使用したリクエストは API エラーで失敗します          |
-| Opus 4.6              | Fable、Opus、Sonnet 5        | Sonnet 4.6 アドバイザーは拒否されます                                                 |
-| Opus 4.7 または Opus 4.8 | Fable、および Opus 4.7 以降      | Opus 4.6 または Sonnet アドバイザーは拒否されます                                        |
-| Opus 5.5 または Opus 5   | Fable、および Opus 5 以降        | Opus 4.6 または Sonnet アドバイザーは拒否され、API は Opus 4.7 または Opus 4.8 アドバイザーを拒否します |
-| Fable 5               | Fable 5.1 または Fable 5      | Opus または Sonnet アドバイザーは拒否されます                                            |
-| Fable 5.1             | Fable 5.1                  | Opus または Sonnet アドバイザーは拒否され、Fable 5 アドバイザーを使用したリクエストは API エラーで失敗します      |
+| メインモデル | 受け入れられるアドバイザー | 注記 |
+| - | - | - |
+| Haiku 4.5 | Fable、Opus、Sonnet | Haiku はアドバイザーを呼び出すことはできますが、アドバイザーとして機能することはできません |
+| Sonnet 4.6 | Fable、Opus、Sonnet | |
+| Sonnet 5.5 または Sonnet 5 | Fable、Opus 4.7 以降、Sonnet 5 以降 | Sonnet 4.6 アドバイザーは拒否され、API は Opus 4.6 アドバイザーを拒否します |
+| Opus 4.6 | Fable、Opus、Sonnet 5 以降 | Sonnet 4.6 アドバイザーは拒否されます |
+| Opus 4.7 または Opus 4.8 | Fable、および Opus 4.7 以降 | Opus 4.6 または Sonnet アドバイザーは拒否されます |
+| Opus 5.5 または Opus 5 | Fable、および Opus 5 以降 | Opus 4.6 または Sonnet アドバイザーは拒否され、API は Opus 4.7 または Opus 4.8 アドバイザーを拒否します |
+| Fable 5 | Fable 5.1 または Fable 5 | Opus または Sonnet アドバイザーは拒否されます |
+| Fable 5.1 | Fable 5.1 | Opus または Sonnet アドバイザーは拒否され、API は Fable 5 アドバイザーを拒否します |
 
 Fable 5.1 には Claude Code v2.1.257 以降が必要です。両方の Fable モデルには [Fable アクセス](/docs/ja/model-config#work-with-fable) が必要です。
 
@@ -114,21 +114,21 @@ Fable 5.1 には Claude Code v2.1.257 以降が必要です。両方の Fable �
 
 サブエージェントは設定されたアドバイザーを継承し、独自のモデルに対して同じペアリングチェックを適用します。
 
-Claude Code はリクエストを送信する前にペアリングを検証し、API が再度検証します。
+Claude Code はリクエストを送信する前にペアリングを検証し、API も再度検証します。
 
 * テーブルで拒否されたアドバイザーの場合、Claude Code はそれをメインモデルのリクエストに添付しません。`/advisor` コマンド出力と通知がこれを表示します。独自のモデルがペアリングを満たすサブエージェントは、引き続きアドバイザーを使用できます。
-* テーブルで API エラーで失敗するとリストされているアドバイザーの場合、Claude Code はそれを添付し、API がそれを拒否します。Claude Code はその後、アドバイザーなしでそのリクエストを再送信し、残りの会話はアドバイザーなしで実行されるため、エラーが表示されず、アドバイザー呼び出しが行われません。`/advisor` で受け入れられたアドバイザーを選択してください。変更は `/clear` または `/compact` の後と新しいセッションで有効になります。
+* テーブルで API によって拒否されたアドバイザーの場合、Claude Code はそれを添付し、API がそれを拒否します。Claude Code はその後、アドバイザーなしでそのリクエストを再送信し、会話の残りはアドバイザーなしで実行されるため、エラーが表示されず、アドバイザー呼び出しが行われません。`/advisor` で受け入れられたアドバイザーを選択してください。変更は `/clear` または `/compact` の後と新しいセッションで有効になります。
 * メインモデルまたはアドバイザーが Claude Code が認識しないモデルの場合、アドバイザーは添付されません。
 
 <h3 id="fable-advisor-and-usage-credits">
   Fable アドバイザーと使用クレジット
 </h3>
 
-一部のプランでは、Fable の使用は使用クレジットに請求され、アドバイザーとしての Fable も同じ方法で請求されます。アカウントが [Fable の使用を使用クレジットに請求するための一度限りの同意](/docs/ja/model-config#fable-and-usage-credits) を必要とする場合、Claude Code は `/model` で Fable モデルを選択するときにそれを要求し、その同意を受け入れるまで Fable をアドバイザーとして適用しません。
+一部のプランでは、Fable の使用は使用クレジットに請求され、アドバイザーとしての Fable も同じ方法で請求されます。アカウントが [Fable の使用を使用クレジットに請求するための 1 回限りの同意](/docs/ja/model-config#fable-and-usage-credits) を必要とする場合、Claude Code は `/model` で Fable モデルを選択するときにそれを要求し、その同意を受け入れるまで Fable をアドバイザーとして適用しません。
 
-それを受け入れる前に、Claude Code は `/advisor fable` を入力するか `/advisor` ピッカーで Fable を選択するときに Fable をアドバイザーとして保存しません。代わりに `/model fable` を指すようにします。`claude --advisor fable` を使用すると、Claude Code は `/model fable` を指すメッセージで起動時に終了します。[バックグラウンドセッション](#use-the-advisor-flag) では、終了する代わりにアドバイザーなしでセッションを開始します。Fable が既に `advisorModel` として保存されている場合、Claude Code はアドバイザーなしでリクエストを送信します。アドバイザーをサポートするインタラクティブセッションでは、`/model fable` を指す通知も表示されます。
+それを受け入れる前に、Claude Code は `/advisor fable` を入力するか `/advisor` ピッカーで Fable を選択するときに Fable をアドバイザーとして保存しません。代わりに `/model fable` を指します。`claude --advisor fable` を使用すると、Claude Code は起動時に `/model fable` を指すメッセージで終了します。[バックグラウンドセッション](#use-the-advisor-flag) では、終了する代わりにアドバイザーなしでセッションを開始します。Fable が既に `advisorModel` として保存されている場合、Claude Code はアドバイザーなしでリクエストを送信します。メインモデルがアドバイザーをサポートする対話型セッションでは、`/model fable` を指す通知も表示されます。
 
-同意を受け入れるには、`/model fable` を実行し、Fable で続行することを選択します。Claude Code は同意を記録し、[Fable を選択したモデルとして保存](/docs/ja/model-config#default-model-setting) します。次に、Fable をアドバイザーとして選択します。
+同意を受け入れるには、`/model fable` を実行し、Fable で続行することを選択します。Claude Code は同意を記録し、[Fable を選択したモデルとして保存します](/docs/ja/model-config#default-model-setting)。その後、Fable をアドバイザーとして選択します。
 
 <h3 id="common-model-pairings">
   一般的なモデルペアリング
@@ -136,14 +136,14 @@ Claude Code はリクエストを送信する前にペアリングを検証し�
 
 受け入れられたペアリングはすべて機能します。これらの組み合わせは、異なる方法でコストと能力のバランスを取ります。
 
-| ペアリング                      | 使用する場合                                                                                  |
-| -------------------------- | --------------------------------------------------------------------------------------- |
-| Sonnet メイン + Opus アドバイザー   | Sonnet は日常的な作業を処理し、計画、曖昧な失敗、完了チェックを Opus にエスカレートします                                     |
-| Sonnet メイン + Fable アドバイザー  | 決定ポイントで Fable ガイダンスを取得し、プロセス全体で Fable を実行しません。Fable アクセスが必要です                           |
-| Haiku メイン + Opus アドバイザー    | 強力な計画を備えた最も低コストのメインモデル。Haiku 単独よりも高いコストが予想されますが、メインモデルを Sonnet または Opus に切り替えるよりは低くなります |
-| Opus メイン + Opus アドバイザー     | 2 番目の Opus が最初の Opus をレビューします。コストよりも独立したチェックが重要な高リスクタスクに役立ちます                           |
-| Fable メイン + Fable アドバイザー   | Fable が利用可能な場合の最高能力ペアリング。Claude Code は Fable メインモデルに Opus または Sonnet アドバイザーを適用しません      |
-| Sonnet メイン + Sonnet アドバイザー | 日常的な見落としをキャッチするための低コストの 2 番目の意見                                                         |
+| ペアリング | 使用する場合 |
+| - | - |
+| Sonnet メイン + Opus アドバイザー | Sonnet は日常的な作業を処理し、計画、曖昧な失敗、完了チェックを Opus にエスカレートします |
+| Sonnet メイン + Fable アドバイザー | 全体を通じて Fable を実行することなく、決定ポイントで Fable のガイダンスを取得します。Fable アクセスが必要です |
+| Haiku メイン + Opus アドバイザー | 最も低コストのメインモデルと強力な計画。Haiku のみより高いコストが予想されますが、メインモデルを Sonnet または Opus に切り替えるより低くなります |
+| Opus メイン + Opus アドバイザー | 2 番目の Opus が最初の Opus をレビューします。コストより独立したチェックが重要な高リスクタスクに役立ちます |
+| Fable メイン + Fable アドバイザー | Fable が利用可能な場合の最高能力ペアリング。Claude Code は Opus または Sonnet アドバイザーを Fable メインモデルに適用しません |
+| Sonnet メイン + Sonnet アドバイザー | 日常的な見落としをキャッチするための低コストの 2 番目の意見 |
 
 <h2 id="when-claude-consults-the-advisor">
   Claude が advisor に相談する場合
@@ -161,6 +161,7 @@ Claude が advisor を呼び出すと、トランスクリプトに呼び出し�
 
 * **Reviewed**: この行は advisor が会話をレビューしたことを確認します。advisor が読み取り可能なガイダンスを返した場合、`Ctrl+O` を押して読むことができます。
 * **Declined**: この行は `Advisor declined to advise on this request` と表示されます。advisor が理由を提供した場合、`Ctrl+O` を押して読むことができます。
+* **Unavailable**: advisor の呼び出しが失敗し、この行は `Advisor unavailable (<error_code>)` と表示されます。ここで `<error_code>` は呼び出しが返したコードです。
 
 Claude は一般的に advisor のガイダンスに従いますが、独自の証拠が特定の主張と矛盾する場合は適応します。推奨されたステップが試行時に失敗した場合、またはファイルの内容がアドバイスと矛盾する場合、Claude はガイダンスに無条件に従うのではなく、矛盾を表示します。
 
@@ -217,12 +218,12 @@ advisor ツール全体を無効にするには、`CLAUDE_CODE_DISABLE_ADVISOR_T
 
 advisor は、モデルの強みを組み合わせるいくつかの方法の 1 つです。2 番目のモデルをいつ関与させるかに基づいて選択します。
 
-| アプローチ                                                 | より強力なモデルが実行される場合                                                                                          | 開始方法                          |
-| ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------- | ----------------------------- |
-| Advisor ツール                                           | タスク中の決定ポイント                                                                                               | Claude がガイダンスが必要な場合に呼び出します    |
-| [`opusplan`](/docs/ja/model-config#opusplan-model-setting) | プランモード中（[`availableModels`](/docs/ja/model-config#restrict-model-selection)で許可されている場合）、その後実行用に Sonnet に切り替わります | プランモードに入ります                   |
-| [サブエージェント](/docs/ja/sub-agents#choose-a-model)（`model` 設定） | 委任されたサブタスク全体                                                                                              | Claude が委任するか、サブエージェントを呼び出します |
-| [`/model`](/docs/ja/model-config#setting-your-model)       | 後続のすべてのリクエストから                                                                                            | モデルを切り替えます                    |
+| アプローチ | より強力なモデルが実行される場合 | 開始方法 |
+| - | - | - |
+| Advisor ツール | タスク中の決定ポイント | Claude がガイダンスが必要な場合に呼び出します |
+| [`opusplan`](/docs/ja/model-config#opusplan-model-setting) | プランモード中（[`availableModels`](/docs/ja/model-config#restrict-model-selection)で許可されている場合）、その後実行用に Sonnet に切り替わります | プランモードに入ります |
+| [サブエージェント](/docs/ja/sub-agents#choose-a-model)（`model` 設定） | 委任されたサブタスク全体 | Claude が委任するか、サブエージェントを呼び出します |
+| [`/model`](/docs/ja/model-config#setting-your-model) | 後続のすべてのリクエストから | モデルを切り替えます |
 
 <h2 id="see-also">
   関連項目

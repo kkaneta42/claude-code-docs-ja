@@ -32,6 +32,14 @@ Claude Code は、セットアップに応じて複数の認証方法をサポ�
 
 ログアウトして再認証するには、Claude Code プロンプトで `/logout` と入力します。ログアウトすると、初回起動セットアップ状態もリセットされるため、次回 `claude` を実行するときはログインとセットアップを再度実行します。
 
+複数のアカウント（仕事用と個人用など）に同時にログインしたままにするには、各アカウントに独自の設定ディレクトリを指定します。`claude` を起動するときに、[`CLAUDE_CONFIG_DIR`](/docs/ja/env-vars#variables) 環境変数を使用するアカウントのディレクトリに設定します。各ディレクトリには、独自の設定、セッション履歴、および claude.ai ログインまたは API キーがあります。たとえば、Bash または Zsh では、`~/.bashrc` または `~/.zshrc` に次のエイリアスを追加して、`claude-work` が仕事用アカウントを使用し、`claude` が個人用アカウントを保持するようにできます。
+
+```bash theme={null}
+alias claude-work='CLAUDE_CONFIG_DIR=~/.claude-work claude'
+```
+
+新しいターミナルを開いて初めて `claude-work` を実行した後、Claude Code は新しいディレクトリのログインとセットアップを実行します。別のディレクトリは、Claude Code がそのような種類のサインインを設定ディレクトリの外に保存するため、2 つの Claude Console サインイン[API キーなし](#sign-in-without-an-api-key)を区別しません。
+
 ログインに問題がある場合は、[認証のトラブルシューティング](/docs/ja/troubleshoot-install#login-and-authentication)を参照してください。
 
 <h2 id="set-up-team-authentication">
@@ -160,7 +168,7 @@ Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry �
 
 開発者の claude.ai ログインが特定の Anthropic 組織に属することを要求するには、[管理設定](/docs/ja/managed-settings)で [`forceLoginMethod`](/docs/ja/settings-reference#forceloginmethod) と [`forceLoginOrgUUID`](/docs/ja/settings-reference#forceloginorguuid) を設定します。`forceLoginOrgUUID` を組織 ID に設定します。組織 ID は Claude for Teams または Enterprise 組織の [claude.ai 管理設定](https://claude.ai/admin-settings/organization)に表示されます。Claude Code は他の組織への claude.ai ログインについてエラーを報告し、使用中の claude.ai 認証情報がリストされていない組織に属している場合、起動時に終了します。
 
-Claude Console ログインの場合、Claude Code は `forceLoginOrgUUID` を使用して、単一の Console 組織 ID に設定した場合、Console サインインページで組織を事前選択します。組織 ID は [platform.claude.com/settings/organization](https://platform.claude.com/settings/organization) に表示されます。ログイン時または起動時に、結果の Console 認証情報がどの組織に属しているかを確認せず、キーをデプロイする前に Console アカウントでログインした開発者はログインしたままになります。
+Claude Console ログインの場合、Claude Code は `forceLoginOrgUUID` を使用して、単一の Console 組織 ID に設定した場合、Console サインインページで組織を事前選択します。組織 ID は [platform.claude.com/settings/organization](https://platform.claude.com/settings/organization) に表示されます。ログイン時または起動時に、結果の Console 認証情報がどの組織に属しているかを確認しません。キーをデプロイする前に Console アカウントでログインした開発者はログインしたままになり、その保存されたキーは [ゲートウェイ](/docs/ja/claude-apps-gateway)サインインも必要とするマシン上、またはクラウドプロバイダーを選択するセッション内でブロックされます。
 
 任意の設定ファイルで `forceLoginOrgUUID` を設定した場合、Claude Code はそのファイルが適用されるセッションで [キーレス Console サインイン](#sign-in-without-an-api-key)の提供を停止し、代わりに API キーを作成します。開発者を claude.ai サインインに向かわせるには、`forceLoginMethod` を `"claudeai"` に設定します。
 
@@ -172,11 +180,13 @@ Claude Console ログインの場合、Claude Code は `forceLoginOrgUUID` を�
 
 デバイス管理ツールを通じてキーをデプロイします。[サーバー管理設定](/docs/ja/server-managed-settings)は、既に組織に認証されているアカウントにのみ到達するため、開発者の最初のログインをリダイレクトできません。組織がサーバー管理設定も配布する場合、両方の場所にキーを設定します。管理設定ソースは [マージされず](/docs/ja/server-managed-settings#settings-precedence)、キャッシュされたサーバー管理設定はデバイス管理ファイルを置き換えます。ただし、いくつかの [キーごとの例外](/docs/ja/server-managed-settings#per-key-exceptions-across-managed-sources)を除いて。`forceLoginOrgUUID` と `forceLoginMethod` の `"claudeai"` および `"console"` 値はこれらの例外に含まれていないため、両方の場所に保持します。
 
+[ゲートウェイ](/docs/ja/claude-apps-gateway)デプロイメントでは、`forceLoginMethod` と `forceLoginOrgUUID` を [ゲートウェイが提供する設定](/docs/ja/claude-apps-gateway-config#managed)から除外したままにしてください。
+
 キーはまた、ログイン認証情報を使用しないセッションが開始できるかどうかも決定します。設定リファレンスの [`forceLoginOrgUUID`](/docs/ja/settings-reference#forceloginorguuid) を参照して、完全な動作を確認してください。
 
-* **`ANTHROPIC_API_KEY`、`ANTHROPIC_AUTH_TOKEN`、または `apiKeyHelper`**: 環境認証情報の組織メンバーシップを確認できないため、起動時にブロックされます
-* **Amazon Bedrock などのクラウドプロバイダーセッション**: クラウドプロバイダーに対して認証されるため、ブロックされません。クラウド IAM ポリシーを通じてそれらを制限します
-* **[Anthropic プロファイルまたはフェデレーション認証情報](#anthropic-profiles-and-federation-credentials)**: ブロックされず、キーはプロファイルが属する組織を確認しません
+* **`ANTHROPIC_API_KEY`、`ANTHROPIC_AUTH_TOKEN`、または `apiKeyHelper`**: 起動時にブロックされます。`forceLoginOrgUUID` では、環境認証情報の組織メンバーシップを確認できず、`forceLoginMethod` では認証情報が必要なサインインの代わりになります。管理設定が [ゲートウェイ](/docs/ja/claude-apps-gateway)サインインも必要とする場合、Claude Code は以前の Claude Console ログインによって保存された API キーを同じ方法でブロックします。[管理者ポリシーがクラウドゲートウェイサインインを必要とします](/docs/ja/errors#administrator-policy-requires-a-cloud-gateway-sign-in)を参照してください
+* **Amazon Bedrock などのクラウドプロバイダーセッション**: `ANTHROPIC_API_KEY`、`ANTHROPIC_AUTH_TOKEN`、または `apiKeyHelper` 認証情報、または以前の Claude Console ログインによって保存された API キーがマシン上にまだ存在する間のみブロックされます。それを削除するとセッションが開始します。これらのセッションはクラウドプロバイダーに対して認証され、クラウドプロバイダーのアクセスポリシーがそれらを管理します
+* **[Anthropic プロファイルまたはフェデレーション認証情報](#anthropic-profiles-and-federation-credentials)**: `ANTHROPIC_API_KEY`、`ANTHROPIC_AUTH_TOKEN`、または `apiKeyHelper` 認証情報、または以前の Claude Console ログインによって保存された API キーもマシン上に存在する場合を除き、ブロックされません。キーはプロファイルが属する組織を確認しません
 
 <h2 id="credential-management">
   認証情報管理
@@ -248,10 +258,10 @@ Claude Code は [ベアモード](/docs/ja/headless#start-faster-with-bare-mode)
 
 Claude Code は 3 つのソースをこの順序でチェックし、設定されている最初のソースで停止します。表は各ソースを設定するものと、`/login` 認証情報に対するランク付けを示しています。
 
-| ソース         | 設定者                                                                                                                                          | `/login` に対するランク                                                                |
-| :---------- | :------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------ |
-| 名前付きプロファイル  | `ANTHROPIC_PROFILE`                                                                                                                          | 上、プロファイルが持つ認証モードに関係なく                                                           |
-| フェデレーション変数  | `ANTHROPIC_FEDERATION_RULE_ID` および `ANTHROPIC_ORGANIZATION_ID`、両方設定                                                                          | 上                                                                               |
+| ソース | 設定者 | `/login` に対するランク |
+| :- | :- | :- |
+| 名前付きプロファイル | `ANTHROPIC_PROFILE` | 上、プロファイルが持つ認証モードに関係なく |
+| フェデレーション変数 | `ANTHROPIC_FEDERATION_RULE_ID` および `ANTHROPIC_ORGANIZATION_ID`、両方設定 | 上 |
 | アクティブプロファイル | 設定ディレクトリ内の [`active_config` ファイル](https://platform.claude.com/docs/en/manage-claude/wif-reference#active-profile)、または `default` という名前のプロファイル | 認証モードが `oidc_federation` の場合は上。認証モードが `user_oauth` の場合は、機能している `/login` 認証情報より下 |
 
 `user_oauth` ルールは、`ant auth login` プロファイルの残りが `/login` でサインインしたアカウントからリクエストを移動するのを防ぎます。フェデレーション変数の場合、Claude Code は ID トークンを交換する際に [WIF リファレンス](https://platform.claude.com/docs/en/manage-claude/wif-reference#environment-variables)の `ANTHROPIC_IDENTITY_TOKEN_FILE` などの他の変数も読み込みます。プロファイルファイル形式については、[WIF リファレンス](https://platform.claude.com/docs/en/manage-claude/wif-reference#profile-configuration-file)を参照してください。
@@ -279,9 +289,25 @@ claude setup-token
 
 このコマンドは `/login` と同じブラウザ認可フローを開き、ブラウザでアクセスを承認した後、トークンはターミナルに出力されます。トークンはどこにも保存されません。トークンをコピーして、認証したい場所で `CLAUDE_CODE_OAUTH_TOKEN` 環境変数として設定します。
 
-```bash theme={null}
-export CLAUDE_CODE_OAUTH_TOKEN=your-token
-```
+<Tabs>
+  <Tab title="macOS, Linux, WSL">
+    ```bash theme={null}
+    export CLAUDE_CODE_OAUTH_TOKEN=your-token
+    ```
+  </Tab>
+
+  <Tab title="Windows PowerShell">
+    ```powershell theme={null}
+    $env:CLAUDE_CODE_OAUTH_TOKEN = "your-token"
+    ```
+  </Tab>
+
+  <Tab title="Windows CMD">
+    ```batch theme={null}
+    set CLAUDE_CODE_OAUTH_TOKEN=your-token
+    ```
+  </Tab>
+</Tabs>
 
 このトークンは Claude サブスクリプションで認証され、Pro、Max、Team、または Enterprise プランが必要です。モデルリクエストのみを実行できるため、[Remote Control](/docs/ja/remote-control) セッションを確立したり、[claude.ai コネクタ](/docs/ja/mcp#use-mcp-servers-from-claude-ai)をフェッチしたりすることはできません。ローカルで設定した MCP サーバーは引き続き機能します。
 

@@ -60,14 +60,14 @@ Claude Code で MCP サーバーを接続および設定するすべての方法
 
     サーバーはステータスインジケーター付きで表示されます。
 
-    | ステータス                                              | 意味                                                                                                                                           |
-    | :------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------- |
-    | `✔ Connected`                                      | 使用可能です。これは `claude-code-docs` で表示されるはずです                                                                                                     |
-    | `! Connected · tools fetch failed`                 | サーバーは接続されましたが、ツールをリストできませんでした。エラーの詳細については `claude mcp get <name>` を実行してください                                                                  |
-    | `! Needs authentication`                           | サーバーに到達可能ですが、ブラウザサインインが必要です。または `--header` で渡されたトークンが必要です。[サインインが必要なサーバーに接続する](#connect-a-server-that-requires-sign-in)を参照してください             |
-    | `✘ Failed to connect`                              | サーバーが応答しませんでした。[トラブルシューティング](#troubleshooting)を参照してください                                                                                      |
-    | `✘ Connection error`                               | 接続試行がエラーをスローしました。[トラブルシューティング](#troubleshooting)を参照してください                                                                                    |
-    | `⏸ Pending approval (run `claude` to approve)`     | まだ承認していないプロジェクトスコープのサーバー。[.mcp.json を直接編集する](#edit-mcp-json-directly)を参照してください                                                               |
+    | ステータス | 意味 |
+    | :- | :- |
+    | `✔ Connected` | 使用可能です。これは `claude-code-docs` で表示されるはずです |
+    | `! Connected · tools fetch failed` | サーバーは接続されましたが、ツールをリストできませんでした。エラーの詳細については `claude mcp get <name>` を実行してください |
+    | `! Needs authentication` | サーバーに到達可能ですが、ブラウザサインインが必要です。または `--header` で渡されたトークンが必要です。[サインインが必要なサーバーに接続する](#connect-a-server-that-requires-sign-in)を参照してください |
+    | `✘ Failed to connect` | サーバーが応答しませんでした。[トラブルシューティング](#troubleshooting)を参照してください |
+    | `✘ Connection error` | 接続試行がエラーをスローしました。[トラブルシューティング](#troubleshooting)を参照してください |
+    | `⏸ Pending approval (run `claude` to approve)` | まだ承認していないプロジェクトスコープのサーバー。[.mcp.json を直接編集する](#edit-mcp-json-directly)を参照してください |
     | `⊘ Disabled for this project (re-enable via /mcp)` | このプロジェクトのプロジェクトの `disabledMcpServers` リストによってこのプロジェクトに対してオフにされたサーバー。[サーバーを削除せずに無効にする](/docs/ja/mcp#disable-a-server-without-removing-it)を参照してください |
 
     Windows 10 のデフォルトコンソールなど、一部のレガシー Windows コンソールはこれらの Unicode グリフをサポートしておらず、`✔` と `✘` の代わりに `√` と `×` を表示します。
@@ -128,11 +128,11 @@ Claude Code で MCP サーバーを接続および設定するすべての方法
 
 `claude mcp add` コマンドは、`--scope` フラグに応じて、2 つのファイルに分散された 3 つのスコープのいずれかにサーバーを書き込みます。これらのファイルを直接編集する必要はありませんが、どこにあるかを知ることはデバッグとバージョン管理に役立ちます。
 
-| スコープ      | ファイル                                       | 利用可能な対象                |
-| :-------- | :----------------------------------------- | :--------------------- |
-| `local`   | `~/.claude.json`、このプロジェクトのエントリの下           | あなたのみ、このプロジェクトのみ。デフォルト |
-| `project` | プロジェクトルートの `.mcp.json`                     | プロジェクトをクローンした全員        |
-| `user`    | `~/.claude.json`、トップレベルの `mcpServers` キーの下 | あなたのみ、すべてのプロジェクト       |
+| スコープ | ファイル | 利用可能な対象 |
+| :- | :- | :- |
+| `local` | `~/.claude.json`、このプロジェクトのエントリの下 | あなたのみ、このプロジェクトのみ。デフォルト |
+| `project` | プロジェクトルートの `.mcp.json` | プロジェクトをクローンした全員 |
+| `user` | `~/.claude.json`、トップレベルの `mcpServers` キーの下 | あなたのみ、すべてのプロジェクト |
 
 Windows では、`~/.claude.json` は `%USERPROFILE%\.claude.json`（通常は `C:\Users\YourName\.claude.json`）に解決されます。[`CLAUDE_CONFIG_DIR`](/docs/ja/env-vars)を設定している場合、Claude Code はそのディレクトリ内から `.claude.json` を読み込みます。
 

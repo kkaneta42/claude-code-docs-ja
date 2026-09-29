@@ -20,11 +20,11 @@ claude -p "Find and fix the bug in auth.py" --allowedTools "Read,Edit,Bash"
   基本的な使用方法
 </h2>
 
-任意の `claude` コマンドに `-p`（または `--print`）フラグを追加して、非対話的に実行します。すべての [CLI オプション](/docs/ja/cli-reference) が `-p` と組み合わさるわけではありません。Claude Code は `--bg` を拒否し、タスク説明付きの `--cloud` を拒否します。競合を名前付きエラーで報告します。セッション ID 付きの `--cloud` と `-p` は代わりに [そのクラウドセッションにメッセージをキューイングして終了します](/docs/ja/claude-code-on-the-web#send-follow-ups-from-the-cli)。`-p` と組み合わせることが多いオプションには以下が含まれます。
+任意の `claude` コマンドに `-p` （または `--print` ）フラグを追加して、非対話的に実行します。すべての [CLI オプション](/docs/ja/cli-reference) が `-p` と組み合わせられるわけではありません。Claude Code は `--bg` を拒否し、タスク説明付きの `--cloud` を拒否します。競合を示すエラーが表示されます。セッション ID 付きの `--cloud` と `-p` は代わりに [そのクラウドセッションにメッセージをキューイングして終了します](/docs/ja/claude-code-on-the-web#send-follow-ups-from-the-cli)。`-p` と組み合わせることが多いオプションには以下が含まれます。
 
-* `--continue` は [会話を続ける](#continue-conversations) 場合
-* `--allowedTools` は [ツールを自動承認する](#auto-approve-tools) 場合
-* `--output-format` は [構造化された出力を取得する](#get-structured-output) 場合
+* `--continue` は [会話を続行する](#continue-conversations) ため
+* `--allowedTools` は [ツールを自動承認する](#auto-approve-tools) ため
+* `--output-format` は [構造化された出力を取得する](#get-structured-output) ため
 
 この例は、コードベースについて Claude に質問し、応答を出力します。
 
@@ -32,64 +32,70 @@ claude -p "Find and fix the bug in auth.py" --allowedTools "Read,Edit,Bash"
 claude -p "What does the auth module do?"
 ```
 
-Claude Code は成功時にコード 0 で終了し、実行が失敗した場合は 0 以外のコードで終了するため、スクリプトは終了ステータスで分岐できます。無効なフラグを渡すと、Claude Code は実行開始前にエラーを stderr に報告します。実行内での失敗（認証の欠落など）が発生した場合、Claude Code は失敗を stdout の結果として出力します。
+Claude Code は成功時にコード 0 で終了し、実行が失敗した場合は 0 以外のコードで終了するため、スクリプトは終了ステータスで分岐できます。無効なフラグを渡すと、Claude Code は実行開始前にエラーを stderr に報告します。実行内で認証の欠落など障害が発生した場合、Claude Code は障害を stdout の結果として出力します。
 
 <h3 id="start-faster-with-bare-mode">
-  ベアモードでより高速に開始する
+  ベアモードで高速に開始する
 </h3>
 
-`--bare` を追加して、hooks、skills、カスタムコマンド、[サブエージェント](/docs/ja/sub-agents)、インストール済みプラグイン、MCP サーバー、auto memory、および CLAUDE.md の自動検出をスキップすることで、起動時間を短縮します。これがない場合、`claude -p` は対話型セッションと同じ [コンテキスト](/docs/ja/how-claude-code-works#the-context-window) を読み込みます。これには、作業ディレクトリまたは `~/.claude` で設定されたすべてのものが含まれます。
+`--bare` を追加して、hooks、skills、カスタムコマンド、[subagents](/docs/ja/sub-agents)、インストール済みプラグイン、MCP サーバー、自動メモリ、CLAUDE.md の自動検出をスキップすることで、起動時間を短縮します。これがない場合、`claude -p` は対話的セッションと同じ [コンテキスト](/docs/ja/how-claude-code-works#the-context-window) を読み込みます。これには、作業ディレクトリまたは `~/.claude` で設定されたすべてが含まれます。
 
-ベアモードは、すべてのマシンで同じ結果が必要な CI とスクリプトに役立ちます。チームメイトの `~/.claude` のフック、またはプロジェクトの `.mcp.json` の MCP サーバーは実行されません。ベアモードはそれらを読み込まないためです。`--add-dir` で指定するディレクトリは部分的な例外です。ベアモードはその `.claude/skills/` フォルダからスキルを読み込みますが、その `.claude/commands/` および `.claude/agents/` フォルダはスキップします。[追加ディレクトリからのスキル](/docs/ja/skills#skills-from-additional-directories) は、何が読み込まれ、何が読み込まれないかについて説明しています。
+ベアモードは、すべてのマシンで同じ結果が必要な CI とスクリプトに役立ちます。チームメイトの `~/.claude` のフック、またはプロジェクトの `.mcp.json` の MCP サーバーは実行されません。ベアモードはそれらを読み込まないためです。`--add-dir` で指定するディレクトリは部分的な例外です。ベアモードはその `.claude/skills/` フォルダから skills を読み込みますが、その `.claude/commands/` と `.claude/agents/` フォルダはスキップします。[追加ディレクトリからの Skills](/docs/ja/skills#skills-from-additional-directories) は、何が読み込まれ、何が読み込まれないかについて説明しています。
 
-`--bare` がない場合、`-p` セッションはプロジェクトの `.claude/settings.json` のフックを実行し、その `.mcp.json` のサーバーを接続します。これは信頼したことのないフォルダでも同様です。`-p` セッションはワークスペース信頼ダイアログもサーバーごとの承認プロンプトも表示しません。[フォルダを信頼する前に実行されるもの](/docs/ja/permissions#what-runs-before-you-trust-a-folder) は、`-p` の下での各種リポジトリコンテンツと、それを除外する方法について説明しています。
+`--bare` がない場合、`-p` セッションはプロジェクトの `.claude/settings.json` のフックを実行し、その `.mcp.json` のサーバーに接続します。これは、信頼したことのないフォルダでも同様です。`-p` セッションはワークスペース信頼ダイアログもサーバーごとの承認プロンプトも表示しません。[フォルダを信頼する前に実行されるもの](/docs/ja/permissions#what-runs-before-you-trust-a-folder) は、`-p` の下での各種リポジトリコンテンツと、それを除外する方法について説明しています。
 
-この例は、ベアモードで 1 回限りの要約タスクを実行し、Read ツールを事前承認して、呼び出しが許可プロンプトなしで完了するようにします。実行前に `ANTHROPIC_API_KEY` を設定してください。ベアモードはサブスクリプションログインを使用しないためです。
+この例は、ベアモードで 1 回限りの要約タスクを実行し、Read ツールを事前承認して、権限プロンプトなしで呼び出しが完了するようにします。ベアモードはサブスクリプションログインを使用しないため、実行前に `ANTHROPIC_API_KEY` を設定してください。
 
 ```bash theme={null}
 claude --bare -p "Summarize README.md" --allowedTools "Read"
 ```
 
-ベアモードでは、Claude Code は OAuth 認証情報またはシステムキーチェーンを読み込みません。Anthropic API の場合、環境に `ANTHROPIC_API_KEY` を設定します。キーは [Claude Console](https://platform.claude.com) で作成するか、`--settings` JSON に `apiKeyHelper` を指定します。Amazon Bedrock、Google Cloud の Agent Platform、および Microsoft Foundry は通常のプロバイダー認証情報を読み込み続けます。
+ベアモードでは、Claude Code は OAuth 認証情報またはシステムキーチェーンを読み込みません。Anthropic API の場合、環境で `ANTHROPIC_API_KEY` を設定します。[Claude Console](https://platform.claude.com) で作成されたキーを使用するか、`--settings` JSON で `apiKeyHelper` を指定します。Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry は、通常どおり独自のプロバイダー認証情報を読み込み続けます。
 
-ベアモードでは Claude は Bash、ファイル読み取り、およびファイル編集ツールにアクセスできます。フラグを使用して必要なコンテキストを渡します。
+ベアモードでは、Claude は Bash、ファイル読み取り、ファイル編集ツールにアクセスできます。フラグで必要なコンテキストを渡します。
 
-| 読み込むもの      | 使用するもの                                                 |
-| ----------- | ------------------------------------------------------ |
+| 読み込むもの | 使用 |
+| - | - |
 | システムプロンプト追加 | `--append-system-prompt`、`--append-system-prompt-file` |
-| 設定          | `--settings <file-or-json>`                            |
-| MCP サーバー    | `--mcp-config <file-or-json>`                          |
-| カスタムエージェント  | `--agents <json>`                                      |
-| プラグイン       | `--plugin-dir <path>`、`--plugin-url <url>`             |
+| 設定 | `--settings <file-or-json>` |
+| MCP サーバー | `--mcp-config <file-or-json>` |
+| カスタムエージェント | `--agents <json>` |
+| プラグイン | `--plugin-dir <path>`、`--plugin-url <url>` |
 
 <Note>
-  `--bare` はスクリプトおよび SDK 呼び出しの推奨モードであり、将来のリリースで `-p` のデフォルトになります。
+  `--bare` はスクリプト化および SDK 呼び出しの推奨モードであり、将来のリリースで `-p` のデフォルトになります。
 </Note>
 
 <h3 id="background-tasks-at-exit">
   終了時のバックグラウンドタスク
 </h3>
 
-Claude が `claude -p` 実行中に [バックグラウンド Bash タスク](/docs/ja/tools-reference#bash-tool-behavior) を開始する場合（例えば、開発サーバーまたはウォッチビルド）、そのシェルは Claude が最終結果を返し、stdin が閉じられてから約 5 秒後に終了します。猶予期間により、結果の直後に終了するタスクでも出力を配信できます。
+Claude が `claude -p` 実行中に [バックグラウンド Bash タスク](/docs/ja/tools-reference#bash-tool-behavior) （例えば、開発サーバーまたはウォッチビルド）を開始した場合、Claude が最終結果を返し、stdin が閉じられてから約 5 秒後に、そのシェルは終了します。猶予期間により、結果の直後に終了するタスクでも出力を配信できます。
 
-Claude が [サブエージェント](/docs/ja/sub-agents) またはワークフローをバックグラウンドで開始する場合、その結果が最終出力の一部であるため、`claude -p` は代わりにその作業が完了するまで開いたままになります。
+Claude がバックグラウンド [subagent](/docs/ja/sub-agents) またはワークフローを開始した場合、`claude -p` は代わりにその作業が完了するまで開いたままになります。その結果は最終出力の一部だからです。
 
-デフォルトでは、待機は 10 分間の継続的なアイドル待機後に終了するため、スタックしたサブエージェントまたはワークフローがプロセスを無期限に開いたままにすることはできません。その時点で Claude Code は実行中のものをすべて停止し、その部分的な結果をドロップします。制限を変更するには、[`CLAUDE_CODE_PRINT_BG_WAIT_CEILING_MS`](/docs/ja/env-vars) を設定するか、`0` に設定して制限なく待機します。
+デフォルトでは、待機は 10 分間の継続的なアイドル待機後に終了するため、スタックした subagent またはワークフローがプロセスを無期限に開いたままにすることはできません。その時点で Claude Code は実行中のすべてを停止し、その部分的な結果をドロップします。制限を変更するには、[`CLAUDE_CODE_PRINT_BG_WAIT_CEILING_MS`](/docs/ja/env-vars) を設定するか、`0` に設定して制限なしで待機します。
 
-Claude が `claude -p` 実行中に [Monitor](/docs/ja/tools-reference#monitor-tool) ウォッチを開始する場合、Claude Code はウォッチがタイムアウトするか 10 分の上限がその待機を終了するまで、どちらか先に来た方まで待機します。待機中、Claude はウォッチが報告することに応答し続けます。デフォルトでは、ウォッチは Claude が開始してから 5 分後にタイムアウトします。
+Claude が `claude -p` 実行中に [Monitor](/docs/ja/tools-reference#monitor-tool) ウォッチを開始した場合、Claude Code はウォッチがタイムアウトするか、10 分の上限が待機を終了するまで、どちらか先に来た方まで待機します。待機中、Claude はウォッチが報告することに応答し続けます。デフォルトでは、ウォッチは Claude が開始してから 5 分後にタイムアウトします。
 
 <h3 id="stop-a-run-with-sigterm">
   SIGTERM で実行を停止する
 </h3>
 
-`claude -p` 実行を SIGTERM で停止する場合（例えば `kill` またはプロセススーパーバイザーから）、Claude Code はコード 143 で終了します。Claude Code は進行中のターンを未完了のままにし、そのための結果を記録しません。代わりにターンを終了するには、SIGINT を送信するか、Agent SDK の `interrupt()` を呼び出してから、プロセスを停止します。
+`claude -p` 実行を SIGTERM で停止した場合（例えば、`kill` またはプロセススーパーバイザーから）、Claude Code はコード 143 で終了します。Claude Code は進行中のターンを未完了のままにし、そのための結果を記録しません。ターンを終了するには、SIGINT を送信するか、Agent SDK の `interrupt()` を呼び出してから、プロセスを停止します。
 
-SIGTERM では、Claude Code はまだ実行中の Bash コマンドのプロセスツリーを終了します。Claude Code は [`SessionEnd` フック](/docs/ja/hooks#sessionend) を実行して終了します。終了中、Claude Code は新しいツール呼び出しを開始せず、新しいモデルリクエストを送信せず、`SessionEnd` 以外のフックを実行しません。実行がコマンド実行中またはシグナル到着時に許可プロンプトへの回答を待機中だった場合、Claude Code はそのステップを以下のように処理します。
+SIGTERM では、Claude Code はまだ実行中の Bash コマンドのプロセスツリーを終了します。Claude Code は [`SessionEnd` hooks](/docs/ja/hooks#sessionend) を実行して終了します。終了中、Claude Code は新しいツール呼び出しを開始せず、新しいモデルリクエストを送信せず、`SessionEnd` 以外のフックを実行しません。実行が権限プロンプトへの回答を待機しているコマンドの途中にあった場合、Claude Code はそのステップを次のように処理します。
 
-* **コマンド実行中**: Claude Code はコマンドをセッションで killed として記録します。
-* **許可プロンプトへの回答を待機中**: プロセスに SIGTERM を送信する場合、Claude Code はプロンプトを未回答のままにします。プログラムが Agent SDK を通じてセッションを閉じる場合、SDK はシグナルを送信する前に Claude Code の入力を終了し、Claude Code は入力が終了するとすぐにプロンプトをキャンセルします。
+* **コマンドを実行中**: Claude Code はコマンドをセッションで強制終了として記録します。
+* **権限プロンプトへの回答を待機中**: SIGTERM をプロセスに送信した場合、Claude Code はプロンプトを未回答のままにします。プログラムが Agent SDK を通じてセッションを閉じた場合、SDK はシグナルを送信する前に Claude Code の入力を終了し、Claude Code は入力が終了するとすぐにプロンプトをキャンセルします。
 
-[セッションを再開](#continue-conversations) する場合、Claude Code は SIGTERM が未完了のままにしたターンを続行します。
+[セッションを再開](#continue-conversations) すると、Claude Code は中断されたターンをそのままにし、次のプロンプトが会話を駆動します。再開時に Claude Code が中断されたターンを続行するようにするには、[`CLAUDE_CODE_RESUME_INTERRUPTED_TURN=1`](/docs/ja/env-vars) を設定します。
+
+<h3 id="if-the-working-directory-is-deleted">
+  作業ディレクトリが削除された場合
+</h3>
+
+`claude -p` または Agent SDK セッションの作業ディレクトリがセッション中に削除された場合、セッションは実行を続けます。ディレクトリが見つからない間にターンが開始されると、Claude Code は `stream-json` 出力で [警告メッセージ](/docs/ja/agent-sdk/typescript#sdkinformationalmessage) を発行し、ディレクトリが再度存在するまでシェルコマンドは失敗します。
 
 <h2 id="examples">
   例
@@ -223,18 +229,18 @@ claude -p "Write a poem" --output-format stream-json --verbose --include-partial
 
 API リクエストが再試行可能なエラーで失敗すると、Claude Code は再試行する前に `system/api_retry` イベントを発行します。v2.1.246 以降では、`401` または `403` が [`apiKeyHelper`](/docs/ja/settings-reference#apikeyhelper) 認証情報を拒否する場合、Claude Code は最初の 2 回の再試行を静かに行い、イベントなしで実行してから、3 回目の連続再試行からイベントを通常通り発行します。静かな再試行は依然として `attempt` にカウントされます。イベントを使用して、独自のインターフェースで再試行の進行状況を表示できます。
 
-| フィールド            | 型                | 説明                                                                                                                                                                                                                                                |
-| ---------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `type`           | `"system"`       | メッセージタイプ                                                                                                                                                                                                                                          |
-| `subtype`        | `"api_retry"`    | これを再試行イベントとして識別                                                                                                                                                                                                                                   |
-| `attempt`        | integer          | 現在の試行番号（1 から開始）                                                                                                                                                                                                                                   |
-| `max_retries`    | integer          | このエラーの原因に許可される再試行の合計（セッション全体の予算より少ない場合がある）                                                                                                                                                                                                        |
-| `retry_delay_ms` | integer          | 次の試行までのミリ秒                                                                                                                                                                                                                                        |
-| `error_status`   | integer または null | 失敗した試行の HTTP ステータスコード、または試行が API から HTTP レスポンスを受け取らなかった場合は `null`                                                                                                                                                                                 |
-| `no_response`    | object、optional  | 失敗した試行が [no response headers in time](/docs/ja/errors#no-response-from-api) を受け取った場合にのみ存在します。`waited_ms` はその試行が待機した時間で、`retry_wait_ms` は再試行が待機する時間です。これらのイベントでは、`max_retries` はセッション全体の予算ではなく、この原因が通常受け取る 1 回の再試行を反映しています。Claude Code v2.1.261 以降が必要です |
-| `error`          | string           | エラーカテゴリ：`authentication_failed`、`oauth_org_not_allowed`、`account_on_hold`、`billing_error`、`rate_limit`、`overloaded`、`invalid_request`、`model_not_found`、`server_error`、`max_output_tokens`、`cloud_credential_error`、または `unknown`                 |
-| `uuid`           | string           | 一意のイベント識別子                                                                                                                                                                                                                                        |
-| `session_id`     | string           | イベントが属するセッション                                                                                                                                                                                                                                     |
+| フィールド | 型 | 説明 |
+| - | - | - |
+| `type` | `"system"` | メッセージタイプ |
+| `subtype` | `"api_retry"` | これを再試行イベントとして識別 |
+| `attempt` | integer | 現在の試行番号（1 から開始） |
+| `max_retries` | integer | このエラーの原因に許可される再試行の合計（セッション全体の予算より少ない場合がある） |
+| `retry_delay_ms` | integer | 次の試行までのミリ秒 |
+| `error_status` | integer または null | 失敗した試行の HTTP ステータスコード、または試行が API から HTTP レスポンスを受け取らなかった場合は `null` |
+| `no_response` | object、optional | 失敗した試行が [no response headers in time](/docs/ja/errors#no-response-from-api) を受け取った場合にのみ存在します。`waited_ms` はその試行が待機した時間で、`retry_wait_ms` は再試行が待機する時間です。これらのイベントでは、`max_retries` はセッション全体の予算ではなく、この原因が通常受け取る 1 回の再試行を反映しています。Claude Code v2.1.261 以降が必要です |
+| `error` | string | エラーカテゴリ：`authentication_failed`、`oauth_org_not_allowed`、`account_on_hold`、`billing_error`、`rate_limit`、`overloaded`、`invalid_request`、`model_not_found`、`server_error`、`max_output_tokens`、`cloud_credential_error`、または `unknown` |
+| `uuid` | string | 一意のイベント識別子 |
+| `session_id` | string | イベントが属するセッション |
 
 <h4 id="read-session-metadata">
   セッションメタデータを読む
@@ -253,19 +259,21 @@ API リクエストが再試行可能なエラーで失敗すると、Claude Cod
 
 `system/init` イベントのプラグインフィールドを使用して、読み込まれなかったプラグインをキャッチします。
 
-| フィールド           | 型     | 説明                                                                                                                                                                     |
-| --------------- | ----- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `plugins`       | array | 正常に読み込まれたプラグイン（各々 `name` と `path` を含む）                                                                                                                                 |
-| `plugin_errors` | array | プラグイン読み込み時エラー（各々 `plugin`、`type`、`message` を含む）。満たされていない依存関係バージョンと `--plugin-dir` 読み込み失敗（パスの欠落やアーカイブが無効など）を含みます。影響を受けたプラグインは降格され、`plugins` から削除されます。エラーがない場合、キーは省略されます |
+| フィールド | 型 | 説明 |
+| - | - | - |
+| `plugins` | array | 正常に読み込まれたプラグイン（各々 `name` と `path` を含む） |
+| `plugin_errors` | array | プラグイン読み込み時エラー（各々 `plugin`、`type`、`message` を含む）。満たされていない依存関係バージョンと `--plugin-dir` 読み込み失敗（パスの欠落やアーカイブが無効など）を含みます。影響を受けたプラグインは `plugins` から削除されます。エラーがない場合、キーは省略されます |
+
+`--plugin-dir` ディレクトリまたはアーカイブ自体が読み込みに失敗した場合、その `plugin_errors` エントリは解決された絶対パスを `path` として含みます。複数の `--plugin-dir` 値のどれが失敗したかを判断するために使用します。`path` フィールドは Claude Code v2.1.283 以降が必要です。
 
 MCP サーバーフィールドも同じ方法で使用します。
 `-p` で [`--mcp-config`](/docs/ja/cli-reference#cli-flags) を渡す場合、Claude Code は最初のターンを実行する前に、まだ保留中のサーバーを待機します（[`MCP_TIMEOUT`](/docs/ja/env-vars) スタートアップタイムアウト（デフォルト 30 秒）まで）。[cached tool list](/docs/ja/agent-sdk/mcp#connection-timing) を持つリモートサーバーは待機をスキップし、`system/init` に `pending` を表示し、最初のツール呼び出しで接続します。待機には Claude Code v2.1.221 以降が必要です。
 
 Claude Code は起動時に各 `--mcp-config` エントリを検証し、検証に失敗したエントリをスキップします（例えば、`type` のない `url` エントリ）。実行は続行され、クリーンに終了するため、これらのフィールドをチェックして、読み込まれなかったサーバーをキャッチします。
 
-| フィールド               | 型     | 説明                                                                                                                                                                                                                                                                                             |
-| ------------------- | ----- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `mcp_servers`       | array | セッション内の MCP サーバー（各々 `name` と `status` を含む）                                                                                                                                                                                                                                                     |
+| フィールド | 型 | 説明 |
+| - | - | - |
+| `mcp_servers` | array | セッション内の MCP サーバー（各々 `name` と `status` を含む） |
 | `mcp_server_errors` | array | 設定検証によってスキップされた `--mcp-config` エントリ（各々 `name`、`type`、`message` を含む）。`type` はスキップカテゴリ（`unknown_type`、`url_missing_type`、`invalid_config`、`reserved_name` など）です。認識しない値は汎用スキップとして扱ってください。影響を受けたサーバーは `mcp_servers` から削除されます。エラーがない場合、キーは省略されるため、CI ゲートは空でない配列で失敗できます。Claude Code v2.1.219 以降が必要です |
 
 コマンドを手でターミナルで実行する場合、Claude Code は stderr にスタートアップ警告も出力します（例：`Warning: 1 MCP server skipped due to invalid config:`）。その後に各スキップエントリの理由が続きます。stderr をリダイレクトする場合、または CI ランナーなどのプログラムがそれをキャプチャする場合、Claude Code は警告を出力せず、スキップされたエントリを `mcp_server_errors` フィールドでのみ報告します。警告には Claude Code v2.1.219 以降が必要です。
@@ -276,15 +284,15 @@ Claude Code は起動時に各 `--mcp-config` エントリを検証し、検証�
 
 [`CLAUDE_CODE_SYNC_PLUGIN_INSTALL`](/docs/ja/env-vars) が設定されている場合、Claude Code は最初のターンの前にマーケットプレイスプラグインがインストールされている間、`system/plugin_install` イベントを発行します。これらを使用して、独自の UI にインストール進行状況を表示します。
 
-| フィールド        | 型                                                      | 説明                                                                                      |
-| ------------ | ------------------------------------------------------ | --------------------------------------------------------------------------------------- |
-| `type`       | `"system"`                                             | メッセージタイプ                                                                                |
-| `subtype`    | `"plugin_install"`                                     | これをプラグインインストールイベントとして識別                                                                 |
-| `status`     | `"started"`、`"installed"`、`"failed"`、または `"completed"` | `started` と `completed` は全体的なインストールをブラケットします。`installed` と `failed` は個別のマーケットプレイスを報告します |
-| `name`       | string、optional                                        | マーケットプレイス名（`installed` と `failed` に存在）                                                  |
-| `error`      | string、optional                                        | 失敗メッセージ（`failed` に存在）                                                                   |
-| `uuid`       | string                                                 | 一意のイベント識別子                                                                              |
-| `session_id` | string                                                 | イベントが属するセッション                                                                           |
+| フィールド | 型 | 説明 |
+| - | - | - |
+| `type` | `"system"` | メッセージタイプ |
+| `subtype` | `"plugin_install"` | これをプラグインインストールイベントとして識別 |
+| `status` | `"started"`、`"installed"`、`"failed"`、または `"completed"` | `started` と `completed` は全体的なインストールをブラケットします。`installed` と `failed` は個別のマーケットプレイスを報告します |
+| `name` | string、optional | マーケットプレイス名（`installed` と `failed` に存在） |
+| `error` | string、optional | 失敗メッセージ（`failed` に存在） |
+| `uuid` | string | 一意のイベント識別子 |
+| `session_id` | string | イベントが属するセッション |
 
 <h3 id="auto-approve-tools">
   ツールを自動承認する

@@ -95,12 +95,12 @@ Claude Code はローカルで実行されます。LLM と相互作用するた�
 
 保存時の暗号化はモデルプロバイダーによって異なります：
 
-| プロバイダー                        | 保存時の暗号化                                                                                                                                                                                                                                                                                                                                          |
-| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Anthropic API                 | インフラストラクチャレベルのディスク暗号化（AES-256）。サーバー側の永続化がないようにするには、[Zero Data Retention](/docs/ja/zero-data-retention) を有効にしてください。                                                                                                                                                                                                                                    |
-| Amazon Bedrock                | AWS 管理キーを使用した AES-256。AWS KMS 経由でカスタマー管理キーを利用可能です。                                                                                                                                                                                                                                                                                               |
-| Google Cloud の Agent Platform | Google 管理の暗号化キー。CMEK を利用可能です。                                                                                                                                                                                                                                                                                                                    |
-| Microsoft Foundry             | デプロイメントの[ホスティングオプション](https://platform.claude.com/docs/en/build-with-claude/claude-in-microsoft-foundry#hosting-options)によって異なります。Azure でホストされているデプロイメントの場合、プロンプトと完了は Azure 内に留まり、使用状況メタデータと Anthropic のセーフティシステムでフラグが付けられたコンテンツのみが Anthropic に送信されます。Anthropic でホストされているデプロイメントの場合、リクエストは AES-256 ディスク暗号化を使用して Anthropic インフラストラクチャにルーティングされます。 |
+| プロバイダー | 保存時の暗号化 |
+| - | - |
+| Anthropic API | インフラストラクチャレベルのディスク暗号化（AES-256）。サーバー側の永続化がないようにするには、[Zero Data Retention](/docs/ja/zero-data-retention) を有効にしてください。 |
+| Amazon Bedrock | AWS 管理キーを使用した AES-256。AWS KMS 経由でカスタマー管理キーを利用可能です。 |
+| Google Cloud の Agent Platform | Google 管理の暗号化キー。CMEK を利用可能です。 |
+| Microsoft Foundry | デプロイメントの[ホスティングオプション](https://platform.claude.com/docs/en/build-with-claude/claude-in-microsoft-foundry#hosting-options)によって異なります。Azure でホストされているデプロイメントの場合、プロンプトと完了は Azure 内に留まり、使用状況メタデータと Anthropic のセーフティシステムでフラグが付けられたコンテンツのみが Anthropic に送信されます。Anthropic でホストされているデプロイメントの場合、リクエストは AES-256 ディスク暗号化を使用して Anthropic インフラストラクチャにルーティングされます。 |
 
 Claude Code は Anthropic の API 上に構築されています。API ロギング手順を含む API セキュリティコントロールの詳細については、[Anthropic Trust Center](https://trust.anthropic.com) のコンプライアンスアーティファクトを参照してください。
 
@@ -110,8 +110,8 @@ Claude Code は Anthropic の API 上に構築されています。API ロギン
 
 [クラウドセッション](/docs/ja/claude-code-on-the-web)は、デフォルトではローカルではなく Anthropic 管理の仮想マシンで実行されます。組織が[自己ホスト環境](/docs/ja/self-hosted-environments)にルーティングするセッションは、制御するインフラストラクチャ上で実行されます。マシン上に留まるもの、および Anthropic に送信されるものについては、[インフラストラクチャに留まるもの](/docs/ja/self-hosted-environments#what-stays-on-your-infrastructure)を参照してください。Anthropic ホスト型クラウドセッションでは：
 
-* **コードとデータストレージ：** リポジトリは分離された VM にクローンされます。コードとセッションデータは、アカウントタイプの保持および使用ポリシーの対象となります（上記のデータ保持セクションを参照）
-* **認証情報：** GitHub 認証はセキュアプロキシを通じて処理されます。GitHub 認証情報がサンドボックスに入ることはありません
+* **コードとデータストレージ：** リポジトリは分離された VM にクローンされます。Anthropic はセッショントランスクリプトを保存して、後でセッションに戻ることができるようにします。コードとセッションデータは、アカウントタイプの[保持および使用ポリシー](#data-retention)の対象となります
+* **認証情報：** GitHub 認証情報は Anthropic のサーバーに暗号化されて保存され、VM に入ることはありません。VM からの GitHub トラフィックは、Anthropic プロキシを通じて送信され、サーバー側でそれらを接続します
 * **ネットワークトラフィック：** すべてのアウトバウンドトラフィックは、監査ログと不正使用防止のためのセキュリティプロキシを通じて送信されます
 * **セッションデータ：** プロンプト、コード変更、および出力は、ローカル Claude Code 使用と同じデータポリシーに従います
 
@@ -144,13 +144,13 @@ Amazon Bedrock や Google Cloud の Agent Platform などのサードパーテ�
 
 デフォルトでは、Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、または Claude Platform on AWS を使用する場合、エラーレポート、テレメトリ、およびバグレポートは無効になります。セッション品質調査と WebFetch ドメインセーフティチェックは例外であり、プロバイダーに関係なく実行されます。署名済みの [Claude apps gateway](/docs/ja/claude-apps-gateway) セッションでは、Anthropic への使用分析、エラーレポート、および調査評価はゲートウェイ認証情報自体によって無効になり、それらを再度有効にする設定はありません。`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` を設定することで、調査を含むすべての非必須トラフィックをオプトアウトできます。この変数は WebFetch チェックや公式プラグインマーケットプレイスの自動インストールに影響を与えません。それぞれに独自のオプトアウトがあります。WebFetch の場合は [settings](/docs/ja/settings) の `skipWebFetchPreflight`、マーケットプレイスの場合は `CLAUDE_CODE_DISABLE_OFFICIAL_MARKETPLACE_AUTOINSTALL` です。以下は完全なデフォルト動作です：
 
-| サービス                             | Claude API                                                                            | Google Cloud の Agent Platform API                                               | Amazon Bedrock API                                                              | Microsoft Foundry API                                                           | Claude Platform on AWS                                                          |
-| -------------------------------- | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
-| **メトリクス**                        | デフォルトオン。<br />`DISABLE_TELEMETRY=1` で無効にします。                                          | デフォルトオフ。<br />`CLAUDE_CODE_USE_VERTEX` は 1 である必要があります。                          | デフォルトオフ。<br />`CLAUDE_CODE_USE_BEDROCK` は 1 である必要があります。                         | デフォルトオフ。<br />`CLAUDE_CODE_USE_FOUNDRY` は 1 である必要があります。                         | デフォルトオフ。<br />`CLAUDE_CODE_USE_ANTHROPIC_AWS` は 1 である必要があります。                   |
-| **エラーレポート**                      | v2.1.198 以降の Pro および Max サインインではオン、それ以外はオフ。<br />`DISABLE_ERROR_REPORTING=1` で無効にします。 | デフォルトオフ。<br />`CLAUDE_CODE_USE_VERTEX` は 1 である必要があります。                          | デフォルトオフ。<br />`CLAUDE_CODE_USE_BEDROCK` は 1 である必要があります。                         | デフォルトオフ。<br />`CLAUDE_CODE_USE_FOUNDRY` は 1 である必要があります。                         | デフォルトオフ。<br />`CLAUDE_CODE_USE_ANTHROPIC_AWS` は 1 である必要があります。                   |
-| **Claude API（`/feedback` レポート）** | デフォルトオン。<br />`DISABLE_FEEDBACK_COMMAND=1` で無効にします。                                   | デフォルトオフ。<br />`CLAUDE_CODE_USE_VERTEX` は 1 である必要があります。                          | デフォルトオフ。<br />`CLAUDE_CODE_USE_BEDROCK` は 1 である必要があります。                         | デフォルトオフ。<br />`CLAUDE_CODE_USE_FOUNDRY` は 1 である必要があります。                         | デフォルトオフ。<br />`CLAUDE_CODE_USE_ANTHROPIC_AWS` は 1 である必要があります。                   |
-| **セッション品質調査**                    | デフォルトオン。<br />`CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY=1` で無効にします。                        | デフォルトオン。<br />`CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY=1` で無効にします。                  | デフォルトオン。<br />`CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY=1` で無効にします。                  | デフォルトオン。<br />`CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY=1` で無効にします。                  | デフォルトオン。<br />`CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY=1` で無効にします。                  |
-| **WebFetch ドメインセーフティチェック**       | デフォルトオン。<br />[settings](/docs/ja/settings) で `skipWebFetchPreflight: true` で無効にします。       | デフォルトオン。<br />[settings](/docs/ja/settings) で `skipWebFetchPreflight: true` で無効にします。 | デフォルトオン。<br />[settings](/docs/ja/settings) で `skipWebFetchPreflight: true` で無効にします。 | デフォルトオン。<br />[settings](/docs/ja/settings) で `skipWebFetchPreflight: true` で無効にします。 | デフォルトオン。<br />[settings](/docs/ja/settings) で `skipWebFetchPreflight: true` で無効にします。 |
+| サービス | Claude API | Google Cloud の Agent Platform API | Amazon Bedrock API | Microsoft Foundry API | Claude Platform on AWS |
+| - | - | - | - | - | - |
+| **メトリクス** | デフォルトオン。<br />`DISABLE_TELEMETRY=1` で無効にします。 | デフォルトオフ。<br />`CLAUDE_CODE_USE_VERTEX` は 1 である必要があります。 | デフォルトオフ。<br />`CLAUDE_CODE_USE_BEDROCK` は 1 である必要があります。 | デフォルトオフ。<br />`CLAUDE_CODE_USE_FOUNDRY` は 1 である必要があります。 | デフォルトオフ。<br />`CLAUDE_CODE_USE_ANTHROPIC_AWS` は 1 である必要があります。 |
+| **エラーレポート** | v2.1.198 以降の Pro および Max サインインではオン、それ以外はオフ。<br />`DISABLE_ERROR_REPORTING=1` で無効にします。 | デフォルトオフ。<br />`CLAUDE_CODE_USE_VERTEX` は 1 である必要があります。 | デフォルトオフ。<br />`CLAUDE_CODE_USE_BEDROCK` は 1 である必要があります。 | デフォルトオフ。<br />`CLAUDE_CODE_USE_FOUNDRY` は 1 である必要があります。 | デフォルトオフ。<br />`CLAUDE_CODE_USE_ANTHROPIC_AWS` は 1 である必要があります。 |
+| **Claude API（`/feedback` レポート）** | デフォルトオン。<br />`DISABLE_FEEDBACK_COMMAND=1` で無効にします。 | デフォルトオフ。<br />`CLAUDE_CODE_USE_VERTEX` は 1 である必要があります。 | デフォルトオフ。<br />`CLAUDE_CODE_USE_BEDROCK` は 1 である必要があります。 | デフォルトオフ。<br />`CLAUDE_CODE_USE_FOUNDRY` は 1 である必要があります。 | デフォルトオフ。<br />`CLAUDE_CODE_USE_ANTHROPIC_AWS` は 1 である必要があります。 |
+| **セッション品質調査** | デフォルトオン。<br />`CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY=1` で無効にします。 | デフォルトオン。<br />`CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY=1` で無効にします。 | デフォルトオン。<br />`CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY=1` で無効にします。 | デフォルトオン。<br />`CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY=1` で無効にします。 | デフォルトオン。<br />`CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY=1` で無効にします。 |
+| **WebFetch ドメインセーフティチェック** | デフォルトオン。<br />[settings](/docs/ja/settings) で `skipWebFetchPreflight: true` で無効にします。 | デフォルトオン。<br />[settings](/docs/ja/settings) で `skipWebFetchPreflight: true` で無効にします。 | デフォルトオン。<br />[settings](/docs/ja/settings) で `skipWebFetchPreflight: true` で無効にします。 | デフォルトオン。<br />[settings](/docs/ja/settings) で `skipWebFetchPreflight: true` で無効にします。 | デフォルトオン。<br />[settings](/docs/ja/settings) で `skipWebFetchPreflight: true` で無効にします。 |
 
 すべての環境変数は `settings.json` にチェックインできます（[settings reference](/docs/ja/settings-reference) を参照）。
 

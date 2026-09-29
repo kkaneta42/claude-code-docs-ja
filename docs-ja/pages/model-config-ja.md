@@ -31,26 +31,26 @@ Claude Code の `model` 設定では、以下のいずれかを設定できま�
 
 モデルエイリアスは、正確なバージョン番号を覚えることなくモデル設定を選択するための便利な方法を提供します。
 
-| モデルエイリアス         | 動作                                                                                                                                                                                                                                                                              |
-| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **`default`**    | 特別な値で、モデルオーバーライドをクリアし、アカウントタイプに応じた推奨モデルに戻すか、管理者が設定した場合は[組織デフォルトモデル](#organization-default-model)に戻します。それ自体はモデルエイリアスではありません                                                                                                                                                      |
-| **`best`**       | 組織がアクセスできる場合は Fable 5 を使用し、そうでない場合は最新の Opus モデルを使用                                                                                                                                                                                                                              |
-| **`fable`**      | 最も難しく、実行時間が長いタスク用に Claude Fable 5 を使用                                                                                                                                                                                                                                           |
-| **`sonnet`**     | 日常的なコーディングタスク用に最新の Sonnet モデルを使用                                                                                                                                                                                                                                                |
-| **`opus`**       | 複雑な推論タスク用に最新の Opus モデルを使用                                                                                                                                                                                                                                                       |
-| **`haiku`**      | シンプルなタスク用に高速で効率的な Haiku モデルを使用                                                                                                                                                                                                                                                  |
+| モデルエイリアス | 動作 |
+| - | - |
+| **`default`** | 特別な値で、モデルオーバーライドをクリアし、アカウントタイプに応じた推奨モデルに戻すか、管理者が設定した場合は[組織デフォルトモデル](#organization-default-model)に戻します。それ自体はモデルエイリアスではありません |
+| **`best`** | 組織がアクセスできる場合は Fable 5 を使用し、そうでない場合は最新の Opus モデルを使用 |
+| **`fable`** | 最も難しく、実行時間が長いタスク用に Claude Fable 5 を使用 |
+| **`sonnet`** | 日常的なコーディングタスク用に最新の Sonnet モデルを使用 |
+| **`opus`** | 複雑な推論タスク用に最新の Opus モデルを使用 |
+| **`haiku`** | シンプルなタスク用に高速で効率的な Haiku モデルを使用 |
 | **`sonnet[1m]`** | 長いセッション用に [100 万トークンのコンテキストウィンドウ](https://platform.claude.com/docs/ja/build-with-claude/context-windows#context-window-sizes-by-model) を備えた Sonnet を使用。`sonnet` がすでにネイティブの 1M ウィンドウを持つ Sonnet 5 に解決される場合は効果がありません。[LLM ゲートウェイ](/docs/ja/llm-gateway)経由の場合は、Sonnet 5 の 1M ウィンドウを選択します |
-| **`opus[1m]`**   | 長いセッション用に [100 万トークンのコンテキストウィンドウ](https://platform.claude.com/docs/ja/build-with-claude/context-windows#context-window-sizes-by-model) を備えた Opus を使用                                                                                                                            |
-| **`opusplan`**   | Plan Mode 中は `opus` を使用し、実行中は `sonnet` に自動的に切り替わる特別なモード                                                                                                                                                                                                                         |
+| **`opus[1m]`** | 長いセッション用に [100 万トークンのコンテキストウィンドウ](https://platform.claude.com/docs/ja/build-with-claude/context-windows#context-window-sizes-by-model) を備えた Opus を使用 |
+| **`opusplan`** | Plan Mode 中は `opus` を使用し、実行中は `sonnet` に自動的に切り替わる特別なモード |
 
 `opus` と `sonnet` エイリアスが解決するバージョンは、プロバイダーによって異なります。
 
-| プロバイダー                                               | `opus`   | `sonnet`   |
-| :--------------------------------------------------- | :------- | :--------- |
-| Anthropic API                                        | Opus 4.8 | Sonnet 5   |
+| プロバイダー | `opus` | `sonnet` |
+| :- | :- | :- |
+| Anthropic API | Opus 4.8 | Sonnet 5 |
 | [Claude Platform on AWS](/docs/ja/claude-platform-on-aws) | Opus 4.8 | Sonnet 4.6 |
-| Amazon Bedrock、Google Cloud の Agent Platform         | Opus 4.8 | Sonnet 4.5 |
-| Microsoft Foundry                                    | Opus 4.6 | Sonnet 4.5 |
+| Amazon Bedrock、Google Cloud の Agent Platform | Opus 4.8 | Sonnet 4.5 |
+| Microsoft Foundry | Opus 4.6 | Sonnet 4.5 |
 
 エイリアスが古いモデルに解決される場合、より新しいモデルは完全なモデル名を明示的に選択するか、`ANTHROPIC_DEFAULT_OPUS_MODEL` または `ANTHROPIC_DEFAULT_SONNET_MODEL` を設定することで利用可能です。
 
@@ -194,10 +194,10 @@ Claude Code があなたに代わって行うモデル変更は、同じ方法�
 
 すべてのサーフェスは受け取るアローリストを適用します。どの配信メカニズムが各サーフェスに到達するかは異なります。
 
-| 配信メカニズム                                            | CLI および IDE | デスクトップローカルセッション | Web、モバイル、およびクラウドセッション | Agent SDK および非対話型 | Cowork       |
-| :------------------------------------------------- | :---------- | :-------------- | :-------------------- | :---------------- | :----------- |
-| 管理コンソールからの [サーバー管理設定](/docs/ja/server-managed-settings) | 適用          | 適用              | 適用                    | 適用                | 配信されない       |
-| [MDM または管理設定ファイル](/docs/ja/settings#settings-files)     | 適用          | 適用              | 配信されない                | 適用                | デプロイされた場所で適用 |
+| 配信メカニズム | CLI および IDE | デスクトップローカルセッション | Web、モバイル、およびクラウドセッション | Agent SDK および非対話型 | Cowork |
+| :- | :- | :- | :- | :- | :- |
+| 管理コンソールからの [サーバー管理設定](/docs/ja/server-managed-settings) | 適用 | 適用 | 適用 | 適用 | 配信されない |
+| [MDM または管理設定ファイル](/docs/ja/settings#settings-files) | 適用 | 適用 | 配信されない | 適用 | デプロイされた場所で適用 |
 
 * クラウドセッション（[Claude Code on the web](/docs/ja/claude-code-on-the-web) または Desktop アプリ内）は Anthropic 管理 VM で実行されます。デバイスにデプロイされた設定はそれらに到達しないため、サーバー管理設定を通じてアローリストを配信してください。クラウドセッション内の中途のモデル切り替えは、要求されたモデルがアローリストで除外されている場合に拒否されます。セッション作成時のサーバー側拒否は、`availableModels` 設定キーではなく、[組織モデル制限](#organization-model-restrictions) に適用されます。
 * Cowork（Claude Desktop アプリの agentic-work タブ）は Claude Code サーフェスではなく、設計上サーバー管理設定を受け取りません。管理設定ファイルは、セッションが実行される場所に存在する場合、Cowork セッションに適用されます。リモート Cowork セッションは Anthropic 管理 VM で実行され、デバイスにデプロイされたファイルは存在しません。
@@ -471,11 +471,11 @@ Fable 5 はサイバーセキュリティと生物学コンテンツ用のセー
 
 利用可能な努力レベルはモデルによって異なります。ここに記載されていないモデルは努力をサポートしていません。
 
-| モデル                        | レベル                                 |
-| :------------------------- | :---------------------------------- |
-| Fable 5                    | `low`、`medium`、`high`、`xhigh`、`max` |
+| モデル | レベル |
+| :- | :- |
+| Fable 5 | `low`、`medium`、`high`、`xhigh`、`max` |
 | Sonnet 5、Opus 4.8、Opus 4.7 | `low`、`medium`、`high`、`xhigh`、`max` |
-| Opus 4.6 と Sonnet 4.6      | `low`、`medium`、`high`、`max`         |
+| Opus 4.6 と Sonnet 4.6 | `low`、`medium`、`high`、`max` |
 
 アクティブなモデルがサポートしないレベルを設定した場合、Claude Code は設定したレベル以下の最高サポートレベルにフォールバックします。例えば、`xhigh` は Opus 4.6 では `high` として実行されます。組織は、モデルに対して利用可能なレベルをキャップすることもできます。[組織努力制限](#organization-effort-limits) を参照してください。
 
@@ -505,13 +505,13 @@ ultracode が利用不可の場合（例えば [workflows がオフ](/docs/ja/wo
 
 各レベルはトークン支出と機能をトレードオフします。デフォルトはほとんどのコーディングタスクに適しています。別のバランスが必要な場合は調整します。
 
-| レベル         | 使用する場合                                                                                        |
-| :---------- | :-------------------------------------------------------------------------------------------- |
-| `low`       | インテリジェンスに敏感でない短くスコープされたレイテンシに敏感なタスク用に予約                                                       |
-| `medium`    | インテリジェンスをトレードオフできるコスト敏感な作業のトークン使用量を削減                                                         |
-| `high`      | トークン使用量とインテリジェンスのバランス。Fable 5、Sonnet 5、Opus 4.8、Opus 4.6、Sonnet 4.6 でのデフォルト                   |
-| `xhigh`     | より高いトークン支出での深い推論。Opus 4.7 でのデフォルト                                                             |
-| `max`       | 難しいタスクのパフォーマンスを改善できますが、収益逓減を示す可能性があり、過度な思考の傾向があります。広く採用する前にテスト                                |
+| レベル | 使用する場合 |
+| :- | :- |
+| `low` | インテリジェンスに敏感でない短くスコープされたレイテンシに敏感なタスク用に予約 |
+| `medium` | インテリジェンスをトレードオフできるコスト敏感な作業のトークン使用量を削減 |
+| `high` | トークン使用量とインテリジェンスのバランス。Fable 5、Sonnet 5、Opus 4.8、Opus 4.6、Sonnet 4.6 でのデフォルト |
+| `xhigh` | より高いトークン支出での深い推論。Opus 4.7 でのデフォルト |
+| `max` | 難しいタスクのパフォーマンスを改善できますが、収益逓減を示す可能性があり、過度な思考の傾向があります。広く採用する前にテスト |
 | `ultracode` | 各実質的なタスク用に `xhigh` ごとのメッセージ推論で [dynamic workflow](/docs/ja/workflows) を計画する Claude Code 設定。セッションのみ |
 
 努力スケールはモデルごとに調整されるため、同じレベル名はモデル全体で同じ基盤値を表しません。
@@ -555,11 +555,11 @@ Opus 4.6 と Sonnet 4.6 では、`CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING=1` を�
 
 拡張思考は、Claude が応答する前に発する推論です。[適応的推論](#adjust-effort-level) をサポートするモデルでは、努力レベルは思考がどの程度発生するかの主要な制御です。以下の設定は思考をオンまたはオフにし、それがどのように表示されるかを制御します。
 
-| 制御            | 設定方法                                                                                                                                                                                                                                                                 |
-| :------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 現在のセッションのトグル  | macOS では `Option+T`、Windows と Linux では `Alt+T` を押します                                                                                                                                                                                                                 |
-| グローバルデフォルトを設定 | `/config` を実行して思考モードをトグルします。`~/.claude/settings.json` に `alwaysThinkingEnabled` として保存されます                                                                                                                                                                            |
-| 努力に関係なく無効化    | [`MAX_THINKING_TOKENS=0`](/docs/ja/env-vars) を設定します。これは Anthropic API 上の Fable 5 を除いて思考をオフにします。[サードパーティプロバイダー](/docs/ja/third-party-integrations) ではこれは `thinking` パラメータを省略し、適応的推論モデルは引き続き思考する可能性があります。他の値は [固定思考予算](#adaptive-reasoning-and-fixed-thinking-budgets) でのみ適用されます |
+| 制御 | 設定方法 |
+| :- | :- |
+| 現在のセッションのトグル | macOS では `Option+T`、Windows と Linux では `Alt+T` を押します |
+| グローバルデフォルトを設定 | `/config` を実行して思考モードをトグルします。`~/.claude/settings.json` に `alwaysThinkingEnabled` として保存されます |
+| 努力に関係なく無効化 | [`MAX_THINKING_TOKENS=0`](/docs/ja/env-vars) を設定します。これは Anthropic API 上の Fable 5 を除いて思考をオフにします。[サードパーティプロバイダー](/docs/ja/third-party-integrations) ではこれは `thinking` パラメータを省略し、適応的推論モデルは引き続き思考する可能性があります。他の値は [固定思考予算](#adaptive-reasoning-and-fixed-thinking-budgets) でのみ適用されます |
 
 思考は Fable 5 でオフにすることはできません。セッショントグル、`alwaysThinkingEnabled`、`MAX_THINKING_TOKENS=0` はそこに効果がなく、Fable 5 は努力レベルに基づいて各ステップでどの程度思考するかを決定します。
 
@@ -573,11 +573,11 @@ Fable 5、Sonnet 5、Opus 4.6 以降、Sonnet 4.6 は、大規模なコードベ
 
 利用可能性はモデルとプランによって異なります。Anthropic API では、Fable 5、Sonnet 5、Opus 4.8、Opus 4.7 は常に 1M ウィンドウで実行されます。Max、Team、Enterprise プランでは、Opus は追加設定なしで自動的に 1M コンテキストにアップグレードされます。これは Team Standard と Team Premium の両方のシートに適用されます。Sonnet 4.6 with 1M context は自動アップグレードの一部ではなく、Max を含むすべてのサブスクリプションプランで [使用クレジット](https://support.claude.com/ja/articles/12429409-extra-usage-for-paid-claude-plans) が必要です。
 
-| プラン                 | Opus with 1M context                                                                             | Sonnet 4.6 with 1M context                                                                       |
-| ------------------- | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
-| Max、Team、Enterprise | サブスクリプションに含まれる                                                                                   | [使用クレジット](https://support.claude.com/ja/articles/12429409-extra-usage-for-paid-claude-plans) が必要 |
-| Pro                 | [使用クレジット](https://support.claude.com/ja/articles/12429409-extra-usage-for-paid-claude-plans) が必要 | [使用クレジット](https://support.claude.com/ja/articles/12429409-extra-usage-for-paid-claude-plans) が必要 |
-| API と従量課金           | フルアクセス                                                                                           | フルアクセス                                                                                           |
+| プラン | Opus with 1M context | Sonnet 4.6 with 1M context |
+| - | - | - |
+| Max、Team、Enterprise | サブスクリプションに含まれる | [使用クレジット](https://support.claude.com/ja/articles/12429409-extra-usage-for-paid-claude-plans) が必要 |
+| Pro | [使用クレジット](https://support.claude.com/ja/articles/12429409-extra-usage-for-paid-claude-plans) が必要 | [使用クレジット](https://support.claude.com/ja/articles/12429409-extra-usage-for-paid-claude-plans) が必要 |
+| API と従量課金 | フルアクセス | フルアクセス |
 
 1M コンテキストを完全に無効にするには、`CLAUDE_CODE_DISABLE_1M_CONTEXT=1` を設定します。これにより、1M モデルバリアントがモデルピッカーから削除されます。[環境変数](/docs/ja/env-vars) を参照してください。
 
@@ -640,13 +640,13 @@ Claude Code は `ANTHROPIC_CUSTOM_MODEL_OPTION` で設定されたモデル ID �
 
 以下の環境変数を使用できます。これらは完全なモデル名、またはお客様の API プロバイダーの同等のものである必要があり、エイリアスがマップするモデル名を制御します。
 
-| 環境変数                             | 説明                                                                                                                                                                                                                                                                    |
-| -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ANTHROPIC_DEFAULT_FABLE_MODEL`  | `fable` に使用するモデル、および Claude Code が [自動モデルフォールバック](#automatic-model-fallback) でサードパーティプロバイダーが Fable 5 として認識するモデル ID                                                                                                                                                    |
-| `ANTHROPIC_DEFAULT_OPUS_MODEL`   | `opus` に使用するモデル、または Plan Mode がアクティブな場合の `opusplan` に使用するモデル                                                                                                                                                                                                          |
-| `ANTHROPIC_DEFAULT_SONNET_MODEL` | `sonnet` に使用するモデル、または Plan Mode がアクティブでない場合の `opusplan` に使用するモデル                                                                                                                                                                                                      |
-| `ANTHROPIC_DEFAULT_HAIKU_MODEL`  | `haiku` に使用するモデル、または [バックグラウンド機能](/docs/ja/costs#background-token-usage) に使用するモデル                                                                                                                                                                                          |
-| `CLAUDE_CODE_SUBAGENT_MODEL`     | すべての [subagents](/docs/ja/sub-agents#choose-a-model)、[agent teams](/docs/ja/agent-teams)、および [workflow](/docs/ja/workflows) が実行するエージェントに使用するモデル。`haiku` などのエイリアスまたは完全なモデル名を受け入れ、呼び出しごとの `model` パラメータと subagent 定義の `model` frontmatter をオーバーライドします。通常のモデル解決を使用するには `inherit` に設定します |
+| 環境変数 | 説明 |
+| - | - |
+| `ANTHROPIC_DEFAULT_FABLE_MODEL` | `fable` に使用するモデル、および Claude Code が [自動モデルフォールバック](#automatic-model-fallback) でサードパーティプロバイダーが Fable 5 として認識するモデル ID |
+| `ANTHROPIC_DEFAULT_OPUS_MODEL` | `opus` に使用するモデル、または Plan Mode がアクティブな場合の `opusplan` に使用するモデル |
+| `ANTHROPIC_DEFAULT_SONNET_MODEL` | `sonnet` に使用するモデル、または Plan Mode がアクティブでない場合の `opusplan` に使用するモデル |
+| `ANTHROPIC_DEFAULT_HAIKU_MODEL` | `haiku` に使用するモデル、または [バックグラウンド機能](/docs/ja/costs#background-token-usage) に使用するモデル |
+| `CLAUDE_CODE_SUBAGENT_MODEL` | すべての [subagents](/docs/ja/sub-agents#choose-a-model)、[agent teams](/docs/ja/agent-teams)、および [workflow](/docs/ja/workflows) が実行するエージェントに使用するモデル。`haiku` などのエイリアスまたは完全なモデル名を受け入れ、呼び出しごとの `model` パラメータと subagent 定義の `model` frontmatter をオーバーライドします。通常のモデル解決を使用するには `inherit` に設定します |
 
 注：`ANTHROPIC_SMALL_FAST_MODEL` は `ANTHROPIC_DEFAULT_HAIKU_MODEL` の代わりに非推奨です。
 
@@ -664,11 +664,11 @@ Claude Code は `ANTHROPIC_CUSTOM_MODEL_OPTION` で設定されたモデル ID �
 
 プロバイダーのバージョン固有のモデル ID を使用して、以下の環境変数を使用します。
 
-| プロバイダー                        | 例                                                                    |
-| :---------------------------- | :------------------------------------------------------------------- |
-| Amazon Bedrock                | `export ANTHROPIC_DEFAULT_OPUS_MODEL='us.anthropic.claude-opus-4-8'` |
-| Google Cloud の Agent Platform | `export ANTHROPIC_DEFAULT_OPUS_MODEL='claude-opus-4-8'`              |
-| Microsoft Foundry             | `export ANTHROPIC_DEFAULT_OPUS_MODEL='claude-opus-4-8'`              |
+| プロバイダー | 例 |
+| :- | :- |
+| Amazon Bedrock | `export ANTHROPIC_DEFAULT_OPUS_MODEL='us.anthropic.claude-opus-4-8'` |
+| Google Cloud の Agent Platform | `export ANTHROPIC_DEFAULT_OPUS_MODEL='claude-opus-4-8'` |
+| Microsoft Foundry | `export ANTHROPIC_DEFAULT_OPUS_MODEL='claude-opus-4-8'` |
 
 `ANTHROPIC_DEFAULT_FABLE_MODEL`、`ANTHROPIC_DEFAULT_SONNET_MODEL`、`ANTHROPIC_DEFAULT_HAIKU_MODEL` に同じパターンを適用します。すべてのプロバイダー全体の現在および従来のモデル ID については、[モデル概要](https://platform.claude.com/docs/ja/about-claude/models/overview) を参照してください。ユーザーを新しいモデルバージョンにアップグレードするには、これらの環境変数を更新して再デプロイします。
 
@@ -696,24 +696,24 @@ export ANTHROPIC_DEFAULT_OPUS_MODEL='claude-opus-4-8[1m]'
 
 これらの変数は、Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry などのサードパーティプロバイダーでのみ有効です。`ANTHROPIC_BASE_URL` が [LLM ゲートウェイ](/docs/ja/llm-gateway) を指す場合、`_NAME` と `_DESCRIPTION` 変数も有効です。`api.anthropic.com` に直接接続する場合は効果がありません。
 
-| 環境変数                                                  | 説明                                                                         |
-| ----------------------------------------------------- | -------------------------------------------------------------------------- |
-| `ANTHROPIC_DEFAULT_OPUS_MODEL_NAME`                   | `/model` ピッカーでピン留めされた Opus モデルの表示名。設定されていない場合はモデル ID がデフォルト                |
-| `ANTHROPIC_DEFAULT_OPUS_MODEL_DESCRIPTION`            | `/model` ピッカーでピン留めされた Opus モデルの表示説明。設定されていない場合は `Custom Opus model` がデフォルト |
-| `ANTHROPIC_DEFAULT_OPUS_MODEL_SUPPORTED_CAPABILITIES` | ピン留めされた Opus モデルがサポートする機能のカンマ区切りリスト                                        |
+| 環境変数 | 説明 |
+| - | - |
+| `ANTHROPIC_DEFAULT_OPUS_MODEL_NAME` | `/model` ピッカーでピン留めされた Opus モデルの表示名。設定されていない場合はモデル ID がデフォルト |
+| `ANTHROPIC_DEFAULT_OPUS_MODEL_DESCRIPTION` | `/model` ピッカーでピン留めされた Opus モデルの表示説明。設定されていない場合は `Custom Opus model` がデフォルト |
+| `ANTHROPIC_DEFAULT_OPUS_MODEL_SUPPORTED_CAPABILITIES` | ピン留めされた Opus モデルがサポートする機能のカンマ区切りリスト |
 
 同じ `_NAME`、`_DESCRIPTION`、`_SUPPORTED_CAPABILITIES` サフィックスは `ANTHROPIC_DEFAULT_SONNET_MODEL`、`ANTHROPIC_DEFAULT_HAIKU_MODEL`、`ANTHROPIC_DEFAULT_FABLE_MODEL`、`ANTHROPIC_CUSTOM_MODEL_OPTION` で利用可能です。
 
 Claude Code は、モデル ID を既知のパターンと照合することで、[努力レベル](#adjust-effort-level) や [拡張思考](#extended-thinking) などの機能を有効にします。Amazon Bedrock ARN やカスタムデプロイメント名などのプロバイダー固有の ID は、これらのパターンと一致しないことが多く、サポートされている機能が無効のままになります。`_SUPPORTED_CAPABILITIES` を設定して、Claude Code にモデルが実際にサポートする機能を伝えます。
 
-| 機能値                    | 有効にするもの                                        |
-| ---------------------- | ---------------------------------------------- |
-| `effort`               | [努力レベル](#adjust-effort-level) と `/effort` コマンド |
-| `xhigh_effort`         | `xhigh` 努力レベル                                  |
-| `max_effort`           | `max` 努力レベル                                    |
-| `thinking`             | [拡張思考](#extended-thinking)                     |
-| `adaptive_thinking`    | タスクの複雑さに基づいて思考を動的に割り当てる適応的推論                   |
-| `interleaved_thinking` | ツール呼び出し間の思考                                    |
+| 機能値 | 有効にするもの |
+| - | - |
+| `effort` | [努力レベル](#adjust-effort-level) と `/effort` コマンド |
+| `xhigh_effort` | `xhigh` 努力レベル |
+| `max_effort` | `max` 努力レベル |
+| `thinking` | [拡張思考](#extended-thinking) |
+| `adaptive_thinking` | タスクの複雑さに基づいて思考を動的に割り当てる適応的推論 |
+| `interleaved_thinking` | ツール呼び出し間の思考 |
 
 `_SUPPORTED_CAPABILITIES` が設定されている場合、リストされた機能は有効になり、リストされていない機能はマッチングされたピン留めされたモデルに対して無効になります。変数が設定されていない場合、Claude Code はモデル ID に基づいた組み込み検出にフォールバックします。
 
@@ -764,12 +764,12 @@ export ANTHROPIC_DEFAULT_OPUS_MODEL_SUPPORTED_CAPABILITIES='effort,xhigh_effort,
 
 Claude Code は [プロンプトキャッシング](/docs/ja/prompt-caching) を自動的に使用してパフォーマンスを最適化し、コストを削減します。プロンプトキャッシングをグローバルに、または特定のモデルティアに対して無効にできます。
 
-| 環境変数                            | 説明                                                    |
-| ------------------------------- | ----------------------------------------------------- |
-| `DISABLE_PROMPT_CACHING`        | `1` に設定して、すべてのモデルのプロンプトキャッシングを無効にします。モデル固有の設定より優先されます |
-| `DISABLE_PROMPT_CACHING_HAIKU`  | `1` に設定して、Haiku モデルのみのプロンプトキャッシングを無効にします              |
-| `DISABLE_PROMPT_CACHING_SONNET` | `1` に設定して、Sonnet モデルのみのプロンプトキャッシングを無効にします             |
-| `DISABLE_PROMPT_CACHING_OPUS`   | `1` に設定して、Opus モデルのみのプロンプトキャッシングを無効にします               |
-| `DISABLE_PROMPT_CACHING_FABLE`  | `1` に設定して、Fable モデルのみのプロンプトキャッシングを無効にします              |
+| 環境変数 | 説明 |
+| - | - |
+| `DISABLE_PROMPT_CACHING` | `1` に設定して、すべてのモデルのプロンプトキャッシングを無効にします。モデル固有の設定より優先されます |
+| `DISABLE_PROMPT_CACHING_HAIKU` | `1` に設定して、Haiku モデルのみのプロンプトキャッシングを無効にします |
+| `DISABLE_PROMPT_CACHING_SONNET` | `1` に設定して、Sonnet モデルのみのプロンプトキャッシングを無効にします |
+| `DISABLE_PROMPT_CACHING_OPUS` | `1` に設定して、Opus モデルのみのプロンプトキャッシングを無効にします |
+| `DISABLE_PROMPT_CACHING_FABLE` | `1` に設定して、Fable モデルのみのプロンプトキャッシングを無効にします |
 
 キャッシュ TTL を変更する方法、またはキャッシュミスをトリガーするものについて詳しくは、[Claude Code がプロンプトキャッシングを使用する方法](/docs/ja/prompt-caching) を参照してください。

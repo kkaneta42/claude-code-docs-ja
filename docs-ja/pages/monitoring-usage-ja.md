@@ -39,7 +39,7 @@ claude
 
 メトリクスをエクスポートするセットアップを検証するには、バックエンドで `claude_code.session.count` メトリクスを確認してください。Claude Code はセッション開始時にこのメトリクスを出力します。ログのみのセットアップを検証するには、プロンプトを送信して `claude_code.user_prompt` イベントを確認してください。
 
-何も到着しない場合は、`claude --debug` を実行してデバッグログを確認してください。Claude Code は、設定したエクスポーターからの失敗を `[3P telemetry]` エラーとして報告します。ここで 3P はサードパーティを意味します。`[Anthropic telemetry]` で始まる行は、[Anthropic の個別の運用テレメトリ](/docs/ja/data-usage#telemetry-services)について説明しており、セットアップの問題を示していません。
+何も到着しない場合は、`claude --debug-file <path>` を使用して Claude Code を起動し、そのパスに書き込まれるログを確認してください。Claude Code は、設定したエクスポーターからの失敗を `[3P telemetry]` エラーとして報告します。ここで 3P はサードパーティを意味します。`[Anthropic telemetry]` で始まる行は、[Anthropic の個別の運用テレメトリ](/docs/ja/data-usage#telemetry-services)について説明しており、セットアップの問題を示していません。
 
 完全な設定オプションについては、[OpenTelemetry 仕様](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/protocol/exporter.md#configuration-options)を参照してください。
 
@@ -49,7 +49,7 @@ claude
 
 管理者は、[管理設定ファイル](/docs/ja/managed-settings#delivery-mechanisms)を通じてすべてのユーザーの OpenTelemetry 設定を設定できます。設定がどのように適用されるかについては、[設定の優先順位](/docs/ja/settings#settings-precedence)を参照してください。
 
-管理設定の設定例:
+管理設定の設定例：
 
 ```json theme={null}
 {
@@ -72,7 +72,7 @@ Claude Code は、Bash ツール、フック、MCP サーバー、言語サー�
   管理設定が OTLP 宛先をロックする方法
 </h3>
 
-管理設定で `OTEL_EXPORTER_OTLP_*` 変数を設定すると、Claude Code は起動時に競合する開発者設定の変数を削除し、`claude --debug` で確認できる警告をログに記録します。削除される内容は、設定する変数によって異なります：
+管理設定で `OTEL_EXPORTER_OTLP_*` 変数を設定すると、Claude Code は起動時に競合する開発者設定の変数を削除し、デバッグログに警告をログに記録します。削除される内容は、設定する変数によって異なります：
 
 * **エンドポイント**：`OTEL_EXPORTER_OTLP_ENDPOINT` を設定すると、Claude Code はすべての開発者設定のシグナル別エンドポイントを削除します。開発者は 1 つのシグナルを別のコレクターにポイントできないため、管理設定でシグナル別エンドポイント変数も設定する必要はありません。
 * **プロトコル**：`OTEL_EXPORTER_OTLP_PROTOCOL` を設定すると、Claude Code はすべての開発者設定のシグナル別プロトコルを削除します。
@@ -105,31 +105,31 @@ v2.1.217 より前では、すべての変数は独立してキーごとの設�
 
 これらの変数は、すべてのデプロイメントのエクスポーター、エンドポイント、エクスポート動作を設定します。`OTEL_EXPORTER_OTLP_METRICS_ENDPOINT` などのシグナルごとのエンドポイントまたはプロトコル変数を設定した場合、Claude Code はそのシグナルの汎用変数の代わりにそれを使用します。`OTEL_EXPORTER_OTLP_METRICS_HEADERS` などのシグナルごとのヘッダー変数を設定した場合、Claude Code はそのシグナルの汎用 `OTEL_EXPORTER_OTLP_HEADERS` とマージします。管理設定を持つマシンでは、[管理設定が OTLP 宛先をロックする方法](#how-managed-settings-lock-the-otlp-destination)を参照して、Claude Code が削除するものを確認してください。
 
-| 環境変数                                                | 説明                                                                                                                                                                                                                                                                                                                                                                                                      | 例の値                                                                                                        |
-| --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| `CLAUDE_CODE_ENABLE_TELEMETRY`                      | テレメトリ収集を有効にする (必須)                                                                                                                                                                                                                                                                                                                                                                                      | `1`                                                                                                        |
-| `OTEL_METRICS_EXPORTER`                             | メトリクスエクスポーターのタイプ (カンマ区切り)。`none` を使用して無効化                                                                                                                                                                                                                                                                                                                                                               | `console`、`otlp`、`prometheus`、`none`                                                                       |
-| `OTEL_LOGS_EXPORTER`                                | ログ/イベントエクスポーターのタイプ (カンマ区切り)。`none` を使用して無効化                                                                                                                                                                                                                                                                                                                                                             | `console`、`otlp`、`none`                                                                                    |
-| `OTEL_EXPORTER_OTLP_PROTOCOL`                       | OTLP エクスポーターのプロトコル (すべてのシグナルに適用)。Claude Code にはデフォルトプロトコルがないため、有効にする各 `otlp` エクスポーターについて、これまたはシグナル固有のプロトコル変数を設定してください                                                                                                                                                                                                                                                                                   | `grpc`、`http/json`、`http/protobuf`                                                                         |
-| `OTEL_EXPORTER_OTLP_ENDPOINT`                       | OTLP コレクターエンドポイント (すべてのシグナル)                                                                                                                                                                                                                                                                                                                                                                            | `http://localhost:4317`                                                                                    |
-| `OTEL_EXPORTER_OTLP_METRICS_PROTOCOL`               | メトリクスのプロトコル (一般的な設定をオーバーライド)                                                                                                                                                                                                                                                                                                                                                                            | `grpc`、`http/json`、`http/protobuf`                                                                         |
-| `OTEL_EXPORTER_OTLP_METRICS_ENDPOINT`               | OTLP メトリクスエンドポイント (一般的な設定をオーバーライド)                                                                                                                                                                                                                                                                                                                                                                      | `http://localhost:4318/v1/metrics`                                                                         |
-| `OTEL_EXPORTER_OTLP_LOGS_PROTOCOL`                  | ログのプロトコル (一般的な設定をオーバーライド)                                                                                                                                                                                                                                                                                                                                                                               | `grpc`、`http/json`、`http/protobuf`                                                                         |
-| `OTEL_EXPORTER_OTLP_LOGS_ENDPOINT`                  | OTLP ログエンドポイント (一般的な設定をオーバーライド)                                                                                                                                                                                                                                                                                                                                                                         | `http://localhost:4318/v1/logs`                                                                            |
-| `OTEL_EXPORTER_OTLP_HEADERS`                        | OTLP の認証ヘッダー                                                                                                                                                                                                                                                                                                                                                                                            | `Authorization=Bearer token`                                                                               |
-| `OTEL_EXPORTER_OTLP_METRICS_HEADERS`                | メトリクスの認証ヘッダー (一般的なヘッダーとマージ)                                                                                                                                                                                                                                                                                                                                                                             | `Authorization=Bearer token`                                                                               |
-| `OTEL_EXPORTER_OTLP_LOGS_HEADERS`                   | ログの認証ヘッダー (一般的なヘッダーとマージ)                                                                                                                                                                                                                                                                                                                                                                                | `Authorization=Bearer token`                                                                               |
-| `OTEL_METRIC_EXPORT_INTERVAL`                       | エクスポート間隔 (ミリ秒単位、デフォルト: 60000)                                                                                                                                                                                                                                                                                                                                                                           | `5000`、`60000`                                                                                             |
-| `OTEL_LOGS_EXPORT_INTERVAL`                         | ログエクスポート間隔 (ミリ秒単位、デフォルト: 5000)                                                                                                                                                                                                                                                                                                                                                                          | `1000`、`10000`                                                                                             |
-| `OTEL_LOG_USER_PROMPTS`                             | ユーザープロンプトコンテンツのログを有効にする (デフォルト: 無効)                                                                                                                                                                                                                                                                                                                                                                     | `1` で有効化                                                                                                   |
-| `OTEL_LOG_ASSISTANT_RESPONSES`                      | `assistant_response` イベントでアシスタント応答テキストのログを有効にする (デフォルト: 無効)。設定されていない場合、`OTEL_LOG_USER_PROMPTS` の値にフォールバックします。Claude Code v2.1.193 以降が必要です                                                                                                                                                                                                                                                               | `1` で有効化、`0` でマスク状態を保持                                                                                     |
-| `OTEL_LOG_TOOL_DETAILS`                             | ツールイベントおよびトレーススパン属性でツールパラメーターと入力引数のログを有効にする: Bash コマンド、MCP サーバーとツール名、スキル名、ユーザー作成ワークフロー名、ツール入力。また、`user_prompt` イベントでカスタム、プラグイン、MCP コマンド名を有効にします (デフォルト: 無効)。Claude Desktop の組み込みサーバーの場合、Claude Desktop が所有するセッションでは、フラグがオフでも `mcp_server_name`/`mcp_tool_name` は `tool_decision`/`tool_result` で出力されます。この例外には Claude Code v2.1.214 以降が必要です                                                              | `1` で有効化                                                                                                   |
-| `OTEL_LOG_TOOL_CONTENT`                             | [`tool.output` スパンイベント](#tool-output-span-event)でツールコンテンツのログを有効にする (デフォルト: 無効)。スパン属性は[独自のゲート](#new-context-gates)の下でツールコンテンツを含みます。[トレース](#traces-beta)が必要です。コンテンツはコンテンツ制限で切り詰められます (デフォルト: 60 KB)                                                                                                                                                                                                       | `1` で有効化                                                                                                   |
-| `OTEL_LOG_MANAGED_SETTINGS`                         | マスク処理された管理設定と、マスク処理前の設定の SHA-256 ダイジェストを [管理設定解決](#managed-settings-resolved-event)イベントに追加します (デフォルト: 無効)。プロジェクトまたはローカル設定の値はそれをオンにしません。Claude Code v2.1.274 以降が必要です                                                                                                                                                                                                                                     | `1` で有効化                                                                                                   |
-| `OTEL_LOG_RAW_API_BODIES`                           | Anthropic Messages API リクエストとレスポンス JSON 全体を `api_request_body` / `api_response_body` ログイベントとして出力します (デフォルト: 無効)。ボディには会話履歴全体が含まれます。これを有効にすることは、`OTEL_LOG_USER_PROMPTS`、`OTEL_LOG_TOOL_DETAILS`、および `OTEL_LOG_TOOL_CONTENT` が明かすすべてのものに同意することを意味します                                                                                                                                                       | `1` でコンテンツ制限で切り詰められたインラインボディ (デフォルト: 60 KB)、または `file:<dir>` でディスク上の切り詰められていないボディと、イベント内の `body_ref` ポインター |
-| `CLAUDE_CODE_OTEL_CONTENT_MAX_LENGTH`               | コンテンツ制限: モデルレスポンス、ツールコンテンツ、システムプロンプト、生 API ボディなどのコンテンツを含む属性の最大長 (UTF-16 コード単位、デフォルト: 61440、つまり 60 KB)。デフォルトは 64 KB で属性値をキャップするバックエンド向けにサイズ設定されています。バックエンドがより大きな値を受け入れる場合はそれを上げるか、テレメトリ量を削減するために下げてください。OpenTelemetry SDK 属性制限 `OTEL_ATTRIBUTE_VALUE_LENGTH_LIMIT` またはそのログレコードおよびスパンバリアントがより低い値に設定されている場合、Claude Code はその小さい値で切り詰めるため、`[TRUNCATED ...]` マーカーは SDK 制限内に留まります。Claude Code v2.1.214 以降が必要です | `262144`                                                                                                   |
-| `OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE` | メトリクスの時間性設定 (デフォルト: `delta`)。バックエンドが累積時間性を期待する場合は `cumulative` に設定                                                                                                                                                                                                                                                                                                                                      | `delta`、`cumulative`                                                                                       |
-| `CLAUDE_CODE_OTEL_HEADERS_HELPER_DEBOUNCE_MS`       | 動的ヘッダーを更新するための間隔 (デフォルト: 1740000ms / 29 分)                                                                                                                                                                                                                                                                                                                                                              | `900000`                                                                                                   |
+| 環境変数 | 説明 | 例の値 |
+| - | - | - |
+| `CLAUDE_CODE_ENABLE_TELEMETRY` | テレメトリ収集を有効にする (必須) | `1` |
+| `OTEL_METRICS_EXPORTER` | メトリクスエクスポーターのタイプ (カンマ区切り)。`none` を使用して無効化 | `console`、`otlp`、`prometheus`、`none` |
+| `OTEL_LOGS_EXPORTER` | ログ/イベントエクスポーターのタイプ (カンマ区切り)。`none` を使用して無効化 | `console`、`otlp`、`none` |
+| `OTEL_EXPORTER_OTLP_PROTOCOL` | OTLP エクスポーターのプロトコル (すべてのシグナルに適用)。Claude Code にはデフォルトプロトコルがないため、有効にする各 `otlp` エクスポーターについて、これまたはシグナル固有のプロトコル変数を設定してください | `grpc`、`http/json`、`http/protobuf` |
+| `OTEL_EXPORTER_OTLP_ENDPOINT` | OTLP コレクターエンドポイント (すべてのシグナル) | `http://localhost:4317` |
+| `OTEL_EXPORTER_OTLP_METRICS_PROTOCOL` | メトリクスのプロトコル (一般的な設定をオーバーライド) | `grpc`、`http/json`、`http/protobuf` |
+| `OTEL_EXPORTER_OTLP_METRICS_ENDPOINT` | OTLP メトリクスエンドポイント (一般的な設定をオーバーライド) | `http://localhost:4318/v1/metrics` |
+| `OTEL_EXPORTER_OTLP_LOGS_PROTOCOL` | ログのプロトコル (一般的な設定をオーバーライド) | `grpc`、`http/json`、`http/protobuf` |
+| `OTEL_EXPORTER_OTLP_LOGS_ENDPOINT` | OTLP ログエンドポイント (一般的な設定をオーバーライド) | `http://localhost:4318/v1/logs` |
+| `OTEL_EXPORTER_OTLP_HEADERS` | OTLP の認証ヘッダー | `Authorization=Bearer token` |
+| `OTEL_EXPORTER_OTLP_METRICS_HEADERS` | メトリクスの認証ヘッダー (一般的なヘッダーとマージ) | `Authorization=Bearer token` |
+| `OTEL_EXPORTER_OTLP_LOGS_HEADERS` | ログの認証ヘッダー (一般的なヘッダーとマージ) | `Authorization=Bearer token` |
+| `OTEL_METRIC_EXPORT_INTERVAL` | エクスポート間隔 (ミリ秒単位、デフォルト: 60000) | `5000`、`60000` |
+| `OTEL_LOGS_EXPORT_INTERVAL` | ログエクスポート間隔 (ミリ秒単位、デフォルト: 5000) | `1000`、`10000` |
+| `OTEL_LOG_USER_PROMPTS` | ユーザープロンプトコンテンツのログを有効にする (デフォルト: 無効) | `1` で有効化 |
+| `OTEL_LOG_ASSISTANT_RESPONSES` | `assistant_response` イベントでアシスタント応答テキストのログを有効にする (デフォルト: 無効)。設定されていない場合、`OTEL_LOG_USER_PROMPTS` の値にフォールバックします。Claude Code v2.1.193 以降が必要です | `1` で有効化、`0` でマスク状態を保持 |
+| `OTEL_LOG_TOOL_DETAILS` | ツールイベントおよびトレーススパン属性でツールパラメーターと入力引数のログを有効にする: Bash コマンド、MCP サーバーとツール名、スキル名、ユーザー作成ワークフロー名、ツール入力。また、`user_prompt` イベントでカスタム、プラグイン、MCP コマンド名を有効にします (デフォルト: 無効)。Claude Desktop の組み込みサーバーの場合、Claude Desktop が所有するセッションでは、フラグがオフでも `mcp_server_name`/`mcp_tool_name` は `tool_decision`/`tool_result` で出力されます。この例外には Claude Code v2.1.214 以降が必要です | `1` で有効化 |
+| `OTEL_LOG_TOOL_CONTENT` | [`tool.output` スパンイベント](#tool-output-span-event)でツールコンテンツのログを有効にする (デフォルト: 無効)。スパン属性は[独自のゲート](#new-context-gates)の下でツールコンテンツを含みます。[トレース](#traces-beta)が必要です。コンテンツはコンテンツ制限で切り詰められます (デフォルト: 60 KB) | `1` で有効化 |
+| `OTEL_LOG_MANAGED_SETTINGS` | マスク処理された管理設定と、マスク処理前の設定の SHA-256 ダイジェストを [管理設定解決](#managed-settings-resolved-event)イベントに追加します (デフォルト: 無効)。プロジェクトまたはローカル設定の値はそれをオンにしません。Claude Code v2.1.274 以降が必要です | `1` で有効化 |
+| `OTEL_LOG_RAW_API_BODIES` | Anthropic Messages API リクエストとレスポンス JSON 全体を `api_request_body` / `api_response_body` ログイベントとして出力します (デフォルト: 無効)。ボディには会話履歴全体が含まれます。これを有効にすることは、`OTEL_LOG_USER_PROMPTS`、`OTEL_LOG_TOOL_DETAILS`、および `OTEL_LOG_TOOL_CONTENT` が明かすすべてのものに同意することを意味します | `1` でコンテンツ制限で切り詰められたインラインボディ (デフォルト: 60 KB)、または `file:<dir>` でディスク上の切り詰められていないボディと、イベント内の `body_ref` ポインター |
+| `CLAUDE_CODE_OTEL_CONTENT_MAX_LENGTH` | コンテンツ制限: モデルレスポンス、ツールコンテンツ、システムプロンプト、生 API ボディなどのコンテンツを含む属性の最大長 (UTF-16 コード単位、デフォルト: 61440、つまり 60 KB)。デフォルトは 64 KB で属性値をキャップするバックエンド向けにサイズ設定されています。バックエンドがより大きな値を受け入れる場合はそれを上げるか、テレメトリ量を削減するために下げてください。OpenTelemetry SDK 属性制限 `OTEL_ATTRIBUTE_VALUE_LENGTH_LIMIT` またはそのログレコードおよびスパンバリアントがより低い値に設定されている場合、Claude Code はその小さい値で切り詰めるため、`[TRUNCATED ...]` マーカーは SDK 制限内に留まります。Claude Code v2.1.214 以降が必要です | `262144` |
+| `OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE` | メトリクスの時間性設定 (デフォルト: `delta`)。バックエンドが累積時間性を期待する場合は `cumulative` に設定 | `delta`、`cumulative` |
+| `CLAUDE_CODE_OTEL_HEADERS_HELPER_DEBOUNCE_MS` | 動的ヘッダーを更新するための間隔 (デフォルト: 1740000ms / 29 分) | `900000` |
 
 `http/protobuf` および `http/json` プロトコルの場合、Claude Code は各エクスポートリクエストを `Content-Length` ヘッダーで送信します。v2.1.212 より前では、v2.1.191 以降の Claude Code バージョンはこれらのリクエストをチャンク転送エンコーディングで送信していました。Azure Monitor およびその他の宣言された長さを必要とするエンドポイントは、`411 Length Required` または `400` エラーでこれらを拒否していました。
 
@@ -139,10 +139,10 @@ v2.1.217 より前では、すべての変数は独立してキーごとの設�
 
 OTLP エクスポーターのクライアント証明書を設定する方法は、そのシグナルに使用されている OTLP プロトコルに依存し、`OTEL_EXPORTER_OTLP_PROTOCOL` またはシグナルごとのオーバーライドで設定されます。同じ設定がメトリクス、ログ、トレースに適用されます。
 
-| プロトコル                       | クライアント証明書変数                                                                                                                                                  | コレクターの CA を信頼する方法                |
-| :-------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------- |
-| `http/protobuf`、`http/json` | `CLAUDE_CODE_CLIENT_CERT`、`CLAUDE_CODE_CLIENT_KEY`、およびオプションで `CLAUDE_CODE_CLIENT_KEY_PASSPHRASE`。[ネットワーク設定](/docs/ja/network-config#mtls-authentication)を参照       | `NODE_EXTRA_CA_CERTS`            |
-| `grpc`                      | `OTEL_EXPORTER_OTLP_CLIENT_KEY` および `OTEL_EXPORTER_OTLP_CLIENT_CERTIFICATE`、またはシグナルごとに異なる証明書を使用するための `OTEL_EXPORTER_OTLP_METRICS_CLIENT_KEY` などのシグナルごとのバリアント | `OTEL_EXPORTER_OTLP_CERTIFICATE` |
+| プロトコル | クライアント証明書変数 | コレクターの CA を信頼する方法 |
+| :- | :- | :- |
+| `http/protobuf`、`http/json` | `CLAUDE_CODE_CLIENT_CERT`、`CLAUDE_CODE_CLIENT_KEY`、およびオプションで `CLAUDE_CODE_CLIENT_KEY_PASSPHRASE`。[ネットワーク設定](/docs/ja/network-config#mtls-authentication)を参照 | `NODE_EXTRA_CA_CERTS` |
+| `grpc` | `OTEL_EXPORTER_OTLP_CLIENT_KEY` および `OTEL_EXPORTER_OTLP_CLIENT_CERTIFICATE`、またはシグナルごとに異なる証明書を使用するための `OTEL_EXPORTER_OTLP_METRICS_CLIENT_KEY` などのシグナルごとのバリアント | `OTEL_EXPORTER_OTLP_CERTIFICATE` |
 
 `grpc` の場合、OpenTelemetry SDK は標準 OTLP 変数を直接読み取るため、シグナルごとのメトリクス変数を設定する既存の設定は引き続き機能します。管理設定を持つマシンでは、Claude Code は[スタートアップ時に開発者が設定したシグナルごとの認証情報とエンドポイントを削除する](#how-managed-settings-lock-the-otlp-destination)可能性があります。
 
@@ -152,14 +152,14 @@ OTLP エクスポーターのクライアント証明書を設定する方法は
 
 以下の環境変数は、カーディナリティを管理するためにメトリクスに含まれる属性を制御します:
 
-| 環境変数                                       | 説明                                                                                         | デフォルト値  | 無効化する例  |
-| ------------------------------------------ | ------------------------------------------------------------------------------------------ | ------- | ------- |
-| `OTEL_METRICS_INCLUDE_SESSION_ID`          | メトリクスに session.id 属性を含める                                                                   | `true`  | `false` |
-| `OTEL_METRICS_INCLUDE_VERSION`             | メトリクスに app.version 属性を含める                                                                  | `false` | `true`  |
-| `OTEL_METRICS_INCLUDE_ACCOUNT_UUID`        | メトリクスに user.account\_uuid および user.account\_id 属性を含める                                      | `true`  | `false` |
-| `OTEL_METRICS_INCLUDE_ENTRYPOINT`          | メトリクスに app.entrypoint 属性を含める                                                               | `false` | `true`  |
-| `OTEL_METRICS_INCLUDE_RESOURCE_ATTRIBUTES` | `OTEL_RESOURCE_ATTRIBUTES` からのキーをメトリクスデータポイントの属性として含める                                     | `true`  | `false` |
-| `OTEL_METRICS_INCLUDE_REPOSITORY`          | メトリクスおよびイベントに `vcs.*` [リポジトリ識別属性](#repository-attributes)を含める。Claude Code v2.1.269 以降が必要です | `false` | `true`  |
+| 環境変数 | 説明 | デフォルト値 | 無効化する例 |
+| - | - | - | - |
+| `OTEL_METRICS_INCLUDE_SESSION_ID` | メトリクスに session.id 属性を含める | `true` | `false` |
+| `OTEL_METRICS_INCLUDE_VERSION` | メトリクスに app.version 属性を含める | `false` | `true` |
+| `OTEL_METRICS_INCLUDE_ACCOUNT_UUID` | メトリクスに user.account\_uuid および user.account\_id 属性を含める | `true` | `false` |
+| `OTEL_METRICS_INCLUDE_ENTRYPOINT` | メトリクスに app.entrypoint 属性を含める | `false` | `true` |
+| `OTEL_METRICS_INCLUDE_RESOURCE_ATTRIBUTES` | `OTEL_RESOURCE_ATTRIBUTES` からのキーをメトリクスデータポイントの属性として含める | `true` | `false` |
+| `OTEL_METRICS_INCLUDE_REPOSITORY` | メトリクスおよびイベントに `vcs.*` [リポジトリ識別属性](#repository-attributes)を含める。Claude Code v2.1.269 以降が必要です | `false` | `true` |
 
 カーディナリティが低いほど、一般的にパフォーマンスが向上し、ストレージコストが低くなりますが、分析用のより詳細なデータは少なくなります。
 
@@ -171,14 +171,14 @@ OTLP エクスポーターのクライアント証明書を設定する方法は
 
 トレースはデフォルトでオフです。有効にするには、`CLAUDE_CODE_ENABLE_TELEMETRY=1` と `CLAUDE_CODE_ENHANCED_TELEMETRY_BETA=1` の両方を設定してから、`OTEL_TRACES_EXPORTER` を設定してスパンの送信先を選択します。トレースは、エンドポイント、プロトコル、ヘッダー、および [mTLS](#mtls-authentication)について [一般的な OTLP 設定](#common-configuration-variables)を再利用します。管理設定を持つマシンでは、Claude Code は[スタートアップ時に開発者が設定したシグナルごとの認証情報とエンドポイントを削除する](#how-managed-settings-lock-the-otlp-destination)可能性があります。
 
-| 環境変数                                  | 説明                                                            | 例の値                                |
-| ------------------------------------- | ------------------------------------------------------------- | ---------------------------------- |
-| `CLAUDE_CODE_ENHANCED_TELEMETRY_BETA` | スパントレースを有効にする (必須)。`ENABLE_ENHANCED_TELEMETRY_BETA` も受け入れられます | `1`                                |
-| `OTEL_TRACES_EXPORTER`                | トレースエクスポーターのタイプ (カンマ区切り)。`none` を使用して無効化                      | `console`、`otlp`、`none`            |
-| `OTEL_EXPORTER_OTLP_TRACES_PROTOCOL`  | トレースのプロトコル (`OTEL_EXPORTER_OTLP_PROTOCOL` をオーバーライド)           | `grpc`、`http/json`、`http/protobuf` |
-| `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT`  | OTLP トレースエンドポイント (`OTEL_EXPORTER_OTLP_ENDPOINT` をオーバーライド)     | `http://localhost:4318/v1/traces`  |
-| `OTEL_EXPORTER_OTLP_TRACES_HEADERS`   | トレースの認証ヘッダー (`OTEL_EXPORTER_OTLP_HEADERS` とマージ)               | `Authorization=Bearer token`       |
-| `OTEL_TRACES_EXPORT_INTERVAL`         | スパンバッチエクスポート間隔 (ミリ秒単位、デフォルト: 5000)                            | `1000`、`10000`                     |
+| 環境変数 | 説明 | 例の値 |
+| - | - | - |
+| `CLAUDE_CODE_ENHANCED_TELEMETRY_BETA` | スパントレースを有効にする (必須)。`ENABLE_ENHANCED_TELEMETRY_BETA` も受け入れられます | `1` |
+| `OTEL_TRACES_EXPORTER` | トレースエクスポーターのタイプ (カンマ区切り)。`none` を使用して無効化 | `console`、`otlp`、`none` |
+| `OTEL_EXPORTER_OTLP_TRACES_PROTOCOL` | トレースのプロトコル (`OTEL_EXPORTER_OTLP_PROTOCOL` をオーバーライド) | `grpc`、`http/json`、`http/protobuf` |
+| `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT` | OTLP トレースエンドポイント (`OTEL_EXPORTER_OTLP_ENDPOINT` をオーバーライド) | `http://localhost:4318/v1/traces` |
+| `OTEL_EXPORTER_OTLP_TRACES_HEADERS` | トレースの認証ヘッダー (`OTEL_EXPORTER_OTLP_HEADERS` とマージ) | `Authorization=Bearer token` |
+| `OTEL_TRACES_EXPORT_INTERVAL` | スパンバッチエクスポート間隔 (ミリ秒単位、デフォルト: 5000) | `1000`、`10000` |
 
 スパンはデフォルトでユーザープロンプトテキスト、ツール入力詳細、ツールコンテンツをマスクします。これらを含めるには、`OTEL_LOG_USER_PROMPTS=1`、`OTEL_LOG_TOOL_DETAILS=1`、および `OTEL_LOG_TOOL_CONTENT=1` を設定します。
 
@@ -222,112 +222,115 @@ Agent SDK および `claude -p` セッションでは、`TRACEPARENT` が環境�
 
 **`claude_code.interaction`**
 
-| 属性                        | 説明                                                                                                                        | ゲート                     |
-| ------------------------- | ------------------------------------------------------------------------------------------------------------------------- | ----------------------- |
-| `user_prompt`             | プロンプトテキスト。ゲートが設定されていない限り、値は `<REDACTED>` です                                                                               | `OTEL_LOG_USER_PROMPTS` |
-| `user_prompt_length`      | プロンプト長 (文字数)                                                                                                              |                         |
-| `interaction.sequence`    | インタラクションの 1 ベースカウンター。セッションごとではなく Claude Code プロセスごとにカウントされます。[`event.sequence`](#event-correlation-attributes)で説明されているとおり |                         |
-| `parent.source`           | スパンがトレース親を取得した方法: インバウンド `TRACEPARENT` の下で親になった場合は `env`、独自のトレースを開始した場合は `none`。Claude Code v2.1.268 以降が必要です              |                         |
-| `interaction.duration_ms` | ターンの実時間                                                                                                                   |                         |
+| 属性 | 説明 | ゲート |
+| - | - | - |
+| `user_prompt` | プロンプトテキスト。ゲートが設定されていない限り、値は `<REDACTED>` です | `OTEL_LOG_USER_PROMPTS` |
+| `user_prompt_length` | プロンプト長 (文字数) | |
+| `interaction.sequence` | インタラクションの 1 ベースカウンター。セッションごとではなく Claude Code プロセスごとにカウントされます。[`event.sequence`](#event-correlation-attributes)で説明されているとおり | |
+| `parent.source` | スパンがトレース親を取得した方法: インバウンド `TRACEPARENT` の下で親になった場合は `env`、独自のトレースを開始した場合は `none`。Claude Code v2.1.268 以降が必要です | |
+| `interaction.duration_ms` | ターンの実時間 | |
 
 **`claude_code.llm_request`**
 
-| 属性                               | 説明                                                                                                                                                                                                         | ゲート                            |
-| -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------ |
-| `model`                          | モデル識別子                                                                                                                                                                                                     |                                |
-| `gen_ai.system`                  | 常に `anthropic`。OpenTelemetry GenAI セマンティック規約                                                                                                                                                               |                                |
-| `gen_ai.request.model`           | `model` と同じ値。OpenTelemetry GenAI セマンティック規約                                                                                                                                                                 |                                |
-| `query_source`                   | リクエストを発行したサブシステム。例: `repl_main_thread` またはサブエージェント名                                                                                                                                                        | `ENABLE_BETA_TRACING_DETAILED` |
-| `query_source_safe`              | `query_source` の制限された形式。詳細なベータトレースがアクティブかどうかに関わらず出力されます。`repl_main_thread` または `agent.builtin.general-purpose` などの値を持ちます。`:` は `.` になり、ユーザー名のエージェントは `agent.custom` として表示されます。Claude Code v2.1.268 以降が必要です |                                |
-| `agent_id`                       | リクエストを発行したサブエージェントまたはチームメイトの識別子。メインセッションでは存在しません                                                                                                                                                           |                                |
-| `parent_agent_id`                | このエージェントを生成したエージェントの識別子。メインセッションおよびそこから直接生成されたエージェントでは存在しません                                                                                                                                               |                                |
-| `workflow.run_id`                | このエージェントを生成した [Workflow](/docs/ja/workflows) ツール実行の実行識別子。`wf_` で始まります。ワークフローによって生成されていないエージェントでは存在しません                                                                                                          |                                |
-| `workflow.name`                  | このエージェントを生成したワークフローの名前。ユーザー作成名はゲートが設定されていない限り `custom` に置き換えられます                                                                                                                                           | `OTEL_LOG_TOOL_DETAILS`        |
-| `speed`                          | `fast` または `normal`                                                                                                                                                                                        |                                |
-| `effort`                         | [リクエストに適用される努力レベル](/docs/ja/model-config#adjust-effort-level): `low`、`medium`、`high`、`xhigh`、または `max`。Claude Code が努力レベルを送信しない場合は存在しません。例えば、努力をサポートしていないモデルの場合。Claude Code v2.1.274 以降が必要です                    |                                |
-| `llm_request.context`            | 親スパンに応じて `interaction`、`tool`、または `standalone`                                                                                                                                                             |                                |
-| `duration_ms`                    | 再試行を含む実時間                                                                                                                                                                                                  |                                |
-| `ttft_ms`                        | 最初のトークンまでの時間 (ミリ秒単位)                                                                                                                                                                                       |                                |
-| `first_content_ms`               | リクエスト開始から成功した試行の最初のコンテンツブロックまでの時間 (ミリ秒単位)。ストリーミング以外のパスにフォールバックしたリクエストでは存在しません。Claude Code v2.1.268 以降が必要です                                                                                                 |                                |
-| `input_tokens`                   | API 使用ブロックからの入力トークン数                                                                                                                                                                                       |                                |
-| `output_tokens`                  | 出力トークン数                                                                                                                                                                                                    |                                |
-| `cache_read_tokens`              | プロンプトキャッシュから読み取られたトークン                                                                                                                                                                                     |                                |
-| `cache_creation_tokens`          | プロンプトキャッシュに書き込まれたトークン                                                                                                                                                                                      |                                |
-| `request_id`                     | レスポンスヘッダーの `request-id` からの Anthropic API リクエスト ID                                                                                                                                                         |                                |
-| `gen_ai.response.id`             | `request_id` と同じ値。OpenTelemetry GenAI セマンティック規約                                                                                                                                                            |                                |
-| `client_request_id`              | 最終試行のクライアント生成 `x-client-request-id`                                                                                                                                                                        |                                |
-| `attempt`                        | このリクエストに対して行われた総試行回数                                                                                                                                                                                       |                                |
-| `success`                        | `true` または `false`                                                                                                                                                                                         |                                |
-| `status_code`                    | リクエストが失敗した場合の HTTP ステータスコード                                                                                                                                                                                |                                |
-| `error`                          | リクエストが失敗した場合のエラーメッセージ                                                                                                                                                                                      |                                |
-| `error_class`                    | リクエストが失敗した場合の短いエラークラストークン。例: `api_timeout` または `server_overload`。Claude Code v2.1.268 以降が必要です                                                                                                              |                                |
-| `response.has_tool_call`         | レスポンスにツール使用ブロックが含まれている場合は `true`                                                                                                                                                                           |                                |
-| `stop_reason`                    | API レスポンス `stop_reason`。例: `end_turn`、`tool_use`、`max_tokens`、`stop_sequence`、`pause_turn`、または `refusal`                                                                                                   |                                |
-| `gen_ai.response.finish_reasons` | `stop_reason` と同じ値。文字列配列でラップされています。OpenTelemetry GenAI セマンティック規約                                                                                                                                           |                                |
+| 属性 | 説明 | ゲート |
+| - | - | - |
+| `model` | モデル識別子 | |
+| `gen_ai.system` | 常に `anthropic`。OpenTelemetry GenAI セマンティック規約 | |
+| `gen_ai.request.model` | `model` と同じ値。OpenTelemetry GenAI セマンティック規約 | |
+| `query_source` | リクエストを発行したサブシステム。例: `repl_main_thread` またはサブエージェント名 | `ENABLE_BETA_TRACING_DETAILED` |
+| `query_source_safe` | `query_source` の制限された形式。詳細なベータトレースがアクティブかどうかに関わらず出力されます。`repl_main_thread` または `agent.builtin.general-purpose` などの値を持ちます。`:` は `.` になり、ユーザー名のエージェントは `agent.custom` として表示されます。Claude Code v2.1.268 以降が必要です | |
+| `agent_id` | リクエストを発行したサブエージェントまたはチームメイトの識別子。メインセッションでは存在しません | |
+| `parent_agent_id` | このエージェントを生成したエージェントの識別子。メインセッションおよびそこから直接生成されたエージェントでは存在しません | |
+| `workflow.run_id` | このエージェントを生成した [Workflow](/docs/ja/workflows) ツール実行の実行識別子。`wf_` で始まります。ワークフローによって生成されていないエージェントでは存在しません | |
+| `workflow.name` | このエージェントを生成したワークフローの名前。ユーザー作成名はゲートが設定されていない限り `custom` に置き換えられます | `OTEL_LOG_TOOL_DETAILS` |
+| `speed` | `fast` または `normal` | |
+| `effort` | [リクエストに適用される努力レベル](/docs/ja/model-config#adjust-effort-level): `low`、`medium`、`high`、`xhigh`、または `max`。Claude Code が努力レベルを送信しない場合は存在しません。例えば、努力をサポートしていないモデルの場合。Claude Code v2.1.274 以降が必要です | |
+| `llm_request.context` | 親スパンに応じて `interaction`、`tool`、または `standalone` | |
+| `duration_ms` | 再試行を含む実時間 | |
+| `ttft_ms` | 最初のトークンまでの時間 (ミリ秒単位) | |
+| `first_content_ms` | リクエスト開始から成功した試行の最初のコンテンツブロックまでの時間 (ミリ秒単位)。ストリーミング以外のパスにフォールバックしたリクエストでは存在しません。Claude Code v2.1.268 以降が必要です | |
+| `input_tokens` | API 使用ブロックからの入力トークン数 | |
+| `output_tokens` | 出力トークン数 | |
+| `cache_read_tokens` | プロンプトキャッシュから読み取られたトークン | |
+| `cache_creation_tokens` | プロンプトキャッシュに書き込まれたトークン | |
+| `request_id` | API リクエスト ID。[イベント相関属性](#event-correlation-attributes)の `request_id` と同じ値 | |
+| `gen_ai.response.id` | `request_id` と同じ値。OpenTelemetry GenAI セマンティック規約 | |
+| `client_request_id` | 最終試行のクライアント生成 `x-client-request-id` | |
+| `attempt` | このリクエストに対して行われた総試行回数 | |
+| `success` | `true` または `false` | |
+| `status_code` | リクエストが失敗した場合の HTTP ステータスコード | |
+| `error` | リクエストが失敗した場合のエラーメッセージ | |
+| `error_class` | リクエストが失敗した場合の短いエラークラストークン。例: `api_timeout` または `server_overload`。Claude Code v2.1.268 以降が必要です | |
+| `response.has_tool_call` | レスポンスにツール使用ブロックが含まれている場合は `true` | |
+| `stop_reason` | API レスポンス `stop_reason`。例: `end_turn`、`tool_use`、`max_tokens`、`stop_sequence`、`pause_turn`、または `refusal` | |
+| `gen_ai.response.finish_reasons` | `stop_reason` と同じ値。文字列配列でラップされています。OpenTelemetry GenAI セマンティック規約 | |
 
 各再試行試行は、`attempt` および `client_request_id` 属性を持つ `gen_ai.request.attempt` スパンイベントとしても記録されます。
 
 **`claude_code.tool`**
 
-| 属性                    | 説明                                                                                                                                                                              | ゲート                     |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- |
-| `tool_name`           | ツール名                                                                                                                                                                            |                         |
-| `tool_name_safe`      | ユーザーが選択した名前を含まない `tool_name` の形式。組み込みツール名はそのまま渡されます。MCP ツール名は `mcp_other` として表示されます。ただし、`playwright` ツールの `browser_*` など、固定の形状に一致するツール名は、そのまま渡されます。Claude Code v2.1.268 以降が必要です |                         |
-| `bash_command_class`  | Bash ツールの場合: 固定リストからのコマンドの最初のプログラムのカテゴリ。例: `vcs` または `package_manager`。リスト外のプログラムの場合は `other`、行を解析できない場合は `unparsed`。Claude Code v2.1.268 以降が必要です                               |                         |
-| `bash_argv0`          | Bash ツールの場合: 同じ固定リスト上にあるコマンドの最初のプログラム。例: `git` または `npm`。リスト外のプログラムの場合は `other`。Claude Code v2.1.268 以降が必要です                                                                    |                         |
-| `duration_ms`         | 権限待機と実行を含む実時間                                                                                                                                                                   |                         |
-| `result_tokens`       | ツール結果のおおよそのトークンサイズ                                                                                                                                                              |                         |
-| `agent_id`            | ツールを実行したサブエージェントまたはチームメイトの識別子。メインセッションでは存在しません                                                                                                                                  |                         |
-| `parent_agent_id`     | このエージェントを生成したエージェントの識別子。メインセッションおよびそこから直接生成されたエージェントでは存在しません                                                                                                                    |                         |
-| `workflow.run_id`     | このエージェントを生成した Workflow ツール実行の実行識別子。`wf_` で始まります。ワークフローによって生成されていないエージェントでは存在しません                                                                                                |                         |
-| `workflow.name`       | このエージェントを生成したワークフローの名前。ユーザー作成名はゲートが設定されていない限り `custom` に置き換えられます                                                                                                                | `OTEL_LOG_TOOL_DETAILS` |
-| `tool_use_id`         | このコールのモデルの `tool_use` ブロック ID。[tool\_result](#tool-result-event) および [tool\_decision](#tool-decision-event) イベントおよびフックペイロード内の `tool_use_id` と一致するため、スパンをこれらのレコードに結合できます         |                         |
-| `gen_ai.tool.call.id` | `tool_use_id` と同じ値。OpenTelemetry GenAI セマンティック規約                                                                                                                                |                         |
-| `file_path`           | Read、Edit、Write ツールのターゲットファイルパス                                                                                                                                                 | `OTEL_LOG_TOOL_DETAILS` |
-| `full_command`        | Bash ツールのコマンド文字列                                                                                                                                                                | `OTEL_LOG_TOOL_DETAILS` |
-| `skill_name`          | Skill ツールのスキル名                                                                                                                                                                  | `OTEL_LOG_TOOL_DETAILS` |
-| `subagent_type`       | Agent ツールまたはレガシー Task ツールのサブエージェントタイプ                                                                                                                                           | `OTEL_LOG_TOOL_DETAILS` |
+| 属性 | 説明 | ゲート |
+| - | - | - |
+| `tool_name` | ツール名 | |
+| `tool_name_safe` | ユーザーが選択した名前を含まない `tool_name` の形式。組み込みツール名はそのまま渡されます。MCP ツール名は `mcp_other` として表示されます。ただし、`playwright` ツールの `browser_*` など、固定の形状に一致するツール名は、そのまま渡されます。Claude Code v2.1.268 以降が必要です | |
+| `bash_command_class` | Bash ツールの場合: 固定リストからのコマンドの最初のプログラムのカテゴリ。例: `vcs` または `package_manager`。リスト外のプログラムの場合は `other`、行を解析できない場合は `unparsed`。Claude Code v2.1.268 以降が必要です | |
+| `bash_argv0` | Bash ツールの場合: 同じ固定リスト上にあるコマンドの最初のプログラム。例: `git` または `npm`。リスト外のプログラムの場合は `other`。Claude Code v2.1.268 以降が必要です | |
+| `duration_ms` | 権限待機と実行を含む実時間 | |
+| `result_tokens` | ツール結果のおおよそのトークンサイズ | |
+| `agent_id` | ツールを実行したサブエージェントまたはチームメイトの識別子。メインセッションでは存在しません | |
+| `parent_agent_id` | このエージェントを生成したエージェントの識別子。メインセッションおよびそこから直接生成されたエージェントでは存在しません | |
+| `workflow.run_id` | このエージェントを生成した Workflow ツール実行の実行識別子。`wf_` で始まります。ワークフローによって生成されていないエージェントでは存在しません | |
+| `workflow.name` | このエージェントを生成したワークフローの名前。ユーザー作成名はゲートが設定されていない限り `custom` に置き換えられます | `OTEL_LOG_TOOL_DETAILS` |
+| `tool_use_id` | このコールのモデルの `tool_use` ブロック ID。[tool\_result](#tool-result-event) および [tool\_decision](#tool-decision-event) イベントおよびフックペイロード内の `tool_use_id` と一致するため、スパンをこれらのレコードに結合できます | |
+| `gen_ai.tool.call.id` | `tool_use_id` と同じ値。OpenTelemetry GenAI セマンティック規約 | |
+| `file_path` | Read、Edit、Write ツールのターゲットファイルパス | `OTEL_LOG_TOOL_DETAILS` |
+| `full_command` | Bash ツールのコマンド文字列 | `OTEL_LOG_TOOL_DETAILS` |
+| `skill_name` | Skill ツールのスキル名 | `OTEL_LOG_TOOL_DETAILS` |
+| `subagent_type` | Agent ツールまたはレガシー Task ツールのサブエージェントタイプ | `OTEL_LOG_TOOL_DETAILS` |
 
 <span id="tool-output-span-event" />**`tool.output` スパンイベント (`claude_code.tool` 上)**
 
 `OTEL_LOG_TOOL_CONTENT=1` を設定した場合、Read および Bash 呼び出しは `claude_code.tool` スパン上に `tool.output` スパンイベントを記録できます。Edit および Write 呼び出しは、`OTEL_LOG_TOOL_DETAILS=1` も設定した場合にのみ記録します。その変数はこれら 2 つのツールにスコープされていないため、設定テーブルの[その行](#common-configuration-variables)で、それが他の場所に追加する引数を確認してください。
 
+MCP ツール、WebFetch、WebSearch も Claude Code v2.1.283 以降でこのイベントを記録します。
+
 Claude Code はツール呼び出しの成功した戻りからこのイベントを書き込むため、エラーを発生させる呼び出しは何も記録しません。戻りを行う呼び出しの中で、以下の場合は `tool.output` イベントを記録しません:
 
-* Read、Edit、Write、Bash 以外のツール (MCP ツールおよび WebFetch を含む) への呼び出し
+* Read、Edit、Write、Bash、WebFetch、WebSearch、MCP ツール以外のツールへの呼び出し
 * 画像、PDF、または内容が変更されていないファイルの再読み込みなど、ファイルテキスト以外のものを返す Read
 * `OTEL_LOG_TOOL_DETAILS=1` も設定しない限り、Edit または Write 呼び出し
+* Claude Code が、ターンを中断して[キューに入れたメッセージをすぐに送信](/docs/ja/interactive-mode#when-claude-code-sends-what-you-queued)している間に呼び出しが実行されたため、バックグラウンドに移動した WebFetch または WebSearch 呼び出し。Claude はその結果をツールスパンが終了した後に受け取ります
 
 イベントはこれらの属性を含み、各属性はコンテンツ制限で切り詰められます (デフォルト: 60 KB)。`Gated by` は、属性が必要とする変数を名前付けます。Edit および Write の場合、その変数は属性ではなくイベント自体をゲートします。
 
-| 属性             | 説明                                              | ゲート                                  |
-| -------------- | ----------------------------------------------- | ------------------------------------ |
-| `content`      | Read ツールが返したテキスト、または Write 呼び出しが書き込むよう求めたテキスト   | `OTEL_LOG_TOOL_DETAILS` (Write ツール用) |
-| `output`       | Bash コマンドの結合出力 (stderr は stdout にインターリーブ)       |                                      |
-| `diff`         | Edit ツールが適用した構造化パッチ                             | `OTEL_LOG_TOOL_DETAILS`              |
-| `file_path`    | Read、Edit、Write ツールのターゲットファイルパス。同じ名前のスパン属性を繰り返す | `OTEL_LOG_TOOL_DETAILS`              |
-| `bash_command` | Bash ツールのコマンド文字列                                | `OTEL_LOG_TOOL_DETAILS`              |
+| 属性 | 説明 | ゲート |
+| - | - | - |
+| `content` | Read ツールが返したテキスト、または Write 呼び出しが書き込むよう求めたテキスト | `OTEL_LOG_TOOL_DETAILS` (Write ツール用) |
+| `output` | Bash コマンドの結合出力 (stderr は stdout にインターリーブ)。MCP ツール、WebFetch、WebSearch の場合、ツールが返した結果: テキストブロックを改行で結合し、画像またはドキュメントをプレースホルダー (`[image]` など) に置き換えたもの | |
+| `diff` | Edit ツールが適用した構造化パッチ | `OTEL_LOG_TOOL_DETAILS` |
+| `file_path` | Read、Edit、Write ツールのターゲットファイルパス。同じ名前のスパン属性を繰り返す | `OTEL_LOG_TOOL_DETAILS` |
+| `bash_command` | Bash ツールのコマンド文字列 | `OTEL_LOG_TOOL_DETAILS` |
 
 親スパンの `tool_name` 属性は、イベントがどのツールから来たかを示します。コンテンツ制限で切り詰められた属性には、`<attribute>_truncated` および `<attribute>_original_length` が付属します。
 
 **`claude_code.tool.blocked_on_user`**
 
-| 属性            | 説明                                                    | ゲート |
-| ------------- | ----------------------------------------------------- | --- |
-| `duration_ms` | 権限決定の待機に費やされた時間                                       |     |
-| `decision`    | `accept` または `reject`                                 |     |
-| `source`      | 決定ソース。[Tool decision event](#tool-decision-event) と一致 |     |
+| 属性 | 説明 | ゲート |
+| - | - | - |
+| `duration_ms` | 権限決定の待機に費やされた時間 | |
+| `decision` | `accept` または `reject` | |
+| `source` | 決定ソース。[Tool decision event](#tool-decision-event) と一致 | |
 
 **`claude_code.tool.execution`**
 
-| 属性                    | 説明                                                                                                                                            | ゲート                     |
-| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- |
-| `duration_ms`         | ツール本体の実行に費やされた時間                                                                                                                              |                         |
-| `tool_use_id`         | 親 `claude_code.tool` スパンと同じ値                                                                                                                  |                         |
-| `gen_ai.tool.call.id` | `tool_use_id` と同じ値。OpenTelemetry GenAI セマンティック規約                                                                                              |                         |
-| `success`             | `true` または `false`                                                                                                                            |                         |
-| `error`               | 実行が失敗した場合のエラーカテゴリ文字列。例: `Error:ENOENT` または `ShellError`。ゲートが設定されている場合は完全なエラーメッセージを含む                                                          | `OTEL_LOG_TOOL_DETAILS` |
-| `error_class`         | 文字、数字、アンダースコア以外の文字を `_` に置き換えた識別子形式のエラーカテゴリ。例: `Error_ENOENT` または `ShellError`。`error` が完全なメッセージを含む場合でもカテゴリを含みます。Claude Code v2.1.268 以降が必要です |                         |
+| 属性 | 説明 | ゲート |
+| - | - | - |
+| `duration_ms` | ツール本体の実行に費やされた時間 | |
+| `tool_use_id` | 親 `claude_code.tool` スパンと同じ値 | |
+| `gen_ai.tool.call.id` | `tool_use_id` と同じ値。OpenTelemetry GenAI セマンティック規約 | |
+| `success` | `true` または `false` | |
+| `error` | 実行が失敗した場合のエラーカテゴリ文字列。例: `Error:ENOENT` または `ShellError`。ゲートが設定されている場合は完全なエラーメッセージを含む | `OTEL_LOG_TOOL_DETAILS` |
+| `error_class` | 文字、数字、アンダースコア以外の文字を `_` に置き換えた識別子形式のエラーカテゴリ。例: `Error_ENOENT` または `ShellError`。`error` が完全なメッセージを含む場合でもカテゴリを含みます。Claude Code v2.1.268 以降が必要です | |
 
 **`claude_code.hook`**
 
@@ -335,17 +338,17 @@ Claude Code はツール呼び出しの成功した戻りからこのイベン�
 
 対話型 CLI セッションでは、詳細なベータトレースは、組織がこの機能のホワイトリストに登録されていることも必要です。Agent SDK および非対話型 `-p` セッションはホワイトリストを必要としません。
 
-| 属性                       | 説明                            | ゲート                     |
-| ------------------------ | ----------------------------- | ----------------------- |
-| `hook_event`             | フックイベントタイプ。例: `PreToolUse`    |                         |
-| `hook_name`              | 完全なフック名。例: `PreToolUse:Write` |                         |
-| `num_hooks`              | 実行された一致するフックコマンドの数            |                         |
-| `hook_definitions`       | JSON シリアル化されたフック設定            | `OTEL_LOG_TOOL_DETAILS` |
-| `duration_ms`            | すべての一致するフックの実時間               |                         |
-| `num_success`            | 正常に完了したフックの数                  |                         |
-| `num_blocking`           | ブロッキング決定を返したフックの数             |                         |
-| `num_non_blocking_error` | ブロックなしで失敗したフックの数              |                         |
-| `num_cancelled`          | 完了前にキャンセルされたフックの数             |                         |
+| 属性 | 説明 | ゲート |
+| - | - | - |
+| `hook_event` | フックイベントタイプ。例: `PreToolUse` | |
+| `hook_name` | 完全なフック名。例: `PreToolUse:Write` | |
+| `num_hooks` | 実行された一致するフックコマンドの数 | |
+| `hook_definitions` | JSON シリアル化されたフック設定 | `OTEL_LOG_TOOL_DETAILS` |
+| `duration_ms` | すべての一致するフックの実時間 | |
+| `num_success` | 正常に完了したフックの数 | |
+| `num_blocking` | ブロッキング決定を返したフックの数 | |
+| `num_non_blocking_error` | ブロックなしで失敗したフックの数 | |
+| `num_cancelled` | 完了前にキャンセルされたフックの数 | |
 
 <span id="new-context-gates" />
 
@@ -528,19 +531,19 @@ export OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317
 
 すべてのメトリクスとイベントは、これらの標準属性を共有します。
 
-| 属性                                                                                   | 説明                                                                                                              | 制御対象                                                                       |
-| ------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
-| `session.id`                                                                         | 一意のセッション識別子                                                                                                     | `OTEL_METRICS_INCLUDE_SESSION_ID`（デフォルト: true）                             |
-| `app.version`                                                                        | 現在の Claude Code バージョン                                                                                           | `OTEL_METRICS_INCLUDE_VERSION`（デフォルト: false）                               |
-| `app.entrypoint`                                                                     | セッションの起動方法。`cli`、`sdk-cli`、`sdk-ts`、`sdk-py`、`claude-vscode` など                                                 | `OTEL_METRICS_INCLUDE_ENTRYPOINT`（デフォルト: false）                            |
-| `organization.id`                                                                    | 組織 UUID（認証時）                                                                                                    | 利用可能な場合は常に含まれます                                                            |
-| `user.account_uuid`                                                                  | アカウント UUID（認証時）                                                                                                 | `OTEL_METRICS_INCLUDE_ACCOUNT_UUID`（デフォルト: true）                           |
-| `user.account_id`                                                                    | Anthropic 管理 API に一致するタグ付き形式のアカウント ID（認証時）。例：`user_01BWBeN28...`                                                | `OTEL_METRICS_INCLUDE_ACCOUNT_UUID`（デフォルト: true）                           |
-| `user.id`                                                                            | 初回実行時に生成され、`~/.claude.json` に保持されるランダムな匿名識別子。個人情報は含まれず、Claude アカウントから派生していません。ファイルを削除すると、次回実行時に新しい無関係な値が生成されます。 | 常に含まれます                                                                    |
-| `user.email`                                                                         | ユーザーのメールアドレス。サインイン時のメールアドレス、または [クラウドセッション](/docs/ja/claude-code-on-the-web) の場合はセッション自体の認証情報から取得                    | 利用可能な場合は常に含まれます                                                            |
-| `terminal.type`                                                                      | ターミナルタイプ。`iTerm.app`、`vscode`、`cursor`、`tmux` など                                                                | 検出された場合は常に含まれます                                                            |
-| `OTEL_RESOURCE_ATTRIBUTES` からのキー                                                     | `department` や `team.id` など、設定したカスタム属性。[マルチチーム組織サポート](#multi-team-organization-support) を参照                     | `OTEL_METRICS_INCLUDE_RESOURCE_ATTRIBUTES`（デフォルト: true）                    |
-| `vcs.repository.url.full`、`vcs.owner.name`、`vcs.repository.name`、`vcs.provider.name` | セッションリポジトリの ID。`origin` リモートから派生。[リポジトリ属性](#repository-attributes) を参照                                          | `OTEL_METRICS_INCLUDE_REPOSITORY`（デフォルト: false）。Claude Code v2.1.269 以降が必要 |
+| 属性 | 説明 | 制御対象 |
+| - | - | - |
+| `session.id` | 一意のセッション識別子 | `OTEL_METRICS_INCLUDE_SESSION_ID`（デフォルト: true） |
+| `app.version` | 現在の Claude Code バージョン | `OTEL_METRICS_INCLUDE_VERSION`（デフォルト: false） |
+| `app.entrypoint` | セッションの起動方法。`cli`、`sdk-cli`、`sdk-ts`、`sdk-py`、`claude-vscode` など | `OTEL_METRICS_INCLUDE_ENTRYPOINT`（デフォルト: false） |
+| `organization.id` | 組織 UUID（認証時） | 利用可能な場合は常に含まれます |
+| `user.account_uuid` | アカウント UUID（認証時） | `OTEL_METRICS_INCLUDE_ACCOUNT_UUID`（デフォルト: true） |
+| `user.account_id` | Anthropic 管理 API に一致するタグ付き形式のアカウント ID（認証時）。例：`user_01BWBeN28...` | `OTEL_METRICS_INCLUDE_ACCOUNT_UUID`（デフォルト: true） |
+| `user.id` | 初回実行時に生成され、`~/.claude.json` に保持されるランダムな匿名識別子。個人情報は含まれず、Claude アカウントから派生していません。ファイルを削除すると、次回実行時に新しい無関係な値が生成されます。 | 常に含まれます |
+| `user.email` | ユーザーのメールアドレス。サインイン時のメールアドレス、または [クラウドセッション](/docs/ja/claude-code-on-the-web) の場合はセッション自体の認証情報から取得 | 利用可能な場合は常に含まれます |
+| `terminal.type` | ターミナルタイプ。`iTerm.app`、`vscode`、`cursor`、`tmux` など | 検出された場合は常に含まれます |
+| `OTEL_RESOURCE_ATTRIBUTES` からのキー | `department` や `team.id` など、設定したカスタム属性。[マルチチーム組織サポート](#multi-team-organization-support) を参照 | `OTEL_METRICS_INCLUDE_RESOURCE_ATTRIBUTES`（デフォルト: true） |
+| `vcs.repository.url.full`、`vcs.owner.name`、`vcs.repository.name`、`vcs.provider.name` | セッションリポジトリの ID。`origin` リモートから派生。[リポジトリ属性](#repository-attributes) を参照 | `OTEL_METRICS_INCLUDE_REPOSITORY`（デフォルト: false）。Claude Code v2.1.269 以降が必要 |
 
 Claude Code が [Claude アプリゲートウェイ](/docs/ja/claude-apps-gateway) にサインインしている場合、CLI はゲートウェイセッションの認証済みアイデンティティでエクスポートをスタンプします。`user.id` は匿名インストール識別子ではなく IdP サブジェクト、`user.email` はサインイン済みメール、`user.groups` は IdP グループメンバーシップをコンマ区切り文字列として保持します。各エクスポートは `identity.source: gateway-oidc` も保持します。ゲートウェイアイデンティティは最後に適用されるため、`OTEL_RESOURCE_ATTRIBUTES` を通じて設定された `user.*` および `identity.*` キーはゲートウェイセッションで無視されます。
 
@@ -559,12 +562,12 @@ Claude Code が [Claude アプリゲートウェイ](/docs/ja/claude-apps-gatewa
 
 Claude Code はセッションごとに 1 回、リポジトリの `origin` リモートからこれらの属性を派生させます。1 つのリポジトリの HTTPS および SSH リモートは同じ値を生成します。
 
-| 属性                        | 値                                                                                                         |
-| ------------------------- | --------------------------------------------------------------------------------------------------------- |
-| `vcs.repository.url.full` | リポジトリのブラウザ URL（`.git` なし）。例：`https://github.com/example-org/example-repo`                                 |
-| `vcs.owner.name`          | オーナーまたはグループパス。例：`example-org`。リモートパスが単一セグメントの場合は省略                                                        |
-| `vcs.repository.name`     | 裸のリポジトリ名。例：`example-repo`                                                                                 |
-| `vcs.provider.name`       | Claude Code がリモートのホストまたは URL 形状を `github`、`gitlab`、`bitbucket`、`gitea` のいずれかとして認識する場合はそのプロバイダー。それ以外の場合は省略 |
+| 属性 | 値 |
+| - | - |
+| `vcs.repository.url.full` | リポジトリのブラウザ URL（`.git` なし）。例：`https://github.com/example-org/example-repo` |
+| `vcs.owner.name` | オーナーまたはグループパス。例：`example-org`。リモートパスが単一セグメントの場合は省略 |
+| `vcs.repository.name` | 裸のリポジトリ名。例：`example-repo` |
+| `vcs.provider.name` | Claude Code がリモートのホストまたは URL 形状を `github`、`gitlab`、`bitbucket`、`gitea` のいずれかとして認識する場合はそのプロバイダー。それ以外の場合は省略 |
 
 値は小文字に変換され、リモート URL からの認証情報、クエリ文字列、フラグメントは決して表示されません。セッションに `origin` リモートがない場合、リモートが URL 形状でない場合、または唯一の囲むリポジトリがホームディレクトリである場合、属性は省略されます。
 
@@ -578,16 +581,16 @@ Claude Code はセッションごとに 1 回、リポジトリの `origin` リ�
 
 Claude Code は以下のメトリクスをエクスポートします。Unit 列は各メトリクスに添付される OpenTelemetry ユニット文字列を示します。カウントメトリクスには何も含まれません。
 
-| メトリクス名                                | 説明                    | ユニット   |
-| ------------------------------------- | --------------------- | ------ |
-| `claude_code.session.count`           | 開始された CLI セッションのカウント  | なし     |
-| `claude_code.lines_of_code.count`     | 変更されたコード行のカウント        | なし     |
-| `claude_code.pull_request.count`      | 作成されたプルリクエストの数        | なし     |
-| `claude_code.commit.count`            | 作成された git コミットの数      | なし     |
-| `claude_code.cost.usage`              | Claude Code セッションのコスト | USD    |
-| `claude_code.token.usage`             | 使用されたトークン数            | tokens |
-| `claude_code.code_edit_tool.decision` | コード編集ツール権限決定のカウント     | なし     |
-| `claude_code.active_time.total`       | 総アクティブ時間              | s      |
+| メトリクス名 | 説明 | ユニット |
+| - | - | - |
+| `claude_code.session.count` | 開始された CLI セッションのカウント | なし |
+| `claude_code.lines_of_code.count` | 変更されたコード行のカウント | なし |
+| `claude_code.pull_request.count` | 作成されたプルリクエストの数 | なし |
+| `claude_code.commit.count` | 作成された git コミットの数 | なし |
+| `claude_code.cost.usage` | Claude Code セッションのコスト | USD |
+| `claude_code.token.usage` | 使用されたトークン数 | tokens |
+| `claude_code.code_edit_tool.decision` | コード編集ツール権限決定のカウント | なし |
+| `claude_code.active_time.total` | 総アクティブ時間 | s |
 
 `prometheus` が `OTEL_METRICS_EXPORTER` にリストされた唯一のエクスポーターである場合、Claude Code はエクスポートされたメトリクスから `USD`、`tokens`、`s` ユニットを省略して、スクレイプが有効な Prometheus テキスト形式のままになるようにします。メトリクス名は変わらず、`otlp,prometheus` などのエクスポーターを組み合わせた設定はユニットを保持します。v2.1.216 より前では、Prometheus スクレイプには OpenMetrics のみの `# UNIT` 行が含まれていて、一部のスクレイパーが拒否していました。
 
@@ -713,12 +716,13 @@ Claude Code は OpenTelemetry ログ/イベント経由で以下のイベント�
 
 ユーザーがプロンプトを送信すると、Claude Code は複数の API 呼び出しを行い、いくつかのツールを実行する可能性があります。`prompt.id` 属性を使用すると、これらすべてのイベントを、それらをトリガーした単一のプロンプトに結び付けることができます。
 
-| 属性                  | 説明                                                                                                                                                                                                                                                                                                                                                               |
-| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `prompt.id`         | 単一のユーザープロンプト処理中に生成されたすべてのイベントをリンクする UUID v4 識別子                                                                                                                                                                                                                                                                                                                  |
-| `event.sequence`    | イベントを順序付けするための 0 ベースのカウンター。セッションごとではなく Claude Code プロセスごとにカウント                                                                                                                                                                                                                                                                                                   |
-| `message.uuid`      | セッショントランスクリプト（`~/.claude/projects/*/*.jsonl` ファイル）に保持されるメッセージの UUID。`assistant_response`、`api_response_body` に存在し、コマンドディスパッチを除く `user_prompt` に存在します。コマンドディスパッチはゼロまたは多くのメッセージを生成できます。`assistant_response` および `api_response_body` では、これは応答の最終トランスクリプトエントリであり、次のターンの `parentUuid` がこれからチェーンされます。Claude Code v2.1.214 以降が必要。または `api_response_body` では v2.1.274 以降 |
-| `client_request_id` | `x-client-request-id` リクエストヘッダーとして送信されるクライアント生成 UUID。ファーストパーティ API 接続の `api_request` および `api_error` に存在します。サードパーティプロバイダーバックエンドおよびリクエストが非ストリーミングフォールバック経由で再試行された場合は存在しません。リクエストをその応答とペアリングし、サーバー `request_id` を生成しなかったタイムアウトなどの障害に対して利用可能なままです。`llm_request` トレーススパンの同じ属性と一致します。Claude Code v2.1.214 以降が必要                                                       |
+| 属性 | 説明 |
+| - | - |
+| `prompt.id` | 単一のユーザープロンプト処理中に生成されたすべてのイベントをリンクする UUID v4 識別子 |
+| `event.sequence` | イベントを順序付けするための 0 ベースのカウンター。セッションごとではなく Claude Code プロセスごとにカウント |
+| `message.uuid` | セッショントランスクリプト（`~/.claude/projects/*/*.jsonl` ファイル）に保持されるメッセージの UUID。`assistant_response`、`api_response_body` に存在し、コマンドディスパッチを除く `user_prompt` に存在します。コマンドディスパッチはゼロまたは多くのメッセージを生成できます。`assistant_response` および `api_response_body` では、これは応答の最終トランスクリプトエントリであり、次のターンの `parentUuid` がこれからチェーンされます。Claude Code v2.1.214 以降が必要。または `api_response_body` では v2.1.274 以降 |
+| `request_id` | サーバーが割り当てた API リクエストの ID。`request-id` レスポンスヘッダーから読み取られます。例：`req_011...`。[Amazon Bedrock](/docs/ja/amazon-bedrock) のようにレスポンスに `request-id` ヘッダーがない場合、値は代わりに `x-amzn-requestid` ヘッダーから取得されます。`api_request`、`api_error`、`api_refusal`、`assistant_response`、および `api_response_body` に存在します。レスポンスがいずれかのヘッダーを持つ場合。`llm_request` トレーススパンの同じ属性と一致します。`x-amzn-requestid` ソースは Claude Code v2.1.282 以降が必要 |
+| `client_request_id` | `x-client-request-id` リクエストヘッダーとして送信されるクライアント生成 UUID。ファーストパーティ API 接続の `api_request` および `api_error` に存在します。サードパーティプロバイダーバックエンドおよびリクエストが非ストリーミングフォールバック経由で再試行された場合は存在しません。リクエストをその応答とペアリングし、サーバー `request_id` を生成しなかったタイムアウトなどの障害に対して利用可能なままです。`llm_request` トレーススパンの同じ属性と一致します。Claude Code v2.1.214 以降が必要 |
 
 単一のプロンプトによってトリガーされたすべてのアクティビティをトレースするには、特定の `prompt.id` 値でイベントをフィルタリングします。これにより、user\_prompt イベント、すべての api\_request イベント、およびそのプロンプト処理中に発生したすべての tool\_result イベントが返されます。
 
@@ -767,7 +771,7 @@ Claude Code は OpenTelemetry ログ/イベント経由で以下のイベント�
 * `response_length`: 応答テキストの長さ（文字数）
 * `response`: 応答テキスト。コンテンツ制限（デフォルト 60 KB）で切り詰められます。デフォルトでは `<REDACTED>` にリダクションされます。`OTEL_LOG_ASSISTANT_RESPONSES=1` を設定して含めます。`OTEL_LOG_ASSISTANT_RESPONSES` が設定されていない場合、`OTEL_LOG_USER_PROMPTS` が代わりに制御するため、プロンプトログが有効な場合は応答をリダクションされたままにするために `OTEL_LOG_ASSISTANT_RESPONSES=0` を設定します
 * `model`: モデル識別子（例：「claude-sonnet-5」）
-* `request_id`: 応答の `request-id` ヘッダーからの Anthropic API リクエスト ID。API が返す場合のみ存在
+* `request_id`: API リクエスト ID。[イベント相関属性](#event-correlation-attributes) で説明
 * `message.uuid`: 応答の最終トランスクリプトエントリの UUID。API 応答はコンテンツブロックごとに 1 つのトランスクリプトエントリとして保持されます。これは最後のもので、次のターンの `parentUuid` がこれからチェーンされます。Claude Code v2.1.214 以降が必要
 * `query_source`: リクエストを発行したサブシステム。`"repl_main_thread"`、`"compact"`、またはサブエージェント名など
 
@@ -827,7 +831,7 @@ Claude への各 API リクエストに対してログされます。
 * `output_tokens`: 出力トークン数
 * `cache_read_tokens`: キャッシュから読み取られたトークン数
 * `cache_creation_tokens`: キャッシュ作成に使用されたトークン数
-* `request_id`: 応答の `request-id` ヘッダーからの Anthropic API リクエスト ID。`"req_011..."` など。API が返す場合のみ存在。
+* `request_id`: API リクエスト ID。`"req_011..."` など。[イベント相関属性](#event-correlation-attributes) で説明。
 * `client_request_id`: `x-client-request-id` リクエストヘッダーとして送信されるクライアント生成 UUID。存在する場合については [イベント相関属性](#event-correlation-attributes) テーブルを参照。Claude Code v2.1.214 以降が必要
 * `speed`: 高速モードがアクティブであったかどうかを示す `"fast"` または `"normal"`
 * `query_source`: リクエストを発行したサブシステム。`"repl_main_thread"`、`"compact"`、またはサブエージェント名など
@@ -853,7 +857,7 @@ Claude への API リクエストが失敗するとログされます。
 * `status_code`: HTTP ステータスコード（数値）。接続障害などの非 HTTP エラーの場合は存在しません。
 * `duration_ms`: リクエスト期間（ミリ秒）
 * `attempt`: 実行された試行の総数。初期リクエストを含む（`1` は再試行が発生しなかったことを意味します）
-* `request_id`: 応答の `request-id` ヘッダーからの Anthropic API リクエスト ID。`"req_011..."` など。API が返す場合のみ存在。
+* `request_id`: API リクエスト ID。`"req_011..."` など。[イベント相関属性](#event-correlation-attributes) で説明。
 * `client_request_id`: `x-client-request-id` リクエストヘッダーとして送信されるクライアント生成 UUID。タイムアウトや接続エラーなどの障害がサーバー `request_id` を生成しなかった場合でも利用可能です。存在する場合については [イベント相関属性](#event-correlation-attributes) テーブルを参照。Claude Code v2.1.214 以降が必要
 * `speed`: 高速モードがアクティブであったかどうかを示す `"fast"` または `"normal"`
 * `query_source`: リクエストを発行したサブシステム。`"repl_main_thread"`、`"compact"`、またはサブエージェント名など
@@ -875,7 +879,7 @@ API リクエストが `stop_reason: "refusal"` を返すとログされます�
 * `event.timestamp`: ISO 8601 タイムスタンプ
 * `event.sequence`: イベント順序付けのためのプロセスごとのカウンター。[イベント相関属性](#event-correlation-attributes) で説明
 * `model`: リクエストからのモデル識別子
-* `request_id`: 応答の `request-id` ヘッダーからの Anthropic API リクエスト ID。`"req_011..."` など。API が返す場合のみ存在。
+* `request_id`: API リクエスト ID。`"req_011..."` など。[イベント相関属性](#event-correlation-attributes) で説明。
 * `query_source`: リクエストを発行したサブシステム。`"repl_main_thread"`、`"compact"`、またはサブエージェント名など。定義については [`api_request`](#api-request-event) を参照。
 * `speed`: [高速モード](/docs/ja/fast-mode) がアクティブな場合は `"fast"`、またはそれ以外の場合は `"normal"`
 * `attempt`: 再試行試行番号。最初の試行は `1`。
@@ -930,7 +934,7 @@ API リクエストが `stop_reason: "refusal"` を返すとログされます�
 * `body_truncated`: インラインの切り詰めが発生した場合は `"true"`。ファイルモードおよび切り詰めが発生しなかった場合は存在しません。
 * `model`: モデル識別子
 * `query_source`: リクエストを発行したサブシステム
-* `request_id`: 応答の `request-id` ヘッダーからの Anthropic API リクエスト ID。`"req_011..."` など。API が返す場合のみ存在。
+* `request_id`: API リクエスト ID。`"req_011..."` など。[イベント相関属性](#event-correlation-attributes) で説明。
 * `request_body_id`: この応答が答える [`api_request_body` イベント](#api-request-body-event) の `request_body_id`。Claude Code v2.1.274 以降が必要
 * `message.id`: API がレスポンスに割り当てたメッセージ ID。レスポンスボディの `id` フィールド。Claude Code v2.1.274 以降が必要
 * `message.uuid`: レスポンスの最終トランスクリプトエントリの UUID。`request_body_id` と一緒に、トランスクリプトメッセージをそれの背後にあるリクエストおよびレスポンスボディにリンクします。Claude Code v2.1.274 以降が必要
@@ -1419,12 +1423,12 @@ Claude Code v2.1.274 以降が必要です。
   使用状況監視
 </h3>
 
-| メトリクス                                                         | 分析の機会                                                                        |
-| ------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| `claude_code.token.usage`                                     | `type` (入力/出力)、ユーザー、チーム、モデル、`skill.name`、`plugin.name`、または `agent.name` 別に分類 |
-| `claude_code.session.count`                                   | 時間経過に伴う採用と関与を追跡                                                              |
-| `claude_code.lines_of_code.count`                             | コード追加と削除を追跡して生産性を測定し、モデル別に分類                                                 |
-| `claude_code.commit.count` & `claude_code.pull_request.count` | 開発ワークフローへの影響を理解                                                              |
+| メトリクス | 分析の機会 |
+| - | - |
+| `claude_code.token.usage` | `type` (入力/出力)、ユーザー、チーム、モデル、`skill.name`、`plugin.name`、または `agent.name` 別に分類 |
+| `claude_code.session.count` | 時間経過に伴う採用と関与を追跡 |
+| `claude_code.lines_of_code.count` | コード追加と削除を追跡して生産性を測定し、モデル別に分類 |
+| `claude_code.commit.count` & `claude_code.pull_request.count` | 開発ワークフローへの影響を理解 |
 
 <h3 id="cost-monitoring">
   コスト監視
@@ -1509,11 +1513,11 @@ export OTEL_RESOURCE_ATTRIBUTES="enduser.id=jdoe@example.com,enduser.directory_i
 
 完全なコール詳細で MCP サーバーアクティビティをキャプチャするには、ログエクスポーターを有効にし、`OTEL_LOG_TOOL_DETAILS=1` を設定します。その後、各 MCP 操作は、標準 ID 属性と共にサーバー名、ツール名、呼び出し引数を含む構造化イベントを生成します：
 
-| イベント                    | MCP に対して記録するもの                                                                                                                                        |
-| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `mcp_server_connection` | `server_name`、`transport_type`、`server_scope`、およびエラー詳細を含むサーバー接続、切断、接続失敗                                                                               |
-| `tool_result`           | `tool_name` および `mcp_server_scope` を含む各 MCP ツール呼び出し、`mcp_server_name` および `mcp_tool_name` を含む `tool_parameters` ペイロード、および呼び出し引数を含む `tool_input` ペイロード |
-| `tool_decision`         | 呼び出しが許可されたか拒否されたか、および決定が設定、フック、またはユーザーから来たかどうか、および `mcp_server_name` と `mcp_tool_name` を含む `tool_parameters` ペイロード                                    |
+| イベント | MCP に対して記録するもの |
+| - | - |
+| `mcp_server_connection` | `server_name`、`transport_type`、`server_scope`、およびエラー詳細を含むサーバー接続、切断、接続失敗 |
+| `tool_result` | `tool_name` および `mcp_server_scope` を含む各 MCP ツール呼び出し、`mcp_server_name` および `mcp_tool_name` を含む `tool_parameters` ペイロード、および呼び出し引数を含む `tool_input` ペイロード |
+| `tool_decision` | 呼び出しが許可されたか拒否されたか、および決定が設定、フック、またはユーザーから来たかどうか、および `mcp_server_name` と `mcp_tool_name` を含む `tool_parameters` ペイロード |
 
 `OTEL_LOG_TOOL_DETAILS` がない場合、これらのイベントは識別詳細を削除します：
 
@@ -1527,16 +1531,16 @@ export OTEL_RESOURCE_ATTRIBUTES="enduser.id=jdoe@example.com,enduser.directory_i
 
 検出ルールを構築する場合、監視したいシグナルを検索し、対応するイベントと属性についてバックエンドをクエリします：
 
-| シグナル                                               | イベント                                                                    | キー属性                                                                                                                                                                                                                                        |
-| -------------------------------------------------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ツール呼び出しが許可または拒否され、何によって                            | `tool_decision`                                                         | `decision`、`source`、`tool_name`、`tool_parameters`                                                                                                                                                                                           |
-| 権限モードのエスカレーション                                     | `permission_mode_changed`                                               | `from_mode`、`to_mode`、`trigger`                                                                                                                                                                                                             |
-| ポリシーフックがアクションをブロック                                 | `hook_execution_complete`                                               | `hook_event`、`num_blocking`                                                                                                                                                                                                                 |
-| ログイン、ログアウト、認証失敗                                    | `auth`                                                                  | `action`、`success`、`error_category`                                                                                                                                                                                                         |
-| MCP サーバー接続または失敗                                    | `mcp_server_connection`                                                 | `status`、`server_name`、`is_plugin`、`error_code`                                                                                                                                                                                             |
-| プラグインがインストールされ、そのソース                               | `plugin_installed`                                                      | `plugin.name`、`marketplace.name`、`marketplace.is_official`                                                                                                                                                                                  |
-| 実行されたコマンドとタッチされたファイル                               | `tool_result`（実行）または `tool_decision`（拒否）（`OTEL_LOG_TOOL_DETAILS=1` の場合） | `tool_parameters`；`tool_input`（`tool_result` のみ）                                                                                                                                                                                            |
-| マシンが実行する管理設定ソース、そのポリシーヘルパーが正常かどうか、およびマシンが起動を拒否した理由 | `managed_settings_resolved`                                             | `managed_settings.trigger`、`managed_settings.sources`、`managed_settings.source_behavior`、`managed_settings.helper.state`、`error.type`；`managed_settings.settings` および `managed_settings.resolved_sha256`（`OTEL_LOG_MANAGED_SETTINGS=1` の場合） |
+| シグナル | イベント | キー属性 |
+| - | - | - |
+| ツール呼び出しが許可または拒否され、何によって | `tool_decision` | `decision`、`source`、`tool_name`、`tool_parameters` |
+| 権限モードのエスカレーション | `permission_mode_changed` | `from_mode`、`to_mode`、`trigger` |
+| ポリシーフックがアクションをブロック | `hook_execution_complete` | `hook_event`、`num_blocking` |
+| ログイン、ログアウト、認証失敗 | `auth` | `action`、`success`、`error_category` |
+| MCP サーバー接続または失敗 | `mcp_server_connection` | `status`、`server_name`、`is_plugin`、`error_code` |
+| プラグインがインストールされ、そのソース | `plugin_installed` | `plugin.name`、`marketplace.name`、`marketplace.is_official` |
+| 実行されたコマンドとタッチされたファイル | `tool_result`（実行）または `tool_decision`（拒否）（`OTEL_LOG_TOOL_DETAILS=1` の場合） | `tool_parameters`；`tool_input`（`tool_result` のみ） |
+| マシンが実行する管理設定ソース、そのポリシーヘルパーが正常かどうか、およびマシンが起動を拒否した理由 | `managed_settings_resolved` | `managed_settings.trigger`、`managed_settings.sources`、`managed_settings.source_behavior`、`managed_settings.helper.state`、`error.type`；`managed_settings.settings` および `managed_settings.resolved_sha256`（`OTEL_LOG_MANAGED_SETTINGS=1` の場合） |
 
 Claude Code は生のイベントストリームのみを出力します。異常検出、ベースライン化、セッション間の相関、アラートは SIEM または可観測性バックエンドの責任です。
 
@@ -1559,7 +1563,7 @@ Claude Code は生のイベントストリームのみを出力します。異�
 }
 ```
 
-イベントが到着したことを確認するには、この設定で実行されているセッションでプロンプトを送信し、SIEM で `claude_code.user_prompt` イベントを確認します。何も到着しない場合は、`claude --debug` を実行し、デバッグログで `[3P telemetry]` エクスポートエラーを確認します。
+イベントが到着したことを確認するには、この設定で実行されているセッションでプロンプトを送信し、SIEM で `claude_code.user_prompt` イベントを確認します。何も到着しない場合は、`claude --debug-file <path>` で Claude Code を起動し、そのログで `[3P telemetry]` エクスポートエラーを確認します。
 
 <h2 id="backend-considerations">
   バックエンドに関する考慮事項
@@ -1621,19 +1625,19 @@ Claude Code は生のイベントストリームのみを出力します。異�
 </h2>
 
 * OpenTelemetry エクスポートをバックエンドに送信することはオプトインであり、明示的な設定が必要です。Anthropic の個別の運用テレメトリーと無効化方法については、[データ使用](/docs/ja/data-usage#telemetry-services)を参照してください
-* ファイルの生コンテンツとコードスニペットはメトリクスやイベントに含まれません。トレーススパンは別のデータパスです。以下の `OTEL_LOG_TOOL_CONTENT` の項目を参照してください
+* 生のファイルコンテンツとコードスニペットはメトリクスやイベントに含まれません。トレーススパンは別のデータパスです。以下の `OTEL_LOG_TOOL_CONTENT` の項目を参照してください
 * OAuth 経由で認証されている場合、`user.email` はテレメトリー属性に含まれ、設定した OTel エンドポイントにのみ送信され、Anthropic には送信されません。これが組織にとって懸念事項である場合は、テレメトリーバックエンドと協力してこのフィールドをフィルタリングまたは編集してください
 * ユーザープロンプトコンテンツはデフォルトでは収集されません。プロンプト長のみが記録されます。プロンプトコンテンツを含めるには、`OTEL_LOG_USER_PROMPTS=1` を設定してください。詳細なベータトレースでは、この変数はプロンプトテキストより広い範囲に達します。これは [`new_context` スパン属性](#new-context-gates)もゲートします。これは `claude_code.llm_request` スパンのツール結果を含みます
 * アシスタント応答テキストはデフォルトでは収集されません。応答長のみが記録されます。応答テキストを含めるには、`OTEL_LOG_ASSISTANT_RESPONSES=1` を設定してください。Claude Code からのすべての OpenTelemetry データと同様に、応答テキストは設定した OTel エンドポイントにのみ送信され、Anthropic には送信されません。この変数が設定されていない場合、`OTEL_LOG_USER_PROMPTS` がフォールバックとして使用されるため、プロンプトコンテンツなしで応答コンテンツが必要な場合は `OTEL_LOG_ASSISTANT_RESPONSES=0` を設定してください
-* ツール入力引数とパラメータはデフォルトではログに記録されません。これらを含めるには、`OTEL_LOG_TOOL_DETAILS=1` を設定してください。Claude Desktop の組み込みサーバーの場合、Claude Desktop が所有するセッションでは、`tool_decision` と `tool_result` は `mcp_server_name`/`mcp_tool_name` ペアを含みます。これはホーム作成者の名前であり、フラグがオフの場合でも引数コンテンツではありません。この例外には Claude Code v2.1.214 以降が必要です。このデータは設定した OTEL エンドポイントにのみ送信され、Anthropic には送信されません。引数には機密値が含まれる可能性があるため、テレメトリーバックエンドを設定してこれらの属性をフィルタリングまたは編集してください。有効にすると：
-  * `tool_result` と `tool_decision` イベントには、Bash コマンド、MCP サーバーとツール名、スキル名を含む `tool_parameters` 属性が含まれます。`full_command` などのフィールドは切り詰められずに出力されます
-  * `tool_result` イベントには、ファイルパス、URL、検索パターン、その他の引数を含む `tool_input` 属性も含まれます。512 文字を超える個別の値は切り詰められ、合計は約 4 K 文字に制限されます
-  * `user_prompt` イベントには、カスタム、プラグイン、MCP コマンドの逐語的な `command_name` が含まれます
-  * トレーススパンには、同じ `tool_input` 属性と `file_path` などの入力派生属性が含まれ、`tool_input` と同じ切り詰めが行われます
-* ツールコンテンツはデフォルトではトレーススパンにログに記録されません。これを含めるには、`OTEL_LOG_TOOL_CONTENT=1` を設定してください。その後、`claude_code.tool` スパンは、ファイルの生コンテンツと Bash コマンド出力を含む [`tool.output` スパンイベント](#tool-output-span-event)を含みます。これは属性ごとのコンテンツ制限（デフォルトでは 60 KB）で切り詰められます。ツールコンテンツは [`new_context`](#new-context-gates) を通じてスパンに到達します。このゲートはスパンごとに異なります。テレメトリーバックエンドを設定してこれらの属性をフィルタリングまたは編集してください
-* 生の Anthropic Messages API リクエストおよびレスポンスボディはデフォルトではログに記録されません。これらを含めるには、シェル、ユーザー設定、または管理設定で `OTEL_LOG_RAW_API_BODIES` を設定してください。これは [プロジェクトおよびローカル設定](/docs/ja/settings-reference#variables-claude-code-ignores-in-env)では無視されます。ボディには、システムプロンプト、すべての以前のユーザーとアシスタントのターン、ツール結果を含む完全な会話履歴が含まれるため、これを有効にすることは、他の `OTEL_LOG_*` コンテンツフラグが明かすすべてのものへの同意を意味します。Claude Code は、他の設定に関係なく、これらのボディから Claude の拡張思考コンテンツを常に編集します。設定する値は、Claude Code がボディを配信する方法を決定します：
+* ツール入力引数とパラメータはデフォルトではログに記録されません。これらを含めるには、`OTEL_LOG_TOOL_DETAILS=1` を設定してください。Claude Desktop の組み込みサーバーの場合、Claude Desktop が所有するセッションでは、`tool_decision` と `tool_result` は `mcp_server_name`/`mcp_tool_name` ペアを含みます。これはホストが作成した名前であり、フラグがオフの場合でも引数コンテンツではありません。この例外には Claude Code v2.1.214 以降が必要です。このデータは設定した OTEL エンドポイントにのみ送信され、Anthropic には送信されません。引数には機密値が含まれる可能性があるため、テレメトリーバックエンドを設定してこれらの属性をフィルタリングまたは編集してください。有効にすると：
+  * `tool_result` と `tool_decision` イベントには、Bash コマンド、MCP サーバーとツール名、およびスキル名を含む `tool_parameters` 属性が含まれます。`full_command` などのフィールドは切り詰められずに出力されます
+  * `tool_result` イベントには、ファイルパス、URL、検索パターン、およびその他の引数を含む `tool_input` 属性も含まれます。512 文字を超える個別の値は切り詰められ、合計は約 4 K 文字に制限されます
+  * `user_prompt` イベントには、カスタム、プラグイン、および MCP コマンドの逐語的な `command_name` が含まれます
+  * トレーススパンには、同じ `tool_input` 属性と `file_path` などの入力派生属性が含まれ、`tool_input` と同じ切り詰めが適用されます
+* ツールコンテンツはデフォルトではトレーススパンにログに記録されません。これを含めるには、`OTEL_LOG_TOOL_CONTENT=1` を設定してください。その後、`claude_code.tool` スパンは、生のファイルコンテンツ、Bash コマンド出力、および MCP ツール、WebFetch、WebSearch が返すものを含む [`tool.output` スパンイベント](#tool-output-span-event)を含みます。これはコンテンツ制限（デフォルトでは 60 KB）で属性ごとに切り詰められます。MCP ツール、WebFetch、WebSearch からの結果には Claude Code v2.1.283 以降が必要です。ツールコンテンツは [`new_context`](#new-context-gates) を通じてスパンに到達します。このゲートはスパンごとに異なります。テレメトリーバックエンドを設定してこれらの属性をフィルタリングまたは編集してください
+* 生の Anthropic Messages API リクエストおよびレスポンスボディはデフォルトではログに記録されません。これらを含めるには、シェル、ユーザー設定、または管理設定で `OTEL_LOG_RAW_API_BODIES` を設定してください。これは[プロジェクトおよびローカル設定](/docs/ja/settings-reference#variables-claude-code-ignores-in-env)では無視されます。ボディには、システムプロンプト、すべての以前のユーザーおよびアシスタントターン、ツール結果を含む完全な会話履歴が含まれるため、これを有効にすることは、他の `OTEL_LOG_*` コンテンツフラグが明かすすべてのことへの同意を意味します。Claude Code は、他の設定に関係なく、これらのボディから Claude の拡張思考コンテンツを常に編集します。設定する値は、Claude Code がボディを配信する方法を決定します：
   * `=1` の場合、Claude Code は各 API 呼び出しに対して `api_request_body` と `api_response_body` ログイベントを出力します。イベントの `body` 属性は JSON シリアル化されたペイロードを含み、コンテンツ制限（デフォルトでは 60 KB）で切り詰められます
-  * `=file:<dir>` の場合、Claude Code は切り詰められていないボディをそのディレクトリの `.request.json` と `.response.json` ファイルに書き込み、イベントはインラインボディの代わりに `body_ref` パスを含みます。ディレクトリをテレメトリーストリームではなく、ログコレクターまたはサイドカーと一緒に配布してください。
+  * `=file:<dir>` の場合、Claude Code はそのディレクトリの下の `.request.json` と `.response.json` ファイルに切り詰められていないボディを書き込み、イベントはインラインボディの代わりに `body_ref` パスを含みます。テレメトリーストリームを通じてではなく、ログコレクターまたはサイドカーでディレクトリを配信してください。
 
     各成功したレスポンスについて、Claude Code はそのディレクトリの `index.jsonl` に 1 行を追加し、レスポンスファイルをそれを生成したリクエストファイルおよびそれが成為したトランスクリプトメッセージにリンクします。各行はメッセージコンテンツを含まず、[API レスポンスボディイベント](#api-response-body-event)セクションがそのフィールドをリストします。インデックスファイルには Claude Code v2.1.274 以降が必要です
 

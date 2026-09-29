@@ -34,11 +34,11 @@ curl -sS https://claude-gateway.internal.example.com/v1/organizations/spend_limi
   -d '{"scope": {"type": "rbac_group", "rbac_group_id": "contractors"}, "amount": "10000", "period": "daily"}'
 ```
 
-| フィールド        | 値                                  | 説明                                                                                                                                                                                                                                                                                                                    |
-| ------------ | ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| フィールド | 値 | 説明 |
+| - | - | - |
 | `scope.type` | `user`、`rbac_group`、`organization` | `user` は OpenID Connect（OIDC）`sub` で 1 人の開発者をターゲットにします。これは ID プロバイダーが割り当てる安定したユーザー ID です。`scope.user_id` として渡します。`rbac_group` は [IdP グループ](/docs/ja/claude-apps-gateway-config#managed) を名前でターゲットにします。`scope.rbac_group_id` として渡します。`organization` は組織全体のデフォルトです。gateway は 3 つすべてを受け入れます。Anthropic の公開 `POST` は現在ユーザーのみです。 |
-| `amount`     | USD セントの整数文字列、または `null`           | `null` は無制限です。`"0"` はゼロ上限で、すべてのリクエストをブロックします。                                                                                                                                                                                                                                                                         |
-| `period`     | `daily`、`weekly`、`monthly`         | スコープは期間ごとに 1 つの上限を保持でき、各々は独立して適用されます。開発者は、いずれかの上限を超えている場合、ブロックされます。                                                                                                                                                                                                                                                   |
+| `amount` | USD セントの整数文字列、または `null` | `null` は無制限です。`"0"` はゼロ上限で、すべてのリクエストをブロックします。 |
+| `period` | `daily`、`weekly`、`monthly` | スコープは期間ごとに 1 つの上限を保持でき、各々は独立して適用されます。開発者は、いずれかの上限を超えている場合、ブロックされます。 |
 
 グループまたは組織の上限は、各メンバーが継承する座席ごとのデフォルトであり、共有プールではありません。期間ごとに、開発者の有効な上限は次の順序で解決されます。ユーザーごとのオーバーライド、次に最も制限的なグループ上限、次に組織のデフォルト、次に無制限。[`admin.group_limit_mode: max`](/docs/ja/claude-apps-gateway-config#admin) は、複数グループのタイブレークを最も制限的ではないものに反転させます。
 
@@ -86,6 +86,8 @@ v2.1.227 以降では、`<public_url>/protocol` のプロトコルリファレ�
 
 事前チェッククエリは 2 秒のタイムアウトで Postgres にクエリします。ストアに到達できない場合またはタイムアウトする場合、デフォルトでは適用は開いた状態で失敗します。リクエストは進行し、gateway は警告をログに記録し、レスポンスは `anthropic-ratelimit-unified-*` ヘッダーを含みません。[`enforcement.fail_closed_on_error: true`](/docs/ja/claude-apps-gateway-config#enforcement) を設定して、代わりに閉じた状態で失敗させます。これは同じ `429 billing_error` を返しますが、メッセージは `spend limit unavailable` で、期間、リセット時刻、`retry-after` ヘッダーはありません。フェイルオープンはストア停止が推論停止になるのを防ぎます。フェイルクローズは計測されていない支出がないことを保証します。
 
+フェイルオープンは、ロードバランサーまたはオーケストレーターが引き続き gateway にトラフィックをルーティングしている間のみ役立ちます。[停止動作](/docs/ja/claude-apps-gateway-deploy#outage-behavior) で `store.readiness_grace_seconds` を参照してください。これにより、レプリカは短い停止を通じてレディネスチェックに合格し続けます。
+
 <h3 id="usage-warnings-in-claude-code">
   Claude Code での使用警告
 </h3>
@@ -107,14 +109,14 @@ Claude Code は開発者が上限に近づくと警告します。使用率が 7
 
 以下のエンドポイントは `/v1/organizations/spend_limits` の下で提供されます。
 
-| メソッドとパス                                        | 説明                                                                                                                                     |
-| ---------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| `GET /v1/organizations/spend_limits`           | 設定された上限をリストします。オプションで `organization`、`rbac_group`、または `user` の `scope_type` にフィルターできます。クエリ：`?limit=&after_id=&before_id=&scope_type=`。 |
-| `POST /v1/organizations/spend_limits`          | `{scope, period}` の上限を作成または置き換えます。                                                                                                     |
-| `GET /v1/organizations/spend_limits/{id}`      | `spl_` プレフィックス付き ID で 1 つの上限を取得します。                                                                                                    |
-| `DELETE /v1/organizations/spend_limits/{id}`   | 1 つの上限を削除します。`{type: "spend_limit_deleted", id}` を返します。                                                                                |
-| `GET /v1/organizations/spend_limits/effective` | プリンシパルごと、期間ごとの解決された上限と期間から現在までの支出。                                                                                                     |
-| `GET /v1/organizations/spend_limits/audit`     | 管理者の変更トレイル、最新順。クエリ：`?limit=&after_id=`。                                                                                                |
+| メソッドとパス | 説明 |
+| - | - |
+| `GET /v1/organizations/spend_limits` | 設定された上限をリストします。オプションで `organization`、`rbac_group`、または `user` の `scope_type` にフィルターできます。クエリ：`?limit=&after_id=&before_id=&scope_type=`。 |
+| `POST /v1/organizations/spend_limits` | `{scope, period}` の上限を作成または置き換えます。 |
+| `GET /v1/organizations/spend_limits/{id}` | `spl_` プレフィックス付き ID で 1 つの上限を取得します。 |
+| `DELETE /v1/organizations/spend_limits/{id}` | 1 つの上限を削除します。`{type: "spend_limit_deleted", id}` を返します。 |
+| `GET /v1/organizations/spend_limits/effective` | プリンシパルごと、期間ごとの解決された上限と期間から現在までの支出。 |
+| `GET /v1/organizations/spend_limits/audit` | 管理者の変更トレイル、最新順。クエリ：`?limit=&after_id=`。 |
 
 規約は Anthropic の Admin API をミラーリングします。
 
@@ -141,13 +143,13 @@ Claude Code は開発者が上限に近づくと警告します。使用率が 7
 
 グループソースの上限は、適用が使用するのと同じ `group_limit_mode` タイブレークでそれらの最後に見られたグループに対して解決されるため、ビューアーは実際に適用される上限を表示します。
 
-| クエリパラメーター        | 説明                                                              |
-| ---------------- | --------------------------------------------------------------- |
-| `user_ids[]`     | 繰り返し可能。OIDC `sub` で特定のプリンシパルにフィルターします。                          |
-| `period[]`       | 繰り返し可能。`daily`、`weekly`、または `monthly` 行にフィルターします。               |
-| `sort`           | `spend_desc` は最大支出者を最初にリストします。正確に 1 つの `period[]` が必要です。        |
-| `q`              | OIDC `sub`、最後に見られたメール、および最後に見られた表示名に対する大文字と小文字を区別しない部分文字列フィルター。 |
-| `limit` / `page` | ページサイズ（1～1000、デフォルト 20）および前のレスポンスの `next_page` からの不透明なカーソル。     |
+| クエリパラメーター | 説明 |
+| - | - |
+| `user_ids[]` | 繰り返し可能。OIDC `sub` で特定のプリンシパルにフィルターします。 |
+| `period[]` | 繰り返し可能。`daily`、`weekly`、または `monthly` 行にフィルターします。 |
+| `sort` | `spend_desc` は最大支出者を最初にリストします。正確に 1 つの `period[]` が必要です。 |
+| `q` | OIDC `sub`、最後に見られたメール、および最後に見られた表示名に対する大文字と小文字を区別しない部分文字列フィルター。 |
+| `limit` / `page` | ページサイズ（1～1000、デフォルト 20）および前のレスポンスの `next_page` からの不透明なカーソル。 |
 
 <Warning>
   `q=` と `user_ids[]=` は GET クエリ文字列に乗るため、任意のフロントプロキシまたはロードバランサーはそれらをアクセスログでキャプチャします。PII ログポリシーが厳しい場合は、そこでこれらのパラメーターをスクラブしてください。
@@ -171,11 +173,11 @@ Claude Code は開発者が上限に近づくと警告します。使用率が 7
 
 gateway は 4 つの支出関連テーブルを保持します。時間ごとのスイープが保持期間を適用します。
 
-| テーブル               | 内容                                             | 保持期間                                                                                          |
-| ------------------ | ---------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| `spend`            | プリンシパルごとの期間から現在までのカウンター（セント）                   | [`admin.spend_retention_months`](/docs/ja/claude-apps-gateway-config#admin)、デフォルト 13               |
-| `spend_limits`     | 設定された上限                                        | API 経由で削除されるまで                                                                                |
-| `admin_audit`      | 変更トレイル                                         | [`admin.audit_retention_days`](/docs/ja/claude-apps-gateway-config#admin)、デフォルト 365                |
+| テーブル | 内容 | 保持期間 |
+| - | - | - |
+| `spend` | プリンシパルごとの期間から現在までのカウンター（セント） | [`admin.spend_retention_months`](/docs/ja/claude-apps-gateway-config#admin)、デフォルト 13 |
+| `spend_limits` | 設定された上限 | API 経由で削除されるまで |
+| `admin_audit` | 変更トレイル | [`admin.audit_retention_days`](/docs/ja/claude-apps-gateway-config#admin)、デフォルト 365 |
 | `principal_emails` | 各プリンシパルの最後に見られたメール、表示名、および IdP グループ。PII を含みます。 | [`admin.identity_retention_days`](/docs/ja/claude-apps-gateway-config#admin) 最後のアクティビティ以降、デフォルト 90 |
 
 開発者が去る場合、`DELETE /v1/organizations/spend_limits/{id}` 経由でユーザーごとの上限を削除します。その支出とアイデンティティ行は上記の保持期間で期限切れになります。1 人を即座に削除するには、オフボーディングまたはデータサブジェクトアクセスリクエスト（DSAR）の場合、gateway データベースに対して直接 `DELETE FROM principal_emails WHERE principal = '<sub>'` を実行します。これにより、メール、名前、およびグループを保持する唯一のテーブルが削除されます。`spend` と `admin_audit` 行は疑似匿名 OIDC `sub` のみを参照し、独自のウィンドウで期限切れになります。

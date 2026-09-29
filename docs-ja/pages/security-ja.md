@@ -126,10 +126,11 @@ IDE で Claude Code を実行する場合の詳細については、[VS Code sec
 
 * **分離された仮想マシン**: 各クラウドセッションは分離された Anthropic 管理 VM で実行されます
 * **ネットワークアクセス制御**: ネットワークアクセスはデフォルトで制限され、無効にするか特定のドメインのみを許可するように設定できます
-* **認証情報保護**: 認証はサンドボックス内でスコープされた認証情報を使用するセキュアプロキシを通じて処理され、その後実際の GitHub 認証トークンに変換されます
+* **認証情報保護**: GitHub 認証情報は Anthropic のサーバーに暗号化されて保存され、セッション VM に入ることはありません。VM はそのセッションにスコープされた短命の認証情報を保持し、GitHub トラフィックは GitHub 認証情報をサーバー側で付与する [Anthropic プロキシ](/docs/ja/cloud-environments#github-proxy) を通じて流れます。アクセスを付与する方法については、[GitHub 認証オプション](/docs/ja/claude-code-on-the-web#github-authentication-options) を参照してください
 * **ブランチ制限**: Git push 操作は現在のワーキングブランチに制限されます
 * **監査ログ**: クラウドセッション内のすべての操作はコンプライアンスと監査目的でログされます
 * **自動クリーンアップ**: セッション VM は非アクティブ期間後に回収されます
+* **削除**: [セッションを削除](/docs/ja/claude-code-on-the-web#delete-sessions) することはいつでも可能です。クラウドセッションについて Anthropic が保存する内容については、[クラウド実行データフロー](/docs/ja/data-usage#cloud-execution-data-flow-and-dependencies) を参照してください
 
 クラウド実行の詳細については、[Claude Code をクラウドで使用する](/docs/ja/claude-code-on-the-web) を参照してください。クラウドセッションのネットワークアクセスを設定するには、[クラウド環境を設定する](/docs/ja/cloud-environments#network-access) を参照してください。
 

@@ -32,41 +32,41 @@
 
 以下の表は、各イベントがいつ発火するかをまとめています。[フック イベント](#hook-events)セクションでは、各イベントの完全な入力スキーマと決定制御オプションについて説明しています。
 
-| Event                 | When it fires                                                                                                                                                                                                                                         |
-| :-------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `SessionStart`        | When a session begins or resumes                                                                                                                                                                                                                      |
-| `Setup`               | When you start Claude Code with `--init-only`, or with `--init` or `--maintenance` in `-p` mode. For one-time preparation in CI or scripts                                                                                                            |
-| `UserPromptSubmit`    | When you submit a prompt, before Claude processes it                                                                                                                                                                                                  |
-| `UserPromptExpansion` | When a user-typed command expands into a prompt, before it reaches Claude. Can block the expansion                                                                                                                                                    |
-| `PreToolUse`          | Before a tool call executes. Can block it                                                                                                                                                                                                             |
-| `PermissionRequest`   | When a tool call needs a permission decision                                                                                                                                                                                                          |
-| `PermissionDenied`    | When auto mode denies a tool call, including denials without a classifier verdict. Use JSON `hookSpecificOutput.retry: true` to tell the model it may retry the denied tool call. Claude Code ignores `retry` when the classifier produced no verdict |
-| `PostToolUse`         | After a tool call succeeds                                                                                                                                                                                                                            |
-| `PostToolUseFailure`  | After a tool call fails                                                                                                                                                                                                                               |
-| `PostToolBatch`       | After a full batch of parallel tool calls resolves, before the next model call                                                                                                                                                                        |
-| `Notification`        | When Claude Code sends a notification                                                                                                                                                                                                                 |
-| `MessageDisplay`      | While assistant message text is displayed                                                                                                                                                                                                             |
-| `SubagentStart`       | When a subagent is spawned                                                                                                                                                                                                                            |
-| `SubagentStop`        | When a subagent finishes                                                                                                                                                                                                                              |
-| `TaskCreated`         | When a task is being created via `TaskCreate`                                                                                                                                                                                                         |
-| `TaskCompleted`       | When a task is being marked as completed                                                                                                                                                                                                              |
-| `Stop`                | When Claude finishes responding                                                                                                                                                                                                                       |
-| `StopFailure`         | When the turn ends due to an API error                                                                                                                                                                                                                |
-| `TeammateIdle`        | When an [agent team](/docs/en/agent-teams) teammate is about to go idle                                                                                                                                                                                    |
-| `InstructionsLoaded`  | When a CLAUDE.md or `.claude/rules/*.md` file is loaded into context. Fires at session start and when files are lazily loaded during a session                                                                                                        |
-| `ConfigChange`        | When a configuration file changes during a session                                                                                                                                                                                                    |
-| `CwdChanged`          | When the working directory changes, for example when Claude executes a `cd` command. Useful for reactive environment management with tools like direnv                                                                                                |
-| `DirectoryAdded`      | When a working directory is added mid-session via `/add-dir` or the SDK `register_repo_root` control request                                                                                                                                          |
-| `FileChanged`         | When a watched file changes on disk. The `matcher` field specifies which filenames to watch                                                                                                                                                           |
-| `WorktreeCreate`      | When a worktree is being created via `--worktree`, `isolation: "worktree"`, or for a background session. Replaces default git behavior                                                                                                                |
-| `WorktreeRemove`      | When a worktree is being removed at session exit, when a subagent finishes, or when you delete a background session                                                                                                                                   |
-| `PreCompact`          | Before context compaction                                                                                                                                                                                                                             |
-| `PostCompact`         | After context compaction completes                                                                                                                                                                                                                    |
-| `PreModelSwitch`      | Before Claude Code applies a model switch that you or a client requested. Can block the switch                                                                                                                                                        |
-| `PostModelSwitch`     | After the session's model changes, including changes Claude Code makes on its own, such as restoring the model when you resume a session                                                                                                              |
-| `Elicitation`         | When an MCP server requests user input during a tool call                                                                                                                                                                                             |
-| `ElicitationResult`   | After a user responds to an MCP elicitation, before the response is sent back to the server                                                                                                                                                           |
-| `SessionEnd`          | When a session terminates                                                                                                                                                                                                                             |
+| Event | When it fires |
+| :- | :- |
+| `SessionStart` | When a session begins or resumes |
+| `Setup` | When you start Claude Code with `--init-only`, or with `--init` or `--maintenance` in `-p` mode. For one-time preparation in CI or scripts |
+| `UserPromptSubmit` | When you submit a prompt, before Claude processes it |
+| `UserPromptExpansion` | When a user-typed command expands into a prompt, before it reaches Claude. Can block the expansion |
+| `PreToolUse` | Before a tool call executes. Can block it |
+| `PermissionRequest` | When a tool call needs a permission decision |
+| `PermissionDenied` | When auto mode denies a tool call, including denials without a classifier verdict. Use JSON `hookSpecificOutput.retry: true` to tell the model it may retry the denied tool call. Claude Code ignores `retry` when the classifier produced no verdict |
+| `PostToolUse` | After a tool call succeeds |
+| `PostToolUseFailure` | After a tool call fails |
+| `PostToolBatch` | After a full batch of parallel tool calls resolves, before the next model call |
+| `Notification` | When Claude Code sends a notification |
+| `MessageDisplay` | While assistant message text is displayed |
+| `SubagentStart` | When a subagent is spawned |
+| `SubagentStop` | When a subagent finishes |
+| `TaskCreated` | When a task is being created via `TaskCreate` |
+| `TaskCompleted` | When a task is being marked as completed |
+| `Stop` | When Claude finishes responding |
+| `StopFailure` | When the turn ends due to an API error |
+| `TeammateIdle` | When an [agent team](/docs/en/agent-teams) teammate is about to go idle |
+| `InstructionsLoaded` | When a CLAUDE.md or `.claude/rules/*.md` file is loaded into context. Fires at session start and when files are lazily loaded during a session |
+| `ConfigChange` | When a configuration file changes during a session |
+| `CwdChanged` | When the working directory changes, for example when Claude executes a `cd` command. Useful for reactive environment management with tools like direnv |
+| `DirectoryAdded` | When a working directory is added mid-session via `/add-dir` or the SDK `register_repo_root` control request |
+| `FileChanged` | When a watched file changes on disk. The `matcher` field specifies which filenames to watch |
+| `WorktreeCreate` | When a worktree is being created via `--worktree`, `isolation: "worktree"`, or for a background session. Replaces default git behavior |
+| `WorktreeRemove` | When a worktree is being removed at session exit, when a subagent finishes, or when you delete a background session |
+| `PreCompact` | Before context compaction |
+| `PostCompact` | After context compaction completes |
+| `PreModelSwitch` | Before Claude Code applies a model switch that you or a client requested. Can block the switch |
+| `PostModelSwitch` | After the session's model changes, including changes Claude Code makes on its own, such as restoring the model when you resume a session |
+| `Elicitation` | When an MCP server requests user input during a tool call |
+| `ElicitationResult` | After a user responds to an MCP elicitation, before the response is sent back to the server |
+| `SessionEnd` | When a session terminates |
 
 <h3 id="how-a-hook-resolves">
   フックがどのように解決されるか
@@ -182,14 +182,14 @@ fi
 
 フックを定義する場所によって、そのスコープが決まります。
 
-| 位置                                                  | スコープ             | 共有可能                                |
-| :-------------------------------------------------- | :--------------- | :---------------------------------- |
-| `~/.claude/settings.json`                           | すべてのプロジェクト       | いいえ、マシンにローカル                        |
-| `.claude/settings.json`                             | 単一プロジェクト         | はい、リポジトリにコミット可能                     |
-| `.claude/settings.local.json`                       | 単一プロジェクト         | いいえ、Claude Code が作成するときに gitignored |
-| 管理ポリシー設定                                            | 組織全体             | はい、管理者が制御                           |
-| [プラグイン](/docs/ja/plugins) `hooks/hooks.json`             | プラグインが有効な場合      | はい、プラグインにバンドル                       |
-| [スキル](/docs/ja/skills)または[エージェント](/docs/ja/sub-agents)フロントマター | コンポーネントがアクティブな場合 | はい、コンポーネント ファイルで定義                  |
+| 位置 | スコープ | 共有可能 |
+| :- | :- | :- |
+| `~/.claude/settings.json` | すべてのプロジェクト | いいえ、マシンにローカル |
+| `.claude/settings.json` | 単一プロジェクト | はい、リポジトリにコミット可能 |
+| `.claude/settings.local.json` | 単一プロジェクト | いいえ、Claude Code が作成するときに gitignored |
+| 管理ポリシー設定 | 組織全体 | はい、管理者が制御 |
+| [プラグイン](/docs/ja/plugins) `hooks/hooks.json` | プラグインが有効な場合 | はい、プラグインにバンドル |
+| [スキル](/docs/ja/skills)または[エージェント](/docs/ja/sub-agents)フロントマター | コンポーネントがアクティブな場合 | はい、コンポーネント ファイルで定義 |
 
 設定ファイル解決の詳細については、[設定](/docs/ja/settings)を参照してください。エンタープライズ管理者は `allowManagedHooksOnly` を使用して、ユーザー、プロジェクト、プラグイン フックをブロックできます。管理設定で force-enabled されたプラグインからのフックは除外されるため、管理者は組織マーケットプレイスを通じて検証済みのフックを配布できます。[フック設定](/docs/ja/settings#hook-configuration)を参照してください。
 
@@ -199,11 +199,11 @@ fi
 
 `matcher` フィールドは、フックが発火するタイミングをフィルタリングします。マッチャーの評価方法は、含まれている文字に依存します。
 
-| マッチャー値                         | 評価方法                                                 | 例                                                                                                          |
-| :----------------------------- | :--------------------------------------------------- | :--------------------------------------------------------------------------------------------------------- |
-| `"*"`、`""`、または省略               | すべてにマッチ                                              | イベントのすべての出現で発火                                                                                             |
+| マッチャー値 | 評価方法 | 例 |
+| :- | :- | :- |
+| `"*"`、`""`、または省略 | すべてにマッチ | イベントのすべての出現で発火 |
 | 文字、数字、`_`、`-`、スペース、`,`、`\|` のみ | 完全一致、または `\|` または `,` で区切られた完全一致のリスト（オプションで周囲の空白を含む） | `Bash` は Bash ツールのみにマッチ。`Edit\|Write` と `Edit, Write` はいずれかのツールに完全にマッチ。`code-reviewer` はそのエージェント タイプのみにマッチ |
-| その他の文字を含む                      | JavaScript 正規表現、アンカーなし                               | `^Notebook` は Notebook で始まるツールにマッチ。`mcp__memory__.*` は `memory` サーバーのすべてのツールにマッチ                           |
+| その他の文字を含む | JavaScript 正規表現、アンカーなし | `^Notebook` は Notebook で始まるツールにマッチ。`mcp__memory__.*` は `memory` サーバーのすべてのツールにマッチ |
 
 正規表現パス上のマッチャーは JavaScript の `RegExp.prototype.test` でテストされます。これは値内のどこかでマッチすると成功します。`Edit.*` は `Edit` と `NotebookEdit` の両方にマッチします。完全文字列マッチが必要な場合は、`^Edit$` のようにパターンを `^` と `$` でラップしてください。
 
@@ -217,25 +217,25 @@ fi
 
 各イベント タイプは異なるフィールドでマッチします。
 
-| イベント                                                                                                                                      | マッチャーがフィルタリングするもの                              | マッチャー値の例                                                                                                                                                                   |
-| :---------------------------------------------------------------------------------------------------------------------------------------- | :--------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `PreToolUse`、`PostToolUse`、`PostToolUseFailure`、`PermissionRequest`、`PermissionDenied`                                                    | ツール名                                           | `Bash`、`Edit\|Write`、`mcp__.*`                                                                                                                                             |
-| `SessionStart`                                                                                                                            | セッションの開始方法                                     | `startup`、`resume`、`clear`、`compact`                                                                                                                                       |
-| `Setup`                                                                                                                                   | セットアップをトリガーした CLI フラグ                          | `init`、`maintenance`                                                                                                                                                       |
-| `SessionEnd`                                                                                                                              | セッションが終了した理由                                   | `clear`、`resume`、`logout`、`prompt_input_exit`、`bypass_permissions_disabled`、`other`                                                                                        |
-| `Notification`                                                                                                                            | 通知タイプ                                          | `permission_prompt`、`idle_prompt`、`auth_success`、`elicitation_dialog`、`elicitation_complete`、`elicitation_response`、`agent_needs_input`、`agent_completed`                  |
-| `SubagentStart`                                                                                                                           | エージェント タイプ                                     | `general-purpose`、`Explore`、`Plan`、カスタム エージェント名、またはプラグイン スコープ付き名前（`^my-plugin:reviewer$` など）                                                                               |
-| `PreCompact`、`PostCompact`                                                                                                                | コンパクションをトリガーしたもの                               | `manual`、`auto`                                                                                                                                                            |
-| `SubagentStop`                                                                                                                            | エージェント タイプ                                     | `SubagentStart` と同じ値                                                                                                                                                       |
-| `ConfigChange`                                                                                                                            | 設定ソース                                          | `user_settings`、`project_settings`、`local_settings`、`policy_settings`、`skills`                                                                                             |
-| `CwdChanged`                                                                                                                              | マッチャー サポートなし                                   | すべてのディレクトリ変更で常に発火                                                                                                                                                          |
-| `FileChanged`                                                                                                                             | 監視するリテラル ファイル名（[FileChanged](#filechanged)を参照） | `.envrc\|.env`                                                                                                                                                             |
-| `StopFailure`                                                                                                                             | エラー タイプ                                        | `rate_limit`、`overloaded`、`authentication_failed`、`oauth_org_not_allowed`、`billing_error`、`invalid_request`、`model_not_found`、`server_error`、`max_output_tokens`、`unknown` |
-| `InstructionsLoaded`                                                                                                                      | ロード理由                                          | `session_start`、`nested_traversal`、`path_glob_match`、`include`、`compact`                                                                                                   |
-| `UserPromptExpansion`                                                                                                                     | コマンド名                                          | スキルまたはコマンド名                                                                                                                                                                |
-| `Elicitation`                                                                                                                             | MCP サーバー名                                      | 設定された MCP サーバー名                                                                                                                                                            |
-| `ElicitationResult`                                                                                                                       | MCP サーバー名                                      | `Elicitation` と同じ値                                                                                                                                                         |
-| `UserPromptSubmit`、`PostToolBatch`、`Stop`、`TeammateIdle`、`TaskCreated`、`TaskCompleted`、`WorktreeCreate`、`WorktreeRemove`、`MessageDisplay` | マッチャー サポートなし                                   | すべての出現で常に発火                                                                                                                                                                |
+| イベント | マッチャーがフィルタリングするもの | マッチャー値の例 |
+| :- | :- | :- |
+| `PreToolUse`、`PostToolUse`、`PostToolUseFailure`、`PermissionRequest`、`PermissionDenied` | ツール名 | `Bash`、`Edit\|Write`、`mcp__.*` |
+| `SessionStart` | セッションの開始方法 | `startup`、`resume`、`clear`、`compact` |
+| `Setup` | セットアップをトリガーした CLI フラグ | `init`、`maintenance` |
+| `SessionEnd` | セッションが終了した理由 | `clear`、`resume`、`logout`、`prompt_input_exit`、`bypass_permissions_disabled`、`other` |
+| `Notification` | 通知タイプ | `permission_prompt`、`idle_prompt`、`auth_success`、`elicitation_dialog`、`elicitation_complete`、`elicitation_response`、`agent_needs_input`、`agent_completed` |
+| `SubagentStart` | エージェント タイプ | `general-purpose`、`Explore`、`Plan`、カスタム エージェント名、またはプラグイン スコープ付き名前（`^my-plugin:reviewer$` など） |
+| `PreCompact`、`PostCompact` | コンパクションをトリガーしたもの | `manual`、`auto` |
+| `SubagentStop` | エージェント タイプ | `SubagentStart` と同じ値 |
+| `ConfigChange` | 設定ソース | `user_settings`、`project_settings`、`local_settings`、`policy_settings`、`skills` |
+| `CwdChanged` | マッチャー サポートなし | すべてのディレクトリ変更で常に発火 |
+| `FileChanged` | 監視するリテラル ファイル名（[FileChanged](#filechanged)を参照） | `.envrc\|.env` |
+| `StopFailure` | エラー タイプ | `rate_limit`、`overloaded`、`authentication_failed`、`oauth_org_not_allowed`、`billing_error`、`invalid_request`、`model_not_found`、`server_error`、`max_output_tokens`、`unknown` |
+| `InstructionsLoaded` | ロード理由 | `session_start`、`nested_traversal`、`path_glob_match`、`include`、`compact` |
+| `UserPromptExpansion` | コマンド名 | スキルまたはコマンド名 |
+| `Elicitation` | MCP サーバー名 | 設定された MCP サーバー名 |
+| `ElicitationResult` | MCP サーバー名 | `Elicitation` と同じ値 |
+| `UserPromptSubmit`、`PostToolBatch`、`Stop`、`TeammateIdle`、`TaskCreated`、`TaskCompleted`、`WorktreeCreate`、`WorktreeRemove`、`MessageDisplay` | マッチャー サポートなし | すべての出現で常に発火 |
 
 マッチャーは、Claude Code がフックに stdin で送信する[JSON 入力](#hook-input-and-output)からのフィールドに対して実行されます。ツール イベントの場合、そのフィールドは `tool_name` です。各[フック イベント](#hook-events)セクションでは、マッチャー値の完全なセットとそのイベントの入力スキーマをリストしています。
 
@@ -336,25 +336,25 @@ MCP ツールは `mcp__<server>__<tool>` という命名パターンに従いま
 
 これらのフィールドはすべてのフック タイプに適用されます。
 
-| フィールド           | 必須  | 説明                                                                                                                                                                                                                                                                                                                                                                                                 |
-| :-------------- | :-- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `type`          | はい  | `"command"`、`"http"`、`"mcp_tool"`、`"prompt"`、または `"agent"`                                                                                                                                                                                                                                                                                                                                         |
-| `if`            | いいえ | `"Bash(git *)"` または `"Edit(*.ts)"` などの権限ルール構文を使用してこのフックが実行されるタイミングをフィルタリングします。ツール呼び出しがパターンにマッチする場合のみ、フック コマンドが実行されます。[Bash マッチング テーブル](#bash-if-matching)を参照して、Bash パターンがサブコマンド、`$()`、バッククォートに対してどのように評価されるかを確認してください。ツール イベントでのみ評価されます。`PreToolUse`、`PostToolUse`、`PostToolUseFailure`、`PermissionRequest`、`PermissionDenied`。他のイベントでは、`if` が設定されたフックは実行されません。[権限ルール](/docs/ja/permissions)と同じ構文を使用します |
-| `timeout`       | いいえ | キャンセルまでの秒数。デフォルト: `command`、`http`、`mcp_tool` は 600、`prompt` は 30、`agent` は 60。[`UserPromptSubmit`](#userpromptsubmit) は `command`、`http`、`mcp_tool` のデフォルトを 30 に低下させ、[`MessageDisplay`](#messagedisplay) はそれを 10 に低下させます                                                                                                                                                                          |
-| `statusMessage` | いいえ | フックの実行中に表示されるカスタム スピナー メッセージ                                                                                                                                                                                                                                                                                                                                                                       |
-| `once`          | いいえ | `true` の場合、セッションごとに 1 回だけ実行してから削除されます。[スキル フロントマター](#hooks-in-skills-and-agents)でのみ尊重されます。設定ファイルとエージェント フロントマターでは無視されます                                                                                                                                                                                                                                                                            |
+| フィールド | 必須 | 説明 |
+| :- | :- | :- |
+| `type` | はい | `"command"`、`"http"`、`"mcp_tool"`、`"prompt"`、または `"agent"` |
+| `if` | いいえ | `"Bash(git *)"` または `"Edit(*.ts)"` などの権限ルール構文を使用してこのフックが実行されるタイミングをフィルタリングします。ツール呼び出しがパターンにマッチする場合のみ、フック コマンドが実行されます。[Bash マッチング テーブル](#bash-if-matching)を参照して、Bash パターンがサブコマンド、`$()`、バッククォートに対してどのように評価されるかを確認してください。ツール イベントでのみ評価されます。`PreToolUse`、`PostToolUse`、`PostToolUseFailure`、`PermissionRequest`、`PermissionDenied`。他のイベントでは、`if` が設定されたフックは実行されません。[権限ルール](/docs/ja/permissions)と同じ構文を使用します |
+| `timeout` | いいえ | キャンセルまでの秒数。デフォルト: `command`、`http`、`mcp_tool` は 600、`prompt` は 30、`agent` は 60。[`UserPromptSubmit`](#userpromptsubmit) は `command`、`http`、`mcp_tool` のデフォルトを 30 に低下させ、[`MessageDisplay`](#messagedisplay) はそれを 10 に低下させます |
+| `statusMessage` | いいえ | フックの実行中に表示されるカスタム スピナー メッセージ |
+| `once` | いいえ | `true` の場合、セッションごとに 1 回だけ実行してから削除されます。[スキル フロントマター](#hooks-in-skills-and-agents)でのみ尊重されます。設定ファイルとエージェント フロントマターでは無視されます |
 
 `if` フィールドは正確に 1 つの権限ルールを保持します。ルールを組み合わせるための `&&`、`||`、またはリスト構文はありません。複数の条件を適用するには、各条件に対して個別のフック ハンドラーを定義します。
 
 <span id="bash-if-matching" />Bash パターンの場合、フック コマンドが実行されるかどうかは、パターンの形状と Claude が呼び出している Bash コマンドに依存します。先頭の `VAR=value` 割り当ては、マッチング前に削除されます。
 
-| `if` パターン          | Bash コマンド              | フックが実行されるか | 理由                                                        |
-| :----------------- | :--------------------- | :--------- | :-------------------------------------------------------- |
-| `Bash(git *)`      | `FOO=bar git push`     | はい         | 先頭の割り当ては削除されます。`git push` がマッチします                         |
-| `Bash(git *)`      | `npm test && git push` | はい         | 各サブコマンドがチェックされます。`git push` がマッチします                       |
-| `Bash(rm *)`       | `echo $(rm -rf /)`     | はい         | `$()` とバッククォート内のコマンドがチェックされます。`rm -rf /` がマッチします          |
-| `Bash(rm *)`       | `echo $(date)`         | いいえ        | サブコマンドが `rm *` にマッチしません                                   |
-| `Bash(git push *)` | `echo $(date)`         | はい         | コマンド名以上を指定するパターンは、`$()`、バッククォート、または `$VAR` でとにかくフックを実行します |
+| `if` パターン | Bash コマンド | フックが実行されるか | 理由 |
+| :- | :- | :- | :- |
+| `Bash(git *)` | `FOO=bar git push` | はい | 先頭の割り当ては削除されます。`git push` がマッチします |
+| `Bash(git *)` | `npm test && git push` | はい | 各サブコマンドがチェックされます。`git push` がマッチします |
+| `Bash(rm *)` | `echo $(rm -rf /)` | はい | `$()` とバッククォート内のコマンドがチェックされます。`rm -rf /` がマッチします |
+| `Bash(rm *)` | `echo $(date)` | いいえ | サブコマンドが `rm *` にマッチしません |
+| `Bash(git push *)` | `echo $(date)` | はい | コマンド名以上を指定するパターンは、`$()`、バッククォート、または `$VAR` でとにかくフックを実行します |
 
 フィルターは、Bash コマンドを解析できない場合、パターンに関係なくフックを実行して、オープンに失敗します。`if` フィルターはベストエフォートであるため、ハードな許可または拒否を強制するには、フックではなく[権限システム](/docs/ja/permissions)を使用してください。
 
@@ -364,13 +364,13 @@ MCP ツールは `mcp__<server>__<tool>` という命名パターンに従いま
 
 [共通フィールド](#common-fields)に加えて、コマンド フックはこれらのフィールドを受け入れます。
 
-| フィールド         | 必須  | 説明                                                                                                                                                                                                                                                                             |
-| :------------ | :-- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `command`     | はい  | 実行するシェル コマンド。`args` を使用する場合、直接生成する実行可能ファイル。[Exec フォームとシェル フォーム](#exec-form-and-shell-form)を参照してください                                                                                                                                                                            |
-| `args`        | いいえ | 引数リスト。存在する場合、`command` は実行可能ファイルとして解決され、`args` を引数ベクトルとして直接生成されます。シェルは関与しません。[Exec フォームとシェル フォーム](#exec-form-and-shell-form)を参照してください                                                                                                                                          |
-| `async`       | いいえ | `true` の場合、ブロックせずにバックグラウンドで実行されます。[バックグラウンドでフックを実行](#run-hooks-in-the-background)を参照してください                                                                                                                                                                                     |
-| `asyncRewake` | いいえ | `true` の場合、バックグラウンドで実行され、終了コード 2 で Claude を起動します。`async` を暗黙的に指定します。フックの stderr、または stderr が空の場合は stdout が、Claude がシステム リマインダーとして長時間実行されるバックグラウンド失敗に反応できるように表示されます                                                                                                             |
-| `shell`       | いいえ | このフックに使用するシェル。`"bash"` または `"powershell"` を受け入れます。デフォルトは `"bash"`、または Git Bash がインストールされていない場合は Windows で `"powershell"`。`"powershell"` を設定すると、Windows 上で PowerShell 経由でコマンドが実行されます。`CLAUDE_CODE_USE_POWERSHELL_TOOL` は不要です。フックは PowerShell を直接生成するため。`args` が設定されている場合は無視されます |
+| フィールド | 必須 | 説明 |
+| :- | :- | :- |
+| `command` | はい | 実行するシェル コマンド。`args` を使用する場合、直接生成する実行可能ファイル。[Exec フォームとシェル フォーム](#exec-form-and-shell-form)を参照してください |
+| `args` | いいえ | 引数リスト。存在する場合、`command` は実行可能ファイルとして解決され、`args` を引数ベクトルとして直接生成されます。シェルは関与しません。[Exec フォームとシェル フォーム](#exec-form-and-shell-form)を参照してください |
+| `async` | いいえ | `true` の場合、ブロックせずにバックグラウンドで実行されます。[バックグラウンドでフックを実行](#run-hooks-in-the-background)を参照してください |
+| `asyncRewake` | いいえ | `true` の場合、バックグラウンドで実行され、終了コード 2 で Claude を起動します。`async` を暗黙的に指定します。フックの stderr、または stderr が空の場合は stdout が、Claude がシステム リマインダーとして長時間実行されるバックグラウンド失敗に反応できるように表示されます |
+| `shell` | いいえ | このフックに使用するシェル。`"bash"` または `"powershell"` を受け入れます。デフォルトは `"bash"`、または Git Bash がインストールされていない場合は Windows で `"powershell"`。`"powershell"` を設定すると、Windows 上で PowerShell 経由でコマンドが実行されます。`CLAUDE_CODE_USE_POWERSHELL_TOOL` は不要です。フックは PowerShell を直接生成するため。`args` が設定されている場合は無視されます |
 
 <a id="exec-form-and-shell-form" />
 
@@ -421,11 +421,11 @@ MCP ツールは `mcp__<server>__<tool>` という命名パターンに従いま
 
 [共通フィールド](#common-fields)に加えて、HTTP フックはこれらのフィールドを受け入れます。
 
-| フィールド            | 必須  | 説明                                                                                                                 |
-| :--------------- | :-- | :----------------------------------------------------------------------------------------------------------------- |
-| `url`            | はい  | POST リクエストを送信する URL                                                                                                |
-| `headers`        | いいえ | キー値ペアとしての追加 HTTP ヘッダー。値は `$VAR_NAME` または `${VAR_NAME}` 構文を使用した環境変数補間をサポートします。`allowedEnvVars` にリストされている変数のみが解決されます |
-| `allowedEnvVars` | いいえ | ヘッダー値に補間される可能性のある環境変数名のリスト。リストされていない変数への参照は空の文字列に置き換えられます。環境変数補間が機能するために必須                                         |
+| フィールド | 必須 | 説明 |
+| :- | :- | :- |
+| `url` | はい | POST リクエストを送信する URL |
+| `headers` | いいえ | キー値ペアとしての追加 HTTP ヘッダー。値は `$VAR_NAME` または `${VAR_NAME}` 構文を使用した環境変数補間をサポートします。`allowedEnvVars` にリストされている変数のみが解決されます |
+| `allowedEnvVars` | いいえ | ヘッダー値に補間される可能性のある環境変数名のリスト。リストされていない変数への参照は空の文字列に置き換えられます。環境変数補間が機能するために必須 |
 
 Claude Code はフックの[JSON 入力](#hook-input-and-output)を `Content-Type: application/json` の POST リクエスト本体として送信します。レスポンス本体はコマンド フックと同じ[JSON 出力形式](#json-output)を使用します。
 
@@ -462,11 +462,11 @@ Claude Code はフックの[JSON 入力](#hook-input-and-output)を `Content-Typ
 
 [共通フィールド](#common-fields)に加えて、MCP ツール フックはこれらのフィールドを受け入れます。
 
-| フィールド    | 必須  | 説明                                                                                                                                                                                                                            |
-| :------- | :-- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `server` | はい  | 設定された MCP サーバーの名前。[プラグイン バンドル サーバー](/docs/ja/mcp#plugin-provided-mcp-servers)の場合、これはスコープ付き名前 `plugin:<plugin-name>:<server-name>`（例：`plugin:my-plugin:db`）であり、ベア サーバー キーではありません。サーバーは既に接続されている必要があります。フックは OAuth または接続フローをトリガーしません |
-| `tool`   | はい  | そのサーバー上で呼び出すツールの名前                                                                                                                                                                                                            |
-| `input`  | いいえ | ツールに渡される引数。文字列値は、フックの[JSON 入力](#hook-input-and-output)から `${path}` 置換をサポートします（例：`"${tool_input.file_path}"`）                                                                                                                  |
+| フィールド | 必須 | 説明 |
+| :- | :- | :- |
+| `server` | はい | 設定された MCP サーバーの名前。[プラグイン バンドル サーバー](/docs/ja/mcp#plugin-provided-mcp-servers)の場合、これはスコープ付き名前 `plugin:<plugin-name>:<server-name>`（例：`plugin:my-plugin:db`）であり、ベア サーバー キーではありません。サーバーは既に接続されている必要があります。フックは OAuth または接続フローをトリガーしません |
+| `tool` | はい | そのサーバー上で呼び出すツールの名前 |
+| `input` | いいえ | ツールに渡される引数。文字列値は、フックの[JSON 入力](#hook-input-and-output)から `${path}` 置換をサポートします（例：`"${tool_input.file_path}"`） |
 
 ツールのテキスト コンテンツはコマンド フック stdout のように扱われます。有効な[JSON 出力](#json-output)として解析される場合、決定として処理されます。そうでない場合は、プレーン テキストとして表示されます。指定されたサーバーが接続されていない場合、またはツールが `isError: true` を返す場合、フックは非ブロッキング エラーを生成し、実行は続行されます。
 
@@ -500,10 +500,10 @@ MCP ツール フックは、Claude Code が MCP サーバーに接続した後�
 
 [共通フィールド](#common-fields)に加えて、プロンプト フックとエージェント フックはこれらのフィールドを受け入れます。
 
-| フィールド    | 必須  | 説明                                                                                                                             |
-| :------- | :-- | :----------------------------------------------------------------------------------------------------------------------------- |
-| `prompt` | はい  | モデルに送信するプロンプト テキスト。フック入力 JSON のプレースホルダーとして `$ARGUMENTS` を使用します。バックスラッシュでエスケープしてリテラル テキストを含めます。`\$1.00` は `$1.00` としてレンダリングされます |
-| `model`  | いいえ | 評価に使用するモデル。デフォルトは高速モデル                                                                                                         |
+| フィールド | 必須 | 説明 |
+| :- | :- | :- |
+| `prompt` | はい | モデルに送信するプロンプト テキスト。フック入力 JSON のプレースホルダーとして `$ARGUMENTS` を使用します。バックスラッシュでエスケープしてリテラル テキストを含めます。`\$1.00` は `$1.00` としてレンダリングされます |
+| `model` | いいえ | 評価に使用するモデル。デフォルトは高速モデル |
 
 <h3 id="reference-scripts-by-path">
   パスでフック スクリプトを参照
@@ -641,21 +641,21 @@ macOS と Linux では、コマンド フックは v2.1.139 以降、制御端�
 
 フック イベントは、各[フック イベント](#hook-events)セクションで説明されているイベント固有のフィールドに加えて、これらのフィールドを JSON として受け取ります。コマンド フックの場合、この JSON は stdin 経由で到着します。HTTP フックの場合、POST リクエスト本体として到着します。
 
-| フィールド             | 説明                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| :---------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `session_id`      | 現在のセッション識別子                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| `prompt_id`       | 現在処理中のユーザー プロンプトを識別する UUID。[OpenTelemetry イベントの `prompt.id` 属性](/docs/ja/monitoring-usage#event-correlation-attributes)と一致するため、単一のプロンプトのテレメトリでフック出力を相関させることができます。最初のユーザー入力まで存在しません。Claude Code v2.1.196 以降が必要です                                                                                                                                                                                                                                                                                          |
-| `transcript_path` | 会話 JSON へのパス。トランスクリプト ファイルは非同期に書き込まれ、メモリ内の会話に遅れる可能性があるため、フックが発火するときに現在のターンの最新メッセージがまだ含まれていない可能性があります。現在のターンの最終的なアシスタント テキストが必要なフックは、トランスクリプトを読む代わりに[Stop](#stop)と[SubagentStop](#subagentstop)の `last_assistant_message` を使用する必要があります                                                                                                                                                                                                                                                               |
-| `cwd`             | フックが呼び出されるときの現在の作業ディレクトリ                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| `permission_mode` | 現在の[権限モード](/docs/ja/permissions#permission-modes): `"default"`、`"plan"`、`"acceptEdits"`、`"auto"`、`"dontAsk"`、または `"bypassPermissions"`。**Manual** というラベルが付いたモードは `"default"` として到着し、`"manual"` として到着することはないため、`"default"` と一致するスクリプトは引き続き機能します。すべてのイベントがこのフィールドを受け取るわけではありません。各[フック イベント](#hook-events)セクションの JSON 例を確認してください                                                                                                                                                                            |
-| `effort`          | アクティブな[努力レベル](/docs/ja/model-config#adjust-effort-level)を保持する `level` フィールドを持つオブジェクト。ターンの場合: `"low"`、`"medium"`、`"high"`、`"xhigh"`、または `"max"`。リクエストされたモデル努力が現在のモデルがサポートしているものを超える場合、これはモデルが実際に使用したダウングレードされたレベルです。Ultracode は異なるレベルではなく、`"xhigh"` として報告されます。オブジェクトは[ステータス ライン](/docs/ja/statusline#available-data)の `effort` フィールドと一致します。`PreToolUse`、`PostToolUse`、`Stop`、`SubagentStop` などのツール使用コンテキスト内で発火するイベント、および現在のモデルが努力パラメータをサポートする場合に存在します。レベルは、フック コマンドと Bash ツールに `$CLAUDE_EFFORT` 環境変数として利用可能です。 |
-| `hook_event_name` | 発火したイベントの名前                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| フィールド | 説明 |
+| :- | :- |
+| `session_id` | 現在のセッション識別子 |
+| `prompt_id` | 現在処理中のユーザー プロンプトを識別する UUID。[OpenTelemetry イベントの `prompt.id` 属性](/docs/ja/monitoring-usage#event-correlation-attributes)と一致するため、単一のプロンプトのテレメトリでフック出力を相関させることができます。最初のユーザー入力まで存在しません。Claude Code v2.1.196 以降が必要です |
+| `transcript_path` | 会話 JSON へのパス。トランスクリプト ファイルは非同期に書き込まれ、メモリ内の会話に遅れる可能性があるため、フックが発火するときに現在のターンの最新メッセージがまだ含まれていない可能性があります。現在のターンの最終的なアシスタント テキストが必要なフックは、トランスクリプトを読む代わりに[Stop](#stop)と[SubagentStop](#subagentstop)の `last_assistant_message` を使用する必要があります |
+| `cwd` | フックが呼び出されるときの現在の作業ディレクトリ |
+| `permission_mode` | 現在の[権限モード](/docs/ja/permissions#permission-modes): `"default"`、`"plan"`、`"acceptEdits"`、`"auto"`、`"dontAsk"`、または `"bypassPermissions"`。**Manual** というラベルが付いたモードは `"default"` として到着し、`"manual"` として到着することはないため、`"default"` と一致するスクリプトは引き続き機能します。すべてのイベントがこのフィールドを受け取るわけではありません。各[フック イベント](#hook-events)セクションの JSON 例を確認してください |
+| `effort` | アクティブな[努力レベル](/docs/ja/model-config#adjust-effort-level)を保持する `level` フィールドを持つオブジェクト。ターンの場合: `"low"`、`"medium"`、`"high"`、`"xhigh"`、または `"max"`。リクエストされたモデル努力が現在のモデルがサポートしているものを超える場合、これはモデルが実際に使用したダウングレードされたレベルです。Ultracode は異なるレベルではなく、`"xhigh"` として報告されます。オブジェクトは[ステータス ライン](/docs/ja/statusline#available-data)の `effort` フィールドと一致します。`PreToolUse`、`PostToolUse`、`Stop`、`SubagentStop` などのツール使用コンテキスト内で発火するイベント、および現在のモデルが努力パラメータをサポートする場合に存在します。レベルは、フック コマンドと Bash ツールに `$CLAUDE_EFFORT` 環境変数として利用可能です。 |
+| `hook_event_name` | 発火したイベントの名前 |
 
 `--agent` で実行するか、サブエージェント内で実行する場合、2 つの追加フィールドが含まれます。
 
-| フィールド        | 説明                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| :----------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `agent_id`   | サブエージェントの一意の識別子。フックがサブエージェント呼び出し内で発火する場合にのみ存在します。これを使用して、サブエージェント フック呼び出しをメイン スレッド呼び出しから区別します。                                                                                                                                                                                                                                                                                                                                 |
+| フィールド | 説明 |
+| :- | :- |
+| `agent_id` | サブエージェントの一意の識別子。フックがサブエージェント呼び出し内で発火する場合にのみ存在します。これを使用して、サブエージェント フック呼び出しをメイン スレッド呼び出しから区別します。 |
 | `agent_type` | エージェント名（例えば、`"Explore"` または `"security-reviewer"`）。セッションが `--agent` を使用するか、フックがサブエージェント内で発火する場合に存在します。サブエージェントの場合、サブエージェントのタイプがセッションの `--agent` 値よりも優先されます。[カスタム サブエージェント](/docs/ja/sub-agents)の場合、これはエージェントのフロントマターの `name` フィールドであり、ファイル名ではありません。[プラグイン](/docs/ja/plugins)によって提供されるサブエージェントの場合、これは `my-plugin:reviewer` などのプラグイン スコープ識別子であり、フロントマター名ではありません。[SubagentStart](#subagentstart)を参照して、プラグイン スコープ名に対するマッチャーを記述する方法を確認してください。 |
 
 [`SessionStart`](#sessionstart) フックのみが `model` フィールドを受け取ることができ、存在することは保証されません。`$CLAUDE_MODEL` 環境変数はありません。フック プロセスは親環境を継承するため、シェルで `$ANTHROPIC_MODEL` を設定した場合はそれを読み取ることができますが、セッション中に `/model` でモデルを切り替えるときにその値は変わりません。1 つのセット変数は継承されません。Claude Code は[すべてのサブプロセスから `OTEL_*` エクスポーター変数を削除](/docs/ja/monitoring-usage#administrator-configuration)します。これにはフックが含まれます。
@@ -716,38 +716,38 @@ exit 0  # 決定なし: 通常の権限フローが適用される
 
 終了コード 2 は、フックが「停止、これをしないでください」と通知する方法です。効果はイベントに依存します。一部のイベントはブロック可能なアクション（まだ発生していないツール呼び出しなど）を表し、他のイベントはすでに発生したか防止できないことを表すためです。
 
-| フック イベント              | ブロック可能？ | 終了 2 で何が起こるか                                                                            |
-| :-------------------- | :------ | :-------------------------------------------------------------------------------------- |
-| `PreToolUse`          | はい      | ツール呼び出しをブロック                                                                            |
-| `PermissionRequest`   | はい      | 権限を拒否                                                                                   |
-| `UserPromptSubmit`    | はい      | プロンプト処理をブロックしてプロンプトを消去                                                                  |
-| `UserPromptExpansion` | はい      | 拡張をブロック                                                                                 |
-| `Stop`                | はい      | Claude が停止するのを防ぎ、会話を続行                                                                  |
-| `SubagentStop`        | はい      | サブエージェントが停止するのを防止                                                                       |
-| `TeammateIdle`        | はい      | チームメイトがアイドル状態になるのを防止（チームメイトが作業を続行）                                                      |
-| `TaskCreated`         | はい      | タスク作成をロールバック                                                                            |
-| `TaskCompleted`       | はい      | タスクが完了としてマークされるのを防止                                                                     |
-| `ConfigChange`        | はい      | 設定変更が有効になるのをブロック（`policy_settings` を除く）                                                 |
-| `StopFailure`         | いいえ     | 出力と終了コードは無視                                                                             |
-| `PostToolUse`         | いいえ     | Claude に stderr を表示（ツールはすでに実行）                                                          |
-| `PostToolUseFailure`  | いいえ     | Claude に stderr を表示（ツールはすでに失敗）                                                          |
-| `PostToolBatch`       | はい      | 次のモデル呼び出しの前に agentic ループを停止                                                             |
-| `PermissionDenied`    | いいえ     | 終了コードと stderr は無視（拒否はすでに発生）。JSON `hookSpecificOutput.retry: true` を使用してモデルが再試行できることを伝える |
-| `Notification`        | いいえ     | ユーザーのみに stderr を表示                                                                      |
-| `SubagentStart`       | いいえ     | ユーザーのみに stderr を表示                                                                      |
-| `SessionStart`        | いいえ     | ユーザーのみに stderr を表示                                                                      |
-| `Setup`               | いいえ     | ユーザーのみに stderr を表示                                                                      |
-| `SessionEnd`          | いいえ     | ユーザーのみに stderr を表示                                                                      |
-| `CwdChanged`          | いいえ     | ユーザーのみに stderr を表示                                                                      |
-| `FileChanged`         | いいえ     | ユーザーのみに stderr を表示                                                                      |
-| `PreCompact`          | はい      | コンパクションをブロック                                                                            |
-| `PostCompact`         | いいえ     | ユーザーのみに stderr を表示                                                                      |
-| `Elicitation`         | はい      | elicitation を拒否                                                                         |
-| `ElicitationResult`   | はい      | レスポンスをブロック（アクションが decline になる）                                                          |
-| `WorktreeCreate`      | はい      | 0 以外の終了コードでワークツリー作成が失敗                                                                  |
-| `WorktreeRemove`      | いいえ     | 失敗はデバッグ モードでのみログ                                                                        |
-| `InstructionsLoaded`  | いいえ     | 終了コードは無視                                                                                |
-| `MessageDisplay`      | いいえ     | 元のテキストが表示される                                                                            |
+| フック イベント | ブロック可能？ | 終了 2 で何が起こるか |
+| :- | :- | :- |
+| `PreToolUse` | はい | ツール呼び出しをブロック |
+| `PermissionRequest` | はい | 権限を拒否 |
+| `UserPromptSubmit` | はい | プロンプト処理をブロックしてプロンプトを消去 |
+| `UserPromptExpansion` | はい | 拡張をブロック |
+| `Stop` | はい | Claude が停止するのを防ぎ、会話を続行 |
+| `SubagentStop` | はい | サブエージェントが停止するのを防止 |
+| `TeammateIdle` | はい | チームメイトがアイドル状態になるのを防止（チームメイトが作業を続行） |
+| `TaskCreated` | はい | タスク作成をロールバック |
+| `TaskCompleted` | はい | タスクが完了としてマークされるのを防止 |
+| `ConfigChange` | はい | 設定変更が有効になるのをブロック（`policy_settings` を除く） |
+| `StopFailure` | いいえ | 出力と終了コードは無視 |
+| `PostToolUse` | いいえ | Claude に stderr を表示（ツールはすでに実行） |
+| `PostToolUseFailure` | いいえ | Claude に stderr を表示（ツールはすでに失敗） |
+| `PostToolBatch` | はい | 次のモデル呼び出しの前に agentic ループを停止 |
+| `PermissionDenied` | いいえ | 終了コードと stderr は無視（拒否はすでに発生）。JSON `hookSpecificOutput.retry: true` を使用してモデルが再試行できることを伝える |
+| `Notification` | いいえ | ユーザーのみに stderr を表示 |
+| `SubagentStart` | いいえ | ユーザーのみに stderr を表示 |
+| `SessionStart` | いいえ | ユーザーのみに stderr を表示 |
+| `Setup` | いいえ | ユーザーのみに stderr を表示 |
+| `SessionEnd` | いいえ | ユーザーのみに stderr を表示 |
+| `CwdChanged` | いいえ | ユーザーのみに stderr を表示 |
+| `FileChanged` | いいえ | ユーザーのみに stderr を表示 |
+| `PreCompact` | はい | コンパクションをブロック |
+| `PostCompact` | いいえ | ユーザーのみに stderr を表示 |
+| `Elicitation` | はい | elicitation を拒否 |
+| `ElicitationResult` | はい | レスポンスをブロック（アクションが decline になる） |
+| `WorktreeCreate` | はい | 0 以外の終了コードでワークツリー作成が失敗 |
+| `WorktreeRemove` | いいえ | 失敗はデバッグ モードでのみログ |
+| `InstructionsLoaded` | いいえ | 終了コードは無視 |
+| `MessageDisplay` | いいえ | 元のテキストが表示される |
 
 `SessionStart`、`Setup`、および `SubagentStart` の場合、終了コード 2 stderr は[非ブロッキング エラー](#exit-code-output)と同じ方法で、トランスクリプトに `<hook name> hook error` 通知としてレンダリングされます。Claude はそれを見ず、セッションまたはサブエージェントは進行します。`SubagentStart` の場合、通知は親会話ではなく、サブエージェント自身のトランスクリプトに表示されます。
 
@@ -787,13 +787,13 @@ JSON オブジェクトは 3 種類のフィールドをサポートしていま
 * **トップレベルの `decision` と `reason`** は一部のイベントで使用され、ブロックまたはフィードバックを提供します。
 * **`hookSpecificOutput`** はより豊かな制御が必要なイベント用のネストされたオブジェクトです。イベント名に設定された `hookEventName` フィールドが必要です。
 
-| フィールド              | デフォルト   | 説明                                                                                                                                                                                    |
-| :----------------- | :------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `continue`         | `true`  | `false` の場合、フックが実行された後、Claude は完全に処理を停止します。イベント固有の決定フィールドよりも優先されます                                                                                                                    |
-| `stopReason`       | なし      | `continue` が `false` のときにユーザーに表示されるメッセージ。Claude には表示されません                                                                                                                             |
-| `suppressOutput`   | `false` | `true` の場合、デバッグ ログから stdout を非表示にします                                                                                                                                                  |
-| `systemMessage`    | なし      | ユーザーに表示される警告メッセージ                                                                                                                                                                     |
-| `terminalSequence` | なし      | Claude Code が代わりに発行するターミナル エスケープ シーケンス（デスクトップ通知、ウィンドウ タイトル、ベルなど）。OSC `0`/`1`/`2`/`9`/`99`/`777` と BEL に制限されます。値に許可リスト外のものが含まれている場合、フィールドは無視されます。`/dev/tty` が利用できないフックの代わりにこれを使用してください |
+| フィールド | デフォルト | 説明 |
+| :- | :- | :- |
+| `continue` | `true` | `false` の場合、フックが実行された後、Claude は完全に処理を停止します。イベント固有の決定フィールドよりも優先されます |
+| `stopReason` | なし | `continue` が `false` のときにユーザーに表示されるメッセージ。Claude には表示されません |
+| `suppressOutput` | `false` | `true` の場合、デバッグ ログから stdout を非表示にします |
+| `systemMessage` | なし | ユーザーに表示される警告メッセージ |
+| `terminalSequence` | なし | Claude Code が代わりに発行するターミナル エスケープ シーケンス（デスクトップ通知、ウィンドウ タイトル、ベルなど）。OSC `0`/`1`/`2`/`9`/`99`/`777` と BEL に制限されます。値に許可リスト外のものが含まれている場合、フィールドは無視されます。`/dev/tty` が利用できないフックの代わりにこれを使用してください |
 
 Claude を完全に停止するには、イベント タイプに関係なく。
 
@@ -881,19 +881,19 @@ Claude が現在の環境の状態または実行されたばかりの操作に�
 
 すべてのイベントが JSON を通じたブロッキングまたは動作制御をサポートしているわけではありません。サポートするイベントは、その決定を表現するために異なるフィールド セットを使用します。フックを書く前に、このテーブルをクイック リファレンスとして使用してください。
 
-| イベント                                                                                                                        | 決定パターン                     | キー フィールド                                                                                                                                                                                                   |
-| :-------------------------------------------------------------------------------------------------------------------------- | :------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| UserPromptSubmit、UserPromptExpansion、PostToolUse、PostToolUseFailure、PostToolBatch、Stop、SubagentStop、ConfigChange、PreCompact | トップレベル `decision`          | `decision: "block"`、`reason`。Stop と SubagentStop は[会話を続行する非エラー フィードバック](#stop-decision-control)のために `hookSpecificOutput.additionalContext` も受け入れます                                                         |
-| TeammateIdle、TaskCreated、TaskCompleted                                                                                      | 終了コードまたは `continue: false` | 終了コード 2 はアクションをブロックし、stderr フィードバックを使用します。JSON `{"continue": false, "stopReason": "..."}` はチームメイト全体を停止し、`Stop` フック動作と一致します                                                                                 |
-| PreToolUse                                                                                                                  | `hookSpecificOutput`       | `permissionDecision`（allow/deny/ask/defer）、`permissionDecisionReason`                                                                                                                                      |
-| PermissionRequest                                                                                                           | `hookSpecificOutput`       | `decision.behavior`（allow/deny）                                                                                                                                                                            |
-| PermissionDenied                                                                                                            | `hookSpecificOutput`       | `retry: true` はモデルが拒否されたツール呼び出しを再試行できることを伝える                                                                                                                                                               |
-| WorktreeCreate                                                                                                              | パス戻り値                      | コマンド フックは stdout にパスを出力します。HTTP フックは `hookSpecificOutput.worktreePath` 経由で返します。フック失敗またはパス欠落で作成が失敗                                                                                                          |
-| Elicitation                                                                                                                 | `hookSpecificOutput`       | `action`（accept/decline/cancel）、`content`（accept の場合のフォーム フィールド値）                                                                                                                                          |
-| ElicitationResult                                                                                                           | `hookSpecificOutput`       | `action`（accept/decline/cancel）、`content`（フォーム フィールド値をオーバーライド）                                                                                                                                             |
-| MessageDisplay                                                                                                              | `hookSpecificOutput`       | `displayContent` は画面に表示されるテキストを置き換えます。表示のみ: トランスクリプトと Claude が見るものは元のままです                                                                                                                                  |
-| SessionStart、Setup、SubagentStart                                                                                            | コンテキストのみ                   | `hookSpecificOutput.additionalContext` は Claude 用にコンテキストを追加します。SessionStart は [`initialUserMessage`、`watchPaths`、`sessionTitle`、および `reloadSkills`](#sessionstart-decision-control)も受け入れます。ブロッキングまたは決定制御なし |
-| WorktreeRemove、Notification、SessionEnd、PostCompact、InstructionsLoaded、StopFailure、CwdChanged、FileChanged                    | なし                         | 決定制御なし。ログやクリーンアップなどの副作用に使用                                                                                                                                                                                 |
+| イベント | 決定パターン | キー フィールド |
+| :- | :- | :- |
+| UserPromptSubmit、UserPromptExpansion、PostToolUse、PostToolUseFailure、PostToolBatch、Stop、SubagentStop、ConfigChange、PreCompact | トップレベル `decision` | `decision: "block"`、`reason`。Stop と SubagentStop は[会話を続行する非エラー フィードバック](#stop-decision-control)のために `hookSpecificOutput.additionalContext` も受け入れます |
+| TeammateIdle、TaskCreated、TaskCompleted | 終了コードまたは `continue: false` | 終了コード 2 はアクションをブロックし、stderr フィードバックを使用します。JSON `{"continue": false, "stopReason": "..."}` はチームメイト全体を停止し、`Stop` フック動作と一致します |
+| PreToolUse | `hookSpecificOutput` | `permissionDecision`（allow/deny/ask/defer）、`permissionDecisionReason` |
+| PermissionRequest | `hookSpecificOutput` | `decision.behavior`（allow/deny） |
+| PermissionDenied | `hookSpecificOutput` | `retry: true` はモデルが拒否されたツール呼び出しを再試行できることを伝える |
+| WorktreeCreate | パス戻り値 | コマンド フックは stdout にパスを出力します。HTTP フックは `hookSpecificOutput.worktreePath` 経由で返します。フック失敗またはパス欠落で作成が失敗 |
+| Elicitation | `hookSpecificOutput` | `action`（accept/decline/cancel）、`content`（accept の場合のフォーム フィールド値） |
+| ElicitationResult | `hookSpecificOutput` | `action`（accept/decline/cancel）、`content`（フォーム フィールド値をオーバーライド） |
+| MessageDisplay | `hookSpecificOutput` | `displayContent` は画面に表示されるテキストを置き換えます。表示のみ: トランスクリプトと Claude が見るものは元のままです |
+| SessionStart、Setup、SubagentStart | コンテキストのみ | `hookSpecificOutput.additionalContext` は Claude 用にコンテキストを追加します。SessionStart は [`initialUserMessage`、`watchPaths`、`sessionTitle`、および `reloadSkills`](#sessionstart-decision-control)も受け入れます。ブロッキングまたは決定制御なし |
+| WorktreeRemove、Notification、SessionEnd、PostCompact、InstructionsLoaded、StopFailure、CwdChanged、FileChanged | なし | 決定制御なし。ログやクリーンアップなどの副作用に使用 |
 
 いくつかのイベントは、許可またはブロックするだけでなく、コンテンツを書き直すこともできます。
 
@@ -969,12 +969,12 @@ SessionStart はすべてのセッションで実行されるため、これら�
 
 マッチャー値はセッションがどのように開始されたかに対応しています。
 
-| マッチャー     | いつ発火するか                               |
-| :-------- | :------------------------------------ |
-| `startup` | 新しいセッション                              |
-| `resume`  | `--resume`、`--continue`、または `/resume` |
-| `clear`   | `/clear`                              |
-| `compact` | 自動またはマニュアル コンパクション                    |
+| マッチャー | いつ発火するか |
+| :- | :- |
+| `startup` | 新しいセッション |
+| `resume` | `--resume`、`--continue`、または `/resume` |
+| `clear` | `/clear` |
+| `compact` | 自動またはマニュアル コンパクション |
 
 <h4 id="sessionstart-input">
   SessionStart 入力
@@ -982,11 +982,11 @@ SessionStart はすべてのセッションで実行されるため、これら�
 
 [共通入力フィールド](#common-input-fields)に加えて、SessionStart フックは `source` と、オプションで `model`、`agent_type`、`session_title` を受け取ります。
 
-| フィールド           | 説明                                                                                                                                         |
-| :-------------- | :----------------------------------------------------------------------------------------------------------------------------------------- |
-| `source`        | セッションがどのように開始されたか: 新しいセッションの場合は `"startup"`、再開されたセッションの場合は `"resume"`、`/clear` の後は `"clear"`、コンパクション後は `"compact"`                         |
-| `model`         | アクティブなモデル識別子。例えば `/clear` の後、またはセッションが会話復旧を通じて復元されるときなど、フィールドが省略される可能性があるため、読み取る前にフィールドをチェックしてください                                         |
-| `agent_type`    | `claude --agent <name>` で Claude Code を開始する場合、エージェント名が存在                                                                                   |
+| フィールド | 説明 |
+| :- | :- |
+| `source` | セッションがどのように開始されたか: 新しいセッションの場合は `"startup"`、再開されたセッションの場合は `"resume"`、`/clear` の後は `"clear"`、コンパクション後は `"compact"` |
+| `model` | アクティブなモデル識別子。例えば `/clear` の後、またはセッションが会話復旧を通じて復元されるときなど、フィールドが省略される可能性があるため、読み取る前にフィールドをチェックしてください |
+| `agent_type` | `claude --agent <name>` で Claude Code を開始する場合、エージェント名が存在 |
 | `session_title` | 例えば `--name` または `/rename` 経由で既に設定されている場合、現在のセッション タイトル。`sessionTitle` を発行するフックは、ユーザーが明示的に設定したタイトルを上書きしないように、最初に `session_title` をチェックできます |
 
 ```json theme={null}
@@ -1006,13 +1006,13 @@ SessionStart はすべてのセッションで実行されるため、これら�
 
 フック スクリプトが stdout に出力するテキストは Claude のコンテキストとして追加されます。すべてのフックで利用可能な[JSON 出力フィールド](#json-output)に加えて、これらのイベント固有のフィールドを返すことができます。
 
-| フィールド                | 説明                                                                                                                                                                                   |
-| :------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `additionalContext`  | Claude のコンテキストの開始時に追加される文字列。最初のプロンプトの前。[Claude のコンテキストを追加](#add-context-for-claude)を参照して、テキストがどのように配信されるか、何を含めるかを確認してください                                                            |
+| フィールド | 説明 |
+| :- | :- |
+| `additionalContext` | Claude のコンテキストの開始時に追加される文字列。最初のプロンプトの前。[Claude のコンテキストを追加](#add-context-for-claude)を参照して、テキストがどのように配信されるか、何を含めるかを確認してください |
 | `initialUserMessage` | セッションの最初のユーザー メッセージとして使用される文字列。[非対話型モード](/docs/ja/headless)で `-p` フラグで適用され、プロンプトが提供されない場合でも最初のターンになります。プロンプトが提供される場合、次のターンとして続きます。`additionalContext` とは異なり、既存のターンに付加されるのではなく、このターンを作成します |
-| `sessionTitle`       | セッション タイトルを設定します。`/rename` と同じ効果があります。起動フォルダ、git ブランチ、またはワークツリー名からセッションを自動的に名前付けするのに使用します。`source` が `"startup"` または `"resume"` の場合のみ適用されます。`"clear"` と `"compact"` では無視されます         |
-| `watchPaths`         | このセッション中に[FileChanged](#filechanged)イベントを監視する絶対パスの配列                                                                                                                                 |
-| `reloadSkills`       | ブール値。`true` の場合、Claude Code は SessionStart フックが完了した後に[スキル](/docs/ja/skills)とコマンド ディレクトリを再スキャンするため、フックがインストールしたスキルは同じセッションで利用可能になり、最初のプロンプトから開始されます                                        |
+| `sessionTitle` | セッション タイトルを設定します。`/rename` と同じ効果があります。起動フォルダ、git ブランチ、またはワークツリー名からセッションを自動的に名前付けするのに使用します。`source` が `"startup"` または `"resume"` の場合のみ適用されます。`"clear"` と `"compact"` では無視されます |
+| `watchPaths` | このセッション中に[FileChanged](#filechanged)イベントを監視する絶対パスの配列 |
+| `reloadSkills` | ブール値。`true` の場合、Claude Code は SessionStart フックが完了した後に[スキル](/docs/ja/skills)とコマンド ディレクトリを再スキャンするため、フックがインストールしたスキルは同じセッションで利用可能になり、最初のプロンプトから開始されます |
 
 ```json theme={null}
 {
@@ -1090,10 +1090,10 @@ exit 0
 
 マッチャー値はフックをトリガーした CLI フラグに対応しています。
 
-| マッチャー         | いつ発火するか                                     |
-| :------------ | :------------------------------------------ |
-| `init`        | `claude --init-only` または `claude -p --init` |
-| `maintenance` | `claude -p --maintenance`                   |
+| マッチャー | いつ発火するか |
+| :- | :- |
+| `init` | `claude --init-only` または `claude -p --init` |
+| `maintenance` | `claude -p --maintenance` |
 
 `--init-only` は Setup フックと `startup` マッチャーを持つ SessionStart フックを実行してから、会話を開始せずに終了します。`--init` と `--maintenance` は `-p` と組み合わせた場合のみ Setup フックを発火させます。対話型セッションでは、これら 2 つのフラグは現在 Setup フックを発火させません。
 
@@ -1123,8 +1123,8 @@ Setup フックはブロックできません。非ゼロ終了コード（2 を
 
 Claude のコンテキストに情報を渡すには、JSON 出力で `additionalContext` を返します。プレーン stdout はデバッグ ログにのみ書き込まれます。すべてのフックで利用可能な[JSON 出力フィールド](#json-output)に加えて、これらのイベント固有のフィールドを返すことができます。
 
-| フィールド               | 説明                                      |
-| :------------------ | :-------------------------------------- |
+| フィールド | 説明 |
+| :- | :- |
 | `additionalContext` | Claude のコンテキストに追加される文字列。複数のフックの値は連結されます |
 
 ```json theme={null}
@@ -1152,14 +1152,14 @@ Setup フックは `CLAUDE_ENV_FILE` にアクセスできます。そのファ�
 
 [共通入力フィールド](#common-input-fields)に加えて、InstructionsLoaded フックはこれらのフィールドを受け取ります。
 
-| フィールド               | 説明                                                                                                                                                       |
-| :------------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `file_path`         | ロードされた命令ファイルへの絶対パス                                                                                                                                       |
-| `memory_type`       | ファイルのスコープ: `"User"`、`"Project"`、`"Local"`、または `"Managed"`                                                                                                |
-| `load_reason`       | ファイルがロードされた理由: `"session_start"`、`"nested_traversal"`、`"path_glob_match"`、`"include"`、または `"compact"`。`"compact"` 値はコンパクション イベント後に命令ファイルが再ロードされるときに発火します |
-| `globs`             | ファイルの `paths:` フロントマターからのパス グロブ パターン（存在する場合）。`path_glob_match` ロードの場合のみ存在                                                                                |
-| `trigger_file_path` | 遅延ロードの場合、このロードをトリガーしたファイルへのパス                                                                                                                            |
-| `parent_file_path`  | `include` ロードの場合、このファイルを含む親命令ファイルへのパス                                                                                                                    |
+| フィールド | 説明 |
+| :- | :- |
+| `file_path` | ロードされた命令ファイルへの絶対パス |
+| `memory_type` | ファイルのスコープ: `"User"`、`"Project"`、`"Local"`、または `"Managed"` |
+| `load_reason` | ファイルがロードされた理由: `"session_start"`、`"nested_traversal"`、`"path_glob_match"`、`"include"`、または `"compact"`。`"compact"` 値はコンパクション イベント後に命令ファイルが再ロードされるときに発火します |
+| `globs` | ファイルの `paths:` フロントマターからのパス グロブ パターン（存在する場合）。`path_glob_match` ロードの場合のみ存在 |
+| `trigger_file_path` | 遅延ロードの場合、このロードをトリガーしたファイルへのパス |
+| `parent_file_path` | `include` ロードの場合、このファイルを含む親命令ファイルへのパス |
 
 ```json theme={null}
 {
@@ -1223,13 +1223,13 @@ InstructionsLoaded フックは決定制御がありません。命令ロード�
 
 プロンプトをブロックするには、`decision` を `"block"` に設定した JSON オブジェクトを返します。
 
-| フィールド                    | 説明                                                                            |
-| :----------------------- | :---------------------------------------------------------------------------- |
-| `decision`               | `"block"` はプロンプトが処理されるのを防ぎ、コンテキストから消去します。許可するには省略                             |
-| `reason`                 | `decision` が `"block"` のときにユーザーに表示されます。コンテキストに追加されません                         |
-| `additionalContext`      | Claude のコンテキストに追加される文字列。[Claude のコンテキストを追加](#add-context-for-claude)を参照してください |
-| `sessionTitle`           | セッション タイトルを設定します。プロンプト コンテンツに基づいてセッションを自動的に名前付けするのに使用                         |
-| `suppressOriginalPrompt` | `decision` が `"block"` のときに `true` の場合、ユーザーに表示されるブロック メッセージから元のプロンプト テキストを省略  |
+| フィールド | 説明 |
+| :- | :- |
+| `decision` | `"block"` はプロンプトが処理されるのを防ぎ、コンテキストから消去します。許可するには省略 |
+| `reason` | `decision` が `"block"` のときにユーザーに表示されます。コンテキストに追加されません |
+| `additionalContext` | Claude のコンテキストに追加される文字列。[Claude のコンテキストを追加](#add-context-for-claude)を参照してください |
+| `sessionTitle` | セッション タイトルを設定します。プロンプト コンテンツに基づいてセッションを自動的に名前付けするのに使用 |
+| `suppressOriginalPrompt` | `decision` が `"block"` のときに `true` の場合、ユーザーに表示されるブロック メッセージから元のプロンプト テキストを省略 |
 
 ```json theme={null}
 {
@@ -1280,10 +1280,10 @@ InstructionsLoaded フックは決定制御がありません。命令ロード�
 
 `UserPromptExpansion` フックは展開をブロックするか、コンテキストを追加できます。すべての[JSON 出力フィールド](#json-output)が利用可能です。
 
-| フィールド               | 説明                                                                                           |
-| :------------------ | :------------------------------------------------------------------------------------------- |
-| `decision`          | `"block"` はコマンドが展開されるのを防止。許可するには省略                                                           |
-| `reason`            | `decision` が `"block"` のときにユーザーに表示されます                                                       |
+| フィールド | 説明 |
+| :- | :- |
+| `decision` | `"block"` はコマンドが展開されるのを防止。許可するには省略 |
+| `reason` | `decision` が `"block"` のときにユーザーに表示されます |
 | `additionalContext` | 展開されたプロンプトと一緒に Claude のコンテキストに追加される文字列。[Claude のコンテキストを追加](#add-context-for-claude)を参照してください |
 
 ```json theme={null}
@@ -1323,13 +1323,13 @@ MessageDisplay はマッチャーをサポートせず、テキストをスト�
 
 [共通入力フィールド](#common-input-fields)に加えて、MessageDisplay フックはターンとメッセージの識別子、この呼び出しのメッセージ内での位置、および `delta` の新しいテキストを受け取ります。バッチ境界はテキストがどのようにストリーミングされるかに依存するため、行が特定の方法でグループ化されることを期待するのではなく、`index` と `final` を使用してメッセージを通じた進行状況を追跡します。
 
-| フィールド        | 説明                                                                                                                                                                                                   |
-| :----------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `turn_id`    | 現在のターンの UUID                                                                                                                                                                                         |
-| `message_id` | 表示されるアシスタント メッセージの UUID。メッセージの同じバッチ全体で安定しています。これは API `msg_…` id ではないため、トランスクリプト メッセージ id と相関させることはできません                                                                                             |
-| `index`      | メッセージ内のこのバッチのゼロベースのインデックス                                                                                                                                                                            |
-| `final`      | メッセージの最後のバッチで `true`。各メッセージは正確に 1 つの最終バッチを持ちます                                                                                                                                                       |
-| `delta`      | 前のバッチ以降の新しく完了した行。終了改行を含みます。常に完全な行です。ただし、最終バッチは行の途中で終わる可能性があります。対話型実行では、メッセージが改行で終わるときの最終バッチの delta は空なので、`final` ではなく、メッセージの終了信号として `final` を処理します。Agent SDK と `claude -p` 実行では、単一の呼び出しが全体メッセージを含みます |
+| フィールド | 説明 |
+| :- | :- |
+| `turn_id` | 現在のターンの UUID |
+| `message_id` | 表示されるアシスタント メッセージの UUID。メッセージの同じバッチ全体で安定しています。これは API `msg_…` id ではないため、トランスクリプト メッセージ id と相関させることはできません |
+| `index` | メッセージ内のこのバッチのゼロベースのインデックス |
+| `final` | メッセージの最後のバッチで `true`。各メッセージは正確に 1 つの最終バッチを持ちます |
+| `delta` | 前のバッチ以降の新しく完了した行。終了改行を含みます。常に完全な行です。ただし、最終バッチは行の途中で終わる可能性があります。対話型実行では、メッセージが改行で終わるときの最終バッチの delta は空なので、`final` ではなく、メッセージの終了信号として `final` を処理します。Agent SDK と `claude -p` 実行では、単一の呼び出しが全体メッセージを含みます |
 
 ```json theme={null}
 {
@@ -1351,8 +1351,8 @@ MessageDisplay はマッチャーをサポートせず、テキストをスト�
 
 すべてのフックで利用可能な[JSON 出力フィールド](#json-output)に加えて、MessageDisplay フックは `displayContent` を返して画面上の delta を置き換えることができます。
 
-| フィールド            | 説明                                   |
-| :--------------- | :----------------------------------- |
+| フィールド | 説明 |
+| :- | :- |
 | `displayContent` | delta の代わりに表示されるテキスト。元のテキストを表示するには省略 |
 
 MessageDisplay フックは決定制御がありません。メッセージをブロックしたり、トランスクリプトに保存されたもの、または Claude に送信されたものを変更することはできません。
@@ -1461,12 +1461,12 @@ Claude がツール パラメーターを作成した後、ツール呼び出し
 
 シェル コマンドを実行します。
 
-| フィールド               | タイプ  | 例                  | 説明                                                                               |
-| :------------------ | :--- | :----------------- | :------------------------------------------------------------------------------- |
-| `command`           | 文字列  | `"npm test"`       | 実行するシェル コマンド                                                                     |
-| `description`       | 文字列  | `"Run test suite"` | コマンドが何をするかのオプション説明                                                               |
-| `timeout`           | 数値   | `120000`           | ミリ秒単位のオプション タイムアウト。[最大値](/docs/ja/tools-reference#bash-tool-behavior)を超える値は最大値に削減されます |
-| `run_in_background` | ブール値 | `false`            | コマンドをバックグラウンドで実行するかどうか                                                           |
+| フィールド | タイプ | 例 | 説明 |
+| :- | :- | :- | :- |
+| `command` | 文字列 | `"npm test"` | 実行するシェル コマンド |
+| `description` | 文字列 | `"Run test suite"` | コマンドが何をするかのオプション説明 |
+| `timeout` | 数値 | `120000` | ミリ秒単位のオプション タイムアウト。[最大値](/docs/ja/tools-reference#bash-tool-behavior)を超える値は最大値に削減されます |
+| `run_in_background` | ブール値 | `false` | コマンドをバックグラウンドで実行するかどうか |
 
 <h5 id="write">
   Write
@@ -1474,10 +1474,10 @@ Claude がツール パラメーターを作成した後、ツール呼び出し
 
 ファイルを作成または上書きします。
 
-| フィールド       | タイプ | 例                     | 説明             |
-| :---------- | :-- | :-------------------- | :------------- |
+| フィールド | タイプ | 例 | 説明 |
+| :- | :- | :- | :- |
 | `file_path` | 文字列 | `"/path/to/file.txt"` | 書き込むファイルへの絶対パス |
-| `content`   | 文字列 | `"file content"`      | ファイルに書き込むコンテンツ |
+| `content` | 文字列 | `"file content"` | ファイルに書き込むコンテンツ |
 
 <h5 id="edit">
   Edit
@@ -1485,12 +1485,12 @@ Claude がツール パラメーターを作成した後、ツール呼び出し
 
 既存ファイル内の文字列を置換します。
 
-| フィールド         | タイプ  | 例                     | 説明              |
-| :------------ | :--- | :-------------------- | :-------------- |
-| `file_path`   | 文字列  | `"/path/to/file.txt"` | 編集するファイルへの絶対パス  |
-| `old_string`  | 文字列  | `"original text"`     | 検索して置換するテキスト    |
-| `new_string`  | 文字列  | `"replacement text"`  | 置換テキスト          |
-| `replace_all` | ブール値 | `false`               | すべての出現を置換するかどうか |
+| フィールド | タイプ | 例 | 説明 |
+| :- | :- | :- | :- |
+| `file_path` | 文字列 | `"/path/to/file.txt"` | 編集するファイルへの絶対パス |
+| `old_string` | 文字列 | `"original text"` | 検索して置換するテキスト |
+| `new_string` | 文字列 | `"replacement text"` | 置換テキスト |
+| `replace_all` | ブール値 | `false` | すべての出現を置換するかどうか |
 
 <h5 id="read">
   Read
@@ -1498,11 +1498,11 @@ Claude がツール パラメーターを作成した後、ツール呼び出し
 
 ファイル コンテンツを読み取ります。
 
-| フィールド       | タイプ | 例                     | 説明                 |
-| :---------- | :-- | :-------------------- | :----------------- |
-| `file_path` | 文字列 | `"/path/to/file.txt"` | 読み取るファイルへの絶対パス     |
-| `offset`    | 数値  | `10`                  | 読み取りを開始する行番号のオプション |
-| `limit`     | 数値  | `50`                  | 読み取る行数のオプション       |
+| フィールド | タイプ | 例 | 説明 |
+| :- | :- | :- | :- |
+| `file_path` | 文字列 | `"/path/to/file.txt"` | 読み取るファイルへの絶対パス |
+| `offset` | 数値 | `10` | 読み取りを開始する行番号のオプション |
+| `limit` | 数値 | `50` | 読み取る行数のオプション |
 
 <h5 id="glob">
   Glob
@@ -1510,10 +1510,10 @@ Claude がツール パラメーターを作成した後、ツール呼び出し
 
 グロブ パターンにマッチするファイルを検索します。
 
-| フィールド     | タイプ | 例                | 説明                                 |
-| :-------- | :-- | :--------------- | :--------------------------------- |
-| `pattern` | 文字列 | `"**/*.ts"`      | ファイルにマッチするグロブ パターン                 |
-| `path`    | 文字列 | `"/path/to/dir"` | 検索するオプション ディレクトリ。デフォルトは現在の作業ディレクトリ |
+| フィールド | タイプ | 例 | 説明 |
+| :- | :- | :- | :- |
+| `pattern` | 文字列 | `"**/*.ts"` | ファイルにマッチするグロブ パターン |
+| `path` | 文字列 | `"/path/to/dir"` | 検索するオプション ディレクトリ。デフォルトは現在の作業ディレクトリ |
 
 <h5 id="grep">
   Grep
@@ -1521,14 +1521,14 @@ Claude がツール パラメーターを作成した後、ツール呼び出し
 
 正規表現でファイル コンテンツを検索します。
 
-| フィールド         | タイプ  | 例                | 説明                                                                             |
-| :------------ | :--- | :--------------- | :----------------------------------------------------------------------------- |
-| `pattern`     | 文字列  | `"TODO.*fix"`    | 検索する正規表現パターン                                                                   |
-| `path`        | 文字列  | `"/path/to/dir"` | 検索するオプション ファイルまたはディレクトリ                                                        |
-| `glob`        | 文字列  | `"*.ts"`         | ファイルをフィルタリングするオプション グロブ パターン                                                   |
-| `output_mode` | 文字列  | `"content"`      | `"content"`、`"files_with_matches"`、または `"count"`。デフォルトは `"files_with_matches"` |
-| `-i`          | ブール値 | `true`           | 大文字小文字を区別しない検索                                                                 |
-| `multiline`   | ブール値 | `false`          | 複数行マッチングを有効化                                                                   |
+| フィールド | タイプ | 例 | 説明 |
+| :- | :- | :- | :- |
+| `pattern` | 文字列 | `"TODO.*fix"` | 検索する正規表現パターン |
+| `path` | 文字列 | `"/path/to/dir"` | 検索するオプション ファイルまたはディレクトリ |
+| `glob` | 文字列 | `"*.ts"` | ファイルをフィルタリングするオプション グロブ パターン |
+| `output_mode` | 文字列 | `"content"` | `"content"`、`"files_with_matches"`、または `"count"`。デフォルトは `"files_with_matches"` |
+| `-i` | ブール値 | `true` | 大文字小文字を区別しない検索 |
+| `multiline` | ブール値 | `false` | 複数行マッチングを有効化 |
 
 <h5 id="webfetch">
   WebFetch
@@ -1536,9 +1536,9 @@ Claude がツール パラメーターを作成した後、ツール呼び出し
 
 Web コンテンツを取得して処理します。
 
-| フィールド    | タイプ | 例                             | 説明                  |
-| :------- | :-- | :---------------------------- | :------------------ |
-| `url`    | 文字列 | `"https://example.com/api"`   | コンテンツを取得する URL      |
+| フィールド | タイプ | 例 | 説明 |
+| :- | :- | :- | :- |
+| `url` | 文字列 | `"https://example.com/api"` | コンテンツを取得する URL |
 | `prompt` | 文字列 | `"Extract the API endpoints"` | 取得したコンテンツで実行するプロンプト |
 
 <h5 id="websearch">
@@ -1547,11 +1547,11 @@ Web コンテンツを取得して処理します。
 
 Web を検索します。
 
-| フィールド             | タイプ | 例                              | 説明                        |
-| :---------------- | :-- | :----------------------------- | :------------------------ |
-| `query`           | 文字列 | `"react hooks best practices"` | 検索クエリ                     |
-| `allowed_domains` | 配列  | `["docs.example.com"]`         | オプション: これらのドメインからのみ結果を含める |
-| `blocked_domains` | 配列  | `["spam.example.com"]`         | オプション: これらのドメインからの結果を除外   |
+| フィールド | タイプ | 例 | 説明 |
+| :- | :- | :- | :- |
+| `query` | 文字列 | `"react hooks best practices"` | 検索クエリ |
+| `allowed_domains` | 配列 | `["docs.example.com"]` | オプション: これらのドメインからのみ結果を含める |
+| `blocked_domains` | 配列 | `["spam.example.com"]` | オプション: これらのドメインからの結果を除外 |
 
 <h5 id="agent">
   Agent
@@ -1559,25 +1559,25 @@ Web を検索します。
 
 [サブエージェント](/docs/ja/sub-agents)を生成します。
 
-| フィールド           | タイプ | 例                          | 説明                             |
-| :-------------- | :-- | :------------------------- | :----------------------------- |
-| `prompt`        | 文字列 | `"Find all API endpoints"` | エージェントが実行するタスク                 |
-| `description`   | 文字列 | `"Find API endpoints"`     | タスクの短い説明                       |
-| `subagent_type` | 文字列 | `"Explore"`                | 使用する特殊エージェントのタイプ               |
-| `model`         | 文字列 | `"sonnet"`                 | デフォルトをオーバーライドするオプション モデル エイリアス |
+| フィールド | タイプ | 例 | 説明 |
+| :- | :- | :- | :- |
+| `prompt` | 文字列 | `"Find all API endpoints"` | エージェントが実行するタスク |
+| `description` | 文字列 | `"Find API endpoints"` | タスクの短い説明 |
+| `subagent_type` | 文字列 | `"Explore"` | 使用する特殊エージェントのタイプ |
+| `model` | 文字列 | `"sonnet"` | デフォルトをオーバーライドするオプション モデル エイリアス |
 
 `PostToolUse` では、完了した Agent 呼び出しの `tool_response` はサブエージェントの最終テキストと使用テレメトリを含みます。フックからサブエージェント単位のコストを記録するためにこれらのフィールドを読み取ります。
 
-| フィールド               | タイプ    | 例                                                     | 説明                                                                                                                                                                    |
-| :------------------ | :----- | :---------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `status`            | 文字列    | `"completed"`                                         | `"completed"` は同期呼び出しの場合、`"async_launched"` はバックグラウンド サブエージェントの場合。v2.1.198 以降では、サブエージェントはデフォルトでバックグラウンドで実行されるため、省略された `run_in_background` も `"async_launched"` を生成します |
-| `agentId`           | 文字列    | `"a4d2c8f1e0b3a297"`                                  | サブエージェント実行の識別子                                                                                                                                                        |
-| `content`           | 配列     | `[{"type": "text", "text": "Found 12 endpoints..."}]` | サブエージェントの最終テキスト ブロック                                                                                                                                                  |
-| `resolvedModel`     | 文字列    | `"claude-sonnet-4-5"`                                 | サブエージェントが実行されたモデル。要求されたモデルと異なる可能性があります。Claude Code v2.1.174 以降が必要                                                                                                     |
-| `totalTokens`       | 数値     | `12450`                                               | サブエージェントのターン全体で請求されたトークン合計                                                                                                                                            |
-| `totalDurationMs`   | 数値     | `48211`                                               | サブエージェント実行の実時間                                                                                                                                                        |
-| `totalToolUseCount` | 数値     | `7`                                                   | サブエージェントが行ったツール呼び出しの数                                                                                                                                                 |
-| `usage`             | オブジェクト | `{"input_tokens": 8320, ...}`                         | タイプ別トークン分解: `input_tokens`、`output_tokens`、`cache_creation_input_tokens`、`cache_read_input_tokens`                                                                    |
+| フィールド | タイプ | 例 | 説明 |
+| :- | :- | :- | :- |
+| `status` | 文字列 | `"completed"` | `"completed"` は同期呼び出しの場合、`"async_launched"` はバックグラウンド サブエージェントの場合。v2.1.198 以降では、サブエージェントはデフォルトでバックグラウンドで実行されるため、省略された `run_in_background` も `"async_launched"` を生成します |
+| `agentId` | 文字列 | `"a4d2c8f1e0b3a297"` | サブエージェント実行の識別子 |
+| `content` | 配列 | `[{"type": "text", "text": "Found 12 endpoints..."}]` | サブエージェントの最終テキスト ブロック |
+| `resolvedModel` | 文字列 | `"claude-sonnet-4-5"` | サブエージェントが実行されたモデル。要求されたモデルと異なる可能性があります。Claude Code v2.1.174 以降が必要 |
+| `totalTokens` | 数値 | `12450` | サブエージェントのターン全体で請求されたトークン合計 |
+| `totalDurationMs` | 数値 | `48211` | サブエージェント実行の実時間 |
+| `totalToolUseCount` | 数値 | `7` | サブエージェントが行ったツール呼び出しの数 |
+| `usage` | オブジェクト | `{"input_tokens": 8320, ...}` | タイプ別トークン分解: `input_tokens`、`output_tokens`、`cache_creation_input_tokens`、`cache_read_input_tokens` |
 
 バックグラウンド サブエージェントの場合、ツールはサブエージェント起動後すぐに返されるため、`tool_response` は使用フィールドを含みません。`status: "async_launched"`、`agentId`、`description`、`prompt`、`outputFile`、`resolvedModel` を含みます。
 
@@ -1591,10 +1591,10 @@ Web を検索します。
 
 ユーザーに 1 つから 4 つの複数選択肢の質問をします。
 
-| フィールド       | タイプ    | 例                                                                                                                  | 説明                                                                                                                 |
-| :---------- | :----- | :----------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------- |
-| `questions` | 配列     | `[{"question": "Which framework?", "header": "Framework", "options": [{"label": "React"}], "multiSelect": false}]` | 提示する質問。各質問には `question` 文字列、短い `header`、`options` 配列、およびオプションの `multiSelect` フラグがあります                              |
-| `answers`   | オブジェクト | `{"Which framework?": "React"}`                                                                                    | オプション。質問テキストを選択されたオプション ラベルにマップします。複数選択の回答はラベルをコンマで結合します。Claude はこのフィールドを設定しません。`updatedInput` 経由で提供して、プログラムで回答します |
+| フィールド | タイプ | 例 | 説明 |
+| :- | :- | :- | :- |
+| `questions` | 配列 | `[{"question": "Which framework?", "header": "Framework", "options": [{"label": "React"}], "multiSelect": false}]` | 提示する質問。各質問には `question` 文字列、短い `header`、`options` 配列、およびオプションの `multiSelect` フラグがあります |
+| `answers` | オブジェクト | `{"Which framework?": "React"}` | オプション。質問テキストを選択されたオプション ラベルにマップします。複数選択の回答はラベルをコンマで結合します。Claude はこのフィールドを設定しません。`updatedInput` 経由で提供して、プログラムで回答します |
 
 <h5 id="exitplanmode">
   ExitPlanMode
@@ -1602,11 +1602,11 @@ Web を検索します。
 
 Claude が[プラン モード](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode)を離れる前にプランを提示し、ユーザーに承認を求めます。Claude はツールを呼び出す前にプランをディスク上のファイルに書き込むため、モデルからのリテラル `tool_input` は通常空です。Claude Code はプラン コンテンツとファイル パスをフックに渡す前に注入します。
 
-| フィールド            | タイプ | 例                                           | 説明                                                                                              |
-| :--------------- | :-- | :------------------------------------------ | :---------------------------------------------------------------------------------------------- |
-| `plan`           | 文字列 | `"## Refactor auth\n1. Extract..."`         | Markdown のプラン コンテンツ。ディスク上のプラン ファイルから注入                                                          |
-| `planFilePath`   | 文字列 | `"/Users/.../plans/refactor-auth.md"`       | プラン ファイルへのパス。注入                                                                                 |
-| `allowedPrompts` | 配列  | `[{"tool": "Bash", "prompt": "run tests"}]` | 非推奨。Claude Code はフィールドを受け入れますが無視します。v2.1.205 より前では、プランを実装するために Claude が要求していたプロンプト ベースの権限を含みました |
+| フィールド | タイプ | 例 | 説明 |
+| :- | :- | :- | :- |
+| `plan` | 文字列 | `"## Refactor auth\n1. Extract..."` | Markdown のプラン コンテンツ。ディスク上のプラン ファイルから注入 |
+| `planFilePath` | 文字列 | `"/Users/.../plans/refactor-auth.md"` | プラン ファイルへのパス。注入 |
+| `allowedPrompts` | 配列 | `[{"tool": "Bash", "prompt": "run tests"}]` | 非推奨。Claude Code はフィールドを受け入れますが無視します。v2.1.205 より前では、プランを実装するために Claude が要求していたプロンプト ベースの権限を含みました |
 
 `PostToolUse` では、`tool_response` は `plan` と `filePath` フィールドを含むオブジェクトで、承認されたプランと内部ステータス フラグを保持します。ディスクからファイルを再度読み取るのではなく、`tool_response.plan` でプラン コンテンツを読み取ります。
 
@@ -1616,12 +1616,12 @@ Claude が[プラン モード](/docs/ja/permission-modes#analyze-before-you-edi
 
 `PreToolUse` フックはツール呼び出しが進行するかどうかを制御できます。トップレベル `decision` フィールドを使用する他のフックとは異なり、PreToolUse は `hookSpecificOutput` オブジェクト内に決定を返します。これにより、より豊かな制御が可能になります。4 つの結果（許可、拒否、質問、遅延）と、実行前にツール入力を変更する機能。
 
-| フィールド                      | 説明                                                                                                                                                                                                                                                                                                                    |
-| :------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `permissionDecision`       | `"allow"` はツール呼び出しをスキップします。[ユーザー操作が必要なツール](#pretooluse-decision-control)と、組織が [`ask`](/docs/ja/mcp#organization-controls-on-connector-tools)に設定したコネクター ツールを除きます。`"deny"` はツール呼び出しを防止します。`"ask"` はユーザーに確認を促します。`"defer"` は優雅に終了して、ツールを後で再開できるようにします。[拒否と質問ルール](/docs/ja/permissions#manage-permissions)は、フックが返す内容に関係なく引き続き評価されます |
-| `permissionDecisionReason` | `"allow"` と `"ask"` の場合、ユーザーに表示されますが Claude には表示されません。`"deny"` の場合、Claude に表示されます。`"defer"` の場合、無視されます                                                                                                                                                                                                                |
-| `updatedInput`             | 実行前にツールの入力パラメーターを変更します。入力オブジェクト全体を置き換えるため、変更されていないフィールドを変更されたフィールドと一緒に含めます。`"allow"` と組み合わせて自動承認するか、`"ask"` と組み合わせて変更された入力をユーザーに表示します。`"defer"` の場合、無視されます                                                                                                                                                            |
-| `additionalContext`        | ツール実行前に Claude のコンテキストに追加される文字列。`"defer"` の場合、無視されます。[Claude のコンテキストを追加](#add-context-for-claude)を参照してください                                                                                                                                                                                                            |
+| フィールド | 説明 |
+| :- | :- |
+| `permissionDecision` | `"allow"` はツール呼び出しをスキップします。[ユーザー操作が必要なツール](#pretooluse-decision-control)と、組織が [`ask`](/docs/ja/mcp#organization-controls-on-connector-tools)に設定したコネクター ツールを除きます。`"deny"` はツール呼び出しを防止します。`"ask"` はユーザーに確認を促します。`"defer"` は優雅に終了して、ツールを後で再開できるようにします。[拒否と質問ルール](/docs/ja/permissions#manage-permissions)は、フックが返す内容に関係なく引き続き評価されます |
+| `permissionDecisionReason` | `"allow"` と `"ask"` の場合、ユーザーに表示されますが Claude には表示されません。`"deny"` の場合、Claude に表示されます。`"defer"` の場合、無視されます |
+| `updatedInput` | 実行前にツールの入力パラメーターを変更します。入力オブジェクト全体を置き換えるため、変更されていないフィールドを変更されたフィールドと一緒に含めます。`"allow"` と組み合わせて自動承認するか、`"ask"` と組み合わせて変更された入力をユーザーに表示します。`"defer"` の場合、無視されます |
+| `additionalContext` | ツール実行前に Claude のコンテキストに追加される文字列。`"defer"` の場合、無視されます。[Claude のコンテキストを追加](#add-context-for-claude)を参照してください |
 
 複数の PreToolUse フックが異なる決定を返す場合、優先順位は `deny` > `defer` > `ask` > `allow` です。
 
@@ -1735,13 +1735,13 @@ PermissionRequest フックは PreToolUse フックのような `tool_name` と 
 
 `PermissionRequest` フックは権限リクエストを許可または拒否できます。すべてのフックで利用可能な[JSON 出力フィールド](#json-output)に加えて、フック スクリプトはこれらのイベント固有のフィールドを持つ `decision` オブジェクトを返すことができます。
 
-| フィールド                | 説明                                                                                                                              |
-| :------------------- | :------------------------------------------------------------------------------------------------------------------------------ |
-| `behavior`           | `"allow"` は権限を付与、`"deny"` は拒否。[拒否と質問ルール](/docs/ja/permissions#manage-permissions)は引き続き評価されるため、`"allow"` を返すフックは一致する拒否ルールをオーバーライドしません |
-| `updatedInput`       | `"allow"` のみ: 実行前にツールの入力パラメーターを変更します。入力オブジェクト全体を置き換えるため、変更されていないフィールドを変更されたフィールドと一緒に含めます。変更された入力は拒否と質問ルールに対して再評価されます            |
-| `updatedPermissions` | `"allow"` のみ: 適用する[権限更新エントリ](#permission-update-entries)の配列。許可ルールを追加したり、セッション権限モードを変更したりするなど                                    |
-| `message`            | `"deny"` のみ: 権限が拒否された理由を Claude に伝える                                                                                            |
-| `interrupt`          | `"deny"` のみ: `true` の場合、Claude を停止                                                                                              |
+| フィールド | 説明 |
+| :- | :- |
+| `behavior` | `"allow"` は権限を付与、`"deny"` は拒否。[拒否と質問ルール](/docs/ja/permissions#manage-permissions)は引き続き評価されるため、`"allow"` を返すフックは一致する拒否ルールをオーバーライドしません |
+| `updatedInput` | `"allow"` のみ: 実行前にツールの入力パラメーターを変更します。入力オブジェクト全体を置き換えるため、変更されていないフィールドを変更されたフィールドと一緒に含めます。変更された入力は拒否と質問ルールに対して再評価されます |
+| `updatedPermissions` | `"allow"` のみ: 適用する[権限更新エントリ](#permission-update-entries)の配列。許可ルールを追加したり、セッション権限モードを変更したりするなど |
+| `message` | `"deny"` のみ: 権限が拒否された理由を Claude に伝える |
+| `interrupt` | `"deny"` のみ: `true` の場合、Claude を停止 |
 
 ```json theme={null}
 {
@@ -1763,14 +1763,14 @@ PermissionRequest フックは PreToolUse フックのような `tool_name` と 
 
 `updatedPermissions` 出力フィールドと[`permission_suggestions` 入力フィールド](#permissionrequest-input)の両方が同じエントリ オブジェクトの配列を使用します。各エントリには、その他のフィールドを決定する `type` と、変更が書き込まれる場所を制御する `destination` があります。
 
-| `type`              | フィールド                            | 効果                                                                                                                                                                 |
-| :------------------ | :------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `addRules`          | `rules`、`behavior`、`destination` | 権限ルールを追加します。`rules` は `{toolName, ruleContent?}` オブジェクトの配列です。ツール全体にマッチするには `ruleContent` を省略します。`behavior` は `"allow"`、`"deny"`、または `"ask"`                        |
-| `replaceRules`      | `rules`、`behavior`、`destination` | `destination` で指定された `behavior` のすべてのルールを提供されたルールに置き換えます                                                                                                           |
-| `removeRules`       | `rules`、`behavior`、`destination` | 指定された `behavior` の一致するルールを削除                                                                                                                                       |
-| `setMode`           | `mode`、`destination`             | 権限モードを変更します。有効なモードは `default`、`auto`、`acceptEdits`、`dontAsk`、`bypassPermissions`、`plan`、`manual`（`default` のエイリアス）です。`manual` エイリアスには Claude Code v2.1.200 以降が必要です |
-| `addDirectories`    | `directories`、`destination`      | 作業ディレクトリを追加します。`directories` はパス文字列の配列                                                                                                                             |
-| `removeDirectories` | `directories`、`destination`      | 作業ディレクトリを削除                                                                                                                                                        |
+| `type` | フィールド | 効果 |
+| :- | :- | :- |
+| `addRules` | `rules`、`behavior`、`destination` | 権限ルールを追加します。`rules` は `{toolName, ruleContent?}` オブジェクトの配列です。ツール全体にマッチするには `ruleContent` を省略します。`behavior` は `"allow"`、`"deny"`、または `"ask"` |
+| `replaceRules` | `rules`、`behavior`、`destination` | `destination` で指定された `behavior` のすべてのルールを提供されたルールに置き換えます |
+| `removeRules` | `rules`、`behavior`、`destination` | 指定された `behavior` の一致するルールを削除 |
+| `setMode` | `mode`、`destination` | 権限モードを変更します。有効なモードは `default`、`auto`、`acceptEdits`、`dontAsk`、`bypassPermissions`、`plan`、`manual`（`default` のエイリアス）です。`manual` エイリアスには Claude Code v2.1.200 以降が必要です |
+| `addDirectories` | `directories`、`destination` | 作業ディレクトリを追加します。`directories` はパス文字列の配列 |
+| `removeDirectories` | `directories`、`destination` | 作業ディレクトリを削除 |
 
 <Note>
   `setMode` で `bypassPermissions` を使用する場合、セッションが既にバイパス モードで起動されている場合のみ有効です。`--dangerously-skip-permissions`、`--permission-mode bypassPermissions`、`--allow-dangerously-skip-permissions`、または設定の `permissions.defaultMode: "bypassPermissions"` を使用し、モードが [`permissions.disableBypassPermissionsMode`](/docs/ja/permissions#managed-settings)で無効化されていない場合。それ以外の場合、更新は no-op です。`bypassPermissions` は `destination` に関係なく `defaultMode` として永続化されません。
@@ -1778,12 +1778,12 @@ PermissionRequest フックは PreToolUse フックのような `tool_name` と 
 
 すべてのエントリの `destination` フィールドは、変更がメモリに留まるか設定ファイルに永続化されるかを決定します。
 
-| `destination`     | 書き込み先                         |
-| :---------------- | :---------------------------- |
-| `session`         | メモリのみ、セッション終了時に破棄             |
-| `localSettings`   | `.claude/settings.local.json` |
-| `projectSettings` | `.claude/settings.json`       |
-| `userSettings`    | `~/.claude/settings.json`     |
+| `destination` | 書き込み先 |
+| :- | :- |
+| `session` | メモリのみ、セッション終了時に破棄 |
+| `localSettings` | `.claude/settings.local.json` |
+| `projectSettings` | `.claude/settings.json` |
+| `userSettings` | `~/.claude/settings.json` |
 
 フックは受け取った `permission_suggestions` の 1 つを独自の `updatedPermissions` 出力として反映できます。これは、ユーザーがダイアログで「常に許可」オプションを選択するのと同等です。
 
@@ -1822,8 +1822,8 @@ PermissionRequest フックは PreToolUse フックのような `tool_name` と 
 }
 ```
 
-| フィールド         | 説明                                                    |
-| :------------ | :---------------------------------------------------- |
+| フィールド | 説明 |
+| :- | :- |
 | `duration_ms` | オプション。ツール実行時間（ミリ秒）。権限プロンプトと PreToolUse フックに費やされた時間は除外 |
 
 <h4 id="posttooluse-decision-control">
@@ -1832,12 +1832,12 @@ PermissionRequest フックは PreToolUse フックのような `tool_name` と 
 
 `PostToolUse` フックはツール実行後に Claude にフィードバックを提供できます。すべてのフックで利用可能な[JSON 出力フィールド](#json-output)に加えて、フック スクリプトはこれらのイベント固有のフィールドを返すことができます。
 
-| フィールド                  | 説明                                                                            |
-| :--------------------- | :---------------------------------------------------------------------------- |
-| `decision`             | `"block"` は Claude に `reason` でプロンプトを表示。許可するには省略                              |
-| `reason`               | `decision` が `"block"` のときに Claude に表示される説明                                   |
-| `additionalContext`    | Claude のコンテキストに追加される文字列。[Claude のコンテキストを追加](#add-context-for-claude)を参照してください |
-| `updatedToolOutput`    | ツールの出力を提供された値に置換してから Claude に送信。値はツールの出力形状と一致する必要があります                        |
+| フィールド | 説明 |
+| :- | :- |
+| `decision` | `"block"` は Claude に `reason` でプロンプトを表示。許可するには省略 |
+| `reason` | `decision` が `"block"` のときに Claude に表示される説明 |
+| `additionalContext` | Claude のコンテキストに追加される文字列。[Claude のコンテキストを追加](#add-context-for-claude)を参照してください |
+| `updatedToolOutput` | ツールの出力を提供された値に置換してから Claude に送信。値はツールの出力形状と一致する必要があります |
 | `updatedMCPToolOutput` | [MCP ツール](#match-mcp-tools)のみ: ツールの出力を置換。すべてのツールで機能する `updatedToolOutput` を優先 |
 
 以下の例は `Bash` 呼び出しの出力を置換します。置換値は `Bash` ツールの出力形状と一致します。
@@ -1900,11 +1900,11 @@ PostToolUseFailure フックは PostToolUse と同じ `tool_name` と `tool_inpu
 }
 ```
 
-| フィールド          | 説明                                                    |
-| :------------- | :---------------------------------------------------- |
-| `error`        | 何が悪かったかを説明する文字列                                       |
-| `is_interrupt` | 失敗がユーザー割り込みによって引き起こされたかどうかを示すオプション ブール値               |
-| `duration_ms`  | オプション。ツール実行時間（ミリ秒）。権限プロンプトと PreToolUse フックに費やされた時間は除外 |
+| フィールド | 説明 |
+| :- | :- |
+| `error` | 何が悪かったかを説明する文字列 |
+| `is_interrupt` | 失敗がユーザー割り込みによって引き起こされたかどうかを示すオプション ブール値 |
+| `duration_ms` | オプション。ツール実行時間（ミリ秒）。権限プロンプトと PreToolUse フックに費やされた時間は除外 |
 
 <h4 id="posttoolusefailure-decision-control">
   PostToolUseFailure 決定制御
@@ -1912,8 +1912,8 @@ PostToolUseFailure フックは PostToolUse と同じ `tool_name` と `tool_inpu
 
 `PostToolUseFailure` フックはツール失敗後に Claude にコンテキストを提供できます。すべてのフックで利用可能な[JSON 出力フィールド](#json-output)に加えて、フック スクリプトはこれらのイベント固有のフィールドを返すことができます。
 
-| フィールド               | 説明                                                                            |
-| :------------------ | :---------------------------------------------------------------------------- |
+| フィールド | 説明 |
+| :- | :- |
 | `additionalContext` | Claude のコンテキストに追加される文字列。[Claude のコンテキストを追加](#add-context-for-claude)を参照してください |
 
 ```json theme={null}
@@ -1973,8 +1973,8 @@ PostToolUseFailure フックは PostToolUse と同じ `tool_name` と `tool_inpu
 
 `PostToolBatch` フックは Claude のコンテキストを注入できます。すべてのフックで利用可能な[JSON 出力フィールド](#json-output)に加えて、フック スクリプトはこれらのイベント固有のフィールドを返すことができます。
 
-| フィールド               | 説明                                                                                   |
-| :------------------ | :----------------------------------------------------------------------------------- |
+| フィールド | 説明 |
+| :- | :- |
 | `additionalContext` | 次のモデル呼び出しの前に 1 回注入されるコンテキスト文字列。[Claude のコンテキストを追加](#add-context-for-claude)を参照してください |
 
 ```json theme={null}
@@ -2019,8 +2019,8 @@ PostToolUseFailure フックは PostToolUse と同じ `tool_name` と `tool_inpu
 }
 ```
 
-| フィールド    | 説明                     |
-| :------- | :--------------------- |
+| フィールド | 説明 |
+| :- | :- |
 | `reason` | ツール呼び出しが拒否された理由の分類器の説明 |
 
 <h4 id="permissiondenied-decision-control">
@@ -2046,16 +2046,16 @@ PermissionDenied フックはモデルが拒否されたツール呼び出しを
 
 Claude Code が通知を送信するときに実行されます。通知タイプでマッチします。マッチャーを省略して、すべての通知タイプのフックを実行します。
 
-| マッチャー                  | いつ発火するか                                                               |
-| :--------------------- | :-------------------------------------------------------------------- |
-| `permission_prompt`    | Claude が権限承認を必要とする                                                    |
-| `idle_prompt`          | Claude が完了して次のプロンプトを待機                                                |
-| `auth_success`         | 認証が完了                                                                 |
-| `elicitation_dialog`   | MCP サーバーが elicitation フォームを開く                                         |
-| `elicitation_complete` | MCP elicitation フォームが送信または却下                                          |
-| `elicitation_response` | MCP elicitation レスポンスがサーバーに送信                                         |
-| `agent_needs_input`    | バックグラウンド セッションが入力を待機開始。[エージェント ビュー](/docs/ja/agent-view)がターミナルで開いている場合のみ発火 |
-| `agent_completed`      | バックグラウンド セッションが完了または失敗。[エージェント ビュー](/docs/ja/agent-view)がターミナルで開いている場合のみ発火 |
+| マッチャー | いつ発火するか |
+| :- | :- |
+| `permission_prompt` | Claude が権限承認を必要とする |
+| `idle_prompt` | Claude が完了して次のプロンプトを待機 |
+| `auth_success` | 認証が完了 |
+| `elicitation_dialog` | MCP サーバーが elicitation フォームを開く |
+| `elicitation_complete` | MCP elicitation フォームが送信または却下 |
+| `elicitation_response` | MCP elicitation レスポンスがサーバーに送信 |
+| `agent_needs_input` | バックグラウンド セッションが入力を待機開始。[エージェント ビュー](/docs/ja/agent-view)がターミナルで開いている場合のみ発火 |
+| `agent_completed` | バックグラウンド セッションが完了または失敗。[エージェント ビュー](/docs/ja/agent-view)がターミナルで開いている場合のみ発火 |
 
 `agent_needs_input` と `agent_completed` タイプには Claude Code v2.1.198 以降が必要です。
 
@@ -2135,8 +2135,8 @@ Agent ツール経由でサブエージェントが生成されるときに実�
 
 SubagentStart フックはサブエージェント作成をブロックできませんが、サブエージェントにコンテキストを注入できます。すべてのフックで利用可能な[JSON 出力フィールド](#json-output)に加えて、以下を返すことができます。
 
-| フィールド               | 説明                                                                                            |
-| :------------------ | :-------------------------------------------------------------------------------------------- |
+| フィールド | 説明 |
+| :- | :- |
 | `additionalContext` | サブエージェントのコンテキストの開始時に追加される文字列。最初のプロンプトの前。[Claude のコンテキストを追加](#add-context-for-claude)を参照してください |
 
 ```json theme={null}
@@ -2210,13 +2210,13 @@ SubagentStop フックは[Stop フック](#stop-decision-control)と同じ決定
 }
 ```
 
-| フィールド              | 説明                                |
-| :----------------- | :-------------------------------- |
-| `task_id`          | 作成されるタスクの識別子                      |
-| `task_subject`     | タスクのタイトル                          |
-| `task_description` | タスクの詳細説明。存在しない可能性があります            |
-| `teammate_name`    | タスクを作成しているチームメイトの名前。存在しない可能性があります |
-| `team_name`        | チームの名前。存在しない可能性があります              |
+| フィールド | 説明 |
+| :- | :- |
+| `task_id` | 作成されるタスクの識別子 |
+| `task_subject` | タスクのタイトル |
+| `task_description` | タスクの詳細説明。存在しない可能性があります |
+| `teammate_name` | タスクを作成しているチームメイトの名前。存在しない可能性があります |
+| `team_name` | チームの名前。存在しない可能性があります |
 
 <h4 id="taskcreated-decision-control">
   TaskCreated 決定制御
@@ -2271,13 +2271,13 @@ exit 0
 }
 ```
 
-| フィールド              | 説明                                |
-| :----------------- | :-------------------------------- |
-| `task_id`          | 完了しているタスクの識別子                     |
-| `task_subject`     | タスクのタイトル                          |
-| `task_description` | タスクの詳細説明。存在しない可能性があります            |
-| `teammate_name`    | タスクを完了しているチームメイトの名前。存在しない可能性があります |
-| `team_name`        | チームの名前。存在しない可能性があります              |
+| フィールド | 説明 |
+| :- | :- |
+| `task_id` | 完了しているタスクの識別子 |
+| `task_subject` | タスクのタイトル |
+| `task_description` | タスクの詳細説明。存在しない可能性があります |
+| `teammate_name` | タスクを完了しているチームメイトの名前。存在しない可能性があります |
+| `team_name` | チームの名前。存在しない可能性があります |
 
 <h4 id="taskcompleted-decision-control">
   TaskCompleted 決定制御
@@ -2324,26 +2324,26 @@ exit 0
 
 `background_tasks` の各エントリは 1 つの進行中のタスクを説明し、これらのフィールドを使用します。
 
-| フィールド         | 説明                                                                                                                                                                      |
-| :------------ | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `id`          | タスク識別子                                                                                                                                                                  |
-| `type`        | フレンドリーなタスク タイプ ラベル（`shell`、`subagent`、`monitor`、`workflow`、`teammate`、`cloud session`、`MCP task` など）。各ラベルは Claude Code のどの機能がタスクを作成したかを識別します。認識されないタイプの場合は生の判別式にフォールバック |
-| `status`      | 現在のタスク ステータス                                                                                                                                                            |
-| `description` | フリー テキスト説明。1000 文字でキャップされ、クリップされた場合は文字列内に `… [+N chars]` マーカー                                                                                                           |
-| `command`     | シェル コマンド ライン。1000 文字でキャップ。`shell` タスクの場合のみ存在                                                                                                                            |
-| `agent_type`  | サブエージェント タイプ名。`subagent` タスクの場合のみ存在                                                                                                                                     |
-| `server`      | MCP サーバー名。`monitor` と `MCP task` タスクの場合のみ存在                                                                                                                             |
-| `tool`        | MCP ツール名。`monitor` と `MCP task` タスクの場合のみ存在                                                                                                                              |
-| `name`        | ワークフロー名。`workflow` タスクの場合のみ存在                                                                                                                                           |
+| フィールド | 説明 |
+| :- | :- |
+| `id` | タスク識別子 |
+| `type` | フレンドリーなタスク タイプ ラベル（`shell`、`subagent`、`monitor`、`workflow`、`teammate`、`cloud session`、`MCP task` など）。各ラベルは Claude Code のどの機能がタスクを作成したかを識別します。認識されないタイプの場合は生の判別式にフォールバック |
+| `status` | 現在のタスク ステータス |
+| `description` | フリー テキスト説明。1000 文字でキャップされ、クリップされた場合は文字列内に `… [+N chars]` マーカー |
+| `command` | シェル コマンド ライン。1000 文字でキャップ。`shell` タスクの場合のみ存在 |
+| `agent_type` | サブエージェント タイプ名。`subagent` タスクの場合のみ存在 |
+| `server` | MCP サーバー名。`monitor` と `MCP task` タスクの場合のみ存在 |
+| `tool` | MCP ツール名。`monitor` と `MCP task` タスクの場合のみ存在 |
+| `name` | ワークフロー名。`workflow` タスクの場合のみ存在 |
 
 `session_crons` の各エントリは 1 つのセッション スコープのスケジュール済みウェイクアップを説明し、`CronCreate`、`ScheduleWakeup`、`/loop` から取得されます。
 
-| フィールド       | 説明                                                                           |
-| :---------- | :--------------------------------------------------------------------------- |
-| `id`        | Cron タスク識別子                                                                  |
-| `schedule`  | Cron 式（例：`0 9 * * 1-5`）                                                      |
+| フィールド | 説明 |
+| :- | :- |
+| `id` | Cron タスク識別子 |
+| `schedule` | Cron 式（例：`0 9 * * 1-5`） |
 | `recurring` | スケジュールが単一の発火時刻をエンコードする 1 回限りのウェイクアップの場合は `false`、すべてのマッチで再発火するタスクの場合は `true` |
-| `prompt`    | Cron が発火するときに送信されるプロンプト。1000 文字でキャップされ、同じ `… [+N chars]` マーカー                |
+| `prompt` | Cron が発火するときに送信されるプロンプト。1000 文字でキャップされ、同じ `… [+N chars]` マーカー |
 
 この例は、1 つの進行中のシェル タスクと 1 つの定期的な cron を含む Stop 入力を示しています。
 
@@ -2382,10 +2382,10 @@ exit 0
 
 `Stop` と `SubagentStop` フックは Claude が続行するかどうかを制御できます。すべてのフックで利用可能な[JSON 出力フィールド](#json-output)に加えて、フック スクリプトはこれらのイベント固有のフィールドを返すことができます。
 
-| フィールド                                  | 説明                                                                                                                                  |
-| :------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------- |
-| `decision`                             | `"block"` は Claude が停止するのを防止。Claude を停止させるには省略                                                                                      |
-| `reason`                               | `decision` が `"block"` のときに必須。Claude が続行すべき理由を伝える                                                                                   |
+| フィールド | 説明 |
+| :- | :- |
+| `decision` | `"block"` は Claude が停止するのを防止。Claude を停止させるには省略 |
+| `reason` | `decision` が `"block"` のときに必須。Claude が続行すべき理由を伝える |
 | `hookSpecificOutput.additionalContext` | 非エラー フィードバック Claude 用。会話は続行されるため Claude が対応できますが、`decision: "block"` とは異なり、トランスクリプトでは「Stop フック フィードバック」としてラベル付けされ、フック エラー通知は表示されません |
 
 ```json theme={null}
@@ -2418,11 +2418,11 @@ exit 0
 
 [共通入力フィールド](#common-input-fields)に加えて、StopFailure フックは `error`、オプションの `error_details`、およびオプションの `last_assistant_message` を受け取ります。`error` フィールドはエラー タイプを識別し、マッチャー フィルタリングに使用されます。
 
-| フィールド                    | 説明                                                                                                                                                                                      |
-| :----------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `error`                  | エラー タイプ: `rate_limit`、`overloaded`、`authentication_failed`、`oauth_org_not_allowed`、`billing_error`、`invalid_request`、`model_not_found`、`server_error`、`max_output_tokens`、または `unknown` |
-| `error_details`          | 利用可能な場合、エラーに関する追加詳細                                                                                                                                                                     |
-| `last_assistant_message` | 会話に表示されるレンダリングされたエラー テキスト。`Stop` と `SubagentStop` とは異なり、このフィールドは Claude の会話出力ではなく、`"API Error: Rate limit reached"` などの API エラー文字列を含みます                                                 |
+| フィールド | 説明 |
+| :- | :- |
+| `error` | エラー タイプ: `rate_limit`、`overloaded`、`authentication_failed`、`oauth_org_not_allowed`、`billing_error`、`invalid_request`、`model_not_found`、`server_error`、`max_output_tokens`、または `unknown` |
+| `error_details` | 利用可能な場合、エラーに関する追加詳細 |
+| `last_assistant_message` | 会話に表示されるレンダリングされたエラー テキスト。`Stop` と `SubagentStop` とは異なり、このフィールドは Claude の会話出力ではなく、`"API Error: Rate limit reached"` などの API エラー文字列を含みます |
 
 ```json theme={null}
 {
@@ -2464,10 +2464,10 @@ StopFailure フックは決定制御がありません。通知とログの目�
 }
 ```
 
-| フィールド           | 説明                       |
-| :-------------- | :----------------------- |
+| フィールド | 説明 |
+| :- | :- |
 | `teammate_name` | アイドル状態になろうとしているチームメイトの名前 |
-| `team_name`     | チームの名前                   |
+| `team_name` | チームの名前 |
 
 <h4 id="teammateidle-decision-control">
   TeammateIdle 決定制御
@@ -2501,13 +2501,13 @@ ConfigChange フックは設定ファイル、管理ポリシー設定、スキ�
 
 マッチャーは設定ソースでフィルタリングします。
 
-| マッチャー              | いつ発火するか                           |
-| :----------------- | :-------------------------------- |
-| `user_settings`    | `~/.claude/settings.json` が変更     |
-| `project_settings` | `.claude/settings.json` が変更       |
-| `local_settings`   | `.claude/settings.local.json` が変更 |
-| `policy_settings`  | 管理ポリシー設定が変更                       |
-| `skills`           | `.claude/skills/` のスキル ファイルが変更    |
+| マッチャー | いつ発火するか |
+| :- | :- |
+| `user_settings` | `~/.claude/settings.json` が変更 |
+| `project_settings` | `.claude/settings.json` が変更 |
+| `local_settings` | `.claude/settings.local.json` が変更 |
+| `policy_settings` | 管理ポリシー設定が変更 |
+| `skills` | `.claude/skills/` のスキル ファイルが変更 |
 
 この例は、セキュリティ監査のためにすべての設定変更をログします。
 
@@ -2552,10 +2552,10 @@ ConfigChange フックは設定ファイル、管理ポリシー設定、スキ�
 
 ConfigChange フックは設定変更が有効になるのをブロックできます。終了コード 2 または JSON `decision` を使用して変更を防止します。ブロックされた場合、新しい設定は実行中のセッションに適用されません。
 
-| フィールド      | 説明                                      |
-| :--------- | :-------------------------------------- |
-| `decision` | `"block"` は設定変更が適用されるのを防止。変更を許可するには省略   |
-| `reason`   | `decision` が `"block"` のときにユーザーに表示される説明 |
+| フィールド | 説明 |
+| :- | :- |
+| `decision` | `"block"` は設定変更が適用されるのを防止。変更を許可するには省略 |
+| `reason` | `decision` が `"block"` のときにユーザーに表示される説明 |
 
 ```json theme={null}
 {
@@ -2599,8 +2599,8 @@ CwdChanged はマッチャーをサポートせず、すべてのディレクト
 
 すべてのフックで利用可能な[JSON 出力フィールド](#json-output)に加えて、CwdChanged フックは `watchPaths` を返して、[FileChanged](#filechanged)が監視するファイル パスを動的に設定できます。
 
-| フィールド        | 説明                                                                              |
-| :----------- | :------------------------------------------------------------------------------ |
+| フィールド | 説明 |
+| :- | :- |
 | `watchPaths` | 絶対パスの配列。現在の動的監視リストを置き換えます（マッチャー設定からのパスは常に監視されます）。新しいディレクトリに入るときは、空の配列を返すのが一般的です |
 
 CwdChanged フックは決定制御がありません。ディレクトリ変更をブロックできません。
@@ -2624,10 +2624,10 @@ FileChanged フックは `CLAUDE_ENV_FILE` にアクセスできます。その�
 
 [共通入力フィールド](#common-input-fields)に加えて、FileChanged フックは `file_path` と `event` を受け取ります。
 
-| フィールド       | 説明                                                                 |
-| :---------- | :----------------------------------------------------------------- |
-| `file_path` | 変更されたファイルへの絶対パス                                                    |
-| `event`     | 何が起こったか: `"change"`（ファイル変更）、`"add"`（ファイル作成）、または `"unlink"`（ファイル削除） |
+| フィールド | 説明 |
+| :- | :- |
+| `file_path` | 変更されたファイルへの絶対パス |
+| `event` | 何が起こったか: `"change"`（ファイル変更）、`"add"`（ファイル作成）、または `"unlink"`（ファイル削除） |
 
 ```json theme={null}
 {
@@ -2646,8 +2646,8 @@ FileChanged フックは `CLAUDE_ENV_FILE` にアクセスできます。その�
 
 すべてのフックで利用可能な[JSON 出力フィールド](#json-output)に加えて、FileChanged フックは `watchPaths` を返して、監視されるファイル パスを動的に更新できます。
 
-| フィールド        | 説明                                                                                               |
-| :----------- | :----------------------------------------------------------------------------------------------- |
+| フィールド | 説明 |
+| :- | :- |
 | `watchPaths` | 絶対パスの配列。現在の動的監視リストを置き換えます（マッチャー設定からのパスは常に監視されます）。フック スクリプトが変更されたファイルに基づいて検出した追加ファイルを監視する場合に使用します |
 
 FileChanged フックは決定制御がありません。ファイル変更をブロックできません。
@@ -2763,10 +2763,10 @@ Claude Code がコンパクション操作を実行しようとしている前�
 
 マッチャー値は、コンパクションが手動でトリガーされたか自動的にトリガーされたかを示します。
 
-| マッチャー    | いつ発火するか                      |
-| :------- | :--------------------------- |
-| `manual` | `/compact`                   |
-| `auto`   | コンテキスト ウィンドウが満杯のときの自動コンパクション |
+| マッチャー | いつ発火するか |
+| :- | :- |
+| `manual` | `/compact` |
+| `auto` | コンテキスト ウィンドウが満杯のときの自動コンパクション |
 
 終了コード 2 でコンパクションをブロック。手動の `/compact` の場合、stderr メッセージはユーザーに表示されます。JSON で `"decision": "block"` を返してブロックすることもできます。
 
@@ -2797,10 +2797,10 @@ Claude Code がコンパクション操作を完了した後に実行されま�
 
 `PreCompact` と同じマッチャー値が適用されます。
 
-| マッチャー    | いつ発火するか                       |
-| :------- | :---------------------------- |
-| `manual` | `/compact` の後                 |
-| `auto`   | コンテキスト ウィンドウが満杯のときの自動コンパクション後 |
+| マッチャー | いつ発火するか |
+| :- | :- |
+| `manual` | `/compact` の後 |
+| `auto` | コンテキスト ウィンドウが満杯のときの自動コンパクション後 |
 
 <h4 id="postcompact-input">
   PostCompact 入力
@@ -2829,14 +2829,14 @@ Claude Code セッションが終了するときに実行されます。クリ�
 
 フック入力の `reason` フィールドはセッションが終了した理由を示します。
 
-| 理由                            | 説明                               |
-| :---------------------------- | :------------------------------- |
-| `clear`                       | `/clear` コマンドでセッションをクリア          |
-| `resume`                      | インタラクティブ `/resume` 経由でセッションを切り替え |
-| `logout`                      | ユーザーがログアウト                       |
-| `prompt_input_exit`           | プロンプト入力が表示されている間にユーザーが終了         |
-| `bypass_permissions_disabled` | バイパス権限モードが無効化                    |
-| `other`                       | その他の終了理由                         |
+| 理由 | 説明 |
+| :- | :- |
+| `clear` | `/clear` コマンドでセッションをクリア |
+| `resume` | インタラクティブ `/resume` 経由でセッションを切り替え |
+| `logout` | ユーザーがログアウト |
+| `prompt_input_exit` | プロンプト入力が表示されている間にユーザーが終了 |
+| `bypass_permissions_disabled` | バイパス権限モードが無効化 |
+| `other` | その他の終了理由 |
 
 <h4 id="sessionend-input">
   SessionEnd 入力
@@ -2931,10 +2931,10 @@ URL モード elicitation（ブラウザベースの認証）の場合。
 }
 ```
 
-| フィールド     | 値                           | 説明                                          |
-| :-------- | :-------------------------- | :------------------------------------------ |
-| `action`  | `accept`、`decline`、`cancel` | リクエストを受け入れるか、拒否するか、キャンセルするか                 |
-| `content` | オブジェクト                      | 送信するフォーム フィールド値。`action` が `accept` のときのみ使用 |
+| フィールド | 値 | 説明 |
+| :- | :- | :- |
+| `action` | `accept`、`decline`、`cancel` | リクエストを受け入れるか、拒否するか、キャンセルするか |
+| `content` | オブジェクト | 送信するフォーム フィールド値。`action` が `accept` のときのみ使用 |
 
 終了コード 2 は elicitation を拒否し、stderr をユーザーに表示します。
 
@@ -2983,10 +2983,10 @@ URL モード elicitation（ブラウザベースの認証）の場合。
 }
 ```
 
-| フィールド     | 値                           | 説明                                                 |
-| :-------- | :-------------------------- | :------------------------------------------------- |
-| `action`  | `accept`、`decline`、`cancel` | ユーザーのアクションをオーバーライド                                 |
-| `content` | オブジェクト                      | フォーム フィールド値をオーバーライド。`action` が `accept` のときのみ意味がある |
+| フィールド | 値 | 説明 |
+| :- | :- | :- |
+| `action` | `accept`、`decline`、`cancel` | ユーザーのアクションをオーバーライド |
+| `content` | オブジェクト | フォーム フィールド値をオーバーライド。`action` が `accept` のときのみ意味がある |
 
 終了コード 2 はレスポンスをブロックし、有効なアクションを `decline` に変更します。
 
@@ -3066,12 +3066,12 @@ URL モード elicitation（ブラウザベースの認証）の場合。
 }
 ```
 
-| フィールド             | 必須  | 説明                                                                                                                                                                                          |
-| :---------------- | :-- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `type`            | はい  | `"prompt"` である必要があります                                                                                                                                                                       |
-| `prompt`          | はい  | LLM に送信するプロンプト テキスト。フック入力 JSON のプレースホルダーとして `$ARGUMENTS` を使用します。`$ARGUMENTS` が存在しない場合、入力 JSON がプロンプトに追加されます                                                                                 |
-| `model`           | いいえ | 評価に使用するモデル。デフォルトは高速モデル                                                                                                                                                                      |
-| `timeout`         | いいえ | タイムアウト（秒単位）。デフォルト：30                                                                                                                                                                        |
+| フィールド | 必須 | 説明 |
+| :- | :- | :- |
+| `type` | はい | `"prompt"` である必要があります |
+| `prompt` | はい | LLM に送信するプロンプト テキスト。フック入力 JSON のプレースホルダーとして `$ARGUMENTS` を使用します。`$ARGUMENTS` が存在しない場合、入力 JSON がプロンプトに追加されます |
+| `model` | いいえ | 評価に使用するモデル。デフォルトは高速モデル |
+| `timeout` | いいえ | タイムアウト（秒単位）。デフォルト：30 |
 | `continueOnBlock` | いいえ | プロンプトが `ok: false` を返すとき、理由を Claude にフィードバックして、停止する代わりにターンを続行します。デフォルト：`false`。結果の `decision: "block"` に `continue: true` として実装されます。イベント ごとの動作については、[レスポンス スキーマ](#response-schema)を参照してください |
 
 <h3 id="response-schema">
@@ -3087,10 +3087,10 @@ LLM は以下を含む JSON で応答する必要があります：
 }
 ```
 
-| フィールド    | 説明                                                                           |
-| :------- | :--------------------------------------------------------------------------- |
-| `ok`     | `true` はアクションを許可、`false` は `decision: "block"` を生成します。以下のイベント ごとの動作を参照してください |
-| `reason` | `ok` が `false` のときに必須。ブロック理由として使用されます                                        |
+| フィールド | 説明 |
+| :- | :- |
+| `ok` | `true` はアクションを許可、`false` は `decision: "block"` を生成します。以下のイベント ごとの動作を参照してください |
+| `reason` | `ok` が `false` のときに必須。ブロック理由として使用されます |
 
 `ok: false` で何が起こるかはイベントによって異なります：
 
@@ -3158,12 +3158,12 @@ LLM は以下を含む JSON で応答する必要があります：
 
 `type` を `"agent"` に設定し、`prompt` 文字列を提供します。設定フィールドは[プロンプト フック](#prompt-hook-configuration)と同じですが、より長いデフォルト タイムアウトです：
 
-| フィールド     | 必須  | 説明                                                           |
-| :-------- | :-- | :----------------------------------------------------------- |
-| `type`    | はい  | `"agent"` である必要があります                                         |
-| `prompt`  | はい  | 検証する内容を説明するプロンプト。フック入力 JSON のプレースホルダーとして `$ARGUMENTS` を使用します |
-| `model`   | いいえ | 使用するモデル。デフォルトは高速モデル                                          |
-| `timeout` | いいえ | タイムアウト（秒単位）。デフォルト：60                                         |
+| フィールド | 必須 | 説明 |
+| :- | :- | :- |
+| `type` | はい | `"agent"` である必要があります |
+| `prompt` | はい | 検証する内容を説明するプロンプト。フック入力 JSON のプレースホルダーとして `$ARGUMENTS` を使用します |
+| `model` | いいえ | 使用するモデル。デフォルトは高速モデル |
+| `timeout` | いいえ | タイムアウト（秒単位）。デフォルト：60 |
 
 レスポンス スキーマはプロンプト フックと同じです：許可するには `{ "ok": true }` を、ブロックするには `{ "ok": false, "reason": "..." }` を返します。
 

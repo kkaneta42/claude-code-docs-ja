@@ -56,11 +56,11 @@ claude-cli://open
 
 パラメーターを追加して、セッションが開始される場所とプロンプトボックスに含まれるテキストを制御します。
 
-| パラメーター | 説明                                                                                                                                                                                   |
-| ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `q`    | プロンプトボックスにプリフィルするテキスト。[URL エンコード](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent)してください。複数行プロンプトの改行には `%0A` を使用します。最大 5,000 文字。 |
-| `cwd`  | 作業ディレクトリとして使用する絶対パス。ネットワークおよび UNC パスは拒否されます。また、`..` セグメント、目に見えない制御文字、または双方向制御文字を含むパスも拒否されます。                                                                                         |
-| `repo` | GitHub の `owner/name` スラッグ。Claude Code はそれを以前に見たローカルクローンに解決し、そこから開始します。一致するクローンがない場合、セッションはホームディレクトリで開きます。                                                                           |
+| パラメーター | 説明 |
+| - | - |
+| `q` | プロンプトボックスにプリフィルするテキスト。[URL エンコード](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent)してください。複数行プロンプトの改行には `%0A` を使用します。最大 5,000 文字。 |
+| `cwd` | 作業ディレクトリとして使用する絶対パス。ネットワークおよび UNC パスは拒否されます。また、`..` セグメント、目に見えない制御文字、または双方向制御文字を含むパスも拒否されます。 |
+| `repo` | GitHub の `owner/name` スラッグ。Claude Code はそれを以前に見たローカルクローンに解決し、そこから開始します。一致するクローンがない場合、セッションはホームディレクトリで開きます。 |
 
 `cwd` と `repo` は[作業ディレクトリを設定する 2 つの方法](#choose-between-cwd-and-repo)です。両方を渡す場合、`cwd` が優先され、`cwd` パスが存在しない場合でも `repo` は無視されます。
 
@@ -168,11 +168,11 @@ Enter キーを押して送信する前にプロンプトを編集できます�
 
 Claude Code は、macOS、Linux、Windows で対話的セッションの最初のプロンプトを送信するときに、`claude-cli://` ハンドラーをオペレーティングシステムに登録します。`claude` を起動してプロンプトを送信せずに終了しても、ハンドラーは登録されません。別のインストールコマンドを実行する必要はありません。登録はユーザーレベルの場所にのみ書き込みます。
 
-| プラットフォーム | ハンドラーの場所                                                                                                 |
-| -------- | -------------------------------------------------------------------------------------------------------- |
-| macOS    | `~/Applications/Claude Code URL Handler.app`                                                             |
-| Linux    | `$XDG_DATA_HOME/applications` の下の `claude-code-url-handler.desktop`。デフォルトは `~/.local/share/applications` |
-| Windows  | `HKEY_CURRENT_USER\Software\Classes\claude-cli`                                                          |
+| プラットフォーム | ハンドラーの場所 |
+| - | - |
+| macOS | `~/Applications/Claude Code URL Handler.app` |
+| Linux | `$XDG_DATA_HOME/applications` の下の `claude-code-url-handler.desktop`。デフォルトは `~/.local/share/applications` |
+| Windows | `HKEY_CURRENT_USER\Software\Classes\claude-cli` |
 
 ハンドラーは検出されたターミナルエミュレーターで Claude Code を起動します。macOS では、Claude Code は最後の対話的セッションからターミナルを記憶し、再利用します。iTerm2、Ghostty、kitty、Alacritty、WezTerm、Terminal.app をサポートしています。Linux では `$TERMINAL` 環境変数を尊重し、次に `x-terminal-emulator`、次に一般的なエミュレーターのリストを使用します。Windows では Windows Terminal を優先し、次に PowerShell、次に `cmd.exe` を使用します。
 

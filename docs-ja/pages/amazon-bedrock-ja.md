@@ -303,18 +303,18 @@ export ANTHROPIC_DEFAULT_HAIKU_MODEL='us.anthropic.claude-haiku-4-5-20251001-v1:
 
 組み込みデフォルトモデルを保持し、優先プレフィックスのみを変更するには、ピンの代わりに [`ANTHROPIC_BEDROCK_REGION_PREFIX`](#cross-region-inference-profile-prefixes) を設定してください。`opus` エイリアスが解決する内容の違いを示します。
 
-| 設定内容                                                          | `opus` エイリアスが解決する内容                                  |
-| :------------------------------------------------------------ | :--------------------------------------------------- |
-| `ANTHROPIC_DEFAULT_OPUS_MODEL='us.anthropic.claude-opus-4-8'` | `us.anthropic.claude-opus-4-8`、ピンした正確な ID            |
-| `ANTHROPIC_BEDROCK_REGION_PREFIX=eu`                          | `eu.anthropic.claude-opus-5-5`、優先プレフィックス付きの組み込みデフォルト |
+| 設定内容 | `opus` エイリアスが解決する内容 |
+| :- | :- |
+| `ANTHROPIC_DEFAULT_OPUS_MODEL='us.anthropic.claude-opus-4-8'` | `us.anthropic.claude-opus-4-8`、ピンした正確な ID |
+| `ANTHROPIC_BEDROCK_REGION_PREFIX=eu` | `eu.anthropic.claude-opus-5-5`、優先プレフィックス付きの組み込みデフォルト |
 
 現在および従来のモデル ID については、[Models overview](https://platform.claude.com/docs/en/about-claude/models/overview) を参照してください。ピン環境変数の完全なリストについては、[Model configuration](/docs/ja/model-config#pin-models-for-third-party-deployments) を参照してください。
 
 ピン変数が設定されていない場合、Claude Code はこれらのデフォルトモデルを使用します。
 
-| モデルタイプ   | デフォルトモデル                                                                    |
-| :------- | :-------------------------------------------------------------------------- |
-| プライマリモデル | Opus 5.5、例えば `us-*` リージョンの `us.anthropic.claude-opus-5-5`                   |
+| モデルタイプ | デフォルトモデル |
+| :- | :- |
+| プライマリモデル | Opus 5.5、例えば `us-*` リージョンの `us.anthropic.claude-opus-5-5` |
 | 小型/高速モデル | Sonnet 4.5、例えば `us-*` リージョンの `us.anthropic.claude-sonnet-4-5-20250929-v1:0` |
 
 セッションタイトル生成などのバックグラウンドタスクは、小型/高速モデル（通常は Haiku クラスモデル）を使用します。Amazon Bedrock では、すべてのアカウントまたはリージョンで Haiku が有効になっていない可能性があるため、Claude Code はバックグラウンドタスクにデフォルト Sonnet モデルを使用します。2 つの選択がどのモデルがそれらを実行するかを変更します。
@@ -390,13 +390,13 @@ Claude Code が Amazon Bedrock で設定されて起動する場合、使用予�
 
 Amazon Bedrock の [Invoke API](https://docs.aws.amazon.com/bedrock/latest/APIReference/API_runtime_InvokeModelWithResponseStream.html) では、Claude Code は組み込みのデフォルトモデルを [クロスリージョン推論プロファイル](https://docs.aws.amazon.com/bedrock/latest/userguide/inference-profiles-support.html) ID に解決します。独自の推論プロファイルを通じてモデルバージョンをルーティングするには、[各モデルバージョンを推論プロファイルにマップする](#map-each-model-version-to-an-inference-profile) を参照してください。このテーブルは、解決された各 AWS リージョンに対して Claude Code が優先するプレフィックスを示しています。
 
-| AWS リージョン                 | プレフィックス   |
-| :------------------------ | :-------- |
+| AWS リージョン | プレフィックス |
+| :- | :- |
 | `us-gov-*` (AWS GovCloud) | `us-gov.` |
-| `us-*`                    | `us.`     |
-| `eu-*`                    | `eu.`     |
-| `ap-*`                    | `apac.`   |
-| その他すべてのリージョン              | `global.` |
+| `us-*` | `us.` |
+| `eu-*` | `eu.` |
+| `ap-*` | `apac.` |
+| その他すべてのリージョン | `global.` |
 
 `ANTHROPIC_BEDROCK_REGION_PREFIX` を設定して、Claude Code が最初に試すプレフィックスを選択します。Claude Code がプロファイルの可用性を確認でき、モデルに一致するプロファイルが見つからない場合、以下の解決順序に従ってフォールバックします。有効な値は `us`、`eu`、`apac`、`jp`、`au`、および `global` です。たとえば、アカウントに `global.` プロファイルが有効になっているが、Claude Code が AWS リージョンから地理的に固有のプロファイルを導出する場合は、`global` に設定します。Claude Code v2.1.224 以降が必要です。
 
@@ -591,11 +591,11 @@ export ANTHROPIC_BEDROCK_MANTLE_BASE_URL=https://your-gateway.example.com
 
 これらの変数は Mantle エンドポイントに固有です。完全なリストについては、[Environment variables](/docs/ja/env-vars) を参照してください。
 
-| 変数                                      | 目的                                           |
-| :-------------------------------------- | :------------------------------------------- |
-| `CLAUDE_CODE_USE_MANTLE`                | Mantle エンドポイントを有効にします。`1` または `true` に設定します。 |
-| `ANTHROPIC_BEDROCK_MANTLE_BASE_URL`     | デフォルト Mantle エンドポイント URL をオーバーライド            |
-| `CLAUDE_CODE_SKIP_MANTLE_AUTH`          | プロキシセットアップのクライアント側認証をスキップ                    |
+| 変数 | 目的 |
+| :- | :- |
+| `CLAUDE_CODE_USE_MANTLE` | Mantle エンドポイントを有効にします。`1` または `true` に設定します。 |
+| `ANTHROPIC_BEDROCK_MANTLE_BASE_URL` | デフォルト Mantle エンドポイント URL をオーバーライド |
+| `CLAUDE_CODE_SKIP_MANTLE_AUTH` | プロキシセットアップのクライアント側認証をスキップ |
 | `ANTHROPIC_SMALL_FAST_MODEL_AWS_REGION` | Haiku クラスモデルの AWS リージョンをオーバーライド（Bedrock と共有） |
 
 <h2 id="troubleshooting">

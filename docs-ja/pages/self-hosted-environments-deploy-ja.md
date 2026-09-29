@@ -52,22 +52,22 @@
 
 これらのホストは常に必須です：
 
-| ホスト                                                   | ポート                      | 用途                                                                                                                                                                                                                                                                                |
-| :---------------------------------------------------- | :----------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `api.anthropic.com`                                   | 443、HTTPS；SCM コネクタのみ WSS | ランナーコントロールプレーンとセッションストリーミング、モデル推論、機能フラグ、製品分析、[JWKS](/docs/ja/self-hosted-environments-identity) キーフェッチ、コミット署名、`--use-anthropic-git-proxy` が設定されている場合の git プロキシ、`--scm-connector-host` が設定されている場合のオーケストレーターの [SCM コネクタ](/docs/ja/self-hosted-environments-reference#scm-connector-flags)トンネル |
-| `github.com` またはお客様の GitHub Enterprise ホストなどの git ホスト | 443 または 22               | リポジトリのクローンとプッシュ。ランナーが `--use-anthropic-git-proxy` を使用する場合は不要です。これは git トラフィックを `api.anthropic.com` を通じてルーティングします。                                                                                                                                                                 |
+| ホスト | ポート | 用途 |
+| :- | :- | :- |
+| `api.anthropic.com` | 443、HTTPS；SCM コネクタのみ WSS | ランナーコントロールプレーンとセッションストリーミング、モデル推論、機能フラグ、製品分析、[JWKS](/docs/ja/self-hosted-environments-identity) キーフェッチ、コミット署名、`--use-anthropic-git-proxy` が設定されている場合の git プロキシ、`--scm-connector-host` が設定されている場合のオーケストレーターの [SCM コネクタ](/docs/ja/self-hosted-environments-reference#scm-connector-flags)トンネル |
+| `github.com` またはお客様の GitHub Enterprise ホストなどの git ホスト | 443 または 22 | リポジトリのクローンとプッシュ。ランナーが `--use-anthropic-git-proxy` を使用する場合は不要です。これは git トラフィックを `api.anthropic.com` を通じてルーティングします。 |
 
 これらのホストが必要かどうかは、設定によって異なります：
 
-| ホスト                                  | ポート | 必須の場合                                                                                                                                                                 |
-| :----------------------------------- | :-- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `downloads.claude.ai`                | 443 | インストール時に、ネイティブインストーラーでホストに Claude Code をインストールまたは更新する場合。`install.sh` スクリプト自体は `claude.ai` から提供されます。セッション実行時には、セッションが公式 Anthropic マーケットプレイスからプラグインをインストールする場合のみです。     |
-| `storage.googleapis.com`             | 443 | セッション実行時に、`/plugin` に表示されるプラグインインストール数とメタデータの場合。                                                                                                                      |
-| `code.claude.com` および `claude.com`   | 443 | 組み込みの claude-code-guide エージェントによるドキュメント検索と、セッション中の事前承認された WebFetch リクエストの場合。これらのホストをブロックするとドキュメント検索のみに影響します。                                                          |
-| `*.frame.claudeusercontent.com`      | 443 | 組織内のセッションで [Artifact ツール](/docs/ja/artifacts#availability)が利用可能な場合のみ。デフォルトはプランによって異なり、そこの利用可能性テーブルに従います。ランナーで `CLAUDE_CODE_DISABLE_ARTIFACT=1` を設定して、組織設定に関係なくツールを無効に保ちます。 |
-| `registry.npmjs.org`                 | 443 | セッションがプラグインをインストールする場合、npm ソースプラグインパッケージのフェッチとプラグインの Node.js 依存関係のインストール、または `npx` で起動された MCP サーバーが実行される場合。                                                           |
-| `http-intake.logs.us5.datadoghq.com` | 443 | Anthropic 運用メトリクス。`CLAUDE_CODE_BYOC_ENABLE_DATADOG=1` が設定されている場合のみ。セルフホスト環境ではデフォルトでオフです。                                                                              |
-| `browser-intake-us5-datadoghq.com`   | 443 | Anthropic エラーレポートアップロード。セッションのアカウントで[エラーレポート](/docs/ja/data-usage#telemetry-services)が有効な場合のみ送信されます。`DISABLE_ERROR_REPORTING=1` または `DISABLE_TELEMETRY=1` で抑制されます。         |
+| ホスト | ポート | 必須の場合 |
+| :- | :- | :- |
+| `downloads.claude.ai` | 443 | インストール時に、ネイティブインストーラーでホストに Claude Code をインストールまたは更新する場合。`install.sh` スクリプト自体は `claude.ai` から提供されます。セッション実行時には、セッションが公式 Anthropic マーケットプレイスからプラグインをインストールする場合のみです。 |
+| `storage.googleapis.com` | 443 | セッション実行時に、`/plugin` に表示されるプラグインインストール数とメタデータの場合。 |
+| `code.claude.com` および `claude.com` | 443 | 組み込みの claude-code-guide エージェントによるドキュメント検索と、セッション中の事前承認された WebFetch リクエストの場合。これらのホストをブロックするとドキュメント検索のみに影響します。 |
+| `*.frame.claudeusercontent.com` | 443 | 組織内のセッションで [Artifact ツール](/docs/ja/artifacts#availability)が利用可能な場合のみ。デフォルトはプランによって異なり、そこの利用可能性テーブルに従います。ランナーで `CLAUDE_CODE_DISABLE_ARTIFACT=1` を設定して、組織設定に関係なくツールを無効に保ちます。 |
+| `registry.npmjs.org` | 443 | セッションがプラグインをインストールする場合、npm ソースプラグインパッケージのフェッチとプラグインの Node.js 依存関係のインストール、または `npx` で起動された MCP サーバーが実行される場合。 |
+| `http-intake.logs.us5.datadoghq.com` | 443 | Anthropic 運用メトリクス。`CLAUDE_CODE_BYOC_ENABLE_DATADOG=1` が設定されている場合のみ。セルフホスト環境ではデフォルトでオフです。 |
+| `browser-intake-us5-datadoghq.com` | 443 | Anthropic エラーレポートアップロード。セッションのアカウントで[エラーレポート](/docs/ja/data-usage#telemetry-services)が有効な場合のみ送信されます。`DISABLE_ERROR_REPORTING=1` または `DISABLE_TELEMETRY=1` で抑制されます。 |
 
 ランナーは `statsig.anthropic.com`、`*.sentry.io`、`claude.ai`、または `platform.claude.com` に到達しません。これらのホストは古いエンタープライズネットワークチェックリストに表示されますが、ランナーまたはセッショントラフィックのために許可リストに登録する必要はありません：機能フラグフェッチは `api.anthropic.com` に移動し、ランナーはインタラクティブ OAuth ではなく環境シークレットで認証します。 2 つのホスト側フローは `claude.ai` に到達するため、出力を許可するホストから実行してください。セッションコンテナ出力を広げるのではなく：ワンラインインストーラーはインストール時に `claude.ai` から `install.sh` をフェッチし、インタラクティブな `claude auth login`（[ガイド付きセットアップ](/docs/ja/self-hosted-environments-quickstart#set-up-an-environment-and-runner)、`doctor` の署名入りモード、[CI ディスパッチ](/docs/ja/self-hosted-environments-testing#authenticate-from-ci)が使用）は `claude.ai`、`claude.com`、`platform.claude.com` を通じてサインインします。`mcp-proxy.anthropic.com` も必須ではありません：セルフホストセッションはそれを使用せず、組織の claude.ai コネクタをセッションに配信する場合（組織で有効な場合）、`api.anthropic.com` を通じてルーティングされます。[MCP サーバー](/docs/ja/self-hosted-environments-configuration#mcp-servers)を参照してください。
 
@@ -201,11 +201,11 @@ RUN git config --system --add safe.directory '*'
   ランナーイメージをビルドする
 </h2>
 
-Anthropic は事前構築されたランナーイメージを公開していません。`claude` バイナリの周りに独自のイメージをビルドし、リポジトリが必要とするツールチェーンをレイヤーします：言語ランタイム、コンパイラ、パッケージマネージャー、[MCP](/docs/ja/mcp) サイドカー。
+Anthropic は事前にビルドされたランナーイメージを公開していません。`claude` バイナリの周りに独自のイメージをビルドし、リポジトリが必要とするツールチェーン（言語ランタイム、コンパイラ、パッケージマネージャー、[MCP](/docs/ja/mcp) サイドカー）をレイヤーに追加してください。
 
-以下のレシピは `--capacity 4` を使用するため、1 つのコンテナは同じロックされたオーナーからの最大 4 つの同時セッションを処理します。これは[強化セクション](#harden-your-deployment)のセッションごとのコンテナ分離を提供しません：本番環境システムに環境を接続する前に、レシピを `--capacity 1` で実行してセッションごとに 1 つのコンテナを使用するか、[オンデマンドランナー](/docs/ja/self-hosted-environments-configuration#on-demand-runners)を使用してください。オンデマンドランナーは、環境シークレットをセッション実行ホストに置かないようにもします。
+以下のレシピは `--capacity 4` を使用しているため、1 つのコンテナが同じロックされたオーナーからの最大 4 つの同時セッションを処理します。これは[ハードニングセクション](#harden-your-deployment)のコンテナ分離をセッションごとに提供していません。環境を本番システムに接続する前に、レシピを `--capacity 1` で実行してセッションごとに 1 つのコンテナを使用するか、[オンデマンドランナー](/docs/ja/self-hosted-environments-configuration#on-demand-runners)を使用してください。オンデマンドランナーは、セッション実行ホストから環境シークレットを保持します。
 
-このDockerfile は最小限の出発点です：
+これは最小限の開始点となる Dockerfile です。
 
 ```dockerfile theme={null}
 FROM debian:bookworm-slim
@@ -220,11 +220,15 @@ RUN git config --system user.name "Claude" \
 ENTRYPOINT ["claude"]
 ```
 
-ノードが ARM の場合は `linux-x64` を `linux-arm64` に、Alpine などの musl ベースのイメージの場合は `linux-x64-musl` または `linux-arm64-musl` に置き換えます。[Alpine Linux セットアップ](/docs/ja/setup#alpine-linux-and-musl-based-distributions)を参照して、musl イメージが必要とする追加パッケージについて確認してください。URL は標準 Claude Code リリースロケーションであるため、[バイナリ整合性とコード署名](/docs/ja/setup#binary-integrity-and-code-signing)で説明されているように、ダウンロードされたバイナリをリリースの署名されたマニフェストに対して検証できます。Claude Code バージョン 2.1.224 以降でイメージをビルドしてから、レジストリにプッシュし、以下のレシピで参照してください：
+ARM ノードの場合は `linux-x64` を `linux-arm64` に置き換えるか、Alpine などの musl ベースのイメージの場合は `linux-x64-musl` または `linux-arm64-musl` に置き換えてください。[Alpine Linux セットアップ](/docs/ja/setup#alpine-linux-and-musl-based-distributions)を参照して、musl イメージが必要とする追加パッケージを確認してください。URL は標準的な Claude Code リリースロケーションであるため、[バイナリの整合性とコード署名](/docs/ja/setup#binary-integrity-and-code-signing)で説明されているように、ダウンロードされたバイナリをリリースの署名されたマニフェストに対して検証できます。ランナーは Claude Code バージョン 2.1.224 以降が必要です。イメージをビルドしてから、レジストリにプッシュし、以下のレシピで参照してください。
 
 ```bash theme={null}
-docker build --build-arg CLAUDE_CODE_VERSION=2.1.267 -t <your-registry>/claude-runner:latest .
+docker build \
+  --build-arg CLAUDE_CODE_VERSION="$(curl -fsSL https://downloads.claude.ai/claude-code-releases/stable)" \
+  -t <your-registry>/claude-runner:latest .
 ```
+
+コマンド置換は現在の `stable` リリース番号を検索し、ビルド引数として渡すため、新しい安定版リリース後に同じコマンドを実行すると、ダウンロードレイヤーが新しいバイナリで再ビルドされます。再現可能なビルドのために特定のリリースをピンするには、バージョン番号を `CLAUDE_CODE_VERSION` として直接渡してください。[新しくリリースされたモデルが必要とする](/docs/ja/model-config)ような安定版チャネルより新しいリリースが必要な場合は、ルックアップ URL の `stable` を `latest` に置き換えてください。
 
 <h2 id="size-cpu-and-memory-for-sessions">
   セッション用に CPU とメモリをサイズ設定する

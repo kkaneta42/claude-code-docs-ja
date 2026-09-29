@@ -203,23 +203,23 @@ https://api.anthropic.com/v1/code/.well-known/jwks.json
 
 以下の表は、検証に関連するセッショントークンクレームをリストしています。`ccr:*` 名前空間と `act` チェーンから ID を読み取ります。フラット `account_email`、`organization_uuid`、および `account_uuid` クレームは、削除される可能性のある後方互換性の重複です。組織のサービス ID が作成するセッション（Claude Tag チャネルセッションを含む）は、`act.sub` に `agent:` サブジェクトを持ち、`act.email`、`ccr:account_id`、`account_email`、および `account_uuid` を省略します。2 つのメールクレームはユーザー作成セッションでもオプションです。Anthropic はセッション作成時にそれらを記録するのは、作成リクエストの認証情報がメールを持つ場合のみで、CLI からディスパッチされたセッションは両方を欠く可能性があるため、メールではなく `act.sub` または `ccr:account_id` で ID をキーにします。トークンはこのテーブルを超えて追加のクレームを持つこともできます。認識しないクレームは無視します。
 
-| クレーム                | 型      | 説明                                                                                                                                                                                                                                                                                                                         |
-| :------------------ | :----- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `iss`               | 文字列    | 常に `ccr`。                                                                                                                                                                                                                                                                                                                  |
-| `sub`               | 文字列    | `ccr:session:<session_id>`。                                                                                                                                                                                                                                                                                                |
-| `aud`               | 文字列の配列 | 常に `anthropic-api` を含みます。自己ホスト環境内のセッションの場合、配列は `ccpool_...` などの環境 ID も含みます。`anthropic-api` ではなく環境 ID を検証します。                                                                                                                                                                                                               |
-| `exp`               | 数値     | Unix タイムスタンプとしての有効期限。4 時間のデフォルト有効期限、8 時間の最大値。                                                                                                                                                                                                                                                                              |
-| `iat`               | 数値     | Unix タイムスタンプとして発行された時刻。                                                                                                                                                                                                                                                                                                    |
-| `jti`               | 文字列    | 一意のトークン識別子。                                                                                                                                                                                                                                                                                                                |
-| `ccr:role`          | 文字列    | セッショントークンの場合、常に `session_worker`。                                                                                                                                                                                                                                                                                          |
-| `ccr:session_id`    | 文字列    | セッション ID。`sub` のサフィックスと同じ値。                                                                                                                                                                                                                                                                                                |
-| `ccr:pool_id`       | 文字列    | 環境 ID。`aud` に表示される同じ値。                                                                                                                                                                                                                                                                                                     |
-| `ccr:org_id`        | 文字列    | Anthropic 組織 ID。                                                                                                                                                                                                                                                                                                           |
-| `ccr:account_id`    | 文字列    | 作成ユーザーの Anthropic アカウント ID。`act.sub` の値から `user:` プレフィックスを除いたもので、タグ付き `user_...` ID。[spawn-runner フック](/docs/ja/self-hosted-environments-configuration#the-spawn-runner-hook)の `CLAUDE_RUNNER_ACCOUNT_ID` が持つ値と同じで、[`--lock-to-account`](/docs/ja/self-hosted-environments-reference#runner-cli-flags) が受け入れるため、3 つは等しい文字列として比較されます。 |
-| `account_email`     | 文字列    | `act.email` の重複。`act.email` がない場合は常に存在しません。                                                                                                                                                                                                                                                                                |
-| `organization_uuid` | 文字列    | Anthropic 組織 UUID。                                                                                                                                                                                                                                                                                                         |
-| `account_uuid`      | 文字列    | 作成ユーザーの Anthropic アカウント UUID。                                                                                                                                                                                                                                                                                              |
-| `act`               | オブジェクト | [RFC 8693](https://www.rfc-editor.org/rfc/rfc8693) 委任チェーン。[`act` チェーン](#the-act-chain)を参照してください。                                                                                                                                                                                                                           |
+| クレーム | 型 | 説明 |
+| :- | :- | :- |
+| `iss` | 文字列 | 常に `ccr`。 |
+| `sub` | 文字列 | `ccr:session:<session_id>`。 |
+| `aud` | 文字列の配列 | 常に `anthropic-api` を含みます。自己ホスト環境内のセッションの場合、配列は `ccpool_...` などの環境 ID も含みます。`anthropic-api` ではなく環境 ID を検証します。 |
+| `exp` | 数値 | Unix タイムスタンプとしての有効期限。4 時間のデフォルト有効期限、8 時間の最大値。 |
+| `iat` | 数値 | Unix タイムスタンプとして発行された時刻。 |
+| `jti` | 文字列 | 一意のトークン識別子。 |
+| `ccr:role` | 文字列 | セッショントークンの場合、常に `session_worker`。 |
+| `ccr:session_id` | 文字列 | セッション ID。`sub` のサフィックスと同じ値。 |
+| `ccr:pool_id` | 文字列 | 環境 ID。`aud` に表示される同じ値。 |
+| `ccr:org_id` | 文字列 | Anthropic 組織 ID。 |
+| `ccr:account_id` | 文字列 | 作成ユーザーの Anthropic アカウント ID。`act.sub` の値から `user:` プレフィックスを除いたもので、タグ付き `user_...` ID。[spawn-runner フック](/docs/ja/self-hosted-environments-configuration#the-spawn-runner-hook)の `CLAUDE_RUNNER_ACCOUNT_ID` が持つ値と同じで、[`--lock-to-account`](/docs/ja/self-hosted-environments-reference#runner-cli-flags) が受け入れるため、3 つは等しい文字列として比較されます。 |
+| `account_email` | 文字列 | `act.email` の重複。`act.email` がない場合は常に存在しません。 |
+| `organization_uuid` | 文字列 | Anthropic 組織 UUID。 |
+| `account_uuid` | 文字列 | 作成ユーザーの Anthropic アカウント UUID。 |
+| `act` | オブジェクト | [RFC 8693](https://www.rfc-editor.org/rfc/rfc8693) 委任チェーン。[`act` チェーン](#the-act-chain)を参照してください。 |
 
 <h3 id="the-act-chain">
   `act` チェーン
@@ -227,14 +227,14 @@ https://api.anthropic.com/v1/code/.well-known/jwks.json
 
 `act` クレームは、セッションを作成したユーザーまたはサービス ID から、ランナーを認めた[環境](/docs/ja/self-hosted-environments#key-concepts)のシークレット、およびそのシークレットを作成した ID までの完全な委任パスを記録します。作成者は最も外側のアクターであるため、`act.sub` は直接それらを識別します。
 
-| パス                | 説明                                                                                                                                                   |
-| :---------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `act.sub`         | 作成ユーザーの Anthropic ユーザー ID（`user:<id>` の形式）、または組織のサービス ID がセッションを作成した場合は `agent:<id>`（Claude Tag チャネルセッションの場合）。                                       |
-| `act.email`       | 作成ユーザーのメールアドレス（セッション作成時に記録された場合）。それを要求しないでください。`act.sub` でキーにします。                                                                                    |
+| パス | 説明 |
+| :- | :- |
+| `act.sub` | 作成ユーザーの Anthropic ユーザー ID（`user:<id>` の形式）、または組織のサービス ID がセッションを作成した場合は `agent:<id>`（Claude Tag チャネルセッションの場合）。 |
+| `act.email` | 作成ユーザーのメールアドレス（セッション作成時に記録された場合）。それを要求しないでください。`act.sub` でキーにします。 |
 | `act.attested_by` | 作成ユーザーのアップストリーム ID プロバイダーの証明（利用可能な場合）。`act.attested_by.sub` は Google や Okta などの SSO プロバイダーが発行したサブジェクトです。独自のシステムの ID にマップする場合、`act.email` よりこれを優先します。 |
-| `act.act`         | セッションを生成したランナー。`act.act.sub` は `ccr:runner:<runner_id>`。                                                                                             |
-| `act.act.act`     | 環境。`act.act.act.sub` は `ccr:pool:<pool_id>`。                                                                                                         |
-| `act.act.act.act` | ランナーが登録した環境シークレットを作成した ID。チェーンはここで終わります。                                                                                                             |
+| `act.act` | セッションを生成したランナー。`act.act.sub` は `ccr:runner:<runner_id>`。 |
+| `act.act.act` | 環境。`act.act.act.sub` は `ccr:pool:<pool_id>`。 |
+| `act.act.act.act` | ランナーが登録した環境シークレットを作成した ID。チェーンはここで終わります。 |
 
 <h2 id="scope-derived-credentials">
   派生認証情報のスコープ

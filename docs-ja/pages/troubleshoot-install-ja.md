@@ -14,41 +14,43 @@
 
 表示されているエラーメッセージまたは症状を修正方法と照合してください：
 
-| 表示内容                                                                                                | 解決方法                                                                                                                                  |
-| :-------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------ |
-| `command not found: claude` または `'claude' is not recognized`                                        | [PATH を修正する](#command-not-found-claude-after-installation)                                                                            |
-| `syntax error near unexpected token '<'`                                                            | [インストールスクリプトが HTML を返す](#install-script-returns-html-instead-of-a-shell-script)                                                       |
-| `curl: (22) The requested URL returned error: 403`                                                  | [インストールスクリプトが 403 を返す](#install-script-returns-html-instead-of-a-shell-script)                                                        |
-| `curl: (23)` または `curl: (56) Failure writing output to destination`                                 | [接続性を確認するか、別のインストーラーを使用する](#curl-56-failure-writing-output-to-destination)                                                            |
-| Linux でのインストール中に `Killed` または `Installation was killed before it could finish (exit code 137)`      | [メモリを解放するか、スワップスペースを追加する](#install-killed-on-low-memory-linux-servers)                                                                |
-| インストール中に `Raw mode is not supported`                                                                | [インストーラーを再実行する](#raw-mode-is-not-supported-during-install)                                                                            |
-| `TLS connect error` または `SSL/TLS secure channel`                                                    | [CA 証明書を更新する](#tls-or-ssl-connection-errors)                                                                                          |
-| `Failed to fetch version` またはダウンロードサーバーに到達できない                                                      | [ネットワークとプロキシ設定を確認する](#check-network-connectivity)                                                                                     |
-| `irm is not recognized` または `The token '&&' is not a valid statement separator`                     | [シェルに適切なコマンドを使用する](#wrong-install-command-on-windows)                                                                                 |
-| `Cask 'claude-code' is unavailable: No Cask with this name exists`                                  | [Homebrew を更新する](#homebrew-cask-unavailable-or-outdated)                                                                              |
-| `'bash' is not recognized as the name of a cmdlet`                                                  | [Windows インストーラーコマンドを使用する](#wrong-install-command-on-windows)                                                                         |
-| `A parameter cannot be found that matches parameter name 'fsSL'`                                    | [Windows インストーラーコマンドを使用する](#wrong-install-command-on-windows)                                                                         |
-| `Claude Code on Windows requires either Git for Windows (for bash) or PowerShell`                   | [シェルをインストールする](#claude-code-on-windows-requires-either-git-for-windows-for-bash-or-powershell)                                        |
-| `Claude Code does not support 32-bit Windows`                                                       | [Windows PowerShell を開く（x86 エントリではなく）](#claude-code-does-not-support-32-bit-windows)                                                  |
-| `The process cannot access the file ... because it is being used by another process`                | [ダウンロードフォルダをクリアして再試行する](#the-process-cannot-access-the-file-during-windows-install)                                                   |
-| `Error loading shared library`                                                                      | [システムに対応したバイナリバリアント](#linux-musl-or-glibc-binary-mismatch)                                                                            |
-| `Illegal instruction`                                                                               | [アーキテクチャまたは CPU 命令セットの不一致](#illegal-instruction)                                                                                      |
-| WSL での `cannot execute binary file: Exec format error`                                              | [WSL1 ネイティブバイナリ回帰](#exec-format-error-on-wsl1)                                                                                        |
-| PowerShell インストーラーが完了しても `claude` が見つからないか古いバージョンが表示される                                             | [インストールディレクトリを PATH に追加する](#verify-your-path)、その後新しいターミナルを開く                                                                          |
-| macOS での `dyld: Symbol not found`、`dyld: cannot load`、または `Abort trap`                              | [バイナリ互換性](#dyld-cannot-load-on-macos)                                                                                                 |
-| `claude update` が `Checking for updates` の後にハングするか、`claude doctor` が出力なしでハングする                      | [シェル設定パスのディレクトリを移動する](#claude-update-or-claude-doctor-hangs)                                                                          |
-| `Invoke-Expression` または `iex` が HTML タグまたは CSS をクォートするパースエラー、または `ParseException` を伴う `ParserError` | [インストールスクリプトが HTML を返す](#install-script-returns-html-instead-of-a-shell-script)                                                       |
-| `running scripts is disabled on this system` または `PSSecurityException`                              | [npm shims の実行を許可する](#running-scripts-is-disabled-on-this-system)                                                                     |
-| `Error: claude native binary not installed`                                                         | [npm インストールを完了する](#native-binary-not-found-after-npm-install)                                                                         |
-| npm の更新または再インストール中に `npm error code ENOTEMPTY`                                                      | [残されたパッケージディレクトリを削除する](#npm-enotempty-during-update-or-reinstall)                                                                     |
-| Windows では、インストールコマンドがスクリプトテキストを出力し、何もインストールされない                                                    | [完全なインストールコマンドを実行する](#wrong-install-command-on-windows)                                                                               |
-| `App unavailable in region`                                                                         | Claude Code はお客様の国では利用できません。[サポートされている国](https://www.anthropic.com/supported-countries)を参照してください。                                     |
-| `unable to get local issuer certificate`                                                            | [企業 CA 証明書を設定する](#tls-or-ssl-connection-errors)                                                                                       |
-| `OAuth error` または `403 Forbidden`                                                                   | [認証を修正する](#login-and-authentication)                                                                                                  |
-| セットアップ中に `Unable to connect to Anthropic services`                                                  | エラーリファレンスの [Unable to connect to Anthropic services](/docs/ja/errors#unable-to-connect-to-anthropic-services) を参照してください                    |
-| `Could not load the default credentials` または `Could not load credentials from any providers`        | [Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry 認証情報](#bedrock-agent-platform-or-foundry-credentials-not-loading) |
-| `ChainedTokenCredential authentication failed` または `CredentialUnavailableError`                     | [Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry 認証情報](#bedrock-agent-platform-or-foundry-credentials-not-loading) |
-| `API Error: 500`、`529 Overloaded`、`429`、またはその他の 4xx および 5xx エラー（上記以外）                               | [エラーリファレンス](/docs/ja/errors)を参照してください                                                                                                      |
+| 表示内容 | 解決方法 |
+| :- | :- |
+| `command not found: claude` または `'claude' is not recognized` | [PATH を修正する](#command-not-found-claude-after-installation) |
+| `syntax error near unexpected token '<'` | [インストールスクリプトが HTML を返す](#install-script-returns-html-instead-of-a-shell-script) |
+| `curl: (22) The requested URL returned error: 403` | [インストールスクリプトが 403 を返す](#install-script-returns-html-instead-of-a-shell-script) |
+| `curl: (23)` または `curl: (56) Failure writing output to destination` | [接続性を確認するか、別のインストーラーを使用する](#curl-56-failure-writing-output-to-destination) |
+| Linux でのインストール中に `Killed` または `Installation was killed before it could finish (exit code 137)` | [メモリを解放するか、スワップスペースを追加する](#install-killed-on-low-memory-linux-servers) |
+| インストール中に `Raw mode is not supported` | [インストーラーを再実行する](#raw-mode-is-not-supported-during-install) |
+| `TLS connect error` または `SSL/TLS secure channel` | [CA 証明書を更新する](#tls-or-ssl-connection-errors) |
+| `Failed to fetch version` またはダウンロードサーバーに到達できない | [ネットワークとプロキシ設定を確認する](#check-network-connectivity) |
+| `irm is not recognized` または `The token '&&' is not a valid statement separator` | [シェルに適切なコマンドを使用する](#wrong-install-command-on-windows) |
+| `Cask 'claude-code' is unavailable: No Cask with this name exists` | [Homebrew を更新する](#homebrew-cask-unavailable-or-outdated) |
+| `'bash' is not recognized as the name of a cmdlet` | [Windows インストーラーコマンドを使用する](#wrong-install-command-on-windows) |
+| `A parameter cannot be found that matches parameter name 'fsSL'` | [Windows インストーラーコマンドを使用する](#wrong-install-command-on-windows) |
+| `Claude Code on Windows requires either Git for Windows (for bash) or PowerShell` | [シェルをインストールする](#claude-code-on-windows-requires-either-git-for-windows-for-bash-or-powershell) |
+| `Claude Code does not support 32-bit Windows` | [Windows PowerShell を開く（x86 エントリではなく）](#claude-code-does-not-support-32-bit-windows) |
+| `The process cannot access the file ... because it is being used by another process` | [ダウンロードフォルダをクリアして再試行する](#the-process-cannot-access-the-file-during-windows-install) |
+| `Error loading shared library` | [システムに対応したバイナリバリアント](#linux-musl-or-glibc-binary-mismatch) |
+| `Illegal instruction` | [アーキテクチャまたは CPU 命令セットの不一致](#illegal-instruction) |
+| WSL での `cannot execute binary file: Exec format error` | [WSL1 ネイティブバイナリ回帰](#exec-format-error-on-wsl1) |
+| PowerShell インストーラーが完了しても `claude` が見つからないか古いバージョンが表示される | [インストールディレクトリを PATH に追加する](#verify-your-path)、その後新しいターミナルを開く |
+| macOS での `dyld: Symbol not found`、`dyld: cannot load`、または `Abort trap` | [バイナリ互換性](#dyld-cannot-load-on-macos) |
+| `claude update` が `Checking for updates` の後にハングするか、`claude doctor` が出力なしでハングする | [シェル設定パスのディレクトリを移動する](#claude-update-or-claude-doctor-hangs) |
+| `Invoke-Expression` または `iex` が HTML タグまたは CSS をクォートするパースエラー、または `ParseException` を伴う `ParserError` | [インストールスクリプトが HTML を返す](#install-script-returns-html-instead-of-a-shell-script) |
+| `running scripts is disabled on this system` または `PSSecurityException` | [npm shims の実行を許可する](#running-scripts-is-disabled-on-this-system) |
+| `Error: claude native binary not installed` | [npm インストールを完了する](#native-binary-not-found-after-npm-install) |
+| npm の更新または再インストール中に `npm error code ENOTEMPTY` | [残されたパッケージディレクトリを削除する](#npm-enotempty-during-update-or-reinstall) |
+| Windows での更新直後に `'claude' is not recognized` | [`claude.exe` をバックアップから復元する](#claude-exe-missing-after-an-update-on-windows) |
+| Windows では、インストールコマンドがスクリプトテキストを出力し、何もインストールされない | [完全なインストールコマンドを実行する](#wrong-install-command-on-windows) |
+| `App unavailable in region` | Claude Code はお客様の国では利用できません。[サポートされている国](https://www.anthropic.com/supported-countries)を参照してください。 |
+| `unable to get local issuer certificate` | [企業 CA 証明書を設定する](#tls-or-ssl-connection-errors) |
+| `OAuth error` または `403 Forbidden` | [認証を修正する](#login-and-authentication) |
+| `Claude Code access has not been granted for this account` | [Claude Code を含むロールを取得する](#claude-code-access-has-not-been-granted-for-this-account) |
+| セットアップ中に `Unable to connect to Anthropic services` | エラーリファレンスの [Unable to connect to Anthropic services](/docs/ja/errors#unable-to-connect-to-anthropic-services) を参照してください |
+| `Could not load the default credentials` または `Could not load credentials from any providers` | [Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry 認証情報](#bedrock-agent-platform-or-foundry-credentials-not-loading) |
+| `ChainedTokenCredential authentication failed` または `CredentialUnavailableError` | [Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry 認証情報](#bedrock-agent-platform-or-foundry-credentials-not-loading) |
+| `API Error: 500`、`529 Overloaded`、`429`、またはその他の 4xx および 5xx エラー（上記以外） | [エラーリファレンス](/docs/ja/errors)を参照してください |
 
 問題がリストに記載されていない場合は、以下の診断チェックを実行して、原因を特定してください。
 
@@ -147,6 +149,13 @@
     ```bash theme={null}
     echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
     source ~/.bashrc
+    ```
+
+    macOS 上の Bash の場合は、代わりに行を `~/.bash_profile` に追加してください。macOS 上のターミナルは Bash をログインシェルとして起動し、`~/.bashrc` を無視して、存在する `~/.bash_profile`、`~/.bash_login`、または `~/.profile` の最初のものだけを読み込みます。既に `~/.bash_login` または `~/.profile` があり、`~/.bash_profile` がない場合は、`~/.bash_profile` を作成するのではなく、そのファイルに行を入れてください：
+
+    ```bash theme={null}
+    echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bash_profile
+    source ~/.bash_profile
     ```
 
     または、ターミナルを閉じて再度開いてください。
@@ -402,12 +411,12 @@ curl: (22) The requested URL returned error: 403
 
 インストールは完了しましたが、`claude` が機能しません。正確なエラーはプラットフォームによって異なります。
 
-| プラットフォーム    | エラーメッセージ                                                               |
-| :---------- | :--------------------------------------------------------------------- |
-| macOS       | `zsh: command not found: claude`                                       |
-| Linux       | `bash: claude: command not found`                                      |
-| Windows CMD | `'claude' is not recognized as an internal or external command`        |
-| PowerShell  | `claude : The term 'claude' is not recognized as the name of a cmdlet` |
+| プラットフォーム | エラーメッセージ |
+| :- | :- |
+| macOS | `zsh: command not found: claude` |
+| Linux | `bash: claude: command not found` |
+| Windows CMD | `'claude' is not recognized as an internal or external command` |
+| PowerShell | `claude : The term 'claude' is not recognized as the name of a cmdlet` |
 
 これは、インストールディレクトリがシェルの検索パスにないことを意味します。各プラットフォームの修正については、[PATH を確認](#verify-your-path)を参照してください。
 
@@ -593,6 +602,28 @@ Remove-Item -Recurse -Force "$env:USERPROFILE\.claude\downloads"
 irm https://claude.ai/install.ps1 | iex
 ```
 
+<h3 id="claude-exe-missing-after-an-update-on-windows">
+  Windows での更新後に `claude.exe` が見つからない
+</h3>
+
+ターミナルが Windows で Claude Code を更新した直後に `'claude' is not recognized` を報告する場合は、`%USERPROFILE%\.local\bin` に `claude.exe` が含まれているかどうかを確認してください。そのディレクトリが PATH にまったくない場合は、代わりに[PATH を修正](#command-not-found-claude-after-installation)を参照してください。Windows で更新するために、Claude Code は既存の `claude.exe` を別にバックアップに名前変更し、新しいバージョンをその場所に移動します。新しいバージョンをその場所に移動できず、Claude Code がバックアップを名前変更して戻すこともできない場合、ディレクトリはバックアップを保持しますが `claude.exe` がありません。
+
+バックアップは、`claude.exe.old.` で始まり、その後に数値タイムスタンプが続く名前を持つ同じディレクトリ内のファイルです。PowerShell で次を実行して、最新のバックアップを `claude.exe` に名前変更します。
+
+```powershell theme={null}
+Get-ChildItem "$env:USERPROFILE\.local\bin\claude.exe.old.*" | Sort-Object Name | Select-Object -Last 1 | Rename-Item -NewName claude.exe
+```
+
+次に `claude --version` を実行して修正を確認します。復元された `claude.exe` はバージョン番号を出力します。
+
+`claude.exe.old.*` ファイルがない場合、または名前変更後も `claude` が失敗する場合は、代わりに再インストールしてください。
+
+```powershell theme={null}
+irm https://claude.ai/install.ps1 | iex
+```
+
+v2.1.281 より前では、Claude Code は `claude.exe` がまだ見つからない間にバックアップを削除する可能性がありました。
+
 <h3 id="install-killed-on-low-memory-linux-servers">
   メモリ不足の Linux サーバーでインストールが強制終了される
 </h3>
@@ -677,7 +708,7 @@ Claude Code v2.1.246 以降は、`claude install` または `claude update` 中�
   `claude update` または `claude doctor` がハングする
 </h3>
 
-`claude update` と `claude doctor` は、古い `claude` エイリアス `~/.zshrc`、`~/.bashrc`、`~/.config/fish/config.fish` のシェル構成ファイルをスキャンします。macOS では、存在する `~/.bash_profile`、`~/.bash_login`、`~/.profile` の最初のものです。`ZDOTDIR` を設定する場合、Zsh ファイルは代わりに `$ZDOTDIR/.zshrc` です。これらのパスの 1 つがディレクトリの場合、Claude Code はそれをスキップし、両方のコマンドが正常に完了します。v2.1.214 より前では、これらのパスの 1 つにあるディレクトリは両方のコマンドをハングさせ、`/status` のシステム診断セクションを空白のままにしました。`claude doctor` は出力なしでハングしました。`claude update` はハングしました。`Checking for updates` を出力した直後。
+`claude update` と `claude doctor` は、古い `claude` エイリアス `~/.zshrc`、`~/.bashrc`、`~/.config/fish/config.fish` のシェル構成ファイルをスキャンします。macOS では、存在する `~/.bash_profile`、`~/.bash_login`、`~/.profile` の最初のものです。`ZDOTDIR` を設定する場合、Zsh ファイルは代わりに `$ZDOTDIR/.zshrc` です。これらのパスの 1 つがディレクトリの場合、Claude Code はそれをスキップし、両方のコマンドが正常に完了します。v2.1.214 より前では、これらのパスの 1 つにあるディレクトリは両方のコマンドをハングさせ、`/status` のシステム診断セクションを空白のままにしました。`claude doctor` は出力なしでハングしました。`claude update` は `Checking for updates` を出力した直後にハングしました。
 
 以前のバージョンでハングに遭遇した場合は、ディレクトリを見つけてください。このコマンドの出力では、`d` で始まる行がそのパスをディレクトリとしてマークします。`No such file or directory` 行は、そのパスに何も存在せず、原因ではないことを意味します。
 
@@ -991,6 +1022,17 @@ npm install -g @anthropic-ai/claude-code
 * **Claude Pro/Max ユーザー**：[claude.ai/settings](https://claude.ai/settings) でサブスクリプションがアクティブであることを確認してください
 * **Anthropic Console ユーザー**：アカウントに「Claude Code」または「Developer」ロールがあることを確認してください。管理者は Anthropic Console の設定 → メンバーで割り当てます。
 * **プロキシの背後**：企業プロキシは API リクエストに干渉する可能性があります。[ネットワーク設定](/docs/ja/network-config) を参照してプロキシセットアップを確認してください。
+
+<h3 id="claude-code-access-has-not-been-granted-for-this-account">
+  Claude Code アクセスがこのアカウントに付与されていません
+</h3>
+
+サインインページに `Authorization failed` と表示され、Claude Code からログインした後に `Claude Code access has not been granted for this account. Contact your administrator.` というメッセージが表示される場合、Claude Enterprise オーガニゼーションはロールを Custom に設定しており、グループに割り当てられた [カスタムロール](https://support.claude.com/en/articles/13930452) のいずれも Claude Code アクセスを付与していません。Custom ロールでは、それらのカスタムロールからのみアクセスを取得するため、Claude Code で変更しても、このエラーは解決されません。
+
+アクセスを取得するには：
+
+1. Claude オーガニゼーションの所有者に、Claude Code アクセスを付与するカスタムロールをグループの 1 つに割り当てるか、ロールを Custom から User などの標準ロールに変更するよう依頼してください。所有者はオーガニゼーションの [ロール設定](https://claude.ai/admin-settings/roles) でロールを管理します。
+2. 所有者が変更を加えた後、`claude` を実行してもう一度ログインしてください。
 
 <h3 id="this-organization-has-been-disabled-with-an-active-subscription">
   このオーガニゼーションはアクティブなサブスクリプションで無効になっています

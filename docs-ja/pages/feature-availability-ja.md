@@ -219,7 +219,7 @@ Desktop は部分的な例外です：[ゲートウェイルーティングは�
 </table>
 
 <span id="fn1" style={{display: 'block', position: 'relative', top: '-120px'}} /><sup>1</sup> Google Cloud の Agent Platform では、Claude 4 モデル以降で Web 検索が利用可能です。<br />
-<span id="fn2" style={{display: 'block', position: 'relative', top: '-120px'}} /><sup>2</sup> これらのプロバイダーでは、Auto mode は Claude Sonnet 5、Opus 4.7 以降、および Fable モデルのみをサポートしています。[Auto mode 設定](/docs/ja/auto-mode-config)を参照してください。これらのプロバイダーの組み込みの開始権限モードは Manual です。[セッションが開始される権限モード](/docs/ja/permission-modes#which-mode-a-session-starts-in)を参照してください。v2.1.158 から v2.1.206 では、これらのプロバイダーの Auto mode は `CLAUDE_CODE_ENABLE_AUTO_MODE=1` の設定も必要でしたが、v2.1.207 でその要件が削除されました。<br />
+<span id="fn2" style={{display: 'block', position: 'relative', top: '-120px'}} /><sup>2</sup> これらのプロバイダーでは、Auto mode は Claude Sonnet 5、Opus 4.7 以降、および Fable モデルのみをサポートしています。[Auto mode 設定](/docs/ja/auto-mode-config)を参照してください。これらのプロバイダーのセッションが開始される権限モードについては、[セッションが開始される権限モード](/docs/ja/permission-modes#which-mode-a-session-starts-in)を参照してください。v2.1.158 から v2.1.206 では、これらのプロバイダーの Auto mode は `CLAUDE_CODE_ENABLE_AUTO_MODE=1` の設定も必要でしたが、v2.1.207 でその要件が削除されました。<br />
 <span id="fn3" style={{display: 'block', position: 'relative', top: '-120px'}} /><sup>3</sup> クラウドプロバイダーとの契約に従います。<br />
 <span id="fn4" style={{display: 'block', position: 'relative', top: '-120px'}} /><sup>4</sup> ダッシュボードと API のみ。[貢献メトリクス](/docs/ja/analytics#enable-contribution-metrics)には claude.ai Team または Enterprise 組織が必要です。<br />
 <span id="fn5" style={{display: 'block', position: 'relative', top: '-120px'}} /><sup>5</sup> macOS および Linux（WSL 2 内の Linux を含む）では Claude Code v2.1.224 以降が必要です。ネイティブ Windows では Claude Code v2.1.234 以降が必要です。API キー認証では、メッセージングは同じマシンのみです。Amazon Bedrock、Claude Platform on AWS、Google Cloud の Agent Platform、および Microsoft Foundry では、メッセージングは同じマシンのみであり、Claude Code v2.1.248 以降が必要です。Claude は、[Remote Control](/docs/ja/remote-control) に接続されているセッションからのみ、[Web 上の Claude Code](/docs/ja/claude-code-on-the-web)セッションおよび他のマシン上のセッションを見つけることができます。接続するには、claude.ai サインインと他の [Remote Control 要件](/docs/ja/remote-control#requirements)が必要です。[他のマシン上のセッションをメッセージする](/docs/ja/cross-session-messaging#message-sessions-on-other-machines)を参照してください。
@@ -303,23 +303,23 @@ Desktop は部分的な例外です：[ゲートウェイルーティングは�
 
 Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、または Anthropic Console API キーを通じて認証する場合、このセクションは適用されません。claude.ai アカウントでサインインすると、プランによって以下の機能の利用可能性が決まります。
 
-| 機能                                                                          | Pro | Max | Team          | Enterprise                        |
-| :-------------------------------------------------------------------------- | :-- | :-- | :------------ | :-------------------------------- |
-| [クラウドセッション](/docs/ja/claude-code-on-the-web)                                     | ✓   | ✓   | ✓             | ✓ <sup><a href="#fn6">6</a></sup> |
-| [Routines](/docs/ja/routines)                                                    | ✓   | ✓   | ✓             | ✓                                 |
-| [Remote Control](/docs/ja/remote-control)                                        | ✓   | ✓   | Admin-enabled | Admin-enabled                     |
-| [Channels](/docs/ja/channels)                                                    | ✓   | ✓   | Admin-enabled | Admin-enabled                     |
-| [Computer use](/docs/ja/computer-use)                                            | ✓   | ✓   | ✗             | ✗                                 |
-| Dispatch（[Desktop](/docs/ja/desktop#sessions-from-dispatch)）                     | ✓   | ✓   | ✗             | ✗                                 |
-| [Code Review](/docs/ja/code-review)                                              | ✗   | ✗   | ✓             | ✓                                 |
-| [Artifacts](/docs/ja/artifacts)                                                  | ✓   | ✓   | ✓             | Admin-enabled                     |
-| [アナリティクスダッシュボードと貢献メトリクス](/docs/ja/analytics)                                     | ✗   | ✗   | ✓             | ✓                                 |
-| [Enterprise Analytics API](/docs/ja/analytics#access-data-programmatically)      | ✗   | ✗   | ✗             | ✓                                 |
-| [サーバー管理設定](/docs/ja/server-managed-settings)                                     | ✗   | ✗   | ✓             | ✓                                 |
-| [SSO](https://support.claude.com/en/articles/9266767-what-is-the-team-plan) | ✗   | ✗   | ✓             | ✓                                 |
-| SCIM                                                                        | ✗   | ✗   | ✗             | ✓                                 |
-| [Compliance API](https://platform.claude.com/docs/en/api/compliance)        | ✗   | ✗   | ✗             | ✓                                 |
-| [Zero Data Retention](/docs/ja/zero-data-retention)                              | ✗   | ✗   | ✗             | ✓ <sup><a href="#fn7">7</a></sup> |
+| 機能 | Pro | Max | Team | Enterprise |
+| :- | :- | :- | :- | :- |
+| [クラウドセッション](/docs/ja/claude-code-on-the-web) | ✓ | ✓ | ✓ | ✓ <sup><a href="#fn6">6</a></sup> |
+| [Routines](/docs/ja/routines) | ✓ | ✓ | ✓ | ✓ |
+| [Remote Control](/docs/ja/remote-control) | ✓ | ✓ | Admin-enabled | Admin-enabled |
+| [Channels](/docs/ja/channels) | ✓ | ✓ | Admin-enabled | Admin-enabled |
+| [Computer use](/docs/ja/computer-use) | ✓ | ✓ | ✗ | ✗ |
+| Dispatch（[Desktop](/docs/ja/desktop#sessions-from-dispatch)） | ✓ | ✓ | ✗ | ✗ |
+| [Code Review](/docs/ja/code-review) | ✗ | ✗ | ✓ | ✓ |
+| [Artifacts](/docs/ja/artifacts) | ✓ | ✓ | ✓ | Admin-enabled |
+| [アナリティクスダッシュボードと貢献メトリクス](/docs/ja/analytics) | ✗ | ✗ | ✓ | ✓ |
+| [Enterprise Analytics API](/docs/ja/analytics#access-data-programmatically) | ✗ | ✗ | ✗ | ✓ |
+| [サーバー管理設定](/docs/ja/server-managed-settings) | ✗ | ✗ | ✓ | ✓ |
+| [SSO](https://support.claude.com/en/articles/9266767-what-is-the-team-plan) | ✗ | ✗ | ✓ | ✓ |
+| SCIM | ✗ | ✗ | ✗ | ✓ |
+| [Compliance API](https://platform.claude.com/docs/en/api/compliance) | ✗ | ✗ | ✗ | ✓ |
+| [Zero Data Retention](/docs/ja/zero-data-retention) | ✗ | ✗ | ✗ | ✓ <sup><a href="#fn7">7</a></sup> |
 
 <span id="fn6" style={{display: 'block', position: 'relative', top: '-120px'}} /><sup>6</sup> Enterprise では、プレミアムシートまたは Chat + Claude Code シートが必要です。[クラウド上で Claude Code を使用する](/docs/ja/claude-code-on-the-web)を参照してください。<br />
 <span id="fn7" style={{display: 'block', position: 'relative', top: '-120px'}} /><sup>7</sup> 標準 Enterprise プランに含まれていません。適格なアカウントについては Anthropic による個別の有効化が必要です。[Zero Data Retention](/docs/ja/zero-data-retention)を参照してください。

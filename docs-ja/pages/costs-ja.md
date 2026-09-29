@@ -110,11 +110,11 @@ Claude Code は最新のレポートを `~/.claude/usage-data/report.html` に�
 [使用量クレジット](https://support.claude.com/en/articles/12429409-extra-usage-for-paid-claude-plans) を使用すると、プランの使用量制限を超えて作業を続けることができます。これらを管理するには、`/login` を通じて claude.ai サブスクリプションにサインインした後、`/usage-credits` を実行します。このコマンドは API キー認証では利用できません。
 セルフサービス Enterprise 組織、Enterprise トライアル、および AWS Marketplace を通じて請求される Enterprise 組織では、コマンドには Claude Code v2.1.248 以降が必要です。以前のバージョンは [`Unknown command: /usage-credits`](/docs/ja/errors#unknown-command) で拒否します。開かれるものはロールによって異なります。
 
-| ロール                                   | `/usage-credits` の動作                                                                                                                                        |
-| :------------------------------------ | :---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Pro または Max サブスクライバー                  | ブラウザで [**Settings > Usage**](https://claude.ai/settings/usage) を claude.ai で開きます。**Usage credits** セクションで、使用量クレジットをオンまたはオフにし、クレジット残高、今月の支出、および月間支出制限を確認できます |
-| 請求アクセス権を持つ Team または Enterprise メンバー   | 組織の使用量設定 [**Admin settings > Usage**](https://claude.ai/admin-settings/usage) をブラウザで開きます                                                                    |
-| 請求アクセス権を持たない Team または Enterprise メンバー | 確認を求めてから、組織の管理者にリクエストを送信します。v2.1.211 より前では、Claude Code は確認ステップなしでリクエストを送信していました                                                                             |
+| ロール | `/usage-credits` の動作 |
+| :- | :- |
+| Pro または Max サブスクライバー | ブラウザで [**Settings > Usage**](https://claude.ai/settings/usage) を claude.ai で開きます。**Usage credits** セクションで、使用量クレジットをオンまたはオフにし、クレジット残高、今月の支出、および月間支出制限を確認できます |
+| 請求アクセス権を持つ Team または Enterprise メンバー | 組織の使用量設定 [**Admin settings > Usage**](https://claude.ai/admin-settings/usage) をブラウザで開きます |
+| 請求アクセス権を持たない Team または Enterprise メンバー | 確認を求めてから、組織の管理者にリクエストを送信します。v2.1.211 より前では、Claude Code は確認ステップなしでリクエストを送信していました |
 
 請求アクセス権を持たない Team および Enterprise メンバーの場合、確認はインタラクティブセッションでのみ表示されます。`-p` フラグを使用した非インタラクティブモードおよび [Remote Control](/docs/ja/remote-control) からは、コマンドはリクエストを送信せず、インタラクティブセッションで実行するよう指示します。
 
@@ -130,11 +130,11 @@ Claude Code にアクセスする方法によって、利用可能なコント�
 
 次の表は、各セットアップを、支出を確認する場所、支出をキャップする場所、およびユーザーごとの数値を取得する方法にマップしています。個別の Pro または Max プランでは、管理する組織がないため、[fast mode](/docs/ja/fast-mode#see-where-fast-mode-spend-appears) を含む [サブスクリプションに使用クレジットを追加](#add-usage-credits-to-your-subscription) の下で、独自の使用クレジット支出を追跡してください。
 
-| セットアップ                                                                                 | 支出を確認                                                                                                                       | 支出をキャップ       | ユーザーごとのレポート                                                                                                                                                                                                       |
-| :------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------- | :------------ | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [Claude for Teams または Enterprise](#claude-for-teams-and-enterprise)                    | [org analytics の支出レポート](https://support.claude.com/en/articles/12883420-view-usage-analytics-for-team-and-enterprise-plans) | 管理者設定の支出制限    | [支出レポート CSV](https://support.claude.com/en/articles/12883420-view-usage-analytics-for-team-and-enterprise-plans)、Enterprise の [Enterprise Analytics API](https://platform.claude.com/docs/en/api/admin/analytics) |
-| [Claude Console（API）](#claude-console)                                                 | [Console 使用状況ページ](https://platform.claude.com/usage)                                                                        | ワークスペース支出制限   | [Console ダッシュボード](https://platform.claude.com/claude-code)、[Claude Code Analytics API](https://platform.claude.com/docs/en/build-with-claude/claude-code-analytics-api)                                           |
-| [Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry](#cloud-providers) | クラウド請求コンソール                                                                                                                 | クラウドの予算コントロール | [OpenTelemetry](/docs/ja/monitoring-usage) または [LLM gateway](/docs/ja/llm-gateway)                                                                                                                                          |
+| セットアップ | 支出を確認 | 支出をキャップ | ユーザーごとのレポート |
+| :- | :- | :- | :- |
+| [Claude for Teams または Enterprise](#claude-for-teams-and-enterprise) | [org analytics の支出レポート](https://support.claude.com/en/articles/12883420-view-usage-analytics-for-team-and-enterprise-plans) | 管理者設定の支出制限 | [支出レポート CSV](https://support.claude.com/en/articles/12883420-view-usage-analytics-for-team-and-enterprise-plans)、Enterprise の [Enterprise Analytics API](https://platform.claude.com/docs/en/api/admin/analytics) |
+| [Claude Console（API）](#claude-console) | [Console 使用状況ページ](https://platform.claude.com/usage) | ワークスペース支出制限 | [Console ダッシュボード](https://platform.claude.com/claude-code)、[Claude Code Analytics API](https://platform.claude.com/docs/en/build-with-claude/claude-code-analytics-api) |
+| [Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry](#cloud-providers) | クラウド請求コンソール | クラウドの予算コントロール | [OpenTelemetry](/docs/ja/monitoring-usage) または [LLM gateway](/docs/ja/llm-gateway) |
 
 [OpenTelemetry エクスポート](/docs/ja/monitoring-usage) はすべてのセットアップで機能し、ユーザーごとのトークンおよびコストメトリクスをほぼリアルタイムで独自の可観測性スタックにストリーミングする唯一のオプションです。
 
@@ -193,14 +193,14 @@ API 組織は [ワークスペース](https://platform.claude.com/docs/en/build-
 
 チーム向けに Claude Code を設定する場合、組織のサイズに基づいて、これらのユーザーあたりのトークン/分（TPM）およびリクエスト/分（RPM）の推奨事項を検討してください。
 
-| チームサイズ       | ユーザーあたり TPM | ユーザーあたり RPM |
-| ------------ | ----------- | ----------- |
-| 1～5 ユーザー     | 200k～300k   | 5～7         |
-| 5～20 ユーザー    | 100k～150k   | 2.5～3.5     |
-| 20～50 ユーザー   | 50k～75k     | 1.25～1.75   |
-| 50～100 ユーザー  | 25k～35k     | 0.62～0.87   |
-| 100～500 ユーザー | 15k～20k     | 0.37～0.47   |
-| 500 ユーザー以上   | 10k～15k     | 0.25～0.35   |
+| チームサイズ | ユーザーあたり TPM | ユーザーあたり RPM |
+| - | - | - |
+| 1～5 ユーザー | 200k～300k | 5～7 |
+| 5～20 ユーザー | 100k～150k | 2.5～3.5 |
+| 20～50 ユーザー | 50k～75k | 1.25～1.75 |
+| 50～100 ユーザー | 25k～35k | 0.62～0.87 |
+| 100～500 ユーザー | 15k～20k | 0.37～0.47 |
+| 500 ユーザー以上 | 10k～15k | 0.25～0.35 |
 
 たとえば、200 ユーザーがいる場合、各ユーザーに 20k TPM をリクエストするか、合計 400 万 TPM（200\*20,000 = 400 万）をリクエストできます。
 
@@ -363,7 +363,7 @@ MCP ツール定義は [デフォルトで遅延](/docs/ja/mcp#scale-with-mcp-to
 
 拡張思考はデフォルトで有効になっています。複雑な計画と推論タスクのパフォーマンスを大幅に向上させるためです。思考トークンは出力トークンとして課金され、デフォルトの予算はモデルに応じてリクエストあたり数万トークンになる可能性があります。
 
-深い推論が不要なシンプルなタスクの場合は、`/effort` または `/model` で [努力レベル](/docs/ja/model-config#adjust-effort-level) を下げるか、`/config` で思考を無効にすることでコストを削減できます。Opus 5.5 または Fable モデルでは思考をオフにすることはできません。これらは常に拡張思考を使用します。
+深い推論が不要なシンプルなタスクの場合は、`/effort` または `/model` で [努力レベル](/docs/ja/model-config#adjust-effort-level) を下げるか、`/config` で思考を無効にすることでコストを削減できます。Opus 5.5、Sonnet 5.5、または Fable モデルでは思考をオフにすることはできません。これらは常に拡張思考を使用します。
 
 [固定思考予算](/docs/ja/model-config#adaptive-reasoning-and-fixed-thinking-budgets) を持つモデルでは、`MAX_THINKING_TOKENS` [環境変数](/docs/ja/env-vars) を設定することで予算を下げることもできます。たとえば `MAX_THINKING_TOKENS=8000` です。適応推論モデルはゼロ以外の予算を無視するため、代わりに努力レベルを使用します。
 
@@ -372,6 +372,8 @@ MCP ツール定義は [デフォルトで遅延](/docs/ja/mcp#scale-with-mcp-to
 </h3>
 
 テストの実行、ドキュメントの取得、またはログファイルの処理は、かなりのコンテキストを消費する可能性があります。これらを [サブエージェント](/docs/ja/sub-agents#isolate-high-volume-operations) に委譲して、冗長な出力がサブエージェントのコンテキストに留まり、要約のみがメインの会話に返されるようにします。
+
+サブエージェント自身のリクエストはまだあなたの使用量を引き出します。それらにより少なく費やすには、[サブエージェント用にはより小さいモデルを選択](/docs/ja/sub-agents#choose-a-model) するか、[すべてのサブエージェントを 1 つのモデルで実行](/docs/ja/sub-agents#run-every-subagent-on-one-model) します。
 
 <h3 id="manage-agent-team-costs">
   エージェントチームのコストを管理する
@@ -420,6 +422,7 @@ Claude Code はアイドル状態でも、バックグラウンド機能にト�
 * **スケジュール済みタスク**: [スケジュール済みタスク](/docs/ja/scheduled-tasks)はセッションがアイドル状態でも間隔で実行され、毎回完全なコンテキストを送信します。
 * **クロスセッションメッセージ**: Claude Code は[別のセッションからのメッセージ](/docs/ja/cross-session-messaging)をこのセッションがアイドル状態のときに新しいターンとして配信し、毎回完全なコンテキストを送信します。受信メッセージを配信する代わりに保持するには、[`crossSessionInbound`](/docs/ja/settings-reference#crosssessioninbound)を`hold`に設定してください。
 * **ゴールチェックイン**: バックグラウンド作業がアクティブな[ゴール](/docs/ja/goal)を待機させている間、Claude Code はセッションがアイドル状態でも[その作業をチェックするよう Claude に要求](/docs/ja/goal#background-work-defers-evaluation)し、完全なコンテキストを送信する新しいターンを開始します。Claude Code はプロンプト間で最大 3 つのアイドルチェックインをゴールごとに開始します。v2.1.246 より前は、アイドルチェックインは無制限でした。チェックインをオフにするには、[`CLAUDE_CODE_GOAL_CHECKIN_MINUTES`](/docs/ja/env-vars)を`0`に設定してください。アイドルチェックインには Claude Code v2.1.236 以降が必要です。
+* **サブエージェントとワークフロー**: すべてのサブエージェント、および[動的ワークフロー](/docs/ja/workflows#cost)が生成するすべてのエージェントは、メイン会話の上に独自のリクエストを送信します。[属性の内訳](#plan-usage-breakdown)はサブエージェントのシェアを表示します。
 * **エージェントチームメイト**: アクティブな[チームメイト](#agent-team-token-costs)ごとに、終了するまでトークンを消費し続けます。
 * **コンパクション**: `/compact`は要約するコンテキストを読み込むため、[大規模なコンテキストをコンパクトにする](/docs/ja/prompt-caching#compacting-the-conversation)こと自体が大規模なリクエストです。継続性ではなく新しいスタートが必要な場合、`/clear`はコストがかかりません。
 

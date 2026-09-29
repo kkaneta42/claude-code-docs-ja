@@ -8,19 +8,20 @@
 
 このページでは、Claude Code が実行中のパフォーマンス、安定性、検索の問題について説明します。その他の問題については、問題が発生している場所に一致するページから始めてください：
 
-| 症状                                                                                                                                | 移動先                                                                          |
-| :-------------------------------------------------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------- |
-| `command not found`、インストール失敗、PATH の問題、`EACCES`、TLS エラー                                                                            | [インストールとログインのトラブルシューティング](/docs/ja/troubleshoot-install)                          |
-| 更新またはインストールダウンロードが `The connection dropped while downloading the update` または `aborted` で失敗する                                      | [エラーリファレンス](/docs/ja/errors#the-connection-dropped-while-downloading-the-update)  |
+| 症状 | 移動先 |
+| :- | :- |
+| `command not found`、インストール失敗、PATH の問題、`EACCES`、TLS エラー | [インストールとログインのトラブルシューティング](/docs/ja/troubleshoot-install) |
+| 更新またはインストールダウンロードが `The connection dropped while downloading the update` または `aborted` で失敗する | [エラーリファレンス](/docs/ja/errors#the-connection-dropped-while-downloading-the-update) |
 | ログインループ、OAuth エラー、`403 Forbidden`、「organization disabled」、Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry 認証情報 | [インストールとログインのトラブルシューティング](/docs/ja/troubleshoot-install#login-and-authentication) |
-| 設定が適用されない、hooks が実行されない、MCP サーバーがロードされない                                                                                          | [設定をデバッグする](/docs/ja/debug-your-config)                                           |
-| セッションが auto モードで開始された、または Claude がファイルを編集してコマンドを実行する（確認なし）                                                                        | [セッションが開始するモード](/docs/ja/permission-modes#which-mode-a-session-starts-in)         |
-| `API Error: 5xx`、`529 Overloaded`、`429`、リクエスト検証エラー                                                                                | [エラーリファレンス](/docs/ja/errors)                                                      |
-| `model not found` または `you may not have access to it`                                                                             | [エラーリファレンス](/docs/ja/errors#theres-an-issue-with-the-selected-model)              |
-| VS Code 拡張機能が接続されていない、または Claude を検出していない                                                                                         | [VS Code 統合](/docs/ja/vs-code#fix-common-issues)                                  |
-| VS Code または SDK アプリで `Claude Code process exited with code 1`                                                                     | [エラーリファレンス](/docs/ja/errors#claude-code-process-exited-with-code-n)               |
-| JetBrains プラグインまたは IDE が検出されない                                                                                                    | [JetBrains 統合](/docs/ja/jetbrains#troubleshooting)                                |
-| CPU またはメモリ使用量が多い、応答が遅い、ハング、検索がファイルを見つけられない                                                                                        | [パフォーマンスと安定性](#performance-and-stability)（下記）                                |
+| 設定が適用されない、hooks が実行されない、MCP サーバーがロードされない | [設定をデバッグする](/docs/ja/debug-your-config) |
+| セッションが auto モードで開始された、または Claude がファイルを編集してコマンドを実行する（確認なし） | [セッションが開始するモード](/docs/ja/permission-modes#which-mode-a-session-starts-in) |
+| `API Error: 5xx`、`529 Overloaded`、`429`、リクエスト検証エラー | [エラーリファレンス](/docs/ja/errors) |
+| `model not found` または `you may not have access to it` | [エラーリファレンス](/docs/ja/errors#theres-an-issue-with-the-selected-model) |
+| Claude が実行するコマンドが `Your disk quota is full`、`is full (ENOSPC)`、または `Command output was lost` で失敗する | [エラーリファレンス](/docs/ja/errors#disk-quota-or-temp-filesystem-is-full) |
+| VS Code 拡張機能が接続されていない、または Claude を検出していない | [VS Code 統合](/docs/ja/vs-code#fix-common-issues) |
+| VS Code または SDK アプリで `Claude Code process exited with code 1` | [エラーリファレンス](/docs/ja/errors#claude-code-process-exited-with-code-n) |
+| JetBrains プラグインまたは IDE が検出されない | [JetBrains 統合](/docs/ja/jetbrains#troubleshooting) |
+| CPU またはメモリ使用量が多い、応答が遅い、ハング、検索がファイルを見つけられない | [パフォーマンスと安定性](#performance-and-stability)（下記） |
 
 どれが当てはまるかわからない場合は、Claude Code 内で `/doctor` を実行して、インストール、設定、拡張機能、コンテキスト使用量の自動チェックを実行してください。確認後に適用できる修正を提案します。`claude` がまったく起動しない場合は、代わりにシェルから `claude doctor` を実行してください。MCP サーバーのステータスを確認するには `/mcp` を実行してください。
 

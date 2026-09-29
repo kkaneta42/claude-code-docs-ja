@@ -589,239 +589,247 @@ scope: "Which settings files can set the key: user (~/.claude/settings.json), pr
 }}
 />
 
-| Key                                                                                                   | Description                                                                                                                                                                             | Topic                              | Scope                   |
-| :---------------------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :--------------------------------- | :---------------------- |
-| [`advisorModel`](#advisormodel)                                                                       | Claude が[アドバイザーツール](/docs/ja/advisor)に答えるときに使用するモデルを選択します                                                                                                                                    | Model and responses                | Any file                |
-| [`agent`](#agent)                                                                                     | すべてのセッションを、プロンプト、ツール、モデルを持つ名前付き[サブエージェント](/docs/ja/sub-agents)として開始します                                                                                                                       | Agents, sessions, and worktrees    | Any file                |
-| [`agentPushNotifEnabled`](#agentpushnotifenabled)                                                     | Claude が決定したときに[プッシュ通知をスマートフォンに送信](/docs/ja/remote-control#mobile-push-notifications)することを許可します                                                                                              | Remote, desktop, and notifications | Any file                |
-| [`allowAllClaudeAiMcps`](#allowallclaudeaimcps)                                                       | デプロイされた[`managed-mcp.json`](/docs/ja/managed-mcp#exclusive-control-with-managed-mcp-json)と一緒に Claude Code が自身で取得する[claude.ai コネクタ](/docs/ja/mcp)をロードします                                           | MCP                                | Managed                 |
-| [`allowedChannelPlugins`](#allowedchannelplugins)                                                     | メッセージをプッシュできる[チャネルプラグイン](/docs/ja/channels#restrict-which-channel-plugins-can-run)のデフォルト許可リストを置き換えます                                                                                         | Plugins and skills                 | Managed                 |
-| [`allowedHttpHookUrls`](#allowedhttphookurls)                                                         | [HTTP フック](/docs/ja/hooks)がターゲットできる URL を制限します                                                                                                                                               | Hooks and automation               | Any file                |
-| [`allowedMcpServers`](#allowedmcpservers)                                                             | ユーザーが追加できる[MCP サーバー](/docs/ja/mcp)を許可リストに登録します                                                                                                                                               | MCP                                | Any file                |
-| [`allowManagedHooksOnly`](#allowmanagedhooksonly)                                                     | 組織がデプロイする[フック](/docs/ja/hooks)のみを実行します                                                                                                                                                       | Hooks and automation               | Managed                 |
-| [`allowManagedMcpServersOnly`](#allowmanagedmcpserversonly)                                           | マネージド[MCP](/docs/ja/mcp)許可リストが適用される唯一のものにします                                                                                                                                                 | MCP                                | Managed                 |
-| [`allowManagedPermissionRulesOnly`](#allowmanagedpermissionrulesonly)                                 | [マネージド設定](/docs/ja/managed-settings)を[権限ルール](/docs/ja/permissions#managed-settings)の唯一の設定ソースにします                                                                                                  | Permission settings                | Managed                 |
-| [`alwaysThinkingEnabled`](#alwaysthinkingenabled)                                                     | すべてのセッションで[拡張思考](/docs/ja/model-config#extended-thinking)をオフにします                                                                                                                             | Model and responses                | Any file                |
-| [`apiKeyHelper`](#apikeyhelper)                                                                       | 独自のコマンドで[API 認証情報](/docs/ja/authentication#credential-management)を生成します                                                                                                                      | Authentication and providers       | Any file                |
-| [`askUserQuestionTimeout`](#askuserquestiontimeout)                                                   | 未回答の質問が[アイドル時間後に自動継続](/docs/ja/tools-reference#question-auto-continue-timeout)することを許可します                                                                                                     | Interface and terminal             | User or managed         |
-| [`attribution`](#attribution)                                                                         | Claude Code がコミットとプルリクエストに追加する属性をカスタマイズします                                                                                                                                              | Git and attribution                | Any file                |
-| [`attribution.commit`](#attribution-commit)                                                           | Claude Code がコミットに追加するトレーラーを変更または非表示にします                                                                                                                                                | Git and attribution                | Any file                |
-| [`attribution.pr`](#attribution-pr)                                                                   | プルリクエスト説明の属性行を変更または非表示にします                                                                                                                                                              | Git and attribution                | Any file                |
-| [`attribution.sessionUrl`](#attribution-sessionurl)                                                   | [クラウド](/docs/ja/claude-code-on-the-web)および[リモートコントロール](/docs/ja/remote-control)コミットから claude.ai セッションリンクを省略します                                                                                    | Git and attribution                | Any file                |
-| [`autoCompactEnabled`](#autocompactenabled)                                                           | [自動コンパクション](/docs/ja/context-window)をオフまたはオンにします                                                                                                                                             | Memory and context                 | Any file                |
-| [`autoCompactWindow`](#autocompactwindow)                                                             | Claude Code が[コンパクト](/docs/ja/context-window)する前にコンテキストがどのくらい満杯になるかを設定します                                                                                                                    | Memory and context                 | Any file                |
-| [`autoConnectIde`](#autoconnectide)                                                                   | 外部ターミナルから実行中の[VS Code](/docs/ja/vs-code)または[JetBrains](/docs/ja/jetbrains#from-external-terminals) IDE に自動的に接続します                                                                                 | Global config settings             | Global config           |
-| [`autoContinueAtUsageLimit`](#autocontinueatusagelimit)                                               | オープンセッションで待機し、claude.ai 使用制限がリセットされた後に[タスクを自動的に継続](/docs/ja/interactive-mode#wait-for-a-usage-limit-to-reset)します                                                                             | Interface and terminal             | User or managed         |
-| [`autoInstallIdeExtension`](#autoinstallideextension)                                                 | VS Code ターミナルから[IDE 拡張機能](/docs/ja/vs-code#install-the-extension)の自動インストールをオフにします                                                                                                            | Global config settings             | Global config           |
-| [`autoMemoryDirectory`](#automemorydirectory)                                                         | [自動メモリ](/docs/ja/memory#auto-memory)を選択したディレクトリに保存します                                                                                                                                        | Memory and context                 | Any file                |
-| [`autoMemoryEnabled`](#automemoryenabled)                                                             | [自動メモリ](/docs/ja/memory#auto-memory)をオフまたはオンにします                                                                                                                                             | Memory and context                 | Any file                |
-| [`autoMode`](#automode)                                                                               | [自動モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)分類器に独自の許可および拒否ルールを追加します                                                                                                   | Permission settings                | User or managed         |
-| [`autoMode.classifyAllShell`](#automode-classifyallshell)                                             | 狭い許可ルールが一致するものでも、すべてのシェルコマンドを[自動モード分類器](/docs/ja/permission-modes#what-the-classifier-blocks-by-default)を通して送信します                                                                            | Permission settings                | User or managed         |
-| [`autoScrollEnabled`](#autoscrollenabled)                                                             | フルスクリーンレンダリングで[新しい出力に従う](/docs/ja/fullscreen#auto-follow)ことを有効にします                                                                                                                           | Interface and terminal             | Any file                |
-| [`autoUpdatesChannel`](#autoupdateschannel)                                                           | 最新ではなく安定した[リリースチャネル](/docs/ja/setup#configure-release-channel)に従います                                                                                                                          | Updates and versioning             | Any file                |
-| [`availableModels`](#availablemodels)                                                                 | [ユーザーが選択できるモデルを制限](/docs/ja/model-config#restrict-model-selection)します                                                                                                                        | Model and responses                | Any file                |
-| [`awaySummaryEnabled`](#awaysummaryenabled)                                                           | ターミナルに戻ったときに表示される[セッション要約](/docs/ja/interactive-mode#session-recap)をオフにします                                                                                                                   | Remote, desktop, and notifications | Any file                |
-| [`awsAuthRefresh`](#awsauthrefresh)                                                                   | 独自のコマンドで `.aws` の期限切れ[Bedrock 認証情報](/docs/ja/amazon-bedrock#advanced-credential-configuration)をリフレッシュします                                                                                     | Authentication and providers       | Any file                |
-| [`awsCredentialExport`](#awscredentialexport)                                                         | 独自のコマンドから JSON として[Bedrock 認証情報](/docs/ja/amazon-bedrock#advanced-credential-configuration)を提供します                                                                                            | Authentication and providers       | Any file                |
-| [`axScreenReader`](#axscreenreader)                                                                   | [スクリーンリーダーフレンドリーな出力](/docs/ja/accessibility)をレンダリングします                                                                                                                                       | Interface and terminal             | Any file                |
-| [`bashEditDiffEnabled`](#basheditdiffenabled)                                                         | すべての権限モードで[Bash コマンドが変更したファイル](/docs/ja/hooks#bash)を記録します                                                                                                                                    | Interface and terminal             | User or managed         |
-| [`bashOutputMaxChars`](#bashoutputmaxchars)                                                           | 成功したコマンドの[出力](/docs/ja/tools-reference#output-limits)のうち Claude が受け取るインライン量を設定します                                                                                                            | Memory and context                 | Any file                |
-| [`blockedMarketplaces`](#blockedmarketplaces)                                                         | 組織の[プラグインマーケットプレイス](/docs/ja/plugins/overview)ソースをブロックします                                                                                                                                    | Plugins and skills                 | Managed                 |
-| [`browserExternalPageTools`](#browserexternalpagetools)                                               | [デスクトップ](/docs/ja/desktop)ブラウザペインの外部ページで Claude のツールをオフにします                                                                                                                                  | Tools                              | Managed                 |
-| [`channelsEnabled`](#channelsenabled)                                                                 | 組織の[チャネル](/docs/ja/channels#enable-channels-for-your-organization)を許可します                                                                                                                     | Plugins and skills                 | Managed                 |
-| [`claudeMd`](#claudemd)                                                                               | マネージド設定から組織全体の[CLAUDE.md](/docs/ja/memory#deploy-organization-wide-claude-md)指示を注入します                                                                                                        | Memory and context                 | Managed                 |
-| [`claudeMdExcludes`](#claudemdexcludes)                                                               | メモリがロードされるときに特定の[CLAUDE.md](/docs/ja/memory#exclude-specific-claude-md-files)ファイルをスキップします                                                                                                    | Memory and context                 | Any file                |
-| [`cleanupPeriodDays`](#cleanupperioddays)                                                             | Claude Code が[トランスクリプト](/docs/ja/data-usage#data-retention)を削除する前に保持する日数を選択します                                                                                                               | Privacy and telemetry              | Any file                |
-| [`companyAnnouncements`](#companyannouncements)                                                       | スタートアップ時に組織のアナウンスメントを表示します                                                                                                                                                              | Interface and terminal             | Any file                |
-| [`copyOnSelect`](#copyonselect)                                                                       | [フルスクリーンレンダリング](/docs/ja/fullscreen#use-the-mouse)およびエージェントビューでマウスで選択したテキストの自動コピーをオフにします                                                                                                     | Global config settings             | Global config           |
-| [`crossSessionInbound`](#crosssessioninbound)                                                         | Claude Code が[他のセッションからのメッセージ](/docs/ja/cross-session-messaging#control-inbound-messages)を配信するか、配信せずに通知を表示するか、または拒否するかを選択します                                                                 | Agents, sessions, and worktrees    | Any file                |
-| [`defaultShell`](#defaultshell)                                                                       | [`!` プレフィックス](/docs/ja/interactive-mode#shell-mode-with-prefix)で入力したシェルコマンドを実行する Bash または PowerShell を選択します                                                                                  | Interface and terminal             | Any file                |
-| [`deniedMcpServers`](#deniedmcpservers)                                                               | URL、コマンド、または名前で特定の[MCP サーバー](/docs/ja/mcp)をブロックします                                                                                                                                           | MCP                                | Any file                |
-| [`desktopSessionCleanupPeriodDays`](#desktopsessioncleanupperioddays)                                 | [Claude Desktop および Cowork トランスクリプト](/docs/ja/claude-directory#cleaned-up-automatically)の経過日数制限を設定します                                                                                        | Privacy and telemetry              | User or managed         |
-| [`dialogExpiry`](#dialogexpiry)                                                                       | Claude Code が[リモートコントロール](/docs/ja/remote-control)または SDK ホストが転送されたダイアログに答えるのを待つ時間を設定します                                                                                                     | Interface and terminal             | User or managed         |
-| [`diffTool`](#difftool)                                                                               | Claude の提案されたファイル変更が[VS Code](/docs/ja/vs-code)または[JetBrains](/docs/ja/jetbrains#features)差分ビューアで開くか、ターミナルに留まるかを選択します                                                                             | Global config settings             | Global config           |
-| [`disableAgentView`](#disableagentview)                                                               | バックグラウンドエージェントと[エージェントビュー](/docs/ja/agent-view)をオフにします                                                                                                                                       | Agents, sessions, and worktrees    | Any file                |
-| [`disableAllHooks`](#disableallhooks)                                                                 | [フック](/docs/ja/hooks)、カスタム[ステータスライン](/docs/ja/statusline)、およびカスタム[`@` ファイル提案](/docs/ja/interactive-mode#quick-commands)コマンドを一度にオフにします                                                                  | Hooks and automation               | Any file                |
-| [`disableArtifact`](#disableartifact)                                                                 | 非推奨。`enableArtifact` を使用して[Artifact ツール](/docs/ja/artifacts)をオフにします                                                                                                                          | Remote, desktop, and notifications | Any file                |
-| [`disableAutoMode`](#disableautomode)                                                                 | 権限モードサイクルから[自動モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)を削除します                                                                                                         | Permission settings                | Any file                |
-| [`disableBrowserExternalNavigation`](#disablebrowserexternalnavigation)                               | [デスクトップ](/docs/ja/desktop)ブラウザペインをユーザーと Claude の localhost に制限します                                                                                                                            | Tools                              | Managed                 |
-| [`disableBundledSkills`](#disablebundledskills)                                                       | Claude Code に含まれる[スキル](/docs/ja/skills#bundled-skills)および[ワークフロー](/docs/ja/workflows)をオフにします                                                                                                      | Plugins and skills                 | Any file                |
-| [`disableClaudeAiConnectors`](#disableclaudeaiconnectors)                                             | [claude.ai コネクタ](/docs/ja/mcp#disable-claude-ai-connectors)をオフにして、Claude Code がそれらを取得しないようにします                                                                                               | MCP                                | Any file                |
-| [`disableCommandPluginSources`](#disablecommandpluginsources)                                         | マーケットプレイス宣言コマンドを実行してインストールする[プラグイン](/docs/ja/plugins/overview)をブロックします                                                                                                                       | Plugins and skills                 | Managed                 |
-| [`disableDeepLinkRegistration`](#disabledeeplinkregistration)                                         | Claude Code が[`claude-cli://` ハンドラー](/docs/ja/deep-links)を登録するのを停止します                                                                                                                        | Remote, desktop, and notifications | Any file                |
-| [`disableDesktopLocalSessions`](#disabledesktoplocalsessions)                                         | デバイスで実行される[Desktop Code セッション](/docs/ja/desktop#local-sessions-on-managed-devices)をオフにして、SSH を他のホストとクラウドに残します                                                                                | Remote, desktop, and notifications | Managed                 |
-| [`disabledMcpjsonServers`](#disabledmcpjsonservers)                                                   | プロジェクトの[`.mcp.json`](/docs/ja/mcp#project-scope)から特定のサーバーを拒否します                                                                                                                              | MCP                                | Any file                |
-| [`disableMobileSimulatorTools`](#disablemobilesimulatortools)                                         | [デスクトップ](/docs/ja/desktop)iOS Simulator ペインで Claude のツールをブロックします                                                                                                                             | Tools                              | Managed                 |
-| [`disableRemoteControl`](#disableremotecontrol)                                                       | [リモートコントロール](/docs/ja/remote-control)をすべての場所でオフにします                                                                                                                                          | Remote, desktop, and notifications | Any file                |
-| [`disableSideloadFlags`](#disablesideloadflags)                                                       | [プラグイン](/docs/ja/plugins/overview)、[サブエージェント](/docs/ja/sub-agents)、および[MCP サーバー](/docs/ja/mcp)をサイドロードする CLI フラグを拒否します                                                                                  | Enterprise and managed settings    | Managed                 |
-| [`disableSkillShellExecution`](#disableskillshellexecution)                                           | [スキル](/docs/ja/skills)およびカスタムコマンドがインラインシェルを実行するのを停止します                                                                                                                                       | Plugins and skills                 | Any file                |
-| [`disableWorkflows`](#disableworkflows)                                                               | すべてのユーザーの[動的ワークフロー](/docs/ja/workflows)をオフにします。自分自身の場合は `enableWorkflows` を使用します                                                                                                             | Hooks and automation               | Any file                |
-| [`editorMode`](#editormode)                                                                           | 入力プロンプトで[vim キーバインディング](/docs/ja/interactive-mode#vim-editor-mode)を使用します                                                                                                                     | Interface and terminal             | Any file                |
-| [`effortLevel`](#effortlevel)                                                                         | 保存されたレベルを持たないモデルのデフォルト[努力レベル](/docs/ja/model-config#adjust-effort-level)を設定します                                                                                                               | Model and responses                | Any file                |
-| [`emojiCompletionEnabled`](#emojicompletionenabled)                                                   | プロンプト入力で[`:shortcode:` 絵文字の提案と置換](/docs/ja/interactive-mode#emoji-shortcodes)をオフにします                                                                                                         | Interface and terminal             | Any file                |
-| [`enableAllProjectMcpServers`](#enableallprojectmcpservers)                                           | プロンプトなしでプロジェクト[`.mcp.json`](/docs/ja/mcp#project-server-approvals-and-workspace-trust)ファイル内のすべてのサーバーを承認します                                                                                   | MCP                                | Any file                |
-| [`enableArtifact`](#enableartifact)                                                                   | 任意のファイルで `false` を使用して[Artifact ツール](/docs/ja/artifacts)をオフにします。ファイルはそれをオンに戻すことはできません                                                                                                        | Remote, desktop, and notifications | Any file                |
-| [`enabledMcpjsonServers`](#enabledmcpjsonservers)                                                     | プロジェクトの[`.mcp.json`](/docs/ja/mcp#project-server-approvals-and-workspace-trust)から特定のサーバーを承認します                                                                                               | MCP                                | Any file                |
-| [`enabledPlugins`](#enabledplugins)                                                                   | スコープごとに個別の[プラグイン](/docs/ja/plugins/overview)をオンまたはオフにします                                                                                                                                     | Plugins and skills                 | Any file                |
-| [`enableWorkflows`](#enableworkflows)                                                                 | プランのデフォルトに対して[動的ワークフロー](/docs/ja/workflows)をオンまたはオフにします                                                                                                                                      | Hooks and automation               | Any file                |
-| [`enforceAvailableModels`](#enforceavailablemodels)                                                   | [`/model` デフォルト選択](/docs/ja/model-config#enforce-the-allowlist-for-the-default-model)を `availableModels` 許可リスト内に保ちます                                                                         | Model and responses                | Any file                |
-| [`env`](#env)                                                                                         | すべてのセッションとそのサブプロセスの[環境変数](/docs/ja/env-vars#in-settings-files)を設定します                                                                                                                         | Memory and context                 | Any file                |
-| [`externalEditorContext`](#externaleditorcontext)                                                     | [Ctrl+G](/docs/ja/interactive-mode#general-controls)を押して編集するときに Claude の最後の応答をコメントとして表示します                                                                                                   | Global config settings             | Global config           |
-| [`extraKnownMarketplaces`](#extraknownmarketplaces)                                                   | リポジトリまたは組織の[マーケットプレイス](/docs/ja/plugins/overview)を登録します                                                                                                                                      | Plugins and skills                 | Any file                |
-| [`fallbackModel`](#fallbackmodel)                                                                     | プライマリがオーバーロードされたときの[バックアップモデル](/docs/ja/model-config#fallback-model-chains)に名前を付けます                                                                                                          | Model and responses                | Any file                |
-| [`fastMode`](#fastmode)                                                                               | 利用可能なセッションで[高速モード](/docs/ja/fast-mode)をオンにします                                                                                                                                                | Model and responses                | Any file                |
-| [`fastModePerSessionOptIn`](#fastmodepersessionoptin)                                                 | ユーザーが各セッションで[高速モード](/docs/ja/fast-mode)をオンにすることを要求します                                                                                                                                        | Model and responses                | Any file                |
-| [`feedbackDrafts`](#feedbackdrafts)                                                                   | Claude が[フィードバックドラフト](/docs/ja/tools-reference#sendfeedback-tool-behavior)をキューに入れるかどうかを制御します                                                                                                 | Privacy and telemetry              | User or managed         |
-| [`feedbackSurveyRate`](#feedbacksurveyrate)                                                           | [セッション品質調査](/docs/ja/data-usage#session-quality-surveys)が表示される頻度を変更します                                                                                                                       | Privacy and telemetry              | Any file                |
-| [`fileCheckpointingEnabled`](#filecheckpointingenabled)                                               | [`/rewind`](/docs/ja/checkpointing)が復元するファイルスナップショットをオフまたはオンにします                                                                                                                             | Memory and context                 | Any file                |
-| [`fileSuggestion`](#filesuggestion)                                                                   | 独自のコマンドから[`@` ファイルオートコンプリート](/docs/ja/interactive-mode#quick-commands)を提供します                                                                                                                 | Interface and terminal             | Any file                |
-| [`footerLinksRegexes`](#footerlinksregexes)                                                           | 出力内の問題またはレビュー ID を入力ボックスの下の[クリック可能なリンク](/docs/ja/statusline#clickable-links)にします                                                                                                             | Interface and terminal             | User or managed         |
-| [`forceLoginGatewayUrl`](#forcelogingatewayurl)                                                       | ログイン画面が接続する[ゲートウェイ URL](/docs/ja/claude-apps-gateway#set-the-gateway-url)を設定します                                                                                                              | Authentication and providers       | Managed                 |
-| [`forceLoginMethod`](#forceloginmethod)                                                               | [ログインを制限](/docs/ja/authentication#restrict-login-to-your-organization)して claude.ai、Claude Console、または[クラウドゲートウェイ](/docs/ja/claude-apps-gateway)にします                                               | Authentication and providers       | Any file                |
-| [`forceLoginOrgUUID`](#forceloginorguuid)                                                             | [claude.ai ログインを組織にピン留め](/docs/ja/authentication#restrict-login-to-your-organization)します。マネージドソースのみがそれを強制します                                                                                 | Authentication and providers       | Any file                |
-| [`forceRemoteSettingsRefresh`](#forceremotesettingsrefresh)                                           | [サーバーマネージド設定](/docs/ja/server-managed-settings)が新しく取得されるまでスタートアップをブロックします                                                                                                                    | Enterprise and managed settings    | Managed                 |
-| [`gatewayInternalNetworks`](#gatewayinternalnetworks)                                                 | `/login` が組織が内部的に使用するパブリック IPv4 スペース上の[クラウドゲートウェイ](/docs/ja/claude-apps-gateway#allow-a-gateway-on-public-address-space-you-own)に到達することを許可します                                                | Authentication and providers       | Managed                 |
-| [`gcpAuthRefresh`](#gcpauthrefresh)                                                                   | 独自のコマンドで[Google Cloud 認証情報](/docs/ja/google-vertex-ai#advanced-credential-configuration)をリフレッシュします                                                                                           | Authentication and providers       | Any file                |
-| [`hooks`](#hooks)                                                                                     | Claude Code のライフサイクルのポイントで[フック](/docs/ja/hooks)として独自のコマンドを実行します                                                                                                                              | Hooks and automation               | Any file                |
-| [`httpHookAllowedEnvVars`](#httphookallowedenvvars)                                                   | [HTTP フック](/docs/ja/hooks)がヘッダーに入れることができる環境変数を制限します                                                                                                                                          | Hooks and automation               | Any file                |
-| [`includeCoAuthoredBy`](#includecoauthoredby)                                                         | 非推奨。`attribution` を使用してコミットと PR の属性を非表示または変更します                                                                                                                                         | Git and attribution                | Any file                |
-| [`includeGitInstructions`](#includegitinstructions)                                                   | Claude の context から組み込みコミットおよび PR 指示を削除します                                                                                                                                              | Git and attribution                | Any file                |
-| [`inputNeededNotifEnabled`](#inputneedednotifenabled)                                                 | Claude があなたを待っているときに[プッシュ通知](/docs/ja/remote-control#mobile-push-notifications)を取得します                                                                                                        | Remote, desktop, and notifications | Any file                |
-| [`isolatePeerMachines`](#isolatepeermachines)                                                         | Claude が[別のマシンのセッションの 1 つにメッセージを送信](/docs/ja/cross-session-messaging#require-approval-for-cross-machine-messages)する前に確認を求めます                                                                 | Agents, sessions, and worktrees    | Any file                |
-| [`keybindingFlavor`](#keybindingflavor)                                                               | 非推奨で効果がありません。単語編集ショートカットは常に[readline 規約に従う](/docs/ja/interactive-mode#make-ctrl-w-delete-back-to-whitespace)ます                                                                               | Interface and terminal             | Any file                |
-| [`language`](#language)                                                                               | Claude が英語以外の言語で応答するようにします                                                                                                                                                              | Model and responses                | Any file                |
-| [`managedMcpServers`](#managedmcpservers)                                                             | ユーザーが追加するものと一緒にすべてのユーザーにリモート[MCP サーバー](/docs/ja/managed-mcp#provide-servers-through-managed-settings)を提供します                                                                                  | MCP                                | Managed                 |
-| [`managedSourcesBehavior`](#managedsourcesbehavior)                                                   | デプロイするすべての[マネージドソース](/docs/ja/managed-settings#how-claude-code-combines-managed-sources)を構成する代わりに、最優先のものだけを使用します                                                                             | Enterprise and managed settings    | Managed                 |
-| [`maxEffortLevel`](#maxeffortlevel)                                                                   | すべてのモデルまたはモデルごと、すべてのプロバイダーで[努力レベル](/docs/ja/model-config#adjust-effort-level)をキャップします                                                                                                        | Model and responses                | Any file                |
-| [`minimumVersion`](#minimumversion)                                                                   | [自動更新](/docs/ja/setup#pin-a-minimum-version)がバージョン以下のものをインストールするのを防ぎます                                                                                                                       | Updates and versioning             | Any file                |
-| [`model`](#model)                                                                                     | Claude Code が開始する[モデル](/docs/ja/model-config#set-a-default-model-for-new-sessions)を変更します                                                                                                     | Model and responses                | Any file                |
-| [`modelOverrides`](#modeloverrides)                                                                   | [モデル ID をマップ](/docs/ja/model-config#override-model-ids-per-version)して、Bedrock ARN などのプロバイダーの ID にします                                                                                         | Model and responses                | Any file                |
-| [`modelPicker`](#modelpicker)                                                                         | [`/model` ピッカー](/docs/ja/model-config#available-models)がリストするモデルを選択し、独自の順序と独自のラベルで選択します                                                                                                      | Model and responses                | User or managed         |
-| [`modelPricing`](#modelpricing)                                                                       | リスト価格ではなく組織の契約レートで支出を報告します                                                                                                                                                              | Model and responses                | Managed                 |
-| [`modelSettings`](#modelsettings)                                                                     | モデルごとに保存された[努力レベル](/docs/ja/model-config#adjust-effort-level)を保持するか、1 つのモデルの努力をキャップします                                                                                                       | Model and responses                | Any file                |
-| [`otelHeadersHelper`](#otelheadershelper)                                                             | 独自のコマンドで回転する[OpenTelemetry](/docs/ja/monitoring-usage#dynamic-headers)ヘッダーを生成します                                                                                                             | Authentication and providers       | Any file                |
-| [`outputStyle`](#outputstyle)                                                                         | [出力スタイル](/docs/ja/output-styles)で Claude の役割、トーン、出力形式を変更します                                                                                                                                  | Model and responses                | Any file                |
-| [`parentSettingsBehavior`](#parentsettingsbehavior)                                                   | [SDK または IDE ホスト](/docs/ja/managed-settings#let-an-embedding-host-add-policy)が[マネージド設定](/docs/ja/managed-settings)をデプロイするときに渡す制限を適用または削除します                                                       | Enterprise and managed settings    | Managed                 |
-| [`permissionExplainerEnabled`](#permissionexplainerenabled)                                           | v2.1.257 で削除されました。シェル権限プロンプトの `Ctrl+E` コマンド説明と一緒に削除されました                                                                                                                                | Global config settings             | Global config           |
-| [`permissions`](#permissions)                                                                         | 許可、質問、拒否ルール、および開始[権限モード](/docs/ja/permission-modes)を設定します                                                                                                                                    | Permission settings                | Any file                |
-| [`permissions.additionalDirectories`](#permissions-additionaldirectories)                             | Claude に[現在のディレクトリ外のディレクトリ](/docs/ja/permissions#working-directories)へのファイルアクセスを付与します                                                                                                        | Permission settings                | Any file                |
-| [`permissions.allow`](#permissions-allow)                                                             | リストされた[ツール使用](/docs/ja/permissions#permission-rule-syntax)をプロンプトなしで承認します                                                                                                                     | Permission settings                | Any file                |
-| [`permissions.ask`](#permissions-ask)                                                                 | リストされた[ツール使用](/docs/ja/permissions#permission-rule-syntax)の前に常にプロンプトを表示します                                                                                                                   | Permission settings                | Any file                |
-| [`permissions.blockReadsOutsideWorkingDirectories`](#permissions-blockreadsoutsideworkingdirectories) | ファイルツールが[作業ディレクトリ](/docs/ja/permissions#working-directories)外の読み取りをすべての権限モードで拒否するようにします                                                                                                      | Permission settings                | Any file                |
-| [`permissions.defaultMode`](#permissions-defaultmode)                                                 | 新しいセッションが開始する[権限モード](/docs/ja/permission-modes#which-mode-a-session-starts-in)を設定します                                                                                                         | Permission settings                | Any file                |
-| [`permissions.deny`](#permissions-deny)                                                               | リストされた[ツール使用](/docs/ja/permissions#permission-rule-syntax)をブロックします。秘密を保持するファイルの読み取りを含みます                                                                                                     | Permission settings                | Any file                |
-| [`permissions.disableBypassPermissionsMode`](#permissions-disablebypasspermissionsmode)               | 誰もが[bypassPermissions モード](/docs/ja/permission-modes#skip-all-checks-with-bypasspermissions-mode)に入るのを防ぎます                                                                                   | Permission settings                | Any file                |
-| [`plansDirectory`](#plansdirectory)                                                                   | [プランモード](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode)がプランファイルを書き込む場所を選択します                                                                                              | Memory and context                 | Any file                |
-| [`pluginConfigs`](#pluginconfigs)                                                                     | [プラグイン](/docs/ja/plugins/overview)の設定ダイアログで提供した回答を保存します                                                                                                                                      | Plugins and skills                 | User or managed         |
-| [`pluginSuggestionMarketplaces`](#pluginsuggestionmarketplaces)                                       | `/plugin` でプラグインインストール提案を表示できる[マーケットプレイス](/docs/ja/plugins/org#restrict-what-users-can-install)を選択します                                                                                        | Plugins and skills                 | Managed                 |
-| [`pluginTrustMessage`](#plugintrustmessage)                                                           | [プラグイン](/docs/ja/plugins/overview)信頼警告に独自のテキストを追加します                                                                                                                                         | Plugins and skills                 | Managed                 |
-| [`policyHelper`](#policyhelper)                                                                       | スタートアップで[マネージド設定](/docs/ja/managed-settings#compute-the-policy-with-a-helper-program)を計算する実行可能ファイルを実行します                                                                                     | Enterprise and managed settings    | Managed                 |
-| [`policyHelper.path`](#policyhelper-path)                                                             | Claude Code が実行する[ヘルパー実行可能ファイル](/docs/ja/managed-settings#compute-the-policy-with-a-helper-program)に名前を付けます                                                                                  | Enterprise and managed settings    | Managed                 |
-| [`policyHelper.refreshIntervalMs`](#policyhelper-refreshintervalms)                                   | バックグラウンドで[ヘルパー](/docs/ja/managed-settings#compute-the-policy-with-a-helper-program)を間隔で再実行します                                                                                                | Enterprise and managed settings    | Managed                 |
-| [`policyHelper.timeoutMs`](#policyhelper-timeoutms)                                                   | Claude Code が[ヘルパー](/docs/ja/managed-settings#compute-the-policy-with-a-helper-program)を待つ時間を設定します                                                                                           | Enterprise and managed settings    | Managed                 |
-| [`preferredNotifChannel`](#preferrednotifchannel)                                                     | タスク完了の[ターミナルベルまたはデスクトップ通知](/docs/ja/terminal-config#get-a-terminal-bell-or-notification)を選択します                                                                                               | Remote, desktop, and notifications | Any file                |
-| [`prefersReducedMotion`](#prefersreducedmotion)                                                       | [スピナー、シマー、フラッシュアニメーションを削減またはオフ](/docs/ja/accessibility#accessibility-settings)にします                                                                                                           | Interface and terminal             | Any file                |
-| [`processWrapper`](#processwrapper)                                                                   | Claude Code のバックグラウンドプロセスを macOS および Linux の[企業ランチャー](/docs/ja/corporate-launcher)を通して実行します                                                                                                  | Agents, sessions, and worktrees    | User or managed         |
-| [`promptCacheTtl`](#promptcachettl)                                                                   | メイン会話の[プロンプトキャッシュライフタイム](/docs/ja/prompt-caching#cache-lifetime)を選択します                                                                                                                       | Model and responses                | Any file                |
-| [`promptSuggestionEnabled`](#promptsuggestionenabled)                                                 | 入力ボックスのグレーアウトされた[プロンプト提案](/docs/ja/interactive-mode#prompt-suggestions)を非表示にします                                                                                                              | Interface and terminal             | Any file                |
-| [`prUrlTemplate`](#prurltemplate)                                                                     | PR リンクを github.com ではなく内部コードレビューツールにポイントします                                                                                                                                             | Git and attribution                | Any file                |
-| [`remote.defaultEnvironmentId`](#remote-defaultenvironmentid)                                         | `claude --cloud` のデフォルト[クラウド環境](/docs/ja/cloud-environments)を選択します。自己ホスト型 `ccpool_` ID はユーザーおよびマネージド設定および `--settings` からのみ読み取られます                                                           | Remote, desktop, and notifications | Any file                |
-| [`remoteControlAtStartup`](#remotecontrolatstartup)                                                   | セッション開始時に[リモートコントロール](/docs/ja/remote-control#enable-remote-control-for-all-sessions)に自動的に接続します                                                                                              | Remote, desktop, and notifications | Any file                |
-| [`requiredMaximumVersion`](#requiredmaximumversion)                                                   | 組織が許可するバージョンより新しいバージョンで[起動を拒否](/docs/ja/setup#pin-a-minimum-version)します                                                                                                                      | Updates and versioning             | Managed                 |
-| [`requiredMinimumVersion`](#requiredminimumversion)                                                   | 組織が要求するバージョンより古いバージョンで[起動を拒否](/docs/ja/setup#pin-a-minimum-version)します                                                                                                                       | Updates and versioning             | Managed                 |
-| [`respectGitignore`](#respectgitignore)                                                               | gitignored ファイルを[`@` ファイルピッカー](/docs/ja/interactive-mode#quick-commands)から除外します                                                                                                              | Interface and terminal             | Any file                |
-| [`respondToBashCommands`](#respondtobashcommands)                                                     | [`!` シェルコマンド](/docs/ja/interactive-mode#shell-mode-with-prefix)実行後に Claude が応答するのを停止します                                                                                                      | Interface and terminal             | Any file                |
-| [`sandbox`](#sandbox)                                                                                 | macOS、Linux、WSL2 で[Bash コマンドをファイルシステムとネットワークから分離](/docs/ja/sandboxing)します                                                                                                                    | Sandbox settings                   | Any file                |
-| [`sandbox.allowAppleEvents`](#sandbox-allowappleevents)                                               | [サンドボックス化](/docs/ja/sandboxing)されたコマンドが macOS で Apple Events を送信することを許可します                                                                                                                   | Sandbox settings                   | User or managed         |
-| [`sandbox.allowUnsandboxedCommands`](#sandbox-allowunsandboxedcommands)                               | Claude が[サンドボックス](/docs/ja/sandboxing#the-unsandboxed-retry-escape-hatch)外でブロックされたコマンドを再試行することを許可するか、禁止します                                                                                   | Sandbox settings                   | Any file                |
-| [`sandbox.autoAllowBashIfSandboxed`](#sandbox-autoallowbashifsandboxed)                               | [サンドボックス化](/docs/ja/sandboxing#auto-allow-mode)されたコマンドを権限プロンプトなしで実行します                                                                                                                       | Sandbox settings                   | Any file                |
-| [`sandbox.bwrapPath`](#sandbox-bwrappath)                                                             | [サンドボックス](/docs/ja/sandboxing)を `PATH` 外の bubblewrap バイナリにポイントします                                                                                                                            | Sandbox settings                   | Managed                 |
-| [`sandbox.credentials`](#sandbox-credentials)                                                         | [サンドボックス](/docs/ja/sandboxing#protect-credentials)内の認証情報ファイルと変数を非表示またはマスクします                                                                                                                 | Sandbox settings                   | Any file                |
-| [`sandbox.credentials.allowPlaintextInject`](#sandbox-credentials-allowplaintextinject)               | [マスクされた認証情報](/docs/ja/sandboxing#mask-credentials)が信頼されたテストネットワーク上のプレーン HTTP サービスに到達することを許可します                                                                                               | Sandbox settings                   | User or managed         |
-| [`sandbox.credentials.awsPairs`](#sandbox-credentials-awspairs)                                       | カスタム名の AWS キー変数を[再署名](/docs/ja/sandboxing#re-sign-aws-requests)用の 1 つの認証情報にリンクします                                                                                                            | Sandbox settings                   | User or managed         |
-| [`sandbox.credentials.envVars`](#sandbox-credentials-envvars)                                         | [サンドボックス](/docs/ja/sandboxing#mask-environment-variables)内の環境変数を設定解除またはマスクします                                                                                                                | Sandbox settings                   | Any file                |
-| [`sandbox.credentials.files`](#sandbox-credentials-files)                                             | [サンドボックス](/docs/ja/sandboxing#mask-credential-files)内の認証情報ファイルの読み取りをブロックまたはマスクします                                                                                                            | Sandbox settings                   | Any file                |
-| [`sandbox.credentials.sigv4`](#sandbox-credentials-sigv4)                                             | ストリーミング、事前署名、または[SigV4A AWS リクエスト](/docs/ja/sandboxing#re-sign-aws-requests)が失敗するか通過するかを選択します                                                                                                | Sandbox settings                   | User or managed         |
-| [`sandbox.enabled`](#sandbox-enabled)                                                                 | macOS、Linux、WSL2 で[Bash サンドボックス](/docs/ja/sandboxing#get-started)をオンにします                                                                                                                     | Sandbox settings                   | Any file                |
-| [`sandbox.enableWeakerNestedSandbox`](#sandbox-enableweakernestedsandbox)                             | Linux [サンドボックス](/docs/ja/sandboxing)を非特権コンテナ内で実行します                                                                                                                                          | Sandbox settings                   | Any file                |
-| [`sandbox.enableWeakerNetworkIsolation`](#sandbox-enableweakernetworkisolation)                       | `gh`、`gcloud`、`terraform` が macOS の[サンドボックス](/docs/ja/sandboxing#troubleshooting)内の MITM プロキシの背後で TLS を検証することを許可します                                                                          | Sandbox settings                   | Any file                |
-| [`sandbox.excludedCommands`](#sandbox-excludedcommands)                                               | 常に[サンドボックス](/docs/ja/sandboxing)外で実行されるコマンドに名前を付けます                                                                                                                                          | Sandbox settings                   | Any file                |
-| [`sandbox.failIfUnavailable`](#sandbox-failifunavailable)                                             | [サンドボックス](/docs/ja/sandboxing)ができないときに起動を拒否します。サンドボックス化されていない状態で実行する代わりに                                                                                                                     | Sandbox settings                   | Any file                |
-| [`sandbox.filesystem`](#sandbox-filesystem)                                                           | [サンドボックス化](/docs/ja/sandboxing#filesystem-isolation)されたコマンドが読み取りおよび書き込みできるパスを制御します                                                                                                           | Sandbox settings                   | Any file                |
-| [`sandbox.filesystem.allowManagedReadPathsOnly`](#sandbox-filesystem-allowmanagedreadpathsonly)       | 開発者が[組織がブロックした読み取りパス](/docs/ja/sandboxing#keep-developers-from-widening-the-policy)を再度開くのを停止します                                                                                              | Sandbox settings                   | Managed                 |
-| [`sandbox.filesystem.allowRead`](#sandbox-filesystem-allowread)                                       | [`denyRead`](#sandbox-filesystem-denyread)がブロックする領域内での読み取りを再度開きます                                                                                                                       | Sandbox settings                   | Any file                |
-| [`sandbox.filesystem.allowWrite`](#sandbox-filesystem-allowwrite)                                     | [サンドボックス化](/docs/ja/sandboxing)されたコマンドが書き込みできるパスを追加します                                                                                                                                       | Sandbox settings                   | Any file                |
-| [`sandbox.filesystem.denyRead`](#sandbox-filesystem-denyread)                                         | [サンドボックス化](/docs/ja/sandboxing)されたコマンドが特定のパスを読み取るのをブロックします                                                                                                                                   | Sandbox settings                   | Any file                |
-| [`sandbox.filesystem.denyWrite`](#sandbox-filesystem-denywrite)                                       | [サンドボックス化](/docs/ja/sandboxing)されたコマンドが特定のパスに書き込むのをブロックします                                                                                                                                   | Sandbox settings                   | Any file                |
-| [`sandbox.filesystem.disabled`](#sandbox-filesystem-disabled)                                         | ネットワーク分離を保持しながら[ファイルシステム分離をオフ](/docs/ja/sandboxing#disable-filesystem-isolation)にします                                                                                                         | Sandbox settings                   | User or managed         |
-| [`sandbox.ignoreViolations`](#sandbox-ignoreviolations)                                               | コマンドがプローブすることが予想されるパスの違反レポートをサイレンスします                                                                                                                                                   | Sandbox settings                   | Any file                |
-| [`sandbox.network`](#sandbox-network)                                                                 | [サンドボックス化](/docs/ja/sandboxing#network-isolation)されたコマンドが到達するホスト、ポート、ソケットを制御します                                                                                                              | Sandbox settings                   | Any file                |
-| [`sandbox.network.allowAllUnixSockets`](#sandbox-network-allowallunixsockets)                         | [サンドボックス化](/docs/ja/sandboxing)されたコマンドがすべての Unix ソケットに接続することを許可します                                                                                                                           | Sandbox settings                   | Any file                |
-| [`sandbox.network.allowedDomains`](#sandbox-network-alloweddomains)                                   | [サンドボックス化](/docs/ja/sandboxing)されたコマンドがそれらのプロンプトを表示しないようにドメインを事前許可します                                                                                                                        | Sandbox settings                   | Any file                |
-| [`sandbox.network.allowLocalBinding`](#sandbox-network-allowlocalbinding)                             | [サンドボックス化](/docs/ja/sandboxing)されたコマンドが macOS で localhost ポートにバインドすることを許可します                                                                                                                 | Sandbox settings                   | Any file                |
-| [`sandbox.network.allowMachLookup`](#sandbox-network-allowmachlookup)                                 | macOS [サンドボックス化](/docs/ja/sandboxing)ツール（iOS Simulator または Playwright など）が XPC サービスに到達することを許可します                                                                                             | Sandbox settings                   | Any file                |
-| [`sandbox.network.allowManagedDomainsOnly`](#sandbox-network-allowmanageddomainsonly)                 | ネットワーク許可リストを[マネージド設定](/docs/ja/sandboxing#keep-developers-from-widening-the-policy)にロックします                                                                                                   | Sandbox settings                   | Managed                 |
-| [`sandbox.network.allowUnixSockets`](#sandbox-network-allowunixsockets)                               | [サンドボックス化](/docs/ja/sandboxing)されたコマンドが macOS で使用できる Unix ソケットパスをリストします                                                                                                                      | Sandbox settings                   | Any file                |
-| [`sandbox.network.deniedDomains`](#sandbox-network-denieddomains)                                     | [サンドボックス化](/docs/ja/sandboxing)されたコマンドのドメインをブロックします。許可されたワイルドカード内でも                                                                                                                          | Sandbox settings                   | Any file                |
-| [`sandbox.network.httpProxyPort`](#sandbox-network-httpproxyport)                                     | [サンドボックス](/docs/ja/sandboxing#custom-proxy-configuration)HTTP トラフィックを独自のプロキシを通してルーティングします                                                                                                    | Sandbox settings                   | Any file                |
-| [`sandbox.network.socksProxyPort`](#sandbox-network-socksproxyport)                                   | [サンドボックス](/docs/ja/sandboxing#custom-proxy-configuration)SOCKS トラフィックを独自のプロキシを通してルーティングします                                                                                                   | Sandbox settings                   | Any file                |
-| [`sandbox.network.strictAllowlist`](#sandbox-network-strictallowlist)                                 | プロンプトの代わりに[許可リスト](/docs/ja/sandboxing#network-isolation)外のホストを拒否します                                                                                                                          | Sandbox settings                   | User or managed         |
-| [`sandbox.network.tlsTerminate`](#sandbox-network-tlsterminate)                                       | [サンドボックス](/docs/ja/sandboxing#network-isolation)プロキシが TLS を終了して HTTPS リクエストを読み取ることができるようにします                                                                                                 | Sandbox settings                   | User or managed         |
-| [`sandbox.ripgrep`](#sandbox-ripgrep)                                                                 | [サンドボックス](/docs/ja/sandboxing)内で独自の ripgrep バイナリを使用します                                                                                                                                       | Sandbox settings                   | User or managed         |
-| [`sandbox.socatPath`](#sandbox-socatpath)                                                             | [サンドボックス](/docs/ja/sandboxing)プロキシを `PATH` 外の `socat` バイナリにポイントします                                                                                                                           | Sandbox settings                   | Managed                 |
-| [`showClearContextOnPlanAccept`](#showclearcontextonplanaccept)                                       | [プラン受け入れ画面](/docs/ja/permission-modes#review-and-approve-a-plan)に「コンテキストをクリア」オプションを表示します                                                                                                     | Interface and terminal             | Any file                |
-| [`showThinkingSummaries`](#showthinkingsummaries)                                                     | Claude の[思考](/docs/ja/model-config#extended-thinking)の要約を折りたたまれたスタブの代わりに表示します                                                                                                                | Model and responses                | Any file                |
-| [`showTurnDuration`](#showturnduration)                                                               | 各応答後の「Cooked for」期間を非表示にします                                                                                                                                                             | Interface and terminal             | Any file                |
-| [`skillListingBudgetFraction`](#skilllistingbudgetfraction)                                           | [スキルリスティング](/docs/ja/skills#skill-descriptions-are-cut-short)用にコンテキストをより多くまたはより少なく予約します                                                                                                      | Memory and context                 | Any file                |
-| [`skillListingMaxDescChars`](#skilllistingmaxdescchars)                                               | [スキルリスティング](/docs/ja/skills#skill-descriptions-are-cut-short)内の各スキルの説明長をキャップします                                                                                                              | Memory and context                 | Any file                |
-| [`skillOverrides`](#skilloverrides)                                                                   | [SKILL.md を編集せずにスキルを非表示または折りたたむ](/docs/ja/skills#override-skill-visibility-from-settings)                                                                                                    | Plugins and skills                 | Any file                |
-| [`skipAutoPermissionPrompt`](#skipautopermissionprompt)                                               | 組み込みデフォルトではなく自分で[自動モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)に入るときに Claude Code が表示する 1 回限りの通知をスキップします                                                                 | Permission settings                | User or managed         |
-| [`skipDangerousModePermissionPrompt`](#skipdangerousmodepermissionprompt)                             | [bypassPermissions モード](/docs/ja/permission-modes#skip-all-checks-with-bypasspermissions-mode)の前の確認ダイアログをスキップします                                                                             | Permission settings                | User, local, or managed |
-| [`skipWebFetchPreflight`](#skipwebfetchpreflight)                                                     | Anthropic に到達できないときに[WebFetch ホスト名チェック](/docs/ja/tools-reference#webfetch-tool-behavior)をスキップします                                                                                             | Privacy and telemetry              | Any file                |
-| [`spellcheck`](#spellcheck)                                                                           | インストールする[スペルチェッカー](/docs/ja/interactive-mode#check-spelling-as-you-type)でプロンプト入力の誤字にアンダーラインを引きます                                                                                             | Interface and terminal             | User or managed         |
-| [`spinnerTipsEnabled`](#spinnertipsenabled)                                                           | Claude が作業中にスピナーのヒントを非表示にします                                                                                                                                                            | Interface and terminal             | Any file                |
-| [`spinnerTipsOverride`](#spinnertipsoverride)                                                         | スピナーローテーションに独自のヒントを追加するか、組み込みヒントを置き換えます                                                                                                                                                 | Interface and terminal             | Any file                |
-| [`spinnerVerbs`](#spinnerverbs)                                                                       | ターンの実行中に表示される動詞を追加または置き換えます                                                                                                                                                             | Interface and terminal             | Any file                |
-| [`sshConfigs`](#sshconfigs)                                                                           | Desktop 環境ドロップダウンに[SSH 接続](/docs/ja/desktop#pre-configure-ssh-connections-for-your-team)を追加します                                                                                               | Remote, desktop, and notifications | User or managed         |
-| [`sshHostAllowlist`](#sshhostallowlist)                                                               | [Desktop SSH セッション](/docs/ja/desktop#restrict-which-ssh-hosts-users-can-connect-to)が到達できるホストを制限します                                                                                           | Remote, desktop, and notifications | Managed                 |
-| [`statusLine`](#statusline)                                                                           | [ステータスライン](/docs/ja/statusline)をプロンプトの下にレンダリングする独自のコマンドを実行します                                                                                                                                | Interface and terminal             | Any file                |
-| [`strictKnownMarketplaces`](#strictknownmarketplaces)                                                 | ユーザーが追加およびインストールできる[マーケットプレイス](/docs/ja/plugins/overview)ソースを許可リストに登録します                                                                                                                     | Plugins and skills                 | Managed                 |
-| [`strictPluginOnlyCustomization`](#strictpluginonlycustomization)                                     | ユーザーおよびプロジェクトソースから[スキル](/docs/ja/skills)、[エージェント](/docs/ja/sub-agents)、[フック](/docs/ja/hooks)、[MCP サーバー](/docs/ja/mcp)をブロックします                                                                               | Plugins and skills                 | Managed                 |
-| [`strictPluginOnlyCustomization.agents`](#strictpluginonlycustomization-agents)                       | [エージェント](/docs/ja/sub-agents)をプラグインおよびマネージドソースにロックします                                                                                                                                        | Plugins and skills                 | Managed                 |
-| [`strictPluginOnlyCustomization.hooks`](#strictpluginonlycustomization-hooks)                         | [フック](/docs/ja/hooks)をプラグインおよびマネージドソースにロックします                                                                                                                                                | Plugins and skills                 | Managed                 |
-| [`strictPluginOnlyCustomization.mcp`](#strictpluginonlycustomization-mcp)                             | [MCP サーバー](/docs/ja/mcp)をプラグインおよびマネージドソースにロックします                                                                                                                                             | Plugins and skills                 | Managed                 |
-| [`strictPluginOnlyCustomization.skills`](#strictpluginonlycustomization-skills)                       | [スキル](/docs/ja/skills)をプラグインおよびマネージドソースにロックします                                                                                                                                               | Plugins and skills                 | Managed                 |
-| [`subagentPromptCacheTtl`](#subagentpromptcachettl)                                                   | サブエージェントおよびメイン会話外の他のリクエストの[プロンプトキャッシュライフタイム](/docs/ja/prompt-caching#cache-lifetime)を選択します                                                                                                   | Model and responses                | Any file                |
-| [`subagentStatusLine`](#subagentstatusline)                                                           | [サブエージェント](/docs/ja/sub-agents)タスク表示の行を独自のコマンドで書き直します                                                                                                                                        | Interface and terminal             | Any file                |
-| [`switchModelsOnFlag`](#switchmodelsonflag)                                                           | [安全分類器](/docs/ja/model-config#ask-before-switching)がリクエストにフラグを立てたときにモデルを自動的に切り替えるか一時停止します                                                                                                    | Model and responses                | Any file                |
-| [`syncClaudeAiPlugins`](#syncclaudeaiplugins)                                                         | [claude.ai アカウントで有効になっているプラグイン](/docs/ja/plugins/loading#synced-plugins)のロードを停止し、新しいものをダウンロードするのを停止します                                                                                       | Plugins and skills                 | User, local, or managed |
-| [`syncClaudeAiSkills`](#syncclaudeaiskills)                                                           | [claude.ai アカウントで有効になっているスキル](/docs/ja/skills#how-synced-skills-behave)のロードを停止し、新しいものをダウンロードするのを停止します                                                                                        | Plugins and skills                 | User, local, or managed |
-| [`syntaxHighlightingDisabled`](#syntaxhighlightingdisabled)                                           | diff およびコードブロックの構文強調表示をオフにします                                                                                                                                                           | Interface and terminal             | Any file                |
-| [`taskOutputMaxChars`](#taskoutputmaxchars)                                                           | v2.1.277 で削除されました。それがサイズを設定した `TaskOutput` ツールと一緒に削除されました                                                                                                                               | Memory and context                 | Any file                |
-| [`teammateDefaultModel`](#teammatedefaultmodel)                                                       | v2.1.234 で削除されました。Claude Code がチームメイトのモデルを選択する方法については[チームメイトとモデルを指定](/docs/ja/agent-teams#specify-teammates-and-models)を参照してください                                                             | Global config settings             | Global config           |
-| [`teammateMode`](#teammatemode)                                                                       | [エージェントチームチームメイトの表示](/docs/ja/agent-teams#choose-a-display-mode)方法を選択します                                                                                                                     | Agents, sessions, and worktrees    | Any file                |
-| [`terminalProgressBarEnabled`](#terminalprogressbarenabled)                                           | それをサポートするターミナルでターミナルプログレスバーを非表示にします                                                                                                                                                     | Interface and terminal             | Any file                |
-| [`terminalTitleFromRename`](#terminaltitlefromrename)                                                 | [`/rename`](/docs/ja/sessions#name-your-sessions)および `--name` がターミナルタブタイトルを変更するのを停止します                                                                                                       | Interface and terminal             | Any file                |
-| [`theme`](#theme)                                                                                     | インターフェイス[カラーテーマ](/docs/ja/terminal-config#match-the-color-theme)を選択します。組み込みまたはカスタム                                                                                                           | Interface and terminal             | Any file                |
-| [`timeFormat`](#timeformat)                                                                           | インターフェイスの時刻を 12 時間または 24 時間クロック、UTC、または strftime パターンで表示します                                                                                                                             | Interface and terminal             | Any file                |
-| [`timeZone`](#timezone)                                                                               | インターフェイスの時刻をシステムのタイムゾーン以外のタイムゾーンで表示します                                                                                                                                                  | Interface and terminal             | Any file                |
-| [`tui`](#tui)                                                                                         | [フルスクリーン](/docs/ja/fullscreen)または従来のターミナルレンダラーを選択します                                                                                                                                         | Interface and terminal             | Any file                |
-| [`ultracode`](#ultracode)                                                                             | Claude が尋ねられることなく各実質的なタスクの[ワークフロー](/docs/ja/workflows#let-claude-decide-with-ultracode)を計画するようにします                                                                                           | Model and responses                | Any file                |
-| [`useAutoModeDuringPlan`](#useautomodeduringplan)                                                     | [自動モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)分類器が[プランモード](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode)でシェルコマンドをレビューすることを許可します。`false` に設定してプロンプトを取得します | Permission settings                | User, local, or managed |
-| [`verbose`](#verbose)                                                                                 | 切り詰められた要約の代わりに[完全なツール出力](/docs/ja/cli-reference#cli-flags)を表示します。両方が設定されている場合、`viewMode` が優先されます                                                                                             | Interface and terminal             | Any file                |
-| [`viewMode`](#viewmode)                                                                               | すべてのセッションを[デフォルト、詳細、またはフォーカスビュー](/docs/ja/cli-reference#cli-flags)で開始します                                                                                                                     | Interface and terminal             | Any file                |
-| [`vimInsertModeRemaps`](#viminsertmoderemaps)                                                         | `jj` などの 2 キー[INSERT モードシーケンス](/docs/ja/interactive-mode#remap-insert-mode-key-sequences)を Escape にマップします                                                                                    | Interface and terminal             | User or managed         |
-| [`voice`](#voice)                                                                                     | [音声ディクテーション](/docs/ja/voice-dictation)をオンにして、ホールドまたはタップモードを選択します                                                                                                                             | Interface and terminal             | Any file                |
-| [`voiceEnabled`](#voiceenabled)                                                                       | 古い単一キー形式で[音声ディクテーション](/docs/ja/voice-dictation)をオンにします                                                                                                                                       | Interface and terminal             | Any file                |
-| [`wheelScrollAccelerationEnabled`](#wheelscrollaccelerationenabled)                                   | フルスクリーンレンダリングで[マウスホイール加速](/docs/ja/fullscreen#mouse-wheel-scrolling)をオフにします                                                                                                                  | Interface and terminal             | Any file                |
-| [`workflowKeywordTriggerEnabled`](#workflowkeywordtriggerenabled)                                     | プロンプト内の単語 `ultracode` が[ワークフロー](/docs/ja/workflows)を開始することを許可します。`false` に設定して入力します                                                                                                          | Hooks and automation               | Any file                |
-| [`workflowSizeGuideline`](#workflowsizeguideline)                                                     | Claude が[動的ワークフロー](/docs/ja/workflows)で目指すエージェント数を設定します                                                                                                                                      | Hooks and automation               | Any file                |
-| [`worktree`](#worktree)                                                                               | Claude Code が git [worktrees](/docs/ja/worktrees)を作成する方法を設定します                                                                                                                               | Agents, sessions, and worktrees    | Any file                |
-| [`worktree.baseRef`](#worktree-baseref)                                                               | 新しい[worktrees](/docs/ja/worktrees)をリモートデフォルトブランチまたはローカル HEAD からブランチします                                                                                                                       | Agents, sessions, and worktrees    | Any file                |
-| [`worktree.bgIsolation`](#worktree-bgisolation)                                                       | バックグラウンドセッションが[worktree](/docs/ja/worktrees)なしで作業コピーを編集することを許可します                                                                                                                            | Agents, sessions, and worktrees    | Any file                |
-| [`worktree.sparsePaths`](#worktree-sparsepaths)                                                       | 各[worktree](/docs/ja/worktrees)で必要なディレクトリのみをチェックアウトします                                                                                                                                       | Agents, sessions, and worktrees    | Any file                |
-| [`worktree.symlinkDirectories`](#worktree-symlinkdirectories)                                         | 大きなディレクトリを各[worktree](/docs/ja/worktrees)に複製する代わりにシンボリックリンクします                                                                                                                               | Agents, sessions, and worktrees    | Any file                |
-| [`wslInheritsWindowsSettings`](#wslinheritswindowssettings)                                           | WSL が Windows ポリシーチェーンから[マネージド設定](/docs/ja/managed-settings)を読み取ることを許可します                                                                                                                    | Enterprise and managed settings    | Managed                 |
+| Key | Description | Topic | Scope |
+| :- | :- | :- | :- |
+| [`advisorModel`](#advisormodel) | Claude が[アドバイザーツール](/docs/ja/advisor)に答えるときに使用するモデルを選択します | Model and responses | Any file |
+| [`agent`](#agent) | すべてのセッションを、プロンプト、ツール、モデルを持つ名前付き[サブエージェント](/docs/ja/sub-agents)として開始します | Agents, sessions, and worktrees | Any file |
+| [`agentPushNotifEnabled`](#agentpushnotifenabled) | Claude が決定したときに[プッシュ通知をスマートフォンに送信](/docs/ja/remote-control#mobile-push-notifications)することを許可します | Remote, desktop, and notifications | Any file |
+| [`allowAllClaudeAiMcps`](#allowallclaudeaimcps) | デプロイされた[`managed-mcp.json`](/docs/ja/managed-mcp#exclusive-control-with-managed-mcp-json)と一緒に Claude Code が自身で取得する[claude.ai コネクタ](/docs/ja/mcp)をロードします | MCP | Managed |
+| [`allowedChannelPlugins`](#allowedchannelplugins) | メッセージをプッシュできる[チャネルプラグイン](/docs/ja/channels#restrict-which-channel-plugins-can-run)のデフォルト許可リストを置き換えます | Plugins and skills | Managed |
+| [`allowedHttpHookUrls`](#allowedhttphookurls) | [HTTP フック](/docs/ja/hooks)がターゲットできる URL を制限します | Hooks and automation | Any file |
+| [`allowedMcpServers`](#allowedmcpservers) | ユーザーが追加できる[MCP サーバー](/docs/ja/mcp)を許可リストに登録します | MCP | Any file |
+| [`allowManagedHooksOnly`](#allowmanagedhooksonly) | 組織がデプロイする[フック](/docs/ja/hooks)のみを実行します | Hooks and automation | Managed |
+| [`allowManagedMcpServersOnly`](#allowmanagedmcpserversonly) | マネージド[MCP](/docs/ja/mcp)許可リストが適用される唯一のものにします | MCP | Managed |
+| [`allowManagedPermissionRulesOnly`](#allowmanagedpermissionrulesonly) | [マネージド設定](/docs/ja/managed-settings)を[権限ルール](/docs/ja/permissions#managed-settings)の唯一の設定ソースにします | Permission settings | Managed |
+| [`alwaysThinkingEnabled`](#alwaysthinkingenabled) | すべてのセッションで[拡張思考](/docs/ja/model-config#extended-thinking)をオフにします | Model and responses | Any file |
+| [`apiKeyHelper`](#apikeyhelper) | 独自のコマンドで[API 認証情報](/docs/ja/authentication#credential-management)を生成します | Authentication and providers | Any file |
+| [`askUserQuestionTimeout`](#askuserquestiontimeout) | 未回答の質問が[アイドル時間後に自動継続](/docs/ja/tools-reference#question-auto-continue-timeout)することを許可します | Interface and terminal | User or managed |
+| [`attribution`](#attribution) | Claude Code がコミットとプルリクエストに追加する属性をカスタマイズします | Git and attribution | Any file |
+| [`attribution.commit`](#attribution-commit) | Claude Code がコミットに追加するトレーラーを変更または非表示にします | Git and attribution | Any file |
+| [`attribution.pr`](#attribution-pr) | プルリクエスト説明の属性行を変更または非表示にします | Git and attribution | Any file |
+| [`attribution.sessionUrl`](#attribution-sessionurl) | [クラウド](/docs/ja/claude-code-on-the-web)および[リモートコントロール](/docs/ja/remote-control)コミットから claude.ai セッションリンクを省略します | Git and attribution | Any file |
+| [`autoCompactEnabled`](#autocompactenabled) | [自動コンパクション](/docs/ja/context-window)をオフまたはオンにします | Memory and context | Any file |
+| [`autoCompactWindow`](#autocompactwindow) | Claude Code が[コンパクト](/docs/ja/context-window)する前にコンテキストがどのくらい満杯になるかを設定します | Memory and context | Any file |
+| [`autoConnectIde`](#autoconnectide) | 外部ターミナルから実行中の[VS Code](/docs/ja/vs-code)または[JetBrains](/docs/ja/jetbrains#from-external-terminals) IDE に自動的に接続します | Global config settings | Global config |
+| [`autoContinueAtUsageLimit`](#autocontinueatusagelimit) | オープンセッションで待機し、claude.ai 使用制限がリセットされた後に[タスクを自動的に継続](/docs/ja/interactive-mode#wait-for-a-usage-limit-to-reset)します | Interface and terminal | User or managed |
+| [`autoInstallIdeExtension`](#autoinstallideextension) | VS Code ターミナルから[IDE 拡張機能](/docs/ja/vs-code#install-the-extension)の自動インストールをオフにします | Global config settings | Global config |
+| [`autoMemoryDirectory`](#automemorydirectory) | [自動メモリ](/docs/ja/memory#auto-memory)を選択したディレクトリに保存します | Memory and context | Any file |
+| [`autoMemoryEnabled`](#automemoryenabled) | [自動メモリ](/docs/ja/memory#auto-memory)をオフまたはオンにします | Memory and context | Any file |
+| [`autoMode`](#automode) | [自動モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)分類器に独自の許可および拒否ルールを追加します | Permission settings | User or managed |
+| [`autoMode.classifyAllShell`](#automode-classifyallshell) | 狭い許可ルールが一致するものでも、すべてのシェルコマンドを[自動モード分類器](/docs/ja/permission-modes#what-the-classifier-blocks-by-default)を通して送信します | Permission settings | User or managed |
+| [`autoScrollEnabled`](#autoscrollenabled) | フルスクリーンレンダリングで[新しい出力に従う](/docs/ja/fullscreen#auto-follow)ことを有効にします | Interface and terminal | Any file |
+| [`autoUpdatesChannel`](#autoupdateschannel) | 最新ではなく安定した[リリースチャネル](/docs/ja/setup#configure-release-channel)に従います | Updates and versioning | Any file |
+| [`availableModels`](#availablemodels) | [ユーザーが選択できるモデルを制限](/docs/ja/model-config#restrict-model-selection)します | Model and responses | Any file |
+| [`availableModelsMatch`](#availablemodelsmatch) | 各 `availableModels` モデル ID エントリが[それが名前を付けるバージョンのみを許可](/docs/ja/model-config#block-specific-models-or-versions)するようにします | Model and responses | Managed |
+| [`awaySummaryEnabled`](#awaysummaryenabled) | ターミナルに戻ったときに表示される[セッション要約](/docs/ja/interactive-mode#session-recap)をオフにします | Remote, desktop, and notifications | Any file |
+| [`awsAuthRefresh`](#awsauthrefresh) | 独自のコマンドで `.aws` の期限切れ[Bedrock 認証情報](/docs/ja/amazon-bedrock#advanced-credential-configuration)をリフレッシュします | Authentication and providers | Any file |
+| [`awsCredentialExport`](#awscredentialexport) | 独自のコマンドから JSON として[Bedrock 認証情報](/docs/ja/amazon-bedrock#advanced-credential-configuration)を提供します | Authentication and providers | Any file |
+| [`axScreenReader`](#axscreenreader) | [スクリーンリーダーフレンドリーな出力](/docs/ja/accessibility)をレンダリングします | Interface and terminal | Any file |
+| [`bashEditDiffEnabled`](#basheditdiffenabled) | すべての権限モードで[Bash コマンドが変更したファイル](/docs/ja/hooks#bash)を記録します | Interface and terminal | User or managed |
+| [`bashOutputMaxChars`](#bashoutputmaxchars) | 成功したコマンドの[出力](/docs/ja/tools-reference#output-limits)のうち Claude が受け取るインライン量を設定します | Memory and context | Any file |
+| [`blockedMarketplaces`](#blockedmarketplaces) | 組織の[プラグインマーケットプレイス](/docs/ja/plugins/overview)ソースをブロックします | Plugins and skills | Managed |
+| [`browserExternalPageTools`](#browserexternalpagetools) | [デスクトップ](/docs/ja/desktop)ブラウザペインの外部ページで Claude のツールをオフにします | Tools | Managed |
+| [`channelsEnabled`](#channelsenabled) | 組織の[チャネル](/docs/ja/channels#enable-channels-for-your-organization)を許可します | Plugins and skills | Managed |
+| [`claudeInChromeDefaultEnabled`](#claudeinchromedefaultenabled) | `--chrome` を渡さずにすべてのインタラクティブ CLI セッションで[Chrome 統合](/docs/ja/chrome)をオンにします | Global config settings | Global config |
+| [`claudeMd`](#claudemd) | マネージド設定から組織全体の[CLAUDE.md](/docs/ja/memory#deploy-organization-wide-claude-md)指示を注入します | Memory and context | Managed |
+| [`claudeMdExcludes`](#claudemdexcludes) | メモリがロードされるときに特定の[CLAUDE.md](/docs/ja/memory#exclude-specific-claude-md-files)ファイルをスキップします | Memory and context | Any file |
+| [`cleanupPeriodDays`](#cleanupperioddays) | Claude Code が[トランスクリプト](/docs/ja/data-usage#data-retention)を削除する前に保持する日数を選択します | Privacy and telemetry | Any file |
+| [`companyAnnouncements`](#companyannouncements) | スタートアップ時に組織のアナウンスメントを表示します | Interface and terminal | Any file |
+| [`copyFullResponse`](#copyfullresponse) | [`/copy`](/docs/ja/commands)がコードブロックピッカーを表示せずに完全な応答をコピーするようにします | Global config settings | Global config |
+| [`copyOnSelect`](#copyonselect) | [フルスクリーンレンダリング](/docs/ja/fullscreen#use-the-mouse)およびエージェントビューでマウスで選択したテキストの自動コピーをオフにします | Global config settings | Global config |
+| [`crossSessionInbound`](#crosssessioninbound) | Claude Code が[他のセッションからのメッセージ](/docs/ja/cross-session-messaging#control-inbound-messages)を配信するか、配信せずに通知を表示するか、または拒否するかを選択します | Agents, sessions, and worktrees | Any file |
+| [`defaultShell`](#defaultshell) | [`!` プレフィックス](/docs/ja/interactive-mode#shell-mode-with-prefix)で入力したシェルコマンドを実行する Bash または PowerShell を選択します | Interface and terminal | Any file |
+| [`defaultToAgentsView`](#defaulttoagentsview) | 引数なしで `claude` を実行するときに新しい会話の代わりに[エージェントビュー](/docs/ja/agent-view)を開きます | Global config settings | Global config |
+| [`deniedMcpServers`](#deniedmcpservers) | URL、コマンド、または名前で特定の[MCP サーバー](/docs/ja/mcp)をブロックします | MCP | Any file |
+| [`deniedModels`](#deniedmodels) | [特定のモデルをブロック](/docs/ja/model-config#block-specific-models-or-versions)します。`availableModels` が許可するものでも | Model and responses | Managed |
+| [`desktopSessionCleanupPeriodDays`](#desktopsessioncleanupperioddays) | [Claude Desktop および Cowork トランスクリプト](/docs/ja/claude-directory#cleaned-up-automatically)の経過日数制限を設定します | Privacy and telemetry | User or managed |
+| [`dialogExpiry`](#dialogexpiry) | Claude Code が[リモートコントロール](/docs/ja/remote-control)または SDK ホストが転送されたダイアログに答えるのを待つ時間を設定します | Interface and terminal | User or managed |
+| [`diffTool`](#difftool) | Claude の提案されたファイル変更が[VS Code](/docs/ja/vs-code)または[JetBrains](/docs/ja/jetbrains#features)差分ビューアで開くか、ターミナルに留まるかを選択します | Global config settings | Global config |
+| [`disableAgentView`](#disableagentview) | バックグラウンドエージェントと[エージェントビュー](/docs/ja/agent-view)をオフにします | Agents, sessions, and worktrees | Any file |
+| [`disableAllHooks`](#disableallhooks) | [フック](/docs/ja/hooks)、カスタム[ステータスライン](/docs/ja/statusline)、およびカスタム[`@` ファイル提案](/docs/ja/interactive-mode#quick-commands)コマンドを一度にオフにします | Hooks and automation | Any file |
+| [`disableArtifact`](#disableartifact) | 非推奨。`enableArtifact` を使用して[Artifact ツール](/docs/ja/artifacts)をオフにします | Remote, desktop, and notifications | Any file |
+| [`disableAutoMode`](#disableautomode) | 権限モードサイクルから[自動モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)を削除します | Permission settings | Any file |
+| [`disableBrowserExternalNavigation`](#disablebrowserexternalnavigation) | [デスクトップ](/docs/ja/desktop)ブラウザペインをユーザーと Claude の localhost に制限します | Tools | Managed |
+| [`disableBundledSkills`](#disablebundledskills) | Claude Code に含まれる[スキル](/docs/ja/skills#bundled-skills)および[ワークフロー](/docs/ja/workflows)をオフにします | Plugins and skills | Any file |
+| [`disableClaudeAiConnectors`](#disableclaudeaiconnectors) | [claude.ai コネクタ](/docs/ja/mcp#disable-claude-ai-connectors)をオフにして、Claude Code がそれらを取得しないようにします | MCP | Any file |
+| [`disableCommandPluginSources`](#disablecommandpluginsources) | マーケットプレイス宣言コマンドを実行してインストールする[プラグイン](/docs/ja/plugins/overview)をブロックします | Plugins and skills | Managed |
+| [`disableDeepLinkRegistration`](#disabledeeplinkregistration) | Claude Code が[`claude-cli://` ハンドラー](/docs/ja/deep-links)を登録するのを停止します | Remote, desktop, and notifications | Any file |
+| [`disableDesktopLocalSessions`](#disabledesktoplocalsessions) | デバイスで実行される[Desktop Code セッション](/docs/ja/desktop#local-sessions-on-managed-devices)をオフにして、SSH を他のホストとクラウドに残します | Remote, desktop, and notifications | Managed |
+| [`disabledMcpjsonServers`](#disabledmcpjsonservers) | プロジェクトの[`.mcp.json`](/docs/ja/mcp#project-scope)から特定のサーバーを拒否します | MCP | Any file |
+| [`disableMobileSimulatorTools`](#disablemobilesimulatortools) | [デスクトップ](/docs/ja/desktop)iOS Simulator ペインで Claude のツールをブロックします | Tools | Managed |
+| [`disableRemoteControl`](#disableremotecontrol) | [リモートコントロール](/docs/ja/remote-control)をすべての場所でオフにします | Remote, desktop, and notifications | Any file |
+| [`disableSideloadFlags`](#disablesideloadflags) | [プラグイン](/docs/ja/plugins/overview)、[サブエージェント](/docs/ja/sub-agents)、および[MCP サーバー](/docs/ja/mcp)をサイドロードする CLI フラグを拒否します | Enterprise and managed settings | Managed |
+| [`disableSkillShellExecution`](#disableskillshellexecution) | [スキル](/docs/ja/skills)およびカスタムコマンドがインラインシェルを実行するのを停止します | Plugins and skills | Any file |
+| [`disableWorkflows`](#disableworkflows) | すべてのユーザーの[動的ワークフロー](/docs/ja/workflows)をオフにします。自分自身の場合は `enableWorkflows` を使用します | Hooks and automation | Any file |
+| [`editorMode`](#editormode) | 入力プロンプトで[vim キーバインディング](/docs/ja/interactive-mode#vim-editor-mode)を使用します | Interface and terminal | Any file |
+| [`effortLevel`](#effortlevel) | 保存されたレベルを持たないモデルのデフォルト[努力レベル](/docs/ja/model-config#adjust-effort-level)を設定します | Model and responses | Any file |
+| [`emojiCompletionEnabled`](#emojicompletionenabled) | プロンプト入力で[`:shortcode:` 絵文字の提案と置換](/docs/ja/interactive-mode#emoji-shortcodes)をオフにします | Interface and terminal | Any file |
+| [`enableAllProjectMcpServers`](#enableallprojectmcpservers) | プロンプトなしでプロジェクト[`.mcp.json`](/docs/ja/mcp#project-server-approvals-and-workspace-trust)ファイル内のすべてのサーバーを承認します | MCP | Any file |
+| [`enableArtifact`](#enableartifact) | 任意のファイルで `false` を使用して[Artifact ツール](/docs/ja/artifacts)をオフにします。ファイルはそれをオンに戻すことはできません | Remote, desktop, and notifications | Any file |
+| [`enabledMcpjsonServers`](#enabledmcpjsonservers) | プロジェクトの[`.mcp.json`](/docs/ja/mcp#project-server-approvals-and-workspace-trust)から特定のサーバーを承認します | MCP | Any file |
+| [`enabledPlugins`](#enabledplugins) | スコープごとに個別の[プラグイン](/docs/ja/plugins/overview)をオンまたはオフにします | Plugins and skills | Any file |
+| [`enableWorkflows`](#enableworkflows) | プランのデフォルトに対して[動的ワークフロー](/docs/ja/workflows)をオンまたはオフにします | Hooks and automation | Any file |
+| [`enforceAvailableModels`](#enforceavailablemodels) | [`/model` デフォルト選択](/docs/ja/model-config#enforce-the-allowlist-for-the-default-model)を `availableModels` 許可リスト内に保ちます | Model and responses | Any file |
+| [`env`](#env) | すべてのセッションとそのサブプロセスの[環境変数](/docs/ja/env-vars#in-settings-files)を設定します | Memory and context | Any file |
+| [`externalEditorContext`](#externaleditorcontext) | [Ctrl+G](/docs/ja/interactive-mode#general-controls)を押して編集するときに Claude の最後の応答をコメントとして表示します | Global config settings | Global config |
+| [`extraKnownMarketplaces`](#extraknownmarketplaces) | リポジトリまたは組織の[マーケットプレイス](/docs/ja/plugins/overview)を登録します | Plugins and skills | Any file |
+| [`fallbackModel`](#fallbackmodel) | プライマリがオーバーロードされたときの[バックアップモデル](/docs/ja/model-config#fallback-model-chains)に名前を付けます | Model and responses | Any file |
+| [`fastMode`](#fastmode) | 利用可能なセッションで[高速モード](/docs/ja/fast-mode)をオンにします | Model and responses | Any file |
+| [`fastModePerSessionOptIn`](#fastmodepersessionoptin) | ユーザーが各セッションで[高速モード](/docs/ja/fast-mode)をオンにすることを要求します | Model and responses | Any file |
+| [`feedbackDrafts`](#feedbackdrafts) | Claude が[フィードバックドラフト](/docs/ja/tools-reference#sendfeedback-tool-behavior)をキューに入れるかどうかを制御します | Privacy and telemetry | User or managed |
+| [`feedbackSurveyRate`](#feedbacksurveyrate) | [セッション品質調査](/docs/ja/data-usage#session-quality-surveys)が表示される頻度を変更します | Privacy and telemetry | Any file |
+| [`fileCheckpointingEnabled`](#filecheckpointingenabled) | [`/rewind`](/docs/ja/checkpointing)が復元するファイルスナップショットをオフまたはオンにします | Memory and context | Any file |
+| [`fileSuggestion`](#filesuggestion) | 独自のコマンドから[`@` ファイルオートコンプリート](/docs/ja/interactive-mode#quick-commands)を提供します | Interface and terminal | Any file |
+| [`footerLinksRegexes`](#footerlinksregexes) | 出力内の問題またはレビュー ID を入力ボックスの下の[クリック可能なリンク](/docs/ja/statusline#clickable-links)にします | Interface and terminal | User or managed |
+| [`forceLoginGatewayUrl`](#forcelogingatewayurl) | ログイン画面が接続する[ゲートウェイ URL](/docs/ja/claude-apps-gateway#set-the-gateway-url)を設定します | Authentication and providers | Managed |
+| [`forceLoginMethod`](#forceloginmethod) | [ログインを制限](/docs/ja/authentication#restrict-login-to-your-organization)して claude.ai、Claude Console、または[クラウドゲートウェイ](/docs/ja/claude-apps-gateway)にします | Authentication and providers | Any file |
+| [`forceLoginOrgUUID`](#forceloginorguuid) | [claude.ai ログインを組織にピン留め](/docs/ja/authentication#restrict-login-to-your-organization)します。マネージドソースのみがそれを強制します | Authentication and providers | Any file |
+| [`forceRemoteSettingsRefresh`](#forceremotesettingsrefresh) | [サーバーマネージド設定](/docs/ja/server-managed-settings)が新しく取得されるまでスタートアップをブロックします | Enterprise and managed settings | Managed |
+| [`gatewayInternalNetworks`](#gatewayinternalnetworks) | `/login` が組織が内部的に使用するパブリック IPv4 スペース上の[クラウドゲートウェイ](/docs/ja/claude-apps-gateway#allow-a-gateway-on-public-address-space-you-own)に到達することを許可します | Authentication and providers | Managed |
+| [`gcpAuthRefresh`](#gcpauthrefresh) | 独自のコマンドで[Google Cloud 認証情報](/docs/ja/google-vertex-ai#advanced-credential-configuration)をリフレッシュします | Authentication and providers | Any file |
+| [`hooks`](#hooks) | Claude Code のライフサイクルのポイントで[フック](/docs/ja/hooks)として独自のコマンドを実行します | Hooks and automation | Any file |
+| [`httpHookAllowedEnvVars`](#httphookallowedenvvars) | [HTTP フック](/docs/ja/hooks)がヘッダーに入れることができる環境変数を制限します | Hooks and automation | Any file |
+| [`includeCoAuthoredBy`](#includecoauthoredby) | 非推奨。`attribution` を使用してコミットと PR の属性を非表示または変更します | Git and attribution | Any file |
+| [`includeGitInstructions`](#includegitinstructions) | Claude の context から組み込みコミットおよび PR 指示を削除します | Git and attribution | Any file |
+| [`inputNeededNotifEnabled`](#inputneedednotifenabled) | Claude があなたを待っているときに[プッシュ通知](/docs/ja/remote-control#mobile-push-notifications)を取得します | Remote, desktop, and notifications | Any file |
+| [`isolatePeerMachines`](#isolatepeermachines) | Claude が[別のマシンのセッションの 1 つにメッセージを送信](/docs/ja/cross-session-messaging#require-approval-for-cross-machine-messages)する前に確認を求めます | Agents, sessions, and worktrees | Any file |
+| [`keybindingFlavor`](#keybindingflavor) | 非推奨で効果がありません。単語編集ショートカットは常に[readline 規約に従う](/docs/ja/interactive-mode#make-ctrl-w-delete-back-to-whitespace)ます | Interface and terminal | Any file |
+| [`language`](#language) | Claude が英語以外の言語で応答するようにします | Model and responses | Any file |
+| [`leftArrowOpensAgents`](#leftarrowopensagents) | [バックグラウンドセッションとエージェントビューを開く](/docs/ja/agent-view#switch-sessions-without-leaving-the-terminal)ショートカット `←` をオフにします | Global config settings | Global config |
+| [`managedMcpServers`](#managedmcpservers) | ユーザーが追加するものと一緒にすべてのユーザーにリモート[MCP サーバー](/docs/ja/managed-mcp#provide-servers-through-managed-settings)を提供します | MCP | Managed |
+| [`managedSourcesBehavior`](#managedsourcesbehavior) | デプロイするすべての[マネージドソース](/docs/ja/managed-settings#how-claude-code-combines-managed-sources)を構成する代わりに、最優先のものだけを使用します | Enterprise and managed settings | Managed |
+| [`maxEffortLevel`](#maxeffortlevel) | すべてのモデルまたはモデルごと、すべてのプロバイダーで[努力レベル](/docs/ja/model-config#adjust-effort-level)をキャップします | Model and responses | Any file |
+| [`maxProseWidth`](#maxprosewidth) | 広いターミナルで Claude の応答内の散文がどのくらい広く実行されるかをキャップします | Interface and terminal | Any file |
+| [`minimumVersion`](#minimumversion) | [自動更新](/docs/ja/setup#pin-a-minimum-version)がバージョン以下のものをインストールするのを防ぎます | Updates and versioning | Any file |
+| [`model`](#model) | Claude Code が開始する[モデル](/docs/ja/model-config#set-a-default-model-for-new-sessions)を変更します | Model and responses | Any file |
+| [`modelOverrides`](#modeloverrides) | [モデル ID をマップ](/docs/ja/model-config#override-model-ids-per-version)して、Bedrock ARN などのプロバイダーの ID にします | Model and responses | Any file |
+| [`modelPicker`](#modelpicker) | [`/model` ピッカー](/docs/ja/model-config#available-models)がリストするモデルを選択し、独自の順序と独自のラベルで選択します | Model and responses | User or managed |
+| [`modelPricing`](#modelpricing) | リスト価格ではなく組織の契約レートで支出を報告します | Model and responses | Managed |
+| [`modelSettings`](#modelsettings) | モデルごとに保存された[努力レベル](/docs/ja/model-config#adjust-effort-level)を保持するか、1 つのモデルの努力をキャップします | Model and responses | Any file |
+| [`otelHeadersHelper`](#otelheadershelper) | 独自のコマンドで回転する[OpenTelemetry](/docs/ja/monitoring-usage#dynamic-headers)ヘッダーを生成します | Authentication and providers | Any file |
+| [`outputStyle`](#outputstyle) | [出力スタイル](/docs/ja/output-styles)で Claude の役割、トーン、出力形式を変更します | Model and responses | Any file |
+| [`parentSettingsBehavior`](#parentsettingsbehavior) | [SDK または IDE ホスト](/docs/ja/managed-settings#let-an-embedding-host-add-policy)が[マネージド設定](/docs/ja/managed-settings)をデプロイするときに渡す制限を適用または削除します | Enterprise and managed settings | Managed |
+| [`permissionExplainerEnabled`](#permissionexplainerenabled) | v2.1.257 で削除されました。シェル権限プロンプトの `Ctrl+E` コマンド説明と一緒に削除されました | Global config settings | Global config |
+| [`permissions`](#permissions) | 許可、質問、拒否ルール、および開始[権限モード](/docs/ja/permission-modes)を設定します | Permission settings | Any file |
+| [`permissions.additionalDirectories`](#permissions-additionaldirectories) | Claude に[現在のディレクトリ外のディレクトリ](/docs/ja/permissions#working-directories)へのファイルアクセスを付与します | Permission settings | Any file |
+| [`permissions.allow`](#permissions-allow) | リストされた[ツール使用](/docs/ja/permissions#permission-rule-syntax)をプロンプトなしで承認します | Permission settings | Any file |
+| [`permissions.ask`](#permissions-ask) | リストされた[ツール使用](/docs/ja/permissions#permission-rule-syntax)の前に常にプロンプトを表示します | Permission settings | Any file |
+| [`permissions.blockReadsOutsideWorkingDirectories`](#permissions-blockreadsoutsideworkingdirectories) | ファイルツールが[作業ディレクトリ](/docs/ja/permissions#working-directories)外の読み取りをすべての権限モードで拒否するようにします | Permission settings | Any file |
+| [`permissions.defaultMode`](#permissions-defaultmode) | 新しいセッションが開始する[権限モード](/docs/ja/permission-modes#which-mode-a-session-starts-in)を設定します | Permission settings | Any file |
+| [`permissions.deny`](#permissions-deny) | リストされた[ツール使用](/docs/ja/permissions#permission-rule-syntax)をブロックします。秘密を保持するファイルの読み取りを含みます | Permission settings | Any file |
+| [`permissions.disableBypassPermissionsMode`](#permissions-disablebypasspermissionsmode) | 誰もが[bypassPermissions モード](/docs/ja/permission-modes#skip-all-checks-with-bypasspermissions-mode)に入るのを防ぎます | Permission settings | Any file |
+| [`plansDirectory`](#plansdirectory) | [プランモード](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode)がプランファイルを書き込む場所を選択します | Memory and context | Any file |
+| [`pluginConfigs`](#pluginconfigs) | [プラグイン](/docs/ja/plugins/overview)の設定ダイアログで提供した回答を保存します | Plugins and skills | User or managed |
+| [`pluginSuggestionMarketplaces`](#pluginsuggestionmarketplaces) | `/plugin` でプラグインインストール提案を表示できる[マーケットプレイス](/docs/ja/plugins/org#restrict-what-users-can-install)を選択します | Plugins and skills | Managed |
+| [`pluginTrustMessage`](#plugintrustmessage) | [プラグイン](/docs/ja/plugins/overview)信頼警告に独自のテキストを追加します | Plugins and skills | Managed |
+| [`policyHelper`](#policyhelper) | スタートアップで[マネージド設定](/docs/ja/managed-settings#compute-the-policy-with-a-helper-program)を計算する実行可能ファイルを実行します | Enterprise and managed settings | Managed |
+| [`policyHelper.path`](#policyhelper-path) | Claude Code が実行する[ヘルパー実行可能ファイル](/docs/ja/managed-settings#compute-the-policy-with-a-helper-program)に名前を付けます | Enterprise and managed settings | Managed |
+| [`policyHelper.refreshIntervalMs`](#policyhelper-refreshintervalms) | バックグラウンドで[ヘルパー](/docs/ja/managed-settings#compute-the-policy-with-a-helper-program)を間隔で再実行します | Enterprise and managed settings | Managed |
+| [`policyHelper.timeoutMs`](#policyhelper-timeoutms) | Claude Code が[ヘルパー](/docs/ja/managed-settings#compute-the-policy-with-a-helper-program)を待つ時間を設定します | Enterprise and managed settings | Managed |
+| [`preferredNotifChannel`](#preferrednotifchannel) | タスク完了の[ターミナルベルまたはデスクトップ通知](/docs/ja/terminal-config#get-a-terminal-bell-or-notification)を選択します | Remote, desktop, and notifications | Any file |
+| [`prefersReducedMotion`](#prefersreducedmotion) | [スピナー、シマー、フラッシュアニメーションを削減またはオフ](/docs/ja/accessibility#accessibility-settings)にします | Interface and terminal | Any file |
+| [`processWrapper`](#processwrapper) | Claude Code のバックグラウンドプロセスを macOS および Linux の[企業ランチャー](/docs/ja/corporate-launcher)を通して実行します | Agents, sessions, and worktrees | User or managed |
+| [`promptCacheTtl`](#promptcachettl) | メイン会話の[プロンプトキャッシュライフタイム](/docs/ja/prompt-caching#cache-lifetime)を選択します | Model and responses | Any file |
+| [`promptSuggestionEnabled`](#promptsuggestionenabled) | 入力ボックスのグレーアウトされた[プロンプト提案](/docs/ja/interactive-mode#prompt-suggestions)を非表示にします | Interface and terminal | Any file |
+| [`prStatusFooterEnabled`](#prstatusfooterenabled) | プロンプトフッターの[PR レビューステータス](/docs/ja/interactive-mode#pr-review-status)バッジとその背後にあるプルリクエストチェックをオフにします | Global config settings | Global config |
+| [`prUrlTemplate`](#prurltemplate) | PR リンクを github.com ではなく内部コードレビューツールにポイントします | Git and attribution | Any file |
+| [`remote.defaultEnvironmentId`](#remote-defaultenvironmentid) | `claude --cloud` のデフォルト[クラウド環境](/docs/ja/cloud-environments)を選択します。自己ホスト型 `ccpool_` ID はユーザーおよびマネージド設定および `--settings` からのみ読み取られます | Remote, desktop, and notifications | Any file |
+| [`remoteControlAtStartup`](#remotecontrolatstartup) | セッション開始時に[リモートコントロール](/docs/ja/remote-control#enable-remote-control-for-all-sessions)に自動的に接続します | Remote, desktop, and notifications | Any file |
+| [`requiredMaximumVersion`](#requiredmaximumversion) | 組織が許可するバージョンより新しいバージョンで[起動を拒否](/docs/ja/setup#pin-a-minimum-version)します | Updates and versioning | Managed |
+| [`requiredMinimumVersion`](#requiredminimumversion) | 組織が要求するバージョンより古いバージョンで[起動を拒否](/docs/ja/setup#pin-a-minimum-version)します | Updates and versioning | Managed |
+| [`respectGitignore`](#respectgitignore) | gitignored ファイルを[`@` ファイルピッカー](/docs/ja/interactive-mode#quick-commands)から除外します | Interface and terminal | Any file |
+| [`respondToBashCommands`](#respondtobashcommands) | [`!` シェルコマンド](/docs/ja/interactive-mode#shell-mode-with-prefix)実行後に Claude が応答するのを停止します | Interface and terminal | Any file |
+| [`sandbox`](#sandbox) | macOS、Linux、WSL2 で[Bash コマンドをファイルシステムとネットワークから分離](/docs/ja/sandboxing)します | Sandbox settings | Any file |
+| [`sandbox.allowAppleEvents`](#sandbox-allowappleevents) | [サンドボックス化](/docs/ja/sandboxing)されたコマンドが macOS で Apple Events を送信することを許可します | Sandbox settings | User or managed |
+| [`sandbox.allowUnsandboxedCommands`](#sandbox-allowunsandboxedcommands) | Claude が[サンドボックス](/docs/ja/sandboxing#the-unsandboxed-retry-escape-hatch)外でブロックされたコマンドを再試行することを許可するか、禁止します | Sandbox settings | Any file |
+| [`sandbox.autoAllowBashIfSandboxed`](#sandbox-autoallowbashifsandboxed) | [サンドボックス化](/docs/ja/sandboxing#auto-allow-mode)されたコマンドを権限プロンプトなしで実行します | Sandbox settings | Any file |
+| [`sandbox.bwrapPath`](#sandbox-bwrappath) | [サンドボックス](/docs/ja/sandboxing)を `PATH` 外の bubblewrap バイナリにポイントします | Sandbox settings | Managed |
+| [`sandbox.credentials`](#sandbox-credentials) | [サンドボックス](/docs/ja/sandboxing#protect-credentials)内の認証情報ファイルと変数を非表示またはマスクします | Sandbox settings | Any file |
+| [`sandbox.credentials.allowPlaintextInject`](#sandbox-credentials-allowplaintextinject) | [マスクされた認証情報](/docs/ja/sandboxing#mask-credentials)が信頼されたテストネットワーク上のプレーン HTTP サービスに到達することを許可します | Sandbox settings | User or managed |
+| [`sandbox.credentials.awsPairs`](#sandbox-credentials-awspairs) | カスタム名の AWS キー変数を[再署名](/docs/ja/sandboxing#re-sign-aws-requests)用の 1 つの認証情報にリンクします | Sandbox settings | User or managed |
+| [`sandbox.credentials.envVars`](#sandbox-credentials-envvars) | [サンドボックス](/docs/ja/sandboxing#mask-environment-variables)内の環境変数を設定解除またはマスクします | Sandbox settings | Any file |
+| [`sandbox.credentials.files`](#sandbox-credentials-files) | [サンドボックス](/docs/ja/sandboxing#mask-credential-files)内の認証情報ファイルの読み取りをブロックまたはマスクします | Sandbox settings | Any file |
+| [`sandbox.credentials.sigv4`](#sandbox-credentials-sigv4) | ストリーミング、事前署名、または[SigV4A AWS リクエスト](/docs/ja/sandboxing#re-sign-aws-requests)が失敗するか通過するかを選択します | Sandbox settings | User or managed |
+| [`sandbox.enabled`](#sandbox-enabled) | macOS、Linux、WSL2 で[Bash サンドボックス](/docs/ja/sandboxing#get-started)をオンにします | Sandbox settings | Any file |
+| [`sandbox.enableWeakerNestedSandbox`](#sandbox-enableweakernestedsandbox) | Linux [サンドボックス](/docs/ja/sandboxing)を非特権コンテナ内で実行します | Sandbox settings | Any file |
+| [`sandbox.enableWeakerNetworkIsolation`](#sandbox-enableweakernetworkisolation) | `gh`、`gcloud`、`terraform` が macOS の[サンドボックス](/docs/ja/sandboxing#troubleshooting)内の MITM プロキシの背後で TLS を検証することを許可します | Sandbox settings | Any file |
+| [`sandbox.excludedCommands`](#sandbox-excludedcommands) | 常に[サンドボックス](/docs/ja/sandboxing)外で実行されるコマンドに名前を付けます | Sandbox settings | Any file |
+| [`sandbox.failIfUnavailable`](#sandbox-failifunavailable) | [サンドボックス](/docs/ja/sandboxing)ができないときに起動を拒否します。サンドボックス化されていない状態で実行する代わりに | Sandbox settings | Any file |
+| [`sandbox.filesystem`](#sandbox-filesystem) | [サンドボックス化](/docs/ja/sandboxing#filesystem-isolation)されたコマンドが読み取りおよび書き込みできるパスを制御します | Sandbox settings | Any file |
+| [`sandbox.filesystem.allowManagedReadPathsOnly`](#sandbox-filesystem-allowmanagedreadpathsonly) | 開発者が[組織がブロックした読み取りパス](/docs/ja/sandboxing#keep-developers-from-widening-the-policy)を再度開くのを停止します | Sandbox settings | Managed |
+| [`sandbox.filesystem.allowRead`](#sandbox-filesystem-allowread) | [`denyRead`](#sandbox-filesystem-denyread)がブロックする領域内での読み取りを再度開きます | Sandbox settings | Any file |
+| [`sandbox.filesystem.allowWrite`](#sandbox-filesystem-allowwrite) | [サンドボックス化](/docs/ja/sandboxing)されたコマンドが書き込みできるパスを追加します | Sandbox settings | Any file |
+| [`sandbox.filesystem.denyRead`](#sandbox-filesystem-denyread) | [サンドボックス化](/docs/ja/sandboxing)されたコマンドが特定のパスを読み取るのをブロックします | Sandbox settings | Any file |
+| [`sandbox.filesystem.denyWrite`](#sandbox-filesystem-denywrite) | [サンドボックス化](/docs/ja/sandboxing)されたコマンドが特定のパスに書き込むのをブロックします | Sandbox settings | Any file |
+| [`sandbox.filesystem.disabled`](#sandbox-filesystem-disabled) | ネットワーク分離を保持しながら[ファイルシステム分離をオフ](/docs/ja/sandboxing#disable-filesystem-isolation)にします | Sandbox settings | User or managed |
+| [`sandbox.ignoreViolations`](#sandbox-ignoreviolations) | コマンドがプローブすることが予想されるパスの違反レポートをサイレンスします | Sandbox settings | Any file |
+| [`sandbox.network`](#sandbox-network) | [サンドボックス化](/docs/ja/sandboxing#network-isolation)されたコマンドが到達するホスト、ポート、ソケットを制御します | Sandbox settings | Any file |
+| [`sandbox.network.allowAllUnixSockets`](#sandbox-network-allowallunixsockets) | [サンドボックス化](/docs/ja/sandboxing)されたコマンドがすべての Unix ソケットに接続することを許可します | Sandbox settings | Any file |
+| [`sandbox.network.allowedDomains`](#sandbox-network-alloweddomains) | [サンドボックス化](/docs/ja/sandboxing)されたコマンドがそれらのプロンプトを表示しないようにドメインを事前許可します | Sandbox settings | Any file |
+| [`sandbox.network.allowLocalBinding`](#sandbox-network-allowlocalbinding) | [サンドボックス化](/docs/ja/sandboxing)されたコマンドが macOS で localhost ポートにバインドすることを許可します | Sandbox settings | Any file |
+| [`sandbox.network.allowMachLookup`](#sandbox-network-allowmachlookup) | macOS [サンドボックス化](/docs/ja/sandboxing)ツール（iOS Simulator または Playwright など）が XPC サービスに到達することを許可します | Sandbox settings | Any file |
+| [`sandbox.network.allowManagedDomainsOnly`](#sandbox-network-allowmanageddomainsonly) | ネットワーク許可リストを[マネージド設定](/docs/ja/sandboxing#keep-developers-from-widening-the-policy)にロックします | Sandbox settings | Managed |
+| [`sandbox.network.allowUnixSockets`](#sandbox-network-allowunixsockets) | [サンドボックス化](/docs/ja/sandboxing)されたコマンドが macOS で使用できる Unix ソケットパスをリストします | Sandbox settings | Any file |
+| [`sandbox.network.deniedDomains`](#sandbox-network-denieddomains) | [サンドボックス化](/docs/ja/sandboxing)されたコマンドのドメインをブロックします。許可されたワイルドカード内でも | Sandbox settings | Any file |
+| [`sandbox.network.httpProxyPort`](#sandbox-network-httpproxyport) | [サンドボックス](/docs/ja/sandboxing#custom-proxy-configuration)HTTP トラフィックを独自のプロキシを通してルーティングします | Sandbox settings | Any file |
+| [`sandbox.network.socksProxyPort`](#sandbox-network-socksproxyport) | [サンドボックス](/docs/ja/sandboxing#custom-proxy-configuration)SOCKS トラフィックを独自のプロキシを通してルーティングします | Sandbox settings | Any file |
+| [`sandbox.network.strictAllowlist`](#sandbox-network-strictallowlist) | プロンプトの代わりに[許可リスト](/docs/ja/sandboxing#network-isolation)外のホストを拒否します | Sandbox settings | User or managed |
+| [`sandbox.network.tlsTerminate`](#sandbox-network-tlsterminate) | [サンドボックス](/docs/ja/sandboxing#network-isolation)プロキシが TLS を終了して HTTPS リクエストを読み取ることができるようにします | Sandbox settings | User or managed |
+| [`sandbox.ripgrep`](#sandbox-ripgrep) | [サンドボックス](/docs/ja/sandboxing)内で独自の ripgrep バイナリを使用します | Sandbox settings | User or managed |
+| [`sandbox.socatPath`](#sandbox-socatpath) | [サンドボックス](/docs/ja/sandboxing)プロキシを `PATH` 外の `socat` バイナリにポイントします | Sandbox settings | Managed |
+| [`showClearContextOnPlanAccept`](#showclearcontextonplanaccept) | [プラン受け入れ画面](/docs/ja/permission-modes#review-and-approve-a-plan)に「コンテキストをクリア」オプションを表示します | Interface and terminal | Any file |
+| [`showThinkingSummaries`](#showthinkingsummaries) | Claude の[思考](/docs/ja/model-config#extended-thinking)の要約を折りたたまれたスタブの代わりに表示します | Model and responses | Any file |
+| [`showTurnDuration`](#showturnduration) | 各応答後の「Cooked for」期間を非表示にします | Interface and terminal | Any file |
+| [`skillListingBudgetFraction`](#skilllistingbudgetfraction) | [スキルリスティング](/docs/ja/skills#skill-descriptions-are-cut-short)用にコンテキストをより多くまたはより少なく予約します | Memory and context | Any file |
+| [`skillListingMaxDescChars`](#skilllistingmaxdescchars) | [スキルリスティング](/docs/ja/skills#skill-descriptions-are-cut-short)内の各スキルの説明長をキャップします | Memory and context | Any file |
+| [`skillOverrides`](#skilloverrides) | [SKILL.md を編集せずにスキルを非表示または折りたたむ](/docs/ja/skills#override-skill-visibility-from-settings) | Plugins and skills | Any file |
+| [`skipAutoPermissionPrompt`](#skipautopermissionprompt) | 組み込みデフォルトではなく自分で[自動モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)に入るときに Claude Code が表示する 1 回限りの通知をスキップします | Permission settings | User or managed |
+| [`skipDangerousModePermissionPrompt`](#skipdangerousmodepermissionprompt) | [bypassPermissions モード](/docs/ja/permission-modes#skip-all-checks-with-bypasspermissions-mode)の前の確認ダイアログをスキップします | Permission settings | User, local, or managed |
+| [`skipWebFetchPreflight`](#skipwebfetchpreflight) | Anthropic に到達できないときに[WebFetch ホスト名チェック](/docs/ja/tools-reference#webfetch-tool-behavior)をスキップします | Privacy and telemetry | Any file |
+| [`spellcheck`](#spellcheck) | インストールする[スペルチェッカー](/docs/ja/interactive-mode#check-spelling-as-you-type)でプロンプト入力の誤字にアンダーラインを引きます | Interface and terminal | User or managed |
+| [`spinnerTipsEnabled`](#spinnertipsenabled) | Claude が作業中にスピナーのヒントを非表示にします | Interface and terminal | Any file |
+| [`spinnerTipsOverride`](#spinnertipsoverride) | スピナーローテーションに独自のヒントを追加するか、組み込みヒントを置き換えます | Interface and terminal | Any file |
+| [`spinnerVerbs`](#spinnerverbs) | ターンの実行中に表示される動詞を追加または置き換えます | Interface and terminal | Any file |
+| [`sshConfigs`](#sshconfigs) | Desktop 環境ドロップダウンに[SSH 接続](/docs/ja/desktop#pre-configure-ssh-connections-for-your-team)を追加します | Remote, desktop, and notifications | User or managed |
+| [`sshHostAllowlist`](#sshhostallowlist) | [Desktop SSH セッション](/docs/ja/desktop#restrict-which-ssh-hosts-users-can-connect-to)が到達できるホストを制限します | Remote, desktop, and notifications | Managed |
+| [`statusLine`](#statusline) | [ステータスライン](/docs/ja/statusline)をプロンプトの下にレンダリングする独自のコマンドを実行します | Interface and terminal | Any file |
+| [`strictKnownMarketplaces`](#strictknownmarketplaces) | ユーザーが追加およびインストールできる[マーケットプレイス](/docs/ja/plugins/overview)ソースを許可リストに登録します | Plugins and skills | Managed |
+| [`strictPluginOnlyCustomization`](#strictpluginonlycustomization) | ユーザーおよびプロジェクトソースから[スキル](/docs/ja/skills)、[エージェント](/docs/ja/sub-agents)、[フック](/docs/ja/hooks)、[MCP サーバー](/docs/ja/mcp)をブロックします | Plugins and skills | Managed |
+| [`strictPluginOnlyCustomization.agents`](#strictpluginonlycustomization-agents) | [エージェント](/docs/ja/sub-agents)をプラグインおよびマネージドソースにロックします | Plugins and skills | Managed |
+| [`strictPluginOnlyCustomization.hooks`](#strictpluginonlycustomization-hooks) | [フック](/docs/ja/hooks)をプラグインおよびマネージドソースにロックします | Plugins and skills | Managed |
+| [`strictPluginOnlyCustomization.mcp`](#strictpluginonlycustomization-mcp) | [MCP サーバー](/docs/ja/mcp)をプラグインおよびマネージドソースにロックします | Plugins and skills | Managed |
+| [`strictPluginOnlyCustomization.skills`](#strictpluginonlycustomization-skills) | [スキル](/docs/ja/skills)をプラグインおよびマネージドソースにロックします | Plugins and skills | Managed |
+| [`subagentPromptCacheTtl`](#subagentpromptcachettl) | サブエージェントおよびメイン会話外の他のリクエストの[プロンプトキャッシュライフタイム](/docs/ja/prompt-caching#cache-lifetime)を選択します | Model and responses | Any file |
+| [`subagentStatusLine`](#subagentstatusline) | [サブエージェント](/docs/ja/sub-agents)タスク表示の行を独自のコマンドで書き直します | Interface and terminal | Any file |
+| [`switchModelsOnFlag`](#switchmodelsonflag) | [安全分類器](/docs/ja/model-config#ask-before-switching)がリクエストにフラグを立てたときにモデルを自動的に切り替えるか一時停止します | Model and responses | Any file |
+| [`syncClaudeAiPlugins`](#syncclaudeaiplugins) | [claude.ai アカウントで有効になっているプラグイン](/docs/ja/plugins/loading#synced-plugins)のロードを停止し、新しいものをダウンロードするのを停止します | Plugins and skills | User, local, or managed |
+| [`syncClaudeAiSkills`](#syncclaudeaiskills) | [claude.ai アカウントで有効になっているスキル](/docs/ja/skills#how-synced-skills-behave)のロードを停止し、新しいものをダウンロードするのを停止します | Plugins and skills | User, local, or managed |
+| [`syntaxHighlightingDisabled`](#syntaxhighlightingdisabled) | diff およびコードブロックの構文強調表示をオフにします | Interface and terminal | Any file |
+| [`taskOutputMaxChars`](#taskoutputmaxchars) | v2.1.277 で削除されました。それがサイズを設定した `TaskOutput` ツールと一緒に削除されました | Memory and context | Any file |
+| [`teammateDefaultModel`](#teammatedefaultmodel) | v2.1.234 で削除されました。Claude Code がチームメイトのモデルを選択する方法については[チームメイトとモデルを指定](/docs/ja/agent-teams#specify-teammates-and-models)を参照してください | Global config settings | Global config |
+| [`teammateMode`](#teammatemode) | [エージェントチームチームメイトの表示](/docs/ja/agent-teams#choose-a-display-mode)方法を選択します | Agents, sessions, and worktrees | Any file |
+| [`terminalProgressBarEnabled`](#terminalprogressbarenabled) | それをサポートするターミナルでターミナルプログレスバーを非表示にします | Interface and terminal | Any file |
+| [`terminalTitleFromRename`](#terminaltitlefromrename) | [`/rename`](/docs/ja/sessions#name-your-sessions)および `--name` がターミナルタブタイトルを変更するのを停止します | Interface and terminal | Any file |
+| [`theme`](#theme) | インターフェイス[カラーテーマ](/docs/ja/terminal-config#match-the-color-theme)を選択します。組み込みまたはカスタム | Interface and terminal | Any file |
+| [`timeFormat`](#timeformat) | インターフェイスの時刻を 12 時間または 24 時間クロック、UTC、または strftime パターンで表示します | Interface and terminal | Any file |
+| [`timeZone`](#timezone) | インターフェイスの時刻をシステムのタイムゾーン以外のタイムゾーンで表示します | Interface and terminal | Any file |
+| [`tui`](#tui) | [フルスクリーン](/docs/ja/fullscreen)または従来のターミナルレンダラーを選択します | Interface and terminal | Any file |
+| [`ultracode`](#ultracode) | Claude が尋ねられることなく各実質的なタスクの[ワークフロー](/docs/ja/workflows#let-claude-decide-with-ultracode)を計画するようにします | Model and responses | Any file |
+| [`useAutoModeDuringPlan`](#useautomodeduringplan) | [自動モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)分類器が[プランモード](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode)でシェルコマンドをレビューすることを許可します。`false` に設定してプロンプトを取得します | Permission settings | User, local, or managed |
+| [`verbose`](#verbose) | 切り詰められた要約の代わりに[完全なツール出力](/docs/ja/cli-reference#cli-flags)を表示します。両方が設定されている場合、`viewMode` が優先されます | Interface and terminal | Any file |
+| [`viewMode`](#viewmode) | すべてのセッションを[デフォルト、詳細、またはフォーカスビュー](/docs/ja/cli-reference#cli-flags)で開始します | Interface and terminal | Any file |
+| [`vimInsertModeRemaps`](#viminsertmoderemaps) | `jj` などの 2 キー[INSERT モードシーケンス](/docs/ja/interactive-mode#remap-insert-mode-key-sequences)を Escape にマップします | Interface and terminal | User or managed |
+| [`voice`](#voice) | [音声ディクテーション](/docs/ja/voice-dictation)をオンにして、ホールドまたはタップモードを選択します | Interface and terminal | Any file |
+| [`voiceEnabled`](#voiceenabled) | 古い単一キー形式で[音声ディクテーション](/docs/ja/voice-dictation)をオンにします | Interface and terminal | Any file |
+| [`wheelScrollAccelerationEnabled`](#wheelscrollaccelerationenabled) | フルスクリーンレンダリングで[マウスホイール加速](/docs/ja/fullscreen#mouse-wheel-scrolling)をオフにします | Interface and terminal | Any file |
+| [`workflowKeywordTriggerEnabled`](#workflowkeywordtriggerenabled) | プロンプト内の単語 `ultracode` が[ワークフロー](/docs/ja/workflows)を開始することを許可します。`false` に設定して入力します | Hooks and automation | Any file |
+| [`workflowSizeGuideline`](#workflowsizeguideline) | Claude が[動的ワークフロー](/docs/ja/workflows)で目指すエージェント数を設定します | Hooks and automation | Any file |
+| [`worktree`](#worktree) | Claude Code が git [worktrees](/docs/ja/worktrees)を作成する方法を設定します | Agents, sessions, and worktrees | Any file |
+| [`worktree.baseRef`](#worktree-baseref) | 新しい[worktrees](/docs/ja/worktrees)をリモートデフォルトブランチまたはローカル HEAD からブランチします | Agents, sessions, and worktrees | Any file |
+| [`worktree.bgIsolation`](#worktree-bgisolation) | バックグラウンドセッションが[worktree](/docs/ja/worktrees)なしで作業コピーを編集することを許可します | Agents, sessions, and worktrees | Any file |
+| [`worktree.sparsePaths`](#worktree-sparsepaths) | 各[worktree](/docs/ja/worktrees)で必要なディレクトリのみをチェックアウトします | Agents, sessions, and worktrees | Any file |
+| [`worktree.symlinkDirectories`](#worktree-symlinkdirectories) | 大きなディレクトリを各[worktree](/docs/ja/worktrees)に複製する代わりにシンボリックリンクします | Agents, sessions, and worktrees | Any file |
+| [`wslInheritsWindowsSettings`](#wslinheritswindowssettings) | WSL が Windows ポリシーチェーンから[マネージド設定](/docs/ja/managed-settings)を読み取ることを許可します | Enterprise and managed settings | Managed |
 
 <h2 id="model-and-responses">
   モデルと応答
@@ -833,14 +841,14 @@ Claude Code が使用するモデルと応答方法を選択します。これ�
   `advisorModel`
 </h3>
 
-Claude がサーバー側の[アドバイザーツール](/docs/ja/advisor)を呼び出すときに回答するモデルを選択します。アドバイザーをオフにするには、これを設定解除します。アドバイザーは少なくともメインモデルと同じくらい有能である必要があります。受け入れられるペアリングと受け入れられないペアリングを選択した場合の動作については、[アドバイザーモデルを選択](/docs/ja/advisor#choose-an-advisor-model)を参照してください。
+Claude がサーバー側の[アドバイザーツール](/docs/ja/advisor)を呼び出すときに回答するモデルを選択します。これを設定解除するとアドバイザーがオフになります。アドバイザーはメインモデル以上の能力を持つ必要があります。受け入れられるペアリングと受け入れられないペアリングを選択した場合の動作については、[アドバイザーモデルを選択](/docs/ja/advisor#choose-an-advisor-model)を参照してください。
 
-通常、このキーを手動で編集することはありません。`/advisor` を実行して、現在の選択、アドバイザーができるモデル、および**アドバイザーなし**を表示するピッカーを開きます。Claude Code は選択を `~/.claude/settings.json` のこのキーに保存します。[リモートコントロール](/docs/ja/remote-control)クライアントから、またはリモートワーカーに接続されたセッションでピッカーから選択した場合、その選択はそのセッションのみに適用され、このキーは変更されません。
+通常、このキーを手動で編集することはありません。`/advisor` を実行して、現在の選択、アドバイザーができるモデル、および**アドバイザーなし**を表示するピッカーを開きます。Claude Code は選択を `~/.claude/settings.json` のこのキーに保存します。[リモートコントロール](/docs/ja/remote-control)クライアントから、またはリモートワーカーに接続されたセッションで選択した場合、その選択はそのセッションのみに適用され、このキーは変更されません。
 
-アカウントが[使用クレジット同意](/docs/ja/advisor#fable-advisor-and-usage-credits)を必要とする場合は、`/model fable` を実行して最初にそれを受け入れます。そうするまで、`/advisor` で Fable を選択しても何も保存されず、Claude Code は最初に `/model fable` を実行するよう指示します。
+アカウントが[使用クレジット同意](/docs/ja/advisor#fable-advisor-and-usage-credits)を必要とする場合は、`/model fable` を実行して最初に同意を受け入れます。これを行うまで、`/advisor` で Fable を選択しても何も保存されず、Claude Code は最初に `/model fable` を実行するよう指示します。
 
 * **スコープ**: [`任意のファイル`](#scopes)
-* **タイプ**: 文字列、エイリアス `"fable"`、`"opus"`、または `"sonnet"` のいずれか。これらはそのモデルファミリーの Claude Code の現在のデフォルトバージョンに解決されます。または `"claude-opus-5-5"` などの完全なモデル ID
+* **タイプ**: 文字列、エイリアス `"fable"`、`"opus"`、または `"sonnet"` のいずれか。これらは Claude Code の現在のデフォルトバージョンのそのモデルファミリーに解決されます。または、`"claude-opus-5-5"` などの完全なモデル ID
 * **デフォルト**: 設定解除されているため、アドバイザーはオフです
 * **セッションごとのオーバーライド**: `--advisor` はこのキーより優先されます。[`CLAUDE_CODE_DISABLE_ADVISOR_TOOL`](/docs/ja/env-vars)はアドバイザーをオフにし、このキーはそれをオンに戻すことはできません
 
@@ -856,16 +864,16 @@ Claude がサーバー側の[アドバイザーツール](/docs/ja/advisor)を�
   `alwaysThinkingEnabled`
 </h3>
 
-これを `false` に設定して、すべてのセッションで[拡張思考](/docs/ja/model-config#extended-thinking)をオフにします。思考はデフォルトでオンなので、`true` は何も変わりません。ほとんどの人はファイルを編集するのではなく `/config` を通じてこれを設定します。
+このキーを `false` に設定して、すべてのセッションで[拡張思考](/docs/ja/model-config#extended-thinking)をオフにします。思考はデフォルトでオンなので、`true` は何も変わりません。ほとんどの人はファイルを編集するのではなく `/config` を通じてこれを設定します。
 
-Opus 5.5 や Fable モデルなど、常に思考するモデルでは、`false` は効果がありません。[サードパーティプロバイダー](/docs/ja/third-party-integrations)では、Claude Code は思考をオフにするのではなく `thinking` パラメータを省略するため、適応推論モデルは依然として思考する可能性があります。Anthropic API で思考がオフになっている場合、Claude Code は、Opus 5 など[その組み合わせを受け入れない](/docs/ja/errors#effort-isnt-available-with-thinking-turned-off)ことが分かっているモデルに対して、より高いレベルではなく努力 `high` を送信します。
+Opus 5.5、Sonnet 5.5、Fable モデルなど、常に思考するモデルでは、`false` は効果がありません。[サードパーティプロバイダー](/docs/ja/third-party-integrations)では、Claude Code は思考をオフにするのではなく `thinking` パラメータを省略するため、適応推論モデルは依然として思考する可能性があります。Anthropic API で思考をオフにした場合、Claude Code は、Opus 5 など[その組み合わせを受け入れない](/docs/ja/errors#effort-isnt-available-with-thinking-turned-off)ことが分かっているモデルに、より高いレベルではなく努力 `high` を送信します。
 
 * **スコープ**: [`任意のファイル`](#scopes)
 * **タイプ**: ブール値
   * `true`: 効果なし。思考は既にオンです
   * `false`: Claude Code はすべてのセッションで拡張思考をオフにします
 * **デフォルト**: 設定解除されているため、思考はそれをサポートするモデルではオンです
-* **セッションごとのオーバーライド**: [`MAX_THINKING_TOKENS`](/docs/ja/env-vars)はこのキーより優先されます。1 つのセッション: `0` は思考をオフにし、`false` と同じモデルおよびプロバイダーの制限下で、正の値はこのキーが `false` の場合でも思考をオンにします。適応推論モデルでは、数値自体は無視されます
+* **セッションごとのオーバーライド**: [`MAX_THINKING_TOKENS`](/docs/ja/env-vars)はこのキーより優先されます。`0` は `false` と同じモデルおよびプロバイダーの制限の下で思考をオフにし、正の値は、このキーが `false` の場合でも思考をオンにします。適応推論モデルでは、数値自体は無視されます
 
 ```json settings.json theme={null}
 {
@@ -877,13 +885,13 @@ Opus 5.5 や Fable モデルなど、常に思考するモデルでは、`false`
   `availableModels`
 </h3>
 
-メインセッション、[サブエージェント](/docs/ja/sub-agents)、[スキル](/docs/ja/skills)、および[アドバイザー](/docs/ja/advisor)に対して、人々が選択できるモデルを制限します。管理対象リストは `/model`、`--model`、および開発者自身のファイルの `model` キーを制限します。リスト外のモデルは選択できません。それ自体では Default オプションには影響しません。[`enforceAvailableModels`](#enforceavailablemodels)とペアにしてください。
+メインセッション、[サブエージェント](/docs/ja/sub-agents)、[スキル](/docs/ja/skills)、および[アドバイザー](/docs/ja/advisor)で選択できるモデルを制限します。管理リストは `/model`、`--model`、および開発者自身のファイルの `model` キーを制限します。リスト外のモデルは選択できません。デフォルトのプレフィックスマッチングでは、これは Default オプション自体には影響しません。[`enforceAvailableModels`](#enforceavailablemodels)とペアにしてください。
 
 * **スコープ**: [`任意のファイル`](#scopes)。組織に対して強制するために、管理設定にデプロイします。
 * **タイプ**: モデルエイリアスまたは ID の配列
 * **デフォルト**: 設定解除されているため、すべてのモデルが利用可能です
 
-この例では、人々は Sonnet と Haiku モデルのみを選択できます:
+この例では、Sonnet と Haiku モデルのみを選択できます:
 
 ```json settings.json theme={null}
 {
@@ -891,28 +899,76 @@ Opus 5.5 や Fable モデルなど、常に思考するモデルでは、`false`
 }
 ```
 
-[モデル選択を制限](/docs/ja/model-config#restrict-model-selection)を参照してください。
+`"claude-opus-5"` などのモデル ID エントリは、Opus 5.5 などそれを拡張する後のバージョンも許可します。これらのバージョンのいずれかをブロックするには、[`deniedModels`](#deniedmodels)を使用します。各モデル ID エントリが名前を付けたバージョンのみを許可するようにするには、[`availableModelsMatch`](#availablemodelsmatch)を使用します。[モデル選択を制限](/docs/ja/model-config#restrict-model-selection)を参照してください。
+
+<h3 id="availablemodelsmatch">
+  `availableModelsMatch`
+</h3>
+
+[`availableModels`](#availablemodels)エントリがモデル ID とどのように一致するかを選択します。デフォルトでは、モデル ID エントリはそれを拡張する後のバージョンも許可するため、`"claude-opus-5"` は Opus 5.5 を許可します。`"exact"` では、各モデル ID エントリは名前を付けたバージョンのみを許可するため、そのモデルの新しいバージョンはリストに追加されるまでブロックされたままです。Claude Code v2.1.283 以降が必要です。
+
+* **スコープ**: [`管理`](#scopes)。Claude Code はユーザー、プロジェクト、ローカル設定および `--settings` のキーを無視し、警告を表示します
+* **タイプ**: 文字列、以下のいずれか:
+  * `"prefix"`: モデル ID エントリはそのバージョンと、別のセグメントで拡張するモデル ID を許可します
+  * `"exact"`: モデル ID エントリは名前を付けたバージョンのみを許可します。日付付き ID を含むため、`"claude-opus-5"` は Opus 5 を許可しますが `claude-opus-5-5` は許可しません。`"opus"` などのファミリーエイリアスは依然としてファミリー全体を許可し、`best`、`opusplan`、および `default` エントリは無視されます
+* **デフォルト**: `"prefix"`
+
+この例は Opus 5 と Sonnet 5 を許可し、どちらの後のリリースも許可しません:
+
+```json managed-settings.json theme={null}
+{
+  "availableModels": ["claude-opus-5", "claude-sonnet-5"],
+  "availableModelsMatch": "exact"
+}
+```
+
+`"exact"` では、リストが少なくとも 1 つのモデルまたはファミリーを名前付けするときはいつでも、Default オプションもリストされたモデルに制限されます。[特定のモデルまたはバージョンをブロック](/docs/ja/model-config#block-specific-models-or-versions)を参照してください。
+
+<h3 id="deniedmodels">
+  `deniedModels`
+</h3>
+
+[`availableModels`](#availablemodels)許可リストの有無にかかわらず、特定のモデルをブロックし、そのリストがそれらを許可する場合でもブロックします。Claude Code はブロックされたモデルを `/model` ピッカーから非表示にし、`availableModels` が強制される場所ではどこでもモデルを選択できません。Default オプションのセッションは、[特定のモデルまたはバージョンをブロック](/docs/ja/model-config#block-specific-models-or-versions)で説明されているように、ブロックされたモデルも実行しません。Claude Code v2.1.283 以降が必要です。
+
+* **スコープ**: [`管理`](#scopes)。Claude Code はユーザー、プロジェクト、ローカル設定および `--settings` のキーを無視し、警告を表示します
+* **タイプ**: モデルエイリアスまたは ID の配列
+  * `"opus"` などのファミリーエイリアスはそのファミリーのすべてのモデルをブロックします
+  * `"claude-opus-5-5"` などのモデル ID は、日付付きおよびプロバイダー固有の ID を含むすべてのスペルでそのバージョンをブロックします
+  * `"claude-opus-5"` などのマイナーバージョンなしのモデル ID は、Opus 5.5 などの後のマイナーバージョンもブロックします。Opus 5 のみをブロックするには `"claude-opus-5-0"` を記述します
+  * `best`、`opusplan`、および `default` エントリは無視されます
+* **デフォルト**: 設定解除されているため、モデルはブロックされません
+
+この例は Opus と Sonnet モデルを許可し、Opus 5.5 をブロックします:
+
+```json managed-settings.json theme={null}
+{
+  "availableModels": ["opus", "sonnet"],
+  "deniedModels": ["claude-opus-5-5"]
+}
+```
+
+[特定のモデルまたはバージョンをブロック](/docs/ja/model-config#block-specific-models-or-versions)を参照してください。
 
 <h3 id="effortlevel">
   `effortLevel`
 </h3>
 
-レベルを保存していないモデルのデフォルト[努力レベル](/docs/ja/model-config#adjust-effort-level)を設定します。低いレベルは単純なタスクではより高速で安価であり、高いレベルは複雑な問題でより深く推論します。
+保存していないモデルのデフォルト[努力レベル](/docs/ja/model-config#adjust-effort-level)を設定します。低いレベルは単純なタスクではより高速で安価であり、高いレベルは複雑な問題でより深く推論します。
 
-マシン上のインタラクティブセッションで `/effort low`、`medium`、`high`、または `xhigh` を実行すると、Claude Code はレベルを [`modelSettings`](#modelsettings)の下のアクティブなモデルに保存するのではなく、このキーに書き込みます。v2.1.251 より前では、`/effort` はこのキーに書き込みました。
+マシン上のインタラクティブセッションで `/effort low`、`medium`、`high`、または `xhigh` を実行すると、Claude Code はレベルをファイルを編集するのではなく [`modelSettings`](#modelsettings)の下のアクティブなモデルに保存します。v2.1.251 より前では、`/effort` はこのキーを書き込みました。
 
-同じ設定ファイル内では、Claude Code はこのキーではなくモデルの保存されたレベルを使用します。[`modelSettings`](#modelsettings)はクロスファイルの優先順位を示します。
+同じ設定ファイル内で、Claude Code はこのキーではなくモデルの保存されたレベルを使用します。[`modelSettings`](#modelsettings)はクロスファイルの優先順位を述べています。
 
-リモートワーカーに接続されたセッション、`-p` 実行、および Agent SDK では、`/effort` はそのセッションのみに適用されます。[努力レベルを調整](/docs/ja/model-config#adjust-effort-level)はそのセッションのみに適用される対話的な選択肢も一覧表示します。`/effort` が出力するメッセージは、どちらが発生したかを示します。
+リモートワーカーに接続されたセッション、`-p` 実行、および Agent SDK では、`/effort` はそのセッションのみに適用されます。[努力レベルを調整](/docs/ja/model-config#adjust-effort-level)はそのセッションのみに適用されるインタラクティブな選択肢もリストします。`/effort` が出力するメッセージは、どちらが起こったかを示します。
 
 * **スコープ**: [`任意のファイル`](#scopes)
 * **タイプ**: 文字列、以下のいずれか:
-  * `"low"`: 最小限の推論。短く、スコープが限定され、レイテンシに敏感で、知能に敏感ではないタスク用
-  * `"medium"`: コスト敏感な作業の場合、トークン使用量を削減し、知能をトレードオフできます
-  * `"high"`: トークン使用量と知能のバランス
+  * `"low"`: 最小限の推論。短く、スコープが限定され、レイテンシに敏感で、インテリジェンスに敏感ではないタスク用
+  * `"medium"`: コスト敏感な作業のトークン使用量を削減します。インテリジェンスをいくらか取引できます
+  * `"high"`: トークン使用量とインテリジェンスのバランスを取ります
   * `"xhigh"`: より高いトークン支出でより深い推論
 * **デフォルト**: 設定解除されています
-* **セッションごとのオーバーライド**: `--effort` はこのキーより優先されます。1 つのセッション、および [`CLAUDE_CODE_EFFORT_LEVEL`](/docs/ja/env-vars)は両方より優先されます
+* **セッションごとのオーバーライド**: `--effort` はこのキーより優先されます。[`CLAUDE_CODE_EFFORT_LEVEL`](/docs/ja/env-vars)は両方より優先されます
 
 ```json settings.json theme={null}
 {
@@ -920,23 +976,23 @@ Opus 5.5 や Fable モデルなど、常に思考するモデルでは、`false`
 }
 ```
 
-ユーザー設定ファイル `~/.claude/settings.json` では、このキーは `/effort` が書き込んだ古い形式であり、Opus 5、Fable 5.1、および以前のモデルに対してそれが以前に適用されたところに適用され続けます。Opus 5.5 およびそれ以降にリリースされたモデルはそれを無視し、独自のデフォルトで開始します。これは [`modelSettings`](#modelsettings)の下でレベルを保存するまで続きます。プロジェクト、ローカル、および管理設定、および `--settings` では、このキーはすべてのモデルに適用されます。
+ユーザー設定ファイル `~/.claude/settings.json` では、このキーは `/effort` が保存する前の古い形式です。モデルごとにレベルを保存し、以前に適用された場所に適用され続けます。Opus 5、Fable 5.1、および以前のモデルで。Opus 5.5 およびそれ以降にリリースされたモデルはそれを無視し、[`modelSettings`](#modelsettings)の下でレベルを保存するまで独自のデフォルトで開始します。これは `/effort` が書き込みます。プロジェクト、ローカル、管理設定、および `--settings` では、このキーはすべてのモデルに適用されます。
 
 <h3 id="enforceavailablemodels">
   `enforceAvailableModels`
 </h3>
 
-`/model` ピッカーには、適用される場合は[組織デフォルトモデル](/docs/ja/model-config#organization-default-model)に解決される **Default** オプション、またはそれ以外の場合はアカウントタイプのデフォルトがあります。[`availableModels`](#availablemodels)許可リストはあなたが名前を付けることができるモデルを制限しますが、それ自体では **Default** には影響しないため、**Default** はリスト外のモデルに解決される可能性があります。このキーはそのギャップを埋めます。Claude Code v2.1.175 以降が必要です。
+`/model` ピッカーには**Default**オプションがあり、[`default` モデル設定](/docs/ja/model-config#default-model-setting)はそれが解決するモデルを説明します。[`availableModels`](#availablemodels)許可リストは名前を付けることができるモデルを制限しますが、デフォルト[プレフィックスマッチング](#availablemodelsmatch)では、アカウントタイプのデフォルトを再マップしないため、**Default**はリスト外のモデルに解決できます。このキーはそのギャップを閉じます。Claude Code v2.1.175 以降が必要です。
 
 組織が管理設定をデプロイすると、Claude Code はこのキーを管理ソースからのみ読み取り、他のファイルでは無視します。
 
 * **スコープ**: [`任意のファイル`](#scopes)
 * **タイプ**: ブール値
-  * `true`: **Default** が `availableModels` 外のモデルに解決される場合、Claude Code はそれをリスト内の最初の利用可能なモデルに解決します
-  * `false`: **Default** は通常通り解決され、`availableModels` 外のモデルにも解決される可能性があります
+  * `true`: **Default**が `availableModels` 外のモデルに解決される場合、Claude Code はそれをリスト内の最初の利用可能なモデルに解決します
+  * `false`: このキーは**Default**の解決方法を変更しません
 * **デフォルト**: `false`
 
-この例では、名前付き選択を Sonnet と Haiku モデルに制限し、**Default** をそれらの最初の利用可能なモデルに解決します:
+この例は、名前付き選択を Sonnet と Haiku モデルに制限し、**Default**を利用可能なそれらの最初のものに解決します:
 
 ```json settings.json theme={null}
 {
@@ -945,22 +1001,22 @@ Opus 5.5 や Fable モデルなど、常に思考するモデルでは、`false`
 }
 ```
 
-`availableModels` が設定解除されているか空の場合、このキーは効果がありません。[Default モデルの許可リストを強制](/docs/ja/model-config#enforce-the-allowlist-for-the-default-model)を参照してください。Claude Code v2.1.175 以降が必要です。
+このキーは `availableModels` が設定解除されているか空の場合は効果がありません。[Default モデルの許可リストを強制](/docs/ja/model-config#enforce-the-allowlist-for-the-default-model)を参照してください。Claude Code v2.1.175 以降が必要です。
 
 <h3 id="fallbackmodel">
   `fallbackModel`
 </h3>
 
-プライマリモデルがオーバーロードされているか利用できない場合に、Claude Code が順番に試すバックアップモデルに名前を付けます。Claude Code はターンの残りの間、チェーン内の次の利用可能なモデルに切り替え、通知を表示します。チェーンがない場合、Claude Code は同じモデルを再試行してからサーバーのエラーを表示し、あなたが再試行するか、モデルを自分で切り替えます。
+プライマリモデルがオーバーロードされているか利用できない場合に、Claude Code が順番に試すバックアップモデルに名前を付けます。Claude Code はターンの残りの間、チェーン内の次の利用可能なモデルに切り替え、通知を表示します。チェーンがない場合、Claude Code は同じモデルを再試行してからサーバーのエラーを表示し、再試行するか自分でモデルを切り替えます。
 
-切り替えは、フォールバックモデルで 1 つのターンを意味します。[プロンプトキャッシュ](/docs/ja/prompt-caching#switching-models)は冷たく、次のメッセージはプライマリモデルを最初に再度試します。
+切り替えは、フォールバックモデルでコールド[プロンプトキャッシュ](/docs/ja/prompt-caching#switching-models)を使用した 1 ターンを意味します。次のメッセージはプライマリモデルを最初に再度試します。
 
 * **スコープ**: [`任意のファイル`](#scopes)
 * **タイプ**: モデルエイリアスまたは ID の配列。`"default"` はデフォルトモデルに展開されます
 * **デフォルト**: 設定解除されているため、失敗したリクエストは別のモデルで再試行されません
-* **セッションごとのオーバーライド**: `--fallback-model` はこのキーより優先されます。1 つのセッション
+* **セッションごとのオーバーライド**: `--fallback-model` はこのキーより優先されます
 
-この例では、プライマリモデルが失敗したときに最初に Sonnet 5 を試し、次に Haiku 4.5 を試します:
+この例は、プライマリモデルが失敗したときに最初に Sonnet 5 を試し、次に Haiku 4.5 を試します:
 
 ```json settings.json theme={null}
 {
@@ -968,13 +1024,13 @@ Opus 5.5 や Fable モデルなど、常に思考するモデルでは、`false`
 }
 ```
 
-ほとんどの配列設定とは異なり、このキーは設定ファイル全体でマージされません。最も優先度の高いファイルがそれを定義すると、チェーン全体が供給されます。プロジェクトファイルが `["claude-sonnet-5"]` を設定し、ユーザーファイルが `["claude-haiku-4-5"]` を設定する場合、チェーンは `["claude-sonnet-5"]` のみです。Claude Code はリストから最大 3 つの異なる許可モデルを保持し、残りを無視します。[フォールバックモデルチェーン](/docs/ja/model-config#fallback-model-chains)を参照してください。
+ほとんどの配列設定とは異なり、このキーは設定ファイル全体でマージされません。最も優先度の高いファイルがそれを定義すると、チェーン全体が供給されます。プロジェクトファイルが `["claude-sonnet-5"]` を設定し、ユーザーファイルが `["claude-haiku-4-5"]` を設定する場合、チェーンは `["claude-sonnet-5"]` のみです。Claude Code はリストから最大 3 つの異なる許可されたモデルを保持し、残りを無視します。[フォールバックモデルチェーン](/docs/ja/model-config#fallback-model-chains)を参照してください。
 
 <h3 id="fastmode">
   `fastMode`
 </h3>
 
-利用可能な場合、セッションで[高速モード](/docs/ja/fast-mode)をオンにします。これは、速度をより高いトークンあたりのコストで望む迅速な反復やライブデバッグなどのインタラクティブな作業用です。通常、このキーを手動で編集することはありません。`/fast` を実行すると `fastMode: true` が `~/.claude/settings.json` に書き込まれ、再度実行すると高速モードがオフになります。高速モードは Opus 5.5、Opus 5、および Opus 4.8 でのみ実行されます。別のモデルからオンにすると Opus に切り替わり、サポートされていないモデルに切り替えるとオフになります。[高速モードがオンの場合にモデルを切り替える](/docs/ja/fast-mode#switch-models-while-fast-mode-is-on)を参照してください。
+利用可能なセッションで[高速モード](/docs/ja/fast-mode)をオンにします。高速反復やライブデバッグなどのインタラクティブな作業用で、トークンあたりのコストが高い速度が必要な場合。通常、このキーを手動で編集することはありません。`/fast` を実行すると `fastMode: true` が `~/.claude/settings.json` に書き込まれ、再度実行すると高速モードをオフにするキーが削除されます。高速モードは Opus 5.5、Opus 5、および Opus 4.8 でのみ実行されます。別のモデルからオンにするとあなたを Opus に切り替え、サポートされていないモデルに切り替えるとオフになります。[高速モードがオンの間にモデルを切り替え](/docs/ja/fast-mode#switch-models-while-fast-mode-is-on)を参照してください。
 
 * **スコープ**: [`任意のファイル`](#scopes)
 * **タイプ**: ブール値
@@ -993,13 +1049,13 @@ Opus 5.5 や Fable モデルなど、常に思考するモデルでは、`false`
   `fastModePerSessionOptIn`
 </h3>
 
-通常、`/fast` を実行すると [`fastMode`](#fastmode)がユーザー設定に保存されるため、高速モードは後のすべてのセッションの開始時にオンになります。このキーを `true` に設定して、それを停止します。保存された `fastMode: true` はセッション開始時に高速モードをオンにしなくなり、各ユーザーは高速モードを望む各セッションで `/fast` を実行する必要があります。Claude Code は `fastMode` キーをファイルに残すため、このキーをオフにすると古い動作が復元されます。
+通常、`/fast` を実行すると [`fastMode`](#fastmode)がユーザー設定に保存されるため、高速モードは後のすべてのセッションの開始時にオンになります。このキーを `true` に設定して、それを停止します。保存された `fastMode: true` はセッション開始時に高速モードをオンにしなくなり、各ユーザーは必要な各セッションで `/fast` を実行する必要があります。Claude Code は `fastMode` キーをファイルに残すため、このキーをオフにすると古い動作が復元されます。
 
 Team または Enterprise プランのオーナーは、[サーバー管理設定](/docs/ja/server-managed-settings)を通じて組織全体にデプロイできます。管理設定がキーを設定すると、`/fast on` はインタラクティブターミナルセッション外で拒否され、組織が高速モードを無効にしたことを報告します。これは[非インタラクティブモード](/docs/ja/headless)、[VS Code 拡張機能](/docs/ja/vs-code)、および[クラウドセッション](/docs/ja/claude-code-on-the-web)をカバーします。
 
 * **スコープ**: [`任意のファイル`](#scopes)
 * **タイプ**: ブール値
-  * `true`: 保存された `fastMode: true` はセッション開始時に高速モードをオンにしなくなるため、各ユーザーは高速モードを望む各セッションで `/fast` を実行します。`--settings` で渡された `fastMode: true` は、管理設定がこのキーを設定しない限り、そのセッションでもカウントされます
+  * `true`: 保存された `fastMode: true` はセッション開始時に高速モードをオンにしなくなるため、各ユーザーは必要な各セッションで `/fast` を実行します。`--settings` で渡された `fastMode: true` は、管理設定がこのキーを設定しない限り、そのセッションでもカウントされます
   * `false`: 保存された `fastMode: true` は後のすべてのセッションの開始時に高速モードをオンにします
 * **デフォルト**: `false`
 
@@ -1015,10 +1071,10 @@ Team または Enterprise プランのオーナーは、[サーバー管理設�
   `language`
 </h3>
 
-Claude がデフォルトで英語以外の言語で応答するようにします。応答に固定リストはありません。Claude Code は値を Claude に逐語的に指示として渡し、常にその言語で応答するため、Claude が読める任意の言語名が機能します。Claude Code は値をチェックしないため、スペルが間違った名前は書かれたままエラーを生成するのではなく Claude に到達します。同じ値は[音声ディクテーション](/docs/ja/voice-dictation#change-the-dictation-language)の言語を設定します。これには[サポートされているディクテーション言語](/docs/ja/voice-dictation#change-the-dictation-language)の固定リストがあり、自動生成されたセッションタイトルもあります。
+Claude がデフォルトで英語以外の言語で応答するようにします。応答の固定リストはありません。Claude Code は値を Claude に逐語的に、常にその言語で応答するという指示として渡すため、Claude が読むことができる言語名は機能します。Claude Code は値をチェックしないため、スペルが間違った名前はエラーを生成するのではなく、書かれたとおりに Claude に到達します。同じ値は[音声ディクテーション](/docs/ja/voice-dictation#change-the-dictation-language)の言語を設定します。これは[サポートされているディクテーション言語](/docs/ja/voice-dictation#change-the-dictation-language)の固定リストを持ち、自動生成されたセッションタイトルも設定します。
 
 * **スコープ**: [`任意のファイル`](#scopes)
-* **タイプ**: 文字列、`"japanese"`、`"spanish"`、`"french"` などの任意の言語名。Claude Code はそれを検証しません
+* **タイプ**: 文字列、`"japanese"`、`"spanish"`、`"french"` などの言語名。Claude Code はそれを検証しません
 * **デフォルト**: 設定解除されています。セッションタイトルは会話の言語と一致します
 
 ```json settings.json theme={null}
@@ -1031,15 +1087,14 @@ Claude がデフォルトで英語以外の言語で応答するようにしま�
   `maxEffortLevel`
 </h3>
 
-セッションが使用できる[努力レベル](/docs/ja/model-config#adjust-effort-level)をキャップし、低いレベルを利用可能なままにします。より高いレベルはキャップで実行されます。これには `/effort`、`/model` ピッカー、`--effort`、[`CLAUDE_CODE_EFFORT_LEVEL`](/docs/ja/env-vars)、スキルまたはサブエージェントの `effort` frontmatter、またはモデル自体のデフォルトからのものが含まれます。Claude Code はキャップを各リクエストの前に自分で適用するため、Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry を含むすべてのプロバイダーで保持されます。Claude Code v2.1.267 以降が必要です。
+セッションが使用できる[努力レベル](/docs/ja/model-config#adjust-effort-level)をキャップし、低いレベルを利用可能なままにします。より高いレベルはキャップで実行されます。`/effort`、`/model` ピッカー、`--effort`、[`CLAUDE_CODE_EFFORT_LEVEL`](/docs/ja/env-vars)、スキルまたはサブエージェントの `effort` frontmatter、またはモデル自体のデフォルトから。Claude Code はリクエストの前にキャップ自体を適用するため、Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry を含むすべてのプロバイダーで保持されます。Claude Code v2.1.267 以降が必要です。
 
 * **スコープ**: [`任意のファイル`](#scopes)。組織に対して強制するために、管理設定にデプロイします。複数のスコープがキャップを設定する場合、最も低いものが適用されるため、1 つのスコープで設定されたキャップを別のスコープから上げることはできません
 * **タイプ**: 文字列、`"low"`、`"medium"`、`"high"`、`"xhigh"`、または `"max"` のいずれか。`"max"` 値はキャップを設定しません
 * **デフォルト**: 設定解除されているため、キャップは適用されません
-* **ultracode への影響**: `xhigh` より低いキャップは、キャップが適用されるモデルで[ultracode](#ultracode)を利用できなくします
-* **モデルごとのキャップ**: モデルの [`modelSettings`](#modelsettings)エントリに `maxEffortLevel` を追加します。そのエントリは、ユーザー設定や 1 つの[管理ソース](/docs/ja/managed-settings#how-claude-code-combines-managed-sources)など、両方を設定する設定ソース内でのみ、そのモデルのこのキーを置き換えます。そこで `"max"` を設定して、そのソースのキャップからモデルを除外します。Claude Code は他のソースからのキャップを依然として適用します
+* **モデルごとのキャップ**: モデルの [`modelSettings`](#modelsettings)エントリに `maxEffortLevel` を追加します。そのエントリは、ユーザー設定や 1 つの[管理ソース](/docs/ja/managed-settings#how-claude-code-combines-managed-sources)など、両方を設定する設定ソース内でのみこのキーを置き換えます。そこで `"max"` を設定して、そのソースのキャップからモデルを除外します。Claude Code は他のソースからのキャップを依然として適用します
 
-この例では、すべてのモデルを `medium` でキャップし、Sonnet 4.6 を除外します:
+この例はすべてのモデルを `medium` でキャップし、Sonnet 4.6 を除外します:
 
 ```json settings.json theme={null}
 {
@@ -1052,18 +1107,18 @@ Claude がデフォルトで英語以外の言語で応答するようにしま�
 }
 ```
 
-組織が[努力制限](/docs/ja/model-config#organization-effort-limits)をモデルに対して設定する場合、2 つのキャップの低い方が適用されます。
+組織がモデルの[努力制限](/docs/ja/model-config#organization-effort-limits)も設定する場合、2 つのキャップの低い方が適用されます。
 
 <h3 id="model">
   `model`
 </h3>
 
-すべての新しいセッションが使用するモデルを設定して、毎回 `/model` でモデルを選択する必要がないようにします。ここで設定しても、セッション中にモデルを切り替えることはできます。管理者がユーザー選択をオーバーライドするために[組織デフォルトモデル](/docs/ja/model-config#organization-default-model)を設定した場合、ユーザー、プロジェクト、またはローカル設定でこのキーを設定しても、そのモデルが取得されます。
+すべての新しいセッションが使用するモデルを設定するため、毎回 `/model` で 1 つを選択する必要はありません。ここで設定してもセッション中に切り替えることは止まりません。管理者が[組織デフォルトモデル](/docs/ja/model-config#organization-default-model)を設定してユーザー選択をオーバーライドした場合、ユーザー、プロジェクト、またはローカル設定でこのキーを設定しても、そのモデルを取得します。
 
 * **スコープ**: [`任意のファイル`](#scopes)
 * **タイプ**: 文字列、モデルエイリアスまたは完全なモデル ID
 * **デフォルト**: 設定解除されているため、Claude Code はアカウントのデフォルトモデルを使用します
-* **セッションごとのオーバーライド**: `--model` は [`ANTHROPIC_MODEL`](/docs/ja/env-vars)より優先され、両方は 1 つのセッションのこのキーより優先されます。管理 `model` を含む。[`availableModels`](#availablemodels)リストは依然として選択に適用されます
+* **セッションごとのオーバーライド**: `--model` は [`ANTHROPIC_MODEL`](/docs/ja/env-vars)より優先され、両方は 1 つのセッションでこのキーより優先されます。管理 `model` を含む。[`availableModels`](#availablemodels)リストは依然として選択に適用されます
 
 ```json settings.json theme={null}
 {
@@ -1071,19 +1126,19 @@ Claude がデフォルトで英語以外の言語で応答するようにしま�
 }
 ```
 
-ここの値は [`ANTHROPIC_DEFAULT_MODEL`](/docs/ja/model-config#set-a-default-model-for-new-sessions)をランク付けし、Claude Code はモデルを選択するものが他にない場合にのみ使用します。
+ここの値は [`ANTHROPIC_DEFAULT_MODEL`](/docs/ja/model-config#set-a-default-model-for-new-sessions)をランク付けし、Claude Code は他に何もモデルを選択しない場合にのみ使用します。
 
 <h3 id="modeloverrides">
   `modelOverrides`
 </h3>
 
-Anthropic モデル ID をプロバイダー固有のモデル ID（Amazon Bedrock 推論プロファイル ARN など）にマップします。各モデルピッカーエントリは、プロバイダー API を呼び出すときにマップされた値を使用します。管理者は[Amazon Bedrock、Google Cloud の Agent Platform、および Microsoft Foundry](/docs/ja/model-config#override-model-ids-per-version)でこれを使用して、各モデルバージョンを特定の推論プロファイル、バージョン名、またはデプロイメントにルーティングします。これはガバナンス、コスト配分、または地域ルーティング用です。
+Anthropic モデル ID をプロバイダー固有のモデル ID (Amazon Bedrock 推論プロファイル ARN など)にマップします。各モデルピッカーエントリは、プロバイダー API を呼び出すときにマップされた値を使用します。管理者は[Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry](/docs/ja/model-config#override-model-ids-per-version)でこれを使用して、各モデルバージョンを特定の推論プロファイル、バージョン名、またはガバナンス、コスト配分、または地域ルーティングのためのデプロイメントにルーティングします。
 
 * **スコープ**: [`任意のファイル`](#scopes)
 * **タイプ**: モデル ID をプロバイダーモデル ID にマップするオブジェクト
 * **デフォルト**: 設定解除されています
 
-この例では、Opus 4.6 のすべての呼び出しを名前付き Bedrock 推論プロファイルにルーティングします:
+この例は、Opus 4.6 のすべての呼び出しを名前付き Bedrock 推論プロファイルにルーティングします:
 
 ```json settings.json theme={null}
 {
@@ -1099,13 +1154,13 @@ Anthropic モデル ID をプロバイダー固有のモデル ID（Amazon Bedro
   `modelPicker`
 </h3>
 
-`/model` ピッカーが提供するモデルを、書き込む順序で、選択するラベルの下にリストします。これにより、ピッカーは組織が実行するモデルを、組み込みラインアップの後または代わりにリストします。各行の `model` は逐語的に取得されるため、`--model` が受け入れるもの（`opus` などのエイリアス、Anthropic モデル ID、または Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、または LLM ゲートウェイのプロバイダー形式 ID）を受け入れます。Claude Code v2.1.242 以降が必要です。
+`/model` ピッカーが提供するモデルを、書き込む順序で、選択するラベルの下にリストします。ピッカーは組織が実行するモデルをリストします。組み込みラインアップの後または代わりに。各行の `model` は逐語的に取得されるため、`--model` が受け入れるもの、`opus` などのエイリアス、Anthropic モデル ID、または Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、または LLM ゲートウェイのプロバイダー形式 ID を受け入れます。Claude Code v2.1.242 以降が必要です。
 
-* **スコープ**: [`ユーザーまたは管理`](#scopes)。Claude Code は管理設定、`--settings`、およびユーザー設定からキーを読み取り、プロジェクトおよびローカル設定では無視します。クローンするリポジトリはピッカーをリラベルできません。これら 3 つの最も優先度の高いものがキーを設定すると、ラインアップ全体が供給され、Claude Code は 2 つのソースからラインアップをマージすることはありません。
-* **タイプ**: `options` 配列と行を持つオブジェクト、およびオプションの `replaceBuiltInOptions` ブール値
+* **スコープ**: [`ユーザーまたは管理`](#scopes)。Claude Code は管理設定、`--settings`、およびユーザー設定からキーを読み取り、プロジェクトおよびローカル設定では無視するため、クローンするリポジトリはピッカーを再ラベルできません。これら 3 つの最も高いものがキーを設定すると、ラインアップ全体が供給され、Claude Code は 2 つのソースからラインアップをマージしません。
+* **タイプ**: `options` 配列と行とオプションの `replaceBuiltInOptions` ブール値を持つオブジェクト
 * **デフォルト**: 設定解除されているため、ピッカーは組み込みラインアップを表示します
 
-この例では、2 つの Bedrock デプロイメントを組み込みラインアップの後に追加し、チームが認識する名前の下に:
+この例は、組み込みラインアップの後に 2 つの Bedrock デプロイメントを追加し、チームが認識する名前の下に:
 
 ```json managed-settings.json theme={null}
 {
@@ -1132,18 +1187,20 @@ Anthropic モデル ID をプロバイダー固有のモデル ID（Amazon Bedro
 
 キーは 2 つのフィールドを取ります。1 つは行自体用で、もう 1 つは組み込みラインアップを置き換えるか追加するかです。
 
-| フィールド                   | タイプ                                                      | 動作                                                                                                                                             |
-| :---------------------- | :------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------- |
-| `options`               | 各行に必須の `model` とオプションの `label` および `description` を持つ行の配列 | ピッカーが表示する行。この順序で。ただし、グレーアウトされた行は下部に移動します。`label` がない場合、Claude Code は既知のモデルの組み込み名でタイトルを付けるか、モデル ID でそれ以外の場合。`description` がない場合、汎用の 2 行目を書き込みます |
-| `replaceBuiltInOptions` | ブール値、デフォルト `false`                                       | これらの行のみ、**Default**、およびセッションが既に使用しているモデルの行を表示するには `true` に設定します。組み込みラインアップの後にこれらの行を追加するには、設定解除のままにします                                          |
+| フィールド | タイプ | 動作 |
+| :- | :- | :- |
+| `options` | 必須の `model` とオプションの `label`、`description`、および `behavesAs` を持つ行の配列 | ピッカーが表示する行。この順序で。グレーアウトされた行は下部に移動します。`label` がない場合、Claude Code は既知のモデルの組み込み名でタイトルを付けるか、モデル ID でタイトルを付けます。`description` がない場合は、一般的な 2 行目を書き込みます |
+| `replaceBuiltInOptions` | ブール値、デフォルト `false` | これらの行のみ、**Default**、およびセッションが既に使用しているモデルの行を表示するには `true` に設定します。これらの行を組み込みラインアップの後に追加するには、設定解除のままにします |
 
-`replaceBuiltInOptions` がオンの場合、Claude Code はすべての他の行を非表示にします。組み込みラインアップ、[`availableModels`](#availablemodels)エントリ用に追加する行、[ゲートウェイディスカバリー](/docs/ja/llm-gateway-protocol#model-discovery)が見つけたモデル、および [`ANTHROPIC_CUSTOM_MODEL_OPTION`](/docs/ja/model-config#add-a-custom-model-option)。オフの場合、Claude Code は組み込みラインアップが既にカバーしているリストされたモデルをスキップします。ラベルはピッカーが表示するものを変更し、Claude Code が実行するモデルではありません。
+`options` のエントリは、その `model` の横にオプションの `behavesAs` 文字列を持つこともできます。これには v2.1.257 以降が必要です。Claude Code バージョンが既に知っている `claude-opus-4-8` などのモデルの ID に設定します。`model` が バージョンより新しいエントリで。Claude Code はそれ以降、既知のモデルの機能と努力デフォルトをエントリに適用し、そのモデルを不明として扱いません。エントリのラベルと Claude Code がリクエストで送信するモデル ID は変わりません。
 
-[`availableModels`](#availablemodels)許可リストは依然としてこれらの行に適用されます。リストされたモデルを許可リストに追加する前に、[マージ動作](/docs/ja/model-config#merge-behavior)を読んでください。特定のモデル ID はそのファミリーのワイルドカード エントリを絞り込みます。Claude Code はピッカーを表示する前に各行をセッションに対してチェックします:
+`replaceBuiltInOptions` がオンの場合、Claude Code はすべての他の行を非表示にします。組み込みラインアップ、[`availableModels`](#availablemodels)エントリ用に追加する行、[ゲートウェイディスカバリー](/docs/ja/llm-gateway-protocol#model-discovery)が見つけたモデル、および [`ANTHROPIC_CUSTOM_MODEL_OPTION`](/docs/ja/model-config#add-a-custom-model-option)。オフの場合、Claude Code は組み込みラインアップが既にカバーするリストされたモデルをスキップします。ラベルはピッカーが表示するものを変更し、Claude Code が実行するモデルではありません。
 
-* **削除**: Claude Code が提供できない行。廃止されたモデルや、組織がアクセスできないモデルなど
-* **グレーアウト**: まだ選択できない行。理由とともに表示されます
-* **行が生き残らない**: Claude Code は組み込みラインアップを保持し、通常どおり許可リストでフィルタリングされます
+[`availableModels`](#availablemodels)許可リストはこれらの行に依然として適用されます。リストされたモデルを許可リストに追加する前に、[マージ動作](/docs/ja/model-config#merge-behavior)を読んでください。特定のモデル ID はそのファミリーのワイルドカード エントリを絞ります。Claude Code はピッカーを表示する前に各行をセッションに対してチェックします:
+
+* **削除**: Claude Code が提供できない行。廃止されたモデルや組織がアクセスできないモデルなど
+* **グレーアウト**: まだ選択できない行。理由を示して表示されます
+* **行が生き残らない**: Claude Code は通常どおり許可リストでフィルタリングされた組み込みラインアップを保持します
 
 Claude Code は解析できない行を削除し、残りを保持します。[壊れた設定ファイルを修正](/docs/ja/settings#fix-a-broken-settings-file)を参照してください。
 
@@ -1151,15 +1208,15 @@ Claude Code は解析できない行を削除し、残りを保持します。[�
   `modelPricing`
 </h3>
 
-組織が支払うレートでリスト価格の代わりに支出を報告します。組織が契約レートを持っている場合、これを設定して、開発者が見るドル数字が請求書と一致するようにします。Claude Code は `/usage`、[ステータスライン](/docs/ja/statusline)、Agent SDK の `total_cost_usd`、[`--max-budget-usd`](/docs/ja/cli-reference)制限、および[OpenTelemetry](/docs/ja/monitoring-usage)コストメトリックとイベントでレートを適用します。レートを提供します。Claude Code は契約またはClaude Console から読み取りません。Claude Code v2.1.242 以降が必要です。
+組織が支払うレートでリスト価格の代わりに支出を報告します。組織が契約レートを持っている場合に設定するため、開発者が見るドル数字は請求書と一致します。Claude Code は `/usage`、[ステータスライン](/docs/ja/statusline)、Agent SDK の `total_cost_usd`、[`--max-budget-usd`](/docs/ja/cli-reference)制限、および[OpenTelemetry](/docs/ja/monitoring-usage)コストメトリックとイベントのレートを適用します。レートを供給します。Claude Code は契約またはClaude Console から読み取りません。Claude Code v2.1.242 以降が必要です。
 
-* **スコープ**: [`管理`](#scopes)。サーバー管理設定、MDM ポリシー、`managed-settings.json` ファイル、または[ポリシーヘルパー](/docs/ja/managed-settings#compute-the-policy-with-a-helper-program)を通じてキーをデプロイします。Claude Code はユーザー、プロジェクト、およびローカル設定、`--settings`、および Windows のユーザー書き込み可能な[HKCU レジストリ](/docs/ja/managed-settings#where-each-mechanism-stores-the-policy)では無視します。サーバー管理設定では、各セッションはそのセッションの[設定フェッチ](/docs/ja/server-managed-settings#fetch-and-caching-behavior)が設定を確認するまでリスト価格でコストを報告します。Claude Code を埋め込み、[`CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST`](/docs/ja/env-vars)を設定するホストアプリケーションは、SDK [`managedSettings`](/docs/ja/agent-sdk/typescript#options)オプションを通じて独自のテーブルを提供できます。Claude Code はキーを設定する管理ソースがなく、Claude Code v2.1.246 以降の場合にのみ使用します。
+* **スコープ**: [`管理`](#scopes)。サーバー管理設定、MDM ポリシー、`managed-settings.json` ファイル、または[ポリシーヘルパー](/docs/ja/managed-settings#compute-the-policy-with-a-helper-program)を通じてキーをデプロイします。Claude Code はユーザー、プロジェクト、ローカル設定、`--settings`、および Windows のユーザー書き込み可能な[HKCU レジストリ](/docs/ja/managed-settings#where-each-mechanism-stores-the-policy)では無視します。サーバー管理設定では、各セッションはそのセッションの[設定フェッチ](/docs/ja/server-managed-settings#fetch-and-caching-behavior)が設定を確認するまでリスト価格でコストを報告します。Claude Code を埋め込み、[`CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST`](/docs/ja/env-vars)を設定するホストアプリケーションは、SDK [`managedSettings`](/docs/ja/agent-sdk/typescript#options)オプションを通じて独自のテーブルを供給でき、Claude Code はマネージドソースがキーを設定しない場合にのみ使用し、Claude Code v2.1.246 以降でのみ使用します。
 * **タイプ**: オプションの `multiplier` とオプションの `overrides` マップを持つオブジェクト
-* **デフォルト**: 設定解除されているため、Claude Code はホストアプリケーションがテーブルを提供しない限りリスト価格を報告します
+* **デフォルト**: 設定解除されているため、Claude Code はリスト価格を報告します。ホストアプリケーションがテーブルを供給しない限り
 
 `multiplier` のみを設定して定額割引またはマークアップ、`overrides` のみをモデルごとのレート、または両方を設定します。
 
-この例では、Sonnet 4.6 の契約レートを設定し、すべての数字（Sonnet 行を含む）を 15% 削減します:
+この例は Sonnet 4.6 の契約レートを設定し、すべての数字を 15% 削減します。Sonnet 行を含む:
 
 ```json managed-settings.json theme={null}
 {
@@ -1177,9 +1234,9 @@ Claude Code は解析できない行を削除し、残りを保持します。[�
 }
 ```
 
-すべての数字をマークアップするには `multiplier` を 1 より上、最大 10 に設定します。マークアップには Claude Code v2.1.271 以降が必要です。以前のバージョンは警告付きで 1 より上の `multiplier` を無視し、設定の残りを保持します。
+1 より上、最大 10 までマークアップするには `multiplier` を設定します。マークアップには Claude Code v2.1.271 以降が必要です。以前のバージョンは警告付きで 1 より上の `multiplier` を無視し、設定の残りを保持します。
 
-手順（レートが有効であることを確認する方法を含む）については、[契約レートで支出を報告](/docs/ja/costs#report-spend-at-your-contracted-rates)を参照してください。
+手順を含む、レートが有効であることを確認する方法については、[契約レートで支出を報告](/docs/ja/costs#report-spend-at-your-contracted-rates)を参照してください。
 
 <span id="modelpricing-multiplier" />
 
@@ -1189,22 +1246,22 @@ Claude Code は解析できない行を削除し、残りを保持します。[�
   `modelPricing` のフィールド
 </h4>
 
-| フィールド        | タイプ                                                                                 | 動作                                                                                                                                                             |
-| :----------- | :---------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `multiplier` | 0 より大きく最大 10 の数値                                                                    | Claude Code が計算するすべてのコストをスケーリングします。`overrides` 行がカバーするかどうかに関わらず。1 未満は割引、1 より上はマークアップです                                                                         |
-| `overrides`  | モデル ID を `input`、`output`、`cacheRead`、`cacheWrite` を持つレートオブジェクトにマップします。各 0 から 10000 | そのモデルの USD-per-million-token レート。すべて 4 つ必須。`cacheWrite` は 5 分と 1 時間のキャッシュ書き込みの両方をカバーします。[どのモデルが行に適用されるか](#which-models-a-modelpricing-row-applies-to)を参照してください |
+| フィールド | タイプ | 動作 |
+| :- | :- | :- |
+| `multiplier` | 0 より大きく最大 10 の数値 | Claude Code が計算するすべてのコストをスケーリングします。`overrides` 行がカバーするかどうかに関わらず。1 未満は割引、1 より上はマークアップです |
+| `overrides` | モデル ID をそれぞれ 0 から 10000 の `input`、`output`、`cacheRead`、および `cacheWrite` を持つレートオブジェクトにマップします | そのモデルの USD-per-million-token レート。すべて 4 つが必要です。`cacheWrite` は 5 分と 1 時間のキャッシュ書き込みの両方をカバーします。[どのモデルが行に適用されるか](#which-models-a-modelpricing-row-applies-to)を参照してください |
 
-Claude Code は行のレートを書き込んだとおりに使用し、高速モードサージまたは[US のみの推論レート](https://platform.claude.com/docs/en/about-claude/pricing)を追加しません。`multiplier` も設定する場合、Claude Code はそれを行のレートの上に適用します。Claude Code は解析できないレート、または解析できない `multiplier` を持つ行を削除し、残りを保持します。[壊れた設定ファイルを修正](/docs/ja/settings#fix-a-broken-settings-file)を参照してください。
+Claude Code はレートを書き込んだとおりに使用し、高速モード割増料金または[US のみの推論レート](https://platform.claude.com/docs/en/about-claude/pricing)を追加しません。`multiplier` も設定する場合、Claude Code はそれを行のレートの上に適用します。Claude Code は解析できないレートを持つ行、または解析できない `multiplier` を削除し、残りを保持します。[壊れた設定ファイルを修正](/docs/ja/settings#fix-a-broken-settings-file)を参照してください。
 
 <h4 id="which-models-a-modelpricing-row-applies-to">
-  `modelPricing` 行が適用されるモデル
+  どのモデルが `modelPricing` 行に適用されるか
 </h4>
 
 Claude Code は行のキーから行が適用されるモデルを決定します:
 
-* **組み込みモデルの ID**: Claude Code 自体がモデルに使用するキー。そのキーがモデル自体の ID（`claude-sonnet-4-6` など）であるか、Bedrock、Agent Platform、または Foundry ID であるかに関わらず。Claude Code はそのモデルのすべての日付スナップショット ID とプロバイダー固有の ID に行を適用します。
+* **組み込みモデルの ID**: Claude Code 自体がモデルの独自の ID (例: `claude-sonnet-4-6`) またはその Bedrock、Agent Platform、または Foundry ID であるかどうかに関わらず、組み込みモデルに使用するキー。Claude Code はそのモデルのすべての日付スナップショット ID とプロバイダー固有の ID に行を適用します。
 * **その他のキー**: 組み込みモデルの ID ではないキー。ゲートウェイモデルエイリアスなど。Claude Code はそのキーのみに行を適用します。モデル ID がキーの 1 つと正確に一致し、組み込みモデルの ID でキーされた行の下にも該当する場合、Claude Code は正確な一致を使用します。
-* **Bedrock アプリケーション推論プロファイル**: Claude Code がプロファイルをルーティング先のモデルに解決した後。[`modelOverrides`](#modeloverrides)マップまたは[`bedrock:GetInferenceProfile` ルックアップ](/docs/ja/amazon-bedrock#iam-configuration)を通じて、Claude Code はそのモデルの行をプロファイルに適用します。
+* **Bedrock アプリケーション推論プロファイル**: Claude Code がプロファイルを [`modelOverrides`](#modeloverrides)マップまたは [`bedrock:GetInferenceProfile` ルックアップ](/docs/ja/amazon-bedrock#iam-configuration)を通じてルーティングするモデルに解決した後、Claude Code はそのモデルの行をプロファイルに適用します。
 
 <h3 id="modelsettings">
   `modelSettings`
@@ -1212,21 +1269,21 @@ Claude Code は行のキーから行が適用されるモデルを決定しま�
 
 使用する各モデルの[努力レベル](/docs/ja/model-config#adjust-effort-level)を保存します。Claude Code v2.1.251 以降が必要です。
 
-マシン上のインタラクティブセッションで、`/effort` または `/model` ピッカーの努力スライダーで `low`、`medium`、`high`、または `xhigh` をデフォルトとして保存すると、Claude Code はそのレベルを使用しているモデルの下にここに書き込みます。通常、このキーを自分で編集することはありません。[VS Code 拡張機能のモデルピッカー](/docs/ja/vs-code#use-the-prompt-box)でこれらのレベルの 1 つを選択すると、Claude Code は同じ方法でここに保存します。[`effortLevel`](#effortlevel)エントリは `/effort` がそのセッションのみに適用されるセッションをリストします。
+マシン上のインタラクティブセッションで、`/effort` または `/model` ピッカーの努力スライダーで `low`、`medium`、`high`、または `xhigh` をデフォルトとして保存すると、Claude Code はそれを使用しているモデルの下にここにそのレベルを書き込むため、このキーを自分で編集することはめったにありません。[VS Code 拡張機能のモデルピッカー](/docs/ja/vs-code#use-the-prompt-box)でこれらのレベルのいずれかを選択すると、Claude Code は同じ方法でここに保存します。[`effortLevel`](#effortlevel)エントリは `/effort` がそのセッションのみに適用されるセッションをリストします。
 
-キーを手動で編集して、保存したレベルを変更または削除します。
+レベルを変更または削除するには、キーを手動で編集します。
 
-ここのモデルの `effortLevel` は、同じ設定ファイルのトップレベル [`effortLevel`](#effortlevel)より優先されます。ファイル全体では、Claude Code は各モデルを個別に解決します。そのモデルの `effortLevel` またはそのモデルに[適用される](#effortlevel)トップレベル `effortLevel` を設定する最も優先度の高い[設定ファイル](/docs/ja/settings#settings-precedence)が決定するため、管理設定の `effortLevel` はユーザー設定で保存したレベルをランク付けします。[努力レベルを調整](/docs/ja/model-config#adjust-effort-level)は、`--effort` 起動時など、保存されたレベルをオーバーライドできるものをリストします。
+このモデルの `effortLevel` ここは同じ設定ファイルの最上位 [`effortLevel`](#effortlevel)より優先されます。ファイル全体で、Claude Code は各モデルを個別に解決します。そのモデルの `effortLevel` または[そのモデルに適用される](/docs/ja/model-config#adjust-effort-level)最上位 `effortLevel` のいずれかを設定する最も優先度の高い[設定ファイル](/docs/ja/settings#settings-precedence)が決定するため、管理設定の `effortLevel` はユーザー設定で保存されたレベルをランク付けします。[努力レベルを調整](/docs/ja/model-config#adjust-effort-level)は、`--effort` 起動など、保存されたレベルをオーバーライドできるその他のものをリストします。
 
 1 つのモデルの努力をキャップするのではなく、そのモデルのエントリに [`maxEffortLevel`](#maxeffortlevel)フィールドを追加します。フィールドには Claude Code v2.1.267 以降が必要です。
 
 * **スコープ**: [`任意のファイル`](#scopes)
-* **タイプ**: モデル名を `effortLevel` フィールド（`"low"`、`"medium"`、`"high"`、または `"xhigh"` のいずれか）、[`maxEffortLevel`](#maxeffortlevel)フィールド、またはその両方を持つオブジェクトにマップするオブジェクト
+* **タイプ**: モデル名を `effortLevel` フィールド (1 つの `"low"`、`"medium"`、`"high"`、または `"xhigh"`)、[`maxEffortLevel`](#maxeffortlevel)フィールド、またはその両方を持つオブジェクトにマップするオブジェクト
 * **デフォルト**: 設定解除されています
 
 Claude Code は各エントリを `claude-opus-5-5` などのモデルの正規名の下に書き込み、そのモデルのエイリアス、日付サフィックス、`[1m]`、および認識されたプロバイダー固有の ID を同じエントリと一致させます。
 
-この例では、Opus 5.5 を `high` に保持しながら、他のモデルは独自の保存またはデフォルトレベルを使用します:
+この例は Opus 5.5 を `high` に保ちながら、他のモデルは独自の保存またはデフォルトレベルを使用します:
 
 ```json settings.json theme={null}
 {
@@ -1238,21 +1295,21 @@ Claude Code は各エントリを `claude-opus-5-5` などのモデルの正規�
 }
 ```
 
-`/effort auto` を実行して、使用しているモデルの保存されたレベルをクリアします。Claude Code は他のエントリとトップレベルの `effortLevel` をそのままにします。
+`/effort auto` を実行して、使用しているモデルの保存されたレベルをクリアします。Claude Code は他のエントリと最上位の `effortLevel` をそのままにします。
 
 <h3 id="outputstyle">
   `outputStyle`
 </h3>
 
-[出力スタイル](/docs/ja/output-styles)を名前で選択します。出力スタイルは、Claude の役割、トーン、出力形式を変更する保存された指示セットです。組み込みの Explanatory および Learning スタイルや、自分で書いたものなど。
+[出力スタイル](/docs/ja/output-styles)を名前で選択します。出力スタイルは、Claude の役割、トーン、出力形式を変更する保存された指示のセットです。組み込みの Explanatory および Learning スタイルや自分で書いたものなど。
 
-セッション中にこのキーを変更すると、Claude は次のメッセージから新しいスタイルを使用します。そのメッセージがプロンプトキャッシングでコストするものについては、[出力スタイルを変更](/docs/ja/prompt-caching#changing-output-style)を参照してください。v2.1.251 より前では、編集は `/clear` を実行した後またはセッションを開始した後にのみ適用されました。
+セッション中にこのキーを変更すると、Claude は次のメッセージから新しいスタイルを使用します。そのメッセージがプロンプトキャッシュでコストするものについては、[出力スタイルを変更](/docs/ja/prompt-caching#changing-output-style)を参照してください。v2.1.251 より前では、編集は `/clear` を実行した後またはセッションを開始した後にのみ適用されました。
 
 * **スコープ**: [`任意のファイル`](#scopes)
 * **タイプ**: 文字列。[組み込み](/docs/ja/output-styles#built-in-output-styles)または[カスタム](/docs/ja/output-styles#create-a-custom-output-style)出力スタイルの名前
 * **デフォルト**: 設定解除されているため、Claude Code はデフォルトスタイルを使用します
 
-この例では、組み込みの Explanatory スタイルを選択します。これはタスク間に教育的な洞察を追加します:
+この例は、タスク間に教育的な洞察を追加する組み込みの Explanatory スタイルを選択します:
 
 ```json settings.json theme={null}
 {
@@ -1270,10 +1327,10 @@ Claude Code は各エントリを `claude-opus-5-5` などのモデルの正規�
 * **タイプ**: 文字列、以下のいずれか:
   * `"5m"`: キャッシュは 5 分間保持されます
   * `"1h"`: キャッシュは 1 時間保持されます
-* **デフォルト**: 設定解除されているため、各メイン会話リクエストは[デフォルトライフタイム](/docs/ja/prompt-caching#which-ttl-each-request-gets)を取得します
-* **セッションごとのオーバーライド**: [`FORCE_PROMPT_CACHING_5M`](/docs/ja/env-vars)はすべてより優先されます。次に[`CLAUDE_CODE_PROMPT_CACHE_TTL`](/docs/ja/env-vars)、次にこのキー、最後に[`ENABLE_PROMPT_CACHING_1H`](/docs/ja/env-vars)
+* **デフォルト**: 設定解除されているため、各メイン会話リクエストは[そのデフォルトライフタイム](/docs/ja/prompt-caching#which-ttl-each-request-gets)を取得します
+* **セッションごとのオーバーライド**: [`FORCE_PROMPT_CACHING_5M`](/docs/ja/env-vars)はすべてを優先し、次に [`CLAUDE_CODE_PROMPT_CACHE_TTL`](/docs/ja/env-vars)、次にこのキー、最後に [`ENABLE_PROMPT_CACHING_1H`](/docs/ja/env-vars)
 
-この例では、メイン会話を 1 時間のライフタイムに保持し、サブエージェントを 5 分のままにします:
+この例はメイン会話を 1 時間のライフタイムに保ち、サブエージェントを 5 分のままにします:
 
 ```json settings.json theme={null}
 {
@@ -1288,7 +1345,7 @@ Claude Code は各エントリを `claude-opus-5-5` などのモデルの正規�
   `showThinkingSummaries`
 </h3>
 
-インタラクティブセッションで Claude の[拡張思考](/docs/ja/model-config#extended-thinking)の概要を参照してください。`Ctrl+O` で思考を展開するときに完全な概要を表示したい場合は、それを設定します。設定解除または `false` の場合、Anthropic API は思考ブロックを編集し、Claude Code は折りたたまれたスタブを表示します。サードパーティプロバイダーは編集しません。
+インタラクティブセッションで Claude の[拡張思考](/docs/ja/model-config#extended-thinking)の概要を参照してください。`Ctrl+O` で思考を展開するときに完全な概要が必要な場合に設定します。設定解除または `false` の場合、Anthropic API は思考ブロックを編集し、Claude Code は折りたたまれたスタブを表示します。サードパーティプロバイダーは編集しません。
 
 * **スコープ**: [`任意のファイル`](#scopes)
 * **タイプ**: ブール値
@@ -1302,22 +1359,22 @@ Claude Code は各エントリを `claude-opus-5-5` などのモデルの正規�
 }
 ```
 
-編集は、モデルが生成するものではなく、表示するものだけを変更します。思考支出を削減するには、代わりに[予算を下げるか思考を無効にする](/docs/ja/model-config#extended-thinking)してください。
+編集は、モデルが生成するものではなく、表示するものだけを変更します。思考支出を削減するには、代わりに[予算を低下させるか思考を無効にします](/docs/ja/model-config#extended-thinking)。
 
 <h3 id="subagentpromptcachettl">
   `subagentPromptCacheTtl`
 </h3>
 
-[プロンプトキャッシュ](/docs/ja/prompt-caching)がメイン会話外で Claude Code が行うリクエストを保持する期間を選択します。このキーは[サブエージェント](/docs/ja/sub-agents)、[ワークフロー](/docs/ja/workflows)、および Claude Code 独自のバックグラウンドおよびヘルパーリクエスト（圧縮やセッションタイトルなど）に適用されます。1 時間のライフタイムはより長い休憩全体でキャッシュを温かく保ち、API は[各キャッシュ書き込みを 5 分のライフタイムより高いレートで請求します](https://platform.claude.com/docs/en/build-with-claude/prompt-caching#pricing)。Claude Code v2.1.242 以降が必要です。
+[プロンプトキャッシュ](/docs/ja/prompt-caching)がメイン会話外で Claude Code が行うリクエストを保持する期間を選択します。このキーは[サブエージェント](/docs/ja/sub-agents)、[ワークフロー](/docs/ja/workflows)、および Claude Code 独自のバックグラウンドおよびヘルパーリクエスト (圧縮やセッションタイトルなど)に適用されます。1 時間のライフタイムはより長い休憩全体でキャッシュを温かく保ち、API は[各キャッシュ書き込みを 5 分のライフタイムより高いレートで請求します](https://platform.claude.com/docs/en/build-with-claude/prompt-caching#pricing)。Claude Code v2.1.242 以降が必要です。
 
 * **スコープ**: [`任意のファイル`](#scopes)
 * **タイプ**: 文字列、以下のいずれか:
   * `"5m"`: キャッシュは 5 分間保持されます
   * `"1h"`: キャッシュは 1 時間保持されます
-* **デフォルト**: 設定解除されているため、これらの各リクエストは[デフォルトライフタイム](/docs/ja/prompt-caching#which-ttl-each-request-gets)を取得します
-* **セッションごとのオーバーライド**: [`FORCE_PROMPT_CACHING_5M`](/docs/ja/env-vars)はすべてより優先されます。次に[`CLAUDE_CODE_SUBAGENT_PROMPT_CACHE_TTL`](/docs/ja/env-vars)、次にこのキー、次に[`ENABLE_PROMPT_CACHING_1H`](/docs/ja/env-vars)。これはすべてのリクエストで 1 時間のライフタイムを要求します。サブエージェント独自の frontmatter 値がランク付けされる場所については、[TTL を自分で選択](/docs/ja/prompt-caching#choose-the-ttl-yourself)を参照してください
+* **デフォルト**: 設定解除されているため、これらの各リクエストは[そのデフォルトライフタイム](/docs/ja/prompt-caching#which-ttl-each-request-gets)を取得します
+* **セッションごとのオーバーライド**: [`FORCE_PROMPT_CACHING_5M`](/docs/ja/env-vars)はすべてを優先し、次に [`CLAUDE_CODE_SUBAGENT_PROMPT_CACHE_TTL`](/docs/ja/env-vars)、次にこのキー、次に [`ENABLE_PROMPT_CACHING_1H`](/docs/ja/env-vars)。サブエージェント独自の frontmatter 値がランク付けされる場所については、[TTL を自分で選択](/docs/ja/prompt-caching#choose-the-ttl-yourself)を参照してください
 
-この例では、サブエージェントおよびメイン会話外の他のリクエストに 1 時間のライフタイムを提供します:
+この例はサブエージェントとメイン会話外の他のリクエストに 1 時間のライフタイムを与えます:
 
 ```json settings.json theme={null}
 {
@@ -1331,13 +1388,13 @@ Claude Code は各エントリを `claude-opus-5-5` などのモデルの正規�
   `switchModelsOnFlag`
 </h3>
 
-[安全分類器がリクエストにフラグを立てた](/docs/ja/model-config#automatic-model-fallback)場合に何が起こるかを選択します。フォールバックモデルに切り替えて続行するか、プロンプトを切り替えるか編集するかを選択できるように一時停止します。
+[安全分類器がリクエストにフラグを立てた](/docs/ja/model-config#automatic-model-fallback)場合に何が起こるかを選択します。フォールバックモデルに切り替えて続行するか、切り替えるかプロンプトを編集するかを選択できるように一時停止します。
 
-* **スコープ**: [`任意のファイル`](#scopes)。`/config` に**メッセージがフラグされたときにモデルを切り替える**として表示されます。
+* **スコープ**: [`任意のファイル`](#scopes)。`/config` に**メッセージがフラグされたときにモデルを切り替え**として表示されます。
 * **タイプ**: ブール値
   * `true`: Claude Code はフォールバックモデルに切り替えて続行します
-  * `false`: インタラクティブセッションでは Claude Code は一時停止して、切り替えるかプロンプトを編集するかを選択できます。ダイアログが表示できない場所（`-p` 実行など）では、フラグされたリクエストはエラーで終了します
-* **デフォルト**: `true`。自動的に切り替えます
+  * `false`: インタラクティブセッションで Claude Code は一時停止して、切り替えるかプロンプトを編集するかを選択できます。ダイアログが表示できない場所 (`-p` 実行など)では、フラグされたリクエストはエラーで終了します
+* **デフォルト**: `true`。自動的に切り替え
 
 ```json settings.json theme={null}
 {
@@ -1351,14 +1408,14 @@ Claude Code は各エントリを `claude-opus-5-5` などのモデルの正規�
   `ultracode`
 </h3>
 
-セッションを[ultracode](/docs/ja/workflows#let-claude-decide-with-ultracode)でオンで開始します。オンの場合、Claude は、あなたが尋ねるのを待つのではなく、各実質的なタスクのワークフローを計画します。Claude は[動的ワークフロー](/docs/ja/workflows)が有効になっている場合、モデルが `xhigh` 努力をサポートし、`xhigh` より低い[努力キャップ](/docs/ja/model-config#organization-effort-limits)が適用されない場合にのみワークフローを計画します。いずれにせよ、`ultracode: true` はセッションを `xhigh` 努力で実行するか、努力キャップが低い場合はキャップで実行します。Claude Code はこのキーを読み取りますが、決して書き込みません。`/effort ultracode` は現在のセッションのみで ultracode をオンにします。
+セッションを[ultracode](/docs/ja/workflows#let-claude-decide-with-ultracode)でオンで開始します。オンの場合、Claude は、あなたが尋ねるのを待つのではなく、各実質的なタスクのワークフローを計画します。Claude は[動的ワークフロー](/docs/ja/workflows)が有効になっており、モデルが `xhigh` 努力をサポートする場合にのみワークフローを計画します。キーはセッションの努力レベルを変更しません。ultracode はセッションが使用するレベルで実行されます。Claude Code はこのキーを読み取りますが、決して書き込みません。`/effort ultracode` は現在のセッションのみで ultracode をオンにします。
 
 * **スコープ**: [`任意のファイル`](#scopes)
 * **タイプ**: ブール値
-  * `true`: セッションは `xhigh` 努力で開始され、動的ワークフローが有効になっている場合、モデルが `xhigh` をサポートし、努力キャップが `xhigh` より低くない場合、ultracode はオンになります
-  * `false`: セッションは ultracode をオフで開始します
+  * `true`: 動的ワークフローが有効になっており、モデルが `xhigh` をサポートする場合、セッションは ultracode でオンで開始されます
+  * `false`: セッションは ultracode でオフで開始されます
 * **デフォルト**: 設定解除されているため、ultracode はオフです
-* **セッションごとのオーバーライド**: `/effort ultracode` はこのキーなしで 1 つのセッションで ultracode をオンにします。`--effort ultracode` フラグもそれを 1 つのセッションでオンにし、Claude Code v2.1.203 以降が必要です
+* **セッションごとのオーバーライド**: `/effort ultracode` はこのキーなしで 1 つのセッションで ultracode をオンにし、`/effort ultracode off` はこのキーが `true` の場合、1 つのセッションでそれをオフにします。`--effort ultracode` フラグも 1 つのセッションでそれをオンにし、`xhigh` 努力で、Claude Code v2.1.203 以降が必要です
 
 ```json settings.json theme={null}
 {
@@ -1366,7 +1423,7 @@ Claude Code は各エントリを `claude-opus-5-5` などのモデルの正規�
 }
 ```
 
-Ultracode はセッションを `xhigh` 努力で実行し、`effortLevel` および [`modelSettings`](#modelsettings)エントリより優先されます。`xhigh` より低い[努力キャップ](/docs/ja/model-config#organization-effort-limits)（[`maxEffortLevel`](#maxeffortlevel)設定など）がモデルに適用される場合、セッションは代わりにキャップで実行され、ultracode はオフのままです。Claude はそれ自体でワークフローを計画せず、`/effort` は `ultracode` を提供しません。Agent SDK `apply_flag_settings` コントロールリクエストもキーを受け入れます。
+セッションの努力レベルは [`effortLevel`](#effortlevel)、[`modelSettings`](#modelsettings)、および他の[努力ソース](/docs/ja/model-config#adjust-effort-level)から来ます。[`maxEffortLevel`](#maxeffortlevel)などの[努力キャップ](/docs/ja/model-config#organization-effort-limits)はそのレベルを低下させますが、ultracode をオフにしません。これと `/effort ultracode off` フォームには Claude Code v2.1.284 以降が必要です。v2.1.284 より前では、`ultracode: true` はセッションを `xhigh` 努力で実行し、`xhigh` より下の努力キャップは ultracode をオフに保ちました。Agent SDK `apply_flag_settings` コントロールリクエストもキーを受け入れます。
 
 <h2 id="permission-settings">
   権限設定
@@ -1489,11 +1546,11 @@ Claude が確認なしで使用できるツール、常にプロンプトを表�
   `useAutoModeDuringPlan`
 </h3>
 
-Claude Code がプランモード中にシェルコマンドを確認するために自動モード分類器を使用するかどうかを選択します。デフォルトの `true` では、自動モードが利用可能で、プロンプトが表示されない場合、分類器は計画中に各コマンドを確認します。`false` に設定して、組み込みの読み取り専用セット外のすべてのコマンドに対して権限プロンプトを取得します。`/config` に**プラン中に自動モードを使用**として表示されます。
+Claude Code がプランモード中にシェルコマンドを確認するために自動モード分類器を使用するかどうかを選択します。デフォルトの `true` では、自動モードが利用可能で、プロンプトが表示されない場合、分類器は計画中に各コマンドを確認します。ただし、[重要パスの削除](/docs/ja/permission-modes#critical-paths)を除きます。`false` に設定して、組み込みの読み取り専用セット外のすべてのコマンドに対して権限プロンプトを取得します。`/config` に**プラン中に自動モードを使用**として表示されます。
 
 * **スコープ**: [`User, local, or managed`](#scopes)。リポジトリはそれをオフにすることはできません。
 * **タイプ**: ブール値
-  * `true`: 未設定と同じです。自動モードが利用可能な場合、分類器はプランニング中に各シェルコマンドを確認し、プロンプトを表示しません。これらのファイルのいずれかで `false` でもそれをオフにします
+  * `true`: 未設定と同じです。自動モードが利用可能な場合、分類器はプランニング中に各シェルコマンドを確認し、プロンプトを表示しません。ただし、[重要パスの削除](/docs/ja/permission-modes#critical-paths)を除きます。これらのファイルのいずれかで `false` でもそれをオフにします
   * `false`: 組み込みの読み取り専用セット外のすべてのコマンドに対して権限プロンプトを取得します
 * **デフォルト**: `true`
 
@@ -1534,11 +1591,11 @@ Claude Code はプロジェクトの `.claude/settings.json` から `allow` ル�
 
 各行は 1 つのルール形状とそれが一致するものを示します。
 
-| ルール                            | 一致するもの                  |
-| :----------------------------- | :---------------------- |
-| `Bash`                         | すべての Bash コマンド          |
-| `Bash(npm run *)`              | `npm run` で始まるコマンド      |
-| `Read(./.env)`                 | `.env` ファイルの読み取り        |
+| ルール | 一致するもの |
+| :- | :- |
+| `Bash` | すべての Bash コマンド |
+| `Bash(npm run *)` | `npm run` で始まるコマンド |
+| `Read(./.env)` | `.env` ファイルの読み取り |
 | `WebFetch(domain:example.com)` | example.com へのフェッチリクエスト |
 
 ワイルドカード動作、Read、Edit、WebFetch、MCP、Agent ルールのツール固有パターン、および Bash パターンのセキュリティ制限を含む完全なルール構文については、[権限ルール構文](/docs/ja/permissions#permission-rule-syntax)を参照してください。
@@ -1931,10 +1988,10 @@ Claude Code はこれらのリストを OS サンドボックス境界で強制�
 
 `allowWrite`、`denyWrite`、`denyRead`、`allowRead`、および [`credentials.files`](#sandbox-credentials-files) のパスは、プレフィックスで解決されます：
 
-| プレフィックス           | 意味                                              | 例                                                                      |
-| :---------------- | :---------------------------------------------- | :--------------------------------------------------------------------- |
-| `/`               | ファイルシステムルートからの絶対パス                              | `/tmp/build` は `/tmp/build` のままです                                      |
-| `~/`              | ホームディレクトリに相対                                    | `~/.kube` は `$HOME/.kube` になります                                        |
+| プレフィックス | 意味 | 例 |
+| :- | :- | :- |
+| `/` | ファイルシステムルートからの絶対パス | `/tmp/build` は `/tmp/build` のままです |
+| `~/` | ホームディレクトリに相対 | `~/.kube` は `$HOME/.kube` になります |
 | `./` またはプレフィックスなし | プロジェクト設定ではプロジェクトルートに相対、ユーザー設定では `~/.claude` に相対 | `.claude/settings.json` の `./output` は `<project-root>/output` に解決されます |
 
 絶対パスの `//path` プレフィックスも機能します。プロジェクト相対解決を期待して単一スラッシュ `/path` を使用する場合は、`./path` に切り替えてください。この構文は、`//path` を絶対パスに、`/path` をプロジェクト相対に使用する[読み取りおよび編集権限ルール](/docs/ja/permissions#read-and-edit)とは異なります。サンドボックスファイルシステムパスは標準規約を使用するため、`/tmp/build` は絶対パスです。
@@ -2334,14 +2391,14 @@ v2.1.191 以降に適用されます。v2.1.221 より前では、すべての�
 
 `mask` エントリはこれらの optional フィールドを受け入れます。`extract` または `decode` がない場合、Claude Code はファイル全体の内容を 1 つのセンチネルで置き換えます。ファイルシステム分離がオンの macOS では、Claude Code は `extract` または `decode` が実行される前に `mask` エントリを `deny` として適用します。[認証情報ファイルをマスクする](/docs/ja/sandboxing#mask-credential-files)を参照してください。
 
-| フィールド              | 型                                                                                      | 何をするか                                                                                                                                                                                                                                                                                                                                                                                                |
-| :----------------- | :------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `extract`          | 文字列。少なくとも 1 つのキャプチャグループを持つ正規表現                                                         | 各マッチのグループ 1 でキャプチャされたテキストのみをマスクします。ファイルの残りは解析可能なままです。`decode` も設定されている場合、Claude Code は各キャプチャを置き換える代わりに、可能な JWT として確認します。v2.1.221 以降が必要です                                                                                                                                                                                                                                                             |
-| `onExtractNoMatch` | `"warn"`、`"deny"`、または `"error"`。デフォルト `"warn"`                                         | `extract` または `decode` がマスクするものを見つけられない場合に何が起こるか。`warn` はファイルを読み取り可能なままにします。サンドボックス内で、`deny` は読み取り不可にし、`error` は設定を修正するまでサンドボックスセットアップを停止します。Claude Code は、読み取りブロックが強制されない場合、`deny` を `error` として扱います。[ファイルシステム分離を無効にする](/docs/ja/sandboxing#disable-filesystem-isolation)か、[`sandbox.filesystem.allowRead`](#sandbox-filesystem-allowread)エントリがパスを再度開く場合。v2.1.221 以降が必要です。`decode` ケースは v2.1.224 以降が必要です |
-| `decode`           | 文字列 `"jwt"`                                                                            | ファイル内の JSON Web Token（JWT）を見つけ、組み込みパターンまたは設定されている場合は `extract` で、各候補を検証し、構造的に有効な偽トークンで置き換えます。サンドボックス内のコードがトークンをデコードし続けるようにします。候補が検証されない場合、`onExtractNoMatch` が結果を管理します。v2.1.224 以降が必要です                                                                                                                                                                                                              |
-| `maskClaims`       | 文字列の配列。少なくとも 1 つのクレーム名。`decode` が必要                                                    | 各検証済み JWT 内の名前付きトップレベルペイロードクレームのみをマスクし、変更されたペイロードの周りにトークンを再構築します。他のクレームは読み取り可能なままです。名前付きクレームが一致しない場合、`onExtractNoMatch` が結果を管理します。v2.1.224 以降が必要です                                                                                                                                                                                                                                                   |
-| `maskDuplicates`   | ブール値。デフォルト `false`                                                                     | ファイル内の他の場所にある各マスク値の逐語的コピーも置き換えます。コメントに貼り付けられたシークレットなど。Claude Code は生のサブストリングと照合するため、長く、高エントロピーのシークレット用に予約してください。`extract` または `decode` が設定されている場合にのみ参照されます。v2.1.221 以降が必要です                                                                                                                                                                                                                          |
-| `injectHosts`      | 文字列の配列。各ホストは [`sandbox.network.allowedDomains`](#sandbox-network-alloweddomains) も認めます | サンドボックスプロキシが実際の値を置き換えるホストを絞ります。未設定の場合、プロキシは `sandbox.network.allowedDomains` のすべてのホストへのリクエストで置き換えます。v2.1.221 以降が必要です                                                                                                                                                                                                                                                                                 |
+| フィールド | 型 | 何をするか |
+| :- | :- | :- |
+| `extract` | 文字列。少なくとも 1 つのキャプチャグループを持つ正規表現 | 各マッチのグループ 1 でキャプチャされたテキストのみをマスクします。ファイルの残りは解析可能なままです。`decode` も設定されている場合、Claude Code は各キャプチャを置き換える代わりに、可能な JWT として確認します。v2.1.221 以降が必要です |
+| `onExtractNoMatch` | `"warn"`、`"deny"`、または `"error"`。デフォルト `"warn"` | `extract` または `decode` がマスクするものを見つけられない場合に何が起こるか。`warn` はファイルを読み取り可能なままにします。サンドボックス内で、`deny` は読み取り不可にし、`error` は設定を修正するまでサンドボックスセットアップを停止します。Claude Code は、読み取りブロックが強制されない場合、`deny` を `error` として扱います。[ファイルシステム分離を無効にする](/docs/ja/sandboxing#disable-filesystem-isolation)か、[`sandbox.filesystem.allowRead`](#sandbox-filesystem-allowread)エントリがパスを再度開く場合。v2.1.221 以降が必要です。`decode` ケースは v2.1.224 以降が必要です |
+| `decode` | 文字列 `"jwt"` | ファイル内の JSON Web Token（JWT）を見つけ、組み込みパターンまたは設定されている場合は `extract` で、各候補を検証し、構造的に有効な偽トークンで置き換えます。サンドボックス内のコードがトークンをデコードし続けるようにします。候補が検証されない場合、`onExtractNoMatch` が結果を管理します。v2.1.224 以降が必要です |
+| `maskClaims` | 文字列の配列。少なくとも 1 つのクレーム名。`decode` が必要 | 各検証済み JWT 内の名前付きトップレベルペイロードクレームのみをマスクし、変更されたペイロードの周りにトークンを再構築します。他のクレームは読み取り可能なままです。名前付きクレームが一致しない場合、`onExtractNoMatch` が結果を管理します。v2.1.224 以降が必要です |
+| `maskDuplicates` | ブール値。デフォルト `false` | ファイル内の他の場所にある各マスク値の逐語的コピーも置き換えます。コメントに貼り付けられたシークレットなど。Claude Code は生のサブストリングと照合するため、長く、高エントロピーのシークレット用に予約してください。`extract` または `decode` が設定されている場合にのみ参照されます。v2.1.221 以降が必要です |
+| `injectHosts` | 文字列の配列。各ホストは [`sandbox.network.allowedDomains`](#sandbox-network-alloweddomains) も認めます | サンドボックスプロキシが実際の値を置き換えるホストを絞ります。未設定の場合、プロキシは `sandbox.network.allowedDomains` のすべてのホストへのリクエストで置き換えます。v2.1.221 以降が必要です |
 
 これは `gh` ホストファイルの `oauth_token` 値のみをマスクし、ファイル内のそれぞれの他のコピーを置き換え、パターンが何も一致しない場合はファイルを読み取り不可にし、実際のトークンは `api.github.com` へのリクエストでのみ置き換えます：
 
@@ -2409,13 +2466,13 @@ v2.1.191 以降に適用されます。v2.1.221 より前では、すべての�
 
 `mask` エントリはこれらの optional フィールドを受け入れます。`extract` または `decode` がない場合、Claude Code は値全体を 1 つのセンチネルで置き換えます。`extract` と `decode` は同じエントリで組み合わせることはできません。
 
-| フィールド              | 型                                                                                      | 何をするか                                                                                                                                                                                                                                                     |
-| :----------------- | :------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `extract`          | 文字列。少なくとも 1 つのキャプチャグループを持つ正規表現                                                         | 各マッチのグループ 1 でキャプチャされたテキストのみをマスクします。`DATABASE_URL` 接続文字列内のパスワードなど。値の残りは解析可能なままです。v2.1.224 以降が必要です                                                                                                                                                          |
-| `onExtractNoMatch` | `"warn"`、`"deny"`、または `"error"`。デフォルト `"warn"`。`decode` を含むエントリでは、`"warn"` のみが受け入れられます | `extract` が何も一致しない場合に何が起こるか。`warn` は変数をマスクなしで渡し、`deny` はサンドボックス内でそれをアンセットし、`error` は設定を修正するまでサンドボックスセットアップを停止します。v2.1.224 以降が必要です                                                                                                                         |
-| `decode`           | 文字列 `"jwt"`                                                                            | 値全体が JWT であることを検証し、構造的に有効な偽トークンで置き換えます。サンドボックス内のコードがトークンをデコードし続けるようにします。プロキシは出力時に実際のトークン全体を置き換えます。検証されない値はマスクなしで警告とともに渡されます。v2.1.224 以降が必要です                                                                                                              |
-| `maskClaims`       | 文字列の配列。少なくとも 1 つのクレーム名。`decode` が必要                                                    | デコードされた JWT 内の名前付きトップレベルペイロードクレームのみをマスクし、変更されたペイロードの周りにトークンを再構築します。他のクレームは読み取り可能なままです。名前付きクレームが一致しない場合、変数は警告とともにマスクなしで渡されます。v2.1.224 以降が必要です                                                                                                              |
-| `injectHosts`      | 文字列の配列。各ホストは [`sandbox.network.allowedDomains`](#sandbox-network-alloweddomains) も認めます | サンドボックスプロキシが実際の値を置き換えるホストを絞ります。未設定の場合、プロキシは `sandbox.network.allowedDomains` のすべてのホストへのリクエストで置き換えます。IPv6 宛先を括弧で囲まれた形式ではなく、`"::1"` などの裸の圧縮アドレスとして書きます。[`injectHosts` の IPv6 宛先](/docs/ja/sandboxing#ipv6-destinations-in-injecthosts)を参照してください。v2.1.199 以降が必要です |
+| フィールド | 型 | 何をするか |
+| :- | :- | :- |
+| `extract` | 文字列。少なくとも 1 つのキャプチャグループを持つ正規表現 | 各マッチのグループ 1 でキャプチャされたテキストのみをマスクします。`DATABASE_URL` 接続文字列内のパスワードなど。値の残りは解析可能なままです。v2.1.224 以降が必要です |
+| `onExtractNoMatch` | `"warn"`、`"deny"`、または `"error"`。デフォルト `"warn"`。`decode` を含むエントリでは、`"warn"` のみが受け入れられます | `extract` が何も一致しない場合に何が起こるか。`warn` は変数をマスクなしで渡し、`deny` はサンドボックス内でそれをアンセットし、`error` は設定を修正するまでサンドボックスセットアップを停止します。v2.1.224 以降が必要です |
+| `decode` | 文字列 `"jwt"` | 値全体が JWT であることを検証し、構造的に有効な偽トークンで置き換えます。サンドボックス内のコードがトークンをデコードし続けるようにします。プロキシは出力時に実際のトークン全体を置き換えます。検証されない値はマスクなしで警告とともに渡されます。v2.1.224 以降が必要です |
+| `maskClaims` | 文字列の配列。少なくとも 1 つのクレーム名。`decode` が必要 | デコードされた JWT 内の名前付きトップレベルペイロードクレームのみをマスクし、変更されたペイロードの周りにトークンを再構築します。他のクレームは読み取り可能なままです。名前付きクレームが一致しない場合、変数は警告とともにマスクなしで渡されます。v2.1.224 以降が必要です |
+| `injectHosts` | 文字列の配列。各ホストは [`sandbox.network.allowedDomains`](#sandbox-network-alloweddomains) も認めます | サンドボックスプロキシが実際の値を置き換えるホストを絞ります。未設定の場合、プロキシは `sandbox.network.allowedDomains` のすべてのホストへのリクエストで置き換えます。IPv6 宛先を括弧で囲まれた形式ではなく、`"::1"` などの裸の圧縮アドレスとして書きます。[`injectHosts` の IPv6 宛先](/docs/ja/sandboxing#ipv6-destinations-in-injecthosts)を参照してください。v2.1.199 以降が必要です |
 
 これは `DATABASE_URL` 内のパスワードのみをマスクし、パターンが何も一致しない場合は変数をアンセットし、`SERVICE_JWT` の JWT をマスクします。`api_key` を除くすべてのクレームは読み取り可能なままです：
 
@@ -3015,6 +3072,8 @@ Claude Code が[メモリ](/docs/ja/memory#exclude-specific-claude-md-files)を�
 * [`CLAUDE_CODE_MESSAGING_SOCKET` と `CLAUDE_CODE_MESSAGING_TOKEN`](/docs/ja/env-vars#variables)。Claude Code 自体がエクスポートするものは、すべてのファイルから無視されます。ソケット変数を無視するには Claude Code v2.1.224 以降が必要で、トークンを無視するには v2.1.228 以降が必要です。
 * [`CLAUDE_CODE_PROJECT_DIR_NAME`](/docs/ja/sessions#name-the-project-directory-yourself)。Claude Code は起動環境からのみ読み取ります。すべてのファイルから無視されます。v2.1.234 以降が必要です。
 * [`CLAUDE_CODE_RESTRICTED`](/docs/ja/env-vars#variables)。Claude Code は起動環境からのみ読み取ります。すべてのファイルから無視されます。
+* [`CLAUDE_CODE_DISABLE_POWERSHELL_CMD_RM_DENY`](/docs/ja/env-vars#variables)。Claude Code は起動環境からのみ読み取ります。すべてのファイルから無視されます。この変数には Claude Code v2.1.283 以降が必要です。
+* [`CLAUDE_CODE_DISABLE_DANGEROUS_RM_TIMEOUT` と `CLAUDE_CODE_DISABLE_SUBSTITUTION_RM_PROMPT`](/docs/ja/env-vars#variables)。Claude Code は起動環境からのみ読み取ります。すべてのファイルから無視されます。
 
 <h3 id="filecheckpointingenabled">
   `fileCheckpointingEnabled`
@@ -3109,7 +3168,7 @@ Claude Code がターミナルでどのように見え、動作するかを変�
   `askUserQuestionTimeout`
 </h3>
 
-回答されていない [`AskUserQuestion`](/docs/ja/tools-reference) ダイアログがアイドル時間の経過後に自動的に続行し、既に選択していたオプションを送信するようにします。席を離れて Claude に続行させたい場合に設定します。デフォルトでは、質問は回答されるまで待機します。Claude Code v2.1.200 以降が必要です。
+回答されていない[`AskUserQuestion`](/docs/ja/tools-reference)ダイアログがアイドル時間の経過後に自動的に続行し、既に選択していたオプションを送信するようにします。席を離れて Claude に続行させたい場合に設定します。デフォルトでは、質問は回答されるまで待機します。Claude Code v2.1.200 以降が必要です。
 
 * **スコープ**: [`ユーザーまたはマネージド`](#scopes)
 * **タイプ**: 文字列、`"60s"`、`"5m"`、`"10m"`、または `"never"` のいずれか
@@ -3122,7 +3181,7 @@ Claude Code がターミナルでどのように見え、動作するかを変�
 }
 ```
 
-`/config` に **Question auto-continue timeout** として表示され、このキーをユーザー設定に書き込みます。マネージド設定または `--settings` フラグがキーを設定している場合、Claude Code は行を非表示にします。Claude Code v2.1.200 以降が必要です。
+`/config` に**質問の自動続行タイムアウト**として表示され、このキーをユーザー設定に書き込みます。マネージド設定または `--settings` フラグがキーを設定している場合、Claude Code は行を非表示にします。Claude Code v2.1.200 以降が必要です。
 
 <h3 id="autocontinueatusagelimit">
   `autoContinueAtUsageLimit`
@@ -3130,7 +3189,7 @@ Claude Code がターミナルでどのように見え、動作するかを変�
 
 claude.ai の使用制限がセッションを停止した後、開いているセッションで待機し、リセット後にタスクを自動的に続行します。[自動続行をオフにする](/docs/ja/interactive-mode#turn-automatic-continue-off)を参照してください。Claude Code v2.1.234 以降が必要です。
 
-* **スコープ**: [`ユーザーまたはマネージド`](#scopes)。ユーザー設定、`--settings`、およびマネージド設定からのみ読み取ります。これらのいずれもキーを設定しない場合、プロジェクトまたはローカル設定ファイルがキーを設定すると、無視されるのではなく機能がオフになります。
+* **スコープ**: [`ユーザーまたはマネージド`](#scopes)。ユーザー設定、`--settings`、およびマネージド設定からのみ読み取ります。これらのいずれもキーを設定しない場合、プロジェクトまたはローカル設定ファイルがキーを設定すると、機能は無視されるのではなくオフになります。
 * **タイプ**: ブール値
   * `true`: claude.ai の使用制限がセッションを停止した後、Claude Code は開いているセッションで待機し、リセット後にタスクを自動的に続行します
   * `false`: Claude Code は独自に待機を開始しません。[使用制限オプションメニューから自分で待機を開始](/docs/ja/interactive-mode#start-a-wait-yourself)できます
@@ -3142,13 +3201,13 @@ claude.ai の使用制限がセッションを停止した後、開いている�
 }
 ```
 
-`/config` に **Continue automatically at usage limit** として表示され、このキーをユーザー設定に書き込みます。マネージド設定または `--settings` フラグがキーを設定している場合、Claude Code は行を非表示にします。
+`/config` に**使用制限で自動的に続行**として表示され、このキーをユーザー設定に書き込みます。マネージド設定または `--settings` フラグがキーを設定している場合、Claude Code は行を非表示にします。
 
 <h3 id="autoscrollenabled">
   `autoScrollEnabled`
 </h3>
 
-[フルスクリーンレンダリング](/docs/ja/fullscreen)で会話の下部に新しい出力を追従します。スクロールした場所に留まりながら Claude が作業を続けるようにするにはオフにします。権限プロンプトは引き続き表示されます。
+[フルスクリーンレンダリング](/docs/ja/fullscreen)で会話の下部に新しい出力を追従します。オフにすると、Claude が作業を続ける間、スクロールした場所に留まります。権限プロンプトは引き続き表示されます。
 
 * **スコープ**: [`任意のファイル`](#scopes)
 * **タイプ**: ブール値
@@ -3162,19 +3221,19 @@ claude.ai の使用制限がセッションを停止した後、開いている�
 }
 ```
 
-`/config` に **Auto-scroll** として表示されます（フルスクリーンレンダリングがオンの場合）。このキーをユーザー設定に書き込みます。
+`/config` にフルスクリーンレンダリングがオンの場合**自動スクロール**として表示され、このキーをユーザー設定に書き込みます。
 
 <h3 id="axscreenreader">
   `axScreenReader`
 </h3>
 
-スクリーンリーダーフレンドリーな出力をレンダリングします。装飾的なボーダーやアニメーションのないフラットテキストです。スクリーンリーダーモードはクラシックレンダラーを使用するため、アクティブな間は `tui` 設定は効果がありません。アタッチされた[バックグラウンドセッション](/docs/ja/agent-view)は引き続きフルスクリーンでレンダリングされます。
+スクリーンリーダーフレンドリーな出力をレンダリングします。装飾的なボーダーやアニメーションのないフラットテキストです。スクリーンリーダーモードはクラシックレンダラーを使用するため、アクティブな間は `tui` 設定は効果がありません。接続された[バックグラウンドセッション](/docs/ja/agent-view)は引き続きフルスクリーンでレンダリングされます。
 
 * **スコープ**: [`任意のファイル`](#scopes)
 * **タイプ**: ブール値
   * `true`: Claude Code は装飾的なボーダーやアニメーションのないフラットテキストをレンダリングし、クラシックレンダラーを使用します
   * `false`: Claude Code は通常通りレンダリングします
-* **デフォルト**: 未設定のため、スクリーンリーダーモードはオフです
+* **デフォルト**: 未設定、スクリーンリーダーモードはオフです
 * **セッションごとのオーバーライド**: [`--ax-screen-reader`](/docs/ja/cli-reference#cli-flags) は [`CLAUDE_AX_SCREEN_READER`](/docs/ja/env-vars) より優先され、両方ともこのキーより優先されます
 
 ```json settings.json theme={null}
@@ -3187,15 +3246,15 @@ claude.ai の使用制限がセッションを停止した後、開いている�
   `bashEditDiffEnabled`
 </h3>
 
-Bash コマンドが Git リポジトリで変更するファイルを Claude Code が記録するかどうかを選択します。記録する場合、コマンド後にターミナルでそれらのファイルの diff が表示され、[PostToolUse Bash フック](/docs/ja/hooks#bash)は変更されたファイルのリストを受け取ります。
+Bash コマンドの実行中に Git リポジトリで変更されたファイルを Claude Code が記録するかどうかを選択します。記録する場合、コマンド後にターミナルでそれらの diff が表示され、[PostToolUse Bash フック](/docs/ja/hooks#bash)は変更されたファイルのリストを受け取ります。
 
 リストされたファイルは常にコマンドが変更したものとは限りません。コマンドの実行中に別のプログラムまたは別の Bash 呼び出しが行った変更もそこに表示される可能性があります。
 
 キーを `true` に設定して、すべての権限モードで記録します。Claude Code v2.1.269 以降が必要です。
 
-* **スコープ**: [`ユーザーまたはマネージド`](#scopes)。`true` はユーザー設定、`--settings` で渡された JSON、または[マネージド設定](/docs/ja/managed-settings)からのみカウントされるため、リポジトリの `.claude/settings.json` または `.claude/settings.local.json` の `true` は記録をオンにできません。リポジトリファイルの `false` は、[より高い優先度](/docs/ja/settings#settings-precedence)のファイルが `true` を設定しない限り、引き続きオフになります。
+* **スコープ**: [`ユーザーまたはマネージド`](#scopes)。`true` はユーザー設定、`--settings` で渡された JSON、または[マネージド設定](/docs/ja/managed-settings)からのみカウントされるため、リポジトリの `.claude/settings.json` または `.claude/settings.local.json` の `true` は記録をオンにできません。リポジトリファイルの `false` は[より高い優先度](/docs/ja/settings#settings-precedence)のファイルが `true` を設定しない限り、引き続きオフになります。
 * **タイプ**: ブール値
-* **デフォルト**: 未設定のため、Claude Code は自動モードと `bypassPermissions` モードで Claude がファイルを Bash で編集するように指示する場合に変更を記録します
+* **デフォルト**: 未設定、Claude Code は自動モードと `bypassPermissions` モードで Claude が Bash を通じてファイルを編集するように指示する場合に変更を記録します
 * **セッションごとのオーバーライド**: [`CLAUDE_CODE_BASH_EDIT_DIFF`](/docs/ja/env-vars) はこのキーより優先されます
 
 ```json settings.json theme={null}
@@ -3212,7 +3271,7 @@ Bash コマンドが Git リポジトリで変更するファイルを Claude Co
 
 * **スコープ**: [`任意のファイル`](#scopes)
 * **タイプ**: 文字列の配列
-* **デフォルト**: 未設定のため、アナウンスメントは表示されません
+* **デフォルト**: 未設定、アナウンスメントは表示されません
 
 ```json settings.json theme={null}
 {
@@ -3226,9 +3285,9 @@ Bash コマンドが Git リポジトリで変更するファイルを Claude Co
   `defaultShell`
 </h3>
 
-入力ボックスで [`!` プレフィックス](/docs/ja/interactive-mode#shell-mode-with-prefix)で入力するシェルコマンド、Claude Code が直接実行してセッションに追加するコマンドを実行するかどうかを選択します。Bash または PowerShell。
+入力ボックスで[`!` プレフィックス](/docs/ja/interactive-mode#shell-mode-with-prefix)で入力したシェルコマンド、Claude Code が直接実行してセッションに追加するコマンドを実行するかどうかを選択します。Bash または PowerShell。
 
-`"powershell"` は [PowerShell ツール](/docs/ja/tools-reference#powershell-tool)がオンの場合のみ機能します。このツールは Git Bash がない Windows ではデフォルトでオンであり、Git Bash がある Windows では claude.ai および Console アカウント用にオンです。Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry セッション、および macOS、Linux、WSL では、`CLAUDE_CODE_USE_POWERSHELL_TOOL=1` を設定してツールをオンにします。その変数を `0` に設定してツールをオフにします。
+`"powershell"` は[PowerShell ツール](/docs/ja/tools-reference#powershell-tool)がオンの場合のみ機能します。このツールは Git Bash のない Windows ではデフォルトでオンであり、Git Bash を使用する Windows では claude.ai および Console アカウント用にオンです。Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry セッション、および macOS、Linux、WSL では、`CLAUDE_CODE_USE_POWERSHELL_TOOL=1` を設定してツールをオンにします。そのツールをオフにするには、その変数を `0` に設定します。
 
 * **スコープ**: [`任意のファイル`](#scopes)
 * **タイプ**: 文字列、以下のいずれか:
@@ -3242,13 +3301,13 @@ Bash コマンドが Git リポジトリで変更するファイルを Claude Co
 }
 ```
 
-指定したシェルが利用できない場合、Claude Code は他のシェルを使用します。`"powershell"` は PowerShell ツールがオフの場合 Bash にフォールバックし、`"bash"` は Bash がインストールされていない場合 PowerShell にフォールバックします。
+指定したシェルが利用できない場合、Claude Code は他方を使用します。`"powershell"` は PowerShell ツールがオフの場合 Bash にフォールバックし、`"bash"` は Bash がインストールされていない場合 PowerShell にフォールバックします。
 
 <h3 id="dialogexpiry">
   `dialogExpiry`
 </h3>
 
-Claude Code が[リモートクライアントに転送する](/docs/ja/remote-control#limitations)ダイアログ（Remote Control または SDK ホストなど）および[保留中のクロスセッションメッセージ](/docs/ja/cross-session-messaging#control-inbound-messages)の承認ダイアログの期限を設定します。Claude Code v2.1.236 以降では、同じ期限がセッション内の[Fable 使用クレジット同意プロンプト](/docs/ja/model-config#fable-and-usage-credits)をバウンドします。ターミナルに誰もいない可能性があるセッションです。期限前に回答が到着しない場合、Claude Code はダイアログをキャンセルし、デフォルトのアクションなしで続行します。Claude Code v2.1.224 以降が必要です。
+Claude Code が[リモートクライアントに転送](/docs/ja/remote-control#limitations)するダイアログ（Remote Control または SDK ホストなど）および[保留中のクロスセッションメッセージ](/docs/ja/cross-session-messaging#control-inbound-messages)の承認ダイアログの期限を設定します。Claude Code v2.1.236 以降では、同じ期限が誰もターミナルにいない可能性があるセッションの途中の[Fable 使用クレジット同意プロンプト](/docs/ja/model-config#fable-and-usage-credits)を制限します。期限前に回答が到着しない場合、Claude Code はダイアログをキャンセルし、デフォルトのアクションなしで続行します。Claude Code v2.1.224 以降が必要です。
 
 * **スコープ**: [`ユーザーまたはマネージド`](#scopes)
 * **タイプ**: 文字列、`"60s"`、`"5m"`、`"10m"`、または期限を無効にする `"never"` のいずれか
@@ -3261,7 +3320,7 @@ Claude Code が[リモートクライアントに転送する](/docs/ja/remote-c
 }
 ```
 
-権限プロンプトと [`AskUserQuestion`](/docs/ja/tools-reference#askuserquestion-tool-behavior) の質問は独自のフローを使用し、この期限の対象ではありません。` /config` に **Dialog expiry** として表示されます。このキーをユーザー設定に書き込みます。行には Claude Code v2.1.232 以降が必要であり、マネージド設定または `--settings` フラグがキーを設定している場合、Claude Code は行を非表示にします。
+権限プロンプトと[`AskUserQuestion`](/docs/ja/tools-reference#askuserquestion-tool-behavior)質問は独自のフローを使用し、この期限の対象ではありません。Claude Code v2.1.232 以降では `/config` に**ダイアログの有効期限**として表示され、このキーをユーザー設定に書き込みます。行には Claude Code v2.1.232 以降が必要であり、マネージド設定または `--settings` フラグがキーを設定している場合、Claude Code は行を非表示にします。
 
 <h3 id="editormode">
   `editorMode`
@@ -3281,17 +3340,17 @@ Claude Code が[リモートクライアントに転送する](/docs/ja/remote-c
 }
 ```
 
-`/config` に **Editor mode** として表示され、このキーをユーザー設定に書き込みます。
+`/config` に**エディタモード**として表示され、このキーをユーザー設定に書き込みます。
 
 <h3 id="emojicompletionenabled">
   `emojiCompletionEnabled`
 </h3>
 
-プロンプト入力で `:` とショートコードを入力するときに絵文字の提案を表示し、`:heart:` などの完成したショートコードをその絵文字に置き換えます。`false` に設定して両方をオフにします。
+プロンプト入力で `:` とショートコードを入力するときに絵文字の提案を表示し、`:heart:` などの完成したショートコードを絵文字に置き換えます。`false` に設定して両方をオフにします。
 
 * **スコープ**: [`任意のファイル`](#scopes)
 * **タイプ**: ブール値
-  * `true`: Claude Code は `:` の後に絵文字の提案を表示し、完成したショートコードをその絵文字に置き換えます
+  * `true`: Claude Code は `:` の後に絵文字の提案を表示し、完成したショートコードを絵文字に置き換えます
   * `false`: Claude Code は絵文字を提案せず、ショートコードを置き換えません
 * **デフォルト**: `true`
 
@@ -3309,11 +3368,11 @@ Claude Code が[リモートクライアントに転送する](/docs/ja/remote-c
   `fileSuggestion`
 </h3>
 
-組み込みのファイル提案の代わりに、`@` ファイルパスオートコンプリートを提供する独自のコマンドを実行します。組み込みの提案は高速なファイルシステムトラバーサルを使用します。大規模なモノレポは、事前構築されたファイルインデックスなどのプロジェクト固有のインデックスでより良い結果が得られる場合があります。
+組み込みのファイル提案の代わりに、`@` ファイルパスオートコンプリートを提供する独自のコマンドを実行します。組み込み提案は高速ファイルシステムトラバーサルを使用します。大規模なモノレポは事前構築されたファイルインデックスなどのプロジェクト固有のインデックスでより良い結果が得られる場合があります。
 
 * **スコープ**: [`任意のファイル`](#scopes)。[ステータスラインとファイル提案ゲート](#status-line-and-file-suggestion-gates)の下では、Claude Code はコマンドをオフにするか、マネージド値のみを実行し、警告なしにあなたのコマンドをスキップします。
-* **タイプ**: `type`（常に `"command"`）と実行するシェルコマンドである `command` を持つオブジェクト
-* **デフォルト**: 未設定のため、Claude Code は組み込みのファイル提案を使用します
+* **タイプ**: `type`（常に `"command"`）と `command`（実行するシェルコマンド）を持つオブジェクト
+* **デフォルト**: 未設定、Claude Code は組み込みのファイル提案を使用します
 
 ```json settings.json theme={null}
 {
@@ -3324,19 +3383,19 @@ Claude Code が[リモートクライアントに転送する](/docs/ja/remote-c
 }
 ```
 
-これを保存した後、プロンプトで `@` に続けてパスの一部を入力します。提案はコマンドの出力から来ます。
+これを保存した後、プロンプトで `@` に続けてパスの一部を入力します。提案はコマンドの出力から取得されます。
 
 <h4 id="command-input-and-output">
   コマンド入力と出力
 </h4>
 
-Claude Code はコマンドを[フック](/docs/ja/hooks)と同じ環境変数（`CLAUDE_PROJECT_DIR` を含む）で実行し、5 秒後に待機を停止します。コマンドは stdin で `query` フィールドを持つ JSON を受け取ります。これまでに入力したものを保持します:
+Claude Code は[フック](/docs/ja/hooks)と同じ環境変数（`CLAUDE_PROJECT_DIR` を含む）でコマンドを実行し、5 秒後に待機を停止します。コマンドは stdin で `query` フィールドを持つ JSON を受け取ります。これまでに入力したものを保持します:
 
 ```json theme={null}
 {"query": "src/comp"}
 ```
 
-stdout に改行で区切られたファイルパスを出力します。Claude Code は最大 15 個を表示します:
+stdout にニューラインで区切られたファイルパスを出力します。Claude Code は最大 15 個を表示します:
 
 ```text theme={null}
 src/components/Button.tsx
@@ -3359,11 +3418,11 @@ your-repo-file-index --query "$query" | head -20
   `footerLinksRegexes`
 </h3>
 
-ターンの出力（ツール結果（ファイルコンテンツと取得されたページを含む）および Claude 自身の応答）に正規表現がマッチするときに、入力ボックスの下のフッターに追加のクリック可能なバッジをレンダリングします。プロジェクト CLI によって出力される ID（レビューツールと問題トラッカーなど）をセッションリンクに変換するために使用します。
+ターン出力（ツール結果（ファイルコンテンツと取得されたページを含む）および Claude 自身の応答）に正規表現がマッチするときに、入力ボックスの下のフッターに追加のクリック可能なバッジをレンダリングします。プロジェクト CLI によって出力される ID（レビューツールおよび問題トラッカーなど）をセッションリンクに変換するために使用します。
 
 * **スコープ**: [`ユーザーまたはマネージド`](#scopes)
-* **タイプ**: オブジェクトの配列。各オブジェクトは `type` を `"regex"` に設定し、`pattern` 正規表現、`url` テンプレート、およびオプションの `label` を持ちます。`url` と `label` の `{name}` プレースホルダーは `pattern` の名前付きキャプチャグループから入力されます
-* **デフォルト**: 未設定のため、バッジはレンダリングされません
+* **タイプ**: オブジェクトの配列。各オブジェクトは `type` を `"regex"` に設定し、`pattern` 正規表現、`url` テンプレート、およびオプションの `label` を持ちます。`url` および `label` の `{name}` プレースホルダーは `pattern` の名前付きキャプチャグループから入力されます
+* **デフォルト**: 未設定、バッジはレンダリングされません
 
 この例は `PROJ-1234` などの問題キーにマッチし、キャプチャされたキーから各リンクを構築します:
 
@@ -3386,19 +3445,19 @@ your-repo-file-index --query "$query" | head -20
   バッジの制約
 </h4>
 
-各エントリの URL、ラベル、およびバッジ数は以下のようにバウンドされます:
+各エントリの URL、ラベル、およびバッジ数は次のように制限されます:
 
-| 制約       | 動作                                                                                                                                                                     |
-| :------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| URL オリジン | キャプチャされた値は URL エンコードされ、構築された URL はテンプレートのリテラルオリジンを共有する必要があります。キャプチャはパスセグメントまたはクエリ値を入力できますが、リンクが指す場所を変更することはできません                                                       |
-| URL 長    | 2048 文字より長い構築された URL は削除されます                                                                                                                                           |
+| 制約 | 動作 |
+| :- | :- |
+| URL オリジン | キャプチャされた値は URL エンコードされ、構築された URL はテンプレートのリテラルオリジンを共有する必要があります。キャプチャはパスセグメントまたはクエリ値を入力できますが、リンクが指す場所を変更することはできません |
+| URL 長 | 2048 文字より長い構築された URL は削除されます |
 | URL スキーム | `https`、`http`、または認識されたエディタまたはワークスペースディープリンクスキーム: `vscode`、`vscode-insiders`、`cursor`、`windsurf`、`zed`、`jetbrains`、`idea`、`slack`、`linear`、`notion`、`figma` である必要があります |
-| ラベル      | マッチしたテキストにデフォルト設定され、28 表示列に切り詰められます                                                                                                                                    |
-| バッジ数     | 最大 5 個のバッジがレンダリングされます。最も古いものは新しいマッチに置き換えられ、`/clear` はそれらを削除します                                                                                                         |
+| ラベル | マッチしたテキストにデフォルト設定され、28 表示列に切り詰められます |
+| バッジ数 | 最大 5 個のバッジがレンダリングされます。最も古いものは新しいマッチに置き換えられ、`/clear` はそれらを削除します |
 
-ターンが完了すると、Claude Code は各エントリの `pattern` 正規表現をメインスレッドのターン出力に対してマッチングするため、遅い正規表現は完了するまで UI をブロックします。`(a+)+$` などのネストされた量指定子は特定の入力に対して指数関数的に長くかかり、セッションをフリーズさせる可能性があるため、各 `pattern` を線形に保ち、`+` または `*` のネストを避けてください。
+ターンが完了すると、Claude Code はメインスレッドでターン出力に対して各エントリの `pattern` 正規表現をマッチングするため、遅い正規表現は完了するまで UI をブロックします。`(a+)+$` などのネストされた量指定子は特定の入力に対して指数関数的に長くかかり、セッションをフリーズさせる可能性があるため、各 `pattern` を線形に保ち、`+` または `*` のネストを避けてください。
 
-フッターバッジは[カスタムステータスライン](/docs/ja/statusline)が設定されている場合、それと並んでレンダリングされます。どちらも他方を置き換えません。ステータスラインはセッションデータから独自のコンテンツを計算するスクリプト駆動行に使用し、フッターバッジは会話から ID をリンクに変換するために使用します。スクリプトなし。
+フッターバッジは[カスタムステータスライン](/docs/ja/statusline)が設定されている場合と並んでレンダリングされます。どちらも他方を置き換えません。セッションデータから独自のコンテンツを計算するスクリプト駆動行にはステータスラインを使用し、会話から ID をリンクに変換するにはフッターバッジを使用します。スクリプトなし。
 
 <h3 id="keybindingflavor">
   `keybindingFlavor`
@@ -3408,17 +3467,33 @@ your-repo-file-index --query "$query" | head -20
   v2.1.261 以降非推奨であり、効果がありません。プロンプトのワード編集キーは常に[readline 規約に従います](/docs/ja/interactive-mode#make-ctrl-w-delete-back-to-whitespace)。Bash のように。Claude Code は引き続き `keybindingFlavor` を受け入れるため、それを設定する設定ファイルは有効なままです。
 </Warning>
 
-v2.1.238 から v2.1.260 では、`"readline"` に設定すると `Ctrl+W` は前の単語だけでなく前の空白文字まで削除されます。
+v2.1.238 から v2.1.260 では、`"readline"` に設定すると `Ctrl+W` は前の単語だけでなく前の空白文字に戻って削除されました。
 
 * **スコープ**: [`任意のファイル`](#scopes)
 * **タイプ**: 文字列、`"classic"` または `"readline"`
 * **デフォルト**: 未設定
 
+<h3 id="maxprosewidth">
+  `maxProseWidth`
+</h3>
+
+Claude の応答の散文の幅を制限して、行が広いターミナルで読みやすく保ちます。段落、見出し、リスト、およびブロック引用はこの多くの列内でラップされ、テーブルとコードブロックはターミナルの全幅を保ちます。Claude Code v2.1.282 以降が必要です。
+
+* **スコープ**: [`任意のファイル`](#scopes)
+* **タイプ**: ターミナル列の数、整数、最小 `40`。Claude Code は他の値を無視します
+* **デフォルト**: 未設定、散文はターミナルエッジでラップされます
+
+```json settings.json theme={null}
+{
+  "maxProseWidth": 80
+}
+```
+
 <h3 id="prefersreducedmotion">
   `prefersReducedMotion`
 </h3>
 
-スピナー、シマー、フラッシュエフェクトなどのインターフェースアニメーションを削減またはオフにします。`/config` に **Reduce motion** として表示されます。
+スピナー、シマー、フラッシュエフェクトなどのインターフェースアニメーションを削減またはオフにします。`/config` に**モーションを削減**として表示されます。
 
 * **スコープ**: [`任意のファイル`](#scopes)
 * **タイプ**: ブール値
@@ -3436,7 +3511,7 @@ v2.1.238 から v2.1.260 では、`"readline"` に設定すると `Ctrl+W` は�
   `promptSuggestionEnabled`
 </h3>
 
-[プロンプト提案](/docs/ja/interactive-mode#prompt-suggestions)を表示または非表示にします。プロンプト入力に表示される灰色の予測です。`false` に設定するか、`/config` で **Prompt suggestions** をオフにして非表示にします。
+[プロンプト提案](/docs/ja/interactive-mode#prompt-suggestions)を表示または非表示にします。プロンプト入力に表示される灰色の予測です。`false` に設定するか、`/config` で**プロンプト提案**をオフにして非表示にします。
 
 * **スコープ**: [`任意のファイル`](#scopes)
 * **タイプ**: ブール値
@@ -3451,13 +3526,13 @@ v2.1.238 から v2.1.260 では、`"readline"` に設定すると `Ctrl+W` は�
 }
 ```
 
-プロンプト提案には、テレメトリがオンの claude.ai または Console アカウントが必要です。Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、または [`DISABLE_TELEMETRY`](/docs/ja/env-vars) によってテレメトリがオフになっている場合、このキーは効果がなく、`CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION=1` のみがそれらをオンにします。
+プロンプト提案には、テレメトリがオンの claude.ai または Console アカウントが必要です。Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、または [`DISABLE_TELEMETRY`](/docs/ja/env-vars) によるテレメトリがオフの場合、このキーは効果がなく、`CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION=1` のみがそれらをオンにします。
 
 <h3 id="respectgitignore">
   `respectGitignore`
 </h3>
 
-`@` ファイルピッカーが `.gitignore` パターンにマッチするファイルを除外するかどうかを制御します。`/config` に **Respect .gitignore in file picker** として表示されます。
+`@` ファイルピッカーが `.gitignore` パターンにマッチするファイルを除外するかどうかを制御します。`/config` に**ファイルピッカーで .gitignore を尊重**として表示されます。
 
 * **スコープ**: [`任意のファイル`](#scopes)。設定ファイルがそれを設定しない場合、Claude Code は `~/.claude.json` の `respectGitignore` にフォールバックします。これは `/config` トグルが書き込みます。
 * **タイプ**: ブール値
@@ -3475,7 +3550,7 @@ v2.1.238 から v2.1.260 では、`"readline"` に設定すると `Ctrl+W` は�
   `respondToBashCommands`
 </h3>
 
-入力ボックスで [`!` プレフィックス](/docs/ja/interactive-mode#shell-mode-with-prefix)でシェルコマンドを実行した後、Claude が応答するかどうかを選択します。デフォルトでは、Claude Code はコマンドの出力を会話に追加し、Claude がそれに応答します。このキーを `false` に設定して、応答なしでコンテキストに出力を追加し、複数のコマンドを実行して一緒に質問できるようにします。
+入力ボックスで[`!` プレフィックス](/docs/ja/interactive-mode#shell-mode-with-prefix)でシェルコマンドを実行した後、Claude が応答するかどうかを選択します。デフォルトでは、Claude Code はコマンドの出力を会話に追加し、Claude がそれに応答します。このキーを `false` に設定して、応答なしでコンテキストに出力を追加し、複数のコマンドを実行して一緒に質問できるようにします。
 
 * **スコープ**: [`任意のファイル`](#scopes)
 * **タイプ**: ブール値
@@ -3489,17 +3564,17 @@ v2.1.238 から v2.1.260 では、`"readline"` に設定すると `Ctrl+W` は�
 }
 ```
 
-[シェルモード（`!` プレフィックス付き）](/docs/ja/interactive-mode#shell-mode-with-prefix)を参照してください。
+[`!` プレフィックスでシェルモード](/docs/ja/interactive-mode#shell-mode-with-prefix)を参照してください。
 
 <h3 id="showclearcontextonplanaccept">
   `showClearContextOnPlanAccept`
 </h3>
 
-Claude が[プランモード](/docs/ja/permission-modes#review-and-approve-a-plan)でプランを完了すると、承認メニューが表示されます。計画は多くのコンテキストを使用できるため、このキーはそのメニューに最初のオプション **Yes, clear context and …** を追加します。これはプランを承認し、会話コンテキストをクリアし、プランだけから実装を開始します。ラベルの残りはセッションが続行する権限モードに名前を付け、計画がコンテキストをどの程度使用したかを示します。
+Claude が[プランモード](/docs/ja/permission-modes#review-and-approve-a-plan)でプランを完了すると、承認メニューが表示されます。計画は多くのコンテキストを使用できるため、このキーはそのメニューに最初のオプション**はい、コンテキストをクリアして…** を追加します。これはプランを承認し、会話コンテキストをクリアし、プランだけから実装を開始します。ラベルの残りはセッションが続く権限モードに名前を付け、計画がコンテキストをどの程度使用したかを示します。
 
 * **スコープ**: [`任意のファイル`](#scopes)
 * **タイプ**: ブール値
-  * `true`: プラン承認メニューは最初のオプション **Yes, clear context and …** を取得します。これはプランを承認し、会話コンテキストをクリアします
+  * `true`: プラン承認メニューは最初のオプション**はい、コンテキストをクリアして…** を取得します。これはプランを承認し、会話コンテキストをクリアします
   * `false`: プラン承認メニューはクリアコンテキストオプションを表示しません
 * **デフォルト**: `false`
 
@@ -3513,11 +3588,11 @@ Claude が[プランモード](/docs/ja/permission-modes#review-and-approve-a-pl
   `showTurnDuration`
 </h3>
 
-各応答後のターン期間メッセージを表示または非表示にします。例えば「Cooked for 1m 6s · done 6:05 PM」。「done」の後の時計はターンが完了した時刻を示します。[`timeFormat`](#timeformat) と [`timeZone`](#timezone) はその形式とゾーンを制御します。`/config` に **Show turn duration** として表示されます。
+各応答後のターン期間メッセージを表示または非表示にします。例えば「Cooked for 1m 6s · done 6:05 PM」。「done」の後の時計はターンが完了した時刻を示します。[`timeFormat`](#timeformat) と [`timeZone`](#timezone) はその形式とゾーンを制御します。`/config` に**ターン期間を表示**として表示されます。
 
-* **スコープ**: [`任意のファイル`](#scopes)。設定ファイルがそれを設定しない場合、古いバージョンの `~/.claude.json` の値が適用されます。
+* **スコープ**: [`任意のファイル`](#scopes)。古いバージョンの `~/.claude.json` の値は、設定ファイルがそれを設定しない場合に適用されます。
 * **タイプ**: ブール値
-  * `true`: 各応答後のターン期間メッセージが表示されます
+  * `true`: 各応答後にターン期間メッセージが表示されます
   * `false`: Claude Code はターン期間メッセージを非表示にします
 * **デフォルト**: `true`
 
@@ -3531,11 +3606,11 @@ Claude が[プランモード](/docs/ja/permission-modes#review-and-approve-a-pl
   `spellcheck`
 </h3>
 
-入力中にプロンプト入力の誤字をアンダーラインで示します。インストールするスペルチェッカーを使用します。Claude Code はプロンプト入力ボックスのテキストのみをチェックします。[入力中にスペルをチェック](/docs/ja/interactive-mode#check-spelling-as-you-type)は aspell、hunspell、または ispell をインストールし、チェッカーがカバーするものについて説明します。Claude Code v2.1.235 以降が必要です。
+入力時にプロンプト入力でスペルミスのある単語に下線を引きます。インストールするスペルチェッカーを使用します。Claude Code はプロンプト入力ボックスのテキストのみをチェックします。[入力時にスペルをチェック](/docs/ja/interactive-mode#check-spelling-as-you-type)は aspell、hunspell、または ispell のインストールとチェッカーがカバーするものについて説明しています。Claude Code v2.1.235 以降が必要です。
 
-* **スコープ**: [`ユーザーまたはマネージド`](#scopes)。それを設定する最高層からのブロック全体が全体として適用されます。
+* **スコープ**: [`ユーザーまたはマネージド`](#scopes)。それを設定する最高層のブロックが全体として適用されます。
 * **タイプ**: `enabled`（ブール値）、`checker`（`"aspell"`、`"hunspell"`、`"ispell"`、または `"auto"`）、`language`（文字列、チェッカーの辞書名として渡される）、および `color`（文字列、ターミナルカラー名、`#rrggbb`、`rgb(r,g,b)`、`ansi256(n)`、または `ansi:<name>`）を持つオブジェクト
-* **デフォルト**: 未設定のため、スペルチェックはオフです。`checker` はデフォルトで `"auto"`（`PATH` で見つかった最初の 3 つ）です。`language` はデフォルトでチェッカー自身の辞書です。`color` はデフォルトでテーマのエラーカラーです
+* **デフォルト**: 未設定、スペルチェックはオフです。`checker` はデフォルトで `"auto"`、`PATH` で見つかった最初の 3 つです。`language` はデフォルトでチェッカー自身の辞書です。`color` はデフォルトでテーマのエラーカラーです
 
 ```json settings.json theme={null}
 {
@@ -3547,7 +3622,7 @@ Claude が[プランモード](/docs/ja/permission-modes#review-and-approve-a-pl
   `spinnerTipsEnabled`
 </h3>
 
-Claude が作業している間、スピナーラインは「Plan Mode を使用して複雑なリクエストに備えてから変更を加えます。Shift+Tab を 2 回押して有効にします」などの Claude Code 機能に関する短いヒントをローテーションします。このキーを `false` に設定して非表示にします。`/config` に **Show tips** として表示されます。
+Claude が作業している間、スピナーラインは「Plan Mode を使用して複雑なリクエストに備えてから変更を加えます。Shift+Tab を 2 回押して有効にします」などの Claude Code 機能に関する短いヒントをローテーションします。このキーを `false` に設定して非表示にします。`/config` に**ヒントを表示**として表示されます。
 
 * **スコープ**: [`任意のファイル`](#scopes)
 * **タイプ**: ブール値
@@ -3565,38 +3640,38 @@ Claude が作業している間、スピナーラインは「Plan Mode を使用
   `spinnerTipsOverride`
 </h3>
 
-Claude Code が Claude の作業中に表示する[スピナーヒント](#spinnertipsenabled)に独自のヒントを追加するか、組み込みヒントを自分のヒントに置き換えます。Claude Code はあなたのヒントを組み込みヒントと同じローテーションに入れます。最も長く表示されていないヒントを選択し、クールダウン中のヒントをスキップし、優先度でタイを破ります。
+Claude Code が Claude の作業中に表示する[スピナーヒント](#spinnertipsenabled)に独自のヒントを追加するか、組み込みヒントを置き換えます。Claude Code はあなたのヒントを組み込みのものと同じローテーションに入れます。最も長く表示されていないヒントを選択し、クールダウン中のヒントをスキップし、優先度でタイを破ります。
 
-[`spinnerTipsEnabled`](#spinnertipsenabled) を `false` に設定すると、Claude Code はすべてのヒント（あなたのヒントを含む）を非表示にします。
+[`spinnerTipsEnabled`](#spinnertipsenabled) を `false` に設定すると、Claude Code はすべてのヒント（あなたのものを含む）を非表示にします。
 
-* **スコープ**: [`任意のファイル`](#scopes)。Claude Code はヒントオブジェクト、`tipsFile`、`label`、および `excludeDefault` をユーザー設定、`--settings` フラグ、およびマネージド設定から尊重します。プロジェクトおよびローカル設定からは、プレーンな文字列ヒントのみを読み取ります。
+* **スコープ**: [`任意のファイル`](#scopes)。Claude Code はヒントオブジェクト、`tipsFile`、`label`、および `excludeDefault` をユーザー設定、`--settings` フラグ、およびマネージド設定から尊重します。プロジェクトおよびローカル設定からは、プレーン文字列ヒントのみを読み取ります。
 * **タイプ**: `tips`、`tipsFile`、`label`、および `excludeDefault` フィールドを持つオブジェクト。各フィールドはオプションです
-* **デフォルト**: 未設定のため、Claude Code は組み込みヒントのみを表示します
+* **デフォルト**: 未設定、Claude Code は組み込みヒントのみを表示します
 
-ヒントオブジェクト、`tipsFile`、`label`、およびスコープ行のルール（プロジェクトおよびローカル設定はプレーンな文字列のみを提供）には Claude Code v2.1.247 以降が必要です。以前のバージョンでは、プロジェクトまたはローカルファイルの `excludeDefault` も適用されます。
+ヒントオブジェクト、`tipsFile`、`label`、およびスコープ行のルール（プロジェクトおよびローカル設定がプレーン文字列のみを提供）には Claude Code v2.1.247 以降が必要です。以前のバージョンでは、プロジェクトまたはローカルファイルの `excludeDefault` も適用されます。
 
-各 `tips` エントリはプレーンな文字列またはこれらのフィールドを持つオブジェクトです:
+各 `tips` エントリはプレーン文字列またはこれらのフィールドを持つオブジェクトです:
 
-| フィールド              | 必須  | 説明                                                                                                                                  |
-| :----------------- | :-- | :---------------------------------------------------------------------------------------------------------------------------------- |
-| `id`               | はい  | 最大 64 文字、数字、`.`、`_`、または `-`。Claude Code はヒントの表示履歴をキーにするため、ヒントのクールダウンはリストの並べ替えを生き残ります。同じ id を持つ 2 つのエントリのうち、Claude Code は最初のものを使用します |
-| `text`             | はい  | ヒント、最大 500 文字の 1 行。Claude Code は ANSI エスケープと制御文字を削除し、空白を折りたたみます                                                                     |
-| `cooldownSessions` | いいえ | Claude Code がヒントを再度表示する前に待機するセッション数。`0` から `1000`。デフォルト `0`                                                                         |
-| `priority`         | いいえ | 同じ期間表示されていないヒント間の順序。より高い最初。`-10` から `10`。デフォルト `0`                                                                                  |
+| フィールド | 必須 | 説明 |
+| :- | :- | :- |
+| `id` | はい | 最大 64 文字、数字、`.`、`_`、または `-`。Claude Code はヒントの表示履歴をキーにするため、ヒントのクールダウンはリストの並べ替えを生き残ります。同じ id を持つ 2 つのエントリのうち、Claude Code は最初のものを使用します |
+| `text` | はい | ヒント、最大 500 文字の 1 行。Claude Code は ANSI エスケープと制御文字を削除し、空白を折りたたみます |
+| `cooldownSessions` | いいえ | Claude Code がヒントを再度表示する前に待機するセッション数、`0` から `1000`、デフォルト `0` |
+| `priority` | いいえ | 同じ期間表示されていないヒント間の順序、より高い最初、`-10` から `10`、デフォルト `0` |
 
-Claude Code はプレーンな文字列をこれらのデフォルトを持つヒントとして読み取り、位置ベースの id を読み取るため、リストを並べ替えるとその表示履歴がリセットされます。ヒントに `id` を付けて、編集全体で履歴を保持します。
+Claude Code はプレーン文字列をこれらのデフォルトを持つヒントとして読み取り、位置ベースの id を読み取るため、リストを並べ替えるとその表示履歴がリセットされます。ヒントに `id` を付けて、編集全体で履歴を保持します。
 
 Claude Code は `tips` と `tipsFile` 全体で最大 200 個のヒントを読み取り、設定ファイルを拒否する代わりに、デバッグ警告で無効なエントリを削除します。
 
 残りのフィールドを使用して、ヒントファイルに名前を付け、プレフィックスを設定し、組み込みヒントを非表示にします:
 
-* `tipsFile`: ローカル JSON ファイルへの絶対パスまたは `~/` パス。同じエントリの配列を保持するか、`tips` 配列を持つオブジェクト。最大 256 KB。Claude Code はプロセスごとに 1 回ファイルを読み取るため、次の起動時に編集が読み込まれます。[サーバー管理設定](/docs/ja/server-managed-settings)を通じて設定することはできません。インライン `tips` をそこに展開するか、オンディスク `managed-settings.json` にパスを展開します。
-* `label`: Claude Code がユーザー、`--settings`、およびマネージド設定からのヒントの前に表示するプレフィックス。最大 40 文字。デフォルトは `Tip`（組み込みヒントと同じプレフィックス）であり、プロジェクトおよびローカル設定からのヒントは常にそれを使用します。
-* `excludeDefault`: `true` に設定して、組み込みヒントを非表示にし、あなたのヒントのみを表示します。Claude Code があなたのヒントのいずれかを読み込めない場合（例えば、`tipsFile` が存在しないか、すべてのエントリが無効な場合）、空のスピナーの代わりに組み込みローテーションを保持します。
+* `tipsFile`: ローカル JSON ファイルへの絶対パスまたは `~/` パス。同じエントリの配列、またはオブジェクト（`tips` 配列を持つ）を保持します。最大 256 KB。Claude Code はプロセスごとに 1 回ファイルを読み取るため、次の起動時に編集が読み込まれます。[サーバー管理設定](/docs/ja/server-managed-settings)を通じて設定することはできません。インライン `tips` をそこに展開するか、オンディスク `managed-settings.json` にパスを展開します。
+* `label`: Claude Code がユーザー、`--settings`、およびマネージド設定からのヒントの前に表示するプレフィックス。最大 40 文字。デフォルトは `Tip`、組み込みヒントと同じプレフィックスであり、プロジェクトおよびローカル設定からのヒントは常にそれを使用します。
+* `excludeDefault`: `true` に設定して、組み込みヒントを非表示にし、あなたのヒントのみを表示します。Claude Code がヒントを読み込めない場合（例えば `tipsFile` が存在しないか、すべてのエントリが無効な場合）、空のスピナーの代わりに組み込みローテーションを保持します。
 
-複数の設定ファイルがキーを設定する場合、Claude Code はすべてのファイルからヒントを表示し、マネージド設定、`--settings` フラグ、およびユーザー設定のうち、各を設定する最高優先度のものから `tipsFile`、`label`、および `excludeDefault` を取得します。
+複数の設定ファイルがキーを設定する場合、Claude Code はすべてのファイルからヒントを表示し、マネージド設定、`--settings` フラグ、およびユーザー設定のうち、各 `tipsFile`、`label`、および `excludeDefault` を設定する最高優先度のものから取得します。
 
-この例（ユーザー設定内）は、プレーンな文字列ヒントとオブジェクトヒントを `Acme tip` プレフィックスの下のローテーションに追加します:
+この例（ユーザー設定）は、プレーン文字列ヒントとオブジェクトヒントを `Acme tip` プレフィックスの下のローテーションに追加します:
 
 ```json settings.json theme={null}
 {
@@ -3617,11 +3692,11 @@ Claude Code は `tips` と `tipsFile` 全体で最大 200 個のヒントを読�
 
 例の各フィールドは Claude Code がヒントを表示する方法の 1 つを変更します:
 
-* `label`: Claude Code は両方のヒントを `Acme tip: ...` として表示します。`Tip: ...` の代わりに。
-* プレーンな文字列: Claude Code はデフォルトを付与するため、次のセッションで再度表示される可能性があります。
-* `id`: Claude Code は `gateway-errors` の 2 番目のヒントの表示履歴をキーにするため、ヒントを追加または並べ替えた後もそのクールダウンが適用されます。
-* `cooldownSessions`: Claude Code が `gateway-errors` ヒントを表示した後、5 セッション後までそのヒントを再度表示しません。
-* `priority`: `gateway-errors` ヒントと別のヒントが同じ数のセッション（例えば、どちらも表示されていない場合）で表示されていない場合、Claude Code は `gateway-errors` を最初に表示します。プレーンな文字列はデフォルトの優先度 `0` を持ちます。
+* `label`: Claude Code は両方のヒントを `Tip: ...` の代わりに `Acme tip: ...` として表示します。
+* プレーン文字列: Claude Code はデフォルトを付与するため、次のセッションで再度表示される可能性があります。
+* `id`: Claude Code は 2 番目のヒントの表示履歴を `gateway-errors` にキーにするため、そのクールダウンはヒントを追加または並べ替えた後も適用されます。
+* `cooldownSessions`: Claude Code が `gateway-errors` ヒントを表示した後、そのヒントを 5 セッション後まで再度表示しません。
+* `priority`: `gateway-errors` ヒントと別のヒントが同じ期間表示されていない場合（例えば、どちらも表示されていない場合）、Claude Code は `gateway-errors` を最初に表示します。プレーン文字列はデフォルト優先度 `0` を持ちます。
 
 Claude が作業している間、Claude Code はあなたのプレフィックス（例えば `Acme tip: Run /review before opening a PR`）でスピナーにあなたのヒントを表示します。
 
@@ -3629,13 +3704,13 @@ Claude が作業している間、Claude Code はあなたのプレフィック�
   `spinnerVerbs`
 </h3>
 
-ターンが進行中の間、スピナーは「Accomplishing」、「Architecting」、または「Baking」などの回転する動詞を表示します。このキーを使用して、そのローテーションに独自の動詞を追加するか、組み込みリストを自分のリストに置き換えます。
+ターンが進行中の間、スピナーは「Accomplishing」、「Architecting」、または「Baking」などのローテーション動詞を表示します。このキーを使用して、そのローテーションに独自の動詞を追加するか、組み込みリストを置き換えます。
 
 * **スコープ**: [`任意のファイル`](#scopes)
 * **タイプ**: `verbs` 文字列の配列と `mode` を持つオブジェクト。以下のいずれか:
-  * `"append"`: Claude Code は組み込みセットにあなたの動詞を追加します
+  * `"append"`: Claude Code は組み込みセットに動詞を追加します
   * `"replace"`: Claude Code はあなたの動詞のみを表示します
-* **デフォルト**: 未設定のため、Claude Code は組み込み動詞を使用します
+* **デフォルト**: 未設定、Claude Code は組み込み動詞を使用します
 
 この例は 2 つの動詞を組み込みセットに追加します:
 
@@ -3654,11 +3729,11 @@ Claude が作業している間、Claude Code はあなたのプレフィック�
   `statusLine`
 </h3>
 
-独自のコマンドを実行して、プロンプトの下に[ステータスライン](/docs/ja/statusline)をレンダリングします。モデル、コスト、git ブランチなどのコンテキストを使用します。オプションのフィールドは間隔を調整し、定期的な再実行を追加し、スクリプト自体が `vim.mode` をレンダリングする場合は組み込みの vim モードインジケーターを非表示にします。
+[ステータスライン](/docs/ja/statusline)をプロンプトの下にレンダリングする独自のコマンドを実行します。モデル、コスト、git ブランチなどのコンテキストを含みます。オプションのフィールドは間隔を調整し、定期的な再実行を追加し、スクリプトが `vim.mode` 自体をレンダリングする場合は組み込みの vim モードインジケーターを非表示にします。
 
 * **スコープ**: [`任意のファイル`](#scopes)。[`allowManagedHooksOnly`](#allowmanagedhooksonly) がオンの場合、または [`disableAllHooks`](#disableallhooks) がマネージド設定の外で設定されている場合、マネージド設定値のみが実行されます。
 * **タイプ**: `type` を `"command"` に設定し、`command` 文字列を持つオブジェクト。オプションで `padding` を文字数として、`refreshInterval` を秒数として（最小 `1`）、`hideVimModeIndicator` をブール値として
-* **デフォルト**: 未設定のため、ステータスラインはありません
+* **デフォルト**: 未設定、ステータスラインなし
 
 この例はモデル名とコンテキスト使用量を出力し、2 文字の水平間隔を追加します:
 
@@ -3672,17 +3747,17 @@ Claude が作業している間、Claude Code はあなたのプレフィック�
 }
 ```
 
-この例には [`jq`](https://jqlang.org/) がインストールされている必要があり、シェルで実行されます。PowerShell および Git Bash の同等物については、[Windows 設定](/docs/ja/statusline#windows-configuration)を参照してください。完全なセットアップについては、[ステータスラインを手動で設定](/docs/ja/statusline#manually-configure-a-status-line)を参照してください。
+例には[`jq`](https://jqlang.org/)がインストールされている必要があり、シェルで実行されます。PowerShell および Git Bash の同等物については、[Windows 設定](/docs/ja/statusline#windows-configuration)を参照してください。完全なセットアップについては、[ステータスラインを手動で設定](/docs/ja/statusline#manually-configure-a-status-line)を参照してください。
 
 <h3 id="subagentstatusline">
   `subagentStatusLine`
 </h3>
 
-Claude が[サブエージェント](/docs/ja/sub-agents)を実行する場合、Claude Code はプロンプトの下のタスク表示にそれらをリストします。1 行あたり 1 つのサブエージェント。`name · description · token count` を表示します。このキーを使用すると、独自のコマンドを実行してそれらの行を書き直すことができます。例えば、各サブエージェントのコンテキスト使用量をパーセンテージとして表示します。各更新時に、Claude Code は表示されている行を 1 つの JSON オブジェクトとして stdin に送信します。各サブエージェントの `id`、`name`、`status`、`model`、`tokenCount` などを持つ `tasks` 配列を使用します。`id` として書き直した各行を `{"id", "content"}` 行として置き換えます。書き直さない行はデフォルトレンダリングを保持します。
+Claude が[サブエージェント](/docs/ja/sub-agents)を実行する場合、Claude Code はプロンプトの下のタスク表示にそれらをリストします。サブエージェントごとに 1 行。`name · description · token count` を表示します。このキーを使用すると、独自のコマンドを実行してそれらの行を書き直すことができます。例えば、各サブエージェントのコンテキスト使用量をパーセンテージとして表示します。各リフレッシュで、Claude Code は表示されている行を 1 つの JSON オブジェクトとして stdin に送信します。`tasks` 配列は各サブエージェントの `id`、`name`、`status`、`model`、`tokenCount` などを含みます。書き直した各 `id` の行を `{"id", "content"}` 行として置き換えます。書き直さない行はデフォルトレンダリングを保持します。
 
 * **スコープ**: [`任意のファイル`](#scopes)。[`allowManagedHooksOnly`](#allowmanagedhooksonly) がオンの場合、または [`disableAllHooks`](#disableallhooks) がマネージド設定の外で設定されている場合、マネージド設定値のみが実行されます。
 * **タイプ**: `type` を `"command"` に設定し、`command` 文字列を持つオブジェクト
-* **デフォルト**: 未設定のため、Claude Code はデフォルト行をレンダリングします
+* **デフォルト**: 未設定、Claude Code はデフォルト行をレンダリングします
 
 ```json settings.json theme={null}
 {
@@ -3699,7 +3774,7 @@ Claude が[サブエージェント](/docs/ja/sub-agents)を実行する場合�
   `syntaxHighlightingDisabled`
 </h3>
 
-Claude Code は、ターミナルに表示する diff、コードブロック、ファイルプレビューで言語別にコードを色付けします。組み込みハイライターを使用します。プラグインまたは言語サーバーは関係ありません。このキーを `true` に設定してプレーンテキストとして表示します。例えば、色がターミナルテーマと衝突する場合やスクリーンリーダーを遅くする場合。
+Claude Code は組み込みハイライターを使用して、ターミナルに表示される diff、コードブロック、ファイルプレビューで言語別にコードを色付けします。プラグインまたは言語サーバーは関与しません。このキーを `true` に設定して、代わりにプレーンテキストとして表示します。例えば、色がターミナルテーマと競合する場合やスクリーンリーダーを遅くする場合。
 
 * **スコープ**: [`任意のファイル`](#scopes)
 * **タイプ**: ブール値
@@ -3717,11 +3792,11 @@ Claude Code は、ターミナルに表示する diff、コードブロック、
   `terminalProgressBarEnabled`
 </h3>
 
-一部のターミナルは、それらで実行されているプログラムのタブまたはタスクバーに進捗インジケーターを表示できます。Claude が作業している間、Claude Code は進行中の状態をターミナルに報告するため、別のタブまたはウィンドウからセッションがまだビジーかどうかを確認できます。[バックグラウンドサブエージェント](/docs/ja/sub-agents#run-subagents-in-foreground-or-background)または[動的ワークフロー](/docs/ja/workflows)がまだ実行されている間、インジケーターはターンの終了後も表示されたままになり、セッションがアイドル状態になるとクリアされます。
+一部のターミナルは、それらで実行されているプログラムのタブまたはタスクバーに進捗インジケーターを表示できます。Claude が作業している間、Claude Code はターミナルに進行中の状態を報告するため、別のタブまたはウィンドウからセッションがまだビジーかどうかを確認できます。[バックグラウンドサブエージェント](/docs/ja/sub-agents#run-subagents-in-foreground-or-background)または[動的ワークフロー](/docs/ja/workflows)がまだ実行されている間、インジケーターはターンの終了後も表示されたままになり、セッションがアイドル状態になるとクリアされます。
 
-Claude Code はインジケーターをサポートするターミナルでのみ報告します。ConEmu、Ghostty 1.2.0 以降、および iTerm2 3.6.6 以降。このキーを `false` に設定して、Claude Code がそれを報告するのを停止します。`/config` に **Terminal progress bar** として表示されます。
+Claude Code はインジケーターをサポートするターミナルでのみ報告します。ConEmu、Ghostty 1.2.0 以降、および iTerm2 3.6.6 以降。このキーを `false` に設定して、Claude Code がそれを報告するのを停止します。`/config` に**ターミナル進捗バー**として表示されます。
 
-* **スコープ**: [`任意のファイル`](#scopes)。設定ファイルがそれを設定しない場合、古いバージョンの `~/.claude.json` の値が適用されます。
+* **スコープ**: [`任意のファイル`](#scopes)。古いバージョンの `~/.claude.json` の値は、設定ファイルがそれを設定しない場合に適用されます。
 * **タイプ**: ブール値
   * `true`: サポートするターミナルでターミナル進捗バーが表示されます
   * `false`: Claude Code はターミナル進捗バーを非表示にします
@@ -3737,12 +3812,12 @@ Claude Code はインジケーターをサポートするターミナルでの�
   `terminalTitleFromRename`
 </h3>
 
-Claude Code はターミナルタブのタイトルを設定します。デフォルトでは、会話から生成されたタイトルを使用し、`/rename` または `--name` でセッションに[名前を付ける](/docs/ja/sessions#name-your-sessions)と、タブはその名前を代わりに表示します。このキーを `false` に設定して、セッションに名前を付けた後も、生成されたタイトルをタブに保持します。名前自体は引き続き適用されるため、`/resume <name>` とセッションピッカーはそれを見つけます。
+Claude Code はターミナルタブのタイトルを設定します。デフォルトでは、会話から生成されたタイトルを使用し、`/rename` または `--name` で[セッションに名前を付ける](/docs/ja/sessions#name-your-sessions)と、タブはその名前を代わりに表示します。このキーを `false` に設定して、セッションに名前を付けた後も、生成されたタイトルをタブに保持します。名前自体は引き続き適用されるため、`/resume <name>` とセッションピッカーはそれを見つけます。
 
 * **スコープ**: [`任意のファイル`](#scopes)
 * **タイプ**: ブール値
   * `true`: ターミナルタブのタイトルは設定したセッション名を表示します
-  * `false`: タブは Claude Code が会話から生成したタイトルを保持します
+  * `false`: タブは会話から生成された Claude Code のタイトルを保持します
 * **デフォルト**: `true`
 
 ```json settings.json theme={null}
@@ -3757,9 +3832,9 @@ Claude Code がターミナルタイトルを更新するのを完全に停止�
   `theme`
 </h3>
 
-インターフェースのカラーテーマを選択します。`/config` に **Theme** として表示されます。
+インターフェースのカラーテーマを選択します。`/config` に**テーマ**として表示されます。
 
-* **スコープ**: [`任意のファイル`](#scopes)。設定ファイルがそれを設定しない場合、古いバージョンの `~/.claude.json` の値が適用されます。
+* **スコープ**: [`任意のファイル`](#scopes)。古いバージョンの `~/.claude.json` の値は、設定ファイルがそれを設定しない場合に適用されます。
 * **タイプ**: 文字列、以下のいずれか:
   * `"auto"`: ターミナルの明るいまたは暗い背景に一致します
   * `"dark"`: ダークテーマ
@@ -3783,15 +3858,15 @@ Claude Code がターミナルタイトルを更新するのを完全に停止�
   `timeFormat`
 </h3>
 
-Claude Code がインターフェースに表示する時刻の書き方を選択します。例えば、各ターン期間メッセージの終わりの `done 6:05 PM` と[トランスクリプトビューア](/docs/ja/interactive-mode#transcript-viewer)のタイムスタンプ。プリセットを選択するには、`/config` を実行して **Time format** を設定します。Claude Code v2.1.257 以降が必要です。
+Claude Code がインターフェースに表示する時刻の書き方を選択します。例えば、各ターン期間メッセージの終わりの `done 6:05 PM` と[トランスクリプトビューアー](/docs/ja/interactive-mode#transcript-viewer)のタイムスタンプ。プリセットを選択するには、`/config` を実行して**時間形式**を設定します。Claude Code v2.1.257 以降が必要です。
 
 * **スコープ**: [`任意のファイル`](#scopes)
 * **タイプ**: 文字列、以下のいずれか:
-  * `"auto"`: 未設定と同じです。各時刻は組み込み形式を保持します。ターン期間メッセージではロケールに従います
+  * `"auto"`: 未設定と同じです。各時刻は組み込み形式を保持し、ターン期間メッセージではロケールに従います
   * `"12-hour"`: 12 時間制
   * `"24-hour"`: 24 時間制
   * `"24-hour-utc"`: UTC での 24 時間制。分の後に `Z` が付きます。例えば `18:05Z`。Claude Code はこのプリセットの [`timeZone`](#timezone) を無視します
-  * `"%H:%M"` などの strftime パターン: Claude Code は各時刻をパターンで書きます。`%` を含む値はパターンであり、プリセット外の他の値は `"auto"` としてカウントされます
+  * `"%H:%M"` などの strftime パターン: Claude Code はパターンで各時刻を書きます。`%` を含む値はパターンであり、プリセット外の他の値は `"auto"` としてカウントされます
 * **デフォルト**: `"auto"`
 
 ```json settings.json theme={null}
@@ -3808,7 +3883,7 @@ Claude Code がインターフェースに表示する時刻の書き方を選�
 }
 ```
 
-ターン期間メッセージとトランスクリプトビューアは `18:05` などの時刻を表示します。トランスクリプトビューアでは、パターンはタイムスタンプ全体であるため、日付を含めたい場合は日付ディレクティブを追加します。この例は時計の前に日付を置きます:
+ターン期間メッセージとトランスクリプトビューアーは `18:05` などの時刻を表示します。トランスクリプトビューアーでは、パターンはタイムスタンプ全体であるため、日付をそこに含める場合は日付ディレクティブを追加します。この例は時計の前に日付を配置します:
 
 ```json settings.json theme={null}
 {
@@ -3822,11 +3897,11 @@ Claude Code がインターフェースに表示する時刻の書き方を選�
   `timeZone`
 </h3>
 
-インターフェースの時刻をシステムのタイムゾーン以外のタイムゾーンで表示します。[IANA タイムゾーン名](https://www.iana.org/time-zones)（例えば `"UTC"` または `"Europe/Dublin"`）に設定します。[`timeFormat`](#timeformat) が制御する時刻はこのゾーンで表示されます。`timeFormat` が `"24-hour-utc"` の場合、時刻は UTC のままであり、Claude Code はこのキーを無視します。`/config` にはこのキーの行がないため、設定ファイルで設定します。Claude Code v2.1.257 以降が必要です。
+インターフェースの時刻をシステムの時刻以外のタイムゾーンで表示します。[IANA タイムゾーン名](https://www.iana.org/time-zones)（`"UTC"` または `"Europe/Dublin"` など）に設定します。[`timeFormat`](#timeformat) が制御する時刻はこのゾーンで表示されます。`timeFormat` が `"24-hour-utc"` の場合、時刻は UTC のままであり、Claude Code はこのキーを無視します。`/config` にはこのキーの行がないため、設定ファイルで設定します。Claude Code v2.1.257 以降が必要です。
 
 * **スコープ**: [`任意のファイル`](#scopes)
 * **タイプ**: 文字列、IANA タイムゾーン名。Claude Code が名前を認識しない場合、システムタイムゾーンを使用します
-* **デフォルト**: 未設定のため、時刻はシステムタイムゾーンで表示されます
+* **デフォルト**: 未設定、時刻はシステムタイムゾーンで表示されます
 
 ```json settings.json theme={null}
 {
@@ -3838,13 +3913,13 @@ Claude Code がインターフェースに表示する時刻の書き方を選�
   `tui`
 </h3>
 
-ターミナル UI レンダラーを選択します。ちらつきのない[alt-screen レンダラー](/docs/ja/fullscreen)を使用する場合は `"fullscreen"` を使用します。仮想スクロールバック付き。クラシックメインスクリーンレンダラーの場合は `"default"` を使用します。`/tui fullscreen` または `/tui default` を実行すると、このキーが自動的に書き込まれます。
+ターミナル UI レンダラーを選択します。ちらつきのない[alt-screen レンダラー](/docs/ja/fullscreen)を仮想スクロールバックで使用するには `"fullscreen"` を使用するか、クラシックメインスクリーンレンダラーには `"default"` を使用します。`/tui fullscreen` または `/tui default` を実行すると、このキーが書き込まれます。
 
 * **スコープ**: [`任意のファイル`](#scopes)
 * **タイプ**: 文字列、以下のいずれか:
   * `"default"`: クラシックメインスクリーンレンダラー
   * `"fullscreen"`: 仮想スクロールバック付きのちらつきのない alt-screen レンダラー
-* **デフォルト**: 未設定のため、Claude Code は[レンダラーを自動的に選択](/docs/ja/fullscreen#fullscreen-by-default)します
+* **デフォルト**: 未設定、Claude Code は[レンダラーを自動的に選択](/docs/ja/fullscreen#fullscreen-by-default)します
 * **セッションごとのオーバーライド**: [`CLAUDE_CODE_NO_FLICKER`](/docs/ja/env-vars) と [`CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN`](/docs/ja/env-vars) はこのキーより優先されます。`CLAUDE_CODE_NO_FLICKER=1` はフルスクリーンをオンにし、`CLAUDE_CODE_NO_FLICKER=0` または `CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN=1` はオフにします。両方が設定されている場合、Claude Code はオフにします
 
 ```json settings.json theme={null}
@@ -3853,15 +3928,15 @@ Claude Code がインターフェースに表示する時刻の書き方を選�
 }
 ```
 
-tmux `-CC` の下またはWindows への SSH 経由では、Claude Code は `CLAUDE_CODE_NO_FLICKER=1` を設定しない限りクラシックレンダラーを保持します。[エージェントビュー](/docs/ja/agent-view)から開かれたバックグラウンドセッションは、この設定に関係なく常にフルスクリーンレンダラーを使用します。
+tmux `-CC` の下または Windows への SSH 経由では、Claude Code は `CLAUDE_CODE_NO_FLICKER=1` を設定しない限りクラシックレンダラーを保持します。[エージェントビュー](/docs/ja/agent-view)から開かれたバックグラウンドセッションは、この設定に関係なく常にフルスクリーンレンダラーを使用します。
 
 <h3 id="verbose">
   `verbose`
 </h3>
 
-デフォルトでは、トランスクリプトは各ツール呼び出しを短い要約に折りたたみます。例えば、Claude が実行したコマンドと出力の行数。詳細が必要な場合は `Ctrl+O` を押してトランスクリプト全体を展開ビューに切り替えます。このキーを `true` に設定して、すべてのツール呼び出しの完全な入力と出力をインラインで表示します。フック、MCP サーバー、または長いシェルコマンドをデバッグする場合に便利です。`/config` に **Verbose output** として表示されます。
+デフォルトでは、トランスクリプトは各ツール呼び出しを短い要約に折りたたみます。例えば、Claude が実行したコマンドと出力の行数。詳細を表示したい場合は `Ctrl+O` を押してトランスクリプト全体を展開ビューに切り替えます。このキーを `true` に設定して、すべてのツール呼び出しの完全な入力と出力をインラインで表示します。フック、MCP サーバー、または長いシェルコマンドをデバッグする場合に便利です。`/config` に**詳細出力**として表示されます。
 
-* **スコープ**: [`任意のファイル`](#scopes)。設定ファイルがそれを設定しない場合、古いバージョンの `~/.claude.json` の値が適用されます。
+* **スコープ**: [`任意のファイル`](#scopes)。古いバージョンの `~/.claude.json` の値は、設定ファイルがそれを設定しない場合に適用されます。
 * **タイプ**: ブール値
   * `true`: 完全なツール出力が表示されます
   * `false`: ツール出力の切り詰められた要約が表示されます
@@ -3886,8 +3961,8 @@ Claude Code が開始するトランスクリプトビューを設定します�
 * **タイプ**: 文字列、以下のいずれか:
   * `"default"`: 切り詰められたツール出力を持つ通常のトランスクリプト
   * `"verbose"`: 完全なツール出力を持つトランスクリプト
-  * `"focus"`: 最後のプロンプトのみ。編集 diffstat を持つツール呼び出しの 1 行の要約。最終応答。フォーカスビューは[フルスクリーンレンダラー](#tui)が必要です
-* **デフォルト**: 未設定のため、`verbose` 設定と最後の `/focus` 選択が適用されます
+  * `"focus"`: 最後のプロンプトのみ、ツール呼び出しの 1 行の要約（編集 diffstats を含む）、および最終応答。フォーカスビューは[フルスクリーンレンダラー](#tui)が必要です
+* **デフォルト**: 未設定、`verbose` 設定と最後の `/focus` 選択が適用されます
 * **セッションごとのオーバーライド**: [`--verbose`](/docs/ja/cli-reference#cli-flags) はこのキーより優先されます
 
 ```json settings.json theme={null}
@@ -3923,10 +3998,10 @@ Claude Code が開始するトランスクリプトビューを設定します�
 [音声ディクテーション](/docs/ja/voice-dictation)をオンにし、ディクテーションキーの動作を選択します。Claude Code は `/voice` を実行するとこのオブジェクトを書き込みます。
 
 * **スコープ**: [`任意のファイル`](#scopes)
-* **タイプ**: `enabled` をブール値として、`autoSubmit` をホールドモードのみに適用するブール値として、`mode` を以下のいずれかとするオブジェクト:
+* **タイプ**: `enabled` をブール値として、`autoSubmit` をホールドモードのみに適用するブール値として、`mode` を以下のいずれかとして持つオブジェクト:
   * `"hold"`: ディクテーションキーを話している間押し続け、停止するために離します
   * `"tap"`: キーを 1 回タップして記録を開始し、もう一度タップして送信します
-* **デフォルト**: 未設定のため、ディクテーションはオフです。`enabled` が `true` で `mode` が未設定の場合、Claude Code は `"hold"` を使用します
+* **デフォルト**: 未設定、ディクテーションはオフです。`enabled` が `true` で `mode` が未設定の場合、Claude Code は `"hold"` を使用します
 
 この例はディクテーションをオンにし、キーを 1 回タップして記録を開始し、もう一度タップして送信するようにします:
 
@@ -3949,12 +4024,12 @@ Claude Code が開始するトランスクリプトビューを設定します�
   v2.1.92 以降非推奨。[`voice`](#voice) オブジェクトが置き換えました。Claude Code は引き続きそれを読み取るため、古い設定ファイルは機能し続けますが、新しい設定は `voice.enabled` を設定する必要があります。
 </Warning>
 
-`voice` オブジェクトの前の単一ブール値形式で音声ディクテーションをオンにします。両方が設定されている場合、`voice.enabled` が適用されます。
+`voice` オブジェクトより前の単一ブール値形式で音声ディクテーションをオンにします。両方が設定されている場合、`voice.enabled` が適用されます。
 
 * **スコープ**: [`任意のファイル`](#scopes)
 * **タイプ**: ブール値
   * `true`: claude.ai アカウントでログインしており、組織のポリシーが音声を許可している場合、音声ディクテーションはオンです。`voice.enabled` が設定されていない限り
-  * `false`: `voice.enabled` が設定されていない限り、音声ディクテーションはオフです
+  * `false`: 音声ディクテーションはオフです。`voice.enabled` が設定されていない限り
 * **デフォルト**: 未設定
 
 ```json settings.json theme={null}
@@ -3967,12 +4042,12 @@ Claude Code が開始するトランスクリプトビューを設定します�
   `wheelScrollAccelerationEnabled`
 </h3>
 
-[フルスクリーンレンダリング](/docs/ja/fullscreen#mouse-wheel-scrolling)での高速スクロール中にマウスホイールスクロール速度を加速します。ホイールノッチあたりの一定のスクロール速度の場合は `false` に設定します。
+[フルスクリーンレンダリング](/docs/ja/fullscreen#mouse-wheel-scrolling)での高速スクロール中にマウスホイールスクロール速度を加速します。ホイールノッチごとに一定のスクロール速度を使用するには `false` に設定します。
 
 * **スコープ**: [`任意のファイル`](#scopes)
 * **タイプ**: ブール値
   * `true`: Claude Code は高速スクロール中にマウスホイールスクロール速度を加速します
-  * `false`: Claude Code はホイールノッチあたり一定の速度でスクロールします
+  * `false`: Claude Code はホイールノッチごとに一定の速度でスクロールします
 * **デフォルト**: `true`
 
 ```json settings.json theme={null}
@@ -4088,7 +4163,7 @@ Claude Code が git コミットに追加するアトリビューションテキ
 
 * **スコープ**: [`Any file`](#scopes)
 * **タイプ**: 文字列
-* **デフォルト**: 未設定。Claude Code は `Co-Authored-By: <name> <noreply@anthropic.com>` を追加します。名前はセッションのアクティブなモデル（`Claude Sonnet 5` など）です。
+* **デフォルト**: 未設定。Claude Code は `Co-Authored-By: <name> <noreply@anthropic.com>` を追加します。名前はコミットが作成されるときに使用されているモデル（`Claude Sonnet 5` など）です。[subagent](/docs/ja/sub-agents) がコミットを作成する場合、トレーラーは subagent のモデルに名前を付けます。
   * Claude Code がモデルを Claude モデルとして認識しているが、その正確なバージョンを確認できない場合、`Claude` のみを書き込みます。
   * モデル ID をカスタム [`ANTHROPIC_BASE_URL`](/docs/ja/env-vars) を通じて提供されるサードパーティモデルなど、Claude モデルと一致させることができない場合、`Claude Code` を書き込みます。
 
@@ -4650,16 +4725,16 @@ Claude Code v2.1.229 以降が必要です。
 
 以下の各エントリは、ソースタイプごとに 1 つの許可リストエントリと、それが受け入れるフィールドを示しています。ほとんどのタイプは正確に一致します。`hostPattern` と `pathPattern` は正規表現で一致し、`github` エントリは[オーナーワイルドカード](#owner-wildcards)を使用できます。
 
-| Source        | Example entry                                                                                                                   | Fields                                                           |
-| :------------ | :------------------------------------------------------------------------------------------------------------------------------ | :--------------------------------------------------------------- |
-| `github`      | `{ "source": "github", "repo": "acme-corp/plugins", "ref": "main", "path": "marketplace" }`                                     | `repo` 必須; `ref` はブランチまたはタグ; `path` はサブディレクトリ                    |
-| `git`         | `{ "source": "git", "url": "https://gitlab.example.com/tools/plugins.git", "ref": "production" }`                               | `url` 必須; `ref` と `path` は `github` と同じ                          |
-| `url`         | `{ "source": "url", "url": "https://plugins.example.com/marketplace.json", "headers": { "Authorization": "Bearer ${TOKEN}" } }` | `url` 必須; `headers` は認証アクセス用の HTTP ヘッダーを追加します                    |
-| `file`        | `{ "source": "file", "path": "/opt/acme-corp/plugins/marketplace.json" }`                                                       | `path` 必須、`marketplace.json` ファイルへの絶対パス                          |
-| `directory`   | `{ "source": "directory", "path": "/opt/acme-corp/approved-marketplaces" }`                                                     | `path` 必須、`.claude-plugin/marketplace.json` を含むディレクトリへの絶対パス      |
-| `hostPattern` | `{ "source": "hostPattern", "hostPattern": "^github\\.example\\.com$" }`                                                        | `hostPattern` 必須、マーケットプレイスホストに対して一致する正規表現                        |
-| `pathPattern` | `{ "source": "pathPattern", "pathPattern": "^/opt/approved/" }`                                                                 | `pathPattern` 必須、`file` および `directory` ソースの `path` に対して一致する正規表現 |
-| `skills-dir`  | `{ "source": "skills-dir" }`                                                                                                    | フィールドなし。`~/.claude/skills/` プラグインスキャンをオプトバックインします                |
+| Source | Example entry | Fields |
+| :- | :- | :- |
+| `github` | `{ "source": "github", "repo": "acme-corp/plugins", "ref": "main", "path": "marketplace" }` | `repo` 必須; `ref` はブランチまたはタグ; `path` はサブディレクトリ |
+| `git` | `{ "source": "git", "url": "https://gitlab.example.com/tools/plugins.git", "ref": "production" }` | `url` 必須; `ref` と `path` は `github` と同じ |
+| `url` | `{ "source": "url", "url": "https://plugins.example.com/marketplace.json", "headers": { "Authorization": "Bearer ${TOKEN}" } }` | `url` 必須; `headers` は認証アクセス用の HTTP ヘッダーを追加します |
+| `file` | `{ "source": "file", "path": "/opt/acme-corp/plugins/marketplace.json" }` | `path` 必須、`marketplace.json` ファイルへの絶対パス |
+| `directory` | `{ "source": "directory", "path": "/opt/acme-corp/approved-marketplaces" }` | `path` 必須、`.claude-plugin/marketplace.json` を含むディレクトリへの絶対パス |
+| `hostPattern` | `{ "source": "hostPattern", "hostPattern": "^github\\.example\\.com$" }` | `hostPattern` 必須、マーケットプレイスホストに対して一致する正規表現 |
+| `pathPattern` | `{ "source": "pathPattern", "pathPattern": "^/opt/approved/" }` | `pathPattern` 必須、`file` および `directory` ソースの `path` に対して一致する正規表現 |
+| `skills-dir` | `{ "source": "skills-dir" }` | フィールドなし。`~/.claude/skills/` プラグインスキャンをオプトバックインします |
 
 3 つのソースタイプはテーブルを超えたルールを持ちます:
 
@@ -4695,12 +4770,12 @@ Claude Code v2.1.229 以降が必要です。
 
 マッチングルールは 2 つの設定間で異なります:
 
-| Rule          | `strictKnownMarketplaces`                                                                 | `blockedMarketplaces`                        |
-| ------------- | ----------------------------------------------------------------------------------------- | -------------------------------------------- |
-| マッチングソーススペリング | `owner/repo` 形式のみ。同じリポジトリをクローンする git URL は一致しません                                          | `github.com` リポジトリに解決する git URL を含む任意のスペリング  |
-| オーナーケース       | 正確なエントリマッチングのように大文字と小文字を区別します                                                             | 大文字と小文字を区別しません                               |
-| `ref`         | 正確なエントリルールに従います: `ref` を持つエントリはその正確な ref を持つソースのみと一致し、1 つを持たないエントリは ref を指定しないソースのみと一致します | `ref` を持たないエントリは、一致するリポジトリのすべての ref をブロックします |
-| `path`        | 正確なエントリルールより緩い: `path` を持つエントリはその正確な値を必要とし、1 つを持たないエントリはリポジトリ内のすべてのパスと一致します               | `path` を持たないエントリは、一致するリポジトリのすべてのパスをブロックします   |
+| Rule | `strictKnownMarketplaces` | `blockedMarketplaces` |
+| - | - | - |
+| マッチングソーススペリング | `owner/repo` 形式のみ。同じリポジトリをクローンする git URL は一致しません | `github.com` リポジトリに解決する git URL を含む任意のスペリング |
+| オーナーケース | 正確なエントリマッチングのように大文字と小文字を区別します | 大文字と小文字を区別しません |
+| `ref` | 正確なエントリルールに従います: `ref` を持つエントリはその正確な ref を持つソースのみと一致し、1 つを持たないエントリは ref を指定しないソースのみと一致します | `ref` を持たないエントリは、一致するリポジトリのすべての ref をブロックします |
+| `path` | 正確なエントリルールより緩い: `path` を持つエントリはその正確な値を必要とし、1 つを持たないエントリはリポジトリ内のすべてのパスと一致します | `path` を持たないエントリは、一致するリポジトリのすべてのパスをブロックします |
 
 <h4 id="exact-matching">
   正確なマッチング
@@ -4745,14 +4820,14 @@ Claude Code v2.1.229 以降が必要です。
 
 2 つのキーは異なるジョブを実行します。この表はそれらを比較しています:
 
-| Aspect            | `strictKnownMarketplaces` | `extraKnownMarketplaces`                        |
-| ----------------- | ------------------------- | ----------------------------------------------- |
-| Purpose           | 組織ポリシー実施                  | チーム便宜                                           |
-| Settings file     | マネージド設定のみ                 | 任意の設定ファイル                                       |
-| Behavior          | 許可リストされていない追加をブロック        | 不足しているマーケットプレイスを登録                              |
-| When enforced     | ネットワークおよびファイルシステム操作の前     | ユーザーまたはマネージド設定から直ちに。リポジトリのファイルのワークスペース信頼ダイアログの後 |
-| Can be overridden | いいえ、最高優先度                 | はい、より高い優先度の設定による                                |
-| Source format     | 直接ソースオブジェクト               | ネストされた `source` オブジェクトを持つ名前付きマーケットプレイス          |
+| Aspect | `strictKnownMarketplaces` | `extraKnownMarketplaces` |
+| - | - | - |
+| Purpose | 組織ポリシー実施 | チーム便宜 |
+| Settings file | マネージド設定のみ | 任意の設定ファイル |
+| Behavior | 許可リストされていない追加をブロック | 不足しているマーケットプレイスを登録 |
+| When enforced | ネットワークおよびファイルシステム操作の前 | ユーザーまたはマネージド設定から直ちに。リポジトリのファイルのワークスペース信頼ダイアログの後 |
+| Can be overridden | いいえ、最高優先度 | はい、より高い優先度の設定による |
+| Source format | 直接ソースオブジェクト | ネストされた `source` オブジェクトを持つ名前付きマーケットプレイス |
 
 すべてのユーザーのマーケットプレイスを制限および事前登録するには、`managed-settings.json` で両方を設定します:
 
@@ -5687,7 +5762,7 @@ Claude Desktop は、デスクトップ設定から派生したポリシー（�
 * **Type**: Boolean
   * `true`: Claude Code は各対話セッションの開始時に Remote Control を自動的に接続します
   * `false`: Claude Code は `/remote-control` を待ちます
-* **Default**: 未設定なので、自動接続は設定されている場合は組織の管理デフォルトに従い、そうでない場合は Claude Code の現在のデフォルトに従います
+* **Default**: 未設定なので、[自動接続デフォルト](/docs/ja/remote-control#enable-remote-control-for-all-sessions) が適用されます
 * **Per-session overrides**: `--remote-control` はこのキーが `false` の場合でも 1 つのセッションに対して Remote Control をオンにし、フラグは 1 つのセッションに対してそれをオフにしません
 
 ```json settings.json theme={null}
@@ -5839,7 +5914,7 @@ AWS 認証情報を JSON として出力する独自のコマンドを実行し�
 
 `/login` クラウドゲートウェイ画面が接続するゲートウェイ URL を設定して、ユーザーがアドレスを入力せずに [クラウドゲートウェイ](/docs/ja/claude-apps-gateway)に到達できるようにします。画面には URL フィールドがありません。このキーが設定されている場合、ゲートウェイ URL を表示し、ユーザーが Enter キーを押すと接続します。設定されていない場合、IT 管理者に連絡するよう指示します。
 
-このキーまたは `forceLoginMethod: "gateway"` のいずれかがマシンをゲートウェイのみにするため、`/login` はログイン方法ピッカーなしでクラウドゲートウェイ画面で開きます。残されたファーストパーティログインまたは API キーに何が起こるかについては、[管理者ポリシーがクラウドゲートウェイサインインを必要とします](/docs/ja/errors#administrator-policy-requires-a-cloud-gateway-sign-in)を参照してください。画面がエラーを表示する代わりに接続するように、両方のキーを設定します。
+このキーまたは `forceLoginMethod: "gateway"` のいずれかがマシンをゲートウェイのみにするため、`CLAUDE_CODE_USE_*` でクラウドプロバイダーを選択するセッションを除き、`/login` はログイン方法ピッカーなしでクラウドゲートウェイ画面で開きます。残されたファーストパーティログインまたは API キーに何が起こるかについては、[管理者ポリシーがクラウドゲートウェイサインインを必要とします](/docs/ja/errors#administrator-policy-requires-a-cloud-gateway-sign-in)を参照してください。画面がエラーを表示する代わりに接続するように、両方のキーを設定します。
 
 * **スコープ**: [`Managed`](#scopes)。マシン上のソースからのみ読み取ります。`managed-settings.json`、macOS plist または Windows HKLM レジストリ、またはポリシーヘルパー。Claude Code は HKCU およびサーバー管理設定では無視します。
 * **タイプ**: 文字列、スキームを含む完全な URL
@@ -6092,7 +6167,7 @@ Claude Code がセッションデータをどのくらいの期間保持し、�
   `cleanupPeriodDays`
 </h3>
 
-Claude Code が [セッショントランスクリプトおよび他のアプリケーションデータ](/docs/ja/claude-directory#cleaned-up-automatically) を削除する前に保持する日数を設定します。Claude Code はセッション開始後にバックグラウンド削除を実行します。保持期間を安全に判定できる限り実行されます。
+Claude Code が [セッショントランスクリプトおよび他のアプリケーションデータ](/docs/ja/claude-directory#cleaned-up-automatically) を削除する前に保持する日数を設定します。Claude Code はセッション開始後にバックグラウンド削除を実行します。保持期間を安全に判定できる限り実行されます。削除スイープはメッセージを表示せずにトランスクリプトを削除するため、保持期間より長く使用していないセッションは [`/resume`](/docs/ja/sessions#resume-a-session) ピッカーに表示されなくなります。
 
 * **スコープ**: [`Any file`](#scopes)
 * **タイプ**: 日数、整数、最小値 `1`
@@ -6189,17 +6264,17 @@ Claude Desktop または Cowork で開始または最後に続行したセッシ
   エンタープライズおよび管理設定
 </h2>
 
-組織がマネージド設定を計算、更新、および組み合わせるために使用するキー。[マネージド設定の設定](/docs/ja/admin-setup)を参照してください。
+組織が管理設定を計算、更新、および組み合わせるために使用するキー。[管理設定の設定](/docs/ja/admin-setup)を参照してください。
 
 <h3 id="disablesideloadflags">
   `disableSideloadFlags`
 </h3>
 
-起動時に `--plugin-dir`、`--plugin-url`、`--agents`、および `--mcp-config` CLI フラグを拒否します。ユーザーはこれらのフラグを渡して、単一の実行で [`strictKnownMarketplaces`](#strictknownmarketplaces) をバイパスできます。Claude Code はエラーで終了し、拒否されたフラグを名前で指定します。また、これらのフラグで CLI を内部的に開始するサーフェスに同じチェックを適用します。現在、デスクトップアプリの [Cowork](/docs/ja/desktop) ローカルセッションです。[クラウドセッション](/docs/ja/claude-code-on-the-web)では、Claude Code はサーバーが `--mcp-config` を通じて配信した MCP サーバーをドロップします。ただし、プロセス内の `type: "sdk"` エントリを除きます。セッションを開始します。Claude Code v2.1.193 以降が必要です。
+起動時に `--plugin-dir`、`--plugin-url`、`--agents`、および `--mcp-config` CLI フラグを拒否します。これらのフラグは、ユーザーが [`strictKnownMarketplaces`](#strictknownmarketplaces) を単一実行でバイパスするために渡す可能性があります。Claude Code はエラーで終了し、拒否されたフラグを名前で指定します。また、これらのフラグで CLI を内部的に開始するサーフェスに同じチェックを適用します。現在、デスクトップアプリの [Cowork](/docs/ja/desktop) ローカルセッションです。[クラウドセッション](/docs/ja/claude-code-on-the-web)では、Claude Code は `--mcp-config` を通じてサーバーが配信した MCP サーバーをドロップします。ただし、プロセス内 `type: "sdk"` エントリは除きます。セッションを開始します。Claude Code v2.1.193 以降が必要です。
 
 * **スコープ**: [`Managed`](#scopes)
 * **タイプ**: ブール値
-  * `true`: Claude Code は起動時に `--plugin-dir`、`--plugin-url`、`--agents`、および `--mcp-config` を拒否し、エラーで終了して名前を指定します。ただし、クラウドセッションではサーバーが `--mcp-config` を通じて配信した MCP サーバーをドロップします。プロセス内の `type: "sdk"` エントリを除き、セッションを開始します
+  * `true`: Claude Code は起動時に `--plugin-dir`、`--plugin-url`、`--agents`、および `--mcp-config` を拒否し、エラーで終了して名前を指定します。ただし、クラウドセッションでは、サーバーが `--mcp-config` を通じて配信した MCP サーバーをドロップします。プロセス内 `type: "sdk"` エントリは除きます。セッションを開始します
   * `false`: Claude Code はこれらのフラグを受け入れます
 * **デフォルト**: `false`
 
@@ -6209,21 +6284,21 @@ Claude Desktop または Cowork で開始または最後に続行したセッシ
 }
 ```
 
-Claude Code は、サーバーがすべてプロセス内の `type: "sdk"` エントリである `--mcp-config` を受け入れます。これにより、Agent SDK と VS Code 拡張機能は動作し続けます。ユーザーは `claude mcp add` またはファイル `.mcp.json` でサーバーを追加できます。サーバーごとの制御については、[`allowedMcpServers`](/docs/ja/managed-mcp) も設定してください。Claude Code v2.1.193 以降が必要です。
+Claude Code は、サーバーがすべてプロセス内 `type: "sdk"` エントリである `--mcp-config` を受け入れます。これにより、Agent SDK と VS Code 拡張機能は動作し続けます。ユーザーは `claude mcp add` またはファイル `.mcp.json` でサーバーを追加できます。サーバーごとの制御については、[`allowedMcpServers`](/docs/ja/managed-mcp) も設定してください。Claude Code v2.1.193 以降が必要です。
 
-[`CLAUDE_CODE_PLUGIN_DIRS`](/docs/ja/env-vars#variables) 環境変数で名前が付けられたプラグインフォルダーも同じチェックの対象です。Claude Code v2.1.280 以降が必要です。変数がフォルダーに名前を付ける場合、Claude Code は同じエラーで終了し、エラーは変数をアンセットするように指示します。
+同じチェックは、[`CLAUDE_CODE_PLUGIN_DIRS`](/docs/ja/env-vars#variables) 環境変数で名前が付けられたプラグインフォルダをカバーします。これには Claude Code v2.1.280 以降が必要です。変数がフォルダを名前で指定する場合、Claude Code は同じエラーで終了し、エラーは変数をアンセットするように指示します。
 
-クラウドセッションでは、Claude Code はサーバー配信のセッション中 MCP 更新も無視します。これはクラウドセッション構成と、セッションに到達する SDK `setMcpServers()` 呼び出しの背後にあるパスです。プロセス内の `type: "sdk"` エントリはそこでも除外されたままです。v2.1.239 より前では、サーバー配信の `--mcp-config` はクラウドセッションの開始をブロックしていました。
+クラウドセッションでは、Claude Code はセッション中の MCP 更新も無視します。これは、クラウドセッション構成と SDK `setMcpServers()` 呼び出しの背後にあるパスです。プロセス内 `type: "sdk"` エントリはそこでも除外されたままです。v2.1.239 より前では、サーバーが配信した `--mcp-config` はクラウドセッションの開始をブロックしていました。
 
 <h3 id="forceremotesettingsrefresh">
   `forceRemoteSettingsRefresh`
 </h3>
 
-Claude Code が [サーバー管理設定](/docs/ja/server-managed-settings) を新たに取得するまで CLI 起動をブロックします。取得に失敗した場合、Claude Code はキャッシュされた設定または設定なしで続行する代わりに終了します。環境がマネージドポリシーなしでセッションが実行される短い時間枠を受け入れられない場合に設定します。
+Claude Code が [サーバー管理設定](/docs/ja/server-managed-settings) を新たに取得するまで CLI 起動をブロックします。取得に失敗した場合、Claude Code はキャッシュされた設定または設定なしで続行する代わりに終了します。環境が管理ポリシーなしでセッションが実行される短い時間枠を受け入れられない場合に設定します。
 
 キーが設定されていない場合、Claude Code は取得時に起動をブロックしません。ただし、開発者が起動時にサインインする場合、取得を最大 5 秒間待機します。Cloud ゲートウェイセッションは常に待機し、ゲートウェイに到達できない場合は終了します。
 
-* **スコープ**: [`Managed`](#scopes)。Claude Code は、最優先度のソースでなくても、管理者制御のマネージドソースから `true` を受け入れます。
+* **スコープ**: [`Managed`](#scopes)。Claude Code は、最優先度のソースでなくても、管理者が制御する管理ソースからの `true` を尊重します。
 * **タイプ**: ブール値
   * `true`: Claude Code は起動をブロックして、サーバー管理設定を新たに取得するまで待機し、取得に失敗した場合は終了します
   * `false`: Claude Code は取得時に起動をブロックしません。ただし、サインイン起動では最大 5 秒間待機します
@@ -6235,23 +6310,23 @@ Claude Code が [サーバー管理設定](/docs/ja/server-managed-settings) を
 }
 ```
 
-MDM プロファイルまたはマネージド設定ファイルで設定して、最初のサーバーペイロードが到着する前に失敗時閉鎖起動を強制します。Claude Code は、サーバー管理設定を取得するセッションでのみチェックを適用します。[それらを取得しないセッション](/docs/ja/server-managed-settings#platform-availability)は待機せずに開始します。`claude auth` サブコマンドは除外されるため、ユーザーは期限切れの認証情報が取得失敗の原因である場合に再認証できます。[失敗時閉鎖起動を強制する](/docs/ja/server-managed-settings#enforce-fail-closed-startup)を参照してください。
+MDM プロファイルまたは管理設定ファイルで設定して、最初のサーバーペイロードが到着する前に失敗時閉鎖起動を強制します。Claude Code は、サーバー管理設定を取得するセッションでのみチェックを適用します。[それらを取得しないセッション](/docs/ja/server-managed-settings#platform-availability)は待機なしで開始します。`claude auth` サブコマンドは除外されるため、ユーザーは期限切れの認証情報が取得に失敗する理由である場合に再認証できます。[失敗時閉鎖起動を強制する](/docs/ja/server-managed-settings#enforce-fail-closed-startup)を参照してください。
 
 <h3 id="managedsourcesbehavior">
   `managedSourcesBehavior`
 </h3>
 
-Claude Code が、組織が配信する最優先度の [マネージドソース](/docs/ja/managed-settings#how-claude-code-combines-managed-sources) のみを適用するか、配信するすべての管理者ソースを組み合わせるかを選択します。デフォルトでは、Claude Code は [ポリシーキー](/docs/ja/managed-settings#how-claude-code-combines-managed-sources) を含む最優先度のソースを取得し、残りを無視します。ポリシーキーは、このキーと `wslInheritsWindowsSettings` 以外のすべての設定キーです。サーバー管理設定または MDM ポリシーがポリシーキーを配信すると、`managed-settings.json` ファイルは [Claude Code がすべての管理者ソースから読み取るキー](/docs/ja/managed-settings#keys-read-from-every-admin-source) のみを提供します。`"merge"` を使用すると、配信するすべての管理者ソースがそのキーを 1 つの組み合わせたポリシーに提供します。Claude Code v2.1.242 以降が必要です。
+Claude Code が、組織が配信する最優先度の [管理ソース](/docs/ja/managed-settings#how-claude-code-combines-managed-sources) のみを適用するか、配信するすべての管理者ソースを組み合わせるかを選択します。デフォルトでは、Claude Code は [ポリシーキー](/docs/ja/managed-settings#how-claude-code-combines-managed-sources) を含む最優先度のソースを取得し、残りを無視します。ポリシーキーは、このキーと `wslInheritsWindowsSettings` 以外の設定キーです。そのデフォルトでは、サーバー管理設定または MDM ポリシーがポリシーキーを配信すると、`managed-settings.json` ファイルは [Claude Code がすべての管理ソースから読み取るキー](/docs/ja/managed-settings#keys-read-from-every-admin-source) のみを提供します。`"merge"` を使用すると、配信するすべての管理ソースがそのキーを 1 つの組み合わせたポリシーに提供します。Claude Code v2.1.242 以降が必要です。
 
-`"merge"` は、[ランク付けされた](/docs/ja/managed-settings#how-claude-code-combines-managed-sources) 最優先度のソースの下のすべてのソースが管理者の制御下にある場合にのみ設定してください。Claude Code は、`permissions.allow` ルールなどの下位のソースからエントリを追加するためです。
+`"merge"` は、[ランク付けされた](/docs/ja/managed-settings#how-claude-code-combines-managed-sources) 最優先度のソースの下のすべてのソースが管理者の制御下にある場合にのみ設定してください。Claude Code は、`permissions.allow` ルールなどの下位ソースからのエントリをポリシーに追加します。
 
-* **スコープ**: [`Managed`](#scopes)。Claude Code はこのキーを、このキーまたはポリシーキーを含む最優先度のソースから読み取り、ランク付けされた下位のすべてのソースでこのキーを無視します。下位のソースはそれ自体を上記のソースとの組み合わせにオプトインできません。Windows HKCU レジストリも [埋め込みホストからの親設定](/docs/ja/managed-settings#let-an-embedding-host-add-policy) も、マージに参加しません。
+* **スコープ**: [`Managed`](#scopes)。Claude Code はこのキーを、このキーまたはポリシーキーを含む最優先度のソースから読み取り、ランク付けされた下位のすべてのソースでこのキーを無視します。下位ソースは、上位のソースとの組み合わせにオプトインできません。Windows HKCU レジストリも [埋め込みホストからの親設定](/docs/ja/managed-settings#let-an-embedding-host-add-policy) も、マージに参加しません。
 * **タイプ**: 文字列、次のいずれか:
-  * `"first-wins"`: ポリシーキーを含む最優先度のソースがポリシーを提供し、下位のソースは [Claude Code がすべての管理者ソースから読み取るキー](/docs/ja/managed-settings#keys-read-from-every-admin-source) のみを提供します
-  * `"merge"`: 配信するすべての管理者ソースがそのキーを提供し、以下のルールで組み合わせられます
+  * `"first-wins"`: ポリシーキーを含む最優先度のソースがポリシーを提供し、下位ソースは [Claude Code がすべての管理ソースから読み取るキー](/docs/ja/managed-settings#keys-read-from-every-admin-source) のみを提供します
+  * `"merge"`: 配信するすべての管理ソースがそのキーを提供し、以下のルールで組み合わせられます
 * **デフォルト**: `"first-wins"`
 
-最優先度のソースでキーを配信します。サーバー管理設定を受け取らないマシンは、Claude Code がこのキーまたはポリシーキーを含む最優先度のソースからキーを読み取るため、MDM プロファイルにもキーが必要です。`managed-settings.json` ファイルは最下位のランク付けされた管理者ソースであるため、そこに設定された `"merge"` は、それと組み合わせる下位のソースがありません。サーバー管理設定では、キーは次のようになります:
+デプロイする最優先度のソースでキーを配信します。サーバー管理設定を受け取らないマシンは、Claude Code がこのキーまたはポリシーキーを含む最優先度のソースからキーを読み取るため、MDM プロファイルにもキーが必要です。`managed-settings.json` ファイルは最下位の管理ソースであるため、そこに設定された `"merge"` は、それと組み合わせる下位ソースがありません。サーバー管理設定では、キーは次のようになります:
 
 ```json theme={null}
 {
@@ -6259,39 +6334,39 @@ Claude Code が、組織が配信する最優先度の [マネージドソース
 }
 ```
 
-`"merge"` では、Claude Code は各キーをそのタイプで組み合わせます。このテーブルは各タイプのルールを示します。制限許可リスト、値全体取得、および最優先度ソースのみの行は、それらがカバーするすべてのキーを名前で指定し、他の行は例を示します:
+`"merge"` では、Claude Code は各キーをそのタイプで組み合わせます。このテーブルは各タイプのルールを示します。制限許可リスト、値全体取得、および最優先度ソースのみの行は、カバーするすべてのキーを名前で指定し、他の行は例を示します:
 
-| キーのタイプ             | Claude Code がそれを組み合わせる方法                                                                                         | キー                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| :----------------- | :--------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| リスト                | すべてのソースからエントリを組み合わせます                                                                                            | [`permissions.allow`](#permissions-allow)、[`sandbox.network.allowedDomains`](#sandbox-network-alloweddomains)、およびその他のリストキー                                                                                                                                                                                                                                                                                                                                                                                   |
-| ロック                | いずれかのソースが設定する最も厳密な値を適用します。ソースが厳密な値を設定しない場合、最優先度のソースからのみより緩い値を適用します                                               | [`allowManagedPermissionRulesOnly`](#allowmanagedpermissionrulesonly)、[`permissions.disableBypassPermissionsMode`](#permissions-disablebypasspermissionsmode)、およびその他のブール値または列挙型ロック                                                                                                                                                                                                                                                                                                                           |
-| 制限許可リスト            | 下位のソースからエントリを追加せずに、最優先度のソースから全体としてリストを取得します。最優先度のソースが設定しない場合、次のソースから全体として取得します                                   | [`availableModels`](#availablemodels)、[`allowedMcpServers`](#allowedmcpservers)、[`strictKnownMarketplaces`](#strictknownmarketplaces)、[`allowedChannelPlugins`](#allowedchannelplugins)、および [`fallbackModel`](#fallbackmodel) チェーン                                                                                                                                                                                                                                                                           |
-| 値全体取得              | 下位のソースからエントリまたはフィールドを組み合わせずに、最優先度のソースから全体として値を取得します。最優先度のソースが設定しない場合、次のソースから全体として取得します                           | [`sandbox.credentials.awsPairs`](#sandbox-credentials-awspairs)、[`sandbox.ripgrep`](#sandbox-ripgrep)                                                                                                                                                                                                                                                                                                                                                                                                        |
-| 提供される MCP サーバー     | すべてのソースからサーバー名を組み合わせます。2 つのソースが同じ名前を設定する場合、上位のソースの全体エントリを適用します                                                   | [`managedMcpServers`](#managedmcpservers)                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| 最優先度のソースからのみ読み取ります | ポリシーキーを含む最優先度のソースからのみキーを読み取るため、最優先度のソースが何も設定しない場合でも下位のソースの値は無視されます                                               | [`apiKeyHelper`](#apikeyhelper)、[`awsAuthRefresh`](#awsauthrefresh)、[`awsCredentialExport`](#awscredentialexport)、[`gcpAuthRefresh`](#gcpauthrefresh)、[`otelHeadersHelper`](#otelheadershelper)、`proxyAuthHelper`、[`forceLoginOrgUUID`](#forceloginorguuid)、[`forceLoginMethod`](#forceloginmethod) の `"claudeai"` および `"console"` 値、[`parentSettingsBehavior`](#parentsettingsbehavior)、[`modelPicker`](#modelpicker)、[`policyHelper`](#policyhelper)、[`permissions.defaultMode`](#permissions-defaultmode) |
-| `env`              | [管理者ソース全体で変数ごとにマージします](/docs/ja/managed-settings#keys-read-from-every-admin-source)。`"first-wins"` と `"merge"` の両方の下で | [`env`](#env)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| その他のすべてのキー         | それを設定する最優先度のソースから値を取得します                                                                                         | [`cleanupPeriodDays`](#cleanupperioddays)、[`model`](#model)                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| キーのタイプ | Claude Code がそれを組み合わせる方法 | キー |
+| :- | :- | :- |
+| リスト | すべてのソースからのエントリを組み合わせます | [`permissions.allow`](#permissions-allow)、[`sandbox.network.allowedDomains`](#sandbox-network-alloweddomains)、およびその他のリストキー |
+| ロック | ソースが設定する最も厳密な値を適用します。ソースが厳密な値を設定しない場合、最優先度のソースからのみより緩い値を適用します | [`allowManagedPermissionRulesOnly`](#allowmanagedpermissionrulesonly)、[`permissions.disableBypassPermissionsMode`](#permissions-disablebypasspermissionsmode)、およびその他のブール値または列挙型ロック |
+| 制限許可リスト | 下位ソースからのエントリを追加せずに、それを設定する最優先度のソースから全体を取得します。最優先度のソースが設定しない場合、次のソースから全体を取得します | [`availableModels`](#availablemodels)、[`allowedMcpServers`](#allowedmcpservers)、[`strictKnownMarketplaces`](#strictknownmarketplaces)、[`allowedChannelPlugins`](#allowedchannelplugins)、および [`fallbackModel`](#fallbackmodel) チェーン |
+| 値全体取得 | 下位ソースからのエントリまたはフィールドを組み合わせずに、それを設定する最優先度のソースから全体を取得します。最優先度のソースが設定しない場合、次のソースから全体を取得します | [`sandbox.credentials.awsPairs`](#sandbox-credentials-awspairs)、[`sandbox.ripgrep`](#sandbox-ripgrep) |
+| 提供される MCP サーバー | すべてのソースからサーバー名を組み合わせます。2 つのソースが同じ名前を設定する場合、上位ソースの全体エントリを適用します | [`managedMcpServers`](#managedmcpservers) |
+| 最優先度のソースからのみ読み取ります | ポリシーキーを含む最優先度のソースからのみキーを読み取るため、最優先度のソースが何も設定しない場合でも、下位ソースの値は無視されます | [`apiKeyHelper`](#apikeyhelper)、[`awsAuthRefresh`](#awsauthrefresh)、[`awsCredentialExport`](#awscredentialexport)、[`gcpAuthRefresh`](#gcpauthrefresh)、[`otelHeadersHelper`](#otelheadershelper)、`proxyAuthHelper`、[`forceLoginOrgUUID`](#forceloginorguuid)、[`forceLoginMethod`](#forceloginmethod) の `"claudeai"` および `"console"` 値、[`parentSettingsBehavior`](#parentsettingsbehavior)、[`modelPicker`](#modelpicker)、[`policyHelper`](#policyhelper)、[`permissions.defaultMode`](#permissions-defaultmode) |
+| `env` | [管理ソース全体で変数ごとにマージします](/docs/ja/managed-settings#keys-read-from-every-admin-source)。`"first-wins"` と `"merge"` の両方で | [`env`](#env) |
+| その他のすべてのキー | それを設定する最優先度のソースから値を取得します | [`cleanupPeriodDays`](#cleanupperioddays)、[`model`](#model) |
 
-`sandbox.credentials.awsPairs` と `sandbox.ripgrep` を全体として取得するには、Claude Code v2.1.257 以降が必要です。
+`sandbox.credentials.awsPairs` と `sandbox.ripgrep` を全体で取得するには、Claude Code v2.1.257 以降が必要です。
 
-これらのキーの 3 つは独自の条件を追加します:
+いくつかのキーは、テーブルが示さない条件を追加します:
 
-* **[`policyHelper`](#policyhelper)**: Claude Code はポリシーキーを含む最優先度のソースが MDM ポリシーまたはマネージド設定ファイルである場合にのみそれを受け入れます。サーバー管理設定では適用されません。
-* **[`modelOverrides`](#modeloverrides)**: `availableModels` とペアになります。Claude Code は `modelOverrides` をそれを設定する最優先度のソースから取得します。ただし、上位のソースが `modelOverrides` なしで `availableModels` を設定する場合を除きます。その場合、すべてのソースから `modelOverrides` を無視します。
-* **[`forceLoginGatewayUrl`](#forcelogingatewayurl)、[`gatewayInternalNetworks`](#gatewayinternalnetworks)、および [`forceLoginMethod`](#forceloginmethod) の `"gateway"` 値**: Claude Code はサーバー管理設定からこれらを読み取ることはありません。そのため、そこの値は適用されず、MDM ポリシーまたはマネージド設定ファイルで設定された値も隠しません。マシン上の管理者ソースの中で、ポリシーキーを含む最優先度のソースのみがそれらを提供します。サーバー管理設定も存在するかどうかに関わらず。
+* **[`policyHelper`](#policyhelper)**: Claude Code は、ポリシーキーを含む最優先度のソースが MDM ポリシーまたは管理設定ファイルである場合にのみそれを尊重します。サーバー管理設定では適用されません。
+* **[`modelOverrides`](#modeloverrides)**: `availableModels` とペアになります。Claude Code は、それを設定する最優先度のソースから `modelOverrides` を取得します。ただし、上位ソースが `modelOverrides` なしで `availableModels` を設定する場合は除きます。その場合、すべてのソースから `modelOverrides` を無視します。
+* **[`forceLoginGatewayUrl`](#forcelogingatewayurl)、[`gatewayInternalNetworks`](#gatewayinternalnetworks)、および [`forceLoginMethod`](#forceloginmethod) の `"gateway"` 値**: Claude Code はサーバー管理設定からそれらのいずれも読み取りません。そのため、そこでの値は適用されず、MDM ポリシーまたは管理設定ファイルで設定されたものを隠しません。マシン上の管理ソースの中で、ポリシーキーを含む最優先度のソースのみがそれらを提供します。サーバー管理設定も存在するかどうかに関わらず。
 
-マシンで組み合わされたソースを確認するには、`/status` を実行し、[`Setting sources` 行を読み取ります](/docs/ja/managed-settings#read-the-source-in-/status)。
+マシンで組み合わせたソースを確認するには、`/status` を実行し、[`Setting sources` 行を読んでください](/docs/ja/managed-settings#read-the-source-in-/status)。
 
 <h3 id="parentsettingsbehavior">
   `parentSettingsBehavior`
 </h3>
 
-Claude Code が埋め込みホストプロセス（Agent SDK または IDE 拡張機能など）によって提供されるマネージド設定を適用するかどうかを選択します。管理者がデプロイしたマネージド層も存在する場合。`"first-wins"` では、Claude Code はホスト提供の設定をドロップします。`"merge"` では、制限のみのフィルターを通じて管理者層の下で適用します。ホストが起動するセッションに独自の制限を渡す必要がある場合、`"merge"` を設定します。たとえば、Claude Desktop がゲートウェイの出力許可リストを配信する場合。
+Claude Code が、Agent SDK または IDE 拡張機能などの埋め込みホストプロセスによって提供される管理設定を適用するかどうかを選択します。管理者がデプロイした管理層も存在する場合。`"first-wins"` では、Claude Code はホスト提供の設定をドロップします。`"merge"` では、制限のみのフィルターを通じて管理層の下で適用します。ホストが起動するセッションに独自の制限を渡す必要がある場合、`"merge"` を設定します。たとえば、Claude Desktop がゲートウェイの出力許可リストを配信する場合。
 
-* **スコープ**: [`Managed`](#scopes)。Claude Code は最優先度の管理者制御マネージドソースから読み取ります。
+* **スコープ**: [`Managed`](#scopes)。Claude Code はそれを最優先度の管理者制御管理ソースから読み取ります。
 * **タイプ**: 文字列、次のいずれか:
-  * `"first-wins"`: Claude Code は管理者がデプロイしたマネージド層が存在する場合、ホスト提供の設定をドロップします
-  * `"merge"`: Claude Code は制限のみのフィルターを通じて管理者層の下でホスト提供の設定を適用します
+  * `"first-wins"`: Claude Code は、管理者がデプロイした管理層が存在する場合、ホスト提供の設定をドロップします
+  * `"merge"`: Claude Code は、制限のみのフィルターを通じて管理層の下でホスト提供の設定を適用します
 * **デフォルト**: `"first-wins"`
 
 ```json managed-settings.json theme={null}
@@ -6300,7 +6375,7 @@ Claude Code が埋め込みホストプロセス（Agent SDK または IDE 拡�
 }
 ```
 
-管理者がデプロイしたマネージド層が存在しない場合、このキーは効果がありません。ホストの設定は唯一のマネージド層として適用され、制限値にフィルターされます。フィルターの制限とマネージドソースの相互作用については、[埋め込みホストからの親設定](/docs/ja/managed-settings#parent-settings-from-embedding-hosts) と [親設定を制限する](/docs/ja/claude-apps-gateway#restrict-parent-settings) を参照してください。
+管理者がデプロイした管理層が存在しない場合、このキーは効果がありません。ホストの設定は、唯一の管理層として適用されます。制限値にフィルターされたままです。フィルターの制限と管理ソースの相互作用については、[埋め込みホストからの親設定](/docs/ja/managed-settings#parent-settings-from-embedding-hosts) および [親設定を制限する](/docs/ja/claude-apps-gateway#restrict-parent-settings) を参照してください。
 
 <span id="compute-managed-settings-with-a-policy-helper" />
 
@@ -6308,15 +6383,15 @@ Claude Code が埋め込みホストプロセス（Agent SDK または IDE 拡�
   `policyHelper`
 </h3>
 
-起動時にマネージド設定を計算するデプロイ可能な実行可能ファイルを実行して、デバイスの状態、ID、またはリモートサービスから静的ファイルの代わりにポリシーを導出できます。Claude Code は最初のプロンプトを受け入れる前にヘルパーを実行し、それが出力する設定をセッションのマネージド設定として扱います。
+起動時に管理設定を計算するためにデプロイする実行可能ファイルを実行します。デバイスの状態、ID、またはリモートサービスから静的ファイルの代わりにポリシーを導出できます。Claude Code はヘルパーを実行してから最初のプロンプトを受け入れ、それが出力する設定をセッションの管理設定として扱います。
 
-* **スコープ**: [`Managed`](#scopes)。macOS plist、Windows HKLM レジストリ、またはマネージド設定ファイルから読み取ります。Claude Code は [ポリシーキー](/docs/ja/managed-settings#how-claude-code-combines-managed-sources) を含む最優先度のマネージドソースからキーを読み取り、そのソースが 3 つのうちの 1 つである場合にのみヘルパーを実行します。サーバー管理設定、HKCU レジストリ、およびホスト提供の親設定ではキーを無視します。
+* **スコープ**: [`Managed`](#scopes)。macOS plist、Windows HKLM レジストリ、または管理設定ファイルから読み取ります。Claude Code は、[ポリシーキー](/docs/ja/managed-settings#how-claude-code-combines-managed-sources) を含む最優先度の管理ソースからキーを読み取り、そのソースが 3 つのうちの 1 つである場合にのみヘルパーを実行します。サーバー管理設定、HKCU レジストリ、およびホスト提供の親設定ではキーを無視します。
 * **タイプ**: `path`、`timeoutMs`、および `refreshIntervalMs` を含むオブジェクト
 * **デフォルト**: 設定されていないため、ヘルパーは実行されません
 
 サーバー管理設定が起動時にポリシーを配信する場合、ヘルパーのソースより優先され、ヘルパーは実行されません。
 
-後のセッション取得がサーバー管理設定が削除されたことを報告する場合、Claude Code はその時点でヘルパーを実行します。次の起動を待つ代わりに。その出力はセッションの残りを管理し、失敗した実行は [失敗した起動実行](#helper-failures) と同じメッセージでセッションを終了します。
+後の設定取得がサーバー管理設定が削除されたことを報告する場合、Claude Code はその時点でヘルパーを実行します。次の起動を待つ代わりに。その出力はセッションの残りを管理し、失敗した実行は [失敗した起動実行](#helper-failures) と同じメッセージでセッションを終了します。
 
 この例は、5 秒のタイムアウトでヘルパーを実行し、5 分ごとに再実行します:
 
@@ -6336,7 +6411,7 @@ Claude Code が埋め込みホストプロセス（Agent SDK または IDE 拡�
 
 Claude Code はヘルパーを引数なしで実行し、その環境に `CLAUDE_CODE_VERSION` を設定し、stdout から JSON エンベロープを読み取ります。1 MiB でキャップされます。
 
-設定を `managedSettings` キーの下に配置します。`managedSettings` キーのない単なる設定オブジェクトは、`managedSettings` が未定義で何も適用されず、Claude Code はエラーを報告しません:
+設定を `managedSettings` キーの下に配置します。`managedSettings` キーのない裸の設定オブジェクトは、`managedSettings` が未定義で何も適用されず、Claude Code はエラーを報告しません:
 
 ```json theme={null}
 {
@@ -6346,31 +6421,31 @@ Claude Code はヘルパーを引数なしで実行し、その環境に `CLAUDE
 }
 ```
 
-ヘルパーが `managedSettings` を出力する場合、そのオブジェクトは実行のための唯一のマネージド設定ソースになります。Claude Code は MDM、ファイル、および HKCU ソースを無視し、[クロスソースキー](/docs/ja/managed-settings#keys-read-from-every-admin-source) をヘルパーの出力からのみ読み取り、[親設定](/docs/ja/managed-settings#parent-settings-from-embedding-hosts) をマージしません。
+ヘルパーが `managedSettings` を出力する場合、そのオブジェクトは実行の唯一の管理設定ソースになります。Claude Code は MDM、ファイル、および HKCU ソースを無視し、[クロスソースキー](/docs/ja/managed-settings#keys-read-from-every-admin-source) をヘルパーの出力からのみ読み取り、[親設定](/docs/ja/managed-settings#parent-settings-from-embedding-hosts) をマージしません。
 
-起動 `forceRemoteSettingsRefresh` チェックはヘルパーの前に実行され、任意の管理者ソースを読み取ります。ヘルパーが `managedSettings` を省略したエンベロープで 0 で終了する場合、マネージド設定を提供しません。他のソースは通常どおり適用されます。
+起動 `forceRemoteSettingsRefresh` チェックはヘルパーの前に実行され、任意の管理ソースを読み取ります。ヘルパーが `managedSettings` を省略するエンベロープで `0` で終了する場合、管理設定を提供しません。他のソースは通常どおり適用されます。
 
 <h4 id="helper-failures">
-  ヘルパー失敗
+  ヘルパーの失敗
 </h4>
 
 ヘルパー実行は次の場合に失敗します:
 
 * `path` は [`policyHelper.path`](#policyhelper-path) のルールを破ります。
-* `path` に通常ファイルがありません。Claude Code は同じ `timeoutMs` 予算内でヘルパーを開始する前にファイルをチェックするため、応答しないネットワークマウントは実行を失敗させる可能性があります。
-* ヘルパーが 0 以外で終了し、`timeoutMs` が経過してもまだ実行中であるか、まったく開始されません。たとえば、実行可能でないため。
+* `path` に通常ファイルがありません。Claude Code は、同じ `timeoutMs` 予算内でヘルパーを開始する前にファイルをチェックするため、応答しないネットワークマウントは実行を失敗させる可能性があります。
+* ヘルパーが 0 以外で終了し、`timeoutMs` が経過してもまだ実行中であるか、まったく開始しません。たとえば、実行可能でないため。
 * ヘルパーが stdout または stderr に 1 MiB 以上を書き込みます。
 * stdout は単一の JSON オブジェクトではないか、その `managedSettings` に [Claude Code が修復できないスキーマ違反](/docs/ja/managed-settings#find-entries-claude-code-dropped) があります。
 
-起動実行が失敗する場合、Claude Code は理由を出力し、起動を拒否します。0 以外の終了後、理由にはヘルパーの stderr が含まれます。stderr が空の場合は stdout が含まれます。タイムアウト後、理由は `timeoutMs` 制限を名前で指定し、ヘルパーの出力は含まれません。拒否はインタラクティブセッション、`claude -p`、Agent SDK セッション、[バックグラウンドセッション](/docs/ja/agent-view)、およびほとんどのサブコマンドをカバーします。
+起動実行が失敗する場合、Claude Code は理由を出力し、起動を拒否します。0 以外の終了後、理由にはヘルパーの stderr が含まれます。stderr が空の場合は stdout が含まれます。タイムアウト後、理由は `timeoutMs` 制限を名前で指定し、ヘルパーの出力は含まれません。拒否は、対話型セッション、`claude -p`、Agent SDK セッション、[バックグラウンドセッション](/docs/ja/agent-view)、およびほとんどのサブコマンドをカバーします。
 
-拒否は意図的なため、アウテージ復元力が必要なヘルパーは独自のキャッシュから提供し、0 で終了する必要があります。
+拒否は意図的なため、停止復旧が必要なヘルパーは独自のキャッシュから提供し、`0` で終了する必要があります。
 
-バックグラウンド更新が失敗する場合、Claude Code は最後に成功したポリシーを有効に保ち、`/status` は更新が成功するまで失敗した更新とその理由を表示します。各更新は起動実行と同じ `timeoutMs` および失敗ルールの下で実行されます。
+バックグラウンド更新が失敗する場合、Claude Code は最後に成功したポリシーを有効に保ち、`/status` は失敗した更新をその理由とともに表示します。更新が成功するまで。各更新は、起動実行と同じ `timeoutMs` および失敗ルールの下で実行されます。
 
 `--debug` を使用すると、Claude Code はすべての実行からヘルパーの stderr を [デバッグログ](/docs/ja/debug-your-config) に書き込みます。
 
-Claude Code は無効な `policyHelper` 値を [ドロップされたエントリ](/docs/ja/managed-settings#find-entries-claude-code-dropped) として報告し、残りのマネージド設定でセッションを開始し、ヘルパーを実行しません。無効な値には、単なるパス文字列と [その最小値](#policyhelper-timeoutms) より低い `timeoutMs` が含まれます。
+Claude Code は無効な `policyHelper` 値を [ドロップされたエントリ](/docs/ja/managed-settings#find-entries-claude-code-dropped) として報告し、残りの管理設定でセッションを開始します。ヘルパーを実行しません。無効な値には、裸のパス文字列と [その最小値](#policyhelper-timeoutms) より低い `timeoutMs` が含まれます。
 
 ヘルパーをオフにするには、それを設定するソースからキーを削除します。
 
@@ -6378,10 +6453,10 @@ Claude Code は無効な `policyHelper` 値を [ドロップされたエント�
   `policyHelper.path`
 </h3>
 
-Claude Code が実行するヘルパー実行可能ファイルに名前を付けます。パスがルールを破った場合の動作については、[ヘルパー失敗](#helper-failures) を参照してください。
+Claude Code が実行するヘルパー実行可能ファイルに名前を付けます。パスがルールを破る場合に何が起こるかについては、[ヘルパーの失敗](#helper-failures) を参照してください。
 
-* **スコープ**: [`Managed`](#scopes)。macOS plist、Windows HKLM レジストリ、またはマネージド設定ファイルから読み取ります。[`policyHelper`](#policyhelper) が読み取られる場所。
-* **タイプ**: 文字列、`.` または `..` セグメントのない正規化された形式の絶対パス。Windows では、`.exe` で終わるドライブレターまたは UNC パス
+* **スコープ**: [`Managed`](#scopes)。macOS plist、Windows HKLM レジストリ、または管理設定ファイルから読み取ります。[`policyHelper`](#policyhelper) が読み取られる場所。
+* **タイプ**: 文字列、正規化された形式の絶対パス。`.` または `..` セグメントなし。Windows では、`.exe` で終わるドライブレターまたは UNC パス
 * **デフォルト**: なし。`policyHelper` が設定されている場合は必須
 
 ```json managed-settings.json theme={null}
@@ -6396,9 +6471,9 @@ Claude Code が実行するヘルパー実行可能ファイルに名前を付�
   `policyHelper.timeoutMs`
 </h3>
 
-Claude Code がヘルパーを待機する期間を設定してから、実行を失敗として扱います。タイムアウトした実行は 0 以外の終了と同じ方法で失敗するため、起動時に Claude Code は起動を拒否します。
+Claude Code がヘルパーを待機する時間を設定してから、実行を失敗として扱います。タイムアウトした実行は 0 以外の終了と同じ方法で失敗するため、起動時に Claude Code は起動を拒否します。
 
-* **スコープ**: [`Managed`](#scopes)。macOS plist、Windows HKLM レジストリ、またはマネージド設定ファイルから読み取ります。[`policyHelper`](#policyhelper) が読み取られる場所。
+* **スコープ**: [`Managed`](#scopes)。macOS plist、Windows HKLM レジストリ、または管理設定ファイルから読み取ります。[`policyHelper`](#policyhelper) が読み取られる場所。
 * **タイプ**: 整数、ミリ秒、最小 `1000`
 * **デフォルト**: `10000`
 
@@ -6415,10 +6490,10 @@ Claude Code がヘルパーを待機する期間を設定してから、実行�
   `policyHelper.refreshIntervalMs`
 </h3>
 
-Claude Code がバックグラウンドでヘルパーを間隔で再実行して、ポリシーの変更が実行中のセッションに到達するようにします。更新が成功する場合、その出力は前のマネージド設定を再起動なしで置き換えます。更新が失敗する場合、Claude Code は既に持っているポリシーを保ちます。
+Claude Code がバックグラウンドでヘルパーを間隔で再実行するようにして、ポリシーの変更が実行中のセッションに到達するようにします。更新が成功する場合、その出力は前の管理設定を再起動なしで置き換えます。更新が失敗する場合、Claude Code は既に持っているポリシーを保ちます。
 
-* **スコープ**: [`Managed`](#scopes)。macOS plist、Windows HKLM レジストリ、またはマネージド設定ファイルから読み取ります。[`policyHelper`](#policyhelper) が読み取られる場所。
-* **タイプ**: 整数、ミリ秒: 更新を無効にするには `0`、それ以外は最低 `60000`
+* **スコープ**: [`Managed`](#scopes)。macOS plist、Windows HKLM レジストリ、または管理設定ファイルから読み取ります。[`policyHelper`](#policyhelper) が読み取られる場所。
+* **タイプ**: 整数、ミリ秒: 更新を無効にするには `0`。それ以外の場合は最小 `60000`
 * **デフォルト**: 設定されていないため、Claude Code はヘルパーを起動時に 1 回実行します
 
 この例は、5 分ごとにヘルパーを再実行します:
@@ -6436,11 +6511,11 @@ Claude Code がバックグラウンドでヘルパーを間隔で再実行し�
   `wslInheritsWindowsSettings`
 </h3>
 
-WSL 上の Claude Code が Windows ポリシーチェーンからマネージド設定を読み取るようにします。HKLM と Windows マネージド設定ファイルが `/etc/claude-code` と下の HKCU より優先されます。チェーンがオンの間、Claude Code は `C:\Program Files\ClaudeCode\` の下のマネージド設定ファイルまたはドロップインが [ポリシーキー](/docs/ja/managed-settings#how-claude-code-combines-managed-sources) を配信しない場合にのみ `/etc/claude-code` を読み取ります。Windows に既にデプロイしたポリシーを WSL セッションに拡張するように設定して、同じマシン上のホストセッションと同じルールに従うようにします。Claude Code はそれを HKLM レジストリキーまたは `C:\Program Files\ClaudeCode\` の下のマネージド設定ファイルまたはドロップインで設定した場合にのみ受け入れます。どちらも Windows 管理者が書き込む必要があります。
+WSL 上の Claude Code が Windows ポリシーチェーンから管理設定を読み取るようにします。HKLM と Windows 管理設定ファイルが `/etc/claude-code` と下の HKCU より優先されます。チェーンがオンの間、Claude Code は [Windows 管理ドキュメントが存在しない](/docs/ja/managed-settings#present-admin-documents) 場合にのみ `/etc/claude-code` を読み取ります。HKLM レジストリ値または `C:\Program Files\ClaudeCode\` フォルダ内。Windows に既にデプロイしているポリシーを WSL セッションに拡張するために設定します。同じマシン上で、ホストセッションと同じルールに従うようにします。Claude Code は、HKLM レジストリキーまたは管理設定ファイルまたは `C:\Program Files\ClaudeCode\` の下のドロップインで設定されている場合にのみそれを尊重します。どちらも Windows 管理者が書き込む必要があります。
 
 * **スコープ**: [`Managed`](#scopes)。管理者制御の Windows ソースで。
 * **タイプ**: ブール値
-  * `true`: WSL 上の Claude Code は Windows ポリシーチェーンからマネージド設定を読み取り、`C:\Program Files\ClaudeCode\` の下のマネージド設定ファイルまたはドロップインが [ポリシーキー](/docs/ja/managed-settings#how-claude-code-combines-managed-sources) を配信しない場合にのみ `/etc/claude-code` を読み取ります
+  * `true`: WSL 上の Claude Code は Windows ポリシーチェーンから管理設定を読み取り、Windows 管理ドキュメントが存在しない場合にのみ `/etc/claude-code` を読み取ります
   * `false`: WSL は `/etc/claude-code` のみを読み取ります
 * **デフォルト**: `false`。WSL は `/etc/claude-code` のみを読み取ります
 
@@ -6450,7 +6525,9 @@ WSL 上の Claude Code が Windows ポリシーチェーンからマネージド
 }
 ```
 
-管理者ソースがチェーンをオンにすると、HKCU ポリシーは HKCU もキーを `true` に設定する場合にのみ WSL に参加します。そのコピーはそれ自体でチェーンをオンにしません。このキーのみを含む Windows ソースはポリシーソースとしてカウントされないため、下位優先度のソースはポリシーを提供します。このキーはネイティブ Windows に効果がありません。
+管理ソースがチェーンをオンにすると、HKCU ポリシーは HKCU もキーを `true` に設定する場合にのみ WSL に参加します。そのコピーはチェーンをそれ自体でオンにしません。このキーのみを含む Windows ソース。`true` または `false` に設定されている場合、ポリシーソースとしてカウントされません。下位優先度のソースはまだポリシーを提供します。このキーはネイティブ Windows に効果がありません。
+
+Claude Code は `true` と `false` を引用符の有無にかかわらず読み取り、`null` をキーの削除として読み取ります。他の値を保持する管理者制御の Windows ソースは、[存在する管理ドキュメント](/docs/ja/managed-settings#present-admin-documents) としてカウントされます。チェーンがオンの場合: `/etc/claude-code` も HKCU も適用されず、起動警告がキーを名前で指定します。読み取ることができない HKLM 値または Windows フォルダファイルも、チェーンがオンかどうかに関わらず `/etc/claude-code` が適用されるのを防ぎます。Claude Code v2.1.282 以降が必要です。
 
 <h2 id="global-config-settings">
   グローバル設定
@@ -6500,6 +6577,47 @@ VS Code ターミナルから Claude Code を実行するときに、Claude Code
 
 Claude Code は `settings.json` でこのキーを無視します。
 
+<h3 id="claudeinchromedefaultenabled">
+  `claudeInChromeDefaultEnabled`
+</h3>
+
+[Chrome 統合](/docs/ja/chrome)をオンにして、毎回 `--chrome` を渡さずにすべてのインタラクティブ CLI セッションを開始します。[`claude remote-control`](/docs/ja/remote-control) を実行する場合、[プロジェクト](/docs/ja/claude-projects)スレッドの 1 つに対して開始するセッションもこのキーに従います。ただし、`bypassPermissions` モードの場合は除きます。`/chrome` を実行して **Enabled by default** を選択すると、[Chrome をデフォルトで有効にする](/docs/ja/chrome#enable-chrome-by-default)で説明されているように、このキーが設定されます。`/config` に **Claude in Chrome enabled by default** として表示されます。
+
+* **スコープ**: [`グローバル設定`](#scopes)
+* **タイプ**: ブール値
+  * `true`: Claude Code は `--chrome` を渡すときと同様に、インタラクティブ CLI セッションが開始するときに Chrome 統合をオンにします
+  * `false`: インタラクティブ CLI セッションは Chrome 統合をオフで開始し、Claude Code は[セットアップを提案するのを停止](/docs/ja/chrome#install-the-extension-when-claude-asks)します。1 つのインタラクティブセッションでオンにするには `--chrome` を渡してください
+* **デフォルト**: 未設定。Chrome 統合はオフで、Claude Code はセットアップを提案できます
+* **セッションごとのオーバーライド**: `--chrome` と [`--no-chrome`](/docs/ja/cli-reference) はこのキーより優先され、1 つのインタラクティブセッションで機能します
+
+```json ~/.claude.json theme={null}
+{
+  "claudeInChromeDefaultEnabled": true
+}
+```
+
+Claude Code は `settings.json` でこのキーを無視します。
+
+<h3 id="copyfullresponse">
+  `copyFullResponse`
+</h3>
+
+[`/copy`](/docs/ja/commands) が応答に含まれるコードブロックがある場合に表示するピッカーなしで、毎回完全な応答をコピーします。そのピッカーで **Always copy full response** を選択すると、このキーが `true` に設定されます。`/config` に **Skip the /copy picker** として表示されます。
+
+* **スコープ**: [`グローバル設定`](#scopes)
+* **タイプ**: ブール値
+  * `true`: `/copy` はピッカーを表示せずに完全な応答をコピーします
+  * `false`: 応答にコードブロックが含まれている場合、`/copy` はピッカーを表示し、1 つのコードブロックまたは完全な応答を選択できます
+* **デフォルト**: `false`
+
+```json ~/.claude.json theme={null}
+{
+  "copyFullResponse": true
+}
+```
+
+Claude Code は `settings.json` でこのキーを無視します。
+
 <h3 id="copyonselect">
   `copyOnSelect`
 </h3>
@@ -6515,6 +6633,26 @@ Claude Code は `settings.json` でこのキーを無視します。
 ```json ~/.claude.json theme={null}
 {
   "copyOnSelect": false
+}
+```
+
+Claude Code は `settings.json` でこのキーを無視します。
+
+<h3 id="defaulttoagentsview">
+  `defaultToAgentsView`
+</h3>
+
+引数なしで `claude` を実行するときに、新しい会話の代わりに[エージェントビュー](/docs/ja/agent-view)を開きます。エージェントビューが[オフ](#disableagentview)になっていない限り、`/config` に **Open agents view by default** として表示されます。
+
+* **スコープ**: [`グローバル設定`](#scopes)
+* **タイプ**: ブール値
+  * `true`: 引数なしの `claude` はエージェントビューを開きます。ただし、エージェントビューが[オフ](#disableagentview)になっている場合は除きます
+  * `false`: 引数なしの `claude` は新しい会話を開始します
+* **デフォルト**: `false`
+
+```json ~/.claude.json theme={null}
+{
+  "defaultToAgentsView": true
 }
 ```
 
@@ -6574,6 +6712,26 @@ Claude Code は応答の最後の 50 行を保持し、カットを `# … (earl
 
 Claude Code は `settings.json` でこのキーを無視します。
 
+<h3 id="leftarrowopensagents">
+  `leftArrowOpensAgents`
+</h3>
+
+空のプロンプトで `←` を押して、[セッションをバックグラウンドにしてエージェントビューを開き](/docs/ja/agent-view#switch-sessions-without-leaving-the-terminal)ます。このキーを `false` に設定してショートカットをオフにします。エージェントビューが利用可能な場合、`/config` に **← opens agents** として表示されます。
+
+* **スコープ**: [`グローバル設定`](#scopes)
+* **タイプ**: ブール値
+  * `true`: ターミナルで開始したセッションの空のプロンプトで `←` を押すと、セッションがバックグラウンドになり、エージェントビューが開きます
+  * `false`: Claude Code はショートカットをオフにします。[エージェントビューから接続した](/docs/ja/agent-view#attach-to-a-session)セッションでは、空のプロンプトで `←` を押すと切断されます
+* **デフォルト**: `true`
+
+```json ~/.claude.json theme={null}
+{
+  "leftArrowOpensAgents": false
+}
+```
+
+Claude Code は `settings.json` でこのキーを無視します。
+
 <h3 id="permissionexplainerenabled">
   `permissionExplainerEnabled`
 </h3>
@@ -6587,6 +6745,26 @@ v2.1.256 まで、Bash または PowerShell 権限プロンプトで `Ctrl+E` �
 * **スコープ**: [`グローバル設定`](#scopes)。v2.1.256 以前。
 * **タイプ**: ブール値
 * **デフォルト**: `true`
+
+<h3 id="prstatusfooterenabled">
+  `prStatusFooterEnabled`
+</h3>
+
+現在のブランチのオープンなプルリクエストまたはマージリクエストのバッジをプロンプトフッターに表示し、その[ステータス](/docs/ja/interactive-mode#pr-review-status)を示す色付きの下線を表示します。`/config` に **Show PR status footer** として表示されます。
+
+* **スコープ**: [`グローバル設定`](#scopes)
+* **タイプ**: ブール値
+  * `true`: フッターは [PR レビューステータス](/docs/ja/interactive-mode#pr-review-status)の条件下でバッジを表示します
+  * `false`: Claude Code はフッターのプルリクエストおよびマージリクエストチェックをスキップし、そのバッジを表示しません。[エージェントビューから接続した](/docs/ja/agent-view#attach-to-a-session)セッションは、[リンクされた](/docs/ja/agent-view#pull-request-status)プルリクエストへのプレーンリンクを表示できます
+* **デフォルト**: `true`
+
+```json ~/.claude.json theme={null}
+{
+  "prStatusFooterEnabled": false
+}
+```
+
+Claude Code は `settings.json` でこのキーを無視します。
 
 <h3 id="teammatedefaultmodel">
   `teammateDefaultModel`

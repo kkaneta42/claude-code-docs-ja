@@ -72,7 +72,7 @@ Claude が自分自身のために書いたメモ。あなたの修正と設定�
   Auto mode
 </h3>
 
-[permission mode](#permission-mode) の一種。承認プロンプトを表示する代わりに、別の分類器モデルが各アクションをレビューするため、Claude Code はほとんどのアクションをあなたに尋ねることなく実行できます。Claude Code は、あなたの明示的な ask ルールに一致するアクションの前にはあなたに尋ねます。Pro、Max、Team プランでは、auto mode は [built-in starting permission mode](/docs/ja/permission-modes#which-mode-a-session-starts-in) です。インタラクティブターミナルと VS Code セッションの場合。分類器はスコープエスカレーション、信頼されていないインフラストラクチャ、および [prompt injection](#prompt-injection) をブロックします。ツール結果はそれが見るものから削除されるため、ファイルまたは Web ページ内の悪意のあるコンテンツはそれを直接操作することはできません。
+[permission mode](#permission-mode) の一種。承認プロンプトを表示する代わりに、別の分類器モデルが各アクションをレビューするため、Claude Code はほとんどのアクションをあなたに尋ねることなく実行できます。Claude Code は、あなたの明示的な ask ルールに一致するアクションの前にはあなたに尋ねます。Claude Code v2.1.283 以降では、auto mode はインタラクティブターミナルと VS Code セッションの [built-in starting permission mode](/docs/ja/permission-modes#which-mode-a-session-starts-in) であり、以前のバージョンでは Pro、Max、Team プランのみです。分類器はスコープエスカレーション、信頼されていないインフラストラクチャ、および [prompt injection](#prompt-injection) をブロックします。ツール結果はそれが見るものから削除されるため、ファイルまたは Web ページ内の悪意のあるコンテンツはそれを直接操作することはできません。
 
 詳細情報: [Eliminate prompts with auto mode](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)
 
@@ -428,6 +428,33 @@ Claude Code にアクセスする任意の場所: CLI、VS Code、JetBrains、De
 
 詳細情報: [Platforms and integrations](/docs/ja/platforms)
 
+<h3 id="system-prompt">
+  System prompt
+</h3>
+
+Claude Code がすべてのリクエストで会話の前に送信する指示。Claude がツールをどのように使用するか、安全に動作する方法、および応答をどのようにフォーマットするかについて説明します。`--append-system-prompt` でシステムプロンプトに追加するか、`--system-prompt` で置き換えることができます。システムプロンプトは [prompt cache](/docs/ja/prompt-caching#how-the-cache-is-organized) の最初のレイヤーです。
+
+[CLAUDE.md](#claude-md) ファイルと [output style](#output-style) の指示はシステムプロンプトの一部ではありません。Claude Code はそれらを会話で [system reminder](#system-reminder) として配信します。
+
+詳細情報: [System prompt flags](/docs/ja/cli-reference#system-prompt-flags)
+
+<h3 id="system-reminder">
+  System reminder
+</h3>
+
+Claude Code が [harness](#agentic-harness) として会話に追加するメッセージ。Claude に文脈を提供します。システムリマインダーは自分で送信しません。Claude Code はセッションの実行中にそれらを挿入します。たとえば、セッションが開始されるとき、フックがテキストを返すとき、またはファイルがディスク上で変更されるときです。Claude はそれらをメッセージと一緒に読みます。以下のすべてがシステムリマインダーとして Claude に到達します:
+
+* [CLAUDE.md](#claude-md) ファイル
+* [output style](#output-style) の指示
+* [hook](#hook) が `additionalContext` として返すテキスト
+* 利用可能な [skills](#skill) のリスト
+* Claude が以前に読んだファイルがディスク上で変更されたというメモ
+* コミットおよびプルリクエストの属性行
+
+ログに記録された API リクエストでは、システムリマインダーはユーザーメッセージ内の `<system-reminder>` タグでラップされるか、一部のモデルでは `system` ロールを持つ別のメッセージとして表示されます。
+
+詳細情報: [Context Claude Code adds outside the system prompt](/docs/ja/agent-sdk/modifying-system-prompts#context-claude-code-adds-outside-the-system-prompt)
+
 <h2 id="t">
   T
 </h2>
@@ -488,9 +515,9 @@ Claude を `.claude/worktrees/` の別の git worktree で実行する分離モ�
 
 これらの用語は古いドキュメント、ブログ投稿、コミュニティコンテンツに表示されます。このサイトを検索するときは現在の名前を使用してください。
 
-| 古い用語                                                                    | 現在の呼び方                                        | 注記                                                           |
-| ----------------------------------------------------------------------- | --------------------------------------------- | ------------------------------------------------------------ |
-| Headless mode                                                           | [Non-interactive mode](#non-interactive-mode) | 同じ `-p` フラグ、同じ動作                                             |
-| Web session; "Claude Code on the web" as the name for any cloud session | [Cloud session](#cloud-session)               | 「Claude Code on the web」は現在、claude.ai/code のブラウザサーフェスのみを指します |
-| Custom commands                                                         | [Skills](#skill)                              | `.claude/commands/` ファイルは引き続き機能                              |
-| Slash commands                                                          | Commands                                      | 製品コピーから「Slash」を削除                                            |
+| 古い用語 | 現在の呼び方 | 注記 |
+| - | - | - |
+| Headless mode | [Non-interactive mode](#non-interactive-mode) | 同じ `-p` フラグ、同じ動作 |
+| Web session; "Claude Code on the web" as the name for any cloud session | [Cloud session](#cloud-session) | 「Claude Code on the web」は現在、claude.ai/code のブラウザサーフェスのみを指します |
+| Custom commands | [Skills](#skill) | `.claude/commands/` ファイルは引き続き機能 |
+| Slash commands | Commands | 製品コピーから「Slash」を削除 |

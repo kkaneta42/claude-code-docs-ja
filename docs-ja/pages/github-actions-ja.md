@@ -135,19 +135,19 @@ Claude Code GitHub Action を削除するには、インストールに適用さ
 
 アプリをインストールすると、以下の権限を付与します。
 
-| 権限               | アクセス      |
-| ---------------- | --------- |
-| Actions          | 読み取りと書き込み |
-| Checks           | 読み取りと書き込み |
-| Contents         | 読み取りと書き込み |
-| Discussions      | 読み取りと書き込み |
-| Issues           | 読み取りと書き込み |
-| Members          | 読み取り      |
-| Metadata         | 読み取り      |
-| Pull requests    | 読み取りと書き込み |
+| 権限 | アクセス |
+| - | - |
+| Actions | 読み取りと書き込み |
+| Checks | 読み取りと書き込み |
+| Contents | 読み取りと書き込み |
+| Discussions | 読み取りと書き込み |
+| Issues | 読み取りと書き込み |
+| Members | 読み取り |
+| Metadata | 読み取り |
+| Pull requests | 読み取りと書き込み |
 | Repository hooks | 読み取りと書き込み |
-| Statuses         | 読み取り      |
-| Workflows        | 読み取りと書き込み |
+| Statuses | 読み取り |
+| Workflows | 読み取りと書き込み |
 
 権限セットは、それを使用する機能より前に変更される可能性があります。アプリが以前に持っていなかった権限をリクエストすると、GitHub はアカウント所有者に承認を促します。組織インストールの場合は組織所有者に促します。インストールは、承認されるまで古い権限を保持します。たとえば、Actions アクセスが読み取りから書き込みに変更されると、アプリはワークフローを再実行できるようになり、実行とログのみを表示できるようになるため、GitHub は所有者に変更を承認するよう求めます。
 
@@ -398,20 +398,20 @@ jobs:
 
 これらは最も一般的に使用される入力です。各パラメータは `anthropics/claude-code-action` ステップの `with:` キーにマップされます。
 
-| パラメータ                     | 説明                                                                                                                        | 必須                                                                                                                                                              |
-| ------------------------- | ------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `prompt`                  | Claude への指示。プレーン テキストまたは[スキル](/docs/ja/skills)呼び出しとして指定します。省略した場合、Claude は[トリガー フレーズ](#interactive-and-automation-modes)に応答します | いいえ                                                                                                                                                             |
-| `claude_args`             | Claude Code に渡される CLI 引数                                                                                                  | いいえ                                                                                                                                                             |
-| `anthropic_api_key`       | Claude API キー                                                                                                             | Claude API の場合は必須です。ただし、`claude_code_oauth_token` または[ワークロード ID フェデレーション](#set-up-for-an-organization)を使用する場合は不要です。Bedrock、Agent Platform、または Foundry では使用されません |
-| `claude_code_oauth_token` | Claude サブスクリプションで認証するための OAuth トークン。`claude setup-token` で生成されます                                                          | いいえ                                                                                                                                                             |
-| `github_token`            | GitHub 操作用のトークン。省略した場合、Claude Code GitHub Action は Claude GitHub App として認証されます                                            | いいえ                                                                                                                                                             |
-| `plugin_marketplaces`     | プラグイン マーケットプレイス Git URL の改行区切りリスト                                                                                         | いいえ                                                                                                                                                             |
-| `plugins`                 | 実行前にインストールするプラグイン名の改行区切りリスト                                                                                               | いいえ                                                                                                                                                             |
-| `settings`                | Claude Code 設定。JSON 文字列またはセッティング JSON ファイルへのパス                                                                            | いいえ                                                                                                                                                             |
-| `trigger_phrase`          | Claude が応答するトリガー フレーズ。デフォルト: `@claude`                                                                                    | いいえ                                                                                                                                                             |
-| `use_bedrock`             | Claude API の代わりに Amazon Bedrock を使用します                                                                                    | いいえ                                                                                                                                                             |
-| `use_vertex`              | Claude API の代わりに Google Cloud の Agent Platform を使用します                                                                     | いいえ                                                                                                                                                             |
-| `use_foundry`             | Claude API の代わりに Microsoft Foundry を使用します                                                                                 | いいえ                                                                                                                                                             |
+| パラメータ | 説明 | 必須 |
+| - | - | - |
+| `prompt` | Claude への指示。プレーン テキストまたは[スキル](/docs/ja/skills)呼び出しとして指定します。省略した場合、Claude は[トリガー フレーズ](#interactive-and-automation-modes)に応答します | いいえ |
+| `claude_args` | Claude Code に渡される CLI 引数 | いいえ |
+| `anthropic_api_key` | Claude API キー | Claude API の場合は必須です。ただし、`claude_code_oauth_token` または[ワークロード ID フェデレーション](#set-up-for-an-organization)を使用する場合は不要です。Bedrock、Agent Platform、または Foundry では使用されません |
+| `claude_code_oauth_token` | Claude サブスクリプションで認証するための OAuth トークン。`claude setup-token` で生成されます | いいえ |
+| `github_token` | GitHub 操作用のトークン。省略した場合、Claude Code GitHub Action は Claude GitHub App として認証されます | いいえ |
+| `plugin_marketplaces` | プラグイン マーケットプレイス Git URL の改行区切りリスト | いいえ |
+| `plugins` | 実行前にインストールするプラグイン名の改行区切りリスト | いいえ |
+| `settings` | Claude Code 設定。JSON 文字列またはセッティング JSON ファイルへのパス | いいえ |
+| `trigger_phrase` | Claude が応答するトリガー フレーズ。デフォルト: `@claude` | いいえ |
+| `use_bedrock` | Claude API の代わりに Amazon Bedrock を使用します | いいえ |
+| `use_vertex` | Claude API の代わりに Google Cloud の Agent Platform を使用します | いいえ |
+| `use_foundry` | Claude API の代わりに Microsoft Foundry を使用します | いいえ |
 
 完全な入力リストについては、Claude Code GitHub Action の[設定リファレンス](https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md#inputs)を参照してください。
 

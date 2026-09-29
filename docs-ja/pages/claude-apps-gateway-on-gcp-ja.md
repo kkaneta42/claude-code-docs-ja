@@ -150,11 +150,11 @@ gcloud config set project "$PROJECT_ID"
 
     `trusted_proxies` をフロント エンドに合わせて設定します。クラス `gce` の外部 GKE Ingress はリストされていません。これはパブリック転送ルール アドレスをプロビジョニングし、`/login` [プライベート ネットワーク チェック](/docs/ja/claude-apps-gateway#prerequisites)がこれを拒否します。
 
-    | フロント エンド                                  | `trusted_proxies`                   |
-    | ----------------------------------------- | ----------------------------------- |
-    | ロード バランサーなしで直接到達する Cloud Run              | `[169.254.0.0/16]`                  |
+    | フロント エンド | `trusted_proxies` |
+    | - | - |
+    | ロード バランサーなしで直接到達する Cloud Run | `[169.254.0.0/16]` |
     | Cloud Run の前の内部 Application Load Balancer | `169.254.0.0/16` とプロキシ専用サブネットの CIDR |
-    | GKE 内部 Ingress、クラス `gce-internal`         | プロキシ専用サブネットの CIDR                   |
+    | GKE 内部 Ingress、クラス `gce-internal` | プロキシ専用サブネットの CIDR |
 
     以下の例は、内部ロード バランサー イン フロント オブ Cloud Run の値を使用します。
 
@@ -179,6 +179,8 @@ gcloud config set project "$PROJECT_ID"
 
     store:
       postgres_url: ${GATEWAY_POSTGRES_URL}          # GKE: ${file:/secrets/postgres-url}
+      # readiness_grace_seconds: 300                 # Cloud SQL フェイルオーバーを通じて
+    # 準備完了プローブをパスし続ける
 
     upstreams:
       - provider: vertex
@@ -195,12 +197,12 @@ gcloud config set project "$PROJECT_ID"
   <Step title="Secret Manager にシークレットを保存する">
     4 つのシークレットを作成し、`roles/secretmanager.secretAccessor` を `claude-gateway` サービス アカウントに付与します。
 
-    | シークレット                       | ソース                                       |
-    | ---------------------------- | ----------------------------------------- |
-    | `gateway-jwt-secret`         | `openssl rand -base64 32`                 |
-    | `gateway-oidc-client-secret` | Google Cloud Console → OAuth クライアント       |
-    | `gateway-postgres-url`       | Cloud SQL ステップからの `$GATEWAY_POSTGRES_URL` |
-    | `gateway-config`             | 前のステップからの完全な `gateway.yaml`               |
+    | シークレット | ソース |
+    | - | - |
+    | `gateway-jwt-secret` | `openssl rand -base64 32` |
+    | `gateway-oidc-client-secret` | Google Cloud Console → OAuth クライアント |
+    | `gateway-postgres-url` | Cloud SQL ステップからの `$GATEWAY_POSTGRES_URL` |
+    | `gateway-config` | 前のステップからの完全な `gateway.yaml` |
 
     シークレットがコンテナに到達する方法はトラックによって異なります。
 
@@ -313,14 +315,14 @@ gcloud config set project "$PROJECT_ID"
 
 ゲートウェイブートとログインエラーについては、プラットフォーム非依存の[トラブルシューティングテーブル](/docs/ja/claude-apps-gateway-deploy#troubleshooting)を参照してください。以下のエントリは Google Cloud に固有です。
 
-| 症状                                                                                  | 原因                                                                                     | 修正                                                                                                                                                                                          |
-| ----------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Cloud Run がコンテナに到達する前に `403 Forbidden` を返す                                          | invoker IAM チェックがまだ有効                                                                  | `--no-invoker-iam-check` でデプロイするか、`--allow-unauthenticated` で `allUsers` に `run.invoker` ロールを付与します                                                                                          |
-| `--no-invoker-iam-check` が `invoker_iam_disabled is not currently available` で拒否される | `constraints/run.managed.requireInvokerIam` でブロック                                      | `--allow-unauthenticated` を使用します。`constraints/iam.allowedPolicyMemberDomains` 経由の Domain Restricted Sharing もそれをブロックする場合は、GKE トラックを使用します。これはネットワークレイヤーでゲートウェイを公開し、`allUsers` バインディングはありません。 |
-| デプロイ時に `Container manifest type … must support amd64/linux`                         | イメージが非 amd64 ホストでビルドされたか、buildx が OCI イメージインデックスを発行した                                  | `--platform=linux/amd64 --provenance=false` でビルドします                                                                                                                                         |
-| ゲートウェイブートが Cloud Run で Postgres 接続タイムアウトエラーで終了                                      | Service が VPC にアタッチされていないか、Cloud SQL がその VPC にプライベート IP がない                            | Direct VPC egress 用に `--network` および `--subnet` でデプロイし、Cloud SQL インスタンスを `--no-assign-ip` および `--network` で同じ VPC を指すように作成します                                                               |
-| Agent Platform リクエストが `403 PERMISSION_DENIED` を返す                                   | ランタイムが `claude-gateway` service account を使用していないか、モデルが Model Garden でプロジェクト用に有効になっていない | Cloud Run で `--service-account` を設定するか、GKE で Workload Identity をバインドし、各 Claude モデルを Model Garden でターゲット地域用に有効にします                                                                           |
-| ストリーミング応答が固定期間後に切断される                                                               | フロントエンドリクエストタイムアウト：GKE Ingress の背後のロードバランサーバックエンドサービスはデフォルトで 30 秒、Cloud Run は 300 秒    | GKE で `timeoutSec` を上げた BackendConfig をアタッチするか、Cloud Run で `--timeout=3600` でデプロイします                                                                                                        |
+| 症状 | 原因 | 修正 |
+| - | - | - |
+| Cloud Run がコンテナに到達する前に `403 Forbidden` を返す | invoker IAM チェックがまだ有効 | `--no-invoker-iam-check` でデプロイするか、`--allow-unauthenticated` で `allUsers` に `run.invoker` ロールを付与します |
+| `--no-invoker-iam-check` が `invoker_iam_disabled is not currently available` で拒否される | `constraints/run.managed.requireInvokerIam` でブロック | `--allow-unauthenticated` を使用します。`constraints/iam.allowedPolicyMemberDomains` 経由の Domain Restricted Sharing もそれをブロックする場合は、GKE トラックを使用します。これはネットワークレイヤーでゲートウェイを公開し、`allUsers` バインディングはありません。 |
+| デプロイ時に `Container manifest type … must support amd64/linux` | イメージが非 amd64 ホストでビルドされたか、buildx が OCI イメージインデックスを発行した | `--platform=linux/amd64 --provenance=false` でビルドします |
+| ゲートウェイブートが Cloud Run で Postgres 接続タイムアウトエラーで終了 | Service が VPC にアタッチされていないか、Cloud SQL がその VPC にプライベート IP がない | Direct VPC egress 用に `--network` および `--subnet` でデプロイし、Cloud SQL インスタンスを `--no-assign-ip` および `--network` で同じ VPC を指すように作成します |
+| Agent Platform リクエストが `403 PERMISSION_DENIED` を返す | ランタイムが `claude-gateway` service account を使用していないか、モデルが Model Garden でプロジェクト用に有効になっていない | Cloud Run で `--service-account` を設定するか、GKE で Workload Identity をバインドし、各 Claude モデルを Model Garden でターゲット地域用に有効にします |
+| ストリーミング応答が固定期間後に切断される | フロントエンドリクエストタイムアウト：GKE Ingress の背後のロードバランサーバックエンドサービスはデフォルトで 30 秒、Cloud Run は 300 秒 | GKE で `timeoutSec` を上げた BackendConfig をアタッチするか、Cloud Run で `--timeout=3600` でデプロイします |
 
 <h2 id="next-steps">
   次のステップ

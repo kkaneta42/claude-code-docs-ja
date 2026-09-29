@@ -38,17 +38,17 @@ Claude Code が最初に出力する行がモードを確認します。`[Screen
 
 次の表は、各アクセシビリティオプション、フラグ、環境変数、または設定として設定するかどうか、および何を変更するかを示しています。
 
-| オプション                                                                   | タイプ  | 変更内容                                                                                                                                               |
-| :---------------------------------------------------------------------- | :--- | :------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [`--ax-screen-reader`](/docs/ja/cli-reference#cli-flags)                     | フラグ  | 1 つのセッションのスクリーンリーダーモード。                                                                                                                            |
-| [`CLAUDE_AX_SCREEN_READER`](/docs/ja/env-vars#variables)                     | 環境変数 | それを設定したシェルから開始されたセッションのスクリーンリーダーモード。                                                                                                               |
-| [`axScreenReader`](/docs/ja/settings-reference#axscreenreader)               | 設定   | `true` の場合、すべてのセッションのスクリーンリーダーモード。                                                                                                                 |
-| [`CLAUDE_AX_STARTUP_QUIET_MS`](/docs/ja/env-vars#variables)                  | 環境変数 | Claude Code が確認行の後、スクリーンリーダーモードで最初のプロンプトを描画する前に待機する時間。Claude Code v2.1.217 以降が必要です。                                                                |
-| [`CLAUDE_AX_PREPARK_MS`](/docs/ja/env-vars#variables)                        | 環境変数 | Claude Code が行の開始時にカーソルを置いて、スクリーンリーダーモードで新しい行または変更された行を書き込む前に待機する時間。Claude Code v2.1.233 以降が必要です。                                                  |
-| [`CLAUDE_CODE_ACCESSIBILITY`](/docs/ja/env-vars#variables)                   | 環境変数 | `1` に設定した場合、macOS Zoom などのスクリーン拡大鏡に対して表示されたままのターミナルカーソル。カーソルは入力キャレットに従い、Claude Code v2.1.218 以降では、`/config` や `/plugin` などのメニューとパネルの強調表示された行に従います。 |
-| [`prefersReducedMotion`](/docs/ja/settings-reference#prefersreducedmotion)   | 設定   | `true` の場合、スピナー、シマー、およびその他のアニメーションが削減または非表示になります。                                                                                                  |
-| [`theme`](/docs/ja/settings-reference#theme)                                 | 設定   | 色覚異常対応の `dark-daltonized` および `light-daltonized` テーマを含むインターフェースカラー。[`/theme`](/docs/ja/commands#all-commands) で選択することもできます。                             |
-| [`preferredNotifChannel`](/docs/ja/settings-reference#preferrednotifchannel) | 設定   | 値を `"terminal_bell"` にすると、Claude があなたを待機している場合、スクリーンリーダーモード外でターミナルベルが鳴ります。                                                                         |
+| オプション | タイプ | 変更内容 |
+| :- | :- | :- |
+| [`--ax-screen-reader`](/docs/ja/cli-reference#cli-flags) | フラグ | 1 つのセッションのスクリーンリーダーモード。 |
+| [`CLAUDE_AX_SCREEN_READER`](/docs/ja/env-vars#variables) | 環境変数 | それを設定したシェルから開始されたセッションのスクリーンリーダーモード。 |
+| [`axScreenReader`](/docs/ja/settings-reference#axscreenreader) | 設定 | `true` の場合、すべてのセッションのスクリーンリーダーモード。 |
+| [`CLAUDE_AX_STARTUP_QUIET_MS`](/docs/ja/env-vars#variables) | 環境変数 | Claude Code が確認行の後、スクリーンリーダーモードで最初のプロンプトを描画する前に待機する時間。Claude Code v2.1.217 以降が必要です。 |
+| [`CLAUDE_AX_PREPARK_MS`](/docs/ja/env-vars#variables) | 環境変数 | Claude Code が行の開始時にカーソルを置いて、スクリーンリーダーモードで新しい行または変更された行を書き込む前に待機する時間。Claude Code v2.1.233 以降が必要です。 |
+| [`CLAUDE_CODE_ACCESSIBILITY`](/docs/ja/env-vars#variables) | 環境変数 | `1` に設定した場合、macOS Zoom などのスクリーン拡大鏡に対して表示されたままのターミナルカーソル。カーソルは入力キャレットに従い、Claude Code v2.1.218 以降では、`/config` や `/plugin` などのメニューとパネルの強調表示された行に従います。 |
+| [`prefersReducedMotion`](/docs/ja/settings-reference#prefersreducedmotion) | 設定 | `true` の場合、スピナー、シマー、およびその他のアニメーションが削減または非表示になります。 |
+| [`theme`](/docs/ja/settings-reference#theme) | 設定 | 色覚異常対応の `dark-daltonized` および `light-daltonized` テーマを含むインターフェースカラー。[`/theme`](/docs/ja/commands#all-commands) で選択することもできます。 |
+| [`preferredNotifChannel`](/docs/ja/settings-reference#preferrednotifchannel) | 設定 | 値を `"terminal_bell"` にすると、Claude があなたを待機している場合、スクリーンリーダーモード外でターミナルベルが鳴ります。 |
 
 <h2 id="what-your-screen-reader-hears">
   スクリーンリーダーが聞く内容
@@ -70,17 +70,17 @@ Claude Code は、スクリーンリーダーが追いつくことができる�
 
 トランスクリプト内の各メッセージは、スクリーンリーダーが発表するラベルで始まり、それが何であるかを名前付けします：あなたのメッセージ、Claude の返信と思考、ツールアクティビティ、エラーと警告、およびプロンプト。ラベルは検索可能でもあるため、ターミナルのスクロールバックを検索してトランスクリプトのセクション間をジャンプできます：
 
-| ラベル                    | 意味                                                                |
-| :--------------------- | :---------------------------------------------------------------- |
-| `you:`                 | あなたのメッセージ                                                         |
-| `claude:`              | Claude の返信                                                        |
-| `thinking:`            | Claude の思考                                                        |
-| `tool:`                | ファイル編集やコマンド実行などのツールアクティビティ                                        |
-| `tool error:`          | 失敗したツール                                                           |
-| `error:`               | 失敗した API リクエストなどの会話内のエラー                                          |
-| `warning:`             | モデルフォールバックへの切り替えなど、Claude Code からの警告                              |
-| `Permission Required:` | あなたの回答を待つ権限プロンプト                                                  |
-| `Cost:`                | Claude Code が終了するときのセッションコスト概要（アカウントが [コストを表示](/docs/ja/costs) している場合） |
+| ラベル | 意味 |
+| :- | :- |
+| `you:` | あなたのメッセージ |
+| `claude:` | Claude の返信 |
+| `thinking:` | Claude の思考 |
+| `tool:` | ファイル編集やコマンド実行などのツールアクティビティ |
+| `tool error:` | 失敗したツール |
+| `error:` | 失敗した API リクエストなどの会話内のエラー |
+| `warning:` | モデルフォールバックへの切り替えなど、Claude Code からの警告 |
+| `Permission Required:` | あなたの回答を待つ権限プロンプト |
+| `Cost:` | Claude Code が終了するときのセッションコスト概要（アカウントが [コストを表示](/docs/ja/costs) している場合） |
 
 Claude Code はターミナルカーソルを入力キャレットに保つため、スクリーンリーダーの現在の行を読むコマンドは、編集しているプロンプトを読み込みます。
 
@@ -111,7 +111,7 @@ macOS Terminal はマーカーに作用せず、Claude Code は WezTerm では�
   メニューとプロンプトに答える
 </h2>
 
-スクリーンリーダーモードでは、通常は矢印キーで操作するメニュー（権限プロンプトを含む）が番号付きリストになります。Claude Code は各オプションを番号付き行として発表し、その後に有効な範囲を示す `Enter selection` プロンプトを発表します。希望するオプションの番号を入力して Enter キーを押します。
+スクリーンリーダーモードでは、通常は矢印キーで操作するメニュー（権限プロンプトを含む）が番号付きリストになります。Claude Code は各オプションを番号付き行として発表し、その後に有効な範囲を示す `Select with numbers` プロンプトを発表します。希望するオプションの番号を入力して Enter キーを押します。
 
 * `or Escape to cancel` で終わるプロンプトのメニューをキャンセルするには Escape キーを押します。
 * リストにない番号を入力した場合、Claude Code は有効な範囲を発表し、もう一度試すことができます。

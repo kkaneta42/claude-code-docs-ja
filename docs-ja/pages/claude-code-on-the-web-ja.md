@@ -52,14 +52,16 @@
 
 クラウドセッションはコードをクローンしてブランチをプッシュするために GitHub リポジトリへのアクセスが必要です。2 つの方法でアクセスを許可できます：
 
-| 方法               | 接続方法                                                             | セッションが到達できるリポジトリ                                            | 最適な用途                                                     |
-| :--------------- | :--------------------------------------------------------------- | :---------------------------------------------------------- | :-------------------------------------------------------- |
-| **GitHub App**   | [ウェブオンボーディング](/docs/ja/web-quickstart)中に Claude GitHub App を認可します     | 任意のパブリックリポジトリ、および Claude GitHub App がインストールされているプライベートリポジトリ | ブラウザオンボーディング；[Auto-fix](#auto-fix-pull-requests) を希望するチーム |
-| **`/web-setup`** | ターミナルで `/web-setup` を実行して、ローカル `gh` CLI トークンを Claude アカウントに送信します | `gh` トークンがアクセスできる任意のリポジトリ（App がインストールされているかどうかに関わらず）        | すでに `gh` を使用している個別開発者                                     |
+| 方法 | 接続方法 | セッションが到達できるリポジトリ | 最適な用途 |
+| :- | :- | :- | :- |
+| **GitHub App** | [ウェブオンボーディング](/docs/ja/web-quickstart)中に Claude GitHub App を認可します | 任意のパブリックリポジトリ、および Claude GitHub App がインストールされているプライベートリポジトリ | ブラウザオンボーディング；[Auto-fix](#auto-fix-pull-requests) を希望するチーム |
+| **`/web-setup`** | ターミナルで `/web-setup` を実行して、ローカル `gh` CLI トークンを Claude アカウントに送信します | `gh` トークンがアクセスできる任意のリポジトリ（App がインストールされているかどうかに関わらず） | すでに `gh` を使用している個別開発者 |
 
 Claude GitHub App をリポジトリにインストールすると、そのリポジトリのプルリクエストに対して [Auto-fix](#auto-fix-pull-requests) も有効になります。
 
-[プロジェクト](/docs/ja/claude-projects)内のスレッドは、接続方法に関わらず、クローンする各リポジトリに App がインストールされている必要があります。[GitHub アクセスの設定](/docs/ja/claude-projects#set-up-github-access)を参照してください。
+[プロジェクト](/docs/ja/claude-projects)内のスレッドは、接続方法に関わらず、クローンする各リポジトリに Claude GitHub App がインストールされている必要があります。[GitHub アクセスの設定](/docs/ja/claude-projects#set-up-github-access)を参照してください。
+
+Anthropic ホスト環境では、GitHub 認証情報は Anthropic のサーバー上で暗号化されたままであり、セッションの VM に入ることはありません。VM からの GitHub 操作は [GitHub プロキシ](/docs/ja/cloud-environments#github-proxy)を通じて行われ、サーバー側で認証情報を添付します。
 
 `/schedule` がルーチンを作成する前にリポジトリアクセスをチェックする方法については、[リポジトリとブランチの権限](/docs/ja/routines#repositories-and-branch-permissions)を参照してください。`/web-setup` のウォークスルー（`/web-setup` が保存する内容と削除方法を含む）については、[ターミナルから接続](/docs/ja/web-quickstart#connect-from-your-terminal)を参照してください。
 
@@ -135,7 +137,7 @@ claude --cloud "Refactor the logger to use structured output"
 
 git リモートがないリポジトリから `claude --cloud` を実行する場合、または Claude GitHub App がインストールされていない github.com リポジトリから実行する場合、Claude Code はローカルリポジトリをバンドルしてクラウドセッションに直接アップロードします。これは `/web-setup` で GitHub を接続した場合でも適用されます。バンドルにはすべてのブランチ全体のリポジトリ履歴と、追跡されたファイルへのコミットされていない変更が含まれます。
 
-macOS、Linux、WSL では、Claude Code は認証情報またはキーのような名前のファイルへのコミットされていない変更をアップロードから除外し、除外したファイルに名前を付けます。これは `.env` ファイル、Terraform `*.tfvars` ファイル、および `id_rsa` や `*.pem` などのキーファイルをカバーしています。セッションは各のコミットされたバージョンで開始するか、コミットされたものがない場合はファイルなしで開始されます。リンクされたワーキングツリー、サブモジュール、または同様のレイアウトでは、Claude Code はこれらの変更を残りと一緒にアップロードし、アップロードしたファイルに名前を付けます。
+macOS、Linux、WSL では、Claude Code は認証情報またはキーのような名前のファイルへのコミットされていない変更をアップロードから除外し、除外したファイルに名前を付けます。これは `.env` ファイル、Terraform `*.tfvars` ファイル、および `id_rsa` や `*.pem` などのキーファイルをカバーしています。セッションは各のコミットされたバージョンで開始するか、コミットされたものがない場合はファイルなしで開始されます。
 
 Claude Code がリモートからクローンする場合でも強制するには、`CCR_FORCE_BUNDLE=1` を設定します：
 
@@ -186,14 +188,14 @@ View: https://claude.ai/code/session_01DiUkqY2kzbUbDmW1w96rfi?from=cli&m=0
 
 CLI はエラーの前に `Error: ` を付けます。失敗した配信は `failed to send message to cloud session <id>: <reason>` としてラップされます。
 
-| メッセージ                                                                                                                       | 意味                                                                                                                                                                                                                   |
-| --------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| メッセージ | 意味 |
+| - | - |
 | `Cloud sessions aren't available with <provider>. They run on Anthropic's infrastructure and require an Anthropic account.` | Claude Code はサードパーティプロバイダー用に設定されています。メッセージは設定が使用するラベル（`Amazon Bedrock` や `Google Vertex AI` など）でプロバイダーに名前を付けます。そのプロバイダーの設定を削除します（例えば、`CLAUDE_CODE_USE_BEDROCK` を設定解除）、Anthropic アカウント（`claude auth login`）でサインインします。 |
-| `Cloud sessions are disabled by your organization's policy. Contact your organization admin to enable them.`                | `allow_remote_sessions` 組織ポリシーがオフです。                                                                                                                                                                                 |
-| `Couldn't verify your organization's policy for cloud sessions. Check your network connection and try again.`               | Claude Code は組織のポリシーをフェッチできなかったため、クラウドセッションが許可されていると仮定するのではなく、送信を拒否します。ネットワーク接続を確認して再試行してください。                                                                                                                       |
-| `Attaching to an existing cloud session is not enabled for your account.`                                                   | `-p` なしで `--cloud <session-id>` を実行しました。`claude -p "your message" --cloud <session-id>` でメッセージを送信します。                                                                                                                |
-| `Session not found: <id>`                                                                                                   | ID または URL はアクセスできるセッションと一致しません。セッションの claude.ai/code URL に対して確認してください。                                                                                                                                              |
-| `cloud session <id> is archived and cannot accept new messages`                                                             | セッションはアーカイブされています。代わりに新しいセッションを開始します。                                                                                                                                                                                |
+| `Cloud sessions are disabled by your organization's policy. Contact your organization admin to enable them.` | `allow_remote_sessions` 組織ポリシーがオフです。 |
+| `Couldn't verify your organization's policy for cloud sessions. Check your network connection and try again.` | Claude Code は組織のポリシーをフェッチできなかったため、クラウドセッションが許可されていると仮定するのではなく、送信を拒否します。ネットワーク接続を確認して再試行してください。 |
+| `Attaching to an existing cloud session is not enabled for your account.` | `-p` なしで `--cloud <session-id>` を実行しました。`claude -p "your message" --cloud <session-id>` でメッセージを送信します。 |
+| `Session not found: <id>` | ID または URL はアクセスできるセッションと一致しません。セッションの claude.ai/code URL に対して確認してください。 |
+| `cloud session <id> is archived and cannot accept new messages` | セッションはアーカイブされています。代わりに新しいセッションを開始します。 |
 
 <h3 id="from-cloud-to-terminal">
   クラウドからターミナルへ
@@ -217,12 +219,12 @@ CLI はエラーの前に `Error: ` を付けます。失敗した配信は `fai
 
 テレポートはセッションを再開する前にこれらの要件をチェックします。要件が満たされていない場合は、エラーが表示されるか、問題を解決するよう求められます。
 
-| 要件           | 詳細                                                                                                                                                                                                                                                                                                                     |
-| ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| クリーンな git 状態 | 作業ディレクトリにコミットされていない変更がないことが必要です。テレポートは必要に応じて変更をスタッシュするよう求めます。                                                                                                                                                                                                                                                          |
-| 正しいリポジトリ     | フォークではなく、同じリポジトリのチェックアウトから `--teleport` を実行する必要があります。別のリポジトリのチェックアウトから実行する場合、Claude Code はセッションのリポジトリとチェックアウトのリポジトリの両方を示すエラーを表示します。v2.1.219 より前では、エラーはチェックアウトのリポジトリを示していませんでした。Claude Code がリモートをホスト名に解析できない場合（`git@work:owner/repo.git` のような SSH ホストエイリアスなど）、確認を求め、リモートの所有者とリポジトリ名がセッションのリポジトリと一致する場合、チェックアウトを受け入れます。 |
-| ブランチが利用可能    | クラウドセッションからのブランチがリモートにプッシュされている必要があります。テレポートは自動的にフェッチしてチェックアウトします。                                                                                                                                                                                                                                                     |
-| 同じアカウント      | クラウドセッションで使用された同じ claude.ai アカウントに認証される必要があります。                                                                                                                                                                                                                                                                        |
+| 要件 | 詳細 |
+| - | - |
+| クリーンな git 状態 | 作業ディレクトリにコミットされていない変更がないことが必要です。テレポートは必要に応じて変更をスタッシュするよう求めます。 |
+| 正しいリポジトリ | フォークではなく、同じリポジトリのチェックアウトから `--teleport` を実行する必要があります。別のリポジトリのチェックアウトから実行する場合、Claude Code はセッションのリポジトリとチェックアウトのリポジトリの両方を示すエラーを表示します。v2.1.219 より前では、エラーはチェックアウトのリポジトリを示していませんでした。Claude Code がリモートをホスト名に解析できない場合（`git@work:owner/repo.git` のような SSH ホストエイリアスなど）、確認を求め、リモートの所有者とリポジトリ名がセッションのリポジトリと一致する場合、チェックアウトを受け入れます。 |
+| ブランチが利用可能 | クラウドセッションからのブランチがリモートにプッシュされている必要があります。テレポートは自動的にフェッチしてチェックアウトします。 |
+| 同じアカウント | クラウドセッションで使用された同じ claude.ai アカウントに認証される必要があります。 |
 
 <h4 id="teleport-is-unavailable">
   `--teleport` が利用できない
@@ -256,11 +258,11 @@ Claude がすでにメッセージを読んでいる場合、それは会話に�
 
 コンテキスト管理の場合：
 
-| コマンド       | クラウドセッションで機能 | 注記                                                                           |
-| :--------- | :----------- | :--------------------------------------------------------------------------- |
-| `/compact` | はい           | 会話を要約してコンテキストを解放します。`/compact keep the test output` のようなオプションのフォーカス指示を受け入れます |
-| `/context` | はい           | 現在コンテキストウィンドウにあるものを表示します                                                     |
-| `/clear`   | いいえ          | サイドバーから新しいセッションを開始します                                                        |
+| コマンド | クラウドセッションで機能 | 注記 |
+| :- | :- | :- |
+| `/compact` | はい | 会話を要約してコンテキストを解放します。`/compact keep the test output` のようなオプションのフォーカス指示を受け入れます |
+| `/context` | はい | 現在コンテキストウィンドウにあるものを表示します |
+| `/clear` | いいえ | サイドバーから新しいセッションを開始します |
 
 自動圧縮はコンテキストウィンドウが容量に近づくと自動的に実行されます。クラウドセッションは [`CLAUDE_AUTOCOMPACT_PCT_OVERRIDE`](/docs/ja/env-vars) をセッション自身で設定するため、圧縮はウィンドウが満杯になるのではなく、[自動圧縮ウィンドウ](/docs/ja/model-config#set-the-auto-compact-window)の途中でトリガーされます。その値は[環境変数](/docs/ja/cloud-environments#set-environment-variables)に追加するものをオーバーライドするため、そこに変数を追加しても圧縮がトリガーされるタイミングは変わりません。
 
@@ -429,6 +431,7 @@ Claude は PR を解決する際に GitHub のレビューコメントスレッ�
 クラウドセッションをワークフローに組み込む前に、以下の制約を考慮してください。
 
 * **レート制限**: クラウドセッションは、アカウント内のすべての Claude および Claude Code の使用状況とレート制限を共有します。複数のタスクを並行実行すると、レート制限がそれに応じてより多く消費されます。クラウド VM に対する個別の計算料金はありません。
+* **時間制限**: Claude が実行するコマンドと SessionStart フックにはデフォルトのタイムアウトがあり、変更できます。セットアップスクリプトはおよそ 5 分以内に完了した場合のみキャッシュされます。[時間制限](/docs/ja/cloud-environments#time-limits) を参照してください。
 * **リポジトリ認証**: クラウドセッションをターミナルに取り込むことができるのは、同じアカウントで認証されている場合のみです。
 * **プラットフォーム制限**: リポジトリのクローンとプルリクエストの作成には GitHub が必要です。自己ホスト型の [GitHub Enterprise Server](/docs/ja/github-enterprise-server) インスタンスは Team および Enterprise プランでサポートされています。GitLab、Bitbucket、またはその他の非 GitHub リポジトリをクラウドセッションに [ローカルバンドル](#send-local-repositories-without-github) として送信できます。これは `CCR_FORCE_BUNDLE=1` を設定することで実現できますが、セッションはその結果をリモートにプッシュバックできません。
 * **組織 IP 許可リスト**: クラウドセッションは Anthropic 管理インフラストラクチャから Anthropic API を呼び出します。これはお客様のネットワークからではなく、[自己ホスト環境](/docs/ja/self-hosted-environments) のセッションはお客様自身のネットワークから呼び出します。組織で [IP 許可リスト](https://support.claude.com/en/articles/13200993-restrict-access-to-claude-with-ip-allowlisting) が有効になっている場合、Anthropic ホスト型のすべてのクラウドセッションは認証エラーで失敗します。同じことが [Code Review](/docs/ja/code-review) および Anthropic ホスト環境で実行される [routines](/docs/ja/routines) にも適用されます。自己ホスト環境にルーティングされたルーチンは、お客様自身のネットワークから API を呼び出します。Anthropic ホスト型サービスを組織の IP 許可リストから除外するには、[Anthropic サポート](https://support.claude.com/) にお問い合わせください。

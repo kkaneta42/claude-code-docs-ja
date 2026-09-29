@@ -164,14 +164,14 @@ patterns:
     reminder: "マルチテナントコードは org_id でフィルタリングする必要があります。"
 ```
 
-| フィールド           | タイプ    | 説明                                                                                          |
-| :-------------- | :----- | :------------------------------------------------------------------------------------------ |
-| `rule_name`     | string | 警告に表示される識別子                                                                                 |
-| `reminder`      | string | Claude のコンテキストに追加される警告テキスト、1 KB でキャップ                                                       |
-| `regex`         | string | 編集されたコンテンツに対してマッチされる Python 正規表現                                                            |
-| `substrings`    | list   | リテラルサブストリング；これまたは `regex` を提供してください                                                         |
-| `paths`         | list   | オプションのグロブパターン；ルールはマッチするファイルにのみ適用されます。グロブはフルファイルパスに対してマッチするため、プロジェクト相対パターンの前に `**/` を付けてください |
-| `exclude_paths` | list   | スキップするオプションのグロブパターン；`paths` と同じマッチング                                                        |
+| フィールド | タイプ | 説明 |
+| :- | :- | :- |
+| `rule_name` | string | 警告に表示される識別子 |
+| `reminder` | string | Claude のコンテキストに追加される警告テキスト、1 KB でキャップ |
+| `regex` | string | 編集されたコンテンツに対してマッチされる Python 正規表現 |
+| `substrings` | list | リテラルサブストリング；これまたは `regex` を提供してください |
+| `paths` | list | オプションのグロブパターン；ルールはマッチするファイルにのみ適用されます。グロブはフルファイルパスに対してマッチするため、プロジェクト相対パターンの前に `**/` を付けてください |
+| `exclude_paths` | list | スキップするオプションのグロブパターン；`paths` と同じマッチング |
 
 プラグインは、同じスキーマで `.claude/security-patterns.yml` と `.claude/security-patterns.json` も読み込みます。JSON はすべての Python インストールで機能します。YAML フォームは PyYAML をインポート可能にする必要があり、プラグインはそれをインストールしません。プラグインは最大 50 個のカスタムルールを読み込み、壊滅的なバックトラッキングの傾向がある正規表現をスキップします。
 
@@ -181,10 +181,10 @@ patterns:
 
 プラグインは、プラグインがどのように有効化されたかに関係なく、同じ場所で `claude-security-guidance.md` と `security-patterns.yaml` を探します：
 
-| スコープ       | パス                                          | 注記                                  |
-| :--------- | :------------------------------------------ | :---------------------------------- |
-| ユーザー       | `~/.claude/claude-security-guidance.md`     | マシン上のすべてのプロジェクトに適用されます              |
-| プロジェクト     | `.claude/claude-security-guidance.md`       | リポジトリでチェックインされます                    |
+| スコープ | パス | 注記 |
+| :- | :- | :- |
+| ユーザー | `~/.claude/claude-security-guidance.md` | マシン上のすべてのプロジェクトに適用されます |
+| プロジェクト | `.claude/claude-security-guidance.md` | リポジトリでチェックインされます |
 | プロジェクトローカル | `.claude/claude-security-guidance.local.md` | 個人的なオーバーライド用；`.gitignore` に追加してください |
 
 プラグインは存在するすべての場所を読み込み、ガイダンスファイルの合計キャップ 8 KB で連結します。管理者は、デバイス管理を通じて `~/.claude/` にユーザースコープファイルをプッシュすることで、組織全体のルールを配布できます。同じパスが `security-patterns.yaml` に適用されます。
@@ -205,13 +205,13 @@ patterns:
 
 残りを保持しながら個別のレイヤーをオフにするには、マッチング環境変数を設定します：
 
-| 変数                              | 効果                                                         |
-| :------------------------------ | :--------------------------------------------------------- |
-| `ENABLE_PATTERN_RULES=0`        | [編集ごとのパターンチェック](#on-each-file-edit) を無効化                   |
-| `ENABLE_STOP_REVIEW=0`          | [ターン終了 diff レビュー](#at-the-end-of-each-turn) を無効化           |
-| `ENABLE_COMMIT_REVIEW=0`        | [コミットとプッシュレビュー](#on-each-commit-or-push-claude-makes) を無効化 |
-| `ENABLE_CODE_SECURITY_REVIEW=0` | すべてのモデルバックアップレビューを一度に無効化                                   |
-| `SECURITY_GUIDANCE_DISABLE=1`   | アンインストールせずにプラグイン全体を無効化                                     |
+| 変数 | 効果 |
+| :- | :- |
+| `ENABLE_PATTERN_RULES=0` | [編集ごとのパターンチェック](#on-each-file-edit) を無効化 |
+| `ENABLE_STOP_REVIEW=0` | [ターン終了 diff レビュー](#at-the-end-of-each-turn) を無効化 |
+| `ENABLE_COMMIT_REVIEW=0` | [コミットとプッシュレビュー](#on-each-commit-or-push-claude-makes) を無効化 |
+| `ENABLE_CODE_SECURITY_REVIEW=0` | すべてのモデルバックアップレビューを一度に無効化 |
+| `SECURITY_GUIDANCE_DISABLE=1` | アンインストールせずにプラグイン全体を無効化 |
 
 ユーザースコープでプラグインを一時停止するには：
 
@@ -233,13 +233,13 @@ patterns:
 
 プラグインは完全に [hooks](/docs/ja/hooks) 上に構築されています。これは Claude のループの特定のポイントで独自のコードを実行するメカニズムです。登録されます：
 
-| フックイベント                                                    | 目的                                   |
-| :--------------------------------------------------------- | :----------------------------------- |
-| `SessionStart`                                             | プラグインの Python 環境をブートストラップ            |
-| `UserPromptSubmit`                                         | ターン終了レビューが diff を行う作業ツリーベースラインをキャプチャ |
-| `PostToolUse` on `Edit`、`Write`、`NotebookEdit`             | 編集ごとのパターンマッチ                         |
-| `Stop`                                                     | ターン終了 diff レビュー、バックグラウンドで実行          |
-| `PostToolUse` on `Bash`、`git commit` と `git push` にフィルタリング | コミットとプッシュレビュー、バックグラウンドで実行            |
+| フックイベント | 目的 |
+| :- | :- |
+| `SessionStart` | プラグインの Python 環境をブートストラップ |
+| `UserPromptSubmit` | ターン終了レビューが diff を行う作業ツリーベースラインをキャプチャ |
+| `PostToolUse` on `Edit`、`Write`、`NotebookEdit` | 編集ごとのパターンマッチ |
+| `Stop` | ターン終了 diff レビュー、バックグラウンドで実行 |
+| `PostToolUse` on `Bash`、`git commit` と `git push` にフィルタリング | コミットとプッシュレビュー、バックグラウンドで実行 |
 
 独自のフックを構築する場合、[プラグインのソース](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/security-guidance) はフックから別のモデル呼び出しを実行し、結果をセッションにフィードバックする実装例です。
 
@@ -249,13 +249,13 @@ patterns:
 
 プラグインは多層防御アプローチの 1 つのレイヤーです。コードがまだエディタにある間に最も早く問題をキャッチしますが、保証ではなく、後の確認を置き換えません。典型的なスタック：
 
-| ステージ          | ツール                                                    | カバーするもの                                             |
-| :------------ | :----------------------------------------------------- | :-------------------------------------------------- |
-| セッション内        | Security guidance プラグイン                                | Claude が書くコードの一般的な脆弱性。同じセッション内で修正                   |
-| オンデマンド、単一パス   | [`/security-review`](/docs/ja/commands#all-commands)        | 現在のブランチでの 1 回限りのセキュリティパス。要求時に実行                     |
-| オンデマンド、深いスキャン | [Claude Security プラグイン](/docs/ja/claude-security)           | リポジトリまたは diff のマルチエージェント脆弱性スキャン。独立して確認された検出結果とパッチ付き |
-| プルリクエスト       | [Code Review](/docs/ja/code-review)、Team および Enterprise プラン | 完全なコードベースコンテキストを持つマルチエージェント正確性とセキュリティレビュー           |
-| CI            | 既存の静的分析と依存関係スキャナー                                      | 言語固有のルール、サプライチェーンチェック、プラグインが試みないポリシー実装              |
+| ステージ | ツール | カバーするもの |
+| :- | :- | :- |
+| セッション内 | Security guidance プラグイン | Claude が書くコードの一般的な脆弱性。同じセッション内で修正 |
+| オンデマンド、単一パス | [`/security-review`](/docs/ja/commands#all-commands) | 現在のブランチでの 1 回限りのセキュリティパス。要求時に実行 |
+| オンデマンド、深いスキャン | [Claude Security プラグイン](/docs/ja/claude-security) | リポジトリまたは diff のマルチエージェント脆弱性スキャン。独立して確認された検出結果とパッチ付き |
+| プルリクエスト | [Code Review](/docs/ja/code-review)、Team および Enterprise プラン | 完全なコードベースコンテキストを持つマルチエージェント正確性とセキュリティレビュー |
+| CI | 既存の静的分析と依存関係スキャナー | 言語固有のルール、サプライチェーンチェック、プラグインが試みないポリシー実装 |
 
 Claude が書いている変更ではなく、既に持っているコード内のセキュリティ問題を見つけるには、セッション内で Claude に特定のファイルまたはディレクトリの脆弱性をレビューするよう依頼するか、リポジトリ全体のより深いマルチエージェントスキャンのために [Claude Security プラグイン](/docs/ja/claude-security) を使用してください。[`/security-review`](/docs/ja/commands#all-commands) は現在のブランチの変更のみをカバーします。どちらの場合でも、レビューは実行中のサイトまたはデプロイされたサービスではなく、チェックアウト内のソースコードを読みます。
 

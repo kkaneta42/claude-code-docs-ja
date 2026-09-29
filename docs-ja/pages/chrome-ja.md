@@ -268,12 +268,12 @@ Windows では、以下の問題が発生する可能性があります。
 
 これらは最も頻繁に遭遇するエラーと、それらを解決する方法です。
 
-| エラー                                  | 原因                                 | 修正                                                  |
-| ------------------------------------ | ---------------------------------- | --------------------------------------------------- |
-| "Browser extension is not connected" | ネイティブメッセージングホストが拡張機能に到達できない        | Chrome と Claude Code を再起動してから、`/chrome` を実行して再接続します |
-| "Extension not detected"             | Chrome 拡張機能がインストールされていないか、無効になっている | `chrome://extensions` で拡張機能をインストールまたは有効にします         |
-| "No tab available"                   | Claude がタブの準備ができる前に動作しようとした        | Claude に新しいタブを作成して再度試すよう依頼します                       |
-| "Receiving end does not exist"       | 拡張機能サービスワーカーがアイドル状態になった            | `/chrome` を実行して「Reconnect extension」を選択します          |
+| エラー | 原因 | 修正 |
+| - | - | - |
+| "Browser extension is not connected" | ネイティブメッセージングホストが拡張機能に到達できない | Chrome と Claude Code を再起動してから、`/chrome` を実行して再接続します |
+| "Extension not detected" | Chrome 拡張機能がインストールされていないか、無効になっている | `chrome://extensions` で拡張機能をインストールまたは有効にします |
+| "No tab available" | Claude がタブの準備ができる前に動作しようとした | Claude に新しいタブを作成して再度試すよう依頼します |
+| "Receiving end does not exist" | 拡張機能サービスワーカーがアイドル状態になった | `/chrome` を実行して「Reconnect extension」を選択します |
 
 <h2 id="see-also">
   関連項目

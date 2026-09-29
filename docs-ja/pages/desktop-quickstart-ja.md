@@ -4,9 +4,9 @@
 
 # デスクトップアプリを始める
 
-> Claude Code をデスクトップにインストールして、最初のコーディングセッションを開始します
+> Claude デスクトップアプリをインストールして、Code タブを開き、コンピューター上のプロジェクトフォルダーで最初の Claude Code セッションを開始します。
 
-デスクトップアプリは、複数のセッションを並行して実行するために構築されたグラフィカルインターフェース付きの Claude Code を提供します。並列作業を管理するためのサイドバー、統合ターミナルとファイルエディター付きのドラッグアンドドロップレイアウト、ビジュアル diff レビュー、ライブアプリプレビュー、自動マージ機能付きの GitHub PR 監視、スケジュール済みタスクがあります。ターミナルは不要です。
+デスクトップアプリは、グラフィカルインターフェース付きの Claude Code を提供するため、コンピューター上のフォルダー内のコードに対して Claude に作業を依頼し、ターミナルを使用せずにその変更をレビューできます。このページでは、アプリのインストールと **Code** タブで最初のセッションを開始する方法について説明します。Claude Code には [Pro、Max、Team、または Enterprise サブスクリプション](https://claude.com/pricing?utm_source=claude_code\&utm_medium=docs\&utm_content=desktop_quickstart_pricing)が必要です。
 
 <CardGroup cols={3}>
   <Card title="macOS 用にダウンロード" icon="apple" href="https://claude.ai/api/desktop/darwin/universal/dmg/latest/redirect?utm_source=claude_code&utm_medium=docs">
@@ -25,15 +25,16 @@
 Windows ARM64 の場合は、[ARM64 インストーラー](https://claude.ai/api/desktop/win32/arm64/setup/latest/redirect?utm_source=claude_code\&utm_medium=docs)をダウンロードしてください。Linux では apt でインストールします。[Claude Desktop on Linux](/docs/ja/desktop-linux)を参照してください。
 
 <Note>
-  Claude Code には [Pro、Max、Team、または Enterprise サブスクリプション](https://claude.com/pricing?utm_source=claude_code\&utm_medium=docs\&utm_content=desktop_quickstart_pricing)が必要です。
-</Note>
+  以下のケースは他のページで説明されています。
 
-このページでは、アプリのインストールと最初のセッションの開始について説明します。既にセットアップが完了している場合は、[Claude Code Desktop を使用する](/docs/ja/desktop)で完全なリファレンスを参照してください。
+  * **既にセットアップ済み**: [Claude Code Desktop を使用する](/docs/ja/desktop)で Code タブが実行できるすべての機能を参照してください
+  * **ターミナルで `claude` を使用したい**: [CLI をインストール](/docs/ja/quickstart)してください
+</Note>
 
 デスクトップアプリには 3 つのタブがあります。
 
 * **Chat**: ファイルアクセスなしの一般的な会話。claude.ai と同様です。
-* **Cowork**: サンドボックス化された仮想マシン内で独自の環境を持つ自律型バックグラウンドエージェント。あなたが他の作業をしている間も独立して実行できます。オンデバイス Cowork セッションはコンピューター上で VM を実行します。リモート Cowork セッションは代わりに Anthropic 管理の VM 上で実行されます。
+* **Cowork**: あなたが他の作業をしている間も独立して作業を実行する自律型バックグラウンドエージェント。
 * **Code**: ローカルファイルへの直接アクセスを備えたインタラクティブなコーディングアシスタント。権限モードに応じて、Claude が提案する各変更を承認するか、Claude が変更を加えた後にレビューします。
 
 Chat と Cowork は [Claude ヘルプセンター](https://support.claude.com/)で説明されています。デスクトップアプリのインストールとデプロイは [Claude Desktop サポート記事](https://support.claude.com/en/collections/16163169-claude-desktop)で説明されています。このページは **Code** タブに焦点を当てています。
@@ -52,7 +53,7 @@ Chat と Cowork は [Claude ヘルプセンター](https://support.claude.com/)�
   </Step>
 </Steps>
 
-デスクトップアプリには Claude Code が含まれています。Node.js または CLI を別途インストールする必要はありません。ターミナルから `claude` を使用するには、CLI を別途インストールしてください。[CLI を始める](/docs/ja/quickstart)を参照してください。
+デスクトップアプリには Claude Code が含まれています。Code タブを使用するために Node.js または CLI をインストールする必要はありません。
 
 <h2 id="start-your-first-session">
   最初のセッションを開始する

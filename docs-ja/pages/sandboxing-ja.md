@@ -13,65 +13,65 @@ Bash サンドボックスを使用すると、Claude はほとんどのシェ�
 </Note>
 
 <h2 id="get-started">
-  開始方法
+  はじめに
 </h2>
 
-サンドボックスは Claude Code に組み込まれており、macOS、Linux、WSL2 で実行されます。ネイティブ Windows はサポートされていません。Windows では、Claude Code を WSL2 ディストリビューション内で実行してください。
+sandbox は Claude Code に組み込まれており、macOS、Linux、WSL2 で実行されます。ネイティブ Windows はサポートされていません。Windows では、WSL2 ディストリビューション内で Claude Code を実行してください。
 
-macOS では、インストールするものはありません。サンドボックス化は組み込みの Seatbelt フレームワークを使用します。Linux と WSL2 では、サンドボックスは 2 つのパッケージに依存しており、[Linux と WSL2 をセットアップする](#set-up-linux-and-wsl2)で説明されています。まだインストールしていない場合でも、`/sandbox` で開始できます。そのパネルには、何が不足しているかが表示されます。
+macOS では、インストールするものはありません。sandboxing は組み込みの Seatbelt フレームワークを使用します。Linux と WSL2 では、sandbox は 2 つのパッケージに依存しており、[Linux と WSL2 のセットアップ](#set-up-linux-and-wsl2)で説明されています。まだインストールしていない場合でも、`/sandbox` で開始できます。そのパネルには、何かが不足しているかどうかが表示されます。
 
 <Steps>
-  <Step title="/sandbox を実行する">
+  <Step title="/sandbox を実行">
     Claude Code セッションを開始し、`/sandbox` コマンドを実行します。
 
     ```text theme={null}
     /sandbox
     ```
 
-    これにより、3 つのタブを持つサンドボックスパネルが開きます。Linux で seccomp フィルターが不足している場合は、Dependencies タブが追加されます。
+    これにより、sandbox パネルが 3 つのタブで開きます。Linux では、オプションの seccomp フィルターが不足している場合、Dependencies タブが追加されます。
 
-    * **Mode**：サンドボックス化されたコマンドがどのように承認されるかを選択します。次のステップで説明します
-    * **Overrides**：サンドボックス内で失敗するコマンドがサンドボックス化されていない状態で実行にフォールバックできるかどうかを選択します。これは [`allowUnsandboxedCommands`](/docs/ja/settings-reference#sandbox-allowunsandboxedcommands) 設定です
-    * **Config**：解決されたサンドボックス設定を表示します
+    * **Mode**: sandbox されたコマンドがどのように承認されるかを選択します。次のステップで説明されています
+    * **Overrides**: sandbox の下で失敗するコマンドが sandbox されていない状態で実行にフォールバックできるかどうかを選択します。これは [`allowUnsandboxedCommands`](/docs/ja/settings-reference#sandbox-allowunsandboxedcommands) 設定です
+    * **Config**: 解決された sandbox 設定を表示します
 
-    パネルに Dependencies タブのみが表示される場合、必要なパッケージが不足しています。[Linux と WSL2 をセットアップする](#set-up-linux-and-wsl2)で説明されているようにインストールし、Claude Code を再起動して、`/sandbox` を再度実行してください。
+    パネルに Dependencies タブのみが表示される場合、必須パッケージが不足しています。[Linux と WSL2 のセットアップ](#set-up-linux-and-wsl2)で説明されているようにインストールし、Claude Code を再起動して、`/sandbox` を再度実行してください。
   </Step>
 
-  <Step title="モードを選択する">
-    Mode タブで、自動許可または通常の許可を選択します。自動許可はサンドボックス化されたコマンドをプロンプトなしで実行し、通常の許可はコマンドがサンドボックス化されている場合でも通常の許可プロンプトを保持します。自動許可モードでもプロンプトが表示されるコマンドについては、[Sandbox modes](#sandbox-modes) を参照してください。
+  <Step title="モードを選択">
+    Mode タブで、auto-allow または regular permissions を選択します。Auto-allow は sandbox されたコマンドをプロンプトなしで実行し、regular permissions は、コマンドが sandbox されている場合でも通常の権限プロンプトを保持します。auto-allow モードでどのコマンドがまだプロンプトを表示するかについては、[Sandbox modes](#sandbox-modes) を参照してください。
   </Step>
 
-  <Step title="Bash コマンドを実行する">
-    Claude にコマンド（ビルドやテストスイートなど）を実行するよう依頼します。デフォルトでは、サンドボックス内のコマンドは作業ディレクトリ、セッション一時ディレクトリ、および `--add-dir`、`/add-dir`、または `permissions.additionalDirectories` で[追加したディレクトリ](/docs/ja/permissions#additional-directories-grant-file-access-not-configuration)に書き込みできます。
+  <Step title="Bash コマンドを実行">
+    Claude にコマンド（ビルドやテストスイートなど）を実行するよう依頼します。デフォルトでは、sandbox 内のコマンドは作業ディレクトリ、[ユーザーごとの一時ディレクトリ](/docs/ja/env-vars)、および `--add-dir`、`/add-dir`、または `permissions.additionalDirectories` で[追加したディレクトリ](/docs/ja/permissions#additional-directories-grant-file-access-not-configuration)に書き込むことができます。
 
-    コマンドが新しいネットワークドメインにアクセスする必要がある場合、Claude Code は承認を求めるか、[自動モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)では分類器にリクエストを送信します。
+    コマンドが新しいネットワークドメインを必要とする最初の時間、Claude Code は承認を求めます。[auto モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)では、Claude は代わりに、分類器がそれと一緒にレビューするために、コマンドが必要とするホストを[コマンド自体に](#per-command-allowed-domains-in-auto-mode)名前付けします。
 
-    サンドボックス化された状態で実行できないコマンドは、通常の許可フローにフォールバックします。Claude Code はそれらの許可プロンプトを「Bash command」ではなく「Bash command (unsandboxed)」というタイトルで表示するため、どのコマンドがサンドボックス外で実行されたかを判断できます。サンドボックスが許可する内容を広げたり狭めたりするには、[サンドボックス化を設定](#configure-sandboxing)を参照してください。
+    sandbox 内で実行できないコマンドは、通常の権限フローにフォールバックします。Claude Code は、sandbox の外で実行されたコマンドを区別できるように、権限プロンプトを「Bash command」ではなく「Bash command (unsandboxed)」というタイトルにします。sandbox が許可する内容を広げたり狭めたりするには、[Configure sandboxing](#configure-sandboxing) を参照してください。
 
-    サンドボックス化されたコマンドがコンテナ内で `Operation not permitted` で失敗する場合は、[トラブルシューティング](#troubleshooting)の Bubblewrap エントリを参照してください。
+    sandbox されたコマンドがコンテナ内で `Operation not permitted` で失敗する場合は、[Troubleshooting](#troubleshooting) の Bubblewrap エントリを参照してください。
   </Step>
 </Steps>
 
-パネルでモードを選択すると、Claude Code はそれをプロジェクトのローカル設定 `.claude/settings.local.json` に保存します。これは現在のプロジェクトに適用されます。Claude Code はそこに設定を保存する際に、そのファイルをグローバル gitignore に追加します。すべてのプロジェクトでサンドボックスを有効化するには、ユーザー設定 `~/.claude/settings.json` で [`sandbox.enabled`](/docs/ja/settings-reference#sandbox-enabled) を `true` に設定します。組織内のすべての開発者にサンドボックス化を実施するには、[管理設定で実施](#enforce-sandboxing-with-managed-settings)を使用します。
+パネルでモードを選択すると、Claude Code はそれをプロジェクトのローカル設定 `.claude/settings.local.json` に保存します。これは現在のプロジェクトに適用されます。Claude Code は、設定をそこに保存するときに、そのファイルをグローバル gitignore に追加します。すべてのプロジェクトで sandbox を有効にするには、ユーザー設定 `~/.claude/settings.json` で [`sandbox.enabled`](/docs/ja/settings-reference#sandbox-enabled) を `true` に設定します。組織内のすべての開発者に対して sandboxing を強制するには、[managed settings](#enforce-sandboxing-with-managed-settings) を使用します。
 
-1 つのセッションのみでサンドボックスを変更し、設定ファイルに書き込まないようにするには、Claude Code を [`--settings`](/docs/ja/settings#change-a-setting-for-one-session) で起動します。たとえば、このコマンドは、Claude がブロックされたコマンドをサンドボックス外で再試行できないサンドボックス化されたセッションを開始します。
+1 つのセッションの設定ファイルに書き込まずに sandbox を変更するには、[`--settings`](/docs/ja/settings#change-a-setting-for-one-session) で Claude Code を開始します。たとえば、このコマンドは、Claude がブロックされたコマンドを sandbox の外で再試行できない sandbox されたセッションを開始します。
 
 ```bash theme={null}
 claude --settings '{"sandbox": {"enabled": true, "allowUnsandboxedCommands": false}}'
 ```
 
 <Warning>
-  デフォルトでは、依存関係が不足しているか、プラットフォームがサポートされていないためにサンドボックスが起動できない場合、Claude Code は警告を表示してサンドボックス化なしでコマンドを実行します。これをハード失敗にするには、[`sandbox.failIfUnavailable`](/docs/ja/settings-reference#sandbox-failifunavailable) を `true` に設定します。これは、セキュリティゲートとしてサンドボックス化を必要とする管理デプロイメント向けです。
+  デフォルトでは、依存関係が不足しているか、プラットフォームがサポートされていないため sandbox を開始できない場合、Claude Code は警告を表示し、sandboxing なしでコマンドを実行します。これをハード失敗にするには、[`sandbox.failIfUnavailable`](/docs/ja/settings-reference#sandbox-failifunavailable) を `true` に設定します。これは、sandboxing をセキュリティゲートとして必要とするマネージド展開を対象としています。
 </Warning>
 
 <h3 id="set-up-linux-and-wsl2">
-  Linux と WSL2 をセットアップする
+  Linux と WSL2 のセットアップ
 </h3>
 
-Linux と WSL2 では、サンドボックスは 2 つのパッケージに依存しています。
+Linux と WSL2 では、sandbox は 2 つのパッケージに依存しています。
 
-* [`bubblewrap`](https://github.com/containers/bubblewrap)：ファイルシステム分離を実施する非特権サンドボックス化ツール
-* [`socat`](http://www.dest-unreach.org/socat/)：サンドボックスプロキシを通じてネットワークトラフィックをルーティングするために使用されるリレー
+* [`bubblewrap`](https://github.com/containers/bubblewrap): ファイルシステム分離を強制する非特権 sandboxing ツール
+* [`socat`](http://www.dest-unreach.org/socat/): sandbox プロキシを通じてネットワークトラフィックをルーティングするために使用されるリレー
 
 ディストリビューションのパッケージマネージャーでインストールします。
 
@@ -89,17 +89,17 @@ Linux と WSL2 では、サンドボックスは 2 つのパッケージに依�
   </Tab>
 </Tabs>
 
-依存関係が不足している場合、`/sandbox` の Dependencies タブに、`ripgrep`、`bubblewrap`、`socat`、および seccomp フィルターのうち、プラットフォームで不足しているものが表示されます。Claude Code を再起動してから `/sandbox` を実行しても Dependencies タブが表示されない場合は、すべての依存関係が存在します。
+依存関係が不足している場合、`/sandbox` の Dependencies タブには、プラットフォームが不足している `ripgrep`、`bubblewrap`、`socat`、および seccomp フィルターが一覧表示されます。Claude Code をインストールして再起動した後、タブが表示されない場合は、すべての依存関係が存在します。
 
-Ripgrep はネイティブ Claude Code バイナリにバンドルされています。seccomp フィルターはオプションで、Unix ドメインソケットのブロッキングを追加します。不足している場合は、`npm install -g @anthropic-ai/sandbox-runtime` でインストールしてください。
+Ripgrep はネイティブ Claude Code バイナリにバンドルされています。seccomp フィルターはオプションであり、Unix ドメインソケットブロッキングを追加します。不足している場合は、`npm install -g @anthropic-ai/sandbox-runtime` でインストールします。
 
-必要な依存関係が不足している場合、Dependencies タブはインストールするまで唯一のタブとして表示されます。オプションの seccomp フィルターのみが不足している場合、Dependencies タブは他のタブと並んで表示されます。依存関係チェックはスタートアップ時に実行されるため、パッケージをインストール後に Claude Code を再起動して、`/sandbox` がそれらを検出するようにしてください。
+必須の依存関係が不足している場合、Dependencies タブはインストールするまで唯一のタブです。オプションの seccomp フィルターのみが不足している場合、Dependencies タブは他のタブと一緒に表示されます。依存関係チェックはスタートアップ時に実行されるため、パッケージをインストールした後、Claude Code を再起動して `/sandbox` がそれらを検出するようにします。
 
 <AccordionGroup>
-  <Accordion title="Ubuntu 24.04 以降：bubblewrap がユーザー名前空間を作成できるようにする">
-    Ubuntu 24.04 以降では、デフォルトの AppArmor ポリシーが bubblewrap が分離に必要とするユーザー名前空間の作成を防止します。
+  <Accordion title="Ubuntu 24.04 以降: bubblewrap がユーザーネームスペースを作成できるようにする">
+    Ubuntu 24.04 以降では、デフォルトの AppArmor ポリシーは、bubblewrap が分離に必要なユーザーネームスペースを作成することを防止します。
 
-    WSL2 内を含む、環境がこの制限を実施しているかどうかを確認するには、`sysctl kernel.apparmor_restrict_unprivileged_userns` を実行します。コマンドが `0` を返す場合は、このステップをスキップしてください。`No such file or directory` エラーが表示される場合は、キーが存在しないため、このステップをスキップできます。`1` を返す場合は、`bwrap` にこの機能を付与する AppArmor プロファイルを追加します。
+    WSL2 内を含む、環境がこの制限を強制しているかどうかを確認するには、`sysctl kernel.apparmor_restrict_unprivileged_userns` を実行します。コマンドが `0` を返す場合は、このステップをスキップします。`No such file or directory` エラーが出力される場合、キーは存在せず、このステップをスキップできます。`1` を返す場合は、`bwrap` にこの機能を付与する AppArmor プロファイルを追加します。
 
     ```bash theme={null}
     sudo tee /etc/apparmor.d/bwrap > /dev/null <<'EOF'
@@ -113,7 +113,7 @@ Ripgrep はネイティブ Claude Code バイナリにバンドルされてい�
     EOF
     ```
 
-    プロファイルは `bwrap` 自体にのみ適用され、サンドボックス内で実行されるコマンドには適用されません。AppArmor を再度読み込んで適用します。
+    プロファイルは `bwrap` 自体にのみ適用され、sandbox 内で実行されるコマンドには適用されません。AppArmor を再度読み込んで適用します。
 
     ```bash theme={null}
     sudo systemctl reload apparmor
@@ -121,65 +121,67 @@ Ripgrep はネイティブ Claude Code バイナリにバンドルされてい�
   </Accordion>
 
   <Accordion title="WSL2 に関する注記">
-    PowerShell から `wsl -l -v` で WSL バージョンを確認します。`Sandboxing requires WSL2` が表示される場合、ディストリビューションは WSL1 で実行されています。WSL2 にアップグレードするか、Claude Code をサンドボックス化なしで実行してください。
+    PowerShell から `wsl -l -v` で WSL バージョンを確認します。`Sandboxing requires WSL2` が表示される場合、ディストリビューションは WSL1 で実行されています。WSL2 にアップグレードするか、sandboxing なしで Claude Code を実行します。
 
-    WSL2 では、WSL は `cmd.exe`、`powershell.exe`、または `/mnt/c/` 下のものなどの Windows バイナリの起動を Windows ホストに Unix ソケット経由で渡すため、サンドボックス化されたコマンドがそれを起動できるかどうかは、サンドボックスの [Unix ソケット設定](/docs/ja/settings-reference#sandbox-network-allowunixsockets)に従います。オプションの seccomp フィルターをインストールして、最初の場所でソケットをブロックする必要があります。これらの起動を許可するには、`allowAllUnixSockets` を設定します。サンドボックスから完全に除外するには、コマンドを [`excludedCommands`](/docs/ja/settings-reference#sandbox-excludedcommands) に追加します。
+    WSL2 では、WSL は `cmd.exe`、`powershell.exe`、または `/mnt/c/` の下の何かなどの Windows バイナリの起動を Unix ソケット経由で Windows ホストに渡すため、sandbox されたコマンドが 1 つを起動できるかどうかは、sandbox の [Unix ソケット設定](/docs/ja/settings-reference#sandbox-network-allowunixsockets)に従います。オプションの seccomp フィルターをインストールして、最初の場所でソケットをブロックする必要があります。これらの起動を許可するには、`allowAllUnixSockets` を設定します。sandbox から完全に除外するには、コマンドを [`excludedCommands`](/docs/ja/settings-reference#sandbox-excludedcommands) に追加します。
   </Accordion>
 </AccordionGroup>
 
 <h3 id="sandbox-modes">
-  サンドボックスモード
+  Sandbox modes
 </h3>
 
-Claude Code は 2 つのサンドボックスモードを提供します。どちらでも、サンドボックスは同じファイルシステムとネットワーク制限を実施します。違いは、サンドボックス化されたコマンドが自動承認されるか、明示的な許可が必要かだけです。
+Claude Code は 2 つの sandbox モードを提供します。どちらでも、sandbox は同じファイルシステムとネットワーク制限を強制します。違いは、sandbox されたコマンドが自動承認されるか、明示的な権限が必要かだけです。
 
 <h4 id="auto-allow-mode">
-  自動許可モード
+  Auto-allow モード
 </h4>
 
-コマンドがサンドボックス化できる場合、Claude Code はそれをサンドボックス内で実行し、許可なしに自動的に承認します。許可されていないホストへのネットワークアクセスが必要なコマンドなど、サンドボックス化できないコマンドは、通常の許可フローにフォールバックします。そこで Claude Code は [許可ルール](/docs/ja/permissions)を確認し、それらのルールが既に許可していないコマンドについてゲートを設定します。Manual モードではプロンプトが表示されるか、[自動モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)では分類器が使用されます。
+コマンドが sandbox できる場合、Claude Code はそれを sandbox 内で実行し、権限なしで自動的に承認します。ネットワークアクセスが許可されていないホストを必要とするコマンドなど、sandbox できないコマンドは、通常の権限フローにフォールバックします。Claude Code は [権限ルール](/docs/ja/permissions)をチェックし、Manual モードでプロンプトを表示して、これらのルールが既に許可していないコマンドをゲートします。
 
-自動許可モードでも、以下が適用されます。
+auto-allow モードでも、以下が適用されます。
 
-* 明示的な [拒否ルール](/docs/ja/permissions)は常に尊重されます
-* [重要なパス](/docs/ja/permission-modes#critical-paths)をターゲットにする `rm` または `rmdir` コマンドは、依然として通常の許可フローを通じます
-* `Bash(git push *)` のようなコンテンツスコープの [ask ルール](/docs/ja/permissions)は、サンドボックス化されたコマンドでも強制的にプロンプトを表示します
-* 単純な `Bash` ask ルール、または同等の `Bash(*)` 形式は、サンドボックス化されて実行されるコマンドではスキップされます。通常の許可フローにフォールバックするコマンドには依然として適用されます。[Plan Mode](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode) では、ルールはスキップされません。読み取り専用のものを含む、サンドボックス化されたコマンドのプロンプトを表示します。v2.1.212 より前では、スキップは Plan Mode でも適用されていました
+* 明示的な [deny ルール](/docs/ja/permissions)は常に尊重されます
+* [critical path](/docs/ja/permission-modes#critical-paths) をターゲットとする `rm` または `rmdir` コマンドは、通常の権限フローを通じて実行されます
+* `Bash(git push *)` のようなコンテンツスコープの [ask ルール](/docs/ja/permissions)は、sandbox されたコマンドでもプロンプトを強制します
+* 裸の `Bash` ask ルール、または同等の `Bash(*)` フォームは、sandbox 内で実行されるコマンドではスキップされます。通常の権限フローにフォールバックするコマンドに適用されます。[plan mode](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode) では、ルールはスキップされません。読み取り専用を含む sandbox されたコマンドのプロンプトを表示します。v2.1.212 より前では、スキップは plan mode でも適用されていました
 
 <Info>
-  自動許可モードは許可モード設定とは独立して動作します。ただし 3 つの例外があります。[Plan Mode](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode)、[per-command allowed domains](#per-command-allowed-domains-in-auto-mode) を含む自動モードコマンド、および自動モードでのサンドボックス化されたコマンドの [server-side classifier review](/docs/ja/permission-modes#how-the-classifier-evaluates-actions)です。「編集を受け入れる」モードでない場合でも、自動許可が有効な場合、サンドボックス化された Bash コマンドは自動的に実行されます。これは、ファイル編集ツールが通常は Manual モードでプロンプトを表示する場合でも、サンドボックス境界内のファイルを変更する Bash コマンドはプロンプトなしに実行されることを意味します。
+  Auto-allow モードは、権限モード設定とは独立して機能します。3 つの例外があります。[plan mode](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode)、[per-command allowed domains](#per-command-allowed-domains-in-auto-mode) を含む auto モードコマンド、および auto モードで sandbox されたコマンドの[サーバー側分類器レビュー](/docs/ja/permission-modes#how-the-classifier-evaluates-actions)です。「accept edits」モードでない場合でも、auto-allow が有効な場合、sandbox されたBash コマンドは自動的に実行されます。これは、sandbox 境界内でファイルを変更する Bash コマンドが、ファイル編集ツールがプロンプトを表示する Manual モードでもプロンプトなしで実行されることを意味します。
 
-  Plan Mode では、自動許可は承認を広げません。Claude Code が計画中にコマンドをゲートする方法については、[Plan Mode](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode) を参照してください。v2.1.212 より前では、自動許可は Plan Mode でもプロンプトなしにサンドボックス化されたコマンドを実行していました。
+  plan mode では、auto-allow は承認を広げません。Claude Code がコマンドをゲートする方法については、[plan mode](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode) を参照してください。v2.1.212 より前では、auto-allow は plan mode でも sandbox されたコマンドをプロンプトなしで実行していました。
 </Info>
 
 <h4 id="regular-permissions-mode">
-  通常の許可モード
+  Regular permissions モード
 </h4>
 
-すべての Bash コマンドは、サンドボックス化されている場合でも、通常の許可フローを通じます。これはより多くの制御を提供しますが、より多くの承認が必要です。
+すべての Bash コマンドは、sandbox されている場合でも、通常の権限フローを通じて実行されます。これはより多くの制御を提供しますが、より多くの承認が必要です。
 
 <h4 id="the-unsandboxed-retry-escape-hatch">
-  サンドボックス化されていない再試行エスケープハッチ
+  Unsandboxed retry エスケープハッチ
 </h4>
 
-一部のコマンドはサンドボックス内でまったく実行できません。これは、それと互換性がないツール、または許可していないホストが必要なツールなどです。Claude Code はサンドボックス違反をブロックされたコマンドの結果で報告し、サンドボックスが拒否したパス またはホストを名前で指定するため、Claude はサンドボックスがブロックしたものを確認できます。タスクを失敗させたり、サンドボックス化をオフにするよう要求したりするのではなく、Claude Code には意図的なエスケープハッチが含まれています。Claude は違反を分析し、`dangerouslyDisableSandbox` パラメータでコマンドを再試行する可能性があります。
+互換性がないツールや許可していないホストが必要なツールなど、sandbox 内で実行できないコマンドがあります。Claude Code は、sandbox 違反をブロックされたコマンドの結果で報告し、sandbox が拒否したパスまたはホストに名前を付けるため、Claude は sandbox がブロックしたものを見ます。タスクを失敗させたり、sandboxing をオフにするよう要求したりするのではなく、Claude Code にはエスケープハッチが含まれています。Claude は違反を分析し、`dangerouslyDisableSandbox` パラメーターでコマンドを再試行する場合があります。
 
-再試行されたコマンドはサンドボックス外で実行されるため、通常の許可フローを通じます。Manual モードでは確認プロンプトが表示されます。[自動モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)では、分類器は基礎となるコマンドを評価します。[`permissions.blockReadsOutsideWorkingDirectories`](/docs/ja/settings-reference#permissions-blockreadsoutsideworkingdirectories) がオンの間、サンドボックス外で実行するために承認が必要な再試行はプロンプトを表示します。自動モードでもサンドボックス化されていない再試行のたびにプロンプトが表示されるようにするには、`Bash(dangerouslyDisableSandbox:true)` の [ask ルール](/docs/ja/permissions#match-by-input-parameter)を追加してください。
+再試行されたコマンドは sandbox の外で実行されるため、通常の権限フローを通じて実行されます。Manual モードでは確認プロンプトが表示されます。[auto mode](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode) では、分類器は基礎となるコマンドを評価します。[`permissions.blockReadsOutsideWorkingDirectories`](/docs/ja/settings-reference#permissions-blockreadsoutsideworkingdirectories) がオンの場合、sandbox の外で実行するために承認が必要な再試行はプロンプトを表示します。auto mode でも unsandboxed retry のたびにプロンプトを表示するには、`Bash(dangerouslyDisableSandbox:true)` の [ask ルール](/docs/ja/permissions#match-by-input-parameter)を追加します。
 
-このエスケープハッチは、[サンドボックス設定](/docs/ja/settings-reference#sandbox-settings)で `"allowUnsandboxedCommands": false` を設定することで無効化できます。エスケープハッチが無効化されると、Claude Code は `dangerouslyDisableSandbox` パラメータを無視し、すべてのコマンドは `excludedCommands` にリストされていない限り、サンドボックス化されて実行される必要があります。`/sandbox` **Overrides** タブはこの設定を **Strict sandbox mode** として表示します。
+このエスケープハッチは、[sandbox 設定](/docs/ja/settings-reference#sandbox-settings)で `"allowUnsandboxedCommands": false` を設定することで無効にできます。エスケープハッチが無効な場合、Claude Code は `dangerouslyDisableSandbox` パラメーターを無視し、Claude が実行するすべてのコマンドは、`excludedCommands` にリストされていない限り、sandbox 内で実行される必要があります。`/sandbox` **Overrides** タブは、この設定を **Strict sandbox mode** として表示します。
 
-Strict sandbox mode は Claude が実行するコマンドに適用されます。[`!` シェルモードプロンプト](/docs/ja/interactive-mode#shell-mode-with-prefix)で自分で入力するコマンドは、セッションが以下のいずれかでない限り、サンドボックス外で実行されます。
+Strict sandbox mode は、Claude が実行するコマンドに適用されます。[`!` shell-mode プロンプト](/docs/ja/interactive-mode#shell-mode-with-prefix)で自分で入力するコマンドは、セッションが以下のいずれかでない限り、sandbox の外で実行されます。
 
-* **[バックグラウンドセッション](/docs/ja/agent-view)：** strict sandbox mode はシェルモードコマンドもカバーします
-* **[`CLAUDE_CODE_SUBPROCESS_ENV_SCRUB`](/docs/ja/env-vars#variables) が設定された Linux セッション：** すべてのコマンドがサンドボックス化され、シェルモードコマンドを含みます
+* **[background session](/docs/ja/agent-view)**: strict sandbox mode は shell-mode コマンドもカバーします
+* **[`CLAUDE_CODE_SUBPROCESS_ENV_SCRUB`](/docs/ja/env-vars#variables) が設定された Linux セッション**: すべてのコマンドが sandbox されます。shell-mode コマンドを含みます
 
-v2.1.260 より前では、strict sandbox mode はすべてのセッションでシェルモードコマンドをサンドボックス化していました。
+v2.1.260 より前では、strict sandbox mode はすべてのセッションで shell-mode コマンドを sandbox していました。
 
 <h4 id="temporary-directories">
   一時ディレクトリ
 </h4>
 
-セッション一時ディレクトリは、デフォルトで作業ディレクトリと並んでサンドボックス内で書き込み可能です。[ファイルシステム分離を無効化](#disable-filesystem-isolation)しない限り、Claude Code はサンドボックス化されたコマンドに対して `$TMPDIR` をこのディレクトリに設定するため、一時ファイルを書き込むツールは追加の設定なしで動作します。サンドボックス化されていないコマンドは、シェルの `$TMPDIR` を変更されずに継承するため、ファイルシステム分離がオンの間、サンドボックス化されたコマンドとサンドボックス化されていないコマンドは `$TMPDIR` を異なるディレクトリに解決します。シェルが `$TMPDIR` を設定していない場合、またはシェルが空のままの場合、サンドボックス化されていないコマンドが `$TMPDIR` を参照すると、[`CLAUDE_CODE_TMPDIR`](/docs/ja/env-vars) オーバーライドを受け取るか、設定していない場合またはオーバーライドが長いパスの場合は、オペレーティングシステムの一時ディレクトリを受け取ります。変数が空の文字列に展開されないようにするためです。2 つの間で一時ファイルを渡すには、代わりに作業ディレクトリの下に書き込んでください。
+ユーザーごとの一時ディレクトリは、作業ディレクトリと一緒に、デフォルトで sandbox 内で書き込み可能です。[ファイルシステム分離を無効にしない](#disable-filesystem-isolation)限り、Claude Code は sandbox されたコマンドの `$TMPDIR` をこのディレクトリに設定するため、一時ファイルを書き込むツールは追加の設定なしで機能します。
+
+Unsandboxed コマンドは、設定されている場合、シェルの `$TMPDIR` を継承するため、ファイルシステム分離がオンの場合、sandbox されたコマンドと unsandboxed コマンドは `$TMPDIR` を異なるディレクトリに解決します。シェルが `$TMPDIR` を未設定または空のままにしている場合、`$TMPDIR` を参照する unsandboxed コマンドは、[`CLAUDE_CODE_TMPDIR`](/docs/ja/env-vars) オーバーライドを受け取ります。設定していない場合、またはオーバーライドが長いパスの場合は、オペレーティングシステムの一時ディレクトリを受け取るため、変数は空の文字列に展開されません。2 つの間で一時ファイルを渡すには、代わりに作業ディレクトリの下に書き込みます。
 
 <h2 id="configure-sandboxing">
   サンドボックスの設定
@@ -187,7 +189,7 @@ v2.1.260 より前では、strict sandbox mode はすべてのセッションで
 
 `settings.json` ファイルを通じてサンドボックスの動作をカスタマイズできます。完全な設定リファレンスについては、[設定](/docs/ja/settings-reference#sandbox-settings)を参照してください。
 
-デフォルトでは、サンドボックス化されたコマンドは現在の作業ディレクトリ、セッション一時ディレクトリ、および `--add-dir`、`/add-dir`、または `permissions.additionalDirectories` で[追加したディレクトリ](/docs/ja/permissions#additional-directories-grant-file-access-not-configuration)に書き込むことができます。`kubectl`、`terraform`、`npm` などのサブプロセスコマンドがこれらのディレクトリ外に書き込む必要がある場合は、`sandbox.filesystem.allowWrite` を使用して特定のパスへのアクセスを許可します。
+デフォルトでは、サンドボックス化されたコマンドは現在の作業ディレクトリ、ユーザーごとの一時ディレクトリ、および `--add-dir`、`/add-dir`、または `permissions.additionalDirectories` で[追加したディレクトリ](/docs/ja/permissions#additional-directories-grant-file-access-not-configuration)に書き込むことができます。`kubectl`、`terraform`、`npm` などのサブプロセスコマンドがこれらのディレクトリ外に書き込む必要がある場合は、`sandbox.filesystem.allowWrite` を使用して特定のパスへのアクセスを許可します。
 
 ```json theme={null}
 {
@@ -210,21 +212,21 @@ CLI で [`--setting-sources`](/docs/ja/cli-reference) を使用するか、Agent
 
 パスプレフィックスはパスの解決方法を制御します。
 
-| プレフィックス           | 意味                                                             | 例                                                                      |
-| :---------------- | :------------------------------------------------------------- | :--------------------------------------------------------------------- |
-| `/`               | ファイルシステムルートからの絶対パス                                             | `/tmp/build` は `/tmp/build` のままです                                      |
-| `~/`              | ホームディレクトリからの相対パス                                               | `~/.kube` は `$HOME/.kube` になります                                        |
+| プレフィックス | 意味 | 例 |
+| :- | :- | :- |
+| `/` | ファイルシステムルートからの絶対パス | `/tmp/build` は `/tmp/build` のままです |
+| `~/` | ホームディレクトリからの相対パス | `~/.kube` は `$HOME/.kube` になります |
 | `./` またはプレフィックスなし | プロジェクト設定の場合はプロジェクトルートからの相対パス、またはユーザー設定の場合は `~/.claude` からの相対パス | `.claude/settings.json` の `./output` は `<project-root>/output` に解決されます |
 
 この構文は、絶対パスに `//path` を使用し、プロジェクト相対パスに `/path` を使用する[読み取りおよび編集権限ルール](/docs/ja/permissions#read-and-edit)とは異なります。サンドボックスファイルシステムパスは標準的な規則を使用します。`/tmp/build` は絶対パスです。Claude Code がこれらのパスの末尾のスラッシュまたはワイルドカードをどのように扱うかについては、[サンドボックスパスプレフィックス](/docs/ja/settings-reference#sandbox-path-prefixes)を参照してください。
 
 `sandbox.filesystem.denyWrite` と `sandbox.filesystem.denyRead` を使用して書き込みまたは読み取りアクセスを拒否し、`sandbox.filesystem.allowRead` を使用して拒否された領域内の特定のパスを再度許可することもできます。読み取りルールが重複する場合、より狭いパスを持つルールが適用されます。
 
-| ルール例                                                 | 結果                                                                                                                                  |
-| :--------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------- |
-| `"denyRead": ["~/"]` と `"allowRead": ["~/projects"]` | `~/projects` は読み取り可能で、ホームディレクトリの残りはブロックされたままです。より狭い許可がその拒否された領域の一部を再度開きます                                                           |
-| `"allowRead": ["~/"]` と `"denyRead": ["~/.env"]`     | `~/.env` はブロックされたままで、ホームディレクトリの残りは読み取り可能です。拒否はより広い許可内に保持されるため、広い許可はシークレットを静かに再度公開することはできません                                         |
-| `"allowRead": ["~/"]` と `"denyRead": ["~/**/.env"]`  | ホームディレクトリ下のすべての `.env` はブロックされたままで、残りは読み取り可能です。[ワイルドカード拒否](/docs/ja/settings-reference#sandbox-path-prefixes)は、正確なパスと同じ方法でより広い許可内に保持されます |
+| ルール例 | 結果 |
+| :- | :- |
+| `"denyRead": ["~/"]` と `"allowRead": ["~/projects"]` | `~/projects` は読み取り可能で、ホームディレクトリの残りはブロックされたままです。より狭い許可がその拒否された領域の一部を再度開きます |
+| `"allowRead": ["~/"]` と `"denyRead": ["~/.env"]` | `~/.env` はブロックされたままで、ホームディレクトリの残りは読み取り可能です。拒否はより広い許可内に保持されるため、広い許可はシークレットを静かに再度公開することはできません |
+| `"allowRead": ["~/"]` と `"denyRead": ["~/**/.env"]` | ホームディレクトリ下のすべての `.env` はブロックされたままで、残りは読み取り可能です。[ワイルドカード拒否](/docs/ja/settings-reference#sandbox-path-prefixes)は、正確なパスと同じ方法でより広い許可内に保持されます |
 
 以下の例は、ホームディレクトリ全体からの読み取りをブロックしながら、現在のプロジェクトからの読み取りを許可します。プロジェクトの `.claude/settings.json` に配置してください。相対パス `.` はプロジェクト設定に設定が存在する場合にのみプロジェクトルートに解決されるためです。
 
@@ -284,12 +286,12 @@ CLI で [`--setting-sources`](/docs/ja/cli-reference) を使用するか、Agent
 
 管理された `credentials.files` エントリが `filesystem.disabled` をピンするかどうか（キーを管理設定にロックして開発者がファイルシステム分離をオフにできないようにする）は、エントリの `mode` とサンドボックスの開始時にエントリに何が起こるかによって異なります。
 
-| 管理エントリ                                                                                         | `filesystem.disabled` をピンする | 分離がオフの場合にファイルを保護するもの                                                                   |
-| ---------------------------------------------------------------------------------------------- | --------------------------- | -------------------------------------------------------------------------------------- |
-| `"mode": "deny"`                                                                               | はい                          | なし。読み取りブロックはファイルシステムレイヤーの一部です                                                          |
-| `"mode": "mask"`、マスクとして適用                                                                      | いいえ                         | マスキング自体。Linux と WSL2 の[センチネルコピーとプロキシ](#mask-credential-files)、macOS のサンドボックス独自の読み取りルール |
-| `"mode": "mask"`、[セットアップで `deny` にフォールバック](#mask-credential-files)                             | いいえ                         | なし、`deny` と同じです。マスクできないパス（ディレクトリなど）を明示的な `deny` エントリとしてリストします。これはキーをピンします              |
-| `"mode": "mask"`、[検証によって `deny` に低下](/docs/ja/managed-settings#invalid-entries-in-managed-settings) | はい、明示的な `deny` のように         | なし、`deny` と同じです                                                                        |
+| 管理エントリ | `filesystem.disabled` をピンする | 分離がオフの場合にファイルを保護するもの |
+| - | - | - |
+| `"mode": "deny"` | はい | なし。読み取りブロックはファイルシステムレイヤーの一部です |
+| `"mode": "mask"`、マスクとして適用 | いいえ | マスキング自体。Linux と WSL2 の[センチネルコピーとプロキシ](#mask-credential-files)、macOS のサンドボックス独自の読み取りルール |
+| `"mode": "mask"`、[セットアップで `deny` にフォールバック](#mask-credential-files) | いいえ | なし、`deny` と同じです。マスクできないパス（ディレクトリなど）を明示的な `deny` エントリとしてリストします。これはキーをピンします |
+| `"mode": "mask"`、[検証によって `deny` に低下](/docs/ja/managed-settings#invalid-entries-in-managed-settings) | はい、明示的な `deny` のように | なし、`deny` と同じです |
 
 フォールバックはサンドボックスの開始時に発生し、Claude Code が既に設定を読み込んだ後にピンチェックが実行されるため、フォールバックされたエントリはピンしません。検証は設定の読み込み中に無効なエントリを `deny` に書き直すため、低下したエントリは `deny` として記述したものと同じようにピンします。
 
@@ -299,15 +301,15 @@ CLI で [`--setting-sources`](/docs/ja/cli-reference) を使用するか、Agent
 
 `filesystem.disabled` を設定すると、ファイルシステムレイヤー自体が強制する保護が解除されます。他のレイヤーが強制する保護は引き続き適用されます。
 
-| 保護                                                                                  | ファイルシステム分離がオフの場合                                                                                            |
-| ----------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| `filesystem.denyRead` と [`credentials.files`](#protect-credentials) `deny` 読み取りブロック | 強制されません。ファイルシステムレイヤーは両方を適用します                                                                               |
-| `credentials.envVars` `deny` と `mask` エントリ                                          | 強制されます。環境変数スクラビングはファイルシステムレイヤーから独立しています                                                                     |
-| [`credentials.files` `mask` エントリ](#mask-credential-files)がマスクとして適用                  | 強制されます。マスキングはファイルシステムレイヤーから独立しています。[`deny` にフォールバック](#mask-credential-files)したエントリは強制されません。`deny` エントリと同じです |
+| 保護 | ファイルシステム分離がオフの場合 |
+| - | - |
+| `filesystem.denyRead` と [`credentials.files`](#protect-credentials) `deny` 読み取りブロック | 強制されません。ファイルシステムレイヤーは両方を適用します |
+| `credentials.envVars` `deny` と `mask` エントリ | 強制されます。環境変数スクラビングはファイルシステムレイヤーから独立しています |
+| [`credentials.files` `mask` エントリ](#mask-credential-files)がマスクとして適用 | 強制されます。マスキングはファイルシステムレイヤーから独立しています。[`deny` にフォールバック](#mask-credential-files)したエントリは強制されません。`deny` エントリと同じです |
 
 他に 2 つのことが変わります。
 
-* サンドボックス化されたコマンドは、セッション一時ディレクトリではなく、シェルの `$TMPDIR` を継承します。すべての一時ディレクトリは書き込み可能で、Claude Code はコマンドをセッション一時ディレクトリにリダイレクトしなくなるためです。
+* サンドボックス化されたコマンドは、ユーザーごとの一時ディレクトリではなく、シェルの `$TMPDIR` を継承します。すべての一時ディレクトリは書き込み可能で、Claude Code はコマンドをユーザーごとの一時ディレクトリにリダイレクトしなくなるためです。
 
   Linux では、変数は親シェルでしばしば設定されていません。Bash ツールのガイダンスは、`$TMPDIR` に依存するのではなく、`mktemp -d` でスクラッチディレクトリを作成するよう Claude に指示します。
 * [`autoAllowBashIfSandboxed`](/docs/ja/settings-reference#sandbox-autoallowbashifsandboxed) は引き続きデフォルトで `true` であるため、サンドボックス化されたコマンドはプロンプトなしで実行され続けます。プロンプトを表示するには `false` に設定します。
@@ -456,11 +458,11 @@ Claude Code は、全体値をマスクする場合、従来の `AWS_ACCESS_KEY_
 
 3 つの AWS リクエスト形式は、プロキシが再計算できない署名を持ちます。そのようなリクエストがマスク済みペアのプレースホルダーで署名されている場合、プロキシは壊れた署名を転送するのではなく失敗します。未マスク認証情報で署名されたリクエストは影響を受けません。[`credentials.sigv4`](/docs/ja/settings-reference#sandbox-credentials-sigv4) 設定（Claude Code v2.1.224 以降が必要）は、フォームごとにこれを緩和します。フォームのキーを `passthrough` に設定すると、リクエストはプレースホルダー派生署名で転送されるため、呼び出しツールは AWS 独自の拒否応答を受け取る代わりにプロキシエラーを受け取ります。`awsPairs` と同様に、`sigv4` はユーザー設定、管理設定、および `--settings` CLI フラグからのみ尊重されます。
 
-| リクエスト形式                   | `sigv4` キー  | プロキシが再署名できない理由                             |
-| :------------------------ | :---------- | :----------------------------------------- |
+| リクエスト形式 | `sigv4` キー | プロキシが再署名できない理由 |
+| :- | :- | :- |
 | aws-chunked ストリーミングアップロード | `streaming` | チャックごとの署名はシード署名から連鎖するため、再署名にはボディの書き直しが必要です |
-| 署名済み URL                  | `presigned` | 署名は URL 自体に存在し、`Authorization` ヘッダーはありません  |
-| SigV4A 非対称署名              | `sigv4a`    | 再計算する共有キー HMAC がありません                      |
+| 署名済み URL | `presigned` | 署名は URL 自体に存在し、`Authorization` ヘッダーはありません |
+| SigV4A 非対称署名 | `sigv4a` | 再計算する共有キー HMAC がありません |
 
 <h4 id="mask-credential-files">
   認証情報ファイルをマスク
@@ -526,9 +528,9 @@ JWT を保持するファイルの場合、`extract` の代わりに、または
 
 サンドボックス化された Bash ツールはファイルシステムアクセスを特定のディレクトリに制限します。
 
-* **デフォルトの書き込み動作**：現在の作業ディレクトリとそのサブディレクトリへの読み取りおよび書き込みアクセス、`--add-dir`、`/add-dir`、または [`permissions.additionalDirectories`](/docs/ja/settings-reference#permissions-additionaldirectories) で追加したディレクトリ、加えて `$TMPDIR` が指すセッション一時ディレクトリへのアクセス
+* **デフォルトの書き込み動作**：現在の作業ディレクトリとそのサブディレクトリへの読み取りおよび書き込みアクセス、`--add-dir`、`/add-dir`、または [`permissions.additionalDirectories`](/docs/ja/settings-reference#permissions-additionaldirectories) で追加したディレクトリ、加えて `$TMPDIR` が指すユーザーごとの一時ディレクトリへのアクセス
 * **デフォルトの読み取り動作**：特定の拒否ディレクトリを除く、コンピュータ全体への読み取りアクセス。このデフォルトは `~/.aws/credentials` や `~/.ssh/` などの認証情報ファイルの読み取りを許可することに注意してください。[`sandbox.credentials`](#protect-credentials) を使用してこれらのファイルの読み取りをブロックし、シークレット環境変数の設定を解除するか、パスを `denyRead` に追加してください。
-* **ブロックされたアクセス**：明示的な許可なしに作業ディレクトリ、追加されたディレクトリ、およびセッション一時ディレクトリ外のファイルを変更できません。これには `~/.bashrc` などのシェル設定ファイルと `/bin/` のシステムバイナリが含まれます。
+* **ブロックされたアクセス**：明示的な許可なしに作業ディレクトリ、追加されたディレクトリ、およびユーザーごとの一時ディレクトリ外のファイルを変更できません。これには `~/.bashrc` などのシェル設定ファイルと `/bin/` のシステムバイナリが含まれます。
 * **Git worktrees**：作業ディレクトリが[リンクされた git worktree](/docs/ja/worktrees)の場合、サンドボックスはメインリポジトリの共有 `.git` ディレクトリへの書き込みも許可するため、`git commit` などのコマンドが refs とインデックスを更新できます。そのディレクトリ内の `hooks/` と `config` への書き込みは引き続き拒否されます。
 * **設定可能**：設定を通じてカスタム許可パスと拒否パスを定義します
 
@@ -542,7 +544,7 @@ JWT を保持するファイルの場合、`extract` の代わりに、または
 
 * **作業ディレクトリおよびその上のディレクトリ内**：`.claude` 設定ファイル、`.claude/skills`、`.claude/agents`、`.claude/commands`、`.claude/hooks` ディレクトリ、`.mcp.json`、および Claude Code が独自に実行するファイル（`.claude/workflows` や `.claude/scheduled_tasks.json` など）
 * **作業ディレクトリのみ**：`.bashrc` や `.zshrc` などのシェルスタートアップファイル、`.gitconfig`、`.vscode` および `.idea` ディレクトリ、`.git` 内の `hooks` および `config`
-* **作業ディレクトリをベア git リポジトリに変えるファイル**：トップレベルの `HEAD`、`objects`、`refs`、加えて `config` と `hooks`（`HEAD` が隣に存在する場合）。Linux および WSL2 では、サンドボックス化されたコマンドの実行中に表示されるトップレベルの `HEAD` ファイルまたは `objects` または `refs` ディレクトリをサンドボックスが削除します。
+* **作業ディレクトリをベア git リポジトリに変えるファイル**：トップレベルの `HEAD`、`objects`、`refs`、加えて `config` と `hooks`（`HEAD` が隣に存在する場合）。`config` という名前のファイルは `HEAD` がなくても拒否されます。Linux および WSL2 では、サンドボックス化されたコマンドの実行中に表示されるトップレベルの `HEAD` ファイルまたは `objects` または `refs` ディレクトリをサンドボックスが削除します。
 * **`~/.claude` または `CLAUDE_CONFIG_DIR` が指すディレクトリ内**：そのほとんどのコンテンツ、加えて `~/.claude.json` および `.credentials.json` 認証情報ストア
 
 セッション中に保護された設定ファイルのパスにシンボリックリンクが表示される場合、サンドボックスは次のコマンドから、それが指すファイルへの書き込みも拒否します。
@@ -557,7 +559,8 @@ JWT を保持するファイルの場合、`extract` の代わりに、または
 
 ネットワークアクセスはサンドボックス外で実行されるプロキシサーバーを通じて制御されます。
 
-* **ドメイン制限**：Claude Code はデフォルトでドメインを事前に許可しません。コマンドが新しいドメインにアクセスする必要がある場合、Claude Code はプロンプトを表示します。[オートモード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)では、Claude は[Per-command allowed domains](#per-command-allowed-domains-in-auto-mode)に従って、コマンド自体でコマンドが必要とするホストを指定します。プロンプトで「はい」を選択すると、Claude Code は現在のセッションの残りの期間そのホストを許可し、同じホストへの後続の接続ではプロンプトを表示しません。「はい、今後は聞かない」を選択すると、Claude Code は `WebFetch(domain:...)` 許可ルールを[ローカル設定](/docs/ja/permissions#permission-system)に保存するため、そのホストは今後のセッションで許可されたままになります。
+* **ドメイン制限**：Claude Code はデフォルトでドメインを事前に許可しません。コマンドが新しいドメインにアクセスする必要がある場合、Claude Code はプロンプトを表示します。[オートモード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)では、Claude は[Per-command allowed domains](#per-command-allowed-domains-in-auto-mode)に従って、コマンド自体でコマンドが必要とするホストを指定します。
+* **承認の選択肢**：プロンプトで「はい」を選択すると、Claude Code は現在のセッションの残りの期間そのホストを許可し、同じホストへの後続の接続ではプロンプトを表示しません。「はい、今後は聞かない」を選択すると、Claude Code は `WebFetch(domain:...)` 許可ルールを[ローカル設定](/docs/ja/permissions#permission-system)に保存するため、そのホストは今後のセッションで許可されたままになります。
 * **事前許可ドメイン**：[`allowedDomains`](/docs/ja/settings-reference#sandbox-network-alloweddomains) でドメインを事前に許可してプロンプトを完全に回避します。Claude Code は、[Permission rules](#permission-rules) で説明されているように、`WebFetch(domain:...)` 許可ルールからのドメインも事前に許可します。
 * **厳密な許可リスト**：ユーザー、管理、または CLI `--settings` 設定で [`strictAllowlist`](/docs/ja/settings-reference#sandbox-network-strictallowlist) を `true` に設定した場合、Claude Code はプロンプトの代わりに、許可リスト外のホストへのサンドボックス化されたコマンドアクセスを拒否します。許可リストは、サンドボックスが他の方法でプロンプトを表示するのと同じものです。`allowedDomains` に加えて `WebFetch(domain:...)` 許可ルールからのドメイン、または `allowManagedDomainsOnly` が設定されている場合は管理設定エントリのみです。Claude Code はサンドボックス化されたコマンドのみにこれを実施します。`WebFetch` などのインプロセスツールは引き続き[権限ルール](#permission-rules)に従います。リポジトリの `.claude/settings.json` または `.claude/settings.local.json` で設定しても効果はありません。Claude Code v2.1.219 以降が必要です。
 * **管理ロックダウン**：[`allowManagedDomainsOnly`](/docs/ja/settings-reference#sandbox-network-allowmanageddomainsonly) が管理設定で設定されている場合、許可されていないドメインはプロンプトの代わりに自動的にブロックされ、管理設定からの `allowedDomains` および `WebFetch(domain:...)` 許可ルールのみが尊重されます。
@@ -633,17 +636,17 @@ WSL1 は bubblewrap が WSL2 でのみ利用可能なカーネル機能を必要
 
 ファイルシステムおよびネットワーク制限は、サンドボックス設定と権限ルールの両方を通じて構成されます。
 
-| 設定またはルール                                                         | 機能                                                           |
-| :--------------------------------------------------------------- | :----------------------------------------------------------- |
-| `sandbox.filesystem.allowWrite`                                  | 作業ディレクトリ外のパスへのサブプロセス書き込みアクセスを許可します                           |
-| `sandbox.filesystem.denyWrite` および `sandbox.filesystem.denyRead` | 特定のパスへのサブプロセスアクセスをブロックします                                    |
-| `sandbox.filesystem.allowRead`                                   | `denyRead` 領域内の特定のパスの読み取りを再度許可します                            |
-| [`sandbox.filesystem.disabled`](#disable-filesystem-isolation)   | ネットワーク分離を維持しながら、ファイルシステムレイヤーを完全にオフにします                       |
-| `Edit` allow ルール                                                 | `sandbox.filesystem.allowWrite` と同じ方法で、特定のパスへの書き込みアクセスを許可します |
-| `Read` および `Edit` deny ルール                                       | 特定のファイルまたはディレクトリへのアクセスをブロックします                               |
-| `WebFetch(domain:...)` allow および deny ルール                        | ドメインアクセスを制御します                                               |
-| サンドボックス `allowedDomains`                                         | Bash コマンドが到達できるドメインを制御します                                    |
-| サンドボックス `deniedDomains`                                          | より広い `allowedDomains` ワイルドカードが許可する場合でも、特定のドメインをブロックします       |
+| 設定またはルール | 機能 |
+| :- | :- |
+| `sandbox.filesystem.allowWrite` | 作業ディレクトリ外のパスへのサブプロセス書き込みアクセスを許可します |
+| `sandbox.filesystem.denyWrite` および `sandbox.filesystem.denyRead` | 特定のパスへのサブプロセスアクセスをブロックします |
+| `sandbox.filesystem.allowRead` | `denyRead` 領域内の特定のパスの読み取りを再度許可します |
+| [`sandbox.filesystem.disabled`](#disable-filesystem-isolation) | ネットワーク分離を維持しながら、ファイルシステムレイヤーを完全にオフにします |
+| `Edit` allow ルール | `sandbox.filesystem.allowWrite` と同じ方法で、特定のパスへの書き込みアクセスを許可します |
+| `Read` および `Edit` deny ルール | 特定のファイルまたはディレクトリへのアクセスをブロックします |
+| `WebFetch(domain:...)` allow および deny ルール | ドメインアクセスを制御します |
+| サンドボックス `allowedDomains` | Bash コマンドが到達できるドメインを制御します |
+| サンドボックス `deniedDomains` | より広い `allowedDomains` ワイルドカードが許可する場合でも、特定のドメインをブロックします |
 
 サンドボックス設定と権限ルールの両方からのパスとドメインは、最終的なサンドボックス構成にマージされます。
 
@@ -655,11 +658,11 @@ WSL1 は bubblewrap が WSL2 でのみ利用可能なカーネル機能を必要
 
 `/sandbox` は[権限モード](/docs/ja/permission-modes)ではありません。権限モードは、ツール呼び出しが実行されるかどうか、および最初にプロンプトが表示されるかどうかを決定しますが、サンドボックスは Bash コマンドが実行されたら何にアクセスできるかを制限します。制御対象と、アクション単位のプロンプトに代わるものが異なります。
 
-|                                                                 | 制御対象                       | プロンプトに代わるもの                                                                                                                                       |
-| :-------------------------------------------------------------- | :------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `/sandbox`                                                      | Bash コマンドが実行されたら何にアクセスできるか | [オートアロー モード](#sandbox-modes)のサンドボックス境界自体                                                                                                          |
-| [オートモード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode) | 各ツール呼び出しが実行されるかどうか         | アクションをレビューする分類器                                                                                                                                   |
-| `--dangerously-skip-permissions`                                | 各ツール呼び出しが実行されるかどうか         | なし。[保護されたパス](/docs/ja/permission-modes#protected-paths)チェックもスキップされます。[モードが自動承認しないアクション](/docs/ja/permission-modes#actions-no-mode-auto-approves)は引き続き適用されます |
+| | 制御対象 | プロンプトに代わるもの |
+| :- | :- | :- |
+| `/sandbox` | Bash コマンドが実行されたら何にアクセスできるか | [オートアロー モード](#sandbox-modes)のサンドボックス境界自体 |
+| [オートモード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode) | 各ツール呼び出しが実行されるかどうか | アクションをレビューする分類器 |
+| `--dangerously-skip-permissions` | 各ツール呼び出しが実行されるかどうか | なし。[保護されたパス](/docs/ja/permission-modes#protected-paths)チェックもスキップされます。[モードが自動承認しないアクション](/docs/ja/permission-modes#actions-no-mode-auto-approves)は引き続き適用されます |
 
 サンドボックスの[オートアロー モード](#sandbox-modes)は[オートモード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)とは別です。オートアロー はサンドボックス境界がそれらを含むため Bash コマンドを承認し、オートモードはアクションをレビューするために分類器を使用します。この 2 つは独立して機能し、[サンドボックス モード](#sandbox-modes)の下にリストされている例外を除いて組み合わせることができます。無人実行の分離境界を選択するには、[サンドボックス環境](/docs/ja/sandbox-environments#how-isolation-relates-to-permission-modes)を参照してください。各フラグを開始する一般的な権限モードとサンドボックスペアリングのテーブルについては、[一般的なセットアップ](/docs/ja/permission-modes#common-setups)を参照してください。
 

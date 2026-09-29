@@ -20,14 +20,14 @@ Claude Code は、軽量なコマンド単位のサンドボックスから完�
 
 以下の表の最初の 2 つのアプローチはコンテナなしでホストオペレーティングシステム上で実行されます。残りは Claude Code をコンテナまたは仮想マシン内に配置します。
 
-| アプローチ                                        | 何が分離されるか                                       | Docker が必要 | セットアップの手間                                                                 |
-| :------------------------------------------- | :--------------------------------------------- | :--------- | :------------------------------------------------------------------------ |
-| [サンドボックス化された Bash ツール](#sandboxed-bash-tool) | Bash、PowerShell、Monitor コマンドとその子プロセス           | いいえ        | macOS では最小限。Linux と WSL2 では低い                                             |
-| [サンドボックスランタイム](#sandbox-runtime)             | Claude Code プロセス全体（ファイルツール、MCP サーバー、hooks を含む） | いいえ        | 低い                                                                        |
-| [Dev コンテナ](#dev-containers)                  | 完全な開発環境                                        | はい         | 中程度                                                                       |
-| [カスタムコンテナ](#custom-container)                | 完全な開発環境                                        | はい         | 中程度から高い                                                                   |
-| [仮想マシン](#virtual-machine)                    | 完全なオペレーティングシステム                                | いいえ        | 高い                                                                        |
-| [クラウドセッション](#cloud-sessions)                 | 完全なオペレーティングシステム（Anthropic がホスト）                | いいえ        | なし。Claude サブスクリプションが必要で、`claude --cloud` で起動する場合を除き、接続された GitHub アカウントが必要 |
+| アプローチ | 何が分離されるか | Docker が必要 | セットアップの手間 |
+| :- | :- | :- | :- |
+| [サンドボックス化された Bash ツール](#sandboxed-bash-tool) | Bash、PowerShell、Monitor コマンドとその子プロセス | いいえ | macOS では最小限。Linux と WSL2 では低い |
+| [サンドボックスランタイム](#sandbox-runtime) | Claude Code プロセス全体（ファイルツール、MCP サーバー、hooks を含む） | いいえ | 低い |
+| [Dev コンテナ](#dev-containers) | 完全な開発環境 | はい | 中程度 |
+| [カスタムコンテナ](#custom-container) | 完全な開発環境 | はい | 中程度から高い |
+| [仮想マシン](#virtual-machine) | 完全なオペレーティングシステム | いいえ | 高い |
+| [クラウドセッション](#cloud-sessions) | 完全なオペレーティングシステム（Anthropic がホスト） | いいえ | なし。Claude サブスクリプションが必要で、`claude --cloud` で起動する場合を除き、接続された GitHub アカウントが必要 |
 
 [サンドボックス化された Bash ツール](/docs/ja/sandboxing)は Claude Code に組み込まれており、Bash コマンドのみを制限します。組み込みファイルツール、MCP サーバー、hooks はホスト上で直接実行されます。表内の他のすべてのアプローチは、Claude Code プロセス全体を分離境界内に配置するため、ファイルツール、MCP サーバー、hooks も制限されます。
 
@@ -43,16 +43,16 @@ Claude Code は、軽量なコマンド単位のサンドボックスから完�
 
 目標を以下の行と照合してから、その後に続く詳細セクションを読んでください。
 
-| 実現したいこと                                                     | 開始するもの                                                                                                                     |
-| :---------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------- |
-| 自分のマシンでの日常的な作業中に権限プロンプトを減らす                                 | [サンドボックス化された Bash ツール](/docs/ja/sandboxing)（`/sandbox` で有効化）                                                                    |
-| Claude に `--dangerously-skip-permissions` または自動モードで無人で作業させる | 事前設定された [dev コンテナ](/docs/ja/devcontainer)、任意のコンテナまたは VM、または [サンドボックスランタイム](#sandbox-runtime)                                    |
-| Bash だけでなく MCP サーバーと hooks も分離し、Docker なしで実行する              | サンドボックスランタイム                                                                                                               |
-| 信頼できないリポジトリで作業する                                            | 専用の仮想マシン、または Claude サブスクリプションがある場合は [Web 上の Claude Code](/docs/ja/claude-code-on-the-web)。`claude --cloud` で起動する場合、GitHub は不要です |
-| チーム全体でサンドボックス化された環境を標準化する                                   | 事前設定された [dev コンテナ](/docs/ja/devcontainer)（リポジトリにコピー）                                                                            |
-| ローカルセットアップなしのデバイスから Claude Code を使用する                       | [Web 上の Claude Code](/docs/ja/claude-code-on-the-web)（Claude サブスクリプションと接続された GitHub アカウントが必要）                                   |
-| 組織内のすべての開発者に対して分離を要求する                                      | [組織全体で分離を強制](#enforce-isolation-across-an-organization)                                                                    |
-| ネイティブ Windows ホストで作業する                                      | コンテナまたは VM、または WSL2 内で Bash サンドボックスを実行                                                                                     |
+| 実現したいこと | 開始するもの |
+| :- | :- |
+| 自分のマシンでの日常的な作業中に権限プロンプトを減らす | [サンドボックス化された Bash ツール](/docs/ja/sandboxing)（`/sandbox` で有効化） |
+| Claude に `--dangerously-skip-permissions` または自動モードで無人で作業させる | 事前設定された [dev コンテナ](/docs/ja/devcontainer)、任意のコンテナまたは VM、または [サンドボックスランタイム](#sandbox-runtime) |
+| Bash だけでなく MCP サーバーと hooks も分離し、Docker なしで実行する | サンドボックスランタイム |
+| 信頼できないリポジトリで作業する | 専用の仮想マシン、または Claude サブスクリプションがある場合は [Web 上の Claude Code](/docs/ja/claude-code-on-the-web)。`claude --cloud` で起動する場合、GitHub は不要です |
+| チーム全体でサンドボックス化された環境を標準化する | 事前設定された [dev コンテナ](/docs/ja/devcontainer)（リポジトリにコピー） |
+| ローカルセットアップなしのデバイスから Claude Code を使用する | [Web 上の Claude Code](/docs/ja/claude-code-on-the-web)（Claude サブスクリプションと接続された GitHub アカウントが必要） |
+| 組織内のすべての開発者に対して分離を要求する | [組織全体で分離を強制](#enforce-isolation-across-an-organization) |
+| ネイティブ Windows ホストで作業する | コンテナまたは VM、または WSL2 内で Bash サンドボックスを実行 |
 
 <h3 id="how-isolation-relates-to-permission-modes">
   分離が権限モードとどのように関連するか
@@ -117,7 +117,7 @@ Linux と WSL2 では、ランタイムは組み込みサンドボックスと�
 Linux と WSL2 では、ランタイムは既に存在するパスにのみ書き込み許可を適用します。新しい環境では、最初の起動前に Claude Code の設定パスを作成してください。
 
 ```bash theme={null}
-mkdir -p ~/.claude && echo '{}' > ~/.claude.json
+mkdir -p ~/.claude && { [ -f ~/.claude.json ] || echo '{}' > ~/.claude.json; }
 ```
 
 設定ファイルが配置されたら、`npx` で Claude Code を起動し、ラップするコマンドとして `claude` を渡します。

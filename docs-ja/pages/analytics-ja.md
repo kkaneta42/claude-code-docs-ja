@@ -8,10 +8,10 @@
 
 Claude Code は、組織が開発者の使用パターンを理解し、貢献メトリクスを追跡し、Claude Code がエンジニアリング速度にどのような影響を与えるかを測定するのに役立つ分析ダッシュボードを提供します。お客様のプランに応じたダッシュボードにアクセスしてください。
 
-| プラン                           | ダッシュボード URL                                                                | 含まれる内容                                        | 詳細                                              |
-| ----------------------------- | -------------------------------------------------------------------------- | --------------------------------------------- | ----------------------------------------------- |
+| プラン | ダッシュボード URL | 含まれる内容 | 詳細 |
+| - | - | - | - |
 | Claude for Teams / Enterprise | [claude.ai/analytics/claude-code](https://claude.ai/analytics/claude-code) | 使用メトリクス、GitHub 統合による貢献メトリクス、リーダーボード、データエクスポート | [詳細](#access-analytics-for-team-and-enterprise) |
-| API（Claude Console）           | [platform.claude.com/claude-code](https://platform.claude.com/claude-code) | 使用メトリクス、支出追跡、チームインサイト                         | [詳細](#access-analytics-for-api-customers)       |
+| API（Claude Console） | [platform.claude.com/claude-code](https://platform.claude.com/claude-code) | 使用メトリクス、支出追跡、チームインサイト | [詳細](#access-analytics-for-api-customers) |
 
 <h2 id="access-analytics-for-team-and-enterprise">
   Team と Enterprise の分析にアクセスする

@@ -402,12 +402,12 @@ Claude Code は `~/.claude/settings.json` などの JSON 設定ファイルか�
 
 Claude Code は 4 つのファイルから設定を読み込み、組織は claude.ai コンソールから管理設定を配信することもできます。各ソースにはスコープがあります。スコープは、その中に保存された設定が適用される人とプロジェクトのセット。それがあなただけ、プロジェクト内のすべての人、またはあなたの組織内のすべての人であるかどうか。
 
-| スコープ       | ファイル                                                                             | 誰に影響するか                                                                                                        | 用途                                    |
-| :--------- | :------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------- | :------------------------------------ |
-| ユーザー       | `~/.claude/settings.json`                                                        | あなた、このマシン上のすべてのプロジェクト                                                                                          | 個人設定：テーマ、エディターモード、デフォルトモデル、独自の権限ルール   |
-| 共有プロジェクト   | `.claude/settings.json`                                                          | このフォルダを含むフォルダで作業しているすべての人。git リポジトリでは、コミットしてチームメイトが取得できるようにします                                                 | チーム権限、hooks、プラグイン、およびプロジェクトが必要とする環境変数 |
-| プロジェクトローカル | `.claude/settings.local.json`                                                    | あなた、このプロジェクトのみ。Claude Code はファイルを作成するときに git から除外します。手動で作成する場合は、自分で `.gitignore` に追加してください                     | 1 つのプロジェクトの個人的なオーバーライド、および共有する前のテスト   |
-| 管理         | `managed-settings.json` およびその他の[管理ソース](/docs/ja/managed-settings#delivery-mechanisms) | 組織がデプロイするすべての人。あなたが設定するものは何もそれをオーバーライドしません。いくつかの[セキュリティに敏感な例外](#exceptions-to-managed-settings-precedence)を除いて | セキュリティポリシーおよびコンプライアンス要件               |
+| スコープ | ファイル | 誰に影響するか | 用途 |
+| :- | :- | :- | :- |
+| ユーザー | `~/.claude/settings.json` | あなた、このマシン上のすべてのプロジェクト | 個人設定：テーマ、エディターモード、デフォルトモデル、独自の権限ルール |
+| 共有プロジェクト | `.claude/settings.json` | このフォルダを含むフォルダで作業しているすべての人。git リポジトリでは、コミットしてチームメイトが取得できるようにします | チーム権限、hooks、プラグイン、およびプロジェクトが必要とする環境変数 |
+| プロジェクトローカル | `.claude/settings.local.json` | あなた、このプロジェクトのみ。Claude Code はファイルを作成するときに git から除外します。手動で作成する場合は、自分で `.gitignore` に追加してください | 1 つのプロジェクトの個人的なオーバーライド、および共有する前のテスト |
+| 管理 | `managed-settings.json` およびその他の[管理ソース](/docs/ja/managed-settings#delivery-mechanisms) | 組織がデプロイするすべての人。あなたが設定するものは何もそれをオーバーライドしません。いくつかの[セキュリティに敏感な例外](#exceptions-to-managed-settings-precedence)を除いて | セキュリティポリシーおよびコンプライアンス要件 |
 
 ファイル列では、`~/.claude` はホームディレクトリの `.claude` フォルダ、ベアの `.claude` はプロジェクト内の `.claude` フォルダです。
 
@@ -787,17 +787,17 @@ Claude Code 内から新しいセッション用に選択を保存する場合�
 
 セッションを制限する値を持つ少数のキーについて、Claude Code は通常は管理設定をオーバーライドできないスコープからの制限値を優先します。このテーブルでキーを見つけて、どの値を優先し、どこから優先するかを確認してください。
 
-| キー                                                                              | Claude Code が優先する値                                                                                      | 注記                                                                                                                      |
-| :------------------------------------------------------------------------------ | :------------------------------------------------------------------------------------------------------ | :---------------------------------------------------------------------------------------------------------------------- |
-| [`disableClaudeAiConnectors`](/docs/ja/settings-reference#disableclaudeaiconnectors) | 任意のスコープからの `true`                                                                                       | 管理ソースが `false` を設定する場合でも優先されます                                                                                          |
-| [`enableArtifact`](/docs/ja/settings-reference#enableartifact)                       | 任意のスコープからの `false`、および任意のスコープからの `disableArtifact: true`                                                | 管理ソースが `true` を設定する場合でも優先されます。何も [Artifact ツール](/docs/ja/artifacts#disable-artifacts) をオンに戻しません。Claude Code v2.1.242 以降が必要です |
-| [`isolatePeerMachines`](/docs/ja/settings-reference#isolatepeermachines)             | 任意のスコープからの `true`                                                                                       | 管理ソースが `false` を設定する場合でも優先されます                                                                                          |
-| [`remoteControlAtStartup`](/docs/ja/settings-reference#remotecontrolatstartup)       | `.claude/settings.json` または `.claude/settings.local.json` からの `false`                                   | 管理ソースが `true` を設定する場合でも優先されます。プロジェクトまたはローカル `true` は無視されます                                                              |
-| [`crossSessionInbound`](/docs/ja/settings-reference#crosssessioninbound)             | `.claude/settings.json` または `.claude/settings.local.json` からのより厳密な値、`accept` \< `hold` \< `refuse` ラダーで | 管理、`--settings`、およびユーザー値より優先されます。より厳密でないプロジェクトまたはローカル値は無視されます                                                           |
-| [`useAutoModeDuringPlan`](/docs/ja/settings-reference#useautomodeduringplan)         | 任意の管理ソース、`--settings`、`~/.claude/settings.json`、または `.claude/settings.local.json` からの `false`           | 勝利した管理ソースが `true` を設定する場合でも優先されます。`.claude/settings.json` の `false` は無視されます                                             |
-| [`syncClaudeAiSkills`](/docs/ja/settings-reference#syncclaudeaiskills)               | 任意の管理ソース、`--settings`、`~/.claude/settings.json`、または `.claude/settings.local.json` からの `false`           | 勝利した管理ソースが `true` を設定する場合でも優先されます。`.claude/settings.json` の `false` は無視されます                                             |
-| [`syncClaudeAiPlugins`](/docs/ja/settings-reference#syncclaudeaiplugins)             | 任意の管理ソース、`--settings`、`~/.claude/settings.json`、または `.claude/settings.local.json` からの `false`           | 勝利した管理ソースが `true` を設定する場合でも優先されます。`.claude/settings.json` の `false` は無視されます                                             |
-| [`maxEffortLevel`](/docs/ja/settings-reference#maxeffortlevel)                       | `--settings` を含む任意のスコープからのより低いキャップ                                                                      | Claude Code が適用する管理設定がより高いキャップを設定する場合でも優先されます。最も低いキャップが適用されます。Claude Code v2.1.267 以降が必要です                              |
+| キー | Claude Code が優先する値 | 注記 |
+| :- | :- | :- |
+| [`disableClaudeAiConnectors`](/docs/ja/settings-reference#disableclaudeaiconnectors) | 任意のスコープからの `true` | 管理ソースが `false` を設定する場合でも優先されます |
+| [`enableArtifact`](/docs/ja/settings-reference#enableartifact) | 任意のスコープからの `false`、および任意のスコープからの `disableArtifact: true` | 管理ソースが `true` を設定する場合でも優先されます。何も [Artifact ツール](/docs/ja/artifacts#disable-artifacts) をオンに戻しません。Claude Code v2.1.242 以降が必要です |
+| [`isolatePeerMachines`](/docs/ja/settings-reference#isolatepeermachines) | 任意のスコープからの `true` | 管理ソースが `false` を設定する場合でも優先されます |
+| [`remoteControlAtStartup`](/docs/ja/settings-reference#remotecontrolatstartup) | `.claude/settings.json` または `.claude/settings.local.json` からの `false` | 管理ソースが `true` を設定する場合でも優先されます。プロジェクトまたはローカル `true` は無視されます |
+| [`crossSessionInbound`](/docs/ja/settings-reference#crosssessioninbound) | `.claude/settings.json` または `.claude/settings.local.json` からのより厳密な値、`accept` \< `hold` \< `refuse` ラダーで | 管理、`--settings`、およびユーザー値より優先されます。より厳密でないプロジェクトまたはローカル値は無視されます |
+| [`useAutoModeDuringPlan`](/docs/ja/settings-reference#useautomodeduringplan) | 任意の管理ソース、`--settings`、`~/.claude/settings.json`、または `.claude/settings.local.json` からの `false` | 勝利した管理ソースが `true` を設定する場合でも優先されます。`.claude/settings.json` の `false` は無視されます |
+| [`syncClaudeAiSkills`](/docs/ja/settings-reference#syncclaudeaiskills) | 任意の管理ソース、`--settings`、`~/.claude/settings.json`、または `.claude/settings.local.json` からの `false` | 勝利した管理ソースが `true` を設定する場合でも優先されます。`.claude/settings.json` の `false` は無視されます |
+| [`syncClaudeAiPlugins`](/docs/ja/settings-reference#syncclaudeaiplugins) | 任意の管理ソース、`--settings`、`~/.claude/settings.json`、または `.claude/settings.local.json` からの `false` | 勝利した管理ソースが `true` を設定する場合でも優先されます。`.claude/settings.json` の `false` は無視されます |
+| [`maxEffortLevel`](/docs/ja/settings-reference#maxeffortlevel) | `--settings` を含む任意のスコープからのより低いキャップ | Claude Code が適用する管理設定がより高いキャップを設定する場合でも優先されます。最も低いキャップが適用されます。Claude Code v2.1.267 以降が必要です |
 
 Claude Code を内部で実行し、[`CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST`](/docs/ja/env-vars) を設定するアプリも例外です。Claude Code はそのアプリのモデル設定をすべての管理ソースからの `model`、`fallbackModel`、`modelPicker`、および `modelOverrides` キーより優先し、管理 `env` ブロック内のモデル選択変数（`ANTHROPIC_MODEL` および `ANTHROPIC_DEFAULT_*_MODEL` ファミリーなど）より優先します。Claude Code は管理 [`availableModels`](/docs/ja/settings-reference#availablemodels) 許可リストを有効に保ちます。ただし、アプリが独自のものを提供する場合を除きます。
 

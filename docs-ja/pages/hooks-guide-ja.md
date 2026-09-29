@@ -187,19 +187,19 @@ Claude が作業を完了して入力を必要とするときはいつでもデ�
 
 空の `matcher` はすべての通知タイプで発火します。特定のイベントでのみ発火させるには、次のいずれかの値に設定します：
 
-| Matcher                      | 発火するタイミング                                                                                                                                                                                                                                                                                               |
-| :--------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `permission_prompt`          | Claude がツール使用を承認する必要があるか、サンドボックス化されたコマンドの[ネットワークリクエスト](/docs/ja/sandboxing#network-isolation)を承認する必要があり、プロンプトが約 6 秒待機している                                                                                                                                                                                    |
-| `idle_prompt`                | Claude が約 60 秒前に応答を完了し、その後入力していない                                                                                                                                                                                                                                                                       |
-| `auth_success`               | 認証が完了したとき                                                                                                                                                                                                                                                                                               |
-| `elicitation_dialog`         | MCP サーバーが引き出しフォームを開き、約 6 秒入力していない                                                                                                                                                                                                                                                                       |
-| `elicitation_url_dialog`     | MCP サーバーがブラウザURL を開くよう求め、約 6 秒入力していない                                                                                                                                                                                                                                                                   |
-| `elicitation_complete`       | MCP サーバーが[URL モード引き出し](/docs/ja/hooks#elicitation-input)が完了したことを報告する                                                                                                                                                                                                                                         |
-| `elicitation_response`       | MCP 引き出し応答がサーバーに送り返されたとき                                                                                                                                                                                                                                                                                |
-| `agent_needs_input`          | バックグラウンドセッションがあなたの入力を待つのを開始するか、現在のセッションが[agent team チームメイトのターミナルセットアップ質問](/docs/ja/agent-teams#choose-a-display-mode)を尋ね、約 6 秒入力していない。[agent view](/docs/ja/agent-view) が開いている間のみ発火します                                                                                                                            |
-| `agent_completed`            | バックグラウンドセッションが完了または失敗します。[agent view](/docs/ja/agent-view) が開いている間のみ発火します                                                                                                                                                                                                                                    |
-| `quota_auto_resume_fired`    | Claude Code は claude.ai 使用制限が一時停止した後、タスクを続行します：リセット時、または Claude Code 中に何かを行うことで使用可能になったとき（使用クレジットの追加、プランのアップグレード、モデルの切り替えなど）。[モデル設定の例外](/docs/ja/interactive-mode#wait-for-a-usage-limit-to-reset)を参照してください                                                                                                  |
-| `quota_auto_resume_stale`    | claude.ai 使用制限がコンピュータが約 30 分以上スリープしている間にリセットされました。Claude Code はタスクを続行する代わりに `Enter` キーを押すのを待ちます。より短いスリープの後、それは続行し、代わりに `quota_auto_resume_fired` を発火します                                                                                                                                                 |
+| Matcher | 発火するタイミング |
+| :- | :- |
+| `permission_prompt` | Claude がツール使用を承認する必要があるか、サンドボックス化されたコマンドの[ネットワークリクエスト](/docs/ja/sandboxing#network-isolation)を承認する必要があり、プロンプトが約 6 秒待機している |
+| `idle_prompt` | Claude が約 60 秒前に応答を完了し、その後入力していない |
+| `auth_success` | 認証が完了したとき |
+| `elicitation_dialog` | MCP サーバーが引き出しフォームを開き、約 6 秒入力していない |
+| `elicitation_url_dialog` | MCP サーバーがブラウザURL を開くよう求め、約 6 秒入力していない |
+| `elicitation_complete` | MCP サーバーが[URL モード引き出し](/docs/ja/hooks#elicitation-input)が完了したことを報告する |
+| `elicitation_response` | MCP 引き出し応答がサーバーに送り返されたとき |
+| `agent_needs_input` | バックグラウンドセッションがあなたの入力を待つのを開始するか、現在のセッションが[agent team チームメイトのターミナルセットアップ質問](/docs/ja/agent-teams#choose-a-display-mode)を尋ね、約 6 秒入力していない。[agent view](/docs/ja/agent-view) が開いている間のみ発火します |
+| `agent_completed` | バックグラウンドセッションが完了または失敗します。[agent view](/docs/ja/agent-view) が開いている間のみ発火します |
+| `quota_auto_resume_fired` | Claude Code は claude.ai 使用制限が一時停止した後、タスクを続行します：リセット時、または Claude Code 中に何かを行うことで使用可能になったとき（使用クレジットの追加、プランのアップグレード、モデルの切り替えなど）。[モデル設定の例外](/docs/ja/interactive-mode#wait-for-a-usage-limit-to-reset)を参照してください |
+| `quota_auto_resume_stale` | claude.ai 使用制限がコンピュータが約 30 分以上スリープしている間にリセットされました。Claude Code はタスクを続行する代わりに `Enter` キーを押すのを待ちます。より短いスリープの後、それは続行し、代わりに `quota_auto_resume_fired` を発火します |
 | `quota_auto_resume_disabled` | Claude Code は claude.ai 使用制限の待機をタスクを続行せずに終了します：[`autoContinueAtUsageLimit`](/docs/ja/settings-reference#autocontinueatusagelimit) がオフになったか、リセットが Claude Code が開始した待機中に 24 時間以上先に移動した、続行されたタスクが制限に引き続きヒットした、または継続がモデルに到達する前にブロックされました。`Esc` または `Ctrl+C` を押すか、**Don't continue automatically** を選択したときは発火しません |
 
 Claude Code は `permission_prompt` をターミナルと Claude Desktop、VS Code 拡張機能、および Agent SDK を通じて許可リクエストに答えるその他のホストで異なる方法でタイミングします。[各通知タイプが発火するタイミング](/docs/ja/hooks#notification) を参照して、両方のタイミングを確認してください。
@@ -499,46 +499,46 @@ Hook が承認すると、Claude Code は Plan Mode を終了し、Plan Mode に
 
 Claude Code は、ライフサイクルの特定のポイントで hook イベントを発火させます。イベントが発火すると、Claude Code はすべてのマッチングする hooks を並列で実行します。重複するハンドラーの扱い方については、[Hook ハンドラーフィールド](/docs/ja/hooks#hook-handler-fields) を参照してください。以下の表は各イベントとそれがトリガーされるときを示しています：
 
-| イベント                  | 発火するタイミング                                                                                                                                                     |
-| :-------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `SessionStart`        | セッションが開始または再開されたとき                                                                                                                                            |
-| `Setup`               | `--init-only` で Claude Code を起動するとき、または `-p` モードで `--init` または `--maintenance` を使用するとき。CI またはスクリプトでの 1 回限りの準備用                                                |
-| `UserPromptSubmit`    | プロンプトを送信するとき、Claude が処理する前                                                                                                                                    |
-| `UserPromptExpansion` | ユーザーが入力したコマンドがプロンプトに展開されるとき、Claude に到達する前。展開をブロックできます                                                                                                         |
-| `PreToolUse`          | ツール呼び出しが実行される前。ブロックできます                                                                                                                                       |
-| `PermissionRequest`   | ツール呼び出しが権限決定を必要とするとき                                                                                                                                          |
-| `PermissionDenied`    | オートモードがツール呼び出しを拒否するとき、分類器の判定がない拒否を含みます。JSON `hookSpecificOutput.retry: true` を使用して、モデルが拒否されたツール呼び出しを再試行できることを伝えます。Claude Code は分類器が判定を出さなかった場合、`retry` を無視します |
-| `PostToolUse`         | ツール呼び出しが成功した後                                                                                                                                                 |
-| `PostToolUseFailure`  | ツール呼び出しが失敗した後                                                                                                                                                 |
-| `PostToolBatch`       | 並列ツール呼び出しの完全なバッチが解決した後、次のモデル呼び出しの前                                                                                                                            |
-| `Notification`        | Claude Code が通知を送信するとき                                                                                                                                        |
-| `MessageDisplay`      | アシスタントメッセージテキストが表示されている間                                                                                                                                      |
-| `SubagentStart`       | サブエージェントがスポーンされるとき                                                                                                                                            |
-| `SubagentStop`        | サブエージェントが終了するとき                                                                                                                                               |
-| `TaskCreated`         | `TaskCreate` 経由でタスクが作成されるとき                                                                                                                                   |
-| `TaskCompleted`       | タスクが完了としてマークされるとき                                                                                                                                             |
-| `Stop`                | Claude が応答を終了するとき                                                                                                                                             |
-| `StopFailure`         | API エラーが原因でターンが終了するとき                                                                                                                                         |
-| `TeammateIdle`        | [エージェントチーム](/docs/ja/agent-teams) のチームメイトがアイドル状態になろうとするとき                                                                                                          |
-| `InstructionsLoaded`  | CLAUDE.md または `.claude/rules/*.md` ファイルがコンテキストに読み込まれるとき。セッション開始時およびセッション中にファイルが遅延読み込みされるときに発火します                                                              |
-| `ConfigChange`        | セッション中に設定ファイルが変更されるとき                                                                                                                                         |
-| `CwdChanged`          | 作業ディレクトリが変更されるとき、例えば Claude が `cd` コマンドを実行するとき。direnv などのツールを使用したリアクティブな環境管理に便利です                                                                             |
-| `DirectoryAdded`      | `/add-dir` または SDK `register_repo_root` コントロールリクエスト経由でセッション中盤に作業ディレクトリが追加されるとき                                                                                |
-| `FileChanged`         | 監視対象ファイルがディスク上で変更されるとき。`matcher` フィールドは監視するファイル名を指定します                                                                                                        |
-| `WorktreeCreate`      | `--worktree`、`isolation: "worktree"`、またはバックグラウンドセッション経由で worktree が作成されるとき。デフォルトの git 動作を置き換えます                                                               |
-| `WorktreeRemove`      | セッション終了時、サブエージェント終了時、またはバックグラウンドセッションを削除するときに worktree が削除されるとき                                                                                               |
-| `PreCompact`          | コンテキスト圧縮の前                                                                                                                                                    |
-| `PostCompact`         | コンテキスト圧縮が完了した後                                                                                                                                                |
-| `PreModelSwitch`      | Claude Code があなたまたはクライアントがリクエストしたモデルスイッチを適用する前。スイッチをブロックできます                                                                                                  |
-| `PostModelSwitch`     | セッションのモデルが変更された後、Claude Code が独自に行う変更（セッションを再開するときのモデル復元など）を含みます                                                                                              |
-| `Elicitation`         | MCP サーバーがツール呼び出し中にユーザー入力をリクエストするとき                                                                                                                            |
-| `ElicitationResult`   | ユーザーが MCP エリシテーションに応答した後、レスポンスがサーバーに送り返される前                                                                                                                   |
-| `SessionEnd`          | セッションが終了するとき                                                                                                                                                  |
+| イベント | 発火するタイミング |
+| :- | :- |
+| `SessionStart` | セッションが開始または再開されたとき |
+| `Setup` | `--init-only` で Claude Code を起動するとき、または `-p` モードで `--init` または `--maintenance` を使用するとき。CI またはスクリプトでの 1 回限りの準備用 |
+| `UserPromptSubmit` | プロンプトを送信するとき、Claude が処理する前 |
+| `UserPromptExpansion` | ユーザーが入力したコマンドがプロンプトに展開されるとき、Claude に到達する前。展開をブロックできます |
+| `PreToolUse` | ツール呼び出しが実行される前。ブロックできます |
+| `PermissionRequest` | ツール呼び出しが権限決定を必要とするとき |
+| `PermissionDenied` | オートモードがツール呼び出しを拒否するとき、分類器の判定がない拒否を含みます。JSON `hookSpecificOutput.retry: true` を使用して、モデルが拒否されたツール呼び出しを再試行できることを伝えます。Claude Code は分類器が判定を出さなかった場合、`retry` を無視します |
+| `PostToolUse` | ツール呼び出しが成功した後 |
+| `PostToolUseFailure` | ツール呼び出しが失敗した後 |
+| `PostToolBatch` | 並列ツール呼び出しの完全なバッチが解決した後、次のモデル呼び出しの前 |
+| `Notification` | Claude Code が通知を送信するとき |
+| `MessageDisplay` | アシスタントメッセージテキストが表示されている間 |
+| `SubagentStart` | サブエージェントがスポーンされるとき |
+| `SubagentStop` | サブエージェントが終了するとき |
+| `TaskCreated` | `TaskCreate` 経由でタスクが作成されるとき |
+| `TaskCompleted` | タスクが完了としてマークされるとき |
+| `Stop` | Claude が応答を終了するとき |
+| `StopFailure` | API エラーが原因でターンが終了するとき |
+| `TeammateIdle` | [エージェントチーム](/docs/ja/agent-teams) のチームメイトがアイドル状態になろうとするとき |
+| `InstructionsLoaded` | CLAUDE.md または `.claude/rules/*.md` ファイルがコンテキストに読み込まれるとき。セッション開始時およびセッション中にファイルが遅延読み込みされるときに発火します |
+| `ConfigChange` | セッション中に設定ファイルが変更されるとき |
+| `CwdChanged` | 作業ディレクトリが変更されるとき、例えば Claude が `cd` コマンドを実行するとき。direnv などのツールを使用したリアクティブな環境管理に便利です |
+| `DirectoryAdded` | `/add-dir` または SDK `register_repo_root` コントロールリクエスト経由でセッション中盤に作業ディレクトリが追加されるとき |
+| `FileChanged` | 監視対象ファイルがディスク上で変更されるとき。`matcher` フィールドは監視するファイル名を指定します |
+| `WorktreeCreate` | `--worktree`、`isolation: "worktree"`、またはバックグラウンドセッション経由で worktree が作成されるとき。デフォルトの git 動作を置き換えます |
+| `WorktreeRemove` | セッション終了時、サブエージェント終了時、またはバックグラウンドセッションを削除するときに worktree が削除されるとき |
+| `PreCompact` | コンテキスト圧縮の前 |
+| `PostCompact` | コンテキスト圧縮が完了した後 |
+| `PreModelSwitch` | Claude Code があなたまたはクライアントがリクエストしたモデルスイッチを適用する前。スイッチをブロックできます |
+| `PostModelSwitch` | セッションのモデルが変更された後、Claude Code が独自に行う変更（セッションを再開するときのモデル復元など）を含みます |
+| `Elicitation` | MCP サーバーがツール呼び出し中にユーザー入力をリクエストするとき |
+| `ElicitationResult` | ユーザーが MCP エリシテーションに応答した後、レスポンスがサーバーに送り返される前 |
+| `SessionEnd` | セッションが終了するとき |
 
 各 hook には、それがどのように実行されるかを決定する `type` があります。ほとんどの hooks は `"type": "command"` を使用し、シェルコマンドを実行します。他の 4 つのタイプが利用可能です：
 
 * `"type": "http"`：イベントデータを URL に POST します。[HTTP hooks](#http-hooks) を参照してください。
-* `"type": "mcp_tool"`：既に接続されている MCP サーバー上のツールを呼び出します。[MCP tool hooks](/docs/ja/hooks#mcp-tool-hook-fields) を参照してください。
+* `"type": "mcp_tool"`：設定済みの MCP サーバー上のツールを呼び出します。[MCP tool hooks](/docs/ja/hooks#mcp-tool-hook-fields) を参照してください。
 * `"type": "prompt"`：シングルターン LLM 評価。[プロンプトベースの hooks](#prompt-based-hooks) を参照してください。
 * `"type": "agent"`：ツールアクセス付きマルチターン検証。エージェント hooks は実験的であり、変更される可能性があります。[エージェントベースの hooks](#agent-based-hooks) を参照してください。
 
@@ -718,26 +718,26 @@ exit 0  # exit 0 = 決定なし。通常の許可フローが適用されます
 
 各イベントタイプは特定のフィールドでマッチします：
 
-| イベント                                                                                                                                                   | マッチャーがフィルタリングするもの                                                  | マッチャー値の例                                                                                                                                                                                                                                                            |
-| :----------------------------------------------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `PreToolUse`、`PostToolUse`、`PostToolUseFailure`、`PermissionRequest`、`PermissionDenied`                                                                 | ツール名                                                               | `Bash`、`Edit\|Write`、`mcp__.*`                                                                                                                                                                                                                                      |
-| `SessionStart`                                                                                                                                         | セッションがどのように開始されたか                                                  | `startup`、`resume`、`clear`、`compact`、`fork`                                                                                                                                                                                                                         |
-| `Setup`                                                                                                                                                | どの CLI フラグがセットアップをトリガーしたか                                          | `init`、`maintenance`                                                                                                                                                                                                                                                |
-| `SessionEnd`                                                                                                                                           | セッションが終了した理由                                                       | `clear`、`resume`、`logout`、`prompt_input_exit`、`other`                                                                                                                                                                                                               |
-| `Notification`                                                                                                                                         | 通知タイプ                                                              | `permission_prompt`、`idle_prompt`、`auth_success`、`elicitation_dialog`、`elicitation_url_dialog`、`elicitation_complete`、`elicitation_response`、`agent_needs_input`、`agent_completed`、`quota_auto_resume_fired`、`quota_auto_resume_stale`、`quota_auto_resume_disabled` |
-| `SubagentStart`                                                                                                                                        | エージェントタイプ                                                          | `general-purpose`、`Explore`、`Plan`、またはカスタムエージェント名                                                                                                                                                                                                                   |
-| `PreCompact`、`PostCompact`                                                                                                                             | 圧縮をトリガーしたもの                                                        | `manual`、`auto`                                                                                                                                                                                                                                                     |
-| `PreModelSwitch`、`PostModelSwitch`                                                                                                                     | セッションが切り替わるモデルの正規名（[PreModelSwitch](/docs/ja/hooks#premodelswitch) で説明） | `claude-opus-5`、`claude-opus-4-6\|claude-opus-5`、`.*opus.*`                                                                                                                                                                                                         |
-| `SubagentStop`                                                                                                                                         | エージェントタイプ                                                          | `SubagentStart` と同じ値                                                                                                                                                                                                                                                |
-| `ConfigChange`                                                                                                                                         | 設定ソース                                                              | `user_settings`、`project_settings`、`local_settings`、`policy_settings`、`skills`                                                                                                                                                                                      |
-| `DirectoryAdded`                                                                                                                                       | ディレクトリがどのように追加されたか                                                 | `slash_command`、`register_repo_root`                                                                                                                                                                                                                                |
-| `StopFailure`                                                                                                                                          | エラータイプ                                                             | `rate_limit`、`overloaded`、`authentication_failed`、`oauth_org_not_allowed`、`account_on_hold`、`billing_error`、`invalid_request`、`model_not_found`、`server_error`、`max_output_tokens`、`cloud_credential_error`、`unknown`                                               |
-| `InstructionsLoaded`                                                                                                                                   | ロード理由                                                              | `session_start`、`nested_traversal`、`path_glob_match`、`include`、`compact`                                                                                                                                                                                            |
-| `Elicitation`                                                                                                                                          | MCP サーバー名                                                          | 設定した MCP サーバー名                                                                                                                                                                                                                                                      |
-| `ElicitationResult`                                                                                                                                    | MCP サーバー名                                                          | `Elicitation` と同じ値                                                                                                                                                                                                                                                  |
-| `FileChanged`                                                                                                                                          | リテラルファイル名を監視（[FileChanged](/docs/ja/hooks#filechanged) を参照）             | `.envrc\|.env`                                                                                                                                                                                                                                                      |
-| `UserPromptExpansion`                                                                                                                                  | コマンド名                                                              | スキルまたはコマンド名                                                                                                                                                                                                                                                         |
-| `UserPromptSubmit`、`PostToolBatch`、`Stop`、`TeammateIdle`、`TaskCreated`、`TaskCompleted`、`WorktreeCreate`、`WorktreeRemove`、`CwdChanged`、`MessageDisplay` | マッチャーサポートなし                                                        | すべての発生で常に発火                                                                                                                                                                                                                                                         |
+| イベント | マッチャーがフィルタリングするもの | マッチャー値の例 |
+| :- | :- | :- |
+| `PreToolUse`、`PostToolUse`、`PostToolUseFailure`、`PermissionRequest`、`PermissionDenied` | ツール名 | `Bash`、`Edit\|Write`、`mcp__.*` |
+| `SessionStart` | セッションがどのように開始されたか | `startup`、`resume`、`clear`、`compact`、`fork` |
+| `Setup` | どの CLI フラグがセットアップをトリガーしたか | `init`、`maintenance` |
+| `SessionEnd` | セッションが終了した理由 | `clear`、`resume`、`logout`、`prompt_input_exit`、`other` |
+| `Notification` | 通知タイプ | `permission_prompt`、`idle_prompt`、`auth_success`、`elicitation_dialog`、`elicitation_url_dialog`、`elicitation_complete`、`elicitation_response`、`agent_needs_input`、`agent_completed`、`quota_auto_resume_fired`、`quota_auto_resume_stale`、`quota_auto_resume_disabled` |
+| `SubagentStart` | エージェントタイプ | `general-purpose`、`Explore`、`Plan`、またはカスタムエージェント名 |
+| `PreCompact`、`PostCompact` | 圧縮をトリガーしたもの | `manual`、`auto` |
+| `PreModelSwitch`、`PostModelSwitch` | セッションが切り替わるモデルの正規名（[PreModelSwitch](/docs/ja/hooks#premodelswitch) で説明） | `claude-opus-5`、`claude-opus-4-6\|claude-opus-5`、`.*opus.*` |
+| `SubagentStop` | エージェントタイプ | `SubagentStart` と同じ値 |
+| `ConfigChange` | 設定ソース | `user_settings`、`project_settings`、`local_settings`、`policy_settings`、`skills` |
+| `DirectoryAdded` | ディレクトリがどのように追加されたか | `slash_command`、`register_repo_root` |
+| `StopFailure` | エラータイプ | `rate_limit`、`overloaded`、`authentication_failed`、`oauth_org_not_allowed`、`account_on_hold`、`billing_error`、`invalid_request`、`model_not_found`、`server_error`、`max_output_tokens`、`cloud_credential_error`、`unknown` |
+| `InstructionsLoaded` | ロード理由 | `session_start`、`nested_traversal`、`path_glob_match`、`include`、`compact` |
+| `Elicitation` | MCP サーバー名 | 設定した MCP サーバー名 |
+| `ElicitationResult` | MCP サーバー名 | `Elicitation` と同じ値 |
+| `FileChanged` | リテラルファイル名を監視（[FileChanged](/docs/ja/hooks#filechanged) を参照） | `.envrc\|.env` |
+| `UserPromptExpansion` | コマンド名 | スキルまたはコマンド名 |
+| `UserPromptSubmit`、`PostToolBatch`、`Stop`、`TeammateIdle`、`TaskCreated`、`TaskCompleted`、`WorktreeCreate`、`WorktreeRemove`、`CwdChanged`、`MessageDisplay` | マッチャーサポートなし | すべての発生で常に発火 |
 
 以下のタブは、異なるイベントタイプのいくつかのマッチャーを示しています。
 
@@ -840,13 +840,13 @@ exit 0  # exit 0 = 決定なし。通常の許可フローが適用されます
 
 Hook コマンドが実行されるかどうかは、`if` パターンの形状と Claude が呼び出している Bash コマンドによって異なります：
 
-| `if` パターン          | Bash コマンド              | Hook は実行されるか？ | 理由                                                       |
-| :----------------- | :--------------------- | :------------ | :------------------------------------------------------- |
-| `Bash(git *)`      | `git push`             | はい            | コマンド名がマッチします                                             |
-| `Bash(git *)`      | `npm test && git push` | はい            | 各サブコマンドがチェックされます。`git push` がマッチします                      |
-| `Bash(git *)`      | `echo $(git log)`      | はい            | `$()` とバッククォート内のコマンドがチェックされます。`git log` がマッチします          |
-| `Bash(git *)`      | `echo $(date)`         | いいえ           | サブコマンドが `git *` にマッチしません                                 |
-| `Bash(git push *)` | `echo $(date)`         | はい            | コマンド名以上を指定するパターンは、`$()`、バッククォート、または `$VAR` で hook を実行します |
+| `if` パターン | Bash コマンド | Hook は実行されるか？ | 理由 |
+| :- | :- | :- | :- |
+| `Bash(git *)` | `git push` | はい | コマンド名がマッチします |
+| `Bash(git *)` | `npm test && git push` | はい | 各サブコマンドがチェックされます。`git push` がマッチします |
+| `Bash(git *)` | `echo $(git log)` | はい | `$()` とバッククォート内のコマンドがチェックされます。`git log` がマッチします |
+| `Bash(git *)` | `echo $(date)` | いいえ | サブコマンドが `git *` にマッチしません |
+| `Bash(git push *)` | `echo $(date)` | はい | コマンド名以上を指定するパターンは、`$()`、バッククォート、または `$VAR` で hook を実行します |
 
 Claude Code がどのコマンドが Bash 入力を実行するかを判断できない場合、パターンに関係なく hook を実行します。[Bash マッチングテーブル](/docs/ja/hooks#bash-if-matching) は、Claude Code がサブコマンドで絞り込むことができる、またはできないコマンド形状をカバーしています。フィルターはベストエフォートであるため、ハード allow または deny を強制するには、hook ではなく [許可システム](/docs/ja/permissions) を使用してください。
 
@@ -860,15 +860,15 @@ Claude Code がどのコマンドが Bash 入力を実行するかを判断で�
 
 Hook を追加する場所がそのスコープを決定します：
 
-| 場所                                                | スコープ                                                                                      | 共有可能               |
-| :------------------------------------------------ | :---------------------------------------------------------------------------------------- | :----------------- |
-| `~/.claude/settings.json`                         | すべてのプロジェクト                                                                                | いいえ、マシンにローカル       |
-| `.claude/settings.json`                           | 単一プロジェクト                                                                                  | はい、リポジトリにコミット可能    |
-| `.claude/settings.local.json`                     | 単一プロジェクト                                                                                  | いいえ、gitignored     |
-| 管理ポリシー設定                                          | 組織全体                                                                                      | はい、管理者制御           |
-| [Plugin](/docs/ja/plugins/overview) `hooks/hooks.json` | プラグインが有効なとき                                                                               | はい、プラグインにバンドル      |
-| [Skill](/docs/ja/skills) frontmatter                   | スキルが呼び出されたら、セッションの残り。[スキルとエージェントの Hooks](/docs/ja/hooks#hooks-in-skills-and-agents) を参照してください。 | はい、スキルファイルで定義      |
-| [Subagent](/docs/ja/sub-agents) frontmatter            | そのサブエージェントが実行されている間                                                                       | はい、サブエージェントファイルで定義 |
+| 場所 | スコープ | 共有可能 |
+| :- | :- | :- |
+| `~/.claude/settings.json` | すべてのプロジェクト | いいえ、マシンにローカル |
+| `.claude/settings.json` | 単一プロジェクト | はい、リポジトリにコミット可能 |
+| `.claude/settings.local.json` | 単一プロジェクト | いいえ、gitignored |
+| 管理ポリシー設定 | 組織全体 | はい、管理者制御 |
+| [Plugin](/docs/ja/plugins/overview) `hooks/hooks.json` | プラグインが有効なとき | はい、プラグインにバンドル |
+| [Skill](/docs/ja/skills) frontmatter | スキルが呼び出されたら、セッションの残り。[スキルとエージェントの Hooks](/docs/ja/hooks#hooks-in-skills-and-agents) を参照してください。 | はい、スキルファイルで定義 |
+| [Subagent](/docs/ja/sub-agents) frontmatter | そのサブエージェントが実行されている間 | はい、サブエージェントファイルで定義 |
 
 Claude Code で [`/hooks`](/docs/ja/hooks#the-%2Fhooks-menu) を実行して、イベント別にグループ化されたすべての設定済み hooks を参照します。
 
@@ -880,7 +880,7 @@ Claude Code が実行中に設定ファイルを直接編集する場合、フ�
   プロンプトベースの hooks
 </h2>
 
-決定論的なルールではなく判断が必要な決定については、`type: "prompt"` hooks を使用します。シェルコマンドを実行する代わりに、Claude Code はプロンプトと hook の入力データを Claude モデル（デフォルトでは Haiku）に送信して決定を下します。より多くの機能が必要な場合は、`model` フィールドで異なるモデルを指定できます。
+決定論的なルールではなく判断が必要な決定については、`type: "prompt"` hooks を使用します。シェルコマンドを実行する代わりに、Claude Code はプロンプトと hook の入力データを Claude モデルに送信して決定を下します。より多くの機能が必要な場合は、`model` フィールドで異なるモデルを指定できます。
 
 モデルの唯一の仕事は、その決定を JSON として返すことです：
 
@@ -995,7 +995,7 @@ HTTP hooks は、Web サーバー、クラウド関数、または外部サー�
 
 hooks を設計する際は、以下の制約を念頭に置いてください：
 
-* コマンド hooks は stdout、stderr、および終了コードを通じてのみ通信します。これらは `/` コマンドまたはツール呼び出しをトリガーできません。`additionalContext` を通じて返されたテキストは、Claude が平文として読むシステムリマインダーとして注入されます。HTTP hooks はレスポンスボディを通じて通信します。
+* コマンド hooks は stdout、stderr、および終了コードを通じてのみ通信します。これらは `/` コマンドまたはツール呼び出しをトリガーできません。`additionalContext` を通じて返されたテキストは、Claude が平文として読む[システムリマインダー](/docs/ja/glossary#system-reminder)として注入されます。HTTP hooks はレスポンスボディを通じて通信します。
 * Hook タイムアウトはタイプによって異なります。`timeout` フィールド（秒単位）で hook ごとにオーバーライドできます。
   * `command`、`http`、`mcp_tool`：10 分。Claude Code は `UserPromptSubmit`、`PreModelSwitch`、および `PostModelSwitch` hooks のこのデフォルトを 30 秒に短縮し、`MessageDisplay` を 10 秒に短縮します。
   * `prompt`：30 秒。

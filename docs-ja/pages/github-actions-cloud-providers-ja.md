@@ -100,16 +100,16 @@ Claude Code GitHub Action は 3 つのプロバイダーをサポートしてお
   <Step title="リポジトリシークレットを追加する">
     Claude Code GitHub Action が実行されるリポジトリで、プロバイダーのシークレットを追加します。また、最初のステップでカスタム GitHub App を作成した場合は、2 つのアプリシークレットも追加します。GitHub の [GitHub Actions でシークレットを使用する](https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions) ガイドを参照してください。
 
-    | シークレット                           | 必要な対象                         | 値                        |
-    | -------------------------------- | ----------------------------- | ------------------------ |
-    | `AWS_ROLE_TO_ASSUME`             | Amazon Bedrock                | IAM ロールの ARN             |
-    | `GCP_WORKLOAD_IDENTITY_PROVIDER` | Google Cloud の Agent Platform | プロバイダーの完全なリソース名          |
-    | `GCP_SERVICE_ACCOUNT`            | Google Cloud の Agent Platform | サービスアカウントのメールアドレス        |
-    | `AZURE_CLIENT_ID`                | Microsoft Foundry             | Entra アプリケーションのクライアント ID |
-    | `AZURE_TENANT_ID`                | Microsoft Foundry             | Microsoft Entra テナント ID  |
-    | `AZURE_SUBSCRIPTION_ID`          | Microsoft Foundry             | Azure サブスクリプション ID       |
-    | `APP_ID`                         | カスタム GitHub App               | GitHub App の ID          |
-    | `APP_PRIVATE_KEY`                | カスタム GitHub App               | `.pem` 秘密鍵ファイルの内容        |
+    | シークレット | 必要な対象 | 値 |
+    | - | - | - |
+    | `AWS_ROLE_TO_ASSUME` | Amazon Bedrock | IAM ロールの ARN |
+    | `GCP_WORKLOAD_IDENTITY_PROVIDER` | Google Cloud の Agent Platform | プロバイダーの完全なリソース名 |
+    | `GCP_SERVICE_ACCOUNT` | Google Cloud の Agent Platform | サービスアカウントのメールアドレス |
+    | `AZURE_CLIENT_ID` | Microsoft Foundry | Entra アプリケーションのクライアント ID |
+    | `AZURE_TENANT_ID` | Microsoft Foundry | Microsoft Entra テナント ID |
+    | `AZURE_SUBSCRIPTION_ID` | Microsoft Foundry | Azure サブスクリプション ID |
+    | `APP_ID` | カスタム GitHub App | GitHub App の ID |
+    | `APP_PRIVATE_KEY` | カスタム GitHub App | `.pem` 秘密鍵ファイルの内容 |
   </Step>
 
   <Step title="ワークフローファイルを作成する">

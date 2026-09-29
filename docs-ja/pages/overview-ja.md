@@ -18,7 +18,7 @@ Claude Code は複数のサーフェスで実行されます。ターミナル�
   <Tab title="Terminal">
     ターミナルで Claude Code を直接操作するための機能豊富な CLI です。ファイルを編集し、コマンドを実行し、コマンドラインからプロジェクト全体を管理できます。
 
-    Claude Code をインストールするには、以下のいずれかの方法を使用してください。
+    Claude Code をインストールするには、ターミナルを開いてシステムのコマンドを実行してください。ターミナルを使用したことがない場合は、[ターミナルガイド](/docs/ja/terminal-guide)でターミナルを開いてコマンドを貼り付ける方法を確認できます。
 
     <Tabs>
       <Tab title="ネイティブインストール（推奨）">
@@ -39,6 +39,8 @@ Claude Code は複数のサーフェスで実行されます。ターミナル�
         ```batch theme={null}
         curl -fsSL https://claude.ai/install.cmd -o install.cmd && install.cmd && del install.cmd
         ```
+
+        インストーラーが完了したら、新しいターミナルウィンドウを開いて `claude --version` を実行してください。インストールが正常に完了すると、バージョン番号が表示されます。シェルが `claude` が見つからない、または認識されていないと表示される場合は、インストールディレクトリがまだ PATH に含まれていません。[PATH を修正する](/docs/ja/troubleshoot-install#command-not-found-claude-after-installation)を参照してください。
 
         `The token '&&' is not a valid statement separator` というエラーが表示される場合は、CMD ではなく PowerShell を使用しています。`'irm' is not recognized as an internal or external command` というエラーが表示される場合は、PowerShell ではなく CMD を使用しています。PowerShell を使用している場合、プロンプトに `PS C:\` と表示され、CMD を使用している場合は `PS` なしで `C:\` と表示されます。
 
@@ -226,17 +228,17 @@ Claude Code を使用できるいくつかの方法を紹介します：
 
 上記の [Terminal](/docs/ja/quickstart)、[VS Code](/docs/ja/vs-code)、[JetBrains](/docs/ja/jetbrains)、[Desktop](/docs/ja/desktop)、[Web](/docs/ja/claude-code-on-the-web) サーフェスを超えて、Claude Code は CI/CD、チャット、ブラウザワークフローと統合します：
 
-| 実現したいこと                                                      | 最適なオプション                                                                                               |
-| ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------ |
-| ローカルセッションを電話または別のデバイスから続行する                                  | [リモートコントロール](/docs/ja/remote-control)                                                                       |
-| Telegram、Discord、iMessage、または独自の webhook からセッションにイベントをプッシュする | [チャネル](/docs/ja/channels)                                                                                   |
-| ローカルでタスクを開始し、モバイルで続行する                                       | [`claude --cloud`](/docs/ja/claude-code-on-the-web#from-terminal-to-cloud)、その後 [Claude モバイルアプリ](/docs/ja/mobile) |
-| 定期的なスケジュールで Claude を実行する                                     | [ルーティン](/docs/ja/routines) または [デスクトップスケジュール済みタスク](/docs/ja/desktop-scheduled-tasks)                             |
-| PR レビューと問題トリアージを自動化する                                        | [GitHub Actions](/docs/ja/github-actions) または [GitLab CI/CD](/docs/ja/gitlab-ci-cd)                              |
-| すべての PR で自動コードレビューを取得する                                      | [GitHub Code Review](/docs/ja/code-review)                                                                  |
-| Slack からプルリクエストへバグレポートをルーティングする                              | [Slack](/docs/ja/slack)                                                                                     |
-| ライブ Web アプリケーションをデバッグする                                      | [Chrome](/docs/ja/chrome)                                                                                   |
-| 独自のワークフロー用のカスタムエージェントを構築する                                   | [Agent SDK](/docs/ja/agent-sdk/overview)                                                                    |
+| 実現したいこと | 最適なオプション |
+| - | - |
+| ローカルセッションを電話または別のデバイスから続行する | [リモートコントロール](/docs/ja/remote-control) |
+| Telegram、Discord、iMessage、または独自の webhook からセッションにイベントをプッシュする | [チャネル](/docs/ja/channels) |
+| ローカルでタスクを開始し、モバイルで続行する | [`claude --cloud`](/docs/ja/claude-code-on-the-web#from-terminal-to-cloud)、その後 [Claude モバイルアプリ](/docs/ja/mobile) |
+| 定期的なスケジュールで Claude を実行する | [ルーティン](/docs/ja/routines) または [デスクトップスケジュール済みタスク](/docs/ja/desktop-scheduled-tasks) |
+| PR レビューと問題トリアージを自動化する | [GitHub Actions](/docs/ja/github-actions) または [GitLab CI/CD](/docs/ja/gitlab-ci-cd) |
+| すべての PR で自動コードレビューを取得する | [GitHub Code Review](/docs/ja/code-review) |
+| Slack からプルリクエストへバグレポートをルーティングする | [Slack](/docs/ja/slack) |
+| ライブ Web アプリケーションをデバッグする | [Chrome](/docs/ja/chrome) |
+| 独自のワークフロー用のカスタムエージェントを構築する | [Agent SDK](/docs/ja/agent-sdk/overview) |
 
 <h2 id="next-steps">
   次のステップ

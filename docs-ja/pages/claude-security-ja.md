@@ -139,14 +139,14 @@ git apply CLAUDE-SECURITY-<timestamp>/patches/F1.patch
 
 Claude Security プラグインは、[セキュリティガイダンスプラグイン](/docs/ja/security-guidance)、[`/security-review`](/docs/ja/commands#all-commands)、[Code Review](/docs/ja/code-review)、マネージド [Claude Security](https://claude.com/product/claude-security) プロダクト、および既存のスキャナーと並んで、多層防御スタックのオンデマンド深スキャンレイヤーです。
 
-| ステージ         | ツール                                                                          | カバー内容                                        |
-| :----------- | :--------------------------------------------------------------------------- | :------------------------------------------- |
-| セッション内       | [セキュリティガイダンスプラグイン](/docs/ja/security-guidance)                                    | Claude が書くコード内の一般的な脆弱性。同じセッションで修正            |
-| オンデマンド、単一パス  | [`/security-review`](/docs/ja/commands#all-commands)                              | 現在のブランチに対する 1 回限りのセキュリティパス                   |
-| オンデマンド、深スキャン | Claude Security プラグイン                                                        | リポジトリまたは差分のマルチエージェントスキャン。独立してレビューされた検出結果とパッチ |
-| プルリクエスト時     | [Code Review](/docs/ja/code-review)、Team および Enterprise プラン                       | 完全なコードベースコンテキストを備えたマルチエージェント正確性およびセキュリティレビュー |
-| マネージド        | [Claude Security](https://claude.com/product/claude-security)、Enterprise プラン | 接続されたリポジトリを監視するホストされたスキャン                    |
-| CI 内         | 既存の静的分析および依存関係スキャナー                                                          | 言語固有のルール、サプライチェーンチェック、ポリシー実装                 |
+| ステージ | ツール | カバー内容 |
+| :- | :- | :- |
+| セッション内 | [セキュリティガイダンスプラグイン](/docs/ja/security-guidance) | Claude が書くコード内の一般的な脆弱性。同じセッションで修正 |
+| オンデマンド、単一パス | [`/security-review`](/docs/ja/commands#all-commands) | 現在のブランチに対する 1 回限りのセキュリティパス |
+| オンデマンド、深スキャン | Claude Security プラグイン | リポジトリまたは差分のマルチエージェントスキャン。独立してレビューされた検出結果とパッチ |
+| プルリクエスト時 | [Code Review](/docs/ja/code-review)、Team および Enterprise プラン | 完全なコードベースコンテキストを備えたマルチエージェント正確性およびセキュリティレビュー |
+| マネージド | [Claude Security](https://claude.com/product/claude-security)、Enterprise プラン | 接続されたリポジトリを監視するホストされたスキャン |
+| CI 内 | 既存の静的分析および依存関係スキャナー | 言語固有のルール、サプライチェーンチェック、ポリシー実装 |
 
 プラグインは既存のソースコードセキュリティツールを置き換えません。静的分析、依存関係スキャン、コードレビューと並行して実行します。人間のセキュリティ研究者がするのと同じ方法でコードについて推論します。これは、これらのツールが提供する決定論的チェックを補完します。
 
