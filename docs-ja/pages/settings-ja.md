@@ -809,7 +809,7 @@ Claude Code を内部で実行し、[`CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST`](/do
 
 * **共有プロジェクト設定**（`.claude/settings.json`）：1 つのリポジトリを持つセッションで読み込まれます。ファイルはクローンの一部であり、セッションはその内部で開始されるためです。その設定をコミットして、それらのセッションに適用してください。複数のリポジトリを持つセッションはクローンの上で開始され、各リポジトリの `.claude/settings.json` から `enabledPlugins` と `extraKnownMarketplaces` キーのみを読み込み、権限ルール、hooks、`env`、またはその他のキーは読み込みません。これら 2 つのキーが宣言するマーケットプレイスとプラグインは、それでも[クラウドセッションでは読み込まれません](/docs/ja/cloud-environments#what-carries-over-from-your-setup)。
 * **ユーザーおよびプロジェクトローカル設定**（`~/.claude/settings.json` および `.claude/settings.local.json`）：読み込まれません。両方ともマシンに留まり、ローカルファイルはクローンにありません。
-* **管理設定**：[サーバー管理設定](/docs/ja/server-managed-settings)のみがクラウドセッションに到達します。デバイスの `managed-settings.json` ファイルまたは MDM プロファイルは到達しません。[自己ホスト型環境](/docs/ja/self-hosted-environments)もランナーイメージの管理設定ファイルを読み込みます。[Claude Code が管理ソースを結合する方法](/docs/ja/managed-settings#how-claude-code-combines-managed-sources)はそのファイルがいつ適用されるかを説明します。
+* **管理設定**：デバイスの `managed-settings.json` ファイルまたは MDM プロファイルはクラウドセッションに到達しません。組織の[サーバー管理設定](/docs/ja/server-managed-settings)は到達します。[サーフェスカバレッジ](/docs/ja/model-config#surface-coverage)はどのクラウドセッションがそれらを受け取るかをリストします。[自己ホスト型環境](/docs/ja/self-hosted-environments)もランナーイメージの管理設定ファイルを読み込みます。[Claude Code が管理ソースを結合する方法](/docs/ja/managed-settings#how-claude-code-combines-managed-sources)はそのファイルがいつ適用されるかを説明します。
 * **`/config`**：ブラウザの claude.ai/code では、値を変更する代わりに Claude Code セクションの claude.ai 設定を開きます。クラウドセッションの設定を変更するには、環境で[環境変数](/docs/ja/cloud-environments#set-environment-variables)を設定するか、1 つのリポジトリを持つセッションでは、そのリポジトリの `.claude/settings.json` にキーをコミットしてください。
 
 [セットアップから何が引き継がれるか](/docs/ja/cloud-environments#what-carries-over-from-your-setup)は残りをリストします：`CLAUDE.md`、skills、MCP サーバー、plugins、および認証情報。

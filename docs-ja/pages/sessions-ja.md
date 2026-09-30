@@ -8,7 +8,7 @@
 
 セッションはプロジェクトディレクトリに紐付けられた保存済みの会話です。Claude Code はローカルに保存されるため、中断したところから再開したり、別のアプローチを試すために分岐したり、タスク間を切り替えたりできます。
 
-[デスクトップアプリ](/docs/ja/desktop#work-in-parallel-with-sessions)、[Web 上の Claude Code](/docs/ja/claude-code-on-the-web)、および [VS Code 拡張機能](/docs/ja/vs-code#resume-past-conversations)はそれぞれ独自のセッション履歴を保持しています。このページでは CLI について説明します。
+[デスクトップアプリ](/docs/ja/desktop#work-in-parallel-with-sessions)、[Web 上の Claude Code](/docs/ja/claude-code-on-the-web)、および [VS Code 拡張機能](/docs/ja/vs-code#resume-past-conversations)はそれぞれ独自のセッション履歴を保持しており、デスクトップアプリは [CLI セッションを再開](/docs/ja/desktop#coming-from-the-cli)することもできます。このページでは CLI について説明します。
 
 <h2 id="resume-a-session">
   セッションを再開する
@@ -135,7 +135,7 @@ Claude Code はセッションをプロジェクトディレクトリごとに�
 | claude.ai または Claude アプリから | [Remote Control セッション](/docs/ja/remote-control#connect-from-another-device)の名前を変更します。Claude Code は CLI でも同じ名前を適用します。Claude Code v2.1.221 以降が必要です |
 | デスクトップアプリから | [デスクトップアプリ](/docs/ja/desktop#work-in-parallel-with-sessions)でセッションの名前を変更します |
 
-CLI ルートまたは claude.ai からセッションに名前を付けたら、`claude --resume <name>` または `/resume <name>` で再開できます。デスクトップアプリセッションはアプリで再開され、独自のセッション履歴が保持されます。worktree 全体での名前解決の動作については、[セッションを再開する](#resume-a-session)を参照してください。
+CLI ルートまたは claude.ai からセッションに名前を付けたら、`claude --resume <name>` または `/resume <name>` で再開できます。デスクトップアプリセッションは[デスクトップアプリ](/docs/ja/desktop#work-in-parallel-with-sessions)で再開されます。worktree 全体での名前解決の動作については、[セッションを再開する](#resume-a-session)を参照してください。
 
 このマシン上で既に実行中の別のセッションが既に使用している名前でインタラクティブセッションを開始または再開した場合、またはセッションをそのような名前に名前変更した場合、Claude Code は既に持っているセッションに名前を残し、`auth-refactor-graceful-unicorn` のような 2 語のサフィックスを持つバリアントに名前を変更し、その旨を通知します。自分で選びたい場合は、新しい名前で `/rename` を実行してください。v2.1.232 より前は、両方のセッションが名前を保持していました。
 

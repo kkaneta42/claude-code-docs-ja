@@ -185,7 +185,7 @@ Explain the logic in @auth (fuzzy matches auth.js, AuthService.ts, etc.)
 What's in @src/components/ (include a trailing slash for folders)
 ```
 
-大きな PDF の場合、ファイル全体ではなく特定のページを読むよう Claude に依頼できます。単一ページ、1～10 ページなどの範囲、またはページ 3 以降などのオープンエンド範囲。
+大きな PDF の場合、ファイル全体ではなく特定のページを読むよう Claude に依頼できます。単一ページ、1～10 ページなどの範囲、またはページ 3 以降などのオープンエンド範囲。特定のページを読むには、Claude Code が実行されるマシンに [poppler-utils](/docs/ja/tools-reference#read-tool-behavior) が必要です。
 
 エディターでテキストを選択すると、Claude は強調表示されたコードを自動的に表示できます。プロンプトボックスのフッターは、選択されている行数を表示します。`Option+K`（Mac）/ `Alt+K`（Windows/Linux）を押して、ファイルパスと行番号を含む @-メンション（例：`@app.ts#5-10`）を挿入します。選択表示の **X** をクリックして削除し、Claude が選択を受け取らないようにします。他のテキストを選択すると、表示が戻ります。
 

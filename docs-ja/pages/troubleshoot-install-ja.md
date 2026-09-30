@@ -346,16 +346,16 @@ claude --version
 ```
 
 <h2 id="common-installation-issues">
-  インストールの一般的な問題
+  よくあるインストールの問題
 </h2>
 
 これらは最も頻繁に遭遇するインストール問題とその解決策です。
 
 <h3 id="install-script-returns-html-instead-of-a-shell-script">
-  インストールスクリプトがシェルスクリプトではなく HTML を返す
+  インストールスクリプトが shell スクリプトではなく HTML を返す
 </h3>
 
-インストールコマンドを実行すると、次のいずれかのエラーが表示される場合があります。
+インストールコマンドを実行すると、次のようなエラーが表示される場合があります。
 
 ```text theme={null}
 bash: line 1: syntax error near unexpected token `<'
@@ -371,7 +371,7 @@ Missing argument in parameter list.
 ...
 ```
 
-表現は PowerShell のバージョンとシステム言語によって異なります。`Missing expression after unary operator '--'` または `ParserError` と `ParseException` が表示される場合があります。引用符で囲まれたテキスト内の HTML タグまたは CSS はこの失敗を示します。代わりに `-OutFile install.ps1` でダウンロードしても、保存されたファイルは同じウェブページなので、それは役に立ちません。
+表現は PowerShell のバージョンとシステム言語によって異なります。`Missing expression after unary operator '--'` または `ParserError` と `ParseException` が表示される場合があります。引用符で囲まれたテキスト内の HTML タグまたは CSS がこの失敗を示します。代わりに `-OutFile install.ps1` でダウンロードしても、保存されたファイルは同じウェブページなので、それも役に立ちません。
 
 リクエストのルーティング方法によっては、HTML ボディなしで 403 が表示される場合があります。
 
@@ -424,28 +424,33 @@ curl: (22) The requested URL returned error: 403
   `curl: (56) Failure writing output to destination`
 </h3>
 
-`curl ... | bash` コマンドはスクリプトをダウンロードして Bash にパイプして実行します。このエラーと関連する `curl: (23) Failure writing output to destination` は、Bash がスクリプト全体を受け取らなかったことを意味します。終了コード 56 はダウンロード自体が中断されたことを示し、終了コード 23 は curl がパイプに受け取ったものを書き込めなかったことを示します。通常は Bash が早期に終了したためです。
+`curl ... | bash` コマンドはスクリプトをダウンロードして Bash にパイプして実行します。このエラーと関連する `curl: (23) Failure writing output to destination` は、Bash が完全なスクリプトを受け取らなかったことを意味します。終了コード 56 はダウンロード自体が中断されたことを示し、終了コード 23 は curl が受け取ったものをパイプに書き込めなかったことを示します。通常は Bash が早期に終了したためです。
 
-[ネットワーク接続を確認](#check-network-connectivity)のチェックで `downloads.claude.ai` に到達できることをテストしてください。サーバーに到達した場合、元の失敗は一時的である可能性があります。インストールコマンドを再試行してください。[別のインストール方法を試す](/docs/ja/setup#install-claude-code)こともできます。
+[ネットワーク接続を確認](#check-network-connectivity)のチェックで `downloads.claude.ai` に到達できるかテストしてください。サーバーに到達した場合、元の失敗は一時的だった可能性があります。インストールコマンドを再試行してください。[別のインストール方法を試す](/docs/ja/setup#install-claude-code)こともできます。
 
 <h3 id="homebrew-cask-unavailable-or-outdated">
   Homebrew cask が利用できないか古い
 </h3>
 
-Homebrew は、Homebrew cask インデックスのローカルコピーが cask の公開前の場合、`Error: Cask 'claude-code' is unavailable: No Cask with this name exists` を報告します。インデックスを更新して再試行してください。
+Homebrew が `Error: Cask 'claude-code' is unavailable: No Cask with this name exists` を報告する場合、Homebrew cask インデックスのローカルコピーが cask の公開より前のものです。インデックスを更新して再試行してください。
 
 ```bash theme={null}
 brew update
 brew install --cask claude-code
 ```
 
-Homebrew が予想より古い Claude Code バージョンをインストールする場合、通常は同じ古いインデックスが原因です。`claude-code` cask は安定チャネルを追跡し、通常は最新リリースの約 1 週間遅れています。最新バージョンを実行するには、代わりに `brew install --cask claude-code@latest` を実行してください。2 つの cask の違いについては、[リリースチャネルを設定](/docs/ja/setup#configure-release-channel)を参照してください。
+Homebrew が予想より古い Claude Code バージョンをインストールする場合、同じ古いインデックスが通常の原因です。`claude-code` cask は安定チャネルを追跡し、通常は最新リリースより約 1 週間遅れています。最新バージョンを実行するには、代わりに `brew install --cask claude-code@latest` を実行してください。2 つの cask の違いについては、[リリースチャネルを設定](/docs/ja/setup#configure-release-channel)を参照してください。
 
 <h3 id="tls-or-ssl-connection-errors">
   TLS または SSL 接続エラー
 </h3>
 
-`curl: (35) TLS connect error`、`schannel: next InitializeSecurityContext failed`、または PowerShell の `Could not establish trust relationship for the SSL/TLS secure channel` などのエラーは、TLS ハンドシェイク失敗を示します。
+これらのようなエラーは TLS ハンドシェイクが失敗したことを意味します。
+
+* `curl: (35) TLS connect error`
+* `schannel: next InitializeSecurityContext failed`
+* PowerShell の `Could not create SSL/TLS secure channel`
+* PowerShell の `Could not establish trust relationship for the SSL/TLS secure channel`
 
 **解決策：**
 
@@ -465,7 +470,7 @@ Homebrew が予想より古い Claude Code バージョンをインストール�
    irm https://claude.ai/install.ps1 | iex
    ```
 
-3. **プロキシまたはファイアウォールの干渉を確認する**：TLS 検査を実行する企業プロキシはこれらのエラーを引き起こす可能性があります。`unable to get local issuer certificate` と `SELF_SIGNED_CERT_IN_CHAIN` を含みます。インストールステップでは、インストールダウンロードが企業プロキシの CA を信頼するようにします。
+3. **プロキシまたはファイアウォールの干渉を確認する**：TLS 検査を実行する企業プロキシはこれらのエラーを引き起こす可能性があります。`unable to get local issuer certificate` と `SELF_SIGNED_CERT_IN_CHAIN` を含みます。インストール手順では、インストールダウンロードが企業プロキシの CA を信頼するようにします。
 
    <Tabs>
      <Tab title="macOS/Linux">
@@ -501,11 +506,11 @@ Homebrew が予想より古い Claude Code バージョンをインストール�
 
    証明書ファイルがない場合は IT チームに依頼してください。直接接続で試して、プロキシが原因であることを確認することもできます。
 
-4. **Windows では、ブロックされた失効確認を回避する**。エラー `CRYPT_E_NO_REVOCATION_CHECK (0x80092012)` と `CRYPT_E_REVOCATION_OFFLINE (0x80092013)` は curl がサーバーに到達したが、ネットワークが証明書失効ルックアップをブロックしていることを意味します。これは企業ファイアウォールの背後で一般的です。失敗しているコマンドが `install.cmd` をダウンロードする `curl` の場合、`--ssl-revoke-best-effort` を追加してコマンドプロンプトから再実行してください。
+4. **Windows では、ブロックされた失効確認を回避する**。エラー `CRYPT_E_NO_REVOCATION_CHECK (0x80092012)` と `CRYPT_E_REVOCATION_OFFLINE (0x80092013)` は curl がサーバーに到達したが、ネットワークが証明書失効確認をブロックしていることを意味します。これは企業ファイアウォールの背後では一般的です。失敗しているコマンドが `install.cmd` をダウンロードする `curl` の場合、`--ssl-revoke-best-effort` を追加してコマンドプロンプトから再実行してください。
    ```batch theme={null}
    curl --ssl-revoke-best-effort -fsSL https://claude.ai/install.cmd -o install.cmd && install.cmd && del install.cmd
    ```
-   スクリプト自体のダウンロードが同じエラーに遭遇すると、自動的にベストエフォート失効確認で再試行されるため、フラグは自分で実行するコマンドにのみ必要です。ベストエフォート確認は到達不可能な失効サーバーを許容しますが、失効していることが判明している証明書は引き続き拒否します。これはブラウザが失効を処理する方法と一致します。PowerShell から PowerShell インストーラーを実行することで curl の失効確認を完全に回避することもできます。これは .NET 経由でダウンロードされ、失効サーバーが到達不可能な場合は失敗しません。
+   スクリプト自体のダウンロードが同じエラーに遭遇すると、自動的にベストエフォート失効確認で再試行されるため、フラグは自分で実行するコマンドにのみ必要です。ベストエフォート確認は到達不可能な失効サーバーを許容しますが、既知の失効証明書は拒否します。ブラウザが失効を処理する方法と一致します。curl の失効確認を完全に回避することもできます。PowerShell から PowerShell インストーラーを実行してください。これは .NET 経由でダウンロードされ、失効サーバーが到達不可能な場合は失敗しません。
    ```powershell theme={null}
    irm https://claude.ai/install.ps1 | iex
    ```
@@ -521,7 +526,7 @@ Homebrew が予想より古い Claude Code バージョンをインストール�
   Windows での間違ったインストールコマンド
 </h3>
 
-`'irm' is not recognized`、`The token '&&' is not a valid statement separator`、`A parameter cannot be found that matches parameter name 'fsSL'`、または `'bash' is not recognized as the name of a cmdlet` が表示される場合、別のシェルまたはオペレーティングシステムのインストールコマンドをコピーしました。コマンドがスクリプトのテキストを出力する場合、インストールの一部のみを実行しました。
+`'irm' is not recognized`、`The token '&&' is not a valid statement separator`、`A parameter cannot be found that matches parameter name 'fsSL'`、または `'bash' is not recognized as the name of a cmdlet` が表示される場合、別のシェルまたはオペレーティングシステムのインストールコマンドをコピーしました。コマンドがスクリプトのテキストを出力する場合、その一部のみを実行しました。
 
 * **`irm` が認識されない**：CMD にいます。PowerShell ではありません。2 つのオプションがあります。
 
@@ -531,7 +536,7 @@ Homebrew が予想より古い Claude Code バージョンをインストール�
   irm https://claude.ai/install.ps1 | iex
   ```
 
-  または CMD にとどまり、CMD インストーラーを代わりに使用します。
+  または CMD にとどまり、代わりに CMD インストーラーを使用します。
 
   ```batch theme={null}
   curl -fsSL https://claude.ai/install.cmd -o install.cmd && install.cmd && del install.cmd
@@ -542,29 +547,29 @@ Homebrew が予想より古い Claude Code バージョンをインストール�
   irm https://claude.ai/install.ps1 | iex
   ```
 
-* **`A parameter cannot be found that matches parameter name 'fsSL'`**：Windows PowerShell で macOS/Linux `curl -fsSL ... | bash` インストーラーを実行しました。`curl` は `Invoke-WebRequest` のエイリアスであり、`-fsSL` フラグを拒否します。代わりに PowerShell インストーラーを使用してください。
+* **`A parameter cannot be found that matches parameter name 'fsSL'`**：macOS/Linux の `curl -fsSL ... | bash` インストーラーを Windows PowerShell で実行しました。ここで `curl` は `Invoke-WebRequest` のエイリアスであり、`-fsSL` フラグを拒否します。代わりに PowerShell インストーラーを使用してください。
   ```powershell theme={null}
   irm https://claude.ai/install.ps1 | iex
   ```
 
-* **`bash` が認識されない**：Windows で macOS/Linux インストーラーを実行しました。代わりに PowerShell インストーラーを使用してください。
+* **`bash` が認識されない**：macOS/Linux インストーラーを Windows で実行しました。代わりに PowerShell インストーラーを使用してください。
   ```powershell theme={null}
   irm https://claude.ai/install.ps1 | iex
   ```
 
-* **コマンドがスクリプトテキストを出力する**：ダウンロード部分を実行せずに、それを実行する部分なしでコマンドを実行しました。`irm https://claude.ai/install.ps1` 単独でダウンロードされたスクリプトをターミナルに出力します。`iex` にパイプして実行します。
+* **コマンドがスクリプトテキストを出力する代わりにインストールする**：ダウンロード部分を実行部分なしで実行しました。`irm https://claude.ai/install.ps1` 単独でダウンロードされたスクリプトをターミナルに出力します。`iex` にパイプして実行してください。
 
   ```powershell theme={null}
   irm https://claude.ai/install.ps1 | iex
   ```
 
-  CMD では、`-o` なしの `curl -fsSL https://claude.ai/install.cmd` はバッチスクリプトを保存する代わりに出力します。完全なコマンドを実行します。
+  CMD では、`-o` なしの `curl -fsSL https://claude.ai/install.cmd` はバッチスクリプトを保存する代わりに出力します。完全なコマンドを実行してください。
 
   ```batch theme={null}
   curl -fsSL https://claude.ai/install.cmd -o install.cmd && install.cmd && del install.cmd
   ```
 
-どのインストーラーを使用するにしても、それが機能したことを確認します。新しいターミナルを開いて `claude --version` を実行します。これは `2.1.211 (Claude Code)` などのバージョン番号を出力します。
+どのインストーラーを使用するにしても、それが機能したことを確認してください。新しいターミナルを開いて `claude --version` を実行します。これは `2.1.211 (Claude Code)` などのバージョン番号を出力します。
 
 <h3 id="running-scripts-is-disabled-on-this-system">
   `running scripts is disabled on this system`
@@ -578,16 +583,16 @@ npm : File C:\Program Files\nodejs\npm.ps1 cannot be loaded because running scri
     + CategoryInfo          : SecurityError: (:) [], PSSecurityException
 ```
 
-npm インストール後に `claude` を実行すると、同じエラーが `claude.ps1` に名前を付けます。PowerShell の実行ポリシーは npm がそのコマンド用に作成する `.ps1` ランチャースクリプトをブロックしています。ポリシーはスクリプトファイルに適用されるため、PowerShell インストーラー `irm https://claude.ai/install.ps1 | iex` には影響しません。これはダウンロードされたテキストを直接実行します。
+npm インストール後に `claude` を実行すると、同じエラーが `claude.ps1` に名前を付けます。PowerShell の実行ポリシーは npm がそのコマンド用に作成する `.ps1` ランチャースクリプトをブロックしています。ポリシーはスクリプトファイルに適用されるため、ダウンロードされたテキストを直接実行する PowerShell インストーラー `irm https://claude.ai/install.ps1 | iex` には影響しません。
 
 **解決策：**
 
-1. **ユーザーのローカルで作成されたスクリプトを許可してから再試行します**。
+1. **ユーザーのローカルで作成されたスクリプトを許可**してから再試行してください。
    ```powershell theme={null}
    Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
    ```
 2. **`.cmd` ランチャーを呼び出す**：`npm.cmd` と `claude.cmd` は同じ仕事をし、ポリシーはそれらをカバーしません。
-3. **npm の代わりに [PowerShell インストーラー](/docs/ja/setup#install-claude-code)を使用する**。バイナリではなく `.ps1` スクリプトをインストールします。
+3. **npm の代わりに [PowerShell インストーラー](/docs/ja/setup#install-claude-code)を使用する**。これは `.ps1` スクリプトではなくバイナリをインストールします。
 
 <h3 id="the-process-cannot-access-the-file-during-windows-install">
   Windows インストール中の `The process cannot access the file`
@@ -595,7 +600,7 @@ npm インストール後に `claude` を実行すると、同じエラーが `c
 
 PowerShell インストーラーが `Failed to download binary: The process cannot access the file ... because it is being used by another process` で失敗する場合、インストーラーは `%USERPROFILE%\.claude\downloads` に書き込めませんでした。これは通常、前のインストール試行がまだ実行中であるか、アンチウイルスソフトウェアがそのフォルダー内の部分的にダウンロードされたバイナリをスキャンしていることを意味します。
 
-インストーラーを実行している他の PowerShell ウィンドウを閉じ、アンチウイルススキャンがファイルを解放するまで待機します。次にダウンロードフォルダーを削除してインストーラーを再度実行します。
+インストーラーを実行している他の PowerShell ウィンドウを閉じ、アンチウイルススキャンがファイルを解放するまで待機してください。次に downloads フォルダーを削除してインストーラーを再度実行してください。
 
 ```powershell theme={null}
 Remove-Item -Recurse -Force "$env:USERPROFILE\.claude\downloads"
@@ -606,15 +611,15 @@ irm https://claude.ai/install.ps1 | iex
   Windows での更新後に `claude.exe` が見つからない
 </h3>
 
-ターミナルが Windows で Claude Code を更新した直後に `'claude' is not recognized` を報告する場合は、`%USERPROFILE%\.local\bin` に `claude.exe` が含まれているかどうかを確認してください。そのディレクトリが PATH にまったくない場合は、代わりに[PATH を修正](#command-not-found-claude-after-installation)を参照してください。Windows で更新するために、Claude Code は既存の `claude.exe` を別にバックアップに名前変更し、新しいバージョンをその場所に移動します。新しいバージョンをその場所に移動できず、Claude Code がバックアップを名前変更して戻すこともできない場合、ディレクトリはバックアップを保持しますが `claude.exe` がありません。
+ターミナルが Windows で Claude Code が更新された直後に `'claude' is not recognized` を報告する場合、`%USERPROFILE%\.local\bin` に `claude.exe` が含まれているかどうかを確認してください。そのディレクトリが PATH にまったくない場合は、代わりに [PATH を修正](#command-not-found-claude-after-installation)を参照してください。Windows で更新するために、Claude Code は既存の `claude.exe` をバックアップに名前変更し、新しいバージョンをその場所に移動します。新しいバージョンをその場所に移動できず、Claude Code がバックアップを名前変更できない場合、ディレクトリはバックアップを保持しますが `claude.exe` はありません。
 
-バックアップは、`claude.exe.old.` で始まり、その後に数値タイムスタンプが続く名前を持つ同じディレクトリ内のファイルです。PowerShell で次を実行して、最新のバックアップを `claude.exe` に名前変更します。
+バックアップは、`claude.exe.old.` で始まり、その後に数値タイムスタンプが続く名前を持つ同じディレクトリ内のファイルです。PowerShell で以下を実行して、最新のバックアップを `claude.exe` に名前変更してください。
 
 ```powershell theme={null}
 Get-ChildItem "$env:USERPROFILE\.local\bin\claude.exe.old.*" | Sort-Object Name | Select-Object -Last 1 | Rename-Item -NewName claude.exe
 ```
 
-次に `claude --version` を実行して修正を確認します。復元された `claude.exe` はバージョン番号を出力します。
+次に `claude --version` を実行して修正を確認してください。復元された `claude.exe` はバージョン番号を出力します。
 
 `claude.exe.old.*` ファイルがない場合、または名前変更後も `claude` が失敗する場合は、代わりに再インストールしてください。
 
@@ -625,10 +630,10 @@ irm https://claude.ai/install.ps1 | iex
 v2.1.281 より前では、Claude Code は `claude.exe` がまだ見つからない間にバックアップを削除する可能性がありました。
 
 <h3 id="install-killed-on-low-memory-linux-servers">
-  メモリ不足の Linux サーバーでインストールが強制終了される
+  低メモリ Linux サーバーでインストールが強制終了される
 </h3>
 
-インストール中の `Killed` メッセージは通常、Linux メモリ不足（OOM）キラーがシステムのメモリ不足のため `claude install` ステップを終了したことを意味します。これは小規模な VPS とクラウドインスタンスで一般的です。インストールスクリプトは原因を報告し、終了コード 137 で終了します。この例では、行番号とプロセス ID はリリースと実行によって異なります。
+インストール中の `Killed` メッセージは通常、Linux メモリ不足（OOM）キラーがシステムのメモリが不足したため `claude install` ステップを終了したことを意味します。これは小規模な VPS とクラウドインスタンスで一般的です。インストールスクリプトは原因を報告し、終了コード 137 で終了します。この例では、行番号とプロセス ID はリリースと実行によって異なります。
 
 ```text theme={null}
 Setting up Claude Code...
@@ -637,11 +642,11 @@ Installation was killed before it could finish (exit code 137). This usually mea
 Claude Code needs roughly 512MB of free memory to install. Free up memory, then run this script again.
 ```
 
-インストールには約 512 MB の空きメモリが必要で、Claude Code を実行するにはさらに多くが必要です。[システム要件](/docs/ja/setup#system-requirements)を参照してください。
+インストールには約 512 MB の空きメモリが必要であり、Claude Code を実行するにはさらに多くが必要です。[システム要件](/docs/ja/setup#system-requirements)を参照してください。
 
 **解決策：**
 
-1. **サーバーの RAM が限られている場合はスワップスペースを追加する**。スワップはディスク領域をオーバーフロー メモリとして使用し、物理 RAM が少ない場合でもインストールを完了できます。
+1. **スワップスペースを追加する**（サーバーの RAM が限定されている場合）。スワップはディスク領域をオーバーフロー メモリとして使用し、物理 RAM が少ない場合でもインストールを完了できます。
 
    2 GB スワップファイルを作成して有効にします。
 
@@ -652,41 +657,41 @@ Claude Code needs roughly 512MB of free memory to install. Free up memory, then 
    sudo swapon /swapfile
    ```
 
-   次にインストールを再試行します。
+   次にインストールを再試行してください。
 
    ```bash theme={null}
    curl -fsSL https://claude.ai/install.sh | bash
    ```
 
-2. **インストール前に他のプロセスを閉じてメモリを解放する**。
+2. **他のプロセスを閉じて**インストール前にメモリを解放します。
 
 3. **可能であれば、より大きなインスタンスを使用する**。Claude Code には最低 4 GB の RAM が必要です。
 
 <h3 id="install-hangs-in-docker">
-  Docker でインストールがハングする
+  Docker でのインストールハング
 </h3>
 
-Docker コンテナーで Claude Code をインストールする場合、root として `/` にインストールするとハングが発生する可能性があります。
+Docker コンテナーに Claude Code をインストールする場合、root として `/` にインストールするとハングが発生する可能性があります。
 
 **解決策：**
 
-1. **インストーラーを実行する前に作業ディレクトリを設定する**。`/` から実行すると、インストーラーはファイルシステム全体をスキャンし、過度なメモリ使用が発生します。`WORKDIR` を設定すると、スキャンが小さなディレクトリに制限されます。
+1. **インストーラーを実行する前に作業ディレクトリを設定する**。`/` から実行すると、インストーラーはファイルシステム全体をスキャンし、過度なメモリ使用を引き起こします。`WORKDIR` を設定すると、スキャンが小さなディレクトリに制限されます。
    ```dockerfile theme={null}
    WORKDIR /tmp
    RUN curl -fsSL https://claude.ai/install.sh | bash
    ```
 
-2. **Docker Desktop を使用している場合は Docker にメモリを追加する**。ビルドコンテナーは Docker Desktop 仮想マシンに割り当てられたメモリを共有するため、Docker Desktop で **Settings > Resources** を開き、メモリ制限を上げて、ビルドを再実行します。
+2. **Docker Desktop を使用している場合、Docker にさらにメモリを与える**。ビルドコンテナーは Docker Desktop 仮想マシンに割り当てられたメモリを共有するため、Docker Desktop で **Settings > Resources** を開き、メモリ制限を上げて、ビルドを再実行してください。
 
 <h3 id="raw-mode-is-not-supported-during-install">
   インストール中の `Raw mode is not supported`
 </h3>
 
-組織の[サーバー管理設定](/docs/ja/server-managed-settings)に[セキュリティ承認](/docs/ja/server-managed-settings#security-approval-dialogs)が必要な変更が含まれている場合、Claude Code バージョン 2.1.246 より前は `claude install` 中に承認ダイアログを表示しようとします。ダイアログは stdin のターミナルが必要です。インストーラーが `curl -fsSL https://claude.ai/install.sh | bash` のようにパイプから `claude install` を実行する場合、stdin はターミナルではなくパイプであるため、インストールは `Raw mode is not supported` を含むエラーで失敗します。
+組織の [サーバー管理設定](/docs/ja/server-managed-settings)に [セキュリティ承認](/docs/ja/server-managed-settings#security-approval-dialogs)が必要な変更が含まれている場合、v2.1.246 より前の Claude Code バージョンは `claude install` 中に承認ダイアログを表示しようとします。ダイアログは stdin のターミナルが必要です。インストーラーが `curl -fsSL https://claude.ai/install.sh | bash` のようにパイプから `claude install` を実行する場合、stdin はターミナルではなくパイプであるため、インストールは `Raw mode is not supported` を含むエラーで失敗します。
 
-Claude Code v2.1.246 以降は、`claude install` または `claude update` 中にダイアログを表示しません。コマンドは最後に承認した設定で実行され、Claude Code は次の対話型セッションでダイアログを表示します。組織のスタートアップ構成が[設定フェッチを待つ](/docs/ja/server-managed-settings#enforce-fail-closed-startup)場合（`forceRemoteSettingsRefresh` を設定する場合など）、ダイアログはこれらのコマンド中に表示され、パイプから実行されたインストールは引き続き失敗します。
+Claude Code v2.1.246 以降は、`claude install` または `claude update` 中にダイアログを表示しません。コマンドは最後に承認した設定で実行され、Claude Code は次の対話型セッションでダイアログを表示します。組織のスタートアップ構成が [設定フェッチを待つ](/docs/ja/server-managed-settings#enforce-fail-closed-startup)場合（`forceRemoteSettingsRefresh` を設定する場合など）、ダイアログはこれらのコマンド中に表示され、パイプから実行されたインストールは失敗します。
 
-他のすべての構成では、インストーラーを再実行すると、古いバージョンをインストールするよう求めた場合でも、スクリプトは最新リリースの `install` コマンドを実行するため、このエラーを回避できます。プラットフォームのコマンドを再実行してください。
+他のすべての構成では、インストーラーを再実行するとこのエラーを回避できます。スクリプトは古いバージョンのインストールを要求した場合でも、最新リリースの `install` コマンドを実行するためです。プラットフォームのコマンドを再実行してください。
 
 <Tabs>
   <Tab title="macOS/Linux">
@@ -708,15 +713,15 @@ Claude Code v2.1.246 以降は、`claude install` または `claude update` 中�
   `claude update` または `claude doctor` がハングする
 </h3>
 
-`claude update` と `claude doctor` は、古い `claude` エイリアス `~/.zshrc`、`~/.bashrc`、`~/.config/fish/config.fish` のシェル構成ファイルをスキャンします。macOS では、存在する `~/.bash_profile`、`~/.bash_login`、`~/.profile` の最初のものです。`ZDOTDIR` を設定する場合、Zsh ファイルは代わりに `$ZDOTDIR/.zshrc` です。これらのパスの 1 つがディレクトリの場合、Claude Code はそれをスキップし、両方のコマンドが正常に完了します。v2.1.214 より前では、これらのパスの 1 つにあるディレクトリは両方のコマンドをハングさせ、`/status` のシステム診断セクションを空白のままにしました。`claude doctor` は出力なしでハングしました。`claude update` は `Checking for updates` を出力した直後にハングしました。
+`claude update` と `claude doctor` は古い `claude` エイリアス `~/.zshrc`、`~/.bashrc`、`~/.config/fish/config.fish` のシェル構成ファイルをスキャンします。macOS では、存在する `~/.bash_profile`、`~/.bash_login`、または `~/.profile` の最初のものです。`ZDOTDIR` を設定する場合、Zsh ファイルは代わりに `$ZDOTDIR/.zshrc` です。これらのパスの 1 つがディレクトリの場合、Claude Code はそれをスキップし、両方のコマンドが正常に完了します。v2.1.214 より前では、これらのパスの 1 つにあるディレクトリは両方のコマンドをハングさせ、`/status` のシステム診断セクションを空白のままにしました。`claude doctor` はハングして出力がありません。`claude update` は `Checking for updates` を出力した直後にハングしました。
 
-以前のバージョンでハングに遭遇した場合は、ディレクトリを見つけてください。このコマンドの出力では、`d` で始まる行がそのパスをディレクトリとしてマークします。`No such file or directory` 行は、そのパスに何も存在せず、原因ではないことを意味します。
+影響を受けたバージョンでハングが発生した場合は、ディレクトリを見つけてください。このコマンドの出力では、`d` で始まる行がそのパスをディレクトリとしてマークします。`No such file or directory` 行は、そのパスに何も存在せず、原因ではないことを意味します。
 
 ```bash theme={null}
 ls -ld ~/.zshrc ~/.bashrc ~/.bash_profile ~/.bash_login ~/.profile ~/.config/fish/config.fish
 ```
 
-ディレクトリを移動するか、v2.1.214 以降に更新してください。`claude update` は影響を受けるバージョンでハングするため、代わりに[インストールスクリプト](/docs/ja/setup#install-claude-code)を再実行して更新してください。
+ディレクトリを移動するか、v2.1.214 以降に更新してください。影響を受けたバージョンでは `claude update` がハングするため、代わりに [インストールスクリプト](/docs/ja/setup#install-claude-code)を再実行して更新してください。
 
 <h3 id="claude-desktop-overrides-the-claude-command-on-windows">
   Claude Desktop が Windows で `claude` コマンドをオーバーライドする
@@ -727,23 +732,23 @@ ls -ld ~/.zshrc ~/.bashrc ~/.bash_profile ~/.bash_login ~/.profile ~/.config/fis
 Claude Desktop を最新バージョンに更新して、この問題を修正してください。
 
 <h3 id="claude-code-on-windows-requires-either-git-for-windows-for-bash-or-powershell">
-  Windows の Claude Code には Git for Windows（bash 用）または PowerShell のいずれかが必要です
+  Claude Code on Windows requires either Git for Windows (for bash) or PowerShell
 </h3>
 
 Git for Windows はオプションです。Claude Code は Git Bash がない場合、[PowerShell ツール](/docs/ja/tools-reference#powershell-tool)を使用するため、このエラーはどちらのシェルも見つからなかったことを意味します。
 
 **PowerShell が PATH にない場合**、デフォルトの場所は `C:\Windows\System32\WindowsPowerShell\v1.0\` です。そのディレクトリを `PATH` に追加するか、`pwsh` を提供する [PowerShell 7](https://aka.ms/powershell) をインストールしてください。
 
-**Git for Windows をインストールする代わりに**、[git-scm.com/downloads/win](https://git-scm.com/downloads/win) からダウンロードしてください。セットアップ中に「Add to PATH」を選択してください。インストール後にターミナルを再起動してください。インストールすると Bash ツールが有効になり、Bash ベースのスクリプトとツーリングを操作する場合に便利です。
+**Git for Windows をインストールする代わりに**、[git-scm.com/downloads/win](https://git-scm.com/downloads/win) からダウンロードしてください。セットアップ中に「Add to PATH」を選択してください。インストール後にターミナルを再起動してください。インストールすると Bash ツールが有効になり、Bash ベースのスクリプトとツーリングを操作するときに便利です。
 
 **Git が既にインストールされている**が Claude Code が見つけられない場合は、その場所を Claude Code がチェックする場所と比較してください。`CLAUDE_CODE_GIT_BASH_PATH` が設定されていない場合、Claude Code は次の順序で `bash.exe` を探します。
 
 1. デフォルトのインストール場所 `C:\Program Files\Git` と `C:\Program Files (x86)\Git`。
 2. `PATH` 上の `git`。その Git インストールから `bin\bash.exe` を使用します。
 
-ステップ 2 では、Claude Code は Claude Code を起動したフォルダーに存在する `git`、またはそのフォルダーの下のパスで `node_modules` または `.venv` や `env` などの仮想環境フォルダーを含むパスをスキップします。例えば、`C:\dev\env\myproject` から起動した場合の `C:\dev\env\myproject\Git`。これにより、Claude Code がプロジェクトがそこに配置した実行可能ファイルを実行することを防ぎます。Git がそのような場所にある場合は、`CLAUDE_CODE_GIT_BASH_PATH` をそれに指します。
+ステップ 2 では、Claude Code は Claude Code を起動したフォルダーに存在する `git`、またはそのパスの下で `node_modules` または `.venv` や `env` などの仮想環境フォルダーを含むパスをスキップします。例えば、`C:\dev\env\myproject` から起動した場合の `C:\dev\env\myproject\Git`。これにより、Claude Code がプロジェクトがそこに配置した実行可能ファイルを実行することを防ぎます。Git がそのような場所にある場合は、`CLAUDE_CODE_GIT_BASH_PATH` をそれに指します。
 
-**Claude Code を特定の Git インストールに指す**には、PowerShell で `where.exe git` を実行して見つけ、そのインストールから `bin\bash.exe` パスを [settings.json ファイル](/docs/ja/settings)の `CLAUDE_CODE_GIT_BASH_PATH` として設定します。
+**Claude Code を特定の Git インストールに指す**には、PowerShell で `where.exe git` を実行してそれを見つけ、そのインストールから `bin\bash.exe` パスを [settings.json ファイル](/docs/ja/settings)の `CLAUDE_CODE_GIT_BASH_PATH` として設定してください。
 
 ```json theme={null}
 {
@@ -753,23 +758,23 @@ Git for Windows はオプションです。Claude Code は Git Bash がない場
 }
 ```
 
-**`CLAUDE_CODE_GIT_BASH_PATH` が正しいパスに設定されており、ファイルが存在する**が Claude Code がそれを使用しない場合は、まずファイルの名前を確認してください。Claude Code は `bash.exe`、`sh.exe`、`bash`、または `sh` という名前のファイルのみを受け入れます。Git for Windows の `git-bash.exe` ランチャーなど、他の名前では、変数を無視して Git Bash を自動検出し、`--debug` で表示される警告をログに記録します。存在しないパスは同じフォールバックと警告を取得します。v2.1.219 より前では、Claude Code は名前をチェックせずに既存のファイルを使用し、パスが存在しない場合は `Claude Code was unable to find CLAUDE_CODE_GIT_BASH_PATH path` で起動時に終了しました。
+**`CLAUDE_CODE_GIT_BASH_PATH` が正しいパスに設定されており、ファイルが存在する**が Claude Code がそれを使用しない場合は、ファイルの名前を最初に確認してください。Claude Code は `bash.exe`、`sh.exe`、`bash`、または `sh` という名前のファイルのみを受け入れます。Git for Windows の `git-bash.exe` ランチャーなど、他の名前では、変数を無視して Git Bash を自動検出し、`--debug` で表示される警告をログに記録します。存在しないパスは同じフォールバックと警告を取得します。v2.1.219 より前では、Claude Code は名前をチェックせずに既存のファイルを使用し、パスが存在しない場合は `Claude Code was unable to find CLAUDE_CODE_GIT_BASH_PATH path` で起動時に終了しました。
 
-ファイルの名前が正しい場合、AppLocker、グループポリシーソフトウェア制限ポリシー、EDR エージェントなどのエンドポイントセキュリティソフトウェアが干渉している可能性があります。IT チームに `claude.exe` と、`cmd.exe` や `bash.exe` を含むそれが生成するプロセスをエンドポイント保護ポリシーでホワイトリストに登録するよう依頼してください。
+ファイルの名前が正しい場合、AppLocker、グループポリシーソフトウェア制限ポリシー、EDR エージェントなどのエンドポイントセキュリティソフトウェアが干渉している可能性があります。IT チームに `claude.exe` と `cmd.exe` や `bash.exe` を含むそれが生成するプロセスをエンドポイント保護ポリシーでホワイトリストに登録するよう依頼してください。
 
 <h3 id="claude-code-does-not-support-32-bit-windows">
   Claude Code は 32 ビット Windows をサポートしていません
 </h3>
 
-Windows のスタートメニューには 2 つの PowerShell エントリがあります。`Windows PowerShell` と `Windows PowerShell (x86)`。x86 エントリは 32 ビットプロセスとして実行され、64 ビットマシンでもこのエラーをトリガーします。どちらの場合かを確認するには、エラーを生成した同じウィンドウで次を実行します。
+Windows には、スタートメニューに 2 つの PowerShell エントリがあります。`Windows PowerShell` と `Windows PowerShell (x86)`。x86 エントリは 32 ビットプロセスとして実行され、64 ビットマシンでもこのエラーをトリガーします。どちらの場合かを確認するには、エラーを生成した同じウィンドウで以下を実行してください。
 
 ```powershell theme={null}
 [Environment]::Is64BitOperatingSystem
 ```
 
-これが `True` を出力する場合、オペレーティングシステムは問題ありません。ウィンドウを閉じ、x86 サフィックスなしで `Windows PowerShell` を開き、インストールコマンドを再度実行します。
+これが `True` を出力する場合、オペレーティングシステムは問題ありません。ウィンドウを閉じ、x86 サフィックスなしで `Windows PowerShell` を開き、インストールコマンドを再度実行してください。
 
-これが `False` を出力する場合、32 ビット版の Windows を使用しています。Claude Code には 64 ビットオペレーティングシステムが必要です。[システム要件](/docs/ja/setup#system-requirements)を参照してください。
+これが `False` を出力する場合、32 ビット版の Windows にいます。Claude Code には 64 ビットオペレーティングシステムが必要です。[システム要件](/docs/ja/setup#system-requirements)を参照してください。
 
 <h3 id="linux-musl-or-glibc-binary-mismatch">
   Linux musl または glibc バイナリの不一致
@@ -807,11 +812,11 @@ Error loading shared library libstdc++.so.6: No such file or directory
 
 **アーキテクチャの不一致。** インストーラーは間違ったバイナリをダウンロードしました。例えば ARM サーバーで x86。macOS または Linux で `uname -m` を使用して確認するか、PowerShell で `$env:PROCESSOR_ARCHITECTURE` を使用してください。結果が受け取ったバイナリと一致しない場合は、出力を含む [GitHub issue](https://github.com/anthropics/claude-code/issues) をファイルしてください。
 
-**AVX 命令セットが見つかりません。** アーキテクチャは正しいが `Illegal instruction` が表示される場合、CPU はおそらく AVX またはバイナリが必要とする別の命令がありません。これは約 2013 年以前の Intel および AMD プロセッサー、および ハイパーバイザーが AVX をゲストに渡さない仮想マシンに影響します。
+**AVX 命令セットが見つかりません。** アーキテクチャが正しいが、それでも `Illegal instruction` が表示される場合、CPU はおそらく AVX またはバイナリが必要とする別の命令がありません。これは約 2013 年以前の Intel および AMD プロセッサー、およびハイパーバイザーが AVX をゲストに渡さない仮想マシンに影響します。
 
-VPS または VM では、`grep -m1 -ow avx /proc/cpuinfo` を実行します。空の結果は AVX がゲストで利用できないことを意味します。
+VPS または VM では、`grep -m1 -ow avx /proc/cpuinfo` を実行してください。空の結果は AVX がゲストで利用できないことを意味します。
 
-ネイティブバイナリの回避策はありません。ステータスについては [issue #50384](https://github.com/anthropics/claude-code/issues/50384) を追跡し、報告する際に Linux で `grep -m1 "model name" /proc/cpuinfo` または macOS で `sysctl -n machdep.cpu.brand_string` から CPU モデルを含めてください。
+ネイティブバイナリの回避策はありません。ステータスについては [issue #50384](https://github.com/anthropics/claude-code/issues/50384) を追跡し、Linux で `grep -m1 "model name" /proc/cpuinfo` または macOS で `sysctl -n machdep.cpu.brand_string` から CPU モデルを報告する際に含めてください。
 
 代替インストール方法は同じネイティブバイナリをダウンロードし、どちらの原因も解決しません。
 
@@ -840,7 +845,7 @@ Abort trap: 6
 
 1. **macOS バージョンを確認する**：Claude Code には macOS 13.0 以降が必要です。Apple メニューを開き、「このマックについて」を選択してバージョンを確認してください。
 
-2. **古いバージョンを使用している場合は macOS を更新する**。バイナリは古い macOS バージョンがサポートしていないロードコマンドとシステムライブラリを使用しています。Homebrew などの代替インストール方法は同じバイナリをダウンロードし、このエラーを解決しません。
+2. **macOS を更新する**（古いバージョンにいる場合）。バイナリは古い macOS バージョンがサポートしていないロードコマンドとシステムライブラリを使用しています。Homebrew などの代替インストール方法は同じバイナリをダウンロードし、このエラーを解決しません。
 
 <h3 id="exec-format-error-on-wsl1">
   WSL1 での `Exec format error`
@@ -854,7 +859,7 @@ WSL で `claude` を実行すると `cannot execute binary file: Exec format err
 wsl --set-version <DistroName> 2
 ```
 
-WSL1 にとどまる必要がある場合は、動的リンカーを通じてバイナリを呼び出します。ホームディレクトリが異なる場合はパスを置き換えて、WSL 内の `~/.bashrc` にこの関数を追加します。
+WSL1 にとどまる必要がある場合は、動的リンカーを通じてバイナリを呼び出してください。ホームディレクトリが異なる場合はパスを置き換えて、WSL 内の `~/.bashrc` にこの関数を追加してください。
 
 ```bash theme={null}
 claude() {
@@ -862,7 +867,7 @@ claude() {
 }
 ```
 
-次に `source ~/.bashrc` を実行して `claude` を再試行します。
+次に `source ~/.bashrc` を実行して `claude` を再試行してください。
 
 <h3 id="npm-install-errors-in-wsl">
   WSL での npm インストールエラー
@@ -870,11 +875,11 @@ claude() {
 
 これらの問題は、WSL 内で `npm install -g` を使用して Claude Code をインストールした場合に適用されます。[ネイティブインストーラー](/docs/ja/setup)を使用した場合は、このセクションをスキップしてください。
 
-**OS またはプラットフォーム検出の問題。** npm がインストール中にプラットフォームの不一致を報告する場合、WSL はおそらく Windows `npm` を選択しています。最初に `npm config set os linux` を実行してから、`npm install -g @anthropic-ai/claude-code --force` でインストールしてください。`sudo` を使用しないでください。
+**OS またはプラットフォーム検出の問題。** npm がインストール中にプラットフォームの不一致を報告する場合、WSL は Windows `npm` を選択している可能性があります。最初に `npm config set os linux` を実行してから、`npm install -g @anthropic-ai/claude-code --force` でインストールしてください。`sudo` を使用しないでください。
 
-**`claude` を実行するときの `exec: node: not found`。** WSL 環境はおそらく Node.js の Windows インストールを使用しています。`which npm` と `which node` で確認してください。`/mnt/c/` で始まるパスは Windows バイナリで、Linux パスは `/usr/` で始まります。これを修正するには、Linux ディストリビューションのパッケージマネージャーまたは [`nvm`](https://github.com/nvm-sh/nvm) 経由で Node をインストールしてください。
+**`claude` を実行するときの `exec: node: not found`。** WSL 環境は Node.js の Windows インストールを使用している可能性があります。`which npm` と `which node` で確認してください。`/mnt/c/` で始まるパスは Windows バイナリであり、Linux パスは `/usr/` で始まります。これを修正するには、Linux ディストリビューションのパッケージマネージャーまたは [`nvm`](https://github.com/nvm-sh/nvm) 経由で Node をインストールしてください。
 
-**nvm バージョンの競合。** WSL と Windows の両方に nvm がインストールされている場合、WSL でノードバージョンを切り替えると、WSL がデフォルトで Windows PATH をインポートし、Windows nvm が優先されるため、破損する可能性があります。最も一般的な原因は、nvm がシェルに読み込まれていないことです。nvm ローダーを `~/.bashrc` または `~/.zshrc` に追加します。
+**nvm バージョンの競合。** WSL と Windows の両方に nvm がインストールされている場合、WSL でノードバージョンを切り替えると、WSL がデフォルトで Windows PATH をインポートし、Windows nvm が優先されるため、破損する可能性があります。最も一般的な原因は、nvm がシェルに読み込まれていないことです。nvm ローダーを `~/.bashrc` または `~/.zshrc` に追加してください。
 
 ```bash theme={null}
 export NVM_DIR="$HOME/.nvm"
@@ -882,20 +887,20 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 ```
 
-または現在のセッションで読み込みます。
+または現在のセッションに読み込んでください。
 
 ```bash theme={null}
 source ~/.nvm/nvm.sh
 ```
 
-nvm が読み込まれているが Windows パスが引き続き優先される場合は、Linux ノードパスを明示的に先頭に追加します。
+nvm が読み込まれているが Windows パスがまだ優先される場合は、Linux Node パスを明示的に先頭に追加してください。
 
 ```bash theme={null}
 export PATH="$HOME/.nvm/versions/node/$(node -v)/bin:$PATH"
 ```
 
 <Warning>
-  `appendWindowsPath = false` 経由で Windows PATH インポートを無効にすることは避けてください。これは WSL から Windows 実行可能ファイルを呼び出す機能を破壊します。同様に、Windows 開発に使用する場合は Windows から Node.js をアンインストールすることは避けてください。
+  `appendWindowsPath = false` 経由で Windows PATH インポートを無効にすることは避けてください。これは WSL から Windows 実行可能ファイルを呼び出す機能を破壊します。同様に、Windows 開発に使用する場合は Windows から Node.js をアンインストールすることを避けてください。
 </Warning>
 
 <h3 id="permission-errors-during-installation">
@@ -914,7 +919,7 @@ curl -fsSL https://claude.ai/install.sh | bash
   npm インストール後にネイティブバイナリが見つからない
 </h3>
 
-`@anthropic-ai/claude-code` npm パッケージは、`@anthropic-ai/claude-code-darwin-arm64` などのプラットフォーム固有のオプション依存関係としてネイティブバイナリをダウンロードします。npm はパッケージの postinstall スクリプトを実行し、そのバイナリを `claude` コマンドとしてコピーします。実行されるまで、`claude` はプレースホルダースクリプトです。ダウンロードまたは postinstall ステップのいずれかがスキップされた場合、プレースホルダーは残り、macOS と Linux で `claude` を実行すると出力されます。
+`@anthropic-ai/claude-code` npm パッケージは、`@anthropic-ai/claude-code-darwin-arm64` などのプラットフォーム固有のオプション依存関係としてネイティブバイナリをダウンロードします。npm はパッケージの postinstall スクリプトを実行し、そのバイナリを `claude` コマンドとしてその場所にコピーします。実行されるまで、`claude` はプレースホルダースクリプトです。ダウンロードまたは postinstall ステップのいずれかがスキップされた場合、プレースホルダーはその場所に残り、macOS と Linux で `claude` を実行すると出力されます。
 
 ```text theme={null}
 Error: claude native binary not installed.
@@ -933,16 +938,16 @@ Windows では、`bin/claude.exe` はその同じシェルスクリプトプレ�
 
 次の原因を確認してください。
 
-* **オプション依存関係が無効になっている。** npm インストールコマンドから `--omit=optional` を削除し、pnpm から `--no-optional` を削除し、yarn から `--ignore-optional` を削除し、`.npmrc` が `optional=false` を設定していないことを確認してから、再インストールしてください。ネイティブバイナリはオプション依存関係としてのみ配信されるため、スキップされた場合は JavaScript フォールバックがなく、`install.cjs` を再度実行してもダウンロードされなかったバイナリを配置できません。
-* **インストールスクリプトが無効になっている。** `--ignore-scripts` と一部の pnpm 構成は postinstall ステップをスキップしますが、プラットフォームパッケージはダウンロードします。メッセージが示唆するように `node node_modules/@anthropic-ai/claude-code/install.cjs` を実行するか、フラグなしで再インストールしてください。postinstall が環境で実行できない場合、`node node_modules/@anthropic-ai/claude-code/cli-wrapper.cjs` はダウンロードされたパッケージを見つけてそれを起動します。各起動時に余分なノードプロセスのコストで。ラッパーが `Could not find native binary package` を出力する代わりに、プラットフォームパッケージはダウンロードされなかったため、上記のオプション依存関係の原因を最初に修正してください。
-* **サポートされていないプラットフォーム。** プリビルドバイナリは `darwin-arm64`、`darwin-x64`、`linux-x64`、`linux-arm64`、`linux-x64-musl`、`linux-arm64-musl`、`win32-x64`、`win32-arm64` に対して公開されています。Claude Code は他のプラットフォーム用のバイナリを出荷しません。[システム要件](/docs/ja/setup#system-requirements)を参照してください。FreeBSD では、インストーラーはプラットフォームをサポートされていないと報告します。v2.1.205 より前では、FreeBSD を Linux として扱い、実行できないバイナリをダウンロードしました。
-* **企業 npm ミラーがプラットフォームパッケージを欠落している。** レジストリがメタパッケージに加えて 8 つの `@anthropic-ai/claude-code-*` プラットフォームパッケージすべてをミラーしていることを確認してください。
+* **オプション依存関係が無効になっている。** npm インストールコマンドから `--omit=optional` を削除し、pnpm から `--no-optional` を削除し、yarn から `--ignore-optional` を削除し、`.npmrc` が `optional=false` を設定していないことを確認してください。次に再インストールしてください。ネイティブバイナリはオプション依存関係としてのみ配信されるため、スキップされた場合は JavaScript フォールバックがなく、`install.cjs` を再度実行してもダウンロードされなかったバイナリを配置できません。
+* **インストールスクリプトが無効になっている。** `--ignore-scripts` と一部の pnpm 構成は postinstall ステップをスキップしますが、プラットフォームパッケージはダウンロードします。メッセージが示唆するように `node node_modules/@anthropic-ai/claude-code/install.cjs` を実行するか、フラグなしで再インストールしてください。postinstall が環境でまったく実行できない場合、`node node_modules/@anthropic-ai/claude-code/cli-wrapper.cjs` はダウンロードされたパッケージを見つけて起動します。各開始時に追加の Node プロセスのコストで。ラッパーが代わりに `Could not find native binary package` を出力する場合、プラットフォームパッケージはダウンロードされなかったため、最初に上記のオプション依存関係の原因を修正してください。
+* **サポートされていないプラットフォーム。** プリビルトバイナリは `darwin-arm64`、`darwin-x64`、`linux-x64`、`linux-arm64`、`linux-x64-musl`、`linux-arm64-musl`、`win32-x64`、`win32-arm64` に対して公開されています。Claude Code は他のプラットフォーム用のバイナリを出荷しません。[システム要件](/docs/ja/setup#system-requirements)を参照してください。FreeBSD では、インストーラーはプラットフォームをサポートされていないと報告します。v2.1.205 より前では、FreeBSD を Linux として扱い、実行できないバイナリをダウンロードしました。
+* **企業 npm ミラーがプラットフォームパッケージを欠落している。** レジストリがメタパッケージに加えて 8 つすべての `@anthropic-ai/claude-code-*` プラットフォームパッケージをミラーしていることを確認してください。
 
 <h3 id="npm-enotempty-during-update-or-reinstall">
   npm `ENOTEMPTY` エラー（更新または再インストール中）
 </h3>
 
-既存のインストール上で `npm install -g @anthropic-ai/claude-code` を実行すると、npm は古いパッケージディレクトリを移動しようとしている間に失敗する可能性があります。
+既存のインストールに対して `npm install -g @anthropic-ai/claude-code` を実行すると、npm は古いパッケージディレクトリを移動しようとしている間に失敗する可能性があります。
 
 ```text theme={null}
 npm error code ENOTEMPTY
@@ -953,7 +958,7 @@ npm error errno -39
 npm error ENOTEMPTY: directory not empty, rename '...'
 ```
 
-`npm error path` 行は npm が移動できなかったディレクトリに名前を付けます。そのディレクトリと、以前の中断された実行が残す可能性のある隣接する `.claude-code-*` ディレクトリを削除してください。以下のコマンドは `npm root -g` でグローバルパッケージディレクトリを見つけます。`npm error path` 行が名前を付けるディレクトリが `npm root -g` が出力するディレクトリの下にない場合（例えば nvm でノードバージョンを切り替えた場合）、エラーが名前を付けるディレクトリを削除してください。
+`npm error path` 行は npm が移動できなかったディレクトリに名前を付けます。そのディレクトリと、以前の中断された実行が残す可能性のある隣接する `.claude-code-*` ディレクトリを削除してください。以下のコマンドは `npm root -g` でグローバルパッケージディレクトリを見つけます。`npm error path` 行が名前を付けるディレクトリが `npm root -g` が出力するディレクトリの下にない場合（例えば nvm でノードバージョンを切り替えたため）、エラーが名前を付けるディレクトリを削除してください。
 
 <Tabs>
   <Tab title="macOS/Linux">
@@ -961,7 +966,7 @@ npm error ENOTEMPTY: directory not empty, rename '...'
     rm -rf "$(npm root -g)/@anthropic-ai/claude-code"
     ```
 
-    次に、残っているテンポラリディレクトリを削除します。Zsh が `no matches found` を出力する場合、削除するものはありませんでした。
+    次に残りのテンポディレクトリを削除してください。Zsh が `no matches found` を出力する場合、削除するものはありませんでした。
 
     ```bash theme={null}
     rm -rf "$(npm root -g)/@anthropic-ai/.claude-code-"*
@@ -975,13 +980,13 @@ npm error ENOTEMPTY: directory not empty, rename '...'
   </Tab>
 </Tabs>
 
-次に再インストールします。
+次に再インストールしてください。
 
 ```bash theme={null}
 npm install -g @anthropic-ai/claude-code
 ```
 
-`claude --version` で確認します。これは `2.1.211 (Claude Code)` などのバージョン番号を出力します。
+`claude --version` で確認してください。これは `2.1.211 (Claude Code)` などのバージョン番号を出力します。
 
 <h2 id="login-and-authentication">
   ログインと認証

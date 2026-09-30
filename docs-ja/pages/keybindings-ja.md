@@ -22,7 +22,7 @@ Claude Code はカスタマイズ可能なキーボードショートカット�
 | `$docs` | オプションのドキュメント URL |
 | `bindings` | コンテキスト別のバインディングブロックの配列 |
 
-この例では、チャットコンテキストで `Ctrl+E` を外部エディタを開くにバインドし、`Ctrl+U` をアンバインドします。
+この例では、チャットコンテキストで `Ctrl+E` を外部エディタを開くにバインドし、`Ctrl+S` をアンバインドします。
 
 ```json theme={null}
 {
@@ -33,7 +33,7 @@ Claude Code はカスタマイズ可能なキーボードショートカット�
       "context": "Chat",
       "bindings": {
         "ctrl+e": "chat:externalEditor",
-        "ctrl+u": null
+        "ctrl+s": null
       }
     }
   ]
@@ -57,7 +57,7 @@ Claude Code はカスタマイズ可能なキーボードショートカット�
 | `Help` | ヘルプメニューが表示されている |
 | `Transcript` | トランスクリプトビューア |
 | `HistorySearch` | 履歴検索モード（Ctrl+R） |
-| `Task` | バックグラウンドタスクが実行中 |
+| `Task` | フォアグラウンドで実行中のタスク |
 | `ThemePicker` | テーマピッカーダイアログ |
 | `Attachments` | 選択ダイアログ内の画像添付ファイルナビゲーション |
 | `Footer` | フッターインジケータナビゲーション（タスク、チーム、diff、Artifacts） |
@@ -689,7 +689,7 @@ Vim モードが `/config` → エディタモードで有効な場合、キー�
   検証
 </h2>
 
-Claude Code はキーバインディングを検証し、以下の警告を表示します。
+Claude Code はキーバインディングを検証し、以下の警告をデバッグログに書き込みます。
 
 * 解析エラー（無効な JSON または構造）
 * 無効なコンテキスト名
@@ -698,4 +698,4 @@ Claude Code はキーバインディングを検証し、以下の警告を表�
 * 予約済みショートカットの競合
 * 同じコンテキスト内の重複バインディング
 
-Claude Code はファイルが読み込まれるときに警告を報告し、各警告をデバッグログに書き込みます。Claude Code を [`--debug`](/docs/ja/cli-reference#cli-flags) で起動して、詳細を確認してください。
+Claude Code を [`--debug`](/docs/ja/cli-reference#cli-flags) で起動して、詳細を確認してください。

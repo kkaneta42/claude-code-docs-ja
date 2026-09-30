@@ -430,7 +430,7 @@ with-minus-without デルタは報告されますが、終了コードを変更�
 CI ランナーは以下が必要です。
 
 * **インストールと認証情報**：CI ランナーは Claude Code インストールと [環境の認証情報](/docs/ja/authentication)（`ANTHROPIC_API_KEY` など）が必要です。
-* **信頼**：`--trust-plugin` なしで、チェックアウトディレクトリを Claude Code がまだ信頼していないジョブは、[最初の実行信頼プロンプト](#security) が必要で、質問できない実行は終了 1 で拒否されます。
+* **信頼**：`--trust-plugin` なしで、チェックアウトディレクトリを Claude Code がまだ信頼していないジョブは、[最初の実行信頼プロンプト](#trust-the-plugin-directory) が必要で、質問できない実行は終了 1 で拒否されます。
 * **CI での `init`**：`claude plugin eval init` はあなたの質問をするためにターミナルが必要です。CI では、`claude plugin eval init --bare <name>` を実行して空のテンプレートを取得します。
 
 コストを予測可能に保つために、クイックな毎変更スイートにはジャッジを呼び出さないグレーダーのみを付与し、`Δ` が不要な場所で `--ablation none` を使用し、`partial: true` ドキュメントと `skippedPaidGraders` を持つ実行をあなたがチャートするトレンドから除外します。

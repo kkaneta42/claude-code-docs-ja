@@ -1251,7 +1251,7 @@ claude.ai からの Connector は、アクティブな [authentication method](/
 
 一時的なネットワーク問題により、セッション開始時に connector リストが読み込まれない場合、Claude Code はバックグラウンドで最大 3 回再試行し、再試行が成功すると connector が表示されます。まだ表示されていない場合は、Claude Code を再起動してリストを再度取得します。
 
-`/mcp` が connector を `connected · session token rejected` として表示する場合、またはその詳細ビューが [`claude.ai rejected the session token`](/docs/ja/errors#claude-ai-rejected-the-session-token) を表示する場合、claude.ai は Claude Code ログインからのトークンを拒否しました。通常、ログインの有効期限が切れて更新できなかったためです。connector を再度認証しても、connector 自体の認証が拒否されたわけではないため、この状態はクリアされません。クリアするには、以下を実行します。
+`/mcp` が connector を `session token rejected` として表示する場合、またはその詳細ビューが [`claude.ai rejected the session token`](/docs/ja/errors#claude-ai-rejected-the-session-token) を表示する場合、claude.ai は Claude Code ログインからのトークンを拒否しました。connector を再度認証しても、connector 自体の認証が拒否されたわけではないため、この状態はクリアされません。クリアするには、以下を実行します。
 
 1. `/login` を実行して再度サインインします。
 2. `/mcp` から connector を再度接続します。

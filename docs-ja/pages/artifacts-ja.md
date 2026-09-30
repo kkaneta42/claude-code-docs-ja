@@ -51,16 +51,11 @@ Make an artifact that walks through this PR with the diff annotated inline.
 Build a dashboard artifact of last week's deploy failures by service and keep it updated as you investigate.
 ```
 
-場所を指定しない限り、Claude はページを HTML または Markdown ファイルとしてプロジェクト外の一時ディレクトリに書き込み、公開します。新しいアーティファクトを公開する場合、セッションの[権限モード](/docs/ja/permission-modes)を通じて処理されます。
+場所を指定しない限り、Claude はページを HTML または Markdown ファイルとしてプロジェクト外の一時ディレクトリに書き込み、公開します。[Plan Mode](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode) 以外では、入力したプロンプトに応じて Claude が公開する新しいアーティファクトは、権限プロンプトまたは分類器レビューなしで処理されます。ただし、その公開が[コネクタ呼び出し](#pull-live-data-with-mcp-connectors)や[ファイルダウンロード](#offer-a-file-download)などのページのランタイム機能を宣言する場合は除きます。Plan Mode では、Claude Code は各アーティファクトの最初の公開前にあなたに確認を求めます。
 
-* **Auto モード**：分類器がプロンプトの代わりに公開をレビューするため、Claude はプロンプトを表示せずにページを公開できます。セッションが開始される権限モードはプランによって異なります。詳細は[開始時の権限モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)を参照してください。
-* **Manual および Accept edits モード**：Claude Code は権限を要求します。「Claude wants to publish deploy-failures.html, uploading it to claude.ai (Anthropic's servers) to host as the page "Deploy failures by service", private to you until you share it」のようなメッセージが表示される場合があります。**Yes** を選択して公開します。
+アーティファクトは[共有](#share-an-artifact)するまでプライベートなままです。公開共有した後、Claude Code は会話ごとに 1 回変更前に承認を求めるか、[auto mode](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode) では分類器に変更をレビューさせます。
 
-アーティファクトを一度承認すると、Claude Code は再度質問することなく再公開し、以下の場合を含むいくつかのケースで再度質問します。
-
-* Claude がページの[コネクタ呼び出し](#pull-live-data-with-mcp-connectors)や[ファイルダウンロード](#offer-a-file-download)などのランタイム機能を宣言する場合
-* その後、[公開で共有](#share-an-artifact)した場合
-* その後、特定の人またはあなたの組織と共有し、最新バージョンが視聴者が見るバージョンとして選択された場合
+[機能フラグ取得](/docs/ja/env-vars#features-that-need-feature-flag-fetching)をオフにした場合、Claude Code は各アーティファクトの最初の公開前に確認を求めるか、auto mode では分類器にレビューさせます。
 
 最初の公開後、Claude は URL を出力し、ブラウザが新しいページに開きます。[Remote Control](/docs/ja/remote-control)から claude.ai、Claude Desktop、または Claude モバイルアプリを通じてプロンプトを送信した場合、セッションを実行しているマシンではタブが開きません。ブラウザは、Claude がターミナルで入力したプロンプトからアーティファクトを再度公開する次回に開きます。任意の時点で `Ctrl+]` を押して、セッションの最新アーティファクトを再度開きます。
 

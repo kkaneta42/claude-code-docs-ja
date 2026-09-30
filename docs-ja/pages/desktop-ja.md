@@ -834,6 +834,12 @@ Team または Enterprise プランの組織は、管理コンソールコント
 * **Remote Control**：組織の[Remote Control](/docs/ja/remote-control)を有効または無効にします
 * **Disable Bypass permissions mode**：組織内のユーザーが bypass permissions モードを有効にするのを防ぎます
 
+<Note>
+  管理コンソールの[データとプライバシー設定](https://claude.ai/admin-settings/data-privacy-controls)の**Monitoring**下の Cowork 用 OpenTelemetry フォームは、Cowork セッションのみに適用されます。このマシン上の Cowork セッションでは、デスクトップアプリはそのコレクタを Claude Code に`OTEL_*`環境変数として渡すため、Claude Code がそのセッションで[管理コンソール設定をフェッチしない](#managed-settings)場合でも、フォームは有効になります。
+
+  Code タブセッションからテレメトリをエクスポートするには、Claude Code 管理設定の`env`ブロックで`CLAUDE_CODE_ENABLE_TELEMETRY`と`OTEL_*`変数を設定します。[監視用の管理者設定](/docs/ja/monitoring-usage#administrator-configuration)に示されているとおりです。ローカル、クラウド、SSH セッションは、それぞれ[異なるソースから管理設定を読み取ります](#managed-settings)。クラウドセッションが到達できるホストについては、[ネットワークアクセス](/docs/ja/cloud-environments#network-access)を参照してください。Code タブセッションが報告する`service.name`については、[サービス情報](/docs/ja/monitoring-usage#service-information)を参照してください。
+</Note>
+
 <h3 id="managed-settings">
   管理設定
 </h3>
@@ -932,7 +938,7 @@ Artifact は、React またはチャートパッケージなどの JavaScript �
   認証と SSO
 </h3>
 
-エンタープライズ組織はすべてのユーザーに SSO を要求できます。プランレベルの詳細については[認証](/docs/ja/authentication)を参照し、[Setting up SSO](https://support.claude.com/en/articles/13132885-setting-up-single-sign-on-sso)で SAML 設定を参照してください。OIDC セットアップは[Claude Enterprise Administrator Guide](https://claude.com/resources/tutorials/claude-enterprise-administrator-guide)で説明されています。
+Team および Enterprise 組織はすべてのユーザーに SSO を要求できます。プランレベルの詳細については[認証](/docs/ja/authentication)を参照し、[Setting up SSO](https://support.claude.com/en/articles/13132885-setting-up-single-sign-on-sso)で SAML 設定を参照してください。OIDC セットアップは[Claude Enterprise Administrator Guide](https://claude.com/resources/tutorials/claude-enterprise-administrator-guide)で説明されています。
 
 <h3 id="data-handling">
   データ処理
@@ -954,35 +960,43 @@ Desktop はエンタープライズデプロイメントツールを通じて配
 完全なエンタープライズ設定リファレンスについては、[エンタープライズ設定ガイド](https://support.claude.com/en/articles/12622667-enterprise-configuration)を参照してください。
 
 <h2 id="coming-from-the-cli">
-  CLI から来ましたか？
+  CLI から移行する場合
 </h2>
 
-既に Claude Code CLI を使用している場合、Desktop は同じ基盤となるエンジンをグラフィカルインターフェイスで実行します。同じマシン上で、同じプロジェクト上でも、両方を同時に実行できます。各々は個別のセッション履歴を保持しますが、CLAUDE.md ファイルを通じて設定とプロジェクトメモリを共有します。
+Claude Code CLI を既に使用している場合、Desktop はグラフィカルインターフェイスで同じ基盤となるエンジンを実行します。同じマシン上で、同じプロジェクト上でも、両方を同時に実行できます。各々は独自のセッションリストを保持し、CLI セッションを Desktop に持ち込むことができます。CLAUDE.md ファイルを通じて設定とプロジェクトメモリを共有します。
 
-CLI セッションを Desktop に移動するには、ターミナルで `/desktop` を実行します。Claude はセッションを保存し、デスクトップアプリで開いてから CLI を終了します。このコマンドは macOS と x64 Windows でのみ利用可能です。Claude サブスクリプションでサインインしている場合に利用できます。API キー認証では利用できず、Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry でも利用できません。
+CLI セッションを Desktop に移動するには、ターミナルで `/desktop` を実行します。Claude はセッションを保存し、デスクトップアプリで開いてから CLI を終了します。このコマンドは、Claude サブスクリプションでサインインしている場合、macOS と x64 Windows で利用可能です。API キー認証、Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry では利用できません。
 
-Desktop から CLI セッションを再開するには、プロンプトボックスに `/resume` と入力します。Desktop は CLI から開始したセッションをリストアップし、タイトル、フォルダ、またはブランチで検索でき、各セッションがどこで終了したかをプレビューできます。セッションを選択すると、アプリで完全な会話とコンテキストを含めて続行されます。
+Desktop 内から CLI セッションを再開することもできます。`/resume` を使用します。このコマンドはローカルセッションで利用可能で、SSH、WSL、またはクラウドセッションでは利用できません。
+
+Desktop でターミナルセッションを続行するには：
+
+1. ターミナルでセッションを閉じます。
+2. Desktop のプロンプトボックスで `/resume` と入力します。Desktop は、このコンピュータで CLI から開始したセッションをリストアップします。タイトル、フォルダ、またはブランチで検索し、各セッションがどこで終了したかをプレビューします。
+3. セッションを選択します。アプリで完全な会話とコンテキストとともに続行されます。
+
+Desktop は同じセッションを続行するため、コピーではなく、ターミナルで `claude --resume` を実行すると、その後も見つかります。
 
 <Tip>
-  Desktop と CLI をいつ使用するか：並列セッションをウィンドウで管理したい場合、ペインを並べて配置したい場合、または変更をビジュアルで確認したい場合は Desktop を使用します。スクリプト、自動化、またはターミナルワークフローが必要な場合は CLI を使用します。
+  Desktop と CLI をいつ使用するか：複数のセッションを 1 つのウィンドウで管理したい場合、ペインを並べて配置したい場合、または変更を視覚的に確認したい場合は Desktop を使用します。スクリプト、自動化が必要な場合、またはターミナルワークフローを好む場合は CLI を使用します。
 </Tip>
 
 <h3 id="cli-flag-equivalents">
   CLI フラグの同等物
 </h3>
 
-このテーブルは、一般的な CLI フラグのデスクトップアプリの同等物を示しています。リストされていないフラグは、スクリプトまたは自動化用に設計されているため、デスクトップの同等物がありません。
+このテーブルは、一般的な CLI フラグの Desktop アプリの同等物を示しています。リストされていないフラグは、スクリプトまたは自動化用に設計されているため、Desktop の同等物がありません。
 
 | CLI | Desktop の同等物 |
 | - | - |
 | `--model sonnet` | 送信ボタンの横のモデルドロップダウン |
-| `--resume`、`--continue` | サイドバーのセッションをクリック、またはプロンプトボックスに `/resume` と入力して CLI から開始したセッションを選択 |
+| `--resume`、`--continue` | サイドバーのセッションをクリックするか、プロンプトボックスで `/resume` と入力して CLI から開始したセッションを選択します |
 | `--permission-mode` | 送信ボタンの横のモードセレクタ |
-| `--dangerously-skip-permissions` | Bypass permissions モード。Pro と Max プランでは Settings → Claude Code → 「Allow bypass permissions mode」で有効にします。Team と Enterprise プランでは、組織ポリシーがこれを制御します |
-| `--add-dir` | クラウドセッションで **+** ボタンで複数のリポジトリを追加 |
+| `--dangerously-skip-permissions` | 権限モードをバイパスします。Pro および Max プランでは、設定 → Claude Code → 「権限モードのバイパスを許可」で有効にします。Team および Enterprise プランでは、組織ポリシーで制御されます |
+| `--add-dir` | クラウドセッションで **+** ボタンで複数のリポジトリを追加します |
 | `--allowedTools`、`--disallowedTools` | セッションごとの同等物はありません。[設定ファイル](/docs/ja/settings)の権限ルールは引き続き適用されます。 |
-| `--verbose` | [Verbose ビューモード](#switch-view-modes)（Transcript view ドロップダウン） |
-| `--print`、`--output-format` | 利用できません。Desktop はインタラクティブのみです。 |
+| `--verbose` | トランスクリプトビュードロップダウンの[詳細ビューモード](#switch-view-modes) |
+| `--print`、`--output-format` | 利用できません。Desktop は対話的のみです。 |
 | `ANTHROPIC_MODEL` 環境変数 | 送信ボタンの横のモデルドロップダウン |
 | `MAX_THINKING_TOKENS` 環境変数 | ローカル環境エディタで設定します。[環境設定](#environment-configuration)を参照してください。 |
 
@@ -990,63 +1004,63 @@ Desktop から CLI セッションを再開するには、プロンプトボッ�
   共有設定
 </h3>
 
-Desktop と CLI は同じ設定ファイルを読み取るため、セットアップが引き継がれます：
+Desktop と CLI は同じ設定ファイルを読み込むため、セットアップが引き継がれます：
 
 * プロジェクト内の **[CLAUDE.md](/docs/ja/memory)** および `CLAUDE.local.md` ファイルは両方で使用されます
 * `~/.claude.json` または `.mcp.json` で設定された **[MCP サーバー](/docs/ja/mcp)** は両方で機能します
 * 設定で定義された **[Hooks](/docs/ja/hooks)** および **[skills](/docs/ja/skills)** は両方に適用されます
 * `~/.claude.json` および `~/.claude/settings.json` の **[設定](/docs/ja/settings)** は共有されます。`settings.json` の権限ルール、許可されたツール、およびその他の設定は Desktop セッションに適用されます。
-* **モデル**：同じ[モデル](/docs/ja/model-config#available-models)は両方で利用可能です。Desktop では、送信ボタンの横のドロップダウンからモデルを選択します。セッション中にモデルを同じドロップダウンから変更できます。
+* **モデル**：同じ[モデル](/docs/ja/model-config#available-models)が両方で利用可能です。Desktop では、送信ボタンの横のドロップダウンからモデルを選択します。セッション中にも同じドロップダウンからモデルを変更できます。
 
 <h4 id="mcp-servers-from-the-claude-desktop-chat-app">
   Claude Desktop チャットアプリからの MCP サーバー
 </h4>
 
-Desktop アプリは `claude_desktop_config.json` から MCP サーバーをローカル Code タブセッションに読み込みます。これは `~/.claude.json` および `.mcp.json` からのサーバーと並行して行われます。`claude_desktop_config.json` で定義されたサーバーは Desktop チャットサーフェスとローカル Code タブセッションの両方で利用可能です。
+Desktop アプリは、`claude_desktop_config.json` から MCP サーバーをローカルコードタブセッションに読み込み、`~/.claude.json` および `.mcp.json` のサーバーと並行して実行します。`claude_desktop_config.json` で定義したサーバーは、Desktop チャットサーフェイスとローカルコードタブセッションの両方で利用可能です。
 
-`claude_desktop_config.json` と `~/.claude.json` または `.mcp.json` で同じサーバー名を定義した場合、ローカルセッションの Code タブは一度接続し、`claude_desktop_config.json` の定義を使用します。
+`claude_desktop_config.json` と `~/.claude.json` または `.mcp.json` で同じサーバー名を定義した場合、ローカルセッションのコードタブは 1 回接続し、`claude_desktop_config.json` の定義を使用します。
 
-アプリはまた、`~/.claude.json` から stdio サーバーをローカルセッションの組み込み CLI に再配信します。`~/.claude.json`（ユーザースコープ）と `.mcp.json` のトップレベルが同じ stdio サーバー名を定義する場合、Code タブは `~/.claude.json` の定義を使用し、CLI の[スコープ階層](/docs/ja/mcp#scope-hierarchy-and-precedence)から外れます。
+アプリは、`~/.claude.json` の stdio サーバーをローカルセッションの組み込み CLI に再配信します。`~/.claude.json`（ユーザースコープ）と `.mcp.json` のトップレベルが同じ stdio サーバー名を定義する場合、コードタブは `~/.claude.json` の定義を使用し、CLI の[スコープ階層](/docs/ja/mcp#scope-hierarchy-and-precedence)から外れます。
 
 <Note>
-  スタンドアロン CLI は `claude_desktop_config.json` を読み取りません。macOS と WSL では、`claude mcp add-from-claude-desktop` を実行して、これらのサーバーを `~/.claude.json` にコピーします。[Claude Desktop から MCP サーバーをインポート](/docs/ja/mcp#import-mcp-servers-from-claude-desktop)を参照して、インポートフローとスコープオプションを確認してください。
+  スタンドアロン CLI は `claude_desktop_config.json` を読み込みません。macOS と WSL では、`claude mcp add-from-claude-desktop` を実行して、それらのサーバーを `~/.claude.json` にコピーします。[Claude Desktop から MCP サーバーをインポート](/docs/ja/mcp#import-mcp-servers-from-claude-desktop)を参照して、インポートフローとスコープオプションを確認してください。
 </Note>
 
 <h3 id="feature-comparison">
   機能比較
 </h3>
 
-このテーブルは、CLI と Desktop の間のコア機能を比較しています。CLI フラグの完全なリストについては、[CLI リファレンス](/docs/ja/cli-reference)を参照してください。
+このテーブルは、CLI と Desktop の主要機能を比較しています。CLI フラグの完全なリストについては、[CLI リファレンス](/docs/ja/cli-reference)を参照してください。
 
 | 機能 | CLI | Desktop |
 | - | - | - |
-| 権限モード | `dontAsk` を含むすべてのモード | Manual、Accept edits、Plan、および Auto。Bypass permissions はモードセレクタに表示されます。Pro と Max プランでは Settings トグルで有効にします。Team と Enterprise プランでは、組織ポリシーがこれを制御します |
-| [サードパーティプロバイダー](/docs/ja/third-party-integrations) | Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry | デフォルトでは Anthropic の API。ゲートウェイルーティングについては、[デスクトップアプリをゲートウェイに接続](/docs/ja/llm-gateway-connect#desktop-app)を参照してください。Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、または自己ホスト型 LLM ゲートウェイで Code タブを実行するには、[Claude Desktop on 3P](https://claude.com/docs/third-party/claude-desktop/overview)を参照してください。 |
-| [MCP サーバー](/docs/ja/mcp) | 設定ファイルで設定 | ローカルおよび SSH セッションの Connectors UI、または設定ファイル |
-| [Plugins](/docs/ja/plugins/overview) | `/plugin` コマンド | プラグインマネージャー UI |
-| @mention ファイル | テキストベース | オートコンプリート付き；ローカルおよび SSH セッションのみ |
+| 権限モード | `dontAsk` を含むすべてのモード | Manual、Accept edits、Plan、および Auto。権限モードのバイパスは、モードセレクタで有効にされると表示されます：Pro および Max プランでは設定トグルを通じて、Team および Enterprise プランでは組織ポリシーを通じて |
+| [サードパーティプロバイダー](/docs/ja/third-party-integrations) | Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry | デフォルトで Anthropic の API。ゲートウェイルーティングについては、[Desktop アプリをゲートウェイに接続](/docs/ja/llm-gateway-connect#desktop-app)を参照してください。Code タブを Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、または自己ホスト型 LLM ゲートウェイで実行するには、[Claude Desktop on 3P](https://claude.com/docs/third-party/claude-desktop/overview)を参照してください。 |
+| [MCP サーバー](/docs/ja/mcp) | 設定ファイルで設定 | ローカルおよび SSH セッションのコネクタ UI、または設定ファイル |
+| [プラグイン](/docs/ja/plugins/overview) | `/plugin` コマンド | プラグインマネージャー UI |
+| @mention ファイル | テキストベース | オートコンプリート付き。ローカルおよび SSH セッションのみ |
 | ファイル添付 | 利用できません | 画像、PDF |
-| セッション分離 | [`--worktree`](/docs/ja/cli-reference) フラグ | **worktree** オプション（セッション開始時） |
-| 複数セッション | 別のターミナル | サイドバータブ |
+| セッション分離 | [`--worktree`](/docs/ja/cli-reference) フラグ | セッション開始時の **worktree** オプション |
+| 複数セッション | 別々のターミナル | サイドバータブ |
 | 定期的なタスク | Cron ジョブ、CI パイプライン | [スケジュール済みタスク](/docs/ja/desktop-scheduled-tasks) |
-| コンピュータ使用 | [macOS で `/mcp` 経由で有効化](/docs/ja/computer-use) | [macOS と Windows でアプリとスクリーン制御](#let-claude-use-your-computer) |
-| iOS シミュレータ | [コンピュータ使用](/docs/ja/computer-use#test-a-simulator-flow)経由でシミュレータを駆動 | [iOS Simulator ペイン](/docs/ja/desktop-ios-simulator)が自動的に開く |
-| Dispatch 統合 | 利用できません | [Dispatch セッション](#sessions-from-dispatch)（サイドバー） |
+| コンピュータ使用 | macOS で [`/mcp`](/docs/ja/computer-use) で有効化 | macOS および Windows で[アプリとスクリーン制御](#let-claude-use-your-computer) |
+| iOS シミュレータ | [コンピュータ使用](/docs/ja/computer-use#test-a-simulator-flow)経由でシミュレータを駆動 | [iOS シミュレータペイン](/docs/ja/desktop-ios-simulator)が自動的に開きます |
+| Dispatch 統合 | 利用できません | サイドバーの [Dispatch セッション](#sessions-from-dispatch) |
 | スクリプトと自動化 | [`--print`](/docs/ja/cli-reference)、[Agent SDK](/docs/ja/headless) | 利用できません |
 
 <h3 id="what’s-not-available-in-desktop">
-  Desktop では利用できないもの
+  Desktop で利用できない機能
 </h3>
 
-以下の機能は Desktop では利用できません。ただし、以下の場合を除きます：
+以下の機能は Desktop では利用できません（記載されている場合を除く）：
 
-* **サードパーティプロバイダー**：Desktop はデフォルトで Anthropic の API に接続します。Desktop をゲートウェイ経由でルーティングするには、またはコード タブを Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、または自己ホスト型 LLM ゲートウェイで実行するには、[サードパーティプロバイダー行](#feature-comparison)のリンクに従ってください。
-* **Linux（ベータ版）**：Linux デスクトップアプリではコンピュータ使用はまだ利用できません。[Claude Desktop on Linux](/docs/ja/desktop-linux)を参照してください。
+* **サードパーティプロバイダー**：Desktop はデフォルトで Anthropic の API に接続します。Desktop をゲートウェイ経由でルーティングするか、Code タブを Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、または自己ホスト型 LLM ゲートウェイで実行するには、[サードパーティプロバイダー行](#feature-comparison)のリンクに従ってください。
+* **Linux（ベータ）**：Linux デスクトップアプリではコンピュータ使用はまだ利用できません。[Claude Desktop on Linux](/docs/ja/desktop-linux)を参照してください。
 * **インラインコード提案**：Desktop はオートコンプリートスタイルの提案を提供しません。会話型プロンプトと明示的なコード変更を通じて機能します。
-* **エージェントチーム**：チームリーダーとして Claude が共有タスクリストからチームメイトにタスクを割り当てる調整されたチームは、[CLI](/docs/ja/agent-teams)で利用可能であり、Desktop では利用できません。1 つのセッション内でマルチエージェント作業を行う場合は、[動的ワークフロー](/docs/ja/workflows)を使用します。これは Desktop で実行されます。Claude は[他のセッションをメッセージして管理](#work-across-sessions)することもできます。
-* **ターミナルダイアログコマンド**：ターミナルで対話型パネルを開く組み込みコマンドは、Code タブでは異なる動作をします。権限ルールと設定を管理するには、[設定ファイル](/docs/ja/settings)を直接編集するか、スタンドアロン CLI からコマンドを実行します。
+* **エージェントチーム**：Claude がチームリーダーとして共有タスクリストからチームメイトにタスクを割り当てる調整されたチームは、[CLI](/docs/ja/agent-teams)で利用可能で、Desktop では利用できません。1 つのセッション内でマルチエージェント作業を行う場合は、Desktop で実行される[動的ワークフロー](/docs/ja/workflows)を使用します。Claude は[他のセッションに直接メッセージを送信して管理](#work-across-sessions)することもできます。
+* **ターミナルダイアログコマンド**：ターミナルで対話的パネルを開く組み込みコマンドは、コードタブで異なる動作をします。[設定ファイル](/docs/ja/settings)を直接編集して権限ルールと設定を管理するか、スタンドアロン CLI からコマンドを実行します。
   * `/permissions` などの引数形式がないコマンドは、`isn't available in this environment` で応答します。
-  * `/config` は Settings → Claude Code を開きます。コマンドの後のテキストは無視されるため、`/config theme=dark` はテーマを設定しません。
+  * `/config` は設定 → Claude Code を開きます。コマンド後のテキストは無視されるため、`/config theme=dark` はテーマを設定しません。
 
 <h2 id="troubleshooting">
   トラブルシューティング

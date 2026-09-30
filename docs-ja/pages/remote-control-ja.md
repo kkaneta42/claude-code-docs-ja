@@ -34,6 +34,12 @@ Remote Control を使用する前に、環境が以下の条件を満たして�
   * `DISABLE_TELEMETRY` または `DO_NOT_TRACK` のみを設定した場合、組織が [Trusted Devices](#trusted-devices) を要求しない限り、Remote Control は利用可能なままです。要求する場合は、Remote Control を使用するために変数を設定解除してください。いずれかの変数を設定した状態で Remote Control を使用するには、Claude Code v2.1.283 以降が必要です。
 * **ワークスペース信頼**: まだ信頼していないディレクトリで、`claude remote-control` は信頼を有効にする内容を出力し、開始する前に `Trust <directory>? [y/N]` と尋ねます。`y` と答えると選択が保存されます。ただし、ホームディレクトリでは信頼は保存されず、実行するたびに質問が返されます。標準入力または出力がターミナルでない場合、コマンドは質問できず、[`Workspace not trusted`](/docs/ja/errors#workspace-not-trusted-when-starting-remote-control) エラーで終了します。
 
+***
+
+title: "リモートコントロールセッションを開始する"
+description: "CLI、Claude Desktop アプリ、または VS Code 拡張機能からリモートコントロールセッションを開始する方法を学びます。"
+------------------------------------------------------------------------------------
+
 <h2 id="start-a-remote-control-session">
   リモートコントロールセッションを開始する
 </h2>
@@ -64,7 +70,8 @@ CLI、[Claude Desktop アプリ](/docs/ja/desktop)、または VS Code 拡張機
     | `--capacity <N>` | 同時セッションの最大数。デフォルトは 32 です。`--spawn=session` では使用できません。 |
     | `--[no-]create-session-in-dir` | サーバーが起動するときに現在のディレクトリに 1 つのセッションを事前作成し、すぐに入力できる場所を用意します。`worktree` モードでは、このセッションは現在のディレクトリに留まり、オンデマンドセッションは分離された worktree を取得します。デフォルトでオンです。`--no-create-session-in-dir` を渡して何もない状態で開始する場合、Claude Code はサーバーを停止するときにサーバーのセッションをアーカイブするため、[再開](#resume-sessions-after-stopping-the-server)するものはありません。 |
     | `--permission-mode <mode>` | サーバーのセッションの開始 [権限モード](/docs/ja/permission-modes)（`acceptEdits` など）を設定します。`manual` を `default` のエイリアスとして受け入れます。認識されないモードはサーバーを起動時に停止し、有効なモードをリストします。 |
-    | `-d`, `--debug[=<filter>]` | サーバーのデバッグログをオンにします。オプションでカテゴリでフィルタリングできます。フィルタは `=` 形式でのみ渡します（例：`--debug=api,hooks`）。Claude Code v2.1.282 以降が必要です。以前のバージョンはフラグを不明な引数として拒否します。 |
+    | `--chrome` / `--no-chrome` | サーバーが作成するセッションで [Chrome 統合](/docs/ja/chrome)をオンまたはオフにして、別のデバイスから作業している間に Claude がマシン上で Chrome を使用できるようにします。どちらのフラグもない場合、サーバーが事前作成するセッションと claude.ai/code または Claude アプリから自分で開始するセッションは、[Chrome をデフォルトで有効にした](/docs/ja/chrome#enable-chrome-by-default)場合でも、Chrome がオフで開始されます。サーバーが [プロジェクト](/docs/ja/claude-projects)スレッドの 1 つに対して開始するセッションは、`bypassPermissions` モードを除き、代わりにその設定に従います。Claude Code v2.1.273 以降が必要です。 |
+    | `-d`, `--debug[=<filter>]` | サーバーのデバッグログをオンにします。オプションでカテゴリでフィルタリングできます。フィルタは `=` 形式でのみ渡します（例：`--debug=api,hooks`）。Claude Code v2.1.282 以降が必要です。 |
     | `--debug-file <path>` | デバッグログを指定されたファイルに書き込みます。 |
     | `--verbose` | 詳細な接続とセッションログを表示します。 |
     | `--sandbox` / `--no-sandbox` | ファイルシステムとネットワーク分離のための [サンドボックス](/docs/ja/sandboxing)を有効または無効にします。デフォルトではオフです。 |
@@ -199,7 +206,7 @@ Claude アプリをまだ持っていない場合は、Claude Code 内で `/mobi
 
 同じトグルは CLI の外に表示されます：
 
-* **Desktop アプリ**：**Settings > Claude Code > Enable remote control by default**。
+* **Desktop アプリ**：**Settings > Claude Code > Connect new sessions to Remote Control**。
 * **VS Code 拡張機能**：[コマンドメニューの](/docs/ja/vs-code#use-the-prompt-box) Settings セクションの **Enable Remote Control for all sessions**。
 
 代わりに設定ファイルから自動接続をオンにするには、ユーザー `~/.claude/settings.json` または [管理設定](/docs/ja/managed-settings)で [`remoteControlAtStartup`](/docs/ja/settings-reference#remotecontrolatstartup) を `true` に設定します。プロジェクトまたはローカル設定（`.claude/settings.json`、`.claude/settings.local.json`）では、Claude Code は `false` を尊重し、そのリポジトリの自動接続をオフにしますが、`true` は無視するため、チェックインされたファイルはリポジトリを開くすべての人のリモートコントロールをオンにすることはできません。
@@ -438,7 +445,7 @@ Claude Code は、Remote Control がアカウントに対して有効になっ�
   「Remote Control is only available when using Claude via api.anthropic.com」
 </h3>
 
-セッションが Anthropic API と直接通信していないため、ペアリングする claude.ai バックエンドがありません。これは Amazon Bedrock、Google Cloud の Agent Platform、および Microsoft Foundry で発生します。また、[`ANTHROPIC_BASE_URL`](/docs/ja/env-vars) が `api.anthropic.com` 以外のホスト（[LLM ゲートウェイ](/docs/ja/llm-gateway) やプロキシなど）を指している場合にも発生します。claude.ai でサインインしている場合でも同様です。完全な原因リストについては、[エラーリファレンス](/docs/ja/errors#remote-control-requires-the-anthropic-api) を参照してください。
+セッションが Anthropic API と直接通信していないため、Remote Control が必要とします。これは Amazon Bedrock、Google Cloud の Agent Platform、および Microsoft Foundry で発生します。また、[`ANTHROPIC_BASE_URL`](/docs/ja/env-vars) が `api.anthropic.com` 以外のホスト（[LLM ゲートウェイ](/docs/ja/llm-gateway) やプロキシなど）を指している場合にも発生します。claude.ai でサインインしている場合でも同様です。完全な原因リストについては、[エラーリファレンス](/docs/ja/errors#remote-control-requires-the-anthropic-api) を参照してください。
 
 メッセージは、セッションを Anthropic API から遠ざけたもの（`CLAUDE_CODE_USE_BEDROCK` やカスタム `ANTHROPIC_BASE_URL` など）を名前に挙げています。適格な claude.ai ログインがある場合は、名前に挙げられた変数を設定解除し、[設定](/docs/ja/settings) の `env` キーから削除した場合はそこから削除し、セッションを再開してください。
 

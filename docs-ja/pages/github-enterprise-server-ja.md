@@ -252,7 +252,7 @@ GitHub Enterprise アカウントを接続するには、[claude.ai/code](https:
   セッション開始が `Unable to get organization UUID` で失敗
 </h3>
 
-組織アカウントで `/login` を使用してサインインしてください。代わりに API キーで認証する場合、クラウドセッションは `/login` を実行するよう求めるメッセージで早期に失敗します。
+Claude Code は認証情報から claude.ai 組織を読み取ることができませんでした。Team または Enterprise 組織のアカウントを使用して `/login` でサインインしてください。GitHub Enterprise Server サポートはこれらのプランに限定されています。原因と、この状態が生成する他のメッセージについては、[Unable to get organization UUID](/docs/ja/claude-code-on-the-web#unable-to-get-organization-uuid) を参照してください。
 
 <h2 id="related-resources">
   関連リソース

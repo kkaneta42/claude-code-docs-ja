@@ -297,7 +297,7 @@ allowlist を権限あるものにするには、[管理設定ソース](/docs/j
 
 | 設定 | 設定なし（デフォルト） | 空の配列 `[]` | 設定あり |
 | :- | :- | :- | :- |
-| `allowedMcpServers` | すべてのサーバーが許可される | [組織自身のサーバー](#how-a-server-is-evaluated)を除き、サーバーは許可されません | マッチするサーバーのみが許可され、[組織自身のサーバー](#how-a-server-is-evaluated)は除外されます |
+| `allowedMcpServers` | すべてのサーバーが許可される | [allowlist チェックをスキップするサーバー](#how-a-server-is-evaluated)を除き、サーバーは許可されません | マッチするサーバーのみが許可され、[allowlist チェックをスキップするサーバー](#how-a-server-is-evaluated)は除外されます |
 | `deniedMcpServers` | サーバーはブロックされません | サーバーはブロックされません | マッチするサーバーがブロックされます |
 
 エントリがスキーマ検証に失敗した場合の詳細は、[管理設定の無効なエントリ](/docs/ja/managed-settings#invalid-entries-in-managed-settings)を参照してください。
@@ -323,9 +323,13 @@ Claude Code がフェッチするすべての claude.ai コネクタをオフに
 2. **denylist をチェックします。** URL、コマンド、または名前で denylist エントリにマッチするサーバーはブロックされます。denylist マッチをオーバーライドするものはありません。
 3. **allowlist をチェックします。** `allowedMcpServers` がどこにも設定されていない場合、denylist を通過したすべてのサーバーがロードされます。設定されている場合、サーバーがマッチする必要があるものはそのタイプに依存し、以下の表に示されています。
 
-   組織自身のサーバーはこのチェックをスキップします。すべての `managedMcpServers` エントリ、および `${VAR}` 展開を使用しない値を持つ `managed-mcp.json` エントリです。Chrome の Claude、Claude Code が実行中の VS Code または JetBrains IDE に接続する `ide` サーバー、CLI 自身が設定するサーバーなどの組み込みサーバーもスキップします。
+   3 つのサーバーグループはこのチェックをスキップします。
 
-   コマンド、引数、`env`、URL、またはヘッダーで `${VAR}` 展開を使用する `managed-mcp.json` サーバーは、ユーザー、プラグイン、`--mcp-config`、または claude.ai が追加するすべてのサーバーと同様にチェックされます。
+   * 組織自身のサーバー：すべての `managedMcpServers` エントリ、および `${VAR}` 展開を使用しない値を持つ `managed-mcp.json` エントリ。
+   * Chrome の Claude、Claude Code が実行中の VS Code または JetBrains IDE に接続する `ide` サーバー、CLI 自身が設定するサーバーなどの組み込みサーバー。
+   * [Claude Tag](/docs/ja/claude-tag) セッションの Slack ツール：スレッドを読み取り、返信を投稿するために使用するサーバーは allowlist エントリなしでロードされます。
+
+   コマンド、引数、`env`、URL、またはヘッダーで `${VAR}` 展開を使用する `managed-mcp.json` サーバーはまだチェックされます。ユーザー、プラグイン、claude.ai が追加するすべてのサーバー、および `--mcp-config` でユーザーが渡すすべてのサーバーも同様です。
 
 | サーバータイプ | マッチ時に許可される |
 | :- | :- |

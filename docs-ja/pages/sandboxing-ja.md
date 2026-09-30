@@ -530,6 +530,7 @@ JWT を保持するファイルの場合、`extract` の代わりに、または
 
 * **デフォルトの書き込み動作**：現在の作業ディレクトリとそのサブディレクトリへの読み取りおよび書き込みアクセス、`--add-dir`、`/add-dir`、または [`permissions.additionalDirectories`](/docs/ja/settings-reference#permissions-additionaldirectories) で追加したディレクトリ、加えて `$TMPDIR` が指すユーザーごとの一時ディレクトリへのアクセス
 * **デフォルトの読み取り動作**：特定の拒否ディレクトリを除く、コンピュータ全体への読み取りアクセス。このデフォルトは `~/.aws/credentials` や `~/.ssh/` などの認証情報ファイルの読み取りを許可することに注意してください。[`sandbox.credentials`](#protect-credentials) を使用してこれらのファイルの読み取りをブロックし、シークレット環境変数の設定を解除するか、パスを `denyRead` に追加してください。
+* **読み取りブロック**：[`permissions.blockReadsOutsideWorkingDirectories`](/docs/ja/settings-reference#permissions-blockreadsoutsideworkingdirectories) がオンの場合、サンドボックス化されたコマンドはホームディレクトリと、[Sandboxed commands under the block](/docs/ja/settings-reference#sandboxed-commands-under-the-block) がリストするパスを除く、ユーザーファイルを保持する他のディレクトリへの読み取りアクセスも失います。そのセクションはこのブロックの一部が適用されない場合についても説明しています。
 * **ブロックされたアクセス**：明示的な許可なしに作業ディレクトリ、追加されたディレクトリ、およびユーザーごとの一時ディレクトリ外のファイルを変更できません。これには `~/.bashrc` などのシェル設定ファイルと `/bin/` のシステムバイナリが含まれます。
 * **Git worktrees**：作業ディレクトリが[リンクされた git worktree](/docs/ja/worktrees)の場合、サンドボックスはメインリポジトリの共有 `.git` ディレクトリへの書き込みも許可するため、`git commit` などのコマンドが refs とインデックスを更新できます。そのディレクトリ内の `hooks/` と `config` への書き込みは引き続き拒否されます。
 * **設定可能**：設定を通じてカスタム許可パスと拒否パスを定義します

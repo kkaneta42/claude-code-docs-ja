@@ -196,7 +196,7 @@ Claude が作業を完了して入力を必要とするときはいつでもデ�
 | `elicitation_url_dialog` | MCP サーバーがブラウザURL を開くよう求め、約 6 秒入力していない |
 | `elicitation_complete` | MCP サーバーが[URL モード引き出し](/docs/ja/hooks#elicitation-input)が完了したことを報告する |
 | `elicitation_response` | MCP 引き出し応答がサーバーに送り返されたとき |
-| `agent_needs_input` | バックグラウンドセッションがあなたの入力を待つのを開始するか、現在のセッションが[agent team チームメイトのターミナルセットアップ質問](/docs/ja/agent-teams#choose-a-display-mode)を尋ね、約 6 秒入力していない。[agent view](/docs/ja/agent-view) が開いている間のみ発火します |
+| `agent_needs_input` | バックグラウンドセッションがあなたの入力を待つのを開始するか、[agent view](/docs/ja/agent-view) が開いている間のみ発火します。また、ターミナルセッションが[agent team チームメイトのターミナルセットアップ質問](/docs/ja/agent-teams#choose-a-display-mode)を表示するか、auto mode の[分類器リクエスト料金](/docs/ja/auto-mode-classifier-billing)に関する通知を表示し、約 6 秒入力していないときも発火します |
 | `agent_completed` | バックグラウンドセッションが完了または失敗します。[agent view](/docs/ja/agent-view) が開いている間のみ発火します |
 | `quota_auto_resume_fired` | Claude Code は claude.ai 使用制限が一時停止した後、タスクを続行します：リセット時、または Claude Code 中に何かを行うことで使用可能になったとき（使用クレジットの追加、プランのアップグレード、モデルの切り替えなど）。[モデル設定の例外](/docs/ja/interactive-mode#wait-for-a-usage-limit-to-reset)を参照してください |
 | `quota_auto_resume_stale` | claude.ai 使用制限がコンピュータが約 30 分以上スリープしている間にリセットされました。Claude Code はタスクを続行する代わりに `Enter` キーを押すのを待ちます。より短いスリープの後、それは続行し、代わりに `quota_auto_resume_fired` を発火します |

@@ -78,7 +78,7 @@ LOG_LEVEL=debug
 DATABASE_URL=postgres://localhost:5432/myapp
 ```
 
-各セッションは起動時に環境の値を 1 回コピーして、Claude が実行するコマンドが読み取ることができる通常の環境変数にします。実行中のセッションは設定を再度読み取らないため、変数を編集または追加すると、その後に開始するセッションに影響します。既に実行中のセッションは開始時の値を保持します。
+各セッションは起動時に環境の値を 1 回コピーして、Claude が実行するコマンドが読み取ることができる通常の環境変数にします。ただし、`OTEL_*` 変数は除きます。Claude Code はそれらを独自の [テレメトリエクスポート](/docs/ja/monitoring-usage#telemetry-from-cloud-sessions-and-claude-tag) に使用し、実行するコマンドに渡しません。実行中のセッションは設定を再度読み取らないため、変数を編集または追加すると、その後に開始するセッションに影響します。既に実行中のセッションは開始時の値を保持します。
 
 クラウドセッションは起動時に自身でいくつかの変数も設定します。[`CLAUDE_AUTOCOMPACT_PCT_OVERRIDE`](/docs/ja/claude-code-on-the-web#manage-context) の場合、セッションが設定する値はここで追加した値をオーバーライドするため、ここでそのキーを追加しても効果がありません。
 
@@ -149,6 +149,7 @@ API 認証情報は Pro および Max プランで利用可能です。Team お�
 * **GitHub**: [GitHub プロキシ](#github-proxy) は代わりに GitHub へのリクエストを認証するため、GitHub に対して API 認証情報は不要です
 * **Anthropic API およびパブリックパッケージレジストリ**: `api.anthropic.com`、`registry.npmjs.org`、`jsr.io`、`npm.jsr.io`、`pypi.org`、`files.pythonhosted.org`、`index.crates.io`、および `proxy.golang.org`
 * **セットアップスクリプトリクエスト**: Claude Code は [セットアップスクリプト](#setup-scripts) が実行された後、起動時にエージェントプロキシに接続します
+* **Claude Code のテレメトリエクスポート**: Claude Code は [テレメトリエクスポート](/docs/ja/monitoring-usage#telemetry-from-cloud-sessions-and-claude-tag) を実行するコマンドではなく自身で送信し、そのリクエストはエージェントプロキシを通過しません
 
 <h3 id="select-an-environment-from-the-cli">
   CLI から環境を選択する
@@ -203,39 +204,39 @@ Owner は [claude.ai/admin-settings/claude-code](https://claude.ai/admin-setting
   ネットワークアクセス
 </h2>
 
-各環境は 1 つのネットワークアクセスレベルを設定し、セッションが行える送信接続を制御します。デフォルトレベルの **Trusted** はパッケージレジストリおよび他の [許可リストドメイン](#default-allowed-domains) を許可します。**Custom** は独自のドメインリストを取ります。
+各環境は 1 つのネットワークアクセスレベルを設定します。これは、セッションが行える送信接続を制御します。デフォルトレベルの **Trusted** は、パッケージレジストリおよび他の [許可リストに登録されたドメイン](#default-allowed-domains) を許可します。**Custom** はカスタムドメインリストを使用します。
 
-環境のネットワークアクセスを変更するには、[編集用に開いて](#configure-your-environment) ダイアログの **Network access** セレクタを使用します。[共有環境](#organization-shared-environments) は読み取り専用で開くため、Owner は [admin settings](https://claude.ai/admin-settings) の **Cloud environments** ページからそのネットワークアクセスを変更します。セレクタを開くクラウドアイコンは、[Default 環境](#the-default-environment) の下にリストされたアプリサーフェスおよび [ルーチンエディタ](/docs/ja/routines#environments-and-network-access) に表示されます。個人環境は claude.ai アカウント設定に別のページを持ちません。
+環境のネットワークアクセスを変更するには、[編集用に開き](#configure-your-environment)、ダイアログの **Network access** セレクターを使用します。[共有環境](#organization-shared-environments) はそこで読み取り専用で開くため、Owner は [admin settings](https://claude.ai/admin-settings) の **Cloud environments** ページからネットワークアクセスを変更します。クラウドアイコンはセレクターを開き、[The Default environment](#the-default-environment) に記載されているアプリサーフェスと [routine editor](/docs/ja/routines#environments-and-network-access) に表示されます。個人環境は claude.ai アカウント設定に別ページを持ちません。
 
 <Note>
-  セッションまたはルーチンで有効にする MCP コネクタは、コネクタホストを **Allowed domains** に追加しなくても機能します。コネクタトラフィックはセッションのネットワークではなく Anthropic のサーバーを通じて移動するためです。これは [セキュリティと分離](/docs/ja/claude-code-on-the-web#security-and-isolation) の下に記載されている同じ Anthropic バウンドチャネルに依存します。Claude が到達できるツールを制限するために不要なコネクタをオフにします。
+  セッションまたはルーチンで有効にした MCP コネクターは、**Allowed domains** にホストを追加しなくても機能します。コネクタートラフィックはセッションのネットワークではなく Anthropic のサーバーを通じて移動するためです。これは [Security and isolation](/docs/ja/claude-code-on-the-web#security-and-isolation) に記載されている同じ Anthropic バウンドチャネルに依存しています。不要なコネクターをオフにして、Claude が到達できるツールを制限します。
 </Note>
 
 <h3 id="access-levels">
   アクセスレベル
 </h3>
 
-[環境ダイアログ](#configure-your-environment) の **Network access** フィールドは 4 つのレベルのいずれかを取ります。
+[environment dialog](#configure-your-environment) の **Network access** フィールドは、4 つのレベルのいずれかを取ります。
 
-| レベル | 送信接続 |
+| Level | 送信接続 |
 | :- | :- |
 | **None** | セッションのネットワークを通じた送信ネットワークアクセスなし |
-| **Trusted** | [許可リストドメイン](#default-allowed-domains) のみ：パッケージレジストリ、GitHub、クラウド SDK |
+| **Trusted** | [許可リストに登録されたドメイン](#default-allowed-domains) のみ：パッケージレジストリ、GitHub、クラウド SDK |
 | **Full** | 任意のドメイン |
-| **Custom** | 独自の許可リスト（オプションでデフォルトを含む） |
+| **Custom** | カスタム許可リスト（オプションでデフォルトを含む） |
 
-どのレベルを選択しても、セッションはこれらに到達できます。それぞれはセッションのネットワーク許可リストを通じて行かないパスを取るためです。
+どのレベルを選択しても、セッションはこれらに到達できます。各セッションはセッションのネットワーク許可リストを通じない経路を取るためです。
 
-* GitHub（[別のプロキシ](#github-proxy) を通じて）
-* [MCP コネクタ](#network-access)（トラフィックが Anthropic のサーバーを通じて移動）
-* 環境の [API 認証情報](#add-api-credentials) にリストしたホスト（[エージェントプロキシがスキップするホスト](#requests-that-never-get-the-credential) を除く）
-* Anthropic API（Claude Code 独自のリクエスト用。[セキュリティと分離](/docs/ja/claude-code-on-the-web#security-and-isolation) の下に記載されているように **None** でも）
+* GitHub（[separate proxy](#github-proxy) を通じて）
+* 有効にした [MCP connectors](#network-access)（トラフィックは Anthropic のサーバーを通じて移動）
+* 環境の [API credentials](#add-api-credentials) にリストされたホスト（[credential を取得しないホスト](#requests-that-never-get-the-credential) を除く）
+* Anthropic API（Claude Code 独自のリクエスト用。[Security and isolation](/docs/ja/claude-code-on-the-web#security-and-isolation) に記載されているように **None** でも）
 
 <h3 id="allow-specific-domains">
   特定のドメインを許可する
 </h3>
 
-Trusted リストにないドメインを許可するには、環境のネットワークアクセス設定で **Custom** を選択し、**Allowed domains** フィールドに 1 行に 1 つのドメインをリストします。この例は、内部プロジェクトが必要とする可能性のある 3 つのホストを許可します。
+Trusted リストにないドメインを許可するには、環境のネットワークアクセス設定で **Custom** を選択し、**Allowed domains** フィールドに 1 行に 1 つのドメインをリストします。この例は、内部プロジェクトが必要とする 3 つのホストを許可します。
 
 ```text theme={null}
 api.example.com
@@ -243,34 +244,34 @@ api.example.com
 registry.example.com
 ```
 
-この環境のセッションは `api.example.com`、`internal.example.com` のすべてのサブドメイン、および `registry.example.com` に到達でき、セッションのネットワークを通じて他のドメインには到達できません。[GitHub トラフィック](#github-proxy)、[MCP コネクタトラフィック](#network-access)、および環境の [API 認証情報](#add-api-credentials) のホストへのリクエスト（[エージェントプロキシがスキップするホスト](#requests-that-never-get-the-credential) を除く）はこの許可リストを通じません。先頭の `*.` はすべてのサブドメインと一致します。[Trusted ドメイン](#default-allowed-domains) も保持するには、**一般的なパッケージマネージャーのデフォルトリストも含める** をチェックします。チェックを外すと、リストしたもののみを許可します。
+この環境のセッションは、`api.example.com`、`internal.example.com` のすべてのサブドメイン、および `registry.example.com` に到達でき、セッションのネットワークを通じた他のドメインには到達できません。[GitHub traffic](#github-proxy)、[MCP connector traffic](#network-access)、および環境の [API credentials](#add-api-credentials) のホストへのリクエスト（[credential を取得しないホスト](#requests-that-never-get-the-credential) を除く）は、この許可リストを通じません。先頭の `*.` はすべてのサブドメインにマッチします。[Trusted domains](#default-allowed-domains) も保持するには、**Also include default list of common package managers** をチェックします。チェックを外すと、リストしたもののみを許可します。
 
-組織が [アーティファクト](/docs/ja/artifacts#availability) を使用する場合、セッションがそれらを読み取るために `*.frame.claudeusercontent.com` をリストに含める必要はありません。リストがそのホストを除外する場合、Claude Code はセッションの Anthropic への接続を通じてアーティファクトコンテンツを読み取ります。ホストを許可リストに保持する 2 つの状況があります。
+組織が [artifacts](/docs/ja/artifacts#availability) を使用する場合、セッションがそれらを読み取るために `*.frame.claudeusercontent.com` をリストに含める必要はありません。リストがそのホストを除外する場合、Claude Code はセッションの Anthropic への接続を通じてアーティファクトコンテンツを読み取ります。ホストを許可リストに保持する 2 つの状況があります。
 
 * **この環境のセッションが別の組織のパブリックアーティファクトを開く**：Claude Code はホストから直接それらをフェッチするため、このリストに追加します。
-* **ローカル CLI またはセルフホスト実行を設定している**：ホストをその許可リストに保持します。[ネットワークアクセス要件](/docs/ja/network-config#network-access-requirements) およびセルフホスト [ネットワーク要件](/docs/ja/self-hosted-environments-deploy#network-requirements) を参照してください。
+* **ローカル CLI または自己ホスト型ランナーを設定している**：ホストをその許可リストに保持します。[network access requirements](/docs/ja/network-config#network-access-requirements) と自己ホスト型 [network requirements](/docs/ja/self-hosted-environments-deploy#network-requirements) を参照してください。
 
-各環境は独自の許可ドメインリストを持ちます。管理者がすべてのメンバーの環境にプッシュできる組織レベルの許可リストはありません。[サーバー管理設定](/docs/ja/server-managed-settings) はクラウドセッション内に適用されますが、環境のネットワーク許可リストにドメインを追加するものはありません。チームに 1 つの標準リストを提供するために、Owner は **Custom** ネットワークアクセスとそのリストを持つ [組織共有環境](#organization-shared-environments) を作成できます。
+各環境は独自の許可ドメインリストを持ちます。管理者がすべてのメンバーの環境にプッシュできる組織レベルの許可リストはありません。[server-managed setting](/docs/ja/server-managed-settings) も環境のネットワーク許可リストにドメインを追加しません。チームに 1 つの標準リストを提供するには、Owner が **Custom** ネットワークアクセスとそのリストを持つ [organization-shared environment](#organization-shared-environments) を作成できます。
 
 <h3 id="github-proxy">
   GitHub プロキシ
 </h3>
 
-Anthropic ホスト環境では、すべての GitHub 操作は、セッションの VM の外に実際の GitHub 認証情報を保持する専用プロキシを通じて行われます。これは環境の [アクセスレベル](#access-levels) とは独立しています。セルフホスト環境のセッションは、デプロイが提供する認証情報で git 操作を認証します。[Git を設定する](/docs/ja/self-hosted-environments-deploy#configure-git) はオプションをカバーしています。セッションごとにミントされた認証情報とこの同じプロキシへのオプトインを含みます。プロキシは以下を提供します。
+Anthropic ホスト環境では、すべての GitHub 操作は、環境の [access level](#access-levels) に関係なく、セッションの VM の外に実際の GitHub 認証情報を保つ専用プロキシを通じて行われます。自己ホスト型環境のセッションは、デプロイが提供する認証情報で git 操作を認証します。[Configure git](/docs/ja/self-hosted-environments-deploy#configure-git) はオプションをカバーしており、セッションごとにミントされた認証情報と同じプロキシへのオプトインが含まれます。プロキシは以下を提供します。
 
-* **Git 認証情報**：VM 内の git クライアントはスコープされた認証情報を使用し、プロキシはそれを検証して実際の GitHub トークンと交換します。
-* **API リクエスト**：組み込み GitHub ツールからのリクエスト、および [`proxy-injected` プレースホルダー](#work-with-github-issues-and-pull-requests) の下の `gh` からのリクエストは、実際の認証情報が置き換えられた状態で送信されます。
-* **プッシュ保護**：`git push` はセッションの現在の作業ブランチに対してのみ機能します。クローン、フェッチ、PR 操作は通常どおり機能します。
-* **リポジトリスコープ**：GitHub API およびリリースアセットリクエストはセッションに接続されたリポジトリのみに到達するため、セットアップスクリプトが接続されていないリポジトリからリリースアセットをダウンロードすると 403 が返されます。
-* **GraphQL 制限**：プロキシはプルリクエストワークフロー用にピン留めされた GraphQL 操作のセットのみを提供します。プロキシは GraphQL エンドポイント上の他のすべてを 403 で拒否します。`This GraphQL query is not enabled for this session` と言い、REST フォールバック `gh api repos/{owner}/{repo}/...` を名前付けします。制限は、提供する認証情報に関係なく、プロキシを通じるすべてのリクエストに適用されます。設定した `GH_TOKEN` は同じ 403 を取得します。Claude は Projects v2 などのプロキシを通じて GraphQL にのみ存在する GitHub API に到達できません。
+* **Git credentials**：VM 内の git クライアントはスコープ付き認証情報を使用し、プロキシはそれを検証して実際の GitHub トークンと交換します。
+* **API requests**：組み込み GitHub ツールからのリクエスト、および [`proxy-injected` placeholder](#work-with-github-issues-and-pull-requests) の下の `gh` からのリクエストは、実際の認証情報が置き換えられて送信されます。
+* **Push protection**：`git push` はセッションの現在の作業ブランチに対してのみ機能します。クローン、フェッチ、および PR 操作は通常どおり機能します。
+* **Repository scope**：GitHub API およびリリースアセットリクエストはセッションに接続されたリポジトリのみに到達するため、接続されていないリポジトリからリリースアセットをダウンロードするセットアップスクリプトは 403 を取得します。
+* **GraphQL restrictions**：プロキシはプルリクエストワークフロー用にピン留めされた GraphQL 操作のセットのみを提供します。プロキシは GraphQL エンドポイント上の他のすべてをリジェクトし、`This GraphQL query is not enabled for this session` と言う 403 を返し、REST フォールバック `gh api repos/{owner}/{repo}/...` を名前付けします。制限は、提供する認証情報に関係なく、プロキシを通じたすべてのリクエストに適用されるため、設定した `GH_TOKEN` は同じ 403 を取得します。Claude はプロキシを通じて Projects v2 などの GraphQL にのみ存在する GitHub API に到達できません。
 
-パブリックリポジトリからのコミットされたファイルは `raw.githubusercontent.com` を通じて到達し、[セキュリティプロキシ](#security-proxy) がそれを処理します。そのドメインはデフォルト [Trusted リスト](#default-allowed-domains) にあるため、環境の [アクセスレベル](#access-levels) がそれを除外しない限り、これらのファイルは到達可能なままです。
+パブリックリポジトリからのコミットされたファイルは `raw.githubusercontent.com` を通じて到着し、[security proxy](#security-proxy) が代わりに処理します。そのドメインはデフォルト [Trusted list](#default-allowed-domains) にあるため、環境の [access level](#access-levels) がそれを除外しない限り、それらのファイルは到達可能なままです。
 
 <h3 id="security-proxy">
   セキュリティプロキシ
 </h3>
 
-Anthropic ホスト環境のクラウドセッションはセキュリティと不正使用防止のため HTTP/HTTPS ネットワークプロキシの背後で実行されます。[セルフホスト環境](/docs/ja/self-hosted-environments-deploy#default-deny-egress) では、送信トラフィックは代わりに独自のネットワーク境界を通じて離れます。Anthropic ホスト セッションからのすべての送信インターネットトラフィックはこのプロキシを通じて渡され、以下を提供します。
+Anthropic ホスト環境のクラウドセッションは、セキュリティと不正使用防止のための HTTP/HTTPS ネットワークプロキシの背後で実行されます。[self-hosted environment](/docs/ja/self-hosted-environments-deploy#default-deny-egress) では、送信トラフィックは代わりに独自のネットワーク境界を通じて離脱します。Anthropic ホストセッションからのすべての送信インターネットトラフィックはこのプロキシを通じて渡され、以下を提供します。
 
 * 悪意のあるリクエストに対する保護
 * レート制限と不正使用防止
@@ -301,7 +302,7 @@ Anthropic ホスト環境では、各セッションは独自のオペレーテ�
 | リポジトリの `.claude/rules/` | はい | クローンの一部 |
 | リポジトリの `.claude/skills/`、`.claude/agents/`、`.claude/commands/` | はい | クローンの一部 |
 | リポジトリの `.claude/settings.json` で宣言されたプラグインとマーケットプレイス | いいえ | クラウドセッションは、リポジトリが [`enabledPlugins`](/docs/ja/settings-reference#enabledplugins) で有効にするプラグインをインストールしません。これには [`extraKnownMarketplaces`](/docs/ja/settings-reference#extraknownmarketplaces) の下にリストされているマーケットプレイスのプラグインも含まれます |
-| 組織の[サーバー管理設定](/docs/ja/server-managed-settings) | はい | セッション開始時に Anthropic のサーバーから取得されます。クラウドセッションで `availableModels` がどのように適用されるかについては、[Surface coverage](/docs/ja/model-config#surface-coverage) を参照してください。MDM または管理設定ファイルを通じてデバイスにデプロイされた設定は適用されません。セッションは Anthropic 管理 VM で実行されるためです。[セルフホスト環境](/docs/ja/self-hosted-environments)では、セッションはランナーイメージの管理設定ファイルも読み取ります。[Claude Code が管理ソースを組み合わせる方法](/docs/ja/managed-settings#how-claude-code-combines-managed-sources)に従います |
+| 組織の[サーバー管理設定](/docs/ja/server-managed-settings) | はい、[Claude Tag](https://claude.com/docs/claude-tag/overview) セッションを除く | セッション開始時に Anthropic のサーバーから取得されます。クラウドセッションで `availableModels` がどのように適用されるかについては、[Surface coverage](/docs/ja/model-config#surface-coverage) を参照してください。MDM または管理設定ファイルを通じてデバイスにデプロイされた設定は適用されません。セッションは Anthropic 管理 VM で実行されるためです。[セルフホスト環境](/docs/ja/self-hosted-environments)では、セッションはランナーイメージの管理設定ファイルも読み取ります。[Claude Code が管理ソースを組み合わせる方法](/docs/ja/managed-settings#how-claude-code-combines-managed-sources)に従います |
 | ユーザー `~/.claude/CLAUDE.md` | いいえ | マシンに存在し、リポジトリには存在しません |
 | ユーザー `~/.claude/skills/`、`~/.claude/agents/`、`~/.claude/commands/` | いいえ | マシンに存在し、リポジトリには存在しません。代わりにリポジトリの `.claude/` ディレクトリにコミットしてください。クラウドセッションは claude.ai で有効にしたスキルを自動的に読み込みます |
 | ユーザー設定でのみ有効なプラグイン | いいえ | ユーザースコープの `enabledPlugins` は `~/.claude/settings.json` に存在します |
@@ -489,7 +490,7 @@ apt update && apt install -y shellcheck
 
 ユーザーレベルの `~/.claude/settings.json` に SessionStart フックがある場合、クラウドではそれらを期待しないでください。ユーザーレベルの設定はマシンに留まります。どの他のフックが実行されるかは、セッションが実行される場所によって異なります。
 
-* **Anthropic ホスト環境**：Claude Code はリポジトリおよび組織の [サーバー管理設定](/docs/ja/server-managed-settings) からフックを実行します。
+* **Anthropic ホスト環境**：Claude Code はリポジトリおよび組織の [サーバー管理設定](/docs/ja/server-managed-settings) からフックを実行します。[Claude Tag](https://claude.com/docs/claude-tag/overview) セッションはサーバー管理設定を受け取らないため、サーバー管理設定からのフックはそこで実行されません。
 * **[セルフホスト環境](/docs/ja/self-hosted-environments-configuration#permissions-and-tool-approval)**：Claude Code はオペレーターがランナーホストの `~/.claude/` からシードしたフックも実行し、ランナーイメージの管理設定ファイルのフック（そのファイルが [Claude Code が適用する管理ソース](/docs/ja/managed-settings#how-claude-code-combines-managed-sources) のいずれかである場合）。
 
 <h3 id="install-dependencies-with-a-sessionstart-hook">
@@ -565,6 +566,10 @@ SessionStart フックはクラウドでローカルと同じように動作し�
     * platform.claude.com
     * code.claude.com
     * claude.ai
+    * claude.com
+    * support.claude.com
+    * anthropic.com
+    * [www.anthropic.com](http://www.anthropic.com)
   </Accordion>
 
   <Accordion title="バージョン管理">
@@ -595,6 +600,7 @@ SessionStart フックはクラウドでローカルと同じように動作し�
     * hub.docker.com
     * [www.docker.com](http://www.docker.com)
     * production.cloudflare.docker.com
+    * production.cloudfront.docker.com
     * download.docker.com
     * gcr.io
     * \*.gcr.io
@@ -821,4 +827,4 @@ SessionStart フックはクラウドでローカルと同じように動作し�
 * [Remote Control](/docs/ja/remote-control)：代わりに独自のマシンのネットワークとファイルでセッションを実行します
 * [Self-hosted environments](/docs/ja/self-hosted-environments)：組織独自のインフラストラクチャでクラウドセッションを実行します
 * [SessionStart hooks](/docs/ja/hooks#sessionstart)：ローカルとクラウドセッションで実行されるリポジトリコミットセットアップ
-* [Server-managed settings](/docs/ja/server-managed-settings)：クラウドセッションに到達する組織ポリシー
+* [Server-managed settings](/docs/ja/server-managed-settings)：管理コンソールから配信される組織ポリシー

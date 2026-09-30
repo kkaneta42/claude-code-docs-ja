@@ -48,7 +48,7 @@ Claude を管理サービスではなく独自の CI インフラストラクチ
 | 🟡 | Nit | 軽微な問題、修正する価値があるがブロッキングではない |
 | 🟣 | Pre-existing | コードベースに存在するが、この PR で導入されなかったバグ |
 
-結果には、展開可能な拡張推論セクションが含まれており、Claude がなぜ問題をフラグ立てしたのか、どのように問題を検証したのかを理解するために展開できます。
+結果には、展開可能な **Why this was flagged** セクションが含まれており、Claude がなぜ問題をフラグ立てしたのか、どのように問題を検証したのかを理解するために展開できます。
 
 <h3 id="rate-and-reply-to-findings">
   結果に対する評価と返信
@@ -381,7 +381,7 @@ Claude が後でセッションで報告された結果を修正すると、そ�
 
 努力レベルとフラグの後、Claude Code は行の残りを 2 つの方法のいずれかで読み取ります：
 
-* **`ultra` なし**：残りのすべてはレビュータ​​ーゲットです。別のコマンド名で始まる場合でも同様です。`/code-review /fix-issue 123` は `/fix-issue 123` をターゲットテキストとしてレビューし、`/fix-issue` を 2 番目の[スタックされたスキル](/docs/ja/skills#pass-arguments-to-skills)として読み込みません。v2.1.218 より前は、`/code-review` の後にスタックされたコマンドは独自のスキルとして展開されました。
+* **`ultra` なし**：残りのすべてはレビューターゲットです。別のコマンド名で始まる場合でも同様です。`/code-review /fix-issue 123` は `/fix-issue 123` をターゲットテキストとしてレビューし、`/fix-issue` を 2 番目の[スタックされたスキル](/docs/ja/skills#pass-arguments-to-skills)として読み込みません。v2.1.218 より前は、`/code-review` の後にスタックされたコマンドは独自のスキルとして展開されました。
 * **`ultra` あり**：Claude Code は単一の単語をベースブランチまたは PR 番号として読み取り、ブランチまたは PR に名前を付けない長いテキストを[レビューに添付されたノート](/docs/ja/ultrareview#pass-a-request-in-plain-words)に変換します。`/code-review ultra check my auth changes` は現在のブランチをレビューし、Claude は結果をノートに関連付けます。
 
 <h3 id="run-in-the-foreground">

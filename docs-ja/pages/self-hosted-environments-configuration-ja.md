@@ -222,8 +222,8 @@ claude self-hosted-runner orchestrator \
 | 変数 | 説明 |
 | :- | :- |
 | `CLAUDE_RUNNER_WORK_ORDER_FILE` | 新しいランナーが登録する署名済みワークオーダー JWT を含む一時ファイルへのパス。フック終了後に削除されます。ファイルの内容をログに記録しないでください。 |
-| `CLAUDE_RUNNER_ORDER_ID` | 不透明なべき等性キー。スポーン要求ごとに一意で、Kubernetes リソース名に対して安全です。プロビジョナーの重複排除キーとして使用してください。 |
-| `CLAUDE_RUNNER_SESSION_ID` | この要求が対象とするセッション。[`--min-idle`](/docs/ja/self-hosted-environments-reference#orchestrator-cli-flags) が設定されている場合、事前ウォーミング要求（特定のセッションの前にスタンバイランナーをブート）では空です。変数が設定されていると仮定しないでください。 |
+| `CLAUDE_RUNNER_ORDER_ID` | 不透明なべき等性キー。スポーン要求ごとに一意で、Kubernetes リソース名に対して安全です。プロビジョナーの重複排除キーとしてのみ使用してください。 |
+| `CLAUDE_RUNNER_SESSION_ID` | この要求が対象とするセッション。セッションの再要求のたびに繰り返されるため、ログとルーティングに使用し、重複排除キーとしては使用しないでください。[`--min-idle`](/docs/ja/self-hosted-environments-reference#orchestrator-cli-flags) が設定されている場合、事前ウォーミング要求（特定のセッションの前にスタンバイランナーをブート）では空です。変数が設定されていると仮定しないでください。 |
 | `CLAUDE_RUNNER_SESSION_UUID` | 正規 UUID 形式の同じセッション ID。事前ウォーミング要求では空です。 |
 | `CLAUDE_RUNNER_ATTEMPT` | このセッションが持つスポーン要求の数。事前ウォーミング要求では 0 です。 |
 | `CLAUDE_RUNNER_ORDER_SERVER_TIME` | ポーリング応答の HTTP `Date` ヘッダーからのサーバー時刻。フックがワークオーダー JWT の `exp` を検証する場合、ローカルクロックの代わりにこの値と比較して、スキューを許容してください。ゲートウェイがヘッダーを省略した場合は空です。 |
@@ -245,12 +245,14 @@ claude self-hosted-runner orchestrator \
 
 コントラクトには 4 つのプロビジョナー非依存ルールがあります。
 
-1. **`CLAUDE_RUNNER_ORDER_ID` でべき等です。** 同じ要求の再配信は、最大 1 つのランナーをスポーンする必要があります。ID から決定論的なリソース名を導出し、プラットフォームに重複を拒否させてください。
+1. **`CLAUDE_RUNNER_ORDER_ID` でべき等です。** 同じ要求の再配信は、最大 1 つのランナーをスポーンする必要があります。オーダー ID から決定論的なリソース名を導出し、プラットフォームに重複を拒否させてください。`CLAUDE_RUNNER_SESSION_ID` をキーとして使用しないでください。セッションの再要求のたびに同じセッション ID が新しいオーダー ID で実行されるため、セッション ID で名前付けまたは重複排除されたワークロードは、そのセッションに対して 1 回作成され、二度と作成されません。
 2. **ワークロードを再試行しないでください。** 1 つのオーダー ID は、最大 1 つの作成されたワークロードを意味します。ランナーが登録されない場合、Anthropic は `--expected-spawn-seconds` 後に新しいオーダー ID で再要求します。
 3. **終了コードコントラクトを使用します。** 終了 0 は送信されたことを意味します。終了 1 は再試行可能な失敗を意味します。セッションはバックオフして再度提供されます。終了 2 以上は再試行不可を意味します。セッションは、[Owner](/docs/ja/cloud-environments#organization-shared-environments) が環境の **Activity** タブでそれに対して **Retry** を選択するまで、再度スポーンされることがブロックされます。ゼロ以外の終了時に、フックの stderr の末尾がそこに失敗理由として表示されるため、実行可能なエラーを stderr に書き込み、シークレットは決して書き込まないでください。事前ウォーミング要求の場合、失敗するセッションはありません。オーケストレーターはゼロ以外の終了をローカルでのみログに記録し、サーバーはリース後にスポーンを再要求します。
 4. **`--expected-spawn-seconds` を少なくとも p99 ブート時間に設定します。** これはサーバー側のリースです。すべてのオーケストレーターレプリカは同じ値を使用する必要があります。
 
 フックが stdout または stderr に書き込むすべてのものは、認証情報が自動的に削除されたオーケストレーターのログに表示されます。セッションがキューに入ったままの場合、オーケストレーターの `/healthz` ボディをチェックしてキュー数を確認し、[**Cloud environments** 管理ページ](https://claude.ai/admin-settings/cloud-environments)で環境の **Activity** タブを開きます。失敗したセッションをそこで展開してスポーンエラーを確認し、**Retry** を選択して再要求してください。
+
+セッションが **Activity** タブにスポーンエラーなしでキューに入ったままの場合、フックがセッション ID でキーになっていることを意味する可能性があります。確認するには、プラットフォームがそのセッションの最初のスポーン要求のワークロードを持っているかどうか、および再要求のワークロードを持っていないかどうかを確認してください。その場合は、ワークロードを `CLAUDE_RUNNER_ORDER_ID` でキーにしてください。
 
 <h2 id="mcp-servers">
   MCP サーバー
@@ -276,6 +278,32 @@ Claude Code は他のソースからも MCP サーバーを読み込みます。
 `settings.json` は MCP サーバー定義を持たず、設定スキーマに最上位の `mcpServers` フィールドはありません。管理設定では、代わりに [`managedMcpServers`](/docs/ja/settings-reference#managedmcpservers) キーでサーバーを提供します。
 
 セッションはランナーの環境を継承するため、[`ENABLE_TOOL_SEARCH`](/docs/ja/mcp#scale-with-mcp-tool-search)をそこに設定して、ランナーが生成するすべてのセッションの MCP ツール検索を制御します。MCP ページは値をカバーしています。
+
+<h3 id="turn-off-built-in-session-tools">
+  組み込みセッションツールをオフにする
+</h3>
+
+Anthropic のコントロールプレーンは Claude Code Remote という名前の独自の MCP サーバーをクラウドセッションに接続します。Claude はサーバーのツールを使用して[ルーチン](/docs/ja/routines)をスケジュール設定し、他のクラウドセッションを開始および操舵し、より多くのリポジトリを接続し、プルリクエストアクティビティをフォローします。
+
+サーバー全体をオフにするには、[サーバーレベルの拒否ルール](/docs/ja/permissions#mcp)を設定に追加します。コントロールプレーンはセッションの作成方法に応じて、3 つの名前のいずれかでサーバーを登録します。Claude Code はルール内の名前と完全に一致させます（大文字と小文字を区別）。そのため、以下に示すように、名前ごとに一度ルールを記述します。
+
+```json theme={null}
+{
+  "permissions": {
+    "deny": [
+      "mcp__Claude_Code_Remote",
+      "mcp__claude-code-remote",
+      "mcp__bf7c680d-5fdc-5ef4-b4a0-abadb619bf0a"
+    ]
+  }
+}
+```
+
+サーバー全体に名前を付けるルールは、サーバーが後で取得するツールもカバーします。1 つのツールをオフにして残りを保持するには、各ルールに 2 つ以上のアンダースコアとツール名を追加します。例えば `mcp__Claude_Code_Remote__add_repo` のようにします。サーバーのツールを削除するのではなく、サーバーが接続することを完全にブロックするには、代わりに `mcp__` プレフィックスなしで 3 つの名前を [`deniedMcpServers`](/docs/ja/managed-mcp#policy-based-control-with-allowlists-and-denylists) の下の `serverName` エントリとして追加します。
+
+ルールを[サーバー管理設定](/docs/ja/server-managed-settings)に配置して、ランナーに変更を加えずにすべてのセッションに到達するか、ランナーの `~/.claude/settings.json` に配置します。[権限とツール承認](#permissions-and-tool-approval)は、ランナー上の設定がセッションに到達する方法を説明しています。
+
+ルールが有効になったことを確認するには、環境でセッションを開始し、Claude に MCP ツールをリストするよう依頼します。Claude Code は拒否されたツールを Claude のコンテキストから削除するため、拒否されたツールはその回答から欠落しています。
 
 <h2 id="prompt-sessions-to-push-their-work">
   セッションに作業をプッシュするよう促す

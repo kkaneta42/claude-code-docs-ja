@@ -802,7 +802,7 @@ hooks:
     - matcher: "Bash"
       hooks:
         - type: command
-          command: "./scripts/validate-command.sh $TOOL_INPUT"
+          command: "./scripts/validate-command.sh"
   PostToolUse:
     - matcher: "Edit|Write"
       hooks:

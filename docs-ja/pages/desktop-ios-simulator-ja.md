@@ -23,13 +23,29 @@ iOS シミュレータペインは、Claude Code Desktop の会話の横に Appl
 * Claude Desktop v1.24012.0 以降
 * Mac（Apple の iOS シミュレータは macOS でのみ実行されるため）
 * [Xcode](https://developer.apple.com/xcode/)（iOS プラットフォームがインストールされている状態）。これはシミュレータデバイスを提供します。Xcode にまだシミュレータが表示されていない場合は、[シミュレータペインにシミュレータが見つからないと表示される](#the-simulator-pane-says-no-simulators-were-found)を参照してください。
-  * Xcode 26.x を使用してください。ペインはまだ Xcode 27 では動作しません。Xcode 27 は Simulator アプリを Device Hub に置き換えます。Mac 上の `xcode-select` が Xcode 27 を指している場合は、[シミュレータペインが Xcode 27 で失敗する](#the-simulator-pane-fails-with-xcode-27)を参照してください。
+  * Xcode 26.x または Xcode 27 が推奨されており、ペインはどちらでも動作します。複数の Xcode がインストールされている場合は、[シミュレータペインが使用する Xcode を選択する](#choose-which-xcode-the-simulator-pane-uses)を参照してください。
 
 <Note>
   このページでは、「デバイス」はシミュレートされた iPhone または iPad を指し、Xcode の **Window → Devices and Simulators** で管理するのと同じシミュレータデバイスの 1 つであり、物理ハードウェアではありません。
 </Note>
 
 シミュレータペインはローカルセッションでのみ利用可能です。[クラウド](/docs/ja/desktop#run-long-running-tasks-in-the-cloud)および [SSH](/docs/ja/desktop#ssh-sessions) セッションでは、Claude は Mac 上のシミュレータに到達できないマシン上で実行されます。
+
+<h3 id="choose-which-xcode-the-simulator-pane-uses">
+  シミュレータペインが使用する Xcode を選択する
+</h3>
+
+複数の Xcode がインストールされている場合（例えば Xcode 26.x と Xcode 27 が並行している場合）、ペインは `xcode-select` が指しているものを使用します。別のインストールを使用するには、そのパスで選択します。
+
+例えば、使用したい Xcode が `/Applications/Xcode-26.4.app` にインストールされている場合は、ターミナルで以下を実行します。
+
+```bash theme={null}
+sudo xcode-select -s /Applications/Xcode-26.4.app
+```
+
+その後、Claude Desktop を終了して再度開き、ペインが新しく選択された Xcode を使用するようにします。
+
+どのインストールが選択されているかを確認するには、`xcode-select -p` を実行します。これは選択されたインストールの Developer フォルダを出力します。例えば `/Applications/Xcode-26.4.app/Contents/Developer` のようになります。
 
 <h2 id="run-your-app-in-the-simulator">
   シミュレータでアプリを実行する
@@ -59,7 +75,7 @@ iOS シミュレータペインは、Claude Code Desktop の会話の横に Appl
 
 シミュレータペインは、アプリが実際に起動したデバイスを表示します。特定のデバイスでテストするには、リクエストでそれを指定します。例えば「iPhone SE シミュレータで実行してください」と言えば、Claude はビルドと起動時にそのデバイスをターゲットにします。
 
-Claude が起動したデバイスは Apple の Simulator アプリにも表示され、Claude は既に起動しているデバイスにアプリをインストールできます。
+Claude が起動したデバイスは Apple の Simulator アプリにも表示され、Xcode 27 の Device Hub にも表示されます。Claude は既に起動しているデバイスにアプリをインストールできます。
 
 シミュレータペインを自分で開くこともできます。セッションがシミュレータを接続したか Swift ファイルを編集した後、セッションツールバーの **Views** メニューに **iOS Simulator** エントリが表示されます。ペインがまだデバイスを表示していない場合は、**Attach simulator** をクリックするか、その横のデバイスメニューから特定のデバイスを選択します。シャットダウンしたデバイスを選択すると、それが起動します。Xcode またはそのシミュレータが見つからない場合、ペインはセットアップステップを表示し、完了するたびにそれらをチェックします。
 
@@ -86,7 +102,7 @@ Claude が起動したデバイスは Apple の Simulator アプリにも表示�
 
 各デバイスはそれを起動したセッションに属するため、[並列セッション](/docs/ja/desktop#work-in-parallel-with-sessions)はデバイスを共有しません。1 つのセッションのペインに表示されるのは、そのセッションの作業を反映し、別のセッションの作業ではありません。サイドバーでセッションを切り替えると、シミュレータビューが会話と一緒に切り替わり、戻すと同じデバイスが中断したところから再開されます。Claude が複数のデバイスで作業する場合、各デバイスは独自のペインを開き、セッションあたり最大 4 つまでです。
 
-Claude Code Desktop は、起動したシミュレータが使用されなくなると、それらをシャットダウンします。アプリを終了するとき、セッションをアーカイブするとき、またはペインからデバイスをデタッチしてから 10 分後です。ペインまたは Apple の Simulator アプリから自分で起動したデバイスは、自動的にシャットダウンされることはありません。接続されたデバイスをすぐにシャットダウンするには、ペインのシャットダウンボタンを使用します。
+Claude Code Desktop は、起動したシミュレータが使用されなくなると、それらをシャットダウンします。アプリを終了するとき、セッションをアーカイブするとき、またはペインからデバイスをデタッチしてから 10 分後です。Claude Code Desktop の外で起動したデバイス（Apple の Simulator アプリや Device Hub など）は、自動的にシャットダウンされることはありません。接続されたデバイスをすぐにシャットダウンするには、ペインのシャットダウンボタンを使用します。
 
 <h2 id="grant-claude-access-to-a-device">
   Claude にデバイスへのアクセスを許可する
@@ -150,21 +166,7 @@ Claude がアプリを実行またはテストしたいことを認識してい�
   シミュレータペインにシミュレータが見つからないと表示される
 </h3>
 
-`xcode-select` が Xcode 27 を指している場合、デバイスが存在していても、ペインはシミュレータが見つからないと報告できます。[シミュレータペインが Xcode 27 で失敗する](#the-simulator-pane-fails-with-xcode-27)を参照してください。それ以外の場合、Xcode はインストールされていますが、iOS シミュレータがリストされていません。シミュレータペインはセットアップステップを表示し、各ステップが完了するたびにそれらをチェックします。見つからないピースを手動でインストールするには、Xcode の設定から iOS シミュレータランタイムをダウンロードするか、`xcodebuild -downloadPlatform iOS` を実行します。
-
-<h3 id="the-simulator-pane-fails-with-xcode-27">
-  シミュレータペインが Xcode 27 で失敗する
-</h3>
-
-ペインはまだ Xcode 27 では動作しません。Xcode 27 は Simulator アプリを Device Hub に置き換えます。Xcode 27 が選択されている場合、デバイスの接続に失敗するか、デバイスが存在していてもペインはシミュレータが見つからないと報告します。
-
-ペインは `xcode-select` が指す Xcode を使用します。Xcode 27 が唯一のインストールである場合、まず Xcode 26.x をそれと並行してインストールします。次に、26.x インストールをそのパスで選択します。例えば、`/Applications/Xcode-26.4.app` としてインストールされている場合：
-
-```bash theme={null}
-sudo xcode-select -s /Applications/Xcode-26.4.app
-```
-
-`xcode-select -p` を実行して、どのインストールが選択されているかを確認します。
+Xcode がインストールされていますが、iOS シミュレータがリストされていません。シミュレータペインはセットアップステップを表示し、各ステップが完了するたびにそれらをチェックします。見つからないピースを手動でインストールするには、Xcode の設定から iOS シミュレータランタイムをダウンロードするか、`xcodebuild -downloadPlatform iOS` を実行します。
 
 <h2 id="see-also">
   関連項目

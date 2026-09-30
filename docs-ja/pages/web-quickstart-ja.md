@@ -231,11 +231,11 @@ Claude が完了したら、変更をレビューし、特定の行にフィー�
 
 クラウドセッションには接続された GitHub アカウントが必要です。上記のブラウザフローで接続するか、GitHub CLI を使用する場合はターミナルから `/web-setup` を実行してください。GitHub をまったく接続したくない場合は、[Remote Control](/docs/ja/remote-control) を参照して、自分のマシンで Claude Code を実行し、ブラウザまたは電話から監視してください。
 
-<h3 id="not-available-for-the-selected-organization">
-  「選択した組織では利用できません」
+<h3 id="claude-code-isn’t-available-on-your-account">
+  「Claude Code はアカウントで利用できません」
 </h3>
 
-エンタープライズ組織では、所有者がクラウドセッションを有効にする必要がある場合があります。Anthropic アカウントチームにお問い合わせください。
+選択した組織のシートに Claude Code が含まれていません。別の組織に属している場合は、そのページで **Switch organization** をクリックしてください。それ以外の場合は、組織の所有者に [Claude Code を含むシート](https://support.claude.com/en/articles/11845131-use-claude-code-with-your-team-or-enterprise-plan)を割り当てるよう依頼してください。
 
 <h3 id="/web-setup-says-not-signed-in-to-claude">
   `/web-setup` が「Claude にサインインしていません」と表示される

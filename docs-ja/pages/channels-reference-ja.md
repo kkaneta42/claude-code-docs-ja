@@ -163,7 +163,9 @@
     ペイロードは Claude のコンテキストに `<channel>` タグとして到着します：
 
     ```text theme={null}
-    <channel source="webhook" path="/" method="POST">build failed on main: https://ci.example.com/run/1234</channel>
+    <channel source="webhook" path="/" method="POST">
+    build failed on main: https://ci.example.com/run/1234
+    </channel>
     ```
 
     ターミナルはイベントを 1 行の概要として、`← webhook: build failed on main: https://ci.example.com/run/1234` としてレンダリングします。これは生のタグではなく、その後 Claude が応答を開始するのが見えます：ファイルを読み込み、コマンドを実行、またはメッセージが要求するもの。これは一方向チャネルなので、Claude はセッションで動作しますが、webhook を通じて何も返送しません。返信を追加するには、[返信ツールを公開](#expose-a-reply-tool) を参照してください。

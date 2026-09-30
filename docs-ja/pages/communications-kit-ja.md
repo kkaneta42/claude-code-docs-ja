@@ -71,10 +71,10 @@
 
     コードの行き先：Claude Code はターミナルで実行され、Anthropic の API と
     直接通信し、ループ内に第三者のサーバーはありません。ファイルを編集したり
-    コマンドを実行したりする前に許可を求めます。エンタープライズ契約の下では、
-    Anthropic はモデルのトレーニングにコードまたはプロンプトを使用しません。
-    詳細：https://code.claude.com/docs/ja/data-usage
-          https://code.claude.com/docs/ja/security
+    コマンドを実行したりする前に許可を求めます。Team または Enterprise プランの
+    下では、Anthropic はモデルのトレーニングにコードまたはプロンプトを使用しません。
+    詳細：https://code.claude.com/docs/en/data-usage
+          https://code.claude.com/docs/en/security
 
     質問がある場合：#claude-code。[所有者名] がこの週を監視しています。
 
@@ -98,13 +98,14 @@
     *最初に試すこと* → `/init` を実行してから：「[ファイル] のテストは
     不安定です、理由を調べて修正してください。」
 
-    🔒 ターミナルで実行、Anthropic の API とのみ通信します。エンタープライズ
-    プランの下では、コードとプロンプトはモデルのトレーニングに使用されません。
-    データ使用 → https://code.claude.com/docs/ja/data-usage
+    🔒 ターミナルで実行、Anthropic の API とのみ通信します。Team または
+    Enterprise プランの下では、コードとプロンプトはモデルのトレーニングに
+    使用されません。
+    データ使用 → https://code.claude.com/docs/en/data-usage
 
     📚 クイックスタート · VS Code · 無料 1 時間コース
-       https://code.claude.com/docs/ja/quickstart
-       https://code.claude.com/docs/ja/vs-code
+       https://code.claude.com/docs/en/quickstart
+       https://code.claude.com/docs/en/vs-code
        https://academy.claude.com/courses/claude-code-in-action
 
     質問 → このスレッド。[所有者] が対応しています。
@@ -436,7 +437,7 @@ Claude は完全な git フローを処理します。従来のメッセージ�
 
 チームの誰かが「待って、私のコードはどこに行くのか？」と尋ねるつもりです。ここに貼り付けることができる短いバージョンがあります。
 
-許可優先の設計。すべてのファイル編集、シェルコマンド、外部呼び出しは承認によってゲートされます。CLI はターミナルで実行され、Anthropic の API と直接通信し、第三者のサーバーはなく、シェルコマンドのオプションの OS レベルのサンドボックスをサポートしています。エンタープライズプランの下では、Anthropic はモデルのトレーニングにコードまたはプロンプトを使用しません。
+許可優先の設計。すべてのファイル編集、シェルコマンド、外部呼び出しは承認によってゲートされます。CLI はターミナルで実行され、Anthropic の API と直接通信し、第三者のサーバーはなく、シェルコマンドのオプションの OS レベルのサンドボックスをサポートしています。Team または Enterprise プランの下では、Anthropic はモデルのトレーニングにコードまたはプロンプトを使用しません。
 
 *今すぐ試す：* 次に質問が出たときのために、これら 2 つのリンクを保存してください。ほとんどのセキュリティレビューの質問に答えます。
 
@@ -475,7 +476,7 @@ Claude Code から跳ね返るほとんどの人は、これらの 1 つをス�
 | - | - |
 | 「VS Code で動作しますか？」 | はい。VS Code 拡張機能と JetBrains プラグインがあり、エディタに埋め込まれた同じ機能があります。[VS Code →](/docs/ja/vs-code) |
 | 「最初に何かを設定する必要がありますか？」 | いいえ。インストールしてから、任意のリポジトリで `claude` を実行してください。`/init` を 1 回実行すれば完了です。[クイックスタート →](/docs/ja/quickstart) |
-| 「私のコードはどこに行きますか？」 | CLI はターミナルで実行され、コンテキストを Anthropic の API に送信して推論を行い、第三者のサーバーはありません。エンタープライズプランの下では、コードとプロンプトはモデルのトレーニングに使用されません。[データ使用 →](/docs/ja/data-usage) |
+| 「私のコードはどこに行きますか？」 | CLI はターミナルで実行され、コンテキストを Anthropic の API に送信して推論を行い、第三者のサーバーはありません。Team または Enterprise プランの場合、コードとプロンプトはモデルのトレーニングに使用されません。[データ使用 →](/docs/ja/data-usage) |
 | 「リポジトリ全体を見ることができますか？」 | アクセス権を与えたものを読みます。作業ディレクトリ内のファイル読み取りはプロンプトしません。許可プロンプトはゲート編集、読み取り専用以外のシェルコマンド、およびそのディレクトリの外側のファイルツール読み取りです。`ls` や `cat` などの組み込みの読み取り専用シェルコマンドセットはプロンプトなしで実行されます。[sandbox `denyRead` ルール](/docs/ja/sandboxing#filesystem-isolation)で制限してください。[権限 →](/docs/ja/permissions) |
 | 「これは Copilot とどう違いますか？」 | Copilot は行を自動補完します。Claude Code はファイルを読み、コマンドを実行し、マルチファイル編集を行うエージェントです。[概要 →](/docs/ja/overview) |
 | 「最初に何を試すべきですか？」 | 退屈だから先延ばしにしていたバグ。「\[ファイル] のテストは不安定です、理由を調べてください。」[クイックスタート →](/docs/ja/quickstart) |
