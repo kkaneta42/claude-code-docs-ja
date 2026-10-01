@@ -35,67 +35,69 @@ github.com 上のリポジトリについては、[クラウドで Claude Code �
   管理者セットアップ
 </h2>
 
-管理者が GHES インスタンスを Claude Code に 1 回接続します。その後、組織の開発者は追加の設定なしで GHES リポジトリを使用できます。Claude 組織への Owner または Primary Owner ロールと、GHES インスタンスで GitHub App を作成する権限が必要です。
+Owner は GHES インスタンスを Claude Code に 1 回接続します。その後、組織内の開発者は追加の設定なしで GHES リポジトリを使用できます。Claude 組織で Owner または Primary Owner ロールを持ち、GHES インスタンスで GitHub Apps を作成する権限が必要です。
 
-ガイド付きセットアップは GitHub App マニフェストを生成し、GHES インスタンスにリダイレクトして 1 クリックでアプリを作成します。環境がリダイレクトフローをブロックしている場合は、[代替手動セットアップ](#manual-setup) が利用可能です。
+ガイド付きセットアップは GitHub App マニフェストを生成し、GHES インスタンスにリダイレクトしてアプリをワンクリックで作成します。環境がリダイレクトフローをブロックしている場合は、[代替の手動セットアップ](#manual-setup)が利用可能です。
 
 <Steps>
   <Step title="Claude Code 管理者設定を開く">
     [claude.ai/admin-settings/claude-code](https://claude.ai/admin-settings/claude-code) にアクセスして、GitHub Enterprise Server セクションを見つけます。
   </Step>
 
-  <Step title="ガイド付きセットアップを開始">
-    **Connect** をクリックします。接続の表示名（最大 20 文字）と GHES ホスト名（例：`github.example.com`）を入力します。GHES インスタンスが自己署名証明書またはプライベート認証局を使用している場合は、CA 証明書をオプションフィールドに貼り付けます。
+  <Step title="ガイド付きセットアップを開始する">
+    **接続** をクリックします。接続の表示名（最大 20 文字）と GHES ホスト名（例：`github.example.com`）を入力します。GHES インスタンスが自己署名証明書またはプライベート認証局を使用している場合は、CA 証明書をオプションフィールドに貼り付けます。
   </Step>
 
-  <Step title="GitHub App を作成">
-    **Continue to GitHub Enterprise** をクリックします。ブラウザが事前入力されたアプリマニフェストを含む GHES インスタンスにリダイレクトされます。設定を確認して **Create GitHub App** をクリックします。GHES はアプリ認証情報が自動的に保存された状態で Claude にリダイレクトします。
+  <Step title="GitHub App を作成する">
+    **GitHub Enterprise に続行** をクリックします。ブラウザが GHES インスタンスにリダイレクトされ、事前入力されたアプリマニフェストが表示されます。設定を確認して **GitHub App を作成** をクリックします。GHES はアプリ認証情報を自動的に保存して Claude に戻します。
   </Step>
 
-  <Step title="リポジトリにアプリをインストール">
-    GHES インスタンスの GitHub App ページから、Claude がアクセスする必要があるリポジトリまたは組織にアプリをインストールします。最初はサブセットで開始して、後で追加できます。
+  <Step title="リポジトリにアプリをインストールする">
+    GHES インスタンスの GitHub App ページから、Claude がアクセスしたいリポジトリまたは組織にアプリをインストールします。最初はサブセットで開始して、後で追加できます。
   </Step>
 
-  <Step title="機能を有効化">
-    [claude.ai/admin-settings/claude-code](https://claude.ai/admin-settings/claude-code) に戻り、GHES リポジトリの [Code Review](/docs/ja/code-review#set-up-code-review)、Claude Security、および [貢献度メトリクス](/docs/ja/analytics#enable-contribution-metrics) を github.com と同じ設定で有効化します。
+  <Step title="機能を有効にする">
+    [claude.ai/admin-settings/claude-code](https://claude.ai/admin-settings/claude-code) に戻り、GHES リポジトリの [コードレビュー](/docs/ja/code-review#set-up-code-review)、Claude Security、および [貢献メトリクス](/docs/ja/analytics#enable-contribution-metrics) を github.com と同じ設定を使用して有効にします。
   </Step>
 </Steps>
 
 <h3 id="github-app-permissions">
-  GitHub App の権限
+  GitHub App 権限
 </h3>
 
-マニフェストは、クラウドセッション、Code Review、Claude Security、プラグインマーケットプレイス、および貢献度メトリクスをカバーする権限と Webhook イベントで GitHub App を設定します。
+マニフェストは GitHub App を以下の権限と webhook イベントで設定します。これらは一緒にクラウドセッション、コードレビュー、Claude Security、プラグインマーケットプレイス、および貢献メトリクスをカバーします。
 
 | 権限 | アクセス | 用途 |
 | :- | :- | :- |
 | Contents | 読み取りと書き込み | リポジトリのクローンとブランチのプッシュ |
 | Pull requests | 読み取りと書き込み | PR の作成とレビューコメントの投稿 |
 | Issues | 読み取りと書き込み | Issue メンションへの応答 |
-| Checks | 読み取りと書き込み | Code Review チェック実行の投稿 |
-| Actions | 読み取り | 自動修正用の CI ステータスの読み取り |
+| Checks | 読み取りと書き込み | コードレビューチェック実行の投稿 |
+| Actions | 読み取り | 自動修正の CI ステータスの読み取り |
 | Commit statuses | 読み取り | チェック実行の代わりにコミットステータスを報告するプロバイダーから CI ステータスを読み取る |
-| Repository hooks | 読み取りと書き込み | [Organization settings > Plugins & skills](https://claude.ai/admin-settings/skills?tab=marketplaces) でマーケットプレイスの **Sync automatically** がオンになっている場合、プラグインマーケットプレイスリポジトリに Webhook を作成する |
-| Metadata | 読み取り | すべてのアプリで GitHub が必須 |
-| Organization members | 読み取り | github.com の Claude GitHub App と一致させます。これは接続ユーザーの組織ロールをチェックするときにインストールをリンクするために使用されます |
+| Repository hooks | 読み取りと書き込み | [**組織設定 > プラグイン & スキル**](https://claude.ai/admin-settings/skills?tab=marketplaces) でマーケットプレイスの **自動同期** がオンになっている場合、プラグインマーケットプレイスリポジトリに webhook を作成する |
+| Metadata | 読み取り | すべてのアプリに GitHub が必須 |
+| Organization members | 読み取り | github.com の Claude GitHub App と一致させるため。インストールをリンクするときに接続ユーザーの組織ロールを確認するために使用します |
 
 アプリは `pull_request`、`issue_comment`、`pull_request_review_comment`、`pull_request_review`、`check_run`、および `status` イベントをサブスクライブします。
 
-GitHub はマニフェストをアプリ作成時にのみ適用するため、マニフェストの以前のバージョンから作成されたアプリは、作成時の権限とイベントを保持します。アプリが上記の権限またはイベントのいずれかが不足している場合は、GHES インスタンスのアプリ設定で追加してください。その後、GitHub は各インストールの所有者に新しい権限を承認するよう求め、インストールは承認されるまで古い権限を保持します。
+GitHub はアプリ作成時にのみマニフェストを適用するため、マニフェストの以前のバージョンから作成されたアプリは、作成時の権限とイベントを保持します。アプリが上記の権限またはイベントのいずれかが不足している場合は、GHES インスタンスのアプリ設定で追加します。その後、GitHub は各インストールの所有者に新しい権限を承認するよう求め、インストールは承認されるまで古い権限を保持します。
 
 <h3 id="manual-setup">
   手動セットアップ
 </h3>
 
-ネットワーク設定によってガイド付きリダイレクトフローがブロックされている場合は、Connect の代わりに **Add manually** をクリックします。[上記の権限とイベント](#github-app-permissions) を使用して GHES インスタンスで GitHub App を作成し、フォームに接続詳細を入力します。表示名、GHES ホスト名とオプションのポート、およびアプリの ID、クライアント ID、クライアントシークレット、Webhook シークレット、および秘密鍵です。フォームはオプションのカスタム CA 証明書と読み取りレプリカホスト名も受け入れます。
+ガイド付きリダイレクトフローがネットワーク設定によってブロックされている場合は、接続の代わりに **手動で追加** をクリックします。GHES インスタンスで [上記の権限とイベント](#github-app-permissions) を使用して GitHub App を作成し、フォームに接続詳細を入力します。表示名、GHES ホスト名とオプションのポート、アプリの ID、クライアント ID、クライアントシークレット、webhook シークレット、および秘密鍵です。フォームはオプションのカスタム CA 証明書と読み取りレプリカホスト名も受け入れます。
 
-Claude は接続を保存するときにアプリの Webhook URL を生成します。**Add configuration** をクリックした後、接続の **More options** メニューを開き、**Copy webhook URL** を選択して、URL をアプリの Webhook 設定に貼り付けます。フォームに入力したのと同じ Webhook シークレットを使用してください。
+Claude は接続を保存するときにアプリの webhook URL を生成します。**設定を追加** をクリックした後、接続の **その他のオプション** メニューを開き、**webhook URL をコピー** を選択して、URL をアプリの webhook 設定に GHES インスタンスで貼り付けます。フォームに入力したのと同じ webhook シークレットを使用します。
 
 <h3 id="network-requirements">
   ネットワーク要件
 </h3>
 
-Anthropic ホスト型セッションの場合、GHES インスタンスは Anthropic インフラストラクチャから到達可能である必要があります。これにより Claude はリポジトリをクローンしてレビューコメントを投稿できます。GHES インスタンスがファイアウォールの背後にある場合は、Anthropic の [アウトバウンド IP アドレス](https://platform.claude.com/docs/en/api/ip-addresses#outbound-ip-addresses) をホワイトリストに登録します。[自己ホスト型環境](/docs/ja/self-hosted-environments-deploy#configure-git) のセッションは、ランナーが [Anthropic git プロキシ](/docs/ja/self-hosted-environments-deploy#use-the-anthropic-git-proxy) にオプトインしない限り、ネットワーク内からクローンします。Anthropic git プロキシは Anthropic 側からフェッチし、同じ到達可能性が必要です。[SCM コネクタ](/docs/ja/self-hosted-environments-reference#scm-connector-flags) は、内部的にのみルーティング可能な GHES ホストのリポジトリピッカーなどのホスト型プリセッションフローをカバーします。
+Anthropic ホスト型セッションの場合、GHES インスタンスは Anthropic インフラストラクチャから到達可能である必要があります。これにより Claude はリポジトリをクローンしてレビューコメントを投稿できます。GHES インスタンスがファイアウォールの背後にある場合は、Anthropic の [アウトバウンド IP アドレス](https://platform.claude.com/docs/en/api/ip-addresses#outbound-ip-addresses) をホワイトリストに登録します。[自己ホスト型環境](/docs/ja/self-hosted-environments-deploy#configure-git) のセッションはネットワーク内からクローンします。ただし、ランナーが [Anthropic git プロキシ](/docs/ja/self-hosted-environments-deploy#use-the-anthropic-git-proxy) にオプトインする場合は除きます。このプロキシは Anthropic 側からフェッチし、同じ到達可能性が必要です。
+
+リポジトリピッカーなどのホスト型プリセッションフローは、セッション開始前に Anthropic 側で実行されます。セッションが自己ホスト型環境で実行される場合でも、GHES インスタンスが Anthropic インフラストラクチャから到達可能である必要があります。[SCM コネクタ](/docs/ja/self-hosted-environments-reference#scm-connector-flags) は利用できないため、これらのフローは内部的にのみルーティング可能な GHES ホストに到達できません。
 
 <h2 id="developer-workflow">
   開発者ワークフロー
@@ -246,7 +248,7 @@ GitHub Enterprise アカウントを接続するには、[claude.ai/code](https:
   GHES インスタンスに到達不可
 </h3>
 
-レビューまたは Anthropic ホスト型クラウドセッションがタイムアウトする場合、GHES インスタンスは Anthropic インフラストラクチャから到達不可能な可能性があります。ファイアウォールが Anthropic の [アウトバウンド IP アドレス](https://platform.claude.com/docs/en/api/ip-addresses#outbound-ip-addresses) からのインバウンド接続を許可していることを確認してください。[セルフホスト環境](/docs/ja/self-hosted-environments) のセッションは、ネットワーク内から GHES に到達するため、代わりにランナー自体のネットワークパスと [SCM コネクタ](/docs/ja/self-hosted-environments-reference#scm-connector-flags) を確認してください。
+レビューまたは Anthropic ホスト型クラウドセッションがタイムアウトする場合、GHES インスタンスは Anthropic インフラストラクチャから到達不可能な可能性があります。ファイアウォールが Anthropic の [アウトバウンド IP アドレス](https://platform.claude.com/docs/en/api/ip-addresses#outbound-ip-addresses) からのインバウンド接続を許可していることを確認してください。[セルフホスト環境](/docs/ja/self-hosted-environments) のセッションは、ネットワーク内から GHES に到達するため、代わりにランナー自体のネットワークパスを確認してください。リポジトリピッカーおよび他のホスト型セッション前フローについては、[ネットワーク要件](#network-requirements) を参照してください。
 
 <h3 id="session-start-fails-with-unable-to-get-organization-uuid">
   セッション開始が `Unable to get organization UUID` で失敗

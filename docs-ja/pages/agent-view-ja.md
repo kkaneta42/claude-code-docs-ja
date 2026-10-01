@@ -8,9 +8,9 @@
 
 `claude agents` で開くエージェントビューは、すべてのバックグラウンドセッションの 1 つの画面です。実行中のもの、入力が必要なもの、完了したものが表示されます。新しいセッションをディスパッチし、トランスクリプトをスクロールする代わりに一目でセッションの状態を確認し、セッションが必要とするときだけ介入します。各バックグラウンドセッションは完全な Claude Code の会話であり、ターミナルが接続されていなくてもバックグラウンドで実行し続けるため、いつでも開いて、返信して、去ることができます。
 
-<img src="https://mintcdn.com/claude-code/1B48Qz2Z9hac4SLG/images/agent-view-light.png?fit=max&auto=format&n=1B48Qz2Z9hac4SLG&q=85&s=7a186c96ed47d6700d084d77e786be65" className="dark:hidden" alt="ターミナルのエージェントビュー：ヘッダーは Claude Code v2.1.140、モデル、作業ディレクトリ、および概要カウントを表示します。セッションは「入力が必要」、「実行中」、「完了」の下にグループ化され、下部にディスパッチ入力とキーボードヒントのフッターがあります。" width="1772" height="780" data-path="images/agent-view-light.png" />
+<img src="https://mintcdn.com/claude-code/HDAmBwgbrZVk0pOt/images/agent-view-light.png?fit=max&auto=format&n=HDAmBwgbrZVk0pOt&q=85&s=d6905012bee31f3e6b3920b09c05dd02" className="dark:hidden" alt="ターミナルのエージェントビュー：ヘッダーは Claude Code v2.1.140、モデル、作業ディレクトリ、および概要カウントを表示します。セッションは「入力が必要」、「実行中」、「完了」の下にグループ化され、下部にディスパッチ入力とキーボードヒントのフッターがあります。" width="1872" height="680" data-path="images/agent-view-light.png" />
 
-<img src="https://mintcdn.com/claude-code/1B48Qz2Z9hac4SLG/images/agent-view-dark.png?fit=max&auto=format&n=1B48Qz2Z9hac4SLG&q=85&s=a5bed7434bae368faea3a8f023b52aa2" className="hidden dark:block" alt="ターミナルのエージェントビュー：ヘッダーは Claude Code v2.1.140、モデル、作業ディレクトリ、および概要カウントを表示します。セッションは「入力が必要」、「実行中」、「完了」の下にグループ化され、下部にディスパッチ入力とキーボードヒントのフッターがあります。" width="1772" height="780" data-path="images/agent-view-dark.png" />
+<img src="https://mintcdn.com/claude-code/HDAmBwgbrZVk0pOt/images/agent-view-dark.png?fit=max&auto=format&n=HDAmBwgbrZVk0pOt&q=85&s=fc3c195bfc57e313ced1f1beb36cee93" className="hidden dark:block" alt="ターミナルのエージェントビュー：ヘッダーは Claude Code v2.1.140、モデル、作業ディレクトリ、および概要カウントを表示します。セッションは「入力が必要」、「実行中」、「完了」の下にグループ化され、下部にディスパッチ入力とキーボードヒントのフッターがあります。" width="1872" height="680" data-path="images/agent-view-dark.png" />
 
 Claude が複数の独立したタスクに対して、あなたが毎ステップを監視することなく作業できる場合に、エージェントビューを使用します。バグ修正、プルリクエストレビュー、不安定なテストの調査を 3 つの行としてディスパッチし、別のウィンドウで作業を続け、行が入力が必要であることを示すか、結果が得られたときに確認します。
 
@@ -64,9 +64,35 @@ Claude が複数の独立したタスクに対して、あなたが毎ステッ�
   </Step>
 </Steps>
 
-`claude agents` を `claude` の代わりにプライマリエントリーポイントとして使用できます。エージェントビューからすべてのタスクをディスパッチし、フル会話が必要な場合はアタッチし、`←` を押してテーブルに戻ります。
-
 通常の `claude` セッション内では、プロンプトフッターの `←` ヒントは、`← 2 agents` のように入力を待機中のバックグラウンドエージェントの数をカウントし、入力が必要なエージェントがない場合は `← for agents` に戻ります。99 を超えるカウントは `99+` として表示されます。カウントはターミナルがフォーカスされている間は約 10 秒ごとに更新され、フォーカスが戻ると即座に更新されます。カウントが移動したときとエージェントが完了したときに色が一時的に変わり、バックグラウンドセッションが完了して入力が必要なエージェントがない場合は、`← 2 done` のように完了した数を一時的に表示します。[`prefersReducedMotion` 設定](/docs/ja/settings-reference#prefersreducedmotion)がオンの場合は両方のフラッシュがオフになり、[スクリーンリーダーモード](/docs/ja/accessibility)ではヒントは非表示になります。
+
+<h3 id="open-agent-view-by-default">
+  デフォルトでエージェントビューを開く
+</h3>
+
+引数なしの `claude` がエージェントビューを新しい会話の代わりに開くようにするには、`/config` 設定をオンにします。
+
+<Steps>
+  <Step title="設定をオンにする">
+    通常の `claude` セッションで `/config` を実行し、**デフォルトでエージェントビューを開く**をオンにします。メニューをスキップするには、[`defaultToAgentsView`](/docs/ja/settings-reference#defaulttoagentsview) キーを直接設定します。
+
+    ```text theme={null}
+    /config defaultToAgentsView=true
+    ```
+  </Step>
+
+  <Step title="Claude Code を開始する">
+    セッションを終了し、引数なしで `claude` を実行します。
+
+    ```bash theme={null}
+    claude
+    ```
+
+    エージェントビューが新しい会話の代わりに開きます。
+  </Step>
+</Steps>
+
+設定がオンの場合に通常のセッションを開始するには、プロンプトを渡します。`claude "fix the login test"`。設定をオフにするには、通常のセッションで、またはエージェントビューからアタッチしたセッションで `/config defaultToAgentsView=false` を実行します。
 
 <h2 id="monitor-sessions-with-agent-view">
   エージェントビューでセッションを監視する

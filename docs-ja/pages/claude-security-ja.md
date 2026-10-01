@@ -6,11 +6,11 @@
 
 > Claude Security プラグインをインストールして、Claude Code セッション内でコードベースの脆弱性をスキャンし、検出結果をレビューして適用できるパッチに変換します。
 
-Claude Security プラグインは、Claude Code セッション内でコードベースのマルチエージェント脆弱性スキャンを実行します。Claude エージェントのチームがアーキテクチャをマッピングし、脅威モデルを構築し、脆弱性を検出し、すべての検出結果を独立してレビューしてからレポートを作成します。プラグインを使用して、リポジトリ全体をスキャンするか、[変更のみをスキャン](#scan-only-your-changes)することができます。例えば、ブランチの diff、プルリクエストの diff、または単一のコミットなど、選択した検出結果をレビューして自分で適用できるパッチに変換します。
+Claude Security プラグインは、Claude Code セッション内でコードベースのマルチエージェント脆弱性スキャンを実行します。Claude エージェントのチームがアーキテクチャをマッピングし、脅威モデルを構築し、脆弱性を検出し、すべての検出結果を独立してレビューしてからレポートを作成します。プラグインを使用して、リポジトリ全体をスキャンするか、[変更のみをスキャン](#scan-only-your-changes)することができます。例えば、ブランチの diff、プルリクエストの diff、または単一のコミットなどです。その後、選択した検出結果をレビューして自分で適用できるパッチに変換します。
 
-プラグインはセッション内でローカルに実行され、Claude Code で利用可能なモデルを使用し、各スキャンはプランの使用制限にカウントされます。リポジトリを監視するマネージドサービスが必要な場合、または [Claude Mythos 5](https://platform.claude.com/docs/en/about-claude/models/introducing-claude-fable-5-and-claude-mythos-5) でスキャンを実行したい場合は、Enterprise プランで利用可能な [Claude Security](https://claude.com/product/claude-security) プロダクトを参照してください。プラグインは、GitLab や Bitbucket でホストされているリポジトリ、または受信接続を許可しないネットワーク上のリポジトリなど、マネージドプロダクトが到達できないコードに到達します。
+プラグインはセッション内でローカルに実行され、[Claude Code でアクセスできるモデルを使用](#models-and-providers)し、各スキャンは[使用量](/docs/ja/costs)にカウントされます。リポジトリを監視するマネージドサービスが必要な場合、または [Claude Mythos](https://platform.claude.com/docs/en/about-claude/models/introducing-claude-fable-5-and-claude-mythos-5) でスキャンを実行したい場合は、Enterprise プランで利用可能な [Claude Security](https://claude.com/product/claude-security) プロダクトを参照してください。プラグインは、GitLab や Bitbucket でホストされているリポジトリ、または受信接続を許可しないネットワーク上のリポジトリなど、マネージドプロダクトが到達できないコードに到達できます。
 
-プラグインは、Claude Code に既に存在するレビューツールとも異なります。[security guidance プラグイン](/docs/ja/security-guidance)は Claude が記述するコードをレビューし、[`/security-review`](/docs/ja/commands#all-commands)はブランチに対して単一パスを実行し、[Code Review](/docs/ja/code-review)はプルリクエストをレビューします。レイヤーがどのようにスタックするかについては、[プラグインが他のセキュリティツールとどのように適合するか](#how-the-plugin-fits-with-other-security-tools)を参照してください。
+プラグインは、Claude Code に既に含まれているレビューツールとも異なります。[security guidance プラグイン](/docs/ja/security-guidance)は Claude が記述するコードをレビューし、[`/security-review`](/docs/ja/commands#all-commands)はブランチに対して単一パスを実行し、[Code Review](/docs/ja/code-review)はプルリクエストをレビューします。レイヤーがどのようにスタックするかについては、[プラグインが他のセキュリティツールとどのように適合するか](#how-the-plugin-fits-with-other-security-tools)を参照してください。
 
 <h2 id="prerequisites">
   前提条件
@@ -18,10 +18,23 @@ Claude Security プラグインは、Claude Code セッション内でコード�
 
 プラグインを実行するには、以下が必要です。
 
-* 有料プラン。スキャンがエージェントをオーケストレーションするために使用する [動的ワークフロー](/docs/ja/workflows)用です。Pro では、`/config` の Dynamic workflows 行から有効にしてください。
-* Python 3.9 以降が `PATH` で `python3` として利用可能です。`python3 --version` で確認してください。プラグインのツーリングは Python 標準ライブラリのみを使用するため、何もインストールされません。
+* 有料プラン、Anthropic API アクセス、または[サードパーティプロバイダー](#models-and-providers)。スキャンが使用する[動的ワークフロー](/docs/ja/workflows)でエージェントをオーケストレーションするためです。Pro では、`/config` の Dynamic workflows 行から有効にしてください。
+* Python 3.9 以降が `PATH` で `python3` として利用可能であること。`python3 --version` で確認してください。プラグインのツーリングは Python 標準ライブラリのみを使用するため、何もインストールされません。
 * Linux、macOS、または Windows。
-* Git（変更スキャンおよび検出結果をパッチに変換するため）。これらのジョブは他のバージョン管理システムをサポートしていません。完全スキャンは、バージョン管理の有無にかかわらず、任意のディレクトリで機能します。
+* Git。変更スキャンと検出結果をパッチに変換するためです。これらのジョブは他のバージョン管理システムをサポートしていません。完全スキャンは、バージョン管理の有無を問わず、任意のディレクトリで機能します。
+
+<h2 id="models-and-providers">
+  モデルとプロバイダー
+</h2>
+
+スキャンは Claude Code セッション内で実行されます。プラグインは独自のモデル呼び出しを行わないため、設定する必要のある個別の API キーやプロバイダー設定はありません。
+
+* **モデル**: 脆弱性を検出し、検出結果を検証し、パッチを作成およびレビューするエージェントは、[セッションのモデル](/docs/ja/sub-agents#choose-a-model)で実行されます。これを変更するには、スキャンを開始する前にセッションで [`/model`](/docs/ja/model-config#setting-your-model) を実行してください。リポジトリのマッピングなどのいくつかのサポート手順では、代わりに [`sonnet` エイリアス](/docs/ja/model-config#model-aliases)を使用します。
+* **プロバイダー**: スキャンは有料プラン、Anthropic API アクセス、または [Amazon Bedrock](/docs/ja/amazon-bedrock)、[Google Cloud の Agent Platform](/docs/ja/google-vertex-ai)、[Microsoft Foundry](/docs/ja/microsoft-foundry)などの[サードパーティプロバイダー](/docs/ja/third-party-integrations)で実行されます。
+
+サードパーティプロバイダーでは、`sonnet` エイリアスが Anthropic API での場合とは異なるバージョンに解決される可能性があります。アカウントがそのバージョンを使用できない場合は、`ANTHROPIC_DEFAULT_SONNET_MODEL` を含む[モデルバージョンをピン留めしてください](/docs/ja/model-config#pin-models-for-third-party-deployments)。
+
+[自動モデルフォールバック](/docs/ja/model-config#automatic-model-fallback)は、モデルのセーフガードがフラグを立てたリクエストを再実行します。Amazon Bedrock、Google Cloud の Agent Platform、および Microsoft Foundry では、[デプロイメントの設定方法](/docs/ja/model-config#enable-fallback-on-bedrock-agent-platform-and-foundry)に応じて、リクエストが拒否メッセージで終了する可能性があります。
 
 <h2 id="install-the-plugin">
   プラグインをインストールする
@@ -156,7 +169,7 @@ Claude Security プラグインは、[セキュリティガイダンスプラグ
 
 **`/claude-security` メニューが Python 警告で開きます。** プラグインは `PATH` に Python 3.9 以降の `python3` が必要です。`python3` がまったく見つからない場合、メニューは Claude Security がインストールされるまで機能しないことを警告します。`PATH` の最初の `python3` が古い場合、警告は見つかったバージョンを名前で指定します。Python 3 をインストールするか、新しい `python3` を `PATH` の最初に配置してから、新しいセッションを開始してください。
 
-**Fable モデルでスキャンするときに「safeguards flagged this message」という通知が表示される場合があります。** メッセージはモデルを名前で指定します。例えば「Fable 5.1's safeguards flagged this message」。Fable のサイバーセキュリティ安全分類器により、特定のリクエストがフラグされ、Claude Code は [自動モデルフォールバック](/docs/ja/model-config#automatic-model-fallback)を通じてフラグされたリクエストを Opus モデルで再実行します。これは予想されており、スキャンは引き続き正常に完了するはずです。
+**Fable モデルでスキャンするときに「safeguards flagged this message」という通知が表示される場合があります。** メッセージは実行しているモデルを名前で指定します。Fable のサイバーセキュリティ安全分類器により、特定のリクエストがフラグされ、Claude Code は [自動モデルフォールバック](/docs/ja/model-config#automatic-model-fallback)を通じてフラグされたリクエストを Opus モデルで再実行します。これは予想されており、リクエストが再実行されるとき、スキャンは引き続き正常に完了するはずです。
 
 <h2 id="related-resources">
   関連リソース

@@ -20,7 +20,7 @@
 以下は、最初の行に git 情報を表示し、2 番目の行にカラーコード化されたコンテキストバーを表示する [複数行ステータスライン](#display-multiple-lines) の例です。
 
 <Frame>
-  <img src="https://mintcdn.com/claude-code/nibzesLaJVh4ydOq/images/statusline-multiline.png?fit=max&auto=format&n=nibzesLaJVh4ydOq&q=85&s=60f11387658acc9ff75158ae85f2ac87" alt="最初の行にモデル名、ディレクトリ、git ブランチを表示し、2 番目の行にコンテキスト使用状況プログレスバー、コスト、期間を表示する複数行ステータスライン" width="776" height="212" data-path="images/statusline-multiline.png" />
+  <img src="https://mintcdn.com/claude-code/HDAmBwgbrZVk0pOt/images/statusline-multiline.png?fit=max&auto=format&n=HDAmBwgbrZVk0pOt&q=85&s=a9d0a2fe8e446d80b1abc46da3f93270" alt="最初の行にモデル名、ディレクトリ、git ブランチを表示し、2 番目の行にコンテキスト使用状況プログレスバー、コスト、期間を表示する複数行ステータスライン" width="1224" height="262" data-path="images/statusline-multiline.png" />
 </Frame>
 
 このページでは、[基本的なステータスラインの設定](#set-up-a-status-line) について説明し、Claude Code からスクリプトへの [データフロー](#how-status-lines-work) について説明し、[表示できるすべてのフィールド](#available-data) をリストアップし、git ステータス、コスト追跡、プログレスバーなどの一般的なパターンの [すぐに使える例](#examples) を提供します。
@@ -93,7 +93,7 @@
 これらの例では Bash スクリプトを使用しており、macOS と Linux で動作します。Windows では、[Windows 設定](#windows-configuration) で PowerShell と Git Bash の例を参照してください。
 
 <Frame>
-  <img src="https://mintcdn.com/claude-code/nibzesLaJVh4ydOq/images/statusline-quickstart.png?fit=max&auto=format&n=nibzesLaJVh4ydOq&q=85&s=696445e59ca0059213250651ad23db6b" alt="モデル名、ディレクトリ、コンテキスト割合を表示するステータスライン" width="726" height="164" data-path="images/statusline-quickstart.png" />
+  <img src="https://mintcdn.com/claude-code/HDAmBwgbrZVk0pOt/images/statusline-quickstart.png?fit=max&auto=format&n=HDAmBwgbrZVk0pOt&q=85&s=88a7eab9c1038dd098ee8e284d96b7e6" alt="モデル名、ディレクトリ、コンテキスト割合を表示するステータスライン" width="1224" height="224" data-path="images/statusline-quickstart.png" />
 </Frame>
 
 <Steps>
@@ -444,7 +444,7 @@ Bash の例は [`jq`](https://jqlang.org/) を使用して JSON を解析しま�
 現在のモデルとコンテキストウィンドウの使用状況を視覚的なプログレスバーで表示します。各スクリプトは stdin から JSON を読み取り、`used_percentage` フィールドを抽出し、塗りつぶされたブロック（▓）が使用状況を表す 10 文字のバーを構築します：
 
 <Frame>
-  <img src="https://mintcdn.com/claude-code/nibzesLaJVh4ydOq/images/statusline-context-window-usage.png?fit=max&auto=format&n=nibzesLaJVh4ydOq&q=85&s=15b58ab3602f036939145dde3165c6f7" alt="モデル名とパーセンテージ付きプログレスバーを表示するステータスライン" width="448" height="152" data-path="images/statusline-context-window-usage.png" />
+  <img src="https://mintcdn.com/claude-code/HDAmBwgbrZVk0pOt/images/statusline-context-window-usage.png?fit=max&auto=format&n=HDAmBwgbrZVk0pOt&q=85&s=f3918a549912dc47e90f2b69e68bc847" alt="モデル名とパーセンテージ付きプログレスバーを表示するステータスライン" width="1224" height="224" data-path="images/statusline-context-window-usage.png" />
 </Frame>
 
 <CodeGroup>
@@ -513,7 +513,7 @@ Bash の例は [`jq`](https://jqlang.org/) を使用して JSON を解析しま�
 ステージングされたファイルと変更されたファイルのカラーコード化されたインジケーターを使用して git ブランチを表示します。このスクリプトはターミナルの色に [ANSI エスケープコード](https://en.wikipedia.org/wiki/ANSI_escape_code#Colors) を使用します：`\033[32m` は緑、`\033[33m` は黄、`\033[0m` はデフォルトにリセットします。
 
 <Frame>
-  <img src="https://mintcdn.com/claude-code/nibzesLaJVh4ydOq/images/statusline-git-context.png?fit=max&auto=format&n=nibzesLaJVh4ydOq&q=85&s=e656f34f90d1d9a1d0e220988914345f" alt="モデル、ディレクトリ、git ブランチ、ステージングされたファイルと変更されたファイルのカラーコード化されたインジケーターを表示するステータスライン" width="742" height="178" data-path="images/statusline-git-context.png" />
+  <img src="https://mintcdn.com/claude-code/HDAmBwgbrZVk0pOt/images/statusline-git-context.png?fit=max&auto=format&n=HDAmBwgbrZVk0pOt&q=85&s=f13c190724d9ec7188c17cd2f98b7bf4" alt="モデル、ディレクトリ、git ブランチ、ステージングされたファイルと変更されたファイルのカラーコード化されたインジケーターを表示するステータスライン" width="1224" height="224" data-path="images/statusline-git-context.png" />
 </Frame>
 
 各スクリプトは現在のディレクトリが git リポジトリであるかどうかを確認し、ステージングされたファイルと変更されたファイルをカウントし、カラーコード化されたインジケーターを表示します：
@@ -611,7 +611,7 @@ Bash の例は [`jq`](https://jqlang.org/) を使用して JSON を解析しま�
 各スクリプトはコストを通貨としてフォーマットし、ミリ秒を分と秒に変換します：
 
 <Frame>
-  <img src="https://mintcdn.com/claude-code/nibzesLaJVh4ydOq/images/statusline-cost-tracking.png?fit=max&auto=format&n=nibzesLaJVh4ydOq&q=85&s=e3444a51fe6f3440c134bd5f1f08ad29" alt="モデル名、セッションコスト、期間を表示するステータスライン" width="588" height="180" data-path="images/statusline-cost-tracking.png" />
+  <img src="https://mintcdn.com/claude-code/HDAmBwgbrZVk0pOt/images/statusline-cost-tracking.png?fit=max&auto=format&n=HDAmBwgbrZVk0pOt&q=85&s=925f7024c3b38be0f0eca63564bfb52f" alt="モデル名、セッションコスト、期間を表示するステータスライン" width="1224" height="224" data-path="images/statusline-cost-tracking.png" />
 </Frame>
 
 <CodeGroup>
@@ -672,7 +672,7 @@ Bash の例は [`jq`](https://jqlang.org/) を使用して JSON を解析しま�
 スクリプトは複数の行を出力して、より豊かなディスプレイを作成できます。
 
 <Frame>
-  <img src="https://mintcdn.com/claude-code/nibzesLaJVh4ydOq/images/statusline-multiline.png?fit=max&auto=format&n=nibzesLaJVh4ydOq&q=85&s=60f11387658acc9ff75158ae85f2ac87" alt="最初の行にモデル名、ディレクトリ、git ブランチを表示し、2 番目の行にコンテキスト使用状況プログレスバー、コスト、期間を表示する複数行ステータスライン" width="776" height="212" data-path="images/statusline-multiline.png" />
+  <img src="https://mintcdn.com/claude-code/HDAmBwgbrZVk0pOt/images/statusline-multiline.png?fit=max&auto=format&n=HDAmBwgbrZVk0pOt&q=85&s=a9d0a2fe8e446d80b1abc46da3f93270" alt="最初の行にモデル名、ディレクトリ、git ブランチを表示し、2 番目の行にコンテキスト使用状況プログレスバー、コスト、期間を表示する複数行ステータスライン" width="1224" height="262" data-path="images/statusline-multiline.png" />
 </Frame>
 
 この例は複数のテクニックを組み合わせています：閾値ベースの色（70% 未満は緑、70～89% は黄、90% 以上は赤）、プログレスバー、git ブランチ情報。各 `print` または `echo` ステートメントは別の行を作成します：
@@ -781,7 +781,7 @@ Bash の例は [`jq`](https://jqlang.org/) を使用して JSON を解析しま�
 この例は GitHub リポジトリへのクリック可能なリンクを作成します。Cmd（macOS）または Ctrl（Windows/Linux）を押しながらクリックして、ブラウザでリンクを開きます。
 
 <Frame>
-  <img src="https://mintcdn.com/claude-code/nibzesLaJVh4ydOq/images/statusline-links.png?fit=max&auto=format&n=nibzesLaJVh4ydOq&q=85&s=4bcc6e7deb7cf52f41ab85a219b52661" alt="GitHub リポジトリへのクリック可能なリンクを表示するステータスライン" width="726" height="198" data-path="images/statusline-links.png" />
+  <img src="https://mintcdn.com/claude-code/HDAmBwgbrZVk0pOt/images/statusline-links.png?fit=max&auto=format&n=HDAmBwgbrZVk0pOt&q=85&s=4778a144a28cb498c99d5fa018bb374a" alt="GitHub リポジトリへのクリック可能なリンクを表示するステータスライン" width="1224" height="224" data-path="images/statusline-links.png" />
 </Frame>
 
 各スクリプトは git リモート URL を取得し、SSH 形式を HTTPS に変換し、リポジトリ名を OSC 8 エスケープコードでラップします。Bash バージョンは `printf '%b'` を使用します。これはバックスラッシュエスケープを異なるシェル間でより確実に解釈します：

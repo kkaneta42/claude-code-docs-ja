@@ -483,7 +483,7 @@ Claude Code に必要な権限を持つ IAM ポリシーを作成します。
 
 Claude Sonnet 5、Opus 4.6 以降、および Sonnet 4.6 は、Amazon Bedrock で [1M トークンコンテキストウィンドウ](https://platform.claude.com/docs/ja/build-with-claude/context-windows#context-window-sizes-by-model)をサポートしています。Sonnet 5 は Invoke API と [Mantle エンドポイント](#use-the-mantle-endpoint)の両方で常に 1M ウィンドウで実行され、選択する `[1m]` バリアントはありません。Invoke API 上の他のモデルについては、Claude Code は 1M モデルバリアントを選択すると、拡張コンテキストウィンドウを自動的に有効にします。
 
-[セットアップウィザード](#sign-in-with-bedrock)は、モデルをピン留めするときに 1M コンテキストオプションを提供します。手動でピン留めされたモデルの代わりに有効にするには、モデル ID に `[1m]` を追加します。詳細については、[サードパーティデプロイメント用のモデルをピン留めする](/docs/ja/model-config#pin-models-for-third-party-deployments)を参照してください。
+[セットアップウィザード](#sign-in-with-bedrock)は、モデルをピン留めするときに 1M コンテキストオプションを提供します。手動でピン留めされたモデルの代わりに有効にするには、モデル ID に `[1m]` を追加します。詳細については、[サードパーティデプロイメント用のモデルをピン留めする](/docs/ja/model-config#pin-models-for-third-party-deployments)を参照してください。1M ウィンドウをピンを変更せずに使用する方法を含みます。
 
 <h2 id="service-tiers">
   サービスティア

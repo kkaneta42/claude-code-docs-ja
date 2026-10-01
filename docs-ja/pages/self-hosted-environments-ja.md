@@ -48,7 +48,7 @@
 * **ゼロデータ保持**: [ゼロデータ保持](/docs/ja/zero-data-retention)が有効になっている組織では利用できません。
 * **モデル推論**: セッションは Anthropic API を使用し、推論は[Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry](/docs/ja/third-party-integrations)、または[LLM ゲートウェイ](/docs/ja/llm-gateway)を通じてルーティングできません。
 * **サーフェス**: [claude.ai/code](https://claude.ai/code)、モバイルおよびデスクトップアプリ、[スケジュール済みルーチン](/docs/ja/routines)、およびターミナルから開始されたセッション（[`claude --cloud`](/docs/ja/claude-code-on-the-web#from-terminal-to-cloud)または[`--environment`ディスパッチ](/docs/ja/self-hosted-environments-testing#run-the-test-loop)を使用）は、自己ホスト環境で実行できます。[Claude Tag](https://claude.com/docs/claude-tag/overview)セッションもそれらで実行できますが、Claude はまだそれらのセッションで[アクセスバンドル](https://claude.com/docs/claude-tag/concepts/glossary#access-bundle)を使用できません。[Claude Security](/docs/ja/claude-security)および[Code Review](/docs/ja/code-review)セッションはまだそれらにルーティングされません。これら 2 つのサーフェスのサポートは別途提供されます。
-* **リポジトリ**: セッションは GitHub からリポジトリをチェックアウトします。[GitHub 認証オプション](/docs/ja/claude-code-on-the-web#github-authentication-options)を参照してください。
+* **リポジトリ**: セッションは GitHub からリポジトリをチェックアウトします。[GitHub 認証オプション](/docs/ja/claude-code-on-the-web#github-authentication-options)を参照してください。GitHub Enterprise Server ホストについては、その[ネットワーク要件](/docs/ja/github-enterprise-server#network-requirements)を参照してください。
 * **請求**: 自己ホスト環境のセッションは、Anthropic ホスト環境のセッションと同じ方法で組織の Claude Code 使用量を消費します。
 
 <h2 id="why-self-host">

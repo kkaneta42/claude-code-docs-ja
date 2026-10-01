@@ -100,7 +100,7 @@ Claude Code で `/artifacts` を実行して、所有しているすべてのア
 共有できる相手はプランによって異なります。
 
 * **組織内**: Team プランと Enterprise プランでは、組織内の特定のユーザーまたは全員にアクセス権を付与できます。ビューアーは、ページを表示するために claude.ai に組織のメンバーとしてサインインします。
-* **公開**: インターネット上の誰でも開くことができるリンクを共有でき、claude.ai へのサインインは不要です。Pro プランと Max プランでは、公開リンクがアーティファクトを共有する唯一の方法です。Team プランと Enterprise プランでは、Owner が [組織に対して公開共有を有効にする](#control-public-sharing) まで、公開共有はオフになっています。
+* **公開**: インターネット上の誰でも開くことができるリンクを共有でき、claude.ai へのサインインは不要です。Team プランと Enterprise プランでは、Owner が [組織に対して公開共有を有効にする](#control-public-sharing) まで、公開共有はオフになっています。
 
 <h3 id="let-someone-edit-with-you">
   他のユーザーと一緒に編集する
@@ -122,14 +122,14 @@ Claude は他の人が書いたページを、[WebFetch](/docs/ja/tools-referenc
   アーティファクトのコメントを収集する
 </h2>
 
-組織内でアーティファクトを共有すると、共有相手はページにコメントを残すことができ、Claude がそのコメントを読んで返信することができます。Claude Code v2.1.221 以降と Team または Enterprise プランが必要です。これは、[組織内で共有](#share-an-artifact)したアーティファクトのみがコメントを受け付けるためです。Claude がコメントを読む場合は 2 つあります。
+組織内でアーティファクトを共有すると、共有相手はページにコメントを残すことができ、Claude がそのコメントを読んで返信することができます。Claude Code v2.1.221 以降が必要です。Claude がコメントを読む場合は 2 つあります。
 
 * **Claude に読むよう依頼する場合**：Claude にアーティファクトの URL を提供し、コメントを求めます。Claude は各スレッドをリストアップし、アーティファクトを編集できるユーザーが送信したコメントをマークします。
 * **アーティファクトを編集できるユーザーが Claude にコメントを送信する場合**：ページのスレッドで、**Send to Claude** でコメントを送信するか、その中で `@claude` にメンションします。どちらの方法でも、スレッドが有効になります。
 
 Claude は有効になったスレッドにのみ返信または解決できます。その他のスレッドは、ユーザーがページで解決するまで開いたままになります。ビューアーは、各返信が Claude から送信されたものとして表示されます（あなた経由で）。
 
-アーティファクトを公開共有する場合、ビューアーはコメントできません。ページに「`Comments aren't available while this Artifact is shared publicly.`」と表示されます。既にコメントスレッドがあるアーティファクトを公開リンクに切り替えるには、まずスレッドを削除してください。
+アーティファクトを公開共有する場合、公開リンク経由でのみアクセスできるユーザーはコメントを表示できず、追加することもできません。既存のコメントスレッドはアーティファクトに残り、あなたとそのエディターはまだそれらを読んで返信できます。
 
 コメントを自分で読むよう Claude に依頼するには、URL を提供します。
 
@@ -195,13 +195,13 @@ Claude はページの公開の一部として、ページが呼び出す可能�
 
 コネクタバックアップページを共有する予定がある場合は、Claude に各ライブセクションに必要なコネクタを指定するフォールバックメッセージを含めるよう依頼してください。接続が不足しているビューアには、空のセクションの代わりに接続する内容が表示されます。
 
-コネクタを呼び出すアーティファクトは、どのプランでも公開リンクで共有することはできません。Team および Enterprise プランでは、プライベートに保つか、[組織内で共有](#share-an-artifact) することができます。公開リンクが唯一の共有方法である Pro および Max プランでは、コネクタバックアップアーティファクトはあなたのみにプライベートのままです。
+[アーティファクトを共有](#share-an-artifact) する場合、組織内またはパブリックで共有できます。これはプランと組織の設定によります。コネクタ呼び出しは、claude.ai にサインインせずにパブリックリンクを開いたビューア、または組織外からアクセスしたビューアに対しては実行されません。そのビューアはページをライブセクションなしで表示します。
 
 <h3 id="the-page-shows-no-live-data-for-a-viewer">
   ページがビューアのライブデータを表示しない
 </h3>
 
-コネクタバックアップページがレンダリングされても、共有した人のライブセクションが空のままの場合は、これらの原因を確認してください。
+コネクタバックアップページがレンダリングされても、組織内のビューアのライブセクションが空のままの場合は、これらの原因を確認してください。
 
 * **ビューアがコネクタを接続していない**。コネクタはアカウントごとであるため、各ビューアはページが呼び出すすべてのコネクタへの独自の接続が必要です。claude.ai の **Settings > Connectors** で接続を追加してから、ページを再度読み込むことができます。
 * **ビューアが権限要求を拒否した**。拒否はそのページロードの残りの間続きます。ページを再度読み込むと、権限要求が戻ります。
@@ -375,7 +375,7 @@ Artifacts には以下のすべての条件が必要です。いずれかが満�
 
 | 要件 | 利用可能な場合 |
 | :- | :- |
-| プラン | Pro、Max、Team、または Enterprise。Pro および Max プランでは、Artifacts は共有するまであなたのみがアクセスでき、管理者管理は適用されません。Team プランでは、Artifacts はデフォルトで有効です。Enterprise プランでは、Owner が claude.ai 管理設定で[それらを有効にします](#manage-artifacts-for-your-organization)。 |
+| プラン | Pro、Max、Team、または Enterprise。Pro および Max プランでは、Artifacts は共有するまであなたのみがアクセスでき、管理者管理は適用されません。Team および Enterprise プランでは、Artifacts はデフォルトで有効です。Owner が claude.ai 管理設定で[それらを組織に対して無効にする](#manage-artifacts-for-your-organization)ことができます。 |
 | 認証 | セッションが claude.ai アカウントでサポートされています。CLI またはデスクトップアプリで `/login` でサインインします。Claude Tag セッションはエージェントの ID を通じてサインインするため、追加の手順は不要です。API キー、[ゲートウェイトークン](/docs/ja/llm-gateway)、またはクラウドプロバイダー認証情報を使用するセッションは公開できません。 |
 | モデルプロバイダー | Anthropic API。[Amazon Bedrock](/docs/ja/amazon-bedrock)、[Google Cloud の Agent Platform](/docs/ja/google-vertex-ai)、または[Microsoft Foundry](/docs/ja/microsoft-foundry)では利用できません。 |
 | 組織ポリシー | カスタマー管理暗号化キー（CMEK）、HIPAA、および[Zero Data Retention](/docs/ja/zero-data-retention)は組織に対して有効になっていません。 |
@@ -408,31 +408,31 @@ Artifacts が組織に対して許可されているかどうかは、Claude Cod
   組織のアーティファクトを管理する
 </h2>
 
-Team プランと Enterprise プランのオーナーは、[claude.ai 管理設定](https://claude.ai/admin-settings/claude-code)からアーティファクトを管理できます。アーティファクトのコンテンツは Anthropic が運用するインフラストラクチャに保存され、アーティファクトが[公開で共有](#control-public-sharing)されていない限り、発行元の組織の認証済みメンバーのみに表示されます。
+Team プランと Enterprise プランのオーナーは、[claude.ai 管理設定](https://claude.ai/admin-settings/artifacts)からアーティファクトを管理できます。アーティファクトのコンテンツは Anthropic が運用するインフラストラクチャに保存され、アーティファクトが[公開で共有](#control-public-sharing)されていない限り、発行元の組織の認証済みメンバーと共有先の人のみに表示されます。
 
 <h3 id="enable-or-disable-artifacts">
   アーティファクトを有効または無効にする
 </h3>
 
-組織全体のアーティファクトを有効または無効にするには、[**Settings > Claude Code > Capabilities**](https://claude.ai/admin-settings/claude-code)に移動して、**Artifacts** トグルを使用します。ロールベースのアクセス制御を備えた Enterprise プランでは、アーティファクトを特定のロールにスコープすることもできます。[**Settings > Roles**](https://claude.ai/admin-settings/roles)に移動してロールを編集し、**Claude Code** グループの下の **Artifacts** 権限を設定します。
+組織全体のアーティファクトを有効または無効にするには、[**Organization settings > Artifacts**](https://claude.ai/admin-settings/artifacts)に移動して、**Artifacts** トグルを使用します。ロールベースのアクセス制御を備えた Enterprise プランでは、アーティファクトを特定のロールにスコープすることもできます。[**Organization settings > Roles**](https://claude.ai/admin-settings/roles)に移動してロールを編集し、**Artifacts** 権限を設定します。
 
 <h3 id="control-connector-calls-from-artifacts">
   アーティファクトからのコネクタ呼び出しを制御する
 </h3>
 
-[アーティファクトからのコネクタ呼び出し](#pull-live-data-with-mcp-connectors)には、アーティファクトのオン/オフを切り替える **Artifacts** トグルとは別の専用トグルがあります。[**Settings > Capabilities**](https://claude.ai/admin-settings/capabilities)に移動して、**Enable artifact connectors** トグルを使用します。同じトグルは claude.ai の会話で作成されたアーティファクトからのコネクタ呼び出しも管理します。そのため、**Settings > Claude Code** ではなく **Settings > Capabilities** の下に配置されています。
+[アーティファクトからのコネクタ呼び出し](#pull-live-data-with-mcp-connectors)には、アーティファクトのオン/オフを切り替える **Artifacts** トグルとは別の専用トグルがあります。[**Organization settings > Capabilities**](https://claude.ai/admin-settings/capabilities)に移動して、**Enable artifact connectors** トグルを使用します。同じトグルは claude.ai の会話で作成されたアーティファクトからのコネクタ呼び出しも管理します。
 
 <h3 id="control-public-sharing">
   公開共有を制御する
 </h3>
 
-公開共有は Team プランと Enterprise プランではデフォルトでオフになっているため、メンバーはオーナーがオンにするまで、組織内でのみアーティファクトを共有できます。メンバーがサインインなしで誰でも表示できるパブリックリンクにアーティファクトを公開できるようにするには、**Settings > Claude Code > Capabilities** に移動して、**Artifacts** トグルの下の **External sharing** をオンにします。オフに戻すと、各アーティファクトのオーディエンスを変更することなく、既存のパブリックリンク経由のアクセスがブロックされます。再度有効にすると、アクセスが再開されます。
+公開共有は Team プランと Enterprise プランではデフォルトでオフになっています。メンバーがサインインなしで誰でも表示できるパブリックリンクにアーティファクトを公開できるようにするには、[**Organization settings > Artifacts**](https://claude.ai/admin-settings/artifacts)に移動して、**Artifacts** トグルの下の **External sharing** をオンにします。オフに戻すと、各アーティファクトのオーディエンスを変更することなく、既存のパブリックリンク経由のアクセスがブロックされます。再度有効にすると、アクセスが再開されます。
 
 <h3 id="set-a-retention-policy">
   保持ポリシーを設定する
 </h3>
 
-アーティファクトが自動削除される前に保持される期間を設定するには、[**Settings > Data & privacy controls**](https://claude.ai/admin-settings/data-privacy-controls)に移動します。作成者にのみプライベートなアーティファクトと共有されたアーティファクトに対して、別々の保持期間を設定できます。
+アーティファクトが自動削除される前に保持される期間を設定するには、[**Organization settings > Data and privacy**](https://claude.ai/admin-settings/data-privacy-controls)に移動します。作成者にのみプライベートなアーティファクトと共有されたアーティファクトに対して、別々の保持期間を設定できます。
 
 <h3 id="review-the-audit-log">
   監査ログを確認する

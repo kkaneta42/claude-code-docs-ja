@@ -586,6 +586,8 @@ Claude Tag チャネルセッションでは、Claude はメンバーではな�
 
 Claude Code が[Claude アプリゲートウェイ](/docs/ja/claude-apps-gateway)にサインインしている場合、CLI はゲートウェイセッションの認証済みアイデンティティでエクスポートをスタンプします。`user.id` は匿名インストール識別子ではなく IdP サブジェクト、`user.email` はサインイン済みメール、`user.groups` は IdP グループメンバーシップをカンマ区切り文字列として保持します。各エクスポートは `identity.source: gateway-oidc` も保持します。ゲートウェイアイデンティティは最後に適用されるため、`OTEL_RESOURCE_ATTRIBUTES` を通じて設定された `user.*` および `identity.*` キーはゲートウェイセッションで無視されます。
 
+Claude Desktop および Cowork セッションがゲートウェイ経由で接続する場合のアイデンティティ属性については、[ゲートウェイ `telemetry` リファレンス](/docs/ja/claude-apps-gateway-config#telemetry)を参照してください。
+
 イベントには、以下の追加属性が含まれます。これらはメトリクスに添付されることはありません。無制限のカーディナリティを引き起こすためです。
 
 * `prompt.id`: ユーザープロンプトと、次のプロンプトまでのすべての後続イベントを相関させる UUID。[イベント相関属性](#event-correlation-attributes)を参照。
@@ -1542,11 +1544,11 @@ OpenTelemetry イベントは Claude Code アクティビティの監査デー�
   属性アクションをユーザーに関連付ける
 </h3>
 
-各イベントの [標準属性](#standard-attributes) には、認証されたユーザーの ID が含まれます：Claude アカウントでサインインしている場合は `user.email`、`user.account_uuid`、`user.account_id`、および `organization.id`、さらに [クラウドセッション](/docs/ja/claude-code-on-the-web) では、セッション自体の認証情報がそれらを持つ場合、`user.id` とセッションごとの `session.id`。`user.id` はインストールスコープの識別子です。ただし、[Claude apps gateway](/docs/ja/claude-apps-gateway) セッションでは、ゲートウェイが発行したトークンからの IdP サブジェクトです。
+各イベントの [標準属性](#standard-attributes) には、認証されたユーザーの ID が含まれます：Claude アカウントでサインインしている場合は `user.email`、`user.account_uuid`、`user.account_id`、および `organization.id`、さらに [クラウドセッション](/docs/ja/claude-code-on-the-web) では、セッション自体の認証情報がそれらを持つ場合、`user.id` とセッションごとの `session.id`。`user.id` はインストールスコープの識別子です。ただし、[Claude apps gateway](/docs/ja/claude-apps-gateway) セッションでは `/login` を通じてサインインしている場合、ゲートウェイが発行したトークンからの IdP サブジェクトです。
 
 開発者が開始したセッションでは、MCP ツール呼び出し、Bash コマンド、ファイル編集はその開発者に属性付けられます。Claude Code は個別のサービスアカウントの下では機能しません。各イベントに記録される ID は、開発者自身の Claude アカウント、または [Claude apps gateway](/docs/ja/claude-apps-gateway) セッションでの開発者の IdP ID です。Claude Tag チャネルセッションでは、Claude はあなたの組織の [共有 ID](/docs/ja/cloud-environments#set-the-environment-a-claude-tag-channel-uses) として機能します。
 
-Claude Code が直接 API キーで認証する場合、または Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry に対して認証する場合、セッションに Claude アカウントはなく、`user.id` と `session.id` のみが入力されます。これらのデプロイメントでは、`OTEL_RESOURCE_ATTRIBUTES` を使用してユーザー ID を自分で添付し、[管理設定](#administrator-configuration) ファイルまたはローンチラッパーを通じてユーザーごとに設定します。Claude apps gateway セッションはこれを必要としません：CLI は [標準属性](#standard-attributes) で説明されているように、IdP ID を自動的にスタンプします。
+Claude Code が直接 API キーで認証する場合、または Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry に対して認証する場合、セッションに Claude アカウントはなく、`user.id` と `session.id` のみが入力されます。これらのデプロイメントでは、`OTEL_RESOURCE_ATTRIBUTES` を使用してユーザー ID を自分で添付し、[管理設定](#administrator-configuration) ファイルまたはローンチラッパーを通じてユーザーごとに設定します。Claude apps gateway セッションはこれを必要としません：[標準属性](#standard-attributes) を参照して、それらのエクスポートが持つ ID を確認してください。
 
 ```bash theme={null}
 export OTEL_RESOURCE_ATTRIBUTES="enduser.id=jdoe@example.com,enduser.directory_id=S-1-5-21-..."

@@ -512,37 +512,106 @@ export PRIVATE_SUBNETS="<subnet-id-a> <subnet-id-b>"
   テレメトリ
 </h2>
 
-ゲートウェイは、マシンごとの OTEL 設定なしで開発者ごとの使用メトリクスを提供します。Claude Code は OpenTelemetry（OTLP）メトリクス、ログ、およびオプトインのトレースを発行します。[使用状況の監視](/docs/ja/monitoring-usage)は CLI が報告するすべてをカバーしています。ゲートウェイセッションでは、CLI は各エクスポートに認証された IdP ID 属性 `user.id`、`user.email`、および `user.groups` でスタンプを付けるため、使用状況は `OTEL_RESOURCE_ATTRIBUTES` 配管なしで開発者ごとにロールアップされます。
+ゲートウェイは、マシンごとの OTEL 設定なしで、開発者ごとの使用状況メトリクスを提供します。Claude Code は OpenTelemetry（OTLP）メトリクス、ログ、およびオプトイン トレースを出力します。[使用状況の監視](/docs/ja/monitoring-usage)は、CLI が報告するすべてをカバーしています。`/login` を通じてサインインしたセッションでは、CLI は各エクスポートに認証された IdP ID 属性 `user.id`、`user.email`、および `user.groups` をスタンプし、使用状況は開発者ごとにロールアップされます。
 
-ゲートウェイ自体は認証された OTLP リレーです。[`telemetry.forward_to`](/docs/ja/claude-apps-gateway-config#telemetry) を `listen.public_url` と一緒に設定し、OTEL エクスポーター設定をすべての接続されたクライアントにプッシュし、OTLP トラフィックを逐語的にリストするすべての宛先に転送します。各宛先はメトリクス、ログ、およびトレースを独立して選択し、デフォルトはメトリクスのみです。[`telemetry` リファレンス](/docs/ja/claude-apps-gateway-config#telemetry)を参照してください。シグナルごとのフィールドとそれらの感度トレードオフについて。ゲートウェイはバッファ、集約、またはテレメトリを保存しないため、データが到達する場所は完全にコレクターのエクスポーター設定です。
+ゲートウェイ自体は認証された OTLP リレーです。[`telemetry.forward_to`](/docs/ja/claude-apps-gateway-config#telemetry) を `listen.public_url` と一緒に設定すると、OTEL エクスポーター設定をすべての接続クライアントにプッシュし、OTLP トラフィックを指定した各宛先に逐語的に転送します。各宛先はメトリクス、ログ、およびトレースに独立してオプトインでき、デフォルトはメトリクスのみです。[`telemetry` リファレンス](/docs/ja/claude-apps-gateway-config#telemetry)で、シグナルごとのフィールドとそれらの感度トレードオフを参照してください。ゲートウェイはテレメトリをバッファリング、集約、または保存しないため、データが到達する場所はコレクターのエクスポーター設定に完全に依存します。
 
-クライアントテレメトリはデフォルトでオフです。`telemetry.forward_to` を設定することは、接続された開発者のためにそれをオンにするものです。各インタラクティブクライアントは、[設定リファレンス](/docs/ja/claude-apps-gateway-config#telemetry)で説明されているように、プッシュされた設定の 1 回限りのセキュリティ承認ダイアログを表示します。AWS では、各シグナルは次のように宛先にマップされます。
+クライアント テレメトリはデフォルトでオフです。`telemetry.forward_to` を設定することで、接続された開発者に対してオンになり、各インタラクティブ クライアントはプッシュされた設定に対するセキュリティ承認ダイアログを表示します。これは[設定リファレンス](/docs/ja/claude-apps-gateway-config#telemetry)で説明されています。AWS では、各シグナルは次のように宛先にマップされます。
 
 <h3 id="client-metrics-logs-and-traces">
-  クライアントメトリクス、ログ、およびトレース
+  クライアント メトリクス、ログ、およびトレース
 </h3>
 
-`telemetry.forward_to` を OpenTelemetry コレクター（[AWS Distro for OpenTelemetry（ADOT）コレクター](https://aws-otel.github.io/)など）に指し、Amazon CloudWatch、Amazon Managed Service for Prometheus、または任意の OTLP バックエンドにエクスポートします。
+`telemetry.forward_to` を OpenTelemetry コレクター（[AWS Distro for OpenTelemetry（ADOT）コレクター](https://aws-otel.github.io/)など）にポイントし、そこから Amazon CloudWatch、Amazon Managed Service for Prometheus、または任意の OTLP バックエンドにエクスポートします。
 
-`https://` 経由で到達可能な独自の内部サービスとしてコレクターを実行します。ゲートウェイはループバック URL に対してのみプレーンテキスト `http://` を受け入れ、その場合でも [SSRF ガード](/docs/ja/claude-apps-gateway-deploy#threat-model-summary)はデフォルトで送信時にループバック接続をブロックします。`http://localhost:4318` のサイドカーコレクターは設定検証を渡しますが、トラフィックを受け取りません。エクスポートは `ECONNREFUSED_SSRF` として失敗します。ゲートウェイログで、`CLAUDE_GATEWAY_ALLOW_LOOPBACK=1` がゲートウェイの環境に設定されていない限り。その変数はすべてのオペレーター設定 URL のループバックブロックを緩和し、テレメトリのみではなく、ネットワークが他の方法でロックダウンされているタスクのサイドカープラスフラグセットアップを予約してください。内部サービスパターンを優先します。
+コレクターを `https://` 経由で到達可能な独自の内部サービスとして実行します。[`telemetry` リファレンス](/docs/ja/claude-apps-gateway-config#telemetry)はループバック例外と `CLAUDE_GATEWAY_ALLOW_LOOPBACK` をカバーしています。
 
 <h3 id="gateway-logs">
-  ゲートウェイログ
+  ゲートウェイ ログ
 </h3>
 
-ECS Fargate では、追加のセットアップはありません。`awslogs` ドライバーはゲートウェイの stderr を配信します。これは監査イベントと運用ログを運びます。`/ecs/claude-gateway` ロググループに上記で作成されました。EKS では、ポッドログはデフォルトで CloudWatch に到達しないため、監査証跡は失われます。ログ収集をインストールするまで：コンテナログキャプチャが有効な Amazon CloudWatch Observability アドオン、または Fluent Bit DaemonSet。どちらのトラックでも、CloudWatch Logs Insights でログをクエリし、メトリクスフィルターからアラームを駆動します。
+ECS Fargate では、追加のセットアップは不要です。`awslogs` ドライバーはゲートウェイの stderr（監査イベントと運用ログを含む）を、上記で作成した `/ecs/claude-gateway` ログ グループに配信します。EKS では、ポッド ログはデフォルトで CloudWatch に到達しないため、ログ収集をインストールするまで監査証跡は失われます。Amazon CloudWatch Observability アドオン（コンテナ ログ キャプチャ有効）または Fluent Bit DaemonSet をインストールしてください。どちらの場合でも、CloudWatch Logs Insights でログをクエリし、メトリック フィルターからアラームを駆動します。
 
 <h3 id="container-metrics">
-  コンテナメトリクス
+  コンテナ メトリクス
 </h3>
 
-`aws ecs update-cluster-settings --cluster claude-gateway --settings name=containerInsights,value=enabled` でクラスタで Container Insights を有効にして、タスクごとの CPU、メモリ、およびネットワーク。EKS では、Amazon CloudWatch Observability アドオンをインストールします。
+`aws ecs update-cluster-settings --cluster claude-gateway --settings name=containerInsights,value=enabled` でクラスターの Container Insights を有効にして、タスクごとの CPU、メモリ、およびネットワークを取得します。EKS では、Amazon CloudWatch Observability アドオンをインストールしてください。
 
 <h3 id="spend">
   支出
 </h3>
 
-テレメトリは事後に使用状況を表示します。[支出制限](/docs/ja/claude-apps-gateway-spend-limits)は、共有アップストリーム認証情報の上にゲートウェイのライブ開発者ごとのビューと実装です。
+テレメトリは事後に使用状況を表示します。[支出制限](/docs/ja/claude-apps-gateway-spend-limits)はゲートウェイのライブ開発者ごとのビューと実装です。
+
+<h2 id="cost-attribution">
+  コスト属性
+</h2>
+
+ゲートウェイはすべての Bedrock リクエストに独自のプリンシパル（ECS タスクロールまたは EKS IRSA ロール）で署名するため、デフォルトでは AWS はそのすべての支出を 1 つの IAM プリンシパルの下に表示します。AWS 独自の請求データで分割する方法は 2 つあり、これらは組み合わせることができます。
+
+<h3 id="per-developer-with-assume_role">
+  `assume_role` を使用した開発者ごと
+</h3>
+
+Bedrock 権限を保持し、ゲートウェイのプリンシパルを信頼する 2 番目の IAM ロールを作成し、そのプリンシパルに対して `sts:AssumeRole` を付与し、Bedrock アップストリームで [`assume_role`](/docs/ja/claude-apps-gateway-config#per-developer-aws-cost-attribution) を `session_name: email` で設定します。ゲートウェイは、開発者ごとに 1 時間に 1 回そのロールを引き受け、セッション名をメールアドレスに設定して、その結果でリクエストに署名します。Claude Code v2.1.281 以降を実行しているゲートウェイが必要です。ロールは別の AWS アカウントに配置することもできます。[別の AWS アカウントの Bedrock](/docs/ja/claude-apps-gateway-config#bedrock-in-another-aws-account) を参照してください。Terraform では、[Terraform バンドル](#terraform-reference) のタスクロールの隣に以下を配置します。
+
+```hcl theme={null}
+resource "aws_iam_role" "bedrock_user" {
+  name = "claude-gateway-bedrock-user"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{ Effect = "Allow", Action = "sts:AssumeRole", Principal = { AWS = aws_iam_role.task.arn } }]
+  })
+}
+resource "aws_iam_role_policy" "bedrock_user_invoke" {   # same Bedrock policy as the task role's
+  role   = aws_iam_role.bedrock_user.id
+  policy = aws_iam_role_policy.bedrock_invoke.policy
+}
+resource "aws_iam_role_policy" "task_assume_bedrock_user" {
+  role   = aws_iam_role.task.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{ Effect = "Allow", Action = "sts:AssumeRole", Resource = aws_iam_role.bedrock_user.arn }]
+  })
+}
+```
+
+`assume_role` が設定されている場合、ゲートウェイはすべての Bedrock 呼び出し（支出メータリング用の無料 `CountTokens` 呼び出しを含む）に引き受けたロールの認証情報で署名するため、ゲートウェイのプリンシパルは `assume_role` のないアップストリームの場合のみ独自の Bedrock ポリシーが必要です。
+
+ゲートウェイはリクエスト時に STS を呼び出すため、プライベートサブネットは `sts.<region>.amazonaws.com` へのパスが必要です。前提条件の NAT ゲートウェイがそのパスを提供し、そのホスト名に応答する STS インターフェース VPC エンドポイントも提供します。アクティブな開発者ごとに、ゲートウェイレプリカあたり 1 時間に 1 回の STS 呼び出しがかかります。
+
+各開発者のリクエストは、プリンシパル `arn:aws:sts::<account>:assumed-role/<role>/<email>` として AWS に到達します。プリンシパルごとの支出を確認するには、IAM プリンシパルデータを含む請求エクスポートを使用します。AWS の [IAM プリンシパルコスト配分](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/iam-principal-cost-allocation.html) ページでは、有効にする方法と、どの請求ツールがそれを表示するかについて説明しています。
+
+<h3 id="per-team-with-application-inference-profiles">
+  アプリケーション推論プロファイルを使用したチームごと
+</h3>
+
+このルートは [`models`](/docs/ja/claude-apps-gateway-config#models) と [`managed`](/docs/ja/claude-apps-gateway-config#managed) セクションのみを使用します。チームとモデルごとに 1 つの Bedrock [アプリケーション推論プロファイル](https://docs.aws.amazon.com/bedrock/latest/userguide/inference-profiles-create.html) を作成し、各プロファイルにチームでタグを付け、そのタグをコスト配分タグとして有効化します。次に、各チームに `gateway.yaml` で独自のモデル ID を付与し、各 IdP グループをそのチームの ID にピン留めします。
+
+```yaml theme={null}
+models:
+  - id: platform-claude-opus-4-8
+    upstream_model:
+      bedrock: arn:aws:bedrock:us-east-1:123456789012:application-inference-profile/abc123
+  - id: data-claude-opus-4-8
+    upstream_model:
+      bedrock: arn:aws:bedrock:us-east-1:123456789012:application-inference-profile/def456
+managed:
+  policies:
+    - match: {groups: [team-platform]}
+      cli: {availableModels: [platform-claude-opus-4-8], enforceAvailableModels: true}
+    - match: {groups: [team-data]}
+      cli: {availableModels: [data-claude-opus-4-8], enforceAvailableModels: true}
+    - match: {}
+      cli: {availableModels: [claude-opus-4-8, claude-sonnet-4-6], enforceAvailableModels: true}
+```
+
+ピン留めされたチームの開発者に、チームの ID を使用して `--model platform-claude-opus-4-8` で Claude Code を起動するよう指示します。セッションがそれなしで開始された場合、デフォルトモデルが実行され、ゲートウェイはそれらのモデルを拒否するためです。
+
+ゲートウェイはモデルピッカーだけでなく、すべてのリクエストで `availableModels` を強制し、AWS 請求は有効化したタグで支出をグループ化します。`match: {}` キャッチオールがない場合、ポリシーに一致しない開発者はカタログ内のすべてのモデルを取得でき、どちらのチームのプロファイルでも請求できます。
+
+コスト：設定はチーム数とモデル数で増加し、このアップストリームの Bedrock リクエストに署名するロールは、`application-inference-profile/*` ARN を呼び出すことも許可される必要があります。そのロールはゲートウェイのプリンシパル、または `assume_role` を使用する場合は引き受けるロールです。これらの ID の価格設定方法については、[`pricing`](/docs/ja/claude-apps-gateway-config#pricing) を参照してください。
 
 <h2 id="next-steps">
   次のステップ

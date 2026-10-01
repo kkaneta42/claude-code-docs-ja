@@ -58,7 +58,7 @@ CLI、[Claude Desktop アプリ](/docs/ja/desktop)、または VS Code 拡張機
 
     プロセスはターミナルでサーバーモードで実行され続け、リモート接続を待機します。[別のデバイスから接続](#connect-from-another-device)するために使用できるセッション URL が表示され、スペースバーを押すと携帯電話からの高速アクセス用 QR コードが表示されます。リモートセッションがアクティブな間、ターミナルは接続ステータスとツールアクティビティを表示します。
 
-    利用可能なフラグ：
+    `remote-control` の後に以下のフラグを渡します：
 
     | フラグ | 説明 |
     | - | - |
@@ -74,11 +74,10 @@ CLI、[Claude Desktop アプリ](/docs/ja/desktop)、または VS Code 拡張機
     | `-d`, `--debug[=<filter>]` | サーバーのデバッグログをオンにします。オプションでカテゴリでフィルタリングできます。フィルタは `=` 形式でのみ渡します（例：`--debug=api,hooks`）。Claude Code v2.1.282 以降が必要です。 |
     | `--debug-file <path>` | デバッグログを指定されたファイルに書き込みます。 |
     | `--verbose` | 詳細な接続とセッションログを表示します。 |
-    | `--sandbox` / `--no-sandbox` | ファイルシステムとネットワーク分離のための [サンドボックス](/docs/ja/sandboxing)を有効または無効にします。デフォルトではオフです。 |
-
-    これらのフラグは `remote-control` の後に指定します。
 
     `remote-control` の前にグローバル `claude` フラグを渡すか、ラッパースクリプトが 1 つを追加する場合、Claude Code はそのフラグをサーバーが作成するセッションに引き継ぎません。Claude Code は `--verbose` や `--model` など、そのフラグを削除しても何が起こるかが変わらないことが既知の場合にのみフラグを通します。他のフラグ（`--settings` など）の場合、Claude Code は [起動を拒否](/docs/ja/errors#not-carried-over-to-the-sessions-remote-control-starts)し、削除するフラグを名前で指定します。
+
+    セッションをサンドボックス化するには、設定ファイルで [サンドボックス](/docs/ja/sandboxing)をオンにします。
 
     Claude Code はヘルプを出力する前にリモートコントロール適格性をチェックするため、適格なアカウントでサインインしていない場合、`claude remote-control --help` はこのフラグリストの代わりにエラーを返します。
   </Tab>
@@ -116,7 +115,7 @@ CLI、[Claude Desktop アプリ](/docs/ja/desktop)、または VS Code 拡張機
 
     リモートコントロールの 1 回限りの確認を受け入れるまで、`/remote-control` が接続する前にダイアログが表示されます。**Enable Remote Control** を選択して受け入れて接続します。**Never mind** を選択するか Esc を押すと、Claude Code は接続せず、次回 `/remote-control` を実行するときに再度尋ねます。
 
-    `--verbose`、`--sandbox`、および `--no-sandbox` フラグはこのコマンドでは利用できません。
+    `--verbose` フラグはこのコマンドでは利用できません。
   </Tab>
 
   <Tab title="VS Code">

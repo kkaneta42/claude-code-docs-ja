@@ -577,7 +577,7 @@ export const ReferenceFilter = ({placeholder, noun, facets, facetOrder, columnHe
   設定インデックス
 </h2>
 
-以下のすべてのキーはそのエントリにリンクしています。スコープは、それが入ることができる[ファイル](/docs/ja/settings#settings-files-and-who-they-affect)をリストしています。`User` は `~/.claude/settings.json`、`Project` は `.claude/settings.json`、`Local` は `.claude/settings.local.json`、`Managed` は[組織がデプロイするもの](/docs/ja/managed-settings)です。`Any file` は 4 つすべてを意味し、`Global config` は [`~/.claude.json`](#global-config-settings) を意味します。
+以下のすべてのキーはそのエントリにリンクしています。スコープは、それが入ることができる[ファイル](/docs/ja/settings#settings-files-and-who-they-affect)をリストしています。`User` は `~/.claude/settings.json`、`Project` は `.claude/settings.json`、`Local` は `.claude/settings.local.json`、`Managed` は[組織がデプロイするもの](/docs/ja/managed-settings)です。`Any file` は 4 つすべてを意味し、`Global config` は [`~/.claude.json`](#global-config-settings)を意味します。
 
 <ReferenceFilter
   noun="settings"
@@ -595,6 +595,7 @@ scope: "Which settings files can set the key: user (~/.claude/settings.json), pr
 | [`agent`](#agent) | すべてのセッションを、プロンプト、ツール、モデルを持つ名前付き[サブエージェント](/docs/ja/sub-agents)として開始します | Agents, sessions, and worktrees | Any file |
 | [`agentPushNotifEnabled`](#agentpushnotifenabled) | Claude が決定したときに[プッシュ通知をスマートフォンに送信](/docs/ja/remote-control#mobile-push-notifications)することを許可します | Remote, desktop, and notifications | Any file |
 | [`allowAllClaudeAiMcps`](#allowallclaudeaimcps) | デプロイされた[`managed-mcp.json`](/docs/ja/managed-mcp#exclusive-control-with-managed-mcp-json)と一緒に Claude Code が自身で取得する[claude.ai コネクタ](/docs/ja/mcp)をロードします | MCP | Managed |
+| [`allowClaudeInChromeWithManagedMcp`](#allowclaudeinchromewithmanagedmcp) | デプロイされた[`managed-mcp.json`](/docs/ja/managed-mcp#exclusive-control-with-managed-mcp-json)と一緒に組み込み[Claude in Chrome](/docs/ja/chrome)サーバーを実行することを許可します | MCP | Managed |
 | [`allowedChannelPlugins`](#allowedchannelplugins) | メッセージをプッシュできる[チャネルプラグイン](/docs/ja/channels#restrict-which-channel-plugins-can-run)のデフォルト許可リストを置き換えます | Plugins and skills | Managed |
 | [`allowedHttpHookUrls`](#allowedhttphookurls) | [HTTP フック](/docs/ja/hooks)がターゲットできる URL を制限します | Hooks and automation | Any file |
 | [`allowedMcpServers`](#allowedmcpservers) | ユーザーが追加できる[MCP サーバー](/docs/ja/mcp)を許可リストに登録します | MCP | Any file |
@@ -5155,6 +5156,26 @@ Claude Code が自身で取得する[claude.ai コネクタ](/docs/ja/mcp#use-mc
 
 [`allowedMcpServers`](#allowedmcpservers)と[`deniedMcpServers`](#deniedmcpservers)は、このキーが読み込むコネクタにも適用されます。`managed-mcp.json` を持つホスト（自己ホスト型ランナーなど）の[クラウドセッション](/docs/ja/claude-code-on-the-web)に配信されるコネクタは、抑制されたままです。[管理対象セットと一緒に claude.ai コネクタを許可する](/docs/ja/managed-mcp#allow-claude-ai-connectors-alongside-the-managed-set)を参照してください。
 
+<h3 id="allowclaudeinchromewithmanagedmcp">
+  `allowClaudeInChromeWithManagedMcp`
+</h3>
+
+デプロイされた `managed-mcp.json` と一緒に、組み込みの[Claude in Chrome](/docs/ja/chrome)サーバーを実行できるようにします。このキーがない場合、デプロイされた `managed-mcp.json` はターミナルセッションで Claude in Chrome をブロックします。Claude Code v2.1.282 以降が必要です。
+
+* **スコープ**: [`Managed`](#scopes)。デバイス自身の管理設定からのみ。MDM でデプロイされた plist または HKLM レジストリキー、またはシステム `managed-settings.json` ファイル。Claude Code はサーバー管理設定、ユーザー書き込み可能な HKCU レジストリ、およびユーザーまたはプロジェクト設定では無視します。
+* **タイプ**: ブール値
+  * `true`: 組み込みの Claude in Chrome サーバーは、デプロイされた `managed-mcp.json` と一緒に実行できます
+  * `false`: デプロイされた `managed-mcp.json` はターミナルセッションで Claude in Chrome をブロックします
+* **デフォルト**: `false`。デプロイされた `managed-mcp.json` はターミナルセッションで Claude in Chrome をブロックします
+
+```json managed-settings.json theme={null}
+{
+  "allowClaudeInChromeWithManagedMcp": true
+}
+```
+
+`claude-in-chrome` の[`deniedMcpServers`](#deniedmcpservers)エントリは、このキーがオンの場合でもサーバーをブロックします。[管理対象セットと一緒に Claude in Chrome を許可する](/docs/ja/managed-mcp#allow-claude-in-chrome-alongside-the-managed-set)を参照してください。
+
 <h3 id="allowedmcpservers">
   `allowedMcpServers`
 </h3>
@@ -6302,7 +6323,7 @@ Claude Desktop または Cowork で開始または最後に続行したセッシ
   `disableSideloadFlags`
 </h3>
 
-起動時に `--plugin-dir`、`--plugin-url`、`--agents`、および `--mcp-config` CLI フラグを拒否します。これらのフラグは、ユーザーが [`strictKnownMarketplaces`](#strictknownmarketplaces) を単一実行でバイパスするために渡す可能性があります。Claude Code はエラーで終了し、拒否されたフラグを名前で指定します。また、これらのフラグで CLI を内部的に開始するサーフェスに同じチェックを適用します。現在、デスクトップアプリの [Cowork](/docs/ja/desktop) ローカルセッションです。[クラウドセッション](/docs/ja/claude-code-on-the-web)では、Claude Code はセッションを開始し、サーバーが配信した `--mcp-config` エントリをドロップします。ただし、プロセス内 `type: "sdk"` エントリと [Claude Tag](/docs/ja/claude-tag) セッションの Slack ツールは除きます。Claude Code v2.1.193 以降が必要です。
+起動時に `--plugin-dir`、`--plugin-url`、`--agents`、および `--mcp-config` CLI フラグを拒否します。これらのフラグは、ユーザーが [`strictKnownMarketplaces`](#strictknownmarketplaces) を単一実行でバイパスするために渡す可能性があります。Claude Code はエラーで終了し、拒否されたフラグを名前で指定します。[クラウドセッション](/docs/ja/claude-code-on-the-web)では、Claude Code はセッションを開始し、サーバーが配信した `--mcp-config` エントリをドロップします。ただし、プロセス内 `type: "sdk"` エントリと [Claude Tag](/docs/ja/claude-tag) セッションの Slack ツールは除きます。Claude Code v2.1.193 以降が必要です。
 
 * **スコープ**: [`Managed`](#scopes)
 * **タイプ**: ブール値
@@ -6321,6 +6342,11 @@ Claude Code は、サーバーがすべてプロセス内 `type: "sdk"` エン�
 同じチェックは、[`CLAUDE_CODE_PLUGIN_DIRS`](/docs/ja/env-vars#variables) 環境変数で名前が付けられたプラグインフォルダをカバーします。これには Claude Code v2.1.280 以降が必要です。変数がフォルダを名前で指定する場合、Claude Code は同じエラーで終了し、エラーは変数をアンセットするように指示します。
 
 クラウドセッションでは、Claude Code はセッション中の MCP 更新も無視します。これは、クラウドセッション構成と SDK `setMcpServers()` 呼び出しの背後にあるパスです。プロセス内 `type: "sdk"` エントリと Claude Tag セッションの Slack ツールはそこでも除外されたままです。v2.1.268 より前では、このドロップと起動ドロップの両方も Claude Tag セッションの Slack ツールを削除していました。v2.1.239 より前では、サーバーが配信した `--mcp-config` はクラウドセッションの開始をブロックしていました。
+
+デスクトップアプリは、claude.ai から同期されたプラグインや、組織がアプリを通じてデプロイするプラグインを含む、いくつかのプラグインを自身で管理します。MDM、OS レベルのポリシー、または管理設定ファイルを通じてこのキーをデバイスにデプロイする場合、デスクトップアプリはそれらのプラグインを、そのデバイス上の以下のセッションに渡しません:
+
+* **[ユーザーのマシン上のコードセッション](/docs/ja/desktop#environment-configuration)**: ユーザーの claude.ai アカウントに対して有効になっているスキルなしでも開始します。Claude Code が管理設定のマーケットプレイスからインストールするプラグインは引き続きロードされます。[Claude Desktop on 3P](https://claude.com/docs/third-party/claude-desktop/overview) では、デバイスの `org-plugins` ディレクトリにデプロイするプラグインからの MCP サーバーは利用可能なままです。デスクトップアプリが自身でそれらに接続するため。Claude Desktop v1.37937.0 より前では、これらのセッションは起動時に失敗していました。
+* **[ユーザーのマシン上の Cowork セッション](/docs/ja/managed-settings#where-and-when-a-policy-applies)**: それらのプラグイン内のスキルとユーザーの claude.ai アカウントに対して有効になっているスキルは利用可能なままです。[Claude Desktop on 3P](https://claude.com/docs/third-party/claude-desktop/overview) では、デバイスの `org-plugins` ディレクトリにデプロイするプラグインからの MCP サーバーは利用可能なままです。デスクトップアプリが自身でそれらに接続するため。Claude Desktop v1.44121.0 より前では、これらのセッションは起動時に失敗していました。
 
 <h3 id="forceremotesettingsrefresh">
   `forceRemoteSettingsRefresh`

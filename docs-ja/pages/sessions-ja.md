@@ -29,13 +29,31 @@ Claude Code は [`claude -p`](/docs/ja/headless)または [Agent SDK](/docs/ja/a
 
 `claude --continue` は完了した [バックグラウンドセッション](/docs/ja/agent-view)を開きますが、実行中のセッションは開きません。完了したバックグラウンドセッションを開くには Claude Code v2.1.257 以降が必要です。最新の会話が [バックグラウンドに移動した](/docs/ja/agent-view#send-the-session-to-the-background)セッションで、そこで実行中の場合、Claude Code は `Your most recent conversation is running in the background` と終了し、そのセッションの ID を表示します。[`claude agents`](/docs/ja/agent-view#attach-to-a-session)からセッションにアタッチするか、`claude --resume` を実行して別のセッションを選択します。
 
+<span id="resume-a-running-background-session" />
+
+`claude --resume` または `/resume` で再開する会話が、実行中の [バックグラウンドセッション](/docs/ja/agent-view)に属する場合、Claude Code は実行中のセッション自体を開きます。コマンドラインで `--bg` を使用すると、再開は [バックグラウンドディスパッチ](/docs/ja/agent-view#from-your-shell)になります。v2.1.285 より前は、Claude Code は拒否し、`claude attach <id>` でセッションを開くか、`claude stop <id>` で最初に停止するよう指示していました。
+
+* **シェルから**：`claude --resume <session>` は、トランスクリプト自体を読み込む代わりに、同じターミナルでそのセッションに対して [`claude attach`](/docs/ja/agent-view#attach-to-a-session)を実行します。`claude --resume <session> "check the tests too"` のようにコマンドラインで渡すプロンプトは、最初にセッションの次のターンとして送信され、Claude Code は `Sent your prompt to the background session (<id>); opening it…` を出力してからアタッチします。ターミナルで入力した `claude -p --resume <session> "prompt"` も同じように動作するため、`-p` はその実行を非対話型に保ちません。
+
+  Claude Code は、コマンドラインに以下のいずれかがある場合、セッションを開きません。
+
+  * パイプまたはリダイレクトされた入力または出力
+  * `--permission-mode`、`--model`、`--settings` などのセッションを設定するフラグ
+  * `--output-format json` または `--json-schema` などの出力を読み込むフラグ
+  * `--max-turns` または `--max-budget-usd` などの実行を制限またはリワインドするフラグ
+
+  これらのいずれかがある場合、または [エージェントビューがオフになっている](/docs/ja/agent-view#turn-off-agent-view)場合、Claude Code は何も送信せず、ステータス 1 で終了し、セッションがバックグラウンドで実行中であることを出力し、それを開く `claude attach <id>` コマンドを表示するか、ID を判定できない場合は `claude agents` で見つけるよう指示します。`--fork-session` を追加して、会話のコピーを再開します。セッション自体で会話を続行するには、フラグを適用して、`claude stop <id>` を実行してからコマンドを繰り返します。
+
+  `/` または `!` で始まるプロンプトは送信されず、セッションが質問への回答を待っている間のプロンプトも送信されません。どちらの場合も Claude Code はセッションを開かず、メッセージには `Your prompt was not sent to it` と理由が含まれます。
+* **セッション内から**：`/resume` は現在の会話をバックグラウンドに移動し、このターミナルを実行中のセッションにアタッチし、`Opening "<title>", running in the background (<id>)` を出力します。空のプロンプトで `←` を押すとエージェントビューに戻ります。これは、残した会話もリストします。現在の会話がバックグラウンドに移動できない場合（例えば、バックグラウンドセッションにすでにアタッチしている場合、またはセッション永続性がオフの場合）、`/resume` は代わりに実行する `claude attach` コマンドを出力します。
+
 任意のディレクトリから `claude --resume <session-id>` を実行できます。Claude Code は現在のプロジェクトディレクトリとその git worktrees でまず ID を検索し、次にこのマシン上の他のすべてのプロジェクトで検索するため、他の場所で開始されたセッションや [`/cd`](/docs/ja/commands)で移動したセッションを見つけます。クロスプロジェクト検索は、正確に 1 つの他のプロジェクトがそれのメッセージを含むトランスクリプトを保持している場合にのみ ID を解決するため、手動でコピーされた重複は Claude Code が見つからないと報告し、任意のコピーを再開するのではなく、見つかりません。保存されたセッションが ID と一致しない場合、Claude Code は `No conversation found with session ID: <session-id>` と報告します。v2.1.223 より前は、ルックアップは現在のプロジェクトディレクトリとその git worktrees で停止したため、セッションが最後に機能していたディレクトリから再開する必要がありました。
 
 <h3 id="what-a-resumed-session-restores">
   再開されたセッションが復元するもの
 </h3>
 
-再開されたセッションは、会話とそれに保存された状態を復元します。
+Claude Code がトランスクリプトから会話を読み込むと、再開されたセッションは会話とそれに保存された状態を復元します。
 
 * 会話履歴：ツール呼び出しと結果を含む完全な履歴。前のプロセスが終了したときに実行中だったツール（例えばクラッシュ）は、再開時に完了または再実行されません。Claude はその呼び出しが結果が記録される前に切断されたとマークされているのを見て、再度実行する前に有効になったかどうかを確認するよう指示されます。ただし、[`CLAUDE_CODE_RESUME_INTERRUPTED_TURN`](/docs/ja/env-vars#variables)が設定されている場合は除きます。v2.1.281 より前は、Claude Code は切断された呼び出しを会話から削除するか、中断したものとして Claude に表示していました。
 * モデル：セッションは使用していたモデルで続行されます。モデルが廃止されたか `availableModels` で許可されていない場合、`--model` フラグまたは `ANTHROPIC_MODEL` ファミリー環境変数が起動時に 1 つを選択する場合、または [Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry](/docs/ja/third-party-integrations)などのプロバイダー固有のデプロイ ID を使用するプロバイダーの場合は復元されません。[モデル設定](/docs/ja/model-config#setting-your-model)の解決順序を参照してください。
@@ -51,7 +69,7 @@ Claude Code は [`claude -p`](/docs/ja/headless)または [Agent SDK](/docs/ja/a
   再開時の権限モード
 </h4>
 
-再開されたセッションが開始される権限モードは、再開方法によって異なります。
+再開されたセッションが開始される権限モードは、再開方法によって異なります。以下の場合は、Claude Code がトランスクリプトから会話を読み込むときに適用されます。[実行中のバックグラウンドセッションを開く](#resume-a-running-background-session)場合、そのセッションは存在する権限モードを保持します。
 
 * ターミナル：`claude --continue`、`claude --resume <session-id>`、または `claude --resume <name>`（名前が 1 つのセッションと一致する場合）で `-p` なし。Claude Code はセッションが存在していた権限モードを復元します。ただし、表の場合は除きます。`--permission-mode` または `--dangerously-skip-permissions` を渡して復元されたモードをオーバーライドします。
 * 非対話型：`claude -p --resume` または `claude -p --continue`。Claude Code は新しい `claude -p` 実行が開始される権限モードで実行を開始します。ただし、プランモードで終了したセッションは [以下の条件](#resume-in-plan-mode-with-p)下でプランモードで再開されます。

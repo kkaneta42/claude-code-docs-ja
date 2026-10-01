@@ -95,13 +95,14 @@ Claude Code はそのセッションの `advisorModel` 設定の代わりにフ�
   アドバイザーモデルを選択する
 </h2>
 
-アドバイザーは、メインモデル以上の能力を持つ必要があります。各メインモデルで受け入れられるアドバイザーは以下の通りです。
+Claude Code と API の両方は、メインモデル以上の能力を持つアドバイザーが必要であり、2 つは一部のモデルを異なる方法でランク付けします。各メインモデルで受け入れられるアドバイザーは以下の通りです。
 
 | メインモデル | 受け入れられるアドバイザー | 注記 |
 | - | - | - |
 | Haiku 4.5 | Fable、Opus、Sonnet | Haiku はアドバイザーを呼び出すことはできますが、アドバイザーとして機能することはできません |
 | Sonnet 4.6 | Fable、Opus、Sonnet | |
-| Sonnet 5.5 または Sonnet 5 | Fable、Opus 4.7 以降、Sonnet 5 以降 | Sonnet 4.6 アドバイザーは拒否され、API は Opus 4.6 アドバイザーを拒否します |
+| Sonnet 5 | Fable、Opus 4.7 以降、Sonnet 5 以降 | Sonnet 4.6 アドバイザーは拒否され、API は Opus 4.6 アドバイザーを拒否します |
+| Sonnet 5.5 | Fable、Opus 5 以降、Sonnet 5.5 | Sonnet 4.6 アドバイザーは拒否され、API は Sonnet 5、Opus 4.6、Opus 4.7、または Opus 4.8 アドバイザーを拒否します |
 | Opus 4.6 | Fable、Opus、Sonnet 5 以降 | Sonnet 4.6 アドバイザーは拒否されます |
 | Opus 4.7 または Opus 4.8 | Fable、および Opus 4.7 以降 | Opus 4.6 または Sonnet アドバイザーは拒否されます |
 | Opus 5.5 または Opus 5 | Fable、および Opus 5 以降 | Opus 4.6 または Sonnet アドバイザーは拒否され、API は Opus 4.7 または Opus 4.8 アドバイザーを拒否します |

@@ -80,17 +80,19 @@
   SCM コネクタフラグ
 </h3>
 
-オーケストレーターは Anthropic のコントロールプレーンへのスタンディング WebSocket 接続を保持できます。リポジトリピッカーやブランチまたは ref リゾルバーなどのホスト済みプリセッションフローが、ネットワーク内からのみルーティング可能な GitHub Enterprise Server ホストに到達できるようにします。`--scm-connector-host` を設定しない限り、コネクタはオフのままです。
+SCM コネクタは利用できないため、このセクションのフラグは未設定のままにしてください。`--scm-connector-host` を設定した場合、接続は開かず、オーケストレーターは再試行を続けます。ランナーはセッションキューとして開始されます。
+
+コネクタは、オーケストレーターから Anthropic のコントロールプレーンへのスタンディング WebSocket 接続です。リポジトリピッカーやブランチまたは ref リゾルバーなどのホスト済みプリセッションフローが、ネットワーク内からのみルーティング可能な GitHub Enterprise Server ホストに到達できるようにするために設計されています。GitHub Enterprise Server ページの [ネットワーク要件](/docs/ja/github-enterprise-server#network-requirements) を参照して、これらのフローが必要とするものを確認してください。
 
 | フラグ | デフォルト | 説明 |
 | :- | :- | :- |
-| `--scm-connector-host <host[:port]>` | 未設定 | リクエストを転送する GitHub Enterprise Server ホスト名。ポートはデフォルトで `443` です。このフラグを設定するとコネクタが有効になります。 |
-| `--scm-connector-id <n>` | `--scm-connector-host` で必須 | 組織の GitHub Enterprise Server 接続の数値 ID。コネクタを有効にするときは、Anthropic アカウントチームに値を問い合わせてください。 |
+| `--scm-connector-host <host[:port]>` | 未設定 | リクエストを転送する GitHub Enterprise Server ホスト名。ポートはデフォルトで `443` です。 |
+| `--scm-connector-id <n>` | `--scm-connector-host` で必須 | 組織の GitHub Enterprise Server 接続の数値 ID。 |
 | `--scm-connector-provider <slug>` | `ghe` | プロバイダーを識別するパスセグメント。`^[a-z0-9-]{1,32}$` と一致します。 |
 | `--scm-connector-ca-file <path>` | 未設定 | GitHub Enterprise Server ホストへの TLS 接続用の追加 CA バンドル（PEM 形式）。 |
 | `--scm-connector-host-rewrite <from>=<to_host:to_port>` | 未設定 | エンドツーエンドテスト専用：ホストヘッダーと TLS SNI を `--scm-connector-host` として保ちながら TCP 接続をリダイレクトします。 |
 
-コネクタはオーケストレーターの既存の環境シークレットで認証し、自動的に再接続します。ドロップされた接続で指数バックオフするか、別のオーケストレーターレプリカが既に保持しているため、コントロールプレーンが接続を閉じるときに固定 30 秒の遅延があります。
+各接続試行時に、オーケストレーターは既存の環境シークレットを送信し、指数バックオフで自動的に再試行します。30 秒とジッターでキャップされます。
 
 <h2 id="environment-variable-only-settings">
   環境変数のみの設定

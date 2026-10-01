@@ -122,7 +122,7 @@ export const ContactSalesCard = ({surface}) => {
 
     <tr>
       <td>請求</td>
-      <td><strong>Teams:</strong> \$150/シート（Premium）PAYG 利用可能<br /><strong>Enterprise:</strong> <a href="https://claude.com/contact-sales?utm_source=claude_code&utm_medium=docs&utm_content=third_party_enterprise">営業に連絡</a></td>
+      <td><strong>Teams:</strong> シートあたりのサブスクリプション（PAYG 利用可能）、<a href="https://claude.com/pricing?utm_source=claude_code&utm_medium=docs&utm_content=third_party_pricing#team-&-enterprise">価格</a>を参照<br /><strong>Enterprise:</strong> <a href="https://claude.com/contact-sales?utm_source=claude_code&utm_medium=docs&utm_content=third_party_enterprise">営業に連絡</a></td>
       <td>PAYG</td>
       <td>AWS 経由の PAYG</td>
       <td>AWS Marketplace 経由の PAYG</td>

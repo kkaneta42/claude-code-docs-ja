@@ -96,7 +96,9 @@
 | `rejected the credential from its headersHelper` / `rejected the Authorization header in its config` | [認証](#mcp-server-needs-you-to-sign-in-again) |
 | `MCP server "<name>" needs additional permissions (scope: "<scope>") — run /mcp to re-authenticate` | [認証](#mcp-server-needs-you-to-sign-in-again) |
 | `MCP server "<name>" requires re-authorization (token expired)` | [認証](#mcp-server-needs-you-to-sign-in-again) |
+| `This server's URL is missing or not a valid URL, so sign-in can't start` | [認証](#mcp-server-url-is-missing-or-not-a-valid-url) |
 | `Issuer mismatch in authorization response (RFC 9207)` | [認証](#issuer-mismatch-in-authorization-response) |
+| `Refusing to send credentials to non-https token endpoint` / `<short-name> from the MCP SDK for <server-url>` | [認証](#refusing-to-send-credentials-to-non-https-token-endpoint) |
 | `Cloud gateway session expired — run /login to reconnect.` | [認証](#cloud-gateway-session-expired) |
 | `Cloud gateway <url> no longer accepts this session` | [認証](#cloud-gateway-session-expired) |
 | `Sign-in timed out while waiting for you to continue. Try again.` | [認証](#sign-in-timed-out-while-waiting-for-you-to-continue) |
@@ -159,6 +161,7 @@
 | `Claude Code ... is older than the minimum version required by your organization's policy` | [リクエストエラー](#claude-code-does-not-support-this-model) |
 | `Model ... is restricted by your organization's settings` | [リクエストエラー](#model-is-restricted-by-your-organizations-settings) |
 | `Model ... is not available. Your organization restricts model selection.` | [リクエストエラー](#model-is-restricted-by-your-organizations-settings) |
+| `Can't switch to the default model` | [リクエストエラー](#cant-switch-to-the-default-model) |
 | `Model switch ... blocked by a PreModelSwitch hook` | [リクエストエラー](#model-switch-was-blocked-by-a-premodelswitch-hook) |
 | `couldn't save it as your default` / `couldn't confirm it was saved as your default` | [リクエストエラー](#couldnt-save-it-as-your-default) |
 | `thinking.type.enabled is not supported for this model` | [リクエストエラー](#thinking-type-enabled-is-not-supported-for-this-model) |
@@ -202,6 +205,8 @@
 | `Cannot add MCP server to scope: managed` | [コマンドラインエラー](#cannot-add-mcp-server-to-the-managed-scope) |
 | `is Anthropic-hosted and doesn't support local OAuth` | [コマンドラインエラー](#anthropic-hosted-and-doesnt-support-local-oauth) |
 | `Can't read .mcp.json: it isn't a regular file or is larger than 2097152 bytes` | [コマンドラインエラー](#cant-read-mcp-json) |
+| `MCP server "<name>" was not saved to` / `was not removed from` | [コマンドラインエラー](#mcp-server-was-not-saved-or-removed) |
+| `MCP server "<name>" may not have been saved` / `may not have been removed` | [コマンドラインエラー](#mcp-server-may-not-have-been-saved-or-removed) |
 | `Server rejected the Authorization header minted by the configured headersHelper` | [コマンドラインエラー](#server-rejected-the-authorization-header-minted-by-the-configured-headershelper) |
 | `Error: MCP tool <name> (passed via --permission-prompt-tool) not found` | [コマンドラインエラー](#mcp-permission-prompt-tool-not-found) |
 | `OAuth callback port <port> is already in use — another process may be holding it` | [コマンドラインエラー](#oauth-callback-port-is-already-in-use) |
@@ -220,6 +225,7 @@
 | `Ultrareview clones <owner>/<repo> in the cloud with the GitHub account connected to your Claude account, and none is connected` | [コマンドラインエラー](#no-github-account-is-connected-to-your-claude-account) |
 | `Your connected GitHub account can't see <owner>/<repo>` | [コマンドラインエラー](#your-connected-github-account-cant-see-the-repository) |
 | `The GitHub App preflight failed transiently (network or service hiccup) — retry in a moment to start from GitHub instead` | [コマンドラインエラー](#the-github-app-preflight-failed-transiently) |
+| `Not uploading this working tree` with `the upload cannot follow that setting` | [コマンドラインエラー](#the-repository-upload-cant-follow-a-git-setting) |
 | `GitHub isn't connected to your Claude account, so this repository can't be cloned in the cloud` | [コマンドラインエラー](#github-isnt-connected-to-your-claude-account) |
 | `Single sign-on authorization needed` | [コマンドラインエラー](#single-sign-on-authorization-needed) |
 | `Failed to resume the conversation` | [コマンドラインエラー](#failed-to-resume-the-conversation) |
@@ -253,6 +259,7 @@
 | `Plugin "<name>@synced" is required by your organization and can't be disabled here` | [プラグインエラー](#plugin-is-required-by-your-organization) |
 | `"<plugin>" was not uninstalled: it is still switched on in <file>` | [プラグインエラー](#plugin-was-not-uninstalled) |
 | `"<plugin>" was not uninstalled: <file> is there and could not be read` | [プラグインエラー](#plugin-was-not-uninstalled) |
+| `Plugin "<plugin>" was not uninstalled: installed_plugins.json` | [プラグインのトラブルシューティング](/docs/ja/plugins/troubleshooting#installed-plugins-json-holds-a-record-this-version-cannot-read) |
 | `would be spawned with zero tools — refusing` | [ツールエラー](#agent-would-be-spawned-with-zero-tools) |
 | `File is covered by a Read deny rule in your permission settings` | [ツールエラー](#file-is-covered-by-a-read-deny-rule) |
 | `cannot contain null bytes (\0)` | [ツールエラー](#path-cannot-contain-null-bytes) |
@@ -728,7 +735,7 @@ v2.1.268 より前では、メッセージは `run /usage-credits to turn them o
   確認プロンプトが未回答のまま終了しました
 </h3>
 
-アカウントが [Fable 使用クレジット同意](/docs/ja/model-config#fable-and-usage-credits) を必要とする場合、Claude Code は Fable リクエストが使用クレジットを請求する前に確認するよう求めます。ターミナルがないセッションで誰もその同意プロンプトに答えない場合、Claude Code はプロンプトを閉じ、次のいずれかのメッセージでターンを終了します。
+アカウントが [Fable 使用クレジット同意](/docs/ja/model-config#fable-and-usage-credits) を必要とする場合、Claude Code は Fable リクエストが使用クレジットを請求する前に確認するよう求めます。同意プロンプトが誰も答えないまま閉じられた場合、Claude Code はターンを次のいずれかのメッセージで終了します。
 
 ```text theme={null}
 Fable limit reached · continuing on Fable 5.1 uses usage credits, and the prompt to confirm went unanswered — nothing was sent · answer it where this session is running, or /model to change
@@ -737,13 +744,13 @@ Fable 5.1 now uses usage credits · the prompt to confirm went unanswered — no
 
 メッセージはセッションの Fable モデルを指定するため、Fable 5 では `continuing on Fable 5` と `Fable 5 now uses usage credits` と表示されます。v2.1.257 より前では、最初のメッセージは `Fable 5 limit reached` で始まりました。
 
-これは [Remote Control](/docs/ja/remote-control) セッション、[バックグラウンドセッション](/docs/ja/agent-view)、および [エージェントチーム](/docs/ja/agent-teams) チームメイトセッションで発生します。Claude Code は同意プロンプトをセッション独自のインタラクティブビューにのみ表示します。実行されるターミナル、またはバックグラウンドセッションの場合は、アタッチしたら [エージェントビュー](/docs/ja/agent-view) です。Remote Control クライアントはそれを表示できません。Claude Code は [`dialogExpiry`](/docs/ja/settings-reference#dialogexpiry) デッドラインでプロンプトを閉じます。デフォルトは 5 分、またはそのターミナルで誰も入力していない間に新しいプロンプトが到着するとすぐに、例えば Remote Control クライアントから送信されたプロンプトなどです。セッションが実行されるターミナルで入力するとデッドラインがキャンセルされ、Claude Code は回答を待ちます。バックグラウンドセッションのアタッチされたビューでは、入力はデッドラインをキャンセルせず、新しいプロンプトは同意プロンプトを閉じるため、どちらかが発生する前に回答してください。Claude Code は何も送信せず、モデルを保持するため、次のプロンプトを送信すると、Claude Code は同意プロンプトを再度表示します。
+これは [Remote Control](/docs/ja/remote-control) セッション、[バックグラウンドセッション](/docs/ja/agent-view)、[エージェントチーム](/docs/ja/agent-teams) チームメイトセッション、および Agent SDK を通じてホストする別のアプリケーションで発生します。Claude Code がプロンプトを閉じるタイミングについては、[Fable と使用クレジット](/docs/ja/model-config#fable-and-usage-credits) を参照してください。
 
 **対応方法：**
 
-* セッションが実行されるターミナルで別のプロンプトを送信し、再度表示されたら同意プロンプトに答えます。バックグラウンドセッションの場合、最初に [エージェントビュー](/docs/ja/agent-view) からアタッチします。Remote Control クライアントから再送信すると、クライアントがプロンプトを表示できないため、このメッセージが再度表示されます。
+* セッションが実行されるターミナルまたはそれをホストするアプリケーションで、別のプロンプトを送信し、再度表示されたら同意プロンプトに答えます。バックグラウンドセッションの場合、最初に [エージェントビュー](/docs/ja/agent-view) からアタッチします。Remote Control クライアントから再送信すると、クライアントがプロンプトを表示できないため、このメッセージが再度表示されます。
 * `/model` を実行して、使用クレジットを請求しないモデルに切り替えます
-* そのターミナルに到達するまでの時間を増やすには、[`dialogExpiry`](/docs/ja/settings-reference#dialogexpiry) をより長い値または `"never"` に設定します
+* より多くの時間を確保するには、[`dialogExpiry`](/docs/ja/settings-reference#dialogexpiry) をより長い値または `"never"` に設定します
 
 v2.1.236 より前では、このメッセージは表示されませんでした。Remote Control クライアントが接続されている間、Claude Code は回答を 60 秒待ってからデフォルトモデルでターンを続行しました。
 
@@ -1496,6 +1503,20 @@ MCP server "<name>" needs additional permissions (scope: "<scope>") — run /mcp
 
 v2.1.274 より前では、このケースは `needs you to sign in again` メッセージを表示し、v2.1.273 より前は他のケースのように `requires re-authorization (token expired)` を表示していました。
 
+<h3 id="mcp-server-url-is-missing-or-not-a-valid-url">
+  MCP サーバー URL が見つからないか、有効な URL ではありません
+</h3>
+
+Claude Code がリモート MCP サーバーの OAuth サインインを開始することを拒否しました。サーバーの設定された `url` が URL として解析されないため。Claude Code がサーバーに報告するより具体的な設定問題がない限り、[`claude mcp login <name>`](/docs/ja/mcp#authenticate-from-the-command-line) をシェルで実行すると、拒否が出力されます：
+
+```text theme={null}
+Couldn't complete authentication for "<name>": This server's URL is missing or not a valid URL, so sign-in can't start. Fix the URL in its MCP config (or set the environment variable it uses) and try again.
+```
+
+**対応方法：**
+
+* サーバーが設定されている場所でエントリの `url` をサーバーの実際のエンドポイントに設定するか、その [`${VAR}` リファレンス](/docs/ja/mcp#environment-variable-expansion-in-mcp-json) が名前を付ける環境変数を設定してから、サインインを再度実行します。
+
 <h3 id="issuer-mismatch-in-authorization-response">
   認可応答での発行者の不一致
 </h3>
@@ -1515,6 +1536,25 @@ Issuer mismatch in authorization response (RFC 9207): expected "https://auth.exa
 * サーバーが修正されている間に接続するには、[`MCP_SDK_GENERATION=v1`](/docs/ja/env-vars) で Claude Code を起動します。その [ランタイム](/docs/ja/mcp#mcp-client-runtimes) はこのチェックを実行しません。これは混合攻撃に対する保護を削除するため、サーバー側の修正を優先してください
 
 v2.1.232 より前では、Claude Code は段階的なロールアウトでのみ v2 ランタイムを使用するか、`MCP_SDK_GENERATION=v2` を設定したときに使用していました。
+
+<h3 id="refusing-to-send-credentials-to-non-https-token-endpoint">
+  HTTPS 以外のトークンエンドポイントへの認証情報の送信を拒否しています
+</h3>
+
+[v2 ランタイム](/docs/ja/mcp#mcp-client-runtimes) では、Claude Code は [MCP OAuth](/docs/ja/mcp#authenticate-with-remote-mcp-servers) トークンリクエストを HTTPS で提供されるトークンエンドポイント、または `localhost`、`127.0.0.1`、または `::1` でのみ送信します。このメッセージは、サーバーのトークンエンドポイントがどちらでもないため、Claude Code がリクエストを送信する前に停止したことを意味しています。これはブラウザサインイン後に発生するため、ブラウザステップは最初に成功し、Claude Code がサーバーのトークンを更新するたびに再度発生します。
+
+完全な形式では、メッセージは MCP SDK から来ており、拒否したトークンエンドポイントを引用しています。デバッグログでは、サインインの場合は `Error during auth completion:` の後に続き、更新の場合は `Token refresh failed:` の後に続きます。シェルでは、`claude mcp login <name>` は `Couldn't complete authentication for "<name>":` の後に出力し、セッションでは `/mcp` はサーバーのメニューの下に表示されます：
+
+```text theme={null}
+Refusing to send credentials to non-https token endpoint 'http://192.168.1.50:8123/oauth/token'. OAuth token requests MUST use TLS (localhost / 127.0.0.1 / ::1 are exempt).
+```
+
+Claude Code は、クエリ文字列または長いランダムに見えるパス セグメントを持つサーバー URL を、おそらくシークレットとして扱います。そのようなサーバーの場合、MCP SDK が発生させるサインインエラーを表示またはログに記録する前に編集します。このエラーは、リリース間で変更される可能性がある短い名前（`io` など）として読み、その後に `from the MCP SDK for` と編集されたサーバー URL が続きます。MCP SDK からの他のエラーはそこで同じ形状を取ります。編集されたメッセージは、サーバーのトークンエンドポイントが `localhost`、`127.0.0.1`、または `::1` 以外のアドレスで plain `http://` である場合にのみ、このエラーである可能性があります。
+
+**対応方法：**
+
+* そのトークンエンドポイントを HTTPS で提供します。たとえば、リバースプロキシまたはトンネルの背後にサーバーを配置して TLS を終了し、サーバーが `https://` アドレスをアドバタイズするように設定します
+* サーバーを変更せずに接続するには、[`MCP_SDK_GENERATION=v1`](/docs/ja/env-vars) で Claude Code を起動します。その [ランタイム](/docs/ja/mcp#mcp-client-runtimes) はこのルールを適用せず、トークンリクエストを plain HTTP で送信します。その選択は終了まで続き、すべてのサーバーに適用されます。v1 ランタイムは [発行者チェック](#issuer-mismatch-in-authorization-response) もスキップするため、エンドポイントを HTTPS で提供することを優先してください
 
 <h3 id="aws-credentials-expired-or-invalid">
   AWS 認証情報が有効期限切れまたは無効です
@@ -1938,7 +1978,7 @@ x-deny-reason: host_not_allowed
 
 * ルーチンを編集用に開くか、クラウドセッションを開始してください。**Default** などの環境の名前を示すクラウドアイコンを選択して、セレクターを開きます。環境の上にマウスを置き、設定アイコンをクリックしてください。
 * **Update cloud environment** ダイアログで、**Network access** を **Trusted** から **Custom** に変更し、ブロックされたドメインを **Allowed domains** に追加してください。1 行に 1 つのドメインを入力してください。**Also include default list of common package managers** をチェックして、カスタムドメインと共に [デフォルト許可リスト](/docs/ja/cloud-environments#default-allowed-domains) を保持してください。無制限のアクセスが必要な場合は、代わりに **Full** を選択してください。
-* **Save changes** をクリックしてください。次の実行は更新された許可リストを使用します。
+* **Save changes** をクリックしてください。次の実行は更新された許可リストを使用します。クラウドセッションが既に開いている場合は、[ネットワークアクセス変更が既存セッションに到達するタイミング](/docs/ja/cloud-environments#network-access) を参照してください。
 
 アクセスレベルとデフォルト許可リストについては、[ネットワークアクセス](/docs/ja/cloud-environments#network-access) を参照してください。ローカル CLI セッションはこのポリシーの影響を受けません。
 
@@ -2490,6 +2530,30 @@ Claude Code は、モデルファミリーエイリアス（`opus`、`sonnet`、
 * `/model` を実行して、組織が許可するモデルから選択してください。制限されたモデルはピッカーから非表示になります。
 * 制限されたモデルが `--model`、`ANTHROPIC_MODEL`、設定ファイルの `model` フィールド、または [サブエージェント](/docs/ja/sub-agents#choose-a-model)、スキル、またはコマンドの `model` frontmatter に設定された場合は、その値を削除または更新して、通知が再度発生しないようにしてください
 * 制限されたモデルへのアクセスが必要な場合は、組織の管理者に有効にするよう依頼してください。[組織モデル制限](/docs/ja/model-config#organization-model-restrictions)を参照してください。
+
+<h3 id="cant-switch-to-the-default-model">
+  デフォルトモデルに切り替えることができません
+</h3>
+
+Default モデルを選択しました。たとえば、`/model` ピッカーで Default 行を選択するか、`/model default` を入力してください。Claude Code はスイッチを拒否したため、セッションは現在のモデルを保持します。
+
+```text theme={null}
+Can't switch to the default model: your organization's managed settings block it (claude-opus-4-6) in "deniedModels", and none of the models they allow can be used as the default instead. Ask your administrator to update "deniedModels" or "availableModels".
+```
+
+コロンの後の表現は、スイッチをブロックしたものを名前付けします：
+
+* **`your organization's managed settings block it ... in "deniedModels"`**：管理拒否リストが Default オプションが解決するモデルをブロックします
+* **`your organization allows only the models listed in "availableModels"`**：[`availableModels`](/docs/ja/model-config#restrict-model-selection)を持つ管理許可リストと [`availableModelsMatch`](/docs/ja/settings-reference#availablemodelsmatch) が `"exact"` に設定されている場合、Default オプションが解決するモデルを除外します
+* **`Claude Code couldn't read your organization's managed settings to check which models they allow`**：[管理設定](/docs/ja/managed-settings)を読み取ることができず、Claude Code はチェックされていないスイッチを適用するのではなく拒否します
+
+**対応方法：**
+
+* [`deniedModels`](/docs/ja/settings-reference#deniedmodels) と `availableModels` の表現については、`/model` を実行して、組織が許可するモデルを名前で選択してください
+* メッセージが名前付けする管理設定を更新するよう管理者に依頼してください
+* `couldn't read` の表現については、Claude Code を再開してください。ブロックし続ける場合は、管理者に管理設定を確認するよう依頼してください
+
+セッションが代わりに `Claude Code can't start` メッセージで起動に失敗する場合は、これらの管理設定の下で [管理設定がデフォルトモデルをブロック](#managed-settings-block-the-default-model)を参照してください。
 
 <h3 id="model-switch-was-blocked-by-a-premodelswitch-hook">
   モデルスイッチが PreModelSwitch フックによってブロックされました
@@ -3097,6 +3161,43 @@ v2.1.257 より前は、`.mcp.json` の FIFO はコマンドを出力なしで�
 
 * 現在のディレクトリの `.mcp.json` に何があるかを確認してください。[プロジェクトスコープ形式](/docs/ja/mcp#project-scope)の通常の JSON ファイルに置き換えるか、削除してから、コマンドを再度実行してください。
 
+<h3 id="mcp-server-was-not-saved-or-removed">
+  MCP サーバーは保存されたか削除されませんでした
+</h3>
+
+`user` または `local` [スコープ](/docs/ja/mcp#mcp-installation-scopes)のサーバーに対して `claude mcp add`、`claude mcp add-json`、または `claude mcp remove` を実行しました。両方のスコープは `~/.claude.json` に保存され、書き込み後に Claude Code がそれを読み込むときに変更がそのファイルにありません。コマンドは成功行の代わりにこのエラーで終了します。
+
+```text theme={null}
+MCP server "example" was not saved to /home/user/.claude.json. If that file is read-only or protected by a sandbox, make it writable or run the command outside the sandbox, then add the server again.
+```
+
+削除後、メッセージは `was not removed from` を読み、`then remove the server again` で終わります。`local` スコープサーバーの場合、パスの後にサーバーが属するプロジェクトディレクトリが `(local scope for /path/to/project)` として続きます。
+
+v2.1.283 より前は、`claude mcp add`、`claude mcp add-json`、`claude mcp remove` は変更がファイルに到達しなかった場合でも成功を報告していました。
+
+**対処方法：**
+
+* メッセージが示すファイルを書き込み可能にするか、サンドボックスの外でコマンドを実行してから、同じ追加または削除コマンドを再度実行してください。
+
+<h3 id="mcp-server-may-not-have-been-saved-or-removed">
+  MCP サーバーは保存されたか削除されなかった可能性があります
+</h3>
+
+`user` または `local` [スコープ](/docs/ja/mcp#mcp-installation-scopes)のサーバーに対して `claude mcp add`、`claude mcp add-json`、または `claude mcp remove` を実行しました。Claude Code は `~/.claude.json` を読み込んで変更を確認できませんでした。変更はディスク上にあるかもしれません。括弧内のテキストはその読み込みからのエラーです。
+
+```text theme={null}
+MCP server "example" may not have been saved: /home/user/.claude.json could not be read to confirm the change (EACCES: permission denied, open '/home/user/.claude.json'). Run `claude mcp get example` to check, then add the server again if it is missing.
+```
+
+削除後、メッセージは `may not have been removed` を読み、`then remove the server again if it is still listed` で終わります。
+
+v2.1.283 より前は、コマンドは変更を確認できなかった場合でも成功を報告していました。
+
+**対処方法：**
+
+* `claude mcp get <name>` を実行して、変更がディスク上にあるかどうかを確認してください。`local` スコープサーバーの場合は、サーバーが属するプロジェクトディレクトリから実行してください。ローカルスコープはプロジェクトごとです。
+* サーバーが追加後に欠落している場合、または削除後もリストされている場合は、同じ追加または削除コマンドを再度実行してください。
+
 <h3 id="anthropic-hosted-and-doesnt-support-local-oauth">
   サーバーは Anthropic ホストで、ローカル OAuth をサポートしていません
 </h3>
@@ -3407,8 +3508,26 @@ Could not upload repo bundle (<error>). The GitHub App preflight failed transien
 
 v2.1.251 より前は、Claude Code は GitHub チェックが一時的にのみ失敗した場合でも `Please set up GitHub on https://claude.ai/code` でメッセージを終了し、セットアップアドバイスは一時的な失敗を解決することはできません。
 
+<h3 id="the-repository-upload-cant-follow-a-git-setting">
+  リポジトリのアップロードは git 設定に従うことができません
+</h3>
+
+ローカルリポジトリをアップロードする[クラウドセッション](/docs/ja/claude-code-on-the-web#send-local-repositories-without-github)、またはブランチの[ultrareview](/docs/ja/ultrareview)を開始しました。アップロードは、ファイルに適用される属性ルールを決定する git 設定の 1 つに従うことができません。アップロードが進行し、ルールを逃した場合、git が保存する前に変換するファイル（例えば、クリーンフィルタが暗号化するファイル）は、ディスク上のままクラウドに到達する可能性があります。Claude Code はアップロードを拒否する代わりに、何もアップロードされません。
+
+```text theme={null}
+Not uploading this working tree: core.ignoreCase (which decides whether .gitattributes patterns match file names regardless of letter case) is set in <file>, and the upload cannot follow that setting, so a file git would change before storing it (to encrypt it, for example) could be uploaded as it is on disk. Move the core.ignoreCase line into this repository's .git/config or directly into your ~/.gitconfig, then retry.
+```
+
+メッセージは設定と場所を示し、ヒットしたケースの修正で終わります。同じ拒否は `core.attributesFile` と `attr.tree` に対して表示され、それぞれ独自の修正があります。
+
+メッセージは、その指令の条件がこのリポジトリに適用されない場合でも、git 設定が `include` または `includeIf` 指令を通じてプルインする設定ファイルに名前を付ける可能性があります。
+
+**対処方法：**
+
+* メッセージの最後の文の修正を適用してください。
+
 <h3 id="github-isnt-connected-to-your-claude-account">
-  GitHub が Claude アカウントに接続されていません
+  GitHub がアカウントに接続されていません
 </h3>
 
 ローカルリポジトリから[クラウドセッション](/docs/ja/claude-code-on-the-web)を開始しました。例えば、`/autofix-pr` を使用しています。GitHub アカウントが Claude アカウントに接続されていないか、接続が期限切れになっているため、Claude Code は起動を拒否します。
@@ -3538,18 +3657,20 @@ Cannot switch renderers in this session — it has restrictions a restart can't 
   Claude Desktop を開くことができませんでした
 </h3>
 
-[`/desktop`](/docs/ja/desktop#coming-from-the-cli)またはそのエイリアス `/app` を実行しましたが、Claude Desktop を開くために Claude Code が使用するシステムコマンドが失敗しました。セッションはターミナルに留まります。
+[`/desktop`](/docs/ja/desktop#coming-from-the-cli)またはそのエイリアス `/app` をセッションで実行しました。または [`claude --desktop`](/docs/ja/cli-reference#cli-flags)をシェルで実行しました。Claude Desktop を開くために Claude Code が使用するシステムコマンドが失敗しました。`/desktop` の後、セッションはターミナルに留まります。`claude --desktop` はメッセージを `Error:` プレフィックスなしで出力し、ステータス 1 で終了します。
+
+括弧内のテキストは失敗したコマンドを示し、その終了ステータスと最初の行のエラー出力（生成された場合）を示します。macOS ではそのコマンドは `open` です。この例のように。Windows では `rundll32` です。
 
 ```text theme={null}
-Error: Couldn't open Claude Desktop (`open` exited 1: LSOpenURLsWithRole() failed for the URL claude://resume?session=<session-id> with error -10814). Open Claude Desktop and run /desktop again.
+Error: Couldn't open Claude Desktop (`open` exited 1: LSOpenURLsWithRole() failed for the URL claude://resume?session=<session-id> with error -10814). Open Claude Desktop and try again.
 ```
 
 **対処方法：**
 
-* Claude Desktop を自分で開いてから、`/desktop` を再度実行してください。
-* そのコマンドの完全なエラー出力を読むには、`/debug` でデバッグログをオンにし、`/desktop` を再度実行してから、デバッグログを確認してください。
+* Claude Desktop を自分で開いてから、`/desktop` または `claude --desktop` を再度実行してください。
+* 失敗したコマンドの完全なエラー出力を読むには、`/debug` でデバッグログをオンにし、`/desktop` を再度実行するか、`claude --desktop --debug-file <path>` を実行してから、デバッグログを確認してください。
 
-v2.1.275 より前は、メッセージは `Failed to open Claude Desktop. Please try opening it manually.` で、何が失敗したかを言いませんでした。
+v2.1.285 より前は、メッセージは `Open Claude Desktop and run /desktop again.` で終わりました。v2.1.275 より前は、`Failed to open Claude Desktop. Please try opening it manually.` で、何が失敗したかを言いませんでした。
 
 <h3 id="terminal-setup-left-your-zed-keymap-unchanged">
   /terminal-setup は Zed キーマップを変更しませんでした
@@ -3919,7 +4040,7 @@ Claude Code は何も保存せず、プラグインは有効なままです。
   プラグインはアンインストールされませんでした
 </h3>
 
-[`claude plugin uninstall`](/docs/ja/plugins/cli-reference#plugin-uninstall)を実行するか、`/plugin` **Installed** タブで **Uninstall** を選択し、アンインストールが `"<plugin>" was not uninstalled:` で始まるメッセージで停止しました。
+[`claude plugin uninstall`](/docs/ja/plugins/cli-reference#plugin-uninstall)を実行するか、`/plugin` **Installed** タブで **Uninstall** を選択し、アンインストールが `"<plugin>" was not uninstalled:` で始まるメッセージで停止しました。そのコロンの後のテキストが `installed_plugins.json` の代わりに設定ファイルに名前を付けている場合、原因は `installed_plugins.json` 内のコンテンツで、このバージョンの Claude Code が読み込めません。その形式については、[`installed_plugins.json` がこのバージョンが読み込めないレコードを保持している](/docs/ja/plugins/troubleshooting#installed-plugins-json-holds-a-record-this-version-cannot-read)を参照してください。
 
 Claude Code がプラグインのエントリを `enabledPlugins` から削除し、そのスコープの設定ファイルを読み込み直したとき、プラグインはまだそこでオンになっていたか、またはそれをオンにできるファイルを読み込むか確認できませんでした。設定エントリがそれをオンに戻す可能性があるときにプラグインの保存されたオプション、シークレット、およびデータを削除すると、それらが失われるため、アンインストールは代わりに停止します：プラグインはインストールされたままで、保存されたものは何も削除されません。
 

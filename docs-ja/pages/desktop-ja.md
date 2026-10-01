@@ -89,7 +89,7 @@ Claude に実行させたいことを入力して**Enter**キーを押して送�
 | **Manual** | `default` | Claude はファイルの編集またはコマンドの実行の前に確認を求めます。diff を確認し、各変更を受け入れるか拒否できます。 |
 | **Accept edits** | `acceptEdits` | Claude はファイル編集と`mkdir`、`touch`、`mv`などの一般的なファイルシステムコマンドを自動的に受け入れますが、他のターミナルコマンドの実行前には確認を求めます。ファイル変更を信頼し、より高速な反復を望む場合に使用します。 |
 | **Plan** | `plan` | Claude はファイルを読み取り、コマンドを実行して探索してから、ソースコードを編集せずにプランを提案します。アプローチを最初に確認したい複雑なタスクに適しています。 |
-| **Auto** | `auto` | Claude はバックグラウンド安全チェック付きですべてのアクションを実行し、リクエストとの整合性を確認します。権限プロンプトを削減しながら監視を維持します。[auto mode が利用可能](#auto-mode-availability)な場合に表示されます。設定用の個別トグルはありません。 |
+| **Auto** | `auto` | Claude はルーチンプロンプトなしで実行されます。シェルコマンドやネットワークリクエストなどのアクションが実行される前に、バックグラウンド分類器がリクエストとの整合性を確認します。[auto mode が利用可能](#auto-mode-availability)な場合に表示されます。設定用の個別トグルはありません。 |
 | **Bypass permissions** | `bypassPermissions` | Claude は権限プロンプトなしで実行されます。ただし、[どのモードも自動承認しないアクション](/docs/ja/permission-modes#actions-no-mode-auto-approves)、Claude が[外部サイトで機能する](#browse-external-sites)場合の安全分類器、またはデスクトップアクション（[セッションをアーカイブする](#work-across-sessions)など Claude が常に最初に確認するもの）は除きます。CLI の`--dangerously-skip-permissions`と同等です。Pro および Max プランでは、Settings → Claude Code の「Allow bypass permissions mode」で有効にします。Team および Enterprise プランでは設定トグルはなく、組織ポリシーで制御されます。サンドボックス化されたコンテナまたは VM でのみ使用してください。 |
 
 Code タブの以前のバージョンでは、これらのモードを Ask permissions、Auto accept edits、および Plan mode というラベルが付けられていました。
@@ -496,7 +496,7 @@ Claude が作業中でも、他のメッセージと同じようにコマンド�
 
 ローカルセッションは `~/.claude/skills/` からパーソナルスキルをロードします。[SSH](#ssh-sessions) セッションは、マシンからではなく、リモートホストのホームディレクトリから `~/.claude/skills/` を読み取ります。
 
-ローカルおよびクラウドセッションは、claude.ai アカウント用に有効化されたスキルもロードします。クラウドセッションは、[Cowork およびクラウドセッションのスキル](/docs/ja/skills#skills-in-cowork-and-cloud-sessions)で説明されているように、`~/.claude/skills/` の代わりにそれらをロードします。
+ローカルおよびクラウドセッションは、claude.ai アカウント用に有効化されたスキルもロードします。ただし、組織が [`disableSideloadFlags`](/docs/ja/settings-reference#disablesideloadflags) を設定している場合、ローカルセッションはそれらをロードしません。クラウドセッションは、[Cowork およびクラウドセッションのスキル](/docs/ja/skills#skills-in-cowork-and-cloud-sessions)で説明されているように、`~/.claude/skills/` の代わりにそれらをロードします。
 
 <h3 id="install-plugins">
   プラグインをインストールする
@@ -506,7 +506,7 @@ Claude が作業中でも、他のメッセージと同じようにコマンド�
 
 ローカルおよび [SSH](#ssh-sessions) セッションの場合、プロンプトボックスの横の\*\*+**ボタンをクリックして**Plugins**を選択して、インストール済みプラグインとそのスキルを確認します。プラグインを追加するには、サブメニューから**Add plugin\*\*を選択してプラグインブラウザを開きます。これは、公式 Anthropic マーケットプレイスを含む、設定された [マーケットプレイス](/docs/ja/plugins/overview)から利用可能なプラグインを表示します。**Manage plugins**を選択して、プラグインを有効化、無効化、またはアンインストールします。
 
-プラグインはユーザーアカウント、特定のプロジェクト、またはローカルのみにスコープできます。組織がプラグインを一元管理する場合、それらのプラグインは CLI と同じ方法で Desktop セッションで利用可能です。
+プラグインはユーザーアカウント、特定のプロジェクト、またはローカルのみにスコープできます。組織がプラグインを一元管理する場合、それらのプラグインは CLI と同じ方法で Desktop セッションで利用可能です。ただし、デスクトップアプリが [`disableSideloadFlags`](/docs/ja/settings-reference#disablesideloadflags) の下で保留しているものは除きます。
 
 プラグインブラウザはクラウドセッションでは利用できず、デスクトップアプリからインストールしたプラグインはクラウドセッションでは利用できません。クラウドセッションでもプラグインをインストールしません。リポジトリの `.claude/settings.json` で宣言されているプラグインは、[セットアップから引き継がれるもの](/docs/ja/cloud-environments#what-carries-over-from-your-setup)で説明されているとおりです。プラグインは WSL セッションでは利用できません。プラグインの作成を含む完全なプラグインリファレンスについては、[プラグイン](/docs/ja/plugins/overview)を参照してください。
 
@@ -966,6 +966,14 @@ Desktop はエンタープライズデプロイメントツールを通じて配
 Claude Code CLI を既に使用している場合、Desktop はグラフィカルインターフェイスで同じ基盤となるエンジンを実行します。同じマシン上で、同じプロジェクト上でも、両方を同時に実行できます。各々は独自のセッションリストを保持し、CLI セッションを Desktop に持ち込むことができます。CLAUDE.md ファイルを通じて設定とプロジェクトメモリを共有します。
 
 CLI セッションを Desktop に移動するには、ターミナルで `/desktop` を実行します。Claude はセッションを保存し、デスクトップアプリで開いてから CLI を終了します。このコマンドは、Claude サブスクリプションでサインインしている場合、macOS と x64 Windows で利用可能です。API キー認証、Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry では利用できません。
+
+シェルから、[`claude --desktop`](/docs/ja/cli-reference#cli-flags) は Desktop を直接開き、ターミナルセッションを開始しません。Claude Code v2.1.285 以降が必要で、`/desktop` と同じプラットフォームおよびサインイン要件があります。他の引数がない場合、現在のディレクトリで Desktop を開きます。既存の CLI セッションを Desktop で開くには、このディレクトリの最新の会話に対して `--continue` を追加するか、`/status` が表示するセッション ID で `--resume` を追加します：
+
+```bash theme={null}
+claude --desktop --resume <session-id>
+```
+
+Claude Code は `Opening session <session-id> in Claude Desktop` を出力し、セッションはアプリで開き、コマンドは終了します。セッション名は ID の代わりに機能しません。Claude Code は別のターミナルで開いているセッションや、バックグラウンドで実行中のセッションを移動しません。Claude Desktop がインストールされていない場合、コマンドはダウンロードリンクを出力して終了します。
 
 Desktop 内から CLI セッションを再開することもできます。`/resume` を使用します。このコマンドはローカルセッションで利用可能で、SSH、WSL、またはクラウドセッションでは利用できません。
 

@@ -80,7 +80,7 @@ Claude Code は、ツール呼び出しの承認方法を制御するいくつ�
 | `default` | 各ツールの最初の使用時に権限を促します。CLI、VS Code と JetBrains 拡張機能、およびデスクトップアプリでは Manual とラベル付けされており、Claude Code は `manual` をエイリアスとして受け入れます。ラベルとエイリアスには Claude Code v2.1.200 以降が必要です。デスクトップアプリのラベルは CLI バージョンに依存しません |
 | `acceptEdits` | ファイル編集と一般的なファイルシステムコマンド（`mkdir`、`touch`、`mv`、`cp` など）を、作業ディレクトリまたは `additionalDirectories` 内のパスに対して自動的に受け入れます |
 | `plan` | Claude はファイルを読み取り、読み取り専用シェルコマンドを実行して探索しますが、ソースファイルを編集しません。[auto モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)が利用可能で、分類器が承認したコマンドも実行されます。CLI および VS Code 拡張機能では Plan とラベル付けされています |
-| `auto` | バックグラウンド安全チェック付きでツール呼び出しを自動承認し、アクションがリクエストと一致することを確認します |
+| `auto` | ルーチンプロンプトなしで実行されます。シェルコマンドやネットワークリクエストなどのアクションが実行される前に、バックグラウンド[分類器](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)がそれらがリクエストと一致することを確認します |
 | `dontAsk` | その他の場合はプロンプトを表示するすべての呼び出しを自動的に拒否します。作業ディレクトリ内のファイル読み取りおよび承認が不要なその他のアクションは実行されます。`/permissions` または `permissions.allow` ルール経由で事前に承認されたツールも実行されます。`AskUserQuestion`、MCP ツール（[`requiresUserInteraction`](/docs/ja/mcp#require-approval-for-a-specific-tool)とマークされたもの）、およびコネクタツール（[組織が `ask` に設定したもの](/docs/ja/mcp#organization-controls-on-connector-tools)）は、その設定が Claude Code に到達するセッションでは、許可していてもすべて拒否されます |
 | `bypassPermissions` | 権限プロンプトをスキップします。ただし、[どのモードも自動承認しないアクション](/docs/ja/permission-modes#actions-no-mode-auto-approves)は除きます |
 
@@ -144,7 +144,9 @@ MCP ツール上のパラメータをマッチさせるには、[`--disallowedTo
 * 各ルールは 1 つのパラメータに名前を付けます。`model` と `isolation` の両方でゲートするには、1 つのルールで組み合わせるのではなく、`Agent(model:opus)` と `Agent(isolation:worktree)` の 2 つのルールを記述します
 * 値は `*` をワイルドカードとしてサポートし、任意の文字シーケンスにマッチするため、`Agent(isolation:*)` は任意の明示的な isolation 値にマッチします。`*` がない場合、マッチは正確です
 * モデルが省略するパラメータは決してマッチしないため、`Agent(model:*)` は `model` が設定されていない呼び出しにはマッチしません
-* 値は Claude が送信するリテラル入力と比較され、正規化の前です。`Agent(model:opus)` は別名 `opus` にマッチしますが、完全なモデル ID にはマッチしません。[`--verbose`](/docs/ja/cli-reference) で実行して、各ツール呼び出しの正確なパラメータ名と値を確認してください
+* 値は Claude が送信するリテラル入力と比較され、正規化の前です。`Agent(model:opus)` は別名 `opus` にマッチしますが、完全なモデル ID にはマッチしません
+* `Skill(skill:<name>)` 拒否ルールは代わりに [スキルをそのいずれかの名前でマッチさせます](/docs/ja/skills#restrict-claude%E2%80%99s-skill-access)。別名や表示名など
+* [`--verbose`](/docs/ja/cli-reference) で実行して、各ツール呼び出しの正確なパラメータ名と値を確認してください
 * コロンの周りのホワイトスペースは無視されます
 
 ツールのプライマリコンテンツフィールドはこの方法ではマッチ可能ではありません。Bash と PowerShell の `command`、Read、Edit、Write の `file_path`、Grep と Glob の `path`、NotebookEdit の `notebook_path`、WebFetch の `url` です。`Bash(command:rm *)` のようなルールはコンパウンドコマンドでバイパス可能であるため、Claude Code はそれを無視し、スタートアップ警告を発行します。代わりに `Bash(rm *)`、`Read(./path)`、または `WebFetch(domain:host)` を使用してください。

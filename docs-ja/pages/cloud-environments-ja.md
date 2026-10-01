@@ -78,7 +78,14 @@ LOG_LEVEL=debug
 DATABASE_URL=postgres://localhost:5432/myapp
 ```
 
-各セッションは起動時に環境の値を 1 回コピーして、Claude が実行するコマンドが読み取ることができる通常の環境変数にします。ただし、`OTEL_*` 変数は除きます。Claude Code はそれらを独自の [テレメトリエクスポート](/docs/ja/monitoring-usage#telemetry-from-cloud-sessions-and-claude-tag) に使用し、実行するコマンドに渡しません。実行中のセッションは設定を再度読み取らないため、変数を編集または追加すると、その後に開始するセッションに影響します。既に実行中のセッションは開始時の値を保持します。
+セッションは環境の値を読み込んで、Claude が実行するコマンドが読み取ることができる通常の環境変数にします。ただし、`OTEL_*` 変数は除きます。Claude Code はそれらを独自の [テレメトリエクスポート](/docs/ja/monitoring-usage#telemetry-from-cloud-sessions-and-claude-tag) に使用し、実行するコマンドに渡しません。
+
+Anthropic ホスト型環境では、セッションは環境の値をセッション作成時に読み込み、その後 Claude Code がセッションの VM で起動するたびに再度読み込みます。これは 2 つのケースで発生します。
+
+* **VM がアイドル後に復元される**: 数分間アクティビティがない場合、セッションの VM はファイルが保存された状態で一時停止します。次のメッセージは同じ VM を復元し、Claude Code を再度起動します。
+* **VM が回収され再構築される**: 一時停止した VM が [回収](/docs/ja/claude-code-on-the-web#environment-expired) されている場合、セッションを再度開くと新しい VM がプロビジョニングされます。
+
+変数を編集、追加、または削除した後、Anthropic ホスト型環境の既存セッションは、VM が次に復元または再構築されるまで最後に読み込んだ値を保持し、その後は変更を使用します。VM はセッションがアイドル状態になると自動的に一時停止し、自分で一時停止することはできません。新しい値をすぐに使用するには、Claude に実行するコマンドで設定するよう依頼します。例えば `LOG_LEVEL=trace npm test` のように、または新しいセッションを開始します。
 
 クラウドセッションは起動時に自身でいくつかの変数も設定します。[`CLAUDE_AUTOCOMPACT_PCT_OVERRIDE`](/docs/ja/claude-code-on-the-web#manage-context) の場合、セッションが設定する値はここで追加した値をオーバーライドするため、ここでそのキーを追加しても効果がありません。
 
@@ -207,6 +214,8 @@ Owner は [claude.ai/admin-settings/claude-code](https://claude.ai/admin-setting
 各環境は 1 つのネットワークアクセスレベルを設定します。これは、セッションが行える送信接続を制御します。デフォルトレベルの **Trusted** は、パッケージレジストリおよび他の [許可リストに登録されたドメイン](#default-allowed-domains) を許可します。**Custom** はカスタムドメインリストを使用します。
 
 環境のネットワークアクセスを変更するには、[編集用に開き](#configure-your-environment)、ダイアログの **Network access** セレクターを使用します。[共有環境](#organization-shared-environments) はそこで読み取り専用で開くため、Owner は [admin settings](https://claude.ai/admin-settings) の **Cloud environments** ページからネットワークアクセスを変更します。クラウドアイコンはセレクターを開き、[The Default environment](#the-default-environment) に記載されているアプリサーフェスと [routine editor](/docs/ja/routines#environments-and-network-access) に表示されます。個人環境は claude.ai アカウント設定に別ページを持ちません。
+
+Anthropic ホスト環境のネットワークアクセスを変更すると、既存のセッションはセッションの [network allowlist](#access-levels) を通じて行くリクエストについて、約 1 分以内に新しい設定に従います。新しいセッションを開始する必要はありません。
 
 <Note>
   セッションまたはルーチンで有効にした MCP コネクターは、**Allowed domains** にホストを追加しなくても機能します。コネクタートラフィックはセッションのネットワークではなく Anthropic のサーバーを通じて移動するためです。これは [Security and isolation](/docs/ja/claude-code-on-the-web#security-and-isolation) に記載されている同じ Anthropic バウンドチャネルに依存しています。不要なコネクターをオフにして、Claude が到達できるツールを制限します。
@@ -428,10 +437,12 @@ VM は大規模なビルドジョブやメモリ集約的なテストなど、�
 
 Anthropic ホスト環境では、ビルド、インストール、テスト実行など、クラウドセッションでの長時間実行作業に対して、これらの時間制限が適用されます。各エントリは制限を定義するセクションにリンクしています。
 
-* **Claude が実行するコマンド**：クラウド環境は独自のコマンドタイムアウトを設定しないため、Bash ツールのデフォルトが適用されます。Claude はデフォルトでコマンドを 2 分間待機し、最大 10 分間要求できます。コマンドが[タイムアウト](/docs/ja/tools-reference#timeout-and-output-limits)に達すると、Claude Code は `sleep` で始まるコマンドを除き、それを停止する代わりに[バックグラウンドに移動](/docs/ja/tools-reference#background-commands)します。
+* **Claude が実行するコマンド**：クラウド環境は独自のコマンドタイムアウトを設定しないため、Bash ツールのデフォルトが適用されます。Claude はデフォルトでコマンドを 2 分間待機し、最大 10 分間要求できます。
+
+  コマンドが[タイムアウト](/docs/ja/tools-reference#timeout-and-output-limits)に達すると、Claude Code は `sleep` で始まるコマンドを除き、それを停止する代わりに[バックグラウンドに移動](/docs/ja/tools-reference#foreground-commands-that-move-to-the-background)します。この方法で移動されたコマンドは、Claude Code がそれを[バックグラウンド時間制限](/docs/ja/tools-reference#time-limit-for-background-commands)で停止する前に、最大 30 分間実行し続けることができます。`BASH_DEFAULT_TIMEOUT_MS` を `1800000` ミリ秒より上に設定すると、その制限とフォアグラウンドデフォルトの両方が長くなります。
 * **SessionStart hooks**：Claude Code は、hook エントリで[`timeout`](/docs/ja/hooks#common-fields)（秒単位）を設定しない限り、600 秒後に `command` hook をキャンセルします。Claude Code は[`async: true`](/docs/ja/hooks#run-hooks-in-the-background)で実行する hook に対してタイムアウトを適用しません。
 * **セットアップスクリプト**：約 5 分以上かかるスクリプトはキャッシュされません。[スクリプト要件](#script-requirements)は、その制限内に留まる方法をカバーしています。
-* **アイドルセッション**：セッションは非アクティブ期間後に停止し、その VM は回収されます。[Environment expired](/docs/ja/claude-code-on-the-web#environment-expired)は、非アクティブと見なされるものと、セッションを再度開く方法をカバーしています。
+* **アイドルセッション**：数分間アクティビティがない場合、セッションの VM はファイルが保存された状態で一時停止され、一時停止された VM は後で回収される可能性があります。[環境変数の設定](#set-environment-variables)は、各ケースでセッションが何を取得するかについて説明し、[Environment expired](/docs/ja/claude-code-on-the-web#environment-expired)は VM が回収されたセッションを再度開く方法をカバーしています。
 
 環境のセッションのコマンドタイムアウトを上げるには、[`BASH_DEFAULT_TIMEOUT_MS` と `BASH_MAX_TIMEOUT_MS`](/docs/ja/env-vars#variables)をその[環境変数](#set-environment-variables)に追加してください。どちらもミリ秒を取ります。例えば、`BASH_DEFAULT_TIMEOUT_MS=600000` は 10 分をデフォルトにします。
 
@@ -470,7 +481,7 @@ apt update && apt install -y shellcheck
 
 キャッシュはファイルシステムスナップショットであるため、セットアップスクリプトがディスクに書き込むものを保持し、実行中のみのものを失います。インストールするパッケージ、プルする Docker イメージ、書き込むファイルはすべて引き継がれます。スクリプトが開始したデータベース、`docker compose up` スタック、またはその他のバックグラウンドプロセスは引き継がれません。これらはセッションごとに Claude に依頼するか、[SessionStart フック](#setup-scripts-vs-sessionstart-hooks) で開始します。
 
-セットアップスクリプトは、環境のセットアップスクリプトまたは許可されたネットワークホストを変更するとき、およびキャッシュが約 7 日後に有効期限に達するときに再度実行され、キャッシュを再構築します。既存のセッションを再開すると、セットアップスクリプトは再度実行されません。
+セットアップスクリプトは、環境のセットアップスクリプトまたは許可されたネットワークホストを変更するとき、およびキャッシュが約 7 日後に有効期限に達するときに再度実行され、キャッシュを再構築します。Anthropic ホスト環境では、セッションの VM が [アイドル後に復元](#set-environment-variables) されるときに、セットアップスクリプトは実行されません。そのため、スクリプトへの変更は、その VM が [回収](/docs/ja/claude-code-on-the-web#environment-expired) されて再構築されるときにのみ既存のセッションに到達します。変更をすぐに適用するには、セッションでコマンドを実行するか、新しいセッションを開始します。
 
 キャッシングを有効にするか、スナップショットを自分で管理する必要はありません。
 

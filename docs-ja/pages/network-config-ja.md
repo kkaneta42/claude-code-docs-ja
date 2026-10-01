@@ -203,28 +203,30 @@ Claude Code がこれらのファイルの 1 つを読み込めない場合、�
   ストリーミングアイドルウォッチドッグ
 </h2>
 
-Claude Code は 4 つの独立したタイマーを実行し、ストリーミングモデルレスポンスが静止状態になるとそれを中止するため、接続が切れた場合はハングするのではなく失敗して再試行します。最初のバイト期限はレスポンスヘッダーの到着を待つ間をカバーし、レスポンスが到着する前です。他の 3 つのそれぞれは、異なるシグナルについてライブレスポンスを監視します。
+Claude Code は 4 つの独立したタイマーを実行し、ストリーミングモデルレスポンスが静止状態になるとそれを中止するため、接続が切れた場合はハングするのではなく失敗して再試行されます。最初のバイト期限はレスポンスヘッダーの到着を待つ間をカバーし、レスポンスが到着する前です。他の 3 つのタイマーはそれぞれ、ライブレスポンスの異なるシグナルを監視します。
 
 | タイマー | 中止する条件 | 実行対象 | デフォルトタイムアウト |
 | :- | :- | :- | :- |
-| 最初のバイト期限 | Claude Code がリクエストを送信した後、レスポンスヘッダーが到着しない | Anthropic API 直接接続および [AWS 上の Claude Platform](/docs/ja/claude-platform-on-aws)（HTTPS プロキシ経由を含む）。ただし `ANTHROPIC_BASE_URL` または `ANTHROPIC_AWS_BASE_URL` が [ゲートウェイ](/docs/ja/gateways) を経由する場合は除外。Amazon Bedrock では `CLAUDE_ENABLE_BYTE_WATCHDOG_BEDROCK=1` でオプトイン。Google Cloud の Agent Platform または Microsoft Foundry では実行されない | Anthropic API 直接接続では 180 秒、その他では 300 秒、加えてリクエストボディの 32KB あたり 1 秒 |
-| イベントレベルウォッチドッグ | レスポンスイベントが解析されない。バイトレベルウォッチドッグが実行される接続では、キープアライブピングを含む到着バイトもこのウォッチドッグをリセットし、解析されたイベントがない状態で約 5 分間実行される | すべてのプロバイダー | 300 秒 |
-| バイトレベルウォッチドッグ | SSE キープアライブピングを含む、ネットワーク上にバイトが到着しない | Anthropic API 直接接続、[AWS 上の Claude Platform](/docs/ja/claude-platform-on-aws)、および [ゲートウェイ](/docs/ja/gateways) 接続（カスタム `ANTHROPIC_BASE_URL` を含む）。Amazon Bedrock `vnd.amazon.eventstream` レスポンスでは `CLAUDE_ENABLE_BYTE_WATCHDOG_BEDROCK=1` でオプトイン。Google Cloud の Agent Platform または Microsoft Foundry では実行されない | Anthropic API 直接接続では 180 秒、その他では 300 秒 |
-| ボディアイドルタイムアウト | 5 分間バイトが到着しない | Anthropic API 直接接続および AWS 上の Claude Platform 以外のプロバイダー。[`API_FORCE_IDLE_TIMEOUT`](/docs/ja/env-vars) で変更される場合を除く | 5 分 |
+| 最初のバイト期限 | Claude Code がリクエストを送信した後、レスポンスヘッダーが到着しない | 直接 Anthropic API および [Claude Platform on AWS](/docs/ja/claude-platform-on-aws)（HTTPS プロキシを含む）。ただし、`ANTHROPIC_BASE_URL` または `ANTHROPIC_AWS_BASE_URL` が [gateway](/docs/ja/gateways) を経由する場合は除外。Amazon Bedrock では `CLAUDE_ENABLE_BYTE_WATCHDOG_BEDROCK=1` でオプトイン。Google Cloud の Agent Platform または Microsoft Foundry では実行されない | 直接 Anthropic API では 180 秒、その他では 300 秒、加えてリクエストボディの 32KB ごとに 1 秒 |
+| イベントレベルウォッチドッグ | レスポンスイベントが解析されない。バイトレベルウォッチドッグが Amazon Bedrock 以外の接続で実行される場合、キープアライブピングを含む到着バイトもこのウォッチドッグをリセットし、解析されたイベントがない状態で約 5 分間まで実行される | すべてのプロバイダー | 300 秒 |
+| バイトレベルウォッチドッグ | ワイヤー上にバイトが到着しない（SSE キープアライブピングを含む） | 直接 Anthropic API、[Claude Platform on AWS](/docs/ja/claude-platform-on-aws)、および [gateway](/docs/ja/gateways) 接続（カスタム `ANTHROPIC_BASE_URL` を含む）。Amazon Bedrock の `vnd.amazon.eventstream` レスポンスでは `CLAUDE_ENABLE_BYTE_WATCHDOG_BEDROCK=1` でオプトイン。Google Cloud の Agent Platform または Microsoft Foundry では実行されない | 直接 Anthropic API では 180 秒、その他では 300 秒 |
+| ボディアイドルタイムアウト | 5 分間バイトが到着しない | 直接 Anthropic API、Claude Platform on AWS、および `CLAUDE_ENABLE_BYTE_WATCHDOG_BEDROCK=1` が設定された Amazon Bedrock 以外のプロバイダー。ただし、[`API_FORCE_IDLE_TIMEOUT`](/docs/ja/env-vars) がこれを変更する場合は除外 | 5 分 |
 
-これらの変数でタイマーを設定します。各変数の詳細は [環境変数リファレンス](/docs/ja/env-vars) に記載されています。
+`CLAUDE_ENABLE_BYTE_WATCHDOG_BEDROCK=1` を設定した場合、バイトレベルウォッチドッグは Bedrock のボディアイドルタイムアウトを置き換え、並行して実行されるのではなく実行されます。その後、`CLAUDE_STREAM_IDLE_TIMEOUT_MS` は Bedrock ストリームが接続を切断されたものとして扱われるまで静止状態を保つことができる期間も制御し、以下にリストされた制限内です。到着バイトは Bedrock のイベントレベルウォッチドッグをリセットしません。デバッグログが有効な場合、各 Bedrock ストリームは `wire-heartbeat: _chunkTimes absent` で始まるデバッグメッセージをログに記録します。
 
-* `CLAUDE_ENABLE_STREAM_WATCHDOG` および `CLAUDE_ENABLE_BYTE_WATCHDOG` は、テーブルに記載されている接続内で、`1` で対応するウォッチドッグをオンにするか、`0` でオフにします。どちらの変数もウォッチドッグをカバーしていない接続タイプに拡張することはありません。`CLAUDE_ENABLE_BYTE_WATCHDOG` を `0` に設定すると、最初のバイト期限もオフになります。
+これらの変数を使用してタイマーを設定します。各変数の詳細は [環境変数リファレンス](/docs/ja/env-vars) に記載されています。
+
+* `CLAUDE_ENABLE_STREAM_WATCHDOG` および `CLAUDE_ENABLE_BYTE_WATCHDOG` は、テーブルにリストされている接続内で、対応するウォッチドッグを `1` でオンまたは `0` でオフに強制します。どちらの変数もウォッチドッグをカバーしていない接続タイプに拡張しません。`CLAUDE_ENABLE_BYTE_WATCHDOG` を `0` に設定すると、最初のバイト期限もオフになります。
 * `CLAUDE_STREAM_IDLE_TIMEOUT_MS` は両方のウォッチドッグのタイムアウトを設定します。Claude Code は 5 分未満の値を 5 分に引き上げ、バイトレベルウォッチドッグの値を 30 分でキャップします。
 * `CLAUDE_BYTE_STREAM_IDLE_TIMEOUT_MS` はイベントレベルウォッチドッグを変更せずにバイトレベルウォッチドッグのタイムアウトを設定し、10 秒から 30 分の間にクランプされ、そのウォッチドッグについて `CLAUDE_STREAM_IDLE_TIMEOUT_MS` より優先されます。
-* `CLAUDE_STREAM_FIRST_BYTE_TIMEOUT_MS` は最初のバイト期限を直接設定します。設定しないままにすると、Claude Code はバイトレベルウォッチドッグのタイムアウトを使用するため、`CLAUDE_STREAM_IDLE_TIMEOUT_MS` および `CLAUDE_BYTE_STREAM_IDLE_TIMEOUT_MS` も期限を変更します。クランプ、アップロード許容量、`API_TIMEOUT_MS` キャップ、および応答なし中止後の再試行待機時間については、[API からの応答なし](/docs/ja/errors#no-response-from-api) を参照してください。
+* `CLAUDE_STREAM_FIRST_BYTE_TIMEOUT_MS` は最初のバイト期限を直接設定します。設定しないままにすると、Claude Code はバイトレベルウォッチドッグのタイムアウトを使用するため、`CLAUDE_STREAM_IDLE_TIMEOUT_MS` および `CLAUDE_BYTE_STREAM_IDLE_TIMEOUT_MS` も期限を変更します。クランプ、アップロード許容量、`API_TIMEOUT_MS` キャップ、および no-response 中止後の再試行待機時間については、[API からのレスポンスなし](/docs/ja/errors#no-response-from-api) を参照してください。
 * `API_FORCE_IDLE_TIMEOUT` を `0` に設定するとボディアイドルタイムアウトがオフになり、`1` に設定するとすべてのプロバイダーでオンになります。ウォッチドッグはそれとは独立して実行されるため、ストリームをそれらのしきい値より長く一時停止させるには、それらも引き上げるか無効にしてください。
 
-ウォッチドッグが停止したストリームを中止すると、Claude Code は中止を中流の失敗として扱い、表示される内容はレスポンスがどこまで進んだかによって異なります。Claude Code はリクエストを再試行するか、エラーでターンを終了し、完了した出力を保持して [不完全なレスポンス通知](/docs/ja/errors#the-response-above-may-be-incomplete) を表示するか、ターンを正常に終了します。[自動再試行](/docs/ja/errors#automatic-retries) は各結果がどこに適用されるかを説明しています。
+ウォッチドッグが停止したストリームを中止すると、Claude Code は中止を mid-stream 失敗として扱い、表示される内容はレスポンスがどこまで進んだかによって異なります。Claude Code はリクエストを再試行するか、エラーで ターンを終了し、完了した出力を保持して [不完全なレスポンス通知](/docs/ja/errors#the-response-above-may-be-incomplete) を表示するか、ターンを正常に終了します。[自動再試行](/docs/ja/errors#automatic-retries) は各結果がどこに適用されるかを説明しています。
 
-[非対話型セッション](/docs/ja/headless) では、および任意のセッションでサブエージェントのレスポンスについては、Claude Code は最初に Claude にカットオフレスポンスを続行するよう促す場合があります。[その通知のエントリ](/docs/ja/errors#the-response-above-may-be-incomplete) は、それがいつ行われるか、およびいつ通知がまだ表示されるかを説明しています。
+[非対話型セッション](/docs/ja/headless) では、およびいかなるセッションでもサブエージェントのレスポンスについて、Claude Code は最初に Claude にカットオフレスポンスを続行するよう促す場合があります。[その通知のエントリ](/docs/ja/errors#the-response-above-may-be-incomplete) は、それがいつ行われるか、およびいつ通知が表示されるかを説明しています。
 
-最初のバイト期限が発火すると、レスポンスが開始されていないため、保持する部分的な出力はありません。Claude Code がリクエストを再送信する方法と、ターンが代わりに終了する場合については、[API からの応答なし](/docs/ja/errors#no-response-from-api) を参照してください。
+最初のバイト期限が発火すると、レスポンスが開始されていないため、保持する部分的な出力はありません。Claude Code がリクエストを再送信する方法と、ターンが代わりに終了する場合については、[API からのレスポンスなし](/docs/ja/errors#no-response-from-api) を参照してください。
 
 <h2 id="network-access-requirements">
   ネットワークアクセス要件
@@ -277,7 +279,7 @@ Anthropic ホスト環境での [Web 上の Claude Code](/docs/ja/claude-code-on
 
 GitHub Enterprise Cloud 組織が IP アドレスでアクセスを制限している場合、[インストール済み GitHub Apps の IP ホワイトリスト継承を有効にし](https://docs.github.com/en/enterprise-cloud@latest/organizations/keeping-your-organization-secure/managing-security-settings-for-your-organization/managing-allowed-ip-addresses-for-your-organization#allowing-access-by-github-apps)、Anthropic の[アウトバウンド IP アドレス](https://platform.claude.com/docs/en/api/ip-addresses#outbound-ip-addresses)の[ホワイトリストエントリを追加](https://docs.github.com/en/enterprise-cloud@latest/organizations/keeping-your-organization-secure/managing-security-settings-for-your-organization/managing-allowed-ip-addresses-for-your-organization#adding-an-allowed-ip-address)してください。継承は Claude GitHub App がインストールとして行うリクエストのみをカバーし、ユーザーの代わりに行うリクエストはカバーしません。他のファイアウォールについては、[Anthropic API IP アドレス](https://platform.claude.com/docs/en/api/ip-addresses)を参照してください。
 
-ファイアウォールの背後にある自己ホスト [GitHub Enterprise Server](/docs/ja/github-enterprise-server) インスタンスの場合、Anthropic の[アウトバウンド IP アドレス](https://platform.claude.com/docs/en/api/ip-addresses#outbound-ip-addresses)をホワイトリストに登録して、Anthropic インフラストラクチャが GHES ホストに到達してリポジトリをクローンし、レビューコメントを投稿できるようにしてください。[自己ホスト環境](/docs/ja/self-hosted-environments-deploy#configure-git)のセッションはネットワーク内から GHES ホストに到達するため、その露出は Anthropic ホストセッション、リポジトリピッカーなどのホスト前セッションフロー、および [Anthropic git プロキシ](/docs/ja/self-hosted-environments-deploy#use-the-anthropic-git-proxy)にオプトインする自己ホストランナーにのみ適用されます。これは Anthropic 側から取得します。ネットワーク内でのみルーティング可能な GHES ホストの場合、[SCM コネクタ](/docs/ja/self-hosted-environments-reference#scm-connector-flags)はホスト前セッションフローをアウトバウンド接続を通じて実行するため、ホワイトリストはそれらに必要ありません。
+ファイアウォールの背後にある自己ホスト [GitHub Enterprise Server](/docs/ja/github-enterprise-server) インスタンスの場合、Anthropic の[アウトバウンド IP アドレス](https://platform.claude.com/docs/en/api/ip-addresses#outbound-ip-addresses)をホワイトリストに登録して、Anthropic インフラストラクチャが GHES ホストに到達してリポジトリをクローンし、レビューコメントを投稿できるようにしてください。[自己ホスト環境](/docs/ja/self-hosted-environments-deploy#configure-git)のセッションはネットワーク内から GHES ホストに到達するため、その露出は Anthropic ホストセッション、リポジトリピッカーなどのホスト前セッションフロー、および [Anthropic git プロキシ](/docs/ja/self-hosted-environments-deploy#use-the-anthropic-git-proxy)にオプトインする自己ホストランナーにのみ適用されます。これは Anthropic 側から取得します。[SCM コネクタ](/docs/ja/self-hosted-environments-reference#scm-connector-flags)は利用できないため、ホスト前セッションフローはネットワーク内でのみルーティング可能な GHES ホストに到達できません。
 
 <h3 id="desktop-and-claude-ai">
   デスクトップと claude.ai

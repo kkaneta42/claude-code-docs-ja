@@ -412,8 +412,8 @@ Claude Code では、キャッシュは事実上 1 つのマシンとディレ�
 | - | - |
 | `DISABLE_PROMPT_CACHING` | すべてのモデルに対して無効にする |
 | `DISABLE_PROMPT_CACHING_HAIKU` | デフォルトの Haiku モデルに対して無効にする |
-| `DISABLE_PROMPT_CACHING_SONNET` | Sonnet のみに対して無効にする |
-| `DISABLE_PROMPT_CACHING_OPUS` | Opus のみに対して無効にする |
+| `DISABLE_PROMPT_CACHING_SONNET` | デフォルトの Sonnet モデルに対して無効にする |
+| `DISABLE_PROMPT_CACHING_OPUS` | デフォルトの Opus モデルに対して無効にする |
 | `DISABLE_PROMPT_CACHING_FABLE` | Fable のみに対して無効にする |
 
 `DISABLE_PROMPT_CACHING_HAIKU` はデフォルトの Haiku モデル、`haiku` エイリアスが解決するモデルに適用されます。そのモデルがメインモデルである場合のメイン会話を含め、そのモデルが実行される場所ならどこでもキャッシングを無効にします。メイン会話をカバーするには Claude Code v2.1.283 以降が必要です。
@@ -421,6 +421,8 @@ Claude Code では、キャッシュは事実上 1 つのマシンとディレ�
 この変数は、メインモデルと異なる場合、非推奨の `ANTHROPIC_SMALL_FAST_MODEL` 変数で設定したバックグラウンドモデルもカバーします。
 
 メインモデルとしてピン留めした別の Haiku バージョンはキャッシングを保持します。それに対してキャッシングを無効にするには `DISABLE_PROMPT_CACHING` を設定してください。
+
+`DISABLE_PROMPT_CACHING_SONNET` と `DISABLE_PROMPT_CACHING_OPUS` はそれぞれ、`sonnet` または `opus` エイリアスが解決するモデルに適用されます。別の Sonnet または Opus モデル ID をメインモデルとして設定した場合、そのモデルはキャッシングを保持します。たとえば、`claude-sonnet-5` でのセッションはキャッシングを保持しますが、`sonnet` は `claude-sonnet-5-5` に解決されます。そのモデルに対してキャッシングを無効にするには、`DISABLE_PROMPT_CACHING` を設定してください。
 
 組織全体でキャッシングポリシーを設定するには、これらのいずれかまたは [TTL 変数](#cache-lifetime)を [管理設定](/docs/ja/managed-settings)の `env` ブロックに入れます。通常の使用では、キャッシングを有効のままにしてください。
 

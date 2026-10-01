@@ -56,7 +56,7 @@ Claude がすべてのタスクで実行するサイクル: コンテキスト�
   Artifact
 </h3>
 
-Claude Code がセッションから claude.ai 上のプライベート URL に公開するライブでインタラクティブな Web ページ。出力を視覚的に確認したり、ターミナルテキストを読む代わりに共有したりできます。セッションが再公開されると、ページはその場で更新されます。Claude Code から作成した Artifact は、claude.ai の会話から作成した Artifact と同じギャラリーに表示されます。共有はプランに依存します: Pro と Max では、誰でも開くことができるパブリックリンク。Team と Enterprise では、組織内での共有、およびオーナーが有効にした後のパブリックリンク。
+Claude Code がセッションから claude.ai 上のプライベート URL に公開するライブでインタラクティブな Web ページ。出力を視覚的に確認したり、ターミナルテキストを読む代わりに共有したりできます。セッションが再公開されると、ページはその場で更新されます。Claude Code から作成した Artifact は、claude.ai の会話から作成した Artifact と同じギャラリーに表示されます。共有オプションはプランに依存します: [Share an artifact](/docs/ja/artifacts#share-an-artifact) を参照してください。
 
 詳細情報: [Share session output as artifacts](/docs/ja/artifacts)
 
@@ -474,6 +474,14 @@ Claude Code が [harness](#agentic-harness) として会話に追加するメッ
 Claude が実行できるアクション: ファイルを読み取る、コードを編集する、シェルコマンドを実行する、web を検索する、subagent を生成する。Tools は Claude Code を agentic にするものです。それらなしでは、Claude はテキストのみで応答できます。各ツール使用は、[agentic loop](#agentic-loop) での Claude の次の決定に情報を提供する結果を返します。
 
 詳細情報: [Tools available to Claude](/docs/ja/tools-reference)
+
+<h3 id="transcript">
+  Transcript
+</h3>
+
+[session](#session) の保存されたレコード。会話はあなたと Claude が交換するもの。トランスクリプトはその会話をファイルとして保存したもので、デフォルトでは `~/.claude/projects/<project>/<session-id>.jsonl` に保存されます。Claude Code は再開時にファイルを読み込み直します。これにより、セッション終了後も会話が続きます。同じ会話の画面上のビューについては、[transcript viewer](/docs/ja/interactive-mode#transcript-viewer) を参照してください。
+
+詳細情報: [トランスクリプトの保存場所](/docs/ja/sessions#where-transcripts-are-stored)
 
 <h3 id="turn">
   Turn

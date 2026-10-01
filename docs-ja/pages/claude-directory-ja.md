@@ -1569,6 +1569,7 @@ Claude Code は、[`cleanupPeriodDays`](/docs/ja/settings-reference#cleanupperio
 | `feedback/drafts/` | キューに入った [Claude が作成したフィードバック](/docs/ja/tools-reference#sendfeedback-tool-behavior)。`/feedback` でのレビューを待機中です。`cleanupPeriodDays` または 30 日のいずれか短い方の後にスイープされます。キューが 10 ドラフトの上限に達すると、Claude Code は最も古いドラフトを削除して空き容量を作ります |
 | `usage-data/` | `report.html` と [`/insights`](/docs/ja/costs#analyze-your-usage-patterns)で書き込まれたタイムスタンプ付きレポートコピー。それらを構築するために使用されるキャッシュされたセッションごとの分析データ |
 | `skills/.trash/`、`plugins/.trash/` | [スキル](/docs/ja/skills#how-synced-skills-behave)と [プラグイン](/docs/ja/plugins/loading#synced-plugins)。claude.ai 同期で削除されたもの。例えば、claude.ai でオフにした後、または同期を停止した後。ファイルはここに残るため、スイープが削除するまで復元できます |
+| `plugins/installed_plugins.set-aside.<date>.<hash>.json`、`plugins/installed_plugins.unreadable.<date>.<hash>.kept` | 日付付きコピー。Claude Code が [`installed_plugins.json`](/docs/ja/plugins/loading#find-plugins-on-disk) を書き直す前に作成します。削除したインストールレコード、および読み込めなかったファイルの内容 |
 | `todos/`、`statsig/`、`logs/` | 古いバージョンのレガシーディレクトリ。現在は書き込まれていません。スイープはその内容を削除してから、空のディレクトリを削除します |
 
 `sessions/` のセッションファイル、自動メモリ、Claude Desktop および Cowork トランスクリプトは、それぞれ独自の保持ルールに従います：
@@ -1715,6 +1716,7 @@ claude project purge ~/work/my-repo --yes
 | `~/.claude/policy-limits.json` | なし。自動的に更新されます |
 | `~/.claude/tasks/` | 再開されたセッションが取得するタスクリスト |
 | `~/.claude/skills/.trash/`、`~/.claude/plugins/.trash/` | Claude Code が削除した[同期されたスキル](/docs/ja/skills#how-synced-skills-behave)と[同期されたプラグイン](/docs/ja/plugins/loading#synced-plugins)を復元する機会 |
+| `~/.claude/plugins/installed_plugins.set-aside.<date>.<hash>.json`、`~/.claude/plugins/installed_plugins.unreadable.<date>.<hash>.kept` | Claude Code が削除したプラグインインストールレコード、または読み込めなかったファイルのコピー。何もそれらを読み込み直しません |
 | `~/.claude/debug/`、`~/.claude/plans/`、`~/.claude/session-env/`、`~/.claude/shell-snapshots/`、`~/.claude/backups/` | ユーザーに見える何もなし |
 | `~/.claude/todos/`、`~/.claude/statsig/`、`~/.claude/logs/`、`~/.claude/image-cache/` | なし。現在のバージョンで書き込まれていないレガシーディレクトリ |
 

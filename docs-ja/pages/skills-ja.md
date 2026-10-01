@@ -56,6 +56,25 @@ Claude Code には、`/doctor`、`/code-review`、`/batch`、`/debug`、`/loop`�
 
 Claude は、失敗したコマンドや欠落したステップなど、実行を誤った場合にのみ記録されたファイルを編集するため、セッションごとの差分なしでファイルをコミットできます。v2.1.205 より前では、バンドルされたスキルは Claude に実行から学んだことをすべて折り込むよう指示し、頻繁なマージコンフリクトを引き起こしていました。
 
+<h3 id="work-on-claude-api-projects">
+  Claude API プロジェクトで作業する
+</h3>
+
+バンドルされた `/claude-api` スキルは、プロジェクトの言語に対して [Claude API](https://platform.claude.com/docs/en/api/overview) および [Managed Agents](https://platform.claude.com/docs/en/managed-agents/overview) リファレンス資料を読み込みます。コードが `anthropic` または `@anthropic-ai/sdk` をインポートする場合、Claude はこれを自動的にアクティベートします。
+
+スキルのワークフローの 1 つを開始するには、Claude Code プロンプトでスキル名の後にサブコマンドを入力します。たとえば `/claude-api migrate` です。表は各サブコマンドが何をするか、およびそれを含む最も古い Claude Code バージョンをリストしています。`migrate` と `managed-agents-onboard` は v2.1.221 より前のバージョンです。これは表が追跡する最も古いバージョンです。
+
+| サブコマンド | 実行内容 | 最小バージョン |
+| :- | :- | :- |
+| `migrate` | 既存の Claude API コードを新しいモデルに更新する | v2.1.221 より前 |
+| `upgrade` | プロジェクトの Anthropic SDK 依存関係をメジャーバージョン間で移動します。現在は Python `anthropic` パッケージを 0.x から 1.x に移動します | v2.1.236 以降 |
+| `managed-agents-onboard` | 新しい Managed Agent の作成をウォークスルーする | v2.1.221 より前 |
+| `prompt-audit` | プロンプト、スキル、ツール説明に書かれた古いモデル向けの指示にフラグを立て、差分として修正を提案する | v2.1.221 以降 |
+| `cost-optimize` | プロジェクトの Claude API 支出がどこに行くかをプロファイルし、プロンプトキャッシング、不要な入出力トークンの削減、バッチ処理、努力、モデル選択などのオプションから節約を提案します。一度に 1 つの変更 | v2.1.247 以降 |
+| `build-eval` | Claude を搭載したアプリ用の eval セットをビルドする | v2.1.259 以降 |
+| `hillclimb` | 既存の eval に対してアプリを反復的に改善する | v2.1.259 以降 |
+| `preserved-thinking-migration` | 統合が以前のターン、システムプロンプト、またはツールリストに対して行う編集を見つけます。これは [preserved thinking](https://platform.claude.com/docs/en/build-with-claude/preserved-thinking) ブロックを無効にし、各ブロックがどの程度の推論を削除するかを測定し、一度に 1 つずつ修正を提案します。各変更後に再測定します | v2.1.282 以降 |
+
 <h2 id="getting-started">
   はじめに
 </h2>
@@ -721,7 +740,7 @@ Claude Code は、スキルのフロントマターの `shell` キーと環境�
 
 * **作業ディレクトリ**：Claude Code は各コマンドをセッションシェルの現在の作業ディレクトリで実行します。Claude が `cd` を実行するとそのディレクトリが移動します。毎回同じ方法で解決する必要があるパスで [`${CLAUDE_SKILL_DIR}` または `${CLAUDE_PROJECT_DIR}`](#available-string-substitutions) を使用します。
 * **stderr**：デフォルトの `bash` シェルでは、Claude Code は stderr を stdout にマージします。コマンドが stderr に書き込むすべてのものが注入されたテキストに表示されます。
-* **タイムアウト**：各コマンドは Bash ツールのデフォルト 2 分 [timeout](/docs/ja/tools-reference#timeout-and-output-limits) の下で実行されます。Bash ツールが [タイムアウトしたコマンドをバックグラウンドに移動](/docs/ja/tools-reference#background-commands) する場合、スキルは引き続きレンダリングされます。注入されたテキストは移動を報告し、バックグラウンドタスクとコマンドの出力を収集するファイルに名前を付けます。コマンドが Bash ツールが自動的にバックグラウンドに移動しないコマンドの場合、Claude Code はタイムアウト時にそれを強制終了します。その失敗は [呼び出しを中止します](#when-an-injected-command-fails)。
+* **タイムアウト**：各コマンドは Bash ツールのデフォルト 2 分 [timeout](/docs/ja/tools-reference#timeout-and-output-limits) の下で実行されます。Bash ツールが [タイムアウトしたコマンドをバックグラウンドに移動](/docs/ja/tools-reference#foreground-commands-that-move-to-the-background) する場合、スキルは引き続きレンダリングされます。注入されたテキストは移動を報告し、バックグラウンドタスクとコマンドの出力を収集するファイルに名前を付けます。コマンドが Bash ツールが自動的にバックグラウンドに移動しないコマンドの場合、Claude Code はタイムアウト時にそれを強制終了します。その失敗は [呼び出しを中止します](#when-an-injected-command-fails)。
 * **出力サイズ**：Bash ツールのインライン上限を超える出力は、切り詰められたテキストではなく、ファイルパスと短いプレビューとして到着します。[出力制限](/docs/ja/tools-reference#output-limits) は上限とそれぞれの境界を調整する方法をカバーしています。
 
 PowerShell ツールは、実行するコマンドに同じタイムアウト、バックグラウンド処理、および出力上限の動作を適用します。その詳細については、[PowerShell ツール](/docs/ja/tools-reference#powershell-tool) セクションを参照してください。
@@ -843,13 +862,25 @@ Skill(review-pr *)
 Skill(deploy *)
 ```
 
-権限構文：正確な一致の場合は `Skill(name)`、任意の引数を持つプレフィックス一致の場合は `Skill(name *)`。`allow` ルールでは、[synced skills 用に予約されたネームスペース](#names-reserved-for-synced-skills) の外のプレフィックスはその中の名前と一致しません。`Skill(anthropic *)` は `anthropic-skills:pdf` をカバーしません。
+権限構文：正確な一致の場合は `Skill(name)`、任意の引数を持つプレフィックス一致の場合は `Skill(name *)`。
 
-deny ルールがスキルの別名または修飾されていない名前ではなくスキル独自の名前を指定する場合、Claude Code はスキルをブロックします。`Skill(review)` でバンドルされた `/code-review` をその `/review` エイリアスを通じてブロックし、`Skill(deploy)` で [ネストされたスキル](#where-skills-live) を `apps/web:deploy` として修飾されていない名前を通じてブロックします。v2.1.260 より前では、Claude Code は deny ルールが修飾されていない名前のみを指定する場合、修飾された名前の下にリストされたネストされたスキルをブロックしませんでした。
+テーブルは、あなたが書く名前の種類によって、`deny` ルールが名前を超えてブロックするものを示しています。
 
-Claude Code は `allow` ルールをスキル独自の名前と Claude の呼び出しの名前に対してのみ一致させます。
+| あなたの `deny` ルール名 | ルール例 | Claude Code もブロック |
+| :- | :- | :- |
+| エイリアス | `Skill(review)` | バンドルされた `/code-review`、その `/review` エイリアスを通じて |
+| 修飾されていない名前 | `Skill(deploy)` | [ネストされたスキル](#where-skills-live) を `apps/web:deploy` として |
+| [claude.ai から同期されたスキル](#how-synced-skills-behave) | `Skill(anthropic-skills:deploy)` | Claude Desktop がそれをセッションにプラグインとして配信するとき |
+| 同期されたスキルのプラグイン形式 | `Skill(deploy:deploy)` | 同期されたスキル |
+| [parameter form](/docs/ja/permissions#match-by-input-parameter) のスキル | `Skill(skill:deploy)` | スキルが呼び出される名前のいずれかで、そのエイリアスと表示名を含む |
 
-[synced skill](#how-synced-skills-behave) を事前承認なしで承認するには、その [reserved namespace](#names-reserved-for-synced-skills) 内の名前を付けます。`Skill(anthropic-skills:pdf)` は synced `pdf` スキルを承認し、`Skill(anthropic-skills *)` はすべての synced スキルを承認します。
+v2.1.260 より前では、Claude Code は deny ルールが修飾されていない名前のみを指定する場合、修飾された名前の下にリストされたネストされたスキルをブロックしませんでした。
+
+Claude Code は `allow` ルールをスキル独自の名前と Claude の呼び出しの名前に対してのみ一致させます。[synced skill](#how-synced-skills-behave) を事前承認なしで承認するには、その [reserved namespace](#names-reserved-for-synced-skills) 内の名前を付けます。
+
+* `Skill(anthropic-skills:pdf)` は synced `pdf` スキルを承認します
+* `Skill(anthropic-skills *)` はすべての synced スキルを承認します
+* `Skill(anthropic *)` は `anthropic-skills:pdf` をカバーしません。ネームスペース外のプレフィックスはその中の名前と一致しないため
 
 **個別のスキルを非表示にする** には、フロントマターに `disable-model-invocation: true` を追加します。これはスキルを Claude のコンテキストから完全に削除します。
 
@@ -909,9 +940,14 @@ v2.1.199 以降、`"off"` はターミナル `/` メニューに加えて、[Rem
 
 スキルがトリガーされたことを確認することは、Claude がそれを見つけたことを意味しますが、意図した動作をしたことを意味しません。スキルが機能していることを知るには、Claude がそれを呼び出すべきプロンプトで実際に呼び出すかどうか、および呼び出す場合に出力が期待と一致するかどうかを個別に測定する必要があります。
 
-両方をチェックするには、ベースライン比較を行います。現実的なプロンプトをいくつか収集し、スキルが利用可能な新しいセッションで各プロンプトを実行し、[無効化](#override-skill-visibility-from-settings)した状態でも実行して、結果を比較します。新しいセッションが重要なのは、スキルの作成時に残されたコンテキストが、書かれた指示のギャップをマスクするためです。
+両方をチェックするには、ベースライン比較を行います。現実的なプロンプトをいくつか収集し、スキルが利用可能な新しいセッションで各プロンプトを実行し、スキルをオフにした状態でも実行して、結果を比較します。新しいセッションが重要なのは、スキルの作成時に残されたコンテキストが、書かれた指示のギャップをマスクするためです。
 
-その比較を自動化する 2 つのツールがあります。[プラグイン](/docs/ja/plugins/overview)で配布されるスキルの場合、[`claude plugin eval`](/docs/ja/plugin-evals) は各プロンプトを分離されたセッションでプラグインの有無で実行し、定義したグレーダーまたはそれが作成したグレーダーでスコアリングし、閾値以下の場合はゼロ以外で終了するため、CI でそれをゲートできます。Claude Code 会話内の単一スキルを反復する場合、以下のスキル作成者プラグインは独自の `evals/evals.json` 形式で同様のループを実行します。2 つの形式は相互交換可能ではありません。
+2 番目の実行でスキルをオフにする方法は、スキルの出所によって異なります。
+
+* **個人用またはプロジェクトスキル**：[`skillOverrides`](#override-skill-visibility-from-settings) で `"off"` に設定します。
+* **プラグインが提供するスキル**：`skillOverrides` はプラグインスキルには適用されません。代わりに [`claude plugin eval`](/docs/ja/plugin-evals#the-no-plugin-baseline) を使用します。これはプラグインが読み込まれていない状態で各実行を繰り返します。
+
+ベースライン比較を自動化する 2 つのツールがあります。[プラグイン](/docs/ja/plugins/overview) で配布されるスキルの場合、[`claude plugin eval`](/docs/ja/plugin-evals) は各プロンプトを分離されたセッションでプラグインの有無で実行し、定義したグレーダーまたはそれが作成したグレーダーでスコアリングし、閾値以下の場合はゼロ以外で終了するため、CI でそれをゲートできます。Claude Code 会話内の単一スキルを反復する場合、以下のスキル作成者プラグインは独自の `evals/evals.json` 形式で同様のループを実行します。2 つの形式は相互交換可能ではありません。
 
 <h3 id="run-evals-with-skill-creator">
   skill-creator でエバルを実行する
@@ -1154,7 +1190,7 @@ if __name__ == '__main__':
 Claude がスキルを期待通りに使用しない場合：
 
 1. 説明にユーザーが自然に言うキーワードが含まれているか確認してください
-2. スキルが「What skills are available?」に表示されていることを確認してください
+2. スキルが「利用可能なスキルは何ですか？」に表示されているか確認してください
 3. 説明により密接に一致するようにリクエストを言い換えてみてください
 4. スキルがユーザー呼び出し可能な場合は、`/skill-name` で直接呼び出してください
 
@@ -1173,27 +1209,37 @@ Claude がスキルを不要な時に使用する場合：
 1. 説明をより具体的にしてください
 2. 手動呼び出しのみが必要な場合は `disable-model-invocation: true` を追加してください
 
+<h3 id="claude-stops-following-a-skill">
+  Claude がスキルに従わなくなる
+</h3>
+
+Claude が最初の応答でスキルに従い、その後に従わなくなった場合は、以下のいずれかのケースに該当するもので始めてください：
+
+* **Claude が毎回成立する必要があるルールをスキップした**：ルールを [hook](/docs/ja/hooks-guide) に移動してください。Claude Code は hook をそのイベントが発生するたびに実行します。例えば、ファイル編集の前など、Claude がスキルに従っているかどうかに関わらず実行されます。ルールをスキルと一緒に保つには、スキルの [`hooks` frontmatter](/docs/ja/hooks#hooks-in-skills-and-agents) で hook を定義してください。その hook はスキルが呼び出された時点からセッション終了まで適用されます。
+* **Claude が判断を伴って適用すべきガイダンスをスキップした**：ガイダンスが全体的なタスクに適用されるように言い換えてください。例えば「すべての編集後にテストを実行する」ではなく「テストを実行する」ではなく、「すべての編集後にテストを実行する」と言ってください。Claude Code はスキルが呼び出された時点で会話にスキルのコンテンツを追加し、[後の段階ではファイルを再読み込みしません](#skill-content-lifecycle)。
+* **会話がコンパクト化された**：スキルを再度呼び出してコンテンツを復元してください。[コンパクト化](/docs/ja/how-claude-code-works#when-context-fills-up)後、Claude Code は [呼び出されたスキルの開始部分のみを保持できます](#skill-content-lifecycle)。そのため、最も重要な指示を `SKILL.md` の上部に配置してください。
+
 <h3 id="skill-descriptions-are-cut-short">
   スキルの説明が短くカットされている
 </h3>
 
-Claude Code はスキル名と説明のリストをコンテキストに読み込み、Claude が利用可能なものを認識できるようにします。リストには常にすべてのスキル名が含まれていますが、スキルが多い場合、Claude Code はリストの文字予算に合わせて説明を短縮し、Claude が一致させるために必要なキーワードを削除する可能性があります。予算はモデルのコンテキストウィンドウの 1% でスケーリングされます。リストが予算を超える場合、Claude Code は最も呼び出しが少ないスキルから説明を削除するため、最も使用するスキルは完全なテキストを保持します。
+Claude Code はスキル名と説明のリストをコンテキストに読み込み、Claude が利用可能なものを知ることができるようにします。リストには常にすべてのスキル名が含まれていますが、スキルが多い場合、Claude Code はリストの文字予算に合わせるために一部の説明を削除し、Claude が要求と照合するために必要なキーワードが削除されます。予算はモデルのコンテキストウィンドウの 1% でスケーリングされます。リストが予算を超える場合、Claude Code は最も呼び出しが少ないスキルから説明を削除するため、最も使用するスキルは完全なテキストを保持します。
 
 `/doctor` を実行してリストのコンテキストコストとその最大の貢献者の推定値を取得してください。オフにする価値のあるスキルを見つけるには、[`/skill-doctor`](#find-unused-skills) を実行してください。リストが予算を超える場合、Claude Code はデバッグログに警告も書き込みます。これは [`--debug`](/docs/ja/cli-reference#cli-flags) で表示できます。
 
-`/context` の Skills 行は、予算が適用された後のリストのサイズを報告するため、モデルが受け取るものと一致します。v2.1.196 より前は、この行はすべての説明の完全なテキストをカウントし、設定された予算の数倍大きい値を表示する可能性がありました。
+`/context` の Skills 行は、予算が適用された後のリストのサイズを報告するため、モデルが受け取るものと一致します。v2.1.196 より前は、この行はすべての説明の完全なテキストをカウントし、設定された予算の数倍大きい値を表示できました。
 
-予算を増やすには、[`skillListingBudgetFraction`](/docs/ja/settings-reference#skilllistingbudgetfraction) 設定（例：`0.02` = 2%）または `SLASH_COMMAND_TOOL_CHAR_BUDGET` 環境変数を固定文字数に設定してください。他のスキルの予算を解放するには、[`skillOverrides`](#override-skill-visibility-from-settings) で低優先度のエントリを `"name-only"` に設定して、説明なしでリストされるようにしてください。また、ソースで `description` と `when_to_use` テキストをトリミングすることもできます。各エントリの結合テキストは予算に関係なく 1,536 文字でキャップされているため、主要なユースケースを最初に配置してください。キャップは [`skillListingMaxDescChars`](/docs/ja/settings-reference#skilllistingmaxdescchars) で設定可能です。
+予算を増やすには、[`skillListingBudgetFraction`](/docs/ja/settings-reference#skilllistingbudgetfraction) 設定（例えば `0.02` = 2%）または `SLASH_COMMAND_TOOL_CHAR_BUDGET` 環境変数を固定文字数に設定してください。他のスキルのために予算を解放するには、[`skillOverrides`](#override-skill-visibility-from-settings) で低優先度のエントリを `"name-only"` に設定して、説明なしでリストされるようにしてください。また、ソースで `description` と `when_to_use` テキストをトリミングすることもできます。各エントリの結合テキストは予算に関わらず 1,536 文字でキャップされているため、主要なユースケースを最初に配置してください。キャップは [`skillListingMaxDescChars`](/docs/ja/settings-reference#skilllistingmaxdescchars) で設定可能です。
 
 <h3 id="personal-skills-disappeared">
   個人スキルが消えた
 </h3>
 
-`~/.claude/skills/` に作成したスキルフォルダが消えている場合は、`~/.claude/skills/.trash/` を確認してください。Claude Code が [claude.ai からスキルを同期](#how-synced-skills-behave)する場合、それらは別の `synced` サブフォルダにダウンロードされ、作成したフォルダは移動または削除されません。
+`~/.claude/skills/` に作成したスキルフォルダが消えている場合は、`~/.claude/skills/.trash/` を確認してください。Claude Code が [claude.ai からスキルを同期](#how-synced-skills-behave)する場合、それらを別の `synced` サブフォルダにダウンロードし、作成したフォルダを移動または削除しません。
 
 v2.1.280 より前は、`~/.claude/skills/` に `manifest.json` という名前のファイルがあると、Claude Code はそのファイルがリストしたスキルフォルダを `~/.claude/skills/.trash/` の下のタイムスタンプ付きフォルダに移動し、それらのスキルは読み込まれなくなりました。
 
-スキルを復元するには、タイムスタンプ付きフォルダからそのフォルダを `~/.claude/skills/` に戻してください。これは [retention sweep](/docs/ja/claude-directory#cleaned-up-automatically) がゴミ箱エントリを削除する前に行ってください。デフォルトではゴミ箱に移動されてから 30 日後に削除されます。
+スキルを復元するには、タイムスタンプ付きフォルダからそのフォルダを `~/.claude/skills/` に戻してください。これは [保持期間スイープ](/docs/ja/claude-directory#cleaned-up-automatically) がゴミ箱エントリを削除する前に行ってください。デフォルトではゴミ箱に移動されてから 30 日後に削除されます。
 
 <h2 id="related-resources">
   関連リソース

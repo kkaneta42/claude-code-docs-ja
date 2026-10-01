@@ -312,7 +312,7 @@ Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、または
 | [Computer use](/docs/ja/computer-use) | ✓ | ✓ | ✗ | ✗ |
 | Dispatch（[Desktop](/docs/ja/desktop#sessions-from-dispatch)） | ✓ | ✓ | ✗ | ✗ |
 | [Code Review](/docs/ja/code-review) | ✗ | ✗ | ✓ | ✓ |
-| [Artifacts](/docs/ja/artifacts) | ✓ | ✓ | ✓ | Admin-enabled |
+| [Artifacts](/docs/ja/artifacts) | ✓ | ✓ | ✓ | ✓ |
 | [アナリティクスダッシュボードと貢献メトリクス](/docs/ja/analytics) | ✗ | ✗ | ✓ | ✓ |
 | [Enterprise Analytics API](/docs/ja/analytics#access-data-programmatically) | ✗ | ✗ | ✗ | ✓ |
 | [サーバー管理設定](/docs/ja/server-managed-settings) | ✗ | ✗ | ✓ | ✓ |

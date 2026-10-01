@@ -303,7 +303,7 @@ readiness プローブを `/healthz` に指定する場合、レプリカは障�
 | - | - | - |
 | 推論（プロンプト、完了） | CLI → ゲートウェイ → 上流 | Anthropic API が設定された上流の場合のみ |
 | テレメトリ（OTLP メトリクス、プラス [オプトイン ログとトレース](/docs/ja/claude-apps-gateway-config#telemetry)） | CLI → ゲートウェイ → コレクター | なし |
-| アイデンティティ（メール、グループ、sub） | IdP → ゲートウェイ → JWT → CLI。CLI はそれを OTLP エクスポートにスタンプします。[`forward_user_identity`](/docs/ja/claude-apps-gateway-config#per-user-identity-headers-for-a-proxy-you-run) をオンにすると、ゲートウェイは開発者のメールと IdP サブジェクトをヘッダーとしてプロキシに送信します | なし |
+| アイデンティティ（メール、グループ、sub） | IdP → ゲートウェイ → CLI。CLI はそれを OTLP エクスポートにスタンプします。[`forward_user_identity`](/docs/ja/claude-apps-gateway-config#per-user-identity-headers-for-a-proxy-you-run) をオンにすると、ゲートウェイは開発者のメールと IdP サブジェクトをヘッダーとしてプロキシに送信します | なし |
 | 管理設定 | ゲートウェイ YAML → CLI | なし |
 | 監査ログ | ゲートウェイ stderr → アグリゲーター | なし |
 

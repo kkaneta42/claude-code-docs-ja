@@ -301,7 +301,7 @@ v2.1.280 より前では、`y` はデフォルトで `confirm:yes` に、`n` は
 | `footer:down` | Down | フッター内を下に移動 |
 | `footer:openSelected` | Enter | 選択したフッター項目を開く |
 | `footer:clearSelection` | Escape | フッター選択をクリア |
-| `footer:dismiss` | （バインドなし） | v2.1.281 で削除されました。アクションをまだ名前付けする `keybindings.json` は有効なままで、バインディングは何もしません。v2.1.281 より前では、Backspace と Delete はフッターから選択したアーティファクトリンクを削除しました |
+| `footer:dismiss` | （バインドなし） | このアクションにキーをバインドしても効果がなく、それを名前付けする `keybindings.json` は有効なままです。v2.1.281 より前では、Backspace と Delete はフッターから選択したアーティファクトリンクを削除しました。 |
 
 フッター項目が選択されている場合（プロンプトの下のエージェントパネルの行など）、`chat:submit` を `chat:queueSubmit` または `chat:newline` に再バインドしても、`Enter` はそれを開きます。
 
@@ -417,9 +417,11 @@ v2.1.283 より前では、ファイルリストは `Select` バインディン�
 | `select:accept` | Enter | 選択を受け入れ |
 | `select:cancel` | Escape | 選択をキャンセル |
 
-`/skills` や `/mcp` などのリストパネルでは、Claude Code は `select:pageUp`、`select:pageDown`、`select:first`、および `select:last` バインディングを適用します。`/model` ピッカーなどのほとんどの他のリストでは、`select:first` と `select:last` バインディングが適用されます。PageUp と PageDown は、バインディングに関係なく、これらのリストのオプションをページングします。
+`/skills`、`/mcp`、`/tasks` などのリストパネルでは、Claude Code は `select:pageUp`、`select:pageDown`、`select:first`、および `select:last` バインディングを適用します。`/model` ピッカーなどのほとんどの他のリストでは、`select:first` と `select:last` バインディングが適用されます。PageUp と PageDown は、バインディングに関係なく、これらのリストのオプションをページングします。
 
 v2.1.280 より前では、これらの他のリストは Home、End、および `select:first` と `select:last` バインディングを無視していました。
+
+v2.1.283 より前では、`/mcp` ツールリストは、バインディングに関係なく固定 PageUp と PageDown キーでページングしました。
 
 <h3 id="plugin-actions">
   プラグインアクション
@@ -692,6 +694,7 @@ Vim モードが `/config` → エディタモードで有効な場合、キー�
 Claude Code はキーバインディングを検証し、以下の警告をデバッグログに書き込みます。
 
 * 解析エラー（無効な JSON または構造）
+* スペルミスのあるモディファイア（例：`ctl+k`）。Claude Code は認識できない部分を削除し、残りのキーストロークにバインディングを適用します。この例では `k` です。
 * 無効なコンテキスト名
 * 無効なアクション値（アクションが文字列または `null` ではない場合など）
 * 不明なアクション名（登録されたアクションのタイプミスなど）。Claude Code はバインディングをスキップし、そのキーのデフォルトバインディングを有効に保ちます。v2.1.246 より前では、不明なアクション名を持つバインディングはそのキーを静かに無効化していました

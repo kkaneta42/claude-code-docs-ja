@@ -79,7 +79,7 @@ Microsoft Foundry および [AWS 上の Claude Platform](/docs/ja/claude-platfor
 
 クライアントが Amazon Bedrock フォーマットを使用する場合、`InvokeModelWithResponseStream` レスポンスボディとその `Content-Type: application/vnd.amazon.eventstream` ヘッダーを変更せずにリレーし、ストリームをサーバー送信イベントに変換しないでください。[ゲートウェイまたはプロキシの背後でのストリーミングエラー](/docs/ja/amazon-bedrock#streaming-errors-behind-a-gateway-or-proxy) を参照してください。
 
-キープアライブピングもリレーします。`ANTHROPIC_BASE_URL` または `ANTHROPIC_AWS_BASE_URL` を通じた接続では、Claude Code はゲートウェイがリレーするすべてのバイト（SSE `ping` イベントとコメント行を含む）をカウントし、300 秒間デフォルトで無音のストリームを中止します。アップストリームのピングは長い思考の一時停止中の唯一のトラフィックであるため、ゲートウェイがそれらをストリップまたはバッファリングする場合、Claude Code はそれらの一時停止中にストリームを中止します。[自動再試行](/docs/ja/errors#automatic-retries) は、レスポンスがどこまで進行したかに基づいて、中止されたストリームが報告する内容をカバーしています。Amazon Bedrock のバイナリイベントストリームなど、ピングをまったく送信しないアップストリームは、それらの一時停止を転送するものがありません。そのようなアップストリームから変換する場合、無音のギャップ中に独自の `ping` イベントを発行します。`ANTHROPIC_BEDROCK_BASE_URL`、`ANTHROPIC_VERTEX_BASE_URL`、または `ANTHROPIC_FOUNDRY_BASE_URL` を通じて到達するゲートウェイは、Anthropic Messages フォーマットをリレーする場合でも、このバイトレベルのウォッチドッグでラップされません。そこでは、[5 分のアイドルタイムアウト](/docs/ja/env-vars) が無音のストリームを中止し、`ANTHROPIC_BEDROCK_BASE_URL` 接続では [`CLAUDE_ENABLE_BYTE_WATCHDOG_BEDROCK`](/docs/ja/env-vars) でバイトウォッチドッグを追加できます。
+キープアライブピングもリレーします。Claude Code は [5 分のデフォルト](/docs/ja/network-config#streaming-idle-watchdogs) でストリーミングレスポンスを中止します。長い思考の一時停止中、アップストリームの SSE `ping` イベントはストリーム上の唯一のバイトである可能性があります。ゲートウェイがそれらをストリップまたはバッファリングする場合、Claude Code は一時停止の途中でレスポンスを中止します。Amazon Bedrock のバイナリイベントストリームなど、ピングをまったく送信しないアップストリームから変換する場合、無音のギャップ中に独自の `ping` イベントを発行します。
 
 <h3 id="format-mismatch-with-the-upstream">
   アップストリームとのフォーマット不一致

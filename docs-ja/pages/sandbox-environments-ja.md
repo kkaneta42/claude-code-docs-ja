@@ -88,10 +88,10 @@ Claude Code は、軽量なコマンド単位のサンドボックスから完�
 組み込みツール、MCP サーバー、hooks をすべて 1 つの OS 境界の背後に配置するには、Claude Code プロセス全体を [サンドボックスランタイム](#sandbox-runtime)、[dev コンテナ](#dev-containers)、または [カスタムコンテナ](#custom-container)内で実行してください。
 
 <h2 id="sandbox-runtime">
-  サンドボックスランタイム
+  Sandbox ランタイム
 </h2>
 
-[`@anthropic-ai/sandbox-runtime`](https://github.com/anthropic-experimental/sandbox-runtime) パッケージは、組み込みの Bash サンドボックスが使用するのと同じ Seatbelt または bubblewrap 分離でプロセス全体をラップします。Claude Code をそれを通して実行すると、シェルコマンドだけでなく、セッション内のすべてのツール、hook、MCP サーバーが制限されます。ランタイムはベータ研究プレビューであり、パッケージが進化するにつれて設定形式が変わる可能性があります。
+[`@anthropic-ai/sandbox-runtime`](https://github.com/anthropic-experimental/sandbox-runtime) パッケージは、プロセス全体を、組み込み Bash sandbox が使用するのと同じ Seatbelt または bubblewrap 分離でラップします。Claude Code をランタイムを通じて実行すると、シェルコマンドだけでなく、セッション内のすべてのツール、hook、MCP サーバーが制約されます。ランタイムはベータ版の研究プレビューであり、パッケージの進化に伴い、その設定形式が変わる可能性があります。
 
 このセクションでは、設定する内容とランタイムが独自に実施する内容について説明します。Agent SDK アプリケーションでランタイムをデプロイする場合は、[セキュアデプロイメントガイド](/docs/ja/agent-sdk/secure-deployment#sandbox-runtime)を参照してください。
 
@@ -99,49 +99,49 @@ Claude Code は、軽量なコマンド単位のサンドボックスから完�
   ランタイムのセットアップと起動
 </h3>
 
-Linux と WSL2 では、ランタイムは組み込みサンドボックスと同じ `bubblewrap` および `socat` パッケージに加えて、Claude Code がバンドルしているが、スタンドアロンランタイムは PATH から解決する `ripgrep` に依存しています。[Linux と WSL2 のセットアップ](/docs/ja/sandboxing#set-up-linux-and-wsl2)で説明されているように `bubblewrap` と `socat` をインストールし、ディストリビューションのパッケージマネージャーから `ripgrep` をインストールしてください。macOS では追加のパッケージは必要ありません。ランタイムはそこで組み込みの Seatbelt サンドボックスを使用します。
+Linux と WSL2 では、ランタイムは組み込み sandbox と同じ `bubblewrap` および `socat` パッケージに加えて、`ripgrep` に依存します。Claude Code はこれをバンドルしていますが、スタンドアロンランタイムは PATH から解決します。[Linux と WSL2 のセットアップ](/docs/ja/sandboxing#set-up-linux-and-wsl2)で説明されているように `bubblewrap` と `socat` をインストールし、ディストリビューションのパッケージマネージャーから `ripgrep` をインストールしてください。macOS では追加のパッケージは不要です。ランタイムはそこで組み込み Seatbelt sandbox を使用します。
 
-デフォルトでは、ランタイムはネットワークアクセスを拒否し、書き込みを小さな組み込みランタイムパスセットに限定するため、Claude Code を起動する前に設定してください。設定を `~/.srt-settings.json` に、または `--settings` で渡すファイルに配置します。パッケージ [README](https://github.com/anthropic-experimental/sandbox-runtime) は完全な設定スキーマを文書化しています。
+デフォルトでは、ランタイムはネットワークアクセスを拒否し、書き込みを組み込みランタイムパスの小さなセットに限定するため、Claude Code を通じて起動する前に設定してください。設定を `~/.srt-settings.json` に配置するか、`--settings` で渡すファイルに配置します。パッケージの [README](https://github.com/anthropic-experimental/sandbox-runtime) に完全な設定スキーマが記載されています。
 
-少なくとも以下への書き込みアクセスを許可してください。
+少なくとも以下への書き込みアクセスを許可してください：
 
 * プロジェクトディレクトリ。
 * Claude Code の設定パス `~/.claude` および `~/.claude.json`。
-* `/tmp`。Claude Code はランタイムファイルをここに書き込みます。
+* `/tmp`。Claude Code はここにランタイムファイルを書き込みます。
 
-セッションが必要とするネットワークドメインを許可してください。
+セッションが必要とするネットワークドメインを許可してください：
 
-* `api.anthropic.com`、またはプロバイダーのエンドポイント。サードパーティプロバイダーでは、`api.anthropic.com` も保持してください。WebFetch ドメインセーフティチェックは、`skipWebFetchPreflight: true` を設定しない限り、デフォルトでそれを呼び出します。
+* `api.anthropic.com`、またはカスタマーが設定したプロバイダーのエンドポイント。サードパーティプロバイダーでは、`api.anthropic.com` も保持してください。WebFetch ドメインセーフティチェックは、`skipWebFetchPreflight: true` を設定しない限り、デフォルトでそれを呼び出します。
 * `claude.ai` および `platform.claude.com`。[OAuth サインインとトークンリフレッシュ](/docs/ja/network-config#network-access-requirements)に必要です。API キーで認証されたランは、これら 2 つを削除できます。
 
-Linux と WSL2 では、ランタイムは既に存在するパスにのみ書き込み許可を適用します。新しい環境では、最初の起動前に Claude Code の設定パスを作成してください。
+Linux と WSL2 では、ランタイムは既に存在するパスにのみ書き込み許可を適用します。新しい環境では、最初の起動前に Claude Code の設定パスを作成してください：
 
 ```bash theme={null}
 mkdir -p ~/.claude && { [ -f ~/.claude.json ] || echo '{}' > ~/.claude.json; }
 ```
 
-設定ファイルが配置されたら、`npx` で Claude Code を起動し、ラップするコマンドとして `claude` を渡します。
+設定ファイルが配置されたら、`npx` で Claude Code を起動し、ラップするコマンドとして `claude` を渡します：
 
 ```bash theme={null}
 npx @anthropic-ai/sandbox-runtime claude
 ```
 
-Claude Code はサンドボックス内で起動し、設定したファイルシステムとネットワーク境界があります。同じコマンドは、スタンドアロン MCP サーバーまたは他のヘルパープロセスのサンドボックス化に機能します。
+Claude Code は、カスタマーが設定したファイルシステムおよびネットワーク境界を持つ sandbox 内で起動します。同じコマンドは、スタンドアロン MCP サーバーまたは他のヘルパープロセスのサンドボックス化に機能します。
 
 <h3 id="what-the-runtime-blocks-on-its-own">
   ランタイムが独自にブロックするもの
 </h3>
 
-ランタイムは、設定なしで最高リスクの書き込みをブロックします。
+ランタイムは、カスタマーからの設定なしで最高リスクの書き込みをブロックします：
 
 * `denyWrite` は `allowWrite` より優先されます。
 * プロジェクトルートでは、ランタイムは `.git/hooks` を拒否し、`filesystem.allowGitConfig: true` を設定しない限り `.git/config` を拒否し、`.mcp.json`、`.claude/commands`、`.claude/agents`、およびシェルスタートアップファイルを拒否します。
 * macOS では、これらの拒否は書き込みが発生したときにチェックされるため、ネストされたファイルとセッション中に作成されたリポジトリもカバーします。
-* Linux と WSL2 では、ランタイムは起動時に拒否リストを構築します。プロジェクトルートを確実にカバーし、その時点で存在するネストされたコピーの最善の努力による浅いスキャンを行い、`git init`、`git clone`、またはスキャフォルディングなど、セッションが後で作成するものはカバーしません。README の `mandatoryDenySearchDepth` セクションはスキャンの正確なセマンティクスを説明しています。
-* 有効な `~/.srt-settings.json` がない場合、ランタイムは起動しますが、ネットワークアクセスをブロックし、書き込みを `/tmp/claude`、`~/.npm/_logs`、`~/.claude/debug` などの組み込みランタイムパスに限定します。クリーンスタートを設定が読み込まれた証拠として受け取らないでください。
-* `--settings` を渡すと、ファイルの読み込みに失敗した場合、ランタイムは起動を拒否します。
+* Linux と WSL2 では、ランタイムは起動時に拒否リストを構築します。プロジェクトルートを確実にカバーし、その時点で存在するネストされたコピーの浅いスキャンをベストエフォートで実行し、`git init`、`git clone`、またはスキャフォルディングなど、セッションが後で作成するものはカバーしません。README の `mandatoryDenySearchDepth` セクションでは、スキャンの正確なセマンティクスについて説明しています。
+* `~/.srt-settings.json` が存在せず、`--settings` を渡さない場合、ランタイムは起動します。ネットワークアクセスをブロックし、書き込みを `/tmp/claude`、`~/.npm/_logs`、`~/.claude/debug` などの組み込みランタイムパスに限定します。クリーンスタートを設定が読み込まれた証拠として受け取らないでください。
+* 設定ファイルが存在するが空、読み取り不可、または無効な場合、ランタイムは起動を拒否します。これは `~/.srt-settings.json` でも、`--settings` で渡すファイルでも同じです。また、`--settings` ファイルが存在しない場合も起動を拒否します。
 
-書き込み許可には、Claude Code が設定を読み込む他のパスも含まれるため、`denyWrite` でそれらを拒否してください。それらに書き込みできるサンドボックス化されたセッションは、次に Claude Code を起動するときに、サンドボックス化されていない hook、権限ルール、または MCP サーバーを永続化できます。
+カスタマーの書き込み許可には、Claude Code が設定を読み込む他のパスも含まれるため、`denyWrite` でそれらを拒否してください。それらに書き込みできるサンドボックス化されたセッションは、次に Claude Code を起動するときに、サンドボックス化されていない hook、権限ルール、または MCP サーバーを永続化できます。
 
 <h3 id="after-unattended-runs">
   無人実行後
