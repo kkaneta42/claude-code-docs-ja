@@ -45,6 +45,8 @@
 
 [組織向けの LLM gateway をロールアウト](/docs/ja/llm-gateway-rollout)では、各ステップを説明し、各ステップで配布する設定ファイルを示しています。ゲートウェイは組織セットアップの 1 つの部分です。ポリシー実施、使用状況の可視性、データ処理の決定については、[組織向けに Claude Code をセットアップ](/docs/ja/admin-setup)を参照してください。
 
+`ANTHROPIC_BASE_URL` を通じて到達するゲートウェイを、管理対象マシンが使用できる唯一の宛先にするには、同じ管理設定ファイルで [`allowedProviders`](/docs/ja/settings-reference#allowedproviders) を `["customEndpoint"]` に設定し、ゲートウェイの `ANTHROPIC_BASE_URL` をそのファイルの `env` ブロックに配置します。Claude Code はその後、Anthropic に直接接続する場合や開発者独自のプロキシを含む他の場所を指すセッションを拒否し、`ANTHROPIC_BASE_URL` をそこに設定した値でのみ受け入れます。`ANTHROPIC_BEDROCK_BASE_URL` などのプロバイダー固有のエンドポイント変数を通じて到達するゲートウェイの場合、`allowedProviders` エントリはどの変数をピン留めするかを指定します。Claude Code v2.1.285 以降が必要です。
+
 <h2 id="subscriptions-and-gateways">
   サブスクリプションとゲートウェイ
 </h2>

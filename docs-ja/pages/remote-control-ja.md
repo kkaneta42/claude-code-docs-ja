@@ -226,7 +226,7 @@ Ctrl+C で `claude remote-control` を停止すると、提供していたセッ
 
 これらのコマンドはサーバーが停止してから約 4 時間機能します。その後、`claude remote-control` を実行して新しいセッションを開始します。その間にセッションをアーカイブした場合、Claude Code v2.1.228 以降で `--continue` と `--session-id` はそれをアーカイブ解除します。
 
-`claude --remote-control` または `/remote-control` で開始したセッションを復元するには、`claude --continue` または `claude --resume` で会話を再開します。リモートコントロールが再接続しない場合は、[リモートコントロールセッションに再接続できませんでした](#couldnt-reconnect-to-your-remote-control-session)を参照してください。
+`claude --remote-control` または `/remote-control` で開始したセッションを復元するには、`claude --continue` または `claude --resume` で会話を再開します。再開した会話がどの権限モードで開始されるかについては、[再開時の権限モード](/docs/ja/sessions#permission-mode-on-resume)を参照してください。Remote Control が再接続しない場合は、[Remote Control セッションに再接続できませんでした](#couldnt-reconnect-to-your-remote-control-session)を参照してください。
 
 最初のターミナルがまだリモートコントロールをオンにしている間に 2 番目のターミナルで会話を再開する場合、Claude Code は 2 番目のターミナルに `Remote Control not started here` 通知を出力し、セッションを最初のターミナルから奪う代わりに、そこでリモートコントロールをオフのままにします。2 番目のターミナルで `/remote-control` を実行してリモートコントロールをそこに移動します。
 
@@ -369,15 +369,16 @@ Claude Code は、お客様がターミナルに入力中または接続され�
 * **インタラクティブプロセスごとに 1 つのリモートセッション**: サーバーモード外では、各 Claude Code インスタンスは一度に 1 つのリモートセッションをサポートします。単一プロセスから複数の同時セッションを実行するには、[サーバーモード](#start-a-remote-control-session)を使用してください。
 * **ローカルプロセスは実行し続ける必要があります**: Remote Control はローカルプロセスとして実行されます。ターミナルを閉じたり、Desktop アプリまたは VS Code を終了したり、`claude` プロセスを停止したりすると、セッションはオフラインになります。セッションを[復帰](#resume-sessions-after-stopping-the-server)させるまでオフラインのままです。SSH から切断した後もリモートマシンでセッションを実行し続けるには、`tmux` または `screen` 内で開始してください。
 * **サーバーモードでのクラッシュしたセッション**: `claude remote-control` で提供されるセッションがクラッシュした場合、接続されたデバイスからメッセージを送信してください。Claude Code はそれを再度提供します。サーバーを再起動する必要はありません。Claude Code v2.1.238 以降が必要です。
-* **接続されたセッションでの HTTP 403 拒否**: インタラクティブセッションが接続されると、VPN またはネットワークの変更後に発生する可能性があるように、マシンと Anthropic のサーバー間の何かが HTTP 403 で応答する場合、Claude Code は最大 3 分間再試行を続けます。拒否が長く続く場合、Claude Code は切断され、理由は何が拒否したかを示します。ネットワークエッジ、またはあなた自身のネットワーク上のプロキシ、VPN、またはファイアウォールです。
+* **接続されたセッションでの HTTP 403 拒否**: インタラクティブセッションが接続されると、VPN またはネットワークの変更後に発生する可能性があるように、マシンと Anthropic のサーバー間の何かが HTTP 403 で応答する場合、Claude Code は最大 3 分間再試行を続けます。拒否が長く続く場合、Claude Code は切断され、理由は何が拒否したかを示します。ネットワークエッジ、またはユーザー自身のネットワーク上のプロキシ、VPN、またはファイアウォールです。
 * **拡張ネットワーク障害**: マシンが起動しているがネットワークに到達できない場合、次に何をするかはモードによって異なります。
   * **サーバーモード**: Claude Code は約 10 分後にあきらめ、`claude remote-control` プロセスが終了します。新しいセッションを開始するには、`claude remote-control` を再度実行してください。
   * **インタラクティブセッション**: ローカルで作業を続けてください。Claude Code は障害が続く限り再試行を続け、ネットワークが戻ると自動的に再接続します。
+* **ダウンロードされない添付ファイル**: スマートフォンまたはブラウザから添付したファイルをマシンにダウンロードできない場合でも、Claude はメッセージとダウンロードされたファイルを受け取ります。欠落しているファイルの代わりに、Claude Code は `[1 of 3 attachments did not arrive]` などの注記をメッセージに追加します。
 * **プレゼンスハートビートの失敗**: インタラクティブセッションが `could not reach the Remote Control server for about 30 minutes` で切断された場合、`/remote-control` を実行して再接続してください。
-* **転送されたダイアログの有効期限**: Claude Code は権限プロンプトと `AskUserQuestion` の質問を、あなたが回答するまで開いたままにします。Claude Code が別の種類のダイアログをリモートセッションに転送する場合（安全性拒否後に表示されるモデル選択プロンプトなど）、デフォルトでは 5 分待機してからダイアログを閉じ、ダイアログのアクション不要なデフォルトで続行します。[`dialogExpiry`](/docs/ja/settings-reference#dialogexpiry) を設定して期限を調整または無効にしてください。Claude Code v2.1.224 以降が必要です。
+* **転送されたダイアログの有効期限**: Claude Code は権限プロンプトと `AskUserQuestion` の質問を、回答するまで開いたままにします。Claude Code が別の種類のダイアログをリモートセッションに転送する場合（安全性拒否後に表示されるモデル選択プロンプトなど）、デフォルトでは 5 分待機してからダイアログを閉じ、ダイアログのアクション不要なデフォルトで続行します。[`dialogExpiry`](/docs/ja/settings-reference#dialogexpiry) を設定して期限を調整または無効にしてください。Claude Code v2.1.224 以降が必要です。
 * **Fable 使用クレジット同意プロンプトは転送されません**: Claude Code は、セッションが実行される場所でのみ、デバイスではなく、セッション中の [Fable 使用クレジット同意プロンプト](/docs/ja/model-config#fable-and-usage-credits)を表示します。セッションがターミナルで実行され、そこにいる誰もが Claude Code がプロンプトを閉じる前に回答しない場合、ターンはリクエストを送信せずに終了します。[プロンプトの確認が未回答のままでした](/docs/ja/errors#the-prompt-to-confirm-went-unanswered)を参照してください。
 * **一部のコマンドはローカルのみ**: `/plugin` や `/resume` などのターミナルインターフェイスでのみ実行されるコマンドは、引数を渡すかどうかに関わらず、ローカル CLI からのみ機能します。以下はモバイルと Web から機能します。
-  * テキスト出力コマンド: `/compact`、`/clear`、`/context`、`/usage`、`/exit`、`/usage-credits`、`/recap`、および `/reload-plugins`。`/usage-credits` はブラウザを開く代わりに課金 URL を出力します。`/reload-plugins` はセッションがインタラクティブターミナルで実行されている場合にのみ機能します。セッションがない場合は拒否されます。
+  * テキスト出力コマンド: `/compact`、`/clear`、`/context`、`/usage`、`/exit`、`/usage-credits`、`/recap`、および `/reload-plugins`。`/usage-credits` はブラウザを開く代わりに請求 URL を出力します。`/reload-plugins` はセッションがインタラクティブターミナルで実行されている場合にのみ機能します。セッションがない場合は拒否されます。
   * `/model`、`/effort`、`/fast`、`/color`、および `/rename`: 値を引数として渡してください。例えば `/model sonnet` または `/effort high`。モバイルと Web から、`/model` と `/effort` は、ターミナルピッカーまたはスライダーの代わりに引数を取ります。
   * `/mcp`: モバイルアプリから、ピッカーを開く代わりにサーバーステータスのテキスト概要を返します。Web では、`/mcp` 単独で概要を返す代わりに [claude.ai コネクタ](/docs/ja/mcp#use-mcp-servers-from-claude-ai)のディレクトリを開きます。`reconnect`、`enable`、および `disable` [サブコマンド](/docs/ja/commands#all-commands)は両方から機能します。ローカル CLI とは異なり、サーバー名なしの `/mcp reconnect` は失敗したか認証が必要なすべてのサーバーを再接続します。
   * `/config`: モバイルアプリから、`key=value` を渡して設定を設定するか、引数なしで実行して設定できるキーをリストします。Web では、`/config` は代わりに設定の Claude Code セクションを開き、コマンド後のテキストを無視します。
@@ -448,7 +449,7 @@ Claude Code は、Remote Control がアカウントに対して有効になっ�
 
 メッセージは、セッションを Anthropic API から遠ざけたもの（`CLAUDE_CODE_USE_BEDROCK` やカスタム `ANTHROPIC_BASE_URL` など）を名前に挙げています。適格な claude.ai ログインがある場合は、名前に挙げられた変数を設定解除し、[設定](/docs/ja/settings) の `env` キーから削除した場合はそこから削除し、セッションを再開してください。
 
-<h3 id="remote-control-is-disabled-by-your-organization’s-policy">
+<h3 id="remote-control-is-disabled-by-your-organizations-policy">
   「Remote Control is disabled by your organization's policy」
 </h3>
 
@@ -460,6 +461,19 @@ Claude Code は、Remote Control がアカウントに対して有効になっ�
 * **それ以外の場合、所有者が組織に対して有効にしていない**：Remote Control は Team および Enterprise プランではデフォルトでオフです。所有者は [claude.ai/admin-settings/claude-code](https://claude.ai/admin-settings/claude-code) で **Remote Control** トグルをオンにすることで有効にできます。このトグルはサーバー側の組織設定です。
 
 v2.1.281 より前では、このメッセージは Claude Code がこのマシンで組織のポリシーを読み込んでいない場合（例えば、オフラインで開始した後）にも表示されていました。後のバージョンではその状態を [`Couldn't verify your organization's policy for remote control`](#couldnt-verify-your-organizations-policy-for-remote-control) として報告します。
+
+<h3 id="remote-control-was-turned-off-by-your-organizations-policy">
+  「Remote Control was turned off by your organization's policy」
+</h3>
+
+セッションの接続中に組織のポリシーが Remote Control を許可しなくなったため、Claude Code はセッションを切断しました。セッションがどうなるかは、Remote Control をどのように開始したかによって異なります。
+
+* **`/remote-control`、`claude --remote-control`、または [自動接続](#enable-remote-control-for-all-sessions) で開始した場合**：セッションは Remote Control なしで実行し続け、Claude Code は claude.ai でそのセッションをアーカイブします
+* **`claude remote-control` で開始した場合**：サーバーは停止し、提供していたセッションをアーカイブしてから終了します
+
+アーカイブされたセッションは、[アーカイブされたセッションでフィルタリング](/docs/ja/claude-code-on-the-web#archive-sessions)することで引き続き見つけられます。
+
+Remote Control は自動的には再接続しません。組織が再び許可した後にオンに戻すには、セッションで `/remote-control` を実行するか、シェルで `claude remote-control` を実行してください。このマシンの Claude Code が変更されたポリシーを取得するまで、どちらのコマンドも [`Remote Control is disabled by your organization's policy`](#remote-control-is-disabled-by-your-organizations-policy) で失敗します。開いているセッションは約 1 時間に 1 回ポリシーを取得します。Remote Control をブロックしている原因を確認するには、コマンドが出力する完全なテキストをその項目と照合してください。
 
 <h3 id="couldnt-verify-your-organizations-policy-for-remote-control">
   「Couldn't verify your organization's policy for remote control」

@@ -163,6 +163,18 @@ sudo rm /etc/apt/sources.list.d/claude-desktop.list
 
 `claude-desktop` がこのメッセージで終了する場合、root として起動しました。通常のユーザーとしてログインして、そこから起動してください。
 
+<h3 id="your-sign-in-won’t-be-saved-on-this-device">
+  このデバイスではサインインが保存されません
+</h3>
+
+Claude Desktop はサインインをデスクトップのキーリング（GNOME Keyring や KDE Wallet など）に保存します。ロック解除されたキーリングに到達できない場合、サインインは保存されず、アプリを起動するたびに再度サインインします。システムに一致するケースを選択してください。
+
+* **キーリングがインストールされていない（KDE Plasma 以外のデスクトップ）**：`--no-install-recommends` でインストールした場合、または推奨パッケージをスキップする最小イメージの場合、apt はキーリングをインストールしませんでした。`sudo apt install gnome-keyring` で GNOME Keyring をインストールしてください。
+* **KDE Plasma に GNOME Keyring もインストールされている**：KDE Wallet は Plasma デスクトップに付属しています。2 つのキーリングが競合し、Claude Desktop は KDE Wallet が機能していても、このお知らせを表示することがあります。`sudo apt remove gnome-keyring` で余分なものを削除してから、コンピュータを再起動してください。
+* **キーリングがインストールされているがロックされている**：ロック解除してください。
+
+修正後、アプリを再起動してサインインしてください。その後、アプリを終了して再度起動し、サインインしたままアプリが開くことを確認してください。
+
 <h3 id="cowork-isn’t-available">
   Cowork が利用できない
 </h3>

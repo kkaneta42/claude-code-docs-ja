@@ -293,6 +293,18 @@ Claude Code デフォルトより古いモデルバージョンをピン留め�
 
 `opus` などのモデルエイリアスはピンとして機能せず、Claude Code が認識しないモデル ID も同様です。
 
+これらのチェックがプロジェクトが呼び出せないモデルを見つけた場合、Claude Code はこのマシン上でその拒否を最大 1 日間記憶し、その間の起動時に記憶されたモデルをスキップして Agent Platform に再度問い合わせません。Claude Code は、現在のデフォルトモデルの記憶された拒否を、最後のチェック以降 10 分が経過した後に起動時に再度チェックするため、管理者が再度有効にしたデフォルトが戻ります。メモリをオフにするには、[`CLAUDE_CODE_SKIP_MODEL_ACCESS_MEMORY=1`](/docs/ja/env-vars)を設定してください。
+
+<h3 id="when-a-model-is-disabled-mid-session">
+  セッション中にモデルが無効化された場合
+</h3>
+
+プロジェクトがセッションで実行しているモデルへのアクセスを失った場合（例えば、管理者が [Model Garden](https://console.cloud.google.com/vertex-ai/model-garden)で無効化した場合）、Claude Code は各リクエストが失敗する代わりにセッションを別のモデルに切り替え、`Switched to <fallback> because <model> is not available` を表示します。起動時フォールバックと同じモデルを試します。同じティアの以前のバージョンを最初に試し、Opus セッションで Opus バージョンが利用できない場合は、デフォルト Sonnet モデルを試します。
+
+切り替えは、ピン留めしていないティアにのみ適用されます。これは起動時フォールバックと同じ条件です。選択した特定のバージョンでのセッションはそのモデルを保持し、フォールバックモデルチェーンがない場合、リクエストは失敗します。[auto モード](/docs/ja/permission-modes#enable-auto-mode-on-bedrock-agent-platform-or-foundry)では、Claude Code は Agent Platform で auto モードがサポートするモデルにのみ切り替えます。それらのモデルも利用できない場合、リクエストは失敗します。
+
+設定した[フォールバックモデルチェーン](/docs/ja/model-config#fallback-model-chains)はティア切り替えを置き換えます。これらの拒否時に Claude Code は設定したフォールバックに切り替えます。拒否されたリクエストが切り替わらずに失敗するようにするには、[`CLAUDE_CODE_DISABLE_MODEL_ACCESS_FALLBACK=1`](/docs/ja/env-vars)を設定してください。設定したフォールバックチェーンはこれらの拒否時に切り替わります。すべての拒否されたリクエストが失敗するようにしたい場合は、チェーンも削除してください。
+
 <h2 id="iam-configuration">
   IAM 設定
 </h2>

@@ -407,7 +407,7 @@ Claude はその作業を `claude/` で始まるブランチにプッシュし�
   </Step>
 
   <Step title="ネットワークアクセスレベルを変更する">
-    **Update cloud environment** ダイアログで、**Network access** を **Custom** に変更し、**Allowed domains** にドメインを入力します。**Also include default list of common package managers** をチェックして、カスタムドメインと共に [デフォルト許可リスト](/docs/ja/cloud-environments#default-allowed-domains)を保持します。制限のないアクセスの場合は、代わりに **Full** を選択します。
+    **Edit cloud environment** ダイアログで、**Network access** を **Custom** に変更し、**Allowed domains** にドメインを入力します。**Also include default list of common package managers** をチェックして、カスタムドメインと共に [デフォルト許可リスト](/docs/ja/cloud-environments#default-allowed-domains)を保持します。制限のないアクセスの場合は、代わりに **Full** を選択します。
   </Step>
 
   <Step title="保存">

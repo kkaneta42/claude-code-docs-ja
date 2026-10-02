@@ -199,6 +199,8 @@ Claude Code は、存在する管理者ドキュメントの下にあるユー�
 
 [ゲートウェイログインキー](#choose-a-delivery-mechanism)は別のルールに従います。Claude Code はサーバー管理設定からそれらを読み取ることはないため、サーバー管理設定が選択されたソースである間、ポリシーキーを持つマシン上の最も高いランクの管理者ソースがそれらを提供します。それより下にランク付けされた管理者ソースの値、または HKCU レジストリの値は無視されます。
 
+[`allowedProviders`](/docs/ja/settings-reference#allowedproviders) には独自のルールがあります。そのエントリの Scope の注記で、マシン上で設定されたリストがサーバー管理のリストとどのように組み合わされるかを説明しています。Claude Code v2.1.285 以降が必要です。
+
 管理者ソースが `allowManagedMcpServersOnly` または `allowedMcpServers` リストを設定し、その値が実行中のものではない場合、`/status` と `claude doctor` はそのソースとキーに名前を付けます。
 
 <h3 id="compose-every-managed-source">
@@ -353,7 +355,10 @@ Claude Code は [`policyHelper`](/docs/ja/settings-reference#policyhelper) が�
 * 空の管理対象設定ファイルは `{}` としてカウントされます。
 * ユーザー書き込み可能な HKCU レジストリ キーの不正形式の値は起動をブロックしません。Claude Code は代わりに `/status` と `claude doctor` で通知として報告します。
 
-管理対象設定ファイル、ドロップイン ファイル、または `managed-settings.d/` ディレクトリを読み取ることができず、管理者ソースがポリシーを提供しない場合、claude.ai または Claude Console 認証情報でサインインしたセッションは管理者に連絡するメッセージで起動時に終了します。
+管理対象設定ファイル、ドロップイン ファイル、`managed-settings.d/` ディレクトリ、MDM プロファイル、または HKLM レジストリ値が存在するが読み取ることができず、管理者ソースがポリシーを提供しない場合、何が起こるかは読み取りが失敗した理由によって異なります。
+
+* オペレーティング システムが読み取りを拒否した場合（root のみが読み取れるファイルなど）、すべてのセッションはそのソースのポリシーなしで起動します。`/status` と `claude doctor` は失敗を記録し、`-p` を使用した実行では stderr にも出力されます。
+* I/O エラーなど、その他の読み取り失敗の場合、すべてのセッションは起動時に[管理者に連絡するよう求めるメッセージ](/docs/ja/errors#unable-to-read-managed-policy-settings)を表示して終了します。
 
 ドロップされたエントリを見つけるには、3 つの場所のいずれかを確認します。
 
@@ -387,6 +392,7 @@ Claude Code は `permissions`、`autoMode`、`worktree`、および `attribution
 | フィールド | 存在するが無効な場合の動作 |
 | :- | :- |
 | `allowedMcpServers` | ユーザーが追加する MCP サーバーが許可されないように、値が修正されるまで空のアローリストとして適用されます。組織が [`managedMcpServers`](/docs/ja/settings-reference#managedmcpservers) を通じて配信するサーバーは引き続きロードされ、`managed-mcp.json` サーバーは[サーバーの評価方法](/docs/ja/managed-mcp#how-a-server-is-evaluated)に従ってロードされます。個別の無効なエントリは削除され、有効なサブセットが適用されます。 |
+| [`allowedProviders`](/docs/ja/settings-reference#allowedproviders) | 値が修正されるまで空の許可リストとして適用されるため、すべての API プロバイダーが拒否され、そのマシンで Claude Code は起動しません。個別のエントリが既知のプロバイダー名ではないだけの場合、Claude Code はそのエントリをドロップして報告し、残りを適用します。 |
 | `allowedHttpHookUrls` | Claude Code は値を修正するまで空の管理[アローリスト](/docs/ja/settings-reference#allowedhttphookurls)を適用するため、HTTP フックは別の設定ファイルがその URL をリストしている場合にのみ実行されます。無効なエントリが 1 つだけの場合、Claude Code はそのエントリを削除し、残りを適用します。 |
 | `httpHookAllowedEnvVars` | Claude Code は値を修正するまで空の管理[アローリスト](/docs/ja/settings-reference#httphookallowedenvvars)を適用するため、ヘッダー変数は別の設定ファイルがそれを名前で示している場合にのみ補間されます。無効なエントリが 1 つだけの場合、Claude Code はそのエントリを削除し、残りを適用します。 |
 | `allowedChannelPlugins` | 値を修正するまで空のアローリストとして適用されるため、`--channels` に渡されるチャネル プラグインは許可されません。無効なエントリが 1 つだけの場合、それを削除し、残りを適用します。 |
@@ -437,34 +443,36 @@ Claude Code は以下のキーをマネージドソースからのみ読み込�
 
 これらのほとんどはロックです。ロックが管理する値（権限ルールや `sandbox.network.allowedDomains` など）は、任意のレベルで設定できる通常のキーであり、ロックは Claude Code にマネージド値のみを尊重するよう指示します。
 
-このテーブルは権限、プラグイン、配信制御をカバーしています。ここに記載されていないキーについては、[設定リファレンス](/docs/ja/settings-reference#all-settings)インデックスの Scope 列に、それがマネージドのみかどうかが記載されています。そこに記載されている残りのマネージドのみのキーには、ゲートウェイログイン URL、バージョン、ブラウザ、モバイルシミュレータ、SSH ホスト、Desktop ローカルセッション、サンドボックスバイナリパス、モデル価格設定、モデル制限、CLAUDE.md 制御が含まれます。
+このテーブルは権限、プラグイン、配信制御をカバーしています。ここに記載されていないキーについては、[設定リファレンス](/docs/ja/settings-reference#all-settings)インデックスの Scope 列に、それがマネージドのみかどうかが記載されています。
 
 | 設定 | 説明 |
 | :- | :- |
 | [`allowAllClaudeAiMcps`](/docs/ja/settings-reference#allowallclaudeaimcps) | デプロイされた `managed-mcp.json` と一緒に Claude Code が自身で取得する claude.ai コネクタを読み込みます。それ以外の場合は抑制されます |
-| [`allowedChannelPlugins`](/docs/ja/settings-reference#allowedchannelplugins) | メッセージをプッシュできるチャネルプラグインのアローリスト。設定時にデフォルトの Anthropic アローリストを置き換えます。`channelsEnabled: true` が必要です。[チャネルプラグインの実行を制限する](/docs/ja/channels#restrict-which-channel-plugins-can-run)を参照してください |
+| [`allowedChannelPlugins`](/docs/ja/settings-reference#allowedchannelplugins) | メッセージをプッシュできるチャネルプラグインの許可リスト。設定時にデフォルトの Anthropic 許可リストを置き換えます。`channelsEnabled: true` が必要です。[チャネルプラグインの実行を制限する](/docs/ja/channels#restrict-which-channel-plugins-can-run)を参照してください |
 | [`allowManagedHooksOnly`](/docs/ja/settings-reference#allowmanagedhooksonly) | `true` の場合、どのフックが実行されるかを制限します。完全な効果リストについては[`allowManagedHooksOnly` の下で実行されるもの](/docs/ja/settings-reference#what-runs-under-allowmanagedhooksonly)を参照してください |
-| [`allowManagedMcpServersOnly`](/docs/ja/settings-reference#allowmanagedmcpserversonly) | `true` の場合、マネージド設定からの `allowedMcpServers` のみが尊重されます。`deniedMcpServers` はすべてのソースからマージされます。どのマネージドソースがこれを設定できるかについては[すべての管理者ソースから読み込まれるキー](#keys-read-from-every-admin-source)を参照し、[マネージド MCP 設定](/docs/ja/managed-mcp)を参照してください |
-| [`allowManagedPermissionRulesOnly`](/docs/ja/settings-reference#allowmanagedpermissionrulesonly) | マネージド設定を権限ルールの唯一の設定ソースにします。エントリは無視するすべてのソースをリストします |
+| [`allowManagedMcpServersOnly`](/docs/ja/settings-reference#allowmanagedmcpserversonly) | `true` の場合、管理設定からの `allowedMcpServers` のみが尊重されます。`deniedMcpServers` はすべてのソースからマージされます。どのマネージドソースがこれを設定できるかについては[すべての管理者ソースから読み込まれるキー](#keys-read-from-every-admin-source)を参照し、[マネージド MCP 設定](/docs/ja/managed-mcp)を参照してください |
+| [`allowManagedPermissionRulesOnly`](/docs/ja/settings-reference#allowmanagedpermissionrulesonly) | 管理設定を権限ルールの唯一の設定ソースにします。エントリは無視するすべてのソースをリストします |
 | [`blockedMarketplaces`](/docs/ja/settings-reference#blockedmarketplaces) | マーケットプレイスソースのブロックリスト。ブロックされたソースはダウンロード前にチェックされるため、ファイルシステムに触れることはありません。[マネージドマーケットプレイス制限](/docs/ja/plugins/org#restrict-what-users-can-install)を参照してください |
 | [`channelsEnabled`](/docs/ja/settings-reference#channelsenabled) | 組織の[チャネル](/docs/ja/channels)を許可します。各プランのデフォルトについては[エンタープライズ制御](/docs/ja/channels#enterprise-controls)を参照してください |
-| [`disableCommandPluginSources`](/docs/ja/settings-reference#disablecommandpluginsources) | `true` の場合、[`command` プラグインソース](/docs/ja/plugins/marketplace-reference#command-plugin-source)を完全にブロックするため、マーケットプレイスで宣言されたコマンドは実行されません。また、マーケットプレイスの[`headersHelper` コマンド](/docs/ja/plugins/host-marketplace#authenticate-archive-downloads)もブロックします。ただし、マネージド設定自体が宣言するマーケットプレイスは除きます。設定されていない場合は、`allowManagedHooksOnly` に従います。Claude Code v2.1.229 以降が必要であり、`headersHelper` ブロックには v2.1.238 以降が必要です |
+| [`disableCommandPluginSources`](/docs/ja/settings-reference#disablecommandpluginsources) | `true` の場合、[`command` プラグインソース](/docs/ja/plugins/marketplace-reference#command-plugin-source)を完全にブロックするため、マーケットプレイスで宣言されたコマンドは実行されません。また、マーケットプレイスの[`headersHelper` コマンド](/docs/ja/plugins/host-marketplace#authenticate-archive-downloads)もブロックします。ただし、管理設定自体が宣言するマーケットプレイスは除きます。設定されていない場合は、`allowManagedHooksOnly` に従います。Claude Code v2.1.229 以降が必要であり、`headersHelper` ブロックには v2.1.238 以降が必要です |
 | [`disableSideloadFlags`](/docs/ja/settings-reference#disablesideloadflags) | 起動時に `--plugin-dir`、`--plugin-url`、`--agents`、`--mcp-config` フラグを拒否します。クラウドセッションでは、Claude Code はセッションを開始し、サーバー配信の `--mcp-config` サーバーをドロップします。ただし、その[リファレンスエントリ](/docs/ja/settings-reference#disablesideloadflags)がリストする例外は除きます。Claude Code v2.1.193 以降が必要です |
-| [`forceRemoteSettingsRefresh`](/docs/ja/settings-reference#forceremotesettingsrefresh) | `true` の場合、リモートマネージド設定が新たに取得されるまで CLI 起動をブロックし、取得に失敗した場合は終了します。[フェイルクローズ実装](/docs/ja/server-managed-settings#enforce-fail-closed-startup)を参照してください |
-| [`managedMcpServers`](/docs/ja/settings-reference#managedmcpservers) | すべてのユーザーに自身のサーバーと一緒に提供されるリモート MCP サーバー。何かをロックダウンするのではなく、サーバーを提供します。[マネージド設定を通じてサーバーを提供する](/docs/ja/managed-mcp#provide-servers-through-managed-settings)を参照してください。Claude Code v2.1.259 以降が必要です |
+| [`forceRemoteSettingsRefresh`](/docs/ja/settings-reference#forceremotesettingsrefresh) | `true` の場合、リモート管理設定が新たに取得されるまで CLI 起動をブロックし、取得に失敗した場合は終了します。[フェイルクローズ実装](/docs/ja/server-managed-settings#enforce-fail-closed-startup)を参照してください |
+| [`managedMcpServers`](/docs/ja/settings-reference#managedmcpservers) | すべてのユーザーに自身のサーバーと一緒に提供されるリモート MCP サーバー。何かをロックダウンするのではなく、サーバーを提供します。[管理設定を通じてサーバーを提供する](/docs/ja/managed-mcp#provide-servers-through-managed-settings)を参照してください。Claude Code v2.1.259 以降が必要です |
 | [`managedSourcesBehavior`](/docs/ja/settings-reference#managedsourcesbehavior) | Claude Code が最優先のマネージドソースのみを適用するか、[すべてのマネージドソースを構成する](#compose-every-managed-source)かどうか |
 | [`parentSettingsBehavior`](/docs/ja/settings-reference#parentsettingsbehavior) | ホスト提供の親設定がマネージドポリシーの下でマージされるかどうか |
 | [`pluginSuggestionMarketplaces`](/docs/ja/settings-reference#pluginsuggestionmarketplaces) | Claude Code がユーザーに提案できるプラグインのマーケットプレイス |
 | [`pluginTrustMessage`](/docs/ja/settings-reference#plugintrustmessage) | インストール前に表示されるプラグイン信頼警告に追加されるカスタムメッセージ |
-| [`policyHelper`](/docs/ja/settings-reference#policyhelper) | 起動時にマネージド設定を計算する実行可能ファイル。[ポリシーヘルパーでマネージド設定を計算する](/docs/ja/settings-reference#policyhelper)を参照してください |
-| [`sandbox.filesystem.allowManagedReadPathsOnly`](/docs/ja/settings-reference#sandbox-filesystem-allowmanagedreadpathsonly) | `true` の場合、マネージド設定からの `filesystem.allowRead` パスのみが尊重されます。`denyRead` はすべてのソースからマージされます |
-| [`sandbox.network.allowManagedDomainsOnly`](/docs/ja/settings-reference#sandbox-network-allowmanageddomainsonly) | マネージドの `allowedDomains` と `WebFetch(domain:...)` アロールールのみを尊重します。他のドメインはプロンプトなしでブロックします |
+| [`policyHelper`](/docs/ja/settings-reference#policyhelper) | 起動時に管理設定を計算する実行可能ファイル。[ポリシーヘルパーで管理設定を計算する](/docs/ja/settings-reference#policyhelper)を参照してください |
+| [`sandbox.filesystem.allowManagedReadPathsOnly`](/docs/ja/settings-reference#sandbox-filesystem-allowmanagedreadpathsonly) | `true` の場合、管理設定からの `filesystem.allowRead` パスのみが尊重されます。`denyRead` はすべてのソースからマージされます |
+| [`sandbox.network.allowManagedDomainsOnly`](/docs/ja/settings-reference#sandbox-network-allowmanageddomainsonly) | マネージドの `allowedDomains` と `WebFetch(domain:...)` 許可ルールのみを尊重します。他のドメインはプロンプトなしでブロックします |
 | [`strictKnownMarketplaces`](/docs/ja/settings-reference#strictknownmarketplaces) | ユーザーが追加してプラグインをインストールできるプラグインマーケットプレイスソースを制御します。[マネージドマーケットプレイス制限](/docs/ja/plugins/org#restrict-what-users-can-install)を参照してください |
 | [`strictPluginOnlyCustomization`](/docs/ja/settings-reference#strictpluginonlycustomization) | ユーザーおよびプロジェクトソースからのスキル、エージェント、フック、MCP サーバーをブロックします。`true` はすべて 4 つをロックし、配列はどれをロックするかを指定します |
 | [`wslInheritsWindowsSettings`](/docs/ja/settings-reference#wslinheritswindowssettings) | HKLM レジストリまたは `C:\Program Files\ClaudeCode` の下のファイルに設定されている場合、WSL に Windows ポリシーチェーンを読み込ませ、[Windows 管理ドキュメントが存在しない](#present-admin-documents)場合にのみ `/etc/claude-code` を読み込みます。エントリは順序を指定します |
 
 <Note>
-  Team および Enterprise プランでは、オーナーが [Claude Code 管理設定](https://claude.ai/admin-settings/claude-code)で組織全体の[リモートコントロール](/docs/ja/remote-control)と[クラウドセッション](/docs/ja/claude-code-on-the-web)を有効または無効にします。リモートコントロールは [`disableRemoteControl`](/docs/ja/settings-reference#disableremotecontrol) 設定でデバイスごとに無効にすることもできます。クラウドセッションにはデバイスごとのマネージド設定キーはありません。
+  Team および Enterprise プランでは、Owner が [Claude Code 管理設定](https://claude.ai/admin-settings/claude-code)で組織全体の [Remote Control](/docs/ja/remote-control) と[クラウドセッション](/docs/ja/claude-code-on-the-web)を有効または無効にします。Owner が Remote Control をオフにすると、Claude Code v2.1.286 以降を実行している接続済みのセッションも切断されます。各セッションは、次に組織のポリシーを更新したとき（約 1 時間に 1 回）に切断されます。それらのセッションで何が起こるかについては、[`Remote Control was turned off by your organization's policy`](/docs/ja/remote-control#remote-control-was-turned-off-by-your-organizations-policy) を参照してください。
+
+  Remote Control は [`disableRemoteControl`](/docs/ja/settings-reference#disableremotecontrol) 設定でデバイスごとに無効にすることもできます。クラウドセッションにはデバイスごとの管理設定キーはありません。
 
   これらの組織設定が特定のマシンに到達したかどうかを確認するには、そこで `claude doctor` を実行し、`Organization policy` 行を読みます。この行は Claude Code がポリシーをどこから読み込んだか、または読み込まなかった理由を示します。Claude Code v2.1.261 以降が必要です。実行中のセッションでは、ポリシーが読み込まれなかった場合、`/status` は同じ行を表示します。
 </Note>

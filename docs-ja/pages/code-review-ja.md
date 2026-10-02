@@ -428,9 +428,7 @@ Ultrareview は独自のスコープを使用します：現在のブランチ�
   Ultrareview は claude.ai アカウントでの認証が必要であり、Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、または Zero Data Retention が有効な組織では利用できません。ultrareview が利用できない場合、`/code-review ultra` はセッション内でローカルレビューを実行します。
 </Note>
 
-スクリプトまたは CI からクラウドレビューを開始するには、`claude -p '/code-review ultra'` を実行します。Claude Code はレビューを起動し、追跡用のリンクを出力します。Claude Code v2.1.218 以降が必要です。
-
-レビューが[使用クレジット](https://support.claude.com/en/articles/12429409-extra-usage-for-paid-claude-plans)を請求する場合、Claude Code は起動前に停止します。請求確認には対話型セッションが必要なためです。代わりに[`claude ultrareview` サブコマンド](/docs/ja/ultrareview#run-ultrareview-non-interactively)を実行します。実行することで、料金に同意します。
+スクリプトまたは CI ジョブからクラウドレビューを実行するには、[`claude ultrareview` サブコマンド](/docs/ja/ultrareview#run-ultrareview-non-interactively)を使用します。このサブコマンドは結果を待機し、stdout に出力します。
 
 このコマンドは v2.1.147 より前は `/simplify` という名前で、デフォルトで修正を適用していました。`/simplify` はバグを探さずに修正を適用するクリーンアップのみのレビューを実行します。バグ検出のために `/simplify` をスクリプト化した場合は、`/code-review --fix` に切り替えます。
 

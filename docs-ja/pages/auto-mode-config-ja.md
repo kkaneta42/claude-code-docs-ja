@@ -285,13 +285,9 @@ Claude Code はバックグラウンドでスキャンを実行し、ドラフ�
   `/permissions` から編集ルール
 </h2>
 
-設定ファイルを開かずに分類器ルールを表示および編集するには、[`/permissions`](/docs/ja/permissions#manage-permissions) を実行して **Auto mode** タブを選択します。このタブは Claude Code v2.1.246 以降が必要であり、[auto mode がセッションで利用可能](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)な場合にのみ表示されます。
+設定ファイルを開かずに分類器ルールと `environment` エントリを表示および編集するには、[`/permissions`](/docs/ja/permissions#manage-permissions) を実行して **Auto mode** タブを選択します。このタブは Claude Code v2.1.246 以降が必要であり、[auto mode がセッションで利用可能](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)な場合にのみ表示されます。
 
-このタブには、[分類器が設定を読み込むスコープ](#where-the-classifier-reads-configuration)のそれぞれから `allow`、`soft_deny`、`hard_deny`、および `environment` エントリが一覧表示され、各セクションに対して組み込みルールが有効かどうかが表示されます。Claude Code は [管理設定](/docs/ja/server-managed-settings)または `--settings` フラグからのエントリを読み取り専用として表示し、タブで行ったすべての変更を `~/.claude/settings.json` に保存します。タブから以下の操作ができます。
-
-* `allow`、`soft_deny`、および `hard_deny` セクションのルールを追加、編集、または削除します。セクションに最初のルールを追加すると、Claude Code は `"$defaults"` も挿入して、[組み込みルール](#override-the-block-and-allow-rules)が有効なままになるようにします。
-* `allow`、`soft_deny`、または `hard_deny` の組み込みルールをオフにするか、再度オンにします。Claude Code は、そのセクションのリストに `"$defaults"` を追加または削除することで選択を記録するため、セクションの組み込みルールをオフにする前に、少なくとも 1 つの独自ルールが必要です。
-* `environment` エントリをエディタで 1 つのドキュメントとして編集します。まだ `environment` エントリを設定していない場合、Claude Code は最初に組み込み環境を置き換えるかどうかを尋ね、その後、組み込みテキスト全体でエディタを開きます。保存すると、Claude Code はドキュメントで `autoMode.environment` 配列を置き換えます。`"$defaults"` 行を含めて、[組み込みエントリを保持](#define-trusted-infrastructure)します。
+Claude Code は [管理設定](/docs/ja/server-managed-settings)または `--settings` フラグからのエントリを読み取り専用として表示し、タブで行ったすべての変更を `~/.claude/settings.json` に保存します。
 
 <h2 id="route-all-shell-commands-through-the-classifier">
   すべてのシェルコマンドを分類器を通してルーティングする

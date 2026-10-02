@@ -1430,6 +1430,7 @@ Claude Code v2.1.274 以降が必要。
 * `error.type`: Claude Code がセッションを停止した理由。`refused` イベントでのみ存在。
   * `"helper_failed"`: [ポリシーヘルパー実行が失敗](/docs/ja/settings-reference#helper-failures)
   * `"policy_invalid"`: 管理設定に Claude Code が開始するのを停止するエラーが含まれるか、管理ソースが読み込みに失敗したため、Claude Code は組織ログイン強制を確認できません
+  * `"provider_not_allowed"`: セッションが API プロバイダーを使用するか、プロバイダーのトラフィックをホストに送信するため、管理 [`allowedProviders`](/docs/ja/settings-reference#allowedproviders) リストが許可しません。Claude Code v2.1.285 以降が必要
   * `"consent_rejected"`: ユーザーがサーバー管理設定の[セキュリティ承認ダイアログ](/docs/ja/server-managed-settings#security-approval-dialogs)を拒否
   * `"force_refresh_failed"`: [`forceRemoteSettingsRefresh`](/docs/ja/settings-reference#forceremotesettingsrefresh) が必要とする設定フェッチが失敗
   * `"gateway_rejected"`: [Claude アプリゲートウェイ](/docs/ja/claude-apps-gateway)が管理設定ロードに HTTP 403 で応答

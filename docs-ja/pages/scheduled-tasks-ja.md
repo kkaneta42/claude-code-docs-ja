@@ -84,7 +84,7 @@ Claude Code は、定期的または 1 回限りの作業をスケジュール�
 <span id="loop-provider-differences" />
 
 <Note>
-  動的に選択された間隔と[組み込みメンテナンスプロンプト](#run-the-built-in-maintenance-prompt)はすべてのプロバイダーで機能し、[フィーチャーフラグ取得](/docs/ja/env-vars#features-that-need-feature-flag-fetching)がオフになっている場合でも機能します。Amazon Bedrock、Claude Platform on AWS、Google Cloud の Agent Platform、Microsoft Foundry、または取得がオフになっている場合、両方とも Claude Code v2.1.248 以降が必要です。その場合、以前のバージョンでは、間隔なしのプロンプトは固定 10 分スケジュールで実行され、プロンプトなしの `/loop` は使用メッセージを出力します。
+  動的に選択された間隔と[組み込みメンテナンスプロンプト](#run-the-built-in-maintenance-prompt)はすべてのプロバイダーで機能し、[フィーチャーフラグ取得](/docs/ja/env-vars#features-that-need-feature-flag-fetching)がオフになっている場合でも機能します。Amazon Bedrock、Claude Platform on AWS、Google Cloud の Agent Platform、Microsoft Foundry、または取得がオフになっている場合、両方とも Claude Code v2.1.248 以降が必要です。
 </Note>
 
 <h3 id="run-the-built-in-maintenance-prompt">

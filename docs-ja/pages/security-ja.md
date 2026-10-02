@@ -20,15 +20,12 @@
   パーミッションベースのアーキテクチャ
 </h3>
 
-Manual モードでは、Claude Code は読み取り専用の権限で開始されます。Claude Code がファイルを編集したり、テストを実行したり、コマンドを実行したりする必要がある場合、まずあなたに確認し、アクションを 1 回だけ承認するか、それ以降は常に許可するかを選択できます。
+セッションの権限モードは、Claude が事前に確認せずに実行できるアクションを決定します。auto モードは、対話型のターミナルセッションと VS Code セッションにおける組み込みの開始権限モードです。[セッションがどのモードで開始されるか](/docs/ja/permission-modes#which-mode-a-session-starts-in) では、以前のバージョン、その他のサーフェス、および開始権限モードを変更する設定について説明しています。
 
-Manual モードでは、Claude Code はシステムを変更できる Bash コマンドを実行する前にも確認します。`ls`、`cat`、`git status` などの [読み取り専用コマンド](/docs/ja/permissions#read-only-commands) の組み込みセットは、確認なしで実行されます。あなたと組織は、これらの権限を直接設定します。
+* **auto モード**: 別の分類器モデルがユーザーの代わりにアクションをレビューし、安全でないと判断したものをブロックします。[分類器がアクションを評価する方法](/docs/ja/permission-modes#how-the-classifier-evaluates-actions) では、Claude Code が直接承認するアクション、分類器に送信するアクション、および Claude Code が引き続きユーザーに確認するアクションを一覧表示しています。明示的な ask ルールと deny ルールは引き続き適用され、組織は [auto モードをオフにする](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode) ことができます
+* **Manual モード**: Claude Code は読み取り専用の権限で開始されます。ファイルを編集したり、テストを実行したり、コマンドを実行したりする必要がある場合は、まずユーザーに確認し、ユーザーはアクションを 1 回だけ承認するか、それ以降は常に許可するかを選択できます。`ls`、`cat`、`git status` などの [読み取り専用コマンド](/docs/ja/permissions#read-only-commands) の組み込みセットは、確認なしで実行されます
 
-[auto モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode) では、別の分類器モデルがあなたの代わりにアクションをレビューし、安全でないと判断したものをブロックします。[分類器がアクションを評価する方法](/docs/ja/permission-modes#how-the-classifier-evaluates-actions) では、Claude Code が直接承認するアクション、分類器に送信するアクション、およびあなたに確認するアクションを一覧表示しています。明示的な ask ルールと deny ルールは引き続き適用され、組織は [auto モードをオフにする](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode) ことができます。
-
-セッションが開始される権限モードは、プラン、開始するサーフェス、設定、および組織の設定によって異なります。[権限モード](/docs/ja/permission-modes#which-mode-a-session-starts-in) を参照してください。
-
-詳細なパーミッション設定については、[Permissions](/docs/ja/permissions) を参照してください。
+ユーザーと組織は、これらの権限を直接設定します。詳細な権限設定については、[Permissions](/docs/ja/permissions) を参照してください。
 
 <h3 id="built-in-protections">
   組み込み保護機能
@@ -37,7 +34,9 @@ Manual モードでは、Claude Code はシステムを変更できる Bash コ�
 agentic システムのリスクを軽減するために：
 
 * **サンドボックス化された bash ツール**: [Sandbox](/docs/ja/sandboxing) bash コマンドをファイルシステムとネットワークの分離で実行し、権限プロンプトを減らしながらセキュリティを維持します。`/sandbox` で設定して、Claude Code が自律的に動作できる境界を定義します
-* **作業ディレクトリの境界**: Manual モードでは、Claude Code は開始されたフォルダとそのサブフォルダにのみ書き込みでき、明示的な権限なしに親ディレクトリのファイルを変更することはできません。Manual モードでは、Claude Code は Read、Grep、Glob ツールを使用してこの境界外のパスを読み取る前にも確認します。[追加ディレクトリ](/docs/ja/permissions#working-directories) でこの境界を拡張して確認をスキップするか、サンドボックスが有効な場合にのみ適用される [sandbox `denyRead` ルール](/docs/ja/sandboxing#filesystem-isolation) で読み取り専用 Bash コマンドで利用可能なより広い読み取りアクセスを制限します
+* **作業ディレクトリの境界**: Manual モードでは、Claude Code のファイルツールが、起動されたフォルダとそのサブフォルダの外部で読み取りまたは書き込みを行う前に、ユーザーに確認します。この境界は権限プロンプトであるため、ユーザーが承認した Bash コマンドは、ユーザーアカウントが書き込み可能な任意の場所に書き込むことができます
+  * 確認なしでフォルダを読み取るには、そのフォルダを [追加ディレクトリ](/docs/ja/permissions#working-directories) として追加します
+  * オペレーティングシステムレベルで Bash コマンドを制限するには、[サンドボックス化](/docs/ja/sandboxing#filesystem-isolation) をオンにします
 * **プロンプト疲労の軽減**: ユーザーごと、コードベースごと、または組織ごとに頻繁に使用される安全なコマンドのホワイトリスト化をサポート
 * **Accept Edits モード**: ファイル編集と `mkdir`、`touch`、`rm`、`mv`、`cp`、`sed` などの固定セットのファイルシステム Bash コマンドを作業ディレクトリ内のパスに対して自動承認します。その他の Bash コマンドとスコープ外のパスはプロンプトが表示されます
 
@@ -45,7 +44,7 @@ agentic システムのリスクを軽減するために：
   ユーザーの責任
 </h3>
 
-Claude Code は、ユーザーが付与したパーミッションのみを持ちます。承認前に、提案されたコードとコマンドのセキュリティを確認する責任があります。
+承認前に、提案されたコードとコマンドの安全性を確認する責任があります。
 
 <h2 id="protect-against-prompt-injection">
   プロンプトインジェクションから保護する
@@ -58,8 +57,6 @@ Claude Code は、ユーザーが付与したパーミッションのみを持�
 </h3>
 
 * **権限モード**: Manual モードでは、機密操作には明示的な承認が必要です
-* **コンテキスト認識分析**: 完全なリクエストを分析して潜在的に有害な指示を検出します
-* **入力サニタイゼーション**: ユーザー入力を処理することでコマンドインジェクションを防止します
 * **ネットワークコマンド承認**: `curl` や `wget` などのウェブからコンテンツを取得するコマンドはデフォルトでは自動承認されません。Manual モードでは他の読み取り専用以外の Bash コマンドと同様にプロンプトが表示されるため、一度承認するか、`Bash(curl *)` のような明示的な許可ルールを追加できます。Claude がこれらを実行しないようにするには、[`permissions.deny`](/docs/ja/permissions#tool-specific-permission-rules) に追加してください。deny ルールは[書かれたとおりの](/docs/ja/permissions#bash-rule-limits)コマンドにマッチします。コマンドテキストに依存しないネットワーク強制については、[sandbox ネットワーク分離](/docs/ja/sandboxing#network-isolation) を参照してください
 
 <h3 id="privacy-safeguards">
@@ -79,14 +76,13 @@ Claude Code は、ユーザーが付与したパーミッションのみを持�
 </h3>
 
 * **ネットワークリクエスト承認**: Manual モードでは、ネットワークリクエストを行うほとんどのツールはデフォルトでユーザー承認が必要です
-* **分離されたコンテキストウィンドウ**: Web fetch は潜在的に悪意のあるプロンプトの注入を避けるために別のコンテキストウィンドウを使用します
-* **信頼検証**: 初回のコードベース実行と新しい MCP サーバーには信頼検証が必要です
-  * 注：信頼検証は `-p` フラグで非対話的に実行する場合は無効になります
+* **Web ページの要約**: ほとんどのフェッチでは、WebFetch がページに対して別のモデル呼び出しを実行し、Claude は生のページではなくその呼び出しの回答を受け取ります。[WebFetch ツールの動作](/docs/ja/tools-reference#webfetch-tool-behavior) を参照してください
+* **信頼検証**: 対話型セッションでは、まだ信頼していないフォルダで Claude Code を起動すると、ワークスペースの信頼ダイアログが表示されます。プロジェクトの `.mcp.json` 内のサーバーには独自の承認プロンプトがあり、[プロジェクトスコープ](/docs/ja/mcp#project-scope) にはそのプロンプトをスキップするセッションが記載されています
+  * 注：`-p` セッションではどちらのプロンプトも表示されません。そこでリポジトリのファイルが実行できるものについては、[フォルダを信頼する前に実行されるもの](/docs/ja/permissions#what-runs-before-you-trust-a-folder) に記載されています
   * 注：Claude Code をホームディレクトリで直接起動する場合、信頼受け入れは現在のセッションのみ保持され、ディスクに書き込まれないため、起動するたびにプロンプトが再度表示されます。これを永続化するための設定はありません。代わりに、プロジェクトサブディレクトリから Claude Code を起動してください。そこでは信頼受け入れはディレクトリごとに保存されます
-* **コマンドインジェクション検出**: Manual モードでは、疑わしい bash コマンドは、以前にホワイトリストに登録されていても手動承認が必要です
+* **コマンドインジェクション検出**: Manual モードでは、Claude Code は完全に分析できない Bash コマンドを実行する前に確認を求めます。`Bash(git *)` のようなコマンドの一部に対する許可ルールがあっても、このプロンプトはスキップされません。[サンドボックス化されたコマンド](/docs/ja/permissions#how-permissions-interact-with-sandboxing) はこのプロンプトなしで実行できます
 * **フェイルクローズドマッチング**: Manual モードでは、マッチしないコマンドはデフォルトで承認が必要です
-* **自然言語説明**: 複雑な bash コマンドにはユーザーの理解のための説明が含まれます
-* **セキュアな認証情報ストレージ**: API キーとトークンは利用可能な場合は macOS Keychain に保存され、Windows と Linux ではファイルパーミッションで保護されます。[Credential Management](/docs/ja/authentication#credential-management) を参照してください
+* **セキュアな認証情報ストレージ**: API キーとトークンは、利用可能な場合は macOS Keychain に保存されます。Linux ではモード `0600` のファイルに保存され、Windows ではユーザープロファイルディレクトリのアクセス制御を継承するファイルに保存されます。[Credential Management](/docs/ja/authentication#credential-management) を参照してください
 
 <Warning>
   **Windows WebDAV セキュリティリスク**: Windows で Claude Code を実行する場合、WebDAV を有効にしたり、Claude Code に `\\*` などの WebDAV サブディレクトリを含む可能性のあるパスへのアクセスを許可することはお勧めしません。[WebDAV は Microsoft によって非推奨になっています](https://learn.microsoft.com/en-us/windows/whats-new/deprecated-features#:~:text=The%20Webclient%20\(WebDAV\)%20service%20is%20deprecated) セキュリティリスクのため。WebDAV を有効にすると、Claude Code がリモートホストへのネットワークリクエストをトリガーし、パーミッションシステムをバイパスする可能性があります。
@@ -108,7 +104,7 @@ Claude Code は、ユーザーが付与したパーミッションのみを持�
   MCP セキュリティ
 </h2>
 
-Claude Code ユーザーは Model Context Protocol（MCP）サーバーを設定できます。許可された MCP サーバーのリストは、エンジニアがソース管理にチェックインする Claude Code 設定の一部として、ソースコードで設定されます。
+Claude Code を Model Context Protocol（MCP）サーバーに接続できます。プロジェクトスコープのサーバーは `.mcp.json` で定義され、このファイルはソース管理にチェックインできます。[その他のスコープ](/docs/ja/mcp#mcp-installation-scopes)のサーバーや [claude.ai コネクタ](/docs/ja/mcp#how-connectors-reach-claude-code)はリポジトリの外部で設定され、プラグインもサーバーを追加できるため、`.mcp.json` を確認しても、セッションが読み込む可能性のあるすべてのサーバーがわかるわけではありません。組織内で実行されるサーバーを制限するには、[マネージド MCP 設定](/docs/ja/managed-mcp)を参照してください。
 
 独自の MCP サーバーを作成するか、信頼できるプロバイダーからの MCP サーバーを使用することをお勧めします。Claude Code パーミッションを MCP サーバー用に設定できます。Anthropic は MCP サーバーを [リスティング基準](https://claude.com/docs/connectors/building/review-criteria) に照らして確認してから [Anthropic Directory](https://claude.ai/directory) に追加しますが、MCP サーバーのセキュリティ監査または管理は行いません。
 

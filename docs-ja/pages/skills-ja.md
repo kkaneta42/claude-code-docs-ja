@@ -56,6 +56,16 @@ Claude Code には、`/doctor`、`/code-review`、`/batch`、`/debug`、`/loop`�
 
 Claude は、失敗したコマンドや欠落したステップなど、実行を誤った場合にのみ記録されたファイルを編集するため、セッションごとの差分なしでファイルをコミットできます。v2.1.205 より前では、バンドルされたスキルは Claude に実行から学んだことをすべて折り込むよう指示し、頻繁なマージコンフリクトを引き起こしていました。
 
+<h3 id="run-your-checks-before-each-commit">
+  各コミットの前にチェックを実行する
+</h3>
+
+`verify` または `simplify` という名前のスキルが存在する状態でセッションが開始されると、Claude Code のコミット指示により、Claude はドキュメントやテストへの変更を除き、各コミットの直前にそのスキルを実行します。これには Claude Code v2.1.286 以降が必要です。セッション開始時に次の条件を満たしている場合、Claude はその指示を受け取ります。
+
+* **場所**: スキルがエンタープライズ、個人、プロジェクト、または追加ディレクトリの[場所](#where-skills-live)から読み込まれるか、その名前の `.claude/commands/` ファイルから読み込まれること。`/verify` がリポジトリルートに記録するレシピはプロジェクトスキルであるため、対象になります。バンドルされた `/verify` と `/simplify`、プラグインスキル、claude.ai アカウントのスキルは対象外です。
+* **呼び出し**: Claude がスキルを呼び出せること。たとえば `disable-model-invocation: true` などで [Claude による呼び出しを停止した](#control-who-invokes-a-skill) 場合、Claude はこの指示を受け取りません。
+* **Git の指示**: [`includeGitInstructions`](/docs/ja/settings-reference#includegitinstructions) をオフにしていないこと。オフにすると、組み込みのコミットおよび PR に関するその他の指示とともに、この指示も削除されます。
+
 <h3 id="work-on-claude-api-projects">
   Claude API プロジェクトで作業する
 </h3>
@@ -290,7 +300,7 @@ Claude Code は名前 `anthropic-skills` と、`anthropic-skills:pdf` などの�
 
 Claude Code は、同期されたスキルの frontmatter に 2 つのルールを適用します：
 
-* Claude Code は、あらゆる種類のセッションで frontmatter を尊重するため、`allowed-tools` グラントは通常の [権限フロー](/docs/ja/permissions) を通じて進みます。
+* フロントマターはあらゆる種類のセッションで適用されるため、`allowed-tools` による許可は通常の [権限フロー](/docs/ja/permissions) を経由します。組織が `allowManagedPermissionRulesOnly` を設定している場合、この許可は [適用されません](#when-only-managed-permission-rules-apply)。
 * Claude Code は、スキルが提供する表示テキスト（説明など）をサニタイズします。制御文字を削除し、Claude に到達するテキスト（説明など）では、テキストが Claude Code の内部フォーマットを模倣できないように、角括弧をエスケープします。このサニタイズには Claude Code v2.1.228 以降が必要です。
 
 <h4 id="how-claude-code-handles-the-body-of-a-synced-skill">
@@ -603,7 +613,7 @@ Claude が、レンダリングされたコンテンツがコンテキストに�
 
 `allowed-tools` フィールドは、スキルを呼び出すターン中にリストされたツールの権限を付与するため、Claude は承認を求めることなくそれらを使用できます。許可はあなたが次のメッセージを送信するときにクリアされます。スキルコンテンツは [コンテキストに留まる](#skill-content-lifecycle) にもかかわらず。スキルを再呼び出すと、そのターンに対して再度適用されます。これはどのツールが利用可能かを制限しません。すべてのツールは呼び出し可能なままであり、[権限設定](/docs/ja/permissions) はリストされていないツールを引き続き管理します。セッション全体ではなく単一のターンのツールを事前承認するには、代わりにそれらの権限設定に許可ルールを追加します。
 
-ワークスペーストラストはこのフィールドをゲートしません。Claude Code は、信頼したことのないフォルダで `-p` 実行を含む、あなたまたは Claude がスキルを呼び出すときはいつでも、プロジェクトスキルの `allowed-tools` を適用します。スキルは自身に広いツールアクセスを付与できるため、Claude Code をそこで実行する前に、リポジトリにチェックインされたスキルの `allowed-tools` を確認してください。
+ワークスペースの信頼はこのフィールドの適用を制限しません。Claude Code は、一度も信頼したことのないフォルダでの `-p` 実行であっても、プロジェクトスキルの `allowed-tools` を適用します。スキルは自身に広いツールアクセスを付与できるため、Claude Code をそこで実行する前に、リポジトリにチェックインされたスキルの `allowed-tools` を確認してください。組織全体でリポジトリのスキルからこのフィールドを無効にするには、[管理された権限ルールのみが適用される場合](#when-only-managed-permission-rules-apply) を参照してください。
 
 このスキルでは、スキルを呼び出すときはいつでも、Claude は許可を求めることなく git コマンドを実行できます。
 
@@ -617,6 +627,14 @@ allowed-tools: Bash(git add *) Bash(git commit *) Bash(git status *)
 ```
 
 スキルがアクティブな間、Claude の利用可能なプールからツールを削除するには、スキルのフロントマターの `disallowed-tools` にそれらをリストします。制限はあなたが次のメッセージを送信するときにクリアされます。拒否ルールと同様に、フィールドは他のツールが残っている間、[`EndConversation`](/docs/ja/tools-reference#endconversation-tool-behavior) を削除できません。すべてのスキルとプロンプト全体でツールをブロックするには、[権限設定](/docs/ja/permissions) に拒否ルールを追加します。
+
+<h4 id="when-only-managed-permission-rules-apply">
+  管理された権限ルールのみが適用される場合
+</h4>
+
+組織が管理設定で `allowManagedPermissionRulesOnly` を設定している場合、Claude Code はプロジェクトスキルと個人スキル、および [この設定の項目に記載されているその他のソース](/docs/ja/settings-reference#allowmanagedpermissionrulesonly) の `allowed-tools` を無視します。これには Claude Code v2.1.282 以降が必要です。
+
+影響を受けるスキルがリストするツールは、代わりに組織の管理ルールと通常の権限プロンプトを経由します。`/status` を実行すると、セッション内でこれまでに Claude Code が `allowed-tools` を無視した各スキルが一覧表示されます。どの管理ルールでも許可されていない、スキル内の注入されたコマンドは、[注入されたコマンドの権限チェック](#permission-checks-on-injected-commands) に従います。
 
 <h3 id="pass-arguments-to-skills">
   スキルに引数を渡す
@@ -766,7 +784,7 @@ PowerShell ツールは、実行するコマンドに同じタイムアウト、
 
 注入されたコマンドは、スキルのレンダリング中に権限を求めるプロンプトを表示することはありません。Claude Code は最初に [権限ルール](/docs/ja/permissions) に対して各コマンドをチェックします。deny ルールが一致するコマンドは `Shell command permission check failed for pattern "..."` で呼び出しを中止します。
 
-[auto mode](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode) の外では、コマンドの権限チェックが allow 以外のものを返す場合、Claude Code は同じエラーで呼び出しを中止します。これには通常あなたに尋ねるルールが含まれます。一致しないコマンドが中止されるのを防ぐには、[`allowed-tools`](#pre-approve-tools-for-a-skill) で事前に承認します。Deny および ask ルールは引き続き `allowed-tools` をオーバーライドします。[権限を管理する](/docs/ja/permissions#manage-permissions) を参照してください。
+[auto モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode) 以外では、コマンドの権限チェックが allow 以外を返す場合、Claude Code は同じエラーで呼び出しを中止します。これには通常はユーザーに確認を求めるルールも含まれます。一致しないコマンドがここで中止されるのを防ぐには、[`allowed-tools`](#pre-approve-tools-for-a-skill) で事前に承認します。組織が権限ルールを管理設定に制限している場合は、[管理された権限ルールのみが適用される場合](#when-only-managed-permission-rules-apply) を参照してください。拒否ルールと確認ルールは引き続き `allowed-tools` より優先されます。[権限を管理する](/docs/ja/permissions#manage-permissions) を参照してください。
 
 auto mode では、そうでなければあなたの承認が必要なコマンドは呼び出しを中止しません。スキルは Claude にコマンドを最初に実行するよう指示して読み込まれ、Claude 独自の呼び出しは [auto mode の通常のチェック](/docs/ja/permission-modes#how-the-classifier-evaluates-actions) を通じて進みます。呼び出しは、`agent` を設定する [フォークされたスキル](#run-skills-in-a-subagent) でも、Claude が [注入されたコマンドを実行するシェルツール](#how-injected-commands-run) を持たないセッションでも中止されます。
 
@@ -840,7 +858,7 @@ Research $ARGUMENTS thoroughly:
   Claude のスキルアクセスを制限する
 </h3>
 
-デフォルトでは、Claude は `disable-model-invocation: true` が設定されていないスキルを呼び出すことができます。`allowed-tools` を定義するスキルは、スキルを呼び出すターン中に、事前承認なしでこれらのツールへのアクセスを Claude に付与します。許可は次のメッセージを送信するときにクリアされます。[権限設定](/docs/ja/permissions) は引き続き、他のすべてのツールの基本的な承認動作を管理します。`/init` や `/security-review` を含むいくつかの組み込みコマンドも Skill ツールを通じて利用可能です。`/compact` などの他の組み込みコマンドはそうではありません。
+デフォルトでは、Claude は `disable-model-invocation: true` が設定されていない任意のスキルを呼び出すことができます。[`allowed-tools`](#pre-approve-tools-for-a-skill) を定義するスキルは、そのスキルを呼び出すターンの間、使用ごとの承認なしでそれらのツールへのアクセスを Claude に付与します。この付与は次のメッセージを送信するとクリアされます。[権限設定](/docs/ja/permissions) は引き続き、その他のすべてのツールの基本的な承認動作を管理します。`/init` や `/security-review` を含むいくつかの組み込みコマンドも Skill ツールを通じて利用できます。`/compact` などのその他の組み込みコマンドは利用できません。
 
 Claude が呼び出すことができるスキルを制御する 3 つの方法：
 

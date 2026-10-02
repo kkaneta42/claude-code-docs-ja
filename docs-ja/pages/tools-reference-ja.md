@@ -167,12 +167,14 @@ Claude Code を起動する前に virtualenv または conda 環境をアクテ�
   タイムアウトと出力制限
 </h3>
 
-各コマンドはタイムアウト下で実行され、Claude がそれを管理します。コマンドにデフォルトより長い時間が必要な場合、その呼び出しで `timeout` パラメータを渡します。ユーザーがコマンドごとのタイムアウトを設定することはありません。2 つの[環境変数](/docs/ja/env-vars)が Claude が取得するものを制限します。
+各コマンドはタイムアウト下で実行され、Claude がそれを管理します。コマンドにデフォルトより長い時間が必要な場合、その呼び出しで `timeout` パラメータを渡します。ユーザーがコマンドごとのタイムアウトを設定することはありません。
+
+2 つの[環境変数](/docs/ja/env-vars)が、フォアグラウンドで実行されるコマンドに対して Claude が取得するものを制御します。
 
 * `BASH_DEFAULT_TIMEOUT_MS` — Claude がタイムアウトを渡さない場合のデフォルト。デフォルトでは 2 分です。
 * `BASH_MAX_TIMEOUT_MS` — デフォルトでは、Claude が要求するものを上限で制限します。有効な上限は 2 つの値の大きい方です。デフォルトでは 10 分です。
 
-バックグラウンドで実行される Claude が開始するコマンドの場合、`timeout` は代わりにコマンドがそこで実行される期間を設定し、[バックグラウンドコマンド](#background-commands)の下で説明されている別のデフォルトと最大値があります。[PowerShell ツール](#powershell-tool)は同じタイムアウトルールに従い、同じ 2 つの変数を読み取ります。
+バックグラウンドで実行される Claude が開始するコマンドの場合、`timeout` は代わりにコマンドがそこで実行される期間を設定し、[バックグラウンドコマンドの時間制限](#time-limit-for-background-commands)の下で説明されている別のデフォルトと最大値があります。[PowerShell ツール](#powershell-tool)は同じタイムアウトルールに従い、同じ 2 つの変数を読み取ります。
 
 <h4 id="output-limits">
   出力制限
@@ -197,23 +199,39 @@ Claude Code はコマンドの出力をコマンド実行中に作業ファイ�
 
 開発サーバーやウォッチビルドなどの長時間実行プロセスの場合、Claude は `run_in_background: true` を設定してコマンドをバックグラウンドタスクとして開始し、実行中に作業を続けることができます。`/tasks` でバックグラウンドタスクをリストアップして停止します。そこから停止するか、デスクトップアプリなどの接続されたクライアントから停止すると、Claude は待機する代わりに先に進みます。サブエージェントがコマンドを開始した場合、先に進むのはそのサブエージェントです。
 
-[フォアグラウンドサブエージェント](/docs/ja/sub-agents#run-subagents-in-foreground-or-background)が開始したコマンドは、そのサブエージェントの実行が終了すると停止します。完了したか、失敗したか、中断されたかに関係なく。メインの会話またはバックグラウンドサブエージェントが開始したコマンドは、最終応答の後も実行し続けます。終了するまで、停止されるまで、またはその時間制限に達するまで。`-p` フラグを使用した非対話型モードでは、[バックグラウンドコマンドは実行の最終結果の直後に終了します](/docs/ja/headless#background-tasks-at-exit)。
+<h4 id="when-a-background-command-stops">
+  バックグラウンドコマンドが停止するとき
+</h4>
+
+[フォアグラウンドサブエージェント](/docs/ja/sub-agents#run-subagents-in-foreground-or-background)が開始したコマンドは、そのサブエージェントの実行が終了すると停止します。完了したか、失敗したか、中断されたかに関係なく。メインの会話またはバックグラウンドサブエージェントが開始したコマンドは、最終応答の後も実行し続けます。終了するまで、停止されるまで、またはその[時間制限](#time-limit-for-background-commands)に達するまで。`-p` フラグを使用した非対話モードでは、[バックグラウンドコマンドは実行の最終結果の直後に終了します](/docs/ja/headless#background-tasks-at-exit)。
+
+<h4 id="time-limit-for-background-commands">
+  バックグラウンドコマンドの時間制限
+</h4>
 
 Bash および PowerShell バックグラウンドコマンドには時間制限があり、コマンドがバックグラウンドに入った時点からカウントされます。
 
 * Claude がバックグラウンドで開始するコマンドは 30 分、または Claude が `run_in_background` で渡す `timeout` を取得します。最大 2 時間まで。
 * フォアグラウンドで開始してからバックグラウンドに移動するコマンド。例えば `Ctrl+B` で、またはそのタイムアウトで、移動から 30 分を取得します。
 
+バックグラウンドコマンドが時間制限に達すると、Claude Code はそれを停止し、Claude に理由を伝えます。Claude は、作業がまだ必要な場合、より長い `timeout` でコマンドを再度開始できます。停止通知は `Background command "<description>" was stopped after reaching its background time limit` と読みます。
+
+<h4 id="raise-the-time-limit-for-background-commands">
+  バックグラウンドコマンドの時間制限を上げる
+</h4>
+
 2 つの[環境変数](/docs/ja/env-vars)がこれらの制限を上げます。Bash および PowerShell コマンド同様。両方ともミリ秒を取得し、どちらも制限を短縮することはできません。低い値は 30 分のデフォルトと 2 時間の最大値を保ちます。
 
 * `BASH_DEFAULT_TIMEOUT_MS` を `1800000` より上に設定して、30 分のデフォルトをその値に置き換えます。Claude が `timeout` なしで開始するコマンドと移動されたコマンドの両方に対して。
 * `BASH_MAX_TIMEOUT_MS` を `7200000` より上に設定して、2 時間の最大値をその値に上げます。`BASH_DEFAULT_TIMEOUT_MS` を `7200000` より上に設定すると、最大値が同じ方法で上がります。
 
-バックグラウンドコマンドが時間制限に達すると、Claude Code はそれを停止し、Claude に理由を伝えます。Claude は、作業がまだ必要な場合、より長い `timeout` でコマンドを再度開始できます。停止通知は `Background command "<description>" was stopped after reaching its background time limit` と読みます。
+<h4 id="foreground-commands-that-move-to-the-background">
+  フォアグラウンドコマンドがバックグラウンドに移動する
+</h4>
 
-フォアグラウンドコマンドが完了せずにタイムアウトに達すると、Claude Code はそれを停止する代わりにバックグラウンドに移動します。ただし、コマンドが `sleep` で始まる場合は除きます。移動されたコマンドの時間制限は移動からカウントされ、フォアグラウンドサブエージェントの移動されたコマンドはそのサブエージェントの実行が終了すると停止します。
+フォアグラウンドコマンドが完了せずにタイムアウトに達すると、Claude Code はそれを停止する代わりにバックグラウンドに移動します。ただし、コマンドが `sleep` で始まる場合は除きます。移動されたコマンドの[時間制限](#time-limit-for-background-commands)は移動からカウントされ、フォアグラウンドサブエージェントの移動されたコマンドはそのサブエージェントの実行が終了すると停止します。
 
-[`CLAUDE_CODE_DISABLE_BACKGROUND_TASKS=1`](/docs/ja/env-vars#variables) を設定すると、バックグラウンドタスク機能の残りと共に自動バックグラウンド化を無効にします。
+[`CLAUDE_CODE_DISABLE_BACKGROUND_TASKS=1`](/docs/ja/env-vars#variables) を設定するか、[bare モード](/docs/ja/headless#start-faster-with-bare-mode)で実行すると、バックグラウンドタスク機能の残りと共に自動バックグラウンド化が無効になるため、タイムアウトに達したコマンドは代わりに停止します。
 
 バックグラウンドに移動されたコマンドの結果は、何が起こったかを示します。
 
@@ -244,7 +262,6 @@ Claude Code は、開始する他の種類のプロセスも同じ制限に対�
 リストするものに関係なく、これらのルールが適用されます。
 
 * **不明な名前**: Claude Code は認識しない名前を無視します。
-* **Bash、PowerShell、および Monitor**: Claude Code は、リストするものに関係なく、Bash、PowerShell、および Monitor ツールコマンドを上限の下に保ちます。
 * **変数が設定されていない**: Claude Code は、Anthropic がサーバーから配信する設定から他のキャップされた種類のセットを取得し、そのセットは時間とともに変わる可能性があるため、変更されないセットが必要な場合は変数を設定します。
 * **権限ゲーティングフック**: すべての種類がキャップされている場合でも、Claude Code はアクションをブロックまたは変更できるフック、およびそのようなフックが呼び出す MCP サーバーを上限から除外するため、カーネルが権限ゲーティングフックを強制終了してもブロックしていたアクションを許可することはできません。
 
@@ -647,6 +664,16 @@ Manual および `acceptEdits` [権限モード](/docs/ja/permission-modes) で�
 WebFetch は `Claude-User` で始まる `User-Agent` ヘッダーと、コンテンツネゴシエーションをサポートするサーバーが Markdown を直接返すことができるように HTML より Markdown を優先する `Accept` ヘッダーを設定します。
 
 サンドボックス化されたコマンドは WebFetch の事前承認されたドキュメンテーションドメインの組み込みセットを継承しません。サンドボックス化されたコマンドがプロンプトなしでドメインに到達できるようにするには、ドメインを [`allowedDomains`](/docs/ja/settings-reference#sandbox-network-alloweddomains) に追加するか、`WebFetch(domain:...)` ルールで許可します。[サンドボックスもこれを尊重します](/docs/ja/sandboxing#network-isolation)。WebFetch は代わりにサンドボックス許可リストを読み取ることはないため、ドメインをサンドボックスまたは組織ネットワーク許可リストに追加しても、WebFetch がそれについてプロンプトを表示するのを止めることはできません。
+
+<h3 id="webfetch-availability">
+  WebFetch の利用可能性
+</h3>
+
+Claude Code v2.1.285 以降では、[`CLAUDE_CODE_DISABLE_WEB_FETCH`](/docs/ja/env-vars#variables) を `1` に設定して WebFetch をオフにできます。
+
+Team または Enterprise claude.ai アカウントでサインインし、[LLM ゲートウェイ](/docs/ja/llm-gateway) を経由して接続しない場合、WebFetch はまた組織のポリシーに依存します。Claude Code はセッション開始時に `api.anthropic.com` からこのポリシーをリクエストします。同じことは、Claude Code が計画を決定できないセッション（別のアプリが提供した claude.ai トークンで実行されているセッションなど）にも当てはまります。
+
+WebFetch がセッションから欠落している場合、セッションで `/status` を実行してください。その `Organization policy` 行がポリシーが読み込まれなかったことを報告し、ポリシーを待つ機能の中に Web フェッチを名前で示す場合、Claude Code は組織がそれを許可することを確認できるまで WebFetch を保留しています。セッション外では、`claude doctor` は独自のリクエストを行い、同じ行を出力します。WebFetch を許可するポリシーが読み込まれると、ツールは再起動なしで返されます。
 
 <h2 id="websearch-tool-behavior">
   WebSearch ツールの動作

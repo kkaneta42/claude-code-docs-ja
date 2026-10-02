@@ -51,8 +51,7 @@ Prompt cache (main):   14 requests · 91% of input tokens from cache · 2 misses
 
 行のミス、予想される再構築、およびウォーム状態またはコールド状態の部分は以下を意味します。
 
-* **ミス**: キャッシュが既に保持していたコンテンツを再処理したリクエスト。最後のミスの時刻と、それらのリクエストがキャッシュに書き戻したトークン数が表示されます。Claude Code は、リクエストがキャッシュから読み取ることができた内容の 5% 以上かつ最低 2,000 トークン以上を再処理した場合、そのリクエストをミスとしてカウントします。[キャッシュを無効化するアクション](/docs/ja/prompt-caching#actions-that-invalidate-the-cache) は通常の原因をリストしています。
-  Claude Code が最後のミスの可能性のある原因を特定できる場合、行はそれも名前を付けます。例えば `likely cause: tool definitions changed` のようにです。可能性のある原因テキストには Claude Code v2.1.260 以降が必要です。
+* **ミス**: キャッシュが既に保持していたコンテンツを再処理したリクエスト。最後のミスの時刻と、それらのリクエストがキャッシュに書き戻したトークン数が表示されます。[キャッシュを無効化するアクション](/docs/ja/prompt-caching#actions-that-invalidate-the-cache) は通常の原因をリストしています。Claude Code が最後のミスの可能性のある原因を特定できる場合、行はそれも名前を付けます。例えば `likely cause: tool definitions changed` のようにです。可能性のある原因テキストには Claude Code v2.1.260 以降が必要です。
 * **予想される再構築**: Claude Code が会話を再度書き直した場合。[圧縮](/docs/ja/prompt-caching#compacting-the-conversation) またはコンテキストから古いツール結果をクリアすることで、同じ種類のミスを予想される再構築としてカウントします。この部分は、少なくとも 1 つの予想される再構築が発生した後にのみ表示されます。
 * **ウォーム状態またはコールド状態**: キャッシュされたプレフィックスが [キャッシュ有効期間](/docs/ja/prompt-caching#cache-lifetime) 内にあるかどうか。有効な TTL が表示されます。キャッシュがコールド状態の場合、行はセッションがアイドル状態だった期間を表示します。API がキャッシュトークンを報告していない場合、行は代わりに `no prompt caching reported by the API` で終わります。
 
@@ -267,7 +266,7 @@ Amazon Bedrock、Google Cloud の Agent Platform、および Microsoft Foundry �
 `/usage` を使用して現在のトークン使用量を確認するか、[ステータスラインを設定](/docs/ja/statusline#context-window-usage) して継続的に表示します。
 
 * **タスク間でクリアする**: 関連のない作業に切り替えるときは `/clear` を使用して新しく開始します。古いコンテキストは後続のすべてのメッセージでトークンを無駄にします。クリアする前に `/rename` を使用してセッションに名前を付けると、後で簡単に見つけることができます。その後 `/resume` を使用して復帰します。
-* **カスタムコンパクション指示を追加する**: `/compact Focus on code samples and API usage` は、要約中に保持する内容を Claude に指示します。新しいセッションでは、会話履歴がまだないため `/compact` は `Not enough messages to compact.` と出力します。
+* **カスタムコンパクション指示を追加する**: `/compact Focus on code samples and API usage` は、要約中に保持する内容を Claude に指示します。
 
 プロジェクトのルートにある CLAUDE.md ファイルでコンパクション動作をカスタマイズすることもできます。
 

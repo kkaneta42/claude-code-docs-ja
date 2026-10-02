@@ -273,7 +273,7 @@ claude mcp remove notion
 
 * ``⏸ Pending approval (run `claude` to approve)``: まだ承認していない `.mcp.json` からのプロジェクトスコープサーバー。Claude Code はそれを `claude mcp list` と `claude mcp get <name>` の両方に表示します。対話的に `claude` を実行して、それを確認して承認してください。
 * `✘ Rejected (see disabledMcpjsonServers in settings)`: [`disabledMcpjsonServers`](/docs/ja/settings-reference#disabledmcpjsonservers) エントリが拒否する `.mcp.json` サーバー。Claude Code はそれを `claude mcp get <name>` にのみ表示します。
-* `⊘ Disabled for this project (re-enable via /mcp)`: プロジェクトの [`disabledMcpServers`](#disable-a-server-without-removing-it) リストが名前を付けるサーバー。Claude Code はそれを `claude mcp list` と `claude mcp get <name>` の両方に表示します。`/mcp` パネルからサーバーをオンに戻してください。v2.1.238 より前では、両方のコマンドが無効なサーバーに接続して健全性チェックを実行し、接続結果を報告していました。
+* `⊘ Disabled for this project (re-enable via /mcp)`: プロジェクトの [`disabledMcpServers`](#disable-a-server-without-removing-it) リストが名前を付けるサーバー。Claude Code はそれを `claude mcp list` と `claude mcp get <name>` の両方に表示します。`/mcp` パネルからサーバーをオンに戻してください。
 
 WebSocket サーバーは `claude mcp list` 出力に表示されません。`claude mcp get <name>` または `/mcp` パネルを使用してそれらを確認してください。
 
@@ -321,7 +321,7 @@ Claude Code は以下の設定の問題について警告します。各エン�
 
 * **隠れた空白**: Claude Code は MCP 設定値が隠れた先頭または末尾の空白を持つときに警告します。これはしばしば末尾の改行を持つトークンを貼り付けることから来ます。Claude Code は `command`、`url`、各 `args` エントリ、および `env` と `headers` の下の値とキー名をチェックします。Claude Code は警告を `claude mcp list` 出力と `/mcp` に表示し、影響を受けたフィールドに名前を付けます。例えば `Leading or trailing whitespace in: headers.Authorization`。Claude Code は空白をトリムしません。書き込まれたとおりに値を使用するため、設定を編集してそれを削除してください。
 * **複数のスコープで同じ名前**: 異なるエンドポイントで複数の [スコープ](#mcp-installation-scopes) で同じサーバー名を定義する場合、Claude Code は `claude mcp list` 出力と `/mcp` で競合について警告します。Claude Code は OAuth サインインをエンドポイントごとに保存するため、1 つのプロジェクトで読み込まれる定義を認証すると、別の定義が読み込まれるプロジェクトで別にサインインする必要があります。必要なエンドポイントを保持し、他を `claude mcp remove <name> --scope <scope>` で削除してください。警告では、Claude Code は各スコープのエンドポイントを設定に書き込まれたとおりに引用します。[`${VAR}` 参照](#environment-variable-expansion-in-mcp-json) は展開されないため、API キーなどの解決された値を表示しません。
-* **予約名**: Claude Code は `workspace`、`claude-in-chrome`、`computer-use`、`Claude Preview`、`Claude Browser` を含む組み込みサーバーの名前を予約しています。設定が予約名を持つサーバーを定義する場合、Claude Code はロード時にそれをスキップし、名前を変更するよう求める警告を表示します。`claude mcp add` は予約名を拒否します。`Claude Preview` と `Claude Browser` は両方とも [Claude Code デスクトップアプリのプレビューペイン](/docs/ja/desktop#preview-your-app) が使用する組み込みサーバーに名前を付けます。v2.1.205 より前では、`Claude Browser` は予約されていなかったため、ユーザー設定サーバーはその名前で登録できました。
+* **予約名**: Claude Code は `workspace`、`claude-in-chrome`、`computer-use`、`Claude Preview`、`Claude Browser` を含む組み込みサーバーの名前を予約しています。設定が予約名を持つサーバーを定義する場合、Claude Code はロード時にそれをスキップし、名前を変更するよう求める警告を表示します。`claude mcp add` は予約名を拒否します。`Claude Preview` と `Claude Browser` は両方とも [Claude Code デスクトップアプリのプレビューペイン](/docs/ja/desktop#preview-your-app) が使用する組み込みサーバーに名前を付けます。
 * **環境変数の欠落**: サーバーの設定の [`${VAR}` 参照](#environment-variable-expansion-in-mcp-json) が設定されていない変数に名前を付け、`:-default` がない場合、Claude Code は `claude mcp list` 出力と `/mcp` で警告し、変数に名前を付けます。`${VAR}` テキストは展開されないままサーバーを読み込みます。変数を設定するか、`${VAR:-default}` フォールバックを追加してください。リモートサーバーの `url` と `headers` では、一部の認証情報変数 [空として読み込まれます](#credential-variables-that-read-as-empty) 代わりに、警告なしで。
 
 <h4 id="tool-availability">
@@ -417,7 +417,7 @@ Claude Code は指数バックオフでドロップされたリモートサー�
   失敗した最初の接続
 </h4>
 
-HTTP または SSE サーバーの最初の接続が 5xx レスポンス、接続拒否、タイムアウトなどの一時的なエラーで失敗する場合、Claude Code は最大 3 回再試行します。接続がまだ失敗する場合、Claude Code はサーバーを失敗としてマークします。Claude Code はこのように起動時と、セッション中にサーバーが追加されるときに再試行します。これには Claude Code が [クラウドセッション](/docs/ja/claude-code-on-the-web) に設定から追加するサーバーと、Agent SDK の [`setMcpServers()`](/docs/ja/agent-sdk/typescript) で追加するサーバーが含まれます。
+HTTP または SSE サーバーの最初の接続が 5xx レスポンス、接続拒否、タイムアウトなどの一時的なエラーで失敗する場合、Claude Code は最大 3 回再試行します。接続がまだ失敗する場合、Claude Code はサーバーを失敗としてマークします。
 
 Claude Code はこれらの場合には再試行しません。
 
@@ -552,6 +552,8 @@ MCP サーバーはまた、CI 結果、監視アラート、チャットメッ�
 * **複数のトランスポートタイプ**: stdio、SSE、HTTP、WebSocket トランスポートのサポート。ただし、トランスポートサポートはサーバーによって異なる場合があります
 
 プラグインサーバーは `/mcp` に表示され、プラグインから来ることを示すインジケータが付きます。
+
+プラグインの stdio サーバーの場合、`claude mcp get` は `Command: stdio`、空の `Args:` 行、および各環境変数を `NAME=[REDACTED]` として出力します。値は認証情報を運ぶことができるため、隠されています。
 
 **プラグイン MCP ツール名**：
 
@@ -1458,11 +1460,9 @@ Claude API はリクエスト内のすべてのツールの入力スキーマを
 * トップレベルのプロパティ名は 1 ～ 64 文字の長さで、ASCII 文字と数字、`_`、`.`、`-` のみを使用する必要があります
 * スキーマは JSON Schema draft 2020-12 メタスキーマに対して有効である必要があります。Claude Code は `$schema` を宣言していないスキーマと draft 2020-12 を宣言しているスキーマにこのチェックを適用します。他の方言を宣言しているスキーマはこのチェックをスキップしますが、上記のプロパティ名チェックは引き続き適用されます
 
-Claude Code は [ルートレベルのコンビネータの書き換え](#tool-input-schemas-with-a-root-level-combinator) の後、実際に送信するスキーマに対してチェックを実行します。
-
 Claude Code がツールを除外する場合、その理由をサーバーのログに記録し、除外したツールとその理由を Claude に伝えるため、ツールが見つからない理由を Claude に尋ねることができます。サーバーのスキーマを修正すると、Claude Code が次にサーバーのツールを読み込むときにツールが復帰します。
 
-Claude Code は Anthropic から取得するフィーチャーフラグを通じて除外をオンにします。[フラグ取得がオフになっているデプロイメント](/docs/ja/env-vars#features-that-need-feature-flag-fetching) または フラグが到着したことのないマシン（エアギャップマシンなど）では、Claude Code はチェックを実行してサーバーのログにどのツールが拒否されるかを記録しますが、ツールのスキーマを API に送信します。API は [ツールの位置で名前を付けた 400 エラー](/docs/ja/errors#tool-input-schema-is-invalid) でそのスキーマを含むリクエストを拒否します。v2.1.216 より前では、デプロイメントはこれらのチェックを実行していませんでした。
+Claude Code は Anthropic から取得するフィーチャーフラグを通じて除外をオンにします。[フラグ取得がオフになっているデプロイメント](/docs/ja/env-vars#features-that-need-feature-flag-fetching) またはフラグが到着したことのないマシン（エアギャップマシンなど）では、Claude Code はチェックを実行してサーバーのログにどのツールが拒否されるかを記録しますが、ツールのスキーマを API に送信します。API は [ツールの位置で名前を付けた 400 エラー](/docs/ja/errors#tool-input-schema-is-invalid) でそのスキーマを含むリクエストを拒否します。v2.1.216 より前では、デプロイメントはこれらのチェックを実行していませんでした。
 
 [ルートレベルのコンビネータ処理](#tool-input-schemas-with-a-root-level-combinator) は独立しており、フラグ取得がオフの場合またはフラグが到着したことのない場合、独自の動作を保持します。
 

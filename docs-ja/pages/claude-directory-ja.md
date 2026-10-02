@@ -1561,6 +1561,7 @@ Claude Code は、[`cleanupPeriodDays`](/docs/ja/settings-reference#cleanupperio
 | `paste-cache/` | 大きな貼り付けの内容 |
 | `image-cache/<session>/` | Claude Code v2.1.274 以前で保存された添付画像。それ以降のバージョンでは、貼り付けた画像と添付画像は `~/.claude` の外に保存されます。[`CLAUDE_CODE_TMPDIR`](/docs/ja/env-vars)が制御する一時ディレクトリの下の各セッションの `images/` ディレクトリに保存されます。スイープは、年齢に関係なく、ここにある他のセッションの残されたディレクトリを削除します |
 | `uploads/<session>/` | Web またはモバイルアプリから添付したファイル、およびモバイルアプリから添付した写真。[リモートコントロール](/docs/ja/remote-control)セッションにメッセージを送信する場合。[クラウドセッション](/docs/ja/claude-code-on-the-web)への添付は、代わりにそのセッション自身のクラウド環境に保存され、マシン上には保存されません |
+| `dev-mods/<session>/` | [Claude が作成した Mods](/docs/ja/plugins/mods/create#ask-claude-for-a-mod)。セッション中に作成されたもの |
 | `session-env/` | セッションごとの環境メタデータ |
 | `tasks/` | タスクツールで書き込まれたタスクリスト。リストごとに 1 つのディレクトリ |
 | `shell-snapshots/` | 起動時にキャプチャされたエイリアス、関数、シェルオプション。[Bash ツール](/docs/ja/tools-reference#bash-tool-behavior)によって各コマンドに適用されます。クリーンな終了時に削除されます。スイープはクラッシュ後に残されたものをクリアします |

@@ -65,21 +65,17 @@ Hook を作成するには、[設定ファイル](#configure-hook-location) に 
     }
     ```
 
-    CLI で説明することで、Claude に hook を書いてもらうこともできます。
+    CLI で実現したい内容を説明して、Claude にフックを書いてもらうこともできます。
   </Step>
 
   <Step title="設定を確認する">
-    `/hooks` と入力して hooks ブラウザを開きます。利用可能なすべての hook イベントのリストが表示され、hooks が設定されているイベントの横に数が表示されます。`Notification` を選択して、新しい hook がリストに表示されることを確認します。Hook を選択すると、その詳細が表示されます：イベント、マッチャー、タイプ、ソースファイル、およびコマンド。
+    Claude Code のプロンプトで `/hooks` と入力して hooks ブラウザを開きます。新しいフックが `Notification` の下のリストに表示されます。
   </Step>
 
-  <Step title="hook をテストする">
-    `Esc` を押して CLI に戻ります。`Shift+Tab` を押してステータスバーに `⏸ manual mode on` が表示されるまで続け、Claude に許可が必要な何かをするよう依頼し、ターミナルから切り替えます。デスクトップ通知を受け取るはずです。
+  <Step title="フックをテストする">
+    `Esc` を押して CLI に戻ります。ステータスバーに `⏸ manual mode on` が表示されるまで `Shift+Tab` を押し、権限が必要な操作を Claude に依頼してから、ターミナル以外のウィンドウに切り替えます。デスクトップ通知を受け取るはずです。
   </Step>
 </Steps>
-
-<Tip>
-  `/hooks` メニューは読み取り専用です。Hooks を追加、変更、または削除するには、設定 JSON を直接編集するか、Claude に変更を依頼します。
-</Tip>
 
 <h2 id="what-you-can-automate">
   自動化できるもの
@@ -97,7 +93,9 @@ Hooks を使用すると、Claude Code のライフサイクルの主要なポ�
 
 Claude が作業を完了して入力を必要とするときはいつでもデスクトップ通知を取得し、ターミナルをチェックせずに他のタスクに切り替えることができます。
 
-この hook は `Notification` イベントを使用します。これは Claude が入力または許可を待っているときに発火します。[各通知タイプが発火するタイミング](/docs/ja/hooks#notification) を参照して、正確なタイミングを確認してください。以下の各タブはプラットフォームのネイティブ通知コマンドを使用します。これを `~/.claude/settings.json` に追加します：
+このフックは `Notification` イベントを使用します。これは Claude が入力または権限を待っているときに Claude Code が発火するイベントです。正確なタイミングについては、[各通知タイプが発火するタイミング](/docs/ja/hooks#notification)を参照してください。
+
+以下の各タブはプラットフォームのネイティブ通知コマンドを使用します。これを `~/.claude/settings.json` に追加します：
 
 <Tabs>
   <Tab title="macOS">
@@ -120,7 +118,9 @@ Claude が作業を完了して入力を必要とするときはいつでもデ�
     ```
 
     <Accordion title="通知が表示されない場合">
-      `osascript` は組み込みの Script Editor アプリを通じて通知をルーティングします。Script Editor に通知権限がない場合、コマンドは静かに失敗し、macOS はそれを付与するよう求めません。Terminal でこれを 1 回実行して、Script Editor を通知設定に表示させます：
+      `osascript` は組み込みの Script Editor アプリを通じて通知をルーティングします。Script Editor に通知権限がない場合、コマンドは何も表示せずに失敗し、macOS は権限の付与を求めません。
+
+      Terminal でこれを 1 回実行して、Script Editor を通知設定に表示させます：
 
       ```bash theme={null}
       osascript -e 'display notification "test"'
@@ -180,7 +180,9 @@ Claude が作業を完了して入力を必要とするときはいつでもデ�
     ```
 
     <Accordion title="ダイアログが表示されない場合">
-      このコマンドは画面の隅の通知ではなくダイアログボックスを開くため、ダイアログはターミナルウィンドウの背後で開く可能性があります。まず PowerShell でコマンドを直接テストしてください。Claude Code を WSL 内で実行する場合、`powershell.exe` は Windows interop を通じて `PATH` で利用可能である必要があります。
+      このコマンドは画面の隅の通知ではなくダイアログボックスを開くため、ダイアログがターミナルウィンドウの背後で開く可能性があります。まず PowerShell でコマンドを直接テストしてください。
+
+      Claude Code を WSL 内で実行する場合、`powershell.exe` が Windows interop を通じて `PATH` で利用可能である必要があります。
     </Accordion>
   </Tab>
 </Tabs>
@@ -212,7 +214,7 @@ Claude Code は `permission_prompt` をターミナルと Claude Desktop、VS Co
 
 チームメイトのターミナルセットアップ質問に対する `agent_needs_input` には Claude Code v2.1.248 以降が必要です。
 
-`/hooks` と入力して `Notification` を選択し、hook が登録されていることを確認します。完全なイベントスキーマについては、[Notification リファレンス](/docs/ja/hooks#notification) を参照してください。
+Claude Code のプロンプトで `/hooks` と入力し、`Notification` の下にフックが表示されることを確認します。
 
 <h3 id="auto-format-code-after-edits">
   編集後にコードを自動フォーマットする
@@ -986,136 +988,139 @@ HTTP hooks は、Web サーバー、クラウド関数、または外部サー�
 完全な設定オプションとレスポンス処理については、リファレンスの [HTTP hooks](/docs/ja/hooks#http-hook-fields) を参照してください。
 
 <h2 id="limitations-and-troubleshooting">
-  制限とトラブルシューティング
+  制限事項とトラブルシューティング
 </h2>
 
 <h3 id="limitations">
-  制限
+  制限事項
 </h3>
 
-hooks を設計する際は、以下の制約を念頭に置いてください：
+フックを設計する際は、以下の制約に留意してください。
 
-* コマンド hooks は stdout、stderr、および終了コードを通じてのみ通信します。これらは `/` コマンドまたはツール呼び出しをトリガーできません。`additionalContext` を通じて返されたテキストは、Claude が平文として読む[システムリマインダー](/docs/ja/glossary#system-reminder)として注入されます。HTTP hooks はレスポンスボディを通じて通信します。
-* Hook タイムアウトはタイプによって異なります。`timeout` フィールド（秒単位）で hook ごとにオーバーライドできます。
-  * `command`、`http`、`mcp_tool`：10 分。Claude Code は `UserPromptSubmit`、`PreModelSwitch`、および `PostModelSwitch` hooks のこのデフォルトを 30 秒に短縮し、`MessageDisplay` を 10 秒に短縮します。
+* コマンドフックは stdout、stderr、終了コードのみを介して通信します。`/` コマンドやツール呼び出しをトリガーすることはできません。`additionalContext` を介して返されたテキストは[システムリマインダー](/docs/ja/glossary#system-reminder)として挿入され、Claude はこれをプレーンテキストとして読み取ります。HTTP フックは代わりにレスポンスボディを介して通信します。
+* フックのタイムアウトはタイプによって異なります。フックごとに `timeout` フィールド（秒単位）で上書きできます。
+  * `command`、`http`、`mcp_tool`：10 分。Claude Code は、`UserPromptSubmit`、`PreModelSwitch`、`PostModelSwitch` フックではこのデフォルトを 30 秒に、`MessageDisplay` では 10 秒に引き下げます。
   * `prompt`：30 秒。
   * `agent`：60 秒。
-  * [`SessionEnd`](/docs/ja/hooks#sessionend) hooks はすべてのタイプで 1.5 秒の予算を共有します。設定で hook ごとの `timeout` がより長い場合、Claude Code は予算を引き上げて一致させ、最大 60 秒までです。
-* `PostToolUse` hooks はツールが既に実行されているため、アクションを元に戻すことはできません。
-* `PermissionRequest` hooks は Claude Code があなたに許可を求めようとしているときに発火します。
-  * [非インタラクティブモード](/docs/ja/headless)（`-p` フラグ）では、そのプロンプトは Agent SDK の [`canUseTool` コールバック](/docs/ja/agent-sdk/permissions)がそれを提供する場合にのみ存在します。プレーンな `-p` 実行または `--permission-prompt-tool` では、自動化された許可決定に代わりに `PreToolUse` hooks を使用します。
-  * バックグラウンド subagents は非インタラクティブモードでプロンプトを表示できません。Claude Code は依然としてそれらのツール呼び出しの hooks を実行し、hook が決定を返さない場合は呼び出しを拒否します。インタラクティブセッションでは、バックグラウンド subagent プロンプトはメインセッションに表示され、hooks は通常通り発火します。
-* `Stop` hooks はタスク完了時だけでなく、Claude が応答を終了するたびに発火します。ユーザーの割り込みでは発火しません。API エラーは代わりに [StopFailure](/docs/ja/hooks#stopfailure) を発火させます。
-* 複数の `PreToolUse` hooks が [`updatedInput`](/docs/ja/hooks#pretooluse) を返してツールの引数を書き直す場合、最後に完了したものが勝ちます。Hooks は並列で実行されるため、順序は非決定的です。同じツールの入力を変更する複数の hooks を持つことを避けてください。
+  * [`SessionEnd`](/docs/ja/hooks#sessionend) フックは、タイプを問わず 1.5 秒の割り当て時間を共有します。設定でフックごとにより長い `timeout` を指定している場合、Claude Code は最大 60 秒までそれに合わせて割り当て時間を引き上げます。
+* `PostToolUse` フックは、ツールがすでに実行されているため、アクションを元に戻すことはできません。
+* `PermissionRequest` フックは、Claude Code がユーザーに権限を求めようとするときに発火します。
+  * `-p` フラグを使用した[非対話モード](/docs/ja/headless)では、そのプロンプトは Agent SDK の [`canUseTool` コールバック](/docs/ja/agent-sdk/permissions)が提供する場合にのみ存在します。単純な `-p` 実行や `--permission-prompt-tool` を使用する場合は、自動化された権限の判断には代わりに `PreToolUse` フックを使用してください。
+  * バックグラウンドのサブエージェントは、非対話モードではプロンプトを表示できません。Claude Code はそれらのツール呼び出しに対してもフックを実行し、どのフックも判断を返さない場合はその呼び出しを拒否します。対話セッションでは、バックグラウンドのサブエージェントのプロンプトはメインセッションに表示され、フックは通常どおり発火します。
+* `Stop` フックは、タスクの完了時だけでなく、Claude が応答を終えるたびに発火します。ユーザーによる中断では発火しません。API エラーの場合は代わりに [StopFailure](/docs/ja/hooks#stopfailure) が発火します。
+* 複数の `PreToolUse` フックがツールの引数を書き換えるために [`updatedInput`](/docs/ja/hooks#pretooluse) を返す場合、最後に完了したものが有効になります。フックは並列に実行されるため、順序は非決定的です。同じツールの入力を複数のフックで変更することは避けてください。
 
 <h3 id="hooks-and-permission-modes">
-  Hooks と許可モード
+  フックと権限モード
 </h3>
 
-`PreToolUse` hooks は任意の権限モードチェックの前に発火します。すべての [権限モード](/docs/ja/permission-modes)（`dontAsk` を含む）で発火します。`permissionDecision: "deny"` を返す hook は、`bypassPermissions` モードまたは `--dangerously-skip-permissions` でもツールをブロックします。これにより、ユーザーが権限モードを変更してバイパスできないポリシーを適用できます。
+`PreToolUse` フックは、`dontAsk` を含むすべての[権限モード](/docs/ja/permission-modes)において、権限モードのチェックより前に発火します。`permissionDecision: "deny"` を返すフックは、`bypassPermissions` モードや `--dangerously-skip-permissions` を使用している場合でもツールをブロックします。これにより、ユーザーが権限モードを変更しても回避できないポリシーを適用できます。
 
-逆は真ではありません：`"allow"` を返す hook は、設定からの deny ルールをバイパスしません。また、[`requiresUserInteraction`](/docs/ja/mcp#require-approval-for-a-specific-tool) とマークされた MCP ツールのプロンプトを抑制することもできず、組織が [セッションでそのセッティングに到達する Claude Code で `ask` に設定した](/docs/ja/mcp#organization-controls-on-connector-tools)コネクタツールも抑制できません。Hooks は制限を厳しくできますが、許可ルールが許可する範囲を超えて緩和することはできません。
+逆は成り立ちません。`"allow"` を返すフックは、設定の拒否ルールを回避することはできず、また [`requiresUserInteraction`](/docs/ja/mcp#require-approval-for-a-specific-tool) が指定された MCP ツールや、その設定が Claude Code に反映されるセッションにおいて[組織が `ask` に設定した](/docs/ja/mcp#organization-controls-on-connector-tools)コネクタツールのプロンプトを抑制することもできません。設定ファイルやプラグインの `hooks/hooks.json` 内のフックは、制限を厳しくすることはできますが、権限ルールが許可する範囲を超えて緩めることはできません。
+
+インストールした [mod](/docs/ja/plugins/mods/overview) が `tool.check` をフックしている場合、そのフックが管理設定にない限り、`PreToolUse` フックがブロックした呼び出しを mod が承認できます。mod に対してどのルールが優先されるかは、[フックで権限を拡張する](/docs/ja/permissions#extend-permissions-with-hooks)に記載されています。
 
 <h3 id="hook-not-firing">
-  Hook が発火しない
+  フックが発火しない
 </h3>
 
-Hook は設定されていますが、実行されません。
+フックは設定されているが、一度も実行されない場合。
 
-* `/hooks` を実行し、hook が正しいイベントの下に表示されることを確認します
-* マッチャーパターンがツール名と正確にマッチすることを確認します。マッチャーは大文字小文字を区別します
-* 正しいイベントタイプをトリガーしていることを確認します：`PreToolUse` はツール実行前に発火し、`PostToolUse` は後に発火します。`PermissionRequest` hook は Claude Code があなたに許可を求めようとしているときに発火します。非インタラクティブケースについては [制限](#limitations)を参照してください
+* `/hooks` を実行し、フックが正しいイベントの下に表示されていることを確認します
+* matcher のパターンがツール名と正確に一致していることを確認します。matcher は大文字と小文字を区別します
+* 正しいイベントタイプをトリガーしていることを確認します。`PreToolUse` はツールの実行前に、`PostToolUse` は実行後に発火します。`PermissionRequest` フックは Claude Code がユーザーに権限を求めようとするときに発火します。非対話の場合については[制限事項](#limitations)を参照してください
 
 <h3 id="hook-error-in-output">
-  Hook エラーが出力に表示される
+  出力にフックエラーが表示される
 </h3>
 
-トランスクリプトに「PreToolUse hook error: ...」というメッセージが表示されます。
+トランスクリプトに「PreToolUse hook error: ...」のようなメッセージが表示される場合。
 
-* スクリプトが予期せずゼロ以外のコードで終了しました。サンプル JSON をパイプして手動でテストします：
+* スクリプトが予期せずゼロ以外のコードで終了しています。サンプルの JSON をパイプで渡して手動でテストします。
   ```bash theme={null}
   echo '{"tool_name":"Bash","tool_input":{"command":"ls"}}' | ./my-hook.sh
-  echo $?  # 終了コードを確認
+  echo $?  # Check the exit code
   ```
-* 「command not found」が表示される場合は、絶対パスを使用するか、スクリプトを参照するために `${CLAUDE_PROJECT_DIR}` を使用します。シェルクォーティングを完全に回避するには、`"args": []` を追加して [exec form](/docs/ja/hooks#exec-form-and-shell-form) に切り替えます。これはシェルなしでスクリプトを直接生成します
-* 「jq: command not found」が表示される場合は、`jq` をインストールするか、JSON 解析に Python/Node.js を使用します
-* 通知が JSON 検証メッセージを表示する場合、hook の stdout は JSON として解析されましたがスキーマ検証に失敗しました。JSON 解析メッセージを表示する場合、stdout は JSON オブジェクトのように見えましたが有効な JSON ではありませんでした。どちらも終了コード 0 でも発生します。
+* 「command not found」と表示される場合は、絶対パスまたは `${CLAUDE_PROJECT_DIR}` を使用してスクリプトを参照します。シェルのクォートを完全に回避するには、`"args": []` を追加して [exec 形式](/docs/ja/hooks#exec-form-and-shell-form)に切り替えます。これにより、シェルを介さずにスクリプトが直接起動されます
+* 「jq: command not found」と表示される場合は、`jq` をインストールするか、JSON の解析に Python/Node.js を使用します
+* 通知に JSON 検証メッセージが表示される場合、フックの stdout は JSON として解析されましたが、スキーマ検証に失敗しています。JSON 解析メッセージが表示される場合、stdout は JSON オブジェクトのように見えましたが、有効な JSON ではありませんでした。どちらも終了コード 0 の場合でも発生します。
 
-  解析失敗を修正するには、文字列連結の代わりに `jq` などの JSON エンコーダーでペイロードを構築して、値内の引用符とバックスラッシュがエスケープされるようにします。リファレンスの [終了コード出力](/docs/ja/hooks#exit-code-output)セクションは終了コードと JSON の組み合わせをカバーしています
+  解析の失敗を修正するには、文字列の連結ではなく `jq` などの JSON エンコーダーを使用してペイロードを組み立て、値に含まれる引用符やバックスラッシュがエスケープされるようにします。終了コードと JSON の組み合わせについては、リファレンスの[終了コードの出力](/docs/ja/hooks#exit-code-output)セクションで説明しています
 * スクリプトがまったく実行されていない場合は、実行可能にします：`chmod +x ./my-hook.sh`
 
 <h3 id="/hooks-shows-no-hooks-configured">
-  `/hooks` に設定された hooks が表示されない
+  `/hooks` にフックが設定されていないと表示される
 </h3>
 
-設定ファイルを編集しましたが、hooks がメニューに表示されません。
+設定ファイルを編集したが、フックがメニューに表示されない場合。
 
-* ファイル編集は通常自動的に取得されます。数秒後に表示されていない場合、ファイルウォッチャーが変更を見逃した可能性があります：セッションを再開して強制的にリロードします。
-* JSON が有効であることを確認します：末尾のコンマとコメントは許可されていません
-* 設定ファイルが正しい場所にあることを確認します：プロジェクト hooks の場合は `.claude/settings.json`、グローバル hooks の場合は `~/.claude/settings.json`
+* ファイルの編集は通常自動的に反映されます。数秒経っても表示されない場合は、ファイルウォッチャーが変更を検出できなかった可能性があります。セッションを再起動して強制的に再読み込みしてください。
+* JSON が有効であることを確認します。末尾のカンマやコメントは使用できません
+* 設定ファイルが正しい場所にあることを確認します。プロジェクトのフックは `.claude/settings.json`、グローバルのフックは `~/.claude/settings.json` です
+* メニューに `Only hooks from managed settings run here` と表示される場合は、組織が [`allowManagedHooksOnly`](/docs/ja/settings-reference#allowmanagedhooksonly) を設定しています。ユーザー、プロジェクト、ローカルの設定ファイル内のフックは実行されず、一覧にも表示されません
 
 <h3 id="stop-hook-hits-the-block-cap">
-  Stop hook がブロック上限に達する
+  Stop フックがブロック上限に達する
 </h3>
 
-Claude は無限ループで作業を続け、停止する代わりに、Stop hook が連続して 8 回ブロックしたという警告でターンを終了します。
+Claude が停止せずに作業を続け、その後 Stop フックが連続してブロックした回数が多すぎるという警告とともにターンを終了する場合。
 
-Claude Code は Stop hook が進捗なしで 8 回連続でブロックした後、それをオーバーライドします。Hook スクリプトは、それが既にトリガーされたかどうかをチェックする必要があります。JSON 入力から `stop_hook_active` フィールドを解析し、`true` の場合は早期に終了します：
+Claude Code は、Stop フックが進展のないまま 8 回連続でブロックすると、そのフックを上書きします。フックスクリプトでは、すでに継続をトリガーしたかどうかを確認する必要があります。JSON 入力から `stop_hook_active` フィールドを解析し、`true` の場合は早期に終了します。
 
 ```bash theme={null}
 #!/bin/bash
 INPUT=$(cat)
 if [ "$(echo "$INPUT" | jq -r '.stop_hook_active')" = "true" ]; then
-  exit 0  # Claude が停止することを許可
+  exit 0  # Allow Claude to stop
 fi
-# ... hook ロジックの残り
+# ... rest of your hook logic
 ```
 
-Hook が収束するために 8 回以上の反復が正当に必要な場合は、[`CLAUDE_CODE_STOP_HOOK_BLOCK_CAP`](/docs/ja/env-vars) で上限を引き上げます。
+フックが収束するまでに正当な理由で 8 回を超える反復が必要な場合は、[`CLAUDE_CODE_STOP_HOOK_BLOCK_CAP`](/docs/ja/env-vars) で上限を引き上げてください。
 
 <h3 id="hook-json-has-no-effect">
-  Hook JSON に効果がない
+  フックの JSON が効果を持たない
 </h3>
 
-Hook は有効な JSON を出力していますが、決定が有効にならず、トランスクリプトにエラーが表示されません。どの原因が当てはまるかを確認します：
+フックは有効な JSON を出力しているが、判断が反映されず、トランスクリプトにもエラーが表示されない場合。どの原因に該当するかを確認してください。
 
-* **JSON の前の追加出力**：通常、シェルプロファイルの無条件の `echo` により、何か他のものが最初に stdout に書き込まれるため、出力はもはや `{` で始まらず、Claude Code はそれを JSON として解析しません。原因と修正は以下のリストに従います。
-* **フィールドが間違ったレベルにある**：各フィールドの配置を [JSON 出力](/docs/ja/hooks#json-output)形式と比較します。例えば、`permissionDecision` はトップレベルではなく `hookSpecificOutput` の内部に属します。
+* **JSON の前に余分な出力がある**：他の何かが先に stdout に書き込んでいます。通常はシェルプロファイル内の無条件の `echo` です。そのため出力が `{` で始まらなくなり、Claude Code はそれを JSON として解析しません。原因と修正方法はこのリストの後で説明します。
+* **フィールドの階層が間違っている**：各フィールドの配置を [JSON 出力](/docs/ja/hooks#json-output)の形式と比較してください。たとえば、`permissionDecision` はトップレベルではなく `hookSpecificOutput` の内側に配置する必要があります。
 
-Claude Code が shell form コマンド hook（`args` なし）を実行する場合、macOS と Linux では `sh -c` を、Windows では Git Bash を、Git Bash がデフォルトでインストールされていない場合は PowerShell を生成します。このシェルは非インタラクティブですが、Git Bash と一部の設定（`BASH_ENV` が `~/.bashrc` を指すなど）は依然としてプロファイルをソースします。そのプロファイルに無条件の `echo` ステートメントが含まれている場合、その出力は hook の JSON に前置されます：
+Claude Code がシェル形式のコマンドフック（`args` のないもの）を実行する場合、macOS と Linux では `sh -c` を、Windows では Git Bash を、Git Bash がインストールされていない場合はデフォルトで PowerShell を起動します。このシェルは非対話ですが、Git Bash や、`BASH_ENV` が `~/.bashrc` を指しているなどの一部の設定では、プロファイルが読み込まれます。そのプロファイルに無条件の `echo` 文が含まれていると、その出力がフックの JSON の前に付加されます。
 
 ```text theme={null}
 Shell ready on arm64
 {"decision": "block", "reason": "Not allowed"}
 ```
 
-結合された出力はもはや `{` で始まらないため、Claude Code は stdout 全体をプレーンテキストとして扱い、JSON を無視します。終了コード 0 ではトランスクリプトに何も報告されません。解析試行は [デバッグログ](/docs/ja/hooks#debug-hooks)にのみ記録されます。これを修正するには、シェルプロファイルの echo ステートメントをラップして、インタラクティブシェルでのみ実行するようにします：
+結合された出力は `{` で始まらなくなるため、Claude Code は stdout 全体をプレーンテキストとして扱い、JSON を無視します。終了コード 0 の場合、トランスクリプトには何も報告されず、解析の試行は[デバッグログ](/docs/ja/hooks#debug-hooks)にのみ記録されます。これを修正するには、シェルプロファイル内の echo 文を、対話シェルでのみ実行されるように囲みます。
 
 ```bash theme={null}
-# ~/.zshrc または ~/.bashrc 内
+# In ~/.zshrc or ~/.bashrc
 if [[ $- == *i* ]]; then
   echo "Shell ready"
 fi
 ```
 
-`$-` 変数はシェルフラグを含み、`i` はインタラクティブを意味します。Hooks は非インタラクティブシェルで実行されるため、echo はスキップされます。
+`$-` 変数にはシェルのフラグが含まれており、`i` は対話を意味します。フックは非対話シェルで実行されるため、echo はスキップされます。
 
-Hook が `permissionDecision` または `additionalContext` を `hookSpecificOutput` の内部ではなくトップレベルに返す場合、JSON は依然として解析され、Claude Code は誤配置されたフィールドを報告なしで無視します。どのフィールドが無視されたかを確認するには、`claude --debug` で Claude Code を開始し、[デバッグログ](/docs/ja/hooks#debug-hooks)で `Hook JSON output had unrecognized keys` を検索します。
+フックが `permissionDecision` や `additionalContext` を `hookSpecificOutput` の内側ではなくトップレベルで返した場合でも、JSON は解析されますが、Claude Code は誤って配置されたフィールドをエラーを報告せずに無視します。どのフィールドが無視されたかを確認するには、`claude --debug` で Claude Code を起動し、[デバッグログ](/docs/ja/hooks#debug-hooks)で `Hook JSON output had unrecognized keys` を検索します。
 
 <h3 id="debug-techniques">
-  デバッグ技術
+  デバッグ手法
 </h3>
 
-`Ctrl+O` を押してトランスクリプトビューを開き、hook 実行の結果を確認します：
+`Ctrl+O` を押してトランスクリプトビューを開き、フック実行の結果を確認します。
 
-* **成功した実行**：hook の JSON が `systemMessage` や Stop hook フィードバックなどのサーフェスを表示しない限り、何も表示されません。
-  * Hook が実行されたことを確認するには、再フォーマットされたファイルなどの効果をチェックするか、以下で説明されているようにデバッグログを有効にして hook を再度トリガーします
-* **ブロッキングエラー**：ほとんどのイベントでは hook のフィードバックが表示されます。Hook の JSON がブロッキング決定を下した場合、フィードバックはその決定からの理由です。そうでない場合は hook の stderr です。`ConfigChange` や `Elicitation` などのいくつかのイベントでは、ブロックはメッセージを表示しません。
-* **非ブロッキングエラー**：アクションが進行し、`<hook name> hook error` 通知が短い説明とともに表示されます。例えば stderr の最初の行に「Failed with non-blocking status code:」というプレフィックスが付いているか、JSON 検証またはパースメッセージです。
+* **実行成功**：フックの JSON が `systemMessage` や Stop フックのフィードバックなどを表示しない限り、何も表示されません。
+  * フックが実行されたことを確認するには、ファイルが再フォーマットされたなどの効果を確認するか、以下で説明するようにデバッグログをオンにしてから再度フックをトリガーします
+* **ブロッキングエラー**：ほとんどのイベントでは、フックのフィードバックが表示されます。フックの JSON がブロックの判断を行った場合、フィードバックはその判断の理由です。それ以外の場合はフックの stderr です。`ConfigChange` や `Elicitation` などの一部のイベントでは、ブロックしてもメッセージは表示されません。
+* **非ブロッキングエラー**：アクションは続行され、`<hook name> hook error` という通知と短い説明が表示されます。説明は、`Failed with non-blocking status code:` を先頭に付けた stderr の最初の行や、JSON の検証メッセージまたは解析メッセージなどです。
 
-どの終了コードと JSON の組み合わせが各結果を生成するか、イベントごとの例外を含めて、リファレンスの [終了コード出力](/docs/ja/hooks#exit-code-output)セクションで定義されています。
+どの終了コードと JSON の組み合わせがそれぞれの結果を生むか（イベントごとの例外を含む）は、リファレンスの[終了コードの出力](/docs/ja/hooks#exit-code-output)セクションで定義されています。
 
-完全な実行詳細（どの hooks がマッチしたか、それらの終了コード、stdout、stderr など）については、デバッグログを読みます。`claude --debug-file /tmp/claude.log` で Claude Code を開始して既知のパスに書き込み、別のターミナルで `tail -f /tmp/claude.log` を実行します。そのフラグなしで開始した場合は、セッション中に `/debug` を実行してログを有効にし、ログパスを見つけます。
+どのフックが一致したか、その終了コード、stdout、stderr を含む実行の詳細をすべて確認するには、デバッグログを読みます。`claude --debug-file /tmp/claude.log` で Claude Code を起動して既知のパスに書き込み、別のターミナルで `tail -f /tmp/claude.log` を実行します。このフラグを付けずに起動した場合は、セッションの途中で `/debug` を実行してログを有効にし、ログのパスを確認します。
 
 <h2 id="learn-more">
   詳細を学ぶ

@@ -358,7 +358,7 @@ Claude Code は PowerShell AST を解析し、複合コマンド内の各コマ�
   Read と Edit
 </h3>
 
-Claude のファイルツールがファイルまたはディレクトリを読み取るのをブロックするには、`Read(./.env)` または `Read(./secrets/**)` などのパスに対して `Read` deny ルールを追加します。[機密ファイルを除外](/docs/ja/settings-reference#exclude-sensitive-files)にはペースト可能な例があります。
+Claude のファイルツールがファイルまたはディレクトリを読み取るのをブロックするには、`Read(./.env)` または `Read(./secrets/**)` などのパスに対して `Read` deny ルールを追加します。[機密ファイルを除外](/docs/ja/settings-reference#exclude-sensitive-files)にはペースト可能な例があります。プロジェクトに `.claudeignore` ファイルがある場合、そのファイルは効果がないため、そのエントリを `Read` deny ルールに移してください。
 
 `Edit` ルールはファイルを編集するすべての組み込みツールに適用されます。Claude は、Grep や Glob などのファイルを読み取るすべての組み込みツール、プロンプト内の `@file` メンション、および接続された [IDE](/docs/ja/vs-code#the-built-in-ide-mcp-server) が Claude と共有する選択およびオープンファイルコンテキストに `Read` ルールを適用するためにベストエフォートを試みます。
 
@@ -601,7 +601,16 @@ Claude Desktop アプリの [Cowork](https://claude.com/docs/cowork/overview)セ
 
 [Claude Code フック](/docs/ja/hooks-guide)は、実行時に権限評価を実行するカスタムシェルコマンドを登録する方法を提供します。Claude Code がツール呼び出しを行うと、PreToolUse フックは権限プロンプトの前に実行されます。ただし、[`EndConversation`](/docs/ja/tools-reference#endconversation-tool-behavior)を除くすべてのツールに対して実行されます。フック出力はツール呼び出しを拒否し、プロンプトを強制し、またはプロンプトをスキップしてコールを続行させることができます。
 
-フック決定は権限ルールをバイパスしません。Claude Code は deny ルールと ask ルールを、フックが何を返すかに関係なく評価します。マッチする deny ルールはコールをブロックし、マッチする ask ルールはフックが `"allow"` または `"ask"` を返した場合でもプロンプトを表示します。これは、[権限を管理する](#manage-permissions)で説明されている deny 優先の優先順位を保持し、管理設定で設定された deny ルールを含みます。
+PreToolUse フック決定は権限ルールをバイパスしません。Claude Code は deny ルールと ask ルールを、フックが何を返すかに関係なく評価します。マッチする deny ルールはコールをブロックし、マッチする ask ルールはフックが `"allow"` または `"ask"` を返した場合でもプロンプトを表示します。これは、[権限を管理する](#manage-permissions)で説明されている deny 優先の優先順位を保持し、管理設定で設定された deny ルールを含みます。
+
+その優先順位は、設定ファイル内のフックとプラグインの `hooks/hooks.json` 内のフックをカバーしています。インストールする[mod](/docs/ja/plugins/mods/overview)が `tool.check` をフックする場合、ルールと `PreToolUse` フックが決定した後に応答し、その応答はそれらを置き換えることができます。
+
+* **Ask ルール**: mod は ask ルールがプロンプトを表示するコールを承認できます
+* **`PreToolUse` フックからのブロック**: mod はコールを承認できます。ただし、フックが管理設定にある場合を除きます
+* **自動モード分類器**: [自動モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)では、mod が承認するコールは分類器チェックなしで実行されます
+* **Deny ルール**: 管理設定を持つマシン上、または Team または Enterprise プランでサインインしている場合、deny ルールはデフォルトで mod より優先され、組織はそれを変更できます。その他の場所では、mod は deny ルールが拒否するコールを承認できます
+
+[mod を信頼するかどうかを決定する](/docs/ja/plugins/mods/overview#decide-whether-to-trust-a-mod)を参照するか、管理設定をデプロイする場合は[組織の mod を管理する](/docs/ja/plugins/mods/admin#know-what-happens-by-default)を参照してください。
 
 [`requiresUserInteraction`](/docs/ja/mcp#require-approval-for-a-specific-tool)でマークされた MCP ツールも、フックが `"allow"` を返した場合でもプロンプトを表示します。コネクタツール（[組織が `ask` に設定](/docs/ja/mcp#organization-controls-on-connector-tools)）も同様に、その設定が Claude Code に到達するセッションではプロンプトを表示します。
 
@@ -719,6 +728,8 @@ Claude Code は現在の作業ディレクトリとその親、`~/.claude/` の�
 
 設定スコープ全体でも同じことが当てはまります。ユーザー設定で権限が許可されており、プロジェクト設定で拒否されている場合、拒否ルールがそれをブロックします。逆も同様です。ユーザーレベルの deny がプロジェクトレベルの allow をブロックします。これは、任意のスコープからの deny ルールが allow ルールの前に評価されるためです。
 
+この優先順位は、設定ファイルとコマンドライン引数の間のものです。deny ルールがインストールした [mod](/docs/ja/plugins/mods/overview) に対して有効かどうかについては、[フックで権限を拡張する](#extend-permissions-with-hooks)を参照してください。
+
 埋め込みホストは、SDK の `managedSettings` オプションを介して追加の管理ポリシーを提供できます。これには、管理者が `allowManaged*Only` ロックを設定していない限り、権限許可ルールが含まれます。[Claude Desktop セッションにポリシーを配信する](/docs/ja/claude-apps-gateway#deliver-policy-to-claude-desktop-sessions)では、埋め込み元ポリシーがいつ適用されるかについて説明しています。
 
 <h2 id="project-allow-rules-and-workspace-trust">
@@ -765,9 +776,9 @@ Claude Code は git を実行して 2 つを区別し、フォルダを信頼し
 | 設定ファイル内の[Hooks](/docs/ja/hooks)、[`env`](/docs/ja/settings-reference#env)ブロック、[`apiKeyHelper`](/docs/ja/settings-reference#apikeyhelper)などのヘルパーコマンド、およびプロジェクトスキルの[hooks](/docs/ja/hooks#hooks-in-skills-and-agents)と[`allowed-tools`](/docs/ja/skills#pre-approve-tools-for-a-skill) | 使用 | 使用。ワークスペーストラストはどのセッションでもスキルの `allowed-tools` をゲートしません |
 | `.claude/settings.json` 内の `permissions.allow` ルールと `additionalDirectories` | トラストダイアログを受け入れるまで使用されません。ダイアログは再度表示され、それらをリストします | 使用されません。Claude Code は stderr に[`this workspace has not been trusted`](/docs/ja/errors#workspace-has-not-been-trusted)警告を出力します |
 | プロジェクト[subagent](/docs/ja/sub-agents#hooks-in-subagent-frontmatter)のフロントマターフック、プロジェクト[`@skills-dir` プラグイン](/docs/ja/plugins/loading#plugins-shared-through-a-repository)、およびリポジトリまたは `--add-dir` ディレクトリからの[`extraKnownMarketplaces`](/docs/ja/settings-reference#extraknownmarketplaces)エントリ | 使用されず、ダイアログは提供されません | 使用されません |
-| リポジトリまたは `--add-dir` ディレクトリからの subagent のフロントマター内のインライン[`mcpServers`](/docs/ja/sub-agents#scope-mcp-servers-to-a-subagent)。v2.1.238 より前では、Claude Code はこれらのサーバーを両方の状況で読み込んでいました | 使用されず、ダイアログは提供されません | 使用されません |
+| リポジトリまたは `--add-dir` ディレクトリからの subagent のフロントマター内のインライン[`mcpServers`](/docs/ja/sub-agents#scope-mcp-servers-to-a-subagent) | 使用されず、ダイアログは提供されません | 使用されません |
 | `.mcp.json` 内のサーバー。リポジトリが[独自の設定で承認](/docs/ja/mcp#project-server-approvals-and-workspace-trust)するものを含む | Claude Code は接続する前にあなたに尋ねます。リポジトリ独自の承認はカウントされません | 承認されているかどうかに関わらず接続されます。SDK はセッティングソースがプロジェクト設定を含む場合にのみそれらを読み込みます。同じフォルダの `claude mcp list` はそのようなサーバーを保留中として報告します |
-| `.mcp.json` 内のサーバー上の[`headersHelper`](/docs/ja/mcp#trust-a-folder-before-its-headershelper-runs)。v2.1.238 より前では、Claude Code はヘルパーを両方の状況で実行していました | トラストダイアログを受け入れるまで実行されません。ダイアログは再度表示され、ヘルパーが宣言されている場所を名前で指定します。Claude Code はそれまでサーバーを静的 `headers` のみで接続します | 実行されません。Claude Code はサーバーを静的 `headers` のみで接続し、サーバーごとに stderr に[`headersHelper not run`](/docs/ja/errors#headershelper-not-run)行を出力します |
+| `.mcp.json` 内のサーバー上の[`headersHelper`](/docs/ja/mcp#trust-a-folder-before-its-headershelper-runs) | トラストダイアログを受け入れるまで実行されません。ダイアログは再度表示され、ヘルパーが宣言されている場所を名前で指定します。Claude Code はそれまでサーバーを静的 `headers` のみで接続します | 実行されません。Claude Code はサーバーを静的 `headers` のみで接続し、サーバーごとに stderr に[`headersHelper not run`](/docs/ja/errors#headershelper-not-run)行を出力します |
 
 このフォルダを信頼する必要がある行については、手動で信頼してください。`~/.claude.json` で `projects["<path>"].hasTrustDialogAccepted` を `true` に設定します。`<path>` はリポジトリルート、またはリポジトリ外のフォルダ自体です。Claude Code はスキップされた subagent フックまたはインライン MCP サーバーのデバッグログ行、スキップされた許可ルールの stderr 警告、およびスキップされたヘルパーの `headersHelper not run` 行に正確なキーを出力します。
 

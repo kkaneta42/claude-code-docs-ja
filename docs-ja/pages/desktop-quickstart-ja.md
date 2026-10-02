@@ -135,7 +135,7 @@ Code タブを開いた状態で、プロジェクトを選択し、Claude に�
 
 **Claude をスケジュールに設定する。** [スケジュール済みタスク](/docs/ja/desktop-scheduled-tasks)を設定して、Claude を定期的に自動実行します。毎朝のコードレビュー、週次の依存関係監査、または接続されたツールから情報を取得するブリーフィングです。
 
-**準備ができたらスケールアップする。** サイドバーから [並列セッション](/docs/ja/desktop#work-in-parallel-with-sessions)を開いて複数のタスクを同時に実行します。各セッションは独自の Git worktree で実行され、[タスクペイン](/docs/ja/desktop#watch-background-tasks)を開いてセッションが実行しているサブエージェントとバックグラウンドコマンドを監視します。[サイドチャット](/docs/ja/desktop#ask-a-side-question-without-derailing-the-session)を開いてメインスレッドを脱線させずに質問を尋ねます。[長時間実行される作業をクラウドに送信](/docs/ja/desktop#run-long-running-tasks-in-the-cloud)して、アプリを閉じても続行するか、タスクが予想より長くかかる場合は [Web または IDE でセッションを続行](/docs/ja/desktop#continue-in-another-surface)します。[GitHub、Slack、Linear などの外部ツールを接続](/docs/ja/desktop#extend-claude-code)して、ワークフローをまとめます。
+**準備ができたらスケールアップする。** サイドバーから [並列セッション](/docs/ja/desktop#work-in-parallel-with-sessions)を開いて複数のタスクを同時に実行します。各セッションは必要に応じて独自の Git worktree で実行でき、[タスクペイン](/docs/ja/desktop#watch-background-tasks)を開いてセッションが実行しているサブエージェントとバックグラウンドコマンドを監視します。[サイドチャット](/docs/ja/desktop#ask-a-side-question-without-derailing-the-session)を開いてメインスレッドを脱線させずに質問を尋ねます。[長時間実行される作業をクラウドに送信](/docs/ja/desktop#run-long-running-tasks-in-the-cloud)して、アプリを閉じても続行するか、タスクが予想より長くかかる場合は [Web または IDE でセッションを続行](/docs/ja/desktop#continue-in-another-surface)します。[GitHub、Slack、Linear などの外部ツールを接続](/docs/ja/desktop#extend-claude-code)して、ワークフローをまとめます。
 
 <h2 id="what’s-next">
   次のステップ

@@ -22,6 +22,7 @@
 | `curl: (23)` または `curl: (56) Failure writing output to destination` | [接続性を確認するか、別のインストーラーを使用する](#curl-56-failure-writing-output-to-destination) |
 | Linux でのインストール中に `Killed` または `Installation was killed before it could finish (exit code 137)` | [メモリを解放するか、スワップスペースを追加する](#install-killed-on-low-memory-linux-servers) |
 | インストール中に `Raw mode is not supported` | [インストーラーを再実行する](#raw-mode-is-not-supported-during-install) |
+| インストール中に `EACCES: permission denied` | [インストールディレクトリの権限を修正する](#permission-errors-during-installation) |
 | `TLS connect error` または `SSL/TLS secure channel` | [CA 証明書を更新する](#tls-or-ssl-connection-errors) |
 | `Failed to fetch version` またはダウンロードサーバーに到達できない | [ネットワークとプロキシ設定を確認する](#check-network-connectivity) |
 | `irm is not recognized` または `The token '&&' is not a valid statement separator` | [シェルに適切なコマンドを使用する](#wrong-install-command-on-windows) |
@@ -295,7 +296,18 @@ winget uninstall Anthropic.ClaudeCode
   ディレクトリ権限を確認する
 </h3>
 
-インストーラーは macOS と Linux の `~/.local/bin/` と `~/.claude/` への書き込みアクセスが必要です。Windows ではインストール場所は `%USERPROFILE%` の下にあり、デフォルトではユーザーが書き込み可能なため、このセクションはそこではほとんど適用されません。
+権限が原因でインストールが失敗した場合は、作成または書き込みできなかったパスが表示されます。Windows ではインストールは `%USERPROFILE%` の下に書き込まれ、そこはデフォルトでユーザーが書き込み可能なため、このセクションはそこではほとんど適用されません。
+
+macOS と Linux では、インストールは次の場所に書き込みます：
+
+* `~/.claude/downloads/`：インストールコマンドがダウンロードしたバイナリを配置する場所
+* `~/.local/bin/`：`claude` ランチャー
+* `~/.local/share/claude/`：ダウンロードした各バージョン
+* `~/.local/state/claude/`：ロックファイル
+* `~/.cache/claude/`：ステージングされたダウンロード
+* [`~/.claude.json`](/docs/ja/claude-directory)：グローバル設定ファイル。インストーラーはここにインストール方法を記録します
+
+`XDG_DATA_HOME`、`XDG_STATE_HOME`、または `XDG_CACHE_HOME` を設定している場合、インストールは `~/.local/share`、`~/.local/state`、`~/.cache` の代わりにそれらを使用します。[`CLAUDE_CONFIG_DIR`](/docs/ja/env-vars) を設定している場合、グローバル設定ファイルはホームディレクトリではなくそのディレクトリの下に置かれます。
 
 ディレクトリが書き込み可能かどうかを確認してください：
 
@@ -1032,15 +1044,15 @@ npm install -g @anthropic-ai/claude-code
   Claude Code アクセスがこのアカウントに付与されていません
 </h3>
 
-サインインページに `Authorization failed` と表示され、Claude Code からログインした後に `Claude Code access has not been granted for this account. Contact your administrator.` というメッセージが表示される場合、Claude Enterprise オーガニゼーションはロールを Custom に設定しており、グループに割り当てられた [カスタムロール](https://support.claude.com/en/articles/13930452) のいずれも Claude Code アクセスを付与していません。Custom ロールでは、それらのカスタムロールからのみアクセスを取得するため、Claude Code で変更しても、このエラーは解決されません。
+サインインページに `Authorization failed` と表示され、Claude Code からログインした後に `Claude Code access has not been granted for this account. Contact your administrator.` というメッセージが表示される場合、Claude Enterprise 組織はロールを Custom に設定しており、グループに割り当てられた [カスタムロール](https://support.claude.com/en/articles/13930452) のいずれも Claude Code アクセスを付与していません。Custom ロールでは、それらのカスタムロールからのみアクセスを取得するため、Claude Code で変更しても、このエラーは解決されません。
 
 アクセスを取得するには：
 
-1. Claude オーガニゼーションの所有者に、Claude Code アクセスを付与するカスタムロールをグループの 1 つに割り当てるか、ロールを Custom から User などの標準ロールに変更するよう依頼してください。所有者はオーガニゼーションの [ロール設定](https://claude.ai/admin-settings/roles) でロールを管理します。
-2. 所有者が変更を加えた後、`claude` を実行してもう一度ログインしてください。
+1. Claude 組織の Owner に、Claude Code アクセスを付与するカスタムロールをグループの 1 つに割り当てるか、ロールを Custom から User などの標準ロールに変更するよう依頼してください。Owner は組織の [ロール設定](https://claude.ai/admin-settings/roles) でロールを管理します。
+2. Owner が変更を加えた後、`claude` を実行してもう一度ログインしてください。
 
 <h3 id="this-organization-has-been-disabled-with-an-active-subscription">
-  このオーガニゼーションはアクティブなサブスクリプションで無効になっています
+  この組織はアクティブなサブスクリプションで無効になっています
 </h3>
 
 アクティブな Claude サブスクリプションがあるにもかかわらず `API Error: 400 ... "This organization has been disabled"` が表示される場合、`ANTHROPIC_API_KEY` 環境変数がサブスクリプションをオーバーライドしています。これは、前の雇用主またはプロジェクトからの古い API キーがシェルプロファイルに設定されている場合に一般的に発生します。
@@ -1098,7 +1110,9 @@ Claude Code がセッション後に再度ログインするよう求める場�
 
 `/login` を実行して再認証してください。これが頻繁に発生する場合は、トークン検証が正しいタイムスタンプに依存するため、システムクロックが正確であることを確認してください。
 
-1 台のマシン上の並列セッションは保存されたログインを共有し、その更新を調整して、1 つのプロセスだけが一度にトークンを更新するようにします。v2.1.211 より前では、マシンをスリープから起動すると、2 つのセッションが同じトークンで更新される可能性があり、これは保存されたログインを取り消し、すべてのオープンセッションに一度にログインするよう求めました。
+1 台のマシン上の並列セッションは保存されたログインを共有し、その更新を調整して、1 つのプロセスだけが一度にトークンを更新するようにします。いずれかのセッションで再度サインインした後に他のセッションがどう動作するかについては、[ログインしていない](/docs/ja/errors#not-logged-in) を参照してください。
+
+v2.1.211 より前では、マシンをスリープから起動すると、2 つのセッションが同じトークンで更新される可能性があり、これは保存されたログインを取り消し、すべてのオープンセッションに一度にログインするよう求めました。
 
 macOS では、Claude Code は認証情報をログイン Keychain に保存します。Keychain が書き込みを拒否する場合（SSH セッションでロックされている場合、またはパスワードがアカウントパスワードと同期していない場合など）、Claude Code は代わりにログインをプレーンテキスト `~/.claude/.credentials.json` ファイルに保存します。Keychain が再び書き込み可能になるまで、API キーを作成する Console ログインは失敗します。
 

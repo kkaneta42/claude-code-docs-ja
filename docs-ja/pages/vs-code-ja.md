@@ -58,7 +58,7 @@ IDE のリンクをクリックして直接インストールします。
 
     * **アクティビティバー**：左サイドバーの Spark アイコンをクリックしてセッションリストを開きます。任意のセッションをクリックして[優先位置](#extension-settings)で開くか、新しいセッションを開始します。このアイコンはアクティビティバーに常に表示されます。
     * **コマンドパレット**：`Cmd+Shift+P`（Mac）または `Ctrl+Shift+P`（Windows/Linux）を押し、「Claude Code」と入力して、「Open in New Tab」などのオプションを選択します。
-    * **ステータスバー**：[`preferredLocation`](#extension-settings) を `sidebar` に設定した場合、または **Claude Code: Open in Side Bar** で Claude を開いた場合、ウィンドウの右下隅の **✻ Claude Code** をクリックします。ファイルが開いていない場合でも機能します。
+    * **ステータスバー**：ウィンドウの右下隅の **✻ Claude Code** をクリックします。ファイルが開いていない場合でも機能します。
 
     Claude パネルをドラッグして VS Code 内の任意の場所に移動できます。詳細は[ワークフローをカスタマイズする](#customize-your-workflow)を参照してください。
   </Step>
@@ -808,7 +808,7 @@ Spark アイコンは、ファイルを開いているときに **Editor Toolbar
 4. **競合する拡張機能を無効にする**：他の AI 拡張機能（Cline、Continue など）を一時的に無効にしてください
 5. **ワークスペースの信頼を確認する**：拡張機能は制限モードでは動作しません
 
-または、[`preferredLocation`](#extension-settings) を `sidebar` に設定している場合、または **Claude Code: Open in Side Bar** で Claude を開いている場合は、**Status Bar**（右下隅）の「✻ Claude Code」をクリックしてください。これはファイルを開いていなくても動作します。**Command Palette**（`Cmd+Shift+P` / `Ctrl+Shift+P`）を使用して「Claude Code」と入力することもできます。
+または、ウィンドウの右下隅の **Status Bar** にある **✻ Claude Code** をクリックしてください。これはファイルを開いていなくても動作します。**Command Palette**（`Cmd+Shift+P` / `Ctrl+Shift+P`）を使用して「Claude Code」と入力することもできます。
 
 <h3 id="cmd-esc-does-nothing-on-macos">
   macOS で Cmd+Esc が機能しない

@@ -62,6 +62,14 @@ claude --bare -p "Summarize README.md" --allowedTools "Read"
 | カスタムエージェント | `--agents <json>` |
 | プラグイン | `--plugin-dir <path>`、`--plugin-url <url>` |
 
+bare モードでは、セッションの実行中に行われる処理も制限されます。
+
+* **MCP サーバー**: コマンドラインで指定されたサーバー（例えば `--mcp-config` で指定したもの）のみが接続されます。対話型セッションでは、`--ide` を渡さない限り、Claude Code は IDE への自動接続もスキップします。
+* **システムリマインダー**: Claude はプロンプトとツールの結果を受け取りますが、Claude Code が通常それらと一緒に追加する [システムリマインダー](/docs/ja/glossary#system-reminder) は含まれません。例えば、以前に読み取ったファイルがディスク上で変更されても Claude には通知されず、`--add-dir` フォルダのスキルを含む利用可能なスキルの一覧も Claude には渡されません。
+* **バックグラウンドタスク**: 実行されません。[タイムアウト](/docs/ja/tools-reference#timeout-and-output-limits) に達したコマンドは、[バックグラウンドに移行する](/docs/ja/tools-reference#background-commands) 代わりに停止します。
+
+v2.1.286 より前は、これらの制限は部分的にしか適用されていませんでした。対話型の `--bare` セッションは通常のセッションと同じ MCP サーバーに接続し、すべての `--bare` セッションがシステムリマインダーを送信し、バックグラウンドタスクも引き続き利用可能でした。
+
 <Note>
   `--bare` はスクリプト化および SDK 呼び出しの推奨モードであり、将来のリリースで `-p` のデフォルトになります。
 </Note>
@@ -298,14 +306,14 @@ Claude Code は起動時に各 `--mcp-config` エントリを検証し、検証�
   ツールを自動承認する
 </h3>
 
-`--allowedTools` を使用して、Claude が特定のツールをプロンプトなしで使用できるようにします。この例はテストスイートを実行して失敗を修正し、Claude が Bash コマンドを実行してファイルを読み書きできるようにします（権限を求めずに）。
+`--allowedTools` を使用して、Claude が特定のツールをプロンプトなしで使用できるようにします。`Read` と `Edit` をリストすると、Claude はファイルを読み書きできます。`Bash` をリストすると、シェルコマンドについても同じことができます。ただし、[auto mode](/docs/ja/permission-modes#how-auto-mode-evaluates-actions) で開始される実行では、Claude Code は広いアロー ルールとして裸の `Bash` エントリをドロップし、auto mode が代わりに各コマンドを評価します。この例はテストスイートを実行して失敗を修正し、これら 3 つのツールをリストします。
 
 ```bash theme={null}
 claude -p "Run the test suite and fix any failures" \
   --allowedTools "Bash,Read,Edit"
 ```
 
-個別のツールをリストする代わりにセッション全体のベースラインを設定するには、[permission mode](/docs/ja/permission-modes) を渡します。`-p` の場合、[built-in starting permission mode](/docs/ja/permission-modes#which-mode-a-session-starts-in) はすべてのプランで Manual なので、必要な権限モードを渡します。
+個別のツールをリストする代わりにセッション全体のベースラインを設定するには、[permission mode](/docs/ja/permission-modes) を渡します。権限モードを設定しない実行は、[built-in starting permission mode](/docs/ja/permission-modes#which-mode-a-session-starts-in) を取得します。これは `auto` の場合があるため、必要な権限モードを渡します。
 
 * **`auto`**：`--permission-mode auto` を渡して、ほとんどのアクションをあなたの代わりに分類器にレビューさせます
 * **`dontAsk`**：Claude Code はそれ以外の場合はプロンプトするすべての呼び出しを拒否します。これはロックダウンされた CI 実行に役立ちます。Manual モードで承認が不要なアクション（作業ディレクトリでのファイル読み取りや [read-only command set](/docs/ja/permissions#read-only-commands)）は依然として実行され、`--allowedTools` エントリまたは `permissions.allow` ルールがカバーするアクションも実行されます。`AskUserQuestion`、connector tools [your organization set to `ask`](/docs/ja/mcp#organization-controls-on-connector-tools)、および [`requiresUserInteraction`](/docs/ja/mcp#require-approval-for-a-specific-tool) とマークされた MCP ツールは、許可ルールが一致する場合でも拒否されます

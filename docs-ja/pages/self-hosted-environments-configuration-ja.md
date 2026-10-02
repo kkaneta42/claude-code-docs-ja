@@ -4,7 +4,7 @@
 
 # セルフホストされた環境でセッションをカスタマイズする
 
-> ラッパースクリプト、ライフサイクルフック、オンデマンドランナースポーニングを使用して、セルフホストされた環境セッションをセッションごとの認証情報、ライフサイクルフック、オンデマンドランナースポーニングでカスタマイズします。
+> セッションごとの認証情報のためのラッパースクリプト、ライフサイクルフック、オンデマンドランナースポーニングを使用して、セルフホストされた環境のセッションをカスタマイズします。
 
 <Note>
   セルフホストされた環境は Team および Enterprise プランでパブリックベータ版です。[Owner](/docs/ja/cloud-environments#organization-shared-environments) が [**Cloud environments** 管理ページ](https://claude.ai/admin-settings/cloud-environments) で **Allow self-hosted environments** をオンにすることで有効になります。このページは動作するランナーを前提としています。セットアップについては [クイックスタート](/docs/ja/self-hosted-environments-quickstart) を、フリートレシピについては [本番環境へのデプロイ](/docs/ja/self-hosted-environments-deploy) を参照してください。
@@ -60,6 +60,19 @@ wait "$CHILD"
 ```
 
 ラッパーでファイルディスクリプタ 3 を閉じたり再利用したりしないでください。こどもの stdout と stderr をリダイレクトするのは問題ありません。
+
+<h3 id="pass-the-system-prompt-flags-through">
+  システムプロンプトフラグをそのまま渡す
+</h3>
+
+Anthropic のコントロールプレーンがセッションに送信するシステムプロンプトと追加システムプロンプトは、インラインテキストではなくファイルパスとしてラッパーに届きます。ランナーは各プロンプトをセッションの設定ディレクトリ `CLAUDE_CONFIG_DIR` 内のファイルに書き込み、そのパスをラッパーが受け取る引数の中で [`--system-prompt-file <path>` または `--append-system-prompt-file <path>`](/docs/ja/cli-reference#system-prompt-flags) として渡します。
+
+Claude Code v2.1.281 以降のランナーは、プロンプトをファイルとして配信します。v2.1.281 より前は、ランナーはプロンプトを `--system-prompt <text>` および `--append-system-prompt <text>` として渡していました。
+
+ラッパースクリプトまたは [`command` フック](#command) では、これらのフラグを次のように扱います。
+
+* **そのまま渡す**: ラッパーを `exec "$CLAUDE_RUNNER_CLAUDE_BIN" "$@"` で終了します。これにより、ファイルフラグが他のすべての引数とともに転送されます。フラグを削除したり書き換えたりしないでください。セッションがプロンプトファイルフラグを失うと、コントロールプレーンがそのセッションに送信した指示なしで実行されます。
+* **v2.1.281 以降のランナーでは、追加したファイルフラグはサーバーのフラグを置き換えるものであり、追加されることはない**: 各プロンプトファイルフラグは単一の値を取り、Claude Code は最後に出現したものを保持します。そのため、`"$@"` の後に `--append-system-prompt-file <path>` を追加すると、ファイルの内容がサーバーの追加指示を置き換えます。サーバーの指示に加えて指示を追加するには、ランナーイメージの `CLAUDE.md` に記述します。ランナーはこれを[すべてのセッションのユーザーレベル設定にシードします](#how-each-session’s-config-is-assembled)。
 
 <h3 id="provision-credentials-scoped-to-the-session-creator">
   セッション作成者にスコープされた認証情報をプロビジョニングする
@@ -450,6 +463,10 @@ Anthropic のコントロールプレーンがセッションに [Claude Code �
 * **どこに着地するか**：ランナーは提供された各フックスクリプトをセッションの設定ディレクトリの予約済み `hooks/.ccr-launcher/` サブディレクトリに書き込み、スクリプトを `--settings` で渡す別の設定ファイルに登録し、シードされた `settings.json` と `hooks/<name>` の独自のスクリプトを変更しないままにします。ランナーは各セッションの予約済みサブディレクトリを再作成し、`~/.claude/hooks/.ccr-launcher/` のホストコンテンツをセッションにシードしません。
 * **誰がそれらを作成するか**：コントロールプレーンはセッションごとまたはサードパーティ入力からではなく、独自のデプロイメント内の固定定数からスクリプトを入力します。
 * **何がそれらを管理するか**：`--settings` を通じて配信されるフックは通常のマージされたフック設定に入り、管理層ではないため、管理設定はまだ適用されます。`disableAllHooks` はそれらを無効にし、[`allowManagedHooksOnly`](/docs/ja/settings-reference#allowmanagedhooksonly) が保つカテゴリーには含まれません。
+
+[Claude Tag](https://claude.com/docs/claude-tag/overview) セッション以外では、セルフホスト環境のセッションはデフォルトで [自動メモリ](/docs/ja/memory#auto-memory) がオフの状態で実行されます。セッションをまたいで引き継ぐべき指示には、ランナーイメージまたはリポジトリ内の `CLAUDE.md` を使用してください。
+
+ランナーによるホストの `~/.claude/` のスナップショットには `projects/` ディレクトリは含まれません。自動メモリのデフォルトの保存場所はこのディレクトリの下にあります。そこにメモリファイルを置いても、ランナーはそれらをセッションにシードせず、自動メモリがオンになることもありません。
 
 <h3 id="repository-committed-permission-rules">
   リポジトリコミット権限ルール

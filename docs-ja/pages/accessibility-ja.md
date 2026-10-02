@@ -44,7 +44,7 @@ Claude Code が最初に出力する行がモードを確認します。`[Screen
 | [`CLAUDE_AX_SCREEN_READER`](/docs/ja/env-vars#variables) | 環境変数 | それを設定したシェルから開始されたセッションのスクリーンリーダーモード。 |
 | [`axScreenReader`](/docs/ja/settings-reference#axscreenreader) | 設定 | `true` の場合、すべてのセッションのスクリーンリーダーモード。 |
 | [`CLAUDE_AX_STARTUP_QUIET_MS`](/docs/ja/env-vars#variables) | 環境変数 | Claude Code が確認行の後、スクリーンリーダーモードで最初のプロンプトを描画する前に待機する時間。Claude Code v2.1.217 以降が必要です。 |
-| [`CLAUDE_AX_PREPARK_MS`](/docs/ja/env-vars#variables) | 環境変数 | Claude Code が行の開始時にカーソルを置いて、スクリーンリーダーモードで新しい行または変更された行を書き込む前に待機する時間。Claude Code v2.1.233 以降が必要です。 |
+| [`CLAUDE_AX_PREPARK_MS`](/docs/ja/env-vars#variables) | 環境変数 | 設定した場合、スクリーンリーダーモードで新しい行または変更された行を書き込む前に、Claude Code がターミナルカーソルを現在の行の先頭に保持するミリ秒数。Claude Code v2.1.233 以降が必要です。 |
 | [`CLAUDE_CODE_ACCESSIBILITY`](/docs/ja/env-vars#variables) | 環境変数 | `1` に設定した場合、macOS Zoom などのスクリーン拡大鏡に対して表示されたままのターミナルカーソル。カーソルは入力キャレットに従い、Claude Code v2.1.218 以降では、`/config` や `/plugin` などのメニューとパネルの強調表示された行に従います。 |
 | [`prefersReducedMotion`](/docs/ja/settings-reference#prefersreducedmotion) | 設定 | `true` の場合、スピナー、シマー、およびその他のアニメーションが削減または非表示になります。 |
 | [`theme`](/docs/ja/settings-reference#theme) | 設定 | 色覚異常対応の `dark-daltonized` および `light-daltonized` テーマを含むインターフェースカラー。[`/theme`](/docs/ja/commands#all-commands) で選択することもできます。 |
@@ -60,13 +60,11 @@ Claude Code が最初に出力する行がモードを確認します。`[Screen
 * 色のみのキューなし
 * 変更されていないコンテンツの再描画なし。プログレススピナーは静的テキストとしてレンダリングされます
 * Claude の返信内のテーブルは、ボックス文字グリッドではなく `Header: value` 文として読み込まれます
+* 差分は、追加された行と削除された行を `+` と `-` で示したプレーンテキストとして 1 行ずつ読み上げられるため、ファイル編集の承認プロンプトで回答する前に、提案された変更を聞くことができます
 
 Claude Code は、ターミナルのスクロールバックに印刷するすべてを残すため、スクリーンリーダーのレビューコマンドまたはターミナルの検索を使用して以前のターンを再度読むことができます。Claude Code は、スクリーンリーダーモードで [`tui` 設定](/docs/ja/settings-reference#tui) を無視します。[既知の制限事項](#known-limitations) に記載されている接続されたバックグラウンドセッションを除き、[フルスクリーンレンダリング](/docs/ja/fullscreen) の代わりにスクロールテキストを印刷します。
 
-Claude Code は、スクリーンリーダーが追いつくことができるように 2 つのポイントで待機します：
-
-* Claude Code が確認行を印刷した後、スクリーンリーダーが行を完了できるようにプロンプトを描画する前に 3 秒待機します。任意のキーを押して待機を終了します。待機の長さを変更するには、[`CLAUDE_AX_STARTUP_QUIET_MS`](/docs/ja/env-vars#variables) を設定します。
-* Claude Code が新しい行または変更された行（ヒントや Claude の返信の詳細など）を書き込む前に、カーソルを行の開始位置に移動して 50 ミリ秒待機します。その後、スクリーンリーダーは最初の文字から行を読み込みます。入力行の末尾に入力または削除した文字は直ちに表示されます。待機の長さを変更するには、[`CLAUDE_AX_PREPARK_MS`](/docs/ja/env-vars#variables) を設定します。
+Claude Code は起動時に [確認行](#turn-on-screen-reader-mode) を印刷した後、スクリーンリーダーが行を読み終えられるように、プロンプトを描画する前に 3 秒待機します。任意のキーを押すと待機を終了します。待機の長さを変更するには、[`CLAUDE_AX_STARTUP_QUIET_MS`](/docs/ja/env-vars#variables) を設定します。
 
 トランスクリプト内の各メッセージは、スクリーンリーダーが発表するラベルで始まり、それが何であるかを名前付けします：あなたのメッセージ、Claude の返信と思考、ツールアクティビティ、エラーと警告、およびプロンプト。ラベルは検索可能でもあるため、ターミナルのスクロールバックを検索してトランスクリプトのセクション間をジャンプできます：
 
@@ -93,6 +91,14 @@ Claude Code はターミナルカーソルを入力キャレットに保つた�
 * `Ctrl+K` で行の終了位置まで削除
 
 [権限モード](/docs/ja/permission-modes) を `Shift+Tab` でサイクルすると、Claude Code は `[plan mode on]` または `[accept edits on]` などのランディングした権限モードを発表します。Claude Code は発表を 1 回印刷し、後の再描画では繰り返しません。
+
+<h3 id="read-earlier-output-without-losing-your-place">
+  読んでいる位置を失わずに以前の出力を読む
+</h3>
+
+以前の出力を読んでいる間にスクリーンリーダーがプロンプトに戻ってしまう場合、スクリーンリーダーはターミナルカーソルに追従しています。Claude Code は新しいテキストを書き込むたびに、ターミナルカーソルをプロンプトに戻します。
+
+読んでいる位置を保つには、スクリーンリーダーがターミナルカーソルに追従しないようにします。NVDA では、`NVDA+6` を押すとレビューカーソルがターミナルカーソルに追従しなくなります。もう一度 `NVDA+6` を押すと、追従が再びオンになります。
 
 <h3 id="jump-between-turns">
   ターン間をジャンプする

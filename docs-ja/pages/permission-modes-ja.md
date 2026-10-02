@@ -86,8 +86,8 @@ VS Code 拡張機能が開始する会話は、[権限モードを切り替え�
 | Claude Code の実行方法 | 組み込み開始権限モード |
 | :- | :- |
 | 設定ファイルが `disableAutoMode` を `"disable"` に設定 | `default` |
-| `claude -p` または [Agent SDK](/docs/ja/agent-sdk/permissions) | `default` |
-| ターミナルまたは [VS Code 拡張機能](/docs/ja/vs-code)を通じて | `auto`（Claude Code v2.1.283 以降）。以前のバージョンでは、Pro、Max、または Team プランで [フィーチャーフラグを取得](/docs/ja/env-vars#features-that-need-feature-flag-fetching)するセッションでは `auto`、それ以外は `default` |
+| `claude -p` または [Agent SDK](/docs/ja/agent-sdk/permissions#permission-modes) | [フィーチャーフラグを取得](/docs/ja/env-vars#features-that-need-feature-flag-fetching)するセッションでは `default`。テレメトリがオフの場合やサードパーティプロバイダーなど、フィーチャーフラグを取得しないセッションでは、Claude Code v2.1.285 以降では `auto`、以前のバージョンでは `default`。auto デフォルトを保留するポリシーを持つ組織内のセッションは、代わりに `default` で開始します |
+| ターミナルまたは [VS Code 拡張機能](/docs/ja/vs-code)を通じて | Claude Code v2.1.283 以降では `auto`。以前のバージョンでは、Pro、Max、または Team プランで [フィーチャーフラグを取得](/docs/ja/env-vars#features-that-need-feature-flag-fetching)するセッションでは `auto`、それ以外は `default` |
 
 [インストールまたはアップグレード後の最初のセッション](/docs/ja/env-vars#first-session-after-an-install-or-upgrade)では、Claude Code はフィーチャーフラグが到達する前に開始権限モードを選択できます。そのセッションは表が示すものとは異なる権限モードで開始する可能性があり、次のセッションは表に一致します。
 
@@ -98,7 +98,7 @@ VS Code 拡張機能が開始する会話は、[権限モードを切り替え�
 * ターミナルでは、セッションの上部に 1 回
 * VS Code 拡張機能では、新しい会話画面のカードとして、却下するまで表示されます
 
-Pro、Max、Team プランでは、`~/.claude/settings.json` が `auto` 以外の `defaultMode` を設定し、他の設定ファイルが設定しない場合、セッションはそのモードで開始し続けます。Claude Code はターミナルまたは VS Code 拡張機能で 1 回、設定を auto モードに変更するかどうかを尋ねます。却下した場合、設定はそのままです。
+`~/.claude/settings.json` が `auto` 以外の `defaultMode` を設定し、他の設定ファイルが設定しない場合、セッションはそのモードで開始し続けます。Pro、Max、Team プランおよび [フィーチャーフラグを取得しない](/docs/ja/env-vars#features-that-need-feature-flag-fetching)セッションでは、Claude Code はターミナルまたは VS Code 拡張機能で 1 回、設定を auto モードに変更するかどうかを尋ねます。却下した場合、設定はそのままです。
 
 <h3 id="start-in-a-different-mode">
   異なる権限モードで開始する
@@ -322,7 +322,7 @@ Claude Code が auto モードを利用不可と報告する場合は、まず�
   Bedrock、Agent Platform、または Foundry での auto モード
 </h3>
 
-[Amazon Bedrock](/docs/ja/amazon-bedrock)、[Google Cloud の Agent Platform](/docs/ja/google-vertex-ai)、[Microsoft Foundry](/docs/ja/microsoft-foundry)、およびサインイン済みの[Claude apps gateway](/docs/ja/claude-apps-gateway)セッションでは、auto モードはデフォルトで利用可能です。Claude Code v2.1.283 以降では、インタラクティブターミナルと[VS Code](/docs/ja/vs-code)セッションの[組み込みの開始権限モード](#which-mode-a-session-starts-in)でもあります。開始権限モードを自分で選択するには、[別の権限モードで開始](#start-in-a-different-mode)で説明されているように `permissions.defaultMode` を設定するか、VS Code 拡張機能のモード指示器から権限モードを選択します。
+[Amazon Bedrock](/docs/ja/amazon-bedrock)、[Google Cloud の Agent Platform](/docs/ja/google-vertex-ai)、[Microsoft Foundry](/docs/ja/microsoft-foundry)、およびサインイン済みの[Claude apps gateway](/docs/ja/claude-apps-gateway)セッションでは、auto モードはデフォルトで利用可能です。何も権限モードを設定しない場合、これらのプロバイダーでは、インタラクティブターミナルと VS Code セッションの[組み込みの開始権限モード](#which-mode-a-session-starts-in)でもあります。開始権限モードを自分で選択するには、[別の権限モードで開始](#start-in-a-different-mode)で説明されているように `permissions.defaultMode` を設定するか、VS Code 拡張機能のモード指示器から権限モードを選択します。
 
 これらのプロバイダーでは、Claude Sonnet 5 以降、Opus 4.7 以降、および Fable モデルのみがサポートされています。他のモデルでは、セッションは代わりに Manual で開始します。
 
@@ -524,6 +524,8 @@ auto モードがセッションのアクションを承認できない場合、
     3. 他のすべてはクラシファイアに行きます。[重要なパス削除](#critical-paths)はそれらのデフォルト処理を除きます。ステップ 1 で直接プロンプトするコネクタツールと[`requiresUserInteraction`](/docs/ja/mcp#require-approval-for-a-specific-tool) MCP ツールはクラシファイアに到達しません。そのため、org が必要とする承認も同意ステップも自動承認されません
     4. クラシファイアがブロックする場合、Claude は理由を受け取ります。ほとんどのセッションでは、理由は書かれた説明を与えるのではなく、クラシファイアが一致したルール（`[Data Exfiltration]` など）に名前を付けます。[拒否をレビュー](/docs/ja/auto-mode-config#review-denials)を参照してください
 
+    `tool.check` にフックする、インストールした [mod](/docs/ja/plugins/mods/overview) は、ステップ 3 の前にアクションを承認でき、分類器は mod が承認したアクションをチェックしません。[フックで権限を拡張する](/docs/ja/permissions#extend-permissions-with-hooks)を参照してください。
+
     auto モードに入ると、任意のコード実行を許可する広いルールが削除されます。
 
     * ブランケット `Bash(*)` または `PowerShell(*)`
@@ -667,6 +669,7 @@ Linux と macOS では、Claude Code はこのモードで root として、ま�
 * `.yarn`
 * `.mvn`
 * `.claude`。ただし `.claude/worktrees` は除く。Claude はここに独自の git worktrees を保存します
+* [`--plugin-dir`](/docs/ja/plugins/mods/create#change-a-mod-with-claude) で読み込んだディレクトリ。ファイルが変更されると、Claude Code がそこから mod のコードを再読み込みして実行するためです
 
 保護されたファイル：
 

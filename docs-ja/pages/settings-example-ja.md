@@ -216,7 +216,7 @@
       "enabledPlugins": {
         "code-formatter@acme-tools": true
       },
-      // サンドボックスコマンド：書き込み可能なビルドディレクトリ。npm と example.com は事前に許可、他のホストはまだプロンプト表示
+      // サンドボックスコマンド：書き込み可能なビルドディレクトリ。npm と example.com は事前に許可
       "sandbox": {
         "enabled": true,
         "filesystem": {
@@ -250,7 +250,7 @@
 * [`allowManagedPermissionRulesOnly`](/docs/ja/settings-reference#allowmanagedpermissionrulesonly) と [`allowManagedMcpServersOnly`](/docs/ja/settings-reference#allowmanagedmcpserversonly) は、管理権限と MCP 許可リストのみを適用対象にします
 * `allowedMcpServers` は MCP サーバーを URL で固定します
 * `strictKnownMarketplaces` は 1 つのプラグインマーケットプレイスを許可します
-* `sandbox` はコマンドを固定ネットワーク許可リストでサンドボックス化し、サンドボックス外での再試行を許可しません
+* `sandbox` はコマンドを固定ネットワーク許可リストでサンドボックス化し、サンドボックス外での再試行を許可しません。その `failIfUnavailable` キーは、[サンドボックスを実行できない環境では Claude Code を起動させないようにします](/docs/ja/sandboxing#enforce-sandboxing-with-managed-settings)
 * `requiredMinimumVersion` は最小 Claude Code バージョンを設定します
 * `cleanupPeriodDays` はセッショントランスクリプトおよび他のローカルデータの保持期間を 7 日に短縮します
 * `companyAnnouncements` は起動時にメッセージを表示します

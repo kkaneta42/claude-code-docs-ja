@@ -346,7 +346,7 @@ Claude Code がコマンドをバックグラウンドで実行する場合、�
 * Claude Code にコマンドをバックグラウンドで実行するよう指示する
 * `Ctrl+B` を押して、通常の Bash ツール呼び出しをバックグラウンドに移動する。Tmux ユーザーは tmux のプリフィックスキーのため、`Ctrl+B` を 2 回押す必要があります。
 
-コマンドが完了する前にタイムアウトに達した場合、Claude Code は自動的に[それをバックグラウンドに移動](/docs/ja/tools-reference#foreground-commands-that-move-to-the-background)します。停止する代わりにバックグラウンドに移動します。ただし、コマンドが `sleep` で始まる場合は除きます。コマンドが実行される時間を変更するには、[Bash タイムアウト環境変数](/docs/ja/tools-reference#timeout-and-output-limits)を設定してください。
+コマンドが完了する前にタイムアウトに達した場合、Claude Code は自動的に[それをバックグラウンドに移動](/docs/ja/tools-reference#foreground-commands-that-move-to-the-background)します。停止する代わりにバックグラウンドに移動します。ただし、コマンドが `sleep` で始まる場合は除きます。[`CLAUDE_CODE_DISABLE_BACKGROUND_TASKS`](/docs/ja/env-vars#variables)でバックグラウンドタスクをオフにしているか、[ベアモード](/docs/ja/headless#start-faster-with-bare-mode)で開始している場合、コマンドはタイムアウト時に停止します。タイムアウトを変更するには、[Bash タイムアウト環境変数](/docs/ja/tools-reference#timeout-and-output-limits)を設定してください。
 
 **主な機能：**
 
@@ -361,7 +361,7 @@ Claude Code がコマンドをバックグラウンドで実行する場合、�
 * バックグラウンド Bash および PowerShell コマンドには時間制限があり、コマンドがバックグラウンドに入った時点から数えられます。30 分、またはコマンドがバックグラウンドで開始されるときに Claude が要求する `timeout`（最大 2 時間まで）。例えば `Ctrl+B` で実行中にバックグラウンドに移動するコマンドは、移動から 30 分を取得します。コマンドが制限に達すると、Claude Code はそれを停止し、Claude に理由を伝えます。Claude は、作業がまだ必要な場合、より長い `timeout` で再度開始できます。制限を引き上げるには、[バックグラウンドコマンドの時間制限を引き上げる](/docs/ja/tools-reference#raise-the-time-limit-for-background-commands)を参照してください。ツール参照を参照してください
 * フォアグラウンド[サブエージェント](/docs/ja/sub-agents#run-subagents-in-foreground-or-background)が開始したバックグラウンドコマンドは、そのサブエージェントの実行が終了するときに終了します。完了、失敗、または中断されたかどうかに関わらず。ツール参照の[バックグラウンドコマンドが停止するとき](/docs/ja/tools-reference#when-a-background-command-stops)を参照してください
 
-すべてのバックグラウンドタスク機能を無効にするには、`CLAUDE_CODE_DISABLE_BACKGROUND_TASKS` 環境変数を `1` に設定します。詳細は[環境変数](/docs/ja/env-vars)を参照してください。
+すべてのバックグラウンドタスク機能を無効にするには、[`CLAUDE_CODE_DISABLE_BACKGROUND_TASKS`](/docs/ja/env-vars#variables)環境変数を `1` に設定してください。[ベアモード](/docs/ja/headless#start-faster-with-bare-mode)で開始することでもオフになります。
 
 **一般的なバックグラウンド実行コマンド：**
 
@@ -394,7 +394,7 @@ Claude Code がコマンドをバックグラウンドで実行する場合、�
 * 空のプロンプトで `Escape`、`Backspace`、または `Ctrl+U` で終了します
 * `!` で始まるテキストを空のプロンプトに貼り付けると、シェルモードが自動的に入力されます。入力された `!` の動作と一致します
 
-セッションが[厳密なサンドボックスモード](/docs/ja/sandboxing#the-unsandboxed-retry-escape-hatch)の下にリストされているものの 1 つでない限り、シェルモードで入力するコマンドは、サンドボックスを有効にしている場合でも[サンドボックス](/docs/ja/sandboxing)の外で実行されます。これは、サンドボックスが Claude が実行するコマンドに適用されるためです。
+セッションが[厳密なサンドボックスモード](/docs/ja/sandboxing#turn-off-the-retry-with-strict-sandbox-mode)の下にリストされているものの 1 つでない限り、シェルモードで入力するコマンドは、サンドボックスを有効にしている場合でも[サンドボックス](/docs/ja/sandboxing)の外で実行されます。これは、サンドボックスが Claude が実行するコマンドに適用されるためです。
 
 Claude はコマンド出力がトランスクリプトに到達すると自動的に応答するため、`! npm test` を実行して、2 番目のプロンプトなしで失敗の説明を取得できます。応答は通常のプロンプトを送信するのと同じコストがかかります。出力がコンテキストに追加されて応答がない以前の動作を復元するには、`settings.json` で [`respondToBashCommands`](/docs/ja/settings-reference#respondtobashcommands) を `false` に設定します。v2.1.186 より前では、シェルモードは常に出力をコンテキストに追加して応答がありませんでした。
 
