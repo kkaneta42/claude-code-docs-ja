@@ -68,6 +68,7 @@
 | `registry.npmjs.org` | 443 | セッションがプラグインをインストールする場合、npm ソースプラグインパッケージのフェッチとプラグインの Node.js 依存関係のインストール、または `npx` で起動された MCP サーバーが実行される場合。 |
 | `http-intake.logs.us5.datadoghq.com` | 443 | Anthropic 運用メトリクス。`CLAUDE_CODE_BYOC_ENABLE_DATADOG=1` が設定されている場合のみ。セルフホスト環境ではデフォルトでオフです。 |
 | `browser-intake-us5-datadoghq.com` | 443 | Anthropic エラーレポートアップロード。セッションのアカウントで[エラーレポート](/docs/ja/data-usage#telemetry-services)が有効な場合のみ送信されます。`DISABLE_ERROR_REPORTING=1` または `DISABLE_TELEMETRY=1` で抑制されます。 |
+| モデルリクエスト、モデル検索、認証情報の更新に使用するクラウドプロバイダーのエンドポイント（`bedrock-runtime.us-east-1.amazonaws.com` や `aiplatform.googleapis.com` など） | 443 | ランナーが[モデルリクエストを Amazon Bedrock または Google Cloud の Agent Platform に送信する](/docs/ja/self-hosted-environments-configuration#send-model-requests-to-bedrock-or-agent-platform)場合のみ |
 
 ランナーは `statsig.anthropic.com`、`*.sentry.io`、`claude.ai`、または `platform.claude.com` に到達しません。これらのホストは古いエンタープライズネットワークチェックリストに表示されますが、ランナーまたはセッショントラフィックのために許可リストに登録する必要はありません：機能フラグフェッチは `api.anthropic.com` に移動し、ランナーはインタラクティブ OAuth ではなく環境シークレットで認証します。 2 つのホスト側フローは `claude.ai` に到達するため、出力を許可するホストから実行してください。セッションコンテナ出力を広げるのではなく：ワンラインインストーラーはインストール時に `claude.ai` から `install.sh` をフェッチし、インタラクティブな `claude auth login`（[ガイド付きセットアップ](/docs/ja/self-hosted-environments-quickstart#set-up-an-environment-and-runner)、`doctor` の署名入りモード、[CI ディスパッチ](/docs/ja/self-hosted-environments-testing#authenticate-from-ci)が使用）は `claude.ai`、`claude.com`、`platform.claude.com` を通じてサインインします。`mcp-proxy.anthropic.com` も必須ではありません：セルフホストセッションはそれを使用せず、組織の claude.ai コネクタをセッションに配信する場合（組織で有効な場合）、`api.anthropic.com` を通じてルーティングされます。[MCP サーバー](/docs/ja/self-hosted-environments-configuration#mcp-servers)を参照してください。
 
@@ -139,6 +140,8 @@
 * `core.hooksPath` はランナー管理のフックディレクトリを指します。その `commit-msg` および `prepare-commit-msg` フックは、各コミットにセッションの作成者の `Co-authored-by:` トレーラーを追加します。[`CCR_SESSION_ACCOUNT_EMAIL`](/docs/ja/self-hosted-environments-configuration#wrapper-scripts) のメールから構築され、その変数が設定されていない場合は省略されます。イメージが既に `core.hooksPath` を設定している場合、ランナーは設定を保持し、これらのフックのインストールをスキップし、`[runner:git]` 警告を出力します。
 
 コミット署名には git 2.34 以降が必要です。ランナーは起動時にチェックし、git が古い場合はエラーで終了します。このフラグはプッシュ認証情報を設定しません。これはイメージで提供する必要があります。
+
+v2.1.280 以降のランナーでは、`checkout` または `post-session` ライフサイクルフックから行ったコミットもセッションとして署名されます。ただし、`Co-authored-by:` トレーラーは付きません。[ライフサイクルフック内の git 設定](/docs/ja/self-hosted-environments-configuration#git-configuration-inside-lifecycle-hooks)では、ランナーがこれらのフック内で固定する git 設定について説明しています。
 
 <h3 id="ship-git-config-in-your-image">
   イメージに git 設定を含める
@@ -435,7 +438,7 @@ secrets:
 
 ホストの停止タイムアウトに、少なくとも 3 つの部分の合計を与えてください：設定する `n` 分、リリース後の猶予、[シャットダウンタイミング](#shutdown-timing)が説明する完全なドレインパス。デフォルト設定ではリリース後の猶予は 75 秒、ドレインパスは 80 秒です。`n` 分 + 155 秒を許可してください。ランナーはこの合計を起動時に出力します。`--defer-shutdown-max-min` が設定されている場合。
 
-ランナーが終了する前に停止タイムアウトが切れると、ホストはランナーを強制終了します。保持するセッションは `post-session` フックを取得しません。ランナーは登録解除されず、コントロールプレーンは約 1 分後にセッションを再キューイングします。停止タイムアウトをその合計に与えることができない場合は、`--defer-shutdown-max-min` を設定しないままにして、ランナーが最初のシグナルでドレインするようにしてください。
+ランナーが終了する前に停止タイムアウトが切れると、ホストはランナーを強制終了します。まだ保持しているセッションでは `post-session` フックが実行されません。ランナーは登録解除されず、コントロールプレーンは数分以内にセッションを再キューイングします。停止タイムアウトにその合計を与えることができない場合は、`--defer-shutdown-max-min` を設定しないままにして、ランナーが最初のシグナルでドレインするようにしてください。
 
 <h3 id="what-reaches-a-running-post-session-hook">
   実行中の post-session フックに到達するもの
@@ -543,8 +546,10 @@ Anthropic はランナーからではなく、独自のインフラストラク�
   追加の制限事項
 </h3>
 
-* **再開されたセッションはプッシュされていない作業を失う**：セッションがリリースされるか、ランナーが再起動され、ユーザーが別のメッセージを送信すると、セッションは新しいランナーで再開され、開始ブランチからリポジトリを再度クローンするため、セッションがプッシュしていない作業は失われます。[`--push-outcome-on-release`](/docs/ja/self-hosted-environments-reference#runner-cli-flags)を設定して、ランナーがリリースする前にセッションの結果ブランチをベストエフォートでプッシュするようにします。再開されたセッションはそれらのコミットから開始されます。これはコミットされた作業を保持し、ダーティな作業ツリーではありません。有効にする前に、ソースリモートの `claude/*` refs へのプッシュを制限してください。例えば、ブランチルールセットを使用します：再開時に、ランナーは以前にプッシュされたブランチをフェッチし、誰がプッシュしたかを検証しません。そのため、それらの refs へのプッシュアクセスを持つすべてのユーザーが再開されたワークスペースにコンテンツを配置できます。ランナーは再開時にセッションごとの設定も破棄します。つまり、セッションの Claude 設定ディレクトリとセッションが書き込んだシェル状態です。`--push-outcome-on-release` はそれらをカバーしません。
-* **プライベートリポジトリは mid-session に追加できません**：セッション開始後に追加されたリポジトリは、セルフホストランナーで認証情報でクローンされないため、追加は失敗します。セッションを作成するときに、セッションが必要とするすべてのリポジトリを選択してください。
+* **再開されたセッションはプッシュされていない作業を失う**：新しいランナーは開始ブランチからリポジトリを再度クローンするため、セッションがプッシュしていない作業は失われます。
+  * **コミットされた作業を保持するには**：[`--push-outcome-on-release`](/docs/ja/self-hosted-environments-reference#runner-cli-flags)を設定します。するとランナーはリリースする前にセッションの結果ブランチをベストエフォートでプッシュし、再開されたセッションはそれらのコミットから開始されます。コミットされていない変更は引き続き失われます。
+  * **フラグを有効にする前に**：ソースリモートの `claude/*` refs にプッシュできるユーザーを制限してください。再開時に、ランナーは以前にプッシュされたブランチを、誰がプッシュしたかを検証せずにフェッチします。
+* **セッション途中で追加したリポジトリはクローンに失敗することがあります**：Claude は HTTPS 経由の `git clone` でクローンします。[`--use-anthropic-git-proxy`](#use-the-anthropic-git-proxy) を使用していないランナーでは、ホスト上にリポジトリを読み取れるものが何もない場合、クローンは git 認証エラーで失敗します。可能な場合は、セッションを作成するときに、セッションが必要とするすべてのリポジトリを選択してください。
 * **一部のコネクタはセルフホストセッションに表示されません**：claude.ai 設定でまだ接続していないコネクタはセルフホストセッションにリストされず、セッションはそれを接続するように促しません。最初に設定で接続してから、新しいセッションを開始してください。実行中のセッションにコネクタを追加しても、Claude がそのツールを利用できるようにはなりません。新しく追加されたコネクタを取得するには、新しいセッションを開始してください。
 
 <h3 id="report-an-issue">

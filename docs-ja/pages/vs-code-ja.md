@@ -120,7 +120,7 @@ Claude Code でできることについてのアイデアについては、[一�
     * `/plan` とタスク（例：`/plan fix the auth bug`）: 計画モードに切り替えて、そのタスクの計画を開始します。
     * `/plan open`: 既に計画モードの場合、エディターで計画ファイルを開きます。
   * **Edit automatically**: Claude は確認を求めずに編集を行います。
-* **Model**: コマンドメニューから **Switch model…** を選択して、セッション中にモデルを変更します。プロンプトボックスの下部にあるモデル名をクリックして、同じピッカーを開くこともできます。
+* **Model**: コマンドメニューから **Switch model…** を選択して、セッション中にモデルを変更します。プロンプトボックスの下部にあるモデル名をクリックして、同じピッカーを開くこともできます。Claude Code v2.1.284 以降では、プロンプトボックスで `/model` のみを入力してもピッカーが開きます。
 
   現在のモデルが[努力レベル](/docs/ja/model-config#adjust-effort-level)をサポートしている場合、ピッカーは **Effort** 行も表示し、モデル名ボタンは選択されたレベルを表示します。`max` 以外のレベルを選択すると、Claude Code はそれを現在のモデルのデフォルトとしてユーザー設定の [`modelSettings`](/docs/ja/settings-reference#modelsettings) に保存します。`max` は現在のセッションにのみ適用されます。モデル名ボタンと **Effort** 行には Claude Code v2.1.257 以降が必要です。
 
@@ -221,6 +221,8 @@ Claude Code パネルの上部にある **Session history** ボタンをクリ�
 * **セッションタイトル**: 新しいセッションは最初のメッセージに基づいて AI が生成したタイトルを受け取ります。
 * **名前変更とアーカイブ**: セッションにマウスを置いて、これらのアクションを表示します。説明的なタイトルを付けるために名前を変更するか、リストの下部にある **Archived sessions** グループに移動するためにアーカイブします。
 
+会話が別の Claude Code プロセス（ターミナルの `claude` や別の VS Code ウィンドウなど）で開いている場合、プロンプトボックスの代わりに次の通知が表示されます：`This conversation is still open somewhere else. Using it in two places at once can mix up its messages.` ここで続行するには、別の場所で会話を閉じてから **Open here anyway** をクリックします。閉じずにクリックすると、会話は両方の場所で開いた状態になります。[`claudeProcessWrapper`](#extension-settings) が設定されている場合、拡張機能はこのチェックをスキップし、会話を直接開きます。
+
 デフォルトでは、14 日間アクティビティがないセッションは、開いている、未読、または[グループ](#organize-sessions-into-groups)内にない限り、自動的に **Archived sessions** に移動します。自動アーカイブには Claude Code v2.1.265 以降が必要です。期間を変更するか、オフにするには、[Archive Inactive Sessions 設定](vscode://settings/claudeCode.archiveInactiveSessions)を開き、日数または **Never** を選択します。
 
 アーカイブされたセッションを復元するには、**Archived sessions** を展開して **Unarchive session** をクリックします。アーカイブされたすべてのセッションを一度に復元するには、セッションリストの Activity Bar で **Archived sessions** ヘッダーにマウスを置き、その復元アイコンをクリックします。これには Claude Code v2.1.277 以降が必要です。v2.1.257 より前では、アクションは **Delete session** でした。これはセッションを非表示にし、復元する方法がありませんでした。その後削除したセッションは、アップグレード後に **Archived sessions** の下に表示されます。
@@ -299,14 +301,20 @@ Claude がエディタグループの新しいタブを開くと、拡張機能�
   メイン Claude セッションにはサイドバーを使用し、サイドタスク用に追加タブを開きます。Claude は優先される場所を記憶します。アクティビティバーのセッションリストアイコンは Claude パネルとは別です。セッションリストは常にアクティビティバーに表示されますが、Claude パネルアイコンは左側のサイドバーにドッキングされている場合にのみそこに表示されます。
 </Tip>
 
+<h3 id="continue-conversations-after-a-reload">
+  リロード後に会話を続行する
+</h3>
+
 **Developer: Reload Window** を実行するか VS Code を再起動した後、チャットがその会話とともに戻るかどうかは、それがどこで開かれていたかによって異なります。
 
 * **エディタタブ**: 会話はそのタブとともに戻ります。
 * **サイドバー**: 過去 10 分以内にメッセージを送信したか Claude が応答した場合、会話は戻ります。戻らない場合は、[セッション履歴](#resume-past-conversations)から会話を再開してください。
 
+別の Claude Code プロセスがまだその会話を開いている場合は、ここで開く前に確認を求められます。その際には、[セッション履歴から再開する](#resume-past-conversations)ときと同じ **Open here anyway** の通知が表示されます。
+
 リロードが Claude の途中のステップを中断した場合、会話が戻ると Claude はそのステップを続行し、チャット内の通知が継続をマークします。Claude Code v2.1.274 以降が必要です。ステップが 1 時間以上前に中断されたか、セッションが別の場所で開かれている場合、会話はアイドル状態で戻ります。
 
-継続をオフにするには、[Continue After Reload 設定](vscode://settings/claudeCode.continueAfterReload)を開いてチェックを外します。
+継続をオフにするには、[Continue After Reload 設定](vscode://settings/claudeCode.continueAfterReload)を開いてチェックを外します。VS Code の環境または [`environmentVariables` 設定](#extension-settings)で [`CLAUDE_CODE_RESUME_INTERRUPTED_TURN`](/docs/ja/env-vars#variables) やその他の `CLAUDE_CODE_RESUME_` 変数を設定しても、パネルでは効果がありません。拡張機能がパネルのセッションを開始する前にこれらの変数を削除するためです。
 
 <h3 id="run-multiple-conversations">
   複数の会話を実行する
@@ -363,7 +371,8 @@ VS Code 拡張機能には、[プラグイン](/docs/ja/plugins/overview)をイ�
 プラグインタブでは、以下のことができます。
 
 * **インストール済みプラグイン**がトップに表示され、トグルスイッチで有効または無効にできます。
-  * プロジェクトの共有 `.claude/settings.json` で有効になっているプラグインをオフにすると、拡張機能は最初に確認を求めます。**自分のみ無効にする**はあなただけのためにオフにし、**全員のために無効にする**は共有ファイルを変更します。
+  * プロジェクトの共有 `.claude/settings.json` で有効になっているプラグインをオフにすると、拡張機能は最初に確認を求めます。**自分のみ無効にする**は自分に対してのみオフにし、**全員のために無効にする**は共有ファイルを変更します。
+  * 読み込みに失敗したプラグインは、その行に短い理由が表示されます。理由をクリックすると対処方法が表示され、[プラグインのトラブルシューティング](/docs/ja/plugins/troubleshooting)で調べるために完全なエラーメッセージをコピーすることもできます。
 * 設定されたマーケットプレイスからの**利用可能なプラグイン**が下に表示されます
 * 名前または説明でプラグインをフィルタリングするために検索します
 * 利用可能なプラグインの**インストール**をクリックします
@@ -406,14 +415,21 @@ URL は 2 つのクエリパラメータを受け取ります。
 | パラメータ | 説明 |
 | - | - |
 | `plugin` | マーケットプレイスにリストされているプラグインの名前。必須です。 |
-| `marketplace` | プラグインの出所：GitHub の `owner/repo`、`https://` URL、または `git@github.com:owner/repo.git` などの git SSH URL。省略した場合は `anthropics/claude-plugins-official` がデフォルトになります。 |
+| `marketplace` | マーケットプレイスの[ソース](/docs/ja/plugins/install#add-a-marketplace)：GitHub の `owner/repo`、`https://` URL、または `git@github.com:owner/repo.git` などの git SSH アドレス。省略した場合は `anthropics/claude-plugins-official` がデフォルトになります。 |
 
-[マーケットプレイスタブ](#manage-marketplaces)が受け入れるいくつかの値（ローカルパスや `http://` アドレスなど）はリンクでは機能しません。これらの場合、VS Code はエラーメッセージを表示し、ダイアログは開きません。
+拡張機能は、何かを開く前に両方の値をチェックします。
 
-2 つのケースでは、スコープ選択ではなくダイアログのメッセージで終了します。
+* **プラグイン名**：最大 100 文字で、ASCII 英字または数字で始まり、それ以外は ASCII 英字、数字、`.`、`_`、`-` のみを使用します。
+* **マーケットプレイスのソース**：`marketplace` パラメータに記載されている形式のみです。そのため、ローカルパス、`http://` アドレス、または `claude-plugins-official` のようなマーケットプレイスの名前は使用できません。`https://` URL には、ユーザー名、パスワード、クエリ文字列を含めることはできません。
+* **Git ref**：マーケットプレイスをブランチまたはタグに固定するには、`#` をエンコードした形式である `%23` の後に ref を続けてソースに追加します（例：`marketplace=owner/repo%23v1.0`）。エンコードされていない `#` を含むリンクは失敗します。`anthropics` GitHub 組織内のマーケットプレイスは、リンクで固定できません。
+
+これらのルールに違反するリンクを開くと、`Invalid plugin installation URL` で始まるエラーが表示されます。Claude Code パネルとダイアログは開かず、何もインストールされません。プラグインの名前またはマーケットプレイスをリンクに含められない場合は、**マーケットプレイス**タブでマーケットプレイスを追加してから、**プラグイン**タブでプラグインをインストールするよう案内してください。
+
+次のケースでは、スコープ選択ではなくダイアログのメッセージで終了します。
 
 * **マーケットプレイスにその名前のプラグインがリストされていない**：ダイアログはプラグインが見つからなかったことを報告します。`plugin` の値をマーケットプレイスのリストと照合してください。
 * **プラグインが既にインストールされている**：ダイアログはそのことを示し、何も変わりません。
+* **同じ名前の別のマーケットプレイスが既に追加されている**：ダイアログはリンクのマーケットプレイスが追加されなかったことを示し、何もインストールされません。
 
 GitHub README、issue、およびその他の Markdown ホストの一部は、スキームが `http` または `https` ではないリンクを削除するため、`vscode://` リンクはプレーンテキストとしてレンダリングされます。これらのホストではコードブロック内に URL を配置してください。[リンクがクリック可能ではなくプレーンテキストとしてレンダリングされる](/docs/ja/deep-links#the-link-renders-as-plain-text-instead-of-being-clickable)は `claude-cli://` リンクについて説明しています。
 
@@ -452,6 +468,8 @@ Claude を Chrome ブラウザに接続して、Web アプリをテストし、�
 添付メニューを開いて、新しいタブを開く、ページコンテンツを読むなど、特定のブラウザツールを選択することもできます。
 
 Claude はブラウザタスク用に新しいタブを開き、ブラウザのログイン状態を共有するため、既にサインインしているサイトにアクセスできます。
+
+`@browser` と入力しなくても各セッションの開始時にブラウザへ接続されるようにするには、[Chrome をデフォルトで有効にする](/docs/ja/chrome#enable-chrome-by-default) を参照してください。そのように接続されたセッションで Claude Code がブラウザ操作の前に確認を求める場合については、[VS Code セッションでの権限プロンプト](/docs/ja/chrome#permission-prompts-in-vs-code-sessions) を参照してください。
 
 セットアップ手順、機能の完全なリスト、トラブルシューティングについては、[Claude Code を Chrome で使用する](/docs/ja/chrome) を参照してください。
 
@@ -569,15 +587,16 @@ VS Code は `initialPermissionMode` をユーザー設定から読み込み、�
 | `attachOpenFile` | `true` | エディターで開いているファイルをメッセージに追加し、プロンプトボックスに表示します。オフの場合、選択したテキストのみが追加されます。Claude Code v2.1.271 以降が必要です |
 | `useCtrlEnterToSend` | `false` | Enter の代わりに Ctrl/Cmd+Enter を使用してプロンプトを送信します |
 | `scrollToBottomOnSend` | `true` | メッセージを送信するときに会話を下部にスクロールします。オフの場合、会話は元の位置に留まります。Claude Code v2.1.275 以降が必要です |
+| `showMessageTimestamps` | `false` | 各メッセージが送信された日時を表示します。日付が変わる位置には日付行が表示されます。Claude Code v2.1.284 以降が必要です |
 | `enableNewConversationShortcut` | `false` | Cmd/Ctrl+N を有効にして新しい会話を開始します |
 | `enableReopenClosedSessionShortcut` | `true` | Cmd/Ctrl+Shift+T を使用して、最近閉じた Claude セッションタブを再度開きます。最後に閉じたタブが Claude セッションではなかった場合、ショートカットは VS Code の通常の再度開く閉じたエディターコマンドを実行します。 |
 | `archiveInactiveSessions` | `14` | この日数アクティビティがない場合、[セッションを自動的にアーカイブします](#resume-past-conversations)：`1`、`2`、`7`、または `14`。`0` に設定してオフにします。Claude Code v2.1.265 以降が必要です |
-| `continueAfterReload` | `true` | ウィンドウをリロードした後、Claude は復元されたセッションで [中断されたステップを続行します](#choose-where-claude-lives)。Claude Code v2.1.274 以降が必要です |
+| `continueAfterReload` | `true` | ウィンドウをリロードした後、Claude は復元されたセッションで [中断されたステップを続行します](#continue-conversations-after-a-reload)。Claude Code v2.1.274 以降が必要です |
 | `hideOnboarding` | `false` | オンボーディングチェックリスト（卒業帽アイコン）を非表示にします |
 | `focusView` | `false` | ツール呼び出し、ツール結果、思考を展開可能な行の背後に非表示にして、プロンプトと Claude の応答を残します。Claude の最新のやることリストは表示されたままです。これには Claude Code v2.1.225 以降が必要です。コマンドメニューから Focus ビューを切り替えることもできます。Claude Code v2.1.221 以降が必要です |
 | `respectGitIgnore` | `true` | ファイル検索と [選択コンテキスト](#reference-files-and-folders) から .gitignore パターンを除外します |
 | `usePythonEnvironment` | `true` | Claude を実行するときにワークスペースの Python 環境をアクティブにします。Python 拡張機能が必要です。 |
-| `environmentVariables` | `[]` | Claude プロセスの環境変数を設定します。共有構成には Claude Code 設定を使用してください。 |
+| `environmentVariables` | `[]` | Claude プロセスの環境変数を設定します。共有構成には Claude Code 設定を使用してください。[`CLAUDE_CONFIG_DIR`](/docs/ja/env-vars) エントリは、その値が絶対パスである場合にのみ適用されます。拡張機能は `~` を展開せず、相対パスの値は無視します。 |
 | `disableLoginPrompt` | `false` | 認証プロンプトをスキップします（サードパーティプロバイダーのセットアップ用） |
 | `allowDangerouslySkipPermissions` | `false` | モードセレクターに権限をバイパスを追加します。インターネットアクセスのないサンドボックスでのみ使用してください。 |
 | `claudeProcessWrapper` | - | Claude プロセスを起動するために使用される実行可能ファイル。バンドルされたバイナリパスが存在する場合、引数として渡されます。プラットフォーム用のバイナリが拡張機能ビルドに含まれていない場合は、別途インストールされた `claude` バイナリに設定します。ラップされたセットアップでは、`initialPermissionMode` を設定するか、以前の会話で Manual、Edit automatically、または Auto を選択していない限り、会話は Manual モードで開始されます。これは、拡張機能が設定とビルトインデフォルトステップをスキップするためです。[Switch permission modes](/docs/ja/permission-modes#switch-permission-modes) を参照してください。アクティベーション時の「Unsupported platform」エラーは、プラットフォーム用にバイナリがバンドルされていないことを意味します。[npm install 後にネイティブバイナリが見つからない](/docs/ja/troubleshoot-install#native-binary-not-found-after-npm-install) を参照してください。 |
@@ -666,11 +685,21 @@ VS Code に留まりながら CLI を使用するには、統合ターミナル�
 
 プロンプトで `@terminal:name` を使用してターミナル出力を参照します。ここで `name` はターミナルのタイトルです。これにより、Claude はコマンド出力、エラーメッセージ、またはログをコピー＆ペーストなしで確認できます。
 
+<h3 id="move-a-running-command-or-subagent-to-the-background">
+  実行中のコマンドやサブエージェントをバックグラウンドに移動する
+</h3>
+
+Claude が待機しているコマンドや[サブエージェント](/docs/ja/sub-agents)に想定以上の時間がかかっている場合は、会話内のそのツール呼び出しの下にある **Run in background** をクリックします。このアクションは、コマンドが約 2 秒間実行された時点、またはサブエージェントが開始された直後に表示されます。Claude は待機をやめてターンを続行し、コマンドやサブエージェントは[バックグラウンドタスク](/docs/ja/tools-reference#background-commands)として実行を続け、完了すると Claude に通知します。Claude Code v2.1.287 以降が必要です。
+
+その間にタスクを確認したり停止したりするには、プロンプトボックスで `/tasks` を入力して[エージェントマップ](#use-the-prompt-box)を開きます。サブエージェントはそこでエージェントのツリー内の位置を維持し、コマンドはエージェントの下に一覧表示され、その[カードに最新の出力](#monitor-background-processes)が表示されます。
+
 <h3 id="monitor-background-processes">
   バックグラウンドプロセスを監視する
 </h3>
 
 プロンプトボックスで `/tasks` を入力して[エージェントマップ](#use-the-prompt-box)を開きます。これにより、セッションのバックグラウンドタスク（Claude がバックグラウンドシェルコマンドとして実行中の開発サーバーなど）が一覧表示されます。タスクをクリックしてそのカードを開き、そこで停止できます。Claude Code v2.1.277 以降が必要です。
+
+バックグラウンドシェルコマンド、またはコマンドを実行する[モニター](/docs/ja/tools-reference#monitor-tool)の場合、カードにはコマンドの最新の出力も表示され、コマンドの実行中は更新されます。
 
 <h3 id="connect-to-external-tools-with-mcp">
   MCP を使用して外部ツールに接続する
@@ -775,6 +804,25 @@ summarize the changes I've made to the auth module
 | - | - | - |
 | `mcp__ide__getDiagnostics` | 言語サーバー診断（VS Code の Problems パネルのエラーと警告）を返します。オプションで 1 つのファイルにスコープできます。 | はい |
 | `mcp__ide__executeCode` | アクティブな Jupyter ノートブックのカーネルで Python コードを実行します。以下の確認フローを参照してください。 | いいえ |
+
+**チャットパネルでの診断。** チャットパネルでは、Claude Code v2.1.285 以降の場合、Claude は `claude-vscode` という名前の別の組み込みサーバーを通じて VS Code の Problems パネルを読み取ります。Claude はこのサーバーに対して、1 つのファイル、または VS Code が診断情報を持つすべてのファイルについて、現在のエラーと警告を要求できます。
+
+フックと権限ルールでは、チャットパネルの診断ツールは `mcp__claude-vscode__getDiagnostics` として認識されます。CLI とチャットパネルの両方で診断を対象にするには、フックまたはルールで `mcp__ide__getDiagnostics` と `mcp__claude-vscode__getDiagnostics` の両方を指定してください。
+
+次の `settings.json` の例では、両方のツールを拒否しています。
+
+```json theme={null}
+{
+  "permissions": {
+    "deny": [
+      "mcp__ide__getDiagnostics",
+      "mcp__claude-vscode__getDiagnostics"
+    ]
+  }
+}
+```
+
+`Read` 拒否ルールはどちらのツールも対象にしないため、この例のように[拒否ルール](/docs/ja/permissions#mcp)で名前を指定してブロックしてください。
 
 **Jupyter 実行は常に最初に確認します。** `mcp__ide__executeCode` は何もサイレントに実行することはできません。各呼び出しで、コードはアクティブなノートブックの最後に新しいセルとして挿入され、VS Code がそれをビューにスクロールし、ネイティブ Quick Pick が **Execute** または **Cancel** を求めます。キャンセルするか、`Esc` でピッカーを閉じると、Claude にエラーが返され、何も実行されません。また、アクティブなノートブックがない場合、Jupyter 拡張機能（`ms-toolsai.jupyter`）がインストールされていない場合、またはカーネルが Python でない場合、ツールは完全に拒否します。
 

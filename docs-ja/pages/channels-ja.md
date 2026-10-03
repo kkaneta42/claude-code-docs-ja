@@ -36,7 +36,7 @@ Team、Enterprise、または Console 組織を管理している場合は、[�
       </Step>
 
       <Step title="プラグインをインストールする">
-        Claude Code で以下を実行します。
+        ターミナルで `claude` を実行して Claude Code を起動し、そのプロンプトで以下を入力します。
 
         ```
         /plugin install telegram@claude-plugins-official
@@ -114,7 +114,7 @@ Team、Enterprise、または Console 組織を管理している場合は、[�
       </Step>
 
       <Step title="プラグインをインストールする">
-        Claude Code で以下を実行します。
+        ターミナルで `claude` を実行して Claude Code を起動し、そのプロンプトで以下を入力します。
 
         ```
         /plugin install discord@claude-plugins-official
@@ -179,7 +179,7 @@ Team、Enterprise、または Console 組織を管理している場合は、[�
       </Step>
 
       <Step title="プラグインをインストールする">
-        Claude Code で以下を実行します。
+        ターミナルで `claude` を実行して Claude Code を起動し、そのプロンプトで以下を入力します。
 
         ```
         /plugin install imessage@claude-plugins-official
@@ -238,7 +238,7 @@ Fakechat デモを試すには、以下が必要です。
 
 <Steps>
   <Step title="Fakechat チャネルプラグインをインストールする">
-    Claude Code セッションを開始し、インストールコマンドを実行します。
+    ターミナルで `claude` を実行して Claude Code を起動し、そのプロンプトでインストールコマンドを入力します。
 
     ```text theme={null}
     /plugin install fakechat@claude-plugins-official

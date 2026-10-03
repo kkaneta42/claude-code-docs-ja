@@ -107,14 +107,14 @@ VS Code については、[VS Code でのブラウザ自動化](/docs/ja/vs-code
   Chrome をデフォルトで有効にする
 </h3>
 
-各セッションで `--chrome` を渡すことを避けるには、`/chrome` を実行して「デフォルトで有効」を選択します。
+毎回 `--chrome` を渡さずに Chrome に接続するには、CLI セッションで `/chrome` を実行して **デフォルトで有効** を選択します。[VS Code 拡張機能](/docs/ja/vs-code#automate-browser-tasks-with-chrome)では、プロンプトボックスに `/chrome` と入力して **デフォルトで有効** スイッチをオンにします。両者は 1 つの設定を共有しているため、どちらかでオンにすると CLI と VS Code の両方でオンになります。
+
+この設定がオンで Claude Code v2.1.287 以降を使用している場合、各 VS Code セッションは開始時にブラウザに接続するため、`@browser` と入力する前から Claude がブラウザを使用できます。それより前のバージョン、または設定がオフの場合、VS Code セッションは `@browser` と入力したときに接続します。
 
 Chrome が実行されていない場合でも、Claude Code は通常どおり起動します。v2.1.211 より前では、Chrome 統合が有効で Chrome が実行されていない場合に、起動が停止することがありました。
 
-[VS Code 拡張機能](/docs/ja/vs-code#automate-browser-tasks-with-chrome) では、Chrome 拡張機能がインストールされている場合、Chrome はいつでも利用可能です。追加のフラグは必要ありません。
-
 <Note>
-  CLI で Chrome をデフォルトで有効にすると、ブラウザツールが常にロードされるため、コンテキスト使用量が増加します。コンテキスト消費の増加に気付いた場合、この設定を無効にして、必要な場合にのみ `--chrome` を使用してください。
+  Chrome をデフォルトで有効にすると、ブラウザツールとその指示が常にロードされるため、コンテキスト使用量が増加します。コンテキスト消費の増加に気付いた場合は、この設定をオフにして、必要なときにのみ接続してください。CLI では `--chrome` を使用し、VS Code ではプロンプトボックスに [`@browser`](/docs/ja/vs-code#automate-browser-tasks-with-chrome) と入力します。
 </Note>
 
 <h3 id="manage-site-permissions">
@@ -123,11 +123,20 @@ Chrome が実行されていない場合でも、Claude Code は通常どおり�
 
 サイトレベルの権限は Chrome 拡張機能から継承されます。Chrome 拡張機能の設定で権限を管理して、Claude がブラウズ、クリック、入力できるサイトを制御します。[auto モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)では、auto モードの分類器自体があるサイトへのブラウザ呼び出しを承認した場合、権限ルールで Claude in Chrome に対していずれかのサイトを拒否していない限り、拡張機能はその呼び出しについて独自のサイトごとのチェックを省略します。
 
+<h3 id="permission-prompts-in-vs-code-sessions">
+  VS Code セッションでの権限プロンプト
+</h3>
+
+VS Code セッションでは、ブラウザアクションの前に Claude Code が確認するかどうかは、セッションがブラウザに接続した方法によって異なります。
+
+* **`@browser` と入力した場合**: Claude Code が通常であれば確認するブラウザアクションを、拡張機能がそれぞれ承認します。
+* **[デフォルトで有効](#enable-chrome-by-default)設定によって開始時に接続された場合**: そのセッションで `@browser` と入力するまで、Claude Code は Manual、Edit automatically、Auto、Bypass permissions の各モードで、許可していないサイトでのブラウザアクションの前に確認します。
+
 <h3 id="browser-tools-in-plan-mode">
   plan モードでのブラウザツール
 </h3>
 
-[plan モード](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode)では、Claude が GIF を記録する、新しいタブを開く、またはショートカットを実行する前に権限プロンプトが表示されます。セッションで [bypassPermissions モードが利用可能](/docs/ja/permission-modes#skip-all-checks-with-bypasspermissions-mode)で、かつ[機能フラグの取得](/docs/ja/env-vars#features-that-need-feature-flag-fetching)がオフの場合、これらの呼び出しはプロンプトなしで実行されます。
+[plan モード](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode)では、Claude が GIF を記録する、新しいタブを開く、またはショートカットを実行する前に権限プロンプトが表示されます。ただし、[`@browser`](#permission-prompts-in-vs-code-sessions) と入力した VS Code セッションは除きます。対話型 CLI セッションでは、[bypassPermissions モードが利用可能](/docs/ja/permission-modes#skip-all-checks-with-bypasspermissions-mode)で、かつ[機能フラグの取得](/docs/ja/env-vars#features-that-need-feature-flag-fetching)がオフの場合、これらの呼び出しはプロンプトなしで実行されます。
 
 `createIfEmpty` を設定する `tabs_context_mcp` 呼び出しや、これらのアクションのいずれかを含む `browser_batch` 呼び出しでもプロンプトが表示されます。
 

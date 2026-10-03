@@ -290,7 +290,7 @@ steps:
   Slack、クラウドセッション、Remote Control
 </h3>
 
-[Slack の Claude Code](/docs/ja/slack) と [クラウドセッション](/docs/ja/claude-code-on-the-web)は常に Anthropic の API を使用します。ゲートウェイデプロイメントの一部ではありません。クラウドセッションの環境設定で設定されたゲートウェイ変数は適用されません。トラフィックがゲートウェイに留まる必要がある場合、これらのユーザーに対してこれらのサーフェスを有効にしないでください。
+[Slack の Claude Code](/docs/ja/slack) と[クラウドセッション](/docs/ja/claude-code-on-the-web)は、ゲートウェイのデプロイには含まれません。クラウドセッションの環境設定で設定されたゲートウェイ変数は適用されません。トラフィックがゲートウェイに留まる必要がある場合、これらのユーザーに対してこれらのサーフェスを有効にしないでください。
 
 [Remote Control](/docs/ja/remote-control) と[音声ディクテーション](/docs/ja/voice-dictation)は両方とも claude.ai ID に依存します。Remote Control はライブセッションをアカウントとペアリングし、音声ディクテーションは claude.ai トランスクリプションエンドポイントに到達します。`ANTHROPIC_API_KEY`、`ANTHROPIC_AUTH_TOKEN`、または `apiKeyHelper` がアクティブな間は利用できません。Remote Control は `ANTHROPIC_BASE_URL` が Anthropic 以外のホストを指している場合も無効になるため、claude.ai でサインインするだけでは十分ではありません。v2.1.196 より前では、Anthropic 以外のベース URL は Remote Control をブロックしませんでした。
 

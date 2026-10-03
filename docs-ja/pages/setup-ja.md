@@ -123,7 +123,7 @@ Claude Code をネイティブに Windows で実行することも、WSL 内で�
 
 **オプション 1: ネイティブ Windows**
 
-PowerShell または CMD からインストールコマンドを実行します。管理者として実行する必要はありません。[Git for Windows](https://git-scm.com/downloads/win)をインストールすることはオプションです。これにより Git Bash が提供され、[Bash ツール](/docs/ja/tools-reference#bash-tool-behavior)が有効になります。
+PowerShell または CMD からインストールコマンドを実行します。管理者として実行する必要はありません。[Git for Windows](https://git-scm.com/downloads/win)をインストールすることはオプションです。これにより、[Bash ツール](/docs/ja/tools-reference#bash-tool-behavior)と[Monitor ツール](/docs/ja/tools-reference#monitor-tool)に必要な Git Bash が提供されます。
 
 PowerShell または CMD からインストールするかどうかは、実行するインストールコマンドにのみ影響します。プロンプトは PowerShell では `PS C:\Users\YourName>` と表示され、CMD では `PS` なしで `C:\Users\YourName>` と表示されます。ターミナルが初めての場合は、[ターミナルガイド](/docs/ja/terminal-guide#windows)で各ステップを説明しています。
 
@@ -257,9 +257,13 @@ npm グローバルインストールが npm グローバルディレクトリ�
 }
 ```
 
+新しくリリースされたモデルでは、stable チャネルが提供するバージョンよりも新しい Claude Code バージョンが必要になる場合があります。そのモデルをすぐに使用するには、latest チャネルに移行してください。
+
 エンタープライズデプロイメントの場合、[管理設定](/docs/ja/managed-settings)を使用して、組織全体で一貫したリリースチャネルを適用できます。
 
 Homebrew インストールは、この設定ではなく cask 名でチャネルを選択します。`claude-code` は安定版を追跡し、`claude-code@latest` は最新版を追跡します。
+
+apt、dnf、および apk リポジトリからのインストールは、この設定ではなくリポジトリでチャネルを選択します。チャネルを切り替えるには、[Linux パッケージマネージャーでインストール](#install-with-linux-package-managers)の手順に従ってください。
 
 <h3 id="pin-a-minimum-version">
   最小バージョンをピン留め
@@ -316,7 +320,7 @@ claude update
   高度なインストールオプション
 </h2>
 
-これらのオプションは、バージョンピニング、Linux パッケージマネージャー、npm、およびバイナリ整合性の検証用です。
+これらのオプションは、バージョンピニング、Linux パッケージマネージャー、npm、ネットワークストレージ、およびバイナリ整合性の検証用です。
 
 <h3 id="install-a-specific-version">
   特定のバージョンをインストール
@@ -496,7 +500,7 @@ Claude Code は署名付き apt、dnf、および apk リポジトリを公開�
   npm でのインストール
 </h3>
 
-Claude Code をグローバル npm パッケージとしてインストールすることもできます。v2.1.198 以降、npm パッケージには [Node.js 22 以上](https://nodejs.org/en/download)が必要です。古い Node.js バージョンでは、npm はインストール中に失敗するのではなく `EBADENGINE` 警告を出力します。インストールは完了し、パッケージがランタイムで Node.js を使用しないネイティブバイナリをダウンロードするため、`claude` は引き続き実行されます。
+Claude Code をグローバル npm パッケージとしてインストールすることもできます。npm パッケージには [Node.js 22 以上](https://nodejs.org/en/download)が必要です。古い Node.js バージョンでは、npm はインストール中に失敗するのではなく `EBADENGINE` 警告を出力します。インストールは完了し、パッケージがランタイムで Node.js を使用しないネイティブバイナリをダウンロードするため、`claude` は引き続き実行されます。
 
 ```bash theme={null}
 npm install -g @anthropic-ai/claude-code
@@ -511,6 +515,21 @@ npm インストールをアップグレードするには、`npm install -g @an
 <Warning>
   `sudo npm install -g` を使用しないでください。これはアクセス許可の問題とセキュリティリスクにつながる可能性があります。アクセス許可エラーが発生した場合は、[トラブルシューティングアクセス許可エラー](/docs/ja/troubleshoot-install#permission-errors-during-installation)を参照してください。
 </Warning>
+
+<h3 id="install-on-network-storage">
+  ネットワークストレージへのインストール
+</h3>
+
+実行中のセッションは、起動時だけでなく動作中にも Claude Code 実行ファイルの一部をディスクから読み取ります。ネットワークストレージ上でファイルが切り詰められたり削除されたりするなどして、セッションの途中でファイルが読み取れなくなると、セッションはクラッシュします。Linux では、シェルはこれを `Bus error` として報告します。
+
+複数のマシンにマウントされた NFS ホームなど、ホームディレクトリがネットワークストレージ上にある場合は、各セッションの実行ファイルがセッション終了まで読み取り可能な状態を保つようにインストールを配置してください:
+
+* **ローカルディスクにインストールする**: [Linux パッケージマネージャー](#install-with-linux-package-managers)や独自のデプロイツールなどを使用して、各マシンのローカルファイルシステムにバイナリを配置します。ユーザーごとの npm プレフィックスとネイティブインストーラーのデフォルトの `~/.local/share/claude/versions/` ディレクトリは、どちらもホームディレクトリ内にあります。
+* **各バージョンを専用のディレクトリに保持する**: `npm install -g` で npm インストールをその場でアップグレードすると、以前のバイナリが削除されます。複数のマシンが共有するストレージでは、他のマシン上のセッションがまだ実行中のファイルが削除されることになります。新しいバージョンはそれぞれ古いバージョンの隣にインストールし、ユーザーをそちらに移行してください。
+* **古いバージョンは、どのマシンでも実行されている可能性がなくなってから削除する**: マシンは他のマシンで実行中のプロセスを確認できないため、削除前に実行中のプロセスを確認するだけでは不十分です。
+* **Claude Code 自体の更新をオフにする**: [`DISABLE_UPDATES`](/docs/ja/env-vars) を設定し、独自のツールで新しいバージョンをインストールします。そうしないと、あるマシンでの npm インストールの自動更新が同じインプレースアップグレードを実行し、他のマシン上のセッションが実行中のバイナリを削除してしまいます。ユーザーは引き続き `claude update` や `claude install` を実行できるため、`DISABLE_AUTOUPDATER` を設定するだけでは不十分です。[自動更新を無効にする](#disable-auto-updates)を参照してください。
+
+ネイティブインストーラーは `~/.local/share/claude/versions/` から古いバージョンを自動的に削除します。このディレクトリが共有ストレージ上にある場合、この点が問題になります。ランチャーが指しているバージョンと、同じマシン上のセッションが実行中のバージョンに加えて、最新の 2 つのバージョンを保持し、残りを削除します。削除されたバージョンを実行している別のマシン上のセッションは、そのバイナリを失います。[カスタムランチャー](#auto-updates)を使用する場合、Claude Code はインストールされたすべてのバージョンを保持し、クリーンアップはユーザーに任されます。
 
 <h3 id="binary-integrity-and-code-signing">
   バイナリ整合性とコード署名

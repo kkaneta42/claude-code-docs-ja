@@ -31,7 +31,7 @@ evals を使用して以下を実行します。
 * Claude Code v2.1.269 以降。`claude --version` で確認し、`claude update` でアップグレードしてください。
 * Git 2.31 以降（Git がインストールされている場合）。`git --version` で確認してください。古いバージョンの Git では、`claude plugin eval` は [ケースを実行する前に停止します](#git-is-too-old-for-claude-plugin-eval)。Git がない場合は、通常どおり実行されます。
 * `plugin.json` または `.claude-plugin/plugin.json` マニフェストを含むプラグインディレクトリ、または [skills-directory プラグイン](/docs/ja/plugins/loading#plugins-shared-through-a-repository)。
-* 通常の Claude Code セッションで使用するのと同じ認証とモデルプロバイダー。Eval 実行、judge-scored graders、および `claude plugin eval init` はあなたの認証情報でモデルを呼び出すため、プランの使用量制限または API 請求に対してカウントされます。コマンドがコストを報告する場合、その数値はそれらの呼び出しの [定価見積もり](/docs/ja/costs) です。
+* 通常の Claude Code セッションで使用するのと同じ認証とモデルプロバイダー。Eval 実行、judge-scored graders、および `claude plugin eval init` はユーザーの認証情報でモデルを呼び出すため、プランの使用制限または API 請求に対してカウントされます。コマンドがコストを報告する場合、その数値はそれらの呼び出しの [定価見積もり](/docs/ja/costs) です。Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry で Claude Code を実行している場合は、通常のセッションと同じプロバイダー変数をエクスポートするシェルからスイートを実行してください。[`env` フィールド](#prompt-md-fields) で説明されているとおり、各実行はそのシェルからこれらの変数を継承するためです。
 
 <h2 id="how-an-eval-run-works">
   eval 実行の仕組み
@@ -229,7 +229,7 @@ Claude は本文を正確に作成したとおりに受け取ります。その�
 
 [グレーダータイプ](#grader-types) は各タイプのオプションと合格条件をリストし、[グレーダーが見ることができるもの](#what-a-grader-can-look-at) は `target` と `focus` が受け入れる値をリストします。
 
-`llm` および `baseline` グレーダーのジャッジはデフォルトで小さく高速なモデルです。ニュアンスのあるルーブリックに対してより強力なものを使用するには、`--judge-model sonnet` または完全なモデル ID を渡します。
+デフォルトでは、`llm` および `baseline` グレーダーのジャッジは、Claude Code がバックグラウンドタスクに使用するモデルです。ジャッジを自分で選択するには、`--judge-model sonnet` または完全なモデル ID を渡します。
 
 <h4 id="choose-graders-that-give-a-stable-signal">
   安定した信号を与えるグレーダーを選択する
@@ -333,7 +333,7 @@ Created issue #4821: {{input.title}}
 * **置換**: `{{input.<field>}}` で呼び出しの入力からフィールドを挿入し、`{{file:fixtures/{input.<field>}.json}}` でモックの横のフィクスチャファイルの内容を挿入します。
 * **`expect:`**: `expect:` ブロックは入力を保護します。呼び出しがそれに違反する場合、実行はスコア 0 で中止され、理由が記録されます。そのため、ケースはプラグインがサーバーに何を求めたかを主張できます。
 * **`error: true`**: `error: true` を設定して本文をツールエラーとして返します。
-* **`type: agent`**: `type: agent` を設定して小さいモデルが本文の指示からサーバーとして答えるようにします。
+* **`type: agent`**: `type: agent` を設定してジャッジモデルが本文の指示からサーバーとして答えるようにします。
 
 [モックファイルリファレンス](#mock-files) はすべてのキーと `_server.md` および `_tools.json` ファイルをリストします。
 
@@ -403,7 +403,7 @@ claude plugin eval . --allow-tools Write Edit "Bash(npm test *)"
 | `--runs <n>` | 各ケースの `runs`、またはそれ以外は 3 | arm ごとのケースごとの実行 |
 | `-j`, `--concurrency <n>` | `1` | 最大 1 から 8 のエージェント実行を同時に実行します。アカウントのレート制限を共有するため、これはそのレート制限を超えるスループットを上げるのではなく、壁時間を短縮します。結果はケース順を保持します。 |
 | `--model <model>` | 各ケースの `model`、またはそれ以外は `ANTHROPIC_MODEL` が設定されている場合はそれ、またはそれ以外は Claude Code のデフォルト | テスト中のエージェント用のモデル。CI でモデルロールアウトがプラグイン回帰と間違われないようにそれを固定します。 |
-| `--judge-model <model>` | 小さく高速なモデル | `llm` および `baseline` グレーダー用のモデル |
+| `--judge-model <model>` | [バックグラウンドタスク](#grade-the-result) 用のモデル | `llm` および `baseline` グレーダー用のモデル |
 | `--ablation <mode>` | ケースごとに決定されます。[プラグインなしベースラインに対してスコアを付ける](#compare-against-a-no-plugin-baseline) を参照してください | プラグインが何を追加するかを測定するために、各ケースをプラグインなしでも実行するかどうか。`none` は 1 つの arm を実行します。`with-without` はプラグインなしベースラインを追加します。 |
 | `--threshold <0..1>` | `1.0` | ケースが with-arm スコアがこれ以上の場合に合格します。これ以下のケースはコマンドを終了 1 にします。 |
 | `--max-cost-usd <usd>` | 上限なし | 実行の定価コスト見積もりの上限（プラン使用量ではなく）。各実行開始前にチェックされます。使用後、さらに何も開始されません。既に開始された実行は完了するため、支出はそれらの実行の分だけ上限を超える可能性があります。未開始の実行が残っている場合、コマンドは部分的な結果で終了 2 になります。 |
@@ -451,7 +451,7 @@ with-minus-without デルタは報告されますが、終了コードを変更�
 
 CI ランナーには、以下も必要です。
 
-* **インストールと認証情報**：CI ランナーは Claude Code インストールと [環境の認証情報](/docs/ja/authentication)（`ANTHROPIC_API_KEY` など）が必要です。
+* **インストールと認証情報**：CI ランナーは Claude Code インストールと [環境の認証情報](/docs/ja/authentication)（`ANTHROPIC_API_KEY` やクラウドプロバイダーの変数など）が必要です。
 * **信頼**：`--trust-plugin` なしで、チェックアウトディレクトリを Claude Code がまだ信頼していないジョブは、[最初の実行信頼プロンプト](#trust-the-plugin-directory) が必要で、質問できない実行は終了 1 で拒否されます。
 * **CI での `init`**：`claude plugin eval init` は質問をするためにターミナルが必要です。CI では、`claude plugin eval init --bare <name>` を実行して空のテンプレートを取得します。
 
@@ -655,7 +655,7 @@ evals/
 
 | キー | デフォルト | 目的 |
 | :- | :- | :- |
-| `type` | `fixed` | `fixed` は本文をそのまま返します。`agent` は本文を、実行中にサーバーとして振る舞う小さなモデルへの指示として扱います。このモデルは以前の呼び出しを履歴として見ます |
+| `type` | `fixed` | `fixed` は本文をそのまま返します。`agent` は本文を[ジャッジモデル](#command-options)への指示として扱います。このモデルは実行中にサーバーとして振る舞い、以前の呼び出しを履歴として見ます |
 | `expect` | 未設定 | ドット記法の入力パスから `string`、`number`、`boolean`、`array`、`object` などのタイプ名、`/regex/`、リテラル、または許可されたリテラルのリストへのマップ。それに違反する呼び出しはスコア 0 で実行を中止し、サーバー、ツール、理由を含む `aborted` として報告されます |
 | `error` | `false` | `fixed` のみ。本文をツールエラーとして返します |
 | `abort_when` | 未設定 | `agent` のみ。エージェントが実行を中止できる唯一の条件をリストする散文 |

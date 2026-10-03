@@ -70,6 +70,7 @@ Claude Code は以下の場合、メッセージを拒否します。
 
 * メッセージが [サイズ上限を超えている](#limitations)。Claude Code はそれを送信セッションで拒否します。送信前に。
 * このマシン上のセッションへの急速なバースト送信が [そのセッションのインボックスが受け入れる内容](#limitations) に達しています。Claude Code はそのセッションへのさらなるメッセージを拒否します。
+* このマシンを超えたセッションが [クロスセッションメッセージを受信できないとリストに表示されている](#message-sessions-on-other-machines)。Claude Code は、メッセージがこのマシンを離れる前に送信セッションで拒否します。
 * このマシン上の返信ターゲットが、シンリンクされたターゲットなど、安全性チェックに失敗します。[クロスセッションメッセージの送信を拒否する](/docs/ja/errors#refusing-to-send-a-cross-session-message) にこれらのチェックが記載されています。
 
 受信セッションは到着した各メッセージを独自の [インバウンドコントロール](#control-inbound-messages) に対してチェックし、チェックは 3 つの結果のいずれかで終了します。
@@ -160,7 +161,10 @@ Claude はメッセージのターゲットを独自に検出するため、送�
 
 他のマシン上のセッションとの会話を開始するには、Claude Code v2.1.225 以降と、[リストに表示される](#see-which-sessions-claude-can-reach) ターゲットが必要です。
 
-[リストに `offline` として表示されるセッション](#see-which-sessions-claude-can-reach)（リモートコントロール接続が切断されたセッション）にメッセージを送信できます。送信は通過しますが、メッセージはそのセッションのマシンが再接続した後にのみ到着します。
+[リスト](#see-which-sessions-claude-can-reach) のセッションの行には、Claude がそのセッションにメッセージを送信したときの動作を変える状態が表示されることがあります。
+
+* **`offline`**：そのセッションの Remote Control 接続が切断されています。メッセージは送信されますが、そのセッションのマシンが再接続した後にのみ到着します。
+* **`can't receive cross-session messages (off in that session)`**：そのセッションでメッセージ送受信が [利用できない](#availability) か、その [`crossSessionInbound`](/docs/ja/settings-reference#crosssessioninbound) の値が `refuse` です。Claude Code は、メッセージがこのマシンを離れる前に、そのセッションへのメッセージを拒否します。Claude の `SendMessage` 呼び出しの結果は `Not sent` で始まり、理由が示されます。そのセッションで原因が解消されると、以降のリストにはこの状態が表示されなくなり、Claude はそのセッションにメッセージを送信できます。
 
 コンテナ内のセッションとホスト上のセッションは互いに到達できません。同じコンテナ内の 2 つのセッションは依然としてメッセージを送信できます。[セルフホストランナー](/docs/ja/self-hosted-environments) を含みます。WSL 2 内のセッションと同じコンピュータ上のネイティブ Windows セッションも互いに到達できません。
 
@@ -172,9 +176,9 @@ Claude はメッセージのターゲットを独自に検出するため、送�
   セッションが受信メッセージをどのように扱うか
 </h2>
 
-セッション A がセッション B にメッセージを送信する場合、Claude Code は B の Claude に対して、そのメッセージがあなたからではなく別のセッションから来たことを伝え、メッセージが実行できることを制限します。
+セッション A がセッション B にメッセージを送信する場合、Claude Code は B の Claude に対して、そのメッセージがユーザーからではなく別のセッションから来たことを伝え、メッセージが実行できることを制限します。
 
-* **何も承認できません**: 別のセッションからのメッセージはあなたの同意としてカウントされないため、保留中の権限プロンプトに代わって応答することはできません。
+* **何も承認できません**: 別のセッションからのメッセージはユーザーの同意としてカウントされないため、ユーザーに代わって保留中の権限プロンプトに応答することはできません。
 * **設定を変更できません**: Claude Code は受信側の Claude に対して、別のセッションが要求したため権限設定、`CLAUDE.md`、またはその他の設定を変更しないよう指示します。
 * **コマンドは実行されません**: メッセージのテキスト内のコマンド（`/compact` など）はプレーンテキストとして到着します。Claude Code はそれを実行することはありません。
 * **権限プロンプトは引き続き発火します**: メッセージに対応するために受信側セッションが持っていない権限が必要な場合、他の作業と同じプロンプトが表示されます。
@@ -215,12 +219,14 @@ The new column is tenant_id, and rebasing on main is safe now.
 
 設定ファイルを編集する以外に、`/config` 行の **Messages from your other sessions** で値を選択できます。Claude Code は選択した値をユーザー設定に書き込みます。この行には Claude Code v2.1.232 以降が必要で、管理設定または `--settings` フラグがキーを設定している場合は表示されません。ユーザー設定値は適用されないためです。Claude Code はこのキーに対して `/config crossSessionInbound=value` ショートハンドを拒否します。
 
-どの値が適用されるかを確認するには、[設定リファレンス](/docs/ja/settings-reference#crosssessioninbound)の `crossSessionInbound` 優先順位ルールに従います。値が適用されない場合、Claude Code は 2 つのセッションの権限モードに基づいてメッセージごとに決定します。[権限プロンプトをバイパス](/docs/ja/permission-modes#skip-all-checks-with-bypasspermissions-mode)するセッションを 1 つのクラスにグループ化し、他のすべてのセッションを別のクラスにグループ化します。Plan mode は、バイパス権限が利用可能なセッションではバイパスとしてカウントされ、[auto](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)、`acceptEdits`、`dontAsk` はプロンプトとしてカウントされます。
+どの値が適用されるかを確認するには、[設定リファレンス](/docs/ja/settings-reference#crosssessioninbound)の `crossSessionInbound` 優先順位ルールに従います。
+
+値が適用されない場合、Claude Code は 2 つのセッションの権限モードに基づいてメッセージごとに決定します。[権限プロンプトをバイパス](/docs/ja/permission-modes#skip-all-checks-with-bypasspermissions-mode)するセッションを 1 つのクラスにグループ化し、他のすべてのセッションを別のクラスにグループ化します。plan モードは、バイパス権限が利用可能なインタラクティブなターミナルセッションではバイパスとしてカウントされ、[auto](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)、`acceptEdits`、`dontAsk` はプロンプトとしてカウントされます。
 
 * **受信側セッションが権限をプロンプト**: Claude Code は各メッセージを配信します。送信側セッションが権限プロンプトをバイパスしていることを識別する場合のみ、承認のために 1 つを保留します。
 * **受信側セッションが権限をバイパス**: Claude Code は各メッセージを承認のために保留します。送信側セッションも同様にバイパスしていることを識別する場合のみ、1 つを配信します。
 
-デフォルトがメッセージを保留する場合、Claude Code は受信側セッションで承認ダイアログを開きます。ダイアログには送信者とプレビューが表示されます。
+インタラクティブなターミナルセッションでデフォルトがメッセージを保留する場合、Claude Code はそのセッションで承認ダイアログを開きます。ダイアログには送信者とプレビューが表示されます。
 
 * **Approve** はそのメッセージを Claude に配信します。
 * **Deny** またはダイアログを閉じると、ドロップされます。
@@ -228,20 +234,22 @@ The new column is tenant_id, and rebasing on main is safe now.
 * [バックグラウンドセッション](/docs/ja/agent-view)にターミナルが接続されていない場合、Claude Code はダイアログを期限を過ぎて開いたままにします。接続後、ダイアログが完全な期限期間未回答のままの場合、Claude Code はそれを閉じてメッセージをドロップします。
 * このセッションの権限モードクラスがメッセージが保留されている間に変更される場合、Claude Code はインバウンドルールを再適用し、現在受け入れるメッセージを配信し、通知を表示します。
 
+VS Code 拡張機能または Desktop アプリのセッションはダイアログを表示できません。その場合、[非インタラクティブセッション](#non-interactive-sessions)で説明しているように、Claude Code は保留中のメッセージを同じ期限まで保持します。
+
 Claude Code は最大 100 個のメッセージを保留し、それを超えると最も古いものをドロップします。
 
 <h3 id="non-interactive-sessions">
   非インタラクティブセッション
 </h3>
 
-Claude Code は [`claude -p`](/docs/ja/headless) セッションのインボックスソケットをインタラクティブなものと同様にバインドするため、長時間実行される `-p` ワーカーはメッセージを受信でき、リストに表示されます。[ベアモード](/docs/ja/headless#start-faster-with-bare-mode)でセッションを開始する場合、Claude Code はソケットをバインドしないため、そのセッションはメッセージを受信できず、エージェントリストに表示されません。
+Claude Code は [`claude -p`](/docs/ja/headless) セッションのインボックスソケットをインタラクティブなものと同様にバインドするため、長時間実行される `-p` ワーカーはメッセージを受信でき、リストに表示されます。[bare モード](/docs/ja/headless#start-faster-with-bare-mode)でセッションを開始する場合、Claude Code はソケットをバインドしないため、そのセッションはメッセージを受信できず、エージェントリストに表示されません。
 
 `-p` セッションは承認ダイアログを表示できません。[インバウンドデフォルト](#control-inbound-messages)がそこでメッセージを保留する場合、Claude Code はダイアログが使用する同じ [`dialogExpiry`](/docs/ja/settings-reference#dialogexpiry) 期限（デフォルトは 5 分）でそれを保持します。
 
 * **期限前**: モードまたは設定変更によりメッセージが許可される場合、Claude Code はそれを配信します。
 * **期限後**: Claude Code はメッセージをドロップし、到達できる送信者に期限切れとして報告します。
 
-`dialogExpiry` を `"never"` に設定して、デフォルト保留メッセージをセッション終了まで保持します。明示的な `hold` 設定で保留されたメッセージは期限切れになりません。Claude Code はそれを配信するだけで、後で `accept` が適用される場合です。
+`dialogExpiry` を `"never"` に設定して、デフォルト保留メッセージをセッション終了まで保持します。明示的な `hold` 設定で保留されたメッセージは期限切れになりません。Claude Code は、後で `accept` が適用された場合にのみそれを配信します。
 
 `-p` ワーカーが無人でメッセージを受け取れるようにするには、その `--settings` 値で `crossSessionInbound` を `accept` に設定して開始します。ユーザー設定の `accept` も機能しますが、実行するすべてのセッションに適用されます。
 
@@ -343,6 +351,7 @@ macOS と Linux では、Claude Code は受け入れることができないデ�
   * **クラウドセッションが見つからない**: クラウドセッションは、このセッションが [Remote Control](/docs/ja/remote-control)に接続されている間のみ表示されます。
   * **他のマシンのセッションが見つからない**: 別のマシン上のセッションは、[Remote Control](/docs/ja/remote-control)で実行され、このセッションも接続されている場合にのみ表示されます。
   * **他のマシンのセッションが`offline`**: `offline`としてリストされているセッションへのメッセージは通過しますが、[そのセッションのマシンが再接続した後にのみ到着します](#message-sessions-on-other-machines)。
+  * **クラウドまたは他のマシンのセッションが `can't receive cross-session messages`**: この状態でリストされているセッションへのメッセージは[このマシンから送信されず](#message-sessions-on-other-machines)、`SendMessage` の結果は `Not sent` で始まります。
   * **古いクラウドまたは他のマシンのセッションが見つからない**: Claude Code はこれらのセッションリストを最新順に読み込み、制限されたページ数の後に停止するため、Claude はそれらのページを超えて落ちたセッションを名前でメッセージすることはできません。
 
 メッセージング機能を持つセッションでは、`/status`はセッション自身のインボックスアドレスを含む`Peer address`行も表示するか、Claude Code が [インボックスをセットアップできなかった](#the-sessions-inbox-socket)場合は`unavailable`と理由を表示します。

@@ -165,7 +165,7 @@ config/secrets.json`,
           color: '#9B7BC4',
           oneLiner: 'Topic-scoped instructions, optionally gated by file paths',
           when: <>Rules without <C>paths:</C> load at session start. Rules with <C>paths:</C> load when a matching file enters context</>,
-          description: [<>Project instructions split into topic files that can load conditionally based on file paths. A rule without <C>paths:</C> frontmatter loads at session start like CLAUDE.md; a rule with <C>paths:</C> loads only when Claude reads a matching file.</>, <>Like CLAUDE.md, rules are guidance Claude reads, not configuration Claude Code enforces. For guaranteed behavior use <A href="/docs/en/hooks">hooks</A> or <A href="/docs/en/permissions">permissions</A>.</>],
+          description: [<>Project instructions split into topic files that can load conditionally based on file paths. A rule without <C>paths:</C> frontmatter loads at session start like CLAUDE.md; a rule with <C>paths:</C> loads only when Claude reads, writes, or edits a matching file.</>, <>Like CLAUDE.md, rules are guidance Claude reads, not configuration Claude Code enforces. For guaranteed behavior use <A href="/docs/en/hooks">hooks</A> or <A href="/docs/en/permissions">permissions</A>.</>],
           tips: [<>Use <C>paths:</C> frontmatter with globs to scope rules to directories or file types</>, <>Subdirectories work: <C>.claude/rules/frontend/react.md</C> is discovered automatically</>, 'When CLAUDE.md approaches 200 lines, start splitting into rules'],
           docsLink: '/en/memory#organize-rules-with-claude/rules/',
           children: [{
@@ -1598,7 +1598,7 @@ Claude Code は、以下の場合に年齢ベースのスイープをスキッ�
 
 `<project>` は、文字と数字以外のすべての文字が `-` に置き換えられた作業ディレクトリパスです。例えば、`-Users-you-my-project`。[`CLAUDE_CODE_TMPDIR`](/docs/ja/env-vars)を設定する場合、ツリーはそのディレクトリの下に移動します。フックは現在のセッションのパスを [`scratchpad_dir`](/docs/ja/hooks#common-input-fields)として受け取ります。
 
-スクラッチパッドファイルはセッションのトランスクリプトと同じ期間続きます。[保持スイープ](#cleaned-up-automatically)はトランスクリプトを削除するときにディレクトリを削除し、[`claude project purge`](#clear-local-data)は一時ディレクトリに触れません。ディレクトリはシステムの一時場所の下にあるため、オペレーティングシステムもそれをクリアできます。例えば、再起動時。Claude がそこに書き込んだものを保持するには、Claude にそれをプロジェクトに移動するよう依頼します。
+スクラッチパッドファイルはセッションのトランスクリプトと同じ期間続きます。[保持スイープ](#cleaned-up-automatically)はトランスクリプトを削除するときにディレクトリを削除し、[`claude purge`](#clear-local-data)は一時ディレクトリに触れません。ディレクトリはシステムの一時場所の下にあるため、オペレーティングシステムもそれをクリアできます。例えば、再起動時。Claude がそこに書き込んだものを保持するには、Claude にそれをプロジェクトに移動するよう依頼します。
 
 セッションがスクラッチパッドを持つのは、以下のすべてが成り立つ場合のみです：
 
@@ -1620,9 +1620,11 @@ Claude Code は、以下の場合に年齢ベースのスイープをスキッ�
 | `cache/changelog.md` | Claude Code チェンジログのキャッシュコピー。`/release-notes` で表示されます。バックグラウンドで更新されます |
 | `policy-limits.json` | 組織のキャッシュされた機能ポリシー設定。一部のアカウントタイプにのみ存在します。自動的に更新されます。`policy-limits.json.stamp.json` サイドカーは、キャッシュが属するアカウントまたは API キーを記録します。Claude Code はログアウト時に両方のファイルを削除します |
 
-<span id="state-files-to-keep" />
+<h4 id="state-files-to-keep">
+  保持するべき状態ファイル
+</h4>
 
-使用する機能に応じて、他のファイルが表示されます。キャッシュとロックファイルは削除しても安全です。これらの状態ファイルを保持します：
+使用する機能に応じて、`~/.claude/` には [アプリケーションデータ](#application-data)の表に記載されていないファイルも保存されます。そのうち、キャッシュとロックファイルは削除しても安全です。以下の状態ファイルは保持してください：
 
 * `.credentials.json`：[ログイン認証情報](/docs/ja/authentication#credential-management)
 * `agent-memory/`：[サブエージェントメモリ](/docs/ja/sub-agents#enable-persistent-memory)
@@ -1643,7 +1645,7 @@ Claude Code は、以下の場合に年齢ベースのスイープをスキッ�
   ローカルデータをクリアする
 </h3>
 
-`claude project purge` を実行して、1 つのプロジェクトに対して Claude Code が保持する状態を削除します。削除されるもの：
+`claude purge` を実行して、1 つのプロジェクトに対して Claude Code が保持する状態を削除します。削除されるもの：
 
 * `projects/` の下のトランスクリプトと自動メモリ
 * セッションごとの `tasks/`、`debug/`、`file-history/` エントリ
@@ -1654,12 +1656,14 @@ Claude Code は、以下の場合に年齢ベースのスイープをスキッ�
 
 コマンドは完全な削除計画を出力し、何かを削除する前に確認を求めます。
 
+v2.1.288 より前は、コマンドは `claude project purge` でした。
+
 以下の例では、`~/work/my-repo` をプレースホルダーとして使用します。プロジェクトへのパスに置き換えます。パスに一致する状態がない場合、コマンドはエラーを出力し、ステータス 1 で終了します。
 
 削除せずに計画をプレビューします：
 
 ```bash theme={null}
-claude project purge ~/work/my-repo --dry-run
+claude purge ~/work/my-repo --dry-run
 ```
 
 計画は各一致するアイテムと、それが含まれる理由をリストします：
@@ -1682,7 +1686,7 @@ Dry run: 3 item(s) would be deleted.
 単一の確認プロンプトで削除します：
 
 ```bash theme={null}
-claude project purge ~/work/my-repo
+claude purge ~/work/my-repo
 ```
 
 コマンドは同じ計画を出力してから、`Delete 3 item(s) for /home/user/work/my-repo? This cannot be undone. [y/N]` と尋ね、`y` と答えた場合のみ削除します。
@@ -1692,7 +1696,7 @@ claude project purge ~/work/my-repo
 スクリプトで使用するために確認プロンプトをスキップします：
 
 ```bash theme={null}
-claude project purge ~/work/my-repo --yes
+claude purge ~/work/my-repo --yes
 ```
 
 パスの代わりに `--all` を渡して、すべてのプロジェクトの状態を一度にパージします。これは `history.jsonl` をフィルタリングするのではなく、完全に削除します。`-i` を渡して、削除計画を 1 つずつステップスルーします。

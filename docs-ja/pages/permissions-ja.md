@@ -22,6 +22,16 @@ Claude Code は、パワーと安全性のバランスを取るために、段�
 | Web フェッチ | WebFetch | はい、[事前承認されたドキュメンテーションドメイン](/docs/ja/tools-reference#webfetch-tool-behavior)の組み込みセットを除く | リポジトリとドメインごとに永続的 |
 | Web 検索 | WebSearch | はい | リポジトリごとに永続的 |
 
+権限プロンプトには、Claude が実行しようとしている内容が表示され、その後に選択肢が続きます。次の例は、Manual モードのセッションにおける Bash コマンドのプロンプトです。
+
+<Frame>
+  <img src="https://mintcdn.com/claude-code/oa7CKjMeIChox26S/images/permission-prompt-bash-light.png?fit=max&auto=format&n=oa7CKjMeIChox26S&q=85&s=87585d008a29304873466399f7b476f6" className="dark:hidden" alt="Bash command というタイトルの Claude Code の権限プロンプト。auto モードに関するヒントの下に、説明「Run the test suite」、コマンド npm test、「This command requires approval」という行が表示され、続いて「Do you want to proceed?」と尋ね、4 つのオプション（Yes、Yes, and don't ask again for: npm test *、Yes, and switch to auto mode、No）が表示されています。フッターには 2 つのキー（キャンセルする Esc と修正する Tab）が記載されています。" width="1512" height="680" data-path="images/permission-prompt-bash-light.png" />
+
+  <img src="https://mintcdn.com/claude-code/oa7CKjMeIChox26S/images/permission-prompt-bash-dark.png?fit=max&auto=format&n=oa7CKjMeIChox26S&q=85&s=dd25688056898df1d1e4f1b5542bc978" className="hidden dark:block" alt="Bash command というタイトルの Claude Code の権限プロンプト。auto モードに関するヒントの下に、説明「Run the test suite」、コマンド npm test、「This command requires approval」という行が表示され、続いて「Do you want to proceed?」と尋ね、4 つのオプション（Yes、Yes, and don't ask again for: npm test *、Yes, and switch to auto mode、No）が表示されています。フッターには 2 つのキー（キャンセルする Esc と修正する Tab）が記載されています。" width="1512" height="680" data-path="images/permission-prompt-bash-dark.png" />
+</Frame>
+
+3 番目のオプションである **Yes, and switch to auto mode** は、[すべてのプロンプトに表示されるわけではありません](/docs/ja/permission-modes#switch-permission-modes)。
+
 「はい、今後は聞かない」を選択し、承認が永続的に保存される場合（Bash コマンドや WebFetch ドメインなど）、Claude Code はルールを git リポジトリのルートにある `.claude/settings.local.json` に保存します。これは[worktrees](/docs/ja/worktrees)を通じてメインチェックアウトに解決されます。ルールは、そのリポジトリ内のサブディレクトリで開始されたセッションや worktrees 内のセッションを含む、そのリポジトリ内の将来のセッションに適用されます。ファイル変更の承認はファイルに保存されません。表が示すように、セッション終了まで続きます。git リポジトリの外部や Windows 上など、場合によっては Claude Code はリポジトリルートを使用しません。[Claude Code が各ファイルを探す場所](/docs/ja/settings#where-claude-code-looks-for-each-file)は、これらのケースと代わりにルールを保存する場所をリストアップしています。
 
 v2.1.211 より前では、Claude Code は常にルールを開始ディレクトリに保存していたため、worktree またはサブディレクトリで付与された承認はリポジトリの残りの部分に適用されませんでした。以前のバージョンがサブディレクトリまたは worktree に保存したルールは、そこで開始されたセッションに引き続き適用されます。
@@ -603,7 +613,7 @@ Claude Desktop アプリの [Cowork](https://claude.com/docs/cowork/overview)セ
 
 PreToolUse フック決定は権限ルールをバイパスしません。Claude Code は deny ルールと ask ルールを、フックが何を返すかに関係なく評価します。マッチする deny ルールはコールをブロックし、マッチする ask ルールはフックが `"allow"` または `"ask"` を返した場合でもプロンプトを表示します。これは、[権限を管理する](#manage-permissions)で説明されている deny 優先の優先順位を保持し、管理設定で設定された deny ルールを含みます。
 
-その優先順位は、設定ファイル内のフックとプラグインの `hooks/hooks.json` 内のフックをカバーしています。インストールする[mod](/docs/ja/plugins/mods/overview)が `tool.check` をフックする場合、ルールと `PreToolUse` フックが決定した後に応答し、その応答はそれらを置き換えることができます。
+その優先順位は、設定ファイル内のフックとプラグインの `hooks/hooks.json` 内のフックをカバーしています。インストールした [mod](/docs/ja/plugins/mods/overview) が `tool.check` を処理する場合、ルールと `PreToolUse` フックが決定した後に応答し、その応答はそれらの決定を置き換えることができます。
 
 * **Ask ルール**: mod は ask ルールがプロンプトを表示するコールを承認できます
 * **`PreToolUse` フックからのブロック**: mod はコールを承認できます。ただし、フックが管理設定にある場合を除きます

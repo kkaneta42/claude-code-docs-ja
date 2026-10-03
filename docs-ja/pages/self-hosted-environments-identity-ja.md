@@ -90,11 +90,11 @@ https://api.anthropic.com/v1/code/.well-known/jwks.json
   </Step>
 
   <Step title="有効期限を検証する">
-    `exp` が過去の場合、トークンを拒否します。Anthropic はセッショントークンをデフォルトで 4 時間の有効期限、最大 8 時間で発行します。ランナーは有効期限前にトークンを更新し、新しい値をセッションにプッシュするため、Claude が更新後に開始するサブプロセスはそれを継承します。したがって、1 つのセッションは有効期間中にお客様のサービスに複数の異なる有効なトークンを提示できます。
+    `exp` が過去の場合、トークンを拒否します。Anthropic はセッショントークンをデフォルトで 4 時間の有効期限、最大 8 時間で発行します。ランナーは有効期限前にトークンを更新し、新しい値をセッションにプッシュするため、Claude が更新後に開始するサブプロセスはそれを継承します。したがって、1 つのセッションは有効期間中にサービスに複数の異なる有効なトークンを提示できます。
   </Step>
 
   <Step title="ID を読む">
-    作成ユーザーの ID は `act` クレームにあります。`act.sub` はプレフィックス形式 `user:<id>` の Anthropic ユーザー ID で、`act.email` は作成サーフェスが記録した場合、メールアドレスです。組織のサービス ID が作成するセッション（Claude Tag チャネルセッションを含む）は代わりに `agent:` サブジェクトを持つため、`act.sub` が `user:` プレフィックスを持つ場合にのみセッションをユーザー作成として扱い、ID クレームが存在しないかどうかをテストするのではなく。完全な構造とフラット重複クレームについては、[クレームリファレンス](#claims-reference)を参照してください。
+    作成ユーザーの ID は `act` クレームにあります。`act.sub` はプレフィックス形式 `user:<id>` の Anthropic ユーザー ID で、`act.email` は作成サーフェスが記録した場合、メールアドレスです。組織のサービス ID が作成するセッション（Claude Tag チャネルセッションを含む）は代わりに `agent:` サブジェクトを持つため、ID クレームが存在しないかどうかをテストするのではなく、`act.sub` が `user:` プレフィックスを持つ場合にのみセッションをユーザー作成として扱います。完全な構造とフラット重複クレームについては、[クレームリファレンス](#claims-reference)を参照してください。
   </Step>
 </Steps>
 
@@ -187,10 +187,10 @@ https://api.anthropic.com/v1/code/.well-known/jwks.json
 
 [ラッパースクリプト](/docs/ja/self-hosted-environments-configuration#wrapper-scripts)はセッション内で Claude が開始する前に実行されます。JWT ライブラリを呼び出す代わりに、ランナーバイナリの `self-hosted-runner decode-token` サブコマンドを実行できます。サブコマンドは位置引数、`CLAUDE_CODE_SESSION_ACCESS_TOKEN`、またはパイプされた stdin からトークンを読み取ります（この順序で）。その後、プレフィックスを削除し、JWKS エンドポイントに対して署名を検証し、有効期限をチェックし、クレームを JSON として出力します。サブコマンドは署名と有効期限チェックのみを実行します。`iss`、`aud`、または `ccr:role` はチェックしません。ラッパーの認証決定がこれらのクレームに依存する場合、出力された JSON からそれらを読み取り、明示的に比較します。
 
-このコマンドは作成者 ID を抽出し、SSO プロバイダーのサブジェクト、メールアドレス、作成者の `act.sub` サブジェクト（`user:<id>` または `agent:<id>`）の順で優先します。
+このコマンドは作成者 ID を抽出し、メールアドレス、作成者の `act.sub` サブジェクト（`user:<id>` または `agent:<id>`）の順で優先します。
 
 ```bash theme={null}
-"$CLAUDE_RUNNER_CLAUDE_BIN" self-hosted-runner decode-token | jq -re '.act.attested_by.sub // .act.email // .act.sub'
+"$CLAUDE_RUNNER_CLAUDE_BIN" self-hosted-runner decode-token | jq -re '.act.email // .act.sub'
 ```
 
 ラッパーはランナー自身のバイナリへの絶対パスを `CLAUDE_RUNNER_CLAUDE_BIN` で受け取ります。PATH で解決された `claude` ではなく、そのパスを使用して、デコードがランナー自身が使用するのと同じバイナリで実行されるようにします。
@@ -231,7 +231,7 @@ https://api.anthropic.com/v1/code/.well-known/jwks.json
 | :- | :- |
 | `act.sub` | 作成ユーザーの Anthropic ユーザー ID（`user:<id>` の形式）、または組織のサービス ID がセッションを作成した場合は `agent:<id>`（Claude Tag チャネルセッションの場合）。 |
 | `act.email` | 作成ユーザーのメールアドレス（セッション作成時に記録された場合）。それを要求しないでください。`act.sub` でキーにします。 |
-| `act.attested_by` | 作成ユーザーのアップストリーム ID プロバイダーの証明（利用可能な場合）。`act.attested_by.sub` は Google や Okta などの SSO プロバイダーが発行したサブジェクトです。独自のシステムの ID にマップする場合、`act.email` よりこれを優先します。 |
+| `act.attested_by` | 作成ユーザーに対するアップストリーム ID プロバイダーの証明のために予約されています。存在しないものと想定し、これに依存しないでください。`act.sub` でキーにします。アドレスが必要な場合は、`act.email` が存在するときにそれを読み取ります。 |
 | `act.act` | セッションを生成したランナー。`act.act.sub` は `ccr:runner:<runner_id>`。 |
 | `act.act.act` | 環境。`act.act.act.sub` は `ccr:pool:<pool_id>`。 |
 | `act.act.act.act` | ランナーが登録した環境シークレットを作成した ID。チェーンはここで終わります。 |

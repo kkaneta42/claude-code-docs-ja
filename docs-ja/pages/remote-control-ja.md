@@ -263,7 +263,7 @@ Remote Control を完全にオフにするには、[`disableRemoteControl`](/doc
 
 バイオメトリック チェックはデバイス上でオペレーティングシステムまたはブラウザを通じて実行され、パスキーサインインと同じメカニズムです。Anthropic は指紋、顔データ、またはその他のバイオメトリック情報を受け取ったり保存したりすることはありません。デバイスの公開鍵と表示名、プラットフォーム、登録時刻などの基本的なメタデータのみが保存されます。
 
-この設定は Remote Control にのみ適用されます。通常の Claude チャット、ターミナルの Claude Code、および API 使用は影響を受けません。
+この設定は、Claude Code と [Cowork](https://claude.com/docs/cowork/overview) の両方の Remote Control に適用されます。このページでは Claude Code 側について説明します。通常の Claude チャット、ターミナルの Claude Code、および API 使用は影響を受けません。
 
 <h3 id="enable-trusted-devices-for-your-organization">
   Team または Enterprise 組織で信頼できるデバイスを有効にする
@@ -377,10 +377,10 @@ Claude Code は、お客様がターミナルに入力中または接続され�
 * **プレゼンスハートビートの失敗**: インタラクティブセッションが `could not reach the Remote Control server for about 30 minutes` で切断された場合、`/remote-control` を実行して再接続してください。
 * **転送されたダイアログの有効期限**: Claude Code は権限プロンプトと `AskUserQuestion` の質問を、回答するまで開いたままにします。Claude Code が別の種類のダイアログをリモートセッションに転送する場合（安全性拒否後に表示されるモデル選択プロンプトなど）、デフォルトでは 5 分待機してからダイアログを閉じ、ダイアログのアクション不要なデフォルトで続行します。[`dialogExpiry`](/docs/ja/settings-reference#dialogexpiry) を設定して期限を調整または無効にしてください。Claude Code v2.1.224 以降が必要です。
 * **Fable 使用クレジット同意プロンプトは転送されません**: Claude Code は、セッションが実行される場所でのみ、デバイスではなく、セッション中の [Fable 使用クレジット同意プロンプト](/docs/ja/model-config#fable-and-usage-credits)を表示します。セッションがターミナルで実行され、そこにいる誰もが Claude Code がプロンプトを閉じる前に回答しない場合、ターンはリクエストを送信せずに終了します。[プロンプトの確認が未回答のままでした](/docs/ja/errors#the-prompt-to-confirm-went-unanswered)を参照してください。
-* **一部のコマンドはローカルのみ**: `/plugin` や `/resume` などのターミナルインターフェイスでのみ実行されるコマンドは、引数を渡すかどうかに関わらず、ローカル CLI からのみ機能します。以下はモバイルと Web から機能します。
+* **一部のコマンドはローカルのみ**: `/plugin` や `/resume` などのターミナルインターフェイスでのみ実行されるコマンドは、引数を渡すかどうかに関わらず、ローカル CLI からのみ機能します。`/claude-api` も、モバイルまたは Web から入力した場合は使用できません。ただし、そこでも Claude は[そのスキルを自ら読み込む](/docs/ja/skills#work-on-claude-api-projects)ことができます。以下はモバイルと Web から機能します。
   * テキスト出力コマンド: `/compact`、`/clear`、`/context`、`/usage`、`/exit`、`/usage-credits`、`/recap`、および `/reload-plugins`。`/usage-credits` はブラウザを開く代わりに請求 URL を出力します。`/reload-plugins` はセッションがインタラクティブターミナルで実行されている場合にのみ機能します。セッションがない場合は拒否されます。
   * `/model`、`/effort`、`/fast`、`/color`、および `/rename`: 値を引数として渡してください。例えば `/model sonnet` または `/effort high`。モバイルと Web から、`/model` と `/effort` は、ターミナルピッカーまたはスライダーの代わりに引数を取ります。
-  * `/mcp`: モバイルアプリから、ピッカーを開く代わりにサーバーステータスのテキスト概要を返します。Web では、`/mcp` 単独で概要を返す代わりに [claude.ai コネクタ](/docs/ja/mcp#use-mcp-servers-from-claude-ai)のディレクトリを開きます。`reconnect`、`enable`、および `disable` [サブコマンド](/docs/ja/commands#all-commands)は両方から機能します。ローカル CLI とは異なり、サーバー名なしの `/mcp reconnect` は失敗したか認証が必要なすべてのサーバーを再接続します。
+  * `/mcp`: モバイルアプリから、ピッカーを開く代わりにサーバーステータスのテキスト概要を返します。Web では、`/mcp` 単独で概要を返す代わりに [claude.ai コネクタ](/docs/ja/mcp#use-mcp-servers-from-claude-ai)のディレクトリを開きます。`reconnect`、`enable`、および `disable` [サブコマンド](/docs/ja/commands#all-commands)は両方から機能します。サーバー名なしの `/mcp reconnect` は、失敗したサーバーまたは認証が必要なすべてのサーバーを再試行します。
   * `/config`: モバイルアプリから、`key=value` を渡して設定を設定するか、引数なしで実行して設定できるキーをリストします。Web では、`/config` は代わりに設定の Claude Code セクションを開き、コマンド後のテキストを無視します。
   * Team および Enterprise では、モバイルまたは Web から `/usage-credits` は [使用クレジットリクエストを管理者に送信](/docs/ja/costs#add-usage-credits-to-your-subscription)しません。送信にはインタラクティブ CLI にのみ表示される確認が必要なため、コマンドはそこで実行するよう指示します。
   * `/autocompact`、v2.1.221 から: ウィンドウサイズを引数として渡してください。例えば `/autocompact 500k`。引数がない場合、ターミナルセッションでコマンドが表示するダイアログを開く代わりに、現在のウィンドウサイズをテキストとして出力します。

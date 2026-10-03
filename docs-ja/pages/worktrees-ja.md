@@ -172,7 +172,7 @@ Claude Code の worktree 作成のデフォルトは、ほとんどのセッシ�
 
 `worktree.baseRef` をブランチ名に設定することはできません。特定の既存ブランチから worktree を開始するには、[git で直接作成](#manage-worktrees-manually)してください。
 
-`"fresh"` ベースの場合、Claude Code は `origin/HEAD` を最新の状態に保ちます。過去 24 時間にリポジトリがフェッチされていない場合、デフォルトブランチを 5 秒を上限としてフェッチし、フェッチが失敗した場合はローカルにキャッシュされたリファレンスを使用します。リモートが設定されていない場合、または `origin/HEAD` がローカルにキャッシュされておらずフェッチできない場合、worktree は現在のローカル `HEAD` にフォールバックします。v2.1.208 より前は、fresh の worktree はローカルに既にキャッシュされていた `origin/HEAD` をそのまま使用していました。
+`"fresh"` ベースの場合、Claude Code は `origin/HEAD` を最新の状態に保ちます。過去 24 時間にリポジトリがフェッチされていない場合、デフォルトブランチを 5 秒を上限としてフェッチし、フェッチが失敗した場合はローカルにキャッシュされたリファレンスを使用します。このフェッチはターミナルでの入力を待機しないため、git または ssh がパスワード、鍵のパスフレーズ、または新しい SSH ホストの確認を求める場合も失敗として扱われます。リモートが設定されていない場合、または `origin/HEAD` がローカルにキャッシュされておらずフェッチできない場合、worktree は現在のローカル `HEAD` にフォールバックします。v2.1.208 より前は、fresh の worktree はローカルに既にキャッシュされていた `origin/HEAD` をそのまま使用していました。
 
 この例では、すべての新しい worktree が現在の作業からブランチするようにします。
 
@@ -199,6 +199,8 @@ Claude Code は URL から番号のみを読み取ります。常にリポジト
 * **github.com**: `pull/<number>/head` をフェッチします
 * **gitlab.com**: `merge-requests/<number>/head` をフェッチします
 * **GitHub Enterprise、セルフマネージド GitLab、またはその他のホスト**: まず `pull/<number>/head` を試し、次に `merge-requests/<number>/head` を試します
+
+このフェッチはターミナルでの入力を待機しません。git または ssh がパスワード、鍵のパスフレーズ、または新しい SSH ホストの確認を求める場合、フェッチは代わりに失敗し、Claude Code は `Error creating worktree: Failed to fetch PR/MR #<number>` メッセージを表示して終了します。`ssh-agent` が保持している鍵は引き続き使用できるため、開始する前に鍵を `ssh-agent` に読み込み、`git fetch` を一度手動で実行して新しいホストを記録してください。
 
 v2.1.233 より前は、Claude Code は `--worktree` に対して `#<number>` と GitHub 形式のプルリクエスト URL のみを受け入れ、常に `pull/<number>/head` をフェッチしていました。
 

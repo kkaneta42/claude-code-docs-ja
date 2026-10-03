@@ -35,6 +35,7 @@
 | `Error loading shared library` | [システムに対応したバイナリバリアント](#linux-musl-or-glibc-binary-mismatch) |
 | `Illegal instruction` | [アーキテクチャまたは CPU 命令セットの不一致](#illegal-instruction) |
 | WSL での `cannot execute binary file: Exec format error` | [WSL1 ネイティブバイナリ回帰](#exec-format-error-on-wsl1) |
+| セッション実行中に `Bus error` または `oh no: Bun has crashed` | [実行ファイルを読み取り可能な状態に保つ](#bus-error-while-a-session-is-running) |
 | PowerShell インストーラーが完了しても `claude` が見つからないか古いバージョンが表示される | [インストールディレクトリを PATH に追加する](#verify-your-path)、その後新しいターミナルを開く |
 | macOS での `dyld: Symbol not found`、`dyld: cannot load`、または `Abort trap` | [バイナリ互換性](#dyld-cannot-load-on-macos) |
 | `claude update` が `Checking for updates` の後にハングするか、`claude doctor` が出力なしでハングする | [シェル設定パスのディレクトリを移動する](#claude-update-or-claude-doctor-hangs) |
@@ -858,6 +859,16 @@ Abort trap: 6
 1. **macOS バージョンを確認する**：Claude Code には macOS 13.0 以降が必要です。Apple メニューを開き、「このマックについて」を選択してバージョンを確認してください。
 
 2. **macOS を更新する**（古いバージョンにいる場合）。バイナリは古い macOS バージョンがサポートしていないロードコマンドとシステムライブラリを使用しています。Homebrew などの代替インストール方法は同じバイナリをダウンロードし、このエラーを解決しません。
+
+<h3 id="bus-error-while-a-session-is-running">
+  実行中のセッションで `Bus error` が発生する
+</h3>
+
+実行中のセッションが終了し、シェルに `Bus error` と出力される場合、原因の 1 つとして、Claude Code がディスク上の自身の実行可能ファイルを読み取れなくなったことが考えられます。たとえば、セッションの実行中にファイルが切り詰められた場合や、ネットワークストレージ上で削除された場合です。
+
+シェルのメッセージの前に、Claude Code のランタイムが `panic(main thread): Bus error at address` と `oh no: Bun has crashed. This indicates a bug in Bun, not your code.` を含むクラッシュレポートを出力することがあります。実行可能ファイルが読み取れなくなった場合、クラッシュの原因は Bun のバグではなく、読み取れないファイルです。ランタイムがレポートを出力するコードも読み取れなかった場合は、レポート自体が出力されないこともあります。
+
+続行するには新しいセッションを開始してください。Claude Code がネットワークストレージにインストールされている場合は、[ネットワークストレージへのインストール](/docs/ja/setup#install-on-network-storage)の手順に従い、実行中のセッションがまだ必要とするバイナリがアップグレードによって削除されないようにしてください。
 
 <h3 id="exec-format-error-on-wsl1">
   WSL1 での `Exec format error`

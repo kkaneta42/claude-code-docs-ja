@@ -103,7 +103,7 @@ sudo apt install ./claude-desktop_*.deb
 
 apt が `E: Unsupported file ./claude-desktop_*.deb given on commandline` を報告する場合、パターンが現在のディレクトリ内の `.deb` ファイルと一致しませんでした。ダウンロードが完了したことを確認してから、ファイルが含まれているディレクトリからコマンドを再度実行してください。
 
-`.deb` をインストールすると、Anthropic の apt リポジトリも `/etc/apt/sources.list.d/claude-desktop.list` に登録されるため、今後の更新はシステムの [通常のパッケージ更新](#update) で提供されます。
+`.deb` には Anthropic の署名キーが含まれており、`/usr/share/keyrings/claude-desktop-archive-keyring.asc` にインストールされるため、キーを自分でダウンロードする必要はありません。`CLAUDE_DESKTOP_ADD_REPO` で登録を無効にしていない限り、パッケージは apt リポジトリも `/etc/apt/sources.list.d/claude-desktop.list` に登録するため、今後の更新はシステムの [通常のパッケージ更新](#update) で提供されます。
 
 <h2 id="update">
   更新

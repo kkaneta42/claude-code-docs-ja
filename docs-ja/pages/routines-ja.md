@@ -365,11 +365,7 @@ GitHub 接続が実行予定時に不足しているか期限切れの場合、�
 
 追加する各リポジトリは、すべての実行でクローンされます。Claude はリポジトリのデフォルトブランチから開始します。ただし、プロンプトで別の方法を指定する場合を除きます。
 
-Claude はその作業を `claude/` で始まるブランチにプッシュします。これらは常に受け入れられます。プロンプトが Claude に別のブランチにプッシュするよう指示する場合、Claude Code は最初にプッシュをチェックし、以下のいずれかが当てはまる場合は拒否します。
-
-* ブランチは GitHub で保護されている
-* 他の誰かがそのブランチからのオープンなプルリクエストを持っている
-* ブランチは自分以外の誰かによって作成されたコミットを含んでいる
+Claude は、プロンプトで別のブランチへのプッシュを指示しない限り、`claude/` で始まるブランチに作業をプッシュします。実行がプッシュできるブランチを制御するには、GitHub のブランチ保護ルールまたはルールセットを使用します。Anthropic 管理のインフラストラクチャ上の実行、および [Anthropic の git プロキシ](/docs/ja/self-hosted-environments-deploy#use-the-anthropic-git-proxy)を通じてプッシュするセルフホスト実行の場合、GitHub はこれらのルールを接続した GitHub アクセスに適用するため、そのアクセスがバイパスできるルールは実行のプッシュをブロックしません。デプロイが提供する git 認証情報でプッシュするセルフホスト実行は、代わりにその認証情報に対してチェックされます。[git を設定する](/docs/ja/self-hosted-environments-deploy#configure-git)を参照してください。
 
 <h3 id="connectors">
   コネクタ
@@ -407,7 +403,7 @@ Claude はその作業を `claude/` で始まるブランチにプッシュし�
   </Step>
 
   <Step title="ネットワークアクセスレベルを変更する">
-    **Edit cloud environment** ダイアログで、**Network access** を **Custom** に変更し、**Allowed domains** にドメインを入力します。**Also include default list of common package managers** をチェックして、カスタムドメインと共に [デフォルト許可リスト](/docs/ja/cloud-environments#default-allowed-domains)を保持します。制限のないアクセスの場合は、代わりに **Full** を選択します。
+    **Edit environment** ダイアログで、**Network access** を **Custom** に変更し、**Allowed domains** にドメインを入力します。**Also include default list of common package managers** をチェックして、カスタムドメインと共に [デフォルト許可リスト](/docs/ja/cloud-environments#default-allowed-domains)を保持します。制限のないアクセスの場合は、代わりに **Full** を選択します。
   </Step>
 
   <Step title="保存">

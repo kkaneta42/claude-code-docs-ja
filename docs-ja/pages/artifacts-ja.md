@@ -118,6 +118,15 @@ Claude Code で `/artifacts` を実行して、所有しているすべてのア
 
 Claude は他の人が書いたページを、[WebFetch](/docs/ja/tools-reference#webfetch-tool-behavior) でウェブページを読む方法と同じように読みます。つまり、生のページではなく、質問した内容の要約を取得し、その要約はページに書き込まれた指示を報告しますが、それらを実行する代わりに報告するのです。Claude Code はまた、ページの完全なソースをローカルファイルに保存します。Claude は、アーティファクトを [エディター](#let-someone-edit-with-you) として再発行する場合など、正確なコンテンツが必要な場合にそのファイルを開くことができます。
 
+次の場合、Claude Code は、権限モードやルールによって求められるプロンプトに加えて、Claude がアーティファクトを読む前にユーザーの承認を求めます。
+
+* **ネットワークアクセスのないクラウドセッション**：[クラウド環境](/docs/ja/cloud-environments#access-levels) の場合、**None** レベルがこれに該当します。[auto モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode) では代わりに分類器が承認できますが、[Cowork](https://claude.com/product/cowork) セッションでは、承認できるのはユーザー本人だけです。
+* **別の組織の公開アーティファクト**：Claude Code は auto モードであっても、まずユーザーに確認します。`bypassPermissions` モードなど、Claude Code がユーザーに確認できない場合、Claude はそのアーティファクトを読むことができません。Claude がこれらのアーティファクトを読めるのは、[機能フラグの取得](/docs/ja/env-vars#features-that-need-feature-flag-fetching) がオンになっている間だけです。
+* **所有者またはネットワーク設定が未確認**：Claude Code がアーティファクトの作成者を確認できない場合、またはクラウドセッションのネットワーク設定を確認できない場合は確認を求めます。ユーザーの承認はその 1 回のリクエストにのみ適用されます。
+* **plan モード、または機能フラグの取得がオフ**：[plan モード](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode) の場合、または [機能フラグの取得](/docs/ja/env-vars#features-that-need-feature-flag-fetching) をオフにしている場合、Claude Code は、組織内の他の人が作成したアーティファクトを Artifact ツールが読む前に確認を求めます。
+
+Claude が WebFetch でアーティファクトを読む場合も、WebFetch 自体の [プロンプトのルール](/docs/ja/tools-reference#webfetch-tool-behavior) は引き続き適用されます。
+
 <h2 id="collect-comments-on-an-artifact">
   アーティファクトのコメントを収集する
 </h2>
@@ -359,6 +368,7 @@ README などのコードベースに属するドキュメントはファイル�
 | ダウンロード | ページはダウンロードを自身で開始することはできません。ビューアがページが生成するファイルを保存できるようにするには、Claude はダウンロード機能を宣言します。[ファイルダウンロードを提供する](#offer-a-file-download)を参照してください。 |
 | シングルページ | 相対リンクは解決されません。ページと一緒に何もデプロイされていないためです。マルチセクションコンテンツの場合、Claude は個別ファイルではなくページ内アンカーを使用します。 |
 | ソースファイルタイプ | 公開されるファイルは `.html`、`.htm`、または `.md` である必要があり、UTF-8 として、またはバイトオーダーマークによってリトルエンディアン UTF-16 としてデコードできる必要があります。Markdown ファイルはスタイル付きドキュメントページとしてレンダリングされ、構文強調表示されたコードが含まれます。デコードできないファイル、または置換文字 `U+FFFD` を含むファイルは、[修正する行と列とともに拒否されます](/docs/ja/errors#the-source-file-is-not-valid-utf-8-text)。 |
+| ソースの場所 | ネットワークホストを指すパスにあるファイルは、読み込まれることなく拒否されます。拒否されるパスと、Windows でのマップされたドライブの例外については、[公開されませんでした：そのファイルはネットワーク共有上にあります](/docs/ja/errors#not-published-that-file-is-on-a-network-share)を参照してください。 |
 | レンダリングサイズ | レンダリングされたページは 16 MiB 以下である必要があります。大きな埋め込み画像は、公開が失敗する場合の通常の原因です。 |
 
 アーティファクトを生成することは、他のレスポンスと同様に出力トークンを使用し、スタイル付きページはターミナルテキストと同じコンテンツよりもトークン集約的です。インライン CSS、インタラクティブコントロール用の JavaScript、特にデータ URI として埋め込まれた画像が主な要因です。アーティファクトのトークンコストを削減するには：

@@ -532,6 +532,7 @@ Claude Code v2.1.219 以降が必要です。
 | `managed-mcp.json` が存在し、Chrome で Claude を実行できるユーザーが `claude --chrome` を実行する | Claude Code はスタートアップ時に `Claude in Chrome is blocked by your organization's managed MCP configuration (managed-mcp.json). An administrator can allow it with allowClaudeInChromeWithManagedMcp in device policy.` で終了します |
 | サーバーがデニーリストにあり、ユーザーが `claude mcp add` を実行する | `Cannot add MCP server "<name>": server is explicitly blocked by enterprise policy` |
 | サーバーがアローリストになく、ユーザーが `claude mcp add` を実行する | `Cannot add MCP server "<name>": not allowed by enterprise policy` |
+| [`strictPluginOnlyCustomization`](/docs/ja/settings-reference#strictpluginonlycustomization) が `true` であるか `mcp` を含み、ユーザーが `claude mcp add` を実行する | [`Cannot add MCP server: your organization's managed settings allow only MCP servers that plugins provide`](/docs/ja/errors#cannot-add-mcp-server-when-managed-settings-allow-only-plugin-servers) |
 | ユーザーが `managedMcpServers` のサーバーで `claude mcp remove` を実行する | `MCP server "<name>" is provided by your organization (managed settings) and cannot be removed locally.` |
 | 以前に設定されたサーバーがポリシーによってブロックされるようになった | サーバーは `/mcp` と `claude mcp list` から消える |
 | セッション実行中にサーバーがブロックされ、ユーザーが **Reconnect** を選択するか、`/mcp` でそれをオンに戻す | [`MCP server <name> is blocked by enterprise managed policy`](/docs/ja/errors#mcp-server-is-blocked-by-enterprise-managed-policy) |

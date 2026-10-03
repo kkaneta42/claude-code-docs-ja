@@ -206,8 +206,6 @@ Claude が作業を完了して入力を必要とするときはいつでもデ�
 
 Claude Code は `permission_prompt` をターミナルと Claude Desktop、VS Code 拡張機能、および Agent SDK を通じて許可リクエストに答えるその他のホストで異なる方法でタイミングします。[各通知タイプが発火するタイミング](/docs/ja/hooks#notification) を参照して、両方のタイミングを確認してください。
 
-`agent_needs_input` および `agent_completed` マッチャーには Claude Code v2.1.198 以降が必要です。
-
 `quota_auto_resume_fired`、`quota_auto_resume_stale`、および `quota_auto_resume_disabled` マッチャーには Claude Code v2.1.234 以降が必要です。
 
 ターミナルセッションでは、サンドボックス化されたコマンドのネットワークリクエストに対する `permission_prompt` には Claude Code v2.1.246 以降が必要です。
@@ -1004,9 +1002,7 @@ HTTP hooks は、Web サーバー、クラウド関数、または外部サー�
   * `agent`：60 秒。
   * [`SessionEnd`](/docs/ja/hooks#sessionend) フックは、タイプを問わず 1.5 秒の割り当て時間を共有します。設定でフックごとにより長い `timeout` を指定している場合、Claude Code は最大 60 秒までそれに合わせて割り当て時間を引き上げます。
 * `PostToolUse` フックは、ツールがすでに実行されているため、アクションを元に戻すことはできません。
-* `PermissionRequest` フックは、Claude Code がユーザーに権限を求めようとするときに発火します。
-  * `-p` フラグを使用した[非対話モード](/docs/ja/headless)では、そのプロンプトは Agent SDK の [`canUseTool` コールバック](/docs/ja/agent-sdk/permissions)が提供する場合にのみ存在します。単純な `-p` 実行や `--permission-prompt-tool` を使用する場合は、自動化された権限の判断には代わりに `PreToolUse` フックを使用してください。
-  * バックグラウンドのサブエージェントは、非対話モードではプロンプトを表示できません。Claude Code はそれらのツール呼び出しに対してもフックを実行し、どのフックも判断を返さない場合はその呼び出しを拒否します。対話セッションでは、バックグラウンドのサブエージェントのプロンプトはメインセッションに表示され、フックは通常どおり発火します。
+* [`PermissionRequest`](/docs/ja/hooks#permissionrequest) フックは、Claude Code がユーザーに権限を求めようとするとき、またはプロンプトを表示できない呼び出しをそのままでは自動的に拒否するときに発火します。`-p` フラグを使用した[非対話モード](/docs/ja/headless)でも、[`dontAsk` モード](/docs/ja/permission-modes#allow-only-pre-approved-tools-with-dontask-mode)以外では引き続き実行され、どのフックも判断せず、他に応答できるものもない呼び出しは拒否されます。
 * `Stop` フックは、タスクの完了時だけでなく、Claude が応答を終えるたびに発火します。ユーザーによる中断では発火しません。API エラーの場合は代わりに [StopFailure](/docs/ja/hooks#stopfailure) が発火します。
 * 複数の `PreToolUse` フックがツールの引数を書き換えるために [`updatedInput`](/docs/ja/hooks#pretooluse) を返す場合、最後に完了したものが有効になります。フックは並列に実行されるため、順序は非決定的です。同じツールの入力を複数のフックで変更することは避けてください。
 
@@ -1018,7 +1014,7 @@ HTTP hooks は、Web サーバー、クラウド関数、または外部サー�
 
 逆は成り立ちません。`"allow"` を返すフックは、設定の拒否ルールを回避することはできず、また [`requiresUserInteraction`](/docs/ja/mcp#require-approval-for-a-specific-tool) が指定された MCP ツールや、その設定が Claude Code に反映されるセッションにおいて[組織が `ask` に設定した](/docs/ja/mcp#organization-controls-on-connector-tools)コネクタツールのプロンプトを抑制することもできません。設定ファイルやプラグインの `hooks/hooks.json` 内のフックは、制限を厳しくすることはできますが、権限ルールが許可する範囲を超えて緩めることはできません。
 
-インストールした [mod](/docs/ja/plugins/mods/overview) が `tool.check` をフックしている場合、そのフックが管理設定にない限り、`PreToolUse` フックがブロックした呼び出しを mod が承認できます。mod に対してどのルールが優先されるかは、[フックで権限を拡張する](/docs/ja/permissions#extend-permissions-with-hooks)に記載されています。
+インストールした [mod](/docs/ja/plugins/mods/overview) が `tool.check` を処理する場合、そのフックが管理設定にない限り、`PreToolUse` フックがブロックした呼び出しを mod が承認できます。mod に対してどのルールが優先されるかは、[フックで権限を拡張する](/docs/ja/permissions#extend-permissions-with-hooks)に記載されています。
 
 <h3 id="hook-not-firing">
   フックが発火しない

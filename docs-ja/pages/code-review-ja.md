@@ -341,6 +341,7 @@ PR 作成後に 1 回または手動モードでは、`@claude review always` �
     * `--fix`：レビュー後に結果をワーキングツリーに適用します
     * `--comment`：GitHub プルリクエストにインラインコメントとして結果を投稿するか、GitLab マージリクエストに単一のノートとして投稿します
     * `--post`：`github.com` プルリクエストの `ultra` クラウドレビューで、起動ダイアログで PR に結果を投稿することを事前選択します。[プルリクエストに結果を投稿する](/docs/ja/ultrareview#post-findings-to-the-pull-request)を参照してください。Claude Code v2.1.227 以降が必要です
+    * `--max-findings <n>`、`--max-findings all`、または `--max-findings default`：レビューの通常の上限の代わりに、最大 `n` 件の結果を報告します。`all` を指定するとすべての結果を報告します。以降のレビューでは、`--max-findings default` を渡すまで、入力した値が再利用されます。Claude Code v2.1.288 以降が必要です
 
     GitLab マージリクエストに `--comment` を渡すと、Claude Code は GitLab の `glab` CLI を通じて結果を投稿します。Claude Code v2.1.257 以降が必要です。`glab` がインストールされていない場合、Claude はターミナルに結果を出力します。
 
@@ -391,7 +392,7 @@ Claude が後でセッションで報告された結果を修正すると、そ�
 レビューはデフォルトでバックグラウンドで実行されます。v2.1.218 より前は、会話内で実行されました。以下のような場合はフォアグラウンドで実行されます：
 
 * 前のレビューがまだ進行中に `/code-review` を再度実行する
-* 非対話型モード（`-p` フラグまたは Agent SDK）で実行します。Claude Code はレビューを待機し、結果を応答に含めます。ただし `ultra` は除きます。これは[クラウドレビューを待たずに起動](#escalate-to-ultrareview)します
+* 非対話モード（`-p` フラグまたは Agent SDK）で実行します。Claude Code はレビューを待機し、結果を応答に含めます。ただし `ultra` は除きます。これは[クラウドレビューを待ちません](/docs/ja/ultrareview#run-ultrareview-non-interactively)
 * [`CLAUDE_CODE_DISABLE_BACKGROUND_TASKS`](/docs/ja/env-vars)を `1` に設定します。これはすべての他のバックグラウンドタスク機能もオフにします
 
 <h3 id="let-claude-start-the-review">

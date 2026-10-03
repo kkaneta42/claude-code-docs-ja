@@ -358,7 +358,7 @@ Claude Code がコマンドをバックグラウンドで実行する場合、�
 * macOS と Linux では、オペレーティングシステムが重大なメモリプレッシャーを報告する場合、Claude Code はバックグラウンドタスクを停止します。ただし、セッションが少なくとも 30 分間アイドル状態にあり、ターンまたはサブエージェントが実行されていない場合に限ります。Claude Code v2.1.193 以降が必要です
   * [デバッグログ](/docs/ja/debug-your-config)には、タスクが停止された理由、またはプレッシャーイベントがそれらを実行し続けた理由が記載されています
   * [`CLAUDE_CODE_DISABLE_BG_SHELL_PRESSURE_REAP`](/docs/ja/env-vars)を `1` に設定して、メモリプレッシャー停止をオフにします
-* バックグラウンド Bash および PowerShell コマンドには時間制限があり、コマンドがバックグラウンドに入った時点から数えられます。30 分、またはコマンドがバックグラウンドで開始されるときに Claude が要求する `timeout`（最大 2 時間まで）。例えば `Ctrl+B` で実行中にバックグラウンドに移動するコマンドは、移動から 30 分を取得します。コマンドが制限に達すると、Claude Code はそれを停止し、Claude に理由を伝えます。Claude は、作業がまだ必要な場合、より長い `timeout` で再度開始できます。制限を引き上げるには、[バックグラウンドコマンドの時間制限を引き上げる](/docs/ja/tools-reference#raise-the-time-limit-for-background-commands)を参照してください。ツール参照を参照してください
+* ターミナル、デスクトップアプリ、または VS Code 拡張機能から作業するローカルセッションでのバックグラウンドコマンドには時間制限がありません。`-p` 実行やクラウドセッションなど、無人で実行されるセッションでは、Claude Code はバックグラウンドコマンドを[時間制限](/docs/ja/tools-reference#time-limit-for-background-commands)に達した時点で停止します
 * フォアグラウンド[サブエージェント](/docs/ja/sub-agents#run-subagents-in-foreground-or-background)が開始したバックグラウンドコマンドは、そのサブエージェントの実行が終了するときに終了します。完了、失敗、または中断されたかどうかに関わらず。ツール参照の[バックグラウンドコマンドが停止するとき](/docs/ja/tools-reference#when-a-background-command-stops)を参照してください
 
 すべてのバックグラウンドタスク機能を無効にするには、[`CLAUDE_CODE_DISABLE_BACKGROUND_TASKS`](/docs/ja/env-vars#variables)環境変数を `1` に設定してください。[ベアモード](/docs/ja/headless#start-faster-with-bare-mode)で開始することでもオフになります。
@@ -402,11 +402,11 @@ Claude はコマンド出力がトランスクリプトに到達すると自動�
   Claude が作業中にメッセージをキューに入れる
 </h2>
 
-Claude が作業中に、メッセージを入力して `Enter` キーを押すと、Claude Code はターンを中断する代わりにメッセージをキューに入れ、会話にキューに入れられたエントリを表示します。`!` [シェルコマンド](#shell-mode-with-prefix)と、ほとんどの[コマンド](/docs/ja/commands)をキューに入れることができます。ただし、Claude Code が送信直後に実行する `/status` などのコマンドは除きます。
+Claude が作業中に、メッセージを入力して `Enter` キーを押すと、Claude Code はターンを中断する代わりにメッセージをキューに入れ、送信するまでキューに入れられたエントリを会話に表示します。`!` [シェルコマンド](#shell-mode-with-prefix)と、ほとんどの[コマンド](/docs/ja/commands)も同じようにキューに入れることができます。ただし、Claude Code が送信直後に実行する `/status` などのコマンドは除きます。
 
 送信されたメッセージとキューに入れられたメッセージは、Claude が応答を開始するまでグレーで表示されるため、Claude がまだ処理していないメッセージを判別できます。
 
-[接続された IDE](/docs/ja/vs-code#the-built-in-ide-mcp-server)または[diff パネル](#diff-panel)からの選択が付いたメッセージをキューに入れた場合、`Enter` キーを押したときに選択していた内容が保持されます。その後に選択した内容がどうであれ関係ありません。
+[接続された IDE](/docs/ja/vs-code#the-built-in-ide-mcp-server)からの選択が付いたメッセージをキューに入れた場合、`Enter` キーを押したときに選択していた内容が保持されます。その後に選択した内容がどうであれ関係ありません。
 
 <h3 id="when-claude-code-sends-what-you-queued">
   Claude Code がキューに入れたものを送信するタイミング
@@ -428,11 +428,11 @@ Claude が作業中に、メッセージを入力して `Enter` キーを押す�
 
 `Esc` キーを押してターンを中断し、ドラフトを送信しません。Claude Code はキューに入れたものを保持し、すぐに送信します。
 
-Claude Code は、キューに入れる代わりに、送信直後に実行するコマンドがあります。その中には `/model`、`/effort`、`/fast` があります。これら 3 つはそれぞれ設定を変更します。モデル、努力レベル、またはファストモードです。Claude Code が新しい設定を Claude が既に作業しているターンに適用するか、次のターンからのみ適用するかは、コマンドによって異なります。
+Claude Code は、キューに入れる代わりに、送信直後に実行するコマンドがあります。その中には `/model`、`/effort`、`/fast` があります。これら 3 つはそれぞれ設定を変更します。モデル、effort レベル、または fast mode です。Claude Code が新しい設定を Claude が既に作業しているターンに適用するか、次のターンからのみ適用するかは、コマンドによって異なります。
 
 * [`/model`](/docs/ja/model-config#setting-your-model)：Claude Code が[キャッシュ警告](/docs/ja/prompt-caching#switching-models)を表示する場合は、確認後、Claude Code はそのターン内で次に行うリクエストに変更を適用します。
 * [`/effort`](/docs/ja/model-config#adjust-effort-level)：Claude Code が[キャッシュ警告](/docs/ja/prompt-caching#changing-effort-level)を表示する場合は、確認後、Claude Code はそのターン内で次に行うリクエストに変更を適用します。
-* [`/fast`](/docs/ja/fast-mode#toggle-fast-mode)：Claude Code はターンが開始されたときにアクティブだったファストモード設定を保持するため、速度の変更は次のターンから適用されます。現在のモデルがファストモードをサポートしていない場合、それをオンにすると[モデルも切り替わり](/docs/ja/prompt-caching#turning-on-fast-mode)、Claude Code はそのターン内で次に行うリクエストから新しいモデルを使用します。
+* [`/fast`](/docs/ja/fast-mode#toggle-fast-mode)：Claude Code はターンが開始されたときにアクティブだった fast mode 設定を保持するため、速度の変更は次のターンから適用されます。現在のモデルが fast mode をサポートしていない場合、それをオンにすると[モデルも切り替わり](/docs/ja/prompt-caching#turning-on-fast-mode)、Claude Code はそのターン内で次に行うリクエストから新しいモデルを使用します。
 
 <h3 id="take-back-what-you-queued">
   キューに入れたものを取り戻す
@@ -615,59 +615,60 @@ Claude Code がチェッカーを実行し続けることができない場合�
 
 Claude Code が何かを削除した場合、その Enter は何も送信しません。クリーンアップされたプロンプトは、`Removed 3 invisible characters · review and press Enter to send` などの通知とともに入力ボックスに戻り、もう一度 Enter キーを押すと、表示されたテキストが送信されます。
 
-`claude "fix the login bug"` のようにコマンドラインでプロンプトを渡すか、対話型セッションにパイプする場合、Claude Code は 2 番目の Enter を待ちません。文字を削除し、通知を表示し、クリーンアップされたプロンプトを送信します。クリーンアップされたプロンプトが `/` で始まる場合、Claude Code はそれを入力ボックスに入れて、確認して送信するようにします。
+`claude "fix the login bug"` のようにコマンドラインでプロンプトを渡す場合、Claude Code は 2 番目の Enter を待ちません。文字を削除し、通知を表示し、クリーンアップされたプロンプトを送信します。クリーンアップされたプロンプトが `/` で始まる場合、Claude Code はそれを入力ボックスに入れて、確認して送信するようにします。
 
 <h2 id="review-changes-with-/diff">
   /diff で変更内容を確認する
 </h2>
 
-`/diff` を実行して、Claude Code を離れることなく、ワーキングツリーの変更内容を確認できます。Claude がこれまでに行った編集と、コミットしていないその他の変更が表示されます。
+`/diff` を実行して、Claude Code を離れることなく、ワーキングツリーの変更内容を確認できます。Claude がこれまでに行った編集と、コミットしていないその他の変更が表示されます。`/diff` で開くものは、有効になっているレンダラーによって異なります。
 
-`/diff` が git から読み取る変更では、サブモジュールは単一のエントリとして表示され、それもサブモジュールが指すコミットが変わった場合のみです。サブモジュール内のファイルへの編集はそこには表示されません。
+* **[フルスクリーンレンダリング](/docs/ja/fullscreen)**：[diff パネル](#diff-panel)が会話の横に開きます。パネルは開いたままで、作業を続ける間も更新されます。
+* **クラシックレンダラー**：[diff ダイアログ](#diff-dialog)がプロンプトの上に開き、読み終わったら閉じます。
 
-[フルスクリーンレンダリング](/docs/ja/fullscreen)では、`/diff` は[diff パネル](#diff-panel)を会話の横に開き、作業を続ける間、パネルは開いたままで更新されます。クラシックレンダラーでは、`/diff` は[diff ビューアー](#diff-viewer)をプロンプトの代わりに開き、読み終わったら閉じます。
+パネルとダイアログはどちらも、[Claude Code に組み込まれた mod](/docs/ja/plugins/mods/overview#mods-built-into-claude-code) の 1 つである `cc-plugin-diff` によって提供されます。`/plugin` でこの mod を無効にすると、`/diff` は代わりに Claude Code の以前のパネルと [diff ビューアー](/docs/ja/keybindings#diff-actions)を開きます。
+
+`/diff` が git から読み取る変更では、サブモジュールは単一のエントリとして表示され、それもサブモジュールが指すコミットが変わった場合のみです。サブモジュール内のファイルへの編集はそこには表示されません。Claude がファイルを編集すると、パネルとダイアログには各ターンの編集を示すビューも表示されます。これらのターンビューは git ではなく Claude のファイル編集から作成されるため、Claude がシェルコマンドを通じて行った変更は、ワーキングツリーのビューである `Current` の下にのみ表示されます。
 
 <h3 id="diff-panel">
   Diff パネル
 </h3>
 
-diff パネルは、変更されたファイルを追加行数と削除行数とともにリストアップし、リストの下に各ファイルの diff を表示します。Claude Code は、Claude がファイルを編集するか、シェルコマンドを実行するたびに、パネルを更新します。パネルを閉じるには、`/diff` を再度実行するか、ヘッダーの `✕` をクリックします。
+diff パネルは、変更されたファイルを追加行数と削除行数とともにリストアップし、リストの下に各ファイルの差分を表示します。Claude Code は、Claude がファイルを編集するか、シェルコマンドを実行するたびに、パネルを更新します。パネルを閉じるには、`/diff` を再度実行するか、ヘッダーの `✕` をクリックします。
 
 パネルを使用するには、以下が必要です。
 
 * [フルスクリーンレンダリング](/docs/ja/fullscreen)
 * Git リポジトリ
 * 少なくとも 110 列幅のターミナル
-* Claude Code v2.1.260 以降
-
-パネルが開けない場合、`/diff` は diff ビューアーを開くか、理由を表示します。
+* Claude Code v2.1.287 以降
 
 ターミナルが少なくとも 144 列幅の場合、Claude がファイルの編集を開始すると、パネルは自動的に開きます。`/diff` で自分で開いた後、後続のセッションでは、Claude がそれに適した幅のターミナルでファイルを編集するとすぐにパネルが開きます。パネルを閉じると、このセッションと後続のセッションでも閉じたままになり、`/diff` を再度実行するまで開きません。
 
 パネルが開いている間、以下のことができます。
 
 * **ファイルにジャンプする**：リストの行をクリックします。マウスホイールでパネルをスクロールします。ファイルリスト自体が長すぎて収まらない場合は、`Alt+Up` と `Alt+Down`、または `Ctrl+Up` と `Ctrl+Down` でスクロールします。
-* **特定の行について Claude に質問する**：パネルでマウスを使用して行を選択します。Claude Code は選択内容を次のプロンプトに添付し、送信するまで入力の横に行数を表示します。
-  * 選択内容なしでプロンプトを送信するには、カーソルを行数インジケーターの直後に移動し、`Backspace` を押して削除します。Claude Code v2.1.271 以降が必要です。
+* **ファイルの変更について Claude に質問する**：ファイルの差分の上にあるファイル名の右側の `ask` をクリックします。Claude Code はそのファイルの差分を次のプロンプトに添付し、そのプロンプトを送信するまでボタンには `asked ✓` と表示されます。別のファイルで質問すると、最初のファイルが置き換えられます。
+* **1 つのターンの編集を表示する**：パネルのヘッダーにある `source` ピッカーをクリックし、`Up` と `Down` でターンを選択して `Enter` を押します。ターンには `T1`、`T2` などのラベルが付きます。ピッカーは Claude がファイルを編集すると表示され、`Current` を選ぶとワーキングツリーに戻ります。
 * **パネルが除外するファイルを表示する**：リストはテストファイルと生成されたファイルをスキップし、このセッション前の変更を下部の 1 行に折りたたみます。いずれかのカウント行をクリックして展開します。
-* **パネルが比較する対象を変更する**：`Ctrl+X B` を押して、このセッションの変更から、コミットされていない変更を 1 つのリストとして、デフォルトブランチからの分岐以降のすべてに循環します。Claude Code は、各プロジェクトの選択を記憶します。
+* **パネルが比較する対象を変更する**：`Ctrl+X B` を押して、このセッションの変更から、コミットされていない変更を 1 つのリストとして、デフォルトブランチからの分岐以降のすべてに循環します。Claude Code は、各リポジトリの選択を記憶します。
 
-これらのアクションにキーをバインドするには、[Diff パネルアクション](/docs/ja/keybindings#diff-panel-actions)を参照してください。
+ファイルリストのスクロールや比較対象の変更に使うキーを再バインドするには、[Diff パネルアクション](/docs/ja/keybindings#diff-panel-actions)を参照してください。
 
-<h3 id="diff-viewer">
-  Diff ビューアー
+<h3 id="diff-dialog">
+  Diff ダイアログ
 </h3>
 
-diff ビューアーは、閉じるまでプロンプトの代わりになります。その **Current** ビューは、git からのコミットされていない変更、または変更がない場合は、ブランチがデフォルトブランチから追加する内容を表示します。ビューアーには、Claude がファイルを編集した後の各ターンのターンビューもあり、その編集のみを表示します。Claude Code は、git ではなく Claude のファイル編集からターンビューを構築するため、Claude がシェルコマンドを通じて行った変更は Current の下にのみ表示されます。
+diff ダイアログは、プロンプトの上に枠付きのブロックとして開き、変更されたファイルを追加行数と削除行数とともにリストアップします。ファイルは `HEAD` と比較されるか、このリポジトリで最後に [diff パネルで選択した](#diff-panel)対象と比較されます。
 
-ビューアーでこれらのキーを使用します。
+Claude がファイルを編集すると、リストの上に `source` ピッカーが表示されます。ピッカーには、Claude にファイルを編集させた各プロンプトに対して 1 つずつ、`T1`、`T2` などのラベルが付いたターンビューが用意されます。ターンビューにはそのターンの編集のみが表示され、`Current` を選ぶとワーキングツリーに戻ります。
 
-* **左と右**：Current とターンビューの間を移動します。
+ダイアログでは次のキーを使用します。
+
 * **上と下**：ファイルを選択します。
-* **Enter**：選択したファイルの diff を開きます。上下、または PageUp と PageDown でスクロールします。
-* **Esc**：ファイルの diff からリストに戻るか、リストからビューアーを閉じます。
-
-これらのキーを再バインドするには、[Diff アクション](/docs/ja/keybindings#diff-actions)を参照してください。
+* **Enter**：選択したファイルの差分を開きます。上下、または PageUp と PageDown でスクロールします。
+* **Esc**：ファイルの差分からリストに戻るか、リストからダイアログを閉じます。
+* **Tab**：`source` ピッカーに移動し、上下で `Current` またはターンビューを選択して Enter を押します。ファイルの差分では、Tab で `ask` ボタンに移動します。Enter を押すと、そのファイルの差分が次のプロンプトに添付されます。
 
 <h2 id="side-questions-with-/btw">
   /btw で補足質問をする
@@ -727,9 +728,9 @@ Claude は補足質問に対して、会話に既に含まれている内容か�
 
 ターミナルから離れた後に戻ると、Claude Code はこれまでのセッションで何が起きたかの 1 行の要約を表示します。この要約は、最後に完了したターンから少なくとも 3 分が経過し、ターミナルがフォーカスされていない状態で、バックグラウンドで生成されるため、戻ってきたときに準備ができています。要約はセッションに少なくとも 3 ターンがある場合にのみ表示され、連続して 2 回表示されることはありません。
 
-`/recap` を実行して、オンデマンドで要約を生成します。Claude Code は自動要約と `/recap` 出力の両方を 400 文字に制限しています。自動要約をオフにするには、`/config` を開いて **Session recap** をオフにします。
+`/recap` を実行して、オンデマンドで要約を生成します。これはユーザー自身が要求した場合にのみ実行されます。Slack、Teams、またはプロジェクトのスレッドから中継されたメッセージや、ルーティンが送信したプロンプトに含まれていた場合は、要約の代わりに[通知](/docs/ja/errors#recap-only-runs-when-you-ask-for-it-yourself)が表示されます。
 
-セッションの要約はすべてのプランとプロバイダーでデフォルトでオンになっています。この要約は非対話型モードでは常にスキップされます。
+セッションの要約はすべてのプランとプロバイダーでデフォルトでオンになっています。自動要約をオフにするには、`/config` を開いて **Session recap** をオフにします。自動要約は非対話モードでは表示されません。Claude Code は自動要約と `/recap` 出力の両方を 400 文字に制限しています。
 
 <h2 id="wait-for-a-usage-limit-to-reset">
   使用制限がリセットされるまで待機する
@@ -737,16 +738,19 @@ Claude は補足質問に対して、会話に既に含まれている内容か�
 
 claude.ai の[使用制限](/docs/ja/errors#youve-hit-your-session-limit)が Claude Code の途中でタスクを停止した場合、Claude Code はオープンセッションで待機し、制限がリセットされた後に自動的にタスクを続行します。自動続行は、claude.ai サブスクリプションでサインインしたインタラクティブセッションではデフォルトで有効です。Claude Code v2.1.234 以降が必要です。
 
-Claude Code が待機している間、セッションの下部に続行される時刻を示す行が表示されます。
+Claude Code が待機している間、セッションの下部に、制限がリセットされる時刻と Claude が続行する時刻を示す行が表示されます。
 
 ```text theme={null}
-Usage limit reached · continuing automatically at 3:45pm · esc to cancel
+Usage limit reached · limit resets 3:45pm
+Continuing automatically at 3:45pm · esc to cancel
 ```
+
+いずれの行にも、これらの文言の後に追加の内容が続く場合があります。たとえば、1 行目にはヘルプリンク、2 行目には `/usage-credits to continue now` が表示されることがあります。待機が自動的に開始された場合は、会話にも `Usage limit reached · continuing automatically at 3:45pm · esc to cancel` という行が記録されます。
 
 セッションをオープンのままにしておいてください。その後の動作は、待機の終わり方によって異なります。
 
-* **リセット時**：行は `continuing shortly` と表示され、その後 `Usage limit reset · continuing automatically` と表示されます。Claude Code は Claude に固定プロンプトを送信して、停止した場所からタスクを再開します。最後のメッセージは再送信されません。
-* **コンピュータがスリープした後**：約 30 分以上スリープし、スリープ中に制限がリセットされた場合、行は `Your usage limit has reset · press enter to continue` と表示されます。`Enter` キーを押して続行してください。短いスリープの後は、Claude Code が自動的に続行します。
+* **リセット時**：2 行目が `Continuing shortly · esc to cancel` に変わります。その後、会話に `Usage limit reset · continuing automatically` が表示され、Claude Code は Claude に停止した場所からタスクを再開するよう促します。最後のメッセージは再送信されません。
+* **コンピューターがスリープした後**：約 30 分以上スリープし、スリープ中に制限がリセットされた場合、1 行目は `Your usage limit has reset`、2 行目は `Press enter to continue` と表示されます。`Enter` キーを押して続行してください。スリープが短かった場合や、リセット前にスリープが終了した場合は、Claude Code が自動的に続行します。
 * **早期**：待機中に `/usage-credits` で[使用クレジットを追加](/docs/ja/costs#add-usage-credits-to-your-subscription)したり、`/upgrade` の後に再度サインインしたり、`/model` でモデルを切り替えたりした場合、Claude Code は使用可能な使用量があるかどうかを確認し、ある場合はすぐに続行します。ブラウザで自分で行ったアップグレードまたは購入の後は確認されません。[`opusplan`](/docs/ja/model-config#opusplan-model-setting) および他のモデル設定で異なるモデルでプランモードを実行する場合、Claude Code はリセットを待機します。
 
 続行されたタスクは他のターンと同様に実行されます。Claude Code は通常通り[権限](/docs/ja/permissions)を要求するため、タスクはあなたが不在の間にプロンプトで停止する可能性があります。再度制限に達した場合、Claude Code は最大 2 回連続で待機を再度有効にしてから停止し、`Automatic continue stopped after repeated usage-limit hits · /rate-limit-options to try again` と表示します。
@@ -755,13 +759,13 @@ Usage limit reached · continuing automatically at 3:45pm · esc to cancel
   待機をキャンセルする
 </h3>
 
-空のプロンプトで `Esc` キーを押すか、行が表示されている間に `Ctrl+C` を押すか、[`/rate-limit-options`](/docs/ja/commands#all-commands) を実行して**Don't continue automatically** を選択してください。Claude Code は `Automatic continue cancelled` で始まる行で確認します。
+行が表示されている間に、空のプロンプトで `Esc` キーを押すか `Ctrl+C` を押すか、[`/rate-limit-options`](/docs/ja/commands#all-commands) を実行して **Don't continue automatically** を選択してください。Claude Code は `Automatic continue cancelled` で始まる行で確認します。
 
 キャンセル後、プロンプトを送信するか、`/rate-limit-options` から**Wait here, then continue automatically** で始まる行を再度選択するまで、何も続行されません。Claude Code はそのリセットウィンドウに対して自動的に待機を開始しません。次のリセットウィンドウは新たに開始されます。
 
 待機は以下の場合にもタスクを続行せずに終了します。
 
-* **プロンプトを送信する**：Claude Code は待機する代わりにプロンプトを実行します。
+* **プロンプトを送信する**：Claude Code は待機する代わりにプロンプトを送信します。そのプロンプトも制限に達した場合、プロンプトは会話に残り、Claude Code は再び待機を開始します。
 * **Claude Code を終了する**：セッションを再開しても待機は再開されません。
 * **会話の所有者が変わる**：`/login` でアカウントを切り替えたり、会話をクリアまたはリワインドしたり、`/resume` で別のセッションを再開したり、`/teleport` で取得したり、`/tui` で再起動したり、セッションを Claude Desktop、バックグラウンドセッション、またはクラウドに渡したりします。
 * **設定がオフになるか、リセットが 24 時間を超える**：これは Claude Code が自動的に開始した待機のみを終了します。`/rate-limit-options` から選択した待機はカウントダウンを続けます。

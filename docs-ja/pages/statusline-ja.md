@@ -206,7 +206,8 @@ Claude Code は以下の JSON フィールドを stdin 経由でスクリプト�
 | `thinking.enabled` | セッションで拡張思考が有効になっているかどうか |
 | `rate_limits.five_hour.used_percentage`、`rate_limits.seven_day.used_percentage` | 5 時間または 7 日のレート制限の消費割合（0～100） |
 | `rate_limits.five_hour.resets_at`、`rate_limits.seven_day.resets_at` | 5 時間または 7 日のレート制限ウィンドウがリセットされる Unix エポック秒 |
-| `rate_limits.spend_limit.used_percentage`、`rate_limits.spend_limit.resets_at` | [Claude apps gateway](/docs/ja/claude-apps-gateway-spend-limits#usage-warnings-in-claude-code) の背後にある場合、あなたに適用される支出制限の使用割合、およびその期間がリセットされる Unix エポック秒。割合は 0～100 の範囲、または制限を超えると 100 以上になります。Claude Code v2.1.251 以降が必要です |
+| `rate_limits.spend_limit.used_percentage`、`rate_limits.spend_limit.resets_at` | Claude apps gateway の背後にある場合、支出制限をどれだけ使用したか、およびその期間がいつリセットされるか。[支出制限フィールド](#spend-limit-fields) を参照してください。Claude Code v2.1.251 以降が必要です |
+| `rate_limits.spend_limit.used_usd`、`rate_limits.spend_limit.limit_usd`、`rate_limits.spend_limit.period` | 米ドル建ての推定支出額と制限額、および制限の期間。これらのフィールドは不在の場合があります。[支出制限フィールド](#spend-limit-fields) を参照してください。Claude Code とゲートウェイの両方で v2.1.284 以降が必要です |
 | `prompt_cache` | メイン会話の [prompt cache](/docs/ja/prompt-caching) 統計情報：ヒット率、ミス数、キャッシュがウォーム状態かどうか。すべてのフィールドについては [prompt cache フィールド](#prompt-cache-fields) を参照してください。メイン会話の最初の API レスポンスまで不在。Claude Code v2.1.251 以降が必要です |
 | `session_id` | 一意のセッション識別子 |
 | `session_name` | セッション名。`--name` フラグまたは `/rename` で設定されたカスタム名が存在する場合はそれを使用し、そうでない場合は AI が生成したセッションタイトルを使用します。[デフォルト表示名](/docs/ja/sessions#name-your-sessions)（`my-app-3f` など）はこのフィールドに入力されません。セッションにカスタム名も AI が生成したタイトルもない場合は不在 |
@@ -315,7 +316,10 @@ Claude Code は以下の JSON フィールドを stdin 経由でスクリプト�
       },
       "spend_limit": {
         "used_percentage": 62.8,
-        "resets_at": 1740787200
+        "resets_at": 1740787200,
+        "used_usd": 314.12,
+        "limit_usd": 500,
+        "period": "monthly"
       }
     },
     "vim": {
@@ -384,6 +388,17 @@ Claude Code は以下の JSON フィールドを stdin 経由でスクリプト�
 `current_usage` から手動でコンテキスト割合を計算する場合、`used_percentage` と一致させるために同じ入力のみの式を使用します。
 
 `current_usage` オブジェクトはセッションの最初の API 呼び出しの前は `null` です。また `/compact` の直後は `null` であり、次の API 呼び出しが再度入力されるまで `null` のままです。
+
+<h3 id="spend-limit-fields">
+  支出制限フィールド
+</h3>
+
+[支出制限が設定された Claude apps gateway](/docs/ja/claude-apps-gateway-spend-limits#usage-warnings-in-claude-code) の背後では、`rate_limits.spend_limit` オブジェクトが適用される支出制限を説明します。このオブジェクトはセッションの最初の API レスポンスの後に表示され、Claude Code v2.1.251 以降が必要です。スクリプトはそのフィールドを別々のタイミングで受け取ります：
+
+* `used_percentage` と `resets_at`：すべてのレスポンスに含まれるため、`spend_limit` が存在する場合は常に存在します。`used_percentage` は 0～100 の範囲、または制限を超えると 100 を超える値になり、`resets_at` は制限の期間がリセットされる Unix エポック秒です。
+* `used_usd`、`limit_usd`、`period`：これまでの推定支出額と制限額（米ドル）、および制限の対象期間（`daily`、`weekly`、`monthly` のいずれか）。ゲートウェイは [`used_usd` をトークン数から計算する](/docs/ja/claude-apps-gateway-spend-limits#how-requests-are-priced) ため、これは推定値であり、請求額ではありません。Claude Code は、リクエストを送信している間、約 5 分ごとに別のリクエストでゲートウェイからこれらを読み取ります。金額は `used_percentage` より約 5 分古い場合があるため、両者が一時的に一致しないことがあります。Claude Code とゲートウェイの両方で v2.1.284 以降が必要です。
+
+`spend_limit` が存在する場合でも、`used_usd`、`limit_usd`、`period` はオプションとして扱ってください。スクリプトはこれらより先に割合を受け取ります。また、`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` を設定するとそのリクエストがオフになるため、これらは不在のままになります。スクリプトでは、`jq -r '.rate_limits.spend_limit.used_usd // empty'` のように、それぞれをフォールバック付きで読み取ってください。
 
 <h3 id="prompt-cache-fields">
   Prompt cache フィールド
@@ -860,11 +875,9 @@ Bash の例は [`jq`](https://jqlang.org/) を使用して JSON を解析しま�
   レート制限の使用状況
 </h3>
 
-claude.ai サブスクリプションのレート制限使用状況をステータスラインに表示します。`rate_limits` オブジェクトには、ローリング `five_hour` ウィンドウと週間 `seven_day` ウィンドウが含まれます。各ウィンドウは `used_percentage`（0～100）とウィンドウがリセットされる Unix エポック秒の `resets_at` を提供します。
+claude.ai サブスクリプションのレート制限使用状況、または Claude アプリゲートウェイの支出制限に対する支出額をステータスラインに表示します。サブスクライバーの場合、`rate_limits` オブジェクトには、ローリング `five_hour` ウィンドウと週間 `seven_day` ウィンドウが含まれます。各ウィンドウは `used_percentage`（0～100）とウィンドウがリセットされる Unix エポック秒の `resets_at` を提供します。ゲートウェイの背後では、[支出制限フィールド](#spend-limit-fields) で説明されている `spend_limit` オブジェクトを読み取ります。
 
-Claude アプリゲートウェイの背後にある支出制限を使用する場合、`rate_limits` は支出制限に対して同じ 2 つのフィールドを持つ `spend_limit` を含みます。ただし、その `used_percentage` は制限を超えると 100 を超える可能性があります。Claude Code v2.1.251 以降が必要です。
-
-`rate_limits` オブジェクトは claude.ai Pro および Max サブスクライバー、または支出制限を持つ Claude アプリゲートウェイの背後にある場合のみ存在し、最初の API レスポンスの後のみです。各スクリプトは不在のフィールドを適切に処理します：
+`rate_limits` オブジェクトは claude.ai Pro および Max サブスクライバー、または支出制限を持つ Claude アプリゲートウェイの背後にある場合のみ存在し、最初の API レスポンスの後のみです。各スクリプトは不在のフィールドを適切に処理し、ゲートウェイの背後では `spend: $314.12 / $500` を出力します。ドル額のフィールドが不在の間は `spend: 63%` を出力します：
 
 <CodeGroup>
   ```bash Bash theme={null}
@@ -879,6 +892,11 @@ Claude アプリゲートウェイの背後にある支出制限を使用する�
   LIMITS=""
   [ -n "$FIVE_H" ] && LIMITS="5h: $(printf '%.0f' "$FIVE_H")%"
   [ -n "$WEEK" ] && LIMITS="${LIMITS:+$LIMITS }7d: $(printf '%.0f' "$WEEK")%"
+
+  # Claude アプリゲートウェイの背後：ゲートウェイがドル額を報告する場合はドル額、それ以外はパーセンテージ
+  SPEND_PCT=$(echo "$input" | jq -r '.rate_limits.spend_limit.used_percentage // empty')
+  SPEND_USD=$(echo "$input" | jq -r '.rate_limits.spend_limit | select(.used_usd != null) | "$\(.used_usd) / $\(.limit_usd)"')
+  [ -n "$SPEND_PCT" ] && LIMITS="${LIMITS:+$LIMITS }spend: ${SPEND_USD:-$(printf '%.0f' "$SPEND_PCT")%}"
 
   [ -n "$LIMITS" ] && echo "[$MODEL] | $LIMITS" || echo "[$MODEL]"
   ```
@@ -900,6 +918,14 @@ Claude アプリゲートウェイの背後にある支出制限を使用する�
   if week is not None:
       parts.append(f"7d: {week:.0f}%")
 
+  # Claude アプリゲートウェイの背後：ゲートウェイがドル額を報告する場合はドル額、それ以外はパーセンテージ
+  spend = rate.get('spend_limit', {})
+  if spend.get('used_percentage') is not None:
+      if spend.get('used_usd') is not None:
+          parts.append(f"spend: ${spend['used_usd']} / ${spend['limit_usd']}")
+      else:
+          parts.append(f"spend: {spend['used_percentage']:.0f}%")
+
   if parts:
       print(f"[{model}] | {' '.join(parts)}")
   else:
@@ -920,6 +946,14 @@ Claude アプリゲートウェイの背後にある支出制限を使用する�
 
       if (fiveH != null) parts.push(`5h: ${Math.round(fiveH)}%`);
       if (week != null) parts.push(`7d: ${Math.round(week)}%`);
+
+      // Claude アプリゲートウェイの背後：ゲートウェイがドル額を報告する場合はドル額、それ以外はパーセンテージ
+      const spend = data.rate_limits?.spend_limit;
+      if (spend?.used_percentage != null) {
+          parts.push(spend.used_usd != null
+              ? `spend: $${spend.used_usd} / $${spend.limit_usd}`
+              : `spend: ${Math.round(spend.used_percentage)}%`);
+      }
 
       console.log(parts.length ? `[${model}] | ${parts.join(' ')}` : `[${model}]`);
   });

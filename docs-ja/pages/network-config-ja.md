@@ -287,6 +287,12 @@ GitHub Enterprise Cloud 組織が IP アドレスでアクセスを制限して�
 
 前述のテーブルはスタンドアロン CLI をカバーしています。Claude Desktop アプリと browser の claude.ai は、アプリケーションコードとユーザーコンテンツを追加の Anthropic CDN ホストから読み込みます。これには `assets-proxy.anthropic.com` と、これらのアプリで [artifacts](/docs/ja/artifacts) を提供する他の `*.claudeusercontent.com` オリジンが含まれます。`claude.ai` を許可しながらこれらのホストをブロックすると、エラーではなく空白ページが表示されます。Desktop ページの [ネットワークアクセス要件](/docs/ja/desktop#network-access-requirements)を参照してください。
 
+Claude Desktop と claude.ai は、一部のコネクタが提供する [MCP Apps](https://claude.com/docs/connectors/building/mcp-apps/getting-started) など、会話内の一部のツール結果をインタラクティブなウィジェットとしてレンダリングすることもあります。これらのウィジェットは `claudemcpcontent.com` の生成されたサブドメインから読み込まれるため、ワイルドカードをそのまま残して `*.claudemcpcontent.com` を許可してください。これをブロックしても、アプリの残りの部分は引き続き機能しますが、これらのウィジェットは読み込まれません。
+
+<h4 id="third-party-hosts-for-artifact-fonts-and-libraries">
+  アーティファクトのフォントとライブラリ用のサードパーティホスト
+</h4>
+
 [Google Fonts](/docs/ja/artifacts#improve-the-visual-design) からタイプフェイスを読み込む [artifact](/docs/ja/artifacts) は、`fonts.googleapis.com` と `fonts.gstatic.com` もリクエストします。両方のホストはオプションです。それらをブロックすると、artifacts はフォールバックタイプフェイスでレンダリングされます。フォントリクエストが即座に失敗するように、高速拒否でブロックしてください。ページの最初のレンダリングを遅延させるのではなく。
 
 Artifacts は React やチャートパッケージなどの JavaScript ライブラリを `cdnjs.cloudflare.com`、`cdn.jsdelivr.net`、`cdn.tailwindcss.com`、`code.jquery.com`、および `unpkg.com` から読み込むことができ、他の外部ホストからは読み込めません。これらのホストをブロックすると、ライブラリに依存する artifact の部分は機能しません。ブロックされたフォントとは異なり、ブロックされたライブラリにはフォールバックがありません。ここでも高速拒否でブロックしてください。ブロックされたライブラリリクエストが即座に失敗するように、タイムアウトするまでハングするのではなく。

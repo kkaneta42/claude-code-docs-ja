@@ -96,12 +96,6 @@ Code タブの以前のバージョンでは、これらのモードを Ask perm
 
 `dontAsk`権限モードは[CLI](/docs/ja/permission-modes#allow-only-pre-approved-tools-with-dontask-mode)でのみ利用可能です。
 
-<span id="auto-mode-availability" />
-
-Auto mode は Anthropic API のすべてのユーザーが利用でき、Claude Opus 4.6 以降、Sonnet 4.6 以降、または[Fable モデル](/docs/ja/model-config#work-with-fable)が必要です。組織管理者は[マネージド設定](#managed-settings)の`disableAutoMode`キーで auto mode をオフにできます。
-
-Google Cloud の Agent Platform にルーティングするエンタープライズデプロイメントでは、auto mode もデフォルトで利用可能です。[Bedrock、Agent Platform、または Foundry での auto mode の有効化](/docs/ja/permission-modes#enable-auto-mode-on-bedrock-agent-platform-or-foundry)でサポートされているモデルを参照してください。
-
 <Tip title="ベストプラクティス">
   複雑なタスクを Plan で開始して、Claude が変更を加える前にアプローチをマップアウトするようにします。プランを承認したら、Accept edits または Manual に切り替えて実行します。このワークフローの詳細については、[最初に探索してからプランしてからコード化する](/docs/ja/best-practices#explore-first-then-plan-then-code)を参照してください。
 </Tip>
@@ -109,6 +103,14 @@ Google Cloud の Agent Platform にルーティングするエンタープライ
 クラウドセッションは Accept edits、Plan、および Auto をサポートしています。Accept edits は`default`モードに対応しています：クラウドセッションはファイル編集を事前に承認するため、セレクタは Manual ではなく Accept edits を表示します。Bypass permissions はクラウドセッションでは利用できません。[自己ホスト環境](/docs/ja/self-hosted-environments)のセッションを含みます。
 
 エンタープライズ管理者は利用可能な権限モードを制限できます。詳細については、[エンタープライズ設定](#enterprise-configuration)を参照してください。
+
+<h4 id="auto-mode-availability">
+  auto モードの利用可否
+</h4>
+
+auto モードは Anthropic API のすべてのユーザーが利用でき、Claude Opus 4.6 以降、Sonnet 4.6 以降、または[Fable モデル](/docs/ja/model-config#work-with-fable)が必要です。組織管理者は[管理設定](#managed-settings)の`disableAutoMode`キーで auto モードをオフにできます。
+
+Desktop を Google Cloud の Agent Platform にルーティングする Enterprise デプロイでも、auto モードはデフォルトで利用可能です。サポートされているモデルについては、[Bedrock、Agent Platform、または Foundry での auto モードの有効化](/docs/ja/permission-modes#enable-auto-mode-on-bedrock-agent-platform-or-foundry)を参照してください。
 
 <h3 id="preview-your-app">
   アプリをプレビューする

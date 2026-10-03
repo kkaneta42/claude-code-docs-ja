@@ -273,14 +273,17 @@ Claude Code は、その他のブロックされた選択を、モデルが設�
 * **`advisorModel` 設定**: そのセッションではアドバイザーが無効になります
 * **`--advisor` フラグ**: Claude Code は起動時にエラーで終了します。[バックグラウンドセッション](/docs/ja/agent-view)では、終了する代わりにアドバイザーなしでセッションを開始します
 
-Claude Code は、除外されたモデルを `/model` ピッカーから非表示にします。リストに含まれる完全なモデル ID のうち、組み込みのピッカー行がないもの（リストで固定された古いバージョンなど）は、Claude Code が組み込みの選択肢を [`modelPicker`](/docs/ja/settings-reference#modelpicker) のラインナップに置き換えていない限り、`/model` ピッカーに独自のラベル付き行として表示されます。v2.1.199 より前は、そのような ID は `/model <id>` と入力することでのみ選択できました。
+Claude Code は、除外されたモデルを `/model` ピッカーから非表示にします。リストに含めたモデル ID が独自の行も持つかどうかは、プロバイダーによって異なります。
+
+* **Anthropic API、[Claude Platform on AWS](/docs/ja/claude-platform-on-aws)、[Claude apps gateway](/docs/ja/claude-apps-gateway)、または `ANTHROPIC_BASE_URL` で設定した [LLM ゲートウェイ](/docs/ja/llm-gateway)**: リストに含めた Anthropic のモデル ID のうち、組み込みのピッカー行がないものは、独自のラベル付き行として表示されます。Claude Code は、リストで固定された古いバージョンなど、Opus、Sonnet、Haiku のバージョンに対してこのような行を追加します。[`modelPicker`](/docs/ja/settings-reference#modelpicker) のラインナップで `replaceBuiltInOptions` を設定している場合、その行は表示されません。v2.1.199 より前は、そのような ID は `/model <id>` と入力することでのみ選択できました。
+* **Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry**: リストに含めたモデル ID が `anthropic.` で始まらない限り、それが Anthropic のモデル ID であってもプロバイダー固有のものであっても、Claude Code はその行を追加しません。[Mantle のモデル ID](#mantle-model-ids) にはこのプレフィックスが付いています。組み込みの行がないリスト内のバージョンを表示するには、[`modelPicker`](/docs/ja/settings-reference#modelpicker) のラインナップにも追加してください。ラインナップはプロバイダーの形式の ID を受け付けます。
 
 Claude Code がユーザーに代わって行うモデル変更も、同じ方法でチェックされます。
 
 * **[フォールバックモデルチェーン](#fallback-model-chains)**: 許可リスト外のエントリは除外されます
 * **plan モードのアップグレード**: Anthropic API と Claude Platform on AWS では、[`opusplan`](#opusplan-model-setting) のように除外されたモデルへのアップグレードは、アップグレード先ファミリーの許可された最新バージョンを使用します。プロバイダー固有のモデル ID を持つプロバイダーの場合、および許可されたバージョンがない場合は、アップグレードはスキップされ、計画はセッションのモデルで続行されます
 * **[自動モデルフォールバック](#automatic-model-fallback)**: フォールバック先が除外されている場合、フォールバックは実行されないため、警告されたリクエストは代わりに拒否で終了します
-* **[auto モードの分類器](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)**: 分類器のデフォルトである Claude Sonnet 5 は、許可リストが Sonnet 5 を許可している場合にのみ適用されます。除外されている場合、分類器はセッションのモデル（すでに許可リストの制御下にあります）で実行されるか、セッションが [Fable モデル](#work-with-fable)で実行されている場合は Opus モデルで実行されます。Anthropic API 以外のプロバイダーでは、その Opus フォールバックは許可リストを参照せずにプロバイダーのデフォルトの Opus モデルで実行されます。Claude Code v2.1.210 以降が必要です
+* **[auto モードの分類器](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)**: 分類器のデフォルトである Claude Sonnet 5 は、許可リストが Sonnet 5 を許可している場合にのみ適用されます。除外されている場合、分類器はセッションのモデル（すでに許可リストの制御下にあります）で実行されるか、セッションが [Fable モデル](#work-with-fable)で実行されている場合は Opus モデルで実行されます。Anthropic API 以外のプロバイダーでは、その Opus フォールバックは許可リストを参照せずに、`ANTHROPIC_DEFAULT_OPUS_MODEL` で設定したモデル、または設定していない場合は Opus 5 で実行されます。Claude Code v2.1.210 以降が必要です
 * **[fast mode](/docs/ja/fast-mode)**: 有効化後にセッションが実行されるモデルが許可リスト外である場合、fast mode の有効化は拒否されます
 
 ```json theme={null}
@@ -376,7 +379,7 @@ Claude Code が適用する管理設定で `availableModels` が定義されて�
   Mantle のモデル ID
 </h3>
 
-[Amazon Bedrock Mantle エンドポイント](/docs/ja/amazon-bedrock#use-the-mantle-endpoint)が有効な場合、`availableModels` 内の `anthropic.` で始まるエントリは、カスタムオプションとして `/model` ピッカーに追加され、Mantle エンドポイントにルーティングされます。これは、[サードパーティのデプロイ向けにモデルを固定する](#pin-models-for-third-party-deployments)で説明されているエイリアス一致の例外です。この設定は引き続きピッカーをリストされたエントリに制限し、Mantle ID にはファミリー名が含まれているため、特定のエントリとしてカウントされ、そのファミリーのワイルドカードを無効にします。Mantle ID と併せて、選択可能なままにしたいバージョンプレフィックスまたは完全な ID をリストしてください。[マージの動作](#merge-behavior)を参照してください。
+`availableModels` 内の `anthropic.` で始まるエントリは、カスタムオプションとして `/model` ピッカーに追加されます。これは、[サードパーティのデプロイ向けにモデルを固定する](#pin-models-for-third-party-deployments)で説明されているエイリアス一致の例外です。[Amazon Bedrock Mantle エンドポイント](/docs/ja/amazon-bedrock#use-the-mantle-endpoint)が有効な場合、Claude Code は Mantle 形式に一致するエントリをそのエンドポイントにルーティングします。この設定は引き続きピッカーをリストされたエントリに制限し、Mantle ID にはファミリー名が含まれているため、特定のエントリとしてカウントされ、そのファミリーのワイルドカードを無効にします。Mantle ID と併せて、選択可能なままにしたいバージョンプレフィックスまたは完全な ID をリストしてください。[マージの動作](#merge-behavior)を参照してください。
 
 <h3 id="block-specific-models-or-versions">
   特定のモデルやバージョンをブロックする
@@ -447,7 +450,7 @@ Claude Enterprise プランの組織管理者は、claude.ai の管理コンソ�
 * [管理設定](/docs/ja/managed-settings)内の `model` の値、または `--settings` で指定された `model` の値
 * ユーザー、プロジェクト、またはローカル設定内の `model` の値（`/model` で保存したモデルを含む）
 
-管理者は、組織のデフォルトがユーザーの選択を上書きするように設定することもできます。上書きが有効な場合、組織のデフォルトはユーザー、プロジェクト、ローカル設定内の `model` の値よりも優先されるため、`/model` で保存したモデルは現在のセッションにのみ適用され、次回の起動時には組織のデフォルトに戻ります。ユーザーの選択が異なる場合、`/model` には `Your organization's default (<model>) applies on restart` と表示されます。上書きが有効な場合でも、`--model` フラグ、`ANTHROPIC_MODEL`、管理設定、`--settings` は引き続き優先されます。上書きは一部の組織でのみ利用できます。利用可否については Anthropic のアカウントチームにお問い合わせください。
+管理者は、組織のデフォルトがユーザーの選択を上書きするように設定することもできます。上書きが有効な場合、組織のデフォルトはユーザー、プロジェクト、ローカル設定内の `model` の値よりも優先されるため、`/model` で保存したモデルは現在のセッションにのみ適用され、次回の起動時には組織のデフォルトに戻ります。ユーザーの選択が異なる場合、`/model` には `Your organization's default (<model>) applies on restart` と表示されます。上書きが有効な場合でも、`--model` フラグ、`ANTHROPIC_MODEL`、管理設定、`--settings` は引き続き優先されます。
 
 メンバーが選択できるモデルを制限するには、代わりに[組織のモデル制限](#organization-model-restrictions)または [`availableModels`](#restrict-model-selection) を使用してください。
 
@@ -570,6 +573,20 @@ Amazon Bedrock、Google Cloud's Agent Platform、Microsoft Foundry では、Clau
 
 フォールバックモデルは [`availableModels`](#restrict-model-selection) と照合されます。ブロックされている場合、フォールバックは発生しません。拒否は通常のエラーとして表示され、セッションのモデルは変わりません。
 
+<h4 id="effort-level-after-a-fallback">
+  フォールバック後の effort レベル
+</h4>
+
+Claude Code がセッションをフォールバックモデルに切り替える際は、そのモデルのデフォルトの effort ではなく、警告されたリクエストが実行されていた effort レベルを維持します。たとえば、デフォルトの `medium` で動作している Opus 5.5 のセッションが Opus 4.8 にフォールバックした場合、Opus 4.8 のデフォルトは `high` ですが、`medium` のままになります。
+
+次のような場合は、別のレベルが適用されます。
+
+* **設定または組織のデフォルト**：フォールバックモデルに適用される設定内のレベル、または組織がそのモデルに設定したデフォルトの effort が代わりに適用されます。
+* **ユーザー自身による変更**：effort レベルを選択したり、`/model` でモデルを選んだり、後でセッションを再開したりすると、警告されたリクエストのレベルは引き継がれなくなります。
+* **スキルの effort**：スキルの `effort` フロントマターが警告されたリクエストに設定したレベルはそのターンに適用され、以降のターンは [effort の解決順序](#adjust-effort-level)がフォールバックモデルに与えるレベルで実行されます。
+
+セッションヘッダーには、有効なレベルがモデル名の横に表示されます。変更するには、セッション内で `/effort` を実行します。
+
 <h4 id="check-what-triggered-fallback">
   フォールバックのきっかけを確認する
 </h4>
@@ -636,7 +653,7 @@ Claude Code は、次の順序でセッションの effort レベルを解決し
 
 1. 明示的な選択：[`CLAUDE_CODE_EFFORT_LEVEL`](/docs/ja/env-vars#variables) 環境変数、`--effort` を付けた起動、またはセッション内での `/effort`（[非対話の `/effort` は効果の範囲が狭くなります](#non-interactive-effort)）
 2. 設定：モデルに対して保存したレベルまたは [`effortLevel`](/docs/ja/settings-reference#effortlevel) キー。これらの間および設定ファイル間の優先順位は [`modelSettings`](/docs/ja/settings-reference#modelsettings) に記載されています
-3. モデルのデフォルトの effort：effort をサポートするすべてのモデルで `high`。ただし、Opus 5.5 と Sonnet 5.5 のデフォルトは `medium`、Opus 4.7 のデフォルトは `xhigh` です。また、組織が[組織のデフォルトモデル](#organization-default-model)にデフォルトの effort レベルを設定している場合、そのモデルを実行するときはそのレベルがデフォルトになります
+3. モデルのデフォルトの effort：effort をサポートするすべてのモデルで `high`。ただし、Opus 5.5 と Sonnet 5.5 のデフォルトは `medium`、Opus 4.7 のデフォルトは `xhigh` です。また、組織が[組織のデフォルトモデル](#organization-default-model)にデフォルトの effort レベルを設定している場合、そのモデルを実行するときはそのレベルがデフォルトになります。自動モデルフォールバックの後に適用されるレベルについては、[フォールバック後の effort レベル](#effort-level-after-a-fallback)を参照してください
 
 Opus 5.5 は、上記のいずれかのソースでレベルが設定されていない限り `medium` で開始され、ユーザー設定ファイルのトップレベルの `effortLevel` は Opus 5.5 には適用されません。このキーは、Claude Code がモデルごとにレベルを保存するようになる前に `/effort` が書き込んでいた古い形式です。Opus 5、Fable 5.1、およびそれ以前のモデルでは以前と同様に適用され続けますが、Opus 5.5 とそれ以降にリリースされたモデルは、`/effort` または `/model` ピッカーでレベルを選ぶまで、それぞれのデフォルトで開始されます。プロジェクト設定、ローカル設定、管理設定のトップレベルの `effortLevel`、または `--settings` で渡されたものは、すべてのモデルに適用されます。
 
@@ -777,7 +794,7 @@ Claude Code がこれらのプラン要件を確認するのは、Anthropic API 
 
 <span id="context-window-behind-a-gateway" />
 
-`ANTHROPIC_BASE_URL` を [LLM ゲートウェイ](/docs/ja/llm-gateway)やその他のプロキシに設定した場合、Claude Code は認識する各モデルに、Anthropic API 上と同じコンテキストウィンドウを割り当てます。Fable 5.1、Fable 5、Sonnet 5 以降、Opus 4.7 以降は、`[1m]` バリアントを選択しなくても 1M ウィンドウを使用でき、Opus 4.6 のように `[1m]` バリアントを通じてのみ 1M に到達するモデルは、バリアントなしでは 200K で動作します。Claude Code は、ゲートウェイやその背後のサーバーが強制するより低い制限を検出できません。ゲートウェイが 200K トークンを超えるリクエストを拒否する場合は、[`/autocompact 200k`](#set-the-auto-compact-window) を実行して、セッションがその境界で圧縮されるようにしてください。
+`ANTHROPIC_BASE_URL` を [LLM ゲートウェイ](/docs/ja/llm-gateway)やその他のプロキシに設定した場合、Claude Code は認識する各モデルに、Anthropic API 上と同じコンテキストウィンドウを割り当てます。Fable 5.1、Fable 5、Sonnet 5 以降、Opus 4.7 以降は、`[1m]` バリアントを選択しなくても 1M ウィンドウを使用でき、Opus 4.6 のように `[1m]` バリアントを通じてのみ 1M に到達するモデルは、バリアントなしでは 200K で動作します。Claude Code は、ゲートウェイやその背後のサーバーが強制するより低い制限を検出できません。ゲートウェイが 200K トークンを超えるリクエストを拒否する場合は、Claude Code を起動する環境で [`CLAUDE_CODE_AUTO_COMPACT_WINDOW=200000`](/docs/ja/env-vars) を設定して、すべてのモデルのセッションが[その境界で圧縮される](#set-the-auto-compact-window)ようにしてください。
 
 1M コンテキストをオフにするには、`CLAUDE_CODE_DISABLE_1M_CONTEXT=1` を設定します。Claude Code はモデルピッカーから 1M のモデルバリアントを削除します。Sonnet 5 や Fable モデルなど、ネイティブで 1M ウィンドウを持つモデルでは、そのモデルのコンテキストウィンドウを 200K として扱います。
 
@@ -823,9 +840,10 @@ Claude Code は、[LLM ゲートウェイ](/docs/ja/llm-gateway)やその他の�
   自動圧縮ウィンドウを設定する
 </h3>
 
-自動圧縮ウィンドウは次の 3 か所で設定できます。
+自動圧縮ウィンドウは次の場所で設定できます。
 
-* **現在のセッションとそれ以降のセッション**：`/autocompact 500k` のように、値を指定して `/autocompact` を実行します。Claude Code はこの値をユーザー設定に [`autoCompactWindow`](/docs/ja/settings-reference#autocompactwindow) として保存し、現在のセッションに適用します。管理設定など、より優先順位の高い[設定スコープ](/docs/ja/settings#settings-precedence)がこのキーを設定している場合、コマンドは値を保存しますが、セッションではそのスコープのウィンドウが維持され、コマンドはその旨を表示します。使用中のモデル向けに調整されたウィンドウに戻すには、`/autocompact auto` を実行します。
+* **現在のモデルについて、現在のセッションとそれ以降のセッション**：`/autocompact 500k` のように、値を指定して `/autocompact` を実行します。Claude Code はこの値をユーザー設定の [`modelSettings`](/docs/ja/settings-reference#modelsettings) に現在のモデル用として保存し、現在のセッションに適用します。管理設定など、より優先順位の高い[設定スコープ](/docs/ja/settings#settings-precedence)がそのモデルまたはすべてのモデルに対して独自のウィンドウを設定している場合、コマンドは値を保存しますが、セッションではそのスコープのウィンドウが維持され、コマンドはその旨を表示します。使用中のモデル向けに調整されたウィンドウに戻すには、`/autocompact auto` を実行します。v2.1.288 より前は、このコマンドはすべてのモデルに共通の 1 つのウィンドウを、トップレベルの `autoCompactWindow` として保存していました。
+* **すべてのモデル**：設定ファイルで [`autoCompactWindow`](/docs/ja/settings-reference#autocompactwindow) を設定します（例：`~/.claude/settings.json` に `"autoCompactWindow": 200000` を記述）。`/autocompact` でモデルごとに保存したウィンドウは、そのモデルについては同じファイル内のこのキーよりも優先されます。
 * **1 回の起動のみ**：Claude Code の起動時に [`--autocompact`](/docs/ja/cli-reference#cli-flags) を渡します。このフラグは、保存済みの設定を変更することなく、その起動に限って設定を上書きします。また、`claude --autocompact auto` を実行すると、保存済みの設定に値があっても、調整済みのウィンドウでセッションが実行されます。`/autocompact` とは異なり、このフラグは管理設定など、より優先順位の高い設定スコープによって無効化されることはありません。
 * **スクリプトおよびクラウド環境**：[`CLAUDE_CODE_AUTO_COMPACT_WINDOW`](/docs/ja/env-vars) を設定します。この環境変数が設定されている間は、コマンド、フラグ、設定よりも優先され、`/autocompact` はウィンドウを変更する代わりに上書きされていることを報告します。
 

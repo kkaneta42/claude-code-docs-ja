@@ -208,8 +208,8 @@ CLI では、実行ごとのプロンプトは計画されたフェーズとこ�
 * **権限ルール**: 許可ルール内の `Workflow` はすべてのワークフローを承認し、`Workflow(<name>)` は名前で 1 つの保存されたワークフローを承認します。
 * **自動権限モード**: [分類器](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)は呼び出しをレビューし、それを承認できます。
 * **バイパス権限モード**: Claude Code は呼び出しを承認します。
-* **`PreToolUse` フック**: 呼び出しに対して `allow` を返す[フック](/docs/ja/hooks#pretooluse)はそれを承認します。
-* **ホスト**: [`--permission-prompt-tool`](/docs/ja/cli-reference#cli-flags)がそれを承認するか、Agent SDK では [`canUseTool`](/docs/ja/agent-sdk/permissions) コールバックまたは [`PermissionRequest` フック](/docs/ja/hooks#permissionrequest)がそれを承認します。
+* **フック**: 呼び出しを許可する [`PreToolUse`](/docs/ja/hooks#pretooluse) フックがそれを承認します。
+* **ホスト**: [`--permission-prompt-tool`](/docs/ja/cli-reference#cli-flags)、または Agent SDK では [`canUseTool`](/docs/ja/agent-sdk/permissions) コールバックがそれを承認します。
 
 デスクトップアプリでは、承認カードはワークフロー名、フェーズリスト、トークン使用量の注意を表示し、**Once**、**Always**、**Deny** アクションを表示します。進行状況ビューは、バックグラウンドタスクサイドペインに表示されます。
 

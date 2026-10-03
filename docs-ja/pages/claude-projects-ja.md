@@ -500,7 +500,7 @@ Claude はこのような設定を[プロジェクトメモリ](#give-a-project-
   制限事項
 </h2>
 
-* プロジェクトは claude.ai/code、デスクトップアプリ、Claude モバイルアプリで利用可能です。ターミナル CLI、VS Code 拡張機能、JetBrains プラグイン、Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry では利用できません。CLI の [`claude project`](/docs/ja/cli-reference) コマンドはディレクトリの Claude Code ローカル状態を管理するもので、関連がありません。
+* プロジェクトは claude.ai/code、デスクトップアプリ、Claude モバイルアプリで利用可能です。ターミナル CLI、VS Code 拡張機能、JetBrains プラグイン、Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry では利用できません。
 * プロジェクトスレッドは [クラウドセッション](/docs/ja/claude-code-on-the-web) です。または [Remote Control](/docs/ja/remote-control) を通じてお客様のマシン上のセッションです。どちらの場合も Anthropic がモデルプロバイダーです。[セキュリティ](/docs/ja/security) および [データ使用](/docs/ja/data-usage) はクラウドセッションがどのように分離され、何が保持されるかをカバーしています。また [接続とセキュリティ](/docs/ja/remote-control#connection-and-security) はお客様のマシン上のスレッドがどのように接続され、何が保存されるかをカバーしています。
 * お客様のマシン上で自分で開始したセッションをプロジェクトに追加することはできません。プロジェクトがお客様のマシン上でスレッドを実行するには、[Remote Control を通じてお客様のマシン上でスレッドを実行](#run-a-thread-on-your-own-computer) し、そのセクションに必要なものが記載されています。
 * クラウドスレッドのサンドボックスはターン間で一時停止し、スレッドが続くときに再開されます。サンドボックスを再開できない場合、スレッドは新しいクローンから続きます。コミットされていない変更は失われる可能性があります。長いタスクでは、Claude にコミットしてプログレス作業をプッシュするよう求めてください。

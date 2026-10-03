@@ -62,12 +62,14 @@ Claude Code はカスタマイズ可能なキーボードショートカット�
 | `Attachments` | 選択ダイアログ内の画像添付ファイルナビゲーション |
 | `Footer` | フッターインジケータナビゲーション（タスク、チーム、diff、Artifacts） |
 | `MessageSelector` | 巻き戻しと要約ダイアログのメッセージ選択 |
-| `DiffDialog` | Diff ビューアナビゲーション |
+| `DiffDialog` | [差分ビューア](#diff-actions)のナビゲーション |
 | `DiffPanel` | [diff パネル](/docs/ja/interactive-mode#diff-panel)が開いている |
 | `ModelPicker` | モデルピッカー努力レベル |
 | `EffortSlider` | `/effort` で開かれた努力スライダー |
 | `Select` | 汎用選択/リストコンポーネント |
 | `Plugin` | プラグインダイアログ（参照、発見、管理） |
+| `Pane` | [mod](/docs/ja/plugins/mods/interface#know-which-keys-your-mod-can-receive) が描画したペインにキーボードフォーカスがある |
+| `PaneField` | mod のペイン内の入力フィールドまたは選択にキーボードフォーカスがある |
 | `Agents` | [エージェントビュー](/docs/ja/agent-view)（`claude agents`） |
 | `Scroll` | 会話スクロールとフルスクリーンモードでのテキスト選択 |
 
@@ -334,6 +336,8 @@ v2.1.283 より前では、このリストは `Select` バインディングを�
   差分アクション
 </h3>
 
+これらのアクションは、Claude Code の以前の差分ビューアにのみ作用します。このビューアは、`/plugin` で [`cc-plugin-diff` mod](/docs/ja/plugins/mods/overview#mods-built-into-claude-code) を無効にした後、[フルスクリーンレンダリング](/docs/ja/fullscreen) 以外で `/diff` を実行すると開きます。この mod が有効な間は、`/diff` は代わりに [差分ダイアログ](/docs/ja/interactive-mode#diff-dialog) を開きます。これらのアクションを指定する `keybindings.json` は、どちらの場合でもエラーなく読み込まれます。
+
 `DiffDialog` コンテキストで利用可能なアクション：
 
 | アクション | デフォルト | 説明 |
@@ -364,11 +368,13 @@ v2.1.283 より前では、ファイルリストは `Select` バインディン�
   差分パネルアクション
 </h3>
 
-`/diff` がフルスクリーンレンダリングで開く [差分パネル](/docs/ja/interactive-mode#diff-panel) のアクション。`app:cycleDiffBase` は `DiffPanel` コンテキストにあり、パネルが開いている間はアクティブです。その他は `Global` です。パネルには Claude Code v2.1.260 以降が必要です。
+`/diff` がフルスクリーンレンダリングで開く [差分パネル](/docs/ja/interactive-mode#diff-panel) のアクション。`app:cycleDiffBase` は `DiffPanel` コンテキストにあり、パネルが開いている間はアクティブです。その他は `Global` です。
+
+組み込みの [`cc-plugin-diff` mod](/docs/ja/plugins/mods/overview#mods-built-into-claude-code) がこのパネルを描画し、`app:cycleDiffBase`、`app:diffFileListUp`、`app:diffFileListDown` を処理します。`app:toggleReplTab`、`app:toggleDiffNoiseFilter`、`app:toggleDiffPreSession` は、Claude Code の以前のパネルにのみ作用します。このパネルは、`/plugin` で `cc-plugin-diff` を無効にした後に `/diff` で開きます。
 
 | アクション | デフォルト | 説明 |
 | :- | :- | :- |
-| `app:toggleReplTab` | （バインドなし） | 差分パネルを開くか閉じます。`/diff` を実行するのと同じです |
+| `app:toggleReplTab` | （バインドなし） | 差分パネルを開くか閉じる |
 | `app:cycleDiffBase` | Ctrl+X B | パネルの比較ベースをサイクル：このセッション、コミットされていない、その後ブランチ |
 | `app:diffFileListUp` | Ctrl+Up、Meta+Up | パネルのファイルリストがオーバーフローするときに上にスクロール |
 | `app:diffFileListDown` | Ctrl+Down、Meta+Down | パネルのファイルリストがオーバーフローするときに下にスクロール |
@@ -572,10 +578,10 @@ ctrl+k ctrl+s   Ctrl+K を押して、リリースしてから Ctrl+S
 * `wheelup`、`wheeldown` - マウスホイールスクロールイベント
 
 <h2 id="unbind-default-shortcuts">
-  デフォルトショートカットをアンバインド
+  デフォルトのショートカットのバインドを解除する
 </h2>
 
-アクションを `null` に設定して、デフォルトショートカットをアンバインドします。
+アクションを `null` に設定すると、デフォルトのショートカットのバインドを解除できます。
 
 ```json theme={null}
 {
@@ -590,11 +596,19 @@ ctrl+k ctrl+s   Ctrl+K を押して、リリースしてから Ctrl+S
 }
 ```
 
-これはコード バインディングでも機能します。プレフィックスを共有するすべてのコードをアンバインドすると、そのプレフィックスを単一キー バインディングとして使用できるようになります。コード バインディングは任意のアクティブなコンテキストに存在し、そのプレフィックスを予約したままにするため、それを定義するコンテキストで各コードをアンバインドする必要があります。
+これは chord（連続キー入力）バインディングにも有効です。プレフィックスを共有するすべての chord のバインドを解除すると、そのプレフィックスを単一キーのバインディングとして使用できるようになります。アクティブなコンテキストのいずれかに chord が 1 つでも残っていれば、そのプレフィックスは予約されたままになります。そのため、各 chord は、それを定義しているコンテキストでバインドを解除する必要があります。
 
-Claude Code は `ctrl+x` プレフィックスに以下のデフォルトコードをバインドします。`Chat` では `ctrl+x ctrl+k`、`ctrl+x ctrl+e`、`ctrl+x enter`、`ctrl+x ctrl+a`、`ctrl+x ctrl+s`、`ctrl+x tab`、`Task` では `ctrl+x ctrl+b`、`DiffPanel` では `ctrl+x b` です。`ctrl+x enter` コードは v2.1.247 以降が必要で、`ctrl+x b`、`ctrl+x ctrl+a`、`ctrl+x tab` は v2.1.260 以降が必要で、`ctrl+x ctrl+s` は v2.1.275 以降が必要です。
+Claude Code は、`ctrl+x` プレフィックスに以下のデフォルトの chord をコンテキストごとにバインドしています。
 
-`ctrl+x` 自体を単一キー バインディングとして再利用するには、すべてをアンバインドします。
+* `Chat`：`ctrl+x ctrl+k`、`ctrl+x ctrl+e`、`ctrl+x enter`、`ctrl+x ctrl+a`、`ctrl+x ctrl+s`、`ctrl+x tab`
+* `Task`：`ctrl+x ctrl+b`
+* `DiffPanel`：`ctrl+x b`
+* `Pane`：`ctrl+x left`、`ctrl+x right`、`ctrl+x up`、`ctrl+x down`、`ctrl+x x`
+* `PaneField`：`ctrl+x x`
+
+`ctrl+x enter` の chord には v2.1.247 以降が、`ctrl+x b`、`ctrl+x ctrl+a`、`ctrl+x tab` には v2.1.260 以降が、`ctrl+x ctrl+s` には v2.1.275 以降が必要です。
+
+`ctrl+x` 自体を単一キーのバインディングとして取り戻すには、これらすべてのバインドを解除します。
 
 ```json theme={null}
 {
@@ -609,6 +623,22 @@ Claude Code は `ctrl+x` プレフィックスに以下のデフォルトコー�
       "context": "DiffPanel",
       "bindings": {
         "ctrl+x b": null
+      }
+    },
+    {
+      "context": "Pane",
+      "bindings": {
+        "ctrl+x left": null,
+        "ctrl+x right": null,
+        "ctrl+x up": null,
+        "ctrl+x down": null,
+        "ctrl+x x": null
+      }
+    },
+    {
+      "context": "PaneField",
+      "bindings": {
+        "ctrl+x x": null
       }
     },
     {
@@ -627,7 +657,7 @@ Claude Code は `ctrl+x` プレフィックスに以下のデフォルトコー�
 }
 ```
 
-プレフィックス上の一部のコードをアンバインドしても、すべてをアンバインドしない場合、プレフィックスを押すと残りのバインディングのコード待機モードに入ります。
+プレフィックス上の chord の一部だけのバインドを解除し、すべてを解除しなかった場合、そのプレフィックスを押すと、残りのバインディングのために引き続き chord 待機モードに入ります。
 
 <h2 id="reserved-shortcuts">
   予約済みショートカット

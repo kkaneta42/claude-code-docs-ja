@@ -242,10 +242,10 @@ Claude Code は `ANTHROPIC_BASE_URL` ゲートウェイを Anthropic フォー�
 | 機能 | ヘッダーとボディペア | 壊れた場合の症状 | 修復 |
 | :- | :- | :- | :- |
 | [適応的推論](/docs/ja/model-config#adjust-effort-level) | ベータヘッダーなし。Claude Code は Claude 4.6 以降に `thinking: {"type": "adaptive"}` を送信し、ゲートウェイエイリアスなど認識しないモデル名を、フィールドを受け取る現在のモデルとして扱います | `thinking` フィールドまたは `adaptive` タグを命名する `400`。アップストリームモデルビルドがそれを受け入れない場合 | アップストリームをアップグレードしてください。Opus 4.6 および Sonnet 4.6 では、開発者は代わりに `CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING=1` を設定できます |
-| [コンテキスト管理](https://platform.claude.com/docs/en/build-with-claude/context-editing) | コンテキスト管理ベータヘッダーは `context_management` ボディフィールドと組み合わされます | `Extra inputs are not permitted` を含む `400`。ゲートウェイが Anthropic フォーマットリクエストを受け入れるが Amazon Bedrock に転送する場合に一般的です | 両方を転送するか、[`CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1`](/docs/ja/env-vars) |
+| [コンテキスト管理](https://platform.claude.com/docs/en/build-with-claude/context-editing) | コンテキスト管理ベータヘッダーは `context_management` ボディフィールドと組み合わされます | `Extra inputs are not permitted` を含む `400`。ゲートウェイが Anthropic フォーマットリクエストを受け入れるが Amazon Bedrock に転送する場合に一般的です | 両方を転送するか、[`CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1`](#disable-pre-release-capabilities) |
 | [拡張コンテキスト](https://platform.claude.com/docs/en/build-with-claude/context-windows#context-window-sizes-by-model)および[インターリーブ思考](https://platform.claude.com/docs/en/build-with-claude/extended-thinking#interleaved-thinking) | ベータヘッダーのみ。ボディフィールドなし | ヘッダーが削除されると静かに利用不可。アップストリームは機能リクエストを見ません | `anthropic-beta` をそのまま転送してください |
 | ベータ[ツールフィールド](https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview) | ツール関連ベータヘッダーは `strict` および `defer_loading` などのツールスキーマフィールドと組み合わされます | ボディがヘッダーなしで渡される場合、認識されないツールスキーマフィールドを命名する `400` | 両方を転送するか、[`CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1`](#disable-pre-release-capabilities) |
-| [努力](https://platform.claude.com/docs/en/build-with-claude/effort)および[構造化出力](https://platform.claude.com/docs/en/build-with-claude/structured-outputs) | `output_config` ボディフィールドは努力、構造化出力フォーマット、およびタスク予算設定を含みます。各々は独自のベータヘッダーと組み合わされます | `output_config` を命名する `400`。多くの場合 `Extra inputs are not permitted`。Amazon Bedrock および Google Cloud の Agent Platform アップストリーム上 | フィールドとそのヘッダーを一緒に転送してください |
+| [努力](https://platform.claude.com/docs/en/build-with-claude/effort)および[構造化出力](https://platform.claude.com/docs/en/build-with-claude/structured-outputs) | `output_config` ボディフィールドは努力、構造化出力フォーマット、およびタスク予算設定を含みます。各々は独自のベータヘッダーと組み合わされます | `output_config` を命名する `400`。多くの場合 `Extra inputs are not permitted`。Amazon Bedrock および Google Cloud の Agent Platform アップストリーム上 | フィールドとそのヘッダーを一緒に転送するか、開発者に [`CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1`](#disable-pre-release-capabilities) を設定してもらってください。この変数はフォーマットとタスク予算設定を削除しますが、努力は削除しません。フォーマットのみを削除するには、代わりに [`CLAUDE_CODE_DISABLE_STRUCTURED_OUTPUTS=1`](/docs/ja/env-vars) を設定できます。これには v2.1.288 以降が必要です |
 | [プロンプトキャッシング](/docs/ja/prompt-caching) | ベータペアリングなし。Claude Code は `cache_control` マーカーを `system` ブロックおよび `messages` エントリ（会話の途中で追加される `role: "system"` エントリを含む）に付加します | エラーなし。会話は毎ターン、キャッシュされていない入力として課金されます。`usage` でキャッシュアクティビティがほとんどまたはまったくない高い `input_tokens` として表示されます | `cache_control` が表示される場所ならどこでも変更なしで転送し、ブロック形式の `system` またはメッセージコンテンツをプレーン文字列に変換しないでください |
 | [トークンカウント](https://platform.claude.com/docs/en/build-with-claude/token-counting) | ベータペアリングなし。`count_tokens` エンドポイントを使用します | エラーなし。Claude Code は文字ベースの推定にフォールバックするため、`/context` は概算カウントを表示します | 正確なトークンカウントのためにエンドポイントを公開してください |
 
@@ -260,6 +260,7 @@ Claude Code は `ANTHROPIC_BASE_URL` ゲートウェイを Anthropic フォー�
 * アップストリームが `thinking` フィールド、会話中のシステムメッセージ、またはそのようなメッセージの `cache_control` マーカーを拒否する場合、Claude Code はリクエストをリトライし、拒否された機能を会話の残りの部分で無効にします
 * アップストリームが[思考署名](https://platform.claude.com/docs/en/build-with-claude/extended-thinking)を拒否する場合（`bound to a different conversation` という `400` を含む）、Claude Code はリクエストを以前の思考ブロックなしでリトライし、それらを後のすべてのリクエストから除外します。新しい応答には依然として思考が含まれます
 * ゲートウェイまたはそのアップストリームが [advisor ツール](/docs/ja/advisor)エントリを `tools` で認識されないツールタイプとして拒否する場合、Claude Code はそのエントリとその `anthropic-beta` 値なしでリクエストを 1 回リトライします。その後のそのベース URL へのリクエストは Claude Code が終了するまで advisor を除外し、その時間は `/advisor` は開発者に利用不可です。Claude Code はこの拒否を `Input tag` の後にツールタイプを命名するメッセージを含む `400` または `422` レスポンスによって認識します。例えば `Input tag 'advisor_20260301'` です。v2.1.280 より前では、Claude Code はこの拒否をリトライしませんでした
+* アップストリームが `output_config.effort` を拒否する場合、Claude Code は努力なしでリクエストを再試行し、Claude Code が終了するまでそのモデルへの以降のリクエストから努力を除外します。Claude Code はこの拒否を、メッセージが `Extra inputs are not permitted` とともに `output_config.effort` を挙げている、またはモデルが努力パラメーターをサポートしていないと述べている `400` によって認識します
 * Claude Code はコンテキスト管理またはツールスキーマフィールド拒否をリトライしません。それらの `400` エラーは開発者に到達します
 
 `bound to a different conversation` 拒否は API の[保存された思考](https://platform.claude.com/docs/en/build-with-claude/preserved-thinking)チェックから来ます。これは、`system`、`tools`、または以前の `messages` コンテンツが思考を生成したリクエストと異なる場合に失敗します。そのコンテンツのいずれかを書き直すゲートウェイは、拒否自体を引き起こす可能性があります。[ライブラリ、プロキシ、およびゲートウェイ](https://platform.claude.com/docs/en/build-with-claude/preserved-thinking#libraries-proxies-gateways)は、変更なしで渡すべき内容をカバーしています。
@@ -270,7 +271,21 @@ Claude Code は `ANTHROPIC_BASE_URL` ゲートウェイを Anthropic フォー�
   プレリリース機能を無効化
 </h3>
 
-`CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1` は Claude Code がプレリリース機能とそのボディフィールドを送信するのを停止します。コンテキスト管理とベータツールフィールドを含みます。変数は適応的推論には影響しません。適応的推論はベータではなくモデルによって選択されるためです。この変数は、サブスクリプション認証が必要とする OAuth 機能を抑制することもありません。
+ゲートウェイまたはそのアップストリームがプレリリースの `anthropic-beta` 値やそれと組み合わされるボディフィールドを拒否し、両方の半分を転送できない場合は、開発者に `CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1` を設定してもらってください。この変数を設定すると、Claude Code はプレリリース機能とそれと組み合わされる `anthropic-beta` 値の送信を停止します。対象には次のものが含まれます：
+
+* コンテキスト管理とその `context_management` ボディフィールド
+* `strict` や `defer_loading` などのベータツールスキーマフィールド。標準の `name`、`description`、`input_schema`、`cache_control` ツールフィールドは残ります
+* 構造化出力の `output_config.format` フィールド。Claude Code v2.1.287 以降が必要です
+* `output_config.task_budget` フィールド
+* [MCP ツール検索](/docs/ja/mcp#scale-with-mcp-tool-search)。このため、組織が管理設定を通じて有効に保たない限り、すべての MCP ツールが事前に読み込まれます
+
+この変数はすべての `anthropic-beta` 値を削除するわけではありません。そのまま残るものには次のものがあります：
+
+* 拡張コンテキスト、インターリーブ思考、および努力の `anthropic-beta` 値（クラウドプロバイダーもこれらを受け入れます）
+* `output_config.effort` フィールド。これを拒否するアップストリームについては、[自動リトライとエラー転送](#automatic-retry-and-error-forwarding)を参照してください
+* 適応的推論の `thinking` フィールド（ベータヘッダーはありません）
+* サブスクリプション認証に必要な OAuth の `anthropic-beta` 値
+* 開発者が [`ANTHROPIC_BETAS`](/docs/ja/env-vars) または [`CLAUDE_CODE_EXTRA_BODY`](/docs/ja/env-vars) を通じて自分で追加したヘッダー値とボディフィールド
 
 ホストプラットフォームが Claude Code を埋め込み、[`CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST`](/docs/ja/env-vars) を設定する場合、`CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS` は Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、または [Claude apps ゲートウェイ](/docs/ja/claude-apps-gateway)上のオートモードセッションが [分類器レビュー](/docs/ja/permission-modes#server-side-classifier-review)をサーバーに要求するのを停止しません。そのレビューは `anthropic-beta` 値と `safeguards` リクエストフィールドを追加します。そこで停止するには `CLAUDE_CODE_AUTO_MODE_SERVER=0` を設定してください。
 

@@ -40,7 +40,7 @@ Claude Security プラグインは、Claude Code セッション内でコード�
   プラグインをインストールする
 </h2>
 
-Claude Code セッションで、[公式 Anthropic マーケットプレイス](/docs/ja/plugins/anthropic-marketplaces)からインストールします。
+VS Code 拡張機能またはデスクトップアプリでは、[プラグインをインストールする](/docs/ja/plugins/install#install-a-plugin)の手順に従ってインストールします。ターミナルでは、`claude` を実行して Claude Code を起動し、そのプロンプトで次のように入力して[公式 Anthropic マーケットプレイス](/docs/ja/plugins/anthropic-marketplaces)からインストールします。
 
 ```text theme={null}
 /plugin install claude-security@claude-plugins-official

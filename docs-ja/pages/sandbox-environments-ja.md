@@ -167,7 +167,7 @@ Claude Code は、独自のネットワークポリシー、マウントされ�
 
 複数のマネージドサンドボックスおよびリモート実行サービスがコンテナをホストできます。操作するコンテナと同じチェックリストが適用されます。書き込み可能にマウントされているもの、その内部で到達可能な認証情報とトークン、ネットワーク出力ポリシーが許可するものを確認します。
 
-コマンド単位の制限のためにコンテナ内に組み込みの Bash サンドボックスを重ねることができます。特権のないコンテナには、[サンドボックス化のトラブルシューティング](/docs/ja/sandboxing#troubleshooting)で説明されている nested-sandbox 設定が必要です。
+コマンド単位の制限のためにコンテナ内に組み込みの Bash サンドボックスを重ねることができます。特権のないコンテナには、[コンテナ内で Bubblewrap が起動しない](/docs/ja/sandboxing#bubblewrap-fails-to-start-inside-a-container)で説明されている `enableWeakerNestedSandbox` が必要です。
 
 <h2 id="virtual-machine">
   仮想マシン

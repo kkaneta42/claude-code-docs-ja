@@ -232,7 +232,7 @@ paths:
 - Include OpenAPI documentation comments
 ```
 
-`paths` フィールドのないルールは無条件にロードされ、すべてのファイルに適用されます。パススコープ付きルールは、すべてのツール使用時ではなく、Claude がパターンに一致するファイルを読むときにトリガーされます。マッチングは、Claude がプロジェクトディレクトリへのシンボリックリンクされたパスを通じてファイルに到達する場合（例えば、シンボリックリンクされたチェックアウト）にも機能します。
+`paths` フィールドのないルールは無条件にロードされ、すべてのファイルに適用されます。パススコープ付きルールは、すべてのツール使用時ではなく、Claude がパターンに一致するファイルに対して Read、Write、または Edit ツールを使用するときにトリガーされます。マッチングは、Claude がプロジェクトディレクトリへのシンボリックリンクされたパスを通じてファイルに到達する場合（例えば、シンボリックリンクされたチェックアウト）にも機能します。
 
 `paths` フィールドでグロブパターンを使用して、拡張子、ディレクトリ、またはそれらの組み合わせでファイルをマッチさせてください。
 
@@ -540,7 +540,16 @@ Claude はすべてのセッションで何かを保存するわけではあり�
 
 自動メモリはローカルセッションではデフォルトで有効です。[Claude Tag](https://claude.com/docs/claude-tag/overview) セッション以外では、[セルフホスト環境](/docs/ja/self-hosted-environments-configuration#how-each-session’s-config-is-assembled)のセッションはデフォルトで自動メモリがオフの状態で実行されます。
 
-切り替えるには、セッションで `/memory` を開き、自動メモリトグルを使用します。これにより `autoMemoryEnabled` が `~/.claude/settings.json` のユーザー設定に保存されます。単一のプロジェクトに対してオフにするには、そのプロジェクトの設定で `autoMemoryEnabled` を設定します。
+切り替えるには、セッションで `/memory` を開き、自動メモリトグルを使用します。これにより `autoMemoryEnabled` が `~/.claude/settings.json` のユーザー設定に保存されます。
+
+次のセッションでは、トグルで自動メモリをオフにすることはできますが、再びオンにすることはできません。
+
+* [バックグラウンドセッション](/docs/ja/agent-view)
+* 別の Claude Code セッションが開始したセッション（Claude が Bash ツールを通じて `claude` を実行した場合など）
+
+これらのセッションで自動メモリがオフの間、トグルには `off · can't be turned on here; use a session started outside Claude Code` と表示されます。自動メモリを再びオンにするには、ターミナルで直接 `claude` を実行し、そのセッションで `/memory` トグルを使用します。
+
+単一のプロジェクトに対してオフにするには、そのプロジェクトの設定で `autoMemoryEnabled` を設定します。
 
 ```json theme={null}
 {

@@ -198,12 +198,13 @@ Claude Code は、起動時に `--add-dir` で渡したディレクトリの `.c
   同じ名前のスキルを解決する
 </h3>
 
-2 つのスキルが同じ名前を共有する場合、各スキルがどこから来たかが、`/name` が実行するスキルを決定します。frontmatter `name` フィールドで設定された名前については、[スキルがコマンド名を取得する方法](#how-a-skill-gets-its-command-name) を参照してください。テーブルは、enterprise、personal、project、nested、plugin、および claude.ai の場所、バンドルされたスキル、およびコマンドファイルをカバーしています：
+2 つのスキルが同じディレクトリ名またはファイル名を共有する場合、各スキルがどこから来たかによって、`/name` がどちらを実行するかが決まります。フロントマターの `name` フィールドで設定された名前については、[スキルがコマンド名を取得する方法](#how-a-skill-gets-its-command-name) を参照してください。次の表は、enterprise、personal、project、nested、plugin、および claude.ai の場所、バンドルスキル、組み込みコマンド、およびコマンドファイルを対象としています：
 
 | 同じ名前の場所 | どのスキルが実行されるか |
 | :- | :- |
 | enterprise、personal、および project の 2 つ | Enterprise が personal より優先され、personal が project より優先されます。`~/.claude/skills/` とプロジェクトの `.claude/skills/` の両方に `deploy` がある場合、`/deploy` は personal スキルを実行します |
 | これらの場所のいずれかと [バンドルされたスキル](#bundled-skills) | あなたのスキルがバンドルされたコマンドを置き換えますが、そのエイリアスは置き換えません。プロジェクト `code-review` スキルは `/code-review` を置き換え、バンドルされたエイリアス `/review` はあなたのスキルを実行しません |
+| これらの場所のいずれかと [組み込みコマンド](/docs/ja/commands) | ローカルのターミナルセッションでは、自分のスキルが組み込みコマンドを置き換えますが、そのエイリアスは置き換えません。プロジェクトの `usage` スキルは `/usage` を置き換え、組み込みのエイリアス `/cost` は引き続き組み込みコマンドを実行します |
 | スキルと `.claude/commands/` 内のファイル | スキル |
 | プロジェクトルートスキルとネストされたスキル | 両方が読み込まれます。[monorepos と subdirectories](#discovery-from-parent-and-nested-directories) を参照してください |
 | プラグインスキルと上記の場所のいずれかのスキル | プラグインスキルは `/plugin-name:skill-name` として名前空間化されているため、両方が読み込まれます |
@@ -416,7 +417,7 @@ Claude Code はフロントマターを読み込むのは、開く `---` がフ�
 | `allowed-tools` | いいえ | このスキルを呼び出すターン中に Claude が許可を求めずに使用できるツール。許可はあなたが次のメッセージを送信するときにクリアされます。スペースまたはコンマ区切り文字列、または YAML リストを受け入れます。[スキルのツールを事前承認する](#pre-approve-tools-for-a-skill) を参照してください。 |
 | `disallowed-tools` | いいえ | このスキルがアクティブな間、Claude の利用可能なプールから削除されるツール。バックグラウンドループの `AskUserQuestion` など、自律的なスキルが特定のツールを呼び出すべきではない場合に使用します。スペースまたはコンマ区切り文字列、または YAML リストを受け入れます。制限はあなたが次のメッセージを送信するときにクリアされます。拒否ルールと同様に、他のツールが残っている間、フィールドは [`EndConversation`](/docs/ja/tools-reference#endconversation-tool-behavior) を削除できません。 |
 | `model` | いいえ | このスキルがアクティブな場合に使用するモデル。オーバーライドは現在のターンの残りに適用され、設定に保存されません。セッションモデルは次のプロンプトを送信するときに再開されます。[`/model`](/docs/ja/model-config) と同じ値、または `inherit` を受け入れてアクティブなモデルを保持します。組織の [`availableModels`](/docs/ja/model-config#restrict-model-selection) 許可リストで除外された値は使用されず、セッションは現在のモデルを保持します。[自動モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode) では、および [分類器がコマンドをレビューしている間の計画モード](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode) では、自動モードがサポートしないモデルも使用されず、セッションは現在のモデルを保持します。`context: fork` では、値は [フォークされたサブエージェントのモデル](#run-skills-in-a-subagent) を設定し、除外された値は [サブエージェントモデルオーバーライドと同じルール](/docs/ja/model-config#restrict-model-selection) に従います。 |
-| `effort` | いいえ | このスキルがアクティブな場合の [努力レベル](/docs/ja/model-config#adjust-effort-level)。セッション努力レベルをオーバーライドします。デフォルト：セッションから継承。オプション：`low`、`medium`、`high`、`xhigh`、`max`。利用可能なレベルはモデルに依存します。 |
+| `effort` | いいえ | このスキルがアクティブな場合の [effort レベル](/docs/ja/model-config#adjust-effort-level)。セッションの effort レベルを上書きします。省略した場合、レベルは [effort の解決順序](/docs/ja/model-config#adjust-effort-level) によって決まります。オプション：`low`、`medium`、`high`、`xhigh`、`max`。利用可能なレベルはモデルに依存します。 |
 | `context` | いいえ | フォークされたサブエージェントコンテキストで実行するために `fork` に設定します。[サブエージェントでスキルを実行する](#run-skills-in-a-subagent) を参照してください。 |
 | `agent` | いいえ | `context: fork` が設定されている場合に使用するサブエージェントタイプ。 |
 | `background` | いいえ | `context: fork` にのみ適用されます。スキルを呼び出すターンでフォークされたサブエージェントの結果を待つために `false` に設定します。[バックグラウンドで実行する](#run-skills-in-a-subagent) のではなく。デフォルト：`true`。Claude Code v2.1.218 以降が必要です。 |
@@ -664,7 +665,7 @@ Fix GitHub issue $ARGUMENTS following our coding standards.
 
 スキルに引数を指定して呼び出しても、スキルのコンテンツのプレースホルダーが 1 つも受け取らない場合、Claude Code は `ARGUMENTS: <your input>` をスキルコンテンツの最後に追加するため、Claude は依然として入力したものを見ます。プレースホルダーは `$ARGUMENTS`、`$1` などのインデックス形式、または名前付き引数です。対応する引数がないインデックス付きプレースホルダーはリテラルテキストのままで、1 つを受け取ったとしてカウントされません。名前付きプレースホルダーは、位置に引数がない場合でも、空の文字列に展開されるため、カウントされます。
 
-1 つのメッセージの開始時に複数のスキルをスタックすることもできます。`/write-tests /fix-issue 123` を入力すると、両方のスキルが読み込まれ、末尾のテキスト `123` が `$ARGUMENTS` として各スキルに渡されます。v2.1.199 より前では、最初のスキルのみが読み込まれ、`/fix-issue 123` をリテラル引数テキストとして受け取りました。
+1 つのメッセージの先頭に複数のスキルをスタックすることもできます。`/write-tests /fix-issue 123` と入力すると、両方のスキルが読み込まれ、末尾のテキスト `123` が `$ARGUMENTS` として各スキルに渡されます。
 
 Claude Code は最初のスキルと、その後にスタックされた最大 5 つのスキルを展開します。展開は、インラインユーザー呼び出し可能スキルではない最初のトークンで停止するため、[フォークされたサブエージェント](#run-skills-in-a-subagent) として実行されるスキル（[`/code-review`](/docs/ja/code-review#review-a-diff-locally) など）、またはその引数自体がスラッシュコマンドで始まる可能性があるスキル（`/loop` など）も、そこで実行を終了します。そのトークンとその後のすべてが、展開されたすべてのスキルの引数テキストになります。v2.1.218 から `/code-review` はフォークされたサブエージェントとして実行されます。以前のバージョンではインラインで実行され、スタックされました。
 
@@ -923,7 +924,7 @@ Claude Code は `allow` ルールをスキル独自の名前と Claude の呼び
 
 `/skills` メニューは `"user-invocable-only"` 状態を `user-only` とラベル付けします。
 
-v2.1.199 以降、`"off"` はターミナル `/` メニューに加えて、[Remote Control](/docs/ja/remote-control) クライアントと [Agent SDK](/docs/ja/agent-sdk/skills#discover-available-commands) 呼び出し元に宣伝されるコマンドリストからもスキルを非表示にします。修飾された名前でスキルを呼び出すと、引き続き実行する代わりに `skillOverrides` エラーが返されます。
+`"off"` は、ターミナルの `/` メニューに加えて、[Remote Control](/docs/ja/remote-control) クライアントと [Agent SDK](/docs/ja/agent-sdk/skills#discover-available-commands) 呼び出し元に公開されるコマンドリストからもスキルを非表示にします。非表示のスキルを完全な名前で呼び出すと、実行される代わりに `skillOverrides` エラーが返されます。
 
 `skillOverrides` に存在しないスキルは `"on"` として扱われます。以下の例は 1 つのスキルをその名前に折りたたみ、別のスキルを完全にオフにします。
 
@@ -971,7 +972,7 @@ v2.1.199 以降、`"off"` はターミナル `/` メニューに加えて、[Rem
   skill-creator でエバルを実行する
 </h3>
 
-[`skill-creator` プラグイン](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/skill-creator) は Claude Code 内の比較ループを自動化します。公式マーケットプレイスからインストールします。
+[`skill-creator` プラグイン](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/skill-creator) は Claude Code 内の比較ループを自動化します。VS Code 拡張機能またはデスクトップアプリでは、[プラグインをインストールする](/docs/ja/plugins/install#install-a-plugin) の手順に従って公式マーケットプレイスからインストールします。ターミナルでは、`claude` を実行して Claude Code を起動し、そのプロンプトで次のように入力します。
 
 ```text theme={null}
 /plugin install skill-creator@claude-plugins-official

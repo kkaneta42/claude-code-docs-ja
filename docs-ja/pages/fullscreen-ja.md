@@ -231,7 +231,7 @@ JetBrains IDE ターミナルでは、Claude Code は独自のスクロール処
   diff パネルで変更を監視する
 </h2>
 
-フルスクリーン レンダリングでは、[`/diff`](/docs/ja/interactive-mode#review-changes-with-%2Fdiff) はビューアーを閉じる必要がある代わりに、会話の横にパネルを開くため、Claude が作業している間に変更が蓄積されるのを監視できます。幅の広いターミナルでは、Claude がファイルの編集を開始すると、パネルが自動的に開くこともあります。[Diff パネル](/docs/ja/interactive-mode#diff-panel)は、それが表示する内容、パネルを閉じたままにする方法、および比較対象を変更する方法について説明しています。
+フルスクリーン レンダリングでは、[`/diff`](/docs/ja/interactive-mode#review-changes-with-%2Fdiff) は会話の横にパネルを開くため、Claude が作業している間に変更が蓄積されるのを監視できます。[Diff パネル](/docs/ja/interactive-mode#diff-panel)では、パネルに表示される内容、パネルが自動的に開くタイミング、パネルを閉じたままにする方法、および比較対象を変更する方法について説明しています。
 
 <h2 id="clear-the-conversation">
   会話をクリアする

@@ -576,10 +576,11 @@ claude --bg --exec 'pytest -x'
   ファイル編集の分離方法
 </h3>
 
-エージェントビュー、`/bg`、または `claude --bg` から開始されたすべてのバックグラウンドセッションは、ワーキングディレクトリで開始されます。ファイルを編集する前に、Claude はセッションを `.claude/worktrees/` の下の分離された [git worktree](/docs/ja/worktrees) に移動するため、並列セッションは同じチェックアウトを読み取ることができますが、それぞれが独自に書き込みます。セッションが worktree に入ると、Claude Code は [worktree 分離を強制します](/docs/ja/worktrees#how-claude-code-enforces-isolation) セッションおよびそれが生成するサブエージェント用。
+エージェントビューからバックグラウンドセッションをディスパッチするか、`claude --bg` で開始すると、セッションは作業ディレクトリで開始されます。ファイルを編集する前に、Claude はセッションを `.claude/worktrees/` の下にある分離された [git worktree](/docs/ja/worktrees) に移動します。これにより、並列セッションは同じチェックアウトを読み取りつつ、それぞれ独自の場所に書き込めます。セッションが worktree に入ると、Claude Code はそのセッションと、セッションが生成するすべてのサブエージェントに対して [worktree 分離を強制します](/docs/ja/worktrees#how-claude-code-enforces-isolation)。
 
 Claude は以下の場合に worktree をスキップします。
 
+* 既に開いていたセッションを `←` または `/background` で [バックグラウンドに移動した](#from-inside-a-session) 場合。そのセッションは、既に作業していた場所でファイルの編集を続けます
 * セッションが既にリンクされた git worktree 内にあります。Claude が `.claude/worktrees/` の下に作成したか、`git worktree add` で他の場所に作成したかに関係なく
 * Claude が編集しているファイルがリンクされた git worktree 内にあります。例えば、セッションまたはそのサブエージェントが `git worktree add` で作成したもの
 * ワーキングディレクトリが git リポジトリではなく、[`WorktreeCreate` フック](/docs/ja/hooks#worktreecreate) が設定されていません
@@ -597,11 +598,11 @@ git worktrees が実用的でないリポジトリの worktree 分離をオフ�
 
 git リポジトリの外では、セッションはワーキングディレクトリに直接書き込み、互いに分離されていないため、同じファイルを編集する並列セッションのディスパッチを避けてください。別のバージョン管理システムを使用する場合は、[`WorktreeCreate` フック](/docs/ja/worktrees#non-git-version-control) を設定し、Claude は git の場合と同じ方法で編集を分離します。
 
-フックが git リポジトリではないディレクトリで失敗する場合、Claude はそのディレクトリの分離をスキップし、ワーキングディレクトリをインプレースで編集します。git リポジトリ内では、Claude Code は Claude がセッションを worktree に移動するまで、共有チェックアウトへの書き込みをブロックします。
+git リポジトリではないディレクトリでフックが失敗した場合、Claude はそのディレクトリの分離をスキップし、作業ディレクトリをインプレースで編集します。git リポジトリ内では、編集前に Claude が worktree に移動させるセッションは、その移動が行われるまで共有チェックアウト内のファイルを編集できません。
 
 セッションの worktree パスを見つけるには、セッションをピークするか、アタッチしてそのワーキングディレクトリを確認します。
 
-バックグラウンドセッションが生成する [サブエージェント](/docs/ja/sub-agents) はセッションのワーキングディレクトリを継承するため、そのファイル編集はセッションの worktree に着地し、ワーキングコピーではなく。サブエージェントに独自の別の worktree を与えるには、フロントマターで [`isolation: worktree`](/docs/ja/sub-agents#supported-frontmatter-fields) を設定するか、生成時に `isolation: "worktree"` を渡します。
+バックグラウンドセッションが生成する [サブエージェント](/docs/ja/sub-agents) は、セッションの作業ディレクトリを継承します。セッションが worktree に入ると、サブエージェントのファイル編集は作業コピーではなくその worktree に反映されます。代わりにサブエージェントに独自の別の worktree を与えるには、そのフロントマターで [`isolation: worktree`](/docs/ja/sub-agents#supported-frontmatter-fields) を設定するか、生成時に `isolation: "worktree"` を渡します。
 
 バックグラウンドセッションが Claude が入った worktree でコード変更を行った場合、Claude Code は完了前に作業を保存するよう Claude に指示するため、セッションとその worktree を削除しても生き残ります。
 

@@ -204,7 +204,7 @@ Claude のコンテンツ検索はデフォルトで `.gitignore` を尊重す�
 
 大規模コードベースでは、シンボルが定義または使用されている場所を見つけることは、多くのファイル読み取りと grep 呼び出しを消費する可能性があります。[コード インテリジェンス プラグイン](/docs/ja/plugins/code-intelligence)は Claude を言語サーバーに接続して、ツリーをスキャンする代わりに、定義にジャンプしたり、参照を見つけたり、型エラーを直接表示したりできます。
 
-公式マーケットプレイスには TypeScript、Python、Go、Rust、その他の一般的な言語用のプラグインがあります。Claude Code セッション内で以下のコマンドを実行して TypeScript プラグインをインストールします。
+公式マーケットプレイスには TypeScript、Python、Go、Rust、その他の一般的な言語用のプラグインがあります。VS Code 拡張機能またはデスクトップアプリでは、[プラグインをインストールする](/docs/ja/plugins/install#install-a-plugin)の手順に従ってインストールします。ターミナルでは、`claude` を実行して Claude Code を起動し、そのプロンプトで以下を入力して TypeScript プラグインをインストールします。
 
 ```shell theme={null}
 /plugin install typescript-lsp@claude-plugins-official

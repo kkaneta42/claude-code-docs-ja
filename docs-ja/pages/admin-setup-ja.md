@@ -118,7 +118,7 @@ WSL 2 ユーティリティ VM 内のプロセスは、Windows 側のエンド�
 メンバーが claude.ai または Anthropic API を通じてサインインし、Claude Enterprise プランを使用している場合、何もデプロイせずに組織の管理者設定からモデルを管理することもできます。
 
 * [組織モデル制限](/docs/ja/model-config#organization-model-restrictions)：個別のモデルを無効にします。サーバー側で強制されます。
-* [組織デフォルトモデル](/docs/ja/model-config#organization-default-model)：新しいセッションが開始するモデルを設定します。ユーザーは、組織がデフォルトを強制しない限り変更できます。これは限定的な組織セットで利用可能です。Anthropic アカウントチームにお問い合わせください。
+* [組織デフォルトモデル](/docs/ja/model-config#organization-default-model)：新しいセッションが開始するモデルを設定します。メンバーは引き続きモデルを切り替えることができます。起動時にメンバーを組織のデフォルトに戻すには、そのセクションで説明されている上書きをオンにします。メンバーが選択できるモデルを制限するには、[組織モデル制限](/docs/ja/model-config#organization-model-restrictions)を使用します。
 * [組織エフォート制限](/docs/ja/model-config#organization-effort-limits)：ロールごとのエフォートレベルをキャップします。サーバー側で強制されます。
 
 これらの制御は、Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、または[AWS 上の Claude Platform](/docs/ja/claude-platform-on-aws)のセッションには到達しません。これらのプロバイダーでは、代わりにマネージド設定を使用してください。制限には `availableModels`、デフォルトには `model`、エフォートキャップには [`maxEffortLevel`](/docs/ja/settings-reference#maxeffortlevel) を使用します。

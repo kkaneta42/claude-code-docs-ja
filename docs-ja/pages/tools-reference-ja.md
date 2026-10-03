@@ -132,17 +132,17 @@ subagent の権限プロンプトが表示される場所は、foreground で実
 
 Claude は `AskUserQuestion` を使用して、決定や確認が必要な場合に複数選択肢の質問をします。オプションを選択して回答するか、`Other` 行またはメモフィールドを通じて独自のテキストを入力してください。
 
-独自のテキストを入力して回答する場合、Claude Code は中立的な表現で回答をリレーするため、Claude はあなたが書いたものに従い、最初に待機または説明するよう要求します。
+独自のテキストを入力して回答した場合、Claude Code は中立的な表現で回答を伝えるため、Claude は書かれた内容に従います。これには、待機や先に説明することを求める指示も含まれます。
 
 <h3 id="question-auto-continue-timeout">
   質問の自動継続タイムアウト
 </h3>
 
-質問は、あなたが回答するまで開いたままになります。回答しないままにした質問が最終的に閉じて Claude が あなたなしで続行できるようにしたい場合は、[`askUserQuestionTimeout`](/docs/ja/settings-reference#askuserquestiontimeout) 設定を `60s`、`5m`、または `10m` に設定します。これはユーザーの `settings.json` または `/config` の **Question auto-continue timeout** 行から設定できます。
+質問は、回答するまで開いたままになります。回答しないままにした質問が最終的に閉じて、Claude がユーザーを待たずに続行できるようにしたい場合は、[`askUserQuestionTimeout`](/docs/ja/settings-reference#askuserquestiontimeout) 設定を `60s`、`5m`、または `10m` に設定します。これはユーザーの `settings.json` または `/config` の **Question auto-continue timeout** 行から設定できます。
 
-質問がその期間入力なしで放置された後、ダイアログは自動的に閉じます。既に選択したオプションを送信し、Claude にあなたがキーボードから離れている可能性があることを伝えるため、Claude は独自の判断で進行し、後で再度質問できます。最後の 20 秒間のカウントダウンが表示されます。任意のキーを押してタイマーを再開します。フォーカスを報告するターミナルでは、ウィンドウに切り替えることでもタイマーが再開されます。
+質問がその期間入力なしで放置された後、ダイアログは自動的に閉じます。既に選択したオプションを送信し、ユーザーがキーボードから離れている可能性があることを Claude に伝えるため、Claude は独自の判断で進行し、後で再度質問できます。最後の 20 秒間はカウントダウンが表示されます。任意のキーを押してタイマーを再開します。ターミナルがウィンドウにフォーカスがあると報告している間は、タイマーはカウントダウンしません。
 
-タイムアウトは `AskUserQuestion` の複数選択肢の質問にのみ適用されます。権限プロンプト（計画承認を含む）は、アイドル時に自動解決されることはありません。
+Claude が[バックグラウンドセッション](/docs/ja/agent-view)で行った質問、[スクリーンリーダーモード](/docs/ja/accessibility)での質問、またはセッションが [Remote Control](/docs/ja/remote-control) に接続されている間の質問では、タイマーは開始されません。これらの質問は回答するまで待機します。タイムアウトは `AskUserQuestion` の複数選択肢の質問にのみ適用されます。権限プロンプト（計画承認を含む）は、アイドル時に自動解決されることはありません。
 
 <h2 id="bash-tool-behavior">
   Bash ツールの動作
@@ -174,7 +174,7 @@ Claude Code を起動する前に virtualenv または conda 環境をアクテ�
 * `BASH_DEFAULT_TIMEOUT_MS` — Claude がタイムアウトを渡さない場合のデフォルト。デフォルトでは 2 分です。
 * `BASH_MAX_TIMEOUT_MS` — デフォルトでは、Claude が要求するものを上限で制限します。有効な上限は 2 つの値の大きい方です。デフォルトでは 10 分です。
 
-バックグラウンドで実行される Claude が開始するコマンドの場合、`timeout` は代わりにコマンドがそこで実行される期間を設定し、[バックグラウンドコマンドの時間制限](#time-limit-for-background-commands)の下で説明されている別のデフォルトと最大値があります。[PowerShell ツール](#powershell-tool)は同じタイムアウトルールに従い、同じ 2 つの変数を読み取ります。
+[バックグラウンドコマンドの時間制限](#time-limit-for-background-commands)があるセッションでは、Claude がバックグラウンドで開始するコマンドの `timeout` は、代わりにコマンドがそこで実行できる期間を設定し、その制限独自のデフォルトと最大値が適用されます。[PowerShell ツール](#powershell-tool)は同じタイムアウトルールに従い、同じ 2 つの変数を読み取ります。
 
 <h4 id="output-limits">
   出力制限
@@ -209,10 +209,14 @@ Claude Code はコマンドの出力をコマンド実行中に作業ファイ�
   バックグラウンドコマンドの時間制限
 </h4>
 
-Bash および PowerShell バックグラウンドコマンドには時間制限があり、コマンドがバックグラウンドに入った時点からカウントされます。
+`-p` フラグを使用した実行、Agent SDK アプリケーション、CI ジョブ、クラウドセッションなど、無人で実行されるセッションでは、バックグラウンドの Bash および PowerShell コマンドに時間制限があります。ターミナル、デスクトップアプリ、または VS Code 拡張機能から作業するローカルセッションでは、バックグラウンドコマンドに時間制限はありません。
+
+時間制限には Claude Code v2.1.285 以降が必要です。v2.1.288 より前は、すべてのセッションで適用されていました。
+
+時間制限は、コマンドがバックグラウンドに入った時点からカウントされます。
 
 * Claude がバックグラウンドで開始するコマンドは 30 分、または Claude が `run_in_background` で渡す `timeout` を取得します。最大 2 時間まで。
-* フォアグラウンドで開始してからバックグラウンドに移動するコマンド。例えば `Ctrl+B` で、またはそのタイムアウトで、移動から 30 分を取得します。
+* フォアグラウンドで開始してからバックグラウンドに移動するコマンド（例えばそのタイムアウトで移動したもの）は、移動から 30 分を取得します。
 
 バックグラウンドコマンドが時間制限に達すると、Claude Code はそれを停止し、Claude に理由を伝えます。Claude は、作業がまだ必要な場合、より長い `timeout` でコマンドを再度開始できます。停止通知は `Background command "<description>" was stopped after reaching its background time limit` と読みます。
 
@@ -387,13 +391,13 @@ Claude Code は、言語サーバーを起動できないファイルの各 LSP 
 
 Monitor ツールは Claude がバックグラウンドで何かを監視し、会話を一時停止することなく変更時に反応することができます。Claude に以下のことを依頼できます。
 
-* ログファイルをテールして、エラーが表示されたらフラグを立てる
+* ログファイルをテールして、エラーが表示されたら警告する
 * PR または CI ジョブをポーリングして、ステータスが変更されたときに報告する
 * ディレクトリのファイル変更を監視する
 * 指定した長時間実行スクリプトからの出力を追跡する
 * WebSocket フィードに接続して、到着した各メッセージを報告する
 
-ほとんどの監視では、Claude は小さなスクリプトを作成し、バックグラウンドで実行し、到着した各出力行を受け取ります。イベントをプッシュするサーバーの場合、Claude はスクリプトを実行する代わりに [WebSocket](#websocket-source) を開くことができます。
+ほとんどの監視では、Claude は小さなスクリプトを作成し、バックグラウンドで実行し、到着した各出力行を受け取ります。既にイベントをプッシュしているサーバーの場合、Claude はスクリプトを実行する代わりに [WebSocket](#websocket-source) を開くことができます。
 
 同じセッションで作業を続けることができ、イベントが到着すると Claude が割り込みます。
 
@@ -401,13 +405,13 @@ Claude が開始するすべての監視には期限があります。デフォ�
 
 期限に達すると監視が終了します。Claude は 1 つの通知を受け取るため、必要に応じて監視を再度開始できます。
 
-Monitor をキャンセルするよう Claude に依頼するか、セッションを終了することで Monitor を停止できます。例えば `/tasks` から開始された Monitor を停止する [subagent](/docs/ja/sub-agents) を停止すると、それらの Monitor も一緒に停止します。
+Monitor をキャンセルするよう Claude に依頼するか、セッションを終了することで Monitor を停止できます。Monitor を開始した [サブエージェント](/docs/ja/sub-agents) を、例えば `/tasks` から停止すると、それらの Monitor も一緒に停止します。
 
-Monitor がコマンドを実行するとき、[Bash と同じ権限ルール](/docs/ja/permissions#tool-specific-permission-rules) を使用するため、Bash に設定した `allow` および `deny` パターンがここにも適用されます。[auto mode](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode) がアクティブな場合、Claude Code は `Monitor` 自体を名前に含む allow ルール、および [削除する他のブロード allow ルール](/docs/ja/permission-modes#how-the-classifier-evaluates-actions) を脇に置くため、分類器は Monitor コマンドを Bash コマンドと同じ方法で確認します。
+Monitor がコマンドを実行するとき、[Bash と同じ権限ルール](/docs/ja/permissions#tool-specific-permission-rules) を使用するため、Bash に設定した `allow` および `deny` パターンがここにも適用されます。[auto モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode) がアクティブな場合、Claude Code は `Monitor` 自体を名前に含む許可ルールを、[削除する他の広範な許可ルール](/docs/ja/permission-modes#how-the-classifier-evaluates-actions) とともに脇に置くため、分類器は Monitor コマンドを Bash コマンドと同じ方法で確認します。
 
-[WebSocket ソース](#websocket-source) には独自の承認プロンプトがあり、分類器も auto mode で決定します。
+[WebSocket ソース](#websocket-source) には独自の承認プロンプトがあり、auto モードではこれも分類器が決定します。
 
-このツールは Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry では利用できません。また、`DISABLE_TELEMETRY` または `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` が設定されている場合も利用できません。
+このツールは Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry では利用できません。また、`DISABLE_TELEMETRY` または `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` が設定されている場合も利用できません。Windows では、[Git Bash](/docs/ja/setup#set-up-on-windows) がインストールされている場合にのみこのツールを利用できます。
 
 プラグインは Claude に開始を依頼する代わりに、プラグインがアクティブな場合に自動的に開始される Monitor を宣言できます。[プラグイン Monitor](/docs/ja/plugins/components#monitors) を参照してください。
 
@@ -431,9 +435,9 @@ WebSocket 監視は `command` の代わりに `ws` 入力を取り、単一の M
 
 `timeout_ms` 期限は WebSocket 監視にも適用されます。監視は期限で終了し、`TaskStop` は早期にキャンセルします。
 
-WebSocket を開くと承認を求めるプロンプトが表示されます。[auto mode](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode) では分類器が代わりに決定します。プロンプトは同じホストの将来のプロンプトをスキップするオプションを提供しません。
+WebSocket を開くと承認を求めるプロンプトが表示されます。[auto モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode) では分類器が代わりに決定します。プロンプトは同じホストの将来のプロンプトをスキップするオプションを提供しません。
 
-Claude Code は、ホスト名が 1 つに解決される場合を含む、プライベート、リンク ローカル、またはクラウド メタデータ アドレスを指すURL を拒否します。また、`sandbox.network.deniedDomains` 内のホストも拒否し、マネージド設定で [`allowManagedDomainsOnly`](/docs/ja/settings-reference#sandbox-network-allowmanageddomainsonly) が設定されている場合、マネージド許可リスト外のホストも拒否します。
+Claude Code は、プライベート、リンク ローカル、またはクラウド メタデータ アドレスを指す URL を、それらのアドレスに解決されるホスト名も含めて拒否します。また、`sandbox.network.deniedDomains` 内のホストも拒否し、管理設定で [`allowManagedDomainsOnly`](/docs/ja/settings-reference#sandbox-network-allowmanageddomainsonly) が設定されている場合、管理された許可リスト外のホストも拒否します。
 
 <h2 id="notebookedit-tool-behavior">
   NotebookEdit ツールの動作
@@ -637,7 +641,7 @@ Claude Code はサブエージェントにツールを提供するのは、セ�
   WebFetch ツールの動作
 </h2>
 
-WebFetch は URL とそこから抽出する内容を説明するプロンプトを受け取ります。ページをフェッチし、サーバーが HTML を返した場合はレスポンスを Markdown に変換し、小型で高速なモデルを使用してコンテンツに対してプロンプトを実行します。ほとんどのフェッチでは、Claude はそのモデルの回答を受け取り、生のページではありません。変換ステップは設定できません。
+WebFetch は URL とそこから抽出する内容を説明するプロンプトを受け取ります。ページをフェッチし、サーバーが HTML を返した場合はレスポンスを Markdown に変換します。ほとんどのフェッチでは、その後、別のモデル呼び出しでコンテンツに対してプロンプトを実行し、Claude は生のページではなくその呼び出しの結果を受け取ります。変換ステップは設定できません。
 
 これにより WebFetch は設計上、情報損失が発生します。抽出プロンプトが Claude に到達する内容を決定するため、ページがあるものについて言及していないという結果は、単にプロンプトがそれについて尋ねなかったことを意味するだけかもしれません。Claude に別のより具体的なプロンプトでもう一度フェッチするよう依頼するか、Bash 経由で `curl` を使用して未処理のページを取得してください。
 
@@ -660,6 +664,8 @@ Manual および `acceptEdits` [権限モード](/docs/ja/permission-modes) で�
 プロンプトなしで事前にドメインを許可するには、`WebFetch(domain:example.com)` のような許可ルールを追加します。`WebFetch(domain:*)` はすべてのドメインを許可します。`auto` および `bypassPermissions` [権限モード](/docs/ja/permissions#permission-modes) はプロンプトをスキップします。ただし、明示的な `ask` ルールが一致するドメインは除きます。
 
 `deny`、`ask`、または `allow` の明示的な `WebFetch(domain:...)` ルールは事前承認セットより優先されるため、事前承認されたドメインをブロックするか、そのドメインに対してプロンプトを要求できます。
+
+URL が claude.ai の [アーティファクト](/docs/ja/artifacts) リンクである場合、Claude Code はアーティファクト自体を読み取るための承認を求めることもあります。承認を求めるケースについては、[共有されたアーティファクトを読む](/docs/ja/artifacts#read-an-artifact-shared-with-you) を参照してください。
 
 WebFetch は `Claude-User` で始まる `User-Agent` ヘッダーと、コンテンツネゴシエーションをサポートするサーバーが Markdown を直接返すことができるように HTML より Markdown を優先する `Accept` ヘッダーを設定します。
 

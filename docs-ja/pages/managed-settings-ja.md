@@ -157,17 +157,24 @@ Claude Code は、最初に最優先度の順でソースをチェックしま�
 1. リモート設定。claude.ai から[サーバー管理設定](/docs/ja/server-managed-settings)として、または[Claude アプリゲートウェイ](/docs/ja/claude-apps-gateway)によって配信されます。Claude Code は、セッションが[適格なログインまたはキー](/docs/ja/server-managed-settings#platform-availability)で Anthropic の API に直接認証するか、`/login` でゲートウェイにサインインする場合にのみこのソースをフェッチします。他のプロバイダー、または `ANTHROPIC_BASE_URL` が Anthropic の API 以外を指す場合、次のソースから開始します。
 2. MDM または OS レベルのポリシー: macOS plist または HKLM レジストリキー
 3. 管理設定ファイル、`managed-settings.d/*.json` と `managed-settings.json` をマージしたもの
-4. Windows 上の HKCU レジストリ、および WSL 上で HKLM レジストリまたは Windows 管理設定ファイルが [`wslInheritsWindowsSettings`](/docs/ja/settings-reference#wslinheritswindowssettings) をオンにし、HKCU 値もそれを設定する場合。Claude Code はそれより上に管理者ドキュメントが存在せず、[ホスト提供の親設定](#let-an-embedding-host-add-policy)が制限的なキーを提供しない場合にのみ読み取ります。
-
-<span id="present-admin-documents" />
-
-Claude Code は、存在する管理者ドキュメントの下にあるユーザーが書き込み可能な HKCU レジストリを適用しません。ドキュメントは、ポリシーキーを `null` 以外の値に設定する場合に存在します。これは Claude Code が読み取ることができない値でも同様です。読み取ることができない HKLM 値、管理設定ファイル、または `managed-settings.d` ディレクトリも存在します。WSL では、`/etc/claude-code` もユーザーが書き込み可能であり、[`wslInheritsWindowsSettings`](/docs/ja/settings-reference#wslinheritswindowssettings) エントリは Windows ドキュメントがそれより上に立つ場合を示します。
+4. Windows 上の HKCU レジストリ、および WSL 上で HKLM レジストリまたは Windows 管理設定ファイルが [`wslInheritsWindowsSettings`](/docs/ja/settings-reference#wslinheritswindowssettings) をオンにし、HKCU 値もそれを設定している場合の HKCU レジストリ。Claude Code は、[それより上に管理者ドキュメントが存在せず](#present-admin-documents)、[ホスト提供の親設定](#let-an-embedding-host-add-policy)が制限的なキーを提供しない場合にのみこれを読み取ります
 
 このダイアグラムはランク付けを示し、どちらの設定でも Claude Code が最初の 3 つのソースから読み取るクロスソースキーの例を示しています。
 
 <img src="https://mintcdn.com/claude-code/zuWID2B-Rxm8DEC8/images/managed-source-precedence.svg?fit=max&auto=format&n=zuWID2B-Rxm8DEC8&q=85&s=53f6be49f06eff48e01422c8ae1bc2e6" className="dark:hidden" alt="リモート設定から上部を通じて MDM、管理設定ファイル、および下部の HKCU レジストリにランク付けされた 4 つの管理設定ソースを示すダイアグラム。デフォルトではポリシーキーを持つ最初のソースがポリシーを提供し、残りはスキップされます。managedSourcesBehavior を merge に設定すると、ポリシーキーを持つすべての管理者ソースが寄与し、キーの種類ごとに組み合わされ、HKCU レジストリは除外されます。サイドパネルは、サンドボックスロック、forceRemoteSettingsRefresh、および変数ごとの env マージなどのクロスソースキーが、HKCU レジストリを除外するすべての管理者ソースから読み取られることを示しています。" width="680" height="330" data-path="images/managed-source-precedence.svg" />
 
 <img src="https://mintcdn.com/claude-code/zuWID2B-Rxm8DEC8/images/managed-source-precedence-dark.svg?fit=max&auto=format&n=zuWID2B-Rxm8DEC8&q=85&s=ae407a9a08a3d680e80cf1a2af845d71" className="hidden dark:block" alt="リモート設定から上部を通じて MDM、管理設定ファイル、および下部の HKCU レジストリにランク付けされた 4 つの管理設定ソースを示すダイアグラム。デフォルトではポリシーキーを持つ最初のソースがポリシーを提供し、残りはスキップされます。managedSourcesBehavior を merge に設定すると、ポリシーキーを持つすべての管理者ソースが寄与し、キーの種類ごとに組み合わされ、HKCU レジストリは除外されます。サイドパネルは、サンドボックスロック、forceRemoteSettingsRefresh、および変数ごとの env マージなどのクロスソースキーが、HKCU レジストリを除外するすべての管理者ソースから読み取られることを示しています。" width="680" height="330" data-path="images/managed-source-precedence-dark.svg" />
+
+<h3 id="present-admin-documents">
+  管理者ドキュメントが存在するとみなされる場合
+</h3>
+
+[管理されたソースのランク付け](#how-claude-code-combines-managed-sources)において、Claude Code は、存在する管理者ドキュメントの下にあるユーザーが書き込み可能な HKCU レジストリを決して適用しません。ドキュメントは次の場合に存在するとみなされます。
+
+* ポリシーキーを `null` 以外の値に設定している場合（Claude Code が読み取れない値であっても）
+* 存在するものの読み取れない HKLM 値、管理設定ファイル、または `managed-settings.d` ディレクトリである場合
+
+WSL では、`/etc/claude-code` もユーザーが書き込み可能であり、[`wslInheritsWindowsSettings`](/docs/ja/settings-reference#wslinheritswindowssettings) エントリに、Windows のドキュメントがそれより上に位置する場合が示されています。
 
 <h3 id="keys-read-from-every-admin-source">
   すべての管理者ソースから読み取られるキー

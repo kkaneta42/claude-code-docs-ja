@@ -104,13 +104,13 @@ Microsoft Foundry で Claude Code を構成する前に、以下を確認して�
 
 1. [Microsoft Foundry ポータル](https://ai.azure.com/)に移動します
 2. 新しいリソースを作成し、リソース名をメモします
-3. Claude モデルのデプロイメントを作成します。各デプロイメントに付与する名前をメモしてください。ステップ 4 でこれらの名前をモデル変数として設定します：
+3. Claude モデルのデプロイを作成します。各デプロイに付与する名前をメモしてください。ステップ 4 でこれらの名前をモデル変数として設定します：
 
    * Claude Opus
    * Claude Sonnet
    * Claude Haiku
 
-   デプロイメントを構成する際に、[ホスティングオプション](https://platform.claude.com/docs/en/build-with-claude/claude-in-microsoft-foundry#hosting-options)も選択します。これにより、推論が Azure で実行されるか、Anthropic インフラストラクチャで実行されるかが決まります。
+   デプロイを設定する際に、[ホスティングオプション](https://platform.claude.com/docs/en/build-with-claude/claude-in-microsoft-foundry#hosting-options)も選択します。これにより、推論が Azure で実行されるか、Anthropic インフラストラクチャで実行されるかが決まります。
 
 <h3 id="2-configure-azure-credentials">
   2) Azure 認証情報を構成する
@@ -172,17 +172,19 @@ export ANTHROPIC_FOUNDRY_RESOURCE={resource}
 # export ANTHROPIC_FOUNDRY_BASE_URL=https://{resource}.services.ai.azure.com/anthropic
 ```
 
+`ANTHROPIC_FOUNDRY_RESOURCE` には、`my-resource` のようにリソース名のみを設定します。URL やホスト名を設定した場合、メッセージを送信した時点で Claude Code は[それを拒否します](/docs/ja/errors#anthropic-foundry-resource-must-be-a-foundry-resource-name)。
+
 <h3 id="4-pin-model-versions">
   4. モデルバージョンをピン留めする
 </h3>
 
 <Warning>
-  すべてのデプロイメントに対して特定のモデルバージョンをピン留めしてください。ピン留めなしでは、`sonnet` や `opus` などのモデルエイリアスが Claude Code の Foundry 用の組み込みデフォルトに解決されます。これは最新リリースより遅れている可能性があり、アカウントでまだ利用できない場合があります。Foundry にはスタートアップモデルチェックがないため、デフォルトが利用できない場合、リクエストは失敗します。Azure デプロイメントを作成するときは、「最新に自動更新」ではなく、特定のモデルバージョンを選択してください。
+  すべてのデプロイに対して特定のモデルバージョンをピン留めしてください。ピン留めなしでは、`sonnet` や `opus` などのモデルエイリアスが Claude Code の Microsoft Foundry 用の組み込みデフォルトに解決されます。これは最新リリースより遅れている可能性があり、アカウントでまだ利用できない場合があります。Microsoft Foundry にはスタートアップモデルチェックがないため、デフォルトが利用できない場合、リクエストは失敗します。Azure デプロイを作成するときは、「最新に自動更新」ではなく、特定のモデルバージョンを選択してください。
 </Warning>
 
-モデル変数をステップ 1 で作成したデプロイメント名と一致するように設定します。
+モデル変数をステップ 1 で作成したデプロイ名と一致するように設定します。
 
-`ANTHROPIC_DEFAULT_OPUS_MODEL` がない場合、Foundry の `opus` エイリアスは Opus 4.6 に解決されます。より新しい Opus モデル（Opus 4.8 など）の ID に設定します：
+`ANTHROPIC_DEFAULT_OPUS_MODEL` がない場合、Microsoft Foundry の `opus` エイリアスは Opus 4.6 に解決されます。より新しい Opus モデル（Opus 4.8 など）の ID に設定します：
 
 ```bash theme={null}
 export ANTHROPIC_DEFAULT_OPUS_MODEL='claude-opus-4-8'
@@ -190,17 +192,17 @@ export ANTHROPIC_DEFAULT_SONNET_MODEL='claude-sonnet-5'
 export ANTHROPIC_DEFAULT_HAIKU_MODEL='claude-haiku-4-5'
 ```
 
-セッションタイトル生成などのバックグラウンドタスクは、通常は Haiku クラスモデルである小型/高速モデルを使用します。Foundry では、すべてのアカウントが Haiku デプロイメントを持っているわけではないため、Claude Code はこれをプライマリモデルにデフォルト設定します。バックグラウンドタスクに Haiku を使用するには、上記のように、アカウントで利用可能な Haiku デプロイメントに `ANTHROPIC_DEFAULT_HAIKU_MODEL` を設定します。
+セッションタイトル生成などのバックグラウンドタスクは、通常は Haiku クラスモデルである小型/高速モデルを使用します。Microsoft Foundry では、すべてのアカウントが Haiku デプロイを持っているわけではないため、Claude Code はこれをプライマリモデルにデフォルト設定します。バックグラウンドタスクに Haiku を使用するには、上記のように、アカウントで利用可能な Haiku デプロイに `ANTHROPIC_DEFAULT_HAIKU_MODEL` を設定します。
 
-現在および従来のモデル ID については、[モデル概要](https://platform.claude.com/docs/en/about-claude/models/overview)を参照してください。環境変数の完全なリストについては、[モデル構成](/docs/ja/model-config#pin-models-for-third-party-deployments)を参照してください。
+現在および従来のモデル ID については、[モデル概要](https://platform.claude.com/docs/en/about-claude/models/overview)を参照してください。環境変数の完全なリストについては、[モデル設定](/docs/ja/model-config#pin-models-for-third-party-deployments)を参照してください。
 
-[プロンプトキャッシング](/docs/ja/prompt-caching)は自動的に有効になります。デフォルトの 5 分ではなく 1 時間のキャッシュ TTL をリクエストするには、以下の変数を設定します。1 時間の TTL でのキャッシュ書き込みはより高いレートで課金されます：
+[プロンプトキャッシュ](/docs/ja/prompt-caching)は自動的に有効になります。デフォルトの 5 分ではなく 1 時間のキャッシュ TTL をリクエストするには、以下の変数を設定します。1 時間の TTL でのキャッシュ書き込みはより高いレートで課金されます：
 
 ```bash theme={null}
 export ENABLE_PROMPT_CACHING_1H=1
 ```
 
-メインの会話と Claude Code が実行するリクエストで異なる TTL を設定するには、[TTL を自分で選択](/docs/ja/prompt-caching#choose-the-ttl-yourself)してください。
+メインの会話と、Claude Code がその外部で実行するリクエストとで異なる TTL を設定するには、[TTL を自分で選択](/docs/ja/prompt-caching#choose-the-ttl-yourself)してください。
 
 <h3 id="5-run-claude-code">
   5. Claude Code を実行する
@@ -212,9 +214,9 @@ export ENABLE_PROMPT_CACHING_1H=1
 claude
 ```
 
-Claude Code は環境から `CLAUDE_CODE_USE_FOUNDRY` およびその他の Foundry 変数を読み込み、最初のプロンプトで Azure リソースに接続します。Amazon Bedrock および Google Cloud の Agent Platform とは異なり、Foundry には対話型セットアップウィザードがないため、ステップ 3 およびステップ 4 の環境変数が唯一の構成パスです。
+Claude Code は環境から `CLAUDE_CODE_USE_FOUNDRY` およびその他の Microsoft Foundry 変数を読み込み、最初のプロンプトで Azure リソースに接続します。Amazon Bedrock および Google Cloud の Agent Platform とは異なり、Microsoft Foundry には対話型セットアップウィザードがないため、ステップ 3 およびステップ 4 の環境変数が唯一の設定方法です。
 
-セットアップを確認するには、Claude Code 内で `/status` を実行します。API プロバイダー行に `Microsoft Foundry` が表示され、構成したリソース名またはベース URL が表示されます。
+セットアップを確認するには、Claude Code 内で `/status` を実行します。API プロバイダー行に `Microsoft Foundry` が表示され、設定したリソース名またはベース URL が表示されます。
 
 <h2 id="azure-rbac-configuration">
   Azure RBAC 構成

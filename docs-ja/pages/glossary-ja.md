@@ -368,7 +368,7 @@ Claude Code がその設定をロードする前に、ディレクトリを受�
   Rules
 </h3>
 
-`.claude/rules/` のモジュール化された指示ファイル。CLAUDE.md と一緒にロードされます。ルールは YAML `paths:` frontmatter でパススコープできるため、Claude が一致するファイルを読み取るときのみロードされ、関連になるまでコンテキストを精力的に保ちます。
+`.claude/rules/` 内のモジュール化された指示ファイルで、CLAUDE.md と一緒にロードされます。ルールは YAML フロントマターの `paths:` でパススコープを設定できます。これにより、Claude が一致するファイルを読み取る、書き込む、または編集するときにのみロードされ、関連するまではコンテキストを軽量に保てます。
 
 詳細情報: [Organize rules with `.claude/rules/`](/docs/ja/memory#organize-rules-with-claude/rules/)
 

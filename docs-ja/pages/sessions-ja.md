@@ -27,9 +27,20 @@
 
 Claude Code は [`claude -p`](/docs/ja/headless)または [Agent SDK](/docs/ja/agent-sdk/overview)で作成されたセッションをセッションピッカーから除外し、`claude --continue` からも除外します。セッション ID を `claude --resume <session-id>` に渡すことで再開できます。`claude --continue` を使用する場合、Claude Code は [最初のプロンプトが `/loop` だったセッション](#where-the-session-picker-looks)もスキップします。[`claude -p --continue`](/docs/ja/headless#continue-conversations)を実行すると、Claude Code は `-p`、SDK、および `/loop` セッションを含めます。
 
+`claude --resume <session-id>` は任意のディレクトリから実行できるため、別の場所で開始されたセッションや [`/cd`](/docs/ja/commands)で移動したセッションも再開できます。Claude Code は次の順序で ID を検索します。
+
+1. 現在のプロジェクトディレクトリとその git worktree
+2. このマシン上の他のすべてのプロジェクト
+
+プロジェクト横断の検索では、その ID のメッセージを含むトランスクリプトを保持している他のプロジェクトがちょうど 1 つの場合にのみ ID が解決されます。そのため、手動でコピーされた重複がある場合、Claude Code は任意のコピーを再開するのではなく、見つからないと報告します。保存されたセッションが ID と一致しない場合、Claude Code は `No conversation found with session ID: <session-id>` と報告します。
+
+v2.1.223 より前は、検索は現在のプロジェクトディレクトリとその git worktree で止まっていたため、セッションが最後に作業していたディレクトリから再開する必要がありました。
+
 `claude --continue` は完了した [バックグラウンドセッション](/docs/ja/agent-view)を開きますが、実行中のセッションは開きません。完了したバックグラウンドセッションを開くには Claude Code v2.1.257 以降が必要です。最新の会話が [バックグラウンドに移動した](/docs/ja/agent-view#send-the-session-to-the-background)セッションで、そこで実行中の場合、Claude Code は `Your most recent conversation is running in the background` と終了し、そのセッションの ID を表示します。[`claude agents`](/docs/ja/agent-view#attach-to-a-session)からセッションにアタッチするか、`claude --resume` を実行して別のセッションを選択します。
 
-<span id="resume-a-running-background-session" />
+<h3 id="resume-a-running-background-session">
+  実行中のバックグラウンドセッションを再開する
+</h3>
 
 `claude --resume` または `/resume` で再開する会話が、実行中の [バックグラウンドセッション](/docs/ja/agent-view)に属する場合、Claude Code は実行中のセッション自体を開きます。コマンドラインで `--bg` を使用すると、再開は [バックグラウンドディスパッチ](/docs/ja/agent-view#from-your-shell)になります。v2.1.285 より前は、Claude Code は拒否し、`claude attach <id>` でセッションを開くか、`claude stop <id>` で最初に停止するよう指示していました。
 
@@ -46,8 +57,6 @@ Claude Code は [`claude -p`](/docs/ja/headless)または [Agent SDK](/docs/ja/a
 
   `/` または `!` で始まるプロンプトは送信されず、セッションが質問への回答を待っている間のプロンプトも送信されません。どちらの場合も Claude Code はセッションを開かず、メッセージには `Your prompt was not sent to it` と理由が含まれます。
 * **セッション内から**：`/resume` は現在の会話をバックグラウンドに移動し、このターミナルを実行中のセッションにアタッチし、`Opening "<title>", running in the background (<id>)` を出力します。空のプロンプトで `←` を押すとエージェントビューに戻ります。これは、残した会話もリストします。現在の会話がバックグラウンドに移動できない場合（例えば、バックグラウンドセッションにすでにアタッチしている場合、またはセッション永続性がオフの場合）、`/resume` は代わりに実行する `claude attach` コマンドを出力します。
-
-任意のディレクトリから `claude --resume <session-id>` を実行できます。Claude Code は現在のプロジェクトディレクトリとその git worktrees でまず ID を検索し、次にこのマシン上の他のすべてのプロジェクトで検索するため、他の場所で開始されたセッションや [`/cd`](/docs/ja/commands)で移動したセッションを見つけます。クロスプロジェクト検索は、正確に 1 つの他のプロジェクトがそれのメッセージを含むトランスクリプトを保持している場合にのみ ID を解決するため、手動でコピーされた重複は Claude Code が見つからないと報告し、任意のコピーを再開するのではなく、見つかりません。保存されたセッションが ID と一致しない場合、Claude Code は `No conversation found with session ID: <session-id>` と報告します。v2.1.223 より前は、ルックアップは現在のプロジェクトディレクトリとその git worktrees で停止したため、セッションが最後に機能していたディレクトリから再開する必要がありました。
 
 <h3 id="what-a-resumed-session-restores">
   再開されたセッションが復元するもの
@@ -290,7 +299,7 @@ claude -p --resume <session-id> --output-format json "summarize what we changed"
   セッションデータを削除する
 </h3>
 
-トランスクリプトは [保持スイープルール](/docs/ja/claude-directory#cleaned-up-automatically) に基づいて期限切れになります。プロジェクトのトランスクリプトと関連する状態をより早く削除するには、[`claude project purge`](/docs/ja/claude-directory#clear-local-data) を実行してください。[`claude rm <id>`](/docs/ja/agent-view#what-deleting-a-session-removes) で [バックグラウンドセッション](/docs/ja/agent-view) を削除した場合、そのトランスクリプトはディスク上に残り、`claude --resume` を通じて利用可能なままです。
+トランスクリプトは[保持スイープルール](/docs/ja/claude-directory#cleaned-up-automatically)に基づいて期限切れになります。プロジェクトのトランスクリプトと関連する状態をより早く削除するには、[`claude purge`](/docs/ja/claude-directory#clear-local-data) を実行してください。[`claude rm <id>`](/docs/ja/agent-view#what-deleting-a-session-removes) で[バックグラウンドセッション](/docs/ja/agent-view)を削除した場合、そのトランスクリプトはディスク上に残り、`claude --resume` を通じて利用可能なままです。
 
 <h3 id="name-the-project-directory-yourself">
   プロジェクトディレクトリに自分で名前を付ける
