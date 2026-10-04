@@ -371,7 +371,7 @@ Claude Code は起動するたびにランタイムを選択し、終了する�
 
 v2 では、Claude Code も：
 
-* HTTP サーバーに新しいリビジョンをサポートするかどうかを尋ね、それをサポートするサーバーで使用します。フィーチャーフラグを取得するセッションで claude.ai コネクタサーバーにも尋ねます。Stdio サーバーに尋ねるか、すべてのセッションでコネクタサーバーに尋ねるには、[`MCP_PROTOCOL_NEGOTIATION`](/docs/ja/env-vars) を `auto` に設定してください。他のすべてのサーバーに v1 のように接続します。
+* HTTP サーバーに新しいリビジョンをサポートするかどうかを尋ね、それをサポートするサーバーで使用します。フィーチャーフラグを取得するセッションでは claude.ai コネクタサーバーにも尋ね、Claude Code v2.1.285 以降では Anthropic がその変更を段階的に展開するにつれて stdio サーバーにも尋ねます。すべてのセッションでコネクタサーバーと stdio サーバーに尋ねるようにするには、[`MCP_PROTOCOL_NEGOTIATION`](/docs/ja/env-vars) を `auto` に設定してください。他のすべてのサーバーに v1 のように接続します。
 * 新しいリビジョンのサーバーから [保持するストリーム](#notification-streams-on-the-v2-runtime) 上で `list_changed` 通知を受け取ります。
 * 新しいリビジョンで接続する [チャネル](#push-messages-with-channels) サーバーを登録しません。そのリビジョンはチャネルメッセージを運ぶことができないためです。
 * 予期しない発行者を示す認可応答の [MCP OAuth サインイン](#authenticate-with-remote-mcp-servers) を失敗させます。
@@ -456,7 +456,9 @@ Claude Code が接続に失敗した設定されたサーバーについて Clau
 
 MCP サーバーはまた、CI 結果、監視アラート、チャットメッセージなどの外部イベントに Claude が反応できるようにメッセージをセッションに直接プッシュできます。これを有効にするには、サーバーが `claude/channel` 機能を宣言し、起動時に `--channels` フラグでオプトインします。[チャネル](/docs/ja/channels) を使用して公式にサポートされているチャネルを使用するか、[チャネルリファレンス](/docs/ja/channels-reference) を参照して独自に構築してください。
 
-[v2 ランタイム](#mcp-client-runtimes) では、[`MCP_PROTOCOL_NEGOTIATION`](/docs/ja/env-vars) を `auto` に設定し、チャネルサーバーが MCP プロトコルリビジョン 2026-07-28 をネゴシエートする場合、チャネルメッセージを配信できないため、Claude Code はそれをチャネルとして登録しません。変数を設定しないままにするか、`legacy` に設定すると、stdio サーバーは以前のハンドシェイクのままになります。
+[v2 ランタイム](#mcp-client-runtimes) では、MCP プロトコルリビジョン 2026-07-28 をネゴシエートするチャネルサーバーはチャネルメッセージを配信できないため、Claude Code はそれをチャネルとして登録しません。そのリビジョンをサポートしないチャネルサーバーは以前のハンドシェイクで接続し、従来どおり登録されます。
+
+[`MCP_PROTOCOL_NEGOTIATION`](/docs/ja/env-vars) を `auto` に設定すると、Claude Code は stdio サーバーにそのリビジョンを尋ねます。Anthropic は、Claude Code が [フィーチャーフラグを取得](/docs/ja/env-vars#features-that-need-feature-flag-fetching) するセッションで、Claude Code v2.1.285 以降を対象にこれをデフォルトでオンにしつつあります。stdio チャネルサーバーを以前のハンドシェイクのままにするには、`MCP_PROTOCOL_NEGOTIATION` を `legacy` に設定してください。これにより、すべてのサーバーが以前のハンドシェイクのままになります。
 
 <Tip>
   ヒント：

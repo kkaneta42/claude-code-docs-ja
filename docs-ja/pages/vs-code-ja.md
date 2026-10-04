@@ -36,6 +36,8 @@ IDE のリンクをクリックして直接インストールします。
 
 または、VS Code で `Cmd+Shift+X`（Mac）または `Ctrl+Shift+X`（Windows/Linux）を押して拡張機能ビューを開き、「Claude Code」を検索して、**インストール**をクリックします。
 
+拡張機能のバージョン番号は、同梱されている Claude Code のバージョンです。たとえば、Claude Code v2.1.286 以降を必要とする機能には、拡張機能のバージョン 2.1.286 以降が必要です。拡張機能のバージョンは拡張機能ビューに表示されます。
+
 拡張機能は Devin Desktop や Kiro などの他の VS Code フォークにもインストールされます。エディタの拡張機能ビューで「Claude Code」を検索するか、[Open VSX レジストリ](https://open-vsx.org/extension/Anthropic/claude-code)からインストールしてください。エディタが拡張機能をインストールできない場合は、[CLI](/docs/ja/quickstart) をインストールして、統合ターミナルで `claude` を実行してください。CLI はどのターミナルでも動作します。
 
 <Note>インストール後に拡張機能が表示されない場合は、VS Code を再起動するか、コマンドパレットから「Developer: Reload Window」を実行してください。</Note>
@@ -159,6 +161,9 @@ Claude Code でできることについてのアイデアについては、[一�
     組織のポリシーが製品フィードバックをオフにしている場合、**Report a problem** はメニューに表示されず、`/bug` と `/feedback` はレポートを開く代わりに `Feedback is turned off by your organization's policy or this environment's settings.` という通知を表示します。Claude Code v2.1.284 以降では、`DISABLE_FEEDBACK_COMMAND` または `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` 環境変数を設定した場合、フィードバックもオフになり、レポートを開くとその通知が表示されます。
 * **サイドクエスチョン**: `/btw` の後に質問を入力して、[会話に追加せずに](/docs/ja/interactive-mode#side-questions-with-%2Fbtw)セッションについて質問します。答えはチャットの横のパネルで開き、そこでフォローアップの質問をすることができます。スレッドはウィンドウの再読み込みを通じて保持されます。Claude Code は最新の 20 回の交換を保持し、Claude Code が[保持期間を安全に判断できる](/docs/ja/claude-directory#cleaned-up-automatically)限り、[`cleanupPeriodDays`](/docs/ja/settings-reference#cleanupperioddays)スケジュールに従って保存されたスレッドを期限切れにします。スレッドをクリアするには、パネルのゴミ箱アイコンをクリックします。Claude Code v2.1.227 以降が必要です。
 * **応答をコピー**: 応答にマウスを置いて **Copy response** をクリックしてクリップボードにコピーするか、`/copy` を入力して最新の応答をコピーします。`/copy 2` は 2 番目に新しい応答をコピーします。Claude Code v2.1.277 以降が必要です。
+* **ブックマーク**: 応答にマウスを置いて **Bookmark response** をクリックして保存するか、保存された応答で **Remove bookmark** をクリックして削除します。
+
+  保存された応答を確認するには、Bookmarks パネルを開きます。Claude Code パネルの上部にあるブックマークアイコンをクリックするか、コマンドメニューの Context セクションで **Bookmarks** を選択するか、`/bookmarks` を入力します。Claude Code v2.1.286 以降が必要です。
 * **コンテキスト表示**: プロンプトボックスは Claude のコンテキストウィンドウをどの程度使用しているかを表示します。Claude は必要に応じて自動的にコンパクトにするか、`/compact` を手動で実行できます。
 * **プロンプトキャッシュクロック**: コンテキスト表示の横にある時計アイコンは、会話の[プロンプトキャッシュ](/docs/ja/prompt-caching)が期限切れになるまでの時間を推定します。キャッシュの 5 分または 1 時間の[有効期限](/docs/ja/prompt-caching#cache-lifetime)からカウントダウンし、キャッシュを使用する各応答がカウントダウンを再開します。コンパクション以外に、[キャッシュを無効にするアクション](/docs/ja/prompt-caching#actions-that-invalidate-the-cache)はクロックをリセットしないため、モデルを切り替えた後も残り時間を表示できます。
   * カウントダウンが終了するまで、アイコンは **12m** などの残り時間を表示します。
@@ -171,6 +176,8 @@ Claude Code でできることについてのアイデアについては、[一�
   マップは、バックグラウンドシェルコマンドや[モニター](/docs/ja/tools-reference#monitor-tool)などのセッションの他の[バックグラウンドタスク](/docs/ja/tools-reference#background-commands)もエージェントの下に一覧表示します。行をクリックしてタスクのカードを開き、そこで停止します。
 
   エージェント数が表示されていない場合（Claude がバックグラウンドシェルを開始したがサブエージェントがない場合など）にマップを開くには、プロンプトボックスで `/tasks` を入力します。マップ内のバックグラウンドタスクと入力された `/tasks` には Claude Code v2.1.277 以降が必要です。
+
+  Claude Code v2.1.286 以降では、**Stop** をクリックするか `Esc` を押すと、現在のターンが終了します。バックグラウンドエージェントは、完了するかマップから停止するまで実行を続けます。
 * **拡張思考**: Claude が複雑な問題を推論するためにより多くの時間を費やすことができます。コマンドメニュー（`/`）経由でオンに切り替えます。Claude の推論は会話に折りたたまれたブロックとして表示されます。ブロックをクリックして読むか、`Ctrl+O` を押してセッション内のすべての思考ブロックを展開または折りたたみます。詳細については、[拡張思考](/docs/ja/model-config#extended-thinking)を参照してください。
 * **複数行入力**: `Shift+Enter` を押して、送信せずに新しい行を追加します。これは質問ダイアログの「その他」フリーテキスト入力でも機能します。
 

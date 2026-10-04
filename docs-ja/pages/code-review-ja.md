@@ -302,11 +302,14 @@ PR 作成後に 1 回または手動モードでは、`@claude review always` �
 
 レビューを再度実行するには、PR で `@claude review` とコメントしてください。これは PR を今後のプッシュにサブスクライブせずに新しいレビューを開始します。PR が [フォークから](#review-pull-requests-from-forks) のものでない場合、GitHub の Checks タブの **Claude Code Review** チェックで **Re-run** をクリックすることもできます。再実行も PR をサブスクライブせずに新しいレビューを開始します。
 
-<h3 id="review-didn’t-run-and-the-pr-shows-a-spend-cap-message">
-  レビューが実行されず、PR が支出上限メッセージを表示する
+<h3 id="review-didn’t-run-and-the-pr-shows-a-budget-message">
+  レビューが実行されず、PR に予算に関するメッセージが表示される
 </h3>
 
-組織の月次支出上限に達すると、Code Review は PR に単一のコメントを投稿し、レビューがスキップされたことを説明します。レビューは次の請求期間の開始時に自動的に再開されるか、管理者が [claude.ai/admin-settings/usage](https://claude.ai/admin-settings/usage) で上限を引き上げるとすぐに再開されます。
+組織の Code Review の月次支出上限に達した場合、または使用クレジットの残高を使い切った場合、Code Review はレビューをスキップし、PR に単一のコメントを投稿します。コメントとチェック実行カードの両方に原因が示され、管理者が問題を解決するための管理ページへのリンクが記載されます：
+
+* **支出上限に達した場合**: レビューは次の請求期間の開始時に再開されるか、管理者が [claude.ai/admin-settings/usage](https://claude.ai/admin-settings/usage) で上限を引き上げるとすぐに再開されます
+* **使用クレジットを使い切った場合**: 管理者が [claude.ai/admin-settings/usage](https://claude.ai/admin-settings/usage) で [使用クレジット](https://support.claude.com/en/articles/12429409-extra-usage-for-paid-claude-plans) を追加すると、レビューが再開されます
 
 <h3 id="find-issues-that-aren’t-showing-as-inline-comments">
   インラインコメントとして表示されていない問題を見つける
@@ -322,7 +325,7 @@ PR 作成後に 1 回または手動モードでは、`@claude review always` �
   ローカルで差分をレビューする
 </h2>
 
-[`/code-review` コマンド](/docs/ja/commands)はターミナルで差分をレビューし、GitHub App をインストールせずに実行します。正確性バグと再利用、簡素化、効率化のクリーンアップを報告します。
+[`/code-review` コマンド](/docs/ja/commands)はターミナルで差分をレビューし、GitHub App をインストールせずに実行します。正確性バグを報告します。モデルと effort レベルによっては、レビューは再利用、簡素化、効率化のクリーンアップも対象にします。
 
 `/review` は `/code-review` のエイリアスです。v2.1.223 より前は、GitHub プルリクエストの単一パス読み取り専用レビューを実行する別のコマンドでした。
 

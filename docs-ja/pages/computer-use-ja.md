@@ -210,7 +210,7 @@ CLI と Desktop サーフェスは同じコンピュータ使用エンジンを�
 | 機能 | Desktop | CLI |
 | :- | :- | :- |
 | プラットフォーム | macOS と Windows | macOS のみ |
-| 有効化 | **Settings > General** のトグル（**Desktop app** の下） | `/mcp` で `computer-use` を有効化 |
+| 有効化 | **Settings > This computer > System** のトグル | `/mcp` で `computer-use` を有効化 |
 | 拒否されたアプリリスト | 設定で設定可能 | まだ利用できません |
 | 自動非表示トグル | オプション | 常にオン |
 | Dispatch 統合 | Dispatch で生成されたセッションはコンピュータ使用を使用できます | 適用されません |

@@ -172,7 +172,7 @@ Claude Code は、チームメンバーに対して選択したモデルを、�
 * **`opus` などのファミリーエイリアス**：Anthropic API および AWS 上の Claude Platform では、Claude Code はチームメンバーを許可リストが許可するそのファミリーの最新バージョンで実行します。プロバイダー固有のモデル ID を持つプロバイダーでは、[代替が動作しない](/docs/ja/model-config#restrict-model-selection)場合、ブロックされたエイリアスは次の箇条書きに従って他のブロックされた値のようにフォールバックします。
 * **プロバイダー固有のモデル ID を持つプロバイダーで代替が動作しないファミリーエイリアス、またはそのファミリーに許可されたバージョンがないもの、またはその他のブロックされた値**：Claude Code はチームメンバーをリーダーのモデルで実行します。`CLAUDE_CODE_SUBAGENT_MODEL` を設定した場合、Claude Code はそのモデルを最初に試し、これらの同じルールの下で実行します。
 
-チームメンバーはリーダーの[努力レベル](/docs/ja/model-config#adjust-effort-level)を継承します。分割ペインモードではこれは v2.1.186 から適用されます。それより前のバージョンではリーダーのセッション努力を分割ペインチームメンバーに渡しませんでした。
+デフォルトでは、チームメンバーはリーダーの [effort レベル](/docs/ja/model-config#adjust-effort-level)を継承します。分割ペインモードではこれは v2.1.186 から適用されます。それより前のバージョンではリーダーのセッションの effort を分割ペインのチームメンバーに渡していませんでした。
 
 <h3 id="have-teammates-plan-before-implementing">
   チームメンバーが実装前にプランを立てるようにする
@@ -200,7 +200,7 @@ In-process チームメイトを表示している間、プレーンテキスト
 * `/compact`、`/clear`、`/rewind` はリーダーの会話に作用するため、このビューからいずれかを実行する前に Claude Code が確認を求めます。
 * `/model` と `/fast` はチームメイトではなくリーダーのモデルと fast mode を設定するため、このビューからは実行されません。その理由を示す通知が表示されます。
 
-チームメイトのモデルと fast mode は、スポーン時に固定されます。`/effort` は引き続き表示中のチームメイトの後続のターンに適用されます。これはチームメイトがリーダーの [effort レベル](/docs/ja/model-config#adjust-effort-level)に従うためです。
+チームメイトのモデルと fast mode は、スポーン時に固定されます。
 
 <h3 id="assign-and-claim-tasks">
   タスクを割り当てて要求する
@@ -293,7 +293,7 @@ Claude Code はセッション起動時にこれらの両方を自動的に生�
   チームメンバーに subagent 定義を使用する
 </h3>
 
-どちらの表示モードでもチームメンバーを生成するときに、プロジェクト、ユーザー、または管理対象の [subagent スコープ](/docs/ja/sub-agents#choose-the-subagent-scope) から [subagent](/docs/ja/sub-agents) タイプを参照できます。これにより、セキュリティレビュアーやテストランナーなどのロールを 1 回定義し、委任された subagent とエージェントチームチームメンバーの両方として再利用できます。
+どちらの表示モードでもチームメイトを生成するときに、プロジェクト、ユーザー、管理対象、またはプラグインの [サブエージェントスコープ](/docs/ja/sub-agents#choose-the-subagent-scope) から [サブエージェント](/docs/ja/sub-agents) タイプを参照できます。これにより、セキュリティレビュアーやテストランナーなどのロールを 1 回定義し、委任されたサブエージェントとエージェントチームのチームメイトの両方として再利用できます。
 
 subagent 定義を使用するには、Claude にチームメンバーを生成するよう指示するときに名前で言及してください。
 
@@ -305,6 +305,8 @@ Claude Code は名前を付けた subagent 定義を読み取り、これらの�
 
 * **`tools`**：Claude Code はチームメンバーを定義の `tools` リスト内のツールに制限します。インプロセスチームメンバーの場合、Claude Code はそのリストに `SendMessage` を追加し、[Task ツールを持つセッション](/docs/ja/tools-reference#task-tool-availability) では `TaskCreate`、`TaskGet`、`TaskList`、および `TaskUpdate` も追加します。
 * **`model`**：Claude Code は、生成プロンプトが 1 つを名前で指定しない場合、どちらの表示モードでも定義の `model` を使用します。[Claude Code がチームメンバーのモデルを選択する方法](#specify-teammates-and-models) を参照してください。
+* **`disallowedTools`**：インプロセスのチームメイトの場合、Claude Code は定義の `disallowedTools` にあるツールをチームメイトのツールセットから削除します。`SendMessage` と Claude Code が追加する Task ツールは、リストに記載されていても引き続き使用できます。
+* **`effort`**：インプロセスのチームメイトの場合、Claude Code は [フロントマターの effort ルール](/docs/ja/model-config#set-the-effort-level) に従って定義の [`effort`](/docs/ja/sub-agents#supported-frontmatter-fields) を適用します。
 * **本体**：インプロセスチームメンバーの場合、Claude Code は定義の本体をデフォルトシステムプロンプトに追加の指示として追加します。分割ペインチームメンバーの場合、Claude Code はデフォルトシステムプロンプトの代わりに本体を使用します。
 * **`skills`**：Claude Code はどちらの表示モードでもチームメンバーに定義の `skills` を適用しません。チームメンバーはプロジェクトおよびユーザー設定から skills をロードします。
 * **`mcpServers`**：分割ペインチームメンバーの場合、Claude Code は [そのフィールドのルール](/docs/ja/sub-agents#scope-mcp-servers-to-a-subagent) に従って定義の `mcpServers` を適用します。これは `--agent` で開始されたセッションもカバーします。インプロセスチームメンバーはフィールドを無視し、プロジェクトおよびユーザー設定から MCP サーバーをロードします。

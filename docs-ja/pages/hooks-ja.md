@@ -40,7 +40,7 @@ Claude Code は、セッション中の特定のポイントでフックを実�
 | :- | :- |
 | `SessionStart` | セッションが開始または再開されたとき |
 | `Setup` | `--init-only` で Claude Code を起動するとき、または `-p` モードで `--init` または `--maintenance` を使用するとき。CI またはスクリプトでの 1 回限りの準備用 |
-| `UserPromptSubmit` | プロンプトを送信するとき、Claude が処理する前 |
+| `UserPromptSubmit` | プロンプトを送信するとき、Claude が処理する前。[Claude Code が独自に開始するターン](/docs/ja/hooks#userpromptsubmit)でも発火します |
 | `UserPromptExpansion` | ユーザーが入力したコマンドがプロンプトに展開されるとき、Claude に到達する前。展開をブロックできます |
 | `PreToolUse` | ツール呼び出しが実行される前。ブロックできます |
 | `PermissionRequest` | ツール呼び出しが権限決定を必要とするとき |
@@ -1404,7 +1404,15 @@ InstructionsLoaded フックには判定制御がありません。指示の読�
   UserPromptSubmit
 </h3>
 
-ユーザーがプロンプトを送信したとき、Claude がそれを処理する前に実行されます。これにより、プロンプトや会話に基づいて追加のコンテキストを加えたり、プロンプトを検証したり、特定の種類のプロンプトをブロックしたりできます。
+プロンプトが送信されたとき、Claude がそれを処理する前に実行されます。これにより、
+プロンプトや会話に基づいて追加のコンテキストを加えたり、プロンプトを検証したり、
+特定の種類のプロンプトをブロックしたりできます。
+
+`UserPromptSubmit` フックは、ユーザーが入力したプロンプトだけで発火するわけではありません。Claude Code は以下の場合にもこれらのフックを実行します。
+
+* [スケジュールタスク](/docs/ja/scheduled-tasks)の発火（`/loop` の反復を含む）
+* [バックグラウンドのサブエージェント](/docs/ja/sub-agents#run-subagents-in-foreground-or-background)が、それを開始したセッションに結果を報告したとき
+* [別のセッションが送信したメッセージ](/docs/ja/cross-session-messaging)がメインの会話に届いたとき
 
 `UserPromptSubmit` フックのデフォルトのタイムアウトは、`command`、`http`、`mcp_tool` タイプで 30 秒です。これは、他のほとんどのイベントでのこれらのタイプのデフォルトである 600 秒より短くなっています。このフックはすべてのプロンプトの前に実行され、完了するまでモデルの処理をブロックするため、フックが停止するとセッションも停止します。フックにより長い時間が必要な場合は、フックエントリの `timeout` フィールドを設定してください。
 
@@ -1416,7 +1424,7 @@ InstructionsLoaded フックには判定制御がありません。指示の読�
   UserPromptSubmit の入力
 </h4>
 
-[共通の入力フィールド](#common-input-fields)に加えて、UserPromptSubmit フックはユーザーが送信したテキストを含む `prompt` フィールドを受け取ります。`[Pasted text #N]` プレースホルダーに折りたたまれた貼り付けコンテンツは、その位置に展開された状態で届きます。Claude Code が[貼り付けられたテキストを Claude 向けにマークする](/docs/ja/terminal-config#how-claude-treats-pasted-text)セッションでは、展開されたコンテンツは `<pasted_content id="…">` の行と `</pasted_content id="…">` の行の間に置かれるため、フックがプロンプトを解析する場合はこれらの行を考慮してください。
+[共通の入力フィールド](#common-input-fields)に加えて、UserPromptSubmit フックは送信されたテキストを含む `prompt` フィールドを受け取ります。`[Pasted text #N]` プレースホルダーに折りたたまれた貼り付けコンテンツは、その場で展開された状態で届きます。Claude Code が[貼り付けたテキストを Claude 向けにマークする](/docs/ja/terminal-config#how-claude-treats-pasted-text)セッションでは、展開されたコンテンツは `<pasted_content id="…">` の行と `</pasted_content id="…">` の行の間に置かれるため、フックがプロンプトを解析する場合はこれらの行を考慮してください。
 
 UserPromptSubmit フックは、セッションにカスタムタイトルがある場合に `session_title` も受け取ります。意味は [SessionStart の `session_title` フィールド](#sessionstart-input)と同じです。
 
@@ -1435,7 +1443,7 @@ UserPromptSubmit フックは、セッションにカスタムタイトルがあ
   UserPromptSubmit の判定制御
 </h4>
 
-`UserPromptSubmit` フックは、ユーザーのプロンプトを処理するかどうかを制御し、コンテキストを追加できます。すべての [JSON 出力フィールド](#json-output)を利用できます。
+`UserPromptSubmit` フックは、送信されたプロンプトを処理するかどうかを制御し、コンテキストを追加できます。すべての [JSON 出力フィールド](#json-output)を使用できます。
 
 終了コード 0 で会話にコンテキストを追加する方法は 2 つあります。
 

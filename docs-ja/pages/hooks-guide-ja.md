@@ -503,7 +503,7 @@ Claude Code は、ライフサイクルの特定のポイントで hook イベ�
 | :- | :- |
 | `SessionStart` | セッションが開始または再開されたとき |
 | `Setup` | `--init-only` で Claude Code を起動するとき、または `-p` モードで `--init` または `--maintenance` を使用するとき。CI またはスクリプトでの 1 回限りの準備用 |
-| `UserPromptSubmit` | プロンプトを送信するとき、Claude が処理する前 |
+| `UserPromptSubmit` | プロンプトを送信するとき、Claude が処理する前。[Claude Code が独自に開始するターン](/docs/ja/hooks#userpromptsubmit)でも発火します |
 | `UserPromptExpansion` | ユーザーが入力したコマンドがプロンプトに展開されるとき、Claude に到達する前。展開をブロックできます |
 | `PreToolUse` | ツール呼び出しが実行される前。ブロックできます |
 | `PermissionRequest` | ツール呼び出しが権限決定を必要とするとき |

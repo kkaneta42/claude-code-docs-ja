@@ -184,7 +184,8 @@ Claude Code は文字起こしを挿入し、文字起こしが少なくとも 3
 
 音声ディクテーションが起動または記録されない場合の一般的な問題：
 
-* **`Voice mode requires a Claude.ai account`**：API キーまたはサードパーティプロバイダーで認証されています。`/login` を実行して claude.ai アカウントでサインインしてください。
+* **`Unknown command: /voice`**：`/voice` は、claude.ai アカウントがアクティブなサインインである場合にのみ利用できます。claude.ai アカウントでサインインしていない場合は、`/login` を実行してください。`ANTHROPIC_API_KEY`、`ANTHROPIC_AUTH_TOKEN`、`apiKeyHelper` 設定、または [サードパーティプロバイダー](#requirements) が使用されている場合、それらは claude.ai のサインインより優先されるため、削除してから Claude Code を再起動してください。
+* **`Voice mode requires a Claude.ai account`**：`/voice` を実行したとき、または記録を開始したときに、Claude Code が使用可能な claude.ai のサインインを見つけられませんでした。`/login` を実行して再度サインインしてください。
 * **`Voice mode is disabled by your organization's policy`**：組織の管理者ポリシーが音声ディクテーションをオフにしています。組織の管理者に連絡して、組織で音声ディクテーションが利用可能かどうかを確認してください。
 * **`Microphone access is denied`**：システム設定でターミナルにマイク権限を付与してください。macOS では、システム設定 → プライバシーとセキュリティ → マイク に移動してターミナルアプリを有効にしてから、`/voice` を再度実行してください。Windows では、設定 → プライバシーとセキュリティ → マイク に移動してデスクトップアプリのマイクアクセスをオンにしてから、`/voice` を再度実行してください。ターミナルが macOS 設定に表示されていない場合は、[Terminal not listed in macOS Microphone settings](#terminal-not-listed-in-macos-microphone-settings) を参照してください。
 * **`Voice mode requires SoX for audio recording` on Linux**：ネイティブオーディオモジュールを読み込めず、フォールバックがインストールされていません。エラーメッセージに表示されているコマンドで SoX をインストールしてください。例えば `sudo apt-get install sox` です。
