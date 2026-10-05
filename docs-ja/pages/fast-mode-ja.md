@@ -136,9 +136,9 @@ Claude Code は、モデル切り替え、再接続、または失敗した[可�
 高速モードには以下のすべてが必要です：
 
 * **Anthropic API またはサブスクリプションのみ**：高速モードは Anthropic Console API および使用量クレジットを使用する Claude サブスクリプションプランで利用可能です。Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、または AWS 上の Claude Platform では利用できません。Console 組織は、[高速モードアクセスをプロビジョニング](#enable-fast-mode-for-your-organization)する必要もあります。
-* **サブスクリプションプランで使用量クレジットが有効**：Pro、Max、Team、または Enterprise プランでは、アカウントに[使用量クレジット](/docs/ja/costs#add-usage-credits-to-your-subscription)が有効になっている必要があります。これにより、プランに含まれる使用量を超えて請求できます。有効になるまで、`/fast` は「Fast mode requires usage credits」と表示されます。有効にする方法はプランによって異なります：
-  * Pro および Max では、[**Settings > Usage**](https://claude.ai/settings/usage) の **Usage credits** セクションで claude.ai で有効にするか、`/usage-credits` を実行してそのページを開きます。
-  * Team および Enterprise では、請求アクセス権を持つメンバーが [**Admin settings > Usage**](https://claude.ai/admin-settings/usage) で組織の使用量クレジットを有効にし、アクセス権を持たないメンバーが `/usage-credits` を実行して組織の管理者にリクエストを送信します。
+* **サブスクリプションプランで使用クレジットが有効**：Pro、Max、Team、または Enterprise プランでは、アカウントで[使用クレジット](/docs/ja/costs#add-usage-credits-to-your-subscription)が有効になっている必要があります。これにより、プランに含まれる使用量を超えて課金できるようになります。有効になるまで、`/fast` は「Fast mode requires usage credits」と表示します。有効にする方法はプランによって異なります：
+  * Pro および Max では、claude.ai の [**Settings > Usage**](https://claude.ai/settings/usage) の **Usage credits** セクションで有効にするか、`/usage-credits` を実行してそのページを開きます。
+  * Team および Enterprise では、請求アクセス権を持つメンバーが [**Organization settings > Usage**](https://claude.ai/admin-settings/usage) で組織の使用クレジットを有効にし、アクセス権を持たないメンバーは `/usage-credits` を実行して組織の管理者にリクエストを送信します。
 
 <Note>
   高速モード使用量は、プランに残りの使用量がある場合でも、使用量クレジットに直接請求されます。
@@ -165,7 +165,7 @@ Claude Code は、モデル切り替え、再接続、または失敗した[可�
 * **Console**（API カスタマー）：管理者が [Claude Code preferences](https://platform.claude.com/claude-code/preferences) で有効にします。高速モードは[リサーチプレビュー](#research-preview)にあるため、組織は高速モードリクエストが成功する前に高速モードアクセスをプロビジョニングする必要があります。アクセスを取得するには、アカウントマネージャーに連絡するか、[Claude API の高速モード](https://platform.claude.com/docs/en/build-with-claude/fast-mode)で説明されているようにウェイトリストに参加します。
 
   プロビジョニングされたアクセスがない場合、API は各高速モードリクエストを 429 で拒否し、Claude Code は各拒否を[高速モードレート制限](#handle-rate-limits)として扱います。レート制限のクールダウンとは異なり、アクセスがプロビジョニングされるまで拒否は続きます。
-* **Claude AI**（Team および Enterprise）：所有者が [Admin Settings > Claude Code](https://claude.ai/admin-settings/claude-code) で有効にします
+* **Claude AI**（Team および Enterprise）：Owner が [**Organization settings > Claude Code**](https://claude.ai/admin-settings/claude-code) で有効にします
 
 高速モードを完全に無効にするもう 1 つのオプションは、`CLAUDE_CODE_DISABLE_FAST_MODE=1` を設定することです。[環境変数](/docs/ja/env-vars)を参照してください。
 

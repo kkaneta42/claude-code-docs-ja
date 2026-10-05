@@ -632,7 +632,7 @@ Implement API endpoints. Follow the conventions and patterns from the preloaded 
 
 リストされた各スキルの完全なコンテンツは起動時にサブエージェントのコンテキストに注入されます。このフィールドはプリロードされるスキルを制御し、サブエージェントがアクセスできるスキルではありません。なしで、サブエージェントは実行中に Skill ツールを通じてプロジェクト、ユーザー、およびプラグインスキルを発見して呼び出すことができます。スキルを完全に呼び出すことを防ぐには、[`tools`](#available-tools)リストから `Skill` を省略するか、`disallowedTools` に追加します。
 
-[`disable-model-invocation: true`](/docs/ja/skills#control-who-invokes-a-skill)を設定するスキルはプリロードできません。プリロードは Claude が呼び出すことができるスキルの同じセットから描画するため。これには、バンドルされた `/verify` スキルが含まれます。実行できるのはあなただけなので、プリロードすることもできません。
+[`disable-model-invocation: true`](/docs/ja/skills#control-who-invokes-a-skill)を設定するスキルはプリロードできません。プリロードは Claude が呼び出すことができるスキルと同じセットから取得されるためです。これには、Claude が単独で実行できないバンドルされた `/verify` スキルが含まれます。
 
 リストされたスキルが見つからないか無効な場合（例えば、組織のポリシーによって）、Claude Code はスキップし、デバッグログに警告をログします。
 

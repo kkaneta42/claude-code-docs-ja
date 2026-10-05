@@ -292,6 +292,7 @@ claude -p --resume <session-id> --output-format json "summarize what we changed"
 | [`<project>` ディレクトリに自分で名前を付ける](#name-the-project-directory-yourself) | [`CLAUDE_CODE_PROJECT_DIR_NAME`](/docs/ja/env-vars) | 環境変数 |
 | 30 日間の保持期間を変更する | [`cleanupPeriodDays`](/docs/ja/settings-reference#cleanupperioddays) | `settings.json` |
 | [Claude Desktop と Cowork トランスクリプト](/docs/ja/claude-directory#cleaned-up-automatically) の年齢制限を設定する | [`desktopSessionCleanupPeriodDays`](/docs/ja/settings-reference#desktopsessioncleanupperioddays) | ユーザー設定、管理設定、または `--settings` |
+| `-p` または Agent SDK セッションのトランスクリプトファイルが大きくなるサイズを制限する | [`CLAUDE_CODE_TRANSCRIPT_LOCAL_GC`](/docs/ja/env-vars) | 環境変数 |
 | すべてのモードでトランスクリプト書き込みを抑制する | [`CLAUDE_CODE_SKIP_PROMPT_HISTORY`](/docs/ja/env-vars) | 環境変数 |
 | 1 つの非インタラクティブ実行の書き込みを抑制する | [`--no-session-persistence`](/docs/ja/cli-reference) | `claude -p` を使用した CLI フラグ |
 

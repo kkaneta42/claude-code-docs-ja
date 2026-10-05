@@ -366,6 +366,7 @@
 | `Invalid permission rule "..." was skipped: Malformed Tool(content) rule` | [設定の警告](#malformed-tool-content-rule) |
 | `... is not matched by file permission checks` | [設定の警告](#is-not-matched-by-file-permission-checks) |
 | `... has a wildcard before the rest of the command` | [設定の警告](#has-a-wildcard-before-the-rest-of-the-command) |
+| `Denying Bash also turns off the PowerShell tool, so Claude has neither` | [設定の警告](#denying-bash-also-turns-off-the-powershell-tool) |
 | `CLAUDE_CODE_DISABLE_1M_CONTEXT is set, but the 200K limit isn't enforced` | [設定の警告](#the-200k-limit-isnt-enforced) |
 | `[claude-code:unrecognized_model]` | [設定の警告](#unrecognized-model-id-on-a-request) |
 | `Stale sandbox mask files left by a killed session` | [設定の警告](#stale-sandbox-mask-files-left-by-a-killed-session) |
@@ -846,7 +847,7 @@ Claude アプリゲートウェイを通じて接続し、小文字の `spend li
 **対応方法：**
 
 * Pro と Max では、claude.ai の [**Settings > Usage**](https://claude.ai/settings/usage) で月間支出制限を増やすか、`/usage-credits` を実行します
-* Team と Enterprise では、請求を管理する場合は [**Admin settings > Usage**](https://claude.ai/admin-settings/usage) で制限を増やすか、管理者に依頼します。`/usage-credits` は管理者にそのリクエストを送信します
+* Team と Enterprise では、請求を管理する場合は [**Organization settings > Usage**](https://claude.ai/admin-settings/usage) で制限を増やすか、管理者に依頼します。`/usage-credits` は管理者にそのリクエストを送信します
 * チャネルの制限については、組織の所有者またはチャネルのマネージャーに claude.ai で上げるよう依頼してください。Claude Tag ドキュメントの [Per-channel limits](https://claude.com/docs/claude-tag/admins/set-spend-limit#per-channel-limits) を参照してください
 * メッセージがプランのウィンドウのリセット時刻を指定する場合、代わりにそれを待つことができます
 * `/usage` を実行して、プランのウィンドウと各リセット時刻を確認します
@@ -5635,6 +5636,23 @@ Permission allow rule (.claude/settings.json): Bash(git -C * status *) has a wil
 * ソースが `managed policy settings` と読む場合は、警告を管理設定を保守している人に転送してください。自分でそれをクリアすることはできません。
 
 [バックグラウンドセッション](/docs/ja/agent-view) または `--output-format json` または `stream-json` では、Claude Code は警告をデバッグログに stderr の代わりに書き込むため、マシン読み取り出力はクリーンなままです。`--debug` で `~/.claude/debug/<session-id>.txt` でキャプチャしてください。v2.1.246 より前では、Claude Code はこれらのルールを警告なしで受け入れていました。
+
+<h3 id="denying-bash-also-turns-off-the-powershell-tool">
+  Denying Bash also turns off the PowerShell tool
+</h3>
+
+Bash ツール全体を削除しました。例えば `--disallowedTools Bash` を使用したか、設定ファイルのいずれかで単独の `Bash` または `Bash(*)` [拒否ルール](/docs/ja/permissions#match-all-uses-of-a-tool) を設定した場合です。Git Bash がインストールされた Windows では、[Bash を拒否すると PowerShell ツールもオフになる](/docs/ja/tools-reference#bash-deny-rules-also-turn-off-the-powershell-tool) ため、セッションはシェルツールなしで起動します。Claude Code はスタートアップ時にこの警告を出力します。
+
+```text theme={null}
+Denying Bash also turns off the PowerShell tool, so Claude has neither. To use PowerShell, set CLAUDE_CODE_USE_POWERSHELL_TOOL=1.
+```
+
+**対応方法：**
+
+* Claude に PowerShell を使用させるには、[PowerShell ツールを有効にする](/docs/ja/tools-reference#enable-the-powershell-tool) で示されているように、環境または設定ファイルの `env` ブロックで [`CLAUDE_CODE_USE_POWERSHELL_TOOL`](/docs/ja/env-vars) を `1` に設定してください。これにより、Bash 拒否ルールと並行して PowerShell ツールがオンのままになります。
+* ツール全体ではなく特定のコマンドをブロックするには、同じ設定ファイルまたはフラグ内の単独の `Bash` エントリを、`Bash(git push *)` などのスコープ付きルールに置き換えてください。Claude は Bash ツールを保持し、PowerShell ツールは、変数も設定するかスコープ付きの [`PowerShell` 権限ルール](/docs/ja/permissions#powershell) を追加するまでオフのままです。
+
+[バックグラウンドセッション](/docs/ja/agent-view) または `--output-format json` または `stream-json` では、Claude Code は警告を stderr の代わりにデバッグログに書き込みます。`--debug` で実行すると `~/.claude/debug/<session-id>.txt` にキャプチャできます。v2.1.287 より前では、Claude Code は警告を出力せずに同じ方法で PowerShell ツールをオフにしていました。
 
 <h3 id="crosssessioninbound-must-be-one-of-accept-hold-refuse">
   crossSessionInbound は accept、hold、refuse のいずれかである必要があります

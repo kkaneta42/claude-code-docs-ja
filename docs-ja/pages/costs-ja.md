@@ -114,7 +114,7 @@ Claude Code は最新のレポートを `~/.claude/usage-data/report.html` に�
 | ロール | `/usage-credits` の動作 |
 | :- | :- |
 | Pro または Max サブスクライバー | ブラウザで [**Settings > Usage**](https://claude.ai/settings/usage) を claude.ai で開きます。**Usage credits** セクションで、使用量クレジットをオンまたはオフにし、クレジット残高、今月の支出、および月間支出制限を確認できます |
-| 請求アクセス権を持つ Team または Enterprise メンバー | 組織の使用量設定 [**Admin settings > Usage**](https://claude.ai/admin-settings/usage) をブラウザで開きます |
+| 請求アクセス権を持つ Team または Enterprise メンバー | 組織の使用量設定である [**Organization settings > Usage**](https://claude.ai/admin-settings/usage) をブラウザで開きます |
 | 請求アクセス権を持たない Team または Enterprise メンバー | 確認を求めてから、組織の管理者にリクエストを送信します。v2.1.211 より前では、Claude Code は確認ステップなしでリクエストを送信していました |
 
 請求アクセス権を持たない Team および Enterprise メンバーの場合、確認はインタラクティブセッションでのみ表示されます。`-p` フラグを使用した非インタラクティブモードおよび [Remote Control](/docs/ja/remote-control) からは、コマンドはリクエストを送信せず、インタラクティブセッションで実行するよう指示します。

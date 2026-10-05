@@ -429,11 +429,18 @@ Claude Code がゲートウェイサインイン後に `couldn't load your organ
 
 gateway は、リクエストのヘッダーの合計が 256 KiB（[`limits.max_request_header_bytes`](/docs/ja/claude-apps-gateway-config#http-tuning) を設定している場合はその値）を超えると `431` で応答します。これらのリクエストについては、ログ行も監査イベントも書き込みません。v2.1.284 より前の gateway バージョンは、16 KiB を超えると `431` で応答します。
 
-何を変更すべきかは、gateway のバージョンと設定によって異なります。
+以下のうち、gateway に該当する最初の項目から対応してください。
 
 * **v2.1.284 より古い gateway**: gateway をアップグレードしてください
 * **`limits.max_request_header_bytes` が設定されている**: 値を上げるか、キーを削除してください
 * **いずれにも該当しない、またはその後も `431` が続く**: IdP が発行するグループを減らしてください。Okta、Microsoft Entra ID、Google Workspace がグループを提供する方法については、[Identity provider setup](#identity-provider-setup) を参照してください
+
+groups クレームを削減する際は、以下の設定で指定したグループを残してください。これらの設定は、開発者のアクセス、ポリシー、支出上限を決定します。
+
+* **[`oidc.allowed_groups`](/docs/ja/claude-apps-gateway-config#oidc)**: サインインできるユーザーを決定します
+* **[`admin.admin_groups`](/docs/ja/claude-apps-gateway-config#admin)**: gateway セッションで管理 API を呼び出せるユーザーを決定します
+* **[`managed.policies`](/docs/ja/claude-apps-gateway-config#managed) 内の `match.groups`**: 開発者に適用されるポリシーを決定します
+* **`rbac_group` [支出上限](/docs/ja/claude-apps-gateway-spend-limits)**: 開発者に適用されるグループ上限を決定します
 
 <h2 id="related">
   関連

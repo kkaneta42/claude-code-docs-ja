@@ -990,6 +990,8 @@ Opus 5.5、Sonnet 5.5、Fable モデルなど、常に思考するモデルで�
 
 組織が管理設定をデプロイすると、Claude Code はこのキーを管理ソースからのみ読み取り、他のファイルでは無視します。
 
+起動時のモデルチェックにこのキーがどのように適用されるかについては、[Amazon Bedrock](/docs/ja/amazon-bedrock#when-your-organization-enforces-a-model-allowlist) および [Google Cloud の Agent Platform](/docs/ja/google-vertex-ai#when-your-organization-enforces-a-model-allowlist) を参照してください。
+
 * **スコープ**: [`任意のファイル`](#scopes)
 * **タイプ**: ブール値
   * `true`: **Default**が `availableModels` 外のモデルに解決される場合、Claude Code はそれをリスト内の最初の利用可能なモデルに解決します
@@ -1515,7 +1517,7 @@ auto モードがアクティブな間、すべての Bash および PowerShell 
 }
 ```
 
-[すべてのシェルコマンドを分類器にルーティングする](/docs/ja/auto-mode-config#route-all-shell-commands-through-the-classifier)を参照してください。Claude Code v2.1.193 以降が必要です。
+[すべてのシェルコマンドを分類器にルーティングする](/docs/ja/auto-mode-config#route-all-shell-commands-through-the-classifier)を参照してください。
 
 <h3 id="disableautomode">
   `disableAutoMode`
@@ -3135,7 +3137,7 @@ Claude Code が[メモリ](/docs/ja/memory#exclude-specific-claude-md-files)を�
 * [`CLAUDE_CODE_PROJECT_DIR_NAME`](/docs/ja/sessions#name-the-project-directory-yourself)。Claude Code は起動環境からのみ読み取ります。すべてのファイルから無視されます。v2.1.234 以降が必要です。
 * [`CLAUDE_CODE_RESTRICTED`](/docs/ja/env-vars#variables)。Claude Code は起動環境からのみ読み取ります。すべてのファイルから無視されます。
 * [`CLAUDE_CODE_DISABLE_POWERSHELL_CMD_RM_DENY`](/docs/ja/env-vars#variables)。Claude Code は起動環境からのみ読み取ります。すべてのファイルから無視されます。この変数には Claude Code v2.1.283 以降が必要です。
-* [`CLAUDE_CODE_DISABLE_DANGEROUS_RM_TIMEOUT` と `CLAUDE_CODE_DISABLE_SUBSTITUTION_RM_PROMPT`](/docs/ja/env-vars#variables)。Claude Code は起動環境からのみ読み取ります。すべてのファイルから無視されます。
+* [`CLAUDE_CODE_DISABLE_DANGEROUS_RM_TIMEOUT`、`CLAUDE_CODE_DISABLE_SUBSTITUTION_RM_PROMPT`、`CLAUDE_CODE_DISABLE_INLINE_SHELL_RM_PROMPT`](/docs/ja/env-vars#variables)。Claude Code は起動環境からのみ読み取ります。すべてのファイルから無視されます。
 
 <h3 id="filecheckpointingenabled">
   `fileCheckpointingEnabled`

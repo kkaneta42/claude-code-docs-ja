@@ -195,6 +195,25 @@ RUN git config --system --add safe.directory '*'
 
 ランナーは登録時に Anthropic にオプトインを報告し、起動時に `Registering as opted in to Anthropic-managed git (--use-anthropic-git-proxy)` を出力します。オプトインの報告には Claude Code v2.1.267 以降が必要です。それより前のバージョンはフラグを受け入れますが、報告しないか、その行を出力しません。その後、オプトインランナー上の各セッションは、Anthropic 管理の git またはセッションごとのプロキシ URL のいずれかを使用します。セッションがセッションごとのプロキシ URL を使用する場合、ランナーは 1 つの `[runner:warn]` 行をログに記録します。
 
+<h4 id="github-api-access-without-the-github-cli">
+  GitHub CLI なしで GitHub API にアクセスする
+</h4>
+
+ランナーイメージに GitHub CLI が含まれていない場合、Claude Code は組み込みの `gh` を提供できるため、Claude は引き続きプルリクエストの作成、コメント、CI 結果の読み取りを行えます。組み込みの `gh` は、Anthropic 管理の git を使用するランナー向けです。サポートするコマンドは GitHub の REST API を呼び出す `gh api` の 1 つのみです。ランナーイメージに Claude Code v2.1.287 以降が必要です。
+
+次のコマンドは、`gh pr create` の代わりにプルリクエストを作成します。組み込みの `gh` は、現在のリポジトリの `{owner}` と `{repo}` を自動で埋めます：
+
+```bash theme={null}
+gh api repos/{owner}/{repo}/pulls -f title='Fix' -f head='my-branch' -f base='main'
+```
+
+* **認証情報**：組み込みの `gh` は REST リクエストを Anthropic 管理の git 経由で送信し、GitHub の認証情報は Anthropic 側で提供されるため、イメージにそのための GitHub トークンは不要です
+* **利用できるセッション**：Anthropic 管理の git がセッションの `gh` を提供するかどうかは、Anthropic がセッションごとに決定します。提供する場合、ランナーがそのセッションについてログに記録する `[runner:session] governed git ACTIVE` 行に `gh_path_shim=true` が表示されます。提供しない場合、そのセッションには `gh` がありません
+* **`jq`**：`--jq` を使用したい場合は、イメージに `jq` をインストールしてください
+* **[`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`](/docs/ja/env-vars)**：セッション環境でこれが設定されている場合、Claude Code は組み込みの `gh` を提供せず、セッションには `gh` がありません
+
+イメージに GitHub CLI が含まれている場合、セッションはそれを使用します。
+
 <h4 id="trust-a-private-certificate-authority-with-anthropic-managed-git">
   Anthropic 管理の git でプライベート認証局を信頼する
 </h4>

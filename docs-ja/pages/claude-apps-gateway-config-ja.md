@@ -82,12 +82,12 @@ OpenID Connect（OIDC）はゲートウェイがアイデンティティプロ�
 | `allowed_email_domains` | いいえ | `email` クレームがこれらのドメインのいずれかに含まれていない id\_token を拒否します。大文字と小文字を区別しません。マルチテナント IdP の設定ミスに対する多層防御です。この設定とは無関係に、`email_verified` クレームが明示的に `false` である id\_token は常に拒否されます。 |
 | `allowed_groups` | いいえ | サインインをこれらの IdP グループのメンバーに制限します。`groups_claim` に対してマッチングされます。許可されたメールドメイン内にいるが、これらのグループのいずれにも属していないユーザーは拒否されます。IdP がグループクレームを発行する必要があります。マッチングは、そのクレーム内の値に対する正確で大文字と小文字を区別する文字列比較です。ゲートウェイはネストされたグループを展開しません。サブグループのメンバーを許可するには、ここにサブグループをリストするか、IdP を設定してフラット化されたメンバーシップを発行してください。 |
 | `groups_claim` | いいえ | グループメンバーシップを含む id\_token クレーム。デフォルト `groups`。Microsoft Entra はアプリロールを `roles` の下に発行します。フラットキーまたは `/resource_access/gateway/roles` などのネストされたクレーム用の RFC 6901 JSON ポインタを受け入れます。 |
-| `google_groups` | いいえ | Google Workspace Admin SDK Directory API を通じてサインインしたユーザーのグループを検索します。Google の id\_token はグループクレームを含まないためです。`service_account_json_path` を `https://www.googleapis.com/auth/admin.directory.group.readonly` スコープでドメイン全体の委任を持つサービスアカウントキーファイルに設定し、`admin_email` を Workspace 管理者に設定します。サービスアカウントが偽装します。Directory API は実際の管理者サブジェクトが必要です。各ユーザーのグループメールアドレスがそのグループクレームになるため、`allowed_groups` と `managed.policies.match.groups` はグループメールでマッチングします。 |
+| `google_groups` | いいえ | Google Workspace Admin SDK Directory API を通じてサインインしたユーザーのグループを検索します。Google の id\_token はグループクレームを含まないためです。`service_account_json_path` を `https://www.googleapis.com/auth/admin.directory.group.readonly` スコープでドメイン全体の委任を持つサービスアカウントキーファイルに設定し、`admin_email` をサービスアカウントが偽装する Workspace 管理者に設定します。Directory API は実際の管理者サブジェクトを必要とします。各ユーザーのグループメールアドレスがそのグループクレームになるため、`allowed_groups` と `managed.policies.match.groups` はグループメールでマッチングします。 |
 | `email_claim` | いいえ | ユーザーのメールを含む id\_token クレーム。デフォルト `email`。ADFS や Entra B2C などの一部の IdP は、代わりに `upn` または `preferred_username` を発行します。フラットキー、JSON ポインタ、または最初に存在するキーが使用されるフォールバックキーのリストを受け入れます。 |
-| `scopes` | いいえ | ゲートウェイが要求する OIDC スコープの完全なオーバーライド。デフォルト `[openid, profile, email, offline_access]`。IdP が認識しないスコープを拒否する場合、またはグループまたはメールを発行するためにカスタムスコープが必要な場合に設定します。`openid` を含める必要があります。`offline_access` を削除するとリフレッシュトークンが無効になるため、開発者は `session.ttl_hours` ごとにブラウザログインを再実行します。IdP ごとのスコープレシピ（Google のリフレッシュトークンフローなど）については、[アイデンティティプロバイダーのセットアップ](/docs/ja/claude-apps-gateway-deploy#identity-provider-setup)を参照してください。 |
-| `scope_on_refresh` | いいえ | リフレッシュトークンを交換するときに、サインインリクエストと同じリストで `scope` も送信します。デフォルト `false`：リフレッシュリクエストは `scope` を省略します。ほとんどの IdP はすべてのリフレッシュで id\_token を返し、これを必要としません。IdP がリフレッシュ時に id\_token を返す場合にのみ `true` に設定します。`openid` を再度要求された場合。Okta はそのリフレッシュグラントについてこれを文書化しています。id\_token がない場合、すべてのリフレッシュは IdP の userinfo エンドポイントが更新されたアクセストークンを受け入れることに依存します。サインインをゲートしたり、グループのポリシーをマッチングしたりする場合、IdP のリフレッシュ時 id\_token がそれらを省略する場合は、`userinfo_fallback: true` も設定して、ゲートウェイが userinfo エンドポイントからそれらを入力するようにしてください。要求されたスコープより少ないスコープを付与した IdP は、これがオンの場合、既存のセッションの場合でも `invalid_scope` でリフレッシュを拒否できます。`token_endpoint` でリフレッシュが失敗し始めた場合は、キーを設定した後、キーを設定解除してください。ゲートウェイサーバーで Claude Code v2.1.260 以降が必要です。 |
-| `extra_auth_params` | いいえ | IdP 認可リクエストに逐語的に追加される追加クエリパラメータ。これは、Google リフレッシュトークンの `access_type: offline`、一部の Entra テナントの `domain_hint`、またはステップアップフローの `acr_values` など、IdP 固有の動作のオーバーライドメカニズムです。ゲートウェイが管理するプロトコルパラメータはオーバーライドできません：`state`、`nonce`、`redirect_uri`、PKCE、`scope`、`response_type`、`response_mode`、および `client_id`。 |
-| `userinfo_fallback` | いいえ | id\_token がメールまたはグループを省略する場合、`/userinfo` からそれらを取得します。Keycloak 軽量アクセストークン、Okta org サーバー、および ADFS 最小トークンに必要です。id\_token は権限のままです。userinfo はギャップのみを埋めます。デフォルト `false`。 |
+| `scopes` | いいえ | ゲートウェイが要求する OIDC スコープの完全な上書き。デフォルト `[openid, profile, email, offline_access]`。IdP が認識しないスコープを拒否する場合、またはグループまたはメールを発行するためにカスタムスコープが必要な場合に設定します。`openid` を含める必要があります。`offline_access` を削除するとリフレッシュトークンが無効になるため、開発者は `session.ttl_hours` ごとにブラウザログインを再実行します。IdP ごとのスコープレシピ（Google のリフレッシュトークンフローなど）については、[アイデンティティプロバイダーのセットアップ](/docs/ja/claude-apps-gateway-deploy#identity-provider-setup)を参照してください。 |
+| `scope_on_refresh` | いいえ | ゲートウェイがリフレッシュトークンを交換するときに、サインインリクエストと同じリストで `scope` も送信します。デフォルト `false`：リフレッシュリクエストは `scope` を省略します。ほとんどの IdP はリフレッシュのたびに id\_token を返すため、この設定は不要です。IdP が再度 `openid` を要求された場合にのみリフレッシュ時に id\_token を返す場合（Okta はリフレッシュグラントについてこれを文書化しています）は `true` に設定します。id\_token がない場合、すべてのリフレッシュは、IdP の userinfo エンドポイントがリフレッシュされたアクセストークンを受け入れることに依存します。グループに基づいてサインインを制限したりポリシーをマッチングしたりしていて、IdP のリフレッシュ時の id\_token にグループが含まれない場合は、`userinfo_fallback: true` も設定して、ゲートウェイが userinfo エンドポイントからグループを補完するようにしてください。要求より少ないスコープを付与した IdP は、`invalid_scope` でリフレッシュを拒否することがあります。これがオンの間に `scopes` にエントリを追加した場合は、既存のセッションも対象になります。設定後に `token_endpoint` でリフレッシュが失敗し始めた場合は、このキーを削除してください。ゲートウェイサーバーで Claude Code v2.1.260 以降が必要です。 |
+| `extra_auth_params` | いいえ | IdP 認可リクエストに逐語的に追加される追加クエリパラメータ。これは、Google リフレッシュトークンの `access_type: offline`、一部の Entra テナントの `domain_hint`、またはステップアップフローの `acr_values` など、IdP 固有の動作を上書きするための仕組みです。ゲートウェイが管理するプロトコルパラメータは上書きできません：`state`、`nonce`、`redirect_uri`、PKCE、`scope`、`response_type`、`response_mode`、および `client_id`。 |
+| `userinfo_fallback` | いいえ | id\_token がメールまたはグループを省略する場合、`/userinfo` からそれらを取得します。Keycloak 軽量アクセストークン、Okta org サーバー、および ADFS 最小トークンに必要です。id\_token が引き続き正とされ、userinfo は不足分のみを補完します。デフォルト `false`。 |
 | `use_pkce` | いいえ | 認可リクエストで PKCE（S256）チャレンジを送信します。デフォルト `true`。IdP がこの機密クライアントの PKCE を拒否する場合のみ `false` に設定します。 |
 | `clock_skew_seconds` | いいえ | id\_token 時間クレームを検証するときにクロックドリフトを許容します。デフォルト `0`（厳密）。サインイン直後にホスト/IdP クロックスキューのため「トークン期限切れ/まだ有効でない」エラーが表示される場合は、これを上げてください。 |
 | `token_endpoint_auth_method` | いいえ | ゲートウェイが IdP のトークンエンドポイントに対して認証する方法：`client_secret_basic`、`client_secret_post`、または[証明書によるクライアント認証](#certificate-client-authentication)用の `private_key_jwt`。デフォルトでは、ゲートウェイは IdP が公開している内容から 2 つの `client_secret` 方式のいずれかを選択します。 |
@@ -163,9 +163,9 @@ Microsoft Entra が証明書の認証情報で行うように、アイデンテ�
   フォワードプロキシを通じた IdP リクエスト
 </h4>
 
-推論アップストリームはすべてのバージョンで `HTTPS_PROXY` と `HTTP_PROXY` を尊重します。ゲートウェイ独自の IdP、検出、JWKS、トークン、および userinfo へのリクエストは、`oidc.use_proxy: true` を設定しない限り直接です。v2.1.227 以降が必要です。プロキシ変数が設定され、`use_proxy` が設定解除され、発行者が `NO_PROXY` でカバーされていない場合、ゲートウェイはそれらのリクエストを直接に保ち、ブート時に選択するよう求める通知をログに記録します。`use_proxy: false` はそれらを直接に保ち、通知をサイレンスします。
+推論アップストリームはすべてのバージョンで `HTTPS_PROXY` と `HTTP_PROXY` を尊重します。ゲートウェイ独自の IdP、検出、JWKS、トークン、および userinfo へのリクエストは、`oidc.use_proxy: true` を設定しない限り直接です。これには v2.1.227 以降が必要です。プロキシ変数が設定され、`use_proxy` が設定されておらず、発行者が `NO_PROXY` でカバーされていない場合、ゲートウェイはそれらのリクエストを直接に保ち、ブート時に選択するよう求める通知をログに記録します。`use_proxy: false` はそれらを直接に保ち、通知を抑止します。
 
-`use_proxy: true` の場合、ポッドは各 IdP エンドポイントのホスト名を自身で解決し、プロキシに解決された IP アドレスへの `CONNECT` を要求します。プロキシは、発行者だけでなく、検出ドキュメントが名前を付けるすべてのホストの IP アドレスへの `CONNECT` を受け入れる必要があります。`http://` プロキシ URL を使用します。`ca_cert_pem` と[SSRF ガード](/docs/ja/claude-apps-gateway-deploy#threat-model-summary)はプロキシされたパスにも適用されます。
+`use_proxy: true` の場合、ポッドは各 IdP エンドポイントのホスト名を自身で解決し、プロキシに解決された IP アドレスへの `CONNECT` を要求します。プロキシは、発行者だけでなく、検出ドキュメントが名前を付けるすべてのホストの IP アドレスへの `CONNECT` を受け入れる必要があります。`http://` プロキシ URL を使用します。`ca_cert_pem` と [SSRF ガード](/docs/ja/claude-apps-gateway-deploy#threat-model-summary)はプロキシされたパスにも適用されます。
 
 [プロキシのみのエグレス](#proxy-only-egress)はこれらの両方を変更します。アクティブな場合、IdP リクエストは `use_proxy: false` を設定しない限りプロキシに従い、ゲートウェイは最初にそれを解決せずにプロキシに各 IdP ホスト名を渡します。
 
@@ -173,7 +173,7 @@ Microsoft Entra が証明書の認証情報で行うように、アイデンテ�
   プロキシのみのエグレス
 </h4>
 
-ゲートウェイの環境で `HTTPS_PROXY` の隣に `CLAUDE_GATEWAY_PROXY_IS_EGRESS_BOUNDARY=1` を設定します。ポッドがそのフォワードプロキシを通じてのみ他のホストに到達でき、パブリック DNS 名を自身で解決できない場合、またはプロキシが IP アドレスへの `CONNECT` を拒否する場合。v2.1.277 以降が必要です。これは `gateway.yaml` キーではなく環境変数です。設定ファイルの何もゲートウェイのアドレスチェックを緩和できないようにするためです。
+ポッドがそのフォワードプロキシを通じてのみ他のホストに到達でき、パブリック DNS 名を自身で解決できない場合、またはプロキシが IP アドレスへの `CONNECT` を拒否する場合は、ゲートウェイの環境で `HTTPS_PROXY` の隣に `CLAUDE_GATEWAY_PROXY_IS_EGRESS_BOUNDARY=1` を設定します。v2.1.277 以降が必要です。これは `gateway.yaml` キーではなく環境変数です。設定ファイルの何もゲートウェイのアドレスチェックを緩和できないようにするためです。
 
 ```bash theme={null}
 export HTTPS_PROXY=http://proxy.corp.example.com:3128
@@ -184,12 +184,12 @@ export CLAUDE_GATEWAY_PROXY_IS_EGRESS_BOUNDARY=1
 
 ゲートウェイはプロキシのみのエグレスがアクティブな場合、ブート時に 1 つの `network:` 行をログに記録します。
 
-以下の各行は、`HTTPS_PROXY` が設定されたゲートウェイ上の 1 つのクラスのアウトバウンドリクエストです。デフォルトおよびプロキシのみのエグレスがアクティブな場合。
+以下の各行は、`HTTPS_PROXY` が設定されたゲートウェイ上の 1 つのクラスのアウトバウンドリクエストについて、デフォルトの場合とプロキシのみのエグレスがアクティブな場合の動作を示します。
 
 | アウトバウンドリクエスト | デフォルト | プロキシのみのエグレスアクティブ |
 | - | - | - |
-| `provider: anthropic` アップストリーム、Workload Identity Federation トークン交換、`telemetry.forward_to` エクスポート | ローカルで解決およびチェックされ、その後、プロキシを通じてチェックされた IP アドレスへの `CONNECT`。`NO_PROXY` にリストされたテレメトリコレクターは代わりに直接到達します | プロキシに渡されたホスト名 |
-| IdP 検出、JWKS、トークン、および userinfo | [`oidc.use_proxy: true`](#idp-requests-through-a-forward-proxy) でない限り直接。その後、チェックされた IP アドレスへの `CONNECT` | ホスト名がプロキシに渡されます。ただし、`oidc.use_proxy: false` は内部 IdP を直接に保ちます |
+| `provider: anthropic` アップストリーム、Workload Identity Federation トークン交換、`telemetry.forward_to` エクスポート | ローカルで解決およびチェックされ、その後、プロキシを通じてチェックされた IP アドレスへの `CONNECT`。`NO_PROXY` にリストされたテレメトリコレクターは代わりに直接到達します | ホスト名がプロキシに渡されます |
+| IdP 検出、JWKS、トークン、および userinfo | [`oidc.use_proxy: true`](#idp-requests-through-a-forward-proxy) でない限り直接。その場合はチェックされた IP アドレスへの `CONNECT` | ホスト名がプロキシに渡されます。ただし、`oidc.use_proxy: false` は内部 IdP を直接に保ちます |
 | Amazon Bedrock、Claude Platform on AWS、Google Cloud の Agent Platform、および Microsoft Foundry アップストリーム。Google グループ検索 | ホスト名がプロキシに渡されます | 変更なし |
 
 プロキシのみのエグレスは、ゲートウェイの環境がこれら 3 つの条件をすべて満たさない限り、オフのままです：
@@ -200,39 +200,39 @@ export CLAUDE_GATEWAY_PROXY_IS_EGRESS_BOUNDARY=1
 
 これらの条件のいずれかが満たされていない場合、ゲートウェイはブート時に警告をログに記録し、それを停止した変数に名前を付け、デフォルトの動作を保ちます。
 
-プロキシのみのエグレスがアクティブになったら、内部コレクターと IP アドレスで設定されたホストを含む、プロキシ内のすべての宛先を許可します。[`oidc.use_proxy: false`](#idp-requests-through-a-forward-proxy) で内部 IdP を直接に保つことができます。
+プロキシのみのエグレスがアクティブになったら、内部コレクターと IP アドレスで設定されたホストを含む、プロキシ内のすべての宛先を許可します。[`oidc.use_proxy: false`](#idp-requests-through-a-forward-proxy) で内部 IdP を直接に保つことは引き続き可能です。
 
 <Warning>
-  これをオンにするのは、プロキシのアローリストがゲートウェイ独自のチェック以上に厳密な場合のみです。プロキシは `169.254.169.254` や `metadata.google.internal` などのクラウドメタデータエンドポイント、リンクローカルアドレス、およびプロキシホスト独自のループバックを拒否する必要があります。また、名前だけでなく、名前が解決するアドレスによってそれらを拒否する必要があります。ゲートウェイはもはやそれらのいずれかに解決するホスト名をキャッチしないためです。どこでも接続するプロキシは、これらのリクエストのゲートウェイの[SSRF ガード](/docs/ja/claude-apps-gateway-deploy#threat-model-summary)を削除します。
+  これをオンにするのは、プロキシの許可リストがゲートウェイ独自のチェック以上に厳密な場合のみです。プロキシは `169.254.169.254` や `metadata.google.internal` などのクラウドメタデータエンドポイント、リンクローカルアドレス、およびプロキシホスト独自のループバックを拒否する必要があります。また、名前だけでなく、名前が解決するアドレスによってそれらを拒否する必要があります。ゲートウェイはもはやそれらのいずれかに解決するホスト名をキャッチしないためです。要求された場所にどこでも接続するプロキシは、これらのリクエストに対するゲートウェイの [SSRF ガード](/docs/ja/claude-apps-gateway-deploy#threat-model-summary)を無効にします。
 </Warning>
 
 <h3 id="session">
   `session`
 </h3>
 
-`session` ブロックは、ゲートウェイがサインイン後に鋳造するベアラートークンを形成します。それらに署名するシークレットと、どのくらい長く生きるかです。
+`session` ブロックは、ゲートウェイがサインイン後に発行するベアラートークンを定義します。トークンに署名するシークレットと、その有効期間です。
 
 | フィールド | 必須 | 説明 |
 | - | - | - |
-| `jwt_secret` | はい | 少なくとも 32 バイトのエントロピー。例えば `openssl rand -base64 32` から。ゲートウェイの HS256 ベアラートークンに署名します。単一の文字列または回転用の配列を受け入れます。インデックス 0 が署名し、すべてのエントリが検証します。回転するには、新しいシークレットを先頭に追加し、`ttl_hours` を待ってから古いものを削除します。 |
+| `jwt_secret` | はい | 少なくとも 32 バイトのエントロピー。例えば `openssl rand -base64 32` から。ゲートウェイの HS256 ベアラートークンに署名します。単一の文字列またはローテーション用の配列を受け入れます。インデックス 0 が署名し、すべてのエントリが検証します。ローテーションするには、新しいシークレットを先頭に追加し、`ttl_hours` を待ってから古いものを削除します。 |
 | `ttl_hours` | いいえ | ゲートウェイベアラートークンの有効期間。デフォルト `1`。IdP がリフレッシュトークンを発行する場合、CLI は有効期限前に自動的にリフレッシュします。有効期間が短いほど、より速くプロビジョニング解除されます。長いほど、IdP ラウンドトリップが少なくなります。IdP が `offline_access` が利用できないためリフレッシュトークンを発行できない場合、サイレントリフレッシュはないため、これを `8` または `12` に上げて、開発者を 1 時間ごとにブラウザログインに戻すのを避けてください。 |
 
 <h3 id="store">
   `store`
 </h3>
 
-`store` ブロックはゲートウェイを PostgreSQL データベースに指します。デバイスグラントとレート制限カウンターを保持します。
+`store` ブロックはゲートウェイを PostgreSQL データベースに向けます。このデータベースはデバイスグラントとレート制限カウンターを保持します。
 
 | フィールド | 必須 | 説明 |
 | - | - | - |
-| `postgres_url` | はい | `postgres://` または `postgresql://` URL。必須：デバイスグラント集合。ブラウザコールバックが書き込み、ポーリング CLI が読み込む場所。レプリカ間の状態が必要です。ゲートウェイはブート時およびアップグレード時に独自のスキーママイグレーションを実行するため、ロールはターゲットスキーマでテーブルを作成および変更する権限が必要です。[アップグレード](/docs/ja/claude-apps-gateway-deploy#upgrades)および [Postgres](/docs/ja/claude-apps-gateway-deploy#postgres) を参照してください。 |
-| `username` | いいえ | `postgres_url` のユーザーをオーバーライドします |
+| `postgres_url` | はい | `postgres://` または `postgresql://` URL。必須：ブラウザコールバックが書き込み、ポーリング中の CLI が読み込むデバイスグラントのランデブーには、レプリカ間の状態が必要です。ゲートウェイはブート時およびアップグレード時に独自のスキーママイグレーションを実行するため、ロールはターゲットスキーマでテーブルを作成および変更する権限が必要です。[アップグレード](/docs/ja/claude-apps-gateway-deploy#upgrades)および [Postgres](/docs/ja/claude-apps-gateway-deploy#postgres) を参照してください。 |
+| `username` | いいえ | `postgres_url` のユーザーを上書きします |
 | `password` | いいえ | データベース認証情報。`postgres_url` ではなくここに設定して、認証情報を URL から外します。任意の文字を受け入れ、URL 認証情報よりも優先されます。 |
-| `max_connections` | いいえ | レプリカあたりの Postgres 接続プール サイズ。デフォルト `5`。保守的で共有データベースに優しいです。[支出制限](#admin)が有効な場合、ホットパスは推論リクエストごとに数回の操作を実行するため、専用データベースが負荷の下にある場合はこれを上げ、レプリカ × これをデータベースの `max_connections` 以下に保ちます。 |
+| `max_connections` | いいえ | レプリカあたりの Postgres 接続プールサイズ。デフォルト `5`。保守的で共有データベースに優しいです。[支出制限](#admin)が有効な場合、ホットパスは推論リクエストごとに数回の操作を実行するため、専用データベースが負荷の下にある場合はこれを上げ、レプリカ数 × この値をデータベースの `max_connections` 以下に保ちます。 |
 | `connect_timeout_seconds` | いいえ | ゲートウェイが Postgres 接続を開くときに待機する秒数。`1` から `60` の整数。デフォルト `5`。新しいゲートウェイインスタンスが起動するときに接続試行がタイムアウトする場合は、これを上げてください。ゲートウェイサーバーで Claude Code v2.1.274 以降が必要です。以前のバージョンはキーが設定されている場合、起動を拒否します。 |
 | `readiness_grace_seconds` | いいえ | Postgres が応答を停止した後、`/readyz` が準備完了を報告し続ける秒数。`0` から `3600` の整数。デフォルト `0`。値を選択する方法については、[停止動作](/docs/ja/claude-apps-gateway-deploy#outage-behavior)を参照してください。ゲートウェイサーバーで Claude Code v2.1.282 以降が必要です。以前のバージョンはキーが設定されている場合、起動を拒否します。 |
 
-ローカル開発の場合、`postgres_url` を使い捨て Postgres コンテナに指します。例えば `docker run --rm -p 5432:5432 -e POSTGRES_HOST_AUTH_METHOD=trust postgres`。
+ローカル開発の場合、`postgres_url` を使い捨て Postgres コンテナに向けます。例えば `docker run --rm -p 5432:5432 -e POSTGRES_HOST_AUTH_METHOD=trust postgres`。
 
 <h3 id="upstreams">
   `upstreams`
@@ -240,9 +240,9 @@ export CLAUDE_GATEWAY_PROXY_IS_EGRESS_BOUNDARY=1
 
 `upstreams` は順序付きリストです。ゲートウェイは、要求されたモデルを解決する最初のアップストリームに推論を転送します。
 
-`5xx`、`429`、`401`、`403`、`404`、またはタイムアウト時に、ゲートウェイは次のアップストリームにフェイルオーバーします。他の `4xx` はそうしません。これらのエラーはリクエストではなくアップストリームに起因するためです。`401` または `403` は、ゲートウェイがそのアップストリームに対して使用した認証情報が失敗したことを意味します。`404` はそのアップストリームが要求されたモデルを提供しないことを意味するため、リスト内の後のアップストリームはまだできます。
+`5xx`、`429`、`401`、`403`、`404`、またはタイムアウト時に、ゲートウェイは次のアップストリームにフェイルオーバーします。他の `4xx` ではフェイルオーバーしません。これらのエラーはアップストリームではなくリクエストに起因するためです。`401` または `403` は、ゲートウェイが使用した認証情報をアップストリームが拒否したか、例えば要求されたモデルへのアクセスを拒否したことを意味します。`404` はそのアップストリームが要求されたモデルを提供しないことを意味するため、リスト内の後のアップストリームがまだ提供できます。
 
-アップストリームで `forward_user_identity: true` を設定する場合、開発者のメールを含むリクエストに返す `429` はフェイルオーバーしません。[開発者がどのように per-user 制限拒否に到達するか](#per-user-identity-headers-for-a-proxy-you-run)を参照してください。
+アップストリームで `forward_user_identity: true` を設定する場合、開発者のメールを含むリクエストに対してそのアップストリームが返す `429` はフェイルオーバーしません。[ユーザーごとの制限による拒否が開発者にどう届くか](#per-user-identity-headers-for-a-proxy-you-run)を参照してください。
 
 `404` でのフェイルオーバーにはゲートウェイ v2.1.198 以降が必要です。以前のリリースは、リスト内の後のアップストリームがモデルを提供している場合でも、最初の `404` をクライアントに返しました。
 
@@ -254,18 +254,18 @@ Amazon Bedrock、Claude Platform on AWS、Google Cloud の Agent Platform、お�
   アップストリームエラーメッセージ
 </h4>
 
-ゲートウェイは、アップストリームがどのように応答したかに応じて、1 つのアップストリームのエラー応答またはそれ独自の `502` を返します：
+ゲートウェイは、アップストリームがどのように応答したかに応じて、1 つのアップストリームのエラーレスポンスまたはそれ独自の `502` を返します：
 
-* **ゲートウェイが[フェイルオーバー](#multiple-upstreams)しないステータスをアップストリームが返した**：そのアップストリームの応答。ゲートウェイはさらなるアップストリームを試みません。
+* **ゲートウェイが[フェイルオーバー](#multiple-upstreams)しないステータスをアップストリームが返した**：そのアップストリームのレスポンス。ゲートウェイはそれ以上のアップストリームを試みません。
 * **ゲートウェイが試みたすべてのアップストリームが[フェイルオーバー](#multiple-upstreams)する方法で失敗した**：最後の `429`。いずれも `429` を返さなかった場合、ゲートウェイは順に、最後の `401` または `403`、最後の `404`、最後の `501` を優先します。いずれも返さなかった場合、ゲートウェイ独自の `502`。`all upstreams failed (N attempted)`。N は [`upstreams`](#upstreams) のすべてのエントリをカウントします。要求されたモデルを提供しないためゲートウェイがスキップしたエントリを含みます。
 
-ゲートウェイがアップストリームの応答を返す場合、アップストリームのステータスコードを保ちます。アップストリームのメッセージを保つかどうかはプロバイダーに依存します。Anthropic API アップストリームのエラー本体は開発者に変更されずに到達します。
+ゲートウェイがアップストリームのレスポンスを返す場合、アップストリームのステータスコードを保ちます。アップストリームのメッセージを保つかどうかはプロバイダーに依存します。Anthropic API アップストリームのエラー本体は変更されずに開発者に届きます。
 
-Amazon Bedrock、Claude Platform on AWS、Google Cloud の Agent Platform、および Microsoft Foundry アップストリームは、エラーテキストでアカウント ID、ロール ARN、およびプロジェクト ID に名前を付けることができます。ゲートウェイはその完全なテキストを[運用ログ](/docs/ja/claude-apps-gateway-deploy#logs)に記録します。開発者がこれらのアップストリームから見るものは、拒否に依存します：
+Amazon Bedrock、Claude Platform on AWS、Google Cloud の Agent Platform、および Microsoft Foundry アップストリームは、エラーテキストでアカウント ID、ロール ARN、およびプロジェクト ID に名前を付けることがあります。ゲートウェイはその完全なテキストを[運用ログ](/docs/ja/claude-apps-gateway-deploy#logs)に記録します。開発者がこれらのアップストリームから見るものは、拒否の種類に依存します：
 
-* Anthropic の標準エラーエンベロープの `400` または `413`：`prompt is too long` などのアップストリーム独自のメッセージ。Claude Platform on AWS、Agent Platform、および Microsoft Foundry はモデル API 拒否のためこのエンベロープを返します。
-* プロバイダー独自の形状の `400` または `413`：`capability_rejected:` トークン。ゲートウェイが拒否を分類できない場合、`400` で `upstream rejected the request` または `413` で `request too large for this upstream`。
-* その他のステータス：`429` で `upstream rate limit exceeded` などのステータスごとの汎用コピー。
+* Anthropic の標準エラーエンベロープの `400` または `413`：`prompt is too long` などのアップストリーム独自のメッセージ。Claude Platform on AWS、Agent Platform、および Microsoft Foundry はモデル API の拒否に対してこのエンベロープを返します。
+* プロバイダー独自の形式の `400` または `413`：`capability_rejected:` トークン。ゲートウェイが拒否を分類できない場合、`400` で `upstream rejected the request` または `413` で `request too large for this upstream`。
+* その他のステータス：`429` で `upstream rate limit exceeded` などのステータスごとの汎用文言。
 
 例えば、ゲートウェイは Amazon Bedrock の `Input is too long for requested model.` を `capability_rejected: prompt_too_long` に置き換えます。Claude Code は `prompt is too long` と同様に、そのトークンで[自動的にコンパクト](/docs/ja/errors#prompt-is-too-long)にします。
 
@@ -311,7 +311,7 @@ upstreams:
   実行するプロキシの per-user アイデンティティヘッダー
 </h5>
 
-`provider: anthropic` アップストリームの `base_url` を Anthropic API ではなく実行するプロキシに指すことができます。そのプロキシに各リクエストを送信した開発者を伝えるには、そのアップストリームで `forward_user_identity: true` を設定します。プロキシはその後、開発者ごとに支出を属性付けることができます。Claude Code v2.1.233 以降を実行しているゲートウェイが必要です。
+`provider: anthropic` アップストリームの `base_url` を Anthropic API ではなく実行するプロキシに向けることができます。そのプロキシに各リクエストを送信した開発者を伝えるには、そのアップストリームで `forward_user_identity: true` を設定します。プロキシはその後、開発者ごとに支出を帰属させることができます。Claude Code v2.1.233 以降を実行しているゲートウェイが必要です。
 
 例えば、`upstream-gateway.internal.example.com` のプロキシの場合：
 
@@ -334,15 +334,15 @@ upstreams:
 
 IdP トークンがメールを含まない場合、ゲートウェイは `x-claude-gateway-user-id` のみを送信し、2 つのメールヘッダーを省略します。IdP がメールを別のクレームに入れる場合、[`oidc.email_claim`](#oidc) をそのクレームに設定します。
 
-プロキシが開発者のメールを含むリクエストに `429` で応答する場合、ゲートウェイはその応答を開発者にそのまま返し、次のアップストリームにフェイルオーバーしません。プロキシの per-user 予算またはレート制限が保持されます。プロキシの他の応答は通常の[フェイルオーバールール](#upstreams)に従います。開発者の IdP トークンがメールを含まない場合、ゲートウェイはメールヘッダーなしでリクエストを転送するため、そのようなリクエストへの `429` はアップストリーム容量としてカウントされ、フェイルオーバーします。ゲートウェイサーバーの v2.1.267 より前では、すべての `429` がフェイルオーバーしました。
+プロキシが開発者のメールを含むリクエストに `429` で応答する場合、ゲートウェイはそのレスポンスを開発者にそのまま返し、次のアップストリームにフェイルオーバーしません。これにより、プロキシのユーザーごとの予算またはレート制限が維持されます。プロキシの他のレスポンスは通常の[フェイルオーバールール](#upstreams)に従います。開発者の IdP トークンがメールを含まない場合、ゲートウェイはメールヘッダーなしでリクエストを転送するため、そのようなリクエストへの `429` はアップストリーム容量としてカウントされ、フェイルオーバーします。ゲートウェイサーバーの v2.1.267 より前では、すべての `429` がフェイルオーバーしました。
 
-`forward_user_identity` は、`base_url` が実行するプロキシであるアップストリームにのみ設定します。ゲートウェイは開発者メールを、その `base_url` が名前を付けるサーバーに送信します。`base_url` が Anthropic API（デフォルト）の場合、ゲートウェイは起動を拒否します。
+`forward_user_identity` は、`base_url` が運用するプロキシであるアップストリームにのみ設定します。ゲートウェイは開発者メールを、その `base_url` が名前を付けるサーバーに送信します。`base_url` が Anthropic API（デフォルト）の場合、ゲートウェイは起動を拒否します。
 
 <h4 id="amazon-bedrock">
   Amazon Bedrock
 </h4>
 
-クライアント側の Amazon Bedrock デプロイメント（ゲートウェイが置き換えるか前に置く）については、[Claude Code on Amazon Bedrock](/docs/ja/amazon-bedrock) を参照してください。ゲートウェイ側のアップストリーム：
+ゲートウェイが置き換える、または前段に置くクライアント側の Amazon Bedrock デプロイについては、[Claude Code on Amazon Bedrock](/docs/ja/amazon-bedrock) を参照してください。ゲートウェイ側のアップストリーム：
 
 ```yaml theme={null}
 upstreams:
@@ -363,13 +363,13 @@ upstreams:
 
 空の `auth` ブロックは AWS SDK のデフォルト認証情報チェーンを使用します：環境変数、`~/.aws/credentials`、ECS タスクロール、EC2 インスタンスメタデータ、または EKS 上の IRSA。本番環境では、コンテナイメージに静的キーを埋め込む代わりに、ゲートウェイポッドに IAM ロールを与えます。
 
-明示的な認証情報は完全である必要があります。`aws_access_key_id` と `aws_secret_access_key` が一緒に設定されていない場合、または `aws_session_token` が設定されていない場合、ゲートウェイはブート時に失敗します。v2.1.207 より前では、部分的な `auth:` ブロックが検証に合格しました。
+明示的な認証情報は完全である必要があります。`aws_access_key_id` と `aws_secret_access_key` が一緒に設定されていない場合、または `aws_session_token` がそれらなしで設定されている場合、ゲートウェイはブート時に失敗します。v2.1.207 より前では、部分的な `auth:` ブロックが検証に合格しました。
 
 | セットアップ | 方法 |
 | - | - |
-| IAM 権限 | ゲートウェイのプリンシパルに `bedrock:InvokeModel` と `bedrock:InvokeModelWithResponseStream` を推論プロファイル ARN と基礎モデル ARN の両方に付与します。US リージョンの組み込みカタログの場合：`arn:aws:bedrock:<region>:<account>:inference-profile/us.anthropic.*` と `arn:aws:bedrock:*::foundation-model/anthropic.*`。また、基礎モデル ARN に `bedrock:CountTokens` を付与します。ゲートウェイはそれを使用して、クライアントが放棄したリクエストの入力トークンをカウントします。無料です。[支出制限](#admin)が正確に保たれるようにするためです。これなしでは、ゲートウェイはそのカウントのための 1 トークン Bedrock リクエストにフォールバックします。 |
-| モデルアクセス | Amazon Bedrock はデフォルトで商用リージョンでモデルアクセスを有効にします。残りのアカウントレベルゲートは Anthropic のワンタイムユースケースフォームです。AWS アカウント内の誰もそれを送信していない場合、Amazon Bedrock コンソールを開き、モデルカタログから Anthropic モデルを選択し、フォームを完成させます。AWS Organizations フォームと送信者が必要な権限については、[ユースケース詳細を送信](/docs/ja/amazon-bedrock#1-submit-use-case-details)を参照してください。 |
-| EKS（IRSA） | クラスターの OIDC プロバイダーにスコープされたゲートウェイのサービスアカウントの信頼ポリシーを持つ IAM ロールを作成します。サービスアカウントに `eks.amazonaws.com/role-arn: arn:aws:iam::<acct>:role/claude-gateway` で注釈を付けます。`auth: {}` がそれを取得します。 |
+| IAM 権限 | ゲートウェイのプリンシパルに `bedrock:InvokeModel` と `bedrock:InvokeModelWithResponseStream` を推論プロファイル ARN と基礎モデル ARN の両方に付与します。US リージョンの組み込みカタログの場合：`arn:aws:bedrock:<region>:<account>:inference-profile/us.anthropic.*` と `arn:aws:bedrock:*::foundation-model/anthropic.*`。また、基礎モデル ARN に `bedrock:CountTokens` を付与します。ゲートウェイはこれを無料で使用して、クライアントが放棄したリクエストの入力トークンをカウントし、[支出制限](#admin)を正確に保ちます。これがない場合、ゲートウェイはそのカウントのために 1 トークンの Bedrock リクエストにフォールバックします。 |
+| モデルアクセス | Amazon Bedrock はデフォルトで商用リージョンでモデルアクセスを有効にします。残りのアカウントレベルのゲートは Anthropic のワンタイムユースケースフォームです。AWS アカウント内の誰もそれを送信していない場合、Amazon Bedrock コンソールを開き、モデルカタログから Anthropic モデルを選択し、フォームを完成させます。AWS Organizations フォームと送信者が必要な権限については、[ユースケース詳細を送信](/docs/ja/amazon-bedrock#1-submit-use-case-details)を参照してください。 |
+| EKS（IRSA） | 上記のポリシーと、ゲートウェイのサービスアカウントにスコープされたクラスターの OIDC プロバイダー用の信頼ポリシーを持つ IAM ロールを作成します。サービスアカウントに `eks.amazonaws.com/role-arn: arn:aws:iam::<acct>:role/claude-gateway` で注釈を付けます。`auth: {}` がそれを取得します。 |
 | ECS / EC2 | IAM ロールをタスク定義またはインスタンスプロファイルにアタッチします。`auth: {}` がそれを取得します。 |
 | その他の場所 | `AWS_ACCESS_KEY_ID`、`AWS_SECRET_ACCESS_KEY`、および `AWS_SESSION_TOKEN` 環境変数を通じて認証情報を渡すか、`${VAR}` 展開で `auth:` に明示的に設定します |
 | リージョン | `region:` は API エンドポイントリージョンです。クロスリージョン推論プロファイルは、どれを選択するかに関わらず、地理（US、EU、APAC）全体でルーティングします。US 以外のリージョンまたはプロビジョニングされたスループット ARN の場合、正しい per-upstream ID を持つ [`models:`](#models) ブロックを追加します。 |
@@ -392,16 +392,16 @@ upstreams:
 ```
 
 <Warning>
-  ゲートウェイはガードレール入力タグをサポートしていません。プロンプトにガード コンテンツタグを追加しないため、Amazon Bedrock がタグ付き入力にのみ適用するガードレールフィルターはゲートウェイを通じたトラフィックで実行されません。入力タグに依存するフィルターについては、Amazon Bedrock ドキュメントの[入力タグ](https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails-tagging.html)を参照してください。
+  ゲートウェイはガードレール入力タグをサポートしていません。プロンプトにガードコンテンツタグを追加しないため、Amazon Bedrock がタグ付き入力にのみ適用するガードレールフィルターはゲートウェイを通じたトラフィックで実行されません。入力タグに依存するフィルターについては、Amazon Bedrock ドキュメントの[入力タグ](https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails-tagging.html)を参照してください。
 </Warning>
 
-また、このアップストリームのリクエストに署名するプリンシパル（ゲートウェイの AWS プリンシパル、または [`assume_role`](#bedrock-in-another-aws-account) で `role_arn` に名前を付けたロール）にガードレールで `bedrock:ApplyGuardrail` を付与します。
+また、このアップストリームのリクエストに署名するプリンシパル（ゲートウェイの AWS プリンシパル、または [`assume_role`](#bedrock-in-another-aws-account) を使用する場合は `role_arn` で指定したロール）に、そのガードレールに対する `bedrock:ApplyGuardrail` を付与します。
 
-すべての `bedrock` アップストリームで `guardrail` を設定するか、どれにも設定しないでください。ゲートウェイは混合で起動を拒否します。[フェイルオーバー](#multiple-upstreams)がリクエストをガードレールのない Bedrock アップストリームに送信する可能性があるためです。
+すべての `bedrock` アップストリームで `guardrail` を設定するか、どれにも設定しないでください。ゲートウェイは混在した設定では起動を拒否します。そうしないと、[フェイルオーバー](#multiple-upstreams)によってリクエストがガードレールのない Bedrock アップストリームに送信される可能性があるためです。
 
-ガードレールは Bedrock アップストリームのみをカバーします。`upstreams` に別のプロバイダーをリストする場合、ゲートウェイはガードレールなしでそのプロバイダーにリクエストを送信します。
+ガードレールは Bedrock アップストリームのみをカバーします。`upstreams` に別のプロバイダーをリストする場合、ゲートウェイはガードレールなしでそのプロバイダーにリクエストを送信します。ただし、そのプロバイダーが [`mantle`](#amazon-bedrock-mantle-endpoint) の場合は起動を拒否します。
 
-`/v1/messages` リクエストの本体が `amazon-bedrock-guardrailConfig` などの `amazon-bedrock-*` フィールドを含む場合、ガードレール セットを持つ Bedrock アップストリームに到達すると、ゲートウェイは 400 で応答し、転送しません。
+本体に `amazon-bedrock-guardrailConfig` などの `amazon-bedrock-*` フィールドを含む `/v1/messages` リクエストが、`guardrail` が設定された Bedrock アップストリームに到達すると、ゲートウェイはそれを転送せずに 400 で応答します。
 
 <a id="bedrock-in-another-aws-account" />
 
@@ -409,7 +409,7 @@ upstreams:
   別の AWS アカウントの Bedrock
 </h5>
 
-Bedrock アップストリームで `assume_role` を設定し、ゲートウェイは独自の AWS アイデンティティを使用して、名前を付けたロールで `sts:AssumeRole` を呼び出すだけです。別の AWS アカウントにある可能性があります。そのアップストリームからのすべての Bedrock リクエストは、STS が返す 1 時間の認証情報で署名されるため、長期アクセスキーはアカウント間を通過しません。
+Bedrock アップストリームで `assume_role` を設定すると、ゲートウェイは独自の AWS アイデンティティを、指定したロールに対して `sts:AssumeRole` を呼び出すためだけに使用します。このロールはゲートウェイとは別の AWS アカウントにあってもかまいません。そのアップストリームからのすべての Bedrock リクエストは、STS が返す 1 時間有効の認証情報で署名されるため、長期アクセスキーがアカウント間を行き来することはありません。
 
 Claude Code v2.1.281 以降を実行しているゲートウェイが必要です。以前のゲートウェイはキーを見つけたときに起動を拒否します。
 
@@ -428,11 +428,11 @@ upstreams:
 
 | キー | 意味 |
 | - | - |
-| `role_arn` | ゲートウェイが想定する IAM ロール。`arn:aws:iam::` または `arn:aws-us-gov:iam::` ARN として。このアップストリームが必要とする [Bedrock 権限](#amazon-bedrock)、`bedrock:CountTokens` を含む、およびアップストリームが `guardrail` を設定する場合は `bedrock:ApplyGuardrail` を与えます。 |
-| `external_id` | オプション。すべての `sts:AssumeRole` 呼び出しで外部 ID として送信されます。ロールの信頼ポリシーが 1 つを必要とする場合に設定し、すべての数字の場合は引用符で囲みます。 |
-| `session_name` | オプション。`email` または `sub` は各開発者に独自のセッションを与えます。[Per-developer AWS コスト属性](#per-developer-aws-cost-attribution)を参照してください。設定解除されている場合、すべてのリクエストは `claude-apps-gateway` という名前の 1 つのセッションを使用します。 |
+| `role_arn` | ゲートウェイが引き受ける IAM ロール。`arn:aws:iam::` または `arn:aws-us-gov:iam::` ARN として指定します。このアップストリームが必要とする [Bedrock 権限](#amazon-bedrock)（`bedrock:CountTokens` を含む）と、アップストリームが `guardrail` を設定する場合は `bedrock:ApplyGuardrail` を与えます。 |
+| `external_id` | オプション。すべての `sts:AssumeRole` 呼び出しで外部 ID として送信されます。ロールの信頼ポリシーが外部 ID を必要とする場合に設定し、数字のみの場合は引用符で囲みます。 |
+| `session_name` | オプション。`email` または `sub` は各開発者に独自のセッションを与えます。[Per-developer AWS コスト属性](#per-developer-aws-cost-attribution)を参照してください。設定されていない場合、すべてのリクエストは `claude-apps-gateway` という名前の 1 つのセッションを使用します。 |
 
-ロールの信頼ポリシーはゲートウェイ独自のプリンシパル（IRSA または ECS タスクロールなど）に名前を付けます。そのプリンシパルはロールで `sts:AssumeRole` が必要で、Bedrock 権限はありません。`external_id` を設定しない場合は `Condition` を削除します。
+ロールの信頼ポリシーはゲートウェイ独自のプリンシパル（IRSA または ECS タスクロールなど）に名前を付けます。そのプリンシパルはロールに対する `sts:AssumeRole` が必要で、自身の Bedrock 権限は不要です。`external_id` を設定しない場合は `Condition` を削除します。
 
 ```json theme={null}
 {
@@ -446,12 +446,12 @@ upstreams:
 }
 ```
 
-* STS が拒否または到達不可の場合、ゲートウェイはアップストリーム独自の認証情報でリクエストを送信しません。STS エラーをログに記録し、何をチェックするかを記録してから、リストした次のアップストリームを試みます。[アップストリームエラーメッセージ](#upstream-error-messages)は、アップストリームが成功しない場合にクライアントが受け取るものをカバーしています。`assume_role` のない後のアップストリームはそれ独自の認証情報でリクエストを提供するため、それが望むものの場合のみリストします。
-* ゲートウェイは地域 STS エンドポイント `sts.<region>.amazonaws.com` を呼び出します。ネットワークはそれに到達する必要があります。FIPS エンドポイントの場合、AWS 設定ファイルの `use_fips_endpoint` ではなく、ゲートウェイの環境で `AWS_USE_FIPS_ENDPOINT=true` を設定します。
-* `assume_role` は `provider: bedrock` にのみ適用され、SigV4 ソース認証情報が必要です。ゲートウェイは `aws_bearer_token` の隣に設定されている場合、起動を拒否します。
-* ゲートウェイが許可するすべての開発者はこのアップストリームを使用できます。[`managed`](#managed) はどの開発者がどのモデルを使用できるかを制御します。ロールを通じて提供されるモデルが別のアカウントからも提供されるのを防ぐには、`upstream_model` マップがこのアップストリームの名前のみを持つカスタム id を与えます。そのような id の場合、ゲートウェイはすべての他のアップストリームをスキップするため、リクエストもそれに到達する放棄されたリクエストのトークンカウントも別のアカウントにフェイルオーバーできません。組み込みモデル名はまだすべてのアップストリームで順に試みられます。これを含みます。そのアカウントもそれらを提供する場合を除き、このアップストリームを最後にリストします。
+* STS が拒否または到達不可の場合、ゲートウェイはアップストリーム独自の認証情報でリクエストを送信しません。STS エラーを確認すべき点とともにログに記録してから、リストした次のアップストリームを試みます。[アップストリームエラーメッセージ](#upstream-error-messages)は、どのアップストリームも成功しない場合にクライアントが受け取るものをカバーしています。`assume_role` のない後のアップストリームはそれ独自の認証情報でリクエストを処理するため、それが望む動作である場合のみリストしてください。
+* ゲートウェイはリージョンの STS エンドポイント `sts.<region>.amazonaws.com` を呼び出すため、ネットワークはそれに到達できる必要があります。FIPS エンドポイントの場合、AWS 設定ファイルの `use_fips_endpoint` ではなく、ゲートウェイの環境で `AWS_USE_FIPS_ENDPOINT=true` を設定します。
+* `assume_role` は `provider: bedrock` にのみ適用され、SigV4 ソース認証情報が必要です。ゲートウェイは `aws_bearer_token` と一緒に設定されている場合、起動を拒否します。
+* ゲートウェイが許可するすべての開発者はこのアップストリームを使用できます。[`managed`](#managed) はどの開発者がどのモデルを使用できるかを制御します。ロールを通じて提供されるモデルが別のアカウントからも提供されるのを防ぐには、`upstream_model` マップにこのアップストリームの名前のみを持つカスタム id をそのモデルに与えます。そのような id の場合、ゲートウェイは他のすべてのアップストリームをスキップするため、リクエストも、中断されたリクエストのトークンカウントも、別のアカウントにフェイルオーバーすることはありません。組み込みモデル名へのリクエストは引き続き[このアップストリームに到達する](#multiple-upstreams)可能性があり、ゲートウェイはそれを同じロールで署名します。このアカウントでもそれらのモデルを提供する場合を除き、このアップストリームを最後にリストしてください。
 
-この例は、分離されたアップストリームのみが提供するカスタム id を持つ 1 つのモデルを与えます：
+この例は、分離されたアップストリームのみが提供するカスタム id を 1 つのモデルに与えます：
 
 ```yaml theme={null}
 models:
@@ -466,7 +466,7 @@ models:
   Per-developer AWS コスト属性
 </h5>
 
-デフォルトでは、ゲートウェイはすべての Bedrock リクエストに 1 つの認証情報で署名するため、AWS はすべての開発者のリクエストを単一の IAM プリンシパルの下で見ます。[`assume_role`](#bedrock-in-another-aws-account) に `session_name: email` を追加し、ゲートウェイは開発者ごとに 1 時間ごとに `sts:AssumeRole` を呼び出し、セッション名をその開発者のメールに設定し、返された認証情報でリクエストに署名するため、各開発者のリクエストは独自の想定ロールセッションの下で AWS に到達します。ロールはゲートウェイ独自のアカウントにある可能性があります。
+デフォルトでは、ゲートウェイはすべての Bedrock リクエストに 1 つの認証情報で署名するため、AWS はすべての開発者のリクエストを単一の IAM プリンシパルの下で見ます。[`assume_role`](#bedrock-in-another-aws-account) に `session_name: email` を追加すると、ゲートウェイは開発者ごとに 1 時間に 1 回 `sts:AssumeRole` を呼び出し、セッション名をその開発者のメールに設定し、返された認証情報でリクエストに署名するため、各開発者のリクエストは独自の引き受けたロールセッションの下で AWS に到達します。ロールはゲートウェイ独自のアカウントにあってもかまいません。
 
 Claude Code v2.1.281 以降を実行しているゲートウェイが必要です。[AWS でのコスト属性](/docs/ja/claude-apps-gateway-on-aws#cost-attribution)は IAM ロールと AWS 請求がセッションを表示する場所をカバーしています。
 
@@ -480,21 +480,60 @@ upstreams:
       session_name: email              # or sub
 ```
 
-`session_name` は、検証されたクレームが AWS `RoleSessionName` になるかを選択します：`email` または `sub`。ゲートウェイは ASCII 文字、数字、および `_+,.@-` 以外の任意の文字を UTF-8 バイトごとに `=XX` 16 進数として書き込み、64 文字より長い結果をプレフィックスとハッシュに短縮するため、各開発者のセッション名は有効で一意のままです。トークンがクレームを欠いている開発者からのリクエストはこのアップストリームを通じて送信されず、オペレーター ログは `sub` に切り替えるか [`oidc.email_claim`](#oidc) を設定するよう指示します。
+`session_name` は、どの検証済みクレームが AWS `RoleSessionName` になるかを選択します：`email` または `sub`。ゲートウェイは ASCII 文字、数字、および `_+,.@-` 以外の任意の文字を UTF-8 バイトごとに `=XX` 16 進数として書き込み、64 文字より長い結果をプレフィックスとハッシュに短縮するため、各開発者のセッション名は有効で一意のままです。トークンがクレームを欠いている開発者からのリクエストはこのアップストリームを通じて送信されず、オペレーターログは `sub` に切り替えるか [`oidc.email_claim`](#oidc) を設定するよう指示します。
 
-アクティブな開発者は、ゲートウェイレプリカあたり 1 時間あたり 1 つの STS 呼び出しをコストします。同時最初リクエストは 1 つの呼び出しを共有します。
+アクティブな開発者 1 人あたり、ゲートウェイレプリカごとに 1 時間に 1 回の STS 呼び出しが発生します。同時に発生した最初のリクエストは 1 回の呼び出しを共有します。
 
-ゲートウェイはこのロールで 1 つの呼び出しも行います。クライアントが放棄したリクエストのトークンカウント。[支出制限](/docs/ja/claude-apps-gateway-spend-limits)が正確に保たれるようにするためです。そのカウントと[1 トークンフォールバックリクエスト](#amazon-bedrock)は共有 `claude-apps-gateway` セッションで署名されるため、AWS はフォールバックを `claude-apps-gateway` ではなく開発者に属性付けします。
+ゲートウェイはこのロールで独自の呼び出しも 1 つ行います。[支出制限](/docs/ja/claude-apps-gateway-spend-limits)を正確に保つための、クライアントが放棄したリクエストのトークンカウントです。そのカウントとその[1 トークンフォールバックリクエスト](#amazon-bedrock)は共有の `claude-apps-gateway` セッションで署名されるため、AWS はフォールバックを開発者ではなく `claude-apps-gateway` に帰属させます。
 
-厳密な per-developer 属性の場合、すべての Bedrock アップストリームで `assume_role` を `session_name` で設定します。それなしのアップストリームは独自の認証情報でリクエストに署名します。
+厳密な per-developer 属性の場合、リストするすべての Bedrock アップストリームで `assume_role` を `session_name` とともに設定します。それがないアップストリームは、処理するリクエストに独自の認証情報で署名します。
+
+<h4 id="amazon-bedrock-mantle-endpoint">
+  Amazon Bedrock Mantle エンドポイント
+</h4>
+
+`mantle` プロバイダーは、推論を Amazon Bedrock の [Mantle エンドポイント](/docs/ja/amazon-bedrock#use-the-mantle-endpoint)に送信します。ゲートウェイサーバーで Claude Code v2.1.283 以降が必要です。それより前のゲートウェイリリースはブート時にこれを拒否するため、追加する前にすべてのレプリカをアップグレードしてください。
+
+以下の例では Mantle を最初に置き、その後ろに Amazon Bedrock アップストリームを置いて、`models` フィールドに含まれないすべてのモデルを提供させます：
+
+```yaml theme={null}
+upstreams:
+  - provider: mantle
+    region: us-east-1
+    models: [claude-opus-4-7, claude-haiku-4-5]   # required
+    auth: {}                           # AWS default credential chain
+  - provider: bedrock
+    region: us-east-1
+    auth: {}
+```
+
+以下の表は、`mantle` アップストリーム固有のフィールドを示しています。
+
+| フィールド | 必須 | 説明 |
+| - | - | - |
+| `region` | はい | AWS リージョン。ゲートウェイはここからエンドポイントを `https://bedrock-mantle.<region>.api.aws/anthropic` として導出します。 |
+| `models` | はい | Mantle で AWS アカウントに付与されているモデル。`claude-haiku-4-5` のように、クライアントが送信する名前で指定します。これらのモデルのみがこのアップストリームに送られ、それ以外のモデルは次のアップストリームにスキップされます。 |
+| `auth` | いいえ | [Amazon Bedrock](#amazon-bedrock) アップストリームの `auth` ブロックと同じキーを、同じルールで受け付けます。 |
+| `base_url` | いいえ | 導出されたエンドポイントを上書きします。末尾の `/anthropic` パスは残してください。 |
+
+アップストリームの AWS アイデンティティに、推論とトークンカウント用の Mantle 独自の IAM アクションを付与します。これらは [Mantle エンドポイントを使用する](/docs/ja/amazon-bedrock#use-the-mantle-endpoint)に記載されています。
+
+ゲートウェイが認識しない Mantle モデル ID の場合は、最上位の [`models:`](#models) ブロックに、`upstream_model` がこのアップストリームの名前をその ID にマップするエントリを追加します。次に、そのエントリの `id` をこのアップストリームの `models` フィールドにも追加します。
+
+`bedrock` アップストリームの `guardrail` と `assume_role` の設定は、Mantle が処理するリクエストには適用されません：
+
+* **`guardrail`**：ゲートウェイは Mantle に送信するリクエストに [Bedrock ガードレール](#apply-an-amazon-bedrock-guardrail)を適用しないため、いずれかの `bedrock` アップストリームが `guardrail` を設定している状態で `mantle` アップストリームがリストされていると、起動を拒否します。
+* **`assume_role`**：`mantle` アップストリームは [`assume_role`](#bedrock-in-another-aws-account) を受け付けません。Mantle が処理するリクエストは `mantle` アップストリーム自身の `auth` 認証情報で送信され、[開発者ごとに帰属](#per-developer-aws-cost-attribution)されません。
+
+Mantle 独自のエラーレスポンスの意味については、[Mantle エンドポイントのエラー](/docs/ja/amazon-bedrock#mantle-endpoint-errors)を参照してください。
 
 <h4 id="claude-platform-on-aws">
   Claude Platform on AWS
 </h4>
 
-Claude Platform on AWS は、`aws-external-anthropic.<region>.api.aws` で AWS インフラストラクチャ上の第一者 Anthropic API を提供します。第一者モデル ID を使用し、`anthropic-beta` ヘッダーを送信されたとおりに尊重し、`count_tokens` を提供するため、Bedrock 固有の翻訳は適用されません。`anthropicAws` プロバイダーには Claude Code v2.1.198 以降が必要です。以前のゲートウェイリリースはブート時にそれを拒否します。
+Claude Platform on AWS は、`aws-external-anthropic.<region>.api.aws` で AWS インフラストラクチャ上のファーストパーティ Anthropic API を提供します。ファーストパーティのモデル ID を使用し、`anthropic-beta` ヘッダーを送信されたとおりに尊重し、`count_tokens` を提供するため、Bedrock 固有の変換は適用されません。`anthropicAws` プロバイダーには Claude Code v2.1.198 以降が必要です。以前のゲートウェイリリースはブート時にそれを拒否します。
 
-同じプラットフォームのクライアント側デプロイメントについては、[Claude Code on Claude Platform on AWS](/docs/ja/claude-platform-on-aws) を参照してください。ゲートウェイ側のアップストリーム：
+同じプラットフォームのクライアント側デプロイについては、[Claude Code on Claude Platform on AWS](/docs/ja/claude-platform-on-aws) を参照してください。ゲートウェイ側のアップストリーム：
 
 ```yaml theme={null}
 upstreams:
@@ -513,7 +552,7 @@ upstreams:
     # base_url: https://aws-external-anthropic.us-east-1.api.aws
 ```
 
-プラットフォームはゲートウェイの環境で Amazon Bedrock とは別の AWS アカウントで実行され、独自のサービス名 `aws-external-anthropic` の SigV4 リクエストに署名するため、Bedrock スコープの IAM ロールはそれを認可しません。`auth.api_key` の API キーは SigV4 認証情報も設定されている場合に優先されます。空の `auth` ブロックは AWS SDK のデフォルト認証情報チェーンを使用します。[Amazon Bedrock](#amazon-bedrock) アップストリームが使用するのと同じチェーン。
+このプラットフォームは Amazon Bedrock とは別の AWS アカウントで実行され、独自のサービス名 `aws-external-anthropic` で SigV4 リクエストに署名するため、Bedrock スコープの IAM ロールではそれを認可できません。`auth.api_key` の API キーは、SigV4 認証情報も設定されている場合に優先されます。空の `auth` ブロックは AWS SDK のデフォルト認証情報チェーンを使用します。これは [Amazon Bedrock](#amazon-bedrock) アップストリームが使用するのと同じチェーンです。
 
 | フィールド | 必須 | 説明 |
 | - | - | - |
@@ -521,9 +560,9 @@ upstreams:
 | `workspace_id` | はい | すべてのリクエストでヘッダーとして送信されます。プラットフォームはそれを必要とします |
 | `auth.api_key` | いいえ | プラットフォームの API キー。`x-api-key` として送信されます。ベアラートークンではありません。2 つの認証モードは API キーまたは SigV4 です。 |
 | `auth.aws_access_key_id` / `auth.aws_secret_access_key` | いいえ | 明示的な SigV4 認証情報。一方を他方なしで設定するとブート時に失敗します。`auth.aws_session_token` はそれらと一緒に受け入れられます。 |
-| `base_url` | いいえ | 導出されたエンドポイントをオーバーライド |
+| `base_url` | いいえ | 導出されたエンドポイントを上書き |
 
-プラットフォームは第一者モデル ID を解決するため、組み込みカタログは [`models:`](#models) ブロックなしでそれにルーティングします。`models:` リストをキュレートする場合、エントリを `anthropicAws:` で第一者 ID でキーします。
+プラットフォームはファーストパーティのモデル ID を解決するため、組み込みカタログは [`models:`](#models) ブロックなしでそれにルーティングします。`models:` リストをキュレートする場合、エントリのキーを `anthropicAws:` とし、ファーストパーティの ID を指定します。
 
 <h4 id="google-cloud-agent-platform">
   Google Cloud Agent Platform
@@ -545,21 +584,21 @@ upstreams:
 
 空の `auth` ブロックは Application Default Credentials を使用します：`GOOGLE_APPLICATION_CREDENTIALS`、GCE メタデータ、または GKE Workload Identity。サービスアカウント JSON キーファイルはサポートされていますが、推奨されません。Workload Identity を使用するか、GCE または Cloud Run インスタンスにサービスアカウントをアタッチします。
 
-Google Cloud の Agent Platform の[グローバルエンドポイント](https://cloud.google.com/vertex-ai/generative-ai/docs/learn/locations)を使用するには `region: global` を設定します。Google はその後、各リクエストを利用可能なリージョンにルーティングするため、per-region モデル可用性を追跡しません。特定のリージョンを設定するとすべてのリクエストをそれにピンします。
+リージョンエンドポイントの代わりに [Google Cloud の Agent Platform のグローバルエンドポイント](https://cloud.google.com/vertex-ai/generative-ai/docs/learn/locations)を使用するには、`region: global` を設定します。Google が各リクエストを利用可能なリージョンにルーティングするため、リージョンごとのモデル可用性を追跡する必要がありません。特定のリージョンを設定すると、すべてのリクエストがそのリージョンに固定されます。
 
 | セットアップ | 方法 |
 | - | - |
-| IAM 権限 | ゲートウェイのサービスアカウントにプロジェクトで `roles/aiplatform.user` を付与するか、`aiplatform.endpoints.predict` を持つカスタムロール。Google Cloud の Agent Platform API（`aiplatform.googleapis.com`）を有効にします。 |
-| モデルアクセス | Model Garden で、プロジェクトの Claude モデルを有効にします。特定のリージョンに公開されます。サポートされているリージョンについてはモデルカードを確認してください。 |
+| IAM 権限 | ゲートウェイのサービスアカウントにプロジェクトで `roles/aiplatform.user`、または `aiplatform.endpoints.predict` を持つカスタムロールを付与します。Google Cloud の Agent Platform API（`aiplatform.googleapis.com`）を有効にします。 |
+| モデルアクセス | Model Garden で、プロジェクトの Claude モデルを有効にします。モデルは特定のリージョンに公開されます。サポートされているリージョンについてはモデルカードを確認してください。 |
 | GKE（Workload Identity） | GCP サービスアカウントをゲートウェイの Kubernetes サービスアカウントにバインドし、KSA に `iam.gke.io/gcp-service-account: claude-gateway@<proj>.iam.gserviceaccount.com` で注釈を付けます。`auth: {}` がそれを取得します。 |
 | Cloud Run / GCE | サービスのサービスアカウントを `roles/aiplatform.user` を持つものに設定します。`auth: {}` がそれを取得します。 |
-| その他の場所 | `auth: { service_account_json: /secrets/sa.json }`。マウントされたシークレットとしての JSON キーファイルへのパス。フィールドはキーコンテンツではなくファイルパスを取るため、`${file:…}` 展開は関係ありません。 |
+| その他の場所 | `auth: { service_account_json: /secrets/sa.json }`。シークレットとしてマウントされた JSON キーファイルへのパスです。このフィールドはキーの内容ではなくファイルパスを取るため、`${file:…}` 展開は関係ありません。 |
 
 <h4 id="microsoft-foundry">
   Microsoft Foundry
 </h4>
 
-クライアント側の Microsoft Foundry デプロイメントについては、[Claude Code on Microsoft Foundry](/docs/ja/microsoft-foundry) を参照してください。ゲートウェイ側のアップストリーム：
+クライアント側の Microsoft Foundry デプロイについては、[Claude Code on Microsoft Foundry](/docs/ja/microsoft-foundry) を参照してください。ゲートウェイ側のアップストリーム：
 
 ```yaml theme={null}
 upstreams:
@@ -571,12 +610,12 @@ upstreams:
     #   api_key: ${FOUNDRY_API_KEY}
 ```
 
-`use_azure_ad: true` は `DefaultAzureCredential` を通じて解決します：AKS、ACI、または App Service 上の Managed Identity。Azure CLI。または環境認証情報。API キーは機能しますが、プロジェクト全体であり、自動的にローテーションしません。Microsoft Foundry のエンドポイントは `resource:` から導出されます。Azure Government などのソブリンクラウドの場合、オプションの `base_url` を設定してオーバーライドします。
+`use_azure_ad: true` は `DefaultAzureCredential` を通じて解決します：AKS、ACI、または App Service 上の Managed Identity、Azure CLI、または環境認証情報。API キーは機能しますが、プロジェクト全体に適用され、自動的にローテーションしません。Microsoft Foundry のエンドポイントは `resource:` から導出されます。Azure Government などのソブリンクラウドの場合、オプションの `base_url` を設定して上書きします。
 
 | セットアップ | 方法 |
 | - | - |
 | RBAC | ゲートウェイのアイデンティティに Microsoft Foundry リソースで `Azure AI User` または `Cognitive Services User` を付与 |
-| デプロイメント | Microsoft Foundry は正規モデル ID ではなく、管理者が選択したデプロイメント名を使用します。各正規 ID をデプロイメント名にマップする [`models:`](#models) ブロックを追加します。 |
+| デプロイ | Microsoft Foundry は正規モデル ID ではなく、管理者が選択したデプロイ名を使用します。各正規 ID をデプロイ名にマップする [`models:`](#models) ブロックを追加します。 |
 | AKS（ワークロードアイデンティティ） | User-Assigned Managed Identity をクラスターの OIDC 発行者とフェデレーションし、ゲートウェイのサービスアカウントにバインドします。`use_azure_ad: true` は `WorkloadIdentityCredential` を通じてそれを取得します。 |
 | ACI / App Service | リソースでシステム割り当てまたはユーザー割り当てマネージドアイデンティティを有効にします。`use_azure_ad: true` がそれを取得します。 |
 | その他の場所 | `auth: { api_key: "${FOUNDRY_API_KEY}" }`。`{ }` 内の `${…}` を引用符で囲みます。 |
@@ -585,11 +624,11 @@ upstreams:
   アップストリームリクエストの静的ヘッダー
 </h4>
 
-ゲートウェイが 1 つのアップストリームに送信するリクエストに固定ヘッダーを追加するには、そのアップストリームで `headers:` を設定します。実行するプロキシがヘッダーでトラフィックをルーティングまたは属性付けする場合に使用します。
+ゲートウェイが 1 つのアップストリームに送信するリクエストに固定ヘッダーを追加するには、そのアップストリームで `headers:` を設定します。プロバイダーの前段で実行するプロキシがヘッダーでトラフィックをルーティングまたは帰属させる場合に使用します。
 
 `headers:` にはゲートウェイサーバーで Claude Code v2.1.277 以降が必要です。以前のゲートウェイはキーを見つけたときに起動を拒否します。すべてのレプリカをアップグレードしてからキーを追加し、以前のバージョンにロールバックする前にキーを削除します。
 
-ヘッダーは `base_url` が名前を付けるサーバー、または `base_url` が設定されていない場合はプロバイダー独自のエンドポイントに移動します。プロキシがそれらを削除しない限り、プロバイダーもそれらを受け取ります。
+ヘッダーは `base_url` が名前を付けるサーバー、または `base_url` が設定されていない場合はプロバイダー独自のエンドポイントに送られます。プロキシがそれらを削除しない限り、プロバイダーもそれらを受け取ります。
 
 この例は、`upstream-proxy.internal.example.com` のプロキシを通じて `provider: vertex` アップストリームに到達します。プロキシが読み取る `x-source` ヘッダーを設定し、`PROXY_TOKEN` 環境変数からのトークンを `x-proxy-token` として送信します：
 
@@ -609,20 +648,20 @@ upstreams:
 
 シークレットを設定ファイルから外すには、[シークレット展開](#secret-expansion)を使用して、`${VAR}` で環境変数から、または `${file:/path}` でファイルから値を読み込みます。空の値に解決する `${VAR}` はゲートウェイの起動を停止します。
 
-`headers:` はすべてのプロバイダーで機能し、各アップストリームは独自のみを送信します。
+`headers:` はすべてのプロバイダーで機能し、各アップストリームは自身のヘッダーのみを送信します。
 
 ゲートウェイがアップストリームに送信するすべてのリクエストがそれらを含むわけではありません：
 
 | ゲートウェイがこのアップストリームに送信するリクエスト | `headers:` を含む |
 | - | - |
-| `/v1/messages`。ストリーミングまたはそうでなく、および `/v1/messages/count_tokens` | はい |
+| `/v1/messages`（ストリーミングかどうかを問わない）、および `/v1/messages/count_tokens` | はい |
 | 別のアップストリームからフェイルオーバーしたリクエスト | はい。このアップストリームの `headers:` のみ |
 | クライアントが放棄したリクエストの Amazon Bedrock の `CountTokens` 呼び出し | いいえ |
 | Workload Identity Federation トークン交換 | いいえ |
 
-AWS SigV4 でリクエストに署名する Amazon Bedrock または Claude Platform on AWS アップストリームでは、これらのヘッダーは署名の一部であるため、プロキシはそれらを変更されずに通す必要があります。
+AWS SigV4 でリクエストに署名する Amazon Bedrock または Claude Platform on AWS アップストリームでは、これらのヘッダーは署名の一部であるため、プロキシはそれらを変更せずに通す必要があります。
 
-ゲートウェイが予約するヘッダー名を使用する場合、起動エラーはそのヘッダーに名前を付けて起動を拒否します。予約名には以下が含まれます：
+ゲートウェイが予約する名前を使用すると、ゲートウェイは起動を拒否し、起動エラーにそのヘッダーの名前が表示されます。予約名には以下が含まれます：
 
 * `authorization` と `x-api-key`
 * `host`、`content-type`、および `user-agent`
@@ -632,21 +671,21 @@ AWS SigV4 でリクエストに署名する Amazon Bedrock または Claude Plat
   複数のアップストリーム
 </h4>
 
-同じプロバイダーは異なる `name:` で複数回表示できます。これは異なるリージョン、異なるアカウント（異なる認証情報チェーン経由）、プロビジョニングされたスループット対オンデマンド、およびクロスプロバイダーフェイルバックをカバーします。
+同じプロバイダーは異なる `name:` で複数回表示できます。これは異なるリージョン、異なるアカウント（異なる認証情報チェーン経由）、プロビジョニングされたスループット対オンデマンド、およびクロスプロバイダーフォールバックをカバーします。
 
-ゲートウェイはアップストリームを順に試みます。`5xx`、`429`、`401`、`403`、`404`、タイムアウト、および欠落エンドポイント（`501`）がフェイルオーバーします。他の `4xx` はそうしません。
+ゲートウェイはアップストリームを順に試みます。`5xx`、`429`、`401`、`403`、`404`、タイムアウト、および欠落エンドポイント（`501`）がフェイルオーバーします。他の `4xx` はフェイルオーバーしません。
 
-`429` は per-upstream 容量であるため、プロビジョニングされたスループット（PT）枯渇はオンデマンドにフェイルオーバーします。アップストリームで [`forward_user_identity: true`](#per-user-identity-headers-for-a-proxy-you-run) を設定する場合、開発者のメールを含むリクエストへの `429` は per-user 拒否であり、フェイルオーバーしません。
+`429` はアップストリームごとの容量であるため、プロビジョニングされたスループット（PT）の枯渇はオンデマンドにフェイルオーバーします。アップストリームで [`forward_user_identity: true`](#per-user-identity-headers-for-a-proxy-you-run) を設定する場合、開発者のメールを含むリクエストへの `429` は代わりにユーザーごとの拒否となり、フェイルオーバーしません。
 
 すべてのリクエストは最初のアップストリームで開始されます。リクエストは、それより前のすべてのアップストリームが失敗したか、要求されたモデルを提供しない場合のみ、後のアップストリームに到達します。
 
-ゲートウェイは失敗したアップストリームの記録を保ちません。アップストリームがダウンしている間、それに到達するすべてのリクエストはそれを試み、失敗するのを待ってから先に進みます。
+ゲートウェイは失敗したアップストリームの記録を保たないため、アップストリームがダウンしている間、それに到達するすべてのリクエストはそれを試み、失敗するのを待ってから先に進みます。
 
-Anthropic API アップストリームの場合、[`timeouts.upstream_ttfb_ms`](#http-tuning)はダウンアップストリームでの待機を制限します。その設定は他のプロバイダーには適用されません。ゲートウェイはアップストリームが応答を開始するまで最大 1 時間待機します。
+Anthropic API アップストリームの場合、[`timeouts.upstream_ttfb_ms`](#http-tuning) がダウンしたアップストリームでの待機を制限します。その設定は他のプロバイダーには適用されず、ゲートウェイはアップストリームが応答を開始するまで最大 1 時間待機します。
 
-`404` は per-upstream モデル可用性であるため、モデルを有効にしていないアップストリームは、それを提供する後のアップストリームをブロックしません。要求されたモデルを解決できないアップストリームはネットワークラウンドトリップなしでスキップされます。
+`404` はアップストリームごとのモデル可用性であるため、モデルを有効にしていないアップストリームは、それを提供する後のアップストリームをブロックしません。要求されたモデルを解決できないアップストリームはネットワークラウンドトリップなしでスキップされます。
 
-この例は、プロビジョニングされたスループット Amazon Bedrock 割り当てを最初にルーティングし、オンデマンドと 2 番目のアカウントにオーバーフロー、最後に Anthropic API にフォールバックします：
+この例は、プロビジョニングされたスループットの Amazon Bedrock 割り当てを最初にルーティングし、オンデマンドと 2 番目のアカウントにオーバーフローし、最後に Anthropic API にフォールバックします：
 
 ```yaml theme={null}
 upstreams:
@@ -686,15 +725,15 @@ models:
 
 | レバー | 方法 |
 | - | - |
-| 異なるリージョン | リージョンごとに 1 つの Amazon Bedrock アップストリーム。独自の `region:` を持つ。[`auto_include_builtin_models: true`](#models) でクロスリージョン推論プロファイルは自動的にルーティングします。リージョンピン配置デプロイメントの場合、`models:` ブロックを使用します。 |
+| 異なるリージョン | リージョンごとに 1 つの Amazon Bedrock アップストリームを置き、それぞれ独自の `region:` を持たせます。[`auto_include_builtin_models: true`](#models) ではクロスリージョン推論プロファイルが自動的にルーティングします。リージョン固定のデプロイの場合、`models:` ブロックを使用します。 |
 | 異なるアカウント | アカウントごとに 1 つの Amazon Bedrock アップストリーム。デフォルトチェーン（`auth: {}`）はポッドのアイデンティティを使用します。2 番目のアカウントの場合、短期認証情報でそれに到達するために [`assume_role`](#bedrock-in-another-aws-account) を追加するか、`auth:` で明示的な認証情報またはベアラートークンを設定します。 |
-| プロビジョニングされたスループット | モデルをそのアップストリームの名前の `models:` のプロビジョニングされたスループット ARN にマップします。他のアップストリームはオンデマンド ID を保つため、PT 容量はフェイルオーバーする前に枯渇します。 |
+| プロビジョニングされたスループット | そのアップストリームの名前について、`models:` でモデルをプロビジョニングされたスループット ARN にマップします。他のアップストリームはオンデマンド ID を保つため、PT 容量はフェイルオーバーする前に使い切られます。 |
 | VPC / FIPS エンドポイント | アップストリームで `base_url:` を VPC エンドポイントまたは FIPS エンドポイント URL に設定 |
-| モデルスコープルーティング | カスタムモデル `id` のみ。組み込み Claude モデルではなく、`upstream_model:` マップに存在しないアップストリームをスキップします。ゲートウェイは組み込みモデルをすべてのアップストリームで順に試み、マップに エントリがない場合はプロバイダーのデフォルト ID を使用するため、組み込みモデルの場合、マップはアップストリームが試みられるかどうかではなく、アップストリームが受け取る ID を変更します。ID を拒否するアップストリームは、他のアップストリームエラーと同じ[フェイルオーバールール](#upstreams)に従います。 |
+| モデルスコープルーティング | 組み込み Claude モデルではないカスタムモデル `id` のみが、その `upstream_model:` マップにないアップストリームをスキップします。`mantle` アップストリームは、その [`models` フィールド](#amazon-bedrock-mantle-endpoint)にリストされたモデルに対してのみ試行されます。他のすべてのアップストリームでは、ゲートウェイは組み込みモデルを順に試み、マップにエントリがない場合はプロバイダーのデフォルト ID を使用するため、組み込みモデルの場合、マップはアップストリームが試みられるかどうかではなく、アップストリームが受け取る ID を変更します。ID を拒否するアップストリームは、他のアップストリームエラーと同じ[フェイルオーバールール](#upstreams)に従います。 |
 
-クラウドプロバイダー間、または直接 Anthropic API へのフェイルオーバーは、リクエストを制御する契約、地理、およびその他の条件を変更します。
+クラウドプロバイダー間、または直接 Anthropic API へのフェイルオーバーは、リクエストに適用される契約、地理、およびその他の条件を変更します。
 
-CLI は、どのアップストリームが特定のリクエストを提供するかに関わらず、ゲートウェイに同じ機能ゲーティングを適用するため、フェイルオーバーはアップストリームが拒否する本体フィールドを送信しません。
+CLI は、どのアップストリームが特定のリクエストを処理するかに関わらず、ゲートウェイに同じ機能ゲーティングを適用するため、フェイルオーバーによってアップストリームが拒否する本体フィールドが送信されることはありません。
 
 <h2 id="optional-sections">
   オプションセクション
@@ -846,6 +885,9 @@ managed:
     - match: {}
       cli:
         availableModels: [claude-opus-4-8, claude-sonnet-4-6, claude-haiku-4-5]
+        # Make the Default option in /model resolve inside each policy's
+        # list. The eng-contractors policy inherits enforceAvailableModels.
+        enforceAvailableModels: true
 ```
 
 `match: {}` キャッチオール（慣例的に最後にリストされる）は基盤層として扱われます。他のすべてのポリシーは、設定しないキーをキャッチオールから継承するため、ロールごとのエントリは組織のデフォルトと異なる内容のみをリストすれば済みます。マージルールはキータイプに依存します：
@@ -854,7 +896,7 @@ managed:
 * **拒否リストとフック配列**：`permissions.deny`、`permissions.ask`、`disabledMcpjsonServers`、`deniedMcpServers`、`blockedMarketplaces`、およびすべての `hooks` イベントタイプ配列。これらは基盤とポリシーの和集合を取るため、組織全体の拒否または監査フックがロールごとの上書きで誤って削除されることはありません。
 * **レコード型キー**：`env`、`modelOverrides`、`skillOverrides`。これらは浅くマージされるため、ロールごとの `env` ブロックは設定するキーを上書きし、残りを基盤から継承します。
 
-`availableModels` は `/v1/messages` でサーバー側でも強制されるため、拒否されたモデルはクライアントが送信する内容に関わらず `400` を返します。
+`availableModels` は `/v1/messages` でサーバー側でも強制されるため、拒否されたモデルはクライアントが送信する内容に関わらず `400` を返します。空のリストはすべてのモデルを拒否します。このチェックは、デベロッパーがモデルを選択する前にセッションが開始するモデルにも適用されるため、[ポリシーが許可するモデルでセッションを開始](#start-sessions-on-a-model-the-policy-allows) してください。
 
 ゲートウェイはリクエストを中継する前に `model` 値自体を検証するため、不正な形式の値は上流に到達しません。2 つの場合に `400` でリクエストを拒否します：
 
@@ -880,6 +922,29 @@ managed:
   * **ポリシーの内容**：ポリシーを編集して再デプロイすると、接続されたクライアントの次の管理設定ポーリング時（1 時間以内）に反映されます。ただし [次の起動時にのみ適用される変更](/docs/ja/server-managed-settings#fetch-and-caching-behavior) は除きます。
   * **グループメンバーシップ**：ユーザーのグループメンバーシップを変更すると、どのポリシーがそのユーザーにマッチするかが変わります。これは次のセッション再発行時、つまり次のサイレントリフレッシュ時に有効になり、`session.ttl_hours` が上限となります。
 </Note>
+
+<h4 id="start-sessions-on-a-model-the-policy-allows">
+  ポリシーが許可するモデルでセッションを開始する
+</h4>
+
+`availableModels` に Claude Code のデフォルトモデルが含まれていない場合、デベロッパーが `/model` などでリストにあるモデルを選択するまで、セッションは `400` レスポンスを受け取ります。ゲートウェイセッションでは、デフォルトは `opus` エイリアスが解決される Opus モデルであり、`availableModels` だけではこれは変わりません。
+
+これを解決するには、同じ `cli` ブロックで [`enforceAvailableModels: true`](/docs/ja/model-config#enforce-the-allowlist-for-the-default-model) を設定し、リストに含まれるエントリの種類を確認します：
+
+* **`sonnet` などのエイリアス、または `claude-sonnet-4-6` などの組み込み ID**：セッションはそれらのモデルのいずれかで開始し、`/model` の Default オプションはそのモデルに解決されます
+* **リストにエイリアスも組み込み ID もない場合**：セッションは引き続き組み込みのデフォルトで開始する可能性があるため、そのポリシーの `cli` ブロックで [`model`](/docs/ja/model-config#control-the-model-users-run-on) もリスト内の ID のいずれかに設定してください
+
+このポリシーは [`models`](#models) で定義された 1 つのカスタム ID をリストし、その ID でセッションを開始します：
+
+```yaml theme={null}
+managed:
+  policies:
+    - match: { groups: [restricted-projects] }
+      cli:
+        availableModels: [claude-opus-restricted]
+        enforceAvailableModels: true
+        model: claude-opus-restricted
+```
 
 <h4 id="matcher-values-that-stop-the-gateway-at-boot">
   ゲートウェイをブート時に停止させる matcher 値
@@ -918,6 +983,7 @@ managed:
       cli:
         # Model access (also enforced server-side at /v1/messages)
         availableModels: [claude-opus-4-8, claude-sonnet-4-6, claude-haiku-4-5]
+        enforceAvailableModels: true              # Default resolves inside the list
 
         # Permission policy
         permissions:
@@ -1039,6 +1105,7 @@ managed:
     - match: { groups: [eng-contractors] }
       cli:
         availableModels: [claude-sonnet-4-6]
+        enforceAvailableModels: true
       desktop:
         isLocalDevMcpEnabled: false
         disableAutoUpdates: true
@@ -1432,6 +1499,11 @@ upstreams:
   #   region: us-east-1
   #   auth: {}
 
+  # - provider: mantle
+  #   region: us-east-1
+  #   models: [claude-opus-4-8, claude-opus-4-7, claude-haiku-4-5]
+  #   auth: {}
+
   # - provider: anthropicAws
   #   region: us-east-1
   #   workspace_id: wrkspc_...
@@ -1454,6 +1526,7 @@ models:
     upstream_model:
       anthropic: claude-opus-4-8
       # bedrock: us.anthropic.claude-opus-4-8
+      # mantle: anthropic.claude-opus-4-8
       # anthropicAws: claude-opus-4-8
       # vertex: claude-opus-4-8
       # foundry: <your-opus-deployment-name>
@@ -1471,15 +1544,16 @@ managed:
     - match: { groups: [contractors] }
       cli:
         availableModels: [claude-haiku-4-5]
-        # Constrain the Default picker option to availableModels instead of
-        # the tier default, so contractors don't get a 400 on the default.
-        enforceAvailableModels: true
         # allow auto-approves these tools; it does not block the rest.
         # Add deny rules to restrict tools.
         permissions: { allow: [Read, Grep] }
     - match: {}
       cli:
         availableModels: [claude-opus-4-8, claude-sonnet-4-6, claude-haiku-4-5]
+        # Constrain the Default picker option to each policy's availableModels
+        # instead of the built-in default, so no role gets a 400 on Default.
+        # The contractors policy inherits this key.
+        enforceAvailableModels: true
         permissions:
           allow: [Read, Grep, Bash, Edit]
           deny: ["WebFetch"]

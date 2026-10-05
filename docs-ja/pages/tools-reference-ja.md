@@ -487,6 +487,19 @@ Windows では、Claude Code は PowerShell 7 以降の `pwsh.exe` を自動検�
 
 Claude Code は PowerShell をプロセススコープのみで `-ExecutionPolicy Bypass` で起動するため、`.ps1` スクリプトとモジュールインポートは、マシンのポリシーを変更することなく、デフォルトの Windows インストールで機能します。プロセススコープのバイパスは、グループポリシーの `MachinePolicy` または `UserPolicy` をオーバーライドしないため、エンタープライズポリシーは引き続き適用されます。マシンの有効な実行ポリシーを尊重するには、`CLAUDE_CODE_POWERSHELL_RESPECT_EXECUTION_POLICY=1` を設定します。
 
+<h3 id="bash-deny-rules-also-turn-off-the-powershell-tool">
+  Bash の拒否ルールは PowerShell ツールもオフにする
+</h3>
+
+Git Bash がインストールされている Windows では、Bash を拒否すると、そのセッションでは PowerShell ツールもオフになります。これは単独の `Bash` だけでなく `Bash(git push *)` のようなスコープ付きルールにも適用され、いずれかの設定ファイルのルールにも `--disallowedTools` のルールにも適用されます。Claude Code がこのように動作するのは、`Bash` ルールでは PowerShell ツールが制限されないためです。PowerShell ツールには[独自の権限ルール](/docs/ja/permissions#powershell)があります。PowerShell がオンのままだと、Claude はルールで Bash において拒否されている操作を PowerShell で実行できてしまいます。
+
+Bash の拒否ルールと併せて PowerShell ツールをオンのままにするには、次のいずれかを行います。
+
+* [PowerShell ツールを有効にする](#enable-the-powershell-tool)に示すように、環境または設定ファイルの `env` ブロックで `CLAUDE_CODE_USE_POWERSHELL_TOOL=1` を設定します。
+* `PowerShell(git push *)` 拒否ルールなど、スコープ付きの [`PowerShell` 権限ルール](/docs/ja/permissions#powershell)を設定ファイルに追加します。
+
+これらのいずれも行わない場合、スコープ付きの Bash 拒否ルールでは Bash ツールは利用可能なままですが、Claude Code は警告なしに PowerShell をオフにします。Bash ツール全体を除外するルールの場合、そのセッションで Claude が使えるシェルツールはなくなります。
+
 <h3 id="shell-selection-in-settings-hooks-and-skills">
   設定、フック、スキルでのシェル選択
 </h3>

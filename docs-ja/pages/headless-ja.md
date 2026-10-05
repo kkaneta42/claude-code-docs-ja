@@ -59,7 +59,7 @@ claude --bare -p "Summarize README.md" --allowedTools "Read"
 | システムプロンプト追加 | `--append-system-prompt`、`--append-system-prompt-file` |
 | 設定 | `--settings <file-or-json>` |
 | MCP サーバー | `--mcp-config <file-or-json>` |
-| カスタムエージェント | `--agents <json>` |
+| [カスタムエージェント](/docs/ja/sub-agents#choose-the-subagent-scope) | `--agents <file-or-json>` |
 | プラグイン | `--plugin-dir <path>`、`--plugin-url <url>` |
 
 bare モードでは、セッションの実行中に行われる処理も制限されます。

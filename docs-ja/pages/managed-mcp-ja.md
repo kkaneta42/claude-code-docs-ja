@@ -171,11 +171,9 @@ Claude Code は `allowAllClaudeAiMcps` を管理者制御のポリシー層か�
   マネージドセットと共に Claude in Chrome を許可する
 </h3>
 
-デフォルトでは、`managed-mcp.json` をデプロイすると、Claude Code はターミナルセッションで組み込みの[「Claude in Chrome」](/docs/ja/chrome)サーバーをブロックします。ユーザーは[「拡張機能インストールプロンプト」](/docs/ja/chrome#install-the-extension-when-claude-asks)を取得しません。また、ユーザーが[「Chrome をデフォルトで有効にした」](/docs/ja/chrome#enable-chrome-by-default)セッションは、Chrome なしで起動し、警告を出力しません。Chrome を実行できるユーザーが `claude --chrome` または `CLAUDE_CODE_ENABLE_CFC=1` で起動する場合、Claude Code は `allowClaudeInChromeWithManagedMcp` 設定に名前を付けるエラーで起動時に終了します。
+デフォルトでは、`managed-mcp.json` をデプロイすると、Claude Code はターミナルセッションで組み込みの[「Claude in Chrome」](/docs/ja/chrome)サーバーをブロックします。ユーザーは[「拡張機能インストールプロンプト」](/docs/ja/chrome#install-the-extension-when-claude-asks)を取得しません。また、ユーザーが[「Chrome をデフォルトで有効にした」](/docs/ja/chrome#enable-chrome-by-default)セッションは、Chrome なしで起動し、警告を出力しません。本来であれば Claude in Chrome を実行できるユーザーが `claude --chrome` を起動した場合、Claude Code は `allowClaudeInChromeWithManagedMcp` 設定の名前を示すエラーで起動時に終了します。
 
-ユーザーが `managed-mcp.json` 内のサーバーと共に Claude in Chrome を実行できるようにするには、デバイス独自のマネージド設定で `"allowClaudeInChromeWithManagedMcp": true` を設定してください。MDM デプロイされた plist または HKLM レジストリキー、またはシステム `managed-settings.json` ファイルに配置してください。Claude Code がそのデバイスで[「選択」](/docs/ja/managed-settings#precedence-within-the-managed-tier)するもののいずれかです。Claude Code v2.1.282 以降が必要です。v2.1.282 より前では、Claude Code は設定を無視し、起動エラーは代わりに `You cannot dynamically configure MCP servers when an enterprise MCP config is present` と表示されます。
-
-Claude Code は[「サーバー管理設定」](/docs/ja/server-managed-settings)がポリシーの残りを配信する場合でも、それらのデバイスソースから設定を読み込みます。サーバー管理設定自体、ユーザー書き込み可能な HKCU レジストリ、およびユーザーまたはプロジェクト設定では設定を無視します。[「`deniedMcpServers`」](#policy-based-control-with-allowlists-and-denylists)の `claude-in-chrome` エントリは、設定がオンの場合でもサーバーをブロックします。
+ユーザーがマネージドセットと共に Claude in Chrome を実行できるようにするには、デバイス独自の管理設定で `"allowClaudeInChromeWithManagedMcp": true` を設定してください。MDM デプロイされた plist、HKLM レジストリキー、またはシステム `managed-settings.json` ファイルのうち、Claude Code がそのデバイスで[「選択」](/docs/ja/managed-settings#precedence-within-the-managed-tier)するものに配置してください。Claude Code v2.1.282 以降が必要です。[「サーバー管理設定」](/docs/ja/server-managed-settings)がポリシーの残りを配信する場合でも、Claude Code はそれらのデバイスソースからのみこの設定を読み込みます。この設定がオンの場合でも、`claude-in-chrome` に対する[「`deniedMcpServers`」](#policy-based-control-with-allowlists-and-denylists)エントリは引き続きサーバーをブロックします。
 
 <h2 id="provide-servers-through-managed-settings">
   マネージド設定を通じてサーバーを提供する
@@ -282,7 +280,7 @@ Claude Code は、サードパーティデプロイメント上の Claude Deskto
 
 allowlist と denylist は、設定されたサーバーのうちどれをロードできるかをフィルタリングします。これらはレジストリではなく、allowlist または denylist が適用される前に、ユーザー、プラグイン、または組織によってサーバーを追加する必要があります。
 
-組織が `managedMcpServers` を通じて配信するサーバーは allowlist エントリなしでロードされ、[サーバーの評価方法](#how-a-server-is-evaluated)は `managed-mcp.json` サーバーについて説明しています。denylist はインプロセス `type: "sdk"` エントリを除き、どこから来たサーバーにも適用されます。
+組織が `managedMcpServers` を通じて配信するサーバーは許可リストのエントリなしでロードされます。`managed-mcp.json` サーバーについては、[許可リストのチェックをスキップするサーバー](#servers-that-skip-the-allowlist-check)で説明しています。拒否リストはインプロセスの `type: "sdk"` エントリを除き、どこから来たサーバーにも適用されます。
 
 サーバーをユーザーに配信するには、[`managed-mcp.json`](#exclusive-control-with-managed-mcp-json) または [`managedMcpServers`](#provide-servers-through-managed-settings) を使用します。両方のリストは、インプロセス `type: "sdk"` エントリを除き、[`--mcp-config` CLI フラグ](/docs/ja/cli-reference#cli-flags)で渡されたサーバーもフィルタリングします。`--strict-mcp-config` はどの設定ファイルをロードするかを制限し、どちらのリストもバイパスしません。
 
@@ -308,16 +306,22 @@ allowlist を権限あるものにするには、[管理設定ソース](/docs/j
 | :- | :- | :- |
 | `serverUrl` | リモートサーバー URL、完全一致または `*` ワイルドカード | HTTP および SSE サーバー |
 | `serverCommand` | stdio サーバーを開始する正確なコマンドと引数 | stdio サーバー |
-| `serverName` | ユーザーが割り当てたラベル。完全一致のみ。ワイルドカードは展開されません | どちらのタイプでも、ただし下の警告を参照 |
+| `serverName` | ユーザーが割り当てたラベル。完全一致のみ。ワイルドカードは展開されません | どちらのタイプでも可。ただし[`serverName` エントリのマッチ方法](#how-servername-entries-match)を参照 |
 
 `allowedMcpServers` を設定しないことは、空の配列に設定することとは異なります。
 
 | 設定 | 設定なし（デフォルト） | 空の配列 `[]` | 設定あり |
 | :- | :- | :- | :- |
-| `allowedMcpServers` | すべてのサーバーが許可される | [allowlist チェックをスキップするサーバー](#how-a-server-is-evaluated)を除き、サーバーは許可されません | マッチするサーバーのみが許可され、[allowlist チェックをスキップするサーバー](#how-a-server-is-evaluated)は除外されます |
+| `allowedMcpServers` | すべてのサーバーが許可される | [許可リストのチェックをスキップするサーバー](#servers-that-skip-the-allowlist-check)を除き、サーバーは許可されません | マッチするサーバーのみが許可され、[許可リストのチェックをスキップするサーバー](#servers-that-skip-the-allowlist-check)は除外されます |
 | `deniedMcpServers` | サーバーはブロックされません | サーバーはブロックされません | マッチするサーバーがブロックされます |
 
 エントリがスキーマ検証に失敗した場合の詳細は、[管理設定の無効なエントリ](/docs/ja/managed-settings#invalid-entries-in-managed-settings)を参照してください。
+
+<h4 id="how-servername-entries-match">
+  `serverName` エントリのマッチ方法
+</h4>
+
+`serverName` エントリは、ユーザーが割り当てたラベルに完全一致でマッチし、ワイルドカードは使用できません。
 
 <Warning>
   どちらのリストでも `serverName` エントリはセキュリティ制御ではありません。名前は `claude mcp add` を実行するか設定ファイルを編集するときにユーザーが割り当てるラベルであり、基盤となるサーバーではないため、ユーザーは任意のサーバーを `github` と呼ぶことができます。claude.ai コネクタの場合、名前は claude.ai が返す表示名であり、変更される可能性があります。実際に実行されるサーバーを強制するには、`serverCommand` または `serverUrl` エントリを追加します。
@@ -330,34 +334,22 @@ allowlist を権限あるものにするには、[管理設定ソース](/docs/j
 
 Claude Code がフェッチするすべての claude.ai コネクタをオフにするには、[`disableClaudeAiConnectors`](/docs/ja/mcp#disable-claude-ai-connectors)を参照してください。
 
-<h3 id="how-a-server-is-evaluated">
-  サーバーの評価方法
-</h3>
+<h4 id="how-servercommand-entries-match">
+  `serverCommand` エントリのマッチ方法
+</h4>
 
-サーバーをロードする前に、`managed-mcp.json` からのサーバーを含めて、Claude Code は以下の 3 つのチェックを順番に実行します。ユーザーがサーバーを再接続するか、`/mcp` で無効なサーバーをオンに戻すときに再度実行されます。インプロセス `type: "sdk"` サーバー（[セッションを開始したアプリが登録](/docs/ja/mcp#how-connectors-reach-claude-code)）は、3 つすべてをスキップします。
-
-1. **リストをマージします。** すべての設定スコープからの allowlist と denylist エントリが 1 つの allowlist と 1 つの denylist に結合されます。`allowManagedMcpServersOnly` が `true` の場合、管理 allowlist のみが保持されます。denylist は常にすべてのスコープからマージされます。複数の管理ソースが存在する場合、[すべての管理ソースから読み取られるキー](/docs/ja/managed-settings#keys-read-from-every-admin-source)は、管理スコープのリストを提供するソースを示しています。
-2. **denylist をチェックします。** URL、コマンド、または名前で denylist エントリにマッチするサーバーはブロックされます。denylist マッチをオーバーライドするものはありません。
-3. **allowlist をチェックします。** `allowedMcpServers` がどこにも設定されていない場合、denylist を通過したすべてのサーバーがロードされます。設定されている場合、サーバーがマッチする必要があるものはそのタイプに依存し、以下の表に示されています。
-
-   3 つのサーバーグループはこのチェックをスキップします。
-
-   * 組織自身のサーバー：すべての `managedMcpServers` エントリ、および `${VAR}` 展開を使用しない値を持つ `managed-mcp.json` エントリ。
-   * Chrome の Claude、Claude Code が実行中の VS Code または JetBrains IDE に接続する `ide` サーバー、CLI 自身が設定するサーバーなどの組み込みサーバー。
-   * [Claude Tag](/docs/ja/claude-tag) セッションの Slack ツール：スレッドを読み取り、返信を投稿するために使用するサーバーは allowlist エントリなしでロードされます。
-
-   コマンド、引数、`env`、URL、またはヘッダーで `${VAR}` 展開を使用する `managed-mcp.json` サーバーはまだチェックされます。ユーザー、プラグイン、claude.ai が追加するすべてのサーバー、および `--mcp-config` でユーザーが渡すすべてのサーバーも同様です。
-
-| サーバータイプ | マッチ時に許可される |
-| :- | :- |
-| リモート（HTTP または SSE） | `serverUrl` エントリ。`serverName` マッチは allowlist に `serverUrl` エントリが含まれていない場合にのみカウントされます |
-| stdio | `serverCommand` エントリ。`serverName` マッチは allowlist に `serverCommand` エントリが含まれていない場合にのみカウントされます |
-
-これらのチェック内で 3 つのマッチングルールが適用されます。
+`serverCommand` エントリは、`{ "serverCommand": ["npx", "-y", "server"] }` のように、コマンドとその引数を 1 つの配列として保持します。Claude Code はその配列を、サーバーの設定内のコマンドおよび引数と比較します。
 
 * **コマンドは完全にマッチします。** すべての引数、順番に。`["npx", "-y", "server"]` は `["npx", "server"]` または `["npx", "-y", "server", "--flag"]` にマッチしません。
-* **`serverCommand` と `serverUrl` の値はマッチング前に展開されます。** ポリシーエントリとサーバーの設定値の両方が [`${VAR}` と `${VAR:-default}` 展開](/docs/ja/mcp#environment-variable-expansion-in-mcp-json)を通過するため、`["${HOME}/bin/server"]` として書かれたエントリは、同じ参照または展開されたパスのいずれかを使用するサーバー設定にマッチします。Windows では、`${HOME}` の代わりに `${USERPROFILE}` など、そこで設定されている環境変数を参照します。`serverName` の値は文字通りマッチし、展開されません。両側は異なる環境を読みます。[ポリシーエントリの展開方法](#how-policy-entries-expand)は、どちらであるか、および allowlist と denylist エントリがどのように異なるかについて説明しています。
-* **URL は `*` ワイルドカード**をパターン内の任意の場所（スキームを含む）でサポートします。ホスト名マッチングは大文字と小文字を区別せず、末尾の FQDN ドットを無視するため、`https://Mcp.Example.com/*` は `https://mcp.example.com/api` にマッチします。パスは大文字と小文字を区別したままです。
+* **`env` ブロックは比較されません。** `["node", "server.js"]` は、任意の `env` 値でそのコマンドを実行するサーバーにマッチします。一部の環境変数は、起動時に `node` が読み込む内容を変更します。`env` の値を自分で設定するには、[`managed-mcp.json`](#exclusive-control-with-managed-mcp-json) でサーバーを定義します。
+
+<h4 id="how-serverurl-entries-match">
+  `serverUrl` エントリのマッチ方法
+</h4>
+
+URL はパターン内の任意の場所（スキームを含む）で `*` ワイルドカードをサポートします。ホスト名のマッチングは大文字と小文字を区別せず、末尾の FQDN ドットを無視するため、`https://Mcp.Example.com/*` は `https://mcp.example.com/api` にマッチします。パスは大文字と小文字を区別したままです。
+
+以下の表は、一般的なパターンが許可する内容を示しています。
 
 | パターン | 許可 |
 | :- | :- |
@@ -368,17 +360,55 @@ Claude Code がフェッチするすべての claude.ai コネクタをオフに
 | `*://mcp.example.com/*` | 特定のドメインへの任意のスキーム |
 
 <h4 id="how-policy-entries-expand">
-  ポリシーエントリの展開方法
+  `serverCommand` および `serverUrl` エントリ内の環境変数
 </h4>
 
-サーバーの設定値は、`.mcp.json` の残りの部分と同様に、ライブプロセス環境から展開されます。ポリシーエントリは代わりにピン留めされた環境から展開されるため、プロジェクトまたはユーザー設定ファイルによって設定された変数が allowlist エントリの意味を変更することはできません。ポリシーエントリはまだ参照する任意の変数の起動シェルの値に依存するため、強制に依存するエントリには文字通りの URL とコマンドを使用します。
+`serverCommand` と `serverUrl` の値はマッチング前に展開されます。ポリシーエントリとサーバーの設定値の両方が [`${VAR}` と `${VAR:-default}` 展開](/docs/ja/mcp#environment-variable-expansion-in-mcp-json)を通過するため、`["${HOME}/bin/server"]` として書かれたエントリは、同じ参照または展開後のパスのいずれかを使用するサーバー設定にマッチします。`serverName` の値は文字どおりにマッチし、展開されることはありません。
+
+両側は異なる環境を読み取ります。
+
+* **サーバーの設定値**：`.mcp.json` の他の部分と同様に、実行中のプロセス環境から展開されます
+* **ポリシーエントリ**：固定された環境から展開されるため、プロジェクトまたはユーザー設定ファイルによって設定された変数が許可リストエントリの意味を変更することはできません
+
+ポリシーエントリは、参照する変数について依然として起動元シェルの値に依存するため、強制に依存するエントリにはリテラルの URL とコマンドを使用してください。
+
+Windows では、`${HOME}` の代わりに `${USERPROFILE}` など、Windows 上で設定されている環境変数を参照してください。
+
+2 つのリストでは展開のされ方が異なります。
 
 | エントリリスト | 展開元 | URL エントリのスキーム、ホスト、またはパススコープを変更する展開 |
 | - | - | - |
 | `allowedMcpServers` | Claude Code が開始した環境、プラス管理設定からの `env` 値 | Claude Code はエントリを無視します |
 | `deniedMcpServers` | 同じ、および起動値がなく `:-default` がない変数は、ユーザーまたは管理設定など、リポジトリ外の設定ファイルから入力され、許可されるものを広げるだけです | エントリはまだマッチします |
 
-Claude Code v2.1.219 以降が必要です。
+固定された環境とこの表のルールには、Claude Code v2.1.219 以降が必要です。
+
+<h3 id="how-a-server-is-evaluated">
+  サーバーの評価方法
+</h3>
+
+サーバーをロードする前に、`managed-mcp.json` からのサーバーを含めて、Claude Code は以下の 3 つのチェックを順番に実行します。ユーザーがサーバーを再接続したとき、または `/mcp` で無効なサーバーをオンに戻したときにも再度実行されます。インプロセスの `type: "sdk"` サーバー（[セッションを開始したアプリが登録](/docs/ja/mcp#how-connectors-reach-claude-code)するもの）は、3 つすべてをスキップします。
+
+1. **リストをマージします。** すべての設定スコープからの許可リストと拒否リストのエントリが 1 つの許可リストと 1 つの拒否リストに結合されます。`allowManagedMcpServersOnly` が `true` の場合、管理許可リストのみが保持されます。拒否リストは常にすべてのスコープからマージされます。複数の管理ソースが存在する場合、どのソースが管理スコープのリストを提供するかは[すべての管理ソースから読み取られるキー](/docs/ja/managed-settings#keys-read-from-every-admin-source)で説明しています。
+2. **拒否リストをチェックします。** URL、コマンド、または名前で拒否リストのエントリにマッチするサーバーはブロックされます。拒否リストのマッチを上書きするものはありません。
+3. **許可リストをチェックします。** [一部のサーバーはこのチェックをスキップします](#servers-that-skip-the-allowlist-check)。`allowedMcpServers` がどこにも設定されていない場合、拒否リストを通過したすべてのサーバーがロードされます。設定されている場合、サーバーがマッチする必要がある対象はそのタイプによって異なり、以下の表に示すとおりです。
+
+| サーバータイプ | マッチ時に許可される |
+| :- | :- |
+| リモート（HTTP または SSE） | `serverUrl` エントリ。`serverName` のマッチは、許可リストに `serverUrl` エントリが含まれていない場合にのみカウントされます |
+| stdio | `serverCommand` エントリ。`serverName` のマッチは、許可リストに `serverCommand` エントリが含まれていない場合にのみカウントされます |
+
+<h4 id="servers-that-skip-the-allowlist-check">
+  許可リストのチェックをスキップするサーバー
+</h4>
+
+[3 つすべてのチェック](#how-a-server-is-evaluated)をスキップするインプロセスの `type: "sdk"` サーバーに加えて、3 つのサーバーグループが許可リストのチェックをスキップします。
+
+* 組織自身のサーバー：すべての `managedMcpServers` エントリ、および値に `${VAR}` 展開を使用しない `managed-mcp.json` エントリ。
+* Claude in Chrome、実行中の VS Code または JetBrains IDE に Claude Code が接続する `ide` サーバー、CLI 自身が設定するサーバーなどの組み込みサーバー。
+* [Claude Tag](/docs/ja/claude-tag) セッションの Slack ツール：スレッドを読み取り、返信を投稿するために使用するサーバーは許可リストのエントリなしでロードされます。
+
+コマンド、引数、`env`、URL、またはヘッダーで `${VAR}` 展開を使用する `managed-mcp.json` サーバーは、引き続きチェックされます。Claude Code は、ユーザー、プラグイン、または claude.ai が追加するすべてのサーバー、および `--mcp-config` でユーザーが渡すすべてのサーバーもチェックします。
 
 <h3 id="example-configuration">
   設定例

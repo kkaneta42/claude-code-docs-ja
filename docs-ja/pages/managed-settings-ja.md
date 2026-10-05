@@ -271,6 +271,7 @@ Claude Code はまた、親が提供する値にこれらのチェックを適�
   Claude Code v2.1.273 以降では、`allowManagedMcpServersOnly` がオンの間、1 つを設定する最も高いランクの管理者ソースからの `allowedMcpServers` リストが適用され、親のものをブロックします。これは[クロスソースキー](#keys-read-from-every-admin-source)です。親のリストは、管理者ソースがリストを設定しない場合にのみ適用されます。[`managedSourcesBehavior`](/docs/ja/settings-reference#managedsourcesbehavior) エントリは `"merge"` の下で各キーを提供するソースを示します。v2.1.223 より前では、任意の管理者ソースの値が親のものをブロックしました。
 * `availableModels` の場合、Claude Code は適用する管理設定の値を強制し、親が提供するリストをブロックします。
 * `strictKnownMarketplaces` の場合、Claude Code は同様に適用する管理設定のリストを強制し、親が提供するものをブロックします。親のリストは、適用された管理ソースがリストを設定しない場合にのみ適用されます。Claude Code v2.1.282 以降が必要です。
+* `allowedProviders` の場合、[選択された管理ソース](#which-managed-source-claude-code-uses)のリストが親が提供するリストをブロックし、[`managedSourcesBehavior`](/docs/ja/settings-reference#managedsourcesbehavior) の `"merge"` オプトインの下では、任意の管理者ソースのリストがブロックします。Claude Code v2.1.285 以降が必要です
 * 親が提供する `blockedMarketplaces` は、管理ソースが設定するブロックリストに加えて適用されます。Claude Code v2.1.282 以降が必要です。
 
 <h4 id="keep-cowork-folder-access-when-only-managed-rules-apply">
@@ -301,6 +302,7 @@ Claude Desktop アプリの [Cowork](https://claude.com/docs/cowork/overview) �
 開発者の独自の設定ファイル、`--settings` 値、およびプロジェクトファイルは管理値をオーバーライドしません。[例外](/docs/ja/settings#exceptions-to-managed-settings-precedence)は、より厳しい下位レベルの値がカウントされることのみを許可します。これらのケースはそのルールの外にあります。
 
 * **セッションのモデル**: 管理された `model` はロックではなくデフォルトです。`--model` と `ANTHROPIC_MODEL` はそのセッションのモデルを選択できるため、[`availableModels`](/docs/ja/settings-reference#availablemodels) をデプロイして選択を制限します。
+* **セッションの自動圧縮ウィンドウ**: 管理された [`autoCompactWindow`](/docs/ja/settings-reference#autocompactwindow) もデフォルトです。`--autocompact` フラグと `CLAUDE_CODE_AUTO_COMPACT_WINDOW` 変数は、引き続きそのセッションの[自動圧縮ウィンドウ](/docs/ja/model-config#set-the-auto-compact-window)を設定できます。
 * **ローカル管理者権限**: マシンの管理者である開発者は、管理ソース自体を編集できます。これが MDM ツールがスケジュールでプロファイルまたはファイルを再デプロイできる理由であり、HKLM レジストリと macOS 管理設定ドメインが存在する理由です。
 * **サーバー管理キャッシュ**: サーバー管理設定は Anthropic のサーバーから取得され、ローカルキャッシュへの編集は[次の成功したフェッチまでのみ続きます](/docs/ja/server-managed-settings#security-considerations)。
 * **その他のツール**: 管理設定は Claude Code のみをバインドします。別のツールから API を呼び出す開発者はそれらの下にはありません。
@@ -398,7 +400,7 @@ Claude Code は `permissions`、`autoMode`、`worktree`、および `attribution
 
 | フィールド | 存在するが無効な場合の動作 |
 | :- | :- |
-| `allowedMcpServers` | ユーザーが追加する MCP サーバーが許可されないように、値が修正されるまで空のアローリストとして適用されます。組織が [`managedMcpServers`](/docs/ja/settings-reference#managedmcpservers) を通じて配信するサーバーは引き続きロードされ、`managed-mcp.json` サーバーは[サーバーの評価方法](/docs/ja/managed-mcp#how-a-server-is-evaluated)に従ってロードされます。個別の無効なエントリは削除され、有効なサブセットが適用されます。 |
+| `allowedMcpServers` | ユーザーが追加する MCP サーバーが許可されないように、値が修正されるまで空の許可リストとして適用されます。組織が [`managedMcpServers`](/docs/ja/settings-reference#managedmcpservers) を通じて配信するサーバーは引き続きロードされ、`managed-mcp.json` サーバーは[許可リストのチェックをスキップするサーバー](/docs/ja/managed-mcp#servers-that-skip-the-allowlist-check)に従ってロードされます。個別の無効なエントリは削除され、有効なサブセットが適用されます。 |
 | [`allowedProviders`](/docs/ja/settings-reference#allowedproviders) | 値が修正されるまで空の許可リストとして適用されるため、すべての API プロバイダーが拒否され、そのマシンで Claude Code は起動しません。個別のエントリが既知のプロバイダー名ではないだけの場合、Claude Code はそのエントリをドロップして報告し、残りを適用します。 |
 | `allowedHttpHookUrls` | Claude Code は値を修正するまで空の管理[アローリスト](/docs/ja/settings-reference#allowedhttphookurls)を適用するため、HTTP フックは別の設定ファイルがその URL をリストしている場合にのみ実行されます。無効なエントリが 1 つだけの場合、Claude Code はそのエントリを削除し、残りを適用します。 |
 | `httpHookAllowedEnvVars` | Claude Code は値を修正するまで空の管理[アローリスト](/docs/ja/settings-reference#httphookallowedenvvars)を適用するため、ヘッダー変数は別の設定ファイルがそれを名前で示している場合にのみ補間されます。無効なエントリが 1 つだけの場合、Claude Code はそのエントリを削除し、残りを適用します。 |

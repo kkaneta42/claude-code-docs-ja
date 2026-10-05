@@ -26,7 +26,7 @@
 
 * **`/web-setup` などの CLI フロー**：**Default** を作成します
 * **Pro および Max での Web オンボーディング**：**Default** を作成します
-* **Team および Enterprise での Web オンボーディング**：オーナーが [Quick web setup](/docs/ja/claude-code-on-the-web#github-authentication-options) をオンにしていない限り、**最初のクラウド環境を作成** フォームを表示します。フォームのデフォルトを保持して **作成して完了** をクリックして、同じ **Default** 環境を取得します
+* **Team および Enterprise での Web オンボーディング**：オーナーが [Quick setup](/docs/ja/claude-code-on-the-web#quick-setup-for-team-and-enterprise) をオンにしていない限り、**最初のクラウド環境を作成** フォームを表示します。フォームのデフォルトを保持して **作成して完了** をクリックして、同じ **Default** 環境を取得します
 
 **Default** は独自の設定を持ちません。
 

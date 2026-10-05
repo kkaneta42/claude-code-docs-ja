@@ -62,7 +62,7 @@ Claude Code はどこでも同じように動作します。変わるのは、�
 GitHub への接続は 1 回限りのステップです。既に GitHub CLI を使用している場合は、ブラウザの代わりに [ターミナルからこれを実行](#connect-from-your-terminal) できます。
 
 <Note>
-  Team および Enterprise プランでは、**Sign in with GitHub** ステップは、Claude 組織の [Owner](/docs/ja/server-managed-settings#access-control) が [**Admin settings > Connectors**](https://claude.ai/admin-settings/connectors) で GitHub コネクタをオンにした後にのみ機能します。それまでは、そのステップはサインインボタンの代わりに「GitHub access is required for Claude Code on the web」と表示されます。コネクタがオンになった後、[claude.ai/code](https://claude.ai/code) をリロードして、最初のステップから再度開始します。[**Admin settings > Claude Code**](https://claude.ai/admin-settings/claude-code) の [Quick web setup](/docs/ja/claude-code-on-the-web#github-authentication-options) という 2 番目のトグルはオプションです。オンにすると、`/web-setup` が機能し、オンボーディングはメンバーの環境を作成します。
+  Team および Enterprise プランでは、**Sign in with GitHub** ステップは、Claude 組織の [Owner](/docs/ja/server-managed-settings#access-control) が [**Organization settings > Connectors**](https://claude.ai/admin-settings/connectors) で GitHub コネクタをオンにした後にのみ機能します。それまでは、そのステップはサインインボタンの代わりに「GitHub access is required for Claude Code cloud sessions」と表示されます。コネクタがオンになった後、[claude.ai/code](https://claude.ai/code) をリロードして、最初のステップから再度開始します。[**Organization settings > Claude Code**](https://claude.ai/admin-settings/claude-code) の [Quick setup](/docs/ja/claude-code-on-the-web#quick-setup-for-team-and-enterprise) という 2 番目のトグルはオプションです。オンにすると、`/web-setup` が機能し、オンボーディングはメンバーの環境を作成します。
 </Note>
 
 <Steps>
@@ -84,7 +84,7 @@ GitHub への接続は 1 回限りのステップです。既に GitHub CLI を�
     [cloud environment](/docs/ja/cloud-environments) は、セッション中に Claude が持つネットワークアクセスと、セッション開始時に実行される内容を制御する保存された設定です。GitHub を接続した後の動作はプランによって異なります。
 
     * **Pro および Max**：オンボーディングは **Default** という名前の環境を作成します。
-    * **Team および Enterprise**：オンボーディングは **Create your first cloud environment** フォームを表示します。事前入力された名前とネットワークアクセスを変更せず、**Create & finish** をクリックして **Default** 環境を作成します。Owner が [Quick web setup](/docs/ja/claude-code-on-the-web#github-authentication-options) をオンにしている場合、オンボーディングは代わりに **Default** を作成します。
+    * **Team および Enterprise**：オンボーディングは **Create your first cloud environment** フォームを表示します。事前入力された名前とネットワークアクセスを変更せず、**Create & finish** をクリックして **Default** 環境を作成します。Owner が [Quick setup](/docs/ja/claude-code-on-the-web#quick-setup-for-team-and-enterprise) をオンにしている場合、オンボーディングは代わりに **Default** を作成します。
 
     **Default** は [`Trusted` ネットワークアクセス](/docs/ja/cloud-environments#access-levels) を使用します。セッションは [common package registries](/docs/ja/cloud-environments#default-allowed-domains) およびその他のホワイトリストに登録されたドメインに到達し、セッションのネットワークを通じて他には何も到達しません。設定なしで利用可能な内容については、[Installed tools](/docs/ja/cloud-environments#installed-tools) を参照してください。
 
@@ -96,7 +96,7 @@ GitHub への接続は 1 回限りのステップです。既に GitHub CLI を�
   ターミナルから接続
 </h3>
 
-既に GitHub CLI（`gh`）を使用している場合は、ターミナルから cloud セッション用に GitHub を接続できます。これには [Claude Code CLI](/docs/ja/quickstart) が必要です。Team および Enterprise プランでは、`/web-setup` は Owner が [Quick web setup](/docs/ja/claude-code-on-the-web#github-authentication-options) をオンにした後にのみ利用可能です。
+既に GitHub CLI（`gh`）を使用している場合は、ターミナルからクラウドセッション用に GitHub を接続できます。これには [Claude Code CLI](/docs/ja/quickstart) が必要です。Team および Enterprise プランでは、`/web-setup` は Owner が [Quick setup](/docs/ja/claude-code-on-the-web#quick-setup-for-team-and-enterprise) をオンにした後にのみ利用可能です。
 
 `/web-setup` を実行すると、Claude Code は `gh auth token` が出力するトークンを読み取り、確認を求め、トークンを Anthropic に送信します。Anthropic はそれを claude.ai アカウントで暗号化して保存し、cloud セッションはそれを GitHub アクセスに使用します。これは [削除](#remove-the-web-setup-token) するまで続きます。自分で開始した cloud セッションは、そのトークンがアクセスできる任意のリポジトリにアクセスでき、Claude GitHub App をインストールする必要はありません。[project](/docs/ja/claude-projects#set-up-github-access) 内のスレッドは引き続き Claude GitHub App が必要です。
 
@@ -259,7 +259,7 @@ Claude が完了したら、変更をレビューし、特定の行にフィー�
 
 Claude Code 内に入力した場合、コマンドメニューが「No commands match "/web-setup"」を表示するか、送信すると「Unknown command: /web-setup」が返される場合、要件が満たされていないため、コマンドは非表示になっています。通常の原因は、claude.ai サブスクリプションではなく API キーまたはサードパーティプロバイダーで認証されていることです。`/login` を実行して claude.ai アカウントでサインインしてください。
 
-Team および Enterprise プランでは、コマンドはデフォルトで非表示になっています。[Quick web setup トグル](/docs/ja/claude-code-on-the-web#github-authentication-options)は、所有者がオンにするまでオフになっています。オフの間は、代わりに[ブラウザから GitHub を接続](#connect-github)してください。
+Team および Enterprise プランでは、コマンドはデフォルトで非表示になっています。[Quick setup トグル](/docs/ja/claude-code-on-the-web#quick-setup-for-team-and-enterprise)は、所有者がオンにするまでオフになっています。オフの間は、代わりに[ブラウザから GitHub を接続](#connect-github)してください。
 
 コマンドは他の 2 つのケースでも非表示になります。
 

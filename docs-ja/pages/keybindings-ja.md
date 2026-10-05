@@ -118,7 +118,7 @@ v2.1.205 より前では、`Doctor` コンテキストと `/doctor` 診断スク
 | `chat:cancel` | Escape | 現在の入力をキャンセル |
 | `chat:clearInput` | Ctrl+L | 入力と会話を保持したまま、フルスクリーン再描画を強制 |
 | `chat:clearScreen` | Cmd+K | `chat:clearInput` と同じです。Cmd+K が iTerm2 と Terminal.app でどのように動作するかについては、[会話をクリア](/docs/ja/fullscreen#clear-the-conversation) を参照してください |
-| `chat:killAgents` | Ctrl+X Ctrl+K | このセッション内のすべての実行中の [バックグラウンドサブエージェント](/docs/ja/sub-agents#run-subagents-in-foreground-or-background) を停止し、残りのセッションの [アーティファクト自動返信](/docs/ja/artifacts#let-claude-reply-to-comments-on-its-own) をオフにします |
+| `chat:killAgents` | Ctrl+X Ctrl+K | このセッション内のすべての実行中の [バックグラウンドサブエージェント](/docs/ja/sub-agents#run-subagents-in-foreground-or-background) を停止し、残りのセッションの [アーティファクト自動返信](/docs/ja/artifacts#let-claude-reply-to-comments-on-its-own) をオフにします。確認のため、3 秒以内にショートカットを 2 回押します。バックグラウンドサブエージェントの権限プロンプトが開いている間も押すことができます |
 | `chat:cycleMode` | Shift+Tab\* | 権限モードをサイクル |
 | `chat:modelPicker` | Meta+P | モデルピッカーを開く |
 | `chat:fastMode` | Meta+O | 高速モードを切り替え |
@@ -464,6 +464,10 @@ v2.1.283 より前では、`/mcp` ツールリストは、バインディング�
 | :- | :- | :- |
 | `agents:switchView` | Ctrl+S | [セッショングループ化](/docs/ja/agent-view#organize-the-list) を状態とディレクトリ間で切り替え |
 | `agents:togglePin` | Ctrl+T | 選択したセッションを [ピン留めまたはピン留め解除](/docs/ja/agent-view#organize-the-list) |
+| `agents:find` | Ctrl+F | [`n:` フィルター](/docs/ja/agent-view#filter-sessions) を使って名前でセッションを検索します。v2.1.288 以降が必要 |
+| `agents:rename` | Ctrl+R | 選択したセッションの [名前を変更](/docs/ja/agent-view#organize-the-list) します。v2.1.288 以降が必要 |
+| `agents:previousGroup` | Ctrl+Up、Meta+Up | 前の [グループヘッダー](/docs/ja/agent-view#organize-the-list) にジャンプします。v2.1.288 以降が必要 |
+| `agents:nextGroup` | Ctrl+Down、Meta+Down | 次のグループヘッダーにジャンプします。v2.1.288 以降が必要 |
 
 エージェントビューが開いている間、Claude Code は `Agents` コンテキストがバインドするキーに対して `Agents` バインディングを使用し、同じキーの `Chat` または `Global` バインディングを無視します。例えば、エージェントビューで Ctrl+S を押すと、デフォルトの `chat:stash` をトリガーするのではなく、セッショングループ化を切り替えます。
 

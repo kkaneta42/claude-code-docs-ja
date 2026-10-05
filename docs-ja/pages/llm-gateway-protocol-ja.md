@@ -71,15 +71,13 @@ Microsoft Foundry と [Claude Platform on AWS](/docs/ja/claude-platform-on-aws) 
   ストリーミング
 </h3>
 
-推論の応答はストリーミングで返してください。Claude Code はストリームを受信したそばから読み取るため、ゲートウェイが完全なレスポンスをバッファリングしてから中継すると、Claude Code は停止してしまいます。
+Claude Code はストリーミングの推論応答を、到着したそばからイベントごとに読み取ります。そのため、ゲートウェイがストリームをどのように中継するかによって、ユーザーに表示される内容が変わります。
 
-各応答のイベントシーケンス全体を、イベントの欠落、重複、順序の入れ替えなしに配信してください。Amazon Bedrock のガードレールが応答をブロックした場合は、すでに `content_block_stop` が到着したコンテンツブロックを参照するイベントであっても、送られてきたイベントを変更せずに転送してください。その応答がどのように終了するかは [AWS Guardrails](/docs/ja/amazon-bedrock#aws-guardrails) で説明しています。それ以外のイベントが、`content_block_start` が一度も到着していないコンテンツブロック、またはすでに `content_block_stop` が到着したブロックを参照している場合、Claude Code はそのイベントを適用せず、その時点でストリームの読み取りを停止します。これにより、重複した `content_block_stop` によって同じツール呼び出しが 2 回実行されることを防ぎます。ユーザーに何が表示されるかについては、[The response above may be incomplete](/docs/ja/errors#the-response-above-may-be-incomplete) の `Part of the response never arrived` および `The response stream was malformed` のバリエーションで説明しています。
-
-ボディを終了する前に、各応答を最後の `message_delta` および `message_stop` イベントまで中継してください。`stop_reason` を含む `message_delta` の後でボディが終了し、開いたままのコンテンツブロックがなく、そのフレームの後にコンテンツブロックのイベントもない場合、`message_stop` が欠けていても完了したものとみなされます。コンテンツブロックが開始された後、それより前の時点でゲートウェイがボディを正常に終了した場合は、接続の切断と同じように扱われます。Claude Code がリクエストを再発行する条件については[自動再試行](/docs/ja/errors#automatic-retries)を、表示可能なコンテンツが到着した後に何が保持されるかについては [The response above may be incomplete](/docs/ja/errors#the-response-above-may-be-incomplete) を参照してください。Claude Code は `message_delta` によって配信された `stop_reason` を保持するため、その後に届く使用量のみの `message_delta` で、`delta` の `stop_reason` が `stop_reason: null` であるか `stop_reason` キーがない場合でも、その値はクリアされません。
-
-クライアントが Amazon Bedrock フォーマットを使用する場合は、`InvokeModelWithResponseStream` のレスポンスボディとその `Content-Type: application/vnd.amazon.eventstream` ヘッダーを変更せずに中継し、ストリームを Server-Sent Events に変換しないでください。[ゲートウェイまたはプロキシの背後でのストリーミングエラー](/docs/ja/amazon-bedrock#streaming-errors-behind-a-gateway-or-proxy)を参照してください。
-
-キープアライブの ping も転送してください。Claude Code は、[デフォルトでは 5 分間](/docs/ja/network-config#streaming-idle-watchdogs)1 バイトも届かない状態が続くと、ストリーミング応答を中止するためです。長い思考の一時停止中は、アップストリームの SSE `ping` イベントがストリーム上の唯一のバイトになることがあります。ゲートウェイがそれらを除去またはバッファリングすると、Claude Code は一時停止の途中で応答を中止します。Amazon Bedrock のバイナリイベントストリームのように ping をまったく送信しないアップストリームから変換する場合は、無音の間隔の間に独自の `ping` イベントを送出してください。
+* ゲートウェイが応答を完了するまでバッファリングすると、Claude Code は停止してしまいます。
+* Claude Code は、各応答のイベントシーケンス全体が、最後の `message_delta` および `message_stop` イベントまで順序どおりに届くことを前提としています。コンテンツブロックが開始された後、その最後の `message_delta` より前にボディが正常に終了した場合、Claude Code はその応答を接続の切断として扱います。その場合にユーザーに何が表示されるかは [The response above may be incomplete](/docs/ja/errors#the-response-above-may-be-incomplete) で、Claude Code が代わりにリクエストを再発行する条件は[自動再試行](/docs/ja/errors#automatic-retries)で説明しています。
+* Amazon Bedrock のガードレールが応答をブロックした場合、Bedrock が送信するイベントは、すでに `content_block_stop` が到着したコンテンツブロックを参照することがあり、Claude Code はそれらを送信されたとおりに受信することを前提としています。その応答がどのように終了するかは [AWS Guardrails](/docs/ja/amazon-bedrock#aws-guardrails) で説明しています。
+* Claude Code は、[ストリーミングのアイドルタイムアウト](/docs/ja/network-config#streaming-idle-watchdogs)を超えて 1 バイトも届かない状態が続くと、ストリーミング応答を中止します。長い思考の一時停止中は、アップストリームの SSE `ping` イベントがストリーム上の唯一のバイトになることがあるため、それらを除去またはバッファリングするゲートウェイは、応答の途中でこのタイムアウトを発生させる可能性があります。Amazon Bedrock のバイナリイベントストリームのように ping を送信しないアップストリームから変換するゲートウェイも、独自の `ping` イベントを送出しない限り、同じ空白が生じます。
+* [Amazon Bedrock InvokeModel フォーマット](#api-formats)では、Claude Code は `/model/{model}/invoke-with-response-stream` のレスポンスを、Bedrock が返すバイナリの `application/vnd.amazon.eventstream` ボディとして読み取ります。そのため、ゲートウェイがそれを Server-Sent Events に変換したり、その `Content-Type` ヘッダーを書き換えたりすると、解析できなくなります。その場合にユーザーに何が表示されるかは[ゲートウェイまたはプロキシの背後でのストリーミングエラー](/docs/ja/amazon-bedrock#streaming-errors-behind-a-gateway-or-proxy)で説明しています。
 
 <h3 id="format-mismatch-with-the-upstream">
   アップストリームとのフォーマットの不一致

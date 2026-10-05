@@ -285,6 +285,7 @@ Claude Code がユーザーに代わって行うモデル変更も、同じ方�
 * **[自動モデルフォールバック](#automatic-model-fallback)**: フォールバック先が除外されている場合、フォールバックは実行されないため、警告されたリクエストは代わりに拒否で終了します
 * **[auto モードの分類器](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)**: 分類器のデフォルトである Claude Sonnet 5 は、許可リストが Sonnet 5 を許可している場合にのみ適用されます。除外されている場合、分類器はセッションのモデル（すでに許可リストの制御下にあります）で実行されるか、セッションが [Fable モデル](#work-with-fable)で実行されている場合は Opus モデルで実行されます。Anthropic API 以外のプロバイダーでは、その Opus フォールバックは許可リストを参照せずに、`ANTHROPIC_DEFAULT_OPUS_MODEL` で設定したモデル、または設定していない場合は Opus 5 で実行されます。Claude Code v2.1.210 以降が必要です
 * **[fast mode](/docs/ja/fast-mode)**: 有効化後にセッションが実行されるモデルが許可リスト外である場合、fast mode の有効化は拒否されます
+* **Amazon Bedrock と Google Cloud の Agent Platform での可用性フォールバック**: セッションの途中でアカウントがモデルへのアクセスを失った場合、別のモデルへの切り替えでは除外されたモデルがスキップされます。[Amazon Bedrock](/docs/ja/amazon-bedrock#when-your-organization-enforces-a-model-allowlist) および [Google Cloud の Agent Platform](/docs/ja/google-vertex-ai#when-your-organization-enforces-a-model-allowlist) での起動時のモデルチェックが除外されたモデルをスキップするのは、管理設定で [`enforceAvailableModels`](#enforce-the-allowlist-for-the-default-model) も設定されている場合のみです
 
 ```json theme={null}
 {
@@ -766,7 +767,7 @@ Opus 4.6 と Sonnet 4.6 では、`CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING=1` を�
 | :- | :- |
 | 現在のセッションで切り替える | macOS では `Option+T`、Windows と Linux では `Alt+T` を押します |
 | グローバルのデフォルトを設定する | `/config` を実行して思考モードを切り替えます。`~/.claude/settings.json` に `alwaysThinkingEnabled` として保存されます |
-| 環境変数で無効にする | [`MAX_THINKING_TOKENS=0`](/docs/ja/env-vars) を設定します。これにより、Opus 5.5、Sonnet 5.5、Fable モデルを除き、Anthropic API で思考がオフになります。[サードパーティプロバイダー](/docs/ja/third-party-integrations)では、Claude Code は代わりに `thinking` パラメータを省略するため、アダプティブ推論モデルは引き続き思考する場合があります。その他の値は[固定の思考予算](#adaptive-reasoning-and-fixed-thinking-budgets)の場合にのみ適用されます |
+| 環境変数で無効にする | [`MAX_THINKING_TOKENS=0`](/docs/ja/env-vars) を設定します。これにより、Opus 5.5、Sonnet 5.5、Fable モデルを除き、Anthropic API で思考がオフになります。[サードパーティプロバイダー](/docs/ja/third-party-integrations)では、Claude Code は代わりに `thinking` パラメータを省略するため、アダプティブ推論モデルは引き続き思考する場合があります |
 
 Opus 5.5、Sonnet 5.5、Fable モデルでは思考をオフにできません。これらのモデルでは、セッションのトグルと `/config` の行に切り替えの代わりに `Thinking can't be turned off` が表示され、保存済みの `alwaysThinkingEnabled: false` や `MAX_THINKING_TOKENS=0` は効果がありません。これらのモデルでは、effort レベルに基づいて、モデルがステップごとにどの程度思考するかを判断します。保存済みの設定は、それを受け付けるモデルに切り替えると再び適用されます。
 

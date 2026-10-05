@@ -248,7 +248,7 @@ Claude Code は、コードについて推論するモデルと、ファイル�
 | **Subagents** | スポーン時 | 指定されたスキルを持つ新しいコンテキスト、または [fork](/docs/ja/sub-agents#fork-the-current-conversation) の親会話 | メインセッションから分離 |
 | **Hooks** | トリガー時 | なし（外部で実行） | ゼロ（フックが追加コンテキストを返さない限り） |
 
-\*デフォルトでは、スキル説明はセッション開始時にロードされるため、Claude はそれらを使用する時期を決定できます。スキルの frontmatter で `disable-model-invocation: true` を設定して、手動で呼び出すまで Claude から完全に非表示にします。書いていないスキルの場合は、ファイルを編集せずに同じことを行うために settings で [`skillOverrides`](/docs/ja/skills#override-skill-visibility-from-settings) を設定します。
+\*スキルのフロントマターで [`disable-model-invocation: true`](/docs/ja/skills#control-who-invokes-a-skill) を設定すると、その説明を Claude のコンテキストから除外できます。書いていないスキルの場合は、ファイルを編集せずに同じことを行うために設定で [`skillOverrides`](/docs/ja/skills#override-skill-visibility-from-settings) を設定します。
 
 <h3 id="understand-how-features-load">
   機能がどのようにロードされるかを理解する
@@ -278,13 +278,13 @@ Claude Code は、コードについて推論するモデルと、ファイル�
 
     **ロード内容：** モデル呼び出し可能なスキルの場合、Claude はすべてのリクエストで名前と説明を見ます。`/<name>` でスキルを呼び出すか、Claude が自動的にロードする場合、完全なコンテンツが会話にロードされます。
 
-    **Claude がスキルを選択する方法：** Claude はタスクをスキル説明と照合して、関連するものを決定します。説明が曖昧または重複している場合、Claude は間違ったスキルをロードするか、役立つスキルを見落とす可能性があります。Claude に特定のスキルを使用するよう指示するには、`/<name>` で呼び出します。`disable-model-invocation: true` を持つスキルは、呼び出すまで Claude に見えません。
+    **Claude がスキルを選択する方法：** Claude はタスクをスキル説明と照合して、関連するものを決定します。説明が曖昧または重複している場合、Claude は間違ったスキルをロードするか、役立つスキルを見落とす可能性があります。Claude に特定のスキルを使用するよう指示するには、`/<name>` で呼び出します。
 
     **コンテキストコスト：** 使用されるまで低い。ユーザーのみのスキルは呼び出されるまでゼロコストです。
 
     **Subagents 内：** スキルは subagents で異なる動作をします。オンデマンドロードの代わりに、subagent の `skills` フィールドにリストされているスキルは起動時にそのコンテキストに完全にプリロードされます。Subagents はスキルツールを通じて、リストされていないプロジェクト、ユーザー、プラグインスキルを発見して呼び出すことができます。
 
-    <Tip>副作用を持つスキルには `disable-model-invocation: true` を使用します。これはコンテキストを節約し、あなたのみがそれらをトリガーすることを保証します。</Tip>
+    <Tip>副作用を持つスキルには `disable-model-invocation: true` を使用します。これによりコンテキストを節約でき、名前を指定したときにのみ実行されるようになります。</Tip>
   </Tab>
 
   <Tab title="MCP servers">

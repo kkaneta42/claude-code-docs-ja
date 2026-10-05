@@ -438,7 +438,7 @@ MCP ツールは `mcp__<server>__<tool>` という命名パターンに従いま
 | フィールド | 必須 | 説明 |
 | :- | :- | :- |
 | `type` | はい | `"command"`、`"http"`、`"mcp_tool"`、`"prompt"`、または `"agent"` |
-| `if` | いいえ | `"Bash(git *)"` または `"Edit(*.ts)"` などの権限ルール構文を使用してこのフックが実行されるタイミングをフィルタリングします。ツール呼び出しがパターンにマッチする場合のみ、フック コマンドが実行されます。Bash パターンがサブコマンド、`$()`、バッククォートに対してどのように評価されるかについては、後述の [Bash マッチング テーブル](#bash-if-matching)を参照してください。ツール イベントでのみ評価されます。`PreToolUse`、`PostToolUse`、`PostToolUseFailure`、`PermissionRequest`、`PermissionDenied`。他のイベントでは、`if` が設定されたフックは実行されません。[権限ルール](/docs/ja/permissions)と同じ構文を使用します |
+| `if` | いいえ | このフックが実行されるタイミングをフィルタリングする[権限ルール構文](/docs/ja/permissions#permission-rule-syntax)（`"Bash(git *)"` や `"Edit(*.ts)"` など）。ツール呼び出しがパターンにマッチする場合のみ、フック コマンドが実行されます。Bash パターンがサブコマンド、`$()`、バッククォートに対してどのように評価されるかについては、[Bash マッチング テーブル](#bash-if-matching)を参照してください。ツール イベントでのみ評価されます: `PreToolUse`、`PostToolUse`、`PostToolUseFailure`、`PermissionRequest`、`PermissionDenied`。他のイベントでは、`if` が設定されたフックは実行されません |
 | `timeout` | いいえ | キャンセルまでの秒数。[`async: true`](#run-hooks-in-the-background) で実行するコマンドフックには、Claude Code はこれを適用しません。デフォルト: `command`、`http`、`mcp_tool` は 600、`prompt` は 30、`agent` は 60。Claude Code は、[`UserPromptSubmit`](#userpromptsubmit)、[`PreModelSwitch`](#premodelswitch)、[`PostModelSwitch`](#postmodelswitch) では `command`、`http`、`mcp_tool` のデフォルトを 30 に、[`MessageDisplay`](#messagedisplay) では 10 に下げます。[`SessionEnd`](#sessionend) フックは 1.5 秒の予算を共有します。設定でフックごとにより長い `timeout` を指定している場合、Claude Code は最大 60 秒までそれに合わせて予算を引き上げます |
 | `statusMessage` | いいえ | フックの実行中に表示されるカスタム スピナー メッセージ |
 | `once` | いいえ | `true` の場合、Claude Code は最初の実行が成功した後にフックを削除します。失敗した実行、終了コード 2 でブロックした実行、またはタイムアウトした実行ではフックがそのまま残るため、次にマッチするイベントで再び実行されます。[スキルのフロントマター](#hooks-in-skills-and-agents)で宣言されたフックでのみ有効です。設定ファイルとエージェントのフロントマターでは無視されます |
@@ -447,7 +447,11 @@ MCP ツールは `mcp__<server>__<tool>` という命名パターンに従いま
 
 ファイルツールの `if` 条件では、`"Edit(src/**)"` のような単一セグメントのディレクトリパターンは、作業ディレクトリ内の `src` ディレクトリとその配下のファイルにのみマッチします。任意の深さにある `src` という名前のディレクトリにマッチさせるには、`"Edit(**/src/**)"` と記述します。v2.1.214 より前は、`"Edit(src/**)"` は作業ディレクトリ配下の任意の深さにある `src` という名前のディレクトリにマッチしていました。
 
-<span id="bash-if-matching" />Bash パターンの場合、フック コマンドが実行されるかどうかは、パターンの形状と Claude が呼び出している Bash コマンドに依存します。先頭の `VAR=value` 割り当ては、マッチング前に削除されます。
+<h4 id="bash-if-matching">
+  `if` パターンが Bash コマンドにマッチする仕組み
+</h4>
+
+[`if` フィールド](#common-fields)の Bash パターンの場合、フック コマンドが実行されるかどうかは、パターンの形状と Claude が呼び出している Bash コマンドに依存します。先頭の `VAR=value` 割り当ては、マッチング前に削除されます。
 
 | `if` パターン | Bash コマンド | フックが実行されるか | 理由 |
 | :- | :- | :- | :- |
@@ -1913,7 +1917,7 @@ Claude Code v2.1.271 以降では、[auto モード](/docs/ja/permission-modes#e
 
 | フィールド | 型 | 例 | 説明 |
 | :- | :- | :- | :- |
-| `questions` | array | `[{"question": "Which framework?", "header": "Framework", "options": [{"label": "React"}], "multiSelect": false}]` | 提示する質問。それぞれ `question` 文字列、短い `header`、`options` 配列、省略可能な `multiSelect` フラグを持ちます |
+| `questions` | array | `[{"question": "Which framework?", "header": "Framework", "options": [{"label": "React", "description": "Component library"}, {"label": "Vue", "description": "Progressive framework"}], "multiSelect": false}]` | 提示する質問。それぞれ `question` 文字列、短い `header`、`options` 配列、オプションの `multiSelect` フラグを持ちます |
 | `answers` | object | `{"Which framework?": "React"}` | 省略可。質問のテキストを選択されたオプションのラベルに対応付けます。複数選択の回答は、ラベルをカンマで連結します。Claude はこのフィールドを設定しません。プログラムで回答するには `updatedInput` 経由で指定してください |
 
 <h5 id="exitplanmode">
@@ -1965,15 +1969,47 @@ Claude が [plan モード](/docs/ja/permission-modes#analyze-before-you-edit-wi
 }
 ```
 
-<span id="allow-with-updatedinput" />
+<Note>
+  PreToolUse では以前はトップレベルの `decision` と `reason` フィールドを使用していましたが、これらはこのイベントでは非推奨です。代わりに `hookSpecificOutput.permissionDecision` と `hookSpecificOutput.permissionDecisionReason` を使用してください。非推奨の値 `"approve"` と `"block"` は、それぞれ `"allow"` と `"deny"` に対応します。PostToolUse や Stop などの他のイベントでは、引き続きトップレベルの `decision` と `reason` が現在の形式として使用されます。
+</Note>
 
-`-p` フラグを使った[非対話モード](/docs/ja/headless)では、Claude Code は、Agent SDK の `canUseTool` コールバックなど、プロンプトを受け取る[権限ホスト](/docs/ja/headless#turn-off-permission-prompts-in-unattended-runs)が実行にある場合にのみ、`AskUserQuestion` と `ExitPlanMode` を提供します。これらのツールにはユーザーの操作が必要です。`permissionDecision: "allow"` を `updatedInput` とともに返すと、その要件を満たせます。フックは stdin からツールの入力を読み取り、独自の UI で回答を収集し、それを `updatedInput` で返すことで、ツールはプロンプトなしで実行されます。これらのツールでは、`"allow"` だけを返しても十分ではありません。`AskUserQuestion` の場合は、元の `questions` 配列をそのまま返し、各質問のテキストを選択された回答に対応付ける [`answers`](#askuserquestion) オブジェクトを追加してください。
+<h4 id="allow-with-updatedinput">
+  ユーザーの操作を必要とするツール
+</h4>
+
+`AskUserQuestion` と `ExitPlanMode` はユーザーの操作を必要とします。`-p` フラグを使用した[非対話モード](/docs/ja/headless)では、Agent SDK の `canUseTool` コールバックなど、プロンプトを受け取る[権限ホスト](/docs/ja/headless#turn-off-permission-prompts-in-unattended-runs)が実行にある場合にのみ、Claude Code はこれらのツールを提供します。
+
+`PreToolUse` フックは、次のことを行う場合にその要件を満たします。
+
+1. stdin からツールの入力を読み取る
+2. 独自の UI を通じて回答を収集する
+3. 回答を保持する `updatedInput` とともに `permissionDecision: "allow"` を返し、プロンプトを表示せずにツールが実行されるようにする
+
+これらのツールでは、`"allow"` を返すだけでは不十分です。
+
+`AskUserQuestion` の場合は、元の `questions` 配列をそのまま返し、各質問のテキストを選択された回答に対応付ける [`answers`](#askuserquestion) オブジェクトを追加します。次の出力は、1 つの質問に `React` と回答します。
+
+```json theme={null}
+{
+  "hookSpecificOutput": {
+    "hookEventName": "PreToolUse",
+    "permissionDecision": "allow",
+    "updatedInput": {
+      "questions": [
+        {
+          "question": "Which framework?",
+          "header": "Framework",
+          "options": [{"label": "React", "description": "Component library"}, {"label": "Vue", "description": "Progressive framework"}],
+          "multiSelect": false
+        }
+      ],
+      "answers": {"Which framework?": "React"}
+    }
+  }
+}
+```
 
 サーバーが [`_meta["anthropic/requiresUserInteraction"]`](/docs/ja/mcp#require-approval-for-a-specific-tool) でマークした MCP ツールはさらに厳格です。フックは `updatedInput` の有無にかかわらず、`"allow"` でその承認プロンプトをスキップすることはできません。ツールが必要とする操作をフックが収集したことを Claude Code が確認できないためです。
-
-<Note>
-  PreToolUse は以前はトップレベルの `decision` と `reason` フィールドを使用していましたが、このイベントではこれらは非推奨です。代わりに `hookSpecificOutput.permissionDecision` と `hookSpecificOutput.permissionDecisionReason` を使用してください。非推奨の値 `"approve"` と `"block"` は、それぞれ `"allow"` と `"deny"` に対応します。PostToolUse や Stop などの他のイベントでは、現在の形式としてトップレベルの `decision` と `reason` を引き続き使用します。
-</Note>
 
 <h4 id="defer-a-tool-call-for-later">
   ツール呼び出しを後で実行するために延期する
@@ -2000,7 +2036,7 @@ Claude が [plan モード](/docs/ja/permission-modes#analyze-before-you-edit-wi
   "deferred_tool_use": {
     "id": "toolu_01abc",
     "name": "AskUserQuestion",
-    "input": { "questions": [{ "question": "Which framework?", "header": "Framework", "options": [{"label": "React"}, {"label": "Vue"}], "multiSelect": false }] }
+    "input": { "questions": [{ "question": "Which framework?", "header": "Framework", "options": [{"label": "React", "description": "Component library"}, {"label": "Vue", "description": "Progressive framework"}], "multiSelect": false }] }
   }
 }
 ```
@@ -2738,7 +2774,9 @@ exit 0
   Stop の入力
 </h4>
 
-[共通入力フィールド](#common-input-fields)に加えて、Stop フックは `stop_hook_active`、`last_assistant_message`、`background_tasks`、`session_crons` を受け取ります。`stop_hook_active` フィールドは、Claude Code が Stop フックの結果としてすでに続行している場合に `true` になります。解決しない条件でブロックし続けることがないよう、この値を確認するか、トランスクリプトを処理してください。Claude Code は連続 8 回の続行上限を適用します。Stop フックがターンを 8 回連続で続行させると、Claude Code は次のブロックを上書きしてターンを終了します。上限を引き上げるには、[`CLAUDE_CODE_STOP_HOOK_BLOCK_CAP`](/docs/ja/env-vars) を設定します。
+[共通の入力フィールド](#common-input-fields)に加えて、Stop フックは `stop_hook_active`、`last_assistant_message`、`background_tasks`、`session_crons` を受け取ります。`stop_hook_active` フィールドは、Claude Code が Stop フックの結果としてすでに継続している場合に `true` になります。解決しない条件でブロックし続けることを避けるため、この値を確認するか、トランスクリプトを処理してください。
+
+Claude Code は連続 8 回の継続上限を適用します。Stop フックがターンを 8 回連続で継続させた後、Claude Code は次のブロックを上書きしてターンを終了します。連続継続の回数は、Claude がツールを呼び出すたびにリセットされます。上限を引き上げるには、[`CLAUDE_CODE_STOP_HOOK_BLOCK_CAP`](/docs/ja/env-vars) を設定します。
 
 `last_assistant_message` フィールドには Claude の最終応答のテキスト内容が含まれるため、フックはトランスクリプトファイルを解析せずにそれを参照できます。読み上げや通知のフックなど、完了したばかりのターンに対して動作するフックでは、`transcript_path` を読み取るのではなくこのフィールドを使用してください。すべてのバージョンで、Stop の時点でトランスクリプトファイルに最終メッセージが含まれているとは限りません。
 

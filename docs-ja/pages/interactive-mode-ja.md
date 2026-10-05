@@ -23,7 +23,7 @@
 | ショートカット | 説明 | コンテキスト |
 | :- | :- | :- |
 | `Ctrl+C` | 割り込み、または入力をクリア | 実行中の操作を割り込みます。何も実行されていない場合、最初のプレスはプロンプト入力をクリアし、2 番目のプレスで Claude Code を終了します |
-| `Ctrl+X Ctrl+K` | このセッション内のすべての実行中の[バックグラウンドサブエージェント](/docs/ja/sub-agents#run-subagents-in-foreground-or-background)を停止し、[アーティファクト自動返信](/docs/ja/artifacts#let-claude-reply-to-comments-on-its-own)をセッションの残りの部分で無効にします。3 秒以内に 2 回押して確認 | サブエージェント制御 |
+| `Ctrl+X Ctrl+K` | このセッション内のすべての実行中の[バックグラウンドサブエージェント](/docs/ja/sub-agents#run-subagents-in-foreground-or-background)を停止し、[アーティファクト自動返信](/docs/ja/artifacts#let-claude-reply-to-comments-on-its-own)をセッションの残りの部分で無効にします。3 秒以内に 2 回押して確認します。バックグラウンドサブエージェントの権限プロンプトが開いている間も押すことができます | サブエージェント制御 |
 | `Ctrl+D` | Claude Code セッションを終了 | 最初のプレスで確認ヒントが表示され、800ms 以内に 2 番目のプレスで終了します。プロンプトにテキストがある場合、`Ctrl+D` はカーソルの後の文字を削除します |
 | `Ctrl+G` または `Ctrl+X Ctrl+E` | デフォルトテキストエディタで開く | プロンプトまたはカスタム応答をデフォルトテキストエディタで編集します。`Ctrl+X Ctrl+E` は readline ネイティブバインディングです。`/config` で**外部エディタで最後の応答を表示**をオンにすると、Claude の前の返信を `#` コメント付きコンテキストとしてプロンプトの上に追加します。Claude Code は保存時にコメントブロックを削除します |
 | `Ctrl+L` | 画面を再描画 | 完全なターミナル再描画を強制し、入力と会話履歴を保持します。ディスプレイが乱れたり部分的に空白になった場合に使用して復旧します。[会話をクリア](/docs/ja/fullscreen#clear-the-conversation)を参照してください（フルスクリーンレンダリング） |
@@ -469,6 +469,8 @@ Claude Code は、以下を含むいくつかの状況で個別の提案もス�
 * Plan Mode にいる場合
 * アカウントが使用制限に近い、またはその制限に達している場合。制限に達するまで提案をオンのままにするには、[`CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION`](/docs/ja/env-vars) を `true` に設定します。v2.1.238 より前では、変数が `true` に設定されていても、Claude Code は制限に近い場合にそれらをスキップしていました
 * [agent team](/docs/ja/agent-teams) では、デフォルトでチームメイトのセッションで。リーダーのセッションは提案を表示します
+
+`Showing fewer prompt suggestions · use one to bring them back` という通知は、提案を使用しないまま連続して多数見送ったため、Claude Code が提案を表示する頻度を下げていることを意味します。通常の頻度に戻すには、提案を使用するか、[`CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION`](/docs/ja/env-vars) を `true` に設定します。
 
 Print Mode では、Claude Code はデフォルトでは提案を生成しません。Claude Code が生成した各ターンの後に `prompt_suggestion` メッセージを出力するには、`-p "<prompt>" --output-format stream-json --verbose` で [`--prompt-suggestions`](/docs/ja/cli-reference#cli-flags) を渡します。ジェネレータはここでも非常に短い会話とコールドプロンプトキャッシュをスキップするため、単一の短い `-p` クエリは何も出力しない可能性があります。
 

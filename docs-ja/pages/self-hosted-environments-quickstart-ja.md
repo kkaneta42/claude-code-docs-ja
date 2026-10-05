@@ -117,7 +117,7 @@ claude self-hosted-runner setup
 claude -p "your message" --cloud <session-id>
 ```
 
-`<session-id>` については、ベアの `session_...` または `cse_...` ID またはセッションの claude.ai/code URL を渡します。成功した送信は `Sent to cloud session.` をセッション ID とビューリンク付きで出力します。受け入れられた ID フォーム、JSON 出力、アカウントとポリシー要件、およびエラーリファレンスは[CLI からフォローアップを送信](/docs/ja/claude-code-on-the-web#send-follow-ups-from-the-cli)にあります。コマンドは Anthropic ホストされたセッションに対して同じように機能するためです。
+`<session-id>` については、ベアの `session_...` または `cse_...` ID またはセッションの claude.ai/code URL を渡します。成功した送信は `Sent to cloud session.` をセッション ID とビューリンク付きで出力します。受け入れられた ID フォーム、JSON 出力、およびアカウントとポリシー要件は[CLI からフォローアップを送信](/docs/ja/claude-code-on-the-web#send-follow-ups-from-the-cli)にあります。コマンドは Anthropic ホストされたセッションに対して同じように機能するためです。
 
 <h2 id="what’s-next">
   次のステップ

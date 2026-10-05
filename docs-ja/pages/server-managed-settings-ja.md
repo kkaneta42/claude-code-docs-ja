@@ -6,7 +6,7 @@
 
 > デバイス管理インフラストラクチャを必要とせずに、サーバー配信設定を通じて組織全体で Claude Code を一元的に構成します。
 
-サーバー管理設定により、組織の所有者は claude.ai コンソールの [**Admin Settings > Claude Code > Managed settings**](https://claude.ai/admin-settings/claude-code) から Claude Code を一元的に構成できます。Claude Code クライアントは、ユーザーが対象となる認証情報を使用して、サーバー管理配信がサポートされているプラットフォームで認証すると、これらの設定を自動的に取得します。対象となる認証情報とプラットフォームについては、[プラットフォームの可用性](#platform-availability)を参照してください。
+サーバー管理設定により、組織の所有者は claude.ai コンソールの [**Organization settings > Claude Code > Managed settings**](https://claude.ai/admin-settings/claude-code) から Claude Code を一元的に構成できます。Claude Code クライアントは、ユーザーが対象となる認証情報を使用して、サーバー管理配信がサポートされているプラットフォームで認証すると、これらの設定を自動的に取得します。対象となる認証情報とプラットフォームについては、[プラットフォームの可用性](#platform-availability)を参照してください。
 
 <Note>
   サーバー管理設定は [Claude for Teams](https://claude.com/pricing?utm_source=claude_code\&utm_medium=docs\&utm_content=server_settings_teams#team-&-enterprise) および [Claude for Enterprise](https://anthropic.com/contact-sales?utm_source=claude_code\&utm_medium=docs\&utm_content=server_settings_enterprise) カスタマー向けに利用可能です。
@@ -41,13 +41,13 @@ Claude Code は、一元的な構成のための 2 つのアプローチをサ�
 
 <Steps>
   <Step title="管理コンソールを開く">
-    claude.ai コンソールで、[**Admin Settings > Claude Code > Managed settings**](https://claude.ai/admin-settings/claude-code) に移動します。
+    claude.ai コンソールで、[**Organization settings > Claude Code > Managed settings**](https://claude.ai/admin-settings/claude-code) に移動します。
 
-    リンクが Claude Code ページではなく別の Admin Settings ページにリダイレクトされる場合、アカウントに必要なロールがありません。Admin およびその他の Owner 以外のロールは管理設定を表示または編集できないため、組織内の Owner または Primary Owner に変更を依頼してください。[アクセス制御](#access-control)を参照してください。
+    リンクが Claude Code ページではなく別の Organization settings ページにリダイレクトされる場合、アカウントに必要なロールがありません。Admin およびその他の Owner 以外のロールは管理設定を表示または編集できないため、組織内の Owner または Primary Owner に変更を依頼してください。[アクセス制御](#access-control)を参照してください。
   </Step>
 
   <Step title="設定を定義する">
-    構成を JSON として追加します。`settings.json` で利用可能な[すべての設定](/docs/ja/settings-reference#all-settings)がサポートされており、OS レベルのポリシー配信に制限されているものを除きます。[現在の制限事項](#current-limitations)でその短いリストを参照してください。これには[hooks](/docs/ja/hooks)、[環境変数](/docs/ja/env-vars)、および `allowManagedPermissionRulesOnly` などの[管理専用設定](/docs/ja/managed-settings#managed-only-settings)が含まれます。
+    構成を JSON として追加します。`settings.json` で利用可能な[すべての設定](/docs/ja/settings-reference#all-settings)がサポートされており、OS レベルのポリシー配信に制限されているものを除きます。[現在の制限事項](#current-limitations)でその短いリストを参照してください。これには[フック](/docs/ja/hooks)、[環境変数](/docs/ja/env-vars)、および `allowManagedPermissionRulesOnly` などの[管理専用設定](/docs/ja/managed-settings#managed-only-settings)が含まれます。
 
     この例は、権限拒否リストを適用し、ユーザーが権限をバイパスするのを防ぎ、権限ルールを管理設定で定義されたものに制限します。`Bash(curl *)` ルールは、`/usr/bin/curl` や `sh -c 'curl …'` ではなく、[Claude が記述する方法](/docs/ja/permissions#bash-rule-limits)として `curl` にマッチします。コマンドテキストに依存しないネットワーク強制の場合は、[`sandbox` ブロックに `allowManagedDomainsOnly`](/docs/ja/sandboxing#configure-the-sandbox-for-your-organization) を追加してください。
 

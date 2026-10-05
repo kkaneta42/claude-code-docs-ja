@@ -358,13 +358,26 @@ Claude Code はツール呼び出しが正常に戻ったときにこのイベ�
 
 <span id="new-context-gates" />
 
+**詳細ベータトレースでのコンテンツ属性**
+
 <Note>
-  `new_context`、`system_prompt_preview`、`user_system_prompt`、`tool_input`、`response.model_output` など、コンテンツを保持する追加の属性は、詳細ベータトレースが有効な場合にのみ出力されます。これらは安定したスパンスキーマには含まれません。
-
-  `new_context` のゲートは、それを保持するスパンによって異なり、各コピーはコンテンツ上限（デフォルトで 60 KB）で切り詰められます。`claude_code.tool` スパンでは、ツールにかかわらずそのツール呼び出しの結果を保持し、`OTEL_LOG_TOOL_CONTENT=1` が必要です。`claude_code.interaction` スパンではユーザープロンプトを、`claude_code.llm_request` スパンではそのリクエストの新しいユーザーメッセージとツール結果を保持します。これらはどちらも `OTEL_LOG_USER_PROMPTS=1` が必要です。
-
-  `user_system_prompt` にはさらに `OTEL_LOG_USER_PROMPTS=1` が必要です。これは、`systemPrompt` SDK オプションまたは `--system-prompt` フラグと `--append-system-prompt` フラグで指定したシステムプロンプトのテキストのみを保持し、コンテンツ上限（デフォルトで 60 KB）で切り詰められ、リクエストごとではなくセッションごとに 1 回出力されます。
+  `new_context`、`system_reminders`、`system_prompt_preview`、`user_system_prompt`、`tool_input`、`response.model_output` など、コンテンツを保持する追加の属性は、詳細ベータトレースが有効な場合にのみ出力されます。これらは安定したスパンスキーマには含まれません。
 </Note>
+
+これらの属性は以下のスパンに付与され、`ゲート`は詳細ベータトレースに加えて属性に必要な変数を示します。コンテンツ上限（デフォルトで 60 KB）を超える値は切り詰められます。
+
+| 属性 | スパン | 説明 | ゲート |
+| - | - | - | - |
+| `new_context` | `claude_code.interaction` | ユーザープロンプト | `OTEL_LOG_USER_PROMPTS` |
+| `new_context` | `claude_code.llm_request` | リクエストとともに送信された新しいユーザーメッセージとツール結果 | `OTEL_LOG_USER_PROMPTS` |
+| `system_reminders` | `claude_code.llm_request` | リクエストの新しいメッセージに含まれる[システムリマインダー](/docs/ja/glossary#system-reminder)のテキスト | `OTEL_LOG_USER_PROMPTS` |
+| `system_prompt_preview` | `claude_code.llm_request` | リクエストとともに送信された完全なシステムプロンプトの最初の 500 文字 | `OTEL_LOG_USER_PROMPTS` |
+| `user_system_prompt` | `claude_code.llm_request` | `systemPrompt` SDK オプションまたは `--system-prompt` フラグと `--append-system-prompt` フラグで指定したシステムプロンプトのテキストのみ。リクエストごとではなくセッションごとに 1 回出力されます | `OTEL_LOG_USER_PROMPTS` |
+| `response.model_output` | `claude_code.llm_request` | リクエストに対するモデルの応答のテキスト | `OTEL_LOG_USER_PROMPTS` |
+| `new_context` | `claude_code.tool` | ツールにかかわらず、そのツール呼び出しの結果 | `OTEL_LOG_TOOL_CONTENT` |
+| `tool_input` | `claude_code.tool` | ツール呼び出しのシリアライズされた入力 | `OTEL_LOG_TOOL_DETAILS` |
+
+詳細ベータトレースで `OTEL_LOG_USER_PROMPTS=1` を設定している場合、Claude Code は完全なシステムプロンプトを保持する `claude_code.system_prompt` イベントも出力します。このシステムプロンプトはコンテンツ上限で切り詰められます。このイベントは、セッションが個々の異なるシステムプロンプトを初めて送信したときに届き、コンテキスト圧縮の後にも再度届きます。
 
 <h3 id="dynamic-headers">
   動的ヘッダー
@@ -797,6 +810,7 @@ Claude Code は、OpenTelemetry のログ/イベントを通じて以下のイ�
 * `event.sequence`: イベントを順序付けるためのプロセスごとのカウンター。[イベント相関属性](#event-correlation-attributes)で説明しています
 * `prompt_length`: プロンプトの長さ
 * `prompt`: プロンプトの内容。デフォルトでは秘匿化されます。含めるには `OTEL_LOG_USER_PROMPTS=1` を設定してください
+* `prompt_text`: `prompt` と同じ値で、同じ条件で伏せ字化されます。ドット区切りの属性名をネストされたオブジェクトとして保存するバックエンドでは、`prompt.id` を `prompt` という名前のオブジェクト内の `id` として読み取るため、プロンプト文字列が失われる可能性があります。その場合は代わりに `prompt_text` を読み取ってください。Claude Code v2.1.287 以降が必要です
 * `message.uuid`: 結果として生成されたユーザーメッセージの UUID。保存されたトランスクリプトのエントリと一致します。0 個または複数のメッセージを生成する可能性があるコマンドのディスパッチには含まれません。Claude Code v2.1.214 以降が必要です
 * `command_name`: プロンプトがコマンドを呼び出す場合のコマンド名。`compact` や `debug` などの組み込みおよびバンドルのコマンド名はそのまま出力されます。`reset` などのエイリアスは正規の名前ではなく入力されたとおりに出力されます。カスタム、プラグイン、MCP のコマンド名は、`OTEL_LOG_TOOL_DETAILS=1` が設定されていない限り `custom` または `mcp` にまとめられます
 * `command_source`: コマンドが存在する場合のコマンドの出どころ。`builtin`、`custom`、`mcp` のいずれかです。プラグインが提供するコマンドは `custom` として報告されます
@@ -1694,14 +1708,31 @@ Claude Code は生のイベントストリームのみを出力します。異�
 * OpenTelemetry エクスポートをバックエンドに送信することはオプトインであり、明示的な設定が必要です。Anthropic の個別の運用テレメトリと無効化方法については、[データ使用](/docs/ja/data-usage#telemetry-services)を参照してください
 * 生のファイルコンテンツとコードスニペットはメトリクスやイベントに含まれません。トレーススパンは別のデータパスです。以下の `OTEL_LOG_TOOL_CONTENT` の項目を参照してください
 * OAuth 経由で認証されている場合、`user.email` はテレメトリ属性に含まれ、設定した OTel エンドポイントにのみ送信され、Anthropic には送信されません。これが組織にとって懸念事項である場合は、テレメトリバックエンドと協力してこのフィールドをフィルタリングまたは編集してください
-* ユーザープロンプトコンテンツはデフォルトでは収集されません。プロンプト長のみが記録されます。プロンプトコンテンツを含めるには、`OTEL_LOG_USER_PROMPTS=1` を設定してください。詳細なベータトレースでは、この変数はプロンプトテキストよりも広い範囲に達します。これは [`new_context` スパン属性](#new-context-gates)もゲートします。これは `claude_code.llm_request` スパンのツール結果を含みます
-* アシスタント応答テキストはデフォルトでは収集されません。応答長のみが記録されます。応答テキストを含めるには、`OTEL_LOG_ASSISTANT_RESPONSES=1` を設定してください。Claude Code からのすべての OpenTelemetry データと同様に、応答テキストは設定した OTel エンドポイントにのみ送信され、Anthropic には送信されません。この変数が設定されていない場合、`OTEL_LOG_USER_PROMPTS` がフォールバックとして使用されるため、プロンプトコンテンツなしで応答コンテンツが必要な場合は `OTEL_LOG_ASSISTANT_RESPONSES=0` を設定してください
+* ユーザープロンプトコンテンツはデフォルトでは収集されません。プロンプト長のみが記録されます。プロンプトコンテンツを含めるには、`OTEL_LOG_USER_PROMPTS=1` を設定してください。有効にすると：
+  * `user_prompt` イベントは、プロンプトテキストを `prompt` と [`prompt_text`](#user-prompt-event) の 2 つの属性に含みます。コレクターでイベントのプロンプトテキストを属性名によって削除またはマスクする場合は、ルールで両方の属性を指定してください
+
+    この OpenTelemetry Collector の `attributes` プロセッサーは、これを指定しているパイプラインで両方の属性を削除します：
+
+    ```yaml theme={null}
+    processors:
+      attributes/drop-prompt-text:
+        actions:
+          - key: prompt
+            action: delete
+          - key: prompt_text
+            action: delete
+    ```
+
+  * [トレース](#traces-beta)がオンの場合、`claude_code.interaction` スパンは `user_prompt` 属性にプロンプトテキストを含みます
+
+  * 詳細なベータトレースでは、スパンには各リクエストとともに送信される新しいユーザーメッセージ、ツール結果、システムリマインダーに加えて、システムプロンプトテキストとモデル出力も含まれます。各属性は[詳細なベータトレースにおけるコンテンツ属性](#new-context-gates)に記載されています。`claude_code.system_prompt` イベントは完全なシステムプロンプトを含みます
+* アシスタント応答テキストはデフォルトでは収集されません。応答長のみが記録されます。応答テキストを含めるには、`OTEL_LOG_ASSISTANT_RESPONSES=1` を設定してください。Claude Code からのすべての OpenTelemetry データと同様に、応答テキストは設定した OTel エンドポイントにのみ送信され、Anthropic には送信されません。この変数が設定されていない場合、`OTEL_LOG_USER_PROMPTS` がフォールバックとして使用されるため、イベントで応答コンテンツなしでプロンプトコンテンツが必要な場合は `OTEL_LOG_ASSISTANT_RESPONSES=0` を設定してください。詳細なベータトレースでは、`claude_code.llm_request` スパンは引き続き [`response.model_output`](#new-context-gates) にモデル出力を含みます。これはこの変数ではなく `OTEL_LOG_USER_PROMPTS` に従います
 * ツール入力引数とパラメータはデフォルトではログに記録されません。これらを含めるには、`OTEL_LOG_TOOL_DETAILS=1` を設定してください。Claude Desktop の組み込みサーバーの場合、Claude Desktop が所有するセッションでは、`tool_decision` と `tool_result` は `mcp_server_name`/`mcp_tool_name` ペアを含みます。これはホストが作成した名前であり、フラグがオフの場合でも引数コンテンツではありません。この例外には Claude Code v2.1.214 以降が必要です。このデータは設定した OTEL エンドポイントにのみ送信され、Anthropic には送信されません。引数には機密値が含まれる可能性があるため、テレメトリバックエンドを設定してこれらの属性をフィルタリングまたは編集してください。有効にすると：
   * `tool_result` と `tool_decision` イベントには、Bash コマンド、MCP サーバーとツール名、およびスキル名を含む `tool_parameters` 属性が含まれます。`full_command` などのフィールドは切り詰められずに出力されます
   * `tool_result` イベントには、ファイルパス、URL、検索パターン、およびその他の引数を含む `tool_input` 属性も含まれます。512 文字を超える個別の値は切り詰められ、合計は約 4 K 文字に制限されます
   * `user_prompt` イベントには、カスタム、プラグイン、および MCP コマンドの逐語的な `command_name` が含まれます
   * [コストとトークンカウンター](#cost-counter)および `api_request`、`api_error`、および `api_refusal` イベントは、その属性の帰属に実際のエージェント、スキル、プラグイン、および MCP サーバーとツール名を含みます
-  * トレーススパンには、同じ `tool_input` 属性と `file_path` などの入力派生属性が含まれ、`tool_input` と同じ切り詰めが行われます
+  * `claude_code.tool` スパンには、`file_path` などの入力派生属性が含まれます。詳細なベータトレースでは、[`tool_input`](#new-context-gates) 属性も含まれます
 * ツールコンテンツはデフォルトではトレーススパンにログに記録されません。これを含めるには、`OTEL_LOG_TOOL_CONTENT=1` を設定してください。その後、`claude_code.tool` スパンは、生のファイルコンテンツ、Bash コマンド出力、および MCP ツール、WebFetch、WebSearch が返すものを含む [`tool.output` スパンイベント](#tool-output-span-event)を含みます。コンテンツは属性ごとにコンテンツ制限（デフォルトでは 60 KB）で切り詰められます。MCP ツール、WebFetch、WebSearch からの結果には Claude Code v2.1.283 以降が必要です。ツールコンテンツは [`new_context`](#new-context-gates) を通じてスパンに到達します。このゲートはスパンごとに異なります。テレメトリバックエンドを設定してこれらの属性をフィルタリングまたは編集してください
 * 生の Anthropic Messages API リクエストおよびレスポンスボディはデフォルトではログに記録されません。これらを含めるには、シェル、ユーザー設定、または管理設定で `OTEL_LOG_RAW_API_BODIES` を設定してください。[プロジェクトおよびローカル設定](/docs/ja/settings-reference#variables-claude-code-ignores-in-env)では無視されます。ボディには、システムプロンプト、すべての以前のユーザーとアシスタントのターン、およびツール結果を含む完全な会話履歴が含まれるため、これを有効にすることは、他の `OTEL_LOG_*` コンテンツフラグが明かすすべてのことへの同意を意味します。Claude Code は、他の設定に関係なく、これらのボディから Claude の拡張思考コンテンツを常に編集します。設定する値は、Claude Code がボディを配信する方法を決定します：
   * `=1` の場合、Claude Code は各 API 呼び出しに対して `api_request_body` と `api_response_body` ログイベントを出力します。イベントの `body` 属性は JSON シリアル化されたペイロードを含み、コンテンツ制限（デフォルトでは 60 KB）で切り詰められます

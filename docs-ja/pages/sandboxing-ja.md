@@ -463,7 +463,7 @@ Claude Code は、セッションが読み込むすべての[設定スコープ]
 
 マスキングには以下が必要です。
 
-* **TLS 終端**: プロキシはリクエストの内容の中で実際の値を置換するため、その内容を参照できる必要があります。プロキシ自体が TLS を終端するように、[`network.tlsTerminate`](/docs/ja/settings-reference#sandbox-network-tlsterminate) を設定してください。これを設定しない場合、マスキングは何も漏らさずに失敗します。コマンドにはセンチネルしか見えませんが、センチネルはそのままサーバーに届き、認証が失敗します。Claude Code は起動時にこの設定ミスを報告します。
+* **TLS 終端**: プロキシはリクエストの内容の中で実際の値を置換するため、その内容を参照できる必要があります。プロキシ自体が TLS を終端するように、[`network.tlsTerminate`](/docs/ja/settings-reference#sandbox-network-tlsterminate) を設定してください。これを設定しない場合、マスキングは何も漏らさずに失敗します。コマンドにはセンチネルしか見えませんが、センチネルはそのままサーバーに届き、認証が失敗します。この設定ミスを確認するには、ターミナルで `claude doctor` を実行し、`TLS termination is unavailable` という警告がないか確認してください。
 * **許可された送信先**: 各 `mask` エントリには `injectHosts`（実際の値の送信先として許可されるホスト）を記載できます。プロキシは[ドメイン許可リスト](#network-isolation)が許可する接続でのみ注入を行うため、各 `injectHosts` のホストは `network.allowedDomains` を通じても到達可能である必要があります。`injectHosts` のない `mask` エントリの場合、プロキシは `network.allowedDomains` 内のすべてのホストへのリクエストで実際の値に置換します。
 * **信頼できる設定スコープ**: マスキングはプロキシが実際の認証情報をどこかに送信することを認可するため、Claude Code は `mask` エントリ、`network.tlsTerminate`、[`credentials.allowPlaintextInject`](/docs/ja/settings-reference#sandbox-credentials-allowplaintextinject)、`awsPairs`、`sigv4` を、ユーザー設定、管理設定、および `--settings` フラグからのみ尊重します。リポジトリの `.claude/settings.json` や `.claude/settings.local.json` 内のこれらは無視されます。管理者がサーバー管理設定を通じて `mask` エントリ、`network.tlsTerminate`、または `credentials.allowPlaintextInject` を配布する場合、それらは[承認が必要な設定](/docs/ja/server-managed-settings#security-approval-dialogs)として扱われます。
 

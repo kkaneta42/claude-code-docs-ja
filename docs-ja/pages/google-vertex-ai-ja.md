@@ -295,6 +295,23 @@ Claude Code デフォルトより古いモデルバージョンをピン留め�
 
 これらのチェックがプロジェクトが呼び出せないモデルを見つけた場合、Claude Code はこのマシン上でその拒否を最大 1 日間記憶し、その間の起動時に記憶されたモデルをスキップして Agent Platform に再度問い合わせません。Claude Code は、現在のデフォルトモデルの記憶された拒否を、最後のチェック以降 10 分が経過した後に起動時に再度チェックするため、管理者が再度有効にしたデフォルトが戻ります。メモリをオフにするには、[`CLAUDE_CODE_SKIP_MODEL_ACCESS_MEMORY=1`](/docs/ja/env-vars)を設定してください。
 
+<h3 id="when-your-organization-enforces-a-model-allowlist">
+  組織がモデル許可リストを強制している場合
+</h3>
+
+管理設定で [`enforceAvailableModels`](/docs/ja/model-config#enforce-the-allowlist-for-the-default-model) を設定すると、起動時のモデルチェックは `availableModels` リストで許可されたモデルのみを使用します。これには Claude Code v2.1.287 以降が必要です。`enforceAvailableModels` のないリストは、これらのチェックを制限しません。
+
+チェックでは各エントリを Agent Platform に送信するモデル ID と比較するため、リストはそれらの ID で記述してください。次の例では Opus 4.8 と Sonnet 4.5 を許可します。
+
+```json theme={null}
+{
+  "availableModels": ["claude-opus-4-8", "claude-sonnet-4-5@20250929"],
+  "enforceAvailableModels": true
+}
+```
+
+エイリアス、バージョンプレフィックス、`modelOverrides` エントリについては、[サードパーティデプロイ向けにモデルをピン留めする](/docs/ja/model-config#pin-models-for-third-party-deployments)を参照してください。
+
 <h3 id="when-a-model-is-disabled-mid-session">
   セッション中にモデルが無効化された場合
 </h3>

@@ -86,10 +86,10 @@ VS Code 拡張機能が開始する会話は、[権限モードを切り替え�
 | Claude Code の実行方法 | 組み込み開始権限モード |
 | :- | :- |
 | 設定ファイルが `disableAutoMode` を `"disable"` に設定 | `default` |
-| `claude -p` または [Agent SDK](/docs/ja/agent-sdk/permissions#permission-modes) | [フィーチャーフラグを取得](/docs/ja/env-vars#features-that-need-feature-flag-fetching)するセッションでは `default`。テレメトリがオフの場合やサードパーティプロバイダーなど、フィーチャーフラグを取得しないセッションでは、Claude Code v2.1.285 以降では `auto`、以前のバージョンでは `default`。auto デフォルトを保留するポリシーを持つ組織内のセッションは、代わりに `default` で開始します |
+| `claude -p` または [Agent SDK](/docs/ja/agent-sdk/permissions#permission-modes) | [フィーチャーフラグを取得](/docs/ja/env-vars#features-that-need-feature-flag-fetching)するセッションでは `default`。テレメトリがオフの場合やサードパーティプロバイダーなど、フィーチャーフラグを取得しないセッションでは、Claude Code v2.1.285 以降では `auto`、以前のバージョンでは `default`。`auto` デフォルトを保留するポリシーを持つ組織内のセッションは、代わりに `default` で開始します |
 | ターミナルまたは [VS Code 拡張機能](/docs/ja/vs-code)を通じて | Claude Code v2.1.283 以降では `auto`。以前のバージョンでは、Pro、Max、または Team プランで [フィーチャーフラグを取得](/docs/ja/env-vars#features-that-need-feature-flag-fetching)するセッションでは `auto`、それ以外は `default` |
 
-[インストールまたはアップグレード後の最初のセッション](/docs/ja/env-vars#first-session-after-an-install-or-upgrade)では、Claude Code はフィーチャーフラグが到達する前に開始権限モードを選択できます。そのセッションは表が示すものとは異なる権限モードで開始する可能性があり、次のセッションは表に一致します。
+[インストールまたはアップグレード後の最初のセッション](/docs/ja/env-vars#first-session-after-an-install-or-upgrade)では、Claude Code はフィーチャーフラグが到達する前に開始権限モードを選択できます。そのセッションは表が示すものとは異なる権限モードで開始する可能性があります。
 
 フラグ、設定ファイル、または組み込みデフォルトが `auto` を選択しても、auto モードがセッションで利用できない場合、Claude Code はセッションを Manual で開始します。Auto モードは、セッションが [利用可能性要件](#eliminate-prompts-with-auto-mode)を満たさない場合（設定ファイルがそれをオフにするか、サポートしていないモデルなど）、または Anthropic がサーバー側で一時的にそれをオフにした場合に利用できません。
 
@@ -676,7 +676,7 @@ Linux と macOS では、Claude Code はこのモードで root として、ま�
 * `.devcontainer`
 * `.yarn`
 * `.mvn`
-* `.claude`。ただし `.claude/worktrees` は除く。Claude はここに独自の git worktrees を保存します
+* `.claude`。ただし、Claude が独自の git worktree を保存する `.claude/worktrees` と、`--restricted` なしで開始されたセッションにおける Claude 自身の[自動メモリ](/docs/ja/memory#storage-location)ディレクトリ内の markdown ファイルは除く
 * [`--plugin-dir`](/docs/ja/plugins/mods/create#change-a-mod-with-claude) で読み込んだディレクトリ。ファイルが変更されると、Claude Code がそこから mod のコードを再読み込みして実行するためです
 
 保護されたファイル：
@@ -729,6 +729,7 @@ Claude Code は、以下の `rm` および `rmdir` ターゲットも重要な�
 | コマンド置換の出力のみであるターゲット。`rm` が再帰的な場合 | `rm -rf "$(pwd)"` | Claude Code はコマンドが実行される前にターゲットをチェックできません |
 | 重要なパスの後に続く末尾のコマンド置換 | `rm -rf ~/$(cmd)` | Claude Code は、置換が空に展開された場合に残るパス（この例ではホームディレクトリ）をチェックします |
 | バックスラッシュのみであるターゲット | `rm -rf "\\"` | Windows 上の Git Bash は単一のバックスラッシュを現在のドライブのルートとして読み取るため、チェックはすべてのプラットフォームで適用されます |
+| 末尾が `/*` または `/*/` である一部のターゲット | `rm -rf logs/*/*`、`rm -rf logs/*/`、`cd logs && rm -rf a/*` | Claude Code は、コマンドが実行される前に、それらがどのディレクトリに及ぶかを判断できません |
 
 コマンド置換の出力のみであるターゲットのチェックをオフにするには、Claude Code を起動する環境で [`CLAUDE_CODE_DISABLE_SUBSTITUTION_RM_PROMPT=1`](/docs/ja/env-vars#variables) を設定します。
 
@@ -739,9 +740,11 @@ Claude Code は、以下の `rm` および `rmdir` ターゲットも重要な�
 Claude Code はこれらの構造内も確認します。
 
 * **ネストされたコマンド**: `(...)` を使用したサブシェル、`{ ...; }` を使用したブレースグループ、`$(...)` またはバッククォートを使用したコマンド置換、または `<(...)` を使用したプロセス置換。Claude Code は、`(rm -rf ~)` や `echo "$(rm -rf ~)"` のように置換内にある重要なパスの削除、または同じコマンド内の他の場所にある削除を見つけます。
-* **インラインスクリプト**: Claude Code は `sh -c` または `bash -c` などのシェルに渡されるスクリプトをチェックして、シェル変数と位置パラメータの[ターゲット](#other-targets-that-count-as-critical-paths)を確認します。
+* **インラインスクリプト**: `bash -c 'rm -rf ~'` のように、`-c` を付けて `sh`、`bash`、`zsh`、または同様の POSIX シェルに渡されるスクリプト。
   * スクリプトがダブルクォートで囲まれている場合、呼び出し元のシェルはスクリプトの変数を展開してから、内部シェルがスクリプトを受け取ります。`find . -name '*.tmp' -exec sh -c "rm -rf \"$1\"/*" _ {} \;` では、コマンドはマッチごとに 1 回ファイルシステムルートからの削除に展開され、Claude Code はこれを重要なパスの削除として扱います。
-  * `sh -c 'rm -rf "$1"/*' _ {}` のように `$1` を実際の値にバインドするシングルクォートスクリプトはフラグが付きません。
+  * `sh -c 'rm -rf "$1"/*' _ {}` のように `$1` を実際の値にバインドするシングルクォートスクリプトは警告されません。
+
+`~` など、`-c` スクリプト内に直接書かれた重要なパスに対するチェックをオフにするには、Claude Code を起動する環境で [`CLAUDE_CODE_DISABLE_INLINE_SHELL_RM_PROMPT=1`](/docs/ja/env-vars#variables) を設定します。
 
 <h3 id="rewrite-a-flagged-command">
   フラグが付いたコマンドを書き直す

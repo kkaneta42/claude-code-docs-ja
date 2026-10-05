@@ -479,17 +479,17 @@ Claude Code は会話をローカルに保存するため、タスクが複数�
   自動化とスケール
 </h2>
 
-1 つの Claude で効果的になったら、並列セッション、非対話型モード、ファンアウトパターンで出力を乗算します。
+1 つの Claude で効果的になったら、並列セッション、非対話モード、ファンアウトパターンで出力を乗算します。
 
 <h3 id="run-non-interactive-mode">
-  非対話型モードを実行する
+  非対話モードを実行する
 </h3>
 
 <Tip>
   CI、プリコミットフック、またはスクリプトで `claude -p "prompt"` を使用します。ストリーミング JSON 出力の場合は `--output-format stream-json --verbose` を追加します。
 </Tip>
 
-`claude -p "your prompt"` を使用すると、対話型プロンプトなしで Claude を非対話的に実行できます。実行は `--no-session-persistence` を渡さない限り、再開可能なセッションを作成します。[非対話型モード](/docs/ja/headless)は、Claude を CI パイプライン、プリコミットフック、または自動化されたワークフローに統合する方法です。出力形式を使用すると、結果をプログラムで解析できます。プレーンテキスト、JSON、またはストリーミング JSON です。
+`claude -p "your prompt"` を使用すると、対話的なプロンプトなしで Claude を非対話的に実行できます。実行は `--no-session-persistence` を渡さない限り、再開可能なセッションを作成します。[非対話モード](/docs/ja/headless)は、Claude を CI パイプライン、プリコミットフック、または自動化されたワークフローに統合する方法です。出力形式を使用すると、結果をプログラムで解析できます。プレーンテキスト、JSON、またはストリーミング JSON です。
 
 ```bash theme={null}
 # One-off queries
@@ -516,9 +516,9 @@ claude -p "Analyze this log file" --output-format stream-json --verbose
 
 * [Worktrees](/docs/ja/worktrees)：分離された git チェックアウトで個別の CLI セッションを実行して、編集が衝突しないようにします
 * [クロスセッションメッセージング](/docs/ja/cross-session-messaging)：自分で実行するセッションが相互に検出結果を渡すことができます
-* [デスクトップアプリ](/docs/ja/desktop#work-in-parallel-with-sessions)：複数のローカルセッションを視覚的に管理します。各セッションは独自の worktree にあります
-* [Web 上の Claude Code](/docs/ja/claude-code-on-the-web)：デフォルトで Anthropic が管理するインフラストラクチャ上のクラウドでセッションを実行します
-* [エージェントビュー](/docs/ja/agent-view)：研究プレビュー。`claude agents` を実行して、バックグラウンドで実行し続けるセッションをディスパッチし、1 つの画面から監視します
+* [デスクトップアプリ](/docs/ja/desktop#work-in-parallel-with-sessions)：複数のローカルセッションを視覚的に管理します。必要に応じて、各セッションを独自の worktree で実行できます
+* [クラウドで Claude Code を使用する](/docs/ja/claude-code-on-the-web)：デフォルトで Anthropic が管理するインフラストラクチャ上でセッションを実行します
+* [エージェントビュー](/docs/ja/agent-view)：リサーチプレビュー。`claude agents` を実行して、バックグラウンドで実行し続けるセッションをディスパッチし、1 つの画面から監視します
 * [エージェントチーム](/docs/ja/agent-teams)：実験的で、デフォルトで無効です。共有タスク、メッセージング、チームリーダーを備えた複数のセッションの自動調整
 
 作業を並列化することを超えて、複数のセッションは品質に焦点を当てたワークフローを有効にします。新しいコンテキストは、Claude がちょうど書いたコードに偏らないため、コードレビューを改善します。
@@ -531,14 +531,14 @@ claude -p "Analyze this log file" --output-format stream-json --verbose
 | | `Review the rate limiter implementation in @src/middleware/rateLimiter.ts. Look for edge cases, race conditions, and consistency with our existing middleware patterns.` |
 | `Here's the review feedback: [Session B output]. Address these issues.` | |
 
-テストで同様のことを行うことができます。1 つの Claude にテストを書かせ、別の Claude にそれらを渡すコードを書かせます。
+テストで同様のことを行うことができます。1 つの Claude にテストを書かせ、別の Claude にそれらをパスするコードを書かせます。
 
 <h3 id="fan-out-across-files">
   ファイル全体にファンアウトする
 </h3>
 
 <Tip>
-  各タスクに対して `claude -p` を呼び出すループを実行します。バッチ操作のスコープ権限に `--allowedTools` を使用します。
+  各タスクに対して `claude -p` を呼び出すループを実行します。バッチ操作用にツールを事前承認するには `--allowedTools` を使用します。
 </Tip>
 
 大規模な移行または分析の場合、多くの並列 Claude 呼び出し全体で作業を配布できます。[`/batch <instruction>`](/docs/ja/commands#all-commands) を実行して、Claude が変更を 5～30 個のサブエージェント全体に分割させます。各サブエージェントは独自の worktree で作業します。代わりに独自のスクリプトからファンアウトを駆動するには、`claude -p` をループします。
@@ -552,13 +552,14 @@ claude -p "Analyze this log file" --output-format stream-json --verbose
     ```bash theme={null}
     for file in $(cat files.txt); do
       claude -p "Migrate $file from Python 2 to Python 3. Return OK or FAIL." \
-        --allowedTools "Edit,Bash(git commit *)"
+        --allowedTools "Edit,Bash(git commit *)" \
+        --permission-mode dontAsk
     done
     ```
   </Step>
 
   <Step title="いくつかのファイルでテストしてから、すべてのファイルで実行する">
-    最初の 2～3 ファイルで何が悪いかに基づいてプロンプトを改善し、完全なセットで実行します。`--allowedTools` フラグは Claude が何ができるかを制限します。これは無人で実行しているときに重要です。
+    最初の 2～3 ファイルで何が悪いかに基づいてプロンプトを改善し、完全なセットで実行します。`--allowedTools` フラグは移行に必要なツールを事前承認し、[`--permission-mode dontAsk`](/docs/ja/permission-modes#allow-only-pre-approved-tools-with-dontask-mode) は承認が必要になるそれ以外のすべてを拒否します。これは無人で実行しているときに重要です。
   </Step>
 </Steps>
 
@@ -569,28 +570,28 @@ claude -p "<your prompt>" --output-format json | your_command
 ```
 
 <h3 id="run-autonomously-with-auto-mode">
-  auto mode で自律的に実行する
+  auto モードで自律的に実行する
 </h3>
 
-無中断の実行とバックグラウンドのセーフティチェックについては、[auto mode](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode) を使用します。分類器モデルはコマンドを実行前にレビューし、スコープエスカレーション、未知のインフラストラクチャ、敵対的なコンテンツ駆動のアクションをブロックしながら、ルーチンワークをプロンプトなしで進めさせます。
+無中断の実行とバックグラウンドのセーフティチェックについては、[auto モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)を使用します。分類器モデルはコマンドを実行前にレビューし、スコープエスカレーション、未知のインフラストラクチャ、敵対的なコンテンツ駆動のアクションをブロックしながら、日常的な作業をプロンプトなしで進めさせます。
 
 ```bash theme={null}
 claude --permission-mode auto -p "fix all lint errors"
 ```
 
-非対話型実行で `-p` フラグを使用する場合、分類器が繰り返しアクションをブロックするとき、Claude Code は実行を停止しません。[auto mode がフォールバックするとき](/docs/ja/permission-modes#when-auto-mode-falls-back)を参照して、代わりに何が起こるか、およびしきい値を確認してください。
+`-p` フラグを使用した非対話実行で分類器が繰り返しアクションをブロックするとき、Claude Code は実行を停止しません。[auto モードがフォールバックするとき](/docs/ja/permission-modes#when-auto-mode-falls-back)を参照して、代わりに何が起こるか、およびしきい値を確認してください。
 
 <h3 id="add-an-adversarial-review-step">
   敵対的なレビューステップを追加する
 </h3>
 
 <Tip>
-  タスクが完了したと見なす前に、サブエージェントに新しいコンテキストで diff をレビューさせ、ギャップを報告させます。
+  タスクが完了したと見なす前に、サブエージェントに新しいコンテキストで差分をレビューさせ、ギャップを報告させます。
 </Tip>
 
-Claude が無人で作業する期間が長いほど、作業が完了したと見なす前に独立したチェックが重要になります。新しい[サブエージェント](/docs/ja/sub-agents)コンテキストで実行されるレビュアーは、diff と提供されたクライテリアのみを見て、変更を生成した推論は見ないため、独自の条件で結果を評価します。
+Claude が無人で作業する期間が長いほど、作業が完了したと見なす前に独立したチェックが重要になります。新しい[サブエージェント](/docs/ja/sub-agents)コンテキストで実行されるレビュアーは、差分と提供されたクライテリアのみを見て、変更を生成した推論は見ないため、独自の条件で結果を評価します。
 
-正確性チェックの場合、バンドルされた [`/code-review` スキル](/docs/ja/commands)を実行します。これは新しいサブエージェントで現在の diff をバグについてレビューし、検出結果をセッションに返します。代わりに diff をプランに対してチェックするには、レビュープロンプトを自分で作成します。チェックする作業、チェック対象のプラン、および検出結果として何がカウントされるかを名前付けします。
+正確性チェックの場合、バンドルされた [`/code-review` スキル](/docs/ja/commands)を実行します。これは新しいサブエージェントで現在の差分をバグについてレビューし、検出結果をセッションに返します。代わりに差分をプランに対してチェックするには、レビュープロンプトを自分で作成します。チェックする作業、チェック対象のプラン、および検出結果として何がカウントされるかを明示します。
 
 ```text wrap theme={null}
 Use a subagent to review the rate limiter diff against PLAN.md. Check that
@@ -601,7 +602,7 @@ nothing outside the task's scope changed. Report gaps, not style preferences.
 レビュアーはサブエージェントとして実行されるため、実装セッションはギャップを直接受け取り、ウィンドウ間で検出結果をコピーすることなく、それらを修正して再レビューできます。
 
 <Callout>
-  ギャップを見つけるようにプロンプトされたレビュアーは、作業が健全であっても、通常はいくつかを報告します。それはそれが求められたことだからです。すべての検出結果を追求することは、過度なエンジニアリングにつながります。追加の抽象化レイヤー、防御的なコード、および発生できないケースのテストです。レビュアーに、正確性または記載された要件に影響するギャップのみをフラグ付けするよう指示し、残りはオプションとして扱います。
+  ギャップを見つけるようにプロンプトされたレビュアーは、作業が健全であっても、通常はいくつかを報告します。それはそれが求められたことだからです。すべての検出結果を追求することは、過度なエンジニアリングにつながります。追加の抽象化レイヤー、防御的なコード、および発生し得ないケースのテストです。レビュアーに、正確性または記載された要件に影響するギャップのみを指摘するよう指示し、残りはオプションとして扱います。
 </Callout>
 
 ***
