@@ -211,7 +211,7 @@ Claude Code は以下の JSON フィールドを stdin 経由でスクリプト�
 | `prompt_cache` | メイン会話の [prompt cache](/docs/ja/prompt-caching) 統計情報：ヒット率、ミス数、キャッシュがウォーム状態かどうか。すべてのフィールドについては [prompt cache フィールド](#prompt-cache-fields) を参照してください。メイン会話の最初の API レスポンスまで不在。Claude Code v2.1.251 以降が必要です |
 | `session_id` | 一意のセッション識別子 |
 | `session_name` | セッション名。`--name` フラグまたは `/rename` で設定されたカスタム名が存在する場合はそれを使用し、そうでない場合は AI が生成したセッションタイトルを使用します。[デフォルト表示名](/docs/ja/sessions#name-your-sessions)（`my-app-3f` など）はこのフィールドに入力されません。セッションにカスタム名も AI が生成したタイトルもない場合は不在 |
-| `prompt_id` | 現在処理中のユーザープロンプトを識別する UUID。OpenTelemetry イベントの [`prompt.id` 属性](/docs/ja/monitoring-usage#event-correlation-attributes) と一致します。最初のユーザー入力まで不在。Claude Code v2.1.196 以降が必要です |
+| `prompt_id` | 現在処理中のユーザープロンプトを識別する UUID。OpenTelemetry イベントの [`prompt.id` 属性](/docs/ja/monitoring-usage#event-correlation-attributes) と一致します。最初のユーザー入力まで不在 |
 | `transcript_path` | 会話トランスクリプトファイルへのパス |
 | `version` | Claude Code バージョン |
 | `output_style.name` | 現在の出力スタイルの名前 |

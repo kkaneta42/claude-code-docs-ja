@@ -772,7 +772,7 @@ macOS と Linux では、コマンド フックは制御ターミナルのない
 | フィールド | 説明 |
 | :- | :- |
 | `session_id` | 現在のセッション識別子 |
-| `prompt_id` | 現在処理中のユーザー プロンプトを識別する UUID。[OpenTelemetry イベントの `prompt.id` 属性](/docs/ja/monitoring-usage#event-correlation-attributes)と一致するため、単一のプロンプトのテレメトリでフック出力を相関させることができます。最初のユーザー入力まで存在しません。Claude Code v2.1.196 以降が必要です |
+| `prompt_id` | 現在処理中のユーザー プロンプトを識別する UUID。[OpenTelemetry イベントの `prompt.id` 属性](/docs/ja/monitoring-usage#event-correlation-attributes)と一致するため、単一のプロンプトのテレメトリでフック出力を相関させることができます。最初のユーザー入力まで存在しません |
 | `transcript_path` | 会話 JSON へのパス。トランスクリプト ファイルは非同期に書き込まれ、メモリ内の会話に遅れる可能性があるため、フックが発火するときに現在のターンの最新メッセージがまだ含まれていない可能性があります。現在のターンの最終的なアシスタント テキストが必要なフックは、トランスクリプトを読む代わりに [Stop](#stop) と [SubagentStop](#subagentstop) の `last_assistant_message` を使用する必要があります |
 | `cwd` | フックが呼び出されるときの現在の作業ディレクトリ |
 | `scratchpad_dir` | セッションの[スクラッチパッド ディレクトリ](/docs/ja/claude-directory#session-scratchpad-directory)へのパス。Claude はここに一時的な作業ファイルを保持します。セッションにスクラッチパッドがない場合、または一時ディレクトリが利用できない場合は存在しません。Claude Code v2.1.257 以降が必要です |
@@ -791,7 +791,7 @@ macOS と Linux では、コマンド フックは制御ターミナルのない
 
 `$CLAUDE_MODEL` 環境変数はありません。シェルで `$ANTHROPIC_MODEL` を設定した場合、フックはそれを読み取ることができますが、セッション中に `/model` でモデルを切り替えてもその値は変わりません。
 
-フック プロセスは親環境を継承します。ただし、Claude Code が[起動するすべてのサブプロセスから削除する](/docs/ja/monitoring-usage#administrator-configuration) `OTEL_*` エクスポーター変数と、[`CLAUDE_CODE_SUBPROCESS_ENV_SCRUB`](/docs/ja/env-vars#variables) が `1` に設定されている場合に除去される変数は除きます。
+フック プロセスは親環境を継承します。ただし、Claude Code が[起動するすべてのサブプロセスから削除する](/docs/ja/monitoring-usage#administrator-configuration) `OTEL_*` エクスポーター変数と、[`CLAUDE_CODE_SUBPROCESS_ENV_SCRUB`](/docs/ja/env-vars#variables) が `1` に設定されている場合に除去される変数は除きます。[HIPAA 設定が適用される](/docs/ja/hipaa-setup#check-how-developers-sign-in-and-connect)セッションでは、Claude Code はフックの環境から [Anthropic の認証情報も削除します](/docs/ja/hipaa-setup#anthropic-credentials-in-commands-hooks-and-mcp-servers)。
 
 例えば、Bash コマンドの `PreToolUse` フックは stdin で以下を受け取ります。
 
@@ -2140,7 +2140,7 @@ PreToolUse フックは、権限が必要かどうかにかかわらず、すべ
 | `addRules` | `rules`、`behavior`、`destination` | 権限ルールを追加します。`rules` は `{toolName, ruleContent?}` オブジェクトの配列です。ツール全体に一致させるには `ruleContent` を省略します。`behavior` は `"allow"`、`"deny"`、または `"ask"` です |
 | `replaceRules` | `rules`、`behavior`、`destination` | `destination` にある指定の `behavior` のすべてのルールを、指定した `rules` で置き換えます |
 | `removeRules` | `rules`、`behavior`、`destination` | 指定の `behavior` の一致するルールを削除します |
-| `setMode` | `mode`、`destination` | 権限モードを変更します。有効なモードは `default`、`auto`、`acceptEdits`、`dontAsk`、`bypassPermissions`、`plan`、および `default` のエイリアスとしての `manual` です。`manual` エイリアスには Claude Code v2.1.200 以降が必要です |
+| `setMode` | `mode`、`destination` | 権限モードを変更します。有効なモードは `default`、`auto`、`acceptEdits`、`dontAsk`、`bypassPermissions`、`plan`、および `default` のエイリアスである `manual` です |
 | `addDirectories` | `directories`、`destination` | 作業ディレクトリを追加します。`directories` はパス文字列の配列です |
 | `removeDirectories` | `directories`、`destination` | 作業ディレクトリを削除します |
 

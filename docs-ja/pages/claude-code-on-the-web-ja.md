@@ -64,7 +64,7 @@ Anthropic ホスト環境では、GitHub 認証情報は Anthropic のサーバ�
 `/web-setup` のウォークスルー（`/web-setup` が保存する内容と削除方法を含む）については、[ターミナルから接続](/docs/ja/web-quickstart#connect-from-your-terminal)を参照してください。
 
 <Note>
-  [Zero Data Retention](/docs/ja/zero-data-retention) が有効な組織は `/web-setup` またはその他のクラウドセッション機能を使用できません。
+  [Zero Data Retention](/docs/ja/zero-data-retention) が有効な組織、または [HIPAA 設定](/docs/ja/hipaa-setup)が適用されている組織は、`/web-setup` またはその他のクラウドセッション機能を使用できません。
 </Note>
 
 <h3 id="quick-setup-for-team-and-enterprise">

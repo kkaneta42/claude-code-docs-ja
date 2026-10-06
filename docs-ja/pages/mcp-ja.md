@@ -52,7 +52,7 @@ MCP サーバーが接続されている場合、Claude Code に以下のこと�
     * `Marketplace "claude-plugins-official" not found`：`/plugin marketplace add anthropics/claude-plugins-official` でマーケットプレイスを追加してから、インストールを再試行してください。
     * [プラグインがマーケットプレイスで見つかりません](/docs/ja/plugins/install#install-a-plugin)：プラグイン名を確認してください。
 
-    インストール概要が `Run /reload-plugins to activate.` を報告する場合、Claude Code はその後、そのリロードを実行します。リロードが次のメッセージが会話を再度読み込むことになると警告する場合は、`/reload-plugins --force` を実行してください。
+    インストール概要が `Run /reload-plugins to apply.` を報告する場合、Claude Code はその後、そのリロードを実行します。リロードが次のメッセージが会話を再度読み込むことになると警告する場合は、`/reload-plugins --force` を実行してください。
   </Step>
 
   <Step title="ビルドスキルを実行する">

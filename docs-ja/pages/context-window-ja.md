@@ -1604,8 +1604,8 @@ Claude Code のコンテキストウィンドウには、セッションにつ�
 | 自動メモリ | ディスクから再度注入されます |
 | [Git ステータススナップショット](/docs/ja/settings-reference#includegitinstructions) | Claude Code はリポジトリから新しいものを読み込みます |
 | [plan mode](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode)で Claude が作成したプラン | ディスクから再度注入されます |
-| `paths:` frontmatter を持つルール | Claude がそれらが一致するファイルを読み込むときに Claude Code が再度読み込みます |
-| サブディレクトリ内のネストされた CLAUDE.md | Claude Code がそのサブディレクトリ内のファイルを読み込むときに再度読み込みます |
+| `paths:` フロントマターを持つルール | Claude Code が[必要に応じて](/docs/ja/memory#path-specific-rules)再度読み込みます |
+| サブディレクトリ内のネストされた CLAUDE.md | Claude Code が[必要に応じて](/docs/ja/memory#how-claude-md-files-load)再度読み込みます |
 | Claude が読み込んだまたは編集したファイル | Claude Code は最大 5 つを再度読み込みます。最近変更されたものが最初です |
 | 呼び出されたスキル本体 | 再度注入されます。スキルあたり 5,000 トークン、合計 25,000 トークンでキャップされます。最も古いものが最初にドロップされます |
 | [バックグラウンドコマンド](/docs/ja/interactive-mode#background-bash-commands)とバックグラウンド[サブエージェント](/docs/ja/sub-agents#run-subagents-in-foreground-or-background) | 実行を続けます。Claude Code は Claude に対して、どのコマンドがまだ実行中であるかを通知し、重複を開始しないようにします |

@@ -245,7 +245,7 @@ Anthropic 管理の git を使用する各セッションについて、ラン�
   プライベートネットワークの git URL を書き直す
 </h3>
 
-リポジトリ URL はコントロールプレーンから HTTPS として到達します。git ホストのホスト名を使用します。GitHub Enterprise の場合、Claude Code 管理設定で [GitHub Enterprise 統合](/docs/ja/github-enterprise-server)用に設定したホスト名です。2 つの繰り返し可能なフラグはクローン前にこれらの URL を書き直します：
+リポジトリ URL はコントロールプレーンから HTTPS として到達します。git ホストのホスト名を使用します。GitHub Enterprise の場合、claude.ai で [GitHub Enterprise 統合](/docs/ja/github-enterprise-server)用に設定したホスト名です。2 つの繰り返し可能なフラグはクローン前にこれらの URL を書き直します：
 
 * `--git-host-rewrite <from>=<to>`：スプリットホライズン DNS の場合。Anthropic は外部ホスト名を通じて git ホストに到達しますが、ランナーは内部ホスト名を使用する必要があります
 * `--git-ssh-rewrite <host>`：SSH のみを受け入れる git ホストの場合。`https://<host>/owner/repo` を `git@<host>:owner/repo` に書き直します

@@ -87,7 +87,7 @@ Claude Code は、ツール呼び出しの承認方法を制御するいくつ�
 
 | モード | 説明 |
 | :- | :- |
-| `default` | 各ツールの最初の使用時に権限を促します。CLI、VS Code と JetBrains 拡張機能、およびデスクトップアプリでは Manual とラベル付けされており、Claude Code は `manual` をエイリアスとして受け入れます。ラベルとエイリアスには Claude Code v2.1.200 以降が必要です。デスクトップアプリのラベルは CLI バージョンに依存しません |
+| `default` | 各ツールの最初の使用時に権限を促します。CLI、VS Code と JetBrains 拡張機能、およびデスクトップアプリでは Manual とラベル付けされており、Claude Code は `manual` をエイリアスとして受け入れます |
 | `acceptEdits` | ファイル編集と一般的なファイルシステムコマンド（`mkdir`、`touch`、`mv`、`cp` など）を、作業ディレクトリまたは `additionalDirectories` 内のパスに対して自動的に受け入れます |
 | `plan` | Claude はファイルを読み取り、読み取り専用シェルコマンドを実行して探索しますが、ソースファイルを編集しません。[auto モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)が利用可能で、分類器が承認したコマンドも実行されます。CLI および VS Code 拡張機能では Plan とラベル付けされています |
 | `auto` | ルーチンプロンプトなしで実行されます。シェルコマンドやネットワークリクエストなどのアクションが実行される前に、バックグラウンド[分類器](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)がそれらがリクエストと一致することを確認します |
@@ -773,7 +773,7 @@ Claude Code は git を実行して 2 つを区別し、フォルダを信頼し
   設定ホーム例外はトラストステップのみをスキップします。`~/.claude/settings.local.json` は依然として[ローカルスコープ](/docs/ja/settings#compare-the-scope-of-each-settings-file)であるため、Claude Code はホームディレクトリ自体で起動したセッションでのみそれを読み込み、すべてのプロジェクトでは読み込みません。すべてのプロジェクトに許可ルールを適用するには、代わりにユーザー設定に追加してください。`~/.claude/settings.json`、または `CLAUDE_CONFIG_DIR` が設定されている場合は `$CLAUDE_CONFIG_DIR/settings.json`。
 </Note>
 
-バージョン 2.1.196 から 2.1.199 では、Claude Code は設定ホームと git リポジトリ外のファイルのルールを保持し、そこに[`this workspace has not been trusted`](/docs/ja/errors#workspace-has-not-been-trusted)警告を出力していました。v2.1.207 より前では、Claude Code はダイアログを受け入れる前に追跡されていないファイルのルールを適用していました。
+v2.1.207 より前では、Claude Code はダイアログを受け入れる前に追跡されていないファイルのルールを適用していました。
 
 <h3 id="what-runs-before-you-trust-a-folder">
   フォルダを信頼する前に実行されるもの

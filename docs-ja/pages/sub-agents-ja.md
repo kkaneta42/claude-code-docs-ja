@@ -315,7 +315,7 @@ Bash コマンドの場合、Claude Code はコマンド自体を 2 つの方法
 | `tools` | いいえ | サブエージェントが使用できる[ツール](#available-tools)。`Read, Grep, Glob` や YAML リストなどのカンマ区切り文字列として。省略した場合、サブエージェントで利用可能なすべてのツールを継承します。リスト内のエントリがツールに解決されない場合、サブエージェントは通常、エントリに名前を付けるエラーで[起動に失敗](/docs/ja/errors#agent-would-be-spawned-with-zero-tools)します。スキルをコンテキストにプリロードするには、ここで `Skill` をリストするのではなく、`skills` フィールドを使用します |
 | `disallowedTools` | いいえ | 継承または指定されたリストから削除するツール。`tools` と同じ形式。`Bash(git push *)` などの指定子を持つエントリは、[ツール全体](#available-tools)を削除します |
 | `model` | いいえ | 使用する[モデル](#choose-a-model)。`sonnet`、`opus`、`haiku`、`fable`、`claude-opus-5-5` などの完全なモデル ID、または `inherit`。省略した場合、Claude Code は[サブエージェントモデル順序](#choose-a-model)でモデルを選択します |
-| `permissionMode` | いいえ | [権限モード](#permission-modes)。`default`、`acceptEdits`、`auto`、`dontAsk`、`bypassPermissions`、`plan`、または `default` のエイリアスとしての `manual`。`manual` エイリアスには Claude Code v2.1.200 以降が必要です。[プラグインサブエージェント](#choose-the-subagent-scope)では無視されます |
+| `permissionMode` | いいえ | [権限モード](#permission-modes)。`default`、`acceptEdits`、`auto`、`dontAsk`、`bypassPermissions`、`plan`、または `default` のエイリアスとしての `manual`。[プラグインサブエージェント](#choose-the-subagent-scope)では無視されます |
 | `maxTurns` | いいえ | サブエージェントが停止する前の最大 agentic ターン数。サブエージェントが制限に達すると、Claude Code は出力を部分的としてマークして返し、Claude は[再開](#resume-subagents)して続行できます。部分的なマーキングには Claude Code v2.1.246 以降が必要です |
 | `skills` | いいえ | 起動時にサブエージェントのコンテキストにプリロードする[スキル](/docs/ja/skills)。説明のみではなく、完全なスキルコンテンツが注入されます。サブエージェントは、Skill ツールを通じてリストされていないプロジェクト、ユーザー、およびプラグインスキルを呼び出すことができます |
 | `mcpServers` | いいえ | このサブエージェントで利用可能な[MCP サーバー](/docs/ja/mcp)。各エントリは、既に設定されているサーバーを参照するサーバー名（例えば、`"slack"`）、または完全な[MCP サーバー設定](/docs/ja/mcp#installing-mcp-servers)を値として持つサーバー名をキーとするインライン定義のいずれかです。[プラグインサブエージェント](#choose-the-subagent-scope)では無視されます |
@@ -988,7 +988,7 @@ Claude は Agent ツール呼び出しで `name` パラメータを渡すこと�
 
 API エラー（使用制限や繰り返されるサーバーエラーなど）で実行が終了したサブエージェントは、その失敗を Claude に報告します。Claude が受け取るものは、サブエージェントが実行された場所によって異なります。
 
-* **フォアグラウンド**: レート制限、オーバーロード、またはサーバーエラーがテキスト出力を既に生成したサブエージェントを切断した場合、Agent ツールはその部分出力と、サブエージェントが切断され、タスクを完了しなかったというメモを返します。何も出力しなかったか、唯一の出力がツール呼び出しだったサブエージェントは [`Agent terminated early due to an API error`](/docs/ja/errors#agent-terminated-early-due-to-an-api-error) で失敗し、その後にエラー詳細が続きます。v2.1.199 では、ツール呼び出しのみの形状を切断したレート制限、オーバーロード、またはサーバーエラーは、切断メモのみを含む空の部分結果を返しました。
+* **フォアグラウンド**: レート制限、オーバーロード、またはサーバーエラーがテキスト出力を既に生成したサブエージェントを切断した場合、Agent ツールはその部分出力と、サブエージェントが切断され、タスクを完了しなかったというメモを返します。何も出力しなかったか、唯一の出力がツール呼び出しだったサブエージェントは [`Agent terminated early due to an API error`](/docs/ja/errors#agent-terminated-early-due-to-an-api-error) で失敗し、その後にエラー詳細が続きます。
 * **バックグラウンド**: サブエージェントは失敗とマークされ、Claude が終了時に受け取るメッセージは API エラーに名前を付け、サブエージェントの最後の出力を含むため、部分的な作業は失われません。
 
 [フォールバックモデルチェーン](/docs/ja/model-config#fallback-model-chains) を設定し、サブエージェントがチェーンがカバーする失敗（モデルが利用できないなど）に遭遇した場合、Claude Code はサブエージェントをリクエストを受け入れるチェーンの最初のモデルに切り替えます。サブエージェントはエラーで終了するのではなく、作業を続けます。

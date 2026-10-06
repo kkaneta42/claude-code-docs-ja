@@ -431,7 +431,9 @@ curl: (22) The requested URL returned error: 403
 | Windows CMD | `'claude' is not recognized as an internal or external command` |
 | PowerShell | `claude : The term 'claude' is not recognized as the name of a cmdlet` |
 
-これは、インストールディレクトリがシェルの検索パスにないことを意味します。各プラットフォームの修正については、[PATH を確認](#verify-your-path)を参照してください。
+Windows で、Claude Code の更新直後にこのエラーが発生し始めた場合は、[バックアップから `claude.exe` を復元](#claude-exe-missing-after-an-update-on-windows)を参照してください。
+
+それ以外の場合は、各プラットフォームの修正について[PATH を確認](#verify-your-path)を参照してください。
 
 <h3 id="curl-56-failure-writing-output-to-destination">
   `curl: (56) Failure writing output to destination`
@@ -624,7 +626,7 @@ irm https://claude.ai/install.ps1 | iex
   Windows での更新後に `claude.exe` が見つからない
 </h3>
 
-ターミナルが Windows で Claude Code が更新された直後に `'claude' is not recognized` を報告する場合、`%USERPROFILE%\.local\bin` に `claude.exe` が含まれているかどうかを確認してください。そのディレクトリが PATH にまったくない場合は、代わりに [PATH を修正](#command-not-found-claude-after-installation)を参照してください。Windows で更新するために、Claude Code は既存の `claude.exe` をバックアップに名前変更し、新しいバージョンをその場所に移動します。新しいバージョンをその場所に移動できず、Claude Code がバックアップを名前変更できない場合、ディレクトリはバックアップを保持しますが `claude.exe` はありません。
+ターミナルが Windows で Claude Code が更新された直後に `'claude' is not recognized` を報告する場合、`%USERPROFILE%\.local\bin` に `claude.exe` が含まれているかどうかを確認してください。そのディレクトリが PATH にまったくない場合は、代わりに [PATH を確認](#verify-your-path)を参照してください。Windows で更新するために、Claude Code は既存の `claude.exe` をバックアップに名前変更し、新しいバージョンをその場所に移動します。新しいバージョンをその場所に移動できず、Claude Code がバックアップを名前変更できない場合、ディレクトリはバックアップを保持しますが `claude.exe` はありません。
 
 バックアップは、`claude.exe.old.` で始まり、その後に数値タイムスタンプが続く名前を持つ同じディレクトリ内のファイルです。PowerShell で以下を実行して、最新のバックアップを `claude.exe` に名前変更してください。
 

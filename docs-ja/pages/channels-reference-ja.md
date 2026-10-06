@@ -193,6 +193,8 @@ claude --dangerously-load-development-channels plugin:yourplugin@yourmarketplace
 claude --dangerously-load-development-channels server:webhook
 ```
 
+開発フラグは、Claude Code が確認プロンプトを表示できる対話セッションで実行してください。`-p` を使用した非対話モードや Agent SDK 経由でフラグを渡した場合、Claude Code はフラグを無視し、チャネルは登録されません。
+
 バイパスはエントリごとです。このフラグを `--channels` と組み合わせても、バイパスは `--channels` エントリに拡張されません。リサーチプレビュー中、あなたのチャネルは承認許可リストにないため、構築とテスト中は開発フラグに留まります。
 
 <Note>

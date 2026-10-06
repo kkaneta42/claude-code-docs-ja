@@ -47,7 +47,7 @@ Team、Enterprise、または Console 組織を管理している場合は、[�
         * `Marketplace "claude-plugins-official" not found`：`/plugin marketplace add anthropics/claude-plugins-official` でマーケットプレイスを追加してから、インストールを再試行してください。
         * プラグインが[マーケットプレイスで見つかりません](/docs/ja/plugins/install#install-a-plugin)：プラグイン名を確認してください。
 
-        インストールがインストールスコープを求めるとき、ユーザースコープオプションを選択して、プラグインがすべてのプロジェクト全体で利用可能になるようにしてください。インストール概要を確認してください。`Run /reload-plugins to activate.` と報告されている場合は、[プラグイン変更を再起動なしで適用する](/docs/ja/plugins/cli-reference#reload-plugins)を参照して、プラグインの設定コマンドを利用可能にしてください。
+        インストールがインストールスコープを求めるとき、ユーザースコープオプションを選択して、プラグインがすべてのプロジェクト全体で利用可能になるようにしてください。インストール概要を確認してください。`Run /reload-plugins to apply.` と報告されている場合は、[プラグイン変更を再起動なしで適用する](/docs/ja/plugins/cli-reference#reload-plugins)を参照して、プラグインの設定コマンドを利用可能にしてください。
       </Step>
 
       <Step title="トークンを設定する">
@@ -125,7 +125,7 @@ Team、Enterprise、または Console 組織を管理している場合は、[�
         * `Marketplace "claude-plugins-official" not found`：`/plugin marketplace add anthropics/claude-plugins-official` でマーケットプレイスを追加してから、インストールを再試行してください。
         * プラグインが[マーケットプレイスで見つかりません](/docs/ja/plugins/install#install-a-plugin)：プラグイン名を確認してください。
 
-        インストールがインストールスコープを求めるとき、ユーザースコープオプションを選択して、プラグインがすべてのプロジェクト全体で利用可能になるようにしてください。インストール概要を確認してください。`Run /reload-plugins to activate.` と報告されている場合は、[プラグイン変更を再起動なしで適用する](/docs/ja/plugins/cli-reference#reload-plugins)を参照して、プラグインの設定コマンドを利用可能にしてください。
+        インストールがインストールスコープを求めるとき、ユーザースコープオプションを選択して、プラグインがすべてのプロジェクト全体で利用可能になるようにしてください。インストール概要を確認してください。`Run /reload-plugins to apply.` と報告されている場合は、[プラグイン変更を再起動なしで適用する](/docs/ja/plugins/cli-reference#reload-plugins)を参照して、プラグインの設定コマンドを利用可能にしてください。
       </Step>
 
       <Step title="トークンを設定する">
@@ -192,7 +192,7 @@ Team、Enterprise、または Console 組織を管理している場合は、[�
 
         インストールがインストールスコープを求めるとき、ユーザースコープオプションを選択して、プラグインがすべてのプロジェクト全体で利用可能になるようにしてください。
 
-        インストール概要が `Run /reload-plugins to activate.` と報告されている場合は、次のステップで再起動するため、ここではスキップできます。
+        インストール概要で `Run /reload-plugins to apply.` と報告された場合でも、次のステップで再起動するとプラグインが読み込まれるため、ここで対応する必要はありません。
       </Step>
 
       <Step title="チャネルを有効にして再起動する">
@@ -251,7 +251,7 @@ Fakechat デモを試すには、以下が必要です。
 
     インストールがインストールスコープを求めるとき、ユーザースコープオプションを選択して、プラグインがすべてのプロジェクト全体で利用可能になるようにしてください。
 
-    インストール概要が `Run /reload-plugins to activate.` を報告する場合、ここで対応する必要はありません。次のステップで再起動するときにプラグインが取得されるためです。
+    インストール概要が `Run /reload-plugins to apply.` を報告する場合、ここで対応する必要はありません。次のステップで再起動するときにプラグインが取得されるためです。
   </Step>
 
   <Step title="チャネルを有効にして再起動する">

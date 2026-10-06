@@ -159,10 +159,10 @@ v2.1.205 より前では、`Doctor` コンテキストと `/doctor` 診断スク
 | `confirm:no` | Escape | アクションを拒否 |
 | `confirm:previous` | Up | 前のオプション |
 | `confirm:next` | Down | 次のオプション |
-| `confirm:nextField` | Tab | 次のフィールド |
-| `confirm:previousField` | （バインドなし） | 前のフィールド |
+| `confirm:nextField` | Tab | `/fast` ダイアログで fast mode をオンまたはオフにする |
+| `confirm:previousField` | （バインドなし） | Claude Code はこのアクションに応答しません。このアクションを指定する `keybindings.json` は引き続き有効です |
 | `confirm:toggle` | Space | 選択を切り替え |
-| `confirm:cycleMode` | Shift+Tab\* | 権限モードをサイクルします。ファイル権限プロンプトでは、開いている [コメントフィールド](/docs/ja/permissions#add-a-comment-when-you-answer-a-permission-prompt) を閉じます。フィールドが開いていない場合は、プロンプトがそのオプションを提供する場合、セッションの残りの間アクションを許可するオプションを選択します |
+| `confirm:cycleMode` | Shift+Tab\* | ファイル権限プロンプトでは、開いている [コメントフィールド](/docs/ja/permissions#add-a-comment-when-you-answer-a-permission-prompt) を閉じます。フィールドが開いていない場合は、プロンプトがそのオプションを提供していれば、セッションの残りの間アクションを許可するオプションを選択します |
 
 \*VT モードなし Windows （Node \<24.2.0/\<22.17.0、Bun \<1.2.23） では、デフォルトは Meta+M です。
 
@@ -200,7 +200,7 @@ v2.1.280 より前では、`y` はデフォルトで `confirm:yes` に、`n` は
 
 | アクション | デフォルト | 説明 |
 | :- | :- | :- |
-| `permission:toggleDebug` | （バインドなし） | 権限デバッグ情報を切り替えます。v2.1.146 で `app:exit` をシャドウしたため、Ctrl+D の以前のデフォルトが削除されました |
+| `permission:toggleDebug` | （バインドなし） | Claude Code はこのアクションに応答しません。このアクションを指定する `keybindings.json` は引き続き有効です |
 
 <h3 id="transcript-actions">
   トランスクリプトアクション
@@ -239,7 +239,7 @@ v2.1.280 より前では、`y` はデフォルトで `confirm:yes` に、`n` は
 
 | アクション | デフォルト | 説明 |
 | :- | :- | :- |
-| `task:background` | Ctrl+B、Ctrl+X Ctrl+B | 現在のタスクをバックグラウンドに移動します。Ctrl+X Ctrl+B コードは tmux プレフィックスの競合を回避します |
+| `task:background` | Ctrl+B、Ctrl+X Ctrl+B | 現在のタスクをバックグラウンドに移動 |
 
 <h3 id="theme-actions">
   テーマアクション

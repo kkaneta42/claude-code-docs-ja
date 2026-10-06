@@ -4,13 +4,15 @@
 
 # ゼロデータ保持
 
-> Claude for Enterprise での Claude Code のゼロデータ保持（ZDR）について、スコープ、無効化される機能、有効化のリクエスト方法を学びます。
+> Claude for Enterprise の適格なアカウントで利用可能な Claude Code のゼロデータ保持（ZDR）について、スコープ、無効化される機能、有効化のリクエスト方法を学びます。
 
-ゼロデータ保持（ZDR）は、Claude for Enterprise を通じて使用される Claude Code で利用可能です。ZDR が有効になると、Claude Code セッション中に生成されたプロンプトとモデル応答はリアルタイムで処理され、法令遵守またはミスユース対策が必要な場合を除き、応答が返された後は Anthropic によって保存されません。
+Claude Code のゼロデータ保持（ZDR）は、Claude for Enterprise の適格なアカウントで利用可能です。ZDR が有効になると、Claude Code セッション中に生成されたプロンプトとモデル応答はリアルタイムで処理され、法令遵守またはミスユース対策が必要な場合を除き、応答が返された後は Anthropic によって保存されません。
 
 <Note>
   ZDR は標準的な Claude for Enterprise プランに含まれておらず、管理者設定から有効化することはできません。適格なアカウントで利用可能であり、Anthropic による個別の有効化が必要です。組織が ZDR を必要とする場合は、[営業に連絡](https://www.anthropic.com/contact-sales?utm_source=claude_code\&utm_medium=docs\&utm_content=zero_data_retention_request)するか、Anthropic アカウントチームに連絡して適格性を確認してください。
 </Note>
+
+HIPAA を有効にした Claude for Enterprise の組織は、HIPAA 設定を Claude Code（ローカルモード）と Cowork（ローカルモード）に適用すると、ZDR なしで Claude Code CLI と Claude Desktop の Code タブをビジネスアソシエイト契約（BAA）の対象にできます。[HIPAA 対応組織向けに Claude Code（ローカルモード）をセットアップする](/docs/ja/hipaa-setup)を参照してください。HIPAA 設定のない組織では、Claude Code を BAA の対象とするために引き続き ZDR が必要です。対象サービス（Eligible Services）の一覧については、[実装ガイド](https://trust.anthropic.com/resources?s=l1wrssd9hsbi4gak0tp5a6\&name=%5Banthropic%5D-hipaa-ready-offering-implementation-guide)を参照してください。
 
 Claude for Enterprise 上の ZDR により、エンタープライズカスタマーは Claude Code をゼロデータ保持で使用し、管理機能にアクセスできます：
 
@@ -19,7 +21,7 @@ Claude for Enterprise 上の ZDR により、エンタープライズカスタ�
 * [Server-managed settings](/docs/ja/server-managed-settings)
 * 監査ログ
 
-Claude for Enterprise 上の Claude Code の ZDR は、Anthropic の直接プラットフォームにのみ適用されます。Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry 上の Claude デプロイメントについては、これらのプラットフォームのデータ保持ポリシーを参照してください。
+Claude for Enterprise 上の Claude Code の ZDR は、Anthropic の直接プラットフォームにのみ適用されます。Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry 上の Claude のデプロイについては、これらのプラットフォームのデータ保持ポリシーを参照してください。
 
 <h2 id="zdr-scope">
   ZDR スコープ

@@ -187,6 +187,7 @@
 | `<model>'s safeguards flagged this message` | [リクエストエラー](#safety-measures-flagged-a-cybersecurity-topic) |
 | `<model>'s safeguards flagged this session` | [リクエストエラー](#safety-measures-flagged-a-cybersecurity-topic) |
 | `<model> has safety measures that flagged this message for a cybersecurity topic` | [リクエストエラー](#safety-measures-flagged-a-cybersecurity-topic) |
+| `` Details: `[reasoning_extraction]` `` | [リクエストエラー](#safeguards-flagged-a-request-for-claudes-reasoning) |
 | `API Error: Output blocked by content filtering policy` | [リクエストエラー](#output-blocked-by-content-filtering-policy) |
 | `Installation was killed before it could finish (exit code 137)` | [インストールエラー](#installation-was-killed-before-it-could-finish) |
 | `The connection dropped while downloading the update` | [インストールエラー](#the-connection-dropped-while-downloading-the-update) |
@@ -2825,6 +2826,8 @@ Claude Code 独自の [WebSearch ツール](/docs/ja/tools-reference#websearch-t
 
 会話内のコンテンツが [使用ポリシー](https://www.anthropic.com/legal/aup)のチェックをトリガーしたため、API は応答を拒否しました。
 
+メッセージに `` Details: `[reasoning_extraction]` `` という行が含まれている場合は、[セーフガードが Claude の推論を求めるリクエストを警告しました](#safeguards-flagged-a-request-for-claudes-reasoning)を参照してください。
+
 メッセージには、拒否が誤りだと思われる場合にサポートに伝えることができるリクエスト ID とメッセージ ID が含まれています。
 
 ```text theme={null}
@@ -2855,6 +2858,8 @@ v2.1.219 より前では、メッセージは `Claude Code is unable to respond 
 API Error: Opus 4.8's safeguards flagged this message. Our intentionally broad safeguards allow us to deliver more capabilities faster, but can sometimes flag legitimate cybersecurity work. Apply to the Cyber Verification Program to reduce these interruptions. Send feedback with /feedback or learn more: https://support.claude.com/en/articles/14604842-real-time-cyber-safeguards-on-claude
 ```
 
+メッセージに `` Details: `[reasoning_extraction]` `` という行が含まれている場合は、[セーフガードが Claude の推論を求めるリクエストを警告しました](#safeguards-flagged-a-request-for-claudes-reasoning)を参照してください。
+
 メッセージは、正当なサイバーセキュリティ作業へのアクセスを付与する [Cyber Verification Program](https://support.claude.com/en/articles/14604842-real-time-cyber-safeguards-on-claude) にリンクしています。Opus 5.5 と Sonnet 5.5 では、メッセージは代わりに `<model>'s safeguards flagged this session` で始まります。警告されたカテゴリにフォールバックモデルが利用可能な場合、Claude Code はこのエラーを表示するのではなく [モデルを切り替えます](/docs/ja/model-config#automatic-model-fallback)。
 
 [Amazon Bedrock](/docs/ja/amazon-bedrock)、[Google Cloud の Agent Platform](/docs/ja/google-vertex-ai)、[Microsoft Foundry](/docs/ja/microsoft-foundry) では、サイバーセキュリティの警告は代わりに [使用ポリシーによる拒否](#usage-policy-refusal)のメッセージになります。
@@ -2868,6 +2873,27 @@ v2.1.203 より前では、`<model>'s safeguards flagged this message for a cybe
 * 作業にこのコンテンツが必要な場合は、[Cyber Verification Program](https://support.claude.com/en/articles/14604842-real-time-cyber-safeguards-on-claude) を通じてアクセスを申請してください
 * リクエストがサイバーセキュリティのトピックに関するものではなかった場合は、`/feedback` を実行して誤検知を報告してください
 * 同じセッションで作業を続けるには、Esc キーを 2 回押すか、`/rewind` を実行して、警告をトリガーしたターンの前のチェックポイントに戻り、別のアプローチを試してください。[チェックポイント機能](/docs/ja/checkpointing)を参照してください。
+
+<h3 id="safeguards-flagged-a-request-for-claudes-reasoning">
+  セーフガードが Claude の推論を求めるリクエストを警告しました
+</h3>
+
+モデルに内部の推論を応答内で再現するよう求めるものとしてセーフガードがリクエストを警告したため、API はリクエストを拒否しました。API はこの [拒否カテゴリ](https://platform.claude.com/docs/en/build-with-claude/refusals-and-fallback#refusal-response)を `reasoning_extraction` と呼び、拒否メッセージには次の行が含まれます：
+
+```text theme={null}
+Details: `[reasoning_extraction]`
+```
+
+v2.1.234 より前では、拒否メッセージに `Details` 行は含まれていませんでした。
+
+**対応方法：**
+
+* Claude に思考や推論をそのまま、または固定形式で書き出すよう求める指示（`<thinking>` セクション、スクラッチパッドセクション、JSON 出力の `reasoning` フィールドなど）を削除するか、言い換えてください。この指示は、プロンプト内にある場合もあれば、Claude Code がプロンプトとともに読み込むカスタマイズ（CLAUDE.md、スキル、サブエージェントのプロンプト、出力スタイル、MCP ツールの説明など）内にある場合もあります。
+* カスタマイズがトリガーかどうかを確認するには、ターミナルで [`claude --safe-mode`](/docs/ja/cli-reference#cli-flags) を実行してカスタマイズを無効にしたセッションを開始し、同じプロンプトを送信してください
+* カスタマイズを変更した後は、新しいセッションを開始してください
+* すでに送信したプロンプトを言い換えるには、[巻き戻しと要約](/docs/ja/checkpointing#rewind-and-summarize)を参照してください
+* Claude に回答の説明を求めることは引き続き可能です。短い説明、結果の根拠、または実行したアクションの要約を求めてください。Claude の思考の要約を読むには、[`showThinkingSummaries`](/docs/ja/settings-reference#showthinkingsummaries) を参照してください。
+* その他の例や、言い換えたリクエストが引き続き拒否される場合の対応については、[Keep reasoning in thinking blocks](https://platform.claude.com/docs/en/build-with-claude/refusals-and-fallback#keep-reasoning-in-thinking-blocks)を参照してください
 
 <h3 id="output-blocked-by-content-filtering-policy">
   Output blocked by content filtering policy

@@ -1765,7 +1765,7 @@ Linux および WSL2 では、シンボリックリンクである設定ファ�
   * `"auto"`: Claude Code は日常的なプロンプトなしで実行します。シェルコマンドやネットワークリクエストなどのアクションが実行される前に、バックグラウンドの分類器がそれらがユーザーのリクエストに沿っているかを確認します
   * `"dontAsk"`: Claude Code はプロンプトを表示するはずのすべての呼び出しを自動的に拒否します。読み取り、承認が不要な他のアクション、事前承認されたツールは引き続き実行されます
   * `"bypassPermissions"`: Claude Code はすべてを確認なしで実行します
-  * `"manual"`: `"default"` のエイリアス（Claude Code v2.1.200 以降）
+  * `"manual"`: `"default"` のエイリアス
 * **デフォルト**: 未設定
 * **セッションごとの上書き**: `--permission-mode`、および `bypassPermissions` に相当する `--dangerously-skip-permissions` は、1 つのセッションにおいてこのキーより優先されます
 
@@ -1777,7 +1777,7 @@ Linux および WSL2 では、シンボリックリンクである設定ファ�
 }
 ```
 
-権限ルールはすべてのモードの上に重ねて適用されます。`deny` ルールは `bypassPermissions` を含むすべてのモードでブロックします。[権限モード](/docs/ja/permission-modes)を参照してください。`manual` は、CLI および VS Code 拡張機能で Manual というラベルが付いた権限モードを指します。このエイリアスには Claude Code v2.1.200 以降が必要です。クラウドセッションでは、Claude Code はこのキーのうち `acceptEdits`、`plan`、`default`、`auto` のみを尊重します。VS Code 拡張機能が開始する会話については、[拡張機能が開始権限モードとして読み取る設定](/docs/ja/permission-modes#switch-permission-modes)を参照してください。
+権限ルールはすべてのモードの上に重ねて適用されます。`deny` ルールは `bypassPermissions` を含むすべてのモードでブロックします。[権限モード](/docs/ja/permission-modes)を参照してください。クラウドセッションでは、Claude Code はこのキーのうち `acceptEdits`、`plan`、`default`、`auto` のみを尊重します。VS Code 拡張機能が開始する会話については、[拡張機能が開始権限モードとして読み取る設定](/docs/ja/permission-modes#switch-permission-modes)を参照してください。
 
 <h3 id="permissions-disablebypasspermissionsmode">
   `permissions.disableBypassPermissionsMode`
@@ -3232,7 +3232,7 @@ Claude Code がターミナルでどのように見え、動作するかを変�
   `askUserQuestionTimeout`
 </h3>
 
-回答されていない [`AskUserQuestion`](/docs/ja/tools-reference) ダイアログがアイドル時間の経過後に自動的に続行し、既に選択していたオプションを送信するようにします。席を離れて Claude に続行させたい場合に設定します。デフォルトでは、質問は回答されるまで待機します。タイマーが一時停止する場合や開始されない場合については、[質問の自動続行タイムアウト](/docs/ja/tools-reference#question-auto-continue-timeout)を参照してください。Claude Code v2.1.200 以降が必要です。
+回答されていない [`AskUserQuestion`](/docs/ja/tools-reference) ダイアログがアイドル時間の経過後に自動的に続行し、既に選択していたオプションを送信するようにします。席を離れて Claude に続行させたい場合に設定します。デフォルトでは、質問は回答されるまで待機します。タイマーが一時停止する場合や開始されない場合については、[質問の自動続行タイムアウト](/docs/ja/tools-reference#question-auto-continue-timeout)を参照してください。
 
 * **スコープ**: [`ユーザーまたはマネージド`](#scopes)
 * **タイプ**: 文字列、`"60s"`、`"5m"`、`"10m"`、または `"never"` のいずれか
@@ -3245,7 +3245,7 @@ Claude Code がターミナルでどのように見え、動作するかを変�
 }
 ```
 
-`/config` に**質問の自動続行タイムアウト**として表示され、このキーをユーザー設定に書き込みます。マネージド設定または `--settings` フラグがキーを設定している場合、Claude Code は行を非表示にします。Claude Code v2.1.200 以降が必要です。
+`/config` に**質問の自動続行タイムアウト**として表示され、このキーをユーザー設定に書き込みます。管理設定または `--settings` フラグがキーを設定している場合、Claude Code は行を非表示にします。
 
 <h3 id="autocontinueatusagelimit">
   `autoContinueAtUsageLimit`
@@ -5165,7 +5165,7 @@ Claude Code v2.1.232 以降では、`extraKnownMarketplaces` を `additionalMark
 }
 ```
 
-組み込みプラグインは `@builtin` サフィックス付きの同じキーの下にオプションを保存します。たとえば、Claude Code が `AGENTS.md` ファイルを読むかどうかを制御する [**Project instructions**](/docs/ja/memory#choose-which-instruction-files-load) 設定は `pluginConfigs["agents-md@builtin"].options.instructionFiles` です。
+組み込みプラグインは、`@builtin` サフィックス付きで同じキーの下にオプションを保存します。たとえば、Claude Code が `AGENTS.md` ファイルを読み込むかどうかを制御する [**Project instructions**](/docs/ja/memory#choose-which-instruction-files-load) 設定は `pluginConfigs["cc-plugin-agents-md@builtin"].options.instructionFiles` です。v2.1.285 より前では、このプラグインの ID は `agents-md@builtin` でした。それ以降のバージョンは、どちらの ID の下のエントリも読み込みます。
 
 Claude Code はプロジェクトおよびローカルエントリを無視します。これらの値をプラグインフック、MCP、および LSP 設定に置き換えるため、クローンされたリポジトリはそれらを提供できません。v2.1.207 より前では、プロジェクトおよびローカル設定も読まれていました。
 
@@ -6370,7 +6370,7 @@ Claude Code が [セッショントランスクリプトおよび他のアプリ
   `desktopSessionCleanupPeriodDays`
 </h3>
 
-Claude Desktop または Cowork で開始または最後に続行したセッションのトランスクリプトに対して、日数での年齢制限を設定します。このキーがない場合、Claude Code は [それらのトランスクリプトを任意の年齢で保持します](/docs/ja/claude-directory#cleaned-up-automatically)。Claude Code は各トランスクリプトが、この制限と [`cleanupPeriodDays`](#cleanupperioddays) の両方より古い場合に削除します。したがって、`cleanupPeriodDays` がデフォルトの 30 の場合、`7` の値でも 30 日間保持されます。管理設定が `cleanupPeriodDays` を設定する場合、その期間が代わりに適用され、このキーは無視されます。Claude Code v2.1.248 以降が必要です。
+Claude Desktop または Cowork で開始または最後に続行したセッションのトランスクリプトに対して、日数での年齢制限を設定します。このキーがない場合、Claude Code は [それらのトランスクリプトを任意の年齢で保持します](/docs/ja/claude-directory#cleaned-up-automatically)。Claude Code は各トランスクリプトが、この制限と [`cleanupPeriodDays`](#cleanupperioddays) の両方より古い場合に削除します。したがって、`cleanupPeriodDays` がデフォルトの 30 の場合、`7` の値でも 30 日間保持されます。[自動クリーンアップ](/docs/ja/claude-directory#cleaned-up-automatically) には、代わりに `cleanupPeriodDays` が適用され、Claude Code がこのキーを無視するケースが記載されています。Claude Code v2.1.248 以降が必要です。
 
 * **スコープ**: [`User or managed`](#scopes)。Claude Code は `--settings` で渡すファイルからキーを読み込み、プロジェクトおよびローカル設定では無視します。
 * **タイプ**: 日数、整数、最小値 `0`

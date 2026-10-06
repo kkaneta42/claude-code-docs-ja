@@ -53,7 +53,7 @@ VS Code 拡張機能またはデスクトップアプリでは、[プラグイ�
 * `Marketplace "claude-plugins-official" not found` と報告された場合は、`/plugin marketplace add anthropics/claude-plugins-official` でマーケットプレイスを追加してから、インストールを再試行してください。
 * マーケットプレイスで [プラグインが見つからないと報告された](/docs/ja/plugins/install#install-a-plugin)場合は、プラグイン名のタイプミスを確認してください。
 
-インストール概要を確認してください。`Run /reload-plugins to activate.` と報告された場合は、[プラグインの変更を再起動なしで適用](/docs/ja/plugins/cli-reference#reload-plugins)を参照して、現在のセッションでプラグインをアクティブにしてください。
+インストール概要を確認してください。`Run /reload-plugins to apply.` と報告された場合は、[プラグインの変更を再起動なしで適用](/docs/ja/plugins/cli-reference#reload-plugins)を参照して、現在のセッションでプラグインをアクティブにしてください。
 
 プラグインがアクティブになり、[コードベースをスキャンして修正](#scan-and-fix-your-codebase)する準備ができました。
 

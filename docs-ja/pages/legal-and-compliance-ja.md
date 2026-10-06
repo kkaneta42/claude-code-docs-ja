@@ -46,7 +46,12 @@ Claude Code は、アクセスするプラットフォームに関係なく、An
   ヘルスケア規制対応（BAA）
 </h3>
 
-カスタマーが Anthropic と業務提携契約（BAA）を締結しており、関連する組織に対して [ゼロデータ保持（ZDR）](/docs/ja/zero-data-retention) が有効化されている場合、その BAA は Claude Code を通じて流れるカスタマーの API トラフィックに拡張されます。
+顧客が Anthropic と業務提携契約（BAA）を締結している場合、組織で利用可能なものに応じて、その BAA は次の 2 つの設定で Claude Code に適用されます。
+
+* **HIPAA 設定**：Claude for Enterprise アカウントで使用する Claude Code CLI または Claude Desktop の Code タブ。組織で HIPAA が有効化され、Claude Code（ローカルモード）と Cowork（ローカルモード）に HIPAA 設定が適用されている必要があります。[HIPAA 対応組織向けに Claude Code（ローカルモード）をセットアップする](/docs/ja/hipaa-setup)を参照してください。
+* **ゼロデータ保持**：該当する組織で [ゼロデータ保持（ZDR）](/docs/ja/zero-data-retention) が有効化された Claude Code。ZDR はすべての組織で利用できるわけではありません。
+
+HIPAA 設定では、クラウドセッション、Remote Control、Claude モバイルアプリ内の Claude Code、およびサードパーティのクラウドプロバイダーまたはゲートウェイを経由する Claude Code は対象外です。対象サービス（Eligible Services）の完全なリストについては、[実装ガイド](https://trust.anthropic.com/resources?s=l1wrssd9hsbi4gak0tp5a6\&name=%5Banthropic%5D-hipaa-ready-offering-implementation-guide)を確認してください。
 
 <h2 id="usage-policy">
   使用ポリシー

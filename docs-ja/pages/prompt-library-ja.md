@@ -108,10 +108,10 @@ export const PromptLibrary = ({text = {}, labels = {}, tagLabels = {}, phaseLabe
     sdlc: 'design',
     cat: 'Plan',
     roles: ['pm'],
-    prompt: 'read {input} and write up the action items, then create a {tracker} ticket for each with acceptance criteria',
+    prompt: 'read {input} and write up the action items, then create a ticket in {tracker} for each one, with acceptance criteria',
     slots: {
       input: '@meeting-notes.md',
-      tracker: 'Linear'
+      tracker: 'our issue tracker'
     },
     needs: 'tracker',
     nextHref: '/en/skills',
@@ -151,8 +151,8 @@ export const PromptLibrary = ({text = {}, labels = {}, tagLabels = {}, phaseLabe
     roles: [],
     prompt: 'look at how {example} is implemented to understand the pattern, then build {new} the same way',
     slots: {
-      example: 'the GitHub webhook handler',
-      new: 'a Stripe webhook handler'
+      example: 'the existing webhook handler',
+      new: 'a payments webhook handler'
     },
     nextHref: '/en/memory',
     src: 'best-practices'
@@ -412,9 +412,9 @@ export const PromptLibrary = ({text = {}, labels = {}, tagLabels = {}, phaseLabe
     sdlc: 'ship',
     cat: 'Git',
     roles: [],
-    prompt: 'find the {tracker} ticket about {topic} and open a PR that implements it',
+    prompt: 'find the ticket about {topic} in {tracker} and open a PR that implements it',
     slots: {
-      tracker: 'Linear',
+      tracker: 'our issue tracker',
       topic: 'the login timeout'
     },
     needs: 'tracker',
@@ -492,7 +492,7 @@ export const PromptLibrary = ({text = {}, labels = {}, tagLabels = {}, phaseLabe
     paste: 'screenshot',
     prompt: 'here is a screenshot of {console}. walk me through why {resource} is failing and give me the exact commands to fix it',
     slots: {
-      console: 'the GCP Kubernetes dashboard',
+      console: 'our Kubernetes dashboard',
       resource: 'this pod'
     },
     src: 'teams'
@@ -564,10 +564,10 @@ export const PromptLibrary = ({text = {}, labels = {}, tagLabels = {}, phaseLabe
     sdlc: 'operate',
     cat: 'Automate',
     roles: [],
-    prompt: 'set up the {server} MCP server so you can read my {data} directly',
+    prompt: 'connect {server} via MCP so you can read its {data} directly',
     slots: {
-      server: 'Sentry',
-      data: 'error reports'
+      server: 'our error tracker',
+      data: 'stack traces'
     },
     src: 'workflows'
   }, {
@@ -1181,10 +1181,10 @@ export const text = {
     title: "ミーティングをチケットに変換する",
     teaches: "トランスクリプションステップをスキップしてください。Claude は非構造化入力からアクション項目を抽出し、[MCP](/docs/ja/mcp)経由でトラッカーに直接書き込むため、トランスクリプトではなくチケットをレビューします。",
     next: "これを `/tickets` スキルとして保存してください",
-    prompt: "{input} を読んでアクション項目をまとめ、それぞれについて受け入れ基準付きの {tracker} チケットを作成してください",
+    prompt: "{input} を読んでアクション項目をまとめ、それぞれについて受け入れ基準付きのチケットを{tracker}に作成してください",
     slots: {
       input: "@meeting-notes.md",
-      tracker: "Linear"
+      tracker: "自社のイシュートラッカー"
     }
   },
   "map-edge-cases-before": {
@@ -1212,8 +1212,8 @@ export const text = {
     next: "Claude に、従ったパターンを `CLAUDE.md` に書き込むよう依頼して、将来のセッションが参照なしで一致するようにしてください",
     prompt: "{example}の実装を見てパターンを理解し、同じ方法で {new}を作成してください",
     slots: {
-      example: "GitHub webhook ハンドラー",
-      new: "Stripe webhook ハンドラー"
+      example: "既存の webhook ハンドラー",
+      new: "決済用の webhook ハンドラー"
     }
   },
   "add-a-small-well": {
@@ -1419,9 +1419,9 @@ export const text = {
   "open-a-pull-request": {
     title: "チケットからプルリクエストを開く",
     teaches: "トラッカー、エディタ、GitHub 間のコンテキストスイッチをスキップしてください。1 つのプロンプトがスペックを読み、変更を加え、PR を開きます。",
-    prompt: "{topic}に関する {tracker} チケットを見つけて、それを実装する PR を作成してください",
+    prompt: "{tracker}で{topic}に関するチケットを見つけて、それを実装する PR を作成してください",
     slots: {
-      tracker: "Linear",
+      tracker: "自社のイシュートラッカー",
       topic: "ログインのタイムアウト"
     }
   },
@@ -1470,7 +1470,7 @@ export const text = {
   "investigate-a-production-incident": {
     title: "本番インシデントを調査する",
     teaches: "実行するステップではなく、相関させるエビデンスソースをリストアップしてください。Claude はログ、git 履歴、設定を一緒に読んで、原因を絞り込みます。",
-    next: "Sentry またはログストアを MCP 経由で接続してください",
+    next: "エラートラッカーまたはログストアを MCP 経由で接続してください",
     prompt: "{symptom}。ログ、最近のデプロイ、設定の変更を確認して、最も可能性の高い原因を教えてください",
     slots: {
       symptom: "1 時間前からチェックアウトのエンドポイントが 500 を返すようになりました"
@@ -1491,7 +1491,7 @@ export const text = {
     teaches: "クラウドコンソールは問題を表示しますが、修正するコマンドは表示しません。Claude はスクリーンショットを読み、ダッシュボードを実行する kubectl、gcloud、または aws コマンドに変換します。",
     prompt: "これは {console}のスクリーンショットです。{resource}が失敗している理由を順を追って説明し、修正するための正確なコマンドを教えてください",
     slots: {
-      console: "GCP の Kubernetes ダッシュボード",
+      console: "自社の Kubernetes ダッシュボード",
       resource: "この Pod"
     }
   },
@@ -1538,10 +1538,10 @@ export const text = {
   "connect-a-tool-with": {
     title: "MCP でツールを接続する",
     teaches: "毎回のセッションでデータをペーストする代わりに、ソースを一度接続してください。[MCP](/docs/ja/mcp)セットアップ後、Claude はそれについて尋ねるときにツールから直接読みます。",
-    prompt: "{server} MCP サーバーをセットアップして、私の{data}を直接読めるようにしてください",
+    prompt: "{server}を MCP 経由で接続して、その{data}を直接読めるようにしてください",
     slots: {
-      server: "Sentry",
-      data: "エラーレポート"
+      server: "自社のエラートラッカー",
+      data: "スタックトレース"
     }
   },
   "capture-what-to-remember": {

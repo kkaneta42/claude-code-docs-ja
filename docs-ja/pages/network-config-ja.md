@@ -69,7 +69,7 @@ export HTTPS_PROXY=http://username:password@proxy.example.com:8080
   CA 証明書ストア
 </h2>
 
-デフォルトでは、Claude Code はバンドルされた Mozilla CA 証明書とオペレーティングシステムの証明書ストアの両方を信頼しています。OS ストアを読み取るには、`tls.getCACertificates` を備えたランタイムが必要です。ネイティブインストーラーは常にこれを備えており、npm インストールは Node 22.15 以降が必要です。古い Node バージョンでは、バンドルされたセットと `NODE_EXTRA_CA_CERTS` のみが適用されます。エンタープライズ TLS インスペクションプロキシは、ルート証明書が OS 信頼ストアにインストールされており、ランタイムがそれを読み取ることができる場合、追加の設定なしで動作します。
+デフォルトでは、Claude Code はバンドルされた Mozilla CA 証明書とオペレーティングシステムの証明書ストアの両方を信頼しています。OS ストアを読み取るには、`tls.getCACertificates` を備えたランタイムが必要です。ネイティブインストーラーは常にこれを備えており、npm インストールは Node 22.15 以降が必要です。古い Node バージョンでは、バンドルされたセットと `NODE_EXTRA_CA_CERTS` のみが適用されます。エンタープライズ TLS インスペクションプロキシは、ルート証明書が OS 信頼ストアにインストールされており、ランタイムがそれを読み取ることができる場合、追加の設定なしで動作します。このようなプロキシが gzip 圧縮されたリクエストボディを正しく処理できない場合は、[`CLAUDE_CODE_GZIP_REQUEST_BODIES=0`](/docs/ja/env-vars) を設定して、Claude API、テレメトリ、およびアーティファクト公開のリクエストの圧縮をオフにしてください。
 
 `CLAUDE_CODE_CERT_STORE` はカンマ区切りのソースリストを受け入れます。認識される値は、Claude Code に付属する Mozilla CA セットの場合は `bundled`、オペレーティングシステムの信頼ストアの場合は `system` です。デフォルトは `bundled,system` です。
 

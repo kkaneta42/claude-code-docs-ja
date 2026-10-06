@@ -51,7 +51,8 @@ Claude Code CLI とローカルで実行されるすべてのものは、すべ�
 
 これらは claude.ai アカウントでサインインする必要があり、Anthropic Console API キーまたはサードパーティプロバイダーからはアクセスできません：
 
-* [Web 上の Claude Code](/docs/ja/claude-code-on-the-web)、モバイル上の Claude Code、および [Slack の Claude Code](/docs/ja/slack)
+* [クラウドセッション](/docs/ja/claude-code-on-the-web)とモバイル上の Claude Code
+* [Slack の Claude Code](/docs/ja/slack)：Pro および Max プラン
 * [Claude Code Desktop](/docs/ja/desktop)
 * [Routines](/docs/ja/routines)（`/schedule`）
 * [Ultrareview](/docs/ja/ultrareview)
@@ -302,6 +303,8 @@ Desktop は部分的な例外です：[ゲートウェイルーティングは�
 </h2>
 
 Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、または Anthropic Console API キーを通じて認証する場合、このセクションは適用されません。claude.ai アカウントでサインインすると、プランによって以下の機能の利用可能性が決まります。
+
+[HIPAA 設定](/docs/ja/hipaa-setup)が適用されている Enterprise 組織では、この表の一部の機能が無効になります。
 
 | 機能 | Pro | Max | Team | Enterprise |
 | :- | :- | :- | :- | :- |

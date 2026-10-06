@@ -18,7 +18,7 @@ Ultrareview は [クラウドセッション](/docs/ja/claude-code-on-the-web) �
 * **より広いカバレッジ**: より大規模なレビュアーエージェントのフリートが並行して変更を探索するため、ローカルレビューでは見落とされる可能性のある問題が浮かび上がります
 * **ローカルリソースの使用なし**: レビューはクラウドサンドボックスで完全に実行されるため、実行中はターミナルが他の作業に使用可能なままです
 
-Ultrareview は Anthropic のインフラストラクチャ上でクラウドセッションとして実行されるため、claude.ai アカウントでの認証が必要です。API キーのみで署名している場合は、`/login` を実行して claude.ai で認証してください。Ultrareview は Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry で Claude Code を使用する場合は利用できず、Zero Data Retention を有効にしている組織でも利用できません。ultrareview が利用できない場合、`/code-review ultra` はセッション内でローカルレビューを実行します。
+Ultrareview は Anthropic のインフラストラクチャ上でクラウドセッションとして実行されるため、claude.ai アカウントでの認証が必要です。API キーのみでサインインしている場合は、`/login` を実行して claude.ai で認証してください。Ultrareview は Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry で Claude Code を使用する場合は利用できず、Zero Data Retention を有効にしている組織や [HIPAA 設定](/docs/ja/hipaa-setup) が適用されている組織でも利用できません。ultrareview が利用できない場合、`/code-review ultra` はセッション内でローカルレビューを実行します。
 
 <h2 id="run-ultrareview-from-the-cli">
   CLI から ultrareview を実行する

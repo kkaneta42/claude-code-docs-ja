@@ -124,19 +124,20 @@ Browser ペインから、以下を実行できます：
 
 * Browser ペインで実行中のアプリと直接対話する
 * Claude が自動的に独自の変更を検証するのを監視する：スクリーンショットを撮影し、DOM を検査し、要素をクリックし、フォームに入力し、見つけた問題を修正します
-* セッションツールバーのサーバードロップダウンからサーバーを開始または停止する
-* ドロップダウンで**Persist sessions**を選択して、サーバーの再起動時にクッキーとローカルストレージを保持し、開発中に再度ログインする必要がないようにする
-* サーバー設定を編集するか、すべてのサーバーを一度に停止する
+* Browser ペインのヘッダーにある **Dev servers** メニューから、サーバーを開始または停止する、またはすべてのサーバーを一度に停止する
+* Browser ペインの **⋮** メニューにある **Keep cookies** で、アプリを終了した後も Browser がクッキーを保持するかどうかを選択し、開発中に再度サインインする必要がないようにする
 
 Claude はプロジェクトに基づいて初期サーバー設定を作成します。アプリがカスタム dev コマンドを使用する場合、`.claude/launch.json`を編集してセットアップに合わせます。完全なリファレンスについては、[プレビューサーバーを設定する](#configure-preview-servers)を参照してください。
 
-保存されたセッションデータをクリアするには、Settings → Claude Code でトグルを使用するか、Browser を完全に無効にするには、Settings → Claude Code でトグルを使用します。
+Browser の保存データをクリアするには、Browser ペインの **⋮** メニューで **Clear browsing data** を選択します。Browser を完全にオフにするには、**Settings > Claude Code** で **Browser tools** をオフにします。
 
 <h3 id="browse-external-sites">
   外部サイトを閲覧する
 </h3>
 
-Browser ペインはタブ付きブラウザなので、ドキュメント、issue トラッカー、または実行中のアプリの横に他のサイトを開くことができます。Browser を開くには、macOS で**Cmd+Shift+B**、Windows で**Ctrl+Shift+B**を押すか、**Views**メニューから選択します。チャットで外部リンクをクリックすると、Browser ペインを使用する**Open in app**または自分のブラウザを使用する**Default browser**を提供するチューザーが表示されます。macOS で**Cmd**キーを押しながらクリックするか、Windows で**Ctrl**キーを押しながらクリックすると、システムブラウザでリンクが直接開きます。Google OAuth などのポップアップサインインフローを含む、ペインのサイトにサインインできます。
+Browser ペインはタブ付きブラウザなので、ドキュメント、issue トラッカー、または実行中のアプリの横に他のサイトを開くことができます。Browser を開くには、macOS で**Cmd+Shift+B**、Windows で**Ctrl+Shift+B**を押すか、セッションのタイトルバーにある **Browser** をクリックします。Google OAuth などのポップアップサインインフローを含め、ペイン内でサイトにサインインできます。
+
+チャットで外部リンクを初めてクリックすると、リンクを Browser ペインで開くかデフォルトのブラウザで開くかを尋ねるダイアログが表示されます。後で選択を変更するには、Browser ペインの **⋮** メニューにある **Open links in built-in browser** を使用します。macOS で **Cmd** キーを押しながらクリックするか、Windows で **Ctrl** キーを押しながらクリックすると、デフォルトのブラウザでリンクが直接開きます。
 
 Claude は[アプリを検証](#preview-your-app)するために使用するのと同じツールを使用して外部ページを読み取り、対話できます。2 つの追加の安全チェックがあります：
 
@@ -184,9 +185,14 @@ Claude はコメントを読み取り、要求された変更を加えます。�
   コードを確認する
 </h3>
 
-diff ビューで、右上のツールバーの**Review code**をクリックして、Claude にコミット前に変更を評価するよう依頼します。Claude は現在の diff を検査し、diff ビューに直接コメントを残します。任意のコメントに応答するか、Claude に修正を依頼できます。
+コミット前に Claude に変更をレビューさせるには、[プロンプトボックス](#use-the-prompt-box)に `/code-review` と入力します。レビューが完了すると、結果が会話に表示されます。
 
-レビューは高シグナル問題に焦点を当てています：コンパイルエラー、明確なロジックエラー、セキュリティ脆弱性、および明らかなバグです。スタイル、フォーマット、既存の問題、またはリンターが検出するものにはフラグを立てません。
+ローカル、[SSH](#ssh-sessions)、および [WSL](/docs/ja/desktop-wsl) セッションでは、結果はファイルごとにグループ化された **Code review** カードとして表示されます。カードを使用して結果に対応します：
+
+* **Walk through in diff** をクリックすると、差分ビューが開き、結果を 1 つずつ確認できます。現在の差分内の結果は該当する行に表示され、そこで **Fix this one** をクリックするか、結果を却下できます。
+* **Apply fixes** をクリックすると、まだ未対応の結果を修正するよう Claude に依頼します。
+
+どのセッションでも、プロンプトボックスで Claude にレビュー結果の修正を依頼することもできます。`/code-review` が確認する内容と受け付ける引数については、[差分をローカルでレビューする](/docs/ja/code-review#review-a-diff-locally)を参照してください。
 
 <h3 id="monitor-pull-request-status">
   プルリクエストステータスを監視する
@@ -194,10 +200,10 @@ diff ビューで、右上のツールバーの**Review code**をクリックし
 
 プルリクエストを開いた後、CI ステータスバーがセッションに表示されます。Claude Code は GitHub CLI を使用してチェック結果をポーリングし、失敗を表示します。
 
-* **Auto-fix**：有効にすると、Claude は失敗出力を読み取り、反復することで、失敗した CI チェックを自動的に修正しようとします。
-* **Auto-merge**：有効にすると、Claude はすべてのチェックが成功したら PR をマージします。マージ方法はスカッシュです。Auto-merge がこれを機能させるために[GitHub リポジトリ設定で有効にされている](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/managing-auto-merge-for-pull-requests-in-your-repository)必要があります。
+* **Auto-fix CI & address comments**：有効にすると、Claude は失敗出力を読み取り、反復することで、失敗した CI チェックを自動的に修正しようとします。ローカルセッションでは、ユーザー以外の人が残した新しいレビューコメントにも Claude が対応します。対象となるのは、コメントの作成者がリポジトリのオーナー、組織のメンバー、コラボレーター、または GitHub App である場合です。
+* **Auto-merge when ready**：有効にすると、Claude はすべてのチェックが成功したら PR をマージします。マージ方法はスカッシュです。先に [GitHub リポジトリ設定](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/managing-auto-merge-for-pull-requests-in-your-repository)で auto-merge を有効にしてください。有効になっていない場合、Claude は PR をマージできません。
 
-CI ステータスバーの**Auto-fix**および**Auto-merge**トグルを使用して、いずれかのオプションを有効にします。Claude Code はまた、CI が完了したときにデスクトップ通知を送信します。PR がマージまたはクローズされた後にセッションを自動的にアーカイブするには、Settings → Claude Code で[auto-archive](#work-in-parallel-with-sessions)をオンにします。
+これらをオンにするには、ステータスバーの **CI** をクリックします。PR がマージまたはクローズされた後にセッションを自動的にアーカイブするには、**Settings > Claude Code** で[auto-archive](#work-in-parallel-with-sessions)をオンにします。
 
 <Note>
   PR 監視には、[GitHub CLI（`gh`）](https://cli.github.com/)がマシンにインストールされ、認証されている必要があります。`gh`がインストールされていない場合、Desktop は PR を作成しようとする最初の時点でインストールを促します。
@@ -207,7 +213,7 @@ CI ステータスバーの**Auto-fix**および**Auto-merge**トグルを使用
   ワークスペースを配置する
 </h2>
 
-Code タブはペインを任意のレイアウトで配置できるように構築されています：チャット、diff、ブラウザ、ターミナル、ファイル、プラン、タスク、およびサブエージェント。macOS では [iOS Simulator](/docs/ja/desktop-ios-simulator) も含まれます。ペインをヘッダーでドラッグして位置を変更するか、ペインエッジをドラッグしてサイズを変更します。macOS では**Cmd+\\**を、Windows では**Ctrl+\\**を押してフォーカスされたペインを閉じます。セッションツールバーの**Views**メニューから追加のペインを開きます。
+Code タブはペインを任意のレイアウトで配置できるように構築されています：チャット、diff、ブラウザ、ターミナル、ファイル、プラン、タスク、およびサブエージェント。macOS では [iOS Simulator](/docs/ja/desktop-ios-simulator) も含まれます。ペインをヘッダーでドラッグして位置を変更するか、ペインエッジをドラッグしてサイズを変更します。macOS では**Cmd+\\**を、Windows では**Ctrl+\\**を押してフォーカスされたペインを閉じます。セッションのタイトルバーにある**Terminal**、**Changes**、または**Browser**をクリックすると、ターミナル、diff、またはブラウザペインが開きます。その横にある\*\*⋮**メニューからは**Files\*\*などの追加のペインを開くことができ、ウィンドウの幅が狭くてこれらのボタンを表示できない場合は、ボタンもこのメニューに格納されます。
 
 複数の画面で作業するには、diff やターミナルなどのペインをポップアウトして独立したウィンドウにし、完了したらドックバックします。Claude はメインウィンドウで作業を続けます。
 
@@ -219,7 +225,7 @@ Code タブはペインを任意のレイアウトで配置できるように構
   ターミナルでコマンドを実行する
 </h3>
 
-統合ターミナルを使用すると、別のアプリに切り替えることなく、セッションと並行してコマンドを実行できます。**Views**メニューから開くか、macOS または Windows で**Ctrl+\`**を押します。ターミナルはセッションの作業ディレクトリで開き、Claude と同じ環境を共有するため、`npm test`や`git status`などのコマンドは Claude が編集しているのと同じファイルを見ます。2 番目のターミナルタブを開くには、ターミナルペインヘッダーの**+**をクリックするか、チャットのフォルダを右クリックして**Open in terminal**を選択します。ターミナルはローカルセッションでのみ利用可能です。
+統合ターミナルを使用すると、別のアプリに切り替えることなく、セッションと並行してコマンドを実行できます。セッションのタイトルバーにある**Terminal**をクリックするか、macOS または Windows で**Ctrl+\`**を押します。ターミナルはセッションの作業ディレクトリで開き、Claude と同じ環境を共有するため、`npm test`や`git status`などのコマンドは Claude が編集しているのと同じファイルを見ます。2 番目のターミナルタブを開くには、ターミナルペインヘッダーの**+**をクリックするか、チャットのフォルダを右クリックして**Open in terminal**を選択します。ターミナルはローカルセッションでのみ利用可能です。
 
 <h3 id="open-and-edit-files">
   ファイルを開いて編集する
@@ -410,7 +416,7 @@ macOS で\*\*Cmd+;**を、Windows で**Ctrl+;\*\*を押してサイドチャッ�
   バックグラウンドタスクを監視する
 </h3>
 
-タスクペインは、現在のセッション内で実行されているバックグラウンド作業を表示します：サブエージェント、バックグラウンドシェルコマンド、および[動的ワークフロー](/docs/ja/workflows)。**Views**メニューから開くか、レイアウトにドラッグします。
+タスクペインは、現在のセッション内で実行されているバックグラウンド作業を表示します：サブエージェント、バックグラウンドシェルコマンド、および[動的ワークフロー](/docs/ja/workflows)。セッションにバックグラウンド作業がある場合は、タイトルバーの **⋮** メニューにある **Background tasks** からペインを開きます。
 
 任意のエントリをクリックして、サブエージェントペインで出力を確認するか、停止します。他のセッションが何をしているかを確認するには、[サイドバー](#work-in-parallel-with-sessions)を使用するか、Claude に[それらをチェックしてもらう](#work-across-sessions)ことができます。
 
@@ -518,7 +524,7 @@ Claude が作業中でも、他のメッセージと同じようにコマンド�
 
 Claude は dev サーバーセットアップを自動的に検出し、セッションを開始するときに選択したフォルダのルートの `.claude/launch.json` に設定を保存します。Preview はこのフォルダを作業ディレクトリとして使用するため、親フォルダを選択した場合、独自の dev サーバーを持つサブフォルダは自動的に検出されません。サブフォルダのサーバーで作業するには、そのフォルダで直接セッションを開始するか、設定を手動で追加します。
 
-サーバーの起動方法をカスタマイズするには、たとえば `npm run dev` の代わりに `yarn dev` を使用するか、ポートを変更するには、ファイルを手動で編集するか、サーバードロップダウンの**Edit configuration**をクリックしてコードエディタで開きます。ファイルはコメント付き JSON をサポートしています。
+サーバーの起動方法をカスタマイズするには（たとえば `npm run dev` の代わりに `yarn dev` を使用する、ポートを変更するなど）、`.claude/launch.json` を編集します。ファイルはコメント付き JSON をサポートしています。
 
 ```json theme={null}
 {
@@ -542,7 +548,7 @@ Claude は dev サーバーセットアップを自動的に検出し、セッ�
 
 `autoVerify` が有効な場合、Claude はファイルを編集した後、コード変更を自動的に検証します。スクリーンショットを撮影し、エラーをチェックし、応答を完了する前に変更が機能することを確認します。
 
-Auto-verify はデフォルトで有効です。`.claude/launch.json` に `"autoVerify": false` を追加してプロジェクトごとに無効にするか、サーバードロップダウンメニューから切り替えます。
+Auto-verify はデフォルトで有効です。`.claude/launch.json` に `"autoVerify": false` を追加してプロジェクトごとに無効にするか、Browser ペインの\*\*⋮**メニューで**Auto-verify changes\*\*をオフにします。
 
 ```json theme={null}
 {
@@ -766,14 +772,14 @@ Claude が別のポートを選択すると、割り当てられたポートを 
 
 SSH セッションを使用すると、デスクトップアプリをインターフェイスとして使用しながら、リモートマシンで Claude Code を実行できます。これは、クラウド VM、dev コンテナ、または特定のハードウェアまたは依存関係を持つサーバーに存在するコードベースで作業するのに便利です。
 
-SSH 接続を追加するには、セッションを開始する前に環境ドロップダウンをクリックして、**+ Add SSH connection** を選択します。ダイアログは以下を要求します：
+SSH 接続を追加するには、セッションを開始する前にプロンプトボックスの環境ドロップダウンを開き、**SSH > Add SSH connection…** を選択して接続の詳細を入力します：
 
 * **Name**：この接続のフレンドリーラベル
-* **SSH Host**：`user@hostname` または `~/.ssh/config` で定義されたホスト
-* **SSH Port**：空のままの場合はデフォルトの 22、または SSH config からのポート
-* **Identity File**：`~/.ssh/id_rsa` などの秘密鍵へのパス。デフォルトキーまたは SSH config を使用するには空のままにします。
+* **SSH host**：`user@hostname` または `~/.ssh/config` で定義されたホスト
+* **SSH port**：空のままの場合はデフォルトで 22 になるか、SSH config のポートが使用されます
+* **SSH key (optional)**：`~/.ssh/id_ed25519` などの秘密鍵へのパス。SSH config または SSH エージェントを使用するには空のままにします。
 
-追加されると、接続は環境ドロップダウンに表示されます。それを選択して、そのマシンでセッションを開始します。Claude はリモートマシンで実行され、そのファイルとツールにアクセスできます。
+追加されると、接続は環境ドロップダウンの **SSH** の下に表示されます。それを選択して、そのマシンでセッションを開始します。Claude はリモートマシンで実行され、そのファイルとツールにアクセスできます。
 
 リモートマシンは Linux または macOS を実行する必要があります。Desktop は初回接続時にリモートマシンに Claude Code を自動的にインストールします。接続されると、SSH セッションは権限モード、コネクタ、プラグイン、および MCP サーバーをサポートします。
 
@@ -831,10 +837,11 @@ Team または Enterprise プランの組織は、管理コンソールコント
 
 これらの設定は[管理設定コンソール](https://claude.ai/admin-settings/claude-code)を通じて設定されます：
 
-* **Code in the desktop**：組織内のユーザーがデスクトップアプリで Claude Code にアクセスできるかどうかを制御します
-* **Code in the web**：組織の[クラウドセッション](/docs/ja/claude-code-on-the-web)を有効または無効にします
+* **Desktop**：組織内のユーザーがデスクトップアプリで Claude Code にアクセスできるかどうかを制御します
+* **Cloud sessions**：組織の[クラウドセッション](/docs/ja/claude-code-on-the-web)を有効または無効にします
 * **Remote Control**：組織の[Remote Control](/docs/ja/remote-control)を有効または無効にします
-* **Disable Bypass permissions mode**：組織内のユーザーが bypass permissions モードを有効にするのを防ぎます
+
+HIPAA が有効になっている Enterprise 組織では、**Desktop** トグルはデフォルトでオフになっており、[Owner](/docs/ja/server-managed-settings#access-control) がオンにできます。[HIPAA 設定](/docs/ja/hipaa-setup)を適用すると、オンになっていた場合でもオフになるため、Owner は適用後にオンにし直す必要があります。**Cloud sessions** と **Remote Control** もデフォルトでオフであり、組織に HIPAA 設定が適用された後は、Owner がこれらをオンにすることはできません。
 
 <Note>
   管理コンソールの[データとプライバシー設定](https://claude.ai/admin-settings/data-privacy-controls)の**Monitoring**下の Cowork 用 OpenTelemetry フォームは、Cowork セッションのみに適用されます。このマシン上の Cowork セッションでは、デスクトップアプリはそのコレクタを Claude Code に`OTEL_*`環境変数として渡すため、Claude Code がそのセッションで[管理コンソール設定をフェッチしない](#managed-settings)場合でも、フォームは有効になります。
@@ -846,20 +853,20 @@ Team または Enterprise プランの組織は、管理コンソールコント
   管理設定
 </h3>
 
-管理設定はプロジェクトおよびユーザー設定をオーバーライドし、Desktop の Claude Code セッションに適用されます。これらのキーを組織の[管理設定](/docs/ja/managed-settings)ファイルで設定するか、管理コンソールを通じてリモートでプッシュできます。
+管理設定はプロジェクトおよびユーザー設定を上書きし、Desktop の Claude Code セッションに適用されます。これらのキーを組織の[管理設定](/docs/ja/managed-settings)ファイルで設定するか、管理コンソールを通じてリモートでプッシュできます。
 
 | キー | 説明 |
 | - | - |
 | `permissions.disableBypassPermissionsMode` | ユーザーが Bypass permissions モードを有効にするのを防ぐには`"disable"`に設定します。 |
 | `disableAutoMode` | [Auto](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)モードをモードセレクタから削除するには`"disable"`に設定します。`permissions`の下でも受け入れられます。 |
-| `autoMode` | 組織全体で auto mode 分類器が信頼およびブロックするものをカスタマイズします。[auto mode を設定する](/docs/ja/auto-mode-config)を参照してください。 |
+| `autoMode` | 組織全体で auto モード分類器が信頼およびブロックするものをカスタマイズします。[auto モードを設定する](/docs/ja/auto-mode-config)を参照してください。 |
 | `browserExternalPageTools` | Claude が[Browser ペイン](#browse-external-sites)の外部ページを読み取るまたは操作するためのツールを使用するのを防ぐには`"disabled"`に設定します。ユーザーは引き続き外部サイトに自分でナビゲートできます。ローカル開発サーバープレビューは影響を受けません。 |
 | `disableMobileSimulatorTools` | Claude の[iOS Simulator ペイン](/docs/ja/desktop-ios-simulator#turn-off-simulator-access)でデバイスを制御およびキャプチャするためのツールをブロックするには`true`に設定します。ペインはユーザー自身のタップに対して使用可能なままです。Claude のアクセスのみが削除されます。値は JSON ブール値`true`である必要があります。文字列`"true"`は無視されます。 |
 | `disableBrowserExternalNavigation` | [Browser ペイン](#browse-external-sites)の外部ブラウジングを完全にオフにするには`true`に設定します。ユーザーも Claude も外部サイトにナビゲートできません。localhost 開発サーバープレビューは影響を受けません。値は JSON ブール値`true`である必要があります。文字列`"true"`は無視されます。 |
 | `sshConfigs` | 環境ドロップダウンに表示される[SSH 接続](#pre-configure-ssh-connections-for-your-team)を事前設定します。ユーザーは管理接続を編集または削除できません。 |
 | `sshHostAllowlist` | [SSH セッション](#restrict-which-ssh-hosts-users-can-connect-to)を、解決されたホスト名がこれらのパターンのいずれかと一致するホストに制限します。空の配列は SSH セッションを無効にします。管理設定からのみ読み取られます。 |
-| `disableDesktopLocalSessions` | [デバイスで実行されるコードセッション](#local-sessions-on-managed-devices)をオフにするには`true`に設定します。SSH セッションから他のホストへのセッションとクラウドセッションは利用可能なままです。値は JSON ブール値`true`である必要があります。管理設定からのみ読み取られます。Claude Desktop v1.37937.0 以降が必要です。 |
-| `managedMcpServers` | MCP サーバー設定をすべてのユーザーにプッシュします。サードパーティ（3P）Desktop デプロイメントでのみ利用可能です。各エントリで、`"http"`、`"sse"`、または`"stdio"`のトランスポート、接続詳細、およびオプションで、そのサーバーのどのツールをユーザーが呼び出せるかを制限する`toolPolicy`マップを設定します。管理設定ファイル、MDM、または Claude apps gateway ポリシーの[`desktop`ブロック](/docs/ja/claude-apps-gateway-config#claude-desktop-overlay)を通じて配信します。3P デプロイメントは管理コンソール設定を受け取らないためです。ゲートウェイを通じて配信するには、ゲートウェイサーバーで Claude Code v2.1.232 以降が必要です。これはデスクトップアプリ自体のキーです。Claude Code は、異なるエントリ形状を持つ、同じ名前の[管理設定](/docs/ja/managed-mcp#provide-servers-through-managed-settings)を読み取ります。 |
+| `disableDesktopLocalSessions` | [デバイスで実行されるコードセッション](#local-sessions-on-managed-devices)をオフにするには`true`に設定します。他のホストへの SSH セッションとクラウドセッションは利用可能なままです。値は JSON ブール値`true`である必要があります。管理設定からのみ読み取られます。Claude Desktop v1.37937.0 以降が必要です。 |
+| `managedMcpServers` | MCP サーバー設定をすべてのユーザーにプッシュします。サードパーティ（3P）Desktop デプロイでのみ利用可能です。各エントリで、`"http"`、`"sse"`、または`"stdio"`のトランスポート、接続詳細、およびオプションで、そのサーバーのどのツールをユーザーが呼び出せるかを制限する`toolPolicy`マップを設定します。管理設定ファイル、MDM、または Claude apps gateway ポリシーの[`desktop`ブロック](/docs/ja/claude-apps-gateway-config#claude-desktop-overlay)を通じて配信します。3P デプロイは管理コンソール設定を受け取らないためです。ゲートウェイを通じて配信するには、ゲートウェイサーバーで Claude Code v2.1.232 以降が必要です。これはデスクトップアプリ自体のキーです。Claude Code は、異なるエントリ形状を持つ、同じ名前の[管理設定](/docs/ja/managed-mcp#provide-servers-through-managed-settings)を読み取ります。 |
 
 Desktop セッションがどこで実行されるかに応じて、どの管理設定がそのセッションに到達するかが異なります。[`availableModels`](/docs/ja/model-config#restrict-model-selection)などのモデル制限は、Desktop の Claude Code セッションでターミナル CLI と同じ方法で適用されます。[surface coverage](/docs/ja/model-config#surface-coverage)を参照してください。
 
@@ -870,7 +877,7 @@ Desktop セッションがどこで実行されるかに応じて、どの管理
 
 ローカルおよび SSH セッションでは、デスクトップアプリは各ユーザーの接続された claude.ai コネクタを Claude Code に直接配信します。MCP 設定または`managed-mcp.json`はこれらのコネクタに到達しません。使用する設定ソースまたはファイルの場所に関係なく。これらのセッションでコネクタのツールをブロックするには、組織の[コネクタツールコントロール](/docs/ja/mcp#organization-controls-on-connector-tools)を使用してください。[コネクタが Claude Code に到達する方法](/docs/ja/mcp#how-connectors-reach-claude-code)は、各種類のセッションでコネクタを管理する設定を示しています。
 
-`permissions.disableBypassPermissionsMode`と`disableAutoMode`はユーザーおよびプロジェクト設定でも機能しますが、管理設定に配置するとユーザーがそれらをオーバーライドするのを防ぎます。
+`permissions.disableBypassPermissionsMode`と`disableAutoMode`はユーザーおよびプロジェクト設定でも機能しますが、管理設定に配置するとユーザーがそれらを上書きするのを防ぎます。
 
 管理ソースのみが設定できる権限、プラグイン、および配信キーについては、[管理設定のみが設定できるキー](/docs/ja/managed-settings#managed-only-settings)を参照してください。
 
@@ -878,7 +885,7 @@ Desktop セッションがどこで実行されるかに応じて、どの管理
   デバイス管理ポリシー
 </h3>
 
-IT チームは、macOS の MDM または Windows のグループポリシーを通じてデスクトップアプリを管理できます。利用可能なポリシーには、Claude Code 機能の有効化または無効化、自動更新の制御、およびカスタムデプロイメント URL の設定が含まれます。
+IT チームは、macOS の MDM または Windows のグループポリシーを通じてデスクトップアプリを管理できます。利用可能なポリシーには、Claude Code 機能の有効化または無効化、自動更新の制御、およびカスタムデプロイ URL の設定が含まれます。
 
 * **macOS**：Jamf または Kandji などのツールを使用して`com.anthropic.claudefordesktop`プリファレンスドメインを通じて設定します
 * **Windows**：`SOFTWARE\Policies\Claude`のレジストリを通じて設定します
@@ -928,13 +935,13 @@ platform.claude.com
 *.claudemcpcontent.com
 ```
 
-組織で Claude に対して[IP 許可リスト](https://support.claude.com/en/articles/13200993-restrict-access-to-claude-with-ip-allowlisting)が有効になっている場合は、`bridge.claudeusercontent.com`を`claude.ai`および`api.anthropic.com`と同じプロキシ出口を通じてルーティングしてください。そのようにルーティングできない場合は、プロキシがそのホストに使用する出口アドレスを組織の IP 許可リストに追加してください。ただし、そのアドレスが組織に専用されている場合のみです。共有プロキシ出口範囲は、プロキシベンダーの他のカスタマーも許可します。
+組織で Claude に対して[IP 許可リスト](https://support.claude.com/en/articles/13200993-restrict-access-to-claude-with-ip-allowlisting)が有効になっている場合は、`bridge.claudeusercontent.com`を`claude.ai`および`api.anthropic.com`と同じプロキシ出口を通じてルーティングしてください。そのようにルーティングできない場合は、プロキシがそのホストに使用する出口アドレスを組織の IP 許可リストに追加してください。ただし、そのアドレスが組織に専用されている場合のみです。共有プロキシ出口範囲は、プロキシベンダーの他の顧客も許可します。
 
 Anthropic は、到着元のアドレスを使用して、組織の IP 許可リストに対してそのホストへの接続をチェックします。プロキシがそのホストのトラフィックを、その許可リストにないアドレスを通じて送信する場合、Chrome の Claude およびブリッジを通じて接続する他の機能は機能しなくなりますが、アプリの残りの部分は機能し続けます。
 
-[Artifact](/docs/ja/artifacts)が[Google Fonts](/docs/ja/artifacts#improve-the-visual-design)からタイプフェイスを読み込む場合、`fonts.googleapis.com`および`fonts.gstatic.com`もリクエストします。両方のホストはオプションです。それらをブロックする場合、artifact はフォールバックタイプフェイスでレンダリングされます。フォントリクエストが即座に失敗するように、高速拒否でブロックしてください。ページの最初のレンダリングを遅延させるのではなく。
+[アーティファクト](/docs/ja/artifacts)が[Google Fonts](/docs/ja/artifacts#improve-the-visual-design)からタイプフェイスを読み込む場合、`fonts.googleapis.com`および`fonts.gstatic.com`もリクエストします。両方のホストはオプションです。それらをブロックする場合、アーティファクトはフォールバックタイプフェイスでレンダリングされます。フォントリクエストが即座に失敗するように、高速拒否でブロックしてください。ページの最初のレンダリングを遅延させるのではなく。
 
-Artifact は、React またはチャートパッケージなどの JavaScript ライブラリを`cdnjs.cloudflare.com`、`cdn.jsdelivr.net`、`cdn.tailwindcss.com`、`code.jquery.com`、および`unpkg.com`から読み込むこともできます。他の外部ホストからは読み込みません。それらのホストをブロックする場合、ライブラリに依存する artifact の部分は機能しません。ブロックされたフォントとは異なり、ブロックされたライブラリにはフォールバックがありません。ここでも高速拒否でブロックしてください。ブロックされたライブラリリクエストが即座に失敗するように。タイムアウトするまでハングするのではなく。
+アーティファクトは、React またはチャートパッケージなどの JavaScript ライブラリを`cdnjs.cloudflare.com`、`cdn.jsdelivr.net`、`cdn.tailwindcss.com`、`code.jquery.com`、および`unpkg.com`から読み込むこともできます。他の外部ホストからは読み込みません。それらのホストをブロックする場合、ライブラリに依存するアーティファクトの部分は機能しません。ブロックされたフォントとは異なり、ブロックされたライブラリにはフォールバックがありません。ここでも高速拒否でブロックしてください。ブロックされたライブラリリクエストが即座に失敗するように。タイムアウトするまでハングするのではなく。
 
 <h3 id="authentication-and-sso">
   認証と SSO
@@ -946,16 +953,16 @@ Team および Enterprise 組織はすべてのユーザーに SSO を要求で�
   データ処理
 </h3>
 
-Claude Code はローカルセッションではコードをローカルで処理するか、クラウドセッションでは Anthropic が管理するインフラストラクチャで処理します。組織がそれらを[自己ホスト環境](/docs/ja/self-hosted-environments)にルーティングしない限り。クラウドセッション（自己ホスト環境を含む）は、処理のために会話とコードコンテキストを Anthropic の API に送信します。ローカルおよび SSH セッションは、デプロイメントが設定する[モデルプロバイダー](#feature-comparison)（デフォルトでは Anthropic の API）に送信します。データ保持、プライバシー、およびコンプライアンスの詳細については、[データ処理](/docs/ja/data-usage)を参照してください。
+Claude Code はローカルセッションではコードをローカルで処理するか、クラウドセッションでは Anthropic が管理するインフラストラクチャで処理します。組織がそれらを[自己ホスト環境](/docs/ja/self-hosted-environments)にルーティングしない限り。クラウドセッション（自己ホスト環境を含む）は、処理のために会話とコードコンテキストを Anthropic の API に送信します。ローカルおよび SSH セッションは、デプロイで設定されている[モデルプロバイダー](#feature-comparison)（デフォルトでは Anthropic の API）に送信します。データ保持、プライバシー、およびコンプライアンスの詳細については、[データ処理](/docs/ja/data-usage)を参照してください。
 
 <h3 id="deployment">
-  デプロイメント
+  デプロイ
 </h3>
 
-Desktop はエンタープライズデプロイメントツールを通じて配布できます：
+Desktop はエンタープライズデプロイツールを通じて配布できます：
 
 * **macOS**：Jamf または Kandji などの MDM を使用して`.dmg`インストーラーを通じて配布します
-* **Windows**：MSIX パッケージを通じてデプロイします。サイレントインストールを含むエンタープライズデプロイメントオプションについては、[Deploy Claude Desktop for Windows](https://support.claude.com/en/articles/12622703-deploy-claude-desktop-for-windows)を参照してください。
+* **Windows**：MSIX パッケージを通じてデプロイします。サイレントインストールを含むエンタープライズデプロイのオプションについては、[Deploy Claude Desktop for Windows](https://support.claude.com/en/articles/12622703-deploy-claude-desktop-for-windows)を参照してください。
 
 ファイアウォールで許可リストに登録するドメインについては、上記の[ネットワークアクセス要件](#network-access-requirements)を参照してください。プロキシ設定、カスタム認証局、および LLM ゲートウェイについては、[ネットワーク設定](/docs/ja/network-config)を参照してください。
 
@@ -1155,7 +1162,7 @@ MCP サーバートグルが応答しない場合、または Windows でサー�
   CLI で開くときに「Branch doesn't exist yet」
 </h3>
 
-クラウドセッションはローカルマシンに存在しないブランチを作成できます。セッションツールバーのブランチ名をクリックしてコピーしてから、ローカルでフェッチします：
+クラウドセッションはローカルマシンに存在しないブランチを作成できます。セッション内のブランチ名をクリックして **Copy branch name** を選択してから、ローカルでフェッチします：
 
 ```bash theme={null}
 git fetch origin <branch-name>

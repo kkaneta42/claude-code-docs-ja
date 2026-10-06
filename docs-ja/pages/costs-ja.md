@@ -37,7 +37,7 @@ Usage by model:
 
 これらの合計は `/clear` が新しいセッションを開始するとリセットされるため、次のセッションの合計コストは \$0 から始まります。v2.1.211 より前では、`/clear` 全体で累積し続け、Claude Code プロセスの存続期間中に蓄積されていました。
 
-1.1× [データレジデンシーレート](https://platform.claude.com/docs/en/about-claude/pricing#data-residency-pricing) で請求される Claude API からの応答の場合、Claude Code はその応答のトークンのリスト価格に 1.1 を乗じてセッションコスト数値に反映します。Claude Code は [ステータス行のコストフィールド](/docs/ja/statusline#cost-and-duration-tracking) に同じ合計を報告し、[`--max-budget-usd`](/docs/ja/cli-reference#cli-flags) と比較します。v2.1.239 より前では、Claude Code はこれらの応答に 1.1× を適用しなかったため、セッションコスト数値は請求額より低くなっていました。
+1.1× の [データレジデンシー料金](https://platform.claude.com/docs/en/about-claude/pricing#data-residency-pricing) で請求される Claude API からの応答については、Claude Code はセッションコスト数値において、その応答のトークンの定価に 1.1 を乗じます。同じ合計が [ステータスラインのコストフィールド](/docs/ja/statusline#cost-and-duration-tracking) にも表示され、乗算後の数値は [`--max-budget-usd`](/docs/ja/cli-reference#cli-flags) にもカウントされます。
 
 <h4 id="prompt-cache-statistics">
   プロンプトキャッシュ統計

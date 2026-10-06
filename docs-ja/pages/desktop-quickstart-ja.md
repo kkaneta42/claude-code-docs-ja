@@ -116,7 +116,7 @@ Code タブを開いた状態で、プロジェクトを選択し、Claude に�
 
 **繰り返し可能なタスクにスキルを使用する。** `/` を入力するか、**+** → **Slash commands** をクリックして、[組み込みコマンド](/docs/ja/commands)、[カスタムスキル](/docs/ja/skills)、およびプラグインスキルを参照します。スキルは、コードレビューチェックリストやデプロイメント手順など、必要なときに呼び出すことができる再利用可能なプロンプトです。
 
-**コミット前に変更を確認する。** Claude がファイルを編集した後、`+12 -1` インジケーターが表示されます。それをクリックして [diff ビュー](/docs/ja/desktop#review-changes-with-diff-view)を開き、ファイルごとに変更を確認し、特定の行にコメントを付けます。Claude はコメントを読んで修正します。**Review code** をクリックして、Claude に diff を評価させ、インライン提案を残させます。
+**コミット前に変更を確認する。** Claude がファイルを編集した後、`+12 -1` インジケーターが表示されます。それをクリックして[差分ビュー](/docs/ja/desktop#review-changes-with-diff-view)を開き、ファイルごとに変更を確認し、特定の行にコメントを付けます。Claude はコメントを読んで修正します。Claude 自身に変更をレビューさせるには、プロンプトボックスに [`/code-review`](/docs/ja/desktop#review-your-code) と入力します。
 
 **制御の量を調整する。** [権限モード](/docs/ja/desktop#choose-a-permission-mode)は、Claude が承認を求めずに実行できる量を設定します。
 

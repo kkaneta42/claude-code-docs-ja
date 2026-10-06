@@ -4,13 +4,14 @@
 
 # Slack での Claude Code
 
-> Slack ワークスペースから直接コーディングタスクを委任する。Anthropic は Team および Enterprise ワークスペース向けにこの以前のバージョンを Claude Tag に置き換えています。Pro および Max プランではセットアップパスのままです。
+> Slack からコーディングタスクを委任します。この以前のバージョンは、Claude Tag に接続されていないワークスペースで、Pro および Max アカウントからのチャンネルメンションにのみ応答します。
 
 <Warning>
-  このページは、各セッションが個別ユーザーのアカウントで実行される以前の Claude Code in Slack について説明しています。
+  このページは、各セッションが個別ユーザーのアカウントで実行される以前の Claude Code in Slack について説明しています。このバージョンは、Pro および Max アカウントからのチャンネルでの @メンションにのみ応答し、しかもどの組織も [Claude Tag](https://claude.com/product/tag) に接続していない Slack ワークスペースでのみ応答します。Claude Tag は、組織の共有 ID として @Claude を実行し、管理者が設定したアクセス権限を持ちます。
 
-  * **Team および Enterprise プラン：** Anthropic は、組織の共有 ID として @Claude を実行し、管理者が設定したアクセス権限を持つ [Claude Tag](https://claude.com/product/tag) に置き換えています。既存の Slack アプリと @Claude ハンドルは変わらず、Anthropic アカウントチームが切り替え日を通知できます。新しいワークスペースの場合は [Claude Tag をセットアップ](https://claude.com/docs/claude-tag/overview)してください。このバージョンを既に使用しているワークスペースを移行する場合は、[以前の Claude in Slack から移行する](https://claude.com/docs/claude-tag/admins/migrate-from-earlier)を参照してください。
-  * **Pro および Max プラン：** Claude Tag は個別プランでは利用できないため、このページがセットアップパスのままです。
+  * **Pro および Max プラン：** Claude Tag は個別プランでは利用できないため、Claude Tag に接続されていないワークスペースでは、このページがセットアップパスのままです。
+  * **Team および Enterprise プラン：** 既存の Slack アプリと @Claude ハンドルは変わりません。新しいワークスペースの場合は [Claude Tag をセットアップ](https://claude.com/docs/claude-tag/overview)してください。このバージョンを既に使用しているワークスペースを移行する場合は、[以前の Claude in Slack から移行する](https://claude.com/docs/claude-tag/admins/migrate-from-earlier)を参照してください。
+  * **回答ではなく通知が返された場合：** @Claude が返信した[セットアップ通知](#this-workspace-isnt-set-up-for-claude-tag-yet)または[廃止通知](#the-legacy-claude-in-slack-bot-is-retired)を確認してください。
 </Warning>
 
 Slack での Claude Code は、Claude Code の機能を Slack ワークスペースに直接もたらします。`@Claude` にコーディングタスクをメンションすると、Claude は自動的に意図を検出し、Claude Code クラウドセッションを作成します。これにより、チームの会話を離れることなく開発作業を委任できます。
@@ -34,7 +35,8 @@ Claude Code in Slack を使用する前に、以下を確認してください�
 
 | 要件 | 詳細 |
 | :- | :- |
-| Claude プラン | Pro、Max、Team、または Claude Code アクセス付き Enterprise（プレミアムシート、または Chat + Claude Code シート） |
+| Claude プラン | Pro または Max |
+| Slack ワークスペース | どの組織によっても [Claude Tag](https://claude.com/docs/claude-tag/overview) に接続されていない。@Claude が[廃止のお知らせ](#the-legacy-claude-in-slack-bot-is-retired)で返信する場合、そのワークスペースは接続されています |
 | クラウドセッション | [クラウドセッション](/docs/ja/claude-code-on-the-web) がアカウントで有効になっている |
 | GitHub アカウント | [claude.ai/code](https://claude.ai/code) で接続され、少なくとも 1 つのリポジトリが認証されている |
 | Slack 認証 | Slack アカウントが Claude アプリを通じて Claude アカウントにリンクされている |
@@ -211,8 +213,27 @@ Enterprise および Team アカウントの場合、Slack の Claude から作�
   トラブルシューティング
 </h2>
 
+<h3 id="this-workspace-isnt-set-up-for-claude-tag-yet">
+  "This workspace isn't set up for Claude Tag yet"
+</h3>
+
+次の両方に該当する場合、@Claude は回答の代わりにスレッドでこの通知を返信します。
+
+* どの組織も Slack ワークスペースを [Claude Tag](https://claude.com/docs/claude-tag/overview) に接続していない。
+* Slack でリンクした Claude アカウントが Pro プランまたは Max プランではない。
+
+Claude Tag は Team プランと Enterprise プランで利用できます。ワークスペースを接続するには、通知に記載されている `@Claude connect` コマンドから始め、[Claude Tag をセットアップする](https://claude.com/docs/claude-tag/overview)の手順に従ってください。
+
+<h3 id="the-legacy-claude-in-slack-bot-is-retired">
+  "The legacy Claude in Slack bot is retired"
+</h3>
+
+この通知は `The legacy Claude in Slack bot is retired effective October 5, 2026 and no longer responds in channels.` で始まります。Slack ワークスペースは Claude 組織に接続されていますが、その組織の Claude Tag 設定で、チャンネル、ワークスペース、または組織のデフォルトに対して以前のバージョンがまだ選択されています。この通知は自分のプランに依存しないため、Pro アカウントや Max アカウントにも表示されます。
+
+その組織の Owner である場合は、[Claude 管理設定](https://claude.ai/admin-settings/claude-tag)を開き、チャンネルで Claude Tag をオンにします。設定を継承しているすべてのチャンネルを修正するには、代わりにワークスペースまたは組織のデフォルトで設定を変更します。移行の全体については、[以前の Claude in Slack から移行する](https://claude.com/docs/claude-tag/admins/migrate-from-earlier)を参照してください。Owner でない場合は、このエントリを Owner に送信してください。
+
 <h3 id="claude-code-is-not-enabled-for-your-account">
-  「Claude Code がアカウントで有効になっていません」
+  "Claude Code is not enabled for your account"
 </h3>
 
 このエラーは、Claude アカウントにまだクラウド環境がないことを意味します。Slack に接続したのと同じアカウントで [claude.ai/code](https://claude.ai/code) に 1 回サインインして、[ウェブオンボーディング](/docs/ja/web-quickstart#connect-github)を完了してください。これにより、デフォルトのクラウド環境が作成されるか、作成するよう求められます。エラーは次回のメンション時に解消されます。各ユーザーが個別に実行する必要があります。
@@ -226,17 +247,17 @@ Enterprise および Team アカウントの場合、Slack の Claude から作�
 3. Claude Code に接続された GitHub リポジトリが少なくとも 1 つあることを確認します
 
 <h3 id="sessions-from-a-claude-tag-channel-fail-to-start">
-  Claude Tag チャネルからのセッションが開始に失敗する
+  Claude Tag チャンネルからのセッションが開始に失敗する
 </h3>
 
-このエントリは [Claude Tag](https://claude.com/docs/claude-tag/overview) を使用しているワークスペースに適用されます。Claude Tag では、Claude はメンバーのアカウントではなく、組織の共有 ID としてチャネルで機能します。[claude.ai/code](https://claude.ai/code) でチャネルのクラウド環境を作成した場合、それはあなたの個人アカウントに属しており、Claude は個人環境でチャネルセッションを開始できません。Claude Code はセッションを直ちに失敗させ、再試行しても役に立ちません。
+このエントリは [Claude Tag](https://claude.com/docs/claude-tag/overview) を使用しているワークスペースに適用されます。Claude Tag では、Claude はメンバーのアカウントではなく、組織の共有 ID としてチャンネルで機能します。[claude.ai/code](https://claude.ai/code) でチャンネルのクラウド環境を作成した場合、それは個人アカウントに属しており、Claude は個人環境でチャンネルセッションを開始できません。Claude Code はセッションを直ちに失敗させ、再試行しても役に立ちません。
 
-Owner の場合で環境があなたのものである場合は、環境セレクターから [組織と共有](/docs/ja/cloud-environments#organization-shared-environments)してください。それ以外の場合は、Owner が [admin settings](https://claude.ai/admin-settings) の **Cloud environments** ページから組織共有環境として再作成します。
+Owner であり、環境が自分のものである場合は、環境セレクターから[組織と共有](/docs/ja/cloud-environments#organization-shared-environments)してください。それ以外の場合は、Owner が[管理設定](https://claude.ai/admin-settings)の **Cloud environments** ページから組織共有環境として再作成します。
 
 次の 2 つの方法で適用できます。
 
 * [claude.ai/admin-settings/claude-code](https://claude.ai/admin-settings/claude-code) で組織のデフォルトとして設定します。
-* Claude Tag admin settings で [チャネルに設定](https://claude.com/docs/claude-tag/admins/troubleshooting#channel-sessions-use-the-wrong-environment-or-can%E2%80%99t-find-one)します。
+* Claude Tag の管理設定で[チャンネルに設定](https://claude.com/docs/claude-tag/admins/troubleshooting#channel-sessions-use-the-wrong-environment-or-can%E2%80%99t-find-one)します。
 
 Owner でない場合は、このエントリを Owner に送信してください。
 
@@ -261,7 +282,6 @@ Owner でない場合は、このエントリを Owner に送信してくださ�
 
 1. App Home で Claude アカウントを切断して再接続します
 2. ブラウザで正しい Claude アカウントにサインインしていることを確認します
-3. Claude プランに Claude Code アクセスが含まれていることを確認します
 
 <h2 id="current-limitations">
   現在の制限事項
@@ -269,7 +289,7 @@ Owner でない場合は、このエントリを Owner に送信してくださ�
 
 * **GitHub のみ**: リポジトリは GitHub 上にある必要があります。
 * **一度に 1 つの PR**: 各セッションは 1 つのプルリクエストを作成できます。
-* **クラウドセッションアクセスが必要**: ユーザーは [クラウドセッション](/docs/ja/claude-code-on-the-web) へのアクセスが必要です。アクセスがない場合、Claude は標準的なチャット応答で返信します。
+* **クラウドセッションアクセスが必要**: ユーザーは [クラウドセッション](/docs/ja/claude-code-on-the-web) へのアクセスが必要です。
 
 <h2 id="related-resources">
   関連リソース

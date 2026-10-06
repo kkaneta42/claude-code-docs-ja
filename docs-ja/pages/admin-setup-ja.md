@@ -127,7 +127,7 @@ WSL 2 ユーティリティ VM 内のプロセスは、Windows 側のエンド�
 
 * **クラウド環境ページ**：オーナーは[組織共有環境](/docs/ja/cloud-environments#organization-shared-environments)を作成し、メンバーのクラウドセッションの[ネットワークアクセスレベル](/docs/ja/cloud-environments#network-access)、環境変数、セットアップスクリプトを設定します。
 * **デフォルト環境**：オーナーは、[claude.ai/admin-settings/claude-code](https://claude.ai/admin-settings/claude-code) で組織のデフォルト環境を別途選択します。
-* **GitHub ページ**：組織にリンクされている GitHub アカウントについては、[接続された GitHub アカウント](#connected-github-accounts)を参照してください。
+* **Git providers ページ**：組織にリンクされている GitHub アカウントについては、[接続された GitHub アカウント](#connected-github-accounts)を参照してください。
 
 権限ルールとサンドボックスは異なるレイヤーをカバーします。WebFetch を拒否すると Claude のフェッチツールがブロックされますが、Bash が許可されている場合、`curl` と `wget` は依然として任意の URL に到達できます。サンドボックスは、OS レベルで強制されるネットワークドメイン許可リストでそのギャップを閉じます。
 
@@ -137,11 +137,11 @@ WSL 2 ユーティリティ VM 内のプロセスは、Windows 側のエンド�
   接続された GitHub アカウント
 </h3>
 
-Team プランと Enterprise プランでは、[**Organization settings > GitHub**](https://claude.ai/admin-settings/github) に、[Claude GitHub App](https://github.com/apps/claude) を通じて Claude 組織にリンクされている GitHub 組織と個人アカウントが一覧表示されます。Claude Code、[Claude Tag](https://claude.com/docs/claude-tag/admins/configure-github)、Claude Security はこのリストを共有します。このページを開くには、Claude 組織での管理者ロールが必要です。
+Team プランと Enterprise プランでは、[**Organization settings > Git providers**](https://claude.ai/admin-settings/source-control) の GitHub セクションに、[Claude GitHub App](https://github.com/apps/claude) を通じて Claude 組織にリンクされている GitHub 組織と個人アカウントが一覧表示されます。Claude Code、[Claude Tag](https://claude.com/docs/claude-tag/admins/configure-github)、Claude Security はこのリストを共有します。このページを開くには、Claude 組織での管理者ロールが必要です。
 
 アカウントは管理者またはメンバーがリンクできます。
 
-* **管理者による接続**：管理者がこのページで **Connect** をクリックし、GitHub 組織に Claude GitHub App をインストールします。この方法で組織をリンクするには、GitHub 組織のオーナーであり、かつ Claude 組織の管理者でもある人物が必要です。
+* **管理者による接続**：管理者がこのセクションで **Connect** をクリックするか、アカウントが接続済みの場合は **Add organization** をクリックして、GitHub 組織に Claude GitHub App をインストールします。この方法で組織をリンクするには、GitHub 組織のオーナーであり、かつ Claude 組織の管理者でもある人物が必要です。
 * **メンバーによる接続**：メンバーが GitHub アカウントを Claude に接続すると（たとえば[クラウドセッションのセットアップ](/docs/ja/web-quickstart#connect-github)中など）、Claude は、そのメンバーが所有し、Claude GitHub App が既にインストールされている GitHub アカウントをリンクします。これには、メンバーの個人アカウントや、メンバーが所有する GitHub 組織が含まれる場合があります。
 
 **Not linked** とマークされた行は、ユーザー自身の GitHub サインインに由来するものです。これは、Claude GitHub App がインストールされている、ユーザーが GitHub 上で参照できるアカウントです。
@@ -174,10 +174,11 @@ Team、Enterprise、Claude API、およびクラウドプロバイダープラ�
 | トピック | 知っておくべきこと | 開始場所 |
 | :- | :- | :- |
 | Data usage policy | Anthropic が収集する内容、保持期間、トレーニングに使用されない内容 | [Data usage](/docs/ja/data-usage) |
-| Zero Data Retention（ZDR） | リクエスト完了後は何も保存されません。Claude for Enterprise で利用可能 | [Zero data retention](/docs/ja/zero-data-retention) |
+| Zero Data Retention（ZDR） | リクエスト完了後は何も保存されません。Claude for Enterprise の適格なアカウントで利用可能 | [Zero data retention](/docs/ja/zero-data-retention) |
+| HIPAA 設定 | HIPAA が有効になっている Claude for Enterprise の組織向け。Claude Code（ローカルモード）の一部の機能は無効になり、その他の機能はデフォルトで無効になります | [HIPAA 対応組織向けに Claude Code（ローカルモード）をセットアップする](/docs/ja/hipaa-setup) |
 | Security architecture | ネットワークモデル、暗号化、認証、監査証跡 | [Security](/docs/ja/security) |
 
-リクエストレベルの監査ログが必要な場合、またはデータの機密性によってトラフィックをルーティングしたい場合は、開発者とプロバイダーの間にゲートウェイを配置してください。自ホスト型の [Claude apps gateway](/docs/ja/claude-apps-gateway) は IdP ID を使用してリクエストごとの監査ログを記録するか、別の [LLM gateway](/docs/ja/llm-gateway) を使用してください。規制要件と認定については、[Legal and compliance](/docs/ja/legal-and-compliance) を参照してください。
+リクエストレベルの監査ログが必要な場合、またはデータの機密性によってトラフィックをルーティングしたい場合は、開発者とプロバイダーの間にゲートウェイを配置することをお勧めします。セルフホスト型の [Claude apps gateway](/docs/ja/claude-apps-gateway) は IdP の ID とともにリクエストごとの監査ログを記録します。または、別の [LLM ゲートウェイ](/docs/ja/llm-gateway)を使用することもできます。ゲートウェイを経由するセッションは HIPAA 設定の対象外です。対象となる接続については、[開発者のサインイン方法と接続方法を確認する](/docs/ja/hipaa-setup#check-how-developers-sign-in-and-connect)に記載されています。規制要件と認定については、[Legal and compliance](/docs/ja/legal-and-compliance) を参照してください。
 
 <h2 id="verify-and-onboard">
   検証とオンボード

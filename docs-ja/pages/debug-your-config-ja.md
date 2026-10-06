@@ -29,7 +29,7 @@ Claude が指示を無視したり、設定した機能が表示されない場�
 | `/debug [issue]` | セッションのデバッグログを有効にし、ログ出力と設定パスを使って診断するよう Claude に促す |
 | `/status` | 有効な設定ソース（管理設定が適用されているかどうかを含む） |
 
-メモリファイルが `/context` の内訳に表示されない場合は、その場所を [CLAUDE.md ファイルの読み込み方法](/docs/ja/memory#how-claude-md-files-load)と照らし合わせて確認してください。サブディレクトリの `CLAUDE.md` ファイルは、セッション開始時ではなく、Claude がそのディレクトリ内のファイルに対して Read、Write、または Edit ツールを使用した後にオンデマンドで読み込まれます。
+メモリファイルが `/context` の内訳に表示されない場合は、その場所を [CLAUDE.md ファイルの読み込み方法](/docs/ja/memory#how-claude-md-files-load)と照らし合わせて確認してください。サブディレクトリの `CLAUDE.md` ファイルは、セッション開始時ではなくオンデマンドで読み込まれるため、この内訳には表示されません。
 
 `/context` でファイルが読み込まれていることを確認できたのに、Claude が特定の指示に従わない場合、問題は読み込まれたかどうかではなく、指示の書き方にある可能性が高いです。CLAUDE.md は、プロジェクトの規約、ビルドコマンド、ファイルの配置場所など、新しいチームメイトに伝えるような種類のガイダンスに適しています。
 
@@ -116,7 +116,7 @@ cd /tmp && CLAUDE_CONFIG_DIR=/tmp/claude-clean claude
 | `settings.json` の値が無視されているように見える | 同じキーが `settings.local.json` で設定されている | `settings.local.json` は `settings.json` をオーバーライドし、両方とも `~/.claude/settings.json` をオーバーライドします。[設定の優先順位](/docs/ja/settings#settings-precedence)を参照してください。 |
 | Skill が `/skills` に表示されない | Skill ファイルがフォルダ内ではなく `.claude/skills/name.md` にある | フォルダを使用して、その中に `SKILL.md` を配置してください。`.claude/skills/name/SKILL.md` です。 |
 | Skill が `/skills` に表示されるが Claude が呼び出さない | Skill の frontmatter に `disable-model-invocation: true` がある、またはその説明がリクエストの表現方法と一致しない | `/skills` のバッジを確認してください。「user-only」ラベルは Claude が自動的にトリガーしないことを意味します。[skill 呼び出し](/docs/ja/skills)を参照してください。 |
-| サブディレクトリの `CLAUDE.md` 指示が無視されているように見える | サブディレクトリファイルはセッション開始時ではなく、オンデマンドで読み込まれます | 起動時ではなく、Claude がそのディレクトリ内のファイルに対して Read、Write、または Edit ツールを使用した後に読み込まれます。v2.1.288 より前は、Read ツールのみがそれらを読み込んでいました。[CLAUDE.md ファイルの読み込み方法](/docs/ja/memory#how-claude-md-files-load)を参照してください。 |
+| サブディレクトリの `CLAUDE.md` 指示が無視されているように見える | サブディレクトリファイルはセッション開始時ではなく、オンデマンドで読み込まれます | [サブディレクトリファイルが読み込まれるタイミング](/docs/ja/memory#how-claude-md-files-load)を参照してください。v2.1.288 より前は、Read ツールのみがそれらを読み込んでいました。 |
 | サブエージェントが `CLAUDE.md` 指示を無視する | 組み込みの Explore および Plan エージェントは `CLAUDE.md` をスキップします。カスタムサブエージェントは、その定義が [`omitClaudeMd`](/docs/ja/sub-agents#supported-frontmatter-fields) を設定しない限り、メイン会話と同じ方法で読み込みます | Explore または Plan の場合、委譲プロンプトで指示を再度述べてください。`omitClaudeMd` を設定するサブエージェントの場合、フィールドを削除してください。その他のカスタムサブエージェントの場合、重要な指示をエージェントファイルの本体に配置してください。これはエージェントのシステムプロンプトになります。[起動時に読み込まれるもの](/docs/ja/sub-agents#what-loads-at-startup)を参照してください。 |
 | クリーンアップロジックがセッション終了時に実行されない | `SessionEnd` hook が設定されていない | `settings.json` に `SessionEnd` hook を追加してください。[hook イベントリスト](/docs/ja/hooks#hook-events)を参照してください。 |
 | `.mcp.json` の MCP サーバーが読み込まれない | ファイルが `.claude/` の下にあるか、そのサーバーが VS Code の `mcp.json` のように、`mcpServers` ではなくトップレベルの `servers` キーの下にある | プロジェクト MCP 設定はリポジトリルートの `.mcp.json` に配置され、`.claude/` 内ではなく、`mcpServers` キーの下にサーバーがあります。[MCP 設定](/docs/ja/mcp)を参照してください。 |

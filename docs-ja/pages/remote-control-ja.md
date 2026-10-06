@@ -242,7 +242,7 @@ Claude Desktop またはリモートコントロールがオンだった IDE 拡
 
 Remote Control が接続されている間、セッショントランスクリプト（メッセージ、Claude の応答、ツールアクティビティを含む）は Anthropic サーバーに保存されます。保存されたトランスクリプトは、デバイス間で会話を同期させ、ネットワーク障害後にセッションが再接続できるようにします。実行とファイルシステムアクセスはマシン上に留まり、保存されたトランスクリプトは [データ使用](/docs/ja/data-usage) ポリシーに基づいて保持されます。
 
-Remote Control を完全にオフにするには、[`disableRemoteControl`](/docs/ja/settings-reference#disableremotecontrol) 設定を使用します。Zero Data Retention などのコンプライアンス要件を持つ組織は Remote Control を有効にすることはできません。
+Remote Control を完全にオフにするには、[`disableRemoteControl`](/docs/ja/settings-reference#disableremotecontrol) 設定を使用します。[Zero Data Retention](/docs/ja/zero-data-retention) が有効になっている組織、または [HIPAA 構成](/docs/ja/hipaa-setup) が適用されている組織は、Remote Control を有効にすることはできません。
 
 <h2 id="trusted-devices">
   信頼できるデバイス
@@ -322,7 +322,7 @@ Claude Code は、ターミナルにいない時に作業するための複数�
 | [Dispatch](/docs/ja/desktop#sessions-from-dispatch) | Claude モバイルアプリからタスクをメッセージで送信 | あなたのマシン（Desktop） | [モバイルアプリを Desktop とペアリング](https://support.claude.com/en/articles/13947068) | 外出中の作業委譲、最小限のセットアップ |
 | [Remote Control](/docs/ja/remote-control) | [claude.ai/code](https://claude.ai/code) または Claude モバイルアプリから実行中のセッションを操作 | あなたのマシン（CLI、Desktop、または VS Code） | [`claude remote-control` または `/remote-control`](/docs/ja/remote-control#start-a-remote-control-session) を実行 | 別のデバイスから進行中の作業を操舵 |
 | [Channels](/docs/ja/channels) | Telegram や Discord などのチャットアプリ、またはあなた自身のサーバーからイベントをプッシュ | あなたのマシン（CLI） | [チャネルプラグインをインストール](/docs/ja/channels#quickstart)するか、[独自に構築](/docs/ja/channels-reference) | CI 失敗やチャットメッセージなどの外部イベントに対応 |
-| [Slack](/docs/ja/slack) | チームチャネルで `@Claude` をメンション | Anthropic クラウド | [Slack アプリをインストール](/docs/ja/slack#setting-up-claude-code-in-slack)し、[ウェブ上の Claude Code](/docs/ja/claude-code-on-the-web) を有効化 | チームチャットからの PR とレビュー |
+| [Slack](/docs/ja/slack) | チームチャンネルで `@Claude` をメンション | Anthropic クラウド | [ウェブ上の Claude Code](/docs/ja/claude-code-on-the-web) を有効にした状態で [Slack アプリをインストール](/docs/ja/slack#setting-up-claude-code-in-slack)、Pro および Max プラン | チームチャットからの PR とレビュー |
 | [Self-hosted environments](/docs/ja/self-hosted-environments) | [クラウドセッション](/docs/ja/claude-code-on-the-web)を開始し、組織の環境を選択 | あなたの組織のインフラストラクチャ | [ランナーをデプロイ](/docs/ja/self-hosted-environments-quickstart)、Team および Enterprise プラン | ネットワーク内で実行する必要があるクラウドセッション |
 | [Scheduled tasks](/docs/ja/scheduled-tasks) | スケジュールを設定 | [CLI](/docs/ja/scheduled-tasks)、[Desktop](/docs/ja/desktop-scheduled-tasks)、または[クラウド](/docs/ja/routines) | 頻度を選択 | 日次レビューなどの定期的な自動化 |
 
@@ -393,31 +393,31 @@ Claude Code は、お客様がターミナルに入力中または接続され�
 </h2>
 
 <h3 id="remote-control-requires-a-claude-ai-subscription">
-  「Remote Control requires a claude.ai subscription」
+  "Remote Control requires a claude.ai subscription"
 </h3>
 
 claude.ai アカウントでサインインしていないか、別の認証情報がログインより優先されています。メッセージは以下のいずれかの形式です。
 
-* サインアウト状態で `/remote-control` または `--remote-control` から：「Remote Control requires a claude.ai subscription.」または「/remote-control requires a claude.ai subscription.」
-* サインアウト状態で `claude remote-control` から：「You must be logged in to use Remote Control. Remote Control is only available with claude.ai subscriptions.」
-* サインイン状態だが API キーまたはトークンが使用中：「Remote Control requires claude.ai subscription auth.」の後に、使用中の認証情報（例：「ANTHROPIC\_API\_KEY is set, so this session is using API-key auth」）が続きます。`apiKeyHelper` 設定と `ANTHROPIC_AUTH_TOKEN` も同じ方法で名前が付けられます。
+* サインアウト状態で `/remote-control` または `--remote-control` から：`Remote Control requires a claude.ai subscription.` または `/remote-control requires a claude.ai subscription.`
+* サインアウト状態で `claude remote-control` から：`You must be logged in to use Remote Control. Remote Control is only available with claude.ai subscriptions.`
+* サインイン状態だが API キーまたはトークンが使用中：`Remote Control requires claude.ai subscription auth.` の後に、使用中の認証情報（例：`ANTHROPIC_API_KEY is set, so this session is using API-key auth`）が続きます。`apiKeyHelper` 設定と `ANTHROPIC_AUTH_TOKEN` も同じ方法で名前が示されます。
 
 `claude auth login` を実行して claude.ai オプションを選択してください。メッセージが `ANTHROPIC_API_KEY` または `ANTHROPIC_AUTH_TOKEN` を名前に挙げている場合は、それが設定されている場所（シェル環境または [設定ファイル](/docs/ja/settings-reference#env) の `env` ブロック）から削除してください。`apiKeyHelper` を名前に挙げている場合は、その設定を削除してください。
 
 <h3 id="remote-control-requires-a-full-scope-login-token">
-  「Remote Control requires a full-scope login token」
+  "Remote Control requires a full-scope login token"
 </h3>
 
 `claude setup-token` または `CLAUDE_CODE_OAUTH_TOKEN` 環境変数から取得した長期トークンで認証されています。これらのトークンはモデルリクエストのみを実行できるため、Remote Control セッションを確立できません。代わりに `claude auth login` を実行して、フルスコープセッショントークンで認証してください。
 
 <h3 id="unable-to-determine-your-organization-for-remote-control-eligibility">
-  「Unable to determine your organization for Remote Control eligibility」
+  "Unable to determine your organization for Remote Control eligibility"
 </h3>
 
 キャッシュされたアカウント情報が古いか不完全です。`claude auth login` を実行してリフレッシュしてください。
 
 <h3 id="remote-control-isn’t-enabled-for-this-account">
-  「Remote Control isn't enabled for this account」
+  "Remote Control isn't enabled for this account"
 </h3>
 
 Claude Code は、サインインしているアカウントの Remote Control 利用可能性を確認し、チェック結果がオフでした。通常の原因は、プラン変更後に期限切れになったキャッシュされた権限です。`claude auth logout` を実行してから `claude auth login` を実行してリフレッシュし、古いバージョンを使用している場合は Claude Code を更新してください。
@@ -427,43 +427,43 @@ Claude Code は、サインインしているアカウントの Remote Control �
 v2.1.239 より前では、このメッセージは「Remote Control is not yet enabled for your account」と表示されていました。
 
 <h3 id="couldn’t-verify-remote-control-eligibility">
-  「Couldn't verify Remote Control eligibility」
+  "Couldn't verify Remote Control eligibility"
 </h3>
 
 Claude Code は、Remote Control がアカウントに対して有効になっているかどうかを確認するためにフィーチャーフラグサービスに到達できませんでした。通常の原因は、オフラインであるか、プロキシがリクエストをブロックしていることです。ネットワークアクセスが可能になったら再試行するか、詳細については `claude doctor` を実行してください。関連メッセージ「Couldn't verify your organization's Remote Control policy」は、Claude Code がそのポリシーの読み取りでエラーに遭遇したことを意味し、同じ修正方法があります。
 
 <h3 id="remote-control-requires-feature-flag-evaluation">
-  「Remote Control requires feature-flag evaluation」
+  "Remote Control requires feature-flag evaluation"
 </h3>
 
-フィーチャーフラグ評価をオフにする [環境変数](/docs/ja/env-vars#features-that-need-feature-flag-fetching) が設定されており、完全なメッセージは Claude Code が見つけた変数を名前に挙げています。v2.1.154 より前のバージョンでは、同じ構成により「Remote Control is not yet enabled for your account」が代わりに生成されます。実行する内容は、メッセージが名前に挙げている変数によって異なります。
+フィーチャーフラグ評価をオフにする [環境変数](/docs/ja/env-vars#features-that-need-feature-flag-fetching) が設定されており、完全なメッセージは Claude Code が見つけた変数を名前に挙げています。v2.1.154 より前のバージョンでは、同じ設定により「Remote Control is not yet enabled for your account」が代わりに生成されます。実行する内容は、メッセージが名前に挙げている変数によって異なります。
 
 * **`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` または `DISABLE_GROWTHBOOK`**：シェル環境または [`settings.json` ファイル](/docs/ja/settings-reference#all-settings) の `env` ブロックで設定されている場所から変数を設定解除してください。
 * **`DISABLE_TELEMETRY` または `DO_NOT_TRACK`**：Pro、Max、Team、または Enterprise プランで `DISABLE_GROWTHBOOK` が設定解除されている場合、これらの変数は組織が [Trusted Devices](#trusted-devices) を要求しない限り Remote Control を利用可能なままにします。要求する場合は、Remote Control を使用するために変数を設定されている場所から設定解除してください。v2.1.154 から v2.1.282 までは、どちらかの変数がこのメッセージを生成したため、Claude Code を v2.1.283 以降に更新してください。
 
 <h3 id="remote-control-is-only-available-when-using-claude-via-api-anthropic-com">
-  「Remote Control is only available when using Claude via api.anthropic.com」
+  "Remote Control is only available when using Claude via api.anthropic.com"
 </h3>
 
-セッションが Anthropic API と直接通信していないため、Remote Control が必要とします。これは Amazon Bedrock、Google Cloud の Agent Platform、および Microsoft Foundry で発生します。また、[`ANTHROPIC_BASE_URL`](/docs/ja/env-vars) が `api.anthropic.com` 以外のホスト（[LLM ゲートウェイ](/docs/ja/llm-gateway) やプロキシなど）を指している場合にも発生します。claude.ai でサインインしている場合でも同様です。完全な原因リストについては、[エラーリファレンス](/docs/ja/errors#remote-control-requires-the-anthropic-api) を参照してください。
+セッションが Anthropic API と直接通信していませんが、Remote Control にはこれが必要です。これは Amazon Bedrock、Google Cloud の Agent Platform、および Microsoft Foundry で発生します。また、[`ANTHROPIC_BASE_URL`](/docs/ja/env-vars) が `api.anthropic.com` 以外のホスト（[LLM ゲートウェイ](/docs/ja/llm-gateway) やプロキシなど）を指している場合にも発生します。claude.ai でサインインしている場合でも同様です。完全な原因リストについては、[エラーリファレンス](/docs/ja/errors#remote-control-requires-the-anthropic-api) を参照してください。
 
-メッセージは、セッションを Anthropic API から遠ざけたもの（`CLAUDE_CODE_USE_BEDROCK` やカスタム `ANTHROPIC_BASE_URL` など）を名前に挙げています。適格な claude.ai ログインがある場合は、名前に挙げられた変数を設定解除し、[設定](/docs/ja/settings) の `env` キーから削除した場合はそこから削除し、セッションを再開してください。
+メッセージは、セッションを Anthropic API から遠ざけたもの（`CLAUDE_CODE_USE_BEDROCK` やカスタム `ANTHROPIC_BASE_URL` など）を名前に挙げています。適格な claude.ai ログインがある場合は、名前に挙げられた変数を設定解除し、[設定](/docs/ja/settings) の `env` キーで設定した場合はそこから削除して、セッションを再起動してください。
 
 <h3 id="remote-control-is-disabled-by-your-organizations-policy">
-  「Remote Control is disabled by your organization's policy」
+  "Remote Control is disabled by your organization's policy"
 </h3>
 
 ポリシーが Remote Control をブロックしています。以下の原因を順番に確認してください。
 
 * **エラーが `disableRemoteControl` に言及している**：IT 管理者が [管理設定](/docs/ja/managed-settings) を通じてこのデバイスで Remote Control を無効にしており、組織全体のトグルおよびサインイン方法とは無関係です。
 * **claude.ai プランが Pro または Max である**：Claude Code は以前のログインから Team または Enterprise 組織の下でまだサインインしているため、その組織の Remote Control ポリシーをチェックします。`/status` を実行して、サインインが使用するプランと組織を確認してください。`claude auth logout` を実行してから `claude auth login` を実行して、現在のプランの下で再度サインインしてください。
-* **メッセージが組織管理者に連絡するよう指示していない**：組織に Remote Control と互換性のない HIPAA 構成があり、`/status` の `Compliance` 行に `HIPAA` が表示されています。この状態では、管理パネルの Remote Control トグルはグレーアウトされているため、所有者はそこで変更できません。オプションについて説明するために Anthropic サポートに連絡してください。v2.1.267 より前では、このケースは「Remote Control isn't available for your organization due to its compliance policy」と表示されていました。
-* **それ以外の場合、所有者が組織に対して有効にしていない**：Remote Control は Team および Enterprise プランではデフォルトでオフです。所有者は [claude.ai/admin-settings/claude-code](https://claude.ai/admin-settings/claude-code) で **Remote Control** トグルをオンにすることで有効にできます。このトグルはサーバー側の組織設定です。
+* **メッセージが組織管理者に連絡するよう指示していない**：組織に [HIPAA 設定](/docs/ja/hipaa-setup) が適用されており、これにより Remote Control がオフになっています。確認するには、`/status` を実行し、`Organization configuration` 行に `HIPAA` があるかを確認してください。Owner には [管理設定](https://claude.ai/admin-settings/claude-code) の **Remote Control** トグルがグレーアウトして表示され、オンにすることはできません。この設定について質問がある場合は、Owner に問い合わせてください。Owner は組織の Anthropic アカウントチームに連絡できます。v2.1.267 より前では、このケースは「Remote Control isn't available for your organization due to its compliance policy」と表示されていました。
+* **それ以外の場合、Owner が組織に対して有効にしていない**：Remote Control は Team および Enterprise プランではデフォルトでオフです。Owner は [claude.ai/admin-settings/claude-code](https://claude.ai/admin-settings/claude-code) で **Remote Control** トグルをオンにすることで有効にできます。このトグルはサーバー側の組織設定です。
 
 v2.1.281 より前では、このメッセージは Claude Code がこのマシンで組織のポリシーを読み込んでいない場合（例えば、オフラインで開始した後）にも表示されていました。後のバージョンではその状態を [`Couldn't verify your organization's policy for remote control`](#couldnt-verify-your-organizations-policy-for-remote-control) として報告します。
 
 <h3 id="remote-control-was-turned-off-by-your-organizations-policy">
-  「Remote Control was turned off by your organization's policy」
+  "Remote Control was turned off by your organization's policy"
 </h3>
 
 セッションの接続中に組織のポリシーが Remote Control を許可しなくなったため、Claude Code はセッションを切断しました。セッションがどうなるかは、Remote Control をどのように開始したかによって異なります。
@@ -476,22 +476,22 @@ v2.1.281 より前では、このメッセージは Claude Code がこのマシ�
 Remote Control は自動的には再接続しません。組織が再び許可した後にオンに戻すには、セッションで `/remote-control` を実行するか、シェルで `claude remote-control` を実行してください。このマシンの Claude Code が変更されたポリシーを取得するまで、どちらのコマンドも [`Remote Control is disabled by your organization's policy`](#remote-control-is-disabled-by-your-organizations-policy) で失敗します。開いているセッションは約 1 時間に 1 回ポリシーを取得します。Remote Control をブロックしている原因を確認するには、コマンドが出力する完全なテキストをその項目と照合してください。
 
 <h3 id="couldnt-verify-your-organizations-policy-for-remote-control">
-  「Couldn't verify your organization's policy for remote control」
+  "Couldn't verify your organization's policy for remote control"
 </h3>
 
 Claude Code は組織のポリシーを取得できず、代わりに使用するためにこのマシンに保存されたコピーがないため、組織がそれを許可していることを確認できるまで Remote Control をオフのままにしておきます。これは通常、Claude Code をオフラインで開始するか VPN が接続する前に開始する場合、またはプロキシがリクエストに干渉する場合に発生します。遅い接続では、最初のリクエストがまだ進行中の間に表示されることもあります。
 
 メッセージは以下のいずれかの形式です。
 
-* `/remote-control`、`claude remote-control`、または `claude --remote-control` から：「Couldn't verify your organization's policy for remote control. Check your network connection and try again.」
-* [自動接続](#enable-remote-control-for-all-sessions) からセッション開始時：「couldn't verify your organization's policy — check your network connection and try again」。通知では「Remote Control failed」が前に付き、会話では「Remote Control disconnected」が前に付きます。その後、セッションは Remote Control をオフのままにします。
+* `/remote-control`、`claude remote-control`、または `claude --remote-control` から：`Couldn't verify your organization's policy for remote control. Check your network connection and try again.`
+* [自動接続](#enable-remote-control-for-all-sessions) からセッション開始時：`couldn't verify your organization's policy — check your network connection and try again`。通知では `Remote Control failed` が前に付き、会話では `Remote Control disconnected` が前に付きます。その後、セッションは Remote Control をオフのままにします。
 
-ネットワーク接続を復元してから、`/remote-control` を実行するか、コマンドを再度実行してください。各試行はポリシーを再度チェックするため、Claude Code を再開する必要はありません。メッセージが表示され続ける場合は、`claude doctor` を実行し、その `Organization policy` 行を読んでください。ポリシーが読み込まれなかった理由が表示されます。
+ネットワーク接続を復元してから、`/remote-control` を実行するか、コマンドを再度実行してください。各試行はポリシーを再度チェックするため、Claude Code を再起動する必要はありません。メッセージが表示され続ける場合は、`claude doctor` を実行し、その `Organization policy` 行を読んでください。ポリシーが読み込まれなかった理由が表示されます。
 
-v2.1.281 より前では、この状態は「Remote Control is disabled by your organization's policy」と表示されていました。
+v2.1.281 より前では、この状態は `Remote Control is disabled by your organization's policy` と表示されていました。
 
 <h3 id="remote-credentials-fetch-failed">
-  「Remote credentials fetch failed」
+  "Remote credentials fetch failed"
 </h3>
 
 Claude Code は、接続を確立するために Anthropic API から短期認証情報を取得できませんでした。`--verbose` で再実行して完全なエラーを確認してください。
@@ -504,10 +504,10 @@ claude remote-control --verbose
 
 * サインインしていない：`claude` を実行して `/login` を使用して claude.ai アカウントで認証してください。API キー認証は Remote Control ではサポートされていません。
 * ネットワークまたはプロキシの問題：ファイアウォールまたはプロキシが送信 HTTPS リクエストをブロックしている可能性があります。Remote Control には、ポート 443 の Anthropic API へのアクセスが必要です。
-* セッション作成失敗：「Session creation failed — see debug log」も表示される場合、失敗はセットアップの前の段階で発生しました。サブスクリプションがアクティブであることを確認してください。
+* セッション作成失敗：`Session creation failed — see debug log` も表示される場合、失敗はセットアップの前の段階で発生しました。サブスクリプションがアクティブであることを確認してください。
 
 <h3 id="couldnt-reconnect-to-your-remote-control-session">
-  「Couldn't reconnect to your Remote Control session」
+  "Couldn't reconnect to your Remote Control session"
 </h3>
 
 `claude --resume` または `claude --continue` で会話を再開すると、Claude Code はその会話に記録された Remote Control セッションに再接続します。このメッセージは、ネットワーク中断やサーバーエラーなど、一時的である可能性がある理由で再接続が失敗したことを意味するため、Claude Code はリモートセッションがまだ存在するかどうかを確認できません。
@@ -515,27 +515,27 @@ claude remote-control --verbose
 `/remote-control` を実行して接続を再試行するか、`claude --remote-control` で新しいセッションを開始して新しい Remote Control セッションを作成してください。その間、ローカルセッションは Remote Control なしで実行し続けます。
 
 <h3 id="previous-session-is-unavailable">
-  「Previous session is unavailable — run /remote-control to start a new one」
+  "Previous session is unavailable — run /remote-control to start a new one"
 </h3>
 
 Claude Code は前の Remote Control セッションを復元できず、自動的に新しいセッションを開始する代わりに停止しました。`claude --resume` または `claude --continue` で会話を再開した後、または Claude Code が [切断後に自動的に再接続](/docs/ja/errors#remote-control-couldnt-refresh-your-login) した後に、このメッセージが表示される場合があります。
 
-`/remote-control` を実行して、現在のログインの下で新しい Remote Control セッションを開始してください。その間、ローカルセッションは Remote Control なしで実行し続けます。関連メッセージ「Remote Control could not verify the signed-in account — run /remote-control to reconnect」は同じ修正方法があります。`Previous session is unavailable` の後に Claude Code を再開せずに `/remote-control` を実行する場合、Claude Code は会話の以前のメッセージを新しいセッションから除外します。
+`/remote-control` を実行して、現在のログインの下で新しい Remote Control セッションを開始してください。その間、ローカルセッションは Remote Control なしで実行し続けます。関連メッセージ `Remote Control could not verify the signed-in account — run /remote-control to reconnect` も同じ方法で修正できます。`Previous session is unavailable` の後に Claude Code を再起動せずに `/remote-control` を実行する場合、Claude Code は会話の以前のメッセージを新しいセッションから除外します。
 
 <h3 id="remote-control-got-an-unexpected-server-response">
-  「Remote Control got an unexpected server response」
+  "Remote Control got an unexpected server response"
 </h3>
 
 Remote Control サーバーはリクエストを受け入れましたが、リモートセッションを作成するか認証情報を取得する際に、このバージョンの Claude Code が読み取れない形式で応答しました。同じバージョンで再試行すると同じ方法で失敗します。`claude update` を実行してから、`/remote-control` を実行して再接続してください。
 
 <h3 id="your-organization-requires-trusted-devices-for-remote-control-but-this-device-is-not-enrolled">
-  「Your organization requires Trusted Devices for Remote Control, but this device is not enrolled」
+  "Your organization requires Trusted Devices for Remote Control, but this device is not enrolled"
 </h3>
 
 組織は [Trusted Devices](#trusted-devices) を有効にしており、このマシンはまだ登録されていません。Claude Code で `/login` を実行してください。登録はサインインの一部として行われ、個別の登録コマンドはありません。
 
 <h3 id="session-expired-for-trusted-device-check">
-  「session expired for trusted-device check」
+  "session expired for trusted-device check"
 </h3>
 
 サインインが 18 時間以上前のものです。Claude Code で `/login` を実行するか、claude.ai またはモバイルアプリが Face ID、Touch ID、Windows Hello、またはパスキーで確認するよう求めるときに確認してください。[Trusted Devices](#trusted-devices) を参照してください。

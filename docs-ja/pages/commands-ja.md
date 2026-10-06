@@ -10,7 +10,7 @@
 
 `/` と入力するとご利用いただけるコマンドが表示されます。または `/` の後に文字を入力してフィルタリングできます。[コマンドメニューが入力内容にどのようにマッチするか](#how-the-command-menu-matches-what-you-type)では、ハイライト、タイプミス、および Claude Code がメニューから非表示にするコマンドについて説明しています。これらのコマンドは完全な名前を入力するまで表示されません。
 
-コマンドはメッセージの開始時にのみ認識されます。コマンド名の後に続くテキストがその引数になります。v2.1.199 以降、[スキル](/docs/ja/skills#pass-arguments-to-skills)は例外です。スキル呼び出しの後に別のスキルが続く場合（例：`/skill-a /skill-b do XYZ`）、開始時に指定されたすべてのスキルが読み込まれ、末尾のテキストが各スキルに引数として渡されます。最大 6 つのスキルをチェーンできます。
+コマンドはメッセージの開始時にのみ認識されます。コマンド名の後に続くテキストがその引数になります。[スキル](/docs/ja/skills#pass-arguments-to-skills)は例外です。スキル呼び出しの後に別のスキルが続く場合（例：`/skill-a /skill-b do XYZ`）、開始時に指定されたスキルが読み込まれ、末尾のテキストが各スキルに引数として渡されます。最大 6 つのスキルをチェーンできます。
 
 Claude が応答中にコマンドを送信した場合、Claude Code はそれをキューに入れ、現在のターンが終了した後に実行します。Claude Code は `/status`、`/tasks`、`/usage` など、応答を中断せずにすぐに実行するコマンドもあります。[フルスクリーンレンダリング](/docs/ja/fullscreen)では、Claude Code は `/theme` や `/help` などのダイアログコマンドもすぐに開きます。v2.1.234 より前では、Claude Code はこれらのダイアログをターンが終了するまでキューに入れていました。
 
@@ -140,7 +140,7 @@ Claude が応答中にコマンドを送信した場合、Claude Code はそれ�
 | `/run-skill-generator` | **[Skill](/docs/ja/skills#bundled-skills).** プロジェクトごとの[スキル](/docs/ja/skills#run-and-verify-your-app)を書くことで、クリーンな環境からプロジェクトのアプリをビルド、起動、操作する方法を `/run` と `/verify` に教えます |
 | `/sandbox` | [サンドボックスモード](/docs/ja/sandboxing)を切り替えます。サポートされているプラットフォームでのみ利用可能です |
 | `/schedule [description]` | クラウドで実行される[ルーティン](/docs/ja/routines)を作成、更新、一覧表示、または実行します。Claude はセットアップを会話形式でガイドします。[ルーティンの最近の実行](/docs/ja/routines#manage-routines-from-the-cli)について質問することもできます。エイリアス：`/routines` |
-| `/scroll-speed` | マウスホイールの[スクロール速度](/docs/ja/fullscreen#mouse-wheel-scrolling)をインタラクティブに調整します。ダイアログが開いている間にスクロールして変更をプレビューできるルーラーが表示されます。[フルスクリーンレンダリング](/docs/ja/fullscreen)でのみ利用可能で、JetBrains IDE ターミナルでは利用できません |
+| `/scroll-speed` | マウスホイールの[スクロール速度](/docs/ja/fullscreen#mouse-wheel-scrolling)をインタラクティブに調整します。[フルスクリーンレンダリング](/docs/ja/fullscreen)でのみ利用可能で、JetBrains IDE ターミナルでは利用できません |
 | `/security-review` | 現在のブランチの変更をセキュリティ脆弱性について分析します。ブランチと origin のデフォルトブランチ間の差分をレビューし、インジェクション、認証の問題、データ公開などのリスクを特定します。`origin` リモートが必要です。レビューが `ambiguous argument` エラーで失敗した場合、[エラーリファレンス](/docs/ja/errors#security-review-fails-without-origin-head)を参照してください |
 | `/setup-bedrock` | インタラクティブなウィザードを通じて [Amazon Bedrock](/docs/ja/amazon-bedrock) の認証、リージョン、モデルピンを設定します。`CLAUDE_CODE_USE_BEDROCK=1` が設定されるまで[コマンドメニューから非表示](#how-the-command-menu-matches-what-you-type)です。完全に入力してください。初めて Amazon Bedrock を使用するユーザーはログイン画面からこのウィザードにアクセスすることもできます |
 | `/setup-vertex` | インタラクティブなウィザードを通じて [Google Cloud の Agent Platform](/docs/ja/google-vertex-ai) の認証、プロジェクト、リージョン、モデルピンを設定します。`CLAUDE_CODE_USE_VERTEX=1` が設定されるまで[コマンドメニューから非表示](#how-the-command-menu-matches-what-you-type)です。完全に入力してください。初めて Google Cloud の Agent Platform を使用するユーザーはログイン画面からこのウィザードにアクセスすることもできます |

@@ -40,12 +40,12 @@ Owner は GHES インスタンスを Claude Code に 1 回接続します。そ�
 ガイド付きセットアップは GitHub App マニフェストを生成し、GHES インスタンスにリダイレクトしてアプリをワンクリックで作成します。環境がリダイレクトフローをブロックしている場合は、[代替の手動セットアップ](#manual-setup)が利用可能です。
 
 <Steps>
-  <Step title="Claude Code 管理者設定を開く">
-    [claude.ai/admin-settings/claude-code](https://claude.ai/admin-settings/claude-code) にアクセスして、GitHub Enterprise Server セクションを見つけます。
+  <Step title="Git プロバイダー設定を開く">
+    [**組織設定 > Git プロバイダー**](https://claude.ai/admin-settings/source-control#github-enterprise) にアクセスして、GitHub Enterprise セクションを見つけます。
   </Step>
 
   <Step title="ガイド付きセットアップを開始する">
-    **接続** をクリックします。接続の表示名（最大 20 文字）と GHES ホスト名（例：`github.example.com`）を入力します。GHES インスタンスが自己署名証明書またはプライベート認証局を使用している場合は、CA 証明書をオプションフィールドに貼り付けます。
+    **接続** をクリックします（すでにインスタンスが接続されている場合は **インスタンスを追加** をクリックします）。次に **自動でセットアップ** を選択します。接続の表示名（最大 20 文字）と GHES ホスト名（例：`github.example.com`）を入力します。GHES インスタンスが自己署名証明書またはプライベート認証局を使用している場合は、CA 証明書をオプションフィールドに貼り付けます。
   </Step>
 
   <Step title="GitHub App を作成する">
@@ -57,7 +57,7 @@ Owner は GHES インスタンスを Claude Code に 1 回接続します。そ�
   </Step>
 
   <Step title="機能を有効にする">
-    [claude.ai/admin-settings/claude-code](https://claude.ai/admin-settings/claude-code) に戻り、GHES リポジトリの [コードレビュー](/docs/ja/code-review#set-up-code-review)、Claude Security、および [貢献メトリクス](/docs/ja/analytics#enable-contribution-metrics) を github.com と同じ設定を使用して有効にします。
+    [claude.ai/admin-settings/claude-code](https://claude.ai/admin-settings/claude-code) にアクセスし、GHES リポジトリの [Code Review](/docs/ja/code-review#set-up-code-review) と [貢献メトリクス](/docs/ja/analytics#enable-contribution-metrics) を github.com と同じ設定を使用して有効にします。
   </Step>
 </Steps>
 
@@ -87,7 +87,7 @@ GitHub はアプリ作成時にのみマニフェストを適用するため、�
   手動セットアップ
 </h3>
 
-ガイド付きリダイレクトフローがネットワーク設定によってブロックされている場合は、接続の代わりに **手動で追加** をクリックします。GHES インスタンスで [上記の権限とイベント](#github-app-permissions) を使用して GitHub App を作成し、フォームに接続詳細を入力します。表示名、GHES ホスト名とオプションのポート、アプリの ID、クライアント ID、クライアントシークレット、webhook シークレット、および秘密鍵です。フォームはオプションのカスタム CA 証明書と読み取りレプリカホスト名も受け入れます。
+ガイド付きリダイレクトフローがネットワーク設定によってブロックされている場合は、**接続** または **インスタンスを追加** をクリックし、**自動でセットアップ** の代わりに **手動で追加** を選択します。GHES インスタンスで [上記の権限とイベント](#github-app-permissions) を使用して GitHub App を作成し、フォームに接続詳細を入力します。表示名、GHES ホスト名とオプションのポート、アプリの ID、クライアント ID、クライアントシークレット、webhook シークレット、および秘密鍵です。フォームはオプションのカスタム CA 証明書と読み取りレプリカホスト名も受け入れます。
 
 Claude は接続を保存するときにアプリの webhook URL を生成します。**設定を追加** をクリックした後、接続の **その他のオプション** メニューを開き、**webhook URL をコピー** を選択して、URL をアプリの webhook 設定に GHES インスタンスで貼り付けます。フォームに入力したのと同じ webhook シークレットを使用します。
 
@@ -240,7 +240,12 @@ GHES URL の `/plugin marketplace add` がブロックされている場合、�
 
 ユーザー設定から GHES マーケットプレイスを追加する際に「Marketplace couldn't be added」のような一般的なエラーで失敗する場合は、まず GitHub Enterprise 接続を確認してください。これは、組織の GHES インスタンスが設定されており他のユーザーが接続されている場合でも、独自の GitHub Enterprise アカウントが Claude に接続されていない場合に表示されます。ダイアログは GitHub Enterprise 接続フローを指していません。また、Browse タブの「Connect to GitHub」オプションは github.com にサインインするため、GHES リポジトリへのアクセス権を付与しません。
 
-GitHub Enterprise アカウントを接続するには、[claude.ai/code](https://claude.ai/code) のリポジトリピッカーが設定済みの各 GHES インスタンスの接続オプションを提供します。また、Owner は [Claude Code 管理設定](https://claude.ai/admin-settings/claude-code) の GitHub Enterprise セクションからも接続できます。その後、マーケットプレイスを再度追加してください。または、Owner に組織プラグイン設定でマーケットプレイスを追加するよう依頼してください。これにより、ユーザーごとの接続要件が削除されます。
+次のいずれかの場所で GitHub Enterprise アカウントを接続してから、マーケットプレイスを再度追加してください。
+
+* **リポジトリピッカー**：[claude.ai/code](https://claude.ai/code) では、リポジトリピッカーが設定済みの各 GHES インスタンスの接続オプションを提供します。
+* **Git プロバイダーページ**：Owner の場合は、[**Organization settings > Git providers**](https://claude.ai/admin-settings/source-control) の GitHub セクションに移動して **Connect** をクリックします。アカウントがすでに接続されている場合は **Add organization** をクリックします。**GitHub instance** で GHES ホスト名を選択し、**Connect** をクリックします。
+
+または、Owner に組織プラグイン設定でマーケットプレイスを追加するよう依頼してください。これにより、ユーザーごとの接続要件が削除されます。
 
 他の claude.ai サーフェスでは、GHES マーケットプレイスの「Repository not found. If it's private, GitHub access is required」エラーは通常、同じ接続の欠落を示しています。上記のいずれかのパスを通じて GitHub Enterprise アカウントを接続してから、もう一度試してください。
 

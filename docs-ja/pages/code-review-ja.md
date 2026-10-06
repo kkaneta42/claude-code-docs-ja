@@ -7,7 +7,7 @@
 > マルチエージェント分析を使用してコードベース全体を検査し、ロジックエラー、セキュリティ脆弱性、リグレッションを検出する自動化された PR レビューを設定します
 
 <Note>
-  Code Review はリサーチプレビュー段階であり、[Team および Enterprise](https://claude.ai/admin-settings/claude-code) サブスクリプションで利用可能です。[Zero Data Retention](/docs/ja/zero-data-retention) が有効になっている組織では利用できません。その他のプランでは、`/code-review` コマンドを使用して[ローカルで差分をレビュー](#review-a-diff-locally)することができます。
+  Code Review はリサーチプレビュー段階であり、[Team および Enterprise](https://claude.ai/admin-settings/claude-code) サブスクリプションで利用可能です。[Zero Data Retention](/docs/ja/zero-data-retention) が有効になっている組織や [HIPAA 設定](/docs/ja/hipaa-setup)が適用されている組織では利用できず、Anthropic の BAA の対象外です。その他のプランでは、`/code-review` コマンドを使用して[ローカルで差分をレビュー](#review-a-diff-locally)することができます。
 </Note>
 
 Code Review は GitHub プルリクエストを分析し、コードの問題が見つかった行にインラインコメントとして結果を投稿します。特化したエージェントのフリートがコード変更をコードベース全体のコンテキストで検査し、ロジックエラー、セキュリティ脆弱性、壊れたエッジケース、微妙なリグレッションを探します。
@@ -365,7 +365,7 @@ Claude は以下の両方の実行で、ホストアプリケーションが結�
 * ターミナルセッション。ここで `/code-review` は[フォークされたサブエージェント](/docs/ja/skills#run-skills-in-a-subagent)としてレビューを実行します
 * テキストまたは JSON 出力を含む `-p` 実行
 
-[デスクトップアプリ](/docs/ja/desktop)などの結果リストをリクエストするホストアプリケーションでは、Claude は[`ReportFindings` ツール](/docs/ja/tools-reference)を通じてレビューの結果を報告します。Claude Code は結果を結果リストとしてレンダリングし、各エントリはファイルの場所、1 文の要約、および結果が持つ場合は `correctness` などのカテゴリタグを表示します。ホストリクエストはすべての努力レベルで適用され、Claude Code v2.1.218 以降が必要です。
+[デスクトップアプリ](/docs/ja/desktop#review-your-code)などの結果リストをリクエストするホストアプリケーションでは、Claude は[`ReportFindings` ツール](/docs/ja/tools-reference)を通じてレビューの結果を報告します。Claude Code は結果を結果リストとしてレンダリングし、各エントリはファイルの場所、1 文の要約、および結果が持つ場合は `correctness` などのカテゴリタグを表示します。ホストリクエストはすべての effort レベルで適用され、Claude Code v2.1.218 以降が必要です。
 
 Claude が後でセッションで報告された結果を修正すると、それらを再度報告し、Claude Code は更新された結果リストの各結果を修正済み、スキップ済み、または変更不要としてマークします。
 
@@ -429,7 +429,7 @@ Ultrareview は独自のスコープを使用します：現在のブランチ�
 ターゲットが `github.com` プルリクエストの場合、Claude に[完成した結果を PR に投稿](/docs/ja/ultrareview#post-findings-to-the-pull-request)させることができます。GitHub アカウントからのコメントとして。Claude Code v2.1.227 以降が必要です。
 
 <Note>
-  Ultrareview は claude.ai アカウントでの認証が必要であり、Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、または Zero Data Retention が有効な組織では利用できません。ultrareview が利用できない場合、`/code-review ultra` はセッション内でローカルレビューを実行します。
+  Ultrareview は claude.ai アカウントでの認証が必要であり、Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、または Zero Data Retention が有効な組織や [HIPAA 設定](/docs/ja/hipaa-setup)が適用された組織では利用できません。ultrareview が利用できない場合、`/code-review ultra` はセッション内でローカルレビューを実行します。
 </Note>
 
 スクリプトまたは CI ジョブからクラウドレビューを実行するには、[`claude ultrareview` サブコマンド](/docs/ja/ultrareview#run-ultrareview-non-interactively)を使用します。このサブコマンドは結果を待機し、stdout に出力します。

@@ -1577,7 +1577,12 @@ Claude Code は、[`cleanupPeriodDays`](/docs/ja/settings-reference#cleanupperio
 
 * **`sessions/`**：実行中の各セッションに 1 つの小さいファイルを保持します。同時実行セッションとクラッシュを検出するために使用されます。年齢ベースのスイープの一部ではありません。Claude Code は、セッションが終了するときに各ファイルを削除し、次の起動時にクラッシュの残りをクリアします。
 * **自動メモリ**：スイープは、プロジェクトの[自動メモリ](/docs/ja/memory#auto-memory)ディレクトリ `projects/<project>/memory/` 内のメモリファイルを削除しません。Claude Code は、保持期間全体が空だった場合にのみそのディレクトリを削除します。v2.1.228 より前では、スイープはメモリディレクトリ内のフォルダをセッションデータとして扱い、その下の古いファイルを削除できました。
-* **Claude Desktop および Cowork トランスクリプト**：Claude Code は、Claude Desktop または Cowork で開始または最後に続行したセッションのトランスクリプトを任意の年齢で保持します。これらのトランスクリプトに年齢制限を与えるには、[`desktopSessionCleanupPeriodDays`](/docs/ja/settings-reference#desktopsessioncleanupperioddays)を設定します。[管理設定](/docs/ja/managed-settings)が `cleanupPeriodDays` を設定する場合、Claude Code はその期間の後にこれらのトランスクリプトを削除します。Claude Code v2.1.248 以降が必要です。それより前のバージョンでは、`cleanupPeriodDays` の後に削除します。
+* **Claude Desktop および Cowork トランスクリプト**：Claude Code は、Claude Desktop または Cowork で開始または最後に続行したセッションのトランスクリプトを任意の年齢で保持します。これらのトランスクリプトに年齢制限を与えるには、[`desktopSessionCleanupPeriodDays`](/docs/ja/settings-reference#desktopsessioncleanupperioddays) を設定します。Claude Code v2.1.248 以降が必要です。それより前のバージョンでは、`cleanupPeriodDays` の後に削除します。
+
+  次のいずれかの場合、Claude Code は代わりに `cleanupPeriodDays` の後にこれらのトランスクリプトを削除します：
+
+  * [管理設定](/docs/ja/managed-settings)が `cleanupPeriodDays` を設定している
+  * [HIPAA 設定がセッションに適用されている](/docs/ja/hipaa-setup#check-how-developers-sign-in-and-connect)
 
 Claude Code は、以下の場合に年齢ベースのスイープをスキップします：
 
@@ -1610,11 +1615,11 @@ Claude Code は、以下の場合に年齢ベースのスイープをスキッ�
   削除するまで保持されるファイル
 </h3>
 
-保持クリーンアップスイープは以下のパスを削除しません。Claude Code はそれらを削除するまで保持します。ただし、ログアウト時に削除する 2 つのキャッシュは除きます。
+特に記載のある行を除き、保持クリーンアップスイープは以下のパスを削除せず、Claude Code はそれらを削除するまで保持します。
 
 | `~/.claude/` 下のパス | 内容 |
 | - | - |
-| `history.jsonl` | 入力したすべてのプロンプト。タイムスタンプとプロジェクトパス付き。上矢印リコール、`Ctrl+R` 履歴検索、`!` シェルコマンド補完に使用されます |
+| `history.jsonl` | 入力したすべてのプロンプト。タイムスタンプとプロジェクトパス付き。上矢印リコール、`Ctrl+R` 履歴検索、`!` シェルコマンド補完に使用されます。[HIPAA 設定がセッションに適用されている](/docs/ja/hipaa-setup#check-how-developers-sign-in-and-connect)場合、各スイープで `cleanupPeriodDays` より古いエントリが削除されます |
 | `stats-cache.json` | `/usage` で表示される集計トークンとコスト数 |
 | `remote-settings.json` | 組織の[サーバー管理設定](/docs/ja/server-managed-settings)のキャッシュコピー。組織が何も設定していない場合は `{}`。セッションが[それらを取得](/docs/ja/server-managed-settings#platform-availability)する場合にのみ存在します。Claude Code は起動時と、セッション中は 1 時間ごとに更新を確認します。ログアウト時に削除されます |
 | `cache/changelog.md` | Claude Code チェンジログのキャッシュコピー。`/release-notes` で表示されます。バックグラウンドで更新されます |

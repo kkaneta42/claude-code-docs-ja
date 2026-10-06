@@ -43,11 +43,11 @@ Claude が使用できるツールと、いつ最初に確認するかを制御�
 | `Read` | ファイルの内容を読み取ります。[Read ツールの動作](#read-tool-behavior)を参照してください | いいえ |
 | `ReadMcpResourceTool` | URI で特定の MCP リソースを読み取ります | いいえ |
 | `RemoteTrigger` | claude.ai で[ルーチン](/docs/ja/routines)を作成、更新、実行、リストします。`/schedule` コマンドをサポートします。[`RemoteTrigger` 入力リファレンス](/docs/ja/agent-sdk/typescript#remotetrigger)は、すべてのアクションと、ツールを削除する組織ポリシーを文書化しています。ルーチンは claude.ai に存在し、Pro、Max、Team、または Enterprise プランが必要です。そのため、このツールは Amazon Bedrock、AWS 上の Claude Platform、Google Cloud の Agent Platform、または Microsoft Foundry からはアクセスできません | いいえ |
-| `ReportFindings` | コードレビューの検出結果を構造化リストとしてレポートします。検出結果ごとにファイル、概要、失敗シナリオがあり、Claude Code はテキストとして出力する代わりにレンダリングできます。Claude はアクティブなコードレビュー指示がこれを呼び出すように指示する場合に呼び出します。Claude Code v2.1.196 以降が必要です。v2.1.199 以降、検出結果は `correctness` または `test-coverage` などのオプションの `category` スラッグを含むことができ、レンダリングされたリストのファイルの場所の横に表示されます | いいえ |
+| `ReportFindings` | コードレビューの検出結果を構造化リストとしてレポートします。検出結果ごとにファイル、概要、失敗シナリオがあり、Claude Code はテキストとして出力する代わりにレンダリングできます。Claude はアクティブなコードレビュー指示がこれを呼び出すように指示する場合に呼び出します。検出結果には、`correctness` や `test-coverage` などのオプションの `category` スラッグを含めることもでき、レンダリングされたリストのファイルの場所の横に表示されます | いいえ |
 | `ScheduleWakeup` | [自分のペースで進む `/loop`](/docs/ja/scheduled-tasks#let-claude-choose-the-interval) の次の反復をスケジュールし直します。Claude は各反復の終了時にこれを呼び出して、次の反復をいつ実行するかを 1 分後から 1 時間後の間で選択します。ユーザーが直接呼び出すことはありません。代わりにループを終了するには、Claude はこれを `stop: true` で呼び出します。これは保留中のウェイクアップをキャンセルします。`stop` フィールドには Claude Code v2.1.202 以降が必要です。保留中のウェイクアップは[Stop フックの入力](/docs/ja/hooks#stop-input)の `session_crons` に表示されます | いいえ |
 | `SendFeedback` | Claude Code に関するフィードバックレポートを作成します。製品の問題または Claude Code セッション内での Claude 自身の動作をカバーします。ユーザーがレビューできるよう、お使いのマシン上のキューに入れます。Claude Code は、ドラフトを送信することを選択するまで何も送信しません。[SendFeedback ツールの動作](#sendfeedback-tool-behavior)を参照してください。Claude Code v2.1.238 以降が必要です | いいえ |
 | `SendMessage` | 別のエージェントにメッセージを送信します。[エージェントチーム](/docs/ja/agent-teams)チームメイト、[エージェント ID または名前で再開するサブエージェント](/docs/ja/sub-agents#resume-subagents)、またはこのマシン上またはその外にある他の Claude Code セッションのいずれか。他のセッションへのメッセージングには Claude Code v2.1.224 以降が必要です。[クロスセッションメッセージング](/docs/ja/cross-session-messaging)は、Claude が到達できるセッション、[メッセージが到着したときの外観](/docs/ja/cross-session-messaging#what-a-message-looks-like)、および[別のセッションがアイドル状態になったときに Claude が通知を受け取る方法](/docs/ja/cross-session-messaging#get-a-notice-when-another-session-goes-idle)をカバーしています。Claude はオプションの `summary` 入力を含めることができます。通常は 5～10 語で、Claude Code は 1 行のプレビューとして表示します。Claude が[プレーンテキストメッセージ](/docs/ja/cross-session-messaging#limitations)で省略した場合、Claude Code はメッセージの最初の行を概要として使用します。Claude Code は 200 文字を超える概要を省略記号で切り詰めます | いいえ |
-| `SendUserFile` | セッションからファイルをオプションのキャプション付きで送信します。生成されたレポート、図、スクリーンショット、または構築されたアーティファクトがトランスクリプトでのみ言及されるのではなく、デバイスに到達するようにします。v2.1.196 以降、オプションの `display` 入力はプレゼンテーションを制御します。`render` はファイルをクライアントにインラインで開き、`attach` はダウンロードカードのみを表示し、設定されていない場合、クライアントはファイルタイプで決定します。[リモートコントロール](/docs/ja/remote-control)クライアントが接続されている場合、またはセッションが[ウェブ上の Claude Code](/docs/ja/claude-code-on-the-web)などのマネージドクラウド環境で実行されている場合に利用可能です。配信は Anthropic ホスト型インフラストラクチャを通じて実行されるため、このツールは Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry では利用できません | いいえ |
+| `SendUserFile` | セッションからファイルをオプションのキャプション付きでユーザーに送信します。生成されたレポート、図、スクリーンショット、または構築されたアーティファクトがトランスクリプトで言及されるだけでなく、デバイスに届くようにします。オプションの `display` 入力は表示方法を制御します。`render` はファイルをクライアントにインラインで開き、`attach` はダウンロードカードのみを表示し、設定されていない場合、クライアントはファイルタイプで決定します。[Remote Control](/docs/ja/remote-control) クライアントが接続されている場合、または[クラウドセッション](/docs/ja/claude-code-on-the-web)で利用可能です。配信は Anthropic ホスト型インフラストラクチャを通じて実行されるため、このツールは Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry では利用できません | いいえ |
 | `ShareOnboardingGuide` | ガイドが作成された後、`ONBOARDING.md` をアップロードし、チームメイトが Claude Code で開くことができる共有リンクを返します。`/team-onboarding` から呼び出されます。claude.ai サブスクライバーが Pro、Max、Team、Enterprise プランで利用可能です | はい |
 | `Skill` | メイン会話内で[スキル](/docs/ja/skills#control-who-invokes-a-skill)を実行します | はい |
 | `SubagentHandback` | サブエージェントの最終レポートを、そのサブエージェントの結果を受け取る会話に配信します。[オートモード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)でのみ提供され、Agent ツールがローカルで実行するサブエージェント（[フォーク](/docs/ja/sub-agents#fork-the-current-conversation)以外）に提供され、ターミナル CLI、IDE 拡張機能、クラウドセッション、および Agent SDK で利用可能です。分類器はレポートが配信される前にレビューします。Claude Code v2.1.271 以降が必要です | いいえ |
@@ -55,7 +55,7 @@ Claude が使用できるツールと、いつ最初に確認するかを制御�
 | `TaskGet` | 特定のタスクの完全な詳細を取得します。[タスクツール利用可能性](#task-tool-availability)の下にリストされているモデルでデフォルトで提供され、他のモデルではオプトインした場合に提供されます | いいえ |
 | `TaskList` | すべてのタスクを現在のステータスでリストします。[タスクツール利用可能性](#task-tool-availability)の下にリストされているモデルでデフォルトで提供され、他のモデルではオプトインした場合に提供されます | いいえ |
 | `TaskOutput` | バックグラウンドタスクから出力を取得します。タスクの出力ファイルパスで `Read` を優先して廃止されました。ID に一致するタスクがない場合、エラーは実行中のバックグラウンドエージェントを ID と説明でリストします。v2.1.203 より前では、エラーは欠落している ID のみを名前付けていました | いいえ |
-| `TaskStop` | ID でバックグラウンドタスクを実行中に停止します。また、[エージェントチームチームメイト](/docs/ja/agent-teams)またはエージェント ID または名前でバックグラウンドエージェントを受け入れます。v2.1.198 より前では、バックグラウンドタスク ID のみを受け入れていました。ID に一致するタスクがない場合、エラーは実行中のバックグラウンドエージェントを ID と説明でリストします。別のエージェントが生成したエージェントを含みます。v2.1.203 より前では、エラーは実行中のチームメイトと名前付きエージェントをリストしていましたが、別のエージェントが生成したバックグラウンドエージェントはリストしていなかったため、メイン会話から識別または停止できませんでした | いいえ |
+| `TaskStop` | 実行中のバックグラウンドタスクを ID で停止します。[エージェントチームのチームメイト](/docs/ja/agent-teams)や名前付きバックグラウンドエージェントも、エージェント ID または名前で受け付けます。ID に一致するタスクがない場合、エラーは実行中のバックグラウンドエージェントを ID と説明でリストします。別のエージェントが生成したエージェントも含まれます。v2.1.203 より前では、エラーは実行中のチームメイトと名前付きエージェントをリストしていましたが、別のエージェントが生成したバックグラウンドエージェントはリストしていなかったため、メイン会話から識別または停止できませんでした | いいえ |
 | `TaskUpdate` | タスクステータス、依存関係、詳細を更新するか、タスクを削除します。[タスクツール利用可能性](#task-tool-availability)の下にリストされているモデルでデフォルトで提供され、他のモデルではオプトインした場合に提供されます | いいえ |
 | `TodoWrite` | セッションタスクチェックリストを管理します。`TaskCreate`、`TaskGet`、`TaskList`、`TaskUpdate` を優先して、デフォルトで無効になっています。[タスク追跡ツールを持つセッション](#task-tool-availability)で再度有効にするには、`CLAUDE_CODE_ENABLE_TASKS=0` を設定します | いいえ |
 | `ToolSearch` | [ツール検索](/docs/ja/mcp#scale-with-mcp-tool-search)が有効な場合、遅延ツールを検索してロードします | いいえ |
@@ -122,7 +122,7 @@ subagent を起動すること自体は権限の確認を促しません。Claud
 subagent の権限プロンプトが表示される場所は、foreground で実行されるか background で実行されるかによって異なります。Claude Code は [foreground で実行されるケース](/docs/ja/sub-agents#run-subagents-in-foreground-or-background) を除き、デフォルトで background で subagent を実行します。
 
 * **Foreground subagents** は、メイン会話で見られるのと同じ権限プロンプトを表示し、各ツール呼び出しが発生した時点で表示されます。
-* **Background subagents** v2.1.186 以降、メインセッションで権限プロンプトを表示します。プロンプトはどの subagent がリクエストしているかを名前で示し、Esc キーを押すとそのツール呼び出しのみを拒否し、subagent を停止しません。v2.1.186 より前は、background subagent は権限プロンプトが表示されるツール呼び出しを自動的に拒否し、そのツールなしで続行していました。
+* **バックグラウンドのサブエージェント**は、メインセッションで権限プロンプトを表示します。プロンプトはどのサブエージェントがリクエストしているかを名前で示し、Esc キーを押すとそのツール呼び出しのみを拒否し、サブエージェントを停止しません。
 
 [subagent が到達できる範囲を制限](/docs/ja/sub-agents#control-subagent-capabilities) するには、まず `tools` フィールドを絞り込みます。例えば、Bash をリストから除外するか、設定で拒否ルールを設定します。
 
@@ -512,7 +512,7 @@ Bash の拒否ルールと併せて PowerShell ツールをオンのままにす
 
 Bash ツールセクションで説明されているのと同じメインセッションの作業ディレクトリリセット動作が PowerShell コマンドに適用されます。これには `CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR` 環境変数が含まれます。
 
-v2.1.196 以降、`grep`、`rg`、`egrep`、`fgrep`、`findstr`、`git grep` からの終了コード 1 は一致がないことを意味します。`git diff` からの終了コード 1 は差分が存在することを意味します。どちらの結果も Claude にコマンド失敗として報告されません。`robocopy` の場合、終了コード 0 から 7 は情報結果です。コピーされたファイルや検出された追加ファイルなどです。終了コード 8 以上は失敗としてカウントされます。
+`grep`、`rg`、`egrep`、`fgrep`、`findstr`、`git grep` からの終了コード 1 は一致がないことを意味します。`git diff` からの終了コード 1 は差分が存在することを意味します。どちらの結果も Claude にコマンド失敗として報告されません。`robocopy` の場合、終了コード 0 から 7 は情報結果です。コピーされたファイルや検出された追加ファイルなどです。終了コード 8 以上は失敗としてカウントされます。
 
 <h3 id="windows-encoding-and-exit-codes">
   Windows エンコーディングと終了コード
@@ -551,7 +551,7 @@ Read ツールはファイルパスを受け取り、行番号付きでコンテ
 
 Read は平文テキスト以外のいくつかのファイルタイプを処理します。
 
-* **画像**: PNG、JPG、およびその他の画像形式は、生バイトではなく Claude が見ることができるビジュアルコンテンツとして返されます。Claude Code は大きな画像をモデルの画像サイズ制限に合わせるようにリサイズして再圧縮してから送信するため、Claude は大きなスクリーンショットのダウンスケール版を見る可能性があります。v2.1.196 以降、そのリサイズ後も 500KB より大きい画像は、ピクセル寸法を変更せずに品質を低下させた JPEG として再エンコードされます。Claude が大きな画像の細かいピクセルレベルの詳細を見落とした場合、ImageMagick を使用して Bash で領域をトリミングするなど、関心のある領域を最初にトリミングするよう指示してください。
+* **画像**: PNG、JPG、およびその他の画像形式は、生バイトではなく Claude が見ることができるビジュアルコンテンツとして返されます。Claude Code は大きな画像をモデルの画像サイズ制限に合わせるようにリサイズして再圧縮してから送信するため、Claude は大きなスクリーンショットのダウンスケール版を見る可能性があります。そのリサイズ後も 500KB より大きい画像は、ピクセル寸法を変更せずに品質を低下させた JPEG として再エンコードされます。Claude が大きな画像の細かいピクセルレベルの詳細を見落とした場合、ImageMagick を使用して Bash で領域をトリミングするなど、関心のある領域を最初にトリミングするよう指示してください。
 * **PDF**: Claude は短い `.pdf` ファイルを全体として読み込みます。10 ページを超える PDF の場合、`pages` パラメータ（例：`"1-5"`）を使用して範囲で読み込み、一度に最大 20 ページまで読み込みます。ページ範囲の読み込みは poppler-utils の `pdftoppm` でページをレンダリングするため、macOS では `brew install poppler` でインストールし、Debian および Ubuntu では `apt-get install poppler-utils` でインストールしてください。Windows およびその他のプラットフォームでは、`pdftoppm` を `PATH` に配置する poppler ビルドをインストールしてください。これがない場合、ページ範囲の読み込みは `pdftoppm is not installed` というエラーで失敗します。
 * **Jupyter ノートブック**: `.ipynb` ファイルは、コード、マークダウン、ビジュアライゼーションを含むすべてのセルとその出力を返します。Claude Code は 100 MB を超えるノートブックファイルの読み込みを拒否します。エラーは Claude に、Bash シェルコマンドを使用してセルのスライスなど、ノートブックの一部を読み込む方法を指示します。
 
@@ -603,7 +603,7 @@ Claude がドラフトをキューに入れた後、プロンプトの上にド�
 
 Claude Code はローカルドラフトに作業ディレクトリを保持してトランスクリプトを見つけることができ、ディレクトリは送信しません。
 
-[ゼロデータ保持を使用する組織](/docs/ja/zero-data-retention#features-disabled-under-zdr) では、Claude Code は `/feedback` と同様にツールを除外します。そのような組織のセッションがまだツールを提供している場合、ドラフトはマシンに残り、送信は `Feedback collection is not available for organizations with custom data retention policies.` で失敗します。
+[ゼロデータ保持を使用する組織](/docs/ja/zero-data-retention#features-disabled-under-zdr) および [HIPAA 設定](/docs/ja/hipaa-setup) が適用された組織では、Claude Code は `/feedback` と同様にツールを除外します。ゼロデータ保持を使用する組織のセッションがまだツールを提供している場合、ドラフトはマシンに残り、送信は `Feedback collection is not available for organizations with custom data retention policies.` で失敗します。
 
 <h3 id="discard-or-keep-a-draft">
   ドラフトを破棄または保持する
@@ -627,7 +627,7 @@ Claude Code には、Claude API を使用する独自のマシン上のインタ
 * マシン上のキューに書き込むことができない [Claude Code on the web](/docs/ja/claude-code-on-the-web) などのクラウドセッション
 * [Amazon Bedrock](/docs/ja/amazon-bedrock)、[Claude Platform on AWS](/docs/ja/claude-platform-on-aws)、[Google Cloud の Agent Platform](/docs/ja/google-vertex-ai)、または [Microsoft Foundry](/docs/ja/microsoft-foundry) 上のセッション
 * [`CLAUDE_CODE_SEND_FEEDBACK=0`](/docs/ja/env-vars) または [`DISABLE_FEEDBACK_COMMAND=1`](/docs/ja/env-vars) を設定したセッション、`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` を空でない値に設定したセッション、または [機能フラグ取得](/docs/ja/env-vars#features-that-need-feature-flag-fetching) をオフにしたセッション
-* 製品フィードバックをオフにした組織、および [ゼロデータ保持を使用する組織](/docs/ja/zero-data-retention#features-disabled-under-zdr)
+* 製品フィードバックをオフにした組織、[ゼロデータ保持を使用する組織](/docs/ja/zero-data-retention#features-disabled-under-zdr)、および [HIPAA 設定](/docs/ja/hipaa-setup) が適用された組織
 
 <h2 id="task-tool-availability">
   Task ツールの利用可能性

@@ -128,7 +128,7 @@ v2.1.217 より前では、すべての変数は独立してキーごとの設�
 | `OTEL_METRIC_EXPORT_INTERVAL` | エクスポート間隔（ミリ秒、デフォルト: 60000） | `5000`, `60000` |
 | `OTEL_LOGS_EXPORT_INTERVAL` | ログのエクスポート間隔（ミリ秒、デフォルト: 5000） | `1000`, `10000` |
 | `OTEL_LOG_USER_PROMPTS` | ユーザープロンプトの内容のログ記録を有効にします（デフォルト: 無効） | 有効にするには `1` |
-| `OTEL_LOG_ASSISTANT_RESPONSES` | `assistant_response` イベントでのアシスタント応答テキストのログ記録を有効にします（デフォルト: 無効）。未設定の場合は `OTEL_LOG_USER_PROMPTS` の値にフォールバックします。Claude Code v2.1.193 以降が必要です | 有効にするには `1`、編集済みのままにするには `0` |
+| `OTEL_LOG_ASSISTANT_RESPONSES` | `assistant_response` イベントでのアシスタント応答テキストのログ記録を有効にします（デフォルト: 無効）。未設定の場合は `OTEL_LOG_USER_PROMPTS` の値にフォールバックします | 有効にするには `1`、編集済みのままにするには `0` |
 | `OTEL_LOG_TOOL_DETAILS` | ツールイベントとトレーススパン属性におけるツールパラメーターと入力引数のログ記録を有効にします。対象は Bash コマンド、MCP サーバー名とツール名、スキル名、ユーザーが作成したワークフロー名、ツール入力です。また、`user_prompt` イベントでのカスタムコマンド、プラグインコマンド、MCP コマンドの名前と、[コストおよびトークンのカウンター](#cost-counter)での実際のエージェント名、スキル名、プラグイン名、MCP サーバー名とツール名も有効にします（デフォルト: 無効）。Claude Desktop の組み込みサーバーについては、Claude Desktop が所有するセッションでは、このフラグがオフでも `tool_decision`/`tool_result` で `mcp_server_name`/`mcp_tool_name` が出力されます。この例外には Claude Code v2.1.214 以降が必要です | 有効にするには `1` |
 | `OTEL_LOG_TOOL_CONTENT` | [`tool.output` スパンイベント](#tool-output-span-event)でのツールコンテンツのログ記録を有効にします（デフォルト: 無効）。スパン属性は[独自のゲート](#new-context-gates)のもとでツールコンテンツを保持します。[トレース](#traces-beta)が必要です。コンテンツはコンテンツ上限（デフォルトで 60 KB）で切り詰められます | 有効にするには `1` |
 | `OTEL_LOG_MANAGED_SETTINGS` | 編集済みの管理設定と、編集前の設定の SHA-256 ダイジェストを[管理設定の解決](#managed-settings-resolved-event)イベントに追加します（デフォルト: 無効）。プロジェクト設定またはローカル設定の値ではオンになりません。Claude Code v2.1.274 以降が必要です | 有効にするには `1` |
@@ -819,7 +819,7 @@ Claude Code は、OpenTelemetry のログ/イベントを通じて以下のイ�
   アシスタント応答イベント
 </h4>
 
-モデルからテキストコンテンツを返す各 API リクエストの後にログに記録されます。応答のテキストブロックのみが含まれ、思考ブロックとツール使用ブロックは除外されます。Claude Code v2.1.193 以降が必要です。
+モデルからテキストコンテンツを返す各 API リクエストの後に記録されます。応答のテキストブロックのみが含まれ、思考ブロックとツール使用ブロックは除外されます。
 
 **イベント名**: `claude_code.assistant_response`
 
@@ -1157,7 +1157,7 @@ Claude Code が予期しない内部エラーを捕捉したときにログに�
 * `plugin_id_hash`: プラグイン名とマーケットプレイスの決定論的なハッシュ。設定したエクスポーターにのみ送信されます。名前を記録せずに、フリート全体で読み込まれた個別のサードパーティプラグインの数をカウントできます。[claude.ai から同期されたプラグイン](/docs/ja/plugins/loading#synced-plugins)の場合、Claude Code は、claude.ai がそのプラグインについて報告するマーケットプレイス名、それがない場合は `synced` とプラグイン名を組み合わせてハッシュします。v2.1.246 より前は、Claude Code は claude.ai が報告するマーケットプレイス名をハッシュに使用していませんでした
 * `has_hooks`: プラグインがフックを提供するかどうか
 * `has_mcp`: プラグインが MCP サーバーを提供するかどうか
-* `host_owned_mcp`: SDK ホストがこのプラグインの MCP 接続を管理しており、Claude Code がプラグインの MCP サーバー設定の読み取りをスキップした場合は `true`、それ以外は `false`。Claude Code v2.1.172 以降が必要です
+* `host_owned_mcp`: SDK ホストがこのプラグインの MCP 接続を管理しており、Claude Code がプラグインの MCP サーバー設定の読み取りをスキップした場合は `true`、それ以外は `false`
 * `skill_path_count`: プラグインが宣言するスキルディレクトリの数
 * `command_path_count`: プラグインが宣言するコマンドディレクトリの数
 * `agent_path_count`: プラグインが宣言するエージェントディレクトリの数
@@ -1336,7 +1336,7 @@ API リクエストが複数回の試行の後に失敗したときに 1 回ロ�
 * `pre_tokens`: 圧縮前のおおよそのトークン数
 * `post_tokens`: 圧縮後のおおよそのトークン数
 * `error`: 圧縮が失敗した場合のエラーメッセージ
-* `precompute_reuse`: `trigger` が `"manual"` の場合にのみ設定されます。自動圧縮では、コンテキストウィンドウがいっぱいになる前にバックグラウンドで要約を準備できます。この属性は、`/compact` がその準備済みの要約を再利用したかどうかを記録します。`"hit"` は再利用されたことを意味し、`"miss_custom_instructions"`、`"miss_hook"`、`"miss_not_ready"` は代わりに新しい要約が計算された理由を示します。Claude Code v2.1.153 以降が必要です
+* `precompute_reuse`: `trigger` が `"manual"` の場合にのみ設定されます。自動圧縮では、コンテキストウィンドウが埋まる前にバックグラウンドで要約を準備できます。この属性は、`/compact` がその準備済みの要約を再利用したかどうかを記録します。`"hit"` は再利用されたことを意味し、`"miss_custom_instructions"`、`"miss_hook"`、`"miss_not_ready"` は、代わりに新しい要約が計算された理由を示します
 
 <h4 id="subagent-completed-event">
   サブエージェント完了イベント
@@ -1518,7 +1518,7 @@ Claude Code は、`ANTHROPIC_BASE_URL` の背後にあるゲートウェイま�
 * 異常なトークン消費
 * 特定のユーザーからの高いセッションボリューム
 
-すべてのメトリクスは、[標準属性](#standard-attributes) でセグメント化できます。`model` 属性は `claude_code.token.usage`、`claude_code.cost.usage`、および v2.1.172 以降の `claude_code.lines_of_code.count` で利用可能です。
+すべてのメトリクスは、[標準属性](#standard-attributes) でセグメント化できます。`model` 属性は `claude_code.token.usage`、`claude_code.cost.usage`、および `claude_code.lines_of_code.count` で利用可能です。
 
 コミットのモデル別の内訳は、1 つのセッションが複数のモデルにまたがる可能性があるため、`session.id` でトークンまたはコストメトリクスに対して結合することによってのみ概算できます。トークンまたはコスト側をフィルタリングして、`query_source` が `"main"` である行のみにしてください。これにより、補助的なリクエストとサブエージェントリクエストが、セッションのコミットをそれらを作成しなかったモデルに属性付けしません。
 

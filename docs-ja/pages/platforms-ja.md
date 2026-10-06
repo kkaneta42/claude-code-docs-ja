@@ -39,7 +39,7 @@ CLI はターミナルネイティブな作業に最も完全なサーフェス�
 | [GitHub Actions](/docs/ja/github-actions) | CI パイプラインで Claude を実行 | 自動 PR レビュー、Issue トリアージ、スケジュール済みメンテナンス |
 | [GitLab CI/CD](/docs/ja/gitlab-ci-cd) | GitLab の GitHub Actions と同じ | GitLab での CI 駆動自動化 |
 | [Code Review](/docs/ja/code-review) | すべての PR を自動的にレビュー | 人間によるレビュー前にバグをキャッチ |
-| [Slack](/docs/ja/slack) | チャネルの `@Claude` メンションに応答 | バグレポートをチームチャットから PR に変換 |
+| [Slack](/docs/ja/slack) | チャンネルでの `@Claude` メンションに自分のアカウントで応答 | Pro および Max プランで、チームチャットからバグレポートをプルリクエストに変換 |
 | [Claude Tag](https://claude.com/docs/claude-tag) | 管理者が設定したアクセス権限を持つ組織の共有 ID として `@Claude` を実行 | Team および Enterprise プランでの共有チームアクセス（ユーザーごとの Slack セッションの代わり） |
 
 ここにリストされていない統合については、[MCP サーバー](/docs/ja/mcp)と[コネクター](/docs/ja/desktop#connect-external-tools)により、ほぼすべてのものを接続できます。Linear、Notion、Google Drive、または独自の内部 API など。
@@ -55,7 +55,7 @@ Claude Code は、ターミナルにいない時に作業するための複数�
 | [Dispatch](/docs/ja/desktop#sessions-from-dispatch) | Claude モバイルアプリからタスクをメッセージで送信 | あなたのマシン（Desktop） | [モバイルアプリを Desktop とペアリング](https://support.claude.com/en/articles/13947068) | 外出中の作業委譲、最小限のセットアップ |
 | [Remote Control](/docs/ja/remote-control) | [claude.ai/code](https://claude.ai/code) または Claude モバイルアプリから実行中のセッションを操作 | あなたのマシン（CLI、Desktop、または VS Code） | [`claude remote-control` または `/remote-control`](/docs/ja/remote-control#start-a-remote-control-session) を実行 | 別のデバイスから進行中の作業を操舵 |
 | [Channels](/docs/ja/channels) | Telegram や Discord などのチャットアプリ、またはあなた自身のサーバーからイベントをプッシュ | あなたのマシン（CLI） | [チャネルプラグインをインストール](/docs/ja/channels#quickstart)するか、[独自に構築](/docs/ja/channels-reference) | CI 失敗やチャットメッセージなどの外部イベントに対応 |
-| [Slack](/docs/ja/slack) | チームチャネルで `@Claude` をメンション | Anthropic クラウド | [Slack アプリをインストール](/docs/ja/slack#setting-up-claude-code-in-slack)し、[ウェブ上の Claude Code](/docs/ja/claude-code-on-the-web) を有効化 | チームチャットからの PR とレビュー |
+| [Slack](/docs/ja/slack) | チームチャンネルで `@Claude` をメンション | Anthropic クラウド | [ウェブ上の Claude Code](/docs/ja/claude-code-on-the-web) を有効にした状態で [Slack アプリをインストール](/docs/ja/slack#setting-up-claude-code-in-slack)、Pro および Max プラン | チームチャットからの PR とレビュー |
 | [Self-hosted environments](/docs/ja/self-hosted-environments) | [クラウドセッション](/docs/ja/claude-code-on-the-web)を開始し、組織の環境を選択 | あなたの組織のインフラストラクチャ | [ランナーをデプロイ](/docs/ja/self-hosted-environments-quickstart)、Team および Enterprise プラン | ネットワーク内で実行する必要があるクラウドセッション |
 | [Scheduled tasks](/docs/ja/scheduled-tasks) | スケジュールを設定 | [CLI](/docs/ja/scheduled-tasks)、[Desktop](/docs/ja/desktop-scheduled-tasks)、または[クラウド](/docs/ja/routines) | 頻度を選択 | 日次レビューなどの定期的な自動化 |
 
@@ -86,7 +86,7 @@ Claude Code は、ターミナルにいない時に作業するための複数�
 * [GitHub Actions](/docs/ja/github-actions)：CI パイプラインで Claude を実行
 * [GitLab CI/CD](/docs/ja/gitlab-ci-cd)：GitLab の場合も同じ
 * [Code Review](/docs/ja/code-review)：すべてのプルリクエストで自動レビュー
-* [Slack](/docs/ja/slack)：チームチャットからタスクを送信、PR を取得
+* [Slack](/docs/ja/slack)：Pro および Max プランで、チームチャットからタスクを送信して PR を受け取る
 * [Claude Tag](https://claude.com/docs/claude-tag)：Team および Enterprise プランで組織の共有 ID として `@Claude` を実行
 
 <h3 id="remote-access">

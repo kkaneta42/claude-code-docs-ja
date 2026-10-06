@@ -44,7 +44,7 @@ security guidance プラグインは、Claude が作業中に自身のコード�
 * `Marketplace "claude-plugins-official" not found`：`/plugin marketplace add anthropics/claude-plugins-official` でマーケットプレイスを追加してから、インストールを再試行してください。
 * [プラグインがマーケットプレイスで見つかりません](/docs/ja/plugins/install#install-a-plugin)：プラグイン名を確認してください。
 
-インストール概要を確認してください。`Run /reload-plugins to activate.` と報告された場合、[プラグイン変更を再起動なしで適用](/docs/ja/plugins/cli-reference#reload-plugins)を参照して、現在のセッションでプラグインを有効化してください。
+インストール概要を確認してください。`Run /reload-plugins to apply.` と報告された場合、[プラグイン変更を再起動なしで適用](/docs/ja/plugins/cli-reference#reload-plugins)を参照して、現在のセッションでプラグインを有効化してください。
 
 <h3 id="enable-for-your-team-in-local-sessions">
   ローカルセッションでチームに対して有効化する

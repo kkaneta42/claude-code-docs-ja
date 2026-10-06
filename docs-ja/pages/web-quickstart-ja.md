@@ -103,7 +103,7 @@ GitHub への接続は 1 回限りのステップです。既に GitHub CLI を�
 既にブラウザで GitHub を接続している場合、`/web-setup` は続行すると cloud セッションの接続が置き換わることを警告します。
 
 <Note>
-  [Zero Data Retention](/docs/ja/zero-data-retention) が有効な Organization は `/web-setup` または他の cloud セッション機能を使用できません。GitHub CLI がインストールされていない、または認証されていない場合、Claude Code はブラウザオンボーディングフローを開きます。
+  [Zero Data Retention](/docs/ja/zero-data-retention) が有効な Organization、または [HIPAA 構成](/docs/ja/hipaa-setup) が適用されている Organization は、`/web-setup` または他のクラウドセッション機能を使用できません。GitHub CLI がインストールされていない、または認証されていない場合、Claude Code はブラウザオンボーディングフローを開きます。
 </Note>
 
 <Steps>
@@ -264,7 +264,7 @@ Team および Enterprise プランでは、コマンドはデフォルトで非
 コマンドは他の 2 つのケースでも非表示になります。
 
 * 管理者が組織のクラウドセッションを無効にしました。この場合、`/web-setup` を送信すると [`Cloud sessions are disabled by your organization's policy`](/docs/ja/errors#cloud-sessions-are-disabled-by-your-organizations-policy) が返されます。v2.1.268 より前では、このケースも `Unknown command: /web-setup` を返していました。
-* Enterprise 組織が [Zero Data Retention](/docs/ja/zero-data-retention) を有効にしており、これによりクラウドセッションが利用できなくなります。
+* Enterprise 組織で [Zero Data Retention](/docs/ja/zero-data-retention) が有効になっているか、[HIPAA 設定](/docs/ja/hipaa-setup)が適用されています。いずれの場合もクラウドセッションは利用できなくなります。
 
 <h3 id="could-not-create-a-cloud-environment-or-no-cloud-environment-available-when-using-cloud">
   `--cloud` を使用する場合に「Could not create a cloud environment」または「No cloud environment available」が表示される
