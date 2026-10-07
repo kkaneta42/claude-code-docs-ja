@@ -83,15 +83,15 @@ Claude Code がトランスクリプトから会話を読み込むと、再開�
 * ターミナル：`claude --continue`、`claude --resume <session-id>`、または `claude --resume <name>`（名前が 1 つのセッションと一致する場合）で `-p` なし。Claude Code はセッションが存在していた権限モードを復元します。ただし、表の場合は除きます。`--permission-mode` または `--dangerously-skip-permissions` を渡して復元されたモードをオーバーライドします。
 * 非対話型：`claude -p --resume` または `claude -p --continue`。Claude Code は新しい `claude -p` 実行が開始される権限モードで実行を開始します。ただし、プランモードで終了したセッションは [以下の条件](#resume-in-plan-mode-with-p)下でプランモードで再開されます。
 * VS Code：拡張機能の会話パネル。表は、プランモードで終了した会話のみをカバーします。その他については、[過去の会話を再開](/docs/ja/vs-code#resume-past-conversations)を参照してください。
-* 起動時のセッションピッカー：[セッションピッカー](#use-the-session-picker)から選択したセッション。`claude --resume` だけで開いたか、`claude --from-pr` で開いたか、複数のセッションと一致する名前で開いたかに関わらず。Claude Code は保存された権限モードを復元しません。同じコマンドラインから新しいセッションを開始する権限モードでセッションを開始します。
-* セッション内の `/resume`（引数の有無を問わず）：Claude Code は保存された権限モードを復元しません。切り替える会話は、現在のセッションが存在する権限モードで続行されます。
+* 起動時のセッションピッカー：[セッションピッカー](#use-the-session-picker)から選択したセッション。`claude --resume` だけで開いたか、`claude --from-pr` で開いたか、複数のセッションと一致する名前で開いたかに関わらず。Claude Code は、同じコマンドラインから新しいセッションを開始する場合の権限モードでセッションを開始します。ただし、plan モードで終了したセッションは、`--permission-mode`、`--dangerously-skip-permissions`、または `--fork-session` を渡さない限り plan モードで再開されます。それ以外の保存された権限モードは復元されません。
+* セッション内の `/resume`（引数の有無を問わず）：切り替える会話は、現在のセッションが存在する権限モードで続行されます。ただし、plan モードで終了した会話は、`--permission-mode` または `--dangerously-skip-permissions` で Claude Code を起動した場合でも plan モードで再開されます。その会話がこの Claude Code の実行中にすでに開かれていた場合（開始時の会話や、`/clear` または `/resume` で離れた会話など）は、代わりに現在の権限モードで続行されます。
 
 非対話型および VS Code パスでプランモードを復元するには Claude Code v2.1.246 以降が必要です。各行は、セッションが終了した権限モード、ターミナル、非対話型、および VS Code パスのどれで再開するか、および Claude Code が再開されたセッションを開始する権限モードを示します。
 
 | セッションが終了した権限モード | 再開方法 | 再開後の権限モード |
 | :- | :- | :- |
 | `bypassPermissions` | ターミナル | 新しいセッションが開始される権限モード。[権限をバイパス](/docs/ja/permission-modes#skip-all-checks-with-bypasspermissions-mode)するには、起動時に 1 つのフラグまたは [ユーザー、`--settings`、または管理設定](/docs/ja/settings-reference#permissions-defaultmode)の `permissions.defaultMode: "bypassPermissions"` で有効にします |
-| `plan` | ターミナル | 新しいセッションが開始される権限モード |
+| `plan` | ターミナル | plan モード。`--fork-session` を使用した場合は、新しいセッションが開始される権限モード |
 | `auto` | ターミナル | `auto`。[オートモード要件](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)をアカウントがまだ満たしている場合のみ |
 | Manual | ターミナル | [組み込みデフォルト](/docs/ja/permission-modes#which-mode-a-session-starts-in)から新しいセッションがオートモードで開始される場合は Manual。設定ファイルの `defaultMode` が [有効になる](/docs/ja/permission-modes#which-mode-a-session-starts-in)場合、Claude Code は再開されたセッションをそのモードで開始します |
 | `plan` | 非対話型。[以下の条件](#resume-in-plan-mode-with-p)下 | プランモード |
@@ -191,12 +191,13 @@ Claude Code が重複の名前を変更しない場合が 3 つあり、リス�
 
 | ショートカット | アクション |
 | :- | :- |
-| `↑` / `↓` | セッション間をナビゲートします |
+| `↑` / `↓` または `k` / `j` | セッション間をナビゲートします |
 | `→` / `←` | グループ化されたセッションを展開または折りたたみます |
 | `Enter` | ハイライトされたセッションを再開します |
+| `1` から `9` | リスト内のその位置にあるセッションを再開します |
 | `Space` | セッションコンテンツをプレビューします。ターミナルが貼り付けとしてキャプチャしない場合は `Ctrl+V` も機能します |
 | `Ctrl+R` | ハイライトされたセッションの名前を変更します |
-| `/` またはスペース以外の任意の印字可能文字 | 検索モードに入り、セッションをフィルタリングします。GitHub、GitHub Enterprise、GitLab、または Bitbucket のプルまたはマージリクエスト URL を貼り付けて、それを作成したセッションを見つけます |
+| `/` または `Space`、`j`、`k`、数字以外の任意の印字可能文字 | 検索モードに入り、セッションをフィルタリングします。GitHub、GitHub Enterprise、GitLab、または Bitbucket のプルまたはマージリクエスト URL を貼り付けて、それを作成したセッションを見つけます |
 | `Ctrl+A` | このマシン上のすべてのプロジェクトからセッションを表示します。もう一度押すと現在のリポジトリに戻ります |
 | `Ctrl+W` | 現在のリポジトリのすべての worktree からセッションを表示します。もう一度押すと現在の worktree に戻ります。マルチ worktree リポジトリでのみ表示されます |
 | `Ctrl+B` | 現在の git ブランチからのセッションにフィルタリングします。もう一度押すとすべてのブランチを表示します |

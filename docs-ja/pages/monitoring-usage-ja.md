@@ -1414,7 +1414,7 @@ Claude Code が保持期間を安全に判断できない場合、スイープ�
 * `session_files_deleted`: セッションファイルスイープが削除したアーティファクトの数。トランスクリプトに加え、サイドカー、録画、ツール結果などのセッションごとの付随ファイルを含みます
 * `artifacts_deleted`: スイープが対象とするデータディレクトリ全体で削除した項目の合計（セッションファイルを含む）。一部のスイープは削除したディレクトリツリー全体を 1 項目としてカウントし、いくつかのクリーンアップパスはカウンターに加算されないため、この値は正確なファイル数ではなく下限値として扱ってください
 * `files_retained_fresh`: 検査されたものの、まだ保持期間内であるためそのまま残されたファイル。ファイル単位のスイープのみがこれらをカウントするため、この値は下限値です。ゼロ以外の値は通常の定常状態です
-* `files_past_cutoff`: 保持期間より古いものの、権限エラーやファイルが開かれたままであることなどが原因でスイープが削除に失敗したファイル。ゼロより大きい値は、設定された保持期間を超えてファイルが残ったことを意味します。ただし、ディレクトリ全体の削除に失敗した場合は代わりに `error_count` にカウントされるため、ゼロであってもそのようなファイルがないことの証明にはなりません
+* `files_past_cutoff`: 保持期間より古いものの、権限エラーやファイルが開かれたままであるなどの理由でスイープが削除に失敗したファイル。このカウントには、スイープが `skills/synced/` または `plugins/synced/` の下で見つけた古いフォルダーも、ゴミ箱に移動したかどうかにかかわらずそれぞれ含まれます。これらのフォルダーを除いて、ゼロより大きい値は、設定された保持期間を超えてファイルが残っていることを意味します。ただし、ゼロであってもそうしたファイルがないことの証明にはなりません。ディレクトリ全体の削除に失敗した場合は、代わりに `error_count` にカウントされるためです
 * `error_count`: ファイルの一覧取得または削除中にスイープが遭遇したエラーの数
 
 <h4 id="managed-settings-resolved-event">
@@ -1624,6 +1624,53 @@ export OTEL_RESOURCE_ATTRIBUTES="enduser.id=jdoe@example.com,enduser.directory_i
 | マシンが実行する管理設定ソース、そのポリシーヘルパーが正常かどうか、およびマシンが起動を拒否した理由 | `managed_settings_resolved` | `managed_settings.trigger`、`managed_settings.sources`、`managed_settings.source_behavior`、`managed_settings.helper.state`、`error.type`；`managed_settings.settings` および `managed_settings.resolved_sha256`（`OTEL_LOG_MANAGED_SETTINGS=1` の場合） |
 
 Claude Code は生のイベントストリームのみを出力します。異常検出、ベースライン化、セッション間の相関、アラートは SIEM または可観測性バックエンドの責任です。
+
+<h3 id="map-egress-paths-to-managed-controls-and-events">
+  送信経路を管理コントロールとイベントにマップする
+</h3>
+
+次の表は、セッションの内容をマシン外に持ち出す可能性のある経路とローカル保持を、それらを制限する [管理設定](/docs/ja/managed-settings) のキー、およびそれらを記録するイベントと対応付けたものです。`/feedback` レポートなど、Claude Code 自体が Anthropic に送信するものについては、[データの使用](/docs/ja/data-usage) を参照してください。各名前はそれぞれのリファレンス項目にリンクしており、そこに値とデフォルトが記載されています。
+
+| 経路 | 管理コントロール | イベント |
+| - | - | - |
+| Bash および PowerShell のコマンド | [`sandbox.enabled`](/docs/ja/settings-reference#sandbox-enabled)、[`sandbox.failIfUnavailable`](/docs/ja/settings-reference#sandbox-failifunavailable)、[`sandbox.allowUnsandboxedCommands`](/docs/ja/settings-reference#sandbox-allowunsandboxedcommands)、[`sandbox.network.allowManagedDomainsOnly`](/docs/ja/settings-reference#sandbox-network-allowmanageddomainsonly)、[`sandbox.network.allowedDomains`](/docs/ja/settings-reference#sandbox-network-alloweddomains) | [`tool_decision`](#tool-decision-event)、[`tool_result`](#tool-result-event) |
+| MCP サーバー | [`allowedMcpServers`](/docs/ja/settings-reference#allowedmcpservers)、[`allowManagedMcpServersOnly`](/docs/ja/settings-reference#allowmanagedmcpserversonly)、[`deniedMcpServers`](/docs/ja/settings-reference#deniedmcpservers)、[`managed-mcp.json`](/docs/ja/managed-mcp) | [`mcp_server_connection`](#mcp-server-connection-event)、`tool_decision`、`tool_result` |
+| フック | [`allowManagedHooksOnly`](/docs/ja/settings-reference#allowmanagedhooksonly)、[`allowedHttpHookUrls`](/docs/ja/settings-reference#allowedhttphookurls) | [`hook_registered`](#hook-registered-event)、[`hook_execution_start`](#hook-execution-start-event)、[`hook_execution_complete`](#hook-execution-complete-event) |
+| プラグイン | [`strictKnownMarketplaces`](/docs/ja/settings-reference#strictknownmarketplaces)、[`disableSideloadFlags`](/docs/ja/settings-reference#disablesideloadflags)、[`syncClaudeAiPlugins`](/docs/ja/settings-reference#syncclaudeaiplugins)、[`syncClaudeAiSkills`](/docs/ja/settings-reference#syncclaudeaiskills) | [`plugin_installed`](#plugin-installed-event)、[`plugin_loaded`](#plugin-loaded-event) |
+| [WebFetch](/docs/ja/permissions#webfetch) | [`permissions.deny`](/docs/ja/settings-reference#permissions-deny)、[`allowManagedPermissionRulesOnly`](/docs/ja/settings-reference#allowmanagedpermissionrulesonly) | `tool_decision`、`tool_result` |
+| Artifact など、claude.ai にアップロードするツール | `permissions.deny`、[`enableArtifact`](/docs/ja/settings-reference#enableartifact) | `tool_decision`、`tool_result` |
+| Remote Control | [`disableRemoteControl`](/docs/ja/settings-reference#disableremotecontrol) | 専用のイベントなし |
+| ローカルのトランスクリプト保持 | [`cleanupPeriodDays`](/docs/ja/settings-reference#cleanupperioddays) | [`retention_sweep`](#retention-sweep-event) |
+
+`allowedHttpHookUrls`、`managed-mcp.json`、およびフックイベントの各項目には、表に示した以上の補足があります：
+
+* **`allowedHttpHookUrls`**：エントリは設定ファイル間でマージされるため、開発者は空の管理リストに追加できます。どのフックを実行するかは `allowManagedHooksOnly` が決定します
+* **`managed-mcp.json`**：MCP をオフにするには、[MCP を完全に無効にする](/docs/ja/managed-mcp#disable-mcp-entirely) を参照してください。Claude Code がこのファイルを読み込んでいることを確認するには、[設定を検証する](/docs/ja/managed-mcp#validate-the-configuration) を参照してください
+* **フックイベント**：Claude Code は `hook_execution_start` と `hook_execution_complete` をフックイベントごとに 1 回ログに記録し、一致するすべてのフックを対象とします。`OTEL_LOG_TOOL_DETAILS=1` だけでは HTTP フックの URL は記録されません。フックの設定は `hook_definitions` にのみ表示され、これには詳細なベータトレースも必要です
+
+`OTEL_LOG_TOOL_DETAILS=1` は、これらのイベントにコマンド文字列、サーバー名とツール名、およびツール入力を追加します。この詳細にはセッション自体と同じ機密コンテンツが含まれる可能性があるため、コレクターがそのコンテンツを保持することが承認されている場合にのみ有効にしてください。
+
+<h3 id="check-the-retention-sweep">
+  保持スイープを確認する
+</h3>
+
+すべてのマシンに同じ保持期間を適用するには、[管理設定](/docs/ja/managed-settings) で [`cleanupPeriodDays`](/docs/ja/settings-reference#cleanupperioddays) を設定します。マシンがその値でスイープを実行していることを確認するには、[`retention_sweep`](#retention-sweep-event) イベントを収集します。`period_days` とカウンターは文字列であるため、比較する前に数値にキャストしてください。
+
+| マシンが報告する内容 | 意味 |
+| - | - |
+| `result` が `"skipped"` | Claude Code がスイープを一時停止しました。原因は `skip_reason` に示されます |
+| `used_default` が `"true"`、または `period_days` が管理値と異なる | マシンが管理設定の `cleanupPeriodDays` を適用していません |
+| `error_count` が 0 より大きい | スイープがファイルの一覧表示または削除中にエラーに遭遇したため、保持期間を過ぎたデータが残っている可能性があります |
+| `files_past_cutoff` が 0 より大きい | スイープが保持期間を過ぎたファイルの削除に失敗したか、古い同期済みのスキルおよびプラグインのフォルダーを検出しました。`error_count` と合わせて確認してください |
+| イベントなし | それ自体は失敗ではありません |
+
+意図どおりに動作しているマシンでも、次のような理由でイベントが発生しないことがあります：
+
+* **誰も Claude Code を起動しない**：スイープは実行されず、マシンは次回の起動までデータを保持します
+* **セッションが開いたままになっている**：Claude Code はセッションごとに最大 1 回しかスイープを実行しません
+* **セッションが早期に終了する**：セッション終了時に完了していないスイープは何も出力せず、予期しないエラーで停止したスイープも同様です
+
+スイープはすべてのパスを対象とするわけではありません。残るものは [削除するまで保持されるもの](/docs/ja/claude-directory#kept-until-you-delete-them) に一覧があり、その削除方法は [ローカルデータを消去する](/docs/ja/claude-directory#clear-local-data) で説明しています。
 
 <h3 id="send-events-to-a-siem">
   SIEM にイベントを送信する

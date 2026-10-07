@@ -142,7 +142,7 @@ IDE で Claude Code を実行する場合の詳細については、[VS Code sec
 
 * 承認前にすべての提案された変更を確認してください
 * 機密リポジトリにはプロジェクト固有のパーミッション設定を使用してください
-* 追加の分離のために [dev containers](/docs/ja/devcontainer) の使用を検討してください
+* さらに分離を強化するには、Claude Code（ローカルモード）のプロセス全体を [サンドボックスランタイム](/docs/ja/sandbox-environments#sandbox-runtime) または [dev container](/docs/ja/devcontainer) 内で実行してください
 * `/permissions` で定期的にパーミッション設定を監査してください
 
 <h3 id="team-security">

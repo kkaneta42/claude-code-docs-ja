@@ -87,6 +87,7 @@ VS Code 拡張機能が開始する会話は、[権限モードを切り替え�
 | :- | :- |
 | 設定ファイルが `disableAutoMode` を `"disable"` に設定 | `default` |
 | `claude -p` または [Agent SDK](/docs/ja/agent-sdk/permissions#permission-modes) | [フィーチャーフラグを取得](/docs/ja/env-vars#features-that-need-feature-flag-fetching)するセッションでは `default`。テレメトリがオフの場合やサードパーティプロバイダーなど、フィーチャーフラグを取得しないセッションでは、Claude Code v2.1.285 以降では `auto`、以前のバージョンでは `default`。`auto` デフォルトを保留するポリシーを持つ組織内のセッションは、代わりに `default` で開始します |
+| 組織に [HIPAA 設定](#hipaa-configuration)が適用されており、セッションが[その対象](/docs/ja/hipaa-setup#check-how-developers-sign-in-and-connect)である | Claude Code v2.1.285 以降では `default`。auto モードへの切り替えは引き続き可能です |
 | ターミナルまたは [VS Code 拡張機能](/docs/ja/vs-code)を通じて | Claude Code v2.1.283 以降では `auto`。以前のバージョンでは、Pro、Max、または Team プランで [フィーチャーフラグを取得](/docs/ja/env-vars#features-that-need-feature-flag-fetching)するセッションでは `auto`、それ以外は `default` |
 
 [インストールまたはアップグレード後の最初のセッション](/docs/ja/env-vars#first-session-after-an-install-or-upgrade)では、Claude Code はフィーチャーフラグが到達する前に開始権限モードを選択できます。そのセッションは表が示すものとは異なる権限モードで開始する可能性があります。
@@ -124,6 +125,21 @@ VS Code 拡張機能が開始する会話は、[権限モードを切り替え�
 ```
 
 次に開始するセッションは、ステータスバーに `⏸ manual mode on` を表示します。
+
+<h3 id="hipaa-configuration">
+  HIPAA 設定での権限モード
+</h3>
+
+[HIPAA 設定](/docs/ja/hipaa-setup)が適用されている組織では、組み込みの `auto` デフォルトは適用されません。開始権限モードを他に選択するものがない場合、ターミナルまたは VS Code のセッションは Manual モードで開始します。ターミナルセッションでは `Auto mode isn't the default for your organization · Shift+Tab to switch` も表示され、VS Code 拡張機能では通知は表示されません。これが適用されるセッションについては、[開発者のサインイン方法と接続方法を確認する](/docs/ja/hipaa-setup#check-how-developers-sign-in-and-connect)に記載されています。
+
+auto モードと `bypassPermissions` は引き続き利用できます。
+
+* **auto モードに切り替える**: `Shift+Tab` を押すか、[使用しているインターフェースのコントロール](#switch-permission-modes)を使用します
+* **auto モードで開始する**: `--permission-mode auto` を渡すか、ユーザー設定で `permissions.defaultMode` を `auto` に設定します。組織全体に対しては管理設定で設定します。[異なる権限モードで開始する](#start-in-a-different-mode)を参照してください
+* **auto モードを削除する**: 管理設定で [`permissions.disableAutoMode`](/docs/ja/settings-reference#disableautomode) を `"disable"` に設定します
+* **`bypassPermissions` をブロックする**: 管理設定で [`permissions.disableBypassPermissionsMode`](/docs/ja/settings-reference#permissions-disablebypasspermissionsmode) を `"disable"` に設定します
+
+Claude Code v2.1.285 以降が必要です。これは [HIPAA 設定の最小バージョン](/docs/ja/hipaa-setup#update-claude-code-and-claude-desktop)です。
 
 <h2 id="switch-permission-modes">
   権限モードを切り替える

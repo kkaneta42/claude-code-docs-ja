@@ -156,8 +156,8 @@ Microsoft Entra が証明書の認証情報で行うように、アイデンテ�
 ゲートウェイは鍵と証明書をブート時に一度だけ読み込むため、ファイルの変更は再起動後にのみ反映されます。IdP が持っていない証明書をトークンリクエストが提示することがないよう、次の順序でローテーションします：
 
 1. 新しい証明書を、古い証明書と並べて IdP にアップロードします。
-2. `gateway.yaml` が読み込む鍵と証明書のファイルを置き換えてから、ゲートウェイを再起動します。
-3. 古い証明書を IdP から削除します。
+2. `gateway.yaml` が読み込む鍵と証明書のファイルを置き換えてから、ゲートウェイを再起動します。複数のレプリカを実行している場合は、[ローリング再起動](/docs/ja/claude-apps-gateway-deploy#upgrades)で問題ありません。古い証明書を削除するまで、IdP は両方の証明書を保持しているためです。
+3. すべてのレプリカが再起動した後、古い証明書を IdP から削除します。
 
 <h4 id="idp-requests-through-a-forward-proxy">
   フォワードプロキシを通じた IdP リクエスト
@@ -225,7 +225,7 @@ export CLAUDE_GATEWAY_PROXY_IS_EGRESS_BOUNDARY=1
 
 | フィールド | 必須 | 説明 |
 | - | - | - |
-| `postgres_url` | はい | `postgres://` または `postgresql://` URL。必須：ブラウザコールバックが書き込み、ポーリング中の CLI が読み込むデバイスグラントのランデブーには、レプリカ間の状態が必要です。ゲートウェイはブート時およびアップグレード時に独自のスキーママイグレーションを実行するため、ロールはターゲットスキーマでテーブルを作成および変更する権限が必要です。[アップグレード](/docs/ja/claude-apps-gateway-deploy#upgrades)および [Postgres](/docs/ja/claude-apps-gateway-deploy#postgres) を参照してください。 |
+| `postgres_url` | はい | `postgres://` または `postgresql://` URL。カンマ区切りのリストではなく、ホストを 1 つだけ指定します。ゲートウェイはブート時およびアップグレード時に独自のスキーママイグレーションを実行するため、ロールはターゲットスキーマでテーブルを作成および変更する権限が必要です。[アップグレード](/docs/ja/claude-apps-gateway-deploy#upgrades)および [Postgres](/docs/ja/claude-apps-gateway-deploy#postgres) を参照してください。 |
 | `username` | いいえ | `postgres_url` のユーザーを上書きします |
 | `password` | いいえ | データベース認証情報。`postgres_url` ではなくここに設定して、認証情報を URL から外します。任意の文字を受け入れ、URL 認証情報よりも優先されます。 |
 | `max_connections` | いいえ | レプリカあたりの Postgres 接続プールサイズ。デフォルト `5`。保守的で共有データベースに優しいです。[支出制限](#admin)が有効な場合、ホットパスは推論リクエストごとに数回の操作を実行するため、専用データベースが負荷の下にある場合はこれを上げ、レプリカ数 × この値をデータベースの `max_connections` 以下に保ちます。 |

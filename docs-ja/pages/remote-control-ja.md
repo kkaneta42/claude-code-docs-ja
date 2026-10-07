@@ -17,6 +17,10 @@ Remote Control は [claude.ai/code](https://claude.ai/code) または Claude ア
 
 [Web 上の Claude Code](/docs/ja/claude-code-on-the-web) はクラウドインフラストラクチャで実行されるのに対し、Remote Control セッションはマシン上で直接実行され、ローカルファイルシステムと相互作用します。Web およびモバイルインターフェースは、そのローカルセッションへのウィンドウにすぎません。そのため、コンピュータはオンのままである必要があり、`claude` プロセスは実行され続ける必要があります。
 
+<Note>
+  Remote Control は Claude Code の機能です。その他の Claude 製品での会話については、[Claude ヘルプセンター](https://support.claude.com)を参照してください。
+</Note>
+
 <h2 id="requirements">
   要件
 </h2>

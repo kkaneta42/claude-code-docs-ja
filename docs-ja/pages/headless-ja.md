@@ -206,7 +206,7 @@ claude -p "Explain recursion" --output-format stream-json --verbose --include-pa
 
 コンシューマーがストリームをゆっくり読む場合、Claude Code はキューに入った出力がドレインされるまで待機し、待機時間をまだキューに入っているもの量に応じてスケーリングし、最大 30 秒に制限されます。v2.1.214 より前では、終了待機は約 2 秒に制限されており、大きな応答の終わりが切り取られる可能性がありました。
 
-次の例は [jq](https://jqlang.org/) を使用してテキストデルタをフィルタリングし、ストリーミングテキストのみを表示します。`-r` フラグは生の文字列（引用符なし）を出力し、`-j` は改行なしで結合するため、トークンは継続的にストリーミングされます。
+次の例は [jq](https://jqlang.org/) を使用してテキストデルタをフィルタリングし、ストリーミングテキストのみを表示します。`-r` フラグは生の文字列（引用符なし）を出力し、`-j` は改行なしで結合するため、トークンが途切れなくストリーミングされます。
 
 ```bash theme={null}
 claude -p "Write a poem" --output-format stream-json --verbose --include-partial-messages | \

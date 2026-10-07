@@ -204,7 +204,7 @@ VS Code 拡張機能は `vscode://anthropic.claude-code/open` で独自のハン
   リンクがプレーンテキストとしてレンダリングされ、クリック可能ではない
 </h3>
 
-一部の Markdown レンダラーは `http` と `https` リンクのみを許可し、他の URL スキームを削除します。GitHub は README、issue、pull request、wiki でこれを行います。`[label](claude-cli://...)` は `label` のみとしてレンダリングされ、リンクはなく、URL は削除されます。これらのプラットフォームでは、ディープリンクをコードブロックに配置して、読者が URL を見てブラウザーのアドレスバーに貼り付けられるようにします。
+一部の Markdown レンダラーは `http` と `https` リンクのみを許可し、他の URL スキームを削除します。GitHub は README、issue、プルリクエスト、wiki でこれを行います。`[label](claude-cli://...)` は `label` のみとしてレンダリングされ、リンクはなく、URL は削除されます。これらのプラットフォームでは、ディープリンクをコードブロックに配置して、読者が URL を見てブラウザーのアドレスバーに貼り付けられるようにします。
 
 <h3 id="the-session-opens-in-my-home-directory-instead-of-the-repo">
   セッションがリポジトリの代わりにホームディレクトリで開く

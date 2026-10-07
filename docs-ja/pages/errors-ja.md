@@ -1720,7 +1720,7 @@ v2.1.273 より前では、Microsoft Foundry からの 401 または 403 に対�
   Could not load AWS or Google Cloud credentials
 </h3>
 
-Claude Code は、実行しているマシン上の AWS 認証情報プロバイダーチェーン、または Google のアプリケーションのデフォルト認証情報から使用可能な認証情報を取得できなかったため、リクエストはクラウドプロバイダーに到達しませんでした。Claude Code はキャッシュされた認証情報をクリアし、2 回再試行してからこのメッセージを表示します。`·` の後の詳細には、SSO セッションの期限切れ、`Could not load the default credentials` として報告されるアプリケーションのデフォルト認証情報の欠落、`invalid_grant` として報告されるサインインの取り消しなど、具体的な原因が示されます:
+Claude Code が実行されているマシン上で、AWS 認証情報プロバイダーチェーンまたは Google のアプリケーションのデフォルト認証情報から使用可能な認証情報を取得できなかったため、リクエストはクラウドプロバイダーに到達しませんでした。`·` の後の詳細には具体的な原因が示されます。たとえば、SSO セッションの期限切れ、`Could not load the default credentials` として報告されるアプリケーションのデフォルト認証情報の欠如、`invalid_grant` として報告される取り消されたサインインなどです。
 
 ```text theme={null}
 API Error: Could not load AWS credentials · Could not load credentials from any providers. Check or refresh your AWS credentials and try again.

@@ -536,7 +536,7 @@ Claude Code はスタートアップ時にシェル環境変数を読み込む�
   サブプロセス環境のスクラブで削除されるもの
 </h2>
 
-[`CLAUDE_CODE_SUBPROCESS_ENV_SCRUB`](#variables) を `1` に設定すると、Claude Code は Bash コマンド、フック、stdio MCP サーバーなど、自身が起動するサブプロセスの環境から認証情報を削除します。これにより、プロンプトインジェクション攻撃がシェル展開を通じて読み取れる情報が減ります。Claude Code のプロセス自体は、独自の API 呼び出しのために認証情報を保持します。
+[`CLAUDE_CODE_SUBPROCESS_ENV_SCRUB`](#variables) を `1` に設定すると、Claude Code は Bash コマンド、フック、stdio MCP サーバーなど、自身が起動するサブプロセスの環境から認証情報を削除します。これにより、プロンプトインジェクション攻撃が読み取れる情報が減ります。Claude Code のプロセス自体は、独自の API 呼び出しのために認証情報を保持します。
 
 スクラブは変数名または値の形式によって認証情報を識別するため、唯一の制御手段としてではなく、範囲を絞った[権限ルール](/docs/ja/permissions)と併用する一つの層として使用してください。
 
@@ -548,7 +548,7 @@ Claude Code はスタートアップ時にシェル環境変数を読み込む�
 | `NPM_TOKEN`、`DB_PASSWORD` | 名前が認証情報のように見えるため、削除します |
 | パスワードを含む `DATABASE_URL` | 値が認証情報のように見えるため、削除します |
 | パスワードを含む `PIP_INDEX_URL` または `NPM_CONFIG_REGISTRY` | URL は保持し、そこからユーザー名とパスワードを取り除きます |
-| `CLAUDE_CONFIG_DIR` | 削除します。Claude Code v2.1.251 以降が必要です |
+| `CLAUDE_CONFIG_DIR` | 削除します |
 | `GITHUB_TOKEN`、`GH_TOKEN`、`GH_ENTERPRISE_TOKEN`、`GITHUB_ENTERPRISE_TOKEN` | `gh` や GitHub API を呼び出すスクリプトが引き続き動作するよう、そのまま残します |
 | `HTTP_PROXY`、`HTTPS_PROXY` | [URL 内のユーザー名とパスワード](/docs/ja/network-config#basic-authentication)も含めて、そのまま残します。[サンドボックス](/docs/ja/sandboxing#network-isolation)は、サンドボックス化されたコマンドに対してこれらの変数を自ら設定できます |
 | `GIT_CONFIG_COUNT`、`GIT_CONFIG_KEY_<n>`、`GIT_CONFIG_VALUE_<n>` | 内容にかかわらず、そのまま残します |
@@ -559,6 +559,8 @@ Claude Code はスタートアップ時にシェル環境変数を読み込む�
 サブプロセスが削除対象の変数のいずれかを必要とする場合は、スクラブを設定しないでください。
 
 Linux では、スクラブは Bash サブプロセスを分離された PID 名前空間でも実行するため、サブプロセスは `/proc` を通じてホストのプロセス環境を読み取れません。その副作用として、`ps`、`pgrep`、`kill` はホストのプロセスを参照したり、シグナルを送信したりできません。
+
+v2.1.251 より前のバージョンでは、スクラブは `ANTHROPIC_API_KEY` と `AWS_SECRET_ACCESS_KEY` を削除し、表に示したその他の例示の変数は変更せずに残していました。
 
 <h2 id="features-that-need-feature-flag-fetching">
   機能フラグの取得が必要な機能

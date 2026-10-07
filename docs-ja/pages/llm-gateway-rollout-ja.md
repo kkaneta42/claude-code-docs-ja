@@ -220,6 +220,19 @@ claude -p "Reply with one word: connected"
 * CI ランナーは [ランナーの環境](/docs/ja/llm-gateway-connect#configure-each-surface)で `ANTHROPIC_BASE_URL` と認証情報を設定する必要があります。
 * マネージドされた Windows マシン上の WSL は、[`wslInheritsWindowsSettings`](/docs/ja/settings-reference#wslinheritswindowssettings)が `true` の場合のみ Windows マネージドセッティングを読み取ります。
 
+<h4 id="the-hipaa-configuration-behind-a-gateway">
+  ゲートウェイ経由での HIPAA 設定
+</h4>
+
+ゲートウェイを経由するセッションは HIPAA 設定の対象外です。[開発者のサインイン方法と接続方法を確認する](/docs/ja/hipaa-setup#check-how-developers-sign-in-and-connect)に、対象となるサインイン方法と接続方法が記載されています。
+
+管理設定ファイルでこれらのセッションの機能を制限するには、[送信経路を管理制御とイベントに対応付ける](/docs/ja/monitoring-usage#map-egress-paths-to-managed-controls-and-events)に記載されているキーを使用します。これらのキーによってセッションが HIPAA 設定の対象になるわけではなく、HIPAA 設定が変更する内容をすべてカバーするわけでもありません。例：
+
+* **クラウドセッション**：これをオフにする管理キーはありません。[管理コンソールのコントロール](/docs/ja/desktop#admin-console-controls)を参照してください
+* **子プロセス内の Anthropic 認証情報**：HIPAA 設定は、Claude Code が起動するプロセスからこれらを[削除します](/docs/ja/hipaa-setup#anthropic-credentials-in-commands-hooks-and-mcp-servers)。この処理だけを行う設定キーはありません
+
+これらのキーの代わりに `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` を使用しないでください。これは一部の機能をオフにしますが、自動アップデーターもオフにし、WebFetch はオンのままになります。
+
 <h4 id="hand-developers-the-values-to-set-themselves">
   開発者に値を自分で設定させる
 </h4>

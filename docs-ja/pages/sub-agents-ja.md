@@ -323,7 +323,7 @@ Bash コマンドの場合、Claude Code はコマンド自体を 2 つの方法
 | `memory` | いいえ | [永続メモリスコープ](#enable-persistent-memory)。`user`、`project`、または `local`。クロスセッション学習を有効にします |
 | `background` | いいえ | Claude がフォアグラウンドで実行するよう要求した場合でも、このサブエージェントをバックグラウンドに保つには `true` に設定します。[フォークモード](#turn-fork-mode-on-or-off)がオンの場合、Claude Code は Claude がスポーンするサブエージェントを既に[バックグラウンド](#run-subagents-in-foreground-or-background)で実行します |
 | `omitClaudeMd` | いいえ | このサブエージェントをユーザー、プロジェクト、およびローカル CLAUDE.md ファイルなしで起動するには `true` に設定します。[管理ポリシーファイル](/docs/ja/memory#how-claude-md-files-load)は引き続き読み込まれます。ただし、[管理サブエージェント](#choose-the-subagent-scope)は除きます。[委任プロンプト](#what-loads-at-startup)から必要なすべてを取得するサブエージェントに使用します。エージェントが `--agent` または `agent` 設定経由でメインセッションエージェントとして実行される場合は無視されます。Claude Code v2.1.271 以降が必要です |
-| `effort` | いいえ | このサブエージェントがアクティブな場合の努力レベル。セッション努力レベルをオーバーライドします。デフォルト。セッションから継承します。オプション。`low`、`medium`、`high`、`xhigh`、`max`。利用可能なレベルはモデルに依存します |
+| `effort` | いいえ | このサブエージェントがアクティブな場合の effort レベル。セッションの effort レベルを上書きしますが、[`CLAUDE_CODE_EFFORT_LEVEL`](/docs/ja/env-vars#variables) 環境変数は上書きしません。オプション：`low`、`medium`、`high`、`xhigh`、`max`。利用可能なレベルはモデルによって異なります |
 | `isolation` | いいえ | サブエージェントを一時的な[git worktree](/docs/ja/worktrees)で実行するには `worktree` に設定します。これにより、親セッションの `HEAD` ではなく、デフォルトで[デフォルトブランチ](/docs/ja/worktrees#choose-the-base-branch)からブランチされたリポジトリの分離されたコピーが提供されます。サブエージェントが変更を加えない場合、worktree は自動的にクリーンアップされます |
 | `color` | いいえ | タスクリストとトランスクリプトでのサブエージェントの表示カラー。`red`、`blue`、`green`、`yellow`、`purple`、`orange`、`pink`、または `cyan` を受け入れます |
 | `initialPrompt` | いいえ | このエージェントがメインセッションエージェント（`--agent` または `agent` 設定経由）として実行される場合、最初のユーザーターンとして自動送信されます。[コマンド](/docs/ja/commands)と[スキル](/docs/ja/skills)が処理されます。ユーザー提供のプロンプトの前に付加されます。[プラグインサブエージェント](#choose-the-subagent-scope)では無視されます |

@@ -326,7 +326,7 @@ jobs:
 
 ワークフローに必要な権限のみを付与し、マージする前に Claude の変更を確認します。
 
-権限と認証を含む包括的なセキュリティガイダンスについては、[Claude Code Action セキュリティドキュメント](https://github.com/anthropics/claude-code-action/blob/main/docs/security.md) を参照してください。
+権限と認証を含むセキュリティガイダンスについては、[Claude Code Action セキュリティドキュメント](https://github.com/anthropics/claude-code-action/blob/main/docs/security.md) を参照してください。
 
 <h3 id="manage-costs">
   コストを管理

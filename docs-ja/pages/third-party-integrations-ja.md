@@ -227,13 +227,13 @@ Amazon Bedrock と Google Vertex AI の場合、ログインプロンプトで `
   ドキュメントとメモリに投資する
 </h3>
 
-Claude Code がコードベースを理解できるようにドキュメントに投資することを強くお勧めします。組織は複数のレベルで CLAUDE.md ファイルをデプロイできます。[CLAUDE.md ファイルをどこに配置できるか](/docs/ja/memory#choose-where-to-put-claude-md-files)と[組織全体の CLAUDE.md をデプロイする方法](/docs/ja/memory#deploy-organization-wide-claude-md)をご覧ください。
+Claude Code がコードベースを理解できるように、ドキュメントに投資してください。組織は複数のレベルで CLAUDE.md ファイルをデプロイできます。[CLAUDE.md ファイルをどこに配置できるか](/docs/ja/memory#choose-where-to-put-claude-md-files)と[組織全体の CLAUDE.md をデプロイする方法](/docs/ja/memory#deploy-organization-wide-claude-md)をご覧ください。
 
 <h3 id="simplify-deployment">
   デプロイメントを簡素化する
 </h3>
 
-カスタム開発環境がある場合は、Claude Code をインストールする「ワンクリック」の方法を作成することが、組織全体での採用を促進するための鍵となることがわかっています。
+カスタム開発環境がある場合は、Claude Code をインストールする「ワンクリック」の方法を作成することが、組織全体での採用を促進するための鍵となります。
 
 <h3 id="start-with-guided-usage">
   ガイド付き使用から始める
@@ -259,7 +259,7 @@ Claude Code がコードベースを理解できるようにドキュメント�
   統合に MCP を活用する
 </h3>
 
-MCP は Claude Code にチケット管理システムやエラーログへの接続など、より多くの情報を提供する優れた方法です。1 つの中央チームが MCP サーバーを構成し、`.mcp.json` 構成をコードベースにチェックインして、すべてのユーザーが利益を得られるようにすることをお勧めします。[詳細をご覧ください](/docs/ja/mcp)。
+MCP は Claude Code にチケット管理システムやエラーログへの接続など、より多くの情報を提供する優れた方法です。1 つの中央チームが MCP サーバーを構成し、`.mcp.json` 構成をコードベースにチェックインして、すべてのユーザーが恩恵を受けられるようにします。[詳細をご覧ください](/docs/ja/mcp)。
 
 <h2 id="next-steps">
   次のステップ

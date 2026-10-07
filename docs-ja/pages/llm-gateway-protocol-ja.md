@@ -65,6 +65,8 @@ Microsoft Foundry と [Claude Platform on AWS](/docs/ja/claude-platform-on-aws) 
 
 ゲートウェイには、何も壊すことなく拒否できるベストエフォートの起動時トラフィックも届きます。Anthropic Messages フォーマットのゲートウェイは `HEAD /api/hello` という接続ウォームアップ用のプローブを受信します。HTTP プロキシまたはクライアント証明書が設定されている場合、Claude Code はこのプローブを省略します。Amazon Bedrock フォーマットのゲートウェイは `GET /inference-profiles?type=SYSTEM_DEFINED` リクエストを受信し、設定されたモデルが推論プロファイルである場合は `GET /inference-profiles/{profile}` による参照も受信します。
 
+ゲートウェイを経由するセッションは、HIPAA 設定の対象外です。どのサインイン方法と接続方法が対象となるかは、[開発者のサインイン方法と接続方法を確認する](/docs/ja/hipaa-setup#check-how-developers-sign-in-and-connect)に記載されています。[ゲートウェイの背後での HIPAA 設定](/docs/ja/llm-gateway-rollout#the-hipaa-configuration-behind-a-gateway)を参照してください。
+
 [fast mode](/docs/ja/fast-mode) の利用可否チェックはゲートウェイのログには一切現れません。このチェックは `ANTHROPIC_BASE_URL` に従わず `api.anthropic.com` を直接呼び出すため、`api.anthropic.com` への直接の外向き通信をブロックしているネットワークでは、ゲートウェイ経由の推論は動作し続けていても、fast mode が接続エラーを報告することがあります。[WebFetch のドメイン安全性チェック](/docs/ja/data-usage#webfetch-domain-safety-check)も `api.anthropic.com` を直接呼び出します。これを復旧させる変数については、[プロキシや LLM ゲートウェイの背後で fast mode を使用する](/docs/ja/fast-mode#use-fast-mode-behind-proxies-and-llm-gateways)を参照してください。
 
 <h3 id="streaming">

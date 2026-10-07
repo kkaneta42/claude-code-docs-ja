@@ -1359,13 +1359,13 @@ Setup はすべての起動時に発火するわけではないため、依存�
 
 Setup フックはブロックできず、どの終了コードでも実行は継続されます。どの終了コードであっても、Claude Code は Setup フックの [JSON 出力フィールド](#json-output)（`systemMessage`、`continue`、`hookSpecificOutput.additionalContext` など）を破棄します。`-p` を使用する場合、Setup フックの stdout、stderr、終了コードは、`--output-format stream-json --verbose` で起動したときに限り、[`hook_response` イベント](/docs/ja/headless#read-session-metadata)として実行の出力に表示されます。
 
-Setup フックは `CLAUDE_ENV_FILE` にアクセスできます。このファイルに書き込まれた変数は、[SessionStart フック](#persist-environment-variables)と同様に、セッションの後続の Bash コマンドに引き継がれます。`Setup` で実行されるのは `type: "command"` フックのみです。`Setup` 上の `type: "mcp_tool"` フックは、[MCP ツールフックのフィールド](#mcp-tool-hook-fields)で説明されているとおり、常にスキップされます。
+Setup フックは `CLAUDE_ENV_FILE` にアクセスできます。このファイルに書き込まれた変数は、[SessionStart フック](#persist-environment-variables)と同様に、セッションの後続の Bash コマンドに引き継がれます。`Setup` では `type: "command"` フックのみが実行されます。`Setup` の `type: "mcp_tool"` フックは、[MCP ツールフックのフィールド](#mcp-tool-hook-fields)で説明されているとおり、常にスキップされます。
 
 <h3 id="instructionsloaded">
   InstructionsLoaded
 </h3>
 
-`CLAUDE.md` または `.claude/rules/*.md` ファイルがコンテキストに読み込まれたときに発火します。このイベントは、即時に読み込まれるファイルについてはセッション開始時に発火し、ファイルが遅延読み込みされたときにも再度発火します。遅延読み込みの例としては、ネストされた `CLAUDE.md` を含むサブディレクトリに Claude がアクセスしたときや、`paths:` フロントマターを持つ条件付きルールが一致したときがあります。このフックはブロックや判定制御をサポートしていません。可観測性を目的として非同期で実行されます。
+`CLAUDE.md` または `.claude/rules/*.md` ファイルがコンテキストに読み込まれたときに発火します。このイベントは、即時に読み込まれるファイルについてはセッション開始時に発火し、その後ファイルが遅延読み込みされたときにも再び発火します。たとえば、Claude がネストされた `CLAUDE.md` を含むサブディレクトリにアクセスしたときや、`paths:` フロントマターを持つ条件付きルールが一致したときです。このフックはブロックや判定制御をサポートしません。可観測性の目的で非同期に実行されます。
 
 Claude が **Project instructions** 設定を通じて [`AGENTS.md` を直接読み込む](/docs/ja/memory#agents-md)場合、このイベントは発火しません。`CLAUDE.md` が `AGENTS.md` をインポートする場合は、他のインポートされたファイルと同様に `load_reason` が `include` に設定されて発火し、`CLAUDE.md` が `AGENTS.md` へのシンボリックリンクである場合は、通常の `CLAUDE.md` の読み込みとして発火します。
 
@@ -1485,7 +1485,7 @@ UserPromptSubmit フックは、セッションにカスタムタイトルがあ
   ブロックされたプロンプトが残すもの
 </h4>
 
-ブロックされたプロンプトは Claude に届きませんが、そのテキストがすべての場所から削除されるわけではありません。デフォルトでは、ユーザーに表示されるブロックメッセージの末尾に `Original prompt:` と送信されたテキストが続き、Claude Code はそのメッセージをディスク上のセッションのトランスクリプトファイルに書き込みます。メッセージからテキストを除外するには、`hookSpecificOutput` 内に `"suppressOriginalPrompt": true` を含む JSON を出力します。これは、フックが `decision: "block"` でブロックする場合でも、終了コード 2 で終了してブロックする場合でも機能します。JSON を出力しない終了コード 2 のフックでは、ブロックメッセージに常にプロンプトのテキストが含まれます。
+ブロックされたプロンプトは Claude には届きませんが、そのテキストがすべての場所から削除されるわけではありません。デフォルトでは、ユーザーに表示されるブロックメッセージの末尾に `Original prompt:` と送信されたテキストが続き、Claude Code はそのメッセージをディスク上のセッションのトランスクリプトファイルに書き込みます。メッセージからテキストを除外するには、`hookSpecificOutput` 内に `"suppressOriginalPrompt": true` を含む JSON を出力します。これは、フックが `decision: "block"` でブロックする場合でも、終了コード 2 でブロックする場合でも機能します。
 
 `suppressOriginalPrompt` が変更するのはブロックメッセージのみです。送信されたテキストは、セッションのトランスクリプトやプロンプト履歴などのローカルファイルに引き続き現れる可能性があるため、ブロックするフックは機密情報をディスクに残さないための手段にはなりません。これらのファイルを制限または削除するには、[プレーンテキストでの保存](/docs/ja/claude-directory#plaintext-storage)と[ローカルデータの消去](/docs/ja/claude-directory#clear-local-data)を参照してください。
 

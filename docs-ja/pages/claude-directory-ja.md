@@ -1589,6 +1589,8 @@ Claude Code は、以下の場合に年齢ベースのスイープをスキッ�
 * **ベアモード**：[`--bare`](/docs/ja/headless#start-faster-with-bare-mode)で `claude -p` を実行する場合、Claude Code はそのセッションでスイープを実行しません。
 * **一時停止されたスイープ**：Claude Code が保持期間を安全に判定できない場合、保持クリーンアップスイープを一時停止します。[`retention_sweep` イベント](/docs/ja/monitoring-usage#retention-sweep-event)は、それを一時停止する各設定をリストします。原因が読み込みまたは解析できない設定ファイル、または `cleanupPeriodDays` または `desktopSessionCleanupPeriodDays` が明示的に設定された設定エラーの場合、Claude Code は設定エラーを修正するまで `/status` に警告も表示します。[管理設定](/docs/ja/server-managed-settings)が `cleanupPeriodDays` を提供する場合、Claude Code はどちらの場合でも管理値でスイープを実行します。
 
+組織内のマシンが設定した保持期間でスイープを実行していることを確認するには、[保持スイープを確認する](/docs/ja/monitoring-usage#check-the-retention-sweep)を参照してください。
+
 <h3 id="session-scratchpad-directory">
   セッションスクラッチパッドディレクトリ
 </h3>
@@ -1706,7 +1708,9 @@ claude purge ~/work/my-repo --yes
 
 パスの代わりに `--all` を渡して、すべてのプロジェクトの状態を一度にパージします。これは `history.jsonl` をフィルタリングするのではなく、完全に削除します。`-i` を渡して、削除計画を 1 つずつステップスルーします。
 
-コマンドは `shell-snapshots/` と `backups/` をそのままにしておきます。これらはプロジェクトスコープではないため、計画出力で警告します。
+スクリプトでは、終了ステータスだけでなく出力を確認してください。計画内のすべてを削除した実行は `Purged N item(s)` で終わります。その行を成功の目印として扱ってください。
+
+コマンドは `shell-snapshots/` と `backups/` をそのままにしておきます。これらはプロジェクトスコープではないため、計画出力で警告します。マシン上で誰かが [`/heapdump`](/docs/ja/troubleshooting#high-cpu-or-memory-usage) を実行した場合は、それが書き込んだ `.heapsnapshot` ファイルも削除してください。ヒープスナップショットには会話全体とプロセスが保持していた認証情報が含まれており、保持スイープもパージもそれには触れません。
 
 [保持するべき状態ファイル](#state-files-to-keep)を除き、上記のアプリケーションデータパスのいずれかを手動で削除することもできます。新しいセッションは影響を受けません。以下の表は、過去のセッションで失うものを示しています。
 

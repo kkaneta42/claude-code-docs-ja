@@ -210,7 +210,7 @@ HIPAA 設定なしで実行されるセッションが BAA の対象となるか
 
 `/status` に `HIPAA` が表示されない場合は、次の原因を順に確認してください。
 
-1. **アカウントまたは接続が誤っている**：`/status` の `Organization` 行に組織が表示され、`API provider` 行や `Anthropic base URL` 行が表示されていないことを確認します。設定の対象外となる接続は、[開発者のサインイン方法と接続方法を確認する](#check-how-developers-sign-in-and-connect)に記載されています。
+1. **アカウントまたは接続が誤っている**：`/status` の `Organization` 行に組織が表示され、`API provider` 行や `Anthropic base URL` 行が表示されていないことを確認します。設定の対象外となるサインイン方法と接続方法は、[開発者のサインイン方法と接続方法を確認する](#check-how-developers-sign-in-and-connect)に記載されています。
 2. **ポリシーの取得がブロックされている**：`/status` で `Organization policy` 行を探します。この行に原因が示されます。セッション外では `claude doctor` を実行して同じ行を確認します。この行には、Claude Code がポリシーをどこから読み込んだか、またはポリシーが読み込まれなかった理由が示されます。プロキシで `api.anthropic.com` を許可してから、Claude Code を再起動してください。
 3. **設定がまだ適用されていない**：Primary Owner に設定を適用したかどうかを確認してください。
 

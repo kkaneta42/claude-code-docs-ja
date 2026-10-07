@@ -1098,6 +1098,8 @@ v2.1.284 より前では、プロキシは許可されたホスト名がどの�
 
 * **コンピュータ使用**：Claude がアプリを開いてスクリーンを制御する場合、分離された環境ではなく実際のデスクトップで実行されます。アプリごとの権限プロンプトが各アプリケーションをゲートします。[CLI でのコンピュータ使用](/docs/ja/computer-use)または [Desktop でのコンピュータ使用](/docs/ja/desktop#let-claude-use-your-computer)を参照してください。
 * **サブエージェント**：[subagents](/docs/ja/sub-agents)は親セッションと同じプロセスで実行され、同じサンドボックス設定を使用します。親セッションでサンドボックス化が有効な場合、サブエージェント内の Bash コマンドはサンドボックス化されます。
+* **バックグラウンドセッション**：[バックグラウンドセッション](/docs/ja/agent-view)は独自のプロセスで実行され、[その設定](/docs/ja/agent-view#settings-and-provider)でサンドボックス化が有効になっている場合、その Bash コマンドはサンドボックス化されます。
+* **プロセス全体を囲む境界**：[サンドボックス外で実行されるもの](#what-runs-outside-the-sandbox)に記載されたプロセスも境界の内側に置くには、承認したホストに限定したネットワーク許可リストを指定して [sandbox runtime](/docs/ja/sandbox-environments#sandbox-runtime) 内で Claude Code（ローカルモード）を実行するか、ファイアウォールスクリプトを備えた [dev container](/docs/ja/devcontainer) 内で実行します。バックグラウンドサービスとそれがホストするセッションについては、[企業ランチャーの背後で Claude Code を実行する](/docs/ja/corporate-launcher)を参照してください。
 * **Mod**：[mod](/docs/ja/plugins/mods/overview) は Claude Code 内で独自のコードを実行するプラグインであり、mod が起動するプロセスはサンドボックス外で実行されます。[mod がアクセスできる範囲](/docs/ja/plugins/mods/overview#what-a-mod-can-reach)を参照してください。
 
 <Warning>
@@ -1109,7 +1111,7 @@ v2.1.284 より前では、プロキシは許可されたホスト名がどの�
 </h2>
 
 * [Sandbox environments](/docs/ja/sandbox-environments)：組み込みサンドボックスと dev コンテナ、コンテナ、VM を比較する
-* [Security](/docs/ja/security)：包括的なセキュリティ機能とベストプラクティス
+* [Security](/docs/ja/security)：セキュリティ機能とベストプラクティス
 * [Permissions](/docs/ja/permissions)：許可設定とアクセス制御
 * [All settings](/docs/ja/settings-reference)：すべての設定キー
 * [CLI reference](/docs/ja/cli-reference)：コマンドラインオプション

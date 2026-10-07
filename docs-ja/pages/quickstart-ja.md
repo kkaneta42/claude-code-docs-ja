@@ -33,19 +33,19 @@ Claude Code をインストールするには、ターミナルを開いてシ�
   <Tab title="ネイティブインストール（推奨）">
     **macOS、Linux、WSL：**
 
-    ```bash theme={null}
+    ```bash theme={null} theme={null} theme={null} theme={null} theme={null} theme={null}
     curl -fsSL https://claude.ai/install.sh | bash
     ```
 
     **Windows PowerShell：**
 
-    ```powershell theme={null}
+    ```powershell theme={null} theme={null} theme={null} theme={null} theme={null} theme={null}
     irm https://claude.ai/install.ps1 | iex
     ```
 
     **Windows CMD：**
 
-    ```batch theme={null}
+    ```batch theme={null} theme={null} theme={null} theme={null} theme={null} theme={null}
     curl -fsSL https://claude.ai/install.cmd -o install.cmd && install.cmd && del install.cmd
     ```
 
@@ -63,7 +63,7 @@ Claude Code をインストールするには、ターミナルを開いてシ�
   </Tab>
 
   <Tab title="Homebrew">
-    ```bash theme={null}
+    ```bash theme={null} theme={null} theme={null} theme={null} theme={null} theme={null}
     brew install --cask claude-code
     ```
 
@@ -75,7 +75,7 @@ Claude Code をインストールするには、ターミナルを開いてシ�
   </Tab>
 
   <Tab title="WinGet">
-    ```powershell theme={null}
+    ```powershell theme={null} theme={null} theme={null} theme={null} theme={null} theme={null}
     winget install Anthropic.ClaudeCode
     ```
 
@@ -382,4 +382,4 @@ Claude と連携する方法は多数あります：
 * **Claude Code 内**：`/help` を入力するか、「how do I」という質問をする
 * **ドキュメント**：ここにいます！他のガイドを参照してください
 * **コース**：[Claude Code 101](https://academy.claude.com/courses/claude-code-101) と [Claude Academy](https://academy.claude.com/) の他の無料のセルフペースコースを受講する
-* **コミュニティ**：[Discord](https://www.anthropic.com/discord) に参加してヒントとサポートを得る
+* **コミュニティ**：[Discord サーバー](https://www.anthropic.com/discord) に参加してヒントとサポートを得る

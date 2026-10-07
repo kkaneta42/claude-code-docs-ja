@@ -499,7 +499,7 @@ Claude が [session](#session) 内で行う 1 つの完全な応答です。Turn
   Verification loop
 </h3>
 
-セッションが作業が実際に完了したことを知る方法。テストスイート、ビルド、またはスクリーンショット比較など、Claude が実行できるチェックを提供します。Claude はチェックが成功するまで反復します。1 回の試行後に停止するのではなく。Verification loop は [`/goal`](/docs/ja/goal)、無人実行、および [dynamic workflows](/docs/ja/workflows) の前提条件です。それなしでは、エージェントが完了したことを決定する唯一のものはエージェント自体です。
+もっともらしく見える結果をそのまま受け入れるのではなく、作業が実際に完了したことをセッションが確認する方法です。テストスイート、ビルド、スクリーンショット比較など、Claude が実行できるチェックを提供すると、Claude は 1 回の試行で停止せず、チェックが成功するまで反復します。検証ループは [`/goal`](/docs/ja/goal)、無人実行、および[動的ワークフロー](/docs/ja/workflows)の前提条件です。検証ループがなければ、エージェントが完了したかどうかを判断するのはエージェント自身だけになります。
 
 詳細情報: [Claude に作業を検証する方法を提供する](/docs/ja/best-practices#give-claude-a-way-to-verify-its-work)
 
