@@ -8,13 +8,13 @@
 
 Claude Code の各セッションは、新しいコンテキストウィンドウで始まります。2 つのメカニズムがセッション間で知識を保持します。
 
-* **CLAUDE.md ファイル**: Claude に永続的なコンテキストを与えるために書く指示。Claude はリポジトリの [`AGENTS.md` ファイル](#agents-md)も読むことができます。CLAUDE.md と一緒に使用することも、単独で使用することもできます
+* **CLAUDE.md ファイル**: Claude に永続的なコンテキストを与えるために書く指示。Claude は CLAUDE.md の代わりにリポジトリの [`AGENTS.md` ファイル](#agents-md)を読むこともできます
 * **自動メモリ**: あなたの修正と好みに基づいて Claude が自分自身で書くメモ
 
 このページでは、以下の方法について説明します。
 
 * [CLAUDE.md ファイルを書いて整理する](#claude-md-files)
-* [既存の AGENTS.md をプロジェクト指示として使用する](#agents-md)。CLAUDE.md と一緒に使用することも、単独で使用することもできます
+* [既存の AGENTS.md](#agents-md) をプロジェクト指示として使用する
 * [`.claude/rules/` で特定のファイルタイプにルールをスコープする](#organize-rules-with-claude/rules/)
 * [自動メモリを設定する](#auto-memory)ので Claude が自動的にメモを取ります
 * [指示が従われていない場合のトラブルシューティング](#troubleshoot-memory-issues)

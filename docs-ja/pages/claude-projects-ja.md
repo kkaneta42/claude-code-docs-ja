@@ -56,11 +56,11 @@
 
 * **プロジェクト会話**: Claude がコーディネーターとして機能する 1 つの長時間実行セッション。送信したものを取得し、何がスレッドになるかを決定し、開始したすべてのスレッドを追跡します。スレッドが報告する内容を確認し、実行するすべてのステップは確認しません。
 * **スレッド**: ワーカー。各スレッドは独自のコンテキストウィンドウを持つ個別のセッションで、1 つの作業を実行し、完了時に会話に報告します。クラウドスレッドは独自のブランチで作業し、作業が必要な場合はプルリクエストを開きます。
-* **すべてのクラウドスレッドが開始する内容**:
+* **すべてのクラウドスレッドが開始時に持つもの**:
   * プロジェクトのリポジトリとファイル、およびその [指示とメモリ](#give-a-project-standing-context)
-  * `CLAUDE.md` とスキル、および [プロジェクトの各リポジトリ](#what-threads-pick-up-from-your-repositories) のスキル、および 1 つのリポジトリを持つプロジェクトでは、そのリポジトリの権限ルールと hooks も
-  * [コネクタ](#get-skills-plugins-connectors-and-tools-into-threads) を claude.ai アカウントに
-  * ネットワークアクセス、環境変数、API 認証情報、インストール済みツールを設定する [クラウド環境](#choose-an-environment-for-threads)
+  * [プロジェクトの各リポジトリ](#what-threads-pick-up-from-your-repositories) にある `CLAUDE.md` とスキル。リポジトリが 1 つのプロジェクトでは、そのリポジトリの権限ルールとフックも含まれます
+  * claude.ai アカウントの [コネクタ](#get-skills-plugins-connectors-and-tools-into-threads)
+  * ネットワークアクセス、環境変数、ネットワークシークレット、インストール済みツールを設定する [クラウド環境](#choose-an-environment-for-threads)
 * **Overview ペイン**: [すべてのスレッドを一度に確認](#see-what-needs-you-in-overview) でき、どのスレッドが必要かを確認できる場所。その他のタブは、追加したファイルとスレッドが生成したファイルの **Library**、スレッドが開いたプルリクエストの **Pull requests**、プロジェクトのスケジュール作業の **Routines** です。
 
 クラウドスレッドは、独自のマシンの Claude Code セットアップから何も取得しません。[スキル、プラグイン、コネクタ、ツールをスレッドに取得する](#get-skills-plugins-connectors-and-tools-into-threads) は、それらが不足しているものを提供する方法をカバーしています。
@@ -92,7 +92,7 @@
 
 * **プラン**：Pro または Max プランを利用しており、サイドバーに **Projects** が表示されている。
 * **GitHub（プロジェクトがコードで作業する場合）**：コードが GitHub Enterprise Server、GitLab、または Bitbucket ではなく github.com にあり、接続された GitHub アカウントがそれへのプッシュアクセス権を持っており、Claude GitHub App がインストールされている。[`/web-setup`](/docs/ja/web-quickstart#connect-from-your-terminal)で GitHub を接続した場合、そのトークンは他のクラウドセッションがリポジトリに到達することを許可しますが、Claude GitHub App が必要なプロジェクトスレッドには十分ではありません。[GitHub アクセスをセットアップする](#set-up-github-access)に手順があります。
-* **ネットワーク、認証情報、ツール**：これらはプロジェクトの [クラウド環境](#choose-an-environment-for-threads)から取得されます。デフォルト環境は既に [一般的なパッケージレジストリ](/docs/ja/cloud-environments#default-allowed-domains)に到達しているため、作業が他のドメイン、シークレット、またはプリインストールされていないツールを必要とする場合のみ確認してください。作業が MCP サーバーを必要とする場合は、[claude.ai connectors](https://claude.ai/customize/connectors)で接続済みとして表示されていることを確認してください。
+* **ネットワークアクセス、シークレット、ツール**：クラウドスレッドの場合、これらはプロジェクトの [クラウド環境](#choose-an-environment-for-threads)から取得されます。デフォルト環境は既に [一般的なパッケージレジストリ](/docs/ja/cloud-environments#default-allowed-domains)に到達しているため、作業が他のドメイン、シークレット、またはプリインストールされていないツールを必要とする場合のみ確認してください。作業が MCP サーバーを必要とする場合は、[claude.ai connectors](https://claude.ai/customize/connectors)で接続済みとして表示されていることを確認してください。
 
 <h3 id="start-a-new-project-from-scratch">
   ゼロからプロジェクトを開始する
@@ -396,9 +396,9 @@ Claude はこのような設定を[プロジェクトメモリ](#give-a-project-
   スレッドの環境を選択する
 </h3>
 
-すべての新しいクラウドスレッドはプロジェクトの [クラウド環境](/docs/ja/cloud-environments) で開始します。環境は、スレッドが到達できるドメイン、スレッドが持つ環境変数、リクエストに追加される API 認証情報、Claude が開始する前にセットアップスクリプトがインストールするものを設定します。クラウドスレッドは、**プロジェクト設定 > 環境** で選択するまで、デフォルトの Anthropic ホスト環境を使用します。
+すべての新しいクラウドスレッドはプロジェクトの [クラウド環境](/docs/ja/cloud-environments) で開始します。環境は、スレッドが到達できるドメイン、スレッドが持つ環境変数、リクエストに追加されるネットワークシークレット、Claude が開始する前にセットアップスクリプトがインストールするものを設定します。クラウドスレッドは、**プロジェクト設定 > 環境** で選択するまで、デフォルトの Anthropic ホスト環境を使用します。
 
-クラウドスレッドが内部 API またはプライベートパッケージレジストリに到達する必要がある場合、またはマシンが通常保持するトークンが必要な場合は、プロジェクトではなく環境を変更してください：[ネットワークアクセス](/docs/ja/cloud-environments#network-access)、[API 認証情報を追加](/docs/ja/cloud-environments#add-api-credentials)、[セットアップスクリプト](/docs/ja/cloud-environments#setup-scripts) を参照してください。
+クラウドスレッドが内部 API またはプライベートパッケージレジストリに到達する必要がある場合、またはマシンが通常保持するトークンが必要な場合は、プロジェクトではなく環境を変更してください：[ネットワークアクセス](/docs/ja/cloud-environments#network-access)、[ネットワークシークレットを追加](/docs/ja/cloud-environments#add-network-secrets)、[セットアップスクリプト](/docs/ja/cloud-environments#setup-scripts) を参照してください。
 
 <h3 id="get-skills-plugins-connectors-and-tools-into-threads">
   スキル、プラグイン、コネクタ、ツールをスレッドに取得する
@@ -590,7 +590,7 @@ Claude が実行中だが、その返信がプロジェクトに到達してい�
 </h2>
 
 * [クラウドで Claude Code を使用する](/docs/ja/claude-code-on-the-web): 各クラウドスレッドの背後にあるクラウドセッションがどのように機能するか、GitHub アクセスオプションとプルリクエストの自動修正を含む
-* [クラウド環境を設定する](/docs/ja/cloud-environments): クラウドスレッドがネットワークで到達できるもの、環境変数と API 認証情報を提供し、セットアップスクリプトでツールをインストール
+* [クラウド環境を設定する](/docs/ja/cloud-environments): クラウドスレッドがネットワーク上で到達できる範囲を変更し、環境変数とネットワークシークレットを提供し、セットアップスクリプトでツールをインストール
 * [ルーチンで作業を自動化する](/docs/ja/routines): スケジュール、トリガー、ルーチンの管理。Claude がプロジェクトから作成するものを含む
 * [エージェントビューで複数のエージェントを管理する](/docs/ja/agent-view): 作業がマシンのみが到達できるツールまたはサービスが必要な場合、マシンで複数のセッションを実行および追跡します
 * [プロジェクトの再設計: フォルダから会話へ](https://claude.com/blog/projects-redesigned): ローンチアナウンスメント。プロジェクトを Claude との会話にすることの背景にある考え方を含む

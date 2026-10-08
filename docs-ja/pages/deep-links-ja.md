@@ -176,13 +176,19 @@ Claude Code は、macOS、Linux、Windows で対話的セッションの最初�
 
 ハンドラーは検出されたターミナルエミュレーターで Claude Code を起動します。macOS では、Claude Code は最後の対話的セッションからターミナルを記憶し、再利用します。iTerm2、Ghostty、kitty、Alacritty、WezTerm、Terminal.app をサポートしています。Linux では `$TERMINAL` 環境変数を尊重し、次に `x-terminal-emulator`、次に一般的なエミュレーターのリストを使用します。Windows では Windows Terminal を優先し、次に PowerShell、次に `cmd.exe` を使用します。
 
-登録を完全に防ぐには、`settings.json` で [`disableDeepLinkRegistration`](/docs/ja/settings-reference#disabledeeplinkregistration) を `"disable"` に設定します。組織全体でこれを強制し、ユーザーが再度有効にできないようにするには、代わりに[マネージド設定](/docs/ja/server-managed-settings)で設定します。
+登録を完全に防ぐには、`settings.json` で [`disableDeepLinkRegistration`](/docs/ja/settings-reference#disabledeeplinkregistration) を `"disable"` に設定します。組織全体でこれを強制し、ユーザーが再度有効にできないようにするには、代わりに[管理設定](/docs/ja/server-managed-settings)で設定します。Claude Code の `disableDeepLinkRegistration` 設定が対象とするのは `claude-cli://` リンクのみです。
 
 <h2 id="open-a-vs-code-tab-instead-of-a-terminal">
   ターミナルの代わりに VS Code タブを開く
 </h2>
 
 VS Code 拡張機能は `vscode://anthropic.claude-code/open` で独自のハンドラーを登録し、ターミナルウィンドウではなく Claude Code エディタータブを開きます。その URL のパラメーターについては、[他のツールから VS Code タブを起動する](/docs/ja/vs-code#launch-a-vs-code-tab-from-other-tools)を参照してください。
+
+<h2 id="open-a-claude-desktop-session-on-an-ssh-connection">
+  SSH 接続で Claude Desktop セッションを開く
+</h2>
+
+Claude Desktop は独自の `claude://` リンクを処理します。SSH 経由でリモートマシン上の Desktop セッションを開くには、[リンクから SSH セッションを開く](/docs/ja/desktop#open-an-ssh-session-from-a-link)を参照してください。
 
 <h2 id="troubleshooting">
   トラブルシューティング

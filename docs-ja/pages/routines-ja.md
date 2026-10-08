@@ -93,7 +93,7 @@ Team および Enterprise オーナーは、[claude.ai/admin-settings/claude-cod
     ルーチン用の [cloud environment](/docs/ja/cloud-environments) を選択します。環境は、クラウドセッションがアクセスできるものを制御します。
 
     * **Network access**: 各実行中に利用可能なインターネットアクセスのレベルを設定します
-    * **Environment variables**: Claude が各実行中に使用できる値を提供します。これらは [環境を使用する誰もが見ることができます](/docs/ja/cloud-environments#what-carries-over-from-your-setup)。Pro および Max プランでは、Claude が実行中に呼び出す API のキーを [API credentials](/docs/ja/cloud-environments#add-api-credentials) として保存してください。そのセクションには、認証情報を取得しないリクエストもリストされています
+    * **Environment variables**: Claude が各実行中に使用できる値を提供します。これらは[環境を使用するすべてのユーザーに表示される](/docs/ja/cloud-environments#what-carries-over-from-your-setup)ため、Pro および Max プランでは、Claude が実行中に呼び出す API のキーは代わりに[ネットワークシークレット](/docs/ja/cloud-environments#add-network-secrets)として保存してください。そのセクションには、シークレットが付与されないリクエストも記載されています
     * **Setup script**: ルーチンが必要とする依存関係とツールをインストールします。結果は [cached](/docs/ja/cloud-environments#environment-caching) されるため、スクリプトはセッションごとに再実行されません
 
     **Default** 環境は **Trusted** ネットワークアクセスで提供されます。これにより、[default allowlist](/docs/ja/cloud-environments#default-allowed-domains) のパッケージレジストリ、クラウドプロバイダー API、コンテナレジストリ、および一般的な開発ドメインのみがセッションのネットワークを通じて許可されます。ルーチンに追加するコネクタは Anthropic のサーバーを通じてサービスに到達するため、許可リストの変更は必要ありません。ルーチンが独自のサービスに直接到達する必要がある場合、またはそのリスト外のドメインに到達する必要がある場合は、実行前に環境の [network access](/docs/ja/cloud-environments#network-access) を編集してください。別の環境を使用するには、最初に [create one](/docs/ja/cloud-environments#configure-your-environment) してください。

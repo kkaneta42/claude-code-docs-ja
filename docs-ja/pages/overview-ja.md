@@ -28,6 +28,8 @@ Claude Code は複数のサーフェスで実行されます。ターミナル�
         curl -fsSL https://claude.ai/install.sh | bash
         ```
 
+        Windows では、PowerShell を使用している場合はシェルプロンプトに `PS C:\` と表示され、CMD を使用している場合は `PS` なしで `C:\` と表示されます。
+
         **Windows PowerShell：**
 
         ```powershell theme={null}
@@ -42,9 +44,9 @@ Claude Code は複数のサーフェスで実行されます。ターミナル�
 
         インストーラーが完了したら、新しいターミナルウィンドウを開いて `claude --version` を実行してください。インストールが正常に完了すると、バージョン番号が表示されます。シェルが `claude` が見つからない、または認識されていないと表示される場合は、インストールディレクトリがまだ PATH に含まれていません。[PATH を修正する](/docs/ja/troubleshoot-install#command-not-found-claude-after-installation)を参照してください。
 
-        `The token '&&' is not a valid statement separator` というエラーが表示される場合は、CMD ではなく PowerShell を使用しています。`'irm' is not recognized as an internal or external command` というエラーが表示される場合は、PowerShell ではなく CMD を使用しています。PowerShell を使用している場合、プロンプトに `PS C:\` と表示され、CMD を使用している場合は `PS` なしで `C:\` と表示されます。
+        `The token '&&' is not a valid statement separator` というエラーが表示される場合は、CMD ではなく PowerShell を使用しています。`'irm' is not recognized as an internal or external command` というエラーが表示される場合は、PowerShell ではなく CMD を使用しています。
 
-        インストールコマンドが `syntax error near unexpected token '<'`、`403`、またはその他の curl エラーで失敗する場合は、[インストールのトラブルシューティング](/docs/ja/troubleshoot-install#find-your-error)を参照して、エラーを修正方法に照合し、代替インストール方法を確認してください。
+        インストールコマンドが `syntax error near unexpected token '<'`、`403`、またはその他のエラーで失敗する場合は、[インストールのトラブルシューティング](/docs/ja/troubleshoot-install#find-your-error)を参照して、エラーを修正方法に照合し、代替インストール方法を確認してください。
 
         [Git for Windows](https://git-scm.com/downloads/win) は、Claude Code が Bash ツールを使用できるようにネイティブ Windows で推奨されます。Git for Windows がインストールされていない場合、Claude Code はシェルツールとして PowerShell を代わりに使用します。WSL セットアップは Git for Windows を必要としません。
 
@@ -85,7 +87,7 @@ Claude Code は複数のサーフェスで実行されます。ターミナル�
     claude
     ```
 
-    初回使用時にログインするよう促されます。`ANTHROPIC_API_KEY` 環境変数を設定している場合、Claude Code はログインプロンプトをスキップし、代わりにキーを承認するよう求めます。これで完了です！[クイックスタートに進む →](/docs/ja/quickstart)
+    初回使用時に、Claude Code からログインするよう促されます。`ANTHROPIC_API_KEY` 環境変数を設定しており、そのキーを使用するかどうか Claude Code に尋ねられたときに承認すると、Claude Code はログインプロンプトをスキップします。[クイックスタートに進む →](/docs/ja/quickstart)
 
     <Tip>
       インストールオプション、手動更新、またはアンインストール手順については [高度なセットアップ](/docs/ja/setup) を参照してください。問題が発生した場合は [インストールのトラブルシューティング](/docs/ja/troubleshoot-install) にアクセスしてください。
@@ -171,7 +173,7 @@ Claude Code を使用できるいくつかの方法を紹介します：
   </Accordion>
 
   <Accordion title="指示、スキル、フックでカスタマイズする" icon="sliders">
-    [`CLAUDE.md`](/docs/ja/memory) はプロジェクトルートに追加するマークダウンファイルで、Claude Code はすべてのセッションの開始時に読み取ります。コーディング標準、アーキテクチャの決定、推奨ライブラリ、レビューチェックリストを設定するために使用します。リポジトリに他のコーディングエージェント用の `AGENTS.md` が既にある場合、Claude Code は [それを読み取ることができます](/docs/ja/memory#agents-md) 。Claude は [自動メモリ](/docs/ja/memory#auto-memory) も構築し、セッション間で学習内容を保存し、何も書かずに共有します。
+    [`CLAUDE.md`](/docs/ja/memory) はプロジェクトルートに追加するマークダウンファイルで、Claude Code はすべてのセッションの開始時に読み取ります。コーディング標準、アーキテクチャの決定、推奨ライブラリ、レビューチェックリストを設定するために使用します。リポジトリに他のコーディングエージェント用の `AGENTS.md` が既にある場合、Claude Code は `CLAUDE.md` の代わりに [それを読み取ることができます](/docs/ja/memory#agents-md)。Claude は作業しながら [自動メモリ](/docs/ja/memory#auto-memory) も構築し、ユーザーが何も書かなくてもセッション間で学習内容を保存します。
 
     [スキル](/docs/ja/skills) を作成して、チームが共有できる反復可能なワークフローをパッケージ化します（`/review-pr` や `/deploy-staging` など）。
 

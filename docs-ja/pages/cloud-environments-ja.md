@@ -10,7 +10,7 @@
   クラウド環境は [クラウドセッション](/docs/ja/claude-code-on-the-web) に適用されます。これは Pro、Max、Team プランで利用可能であり、[プレミアムシートまたは Chat + Claude Code シートを持つ](https://support.claude.com/en/articles/11845131-use-claude-code-with-your-team-or-enterprise-plan) Enterprise ユーザー向けです。
 </Note>
 
-各 [クラウドセッション](/docs/ja/claude-code-on-the-web) はクラウド環境で実行されます。環境を設定して [ネットワークアクセス](#access-levels) を許可または拒否し、セッション用に [環境変数を設定](#set-environment-variables) し、Pro および Max プランで [API 認証情報](#add-api-credentials) を保存してセッションが認証情報を見ずに使用でき、Claude が作業を開始する前に [セットアップスクリプト](#setup-scripts) を実行できます。
+各 [クラウドセッション](/docs/ja/claude-code-on-the-web) はクラウド環境で実行されます。環境を設定して [ネットワークアクセス](#access-levels) を許可または拒否し、セッション用に [環境変数を設定](#set-environment-variables) し、Pro および Max プランではセッションが内容を見ずに使用できる [ネットワークシークレット](#add-network-secrets) を保存し、Claude が作業を開始する前に [セットアップスクリプト](#setup-scripts) を実行できます。
 
 同じ環境は、クラウドセッションを開始する場所に関係なく適用されます。[Desktop アプリ](/docs/ja/desktop)、[Claude モバイルアプリ](/docs/ja/mobile)、[claude.ai/code](https://claude.ai/code) のブラウザ、[`claude --cloud`](/docs/ja/claude-code-on-the-web#from-terminal-to-cloud) を使用したターミナル、[ルーチン](/docs/ja/routines)、[Claude Tag](https://claude.com/docs/claude-tag/overview) です。これらの各サーフェスは [セルフホスト環境](/docs/ja/self-hosted-environments) にもルーティングできます。[利用可能性と制限](/docs/ja/self-hosted-environments#availability-and-limitations) は、Claude Tag セッションがセルフホスト環境で実行される場合に Claude がまだ使用できないものをカバーしています。
 
@@ -58,7 +58,7 @@
   <Step title="環境を追加または編集する">
     **Cloud** を選択して環境をリストします。その後、**クラウド環境を追加** を選択するか、既存の環境にホバーして右に表示される設定アイコンを選択します。
 
-    ダイアログには名前、ネットワークアクセスレベル、環境変数、セットアップスクリプトが含まれます。Pro または Max プランで既存のクラウド環境を編集する場合、ダイアログには [API 認証情報](#add-api-credentials) も含まれます。
+    ダイアログには名前、ネットワークアクセスレベル、環境変数、セットアップスクリプトが含まれます。Pro または Max プランで既存のクラウド環境を編集する場合、ダイアログには [ネットワークシークレット](#add-network-secrets) も含まれます。
 
     <Frame>
       <img src="https://mintcdn.com/claude-code/ZFId6l95856c5LSw/images/cloud-environment-dialog.png?fit=max&auto=format&n=ZFId6l95856c5LSw&q=85&s=30d4478b31d1f879f7ee287ddab32505" alt="新しいクラウド環境ダイアログ。プレースホルダー Default を持つ Name フィールド、ネットワークアクセスセレクターが Trusted に設定され、ネットワークポリシーとアクセスレベルへのリンク、.env 形式プレースホルダーテキストを表示する環境変数ボックス（環境を使用する誰もが値を見ることができるという注記付き）、新しいセッションが開始され Claude Code が起動する前に実行される Bash スクリプトとして説明されるセットアップスクリプトボックス、キャンセルと環境を作成ボタン。" width="874" height="1372" data-path="images/cloud-environment-dialog.png" />
@@ -91,70 +91,72 @@ Anthropic ホスト型環境では、セッションは環境の値をセッシ�
 
 クラウドセッションは起動時に自身でいくつかの変数も設定します。[`CLAUDE_AUTOCOMPACT_PCT_OVERRIDE`](/docs/ja/claude-code-on-the-web#manage-context) の場合、セッションが設定する値はここで追加した値をオーバーライドするため、ここでそのキーを追加しても効果がありません。
 
-環境を使用する誰もが値を読み取ることができます。Pro および Max プランでは、エージェントプロキシがリクエストに添付できるキーに対して [API 認証情報](#add-api-credentials) を代わりに使用してください。[認証情報を取得しないリクエスト](#requests-that-never-get-the-credential) はそこにリストされています。
+環境を使用する誰もが値を読み取ることができます。Pro および Max プランでは、エージェントプロキシがリクエストに添付できるキーに対して [ネットワークシークレット](#add-network-secrets) を代わりに使用してください。[シークレットを取得しないリクエスト](#requests-that-never-get-the-credential) はそこにリストされています。
 
-<h3 id="add-api-credentials">
-  API 認証情報を追加する
+<span id="add-api-credentials" />
+
+<h3 id="add-network-secrets">
+  ネットワークシークレットを追加する
 </h3>
 
-API 認証情報は、クラウド環境に保存する API キーまたはトークンで、Claude が環境内の任意のセッションからそのキーを見ることなく API を呼び出すことができます。Anthropic のエージェントプロキシは、セッションの VM を離れた後、リストしたホストへのリクエストにキーを追加します。キーは Claude、実行するコマンド、またはセッションの環境変数に到達しません。
+ネットワークシークレットは、クラウド環境に保存する API キーまたはトークンで、Claude が環境内の任意のセッションからそのキーを見ることなく API を呼び出すことができます。Anthropic のエージェントプロキシは、各リクエストがセッションの VM を離れた後、リストしたホストへのリクエストにキーを追加するため、キー自体は VM の外部にとどまります。
 
-API 認証情報は Pro および Max プランで利用可能です。Team および Enterprise プランではまだ利用できないため、**API 認証情報** セクションはこれらのプランの環境ダイアログに表示されません。
+ネットワークシークレットは Pro および Max プランで利用可能です。Team および Enterprise プランではまだ利用できないため、**ネットワークシークレット** セクションはこれらのプランの環境ダイアログに表示されません。
 
 <h4 id="requirements">
   要件
 </h4>
 
-これらのうち 2 つは認証情報を追加できるかどうかを決定し、2 つは追加後にエージェントプロキシがそれを使用できるかどうかを決定します。
+これらの要件によって、シークレットを追加できるかどうか、および追加後にエージェントプロキシがそれを使用できるかどうかが決まります。
 
 * **ロール**: claude.ai 組織内の組織管理者ロール
   * Team および Enterprise では、Owner がそれを保持し、Admin は保持しません
   * Pro および Max では、独自の組織でそれを保持します
-* **環境タイプ**: 既に存在する Anthropic ホスト型クラウド環境。[自己ホスト型環境](/docs/ja/self-hosted-environments) には API 認証情報がありません
+* **環境タイプ**: 既に存在する Anthropic ホスト型クラウド環境。[自己ホスト型環境](/docs/ja/self-hosted-environments) にはネットワークシークレットがありません
 * **API 到達可能性**: API がインターネットからの接続を受け入れます。リクエストは Anthropic のネットワークから離れるためです
-* **暗号化キー**: 組織がカスタマー管理暗号化キーを使用する場合、認証情報を保存できません
+* **暗号化キー**: 組織が顧客管理の暗号化キーを使用する場合、ネットワークシークレットを保存できません
 
 <h4 id="add-a-credential">
-  認証情報を追加する
+  シークレットを追加する
 </h4>
 
-認証情報は一度に 1 つずつ追加し、追加後に認証情報を編集することはできません。認証情報のホストまたは値を変更するには、削除して再度追加します。
+シークレットは一度に 1 つずつ追加し、追加後にシークレットを編集することはできません。シークレットのホストまたは値を変更するには、削除して再度追加します。
 
 <Steps>
-  <Step title="環境の API 認証情報を開く">
-    [claude.ai/code](https://claude.ai/code) で [環境を編集用に開きます](#configure-your-environment)。**環境を編集** ダイアログで、**API 認証情報** セクションを見つけます。環境に既にある認証情報が表示され、それぞれが適用されるホストが表示されます。
+  <Step title="環境のネットワークシークレットを開く">
+    [claude.ai/code](https://claude.ai/code) で [環境を編集用に開きます](#configure-your-environment)。**環境を編集** ダイアログで、**ネットワークシークレット** セクションを見つけます。環境に既にあるシークレットが表示され、それぞれが適用されるホストが表示されます。
   </Step>
 
-  <Step title="認証情報を追加する">
-    **認証情報を追加** を選択してフォームに入力します。API キーがリクエストヘッダーで移動する場合はデフォルトの **認証情報タイプ**、**Bearer** を保持し、これらのフィールドに入力します。
+  <Step title="シークレットを追加する">
+    **シークレットを追加** を選択してフォームに入力します。API キーがリクエストヘッダーで移動する場合はデフォルトの **認証情報タイプ**、**Bearer** を保持し、これらのフィールドに入力します。
 
-    * **名前**: `Internal billing API` などの認証情報のラベル
+    * **名前**: `Internal billing API` などのシークレットのラベル
     * **許可されたウェブサイト**: `api.example.com` などの API のホスト。先頭の `*.` はすべてのサブドメインと一致します
     * **カスタムヘッダー**: キーを運ぶヘッダーの 1 行。行は `Authorization` をヘッダーの **名前** として、`Bearer` を **プレフィックス** として開始します。キー自体を **値** として貼り付けます。`X-Api-Key` のようなベア値を取得するヘッダーの場合、名前を変更してプレフィックスをクリアします
 
     別の方法で認証する API の場合、別の **認証情報タイプ** を選択します。リストは [Claude Tag](https://claude.com/docs/claude-tag/overview)（Team および Enterprise プランの Slack 統合）が [接続](https://claude.com/docs/claude-tag/admins/add-connections) に提供するものと同じです。
   </Step>
 
-  <Step title="認証情報を保存する">
-    **接続** を選択します。認証情報はリストにホストと共に表示され、ダイアログの **変更を保存** ボタンなしで保存されます。保存後に値を再度表示することはできません。
+  <Step title="シークレットを保存する">
+    **接続** を選択します。シークレットはリストにホストと共に表示され、ダイアログの **変更を保存** ボタンなしで保存されます。保存後に値を再度表示することはできません。
   </Step>
 </Steps>
 
-認証情報が機能することを確認するには、環境でセッションを開始して Claude に API を呼び出すよう依頼します。例えば `curl` を使用します。API はキーがリクエストにあるかのように応答し、キーはセッションの環境変数またはファイルに表示されません。リストが認証情報を **送信されていません** とマークしている場合、その下のメモは理由と対処方法を説明しています。ホストが正確に一致せずに重複する 2 つの認証情報はマーカーを取得せず、エージェントプロキシはそのうちの 1 つだけを送信します。
+シークレットが機能することを確認するには、環境でセッションを開始して Claude に API を呼び出すよう依頼します。例えば `curl` を使用します。API はキーがリクエストにあるかのように応答し、キーはセッションの環境変数またはファイルに表示されません。リストがシークレットを **送信されていません** とマークしている場合、その下のメモは理由と対処方法を説明しています。ホストが正確に一致せずに重複する 2 つのシークレットはマーカーを取得せず、エージェントプロキシはそのうちの 1 つだけを送信します。
 
 <h4 id="which-requests-get-the-credential">
-  どのリクエストが認証情報を取得するか
+  どのリクエストがシークレットを取得するか
 </h4>
 
-エージェントプロキシは、リクエストのホストがその認証情報にリストしたものと一致する場合、認証情報をリクエストに添付します。セッションは、環境の [ネットワークアクセスレベル](#access-levels) がそれ以外の場合は許可しない場合でも、[認証情報を取得しないホスト](#requests-that-never-get-the-credential) を除いて、これらのホストに到達できます。認証情報は、削除するまで、それを開始した人に関係なく、環境で実行されるすべてのセッションに適用されます。
+エージェントプロキシは、リクエストのホストがそのシークレットにリストしたものと一致する場合、シークレットをリクエストに添付します。セッションは、環境の [ネットワークアクセスレベル](#access-levels) がそれ以外の場合は許可しない場合でも、[シークレットを取得しないホスト](#requests-that-never-get-the-credential) を除いて、これらのホストに到達できます。シークレットは、削除するまで、それを開始した人に関係なく、環境で実行されるすべてのセッションに適用されます。
 
 <h4 id="requests-that-never-get-the-credential">
-  認証情報を取得しないリクエスト
+  シークレットを取得しないリクエスト
 </h4>
 
-エージェントプロキシは、追加した認証情報をこれらのリクエストに添付しません。
+エージェントプロキシは、追加したシークレットをこれらのリクエストに添付しません。
 
-* **GitHub**: [GitHub プロキシ](#github-proxy) は代わりに GitHub へのリクエストを認証するため、GitHub に対して API 認証情報は不要です
+* **GitHub**: [GitHub プロキシ](#github-proxy) は代わりに GitHub へのリクエストを認証するため、GitHub に対してネットワークシークレットは不要です
 * **Anthropic API およびパブリックパッケージレジストリ**: `api.anthropic.com`、`registry.npmjs.org`、`jsr.io`、`npm.jsr.io`、`pypi.org`、`files.pythonhosted.org`、`index.crates.io`、および `proxy.golang.org`
 * **セットアップスクリプトリクエスト**: Claude Code は [セットアップスクリプト](#setup-scripts) が実行された後、起動時にエージェントプロキシに接続します
 * **Claude Code のテレメトリエクスポート**: Claude Code は [テレメトリエクスポート](/docs/ja/monitoring-usage#telemetry-from-cloud-sessions-and-claude-tag) を実行するコマンドではなく自身で送信し、そのリクエストはエージェントプロキシを通過しません
@@ -179,7 +181,7 @@ API 認証情報は Pro および Max プランで利用可能です。Team お�
 
 * 環境で既に実行中のセッションは引き続き機能します。
 * 環境はセレクターと `/remote-env` から消えるため、新しいセッション用に選択できません。
-* 環境の API 認証情報は実行中のセッションに添付されたままです。アーカイブする前に不要なものを削除してください。
+* 環境のネットワークシークレットは実行中のセッションに添付されたままです。アーカイブする前に不要なものを削除してください。
 * アーカイブされた環境では、どのサーフェスでも新しいセッションを開始できません。環境が保存された [CLI デフォルト](#select-an-environment-from-the-cli) だった場合、リストに 1 つがある場合は Claude Code は Anthropic ホスト型環境で CLI クラウドセッションを開始し、そうでない場合は [Remote Control ブリッジ環境](#the-default-environment) ではないリスト内の最初の環境で開始します。[ルーチン](/docs/ja/routines#environments-and-network-access) など環境で明示的に設定されたものは、新しいセッションをそこで開始できません。別の環境を指してください。
 
 <h3 id="organization-shared-environments">
@@ -197,7 +199,7 @@ Owner は 2 つの方法のいずれかで環境を組織で利用可能にし�
 
 Owner は [claude.ai/admin-settings/claude-code](https://claude.ai/admin-settings/claude-code) で組織の [デフォルト環境](#the-default-environment) を別途選択します。
 
-すべてのメンバーのセッションは共有環境でその変数を読み取るため、シークレットを含めないでください。[API 認証情報](#add-api-credentials)（セッションが読み取ることができないキーを提供）は Team および Enterprise プランではまだ利用できません。
+すべてのメンバーのセッションは共有環境でその変数を読み取るため、シークレットを含めないでください。[ネットワークシークレット](#add-network-secrets)（セッションが読み取ることができないキーを提供）は Team および Enterprise プランではまだ利用できません。
 
 <h3 id="set-the-environment-a-claude-tag-channel-uses">
   Claude Tag チャネルが使用する環境を設定する
@@ -239,7 +241,7 @@ Anthropic ホスト環境のネットワークアクセスを変更すると、�
 
 * GitHub（[separate proxy](#github-proxy) を通じて）
 * 有効にした [MCP connectors](#network-access)（トラフィックは Anthropic のサーバーを通じて移動）
-* 環境の [API credentials](#add-api-credentials) にリストされたホスト（[credential を取得しないホスト](#requests-that-never-get-the-credential) を除く）
+* 環境の [ネットワークシークレット](#add-network-secrets) にリストしたホスト（[シークレットを取得しないホスト](#requests-that-never-get-the-credential) を除く）
 * Anthropic API（Claude Code 独自のリクエスト用。[Security and isolation](/docs/ja/claude-code-on-the-web#security-and-isolation) に記載されているように **None** でも）
 
 <h3 id="allow-specific-domains">
@@ -254,7 +256,7 @@ api.example.com
 registry.example.com
 ```
 
-この環境のセッションは、`api.example.com`、`internal.example.com` のすべてのサブドメイン、および `registry.example.com` に到達でき、セッションのネットワークを通じた他のドメインには到達できません。[GitHub traffic](#github-proxy)、[MCP connector traffic](#network-access)、および環境の [API credentials](#add-api-credentials) のホストへのリクエスト（[credential を取得しないホスト](#requests-that-never-get-the-credential) を除く）は、この許可リストを通じません。先頭の `*.` はすべてのサブドメインにマッチします。[Trusted domains](#default-allowed-domains) も保持するには、**Also include default list of common package managers** をチェックします。チェックを外すと、リストしたもののみを許可します。
+この環境のセッションは、`api.example.com`、`internal.example.com` のすべてのサブドメイン、および `registry.example.com` に到達でき、セッションのネットワークを通じた他のドメインには到達できません。[GitHub traffic](#github-proxy)、[MCP connector traffic](#network-access)、および環境の [ネットワークシークレット](#add-network-secrets) のホストへのリクエスト（[シークレットを取得しないホスト](#requests-that-never-get-the-credential) を除く）は、この許可リストを通じません。先頭の `*.` はすべてのサブドメインにマッチします。[Trusted domains](#default-allowed-domains) も保持するには、**Also include default list of common package managers** をチェックします。チェックを外すと、リストしたもののみを許可します。
 
 組織が [artifacts](/docs/ja/artifacts#availability) を使用する場合、セッションがそれらを読み取るために `*.frame.claudeusercontent.com` をリストに含める必要はありません。リストがそのホストを除外する場合、Claude Code はセッションの Anthropic への接続を通じてアーティファクトコンテンツを読み取ります。ホストを許可リストに保持する 2 つの状況があります。
 
@@ -272,8 +274,8 @@ Anthropic ホスト環境では、すべての GitHub 操作は、環境の [acc
 * **Git credentials**：VM 内の git クライアントはスコープ付き認証情報を使用し、プロキシはそれを検証して実際の GitHub トークンと交換します。
 * **API requests**：組み込み GitHub ツールからのリクエスト、および [`proxy-injected` placeholder](#work-with-github-issues-and-pull-requests) の下の `gh` からのリクエストは、実際の認証情報が置き換えられて送信されます。
 * **Push restrictions**：プロキシは、ブランチの削除と、タグなどブランチ以外のもののプッシュを拒否します。プッシュで更新できるブランチは制限しません。それを制限するには、GitHub のブランチ保護ルールまたはルールセットを使用してください。
-* **Repository scope**：GitHub API およびリリースアセットリクエストはセッションに接続されたリポジトリのみに到達するため、接続されていないリポジトリからリリースアセットをダウンロードするセットアップスクリプトは 403 を取得します。
-* **GraphQL restrictions**：プロキシはプルリクエストワークフロー用にピン留めされた GraphQL 操作のセットのみを提供します。プロキシは GraphQL エンドポイント上の他のすべてをリジェクトし、`This GraphQL query is not enabled for this session` と言う 403 を返し、REST フォールバック `gh api repos/{owner}/{repo}/...` を名前付けします。制限は、提供する認証情報に関係なく、プロキシを通じたすべてのリクエストに適用されるため、設定した `GH_TOKEN` は同じ 403 を取得します。Claude はプロキシを通じて Projects v2 などの GraphQL にのみ存在する GitHub API に到達できません。
+* **Repository scope**：プロキシは、セッションに接続されたリポジトリに対する GitHub API リクエストを処理します。他のリポジトリに対する API リクエストは、`GitHub access to` で始まり `is not enabled for this session` を含むメッセージとともに 403 を受け取ります。
+* **GraphQL restrictions**：プロキシは GitHub の GraphQL エンドポイントへのリクエストを、`GitHub GraphQL is not available from Claude Code sessions` で始まり REST フォールバック `gh api repos/{owner}/{repo}/...` を示すメッセージとともに 403 で拒否します。`gh pr` や `gh issue` など GraphQL を使用する `gh` サブコマンドも同じ 403 を受け取ります。制限は、提供する認証情報に関係なく、プロキシを通じたすべてのリクエストに適用されるため、設定した `GH_TOKEN` は同じ 403 を取得します。Claude はプロキシを通じて Projects v2 などの GraphQL にのみ存在する GitHub API に到達できません。
 
 パブリックリポジトリからのコミットされたファイルは `raw.githubusercontent.com` を通じて到着し、[security proxy](#security-proxy) が代わりに処理します。そのドメインはデフォルト [Trusted list](#default-allowed-domains) にあるため、環境の [access level](#access-levels) がそれを除外しない限り、それらのファイルは到達可能なままです。
 
@@ -285,8 +287,6 @@ Anthropic ホスト環境のクラウドセッションは、セキュリティ�
 
 * 悪意のあるリクエストに対する保護
 * レート制限と不正使用防止
-* 強化されたセキュリティのためのコンテンツフィルタリング
-* リクエストされたホスト名の DNS レベルの監査証跡
 
 <h2 id="what’s-available-in-cloud-sessions">
   クラウドセッションで利用可能な機能
@@ -313,17 +313,35 @@ Anthropic ホスト環境では、各セッションは独自のオペレーテ�
 | リポジトリの `.claude/skills/`、`.claude/agents/`、`.claude/commands/` | はい | クローンの一部 |
 | リポジトリの `.claude/settings.json` で宣言されたプラグインとマーケットプレイス | いいえ | クラウドセッションは、リポジトリが [`enabledPlugins`](/docs/ja/settings-reference#enabledplugins) で有効にするプラグインをインストールしません。これには [`extraKnownMarketplaces`](/docs/ja/settings-reference#extraknownmarketplaces) の下にリストされているマーケットプレイスのプラグインも含まれます |
 | 組織の[サーバー管理設定](/docs/ja/server-managed-settings) | はい、[Claude Tag](https://claude.com/docs/claude-tag/overview) セッションを除く | セッション開始時に Anthropic のサーバーから取得されます。クラウドセッションで `availableModels` がどのように適用されるかについては、[Surface coverage](/docs/ja/model-config#surface-coverage) を参照してください。MDM または管理設定ファイルを通じてデバイスにデプロイされた設定は適用されません。セッションは Anthropic 管理 VM で実行されるためです。[セルフホスト環境](/docs/ja/self-hosted-environments)では、セッションはランナーイメージの管理設定ファイルも読み取ります。[Claude Code が管理ソースを組み合わせる方法](/docs/ja/managed-settings#how-claude-code-combines-managed-sources)に従います |
-| ユーザー `~/.claude/CLAUDE.md` | いいえ | マシンに存在し、リポジトリには存在しません |
+| ユーザー `~/.claude/CLAUDE.md` | いいえ | マシンに存在し、リポジトリには存在しません。[リポジトリにコミットせずに個人設定を追加する](#add-personal-preferences-without-committing-to-the-repo)を参照してください |
 | ユーザー `~/.claude/skills/`、`~/.claude/agents/`、`~/.claude/commands/` | いいえ | マシンに存在し、リポジトリには存在しません。代わりにリポジトリの `.claude/` ディレクトリにコミットしてください。クラウドセッションは claude.ai で有効にしたスキルを自動的に読み込みます |
-| ユーザー設定でのみ有効なプラグイン | いいえ | ユーザースコープの `enabledPlugins` は `~/.claude/settings.json` に存在します |
+| ユーザー設定でのみ有効なプラグイン | いいえ | ユーザースコープの `enabledPlugins` はマシンの `~/.claude/settings.json` に存在します |
 | デフォルトのローカルスコープまたはユーザースコープで `claude mcp add` を使用して追加した MCP サーバー | いいえ | これらはマシンの `~/.claude.json` に書き込まれ、リポジトリには書き込まれません。`claude mcp add --scope project` でサーバーを追加します。これはリポジトリの[`.mcp.json`](/docs/ja/mcp#project-scope)に書き込まれ、そのファイルをコミットしてください。1 つのリポジトリを持つセッションはそれを読み込みます |
 | リポジトリの `.claude/settings.json` `env` ブロック内のトランスポート変数（`NODE_EXTRA_CA_CERTS` や[mTLS クライアント証明書変数](/docs/ja/network-config#mtls-authentication)など） | いいえ | ホスティング環境がセッションの API 接続を管理するため、Claude Code はこれらのキーを無視し、セッションのデバッグログで無視された各キーを記録します |
-| Claude が呼び出すサービスの API キーとトークン | Pro および Max プランでは、[API 認証情報](#add-api-credentials)として | キーを環境に一度追加すると、エージェントプロキシがリストしたホストへのリクエストにそれを添付します。エージェントプロキシが[添付できない](#requests-that-never-get-the-credential)キー、または Team または Enterprise プランのキーは環境変数に留まります |
+| Claude が呼び出すサービスの API キーとトークン | Pro および Max プランでは、[ネットワークシークレット](#add-network-secrets)として | キーを環境に一度追加すると、エージェントプロキシがリストしたホストへのリクエストにそれを添付します。エージェントプロキシが[添付できない](#requests-that-never-get-the-credential)キー、または Team または Enterprise プランのキーは環境変数に留まります |
 | AWS SSO のようなインタラクティブ認証 | いいえ | サポートされていません。SSO はクラウドセッションで実行できないブラウザベースのログインが必要です |
 
 クラウドセッションで独自の構成を利用可能にするには、リポジトリにコミットしてください。
 
-環境を使用する誰もが環境変数とセットアップスクリプトを読むことができます。ダイアログの**環境変数**の下のメモはそのことを述べており、シークレットをそこに置かないよう警告しています。Pro および Max プランでは、代わりにエージェントプロキシが添付できるキーを[API 認証情報](#add-api-credentials)として保存してください。
+環境を使用する誰もが環境変数とセットアップスクリプトを読むことができます。ダイアログの**環境変数**の下のメモはそのことを述べており、シークレットをそこに置かないよう警告しています。Pro および Max プランでは、代わりにエージェントプロキシが添付できるキーを[ネットワークシークレット](#add-network-secrets)として保存してください。
+
+<h4 id="add-personal-preferences-without-committing-to-the-repo">
+  リポジトリにコミットせずに個人設定を追加する
+</h4>
+
+Anthropic ホスト環境では、共有リポジトリに置きたくない設定のために、`~/.claude/CLAUDE.md` を書き込む[セットアップスクリプト](#setup-scripts)を追加してください。Claude Code はそのファイルをセッション内で[ユーザー指示](/docs/ja/memory#choose-where-to-put-claude-md-files)として読み込みます。この例では、コミットメッセージに関する設定を指定します：
+
+```bash theme={null}
+#!/bin/bash
+mkdir -p ~/.claude
+cat > ~/.claude/CLAUDE.md <<'EOF'
+Use conventional commit messages.
+EOF
+```
+
+このスクリプトは[共有環境](#organization-shared-environments)ではなく、自分の環境のいずれかに設定してください。
+
+次のクラウドセッションで `/context` を実行し、**Memory files** の下に `/root/.claude/CLAUDE.md` が表示されることを確認してください。
 
 <h3 id="installed-tools">
   インストール済みツール
@@ -362,13 +380,13 @@ Node.js バージョンは `/opt/node20`、`/opt/node21`、`/opt/node22` にイ�
 [環境設定](#set-environment-variables)で `GH_TOKEN` または `GITHUB_TOKEN` を自分で設定するか、両方を設定しないままにして[GitHub プロキシ](#github-proxy)に認証を処理させることができます：
 
 * トークンを設定した場合、コンテナに変更されずに渡されるため、スクリプトと GitHub の[`gh` CLI](https://cli.github.com)がそれを直接使用します。
-* どちらも設定せず、[GitHub プロキシ](#github-proxy)がセッションの認証を処理している場合、Claude が実行するコマンドでは両方の変数がプレースホルダー文字列 `proxy-injected` として読み取られ、プロキシは送信 GitHub リクエストで実際の認証情報を置き換えます。`gh` は独自のトークンなしで動作しますが、`GITHUB_TOKEN` を直接読み取るスクリプトはプレースホルダーを取得し、使用可能なトークンは取得しません。
+* どちらも設定せず、[GitHub プロキシ](#github-proxy)がセッションの認証を処理している場合、Claude が実行するコマンドでは両方の変数がプレースホルダー文字列 `proxy-injected` として読み取られ、プロキシは送信 GitHub リクエストで実際の認証情報を置き換えます。アタッチされたリポジトリに対する `gh api` 呼び出しは独自のトークンなしで動作しますが、`GITHUB_TOKEN` を直接読み取るスクリプトはプレースホルダーを取得し、使用可能なトークンは取得しません。
 
 設定したトークンは通常の環境変数であるため、環境を使用する誰もがそれを読むことができます。プロキシパスは認証情報を環境構成とセッション VM から除外します。
 
 セッションにどちらが適用されるかを確認するには、Claude に `echo $GH_TOKEN` を実行するよう依頼してください。
 
-GitHub の[`gh` CLI](https://cli.github.com)は事前にインストールされています。組み込みツールがカバーしていない `gh` コマンド（`gh release` や `gh workflow run` など）が必要な場合は、Claude に実行するよう依頼してください。`gh` は `GH_TOKEN` を自動的に読み取るため、`gh auth login` を実行する必要はありません。
+GitHub の[`gh` CLI](https://cli.github.com)は事前にインストールされています。組み込みツールがカバーしていない GitHub 操作が必要な場合は、`gh api` で REST API を呼び出すよう Claude に依頼してください。`gh workflow list` など、REST API を使用する `gh` サブコマンドも動作します。`gh pr` や `gh issue` など、GraphQL を使用するサブコマンドはプロキシによって[拒否されます](#github-proxy)。`gh` は `GH_TOKEN` を自動的に読み取るため、`gh auth login` を実行する必要はありません。
 
 <h3 id="link-output-back-to-the-session">
   セッションに出力をリンクバックする
@@ -438,7 +456,7 @@ VM は大規模なビルドジョブやメモリ集約的なテストなど、�
 
 Anthropic ホスト環境では、ビルド、インストール、テスト実行など、クラウドセッションでの長時間実行作業に対して、これらの時間制限が適用されます。各エントリは制限を定義するセクションにリンクしています。
 
-* **Claude が実行するコマンド**：クラウド環境は独自のコマンドタイムアウトを設定しないため、Bash ツールのデフォルトが適用されます。Claude はデフォルトでコマンドを 2 分間待機し、最大 10 分間要求できます。
+* **Claude が実行するコマンド**：クラウド環境は独自のコマンドタイムアウトを設定しないため、Bash ツールのデフォルトが適用されます。Claude はデフォルトでフォアグラウンドコマンドを 2 分間待機し、最大 10 分間要求できます。
 
   コマンドが[タイムアウト](/docs/ja/tools-reference#timeout-and-output-limits)に達すると、Claude Code は `sleep` で始まるコマンドを除き、それを停止する代わりに[バックグラウンドに移動](/docs/ja/tools-reference#foreground-commands-that-move-to-the-background)します。この方法で移動されたコマンドは、Claude Code がそれを[バックグラウンド時間制限](/docs/ja/tools-reference#time-limit-for-background-commands)で停止する前に、最大 30 分間実行し続けることができます。`BASH_DEFAULT_TIMEOUT_MS` を `1800000` ミリ秒より上に設定すると、その制限とフォアグラウンドデフォルトの両方が長くなります。
 * **SessionStart hooks**：Claude Code は、hook エントリで[`timeout`](/docs/ja/hooks#common-fields)（秒単位）を設定しない限り、600 秒後に `command` hook をキャンセルします。Claude Code は[`async: true`](/docs/ja/hooks#run-hooks-in-the-background)で実行する hook に対してタイムアウトを適用しません。

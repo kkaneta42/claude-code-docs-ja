@@ -40,6 +40,8 @@ IDE のリンクをクリックして直接インストールします。
 
 拡張機能は Devin Desktop や Kiro などの他の VS Code フォークにもインストールされます。エディタの拡張機能ビューで「Claude Code」を検索するか、[Open VSX レジストリ](https://open-vsx.org/extension/Anthropic/claude-code)からインストールしてください。エディタが拡張機能をインストールできない場合は、[CLI](/docs/ja/quickstart) をインストールして、統合ターミナルで `claude` を実行してください。CLI はどのターミナルでも動作します。
 
+開発コンテナ内で Claude Code を実行するには、[開発コンテナ](/docs/ja/devcontainer)を参照してください。
+
 <Note>インストール後に拡張機能が表示されない場合は、VS Code を再起動するか、コマンドパレットから「Developer: Reload Window」を実行してください。</Note>
 
 <h2 id="get-started">
@@ -606,7 +608,7 @@ VS Code は `initialPermissionMode` をユーザー設定から読み込み、�
 | `environmentVariables` | `[]` | Claude プロセスの環境変数を設定します。共有構成には Claude Code 設定を使用してください。[`CLAUDE_CONFIG_DIR`](/docs/ja/env-vars) エントリは、その値が絶対パスである場合にのみ適用されます。拡張機能は `~` を展開せず、相対パスの値は無視します。 |
 | `disableLoginPrompt` | `false` | 認証プロンプトをスキップします（サードパーティプロバイダーのセットアップ用） |
 | `allowDangerouslySkipPermissions` | `false` | モードセレクターに権限をバイパスを追加します。インターネットアクセスのないサンドボックスでのみ使用してください。 |
-| `claudeProcessWrapper` | - | Claude プロセスを起動するために使用される実行可能ファイル。バンドルされたバイナリパスが存在する場合、引数として渡されます。プラットフォーム用のバイナリが拡張機能ビルドに含まれていない場合は、別途インストールされた `claude` バイナリに設定します。ラップされたセットアップでは、`initialPermissionMode` を設定するか、以前の会話で Manual、Edit automatically、または Auto を選択していない限り、会話は Manual モードで開始されます。これは、拡張機能が設定とビルトインデフォルトステップをスキップするためです。[Switch permission modes](/docs/ja/permission-modes#switch-permission-modes) を参照してください。アクティベーション時の「Unsupported platform」エラーは、プラットフォーム用にバイナリがバンドルされていないことを意味します。[npm install 後にネイティブバイナリが見つからない](/docs/ja/troubleshoot-install#native-binary-not-found-after-npm-install) を参照してください。 |
+| `claudeProcessWrapper` | - | Claude プロセスを起動するために使用される実行可能ファイル。バンドルされたバイナリパスが存在する場合、引数として渡されます。プラットフォーム用のバイナリが拡張機能ビルドに含まれていない場合は、別途インストールされた `claude` バイナリに設定します。 |
 
 <h2 id="use-a-screen-reader">
   スクリーンリーダーを使用する
@@ -621,6 +623,7 @@ VS Code は `initialPermissionMode` をユーザー設定から読み込み、�
 * **Claude の返信**: 拡張機能は各返信が完了したときに 1 回通知し、テキストがストリーミングされている間は沈黙を保ちます。スクリーンリーダーはコードブロックを行数の概要として読み、リンクをラベルで読み、テーブルをセルごとに読みます。完全な返信はトランスクリプトで読み取り可能なままです。
 * **権限リクエストと質問**: 拡張機能は権限プロンプトが表示されたときにリクエストを通知し、Claude が使用したいツールの名前を指定します。Claude があなたに質問するときと Claude がプランを完了してあなたのレビューを待つときも同じ方法で通知します。
 * **ステータス変更**: 拡張機能は Claude が作業を開始したとき、Claude があなたの入力の準備ができたとき、および Claude Code が会話をコンパクト化し始めたときを通知します。
+* **キューに入れられたメッセージ**: Claude の作業中にメッセージを送信すると、拡張機能はそのメッセージについて「Message queued.」と通知します。
 * **エラーとモデルプロンプト**: 拡張機能は会話内のエラーを通知し、[使用クレジット同意プロンプト](/docs/ja/model-config#fable-and-usage-credits) または [フラグ付きリクエストプロンプト](/docs/ja/model-config#ask-before-switching) が表示されたときを通知します。
 
 Claude が作業している間、スクリーンリーダーはプログレススピナーのアニメーションの代わりにテキストラベルを読みます。
@@ -779,7 +782,7 @@ summarize the changes I've made to the auth module
   セキュリティとプライバシー
 </h2>
 
-あなたのコードはプライベートです。Claude Code はあなたのコードを処理して支援を提供しますが、モデルの訓練に使用することはありません。データ処理の詳細とログ記録をオプトアウトする方法については、[データとプライバシー](/docs/ja/data-usage)を参照してください。
+コードはプライベートに保たれます。Claude Code はコードを処理して支援を提供しますが、モデルの訓練に使用することはありません。データ処理の詳細とログ記録をオプトアウトする方法については、[データとプライバシー](/docs/ja/data-usage)を参照してください。
 
 自動編集権限が有効になっている場合、Claude Code は VS Code が自動的に実行する可能性のある VS Code 設定ファイル（`settings.json` や `tasks.json` など）を変更できます。信頼できないコードを操作する場合のリスクを軽減するには、以下の対策を講じてください。
 
@@ -791,13 +794,13 @@ summarize the changes I've made to the auth module
   組み込み IDE MCP サーバー
 </h3>
 
-拡張機能がアクティブな場合、CLI が自動的に接続するローカル MCP サーバーが実行されます。これにより、CLI は VS Code のネイティブ diff ビューアーで diff を開き、`@` メンションの現在の選択を読み取り、Jupyter ノートブックで作業している場合はセルを実行するよう VS Code に要求できます。
+拡張機能がアクティブな場合、CLI が自動的に接続するローカル MCP サーバーが実行されます。これにより、CLI は VS Code のネイティブ差分ビューアーで差分を開き、`@` メンションの現在の選択を読み取り、Jupyter ノートブックで作業している場合はセルを実行するよう VS Code に要求できます。
 
-サーバーは `ide` という名前で、設定するものがないため `/mcp` から非表示になっています。ただし、組織が MCP ツールをホワイトリストに登録するために `PreToolUse` フックを使用している場合は、それが存在することを知っておく必要があります。
+サーバーは `ide` という名前で、設定するものがないため `/mcp` から非表示になっています。ただし、組織が MCP ツールを許可リストに登録するために `PreToolUse` フックを使用している場合は、それが存在することを知っておく必要があります。
 
 **選択とオープンファイルコンテキスト。** 接続中、CLI は現在のエディター選択とアクティブファイルのパスを、送信する各プロンプトのコンテキストとして含めます。トランスクリプトには、これが発生したときに `⧉ Selected N lines from <file>` という行が表示されます。
 
-[Claude が作業中にメッセージをキューに入れる](/docs/ja/interactive-mode#queue-messages-while-claude-works)場合、`Enter` を押したときに持っていた選択を保持し、その後に選択したものは何でも保持します。
+[Claude が作業中にメッセージをキューに入れる](/docs/ja/interactive-mode#queue-messages-while-claude-works)場合、その後に何を選択しても、`Enter` を押した時点の選択が保持されます。
 
 `.env` などの機密ファイルを除外するには、そのパスに対して [`Read` 拒否ルール](/docs/ja/permissions#read-and-edit)を追加してください。一致する拒否ルールは、そのファイルの選択されたテキストとオープンファイル通知の両方が Claude に到達するのを防ぎます。
 
@@ -805,7 +808,7 @@ summarize the changes I've made to the auth module
 
 **トランスポートと認証。** サーバーは `127.0.0.1` の 10000～65535 の範囲内のランダムポートにバインドされ、ポートは設定できません。トランスポートは暗号化されていない `ws://` です。ソケットはループバックのみであるため、トラフィックをキャプチャできるプロセスはロックファイルからトークンを読み取ることもできるため、TLS は保護を追加しません。各拡張機能のアクティベーションは新しいランダム認証トークンを生成し、`~/.claude/ide/<port>.lock` のロックファイルに書き込み、CLI は `X-Claude-Code-Ide-Authorization` ヘッダーとして提示して接続する必要があります。ロックファイルは `0700` ディレクトリ内で `0600` 権限を持つため、VS Code を実行しているユーザーのみがそれを読み取ることができます。`CLAUDE_CONFIG_DIR` が設定されている場合、ロックファイルは代わりに `$CLAUDE_CONFIG_DIR/ide/` に書き込まれます。
 
-**モデルに公開されるツール。** サーバーは 12 個のツールをホストしていますが、モデルに表示されるのは 2 つだけです。残りは CLI が独自の UI（diff を開く、選択を読み取る、ファイルを保存する）に使用する内部 RPC であり、ツールリストが Claude に到達する前にフィルタリングされます。
+**モデルに公開されるツール。** サーバーは 12 個のツールをホストしていますが、モデルに表示されるのは 2 つだけです。残りは CLI が独自の UI（差分を開く、選択を読み取る、ファイルを保存するなど）に使用する内部 RPC であり、ツールリストが Claude に到達する前にフィルタリングされます。
 
 | ツール名（フックで表示される） | 機能 | 読み取り専用 |
 | - | - | - |
@@ -834,7 +837,7 @@ summarize the changes I've made to the auth module
 **Jupyter 実行は常に最初に確認します。** `mcp__ide__executeCode` は何もサイレントに実行することはできません。各呼び出しで、コードはアクティブなノートブックの最後に新しいセルとして挿入され、VS Code がそれをビューにスクロールし、ネイティブ Quick Pick が **Execute** または **Cancel** を求めます。キャンセルするか、`Esc` でピッカーを閉じると、Claude にエラーが返され、何も実行されません。また、アクティブなノートブックがない場合、Jupyter 拡張機能（`ms-toolsai.jupyter`）がインストールされていない場合、またはカーネルが Python でない場合、ツールは完全に拒否します。
 
 <Note>
-  Quick Pick 確認は `PreToolUse` フックとは別です。`mcp__ide__executeCode` のホワイトリストエントリにより、Claude はセルの実行を *提案* できます。VS Code 内の Quick Pick は、実際に実行できるようにするものです。
+  Quick Pick 確認は `PreToolUse` フックとは別です。`mcp__ide__executeCode` の許可リストエントリにより、Claude はセルの実行を *提案* できます。VS Code 内の Quick Pick は、*実際に* 実行できるようにするものです。
 </Note>
 
 <a id="troubleshooting" />
@@ -842,6 +845,19 @@ summarize the changes I've made to the auth module
 <h2 id="fix-common-issues">
   一般的な問題を解決する
 </h2>
+
+サインイン、ネットワーク、起動のエラーについては、インストールのトラブルシューティングページとエラーリファレンスページにそれぞれ個別の項目があります。表示された内容を表で探し、リンク先を参照してください。
+
+| 表示される内容 | 参照先 |
+| - | - |
+| サインイン後に `API Error: 403 Request not allowed` が表示される | [ログイン後の 403 Forbidden](/docs/ja/troubleshoot-install#403-forbidden-after-login) |
+| すでにサインインしているのに、再度サインインを求められる | [ログインしていない、またはトークンの有効期限が切れている](/docs/ja/troubleshoot-install#not-logged-in-or-token-expired) |
+| クラウドプロバイダーの認証情報がターミナルでは機能するが、拡張機能では機能しない | [Bedrock、Agent Platform、または Foundry の認証情報が読み込まれない](/docs/ja/troubleshoot-install#bedrock-agent-platform-or-foundry-credentials-not-loading) |
+| `SSL certificate verification failed` または `Self-signed certificate detected` | [SSL 証明書エラー](/docs/ja/errors#ssl-certificate-errors) |
+| `Claude Code process exited with code 1`、またはその他のコード | [Claude Code process exited with code N](/docs/ja/errors#claude-code-process-exited-with-code-n) |
+| `Could not locate the Claude CLI on PATH` | [Could not locate the Claude CLI on PATH](/docs/ja/errors#could-not-locate-the-claude-cli-on-path) |
+| `The connection to Claude Code ended before this message completed` | [The connection to Claude Code ended before this message completed](/docs/ja/errors#the-connection-to-claude-code-ended-before-this-message-completed) |
+| VS Code の統合ターミナルで `claude` が見つからない | [VS Code で CLI を実行する](#run-cli-in-vs-code) |
 
 <h3 id="extension-won’t-install">
   拡張機能がインストールできない

@@ -159,6 +159,8 @@ Claude Code は各チームメンバーのモデルを、以下の最初に適�
 3. [`CLAUDE_CODE_SUBAGENT_MODEL`](/docs/ja/model-config#environment-variables)。`inherit` 以外に設定されている場合。
 4. リーダーの現在のモデル。
 
+インストールされている [mod](/docs/ja/plugins/mods/overview) が [`agent.spawn`](/docs/ja/plugins/mods/reference#subagents) フックでモデルを設定している場合、Claude Code は最初のソースの代わりにそのモデルを使用します。
+
 [`CLAUDE_CODE_SUBAGENT_MODEL_FORCE=1`](/docs/ja/sub-agents#run-every-subagent-on-one-model) を設定した場合、最初の 2 つのソースは適用されません。Claude Code は `CLAUDE_CODE_SUBAGENT_MODEL` が `inherit` 以外に設定されている場合はそこからすべてのチームメンバーのモデルを選択し、それ以外の場合はリーダーの現在のモデルから選択します。Claude Code v2.1.257 以降が必要です。
 
 v2.1.251 より前は、`CLAUDE_CODE_SUBAGENT_MODEL` がこの順序で最初に来ていました。

@@ -43,13 +43,13 @@ Claude Code は、一元的な構成のための 2 つのアプローチをサ�
   <Step title="管理コンソールを開く">
     claude.ai コンソールで、[**Organization settings > Claude Code > Managed settings**](https://claude.ai/admin-settings/claude-code) に移動します。
 
-    リンクが Claude Code ページではなく別の Organization settings ページにリダイレクトされる場合、アカウントに必要なロールがありません。Admin およびその他の Owner 以外のロールは管理設定を表示または編集できないため、組織内の Owner または Primary Owner に変更を依頼してください。[アクセス制御](#access-control)を参照してください。
+    Team または Enterprise の組織で、このページにアクセス権がないと表示された場合は、[Owner または Primary Owner](#access-control) に変更を依頼してください。
   </Step>
 
   <Step title="設定を定義する">
-    構成を JSON として追加します。`settings.json` で利用可能な[すべての設定](/docs/ja/settings-reference#all-settings)がサポートされており、OS レベルのポリシー配信に制限されているものを除きます。[現在の制限事項](#current-limitations)でその短いリストを参照してください。これには[フック](/docs/ja/hooks)、[環境変数](/docs/ja/env-vars)、および `allowManagedPermissionRulesOnly` などの[管理専用設定](/docs/ja/managed-settings#managed-only-settings)が含まれます。
+    設定を JSON として追加します。OS レベルのポリシー配信に限定された設定を除き、[`settings.json` で使用できるすべての設定](/docs/ja/settings-reference#all-settings)がサポートされます。その短いリストについては[現在の制限事項](#current-limitations)を参照してください。これには、[フック](/docs/ja/hooks)、[環境変数](/docs/ja/env-vars)、および `allowManagedPermissionRulesOnly` などの[管理設定専用の設定](/docs/ja/managed-settings#managed-only-settings)が含まれます。
 
-    この例は、権限拒否リストを適用し、ユーザーが権限をバイパスするのを防ぎ、権限ルールを管理設定で定義されたものに制限します。`Bash(curl *)` ルールは、`/usr/bin/curl` や `sh -c 'curl …'` ではなく、[Claude が記述する方法](/docs/ja/permissions#bash-rule-limits)として `curl` にマッチします。コマンドテキストに依存しないネットワーク強制の場合は、[`sandbox` ブロックに `allowManagedDomainsOnly`](/docs/ja/sandboxing#configure-the-sandbox-for-your-organization) を追加してください。
+    この例では、権限の拒否リストを強制し、ユーザーが権限をバイパスできないようにし、権限ルールを管理設定で定義されたものに制限します。`Bash(curl *)` ルールは [Claude が記述するとおりの](/docs/ja/permissions#bash-rule-limits) `curl` にマッチし、`/usr/bin/curl` や `sh -c 'curl …'` にはマッチしません。コマンドのテキストに依存しないネットワークの強制には、[`allowManagedDomainsOnly` を含む `sandbox` ブロック](/docs/ja/sandboxing#configure-the-sandbox-for-your-organization)を追加してください。
 
     ```json theme={null}
     {
@@ -66,9 +66,9 @@ Claude Code は、一元的な構成のための 2 つのアプローチをサ�
     }
     ```
 
-    Hooks は `settings.json` と同じ形式を使用します。
+    フックは `settings.json` と同じ形式を使用します。
 
-    この例は、組織全体のすべてのファイル編集後に監査スクリプトを実行します。
+    この例では、組織全体でファイルが編集されるたびに監査スクリプトを実行します。
 
     ```json theme={null}
     {
@@ -85,9 +85,9 @@ Claude Code は、一元的な構成のための 2 つのアプローチをサ�
     }
     ```
 
-    hooks はシェルコマンドを実行するため、インタラクティブセッション内のユーザーは Claude Code がそれらを適用する前に[セキュリティ承認ダイアログ](#security-approval-dialogs)を表示します。
+    フックはシェルコマンドを実行するため、対話型セッションのユーザーには、Claude Code がフックを適用する前に[セキュリティ承認ダイアログ](#security-approval-dialogs)が表示されます。
 
-    [auto mode](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode) 分類器を構成して、組織が信頼するリポジトリ、バケット、ドメインを認識させるには、同じ方法で `autoMode` ブロックを配信してください。`autoMode` エントリが分類器がブロックする内容にどのように影響するか、および `environment`、`allow`、`soft_deny`、および `hard_deny` フィールドに関する重要な警告については、[auto mode を構成する](/docs/ja/auto-mode-config)を参照してください。
+    組織が信頼するリポジトリ、バケット、ドメインを [auto モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)の分類器が把握できるように設定するには、同じ方法で `autoMode` ブロックを配信します。`autoMode` のエントリが分類器のブロック対象にどのように影響するか、および `environment`、`allow`、`soft_deny`、`hard_deny` フィールドに関する重要な警告については、[auto モードを設定する](/docs/ja/auto-mode-config)を参照してください。
   </Step>
 
   <Step title="保存してデプロイする">
@@ -96,50 +96,50 @@ Claude Code は、一元的な構成のための 2 つのアプローチをサ�
 </Steps>
 
 <h3 id="verify-settings-delivery">
-  設定配信の確認
+  設定の配信を確認する
 </h3>
 
-設定が適用されていることを確認するには、ユーザーに Claude Code を再起動するよう依頼します。構成に[セキュリティ承認ダイアログ](#security-approval-dialogs)をトリガーする設定が含まれている場合、ユーザーは Claude Code がそれらを取得する次回時（次回の起動時、またはインタラクティブセッション実行中は 1 時間以内）に管理設定を説明するプロンプトを表示します。また、ユーザーに `/permissions` を実行して有効な権限ルールを表示させることで、管理権限ルールがアクティブであることを確認することもできます。
+設定が適用されていることを確認するには、ユーザーに Claude Code を再起動してもらいます。[セキュリティ承認ダイアログ](#security-approval-dialogs)をトリガーする設定が含まれている場合、Claude Code が次に管理設定を取得したとき（次回の起動時、または実行中の対話型セッションでは 1 時間以内）に、ユーザーには管理設定の内容を説明するプロンプトが表示されます。また、ユーザーに `/permissions` を実行してもらい、有効な権限ルールを表示することで、管理された権限ルールが有効になっていることを確認することもできます。
 
-特定のマシンでフェッチ結果を確認するには、ユーザーに `claude doctor` を実行させ、`Managed settings (remote)` 行を読んでください。Claude Code v2.1.248 以降が必要です。この行は 4 つの結果のいずれかを報告します。
+特定のマシンでの取得結果を確認するには、ユーザーに `claude doctor` を実行してもらい、`Managed settings (remote)` の行を確認します。Claude Code v2.1.248 以降が必要です。この行には、次の 4 つの結果のいずれかが表示されます。
 
 * 配信された設定が読み込まれた
 * 組織にサーバー管理設定が構成されていない
-* フェッチが失敗し、原因と キャッシュされたポリシーがまだ適用されているかどうかを表示
-* Claude Code がフェッチをスキップし、理由を表示。[プラットフォーム可用性](#platform-availability)でスキップするプロバイダーと構成を参照してください
+* 取得に失敗した（原因と、キャッシュされたポリシーが引き続き適用されるかどうかが表示されます）
+* Claude Code が取得をスキップした（理由が表示されます）。取得をスキップするプロバイダーと構成については、[プラットフォームの対応状況](#platform-availability)を参照してください
 
-フェッチがまだ進行中の場合、行はそれを報告します。
+取得がまだ進行中の場合は、この行にその旨が表示されます。
 
-実行中のセッションでは、`/status` はフェッチ失敗後に同じ行を表示し、サードパーティプロバイダー変数やユーザーのシェルでエクスポートされたカスタム `ANTHROPIC_BASE_URL` など、スキップされたフェッチの原因によっては表示されます。
+実行中のセッションでは、取得に失敗した後、および取得スキップの原因の一部（ユーザーのシェルでエクスポートされたサードパーティプロバイダーの変数やカスタムの `ANTHROPIC_BASE_URL` など）について、`/status` に同じ行が表示されます。
 
 <h3 id="access-control">
   アクセス制御
 </h3>
 
-以下のロールがサーバー管理設定を管理できます。
+次のロールがサーバー管理設定を管理できます。
 
 * **Primary Owner**
 * **Owner**
 
-設定の変更は組織内のすべてのユーザーに適用されるため、信頼できる担当者へのアクセスを制限してください。
+設定の変更は組織内のすべてのユーザーに適用されるため、アクセスは信頼できる担当者に限定してください。
 
 <h3 id="managed-only-settings">
-  管理専用設定
+  管理設定専用の設定
 </h3>
 
-ほとんどの[設定キー](/docs/ja/settings-reference#all-settings)は任意のスコープで機能します。いくつかのキーは管理設定からのみ読み込まれ、ユーザーまたはプロジェクト設定ファイルに配置された場合は効果がありません。権限およびプラグイン制御については[管理専用設定](/docs/ja/managed-settings#managed-only-settings)を参照するか、完全なセットについては[すべての設定](/docs/ja/settings-reference#all-settings)インデックスの Scope 列を読んでください。
+ほとんどの[設定キー](/docs/ja/settings-reference#all-settings)はどのスコープでも機能します。一部のキーは管理設定からのみ読み取られ、ユーザーまたはプロジェクトの設定ファイルに配置しても効果はありません。権限とプラグインの制御については[管理設定専用の設定](/docs/ja/managed-settings#managed-only-settings)を参照するか、完全な一覧については[すべての設定](/docs/ja/settings-reference#all-settings)インデックスの Scope 列を確認してください。
 
 <h3 id="current-limitations">
   現在の制限事項
 </h3>
 
-サーバー管理設定には、以下の制限があります。
+サーバー管理設定には次の制限があります。
 
-* 設定は組織内のすべてのユーザーに均一に適用されます。グループごとの構成はまだサポートされていません。
-* [`managed-mcp.json`](/docs/ja/managed-mcp) ファイルはサーバー管理設定を通じて配布することはできません。代わりに `allowedMcpServers` および `deniedMcpServers` ポリシーキーをそこに配信してください。Claude Code v2.1.259 以降では、[`managedMcpServers`](/docs/ja/managed-mcp#provide-servers-through-managed-settings) でリモートサーバーを提供することもできます。これは `http` および `sse` サーバーのみを受け入れ、ファイルが行う方法で排他的制御を行いません。
+* 設定は組織内のすべてのユーザーに一律に適用されます。グループごとの構成はまだサポートされていません。
+* [`managed-mcp.json`](/docs/ja/managed-mcp) ファイルをサーバー管理設定で配布することはできません。代わりに、`allowedMcpServers` および `deniedMcpServers` ポリシーキーをそこで配信してください。Claude Code v2.1.259 以降では、[`managedMcpServers`](/docs/ja/managed-mcp#provide-servers-through-managed-settings) でリモートサーバーを提供することもできます。これは `http` および `sse` サーバーのみを受け付け、ファイルのように排他的な制御は行いません。
 
-  Claude Code は、その[システムパス](/docs/ja/managed-mcp#exclusive-control-with-managed-mcp-json)にデプロイされた `managed-mcp.json` を管理設定層とは別に読み込むため、サーバー管理設定が有効な場合でもファイルが適用されます。
-* `policyHelper` および `wslInheritsWindowsSettings` など、OS レベルのポリシーソースに制限されている設定は、尊重されません。代わりに MDM またはシステム `managed-settings.json` ファイルを通じてデプロイしてください。その方法でデプロイされた `policyHelper` は、その送信元が[管理層内の優先順位](/docs/ja/managed-settings#precedence-within-the-managed-tier)の下で選択されたものである場合にのみ実行されます。
+  Claude Code は、[システムパス](/docs/ja/managed-mcp#exclusive-control-with-managed-mcp-json)にデプロイされた `managed-mcp.json` を管理設定の階層とは別に読み取るため、サーバー管理設定が有効な場合でもこのファイルは引き続き適用されます。
+* `policyHelper` や `wslInheritsWindowsSettings` など、OS レベルのポリシーソースに限定された設定は反映されません。代わりに MDM またはシステムの `managed-settings.json` ファイルでデプロイしてください。その方法でデプロイされた `policyHelper` は、そのソースが[管理階層内の優先順位](/docs/ja/managed-settings#precedence-within-the-managed-tier)に従って選択されたものである場合にのみ実行されます。
 
 <h2 id="settings-delivery">
   設定配信
@@ -149,7 +149,7 @@ Claude Code は、一元的な構成のための 2 つのアプローチをサ�
   設定の優先順位
 </h3>
 
-サーバー管理設定と[エンドポイント管理設定](/docs/ja/managed-settings#delivery-mechanisms)は、Claude Code [設定階層](/docs/ja/settings#settings-precedence)の最上位を占めます。コマンドライン引数を含む他の設定レベルはこれらをオーバーライドできません。ただし、[管理設定の優先順位の例外](/docs/ja/settings#exceptions-to-managed-settings-precedence)は除きます。
+サーバー管理設定と[エンドポイント管理設定](/docs/ja/managed-settings#delivery-mechanisms)は、いずれも Claude Code [設定階層](/docs/ja/settings#settings-precedence)の最上位を占めます。ここで設定したキーは、ユーザー自身の設定ファイルや `--settings` の値に含まれる同じキーよりも優先されます。ただし、[管理設定の優先順位の例外](/docs/ja/settings#exceptions-to-managed-settings-precedence)は除きます。
 
 管理層内では、Claude Code はデフォルトで、少なくとも 1 つのポリシーキーを配信する最初のソースを使用します。サーバー管理設定が最初にチェックされ、次にエンドポイント管理設定がチェックされます。ただし、[次に説明するキー単位の例外](#per-key-exceptions-across-managed-sources)は除きます。[Claude Code が管理ソースを組み合わせる方法](/docs/ja/managed-settings#precedence-within-the-managed-tier)には、完全なランキング、制御キーの除外、およびすべてのソースに適用されるオプトインが記載されています。
 

@@ -416,7 +416,7 @@ Claude は PR を解決する際に GitHub のレビューコメントスレッ�
 * **分離された仮想マシン**：各セッションは分離された Anthropic 管理 VM で実行されます。セッションが組織によってルーティングされる[セルフホスト環境](/docs/ja/self-hosted-environments)は、代わりに独自のインフラストラクチャで実行され、分離はデプロイメントの責任です
 * <span id="default-allowed-domains" />**ネットワークアクセス制御**：Anthropic ホスト型環境では、ネットワークアクセスはデフォルトで制限され、無効にできます。[ネットワークアクセス](/docs/ja/cloud-environments#network-access)でアクセスレベル、[デフォルト許可ドメイン](/docs/ja/cloud-environments#default-allowed-domains)、および許可リストを通過しないトラフィックを参照してください。セルフホスト型環境では、独自のネットワーク境界でセッション出力を制限します。ネットワークアクセスを無効にして実行する場合、Claude Code は Anthropic API と通信できます。これにより VM からデータが出ることを許可する可能性があります。
 * **認証情報保護**：Anthropic ホスト型環境では、git 認証情報と署名キーはサンドボックスの外に留まり、プロキシはスコープ付き認証情報で認証します。セルフホスト型環境では、デプロイメントが git 認証情報を提供します；[git を設定](/docs/ja/self-hosted-environments-deploy#configure-git)を参照してください
-* **API 認証情報**：Anthropic ホスト型環境の Pro および Max プランでは、[クラウド環境に追加](/docs/ja/cloud-environments#add-api-credentials)するキーはサンドボックスの外に留まり、セッションを離れた後、一致するリクエストに添付されます。セルフホスト型環境には API 認証情報がなく、Team および Enterprise プランはまだそれらを持っていません
+* **ネットワークシークレット**：Anthropic ホスト型環境の Pro および Max プランでは、[クラウド環境に追加](/docs/ja/cloud-environments#add-network-secrets)したキーも同様にサンドボックスの外に留まり、セッションを離れた後に一致するリクエストに添付されます。セルフホスト型環境にはネットワークシークレットがなく、Team および Enterprise プランではまだ利用できません
 * **セキュアな分析**：コードは PR を作成する前に分離されたセッション環境内で分析および変更されます
 
 <h2 id="troubleshooting">
@@ -442,10 +442,12 @@ Claude は PR を解決する際に GitHub のレビューコメントスレッ�
 `claude --cloud` と `claude --teleport` には claude.ai アカウントでのサインインが必要です。API キーで認証している場合、または保存されたアカウント詳細が古い場合、次のいずれかが表示されます。
 
 * `Unable to get organization UUID`
-* API キー認証では不十分であるというメッセージ
+* ``Cloud sessions need a claude.ai sign-in. Run `claude auth login` (or /login in a local session), then try again.``
 * セッション ID なしで `claude --teleport` を実行した場合、セッションピッカーでの `Error loading Claude Code sessions`
 
-`/login` を実行して claude.ai アカウントでサインインし、コマンドを再試行してください。エラーにプロバイダー名が示されている場合は、[エラーテーブル](#errors-when-sending-to-a-cloud-session)を参照してください。クラウドセッションはサードパーティプロバイダーを通じては利用できません。
+シェルで [`claude auth login`](/docs/ja/cli-reference#cli-commands) を実行して claude.ai アカウントでサインインし、コマンドを再試行してください。実行中のセッション内では、`/login` でも同じことができます。エラーにプロバイダー名が示されている場合は、[エラーテーブル](#errors-when-sending-to-a-cloud-session)を参照してください。クラウドセッションはサードパーティプロバイダーを通じては利用できません。
+
+v2.1.274 から v2.1.289 までは、サインインメッセージは `Claude Code cloud sessions require authentication with a Claude.ai account. API key authentication is not sufficient. Please run /login to authenticate, or check your authentication status with /status.` でした。
 
 <h3 id="remote-control-session-expired-or-access-denied">
   Remote Control セッションの有効期限切れまたはアクセス拒否

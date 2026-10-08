@@ -219,17 +219,32 @@ claude -p "Write a poem" --output-format stream-json --verbose --include-partial
   サブエージェントメッセージをフォローする
 </h4>
 
-[subagents](/docs/ja/sub-agents) からのメッセージは、ストリームに `assistant` および `user` メッセージとして表示され、その `parent_tool_use_id` フィールドはサブエージェントを生成したツール呼び出しの ID です。メインの会話からのメッセージは、そのフィールドに `null` を含みます。
+[サブエージェント](/docs/ja/sub-agents)からのメッセージと、[サブエージェントで実行される](/docs/ja/skills#run-skills-in-a-subagent)スキルからのメッセージは、ストリームに `assistant` および `user` メッセージとして表示されます。その `parent_tool_use_id` フィールドは、各メッセージがどの実行に属するかを示します。メインの会話からのメッセージは、このフィールドに `null` を持ちます。
 
-[foreground](/docs/ja/sub-agents#run-subagents-in-foreground-or-background) で実行されているサブエージェントからの最初のメッセージは、それを駆動するプロンプトを含む `user` メッセージです。その最初のメッセージの後、Claude Code は以下を発行します。
+フォークされたスキル、または[フォアグラウンド](/docs/ja/sub-agents#run-subagents-in-foreground-or-background)で実行されているサブエージェントからの最初のメッセージは、その実行を駆動するプロンプトまたはスキルコンテンツを含む `user` メッセージです。その最初のメッセージの後、Claude Code は以下を発行します。
 
-* **デフォルト**：サブエージェントの `tool_use` および `tool_result` ブロック。
-* **[`--forward-subagent-text`](/docs/ja/cli-reference#cli-flags) または [`CLAUDE_CODE_FORWARD_SUBAGENT_TEXT`](/docs/ja/env-vars) を使用**：サブエージェントのテキストおよび thinking ブロックも含まれるため、各サブエージェントのトランスクリプトを再構築できます。これには Claude Code v2.1.211 以降が必要です。
+* **デフォルト**：その実行の `tool_use` および `tool_result` ブロック。
+* **[`--forward-subagent-text`](/docs/ja/cli-reference#cli-flags) または [`CLAUDE_CODE_FORWARD_SUBAGENT_TEXT`](/docs/ja/env-vars) を使用した場合**：その実行のテキストブロックと思考ブロックも発行されるため、各実行のトランスクリプトを再構築できます。
 
-いずれかのオプションを有効にすると、Claude Code は [subagents at every nesting depth](/docs/ja/sub-agents#let-subagents-spawn-their-own-subagents) からのメッセージを転送します。Agent ツールまたは [forked skill](/docs/ja/skills#run-skills-in-a-subagent) として開始された場合、サブエージェントが生成されたかどうかに関わらず。
-フォークされたスキルが生成するサブエージェントのメッセージ、およびサブエージェント内またはフォークされたスキル内で開始されたフォークされたスキルには、Claude Code v2.1.275 以降が必要です。`parent_tool_use_id` では、ネストされたサブエージェントのメッセージは、それを開始した Agent または Skill ツール呼び出しの ID を含むため、これらの ID をフォローして完全なネストツリーを再構築できます。v2.1.219 より前では、ネストされたサブエージェントからのメッセージはストリームに表示されていませんでした。
+いずれかのオプションを有効にすると、Claude Code は[あらゆるネストの深さのサブエージェント](/docs/ja/sub-agents#let-subagents-spawn-their-own-subagents)からのメッセージを、Agent ツールで生成されたものかフォークされたスキルとして開始されたものかに関わらず転送します。`parent_tool_use_id` では、ネストされたサブエージェントのメッセージはそれを開始した Agent または Skill ツール呼び出しの ID を持つため、これらの ID をたどることで完全なネストツリーを再構築できます。
 
-[subagent で実行される](/docs/ja/skills#run-skills-in-a-subagent) Skills は、ストリームに同じ方法で表示されます。フォークされたスキルの最初のメッセージは、実行を駆動するスキルコンテンツを含む `user` メッセージです。いずれかのオプションを有効にすると、ストリームはフォークされたスキルのテキストおよび thinking ブロックも含みます。v2.1.265 より前では、フォークされたスキルの `tool_use` および `tool_result` ブロックのみがストリームに表示されていました。
+Claude がツール呼び出しで開始した実行は、そのツール呼び出しの ID を持ちます。`/<skill-name>` をプロンプトとして渡して開始したフォークされたスキルにはツール呼び出しがないため、そのメッセージは代わりに `forked-command-` で始まる値を持ち、スキルの完了後に届きます。実行の開始方法は最初の列で確認してください。
+
+| 実行の開始方法 | `parent_tool_use_id` | メッセージが届くタイミング |
+| :- | :- | :- |
+| Claude がメインの会話から Agent ツールを呼び出す | その Agent `tool_use` ブロックの ID | サブエージェントの作業中 |
+| Claude がメインの会話からフォークされたスキルの Skill ツールを呼び出す | その Skill `tool_use` ブロックの ID | フォークされたスキルの作業中 |
+| `/<skill-name>` をプロンプトとして渡す | `forked-command-` で始まる値 | フォークされたスキルの完了後に、まとめて順番に |
+
+プロンプトから開始したフォークされたスキルについては、`parent_tool_use_id` を `forked-command-` プレフィックスで照合してください。プレフィックスの後に続く名前は、入力した名前と異なる場合があるためです。
+
+これらのメッセージの一部がストリームに含まれていない場合は、Claude Code のバージョンを次の最小要件と照らし合わせて確認してください。
+
+* **`--forward-subagent-text` と `CLAUDE_CODE_FORWARD_SUBAGENT_TEXT`**：v2.1.211 以降
+* **あらゆるネストの深さでの転送**：v2.1.219 以降
+* **Claude がメインの会話から Skill ツールで開始するフォークされたスキル**：`tool_use` および `tool_result` ブロックには v2.1.86 以降、最初の `user` メッセージとテキストブロックおよび思考ブロックには v2.1.265 以降
+* **フォークされたスキルが生成するサブエージェントのメッセージ、およびサブエージェントや別のフォークされたスキルの中で開始されたフォークされたスキルのメッセージ**：v2.1.275 以降
+* **`/<skill-name>` をプロンプトとして渡して開始したフォークされたスキルのメッセージ**：v2.1.287 以降
 
 <h4 id="handle-api-retries">
   API 再試行を処理する

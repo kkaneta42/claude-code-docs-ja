@@ -210,7 +210,7 @@ export VERTEX_REGION_CLAUDE_HAIKU_4_5=us-east5
 export VERTEX_REGION_CLAUDE_4_6_SONNET=europe-west1
 ```
 
-ほとんどのモデルバージョンには、対応する `VERTEX_REGION_CLAUDE_*` 変数があります。完全なリストについては、[環境変数リファレンス](/docs/ja/env-vars)を参照してください。どのモデルがグローバルエンドポイントをサポートしているか、または地域別のみをサポートしているかを確認するには、[Google Cloud の Agent Platform Model Garden](https://console.cloud.google.com/vertex-ai/model-garden)を確認してください。
+ほとんどのモデルバージョンには、対応する `VERTEX_REGION_CLAUDE_*` 変数があります。完全なリストについては、[環境変数リファレンス](/docs/ja/env-vars#variables)を参照してください。どのモデルがグローバルエンドポイントをサポートしているか、または地域別のみをサポートしているかを確認するには、[Google Cloud の Agent Platform Model Garden](https://console.cloud.google.com/vertex-ai/model-garden)を確認してください。
 
 リージョン値がリージョンまたはロケーション名のような形状でない場合、Claude Code はそれを未設定として扱います。例えば、Claude Code はスラッシュ、ドット、またはスペースを含む値を未設定として扱います。Claude Code は各変数に対して異なるソースにフォールバックします。
 
@@ -366,7 +366,7 @@ Claude Sonnet 5、Opus 4.6 以降、および Sonnet 4.6 は、Google Cloud の 
 * 指定したロケーションでモデルが利用可能であることを確認してください。一部のモデルは `global` またはマルチリージョンロケーション（`eu` および `us` など）でのみ提供され、特定のリージョンでは提供されていません
 * `CLOUD_ML_REGION=global` を使用している場合、[Model Garden](https://console.cloud.google.com/vertex-ai/model-garden)の「サポートされている機能」でモデルがグローバルエンドポイントをサポートしていることを確認してください。グローバルエンドポイントをサポートしていないモデルの場合は、以下のいずれかを実行してください：
   * `ANTHROPIC_MODEL` または `ANTHROPIC_DEFAULT_HAIKU_MODEL` を通じてサポートされているモデルを指定するか、
-  * `VERTEX_REGION_<MODEL_NAME>` 環境変数を使用してリージョンまたはマルチリージョンロケーションを設定してください
+  * [環境変数リファレンス](/docs/ja/env-vars#variables)に記載されているモデルの `VERTEX_REGION_CLAUDE_*` 変数を使用して、リージョンまたはマルチリージョンロケーションを設定してください
 
 429 エラーが発生した場合：
 

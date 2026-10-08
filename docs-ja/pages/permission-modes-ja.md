@@ -233,13 +233,13 @@ Claude Code v2.1.285 以降が必要です。これは [HIPAA 設定の最小バ
   </Tab>
 
   <Tab title="Web and mobile">
-    [claude.ai/code](https://claude.ai/code) のプロンプトボックスの横またはモバイルアプリのモードドロップダウンを使用します。権限プロンプトは承認のために claude.ai に表示されます。どのモードが表示されるかはセッションが実行される場所によります。
+    [claude.ai/code](https://claude.ai/code) では、プロンプトボックスの横にあるモードドロップダウンを使用します。モバイルアプリでは、プロンプトボックスの **+** ボタンをタップし、次に **Permission** をタップします。クラウドセッションと Remote Control セッションでは、提供される権限モードが異なります。
 
-    * **[Claude Code on the web](/docs/ja/claude-code-on-the-web)のクラウドセッション**：Accept edits、Plan、Auto。Accept edits は `default` モードに対応します。クラウドセッションはモードに関係なくファイル編集を事前承認するため、ドロップダウンは Manual の代わりに Accept edits を表示します。設定からの `defaultMode: "acceptEdits"` は依然として尊重されます。Auto モードは組織がそれを許可し、選択されたモデルがそれをサポートする場合にのみ表示されます。Bypass permissions は利用できません。
-    * **ローカルマシンの [Remote Control](/docs/ja/remote-control)セッション**：自分で開始したセッションの場合、Manual、Accept edits、Plan。アプリから Auto または Bypass permissions を選択することはできません。プロジェクトスレッドがコンピューター上で実行されている場合は、[スレッドを自分のコンピューター上で実行する](/docs/ja/claude-projects#run-a-thread-on-your-own-computer)を参照してください。
-      * Bypass permissions を除き、ドロップダウンはローカルセッションが実行されているモードを表示します。これにはターミナルから設定されたモードが含まれ、アプリまたはターミナルでモードが変更されると更新されます。
-      * [デスクトップアプリ](/docs/ja/desktop)または [VS Code 拡張機能](/docs/ja/vs-code)でホストされるセッションは、アプリで発生するのと同じように権限モード変更を claude.ai に報告します。
-      * v2.1.202 より前では、`/remote-control` または `claude --remote-control` で接続されたセッションはモードをまったく報告しなかったため、claude.ai とモバイルアプリはセッションが実行されていないモードを表示する可能性がありました。不一致はラベルのみに影響しました。Claude Code は権限プロンプトをセッションの実際のモードから生成し、それらは依然としてアプリに表示されて承認されました。
+    * **[クラウドセッション](/docs/ja/claude-code-on-the-web)**：Accept edits、Plan、Auto。Accept edits は `default` モードに対応します。クラウドセッションはモードに関係なくファイル編集を事前承認するため、ドロップダウンは Manual の代わりに Accept edits を表示します。クラウドセッションは設定からの `defaultMode: "acceptEdits"` を引き続き尊重します。Auto モードは組織がそれを許可し、選択されたモデルがそれをサポートする場合にのみ表示されます。Bypass permissions は利用できません。
+    * **ローカルマシンの [Remote Control](/docs/ja/remote-control) セッション**：自分で開始したセッションの場合は Manual、Accept edits、Plan、Auto を使用でき、アプリから Bypass permissions を選択することはできません。Auto を使用するには、セッションが auto モードの[利用要件](#eliminate-prompts-with-auto-mode)を満たしている必要があります。コンピューター上で実行されるプロジェクトスレッドについては、[スレッドを自分のコンピューター上で実行する](/docs/ja/claude-projects#run-a-thread-on-your-own-computer)を参照してください。
+      * Bypass permissions を除き、ドロップダウンはローカルセッションの現在の権限モードを表示します。これにはターミナルから設定された権限モードも含まれます。アプリまたはターミナルで権限モードが変更されると、表示が更新されます。
+      * [デスクトップアプリ](/docs/ja/desktop)または [VS Code 拡張機能](/docs/ja/vs-code)でホストされるセッションは、ターミナルでホストされるセッションと同様に、権限モードの変更を発生時に claude.ai に報告します。
+      * v2.1.202 より前では、`/remote-control` または `claude --remote-control` で接続されたセッションは権限モードをまったく報告しなかったため、claude.ai とモバイルアプリはセッションの実際とは異なる権限モードを表示する可能性がありました。不一致はラベルのみに影響しました。Claude Code は権限プロンプトをセッションの実際の権限モードから生成し、それらは依然としてアプリに表示されて承認されました。
 
     Remote Control の場合、ローカルマシンを実行するセッションは claude.ai アカウントでサインインする必要があります。API キーはサポートされていません。ローカルセッションを起動するときに開始権限モードを設定することもできます。
 
@@ -333,7 +333,7 @@ auto モードは、アカウントが以下のすべての要件を満たす場
 
 * **プラン**: すべてのプラン。
 * **組織**: Team と Enterprise では、auto モードはデフォルトで利用可能です。管理者は[管理設定](/docs/ja/managed-settings)で `permissions.disableAutoMode` を `"disable"` に設定することで、組織の auto モードをオフにできます。
-* **モデル**: Anthropic API と [Claude Platform on AWS](/docs/ja/claude-platform-on-aws) では、Claude Opus 4.6 以降、Sonnet 4.6 以降、または [Fable モデル](/docs/ja/model-config#work-with-fable)。Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、およびサインイン済みの [Claude apps gateway](/docs/ja/claude-apps-gateway) セッションでは、Claude Sonnet 5 以降、Opus 4.7 以降、および Fable モデルのみです。Sonnet 4.5、Opus 4.5、Haiku、claude-3 モデルを含む古いモデルは、どのプロバイダーでもサポートされていません。
+* **モデル**: Anthropic API と [Claude Platform on AWS](/docs/ja/claude-platform-on-aws) では、Claude Opus 4.6 以降、Sonnet 4.6 以降、Haiku 5.5、または [Fable モデル](/docs/ja/model-config#work-with-fable)。Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、およびサインイン済みの [Claude apps gateway](/docs/ja/claude-apps-gateway) セッションでは、Claude Sonnet 5 以降、Opus 4.7 以降、Haiku 5.5、および Fable モデルのみです。Sonnet 4.5、Opus 4.5、Haiku 4.5、claude-3 モデルを含む古いモデルは、どのプロバイダーでもサポートされていません。
 * **プロバイダー**: Anthropic API、Claude Platform on AWS、Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、およびサインイン済みの Claude apps gateway セッションでデフォルトで利用可能です。
 
 Claude Code が auto モードを利用不可と報告する場合は、まずこれらの要件と、いずれかの設定ファイルが [`disableAutoMode`](/docs/ja/settings-reference#disableautomode) を設定していないかを確認してください。また、Anthropic がサーバー側で auto モードをオフにしているか、サーバーがアカウントに対して auto モードを拒否した可能性もあります。いずれかの回答を受け取ったセッションは、セッションが終了するまで auto モードをオフのままにするため、後で新しいセッションを開始してください。
@@ -348,7 +348,7 @@ Claude Code が auto モードを利用不可と報告する場合は、まず�
 
 [Amazon Bedrock](/docs/ja/amazon-bedrock)、[Google Cloud の Agent Platform](/docs/ja/google-vertex-ai)、[Microsoft Foundry](/docs/ja/microsoft-foundry)、およびサインイン済みの [Claude apps gateway](/docs/ja/claude-apps-gateway) セッションでは、auto モードはデフォルトで利用可能です。他に権限モードを設定するものがない場合、そのセクションの表に記載されているバージョンでは、[組み込みの開始権限モード](#which-mode-a-session-starts-in)でもあります。開始権限モードを自分で選択するには、[別の権限モードで開始する](#start-in-a-different-mode)の説明に従って `permissions.defaultMode` を設定するか、VS Code 拡張機能のモードインジケーターから権限モードを選択します。
 
-これらのプロバイダーでサポートされているのは、Claude Sonnet 5 以降、Opus 4.7 以降、および Fable モデルのみです。その他のモデルでは、セッションは代わりに Manual で開始します。
+これらのプロバイダーでサポートされているのは、Claude Sonnet 5 以降、Opus 4.7 以降、Haiku 5.5、および Fable モデルのみです。その他のモデルでは、セッションは代わりに Manual で開始します。これらのプロバイダーで Haiku 5.5 を使用して auto モードを利用するには、Claude Code v2.1.293 以降が必要です。
 
 開発者が auto モードを使用できないようにするには、[管理設定](/docs/ja/managed-settings)で `disableAutoMode` を `"disable"` に設定します。これにより `auto` が `Shift+Tab` のサイクルから削除され、`--permission-mode auto` で開始されたセッションは代わりに Manual で開始します。すでに auto モードで実行中のセッションは、この設定が[管理者がデプロイしたソース](/docs/ja/managed-settings#which-managed-source-claude-code-uses)からそのセッションに届くと auto モードを終了し、`auto mode disabled by settings` と表示します。v2.1.251 より前では、実行中のセッションは終了するまで auto モードを維持していました。
 

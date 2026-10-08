@@ -140,11 +140,13 @@ Claude Code GitHub Action を削除するには、インストールに適用さ
 | 権限 | アクセス |
 | - | - |
 | Actions | 読み取りと書き込み |
+| Administration | 読み取り |
 | Checks | 読み取りと書き込み |
 | Contents | 読み取りと書き込み |
 | Discussions | 読み取りと書き込み |
 | Issues | 読み取りと書き込み |
 | Members | 読み取り |
+| Merge queues | 読み取り |
 | Metadata | 読み取り |
 | Pull requests | 読み取りと書き込み |
 | Repository hooks | 読み取りと書き込み |

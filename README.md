@@ -17,6 +17,341 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-10-08</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/admin-setup-ja.md                    |  14 +-
+ docs-ja/pages/advisor-ja.md                        |  16 +-
+ docs-ja/pages/agent-teams-ja.md                    |   2 +
+ docs-ja/pages/agent-view-ja.md                     |  14 +-
+ docs-ja/pages/agents-ja.md                         |   2 +-
+ docs-ja/pages/amazon-bedrock-ja.md                 |   4 +-
+ docs-ja/pages/authentication-ja.md                 |   2 +-
+ docs-ja/pages/auto-mode-config-ja.md               |   2 +-
+ docs-ja/pages/changelog.md                         |  59 ++
+ docs-ja/pages/chrome-ja.md                         |   2 +-
+ docs-ja/pages/claude-apps-gateway-config-ja.md     |  51 +-
+ docs-ja/pages/claude-code-on-the-web-ja.md         |   8 +-
+ docs-ja/pages/claude-directory-ja.md               |  22 +-
+ docs-ja/pages/claude-projects-ja.md                |  16 +-
+ docs-ja/pages/cli-reference-ja.md                  |   4 +-
+ docs-ja/pages/cloud-environments-ja.md             |  98 ++--
+ docs-ja/pages/code-review-ja.md                    |   2 +-
+ docs-ja/pages/common-workflows-ja.md               |   2 +-
+ docs-ja/pages/context-window-ja.md                 |  20 +-
+ docs-ja/pages/corporate-launcher-ja.md             |   1 +
+ docs-ja/pages/costs-ja.md                          |  38 +-
+ docs-ja/pages/deep-links-ja.md                     |   8 +-
+ docs-ja/pages/desktop-ios-simulator-ja.md          |   2 +-
+ docs-ja/pages/desktop-ja.md                        | 159 ++++--
+ docs-ja/pages/env-vars-ja.md                       | 636 +++++++++++----------
+ docs-ja/pages/errors-ja.md                         |   9 +-
+ docs-ja/pages/fast-mode-ja.md                      |   2 +-
+ docs-ja/pages/feature-availability-ja.md           |  13 +-
+ docs-ja/pages/github-actions-ja.md                 |   2 +
+ docs-ja/pages/glossary-ja.md                       |  48 +-
+ docs-ja/pages/google-vertex-ai-ja.md               |   4 +-
+ docs-ja/pages/headless-ja.md                       |  29 +-
+ docs-ja/pages/hooks-guide-ja.md                    |   2 +-
+ docs-ja/pages/hooks-ja.md                          |  14 +-
+ docs-ja/pages/how-claude-code-works-ja.md          |   2 +-
+ docs-ja/pages/interactive-mode-ja.md               |   2 +-
+ docs-ja/pages/keybindings-ja.md                    |  54 +-
+ docs-ja/pages/llm-gateway-connect-ja.md            |   9 +-
+ docs-ja/pages/llm-gateway-protocol-ja.md           |   2 +-
+ docs-ja/pages/managed-mcp-ja.md                    |  22 +-
+ docs-ja/pages/mcp-ja.md                            |  10 +-
+ docs-ja/pages/memory-ja.md                         |   4 +-
+ docs-ja/pages/mobile-ja.md                         |   2 +-
+ docs-ja/pages/model-config-ja.md                   |  66 ++-
+ docs-ja/pages/monitoring-usage-ja.md               |   2 +-
+ docs-ja/pages/overview-ja.md                       |  10 +-
+ docs-ja/pages/permission-modes-ja.md               |  16 +-
+ docs-ja/pages/plugin-evals-ja.md                   |   8 +-
+ docs-ja/pages/prompt-caching-ja.md                 |  76 +--
+ docs-ja/pages/prompt-library-ja.md                 |   8 +-
+ docs-ja/pages/quickstart-ja.md                     | 176 +++---
+ docs-ja/pages/remote-control-ja.md                 |   6 +-
+ docs-ja/pages/routines-ja.md                       |   2 +-
+ .../pages/self-hosted-environments-testing-ja.md   |   2 +-
+ docs-ja/pages/server-managed-settings-ja.md        |  48 +-
+ docs-ja/pages/sessions-ja.md                       |  78 +--
+ docs-ja/pages/settings-ja.md                       |  30 +-
+ docs-ja/pages/settings-reference-ja.md             |  19 +-
+ docs-ja/pages/setup-ja.md                          |   8 +-
+ docs-ja/pages/skills-ja.md                         |   9 +-
+ docs-ja/pages/statusline-ja.md                     |  29 +-
+ docs-ja/pages/sub-agents-ja.md                     |  10 +-
+ docs-ja/pages/tools-reference-ja.md                |   6 +-
+ docs-ja/pages/vs-code-ja.md                        |  30 +-
+ docs-ja/pages/web-quickstart-ja.md                 |  34 +-
+ docs-ja/pages/workflows-ja.md                      |   7 +-
+ docs-ja/pages/worktrees-ja.md                      |   4 +-
+ 67 files changed, 1228 insertions(+), 870 deletions(-)
+```
+
+<details>
+<summary>admin-setup-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/admin-setup-ja.md b/docs-ja/pages/admin-setup-ja.md
+index 0cd347d..f3a18fe 100644
+--- a/docs-ja/pages/admin-setup-ja.md
++++ b/docs-ja/pages/admin-setup-ja.md
+@@ -47,5 +47,5 @@ Claude Code は複数の API プロバイダーのいずれかを通じて Claud
+ </h2>
+ 
+-マネージド設定は、組織ポリシーを定義します。Claude Code は以下の表に示す 4 つのソースを優先順位順にチェックします。[Claude Code がマネージドソースを組み合わせる方法](/docs/ja/managed-settings#precedence-within-the-managed-tier)は、どのソースが適用されるか、ポリシーヘルパーが何を変更するか、およびすべてのソースを構成する方法を説明しています。この表は決定マップです。
++管理設定は、組織ポリシーを定義します。Claude Code は以下の表に示す 4 つのソースを優先順位順にチェックします。[Claude Code がマネージドソースを組み合わせる方法](/docs/ja/managed-settings#precedence-within-the-managed-tier)は、どのソースが適用されるか、ポリシーヘルパーが何を変更するか、およびすべてのソースを構成する方法を説明しています。この表は決定マップです。
+ 
+ | メカニズム | 配信 | 優先度 | プラットフォーム |
+@@ -56,5 +56,5 @@ Claude Code は複数の API プロバイダーのいずれかを通じて Claud
+ | Windows user registry | `HKCU\SOFTWARE\Policies\ClaudeCode` | 最低 | Windows のみ |
+ 
+-Claude Code はスタートアップ時に server-managed 設定をフェッチし、セッション中は 1 時間ごとに更新します。デプロイするエンドポイントインフラストラクチャはありません。claude.ai 管理コンソール経由の配信には Claude for Teams または Enterprise プランが必要です。Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry でのデプロイメントは、[Claude apps gateway](/docs/ja/claude-apps-gateway) を実行することで同じリモート配信を取得できます。または、ファイルベースまたは OS レベルのメカニズムのいずれかを代わりに使用してください。
++Claude Code はスタートアップ時に server-managed 設定をフェッチし、セッション中は 1 時間ごとに更新します。デプロイするエンドポイントインフラストラクチャはありません。claude.ai 管理コンソール経由の配信には Claude for Teams または Enterprise プランが必要です。Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry でのデプロイは、[Claude apps gateway](/docs/ja/claude-apps-gateway) を実行することで同じリモート配信を取得できます。または、ファイルベースまたは OS レベルのメカニズムのいずれかを代わりに使用してください。
+ 
+ 組織が複数のプロバイダーを混在させている場合、claude.ai ユーザー向けに [server-managed settings](/docs/ja/server-managed-settings) を設定し、他のユーザーがマネージドポリシーを受け取るように [ファイルベースまたは plist/registry フォールバック](/docs/ja/managed-settings#delivery-mechanisms)を設定してください。
+@@ -70,16 +70,16 @@ plist と HKLM レジストリの場所は任意のプロバイダーで機能
+ </h3>
+ 
+-Windows では、[Claude Code Desktop は WSL 2 ディストリビューション内で Code セッションを実行できます](/docs/ja/desktop-wsl)。セッションの Claude Code プロセスはディストリビューション内で実行されるため、上記の WSL 検出パスを通じてマネージド設定を解決します。`wslInheritsWindowsSettings: true` が展開されていない限り、Windows のみのソースはそれに到達しません。
++Windows では、[Claude Code Desktop は WSL 2 ディストリビューション内で Code セッションを実行できます](/docs/ja/desktop-wsl)。セッションの Claude Code プロセスはディストリビューション内で実行されるため、上記の WSL 検出パスを通じて管理設定を解決します。`wslInheritsWindowsSettings: true` がデプロイされていない限り、Windows のみのソースはそれに到達しません。
+ 
+-Claude Desktop は、`C:\Program Files\ClaudeCode\managed-settings.json` が存在する場合など、組織がマネージドしているデバイスとして検出されるデバイスでは、デフォルトで WSL セッションをオフにします。それらをオンにするには、Windows レジストリポリシーをデプロイします。これには Claude Desktop v1.19367.0 以降が必要です。
++Claude Desktop は、`C:\Program Files\ClaudeCode\managed-settings.json` が存在する場合など、組織が管理しているデバイスとして検出されるデバイスでは、デフォルトで WSL セッションをオフにします。それらをオンにするには、Windows レジストリポリシーをデプロイします。これには Claude Desktop v1.19367.0 以降が必要です。
+ 
+-* `HKLM\SOFTWARE\Policies\Claude` の下に `disableWslSessions` という名前の値を作成し、`REG_SZ` 文字列 `false` または `REG_DWORD` `0` に設定します。この値は Claude Desktop ポリシーキーの下にあり、マネージド設定を含む `ClaudeCode` キーとは別です。HKLM の下に値をデプロイします。これには管理者権限が必要です。HKCU の下の値は WSL セッションを有効にしません。
++* `HKLM\SOFTWARE\Policies\Claude` の下に `disableWslSessions` という名前の値を作成し、`REG_SZ` 文字列 `false` または `REG_DWORD` `0` に設定します。この値は Claude Desktop ポリシーキーの下にあり、管理設定を含む `ClaudeCode` キーとは別です。HKLM の下に値をデプロイします。これには管理者権限が必要です。HKCU の下の値は WSL セッションを有効にしません。
+ * `C:\Program Files\ClaudeCode\managed-settings.json` をデプロイする場合は、そのままにしておいてください。`disableWslSessions` が HKLM の下で `false` になると、そのファイルが存在していても Desktop は WSL セッションを許可します。
+```
+
+</details>
+
+<details>
+<summary>advisor-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/advisor-ja.md b/docs-ja/pages/advisor-ja.md
+index 6070a48..dd69937 100644
+--- a/docs-ja/pages/advisor-ja.md
++++ b/docs-ja/pages/advisor-ja.md
+@@ -88,5 +88,5 @@ Claude Code はそのセッションの `advisorModel` 設定の代わりにフ
+ 
+ * セッションのメインモデルが advisor をサポートしていない
+-* Haiku などのリクエストされたモデルが advisor として機能できない
++* Haiku 4.5 などのリクエストされたモデルが advisor として機能できない
+ * 組織の [`availableModels`](/docs/ja/model-config#restrict-model-selection) 許可リストがリクエストされたモデルを除外している
+ * Fable をリクエストし、アカウントがまだ[使用クレジット同意](#fable-advisor-and-usage-credits)を必要としている
+@@ -104,8 +104,8 @@ Claude Code はアドバイザーの役割における能力に基づいてモ
+ | メインモデル | 受け入れられるアドバイザー |
+ | - | - |
+-| Haiku 4.5 | Fable、Opus、Sonnet |
+-| Sonnet 4.6 | Fable、Opus、Sonnet |
+-| Opus 4.6 | Fable、Opus、Sonnet 5 以降 |
+-| Sonnet 5 | Fable、Opus 4.7 以降、Sonnet 5 以降 |
++| Haiku 4.5 | Fable、Opus、Sonnet、Haiku 5.5 |
++| Sonnet 4.6 | Fable、Opus、Sonnet、Haiku 5.5 |
++| Opus 4.6 | Fable、Opus、Sonnet 5 以降、Haiku 5.5 |
++| Sonnet 5 または Haiku 5.5 | Fable、Opus 4.7 以降、Sonnet 5 以降、Haiku 5.5 |
+ | Opus 4.7 または Opus 4.8 | Fable、Opus 4.7 以降、Sonnet 5.5 |
+ | Sonnet 5.5 | Fable、Opus 5 以降、Sonnet 5.5 |
+@@ -114,7 +114,7 @@ Claude Code はアドバイザーの役割における能力に基づいてモ
+ | Fable 5.1 | Fable 5.1 |
+ 
+-Fable 5.1 には Claude Code v2.1.257 以降が必要です。Fable モデルには [Fable アクセス](/docs/ja/model-config#work-with-fable) が必要です。Opus 4.7 または Opus 4.8 のメインモデルに対して Sonnet 5.5 をアドバイザーとして使用するには、Claude Code v2.1.287 以降が必要です。
++Fable 5.1 には Claude Code v2.1.257 以降が必要です。Fable モデルには [Fable アクセス](/docs/ja/model-config#work-with-fable) が必要です。Opus 4.7 または Opus 4.8 のメインモデルに対して Sonnet 5.5 をアドバイザーとして使用するには、Claude Code v2.1.287 以降が必要です。Haiku 5.5 をメインモデルまたはアドバイザーとして使用するには、Claude Code v2.1.293 以降が必要です。
+ 
+```
+
+</details>
+
+<details>
+<summary>agent-teams-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/agent-teams-ja.md b/docs-ja/pages/agent-teams-ja.md
+index a91adb6..7f4436f 100644
+--- a/docs-ja/pages/agent-teams-ja.md
++++ b/docs-ja/pages/agent-teams-ja.md
+@@ -160,4 +160,6 @@ Claude Code は各チームメンバーのモデルを、以下の最初に適
+ 4. リーダーの現在のモデル。
+ 
++インストールされている [mod](/docs/ja/plugins/mods/overview) が [`agent.spawn`](/docs/ja/plugins/mods/reference#subagents) フックでモデルを設定している場合、Claude Code は最初のソースの代わりにそのモデルを使用します。
++
+ [`CLAUDE_CODE_SUBAGENT_MODEL_FORCE=1`](/docs/ja/sub-agents#run-every-subagent-on-one-model) を設定した場合、最初の 2 つのソースは適用されません。Claude Code は `CLAUDE_CODE_SUBAGENT_MODEL` が `inherit` 以外に設定されている場合はそこからすべてのチームメンバーのモデルを選択し、それ以外の場合はリーダーの現在のモデルから選択します。Claude Code v2.1.257 以降が必要です。
+ 
+```
+
+</details>
+
+<details>
+<summary>agent-view-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/agent-view-ja.md b/docs-ja/pages/agent-view-ja.md
+index 16af107..9ad0030 100644
+--- a/docs-ja/pages/agent-view-ja.md
++++ b/docs-ja/pages/agent-view-ja.md
+@@ -227,5 +227,5 @@ Completed
+ ピークパネルに返信を入力して `Enter` を押すと、そのセッションに送信されます。返信の先頭に `!` を付けると、代わりに Bash コマンドを送信します。返信がどう扱われるかは、セッションと送信する内容によって異なります：
+ 
+-* 作業中のセッション：返信は応答を中断せずにセッションの [メッセージキュー](/docs/ja/interactive-mode#queue-messages-while-claude-works) に追加され、[キューに入れた入力が反映されるタイミング](/docs/ja/interactive-mode#when-claude-code-sends-what-you-queued) で反映されます。[コマンド](/docs/ja/commands) は、セッション自体のプロンプトで入力するとすぐに実行されるものであっても、ターンが終了するまで待機します
++* 作業中のセッション：`/model`、`/effort`、`/rename`、`/usage` はすぐに実行されます。その他の返信は応答を中断せずにセッションの [メッセージキュー](/docs/ja/interactive-mode#queue-messages-while-claude-works) に追加され、[キューに入れた入力が反映されるタイミング](/docs/ja/interactive-mode#when-claude-code-sends-what-you-queued) で反映されます。その他の [コマンド](/docs/ja/commands) は、セッション自体のプロンプトで入力するとすぐに実行されるものであっても、ターンが終了するまで待機します
+ * `/stop` だけの返信：セッションに届けられるのではなく、セッションが作業中でもユーザーを待っている状態でも、その場でセッションを停止します
+ * [シェルジョブ](#run-a-shell-command)：返信は `/stop` も含め、入力としてコマンドのターミナルに送られます
+@@ -289,9 +289,11 @@ Claude Code が会話を再度開けない場合は、終了して会話を再
+ `←` を押した元の行は、矢印キーまたはマウスで選択を移動した後も、太字で薄くない名前を保持するため、どのセッションから来たかがわかります。
+ 
+-`←` を押したときにツールが実行中の場合、Claude Code はバックグラウンドにする前に最大約 10 秒間その完了を待ち、Claude はバックグラウンドセッションで応答を続けます。待たずにすぐにバックグラウンドにするには、`←` を再度押します。進行中の作業をバックグラウンドセッションに引き継げない場合、Claude Code は [`/background`](#from-inside-a-session) と同様に、まず `Background this session?` ダイアログを表示します。
++`←` を押したときにツールが実行中の場合、Claude Code はバックグラウンドにする前にその完了を待ち、Claude はバックグラウンドセッションで応答を続けます。待たずにすぐにバックグラウンドにするには、`←` を再度押します。進行中の作業をバックグラウンドセッションに引き継げない場合、Claude Code は [`/background`](#from-inside-a-session) と同様に、まず `Background this session?` ダイアログを表示します。
+ 
+-Claude が会話で開始した [フォアグラウンドのサブエージェント](/docs/ja/sub-agents#run-subagents-in-foreground-or-background) がまだ実行中の間は、10 秒の制限は適用されません。Claude Code はそれらの作業が引き継がれるよう待機を続け、待機中は `Still backgrounding after the current tool` 通知を表示します。待たずにバックグラウンドにするには `←` を再度押しますが、その場合それらのサブエージェントは最初からやり直しになります。Claude Code は [動的ワークフロー](/docs/ja/workflows) が実行しているサブエージェントは待ちません。ワークフローでサブエージェントが実行中の場合、Claude Code は代わりに `Background this session?` ダイアログを表示します。
++約 10 秒経過すると、Claude Code はそれ以上待たずにセッションをバックグラウンドにします。ただし、次のようなケースは例外です：
+ 
+-プロンプト入力に未送信のテキストがある間、Claude Code はセッションをバックグラウンドにしません。そのテキストはターミナルの入力ボックスに残り、バックグラウンドセッションには移動しないためです。Claude Code がセッションをバックグラウンドにするのを待っている間に入力欄に入力すると、`Backgrounding cancelled — you have unsent text in the input. Send it or clear it, then press ← again.` と表示されて切り替えがキャンセルされます。
++* **フォアグラウンドのサブエージェントがまだ実行中**：Claude が開始した [フォアグラウンドのサブエージェント](/docs/ja/sub-agents#run-subagents-in-foreground-or-background) の作業が引き継がれるよう、Claude Code は待機を続け、`Still backgrounding after the current tool` を表示します。待たずにバックグラウンドにするには `←` を再度押しますが、その場合それらのサブエージェントは最初からやり直しになります。
++* **権限プロンプトまたは質問が回答を待っている**：権限プロンプトまたは Claude が尋ねた質問が待機している間、Claude Code は待機を続け、`Still backgrounding after the current tool — a question is waiting for your answer.` を表示します。
++* **プロンプト入力に入力した**：未送信のテキストはターミナルの入力ボックスに残り、バックグラウンドセッションには移動しないため、Claude Code は切り替えをキャンセルします。`Backgrounding cancelled — you have unsent text in the input. Send it or clear it, then press ← again.` と表示されます。
+ 
+ `←` を押すと、会話にまだメッセージがない場合でもセッションの行が作成されるため、`→` でその行に戻れます。
+@@ -820,4 +822,5 @@ claude agents --settings ./ci-settings.json --add-dir ../shared-lib
+ | `claude rm <id> --force-remove-worktree <worktree-id>` | git または `WorktreeRemove` フックが worktree を削除できなかったために削除が拒否されたセッションを削除し、worktree ディレクトリを削除してそのブランチをリポジトリに残します。拒否が出力した正確な値を渡します。[セッションの削除で何が削除されるか](#what-deleting-a-session-removes)を参照してください。v2.1.268 以降が必要です |
+ | `claude daemon status` | [supervisor](#the-supervisor-process) の状態、バージョン、ソケットディレクトリ、およびワーカー数を出力する |
++| `claude daemon logs` | supervisor のログファイル [`~/.claude/daemon.log`](#where-state-is-stored) を追跡し、`Ctrl+C` を押すまで新しい行を到着次第出力する |
+```
+
+</details>
+
+<details>
+<summary>agents-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/agents-ja.md b/docs-ja/pages/agents-ja.md
+index 236184e..7858ede 100644
+--- a/docs-ja/pages/agents-ja.md
++++ b/docs-ja/pages/agents-ja.md
+@@ -21,5 +21,5 @@ Claude Code には、複数のタスクを同時に処理する 5 つの方法
+ この作業をサポートする 3 つの追加ツールがありますが、エージェント自体を実行する方法ではありません。
+ 
+-* [ワークツリー](/docs/ja/worktrees) は各セッションに個別の git チェックアウトを提供するため、並列セッションが同じファイルを編集することはありません。自分で実行するセッションに使用します。エージェントビューからディスパッチされたセッションは、[ファイルを編集する前に独自のワークツリーに移動](/docs/ja/agent-view#how-file-edits-are-isolated) し、スポーンするサブエージェントも各々独自のワークツリーを取得できます。
++* [Worktree](/docs/ja/worktrees) は各セッションに個別の git チェックアウトを提供するため、並列セッションはそれぞれ自分のファイルのコピーを編集します。自分で実行するセッションに使用します。エージェントビューからディスパッチしたセッションは、[ファイルを編集する前に専用の worktree に移動](/docs/ja/agent-view#how-file-edits-are-isolated) し、スポーンするサブエージェントもそれぞれ worktree を取得できます。
+ * [クロスセッションメッセージング](/docs/ja/cross-session-messaging) により、Claude はこのマシン上、別のマシン上、または [クラウド](/docs/ja/claude-code-on-the-web) 上の他の Claude Code セッションをリストして、メッセージを送信できます。自分で実行するセッションは、検出結果とステータスを相互に渡すことができます。
+ * [`/batch`](/docs/ja/commands) は、1 つの大きな変更を 5 ～ 30 個のワークツリー分離サブエージェントに分割する [skill](/docs/ja/skills) です。これはサブエージェントとワークツリーのパッケージ化された使用法であり、別の調整スタイルではありません。
+```
+
+</details>
+
+<details>
+<summary>amazon-bedrock-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/amazon-bedrock-ja.md b/docs-ja/pages/amazon-bedrock-ja.md
+index f9a2444..23344f4 100644
+--- a/docs-ja/pages/amazon-bedrock-ja.md
++++ b/docs-ja/pages/amazon-bedrock-ja.md
+@@ -189,5 +189,5 @@ Claude Code は AWS デフォルト認証情報プロバイダーチェーンを
+ キャッシュは上記のすべての認証情報オプションをカバーしていますが、Amazon Bedrock API キーはプロバイダーチェーンを使用しないため除外されます。代わりにすべてのリクエストでチェーンを解決するには、[`CLAUDE_CODE_SKIP_AWS_CRED_CACHE=1`](/docs/ja/env-vars) を設定してください。
+ 
+-チェーンの各解決は 60 秒後にタイムアウトします。チェーン内のステップが停止した場合（例えば、受け取ることができない入力を待つ `credential_process` ヘルパー）、リクエストは [`AWS default-chain credential resolve timed out`](/docs/ja/errors#aws-default-chain-credential-resolve-timed-out) で失敗します。チェーンが正当に長い時間が必要なインタラクティブサインイン（`aws-vault` のようなラッパーを使用した MFA 付きブラウザベースの SSO など）を実行する場合、[`CLAUDE_CODE_AWS_CHAIN_RESOLVE_TIMEOUT_MS`](/docs/ja/env-vars) でミリ秒単位で制限を引き上げてください。v2.1.207 より前では、停止した認証情報解決はリクエストを無期限に待機させていました。
++キャッシュを埋める解決は 60 秒後にタイムアウトします。チェーン内のステップが停止した場合（例えば、受け取ることができない入力を待つ `credential_process` ヘルパー）、リクエストは [`AWS default-chain credential resolve timed out`](/docs/ja/errors#aws-default-chain-credential-resolve-timed-out) で失敗します。チェーンが正当に長い時間を必要とするインタラクティブサインイン（`aws-vault` のようなラッパーを使用した MFA 付きブラウザベースの SSO など）を実行する場合、[`CLAUDE_CODE_AWS_CHAIN_RESOLVE_TIMEOUT_MS`](/docs/ja/env-vars) でミリ秒単位で制限を引き上げてください。`CLAUDE_CODE_SKIP_AWS_CRED_CACHE=1` を設定している場合、各 API リクエストはこの制限なしでチェーンを解決します。
+ 
+ Amazon Bedrock API キーで認証する場合を除き、[セットアップウィザード](#sign-in-with-bedrock)は認証情報を検証する際に行う各 AWS 呼び出しに同じ制限を適用し、各モデルチェック前の認証情報ルックアップにも適用します。認証情報検証中に、制限を超えるチェックは [`Timed out after 60s waiting for AWS`](/docs/ja/errors#bedrock-setup-verification-timed-out-waiting-for-aws) で失敗します。
+@@ -683,5 +683,5 @@ Claude Code は Amazon Bedrock [Invoke API](https://docs.aws.amazon.com/bedrock/
+ Amazon Bedrock は `InvokeModelWithResponseStream` レスポンスをバイナリイベントストリーム形式でストリーミングし、ヘッダー `Content-Type: application/vnd.amazon.eventstream` を含みます。Claude Code と Amazon Bedrock の間のゲートウェイまたはプロキシは、Amazon Bedrock が送信したレスポンスボディとそのヘッダー（`Content-Type` を含む）を変更されずに転送する必要があります。
+ 
+-ゲートウェイが `Content-Type` を別の値に書き換える場合、Claude Code は `Bedrock streaming response has content-type` で始まるエラーでレスポンスを拒否し、受け取った値を名前付けます。一般的な書き換えは `text/event-stream` で、ストリームをサーバー送信イベントとして再発行する統合からのものです。
++ゲートウェイが `Content-Type` を別の値に書き換える場合、Claude Code は `Bedrock streaming response has content-type` で始まるエラーでレスポンスを拒否し、受け取った値を名前付けます。一般的な書き換えは `text/event-stream` で、ストリームをサーバー送信イベントとして再発行する統合からのものです。エラーメッセージに示される `CLAUDE_CODE_DISABLE_BEDROCK_CONTENT_TYPE_GUARD` 変数については、[Bedrock streaming response has an unexpected content-type](/docs/ja/errors#bedrock-streaming-response-has-an-unexpected-content-type) を参照してください。
+ 
+ ゲートウェイがヘッダーをドロップまたは空白にする代わりに、Claude Code は本体が Amazon Bedrock のイベントストリームであると仮定してデコードするため、ゲートウェイが変更されずに通した本体はストリーミングを続けます。
+```
+
+</details>
+
+<details>
+<summary>authentication-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/authentication-ja.md b/docs-ja/pages/authentication-ja.md
+index 5d12dde..7d6b628 100644
+--- a/docs-ja/pages/authentication-ja.md
++++ b/docs-ja/pages/authentication-ja.md
+@@ -13,5 +13,5 @@ Claude Code は、セットアップに応じて複数の認証方法をサポ
+ </h2>
+ 
+-[Claude Code をインストール](/docs/ja/setup#install-claude-code)した後、ターミナルで `claude` を実行します。初回起動時に、Claude Code はログインするためのブラウザウィンドウを開きます。`ANTHROPIC_API_KEY` 環境変数を設定している場合、Claude Code はログインプロンプトをスキップし、代わりにキーを承認するよう求めます。
++[Claude Code をインストール](/docs/ja/setup#install-claude-code)した後、ターミナルで `claude` を実行します。初回起動時に、Claude Code はログインするためのブラウザウィンドウを開きます。`ANTHROPIC_API_KEY` 環境変数を設定していて、そのキーを使用するかどうかを Claude Code に尋ねられたときにキーを承認した場合、Claude Code はログインプロンプトをスキップします。
+ 
+ ブラウザが自動的に開かない場合は、`c` を押してログイン URL をクリップボードにコピーし、ブラウザに貼り付けます。
+```
+
+</details>
+
+<details>
+<summary>auto-mode-config-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/auto-mode-config-ja.md b/docs-ja/pages/auto-mode-config-ja.md
+index 29cf65e..7d4dab9 100644
+--- a/docs-ja/pages/auto-mode-config-ja.md
++++ b/docs-ja/pages/auto-mode-config-ja.md
+@@ -352,5 +352,5 @@ claude auto-mode config
+ ```
+ 
+-カスタム `allow`、`soft_deny`、`hard_deny` ルールについて AI からのフィードバックを取得します：
++カスタムの `allow`、`soft_deny`、`hard_deny`、`environment` エントリについて AI からのフィードバックを取得します：
+ 
+ ```bash theme={null}
+```
+
+</details>
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index a4eabce..43185dc 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,63 @@
+ # Changelog
+ 
++## 2.1.293
++
++- Added Claude Haiku 5.5 (`claude-haiku-5-5`), now the default Haiku model on the Anthropic API — 1M context, $0.10/$0.50 per Mtok ($0.50/$2.50 for prompts over 100K)
++- Added `agentType` to the `subagentStatusLine` payload, so scripts can tell custom subagent types apart
++- Added `isDeferred` to `$.tool.register` for mods: `false` lists the tool's schema in the prompt from the start instead of behind tool search
++- Fixed Claude sometimes treating its own last actions before a context compaction as done after it, and retracting or redoing finished work
++- Fixed a memory leak where an HTTP MCP connection kept every request it had sent until it closed
++- Fixed a message sent while Claude was working being lost when `←` moved the session to the background; if a queued message can't move, `←` now stays put and says so
++- Fixed `/model` effort ←/→ wrapping past the highest or lowest level, which could accidentally save Low as a model's default effort
++- Fixed `/tui` disconnecting Claude in Chrome in a session started with `--chrome`, and ignoring `--no-chrome`
++- Fixed Claude being told to continue or message subagents with `SendMessage` in sessions, including resumed ones, where a host, a permission rule or a `--tools` list removed that tool
++- Fixed subagents and `--agent` sessions being told a built-in tool was disabled for the whole session when only their own tool list left it out
++- Fixed a claude.ai-synced skill's edited description sometimes not reaching the model until a new conversation or `/clear`
++- Fixed `claude logs`, `stop`, `kill`, `rm` and `claude daemon status`, `stop`, `uninstall` sometimes signing you out when your login had expired or was about to
++- Fixed the footer's agents count disappearing after a momentary failure to read the sessions folder (for example, too many open files)
++- Fixed a custom agent named `worker` being shown as "Agent" when it starts, and the agent detail dialog's title losing the agent type once the agent finishes
++- Fixed the Artifact tool's transcript row briefly reading `Artifact("(unprintable path)")` while a publish call was still streaming in
++- Fixed the `/ultrareview` upload on Linux wrongly refusing some repositories, such as one inside another checkout, over a settings file that "could not be parsed" while a sandboxed command was running
++- Fixed the `/ultrareview` upload's refusal over split-index files advising a git command that could leave git unable to read its index
++- Fixed replies in very long Remote Control and cloud sessions that could still appear a block at a time instead of streaming in
++- Fixed Remote Control uploading a session's starting history again after every credential recovery
++- Fixed PushNotification reporting "Remote Control inactive" in sessions started with `claude remote-control`
++- Fixed a mod's hooks on `classic.*` events being skipped while the plugin hooks worker restarts, which left settings hooks to answer without them
+```
+
+</details>
+
+*...以降省略*
+
+</details>
+
+
+<details>
 <summary>2026-10-07</summary>
 
 **変更ファイル:**
@@ -2759,346 +3094,6 @@ index e589491..5b50621 100644
 ```
  docs-ja/pages/claude-tag-ja.md | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
-```
-
-<details>
-<summary>claude-tag-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/claude-tag-ja.md b/docs-ja/pages/claude-tag-ja.md
-index f3b7b2e..e589491 100644
---- a/docs-ja/pages/claude-tag-ja.md
-+++ b/docs-ja/pages/claude-tag-ja.md
-@@ -1 +1 @@
--<!DOCTYPE html><html lang="en-US"><head><title>Just a moment...</title><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=Edge"><meta name="robots" content="noindex,nofollow"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="content-security-policy" content="default-src &#39;none&#39;; script-src &#39;nonce-38bE91Pcji4a3djuAeGw8J&#39; &#39;unsafe-eval&#39; https://challenges.cloudflare.com; script-src-attr &#39;none&#39;; style-src &#39;unsafe-inline&#39;; img-src &#39;self&#39; https://challenges.cloudflare.com; connect-src &#39;self&#39; https://challenges.cloudflare.com; frame-src &#39;self&#39; https://challenges.cloudflare.com blob:; child-src &#39;self&#39; https://challenges.cloudflare.com blob:; worker-src blob:; form-action http: https:; base-uri &#39;self&#39;"><style>*{box-sizing:border-box;margin:0;padding:0}html{line-height:1.15;-webkit-text-size-adjust:100%;color:#313131;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"}body{display:flex;flex-direction:column;height:100vh;min-height:100vh}.main-content{margin:8rem auto;padding-left:1.5rem;max-width:60rem}@media (width <= 720px){.main-content{margin-top:4rem}}#challenge-error-text{background-image:url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgZmlsbD0ibm9uZSI+PHBhdGggZmlsbD0iI0IyMEYwMyIgZD0iTTE2IDNhMTMgMTMgMCAxIDAgMTMgMTNBMTMuMDE1IDEzLjAxNSAwIDAgMCAxNiAzbTAgMjRhMTEgMTEgMCAxIDEgMTEtMTEgMTEuMDEgMTEuMDEgMCAwIDEtMTEgMTEiLz48cGF0aCBmaWxsPSIjQjIwRjAzIiBkPSJNMTcuMDM4IDE4LjYxNUgxNC44N0wxNC41NjMgOS41aDIuNzgzem0tMS4wODQgMS40MjdxLjY2IDAgMS4wNTcuMzg4LjQwNy4zODkuNDA3Ljk5NCAwIC41OTYtLjQwNy45ODQtLjM5Ny4zOS0xLjA1Ny4zODktLjY1IDAtMS4wNTYtLjM4OS0uMzk4LS4zODktLjM5OC0uOTg0IDAtLjU5Ny4zOTgtLjk4NS40MDYtLjM5NyAxLjA1Ni0uMzk3Ii8+PC9zdmc+");background-repeat:no-repeat;background-size:contain;padding-left:34px}</style><meta http-equiv="refresh" content="360"></head><body><div class="main-wrapper" role="main"><div class="main-content"><noscript><div class="h2"><span id="challenge-error-text">Enable JavaScript and cookies to continue</span></div></noscript></div></div><script nonce="38bE91Pcji4a3djuAeGw8J">(function(){window._cf_chl_opt = {cFPWv: 'b',cH: 'oTtPYH3mNwM2UxvaNLdxsBpxW7dpBK19G3J7Tdj7Scc-1790389329-1.2.1.1-R2.rdMet2iYOB71KMACq8C.tuF_VSUJQ27vKiLI99xNwQC2gEOdVyvNPi0UIE_78',cITimeS: '1790389329',cN: '38bE91Pcji4a3djuAeGw8J',cRay: 'a40ecc9adae9ba7a',cTplB: '0',cTplC:0,cTplO:0,cTplV:5,cType: 'managed',cUPMDTk:"/?redirect=claude.com\u0026__cf_chl_tk=Gf9qmsJR_9DseyOWj4Lg_7foTABQaNYGMoq0qlQMypM-1790389329-1.0.1.1-9v5i7SgD11u5ba5ak92kYw55bZa6n6VMXOCO5oPPvRc",cvId: '3',cZone: 'claude.ai',fa:"/?redirect=claude.com\u0026__cf_chl_f_tk=Gf9qmsJR_9DseyOWj4Lg_7foTABQaNYGMoq0qlQMypM-1790389329-1.0.1.1-9v5i7SgD11u5ba5ak92kYw55bZa6n6VMXOCO5oPPvRc",md: 'qJhmzfAM6kQyi28LYr5SEixsP0baxid1plnIiAIIL1k-1790389329-1.2.1.1-cQ0ggEaSVHxMJr8qwcrCuPaFzZgyx9XtdEDR4CxUN2cwEjQNacLd6NIBI_3MmOvZCF5GtkHlo5jDH5j13Pc6KSTNzBHleST2tIVGitNbRFyDtcDjse5H1FK5J3MB2qLKTKKh2DRqwgSztsF49I_PyMHE6NUe1iHT7BW1ZgCfFb4n2gkKwvey4C5C_qamN_RGtkRR50a2dqa4IM6CKu9coSreegiDw7Ua1wIn8WZBuhXyrzYBqoF2c1atWklgz_TFw_Is9cYgcVtwxkZQNFs1js4GhBAI2nSHNUCinWlvUeE6v5vfRk.APxc2XKTNvdk_k.PMbQy1.8PoCnz7tHDaCTSQ2xW2oBW_TPfuCd6pK1eW2nAWXXFqFqXSX37ppF6LyxSFvDkePRLjeHvzrH.qKX_OTE5TL_ZS1CzRMDtP.RigsmvLxjiQQgp37xd9StCJFKR0anDDxdxhuOnzCWnf8.Ky.eDiXlpoxm_Q7.PxN.h_Qz_gyeBgTlP8dPwhtYiGFbeaFWVEcyYXPv7X8tdkqR9s46K5tKjRHXZ78e9EBya3i1AN5m.UVz96hOS7o1bXOOBwqGZVz_xhdLFguWZurVRff0AaXgZgiiLSDbpIh9ONxfG2M6vArSWEsafmMNV0BTXjCidYq7.lGSEjbPPRe8tEN9PKq1PC2HJOlqm8cbQClD_y1IverFRwqasrpjx9ywNAc_Rm3.Qd3EjzpWsS3U4mX4rga0p1iUDmgmWt7BC.6U6WCKYGkfD6F_ETp_zletrS5rnVnDOsWJlUB7Xn_5tg1ie_pK6UB3Ho8_bjoc6Ag8oGc2Gy5_RHPfwyNNZaHzbsm_jOYPmCuSMzkOaNUgjgMH846Z6N_97NbU1t2VykgdYMUGA83Tuja1ivxaVNco62qprxWEozLMZ93KpvAeHrzb0X0bfzba0rtcE.d1XjAXnFoVmO_5GzbSQnoxFXGu5cq70XBAblKLjRyL0UY9DkUOg6IvveRN3vS.z2Qc5ooMIDjEQAInvLQqwli1KP3pjzN1C3sri1s8uGbyqMTpmWb0XokGTtgx0kvXHWtns',mdrd: 'vgMvrTIItakA5phRP4D9NBI5GohDWMJQGwq3AKHdYwY-1790389329-1.2.1.1-Uu_LycAgkBWZm_D8XBtTwy0nxR12SC1OCNUPomONVZIgnBR_OSzKjq1lLjH2QRae5DwVYrzNTxEvTgydBdtpmFblyeVx1ne.IwBP_rO_8MArU5iuGgwEh2JUzORFHD.XP4S9W5vciPaFJqnt9eVX6YnE1qo98ok8xaQUq_OMt_jo7sErv8ch.Vi6Sn20vgJCccJn0AG5ef26c3Aqphkh4tEzzFLAUpjplGppwTcq0nLeNcV9_OqQP7M01yrLlRMRtvvCprSxm4s2.7al8qqcJGVkyCakkRqn0j55GrIOrTjw5Wq6eTJhLEAUNp.rM.9YzPQKTtdEYeN2uLyTGQALj8fqswJFYdgZAnyzpEglwQjIQiIC.w_JSRH_QYOHnut20lwLSkP31BJMITVqLBX9bsgbj6JYLwt_yTZgJFV9XZXmpWJckq0nZy_TJZGYOOq1',};var a = document.createElement('script');a.nonce = '38bE91Pcji4a3djuAeGw8J';a.src = '/cdn-cgi/challenge-platform/h/b/orchestrate/chl_page/v1?ray=a40ecc9adae9ba7a';window._cf_chl_opt.cOgUHash = location.hash === '' && location.href.indexOf('#') !== -1 ? '#' : location.hash;window._cf_chl_opt.cOgUQuery = location.search === '' && location.href.slice(0, location.href.length - window._cf_chl_opt.cOgUHash.length).indexOf('?') !== -1 ? '?' : location.search;if (window.history && window.history.replaceState) {var ogU = location.pathname + window._cf_chl_opt.cOgUQuery + window._cf_chl_opt.cOgUHash;history.replaceState(null, null,"/?redirect=claude.com\u0026__cf_chl_rt_tk=Gf9qmsJR_9DseyOWj4Lg_7foTABQaNYGMoq0qlQMypM-1790389329-1.0.1.1-9v5i7SgD11u5ba5ak92kYw55bZa6n6VMXOCO5oPPvRc"+ window._cf_chl_opt.cOgUHash);a.onload = function() {history.replaceState(null, null, ogU);}}document.getElementsByTagName('head')[0].appendChild(a);}());</script></body></html>
-\ No newline at end of file
-+<!DOCTYPE html><html lang="en-US"><head><title>Just a moment...</title><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=Edge"><meta name="robots" content="noindex,nofollow"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="content-security-policy" content="default-src &#39;none&#39;; script-src &#39;nonce-tR6BKjYD9x0BybboKCb5Xc&#39; &#39;unsafe-eval&#39; https://challenges.cloudflare.com; script-src-attr &#39;none&#39;; style-src &#39;unsafe-inline&#39;; img-src &#39;self&#39; https://challenges.cloudflare.com; connect-src &#39;self&#39; https://challenges.cloudflare.com; frame-src &#39;self&#39; https://challenges.cloudflare.com blob:; child-src &#39;self&#39; https://challenges.cloudflare.com blob:; worker-src blob:; form-action http: https:; base-uri &#39;self&#39;"><style>*{box-sizing:border-box;margin:0;padding:0}html{line-height:1.15;-webkit-text-size-adjust:100%;color:#313131;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"}body{display:flex;flex-direction:column;height:100vh;min-height:100vh}.main-content{margin:8rem auto;padding-left:1.5rem;max-width:60rem}@media (width <= 720px){.main-content{margin-top:4rem}}#challenge-error-text{background-image:url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgZmlsbD0ibm9uZSI+PHBhdGggZmlsbD0iI0IyMEYwMyIgZD0iTTE2IDNhMTMgMTMgMCAxIDAgMTMgMTNBMTMuMDE1IDEzLjAxNSAwIDAgMCAxNiAzbTAgMjRhMTEgMTEgMCAxIDEgMTEtMTEgMTEuMDEgMTEuMDEgMCAwIDEtMTEgMTEiLz48cGF0aCBmaWxsPSIjQjIwRjAzIiBkPSJNMTcuMDM4IDE4LjYxNUgxNC44N0wxNC41NjMgOS41aDIuNzgzem0tMS4wODQgMS40MjdxLjY2IDAgMS4wNTcuMzg4LjQwNy4zODkuNDA3Ljk5NCAwIC41OTYtLjQwNy45ODQtLjM5Ny4zOS0xLjA1Ny4zODktLjY1IDAtMS4wNTYtLjM4OS0uMzk4LS4zODktLjM5OC0uOTg0IDAtLjU5Ny4zOTgtLjk4NS40MDYtLjM5NyAxLjA1Ni0uMzk3Ii8+PC9zdmc+");background-repeat:no-repeat;background-size:contain;padding-left:34px}</style><meta http-equiv="refresh" content="360"></head><body><div class="main-wrapper" role="main"><div class="main-content"><noscript><div class="h2"><span id="challenge-error-text">Enable JavaScript and cookies to continue</span></div></noscript></div></div><script nonce="tR6BKjYD9x0BybboKCb5Xc">(function(){window._cf_chl_opt = {cFPWv: 'b',cH: 'mqPZrUsGLExF1TJdnG0sBliDcG1lLjQeSpnaLZlzXwQ-1790475476-1.2.1.1-wWe_cRbqwVu7KmokQL.m1p0x6Lktm3WertPBdLamPAEYUMImI5Ow.wNUO641NMwh',cITimeS: '1790475476',cN: 'tR6BKjYD9x0BybboKCb5Xc',cRay: 'a41703cda8b515e5',cTplB: '0',cTplC:0,cTplO:0,cTplV:5,cType: 'managed',cUPMDTk:"/?redirect=claude.com\u0026__cf_chl_tk=4oEuvT07_RlrOvDZF8exwKJxl0rxBQrCqnxOdITZdyA-1790475476-1.0.1.1-sRmtNrRFtwnFx1gksgmmZb6rH0loVLlrMSWyhW7ceM0",cvId: '3',cZone: 'claude.ai',fa:"/?redirect=claude.com\u0026__cf_chl_f_tk=4oEuvT07_RlrOvDZF8exwKJxl0rxBQrCqnxOdITZdyA-1790475476-1.0.1.1-sRmtNrRFtwnFx1gksgmmZb6rH0loVLlrMSWyhW7ceM0",md: 'K2ohU4NEakNy8bIEDteIqqcPfsFCJhcnqTgt0EFSgOY-1790475476-1.2.1.1-yITIewvFlh470ABl.YmIb6sonz9btRSRzgQJ62T2VPx3v0KihkUOJaZ_cdWbwW5wG.zn8lmx3Bzv8sQBa4rmNcgoD1SxM6vCVHyKLUNdzsPPWFKkWNTaGqLdLNp3kubqw1CU0oPr1p3eGibwqioWaZ4YvW6BWYYeaKA79xNigu5HK3GytGFDdI1pNDvfp6rfxeyZS1gHMimQPnNtYdFNKaBeqgkchf_i_P4_jJL9Ek7KVlsF4B7t52E_wMcReRkkiSTplwBZQ8cMt77XQVEh1Vtti.rxoDQ9RyacDIb0NEVNGIYIdzNZe6YTF50BFzEZtIAof2pW0KbDVmyrmnVIHusMy.oKABlnBzlVsIEit5akpGZ1KPmnL10AsjXAgGSJBn.ZPsPdcO6H0DtdK8bYlKHIJZo17RZM14vYKe2Kmrb73XsMtgoMHKpLPmf2yEUL4X5B6KpY45i.PighPNb4ssNJjkP_UUAVbvN1VeK8Xa8WzIc5PG4FVg8TNhTvSPbk200eP4Pas1MmPxZs138OsV3dPYICUI027WxC1fPMSF0bw.cO_jpwbAHMjpXcp0uOtTWJX.fKYcdh6q2l64CwlEDwygc2Fcr1egGGb4lCluBHett2CqhHx971Q35WPHTzTI_tVFbiR8tX9xgwolf1UcwhVf9LxzY9vTKCA9lWNF7i6JzBQ1A0huvuGfJ.kqdzK57ckWdoyxWg0pyNpBmP7QcRcu1JxeP7LXwYRJuOqeGQerjO02OAHCpNCJ7m.8n4B36VFMVqyeJf1EkOGkAQ6p6GfgWNjPgBWtYraANwTw3pXJRJ549AGkTbD2_i7HA_Eq7A55gTTfNYzhRDpJg2U6HldSl9paLKc9z2g2C2q.0eoijvp2_s5IMOww1JzLs82VDx1LRniygCCUNzS7TKfERuf5Lm1X0luhrTTjjqyc54XmqPdm1_eD.KE7GzvZVFTwRudcY1urCQuPPy.JlgV2DddDkLVJGMcEfRZsRqRMnoXa9HvjMERLnPZMBHMroTy0Z.n_sj0LOW3.EK82LV4mlOkxYQWhYZ1pbhAFZCmek',mdrd: 'lxlB2uVCdnEXyr4Sp_E_dc5mcFWtqi7lBxVc0Fxm2xc-1790475476-1.2.1.1-Ds_hMMMtqLXVlr7jntlXILUMcqeFD3CYrSo3QUgiqrOI7zf8eDkIkyvIeBV0l6QysexMmbbSiIIAqnOi4kK8_0nMAUVKwmhEk4tI2xMRceV5UvaBCADW9Yhu6CfHOa0WxRfbPe71ctCto7Cw5W9mwGWj4_PVKvyfqhuklfiOGygK8zEfWJR3msCSZhIhSXaVvJrsTFv5gErw6xM_MflVkXZLLV5GCZlVaub10jNqz8q_HZ_roDa3AD1O5WxKO1JUNJYJ6G263kcda22kH46kJMRi1Cw57uLMdQZ237SbbPeUGCrUW6fjbAa0mweHwrQsrZIGauTY2cpe6DChxxmwhrfpFUqnsyo0fKsDb.kHApomy3grEKJIPHYBf2lLKNqYQYGRyHNKEc9E81kFtbnT1mT6LZR_PxeNSebbJHzzhLAP2dZBwULb3gjnkXq8whBF',};var a = document.createElement('script');a.nonce = 'tR6BKjYD9x0BybboKCb5Xc';a.src = '/cdn-cgi/challenge-platform/h/b/orchestrate/chl_page/v1?ray=a41703cda8b515e5';window._cf_chl_opt.cOgUHash = location.hash === '' && location.href.indexOf('#') !== -1 ? '#' : location.hash;window._cf_chl_opt.cOgUQuery = location.search === '' && location.href.slice(0, location.href.length - window._cf_chl_opt.cOgUHash.length).indexOf('?') !== -1 ? '?' : location.search;if (window.history && window.history.replaceState) {var ogU = location.pathname + window._cf_chl_opt.cOgUQuery + window._cf_chl_opt.cOgUHash;history.replaceState(null, null,"/?redirect=claude.com\u0026__cf_chl_rt_tk=4oEuvT07_RlrOvDZF8exwKJxl0rxBQrCqnxOdITZdyA-1790475476-1.0.1.1-sRmtNrRFtwnFx1gksgmmZb6rH0loVLlrMSWyhW7ceM0"+ window._cf_chl_opt.cOgUHash);a.onload = function() {history.replaceState(null, null, ogU);}}document.getElementsByTagName('head')[0].appendChild(a);}());</script></body></html>
-\ No newline at end of file
-```
-
-</details>
-
-</details>
-
-
-<details>
-<summary>2026-09-26</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/admin-setup-ja.md                |  40 ++--
- docs-ja/pages/agent-teams-ja.md                |   2 +-
- docs-ja/pages/agents-ja.md                     |   2 +-
- docs-ja/pages/amazon-bedrock-ja.md             |   9 +-
- docs-ja/pages/best-practices-ja.md             |  14 +-
- docs-ja/pages/changelog.md                     | 100 ++++++++-
- docs-ja/pages/channels-ja.md                   |  26 +--
- docs-ja/pages/channels-reference-ja.md         |   8 +-
- docs-ja/pages/checkpointing-ja.md              |   2 +-
- docs-ja/pages/claude-apps-gateway-deploy-ja.md |   2 +-
- docs-ja/pages/claude-code-on-the-web-ja.md     |  14 +-
- docs-ja/pages/claude-directory-ja.md           |  52 ++---
- docs-ja/pages/claude-platform-on-aws-ja.md     |   2 +-
- docs-ja/pages/claude-projects-ja.md            | 208 +++++++++---------
- docs-ja/pages/claude-security-ja.md            |  20 +-
- docs-ja/pages/claude-tag-ja.md                 |  12 +-
- docs-ja/pages/cli-reference-ja.md              |  12 +-
- docs-ja/pages/cloud-environments-ja.md         |   4 +-
- docs-ja/pages/commands-ja.md                   |  14 +-
- docs-ja/pages/common-workflows-ja.md           |   2 +-
- docs-ja/pages/costs-ja.md                      |   2 +-
- docs-ja/pages/debug-your-config-ja.md          |   2 +-
- docs-ja/pages/desktop-ja.md                    |  12 +-
- docs-ja/pages/env-vars-ja.md                   |   2 +-
- docs-ja/pages/errors-ja.md                     |  46 ++--
- docs-ja/pages/feature-availability-ja.md       |   2 +-
- docs-ja/pages/features-overview-ja.md          |  34 +--
- docs-ja/pages/fullscreen-ja.md                 |   3 +-
- docs-ja/pages/github-actions-ja.md             |   4 +-
- docs-ja/pages/github-enterprise-server-ja.md   |  26 +--
- docs-ja/pages/glossary-ja.md                   |   6 +-
- docs-ja/pages/headless-ja.md                   |   2 +-
- docs-ja/pages/hooks-guide-ja.md                |  22 +-
- docs-ja/pages/how-claude-code-works-ja.md      |  14 +-
- docs-ja/pages/interactive-mode-ja.md           |  15 +-
- docs-ja/pages/keybindings-ja.md                |  52 +++--
- docs-ja/pages/large-codebases-ja.md            |  10 +-
- docs-ja/pages/managed-mcp-ja.md                |   2 +-
- docs-ja/pages/managed-settings-ja.md           | 228 ++++++++++----------
- docs-ja/pages/mcp-ja.md                        |  34 +--
- docs-ja/pages/monitoring-usage-ja.md           |  12 +-
- docs-ja/pages/network-config-ja.md             |   2 +-
- docs-ja/pages/output-styles-ja.md              |   4 +-
- docs-ja/pages/permission-modes-ja.md           |  17 +-
- docs-ja/pages/permissions-ja.md                |  22 +-
- docs-ja/pages/platforms-ja.md                  |  18 +-
- docs-ja/pages/plugin-evals-ja.md               |  91 +++++---
- docs-ja/pages/prompt-caching-ja.md             |  16 +-
- docs-ja/pages/prompt-library-ja.md             |   7 +-
- docs-ja/pages/remote-control-ja.md             |  12 +-
- docs-ja/pages/sandboxing-ja.md                 | 283 +++++++++++++------------
- docs-ja/pages/security-guidance-ja.md          |  10 +-
- docs-ja/pages/server-managed-settings-ja.md    |   4 +-
- docs-ja/pages/sessions-ja.md                   |   2 +-
- docs-ja/pages/settings-example-ja.md           |  16 +-
- docs-ja/pages/settings-ja.md                   | 128 +++++------
- docs-ja/pages/settings-reference-ja.md         | 126 ++++++-----
- docs-ja/pages/skills-ja.md                     |  44 ++--
- docs-ja/pages/statusline-ja.md                 |   2 +-
- docs-ja/pages/sub-agents-ja.md                 |  40 ++--
- docs-ja/pages/terminal-config-ja.md            |   2 +-
- docs-ja/pages/tools-reference-ja.md            |  14 +-
- docs-ja/pages/vs-code-ja.md                    |   4 +-
- docs-ja/pages/workflows-ja.md                  |   2 +-
- docs-ja/pages/zero-data-retention-ja.md        |   2 +-
- 65 files changed, 1073 insertions(+), 870 deletions(-)
-```
-
-<details>
-<summary>admin-setup-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/admin-setup-ja.md b/docs-ja/pages/admin-setup-ja.md
-index 86f1c19..8b44218 100644
---- a/docs-ja/pages/admin-setup-ja.md
-+++ b/docs-ja/pages/admin-setup-ja.md
-@@ -94,24 +94,24 @@ WSL 2 ユーティリティ VM 内のプロセスは、Windows 側のエンド
- マネージド設定は、ツール、サンドボックス実行、MCP サーバーとプラグインソース、および実行するフック を制限できます。各行は、それを駆動する設定キーを持つ制御サーフェスです。
- 
--| 制御                                                                           | 機能                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | キー設定                                                                                                                                |
--| :--------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------- |
--| [権限ルール](/docs/ja/permissions)                                                     | 特定のツールとコマンドを許可、確認、または拒否する                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | `permissions.allow`、`permissions.deny`                                                                                              |
--| [権限ロックダウン](/docs/ja/permissions#managed-only-settings)                            | マネージド設定を[権限ルールの唯一の設定ソース](/docs/ja/settings-reference#allowmanagedpermissionrulesonly)にします。`--dangerously-skip-permissions` を無効にする                                                                                                                                                                                                                                                                                                                                                                                 | `allowManagedPermissionRulesOnly`、`permissions.disableBypassPermissionsMode`                                                        |
--| [開始権限モード](/docs/ja/permission-modes#which-mode-a-session-starts-in)               | 組み込みの開始権限モードの代わりに、開発者のターミナルセッションが開始する権限モードを選択するか、自動モードを削除します。VS Code 拡張機能は、Pro、Max、Team プランでのみ設定した `defaultMode` を読み取ります。[権限モードの切り替え](/docs/ja/permission-modes#switch-permission-modes)は、拡張機能が読み取る内容を一覧表示します                                                                                                                                                                                                                                                                                                     | `permissions.defaultMode`、`permissions.disableAutoMode`                                                                             |
--| [サンドボックス](/docs/ja/sandboxing)                                                    | ドメイン許可リスト付きの OS レベルのファイルシステムとネットワーク分離                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | `sandbox.enabled`、`sandbox.network.allowedDomains`                                                                                  |
--| [マネージドポリシー CLAUDE.md](/docs/ja/memory#deploy-organization-wide-claude-md)         | すべてのセッションで読み込まれる組織全体の指示。除外できません                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | マネージドポリシーパスのファイル                                                                                                                    |
--| [MCP サーバー制御](/docs/ja/managed-mcp)                                                | ユーザーが追加または接続できる MCP サーバーを制限し、固定セットをデプロイするか、リモートサーバーをすべてのユーザーに提供します                                                                                                                                                                                                                                                                                                                                                                                                                                           | `allowedMcpServers`、`deniedMcpServers`、`allowManagedMcpServersOnly`、`managedMcpServers`、またはデプロイされた `managed-mcp.json` ファイル          |
--| [プラグインマーケットプレイス制御](/docs/ja/plugin-marketplaces#managed-marketplace-restrictions) | ユーザーが追加およびインストールできるマーケットプレイスソースを制限し、単一実行のためにプラグイン、エージェント、MCP サーバーをサイドロードする CLI フラグを拒否し、[`command` プラグインソース](/docs/ja/plugin-marketplaces#command-sources)をブロックし、どのマーケットプレイスのプラグインを提案できるかをホワイトリストに登録します                                                                                                                                                                                                                                                                                                            | `strictKnownMarketplaces`、`blockedMarketplaces`、`disableSideloadFlags`、`disableCommandPluginSources`、`pluginSuggestionMarketplaces` |
--| [カスタマイズロックダウン](/docs/ja/settings-reference#strictpluginonlycustomization)         | スキル、エージェント、フック、MCP サーバーをユーザーおよびプロジェクトソースからブロックし、プラグインまたはマネージド設定からのみ取得できるようにします。スキルをロックすると、開発者が claude.ai で有効にした[スキル](/docs/ja/skills#where-synced-skills-load)の同期も停止します                                                                                                                                                                                                                                                                                                                                           | `strictPluginOnlyCustomization`                                                                                                     |
--| [claude.ai 同期を無効にする](/docs/ja/settings-reference#syncclaudeaiskills)              | Claude Code が開発者が claude.ai で有効にした[スキル](/docs/ja/skills#how-synced-skills-behave)と[プラグイン](/docs/ja/plugins-reference#synced-plugins)を読み込むのを停止します。組織の claude.ai でスキルをオフにすると、Claude Code は両方の同期を停止します。v2.1.273 以降では、既に同期したものも削除します。スキルをオフにせずにどちらか一方を停止するには、マネージド設定でそのキーを `false` に設定します                                                                                                                                                                                                                                  | `syncClaudeAiSkills`、`syncClaudeAiPlugins`                                                                                          |
--| [フック制限](/docs/ja/settings-reference#allowmanagedhooksonly)                        | 実行するフックを制限し、HTTP フック URL を制限します。[`allowManagedHooksOnly` で実行される内容](/docs/ja/settings-reference#what-runs-under-allowmanagedhooksonly)の完全な効果リストを参照してください                                                                                                                                                                                                                                                                                                                                                           | `allowManagedHooksOnly`、`allowedHttpHookUrls`                                                                                       |
--| [ログイン強制](/docs/ja/settings-reference#forceloginmethod)                            | ログインを特定の方法または Anthropic 組織に制限します。メソッド制限は VS Code 拡張機能、Agent SDK、`claude setup-token`、`/install-github-app` 全体に適用され、ターミナルのインタラクティブログイン画面（`/login` または初回オンボーディングで到達）はメソッドを事前選択しますが強制しません。Claude Code は、ターミナル、VS Code 拡張機能、Agent SDK での claude.ai アカウントログインの組織を検証し、Claude Console ログインまたは[ゲートウェイ](/docs/ja/claude-apps-gateway)サインインではチェックしません。v2.1.212 より前は、ターミナルログインのみが両方のキーを適用していました。設定すると、`ANTHROPIC_API_KEY`、`ANTHROPIC_AUTH_TOKEN`、または `apiKeyHelper` によって認証されたセッションはスタートアップでブロックされます。クラウドプロバイダーセッションは影響を受けません | `forceLoginMethod`、`forceLoginOrgUUID`                                                                                              |
--| [エージェントビューを無効にする](/docs/ja/agent-view#how-background-sessions-are-hosted)         | `claude agents`、`--bg`、`/background`、およびオンデマンドスーパーバイザーをオフにします                                                                                                                                                                                                                                                                                                                                                                                                                                                | `disableAgentView`                                                                                                                  |
--| [企業ランチャーを構成する](/docs/ja/corporate-launcher)                                       | [バックグラウンドエージェントスーパーバイザー](/docs/ja/agent-view#how-background-sessions-are-hosted)、そのワーカー、および[その他のカバーされたバックグラウンドプロセス](/docs/ja/corporate-launcher#what-the-launcher-covers)に、エージェントビューをオフにする代わりに、必須の企業ランチャーをプレフィックスします                                                                                                                                                                                                                                                                                                   | `processWrapper`                                                                                                                    |
--| [モデル制限](/docs/ja/model-config#restrict-model-selection)                           | `availableModels` はピッカーに表示されるモデルをフィルタリングします。`enforceAvailableModels` を追加すると、自動選択されたデフォルトモデルも制限されます。このセッティングが CLI、ウェブ、IDE にどのように到達するかについては、[サーフェスカバレッジ](/docs/ja/model-config#surface-coverage)を参照してください                                                                                                                                                                                                                                                                                                           | `availableModels`、`enforceAvailableModels`                                                                                          |
--| [エフォートキャップ](/docs/ja/settings-reference#maxeffortlevel)                           | すべてのモデルまたはモデルごとに、すべてのプロバイダーで[エフォートレベル](/docs/ja/model-config#adjust-effort-level)をキャップします                                                                                                                                                                                                                                                                                                                                                                                                                         | `maxEffortLevel`                                                                                                                    |
--| [バージョンフロア](/docs/ja/settings-reference#minimumversion)                            | 自動更新が組織全体の最小値以下をインストールするのを防ぎます                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | `minimumVersion`                                                                                                                    |
--| [必須バージョン範囲](/docs/ja/settings-reference#requiredminimumversion)                   | 実行中のバージョンが組織承認範囲外の場合、まったく起動を拒否します。ダウングレードのみをブロックする `minimumVersion` より強力です                                                                                                                                                                                                                                                                                                                                                                                                                                   | `requiredMinimumVersion`、`requiredMaximumVersion`                                                                                   |
--| [テレメトリオプトアウト](/docs/ja/data-usage#telemetry-services)                             | すべてのデバイスで Anthropic バウンドの使用メトリクス、エラーレポート、およびサーベイをオフにします                                                                                                                                                                                                                                                                                                                                                                                                                                                      | `env` に `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` を `1` に設定します。リンクされたセクションはカテゴリごとの変数を一覧表示します                                       |
-+| 制御                                                                   | 機能                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | キー設定                                                                                                                                |
-+| :------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------- |
-+| [権限ルール](/docs/ja/permissions)                                             | 特定のツールとコマンドを許可、確認、または拒否する                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | `permissions.allow`、`permissions.deny`                                                                                              |
-```
-
-</details>
-
-<details>
-<summary>agent-teams-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/agent-teams-ja.md b/docs-ja/pages/agent-teams-ja.md
-index 7974b36..8aa560b 100644
---- a/docs-ja/pages/agent-teams-ja.md
-+++ b/docs-ja/pages/agent-teams-ja.md
-@@ -119,5 +119,5 @@ v2.1.199 以降、アイドル状態のチームメンバーの行は、他の
- デフォルトは `"in-process"` です。`"auto"` を設定して、既に tmux セッション内で実行している場合または使用しているターミナルが iTerm2 で `it2` CLI がインストールされている場合は分割ペインを有効にし、それ以外の場合は in-process にフォールバックします。`"tmux"` 設定は分割ペインモードを有効にし、ターミナルに基づいて tmux または iTerm2 を使用するかどうかを自動検出します。
- 
--v2.1.186 以降、`"iterm2"` を設定して iTerm2 ネイティブ分割ペインを明示的に使用してください。このモードは [`it2` CLI](https://github.com/mkusaka/it2) が必要で、`it2` が見つからない場合はインストールコマンド付きでエラーを表示します。`it2` をインストールするか tmux に切り替えるオプションを提供するセットアッププロンプトは、ターミナルが iTerm2 で tmux がフォールバックとして利用可能な場合、`"auto"` または `"tmux"` の下に表示されます。
-+`"iterm2"` を設定して iTerm2 ネイティブ分割ペインを明示的に使用してください。このモードは [`it2` CLI](https://github.com/mkusaka/it2) が必要で、`it2` が見つからない場合はインストールコマンド付きでエラーを表示します。`it2` をインストールするか tmux に切り替えるオプションを提供するセットアッププロンプトは、ターミナルが iTerm2 で tmux がフォールバックとして利用可能な場合、`"auto"` または `"tmux"` の下に表示されます。
- 
- デフォルトをオーバーライドするには、`~/.claude/settings.json` で [`teammateMode`](/docs/ja/settings-reference#teammatemode) を設定してください。
-```
-
-</details>
-
-<details>
-<summary>agents-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/agents-ja.md b/docs-ja/pages/agents-ja.md
-index 6faf8f2..688cc7a 100644
---- a/docs-ja/pages/agents-ja.md
-+++ b/docs-ja/pages/agents-ja.md
-@@ -23,5 +23,5 @@ Claude Code には、複数のタスクを同時に処理する 5 つの方法
- * [ワークツリー](/docs/ja/worktrees) は各セッションに個別の git チェックアウトを提供するため、並列セッションが同じファイルを編集することはありません。自分で実行するセッションに使用します。エージェントビューからディスパッチされたセッションは、[ファイルを編集する前に独自のワークツリーに移動](/docs/ja/agent-view#how-file-edits-are-isolated) し、スポーンするサブエージェントも各々独自のワークツリーを取得できます。
- * [クロスセッションメッセージング](/docs/ja/cross-session-messaging) により、Claude はこのマシン上、別のマシン上、または [クラウド](/docs/ja/claude-code-on-the-web) 上の他の Claude Code セッションをリストして、メッセージを送信できます。自分で実行するセッションは、検出結果とステータスを相互に渡すことができます。
--* [`/batch`](/docs/ja/commands) は、1 つの大きな変更を 5 ～ 30 個のワークツリー分離サブエージェントに分割し、各エージェントがプルリクエストを開く [skill](/docs/ja/skills) です。これはサブエージェントとワークツリーのパッケージ化された使用法であり、別の調整スタイルではありません。
-+* [`/batch`](/docs/ja/commands) は、1 つの大きな変更を 5 ～ 30 個のワークツリー分離サブエージェントに分割する [skill](/docs/ja/skills) です。これはサブエージェントとワークツリーのパッケージ化された使用法であり、別の調整スタイルではありません。
- 
- 他にも Claude を各ステップで駆動することなく実行する機能がいくつかありますが、これらはエージェント間で作業を分割することとは異なる問題を解決します。
-```
-
-</details>
-
-<details>
-<summary>amazon-bedrock-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/amazon-bedrock-ja.md b/docs-ja/pages/amazon-bedrock-ja.md
-index ec20931..e4551ab 100644
---- a/docs-ja/pages/amazon-bedrock-ja.md
-+++ b/docs-ja/pages/amazon-bedrock-ja.md
-@@ -520,5 +520,7 @@ Claude Code は、各リクエストで `X-Amzn-Bedrock-Service-Tier` ヘッダ
- </h2>
- 
--Mantle は、Bedrock Invoke API ではなく、ネイティブ Anthropic API シェイプを通じて Claude モデルを提供する Amazon Bedrock エンドポイントです。同じ [AWS 認証情報](#2-configure-aws-credentials)、[IAM 権限](#iam-configuration)、および [`awsAuthRefresh` 設定](#advanced-credential-configuration) を使用します。
-+Mantle は、Bedrock Invoke API ではなく、ネイティブ Anthropic API シェイプを通じて Claude モデルを提供する Amazon Bedrock エンドポイントです。同じ [AWS 認証情報](#2-configure-aws-credentials) と [`awsAuthRefresh` 設定](#advanced-credential-configuration) を使用します。
-+
-+Mantle は `bedrock-mantle:` プレフィックスの下に独自の IAM アクションを持つため、[IAM 設定](#iam-configuration) の `bedrock:` アクションはこれをカバーしていません。推論用に `bedrock-mantle:CreateInference` と、トークンカウント用に `bedrock-mantle:CountTokens` を IAM アイデンティティに付与します。AWS ドキュメントの [推論リクエストの実行](https://docs.aws.amazon.com/bedrock/latest/userguide/inference.html) と [トークンのカウント](https://docs.aws.amazon.com/bedrock/latest/userguide/count-tokens.html)、および [サービス認可リファレンス](https://docs.aws.amazon.com/service-authorization/latest/reference/list_amazonbedrockpoweredbyawsmantle.html) を参照して、すべての Mantle アクションを確認してください。
- 
- <h3 id="enable-mantle">
-@@ -672,5 +674,8 @@ v2.1.196 以降に更新してください。
- `CLAUDE_CODE_USE_MANTLE` を設定した後、`/status` が `Amazon Bedrock (Mantle)` を表示しない場合、変数がプロセスに到達していません。Claude Code を起動したシェルでエクスポートされているか、[settings file](/docs/ja/settings) の `env` ブロックで設定されていることを確認してください。
- 
--有効な認証情報を持つ Mantle エンドポイントからの `403` は、AWS アカウントがリクエストしたモデルへのアクセスを許可されていないことを意味します。AWS アカウントチームに連絡してアクセスをリクエストしてください。
-+Mantle エンドポイントからの `403` が何を意味するかは、エラーが IAM アクションを名前付けるかどうかによって異なります：
-+
-+* エラーが `bedrock-mantle:` アクションを名前付ける場合は、IAM アイデンティティにそのアクションを付与してください。
-+* エラーがアクションを名前付けず、認証情報が有効な場合は、AWS アカウントがリクエストしたモデルへのアクセスを許可されていません。AWS アカウントチームに連絡してアクセスをリクエストしてください。
- 
- モデル ID を名前付ける `400` は、そのモデルが Mantle で提供されていないことを意味します。Mantle は標準 Amazon Bedrock カタログとは別の独自のモデルラインアップを持っているため、`us.anthropic.claude-sonnet-4-6` などの推論プロファイル ID は機能しません。Mantle 形式の ID を使用するか、[両方のエンドポイントを有効にして](#run-mantle-alongside-the-invoke-api)、Claude Code が各リクエストをモデルが利用可能なエンドポイントにルーティングするようにしてください。
-```
-
-</details>
-
-<details>
-<summary>best-practices-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/best-practices-ja.md b/docs-ja/pages/best-practices-ja.md
-index c4d77a4..b173ddb 100644
---- a/docs-ja/pages/best-practices-ja.md
-+++ b/docs-ja/pages/best-practices-ja.md
-@@ -203,5 +203,5 @@ CLAUDE.md ファイルは `@path/to/import` 構文を使用して追加ファイ
- 
- <h3 id="configure-permissions">
--  パーミッションを設定する
-+  権限モードを設定する
- </h3>
- 
-@@ -210,12 +210,12 @@ CLAUDE.md ファイルは `@path/to/import` 構文を使用して追加ファイ
- </Tip>
- 
--Pro、Max、Team プランでは、auto mode は対話型ターミナルと VS Code セッションの[組み込みの開始パーミッションモード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)です。別の分類器モデルがほとんどのアクションをレビューし、スコープエスカレーション、未知のインフラストラクチャ、敵対的なコンテンツ駆動のアクションなど、リスクがあるように見えるものだけをブロックします。
-+Pro、Max、Team プランでは、auto mode は対話型ターミナルと VS Code セッションの[組み込みの開始権限モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)です。別の分類器モデルがほとんどのアクションをレビューし、スコープエスカレーション、未知のインフラストラクチャ、敵対的なコンテンツ駆動のアクションなど、リスクがあるように見えるものだけをブロックします。
- 
--Manual モード（他のプランの組み込みの開始パーミッションモード）では、Claude Code はシステムを変更する可能性のあるアクション（ファイル書き込み、Bash コマンド、MCP ツール）の前に尋ねます。これは安全ですが、面倒です。10 回目の承認後、あなたはクリックしているだけで、本当にレビューしていません。これらの中断を減らす 2 つのツールがあり、Manual モードで適用され、auto mode でも同様に適用されます。
-+Manual モード（他のプランの組み込みの開始権限モード）では、Claude Code はシステムを変更する可能性のあるアクション（ファイル書き込み、Bash コマンド、MCP ツール）の前に尋ねます。これは安全ですが、面倒です。10 回目の承認後、あなたはクリックしているだけで、本当にレビューしていません。これらの中断を減らす 2 つのツールがあり、Manual モードで適用され、auto mode でも同様に適用されます。
- 
--* **パーミッションホワイトリスト**：`npm run lint` や `git commit` など、安全であることがわかっているツールを許可します
-+* **権限ホワイトリスト**：`npm run lint` や `git commit` など、安全であることがわかっているツールを許可します
- * **サンドボックス**：OS レベルの分離を有効にして、ファイルシステムとネットワークアクセスを制限し、Claude が定義された境界内でより自由に動作できるようにします
- 
--[パーミッションモード](/docs/ja/permission-modes)、[パーミッションルール](/docs/ja/permissions)、[サンドボックス](/docs/ja/sandboxing)の詳細をお読みください。
-+[権限モード](/docs/ja/permission-modes)、[権限ルール](/docs/ja/permissions)、[サンドボックス](/docs/ja/sandboxing)の詳細をお読みください。
- 
- <h3 id="use-cli-tools">
-@@ -335,5 +335,5 @@ Claude に明示的にサブエージェントを使用するよう指示しま
- </Tip>
-```
-
-</details>
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index 92e3505..b6c326f 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,101 @@
- # Changelog
- 
-+## 2.1.283
-+
-+- Added `x-claude-code-prompt-id` to the gateway hint headers so LLM gateways can group the requests that serve one user prompt; opt in with `CLAUDE_CODE_GATEWAY_HINT_HEADERS=1`
-+- Added `availableModelsMatch` managed setting: with `"exact"`, an `availableModels` entry allows only the model version it names, so new releases stay blocked until listed
-+- Added `deniedModels` managed setting to block specific models, even when `availableModels` allows them
-+- Added MCP tool, WebFetch and WebSearch outputs to the `tool.output` OpenTelemetry span event when `OTEL_LOG_TOOL_CONTENT=1`
-+- Added `/doctor prompt-audit` (also `/checkup prompt-audit`) to audit your CLAUDE.md files, skills, agents and commands for prompting patterns written for older models
-+- Added click-to-expand for truncated messages from your other sessions in fullscreen mode
-+- Added `path` to `--plugin-dir` load-failure entries in the stream-json `system/init` `plugin_errors`, naming the directory that did not load
-+- Added an opt-in `load_test_mode` block to the Claude apps gateway config: requests are built and signed but not sent upstream, and clients get a canned reply, so a deployment can be load tested
-+- Added a `mantle` upstream provider to the Claude apps gateway for Amazon Bedrock's Mantle endpoint
-+- Fixed SDK sessions losing a deferred tool call or finished tool result when a turn ended early, a held approval prompt after a worker restart, and a non-streaming fallback's `result.usage`
-+- Fixed MCP progress notifications being discarded once a long-running tool call moved to the background; the background task now shows the latest progress
-+- Fixed stdio MCP servers being left running when the session ended while they were still starting
-+- Fixed a brief HTTP 404 from a stateless remote MCP server (for example a proxy mid-redeploy) leaving that server unusable for the rest of the session while still shown as connected
-+- Fixed MCP sign-in for a server with no valid URL failing with an opaque SDK error; `/mcp` no longer offers Authenticate for such servers
-+- Fixed the weekly Fable limit not appearing in `/usage` and the VS Code usage meters when telemetry is disabled
-+- Fixed `/model` accepting Sonnet 4.6 or Sonnet 5 with `[1m]` when the id carried a date or `-v1:0` suffix, in the cases where the plain id was refused
-+- Fixed `/model` picker showing a hardcoded Haiku version and price when `ANTHROPIC_DEFAULT_HAIKU_MODEL` pins a different model
-+- Fixed dynamic workflows started during a model fallback running every agent on the fallback model instead of retrying the configured model
-+- Fixed `DISABLE_PROMPT_CACHING_HAIKU` having no effect when Haiku is the session's main model
-+- Fixed `claude plugin validate` saying Claude Code accepts a plugin or marketplace name it cannot install; such names in `marketplace.json` now fail validation
-+- Fixed `claude plugin validate` passing plugins whose `outputStyles`, `themes`, `monitors`, or `lspServers` paths are missing or point outside the plugin directory
-```
-
-</details>
-
-<details>
-<summary>channels-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/channels-ja.md b/docs-ja/pages/channels-ja.md
-index 6defd50..426efb3 100644
---- a/docs-ja/pages/channels-ja.md
-+++ b/docs-ja/pages/channels-ja.md
-@@ -46,7 +46,7 @@ Team、Enterprise、または Console 組織を管理している場合は、[
- 
-         * `Marketplace "claude-plugins-official" not found`：`/plugin marketplace add anthropics/claude-plugins-official` でマーケットプレイスを追加してから、インストールを再試行してください。
--        * プラグインが[マーケットプレイスで見つかりません](/docs/ja/discover-plugins#install-plugins)：プラグイン名を確認してください。
-+        * プラグインが[マーケットプレイスで見つかりません](/docs/ja/plugins/install#install-a-plugin)：プラグイン名を確認してください。
- 
--        インストールがインストールスコープを求めるとき、ユーザースコープオプションを選択して、プラグインがすべてのプロジェクト全体で利用可能になるようにしてください。インストール概要を確認してください。`Run /reload-plugins to activate.` と報告されている場合は、[プラグイン変更を再起動なしで適用する](/docs/ja/discover-plugins#apply-plugin-changes-without-restarting)を参照して、プラグインの設定コマンドを利用可能にしてください。
-+        インストールがインストールスコープを求めるとき、ユーザースコープオプションを選択して、プラグインがすべてのプロジェクト全体で利用可能になるようにしてください。インストール概要を確認してください。`Run /reload-plugins to activate.` と報告されている場合は、[プラグイン変更を再起動なしで適用する](/docs/ja/plugins/cli-reference#reload-plugins)を参照して、プラグインの設定コマンドを利用可能にしてください。
-       </Step>
- 
-@@ -124,7 +124,7 @@ Team、Enterprise、または Console 組織を管理している場合は、[
- 
-         * `Marketplace "claude-plugins-official" not found`：`/plugin marketplace add anthropics/claude-plugins-official` でマーケットプレイスを追加してから、インストールを再試行してください。
--        * プラグインが[マーケットプレイスで見つかりません](/docs/ja/discover-plugins#install-plugins)：プラグイン名を確認してください。
-+        * プラグインが[マーケットプレイスで見つかりません](/docs/ja/plugins/install#install-a-plugin)：プラグイン名を確認してください。
- 
--        インストールがインストールスコープを求めるとき、ユーザースコープオプションを選択して、プラグインがすべてのプロジェクト全体で利用可能になるようにしてください。インストール概要を確認してください。`Run /reload-plugins to activate.` と報告されている場合は、[プラグイン変更を再起動なしで適用する](/docs/ja/discover-plugins#apply-plugin-changes-without-restarting)を参照して、プラグインの設定コマンドを利用可能にしてください。
-+        インストールがインストールスコープを求めるとき、ユーザースコープオプションを選択して、プラグインがすべてのプロジェクト全体で利用可能になるようにしてください。インストール概要を確認してください。`Run /reload-plugins to activate.` と報告されている場合は、[プラグイン変更を再起動なしで適用する](/docs/ja/plugins/cli-reference#reload-plugins)を参照して、プラグインの設定コマンドを利用可能にしてください。
-       </Step>
- 
-@@ -189,7 +189,9 @@ Team、Enterprise、または Console 組織を管理している場合は、[
- 
-         * `Marketplace "claude-plugins-official" not found`：`/plugin marketplace add anthropics/claude-plugins-official` でマーケットプレイスを追加してから、インストールを再試行してください。
--        * プラグインが[マーケットプレイスで見つかりません](/docs/ja/discover-plugins#install-plugins)：プラグイン名を確認してください。
-+        * プラグインが[マーケットプレイスで見つかりません](/docs/ja/plugins/install#install-a-plugin)：プラグイン名を確認してください。
- 
-```
-
-</details>
-
-*...以降省略*
-
-</details>
-
-
-<details>
-<summary>2026-09-25</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/changelog.md                  |  89 +++++++++++
- docs-ja/pages/claude-apps-gateway-ja.md     |   4 +-
- docs-ja/pages/costs-ja.md                   |   2 +
- docs-ja/pages/env-vars-ja.md                |   6 +-
- docs-ja/pages/errors-ja.md                  | 223 ++++++++++++++++++++++------
- docs-ja/pages/interactive-mode-ja.md        |   2 +-
- docs-ja/pages/managed-settings-ja.md        |   2 +-
- docs-ja/pages/memory-ja.md                  |  12 +-
- docs-ja/pages/plugin-evals-ja.md            |  28 ++--
- docs-ja/pages/server-managed-settings-ja.md |   2 +-
- docs-ja/pages/settings-reference-ja.md      |   4 +
- 11 files changed, 304 insertions(+), 70 deletions(-)
 ```
 
 <!-- UPDATE_LOG_END -->

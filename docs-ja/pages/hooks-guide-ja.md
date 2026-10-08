@@ -526,7 +526,7 @@ Claude Code は、ライフサイクルの特定のポイントで hook イベ�
 | `DirectoryAdded` | `/add-dir` または SDK `register_repo_root` コントロールリクエスト経由でセッション中盤に作業ディレクトリが追加されるとき |
 | `FileChanged` | 監視対象ファイルがディスク上で変更されるとき。`matcher` フィールドは監視するファイル名を指定します |
 | `WorktreeCreate` | `--worktree`、`isolation: "worktree"`、またはバックグラウンドセッション経由で worktree が作成されるとき。デフォルトの git 動作を置き換えます |
-| `WorktreeRemove` | セッション終了時、サブエージェント終了時、またはバックグラウンドセッションを削除するときに worktree が削除されるとき |
+| `WorktreeRemove` | `WorktreeCreate` フックが作成した worktree が削除されるとき |
 | `PreCompact` | コンテキスト圧縮の前 |
 | `PostCompact` | コンテキスト圧縮が完了した後 |
 | `PreModelSwitch` | Claude Code があなたまたはクライアントがリクエストしたモデルスイッチを適用する前。スイッチをブロックできます |

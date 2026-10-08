@@ -275,8 +275,6 @@ claude mcp remove notion
 * `✘ Rejected (see disabledMcpjsonServers in settings)`: [`disabledMcpjsonServers`](/docs/ja/settings-reference#disabledmcpjsonservers) エントリが拒否する `.mcp.json` サーバー。Claude Code はそれを `claude mcp get <name>` にのみ表示します。
 * `⊘ Disabled for this project (re-enable via /mcp)`: プロジェクトの [`disabledMcpServers`](#disable-a-server-without-removing-it) リストが名前を付けるサーバー。Claude Code はそれを `claude mcp list` と `claude mcp get <name>` の両方に表示します。`/mcp` パネルからサーバーをオンに戻してください。
 
-WebSocket サーバーは `claude mcp list` 出力に表示されません。`claude mcp get <name>` または `/mcp` パネルを使用してそれらを確認してください。
-
 <h4 id="project-server-approvals-and-workspace-trust">
   プロジェクトサーバーの承認とワークスペーストラスト
 </h4>
@@ -371,7 +369,7 @@ Claude Code は起動するたびにランタイムを選択し、終了する�
 
 v2 では、Claude Code も：
 
-* HTTP サーバーに新しいリビジョンをサポートするかどうかを尋ね、それをサポートするサーバーで使用します。フィーチャーフラグを取得するセッションでは claude.ai コネクタサーバーにも尋ね、Claude Code v2.1.285 以降では Anthropic がその変更を段階的に展開するにつれて stdio サーバーにも尋ねます。すべてのセッションでコネクタサーバーと stdio サーバーに尋ねるようにするには、[`MCP_PROTOCOL_NEGOTIATION`](/docs/ja/env-vars) を `auto` に設定してください。他のすべてのサーバーに v1 のように接続します。
+* HTTP サーバーと stdio サーバーに新しいリビジョンをサポートするかどうかを尋ね、それをサポートするサーバーで使用します。フィーチャーフラグを取得するセッションでは、claude.ai コネクタサーバーにも尋ねます。他のすべてのサーバーには v1 と同様に接続します。
 * 新しいリビジョンのサーバーから [保持するストリーム](#notification-streams-on-the-v2-runtime) 上で `list_changed` 通知を受け取ります。
 * 新しいリビジョンで接続する [チャネル](#push-messages-with-channels) サーバーを登録しません。そのリビジョンはチャネルメッセージを運ぶことができないためです。
 * 予期しない発行者を示す認可応答の [MCP OAuth サインイン](#authenticate-with-remote-mcp-servers) を失敗させます。
@@ -458,7 +456,7 @@ MCP サーバーはまた、CI 結果、監視アラート、チャットメッ�
 
 [v2 ランタイム](#mcp-client-runtimes) では、MCP プロトコルリビジョン 2026-07-28 をネゴシエートするチャネルサーバーはチャネルメッセージを配信できないため、Claude Code はそれをチャネルとして登録しません。そのリビジョンをサポートしないチャネルサーバーは以前のハンドシェイクで接続し、従来どおり登録されます。
 
-[`MCP_PROTOCOL_NEGOTIATION`](/docs/ja/env-vars) を `auto` に設定すると、Claude Code は stdio サーバーにそのリビジョンを尋ねます。Anthropic は、Claude Code が [フィーチャーフラグを取得](/docs/ja/env-vars#features-that-need-feature-flag-fetching) するセッションで、Claude Code v2.1.285 以降を対象にこれをデフォルトでオンにしつつあります。stdio チャネルサーバーを以前のハンドシェイクのままにするには、`MCP_PROTOCOL_NEGOTIATION` を `legacy` に設定してください。これにより、すべてのサーバーが以前のハンドシェイクのままになります。
+Claude Code はデフォルトで stdio サーバーにそのリビジョンを尋ねます。stdio チャネルサーバーを以前のハンドシェイクのままにするには、[`MCP_PROTOCOL_NEGOTIATION`](/docs/ja/env-vars) を `legacy` に設定してください。これにより、すべてのサーバーが以前のハンドシェイクのままになります。
 
 <Tip>
   ヒント：
@@ -1439,10 +1437,6 @@ MCP サーバーを構築している場合、ツールの `tools/list` レス�
 ```
 
 注釈はテキストコンテンツに対して `MAX_MCP_OUTPUT_TOKENS` とは独立して適用されるため、ユーザーはそれを宣言するツールのために環境変数を引き上げる必要はありません。画像データを返すツールは、引き続きトークン制限の対象となります。
-
-<Warning>
-  制御していない特定の MCP サーバーで出力警告が頻繁に発生する場合は、`MAX_MCP_OUTPUT_TOKENS` 制限を増やすことを検討してください。サーバー作成者に `anthropic/maxResultSizeChars` 注釈を追加するか、レスポンスをページネーションするよう依頼することもできます。注釈は画像コンテンツを返すツールには効果がありません。それらの場合、`MAX_MCP_OUTPUT_TOKENS` を引き上げることが唯一のオプションです。
-</Warning>
 
 <h3 id="images-in-tool-results">
   ツール結果内の画像

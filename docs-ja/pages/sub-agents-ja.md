@@ -310,7 +310,7 @@ Bash コマンドの場合、Claude Code はコマンド自体を 2 つの方法
 
 | フィールド | 必須 | 説明 |
 | :- | :- | :- |
-| `name` | はい | 一意の識別子（`code-reviewer` や `reviewer-v2` など）。[フック](/docs/ja/hooks#subagentstart)はこの値を `agent_type` として受け取ります。ファイル名は一致する必要はありません。名前に `:` を含めることはできません。これは [plugin-scoped identifiers](/docs/ja/plugins/overview)（`my-plugin:reviewer` など）用に予約されています。Claude Code は `:` を含む名前のファイルを読み込まず、デバッグログにエラーをログします。v2.1.218 より前では、そのような名前は受け入れられていました |
+| `name` | はい | 最大 256 文字の一意の識別子（`code-reviewer` や `reviewer-v2` など）。[フック](/docs/ja/hooks#subagentstart)はこの値を `agent_type` として受け取ります。ファイル名は一致する必要はありません。名前に `:` を含めることはできません。これは [プラグインスコープ付き識別子](/docs/ja/plugins/overview)（`my-plugin:reviewer` など）用に予約されています |
 | `description` | はい | Claude がこのサブエージェントに委任すべき場合 |
 | `tools` | いいえ | サブエージェントが使用できる[ツール](#available-tools)。`Read, Grep, Glob` や YAML リストなどのカンマ区切り文字列として。省略した場合、サブエージェントで利用可能なすべてのツールを継承します。リスト内のエントリがツールに解決されない場合、サブエージェントは通常、エントリに名前を付けるエラーで[起動に失敗](/docs/ja/errors#agent-would-be-spawned-with-zero-tools)します。スキルをコンテキストにプリロードするには、ここで `Skill` をリストするのではなく、`skills` フィールドを使用します |
 | `disallowedTools` | いいえ | 継承または指定されたリストから削除するツール。`tools` と同じ形式。`Bash(git push *)` などの指定子を持つエントリは、[ツール全体](#available-tools)を削除します |
@@ -348,7 +348,7 @@ Claude Code は、frontmatter に以下の問題がある場合、プロジェ�
 
 * **`name` がない**。Claude Code はファイルをエージェントの横に保持されたドキュメントとして扱います。
 * **ファイルの最初の行ではない開き `---`**。Claude Code はファイルに frontmatter がないと読み取り、ドキュメントとして扱います。
-* **`-` で始まるか `:` を含む `name`**。Claude Code はファイルをスキップし、デバッグログにエラーを書き込みます。上記の表の `name` 行を参照してください。
+* **`-` で始まる、`:` を含む、または 256 文字を超える `name`**。Claude Code はファイルをスキップし、デバッグログにエラーを書き込みます。
 * **`name` があるが `description` がない**。Claude Code はファイルをスキップし、理由をデバッグログに書き込みます。
 * **解析されない YAML**。Claude Code はファイルからフィールドを読み取らず、スキップして、解析エラーをデバッグログに書き込みます。
 
@@ -378,6 +378,8 @@ Claude がサブエージェントを呼び出すとき、その特定の呼び�
 2. サブエージェント定義の `model` frontmatter。`inherit` はメイン会話のモデルを選択します
 3. [`CLAUDE_CODE_SUBAGENT_MODEL`](/docs/ja/model-config#environment-variables)環境変数。モデルエイリアスまたはモデル ID に設定した場合
 4. メイン会話のモデル
+
+インストール済みの [mod](/docs/ja/plugins/mods/overview) が [`agent.spawn`](/docs/ja/plugins/mods/reference#subagents) フックでモデルを設定する場合、Claude Code は呼び出しごとのパラメータの代わりにそのモデルを使用します。
 
 2 つのケースでは、`opus` などのファミリエイリアスが、呼び出しごとのパラメータまたは frontmatter で、メイン会話のモデルの代わりに[エイリアスが指す](/docs/ja/model-config#model-aliases)バージョンに解決されます。
 
@@ -1164,7 +1166,7 @@ code-reviewer サブエージェントを使用してパフォーマンスの問
 
 * サブエージェントが完了すると、Claude はそのエージェント ID を受け取ります。
 * 組み込みの Explore および Plan エージェントは 1 回限りで、エージェント ID を返さないため、Claude はそれらを再開できません。作業を続ける必要がある場合は、`general-purpose` またはカスタムサブエージェントを使用してください。
-* サブエージェントが [`maxTurns`](#supported-frontmatter-fields) 制限で停止すると、Claude Code は返された出力を部分的としてマークします。エージェント ID を返すサブエージェントの場合、Claude Code は、Claude がサブエージェントにメッセージを送信して停止した場所から続行できることを結果に記載します。
+* サブエージェントが [`maxTurns`](#supported-frontmatter-fields) 制限で停止すると、Claude Code は返された出力を部分的としてマークし、Claude はサブエージェントを再開して作業を続行できます。
 
 Claude は `SendMessage` ツールを使用し、エージェント ID または名前を `to` フィールドとして使用して再開します。`SendMessage` は [エージェントチーム](/docs/ja/agent-teams) が有効になっている必要はありません。`shutdown_request` や `plan_approval_response` などの構造化チームプロトコルメッセージのみが必要です。サブエージェントとチームメイトを超えて、クロスセッションメッセージングが有効なセッションでは、Claude は同じツールを使用して [他の Claude Code セッション](/docs/ja/cross-session-messaging) にメッセージを送信でき、このマシンまたは [それを超えて](/docs/ja/cross-session-messaging#message-sessions-on-other-machines) です。
 
@@ -1279,7 +1281,7 @@ Claude は Agent ツールを通じて `fork` サブエージェントタイプ�
 | 権限 | プロンプトがターミナルに表示 | [バックグラウンド実行時にメインセッションに表示](#run-subagents-in-foreground-or-background) |
 | プロンプトキャッシュ | メインセッションと共有 | 別のキャッシュ |
 
-フォークのシステムプロンプトとツール定義は親と同じであるため、最初のリクエストは親の[プロンプトキャッシュ](/docs/ja/prompt-caching#subagents-and-the-cache)を再利用します。これにより、同じコンテキストが必要なタスクの場合、フォークは新しいサブエージェントをスポーンするよりも安価です。
+フォークのシステムプロンプトとツール定義は親と同じであるため、最初のリクエストは親の[プロンプトキャッシュ](/docs/ja/prompt-caching#subagents-and-the-cache)を再利用します。この再利用により、同じコンテキストが必要なタスクの場合、フォークは新しいサブエージェントよりも安価です。
 
 Claude が Agent ツール経由でフォークをスポーンするときに、`isolation: "worktree"` を渡すことができるため、フォークのファイル編集は、チェックアウトではなく、別の git worktree に書き込まれます。フォークはさらにフォークをスポーンできません。
 

@@ -63,7 +63,7 @@ Claude Code は、セッション中の特定のポイントでフックを実�
 | `DirectoryAdded` | `/add-dir` または SDK `register_repo_root` コントロールリクエスト経由でセッション中盤に作業ディレクトリが追加されるとき |
 | `FileChanged` | 監視対象ファイルがディスク上で変更されるとき。`matcher` フィールドは監視するファイル名を指定します |
 | `WorktreeCreate` | `--worktree`、`isolation: "worktree"`、またはバックグラウンドセッション経由で worktree が作成されるとき。デフォルトの git 動作を置き換えます |
-| `WorktreeRemove` | セッション終了時、サブエージェント終了時、またはバックグラウンドセッションを削除するときに worktree が削除されるとき |
+| `WorktreeRemove` | `WorktreeCreate` フックが作成した worktree が削除されるとき |
 | `PreCompact` | コンテキスト圧縮の前 |
 | `PostCompact` | コンテキスト圧縮が完了した後 |
 | `PreModelSwitch` | Claude Code があなたまたはクライアントがリクエストしたモデルスイッチを適用する前。スイッチをブロックできます |
@@ -3272,15 +3272,17 @@ Claude Code は、`.` や `..` セグメントを含む絶対パスと、リポ�
   WorktreeRemove
 </h3>
 
-worktree が削除されるときに実行されます。これは [WorktreeCreate](#worktreecreate) に対応するクリーンアップ用のイベントです。このイベントは次の場合に発生します。
+Claude Code が、[`WorktreeCreate`](#worktreecreate) フックで作成された worktree をクリーンアップするときに実行されます。このイベントは次の場合に発生します。
 
-* `--worktree` セッションを終了し、削除を選択したとき
-* `isolation: "worktree"` を指定したサブエージェントが終了したとき
-* フックが worktree を作成した[バックグラウンドセッション](/docs/ja/agent-view#what-deleting-a-session-removes)を削除したとき
+* 対話型の [worktree セッション](/docs/ja/worktrees#start-claude-in-a-worktree)を終了し、Claude Code に確認されたときに worktree の削除を選択した場合
+* [名前を付けて](/docs/ja/sessions#name-your-sessions)いない対話型の worktree セッションを終了し、Claude Code が変更済みまたは未追跡のファイルを検出せず、確認なしで worktree を削除する場合
+* その worktree で実行されている[バックグラウンドセッション](/docs/ja/agent-view#what-deleting-a-session-removes)を削除した場合
+
+Claude Code は git を使って変更済みまたは未追跡のファイルを探すため、git チェックアウトではない、またはその内部にない worktree では、ディレクトリに未コミットの作業があっても何も検出しません。何かを削除する前に、WorktreeRemove フック内でそのような作業がないか確認してください。
 
 Git ベースの worktree の場合、Claude Code は `git worktree remove` で自動的にクリーンアップを行います。WorktreeCreate フックを設定した場合は、WorktreeRemove フックと組み合わせて、作成した worktree のクリーンアップを制御してください。
 
-* **WorktreeRemove フックがない場合**: `--worktree` セッションを終了して削除を選択すると、Claude Code は WorktreeCreate フックが返したパスに対して `git worktree remove --force` にフォールバックするため、Git が認識している worktree は削除されます。Git が認識していない worktree（たとえば Git 以外のバージョン管理システムでフックが作成したもの）はディスクに残ります。[バックグラウンドセッション](/docs/ja/agent-view#what-deleting-a-session-removes)の削除がフックで作成された worktree をどう扱うかについては、エージェントビューの削除ルールを参照してください。
+* **WorktreeRemove フックがない場合**: worktree セッションの終了時に Claude Code が worktree を削除する際、WorktreeCreate フックが返したパスに対して `git worktree remove --force` にフォールバックするため、git が認識している worktree は削除されます。git が認識しない worktree（例えば、フックが git 以外のバージョン管理システムで作成したもの）はディスク上に残ります。[バックグラウンドセッション](/docs/ja/agent-view#what-deleting-a-session-removes)の削除がフックで作成された worktree をどう扱うかについては、エージェントビューの削除ルールを参照してください。
 * **フックが 0 で終了した場合**: worktree は削除済みとして扱われます。Claude Code はフックからそれ以外に何も読み取らないため、フックがディレクトリを確実に削除するようにしてください。
 * **フックが 0 以外で終了した場合**: その後も `worktree_path` のディレクトリが存在していれば削除は失敗し、Git へのフォールバックなしで worktree はディスクに残ります。0 以外で終了する前にディレクトリを削除したフックは、削除済みとして扱われます。失敗の報告方法については、[WorktreeRemove の入力](#worktreeremove-input)を参照してください。
 

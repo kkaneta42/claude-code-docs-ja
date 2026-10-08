@@ -1166,15 +1166,34 @@ PowerShell スクリプトをステータスラインとして実行するには
 }
 ```
 
-コマンドは、すべての表示されているサブエージェント行が stdin で単一の JSON オブジェクトとして渡される各リフレッシュティックで実行されます。入力には [基本フックフィールド](/docs/ja/hooks#common-input-fields)、使用可能な行幅を示す `columns` フィールド、および `tasks` 配列が含まれます。各タスクには `id`、`name`、`type`、`status`、`description`、`label`、`startTime`、`model`、`effort`、`contextWindowSize`、`tokenCount`、`tokenSamples`、`cwd` があります。
-
-タスクごとの `model` フィールドは、タスクが実行される解決済みモデル ID です。`contextWindowSize` はそのモデルのコンテキストウィンドウ（トークン単位）で、メインステータスラインの `context_window.context_window_size` と同じ方法で計算されるため、`tokenCount` から行ごとのパーセンテージをレンダリングできます。両方のフィールドには Claude Code v2.1.205 以降が必要で、モデルがまだ解決されていないタスクでは省略されます。
-
-タスクごとの `effort` フィールドは、そのサブエージェントに設定された推論 effort で、その [定義フロントマター](/docs/ja/sub-agents#supported-frontmatter-fields) または個別の呼び出しで設定されます。値は、effort レベル文字列 `low`、`medium`、`high`、`xhigh`、`max` のいずれか、またはトークン予算の数値です。フィールドは、記述されたとおりに設定された値を報告します。モデルがそのレベルをサポートしていない場合、Claude Code が実際に適用する effort は異なる可能性があります。フィールドには Claude Code v2.1.214 以降が必要で、サブエージェントにレベルが設定されていない場合は存在しません。
+コマンドはリフレッシュティックごとに 1 回実行され、表示されているすべてのサブエージェント行を単一の JSON オブジェクトとして stdin で受け取ります。入力には [基本フックフィールド](/docs/ja/hooks#common-input-fields)、使用可能な行幅を示す `columns` フィールド、および行ごとに 1 つのエントリを持つ `tasks` 配列が含まれます。`tasks` 配列については [タスクフィールド](#task-fields) で説明します。
 
 オーバーライドしたい各行に対して stdout に 1 つの JSON 行を書き込みます。形式は `{"id": "<task id>", "content": "<row body>"}` です。`content` 文字列はそのままレンダリングされます。ANSI 色と OSC 8 ハイパーリンクを含みます。タスクの `id` を省略して、その行のデフォルトレンダリングを保持します。空の `content` 文字列を出力して、その行を非表示にします。
 
 `statusLine` に適用される同じトラストと `disableAllHooks` および [`allowManagedHooksOnly`](/docs/ja/settings-reference#allowmanagedhooksonly) ゲートが `subagentStatusLine` に適用されます。プラグインは、[`settings.json`](/docs/ja/plugins/manifest-reference#standard-layout) でデフォルトの `subagentStatusLine` を配布できます。ただし、フックとは異なり、プラグインが管理設定で強制的に有効化されている場合でも、プラグイン値は `allowManagedHooksOnly` の下で実行されません。
+
+<h3 id="task-fields">
+  タスクフィールド
+</h3>
+
+`tasks` 配列の各エントリは、以下のフィールドで 1 つのサブエージェント行を記述します。省略可能と記載されたフィールドは値がない場合に省略されるため、スクリプトではそれらが存在しない場合に備えてください。
+
+| フィールド | 型 | 説明 |
+| :- | :- | :- |
+| `id` | string | タスクの識別子。この行に対して書き戻す行で `id` としてそのまま返します |
+| `name` | string、省略可能 | サブエージェントに名前がある場合、その [呼び出しに使われる](/docs/ja/sub-agents#subagent-names) 名前 |
+| `type` | string | タスクの種類: `local_agent` |
+| `agentType` | string | タスクが実行されるサブエージェントタイプ。組み込みの [`Explore`](/docs/ja/sub-agents#built-in-subagents) やカスタムの `code-reviewer` などです。フックが [`agent_type`](/docs/ja/hooks#subagentstart) として受け取るのと同じ値を保持します。Claude Code v2.1.293 以降が必要です |
+| `status` | string | タスクの状態。`running`、`completed`、`failed`、`killed` など |
+| `description` | string | タスクの短い説明。Claude がサブエージェントを生成したときに付けた説明など |
+| `label` | string | Claude Code が持っている場合はタスクの短い進捗サマリー、それ以外の場合は `description` と同じテキスト |
+| `startTime` | number | タスクが開始された時刻（Unix エポックからのミリ秒） |
+| `model` | string、省略可能 | タスクが実行される解決済みモデルの ID。モデルが解決されるまでは省略されます。Claude Code v2.1.205 以降が必要です |
+| `effort` | string または number、省略可能 | サブエージェントの [定義フロントマター](/docs/ja/sub-agents#supported-frontmatter-fields) または個別の呼び出しで設定された推論 effort: `low`、`medium`、`high`、`xhigh`、`max`、またはトークン予算の数値。これは設定された値であり、モデルがそのレベルをサポートしていない場合、Claude Code が実際に適用する effort は異なる可能性があります。effort が設定されていない場合は省略されます。Claude Code v2.1.213 以降が必要です |
+| `contextWindowSize` | number、省略可能 | `model` のコンテキストウィンドウ（トークン単位）。メインステータスラインの [`context_window.context_window_size`](#context-window-fields) と同じ方法で計算されるため、`tokenCount` から行ごとのパーセンテージをレンダリングできます。`model` が省略されている場合は省略されます。Claude Code v2.1.205 以降が必要です |
+| `tokenCount` | number | サブエージェントの累計トークン数。デフォルトの行に表示される数値です |
+| `tokenSamples` | array of numbers | 直近最大 16 個の `tokenCount` の読み取り値。リフレッシュティックごとに 1 つずつ、古い順に並び、現在の値で終わります |
+| `cwd` | string | サブエージェントの作業ディレクトリ。隔離された worktree など独自のディレクトリで実行される場合はそのディレクトリ、それ以外の場合はセッションの作業ディレクトリです |
 
 <h2 id="tips">
   ヒント

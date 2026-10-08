@@ -870,7 +870,7 @@ Claude がサーバー側の[アドバイザーツール](/docs/ja/advisor)を�
 
 このキーを `false` に設定して、すべてのセッションで[拡張思考](/docs/ja/model-config#extended-thinking)をオフにします。思考はデフォルトでオンなので、`true` は何も変わりません。ほとんどの人はファイルを編集するのではなく `/config` を通じてこれを設定します。
 
-Opus 5.5、Sonnet 5.5、Fable モデルなど、常に思考するモデルでは、`false` は効果がありません。[サードパーティプロバイダー](/docs/ja/third-party-integrations)では、Claude Code は思考をオフにするのではなく `thinking` パラメータを省略するため、適応推論モデルは依然として思考する可能性があります。Anthropic API で思考をオフにした場合、Claude Code は、Opus 5 など[その組み合わせを受け入れない](/docs/ja/errors#effort-isnt-available-with-thinking-turned-off)ことが分かっているモデルに、より高いレベルではなく努力 `high` を送信します。
+Opus 5.5、Sonnet 5.5、Haiku 5.5、Fable モデルなど、常に思考するモデルでは、`false` は効果がありません。[サードパーティプロバイダー](/docs/ja/third-party-integrations)では、Claude Code は思考をオフにする代わりに `thinking` パラメータを省略するため、適応推論モデルは引き続き思考する可能性があります。Anthropic API で思考をオフにした場合、Claude Code は、Opus 5 など[その組み合わせを受け付けない](/docs/ja/errors#effort-isnt-available-with-thinking-turned-off)ことが分かっているモデルに対して、より高いレベルの代わりに effort `high` を送信します。
 
 * **スコープ**: [`任意のファイル`](#scopes)
 * **タイプ**: ブール値
@@ -3164,7 +3164,7 @@ Claude Code が[メモリ](/docs/ja/memory#exclude-specific-claude-md-files)を�
   `plansDirectory`
 </h3>
 
-Claude Code が[計画モード](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode)で書き込む計画ファイルを保存する場所を選択します。Claude Code はパスをプロジェクトルートを基準に解決し、パスがそれの外側に解決される場合はデフォルトを保持します。
+Claude Code が [plan モード](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode)で書き込む計画ファイルを保存する場所を選択します。Claude Code はパスをプロジェクトルートを基準に解決します。
 
 * **スコープ**: [`任意のファイル`](#scopes)
 * **タイプ**: 文字列。プロジェクトルートを基準とした相対パス
@@ -3175,6 +3175,11 @@ Claude Code が[計画モード](/docs/ja/permission-modes#analyze-before-you-ed
   "plansDirectory": "./plans"
 }
 ```
+
+次のような場合、Claude Code は設定したディレクトリではなく `~/.claude/plans` に計画を保存します。
+
+* **プロジェクトルートの外側**: `"../plans"` のように、パスがプロジェクトルートの外側に解決される場合。
+* **macOS、Linux、WSL でのバックスラッシュ**: Windows 形式の `"docs\\plans"` のように、解決されたパスにバックスラッシュが含まれる場合。Windows でも動作する `"docs/plans"` と記述してください。
 
 <h3 id="skilllistingbudgetfraction">
   `skillListingBudgetFraction`
@@ -5768,7 +5773,7 @@ Claude Code が `claude-cli://` プロトコルハンドラーをオペレーテ
 
 開発者が SSH 経由でリモートマシンで作業する必要があるデプロイメント用に、[デスクトップアプリ](/docs/ja/desktop#local-sessions-on-managed-devices) で実行されるコードセッションをオフにします。Code タブでは、**Local** 環境は環境ドロップダウンに留まりますが、グレーアウトされて選択できず、組織がオフにしたことを示すツールチップが表示されます。Windows では WSL エントリも同じようにグレーアウトされますが、WSL セッションがマネージドデバイスで実行されるかどうかは [別途管理されます](/docs/ja/admin-setup#wsl-sessions-in-claude-code-desktop)。新しいセッションは、設定されている場合は最初の [SSH 接続](/docs/ja/desktop#ssh-sessions) にデフォルト設定され、アプリは同じマシンへの SSH 接続を含む、デバイス上のセッションの開始または再開を拒否します。他のホストへの SSH セッションとクラウドセッションは影響を受けません。デスクトップアプリはこのキーを読み取ります。ターミナル CLI は無視します。Claude Desktop v1.37937.0 以降が必要です。
 
-* **Scope**: [`Managed`](#scopes)
+* **Scope**: [`Managed`](#scopes)。デフォルトでは、デスクトップアプリは [1 つの管理ソース](/docs/ja/managed-settings#how-claude-code-combines-managed-sources) からキーを読み取ります。
 * **Type**: Boolean。JSON Boolean `true` のみが有効です
   * `true`: デスクトップアプリはオンデバイスコードセッションを提供しません。既存のローカルセッションはリストに残りますが、続行できません
   * `false`: ローカルセッションは利用可能なままです
@@ -5915,7 +5920,7 @@ Claude Code はプロジェクトまたはローカル設定からの `true` を
 
 [Desktop](/docs/ja/desktop#pre-configure-ssh-connections-for-your-team) 環境ドロップダウンに SSH 接続を追加します。管理者はこれを使用して、共有接続をチームに配布します。マネージド設定で定義した接続はマネージドとして表示されるため、ユーザーはそれらを選択できますが、アプリで編集または削除することはできません。
 
-* **Scope**: [`User or managed`](#scopes)。デスクトップアプリはこのキーを読み取ります。
+* **Scope**: [`User or managed`](#scopes)。デスクトップアプリはこのキーを読み取ります。デフォルトでは、管理対象の接続を [1 つの管理ソース](/docs/ja/managed-settings#how-claude-code-combines-managed-sources) から読み取ります。
 * **Type**: オブジェクトの配列。各オブジェクトは必須の `id`、`name`、`sshHost` と、オプションの `sshPort` および `sshIdentityFile` を持ちます
 * **Default**: 未設定
 
@@ -5939,7 +5944,7 @@ Claude Code はプロジェクトまたはローカル設定からの `true` を
 
 [Desktop SSH セッション](/docs/ja/desktop#restrict-which-ssh-hosts-users-can-connect-to) が接続できるホストを制限します。デスクトップアプリのみがこのキーを読み取ります。CLI は読み取りません。パターンは大文字と小文字を区別しません。`*` は任意のホストに一致し、`*.example.com` は `example.com` とすべてのサブドメインに一致し、その他は `~/.ssh/config` 解決後のホスト名に対する完全一致です。空の配列は SSH セッションをオフにします。
 
-* **Scope**: [`Managed`](#scopes)
+* **Scope**: [`Managed`](#scopes)。デフォルトでは、Desktop は [1 つの管理ソース](/docs/ja/managed-settings#how-claude-code-combines-managed-sources) からキーを読み取ります。
 * **Type**: ホスト名パターンの配列
 * **Default**: 未設定なので、任意のホストが許可されます
 
@@ -5950,6 +5955,10 @@ Claude Code はプロジェクトまたはローカル設定からの `true` を
   "sshHostAllowlist": ["*.devboxes.example.com", "bastion.example.com"]
 }
 ```
+
+`true` やオブジェクトなど、Desktop がホストのリストとして読み取れない値は、修正するまで空の配列として扱われます。ただし `null` は未設定として扱われます。Claude Desktop v2.26454.0 以降が必要です。
+
+最上位のソースで [`managedSourcesBehavior`](#managedsourcesbehavior) を `"merge"` に設定すると、Desktop はすべての [管理ソース](/docs/ja/managed-settings#how-claude-code-combines-managed-sources) のリストを結合し、いずれかに一致するホストを許可します。あるソースで空の配列を設定しても、別のソースがリストしているホストに対しては SSH セッションはオンのままです。
 
 <span id="authentication-and-login" />
 

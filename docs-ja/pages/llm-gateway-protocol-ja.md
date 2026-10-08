@@ -200,7 +200,7 @@ Claude Code はこれらのレスポンスヘッダーを読み取り、スト�
 
 | ヘッダー | 返すべき内容と理由 |
 | :- | :- |
-| `content-type` | ストリーム化された Anthropic Messages 形式のレスポンスでは `text/event-stream` を返し、Amazon Bedrock 形式のレスポンスでは `application/vnd.amazon.eventstream` を未修正のまま返してください。[ゲートウェイまたはプロキシの背後でのストリーミングエラー](/docs/ja/amazon-bedrock#streaming-errors-behind-a-gateway-or-proxy)では異なるタイプがリクエストを失敗させます。[ストリーミング](#streaming)では、これらのストリームに対してストール検出を実行する接続を示しています |
+| `content-type` | ストリーム化された Anthropic Messages 形式のレスポンスでは `text/event-stream` を返し、Amazon Bedrock 形式のレスポンスでは `application/vnd.amazon.eventstream` を未修正のまま返してください。Amazon Bedrock 形式では[異なるタイプを返すとリクエストが失敗します](/docs/ja/amazon-bedrock#streaming-errors-behind-a-gateway-or-proxy) |
 | `retry-after` | HTTP 日付ではなく整数秒を返してください。Claude Code は次の[自動再試行](/docs/ja/errors#automatic-retries)の前に少なくともその時間待機し、[`CLAUDE_CODE_RETRY_WATCHDOG`](/docs/ja/env-vars)セッション外では 60 を超える値は再試行を停止し、エラーを直ちに表示します |
 | `x-should-retry` | アップストリームの値を未修正のまま渡してください。Claude Code はこのヘッダーを失敗したリクエストを再試行するかどうかを決定する際の 1 つの入力として読み取ります。`true` はレスポンスが再試行可能であることを示し、`false` は再試行不可能であることを示します。再試行回数、バックオフ、および Claude Code が再試行する失敗については、[自動再試行](/docs/ja/errors#automatic-retries)を参照してください |
 | `anthropic-ratelimit-unified-*` | すべてのレスポンスでアップストリームの値を未修正のまま転送してください。Claude Code はこれらを成功したレスポンスで読み取り、claude.ai でサインインしている開発者にプラン制限に対する使用量を表示し、`429` では一時的なスロットルからプラン制限または支出上限を区別します。[使用量制限](/docs/ja/errors#usage-limits)を参照してください |

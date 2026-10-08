@@ -347,17 +347,28 @@ Claude Code がフェッチするすべての claude.ai コネクタをオフに
   `serverUrl` エントリのマッチ方法
 </h4>
 
-URL はパターン内の任意の場所（スキームを含む）で `*` ワイルドカードをサポートします。ホスト名のマッチングは大文字と小文字を区別せず、末尾の FQDN ドットを無視するため、`https://Mcp.Example.com/*` は `https://mcp.example.com/api` にマッチします。パスは大文字と小文字を区別したままです。
+URL は `*` ワイルドカードをサポートしており、スキーム全体を `*` にすることもできます。ホスト名のマッチングは大文字と小文字を区別せず、末尾の FQDN ドットを無視するため、`https://Mcp.Example.com/*` は `https://mcp.example.com/api` にマッチします。パスは大文字と小文字を区別したままです。ポートを指定しない場合、ホスト名の書き方によって、パターンがスキームのデフォルトポートのみにマッチするか、すべてのポートにマッチするかが決まります。
+
+* **ホスト名を完全に記述した場合**：デフォルトポートのみ（`https` は 443、`http` は 80）
+* **ホスト名に `*` を含む場合**：すべてのポート
 
 以下の表は、一般的なパターンが許可する内容を示しています。
 
 | パターン | 許可 |
 | :- | :- |
-| `https://mcp.example.com/*` | 特定のドメイン上のすべてのパス |
-| `https://mcp.example.com` | そのドメイン上のすべてのパスも。パスのないパターンは任意のパスにマッチします |
-| `https://*.example.com/*` | `example.com` の任意のサブドメイン |
+| `https://mcp.example.com/*` | 特定のドメイン上のすべてのパス（ポート 443 のみ） |
+| `https://mcp.example.com` | そのドメイン上のすべてのパスも（ポート 443 のみ）。パスのないパターンは任意のパスにマッチします |
+| `https://mcp.example.com:8443/*` | そのドメイン上のすべてのパス（ポート 8443 のみ） |
+| `https://mcp.example.com:*/*` | そのドメイン上のすべてのパス（443 を含む任意のポート） |
+| `https://*.example.com/*` | `example.com` の任意のサブドメイン（任意のポート） |
 | `http://localhost:*/*` | localhost 上の任意のポート |
-| `*://mcp.example.com/*` | 特定のドメインへの任意のスキーム |
+| `*://mcp.example.com/*` | 特定のドメインへの任意のスキーム（各スキームのデフォルトポートのみ） |
+
+`deniedMcpServers` のエントリも同じ方法でポートにマッチするため、`staging.example.com` のエントリは、ブロックする必要があるポートとスキームに応じて選択します。
+
+* `https://staging.example.com/*`：そのホスト上の `https` サーバーをポート 443 でのみブロックするため、`https://staging.example.com:8443/api` のサーバーはブロックされません
+* `https://staging.example.com:*/*`：そのホスト上の `https` サーバーをすべてのポートでブロックします
+* `*://staging.example.com:*/*`：そのホストを任意のスキーム、任意のポートでブロックします
 
 <h4 id="how-policy-entries-expand">
   `serverCommand` および `serverUrl` エントリ内の環境変数
@@ -529,6 +540,7 @@ Windows では、`${HOME}` の代わりに `${USERPROFILE}` など、Windows 上
   | :- | :- |
   | `https://mcp.example.com/api` の HTTP サーバー | 許可：allowlist URL パターンにマッチ、denylist マッチなし |
   | `https://staging.example.com/api` の HTTP サーバー | ブロック：両方にマッチしますが、denylist が優先されます |
+  | `https://staging.example.com:8443/api` の HTTP サーバー | 許可：allowlist URL パターンにマッチ、[このポートでは denylist マッチなし](#how-serverurl-entries-match) |
   | `https://other.com/mcp` の HTTP サーバー | ブロック：allowlist にマッチしません |
 </Accordion>
 

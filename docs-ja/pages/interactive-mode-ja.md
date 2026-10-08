@@ -42,7 +42,7 @@
 | `Ctrl+Enter` または `Ctrl+X Ctrl+S` | キューに入れたメッセージを今すぐ送信 | [キューに入れたメッセージ](#queue-messages-while-claude-works)とドラフトを直ちに送信します。[Claude Code がキューに入れたものを送信するとき](#when-claude-code-sends-what-you-queued)は、Claude が作業中のターンに何が起こるかについて説明しています。[シェルモード](#shell-mode-with-prefix)では、キーはコマンドをキューに入れるだけです。拡張キーを報告しないターミナルでは、`Ctrl+Enter` は通常の `Enter` として到着します。`Ctrl+X Ctrl+S` はすべてのターミナルで機能します。Claude Code v2.1.275 以降が必要です |
 | `Shift+Tab`、または Node または Bun ランタイムが VT 入力モードを有効にしない場合は Windows で `Alt+M` | 権限モードを循環 | `default`（モード指標で Manual とラベル付け）、`acceptEdits`、`plan`、および利用可能な場合は `bypassPermissions` と `auto` を循環します。`auto` から、最初のプレスは `default` に切り替わります。[権限モード](/docs/ja/permission-modes)を参照してください。ファイル権限プロンプトでは、同じキーが開いている[コメントフィールド](/docs/ja/permissions#add-a-comment-when-you-answer-a-permission-prompt)を閉じます。フィールドが開いていない場合、プロンプトがそのオプションを提供するときに、セッションの残りの部分でアクションを許可するオプションを選択します |
 | `Option+P`（macOS）または `Alt+P`（Windows/Linux） | モデルを切り替え | プロンプトをクリアせずにモデルを切り替え |
-| `Option+T`（macOS）または `Alt+T`（Windows/Linux） | 拡張思考を切り替え | 拡張思考モードを有効または無効にします。Opus 5.5、Sonnet 5.5、または Fable モデルには効果がありません。これらは常に拡張思考を使用します。macOS で Option を Meta として設定せずに動作します |
+| `Option+T`（macOS）または `Alt+T`（Windows/Linux） | 拡張思考を切り替え | 拡張思考モードを有効または無効にします。Opus 5.5、Sonnet 5.5、Haiku 5.5、または Fable モデルには効果がありません。これらは常に拡張思考を使用します。macOS で Option を Meta として設定せずに動作します |
 | `Option+O`（macOS）または `Alt+O`（Windows/Linux） | 高速モードを切り替え | [高速モード](/docs/ja/fast-mode)を有効または無効にします |
 
 <h3 id="text-editing">

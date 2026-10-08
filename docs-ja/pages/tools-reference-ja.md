@@ -709,16 +709,16 @@ WebSearch 権限ルールは指定子を取りません。`allow` または `den
 検索バックエンドは設定不可です。別のプロバイダーで検索するには、検索ツールを公開する [MCP サーバー](/docs/ja/mcp) を追加します。
 
 <Note>
-  WebSearch は Claude API と [AWS 上の Claude Platform](/docs/ja/claude-platform-on-aws) で利用可能です。Microsoft Foundry では [Anthropic でホストされているデプロイメント](https://platform.claude.com/docs/en/build-with-claude/claude-in-microsoft-foundry#hosting-options) が必要です。Azure でホストされているデプロイメントはサーバー側ツールをサポートしていないため、WebSearch 呼び出しは失敗します。Google Cloud の Agent Platform では Claude 4 以降のモデル（Opus、Sonnet、Haiku を含む）で動作します。Amazon Bedrock はサーバー側ウェブ検索ツールを公開していません。
+  WebSearch は Claude API、[AWS 上の Claude Platform](/docs/ja/claude-platform-on-aws)、Microsoft Foundry で利用可能です。Google Cloud の Agent Platform では Claude 4 以降のモデル（Opus、Sonnet、Haiku を含む）で動作します。Amazon Bedrock はサーバー側ウェブ検索ツールを公開していません。
 </Note>
 
 <h3 id="session-search-limit">
   セッション検索制限
 </h3>
 
-セッションは最大 200 回の WebSearch 呼び出しを実行できます。メイン会話とそれが生成するすべての [サブエージェント](/docs/ja/sub-agents) 全体でカウントされるため、並列リサーチ ファンアウトによって行われた検索は同じ制限にカウントされます。この制限には Claude Code v2.1.212 以降が必要です。Claude が制限に達すると、さらなる呼び出しは、再試行を促すエラーではなく、既に収集した情報で続行するよう Claude に指示する通知を返します。通知は表示されません。キャップされた呼び出しは会話に何もしなかった検索として表示され、Claude がさらに検索が必要な場合、通知は制限を引き上げるよう求めるよう指示します。
+インタラクティブなターミナルセッションは 200 回の WebSearch 呼び出しを実行できます。メイン会話とそれが生成するすべての [サブエージェント](/docs/ja/sub-agents) 全体でカウントされるため、並列リサーチ ファンアウトによって行われた検索は同じ制限にカウントされます。この制限には Claude Code v2.1.212 以降が必要です。Claude が制限に達すると、さらなる呼び出しは、再試行を促すエラーではなく、既に収集した情報で続行するよう Claude に指示する通知を返します。通知は表示されません。キャップされた呼び出しは会話に何もしなかった検索として表示され、Claude がさらに検索が必要な場合、通知は制限を引き上げるようユーザーに求めるよう指示します。
 
-[`CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION`](/docs/ja/env-vars) 環境変数を設定して上限を変更します。正の整数を受け入れるため、上限を引き上げることはできますが、オフにすることはできません。[`/clear`](/docs/ja/commands#all-commands) を実行するとカウントがリセットされます。ワークフローの実行など、[サブエージェント](/docs/ja/sub-agents) を生成できる作業がクリア後も存在する場合、カウントは代わりに引き継がれます。
+[`CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION`](/docs/ja/env-vars) 環境変数を設定して上限を変更します。正の整数を受け入れるため、上限を引き上げることはできますが、オフにすることはできません。インタラクティブなターミナルセッションの制限は 1 時間あたり約 100 回の呼び出しで回復し、[`CLAUDE_CODE_WEB_SEARCH_REFILLS_PER_HOUR`](/docs/ja/env-vars#variables) でその回復レートを設定します。[`/clear`](/docs/ja/commands#all-commands) を実行するとカウントがリセットされます。ワークフローの実行など、[サブエージェント](/docs/ja/sub-agents) を生成できる作業がクリア後も存在する場合、カウントは代わりに引き継がれます。
 
 <h2 id="write-tool-behavior">
   Write ツールの動作

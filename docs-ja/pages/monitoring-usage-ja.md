@@ -551,7 +551,7 @@ export OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317
 * **サーバー管理設定**: 組織の [サーバー管理設定](/docs/ja/server-managed-settings) の `env` ブロックに追加します。Claude Code は [サーバー管理設定が適用される](/docs/ja/model-config#surface-coverage) 場所（ユーザーのマシンと Claude Tag チャネルセッション以外のクラウドセッションを含む）で起動時にこれらの設定を取得します。Claude Tag セッションはサーバー管理設定を受け取らないため、このルートではそれらを設定できません。
 * **環境の変数**: クラウド環境の [環境変数](/docs/ja/cloud-environments#set-environment-variables) に追加して、その環境で実行されるセッションのみを設定します。これは Claude Tag セッションに到達するルートです。
 
-環境を使用する誰もがその変数を読み取ることができるため、`OTEL_EXPORTER_OTLP_HEADERS` のコレクタートークンなどの認証情報をそこに配置しないでください。環境の [API 認証情報](/docs/ja/cloud-environments#add-api-credentials) も役に立ちません。Claude Code 独自のテレメトリエクスポートは、[認証情報を取得しないリクエスト](/docs/ja/cloud-environments#requests-that-never-get-the-credential) の 1 つだからです。コレクターが認証情報を必要とする場合は、代わりにサーバー管理設定を通じてエクスポート全体を設定してください。認証情報をそこに設定すると、[Claude Code は管理設定外で設定されたエンドポイント変数を削除します](#how-managed-settings-lock-the-otlp-destination)。
+環境を使用する誰もがその変数を読み取ることができるため、`OTEL_EXPORTER_OTLP_HEADERS` のコレクタートークンなどの認証情報をそこに配置しないでください。環境の [ネットワークシークレット](/docs/ja/cloud-environments#add-network-secrets) も役に立ちません。Claude Code 独自のテレメトリエクスポートは、[シークレットを取得しないリクエスト](/docs/ja/cloud-environments#requests-that-never-get-the-credential) の 1 つだからです。コレクターが認証情報を必要とする場合は、代わりにサーバー管理設定を通じてエクスポート全体を設定してください。認証情報をそこに設定すると、[Claude Code は管理設定外で設定されたエンドポイント変数を削除します](#how-managed-settings-lock-the-otlp-destination)。
 
 クラウドセッションのテレメトリを設定する際は、これらの制約を念頭に置いてください。
 

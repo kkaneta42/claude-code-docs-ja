@@ -89,7 +89,7 @@ Dispatch は、生成した Code セッションが完了したときまたは�
 モバイルクライアントはセッションが必要とするほとんどのことをカバーしていますが、いくつかの制限があります。
 
 * **ローカルのみのコマンド**: `/plugin` や `/resume` など、ターミナルインターフェイスでのみ実行されるコマンドはアプリから機能しません。[リモートコントロール制限](/docs/ja/remote-control#limitations)には、モバイルから機能するコマンドと動作の違いが記載されています。
-* **権限モード**: クラウドセッションはモードドロップダウンで Accept edits、Plan、Auto を提供し、リモートコントロールセッションは Manual、Accept edits、Plan を提供します。どちらの場合でもアプリから Bypass permissions を選択することはできず、リモートコントロールセッションの Auto を選択することもできません。[権限モードを切り替える](/docs/ja/permission-modes#switch-permission-modes)を参照してください。
+* **権限モード**: クラウドセッションでは Accept edits、Plan、Auto を、Remote Control セッションでは Manual、Accept edits、Plan、Auto を選択できます。どちらの場合でも、アプリから Bypass permissions を選択することはできません。Auto が利用可能な条件については、[権限モードを切り替える](/docs/ja/permission-modes#switch-permission-modes)を参照してください。
 * **Dispatch プラン**: Dispatch には Pro または Max プランが必要であり、Team または Enterprise では利用できません。
 
 <h2 id="related-resources">

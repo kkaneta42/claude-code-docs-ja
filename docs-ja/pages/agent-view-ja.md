@@ -226,7 +226,7 @@ Completed
 
 ピークパネルに返信を入力して `Enter` を押すと、そのセッションに送信されます。返信の先頭に `!` を付けると、代わりに Bash コマンドを送信します。返信がどう扱われるかは、セッションと送信する内容によって異なります：
 
-* 作業中のセッション：返信は応答を中断せずにセッションの [メッセージキュー](/docs/ja/interactive-mode#queue-messages-while-claude-works) に追加され、[キューに入れた入力が反映されるタイミング](/docs/ja/interactive-mode#when-claude-code-sends-what-you-queued) で反映されます。[コマンド](/docs/ja/commands) は、セッション自体のプロンプトで入力するとすぐに実行されるものであっても、ターンが終了するまで待機します
+* 作業中のセッション：`/model`、`/effort`、`/rename`、`/usage` はすぐに実行されます。その他の返信は応答を中断せずにセッションの [メッセージキュー](/docs/ja/interactive-mode#queue-messages-while-claude-works) に追加され、[キューに入れた入力が反映されるタイミング](/docs/ja/interactive-mode#when-claude-code-sends-what-you-queued) で反映されます。その他の [コマンド](/docs/ja/commands) は、セッション自体のプロンプトで入力するとすぐに実行されるものであっても、ターンが終了するまで待機します
 * `/stop` だけの返信：セッションに届けられるのではなく、セッションが作業中でもユーザーを待っている状態でも、その場でセッションを停止します
 * [シェルジョブ](#run-a-shell-command)：返信は `/stop` も含め、入力としてコマンドのターミナルに送られます
 
@@ -288,11 +288,13 @@ Claude Code が会話を再度開けない場合は、終了して会話を再�
 
 `←` を押した元の行は、矢印キーまたはマウスで選択を移動した後も、太字で薄くない名前を保持するため、どのセッションから来たかがわかります。
 
-`←` を押したときにツールが実行中の場合、Claude Code はバックグラウンドにする前に最大約 10 秒間その完了を待ち、Claude はバックグラウンドセッションで応答を続けます。待たずにすぐにバックグラウンドにするには、`←` を再度押します。進行中の作業をバックグラウンドセッションに引き継げない場合、Claude Code は [`/background`](#from-inside-a-session) と同様に、まず `Background this session?` ダイアログを表示します。
+`←` を押したときにツールが実行中の場合、Claude Code はバックグラウンドにする前にその完了を待ち、Claude はバックグラウンドセッションで応答を続けます。待たずにすぐにバックグラウンドにするには、`←` を再度押します。進行中の作業をバックグラウンドセッションに引き継げない場合、Claude Code は [`/background`](#from-inside-a-session) と同様に、まず `Background this session?` ダイアログを表示します。
 
-Claude が会話で開始した [フォアグラウンドのサブエージェント](/docs/ja/sub-agents#run-subagents-in-foreground-or-background) がまだ実行中の間は、10 秒の制限は適用されません。Claude Code はそれらの作業が引き継がれるよう待機を続け、待機中は `Still backgrounding after the current tool` 通知を表示します。待たずにバックグラウンドにするには `←` を再度押しますが、その場合それらのサブエージェントは最初からやり直しになります。Claude Code は [動的ワークフロー](/docs/ja/workflows) が実行しているサブエージェントは待ちません。ワークフローでサブエージェントが実行中の場合、Claude Code は代わりに `Background this session?` ダイアログを表示します。
+約 10 秒経過すると、Claude Code はそれ以上待たずにセッションをバックグラウンドにします。ただし、次のようなケースは例外です：
 
-プロンプト入力に未送信のテキストがある間、Claude Code はセッションをバックグラウンドにしません。そのテキストはターミナルの入力ボックスに残り、バックグラウンドセッションには移動しないためです。Claude Code がセッションをバックグラウンドにするのを待っている間に入力欄に入力すると、`Backgrounding cancelled — you have unsent text in the input. Send it or clear it, then press ← again.` と表示されて切り替えがキャンセルされます。
+* **フォアグラウンドのサブエージェントがまだ実行中**：Claude が開始した [フォアグラウンドのサブエージェント](/docs/ja/sub-agents#run-subagents-in-foreground-or-background) の作業が引き継がれるよう、Claude Code は待機を続け、`Still backgrounding after the current tool` を表示します。待たずにバックグラウンドにするには `←` を再度押しますが、その場合それらのサブエージェントは最初からやり直しになります。
+* **権限プロンプトまたは質問が回答を待っている**：権限プロンプトまたは Claude が尋ねた質問が待機している間、Claude Code は待機を続け、`Still backgrounding after the current tool — a question is waiting for your answer.` を表示します。
+* **プロンプト入力に入力した**：未送信のテキストはターミナルの入力ボックスに残り、バックグラウンドセッションには移動しないため、Claude Code は切り替えをキャンセルします。`Backgrounding cancelled — you have unsent text in the input. Send it or clear it, then press ← again.` と表示されます。
 
 `←` を押すと、会話にまだメッセージがない場合でもセッションの行が作成されるため、`→` でその行に戻れます。
 
@@ -819,6 +821,7 @@ claude agents --settings ./ci-settings.json --add-dir ../shared-lib
 | `claude rm <id> --discard-unpushed <commit>@<worktree-id>` | プッシュされていないコミットで削除が拒否されたセッションを削除し、worktree をそのブランチとコミットとともに破棄します。拒否が出力した正確な値を渡します。[セッションの削除で何が削除されるか](#what-deleting-a-session-removes)を参照してください。v2.1.260 以降が必要です |
 | `claude rm <id> --force-remove-worktree <worktree-id>` | git または `WorktreeRemove` フックが worktree を削除できなかったために削除が拒否されたセッションを削除し、worktree ディレクトリを削除してそのブランチをリポジトリに残します。拒否が出力した正確な値を渡します。[セッションの削除で何が削除されるか](#what-deleting-a-session-removes)を参照してください。v2.1.268 以降が必要です |
 | `claude daemon status` | [supervisor](#the-supervisor-process) の状態、バージョン、ソケットディレクトリ、およびワーカー数を出力する |
+| `claude daemon logs` | supervisor のログファイル [`~/.claude/daemon.log`](#where-state-is-stored) を追跡し、`Ctrl+C` を押すまで新しい行を到着次第出力する |
 | `claude daemon stop --any` | supervisor プロセスとそれがホストするバックグラウンドセッションを停止します。`--keep-workers` を渡して、バックグラウンドセッションを実行したままにして、次の supervisor が再接続できるようにします。次の `claude agents` または `claude --bg` は新しい supervisor を開始します |
 
 `claude attach` と `claude logs` は、`claude logs "auth refactor"` のように、ID の代わりに実行中のセッション名の一部を受け取ることができます。名前を渡すには Claude Code v2.1.290 以降が必要です。
@@ -875,7 +878,7 @@ Claude Code は、エージェントビューに表示されているすべて�
 
 各セッションはスーパーバイザーの下で独自の Claude Code プロセスであり、そのプロセスに何が起こるかはセッションの状態によって異なります。
 
-* **動作中、権限プロンプトまたは他のダイアログで一時停止中、または接続中**：プロセスは実行を続けます。実行中のサブエージェント、ワークフロー、またはモニターは動作中としてカウントされます。
+* **動作中、権限プロンプトまたは他のダイアログで一時停止中、または接続中**：プロセスは実行を続けます。実行中のサブエージェント、ワークフロー、またはモニターは動作中としてカウントされます。`/loop` のウェイクアップなど、保留中の[セッションスコープのスケジュールタスク](/docs/ja/scheduled-tasks)も同様です。
 * **完了したか次のメッセージを待機中で、約 1 時間未接続**：スーパーバイザーはリソースを解放するためにプロセスを停止します。質問を投げかけてターンを終了したセッションは、次のメッセージを待機中としてカウントされます。会話はディスクに保存され、次回接続または返信するときに、セッションは中断したところから再開されます。`Ctrl+T` でセッションをピンして、プロセスの実行を継続させます。
 * **スーパーバイザーが実行中に予期せず終了した**：スーパーバイザーはプロセスを再起動します。`←` または `/background` で自分でバックグラウンドに送信したセッションを、たとえば `kill` で終了した場合は、再起動されずに停止済みとしてマークされます。シャットダウンで終了したセッションについては、[セッションがシャットダウン後に失敗または停止として表示される](#sessions-show-as-failed-after-shutdown) を参照してください。
 * **自動更新後**：スーパーバイザーは新しいバージョンに再起動し、アイドル状態のセッションをバックグラウンドで移動します。動作中、ユーザーの応答を待機中、または接続中のセッションは中断されません。
@@ -1092,6 +1095,7 @@ Agent view はリサーチプレビュー中に急速に進化しました。古
 | バージョン | 変更 |
 | - | - |
 | v2.1.290 | [`claude attach` と `claude logs`](#manage-sessions-from-the-shell) は、ID の代わりに実行中のセッションの名前の一部を受け付けます。 |
+| v2.1.290 | `/model`、`/effort`、`/rename`、`/usage` を作業中のセッションへの[ピーク返信](#peek-and-reply)として送信すると、すぐに実行されます。 |
 | v2.1.288 | `Ctrl+F` は名前でセッションを検索し、`Alt+↑` / `Alt+↓` はグループヘッダー間を移動します。これらのキーと `Ctrl+R` は[再割り当て](/docs/ja/keybindings#agents-actions)できます。 |
 | v2.1.287 | [`n:<text>` フィルター](#filter-sessions)は、名前または最初のプロンプトでセッションを検索します。いずれかのフィルターが有効な間は、折りたたんだグループが展開されて一致するセッションが表示され、最初の一致が選択されるため、`Enter` でそれを開けます。 |
 | v2.1.287 | [ピーク返信](#peek-and-reply)として送信されたコマンドは、セッションの現在のターンが終了したときに実行されます。これには、セッション自身のプロンプトで入力するとすぐに実行されるコマンドも含まれます。`/stop` だけの返信は、セッションを直ちに停止します。 |

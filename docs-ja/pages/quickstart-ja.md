@@ -4,9 +4,9 @@
 
 # クイックスタート
 
-> Claude Code へようこそ！
+> ターミナルに Claude Code をインストールしてサインインし、CLI を使ってコードベースを探索して最初のコード変更を行います。
 
-このクイックスタートガイドを使用すれば、数分で AI を活用したコーディング支援を利用できます。このガイドを終了する頃には、一般的な開発タスクに Claude Code を使用する方法を理解できるようになります。
+このクイックスタートでは、ターミナルでの Claude Code の使い方を説明します。CLI のインストール、最初のセッションからのサインイン、そして自分のプロジェクトでの一般的な開発タスクへの活用方法を扱います。
 
 <h2 id="before-you-begin">
   始める前に
@@ -15,12 +15,14 @@
 以下を確認してください：
 
 * ターミナルまたはコマンドプロンプトが開いている
-  * ターミナルを使用したことがない場合は、[ターミナルガイド](/docs/ja/terminal-guide)をご覧ください
 * 作業するコードプロジェクトがある
 * [Claude サブスクリプション](https://claude.com/pricing?utm_source=claude_code\&utm_medium=docs\&utm_content=quickstart_prereq)（Pro、Max、Team、または Enterprise）、[Claude Console](https://platform.claude.com/) アカウント、または[サポートされているクラウドプロバイダー](/docs/ja/third-party-integrations)経由のアクセスがある
 
 <Note>
-  このガイドはターミナル CLI について説明しています。Claude Code は[ウェブ](https://claude.ai/code)、[デスクトップアプリ](/docs/ja/desktop)、[VS Code](/docs/ja/vs-code) および [JetBrains IDE](/docs/ja/jetbrains)、[Slack](/docs/ja/slack)、および [GitHub Actions](/docs/ja/github-actions) と [GitLab](/docs/ja/gitlab-ci-cd) を使用した CI/CD でも利用できます。[すべてのインターフェース](/docs/ja/overview#use-claude-code-everywhere)を参照してください。
+  以下のケースについては、他のページで説明しています：
+
+  * **ターミナルを使用したことがない場合**：[ターミナルガイド](/docs/ja/terminal-guide)から始めてください
+  * **ターミナル以外の場所で Claude Code を使用したい場合**：Claude Code は[ウェブ](https://claude.ai/code)、[デスクトップアプリ](/docs/ja/desktop)、[VS Code](/docs/ja/vs-code) および [JetBrains IDE](/docs/ja/jetbrains)、[Slack](/docs/ja/slack)、および [GitHub Actions](/docs/ja/github-actions) と [GitLab](/docs/ja/gitlab-ci-cd) を使用した CI/CD でも利用できます。[すべてのインターフェース](/docs/ja/overview#use-claude-code-everywhere)を参照してください。
 </Note>
 
 <h2 id="step-1-install-claude-code">
@@ -33,27 +35,29 @@ Claude Code をインストールするには、ターミナルを開いてシ�
   <Tab title="ネイティブインストール（推奨）">
     **macOS、Linux、WSL：**
 
-    ```bash theme={null} theme={null} theme={null} theme={null} theme={null} theme={null}
+    ```bash theme={null}
     curl -fsSL https://claude.ai/install.sh | bash
     ```
 
+    Windows では、PowerShell を使用している場合はシェルプロンプトに `PS C:\` と表示され、CMD を使用している場合は `PS` なしで `C:\` と表示されます。
+
     **Windows PowerShell：**
 
-    ```powershell theme={null} theme={null} theme={null} theme={null} theme={null} theme={null}
+    ```powershell theme={null}
     irm https://claude.ai/install.ps1 | iex
     ```
 
     **Windows CMD：**
 
-    ```batch theme={null} theme={null} theme={null} theme={null} theme={null} theme={null}
+    ```batch theme={null}
     curl -fsSL https://claude.ai/install.cmd -o install.cmd && install.cmd && del install.cmd
     ```
 
     インストーラーが完了したら、新しいターミナルウィンドウを開いて `claude --version` を実行してください。インストールが正常に完了すると、バージョン番号が表示されます。シェルが `claude` が見つからない、または認識されていないと表示される場合は、インストールディレクトリがまだ PATH に含まれていません。[PATH を修正する](/docs/ja/troubleshoot-install#command-not-found-claude-after-installation)を参照してください。
 
-    `The token '&&' is not a valid statement separator` というエラーが表示される場合は、CMD ではなく PowerShell を使用しています。`'irm' is not recognized as an internal or external command` というエラーが表示される場合は、PowerShell ではなく CMD を使用しています。PowerShell を使用している場合、プロンプトに `PS C:\` と表示され、CMD を使用している場合は `PS` なしで `C:\` と表示されます。
+    `The token '&&' is not a valid statement separator` というエラーが表示される場合は、CMD ではなく PowerShell を使用しています。`'irm' is not recognized as an internal or external command` というエラーが表示される場合は、PowerShell ではなく CMD を使用しています。
 
-    インストールコマンドが `syntax error near unexpected token '<'`、`403`、またはその他の curl エラーで失敗する場合は、[インストールのトラブルシューティング](/docs/ja/troubleshoot-install#find-your-error)を参照して、エラーを修正方法に照合し、代替インストール方法を確認してください。
+    インストールコマンドが `syntax error near unexpected token '<'`、`403`、またはその他のエラーで失敗する場合は、[インストールのトラブルシューティング](/docs/ja/troubleshoot-install#find-your-error)を参照して、エラーを修正方法に照合し、代替インストール方法を確認してください。
 
     [Git for Windows](https://git-scm.com/downloads/win) は、Claude Code が Bash ツールを使用できるようにネイティブ Windows で推奨されます。Git for Windows がインストールされていない場合、Claude Code はシェルツールとして PowerShell を代わりに使用します。WSL セットアップは Git for Windows を必要としません。
 
@@ -63,7 +67,7 @@ Claude Code をインストールするには、ターミナルを開いてシ�
   </Tab>
 
   <Tab title="Homebrew">
-    ```bash theme={null} theme={null} theme={null} theme={null} theme={null} theme={null}
+    ```bash theme={null}
     brew install --cask claude-code
     ```
 
@@ -75,7 +79,7 @@ Claude Code をインストールするには、ターミナルを開いてシ�
   </Tab>
 
   <Tab title="WinGet">
-    ```powershell theme={null} theme={null} theme={null} theme={null} theme={null} theme={null}
+    ```powershell theme={null}
     winget install Anthropic.ClaudeCode
     ```
 
@@ -95,57 +99,43 @@ claude --version
 
 このコマンドは、バージョン番号の後に `(Claude Code)` を出力します。
 
-<h2 id="step-2-log-in-to-your-account">
-  ステップ 2：アカウントにログインする
+<h2 id="step-2-start-your-first-session">
+  ステップ 2: 最初のセッションを開始する
 </h2>
 
-Claude Code を使用するにはアカウントが必要です。`claude` コマンドでインタラクティブセッションを開始すると、初回使用時にログインするよう求められます：
-
-```bash theme={null}
-claude
-```
-
-Claude サブスクリプションまたは Console アカウントの場合は、プロンプトに従ってブラウザで認証を完了してください。`ANTHROPIC_API_KEY` 環境変数を設定している場合、Claude Code はログインプロンプトをスキップし、代わりにキーを承認するよう求めます。後でアカウントを切り替えるか再認証するには、実行中のセッション内で `/login` と入力します：
-
-```text wrap theme={null}
-/login
-```
-
-以下のいずれかのアカウントタイプを使用してログインできます：
-
-* [Claude Pro、Max、Team、または Enterprise](https://claude.com/pricing?utm_source=claude_code\&utm_medium=docs\&utm_content=quickstart_login)（推奨）
-* [Claude Console](https://platform.claude.com/)（プリペイドクレジット付き API アクセス）。初回ログイン時に、コスト追跡を一元化するために「Claude Code」ワークスペースが Console に自動的に作成されます。
-* [Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry](/docs/ja/third-party-integrations)（エンタープライズクラウドプロバイダー）
-* 組織が実行している自己ホスト型の [Claude apps gateway](/docs/ja/claude-apps-gateway)：管理者がゲートウェイ URL を事前に設定し、`/login` で **Cloud gateway** 画面が直接開き、企業 SSO でサインインできます
-
-ログイン後、認証情報が保存され、再度ログインする必要はありません。詳細は [認証情報管理](/docs/ja/authentication#credential-management) をご覧ください。
-
-<h2 id="step-3-start-your-first-session">
-  ステップ 3：最初のセッションを開始する
-</h2>
-
-任意のプロジェクトディレクトリでターミナルを開き、Claude Code を開始します：
+任意のプロジェクトディレクトリでターミナルを開き、Claude Code を起動します。
 
 ```bash theme={null}
 cd /path/to/your/project
 claude
 ```
 
-`/path/to/your/project` を、作業したいプロジェクトのパスに置き換えてください。
+`/path/to/your/project` は、作業したいプロジェクトのパスに置き換えてください。
 
-Claude Code プロンプトが表示され、バージョン、現在のモデル、および作業ディレクトリが上に表示されます。利用可能なコマンドについては `/help` を入力するか、前の会話を続行するには `/resume` を入力します。
+初回使用時には、Claude Code からログインを求められます。Claude サブスクリプションまたは Console アカウントの場合は、表示される指示に従ってブラウザで認証を完了してください。`ANTHROPIC_API_KEY` 環境変数を設定しており、Claude Code からそのキーを使用するかどうか尋ねられた際に承認した場合、Claude Code はログインプロンプトをスキップします。
 
-<h2 id="step-4-ask-your-first-question">
-  ステップ 4：最初の質問をする
+次のいずれかのアカウントタイプでログインできます。
+
+* [Claude Pro、Max、Team、または Enterprise](https://claude.com/pricing?utm_source=claude_code\&utm_medium=docs\&utm_content=quickstart_login)（推奨）
+* [Claude Console](https://platform.claude.com/)（前払いクレジットによる API アクセス）。初回ログイン時に、コストを一元的に追跡するための「Claude Code」ワークスペースが Console に自動的に作成されます。
+* [Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry](/docs/ja/third-party-integrations)（エンタープライズ向けクラウドプロバイダー）
+* 組織で運用している場合は、セルフホストの [Claude apps ゲートウェイ](/docs/ja/claude-apps-gateway)：管理者がゲートウェイ URL を事前に設定しており、`/login` を実行すると **Cloud gateway** 画面が直接開くので、企業の SSO でサインインします
+
+一度ログインすると認証情報が保存されるため、再度ログインする必要はありません。詳しくは[認証情報の管理](/docs/ja/authentication#credential-management)を参照してください。
+
+Claude Code のプロンプトが表示され、その上にバージョン、現在のモデル、作業ディレクトリが表示されます。`/help` と入力すると利用可能なコマンドが表示され、`/resume` と入力すると以前の会話を再開できます。後でアカウントを切り替えたり再認証したりするには、実行中のセッション内で `/login` と入力します。
+
+<h2 id="step-3-ask-your-first-question">
+  ステップ 3: 最初の質問をする
 </h2>
 
-コードベースを理解することから始めましょう。以下のコマンドのいずれかを試してください：
+次のいずれかのコマンドを試してください：
 
 ```text wrap theme={null}
 what does this project do?
 ```
 
-Claude はファイルを分析して概要を提供します。より具体的な質問をすることもできます：
+Claude がファイルを分析し、概要を提示します。より具体的な質問をすることもできます：
 
 ```text wrap theme={null}
 what technologies does this project use?
@@ -159,7 +149,7 @@ where is the main entry point?
 explain the folder structure
 ```
 
-Claude 自体の機能について質問することもできます：
+Claude 自身の機能について質問することもできます：
 
 ```text wrap theme={null}
 what can Claude Code do?
@@ -174,112 +164,99 @@ can Claude Code work with Docker?
 ```
 
 <Note>
-  Claude Code は必要に応じてプロジェクトファイルを読み込みます。コンテキストを手動で追加する必要はありません。
+  Claude Code は必要に応じてプロジェクトファイルを読み取ります。コンテキストを手動で追加する必要はありません。
 </Note>
 
-<h2 id="step-5-make-your-first-code-change">
-  ステップ 5：最初のコード変更を行う
+<h2 id="step-4-make-your-first-code-change">
+  ステップ 4: 最初のコード変更を行う
 </h2>
 
-次に、Claude Code に実際のコーディングを行わせましょう。簡単なタスクを試してください：
+小さなタスクを試してみましょう。
 
 ```text wrap theme={null}
-メインファイルに hello world 関数を追加してください
+add a hello world function to the main file
 ```
 
-Claude Code は適切なファイルを見つけて、変更内容を表示します。変更を行う前に確認を求める場合は、**Yes** を選択して承認してください。
+Claude Code は適切なファイルを見つけ、変更内容を表示します。変更を行う前に確認を求められた場合は、**Yes** を選択して承認します。
 
-Claude Code v2.1.283 以降では、auto モードはインタラクティブターミナルセッションの[組み込みの開始権限モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)です。分類器があなたの代わりにアクションをレビューし、Claude はほとんどのファイルを編集し、ほとんどのコマンドをあなたに尋ねることなく実行します。それより前のバージョンでは、auto モードは Pro、Max、Team プランのみで組み込みの開始権限モードです。インストール直後に開始するセッションについては、[インストールまたはアップグレード後の最初のセッション](/docs/ja/env-vars#first-session-after-an-install-or-upgrade)を参照してください。
+セッションの[権限モード](/docs/ja/permission-modes)は、Claude が事前に確認せずに実行できるアクションを決定します。`Shift+Tab` を押すと、いつでも現在のセッションの権限モードを切り替えられます。
 
-<Note>
-  設定またはお客様の組織が異なる開始権限モードを設定できます。[セッションが開始する権限モード](/docs/ja/permission-modes#which-mode-a-session-starts-in)に、その内容が記載されています。いつでも `Shift+Tab` を押して、現在のセッションの権限モードを切り替えることができます。
-</Note>
-
-<h2 id="step-6-use-git-with-claude-code">
-  ステップ 6：Claude Code で Git を使用する
+<h2 id="step-5-use-git-with-claude-code">
+  ステップ 5：Claude Code で Git を使用する
 </h2>
 
-Claude Code は Git 操作を会話形式にします：
+Claude Code を使うと、Git の操作を会話形式で行えます：
 
 ```text wrap theme={null}
-どのファイルを変更しましたか？
+what files have I changed?
 ```
 
 ```text wrap theme={null}
-説明的なメッセージで変更をコミットしてください
+commit my changes with a descriptive message
 ```
 
-より複雑な Git 操作を求めることもできます：
+より複雑な Git 操作をプロンプトで依頼することもできます：
 
 ```text wrap theme={null}
-feature/quickstart という名前の新しいブランチを作成してください
-```
-
-```text wrap theme={null}
-最後の 5 つのコミットを表示してください
+create a new branch called feature/quickstart
 ```
 
 ```text wrap theme={null}
-マージコンフリクトの解決を手伝ってください
+show me the last 5 commits
 ```
 
-<h2 id="step-7-fix-a-bug-or-add-a-feature">
-  ステップ 7：バグを修正するか機能を追加する
+```text wrap theme={null}
+help me resolve merge conflicts
+```
+
+<h2 id="step-6-fix-a-bug-or-add-a-feature">
+  ステップ 6: バグを修正する、または機能を追加する
 </h2>
 
-Claude はデバッグと機能実装に長けています。
-
-自然言語で実現したいことを説明します：
+やりたいことを自然言語で説明します。
 
 ```text wrap theme={null}
-ユーザー登録フォームに入力検証を追加してください
+add input validation to the user registration form
 ```
 
-または既存の問題を修正します：
+既存の問題を修正することもできます。
 
 ```text wrap theme={null}
-ユーザーが空のフォームを送信できるバグがあります。修正してください
+there's a bug where users can submit empty forms - fix it
 ```
 
-Claude Code は以下を実行します：
-
-* 関連するコードを見つける
-* コンテキストを理解する
-* ソリューションを実装する
-* 利用可能な場合はテストを実行する
-
-<h2 id="step-8-test-out-other-common-workflows">
-  ステップ 8：他の一般的なワークフローを試す
+<h2 id="step-7-test-out-other-common-workflows">
+  ステップ 7: その他の一般的なワークフローを試す
 </h2>
 
-Claude と連携する方法は多数あります：
+Claude と連携する方法はいくつもあります。
 
-**コードをリファクタリングする**
+**コードのリファクタリング**
 
 ```text wrap theme={null}
-認証モジュールをリファクタリングして、コールバックの代わりに async/await を使用するようにしてください
+refactor the authentication module to use async/await instead of callbacks
 ```
 
-**テストを書く**
+**テストの作成**
 
 ```text wrap theme={null}
-計算機関数のユニットテストを書いてください
+write unit tests for the calculator functions
 ```
 
-**ドキュメントを更新する**
+**ドキュメントの更新**
 
 ```text wrap theme={null}
-インストール手順で README を更新してください
+update the README with installation instructions
 ```
 
 **コードレビュー**
 
 ```text wrap theme={null}
-変更をレビューして改善を提案してください
+review my changes and suggest improvements
 ```
 
 <Tip>
-  有能な同僚と話すように Claude と話してください。実現したいことを説明すれば、それを実現するのに役立ちます。
+  頼りになる同僚に話しかけるように Claude に話しかけてください。達成したいことを説明すれば、Claude がその実現を手助けします。
 </Tip>
 
 <h2 id="essential-commands">
@@ -357,29 +334,18 @@ Claude と連携する方法は多数あります：
 
 基本を学習したので、より高度な機能を探索してください：
 
-<CardGroup cols={2}>
-  <Card title="Claude Code の仕組み" icon="microchip" href="/docs/ja/how-claude-code-works">
-    agentic ループ、組み込みツール、および Claude Code がプロジェクトと相互作用する方法を理解する
-  </Card>
+* [Claude Code の仕組み](/docs/ja/how-claude-code-works)：エージェント型ループ、組み込みツール、および Claude Code がプロジェクトと相互作用する方法を理解する
+* [ベストプラクティス](/docs/ja/best-practices)：効果的なプロンプティングとプロジェクト設定でより良い結果を得る
+* [一般的なワークフロー](/docs/ja/common-workflows)：一般的なタスクのステップバイステップガイド
+* [Claude Code を拡張する](/docs/ja/features-overview)：CLAUDE.md、スキル、フック、MCP などでカスタマイズする
 
-  <Card title="ベストプラクティス" icon="star" href="/docs/ja/best-practices">
-    効果的なプロンプティングとプロジェクト設定でより良い結果を得る
-  </Card>
-
-  <Card title="一般的なワークフロー" icon="graduation-cap" href="/docs/ja/common-workflows">
-    一般的なタスクのステップバイステップガイド
-  </Card>
-
-  <Card title="Claude Code を拡張する" icon="puzzle-piece" href="/docs/ja/features-overview">
-    CLAUDE.md、スキル、フック、MCP などでカスタマイズする
-  </Card>
-</CardGroup>
+インストールオプション、手動アップデート、またはアンインストール手順については、[高度なセットアップ](/docs/ja/setup)を参照してください。
 
 <h2 id="getting-help">
   ヘルプを取得する
 </h2>
 
 * **Claude Code 内**：`/help` を入力するか、「how do I」という質問をする
-* **ドキュメント**：ここにいます！他のガイドを参照してください
+* **ドキュメント**：このサイトの他のガイドを参照する
 * **コース**：[Claude Code 101](https://academy.claude.com/courses/claude-code-101) と [Claude Academy](https://academy.claude.com/) の他の無料のセルフペースコースを受講する
 * **コミュニティ**：[Discord サーバー](https://www.anthropic.com/discord) に参加してヒントとサポートを得る

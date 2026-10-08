@@ -351,7 +351,7 @@ claude auto-mode config
 }
 ```
 
-カスタム `allow`、`soft_deny`、`hard_deny` ルールについて AI からのフィードバックを取得します：
+カスタムの `allow`、`soft_deny`、`hard_deny`、`environment` エントリについて AI からのフィードバックを取得します：
 
 ```bash theme={null}
 claude auto-mode critique

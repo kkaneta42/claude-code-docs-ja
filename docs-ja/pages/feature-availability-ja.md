@@ -92,7 +92,7 @@ Desktop は部分的な例外です：[ゲートウェイルーティングは�
       <td>✗</td>
       <td>✓</td>
       <td>注記を参照 <sup><a href="#fn1">1</a></sup></td>
-      <td>✓（[Anthropic でホストされているデプロイメント](https://platform.claude.com/docs/en/build-with-claude/claude-in-microsoft-foundry#hosting-options)）</td>
+      <td>✓</td>
     </tr>
 
     <tr>
@@ -220,10 +220,10 @@ Desktop は部分的な例外です：[ゲートウェイルーティングは�
 </table>
 
 <span id="fn1" style={{display: 'block', position: 'relative', top: '-120px'}} /><sup>1</sup> Google Cloud の Agent Platform では、Claude 4 モデル以降で Web 検索が利用可能です。<br />
-<span id="fn2" style={{display: 'block', position: 'relative', top: '-120px'}} /><sup>2</sup> これらのプロバイダーでは、Auto mode は Claude Sonnet 5、Opus 4.7 以降、および Fable モデルのみをサポートしています。[Auto mode 設定](/docs/ja/auto-mode-config)を参照してください。これらのプロバイダーのセッションが開始される権限モードについては、[セッションが開始される権限モード](/docs/ja/permission-modes#which-mode-a-session-starts-in)を参照してください。v2.1.158 から v2.1.206 では、これらのプロバイダーの Auto mode は `CLAUDE_CODE_ENABLE_AUTO_MODE=1` の設定も必要でしたが、v2.1.207 でその要件が削除されました。<br />
+<span id="fn2" style={{display: 'block', position: 'relative', top: '-120px'}} /><sup>2</sup> これらのプロバイダーでは、Auto mode は Claude Sonnet 5 以降、Opus 4.7 以降、Haiku 5.5、および Fable モデルのみをサポートしています。[Auto mode 設定](/docs/ja/auto-mode-config)を参照してください。これらのプロバイダーのセッションが開始される権限モードについては、[セッションが開始される権限モード](/docs/ja/permission-modes#which-mode-a-session-starts-in)を参照してください。v2.1.158 から v2.1.206 では、これらのプロバイダーの Auto mode は `CLAUDE_CODE_ENABLE_AUTO_MODE=1` の設定も必要でしたが、v2.1.207 でその要件が削除されました。<br />
 <span id="fn3" style={{display: 'block', position: 'relative', top: '-120px'}} /><sup>3</sup> クラウドプロバイダーとの契約に従います。<br />
 <span id="fn4" style={{display: 'block', position: 'relative', top: '-120px'}} /><sup>4</sup> ダッシュボードと API のみ。[貢献メトリクス](/docs/ja/analytics#enable-contribution-metrics)には claude.ai Team または Enterprise 組織が必要です。<br />
-<span id="fn5" style={{display: 'block', position: 'relative', top: '-120px'}} /><sup>5</sup> macOS および Linux（WSL 2 内の Linux を含む）では Claude Code v2.1.224 以降が必要です。ネイティブ Windows では Claude Code v2.1.234 以降が必要です。API キー認証では、メッセージングは同じマシンのみです。Amazon Bedrock、Claude Platform on AWS、Google Cloud の Agent Platform、および Microsoft Foundry では、メッセージングは同じマシンのみであり、Claude Code v2.1.248 以降が必要です。Claude は、[Remote Control](/docs/ja/remote-control) に接続されているセッションからのみ、[Web 上の Claude Code](/docs/ja/claude-code-on-the-web)セッションおよび他のマシン上のセッションを見つけることができます。接続するには、claude.ai サインインと他の [Remote Control 要件](/docs/ja/remote-control#requirements)が必要です。[他のマシン上のセッションをメッセージする](/docs/ja/cross-session-messaging#message-sessions-on-other-machines)を参照してください。
+<span id="fn5" style={{display: 'block', position: 'relative', top: '-120px'}} /><sup>5</sup> macOS および Linux（WSL 2 内の Linux を含む）では Claude Code v2.1.224 以降が必要です。ネイティブ Windows では Claude Code v2.1.234 以降が必要です。API キー認証では、メッセージングは同じマシンのみです。Amazon Bedrock、Claude Platform on AWS、Google Cloud の Agent Platform、および Microsoft Foundry では、メッセージングは同じマシンのみであり、Claude Code v2.1.248 以降が必要です。Claude は、[Remote Control](/docs/ja/remote-control) に接続されているセッションからのみ、[クラウドセッション](/docs/ja/claude-code-on-the-web)および他のマシン上のセッションを見つけることができます。接続するには、claude.ai サインインと他の [Remote Control 要件](/docs/ja/remote-control#requirements)が必要です。[他のマシン上のセッションをメッセージする](/docs/ja/cross-session-messaging#message-sessions-on-other-machines)を参照してください。
 
 <Note>
   [LLM ゲートウェイ](/docs/ja/llm-gateway)を通じて認証する場合、機能の利用可能性はゲートウェイが転送する基盤となるプロバイダーと一致します。ただし、Claude Code 自体がオフにする機能は除きます。`ANTHROPIC_BASE_URL` が `api.anthropic.com` 以外のホストを指している場合、Claude Code は [Remote Control](/docs/ja/remote-control#requirements) や [サーバー管理設定](/docs/ja/server-managed-settings#platform-availability)などの機能をオフにします。ゲートウェイが転送するものに関係なく、[Advisor](/docs/ja/advisor) などの一部の Anthropic 専用機能は、ゲートウェイが要求を Anthropic API に完全に転送する場合にのみ機能します。
@@ -244,7 +244,7 @@ Desktop は部分的な例外です：[ゲートウェイルーティングは�
     **部分的なサポート：**
 
     * [Desktop](/docs/ja/desktop)：[Claude Desktop on 3P](https://claude.com/docs/third-party/claude-desktop/overview) 経由のみ
-    * [Auto mode](/docs/ja/auto-mode-config)：Sonnet 5、Opus 4.7 以降、および Fable モデルのみ
+    * [Auto mode](/docs/ja/auto-mode-config)：Sonnet 5 以降、Opus 4.7 以降、Haiku 5.5、および Fable モデルのみ
     * [クロスセッションメッセージング](/docs/ja/cross-session-messaging)：このマシン上のセッション間のみ <sup><a href="#fn5">5</a></sup>
     * [Zero Data Retention](/docs/ja/zero-data-retention)：AWS 契約に従う
 
@@ -270,7 +270,7 @@ Desktop は部分的な例外です：[ゲートウェイルーティングは�
 
     * [Desktop](/docs/ja/desktop)：[管理設定](https://claude.com/docs/third-party/claude-desktop/configuration)または [Claude Desktop on 3P](https://claude.com/docs/third-party/claude-desktop/overview) 経由
     * [Web 検索](/docs/ja/tools-reference#websearch-tool-behavior)：Claude 4 モデル以降
-    * [Auto mode](/docs/ja/auto-mode-config)：Sonnet 5、Opus 4.7 以降、および Fable モデルのみ
+    * [Auto mode](/docs/ja/auto-mode-config)：Sonnet 5 以降、Opus 4.7 以降、Haiku 5.5、および Fable モデルのみ
     * [クロスセッションメッセージング](/docs/ja/cross-session-messaging)：このマシン上のセッション間のみ <sup><a href="#fn5">5</a></sup>
     * [Zero Data Retention](/docs/ja/zero-data-retention)：Google Cloud 契約に従う
 
@@ -283,8 +283,7 @@ Desktop は部分的な例外です：[ゲートウェイルーティングは�
     **部分的なサポート：**
 
     * [Desktop](/docs/ja/desktop)：[Claude Desktop on 3P](https://claude.com/docs/third-party/claude-desktop/overview) 経由のみ
-    * [Web 検索](/docs/ja/tools-reference#websearch-tool-behavior)：[Anthropic でホストされているデプロイメント](https://platform.claude.com/docs/en/build-with-claude/claude-in-microsoft-foundry#hosting-options)のみ
-    * [Auto mode](/docs/ja/auto-mode-config)：Sonnet 5、Opus 4.7 以降、および Fable モデルのみ
+    * [Auto mode](/docs/ja/auto-mode-config)：Sonnet 5 以降、Opus 4.7 以降、Haiku 5.5、および Fable モデルのみ
     * [クロスセッションメッセージング](/docs/ja/cross-session-messaging)：このマシン上のセッション間のみ <sup><a href="#fn5">5</a></sup>
     * [Zero Data Retention](/docs/ja/zero-data-retention)：Azure 契約に従う
 

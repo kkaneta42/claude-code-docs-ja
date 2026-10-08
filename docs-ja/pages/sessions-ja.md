@@ -18,10 +18,10 @@
 
 | コマンド | 機能 |
 | :- | :- |
-| `claude --continue` | 現在のディレクトリで最新のセッションを再開します |
+| `claude --continue` | 現在のディレクトリで最新の会話を再び開きます |
 | `claude --resume` | [セッションピッカー](#use-the-session-picker)を開きます |
 | `claude --resume <name>` | 指定されたセッションを直接再開します |
-| `claude --resume <transcript-path>` | そのパスの `.jsonl` [トランスクリプトファイル](#where-transcripts-are-stored)に保存されている会話を再開します |
+| `claude --resume <transcript-path>` | その絶対パスにある `.jsonl` [トランスクリプトファイル](#where-transcripts-are-stored)に保存されている会話を再開します |
 | `claude --from-pr <number>` | そのプルリクエストにリンクされたセッションでフィルタリングされたセッションピッカーを開きます |
 | `/resume` | アクティブなセッション内から別の会話に切り替えます |
 
@@ -36,13 +36,13 @@ Claude Code は [`claude -p`](/docs/ja/headless)または [Agent SDK](/docs/ja/a
 
 v2.1.223 より前は、検索は現在のプロジェクトディレクトリとその git worktree で止まっていたため、セッションが最後に作業していたディレクトリから再開する必要がありました。
 
-`claude --continue` は完了した [バックグラウンドセッション](/docs/ja/agent-view)を開きますが、実行中のセッションは開きません。完了したバックグラウンドセッションを開くには Claude Code v2.1.257 以降が必要です。最新の会話が [バックグラウンドに移動した](/docs/ja/agent-view#send-the-session-to-the-background)セッションで、そこで実行中の場合、Claude Code は `Your most recent conversation is running in the background` と終了し、そのセッションの ID を表示します。[`claude agents`](/docs/ja/agent-view#attach-to-a-session)からセッションにアタッチするか、`claude --resume` を実行して別のセッションを選択します。
+`claude --continue` は完了した [バックグラウンドセッション](/docs/ja/agent-view)を開きますが、実行中のセッションは開きません。完了したバックグラウンドセッションを開くには Claude Code v2.1.257 以降が必要です。最新の会話が [バックグラウンドに移動した](/docs/ja/agent-view#send-the-session-to-the-background)セッションで、そこで実行中の場合、Claude Code は `Your most recent conversation is running in the background` と表示して終了し、そのセッションの ID を表示します。[`claude agents`](/docs/ja/agent-view#attach-to-a-session)からセッションにアタッチするか、`claude --resume` を実行して別のセッションを選択します。
 
 <h3 id="resume-a-running-background-session">
   実行中のバックグラウンドセッションを再開する
 </h3>
 
-`claude --resume` または `/resume` で再開する会話が、実行中の [バックグラウンドセッション](/docs/ja/agent-view)に属する場合、Claude Code は実行中のセッション自体を開きます。コマンドラインで `--bg` を使用すると、再開は [バックグラウンドディスパッチ](/docs/ja/agent-view#from-your-shell)になります。v2.1.285 より前は、Claude Code は拒否し、`claude attach <id>` でセッションを開くか、`claude stop <id>` で最初に停止するよう指示していました。
+`claude --resume` または `/resume` で再開する会話が、実行中の [バックグラウンドセッション](/docs/ja/agent-view)に属する場合、Claude Code は実行中のセッション自体を開きます。コマンドラインで `--bg` を使用すると、再開は代わりに [バックグラウンドディスパッチ](/docs/ja/agent-view#from-your-shell)になります。v2.1.285 より前は、Claude Code は拒否し、`claude attach <id>` でセッションを開くか、先に `claude stop <id>` で停止するよう指示していました。
 
 * **シェルから**：`claude --resume <session>` は、トランスクリプト自体を読み込む代わりに、同じターミナルでそのセッションに対して [`claude attach`](/docs/ja/agent-view#attach-to-a-session)を実行します。`claude --resume <session> "check the tests too"` のようにコマンドラインで渡すプロンプトは、最初にセッションの次のターンとして送信され、Claude Code は `Sent your prompt to the background session (<id>); opening it…` を出力してからアタッチします。ターミナルで入力した `claude -p --resume <session> "prompt"` も同じように動作するため、`-p` はその実行を非対話型に保ちません。
 
@@ -53,10 +53,10 @@ v2.1.223 より前は、検索は現在のプロジェクトディレクトリ�
   * `--output-format json` または `--json-schema` などの出力を読み込むフラグ
   * `--max-turns` または `--max-budget-usd` などの実行を制限またはリワインドするフラグ
 
-  これらのいずれかがある場合、または [エージェントビューがオフになっている](/docs/ja/agent-view#turn-off-agent-view)場合、Claude Code は何も送信せず、ステータス 1 で終了し、セッションがバックグラウンドで実行中であることを出力し、それを開く `claude attach <id>` コマンドを表示するか、ID を判定できない場合は `claude agents` で見つけるよう指示します。`--fork-session` を追加して、会話のコピーを再開します。セッション自体で会話を続行するには、フラグを適用して、`claude stop <id>` を実行してからコマンドを繰り返します。
+  これらのいずれかがある場合、または [エージェントビューがオフになっている](/docs/ja/agent-view#turn-off-agent-view)場合、Claude Code は何も送信せず、ステータス 1 で終了し、セッションがバックグラウンドで実行中であることを出力し、それを開く `claude attach <id>` コマンドを表示するか、ID を判定できない場合は `claude agents` で見つけるよう指示します。代わりに会話のコピーを再開するには、`--fork-session` を追加します。フラグを適用した自分のセッションで会話そのものを続行するには、`claude stop <id>` を実行してからコマンドを再度実行します。
 
   `/` または `!` で始まるプロンプトは送信されず、セッションが質問への回答を待っている間のプロンプトも送信されません。どちらの場合も Claude Code はセッションを開かず、メッセージには `Your prompt was not sent to it` と理由が含まれます。
-* **セッション内から**：`/resume` は現在の会話をバックグラウンドに移動し、このターミナルを実行中のセッションにアタッチし、`Opening "<title>", running in the background (<id>)` を出力します。空のプロンプトで `←` を押すとエージェントビューに戻ります。これは、残した会話もリストします。現在の会話がバックグラウンドに移動できない場合（例えば、バックグラウンドセッションにすでにアタッチしている場合、またはセッション永続性がオフの場合）、`/resume` は代わりに実行する `claude attach` コマンドを出力します。
+* **セッション内から**：`/resume` は現在の会話をバックグラウンドに移動し、このターミナルを実行中のセッションにアタッチし、`Opening "<title>", running in the background (<id>)` を出力します。空のプロンプトで `←` を押すとエージェントビューに戻ります。エージェントビューには、離れた会話も一覧表示されます。現在の会話をバックグラウンドに移動できない場合（例えば、すでにバックグラウンドセッションにアタッチしている場合や、セッション永続性がオフの場合）、`/resume` は代わりに実行する `claude attach` コマンドを出力します。
 
 <h3 id="what-a-resumed-session-restores">
   再開されたセッションが復元するもの
@@ -64,64 +64,66 @@ v2.1.223 より前は、検索は現在のプロジェクトディレクトリ�
 
 Claude Code がトランスクリプトから会話を読み込むと、再開されたセッションは会話とそれに保存された状態を復元します。
 
-* 会話履歴：ツール呼び出しと結果を含む完全な履歴。前のプロセスが終了したときに実行中だったツール（例えばクラッシュ）は、再開時に完了または再実行されません。Claude はその呼び出しが結果が記録される前に切断されたとマークされているのを見て、再度実行する前に有効になったかどうかを確認するよう指示されます。ただし、[`CLAUDE_CODE_RESUME_INTERRUPTED_TURN`](/docs/ja/env-vars#variables)が設定されている場合は除きます。v2.1.281 より前は、Claude Code は切断された呼び出しを会話から削除するか、中断したものとして Claude に表示していました。
-* モデル：セッションは使用していたモデルで続行されます。モデルが廃止されたか `availableModels` で許可されていない場合、`--model` フラグまたは `ANTHROPIC_MODEL` ファミリー環境変数が起動時に 1 つを選択する場合、または [Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry](/docs/ja/third-party-integrations)などのプロバイダー固有のデプロイ ID を使用するプロバイダーの場合は復元されません。[モデル設定](/docs/ja/model-config#setting-your-model)の解決順序を参照してください。
-* エージェント：[`--agent`](/docs/ja/sub-agents#invoke-subagents-explicitly)または `agent` 設定で開始されたセッションはそのエージェントとして続行され、ツール制限とモデルを保持します。再開時に `--agent` を渡して別のエージェントを選択します。どちらの場合のシステムプロンプトについては、[再開された会話のシステムプロンプトフラグ](/docs/ja/cli-reference#system-prompt-flags-in-resumed-conversations)を参照してください。Claude Code は 2 つの場所でエージェントを検索します。セッションの元のディレクトリ（[そのワークスペースを信頼している](/docs/ja/permissions#project-allow-rules-and-workspace-trust)場合）、次に再開するディレクトリ。プロジェクトスコープのエージェントは別のディレクトリから再開する場合でも読み込まれます。Claude Code がどちらの場所でもエージェントを見つけられない場合、セッションはデフォルトのツールで再開され、[エージェントに名前を付けた警告](/docs/ja/errors#session-agent-no-longer-available)が表示されます。
-* 権限モード：`claude --continue`、`claude --resume <session-id>`、または `claude --resume <name>`（名前が 1 つのセッションと一致する場合）で `-p` なしでターミナルから再開する場合、Claude Code はセッションが存在していた権限モードを復元します。ただし、[再開時の権限モード](#permission-mode-on-resume)の場合は除きます。これはセッションピッカー、`/resume`、および `claude -p` で再開する場合もカバーします。`--permission-mode` または `--dangerously-skip-permissions` を渡して復元されたモードをオーバーライドします。
+* 会話履歴：ツール呼び出しと結果を含む完全な履歴。前のプロセスが終了したとき（例えばクラッシュ時）に実行中だったツールは、再開時に完了または再実行されません。Claude はその呼び出しが結果の記録前に中断されたとマークされているのを確認し、再度実行する前にそれが有効になったかどうかを確認するよう指示されます。ただし、[`CLAUDE_CODE_RESUME_INTERRUPTED_TURN`](/docs/ja/env-vars#variables)が設定されている場合は除きます。v2.1.281 より前は、Claude Code は中断された呼び出しを会話から削除するか、ユーザーが中断したものとして Claude に表示していました。
+* モデル：セッションは使用していたモデルで続行されます。ただし、[モデルの設定](/docs/ja/model-config#setting-your-model)に記載されている場合は除きます。
+* エージェント：[`--agent`](/docs/ja/sub-agents#invoke-subagents-explicitly)または `agent` 設定で開始されたセッションはそのエージェントとして続行され、ツール制限とモデルを保持します。別のエージェントを選択するには、再開時に `--agent` を渡します。どちらの場合のシステムプロンプトについては、[再開された会話のシステムプロンプトフラグ](/docs/ja/cli-reference#system-prompt-flags-in-resumed-conversations)を参照してください。Claude Code は 2 つの場所でエージェントを検索します。セッションの元のディレクトリ（[そのワークスペースを信頼している](/docs/ja/permissions#project-allow-rules-and-workspace-trust)場合）と、次に再開元のディレクトリです。そのため、プロジェクトスコープのエージェントは別のディレクトリから再開する場合でも読み込まれます。Claude Code がどちらの場所でもエージェントを見つけられない場合、セッションはデフォルトのツールで再開され、[エージェント名を示す警告](/docs/ja/errors#session-agent-no-longer-available)が表示されます。
+* 権限モード：`claude --continue`、`claude --resume <session-id>`、または `claude --resume <name>`（名前が 1 つのセッションと一致する場合）で `-p` なしでターミナルから再開する場合、Claude Code はセッションが使用していた権限モードを復元します。ただし、[再開時の権限モード](#permission-mode-on-resume)に記載されている場合は除きます。このセクションでは、セッションピッカー、`/resume`、および `claude -p` で再開する場合も扱います。復元されたモードを上書きするには、`--permission-mode` または `--dangerously-skip-permissions` を渡します。
 * アクティブなゴール：セッションが終了したときにまだアクティブだった [ゴール](/docs/ja/goal#resume-with-an-active-goal)は引き継がれます。ターン数、タイマー、およびトークン支出ベースラインはリセットされます。
-* スケジュール済みタスク：[有効期限が切れていない](/docs/ja/scheduled-tasks#limitations)タスクが復元されます。バックグラウンド Bash およびモニタータスクは復元されません。
-* バックグラウンド作業：前のプロセスで終了した [バックグラウンドサブエージェント](/docs/ja/sub-agents#run-subagents-in-foreground-or-background)、バックグラウンド Bash コマンド、または [ワークフロー](/docs/ja/workflows)は、再開されたトランスクリプトに完了しなかったというメモとして表示されます。Claude Code はそれらのメモからターンを開始しません。Claude はそれらを次のプロンプトで読みます。
+* スケジュールタスク：[有効期限が切れていない](/docs/ja/scheduled-tasks#limitations)タスクが復元されます。バックグラウンド Bash およびモニタータスクは復元されません。
+* バックグラウンド作業：前のプロセスとともに終了した [バックグラウンドサブエージェント](/docs/ja/sub-agents#run-subagents-in-foreground-or-background)、バックグラウンド Bash コマンド、または [ワークフロー](/docs/ja/workflows)は、再開されたトランスクリプトに完了しなかったというメモとして表示されます。Claude Code はそれらのメモからターンを開始しません。Claude は次のプロンプトとともにそれらを読みます。
 
-元の起動からのすべての設定フラグが復元されるわけではありません。セッションが `--mcp-config`、`--settings`、`--plugin-dir`、`--fallback-model`、または `--add-dir` で追加されたディレクトリに依存していた場合、再開時に再度渡します。セッション中に `/add-dir` で追加されたディレクトリは復元されませんが、セッションピッカーはセッションを見つけるためにそれらを使用します。`settings.json` や `settings.local.json` などの標準設定ファイルは起動時に再度読み込まれるため、それらに存在する設定を再度渡す必要はありません。`--system-prompt` および `--append-system-prompt` については、[再開された会話のシステムプロンプトフラグ](/docs/ja/cli-reference#system-prompt-flags-in-resumed-conversations)を参照してください。
+元の起動時のすべての設定フラグが復元されるわけではありません。セッションが `--mcp-config`、`--settings`、`--plugin-dir`、`--fallback-model`、または `--add-dir` で追加されたディレクトリに依存していた場合、再開時に再度渡します。セッション中に `/add-dir` で追加されたディレクトリも復元されませんが、セッションピッカーはセッションを見つけるためにそれらを使用します。`settings.json` や `settings.local.json` などの標準設定ファイルは起動時に再度読み込まれるため、それらに含まれる設定を再度渡す必要はありません。`--system-prompt` および `--append-system-prompt` については、[再開された会話のシステムプロンプトフラグ](/docs/ja/cli-reference#system-prompt-flags-in-resumed-conversations)を参照してください。
 
 <h4 id="permission-mode-on-resume">
   再開時の権限モード
 </h4>
 
-再開されたセッションが開始される権限モードは、再開方法によって異なります。以下の場合は、Claude Code がトランスクリプトから会話を読み込むときに適用されます。[実行中のバックグラウンドセッションを開く](#resume-a-running-background-session)場合、そのセッションは存在する権限モードを保持します。
+Claude Code が再開されたセッションをどの権限モードで開始するかは、再開方法によって異なります。以下のケースは、Claude Code がトランスクリプトから会話を読み込む場合に適用されます。代わりに [実行中のバックグラウンドセッションを開く](#resume-a-running-background-session)場合、そのセッションは現在の権限モードを保持します。
 
-* ターミナル：`claude --continue`、`claude --resume <session-id>`、または `claude --resume <name>`（名前が 1 つのセッションと一致する場合）で `-p` なし。Claude Code はセッションが存在していた権限モードを復元します。ただし、表の場合は除きます。`--permission-mode` または `--dangerously-skip-permissions` を渡して復元されたモードをオーバーライドします。
-* 非対話型：`claude -p --resume` または `claude -p --continue`。Claude Code は新しい `claude -p` 実行が開始される権限モードで実行を開始します。ただし、プランモードで終了したセッションは [以下の条件](#resume-in-plan-mode-with-p)下でプランモードで再開されます。
-* VS Code：拡張機能の会話パネル。表は、プランモードで終了した会話のみをカバーします。その他については、[過去の会話を再開](/docs/ja/vs-code#resume-past-conversations)を参照してください。
+* ターミナル：`claude --continue`、`claude --resume <session-id>`、または `claude --resume <name>`（名前が 1 つのセッションと一致する場合）で `-p` なし。Claude Code はセッションが使用していた権限モードを復元します。ただし、表に記載されている場合は除きます。復元されたモードを上書きするには、`--permission-mode` または `--dangerously-skip-permissions` を渡します。
+* 非対話型：`claude -p --resume` または `claude -p --continue`。Claude Code は新しい `claude -p` 実行が開始される権限モードで実行を開始します。ただし、plan モードで終了したセッションは、[以下の条件](#resume-in-plan-mode-with-p)を満たす場合に plan モードで再開されます。
+* VS Code：拡張機能の会話パネル。表は、plan モードで終了した会話のみを扱います。その他については、[過去の会話を再開](/docs/ja/vs-code#resume-past-conversations)を参照してください。
 * 起動時のセッションピッカー：[セッションピッカー](#use-the-session-picker)から選択したセッション。`claude --resume` だけで開いたか、`claude --from-pr` で開いたか、複数のセッションと一致する名前で開いたかに関わらず。Claude Code は、同じコマンドラインから新しいセッションを開始する場合の権限モードでセッションを開始します。ただし、plan モードで終了したセッションは、`--permission-mode`、`--dangerously-skip-permissions`、または `--fork-session` を渡さない限り plan モードで再開されます。それ以外の保存された権限モードは復元されません。
-* セッション内の `/resume`（引数の有無を問わず）：切り替える会話は、現在のセッションが存在する権限モードで続行されます。ただし、plan モードで終了した会話は、`--permission-mode` または `--dangerously-skip-permissions` で Claude Code を起動した場合でも plan モードで再開されます。その会話がこの Claude Code の実行中にすでに開かれていた場合（開始時の会話や、`/clear` または `/resume` で離れた会話など）は、代わりに現在の権限モードで続行されます。
+* セッション内の `/resume`（引数の有無を問わず）：切り替え先の会話は、現在のセッションの権限モードで続行されます。ただし、plan モードで終了した会話は、`--permission-mode` または `--dangerously-skip-permissions` で Claude Code を起動した場合でも plan モードで再開されます。その会話がこの Claude Code の実行中にすでに開かれていた場合（開始時の会話や、`/clear` または `/resume` で離れた会話など）は、代わりに現在の権限モードで続行されます。
 
-非対話型および VS Code パスでプランモードを復元するには Claude Code v2.1.246 以降が必要です。各行は、セッションが終了した権限モード、ターミナル、非対話型、および VS Code パスのどれで再開するか、および Claude Code が再開されたセッションを開始する権限モードを示します。
+非対話型および VS Code の経路で plan モードを復元するには Claude Code v2.1.246 以降が必要です。各行は、セッションが終了した権限モード、ターミナル、非対話型、および VS Code の経路のどれで再開するか、および Claude Code が再開されたセッションを開始する権限モードを示します。
 
 | セッションが終了した権限モード | 再開方法 | 再開後の権限モード |
 | :- | :- | :- |
-| `bypassPermissions` | ターミナル | 新しいセッションが開始される権限モード。[権限をバイパス](/docs/ja/permission-modes#skip-all-checks-with-bypasspermissions-mode)するには、起動時に 1 つのフラグまたは [ユーザー、`--settings`、または管理設定](/docs/ja/settings-reference#permissions-defaultmode)の `permissions.defaultMode: "bypassPermissions"` で有効にします |
+| `bypassPermissions` | ターミナル | 新しいセッションが開始される権限モード。再度 [権限をバイパス](/docs/ja/permission-modes#skip-all-checks-with-bypasspermissions-mode)するには、起動時にその起動フラグのいずれか、または [ユーザー設定、`--settings`、または管理設定](/docs/ja/settings-reference#permissions-defaultmode)の `permissions.defaultMode: "bypassPermissions"` で有効にします |
 | `plan` | ターミナル | plan モード。`--fork-session` を使用した場合は、新しいセッションが開始される権限モード |
-| `auto` | ターミナル | `auto`。[オートモード要件](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)をアカウントがまだ満たしている場合のみ |
-| Manual | ターミナル | [組み込みデフォルト](/docs/ja/permission-modes#which-mode-a-session-starts-in)から新しいセッションがオートモードで開始される場合は Manual。設定ファイルの `defaultMode` が [有効になる](/docs/ja/permission-modes#which-mode-a-session-starts-in)場合、Claude Code は再開されたセッションをそのモードで開始します |
-| `plan` | 非対話型。[以下の条件](#resume-in-plan-mode-with-p)下 | プランモード |
-| Any mode | 非対話型。その他の場合 | 新しい `claude -p` 実行が開始される権限モード |
-| `plan` | VS Code | プランモード。[VS Code ページの例外](/docs/ja/vs-code#resume-past-conversations)付き |
+| `auto` | ターミナル | `auto`。アカウントがまだ [auto モードの要件](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)を満たしている場合のみ |
+| Manual | ターミナル | 新しいセッションが [組み込みデフォルト](/docs/ja/permission-modes#which-mode-a-session-starts-in)により auto モードで開始される場合は Manual。設定ファイルの `defaultMode` が [有効になる](/docs/ja/permission-modes#which-mode-a-session-starts-in)場合、Claude Code は代わりに再開されたセッションをそのモードで開始します |
+| `plan` | 非対話型。[以下の条件](#resume-in-plan-mode-with-p)を満たす場合 | plan モード |
+| 任意のモード | 非対話型。その他の場合 | 新しい `claude -p` 実行が開始される権限モード |
+| `plan` | VS Code | plan モード。ただし [VS Code ページに記載の例外](/docs/ja/vs-code#resume-past-conversations)あり |
+
+<a id="resume-in-plan-mode-with-p" />
 
 <h5 id="resume-in-plan-mode-with-p">
-  `-p` でプランモードで再開
+  `-p` で plan モードで再開する
 </h5>
 
-`claude -p --resume` または `claude -p --continue` 実行は、4 つの条件すべてが成立する場合にのみプランモードで再開されます。
+`claude -p --resume` または `claude -p --continue` の実行は、以下の条件がすべて成立する場合にのみ plan モードで再開されます。
 
-* [`--permission-prompt-tool`](/docs/ja/cli-reference#cli-flags)を渡し、[`--permission-prompts none`](/docs/ja/headless#turn-off-permission-prompts-in-unattended-runs)を渡さないため、Claude Code は承認のためにプランを提示できます
+* [`--permission-prompt-tool`](/docs/ja/cli-reference#cli-flags)を渡し、[`--permission-prompts none`](/docs/ja/headless#turn-off-permission-prompts-in-unattended-runs)を渡さないことで、Claude Code がプランを承認のために提示できること
 * `--permission-mode` または `--dangerously-skip-permissions` を渡さない
 * `--fork-session` を渡さない
 * 実行が [チャネル](/docs/ja/channels)を通じて開始されていない
 
 <h3 id="resume-from-a-summary">
-  サマリーから再開
+  サマリーから再開する
 </h3>
 
 Pro または Max プランでは、約 1 時間以上非アクティブで 100,000 トークンを超えるセッションを再開すると、Claude Code は会話を復元してから、最初のメッセージを送信する前にダイアログを開きます。セッションの [プロンプトキャッシュ](/docs/ja/prompt-caching#cache-lifetime)はその時点で有効期限が切れているため、ダイアログのオプションのどれを選択しても、次のリクエストは完全な履歴を 1 回処理します。
 
-ダイアログはセッションを続行する 3 つの方法を提供します。各方法は、会話の各部分が後のリクエストにどの程度引き継がれるかが異なり、これはすべての詳細を保持することと、リクエストごとに送信するトークンを減らすことのトレードオフです。
+ダイアログはセッションを続行する 3 つの方法を提供します。各方法は、会話のどれだけを後のリクエストに引き継ぐかが異なり、すべての詳細を保持することと、リクエストごとに送信するトークンを減らすことのトレードオフになります。
 
-* **サマリーから再開**：[`/compact`](/docs/ja/context-window#what-survives-compaction)を直ちに実行します。Claude Code は完全な履歴に対して 1 つの要約リクエストを送信し、その後履歴をサマリー、最新の交換、および最近読んだファイルまで 5 つに置き換えます。後のリクエストは完全な履歴の代わりにサマリーを実行します。
-* **セッション全体をそのまま再開**：会話を変更せずに読み込みます。最初のメッセージを送信した後、Claude Code は完全な履歴を再処理してキャッシュし、キャッシュが温かいままの間は後のリクエストでキャッシュから再度読み込みます。
-* **今後は聞かないでください**：セッション全体を再開し、すべての将来の再開でダイアログの表示を停止します。
+* **サマリーから再開**：[`/compact`](/docs/ja/context-window#what-survives-compaction)を直ちに実行します。Claude Code は完全な履歴に対して 1 回の要約リクエストを送信し、その後履歴をサマリー、最新のやり取り、および最近読んだファイル（最大 5 つ）に置き換えます。後のリクエストには完全な履歴の代わりにサマリーが含まれます。
+* **セッション全体をそのまま再開**：会話を変更せずに読み込みます。最初のメッセージを送信した後、Claude Code は完全な履歴を再処理して再キャッシュし、キャッシュが有効な間は後のリクエストでキャッシュから再度読み込みます。
+* **今後は聞かないでください**：セッション全体を再開し、今後のすべての再開でダイアログの表示を停止します。
 
-そのまま再開すると、会話のすべての詳細が利用可能に保たれ、会話のサイズに応じてスケーリングするリクエストごとのコストがあります。サマリーから再開すると、完全な履歴の代わりにサマリーを実行するため、後のリクエストごとのコストが低くなりますが、サマリーが除外したものは Claude のコンテキストに存在しなくなります。[長いセッションで使用量が増加する理由](/docs/ja/costs#why-usage-climbs-in-a-long-session)を参照して、そのリクエストごとのコストがどこから来るかを確認してください。
+そのまま再開すると、会話のすべての詳細を利用できる状態が保たれますが、リクエストごとのコストは会話のサイズに応じて増加します。サマリーから再開すると、完全な履歴の代わりにサマリーを含めるため、後のリクエストごとのコストが低くなりますが、サマリーに含まれなかった内容は Claude のコンテキストから失われます。そのリクエストごとのコストがどこから来るかについては、[長いセッションで使用量が増加する理由](/docs/ja/costs#why-usage-climbs-in-a-long-session)を参照してください。
 
 <h3 id="where-the-session-picker-looks">
   セッションピッカーが検索する場所
@@ -134,17 +136,17 @@ Claude Code はセッションをプロジェクトディレクトリごとに�
 
 `Ctrl+W` を使用してリポジトリのすべての worktree に拡張するか、`Ctrl+A` を使用してこのマシン上のすべてのプロジェクトに拡張します。
 
-最初のプロンプトが [`/loop`](/docs/ja/scheduled-tasks#run-a-prompt-repeatedly-with-%2Floop)コマンドだったセッションはピッカーに表示されず、`claude --continue` もそれらをスキップします。会話の後半で `/loop` を実行してもセッションは非表示になりません。v2.1.211 より前は、会話の早い段階で `/loop` 実行を行うと、セッションはピッカーから永続的に非表示になりました。
+最初のプロンプトが [`/loop`](/docs/ja/scheduled-tasks#run-a-prompt-repeatedly-with-%2Floop)コマンドだったセッションはピッカーに表示されず、`claude --continue` もそれらをスキップします。会話の後半で `/loop` を実行してもセッションは非表示になりません。v2.1.211 より前は、会話の早い段階で `/loop` を実行すると、セッションはピッカーから永続的に非表示になりました。
 
-[`/cd`](/docs/ja/commands)でセッションを移動すると、新しいディレクトリのプロジェクトストレージに再配置されるため、その後そのディレクトリのピッカーに表示されます。v2.1.196 以降、移動されたセッションはクラッシュまたは強制終了後も古いディレクトリのピッカーから除外されたままになります。以前のバージョンでは、古いパスにアンダースコアなどの特殊文字が含まれている場合、クリーンでない終了後に古いディレクトリのリストに再度表示される可能性がありました。
+[`/cd`](/docs/ja/commands)でセッションを移動すると、新しいディレクトリのプロジェクトストレージに再配置されるため、その後そのディレクトリのピッカーに表示されます。v2.1.196 以降、移動されたセッションはクラッシュまたは強制終了後も古いディレクトリのピッカーから除外されたままになります。以前のバージョンでは、古いパスにアンダースコアなどの特殊文字が含まれている場合、正常でない終了後に古いディレクトリのリストに再度表示される可能性がありました。
 
-同じリポジトリの別の worktree からセッションを選択すると、Claude Code はそこで再開します。セッション自体の worktree が存在しなくなった場合、Claude Code は [現在のディレクトリで再開](/docs/ja/worktrees#resume-a-worktree-session)します。関連のないプロジェクトからセッションを選択すると、Claude Code は `cd` と再開コマンドをクリップボードにコピーします。そのプロジェクトのディレクトリが存在しなくなった場合、Claude Code は失敗する `cd` コマンドをコピーするのではなく、現在のディレクトリでセッションを再開します。
+同じリポジトリの別の worktree からセッションを選択すると、Claude Code はそこで再開します。セッション自体の worktree が存在しなくなった場合、Claude Code は [現在のディレクトリで再開](/docs/ja/worktrees#resume-a-worktree-session)します。関連のないプロジェクトからセッションを選択すると、Claude Code は代わりに `cd` と再開コマンドをクリップボードにコピーします。そのプロジェクトのディレクトリが存在しなくなった場合、Claude Code は失敗する `cd` コマンドをコピーするのではなく、現在のディレクトリでセッションを再開します。
 
 名前で再開する場合は、現在のリポジトリとその worktree 全体で解決されます。どちらの形式も完全一致を探し、別の worktree に存在する場合でも直接再開します。
 
 | コマンド | 完全一致 | あいまいな名前 |
 | :- | :- | :- |
-| `claude --resume <name>` | 直接再開します | セッションピッカーを開き、名前を検索用語として事前入力します |
+| `claude --resume <name>` | 直接再開します | セッションピッカーを開き、名前を検索語として事前入力します |
 | `/resume <name>` | 直接再開します | エラーを報告します。セッションピッカーを開くには、引数なしで `/resume` を実行します |
 
 <h2 id="name-your-sessions">

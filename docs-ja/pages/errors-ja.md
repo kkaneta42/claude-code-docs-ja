@@ -130,7 +130,7 @@
 | `unable to get local issuer certificate` | [ネットワーク](#ssl-certificate-errors) |
 | `403` with `x-deny-reason: host_not_allowed` in a cloud or routine session | [ネットワーク](#host-not-allowed-in-a-cloud-session) |
 | `proxy refused the connection` | [ネットワーク](#the-proxy-refused-the-connection) |
-| `403` with `This GraphQL query is not enabled for this session` in a cloud session | [GitHub proxy](/docs/ja/cloud-environments#github-proxy) |
+| `403` with `GitHub GraphQL is not available from Claude Code sessions` in a cloud session | [GitHub proxy](/docs/ja/cloud-environments#github-proxy) |
 | `The cloud environments service returned an empty response` / `The cloud environments service returned a response in an unexpected format` | [ネットワーク](#the-cloud-environments-service-returned-an-empty-or-unexpected-response) |
 | `Couldn't reconnect to your Remote Control session` | [ネットワーク](#couldnt-reconnect-to-your-remote-control-session) |
 | `N sessions ended while this machine was offline — the environment was cleaned up on the server and can't be resumed.` | [ネットワーク](#sessions-ended-while-this-machine-was-offline) |
@@ -197,6 +197,7 @@
 | `Cloud sessions cannot be created from a --restricted session` | [コマンドラインエラー](#cloud-sessions-cannot-be-created-from-a-restricted-session) |
 | `Cloud sessions are disabled by your organization's policy` | [コマンドラインエラー](#cloud-sessions-are-disabled-by-your-organizations-policy) |
 | `Couldn't verify your organization's policy for cloud sessions` | [コマンドラインエラー](#cloud-sessions-are-disabled-by-your-organizations-policy) |
+| `Cloud sessions need a claude.ai sign-in` | [Unable to get organization UUID](/docs/ja/claude-code-on-the-web#unable-to-get-organization-uuid) |
 | `Error: --json-schema is not a valid JSON Schema` | [コマンドラインエラー](#the-json-schema-value-is-not-a-valid-json-schema) |
 | `Error: Invalid --agents configuration:` | [コマンドラインエラー](#invalid-agents-configuration) |
 | `Error: --agents takes a JSON object, or a file path only with --print (-p)` | [コマンドラインエラー](#invalid-agents-configuration) |
@@ -387,6 +388,7 @@ Claude Code がリトライする障害：
 * リクエストの途中でコンピューターがスリープ状態になったことが原因で Claude Code が検出した接続の破損。Claude Code はこれを上記のルールに基づいて切断された接続としてカウントします。リトライラベルが特定の理由を名前付けすると、`Connection lost while your computer was asleep` と読み、Claude が思考を完了した後、テキストまたはツール呼び出しの前にターンが終了する場合、メッセージは `Your computer went to sleep before a response was produced` と読みます。
 * 応答ヘッダーが到着したが Claude の応答が到着していない場合、または Claude が思考を完了したがテキストまたはツール呼び出しを開始していない場合の、停止した応答ストリーム。Claude Code は停止した接続を中止し、上記の 10 回の試行予算外で最大 1 回リクエストを再発行します。Claude が思考を完了した後、テキストまたはツール呼び出しの前に応答が 2 回目に停止した場合、Claude Code は `The response stalled before a response was produced` でターンを終了します。
 * API が応答ヘッダーで応答しないストリーミングリクエスト。[最初のバイトデッドラインが実行される](/docs/ja/network-config#streaming-idle-watchdogs)接続上：Claude Code はデッドラインで中止し、リトライ予算内でモデルリクエストごとに最大 1 回再送信し、その試行も応答がない場合は [No response from API](#no-response-from-api) でターンを終了します。他の接続では、リクエストは `API_TIMEOUT_MS` を待ちます。`CLAUDE_CODE_RETRY_WATCHDOG` を設定する場合、1 回のリトライ上限は適用されません。
+* Claude が思考を完了するか、テキストまたはツール呼び出しを開始する前に、API の出力コンテンツフィルターが停止したストリーミング応答。Claude Code はリトライ予算内でリクエストを 1 回再送信し、フィルターが 2 回目の応答も停止した場合は [Output blocked by content filtering policy](#output-blocked-by-content-filtering-policy) を表示します。
 * 一時的な 429 スロットル。ただし、ゲートウェイの支出制限 `429` は除きます。これはスロットルではありません。[Spend limit reached](#spend-limit-reached) を参照してください。
   * claude.ai サブスクリプションでサインインしている場合、これには計画の割り当てヘッダーを含まない 429 スロットルが含まれます。v2.1.199 より前は、Claude Code は API キーおよび Enterprise サインインに対してのみこれらのスロットルをリトライしました。
 * 入力と `max_tokens` がコンテキスト制限を超えるため拒否されたリクエスト。変更されていない状態で再送信すると同じ方法で失敗するため、Claude Code は削減された `max_tokens` でリトライし、2 つのケースでリトライを停止してコンパクト化する代わりに：
@@ -405,7 +407,6 @@ Claude Code がリトライしない障害：
 * [Amazon Bedrock ストリーミング応答に予期しないコンテンツタイプがある](#bedrock-streaming-response-has-an-unexpected-content-type)。ゲートウェイまたはプロキシが応答を書き直すため、リトライも同じ方法で書き直されます。Claude Code v2.1.208 以降が必要です。
 * 失敗したストリーミングリクエストの非ストリーミングリトライが成功ステータスを取得しますが、[本文に Claude API メッセージがない](#api-returned-an-empty-or-malformed-response)。Claude Code はそのエラーでターンを終了します。
 * 組織のポリシーチェックが拒否したリクエスト。これは `API Error:` 行として表示され、拒否メッセージが含まれます。組織の管理者は [Inference hooks](https://platform.claude.com/docs/en/manage-claude/inference-hooks) を使用してチェックを設定します。これは Claude Enterprise 機能であり、メッセージは彼らが設定した指示で終わるか、デフォルトでは彼らに連絡するよう指示します。Claude Code は、拒否がリクエストのコンテンツに関するものであり、モデルに関するものではないため、拒否されたリクエストを同じモデルまたは [fallback model](/docs/ja/model-config#fallback-model-chains) に再送信しません。v2.1.239 より前は、Claude Code は拒否されたリクエストを、ストリーミングなしで、または設定されたフォールバックモデルで再送信してから、拒否を表示する可能性がありました。
-* API の出力コンテンツフィルターがブロックした応答。Claude Code は [Output blocked by content filtering policy](#output-blocked-by-content-filtering-policy) をすぐに表示し、そのリクエストをリトライまたは再送信しません。
 
 <h3 id="what-you-see-while-claude-code-retries-or-waits">
   Claude Code がリトライまたは待機している間に表示される内容
@@ -2299,7 +2300,7 @@ Claude Code は処理できない画像をテキストプレースホルダー�
 
 **対応方法：**
 
-* 貼り付ける前に画像をリサイズしてください。API は単一の画像で最長辺 8000 ピクセルまで、多くの画像がコンテキストにある場合は 2000 ピクセルまでの画像を受け入れます。
+* 貼り付ける前に画像をリサイズしてください。API は単一の画像で最長辺 8000 ピクセルまで、コンテキストに 20 枚を超える画像がある場合は 3000 ピクセルまでの画像を受け入れます。
 * 全画面ではなく、関連する領域に絞ったスクリーンショットを撮ってください
 
 <h3 id="unable-to-resize-image">
@@ -2904,8 +2905,6 @@ API の出力コンテンツフィルターが、Claude が生成していた応
 ```text theme={null}
 API Error: Output blocked by content filtering policy
 ```
-
-Claude Code はブロックが届くとすぐにエラーを表示し、その時点でリクエストを終了します。リクエストの再試行、ストリーミングなしでの再送信、[フォールバックモデル](/docs/ja/model-config#fallback-model-chains)への切り替えは行いません。v2.1.285 より前では、Claude Code はブロックされたリクエストを再送信して再試行することがあり、エラーを表示するまでに数分かかる場合もありました。
 
 **対応方法：**
 

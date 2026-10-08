@@ -50,7 +50,7 @@ Claude Code はどこでも同じように動作します。変わるのは、�
 | **ローカル設定を使用** | いいえ、リポジトリのみ | はい | はい |
 | **GitHub が必要** | はい、または `--cloud` 経由で[ローカルリポジトリをバンドル](/docs/ja/claude-code-on-the-web#send-local-repositories-without-github) | いいえ | いいえ |
 | **切断時に実行を継続** | はい | いいえ | セッションがお客様のマシンで開いている間 |
-| **[権限モード](/docs/ja/permission-modes)** | 編集を受け入れる、Plan、Auto | ターミナルのすべてのモード。IDE と Desktop app については[権限モードを切り替える](/docs/ja/permission-modes#switch-permission-modes)を参照してください | claude.ai とモバイルアプリから Manual、編集を受け入れる、または Plan |
+| **[権限モード](/docs/ja/permission-modes)** | 編集を受け入れる、Plan、Auto | ターミナルのすべてのモード。IDE と Desktop app については[権限モードを切り替える](/docs/ja/permission-modes#switch-permission-modes)を参照してください | claude.ai とモバイルアプリから Manual、編集を受け入れる、Plan、または Auto |
 | **ネットワークアクセス** | 環境ごとに設定可能 | お客様のマシンのネットワーク | お客様のマシンのネットワーク |
 
 ローカルセッションをセットアップするには、[ターミナルクイックスタート](/docs/ja/quickstart)、[Desktop app](/docs/ja/desktop)、または [リモートコントロール](/docs/ja/remote-control) ドキュメントを参照してください。
@@ -139,34 +139,34 @@ Claude アカウントからトークンを削除するには、[claude.ai/custo
 トークン自体を無効にするには、GitHub でそれを取り消します。ブラウザを通じて `gh` にサインインした場合、トークンは GitHub の [**Settings > Applications > Authorized OAuth Apps**](https://github.com/settings/applications) の **GitHub CLI** エントリに属し、そのエントリを取り消すと、マシン上の GitHub CLI もサインアウトします。Cloud セッションは `gh auth login` と `/web-setup` を再度実行するまで GitHub アクセスを失います。
 
 <h2 id="start-a-task">
-  タスクを開始
+  タスクを開始する
 </h2>
 
-GitHub が接続され、環境が作成されたら、タスクを送信する準備ができています。
+GitHub を接続して環境を作成したら、タスクを送信する準備が整います。
 
 <Steps>
-  <Step title="リポジトリとブランチを選択">
-    [claude.ai/code](https://claude.ai/code) または Claude モバイルアプリの Code タブから、入力ボックスの下のリポジトリセレクターをクリックし、Claude が作業するリポジトリを選択します。各リポジトリはブランチセレクターを表示します。デフォルトの代わりに feature ブランチから Claude を開始するように変更します。複数のリポジトリを追加して、1 つのセッション内で複数のリポジトリで作業できます。
+  <Step title="リポジトリとブランチを選択する">
+    [claude.ai/code](https://claude.ai/code) または Claude モバイルアプリの Code タブで、入力ボックスの下にあるリポジトリセレクターをクリックし、Claude が作業するリポジトリを選択します。各リポジトリにはブランチセレクターが表示されます。デフォルトではなくフィーチャーブランチから Claude を開始するには、これを変更します。複数のリポジトリを追加して、1 つのセッションでそれらにまたがって作業することもできます。
   </Step>
 
-  <Step title="権限モードを選択">
-    入力の横の mode ドロップダウンは、セッションが実行される権限モードを表示します：
+  <Step title="権限モードを選択する">
+    [権限モードコントロール](/docs/ja/permission-modes#switch-permission-modes)には、セッションが実行される権限モードが表示されます。
 
-    * **Auto**：分類器が Claude のアクションをレビューします。組織が auto モードを許可し、選択されたモデルがそれをサポートしている場合に表示されます
-    * **Accept edits**：Claude は承認を待たずに変更を加えてブランチをプッシュします
-    * **Plan**：Claude がアプローチを提案し、ファイルを編集する前にあなたの承認を待ちます
+    * **Auto**：ユーザーに確認する代わりに、分類器が Claude のアクションをレビューします。組織が auto モードを許可しており、選択したモデルがそれをサポートしている場合に表示されます
+    * **Accept edits**：Claude は承認を待たずに変更を加え、ブランチをプッシュします
+    * **Plan**：Claude はアプローチを提案し、ファイルを編集する前にユーザーの承認を待ちます
 
-    Cloud セッションは Manual または Bypass 権限を提供しません。各権限モードが何を許可するかについては、[権限モードの完全なリスト](/docs/ja/permission-modes#available-modes)を参照してください。
+    クラウドセッションでは Manual や Bypass permissions は提供されません。それぞれで何が許可されるかについては、[権限モードの一覧](/docs/ja/permission-modes#available-modes)を参照してください。
   </Step>
 
-  <Step title="タスクを説明して送信">
-    実行したい内容の説明を入力して Enter キーを押します。具体的にしてください：
+  <Step title="タスクを説明して送信する">
+    やりたいことの説明を入力して Enter キーを押します。具体的に記述してください。
 
-    * ファイルまたは関数に名前を付けます：「Add a README with setup instructions」または「Fix the failing auth test in `tests/test_auth.py`」は「fix tests」より良いです
-    * エラー出力がある場合は貼り付けます
-    * 症状だけでなく、期待される動作を説明します
+    * ファイルや関数の名前を挙げる：「fix tests」よりも「Add a README with setup instructions」や「Fix the failing auth test in `tests/test_auth.py`」のほうが適切です
+    * エラー出力があれば貼り付ける
+    * 症状だけでなく、期待される動作を説明する
 
-    Claude はリポジトリをクローンし、設定されている場合は setup script を実行し、作業を開始します。各タスクは独自のセッションと独自のブランチを取得するため、1 つが完了するのを待つ必要はありません。
+    Claude はリポジトリをクローンし、セットアップスクリプトが設定されていればそれを実行して、作業を開始します。各タスクには専用のセッションと専用のブランチが割り当てられるため、1 つのタスクが完了するのを待たずに別のタスクを開始できます。
   </Step>
 </Steps>
 

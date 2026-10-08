@@ -207,10 +207,10 @@ Claude アプリをまだ持っていない場合は、Claude Code 内で `/mobi
 * **`false`**：自動接続をオフにします。ただし、[管理設定](/docs/ja/managed-settings)からの `true` はそれをランク付けします。Claude Code は選択をユーザー設定に保存するためです。プロジェクトまたはローカル設定（`.claude/settings.json`、`.claude/settings.local.json`）の `false` は、管理 `true` の上でも自動接続をオフにします。
 * **`default`**：選択をクリアし、設定されている場合は組織の管理者デフォルトに従います。そうでない場合は Claude Code の現在のデフォルトに従います。
 
-同じトグルは CLI の外に表示されます：
+VS Code 拡張機能と Desktop アプリにも自動接続のトグルがあります：
 
-* **Desktop アプリ**：**Settings > Claude Code > Connect new sessions to Remote Control**。
 * **VS Code 拡張機能**：[コマンドメニューの](/docs/ja/vs-code#use-the-prompt-box) Settings セクションの **Enable Remote Control for all sessions**。
+* **Desktop アプリ**：**Settings > Claude Code > Connect new sessions to Remote Control**。[他のデバイスに表示されるセッションを制御する](/docs/ja/desktop#control-which-sessions-appear-on-your-other-devices)を参照してください。
 
 代わりに設定ファイルから自動接続をオンにするには、ユーザー `~/.claude/settings.json` または [管理設定](/docs/ja/managed-settings)で [`remoteControlAtStartup`](/docs/ja/settings-reference#remotecontrolatstartup) を `true` に設定します。プロジェクトまたはローカル設定（`.claude/settings.json`、`.claude/settings.local.json`）では、Claude Code は `false` を尊重し、そのリポジトリの自動接続をオフにしますが、`true` は無視するため、チェックインされたファイルはリポジトリを開くすべての人のリモートコントロールをオンにすることはできません。
 
@@ -371,7 +371,7 @@ Claude Code は、お客様がターミナルに入力中または接続され�
 </h2>
 
 * **インタラクティブプロセスごとに 1 つのリモートセッション**: サーバーモード外では、各 Claude Code インスタンスは一度に 1 つのリモートセッションをサポートします。単一プロセスから複数の同時セッションを実行するには、[サーバーモード](#start-a-remote-control-session)を使用してください。
-* **ローカルプロセスは実行し続ける必要があります**: Remote Control はローカルプロセスとして実行されます。ターミナルを閉じたり、Desktop アプリまたは VS Code を終了したり、`claude` プロセスを停止したりすると、セッションはオフラインになります。セッションを[復帰](#resume-sessions-after-stopping-the-server)させるまでオフラインのままです。SSH から切断した後もリモートマシンでセッションを実行し続けるには、`tmux` または `screen` 内で開始してください。
+* **ローカルプロセスを実行し続ける必要がある**: Remote Control はローカルプロセスとして実行されます。ターミナルを閉じたり、Desktop アプリや VS Code を終了したり、その他の方法で `claude` プロセスを停止したりすると、[再開する](#resume-sessions-after-stopping-the-server)までセッションはオフラインになります。リモートマシン上のターミナルから `claude` を実行する場合は、SSH の接続を切断した後もセッションが実行され続けるように、`tmux` または `screen` の中で起動してください。
 * **サーバーモードでのクラッシュしたセッション**: `claude remote-control` で提供されるセッションがクラッシュした場合、接続されたデバイスからメッセージを送信してください。Claude Code はそれを再度提供します。サーバーを再起動する必要はありません。Claude Code v2.1.238 以降が必要です。
 * **接続されたセッションでの HTTP 403 拒否**: インタラクティブセッションが接続されると、VPN またはネットワークの変更後に発生する可能性があるように、マシンと Anthropic のサーバー間の何かが HTTP 403 で応答する場合、Claude Code は最大 3 分間再試行を続けます。拒否が長く続く場合、Claude Code は切断され、理由は何が拒否したかを示します。ネットワークエッジ、またはユーザー自身のネットワーク上のプロキシ、VPN、またはファイアウォールです。
 * **拡張ネットワーク障害**: マシンが起動しているがネットワークに到達できない場合、次に何をするかはモードによって異なります。

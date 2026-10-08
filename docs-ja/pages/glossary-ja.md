@@ -104,77 +104,77 @@ Claude Code に含まれるプロンプトベースのプレイブック。`/bat
   Channel
 </h3>
 
-イベントを実行中のセッションにプッシュする [MCP サーバー](#mcp-model-context-protocol) で、ターミナルから離れている間に発生したことに Claude が反応できるようにします。チャネルは双方向にすることができます。Claude は受信イベントを読み取り、同じチャネルを通じて返信します。Telegram、Discord、iMessage は研究プレビューに含まれています。
+実行中のセッションにイベントをプッシュする [MCP サーバー](#mcp-model-context-protocol)で、ユーザーがターミナルから離れている間に起きた出来事に Claude が反応できるようにします。チャネルは双方向にすることができ、Claude は受信したイベントを読み取り、同じチャネルを通じて返信します。リサーチプレビューには Telegram、Discord、iMessage が含まれています。
 
-詳細情報：[Channels](/docs/ja/channels)
+詳細: [チャネル](/docs/ja/channels)
 
 <h3 id="checkpoint">
   Checkpoint
 </h3>
 
-送信するプロンプトごとにターンを開始する復元ポイント。Claude Code はすべての編集の前にファイルをスナップショットするため、チェックポイントはそれらを復元できます。`Esc` キーを 2 回押すか `/rewind` を実行して、コード、会話、またはその両方を以前のポイントに復元するか、選択したメッセージから会話の一部を要約します。チェックポイントは会話とともに保存されるため、再開されたセッションでも `/rewind` でそれらに戻ることができます。これらは git とは別で、Bash ツールを通じて行われた変更は追跡しません。
+ターンを開始するプロンプトを送信するたびに作成される復元ポイントです。Claude Code は編集のたびにその前のファイルのスナップショットを取得するため、チェックポイントによってファイルを元に戻すことができます。`Esc` を 2 回押すか `/rewind` を実行すると、コード、会話、またはその両方を以前の時点に復元したり、選択したメッセージ以降の会話の一部を要約したりできます。チェックポイントは会話とともに保存されるため、再開したセッションでも `/rewind` でチェックポイントに戻ることができます。チェックポイントは git とは別のものであり、Bash ツールを通じて行われた変更は追跡しません。
 
-詳細情報：[Checkpointing](/docs/ja/checkpointing)
+詳細: [チェックポイント機能](/docs/ja/checkpointing)
 
 <h3 id="claude-directory">
-  `.claude` ディレクトリ
+  `.claude` directory
 </h3>
 
-Claude Code がプロジェクトスコープの設定を読み取るディレクトリ。設定、フック、スキル、サブエージェント、ルール、自動メモリが含まれます。プロジェクトはそのルートに `.claude/` を持ち、ユーザーレベルのデフォルトは `~/.claude/` にあります。
+Claude Code がプロジェクトスコープの設定（設定、フック、スキル、サブエージェント、ルール、自動メモリ）を読み込むディレクトリです。プロジェクトではルートに `.claude/` があり、ユーザーレベルのデフォルトは `~/.claude/` にあります。
 
-詳細情報：[The `.claude` directory](/docs/ja/claude-directory)
+詳細: [`.claude` ディレクトリ](/docs/ja/claude-directory)
 
 <h3 id="claude-md">
   CLAUDE.md
 </h3>
 
-Claude 用に作成する永続的な指示のマークダウンファイル。システムプロンプトの後、ユーザーメッセージとしてすべてのセッションの開始時に読み込まれます。プロジェクト規約、アーキテクチャノート、「常に X を行う」ルールをここに記述します。プロジェクトルート CLAUDE.md は [compaction](#compaction) を通じて保存され、その後ディスクから新たに読み込まれます。
+ユーザーが Claude 向けに記述する永続的な指示の markdown ファイルで、すべてのセッションの開始時にシステムプロンプトの後のユーザーメッセージとして読み込まれます。プロジェクトの規約、アーキテクチャに関するメモ、「常に X を行う」といったルールをここに記述します。プロジェクトルートの CLAUDE.md は[コンテキスト圧縮](#compaction)後も保持され、圧縮後にディスクから改めて読み込まれます。
 
-CLAUDE.md は `./CLAUDE.md` または `./.claude/CLAUDE.md` でプロジェクトスコープに、`~/.claude/CLAUDE.md` でユーザースコープに、または組織の [managed policy](#managed-settings) として配置できます。検出されたすべてのファイルは相互にオーバーライドするのではなく、最も広いスコープから最も具体的なスコープの順に、コンテキストに連結されます。Claude Code は、プロジェクトの [AGENTS.md](#agents-md) ファイルも読み込むことができます。これは単独で、または CLAUDE.md と一緒に読み込まれます。
+CLAUDE.md は、プロジェクトスコープでは `./CLAUDE.md` または `./.claude/CLAUDE.md` に、ユーザースコープでは `~/.claude/CLAUDE.md` に、あるいは組織向けの[管理ポリシー](#managed-settings)として配置できます。検出されたすべてのファイルは互いを上書きするのではなく連結されてコンテキストに追加され、最も広いスコープから最も限定的なスコープの順に並べられます。Claude Code は CLAUDE.md の代わりにプロジェクトの [AGENTS.md](#agents-md) ファイルを読み込むこともできます。
 
-詳細情報：[CLAUDE.md files](/docs/ja/memory#claude-md-files)
+詳細: [CLAUDE.md ファイル](/docs/ja/memory#claude-md-files)
 
 <h3 id="cloud-session">
   Cloud session
 </h3>
 
-claude.ai/code、Claude モバイルアプリ、**Cloud** が選択された Desktop アプリ、`claude --cloud`、または [routine](/docs/ja/routines) から開始する Claude Code セッションで、ラップトップを閉じた後も実行を続けます。これはクラウドインフラストラクチャで実行されるためです。デフォルトでは Anthropic が管理するか、組織が運用する [self-hosted environment](/docs/ja/self-hosted-environments) です。ターミナル、IDE、または **Local** が選択された Desktop アプリ内のセッションはローカルセッションです。別のデバイスからローカルセッションに到達するには、[Remote Control](#remote-control) を使用します。
+ユーザーのマシンではなくクラウドインフラストラクチャ上で実行されるため、ノートパソコンを閉じた後も実行され続ける Claude Code セッションです。デフォルトでは Anthropic が管理するインフラストラクチャ上で実行されますが、組織が運用する[セルフホスト環境](/docs/ja/self-hosted-environments)で実行することもできます。クラウドセッションは、claude.ai/code、Claude モバイルアプリ、**Cloud** を選択した Desktop アプリ、`claude --cloud`、または[ルーティン](/docs/ja/routines)から開始します。ターミナル、IDE、または **Local** を選択した Desktop アプリでのセッションはローカルセッションです。別のデバイスからローカルセッションにアクセスするには、[Remote Control](#remote-control) を使用します。
 
-詳細情報：[Use Claude Code in the cloud](/docs/ja/claude-code-on-the-web)
+詳細: [クラウドで Claude Code を使用する](/docs/ja/claude-code-on-the-web)
 
 <h3 id="command">
   Command
 </h3>
 
-プロンプトに `/name` と入力して呼び出す再利用可能な指示。`/clear`、`/model`、`/compact` などの組み込みコマンドはセッションを制御します。`.claude/commands/` のファイルとして独自のコマンドを定義するか、[plugin](#plugin) からインストールできます。[Skills](#skill) は複数ステップのコマンドをパッケージ化するための推奨される方法です。
+プロンプトに `/name` と入力して呼び出す、再利用可能な指示です。`/clear`、`/model`、`/compact` などの組み込みコマンドはセッションを制御します。独自のコマンドを `.claude/commands/` 内のファイルとして定義することも、[プラグイン](#plugin)からインストールすることもできます。複数ステップのコマンドをパッケージ化するには、[スキル](#skill)の使用が推奨されます。
 
-この単語の他の 2 つの用途は関連がありません。`claude` CLI サブコマンド（`claude mcp add` など）は [CLI reference](/docs/ja/cli-reference#cli-commands) に記載されており、stdio [MCP server](#mcp-server) エントリの `command` フィールドは、Claude Code が起動するために起動する実行可能ファイルを指定します。
+この語には無関係な用法が 2 つあります。1 つは `claude mcp add` などの `claude` CLI サブコマンドで、[CLI リファレンス](/docs/ja/cli-reference#cli-commands)に一覧があります。もう 1 つは stdio [MCP サーバー](#mcp-server)エントリの `command` フィールドで、サーバーを開始するために Claude Code が起動する実行ファイルを指定します。
 
-詳細情報：[Commands](/docs/ja/commands) · [Skills](/docs/ja/skills)
+詳細: [コマンド](/docs/ja/commands) · [スキル](/docs/ja/skills)
 
 <h3 id="compaction">
   Compaction
 </h3>
 
-[context window](#context-window) がその制限に近づくときの会話の自動要約。古いツール出力が最初にクリアされ、その後会話が要約されます。プロジェクトルート CLAUDE.md と自動メモリは compaction を通じて保存され、ディスクから再度読み込まれます。会話でのみ与えられた指示は失われる可能性があります。`/compact` を手動でトリガーするか、オプションで `/compact focus on the API changes` のようなフォーカスを指定します。
+[コンテキストウィンドウ](#context-window)が上限に近づいたときに、会話を自動的に要約する処理です。まず古いツール出力がクリアされ、次に会話が要約されます。プロジェクトルートの CLAUDE.md と自動メモリは圧縮後も保持され、ディスクから再読み込みされますが、会話の中でのみ与えられた指示は失われる可能性があります。手動で実行するには `/compact` を実行します。`/compact focus on the API changes` のように重点を指定することもできます。
 
-詳細情報：[What survives compaction](/docs/ja/context-window#what-survives-compaction) · [When context fills up](/docs/ja/how-claude-code-works#when-context-fills-up)
+詳細: [コンテキスト圧縮後も保持されるもの](/docs/ja/context-window#what-survives-compaction) · [コンテキストがいっぱいになったとき](/docs/ja/how-claude-code-works#when-context-fills-up)
 
 <h3 id="connector">
   Connector
 </h3>
 
-Claude Code ではなく claude.ai アカウントに追加される [MCP server](#mcp-server)。そのアカウントで Claude Code にサインインすると、コネクタはローカルに追加したサーバーと一緒に `/mcp` に表示されます。組織はコネクタをプロビジョニングし、それらに対するツール単位の制御を設定することもできます。
+Claude Code で設定するのではなく、claude.ai アカウントに追加された [MCP サーバー](#mcp-server)です。そのアカウントで Claude Code にサインインすると、ローカルで追加したサーバーとともにコネクタが `/mcp` に表示されます。組織はコネクタをプロビジョニングし、ツールごとの制御を設定することもできます。
 
-詳細情報：[Use MCP servers from claude.ai](/docs/ja/mcp#use-mcp-servers-from-claude-ai)
+詳細: [claude.ai の MCP サーバーを使用する](/docs/ja/mcp#use-mcp-servers-from-claude-ai)
 
 <h3 id="context-window">
   Context window
 </h3>
 
-セッションの作業メモリ。会話履歴、ファイルコンテンツ、コマンド出力、CLAUDE.md、自動メモリ、読み込まれたスキル、システム指示を保持します。作業を進めると、[compaction](#compaction) がそれを要約するまでコンテキストが満杯になります。`/context` を実行してスペースを使用しているものを確認します。基盤となるモデルの概念については、[platform glossary](https://platform.claude.com/docs/ja/about-claude/glossary#context-window) を参照してください。
+セッションの作業メモリで、会話履歴、ファイルの内容、コマンド出力、CLAUDE.md、自動メモリ、読み込まれたスキル、システム指示を保持します。作業を進めるにつれてコンテキストが埋まっていき、やがて[コンテキスト圧縮](#compaction)によって要約されます。何が容量を使用しているかを確認するには、`/context` を実行します。基盤となるモデルの概念については、[プラットフォーム用語集](https://platform.claude.com/docs/en/about-claude/glossary#context-window)を参照してください。
 
-詳細情報：[Explore the context window](/docs/ja/context-window)
+詳細: [コンテキストウィンドウを確認する](/docs/ja/context-window)
 
 <h2 id="d">
   D
@@ -196,7 +196,7 @@ Claude Code ではなく claude.ai アカウントに追加される [MCP server
   Effort level
 </h3>
 
-各ステップで適応的推論を行うかどうか、またどの程度行うかをモデルが決定できるようにする設定です。より高い努力はより多くの思考トークンとより深い推論を意味し、より低い努力はより速く、より安価です。Effort は Fable モデル、Opus 4.6 以降、および Sonnet 4.6 以降でサポートされています。
+各ステップで適応的推論を行うかどうか、またどの程度行うかをモデルが決定できるようにする設定です。より高い努力はより多くの思考トークンとより深い推論を意味し、より低い努力はより速く、より安価です。Effort は Fable モデル、Opus 4.6 以降、Sonnet 4.6 以降、および Haiku 5.5 でサポートされています。
 
 詳細情報: [Adjust effort level](/docs/ja/model-config#adjust-effort-level)
 
@@ -396,7 +396,7 @@ Bash ツールの OS レベルのファイルシステムおよびネットワ�
   Settings layers
 </h3>
 
-Claude Code が設定を読み取る階層。優先順位の高い順から低い順: [managed policy](#managed-settings)、コマンドライン引数、`.claude/settings.local.json` のローカル設定、`.claude/settings.json` のプロジェクト設定、`~/.claude/settings.json` のユーザー設定。配列はレイヤー全体でマージされます。スカラーは高いレイヤーで低いレイヤーをオーバーライドします。[Settings precedence](/docs/ja/settings#settings-precedence) を参照してください。
+Claude Code が設定を読み取る階層。優先順位の高い順から低い順: [managed policy](#managed-settings)、`--settings` フラグで渡す設定、`.claude/settings.local.json` のローカル設定、`.claude/settings.json` のプロジェクト設定、`~/.claude/settings.json` のユーザー設定。配列はレイヤー全体でマージされます。スカラーは高いレイヤーの値が低いレイヤーの値を上書きします。[Settings precedence](/docs/ja/settings#settings-precedence) を参照してください。
 
 詳細情報: [Settings files](/docs/ja/settings#where-settings-live)
 
@@ -404,7 +404,7 @@ Claude Code が設定を読み取る階層。優先順位の高い順から低�
   Skill
 </h3>
 
-指示、知識、またはワークフローを含む `SKILL.md` ファイル。Claude はそれをツールキットに追加します。Claude は関連する場合に自動的にスキルをロードするか、`/skill-name` で直接呼び出します。Skills は Agent Skills オープン標準に従います。Claude Code はそれを呼び出し制御と subagent 実行で拡張します。
+指示、知識、またはワークフローを含む `SKILL.md` ファイル。Claude はそれをツールキットに追加します。Claude は関連する場合に自動的にスキルをロードします。また、`/skill-name` で直接呼び出すこともできます。Skills は Agent Skills オープン標準に従います。Claude Code はそれを呼び出し制御と subagent 実行で拡張します。
 
 Skills は custom commands の推奨される後継者です。`.claude/commands/deploy.md` のファイルと `.claude/skills/deploy/SKILL.md` のファイルの両方が `/deploy` を作成し、同じように機能します。既存のコマンドファイルは引き続き機能します。
 

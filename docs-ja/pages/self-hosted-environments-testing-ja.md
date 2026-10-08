@@ -104,7 +104,7 @@ Claude Code はセッションを作成し、セッション ID とそのリン�
   スクリプト例
 </h2>
 
-以下のスクリプトは `$CLAUDE_TEST_ENVIRONMENT_ID`（テスト環境の `ccpool_...` ID）に対して完全なループを実行します。これは管理ページの環境詳細ダイアログに表示されるか、[環境作成呼び出し](#create-a-dedicated-test-environment)によって返されます。各返信のセンチネルフレーズをアサートします。キャプチャフックがインストールされ、`E2E_REPLY_DIR` がエクスポートされている実行イメージを使用して、このホストで実行イメージを開始した後、セッションを実行したいリポジトリの git チェックアウトから実行します。
+以下のスクリプトは `$CLAUDE_TEST_ENVIRONMENT_ID`（テスト環境の `ccpool_...` ID）に対して完全なループを実行します。これは管理ページの環境詳細ダイアログに表示されるか、[環境作成呼び出し](#create-a-dedicated-test-environment)によって返されます。各返信のセンチネルフレーズをアサートします。キャプチャフックがインストールされ、`E2E_REPLY_DIR` がエクスポートされている実行イメージを使用して、このホストで実行イメージを開始した後、セッションを実行したいリポジトリの git チェックアウトから実行します。まず、[CI からの認証](#authenticate-from-ci)で説明しているとおり、スクリプトを実行するマシンで claude.ai アカウントにサインインします。このサインインを行わないと、最初のディスパッチが `Unable to get organization UUID for cloud session creation` などのエラーで失敗します。
 
 ```bash theme={null}
 #!/usr/bin/env bash

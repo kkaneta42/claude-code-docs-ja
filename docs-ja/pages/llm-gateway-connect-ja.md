@@ -216,7 +216,14 @@ CLI は上記の環境変数と設定ファイルを読み取ります。他の�
 * **管理者によって配布される**：組織が[設定を配布](/docs/ja/llm-gateway-rollout#distribute-through-managed-settings)している場合、デスクトップアプリはゲートウェイを通じてルーティングされ、設定は不要です
 * **ローカルで設定される**：管理者配布設定がないデバイスの場合、Help → Troubleshooting → 開発者モードを有効化を開きます。これはアプリを再起動して開発者メニューを表示します。その後、Developer → Configure Third-Party Inference を開き、ゲートウェイベース URL を入力します。管理者配布設定が優先され、このフォームを読み取り専用にします
 
-ゲートウェイ設定がアクティブな場合、デスクトップアプリはローカルマシンのみでセッションを実行します。環境ピッカーは SSH セッションまたは Anthropic ホスト型クラウド環境を提供せず、[Remote Control](/docs/ja/remote-control)は利用できません。ゲートウェイを通じてリモートホストで Claude Code を使用するには、そのホストで CLI を実行し、[`ANTHROPIC_BASE_URL` とゲートウェイ認証情報](#set-the-base-url-and-credential)を設定します。
+ゲートウェイ設定がアクティブな場合、環境ピッカーは Anthropic ホスト型クラウド環境を提供せず、[Remote Control](/docs/ja/remote-control) は利用できません。
+
+ゲートウェイ設定での SSH セッションはベータ版であり、Claude Desktop v1.40609.0 以降が必要です。接続する前に、許可リストとゲートウェイのアドレスを確認してください：
+
+* **許可されたホスト**：SSH セッションはデフォルトでオフです。オンにするには、ユーザーまたは管理者がサードパーティ推論設定の [`sshHostAllowlist`](https://claude.com/docs/third-party/claude-desktop/configuration#sshhostallowlist) キーに許可するホストを列挙します
+* **ゲートウェイのアドレス**：リモートマシンはゲートウェイに直接接続するため、自分のコンピューター上の `localhost` にあるゲートウェイは SSH セッションでは機能しません
+
+[3P 環境の Claude Desktop における SSH リモートセッション](https://claude.com/docs/third-party/claude-desktop/ssh-remote-sessions)を参照してください。また、リモートホストで CLI を実行し、そこで [`ANTHROPIC_BASE_URL` とゲートウェイ認証情報](#set-the-base-url-and-credential)を設定することもできます。
 
 デスクトップアプリが `Gateway was unreachable` を表示する場合、アプリは起動時に設定されたベース URL に到達できませんでした。URL とネットワークパスを上記の [curl テスト](#verify-the-connection)で確認してください。
 

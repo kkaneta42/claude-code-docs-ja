@@ -255,7 +255,7 @@ Amazon Bedrock、Google Cloud の Agent Platform、および Microsoft Foundry �
   トークン使用量を削減する
 </h2>
 
-トークンコストはコンテキストサイズに応じてスケールします。Claude が処理するコンテキストが大きいほど、より多くのトークンを使用します。Claude Code は [プロンプトキャッシング](/docs/ja/prompt-caching) を通じてコストを自動的に最適化します。プロンプトキャッシングはシステムプロンプトなどの繰り返されるコンテンツのコストを削減し、auto-compact はコンテキスト制限に近づいたときに会話履歴を要約します。
+トークンコストはコンテキストサイズに応じてスケールします。Claude が処理するコンテキストが大きいほど、より多くのトークンを使用します。Claude Code は [プロンプトキャッシュ](/docs/ja/prompt-caching) と自動圧縮を通じてコストを自動的に最適化します。プロンプトキャッシュはシステムプロンプトなどの繰り返されるコンテンツのコストを削減し、自動圧縮はコンテキスト制限に近づいたときに会話履歴を要約します。
 
 以下の戦略は、コンテキストを小さく保ち、メッセージあたりのコストを削減するのに役立ちます。
 
@@ -266,9 +266,9 @@ Amazon Bedrock、Google Cloud の Agent Platform、および Microsoft Foundry �
 `/usage` を使用して現在のトークン使用量を確認するか、[ステータスラインを設定](/docs/ja/statusline#context-window-usage) して継続的に表示します。
 
 * **タスク間でクリアする**: 関連のない作業に切り替えるときは `/clear` を使用して新しく開始します。古いコンテキストは後続のすべてのメッセージでトークンを無駄にします。クリアする前に `/rename` を使用してセッションに名前を付けると、後で簡単に見つけることができます。その後 `/resume` を使用して復帰します。
-* **カスタムコンパクション指示を追加する**: `/compact Focus on code samples and API usage` は、要約中に保持する内容を Claude に指示します。
+* **カスタムのコンテキスト圧縮指示を追加する**: `/compact Focus on code samples and API usage` は、要約中に保持する内容を Claude に指示します。
 
-プロジェクトのルートにある CLAUDE.md ファイルでコンパクション動作をカスタマイズすることもできます。
+プロジェクトのルートにある CLAUDE.md ファイルで圧縮の動作をカスタマイズすることもできます。
 
 ```markdown theme={null}
 # Compact instructions
@@ -298,18 +298,18 @@ MCP ツール定義は [デフォルトで遅延](/docs/ja/mcp#scale-with-mcp-to
 [コード インテリジェンスプラグイン](/docs/ja/plugins/code-intelligence) は、Claude にテキストベースの検索の代わりに正確なシンボルナビゲーションを提供し、不慣れなコードを探索するときの不要なファイル読み取りを削減します。単一の「定義に移動」呼び出しは、複数の候補ファイルを読み取る前に grep を実行する必要があったものを置き換えます。インストールされた言語サーバーは、編集後に型エラーを自動的に報告するため、Claude はコンパイラを実行せずにエラーをキャッチします。
 
 <h3 id="offload-processing-to-hooks-and-skills">
-  hooks と skills に処理をオフロードする
+  フックとスキルに処理をオフロードする
 </h3>
 
-カスタム [hooks](/docs/ja/hooks) は Claude がそれを見る前にデータを前処理できます。Claude が 10,000 行のログファイルを読んでエラーを見つける代わりに、hook は `ERROR` に対して grep を実行し、一致する行のみを返すことができます。これにより、コンテキストを数万トークンから数百に削減します。
+カスタム [フック](/docs/ja/hooks) は Claude がそれを見る前にデータを前処理できます。Claude が 10,000 行のログファイルを読んでエラーを見つける代わりに、フックは `ERROR` に対して grep を実行し、一致する行のみを返すことができます。これにより、コンテキストを数万トークンから数百に削減します。
 
-[skill](/docs/ja/skills) は Claude にドメイン知識を与えることができるため、探索する必要がありません。たとえば、「codebase-overview」skill はプロジェクトのアーキテクチャ、主要なディレクトリ、命名規則を説明できます。Claude が skill を呼び出すと、構造を理解するために複数のファイルを読むトークンを費やす代わりに、このコンテキストが即座に得られます。
+[スキル](/docs/ja/skills) は Claude にドメイン知識を与えることができるため、探索する必要がありません。たとえば、「codebase-overview」スキルはプロジェクトのアーキテクチャ、主要なディレクトリ、命名規則を説明できます。Claude がスキルを呼び出すと、構造を理解するために複数のファイルを読むトークンを費やす代わりに、このコンテキストが即座に得られます。
 
-たとえば、この PreToolUse hook はテスト出力をフィルタリングして失敗のみを表示します。
+たとえば、この PreToolUse フックはテスト出力をフィルタリングして失敗のみを表示します。
 
 <Tabs>
   <Tab title="settings.json">
-    これを [settings.json](/docs/ja/settings#where-settings-live) に追加して、すべての Bash コマンドの前に hook を実行します。
+    これを [settings.json](/docs/ja/settings#where-settings-live) に追加して、すべての Bash コマンドの前にフックを実行します。
 
     ```json theme={null}
     {
@@ -331,7 +331,7 @@ MCP ツール定義は [デフォルトで遅延](/docs/ja/mcp#scale-with-mcp-to
   </Tab>
 
   <Tab title="filter-test-output.sh">
-    hook はこのスクリプトを呼び出します。`mkdir -p ~/.claude/hooks` でフォルダを作成し、以下のスクリプトを `~/.claude/hooks/filter-test-output.sh` として保存し、`chmod +x ~/.claude/hooks/filter-test-output.sh` で実行可能にします。コマンドがテストランナーであるかどうかをチェックし、失敗のみを表示するように変更します。
+    フックはこのスクリプトを呼び出します。`mkdir -p ~/.claude/hooks` でフォルダを作成し、以下のスクリプトを `~/.claude/hooks/filter-test-output.sh` として保存し、`chmod +x ~/.claude/hooks/filter-test-output.sh` で実行可能にします。コマンドがテストランナーであるかどうかをチェックし、失敗のみを表示するように変更します。
 
     ```bash theme={null}
     #!/bin/bash
@@ -350,13 +350,13 @@ MCP ツール定義は [デフォルトで遅延](/docs/ja/mcp#scale-with-mcp-to
   </Tab>
 </Tabs>
 
-セットアップを確認するには、`/hooks` を実行して、hook が PreToolUse の下に表示されることを確認します。`claude --debug-file ./claude-debug.txt` で Claude Code を起動し、Claude に `npm test` を実行するよう依頼することもできます。hook がコマンドを書き直すと、そのログファイルには `command` と他の Bash 入力フィールドをリストする `modified tool input keys` 行が含まれます。
+セットアップを確認するには、`/hooks` を実行して、フックが PreToolUse の下に表示されることを確認します。`claude --debug-file ./claude-debug.txt` で Claude Code を起動し、Claude に `npm test` を実行するよう依頼することもできます。フックがコマンドを書き直すと、そのログファイルには `command` と他の Bash 入力フィールドをリストする `modified tool input keys` 行が含まれます。
 
 <h3 id="move-instructions-from-claude-md-to-skills">
-  CLAUDE.md から skills に指示を移動する
+  CLAUDE.md からスキルに指示を移動する
 </h3>
 
-[CLAUDE.md](/docs/ja/memory) ファイルはセッション開始時にコンテキストに読み込まれます。PR レビューやデータベースマイグレーションなどの特定のワークフロー用の詳細な指示が含まれている場合、関連のない作業を行っているときでもそれらのトークンが存在します。[Skills](/docs/ja/skills) はオンデマンドでのみ呼び出されたときに読み込まれるため、特殊な指示を skills に移動することで、ベースコンテキストを小さく保ちます。必須項目のみを含めることで、CLAUDE.md を 200 行以下に保つことを目指します。
+[CLAUDE.md](/docs/ja/memory) ファイルはセッション開始時にコンテキストに読み込まれます。PR レビューやデータベースマイグレーションなどの特定のワークフロー用の詳細な指示が含まれている場合、関連のない作業を行っているときでもそれらのトークンが存在します。[スキル](/docs/ja/skills) はオンデマンドでのみ呼び出されたときに読み込まれるため、特殊な指示をスキルに移動することで、ベースコンテキストを小さく保ちます。必須項目のみを含めることで、CLAUDE.md を 200 行以下に保つことを目指します。
 
 <h3 id="adjust-extended-thinking">
   拡張思考を調整する
@@ -364,9 +364,9 @@ MCP ツール定義は [デフォルトで遅延](/docs/ja/mcp#scale-with-mcp-to
 
 拡張思考はデフォルトで有効になっています。複雑な計画と推論タスクのパフォーマンスを大幅に向上させるためです。思考トークンは出力トークンとして課金され、デフォルトの予算はモデルに応じてリクエストあたり数万トークンになる可能性があります。
 
-深い推論が不要なシンプルなタスクの場合は、`/effort` または `/model` で [努力レベル](/docs/ja/model-config#adjust-effort-level) を下げるか、`/config` で思考を無効にすることでコストを削減できます。Opus 5.5、Sonnet 5.5、または Fable モデルでは思考をオフにすることはできません。これらは常に拡張思考を使用します。
+深い推論が不要なシンプルなタスクの場合は、`/effort` または `/model` で [effort レベル](/docs/ja/model-config#adjust-effort-level) を下げるか、`/config` で思考を無効にすることでコストを削減できます。Opus 5.5、Sonnet 5.5、Haiku 5.5、または Fable モデルでは思考をオフにすることはできません。これらは常に拡張思考を使用します。
 
-[固定思考予算](/docs/ja/model-config#adaptive-reasoning-and-fixed-thinking-budgets) を持つモデルでは、`MAX_THINKING_TOKENS` [環境変数](/docs/ja/env-vars) を設定することで予算を下げることもできます。たとえば `MAX_THINKING_TOKENS=8000` です。適応推論モデルはゼロ以外の予算を無視するため、代わりに努力レベルを使用します。
+[固定思考予算](/docs/ja/model-config#adaptive-reasoning-and-fixed-thinking-budgets) を持つモデルでは、`MAX_THINKING_TOKENS` [環境変数](/docs/ja/env-vars) を設定することで予算を下げることもできます。たとえば `MAX_THINKING_TOKENS=8000` です。適応推論モデルはゼロ以外の予算を無視するため、代わりに effort レベルを使用します。
 
 <h3 id="delegate-verbose-operations-to-subagents">
   冗長な操作をサブエージェントに委譲する
@@ -374,13 +374,13 @@ MCP ツール定義は [デフォルトで遅延](/docs/ja/mcp#scale-with-mcp-to
 
 テストの実行、ドキュメントの取得、またはログファイルの処理は、かなりのコンテキストを消費する可能性があります。これらを [サブエージェント](/docs/ja/sub-agents#isolate-high-volume-operations) に委譲して、冗長な出力がサブエージェントのコンテキストに留まり、要約のみがメインの会話に返されるようにします。
 
-サブエージェント自身のリクエストはまだあなたの使用量を引き出します。それらにより少なく費やすには、[サブエージェント用にはより小さいモデルを選択](/docs/ja/sub-agents#choose-a-model) するか、[すべてのサブエージェントを 1 つのモデルで実行](/docs/ja/sub-agents#run-every-subagent-on-one-model) します。
+サブエージェント自身のリクエストも使用量を消費します。その消費を抑えるには、[サブエージェント用により小さいモデルを選択](/docs/ja/sub-agents#choose-a-model) するか、[すべてのサブエージェントを 1 つのモデルで実行](/docs/ja/sub-agents#run-every-subagent-on-one-model) します。
 
 <h3 id="manage-agent-team-costs">
   エージェントチームのコストを管理する
 </h3>
 
-エージェントチームは、チームメイトが plan mode で実行されるときに標準セッションよりも約 7 倍多くのトークンを使用します。各チームメイトが独自のコンテキストウィンドウを維持し、別の Claude インスタンスとして実行されるためです。チームタスクを小さく自己完結させて、チームメイトあたりのトークン使用量を制限します。詳細は [エージェントチーム](/docs/ja/agent-teams) を参照してください。
+エージェントチームは、チームメイトが plan モードで実行されるときに標準セッションよりも約 7 倍多くのトークンを使用します。各チームメイトが独自のコンテキストウィンドウを維持し、別の Claude インスタンスとして実行されるためです。チームタスクを小さく自己完結させて、チームメイトあたりのトークン使用量を制限します。詳細は [エージェントチーム](/docs/ja/agent-teams) を参照してください。
 
 <h3 id="write-specific-prompts">
   具体的なプロンプトを作成する
@@ -394,10 +394,10 @@ MCP ツール定義は [デフォルトで遅延](/docs/ja/mcp#scale-with-mcp-to
 
 より長いまたはより複雑な作業の場合、これらの習慣は間違った方向に進むことからのトークン浪費を回避するのに役立ちます。
 
-* **複雑なタスクに plan mode を使用する**: Shift+Tab を押して実装前に [plan mode](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode) に切り替えます。Claude はコードベースを探索し、承認のためのアプローチを提案し、初期の方向が間違っている場合の高額な再作業を防ぎます。
+* **複雑なタスクに plan モードを使用する**: Shift+Tab を押して実装前に [plan モード](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode) に切り替えます。Claude はコードベースを探索し、承認のためのアプローチを提案し、初期の方向が間違っている場合の高額な再作業を防ぎます。
 * **早期に方向を修正する**: Claude が間違った方向に向かい始めたら、Escape を押してすぐに停止します。`/rewind` を使用するか、Escape をダブルタップして、会話とコードを以前のチェックポイントに復元します。
-* **検証ターゲットを指定する**: テストケースを含める、スクリーンショットを貼り付ける、またはプロンプトで予想される出力を定義します。Claude が独自の作業を検証できる場合、修正をリクエストする必要がある前に問題をキャッチします。
-* **段階的にテストする**: 1 つのファイルを作成し、テストしてから続行します。これにより、修正が安価なときに早期に問題をキャッチします。
+* **検証ターゲットを指定する**: テストケースを含める、スクリーンショットを貼り付ける、またはプロンプトで予想される出力を定義します。Claude が独自の作業を検証できる場合、修正を求める必要が生じる前に問題をキャッチします。
+* **段階的にテストする**: 1 つのファイルを作成し、テストしてから続行します。これにより、早期に問題をキャッチします。
 
 <h2 id="background-token-usage">
   バックグラウンドトークン使用量

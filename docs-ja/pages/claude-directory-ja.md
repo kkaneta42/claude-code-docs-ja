@@ -34,7 +34,7 @@ export const ClaudeExplorer = () => {
         oneLiner: 'Project instructions Claude reads every session',
         when: 'Loaded into context at the start of every session',
         description: 'Project-specific instructions that shape how Claude works in this repository. Put your conventions, common commands, and architectural context here so Claude operates with the same assumptions your team does.',
-        tips: ['Target under 200 lines. Longer files still load in full but may reduce adherence', <>CLAUDE.md loads into every session. If something only matters for specific tasks, move it to a <A href="/docs/en/skills">skill</A> or a path-scoped <A href="/docs/en/memory#organize-rules-with-claude/rules/">rule</A> so it loads only when needed</>, 'List the commands you run most, like build, test, and format, so Claude knows them without you spelling them out each time', <>Run <C>/memory</C> to open and edit CLAUDE.md from within a session</>, <>Also works at <C>.claude/CLAUDE.md</C> if you prefer to keep the project root clean</>, <>If your repo already has an <C>AGENTS.md</C> for other coding agents, Claude Code <A href="/docs/en/memory#agents-md">can read that</A> on its own or alongside CLAUDE.md</>],
+        tips: ['Target under 200 lines. Longer files still load in full but may reduce adherence', <>CLAUDE.md loads into every session. If something only matters for specific tasks, move it to a <A href="/docs/en/skills">skill</A> or a path-scoped <A href="/docs/en/memory#organize-rules-with-claude/rules/">rule</A> so it loads only when needed</>, 'List the commands you run most, like build, test, and format, so Claude knows them without you spelling them out each time', <>Run <C>/memory</C> to open and edit CLAUDE.md from within a session</>, <>Also works at <C>.claude/CLAUDE.md</C> if you prefer to keep the project root clean</>, <>If your repo already has an <C>AGENTS.md</C> for other coding agents, Claude Code <A href="/docs/en/memory#agents-md">can read that</A> in place of a <C>CLAUDE.md</C></>],
         exampleIntro: 'This example is for a TypeScript and React project. It lists the build and test commands, the framework conventions Claude should follow, and project-specific rules like export style and file layout.',
         example: `# Project conventions
 
@@ -164,7 +164,7 @@ config/secrets.json`,
           icon: 'folder',
           color: '#9B7BC4',
           oneLiner: 'Topic-scoped instructions, optionally gated by file paths',
-          when: <>Rules without <C>paths:</C> load at session start. Rules with <C>paths:</C> load when a matching file enters context</>,
+          when: <>Rules without <C>paths:</C> load at session start. Rules with <C>paths:</C> load when Claude reads, writes, or edits a matching file</>,
           description: [<>Project instructions split into topic files that can load conditionally based on file paths. A rule without <C>paths:</C> frontmatter loads at session start like CLAUDE.md; a rule with <C>paths:</C> loads only when Claude reads, writes, or edits a matching file.</>, <>Like CLAUDE.md, rules are guidance Claude reads, not configuration Claude Code enforces. For guaranteed behavior use <A href="/docs/en/hooks">hooks</A> or <A href="/docs/en/permissions">permissions</A>.</>],
           tips: [<>Use <C>paths:</C> frontmatter with globs to scope rules to directories or file types</>, <>Subdirectories work: <C>.claude/rules/frontend/react.md</C> is discovered automatically</>, 'When CLAUDE.md approaches 200 lines, start splitting into rules'],
           docsLink: '/en/memory#organize-rules-with-claude/rules/',
@@ -176,7 +176,7 @@ config/secrets.json`,
             color: '#9B7BC4',
             badge: 'committed',
             oneLiner: 'Test conventions scoped to test files',
-            when: <>Loaded when Claude reads a file matching the <C>paths:</C> globs below</>,
+            when: <>Loaded when Claude reads, writes, or edits a file matching the <C>paths:</C> globs below</>,
             description: <>An example rule that only loads when Claude is working on test files. The <C>paths:</C> globs in the frontmatter define which files trigger it; here, anything ending in .test.ts or .test.tsx. For other files, this rule is not loaded into context.</>,
             example: `---
 paths:
@@ -197,8 +197,8 @@ paths:
             color: '#9B7BC4',
             badge: 'committed',
             oneLiner: 'API conventions scoped to backend code',
-            when: <>Loaded when Claude reads a file matching the <C>paths:</C> glob below</>,
-            description: <>A second example showing a rule scoped to backend code. The <C>paths:</C> glob matches files under src/api/, so these conventions load only when Claude is editing API routes.</>,
+            when: <>Loaded when Claude reads, writes, or edits a file matching the <C>paths:</C> glob below</>,
+            description: <>A second example showing a rule scoped to backend code. The <C>paths:</C> glob matches files under src/api/, so these conventions load only when Claude is working on API routes.</>,
             example: `---
 paths:
   - "src/api/**/*.ts"
@@ -605,7 +605,7 @@ type: reference
           icon: 'folder',
           color: '#9B7BC4',
           oneLiner: 'User-level rules that apply to every project',
-          when: <>Rules without <C>paths:</C> load at session start. Rules with <C>paths:</C> load when a matching file enters context</>,
+          when: <>Rules without <C>paths:</C> load at session start. Rules with <C>paths:</C> load when Claude reads, writes, or edits a matching file</>,
           description: 'Same as project .claude/rules/ but applies everywhere. Use this for conventions you want across all your work, like personal code style or commit message format.',
           docsLink: '/en/memory#organize-rules-with-claude/rules/',
           children: []
@@ -1434,7 +1434,7 @@ Claude Code は、プロジェクトディレクトリとホームディレク�
 
 Windows では、`~/.claude` は `%USERPROFILE%\.claude` に解決されます。[`CLAUDE_CONFIG_DIR`](/docs/ja/env-vars) を設定した場合、このページのすべての `~/.claude` パスはそのディレクトリの下に存在します。
 
-ほとんどのユーザーは `CLAUDE.md` と `settings.json` のみを編集します。リポジトリに他のコーディングエージェント用の `AGENTS.md` が既にある場合、Claude Code は [それを独立して、または `CLAUDE.md` と一緒に読み込むことができます](/docs/ja/memory#agents-md)。ディレクトリの残りはオプションです。必要に応じて skills、rules、または subagents を追加してください。
+ほとんどのユーザーは `CLAUDE.md` と `settings.json` のみを編集します。リポジトリに他のコーディングエージェント用の `AGENTS.md` が既にある場合、Claude Code は `CLAUDE.md` の代わりに[それを読み込むことができます](/docs/ja/memory#agents-md)。ディレクトリの残りはオプションです。必要に応じてスキル、ルール、またはサブエージェントを追加してください。
 
 <h2 id="explore-the-directory">
   ディレクトリを探索する
@@ -1452,9 +1452,9 @@ Windows では、`~/.claude` は `%USERPROFILE%\.claude` に解決されます�
 
 | ファイル | 場所 | 目的 |
 | - | - | - |
-| `managed-settings.json` | システムレベル、OS によって異なる | エンタープライズが強制する設定で、[限定的な例外](/docs/ja/settings#security-keys-where-the-stricter-value-applies)を除いてオーバーライドできません。[ファイルの保存場所](/docs/ja/managed-settings#deploy-a-managed-settings-file)と [Claude Code が使用する管理ソース](/docs/ja/managed-settings#precedence-within-the-managed-tier)を参照してください。 |
+| `managed-settings.json` | システムレベル、OS によって異なる | エンタープライズが強制する設定で、[限定的な例外](/docs/ja/settings#exceptions-to-managed-settings-precedence)を除き、自身の設定ファイルや `--settings` の値で上書きすることはできません。[ファイルの保存場所](/docs/ja/managed-settings#deploy-a-managed-settings-file)と [Claude Code が使用する管理ソース](/docs/ja/managed-settings#precedence-within-the-managed-tier)を参照してください。 |
 | `CLAUDE.local.md` | プロジェクトルート | このプロジェクトの個人的な設定で、CLAUDE.md と一緒に読み込まれます。手動で作成し、`.gitignore` に追加してください。 |
-| `AGENTS.md` | プロジェクトルート、`.claude/`、または任意のディレクトリ | AI コーディングエージェント向けに作成するプロジェクト指示。Claude Code は[それを読み込む](/docs/ja/memory#agents-md)ことができます。これは独立して、または `CLAUDE.md` と一緒に読み込まれます。 |
+| `AGENTS.md` | プロジェクトルート、`.claude/`、または任意のディレクトリ | AI コーディングエージェント向けに作成するプロジェクト指示。Claude Code は `CLAUDE.md` の代わりに[これを読み込む](/docs/ja/memory#agents-md)ことができます。 |
 | インストール済みプラグイン | `~/.claude/plugins` | クローンされたマーケットプレイス、インストール済みプラグインバージョン、`installed_plugins.json` インストール記録、およびプラグインごとのデータで、`claude plugin` コマンドで管理されます。[claude.ai アカウントから同期された](/docs/ja/plugins/loading#synced-plugins)プラグインは `~/.claude/plugins/synced/` にダウンロードされます。リンクモードでマーケットプレイス [`command` ソース](/docs/ja/plugins/marketplace-reference#command-plugin-source)からインストールされたプラグインの場合、Claude Code はコピーの代わりにここにリンクを保存し、プラグインのファイルはコマンドが出力するディレクトリに留まります。`command` ソースには Claude Code v2.1.229 以降が必要です。ローカルパスから追加したマーケットプレイスで相対パスによってリストされているプラグインも、キャッシュコピーではなく、ソースディレクトリから[その場で読み込まれます](/docs/ja/plugins/loading#find-plugins-on-disk)。[プラグインキャッシング](/docs/ja/plugins/loading#find-plugins-on-disk)を参照して、孤立したバージョンがどのようにクリーンアップされるかを確認してください。 |
 
 `~/.claude` はまた、Claude Code があなたが作業する際に書き込むデータも保持しています。トランスクリプト、プロンプト履歴、ファイルスナップショット、キャッシュ、およびログです。下記の[アプリケーションデータ](#application-data)を参照してください。
@@ -1487,7 +1487,7 @@ Windows では、`~/.claude` は `%USERPROFILE%\.claude` に解決されます�
 <Note>
   これらのファイルに入れたものをオーバーライドできるいくつかのことがあります。
 
-  * 組織によってデプロイされた[管理設定](/docs/ja/server-managed-settings)はすべてに優先します。ただし[設定の優先順位の例外](/docs/ja/settings#exceptions-to-managed-settings-precedence)の下の例外を除きます
+  * 組織によってデプロイされた[管理設定](/docs/ja/server-managed-settings)は、[設定の優先順位における例外](/docs/ja/settings#exceptions-to-managed-settings-precedence)を除き、すべての設定ファイルおよび `--settings` の値に優先します
   * `--permission-mode` や `--settings` などの CLI フラグはそのセッションの `settings.json` をオーバーライドします
   * 一部の環境変数は同等の設定に優先しますが、これは異なります。各設定について[環境変数リファレンス](/docs/ja/env-vars)を確認してください
 
@@ -1707,8 +1707,6 @@ claude purge ~/work/my-repo --yes
 ```
 
 パスの代わりに `--all` を渡して、すべてのプロジェクトの状態を一度にパージします。これは `history.jsonl` をフィルタリングするのではなく、完全に削除します。`-i` を渡して、削除計画を 1 つずつステップスルーします。
-
-スクリプトでは、終了ステータスだけでなく出力を確認してください。計画内のすべてを削除した実行は `Purged N item(s)` で終わります。その行を成功の目印として扱ってください。
 
 コマンドは `shell-snapshots/` と `backups/` をそのままにしておきます。これらはプロジェクトスコープではないため、計画出力で警告します。マシン上で誰かが [`/heapdump`](/docs/ja/troubleshooting#high-cpu-or-memory-usage) を実行した場合は、それが書き込んだ `.heapsnapshot` ファイルも削除してください。ヒープスナップショットには会話全体とプロセスが保持していた認証情報が含まれており、保持スイープもパージもそれには触れません。
 

@@ -374,6 +374,8 @@ upstreams:
 | その他の場所 | `AWS_ACCESS_KEY_ID`、`AWS_SECRET_ACCESS_KEY`、および `AWS_SESSION_TOKEN` 環境変数を通じて認証情報を渡すか、`${VAR}` 展開で `auth:` に明示的に設定します |
 | リージョン | `region:` は API エンドポイントリージョンです。クロスリージョン推論プロファイルは、どれを選択するかに関わらず、地理（US、EU、APAC）全体でルーティングします。US 以外のリージョンまたはプロビジョニングされたスループット ARN の場合、正しい per-upstream ID を持つ [`models:`](#models) ブロックを追加します。 |
 
+<a id="apply-an-amazon-bedrock-guardrail" />
+
 <h5 id="apply-an-amazon-bedrock-guardrail">
   Amazon Bedrock ガードレールを適用
 </h5>
@@ -919,8 +921,10 @@ managed:
 
   2 つの伝播タイミングがあります：
 
-  * **ポリシーの内容**：ポリシーを編集して再デプロイすると、接続されたクライアントの次の管理設定ポーリング時（1 時間以内）に反映されます。ただし [次の起動時にのみ適用される変更](/docs/ja/server-managed-settings#fetch-and-caching-behavior) は除きます。
+  * **ポリシーの内容**：ポリシーを編集して再デプロイすると、接続された Claude Code クライアントの次の管理設定ポーリング時（1 時間以内）に反映されます。ただし [次の起動時にのみ適用される変更](/docs/ja/server-managed-settings#fetch-and-caching-behavior) は除きます。
   * **グループメンバーシップ**：ユーザーのグループメンバーシップを変更すると、どのポリシーがそのユーザーにマッチするかが変わります。これは次のセッション再発行時、つまり次のサイレントリフレッシュ時に有効になり、`session.ttl_hours` が上限となります。
+
+  Claude Desktop は [独自のスケジュール](#when-a-policy-change-reaches-claude-desktop) に従います。
 </Note>
 
 <h4 id="start-sessions-on-a-model-the-policy-allows">
@@ -1084,7 +1088,13 @@ Claude Code は、デベロッパーに承認ダイアログを表示せずに�
   ゲートウェイサーバー上の Claude Code v2.1.203 以降と、明示的なオプトインが必要です：ユーザーにマッチするポリシーが `desktop` キーを持たない限り、`/user/bootstrap` は 404 を返します。空の `desktop: {}` でポリシーをオプトインでき、`match: {}` 基盤層の `desktop` キーはそれを継承するすべてのポリシーをオプトインします。監査ログは各リクエストを `desktop_bootstrap.serve` または `desktop_bootstrap.denied` として記録します。
 </Note>
 
-ゲートウェイはレスポンスの多くを、マッチしたポリシーの `cli` ブロックとトップレベルのゲートウェイ設定から導出します：
+Claude Desktop をデプロイしない場合は、ポリシーから `desktop` を完全に省略してください。その場合、ゲートウェイはすべてのユーザーに対して `/user/bootstrap` から 404 を返します。
+
+<h5 id="settings-the-gateway-derives-for-claude-desktop">
+  ゲートウェイが Claude Desktop 用に導出する設定
+</h5>
+
+ゲートウェイはブートストラップレスポンスの多くを、マッチしたポリシーの `cli` ブロックとトップレベルのゲートウェイ設定から導出します：
 
 * `availableModels` からのモデルリスト。各モデルの 1M コンテキストオプションについては [Claude Desktop の拡張コンテキスト](#extended-context-in-claude-desktop) を参照してください
 * ツール名のみの `permissions.deny` エントリからの無効化されたツール。ポリシーの `desktop` ブロックで `disabledBuiltinTools` を設定した場合、ゲートウェイは指定した値と導出されたリストの和集合を提供します。そのため、この方法でさらにツールを無効化できますが、`permissions.deny` で無効化したツールを再度有効化することはできません
@@ -1097,7 +1107,13 @@ Claude Code は、デベロッパーに承認ダイアログを表示せずに�
 
 ゲートウェイは、`hooks` や `Bash(npm *)` のようなスコープ付き権限ルールなど、Claude Desktop に相当するものがないキーをブートストラップレスポンスから省略します。
 
-Claude Desktop の設定を直接指定するには、`cli` と並べてオプションの `desktop` ブロックを追加します。Claude Desktop の [管理設定リファレンス](https://claude.com/docs/third-party/claude-desktop/configuration) にある設定をフラットなキー名で記述してください。`bootstrapUrl` など、Claude Desktop が MDM またはローカルファイルからのみ読み取るキーは省略してください。ゲートウェイはブート時にそれらを拒否します。v2.1.232 より前では、ゲートウェイは `chatTabEnabled` や `disableAutoUpdates` など 11 個の機能ゲートキーの固定リストを受け入れ、その他のすべてのキーをブート時に拒否していました。v2.1.227 より前では、ゲートウェイは `chatTabEnabled` と `chatAdvancedFileAnalysisEnabled` もブート時に拒否していました。
+<h5 id="set-claude-desktop-settings-directly">
+  Claude Desktop の設定を直接指定する
+</h5>
+
+Claude Desktop の設定を直接指定するには、`cli` と並べてオプションの `desktop` ブロックを追加します。Claude Desktop の [管理設定リファレンス](https://claude.com/docs/third-party/claude-desktop/configuration) にある設定をフラットなキー名で記述してください。`bootstrapUrl` など、Claude Desktop が MDM またはローカルファイルからのみ読み取るキーは省略してください。ゲートウェイはブート時にそれらを拒否します。
+
+この例では、`eng-contractors` グループに対して、その `cli` 設定と並べて 3 つの Claude Desktop キーを設定します：
 
 ```yaml theme={null}
 managed:
@@ -1112,7 +1128,13 @@ managed:
         banner: { text: "Contractor build: internal use only" }
 ```
 
-すべてのキーはオプションです。省略したキーには Claude Desktop 独自のデフォルトが適用されます。ゲートウェイはブート時に各 `desktop` ブロックを Claude Desktop 自体が使用する設定スキーマに対して検証するため、間違いは接続されたすべてのデスクトップに届くのではなく、ゲートウェイ起動時にキーを示すエラーとして表面化します。ブロックに以下が含まれる場合、ゲートウェイはブート時に失敗します：
+すべてのキーはオプションです。省略したキーには Claude Desktop 独自のデフォルトが適用されます。
+
+<h5 id="what-the-gateway-rejects-at-boot">
+  ゲートウェイがブート時に拒否するもの
+</h5>
+
+ゲートウェイはブート時に各 `desktop` ブロックを Claude Desktop 自体が使用する設定スキーマに対して検証するため、間違いは接続されたすべてのデスクトップに届くのではなく、ゲートウェイ起動時にキーを示すエラーとして表面化します。ブロックに以下が含まれる場合、ゲートウェイはブート時に失敗します：
 
 * 不明なキー
 * 空の値やネストされたエントリ内のサブキーのスペルミスなど、Claude Desktop が拒否するか黙って破棄する値を持つ認識済みのキー。v2.1.260 より前では、ゲートウェイは `managedMcpServers` または `orgPluginSettings` エントリのネストされたオブジェクト内のスペルミスのあるフィールドを、ブート時に失敗させずに黙って破棄していました。
@@ -1121,11 +1143,21 @@ managed:
 
 `transport` のない `managedMcpServers` エントリなど、非推奨の値やエントリ形式を使用した場合、ゲートウェイは起動し、代替を示す警告をログに記録します。
 
+v2.1.232 より前では、ゲートウェイは `chatTabEnabled` や `disableAutoUpdates` など 11 個の機能ゲートキーの固定リストを受け入れ、その他のすべてのキーをブート時に拒否していました。v2.1.227 より前では、ゲートウェイは `chatTabEnabled` と `chatAdvancedFileAnalysisEnabled` もブート時に拒否していました。
+
+<h5 id="keys-that-need-a-later-gateway-or-claude-desktop-version">
+  より新しいゲートウェイまたは Claude Desktop のバージョンが必要なキー
+</h5>
+
 ゲートウェイは `cli` ブロックと同様に、インストール済みバージョンにバンドルされたスキーマに対して `desktop` ブロックを検証します。新しい Claude Desktop リリースで導入された設定を配信するには、まずゲートウェイをアップグレードしてください。例えば、`userPluginMarketplacesEnabled` と `userPluginUploadsEnabled` には、ゲートウェイサーバー上の Claude Code v2.1.260 以降と、メンバーのマシン上の Claude Desktop 1.37937.0 以降が必要です。
 
 `blockReadsOutsideWorkingDirectories`、`disableBypassPermissionsMode`、`configRecheckIntervalMinutes`、`sshClientPath` には、ゲートウェイサーバー上の Claude Code v2.1.281 以降が必要です。`microsoftAuthBroker` の `required` 値と、Microsoft 365 `managedMcpServers` エントリの `continuousAccessEvaluation` フィールドも同様です。`required` 値より前の Claude Desktop リリースはそれを `disabled` として読み取るため、すべてのメンバーの Claude Desktop がサポートしてから `required` を設定してください。Claude Desktop の [管理設定リファレンス](https://claude.com/docs/third-party/claude-desktop/configuration) には、各キーを最初に読み取るリリースがリストされています。
 
 ポリシーの `desktop` ブロックで `orgPluginSettings` を設定した場合、ゲートウェイは Claude Desktop 1.15200.0 以降が読み取る配列形式で提供します。古いデスクトップは配列を無視し、プラグインツールポリシーを強制しないため、それに依存する前にメンバーを 1.15200.0 以降に更新してください。
+
+<h5 id="how-a-role-policy-inherits-the-base-desktop-block">
+  ロールポリシーが基盤の `desktop` ブロックを継承する仕組み
+</h5>
 
 ゲートウェイは、ポリシーの `cli` ブロックを基盤から補完するのと同じ方法で、ポリシーの `desktop` ブロックが設定していないキーを `match: {}` キャッチオールの `desktop` ブロックから補完します。基盤とロールポリシーの両方で `disabledBuiltinTools` または `builtinToolPolicy` を設定した場合、ゲートウェイは基盤の制限を維持します：
 
@@ -1134,7 +1166,16 @@ managed:
 
 その他のすべてのキーについては、ロールポリシーで設定した場合、ゲートウェイはロールポリシーの値を使用します。ゲートウェイは配列や `banner` などのネストされたオブジェクトを丸ごと置き換えるため、ロールポリシーで `banner.text` を設定すると、ゲートウェイは基盤の `banner.backgroundColor` を破棄します。
 
-Claude Desktop をデプロイしない場合は、ポリシーから `desktop` を完全に省略してください。その場合、ゲートウェイはすべてのユーザーに対して `/user/bootstrap` から 404 を返します。
+<h5 id="when-a-policy-change-reaches-claude-desktop">
+  ポリシーの変更が Claude Desktop に届くタイミング
+</h5>
+
+変更したポリシーでゲートウェイを再デプロイした後、Claude Desktop はほとんどの設定を次回の起動時にのみ適用します：
+
+* **閉じている場合**：Claude Desktop は起動時にブートストラップレスポンスを取得するため、変更は次回の起動から適用されます
+* **開いている場合**：Claude Desktop はデフォルトで 10 分ごとにレスポンスの変更を確認し、一部の設定は再起動なしで適用します。[`skillCreationEnabled`](https://claude.com/docs/third-party/claude-desktop/configuration#skillcreationenabled) などのその他の設定については、ユーザーのサイドバーに **Relaunch Claude Desktop** カードが表示され、アプリを再起動するまで以前の設定が維持されます。デフォルトでは 24 時間後に、Claude Desktop は再起動ダイアログを表示し、2 分間操作がないと自動的に再起動します
+
+24 時間を短縮するには、ポリシーの `desktop` ブロックで [`relaunchEnforcementHours`](https://claude.com/docs/third-party/claude-desktop/configuration#relaunchenforcementhours) を設定します。ゲートウェイサーバー上の Claude Code v2.1.260 以降と、メンバーのマシン上の Claude Desktop 1.40609.0 以降が必要です。`0` にすると、Claude Desktop が変更を検出するとすぐにダイアログが表示されます。
 
 <h4 id="extended-context-in-claude-desktop">
   Claude Desktop の拡張コンテキスト

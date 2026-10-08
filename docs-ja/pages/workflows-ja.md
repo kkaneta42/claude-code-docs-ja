@@ -522,7 +522,12 @@ Claude Code は各ワークフローエージェントのモデルを、[サブ�
 
 組織全体のワークフローをオフにするには、[管理設定](/docs/ja/server-managed-settings)で `"disableWorkflows": true` を設定するか、[Claude Code 管理設定](https://claude.ai/admin-settings/claude-code)ページのトグルを使用します。
 
-ワークフローが無効化されると、バンドルされたワークフローコマンドと `/workflow-authoring` スキルは利用できなくなり、`ultracode` キーワードはランをトリガーしなくなり、**Ultracode** トグルは `/effort` から削除されます。ランが既に進行中の場合は、実行を続けます。
+ワークフローが無効化されると：
+
+* `/workflows`、ワークフローコマンド、`/workflow-authoring` スキルは利用できなくなります
+* `ultracode` キーワードはランをトリガーしなくなり、**Ultracode** トグルは `/effort` から削除されます
+
+既に進行中だったランは実行を続けます。
 
 ワークフローをオフにすることで、[ultracode](#let-claude-decide-with-ultracode)も利用できなくなります。ultracode だけを除外する管理設定ルールはありません。[利用可能](/docs/ja/model-config#when-ultracode-is-available)な場所では、ユーザーは `/effort ultracode` で ultracode をオンにできます。[エフォート上限](/docs/ja/model-config#organization-effort-limits)は、ultracode がオンのセッションが実行するエフォートレベルを低下させますが、ultracode をオフにしません。
 

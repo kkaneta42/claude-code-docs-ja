@@ -68,6 +68,9 @@ Claude Code はカスタマイズ可能なキーボードショートカット�
 | `EffortSlider` | `/effort` で開かれた努力スライダー |
 | `Select` | 汎用選択/リストコンポーネント |
 | `Plugin` | プラグインダイアログ（参照、発見、管理） |
+| `AbovePrompt` | [プロンプトの上の帯](#above-prompt-actions)、またはその中のボタンにキーボードフォーカスがある |
+| `AbovePromptInput` | プロンプトの上の帯または mod のペイン内の入力フィールドにキーボードフォーカスがある |
+| `AbovePromptSelect` | プロンプトの上の帯または mod のペイン内の選択にキーボードフォーカスがある |
 | `Pane` | [mod](/docs/ja/plugins/mods/interface#know-which-keys-your-mod-can-receive) が描画したペインにキーボードフォーカスがある |
 | `PaneField` | mod のペイン内の入力フィールドまたは選択にキーボードフォーカスがある |
 | `Agents` | [エージェントビュー](/docs/ja/agent-view)（`claude agents`） |
@@ -299,10 +302,11 @@ v2.1.280 より前では、`y` はデフォルトで `confirm:yes` に、`n` は
 | :- | :- | :- |
 | `footer:next` | Right | 次のフッター項目 |
 | `footer:previous` | Left | 前のフッター項目 |
-| `footer:up` | Up | フッター内を上に移動（上部で選択解除） |
-| `footer:down` | Down | フッター内を下に移動 |
+| `footer:up` | Up、Ctrl+P | フッター内を上に移動（上部で選択解除） |
+| `footer:down` | Down、Ctrl+N | フッター内を下に移動 |
 | `footer:openSelected` | Enter | 選択したフッター項目を開く |
 | `footer:clearSelection` | Escape | フッター選択をクリア |
+| `footer:close` | x | 選択した [エージェント](/docs/ja/sub-agents#observe-and-steer-running-forks) または [ワークフロー](/docs/ja/workflows#manage-runs) を停止します。すでに実行中でない場合は、その行を閉じます |
 | `footer:dismiss` | （バインドなし） | このアクションにキーをバインドしても効果がなく、それを名前付けする `keybindings.json` は有効なままです。v2.1.281 より前では、Backspace と Delete はフッターから選択したアーティファクトリンクを削除しました。 |
 
 フッター項目が選択されている場合（プロンプトの下のエージェントパネルの行など）、`chat:submit` を `chat:queueSubmit` または `chat:newline` に再バインドしても、`Enter` はそれを開きます。
@@ -440,6 +444,52 @@ v2.1.283 より前では、`/mcp` ツールリストは、バインディング�
 | `plugin:toggle` | Space | プラグイン選択を切り替え |
 | `plugin:install` | I | 選択したプラグインをインストール |
 | `plugin:favorite` | F | 選択したプラグインをお気に入りにして、インストール済みタブの上部付近でソート |
+
+<h3 id="above-prompt-actions">
+  プロンプト上部アクション
+</h3>
+
+プロンプトの上にある帯のアクション。この帯は、[mod](/docs/ja/plugins/mods/interface#pick-where-to-draw) がボタン、入力フィールド、セレクトを描画する共有ストリップです。`abovePrompt:toggle` と `abovePrompt:focus` は `Chat` コンテキストで適用されます。その他のアクションは、帯またはペイン内でキーボードフォーカスを持っているものの [コンテキスト](#contexts) で適用されます。
+
+| アクション | デフォルト | 説明 |
+| :- | :- | :- |
+| `abovePrompt:toggle` | Ctrl+X Ctrl+A | 帯を 1 行のヒントに折りたたむか、再び展開する |
+| `abovePrompt:focus` | Ctrl+X Tab | キーボードフォーカスを帯に移動し、次に開いている各 [ペイン](#pane-actions) に移動し、最後のペインからプロンプトに戻す |
+| `abovePrompt:next` | Tab | 次のコントロールにフォーカス |
+| `abovePrompt:previous` | Shift+Tab | 前のコントロールにフォーカス |
+| `abovePrompt:press` | Enter | フォーカスされたボタンを押す、フォーカスされた入力フィールドを送信する、またはセレクト内のハイライトされたオプションを選択する |
+| `abovePrompt:leave` | Escape | キーボードフォーカスをプロンプトに戻す |
+| `abovePrompt:highlightNext` | Down | フォーカスされたセレクト内の次のオプションをハイライト |
+| `abovePrompt:highlightPrevious` | Up | フォーカスされたセレクト内の前のオプションをハイライト |
+
+2 つのコンテキストが、デフォルトでこれらのアクションに追加のキーをバインドしています：
+
+* **`AbovePrompt`**：Right と Left も `abovePrompt:next` と `abovePrompt:previous` を実行し、Space も `abovePrompt:press` を実行します
+* **`AbovePromptInput`**：Down と Up も `abovePrompt:next` と `abovePrompt:previous` を実行します
+
+`AbovePrompt` コンテキストは、Up、Down、PageUp、PageDown、Home、End も [ペインのスクロールアクション](#pane-actions) `pane:scrollUp` から `pane:bottom` にバインドしています。そのため、帯でこれらのキーのいずれかを変更するには、`AbovePrompt` ブロックでスクロールアクションをバインドします。
+
+<h3 id="pane-actions">
+  ペインアクション
+</h3>
+
+[mod](/docs/ja/plugins/mods/interface#know-which-keys-your-mod-can-receive) が描画するペインのアクション。スクロール、サイズ変更、閉じるの各アクションは `Pane` [コンテキスト](#contexts) で適用されます。`pane:close` は `PaneField` コンテキストでも適用されるため、ペインのフィールドのいずれかがフォーカスを持っている間も機能します。`pane:next` と `pane:previous` は、複数のペインが開いている間、`Global` コンテキストで適用されます。
+
+| アクション | デフォルト | 説明 |
+| :- | :- | :- |
+| `pane:scrollUp` | Up | ペインが表示できる行数より多くの行を持つ場合に、ペインを上にスクロール |
+| `pane:scrollDown` | Down | ペインが表示できる行数より多くの行を持つ場合に、ペインを下にスクロール |
+| `pane:pageUp` | PageUp | ペインを 1 ページ上にスクロール |
+| `pane:pageDown` | PageDown | ペインを 1 ページ下にスクロール |
+| `pane:top` | Home | ペインのトップにジャンプ |
+| `pane:bottom` | End | ペインのボトムにジャンプ |
+| `pane:grow` | Ctrl+X Left、Ctrl+X Up | ペインの領域を広げる：トランスクリプトの横にある場合は幅、プロンプトの上にある場合は高さ |
+| `pane:shrink` | Ctrl+X Right、Ctrl+X Down | ペインの領域を狭める：トランスクリプトの横にある場合は幅、プロンプトの上にある場合は高さ |
+| `pane:close` | Ctrl+X X | ペインを閉じる |
+| `pane:next` | （バインドなし） | 次の開いているペインを表示 |
+| `pane:previous` | （バインドなし） | 前の開いているペインを表示 |
+
+`Pane` コンテキストは、Tab、Shift+Tab、Enter、Escape も帯と同じ [プロンプト上部アクション](#above-prompt-actions) にバインドしており、ペインの入力フィールドとセレクトは `AbovePromptInput` と `AbovePromptSelect` コンテキストを使用します。ペイン内で各キーが何をするかは、[キーボードフォーカスとホットキー](/docs/ja/plugins/mods/interface#know-which-keys-your-mod-can-receive) に記載されています。
 
 <h3 id="settings-actions">
   設定アクション

@@ -391,7 +391,7 @@ Claude Code はどのディレクトリでも機能します。ノートボル�
     Explain the logic in @src/utils/auth.js
     ```
 
-    これにより、ファイルの完全な内容が会話に含まれます。
+    これにより、ファイルが [Read ツール](/docs/ja/tools-reference#read-tool-behavior)のトークン制限（デフォルトでは 25,000 トークン）に収まる場合、ファイルの内容が会話に含まれます。256KB を超えるテキストファイルは含まれません。
   </Step>
 
   <Step title="ディレクトリを参照する">

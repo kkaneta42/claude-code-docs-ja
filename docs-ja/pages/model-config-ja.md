@@ -43,14 +43,14 @@ Claude Code の `model` 設定には、次のいずれかを設定できます�
 | **`opus[1m]`** | 長いセッション向けに [100 万トークンのコンテキストウィンドウ](https://platform.claude.com/docs/en/build-with-claude/context-windows#context-window-sizes-by-model)を備えた Opus を使用します |
 | **`opusplan`** | plan モードでは `opus` を使用し、実行時には `sonnet` に切り替える特別なモード |
 
-`opus` および `sonnet` エイリアスが解決されるバージョンは、プロバイダーによって異なります。
+`opus`、`sonnet`、`haiku` エイリアスは、Anthropic API では最新バージョンに解決され、その他の一部のプロバイダーではそれより前のバージョンに解決されます。
 
-| プロバイダー | `opus` | `sonnet` |
-| :- | :- | :- |
-| Anthropic API | Opus 5.5 | Sonnet 5.5 |
-| [Claude Platform on AWS](/docs/ja/claude-platform-on-aws) | Opus 5.5 | Sonnet 4.6 |
-| Amazon Bedrock、Google Cloud's Agent Platform | Opus 5.5 | Sonnet 4.5 |
-| Microsoft Foundry | Opus 4.6 | Sonnet 4.5 |
+| プロバイダー | `opus` | `sonnet` | `haiku` |
+| :- | :- | :- | :- |
+| Anthropic API | Opus 5.5 | Sonnet 5.5 | Haiku 5.5 |
+| [Claude Platform on AWS](/docs/ja/claude-platform-on-aws) | Opus 5.5 | Sonnet 4.6 | Haiku 4.5 |
+| Amazon Bedrock、Google Cloud's Agent Platform | Opus 5.5 | Sonnet 4.5 | Haiku 4.5 |
+| Microsoft Foundry | Opus 4.6 | Sonnet 4.5 | Haiku 4.5 |
 
 <span id="fable-alias-resolution" />
 
@@ -58,14 +58,14 @@ Claude Code の `model` 設定には、次のいずれかを設定できます�
 
 `claude-fable-5-1` を提供するように設定されていないゲートウェイは、そのモデルへのリクエストを拒否します。Fable 5.1 を提供しているゲートウェイ経由で使用するには、`/model claude-fable-5-1` で選択してください。
 
-エイリアスが古いモデルに解決される場合、完全なモデル名を明示的に選択するか、`ANTHROPIC_DEFAULT_OPUS_MODEL` または `ANTHROPIC_DEFAULT_SONNET_MODEL` を設定することで、新しいモデルを利用できます。
+`opus` または `sonnet` が古いモデルに解決される場合、完全なモデル名を明示的に選択するか、`ANTHROPIC_DEFAULT_OPUS_MODEL` または `ANTHROPIC_DEFAULT_SONNET_MODEL` を設定することで、新しいモデルを利用できます。
 
 以前のバージョンでは、これらのエイリアスはより古いモデルに解決されます。各エイリアスがどのバージョンで変更されたかについては、[バージョン履歴](#version-history)を参照してください。
 
 エイリアスはプロバイダーの推奨バージョンを指しており、時間の経過とともに更新されます。特定のバージョンに固定するには、完全なモデル名（例: `claude-opus-5-5`）を使用するか、`ANTHROPIC_DEFAULT_OPUS_MODEL` などの対応する環境変数を設定してください。
 
 <Note>
-  Sonnet 5.5 には Claude Code v2.1.284 以降、Opus 5.5 には v2.1.280 以降が必要です。古いバージョンからこれらのモデルへのリクエストが失敗する場合は、[Claude Code does not support this model](/docs/ja/errors#claude-code-does-not-support-this-model) を参照してください。アップグレードするには `claude update` を実行します。
+  Sonnet 5.5 には Claude Code v2.1.284 以降、Opus 5.5 には v2.1.280 以降が必要です。古いバージョンからこれらのモデルへのリクエストが失敗する場合は、[Claude Code does not support this model](/docs/ja/errors#claude-code-does-not-support-this-model) を参照してください。Haiku 5.5 では v2.1.293 以降を使用してください。アップグレードするには `claude update` を実行します。
 </Note>
 
 <h3 id="work-with-fable">
@@ -156,7 +156,9 @@ v2.1.144 から v2.1.152 では、`/model` は現在のセッションにのみ�
 
 `/model` ピッカーの価格は、Claude Code が Anthropic API と直接、またはそれをプロキシする [LLM ゲートウェイ](/docs/ja/llm-gateway)経由で通信している場合に表示され、各行の価格はその行が選択するモデルの価格です。Amazon Bedrock などの[サードパーティプロバイダー](/docs/ja/third-party-integrations)や [Claude apps gateway](/docs/ja/claude-apps-gateway) では、支払う金額はプロバイダーまたはゲートウェイによって決まるため、ピッカーの行には価格が表示されません。価格は表示用のラベルにすぎず、行が選択するモデルやプロバイダーの請求額には影響しません。v2.1.206 より前は、[Claude Platform on AWS](/docs/ja/claude-platform-on-aws) とゲートウェイのセッションで Anthropic の定価が表示され、行が選択するモデルとは異なるモデルの価格が表示されることがありました。
 
-`claude --resume`、`--continue`、または `/resume` ピッカーで再開したセッションは、現在の `model` 設定にかかわらず、トランスクリプトが保存された時点で使用していたモデルを維持します。復元されたモデルが廃止されている場合や [`availableModels`](#restrict-model-selection) によって除外されている場合、セッションは通常の優先順位に従います。これにより、別のセッションでの `/model` の選択が再開時のモデルを変更することを防ぎます。Amazon Bedrock、Google Cloud's Agent Platform、Microsoft Foundry など、Anthropic のモデル ID ではなくプロバイダー固有のデプロイ ID を使用するプロバイダーでは、トランスクリプトのモデルはまったく復元されず、セッションは通常の優先順位に従ってモデルを解決します。
+`claude --resume`、`--continue`、または `/resume` ピッカーで再開したセッションは、トランスクリプトが保存された時点で使用していたモデルを維持します。復元されたモデルが廃止されている場合や [`availableModels`](#restrict-model-selection) によって除外されている場合、セッションは通常の優先順位に従います。Amazon Bedrock、Google Cloud's Agent Platform、Microsoft Foundry など、Anthropic のモデル ID ではなくプロバイダー固有のデプロイ ID を使用するプロバイダーでは、トランスクリプトのモデルはまったく復元されず、セッションは通常の優先順位に従ってモデルを解決します。
+
+`model` 設定が `haiku` の場合、Haiku モデルで保存されたセッションは、現在 `haiku` が解決されるモデルで再開されます。たとえば、`haiku` が Haiku 5.5 に解決されるようになると、Haiku 4.5 で保存されたセッションは Haiku 5.5 で再開されます。
 
 新しい起動時に `--model` または `ANTHROPIC_MODEL` で選択したモデルは、引き続き復元されたモデルより優先されます。v2.1.195 以降は、[`ANTHROPIC_DEFAULT_OPUS_MODEL`](#environment-variables) 系の変数も同様に優先されます。[`ANTHROPIC_DEFAULT_MODEL`](#set-a-default-model-for-new-sessions) も、そのセクションに記載されている条件の下で優先されます。
 
@@ -578,15 +580,14 @@ Amazon Bedrock、Google Cloud's Agent Platform、Microsoft Foundry では、Clau
   フォールバック後の effort レベル
 </h4>
 
-Claude Code がセッションをフォールバックモデルに切り替える際は、そのモデルのデフォルトの effort ではなく、警告されたリクエストが実行されていた effort レベルを維持します。たとえば、デフォルトの `medium` で動作している Opus 5.5 のセッションが Opus 4.8 にフォールバックした場合、Opus 4.8 のデフォルトは `high` ですが、`medium` のままになります。
+Claude Code がセッションをフォールバックモデルに切り替える際は、警告されたリクエストが実行されていた effort レベルを維持します。たとえば、デフォルトの `medium` で動作している Opus 5.5 のセッションが Opus 4.8 にフォールバックした場合、Opus 4.8 のデフォルトは `high` ですが、`medium` のままになります。
 
 次のような場合は、別のレベルが適用されます。
 
-* **設定または組織のデフォルト**：フォールバックモデルに適用される設定内のレベル、または組織がそのモデルに設定したデフォルトの effort が代わりに適用されます。
 * **ユーザー自身による変更**：effort レベルを選択したり、`/model` でモデルを選んだり、後でセッションを再開したりすると、警告されたリクエストのレベルは引き継がれなくなります。
 * **スキルの effort**：スキルの `effort` フロントマターが警告されたリクエストに設定したレベルはそのターンに適用され、以降のターンは [effort の解決順序](#adjust-effort-level)がフォールバックモデルに与えるレベルで実行されます。
 
-セッションヘッダーには、有効なレベルがモデル名の横に表示されます。変更するには、セッション内で `/effort` を実行します。
+セッション内で `/effort status` を実行すると有効なレベルを確認でき、`/effort` を実行すると変更できます。
 
 <h4 id="check-what-triggered-fallback">
   フォールバックのきっかけを確認する
@@ -645,7 +646,7 @@ Claude Code がセッションをフォールバックモデルに切り替え�
 | モデル | レベル |
 | :- | :- |
 | Fable 5.1 と Fable 5 | `low`、`medium`、`high`、`xhigh`、`max` |
-| Opus 5.5、Sonnet 5.5、Opus 5、Sonnet 5、Opus 4.8、Opus 4.7 | `low`、`medium`、`high`、`xhigh`、`max` |
+| Opus 5.5、Sonnet 5.5、Haiku 5.5、Opus 5、Sonnet 5、Opus 4.8、Opus 4.7 | `low`、`medium`、`high`、`xhigh`、`max` |
 | Opus 4.6 と Sonnet 4.6 | `low`、`medium`、`high`、`max` |
 
 アクティブなモデルがサポートしていないレベルを設定した場合、Claude Code は設定したレベル以下でサポートされている最も高いレベルにフォールバックします。たとえば、Opus 4.6 では `xhigh` は `high` として動作します。組織またはユーザー自身の設定によって、モデルが提供するレベルに上限を設けることもできます。[組織の effort 制限](#organization-effort-limits)を参照してください。
@@ -654,7 +655,9 @@ Claude Code は、次の順序でセッションの effort レベルを解決し
 
 1. 明示的な選択：[`CLAUDE_CODE_EFFORT_LEVEL`](/docs/ja/env-vars#variables) 環境変数、`--effort` を付けた起動、またはセッション内での `/effort`（[非対話の `/effort` は効果の範囲が狭くなります](#non-interactive-effort)）
 2. 設定：モデルに対して保存したレベルまたは [`effortLevel`](/docs/ja/settings-reference#effortlevel) キー。これらの間および設定ファイル間の優先順位は [`modelSettings`](/docs/ja/settings-reference#modelsettings) に記載されています
-3. モデルのデフォルトの effort：effort をサポートするすべてのモデルで `high`。ただし、Opus 5.5 と Sonnet 5.5 のデフォルトは `medium`、Opus 4.7 のデフォルトは `xhigh` です。また、組織が[組織のデフォルトモデル](#organization-default-model)にデフォルトの effort レベルを設定している場合、そのモデルを実行するときはそのレベルがデフォルトになります。自動モデルフォールバックの後に適用されるレベルについては、[フォールバック後の effort レベル](#effort-level-after-a-fallback)を参照してください
+3. モデルのデフォルトの effort：effort をサポートするすべてのモデルで `high`。ただし、Opus 5.5、Sonnet 5.5、Haiku 5.5 のデフォルトは `medium`、Opus 4.7 のデフォルトは `xhigh` です。また、組織が[組織のデフォルトモデル](#organization-default-model)にデフォルトの effort レベルを設定している場合、そのモデルを実行するときはそのレベルがデフォルトになります
+
+自動モデルフォールバックの後に適用されるレベルについては、[フォールバック後の effort レベル](#effort-level-after-a-fallback)を参照してください。
 
 Opus 5.5 は、上記のいずれかのソースでレベルが設定されていない限り `medium` で開始され、ユーザー設定ファイルのトップレベルの `effortLevel` は Opus 5.5 には適用されません。このキーは、Claude Code がモデルごとにレベルを保存するようになる前に `/effort` が書き込んでいた古い形式です。Opus 5、Fable 5.1、およびそれ以前のモデルでは以前と同様に適用され続けますが、Opus 5.5 とそれ以降にリリースされたモデルは、`/effort` または `/model` ピッカーでレベルを選ぶまで、それぞれのデフォルトで開始されます。プロジェクト設定、ローカル設定、管理設定のトップレベルの `effortLevel`、または `--settings` で渡されたものは、すべてのモデルに適用されます。
 
@@ -709,8 +712,8 @@ ultracode は次のいずれかの方法でオンにできます。
 | レベル | 使用する場面 |
 | :- | :- |
 | `low` | ブレインストーミング、最初の下書き、名前の変更のような小さな変更など、結果を 1 つずつ確認する素早いやり取り |
-| `medium` | Opus 5.5 と Sonnet 5.5 のデフォルトで、新機能の実装など、範囲が明確な日常的なエンジニアリング作業に適しています。その他のモデルでは、ある程度の知能と引き換えにできるコスト重視の作業でトークン使用量を削減します |
-| `high` | 既存のコードベースのバグ修正など、検証が重要な作業やエッジケースが発生しやすい作業。Opus 5.5、Sonnet 5.5、Opus 4.7 を除くすべてのモデルのデフォルト |
+| `medium` | Opus 5.5、Sonnet 5.5、Haiku 5.5 のデフォルトです。Opus 5.5 と Sonnet 5.5 では、新機能の実装など、範囲が明確な日常的なエンジニアリング作業に適しています。デフォルトがより高いモデルでは、ある程度の知能と引き換えにできるコスト重視の作業でトークン使用量を削減します |
+| `high` | 既存のコードベースのバグ修正など、検証が重要な作業やエッジケースが発生しやすい作業。Opus 5.5、Sonnet 5.5、Haiku 5.5、Opus 4.7 を除くすべてのモデルのデフォルト |
 | `xhigh` | より多くのトークン消費でより深い推論。Opus 4.7 のデフォルト |
 | `max` | セキュリティ脆弱性の発見など、ユーザーの関与なしに Claude に取り組ませたい難しい問題。`max` は収穫逓減を示すことがあり、考えすぎる傾向があるため、広く採用する前にテストしてください |
 | `ultracode` | レベルではなく Claude Code の設定：任意の effort レベルで、本格的なタスクごとに[動的ワークフロー](/docs/ja/workflows)を計画します |
@@ -753,7 +756,7 @@ effort は次のいずれかの方法で変更できます。
 
 アダプティブ推論では、各ステップで思考が任意になるため、Claude は日常的なプロンプトにはより速く応答し、より深い思考はそれが役立つステップのために取っておけます。現在のレベルよりも思考の頻度を増やしたり減らしたりしたい場合は、プロンプトまたは `CLAUDE.md` で直接そう伝えることができます。モデルは effort 設定の範囲内でその指示に応えます。
 
-Fable モデル、Sonnet 5 以降、Opus 4.7 以降は常にアダプティブ推論を使用します。固定の思考予算モードと `CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING` はこれらのモデルには適用されません。
+Fable モデル、Sonnet 5 以降、Haiku 5.5、Opus 4.7 以降は常にアダプティブ推論を使用します。固定の思考予算モードと `CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING` はこれらのモデルには適用されません。
 
 Opus 4.6 と Sonnet 4.6 では、`CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING=1` を設定すると、`MAX_THINKING_TOKENS` で制御される以前の固定の思考予算に戻せます。[環境変数](/docs/ja/env-vars)を参照してください。
 
@@ -767,9 +770,9 @@ Opus 4.6 と Sonnet 4.6 では、`CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING=1` を�
 | :- | :- |
 | 現在のセッションで切り替える | macOS では `Option+T`、Windows と Linux では `Alt+T` を押します |
 | グローバルのデフォルトを設定する | `/config` を実行して思考モードを切り替えます。`~/.claude/settings.json` に `alwaysThinkingEnabled` として保存されます |
-| 環境変数で無効にする | [`MAX_THINKING_TOKENS=0`](/docs/ja/env-vars) を設定します。これにより、Opus 5.5、Sonnet 5.5、Fable モデルを除き、Anthropic API で思考がオフになります。[サードパーティプロバイダー](/docs/ja/third-party-integrations)では、Claude Code は代わりに `thinking` パラメータを省略するため、アダプティブ推論モデルは引き続き思考する場合があります |
+| 環境変数で無効にする | [`MAX_THINKING_TOKENS=0`](/docs/ja/env-vars) を設定します。これにより、Opus 5.5、Sonnet 5.5、Haiku 5.5、Fable モデルを除き、Anthropic API で思考がオフになります。[サードパーティプロバイダー](/docs/ja/third-party-integrations)では、Claude Code は代わりに `thinking` パラメータを省略するため、アダプティブ推論モデルは引き続き思考する場合があります |
 
-Opus 5.5、Sonnet 5.5、Fable モデルでは思考をオフにできません。これらのモデルでは、セッションのトグルと `/config` の行に切り替えの代わりに `Thinking can't be turned off` が表示され、保存済みの `alwaysThinkingEnabled: false` や `MAX_THINKING_TOKENS=0` は効果がありません。これらのモデルでは、effort レベルに基づいて、モデルがステップごとにどの程度思考するかを判断します。保存済みの設定は、それを受け付けるモデルに切り替えると再び適用されます。
+Opus 5.5、Sonnet 5.5、Haiku 5.5、Fable モデルでは思考をオフにできません。これらのモデルでは、セッションのトグルと `/config` の行に切り替えの代わりに `Thinking can't be turned off` が表示され、保存済みの `alwaysThinkingEnabled: false` や `MAX_THINKING_TOKENS=0` は効果がありません。これらのモデルでは、effort レベルに基づいて、モデルがステップごとにどの程度思考するかを判断します。保存済みの設定は、それを受け付けるモデルに切り替えると再び適用されます。
 
 Claude Code はデフォルトで思考の出力を折りたたみます。`Ctrl+O` を押して詳細モードを切り替えると、推論がグレーの斜体テキストで表示されます。Anthropic API 上の対話セッションはデフォルトで編集済みの思考ブロックを受け取るため、展開時に完全な要約を表示したい場合は、[設定](/docs/ja/settings)で `showThinkingSummaries: true` を設定してください。折りたたまれていても編集済みであっても、生成されたすべての思考トークンに対して課金されます。
 
@@ -779,9 +782,9 @@ Claude Code はデフォルトで思考の出力を折りたたみます。`Ctrl
   拡張コンテキスト
 </h3>
 
-Fable 5.1、Fable 5、Sonnet 5 以降、Opus 4.6 以降、Sonnet 4.6 は、大規模なコードベースでの長いセッション向けに [100 万トークンのコンテキストウィンドウ](https://platform.claude.com/docs/en/build-with-claude/context-windows#context-window-sizes-by-model)をサポートしています。
+Fable 5.1、Fable 5、Sonnet 5 以降、Haiku 5.5、Opus 4.6 以降、Sonnet 4.6 は、大規模なコードベースでの長いセッション向けに [100 万トークンのコンテキストウィンドウ](https://platform.claude.com/docs/en/build-with-claude/context-windows#context-window-sizes-by-model)をサポートしています。
 
-Anthropic API では、Fable 5.1、Fable 5、Sonnet 5 以降、Opus 4.7 以降は、Pro を含むすべてのプランで 1M ウィンドウで動作します。これらのモデルでは、1M ウィンドウのために `[1m]` バリアントを選択したり、使用クレジットをオンにしたりする必要はありません。Fable の利用自体は、一部のプランでは使用クレジットに請求される場合があります。[Fable と使用クレジット](#fable-and-usage-credits)を参照してください。
+Anthropic API では、Fable 5.1、Fable 5、Sonnet 5 以降、Haiku 5.5、Opus 4.7 以降は、Pro を含むすべてのプランで 1M ウィンドウで動作します。これらのモデルでは、1M ウィンドウのために `[1m]` バリアントを選択したり、使用クレジットをオンにしたりする必要はありません。Fable の利用自体は、一部のプランでは使用クレジットに請求される場合があります。[Fable と使用クレジット](#fable-and-usage-credits)を参照してください。
 
 Opus 4.6 と Sonnet 4.6 が 1M に到達するのは `[1m]` バリアントを通じてのみで、そのバリアントへのアクセスはプランによって異なります。Team Standard と Team Premium の両方のシートを含む Max、Team、Enterprise プランでは、1M コンテキストの Opus 4.6 はサブスクリプションに含まれています。1M コンテキストの Sonnet 4.6 は、Max を含むすべてのサブスクリプションプランで[使用クレジット](https://support.claude.com/en/articles/12429409-extra-usage-for-paid-claude-plans)が必要です。
 
@@ -795,7 +798,7 @@ Claude Code がこれらのプラン要件を確認するのは、Anthropic API 
 
 <span id="context-window-behind-a-gateway" />
 
-`ANTHROPIC_BASE_URL` を [LLM ゲートウェイ](/docs/ja/llm-gateway)やその他のプロキシに設定した場合、Claude Code は認識する各モデルに、Anthropic API 上と同じコンテキストウィンドウを割り当てます。Fable 5.1、Fable 5、Sonnet 5 以降、Opus 4.7 以降は、`[1m]` バリアントを選択しなくても 1M ウィンドウを使用でき、Opus 4.6 のように `[1m]` バリアントを通じてのみ 1M に到達するモデルは、バリアントなしでは 200K で動作します。Claude Code は、ゲートウェイやその背後のサーバーが強制するより低い制限を検出できません。ゲートウェイが 200K トークンを超えるリクエストを拒否する場合は、Claude Code を起動する環境で [`CLAUDE_CODE_AUTO_COMPACT_WINDOW=200000`](/docs/ja/env-vars) を設定して、すべてのモデルのセッションが[その境界で圧縮される](#set-the-auto-compact-window)ようにしてください。
+`ANTHROPIC_BASE_URL` を [LLM ゲートウェイ](/docs/ja/llm-gateway)やその他のプロキシに設定した場合、Claude Code は認識する各モデルに、Anthropic API 上と同じコンテキストウィンドウを割り当てます。Fable 5.1、Fable 5、Sonnet 5 以降、Haiku 5.5、Opus 4.7 以降は、`[1m]` バリアントを選択しなくても 1M ウィンドウを使用でき、Opus 4.6 のように `[1m]` バリアントを通じてのみ 1M に到達するモデルは、バリアントなしでは 200K で動作します。Claude Code は、ゲートウェイやその背後のサーバーが強制するより低い制限を検出できません。ゲートウェイが 200K トークンを超えるリクエストを拒否する場合は、Claude Code を起動する環境で [`CLAUDE_CODE_AUTO_COMPACT_WINDOW=200000`](/docs/ja/env-vars) を設定して、すべてのモデルのセッションが[その境界で圧縮される](#set-the-auto-compact-window)ようにしてください。
 
 1M コンテキストをオフにするには、`CLAUDE_CODE_DISABLE_1M_CONTEXT=1` を設定します。Claude Code はモデルピッカーから 1M のモデルバリアントを削除します。Sonnet 5 や Fable モデルなど、ネイティブで 1M ウィンドウを持つモデルでは、そのモデルのコンテキストウィンドウを 200K として扱います。
 
@@ -804,7 +807,7 @@ Claude Code がこれらのプラン要件を確認するのは、Anthropic API 
 
 v2.1.223 より前は、Claude Code が 200K に制限していたのは Sonnet 5、Opus 4.8、Opus 5 のセッションのみでした。[環境変数](/docs/ja/env-vars)を参照してください。
 
-1M コンテキストウィンドウは標準のモデル料金を使用し、200K を超えるトークンに対する割増料金はありません。拡張コンテキストがサブスクリプションに含まれるプランでは、使用量は引き続きサブスクリプションでカバーされます。使用クレジットを通じて拡張コンテキストにアクセスするプランでは、トークンは使用クレジットに請求されます。
+1M コンテキストウィンドウは標準のモデル料金を使用し、200K を超えるトークンに対する割増料金はありません。ただし、Haiku 5.5 は [100K トークンを超えるプロンプトではコストが高くなります](#haiku-5-5-context-window-and-pricing)。拡張コンテキストがサブスクリプションに含まれるプランでは、使用量は引き続きサブスクリプションでカバーされます。使用クレジットを通じて拡張コンテキストにアクセスするプランでは、トークンは使用クレジットに請求されます。
 
 アカウントが 1M コンテキストをサポートしている場合、最新バージョンの Claude Code では `/model` ピッカーにそのオプションが表示されます。表示されない場合は、セッションを再起動してください。サードパーティプロバイダーでは、デプロイが `ANTHROPIC_DEFAULT_*_MODEL` 変数で[モデルを固定](#pin-models-for-third-party-deployments)していないか確認してください。
 
@@ -830,6 +833,16 @@ Claude Code は、[LLM ゲートウェイ](/docs/ja/llm-gateway)やその他の�
 次の設定では、代わりにウィンドウを 200K に制限します。
 
 * **`CLAUDE_CODE_DISABLE_1M_CONTEXT=1`**：ネイティブで 1M ウィンドウを持つすべてのモデルのセッションを 200K ウィンドウに制限します。制限がどのように適用されるかについては[拡張コンテキスト](#extended-context)を参照してください。コンテキストに上限を設ける必要があるデプロイに役立ちます。
+
+<h4 id="haiku-5-5-context-window-and-pricing">
+  Haiku 5.5 のコンテキストウィンドウと料金
+</h4>
+
+Anthropic API では、Haiku 5.5 はすべてのプランで 1M コンテキストウィンドウで動作し、選択する `[1m]` サフィックスはありません。モデル ID は `claude-haiku-5-5` です。使用するには、セッション内で `/model claude-haiku-5-5` を実行するか、シェルから `claude --model claude-haiku-5-5` で Claude Code を起動します。
+
+Haiku 5.5 のリクエストは、プロンプトが 100K トークンを超えるとトークンあたりのコストが高くなります。両方の料金については、[Anthropic の料金](https://platform.claude.com/docs/en/about-claude/pricing)を参照してください。
+
+セッションはデフォルトで約 967K トークンで自動圧縮されます。より早く圧縮するには、モデルに[より小さい自動圧縮ウィンドウを設定](#set-the-auto-compact-window)してください。
 
 <h2 id="context-window-and-auto-compaction">
   コンテキストウィンドウと自動圧縮
@@ -865,7 +878,7 @@ Claude Code は、[LLM ゲートウェイ](/docs/ja/llm-gateway)やその他の�
 * [クラウドセッション](/docs/ja/claude-code-on-the-web)は、会話がモデルの上限に近づいた時点で圧縮します
 * [拡張コンテキスト](#extended-context)を使用しない Sonnet 4.6 と Opus 4.6 は 200K の境界で圧縮します。Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry など、200K のコンテキストウィンドウで実行される Opus 4.8 以降も同様です
 * [`CLAUDE_CODE_DISABLE_1M_CONTEXT=1`](/docs/ja/env-vars) を設定すると、Sonnet 5 や Fable モデルなど、ネイティブで 1M のウィンドウを持つモデルは 200K の境界で圧縮します
-* ネイティブの 1M ウィンドウで実行されるモデルは、ウィンドウが埋まる前に、デフォルトで約 967K トークンの時点で圧縮します。Anthropic API では、Sonnet 5、Fable モデル、Opus 4.7 以降がこれに該当します。Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry でどのモデルがこのウィンドウで実行されるかについては、[サードパーティのデプロイでモデルを固定する](#pin-models-for-third-party-deployments)を参照してください。カスタムの `ANTHROPIC_BASE_URL` を使用している場合は、[ゲートウェイ経由のコンテキストウィンドウ](#context-window-behind-a-gateway)を参照してください
+* ネイティブの 1M ウィンドウで実行されるモデルは、ウィンドウが埋まる前に、デフォルトで約 967K トークンの時点で圧縮します。Anthropic API では、Sonnet 5、Haiku 5.5、Fable モデル、Opus 4.7 以降がこれに該当します。Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry でどのモデルがこのウィンドウで実行されるかについては、[サードパーティのデプロイでモデルを固定する](#pin-models-for-third-party-deployments)を参照してください。カスタムの `ANTHROPIC_BASE_URL` を使用している場合は、[ゲートウェイ経由のコンテキストウィンドウ](#context-window-behind-a-gateway)を参照してください
 * [LLM ゲートウェイ](/docs/ja/llm-gateway)のエイリアスなど、Claude Code が認識できないモデル ID を使用するセッションは、Claude Code がその ID に対して想定するコンテキストウィンドウで圧縮します。[ゲートウェイまたはカスタムモデル ID のウィンドウを修正する](#correct-the-window-for-a-gateway-or-custom-model-id)を参照してください
 
 <h3 id="correct-the-window-for-a-gateway-or-custom-model-id">
@@ -1094,6 +1107,7 @@ Claude Code は、パフォーマンスを最適化しコストを削減する�
 
 | バージョン | 変更内容 |
 | :- | :- |
+| v2.1.293 | Anthropic API で `haiku` が Haiku 5.5 に解決されるようになりました |
 | v2.1.284 | Anthropic API で `sonnet` が Sonnet 5.5 に解決されるようになりました |
 | v2.1.280 | Anthropic API、Claude Platform on AWS、Amazon Bedrock、Google Cloud の Agent Platform で `opus` が Opus 5.5 に解決されるようになりました |
 | v2.1.257 | Claude apps ゲートウェイのセッションを除き、`fable` が Fable 5.1 に解決されるようになりました |
@@ -1101,4 +1115,4 @@ Claude Code は、パフォーマンスを最適化しコストを削減する�
 | v2.1.207 | Claude Platform on AWS、Amazon Bedrock、Agent Platform で `opus` が Opus 4.8 に解決されるようになりました |
 | v2.1.197 | Anthropic API で `sonnet` が Sonnet 5 に解決されるようになりました |
 | v2.1.154 | Anthropic API で `opus` が Opus 4.8 に解決されるようになりました |
-| それ以前 | `opus` は Claude Platform on AWS では Opus 4.7 に、Amazon Bedrock と Agent Platform では Opus 4.6 に解決されます。`fable` はすべてのプロバイダーで Fable 5 に解決されます |
+| それ以前 | `opus` は Claude Platform on AWS では Opus 4.7 に、Amazon Bedrock と Agent Platform では Opus 4.6 に解決されます。`fable` はすべてのプロバイダーで Fable 5 に、`haiku` はすべてのプロバイダーで Haiku 4.5 に解決されます |

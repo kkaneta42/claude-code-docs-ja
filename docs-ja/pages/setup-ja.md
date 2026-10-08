@@ -49,6 +49,8 @@ Claude Code をインストールするには、ターミナルを開いてシ�
     curl -fsSL https://claude.ai/install.sh | bash
     ```
 
+    Windows では、PowerShell を使用している場合はシェルプロンプトに `PS C:\` と表示され、CMD を使用している場合は `PS` なしで `C:\` と表示されます。
+
     **Windows PowerShell：**
 
     ```powershell theme={null}
@@ -63,9 +65,9 @@ Claude Code をインストールするには、ターミナルを開いてシ�
 
     インストーラーが完了したら、新しいターミナルウィンドウを開いて `claude --version` を実行してください。インストールが正常に完了すると、バージョン番号が表示されます。シェルが `claude` が見つからない、または認識されていないと表示される場合は、インストールディレクトリがまだ PATH に含まれていません。[PATH を修正する](/docs/ja/troubleshoot-install#command-not-found-claude-after-installation)を参照してください。
 
-    `The token '&&' is not a valid statement separator` というエラーが表示される場合は、CMD ではなく PowerShell を使用しています。`'irm' is not recognized as an internal or external command` というエラーが表示される場合は、PowerShell ではなく CMD を使用しています。PowerShell を使用している場合、プロンプトに `PS C:\` と表示され、CMD を使用している場合は `PS` なしで `C:\` と表示されます。
+    `The token '&&' is not a valid statement separator` というエラーが表示される場合は、CMD ではなく PowerShell を使用しています。`'irm' is not recognized as an internal or external command` というエラーが表示される場合は、PowerShell ではなく CMD を使用しています。
 
-    インストールコマンドが `syntax error near unexpected token '<'`、`403`、またはその他の curl エラーで失敗する場合は、[インストールのトラブルシューティング](/docs/ja/troubleshoot-install#find-your-error)を参照して、エラーを修正方法に照合し、代替インストール方法を確認してください。
+    インストールコマンドが `syntax error near unexpected token '<'`、`403`、またはその他のエラーで失敗する場合は、[インストールのトラブルシューティング](/docs/ja/troubleshoot-install#find-your-error)を参照して、エラーを修正方法に照合し、代替インストール方法を確認してください。
 
     [Git for Windows](https://git-scm.com/downloads/win) は、Claude Code が Bash ツールを使用できるようにネイティブ Windows で推奨されます。Git for Windows がインストールされていない場合、Claude Code はシェルツールとして PowerShell を代わりに使用します。WSL セットアップは Git for Windows を必要としません。
 
@@ -204,7 +206,7 @@ claude doctor
 
 Claude Code には、Pro、Max、Team、Enterprise、または Console アカウントが必要です。無料の claude.ai プランには Claude Code アクセスは含まれていません。[Amazon Bedrock](/docs/ja/amazon-bedrock)、[Google Cloud の Agent Platform](/docs/ja/google-vertex-ai)、または[Microsoft Foundry](/docs/ja/microsoft-foundry)などのサードパーティ API プロバイダーで Claude Code を使用することもできます。
 
-インストール後、`claude` を実行してブラウザーのプロンプトに従ってログインします。`ANTHROPIC_API_KEY` 環境変数が設定されている場合、Claude Code はブラウザーを開く代わりに、キーを承認するよう 1 回プロンプトを表示します。すべてのアカウントタイプとチームセットアップオプションについては、[認証](/docs/ja/authentication)を参照してください。
+インストール後、`claude` を実行してブラウザーのプロンプトに従ってログインします。`ANTHROPIC_API_KEY` 環境変数を設定しており、そのキーを使用するかどうかを Claude Code に尋ねられたときにキーを承認すると、Claude Code はログインプロンプトをスキップします。すべてのアカウントタイプとチームセットアップオプションについては、[認証](/docs/ja/authentication)を参照してください。
 
 <h2 id="update-claude-code">
   Claude Code を更新
