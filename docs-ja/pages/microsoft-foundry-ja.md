@@ -116,12 +116,24 @@ Microsoft Foundry で Claude Code を構成する前に、以下を確認して�
   2) Azure 認証情報を構成する
 </h3>
 
-Claude Code は Microsoft Foundry の 3 つの認証方法をサポートしています。セキュリティ要件に最適な方法を選択してください。
+Claude Code は Microsoft Foundry の 3 つの認証方法をサポートしています。セキュリティ要件に最適な方法を選択してください：
 
-**オプション A：API キー認証**
+* [API キー](#use-an-api-key)：Microsoft Foundry ポータルからキーをコピーし、`ANTHROPIC_FOUNDRY_API_KEY` として設定します
+* [Microsoft Entra ID](#use-microsoft-entra-id)：Claude Code は Azure SDK のデフォルト認証情報チェーンを通じて（たとえば `az login` セッションから）トークンを取得するため、API キーを保存する必要がありません
+* [ベアラートークン](#use-a-bearer-token)：別のプロセスが Microsoft Entra ID アクセストークンを取得し、それを `ANTHROPIC_FOUNDRY_AUTH_TOKEN` で渡します
+
+<Note>
+  Microsoft Foundry を使用する場合、認証が Azure 認証情報を通じて処理されるため、`/logout` コマンドは利用できません。
+</Note>
+
+<h4 id="use-an-api-key">
+  API キーを使用する
+</h4>
+
+Microsoft Foundry ポータルからキーをコピーし、環境変数として設定します：
 
 1. Microsoft Foundry ポータルでリソースに移動します
-2. **エンドポイントとキー**セクションに移動します
+2. **Endpoints and keys** セクションを開きます
 3. **API キー**をコピーします
 4. 環境変数を設定します。`your-azure-api-key` をコピーしたキーに置き換えます：
 
@@ -129,18 +141,24 @@ Claude Code は Microsoft Foundry の 3 つの認証方法をサポートして�
 export ANTHROPIC_FOUNDRY_API_KEY=your-azure-api-key
 ```
 
-**オプション B：Microsoft Entra ID 認証**
+<h4 id="use-microsoft-entra-id">
+  Microsoft Entra ID を使用する
+</h4>
 
-`ANTHROPIC_FOUNDRY_API_KEY` も `ANTHROPIC_FOUNDRY_AUTH_TOKEN` も設定されていない場合、Claude Code は Azure SDK [デフォルト認証情報チェーン](https://learn.microsoft.com/en-us/azure/developer/javascript/sdk/authentication/credential-chains#defaultazurecredential-overview)を自動的に使用します。
+`ANTHROPIC_FOUNDRY_API_KEY` と `ANTHROPIC_FOUNDRY_AUTH_TOKEN` を設定しないままにします。すると Claude Code は Azure SDK の[デフォルト認証情報チェーン](https://learn.microsoft.com/en-us/azure/developer/javascript/sdk/authentication/credential-chains#defaultazurecredential-overview)を使用します。
 これは、ローカルおよびリモートワークロードを認証するためのさまざまな方法をサポートしています。
 
-ローカル環境では、一般的に Azure CLI を使用できます：
+ローカルマシンでは、Azure CLI でサインインします：
 
 ```bash theme={null}
 az login
 ```
 
-**オプション C：ベアラートークン認証**
+ID に必要なロールについては、[Azure RBAC 設定](#azure-rbac-configuration)を参照してください。
+
+<h4 id="use-a-bearer-token">
+  ベアラートークンを使用する
+</h4>
 
 Claude Code は、すべてのリクエストで `ANTHROPIC_FOUNDRY_AUTH_TOKEN` の値を `Authorization: Bearer` ヘッダーとして送信します。ホストアプリケーションやサインインスクリプトなど、別のプロセスがすでにアクセストークンを取得している場合に、このオプションを使用します。Claude Code v2.1.203 以降が必要です。
 
@@ -151,10 +169,6 @@ export ANTHROPIC_FOUNDRY_AUTH_TOKEN=your-entra-access-token
 ```
 
 `ANTHROPIC_FOUNDRY_AUTH_TOKEN` は `ANTHROPIC_FOUNDRY_API_KEY` およびデフォルト認証情報チェーンより優先されます。
-
-<Note>
-  Microsoft Foundry を使用する場合、認証が Azure 認証情報を通じて処理されるため、`/logout` コマンドは利用できません。
-</Note>
 
 <h3 id="3-configure-claude-code">
   3. Claude Code を構成する
@@ -239,6 +253,26 @@ Claude Code は環境から `CLAUDE_CODE_USE_FOUNDRY` およびその他の Micr
 ```
 
 詳細については、[Microsoft Foundry RBAC ドキュメント](https://learn.microsoft.com/en-us/azure/ai-foundry/concepts/rbac-azure-ai-foundry)を参照してください。
+
+<h2 id="1m-token-context-window">
+  1M トークンのコンテキストウィンドウ
+</h2>
+
+Microsoft Foundry では、デプロイがどのモデルを提供しているかを Claude Code が判別できる場合、Fable モデル、Sonnet 5 以降、Opus 4.7 以降は、`[1m]` サフィックスを付けなくてもデフォルトで [1M トークンのコンテキストウィンドウ](https://platform.claude.com/docs/en/build-with-claude/context-windows#context-window-sizes-by-model)で動作します。Claude Code は、モデル変数に指定されたデプロイ名からモデルを読み取ります。各デプロイには `claude-opus-4-8` のようにモデル ID を名前として付けるか、[`modelOverrides`](/docs/ja/model-config#override-model-ids-per-version) でモデルをデプロイ名にマッピングしてください。モデルと照合できないデプロイ名の場合、[別のウィンドウを宣言](/docs/ja/model-config#correct-the-window-for-a-gateway-or-custom-model-id)しない限り、Claude Code は 200K のウィンドウを想定します。
+
+次の `settings.json` のエントリは、`team-opus-prod` という名前のデプロイが Opus 4.8 を提供していることを Claude Code に伝えます。
+
+```json theme={null}
+{
+  "modelOverrides": {
+    "claude-opus-4-8": "team-opus-prod"
+  }
+}
+```
+
+代わりに 200K のウィンドウを維持するには、[`CLAUDE_CODE_DISABLE_1M_CONTEXT=1`](/docs/ja/model-config#turn-off-1m-context) を設定します。
+
+Opus 4.6 と Sonnet 4.6 は、[サードパーティデプロイ向けにモデルを固定する](/docs/ja/model-config#pin-models-for-third-party-deployments)で説明されているように、`ANTHROPIC_DEFAULT_OPUS_MODEL` または `ANTHROPIC_DEFAULT_SONNET_MODEL` のデプロイ名に `[1m]` を付加すると 1M のウィンドウを利用できます。v2.1.287 より前では、Microsoft Foundry 上の Fable モデルおよび Opus 4.7 以降でもこのサフィックスが必要で、付けない場合はデフォルトで 200K のウィンドウで動作していました。
 
 <h2 id="troubleshooting">
   トラブルシューティング

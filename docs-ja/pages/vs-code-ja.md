@@ -596,7 +596,7 @@ VS Code は `initialPermissionMode` をユーザー設定から読み込み、�
 | `attachOpenFile` | `true` | エディターで開いているファイルをメッセージに追加し、プロンプトボックスに表示します。オフの場合、選択したテキストのみが追加されます。Claude Code v2.1.271 以降が必要です |
 | `useCtrlEnterToSend` | `false` | Enter の代わりに Ctrl/Cmd+Enter を使用してプロンプトを送信します |
 | `scrollToBottomOnSend` | `true` | メッセージを送信するときに会話を下部にスクロールします。オフの場合、会話は元の位置に留まります。Claude Code v2.1.275 以降が必要です |
-| `showMessageTimestamps` | `false` | 各メッセージが送信された日時を表示します。日付が変わる位置には日付行が表示されます。Claude Code v2.1.284 以降が必要です |
+| `showMessageTimestamps` | `true` | 各メッセージが送信された日時を表示します。日付が変わる位置には日付行が表示されます。Claude Code v2.1.284 以降が必要です。v2.1.290 より前は、デフォルトは `false` でした |
 | `enableNewConversationShortcut` | `false` | Cmd/Ctrl+N を有効にして新しい会話を開始します |
 | `enableReopenClosedSessionShortcut` | `true` | Cmd/Ctrl+Shift+T を使用して、最近閉じた Claude セッションタブを再度開きます。最後に閉じたタブが Claude セッションではなかった場合、ショートカットは VS Code の通常の再度開く閉じたエディターコマンドを実行します。 |
 | `archiveInactiveSessions` | `14` | この日数アクティビティがない場合、[セッションを自動的にアーカイブします](#resume-past-conversations)：`1`、`2`、`7`、または `14`。`0` に設定してオフにします。Claude Code v2.1.265 以降が必要です |

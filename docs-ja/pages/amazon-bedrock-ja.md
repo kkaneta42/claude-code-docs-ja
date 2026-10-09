@@ -136,15 +136,33 @@ AWS Organizations を使用している場合、[`PutUseCaseForModelAccess` API]
   2. AWS 認証情報を設定する
 </h3>
 
-Claude Code は AWS SDK のデフォルト認証情報チェーンを使用します。以下のいずれかの方法を使用して認証情報を設定してください。
+Claude Code は AWS SDK のデフォルト認証情報チェーンを使用します。Amazon EC2 インスタンスプロファイルや Amazon ECS タスク認証情報など、マシンがすでにそのチェーンに認証情報を提供している場合は、[ステップ 3](#3-configure-claude-code) に進んでください。
 
-**オプション A: AWS CLI 設定**
+AWS は、専用ソフトウェアを開発する場合や実データを扱う場合に [IAM ユーザーのアクセスキーを使用しないよう警告しています](https://docs.aws.amazon.com/cli/latest/userguide/cli-authentication-user.html)。以下のいずれかの方法で認証情報を設定してください。
+
+* [`aws configure`](#use-aws-configure): IAM ユーザーのアクセスキーを `~/.aws` ディレクトリ内のプロファイルに保存します
+* [アクセスキーの環境変数](#export-an-access-key): アクセスキー、またはセッショントークン付きの一時的な認証情報を、現在のシェルでのみ設定します
+* [SSO プロファイル](#use-an-sso-profile): ブラウザで IAM Identity Center を通じてサインインし、一時的な認証情報を取得します。IAM Identity Center を通じて AWS アカウントにアクセスしている場合は、この方法を使用してください。
+* [AWS Management Console 認証情報](#use-aws-management-console-credentials): AWS Management Console の認証情報を使ってブラウザでサインインし、一時的な認証情報を取得します。ルートユーザー、IAM ユーザー、または IAM とのフェデレーションを通じて AWS アカウントにアクセスしている場合、AWS は[この方法を推奨しています](https://docs.aws.amazon.com/signin/latest/userguide/command-line-sign-in.html)。
+* [Amazon Bedrock API キー](#use-an-amazon-bedrock-api-key): AWS 認証情報の代わりに、Amazon Bedrock でのみ機能するベアラートークンで認証します
+
+<h4 id="use-aws-configure">
+  `aws configure` を使用する
+</h4>
+
+`aws configure` を実行し、プロンプトが表示されたらアクセスキー ID、シークレットアクセスキー、デフォルトリージョンを入力します。
 
 ```bash theme={null}
 aws configure
 ```
 
-**オプション B: 環境変数（アクセスキー）**
+AWS CLI はキーを `~/.aws/credentials` の `default` プロファイルに保存し、認証情報チェーンはそこからキーを読み取ります。
+
+<h4 id="export-an-access-key">
+  アクセスキーをエクスポートする
+</h4>
+
+アクセスキーを環境変数としてエクスポートします。`AWS_SESSION_TOKEN` は一時的な認証情報の場合にのみ必要なため、アクセスキーが IAM ユーザーのものである場合はその行を省略してください。
 
 ```bash theme={null}
 export AWS_ACCESS_KEY_ID=your-access-key-id
@@ -152,9 +170,11 @@ export AWS_SECRET_ACCESS_KEY=your-secret-access-key
 export AWS_SESSION_TOKEN=your-session-token
 ```
 
-**オプション C: 環境変数（SSO プロファイル）**
+<h4 id="use-an-sso-profile">
+  SSO プロファイルを使用する
+</h4>
 
-これらのコマンドを実行する前に、`your-profile-name` を AWS プロファイルの名前に置き換えてください。
+プロファイルがない場合は、`aws configure sso` で作成します。次に IAM Identity Center にサインインし、認証情報チェーンがそのプロファイルを使用するように `AWS_PROFILE` を設定します。これらのコマンドを実行する前に、`your-profile-name` を AWS プロファイルの名前に置き換えてください。
 
 ```bash theme={null}
 aws sso login --profile=your-profile-name
@@ -164,21 +184,36 @@ export AWS_PROFILE=your-profile-name
 
 Claude Code は、プロファイルの `sso_region` で指定された IAM Identity Center リージョンからロール認証情報をリクエストします。これは Amazon Bedrock を実行するリージョンと一致する必要はありません。v2.1.207 では、Amazon Bedrock リージョンが `sso_region` をオーバーライドしていたため、IAM Identity Center インスタンスが別のリージョンにあるプロファイルは `Session token not found or invalid` エラーで認証に失敗しました。
 
-**オプション D: AWS Management Console 認証情報**
+<h4 id="use-aws-management-console-credentials">
+  AWS Management Console 認証情報を使用する
+</h4>
+
+`aws login` コマンドには AWS CLI 2.32.0 以降が必要です。ID に必要な IAM ポリシーについては、[`aws login` に関する AWS の手順](https://docs.aws.amazon.com/signin/latest/userguide/command-line-sign-in.html)を参照してください。
+
+次のコマンドを実行し、AWS Management Console の認証情報を使ってブラウザでサインインします。
 
 ```bash theme={null}
 aws login
 ```
 
-`aws login` について[詳しく学ぶ](https://docs.aws.amazon.com/signin/latest/userguide/command-line-sign-in.html)。
+セッションは最大 12 時間有効で、その後は再度 `aws login` を実行します。
 
-**オプション E: Amazon Bedrock API キー**
+<h4 id="use-an-amazon-bedrock-api-key">
+  Amazon Bedrock API キーを使用する
+</h4>
+
+Amazon Bedrock API キーは、AWS 認証情報の代わりにリクエストを認証するベアラートークンです。AWS は [2 種類のキー](https://docs.aws.amazon.com/bedrock/latest/userguide/api-keys.html)を発行します。
+
+* **短期キー**: 最大 12 時間有効です。本番環境では、AWS は長期キーよりも短期キーを推奨しています。
+* **長期キー**: 設定した有効期限まで有効です。AWS は検証目的でのみ使用することを推奨しています。
+
+キーを `AWS_BEARER_TOKEN_BEDROCK` としてエクスポートします。
 
 ```bash theme={null}
 export AWS_BEARER_TOKEN_BEDROCK=your-bedrock-api-key
 ```
 
-Amazon Bedrock API キーは、完全な AWS 認証情報を必要としない、より簡単な認証方法を提供します。[Amazon Bedrock API キーについて詳しく学ぶ](https://aws.amazon.com/blogs/machine-learning/accelerate-ai-development-with-amazon-bedrock-api-keys/)。
+`AWS_BEARER_TOKEN_BEDROCK` が設定されている場合、他の AWS 認証情報が存在していても、Claude Code はこのキーで認証し、認証情報チェーンを解決しません。[Amazon Bedrock API キーについて詳しく学ぶ](https://aws.amazon.com/blogs/machine-learning/accelerate-ai-development-with-amazon-bedrock-api-keys/)。
 
 <h4 id="credential-caching-and-resolution-timeout">
   認証情報キャッシングと解決タイムアウト
@@ -186,7 +221,7 @@ Amazon Bedrock API キーは、完全な AWS 認証情報を必要としない�
 
 Claude Code は AWS デフォルト認証情報プロバイダーチェーンを 1 回解決し、解決された認証情報をメモリに保持します。認証情報の有効期限の 5 分前まで、または有効期限がない場合は 1 時間の間、それらを再利用するため、SSO でサポートされたプロファイルは認証情報の有効期間ごとに約 1 回 IAM Identity Center から認証情報をリクエストします。API からの認証情報エラーはキャッシュをクリアし、再試行は新しい認証情報を解決します。Claude Code v2.1.207 以降が必要です。
 
-キャッシュは上記のすべての認証情報オプションをカバーしていますが、Amazon Bedrock API キーはプロバイダーチェーンを使用しないため除外されます。代わりにすべてのリクエストでチェーンを解決するには、[`CLAUDE_CODE_SKIP_AWS_CRED_CACHE=1`](/docs/ja/env-vars) を設定してください。
+キャッシュはこのステップの冒頭に挙げたすべての認証情報の方法をカバーしていますが、Amazon Bedrock API キーはプロバイダーチェーンを使用しないため除外されます。代わりにすべてのリクエストでチェーンを解決するには、[`CLAUDE_CODE_SKIP_AWS_CRED_CACHE=1`](/docs/ja/env-vars) を設定してください。
 
 キャッシュを埋める解決は 60 秒後にタイムアウトします。チェーン内のステップが停止した場合（例えば、受け取ることができない入力を待つ `credential_process` ヘルパー）、リクエストは [`AWS default-chain credential resolve timed out`](/docs/ja/errors#aws-default-chain-credential-resolve-timed-out) で失敗します。チェーンが正当に長い時間を必要とするインタラクティブサインイン（`aws-vault` のようなラッパーを使用した MFA 付きブラウザベースの SSO など）を実行する場合、[`CLAUDE_CODE_AWS_CHAIN_RESOLVE_TIMEOUT_MS`](/docs/ja/env-vars) でミリ秒単位で制限を引き上げてください。`CLAUDE_CODE_SKIP_AWS_CRED_CACHE=1` を設定している場合、各 API リクエストはこの制限なしでチェーンを解決します。
 
@@ -510,9 +545,11 @@ Claude Code に必要な権限を持つ IAM ポリシーを作成します。
   1M トークンコンテキストウィンドウ
 </h2>
 
-Claude Sonnet 5、Opus 4.6 以降、および Sonnet 4.6 は、Amazon Bedrock で [1M トークンコンテキストウィンドウ](https://platform.claude.com/docs/ja/build-with-claude/context-windows#context-window-sizes-by-model)をサポートしています。Sonnet 5 は Invoke API と [Mantle エンドポイント](#use-the-mantle-endpoint)の両方で常に 1M ウィンドウで実行され、選択する `[1m]` バリアントはありません。Invoke API 上の他のモデルについては、Claude Code は 1M モデルバリアントを選択すると、拡張コンテキストウィンドウを自動的に有効にします。
+Fable モデル、Sonnet 5 以降、および Opus 4.7 以降は、Amazon Bedrock の Invoke API と [Mantle エンドポイント](#use-the-mantle-endpoint)の両方で、デフォルトで [1M トークンコンテキストウィンドウ](https://platform.claude.com/docs/ja/build-with-claude/context-windows#context-window-sizes-by-model)で実行されます。`[1m]` サフィックスは不要です。アプリケーション推論プロファイル ARN は、[`modelOverrides`](#map-each-model-version-to-an-inference-profile) のエントリがそのモデルを ARN にマッピングしている場合に 1M ウィンドウを使用します。代わりに 200K ウィンドウを維持するには、[`CLAUDE_CODE_DISABLE_1M_CONTEXT=1`](/docs/ja/model-config#turn-off-1m-context) を設定します。
 
-[セットアップウィザード](#sign-in-with-bedrock)は、モデルをピン留めするときに 1M コンテキストオプションを提供します。手動でピン留めされたモデルの代わりに有効にするには、モデル ID に `[1m]` を追加します。詳細については、[サードパーティデプロイメント用のモデルをピン留めする](/docs/ja/model-config#pin-models-for-third-party-deployments)を参照してください。1M ウィンドウをピンを変更せずに使用する方法を含みます。
+Invoke API 上の Opus 4.6 と Sonnet 4.6 は、`[1m]` バリアントを選択すると 1M ウィンドウを使用します。[セットアップウィザード](#sign-in-with-bedrock)は、モデルをピン留めするときに 1M コンテキストオプションを提供します。代わりに手動でピン留めしたモデルで有効にするには、モデル ID に `[1m]` を追加します。ピンを変更せずに 1M ウィンドウを使用する方法を含む詳細については、[サードパーティデプロイ用にモデルをピン留めする](/docs/ja/model-config#pin-models-for-third-party-deployments)を参照してください。
+
+v2.1.287 より前は、Fable モデルと Opus 4.7 以降は Invoke API ではデフォルトで 200K ウィンドウで実行され、`[1m]` サフィックスを付けることで 1M ウィンドウを使用していました。
 
 <h2 id="service-tiers">
   サービスティア

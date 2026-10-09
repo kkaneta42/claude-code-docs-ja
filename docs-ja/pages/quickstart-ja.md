@@ -53,7 +53,7 @@ Claude Code をインストールするには、ターミナルを開いてシ�
     curl -fsSL https://claude.ai/install.cmd -o install.cmd && install.cmd && del install.cmd
     ```
 
-    インストーラーが完了したら、新しいターミナルウィンドウを開いて `claude --version` を実行してください。インストールが正常に完了すると、バージョン番号が表示されます。シェルが `claude` が見つからない、または認識されていないと表示される場合は、インストールディレクトリがまだ PATH に含まれていません。[PATH を修正する](/docs/ja/troubleshoot-install#command-not-found-claude-after-installation)を参照してください。
+    インストールコマンドは、Claude Code のダウンロード中に進行状況を表示しません。インストーラーが完了したら、新しいターミナルウィンドウを開いて `claude --version` を実行してください。インストールが正常に完了すると、バージョン番号が表示されます。シェルが `claude` が見つからない、または認識されていないと表示される場合は、インストールディレクトリがまだ PATH に含まれていません。[PATH を修正する](/docs/ja/troubleshoot-install#command-not-found-claude-after-installation)を参照してください。
 
     `The token '&&' is not a valid statement separator` というエラーが表示される場合は、CMD ではなく PowerShell を使用しています。`'irm' is not recognized as an internal or external command` というエラーが表示される場合は、PowerShell ではなく CMD を使用しています。
 
@@ -229,27 +229,19 @@ there's a bug where users can submit empty forms - fix it
   ステップ 7: その他の一般的なワークフローを試す
 </h2>
 
-Claude と連携する方法はいくつもあります。
-
-**コードのリファクタリング**
+さらにいくつかのプロンプトを試してみましょう。Claude にコードのリファクタリング、テストの作成、ドキュメントの更新、変更内容のレビューを依頼できます。
 
 ```text wrap theme={null}
 refactor the authentication module to use async/await instead of callbacks
 ```
 
-**テストの作成**
-
 ```text wrap theme={null}
 write unit tests for the calculator functions
 ```
 
-**ドキュメントの更新**
-
 ```text wrap theme={null}
 update the README with installation instructions
 ```
-
-**コードレビュー**
 
 ```text wrap theme={null}
 review my changes and suggest improvements
@@ -263,9 +255,13 @@ review my changes and suggest improvements
   必須コマンド
 </h2>
 
-日常的に使用する最も重要なコマンドは以下の通りです。シェルコマンドはターミナルから実行して Claude Code を開始または再開します。セッションコマンドは Claude Code 起動後に実行します。
+日常的に使用する最も重要なコマンドを、実行する場所ごとにまとめて以下に示します。
 
-**シェルコマンド**
+<h3 id="shell-commands">
+  シェルコマンド
+</h3>
+
+これらはターミナルから実行して Claude Code を開始または再開します。
 
 | コマンド | 機能 | 例 |
 | - | - | - |
@@ -275,7 +271,13 @@ review my changes and suggest improvements
 | `claude -c` | 現在のディレクトリで最新の会話を続行する | `claude -c` |
 | `claude -r` | 前の会話を再開する | `claude -r` |
 
-**セッションコマンド**
+シェルコマンドの完全なリストについては [CLI リファレンス](/docs/ja/cli-reference)を参照してください。
+
+<h3 id="session-commands">
+  セッションコマンド
+</h3>
+
+これらは Claude Code の起動後にその中で実行します。
 
 | コマンド | 機能 | 例 |
 | - | - | - |
@@ -283,7 +285,7 @@ review my changes and suggest improvements
 | `/help` | 利用可能なコマンドを表示する | `/help` |
 | `/exit` または Ctrl+D 2 回 | Claude Code を終了する | `/exit` |
 
-シェルコマンドの完全なリストについては [CLI リファレンス](/docs/ja/cli-reference)を、セッションコマンドの完全なリストについては [コマンドリファレンス](/docs/ja/commands)を参照してください。
+セッションコマンドの完全なリストについては [コマンドリファレンス](/docs/ja/commands)を参照してください。
 
 <h2 id="pro-tips-for-beginners">
   初心者向けのプロのヒント

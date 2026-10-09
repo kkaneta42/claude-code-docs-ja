@@ -22,7 +22,7 @@ Claude Code は、軽量なコマンド単位のサンドボックスから完�
 
 | アプローチ | 何が分離されるか | Docker が必要 | セットアップの手間 |
 | :- | :- | :- | :- |
-| [サンドボックス化された Bash ツール](#sandboxed-bash-tool) | Bash、PowerShell、Monitor コマンドとその子プロセス | いいえ | macOS では最小限。Linux と WSL2 では低い |
+| [サンドボックス化された Bash ツール](#sandboxed-bash-tool) | Bash、PowerShell、Monitor ツールのコマンドとその子プロセス | いいえ | macOS では最小限。Linux と WSL2 では低い |
 | [サンドボックスランタイム](#sandbox-runtime) | Claude Code プロセス全体（ファイルツール、MCP サーバー、hooks を含む） | いいえ | 低い |
 | [Dev コンテナ](#dev-containers) | 完全な開発環境 | はい | 中程度 |
 | [カスタムコンテナ](#custom-container) | 完全な開発環境 | はい | 中程度から高い |
@@ -76,14 +76,14 @@ Claude Code は、軽量なコマンド単位のサンドボックスから完�
   このオプションはネイティブ Windows をサポートしていません。Windows ホストでは、WSL2 または以下のコンテナまたは VM アプローチのいずれかを使用してください。
 </Note>
 
-サンドボックス化された Bash ツールは Claude Code に組み込まれています。オペレーティングシステムプリミティブを使用して、Claude が実行するすべての Bash、PowerShell、または Monitor コマンドのファイルシステムとネットワークアクセスを制限します。
+サンドボックス化された Bash ツールは Claude Code に組み込まれています。オペレーティングシステムプリミティブを使用して、Claude が実行する Bash、PowerShell、Monitor ツールのコマンドのファイルシステムとネットワークアクセスを制限します。
 
 `/sandbox` コマンドを実行してサンドボックスパネルを開き、モードを選択してください。[サンドボックス化](/docs/ja/sandboxing)ガイドでは、承認モード、デフォルト境界、および拡大または縮小する方法について説明しています。
 
 コマンド単位のサンドボックスはセッションで実行されるすべてをカバーしていません。
 
 * Read、Edit、WebFetch などの他の [組み込みツール](/docs/ja/tools-reference)は Claude Code プロセス内で実行され、任意のコードを生成しません。[権限ルール](/docs/ja/permissions)がパスまたはドメインでそれらをゲートします。
-* [MCP](/docs/ja/mcp)サーバーと [command hooks](/docs/ja/hooks#command-hook-fields)は、ホスト上で制約なく実行される別のプロセスです。
+* [MCP](/docs/ja/mcp) サーバー、[コマンドフック](/docs/ja/hooks#command-hook-fields)、[プラグインモニター](/docs/ja/plugins/components#monitors)は、ホスト上で制約なく実行される別のプロセスです。このように実行されるその他のプロセスについては、[サンドボックスの外部で実行されるもの](/docs/ja/sandboxing#what-runs-outside-the-sandbox)を参照してください。
 
 組み込みツール、MCP サーバー、hooks をすべて 1 つの OS 境界の背後に配置するには、Claude Code プロセス全体を [サンドボックスランタイム](#sandbox-runtime)、[dev コンテナ](#dev-containers)、または [カスタムコンテナ](#custom-container)内で実行してください。
 

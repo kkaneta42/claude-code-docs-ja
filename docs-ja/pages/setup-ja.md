@@ -63,7 +63,7 @@ Claude Code をインストールするには、ターミナルを開いてシ�
     curl -fsSL https://claude.ai/install.cmd -o install.cmd && install.cmd && del install.cmd
     ```
 
-    インストーラーが完了したら、新しいターミナルウィンドウを開いて `claude --version` を実行してください。インストールが正常に完了すると、バージョン番号が表示されます。シェルが `claude` が見つからない、または認識されていないと表示される場合は、インストールディレクトリがまだ PATH に含まれていません。[PATH を修正する](/docs/ja/troubleshoot-install#command-not-found-claude-after-installation)を参照してください。
+    インストールコマンドは、Claude Code のダウンロード中に進行状況を表示しません。インストーラーが完了したら、新しいターミナルウィンドウを開いて `claude --version` を実行してください。インストールが正常に完了すると、バージョン番号が表示されます。シェルが `claude` が見つからない、または認識されていないと表示される場合は、インストールディレクトリがまだ PATH に含まれていません。[PATH を修正する](/docs/ja/troubleshoot-install#command-not-found-claude-after-installation)を参照してください。
 
     `The token '&&' is not a valid statement separator` というエラーが表示される場合は、CMD ではなく PowerShell を使用しています。`'irm' is not recognized as an internal or external command` というエラーが表示される場合は、PowerShell ではなく CMD を使用しています。
 
@@ -119,13 +119,15 @@ Claude Code をネイティブに Windows で実行することも、WSL 内で�
 
 | オプション | 必須 | [サンドボックス](/docs/ja/sandboxing) | 使用時期 |
 | - | - | - | - |
-| ネイティブ Windows | なし；[Git for Windows](https://git-scm.com/downloads/win)はオプション | サポートされていません | Windows ネイティブプロジェクトとツール |
-| WSL 2 | WSL 2 有効 | サポートされています | Linux ツールチェーンまたはサンドボックス化されたコマンド実行 |
-| WSL 1 | WSL 1 有効 | サポートされていません | WSL 2 が利用できない場合 |
+| [ネイティブ Windows](#install-on-native-windows) | なし；[Git for Windows](https://git-scm.com/downloads/win)はオプション | サポートされていません | Windows ネイティブプロジェクトとツール |
+| [WSL 2](#install-in-wsl) | WSL 2 有効 | サポートされています | Linux ツールチェーンまたはサンドボックス化されたコマンド実行 |
+| [WSL 1](#install-in-wsl) | WSL 1 有効 | サポートされていません | WSL 2 が利用できない場合 |
 
-**オプション 1: ネイティブ Windows**
+<h4 id="install-on-native-windows">
+  ネイティブ Windows へのインストール
+</h4>
 
-PowerShell または CMD からインストールコマンドを実行します。管理者として実行する必要はありません。[Git for Windows](https://git-scm.com/downloads/win)をインストールすることはオプションです。これにより、[Bash ツール](/docs/ja/tools-reference#bash-tool-behavior)と[Monitor ツール](/docs/ja/tools-reference#monitor-tool)に必要な Git Bash が提供されます。
+PowerShell または CMD から[インストールコマンド](#install-claude-code)を実行します。管理者として実行する必要はありません。[Git for Windows](https://git-scm.com/downloads/win)をインストールすることはオプションです。これにより、[Bash ツール](/docs/ja/tools-reference#bash-tool-behavior)と[Monitor ツール](/docs/ja/tools-reference#monitor-tool)に必要な Git Bash が提供されます。
 
 PowerShell または CMD からインストールするかどうかは、実行するインストールコマンドにのみ影響します。プロンプトは PowerShell では `PS C:\Users\YourName>` と表示され、CMD では `PS` なしで `C:\Users\YourName>` と表示されます。ターミナルが初めての場合は、[ターミナルガイド](/docs/ja/terminal-guide#windows)で各ステップを説明しています。
 
@@ -144,9 +146,11 @@ PowerShell または CMD からインストールするかどうかは、実行�
 
 Git for Windows がインストールされている場合、PowerShell ツールは Bash と並行して利用可能です。claude.ai と Console アカウントではデフォルトで有効になっており、Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry セッションでは `CLAUDE_CODE_USE_POWERSHELL_TOOL=1` で有効になります。`0` に設定してツールをオフにします。セットアップと制限については、[PowerShell ツール](/docs/ja/tools-reference#powershell-tool)を参照してください。
 
-**オプション 2: WSL**
+<h4 id="install-in-wsl">
+  WSL へのインストール
+</h4>
 
-WSL ディストリビューションを開き、上記の[インストール手順](#install-claude-code)から Linux インストーラーを実行します。PowerShell または CMD からではなく、WSL ターミナル内で `claude` をインストールして起動します。
+WSL ディストリビューションを開き、[インストール手順](#install-claude-code)から Linux インストーラーを実行します。PowerShell または CMD からではなく、WSL ターミナル内で `claude` をインストールして起動します。
 
 <h3 id="alpine-linux-and-musl-based-distributions">
   Alpine Linux と musl ベースのディストリビューション

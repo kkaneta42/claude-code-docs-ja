@@ -1634,8 +1634,6 @@ Claude Code はコンテキストウィンドウの制限に近づくと自動�
 
 より小さな会話ではなく、より大きなウィンドウが必要な場合、Fable モデル、Sonnet 5 以降、Haiku 5.5、Opus 4.6 以降、および Sonnet 4.6 は 100 万トークンのコンテキストウィンドウをサポートしています。プランごとの利用可能性と `[1m]` モデルバリアントの選択方法については、[拡張コンテキスト](/docs/ja/model-config#extended-context)を参照してください。コンテキスト圧縮はより大きな制限でも同じ方法で機能します。
 
-Sonnet 5.5 と Sonnet 5 は 1M コンテキストウィンドウで実行され、選択する `[1m]` バリアントはありません。その自動コンパクションのしきい値については、[Sonnet 5.5 と Sonnet 5 コンテキストウィンドウ](/docs/ja/model-config#sonnet-5-5-and-sonnet-5-context-window)を参照してください。また、[ゲートウェイの背後にあるコンテキストウィンドウ](/docs/ja/model-config#context-window-behind-a-gateway)で、`ANTHROPIC_BASE_URL` を[LLM ゲートウェイ](/docs/ja/llm-gateway)に設定したときに Claude Code がウィンドウをどのようにサイズ設定するかについて参照してください。
-
 自動コンパクションが実行される時点は、あなたのモデルと設定によって異なります。モデルごとの境界については[デフォルト自動コンパクトしきい値](/docs/ja/model-config#default-auto-compact-thresholds)を参照してください。Claude Code があなたのモデル ID（[LLM ゲートウェイ](/docs/ja/llm-gateway)エイリアスなど）に対して間違ったウィンドウを想定している場合は、[ゲートウェイまたはカスタムモデル ID のウィンドウを修正](/docs/ja/model-config#correct-the-window-for-a-gateway-or-custom-model-id)を参照してください。
 
 <h2 id="check-your-own-session">

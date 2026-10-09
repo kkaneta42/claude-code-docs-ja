@@ -161,7 +161,7 @@ Claude Code は、現在の作業ディレクトリとそれより上のすべ�
 
 発見されたすべてのファイルは、互いに上書きするのではなく、コンテキストに連結されます。ディレクトリツリー全体で、コンテンツはファイルシステムルートから作業ディレクトリまで順序付けられます。`foo/bar/` の例では、`foo/CLAUDE.md` は `foo/bar/CLAUDE.md` の前にコンテキストに表示されるため、Claude を起動した場所に近い指示が最後に読まれます。各ディレクトリ内で、`CLAUDE.local.md` は `CLAUDE.md` の後に追加されるため、個人的なメモはそのレベルで Claude が読む最後のものです。
 
-Claude はまた、現在の作業ディレクトリの下のサブディレクトリで `CLAUDE.md` と `CLAUDE.local.md` ファイルを発見します。起動時にロードするのではなく、Claude がそれらのサブディレクトリ内のファイルに対して [Read](/docs/ja/tools-reference#read-tool-behavior)、[Write](/docs/ja/tools-reference#write-tool-behavior)、または [Edit](/docs/ja/tools-reference#edit-tool-behavior) ツールを使用したときに、Claude Code がそれらを含めます。Claude がサブディレクトリの `CLAUDE.md` 自体に対してこれらのツールのいずれかを既に使用している場合、Claude Code はそのファイルが既に会話に含まれているものとして扱うため、そのファイルはこの方法ではロードされません。`.claude/worktrees/` の下にある worktree 内のファイルについては、[worktree でサブエージェントを分離する](/docs/ja/worktrees#isolate-subagents-with-worktrees) を参照してください。
+Claude はまた、現在の作業ディレクトリの下のサブディレクトリで `CLAUDE.md` と `CLAUDE.local.md` ファイルを発見します。起動時にロードするのではなく、Claude がそのサブディレクトリ内の別のファイルを読み取り、書き込み、または編集した時点で、Claude Code はそれぞれをロードします。読み取りには、単一ファイルに対する `cat` や `head` など、[読み取りとしてカウントされる](/docs/ja/tools-reference#edit-tool-behavior) Bash コマンドでファイルを表示することも含まれます。`.claude/worktrees/` の下にある worktree 内のファイルについては、[worktree でサブエージェントを分離する](/docs/ja/worktrees#isolate-subagents-with-worktrees) を参照してください。
 
 大規模なモノレポで他のチームの CLAUDE.md ファイルが取得される場合は、[`claudeMdExcludes`](#exclude-specific-claude-md-files) を使用してそれらをスキップしてください。ルートおよびディレクトリごとの CLAUDE.md ファイルとルールの完全なレイアウトについては、[モノレポと大規模リポジトリ](/docs/ja/large-codebases) を参照してください。
 
@@ -232,7 +232,7 @@ paths:
 - Include OpenAPI documentation comments
 ```
 
-`paths` フィールドのないルールは無条件にロードされ、すべてのファイルに適用されます。パススコープ付きルールは、すべてのツール使用時ではなく、Claude がパターンに一致するファイルに対して Read、Write、または Edit ツールを使用するときにトリガーされます。マッチングは、Claude がプロジェクトディレクトリへのシンボリックリンクされたパスを通じてファイルに到達する場合（例えば、シンボリックリンクされたチェックアウト）にも機能します。
+`paths` フィールドのないルールは無条件にロードされ、すべてのファイルに適用されます。パススコープ付きルールは、Claude が一致するファイルに対して Read、Write、または Edit ツールを使用したときにロードされます。また、単一ファイルに対する `cat` や `head` など、[読み取りとしてカウントされる](/docs/ja/tools-reference#edit-tool-behavior) Bash コマンドで Claude が一致するファイルを表示したときにもロードされます。マッチングは、Claude がプロジェクトディレクトリへのシンボリックリンクされたパスを通じてファイルに到達する場合（例えば、シンボリックリンクされたチェックアウト）にも機能します。
 
 `paths` フィールドでグロブパターンを使用して、拡張子、ディレクトリ、またはそれらの組み合わせでファイルをマッチさせてください。
 
@@ -278,7 +278,9 @@ Claude Code は予算を超えるパターンを展開されていない状態�
 
 `.claude/rules/` ディレクトリはシンボリックリンクをサポートしているため、共有ルールセットを保持し、複数のプロジェクトにリンクできます。循環シンボリックリンクは検出され、適切に処理されます。
 
-Claude Code は、ターゲットが作業ディレクトリの外にあるシンボリックリンクを [外部インポート](#import-additional-files) のように扱います。リンクされたルールは、プロジェクトの外部インポートを承認するまでロードされず、その後は [`paths` フィールド](#path-specific-rules) のないものだけがロードされます。Claude Code がこの承認を求めるのは、プロジェクトのメモリファイルが `@path` で作業ディレクトリ外のファイルをインポートする場合のみで、シンボリックリンクだけでは求めません。承認なしで共有ルールをロードするには、[`~/.claude/rules/`](#user-level-rules) に保持してください。そこではマシン上のすべてのプロジェクトに適用されます。
+Claude Code は、ターゲットが作業ディレクトリの外にあるシンボリックリンクを [外部インポート](#import-additional-files) のように扱います。リンクされたルールは、プロジェクトの外部インポートを承認するまでロードされず、その後は [`paths` フィールド](#path-specific-rules) のないものだけがロードされます。
+
+Claude Code はこの承認を、インタラクティブセッションの開始時にダイアログでプロジェクトごとに 1 回求めます。ダイアログには、外部の `@path` インポートとともに、リンクされたルールファイルが一覧表示されます。承認なしで共有ルールをロードするには、[`~/.claude/rules/`](#user-level-rules) に保持してください。そこではマシン上のすべてのプロジェクトに適用されます。
 
 この例は、共有ディレクトリと個別ファイルの両方をリンクします。
 

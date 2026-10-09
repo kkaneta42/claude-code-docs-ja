@@ -354,7 +354,7 @@ return audits.filter(Boolean)
 
 本体は最上位の `await` を持つプレーン JavaScript です。`agent()` は 1 つのサブエージェントを生成し、`pipeline()` はリスト内の 1 つのアイテムごとに 1 つを実行し、`parallel()` は一連のエージェント タスクを同時に実行してすべてが完了するのを待ちます。
 
-`agent()` 呼び出しは、実行中に停止した場合または回復不可能な API エラーが発生した場合は `null` に解決されます。`pipeline()` はその `null` を結果配列に保持するため、例は `.filter(Boolean)` で終わってそれらのエントリを削除します。
+`agent()` 呼び出しは、実行中に停止した場合または回復不可能な API エラーが発生した場合は `null` に解決されます。`pipeline()` はその `null` を結果配列に保持するため、例は `.filter(Boolean)` で終わり、[すべての試行で停止したエージェント](#when-an-agent-stalls-and-restarts)のスロットを含め、それらのエントリを削除します。
 
 [auto モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)では、スクリプトが `agent()` に渡すプロンプトは、分類器がそのサブエージェントのアクションをレビューするときにあなたからのリクエストとしてカウントされません。Claude Code はそれをスクリプトが計算したテキストとしてマークするためです。
 
@@ -462,6 +462,32 @@ Claude Code はエージェントが開始した順序でランを再生し、�
 * [`autoContinueAtUsageLimit`](/docs/ja/settings-reference#autocontinueatusagelimit) がオンで、セッション自体が [使用制限がリセットされるのを待つ](/docs/ja/interactive-mode#wait-for-a-usage-limit-to-reset)ことができる同じ設定です。待機中にオフにすると、待機が終了し、待機中のエージェントは失敗します。
 * 制限は 24 時間以内にリセットされます。週単位の制限はさらに先にリセットされる可能性があります。
 * ランはまだ 2 回待機していません。3 回目に制限に達すると、エージェントは失敗します。
+
+<h3 id="when-an-agent-stalls-and-restarts">
+  エージェントが停滞して再起動するとき
+</h3>
+
+出力が十分長い時間届かなくなったエージェントは、同じプロンプトから最初からやり直します。[`/workflows`](#watch-the-run) では、その名前に `(retry 1)` サフィックスが付き、詳細に `attempt 2 (stalled)` と表示されます。再起動は自動で行われるため、何もする必要はありません。
+
+新しい試行は、停滞した試行のトランスクリプトなしで開始されます。停滞した試行が既に変更したファイルは変更されたままで、その試行が消費したトークンはランの合計に残ります。停滞ウィンドウとは、Claude Code が試行を終了する前にエージェントからの出力を待つ時間です。エージェントが自身のツール呼び出しや[使用制限のリセット](#when-a-run-hits-your-usage-limit)を待っている時間は、停滞ウィンドウにカウントされません。
+
+エージェントの再起動は、`r` で要求した再起動も含めて最大 5 回です。6 回目の試行も停滞した場合、`agent()` 呼び出しは失敗し、エラーの冒頭にその理由が示されます。
+
+* `agent stalled on all 6 attempts`: すべての試行がウィンドウ全体の間、出力なしで経過しました。エージェントの作業がそれほど長く出力を伴わないものである場合は、ウィンドウを長くしてください
+* `agent lost its reply on all 6 attempts`: すべての試行の応答ストリームが途絶え、Claude Code がその待機を諦めました。[ストリーミングアイドルウォッチドッグ](/docs/ja/network-config#streaming-idle-watchdogs)が先に応答を終了させたため、停滞ウィンドウを長くしても効果はありません。そのウォッチドッグのタイムアウトは `CLAUDE_STREAM_IDLE_TIMEOUT_MS` で設定します
+* `agent abandoned after 6 attempts`: 試行がそれぞれ異なる方法で終了しました。エラーにはそれらが順番に列挙されます
+
+ウィンドウが終了する前に出力を生成するための時間をエージェントに多く与えるには：
+
+* **1 つのエージェント**: その `agent()` 呼び出しでミリ秒単位の `stallMs` を渡します。たとえば 30 分なら `agent(prompt, { stallMs: 1800000 })` です
+* **すべてのエージェント**: [`CLAUDE_ASYNC_AGENT_STALL_TIMEOUT_MS`](/docs/ja/env-vars#variables) を設定します。これはワークフロー外のサブエージェントにも適用されます
+
+失敗後にランが続行されるかどうかは、スクリプトがエージェントをどのように呼び出したかによって異なります。
+
+* **[`parallel()` または `pipeline()`](#what-the-saved-script-looks-like) 内**: ランはエージェントの結果の代わりに `null` を使用して続行されます
+* **直接 await した場合**: ランはエラーで終了します
+
+再試行するには、Claude にワークフローを再起動するよう依頼してください。何が再度実行されるかについては、[一時停止後に再開する](#resume-after-a-pause)を参照してください。
 
 <h3 id="cost">
   コスト

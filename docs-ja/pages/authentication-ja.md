@@ -142,8 +142,6 @@ API キーを作成しなくても Console アカウントにサインインで�
 * **サインアウトする対象**: Claude Code はマシンに保存されている claude.ai ログインからサインアウトします
 * **元に戻す方法**: `/logout` を実行します。これにより、このサインインが書き込んだ認証情報が削除および取り消されます
 
-組織が [サーバー管理設定](/docs/ja/server-managed-settings)を使用している場合、Claude Code v2.1.257 以降でこのサインインに適用されます。
-
 プロファイルに関するその他すべてのことがこのサインインに適用されます。これには、他の認証情報に対するランク付け、`/status` で取得される `Profile` 行、および claude.ai ログインが必要な機能が含まれます。[Anthropic プロファイルとフェデレーション認証情報](#anthropic-profiles-and-federation-credentials)を参照してください。
 
 <h3 id="cloud-provider-authentication">

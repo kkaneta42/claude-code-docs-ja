@@ -307,8 +307,8 @@ Anthropic ホスト環境では、各セッションは独自のオペレーテ�
 | | クラウドセッションで利用可能 | 理由 |
 | :- | :- | :- |
 | リポジトリの `CLAUDE.md` | はい | クローンの一部 |
-| リポジトリの `.claude/settings.json` hooks と権限ルール | はい、1 つのリポジトリを持つセッションの場合 | クローンの一部。複数のリポジトリを持つセッション（[プロジェクト](/docs/ja/claude-projects#what-threads-pick-up-from-your-repositories)スレッドを含む）はクローンの上で開始され、それらを読み取りません |
-| リポジトリの `.mcp.json` MCP サーバー | はい、1 つのリポジトリを持つセッションの場合 | クローンの一部、セッションの作業ディレクトリから検出されます |
+| リポジトリの `.claude/settings.json` フックと権限ルール | はい、1 つのリポジトリを持つセッションの場合 | クローンの一部。複数のリポジトリを持つセッションについては、[読み取られる設定](/docs/ja/settings#settings-in-cloud-sessions)を参照してください |
+| リポジトリの `.mcp.json` MCP サーバー | はい、1 つのリポジトリを持つセッションの場合 | クローンの一部、セッションの作業ディレクトリから検出されます。セルフホスト環境については、[どのリポジトリの設定が適用されるか](/docs/ja/self-hosted-environments-configuration#repository-settings-in-sessions-with-several-repositories)を参照してください |
 | リポジトリの `.claude/rules/` | はい | クローンの一部 |
 | リポジトリの `.claude/skills/`、`.claude/agents/`、`.claude/commands/` | はい | クローンの一部 |
 | リポジトリの `.claude/settings.json` で宣言されたプラグインとマーケットプレイス | いいえ | クラウドセッションは、リポジトリが [`enabledPlugins`](/docs/ja/settings-reference#enabledplugins) で有効にするプラグインをインストールしません。これには [`extraKnownMarketplaces`](/docs/ja/settings-reference#extraknownmarketplaces) の下にリストされているマーケットプレイスのプラグインも含まれます |
@@ -575,7 +575,7 @@ exit 0
 
 SessionStart フックはクラウドでローカルと同じように動作しますが、これらの注意事項があります。
 
-* **セッションごとに 1 つのリポジトリ**：複数のリポジトリを持つセッションは、リポジトリの `.claude/settings.json` からフックをロードしないため、そこで定義した SessionStart フックは実行されません。これらのセッションの依存関係は [セットアップスクリプト](#setup-scripts) でインストールしてください。
+* **セッションごとに 1 つのリポジトリ**：Anthropic ホスト環境では、複数のリポジトリを持つセッションはどのリポジトリの `.claude/settings.json` からもフックをロードしないため、そこで定義した SessionStart フックは実行されません。これらのセッションの依存関係は、代わりに [セットアップスクリプト](#setup-scripts) でインストールしてください。セルフホスト環境については、[どのリポジトリの設定が適用されるか](/docs/ja/self-hosted-environments-configuration#repository-settings-in-sessions-with-several-repositories) を参照してください。
 * **クラウドのみのスコープなし**：フックはローカルとクラウドセッションの両方で実行されます。ローカル実行をスキップするには、[依存関係インストールスクリプト](#install-dependencies-with-a-sessionstart-hook) のように `CLAUDE_CODE_REMOTE` 環境変数が `true` でない限り早期に終了します。
 * **ネットワークアクセスが必要**：インストールコマンドはパッケージレジストリに到達する必要があります。環境が **None** ネットワークアクセスを使用する場合、これらのフックは失敗します。**Trusted** の下の [デフォルト許可リスト](#default-allowed-domains) は npm、PyPI、RubyGems、crates.io をカバーします。
 * **プロキシ互換性**：Anthropic ホスト環境では、すべての送信トラフィックは [セキュリティプロキシ](#security-proxy) を通じて渡されます。一部のパッケージマネージャーはこのプロキシで正しく機能しません。Bun は既知の例です。[セルフホスト環境](/docs/ja/self-hosted-environments-deploy#default-deny-egress) では、送信トラフィックは代わりに独自のネットワーク境界を通じて行きます。

@@ -92,6 +92,10 @@ Claude Code は、一元的な構成のための 2 つのアプローチをサ�
 
   <Step title="保存してデプロイする">
     変更を保存します。Claude Code クライアントは、次回の起動時または 1 時間ごとのポーリングサイクルで更新された設定を受け取ります。
+
+    エディターは、公開されている Claude Code 設定の JSON スキーマに照らして JSON をチェックします。解析可能な JSON に問題が見つかった場合は、警告が表示され、保存ボタンのラベルが変わります。設定がすでに保存されている場合のラベルは **Update with errors**、まだ設定が保存されていない場合は **Add with errors** です。スキーマの警告は保存をブロックしないため、このボタンでも保存は行われます。
+
+    スキーマは[最新リリースに追従していない場合がある](/docs/ja/settings#edit-a-settings-file)ため、エディターが[設定リファレンス](/docs/ja/settings-reference#all-settings)に記載されているキーや値を警告することがあります。Claude Code は保存されたキーと値を受け取り、読み込む際に[独自の検証](#invalid-entries-in-delivered-settings)を実行します。
   </Step>
 </Steps>
 
@@ -348,6 +352,11 @@ Claude Code は、配信値によって [`API_FORCE_IDLE_TIMEOUT`](/docs/ja/env-
 
 [`apiKeyHelper`](/docs/ja/settings-reference#apikeyhelper) スクリプトによって返されたキーも [Workload Identity Federation](https://platform.claude.com/docs/en/manage-claude/workload-identity-federation) 認証情報も設定フェッチをトリガーしません。
 
+セッションは、認証に使用する認証情報を所有する組織の管理設定を受け取ります。[Claude Console](https://platform.claude.com) の API キーは、そのキーが作成された Console 組織に属しており、これは claude.ai の Team または Enterprise 組織とは別の組織です。そのため、claude.ai の Admin Settings で構成した設定は、会社の Console API キーを使用する CI ジョブなど、そのキーで認証するセッションには届きません。そのジョブに設定を適用するには、以下のいずれかのオプションを使用します。OAuth トークンのオプションは、[`--bare`](/docs/ja/headless#start-faster-with-bare-mode) で実行されるジョブには適用されません。bare モードは `CLAUDE_CODE_OAUTH_TOKEN` を読み取らないためです。
+
+* **OAuth トークン**：[`claude setup-token`](/docs/ja/authentication#generate-a-long-lived-token) でトークンを生成し、Team または Enterprise 組織に対して認可したうえで、ジョブの環境で `CLAUDE_CODE_OAUTH_TOKEN` として設定します。`ANTHROPIC_API_KEY` など、トークンより[優先される](/docs/ja/authentication#authentication-precedence)認証情報はその環境から削除してください。
+* **エンドポイント管理設定**：ジョブを実行するマシンに[管理設定ファイル](/docs/ja/managed-settings#delivery-mechanisms)をデプロイします。
+
 Claude Desktop アプリの [Cowork](https://claude.com/docs/cowork/overview) セッションでは、ユーザーが Team または Enterprise アカウントでサインインしている場合でも、Claude Code は claude.ai 管理コンソールからサーバー管理設定をフェッチしません。[ポリシーが適用される場所と時期](/docs/ja/managed-settings#where-and-when-a-policy-applies) では、ユーザーのマシン上の Cowork セッションとリモート Cowork セッションにどのポリシーが適用されるかについて説明しています。claude.ai は、Cowork ユーザーが claude.ai の git リポジトリからマーケットプレイスを追加するか、Cowork タブの **Customize** から追加する場合、[`strictKnownMarketplaces`](/docs/ja/settings-reference#strictknownmarketplaces) および [`blockedMarketplaces`](/docs/ja/settings-reference#blockedmarketplaces) リストを自身で適用します。[制限がどのように機能するか](/docs/ja/plugins/org#restrict-what-users-can-install) がそのチェックについて説明しています。
 
 シェルで `CLAUDE_CODE_USE_*` プロバイダー変数またはデフォルト以外の `ANTHROPIC_BASE_URL` をエクスポートする場合、Claude Code はセッションの設定フェッチをスキップします。[`claude doctor` と `/status` はスキップされたフェッチとその原因を報告します](#verify-settings-delivery)。
@@ -379,7 +388,7 @@ Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、および
 | ユーザーが変更された Claude Code バイナリを実行する | 変更されたクライアントを実行できるユーザーは、クライアント側の制御をバイパスできます |
 | ユーザーが古い Claude Code バージョンを実行する | サーバー管理設定より前のバージョンは、これらをフェッチまたは適用しません |
 | API が利用不可 | キャッシュされた設定が利用可能な場合は適用されます。ただし、[フェッチが成功するまで Claude Code が保留する値](#fetch-and-caching-behavior)を除きます。キャッシュがない場合、Claude Code は次の成功したフェッチまでサーバー管理設定を適用しません。また、デバイス上の[エンドポイント管理設定](/docs/ja/managed-settings#delivery-mechanisms)は引き続き適用されます。`forceRemoteSettingsRefresh: true` の場合、CLI は続行するのではなく終了します。ただし、[`claude auth` サブコマンド](#enforce-fail-closed-startup)を除きます。[Claude apps gateway](#platform-availability)を通じてサインインしているクライアントは、その設定がない場合、起動時に終了します。同じ `claude auth` 除外があります |
-| ユーザーが別の組織で認証する | 管理対象組織外のアカウントには設定が配信されません |
+| ユーザーが別の組織で認証する | 管理対象組織外のアカウントには設定が配信されません。これには [Console API キー](#platform-availability)で認証するセッションも含まれます |
 | ユーザーが[サードパーティモデルプロバイダー](#platform-availability)を構成する | サーバー管理設定はバイパスされます。これには `CLAUDE_CODE_USE_BEDROCK`、`CLAUDE_CODE_USE_MANTLE`、`CLAUDE_CODE_USE_VERTEX`、`CLAUDE_CODE_USE_FOUNDRY`、`CLAUDE_CODE_USE_ANTHROPIC_AWS`、またはデフォルト以外の `ANTHROPIC_BASE_URL` の設定が含まれます |
 | ネットワークトラフィックが傍受またはリダイレクトされる | TLS 検証が無効化されたか、傍受されたトラフィックは、クライアントが受け取る設定を変更できます |
 

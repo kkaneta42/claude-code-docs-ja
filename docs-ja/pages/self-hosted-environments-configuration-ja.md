@@ -403,7 +403,7 @@ Claude Code は、ほかのソースからも MCP サーバーを読み込みま
 
 * 標準のシステムパスにあるエンタープライズスコープの[管理 MCP ファイル](/docs/ja/managed-mcp)：Linux のランナーホストでは `/etc/claude-code/managed-mcp.json`、macOS のホストでは `/Library/Application Support/ClaudeCode/managed-mcp.json` です。管理者が列挙したサーバーのみを読み込めるようにする、ロックダウンされたフリートで使用します。優先順位のルールについては、[managed-mcp.json による排他的な制御](/docs/ja/managed-mcp#exclusive-control-with-managed-mcp-json)を参照してください。このファイルがランナーホスト上にある場合、Claude Code は claude.ai のコネクタを含め、Anthropic のコントロールプレーンがセッションに配信する MCP サーバーをスキップし、セッションの子プロセスの stderr に出力される警告でそれらの名前を示します。ランナーはこの警告を `debug` ログレベルで記録します。v2.1.229 より前は、これらのセッションは起動時に `You cannot dynamically configure MCP servers when an enterprise MCP config is present` というメッセージを出して終了していました。
 * ランナーホスト上の[管理設定](/docs/ja/managed-settings)にある [`managedMcpServers`](/docs/ja/settings-reference#managedmcpservers) キー：排他的な制御を行わずに HTTP および SSE サーバーを提供するため、ほかのソースからのサーバーも引き続き読み込まれます。Claude Code v2.1.259 以降が必要です。
-* `<repo>/.mcp.json`：プロジェクトスコープです。このファイルをリポジトリにコミットしてください。そのサーバーはクラウドセッションで自動承認されます。
+* `<repo>/.mcp.json`：プロジェクトスコープです。このファイルをリポジトリにコミットしてください。そのサーバーはクラウドセッションで自動承認されます。複数のリポジトリを含むセッションでは、[読み込まれるのは最大 1 つのリポジトリのファイルのみです](#repository-settings-in-sessions-with-several-repositories)。
 
 組織でコネクタ配信が有効になっている場合、Anthropic のコントロールプレーンは、claude.ai で設定したコネクタを、サーバーが提供する MCP 設定を通じて対話的に作成されたセッションに配信します。この配信は `api.anthropic.com` を経由します。[CLI からのディスパッチ](/docs/ja/self-hosted-environments-testing#run-the-test-loop)のようにプログラムで作成されたセッションには、コネクタは配信されません。そうしたセッションには、このセクションで挙げたほかのいずれかのソースを通じて MCP サーバーを提供してください。子プロセスの OAuth トークンにはコネクタを直接取得するためのスコープが含まれていないため、子プロセスが自らその取得を試みることはありません。配信はサーバー主導で行われます。
 
@@ -546,7 +546,7 @@ fi
 exit 0
 ```
 
-フックはセッション終了前に Claude にコミットしてプッシュするよう促し、ディレクトリが git リポジトリではないか、リモートがない場合は静かに留まります。
+フックはセッション終了前に Claude にコミットしてプッシュするよう促し、ディレクトリが git リポジトリではないか、リモートがない場合は静かに留まります。複数のリポジトリを含むセッションについては、[`$CLAUDE_PROJECT_DIR` が指すもの](#repository-settings-in-sessions-with-several-repositories)を参照してください。
 
 <h2 id="permissions-and-tool-approval">
   権限とツール承認
@@ -575,7 +575,7 @@ exec "$CLAUDE_RUNNER_CLAUDE_BIN" "$@" --permission-mode auto
 
 `SELF_HOSTED_RUNNER_HOST_CONFIG_DIR` を設定して別のパスからシードするか、空のディレクトリに指定してシーディングを無効にします。
 
-リポジトリコミット `.claude/settings.json` はプロジェクト設定として上に層状化されます。セッションはランナーイメージの標準システムパスから [`managed-settings.json`](/docs/ja/settings#where-settings-live) も読み取ります。そのキーが [サーバー管理設定](/docs/ja/server-managed-settings) と一緒に適用されるかどうかは、[Claude Code が管理ソースを組み合わせる方法](/docs/ja/managed-settings#how-claude-code-combines-managed-sources) に従います。デフォルトでは、組織が任意のサーバー管理キーを配信する場合、セッションは [Claude Code がすべての管理ソースから読み取るキー](/docs/ja/managed-settings#keys-read-from-every-admin-source)（`env` ブロック、サンドボックスロック、サンドボックスバイナリパス、`forceRemoteSettingsRefresh` など）を除いて、ランナーイメージのファイルを無視します。[設定優先順位](/docs/ja/settings#settings-precedence) を参照してください。
+リポジトリコミット `.claude/settings.json` はプロジェクト設定として上に層状化されます。複数のリポジトリを含むセッションでは、[有効になるのは最大 1 つのリポジトリのファイルのみです](#repository-settings-in-sessions-with-several-repositories)。セッションはランナーイメージの標準システムパスから [`managed-settings.json`](/docs/ja/settings#where-settings-live) も読み取ります。そのキーが [サーバー管理設定](/docs/ja/server-managed-settings) と一緒に適用されるかどうかは、[Claude Code が管理ソースを組み合わせる方法](/docs/ja/managed-settings#how-claude-code-combines-managed-sources) に従います。デフォルトでは、組織が任意のサーバー管理キーを配信する場合、セッションは [Claude Code がすべての管理ソースから読み取るキー](/docs/ja/managed-settings#keys-read-from-every-admin-source)（`env` ブロック、サンドボックスロック、サンドボックスバイナリパス、`forceRemoteSettingsRefresh` など）を除いて、ランナーイメージのファイルを無視します。[設定優先順位](/docs/ja/settings#settings-precedence) を参照してください。
 
 Anthropic のコントロールプレーンがセッションに [Claude Code フック](/docs/ja/hooks) を提供する場合、ランナーはそれらを独自の設定の上ではなく隣に設定します。Claude Code v2.1.229 以降が必要です。
 
@@ -586,6 +586,19 @@ Anthropic のコントロールプレーンがセッションに [Claude Code �
 [Claude Tag](https://claude.com/docs/claude-tag/overview) セッション以外では、セルフホスト環境のセッションはデフォルトで [自動メモリ](/docs/ja/memory#auto-memory) がオフの状態で実行されます。セッションをまたいで引き継ぐべき指示には、ランナーイメージまたはリポジトリ内の `CLAUDE.md` を使用してください。
 
 ランナーによるホストの `~/.claude/` のスナップショットには `projects/` ディレクトリは含まれません。自動メモリのデフォルトの保存場所はこのディレクトリの下にあります。そこにメモリファイルを置いても、ランナーはそれらをセッションにシードせず、自動メモリがオンになることもありません。
+
+<h3 id="repository-settings-in-sessions-with-several-repositories">
+  複数のリポジトリを含むセッションでのリポジトリ設定
+</h3>
+
+複数のリポジトリを含むセッションでは、Claude Code はセッションの開始ディレクトリからプロジェクト設定を読み取るため、プロジェクト設定として有効になるのは最大 1 つのリポジトリの `.claude/settings.json` のみです。別のリポジトリのファイルで定義されたフックは実行されず、そのファイル内の拒否ルールは適用されず、その `env` も設定されません。
+
+* **`--capacity 1`（デフォルト）と組み込みのチェックアウトを使用する場合**：セッションはリポジトリリストの最初のリポジトリで開始します。そのリポジトリの `.claude/settings.json` がプロジェクト設定として有効になり、その `.mcp.json` が読み込まれますが、他のリポジトリのものは有効にならず、読み込まれません。
+* **1 より大きい `--capacity`、または [`checkout` フック](#checkout) を使用する場合**：セッションはチェックアウトを含むセッションごとのディレクトリで開始します。どのリポジトリの `.claude/settings.json` もプロジェクト設定として有効にならず、どのリポジトリの `.mcp.json` も読み込まれず、フックコマンド内の [`$CLAUDE_PROJECT_DIR`](/docs/ja/hooks#reference-scripts-by-path) はチェックアウトではなくそのディレクトリになります。
+
+各リポジトリの `CLAUDE.md` とスキルは、セッションがどこで開始しても読み込まれます。ランナーはすべてのリポジトリを [追加ディレクトリ](/docs/ja/permissions#additional-directories-grant-file-access-not-configuration) として Claude Code に渡すため、Claude Code は各リポジトリの `.claude/settings.json` から `enabledPlugins` キーと `extraKnownMarketplaces` キーも読み取ります。
+
+すべてのセッションでフックを実行したり権限ルールを適用したりするには、ランナーホストの `~/.claude/settings.json` に記述します。ランナーは、セッションがどこで開始しても、[ホストのファイルをすべてのセッションにシードします](#how-each-session’s-config-is-assembled)。`Read` ルールまたは `Edit` ルールのパスは、`//` による絶対パスまたは `~/` によるホーム相対の [パターン](/docs/ja/permissions#read-and-edit) として記述してください。それ以外のパターンは設定ソースまたは現在のディレクトリを基準とするためです。
 
 <h3 id="repository-committed-permission-rules">
   リポジトリコミット権限ルール

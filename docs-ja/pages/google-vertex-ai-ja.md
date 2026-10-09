@@ -342,9 +342,11 @@ Claude Code デフォルトより古いモデルバージョンをピン留め�
   100 万トークンコンテキストウィンドウ
 </h2>
 
-Claude Sonnet 5、Opus 4.6 以降、および Sonnet 4.6 は、Google Cloud の Agent Platform で[100 万トークンコンテキストウィンドウ](https://platform.claude.com/docs/ja/build-with-claude/context-windows#context-window-sizes-by-model)をサポートしています。Sonnet 5 は常に 100 万ウィンドウで実行され、選択する `[1m]` バリアントはありません。その他のモデルについては、Claude Code は 100 万トークンモデルバリアントを選択すると、拡張コンテキストウィンドウを自動的に有効にします。
+Fable モデル、Sonnet 5 以降、および Opus 4.7 以降は、Google Cloud の Agent Platform でデフォルトで[100 万トークンコンテキストウィンドウ](https://platform.claude.com/docs/ja/build-with-claude/context-windows#context-window-sizes-by-model)で実行され、`[1m]` サフィックスは不要です。代わりに 200K ウィンドウを維持するには、[`CLAUDE_CODE_DISABLE_1M_CONTEXT=1`](/docs/ja/model-config#turn-off-1m-context) を設定します。
 
-[セットアップウィザード](#sign-in-with-agent-platform)は、モデルをピン留めするときに 100 万トークンコンテキストオプションを提供します。手動でピン留めされたモデルの代わりに有効にするには、モデル ID に `[1m]` を追加します。詳細については、[サードパーティデプロイメント用のモデルをピン留めする](/docs/ja/model-config#pin-models-for-third-party-deployments)を参照してください。1M ウィンドウを使用する際にピン留めを変更しない方法を含みます。
+Opus 4.6 と Sonnet 4.6 は、`[1m]` バリアントを選択すると 100 万ウィンドウを使用できます。[セットアップウィザード](#sign-in-with-agent-platform)は、モデルをピン留めするときに 100 万トークンコンテキストオプションを提供します。代わりに手動でピン留めしたモデルで有効にするには、モデル ID に `[1m]` を追加します。ピン留めを変更せずに 100 万ウィンドウを使用する方法を含む詳細については、[サードパーティデプロイ用のモデルをピン留めする](/docs/ja/model-config#pin-models-for-third-party-deployments)を参照してください。
+
+v2.1.287 より前は、Fable モデルと Opus 4.7 以降は Google Cloud の Agent Platform でデフォルトで 200K ウィンドウで実行され、`[1m]` サフィックスによって 100 万ウィンドウを使用していました。
 
 <h2 id="troubleshooting">
   トラブルシューティング

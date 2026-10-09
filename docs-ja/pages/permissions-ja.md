@@ -700,7 +700,7 @@ Claude Code は現在の作業ディレクトリとその親、`~/.claude/` の�
 権限と[サンドボックス化](/docs/ja/sandboxing)は補完的なセキュリティレイヤーです。
 
 * **権限**は Claude Code が使用できるツール、およびアクセスできるファイルやドメインを制御します。これらは Bash、Read、Edit、WebFetch、MCP、およびその他すべてのツールに適用されます。ただし、他のツールが残っている場合、deny ルールまたは ask ルールは[`EndConversation`](/docs/ja/tools-reference#endconversation-tool-behavior)をブロックできません。
-* **サンドボックス化**は OS レベルの強制を提供し、シェルコマンドのファイルシステムとネットワークアクセスを制限します。これは Bash、PowerShell、および[Monitor](/docs/ja/tools-reference#monitor-tool)コマンドとその子プロセスにのみ適用されます。
+* **サンドボックス化**は OS レベルの強制を提供し、シェルコマンドのファイルシステムとネットワークアクセスを制限します。これは Bash、PowerShell、および [Monitor](/docs/ja/tools-reference#monitor-tool) ツールのコマンドとその子プロセスに適用されます。
 
 防御の多層化のために両方を使用してください。プロンプトインジェクションが Claude の意思決定をバイパスしても、サンドボックス制限は引き続き適用されます。サンドボックス設定と権限ルールからのパスとドメインは[最終的なサンドボックス構成にマージされます](/docs/ja/sandboxing#permission-rules)。
 

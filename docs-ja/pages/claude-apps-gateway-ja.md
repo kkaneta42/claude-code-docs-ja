@@ -513,35 +513,36 @@ Claude Desktop は同じブラウザ SSO ステップでゲートウェイのア
 使用状況テレメトリは開発者のアイデンティティ、トークン数、モデル、およびレイテンシを組織のコレクターに伝えます。ゲートウェイはプロンプトまたは完了コンテンツをログまたは保存しません。ログやトレースなどのより豊富なテレメトリが収集されるかどうか。コマンドやファイルパスを含む可能性があるのは、組織の[宛先ごとの選択](/docs/ja/claude-apps-gateway-config#telemetry)です。
 
 <h2 id="availability-and-limitations">
-  可用性と制限
+  利用可能性と制限事項
 </h2>
 
-表は、開発者がゲートウェイを通じて接続するときに機能する Claude Code 機能と、ゲートウェイサーバー自体がサポートするものをカバーしています。何かがサポートされていない場合、Notes 列は代替案を提供します。
+この表は、開発者がゲートウェイ経由で接続した場合にどの Claude Code の機能が動作するか、およびゲートウェイサーバー自体が何をサポートしているかをまとめたものです。サポートされていない項目については、「注記」列に代替手段を記載しています。
 
-ゲートウェイは、CLI がすべてのアップストリームに送信する [`anthropic-beta`](https://platform.claude.com/docs/ja/api/beta-headers) 値を配信するため、オペレーターはベータ許可リストを維持しません。Amazon Bedrock の場合、ヘッダーを無視し、ゲートウェイは値をリクエストボディの `anthropic_beta` フィールドに移動します。他のアップストリームは送信されたままヘッダーを受け取ります。
+ゲートウェイは、CLI が送信する [`anthropic-beta`](https://platform.claude.com/docs/en/api/beta-headers) の値をすべてのアップストリームに渡すため、運用者がベータの許可リストを管理する必要はありません。Amazon Bedrock はこのヘッダーを無視するため、Amazon Bedrock に対しては、ゲートウェイがこれらの値をリクエストボディの `anthropic_beta` フィールドに移します。その他のアップストリームは、送信されたとおりにヘッダーを受け取ります。
 
 | 機能 | ステータス | 注記 |
 | - | - | - |
-| 推論転送（Amazon Bedrock、Claude Platform on AWS、Google Cloud の Agent Platform、Microsoft Foundry、Anthropic） | 利用可能 | アップストリームごとのモデル変換とフェイルオーバー付き。Amazon Bedrock アップストリームは `bedrock-runtime` エンドポイントと AWS デフォルト認証情報チェーンを使用します。[Amazon Bedrock Mantle アップストリーム](/docs/ja/claude-apps-gateway-config#amazon-bedrock-mantle-endpoint)にはゲートウェイサーバー上の Claude Code v2.1.283 以降が必要で、[Claude Platform on AWS アップストリーム](/docs/ja/claude-apps-gateway-config#claude-platform-on-aws)には v2.1.198 以降が必要です。 |
-| IdP グループによるモデルアクセスと管理設定 | 利用可能 | モデルアクセスはサーバー側で強制されます。管理設定は IdP グループごとに配信され、CLI によって[管理設定層](/docs/ja/settings#settings-precedence)で適用されます |
-| Claude Desktop | 選択的に利用可能 | ゲートウェイは、ポリシーが [`desktop` キー](/docs/ja/claude-apps-gateway-config#claude-desktop-overlay)でオプトインした後、`/user/bootstrap` で Claude Desktop の設定を提供し、Claude Desktop は Cowork タブと Code タブからモデルリクエストを送信し、Chat タブから有効にした場合はゲートウェイを通じて送信します。Chat タブをオンにするには、[Claude Desktop を接続](#connect-claude-desktop)を参照してください。ゲートウェイサーバー上の Claude Code v2.1.203 以降が必要です。 |
-| テレメトリファンアウト（OTLP/HTTP） | 利用可能 | エクスポートごとにアイデンティティスタンプ付き。protobuf と JSON エンコーディングの両方 |
-| OIDC ID プロバイダー | 利用可能 | 任意の OIDC 準拠の IdP。ゲートウェイは標準 OIDC ディスカバリーと認可コードフローを実行します。[ID プロバイダーセットアップ](/docs/ja/claude-apps-gateway-deploy#identity-provider-setup)を参照して、IdP ごとの設定を確認してください |
-| ユーザーごとおよびグループごとの支出制限 | 利用可能 | [支出制限](/docs/ja/claude-apps-gateway-spend-limits)を参照してください |
-| サーバー側ウェブ検索 | 利用不可 | CLI はゲートウェイがルーティングするアップストリームプロバイダーを見ることができないため、ウェブ検索サポートを検証できず、ゲートウェイセッションで WebSearch を無効化します |
-| [Remote Control](/docs/ja/remote-control) | 利用不可 | CLI は[ゲートウェイを指定するエラー](/docs/ja/errors#remote-control-requires-the-anthropic-api)を表示します |
-| [`/design-sync`](/docs/ja/commands#all-commands) と `/design-login` | 利用不可 | どちらも claude.ai が必要ですが、CLI はゲートウェイセッションで claude.ai に接続しないため、どちらのコマンドもそこに表示されません |
-| `/import` と `claude import` などの機能フラグ取得が必要な機能 | 利用不可 | CLI はゲートウェイセッションでフラグ取得をスキップします。[機能フラグ取得が必要な機能](/docs/ja/env-vars#features-that-need-feature-flag-fetching)は、それがオフにするものをリストします |
-| 標準プロンプトキャッシュ | 利用可能 | ゲートウェイは `cache_control` ブレークポイントをすべてのアップストリームに転送します。[キャッシュが存在する場所](/docs/ja/prompt-caching#where-the-cache-lives)は、CLI がマークするブロック（会話の途中で追加するシステムコンテキストを含む）をカバーしています |
-| 1 時間キャッシュ TTL | 利用不可 | CLI はゲートウェイセッションで拡張キャッシュ TTL ベータを省略します。ゲートウェイがルーティングできるすべてのアップストリームが 1 時間 TTL をサポートしているわけではないため、ゲートウェイを通じたプロンプトキャッシュは 5 分 TTL を使用します。上記のベータヘッダーノートを参照してください |
-| auto モード | 利用可能 | [サードパーティプロバイダールール](/docs/ja/permission-modes#enable-auto-mode-on-bedrock-agent-platform-or-foundry)に従います。サードパーティプロバイダーで適格なモデルのみがそれを使用できます。v2.1.207 より前では、ゲートウェイセッションの auto モードは `CLAUDE_CODE_ENABLE_AUTO_MODE=1` を設定する必要があり、管理ポリシー `env` ブロック経由で配信可能でした |
-| グローバルキャッシュスコープとトークン効率的なツールなどのファーストパーティのみの最適化 | 利用不可 | CLI はゲートウェイセッションでそれらを有効化しません。上記のベータヘッダーノートを参照してください |
-| OTLP/gRPC | サポートされていない | HTTP 経由の OTLP のみ |
-| SAML、LDAP、およびその他の非 OIDC 認証 | サポートされていない | OIDC のみ。必要に応じて OIDC ブリッジで前面に配置します |
-| マルチテナント（複数の OIDC 発行者） | サポートされていない | ゲートウェイごとに 1 つの発行者。個別インスタンスを実行します |
-| Windows サーバー | サポートされていない | Linux にデプロイします。ローカル開発用の macOS のみ |
-| Helm チャート | 利用不可 | ゲートウェイは標準ステートレス Deployment として実行されます。[デプロイガイド](/docs/ja/claude-apps-gateway-deploy#kubernetes)を参照してください |
-| 管理 UI | 利用不可 | 設定は YAML ファイルです。変更するには再デプロイします |
+| 推論の転送（Amazon Bedrock、Claude Platform on AWS、Google Cloud's Agent Platform、Microsoft Foundry、Anthropic） | 利用可能 | アップストリームごとのモデル変換とフェイルオーバーに対応しています。Amazon Bedrock アップストリームは `bedrock-runtime` エンドポイントと AWS のデフォルト認証情報チェーンを使用します。[Amazon Bedrock Mantle アップストリーム](/docs/ja/claude-apps-gateway-config#amazon-bedrock-mantle-endpoint)にはゲートウェイサーバー上で Claude Code v2.1.283 以降が、[Claude Platform on AWS アップストリーム](/docs/ja/claude-apps-gateway-config#claude-platform-on-aws)には v2.1.198 以降が必要です。 |
+| 100 万トークンのコンテキストウィンドウ | 利用可能 | Fable モデル、Sonnet 5 以降、Opus 4.7 以降は、デフォルトで 100 万トークンのウィンドウで動作します。[拡張コンテキスト](/docs/ja/model-config#extended-context)を参照してください。Fable モデルと Opus モデルで 100 万トークンをデフォルトにするには、開発者のマシン上で Claude Code v2.1.287 以降が必要です |
+| IdP グループごとのモデルアクセスと管理設定 | 利用可能 | モデルアクセスはサーバー側で適用されます。管理設定は IdP グループごとに配信され、CLI によって[管理設定の階層](/docs/ja/settings#settings-precedence)で適用されます |
+| Claude Desktop | オプトインで利用可能 | ポリシーで [`desktop` キーによりオプトイン](/docs/ja/claude-apps-gateway-config#claude-desktop-overlay)すると、ゲートウェイは `/user/bootstrap` で Claude Desktop の設定を提供し、Claude Desktop は Cowork タブと Code タブから、および有効にした場合は Chat タブから、ゲートウェイ経由でモデルリクエストを送信します。Chat タブをオンにするには、[Claude Desktop を接続する](#connect-claude-desktop)を参照してください。ゲートウェイサーバー上で Claude Code v2.1.203 以降が必要です。 |
+| テレメトリのファンアウト（OTLP/HTTP） | 利用可能 | エクスポートごとに ID が付与されます。protobuf と JSON の両方のエンコーディングに対応しています |
+| OIDC ID プロバイダー | 利用可能 | OIDC に準拠した任意の IdP に対応しています。ゲートウェイは標準の OIDC ディスカバリーと認可コードフローを実行します。IdP ごとの設定については [ID プロバイダーのセットアップ](/docs/ja/claude-apps-gateway-deploy#identity-provider-setup)を参照してください |
+| ユーザーごとおよびグループごとの支出上限 | 利用可能 | [支出上限](/docs/ja/claude-apps-gateway-spend-limits)を参照してください |
+| サーバー側の Web 検索 | 利用不可 | CLI はゲートウェイがどのアップストリームプロバイダーにルーティングするかを把握できないため、Web 検索のサポートを確認できず、ゲートウェイセッションでは WebSearch を無効にします |
+| [Remote Control](/docs/ja/remote-control) | 利用不可 | CLI は[ゲートウェイを示すエラー](/docs/ja/errors#remote-control-requires-the-anthropic-api)を表示します |
+| [`/design-sync`](/docs/ja/commands#all-commands) と `/design-login` | 利用不可 | どちらも claude.ai を必要としますが、CLI はゲートウェイセッションでは claude.ai に接続しないため、どちらのコマンドも表示されません |
+| `/import` や `claude import` など、フィーチャーフラグの取得を必要とする機能 | 利用不可 | CLI はゲートウェイセッションではフラグの取得をスキップします。これによって無効になる機能は、[フィーチャーフラグの取得を必要とする機能](/docs/ja/env-vars#features-that-need-feature-flag-fetching)に記載されています |
+| 標準のプロンプトキャッシュ | 利用可能 | ゲートウェイは `cache_control` ブレークポイントをすべてのアップストリームに転送します。CLI がどのブロックにマークを付けるか（会話の途中で追加するシステムコンテキストを含む）については、[キャッシュの保存場所](/docs/ja/prompt-caching#where-the-cache-lives)で説明しています |
+| 1 時間のキャッシュ TTL | 利用不可 | ゲートウェイがルーティングできるすべてのアップストリームが 1 時間の TTL をサポートしているわけではないため、CLI はゲートウェイセッションでは extended-cache-ttl ベータを省略します。そのため、ゲートウェイ経由のプロンプトキャッシュは 5 分の TTL を使用します。上記のベータヘッダーに関する注記を参照してください |
+| auto モード | 利用可能 | [サードパーティプロバイダーのルール](/docs/ja/permission-modes#enable-auto-mode-on-bedrock-agent-platform-or-foundry)に従います。サードパーティプロバイダーで対象となるモデルのみが使用できます。v2.1.207 より前は、ゲートウェイセッションで auto モードを使用するには `CLAUDE_CODE_ENABLE_AUTO_MODE=1` の設定が必要でした。この設定は管理ポリシーの `env` ブロックで配信できます |
+| グローバルキャッシュスコープやトークン効率の高いツールなど、ファーストパーティ専用の最適化 | 利用不可 | CLI はゲートウェイセッションではこれらを有効にしません。上記のベータヘッダーに関する注記を参照してください |
+| OTLP/gRPC | サポート対象外 | OTLP over HTTP のみに対応しています |
+| SAML、LDAP、その他の OIDC 以外の認証 | サポート対象外 | OIDC のみに対応しています。必要に応じて OIDC ブリッジを前段に配置してください |
+| マルチテナント（複数の OIDC 発行者） | サポート対象外 | ゲートウェイごとに発行者は 1 つです。別々のインスタンスを実行してください |
+| Windows サーバー | サポート対象外 | Linux にデプロイしてください。macOS はローカル開発専用です |
+| Helm チャート | 利用不可 | ゲートウェイは標準のステートレスな Deployment として動作します。[デプロイガイド](/docs/ja/claude-apps-gateway-deploy#kubernetes)を参照してください |
+| 管理 UI | 利用不可 | 設定は YAML ファイルで行います。変更するには再デプロイしてください |
 
 <h2 id="next-steps">
   次のステップ

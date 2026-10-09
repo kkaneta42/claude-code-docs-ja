@@ -489,7 +489,7 @@ Claude はこのような設定を[プロジェクトメモリ](#give-a-project-
 * **Routines**: プロジェクトでスケジュール済みの作業を要求すると、Claude はそのプロジェクト内のスレッドとして実行され、その **Routines** タブに表示される [routine](/docs/ja/routines) を作成します。プロジェクト外で作成した Routines は独立して動作し続けます。
 * **Remote Control**: [Remote Control](/docs/ja/remote-control) は claude.ai をマシン上で実行している Claude Code セッションに接続します。プロジェクトで Claude にコンピュータ上でスレッドを実行するよう要求すると、プロジェクトは [Remote Control を使用してそれを実行します](#run-a-thread-on-your-own-computer)。
 * **Local sessions と agent view**: ターミナル、IDE、またはデスクトップアプリのローカル環境で自分で開始したセッションはプロジェクトに追加できません。[Agent view](/docs/ja/agent-view) は複数のローカルセッションを並べて追跡するための画面であり、各セッションを自分で開始してタスクを割り当てます。
-* **Worktrees**: [worktree](/docs/ja/worktrees) は各ローカルセッションにリポジトリの独自の作業コピーを提供するため、マシン上の並列セッションが互いに上書きしません。Cloud スレッドはそれらを必要としません。各スレッドはリポジトリを独自のクラウドサンドボックスにクローンし、独自のブランチで作業します。
+* **worktree**: [worktree](/docs/ja/worktrees) は各ローカルセッションにリポジトリの独自の作業コピーを提供します。クラウドスレッドはそれらを必要としません。各スレッドはリポジトリを独自のクラウドサンドボックスにクローンし、独自のブランチで作業します。
 * **Agent teams**: [agent team](/docs/ja/agent-teams) は、マシン上またはクラウドセッション内で単一のタスク用にチームメイトセッションを開始し、そのタスクで終了する 1 つのセッションです。
 * **Subagents**: [subagent](/docs/ja/sub-agents) は 1 つのセッション内で実行され、独自のコンテキストウィンドウで副次的なタスクを実行し、そのセッションに概要を返します。プロジェクトのスレッドは Claude が開始し、プロジェクト会話に報告する完全なセッションであり、スレッドは独自の副次的なタスク用に subagents を使用することができます。
 * **Projects in claude.ai chat and Cowork**: [以前の Projects エクスペリエンス](https://support.claude.com/en/articles/9517075-what-are-projects)。これはスレッドやコーディネーターなしで会話と参照ファイルをグループ化します。これらのプロジェクトは、再設計されたエクスペリエンスがそれらに到達するまで、今日のように動作し続けます。

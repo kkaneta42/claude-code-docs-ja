@@ -323,7 +323,7 @@ Bash コマンドの場合、Claude Code はコマンド自体を 2 つの方法
 | `memory` | いいえ | [永続メモリスコープ](#enable-persistent-memory)。`user`、`project`、または `local`。クロスセッション学習を有効にします |
 | `background` | いいえ | Claude がフォアグラウンドで実行するよう要求した場合でも、このサブエージェントをバックグラウンドに保つには `true` に設定します。[フォークモード](#turn-fork-mode-on-or-off)がオンの場合、Claude Code は Claude がスポーンするサブエージェントを既に[バックグラウンド](#run-subagents-in-foreground-or-background)で実行します |
 | `omitClaudeMd` | いいえ | このサブエージェントをユーザー、プロジェクト、およびローカル CLAUDE.md ファイルなしで起動するには `true` に設定します。[管理ポリシーファイル](/docs/ja/memory#how-claude-md-files-load)は引き続き読み込まれます。ただし、[管理サブエージェント](#choose-the-subagent-scope)は除きます。[委任プロンプト](#what-loads-at-startup)から必要なすべてを取得するサブエージェントに使用します。エージェントが `--agent` または `agent` 設定経由でメインセッションエージェントとして実行される場合は無視されます。Claude Code v2.1.271 以降が必要です |
-| `effort` | いいえ | このサブエージェントがアクティブな場合の effort レベル。セッションの effort レベルを上書きしますが、[`CLAUDE_CODE_EFFORT_LEVEL`](/docs/ja/env-vars#variables) 環境変数は上書きしません。オプション：`low`、`medium`、`high`、`xhigh`、`max`。利用可能なレベルはモデルによって異なります |
+| `effort` | いいえ | このサブエージェントがアクティブな場合の effort レベル。セッションの effort レベルを上書きしますが、[`CLAUDE_CODE_EFFORT_LEVEL`](/docs/ja/env-vars#variables) 環境変数は上書きしません。オプション：`low`、`medium`、`high`、`xhigh`、`max`。利用可能なレベルはモデルによって異なります。[effort レベルを選択する](#choose-an-effort-level)を参照してください |
 | `isolation` | いいえ | サブエージェントを一時的な[git worktree](/docs/ja/worktrees)で実行するには `worktree` に設定します。これにより、親セッションの `HEAD` ではなく、デフォルトで[デフォルトブランチ](/docs/ja/worktrees#choose-the-base-branch)からブランチされたリポジトリの分離されたコピーが提供されます。サブエージェントが変更を加えない場合、worktree は自動的にクリーンアップされます |
 | `color` | いいえ | タスクリストとトランスクリプトでのサブエージェントの表示カラー。`red`、`blue`、`green`、`yellow`、`purple`、`orange`、`pink`、または `cyan` を受け入れます |
 | `initialPrompt` | いいえ | このエージェントがメインセッションエージェント（`--agent` または `agent` 設定経由）として実行される場合、最初のユーザーターンとして自動送信されます。[コマンド](/docs/ja/commands)と[スキル](/docs/ja/skills)が処理されます。ユーザー提供のプロンプトの前に付加されます。[プラグインサブエージェント](#choose-the-subagent-scope)では無視されます |
@@ -401,7 +401,7 @@ Claude Code は、呼び出しごとのパラメータ、frontmatter、および
 
 対話型セッションでは、Claude Code は要求されたモデルとサブエージェントが実行されるモデルに名前を付ける警告を表示します。どちらの置換についても。
 
-サブエージェントが実行されているモデルを確認するには、[`/tasks`](/docs/ja/commands)を実行します。Claude Code はサブエージェントの行でモデルに名前を付け、サブエージェントの定義またはそれがフォークされたスキルが [`effort`](#supported-frontmatter-fields)を設定する場合、[努力レベル](/docs/ja/model-config#adjust-effort-level)を追加します。Claude Code v2.1.242 以降が必要です。
+サブエージェントが実行されているモデルを確認するには、[`/tasks`](/docs/ja/commands)を実行します。Claude Code はサブエージェントの行にモデル名を表示し、そのサブエージェントに [effort レベル](/docs/ja/model-config#adjust-effort-level)が設定されている場合はそれも追加します。Claude Code v2.1.242 以降が必要です。
 
 呼び出しごとの `model` パラメータは、サブエージェントが[再開または後続メッセージが送信](#resume-subagents)される場合にも適用されるため、サブエージェントはそのモデルに留まります。v2.1.211 より前では、再開は呼び出しごとの値をドロップし、サブエージェントは定義の `model` フィールドまたはメイン会話のモデルに戻りました。
 
@@ -433,6 +433,14 @@ v2.1.198 以降、サブエージェントはメイン会話の[拡張思考](/d
 
 * [フォーク](#fork-the-current-conversation)
 * `model: inherit` を持つ[サブエージェントで実行されるスキル](/docs/ja/skills#run-skills-in-a-subagent)
+
+<h3 id="choose-an-effort-level">
+  effort レベルを選択する
+</h3>
+
+サブエージェントを独自の [effort レベル](/docs/ja/model-config#adjust-effort-level)で実行するには、その定義で [`effort`](#supported-frontmatter-fields) フィールドを設定します。
+
+フォーク以外のサブエージェントを特定の effort レベルで実行するよう Claude に依頼すると、Claude はその呼び出しに対して `effort` パラメータを渡すこともできます。このパラメータは `effort` フィールドを上書きし、サブエージェントが[再開](#resume-subagents)されても有効なままです。[`CLAUDE_CODE_EFFORT_LEVEL`](/docs/ja/env-vars#variables) 環境変数はその両方より優先されます。呼び出しごとのパラメータには Claude Code v2.1.292 以降が必要です。
 
 <h3 id="control-subagent-capabilities">
   サブエージェント機能を制御する
@@ -601,7 +609,9 @@ Claude Code は、エージェントファイルが来たフォルダの信頼�
 メイン会話の権限モードは、Claude Code が設定した値を使用するかどうかを決定します。
 
 * メイン会話が `bypassPermissions`、`acceptEdits`、または[自動モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)にある場合、サブエージェントはそのモードで実行され、Claude Code は設定した `permissionMode` を無視します。自動モードでは、分類器はメイン会話のブロックおよび許可ルールでサブエージェントのツール呼び出しを評価します。サブエージェントが終了すると、分類器はその作業と最終レポートもレビューしてから、レポートが配信されます。[自動モードがサブエージェントを処理する方法](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)を参照してください。
-* メイン会話が `default`、`dontAsk`、または `plan` モードにある場合、サブエージェントは設定した権限モードで実行されます。ただし `bypassPermissions` を除きます。`bypassPermissions` を宣言するサブエージェントはメイン会話のモードを保持します。`bypassPermissions` 例外には Claude Code v2.1.267 以降が必要です。
+* メイン会話が `default`、`dontAsk`、または `plan` モードの場合、サブエージェントは設定した権限モードで実行されます。次の場合は、代わりにメイン会話の権限モードを維持します。
+  * `bypassPermissions` を設定した場合。`bypassPermissions` の例外には Claude Code v2.1.267 以降が必要です。
+  * `auto` を設定し、サブエージェントで [auto モードが利用できない](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)場合。例えば、設定ファイルで [`disableAutoMode`](/docs/ja/settings-reference#disableautomode) が設定されている場合や、サブエージェントのモデルが auto モードをサポートしていない場合です。
 
 `permissionMode` はこれらの値を受け入れ、`default` のエイリアスとして `manual` を受け入れます。
 

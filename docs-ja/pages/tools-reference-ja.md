@@ -203,7 +203,9 @@ Claude Code はコマンドの出力をコマンド実行中に作業ファイ�
   バックグラウンドコマンドが停止するとき
 </h4>
 
-[フォアグラウンドサブエージェント](/docs/ja/sub-agents#run-subagents-in-foreground-or-background)が開始したコマンドは、そのサブエージェントの実行が終了すると停止します。完了したか、失敗したか、中断されたかに関係なく。メインの会話またはバックグラウンドサブエージェントが開始したコマンドは、最終応答の後も実行し続けます。終了するまで、停止されるまで、またはその[時間制限](#time-limit-for-background-commands)に達するまで。`-p` フラグを使用した非対話モードでは、[バックグラウンドコマンドは実行の最終結果の直後に終了します](/docs/ja/headless#background-tasks-at-exit)。
+[フォアグラウンドサブエージェント](/docs/ja/sub-agents#run-subagents-in-foreground-or-background)が開始したコマンドは、そのサブエージェントの実行が終了すると停止します。完了したか、失敗したか、中断されたかに関係なく。メインの会話またはバックグラウンドサブエージェントが開始したコマンドは、最終応答の後も実行し続けます。終了するまで、停止されるまで、またはその[時間制限](#time-limit-for-background-commands)に達するまで。
+
+メインの会話が開始したコマンドがまだ実行中の間、`-p` フラグを使用した非対話モードの実行は、そのコマンドが終了するか時間制限に達するまで、[結果の後も開いたままになります](/docs/ja/headless#background-tasks-at-exit)。バックグラウンドサブエージェントが開始したコマンドは、実行が終了すると停止されます。
 
 <h4 id="time-limit-for-background-commands">
   バックグラウンドコマンドの時間制限
@@ -218,15 +220,17 @@ Claude Code はコマンドの出力をコマンド実行中に作業ファイ�
 * Claude がバックグラウンドで開始するコマンドは 30 分、または Claude が `run_in_background` で渡す `timeout` を取得します。最大 2 時間まで。
 * フォアグラウンドで開始してからバックグラウンドに移動するコマンド（例えばそのタイムアウトで移動したもの）は、移動から 30 分を取得します。
 
+プロンプトを `--input-format stream-json` ではなくテキストとして渡す `-p` フラグ付きの実行では、実行が[結果の後にバックグラウンドコマンドを待機する](/docs/ja/headless#background-tasks-at-exit)ため、両方のデフォルトが 30 分ではなく 10 分になります。
+
 バックグラウンドコマンドが時間制限に達すると、Claude Code はそれを停止し、Claude に理由を伝えます。Claude は、作業がまだ必要な場合、より長い `timeout` でコマンドを再度開始できます。停止通知は `Background command "<description>" was stopped after reaching its background time limit` と読みます。
 
 <h4 id="raise-the-time-limit-for-background-commands">
   バックグラウンドコマンドの時間制限を上げる
 </h4>
 
-2 つの[環境変数](/docs/ja/env-vars)がこれらの制限を上げます。Bash および PowerShell コマンド同様。両方ともミリ秒を取得し、どちらも制限を短縮することはできません。低い値は 30 分のデフォルトと 2 時間の最大値を保ちます。
+2 つの[環境変数](/docs/ja/env-vars)がこれらの制限を上げます。Bash および PowerShell コマンド同様。両方ともミリ秒を取得し、どちらも制限を短縮することはできません。低い値はデフォルトと 2 時間の最大値を保ちます。
 
-* `BASH_DEFAULT_TIMEOUT_MS` を `1800000` より上に設定して、30 分のデフォルトをその値に置き換えます。Claude が `timeout` なしで開始するコマンドと移動されたコマンドの両方に対して。
+* `BASH_DEFAULT_TIMEOUT_MS` を `1800000` より上に設定して、30 分のデフォルトをその値に置き換えます。Claude が `timeout` なしで開始するコマンドと移動されたコマンドの両方に対して。プロンプトをテキストとして渡す `-p` 実行では、`600000` を超える値がその 10 分のデフォルトを置き換えます。
 * `BASH_MAX_TIMEOUT_MS` を `7200000` より上に設定して、2 時間の最大値をその値に上げます。`BASH_DEFAULT_TIMEOUT_MS` を `7200000` より上に設定すると、最大値が同じ方法で上がります。
 
 <h4 id="foreground-commands-that-move-to-the-background">
@@ -246,7 +250,7 @@ Claude Code はコマンドの出力をコマンド実行中に作業ファイ�
   Linux と WSL のメモリ制限
 </h3>
 
-Linux と WSL では、[`CLAUDE_CODE_TOOL_MEMORY_LIMIT`](/docs/ja/env-vars#variables) を `4G` などのサイズに設定して、Bash、PowerShell、および[Monitor](#monitor-tool) ツールコマンドが使用できるメモリを上限に設定し、1 つの暴走ビルドがセッションの残りが必要とするメモリを奪わないようにします。Claude Code v2.1.233 以降が必要です。v2.1.246 より前では、Monitor ツールコマンドは上限の外で実行されていました。
+Linux と WSL では、[`CLAUDE_CODE_TOOL_MEMORY_LIMIT`](/docs/ja/env-vars#variables) を `4G` などのサイズに設定して、Bash、PowerShell、および [Monitor](#monitor-tool) ツールコマンドが使用できるメモリを上限に設定し、1 つの暴走ビルドがセッションの残りが必要とするメモリを奪わないようにします。Claude Code v2.1.233 以降が必要です。v2.1.246 より前では、Monitor ツールコマンドは上限の外で実行されていました。
 
 * サイズをバイト数として、または `K`、`M`、`G`、または `T` サフィックス付きで記述します。`0`、`off`、`false`、`no`、または `none` を設定して上限をオフにします。Claude Code は `4e9` などのサイズとして読み取ることができない他の値を無視します。
 * Claude Code は、各コマンドごとではなく、1 つの上限に対してセッションのすべての Bash、PowerShell、および Monitor コマンドをカウントします。
@@ -256,7 +260,7 @@ Linux と WSL では、[`CLAUDE_CODE_TOOL_MEMORY_LIMIT`](/docs/ja/env-vars#varia
 
 Claude Code は、開始する他の種類のプロセスも同じ制限に対してカウントできます。[`CLAUDE_CODE_TOOL_MEMORY_CGROUP_EXCLUDE`](/docs/ja/env-vars#variables) を上限から除外する種類のカンマ区切りリストに設定します。Claude Code はリストにない種類に上限を適用します。`none` に設定してすべての種類に上限を設定するか、`all-new` に設定して Bash、PowerShell、および Monitor ツールコマンドのみに上限を設定します。Claude Code v2.1.246 以降が必要です。名前を付けることができる種類は次のとおりです。
 
-* `mcp`: ローカル[MCP サーバー](/docs/ja/mcp)
+* `mcp`: ローカル [MCP サーバー](/docs/ja/mcp)
 * `lsp`: [言語サーバー](#lsp-tool-behavior)
 * `hooks`: [フック](/docs/ja/hooks)コマンド
 * `plugin`: [プラグイン](/docs/ja/plugins/overview)が実行するコマンド
@@ -285,7 +289,7 @@ Claude が最後に読み取った後、ディスク上で変更されたファ�
 
 Bash でファイルを表示することは、コマンドが `cat`、`nl`、`bat`、`batcat`、`head`、`tail`、`sed -n 'X,Yp'`、`grep`、`egrep`、`fgrep`、または `rg` である場合、パイプまたはリダイレクトなしで単一ファイルに対して read-before-edit 要件を満たします。パイプされた出力およびその他の Bash コマンドは read-before-edit チェックにはカウントされません。
 
-Bash でファイルを表示することは、権限ではなく編集適格性にのみ影響します。[Read と Edit の権限ルール](/docs/ja/permissions#read-and-edit)を参照して、`Read` と `Edit` 拒否ルールがどの Bash コマンドをカバーするかを確認してください。
+Claude がこの方法でファイルを表示すると、Claude Code はそのファイルに適用される[サブディレクトリの `CLAUDE.md`](/docs/ja/memory#how-claude-md-files-load)と[パススコープのルール](/docs/ja/memory#path-specific-rules)も読み込みます。`Read` と `Edit` の拒否ルールがどの Bash コマンドをカバーするかについては、[Read と Edit の権限ルール](/docs/ja/permissions#read-and-edit)を参照してください。
 
 <h2 id="endconversation-tool-behavior">
   EndConversation ツールの動作
@@ -662,7 +666,7 @@ Claude が受け取るレスポンスを形作るいくつかの動作があり�
 
 * WebFetch は `localhost` およびドットのない他のホスト名（ベアなイントラネット名など）をリクエストを行う前に拒否します。[返されるエラー](/docs/ja/errors#webfetch-cannot-fetch-localhost) は Claude に Bash 経由で `curl` を使用してローカルサーバーに到達するよう指示します。
 * HTTP URL は自動的に HTTPS にアップグレードされます。
-* 大きなページは処理前に固定文字数制限に切り詰められます。
+* WebFetch は 1 回の呼び出しにつき、ページのコンテンツを最大 100,000 文字まで読み取ります。Claude Code v2.1.290 以降では、より長いページの結果で読み取られなかった量が Claude に伝えられるため、Claude は次の部分をフェッチできます。
 * WebFetch はデフォルトで各レスポンスを 15 分間キャッシュするため、同じ URL の繰り返しフェッチは迅速に返されます。Claude Code v2.1.233 以降では、[`CLAUDE_CODE_WEBFETCH_CACHE_TTL_MS`](/docs/ja/env-vars#variables) を設定して、WebFetch が各レスポンスを保持する期間を変更できます。
 * ページが 5 分以内（WebFetch が従うリダイレクトを含む）にダウンロードを完了しない場合、デッドラインエラーで失敗します。Claude Code v2.1.268 以降では、[`CLAUDE_CODE_WEBFETCH_DEADLINE_MS`](/docs/ja/env-vars#variables) を設定して制限を変更するか、`0` に設定して削除できます。
 * URL が別のホストにリダイレクトされる場合、WebFetch はそれに従う代わりに、元の URL とリダイレクト先を名前で示すテキスト結果を返します。その後 Claude は 2 番目の WebFetch 呼び出しで新しい URL をフェッチします。
@@ -716,9 +720,15 @@ WebSearch 権限ルールは指定子を取りません。`allow` または `den
   セッション検索制限
 </h3>
 
-インタラクティブなターミナルセッションは 200 回の WebSearch 呼び出しを実行できます。メイン会話とそれが生成するすべての [サブエージェント](/docs/ja/sub-agents) 全体でカウントされるため、並列リサーチ ファンアウトによって行われた検索は同じ制限にカウントされます。この制限には Claude Code v2.1.212 以降が必要です。Claude が制限に達すると、さらなる呼び出しは、再試行を促すエラーではなく、既に収集した情報で続行するよう Claude に指示する通知を返します。通知は表示されません。キャップされた呼び出しは会話に何もしなかった検索として表示され、Claude がさらに検索が必要な場合、通知は制限を引き上げるようユーザーに求めるよう指示します。
+インタラクティブなターミナルセッションには 200 回の WebSearch 呼び出しの制限があります。メイン会話からの検索と、並列リサーチのファンアウトなど [サブエージェント](/docs/ja/sub-agents) からの検索は、同じ制限にカウントされます。この制限には Claude Code v2.1.212 以降が必要です。
 
-[`CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION`](/docs/ja/env-vars) 環境変数を設定して上限を変更します。正の整数を受け入れるため、上限を引き上げることはできますが、オフにすることはできません。インタラクティブなターミナルセッションの制限は 1 時間あたり約 100 回の呼び出しで回復し、[`CLAUDE_CODE_WEB_SEARCH_REFILLS_PER_HOUR`](/docs/ja/env-vars#variables) でその回復レートを設定します。[`/clear`](/docs/ja/commands#all-commands) を実行するとカウントがリセットされます。ワークフローの実行など、[サブエージェント](/docs/ja/sub-agents) を生成できる作業がクリア後も存在する場合、カウントは代わりに引き継がれます。
+セッションが制限に達している間、検索は会話に何もしなかった呼び出しとして表示されます。Claude には、既に収集した情報で続行し、さらに検索が必要な場合は制限を引き上げるようユーザーに求めるよう指示する通知が届きます。
+
+さらに検索するには、上限を引き上げるか、制限の回復を待つか、新しい会話を開始します。
+
+* **上限を引き上げる**: [`CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION`](/docs/ja/env-vars#variables) 環境変数に `500` などの正の整数を設定します。上限は引き上げることはできますが、オフにすることはできません。
+* **回復を待つ**: Claude Code v2.1.290 以降では、インタラクティブなターミナルセッションの制限は 1 時間あたり約 100 回の呼び出しで回復します。レートを変更するには、[`CLAUDE_CODE_WEB_SEARCH_REFILLS_PER_HOUR`](/docs/ja/env-vars#variables) に 1 時間あたりの呼び出し回数（`50` など）を設定します。
+* **新しい会話を開始する**: Claude Code のプロンプトで [`/clear`](/docs/ja/commands#all-commands) を実行してもカウントがリセットされます。実行中のワークフローなど、サブエージェントをまだ生成できる作業がクリア後も存在する場合、カウントは代わりに引き継がれます。
 
 <h2 id="write-tool-behavior">
   Write ツールの動作

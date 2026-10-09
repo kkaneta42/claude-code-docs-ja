@@ -219,7 +219,12 @@ Claude Code を設定する前に、以下が必要です。
 
 Claude Code は AWS 上の Claude Platform に対して 2 つの認証方法をサポートしています。チームがアクセスを管理する方法に合った方法を選択してください。
 
-**オプション A: SigV4 を使用した AWS 認証情報**
+* [SigV4 を使用した AWS 認証情報](#use-aws-credentials-with-sigv4): 標準的な AWS 認証情報チェーンから取得した認証情報を使用し、IAM プリンシパルとして認証します
+* [ワークスペース API キー](#use-a-workspace-api-key): AWS Console で生成した長期間有効なキーで認証します
+
+<h4 id="use-aws-credentials-with-sigv4">
+  SigV4 を使用した AWS 認証情報を使用する
+</h4>
 
 Claude Code は標準的な AWS 認証情報チェーンを使用して SigV4 でリクエストに署名します。環境変数、`~/.aws/credentials` の共有認証情報、IAM ロール、AWS SSO セッション、および AWS SDK がサポートするその他のソース。
 
@@ -244,7 +249,9 @@ Claude Code は起動時にこのコマンドを実行して既存の AWS 認証
 
 `awsAuthRefresh` が設定されている場合、`/login` を実行し、**3rd-party platform** を選択してから、**Using 3rd-party platforms** の下で **Claude Platform on AWS · refresh credentials** を選択します。Claude Code は設定されたコマンドを実行し、再起動せずに AWS 認証情報を再度読み込みます。
 
-**オプション B: ワークスペース API キー**
+<h4 id="use-a-workspace-api-key">
+  ワークスペース API キーを使用する
+</h4>
 
 ワークスペース API キーは長期間有効なシークレットで、フェデレーション AWS 認証情報を管理したくない場合に便利です。AWS Console の **Claude Platform on AWS → API keys** で生成し、`ANTHROPIC_AWS_API_KEY` として設定します。
 

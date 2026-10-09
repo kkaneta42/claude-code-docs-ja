@@ -142,8 +142,6 @@ claude mcp add --env AIRTABLE_API_KEY=YOUR_KEY --transport stdio airtable \
 ```
 
 <Note>
-  **重要: サーバー引数を `--` で区切る**
-
   Stdio サーバーの場合、`--`（ダブルダッシュ）は Claude 自体のオプション（`--transport`、`--env`、`--scope` など）をサーバーを実行するコマンドと引数から分離します。`--` の後のすべてはサーバーに変更されずに渡されます。
 
   例えば：
@@ -507,7 +505,7 @@ Claude Code はデフォルトで stdio サーバーにそのリビジョンを�
   プラグイン提供の MCP サーバー
 </h3>
 
-[プラグイン](/docs/ja/plugins/overview) は、プラグインを有効にするときにツールと統合を提供する MCP サーバーをバンドルできます。プラグイン MCP サーバーはユーザー設定サーバーと同じように機能します。
+[プラグイン](/docs/ja/plugins/overview) は、プラグインを有効にするときにツールと統合を提供する MCP サーバーをバンドルできます。
 
 **プラグイン MCP サーバーの動作方法**：
 
@@ -1405,6 +1403,7 @@ MCP ツールが大きな出力を生成する場合、Claude Code はトーク�
 * **デフォルト制限**：デフォルトの最大値は 25,000 トークンです
 * **スコープ**：環境変数は、独自の制限を宣言していないツールに適用されます。[`anthropic/maxResultSizeChars`](#raise-the-limit-for-a-specific-tool) を設定するツールは、`MAX_MCP_OUTPUT_TOKENS` に設定されている値に関係なく、テキストコンテンツに対してその値を代わりに使用します。画像データを返すツールは、引き続き `MAX_MCP_OUTPUT_TOKENS` の対象となります
 * **制限を超える場合**：画像コンテンツのない成功した結果がトークン制限を超える場合、Claude Code はそれをファイルに保存し、会話内でファイルパスを名前とするメッセージに置き換えます。そのため、Claude はコンテンツが必要な場合にファイルを読み取ります。ファイルはセッションの `tool-results` ディレクトリ内の [`~/.claude/projects/`](/docs/ja/claude-directory#cleaned-up-automatically) に配置されます。
+* **HTTP および SSE サーバーからのレスポンスサイズ**：Claude Code は、[HTTP](#option-1-add-a-remote-http-server) または [SSE](#option-2-add-a-remote-sse-server) サーバーからのレスポンスについて、1 つの JSON レスポンスボディ、またはイベントストリームの 1 つのイベントが展開後に 16 MB を超えると、そのレスポンスの読み取りを停止します。そのレスポンスが応答するリクエストは失敗します。サーバーを管理している場合は、結果をページ分割するなどして、レスポンスごとに返すデータを減らし、制限内に収めてください
 
 Claude Code が[バックグラウンドタスクに移動した](#automatic-backgrounding-of-long-tool-calls)呼び出しは、タスク通知を通じて結果を報告します。フォアグラウンドで完了する呼び出しには、さらに 2 つの制限が適用されます。
 
@@ -1598,6 +1597,29 @@ Claude Code はツール説明とサーバー指示を各 2,048 文字でデフ�
 
 セッション内のすべての MCP サーバーの上限を変更するには、[`CLAUDE_CODE_MAX_MCP_DESCRIPTION_LENGTH`](/docs/ja/env-vars#variables)を文字数に設定します。この変数には Claude Code v2.1.280 以降が必要です。
 
+<h4 id="per-tool-alwaysload">
+  ツールを事前に読み込むか遅延させたままにするかをマークする
+</h4>
+
+サーバーのツールの 1 つがどのように読み込まれるかを制御するには、そのツールの `_meta` オブジェクトで `"anthropic/alwaysLoad"` を設定します。サーバーを Claude Code に追加する人も、自身の設定でサーバー全体に対して [`alwaysLoad`](#exempt-a-server-from-deferral) を設定でき、その設定が作成者の設定を上書きする場合があります。
+
+| ツールの値 | 動作 |
+| :- | :- |
+| `true` | ツールは事前に読み込まれます。この値が理由でスタートアップがサーバーを待機することはありません。サーバーを設定する人は、引き続き[そのすべてのツールを遅延](#defer-a-servers-tools)させることができます |
+| `false` | 相手の設定で `"alwaysLoad": true` が指定されている場合、ツールは遅延されたままになります。これは、サーバーが [`--mcp-config`](/docs/ja/cli-reference#cli-flags) で渡された場合、[Agent SDK アプリケーション](/docs/ja/agent-sdk/mcp#in-code)によって提供された場合、または[プラグイン](#plugin-provided-mcp-servers)によって提供された場合に適用されます。その他のサーバーでは、ツールは事前に読み込まれます。Claude Code v2.1.285 以降が必要です |
+
+次の `tools/list` エントリは、1 つのツールを事前に読み込むよう求めます。
+
+```json theme={null}
+{
+  "name": "search_tickets",
+  "description": "Searches the ticket tracker by keyword",
+  "_meta": {
+    "anthropic/alwaysLoad": true
+  }
+}
+```
+
 <h3 id="configure-tool-search">
   ツール検索を設定する
 </h3>
@@ -1649,7 +1671,7 @@ ENABLE_TOOL_SEARCH=false claude
   サーバーを遅延から除外する
 </h3>
 
-サーバーのツールが常に Claude に表示され、検索ステップなしで利用可能にする場合は、そのサーバーの設定で `alwaysLoad` を `true` に設定します。そのサーバーのすべてのツールは、`ENABLE_TOOL_SEARCH` 設定に関係なく、セッション開始時にコンテキストに読み込まれます。これは、Claude がすべてのターンで必要とする少数のツール用に使用してください。事前読み込みされた各ツールは、会話に利用可能なコンテキストを消費するためです。
+サーバーのツールが常に Claude に表示され、検索ステップなしで利用可能にする場合は、そのサーバーの設定で `alwaysLoad` を `true` に設定します。そのサーバーのツールは、`ENABLE_TOOL_SEARCH` 設定に関係なく、コンテキストに読み込まれます。これは、Claude がすべてのターンで必要とする少数のツール用に使用してください。事前読み込みされた各ツールは、会話に利用可能なコンテキストを消費するためです。
 
 次の `.mcp.json` エントリは、1 つの HTTP サーバーを除外し、他のサーバーを遅延させたままにします。
 
@@ -1665,9 +1687,15 @@ ENABLE_TOOL_SEARCH=false claude
 }
 ```
 
-`alwaysLoad` フィールドはすべてのサーバータイプで利用可能です。MCP サーバーは、ツールの `_meta` オブジェクトに `"anthropic/alwaysLoad": true` を含めることで、個別のツールを常に読み込まれるようにマークすることもできます。これはそのツールのみに同じ効果があります。
+`alwaysLoad` フィールドはすべてのサーバータイプで利用可能です。
 
 `alwaysLoad: true` を設定すると、スタートアップはサーバーのツールを待機します。最初のプロンプトが構築されるときに存在する必要があるため、標準の 5 秒接続タイムアウトでキャップされます。有効な [`cached` エントリ](#server-status-detail)を持つリモートサーバーは、接続せずにキャッシュからツールを供給するため、スタートアップを保持しません。他のサーバーはデフォルトでバックグラウンドで接続します。[`MCP_CONNECTION_NONBLOCKING=0`](/docs/ja/env-vars) を設定して、スタートアップがそれらも待機するようにします。
+
+<h3 id="defer-a-servers-tools">
+  サーバーのツールを遅延させる
+</h3>
+
+サーバーのすべてのツールをツール検索の背後に保つには、MCP 設定内のそのサーバーのエントリで `"alwaysLoad": false` を設定します。これには、サーバーの作成者が[事前に読み込むようマークした](#per-tool-alwaysload)ツールも含まれます。`alwaysLoad` を省略した場合、マークされたツールは事前に読み込まれます。Claude Code v2.1.287 以降が必要です。
 
 <h2 id="use-mcp-prompts-as-commands">
   MCP プロンプトをコマンドとして使用する

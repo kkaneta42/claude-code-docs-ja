@@ -599,6 +599,10 @@ Claude Tag チャネルセッションでは、Claude はメンバーではな�
 
 `/login` を通じて [Claude apps gateway](/docs/ja/claude-apps-gateway) にサインインしたセッションでは、CLI は認証済みの ID をエクスポートに付与します。`user.id` は IdP のサブジェクト、`user.email` はサインインしたメールアドレスで、`user.groups` は IdP のグループメンバーシップをカンマ区切りの文字列として保持します。各エクスポートには `identity.source: gateway-oidc` も付与されます。ゲートウェイの ID は最後に適用されるため、これらのセッションでは `OTEL_RESOURCE_ATTRIBUTES` で設定した `user.*` および `identity.*` キーは無視されます。
 
+<Note>
+  開発者がサインインする前に Claude Code がログに記録するイベントには、ゲートウェイの ID は含まれません。Claude Code がゲートウェイからサインアウトした状態でセッションを開始する場合（たとえば[ゲートウェイがサインインを終了](/docs/ja/errors#cloud-gateway-session-expired)した後など）、サインイン前にログに記録された起動イベントには匿名の `user.id` が含まれ、`identity.source` は含まれません。これには [`managed_settings_resolved`](#managed-settings-resolved-event)、[`plugin_loaded`](#plugin-loaded-event)、[`mcp_server_connection`](#mcp-server-connection-event) が含まれます。
+</Note>
+
 ゲートウェイ経由で接続する Claude Desktop および Cowork セッションの ID 属性については、[ゲートウェイの `telemetry` リファレンス](/docs/ja/claude-apps-gateway-config#telemetry)を参照してください。
 
 イベントには、さらに以下の属性が含まれます。これらはカーディナリティが無制限に増大する原因となるため、メトリクスには付与されません。
@@ -1473,7 +1477,7 @@ Claude Code v2.1.274 以降が必要です。
   たとえば、`apiKeyHelper`、2 つの `env` 変数、および拒否ルールを含む管理設定は、`{"apiKeyHelper":"[REDACTED]","env":{"HTTPS_PROXY":"[REDACTED]","CLAUDE_CODE_ENABLE_TELEMETRY":"[REDACTED]"},"permissions":{"deny":["Read([REDACTED])"]}}` としてエクスポートされます。
 
   Claude Code は値を UTF-8 で 8 KB に切り詰め、切り詰められた値は有効な JSON ではありません
-* `managed_settings.settings_truncated`（`managed_settings.settings` が存在する場合）: Claude Code が `managed_settings.settings` を 8 KB で切り詰めた場合は `true`、それ以外は `false`。文字列ではなくブール値として出力されます
+* `managed_settings.settings_truncated`（`managed_settings.settings` が存在する場合）: Claude Code が `managed_settings.settings` を 8 KB で切り詰めた場合は `true`、それ以外の場合は `false`。文字列ではなくブール値として出力されます
 
 <h2 id="interpret-metrics-and-events-data">
   メトリクスとイベントデータの解釈

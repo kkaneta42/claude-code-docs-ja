@@ -36,6 +36,21 @@ Claude Code には、`/doctor`、`/code-review`、`/batch`、`/debug`、`/loop`�
 
 バンドルされたスキルは、[コマンドリファレンス](/docs/ja/commands) に組み込みコマンドと一緒にリストされており、目的列に **Skill** とマークされています。
 
+<h3 id="check-your-setup-with-/doctor">
+  `/doctor` でセットアップを確認する
+</h3>
+
+Claude Code プロンプトで `/doctor` を実行すると、問題を診断して修正できるセットアップチェックアップが行われます。Claude はまず調査結果を報告し、何かを変更する前に確認を求めます。チェックアップは次の領域を対象とします。
+
+* **インストールの健全性**: 重複したインストールや残存しているインストール、`PATH` の問題、解析できない設定ファイル、および[リリースチャネル](/docs/ja/setup#configure-release-channel)で新しいバージョンが利用可能かどうか
+* **拡張機能**: コンテキストコストと比較した未使用のスキル、MCP サーバー、プラグイン、および低速な[フック](/docs/ja/hooks)
+* **`CLAUDE.md` ファイル**: チェックイン済みのものと重複するローカルの `CLAUDE.md` ファイル、チェックイン済みの [Claude がコードベースから導出できる `CLAUDE.md` の内容](/docs/ja/memory#my-claude-md-is-too-large)、および残りの常時読み込まれるガイダンス。Claude は、このガイダンスをオンデマンドで読み込まれるスキルやネストされた `CLAUDE.md` ファイルに移行することを提案します
+* **権限**: [auto モード](/docs/ja/permissions#permission-modes)をデフォルトの権限モードにすることと、頻繁に拒否している読み取り専用コマンドを[事前承認](/docs/ja/permissions)することの提案
+
+セッションを開始せずに読み取り専用のインストール診断を行うには、代わりにターミナルで `claude doctor` を実行します。
+
+セットアップではなく指示を監査するには、Claude Code プロンプトで `/doctor prompt-audit` を実行します。Claude はチェックアップを実行する代わりに、[`CLAUDE.md` ファイル、スキル、その他の設定をチェック](/docs/ja/memory#audit-your-instruction-files)して、古くなった指示や矛盾する指示がないかを確認します。`prompt-audit` サブコマンドには Claude Code v2.1.283 以降が必要です。
+
 <h3 id="run-and-verify-your-app">
   アプリを実行して検証する
 </h3>
@@ -79,6 +94,8 @@ Claude は、失敗したコマンドや欠落したステップなど、実行�
 | `migrate` | 既存の Claude API コードを新しいモデルに更新する | v2.1.221 より前 |
 | `upgrade` | プロジェクトの Anthropic SDK 依存関係をメジャーバージョン間で移動します。現在は Python `anthropic` パッケージを 0.x から 1.x に移動します | v2.1.236 以降 |
 | `managed-agents-onboard` | 新しい Managed Agent の作成をウォークスルーする | v2.1.221 より前 |
+| `managed-agents-onboard <url>` | URL のページが説明する Managed Agent を構築する。たとえば [Managed Agents ドキュメント](https://platform.claude.com/docs/en/managed-agents/overview) 内のページなど | v2.1.290 以降 |
+| `managed-agents-onboard <quickstart-name>` | `deep-researcher` など、Console のクイックスタートテンプレートの 1 つを構築する。テンプレート名ではない単語を 1 つ指定した場合、Claude は有効な名前を一覧表示します | v2.1.290 以降 |
 | `prompt-audit` | プロンプト、スキル、ツール説明に書かれた古いモデル向けの指示にフラグを立て、差分として修正を提案する | v2.1.221 以降 |
 | `cost-optimize` | プロジェクトの Claude API 支出がどこに行くかをプロファイルし、プロンプトキャッシング、不要な入出力トークンの削減、バッチ処理、努力、モデル選択などのオプションから節約を提案します。一度に 1 つの変更 | v2.1.247 以降 |
 | `build-eval` | Claude を搭載したアプリ用の eval セットをビルドする | v2.1.259 以降 |

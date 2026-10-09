@@ -183,7 +183,7 @@ VS Code 拡張機能では、手書きではなく [**Output styles** メニュ�
 | :- | :- | :- |
 | `name` | いいえ | 出力スタイルの名前。`/config` ピッカーに表示されます。デフォルト: ファイル名 |
 | `description` | いいえ | 出力スタイルの説明。`/config` ピッカーに表示されます |
-| `keep-coding-instructions` | いいえ | `true` に設定すると、Claude Code の組み込みソフトウェアエンジニアリング指示をスタイルと一緒に保持します。デフォルト: `false` |
+| `keep-coding-instructions` | いいえ | `true` に設定すると、完全なシステムプロンプトにのみ含まれる Claude Code の組み込みソフトウェアエンジニアリング指示のセクションを、スタイルと一緒に保持します。[出力スタイルの仕組み](#how-output-styles-work)を参照してください。デフォルト: `false` |
 | `force-for-plugin` | いいえ | プラグイン出力スタイルのみ。`true` に設定すると、プラグインが有効になるたびに、ユーザーが選択する必要なく、このスタイルを自動的に適用します。ユーザーの `outputStyle` 設定をオーバーライドします。複数の有効なプラグインがこれを設定する場合、Claude Code は最初に読み込まれたものを使用します。デフォルト: `false` |
 
 <span id="comparisons-to-related-features" />
@@ -214,7 +214,7 @@ VS Code 拡張機能では、手書きではなく [**Output styles** メニュ�
 出力スタイルは Claude Code が Claude に与える指示を変更します。
 
 * Claude Code はすべてのリクエストで有効なスタイルの指示を送信します。
-* カスタム出力スタイルは、`keep-coding-instructions` が `true` に設定されていない限り、変更のスコープ、コメントの書き方、作業の検証方法など、Claude Code の組み込みソフトウェアエンジニアリング指示を除外します。
+* 完全なシステムプロンプトでは、カスタム出力スタイルは、`keep-coding-instructions` が `true` に設定されていない限り、変更のスコープ、コメントの書き方、作業の検証方法など、Claude Code の組み込みソフトウェアエンジニアリング指示のセクションを除外します。短いシステムプロンプトにはこのセクションが含まれないため、そちらではこのフィールドは効果がありません。このフィールドを確実に機能させるには、[`CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT`](/docs/ja/env-vars#variables) を `0` に設定してください。これにより、どのモデルでも完全なプロンプトが選択されます。
 
 出力スタイルはメイン会話と [フォーク](/docs/ja/sub-agents#fork-the-current-conversation) に適用されます。フォークは親の完全な会話とシステムプロンプトを継承します。その他の [サブエージェントは独自のシステムプロンプトを実行](/docs/ja/sub-agents#what-loads-at-startup) するため、スタイルはそれらの応答方法を変更しません。
 

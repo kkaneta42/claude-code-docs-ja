@@ -78,13 +78,18 @@ v2.1.286 より前は、これらの制限は部分的にしか適用されて�
   終了時のバックグラウンドタスク
 </h3>
 
-Claude が `claude -p` 実行中に [バックグラウンド Bash タスク](/docs/ja/tools-reference#bash-tool-behavior) （例えば、開発サーバーまたはウォッチビルド）を開始した場合、Claude が最終結果を返し、stdin が閉じられてから約 5 秒後に、そのシェルは終了します。猶予期間により、結果の直後に終了するタスクでも出力を配信できます。
+Claude がターンを終え、stdin が閉じられた後も、`claude -p` の実行は Claude が開始したバックグラウンド作業を待つために開いたままになることがあります。
 
-Claude がバックグラウンド [subagent](/docs/ja/sub-agents) またはワークフローを開始した場合、`claude -p` は代わりにその作業が完了するまで開いたままになります。その結果は最終出力の一部だからです。
+メイン会話が開始したバックグラウンドコマンドがまだ実行中でない限り、Claude Code はデフォルトで 10 分間の継続的なアイドル待機後に実行中のすべてを停止し、その部分的な結果を破棄します。10 分の上限を変更するには、[`CLAUDE_CODE_PRINT_BG_WAIT_CEILING_MS`](/docs/ja/env-vars) を設定するか、`0` に設定して上限なしで待機します。
 
-デフォルトでは、待機は 10 分間の継続的なアイドル待機後に終了するため、スタックした subagent またはワークフローがプロセスを無期限に開いたままにすることはできません。その時点で Claude Code は実行中のすべてを停止し、その部分的な結果をドロップします。制限を変更するには、[`CLAUDE_CODE_PRINT_BG_WAIT_CEILING_MS`](/docs/ja/env-vars) を設定するか、`0` に設定して制限なしで待機します。
+実行は、バックグラウンドコマンド、サブエージェントとワークフロー、Monitor ウォッチ、保留中の `/loop` ウェイクアップなどのバックグラウンド作業を待機します。
 
-Claude が `claude -p` 実行中に [Monitor](/docs/ja/tools-reference#monitor-tool) ウォッチを開始した場合、Claude Code はウォッチがタイムアウトするか、10 分の上限が待機を終了するまで、どちらか先に来た方まで待機します。待機中、Claude はウォッチが報告することに応答し続けます。デフォルトでは、ウォッチは Claude が開始してから 5 分後にタイムアウトします。
+* **[バックグラウンドコマンド](/docs/ja/tools-reference#background-commands)**: メイン会話が開始したコマンド（例えば開発サーバーやウォッチビルド）の場合、実行はコマンドが終了するか [時間制限](/docs/ja/tools-reference#time-limit-for-background-commands) に達するまで待機します。その後、Claude はその結果を受けてもう 1 ターン実行し、そのターンの結果が実行の最後の結果となります。これが `text` および `json` 出力で出力される結果です。コマンドの実行中は、10 分の上限によって待機が終了することはありません。
+* **バックグラウンドの [サブエージェント](/docs/ja/sub-agents) とワークフロー**: その結果は最終出力の一部であるため、実行はその作業が完了するまで開いたままになります。
+* **[Monitor](/docs/ja/tools-reference#monitor-tool) ウォッチ**: 実行は、ウォッチがタイムアウトするか 10 分の上限が待機を終了するか、どちらか先に来た方まで待機します。待機中、Claude はウォッチが報告することに応答し続けます。デフォルトでは、ウォッチは Claude が開始してから 5 分後にタイムアウトします。
+* **保留中のウェイクアップ**: プロンプトを `--input-format stream-json` ではなくテキストとして渡した実行で、Claude が [自己ペースの `/loop` ウェイクアップ](/docs/ja/scheduled-tasks#let-claude-choose-the-interval) をスケジュールした場合、実行は各ウェイクアップが発生するのを待ち、[ループが終了する](/docs/ja/scheduled-tasks#stop-a-loop) までその反復を実行します。これは 10 分の上限を超えても続きます。
+
+実行が [`--max-budget-usd`](/docs/ja/cli-reference#cli-flags) の上限に達した場合、Claude Code は待機せずに残りのバックグラウンド作業を停止します。
 
 <h3 id="stop-a-run-with-sigterm">
   SIGTERM で実行を停止する

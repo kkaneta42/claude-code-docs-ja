@@ -200,7 +200,7 @@ Desktop は部分的な例外です：[ゲートウェイルーティングは�
     <tr>
       <td>[サーバー管理設定](/docs/ja/server-managed-settings)</td>
       <td>✓（Team および Enterprise）</td>
-      <td>✓（Team および Enterprise）</td>
+      <td>[プラットフォームの利用可能性](/docs/ja/server-managed-settings#platform-availability)を参照</td>
       <td>✗</td>
       <td>✗</td>
       <td>✗</td>
@@ -293,7 +293,7 @@ Desktop は部分的な例外です：[ゲートウェイルーティングは�
   <Tab title="Anthropic Console">
     **利用不可：** すべての [Claude サブスクリプションが必要な機能](#features-that-require-a-claude-subscription)。
 
-    [プロバイダーによって異なる CLI 機能](#cli-capabilities-that-vary-by-provider)のすべてが利用可能です。ただし、[Fast mode](/docs/ja/fast-mode) は [プロビジョニングされたアクセス](/docs/ja/fast-mode#enable-fast-mode-for-your-organization)が必要です。API キーが Team または Enterprise 組織に属する場合は [サーバー管理設定](/docs/ja/server-managed-settings)も利用可能です。
+    [プロバイダーによって異なる CLI 機能](#cli-capabilities-that-vary-by-provider)のすべてが利用可能です。ただし、[Fast mode](/docs/ja/fast-mode) は [プロビジョニングされたアクセス](/docs/ja/fast-mode#enable-fast-mode-for-your-organization)が必要です。claude.ai の Team または Enterprise 組織で設定した[サーバー管理設定](/docs/ja/server-managed-settings)は、Console API キーで認証するセッションには適用されません。これらのセッションをカバーする方法については、[プラットフォームの利用可能性](/docs/ja/server-managed-settings#platform-availability)を参照してください。
   </Tab>
 </Tabs>
 

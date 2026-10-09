@@ -1399,11 +1399,11 @@ Claude Code は各エントリを `claude-opus-5-5` などのモデルの正規�
 
 [安全分類器がリクエストにフラグを立てた](/docs/ja/model-config#automatic-model-fallback)場合に何が起こるかを選択します。フォールバックモデルに切り替えて続行するか、切り替えるかプロンプトを編集するかを選択できるように一時停止します。
 
-* **スコープ**: [`任意のファイル`](#scopes)。`/config` に**メッセージがフラグされたときにモデルを切り替え**として表示されます。
+* **スコープ**: [`任意のファイル`](#scopes)。`/config` には **メッセージが警告対象となったときにモデルを切り替える** として表示され、選択肢は **自動的に切り替える** と **毎回確認する** です。
 * **タイプ**: ブール値
   * `true`: Claude Code はフォールバックモデルに切り替えて続行します
   * `false`: インタラクティブセッションで Claude Code は一時停止して、切り替えるかプロンプトを編集するかを選択できます。ダイアログが表示できない場所 (`-p` 実行など)では、フラグされたリクエストはエラーで終了します
-* **デフォルト**: `true`。自動的に切り替え
+* **デフォルト**: 設定解除されています。Claude Code は自動的に切り替えますが、対話セッションでは[先に確認する](/docs/ja/model-config#ask-before-switching)場合があります
 
 ```json settings.json theme={null}
 {
@@ -3130,8 +3130,10 @@ Claude Code が[メモリ](/docs/ja/memory#exclude-specific-claude-md-files)を�
 
     プロジェクトおよびローカル設定でこのグループを無視するには Claude Code v2.1.282 以降が必要です。
   * Claude Code の起動またはシンク方法を変更する変数。`CLAUDE_CODE_PROCESS_WRAPPER`、`CLAUDE_CODE_SYNC_SKILLS`、`CLAUDE_CODE_SYNC_PLUGINS`、`CLAUDE_CODE_PLUGIN_CACHE_DIR`、`CLAUDE_CODE_PLUGIN_SEED_DIR` など。
+  * 応答のないダイアログのタイマーを設定する変数: [`CLAUDE_CODE_USER_DIALOG_TIMEOUT_MS`、`CLAUDE_AFK_TIMEOUT_MS`、`CLAUDE_AFK_COUNTDOWN_MS`](/docs/ja/env-vars#variables)。
+  * 添付ファイルの処理をオフにする [`CLAUDE_CODE_DISABLE_ATTACHMENTS`](/docs/ja/env-vars#variables)。
 
-  v2.1.251 より前は、プロジェクトおよびローカル設定は `HOME` と `XDG_CONFIG_HOME` を除き、このリストが名前を付けるファイルの保存または書き込み場所を選択する変数、またはセッションコンテンツをエクスポートする変数を設定できました。
+  v2.1.251 より前は、プロジェクトおよびローカル設定は `HOME` と `XDG_CONFIG_HOME` を除き、このリストのうち Claude Code がファイルを書き込む場所を選択する変数、またはセッションコンテンツをエクスポートする変数も設定できました。v2.1.290 より前は、ダイアログのタイマー変数と `CLAUDE_CODE_DISABLE_ATTACHMENTS` も設定できました。
 * Claude Code のホスティング環境が所有する `CLAUDE_CODE_REMOTE` や `CLAUDE_CODE_ACCOUNT_UUID` などのアイデンティティ変数は、すべてのファイルから無視されます。
 * [`CLAUDE_CODE_MESSAGING_SOCKET` と `CLAUDE_CODE_MESSAGING_TOKEN`](/docs/ja/env-vars#variables)。Claude Code 自体がエクスポートするものは、すべてのファイルから無視されます。ソケット変数を無視するには Claude Code v2.1.224 以降が必要で、トークンを無視するには v2.1.228 以降が必要です。
 * [`CLAUDE_CODE_PROJECT_DIR_NAME`](/docs/ja/sessions#name-the-project-directory-yourself)。Claude Code は起動環境からのみ読み取ります。すべてのファイルから無視されます。v2.1.234 以降が必要です。

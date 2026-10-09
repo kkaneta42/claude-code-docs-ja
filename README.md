@@ -17,6 +17,302 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-10-09</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/agent-view-ja.md                     |    8 +-
+ docs-ja/pages/amazon-bedrock-ja.md                 |   61 +-
+ docs-ja/pages/artifacts-ja.md                      |   48 +-
+ docs-ja/pages/authentication-ja.md                 |    2 -
+ docs-ja/pages/changelog.md                         |  151 +++
+ docs-ja/pages/claude-apps-gateway-config-ja.md     |    2 +-
+ docs-ja/pages/claude-apps-gateway-deploy-ja.md     |   29 +-
+ docs-ja/pages/claude-apps-gateway-ja.md            |   47 +-
+ docs-ja/pages/claude-apps-gateway-on-aws-ja.md     |    2 +-
+ docs-ja/pages/claude-code-on-the-web-ja.md         |    6 +-
+ docs-ja/pages/claude-platform-on-aws-ja.md         |   11 +-
+ docs-ja/pages/claude-projects-ja.md                |    2 +-
+ docs-ja/pages/cli-reference-ja.md                  |    2 +-
+ docs-ja/pages/cloud-environments-ja.md             |    6 +-
+ docs-ja/pages/commands-ja.md                       |    2 +-
+ docs-ja/pages/common-workflows-ja.md               |    3 +-
+ docs-ja/pages/context-window-ja.md                 |    2 -
+ docs-ja/pages/debug-your-config-ja.md              |   13 +-
+ docs-ja/pages/desktop-ja.md                        |   14 +-
+ docs-ja/pages/env-vars-ja.md                       |  632 +++++------
+ docs-ja/pages/errors-ja.md                         |  199 ++--
+ docs-ja/pages/feature-availability-ja.md           |    4 +-
+ docs-ja/pages/glossary-ja.md                       |    4 +-
+ docs-ja/pages/google-vertex-ai-ja.md               |    6 +-
+ docs-ja/pages/headless-ja.md                       |   13 +-
+ docs-ja/pages/hooks-ja.md                          | 1094 ++++++++++++--------
+ docs-ja/pages/managed-settings-ja.md               |    6 +-
+ docs-ja/pages/mcp-ja.md                            |   38 +-
+ docs-ja/pages/memory-ja.md                         |    8 +-
+ docs-ja/pages/microsoft-foundry-ja.md              |   56 +-
+ docs-ja/pages/model-config-ja.md                   |   83 +-
+ docs-ja/pages/monitoring-usage-ja.md               |    6 +-
+ docs-ja/pages/network-config-ja.md                 |    2 +-
+ docs-ja/pages/output-styles-ja.md                  |    4 +-
+ docs-ja/pages/overview-ja.md                       |    2 +-
+ docs-ja/pages/permissions-ja.md                    |    2 +-
+ docs-ja/pages/plugin-evals-ja.md                   |   31 +-
+ docs-ja/pages/quickstart-ja.md                     |   30 +-
+ docs-ja/pages/sandbox-environments-ja.md           |    6 +-
+ docs-ja/pages/sandboxing-ja.md                     |    2 +-
+ .../self-hosted-environments-configuration-ja.md   |   19 +-
+ docs-ja/pages/server-managed-settings-ja.md        |   11 +-
+ docs-ja/pages/settings-ja.md                       |   70 +-
+ docs-ja/pages/settings-reference-ja.md             |    8 +-
+ docs-ja/pages/setup-ja.md                          |   20 +-
+ docs-ja/pages/skills-ja.md                         |   17 +
+ docs-ja/pages/statusline-ja.md                     |   90 +-
+ docs-ja/pages/sub-agents-ja.md                     |   16 +-
+ docs-ja/pages/tools-reference-ja.md                |   28 +-
+ docs-ja/pages/ultrareview-ja.md                    |   12 +-
+ docs-ja/pages/vs-code-ja.md                        |    2 +-
+ docs-ja/pages/web-quickstart-ja.md                 |    2 +-
+ docs-ja/pages/workflows-ja.md                      |   28 +-
+ docs-ja/pages/worktrees-ja.md                      |    2 +-
+ 54 files changed, 1815 insertions(+), 1149 deletions(-)
+```
+
+<details>
+<summary>agent-view-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/agent-view-ja.md b/docs-ja/pages/agent-view-ja.md
+index 9ad0030..4302f8e 100644
+--- a/docs-ja/pages/agent-view-ja.md
++++ b/docs-ja/pages/agent-view-ja.md
+@@ -239,5 +239,5 @@ Completed
+ [`PermissionRequest`](/docs/ja/hooks#permissionrequest) または [`PreToolUse`](/docs/ja/hooks#pretooluse) フックが、セッションが尋ねている呼び出しについて Claude Code が検証できない出力を返した場合、行には保留中のリクエストのテキストの前に、フックイベントと `hook output invalid:` および検証エラーが表示されます。別の形で失敗したフックの場合、行にはフックが失敗したことが表示されます。セッションは引き続き同じリクエストで待機します。
+ 
+-バックグラウンドサービスに到達できない、または送信に失敗したために配信できなかった返信は保存され、そのプロセスが再び起動したときにセッションの次のプロンプトとして送信されます。エラーメッセージには返信が保存されたことが示されます。`!` を先頭に付けた返信は保存されません。保存されたテキストは Bash コマンドとして実行されるのではなく、通常のプロンプトとしてセッションに届いてしまうためです。
++返信を配信できなかった場合、エラーメッセージには返信が保存されたかどうかが示されます。`!` または `/` を先頭に付けた返信は保存されません。Claude Code は、次にセッションを再起動したときに、保存された返信をセッションの次のプロンプトとして送信します。それ以外の返信は再度送信してください。
+ 
+ [音声ディクテーション](/docs/ja/voice-dictation) を [ホールドモード](/docs/ja/voice-dictation#hold-to-record) で有効にしている場合、返信入力がフォーカスされている間にプッシュトゥトークキーを押し続けると、入力する代わりに返信をディクテーションできます。エージェントビュー下部のディスパッチ入力でも同じように機能します。
+@@ -296,4 +296,5 @@ Claude Code が会話を再度開けない場合は、終了して会話を再
+ * **権限プロンプトまたは質問が回答を待っている**：権限プロンプトまたは Claude が尋ねた質問が待機している間、Claude Code は待機を続け、`Still backgrounding after the current tool — a question is waiting for your answer.` を表示します。
+ * **プロンプト入力に入力した**：未送信のテキストはターミナルの入力ボックスに残り、バックグラウンドセッションには移動しないため、Claude Code は切り替えをキャンセルします。`Backgrounding cancelled — you have unsent text in the input. Send it or clear it, then press ← again.` と表示されます。
++* **キューに入れたメッセージを移動できない**：[Claude の作業中にキューに入れた](/docs/ja/interactive-mode#queue-messages-while-claude-works) メッセージは、会話とともにバックグラウンドセッションに移動します。そのいずれかを移動できない場合、セッションはフォアグラウンドに留まり、Claude Code は `Cannot open agents — 1 queued message can't move to the background. Press ← again once Claude has read it.` のような通知を表示します。
+ 
+ `←` を押すと、会話にまだメッセージがない場合でもセッションの行が作成されるため、`→` でその行に戻れます。
+@@ -603,5 +604,5 @@ git worktree が実用的でないリポジトリで worktree 分離をオフに
+ git リポジトリの外では、セッションは作業ディレクトリに直接書き込み、互いに分離されないため、同じファイルを編集する並列セッションのディスパッチは避けてください。別のバージョン管理システムを使用している場合は、[`WorktreeCreate` フック](/docs/ja/worktrees#non-git-version-control) を設定すると、Claude は git の場合と同じ方法で編集を分離します。
+ 
+-git リポジトリではないディレクトリでフックが失敗した場合、Claude はそのディレクトリの分離をスキップし、作業ディレクトリをその場で編集します。git リポジトリ内では、編集前に Claude が worktree に移動させるセッションは、その移動が行われるまで共有チェックアウト内のファイルを編集できません。
++git リポジトリではないディレクトリでフックが失敗した場合、Claude はそのディレクトリの分離をスキップし、作業ディレクトリをその場で編集します。git リポジトリ内では、編集前に Claude が worktree に移動させるセッションは、その移動が行われるまで共有チェックアウトに対して `Edit`、`Write`、`NotebookEdit` ツールを使用できません。
+ 
+ セッションの worktree のパスを確認するには、アタッチしてその作業ディレクトリを確認します。
+@@ -973,5 +974,5 @@ Claude Code は、エージェントビューに表示されているすべて
+ * 別の非インタラクティブ Claude Code プロセス（例えば、同じ会話のバックグラウンドセッションプロセスがまだ終了していない）：行を開くと `This conversation is already open in another running Claude session` が表示されます。そのプロセスを使用するか、終了するまで待機して行を再度開きます。
+ 
+-Claude Code は拒否された試みで入力した返信を保存し、セッションが次に開始するときに送信します。
++Claude Code は拒否された試みで入力した返信を保存し（`!` または `/` で始まる返信を除く）、セッションが次に開始するときに送信します。
+ 
+```
+
+</details>
+
+<details>
+<summary>amazon-bedrock-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/amazon-bedrock-ja.md b/docs-ja/pages/amazon-bedrock-ja.md
+index 23344f4..28dc65f 100644
+--- a/docs-ja/pages/amazon-bedrock-ja.md
++++ b/docs-ja/pages/amazon-bedrock-ja.md
+@@ -137,7 +137,19 @@ AWS Organizations を使用している場合、[`PutUseCaseForModelAccess` API]
+ </h3>
+ 
+-Claude Code は AWS SDK のデフォルト認証情報チェーンを使用します。以下のいずれかの方法を使用して認証情報を設定してください。
++Claude Code は AWS SDK のデフォルト認証情報チェーンを使用します。Amazon EC2 インスタンスプロファイルや Amazon ECS タスク認証情報など、マシンがすでにそのチェーンに認証情報を提供している場合は、[ステップ 3](#3-configure-claude-code) に進んでください。
+ 
+-**オプション A: AWS CLI 設定**
++AWS は、専用ソフトウェアを開発する場合や実データを扱う場合に [IAM ユーザーのアクセスキーを使用しないよう警告しています](https://docs.aws.amazon.com/cli/latest/userguide/cli-authentication-user.html)。以下のいずれかの方法で認証情報を設定してください。
++
++* [`aws configure`](#use-aws-configure): IAM ユーザーのアクセスキーを `~/.aws` ディレクトリ内のプロファイルに保存します
++* [アクセスキーの環境変数](#export-an-access-key): アクセスキー、またはセッショントークン付きの一時的な認証情報を、現在のシェルでのみ設定します
++* [SSO プロファイル](#use-an-sso-profile): ブラウザで IAM Identity Center を通じてサインインし、一時的な認証情報を取得します。IAM Identity Center を通じて AWS アカウントにアクセスしている場合は、この方法を使用してください。
++* [AWS Management Console 認証情報](#use-aws-management-console-credentials): AWS Management Console の認証情報を使ってブラウザでサインインし、一時的な認証情報を取得します。ルートユーザー、IAM ユーザー、または IAM とのフェデレーションを通じて AWS アカウントにアクセスしている場合、AWS は[この方法を推奨しています](https://docs.aws.amazon.com/signin/latest/userguide/command-line-sign-in.html)。
++* [Amazon Bedrock API キー](#use-an-amazon-bedrock-api-key): AWS 認証情報の代わりに、Amazon Bedrock でのみ機能するベアラートークンで認証します
++
++<h4 id="use-aws-configure">
++  `aws configure` を使用する
++</h4>
++
++`aws configure` を実行し、プロンプトが表示されたらアクセスキー ID、シークレットアクセスキー、デフォルトリージョンを入力します。
+ 
+ ```bash theme={null}
+@@ -145,5 +157,11 @@ aws configure
+ ```
+ 
+-**オプション B: 環境変数（アクセスキー）**
+```
+
+</details>
+
+<details>
+<summary>artifacts-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/artifacts-ja.md b/docs-ja/pages/artifacts-ja.md
+index b279042..5329b71 100644
+--- a/docs-ja/pages/artifacts-ja.md
++++ b/docs-ja/pages/artifacts-ja.md
+@@ -52,17 +52,33 @@ Build a dashboard artifact of last week's deploy failures by service and keep it
+ ```
+ 
+-場所を指定しない限り、Claude はページを HTML または Markdown ファイルとしてプロジェクト外の一時ディレクトリに書き込み、公開します。[Plan Mode](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode) 以外では、入力したプロンプトに応じて Claude が公開する新しいアーティファクトは、権限プロンプトまたは分類器レビューなしで処理されます。ただし、その公開が[コネクタ呼び出し](#pull-live-data-with-mcp-connectors)や[ファイルダウンロード](#offer-a-file-download)などのページのランタイム機能を宣言する場合は除きます。Plan Mode では、Claude Code は各アーティファクトの最初の公開前にあなたに確認を求めます。
++場所を指定しない限り、Claude はページを HTML または Markdown ファイルとしてプロジェクト外の一時ディレクトリに書き込み、公開します。アーティファクトは[共有](#share-an-artifact)するまで、ユーザー本人だけが見られるプライベートな状態のままです。
+ 
+-アーティファクトは[共有](#share-an-artifact)するまでプライベートなままです。公開共有した後、Claude Code は会話ごとに 1 回変更前に承認を求めるか、[auto mode](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode) では分類器に変更をレビューさせます。
++最初の公開後、Claude は URL を出力し、ブラウザで新しいページが開きます。
+ 
+-[機能フラグ取得](/docs/ja/env-vars#features-that-need-feature-flag-fetching)をオフにした場合、Claude Code は各アーティファクトの最初の公開前に確認を求めるか、auto mode では分類器にレビューさせます。
++* **ページを再度開く**：任意の時点で `Ctrl+]` を押すと、セッションの最新のアーティファクトを再度開けます
++* **このセッションのアーティファクトを確認する**：プロンプトの下にある `⧉` ピルに、アーティファクトの名前、またはセッションに複数ある場合はその数が表示されます。[フルスクリーンレンダリング](/docs/ja/fullscreen)では、これをクリックすると [`/artifacts`](#find-an-artifact-again) の一覧が開きます
++* **ブラウザが開かないようにする**：環境で `CLAUDE_CODE_ARTIFACT_AUTO_OPEN=0` を設定します
++* **Remote Control**：claude.ai、Claude Desktop、または Claude モバイルアプリから [Remote Control](/docs/ja/remote-control) 経由でプロンプトを送信した場合、セッションを実行しているマシンではタブが開きません。ブラウザは、ターミナルで入力したプロンプトから Claude が次にアーティファクトを公開したときに開きます
+ 
+-最初の公開後、Claude は URL を出力し、ブラウザが新しいページに開きます。[Remote Control](/docs/ja/remote-control)から claude.ai、Claude Desktop、または Claude モバイルアプリを通じてプロンプトを送信した場合、セッションを実行しているマシンではタブが開きません。ブラウザは、Claude がターミナルで入力したプロンプトからアーティファクトを再度公開する次回に開きます。任意の時点で `Ctrl+]` を押して、セッションの最新アーティファクトを再度開きます。
++Claude はアーティファクトのタイトルと、チャートやカレンダーなどページの内容に合ったブラウザタブアイコンを選択します。タイトルは claude.ai の[アーティファクトギャラリー](#share-an-artifact)と共有リンクに表示されます。特定のタイトルやタブアイコンを使いたい場合は、Claude に依頼してください。
+ 
+-Claude はアーティファクトのタイトルと絵文字を選択し、両方が claude.ai の[アーティファクトギャラリー](#share-an-artifact)と共有リンクに表示されます。Claude はまた、チャートやカレンダーなど、ページが何であるかに一致するブラウザタブアイコンを選択することもできます。特定のタイトル、絵文字、またはタブアイコンが必要な場合は、Claude に要求してください。
++Claude が公開できないと応答した場合、またはリンクなしでローカル HTML ファイルを書き込んだ場合、セッションでアーティファクトが有効になっていません。[利用可能性](#availability)の要件を確認してください。ターミナルに `Artifacts need a claude.ai login` と表示された場合は、サインイン方法について[該当するエラーの項目](/docs/ja/errors#artifacts-need-a-claude-ai-login)を参照してください。
+ 
+-新しいアーティファクトが公開されたときにブラウザが自動的に開くのを停止するには、環境で `CLAUDE_CODE_ARTIFACT_AUTO_OPEN=0` を設定します。
++<h3 id="when-claude-code-asks-before-publishing">
++  公開前に Claude Code が確認する場合
++</h3>
++
+```
+
+</details>
+
+<details>
+<summary>authentication-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/authentication-ja.md b/docs-ja/pages/authentication-ja.md
+index 7d6b628..43e1d73 100644
+--- a/docs-ja/pages/authentication-ja.md
++++ b/docs-ja/pages/authentication-ja.md
+@@ -143,6 +143,4 @@ API キーを作成しなくても Console アカウントにサインインで
+ * **元に戻す方法**: `/logout` を実行します。これにより、このサインインが書き込んだ認証情報が削除および取り消されます
+ 
+-組織が [サーバー管理設定](/docs/ja/server-managed-settings)を使用している場合、Claude Code v2.1.257 以降でこのサインインに適用されます。
+-
+ プロファイルに関するその他すべてのことがこのサインインに適用されます。これには、他の認証情報に対するランク付け、`/status` で取得される `Profile` 行、および claude.ai ログインが必要な機能が含まれます。[Anthropic プロファイルとフェデレーション認証情報](#anthropic-profiles-and-federation-credentials)を参照してください。
+ 
+```
+
+</details>
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index 43185dc..bf5498e 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,155 @@
+ # Changelog
+ 
++## 2.1.295
++
++- Added `onFailure: "block"` for command and HTTP hooks: a hook that can't start, times out, or exits with an unexpected code blocks the action instead of letting it through
++- Added Program Status Protocol (OSC 7501) support: terminals that implement it can show whether Claude Code is working, waiting on you, or done
++- Added quoted text to the `/copy` picker, so a drafted message copies without its `>` markers
++- Added a warning to `claude plugin install`, `enable`, `disable` and `marketplace add` when the settings file they write to does not load
++- Added a line on stderr, when it is a terminal, that says what a `claude -p` run is waiting for when it stays open after its last turn
++- Added support for `timeouts.upstream_ttfb_ms` on the Claude apps gateway's Bedrock, Vertex, Foundry and other cloud upstreams: a value you set now limits how long a stream may take to start there, after which it fails over or gets a 502
++- Added a "Backgrounding cancelled" message when you stop the turn while `←` is waiting for the current tool to finish
++- Added an optional `models` list to every Claude apps gateway upstream: only the listed models are sent there, on failover too, and one `*` in an entry is a wildcard
++- Added support for `forceLoginMethod: "gateway"` and `forceLoginGatewayUrl` in your own user settings on machines with no managed settings, so `/login` opens on that Claude apps gateway
++- Added advice to `claude plugin validate` when a plugin's README has no install line: it prints the line to paste and never changes the exit code, even with `--strict`
++- Added `upstream_request_id` to the Claude apps gateway's `inference` audit event: the request ID from Amazon Bedrock, the Anthropic API or another upstream, for support cases
++- Added `$.ui.notify` for mods: raises a native notification through your own notification setting and says which channel sent it
++- Added children to a mod's `Button`: strings and `Text`, so a row of a list is one pressable with a chip or a dim detail inside
++- Added `CLAUDE_CODE_RETRY_WATCHDOG_MAX_WAIT_MS` to limit how long unattended retry mode (`CLAUDE_CODE_RETRY_WATCHDOG`) waits out 429 and 529 errors
++- Added a `request-id` header to the Claude apps gateway's successful inference responses, so `request_id` in Claude Code telemetry matches the gateway's audit log
++- Fixed every request failing on a `[1m]` model when a gateway, Bedrock, Vertex or Foundry refuses the context-1m beta; Claude Code now resends without it
++- Fixed `claude -p` text output dropping earlier responses when background work started another turn; each turn's response now prints when the turn ends
++- Fixed remote MCP servers in headless and SDK sessions staying disconnected after an outage longer than 15 seconds, or reconnecting in a tight loop to a server that drops each connection right after it connects; repeated drops now back off, up to 30s
++- Fixed remote MCP connections being dropped when a server's error reply happened to contain a network error name
++- Fixed MCP servers that repeat a pagination cursor being asked for the same page up to 20 times at every connect
++- Fixed CSS, JavaScript and XML files returned by MCP tools being saved as .bin, which the Read tool refuses; font and icon files now get their own extension too
+```
+
+</details>
+
+<details>
+<summary>claude-apps-gateway-config-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/claude-apps-gateway-config-ja.md b/docs-ja/pages/claude-apps-gateway-config-ja.md
+index 2b9aee0..ef45f6b 100644
+--- a/docs-ja/pages/claude-apps-gateway-config-ja.md
++++ b/docs-ja/pages/claude-apps-gateway-config-ja.md
+@@ -1236,5 +1236,5 @@ managed:
+ CLI はメトリクス、ログ、および有効な場合はトレースをゲートウェイに送信し、ゲートウェイはそれらをそのまま各設定済みの宛先にリレーします。エクスポートは HTTP 上の OpenTelemetry Protocol（OTLP）を使用します。リレーをスキップしてセッションからコレクターに直接エクスポートするには、[ポリシーでコレクターを指定](#export-directly-to-your-collector) します。CLI が出力するメトリクスとイベントについては [使用状況の監視](/docs/ja/monitoring-usage) を参照してください。
+ 
+-`/login` でサインインしたセッションでは、CLI はゲートウェイが発行した JWT から読み取った認証済みユーザーのアイデンティティ（`user.id`、`user.email`、`user.groups` 属性）を各エクスポートに付与します。そのため、デベロッパー側の設定なしで、デベロッパーごとのコストと使用状況の帰属が機能します。
++`/login` でサインインしたセッションでは、CLI はゲートウェイが発行した JWT から読み取った認証済みユーザーのアイデンティティ（`user.id`、`user.email`、`user.groups` 属性）を各エクスポートに付与します。そのため、デベロッパー側の設定なしで、デベロッパーごとのコストと使用状況の帰属が機能します。デベロッパーがサインインする前に Claude Code がログに記録するイベントには、[このアイデンティティは含まれません](/docs/ja/monitoring-usage#standard-attributes)。
+ 
+ ゲートウェイでサインインした [Claude Desktop](#claude-desktop-overlay) と Cowork のセッションは、テレメトリに `enduser.id` とともに `user.email` と `user.groups` を付与するため、`user.email` または `user.groups` に対する 1 つのクエリでターミナル、Desktop、Cowork の使用状況をカバーできます。`user.groups` はコンマ区切りの IdP グループリストです。
+```
+
+</details>
+
+<details>
+<summary>claude-apps-gateway-deploy-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/claude-apps-gateway-deploy-ja.md b/docs-ja/pages/claude-apps-gateway-deploy-ja.md
+index 92aa1a8..03bbceb 100644
+--- a/docs-ja/pages/claude-apps-gateway-deploy-ja.md
++++ b/docs-ja/pages/claude-apps-gateway-deploy-ja.md
+@@ -7,4 +7,12 @@
+ > IdP にゲートウェイを登録し、コンテナをビルドして Kubernetes または Cloud Run にデプロイし、ヘルスチェック、シークレットローテーション、アップグレード、セキュリティを運用します。
+ 
++<Info>
++  **まずゲートウェイのネットワークを計画してください。** サインイン時、Claude Code は、ホスト名がパブリック IP アドレスに解決される Claude apps gateway を拒否します。インターネットから到達できないアドレスであっても同様です。
++
++  Claude apps gateway は、シェルコマンドを実行するフックを含む設定をユーザーのマシンにプッシュできます。このチェックは、ユーザーがパブリックインターネット上の悪意のあるゲートウェイに誤ってサインインするのを防ぐのに役立ちます。自社のゲートウェイもインターネットから切り離しておいてください。
++
++  ゲートウェイを実行する場所を選ぶ前に、ゲートウェイのアドレスを選んでください。通常は、ユーザーが内部ネットワーク上または VPN 経由でアクセスするプライベートアドレスです。内部ネットワークがパブリック IPv4 範囲を使用している場合は、ゲートウェイとユーザーのマシンの両方を含む範囲を 1 つ指定できます。Claude Code は、その一致をゲートウェイが内部ネットワーク上にあることを示すものとみなします。[ゲートウェイのアドレスを選択する](#choose-an-address-for-the-gateway) を参照してください。どちらもネットワークに合わない場合は、Anthropic のアカウントチームにお問い合わせください。
++</Info>
++
+ このページでは、[Claude apps gateway](/docs/ja/claude-apps-gateway) の運用側について説明します。ID プロバイダー（IdP）で OAuth クライアントを登録し、ゲートウェイをコンテナとしてデプロイし、日々運用します。ゲートウェイが起動時に読み込む `gateway.yaml` ファイルのすべてのオプションについては、[設定リファレンス](/docs/ja/claude-apps-gateway-config) を参照してください。
+ 
+@@ -18,8 +26,4 @@
+ サインインまたはブート中に失敗が発生した場合は、[トラブルシューティング](#troubleshooting) に直接進んでください。これは表示されるエラーに基づいてキー付けされています。
+ 
+-<Note>
+-  **プライベートネットワークにデプロイします。** Claude Code は、アドレスがプライベートであるゲートウェイにのみ接続します。これはセキュリティガードです。信頼されたゲートウェイは、開発者マシンでコマンドを実行する設定をプッシュできるためです。ゲートウェイを内部ロードバランサーまたは VPN の背後に配置し、プライベート IP にのみ解決するホスト名を付与します。内部ネットワークが組織が所有するパブリック IPv4 スペースから番号付けされている場合は、[所有するパブリックアドレススペースでゲートウェイを許可する](/docs/ja/claude-apps-gateway#allow-a-gateway-on-public-address-space-you-own) を参照してください。
+-</Note>
+-
+ <h2 id="identity-provider-setup">
+   ID プロバイダーのセットアップ
+@@ -52,5 +56,5 @@
+ </h2>
+ 
+-ゲートウェイは単一のステートレス Linux バイナリで、Postgres を通じて調整されるため、環境内でステートレスサービスをデプロイする方法でデプロイします。ネットワーク内に保持し、開発者と IdP が HTTPS 経由で到達でき、本番認証情報を保持する他のサービスと同様に扱います。
+```
+
+</details>
+
+*...以降省略*
+
+</details>
+
+
+<details>
 <summary>2026-10-08</summary>
 
 **変更ファイル:**
@@ -2867,233 +3163,5 @@ index c79d6f1..4477579 100644
 ```
 
 </details>
-
-<details>
-<summary>admin-setup-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/admin-setup-ja.md b/docs-ja/pages/admin-setup-ja.md
-index 8b44218..25bc825 100644
---- a/docs-ja/pages/admin-setup-ja.md
-+++ b/docs-ja/pages/admin-setup-ja.md
-@@ -15,11 +15,11 @@ Claude Code は、ローカル開発者設定よりも優先されるマネー
- </Note>
- 
--| 決定                                                        | 選択内容                      | 参照                                                                                                                                                                         |
--| :-------------------------------------------------------- | :------------------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
--| [API プロバイダーを選択する](#choose-your-api-provider)              | Claude Code が認証される場所と課金方法 | [Authentication](/docs/ja/authentication)、[Amazon Bedrock](/docs/ja/amazon-bedrock)、[Google Cloud の Agent Platform](/docs/ja/google-vertex-ai)、[Microsoft Foundry](/docs/ja/microsoft-foundry) |
--| [設定がデバイスに到達する方法を決定する](#decide-how-settings-reach-devices) | マネージドポリシーが開発者マシンに到達する方法   | [Server-managed settings](/docs/ja/server-managed-settings)、[Delivery mechanisms](/docs/ja/managed-settings#delivery-mechanisms)                                                     |
--| [実行する内容を決定する](#decide-what-to-enforce)                    | どのツール、コマンド、統合が許可されるか      | [Permissions](/docs/ja/permissions)、[Sandboxing](/docs/ja/sandboxing)                                                                                                                |
--| [使用状況の可視性をセットアップする](#set-up-usage-visibility)             | 支出と採用を追跡する方法              | [Analytics](/docs/ja/analytics)、[Monitoring](/docs/ja/monitoring-usage)、[Costs](/docs/ja/costs)                                                                                           |
--| [データ処理を確認する](#review-data-handling)                       | データ保持とコンプライアンス体制          | [Data usage](/docs/ja/data-usage)、[Security](/docs/ja/security)                                                                                                                      |
-+| 決定 | 選択内容 | 参照 |
-+| :- | :- | :- |
-+| [API プロバイダーを選択する](#choose-your-api-provider) | Claude Code が認証される場所と課金方法 | [Authentication](/docs/ja/authentication)、[Amazon Bedrock](/docs/ja/amazon-bedrock)、[Google Cloud の Agent Platform](/docs/ja/google-vertex-ai)、[Microsoft Foundry](/docs/ja/microsoft-foundry) |
-+| [設定がデバイスに到達する方法を決定する](#decide-how-settings-reach-devices) | マネージドポリシーが開発者マシンに到達する方法 | [Server-managed settings](/docs/ja/server-managed-settings)、[Delivery mechanisms](/docs/ja/managed-settings#delivery-mechanisms) |
-+| [実行する内容を決定する](#decide-what-to-enforce) | どのツール、コマンド、統合が許可されるか | [Permissions](/docs/ja/permissions)、[Sandboxing](/docs/ja/sandboxing) |
-+| [使用状況の可視性をセットアップする](#set-up-usage-visibility) | 支出と採用を追跡する方法 | [Analytics](/docs/ja/analytics)、[Monitoring](/docs/ja/monitoring-usage)、[Costs](/docs/ja/costs) |
-+| [データ処理を確認する](#review-data-handling) | データ保持とコンプライアンス体制 | [Data usage](/docs/ja/data-usage)、[Security](/docs/ja/security) |
- 
- <h2 id="choose-your-api-provider">
-@@ -29,11 +29,11 @@ Claude Code は、ローカル開発者設定よりも優先されるマネー
- Claude Code は複数の API プロバイダーのいずれかを通じて Claude に接続します。選択は課金、認証、継承するコンプライアンス体制、および開発者が使用できる Claude Code 機能に影響します。
- 
--| プロバイダー                        | 選択する場合                                                                                     |
--| :---------------------------- | :----------------------------------------------------------------------------------------- |
-+| プロバイダー | 選択する場合 |
-+| :- | :- |
-```
-
-</details>
-
-<details>
-<summary>advisor-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/advisor-ja.md b/docs-ja/pages/advisor-ja.md
-index 391e629..ff1a045 100644
---- a/docs-ja/pages/advisor-ja.md
-+++ b/docs-ja/pages/advisor-ja.md
-@@ -96,16 +96,16 @@ Claude Code はそのセッションの `advisorModel` 設定の代わりにフ
- </h2>
- 
--アドバイザーはメインモデル以上の能力を持つ必要があります。各メインモデルで受け入れられるアドバイザーは以下の通りです。
--
--| メインモデル                | 受け入れられるアドバイザー              | 注記                                                                       |
--| --------------------- | -------------------------- | ------------------------------------------------------------------------ |
--| Haiku 4.5             | Fable、Opus、Sonnet          | Haiku はアドバイザーを呼び出すことはできますが、アドバイザーとして機能することはできません                         |
--| Sonnet 4.6            | Fable、Opus、Sonnet          |                                                                          |
--| Sonnet 5              | Fable、Opus 4.7 以降、Sonnet 5 | Sonnet 4.6 アドバイザーは拒否され、Opus 4.6 アドバイザーを使用したリクエストは API エラーで失敗します          |
--| Opus 4.6              | Fable、Opus、Sonnet 5        | Sonnet 4.6 アドバイザーは拒否されます                                                 |
--| Opus 4.7 または Opus 4.8 | Fable、および Opus 4.7 以降      | Opus 4.6 または Sonnet アドバイザーは拒否されます                                        |
--| Opus 5.5 または Opus 5   | Fable、および Opus 5 以降        | Opus 4.6 または Sonnet アドバイザーは拒否され、API は Opus 4.7 または Opus 4.8 アドバイザーを拒否します |
--| Fable 5               | Fable 5.1 または Fable 5      | Opus または Sonnet アドバイザーは拒否されます                                            |
--| Fable 5.1             | Fable 5.1                  | Opus または Sonnet アドバイザーは拒否され、Fable 5 アドバイザーを使用したリクエストは API エラーで失敗します      |
-+アドバイザーは、メインモデル以上の能力を持つ必要があります。各メインモデルで受け入れられるアドバイザーは以下の通りです。
-+
-+| メインモデル | 受け入れられるアドバイザー | 注記 |
-+| - | - | - |
-+| Haiku 4.5 | Fable、Opus、Sonnet | Haiku はアドバイザーを呼び出すことはできますが、アドバイザーとして機能することはできません |
-+| Sonnet 4.6 | Fable、Opus、Sonnet | |
-+| Sonnet 5.5 または Sonnet 5 | Fable、Opus 4.7 以降、Sonnet 5 以降 | Sonnet 4.6 アドバイザーは拒否され、API は Opus 4.6 アドバイザーを拒否します |
-+| Opus 4.6 | Fable、Opus、Sonnet 5 以降 | Sonnet 4.6 アドバイザーは拒否されます |
-+| Opus 4.7 または Opus 4.8 | Fable、および Opus 4.7 以降 | Opus 4.6 または Sonnet アドバイザーは拒否されます |
-+| Opus 5.5 または Opus 5 | Fable、および Opus 5 以降 | Opus 4.6 または Sonnet アドバイザーは拒否され、API は Opus 4.7 または Opus 4.8 アドバイザーを拒否します |
-+| Fable 5 | Fable 5.1 または Fable 5 | Opus または Sonnet アドバイザーは拒否されます |
-```
-
-</details>
-
-<details>
-<summary>agent-teams-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/agent-teams-ja.md b/docs-ja/pages/agent-teams-ja.md
-index 8aa560b..004be47 100644
---- a/docs-ja/pages/agent-teams-ja.md
-+++ b/docs-ja/pages/agent-teams-ja.md
-@@ -40,11 +40,11 @@
- </Frame>
- 
--|             | Subagents                                                                                                   | エージェントチーム                                                                                     |
--| :---------- | :---------------------------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------- |
--| **コンテキスト**  | 独自のコンテキストウィンドウ。結果は呼び出し元に返される                                                                                | 独自のコンテキストウィンドウ。完全に独立                                                                          |
--| **通信**      | 呼び出し元に結果を返します。Claude が生成した際に名前を付けた Subagents は、[互いにメッセージを送信](/docs/ja/sub-agents#what-loads-at-startup)することもできます | チームメンバーが互いに直接メッセージを送信                                                                         |
--| **調整**      | メインエージェントがすべての作業を管理                                                                                         | メッセージを通じた自己調整、および [Task ツールを持つエージェント](/docs/ja/tools-reference#task-tool-availability)のための共有タスクリスト |
--| **最適な用途**   | 結果のみが重要な焦点を絞ったタスク                                                                                           | 議論と協力が必要な複雑な作業                                                                                |
--| **トークンコスト** | 低い：結果がメインコンテキストに要約されて返される                                                                                   | 高い：各チームメンバーが個別の Claude インスタンス                                                                 |
-+| | Subagents | エージェントチーム |
-+| :- | :- | :- |
-+| **コンテキスト** | 独自のコンテキストウィンドウ。結果は呼び出し元に返される | 独自のコンテキストウィンドウ。完全に独立 |
-+| **通信** | 呼び出し元に結果を返します。Claude が生成した際に名前を付けた Subagents は、[互いにメッセージを送信](/docs/ja/sub-agents#what-loads-at-startup)することもできます | チームメンバーが互いに直接メッセージを送信 |
-+| **調整** | メインエージェントがすべての作業を管理 | メッセージを通じた自己調整、および [Task ツールを持つエージェント](/docs/ja/tools-reference#task-tool-availability)のための共有タスクリスト |
-+| **最適な用途** | 結果のみが重要な焦点を絞ったタスク | 議論と協力が必要な複雑な作業 |
-+| **トークンコスト** | 低い：結果がメインコンテキストに要約されて返される | 高い：各チームメンバーが個別の Claude インスタンス |
- 
- 結果を報告する必要がある迅速で焦点を絞ったワーカーが必要な場合は subagents を使用してください。チームメンバーが調査結果を共有し、互いに検証し、独立して調整する必要がある場合は、エージェントチームを使用してください。
-@@ -259,10 +259,10 @@ Claude は通常の subagent にも独自に名前を付けるため、後でメ
- エージェントチームは以下で構成されています。
- 
--| コンポーネント     | 役割                                       |
--| :---------- | :--------------------------------------- |
-+| コンポーネント | 役割 |
-+| :- | :- |
-```
-
-</details>
-
-<details>
-<summary>agent-view-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/agent-view-ja.md b/docs-ja/pages/agent-view-ja.md
-index c4bb971..ca92a56 100644
---- a/docs-ja/pages/agent-view-ja.md
-+++ b/docs-ja/pages/agent-view-ja.md
-@@ -113,20 +113,20 @@ Completed
- 各行は、セッションの状態を示すアイコンで始まります。アイコンの色とアニメーションはセッションの状態を示します：
- 
--| 状態    | アイコン表示  | 意味                                                                                                                                                                                                                                                                                                 |
--| :---- | :------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
--| 作業中   | アニメーション | Claude がアクティブにツールを実行しているか、応答を生成しています                                                                                                                                                                                                                                                               |
--| 入力が必要 | 黄色      | Claude は特定の質問または許可決定をあなたから待機しています。あなたのみが提供できる答え、許可決定、または別のプロンプト。例えば [サンドボックス](/docs/ja/sandboxing) プロンプトでネットワークホストを許可するか、MCP サーバーの [入力リクエストに応答する](/docs/ja/mcp#respond-to-mcp-elicitation-requests)。アタッチされたターミナルが必要なコマンド。例えば `/install-github-app` または `/mcp` 設定リスト。[ここで無人セッションを保持します](#attach-to-a-session) |
--| アイドル  | 薄い      | セッションはすることがなく、次のプロンプトの準備ができています                                                                                                                                                                                                                                                                    |
--| 完了    | 緑       | タスクが正常に完了しました                                                                                                                                                                                                                                                                                      |
--| 失敗    | 赤       | タスクがエラーで終了しました                                                                                                                                                                                                                                                                                     |
--| 停止    | グレー     | セッションは `Ctrl+X` または `claude stop` で停止されました。[そのプロセスは Claude Code の外から終了されました](#the-supervisor-process)。または [バックグラウンドサービスがオフの間に終了しました](#sessions-show-as-failed-after-shutdown)                                                                                                                      |
-+| 状態 | アイコン表示 | 意味 |
-+| :- | :- | :- |
-+| 作業中 | アニメーション | Claude がアクティブにツールを実行しているか、応答を生成しています |
-+| 入力が必要 | 黄色 | Claude は特定の質問または許可決定をあなたから待機しています。あなたのみが提供できる答え、許可決定、または別のプロンプト。例えば [サンドボックス](/docs/ja/sandboxing) プロンプトでネットワークホストを許可するか、MCP サーバーの [入力リクエストに応答する](/docs/ja/mcp#respond-to-mcp-elicitation-requests)。アタッチされたターミナルが必要なコマンド。例えば `/install-github-app` または `/mcp` 設定リスト。[ここで無人セッションを保持します](#attach-to-a-session) |
-+| アイドル | 薄い | セッションはすることがなく、次のプロンプトの準備ができています |
-+| 完了 | 緑 | タスクが正常に完了しました |
-+| 失敗 | 赤 | タスクがエラーで終了しました |
-+| 停止 | グレー | セッションは `Ctrl+X` または `claude stop` で停止されました。[そのプロセスは Claude Code の外から終了されました](#the-supervisor-process)。または [バックグラウンドサービスがオフの間に終了しました](#sessions-show-as-failed-after-shutdown) |
- 
- 別に、アイコンの形状は基盤となるプロセスが実行しているかどうかを示します：
- 
--| 形状                 | 意味                                                                           |
--| :----------------- | :--------------------------------------------------------------------------- |
--| `✻` またはアニメーション `✽` | セッションプロセスは生きており、すぐに返信します                                                     |
--| `∙`                | プロセスは終了しました。ピーク表示、返信、またはアタッチはできます。Claude は中断したところから再開します                     |
-```
-
-</details>
-
-<details>
-<summary>agents-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/agents-ja.md b/docs-ja/pages/agents-ja.md
-index 688cc7a..3200061 100644
---- a/docs-ja/pages/agents-ja.md
-+++ b/docs-ja/pages/agents-ja.md
-@@ -9,11 +9,11 @@
- Claude Code には、複数のタスクを同時に処理する 5 つの方法があります。[サブエージェント](/docs/ja/sub-agents)、[エージェントビュー](/docs/ja/agent-view)、[エージェントチーム](/docs/ja/agent-teams)、[動的ワークフロー](/docs/ja/workflows)、および [プロジェクト](/docs/ja/claude-projects) です。これらは、各会話に自分で留まるのか、Claude にワーカーのグループを調整させるのかという関与の度合いや、作業がマシン上で実行されるのかクラウドで実行されるのかという点で異なります。
- 
--| アプローチ                         | 提供内容                                                                                                                                                               | 使用する場合                                                                                                         |
--| :---------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------- |
--| [サブエージェント](/docs/ja/sub-agents)    | 1 つのセッション内で委任されたワーカーが、独自のコンテキストでサイドタスクを実行し、サマリーを返す                                                                                                                 | サイドタスクが検索結果、ログ、またはファイルコンテンツで主な会話を埋め尽くす場合（再度参照しない）                                                              |
--| [エージェントビュー](/docs/ja/agent-view)   | `claude agents` で開く、バックグラウンドで実行されているセッションをディスパッチして監視する 1 つの画面。リサーチプレビュー                                                                                            | 複数の独立したタスクがあり、それらを引き継いで、一目で状態を確認し、必要な場合のみ介入したい場合                                                               |
--| [エージェントチーム](/docs/ja/agent-teams)  | 共有タスクリストとエージェント間メッセージングを備えた複数の調整されたセッション。リーダーによって管理される。実験的で、デフォルトでは無効                                                                                              | Claude にプロジェクトを分割させ、割り当てさせ、ワーカーを同期させたい場合                                                                       |
--| [プロジェクト](/docs/ja/claude-projects) | claude.ai/code またはデスクトップアプリでの 1 つの継続的な会話。Claude は threads と呼ばれる並列クラウドセッションを開始し、各セッションにプロジェクトのリポジトリ、指示、およびメモリを提供し、どのセッションがあなたを必要としているかを表示します。Pro および Max でのパブリックベータ | 作業が数日または数週間にわたる多くのタスクに及び、マシンがオフの場合でも実行を続け、各セッションをディスパッチして追跡するのではなく、一度説明したい場合                                   |
--| [動的ワークフロー](/docs/ja/workflows)     | 多くのサブエージェントを実行し、その結果をチェックするスクリプト。1 回のターンで調整するには大きすぎるジョブ向け                                                                                                          | タスクが大きすぎてサブエージェント数個では対応できない場合、または検出結果を相互に検証したい場合。コードベース全体の監査、500 ファイルのマイグレーション、相互検証が必要な調査、または複数の角度から作成されたプランなど |
-+| アプローチ | 提供内容 | 使用する場合 |
-+| :- | :- | :- |
-+| [サブエージェント](/docs/ja/sub-agents) | 1 つのセッション内で委任されたワーカーが、独自のコンテキストでサイドタスクを実行し、サマリーを返す | サイドタスクが検索結果、ログ、またはファイルコンテンツで主な会話を埋め尽くす場合（再度参照しない） |
-+| [エージェントビュー](/docs/ja/agent-view) | `claude agents` で開く、バックグラウンドで実行されているセッションをディスパッチして監視する 1 つの画面。リサーチプレビュー | 複数の独立したタスクがあり、それらを引き継いで、一目で状態を確認し、必要な場合のみ介入したい場合 |
-+| [エージェントチーム](/docs/ja/agent-teams) | 共有タスクリストとエージェント間メッセージングを備えた複数の調整されたセッション。リーダーによって管理される。実験的で、デフォルトでは無効 | Claude にプロジェクトを分割させ、割り当てさせ、ワーカーを同期させたい場合 |
-+| [プロジェクト](/docs/ja/claude-projects) | claude.ai/code またはデスクトップアプリでの 1 つの継続的な会話。Claude は threads と呼ばれる並列セッションを開始し、クラウドで、またはリモートコントロール経由でコンピューターで実行し、各セッションにプロジェクトの指示を提供し、どのセッションがあなたを必要としているかを表示します。Pro および Max でのパブリックベータ | 作業が数日または数週間にわたる多くのタスクに及び、マシンがオフの場合でも実行を続け、各セッションをディスパッチして追跡するのではなく、一度説明したい場合 |
-+| [動的ワークフロー](/docs/ja/workflows) | 多くのサブエージェントを実行し、その結果をチェックするスクリプト。1 回のターンで調整するには大きすぎるジョブ向け | タスクが大きすぎてサブエージェント数個では対応できない場合、または検出結果を相互に検証したい場合。コードベース全体の監査、500 ファイルのマイグレーション、相互検証が必要な調査、または複数の角度から作成されたプランなど |
- 
- すべてのアプローチにおいて、ワーカーは Claude セッションです。別のツールを関与させるには、それを Claude に [MCP サーバー](/docs/ja/mcp) として公開します。
-```
-
-</details>
-
-*...以降省略*
-
-</details>
-
-
-<details>
-<summary>2026-09-28</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/claude-tag-ja.md | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-```
-
-<details>
-<summary>claude-tag-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/claude-tag-ja.md b/docs-ja/pages/claude-tag-ja.md
-index e589491..5b50621 100644
---- a/docs-ja/pages/claude-tag-ja.md
-+++ b/docs-ja/pages/claude-tag-ja.md
-@@ -1 +1 @@
--<!DOCTYPE html><html lang="en-US"><head><title>Just a moment...</title><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=Edge"><meta name="robots" content="noindex,nofollow"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="content-security-policy" content="default-src &#39;none&#39;; script-src &#39;nonce-tR6BKjYD9x0BybboKCb5Xc&#39; &#39;unsafe-eval&#39; https://challenges.cloudflare.com; script-src-attr &#39;none&#39;; style-src &#39;unsafe-inline&#39;; img-src &#39;self&#39; https://challenges.cloudflare.com; connect-src &#39;self&#39; https://challenges.cloudflare.com; frame-src &#39;self&#39; https://challenges.cloudflare.com blob:; child-src &#39;self&#39; https://challenges.cloudflare.com blob:; worker-src blob:; form-action http: https:; base-uri &#39;self&#39;"><style>*{box-sizing:border-box;margin:0;padding:0}html{line-height:1.15;-webkit-text-size-adjust:100%;color:#313131;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"}body{display:flex;flex-direction:column;height:100vh;min-height:100vh}.main-content{margin:8rem auto;padding-left:1.5rem;max-width:60rem}@media (width <= 720px){.main-content{margin-top:4rem}}#challenge-error-text{background-image:url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgZmlsbD0ibm9uZSI+PHBhdGggZmlsbD0iI0IyMEYwMyIgZD0iTTE2IDNhMTMgMTMgMCAxIDAgMTMgMTNBMTMuMDE1IDEzLjAxNSAwIDAgMCAxNiAzbTAgMjRhMTEgMTEgMCAxIDEgMTEtMTEgMTEuMDEgMTEuMDEgMCAwIDEtMTEgMTEiLz48cGF0aCBmaWxsPSIjQjIwRjAzIiBkPSJNMTcuMDM4IDE4LjYxNUgxNC44N0wxNC41NjMgOS41aDIuNzgzem0tMS4wODQgMS40MjdxLjY2IDAgMS4wNTcuMzg4LjQwNy4zODkuNDA3Ljk5NCAwIC41OTYtLjQwNy45ODQtLjM5Ny4zOS0xLjA1Ny4zODktLjY1IDAtMS4wNTYtLjM4OS0uMzk4LS4zODktLjM5OC0uOTg0IDAtLjU5Ny4zOTgtLjk4NS40MDYtLjM5NyAxLjA1Ni0uMzk3Ii8+PC9zdmc+");background-repeat:no-repeat;background-size:contain;padding-left:34px}</style><meta http-equiv="refresh" content="360"></head><body><div class="main-wrapper" role="main"><div class="main-content"><noscript><div class="h2"><span id="challenge-error-text">Enable JavaScript and cookies to continue</span></div></noscript></div></div><script nonce="tR6BKjYD9x0BybboKCb5Xc">(function(){window._cf_chl_opt = {cFPWv: 'b',cH: 'mqPZrUsGLExF1TJdnG0sBliDcG1lLjQeSpnaLZlzXwQ-1790475476-1.2.1.1-wWe_cRbqwVu7KmokQL.m1p0x6Lktm3WertPBdLamPAEYUMImI5Ow.wNUO641NMwh',cITimeS: '1790475476',cN: 'tR6BKjYD9x0BybboKCb5Xc',cRay: 'a41703cda8b515e5',cTplB: '0',cTplC:0,cTplO:0,cTplV:5,cType: 'managed',cUPMDTk:"/?redirect=claude.com\u0026__cf_chl_tk=4oEuvT07_RlrOvDZF8exwKJxl0rxBQrCqnxOdITZdyA-1790475476-1.0.1.1-sRmtNrRFtwnFx1gksgmmZb6rH0loVLlrMSWyhW7ceM0",cvId: '3',cZone: 'claude.ai',fa:"/?redirect=claude.com\u0026__cf_chl_f_tk=4oEuvT07_RlrOvDZF8exwKJxl0rxBQrCqnxOdITZdyA-1790475476-1.0.1.1-sRmtNrRFtwnFx1gksgmmZb6rH0loVLlrMSWyhW7ceM0",md: 'K2ohU4NEakNy8bIEDteIqqcPfsFCJhcnqTgt0EFSgOY-1790475476-1.2.1.1-yITIewvFlh470ABl.YmIb6sonz9btRSRzgQJ62T2VPx3v0KihkUOJaZ_cdWbwW5wG.zn8lmx3Bzv8sQBa4rmNcgoD1SxM6vCVHyKLUNdzsPPWFKkWNTaGqLdLNp3kubqw1CU0oPr1p3eGibwqioWaZ4YvW6BWYYeaKA79xNigu5HK3GytGFDdI1pNDvfp6rfxeyZS1gHMimQPnNtYdFNKaBeqgkchf_i_P4_jJL9Ek7KVlsF4B7t52E_wMcReRkkiSTplwBZQ8cMt77XQVEh1Vtti.rxoDQ9RyacDIb0NEVNGIYIdzNZe6YTF50BFzEZtIAof2pW0KbDVmyrmnVIHusMy.oKABlnBzlVsIEit5akpGZ1KPmnL10AsjXAgGSJBn.ZPsPdcO6H0DtdK8bYlKHIJZo17RZM14vYKe2Kmrb73XsMtgoMHKpLPmf2yEUL4X5B6KpY45i.PighPNb4ssNJjkP_UUAVbvN1VeK8Xa8WzIc5PG4FVg8TNhTvSPbk200eP4Pas1MmPxZs138OsV3dPYICUI027WxC1fPMSF0bw.cO_jpwbAHMjpXcp0uOtTWJX.fKYcdh6q2l64CwlEDwygc2Fcr1egGGb4lCluBHett2CqhHx971Q35WPHTzTI_tVFbiR8tX9xgwolf1UcwhVf9LxzY9vTKCA9lWNF7i6JzBQ1A0huvuGfJ.kqdzK57ckWdoyxWg0pyNpBmP7QcRcu1JxeP7LXwYRJuOqeGQerjO02OAHCpNCJ7m.8n4B36VFMVqyeJf1EkOGkAQ6p6GfgWNjPgBWtYraANwTw3pXJRJ549AGkTbD2_i7HA_Eq7A55gTTfNYzhRDpJg2U6HldSl9paLKc9z2g2C2q.0eoijvp2_s5IMOww1JzLs82VDx1LRniygCCUNzS7TKfERuf5Lm1X0luhrTTjjqyc54XmqPdm1_eD.KE7GzvZVFTwRudcY1urCQuPPy.JlgV2DddDkLVJGMcEfRZsRqRMnoXa9HvjMERLnPZMBHMroTy0Z.n_sj0LOW3.EK82LV4mlOkxYQWhYZ1pbhAFZCmek',mdrd: 'lxlB2uVCdnEXyr4Sp_E_dc5mcFWtqi7lBxVc0Fxm2xc-1790475476-1.2.1.1-Ds_hMMMtqLXVlr7jntlXILUMcqeFD3CYrSo3QUgiqrOI7zf8eDkIkyvIeBV0l6QysexMmbbSiIIAqnOi4kK8_0nMAUVKwmhEk4tI2xMRceV5UvaBCADW9Yhu6CfHOa0WxRfbPe71ctCto7Cw5W9mwGWj4_PVKvyfqhuklfiOGygK8zEfWJR3msCSZhIhSXaVvJrsTFv5gErw6xM_MflVkXZLLV5GCZlVaub10jNqz8q_HZ_roDa3AD1O5WxKO1JUNJYJ6G263kcda22kH46kJMRi1Cw57uLMdQZ237SbbPeUGCrUW6fjbAa0mweHwrQsrZIGauTY2cpe6DChxxmwhrfpFUqnsyo0fKsDb.kHApomy3grEKJIPHYBf2lLKNqYQYGRyHNKEc9E81kFtbnT1mT6LZR_PxeNSebbJHzzhLAP2dZBwULb3gjnkXq8whBF',};var a = document.createElement('script');a.nonce = 'tR6BKjYD9x0BybboKCb5Xc';a.src = '/cdn-cgi/challenge-platform/h/b/orchestrate/chl_page/v1?ray=a41703cda8b515e5';window._cf_chl_opt.cOgUHash = location.hash === '' && location.href.indexOf('#') !== -1 ? '#' : location.hash;window._cf_chl_opt.cOgUQuery = location.search === '' && location.href.slice(0, location.href.length - window._cf_chl_opt.cOgUHash.length).indexOf('?') !== -1 ? '?' : location.search;if (window.history && window.history.replaceState) {var ogU = location.pathname + window._cf_chl_opt.cOgUQuery + window._cf_chl_opt.cOgUHash;history.replaceState(null, null,"/?redirect=claude.com\u0026__cf_chl_rt_tk=4oEuvT07_RlrOvDZF8exwKJxl0rxBQrCqnxOdITZdyA-1790475476-1.0.1.1-sRmtNrRFtwnFx1gksgmmZb6rH0loVLlrMSWyhW7ceM0"+ window._cf_chl_opt.cOgUHash);a.onload = function() {history.replaceState(null, null, ogU);}}document.getElementsByTagName('head')[0].appendChild(a);}());</script></body></html>
-\ No newline at end of file
-+<!DOCTYPE html><html lang="en-US"><head><title>Just a moment...</title><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=Edge"><meta name="robots" content="noindex,nofollow"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="content-security-policy" content="default-src &#39;none&#39;; script-src &#39;nonce-E2y3O62FTJNX2aSdP151lw&#39; &#39;unsafe-eval&#39; https://challenges.cloudflare.com; script-src-attr &#39;none&#39;; style-src &#39;unsafe-inline&#39;; img-src &#39;self&#39; https://challenges.cloudflare.com; connect-src &#39;self&#39; https://challenges.cloudflare.com; frame-src &#39;self&#39; https://challenges.cloudflare.com blob:; child-src &#39;self&#39; https://challenges.cloudflare.com blob:; worker-src blob:; form-action http: https:; base-uri &#39;self&#39;"><style>*{box-sizing:border-box;margin:0;padding:0}html{line-height:1.15;-webkit-text-size-adjust:100%;color:#313131;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"}body{display:flex;flex-direction:column;height:100vh;min-height:100vh}.main-content{margin:8rem auto;padding-left:1.5rem;max-width:60rem}@media (width <= 720px){.main-content{margin-top:4rem}}#challenge-error-text{background-image:url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgZmlsbD0ibm9uZSI+PHBhdGggZmlsbD0iI0IyMEYwMyIgZD0iTTE2IDNhMTMgMTMgMCAxIDAgMTMgMTNBMTMuMDE1IDEzLjAxNSAwIDAgMCAxNiAzbTAgMjRhMTEgMTEgMCAxIDEgMTEtMTEgMTEuMDEgMTEuMDEgMCAwIDEtMTEgMTEiLz48cGF0aCBmaWxsPSIjQjIwRjAzIiBkPSJNMTcuMDM4IDE4LjYxNUgxNC44N0wxNC41NjMgOS41aDIuNzgzem0tMS4wODQgMS40MjdxLjY2IDAgMS4wNTcuMzg4LjQwNy4zODkuNDA3Ljk5NCAwIC41OTYtLjQwNy45ODQtLjM5Ny4zOS0xLjA1Ny4zODktLjY1IDAtMS4wNTYtLjM4OS0uMzk4LS4zODktLjM5OC0uOTg0IDAtLjU5Ny4zOTgtLjk4NS40MDYtLjM5NyAxLjA1Ni0uMzk3Ii8+PC9zdmc+");background-repeat:no-repeat;background-size:contain;padding-left:34px}</style><meta http-equiv="refresh" content="360"></head><body><div class="main-wrapper" role="main"><div class="main-content"><noscript><div class="h2"><span id="challenge-error-text">Enable JavaScript and cookies to continue</span></div></noscript></div></div><script nonce="E2y3O62FTJNX2aSdP151lw">(function(){window._cf_chl_opt = {cFPWv: 'b',cH: 'U6z6m.MJ37NJPqIqUWLYU.t9Y9g3jHfauZ8DQ7E4pfU-1790562110-1.2.1.1-KNsHmE.iSwJIDMIm642CTHnWCdeXGqLwpxxVVyQcioIkcbYRhZFq8_bvxN4dI1WO',cITimeS: '1790562110',cN: 'E2y3O62FTJNX2aSdP151lw',cRay: 'a41f46e51fa86b84',cTplB: '0',cTplC:0,cTplO:0,cTplV:5,cType: 'managed',cUPMDTk:"/?redirect=claude.com\u0026__cf_chl_tk=W1gZLLoUQrMQSAGLo2r2m7K58F5mIMzEUr9kTF_W_9U-1790562110-1.0.1.1-w6tKWQXZNth.8fGKleFejNVCHet.ghb16nOKO0mSfGA",cvId: '3',cZone: 'claude.ai',fa:"/?redirect=claude.com\u0026__cf_chl_f_tk=W1gZLLoUQrMQSAGLo2r2m7K58F5mIMzEUr9kTF_W_9U-1790562110-1.0.1.1-w6tKWQXZNth.8fGKleFejNVCHet.ghb16nOKO0mSfGA",md: '5TISfKR0eAn7qSL41KTrlCDXbcsQ4PHBwAayE1iygzA-1790562110-1.2.1.1-1cin6EqaRRChja3CCwFR3TDqrHQ2U8H022uQBMjduDfapqIQ8Ft0iDOETILmgq34LgP9m6Jgku6lrQboyfbdoo0HZHmntufaoG0_t3G35PKVeILueEu1V1pFKSNBscB5.p130gnR77DAS1phHlUl5WEgChP2wEuAiSEa0iMovCS5XeNfRwBhrJQYmXeHowVT2qprZBDka9P7cg15RxC3pzJmVLn2rlHtJc3PGkeY3jiIJ981jp1Bvy7hr1D84arUWzkWz0VifwkATl5XMYMa9xzpoKtwojfKUe8IuWsTgUipYhc57.A9JvItL7qlWrBF085BzqMPWWePH5Xah71HZtSV_UBDMs1O6mVxFhjEqyX8cwPWA_f9v23Gt58H9kfkBilqxCrc3S9qOfXKgHdNVIjG7QTstO.IsBFUTdVnzWEGu30a7OAr1xLkvgvBEyMS85hQ65PLBMP5ioE3DZ0O7.8.oHBy76oOjhx4o88POdDLVaIz2.Kbj3FmWns_tVgBLxW0nrs4g6xqWgbTWaHap3objmB9epEziuFxT.UqcFUNLady.V7cMAWp_FQ5oUWaxbKAYd4Y6DkC9xZplTyBzhY0rV5f0lRwxfevvlZ6fbolTH_kEswDqyPVcGZqRjxw.5MAvMqLDyl3mN9JkbmlQC7bWW36IU93HSs9CR4OuDwk_X.hGXXKvSk0edJX7be0W.eekAAoeqvAdhLHN0Jk6FxWTvGhcm.OurxEe0h3HfSSG_wY6EG9rUdh1m5JaSB4.7TcQQ3s0dqDDn2E8WJ6WR7123aAZkWb7Fno2Z.RcYmQ7FcAZg7NSUbKYLcE917gPTEaY_b_dJ9Y_s9hZo9xTnIstlBy6P47TvdtRmI3krTKrKY.m6SZ5KeBrGv8khyhWsVI5DtYAzxQDXeh2ISRSxvmnp7avWuH7C_Dqrk68ZFctuMWv6eRz6kUnuJn.WqE2cxBLRCpVhJZc.CLnnhAdPDx3_k.KgGoQ4iVOjqOZoU1umP0XxbqRgh3.KR6VM_.xIvJH82bHki2aZtBRE26C37Mr6pbbeGm6h42_YpXwQ25kzvkKg0ZfnAQSxKGKkp4',mdrd: 'DygGteHz2PZkHMqJzx63UK9OoqXImsOfNU2te94_USo-1790562110-1.2.1.1-vBPezzBtqhFa97BBDxdMdCn26_QFa80F1IDSNCObhMZkd9B2z6wgpcNnQ_skhgRaI10LG5_tILVdyJPcgphqPK9Aym4z7fFN49ogKYuFjhpGUTkl_juN69pF.5emxUgbGq37potgUscECmMKvzB3430yBDaQ_65f2tOoWZ8vJWXdK.cNYOb4nKdWupWggLxXqOpPR_LUmK.BfDzsxsCgZqo0WcHk5gDQ3rvhvJLy1R4_S7aWtxSwhaxj6vugQR1JC9bbXuynEyJvUGQnZyEZhqdgK7UiGHjMuNyueuG2CK9yDkMh5zRrDw5_rl72TOMgaXhUrvn6OTQF6f6lVQtA9HCJ2d_4DGEkftF3Bq_9tS2ghirD17SaYceQ7bnLAfhQffcVeBdkav2ruU4XSVMrQIcbmE2i8FYB_b6rWiqLZqqftZaDViRp1BDI8RoDohVG',};var a = document.createElement('script');a.nonce = 'E2y3O62FTJNX2aSdP151lw';a.src = '/cdn-cgi/challenge-platform/h/b/orchestrate/chl_page/v1?ray=a41f46e51fa86b84';window._cf_chl_opt.cOgUHash = location.hash === '' && location.href.indexOf('#') !== -1 ? '#' : location.hash;window._cf_chl_opt.cOgUQuery = location.search === '' && location.href.slice(0, location.href.length - window._cf_chl_opt.cOgUHash.length).indexOf('?') !== -1 ? '?' : location.search;if (window.history && window.history.replaceState) {var ogU = location.pathname + window._cf_chl_opt.cOgUQuery + window._cf_chl_opt.cOgUHash;history.replaceState(null, null,"/?redirect=claude.com\u0026__cf_chl_rt_tk=W1gZLLoUQrMQSAGLo2r2m7K58F5mIMzEUr9kTF_W_9U-1790562110-1.0.1.1-w6tKWQXZNth.8fGKleFejNVCHet.ghb16nOKO0mSfGA"+ window._cf_chl_opt.cOgUHash);a.onload = function() {history.replaceState(null, null, ogU);}}document.getElementsByTagName('head')[0].appendChild(a);}());</script></body></html>
-\ No newline at end of file
-```
-
-</details>
-
-</details>
-
-
-<details>
-<summary>2026-09-27</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/claude-tag-ja.md | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-```
 
 <!-- UPDATE_LOG_END -->

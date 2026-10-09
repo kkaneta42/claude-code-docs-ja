@@ -396,7 +396,7 @@ Terminal、Finder または File Explorer、System Settings または Settings �
   セッションで並列に作業する
 </h3>
 
-サイドバーの\*\*+ New session**をクリックするか、macOS で**Cmd+N**を、Windows で**Ctrl+N**を押して、複数のタスクを並列で作業します。**Ctrl+Tab**と**Ctrl+Shift+Tab**を押してサイドバーのセッションをサイクルします。Git リポジトリの場合、ブランチ名の横の**worktree\*\*オプションを選択して、[Git worktrees](/docs/ja/worktrees)を使用してセッションにプロジェクトの独立した分離コピーを与えるため、1 つのセッションの変更は、コミットするまで他のセッションに影響しません。
+サイドバーの\*\*+ New session**をクリックするか、macOS で**Cmd+N**を、Windows で**Ctrl+N**を押して、複数のタスクを並列で作業します。**Ctrl+Tab**と**Ctrl+Shift+Tab**を押してサイドバーのセッションをサイクルします。Git リポジトリの場合、ブランチ名の横の**worktree\*\*オプションを選択すると、[Git worktrees](/docs/ja/worktrees)を使用して、セッションにプロジェクトの独立した分離コピーを与えることができます。
 
 2 つのセッションを同時に表示するには、macOS で**Cmd**を、Windows で**Ctrl**を押しながらサイドバーのセッションをクリックします。セッションは既に開いているセッションの横の 2 番目のペインで開きます。分割がアクティブな間、別のサイドバーセッションをクリックすると、フォーカスがあるペインが置き換わります。macOS で\*\*Cmd+\\**を、Windows で**Ctrl+\\\*\*を押して、フォーカスされたペインを閉じて、単一のセッションに戻ります。
 
@@ -959,7 +959,7 @@ HIPAA が有効になっている Enterprise 組織では、**Desktop** トグ�
 
 Desktop セッションがどこで実行されるかに応じて、どの管理設定がそのセッションに到達するかが異なります。[`availableModels`](/docs/ja/model-config#restrict-model-selection)などのモデル制限は、Desktop の Claude Code セッションでターミナル CLI と同じ方法で適用されます。[surface coverage](/docs/ja/model-config#surface-coverage)を参照してください。
 
-* **このマシン上のローカルセッション**：ディスクにデプロイされた管理設定ファイルが適用されます。管理コンソールを通じてリモートでプッシュされた管理設定は、セッションが[適格なログインまたはキー](/docs/ja/server-managed-settings#platform-availability)で認証する場合、Anthropic の API でこれらのセッションに到達します。ターミナル CLI と同じ[設定の優先順位](/docs/ja/settings#settings-precedence)に従います。
+* **このマシン上のローカルセッション**：ディスクにデプロイされた管理設定ファイルが適用されます。管理コンソールを通じてリモートでプッシュされた管理設定は、セッションが[適格なログイン](/docs/ja/server-managed-settings#platform-availability)で認証する場合、Anthropic の API でこれらのセッションに到達します。ターミナル CLI と同じ[設定の優先順位](/docs/ja/settings#settings-precedence)に従います。
 * **[クラウドセッション](#cloud-sessions)**：[サーバー管理設定](/docs/ja/server-managed-settings)を受け取ります。デバイスにデプロイされたファイルはこれらのセッションに到達しません。Anthropic が管理する VM で実行されるためです。[自己ホスト環境](/docs/ja/self-hosted-environments)にルーティングされたセッションは、ランナーイメージ内の管理設定ファイルも読み取ります。[Claude Code が管理ソースを組み合わせる方法](/docs/ja/managed-settings#how-claude-code-combines-managed-sources)は、そのファイルが適用される場合を示しています。
 * **[SSH セッション](#ssh-sessions)**：セッションはリモートホストから管理設定ファイルを読み取ります。Desktop 自体は、ローカルマシン上で`sshConfigs`、`sshHostAllowlist`、`disableSshSavedPasswords`、および`disableDesktopLocalSessions`を読み取ります。複数の管理ソースを配信する場合、Desktop は[デフォルトではそのうち 1 つから](/docs/ja/managed-settings#how-claude-code-combines-managed-sources)これらを読み取ります。
 * **[Cowork](https://claude.com/docs/cowork/overview)セッション**：このマシン上の Cowork セッションでは、ユーザーが Team または Enterprise アカウントでサインインしている場合でも、Claude Code は管理コンソール設定をフェッチしません。マシンにデプロイされたポリシーを読み取ります。ただし、Claude Desktop 設定が`requireCoworkFullVmSandbox`を設定している場合を除きます。リモート Cowork セッションはどちらも受け取りません。[ポリシーが適用される場所と時期](/docs/ja/managed-settings#where-and-when-a-policy-applies)を参照して、どのデバイスファイルが Cowork に到達するかを確認してください。[MCP 権限ルール](/docs/ja/permissions#mcp)を参照して、`Bash`および`WebFetch`ルールが Cowork のツールにどのように適用されるかを確認してください。
@@ -1184,6 +1184,16 @@ Desktop アプリは、`claude_desktop_config.json` から MCP サーバーを�
 * **Windows**：**Help**をクリックしてから、**About Claude**をクリック
 
 バージョン番号をクリックしてクリップボードにコピーします。
+
+<h4 id="claude-code-version-in-the-code-tab">
+  Code タブの Claude Code バージョン
+</h4>
+
+セッションで実行されている Claude Code のバージョンを確認するには、**Code** タブのローカルセッションで `/status` と入力し、**Claude Code** 行を確認します。この行には `2.1.286` のようなバージョンが表示されます。
+
+ローカルセッション用に新しいバージョンを取得するには、macOS では **Claude → Check for Updates**、Windows では **Help → Check for Updates** を開き、新しいセッションを開始します。
+
+ローカルセッションでは、**Code** タブは独自の Claude Code のコピーを実行し、そのコピーには独自のバージョン番号があります。デスクトップアプリがそのコピーをダウンロードして更新するため、ターミナルの `claude` コマンドとはバージョンが異なる場合があり、一方を更新してももう一方は更新されません。
 
 <h3 id="403-or-authentication-errors-in-the-code-tab">
   Code タブの 403 またはエラー認証エラー

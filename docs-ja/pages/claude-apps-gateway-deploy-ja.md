@@ -6,6 +6,14 @@
 
 > IdP にゲートウェイを登録し、コンテナをビルドして Kubernetes または Cloud Run にデプロイし、ヘルスチェック、シークレットローテーション、アップグレード、セキュリティを運用します。
 
+<Info>
+  **まずゲートウェイのネットワークを計画してください。** サインイン時、Claude Code は、ホスト名がパブリック IP アドレスに解決される Claude apps gateway を拒否します。インターネットから到達できないアドレスであっても同様です。
+
+  Claude apps gateway は、シェルコマンドを実行するフックを含む設定をユーザーのマシンにプッシュできます。このチェックは、ユーザーがパブリックインターネット上の悪意のあるゲートウェイに誤ってサインインするのを防ぐのに役立ちます。自社のゲートウェイもインターネットから切り離しておいてください。
+
+  ゲートウェイを実行する場所を選ぶ前に、ゲートウェイのアドレスを選んでください。通常は、ユーザーが内部ネットワーク上または VPN 経由でアクセスするプライベートアドレスです。内部ネットワークがパブリック IPv4 範囲を使用している場合は、ゲートウェイとユーザーのマシンの両方を含む範囲を 1 つ指定できます。Claude Code は、その一致をゲートウェイが内部ネットワーク上にあることを示すものとみなします。[ゲートウェイのアドレスを選択する](#choose-an-address-for-the-gateway) を参照してください。どちらもネットワークに合わない場合は、Anthropic のアカウントチームにお問い合わせください。
+</Info>
+
 このページでは、[Claude apps gateway](/docs/ja/claude-apps-gateway) の運用側について説明します。ID プロバイダー（IdP）で OAuth クライアントを登録し、ゲートウェイをコンテナとしてデプロイし、日々運用します。ゲートウェイが起動時に読み込む `gateway.yaml` ファイルのすべてのオプションについては、[設定リファレンス](/docs/ja/claude-apps-gateway-config) を参照してください。
 
 本番環境のデプロイメントは順序立てた 4 つのステップに従い、以下のセクションがそれに対応しています。最初の 2 つは選択を行う場所です。後の 2 つは、実行中に参照するリファレンス資料です。
@@ -16,10 +24,6 @@
 4. [セキュリティ体制を確認する](#security)：データがどこを流れるか、脅威モデル、コンプライアンスの回答。セキュリティレビュー用のリファレンス
 
 サインインまたはブート中に失敗が発生した場合は、[トラブルシューティング](#troubleshooting) に直接進んでください。これは表示されるエラーに基づいてキー付けされています。
-
-<Note>
-  **プライベートネットワークにデプロイします。** Claude Code は、アドレスがプライベートであるゲートウェイにのみ接続します。これはセキュリティガードです。信頼されたゲートウェイは、開発者マシンでコマンドを実行する設定をプッシュできるためです。ゲートウェイを内部ロードバランサーまたは VPN の背後に配置し、プライベート IP にのみ解決するホスト名を付与します。内部ネットワークが組織が所有するパブリック IPv4 スペースから番号付けされている場合は、[所有するパブリックアドレススペースでゲートウェイを許可する](/docs/ja/claude-apps-gateway#allow-a-gateway-on-public-address-space-you-own) を参照してください。
-</Note>
 
 <h2 id="identity-provider-setup">
   ID プロバイダーのセットアップ
@@ -51,7 +55,7 @@
   デプロイ
 </h2>
 
-ゲートウェイは単一のステートレス Linux バイナリで、Postgres を通じて調整されるため、環境内でステートレスサービスをデプロイする方法でデプロイします。ネットワーク内に保持し、開発者と IdP が HTTPS 経由で到達でき、本番認証情報を保持する他のサービスと同様に扱います。
+ゲートウェイは単一のステートレス Linux バイナリで、Postgres を通じて調整されるため、環境内で他のステートレスサービスをデプロイするのと同じ方法でデプロイします。ゲートウェイはネットワーク内に置き、開発者が HTTPS 経由で到達でき、ゲートウェイから IdP に到達できるようにします。また、本番認証情報を保持する他のサービスと同様に扱います。
 
 デプロイメントを実行する場所を超えて形作るいくつかの決定があります：
 
@@ -70,6 +74,17 @@
 * `provider: anthropic` では、ゲートウェイは Anthropic API 独自の ping を含む応答をそのまま渡します。
 
 ALB の 60 秒などのデフォルトは、静かなストリームを開いたままにするのに十分です。[AWS の実装例](/docs/ja/claude-apps-gateway-on-aws#troubleshooting) はとにかくそれを 1 時間に引き上げ、トラブルシューティング行は v2.1.229 より古いゲートウェイをカバーしており、現在 ping を取得する上流でサイレント期間中に何も送信しませんでした。
+
+<h3 id="choose-an-address-for-the-gateway">
+  ゲートウェイのアドレスを選択する
+</h3>
+
+Claude Code は、次の 2 つの方法のいずれかでゲートウェイのアドレスを受け付けます：
+
+* **プライベートアドレス**：ゲートウェイを内部ロードバランサーまたは VPN の背後に配置し、RFC 1918 や CGNAT `100.64.0.0/10` などのプライベートアドレスにのみ解決されるホスト名を使用します。ユーザーのマシンはどのアドレスでもかまいません。[プライベートネットワークの前提条件](/docs/ja/claude-apps-gateway#prerequisites) に、受け付けられる範囲が記載されています。
+* **宣言済みブロック**：内部ネットワークが組織所有のパブリック IPv4 空間を使用している場合は、そのブロックを `gatewayInternalNetworks` 管理設定に記載します。ゲートウェイとユーザーのマシンの両方がそのブロック内にある必要があります。[所有するパブリックアドレス空間上のゲートウェイを許可する](/docs/ja/claude-apps-gateway#allow-a-gateway-on-public-address-space-you-own) を参照してください。
+
+両方を含む単一のブロックがない場合は、代わりにゲートウェイにプライベートアドレスを割り当ててください。
 
 <h3 id="container-image">
   コンテナイメージ
@@ -375,7 +390,7 @@ Claude Code は、プラグインマーケットプレイスをゲートウェ�
   トラブルシューティング
 </h2>
 
-ご質問やフィードバックについては、[Claude Code サポート](https://support.claude.com/en/collections/14445694-claude-code)をご利用いただくか、[Claude Code GitHub リポジトリ](https://github.com/anthropics/claude-code/issues)で issue を開いてください。問題を報告する際は、以下の情報を含めてください。
+ご質問やフィードバックについては、[Claude Code サポート](https://support.claude.com/en/collections/14445694-claude-code)をご利用いただくか、[Claude Code GitHub リポジトリ](https://github.com/anthropics/claude-code/issues)で issue を開いてください。Anthropic のアカウントチームに問い合わせることもできます。問題を報告する際は、以下の情報を含めてください。
 
 * **Gateway の問題**: gateway の stderr（該当するウィンドウの）、`gateway.yaml`（シークレットは削除）、gateway のバージョン（ランディングページの `/` と `/managed/settings` の `x-cc-gateway-version` レスポンスヘッダーに表示）、および最近の変更内容
 * **ログイン問題**: 開発者が `claude --debug-file ./claude-debug.txt` を実行して再現し、そのファイルと同じウィンドウの gateway の監査ログを送信
@@ -394,7 +409,7 @@ gateway の stderr には監査イベントストリームが含まれ、監査�
 | CLI `/login`: `The gateway is limiting sign-in attempts right now`、または古いバージョンで `Request failed with status code 429`。`/device` ページは以前に試したことのない開発者に `Too many attempts` を表示する場合があります | IP ごとのサインインレート制限に達した。`listen.trusted_proxies` がロードバランサーをカバーしていないため、すべての開発者がそのアドレスを共有するか、多くの開発者が NAT または VPN 出口アドレスを共有しています。`result: rate_limited` の監査イベントは同じ 1 つまたは少数の `client_ip` 値を表示します。 | まず `listen.trusted_proxies` をロードバランサーのソース範囲に設定し、開発者がアドレスを共有し続ける場合は `rate_limits` を上げてください。[大規模なロールアウト](#large-rollouts)を参照してください。 |
 | CLI `/login`: `Gateway hosts must be on your organization's private network; <host> resolves to the public (or unrecognized) address <ip>` | gateway ホスト名が少なくとも 1 つのパブリック IP アドレスに解決される。Claude Code は各解決されたアドレスをチェックし、すべてがプライベートであることを要求します。一般的な原因は、1 つのファミリーがパブリックアドレスに解決されるデュアルスタック名です。AWS 内部デュアルスタックロードバランサーを含み、パブリック範囲の AAAA アドレスを返します。 | gateway 名が開発者マシン上でプライベートアドレスのみに解決されるようにしてください。デュアルスタック名の場合、パブリック範囲のレコードを削除するか、別の内部専用 DNS 名を提供してください。[プライベートネットワークの前提条件](/docs/ja/claude-apps-gateway#prerequisites)を参照してください。アドレスが組織で所有して内部的に使用するパブリックスペースである場合、代わりに[そのブロックを宣言](/docs/ja/claude-apps-gateway#allow-a-gateway-on-public-address-space-you-own)してください。 |
 | CLI `/login`: `Gateway login would go through proxy <proxy>, which is not on a private network` | `HTTPS_PROXY` または `HTTP_PROXY` が gateway ホストに適用され、プロキシのホスト名がパブリックアドレスに解決される。ホストがプライベートアドレスのみに解決されるプロキシは許可され、このエラーをトリガーしません | 開発者のマシンの `NO_PROXY` に gateway ホストを追加して接続を直接にするか、ホスト名がプライベートアドレスに解決されるプロキシを使用してください。メッセージには追加すべき正確な `NO_PROXY` エントリが示されます |
-| CLI `/login`: `Claude Code only signs in to <host> from inside its declared network <block> (managed settings), and this machine is connecting from <ip>, outside it` | gateway は [`gatewayInternalNetworks`](/docs/ja/claude-apps-gateway#allow-a-gateway-on-public-address-space-you-own) で宣言されたブロック上にあり、開発者のマシンがそのブロック外のアドレスからそれに到達した: VPN アドレスプール、コンテナまたは WSL2 NAT セグメント、または自組織のものではないネットワーク | 開発者に自組織のネットワーク上のホスト OS から `/login` を実行させてください。表示されたアドレスも自組織のパブリックスペースである場合、gateway のエントリを両方をカバーするブロック（最大 `/8`）に置き換えてください。2 番目の重複するエントリは拒否されます |
+| CLI `/login`: `Claude Code only signs in to <host> from inside its declared network <block> (managed settings), and this machine is connecting from <ip>, outside it` | gateway は [`gatewayInternalNetworks`](/docs/ja/claude-apps-gateway#allow-a-gateway-on-public-address-space-you-own) で宣言されたブロック上にあり、開発者のマシンがそのブロック外のアドレスからそれに到達した: VPN アドレスプール、コンテナまたは WSL2 NAT セグメント、または自組織のものではないネットワーク | 開発者に自組織のネットワーク上のホスト OS から `/login` を実行させてください。表示されたアドレスも自組織のパブリックスペースである場合、gateway のエントリを両方をカバーするブロック（最大 `/8`）に置き換えてください。2 番目の重複するエントリは拒否されます。両方をカバーするブロックがない場合は、[gateway のアドレスを選択する](#choose-an-address-for-the-gateway)を参照してください |
 | CLI `/login`: `Every address for gateway host <host> must be inside its declared network <block>, and it also resolves to <ip>` | gateway の名前が [`gatewayInternalNetworks`](/docs/ja/claude-apps-gateway#allow-a-gateway-on-public-address-space-you-own) で宣言されたブロック外のアドレスに解決される: 2 番目のサイト、またはデュアルスタック名上の IPv6 レコード。宣言されたブロックの下では、プライベートおよび IPv6 アドレスを含め、すべてのレコードがその 1 つの IPv4 ブロック内にある必要があります | 開発者マシン上の gateway 名に対してブロック内のレコードのみを公開するか、別の内部専用名を提供してください |
 | CLI `/login`: `<host> is on the declared network <block>, which Claude Code checks over a direct connection, not through an HTTP proxy` | `HTTPS_PROXY` または `HTTP_PROXY` が宣言されたブロック上の gateway に適用される | 開発者のマシンで、メッセージに示された `NO_PROXY` エントリを追加してください |
 | CLI `/login`: `gatewayInternalNetworks in managed settings` で始まるメッセージ | 値が[検証ルール](/docs/ja/claude-apps-gateway#allow-a-gateway-on-public-address-space-you-own)の 1 つに違反しており、メッセージにどのルールかが示されます。修正するまで、Claude Code はプライベートアドレス上の gateway を含め、マシン上のすべての新しい gateway `/login` を拒否します。既存のサインインは機能し続けます | デプロイする管理設定ソースで、メッセージに示されたエントリを修正してから、`/login` を再実行してください |

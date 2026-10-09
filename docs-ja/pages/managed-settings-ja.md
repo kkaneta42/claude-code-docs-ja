@@ -154,7 +154,7 @@ Claude Code は `managed-settings.json` を最初にマージし、次にディ�
 
 Claude Code は、最初に最優先度の順でソースをチェックします。
 
-1. リモート設定。claude.ai から[サーバー管理設定](/docs/ja/server-managed-settings)として、または[Claude アプリゲートウェイ](/docs/ja/claude-apps-gateway)によって配信されます。Claude Code は、セッションが[適格なログインまたはキー](/docs/ja/server-managed-settings#platform-availability)で Anthropic の API に直接認証するか、`/login` でゲートウェイにサインインする場合にのみこのソースをフェッチします。他のプロバイダー、または `ANTHROPIC_BASE_URL` が Anthropic の API 以外を指す場合、次のソースから開始します。
+1. リモート設定。claude.ai から[サーバー管理設定](/docs/ja/server-managed-settings)として、または[Claude アプリゲートウェイ](/docs/ja/claude-apps-gateway)によって配信されます。Claude Code は、セッションが[適格な認証情報](/docs/ja/server-managed-settings#platform-availability)で Anthropic の API に直接認証するか、`/login` でゲートウェイにサインインする場合にのみこのソースをフェッチします。他のプロバイダー、または `ANTHROPIC_BASE_URL` が Anthropic の API 以外を指す場合、次のソースから開始します
 2. MDM または OS レベルのポリシー: macOS plist または HKLM レジストリキー
 3. 管理設定ファイル、`managed-settings.d/*.json` と `managed-settings.json` をマージしたもの
 4. Windows 上の HKCU レジストリ、および WSL 上で HKLM レジストリまたは Windows 管理設定ファイルが [`wslInheritsWindowsSettings`](/docs/ja/settings-reference#wslinheritswindowssettings) をオンにし、HKCU 値もそれを設定している場合の HKCU レジストリ。Claude Code は、[それより上に管理者ドキュメントが存在せず](#present-admin-documents)、[ホスト提供の親設定](#let-an-embedding-host-add-policy)が制限的なキーを提供しない場合にのみこれを読み取ります
@@ -384,8 +384,8 @@ Claude Code は [`policyHelper`](/docs/ja/settings-reference#policyhelper) が�
 これらのケースは閉じた状態で失敗しません。
 
 * `null` はキーを削除します。
-* 無効な `disableAllHooks`（引用符で囲まれたブール値でも）は警告とともにドロップされます。`true` を適用すると、独自の管理対象設定がデプロイするフックもアンロードされるためです。
-* ルールが対象とするすべての他のブール キーについて、文字列 `"true"` または `"false"` はそのブール値として読み取られ、`/status` に引用符を削除するよう求める通知が表示されます。
+* 無効な `disableAllHooks` は、引用符で囲まれたブール値であっても警告とともにドロップされます。`true` を適用すると、組織自身の管理設定がデプロイするフックもアンロードされてしまうためです。
+* このルールが対象とするその他のすべてのブール キーについては、文字列 `"true"` または `"false"` はそのブール値として読み取られ、`/status` に引用符を削除するよう求める通知が表示されます。
 
 Claude Code は `permissions`、`autoMode`、`worktree`、および `attribution` ブロックをフィールドごとに修復します。全体をドロップするのではなく。
 

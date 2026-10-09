@@ -375,70 +375,71 @@
 | Responses seem lower quality than usual | [応答品質](#responses-seem-lower-quality-than-usual) |
 
 <h2 id="automatic-retries">
-  自動リトライ
+  自動再試行
 </h2>
 
-Claude Code は、エラーを表示する前に、指数バックオフを使用して一時的な障害を最大 10 回リトライします。Claude の応答の途中で到着した障害は常にリトライされるわけではありません。このページのエラーのいずれかが表示される場合、Claude Code はその障害に適用されるリトライを既に実行しています。
+Claude Code は、一時的な障害に対して指数バックオフを使用して最大 10 回まで再試行してから、エラーを表示します。Claude の応答の途中で発生した障害については、常に再試行するとは限りません。このページに記載されているエラーのいずれかが表示された時点で、Claude Code はその障害に該当する再試行をすでに行っています。
 
-Claude Code がリトライする障害：
+Claude Code は次の障害を再試行します。
 
-* Claude の応答がストリーミングされる前に到着するサーバーエラー、過負荷応答、およびリクエストタイムアウト。
-* Claude が思考を完了した後、テキストまたはツール呼び出しを開始する前に到着するサーバーエラーまたは過負荷応答。Claude Code はその時点でのサーバーエラーを最大 2 回リトライします。v2.1.284 より前は、Claude Code はその時点でエラーとともにターンを終了していました。
-* 接続の切断。Claude が応答の任意の部分（思考を含む）を完了する前にリクエストの途中で接続が切断された場合、Claude Code は同じバックオフでリクエストを再発行し、テキストがすでにストリーミングを開始していても、ターンは続行されます。Claude が思考を完了した後、テキストまたはツール呼び出しを開始する前に接続が切断された場合、Claude Code は代わりにリクエストを最大 2 回迅速に連続して再発行し、接続がその時点で切断され続ける場合は `Connection lost before a response was produced` でターンを終了します。
-* リクエストの途中でコンピューターがスリープ状態になったことが原因で Claude Code が検出した接続の破損。Claude Code はこれを上記のルールに基づいて切断された接続としてカウントします。リトライラベルが特定の理由を名前付けすると、`Connection lost while your computer was asleep` と読み、Claude が思考を完了した後、テキストまたはツール呼び出しの前にターンが終了する場合、メッセージは `Your computer went to sleep before a response was produced` と読みます。
-* 応答ヘッダーが到着したが Claude の応答が到着していない場合、または Claude が思考を完了したがテキストまたはツール呼び出しを開始していない場合の、停止した応答ストリーム。Claude Code は停止した接続を中止し、上記の 10 回の試行予算外で最大 1 回リクエストを再発行します。Claude が思考を完了した後、テキストまたはツール呼び出しの前に応答が 2 回目に停止した場合、Claude Code は `The response stalled before a response was produced` でターンを終了します。
-* API が応答ヘッダーで応答しないストリーミングリクエスト。[最初のバイトデッドラインが実行される](/docs/ja/network-config#streaming-idle-watchdogs)接続上：Claude Code はデッドラインで中止し、リトライ予算内でモデルリクエストごとに最大 1 回再送信し、その試行も応答がない場合は [No response from API](#no-response-from-api) でターンを終了します。他の接続では、リクエストは `API_TIMEOUT_MS` を待ちます。`CLAUDE_CODE_RETRY_WATCHDOG` を設定する場合、1 回のリトライ上限は適用されません。
-* Claude が思考を完了するか、テキストまたはツール呼び出しを開始する前に、API の出力コンテンツフィルターが停止したストリーミング応答。Claude Code はリトライ予算内でリクエストを 1 回再送信し、フィルターが 2 回目の応答も停止した場合は [Output blocked by content filtering policy](#output-blocked-by-content-filtering-policy) を表示します。
-* 一時的な 429 スロットル。ただし、ゲートウェイの支出制限 `429` は除きます。これはスロットルではありません。[Spend limit reached](#spend-limit-reached) を参照してください。
-  * claude.ai サブスクリプションでサインインしている場合、これには計画の割り当てヘッダーを含まない 429 スロットルが含まれます。v2.1.199 より前は、Claude Code は API キーおよび Enterprise サインインに対してのみこれらのスロットルをリトライしました。
-* 入力と `max_tokens` がコンテキスト制限を超えるため拒否されたリクエスト。変更されていない状態で再送信すると同じ方法で失敗するため、Claude Code は削減された `max_tokens` でリトライし、2 つのケースでリトライを停止してコンパクト化する代わりに：
-  * 削減がフィットできない場合。例えば、会話自体がコンテキストウィンドウをほぼ満たしている場合。
-  * リトライが `max_tokens` をこれ以上縮小できない場合。v2.1.218 より前は、Claude Code は、拡張思考予算が残りのコンテキストを超えた場合など、フィットしない削減されたリクエストを再送信でき、リトライ予算が尽きるまで続きました。
-* [Google Cloud の Agent Platform](/docs/ja/google-vertex-ai) 上の期限切れまたは欠落している Google Cloud 認証情報、またはマシンで読み込みに失敗した AWS 認証情報。Claude Code はキャッシュされた認証情報を破棄し、最大 2 回リトライしてから、[Could not load AWS or Google Cloud credentials](#could-not-load-aws-or-google-cloud-credentials) で説明されているように、すぐに再認証できるようにエラーを報告します。v2.1.228 より前は、Claude Code は失敗した Google Cloud 認証情報を完全なリトライ予算を通じてリトライしてからエラーを表示していました。
-* [`apiKeyHelper`](/docs/ja/settings-reference#apikeyhelper) スクリプトが認証情報を提供している間に、Anthropic API から直接、または [LLM gateway](/docs/ja/llm-gateway) を通じて `401` または `403`。Claude Code はスクリプトを再実行し、完全なリトライ予算内でその新しい出力でリトライします。スクリプト自体が再実行時に失敗する場合、Claude Code は [Your apiKeyHelper script is failing](#your-apikeyhelper-script-is-failing) を代わりに表示します。
+* Claude の応答がまったくストリーミングされていない段階で発生したサーバーエラー、過負荷レスポンス、リクエストタイムアウト。
+* Claude が思考を終えた後、テキストやツール呼び出しを開始する前に発生したサーバーエラーまたは過負荷レスポンス。その時点でのサーバーエラーについて、Claude Code は最大 2 回まで再試行します。v2.1.284 より前は、Claude Code はその時点でエラーとともにターンを終了していました。
+* 切断された接続。Claude が思考を含む応答のいずれの部分も完了する前にリクエストの途中で接続が切断された場合、Claude Code は同じバックオフでリクエストを再発行し、一部のテキストがすでにストリーミングを開始していてもターンは継続します。Claude が思考を終えた後、テキストやツール呼び出しを開始する前に切断された場合は、代わりに Claude Code は短い間隔で最大 2 回までリクエストを再発行し、その時点で接続の切断が続く場合は `Connection lost before a response was produced` でターンを終了します。
+* リクエストの途中でコンピューターがスリープ状態になったことで切断されたと Claude Code が検出した接続。Claude Code はこれを上記のルールに従い切断された接続として扱います。再試行ラベルが具体的な理由を示すようになると `Connection lost while your computer was asleep` と表示され、Claude が思考を終えた後、テキストやツール呼び出しの前にターンが終了した場合、メッセージは `Your computer went to sleep before a response was produced` となります。
+* 停止した応答ストリーム。レスポンスヘッダーは届いたものの Claude の応答がまったく届いていない場合、または Claude が思考を終えたもののテキストやツール呼び出しを開始していない場合です。Claude Code は停止した接続を中断し、上記の 10 回の試行回数とは別に、最大 1 回だけリクエストを再発行します。Claude が思考を終えた後、テキストやツール呼び出しの前に応答が 2 回目に停止した場合、Claude Code は `The response stalled before a response was produced` でターンを終了します。
+* [ファーストバイトの期限が適用される](/docs/ja/network-config#streaming-idle-watchdogs)接続で、API がレスポンスヘッダーを返さないストリーミングリクエスト。Claude Code は期限の時点でそれを中断し、再試行回数の範囲内で、モデルリクエストごとに最大 1 回だけ再送信します。その試行にも応答がない場合は、[No response from API](#no-response-from-api) でターンを終了します。その他の接続では、リクエストは `API_TIMEOUT_MS` まで待機します。`CLAUDE_CODE_RETRY_WATCHDOG` を設定している場合、1 回の再試行という上限は適用されません。
+* Claude が思考を終えるか、テキストやツール呼び出しを開始する前に、API の出力コンテンツフィルターによって停止されたストリーミングレスポンス。Claude Code は再試行回数の範囲内でリクエストを 1 回再送信し、フィルターが 2 回目の応答も停止した場合は [Output blocked by content filtering policy](#output-blocked-by-content-filtering-policy) を表示します。
+* 一時的な 429 スロットリング。ただし、ゲートウェイの支出上限による `429` はスロットリングではないため含まれません。[Spend limit reached](#spend-limit-reached) を参照してください。
+  * claude.ai サブスクリプションでサインインしている場合、これにはプランのクォータヘッダーを含まない 429 スロットリングも含まれます。v2.1.199 より前は、Claude Code がこれらのスロットリングを再試行するのは API キーおよび Enterprise でのサインインの場合のみでした。
+* 入力と `max_tokens` の合計がコンテキスト制限を超えたために拒否されたリクエスト。変更せずに再送信しても同じように失敗するため、Claude Code は `max_tokens` を減らして再試行します。ただし、次の 2 つのケースでは、再試行を停止し、代わりにコンパクト化を行います。
+  * どれだけ減らしても収まらない場合。たとえば、会話自体がコンテキストウィンドウをほぼ埋めている場合です。
+  * 再試行で `max_tokens` をそれ以上縮小できない場合。v2.1.218 より前は、拡張思考のバジェットが残りのコンテキストを超えている場合など、依然として収まらない縮小済みのリクエストを、再試行回数を使い切るまで再送信することがありました。
+* [Google Cloud の Agent Platform](/docs/ja/google-vertex-ai) で期限切れまたは欠落している Google Cloud 認証情報、またはマシン上で読み込みに失敗した AWS 認証情報。Claude Code はキャッシュされた認証情報を破棄して最大 2 回まで再試行し、その後 [Could not load AWS or Google Cloud credentials](#could-not-load-aws-or-google-cloud-credentials) で説明しているように、すぐに再認証できるようエラーを報告します。v2.1.228 より前は、Claude Code は失敗した Google Cloud 認証情報について、再試行回数をすべて使い切るまで再試行してからエラーを表示していました。
+* [`apiKeyHelper`](/docs/ja/settings-reference#apikeyhelper) スクリプトが認証情報を提供している間に、Anthropic API から直接、または [LLM ゲートウェイ](/docs/ja/llm-gateway)経由で返された `401` または `403`。Claude Code はスクリプトを再実行し、その新しい出力を使用して、再試行回数の範囲内で再試行します。再実行時にスクリプト自体が失敗した場合、Claude Code は代わりに [Your apiKeyHelper script is failing](#your-apikeyhelper-script-is-failing) を表示します。
 
-v2.1.227 より前は、`Connection lost before a response was produced` は `Connection closed while thinking, before producing a response` と読み、`The response stalled before a response was produced` は `Response stalled while thinking, before producing a response` と読みました。
+v2.1.227 より前は、`Connection lost before a response was produced` は `Connection closed while thinking, before producing a response`、`The response stalled before a response was produced` は `Response stalled while thinking, before producing a response` と表示されていました。
 
-Claude Code がリトライしない障害：
+Claude Code は次の障害を再試行しません。
 
-* TLS 証明書検証エラー。TLS 検査プロキシ、欠落している `NODE_EXTRA_CA_CERTS` バンドル、または期限切れの証明書など。Claude Code は最初の試行でエラーを報告するため、証明書セットアップをすぐに修正できます。[SSL certificate errors](#ssl-certificate-errors) を参照してください。Claude Code は依然としてハンドシェイクタイムアウトなどの一時的な TLS 条件をリトライします。v2.1.199 より前は、Claude Code は証明書エラーを完全なリトライ予算を通じてリトライしてからエラーを表示していました。
-* Claude がテキストのブロックまたはツール呼び出しを完了した後、または思考を完了した後にそれを開始した後、応答を完了する前に到着するサーバーエラー、切断された接続、または停止したストリーム。Claude Code はリクエストを再実行しません。これは同じツール呼び出しを 2 回実行する可能性があるためです。Claude が完了したものを保持し、Claude が完了したツール呼び出しを実行し、その結果からターンを続行します。対話型セッションと非対話型セッションで表示される内容については、[The response above may be incomplete](#the-response-above-may-be-incomplete) を読んでください。v2.1.199 より前は、サーバーエラーがストリーム中に到着した場合、Claude Code は部分的な出力を破棄し、ターン全体をエラーとして報告していました。
-* Claude が応答を完了した後に到着する障害：リトライする必要がないため、Claude Code は完全な応答を保持し、ターンを正常に終了します。
-* [Amazon Bedrock ストリーミング応答に予期しないコンテンツタイプがある](#bedrock-streaming-response-has-an-unexpected-content-type)。ゲートウェイまたはプロキシが応答を書き直すため、リトライも同じ方法で書き直されます。Claude Code v2.1.208 以降が必要です。
-* 失敗したストリーミングリクエストの非ストリーミングリトライが成功ステータスを取得しますが、[本文に Claude API メッセージがない](#api-returned-an-empty-or-malformed-response)。Claude Code はそのエラーでターンを終了します。
-* 組織のポリシーチェックが拒否したリクエスト。これは `API Error:` 行として表示され、拒否メッセージが含まれます。組織の管理者は [Inference hooks](https://platform.claude.com/docs/en/manage-claude/inference-hooks) を使用してチェックを設定します。これは Claude Enterprise 機能であり、メッセージは彼らが設定した指示で終わるか、デフォルトでは彼らに連絡するよう指示します。Claude Code は、拒否がリクエストのコンテンツに関するものであり、モデルに関するものではないため、拒否されたリクエストを同じモデルまたは [fallback model](/docs/ja/model-config#fallback-model-chains) に再送信しません。v2.1.239 より前は、Claude Code は拒否されたリクエストを、ストリーミングなしで、または設定されたフォールバックモデルで再送信してから、拒否を表示する可能性がありました。
+* TLS を検査するプロキシ、`NODE_EXTRA_CA_CERTS` バンドルの欠落、期限切れの証明書などによる TLS 証明書の検証失敗。Claude Code は最初の試行でエラーを報告するため、すぐに証明書の設定を修正できます。[SSL certificate errors](#ssl-certificate-errors) を参照してください。ハンドシェイクのタイムアウトなど、一時的な TLS の状態については引き続き再試行します。v2.1.199 より前は、Claude Code は証明書の失敗について、再試行回数をすべて使い切るまで再試行してからエラーを表示していました。
+* Claude がテキストのブロックまたはツール呼び出しを完了した後、または思考を終えた後にそれらを開始した後、応答を終える前に発生したサーバーエラー、切断された接続、または停止したストリーム。同じツール呼び出しが 2 回実行される可能性があるため、Claude Code はリクエストを再実行しません。Claude が完了した内容を保持し、Claude が完了したツール呼び出しを実行して、その結果からターンを継続します。対話型セッションおよび非対話型セッションで表示される内容については、[The response above may be incomplete](#the-response-above-may-be-incomplete) を参照してください。v2.1.199 より前は、ストリームの途中でサーバーエラーが発生すると、Claude Code は部分的な出力を破棄し、ターン全体をエラーとして報告していました。
+* Claude が応答を終えた後に発生した障害。再試行する必要があるものはないため、Claude Code は完全な応答を保持し、ターンを通常どおり終了します。
+* [予期しない content-type を持つ Amazon Bedrock のストリーミングレスポンス](#bedrock-streaming-response-has-an-unexpected-content-type)。レスポンスを書き換えているゲートウェイやプロキシは、再試行も同じように書き換えるためです。Claude Code v2.1.208 以降が必要です。
+* 失敗したストリーミングリクエストの非ストリーミング再試行で、成功ステータスが返されたものの[本文に Claude API メッセージが含まれていない](#api-returned-an-empty-or-malformed-response)もの。Claude Code はそのエラーでターンを終了します。
+* 組織のポリシーチェックによって拒否されたリクエスト。これは拒否メッセージを含む `API Error:` の行として表示されます。組織の管理者は Claude Enterprise の機能である [Inference hooks](https://platform.claude.com/docs/en/manage-claude/inference-hooks) を使用してこのチェックを設定しており、メッセージの末尾には管理者が設定した指示が表示されるか、デフォルトでは管理者に連絡するよう案内が表示されます。拒否はモデルではなくリクエストの内容に関するものであるため、Claude Code は拒否されたリクエストを同じモデルにも[フォールバックモデル](/docs/ja/model-config#fallback-model-chains)にも再送信しません。v2.1.239 より前は、Claude Code は拒否を表示する前に、ストリーミングなしで、または設定されたフォールバックモデルで、拒否されたリクエストを再送信することがありました。
 
 <h3 id="what-you-see-while-claude-code-retries-or-waits">
-  Claude Code がリトライまたは待機している間に表示される内容
+  Claude Code が再試行または待機している間に表示される内容
 </h3>
 
-リトライ中、スピナーはエラーラベルの後に `Retrying in Ns · attempt x/y` カウントダウンを表示します。ラベルは、すぐに対応できる障害の最初の試行からの特定の理由を名前付けします。ネットワークがダウンしている、TLS ハンドシェイクが失敗した、またはレート制限に達した場合です。他のエラーの場合は、最初は `API error` と読みます。v2.1.198 以降、3 回目の試行からの特定の理由に切り替わるか、`CLAUDE_CODE_MAX_RETRIES` が 3 未満の試行を許可する場合は最終試行時に切り替わります。以前のバージョンは最終試行時にのみ切り替わります。
+再試行中、スピナーにはエラーラベルの後に `Retrying in Ns · attempt x/y` のカウントダウンが表示されます。ネットワークがダウンしている、TLS ハンドシェイクが失敗した、レート制限に達したなど、すぐに対処できる障害については、ラベルは最初の試行から具体的な理由を示します。その他のエラーでは、最初は `API error` と表示されます。v2.1.198 以降では、3 回目の試行から、または `CLAUDE_CODE_MAX_RETRIES` で 3 回未満しか許可されていない場合は最後の試行で、具体的な理由に切り替わります。それ以前のバージョンでは、最後の試行でのみ切り替わります。
 
-v2.1.198 以降、通常のスピナーのヒントはリトライ中に抑制されます。エラーの理由が明らかになると、障害が 529 オーバーロードの場合、カウントダウンの下の行はサービスステータスを確認する場所も名前付けします。Anthropic API の場合は `status.claude.com`、または他の設定の場合はメッセージで名前付けされたプロバイダーまたはゲートウェイホスト。
+v2.1.198 以降では、再試行中は通常のスピナーのヒントが表示されません。エラーの理由が表示された後、障害が 529 の過負荷である場合は、カウントダウンの下の行にサービスステータスを確認できる場所も表示されます。Anthropic API では `status.claude.com`、その他の構成ではメッセージに示されたプロバイダーまたはゲートウェイのホストです。
 
-リクエストがまだ保留中の間に応答ストリームで 20 秒間データが到着しない場合、スピナーは任意のリトライが開始される前に `Waiting for API response · will retry in … · check your network` を表示します。リクエストはまだ失敗していません。カウントダウンは Claude Code が停止した接続を中止する時点まで実行されます。中止後、表示される内容は応答がどこまで進んだかによって異なります。
+リクエストがまだ保留中の間に、レスポンスストリームに 20 秒間データが届かない場合、再試行が開始される前にスピナーに `Waiting for API response · will retry in … · check your network` と表示されます。リクエストはまだ失敗していません。カウントダウンは、Claude Code が停止した接続を中断する時点までのものです。中断後に表示される内容は、応答がどこまで進んでいたかによって異なります。
 
-* Claude がテキストのブロックまたはツール呼び出しを完了する前、または思考を完了した後にそれを開始する前に、Claude Code はリクエストをリトライするか、エラーでターンを終了します。[Automatic retries](#automatic-retries) は、どのストールをリトライするか、何回リトライするかを示しています。
-* Claude がテキストのブロックまたはツール呼び出しを完了した後、または思考を完了した後にそれを開始した後、応答を完了する前に、Claude Code は Claude が完了したものを保持し、Claude が完了したツール呼び出しからターンを続行し、[The response above may be incomplete](#the-response-above-may-be-incomplete) を表示します。非対話型セッション、およびいずれかのセッションでサブエージェントの応答の場合、Claude Code は最初に Claude に応答を続行するよう促す可能性があります。そのエントリは、いつそれを行うか、いつそこでも通知が表示されるかを示しています。
-* Claude が応答を完了した後、Claude Code はターンを正常に終了します。
+* Claude がテキストのブロックまたはツール呼び出しを完了する前、または思考を終えた後にそれらを開始する前の場合、Claude Code はリクエストを再試行するか、エラーでターンを終了します。どの停止を何回再試行するかについては、[自動再試行](#automatic-retries)を参照してください。
+* Claude がテキストのブロックまたはツール呼び出しを完了した後、または思考を終えた後にそれらを開始した後で、Claude が応答を終える前の場合、Claude Code は Claude が完了した内容を保持し、Claude が完了したツール呼び出しからターンを継続して、[The response above may be incomplete](#the-response-above-may-be-incomplete) を表示します。非対話型セッション、およびすべてのセッションにおけるサブエージェントの応答では、Claude Code は最初に Claude に応答を続けるよう促す場合があります。それがいつ行われるか、またその場合でも通知が表示されるのはいつかについては、そのエントリを参照してください。
+* Claude が応答を終えた後の場合、Claude Code はターンを通常どおり終了します。
 
-バナーは、データが再開されるか、リトライが成功すると自動的にクリアされます。すべての試行で再表示される場合は、[network issue](#unable-to-connect-to-api) として扱ってください。v2.1.185 より前は、バナーは 10 秒後に異なる文言で表示されました。
+このバナーは、データの受信が再開されるか再試行が成功すると自動的に消えます。すべての試行でバナーが再表示される場合は、[ネットワークの問題](#unable-to-connect-to-api)として扱ってください。v2.1.185 より前は、バナーは 10 秒後に異なる文言で表示されていました。
 
-Claude が [advisor](/docs/ja/advisor) を参照している間、バナーは 20 秒ではなく 90 秒後にデータなしで表示されます。長いアドバイザーレビューは 20 秒以上何も送信しないことがあるためです。v2.1.214 より前は、20 秒のしきい値がアドバイザー呼び出し中にも適用されたため、バナーは何も問題がなくてもアドバイザーレビュー中に表示されました。
+Claude が [advisor](/docs/ja/advisor) に相談している間は、長い advisor のレビューでは 20 秒を大きく超えて何も送信されないことがあるため、バナーは 20 秒ではなく、データのない状態が 90 秒続いた後に表示されます。v2.1.214 より前は、advisor の呼び出し中にも 20 秒のしきい値が適用されていたため、何も問題がない場合でも advisor のレビュー中にバナーが表示されていました。
 
 <h3 id="tune-retry-behavior">
-  リトライ動作を調整する
+  再試行の動作を調整する
 </h3>
 
-これらの環境変数を使用してリトライ動作を調整できます。
+次の環境変数を使用して、再試行の動作を調整できます。
 
 | 変数 | デフォルト | 効果 |
 | :- | :- | :- |
-| [`CLAUDE_CODE_MAX_RETRIES`](/docs/ja/env-vars) | 10 | リトライ試行の回数。v2.1.186 以降は 15 でキャップされます。v2.1.199 以降、`CLAUDE_CODE_RETRY_WATCHDOG` はデフォルトを上げ、キャップを削除します。スクリプトで障害をより速く表示するには、これを低くしてください。 |
-| [`CLAUDE_CODE_RETRY_WATCHDOG`](/docs/ja/env-vars) | 未設定 | CI ジョブなどの無人セッションで `1` に設定して、`CLAUDE_CODE_MAX_RETRIES` 試行後に失敗する代わりに、`429` および `529` 容量エラーを無期限にリトライします。Claude Code は、標準速度リクエストが支出制限または使用クレジットの枯渇を報告する `429` を取得する場合、スケジュールでリセットされる [gateway spend cap](#spend-limit-reached) からのものであっても、すぐに失敗します。v2.1.239 より前は、ウォッチドッグはこれらを無期限にリトライしていました。fast mode リクエストについては、[Handle rate limits](/docs/ja/fast-mode#handle-rate-limits) を参照してください。v2.1.199 以降では、サーバーエラー、タイムアウト、切断された接続などの他の一時的なエラーのデフォルトリトライ数も 300 に上げます。これは約 3 時間のバックオフであり、変数を明示的に設定する場合は `CLAUDE_CODE_MAX_RETRIES` の 15 のキャップを削除します。 |
-| [`API_TIMEOUT_MS`](/docs/ja/env-vars) | 600000 | リクエストごとのタイムアウト（ミリ秒）。遅いネットワークまたはプロキシの場合は、これを上げてください。また、[No response from API](#no-response-from-api) で説明されている、Claude Code が応答ヘッダーを待つ時間の上限にもなります。 |
-| [`CLAUDE_CODE_NONSTREAMING_TIMEOUT_RETRIES`](/docs/ja/env-vars) | 未設定 | タイムアウトした[非ストリーミングリクエスト](#streaming-response-ended-before-any-complete-data-was-received)の再送信回数の上限。上限に達すると、リクエストは失敗します。生成にタイムアウトより長くかかる Claude の応答は再送信のたびに再びタイムアウトするため、より早く失敗させるには `0` などの小さい値を設定してください。各非ストリーミング試行は、ローカルセッションでは 300 秒後、正の値を設定した場合は `API_TIMEOUT_MS` の経過後にタイムアウトします。Claude Code v2.1.285 以降が必要です。 |
-| [`CLAUDE_STREAM_FIRST_BYTE_TIMEOUT_MS`](/docs/ja/env-vars) | 未設定 | ストリーミングリクエストの最初の応答バイトのデッドライン（ミリ秒）。Claude Code v2.1.242 以降が必要です。これが未設定の場合に Claude Code がデッドラインを選択する方法については、[No response from API](#no-response-from-api) を参照してください。 |
+| [`CLAUDE_CODE_MAX_RETRIES`](/docs/ja/env-vars) | 10 | 再試行の回数。v2.1.186 以降では上限は 15 です。v2.1.199 以降では、`CLAUDE_CODE_RETRY_WATCHDOG` によってデフォルトが引き上げられ、上限が撤廃されます。スクリプトで障害をより早く表面化させるには、値を下げてください。 |
+| [`CLAUDE_CODE_RETRY_WATCHDOG`](/docs/ja/env-vars) | 未設定 | CI ジョブなどの無人セッションで `1` に設定すると、`429` および `529` の容量エラーを、`CLAUDE_CODE_MAX_RETRIES` 回の試行後に失敗させる代わりに無期限に再試行します。標準速度のリクエストが支出上限または使用クレジットの枯渇を報告する `429` を受け取った場合、スケジュールに従ってリセットされる[ゲートウェイの支出上限](#spend-limit-reached)によるものであっても、Claude Code は即座に失敗します。v2.1.239 より前は、ウォッチドッグはこれらを無期限に再試行していました。fast mode のリクエストについては、[Handle rate limits](/docs/ja/fast-mode#handle-rate-limits) を参照してください。v2.1.199 以降では、サーバーエラー、タイムアウト、切断された接続など、その他の一時的なエラーのデフォルトの再試行回数も 300 (約 3 時間分のバックオフ) に引き上げられ、`CLAUDE_CODE_MAX_RETRIES` を明示的に設定した場合の上限 15 も撤廃されます。 |
+| [`CLAUDE_CODE_OVERLOADED_RETRY_BASE_DELAY_MS`](/docs/ja/env-vars) | 500 | API が `529` 過負荷エラーで拒否したリクエストの再試行間のバックオフにおける、開始時の遅延 (ミリ秒)。API が容量の上限に達している場合に、再試行をより長い期間に分散させるには、最大 32000 まで値を引き上げてください。`CLAUDE_CODE_RETRY_WATCHDOG` が `1` に設定されている場合、または拒否されたリクエストが [fast mode](/docs/ja/fast-mode#handle-rate-limits) で送信された場合は効果がありません。Claude Code v2.1.292 以降が必要です。 |
+| [`API_TIMEOUT_MS`](/docs/ja/env-vars) | 600000 | リクエストごとのタイムアウト (ミリ秒)。低速なネットワークやプロキシを使用する場合は値を引き上げてください。[No response from API](#no-response-from-api) で説明しているように、Claude Code がレスポンスヘッダーを待機する時間の上限にもなります。 |
+| [`CLAUDE_CODE_NONSTREAMING_TIMEOUT_RETRIES`](/docs/ja/env-vars) | 未設定 | タイムアウトした[非ストリーミングリクエスト](#streaming-response-ended-before-any-complete-data-was-received)の再送信回数の上限。上限に達すると、リクエストは失敗します。生成にタイムアウトより長い時間がかかる Claude の応答は、再送信のたびに再びタイムアウトするため、より早く失敗させるには `0` などの小さな値を設定してください。非ストリーミングの各試行は、ローカルセッションでは 300 秒後に、`API_TIMEOUT_MS` に正の値を設定している場合はその時間の経過後にタイムアウトします。Claude Code v2.1.285 以降が必要です。 |
+| [`CLAUDE_STREAM_FIRST_BYTE_TIMEOUT_MS`](/docs/ja/env-vars) | 未設定 | ストリーミングリクエストの最初のレスポンスバイトの期限 (ミリ秒)。Claude Code v2.1.242 以降が必要です。これが未設定の場合に Claude Code が期限をどのように決定するかについては、[No response from API](#no-response-from-api) を参照してください。 |
 
 <h2 id="server-errors">
   サーバーエラー
@@ -709,7 +710,7 @@ Agent terminated early due to an API error: <error detail>
 このセクションのほとんどのエラーは、アカウントまたはプランに関連付けられたクォータに達したことを意味します。3 つのエラーは異なる動作をします。[`Server is temporarily limiting requests`](#server-is-temporarily-limiting-requests) はプランクォータとは無関係なサーバー側のスロットル、[`Usage credits required for 1M context`](#usage-credits-required-for-1m-context) は使い果たされたクォータではなく権利確認、[`The prompt to confirm went unanswered`](#the-prompt-to-confirm-went-unanswered) は使用クレジット同意プロンプトが未回答で閉じられたことを意味し、クォータに達したかどうかは関係ありません。
 
 <h3 id="youve-hit-your-session-limit">
-  セッション制限に達しました
+  You've hit your session limit
 </h3>
 
 サブスクリプションプランには、ローリング使用許容量が含まれています。それが尽きると、次のいずれかのメッセージが表示されます。
@@ -725,7 +726,7 @@ Claude Code はメッセージに表示されたリセット時刻まで、そ�
 
 claude.ai サブスクリプションでサインインしたインタラクティブセッションでは、Claude Code はオープンセッションで待機し、リセット直後に中断されたタスクを続行することもできます。[使用制限がリセットされるのを待つ](/docs/ja/interactive-mode#wait-for-a-usage-limit-to-reset) を参照して、表示内容、待機の開始またはキャンセル方法、自動続行をオフにする方法を確認してください。v2.1.234 より前では、Claude Code はこの待機機能を提供していませんでした。
 
-使用量はセッション許容量と週間許容量に同時にカウントされます。大規模なワークフロー展開など、単一の大量アクティビティのバースト、セッションウィンドウがリセットされる前に週間許容量を使い果たす可能性があります。
+使用量はセッション許容量と週間許容量に同時にカウントされます。大規模なワークフロー展開など、単一の大量アクティビティのバーストによって、セッションウィンドウがリセットされる前に週間許容量を使い果たす可能性があります。
 
 **対応方法：**
 
@@ -736,10 +737,10 @@ claude.ai サブスクリプションでサインインしたインタラクテ�
 * `/usage-credits` を実行して、Pro と Max で追加使用量を購入するか、Team と Enterprise で管理者にリクエストします。[有料プランの使用クレジット](https://support.claude.com/en/articles/12429409-extra-usage-for-paid-claude-plans) を参照して、これがどのように請求されるかを確認してください。
 * プランをアップグレードしてベース制限を高くするには、[claude.com/pricing](https://claude.com/pricing) を参照してください
 
-ウィンドウが終了する前に、Claude Code はほとんどを使用したことを警告できます。例えば `You've used 85% of your session limit · resets 3:45pm` というメッセージが表示されます。残りの許容量を継続的に監視するには、`rate_limits` フィールドを [カスタムステータス行](/docs/ja/statusline#rate-limit-usage) に追加するか、Desktop アプリでモデルピッカーの横にある [使用量リング](/docs/ja/desktop#check-usage) をクリックします。
+ウィンドウが終了する前に、Claude Code はほとんどを使用したことを警告できます。例えば `You've used 85% of your session limit · resets 3:45pm` というメッセージが表示されます。残りの許容量を継続的に監視するには、`rate_limits` フィールドを [カスタムステータスライン](/docs/ja/statusline#rate-limit-usage) に追加するか、Desktop アプリでモデルピッカーの横にある [使用量リング](/docs/ja/desktop#check-usage) をクリックします。
 
 <h3 id="usage-credits-required-for-1m-context">
-  1M コンテキストに使用クレジットが必要です
+  Usage credits required for 1M context
 </h3>
 
 選択されたモデルは 1M トークン拡張コンテキストウィンドウを使用しており、プランはそれを使用クレジットを通じてのみ含みます。
@@ -750,24 +751,24 @@ API Error: Usage credits required for 1M context · run /usage-credits to turn t
 
 Claude Desktop アプリが実行するセッションでは、ヒントはコマンドを指定しません。claude.ai 使用設定ページを指し、Team と Enterprise プランでは claude.ai/admin-settings/usage で使用クレジットをオンにするか、管理者に依頼するよう指示します。
 
-これはクォータ枯渇ではなく、権利確認です。セッション許容量と週間許容量に容量が残っている場合でも発火します。[拡張コンテキスト](/docs/ja/model-config#extended-context) を参照して、どのプランが 1M コンテキストを直接含み、どのプランが使用クレジットを必要とするかを確認してください。
+これはクォータ枯渇ではなく、権利確認です。セッション許容量と週間許容量に容量が残っている場合でも発生します。[拡張コンテキスト](/docs/ja/model-config#extended-context) を参照して、どのプランが 1M コンテキストを直接含み、どのプランが使用クレジットを必要とするかを確認してください。
 
-このエラーが会話の途中でコンテキストが 200K トークンを超えて成長したために表示される場合、Claude Code は自動的に会話を標準コンテキスト制限の下に圧縮し、その後セッションをその制限に保つため、アクションは不要です。v2.1.172 より前のバージョンでは、エラーは `/compact` を含むその後のすべてのリクエストで繰り返されました。これらのバージョンで復旧するには `/clear` を実行してください。以下の手順は、明示的に `[1m]` モデルを選択した場合に適用されます。
+コンテキストが 200K トークンを超えて増えたためにこのエラーが会話の途中で表示される場合、Claude Code は自動的に会話を標準コンテキスト制限の下に圧縮し、その後セッションをその制限に保つため、対応は不要です。v2.1.172 より前のバージョンでは、エラーは `/compact` を含むその後のすべてのリクエストで繰り返されました。これらのバージョンで復旧するには `/clear` を実行してください。以下の手順は、明示的に `[1m]` モデルを選択した場合に適用されます。
 
 **対応方法：**
 
 * `/model` を実行し、`[1m]` サフィックスなしのバリアントを選択して、標準コンテキストウィンドウにフォールバックします
-* メッセージが `/usage-credits` を指定する場合、それを実行して Pro と Max で 1M バリアントのメータリング課金をオンにするか、Team と Enterprise で管理者に使用クレジットをリクエストします。使用クレジットがオンになったら Claude Code を再起動するか、新しいセッションを開始します。メッセージが指定するまで、セッションは標準コンテキスト制限に留まります。
+* メッセージが `/usage-credits` を指定する場合、それを実行して Pro と Max で 1M バリアントの従量課金をオンにするか、Team と Enterprise で管理者に使用クレジットをリクエストします。使用クレジットがオンになったら、メッセージの指示に従って Claude Code を再起動するか、新しいセッションを開始します。それまでは、セッションは標準コンテキスト制限に留まります。
 * `/model` の後もエラーが続く場合、1M モデル ID が他の場所に設定されている可能性があります。[モデルの設定](/docs/ja/model-config#setting-your-model) を参照して、優先順位順に確認する設定場所を確認してください。
 * モデルピッカーから 1M バリアントを完全に削除するには、[`CLAUDE_CODE_DISABLE_1M_CONTEXT=1`](/docs/ja/env-vars) を設定します
 
 v2.1.268 より前では、メッセージは `run /usage-credits to turn them on, or /model to switch to standard context` で終わり、再起動について言及していませんでした。
 
 <h3 id="the-prompt-to-confirm-went-unanswered">
-  確認プロンプトが未回答のまま終了しました
+  The prompt to confirm went unanswered
 </h3>
 
-アカウントが [Fable 使用クレジット同意](/docs/ja/model-config#fable-and-usage-credits) を必要とする場合、Claude Code は Fable リクエストが使用クレジットを請求する前に確認するよう求めます。同意プロンプトが誰も答えないまま閉じられた場合、Claude Code はターンを次のいずれかのメッセージで終了します。
+アカウントが [Fable 使用クレジット同意](/docs/ja/model-config#fable-and-usage-credits) を必要とする場合、Claude Code は Fable リクエストが使用クレジットに課金する前に確認するよう求めます。同意プロンプトが誰も答えないまま閉じられた場合、Claude Code はターンを次のいずれかのメッセージで終了します。
 
 ```text theme={null}
 Fable limit reached · continuing on Fable 5.1 uses usage credits, and the prompt to confirm went unanswered — nothing was sent · answer it where this session is running, or /model to change
@@ -776,18 +777,18 @@ Fable 5.1 now uses usage credits · the prompt to confirm went unanswered — no
 
 メッセージはセッションの Fable モデルを指定するため、Fable 5 では `continuing on Fable 5` と `Fable 5 now uses usage credits` と表示されます。v2.1.257 より前では、最初のメッセージは `Fable 5 limit reached` で始まりました。
 
-これは [Remote Control](/docs/ja/remote-control) セッション、[バックグラウンドセッション](/docs/ja/agent-view)、[エージェントチーム](/docs/ja/agent-teams) チームメイトセッション、および Agent SDK を通じてホストする別のアプリケーションで発生します。Claude Code がプロンプトを閉じるタイミングについては、[Fable と使用クレジット](/docs/ja/model-config#fable-and-usage-credits) を参照してください。
+これは [Remote Control](/docs/ja/remote-control) セッション、[バックグラウンドセッション](/docs/ja/agent-view)、[エージェントチーム](/docs/ja/agent-teams) のチームメイトセッション、および別のアプリケーションが Agent SDK を通じてホストするセッションで発生します。Claude Code がプロンプトを閉じるタイミングについては、[Fable と使用クレジット](/docs/ja/model-config#fable-and-usage-credits) を参照してください。
 
 **対応方法：**
 
-* セッションが実行されるターミナルまたはそれをホストするアプリケーションで、別のプロンプトを送信し、再度表示されたら同意プロンプトに答えます。バックグラウンドセッションの場合、最初に [エージェントビュー](/docs/ja/agent-view) からアタッチします。Remote Control クライアントから再送信すると、クライアントがプロンプトを表示できないため、このメッセージが再度表示されます。
-* `/model` を実行して、使用クレジットを請求しないモデルに切り替えます
+* セッションが実行されている場所（ターミナルまたはそれをホストするアプリケーション）で、別のプロンプトを送信し、再度表示されたら同意プロンプトに答えます。バックグラウンドセッションの場合、最初に [エージェントビュー](/docs/ja/agent-view) からアタッチします。Remote Control クライアントから再送信すると、クライアントがプロンプトを表示できないため、このメッセージが再度表示されます。
+* `/model` を実行して、使用クレジットに課金しないモデルに切り替えます
 * より多くの時間を確保するには、[`dialogExpiry`](/docs/ja/settings-reference#dialogexpiry) をより長い値または `"never"` に設定します
 
 v2.1.236 より前では、このメッセージは表示されませんでした。Remote Control クライアントが接続されている間、Claude Code は回答を 60 秒待ってからデフォルトモデルでターンを続行しました。
 
 <h3 id="server-is-temporarily-limiting-requests">
-  サーバーが一時的にリクエストを制限しています
+  Server is temporarily limiting requests
 </h3>
 
 API は、プランクォータとは無関係の短期的なスロットルを適用しました。
@@ -796,7 +797,7 @@ API は、プランクォータとは無関係の短期的なスロットルを�
 API Error: Server is temporarily limiting requests (not your usage limit)
 ```
 
-Claude Code は、実際の制限応答が持つ統一クォータヘッダーの不在によって、これらをプラン制限と区別します。v2.1.199 以降、これは認証方法に関係なく、[自動的に再試行](#automatic-retries) されてからバックオフで表示されます。以前のバージョンでは、claude.ai サブスクリプションでサインインしたセッションは最初の発生時にターンに失敗しました。API キーと Enterprise サインインのみが再試行しました。
+Claude Code は、実際の制限レスポンスが持つ統一クォータヘッダーがないことによって、これをプラン制限と区別します。v2.1.199 以降、認証方法に関係なく、これは表示される前にバックオフ付きで [自動的に再試行](#automatic-retries) されます。以前のバージョンでは、claude.ai サブスクリプションでサインインしたセッションは最初の発生時にターンが失敗しました。API キーと Enterprise サインインのみが再試行しました。
 
 **対応方法：**
 
@@ -804,7 +805,7 @@ Claude Code は、実際の制限応答が持つ統一クォータヘッダー�
 * 続く場合は [status.claude.com](https://status.claude.com) を確認してください
 
 <h3 id="request-rejected-429">
-  リクエストが拒否されました（429）
+  Request rejected (429)
 </h3>
 
 API キー、Amazon Bedrock プロジェクト、または Google Cloud プロジェクト用に設定されたレート制限に達しました。
@@ -813,71 +814,69 @@ API キー、Amazon Bedrock プロジェクト、または Google Cloud プロ�
 API Error: Request rejected (429) · this may be a temporary capacity issue. If it persists, check https://status.claude.com.
 ```
 
-末尾の文はサービスヘルスを確認する場所を指定し、プロバイダーによって異なります。Amazon Bedrock、Google Cloud の Agent Platform、および Microsoft Foundry 設定は、Anthropic ステータスページの代わりにそのプロバイダーのサービスステータスを指定します。カスタム `ANTHROPIC_BASE_URL` はゲートウェイホストを指定します。
+末尾の文はサービスヘルスを確認する場所を指定し、プロバイダーによって異なります。Amazon Bedrock、Google Cloud の Agent Platform、および Microsoft Foundry の設定では、Anthropic ステータスページの代わりにそのプロバイダーのサービスステータスを指定します。カスタム `ANTHROPIC_BASE_URL` ではゲートウェイホストを指定します。
 
 Claude Code と API の間のプロキシ、ロードバランサー、またはゲートウェイが独自の HTML 429 ページで応答する場合、`·` の後のテキストはそのページのタイトル（存在する場合）です。例えば `Too Many Requests` など。v2.1.281 より前では、ページ全体のマークアップが `·` の後に出力されていました。
 
 **対応方法：**
 
-* `/status` を実行して、アクティブな認証情報が予想されるものであることを確認します。環境内の迷走した `ANTHROPIC_API_KEY` は、サブスクリプションの代わりに低層キーを通じてリクエストをルーティングできます。
-* プロバイダーコンソールでアクティブな制限を確認し、必要に応じてより高い層をリクエストします
-* Anthropic API キーについては、[レート制限リファレンス](https://platform.claude.com/docs/en/api/rate-limits) を参照して、層がどのように機能し、ワークスペースごとのキャップを設定する方法を確認してください
-* 同時実行性を削減します。[`CLAUDE_CODE_MAX_TOOL_USE_CONCURRENCY`](/docs/ja/env-vars) を低くするか、多くの並列サブエージェントの実行を避けるか、高ボリュームのスクリプト実行用に `/model` で小さいモデルに切り替えます
+* `/status` を実行して、アクティブな認証情報が想定どおりのものであることを確認します。環境内に紛れ込んだ `ANTHROPIC_API_KEY` により、サブスクリプションの代わりに低ティアのキーを通じてリクエストがルーティングされる場合があります。
+* プロバイダーコンソールでアクティブな制限を確認し、必要に応じてより高いティアをリクエストします
+* Anthropic API キーについては、[レート制限リファレンス](https://platform.claude.com/docs/en/api/rate-limits) を参照して、ティアの仕組みとワークスペースごとの上限を設定する方法を確認してください
+* 同時実行数を削減します。[`CLAUDE_CODE_MAX_TOOL_USE_CONCURRENCY`](/docs/ja/env-vars) を低くするか、多くの並列サブエージェントの実行を避けるか、大量のスクリプト実行には `/model` で小さいモデルに切り替えます
 
 <h3 id="youve-hit-your-monthly-spend-limit">
-  月間支出制限に達しました
+  You've hit your monthly spend limit
 </h3>
 
-プランに含まれる使用量ではこのリクエストをカバーできず、それ以外の場合はそれを支払う [使用クレジット](https://support.claude.com/en/articles/12429409-extra-usage-for-paid-claude-plans) が支出制限に達しました。これは、プランの使用ウィンドウの 1 つが尽きたとき、またはリクエストが使用クレジットのみが支払うもの（例えば [使用クレジットに請求](/docs/ja/model-config#fable-and-usage-credits) するモデルへのリクエスト）の場合に発生します。メッセージはどの制限があなたをブロックしたかを指定します。`·` の後のテキストはその制限を増やす方法を説明し、プランと請求を管理しているかどうかによって異なります。
+プランに含まれる使用量ではこのリクエストをカバーできず、本来それを支払う [使用クレジット](https://support.claude.com/en/articles/12429409-extra-usage-for-paid-claude-plans) が支出制限に達しました。これは、プランの使用ウィンドウの 1 つが尽きたとき、またはリクエストが使用クレジットのみで支払われるもの（例えば [使用クレジットに課金](/docs/ja/model-config#fable-and-usage-credits) するモデルへのリクエスト）の場合に発生します。メッセージは誰の制限によってブロックされたかを示します。`·` の後のテキストはその制限を引き上げてもらう方法を説明し、プランと請求を管理しているかどうかによって異なります。
 
 ```text theme={null}
-You've hit your monthly spend limit · raise it at claude.ai/settings/usage
+You've hit your monthly spend limit · raise it at https://claude.ai/settings/usage?from=cc_cli_limit_message
 You've hit your individual spend limit · ask your admin for a higher limit
-You've hit your org's monthly spend limit · visit claude.ai/admin-settings/usage to raise it
-You've hit your team's shared budget · ask your admin to raise it at claude.ai/admin-settings/usage
+You've hit your org's monthly spend limit · visit https://claude.ai/admin-settings/usage to raise it
+You've hit your team's shared budget · ask your admin to raise it at https://claude.ai/admin-settings/usage
 You've hit your channel's monthly spend limit · an org owner or channel manager can raise it in the channel's Claude settings
 ```
 
-`team's shared budget` はグループに割り当てられたプール予算で、メッセージはグループを指定しません。`channel's monthly spend limit` はセッションが実行される Slack チャネルの予算なので、組織は外部に予算を持つ可能性があります。
+`team's shared budget` は、管理者が所属するグループに割り当てたプール予算です。メッセージはグループ名を示しません。`channel's monthly spend limit` はセッションが実行されている 1 つの Slack チャンネルの予算なので、組織にはその外にまだ予算がある可能性があります。
 
-プランのウィンドウの 1 つが尽きたとき、メッセージはそのウィンドウがいつリセットされるかも言及します。例えば `· your session limit resets 3:45pm`、アクセスは誰も制限を上げることなく、その後に戻ります。使用量ベースの課金を持つ組織では、メッセージは `spend limit` の代わりに `usage limit` を言及します。例えば `You've hit your individual usage limit`。
+尽きたのがプランのウィンドウの 1 つである場合、メッセージはそのウィンドウがいつリセットされるかも示します（例えば `· your session limit resets 3:45pm`）。その時刻になれば、誰も制限を引き上げなくてもアクセスが戻ります。使用量ベースの課金を利用している組織では、メッセージは `spend limit` の代わりに `usage limit` と表示されます。例えば `You've hit your individual usage limit` です。
 
-v2.1.239 より前では、メッセージはプランウィンドウのリセット時刻を指定しませんでした。v2.1.268 より前では、グループのプール予算は `team's shared budget` の代わりに `individual spend limit` メッセージを生成しました。
-
-Claude アプリゲートウェイを通じて接続し、小文字の `spend limit reached` を見る場合、それはゲートウェイオペレーターのキャップです。[支出制限に達しました](#spend-limit-reached) を参照してください。
+Claude アプリゲートウェイを通じて接続し、小文字の `spend limit reached` が表示される場合、それはゲートウェイオペレーターの上限です。[Spend limit reached](#spend-limit-reached) を参照してください。
 
 **対応方法：**
 
 * Pro と Max では、claude.ai の [**Settings > Usage**](https://claude.ai/settings/usage) で月間支出制限を増やすか、`/usage-credits` を実行します
-* Team と Enterprise では、請求を管理する場合は [**Organization settings > Usage**](https://claude.ai/admin-settings/usage) で制限を増やすか、管理者に依頼します。`/usage-credits` は管理者にそのリクエストを送信します
-* チャネルの制限については、組織の所有者またはチャネルのマネージャーに claude.ai で上げるよう依頼してください。Claude Tag ドキュメントの [Per-channel limits](https://claude.com/docs/claude-tag/admins/set-spend-limit#per-channel-limits) を参照してください
-* メッセージがプランのウィンドウのリセット時刻を指定する場合、代わりにそれを待つことができます
+* Team と Enterprise では、請求を管理している場合は [**Organization settings > Usage**](https://claude.ai/admin-settings/usage) で制限を増やすか、管理者に依頼します。`/usage-credits` は管理者にそのリクエストを送信します
+* チャンネルの制限については、組織の所有者またはチャンネルのマネージャーに claude.ai で引き上げるよう依頼してください。Claude Tag ドキュメントの [Per-channel limits](https://claude.com/docs/claude-tag/admins/set-spend-limit#per-channel-limits) を参照してください
+* メッセージがプランのウィンドウのリセット時刻を示している場合は、代わりにそれを待つこともできます
 * `/usage` を実行して、プランのウィンドウと各リセット時刻を確認します
 
 <h3 id="spend-limit-reached">
-  支出制限に達しました
+  Spend limit reached
 </h3>
 
-[Claude アプリゲートウェイ](/docs/ja/claude-apps-gateway) を通じて接続し、ゲートウェイオペレーターが設定した [支出キャップ](/docs/ja/claude-apps-gateway-spend-limits) を超えました。ゲートウェイは、指定された期間がリセットされるか、オペレーターがキャップを上げるまで、リクエストをブロックします。ブロックされた各 `429` レスポンスに `x-should-retry: false` をマークするため、Claude Code は再試行せずにこのメッセージを表示します。
+[Claude アプリゲートウェイ](/docs/ja/claude-apps-gateway) を通じて接続しており、ゲートウェイオペレーターが設定した [支出上限](/docs/ja/claude-apps-gateway-spend-limits) を超えました。ゲートウェイは、指定された期間がリセットされるか、オペレーターが上限を引き上げるまで、リクエストをブロックします。ブロックされた各 `429` レスポンスに `x-should-retry: false` をマークするため、Claude Code は再試行せずにこのメッセージを表示します。
 
 ```text theme={null}
 spend limit reached (daily; resets 2026-08-09 00:00 UTC)
 ```
 
-メッセージはキャップの期間とリセット時刻を指定し、オペレーターが `blocked_message` を設定した場合、その指示がそれに続きます。v2.1.225 より前では、メッセージは `spend limit reached` のみを読みました。古いバージョンのゲートウェイはまだその短い形式を送信します。
+メッセージは上限の期間とリセット時刻を示し、オペレーターが `blocked_message` を設定している場合は、その指示が続きます。v2.1.225 より前では、メッセージは `spend limit reached` のみでした。古いバージョンのゲートウェイは今もその短い形式を送信します。
 
 **対応方法：**
 
-* メッセージが指定するリセット時刻まで待つか、メッセージがそれを含む場合はオペレーターの指示に従います
-* ルーチンでそれに達する場合は、ゲートウェイオペレーターにキャップを上げるよう依頼します
+* メッセージが示すリセット時刻まで待つか、メッセージにオペレーターの指示が含まれている場合はそれに従います
+* 日常的に上限に達する場合は、ゲートウェイオペレーターに上限を引き上げるよう依頼します
 
-関連するメッセージ `spend limit unavailable` は、ゲートウェイが支出レコードを読み取ることができず、キャップを超えるのではなく予防措置としてリクエストをブロックしたことを意味します。通常は自動的にクリアされます。続く場合は、ゲートウェイオペレーターに通知してください。
+関連するメッセージ `spend limit unavailable` は、ゲートウェイが支出記録を読み取れず、上限超過ではなく予防措置としてリクエストをブロックしたことを意味します。通常は自然に解消されます。続く場合は、ゲートウェイオペレーターに伝えてください。
 
 <h3 id="credit-balance-is-too-low">
-  クレジット残高が低すぎます
+  Credit balance is too low
 </h3>
 
-Console 組織がプリペイドクレジットを使い果たしたか、Claude Code が Console API キーでリクエストを送信しており、サブスクリプションを使用することを意図していました。
+Console 組織のプリペイドクレジットが尽きたか、サブスクリプションを使うつもりなのに Claude Code が Console API キーでリクエストを送信しています。
 
 ```text theme={null}
 Credit balance is too low
@@ -885,27 +884,27 @@ Credit balance is too low
 
 **対応方法：**
 
-* Pro、Max、Team、または Enterprise プランを持っており、これを見る場合は、`/status` を実行して `API key` 行を確認します。環境内の承認された `ANTHROPIC_API_KEY` は、サブスクリプションの代わりにそのキーを通じてリクエストをルーティングします。現在のシェルでそれを設定解除し、シェルプロファイルから削除してから、`claude` を再起動します。サブスクリプションでまだサインインしていない場合は `/login` を実行します。
+* Pro、Max、Team、または Enterprise プランを利用していてこれが表示される場合は、`/status` を実行して `API key` 行を確認します。環境内の承認済み `ANTHROPIC_API_KEY` は、サブスクリプションの代わりにそのキーを通じてリクエストをルーティングします。現在のシェルでそれを設定解除し、シェルプロファイルから削除してから、`claude` を再起動します。サブスクリプションでまだサインインしていない場合は `/login` を実行します。
 * [platform.claude.com/settings/billing](https://platform.claude.com/settings/billing) でクレジットを追加し、そこで自動リロードを有効にして、残高がゼロに達する前に補充されるようにすることを検討してください
-* Console でワークスペースごとの支出キャップを設定して、単一のプロジェクトが組織残高を消耗するのを防ぎます。[コストを効果的に管理](/docs/ja/costs) を参照してください。
+* Console でワークスペースごとの支出上限を設定して、単一のプロジェクトが組織残高を使い果たすのを防ぎます。[コストを効果的に管理](/docs/ja/costs) を参照してください。
 
 <h3 id="could-not-update-your-spend-limit">
-  支出制限を更新できませんでした
+  Could not update your spend limit
 </h3>
 
-サーバーは、支出制限に達したときに表示されるプロンプトから行った支出制限の変更を拒否しました。
+支出制限に達したときに表示されるプロンプトから行った支出制限の変更を、サーバーが拒否しました。
 
 ```text theme={null}
 Could not update your spend limit: <reason from the server>
 ```
 
-サーバーが拒否を説明する場合、メッセージはその理由で終わり、同じ値を再試行すると再度失敗します。失敗に接続の切断など、サーバーが提供した理由がない場合、メッセージは `Could not update your spend limit. Press Enter to retry.` と表示され、再試行は成功する可能性があります。v2.1.216 より前では、Claude Code はすべての失敗に対して汎用形式を表示していました。
+サーバーが拒否の理由を説明する場合、メッセージはその理由で終わり、同じ値で再試行すると再度失敗します。接続の切断など、サーバーから提供された理由がない失敗の場合、メッセージは `Could not update your spend limit. Press Enter to retry.` と表示され、再試行で成功する可能性があります。v2.1.216 より前では、Claude Code はすべての失敗に対して汎用形式を表示していました。
 
 **対応方法：**
 
 * メッセージに理由が含まれている場合は、より低い金額など、それを満たす制限を選択します
-* メッセージが汎用形式のみを表示する場合は、再試行します。失敗は一時的である可能性があります
-* 変更が失敗し続ける場合は、ブラウザの [claude.ai 請求設定](https://support.claude.com/en/articles/12429409-extra-usage-for-paid-claude-plans) から代わりに行います
+* メッセージが汎用形式のみの場合は、再試行します。失敗は一時的である可能性があります
+* 変更が失敗し続ける場合は、代わりにブラウザの [claude.ai 請求設定](https://support.claude.com/en/articles/12429409-extra-usage-for-paid-claude-plans) から変更します
 
 <h2 id="authentication-errors">
   認証エラー
@@ -2861,7 +2860,7 @@ API Error: Opus 4.8's safeguards flagged this message. Our intentionally broad s
 
 メッセージに `` Details: `[reasoning_extraction]` `` という行が含まれている場合は、[セーフガードが Claude の推論を求めるリクエストを警告しました](#safeguards-flagged-a-request-for-claudes-reasoning)を参照してください。
 
-メッセージは、正当なサイバーセキュリティ作業へのアクセスを付与する [Cyber Verification Program](https://support.claude.com/en/articles/14604842-real-time-cyber-safeguards-on-claude) にリンクしています。Opus 5.5 と Sonnet 5.5 では、メッセージは代わりに `<model>'s safeguards flagged this session` で始まります。警告されたカテゴリにフォールバックモデルが利用可能な場合、Claude Code はこのエラーを表示するのではなく [モデルを切り替えます](/docs/ja/model-config#automatic-model-fallback)。
+このメッセージは、正当なサイバーセキュリティ作業へのアクセスを付与する [Cyber Verification Program](https://support.claude.com/en/articles/14604842-real-time-cyber-safeguards-on-claude) にリンクしています。[自動モデルフォールバック](/docs/ja/model-config#automatic-model-fallback)を備えたモデルは、このリンクを含まない別のメッセージを表示します。Opus 5.5 と Sonnet 5.5 では、そのメッセージは `<model>'s safeguards flagged this session` で始まります。Claude Code が代わりにモデルを切り替える場合についても、そのセクションで説明しています。
 
 [Amazon Bedrock](/docs/ja/amazon-bedrock)、[Google Cloud の Agent Platform](/docs/ja/google-vertex-ai)、[Microsoft Foundry](/docs/ja/microsoft-foundry) では、サイバーセキュリティの警告は代わりに [使用ポリシーによる拒否](#usage-policy-refusal)のメッセージになります。
 
@@ -4065,7 +4064,7 @@ v2.1.282 より前では、`claude plugin list` と `/plugin` は、マーケッ
   マーケットプレイスは既に別のソースから追加されています
 </h3>
 
-[`/plugin install <plugin> --marketplace <source>`](/docs/ja/plugins/install#add-a-marketplace-and-install-in-one-command)を通じてマーケットプレイスの追加を確認し、そのソースから Claude Code が取得したカタログは、既に別のソースから追加したマーケットプレイスと同じ名前で自分自身に名前を付けます。Claude Code は既存のマーケットプレイスを保持し、それを置き換えず、プラグインはインストールされません。
+セッション内またはシェルから、[インストールコマンドの `--marketplace <source>`](/docs/ja/plugins/install#add-a-marketplace-and-install-in-one-command) で新しいマーケットプレイスソースを指定しました。Claude Code がそのソースから取得したカタログは、既に別のソースから追加したマーケットプレイスと同じ名前を持っています。Claude Code は既存のマーケットプレイスを置き換えずに保持し、プラグインはインストールされません。
 
 ```text theme={null}
 Marketplace "acme-tools" is already added from a different source (github:acme/plugins). To use this source instead, remove that marketplace first with /plugin marketplace remove acme-tools.
@@ -4815,7 +4814,7 @@ This session is isolated in the worktree /path/to/worktree, but this command eva
 * メインチェックアウトで意図的に動作するには、セッション外のターミナルでコマンドを自分で実行します
 
 <h3 id="this-session-has-no-saved-transcript">
-  このセッションに保存されたトランスクリプトがありません
+  This session has no saved transcript
 </h3>
 
 停止した[バックグラウンドセッション](/docs/ja/agent-view)に接続しました。このセッションは `←` または `/background` で別の会話からバックグラウンドに移動され、最初の応答が完了する前に停止しました。その最初の応答が完了するまで、会話はバックグラウンドに移動した元のセッションにのみ存在するため、`claude attach` は停止したセッションの開始を拒否し、同じセッション ID で空白の会話を開始しません。メッセージは、このセッションの `claude respawn` コマンドで終わります：
@@ -4824,7 +4823,7 @@ This session is isolated in the worktree /path/to/worktree, but this command eva
 This session has no saved transcript — it was stopped before its first response finished. If it was backgrounded from another conversation, that one is still intact; `claude respawn <id>` starts this one fresh.
 ```
 
-[エージェントビュー](/docs/ja/agent-view)で同じセッションの行を開くと、リストの下に `Press enter again to restart this session fresh` が表示され、行の 2 番目の `Enter` はセッションを空の会話で再開します。v2.1.212 より前では、行を開くと拒否メッセージが表示され、エージェントビューから再開する方法がありませんでした。v2.1.211 より前では、停止したセッションを開くと、その空白の会話が静かに開始され、セッションの元のプロンプトを再実行できました。
+[エージェントビュー](/docs/ja/agent-view)で同じセッションの行を開くと、代わりにリストの下に `Press enter again to restart this session fresh` が表示され、行で 2 回目の `Enter` を押すとセッションが空の会話で再開されます。
 
 **対処方法：**
 
@@ -4833,7 +4832,7 @@ This session has no saved transcript — it was stopped before its first respons
 * セッションが応答を完了し、v2.1.214 より前のバージョンでこの拒否が表示される場合、`~/.claude/projects` の読み取り不可フォルダがトランスクリプトスキャンが保存された会話を見つけるのを妨げる可能性があります。v2.1.214 以降にアップグレードしてください。これはスキャン中に読み取り不可フォルダを許容します
 
 <h3 id="this-session-is-running-in-another-terminal">
-  このセッションは別のターミナルで実行されています
+  This session is running in another terminal
 </h3>
 
 [エージェントビュー](/docs/ja/agent-view)で停止したセッションの行を開きました。その保存された会話は、このマシン上の別のライブ Claude Code プロセスで既に開かれているため、Claude Code は同じトランスクリプトに書き込む 2 番目のプロセスの開始を拒否します。表示されるメッセージは、[会話を保持しているもの](/docs/ja/agent-view#opening-a-session-says-the-conversation-is-already-open)によって異なります：
@@ -4846,8 +4845,6 @@ This conversation is already open in another running Claude session — use that
 * **`running in another terminal`**：ターミナルが会話を保持しています。例えば、`claude --resume` または `/resume` で再開したターミナル。行には `Open in a terminal` も表示されます。
 * **`already open in another running Claude session`**：別の非対話型 Claude Code プロセスがそれを保持しています。例えば、同じ会話の[バックグラウンドセッション](/docs/ja/agent-view#the-supervisor-process)プロセスがまだ終了していません。
 
-Claude Code は、行を開くときに入力した返信を保存し、セッションが次に開始するときにセッションの次のプロンプトとして送信します。
-
 **対処方法：**
 
 * 会話を開いているプロセスで会話を続けるか、そのプロセスを終了して行を再度開きます
@@ -4855,7 +4852,7 @@ Claude Code は、行を開くときに入力した返信を保存し、セッ�
 v2.1.248 より前では、`already open in another running Claude session` 拒否のみが存在していました：ターミナルで再開された会話は開いているとはカウントされず、行を開くと同じ会話に書き込む 2 番目の Claude Code プロセスが開始されました。
 
 <h3 id="this-sessions-saved-conversation-is-no-longer-on-disk">
-  このセッションの保存された会話はディスク上にもうありません
+  This session's saved conversation is no longer on disk
 </h3>
 
 [バックグラウンドセッション](/docs/ja/agent-view)を開きました。このセッションはバックグラウンドサービスがオフの間に終了し、[トランスクリプトクリーンアップ](/docs/ja/settings-reference#cleanupperioddays)がその保存された会話を削除しました。例えば、マシンが数週間オフになった後です。通常、そのような行を開くと、[保存された会話を再開](/docs/ja/agent-view#sessions-show-as-failed-after-shutdown)します。再開するものがないため、Claude Code は、確認なしにセッションの元のプロンプトを再実行するのではなく、拒否します：
@@ -4874,7 +4871,7 @@ This session's saved conversation is no longer on disk (it ended while the backg
 v2.1.248 より前では、そのような行を開くと、拒否する代わりにセッションの元のプロンプトを再実行し、数週間前のタスクをフォアグラウンドに引き戻しました。
 
 <h3 id="worktree-has-commits-that-are-not-pushed-anywhere">
-  Worktree にはどこにもプッシュされていないコミットがあります
+  Worktree has commits that are not pushed anywhere
 </h3>
 
 [バックグラウンドセッション](/docs/ja/agent-view#what-deleting-a-session-removes)を削除しようとしました。その worktree は、Claude Code が他の場所に保存されていることを確認できないコミットを保持しています。Claude Code は、コミットを見ずに破棄するのではなく、worktree とセッション行を保持します。`claude rm` はブランチとプッシュされていないコミットに名前を付け、進め方を説明します：
@@ -4902,7 +4899,7 @@ v2.1.260 より前では、メッセージはブランチまたはコミット�
 v2.1.248 より前では、メインチェックアウトでチェックアウトされたデフォルトブランチはカウントされませんでした：既にそこにマージしたブランチは、そのコミットがリモートに到達するまで、この拒否をトリガーしました。
 
 <h3 id="terminal-host-process-died">
-  ターミナルホストプロセスが終了しました
+  Terminal host process died
 </h3>
 
 各[バックグラウンドセッション](/docs/ja/agent-view)のターミナルはバックグラウンドサービスの下のホストプロセスで実行され、そのプロセスはサービスがその接続を保持している間に終了したため、セッションに到達できませんでした。
@@ -4932,7 +4929,7 @@ Couldn't attach to <id> — This session's terminal host process died (the conve
 v2.1.247 より前では、死んだホストプロセスはバックグラウンドサービスが実行したすべての生存性チェックに合格する可能性があったため、セッションを開くと `opening… · esc to cancel` が無期限に表示され、`claude attach <id>` はエラーを報告せずに待機していました。
 
 <h3 id="session-isnt-responding">
-  セッションが応答していません
+  Session isn't responding
 </h3>
 
 [バックグラウンドセッション](/docs/ja/agent-view)を開きました。バックグラウンドサービスは開くことを受け入れましたが、約 10 秒間出力が到着しなかったため、Claude Code は、セッションのターミナルをリレーするプロセスが出力を配信できないと結論付け、待機する代わりに試行を終了します。
@@ -4958,7 +4955,7 @@ Claude Code は、[シェルコマンド](/docs/ja/agent-view#run-a-shell-comman
 * シェルコマンド行の場合、エージェントビューで `Ctrl+X` を押すか、`claude stop <id>` を実行してそれを停止します。コマンドを再度ディスパッチして再実行します
 
 <h3 id="session-was-stopped-while-the-respawn-was-in-flight">
-  セッションは respawn が進行中に停止されました
+  Session was stopped while the respawn was in flight
 </h3>
 
 [バックグラウンドセッション](/docs/ja/agent-view)を開きました。そのプロセスは実行されていなかったため、Claude Code はそれを再開していました。その間に、別の Claude Code プロセスがそれを停止しました。例えば、別のターミナルで `claude stop` を実行しました。Claude Code はセッションを停止したままにします：

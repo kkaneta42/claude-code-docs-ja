@@ -40,7 +40,7 @@ Claude Code の `model` 設定には、次のいずれかを設定できます�
 | **`opus`** | 複雑な推論タスク向けに最新の Opus モデルを使用します |
 | **`haiku`** | シンプルなタスク向けに高速で効率的な Haiku モデルを使用します |
 | **`sonnet[1m]`** | 長いセッション向けに [100 万トークンのコンテキストウィンドウ](https://platform.claude.com/docs/en/build-with-claude/context-windows#context-window-sizes-by-model)を備えた Sonnet を使用します。`sonnet` がネイティブで 1M ウィンドウを持つ Sonnet 5.5 または Sonnet 5 にすでに解決される場合は効果がありません |
-| **`opus[1m]`** | 長いセッション向けに [100 万トークンのコンテキストウィンドウ](https://platform.claude.com/docs/en/build-with-claude/context-windows#context-window-sizes-by-model)を備えた Opus を使用します |
+| **`opus[1m]`** | 長いセッション向けに [100 万トークンのコンテキストウィンドウ](https://platform.claude.com/docs/en/build-with-claude/context-windows#context-window-sizes-by-model)を備えた Opus を使用します。`opus` がネイティブで 1M ウィンドウを持つ Opus 4.7 以降にすでに解決される場合は効果がありません |
 | **`opusplan`** | plan モードでは `opus` を使用し、実行時には `sonnet` に切り替える特別なモード |
 
 `opus`、`sonnet`、`haiku` エイリアスは、Anthropic API では最新バージョンに解決され、その他の一部のプロバイダーではそれより前のバージョンに解決されます。
@@ -310,7 +310,7 @@ Claude Code がユーザーに代わって行うモデル変更も、同じ方�
 * [Claude Tag](https://claude.com/docs/claude-tag/overview) セッションはクラウド環境で実行されますが、サーバー管理設定を受け取りません。[セルフホスト環境](/docs/ja/self-hosted-environments)では、引き続きランナーイメージ内の管理設定ファイルを読み取ります。これらのセッションのモデルを設定するには、Claude Tag 管理者ガイドの[スコープのモデルを選択する](https://claude.com/docs/claude-tag/admins/customize#choose-the-model-for-a-scope)を参照してください。
 * Claude Desktop アプリのエージェント型作業タブである Cowork は、セッションを Claude Code 上で実行しますが、設計上、claude.ai 管理コンソールからサーバー管理設定を受け取りません。サーバー管理設定の `availableModels` リストが空でなく、ユーザーがリスト外のモデルを選択した場合、サーバーはリモート Cowork セッションでそのモデルを拒否します。管理設定ファイルは、セッションが実行される場所に存在する場合に Cowork セッションに適用されます。リモート Cowork セッションは Anthropic が管理する VM 上で実行され、そこにはデバイスにデプロイされたファイルは存在しません。
 * Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、[Claude Platform on AWS](/docs/ja/claude-platform-on-aws) などの[サードパーティプロバイダー](/docs/ja/server-managed-settings#platform-availability)上のセッションはサーバー管理設定を受け取らないため、それらの環境では MDM または管理設定ファイルを通じて許可リストを配信してください。
-* サーバー管理による配信では、セッションが[対象となるログインまたはキー](/docs/ja/server-managed-settings#platform-availability)で認証されている必要もあります。[`apiKeyHelper`](/docs/ja/settings-reference#apikeyhelper) スクリプトを通じてのみキーを生成するフリートでは、MDM または管理設定ファイルを通じて許可リストを配信してください。
+* 管理コンソールからの配信では、セッションが組織への[対象となるログイン](/docs/ja/server-managed-settings#platform-availability)、または組織向けに発行された OAuth トークンを使用して取得を行う必要もあります。API キーで認証するフリートでは、キーが直接設定されたものか [`apiKeyHelper`](/docs/ja/settings-reference#apikeyhelper) スクリプトによって生成されたものかにかかわらず、MDM または管理設定ファイルを通じて許可リストを配信してください。
 * Desktop の Code タブは [SSH セッション](/docs/ja/desktop#ssh-sessions)もホストしており、これらは実行先のリモートホストから管理設定ファイルを読み取ります。[Desktop の管理設定](/docs/ja/desktop#managed-settings)を参照してください。
 * claude.ai および Desktop アプリのモデルピッカーは、組織の許可リストによって除外されたモデルを非表示にするかグレーアウトします。ピッカーの状態はユーザーの利便性のためのものであり、許可リストを適用するものではありません。
 
@@ -562,13 +562,15 @@ Claude Code はチェーンを[サブエージェント](/docs/ja/sub-agents)に
 
 このセクションでは、Fable モデル、Opus 5.5、Sonnet 5.5、Opus 5 からのコンテンツに基づくフォールバックについて説明します。モデルが過負荷状態または利用不可の場合の可用性に基づくフォールバックについては、[フォールバックモデルチェーン](#fallback-model-chains)を参照してください。
 
-Fable モデル、Opus 5.5、Sonnet 5.5、Opus 5 は安全性分類器とともに動作し、分類器が最も頻繁に警告するのはサイバーセキュリティと生物学に関するコンテンツです。分類器がリクエストを警告し、警告されたカテゴリにフォールバックモデルがある場合、Claude Code はそのモデルでリクエストを再実行し、トランスクリプトに通知を表示します。この 2 つのカテゴリについて、フォールバックモデルは拒否したモデルによって異なります。
+Fable モデル、Opus 5.5、Sonnet 5.5、Opus 5 は安全性分類器とともに動作し、分類器が最も頻繁に警告するのはサイバーセキュリティと生物学に関するコンテンツです。この 2 つのカテゴリについて、フォールバックモデルは拒否したモデルによって異なります。
 
 * **Fable 5.1、Fable 5、Opus 5.5**：生物学で警告されたリクエストは Opus 5 で、サイバーセキュリティで警告されたリクエストは Opus 4.8 で再実行されます。
 * **Sonnet 5.5**：サイバーセキュリティで警告されたリクエストは Sonnet 5 で再実行されます。Sonnet 5.5 には生物学のフォールバックモデルがないため、生物学で警告されたリクエストは代わりに拒否で終了します。
 * **Opus 5**：サイバーセキュリティで警告されたリクエストは Opus 4.8 で再実行されます。Opus 5 は独自の生物学分類器をフォールバックモデルなしで実行するため、生物学で警告されたリクエストは代わりに拒否で終了します。
 
 Amazon Bedrock、Google Cloud's Agent Platform、Microsoft Foundry では、Claude Code はこれらのターゲットを代わりにデプロイのモデル ID を通じて解決します。[Bedrock、Agent Platform、Foundry でフォールバックを有効にする](#enable-fallback-on-bedrock-agent-platform-and-foundry)を参照してください。
+
+Claude Code は、警告されたリクエストをそのカテゴリのフォールバックモデルに切り替えると、そのモデルでリクエストを再実行します。メインの会話では、トランスクリプトに通知を表示します。事前に確認を求めるようにするには、[切り替える前に確認する](#ask-before-switching)を参照してください。
 
 フォールバック後、セッションはフォールバックモデルで続行されます。元のモデルに戻るには、[`/model`](#setting-your-model) を実行します。
 
@@ -601,14 +603,19 @@ Claude Code がセッションをフォールバックモデルに切り替え�
   切り替える前に確認する
 </h4>
 
-自動的に切り替えるのではなく、リクエストが警告されるたびにどうするかを判断したい場合は、`/config` を実行して **Switch models when a message is flagged** をオフにするか、設定ファイルで [`switchModelsOnFlag`](/docs/ja/settings-reference#switchmodelsonflag) を `false` に設定します。すると、警告されたリクエストはセッションを一時停止し、フォールバックモデルに切り替えるか、プロンプトを編集して現在のモデルで再試行するかの 2 つの選択肢を表示します。
+リクエストが警告されるたびにどうするかを判断したい場合は、`/config` を実行して **Switch models when a message is flagged** を選択し、**Ask each time** を選びます。設定ファイルで [`switchModelsOnFlag`](/docs/ja/settings-reference#switchmodelsonflag) を `false` に設定することもできます。すると、Claude Code はモデルを切り替えることになる警告されたリクエストで一時停止し、フォールバックモデルに切り替えるか、プロンプトを編集して再試行するかの 2 つの選択肢を表示します。
 
-次の場合は動作が異なります。
+対話セッションで警告されたリクエストが初めてモデルを切り替えようとするとき、Claude Code は以降自動的に切り替えるかどうかを尋ねることがあります。これは `switchModelsOnFlag` を設定していない場合にのみ尋ねられ、選択内容はユーザー設定にそのキーとして保存されます。
+
+代わりに現在のモデルに留まることを選んだ場合、保存される値は **Ask each time** と同じ `false` です。質問を閉じた場合、Claude Code は何も保存せず、次に警告されたリクエストがモデルを切り替えようとするときに再び尋ねます。
+
+**Ask each time** を選んでいる場合、次のケースでは動作が異なります。
 
 * Opus 5 や Sonnet 5.5 での生物学の警告のように、警告されたカテゴリにフォールバックモデルがない場合、Claude Code は確認を表示せず、リクエストは拒否で終了します。
 * 両方のモデルが同じリクエストを警告した場合は、プロンプトを編集して再試行するか、新しいセッションを開始できます。
 * モバイルアプリ上の[クラウドセッション](/docs/ja/claude-code-on-the-web)では、編集して再試行することはできません。モデルを切り替えるか、デスクトップのブラウザまたはデスクトップアプリからセッションを続行してください。
 * 確認を表示できない[非対話モード](/docs/ja/cli-reference#cli-flags)や SDK 統合では、警告されたリクエストは代わりに拒否でターンを終了します。
+* [サブエージェント](/docs/ja/sub-agents)では、Claude Code は確認を表示せず、モデルを切り替えることになる警告されたリクエストはフォールバックモデルで再実行されます。
 * フォールバック先が [`availableModels`](#restrict-model-selection) によってブロックされている場合、Claude Code は確認を表示しません。ターゲットがブロックされている場合の自動フォールバックと同様に、警告されたリクエストは拒否で終了します。
 
 <h4 id="enable-fallback-on-bedrock-agent-platform-and-foundry">
@@ -627,11 +634,13 @@ Claude Code がセッションをフォールバックモデルに切り替え�
 * **すべてのフォールバック元モデル**：フォールバックをオンにし、警告されたカテゴリにターゲットを与えるため、`ANTHROPIC_DEFAULT_OPUS_MODEL` に Opus のモデル ID を設定します。Opus ファミリー以外のモデルや、拒否したモデル自体を指定した場合は、拒否がそのまま残ります。
 * **Sonnet 5.5**：Opus の固定設定に加えて、`ANTHROPIC_DEFAULT_SONNET_MODEL` を設定するか、プロバイダーのモデルリストに Sonnet 5 のエントリを残して、リクエストを再実行するモデルを用意します。Sonnet ファミリー以外のモデルや Sonnet 5.5 自体を指定した Sonnet の固定設定では、拒否がそのまま残ります。
 
+また、フォールバックモデルのコンテキストウィンドウはセッションのコンテキストウィンドウ以上である必要があります。そうでない場合、Claude Code は切り替えず、警告されたリクエストは同じ拒否で終了します。これらのプロバイダーでは、フォールバック元モデルはデフォルトで [1M コンテキストウィンドウ](#extended-context)で動作します。`ANTHROPIC_DEFAULT_OPUS_MODEL` の Opus 4.8 や `ANTHROPIC_DEFAULT_SONNET_MODEL` の Sonnet 5 など、同じく 1M で動作するモデルを、Claude Code が[そのモデルと照合できる](#pin-models-for-third-party-deployments) ID で固定してください。
+
 <h4 id="security-research-and-biology-workloads">
   セキュリティ研究と生物学のワークロード
 </h4>
 
-ペネトレーションテスト、Capture the Flag（CTF）演習、生物学に関連するコードベースなど、攻撃的セキュリティや生物学のワークロードでは、フォールバックが頻繁に、多くの場合最初のリクエストで発生します。Fable 5.1、Fable 5、Opus 5.5 で本格的な生物学の作業を行う場合、Claude Code は最初に警告されたリクエストの時点でセッションを Opus 5 に移行し、Opus 5 には生物学のフォールバックがないため、その後の生物学で警告されたリクエストはそこで拒否となります。Opus 5 と Sonnet 5.5 では、最初に警告されたリクエストからその拒否が発生します。
+ペネトレーションテスト、Capture the Flag（CTF）演習、生物学に関連するコードベースなど、攻撃的セキュリティや生物学のワークロードでは、フォールバックが頻繁に、多くの場合最初のリクエストで発生します。Fable 5.1、Fable 5、Opus 5.5 で本格的な生物学の作業を行う場合、モデルを切り替える最初の警告されたリクエストによってセッションが Opus 5 に移行し、Opus 5 には生物学のフォールバックがないため、その後の生物学で警告されたリクエストはそこで拒否となります。Opus 5 と Sonnet 5.5 では、最初に警告されたリクエストからその拒否が発生します。
 
 これはこれらの分野における想定どおりのルーティングであり、アカウントに対する警告ではありません。組織がこの作業に Fable クラスの能力を必要とする場合は、Anthropic のアカウントチームに信頼済みアクセスプログラムについてお問い合わせください。
 
@@ -778,13 +787,15 @@ Claude Code はデフォルトで思考の出力を折りたたみます。`Ctrl
 
 <a id="extended-context-with-1m" />
 
+<span id="sonnet-5-5-and-sonnet-5-context-window" />
+
 <h3 id="extended-context">
   拡張コンテキスト
 </h3>
 
 Fable 5.1、Fable 5、Sonnet 5 以降、Haiku 5.5、Opus 4.6 以降、Sonnet 4.6 は、大規模なコードベースでの長いセッション向けに [100 万トークンのコンテキストウィンドウ](https://platform.claude.com/docs/en/build-with-claude/context-windows#context-window-sizes-by-model)をサポートしています。
 
-Anthropic API では、Fable 5.1、Fable 5、Sonnet 5 以降、Haiku 5.5、Opus 4.7 以降は、Pro を含むすべてのプランで 1M ウィンドウで動作します。これらのモデルでは、1M ウィンドウのために `[1m]` バリアントを選択したり、使用クレジットをオンにしたりする必要はありません。Fable の利用自体は、一部のプランでは使用クレジットに請求される場合があります。[Fable と使用クレジット](#fable-and-usage-credits)を参照してください。
+Fable 5.1、Fable 5、Sonnet 5 以降、Haiku 5.5、Opus 4.7 以降は、デフォルトで 1M ウィンドウで動作し、`[1m]` サフィックスは不要です。これには、Amazon Bedrock、Google Cloud's Agent Platform、Microsoft Foundry 上のセッションや、[Claude apps gateway](/docs/ja/claude-apps-gateway) のセッションも含まれます。代わりに 200K ウィンドウで実行するには、[1M コンテキストをオフにする](#turn-off-1m-context)を参照してください。
 
 Opus 4.6 と Sonnet 4.6 が 1M に到達するのは `[1m]` バリアントを通じてのみで、そのバリアントへのアクセスはプランによって異なります。Team Standard と Team Premium の両方のシートを含む Max、Team、Enterprise プランでは、1M コンテキストの Opus 4.6 はサブスクリプションに含まれています。1M コンテキストの Sonnet 4.6 は、Max を含むすべてのサブスクリプションプランで[使用クレジット](https://support.claude.com/en/articles/12429409-extra-usage-for-paid-claude-plans)が必要です。
 
@@ -796,43 +807,39 @@ Opus 4.6 と Sonnet 4.6 が 1M に到達するのは `[1m]` バリアントを�
 
 Claude Code がこれらのプラン要件を確認するのは、Anthropic API に直接接続する場合のみです。`ANTHROPIC_BASE_URL` を [LLM ゲートウェイ](/docs/ja/llm-gateway#subscriptions-and-gateways)に向け、保存済みの claude.ai ログインがアクティブな認証情報のままである場合、Claude Code はプランの使用クレジットを確認しません。`[1m]` オプションは `/model` で引き続き利用でき、リクエストが成功するかどうかはゲートウェイが判断します。v2.1.229 より前は、この構成でアカウントの使用クレジットを確認できない場合、Claude Code は `/model sonnet[1m]` を拒否していました。
 
+Anthropic API では、1M コンテキストウィンドウは標準のモデル料金を使用し、200K を超えるトークンに対する割増料金はありません。ただし、Haiku 5.5 は [100K トークンを超えるプロンプトではコストが高くなります](#haiku-5-5-context-window-and-pricing)。拡張コンテキストがサブスクリプションに含まれるプランでは、使用量は引き続きサブスクリプションでカバーされます。使用クレジットを通じて拡張コンテキストにアクセスするプランでは、トークンは使用クレジットに請求されます。
+
+<h4 id="select-1m-context-for-opus-4-6-or-sonnet-4-6">
+  Opus 4.6 または Sonnet 4.6 で 1M コンテキストを選択する
+</h4>
+
+1M バリアントを名前で選択するには、モデルエイリアスまたは完全なモデル名に `[1m]` サフィックスを付けます。
+
+```text theme={null}
+# Append [1m] to a full model name
+/model claude-opus-4-6[1m]
+/model claude-sonnet-4-6[1m]
+
+# Or to an alias: the suffix applies to the model the alias resolves to
+/model opus[1m]
+```
+
 <span id="context-window-behind-a-gateway" />
+
+<h4 id="context-window-behind-an-llm-gateway">
+  LLM ゲートウェイの背後でのコンテキストウィンドウ
+</h4>
 
 `ANTHROPIC_BASE_URL` を [LLM ゲートウェイ](/docs/ja/llm-gateway)やその他のプロキシに設定した場合、Claude Code は認識する各モデルに、Anthropic API 上と同じコンテキストウィンドウを割り当てます。Fable 5.1、Fable 5、Sonnet 5 以降、Haiku 5.5、Opus 4.7 以降は、`[1m]` バリアントを選択しなくても 1M ウィンドウを使用でき、Opus 4.6 のように `[1m]` バリアントを通じてのみ 1M に到達するモデルは、バリアントなしでは 200K で動作します。Claude Code は、ゲートウェイやその背後のサーバーが強制するより低い制限を検出できません。ゲートウェイが 200K トークンを超えるリクエストを拒否する場合は、Claude Code を起動する環境で [`CLAUDE_CODE_AUTO_COMPACT_WINDOW=200000`](/docs/ja/env-vars) を設定して、すべてのモデルのセッションが[その境界で圧縮される](#set-the-auto-compact-window)ようにしてください。
 
-1M コンテキストをオフにするには、`CLAUDE_CODE_DISABLE_1M_CONTEXT=1` を設定します。Claude Code はモデルピッカーから 1M のモデルバリアントを削除します。Sonnet 5 や Fable モデルなど、ネイティブで 1M ウィンドウを持つモデルでは、そのモデルのコンテキストウィンドウを 200K として扱います。
+<h4 id="turn-off-1m-context">
+  1M コンテキストをオフにする
+</h4>
+
+セッションを 200K ウィンドウに保つには、シェルまたは[設定ファイル](/docs/ja/env-vars#set-environment-variables)で `CLAUDE_CODE_DISABLE_1M_CONTEXT=1` を設定します。Claude Code はモデルピッカーから `[1m]` のモデルバリアントを削除します。Fable モデル、Sonnet 5 以降、Opus 4.7 以降など、デフォルトで 1M ウィンドウで動作するモデルでは、そのモデルのコンテキストウィンドウを 200K として扱います。
 
 * 自動圧縮がオンの場合、セッションは[自動圧縮](#set-the-auto-compact-window)によって 200K の境界で圧縮されます。Claude Code は自動圧縮のウィンドウをモデルのコンテキストウィンドウに制限するため、自動圧縮のウィンドウを 200K より大きく設定しても制限は解除されません。
 * 自動圧縮がオフの場合、セッションは圧縮されず、200K の境界で[コンテキスト制限エラー](/docs/ja/errors#prompt-is-too-long)により停止します。
-
-v2.1.223 より前は、Claude Code が 200K に制限していたのは Sonnet 5、Opus 4.8、Opus 5 のセッションのみでした。[環境変数](/docs/ja/env-vars)を参照してください。
-
-1M コンテキストウィンドウは標準のモデル料金を使用し、200K を超えるトークンに対する割増料金はありません。ただし、Haiku 5.5 は [100K トークンを超えるプロンプトではコストが高くなります](#haiku-5-5-context-window-and-pricing)。拡張コンテキストがサブスクリプションに含まれるプランでは、使用量は引き続きサブスクリプションでカバーされます。使用クレジットを通じて拡張コンテキストにアクセスするプランでは、トークンは使用クレジットに請求されます。
-
-アカウントが 1M コンテキストをサポートしている場合、最新バージョンの Claude Code では `/model` ピッカーにそのオプションが表示されます。表示されない場合は、セッションを再起動してください。サードパーティプロバイダーでは、デプロイが `ANTHROPIC_DEFAULT_*_MODEL` 変数で[モデルを固定](#pin-models-for-third-party-deployments)していないか確認してください。
-
-`[1m]` サフィックスは、モデルエイリアスや完全なモデル名とともに使用することもできます。
-
-```text theme={null}
-# Use the opus[1m] or sonnet[1m] alias
-/model opus[1m]
-/model sonnet[1m]
-
-# Or append [1m] to a full model name
-/model claude-opus-4-8[1m]
-```
-
-<h4 id="sonnet-5-5-and-sonnet-5-context-window">
-  Sonnet 5.5 と Sonnet 5 のコンテキストウィンドウ
-</h4>
-
-Anthropic API では、Sonnet 5.5 と Sonnet 5 は常に 1M コンテキストウィンドウで動作します。200K バリアントはなく、選択する `[1m]` サフィックスもなく、どのプランでも使用クレジットは不要です。セッションはウィンドウが埋まる前に、デフォルトで約 967K トークンで自動圧縮されます。別のしきい値を選ぶには、[`CLAUDE_CODE_AUTO_COMPACT_WINDOW`](/docs/ja/env-vars) を設定してください。
-
-Claude Code は、[LLM ゲートウェイ](/docs/ja/llm-gateway)やその他のカスタム `ANTHROPIC_BASE_URL` の背後でも、Sonnet 5.5 と Sonnet 5 に同じ 1M ウィンドウを割り当てます。ゲートウェイがより低い制限を強制する場合は、[ゲートウェイの背後でのコンテキストウィンドウ](#context-window-behind-a-gateway)を参照してください。
-
-次の設定では、代わりにウィンドウを 200K に制限します。
-
-* **`CLAUDE_CODE_DISABLE_1M_CONTEXT=1`**：ネイティブで 1M ウィンドウを持つすべてのモデルのセッションを 200K ウィンドウに制限します。制限がどのように適用されるかについては[拡張コンテキスト](#extended-context)を参照してください。コンテキストに上限を設ける必要があるデプロイに役立ちます。
 
 <h4 id="haiku-5-5-context-window-and-pricing">
   Haiku 5.5 のコンテキストウィンドウと料金
@@ -876,9 +883,9 @@ Haiku 5.5 のリクエストは、プロンプトが 100K トークンを超え�
 自動圧縮ウィンドウを設定していない場合、Claude Code は会話がモデルのコンテキスト上限に達した時点で圧縮します。ただし、次のセッションは例外です。
 
 * [クラウドセッション](/docs/ja/claude-code-on-the-web)は、会話がモデルの上限に近づいた時点で圧縮します
-* [拡張コンテキスト](#extended-context)を使用しない Sonnet 4.6 と Opus 4.6 は 200K の境界で圧縮します。Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry など、200K のコンテキストウィンドウで実行される Opus 4.8 以降も同様です
+* [拡張コンテキスト](#extended-context)を使用しない Sonnet 4.6 と Opus 4.6 は 200K の境界で圧縮します
 * [`CLAUDE_CODE_DISABLE_1M_CONTEXT=1`](/docs/ja/env-vars) を設定すると、Sonnet 5 や Fable モデルなど、ネイティブで 1M のウィンドウを持つモデルは 200K の境界で圧縮します
-* ネイティブの 1M ウィンドウで実行されるモデルは、ウィンドウが埋まる前に、デフォルトで約 967K トークンの時点で圧縮します。Anthropic API では、Sonnet 5、Haiku 5.5、Fable モデル、Opus 4.7 以降がこれに該当します。Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry でどのモデルがこのウィンドウで実行されるかについては、[サードパーティのデプロイでモデルを固定する](#pin-models-for-third-party-deployments)を参照してください。カスタムの `ANTHROPIC_BASE_URL` を使用している場合は、[ゲートウェイ経由のコンテキストウィンドウ](#context-window-behind-a-gateway)を参照してください
+* ネイティブの 1M ウィンドウで実行されるモデルは、ウィンドウが埋まる前に、デフォルトで約 967K トークンの時点で圧縮します。これには、Fable モデル、Sonnet 5 以降、Haiku 5.5、Opus 4.7 以降が含まれます。カスタムの `ANTHROPIC_BASE_URL` を使用している場合は、[ゲートウェイ経由のコンテキストウィンドウ](#context-window-behind-a-gateway)を参照してください
 * [LLM ゲートウェイ](/docs/ja/llm-gateway)のエイリアスなど、Claude Code が認識できないモデル ID を使用するセッションは、Claude Code がその ID に対して想定するコンテキストウィンドウで圧縮します。[ゲートウェイまたはカスタムモデル ID のウィンドウを修正する](#correct-the-window-for-a-gateway-or-custom-model-id)を参照してください
 
 <h3 id="correct-the-window-for-a-gateway-or-custom-model-id">
@@ -982,17 +989,19 @@ Amazon Bedrock と Google Cloud's Agent Platform では、ユーザーが `--mod
 
 `ANTHROPIC_DEFAULT_FABLE_MODEL`、`ANTHROPIC_DEFAULT_SONNET_MODEL`、`ANTHROPIC_DEFAULT_HAIKU_MODEL` にも同じパターンを適用します。すべてのプロバイダーにおける現行およびレガシーのモデル ID については、[モデルの概要](https://platform.claude.com/docs/en/about-claude/models/overview)を参照してください。ユーザーを新しいモデルバージョンにアップグレードするには、これらの環境変数を更新して再デプロイします。
 
-固定したモデルで[拡張コンテキスト](#extended-context)を有効にするには、`ANTHROPIC_DEFAULT_OPUS_MODEL`、`ANTHROPIC_DEFAULT_SONNET_MODEL`、または `ANTHROPIC_DEFAULT_FABLE_MODEL` のモデル ID に `[1m]` を付加します。
+Opus 4.8 や Sonnet 5 など、ネイティブで 1M ウィンドウを持つモデルを固定した場合、Claude Code が固定した ID をそのモデルと照合できれば、サフィックスなしで [1M コンテキストウィンドウ](#extended-context)で動作します。ID は、`us.anthropic.claude-opus-4-8` が `claude-opus-4-8` を含むようにモデルの Anthropic API ID を含む場合、または [`modelOverrides`](#override-model-ids-per-version) のエントリがモデルをその ID にマッピングしている場合に一致します。Claude Code がモデルと照合できない固定 ID では、ID に `[1m]` サフィックスが付いていない限り、セッションはデフォルトで 200K ウィンドウで動作します。
+
+Opus 4.6 や Sonnet 4.6 など、`[1m]` バリアントを通じて 1M に対応するモデルの場合は、`ANTHROPIC_DEFAULT_OPUS_MODEL` または `ANTHROPIC_DEFAULT_SONNET_MODEL` のモデル ID に `[1m]` を付加して拡張コンテキストを有効にします。
 
 ```bash theme={null}
-export ANTHROPIC_DEFAULT_OPUS_MODEL='claude-opus-4-8[1m]'
+export ANTHROPIC_DEFAULT_OPUS_MODEL='claude-opus-4-6[1m]'
 ```
 
 `[1m]` サフィックスを付けると、1M コンテキストウィンドウは固定したエイリアスのすべての使用に適用されます。これには [`opusplan`](#opusplan-model-setting) の plan モードにおける Opus フェーズや、`model` フロントマターでそのエイリアスを指定している[サブエージェント](/docs/ja/sub-agents#choose-a-model)も含まれます。
 
 * Claude Code はモデル ID をプロバイダーに送信する前にサフィックスを取り除きます。
 * `[1m]` は、基盤となるモデルが [1M コンテキストをサポートしている](https://platform.claude.com/docs/en/build-with-claude/context-windows#context-window-sizes-by-model)場合にのみ付加してください。
-* サフィックスはモデルごとではなく、変数ごとに読み取られます。Amazon Bedrock、Google Cloud's Agent Platform、Microsoft Foundry では、ある変数で `[1m]` なしのモデル ID を指定すると、別の変数で同じモデルにサフィックスを付けて設定していても、200K コンテキストが使用されます。Sonnet 5 はこれらのプロバイダーでは常に 1M ウィンドウで動作し、サフィックスは必要ありません。
+* サフィックスはモデルごとではなく、変数ごとに読み取られます。Amazon Bedrock、Google Cloud's Agent Platform、Microsoft Foundry では、ある変数で `[1m]` なしの Opus 4.6 または Sonnet 4.6 の ID を指定すると、別の変数で同じモデルにサフィックスを付けて設定していても、200K コンテキストが使用されます。
 
 `ANTHROPIC_DEFAULT_*_MODEL` 変数を設定すると、`/model` ピッカーには、そのファミリーの組み込みの行（1M コンテキストの行を含む）の代わりに、そのモデルの行が 1 つ表示されます。その変数にサフィックスを追加せずに 1M ウィンドウを利用するには、ユーザーが `/model opus[1m]` を実行します。すると Claude Code は、変数で指定されたモデルにサフィックスを適用します。`/model sonnet[1m]` も同様に動作します。
 

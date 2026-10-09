@@ -51,19 +51,35 @@ Make an artifact that walks through this PR with the diff annotated inline.
 Build a dashboard artifact of last week's deploy failures by service and keep it updated as you investigate.
 ```
 
-場所を指定しない限り、Claude はページを HTML または Markdown ファイルとしてプロジェクト外の一時ディレクトリに書き込み、公開します。[Plan Mode](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode) 以外では、入力したプロンプトに応じて Claude が公開する新しいアーティファクトは、権限プロンプトまたは分類器レビューなしで処理されます。ただし、その公開が[コネクタ呼び出し](#pull-live-data-with-mcp-connectors)や[ファイルダウンロード](#offer-a-file-download)などのページのランタイム機能を宣言する場合は除きます。Plan Mode では、Claude Code は各アーティファクトの最初の公開前にあなたに確認を求めます。
+場所を指定しない限り、Claude はページを HTML または Markdown ファイルとしてプロジェクト外の一時ディレクトリに書き込み、公開します。アーティファクトは[共有](#share-an-artifact)するまで、ユーザー本人だけが見られるプライベートな状態のままです。
 
-アーティファクトは[共有](#share-an-artifact)するまでプライベートなままです。公開共有した後、Claude Code は会話ごとに 1 回変更前に承認を求めるか、[auto mode](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode) では分類器に変更をレビューさせます。
+最初の公開後、Claude は URL を出力し、ブラウザで新しいページが開きます。
 
-[機能フラグ取得](/docs/ja/env-vars#features-that-need-feature-flag-fetching)をオフにした場合、Claude Code は各アーティファクトの最初の公開前に確認を求めるか、auto mode では分類器にレビューさせます。
+* **ページを再度開く**：任意の時点で `Ctrl+]` を押すと、セッションの最新のアーティファクトを再度開けます
+* **このセッションのアーティファクトを確認する**：プロンプトの下にある `⧉` ピルに、アーティファクトの名前、またはセッションに複数ある場合はその数が表示されます。[フルスクリーンレンダリング](/docs/ja/fullscreen)では、これをクリックすると [`/artifacts`](#find-an-artifact-again) の一覧が開きます
+* **ブラウザが開かないようにする**：環境で `CLAUDE_CODE_ARTIFACT_AUTO_OPEN=0` を設定します
+* **Remote Control**：claude.ai、Claude Desktop、または Claude モバイルアプリから [Remote Control](/docs/ja/remote-control) 経由でプロンプトを送信した場合、セッションを実行しているマシンではタブが開きません。ブラウザは、ターミナルで入力したプロンプトから Claude が次にアーティファクトを公開したときに開きます
 
-最初の公開後、Claude は URL を出力し、ブラウザが新しいページに開きます。[Remote Control](/docs/ja/remote-control)から claude.ai、Claude Desktop、または Claude モバイルアプリを通じてプロンプトを送信した場合、セッションを実行しているマシンではタブが開きません。ブラウザは、Claude がターミナルで入力したプロンプトからアーティファクトを再度公開する次回に開きます。任意の時点で `Ctrl+]` を押して、セッションの最新アーティファクトを再度開きます。
+Claude はアーティファクトのタイトルと、チャートやカレンダーなどページの内容に合ったブラウザタブアイコンを選択します。タイトルは claude.ai の[アーティファクトギャラリー](#share-an-artifact)と共有リンクに表示されます。特定のタイトルやタブアイコンを使いたい場合は、Claude に依頼してください。
 
-Claude はアーティファクトのタイトルと絵文字を選択し、両方が claude.ai の[アーティファクトギャラリー](#share-an-artifact)と共有リンクに表示されます。Claude はまた、チャートやカレンダーなど、ページが何であるかに一致するブラウザタブアイコンを選択することもできます。特定のタイトル、絵文字、またはタブアイコンが必要な場合は、Claude に要求してください。
+Claude が公開できないと応答した場合、またはリンクなしでローカル HTML ファイルを書き込んだ場合、セッションでアーティファクトが有効になっていません。[利用可能性](#availability)の要件を確認してください。ターミナルに `Artifacts need a claude.ai login` と表示された場合は、サインイン方法について[該当するエラーの項目](/docs/ja/errors#artifacts-need-a-claude-ai-login)を参照してください。
 
-新しいアーティファクトが公開されたときにブラウザが自動的に開くのを停止するには、環境で `CLAUDE_CODE_ARTIFACT_AUTO_OPEN=0` を設定します。
+<h3 id="when-claude-code-asks-before-publishing">
+  公開前に Claude Code が確認する場合
+</h3>
 
-Claude が公開できないと応答した場合、またはリンクなしでローカル HTML ファイルを書き込んだ場合、ツールはセッションに対して有効になっていません。[利用可能性](#availability)の要件を確認してください。
+入力したプロンプトに応じて Claude が公開する新しいアーティファクトは、権限プロンプトや分類器のレビューなしで処理されます。以下の場合、Claude Code はまず確認を求めるか、[auto モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)では分類器に公開をレビューさせます。
+
+| 条件 | Claude Code の動作 |
+| :- | :- |
+| セッションが [plan モード](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode)になっている | 各アーティファクトの最初の公開前に確認する |
+| 公開が、[コネクタ呼び出し](#pull-live-data-with-mcp-connectors)や[ファイルダウンロード](#offer-a-file-download)など、ページのランタイム機能を宣言している | その公開の前に確認する |
+| アーティファクトを公開共有している | 変更前に会話ごとに 1 回確認する |
+| [機能フラグ取得](/docs/ja/env-vars#features-that-need-feature-flag-fetching)をオフにしている | 各アーティファクトの最初の公開前に確認する |
+| 入力したプロンプトではなく、セッション内で実行された[スケジュールタスク](/docs/ja/scheduled-tasks)によって開始されたターンで Claude が公開する | 各アーティファクトの最初の公開前に確認する |
+| Claude がユーザーの承認なしではファイルを読み取れない | 公開前に確認する。`Artifact` ツールの許可ルールがあっても、このプロンプトはスキップされない |
+
+Claude は、セッションの[作業ディレクトリ](/docs/ja/permissions#working-directories)内のファイルと、ページを書き込む一時ディレクトリ内のファイルを確認なしで読み取ります。別のフォルダからプロンプトなしで公開できるようにするには、起動時に [`--add-dir`](/docs/ja/cli-reference#cli-flags) を使用するか、セッション中に `/add-dir` を使用して、そのフォルダを作業ディレクトリとして追加します。
 
 <h2 id="update-an-artifact">
   アーティファクトを更新する
@@ -87,7 +103,15 @@ https://claude.ai/code/artifact/5fbea6f3-... を本日の数値で更新しま�
   アーティファクトを再度見つける
 </h2>
 
-Claude Code で `/artifacts` を実行して、所有しているすべてのアーティファクトと共有されているすべてのアーティファクトをリストアップします。1 つを選択して、`o` を押してブラウザで開くか、`c` を押してそのリンクをコピーします。`Enter` キーを押して現在のセッションに添付します。v2.1.216 より前のバージョンでは、`Enter` キーでブラウザで開きました。Claude Code は claude.ai アカウントからリストを読み込むため、新しいセッションで機能し、リンクがターミナルからスクロールアウトした後の `/clear` の後でも機能します。Claude Code v2.1.208 以降が必要です。
+Claude Code で `/artifacts` を実行すると、所有しているアーティファクトと共有されているアーティファクトが一覧表示されます。現在のセッションのアーティファクトは **This session** の下に最初に表示されます。Claude Code v2.1.208 以降が必要です。
+
+アーティファクトを選択し、次のいずれかのキーを押します。
+
+* **`Enter`**：現在のセッションにすでに添付されている場合はブラウザで開き、添付されていない場合は添付します。v2.1.216 より前のバージョンでは、`Enter` キーでブラウザで開きました
+* **`o`**：ブラウザで開きます
+* **`c`**：リンクをコピーします
+
+Claude Code は claude.ai アカウントからリストを読み込むため、新しいセッションでも、`/clear` の後でリンクがターミナルからスクロールアウトした場合でも機能します。
 
 <h2 id="share-an-artifact">
   アーティファクトを共有する
@@ -109,6 +133,8 @@ Claude Code で `/artifacts` を実行して、所有しているすべてのア
 共有相手はデフォルトではビューアーです。公開した各バージョンを表示できますが、ページを変更することはできません。Team プランと Enterprise プランでは、ユーザーをエディターにすることもできます。共有ダイアログで、ユーザーを追加し、その役割を **viewer** から **editor** に切り替えます。
 
 エディターは、[別のセッションからアーティファクトを更新する](#update-an-artifact) のと同じ方法で新しいバージョンを公開します。アーティファクトの URL を Claude に提供するか、[`/artifacts`](#find-an-artifact-again) から添付し、Claude が現在のコンテンツを取得して変更を反映して再公開します。ページを開いているすべてのユーザーが各更新をリアルタイムで確認できます。
+
+Claude がページの古いコピーを保持している間にエディターが公開した場合、Claude Code はそのコピーに基づく公開を拒否します。その後、Claude は自身の変更を新しいバージョンにマージして、再度公開します。
 
 <h2 id="read-an-artifact-shared-with-you">
   共有されたアーティファクトを読む
@@ -168,7 +194,9 @@ Claude Code v2.1.228 以降が必要です。[フィーチャーフラグ取得]
 
 Claude は、1 時間以内にそのアーティファクトで 60 件の送信されたコメントまたはスレッド有効化を処理した後、アーティファクトへの自動返信を停止します。`Comments are waiting on Artifact: <name>` が 1 回表示され、Claude はその時間のコメントが古くなると再開します。
 
-`/tasks` を実行して、セッションが監視している各アーティファクトをライブアップデートタスクとしてリストアップされたものを確認します。以下のいずれかの方法で、Claude がアーティファクトに自動で返信するのを停止できます。
+`/tasks` を実行すると、セッションが監視しているアーティファクトを確認できます。`/tasks` は、Claude Code が自動で開始した監視を **System tasks** 行の下にまとめます。その行で `Enter` を押すと、一覧が表示されます。Claude に開始を依頼した監視は **Monitors** の下に表示されます。
+
+以下のいずれかの方法で、Claude の自動返信を停止できます。
 
 * **アイドルプロンプトで Ctrl+C を 1 回押す**：Claude はセッションが監視しているすべてのアーティファクトへの返信を一時停止します。次のメッセージを送信した後、返信が再開されます。
 * **`/tasks` でタスクを停止する**：Claude はそのアーティファクトへの返信を停止し、そこで返信を再開するよう求めるまで停止したままになります。アーティファクトを再度公開しても返信は再開されず、セッションを再開しても停止は適用されたままになります。
@@ -391,7 +419,7 @@ Artifacts には以下のすべての条件が必要です。いずれかが満�
 | 認証 | セッションが claude.ai アカウントでサポートされています。CLI またはデスクトップアプリで `/login` でサインインします。Claude Tag セッションはエージェントの ID を通じてサインインするため、追加の手順は不要です。API キー、[ゲートウェイトークン](/docs/ja/llm-gateway)、またはクラウドプロバイダー認証情報を使用するセッションは公開できません。 |
 | モデルプロバイダー | Anthropic API。[Amazon Bedrock](/docs/ja/amazon-bedrock)、[Google Cloud の Agent Platform](/docs/ja/google-vertex-ai)、または[Microsoft Foundry](/docs/ja/microsoft-foundry)では利用できません。 |
 | 組織ポリシー | カスタマー管理暗号化キー（CMEK）、HIPAA、および[Zero Data Retention](/docs/ja/zero-data-retention)は組織に対して有効になっていません。 |
-| サーフェス | Claude Code CLI、または Claude デスクトップアプリバージョン 1.13576.0 以降。[Claude Tag](https://claude.com/docs/claude-tag/overview) セッションは、Claude Tag と Artifacts の両方が組織に対して有効な場合にも Artifacts を公開できます。[Agent SDK](/docs/ja/agent-sdk/overview)、GitHub Action、および MCP サーバーコンテキストではデフォルトで無効です。また、[`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`](/docs/ja/env-vars)が設定されている場合も無効です。 |
+| サーフェス | Claude Code CLI、または Claude デスクトップアプリバージョン 1.13576.0 以降。[Claude Tag](https://claude.com/docs/claude-tag/overview) セッションは、Claude Tag とアーティファクトの両方が組織に対して有効な場合にもアーティファクトを公開できます。[`claude remote-control`](/docs/ja/remote-control) によって提供されるセッションは、自分でセッションを開始した場合にアーティファクトを公開できます。Claude Code v2.1.281 以降が必要です。[Agent SDK](/docs/ja/agent-sdk/overview)、GitHub Action、および MCP サーバーコンテキストではデフォルトで無効です。また、自分のターミナルやスクリプトから [`-p`](/docs/ja/headless) を付けて Claude Code を実行する場合、および [`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`](/docs/ja/env-vars) が設定されている場合も無効です。 |
 
 Artifacts が組織に対して許可されているかどうかは、Claude Code が `api.anthropic.com` から読み込む組織のポリシーから決まります。Claude Code がポリシーを読み込めない場合、Artifacts は利用できません。リクエストすると、Claude がその理由を説明します。
 

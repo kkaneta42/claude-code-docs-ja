@@ -294,7 +294,7 @@ Claude に [MCP](#mcp-model-context-protocol) 経由でツール、プロンプ�
   Output style
 </h3>
 
-Claude Code が Claude に与える指示を変更して、応答動作、トーン、または形式を設定する設定です。プロジェクトコンテキストを Claude Code のデフォルト指示と一緒に追加する [CLAUDE.md](#claude-md) とは異なり、カスタム output style はデフォルトのソフトウェアエンジニアリング指示を置き換えることができます。
+Claude Code が Claude に与える指示を変更して、応答動作、トーン、または形式を設定する設定です。プロジェクトコンテキストを Claude Code のデフォルト指示と一緒に追加する [CLAUDE.md](#claude-md) とは異なり、カスタム出力スタイルは独自の指示を追加し、デフォルトのソフトウェアエンジニアリング指示を省くことができます。
 
 詳細情報: [Output styles](/docs/ja/output-styles)
 
@@ -511,7 +511,7 @@ Claude が [session](#session) 内で行う 1 つの完全な応答です。Turn
   Worktree isolation
 </h3>
 
-Claude を `.claude/worktrees/` の別の git worktree で実行する分離モード。`-w` フラグまたは subagent 設定の `isolation: worktree` で有効にされます。変更は別のブランチの別のディレクトリに留まるため、並列エージェントはお互いのファイルを上書きしません。
+Claude を `.claude/worktrees/` の別の git worktree で実行する分離モード。`-w` フラグまたはサブエージェント設定の `isolation: worktree` で有効にされます。変更は別のディレクトリの別のブランチに留まるため、並列エージェントはそれぞれ自分用のファイルのコピーを編集します。
 
 詳細情報: [git worktrees を使用した並列セッションの実行](/docs/ja/worktrees)
 

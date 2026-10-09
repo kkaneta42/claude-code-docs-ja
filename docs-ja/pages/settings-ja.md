@@ -404,12 +404,12 @@ Claude Code は 4 つのファイルから設定を読み込み、組織は clau
 
 | スコープ | ファイル | 誰に影響するか | 用途 |
 | :- | :- | :- | :- |
-| ユーザー | `~/.claude/settings.json` | あなた、このマシン上のすべてのプロジェクト | 個人設定：テーマ、エディターモード、デフォルトモデル、独自の権限ルール |
-| 共有プロジェクト | `.claude/settings.json` | このフォルダを含むフォルダで作業しているすべての人。git リポジトリでは、コミットしてチームメイトが取得できるようにします | チーム権限、hooks、プラグイン、およびプロジェクトが必要とする環境変数 |
-| プロジェクトローカル | `.claude/settings.local.json` | あなた、このプロジェクトのみ。Claude Code はファイルを作成するときに git から除外します。手動で作成する場合は、自分で `.gitignore` に追加してください | 1 つのプロジェクトの個人的なオーバーライド、および共有する前のテスト |
+| ユーザー | `~/.claude/settings.json` | 自分自身、このマシン上のすべてのプロジェクト | 個人設定：テーマ、エディターモード、デフォルトモデル、独自の権限ルール |
+| 共有プロジェクト | `.claude/settings.json` | このファイルを含むフォルダで作業しているすべての人。git リポジトリでは、コミットしてチームメイトが取得できるようにします | チーム権限、フック、プラグイン、およびプロジェクトが必要とする環境変数 |
+| プロジェクトローカル | `.claude/settings.local.json` | 自分自身、このプロジェクトのみ。Claude Code はファイルを作成するときに git から除外します。手動で作成する場合は、自分で `.gitignore` に追加してください | 1 つのプロジェクトでの個人的な上書き、および共有する前のテスト |
 | 管理 | `managed-settings.json` およびその他の[管理ソース](/docs/ja/managed-settings#delivery-mechanisms) | 組織がデプロイするすべての人。何がこれを上書きできるかは[設定の優先順位](#settings-precedence)を参照してください | セキュリティポリシーおよびコンプライアンス要件 |
 
-ファイル列では、`~/.claude` はホームディレクトリの `.claude` フォルダ、ベアの `.claude` はプロジェクト内の `.claude` フォルダです。
+ファイル列では、`~/.claude` はホームディレクトリの `.claude` フォルダ、パスなしの `.claude` はプロジェクト内の `.claude` フォルダです。
 
 <span id="where-each-file-applies" />
 
@@ -425,10 +425,10 @@ Claude Code は 4 つのファイルから設定を読み込み、組織は clau
 
 <SettingsScope />
 
-* **`~/.claude/settings.json`**：マシン上のすべてのプロジェクト、チームメイトまたはクラウドセッションには何もありません
-* **`acme-app/.claude/settings.json`**：あなたの `acme-app/`。バージョン管理にファイルをコミットする場合のみ、チームメイトのクローンとクラウドセッションに到達します。それまでは、他のファイルのようにディスク上のファイルであり、誰も持っていません
-* **`acme-app/.claude/settings.local.json`**：あなたの `acme-app/` のみ。Claude Code はファイルを初めて書き込むときに、グローバル git 除外に追加するため、コミットから除外されます。手動でファイルを作成する場合は、[自分で `.gitignore` に追加してください](#keep-personal-settings-out-of-a-repository)
-* **管理設定**。`managed-settings.json` ファイル、MDM ポリシー、または claude.ai コンソールからの[サーバー管理設定](/docs/ja/server-managed-settings)：組織がデプロイするすべてのマシン上のすべてのプロジェクト、またはあなたの組織アカウントでサインインするマシン。サーバー管理設定のみがクラウドセッションに到達します
+* **`~/.claude/settings.json`**：自分のマシン上のすべてのプロジェクト。チームメイトのクローンやクラウドセッションには適用されません
+* **`acme-app/.claude/settings.json`**：自分の `acme-app/`。バージョン管理にファイルをコミットした場合のみ、チームメイトのクローンとクラウドセッションに到達します。それまでは、ディスク上の他のファイルと同じ単なるファイルであり、他の誰も持っていません
+* **`acme-app/.claude/settings.local.json`**：自分の `acme-app/` のみ。Claude Code はファイルを初めて書き込むときに、グローバル git 除外に追加するため、コミットから除外されます。手動でファイルを作成する場合は、[自分で `.gitignore` に追加してください](#keep-personal-settings-out-of-a-repository)
+* **管理設定**。`managed-settings.json` ファイル、MDM ポリシー、または claude.ai コンソールからの[サーバー管理設定](/docs/ja/server-managed-settings)：組織がデプロイするすべてのマシン、または組織アカウントでサインインするマシン上のすべてのプロジェクト。クラウドセッションに到達するのはサーバー管理設定のみです
 
 <span id="which-files-you-have" />
 
@@ -436,25 +436,25 @@ Claude Code は 4 つのファイルから設定を読み込み、組織は clau
   設定ファイルを見つけるか作成する
 </h3>
 
-Claude Code をインストールしても、設定ファイルは作成されません。マシンまたはプロジェクトに既に 1 つある場合は、これらのソースの 1 つから来ました：
+Claude Code をインストールしても、設定ファイルは作成されません。マシンまたはプロジェクトに既に設定ファイルがある場合は、次のいずれかのソースから来たものです：
 
-* **管理**：組織がデプロイします。作成または編集しません。
-* **共有プロジェクト**：Claude Code を既に使用しているプロジェクトにはコミットされたものがあるかもしれません。ない場合は、プロジェクトフォルダに `.claude/settings.json` で作成してください。
-* **ユーザー**および**プロジェクトローカル**：自分で作成するか、Claude Code に作成させます。テーマなどのユーザー設定に保存する `/config` メニューのオプションを初めて変更するときに `~/.claude/settings.json` を書き込み、Bash コマンドに対して「はい、今後は聞かないでください」などの権限プロンプトで立ったままの承認を初めて与えるときに `.claude/settings.local.json` を書き込みます。**ヒントを表示**を含むいくつかの `/config` オプションは、ユーザーファイルの代わりに `.claude/settings.local.json` に保存されます。
+* **管理**：組織がデプロイします。自分で作成または編集することはありません。
+* **共有プロジェクト**：Claude Code を既に使用しているプロジェクトには、コミットされたものがあるかもしれません。ない場合は、プロジェクトフォルダに `.claude/settings.json` として作成してください。
+* **ユーザー**および**プロジェクトローカル**：自分で作成するか、Claude Code に作成させます。テーマなど、ユーザー設定に保存される `/config` メニューのオプションを初めて変更するときに `~/.claude/settings.json` を書き込み、Bash コマンドに対する「はい、今後は聞かないでください」など、権限プロンプトで恒久的な承認を初めて与えるときに `.claude/settings.local.json` を書き込みます。**ヒントを表示**を含むいくつかの `/config` オプションは、ユーザーファイルではなく `.claude/settings.local.json` に保存されます。
 
 <Info>
-  Windows では、`~/.claude` は `%USERPROFILE%\.claude` を意味します。ホームディレクトリファイルを別の場所に保つには、[`CLAUDE_CONFIG_DIR`](/docs/ja/env-vars) を設定してください。Claude Code はその代わりに設定、セッション履歴、およびプラグインをそこに保存します。
+  Windows では、`~/.claude` は `%USERPROFILE%\.claude` を意味します。ホームディレクトリのファイルを別の場所に保存するには、[`CLAUDE_CONFIG_DIR`](/docs/ja/env-vars) を設定してください。Claude Code は設定、セッション履歴、およびプラグインを代わりにそこに保存します。
 </Info>
 
-Claude Code は、[`~/.claude.json`](/docs/ja/claude-directory#ce-claude-json) という 5 番目のファイルも保持します。これは自分で書き込みます。編集する必要はありません。サインインセッション、[MCP サーバー](/docs/ja/mcp)構成、信頼決定などのプロジェクトごとの状態、および `/config` があなたのために書き込む[グローバル構成キー](/docs/ja/settings-reference#global-config-settings)を保持します。
+Claude Code は、[`~/.claude.json`](/docs/ja/claude-directory#ce-claude-json) という 5 番目のファイルも保持します。これは Claude Code 自身が書き込むもので、編集する必要はありません。サインインセッション、[MCP サーバー](/docs/ja/mcp)の設定、信頼の決定などのプロジェクトごとの状態、および `/config` が書き込む[グローバル設定キー](/docs/ja/settings-reference#global-config-settings)を保持します。
 
 <h3 id="share-settings-with-your-team">
   チームと設定を共有する
 </h3>
 
-`.claude/settings.json` をコミットして、リポジトリをクローンするすべての人が同じ権限、hooks、およびプラグインを取得するようにします。各チームメイトは、個人的な例外がコミットを必要としないように、独自の `.claude/settings.local.json` でそれをオーバーライドできます。完全なチームファイルについては、[チームの共有設定](/docs/ja/settings-example#a-teams-shared-settings)を参照してください。
+`.claude/settings.json` をコミットして、リポジトリをクローンするすべての人が同じ権限、フック、およびプラグインを取得するようにします。各チームメイトは、独自の `.claude/settings.local.json` で自分用にそれを上書きできるため、個人的な例外にコミットは必要ありません。完全なチームファイルについては、[チームの共有設定](/docs/ja/settings-example#a-teams-shared-settings)を参照してください。
 
-コミットするものの一部は、各チームメイトが[フォルダを信頼する](/docs/ja/permissions#project-allow-rules-and-workspace-trust)まで待機し、いくつかのキーはリポジトリファイルから効果を発揮しません。[適用されない設定をトラブルシューティングする](#common-cases)は両方をカバーしています。
+コミットするものの一部は、各チームメイトが[フォルダを信頼する](/docs/ja/permissions#project-allow-rules-and-workspace-trust)まで待機し、いくつかのキーはリポジトリファイルからは決して有効になりません。[適用されない設定をトラブルシューティングする](#common-cases)で両方を説明しています。
 
 <span id="local-settings-file" />
 
@@ -468,13 +468,13 @@ Claude Code は、[`~/.claude.json`](/docs/ja/claude-directory#ce-claude-json) �
   リポジトリから個人設定を除外する
 </h3>
 
-プロジェクト内で自分の設定を変更し、チームメイトの設定を変更しないようにするには、プロジェクト内の `.claude/settings.local.json` に保存してください。Claude Code はそのファイルをコミットされた `.claude/settings.json` に適用するため、チームのファイルが `"model": "claude-sonnet-5"` を設定し、Opus が必要な場合は、ローカルファイルに `"model": "claude-opus-5-5"` を入れて、セッションのみを変更します。
+1 つのプロジェクトで、チームメイトの設定を変えずに自分の設定だけを変更するには、プロジェクト内の `.claude/settings.local.json` に保存してください。Claude Code はそのファイルをコミットされた `.claude/settings.json` の上に適用するため、チームのファイルが `"model": "claude-sonnet-5"` を設定していて Opus を使いたい場合は、ローカルファイルに `"model": "claude-opus-5-5"` を入れれば、自分のセッションだけが変わります。
 
-Claude Code もこのファイルに書き込み、コミットから除外し、信頼ステップなしに allow ルールを適用します：
+Claude Code もこのファイルに書き込み、コミットから除外し、信頼ステップなしでその許可ルールを適用します：
 
-* **Claude Code もそれを書き込みます。** Claude が Bash コマンドを実行する権限を求め、「はい、今後は聞かないでください」を選択すると、Claude Code はその[権限承認](/docs/ja/permissions#permission-system)をここに `allow` ルールとして保存します。
-* **手動で作成した場合を除き、自分で gitignore する必要はありません。** Claude Code がリポジトリでファイルを初めて書き込むときに、既にそれを無視していない場合、グローバル git 除外ファイルに `**/.claude/settings.local.json` を追加するため、ファイルはすべてのリポジトリのコミットから除外されます。そのファイルは、グローバル git 構成がそれを絶対パスまたは `~` プレフィックス付きパスに設定する場合は `core.excludesFile`。それ以外の場合は `$XDG_CONFIG_HOME/git/ignore`、または `XDG_CONFIG_HOME` が設定されていない場合は `~/.config/git/ignore`。手動でファイルを作成し、Claude Code がまだそれに書き込んでいない場合は、自分で `.gitignore` に追加してください。
-* **ファイルが追跡されていない間、その allow ルールは信頼を待ちません。** ファイルはリポジトリのものではなくあなたのものであるため、Claude Code はコミットされたファイルが必要とする[ワークスペース信頼](/docs/ja/permissions#project-allow-rules-and-workspace-trust)ステップなしにその `allow` ルールを適用します。ファイルが git で追跡されている場合、信頼ステップもそれに適用されます。[ローカル設定ファイルが信頼を必要とする場合](/docs/ja/permissions#when-your-local-settings-file-needs-trust)を参照してください。
+* **Claude Code もこのファイルに書き込みます。** Claude が Bash コマンドを実行する権限を求め、「はい、今後は聞かないでください」を選択すると、Claude Code はその[権限の承認](/docs/ja/permissions#permission-system)をここに `allow` ルールとして保存します。
+* **手動で作成した場合を除き、自分で gitignore する必要はありません。** Claude Code が、まだこのファイルを無視していない git リポジトリでファイルを初めて書き込むときに、グローバル git 除外ファイルに `**/.claude/settings.local.json` を追加するため、ファイルはすべてのリポジトリでコミットから除外されます。そのファイルは、グローバル git 設定で `core.excludesFile` が絶対パスまたは `~` で始まるパスに設定されている場合はそのファイル、それ以外の場合は `$XDG_CONFIG_HOME/git/ignore`、`XDG_CONFIG_HOME` が設定されていない場合は `~/.config/git/ignore` です。手動でファイルを作成し、Claude Code がまだそれに書き込んでいない場合は、自分で `.gitignore` に追加してください。
+* **ファイルが追跡されていない間、その許可ルールは信頼を待ちません。** ファイルはリポジトリのものではなく自分のものであるため、Claude Code はコミットされたファイルに必要な[ワークスペースの信頼](/docs/ja/permissions#project-allow-rules-and-workspace-trust)ステップなしで、その `allow` ルールを適用します。ファイルが git で追跡されている場合は、信頼ステップがこのファイルにも適用されます。[ローカル設定ファイルが信頼を必要とする場合](/docs/ja/permissions#when-your-local-settings-file-needs-trust)を参照してください。
 
 <span id="where-claude-code-looks-for-each-file" />
 
@@ -486,16 +486,16 @@ Claude Code もこのファイルに書き込み、コミットから除外し�
   Claude Code が git リポジトリでローカルファイルを保持する場所
 </h4>
 
-Claude が Bash コマンドを実行する権限を求め、「はい、今後は聞かないでください」を選択すると、Claude Code はその承認を `.claude/settings.local.json` の `allow` ルールとして保存します。git リポジトリのサブディレクトリから Claude Code を開始する場合、リポジトリルートでそのファイルを読み取り、書き込み、リポジトリ全体に承認を適用します。[worktree](/docs/ja/worktrees) では、メインチェックアウトのルートのファイルを使用します。
+Claude が Bash コマンドを実行する権限を求め、「はい、今後は聞かないでください」を選択すると、Claude Code はその承認を `.claude/settings.local.json` の `allow` ルールとして保存します。git リポジトリのサブディレクトリで Claude Code を開始した場合、リポジトリルートにあるそのファイルを読み書きし、承認をリポジトリ全体に適用します。[worktree](/docs/ja/worktrees) では、メインチェックアウトのルートにあるファイルを使用します。
 
-2 つのルールがルートの場所を適格にします：
+ルートの場所には 2 つの条件があります：
 
-* **ファイルが `.claude/settings.json` の代わりに留まる場合**：git リポジトリの外、リポジトリルートがホームディレクトリ、Windows、またはリポジトリルート、その `.git` またはその `.claude` エントリがユーザーによって所有されていない場合。
-* **ファイル内のパスはリポジトリルートに固定されません**：`/` で始まる権限ルール、または相対サンドボックスパスは、[セッションのプライマリ作業ディレクトリ](/docs/ja/permissions#read-and-edit)に固定されます。
+* **ファイルが代わりに `.claude/settings.json` と同じ場所に置かれる場合**：git リポジトリの外、リポジトリルートがホームディレクトリである場合、Windows の場合、またはリポジトリルートやその `.git` または `.claude` エントリの所有者が自分のユーザーでない場合。
+* **ファイル内のパスはリポジトリルートを基準にしません**：`/` で始まる権限ルールや相対サンドボックスパスは、代わりに[セッションのプライマリ作業ディレクトリを基準にします](/docs/ja/permissions#read-and-edit)。
 
-v2.1.211 より前では、Claude Code は開始ディレクトリにファイルを保持していました。以前のバージョンが残したファイルをルートファイルと並行して読み込みます。両方が同じキーを設定する場合、ルートの値が適用され、両方のファイルからの権限ルールが適用されます。Agent SDK の [`resolveSettings()`](/docs/ja/agent-sdk/typescript#resolvesettings) ヘルパーは常に開始ディレクトリからファイルを読み込みます。
+v2.1.211 より前では、Claude Code は開始ディレクトリにファイルを保持していました。以前のバージョンがそこに残したファイルも、ルートのファイルと併せて読み込みます。両方が同じキーを設定している場合はルートの値が適用され、権限ルールは両方のファイルのものが適用されます。Agent SDK の [`resolveSettings()`](/docs/ja/agent-sdk/typescript#resolvesettings) ヘルパーは常に開始ディレクトリからファイルを読み込みます。
 
-Claude Code は共有 `.claude/settings.json` をセッションの[プライマリ作業ディレクトリ](/docs/ja/permissions#working-directories)から読み込むため、リポジトリルートにコミットされたファイルを使用するには、そこから Claude Code を開始してください。[`/cd`](/docs/ja/permissions#move-the-session-to-another-directory) でセッションを移動した後、Claude Code は代わりに新しいディレクトリから両方のプロジェクトファイルを読み込み、同じルールでローカルファイルを配置します。移動したディレクトリから読み込むには Claude Code v2.1.246 以降が必要です。
+Claude Code は共有 `.claude/settings.json` をセッションの[プライマリ作業ディレクトリ](/docs/ja/permissions#working-directories)から読み込むため、リポジトリルートにコミットされたファイルを使用するには、そこで Claude Code を開始してください。[`/cd` でセッションを移動した](/docs/ja/permissions#move-the-session-to-another-directory)後は、Claude Code は代わりに新しいディレクトリから両方のプロジェクトファイルを読み込み、ローカルファイルは同じルールで配置します。移動先のディレクトリから読み込むには Claude Code v2.1.246 以降が必要です。
 
 <span id="managed-settings-delivery" />
 
@@ -511,17 +511,17 @@ Claude Code は共有 `.claude/settings.json` をセッションの[プライマ
   組織が強制する内容を確認する
 </h3>
 
-組織が Claude Code を管理する場合、いくつかの設定はあなたのために決定され、独自のファイルに入れるものは何もそれらを変更しません。どれを確認するには、`/status` を実行してください。`Setting sources` 行は、あなたに適用される管理ソースの名前を付けます。管理設定はこのマシンで Claude Code が実行される場所に到達します。[開発者が変更できる内容](/docs/ja/managed-settings#what-a-developer-can-change)はローカル管理者権限と Claude Code 以外のツールをカバーしています。
+組織が Claude Code を管理している場合、一部の設定はあらかじめ決定されており、自分のファイルに何を書いても変更できません。どの設定が該当するかを確認するには、`/status` を実行してください。`Setting sources` 行に、適用される管理ソースの名前が表示されます。管理設定は、このマシン上で Claude Code が実行されるすべての場所に適用されます。ローカル管理者権限と Claude Code 以外のツールについては、[開発者が変更できる内容](/docs/ja/managed-settings#what-a-developer-can-change)を参照してください。
 
-管理設定は[管理設定ページ](/docs/ja/managed-settings#delivery-mechanisms)の配信メカニズムを通じてあなたに到達します。最も一般的には：
+管理設定は、管理設定ページで説明している[配信メカニズム](/docs/ja/managed-settings#delivery-mechanisms)を通じて届きます。最も一般的なものは次のとおりです：
 
-* [サーバー管理設定](/docs/ja/server-managed-settings)。Claude Code が claude.ai 管理コンソールまたは自己ホスト型[Claude apps gateway](/docs/ja/claude-apps-gateway) から取得します
-* MDM または OS レベルのポリシー、およびシステムディレクトリの `managed-settings.json` ファイル
-* Claude Desktop などの埋め込みホスト。SDK `managedSettings` オプション経由。[埋め込みホストからポリシーを制御する](/docs/ja/managed-settings#parent-settings-from-embedding-hosts)を参照してください
+* [サーバー管理設定](/docs/ja/server-managed-settings)。Claude Code が claude.ai 管理コンソールまたはセルフホストの [Claude apps gateway](/docs/ja/claude-apps-gateway) から取得します
+* MDM または OS レベルのポリシー、およびシステムディレクトリ内の `managed-settings.json` ファイル
+* Claude Desktop などの埋め込みホスト。SDK の `managedSettings` オプションを通じて配信されます。[埋め込みホストからポリシーを制御する](/docs/ja/managed-settings#parent-settings-from-embedding-hosts)を参照してください
 
-Claude Desktop アプリで実行される[Cowork](https://claude.com/docs/cowork/overview) セッションでは、Claude Code は claude.ai 管理コンソールからサーバー管理設定を取得しません。組織の Claude Desktop 構成が `requireCoworkFullVmSandbox` を設定しない限り、デバイスにデプロイされたポリシーを読み込みます。[ポリシーが適用される場所と時期](/docs/ja/managed-settings#where-and-when-a-policy-applies)は Cowork とクラウドセッションをカバーしています。
+Claude Desktop アプリで自分のマシン上で実行される [Cowork](https://claude.com/docs/cowork/overview) セッションでは、Claude Code は claude.ai 管理コンソールからサーバー管理設定を取得しません。また、組織の Claude Desktop 設定で `requireCoworkFullVmSandbox` が設定されていない限り、デバイスにデプロイされたポリシーを読み込みます。Cowork とクラウドセッションについては、[ポリシーが適用される場所と時期](/docs/ja/managed-settings#where-and-when-a-policy-applies)を参照してください。
 
-管理者の場合、[組織向けに Claude Code をセットアップする](/docs/ja/admin-setup)は何を強制するかを選択する手順を説明し、[管理設定をデプロイする](/docs/ja/managed-settings)は配信と、ポリシーが有効であることを確認する方法をカバーしています。
+管理者の場合、[組織向けに Claude Code をセットアップする](/docs/ja/admin-setup)で何を強制するかを選択する手順を、[管理設定をデプロイする](/docs/ja/managed-settings)で配信方法とポリシーが有効であることを確認する方法を説明しています。claude.ai 管理コンソールの管理設定エディターに表示されることがある警告については、[サーバー管理設定を構成する](/docs/ja/server-managed-settings#configure-server-managed-settings)を参照してください。
 
 <h2 id="change-a-setting">
   設定を変更する
@@ -809,7 +809,7 @@ Claude Code を内部で実行し、[`CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST`](/do
 
 [クラウドセッション](/docs/ja/claude-code-on-the-web)は[クラウド環境](/docs/ja/cloud-environments)で実行され、マシン上ではなくリポジトリの新しいクローンで実行されます。これにより、どの設定がそこに到達するかが変わります：
 
-* **共有プロジェクト設定**（`.claude/settings.json`）：1 つのリポジトリを持つセッションで読み込まれます。ファイルはクローンの一部であり、セッションはその内部で開始されるためです。その設定をコミットして、それらのセッションに適用してください。複数のリポジトリを持つセッションはクローンの上で開始され、各リポジトリの `.claude/settings.json` から `enabledPlugins` と `extraKnownMarketplaces` キーのみを読み込み、権限ルール、hooks、`env`、またはその他のキーは読み込みません。これら 2 つのキーが宣言するマーケットプレイスとプラグインは、それでも[クラウドセッションでは読み込まれません](/docs/ja/cloud-environments#what-carries-over-from-your-setup)。
+* **共有プロジェクト設定**（`.claude/settings.json`）：1 つのリポジトリを持つセッションで読み込まれます。ファイルはクローンの一部であり、セッションはその内部で開始されるためです。その設定をコミットして、それらのセッションに適用してください。Anthropic がホストする環境では、複数のリポジトリを持つセッションはクローンの上で開始され、各リポジトリの `.claude/settings.json` から `enabledPlugins` と `extraKnownMarketplaces` キーのみを読み込み、権限ルール、フック、`env`、またはその他のキーは読み込みません。これら 2 つのキーが宣言するマーケットプレイスとプラグインは、それでも[クラウドセッションでは読み込まれません](/docs/ja/cloud-environments#what-carries-over-from-your-setup)。自己ホスト型環境については、[どのリポジトリの設定が適用されるか](/docs/ja/self-hosted-environments-configuration#repository-settings-in-sessions-with-several-repositories)を参照してください。
 * **ユーザーおよびプロジェクトローカル設定**（`~/.claude/settings.json` および `.claude/settings.local.json`）：読み込まれません。両方ともマシンに留まり、ローカルファイルはクローンにありません。
 * **管理設定**：デバイスの `managed-settings.json` ファイルまたは MDM プロファイルはクラウドセッションに到達しません。組織の[サーバー管理設定](/docs/ja/server-managed-settings)は到達します。[サーフェスカバレッジ](/docs/ja/model-config#surface-coverage)はどのクラウドセッションがそれらを受け取るかをリストします。[自己ホスト型環境](/docs/ja/self-hosted-environments)もランナーイメージの管理設定ファイルを読み込みます。[Claude Code が管理ソースを結合する方法](/docs/ja/managed-settings#how-claude-code-combines-managed-sources)はそのファイルがいつ適用されるかを説明します。
 * **`/config`**：ブラウザの claude.ai/code では、値を変更する代わりに Claude Code セクションの claude.ai 設定を開きます。クラウドセッションの設定を変更するには、環境で[環境変数](/docs/ja/cloud-environments#set-environment-variables)を設定するか、1 つのリポジトリを持つセッションでは、そのリポジトリの `.claude/settings.json` にキーをコミットしてください。
