@@ -139,6 +139,8 @@ Claude Code は、起動時と、セッションが使用されている間は�
 }
 ```
 
+サンドボックス化、ネットワーク許可リスト、認証情報の保護、ローカルデータの保持を含むより完全な `managed-settings.json` については、[設定例リポジトリ](https://github.com/anthropics/claude-code/tree/main/examples/settings)の `settings-hipaa.json` と `README-hipaa.md` を参照してください。
+
 <h4 id="what-each-key-does">
   各キーの役割
 </h4>
@@ -306,6 +308,7 @@ claude project purge --all --yes
 
 * [HIPAA 対応組織向けに Cowork（ローカルモード）をセットアップする](https://claude.com/docs/cowork/hipaa-setup)
 * [管理設定をデプロイする](/docs/ja/managed-settings)
+* [HIPAA 設定の例](https://github.com/anthropics/claude-code/tree/main/examples/settings)
 * [エンタープライズネットワーク設定](/docs/ja/network-config)
 * [ゼロデータ保持](/docs/ja/zero-data-retention)
 * [法務とコンプライアンス](/docs/ja/legal-and-compliance)

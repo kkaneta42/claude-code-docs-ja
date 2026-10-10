@@ -20,7 +20,10 @@
 
 * **エフェメラルなセッションごとのコンテナ**：各ランナープロセスを、プロセスが終了するときに破棄される新しいコンテナまたは VM で実行します。`--capacity 1` とデフォルトの `--drain-grace-sec 0` を使用して、各コンテナが正確に 1 つのセッションを処理するようにします。容量が高い場合、またはドレイングレースが正の場合、1 つのコンテナが同じ[ロックされたオーナー](/docs/ja/self-hosted-environments#key-concepts)からの複数のセッションを処理します。[ランナーのライフサイクル](/docs/ja/self-hosted-environments#runner-lifecycle)を参照してください。ランナーの再起動間でファイルシステムを再利用しないでください。ただし、意図的な[プリウォーミングされたチェックアウト](#reuse-a-pre-warmed-checkout)セットアップは除きます。また、オーナー間では再利用しないでください。
   * <span id="processes-a-stopped-session-leaves" />ランナーがセッションを停止するとき、シェルコマンドの終了後も実行を続けているプロセス（デーモン化したサービスなど）にはシグナルを送信しません。コンテナまたは VM を破棄すると、そのプロセスは終了します。
-* **イメージに広範な認証情報を含めない**：長期的な SSH キー、クラウドプロバイダーの認証情報、またはセッションが必要とする以上の権限を付与するパーソナルアクセストークンを含めないでください。セッション中に使用される認証情報（プッシュトークンや API トークン）は、[ラッパースクリプト](/docs/ja/self-hosted-environments-configuration#wrapper-scripts)からセッションごとにミントしてください。初期クローンの場合（ラッパーが実行される前に発生）、[`checkout` ライフサイクルフック](/docs/ja/self-hosted-environments-configuration#checkout)または [`--use-anthropic-git-proxy`](#use-the-anthropic-git-proxy) を使用してください。[git を設定する](#configure-git)を参照してください。
+* **イメージに広範な認証情報を含めない**：長期的な SSH キー、クラウドプロバイダーの認証情報、またはセッションが必要とする以上の権限を付与するパーソナルアクセストークンを含めないでください。セッション中に使用される認証情報（プッシュトークンや API トークン）は、[ラッパースクリプト](/docs/ja/self-hosted-environments-configuration#wrapper-scripts)からセッションごとにミントしてください。初期クローンはラッパーが実行される前に発生するため、[`checkout` ライフサイクルフック](/docs/ja/self-hosted-environments-configuration#checkout)で処理するか、セッションのすべてのリポジトリが github.com 上にある場合は [`--use-anthropic-git-proxy`](#use-the-anthropic-git-proxy) で処理してください。どちらについても、[git を設定する](#configure-git)を参照してください。
+* **ホストの GitHub 認証情報をセッションから遠ざける**：Claude は、セッションが読み取れる任意の GitHub 認証情報を、その認証情報が付与するアクセス権の範囲で使用できます。ランナーホスト自身の広範なスコープを持つ GitHub 認証情報は、セッションが読み取れる場所に置かないでください。このような認証情報には、パーソナルアクセストークン、`gh auth login` がアカウント用に保存するトークン、ランナーの環境内の `GH_TOKEN` などがあります。
+  * **[Anthropic 管理の git](#use-the-anthropic-git-proxy) を使用する場合**：このような認証情報があると、Claude は Anthropic 管理の git を経由せずに GitHub に直接アクセスします。
+  * **Anthropic 管理の git を使用しない場合**：[イメージに git 設定を含める](#ship-git-config-in-your-image)で説明しているとおりに厳密にスコープを限定すれば、クローン用の認証情報をイメージに残しておくことができます。
 * **環境シークレットをセッション実行ホストに置かない**：環境シークレットはランナーを登録し、環境でキューに入っているセッションを取得できます。固定フリートでは、シークレットはすべてのランナーホストに存在し、どのセッションのコードもシークレットファイルを読み取ることができます。[オンデマンドランナー](/docs/ja/self-hosted-environments-configuration#on-demand-runners)を優先してください。この場合、シークレットはユーザーコードを一切実行しないオーケストレーターホストに留まり、各ランナーは正確に 1 つのランナーを登録する単一使用の作業指示を受け取ります。固定フリートでは、環境シークレットファイルをすべてのセッションで読み取り可能として扱い、セッション侵害が疑われる場合はその後にシークレットをローテーションしてください。
 * **デフォルト拒否ネットワーク出力**：すべての環境でランナーとセッションコンテナのアウトバウンドトラフィックをネットワーク境界で制限してください。[デフォルト拒否出力](#default-deny-egress)では、許可する内容と理由について説明しています。
 * **最小権限ホスト IAM**：ランナーホストに接続されたコンピュート ID（インスタンスプロファイルやノードサービスアカウントなど）は、ランナー自体が必要とするもののみを付与する必要があります。セッションは、ホストの ID を継承するのではなく、ラッパースクリプトを通じて独自の認証情報を取得する必要があります。
@@ -42,7 +45,7 @@
   ガードは [`--trust-workspace`](/docs/ja/self-hosted-environments-reference#runner-cli-flags) に関係なく実行され、リポジトリフック、`.mcp.json`、または Bash ルールはカバーしません。[権限とツール承認](/docs/ja/self-hosted-environments-configuration#permissions-and-tool-approval)では、これらの付与がどこに属するかについて説明しています。
 
 <Note>
-  組織の IP 許可リストはデフォルトではセルフホストランナートラフィックをカバーしません。ランナーまたはセッショントラフィックのネットワーク制御として依存しないでください。代わりに、独自のネットワーク境界でデフォルト拒否出力を適用し、組織の IP 許可リスト適用が必要な場合は Anthropic アカウントチームに連絡してください。
+  組織で [IP 許可リスト](https://support.claude.com/en/articles/13200993-restrict-access-to-claude-with-ip-allowlisting)が有効になっている場合は、ランナーとセッションコンテナを起動する前に、それらのパブリック出力アドレスを許可リストに追加してください。[オンデマンドランナー](/docs/ja/self-hosted-environments-configuration#on-demand-runners)を実行する場合は、オーケストレーターホストのアドレスも追加してください。ランナーまたはセッショントラフィックのネットワーク制御として許可リストに依存しないでください。代わりに、独自のネットワーク境界でデフォルト拒否出力を適用してください。
 </Note>
 
 <h2 id="network-requirements">
@@ -55,8 +58,10 @@
 
 | ホスト | ポート | 用途 |
 | :- | :- | :- |
-| `api.anthropic.com` | 443、HTTPS；SCM コネクタのみ WSS | ランナーコントロールプレーンとセッションストリーミング、モデル推論、機能フラグ、製品分析、[JWKS](/docs/ja/self-hosted-environments-identity) キーフェッチ、コミット署名、`--use-anthropic-git-proxy` が設定されている場合の git プロキシ、`--scm-connector-host` が設定されている場合のオーケストレーターの [SCM コネクタ](/docs/ja/self-hosted-environments-reference#scm-connector-flags)トンネル |
-| `github.com` またはお客様の GitHub Enterprise ホストなどの git ホスト | 443 または 22 | リポジトリのクローンとプッシュ。ランナーが `--use-anthropic-git-proxy` を使用する場合は不要です。これは git トラフィックを `api.anthropic.com` を通じてルーティングします。 |
+| `api.anthropic.com` | 443、HTTPS；[Anthropic 管理の git](#use-the-anthropic-git-proxy) では WSS | ランナーコントロールプレーンとセッションストリーミング、モデル推論、機能フラグ、製品分析、[JWKS](/docs/ja/self-hosted-environments-identity) キーフェッチ、コミット署名、`--use-anthropic-git-proxy` が設定されている場合の Anthropic 管理の git |
+| `github.com` や GitHub Enterprise ホストなどの git ホスト | 443 または 22 | ランナーのセッションが使用する各 git ホストでのリポジトリのクローンとプッシュ。[`--use-anthropic-git-proxy`](#use-the-anthropic-git-proxy) を使用するランナーについては、[`github.com` へのパスが引き続き必要になる場合](#github-com-egress-with-the-anthropic-git-proxy)を参照してください。 |
+
+<span id="github-com-egress-with-the-anthropic-git-proxy" />[`--use-anthropic-git-proxy`](#use-the-anthropic-git-proxy) を使用するランナーは、`github.com` の git トラフィックを `api.anthropic.com` 経由でルーティングするため、`github.com` 向けの git ホストへのパスは不要です。ただし、`--push-outcome-on-release` を設定する場合や `post-session` フックからプッシュする場合は、引き続きそのパスが必要です。
 
 これらのホストが必要かどうかは、設定によって異なります：
 
@@ -71,7 +76,15 @@
 | `browser-intake-us5-datadoghq.com` | 443 | Anthropic エラーレポートアップロード。セッションのアカウントで[エラーレポート](/docs/ja/data-usage#telemetry-services)が有効な場合のみ送信されます。`DISABLE_ERROR_REPORTING=1` または `DISABLE_TELEMETRY=1` で抑制されます。 |
 | モデルリクエスト、モデル検索、認証情報の更新に使用するクラウドプロバイダーのエンドポイント（`bedrock-runtime.us-east-1.amazonaws.com` や `aiplatform.googleapis.com` など） | 443 | ランナーが[モデルリクエストを Amazon Bedrock または Google Cloud の Agent Platform に送信する](/docs/ja/self-hosted-environments-configuration#send-model-requests-to-bedrock-or-agent-platform)場合のみ |
 
-ランナーは `statsig.anthropic.com`、`*.sentry.io`、`claude.ai`、または `platform.claude.com` に到達しません。これらのホストは古いエンタープライズネットワークチェックリストに表示されますが、ランナーまたはセッショントラフィックのために許可リストに登録する必要はありません：機能フラグフェッチは `api.anthropic.com` に移動し、ランナーはインタラクティブ OAuth ではなく環境シークレットで認証します。 2 つのホスト側フローは `claude.ai` に到達するため、出力を許可するホストから実行してください。セッションコンテナ出力を広げるのではなく：ワンラインインストーラーはインストール時に `claude.ai` から `install.sh` をフェッチし、インタラクティブな `claude auth login`（[ガイド付きセットアップ](/docs/ja/self-hosted-environments-quickstart#set-up-an-environment-and-runner)、`doctor` の署名入りモード、[CI ディスパッチ](/docs/ja/self-hosted-environments-testing#authenticate-from-ci)が使用）は `claude.ai`、`claude.com`、`platform.claude.com` を通じてサインインします。`mcp-proxy.anthropic.com` も必須ではありません：セルフホストセッションはそれを使用せず、組織の claude.ai コネクタをセッションに配信する場合（組織で有効な場合）、`api.anthropic.com` を通じてルーティングされます。[MCP サーバー](/docs/ja/self-hosted-environments-configuration#mcp-servers)を参照してください。
+ランナーまたはセッションのトラフィックのために、以下のホストを許可リストに登録する必要はありません：
+
+* **`statsig.anthropic.com`、`*.sentry.io`、`claude.ai`、`platform.claude.com`**：これらのホストは一部の古いエンタープライズネットワークチェックリストに記載されていますが、ランナーはこれらに到達しません。機能フラグのフェッチは `api.anthropic.com` に送られ、ランナーはインタラクティブ OAuth ではなく環境シークレットで認証します。
+* **`mcp-proxy.anthropic.com`**：セルフホストセッションはこれを使用しません。組織でコネクタ配信が有効な場合、組織の claude.ai コネクタは `api.anthropic.com` を通じてセッションに届きます。[MCP サーバー](/docs/ja/self-hosted-environments-configuration#mcp-servers)を参照してください。
+
+以下のホスト側フローは `claude.ai` に到達するため、セッションコンテナの出力を広げるのではなく、出力でこれを許可しているホストから実行してください：
+
+* **ワンラインインストーラー**：インストール時に `claude.ai` から `install.sh` をフェッチします。
+* **インタラクティブな `claude auth login`**：`claude.ai`、`claude.com`、`platform.claude.com` を通じてサインインします。[ガイド付きセットアップ](/docs/ja/self-hosted-environments-quickstart#run-the-guided-setup)、`doctor` のサインイン済みモード、[CI ディスパッチ](/docs/ja/self-hosted-environments-testing#authenticate-from-ci)がこれを使用します。サインインに使用するブラウザーは、claude.ai サインインページのブラウザーチェックも `hcaptcha.com`、`*.hcaptcha.com`、`challenges.cloudflare.com` から読み込みます。
 
 <h3 id="default-deny-egress">
   デフォルト拒否出力
@@ -127,6 +140,8 @@
 * **ランナーに git を設定させる**：`--configure-git` でランナーを開始して、Anthropic ホストセッションが使用する同じ ID とコミット署名設定を書き込ませます
 * **イメージに git 設定を含める**：ID とプッシュ認証情報を自分で設定します。例えば、独自のボット ID でコミットするため
 
+github.com 上のリポジトリについては、[`--use-anthropic-git-proxy`](#use-the-anthropic-git-proxy) でランナーを開始するか、`CLAUDE_RUNNER_USE_GIT_PROXY=1` を設定して、ランナーのセッションの git を提供するよう Anthropic に求めることもできます。
+
 ランナーホストの Git バージョンフロア：[`--configure-git`](#let-the-runner-configure-git) SSH コミット署名には Git 2.34 以降が必要です。[`--use-anthropic-git-proxy`](#use-the-anthropic-git-proxy) には 2.32 以降が必要です。[`--push-outcome-on-release`](/docs/ja/self-hosted-environments-reference#runner-cli-flags) でプッシュされたブランチからセッションを再開するには 2.29 以降が必要です。3 つすべてを省略して git ID を自分で管理する場合は、Git 2.24 で十分です。
 
 <h3 id="let-the-runner-configure-git">
@@ -138,11 +153,13 @@
 * `user.name = Claude` および `user.email = noreply@anthropic.com`。Anthropic ホストセッションと一致します
 * SSH 形式のコミットとタグ署名。ランナー管理のシムを通じてルーティングされ、セッション独自の認証情報を使用して Anthropic の署名サービスを通じて各コミットに署名します。署名は GitHub で Anthropic の公開 SSH 署名キーに対して検証可能です。
 * `push.negotiate = true`。git がプッシュをパックする前に git ホストが既に持っているコミットを尋ねます。Claude Code v2.1.257 以降が必要です。
-* `core.hooksPath` はランナー管理のフックディレクトリを指します。その `commit-msg` および `prepare-commit-msg` フックは、各コミットにセッションの作成者の `Co-authored-by:` トレーラーを追加します。[`CCR_SESSION_ACCOUNT_EMAIL`](/docs/ja/self-hosted-environments-configuration#wrapper-scripts) のメールから構築され、その変数が設定されていない場合は省略されます。イメージが既に `core.hooksPath` を設定している場合、ランナーは設定を保持し、これらのフックのインストールをスキップし、`[runner:git]` 警告を出力します。
+* `core.hooksPath` はランナー管理のフックディレクトリを指します。その `commit-msg` および `prepare-commit-msg` フックは、各コミットにセッションの作成者の `Co-authored-by:` トレーラーを追加します。[`CCR_SESSION_ACCOUNT_EMAIL`](/docs/ja/self-hosted-environments-configuration#wrapper-scripts) のメールから構築され、その変数が設定されていない場合は省略されます。イメージが既に `core.hooksPath` を設定していて、ランナーが [Anthropic 管理の git](#use-the-anthropic-git-proxy) を使用していない場合、ランナーは設定を保持し、これらのフックのインストールをスキップし、`[runner:git]` 警告を出力します。
 
 コミット署名には git 2.34 以降が必要です。ランナーは起動時にチェックし、git が古い場合はエラーで終了します。このフラグはプッシュ認証情報を設定しません。これはイメージで提供する必要があります。
 
 v2.1.280 以降のランナーでは、`checkout` または `post-session` ライフサイクルフックから行ったコミットもセッションとして署名されます。ただし、`Co-authored-by:` トレーラーは付きません。[ライフサイクルフック内の git 設定](/docs/ja/self-hosted-environments-configuration#git-configuration-inside-lifecycle-hooks)では、ランナーがこれらのフック内で固定する git 設定について説明しています。
+
+`--configure-git` の有無にかかわらず、Claude Code は Claude に対して、コミットメッセージの末尾に `Claude-Session: <url>` トレーラーを付け、プルリクエストの説明の末尾にセッションの URL を付けるよう指示します。両方を省略するには、ランナーホストの [`~/.claude/settings.json`](/docs/ja/self-hosted-environments-configuration#how-each-session’s-config-is-assembled) で [`attribution.sessionUrl`](/docs/ja/settings-reference#attribution-sessionurl) を `false` に設定してから、ランナーを再起動してください。
 
 <h3 id="ship-git-config-in-your-image">
   イメージに git 設定を含める
@@ -186,15 +203,103 @@ RUN git config --system --add safe.directory '*'
   Anthropic git プロキシを使用する
 </h3>
 
-`--use-anthropic-git-proxy` でランナーを開始するか、`CLAUDE_RUNNER_USE_GIT_PROXY=1` を設定して、セッション独自の短期トークンで認証された Anthropic の git プロキシを通じてクローンさせます。通常のユーザーセッションの場合、プロキシはセッション作成者用に保存された GitHub または GitHub Enterprise OAuth トークンを使用します。ボットおよびエージェントセッションの場合、組織の GitHub App インストールトークンを使用します。どちらの場合でも、ランナーイメージは git 認証情報をまったく必要としません：SSH キーなし、認証情報ヘルパーなし、`.netrc` なし。これは Anthropic ホスト環境が使用する同じ認証パスです。
+Anthropic git プロキシ（Anthropic 管理の git とも呼ばれます）を使用すると、ランナーイメージはセッション自体のために SSH キー、認証情報ヘルパー、`.netrc`、その他の git 認証情報を必要としません。代わりに、ランナーはセッションの git を提供するよう Anthropic に求めます。Anthropic が提供するユーザーのセッションでは、ランナーのクローンとセッション独自のフェッチおよびプッシュは Anthropic を経由し、Anthropic はセッション作成者用に保存された GitHub OAuth トークンを使用します。ボットおよびエージェントセッションについては、[Anthropic がセッションの git を提供する仕組み](#how-anthropic-serves-git-for-a-session)で説明しています。
 
-プロキシは `--capacity 1` を必要とします。プロキシ URL はセッションごとであり、git 2.32 以降が必要です。古い git はプロキシがセッションを相互に分離するために使用する設定メカニズムを無視するためです。ランナーは要件のいずれかが満たされない場合、起動を拒否します。プロキシは Anthropic 側からフェッチするため、git ホストは Anthropic インフラストラクチャから到達可能である必要があります。これは Anthropic ホストセッションと同じ要件です。ネットワーク内でのみルーティング可能な git ホストの場合は、代わりに [`checkout` ライフサイクルフック](/docs/ja/self-hosted-environments-configuration#checkout)を使用してください。各ランナープロセスは一度に 1 つのセッションを処理するため、並列処理のためにより多くのレプリカを実行してください。プロキシが有効な場合、`--git-host-rewrite` と `--git-ssh-rewrite` は効果がありません：プロキシ URL は git ホストではなく `api.anthropic.com` を指します。
+git プロキシは、[オンにしない](#turn-the-anthropic-git-proxy-on)限りオフです。独自の認証情報で git ホストに到達するランナーには不要であり、そのランナーの git はどの git ホストでも動作します。
+
+その代わり、git プロキシはランナーがサポートする範囲を制限し、ランナーに必要なものを変更します：
+
+* **github.com のみ**：Anthropic は、セッションのすべてのリポジトリが github.com 上にある場合にのみそのセッションを提供します。また、git プロキシはまだ GitHub Enterprise Server をサポートしていません。git プロキシを使用するランナーでは、別の git ホスト上のリポジトリを持つセッションは[開始に失敗します](#when-anthropic-doesnt-serve-a-session)。
+* **接続済みの GitHub アカウント**：ユーザーセッションを作成したユーザーが claude.ai で GitHub を接続している必要があります。接続していない場合、セッションは[開始されません](#creator-has-no-github-connection)。
+* **`--capacity 1`**：git プロキシはランナープロセスごとに 1 つのセッションを必要とするため、並列処理のためにより多くのレプリカを実行してください。要件は [Anthropic git プロキシをオンにする](#turn-the-anthropic-git-proxy-on)に記載されています。
+* **グローバル git 設定の置き換え**：ランナーは、実行ユーザーの[グローバル git 設定を削除して置き換えます](#git-proxy-replaces-global-git-config)。専用ユーザーとして、またはコンテナ内で実行してください。
+* **ホストからのプッシュにはホストの認証情報**：ランナーの [`--push-outcome-on-release`](/docs/ja/self-hosted-environments-reference#runner-cli-flags) によるプッシュと、[`post-session` フック](/docs/ja/self-hosted-environments-configuration#post-session)が行うプッシュは、引き続きランナーホスト独自の git 認証情報と [`github.com` へのネットワーク経路](#github-com-egress-with-the-anthropic-git-proxy)を使用します。これらの認証情報については、[イメージに git 設定を含める](#ship-git-config-in-your-image)を参照してください。
+* **セッションごとの判断**：Anthropic はランナー上の各セッションについて git を提供するかどうかを決定し、提供されないセッションは開始に失敗します。原因については [git プロキシを使用するランナーでセッションの開始に失敗する場合](#when-anthropic-doesnt-serve-a-session)で説明しています。
+
+<span id="git-proxy-replaces-global-git-config" />
+
+<Warning>
+  `--use-anthropic-git-proxy` を設定すると、ランナーは実行ユーザーのグローバル git 設定を削除して置き換え、バックアップは保持しません。これは起動時と各セッションの前に行われます。そこに保存していたログインや認証情報ヘルパーは失われます。[`--configure-git`](#let-the-runner-configure-git) が書き込む設定は保持されます。ランナーは専用ユーザーとして、またはコンテナ内で実行し、決して自分のユーザーとして実行しないでください。
+</Warning>
+
+ID や `safe.directory` など、機密ではない git 設定はシステムの git 設定に保持してください。
+
+<h4 id="turn-the-anthropic-git-proxy-on">
+  Anthropic git プロキシをオンにする
+</h4>
+
+`--use-anthropic-git-proxy` でランナーを開始する前に、ランナーホストが次の各要件を満たしていることを確認してください。容量または git の要件が満たされていない場合、ランナーは起動を拒否します：
+
+* **Claude Code v2.1.267 以降**：それより前のバージョンはフラグを受け入れますが、Anthropic に git の提供を求めるリクエストを報告せず、`Registering as opted in` 行も出力しないため、Anthropic はそれらのセッションを提供しません。
+* **`--capacity 1`（デフォルト）**：各ランナープロセスは一度に 1 つのセッションを処理するため、並列処理のためにより多くのレプリカを実行してください。
+* **Git 2.32 以降**：古い git は、ランナーが git プロキシ用に設定するセッションごとの git 設定を無視します。
 
 <Warning>
   このページの [Kubernetes](#kubernetes) および [Docker Compose](#docker-compose) レシピは `--capacity 4` を使用しています。`--use-anthropic-git-proxy` または `CLAUDE_RUNNER_USE_GIT_PROXY=1` をそのいずれかに追加する場合、容量を `1` に変更しないと、オーケストレーターがそれを再起動するたびにランナーは起動時に終了します。`--capacity 1` を設定し、並列処理のためにより多くのレプリカを実行してください。[ランナーが終了するとき](#when-the-runner-exits)はランナーが出力する行を示しています。
 </Warning>
 
-ランナーは登録時に Anthropic にオプトインを報告し、起動時に `Registering as opted in to Anthropic-managed git (--use-anthropic-git-proxy)` を出力します。オプトインの報告には Claude Code v2.1.267 以降が必要です。それより前のバージョンはフラグを受け入れますが、報告しないか、その行を出力しません。その後、オプトインランナー上の各セッションは、Anthropic 管理の git またはセッションごとのプロキシ URL のいずれかを使用します。セッションがセッションごとのプロキシ URL を使用する場合、ランナーは 1 つの `[runner:warn]` 行をログに記録します。
+git プロキシをオンにするには、ランナーのコマンドに `--use-anthropic-git-proxy` を追加するか、ランナーの環境で `CLAUDE_RUNNER_USE_GIT_PROXY=1` を設定します。ランナーホスト上のシェルで実行する次のコマンドは、[クイックスタート](/docs/ja/self-hosted-environments-quickstart#set-up-manually)のランナーを git プロキシをオンにした状態で開始します：
+
+```bash theme={null}
+claude self-hosted-runner --environment-secret-file '/etc/claude/environment-secret' --base-dir '<writable-dir>' --use-anthropic-git-proxy
+```
+
+起動時に、ランナーは `Registering as opted in to Anthropic-managed git (--use-anthropic-git-proxy)` を出力します。その後、Anthropic はそのランナー上の各セッションについて git を提供するかどうかを決定します。提供する各セッションについて、ランナーは `governed git ACTIVE` を含む `[runner:session]` 行をログに記録します。代わりにセッションの開始に失敗した場合は、[git プロキシを使用するランナーでセッションの開始に失敗する場合](#when-anthropic-doesnt-serve-a-session)を参照してください。
+
+<h4 id="how-anthropic-serves-git-for-a-session">
+  Anthropic がセッションの git を提供する仕組み
+</h4>
+
+Anthropic が提供するセッションでは、ランナーのクローンとセッション独自のフェッチおよびプッシュは、セッション独自の短期トークンで認証されて Anthropic を経由します：
+
+* **ユーザーセッション**：Anthropic はセッション作成者用に保存された GitHub OAuth トークンを使用します。
+* **ボットおよびエージェントセッション**：Anthropic は組織の GitHub App インストールトークンを使用します。
+* **URL の書き直し**：`--git-host-rewrite` と `--git-ssh-rewrite` は、git プロキシが提供するリポジトリには効果がありません。
+
+<h4 id="when-anthropic-doesnt-serve-a-session">
+  git プロキシを使用するランナーでセッションの開始に失敗する場合
+</h4>
+
+`--use-anthropic-git-proxy` で開始したランナーでは、Anthropic がセッションの git を提供しない場合、セッションは開始に失敗します。ランナーのログで、`/git_proxy/` を含む `api.anthropic.com` アドレスを示す git エラーを探してください。
+
+各セッションについて、Claude Code v2.1.267 以降のランナーは、Anthropic がセッションの git を提供する場合は `governed git ACTIVE` を含む `[runner:session]` 行を、提供しない場合は `the server withheld Anthropic-managed git for this session` を含む `[runner:warn]` 行を 1 つログに記録します。表示されている行を次のケースから探してください：
+
+* **`governed git ACTIVE` も `withheld` 行もない**：Claude Code v2.1.267 より古いランナーはどちらの行もログに記録せず、Anthropic はそのセッションを提供しません。[バージョンを固定する](#pin-the-version)の手順に従って、ランナーを v2.1.267 以降に更新してください。
+* **`withheld` 行**：Anthropic はセッションを提供しませんでした。以前は git プロキシで動作していたランナーでも、ユーザー側で何も変更していないのにこのように失敗することがあります。
+  * **github.com 上にないリポジトリがある**：GitHub Enterprise Server など別の git ホスト上のリポジトリが 1 つでもあるセッションは、その github.com リポジトリも含めて提供されません。その環境のランナーでは [Anthropic git プロキシをオフにしてください](#turn-the-anthropic-git-proxy-off)。
+  * **すべてのリポジトリが github.com 上にある**：`withheld` 行のセッション ID を添えて、[Anthropic アカウントチーム](#report-an-issue)に失敗を報告してください。Anthropic は理由を自社側で記録しています。
+* **`remote: access denied by the git proxy` を含む行**：Anthropic が提供するセッションでも拒否される場合があります。たとえば、組織のポリシーがセッションの git アクセスを拒否する場合や、セッションがリポジトリに対して認可されていない場合です。その場合、ランナーのログに `remote: access denied by the git proxy` を含む行が表示され、その行の残りの部分に理由が示されます。
+* <span id="creator-has-no-github-connection" />**`GitHub authentication required`**：セッションの作成者が claude.ai で有効な GitHub 接続を持っていない場合に表示されます。セッションのクローンは失敗し、git エラーには `GitHub authentication required. Please reconnect your GitHub account.` と表示されます。そのユーザーに、claude.ai の設定で GitHub を接続または再接続するよう依頼してください。
+
+原因を修正した後、失敗したセッションを再度開始してください。
+
+<h4 id="turn-the-anthropic-git-proxy-off">
+  Anthropic git プロキシをオフにする
+</h4>
+
+環境内のセッションが GitHub Enterprise Server など github.com 以外の git ホスト上のリポジトリを使用する場合は、その環境のランナーで `--use-anthropic-git-proxy` をオフにしてください。
+
+<Steps>
+  <Step title="フラグを削除する">
+    ランナーのコマンドから `--use-anthropic-git-proxy` を削除します。Pod 仕様や Compose ファイルなど、ランナーの環境で `CLAUDE_RUNNER_USE_GIT_PROXY` を設定している場合は、そこから削除します。シェルでは設定を解除します：
+
+    ```bash theme={null}
+    unset CLAUDE_RUNNER_USE_GIT_PROXY
+    ```
+  </Step>
+
+  <Step title="ランナーに git 認証情報を与える">
+    github.com を含め、ランナーのセッションが使用するすべての git ホストに対して、プロンプトなしで動作する認証情報を提供してください。ランナーユーザーのグローバル git 設定にあった認証情報は、`--use-anthropic-git-proxy` が設定されている間にランナーがその設定を削除したため、失われています。[イメージに認証情報を含める](#ship-git-config-in-your-image)か、[`checkout` ライフサイクルフック](/docs/ja/self-hosted-environments-configuration#checkout)を使用してください。
+  </Step>
+
+  <Step title="ネットワーク経路を開く">
+    ランナーのセッションが使用する各 git ホストに、ランナーがポート 443 または 22 で到達できるようにしてください。[ネットワーク要件](#network-requirements)の git ホストの行を参照してください。
+  </Step>
+
+  <Step title="ランナーを再起動する">
+    git プロキシなしで登録されるようにランナーを再起動します。その後、失敗した各セッションを再度開始してください。
+  </Step>
+</Steps>
 
 <h4 id="github-api-access-without-the-github-cli">
   GitHub CLI なしで GitHub API にアクセスする
@@ -266,7 +371,7 @@ Anthropic は事前にビルドされたランナーイメージを公開して�
 ```dockerfile theme={null}
 FROM debian:bookworm-slim
 ARG CLAUDE_CODE_VERSION
-RUN apt-get update && apt-get install -y --no-install-recommends git curl ca-certificates openssh-client \
+RUN apt-get update && apt-get install -y --no-install-recommends git curl ca-certificates openssh-client jq \
  && rm -rf /var/lib/apt/lists/*
 RUN curl -fsSL "https://downloads.claude.ai/claude-code-releases/${CLAUDE_CODE_VERSION:?set with --build-arg CLAUDE_CODE_VERSION}/linux-x64/claude" \
       -o /usr/local/bin/claude && chmod +x /usr/local/bin/claude
@@ -382,7 +487,7 @@ spec:
 kubectl create namespace claude-runners
 ```
 
-管理 UI の [**環境キーをコピー**ステップ](/docs/ja/self-hosted-environments-quickstart#set-up-an-environment-and-runner)でコピーした値を保持するローカルファイルからバッキング Secret を作成してください。シークレットはシェル履歴に表示されません。`(umask 077 && cat > ./environment-secret)` を実行し、シークレットを貼り付け、Enter キーを押してから Ctrl-D を押してください。次に Secret を作成してファイルを削除してください：
+管理 UI の [**環境キーをコピー**ステップ](/docs/ja/self-hosted-environments-quickstart#set-up-manually)でコピーした値を保持するローカルファイルからバッキング Secret を作成してください。シークレットはシェル履歴に表示されません。`(umask 077 && cat > ./environment-secret)` を実行し、シークレットを貼り付け、Enter キーを押してから Ctrl-D を押してください。次に Secret を作成してファイルを削除してください：
 
 ```bash theme={null}
 kubectl create secret generic claude-runner-environment-secret -n claude-runners --from-file=environment-secret=./environment-secret
@@ -500,7 +605,12 @@ secrets:
   事前にウォームアップされたチェックアウトを再利用する
 </h2>
 
-大規模なリポジトリの場合、クローンがセッション起動を支配することがあります。`--capacity 1` で [`checkout` フック](/docs/ja/self-hosted-environments-configuration#checkout) がない場合、ランナーは `<base-dir>/<repo-owner>/<repo>` でリポジトリごとに 1 つの正規クローンを保持し、セッション全体で再利用します。要求された ref をフェッチし、`HEAD` をデタッチして、それにハードリセットします。これは変更がほとんどない場合、ほぼ瞬時に完了します。コールドクローンをスキップするには、次の 2 つの方法のいずれかでクローンを提供します。
+大規模なリポジトリの場合、クローンがセッション起動を支配することがあります。コールドクローンをスキップするには、ランナーが自身のクローンを保持するパスにクローンを自分で用意します。[`checkout` フック](/docs/ja/self-hosted-environments-configuration#checkout) がない場合、ランナーは `<base-dir>/<repo-owner>/<repo>` でリポジトリごとに 1 つの正規クローンを保持し、セッション全体で再利用します。
+
+* **`--capacity 1` の場合**: ランナーは要求された ref をフェッチし、`HEAD` をデタッチして、それにハードリセットします。これは変更がほとんどない場合、ほぼ瞬時に完了します。
+* **`--capacity` が 1 より大きい場合**: ランナーはそのクローンにフェッチし、セッションごとにそこから個別の worktree をチェックアウトします。事前にウォームアップされたクローンによってダウンロードは省略されますが、チェックアウトは省略されません。
+
+クローンはイメージ内または永続ボリューム上に用意します。
 
 * **イメージ内にクローンを配置する**: ランナーイメージをそのパスにビルドしてクローンを含めます。その後、新しいコンテナはすべてディスクを再利用せずにウォームクローンで起動します。
 * **永続ボリューム上にクローンを配置する**: [`--lock-to-account`](/docs/ja/self-hosted-environments-reference#runner-cli-flags) で 1 人のユーザーアカウントにプリロックされたランナーで、`--base-dir` を永続ボリュームに指定すると、ディスクはそのアカウントのみを提供します。プリロックされたランナーは Claude Tag チャネルセッションを取得しないため、このオプションはそれらを提供するランナーには適用されません。
@@ -508,7 +618,7 @@ secrets:
 再利用パスが保証するもの、しないもの：
 
 * **任意のクローン形状が機能する**: パスの完全、シャロー、または単一ブランチクローンはそのまま使用されます。ランナーは既存のクローンにフェッチするときに `--depth` を渡しません。そのため、完全なプリウォームは完全な履歴を保持し、シャロークローンはシャローのままです。`CLAUDE_RUNNER_FETCH_DEPTH`（`full`、`0`、または数値。デフォルト 50）は、クローンがまだ存在しない場合にランナーが作成するコールドクローンのみを制御します。
-* **追跡された変更はリセットされ、追跡されていないファイルは保持される**: 各セッションはハードリセットから開始され、前のセッションの追跡された変更を削除しますが、ランナーは `git clean` を実行しないため、ロックされたオーナーの以前のセッションからの追跡されていないファイルはツリーに残ります。
+* **追跡された変更はリセットされ、追跡されていないファイルは保持される**: `--capacity 1` では、各セッションはハードリセットから開始され、前のセッションの追跡された変更を削除しますが、ランナーは `git clean` を実行しないため、ロックされたオーナーの以前のセッションからの追跡されていないファイルはツリーに残ります。
 * **セッションごとのディレクトリも保持される**: チェックアウトの横に、ランナーは実行するすべてのセッションに対して `<base-dir>/_sessions/` の下にセッションごとのエントリを作成します。セッションの Claude 設定ディレクトリは、会話トランスクリプトのローカルコピーを保持します。その横には、セッションがある場合、セッションのアップロードされたファイルが配置されます。セッションディレクトリもそこに配置されます。セッションの実行中、セッションごとの worktrees と `checkout` フックチェックアウトを保持し、Claude がそこに書き込んだ他のすべてのものを保持します。
 
   デフォルトでは、ランナーはセッションが終了したときにこれらをそのまま残すため、ランナープロセスより長く存続するディスク上に蓄積されます。すべてのセッションはランナー自身のユーザーとして実行されるため、そのディスクが提供する後続のセッションはそれらを読み取ることができます。永続的な `--base-dir` を保持する場合は、その成長に対応するようにボリュームのサイズを設定してください。同じことは、[Docker Compose レシピ](#docker-compose) を含む、同じファイルシステム上でランナーを再起動するすべてのセットアップに適用されます。
@@ -522,10 +632,12 @@ secrets:
 
 各セッションの子 Claude Code プロセスはランナー独自のバイナリを実行し、ランナーはセッション内でオートアップデートをオフにするため、すべてのセッションはホストにインストールされたか、イメージに組み込まれたバージョンを実行します。ホストレベルのアップデートはランナーが次に開始するときに有効になります。
 
-セッションが使用するモデルは、セッションが実行する Claude Code バージョンより新しい Claude Code バージョンを必要とする場合があります。その場合、サーバーはそのモデルのリクエストを [Claude Code does not support this model](/docs/ja/errors#claude-code-does-not-support-this-model) で拒否します。バージョンをピンする前に、セッションが使用するすべてのモデルについて [モデルが必要とする Claude Code バージョン](/docs/ja/model-config#available-models) を確認してください。
+セッションが実行するバージョンと、それを変更するタイミングを選択します。
 
+* **バージョンをピンする前に**：セッションが使用するすべてのモデルについて [モデルが必要とする Claude Code バージョン](/docs/ja/model-config#available-models) を確認してください。モデルがセッションで実行されるバージョンより新しいバージョンを必要とする場合、サーバーはそのモデルのリクエストを [Claude Code does not support this model](/docs/ja/errors#claude-code-does-not-support-this-model) で拒否します。
 * **フリートを 1 つのバージョンに保持するには**：ピンされたバージョンでイメージをビルドするか、ベアホストで特定のバージョンをインストールし、[オートアップデートを無効にしてください](/docs/ja/setup#disable-auto-updates)
-* **アップグレードするには**：新しいバージョンをインストールするか、イメージを再ビルドしてから、ランナーを再起動してください
+* **固定フリートをアップグレードするには**：現在のバージョンとインストールするバージョンの間の [changelog](/docs/en/changelog) のエントリを確認してから、新しいバージョンをインストールするか、イメージを再ビルドしてランナーを再起動してください
+* **オンデマンドランナーをアップグレードするには**：現在のバージョンとインストールするバージョンの間の [changelog](/docs/en/changelog) のエントリを確認してから、[`spawn-runner` フック](/docs/ja/self-hosted-environments-configuration#the-spawn-runner-hook)が起動するイメージを変更してください。新しいランナーにはそれぞれ新しいバージョンが適用されます。すでに起動しているランナー（[`--min-idle`](/docs/ja/self-hosted-environments-reference#orchestrator-cli-flags) によって起動されたスタンバイランナーを含む）は、終了するまでそのバージョンを維持します。その作業指示は一度しか使用できないため、再起動しないでください。
 * **プラグイン**：プラグインマーケットプレイスもオートアップデートしません。ランナーの環境で `FORCE_AUTOUPDATE_PLUGINS=1` を設定して、バイナリがピンされたままの間、プラグインをオートアップデートさせます
 
 <h2 id="scale-the-fleet">
@@ -543,53 +655,54 @@ secrets:
   既知の問題と制限事項
 </h2>
 
-これらはこのリリースの制限事項です。回避策が存在する場合は記載されています。
+このリリースにおける制限事項と、回避策がある場合はその回避策を以下に示します。
 
 <h3 id="connector-traffic-leaves-your-network">
-  コネクタトラフィックはネットワークを離れます
+  コネクタのトラフィックはネットワーク外に出る
 </h3>
 
-Anthropic はランナーからではなく、独自のインフラストラクチャからコネクタツールを呼び出します。コネクタツールは claude.ai コネクタです。GitHub、Slack、Linear など。Claude がセルフホストセッションでコネクタを使用する場合、そのトラフィックはネットワーク境界内から発信されるのではなく、`api.anthropic.com` を通じて移動します。
+Anthropic は、コネクタのツールをランナーからではなく、Anthropic 自身のインフラストラクチャから呼び出します。コネクタのツールとは、GitHub、Slack、Linear などの claude.ai のコネクタです。セルフホストセッションで Claude がコネクタを使用すると、そのトラフィックはネットワーク境界の内側から発信されるのではなく、`api.anthropic.com` を経由します。
 
-セルフホストセッションからコネクタを除外するには、[`allowedMcpServers` および `deniedMcpServers` ポリシー設定](/docs/ja/managed-mcp#policy-based-control-with-allowlists-and-denylists)でフィルタリングしてください。Claude Code はこれらの設定をランナーホストからシードするサーバーとユーザーが追加するサーバーと同様に、Anthropic が配信するコネクタに適用します。他のサーバーの URL ベースの許可リストをデプロイする場合、Claude Code は配信されたコネクタもブロックします。配信されたコネクタを他のサーバーと一緒に利用可能に保つには、Anthropic プロキシパスの配信されたコネクタに一致するエントリを追加してください：
+コネクタをセルフホストセッションから除外するには、[`allowedMcpServers` および `deniedMcpServers` ポリシー設定](/docs/ja/managed-mcp#policy-based-control-with-allowlists-and-denylists)でフィルタリングします。Claude Code はこれらの設定を、ランナーホストからシードするサーバーやユーザーが追加するサーバーだけでなく、Anthropic が配信するコネクタにも適用します。そのため、他のサーバー向けに許可リストをデプロイすると、Claude Code は配信されたコネクタもブロックします。URL ベースの許可リストを使いながらコネクタを引き続き利用できるようにするには、配信されるコネクタ用の Anthropic プロキシのパスに一致するエントリを追加します。
 
 * `https://api.anthropic.com/v2/ccr-sessions/*`
 * `https://api.anthropic.com/v1/code/sessions/*`
 * `https://api.anthropic.com/v1/code/mcp/*`
 
-ツールトラフィックがネットワーク内に留まる必要がある場合は、代わりにランナーイメージ上でローカル MCP サーバーとして同等のツールを実行してください。[MCP サーバー](/docs/ja/self-hosted-environments-configuration#mcp-servers)を参照してください。
+ツールのトラフィックをネットワーク内に留める必要がある場合は、代わりに同等のツールをランナーイメージ上のローカル MCP サーバーとして実行してください。[MCP サーバー](/docs/ja/self-hosted-environments-configuration#mcp-servers)を参照してください。
 
 <h3 id="some-sessions-don’t-count-as-idle">
-  一部のセッションはアイドルとしてカウントされません
+  一部のセッションはアイドルとみなされない
 </h3>
 
-終了しないバックグラウンドタスクを保持するセッションはアイドルとしてカウントされないため、`--release-idle-session-min` はそのセッションのスロットをリリースしません。実行中のツール呼び出し内から要求された承認を待機しているセッションもアイドルとしてカウントされません。常に `--kill-session-after-min` をそれと一緒に設定して、セッションがスロットを無期限に保持できないようにハードバックストップとしてください。
+終了しないバックグラウンドタスクを保持しているセッションはアイドルとみなされないため、`--release-idle-session-min` はそのセッションのスロットを解放しません。実行中のツール呼び出しの内部から要求された承認を待っているセッションも、アイドルとみなされません。どのセッションもスロットを無期限に保持できないように、厳格な安全策として必ず `--kill-session-after-min` を併せて設定してください。
 
-`--kill-session-after-min` は暴走セッションのバックストップです。v2.1.260 以降のランナーでは、制限に達したセッションは直ちに終了されません。ランナーは猶予ウィンドウを与えます。デフォルトでは 15 分です。[`SELF_HOSTED_RUNNER_MAX_LIFETIME_GRACE_MS`](/docs/ja/self-hosted-environments-reference#environment-variable-only-settings)で変更できます：
+`--kill-session-after-min` は、暴走したセッションに対する安全策です。v2.1.260 以降のランナーでは、上限に達したセッションはただちに終了されません。ランナーはそのセッションに猶予期間（デフォルトは 15 分）を与えます。この期間は [`SELF_HOSTED_RUNNER_MAX_LIFETIME_GRACE_MS`](/docs/ja/self-hosted-environments-reference#environment-variable-only-settings) で変更できます。
 
-* セッションがユーザーを待機している場合、またはターンが終了してバックグラウンドタスクのみを保持している場合、ランナーはそれを直ちにリリースします。セッションはユーザーが次のメッセージを送信するときに再開されます。
-* ターンがまだ実行中の場合、ランナーはターンが終了するのを待つか、セッションが次にユーザーを待機するのを待ってから、それをリリースします。
-* セッションが猶予ウィンドウの終了時にランナーに留まっている場合、ランナーはそれを終了し、実行中のターンの作業は失われます。実行中のツール呼び出し内から要求された承認を待機しているターンは、セッションがウィンドウを超えて存続する 1 つの方法です。
+* セッションがユーザーを待っている場合、ランナーはそのセッションを解放します。ターンが終了していてバックグラウンドタスクのみを保持している場合、ランナーはそれらのタスクが完了するまで最大 60 秒待ってから、セッションを解放します。セッションは、ユーザーが次のメッセージを送信すると再開されます。
+* ターンがまだ実行中の場合、ランナーはターンが完了するか、セッションが次にユーザーを待つ状態になるまで待ってから、セッションを解放します。
+* 猶予期間が終了した時点でセッションがまだランナー上にある場合、ランナーはセッションを終了し、実行中のターンの作業は失われます。実行中のツール呼び出しの内部から要求された承認をターンが待っている場合は、セッションが猶予期間を超えて残る一例です。
 
-リリースされたセッションは新しいクローンから再開されるため、プッシュしていない作業はどちらの方法でも失われます。[再開されたセッションはプッシュされていない作業を失う](#additional-limitations)を参照してください。v2.1.260 より前では、ランナーはすべてのセッションを制限で終了し、実行中のターンが終了するのを最大猶予ウィンドウ待機しました。
+解放されたセッションは新しいクローンから再開されるため、いずれの場合もプッシュしていなかった作業は失われます。[再開されたセッションではプッシュしていない作業が失われる](#additional-limitations)を参照してください。v2.1.260 より前では、ランナーは実行中のターンの完了を最大で猶予期間だけ待った後、上限に達したすべてのセッションを終了していました。
 
-フラグを最長予想セッション（例えば 8 時間の場合は `--kill-session-after-min 480`）の上に設定してください。アイドル状態になった会話からスロットを解放するには、代わりに `--release-idle-session-min` を使用してください。
+このフラグは、想定される最長のセッションよりも長い値に設定してください。たとえば 8 時間の場合は `--kill-session-after-min 480` とします。アイドル状態になった会話からスロットを解放するには、代わりに `--release-idle-session-min` を使用してください。
 
 <h3 id="additional-limitations">
-  追加の制限事項
+  その他の制限事項
 </h3>
 
-* **再開されたセッションはプッシュされていない作業を失う**：新しいランナーは開始ブランチからリポジトリを再度クローンするため、セッションがプッシュしていない作業は失われます。
-  * **コミットされた作業を保持するには**：[`--push-outcome-on-release`](/docs/ja/self-hosted-environments-reference#runner-cli-flags)を設定します。するとランナーはリリースする前にセッションの結果ブランチをベストエフォートでプッシュし、再開されたセッションはそれらのコミットから開始されます。コミットされていない変更は引き続き失われます。
-  * **フラグを有効にする前に**：ソースリモートの `claude/*` refs にプッシュできるユーザーを制限してください。再開時に、ランナーは以前にプッシュされたブランチを、誰がプッシュしたかを検証せずにフェッチします。
-* **セッション途中で追加したリポジトリはクローンに失敗することがあります**：Claude は HTTPS 経由の `git clone` でクローンします。[`--use-anthropic-git-proxy`](#use-the-anthropic-git-proxy) を使用していないランナーでは、ホスト上にリポジトリを読み取れるものが何もない場合、クローンは git 認証エラーで失敗します。可能な場合は、セッションを作成するときに、セッションが必要とするすべてのリポジトリを選択してください。
-* **一部のコネクタはセルフホストセッションに表示されません**：claude.ai 設定でまだ接続していないコネクタはセルフホストセッションにリストされず、セッションはそれを接続するように促しません。最初に設定で接続してから、新しいセッションを開始してください。実行中のセッションにコネクタを追加しても、Claude がそのツールを利用できるようにはなりません。新しく追加されたコネクタを取得するには、新しいセッションを開始してください。
+* **再開されたセッションではプッシュしていない作業が失われる**: 新しいランナーはリポジトリを開始ブランチから再度クローンするため、セッションがプッシュしていなかった作業は失われます。
+  * **コミット済みの作業を保持するには**: 環境内のすべてのランナーで [`--push-outcome-on-release`](/docs/ja/self-hosted-environments-reference#runner-cli-flags) を設定してください。このフラグのないランナーは、セッションを開始ブランチから再開するためです。このフラグを設定したランナーは、解放する前にセッションの成果ブランチのプッシュをベストエフォートで行い、再開されたセッションはそれらのコミットから開始されます。プッシュにはランナーホスト自身の git 認証情報が使用されます。これは [Anthropic 管理の git](#use-the-anthropic-git-proxy) を使用するランナーでも同様です。コミットされていない変更は引き続き失われます。
+  * **`checkout` フックを使用する場合**: [`checkout` ライフサイクルフック](/docs/ja/self-hosted-environments-configuration#checkout)でチェックアウトされたリポジトリはプッシュされません。代わりに [`post-session` フック](/docs/ja/self-hosted-environments-configuration#post-session)からそれらのスナップショットを取得してください。
+  * **フラグを有効にする前に**: ソースリモート上の `claude/*` ref にプッシュできるユーザーを制限してください。再開時、ランナーは以前にプッシュされたブランチを、誰がプッシュしたかを検証せずにフェッチします。
+* **セッションの途中で追加したリポジトリのクローンが失敗することがある**: Claude は HTTPS 経由の `git clone` でリポジトリをクローンします。[`--use-anthropic-git-proxy`](#use-the-anthropic-git-proxy) を使用していないランナーでは、ホスト上にリポジトリを読み取れるものが何もない場合、クローンは git の認証エラーで失敗します。可能であれば、セッションの作成時に、セッションで必要なすべてのリポジトリを選択してください。
+* **一部のコネクタがセルフホストセッションに表示されない**: claude.ai の設定でまだ接続していないコネクタはセルフホストセッションに表示されず、セッションから接続を求められることもありません。まず設定で接続してから、新しいセッションを開始してください。また、すでに実行中のセッションにコネクタを追加しても、そのツールは Claude で使用できるようになりません。新しく追加したコネクタを反映するには、新しいセッションを開始してください。
 
 <h3 id="report-an-issue">
   問題を報告する
 </h3>
 
-セルフホスト環境の問題については、Anthropic アカウントチームに連絡してください。
+セルフホスト環境に関する問題については、Anthropic のアカウントチームにお問い合わせください。
 
 <h2 id="troubleshooting">
   トラブルシューティング
@@ -606,7 +719,8 @@ claude self-hosted-runner doctor
 * **ランナーが環境に表示されない**：ホストが HTTPS 経由で `api.anthropic.com` に到達できること、環境シークレットが最新であること、ホストの時刻が実時間の 5 分以内であることを確認してください。より大きなずれは認証失敗を引き起こします。ランナーは認証失敗時に拒否理由を含む `[runner:fatal]` をログに記録します。
 * **ランナーが `cannot create or write to base directory` で起動時に終了する**：ランナーが `--base-dir` を作成または書き込みできません。これはデフォルトで `/workspace` です。ディレクトリの所有権を修正するか、[ランナー全体でベースディレクトリと容量を同じに保つ](#keep-the-base-directory-and-capacity-identical-across-runners)で説明されているように `--base-dir` を書き込み可能なパスに指定してください。ランナーが代わりにベースディレクトリチェックがタイムアウトしたことを示す `[runner:fatal]` をログに記録する場合、ディレクトリはハングしている NFS または CSI マウント上にあります。権限ではなくマウントヘルスを確認してください。ランナーは `--log-file` を開く前にこれらの起動失敗を stderr に出力するため、ログファイルではなくターミナルまたはプラットフォームのコンテナログで探してください。v2.1.225 より前では、ランナーは起動時にベースディレクトリをチェックしておらず、この設定ミスはピックアップ後にセッションを失敗させました。
 * **セッションがキューに留まる**：すべてのオンラインランナーは異なる所有者にロックされている可能性があります。各ランナーの `claude_code_self_hosted_runner_locked_account` [メトリクス](/docs/ja/self-hosted-environments-reference#prometheus-metrics)またはその `[runner:health]` ログ行の `locked_account` フィールドをチェックして、誰がそれを保持しているかを確認してください。どちらも、ランナーが `act.email` クレームを含むセッショントークンを発行された後にのみ所有者のメールアドレスを表示します。これは Claude Tag エージェントのセッションでは決して行われません。クレームがない場合、ランナーは `locked_account` シリーズを出力せず、`locked_account=yes` をログに記録します。これはランナーがロックされていることを示しますが、どの所有者にロックされているかは示しません。レプリカを追加するか、既存のランナーがドレインして再起動するのを待ってください。環境がオンデマンドランナーを使用する場合は、代わりにオーケストレーターをチェックしてください。[オンデマンドランナー](/docs/ja/self-hosted-environments-configuration#on-demand-runners)を参照してください。
-* **セッションがピックアップ直後に失敗する**：claude.ai/code でセッションを開いてエラーを確認してください。最も一般的な原因は、ランナーイメージの [git 認証情報](#configure-git)の欠落とインストールされていないビルドツールです。書き込み不可能なベースディレクトリはセッションを失敗させるのではなく、起動時にランナーを停止させます。このリストの **ランナーが `cannot create or write to base directory` で起動時に終了する** エントリを参照してください。
+* **セッションがピックアップ直後に失敗する**：claude.ai/code でセッションを開いてエラーを確認してください。最も一般的な原因は、ランナーイメージの [git 認証情報](#configure-git)の欠落とインストールされていないビルドツールです。`--use-anthropic-git-proxy` で起動したランナーの場合は、[git プロキシを使用するランナーでセッションの開始に失敗する場合](#when-anthropic-doesnt-serve-a-session)を参照してください。書き込み不可能なベースディレクトリはセッションを失敗させるのではなく、起動時にランナーを停止させます。このリストの **ランナーが `cannot create or write to base directory` で起動時に終了する** エントリを参照してください。
+* **`--use-anthropic-git-proxy` を設定したランナーでセッションの開始に失敗する**：ランナーのログで `access denied by the git proxy`、または `/git_proxy/` を含む `api.anthropic.com` のアドレスを示す git エラーを探してください。Anthropic がそのセッションを処理したかどうかを判断して原因を修正するには、[git プロキシを使用するランナーでセッションの開始に失敗する場合](#when-anthropic-doesnt-serve-a-session)を参照してください。
 * **セッションが認証エグレスプロキシ経由でネットワークに到達できない**：[`--proxy-authorization-command` または `--proxy-authorization-file`](#authenticate-to-an-egress-proxy) で設定したソースが失敗する場合、30 秒後にタイムアウトする場合、または空の値を生成する場合、ランナーはその接続に `502 Bad Gateway` で応答し、理由をログに記録します。ランナーはそのログでコマンドの stderr を編集し、ヘッダー値をログに記録しません。`--proxy-authorization-command` を使用する場合、ホスト上でコマンド自体を実行して、stdout 全体のヘッダー値を出力することを確認してください。ランナーが代わりに `could not start the proxy-authorization listener` で起動時に終了する場合、ループバックリスナーを開くことができませんでした。
 * **ランナーが `rejecting the malformed poll response` を含む `Poll failed` 行をログに記録する**：ランナーは、本体がキューの予期された JSON ではないワークポール応答を受け取りました。最も一般的には、インターセプティングプロキシやキャプティブポータルなど、ランナーと `api.anthropic.com` の間の何かが独自のページで応答したためです。ランナーは応答を拒否し、`claude_code_self_hosted_runner_poll_errors_total` [メトリクス](/docs/ja/self-hosted-environments-reference#prometheus-metrics)の `transport` 種別の下でカウントし、[セッションライフサイクル](/docs/ja/self-hosted-environments#session-lifecycle)で説明されている失敗したポールスケジュールで再試行します。ランナーはライブセッションを提供し続けます。`api.anthropic.com` からの応答を変更されずに通すようにプロキシを設定してください。v2.1.246 より前では、ランナーはそのような応答を空のワークキューとして読み取り、ライブセッションを終了するか、終了させる可能性がありました。
 * **セッションのブランチがリモートに存在しなくなった**：セッションが読み取り専用の git ソースの場合、ランナーはそのソースをスキップして残りのソースで続行します。セッションが結果をプッシュするソースの場合、削除されたブランチ（通常はマージされて自動削除されたため）はセッションを失敗させ、リポジトリとブランチを名前付けするエラーを表示し、ブランチを復元して再試行するよう求めます。ランナーはスキップするとリポジトリがまったくなくなる場合、同じエラーでセッションを失敗させます。v2.1.228 より前では、そのようなセッションは空のディレクトリで開始されました。
@@ -616,7 +730,7 @@ claude self-hosted-runner doctor
 
   アクセスチェックはセッションがランナーで開始されるたびに再度実行されるため、ランナーの git アイデンティティが読み取りアクセスを持つと、次の開始でリポジトリをクローンします。v2.1.274 より前では、これらの拒否のそれぞれがセッション開始を失敗させました。
 * **セッションの開始に数分かかる**：初期クローンが通常支配的です。`claude_code_self_hosted_runner_session_init_duration_seconds` [メトリクス](/docs/ja/self-hosted-environments-reference#prometheus-metrics)を監視して確認し、[事前にウォーミングされたチェックアウト](#reuse-a-pre-warmed-checkout)またはより小さい `CLAUDE_RUNNER_FETCH_DEPTH` でクローンを削減してください。
-* **ターンが 401 で失敗する**：各セッションは、ランナーが Anthropic から取得し、セッションの stdin 経由でローテーションする短命の [`CLAUDE_CODE_OAUTH_TOKEN`](/docs/ja/self-hosted-environments-configuration#wrapper-scripts) を使用してモデル呼び出しを認証します。ターンがモデル API から 401 または 403 で終了する場合、ランナーは新しいトークンを取得し、セッションに渡します。失敗したターンは再試行されません。
+* **ターンが 401 で失敗する**：ターンが Anthropic API からの 401 または 403 で終了すると、ランナーは新しい [`CLAUDE_CODE_OAUTH_TOKEN`](/docs/ja/self-hosted-environments-configuration#wrapper-scripts) を Anthropic から取得し、セッションに渡します。失敗したターンは再試行されません。このトークンは短命で、ランナーはセッションの stdin 経由でそれをローテーションします。
 
   フェッチが失敗する場合、ランナーは `inference_token refresh failed` 行をログに記録し、いつ再試行するかを示し、セッションが実行されている限り再試行を続けます。
 
@@ -637,6 +751,7 @@ claude self-hosted-runner doctor
 
 * **通常の終了**：ランナーはセッションを完了してドレインし、リタイア時間に達した、または停止するよう指示されました。環境に容量を戻すために再起動してください。[ランナーライフサイクル](/docs/ja/self-hosted-environments#runner-lifecycle)はこれらの終了について説明しています。
 * **失敗した開始**：ランナーは与えられた設定またはホストで開始できないため、起動後数秒で終了し、再起動するたびに同じ方法で終了します。より速く再起動しても役に立ちません。誰かが出力を読んで原因を修正する必要があります。
+* **接続の喪失**：ホストのスリープ中など、[リース](/docs/ja/self-hosted-environments#session-lifecycle)より長く Anthropic に到達できないランナーは、環境から削除されることがあります。削除されたランナーは再接続すると終了します。そのログには、`runner record gone server-side` を含む `[runner:fatal]` 行、またはより長い停止の後には [`poll auth failed`](/docs/ja/self-hosted-environments-quickstart#set-up-an-environment-and-runner) を含む行が表示されることがあります。ランナーは自動的に再登録しないため、再起動してください。
 
 ランナーが終了するたびに再起動するようにスーパーバイザーを設定し、ランナーが起動直後に終了し続ける場合は再起動間の待機時間を長くし、それが起こり続ける場合は誰かに通知してください。
 

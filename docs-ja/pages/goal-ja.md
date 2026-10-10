@@ -127,7 +127,7 @@ Claude Code は条件を引き継ぎますが、ターン数、タイマー、�
 claude -p "/goal CHANGELOG.md has an entry for every PR merged this week"
 ```
 
-デフォルトのテキスト出力では、実行が終了するまで何も出力されないため、多くのターンを実行するゴールは停止しているように見える場合があります。`--output-format stream-json --verbose` を追加して、ループの実行時に各メッセージを出力します。
+デフォルトのテキスト出力では、ループが終了したときに Claude の最終応答が出力されるため、多くのターンを実行するゴールは停止しているように見える場合があります。`--output-format stream-json --verbose` を追加して、ループの実行時に各メッセージを出力します。
 
 Ctrl+C でプロセスを中断して、解決前に非対話的なゴールを停止します。
 

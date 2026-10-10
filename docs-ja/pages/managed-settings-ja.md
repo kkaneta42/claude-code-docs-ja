@@ -57,51 +57,53 @@
   配信メカニズムを選択する
 </h2>
 
-上記のステップのファイルは、マネージド設定をマシンに取得する 4 つの方法の 1 つです。すべてのメカニズムは `settings.json` ファイルと同じポリシーキーを持つため、[設定リファレンス](/docs/ja/settings-reference) はすべてに適用されます。いくつかのキーは特定のソースに関連付けられており、各エントリの Scope 行はどれかを示しています。
+上記の手順で作成したファイルは、管理設定をマシンに配置する 4 つの方法のうちの 1 つです。どのメカニズムも `settings.json` ファイルと同じポリシーキーを扱うため、[設定リファレンス](/docs/ja/settings-reference)はそのすべてに当てはまります。一部のキーは特定のソースに結び付いており、各エントリの Scope 行にそれが記載されています:
 
-* **配信コントロール**: [`policyHelper`](/docs/ja/settings-reference#policyhelper)、[`wslInheritsWindowsSettings`](/docs/ja/settings-reference#wslinheritswindowssettings)、および [`managedSourcesBehavior`](/docs/ja/settings-reference#managedsourcesbehavior)
-* **ゲートウェイログインキー**: [`forceLoginGatewayUrl`](/docs/ja/settings-reference#forcelogingatewayurl)、[`gatewayInternalNetworks`](/docs/ja/settings-reference#gatewayinternalnetworks)、および [`forceLoginMethod`](/docs/ja/settings-reference#forceloginmethod) の `"gateway"` 値
+* **配信制御**: [`policyHelper`](/docs/ja/settings-reference#policyhelper)、[`wslInheritsWindowsSettings`](/docs/ja/settings-reference#wslinheritswindowssettings)、[`managedSourcesBehavior`](/docs/ja/settings-reference#managedsourcesbehavior)
+* **ゲートウェイログインキー**: [`forceLoginGatewayUrl`](/docs/ja/settings-reference#forcelogingatewayurl)、[`gatewayInternalNetworks`](/docs/ja/settings-reference#gatewayinternalnetworks)、[`forceLoginMethod`](/docs/ja/settings-reference#forceloginmethod) の `"gateway"` 値
 
-マネージド設定ファイル、MDM プロファイル、または claude.ai コンソールは、それが到達するすべてのユーザーに 1 つのポリシーを適用します。開発者の 1 つのグループに異なるポリシーを提供するには、異なるファイルまたはプロファイルをそのグループにデプロイします。claude.ai コンソール [はまだグループをターゲットにできません](/docs/ja/server-managed-settings#current-limitations)。一方、自己ホスト型の [Claude apps gateway](/docs/ja/claude-apps-gateway) は IdP グループごとにマネージド設定を配信します。
+管理設定ファイル、MDM プロファイル、claude.ai コンソールは、それが届くすべてのユーザーに 1 つのポリシーを適用します。特定の開発者グループに異なるポリシーを適用するには、そのグループに別のファイルまたはプロファイルをデプロイします。claude.ai コンソールは[まだグループを対象にできません](/docs/ja/server-managed-settings#current-limitations)が、セルフホストの [Claude apps gateway](/docs/ja/claude-apps-gateway) は IdP グループごとに管理設定を配信します。
 
-複数のメカニズムが同じマシンにポリシーを配信する場合、Claude Code はデフォルトで 1 つを使用し、他を無視します。[Claude Code がマネージドソースを組み合わせる方法](#how-claude-code-combines-managed-sources) は順序と適用される opt-in を示しています。
+複数のメカニズムが同じマシンにポリシーを配信する場合、Claude Code はデフォルトで 1 つを使用し、他は無視します。[Claude Code が管理ソースを組み合わせる方法](#how-claude-code-combines-managed-sources)では、その順序と、すべてのソースを適用するオプトインについて説明しています。
 
-MDM とファイル行は一緒に endpoint-managed settings と呼ばれます。ポリシーが開発者のデバイスに保存されているためです。これは server-managed 行とは対照的です。Claude Code はそれをフェッチします。
+MDM とファイルの行は、まとめてエンドポイント管理設定と呼ばれます。これは、Claude Code がポリシーを取得するサーバー管理の行とは異なり、ポリシーが開発者のデバイスに保存されるためです。
 
-下記のテーブルを使用して、デバイスを既に管理している方法に基づいてメカニズムを選択してください。
+以下の表を参考に、すでに行っているデバイス管理の方法に応じてメカニズムを選択してください。
 
-| メカニズム | 配信方法 | Claude Code がそれを読む時期 | 使用する場合 |
+| メカニズム | 配信方法 | Claude Code が読み取るタイミング | 使用する場面 |
 | :- | :- | :- | :- |
-| [サーバーマネージド設定](/docs/ja/server-managed-settings) | claude.ai 管理コンソール内、または自己ホスト型 [Claude apps gateway](/docs/ja/claude-apps-gateway) 上 | スタートアップ時にフェッチされ、1 時間ごとにポーリングされます。[ポリシーが適用される場所と時期](#where-and-when-a-policy-applies) を参照してください | 各マシンに触れずに claude.ai 組織のポリシーを変更する 1 つの場所が必要な場合 |
-| MDM または OS レベルのポリシー | macOS 構成プロファイルまたは Windows `HKLM` レジストリ値として、Jamf、Intune、グループポリシー、または同様のツール経由。[各メカニズムがポリシーを保存する場所](#where-each-mechanism-stores-the-policy) を参照してください | スタートアップ時に読み取られ、30 分ごとに変更がチェックされます | MDM またはグループポリシーでデバイスを既に管理している場合 |
-| ファイルベース | 各マシンのシステムディレクトリ内の `managed-settings.json` として。[各メカニズムがポリシーを保存する場所](#where-each-mechanism-stores-the-policy) を参照してください | スタートアップ時に読み取られ、ファイルが変更されるとリロードされます | MDM なしのマシン、Linux ホスト、または自分で構築するイメージ |
-| HKCU レジストリ、Windows と WSL | Windows `HKCU` レジストリ値として。[各メカニズムがポリシーを保存する場所](#where-each-mechanism-stores-the-policy) を参照してください | スタートアップ時に読み取られ、30 分ごとに変更がチェックされます。Claude Code はそれを使用するのは、[他の管理ドキュメントが存在しない場合](#present-admin-documents) のみで、[ホスト提供の親設定](#let-an-embedding-host-add-policy) が制限的なキーを提供しない場合です | マシンレベルの `HKLM` キーを書き込むことができない場合 |
+| [サーバー管理設定](/docs/ja/server-managed-settings) | claude.ai 管理コンソール、またはセルフホストの [Claude apps gateway](/docs/ja/claude-apps-gateway) 上で | 起動時に取得され、1 時間ごとにポーリングされます。[承認が必要な変更](#where-and-when-a-policy-applies)を参照してください | 各マシンに触れることなく、claude.ai 組織のポリシーを 1 か所で変更したい場合 |
+| MDM または OS レベルのポリシー | Jamf、Intune、グループポリシー、または同様のツールを通じて、macOS 構成プロファイルまたは Windows `HKLM` レジストリ値として。[各メカニズムがポリシーを保存する場所](#where-each-mechanism-stores-the-policy)を参照してください | 起動時に読み取られ、30 分ごとに変更がチェックされます | すでに MDM またはグループポリシーでデバイスを管理している場合 |
+| ファイルベース | 各マシンのシステムディレクトリ内の `managed-settings.json` として。[各メカニズムがポリシーを保存する場所](#where-each-mechanism-stores-the-policy)を参照してください | 起動時に読み取られ、ファイルが変更されると再読み込みされます | MDM のないマシン、Linux ホスト、または自分でビルドするイメージ |
+| HKCU レジストリ、Windows および WSL | Windows `HKCU` レジストリ値として。[各メカニズムがポリシーを保存する場所](#where-each-mechanism-stores-the-policy)を参照してください | 起動時に読み取られ、30 分ごとに変更がチェックされます。Claude Code がこれを使用するのは、[これより上位の管理ドキュメントが存在せず](#present-admin-documents)、かつ[ホストが提供する親設定](#let-an-embedding-host-add-policy)が制限的なキーを提供していない場合に限られます | マシンレベルの `HKLM` キーに書き込めない場合 |
 
-Jamf、Iru、Intune、グループポリシーのスターターテンプレートは、[MDM 例リポジトリ](https://github.com/anthropics/claude-code/tree/main/examples/mdm) にあります。
+Jamf、Iru、Intune、グループポリシー用のスターターテンプレートは、[MDM サンプルリポジトリ](https://github.com/anthropics/claude-code/tree/main/examples/mdm)にあります。
 
-`managed-mcp.json` を通じてデプロイするか、[`managedMcpServers`](/docs/ja/settings-reference#managedmcpservers) キーを通じて提供するマネージド MCP サーバーについては、[マネージド MCP 構成](/docs/ja/managed-mcp) を参照してください。
+組織に [HIPAA 設定](/docs/ja/hipaa-setup#deploy-managed-settings)が適用されている場合は、サンドボックス化、ネットワーク許可リスト、認証情報の保護、ローカルデータ保持を含むより充実した `managed-settings.json` について、[設定サンプルリポジトリ](https://github.com/anthropics/claude-code/tree/main/examples/settings)の `settings-hipaa.json` と `README-hipaa.md` を参照してください。
+
+これらのいずれかと併せて `managed-mcp.json` を通じてデプロイする、または [`managedMcpServers`](/docs/ja/settings-reference#managedmcpservers) キーを通じて提供する管理 MCP サーバーについては、[管理 MCP 設定](/docs/ja/managed-mcp)を参照してください。
 
 <h3 id="where-and-when-a-policy-applies">
-  ポリシーが適用される場所と時期
+  ポリシーが適用される場所とタイミング
 </h3>
 
-デプロイされたポリシーは、開発者のセッションに次のように到達します。
+デプロイされたポリシーは、次のように開発者のセッションに反映されます:
 
-* **サーフェス**: 開発者のマシン上で、ターミナル、VS Code および JetBrains 拡張機能、デスクトップアプリの Code タブ、および [Agent SDK](/docs/ja/agent-sdk/typescript) セッションはこれらのソースをすべて読み取ります。Agent SDK セッションは、`settingSources` がユーザー、プロジェクト、ローカルファイルを除外する場合でも、マネージド設定をロードします。
-* **クラウドセッション**: Anthropic ホスト環境のセッションはデバイスの MDM プロファイルまたはファイルを読み取らないため、ポリシーはサーバーマネージド設定から来る必要があります。[自己ホスト環境](/docs/ja/self-hosted-environments) のセッションは、デフォルトではサーバーマネージド設定がポリシーキーを配信しない場合のみ、ランナーイメージ内のマネージド設定ファイルを読み取ります。ただし、[すべての管理ソースから Claude Code が読み取るキー](#keys-read-from-every-admin-source) は除きます。[Claude Code がマネージドソースを組み合わせる方法](#how-claude-code-combines-managed-sources) は両方を適用する opt-in について説明しています。
-* **Claude Tag セッション**: [Claude Tag](https://claude.com/docs/claude-tag/overview) セッションはクラウド環境で実行されますが、サーバーマネージド設定を受け取りません。[自己ホスト環境](/docs/ja/self-hosted-environments) では、ランナーイメージ内のマネージド設定ファイルを読み取ります。Claude Tag 自体は [Claude Tag 管理設定](https://claude.com/docs/claude-tag/admins/customize) で構成します。
-* **Cowork セッション**: Claude Desktop アプリの [Cowork](https://claude.com/docs/cowork/overview) は Claude Code 上でセッションを実行します。Cowork セッションでは、Claude Code は Team または Enterprise アカウントでユーザーがサインインしている場合でも、claude.ai 管理コンソールからサーバーマネージド設定をフェッチしません。したがって、どのポリシーが適用されるかはセッションが実行される場所によって異なります。
+* **サーフェス**: 開発者のマシン上では、ターミナル、VS Code および JetBrains 拡張機能、デスクトップアプリの Code タブ、[Agent SDK](/docs/ja/agent-sdk/typescript) のセッションが、これらすべてのソースを読み取ります。Agent SDK のセッションは、`settingSources` がユーザー、プロジェクト、ローカルのファイルを除外している場合でも管理設定を読み込みます。
+* **クラウドセッション**: Anthropic がホストする環境のセッションはデバイスの MDM プロファイルやファイルを読み取らないため、そのポリシーはサーバー管理設定から提供する必要があります。[セルフホスト環境](/docs/ja/self-hosted-environments)のセッションは、ランナーイメージ内の管理設定ファイルも読み取りますが、デフォルトでは、[Claude Code がすべての管理ソースから読み取るキー](#keys-read-from-every-admin-source)を除き、サーバー管理設定がポリシーキーを 1 つも配信しない場合に限られます。両方を適用するオプトインについては、[Claude Code が管理ソースを組み合わせる方法](#how-claude-code-combines-managed-sources)で説明しています。
+* **Claude Tag セッション**: [Claude Tag](https://claude.com/docs/claude-tag/overview) のセッションはクラウド環境で実行されますが、サーバー管理設定は受け取りません。[セルフホスト環境](/docs/ja/self-hosted-environments)では、ランナーイメージ内の管理設定ファイルは引き続き読み取ります。Claude Tag 自体は [Claude Tag 管理設定](https://claude.com/docs/claude-tag/admins/customize)で設定します。
+* **Cowork セッション**: Claude Desktop アプリの [Cowork](https://claude.com/docs/cowork/overview) は、そのセッションを Claude Code 上で実行します。Cowork セッションでは、ユーザーが Team または Enterprise アカウントでサインインしている場合でも、Claude Code が claude.ai 管理コンソールからサーバー管理設定を取得することはありません。そのため、どのポリシーが適用されるかはセッションの実行場所によって異なります:
 
-  * **ユーザーのマシン上**: デフォルトでは、Cowork セッションの Claude Code はそのデバイス上の MDM または OS レベルのポリシーおよびマネージド設定ファイルを読み取るため、ポリシーをそこにデプロイします。
-  * **完全な VM サンドボックス内**: Claude Desktop マネージド構成が [`requireCoworkFullVmSandbox`](https://claude.com/docs/third-party/claude-desktop/configuration#requirecoworkfullvmsandbox) を設定する場合、Claude Code は仮想マシン内で実行され、デバイスの MDM ポリシーおよびマネージド設定ファイルは存在しません。
-  * **リモート Cowork セッション**: これらは Anthropic 管理 VM 上で実行され、Claude Code はデバイスポリシーを読み取ることができません。
+  * **ユーザーのマシン上**: デフォルトでは、Cowork セッション内の Claude Code はそのデバイス上の MDM または OS レベルのポリシーと管理設定ファイルを読み取るため、ポリシーはそこにデプロイします。
+  * **フル VM サンドボックス内**: Claude Desktop の管理設定で [`requireCoworkFullVmSandbox`](https://claude.com/docs/third-party/claude-desktop/configuration#requirecoworkfullvmsandbox) が設定されている場合、Claude Code は仮想マシン内で実行され、そこにはデバイスの MDM ポリシーや管理設定ファイルが存在しません。
+  * **リモート Cowork セッション**: これらは Anthropic が管理する VM 上で実行され、Claude Code が読み取るデバイスポリシーはありません。
 
-  セッションが実行される場所に関係なく、claude.ai は管理コンソールの [`strictKnownMarketplaces`](/docs/ja/settings-reference#strictknownmarketplaces) および [`blockedMarketplaces`](/docs/ja/settings-reference#blockedmarketplaces) リストを、誰かが claude.ai 上の git リポジトリからマーケットプレイスを追加するか、Cowork タブの **Customize** から追加する場合に自動的に適用します。[制限がどのように機能するか](/docs/ja/plugins/org#restrict-what-users-can-install) はそのチェックについて説明しています。[サーフェスカバレッジ](/docs/ja/model-config#surface-coverage) テーブルは Cowork と他のサーフェスを比較しています。
-* **実行中のセッション**: ほとんどの変更は、[配信メカニズムテーブル](#choose-a-delivery-mechanism) のスケジュールに従って、再起動なしで実行中のセッションに到達します。
-  * [`forceRemoteSettingsRefresh`](/docs/ja/settings-reference#forceremotesettingsrefresh)、[`requiredMinimumVersion`](/docs/ja/settings-reference#requiredminimumversion)、および [いくつかのユーザー編集可能キー](/docs/ja/settings#when-edits-take-effect) への変更は、次のセッション開始時に有効になります。
-  * 新規または変更された [`policyHelper`](/docs/ja/settings-reference#policyhelper) エントリは次の起動時に有効になります。ただし、起動時にサーバーマネージド設定によってシャドウされたヘルパーは、フェッチがそれらの設定が削除されたことを報告するとすぐに実行されます。
-* **承認が必要な変更**: [次の起動を待つ更新](/docs/ja/server-managed-settings#fetch-and-caching-behavior) とは別に、[承認が必要な](/docs/ja/server-managed-settings#security-approval-dialogs) 設定（フックまたは `env` 変数など）へのサーバーマネージド変更は、開発者がインタラクティブセッションでダイアログを受け入れるのを待ち、IDE 拡張機能または Agent SDK がホストするセッションの現在の実行に適用されます。その他のサーバーマネージド変更は次のポーリングで適用されます。
-* **長時間実行セッション**: 数週間開いたままのセッションはロールアウトに遅れることができます。[`requiredMinimumVersion`](/docs/ja/settings-reference#requiredminimumversion) は古いバイナリが開始されるのをブロックし、既に実行中のセッションを終了しません。
+  セッションがどこで実行されても、claude.ai 上の git リポジトリから、または Cowork タブの **Customize** から誰かがマーケットプレイスを追加すると、claude.ai は管理コンソールの [`strictKnownMarketplaces`](/docs/ja/settings-reference#strictknownmarketplaces) と [`blockedMarketplaces`](/docs/ja/settings-reference#blockedmarketplaces) のリストを自ら適用します。そのチェックについては[制限の仕組み](/docs/ja/plugins/org#restrict-what-users-can-install)で説明しています。[サーフェスの対応範囲](/docs/ja/model-config#surface-coverage)の表では、Cowork と他のサーフェスを比較しています。
+* **実行中のセッション**: ほとんどの変更は、[配信メカニズムの表](#choose-a-delivery-mechanism)のスケジュールに従い、再起動なしで実行中のセッションに反映されます。
+  * [`forceRemoteSettingsRefresh`](/docs/ja/settings-reference#forceremotesettingsrefresh)、[`requiredMinimumVersion`](/docs/ja/settings-reference#requiredminimumversion)、および[一部のユーザーが編集可能なキー](/docs/ja/settings#when-edits-take-effect)への変更は、次回のセッション開始時に有効になります。
+  * 新規または変更された [`policyHelper`](/docs/ja/settings-reference#policyhelper) エントリは、次回の起動時に有効になります。その起動時にサーバー管理設定がヘルパーを覆い隠している場合、取得によってそれらの設定の削除が報告されるとすぐにヘルパーが実行されます。
+* **承認が必要な変更**: [次回の起動まで待機する更新](/docs/ja/server-managed-settings#fetch-and-caching-behavior)を除き、フックや `env` 変数など[承認が必要な](/docs/ja/server-managed-settings#security-approval-dialogs)設定に対するサーバー管理の変更は、対話型セッションでは開発者がダイアログを承認するまで待機し、IDE 拡張機能または Agent SDK がホストするセッションでは現在の実行に適用されます。その他のサーバー管理の変更は、次回のポーリングで適用されます。
+* **長期間のセッション**: 数週間開いたままのセッションは、ロールアウトに遅れることがあります。[`requiredMinimumVersion`](/docs/ja/settings-reference#requiredminimumversion) は古いバイナリの起動をブロックしますが、すでに実行中のセッションを終了させることはありません。
 
 <span id="format-the-policy-for-each-platform" />
 
@@ -109,30 +111,30 @@ Jamf、Iru、Intune、グループポリシーのスターターテンプレー�
   各メカニズムがポリシーを保存する場所
 </h3>
 
-キーはどこでも同じですが、各メカニズムはそれらを異なる場所と形状に保存します。
+キーはどこでも同じですが、各メカニズムはそれらを異なる場所と形式で保存します:
 
-* **サーバーマネージド**: Anthropic のサーバーまたはゲートウェイがポリシーを保持します。Claude Code はローカルキャッシュを保持し、スタートアップ時に適用し、[各成功したフェッチで置き換えます](/docs/ja/server-managed-settings#security-considerations)。
-* **macOS 構成プロファイル**: `com.anthropic.claudecode` マネージド設定ドメイン。`managed-settings.json` と同じトップレベルキーを使用し、ネストされた設定は辞書として、リストは plist 配列として使用します。
-* **Windows HKLM レジストリ**: `HKLM\SOFTWARE\Policies\ClaudeCode` の下の `Settings` という名前の `REG_SZ` または `REG_EXPAND_SZ` 値として JSON。
-* **ファイルベース**: `managed-settings.json`、オプションの `managed-settings.d/` ディレクトリ、および `managed-mcp.json` をシステムディレクトリに配置します。macOS では `/Library/Application Support/ClaudeCode/`、Linux と WSL では `/etc/claude-code/`、Windows では `C:\Program Files\ClaudeCode\`。Claude Code はレガシー Windows パス `C:\ProgramData\ClaudeCode\managed-settings.json` を読み取りません。
-* **Windows HKCU レジストリ**: `HKCU\SOFTWARE\Policies\ClaudeCode` の下の同じ `Settings` 値。
+* **サーバー管理**: Anthropic のサーバー、またはユーザーのゲートウェイがポリシーを保持します。Claude Code はローカルキャッシュを保持し、起動時にそれを適用し、[取得が成功するたびに置き換えます](/docs/ja/server-managed-settings#security-considerations)。
+* **macOS 構成プロファイル**: `com.anthropic.claudecode` 管理環境設定ドメイン。`managed-settings.json` と同じトップレベルキーを使用し、ネストされた設定は辞書として、リストは plist 配列として記述します。
+* **Windows HKLM レジストリ**: `HKLM\SOFTWARE\Policies\ClaudeCode` の下にある `Settings` という名前の `REG_SZ` または `REG_EXPAND_SZ` 値としての JSON。
+* **ファイルベース**: システムディレクトリ内の `managed-settings.json`、オプションの `managed-settings.d/` ディレクトリ、および `managed-mcp.json`。システムディレクトリは、macOS では `/Library/Application Support/ClaudeCode/`、Linux と WSL では `/etc/claude-code/`、Windows では `C:\Program Files\ClaudeCode\` です。Claude Code は、従来の Windows パス `C:\ProgramData\ClaudeCode\managed-settings.json` を読み取りません。
+* **Windows HKCU レジストリ**: `HKCU\SOFTWARE\Policies\ClaudeCode` の下にある同じ `Settings` 値。
 
 <h3 id="split-a-file-based-policy-across-teams">
   ファイルベースのポリシーをチーム間で分割する
 </h3>
 
-複数のチームが 1 つのポリシーの一部を所有している場合、各部分を `managed-settings.d/` 内の独自のファイルに配置します。同じシステムディレクトリ内の `managed-settings.json` の隣に配置し、1 つの共有ファイルを編集する代わりに使用します。
+複数のチームが 1 つのポリシーの一部をそれぞれ所有している場合は、1 つの共有ファイルを編集する代わりに、各部分を同じシステムディレクトリ内の `managed-settings.json` の隣にある `managed-settings.d/` 内の個別のファイルに配置します。
 
-Claude Code は `managed-settings.json` を最初にマージし、次にディレクトリ内のすべての `*.json` ファイルをアルファベット順にマージします。ファイルに数値プレフィックスを付けて順序を制御します。例えば `10-telemetry.json` と `20-security.json`。Claude Code は隠しファイルと `.json` で終わらないファイルを無視します。
+Claude Code は最初に `managed-settings.json` をマージし、次にディレクトリ内のすべての `*.json` ファイルをアルファベット順にマージします。順序を制御するには、`10-telemetry.json` や `20-security.json` のように、ファイル名に数字のプレフィックスを付けます。Claude Code は、隠しファイルと `.json` で終わらないファイルを無視します。
 
-2 つのファイルが同じキーを設定する場合、Claude Code はこれらのルールで組み合わせます。
+2 つのファイルが同じキーを設定している場合、Claude Code は次のルールに従ってそれらを組み合わせます:
 
-* **単一値**（`"model": "opus"` または `"cleanupPeriodDays": 7` など）: 後のファイルの値が前のファイルを置き換えます
-* **リスト**（`permissions.deny` または `sandbox.network.allowedDomains` など）: 2 つのリストが組み合わされ、重複が削除されます
-* **ネストされたブロック**（`env` または `sandbox` など）: 2 つのブロックはキーごとにマージされ、内部の各キーはこれらの同じルールに従います
+* **単一の値**（`"model": "opus"` や `"cleanupPeriodDays": 7` など）: 後のファイルの値が前の値を置き換えます
+* **リスト**（`permissions.deny` や `sandbox.network.allowedDomains` など）: 2 つのリストが結合され、重複は削除されます
+* **ネストされたブロック**（`env` や `sandbox` など）: 2 つのブロックはキーごとにマージされ、内部の各キーも同じルールに従います
 * **`fallbackModel`**: 後のチェーンが前のチェーン全体を置き換えます
-* **[`extraKnownMarketplaces`](/docs/ja/settings-reference#extraknownmarketplaces) および [`managedMcpServers`](/docs/ja/settings-reference#managedmcpservers)**: 同じ名前の後のエントリが前のエントリ全体を置き換えます
-* **[`modelPicker`](/docs/ja/settings-reference#modelpicker)**: 後のラインアップが前のラインアップ全体を置き換えます
+* **[`extraKnownMarketplaces`](/docs/ja/settings-reference#extraknownmarketplaces) と [`managedMcpServers`](/docs/ja/settings-reference#managedmcpservers)**: 同じ名前を持つ後のエントリが前のエントリ全体を置き換えます
+* **[`modelPicker`](/docs/ja/settings-reference#modelpicker)**: 後のラインナップが前のラインナップ全体を置き換えます
 
 <span id="precedence-within-the-managed-tier" />
 
@@ -154,7 +156,7 @@ Claude Code は `managed-settings.json` を最初にマージし、次にディ�
 
 Claude Code は、最初に最優先度の順でソースをチェックします。
 
-1. リモート設定。claude.ai から[サーバー管理設定](/docs/ja/server-managed-settings)として、または[Claude アプリゲートウェイ](/docs/ja/claude-apps-gateway)によって配信されます。Claude Code は、セッションが[適格な認証情報](/docs/ja/server-managed-settings#platform-availability)で Anthropic の API に直接認証するか、`/login` でゲートウェイにサインインする場合にのみこのソースをフェッチします。他のプロバイダー、または `ANTHROPIC_BASE_URL` が Anthropic の API 以外を指す場合、次のソースから開始します
+1. リモート設定。claude.ai から[サーバー管理設定](/docs/ja/server-managed-settings)として、または[Claude アプリゲートウェイ](/docs/ja/claude-apps-gateway)によって配信されます。Claude Code は、セッションが[適格な認証情報](/docs/ja/server-managed-settings#platform-availability)で Anthropic の API に直接認証する場合、`/login` でゲートウェイにサインインする場合、または[そのセッションに設定を提供する](/docs/ja/claude-apps-gateway-config#apply-code-settings-in-the-code-tab)ゲートウェイの背後で Claude Desktop の Code タブで実行される場合にのみ、このソースをフェッチします。他のプロバイダー、または `ANTHROPIC_BASE_URL` が Anthropic の API 以外を指す場合、次のソースから開始します
 2. MDM または OS レベルのポリシー: macOS plist または HKLM レジストリキー
 3. 管理設定ファイル、`managed-settings.d/*.json` と `managed-settings.json` をマージしたもの
 4. Windows 上の HKCU レジストリ、および WSL 上で HKLM レジストリまたは Windows 管理設定ファイルが [`wslInheritsWindowsSettings`](/docs/ja/settings-reference#wslinheritswindowssettings) をオンにし、HKCU 値もそれを設定している場合の HKCU レジストリ。Claude Code は、[それより上に管理者ドキュメントが存在せず](#present-admin-documents)、[ホスト提供の親設定](#let-an-embedding-host-add-policy)が制限的なキーを提供しない場合にのみこれを読み取ります

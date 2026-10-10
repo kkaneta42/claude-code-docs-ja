@@ -55,14 +55,18 @@ Claude Code は、任意の有料 Claude サブスクリプション（Pro、Max
   使用方法
 </h2>
 
-<h3 id="from-your-ide">
-  IDE から
+<span id="from-your-ide" />
+
+<h3 id="run-claude-code-from-your-ide">
+  IDE から Claude Code を実行する
 </h3>
 
 IDE の統合ターミナルから `claude` を実行すると、すべての統合機能がアクティブになります。
 
-<h3 id="from-external-terminals">
-  外部ターミナルから
+<span id="from-external-terminals" />
+
+<h3 id="connect-from-an-external-terminal">
+  外部ターミナルから接続する
 </h3>
 
 任意の外部ターミナルで `/ide` コマンドを使用して Claude Code を JetBrains IDE に接続し、すべての機能をアクティブにします。

@@ -235,7 +235,7 @@ Claude Code は、起動時に `--add-dir` で渡したディレクトリの `.c
 
 スキルがマシン上の `~/.claude/skills/` にのみ存在する場合、[routine](/docs/ja/routines) がそれを呼び出すと、Claude Code はスキルが見つからないと報告します。各 routine 実行は新しいクラウドセッションとして開始されるためです。これらのセッションで personal スキルを利用可能にするには：
 
-* Cowork およびクラウドセッションの場合、claude.ai アカウント用にスキルを有効化します。
+* Cowork およびクラウドセッションの場合、claude.ai アカウント用にスキルを有効化します。[セルフホスト環境の一部のセッション](/docs/ja/self-hosted-environments-configuration#how-each-session’s-config-is-assembled) は、アカウントのスキルを読み込みません。
 * クラウドセッションの場合、代わりにスキルをリポジトリの `.claude/skills/` にコミットできます。リポジトリの `.claude/settings.json` で宣言されたプラグインおよびユーザーセッティングでのみ有効化されたプラグインは [クラウドセッションで読み込まれません](/docs/ja/cloud-environments#what-carries-over-from-your-setup)。
 
 [Desktop scheduled tasks](/docs/ja/desktop-scheduled-tasks) はマシン上でローカルに実行されるため、`~/.claude/skills/` を読み込みます。

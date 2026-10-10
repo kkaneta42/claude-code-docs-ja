@@ -242,7 +242,7 @@ Claude が編集するすべてのファイルで [Prettier](https://prettier.io
 
 hook をテストするには、Claude に JavaScript ファイルにシングルクォート文字列を含む行を追加するよう求めてください。その後ファイルを開きます：Prettier のデフォルト設定では、hook はそれらをダブルクォートに書き直します。
 
-hook が成功すると、Claude Code は会話に何も表示しません。hook が実行されたことを確認するには、編集されたファイルが再フォーマットされていることを確認するか、[デバッグテクニック](#debug-techniques) を参照してください。
+フックが成功すると、Claude Code は会話に何も表示しません。フックが実行されたことを確認するには、編集されたファイルが再フォーマットされていることを確認するか、[フックが何をしたかを確認する](#check-what-a-hook-did)を参照してください。
 
 ファイルが `Bash` コマンドで書き直されるときを含め、特定のファイルがどのように変更されても再フォーマットするには、代わりに [FileChanged](/docs/ja/hooks#filechanged) hook を使用してください。
 
@@ -979,7 +979,10 @@ HTTP hooks は、Web サーバー、クラウド関数、または外部サー�
 }
 ```
 
-エンドポイントは、コマンド hooks と同じ [出力形式](/docs/ja/hooks#json-output) を使用して JSON レスポンスボディを返す必要があります。ツール呼び出しをブロックするには、適切な `hookSpecificOutput` フィールドで 2xx レスポンスを返します。HTTP ステータスコードだけではアクションをブロックできません。
+エンドポイントは、コマンドフックと同じ [出力形式](/docs/ja/hooks#json-output) の JSON ボディで応答し、Claude Code はレスポンスのステータスも確認します：
+
+* **2xx ステータス**：ツール呼び出しをブロックするには、ボディで適切な `hookSpecificOutput` フィールドを返します。
+* **その他のステータス、またはリクエストが失敗した場合**：Claude Code は [ノンブロッキングエラー](/docs/ja/hooks#exit-code-output) を報告し、アクションを続行させます。失敗したエンドポイントでアクションをブロックするには、フックに [`onFailure: "block"`](/docs/ja/hooks#block-the-action-when-a-hook-fails) を設定します。
 
 ヘッダー値は `$VAR_NAME` または `${VAR_NAME}` 構文を使用した環境変数補間をサポートします。`allowedEnvVars` 配列にリストされている変数のみが解決されます。他のすべての `$VAR` 参照は空のままです。
 
@@ -1103,20 +1106,20 @@ fi
 
 フックが `permissionDecision` や `additionalContext` を `hookSpecificOutput` の内側ではなくトップレベルで返した場合でも、JSON は解析されますが、Claude Code は誤って配置されたフィールドをエラーを報告せずに無視します。どのフィールドが無視されたかを確認するには、`claude --debug` で Claude Code を起動し、[デバッグログ](/docs/ja/hooks#debug-hooks)で `Hook JSON output had unrecognized keys` を検索します。
 
-<h3 id="debug-techniques">
-  デバッグ手法
+<h3 id="check-what-a-hook-did">
+  フックの動作を確認する
 </h3>
 
-`Ctrl+O` を押してトランスクリプトビューを開き、フック実行の結果を確認します。
+`Ctrl+O` を押してトランスクリプトビューを開き、フックの結果を確認します。
 
-* **実行成功**：フックの JSON が `systemMessage` や Stop フックのフィードバックなどを表示しない限り、何も表示されません。
-  * フックが実行されたことを確認するには、ファイルが再フォーマットされたなどの効果を確認するか、以下で説明するようにデバッグログをオンにしてから再度フックをトリガーします
-* **ブロッキングエラー**：ほとんどのイベントでは、フックのフィードバックが表示されます。フックの JSON がブロックの判断を行った場合、フィードバックはその判断の理由です。それ以外の場合はフックの stderr です。`ConfigChange` や `Elicitation` などの一部のイベントでは、ブロックしてもメッセージは表示されません。
-* **非ブロッキングエラー**：アクションは続行され、`<hook name> hook error` という通知と短い説明が表示されます。説明は、`Failed with non-blocking status code:` を先頭に付けた stderr の最初の行や、JSON の検証メッセージまたは解析メッセージなどです。
+* **成功**：フックの JSON が `systemMessage` や Stop フックのフィードバックなどを表示しない限り、何も表示されません。
+  * フックが実行されたことを確認するには、ファイルが再フォーマットされたなどの効果を確認します
+* **ブロッキングエラー**：ほとんどのイベントでは、ブロックに伴うメッセージが表示されます（例：`Blocked: rm commands are not allowed`）。`ConfigChange` や `Elicitation` などの一部のイベントでは、メッセージは表示されません。メッセージの出どころについては[終了コード 2](/docs/ja/hooks#exit-code-2) で説明しています。
+* **非ブロッキングエラー**：`<hook name> hook error` という通知と短い説明が表示されます。説明は、`Failed with non-blocking status code:` の後に続く stderr の最初の行や、JSON の検証メッセージまたは解析メッセージなどです。アクションは続行されています。
 
-どの終了コードと JSON の組み合わせがそれぞれの結果を生むか（イベントごとの例外を含む）は、リファレンスの[終了コードの出力](/docs/ja/hooks#exit-code-output)セクションで定義されています。
+特定の終了コードと stdout に対する結果（イベントごとの例外を含む）を調べるには、リファレンスの[終了コードの出力](/docs/ja/hooks#exit-code-output)を参照してください。
 
-どのフックが一致したか、その終了コード、stdout、stderr を含む実行の詳細をすべて確認するには、デバッグログを読みます。`claude --debug-file /tmp/claude.log` で Claude Code を起動して既知のパスに書き込み、別のターミナルで `tail -f /tmp/claude.log` を実行します。このフラグを付けずに起動した場合は、セッションの途中で `/debug` を実行してログを有効にし、ログのパスを確認します。
+フックの終了コード、stdout、stderr を含む実行の詳細をすべて確認するには、デバッグログを読みます。`claude --debug-file /tmp/claude.log` で Claude Code を起動して既知のパスに書き込み、別のターミナルで `tail -f /tmp/claude.log` を実行します。このフラグを付けずに起動した場合は、セッションの途中で `/debug` を実行してログを有効にし、ログのパスを確認します。
 
 <h2 id="learn-more">
   詳細を学ぶ

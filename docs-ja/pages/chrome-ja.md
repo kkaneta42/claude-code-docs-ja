@@ -129,16 +129,15 @@ Chrome が実行されていない場合でも、Claude Code は通常どおり�
   VS Code セッションでの権限プロンプト
 </h3>
 
-VS Code セッションでは、ブラウザアクションの前に Claude Code が確認するかどうかは、セッションがブラウザに接続した方法によって異なります。
+VS Code セッションでは、ブラウザアクションの前に Claude Code が確認する場合、プロンプトはチャットパネルにカードとして表示されます。アクションの対象が許可していないサイトである場合、カードにはそのサイトを許可するオプションも表示されます。
 
-* **`@browser` と入力した場合**: Claude Code が通常であれば確認するブラウザアクションを、拡張機能がそれぞれ承認します。
-* **[デフォルトで有効](#enable-chrome-by-default)設定によって開始時に接続された場合**: そのセッションで `@browser` と入力するまで、Claude Code は Manual、Edit automatically、Auto、Bypass permissions の各モードで、許可していないサイトでのブラウザアクションの前に確認します。
+[デフォルトで有効](#enable-chrome-by-default)がオンになっているために開始時にブラウザに接続したセッションでは、Claude Code は Manual、Edit automatically、Auto、Bypass permissions の各モードで、許可していないサイトでのブラウザアクションの前に確認します。Auto モードと Bypass permissions モードでは、これはそのセッションで `@browser` と入力するまで適用されます。
 
 <h3 id="browser-tools-in-plan-mode">
   plan モードでのブラウザツール
 </h3>
 
-[plan モード](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode)では、Claude が GIF を記録する、新しいタブを開く、またはショートカットを実行する前に権限プロンプトが表示されます。ただし、[`@browser`](#permission-prompts-in-vs-code-sessions) と入力した VS Code セッションは除きます。対話型 CLI セッションでは、[bypassPermissions モードが利用可能](/docs/ja/permission-modes#skip-all-checks-with-bypasspermissions-mode)で、かつ[機能フラグの取得](/docs/ja/env-vars#features-that-need-feature-flag-fetching)がオフの場合、これらの呼び出しはプロンプトなしで実行されます。
+[plan モード](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode)では、Claude が GIF を記録する、新しいタブを開く、またはショートカットを実行する前に権限プロンプトが表示されます。対話型 CLI セッションでは、[bypassPermissions モードが利用可能](/docs/ja/permission-modes#skip-all-checks-with-bypasspermissions-mode)で、かつ[機能フラグの取得](/docs/ja/env-vars#features-that-need-feature-flag-fetching)がオフの場合、これらの呼び出しはプロンプトなしで実行されます。
 
 `createIfEmpty` を設定する `tabs_context_mcp` 呼び出しや、これらのアクションのいずれかを含む `browser_batch` 呼び出しでもプロンプトが表示されます。
 
@@ -202,11 +201,12 @@ Open the bug tracker at bugs.example.com, create a new issue,
 and attach logs/session.log to it
 ```
 
-アップロードには次の 3 つの制限が適用されます。
+Claude がファイルの添付を拒否した場合やアップロードが失敗した場合は、次の原因を確認してください。
 
 * **権限**: Claude がファイルをアップロードできるのは、セッションがそのファイルの読み取りを許可されている場合のみです。そのため、ファイルへの `Read` アクセスを拒否する[権限ルール](/docs/ja/settings-reference#permission-settings)は、そのファイルのアップロードもブロックします。
 * **サイズ**: 1 回のアップロードに含められるファイルは合計 10 MB までです。
 * **ハードリンク**: Claude は複数のハードリンクを持つファイルを拒否します。これは `node_modules` などのパッケージマネージャーのストア内でよく見られます。ファイルをコピーし、そのコピーをアップロードしてください。
+* **認証情報に関する名前**: Claude は、`.env`、`.pem` ファイルや `.key` ファイル、`.ssh` 配下のものなど、認証情報が保管される名前やフォルダーを持つファイルを拒否します。Claude Code v2.1.293 以降が必要です。
 
 <h3 id="draft-content-in-google-docs">
   Google Docs でコンテンツをドラフトする
@@ -309,6 +309,26 @@ Edge の場合：
 
 その他の Chromium ベースのブラウザは、ブラウザ名にちなんだ独自の設定ディレクトリから同じファイルを読み取ります。例えば、macOS 上の Brave は `~/Library/Application Support/BraveSoftware/Brave-Browser/NativeMessagingHosts/` を使用し、Windows では各ブラウザが `HKCU\Software\BraveSoftware\Brave-Browser\NativeMessagingHosts\` のような独自のレジストリキーを持ちます。
 
+<h3 id="project-settings-can’t-turn-on-chrome">
+  プロジェクト設定では Chrome をオンにできない
+</h3>
+
+ターミナルに表示されるこの警告は、作業中のプロジェクトが Chrome 統合をオンにしようとし、Claude Code がそれを許可しなかったことを意味します。
+
+```text wrap theme={null}
+Claude Code ignored CLAUDE_CODE_ENABLE_CFC in this project's settings: a project can't turn on Claude in Chrome. To turn it on yourself, run /chrome or start with --chrome.
+```
+
+プロジェクトの `.claude/settings.json` または `.claude/settings.local.json` が、Chrome 統合をオンにするために `env` ブロックで [`CLAUDE_CODE_ENABLE_CFC`](/docs/ja/env-vars#variables) を `1` に設定しています。Claude Code はその設定を適用しなかったため、このセッションでは Chrome 統合がオフになっており、Claude はブラウザツールを使用できません。
+
+Claude Code がこの設定をスキップするのは、これらのファイルがプロジェクトディレクトリに保存されており、チェックアウトしたリポジトリが Claude をブラウザに接続できてはならないためです。
+
+そのまま作業を続けることができます。ブラウザツールを使用したい場合や警告を消したい場合は、次のいずれかを行います。
+
+* **今すぐブラウザツールを使用するには**：終了し、シェルで `claude --chrome` を使用して再度起動します。
+* **以降のセッションでブラウザツールを使用するには**：Claude Code のプロンプトで `/chrome` を実行し、[**Enabled by default**](#enable-chrome-by-default) を選択します。これはその後に開始するセッションに適用され、実行中のセッションには適用されません。
+* **ブラウザツールなしで警告を止めるには**：プロジェクトの設定ファイルから `CLAUDE_CODE_ENABLE_CFC` の行を削除します。
+
 <h3 id="browser-not-responding">
   ブラウザが応答しない
 </h3>
@@ -324,6 +344,22 @@ Claude のブラウザコマンドが機能しなくなった場合：
 </h3>
 
 Chrome 拡張機能のサービスワーカーは長時間のセッション中にアイドル状態になる可能性があり、接続が切れます。非アクティブ期間後にブラウザツールが機能しなくなった場合、`/chrome` を実行して「Reconnect extension」を選択します。
+
+`/chrome` を実行したら、その `Status` 行を確認します。「Not connected」と表示されている場合、実行中のセッション自体の Chrome への接続が失敗しています。「Reconnect extension」を選択してその接続を再開します。接続が成功すると、Chrome で拡張機能の再接続ページが開きます。v2.1.290 より前では、「Reconnect extension」はそのページを開くだけで、失敗した接続を再開しなかったため、以前のバージョンでブラウザツールが復帰しない場合は Claude Code を更新してください。
+
+<h3 id="extension-signed-in-to-a-different-organization">
+  拡張機能が別の組織にサインインしている
+</h3>
+
+複数の claude.ai 組織に所属している場合、拡張機能は Claude Code と同じ組織にサインインしている必要があります。両者が異なる場合、両方が同じ claude.ai アカウントを使用していても、Claude のブラウザツールは「Browser extension is not connected」を返します。
+
+Claude Code がどの組織にサインインしているかを確認するには、Claude Code のプロンプトで [`/status`](/docs/ja/commands) を実行し、`Organization` 行を確認します。
+
+<Warning>
+  拡張機能からログアウトすると、拡張機能に保存されているショートカットとスケジュールタスクが失われます。まず[一般的なエラーメッセージ](#common-error-messages)にある他の解決策を試してください。
+</Warning>
+
+拡張機能の組織を変更するには、拡張機能の設定でログアウトしてから再度ログインし、`/status` に表示される組織を選択します。
 
 <h3 id="windows-specific-issues">
   Windows 固有の問題
@@ -343,7 +379,7 @@ Windows では、以下の問題が発生する可能性があります。
 
 | エラー | 原因 | 修正 |
 | - | - | - |
-| "Browser extension is not connected" | ネイティブメッセージングホストが拡張機能に到達できない、または組織の IP 許可リストが `bridge.claudeusercontent.com` への接続を拒否している | 拡張機能が Claude Code と同じ claude.ai アカウントにサインインしていることを確認し、Chrome と Claude Code を再起動してから、`/chrome` を実行して再接続します。組織が IP 許可リストを使用しており、エラーが解決しない場合は、[組織の IP 許可リストとプロキシのエグレス](/docs/ja/network-config#organization-ip-allowlists-and-proxy-egress)を参照してください |
+| "Browser extension is not connected" | 拡張機能が Chrome にインストールされていないか実行されていない、拡張機能が Claude Code とは異なる claude.ai アカウントまたは組織にサインインしている、または組織の IP 許可リストが `bridge.claudeusercontent.com` への接続を拒否している | 拡張機能が Claude Code と同じ claude.ai アカウントおよび[組織](#extension-signed-in-to-a-different-organization)にサインインしていることを確認し、Chrome と Claude Code を再起動してから、`/chrome` を実行して再接続します。組織が IP 許可リストを使用しており、エラーが解決しない場合は、[組織の IP 許可リストとプロキシのエグレス](/docs/ja/network-config#organization-ip-allowlists-and-proxy-egress)を参照してください |
 | `/chrome` で拡張機能に「Not detected」と表示される | Chrome 拡張機能がインストールされていないか、無効になっている | `chrome://extensions` で拡張機能をインストールまたは有効にします |
 | "No tab available" | Claude がタブの準備ができる前に動作しようとした | Claude に新しいタブを作成して再度試すよう依頼します |
 | "Receiving end does not exist" | 拡張機能サービスワーカーがアイドル状態になった | `/chrome` を実行して「Reconnect extension」を選択します |

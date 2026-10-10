@@ -370,27 +370,60 @@ Claude Code は、お客様がターミナルに入力中または接続され�
   制限事項
 </h2>
 
-* **インタラクティブプロセスごとに 1 つのリモートセッション**: サーバーモード外では、各 Claude Code インスタンスは一度に 1 つのリモートセッションをサポートします。単一プロセスから複数の同時セッションを実行するには、[サーバーモード](#start-a-remote-control-session)を使用してください。
-* **ローカルプロセスを実行し続ける必要がある**: Remote Control はローカルプロセスとして実行されます。ターミナルを閉じたり、Desktop アプリや VS Code を終了したり、その他の方法で `claude` プロセスを停止したりすると、[再開する](#resume-sessions-after-stopping-the-server)までセッションはオフラインになります。リモートマシン上のターミナルから `claude` を実行する場合は、SSH の接続を切断した後もセッションが実行され続けるように、`tmux` または `screen` の中で起動してください。
-* **サーバーモードでのクラッシュしたセッション**: `claude remote-control` で提供されるセッションがクラッシュした場合、接続されたデバイスからメッセージを送信してください。Claude Code はそれを再度提供します。サーバーを再起動する必要はありません。Claude Code v2.1.238 以降が必要です。
-* **接続されたセッションでの HTTP 403 拒否**: インタラクティブセッションが接続されると、VPN またはネットワークの変更後に発生する可能性があるように、マシンと Anthropic のサーバー間の何かが HTTP 403 で応答する場合、Claude Code は最大 3 分間再試行を続けます。拒否が長く続く場合、Claude Code は切断され、理由は何が拒否したかを示します。ネットワークエッジ、またはユーザー自身のネットワーク上のプロキシ、VPN、またはファイアウォールです。
-* **拡張ネットワーク障害**: マシンが起動しているがネットワークに到達できない場合、次に何をするかはモードによって異なります。
-  * **サーバーモード**: Claude Code は約 10 分後にあきらめ、`claude remote-control` プロセスが終了します。新しいセッションを開始するには、`claude remote-control` を再度実行してください。
-  * **インタラクティブセッション**: ローカルで作業を続けてください。Claude Code は障害が続く限り再試行を続け、ネットワークが戻ると自動的に再接続します。
-* **ダウンロードされない添付ファイル**: スマートフォンまたはブラウザから添付したファイルをマシンにダウンロードできない場合でも、Claude はメッセージとダウンロードされたファイルを受け取ります。欠落しているファイルの代わりに、Claude Code は `[1 of 3 attachments did not arrive]` などの注記をメッセージに追加します。
-* **プレゼンスハートビートの失敗**: インタラクティブセッションが `could not reach the Remote Control server for about 30 minutes` で切断された場合、`/remote-control` を実行して再接続してください。
-* **転送されたダイアログの有効期限**: Claude Code は権限プロンプトと `AskUserQuestion` の質問を、回答するまで開いたままにします。Claude Code が別の種類のダイアログをリモートセッションに転送する場合（安全性拒否後に表示されるモデル選択プロンプトなど）、デフォルトでは 5 分待機してからダイアログを閉じ、ダイアログのアクション不要なデフォルトで続行します。[`dialogExpiry`](/docs/ja/settings-reference#dialogexpiry) を設定して期限を調整または無効にしてください。Claude Code v2.1.224 以降が必要です。
-* **Fable 使用クレジット同意プロンプトは転送されません**: Claude Code は、セッションが実行される場所でのみ、デバイスではなく、セッション中の [Fable 使用クレジット同意プロンプト](/docs/ja/model-config#fable-and-usage-credits)を表示します。セッションがターミナルで実行され、そこにいる誰もが Claude Code がプロンプトを閉じる前に回答しない場合、ターンはリクエストを送信せずに終了します。[プロンプトの確認が未回答のままでした](/docs/ja/errors#the-prompt-to-confirm-went-unanswered)を参照してください。
-* **一部のコマンドはローカルのみ**: `/plugin` や `/resume` などのターミナルインターフェイスでのみ実行されるコマンドは、引数を渡すかどうかに関わらず、ローカル CLI からのみ機能します。`/claude-api` も、モバイルまたは Web から入力した場合は使用できません。ただし、そこでも Claude は[そのスキルを自ら読み込む](/docs/ja/skills#work-on-claude-api-projects)ことができます。以下はモバイルと Web から機能します。
-  * テキスト出力コマンド: `/compact`、`/clear`、`/context`、`/usage`、`/exit`、`/usage-credits`、`/recap`、および `/reload-plugins`。`/usage-credits` はブラウザを開く代わりに請求 URL を出力します。`/reload-plugins` はセッションがインタラクティブターミナルで実行されている場合にのみ機能します。セッションがない場合は拒否されます。
-  * `/model`、`/effort`、`/fast`、`/color`、および `/rename`: 値を引数として渡してください。例えば `/model sonnet` または `/effort high`。モバイルと Web から、`/model` と `/effort` は、ターミナルピッカーまたはスライダーの代わりに引数を取ります。
-  * `/mcp`: モバイルアプリから、ピッカーを開く代わりにサーバーステータスのテキスト概要を返します。Web では、`/mcp` 単独で概要を返す代わりに [claude.ai コネクタ](/docs/ja/mcp#use-mcp-servers-from-claude-ai)のディレクトリを開きます。`reconnect`、`enable`、および `disable` [サブコマンド](/docs/ja/commands#all-commands)は両方から機能します。サーバー名なしの `/mcp reconnect` は、失敗したサーバーまたは認証が必要なすべてのサーバーを再試行します。
-  * `/config`: モバイルアプリから、`key=value` を渡して設定を設定するか、引数なしで実行して設定できるキーをリストします。Web では、`/config` は代わりに設定の Claude Code セクションを開き、コマンド後のテキストを無視します。
-  * Team および Enterprise では、モバイルまたは Web から `/usage-credits` は [使用クレジットリクエストを管理者に送信](/docs/ja/costs#add-usage-credits-to-your-subscription)しません。送信にはインタラクティブ CLI にのみ表示される確認が必要なため、コマンドはそこで実行するよう指示します。
-  * `/autocompact`、v2.1.221 から: ウィンドウサイズを引数として渡してください。例えば `/autocompact 500k`。引数がない場合、ターミナルセッションでコマンドが表示するダイアログを開く代わりに、現在のウィンドウサイズをテキストとして出力します。
-  * `/advisor`、v2.1.260 から: モデルを引数として渡してください。例えば `/advisor opus`、または `off` を渡してアドバイザーをオフにしてください。両方の形式は現在のセッションにのみ適用され、保存されたデフォルトは変わりません。引数がない場合、ピッカーを開く代わりに現在のアドバイザーをテキストとして出力します。
-  * `/output-style`、v2.1.269 から: スタイル名を引数として渡してください。例えば `/output-style concise`、または引数なしで実行してスタイルをリストします。モバイルと Web から、[組み込みスタイル](/docs/ja/output-styles#built-in-output-styles)のみをリストして選択できます。[カスタムスタイル](/docs/ja/output-styles#create-a-custom-output-style)を使用するには、セッション自体で選択してください。
-  * `/focus`、v2.1.281 から: 引数として `on` または `off` を渡してください。例えば `/focus on`、または引数なしで実行して [フォーカスビュー](/docs/ja/commands#all-commands)を切り替えます。両方の形式は現在のセッションにのみ適用され、保存された選択は変わりません。
+* **対話型プロセスごとに 1 つのリモートセッション**: サーバーモード以外では、各 Claude Code インスタンスは一度に 1 つのリモートセッションをサポートします。単一のプロセスから複数のセッションを同時に実行するには、[サーバーモード](#start-a-remote-control-session)を使用してください。
+* **ローカルプロセスを実行し続ける必要がある**: Remote Control はローカルプロセスとして実行されます。ターミナルを閉じる、Desktop アプリや VS Code を終了する、またはその他の方法で `claude` プロセスを停止すると、[再開する](#resume-sessions-after-stopping-the-server)までセッションはオフラインになります。リモートマシン上のターミナルから `claude` を実行する場合は、SSH から切断した後もセッションが実行され続けるように、`tmux` または `screen` の中で起動してください。
+* **サーバーモードでクラッシュしたセッション**: `claude remote-control` で提供されているセッションがクラッシュした場合は、接続済みのデバイスからそのセッションにメッセージを送信してください。Claude Code がそのセッションを再び提供します。サーバーを再起動する必要はありません。Claude Code v2.1.238 以降が必要です。
+* **接続済みセッションでの HTTP 403 拒否**: 対話型セッションが接続されると、VPN やネットワークの変更後などに、マシンと Anthropic のサーバーの間にある何かが HTTP 403 で応答した場合、Claude Code は最大 3 分間再試行を続けます。拒否がそれより長く続くと Claude Code は切断し、その理由として拒否したもの（ネットワークエッジ、または自分のネットワーク上のプロキシ、VPN、ファイアウォール）が示されます。
+* **長時間のネットワーク障害**: マシンがスリープしていないのにネットワークに到達できない場合、次に行うことはモードによって異なります。
+  * **サーバーモード**: Claude Code は約 10 分後に諦め、`claude remote-control` プロセスが終了します。新しいセッションを開始するには、`claude remote-control` を再度実行してください。
+  * **対話型セッション**: ローカルで作業を続けてください。Claude Code は障害が続く間再試行を続け、ネットワークが復旧すると自動的に再接続します。
+* **ダウンロードされない添付ファイル**: スマートフォンやブラウザから添付したファイルをマシンにダウンロードできない場合でも、Claude はメッセージとダウンロードできたファイルを受け取ります。欠けているファイルの代わりに、Claude Code は `[1 of 3 attachments did not arrive]` のような注記をメッセージに追加します。
+* **プレゼンスハートビートの失敗**: 対話型セッションが `could not reach the Remote Control server for about 30 minutes` で切断された場合は、`/remote-control` を実行して再接続してください。
+* **転送されたダイアログの有効期限**: Claude Code は、権限プロンプトと `AskUserQuestion` の質問を、回答するまで開いたままにします。安全性による拒否の後に表示されるモデル選択プロンプトなど、別の種類のダイアログを Claude Code がリモートセッションに転送した場合は、デフォルトで 5 分間待機した後、ダイアログを閉じて、そのダイアログの何もしないデフォルトで続行します。期限を調整または無効にするには、[`dialogExpiry`](/docs/ja/settings-reference#dialogexpiry) を設定してください。Claude Code v2.1.224 以降が必要です。
+* **Fable の使用クレジット同意プロンプトは転送されない**: Claude Code は、セッション中の [Fable の使用クレジット同意プロンプト](/docs/ja/model-config#fable-and-usage-credits)を、デバイス上ではなくセッションが実行されている場所でのみ表示します。セッションがターミナルで実行されていて、Claude Code がプロンプトを閉じる前にそこで誰も回答しなかった場合、ターンはリクエストを送信せずに終了します。[The prompt to confirm went unanswered](/docs/ja/errors#the-prompt-to-confirm-went-unanswered) を参照してください。
+* **一部のコマンドはローカル専用**: `/plugin` や `/resume` など、ターミナルインターフェースでのみ実行されるコマンドは、引数を渡すかどうかにかかわらず、ローカルの CLI からのみ動作します。`/claude-api` も、モバイルや Web から入力した場合は使用できません。ただし、そこでも Claude は[そのスキルを自ら読み込む](/docs/ja/skills#work-on-claude-api-projects)ことができます。以下はモバイルと Web から動作します。
+  * テキスト出力コマンド: `/compact`、`/clear`、`/context`、`/usage`、`/exit`、`/usage-credits`、`/recap`、`/reload-plugins`。`/usage-credits` はブラウザを開く代わりに請求 URL を出力します。`/reload-plugins` は、セッションが対話型ターミナルで実行されている場合にのみ動作します。対話型ターミナルのないセッションではこのコマンドは拒否されます。
+  * `/model`、`/effort`、`/fast`、`/color`、`/rename`: 値を引数として渡します（例: `/model sonnet` や `/effort high`）。モバイルと Web からは、`/model` と `/effort` はターミナルのピッカーやスライダーの代わりに引数を受け取ります。
+  * `/mcp`: モバイルアプリからは、ピッカーを開く代わりにサーバーのステータスのテキスト要約を返します。Web では、`/mcp` を単独で実行すると、要約を返す代わりに [claude.ai コネクタ](/docs/ja/mcp#use-mcp-servers-from-claude-ai)のディレクトリが開きます。`reconnect`、`enable`、`disable` の[サブコマンド](/docs/ja/commands#all-commands)は、セッションが対話型ターミナルで実行されている場合、どちらからでも動作します。サーバー名を指定しない `/mcp reconnect` は、失敗した、または認証が必要なすべてのサーバーを再試行します。ピッカーを使わずに claude.ai コネクタを認可するには、[シェルからコネクタを再度認可する](#authorize-a-connector-again-from-your-shell)を参照してください。
+  * `/config`: モバイルアプリからは、`key=value` を渡して設定を変更するか、引数なしで実行して設定可能なキーを一覧表示します。Web では、`/config` は代わりに設定の Claude Code セクションを開き、コマンドの後のテキストは無視されます。
+  * Team と Enterprise では、モバイルや Web からの `/usage-credits` は[管理者への使用クレジットのリクエスト](/docs/ja/costs#add-usage-credits-to-your-subscription)を送信しません。送信には対話型 CLI でのみ表示される確認が必要なため、このコマンドは代わりにそちらで実行するよう案内します。
+  * `/autocompact`（v2.1.221 以降）: ウィンドウサイズを引数として渡します（例: `/autocompact 500k`）。引数なしの場合、ターミナルセッションでこのコマンドが表示するダイアログを開く代わりに、現在のウィンドウサイズをテキストとして出力します。
+  * `/advisor`（v2.1.260 以降）: モデルを引数として渡すか（例: `/advisor opus`）、`off` を渡してアドバイザーをオフにします。どちらの形式も現在のセッションにのみ適用され、保存済みのデフォルトは変更されません。引数なしの場合、ピッカーを開く代わりに現在のアドバイザーをテキストとして出力します。
+  * `/output-style`（v2.1.269 以降）: スタイル名を引数として渡すか（例: `/output-style concise`）、引数なしで実行してスタイルを一覧表示します。モバイルと Web からは、[組み込みスタイル](/docs/ja/output-styles#built-in-output-styles)のみを一覧表示・選択できます。[カスタムスタイル](/docs/ja/output-styles#create-a-custom-output-style)を使用するには、セッション自体で選択してください。
+  * `/focus`（v2.1.281 以降）: `on` または `off` を引数として渡すか（例: `/focus on`）、引数なしで実行して[フォーカスビュー](/docs/ja/commands#all-commands)を切り替えます。どちらの形式も現在のセッションにのみ適用され、保存済みの選択は変更されません。
+
+<h2 id="authorize-a-connector-again-from-your-shell">
+  シェルからコネクタを再度認可する
+</h2>
+
+Remote Control で操作しているセッションで claude.ai コネクタの認証が必要になった場合、モバイルアプリや Web からは `/mcp` パネルを利用できません。セッションが実行されているマシン上のターミナルから認可リンクを取得し、使用しているデバイスでそのリンクを開いてください。このコマンドはモバイルアプリや Web からは実行できません。そこから送信した `!` で始まる行は Claude へのメッセージとして送られ、[シェルモード](/docs/ja/interactive-mode#shell-mode-with-prefix)では実行されません。
+
+<Steps>
+  <Step title="認可リンクを取得する">
+    セッションが実行されているマシン上のターミナル（SSH 経由など）で、コネクタ名を引用符で囲んで `claude mcp login` を実行します。コネクタ名は `claude.ai` で始まります。たとえば Slack コネクタの場合は `claude.ai Slack` です。次のコマンドは Slack コネクタのリンクを取得します。
+
+    ```bash theme={null}
+    claude mcp login "claude.ai Slack" --no-browser
+    ```
+
+    このコマンドは claude.ai のリンクを出力して終了します。ブラウザでリンクを開き、claude.ai で認可を完了してください。`--no-browser` を指定すると、コマンドがそのマシン上でブラウザを開かなくなります。そのマシンは、使用しているデバイスとは限らないためです。
+  </Step>
+
+  <Step title="セッションでコネクタを使用する">
+    新しいセッションを開始するか、すでに実行中のセッションでコネクタを再接続します。
+
+    * **新しいセッション**：認可後に開始したセッションは、追加の手順なしでコネクタに接続します。
+    * **実行中のセッション**：Claude Code のプロンプトで、またはモバイルアプリや Web から、同じ名前を引用符なしで指定して `/mcp reconnect` を実行します。セッションがモバイルアプリや Web からこのコマンドを受け付けるかどうかを確認するには、[モバイルと Web から使用できるコマンド](#limitations)の `/mcp` の項目を参照してください。
+
+    次のコマンドは Slack コネクタを再接続します。
+
+    ```text theme={null}
+    /mcp reconnect claude.ai Slack
+    ```
+
+    ターミナルでは、Claude Code が `Successfully reconnected to claude.ai Slack` と出力します。モバイルアプリや Web からの場合、応答は `Reconnected "claude.ai Slack".` です。
+  </Step>
+</Steps>
 
 <h2 id="troubleshooting">
   トラブルシューティング

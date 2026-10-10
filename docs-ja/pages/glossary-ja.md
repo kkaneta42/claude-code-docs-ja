@@ -465,7 +465,7 @@ Claude Code が [harness](#agentic-harness) として会話に追加するメッ
 
 コマンド `/teleport`。クラウド Claude Code セッションをローカルターミナルにプルします。Claude はブランチをフェッチし、会話履歴をロードし、クラウドセッションの最後の状態から再開します。逆方向は `--cloud` です。ローカルタスクをクラウドで実行するために送信します。
 
-詳細情報: [クラウドからターミナルへ](/docs/ja/claude-code-on-the-web#from-cloud-to-terminal)
+詳細情報: [ターミナルでクラウドセッションを続行する](/docs/ja/claude-code-on-the-web#from-cloud-to-terminal)
 
 <h3 id="tool">
   Tool

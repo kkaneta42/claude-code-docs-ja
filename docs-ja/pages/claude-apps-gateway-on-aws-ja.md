@@ -478,7 +478,7 @@ export PRIVATE_SUBNETS="<subnet-id-a> <subnet-id-b>"
   </Step>
 
   <Step title="ゲートウェイ URL を開発者マシンにプッシュする">
-    ゲートウェイは実行されていますが、ゲートウェイ URL が開発者のマシンに配置されるまで、開発者は `/login` からゲートウェイに到達できません。MDM を介して各デバイスにデプロイする[管理設定ファイル](/docs/ja/claude-apps-gateway#set-the-gateway-url)で `forceLoginMethod` と `forceLoginGatewayUrl` を設定します。ログインピッカーには、開発者が手動で選択できるゲートウェイオプションはありません。
+    ゲートウェイは実行されていますが、ゲートウェイ URL が開発者のマシンに配置されるまで、開発者は `/login` からゲートウェイに到達できません。`forceLoginMethod`、`forceLoginGatewayUrl`、および `parentSettingsBehavior: "merge"` のオプトインを含む完全な[管理設定スニペット](/docs/ja/claude-apps-gateway#set-the-gateway-url)を、MDM を介して各デバイスにデプロイします。ログインピッカーには、開発者が手動で選択できるゲートウェイオプションはありません。
   </Step>
 </Steps>
 

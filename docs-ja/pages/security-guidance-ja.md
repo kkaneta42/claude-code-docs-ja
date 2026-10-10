@@ -74,8 +74,10 @@ security guidance プラグインは、Claude が作業中に自身のコード�
 
 各レイヤーは [独自のルールを追加](#add-your-own-rules) することで拡張できます。組み込みチェックは個別に削除することはできませんが、各レイヤーは [独立して無効化](#disable-or-uninstall) できます。
 
-<h3 id="on-each-file-edit">
-  各ファイル編集時
+<span id="on-each-file-edit" />
+
+<h3 id="checks-on-each-file-edit">
+  各ファイル編集時のチェック
 </h3>
 
 Claude がファイルに書き込むと、プラグインは新しいコンテンツをスキャンして既知のリスキーなパターンを探します。これはモデル呼び出しのないパターンマッチなので、使用コストは追加されません。
@@ -91,8 +93,10 @@ Claude がファイルに書き込むと、プラグインは新しいコンテ�
 
 `security-patterns.yaml` ファイルを使用して、このレイヤーに [独自のパターンを追加](#add-custom-per-edit-patterns) できます。
 
-<h3 id="at-the-end-of-each-turn">
-  各ターンの終了時
+<span id="at-the-end-of-each-turn" />
+
+<h3 id="checks-at-the-end-of-each-turn">
+  各ターンの終了時のチェック
 </h3>
 
 ターンは Claude が応答する 1 ラウンドです：メッセージを送信し、Claude が作業して返信し、ターンが終了します。各ターンの後、プラグインはターン中に作業ツリーで変更されたすべてのもの（Claude の編集ツール、Bash コマンド、サブエージェントからの変更を含む）の git diff を計算し、セキュリティに焦点を当てた別の Claude レビューに送信します。レビューはバックグラウンドで実行されるため、Claude の返信は遅延しません。レビューが問題を見つけた場合、Claude は結果を使用して再度プロンプトされ、フォローアップとして対処します。
@@ -107,8 +111,10 @@ Claude がファイルに書き込むと、プラグインは新しいコンテ�
 
 セッションで直接、結果と Claude の解決策の両方が表示されます。レビューはターンごとに最大 30 個の変更されたファイルをカバーし、最大 3 回連続で発火してからあなたに戻ります。
 
-<h3 id="on-each-commit-or-push-claude-makes">
-  Claude が行う各コミットまたはプッシュ時
+<span id="on-each-commit-or-push-claude-makes" />
+
+<h3 id="checks-on-each-commit-or-push-claude-makes">
+  Claude が行う各コミットまたはプッシュ時のチェック
 </h3>
 
 Claude が Bash ツールを通じて `git commit` または `git push` を実行すると、プラグインはバックグラウンドで変更の深い agentic レビューを実行します。このレビューは、呼び出し元、サニタイザー、関連ファイルを含む周囲のコードを読んで、結果が実際のものであるかどうかを判断してから報告します。追加のコンテキストは、分離されたときは危険に見えるが、コードベースでは安全なパターンの偽陽性を低く保ちます。

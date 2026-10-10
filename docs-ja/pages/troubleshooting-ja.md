@@ -11,7 +11,7 @@
 | 症状 | 移動先 |
 | :- | :- |
 | `command not found`、インストール失敗、PATH の問題、`EACCES`、TLS エラー | [インストールとログインのトラブルシューティング](/docs/ja/troubleshoot-install) |
-| 更新またはインストールダウンロードが `The connection dropped while downloading the update` または `aborted` で失敗する | [エラーリファレンス](/docs/ja/errors#the-connection-dropped-while-downloading-the-update) |
+| 更新またはインストールダウンロードが `The connection dropped while downloading the update` または `aborted` で失敗する | [インストールとログインのトラブルシューティング](/docs/ja/troubleshoot-install#the-connection-dropped-while-downloading-the-update) |
 | ログインループ、OAuth エラー、`403 Forbidden`、「organization disabled」、Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry 認証情報 | [インストールとログインのトラブルシューティング](/docs/ja/troubleshoot-install#login-and-authentication) |
 | 設定が適用されない、hooks が実行されない、MCP サーバーがロードされない | [設定をデバッグする](/docs/ja/debug-your-config) |
 | セッションが auto モードで開始された、または Claude がファイルを編集してコマンドを実行する（確認なし） | [セッションが開始するモード](/docs/ja/permission-modes#which-mode-a-session-starts-in) |

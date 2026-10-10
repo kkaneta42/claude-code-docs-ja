@@ -166,6 +166,7 @@ Claude Code でできることについてのアイデアについては、[一�
 * **ブックマーク**: 応答にマウスを置いて **Bookmark response** をクリックして保存するか、保存された応答で **Remove bookmark** をクリックして削除します。
 
   保存された応答を確認するには、Bookmarks パネルを開きます。Claude Code パネルの上部にあるブックマークアイコンをクリックするか、コマンドメニューの Context セクションで **Bookmarks** を選択するか、`/bookmarks` を入力します。Claude Code v2.1.286 以降が必要です。
+* **Claude が送信したファイル**: セッションが [Remote Control](/docs/ja/remote-control#start-a-remote-control-session) に接続されていて、Claude が [`SendUserFile` ツール](/docs/ja/tools-reference)でファイルを送信すると、会話に **Sent report.md, chart.png** のような行が表示されます。ファイル名をクリックするとエディターで開きます。
 * **コンテキスト表示**: プロンプトボックスは Claude のコンテキストウィンドウをどの程度使用しているかを表示します。Claude は必要に応じて自動的にコンパクトにするか、`/compact` を手動で実行できます。
 * **プロンプトキャッシュクロック**: コンテキスト表示の横にある時計アイコンは、会話の[プロンプトキャッシュ](/docs/ja/prompt-caching)が期限切れになるまでの時間を推定します。キャッシュの 5 分または 1 時間の[有効期限](/docs/ja/prompt-caching#cache-lifetime)からカウントダウンし、キャッシュを使用する各応答がカウントダウンを再開します。コンパクション以外に、[キャッシュを無効にするアクション](/docs/ja/prompt-caching#actions-that-invalidate-the-cache)はクロックをリセットしないため、モデルを切り替えた後も残り時間を表示できます。
   * カウントダウンが終了するまで、アイコンは **12m** などの残り時間を表示します。
@@ -478,7 +479,7 @@ Claude を Chrome ブラウザに接続して、Web アプリをテストし、�
 
 Claude はブラウザタスク用に新しいタブを開き、ブラウザのログイン状態を共有するため、既にサインインしているサイトにアクセスできます。
 
-`@browser` と入力しなくても各セッションの開始時にブラウザへ接続されるようにするには、[Chrome をデフォルトで有効にする](/docs/ja/chrome#enable-chrome-by-default) を参照してください。そのように接続されたセッションで Claude Code がブラウザ操作の前に確認を求める場合については、[VS Code セッションでの権限プロンプト](/docs/ja/chrome#permission-prompts-in-vs-code-sessions) を参照してください。
+`@browser` と入力しなくても各セッションの開始時にブラウザへ接続されるようにするには、[Chrome をデフォルトで有効にする](/docs/ja/chrome#enable-chrome-by-default) を参照してください。Claude Code がブラウザ操作の前に確認を求める場合については、[VS Code セッションでの権限プロンプト](/docs/ja/chrome#permission-prompts-in-vs-code-sessions) を参照してください。
 
 セットアップ手順、機能の完全なリスト、トラブルシューティングについては、[Claude Code を Chrome で使用する](/docs/ja/chrome) を参照してください。
 
@@ -597,6 +598,7 @@ VS Code は `initialPermissionMode` をユーザー設定から読み込み、�
 | `useCtrlEnterToSend` | `false` | Enter の代わりに Ctrl/Cmd+Enter を使用してプロンプトを送信します |
 | `scrollToBottomOnSend` | `true` | メッセージを送信するときに会話を下部にスクロールします。オフの場合、会話は元の位置に留まります。Claude Code v2.1.275 以降が必要です |
 | `showMessageTimestamps` | `true` | 各メッセージが送信された日時を表示します。日付が変わる位置には日付行が表示されます。Claude Code v2.1.284 以降が必要です。v2.1.290 より前は、デフォルトは `false` でした |
+| `spinnerVerbs` | `{"mode": "append", "verbs": []}` | ターンの実行中に会話のスピナーが順に表示する動詞を設定します。CLI の [`spinnerVerbs`](/docs/ja/settings-reference#spinnerverbs) と同じ `mode` フィールドと `verbs` フィールドを使用します。 |
 | `enableNewConversationShortcut` | `false` | Cmd/Ctrl+N を有効にして新しい会話を開始します |
 | `enableReopenClosedSessionShortcut` | `true` | Cmd/Ctrl+Shift+T を使用して、最近閉じた Claude セッションタブを再度開きます。最後に閉じたタブが Claude セッションではなかった場合、ショートカットは VS Code の通常の再度開く閉じたエディターコマンドを実行します。 |
 | `archiveInactiveSessions` | `14` | この日数アクティビティがない場合、[セッションを自動的にアーカイブします](#resume-past-conversations)：`1`、`2`、`7`、または `14`。`0` に設定してオフにします。Claude Code v2.1.265 以降が必要です |

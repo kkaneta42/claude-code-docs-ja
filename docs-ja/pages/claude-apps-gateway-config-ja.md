@@ -968,11 +968,44 @@ v2.1.232 より前では、ゲートウェイはこれらの値で起動しま�
 * `@`、空白、またはコンマを含む `email_domain`：ポリシーは誰にもマッチしませんでした
 * `groups` または `admin_groups` の空のエントリ：そのユーザーの IdP `groups` クレームにも空のエントリが含まれている場合にのみ、エントリはユーザーにマッチしました。`admin_groups` では、そのマッチにより管理者アクセスが付与されました。`admin_groups` リストに空のエントリが一度も含まれていなかった場合、この方法で管理者アクセスを得た人はいません。
 
+<h4 id="choose-cli-or-code">
+  `cli` と `code` のどちらを選ぶか
+</h4>
+
+<Warning>
+  ポリシーで `code` キーを使用する場合、次のいずれかによってゲートウェイが起動しなくなります。
+
+  * **ゲートウェイのバージョン**: `code` には、ゲートウェイサーバー上の Claude Code v2.1.296 以降が必要です。それより前のゲートウェイは、このキーを見つけると起動を拒否します。キーを追加する前にすべてのレプリカをアップグレードし、以前のバージョンにロールバックする前に `code` を `cli` に戻してください。
+  * **キーの混在**: `code` と `cli`（またはその以前の表記である `settings`）の両方を含むファイルは、起動時にゲートウェイを停止させます。1 回の編集で、すべてのブロックを 1 つのキーの下に置いてください。
+</Warning>
+
+`.env` ファイルの読み取りを拒否するルールなど、ポリシーの Claude Code の設定は、`cli` または `code` キーの下のブロックに記述します。`code` が推奨されるキーで、`cli` は従来のキーです。どちらのキーも同じ内容を受け付けます。キーによって、設定が適用される場所が決まります。
+
+* **`cli`**: ターミナル、VS Code と JetBrains の拡張機能、Agent SDK。`cli` の下では、Claude Desktop の Code タブには [派生した設定](#claude-desktop-overlay) が適用されるため、`Read(./.env)` のようなスコープ付きルールはそこでのユーザーの操作を止めません。
+* **`code`**: 同じ場所に加え、Claude Desktop の Code タブもカバーできます。
+
+`cli` を使用するファイルは従来どおり動作し、[`desktop`](#claude-desktop-overlay) キーを持つポリシーで `cli` を検出したゲートウェイは、起動時に警告を出しますが起動は続行します。設定が Code タブにも適用されるように、`code` に切り替えてください。
+
+切り替える前に、[Code タブで `code` 設定を適用する](#apply-code-settings-in-the-code-tab) をお読みください。設定がそこで適用されるには、ポリシーに `desktop` キーが必要で、ユーザーのマシンでのセットアップも必要です。また、Claude Desktop では Web 検索がオフになります。
+
+次のポリシーは、拒否ルールを `code` の下に置き、空の `desktop` キーを持っています。
+
+```yaml theme={null}
+managed:
+  policies:
+    - match: {}
+      code:
+        permissions: { deny: ["Read(./.env)"] }
+      desktop: {}
+```
+
+切り替える際は、ブロック名を変更するのと同じ編集で、`serve_to_desktop` の行をすべて削除してください。説明で `cli` ブロックに言及している箇所では、`code` ブロックを使用してください。
+
 <h4 id="what-goes-in-cli">
   `cli` に何を入れるか
 </h4>
 
-各 `cli` 値は完全な Claude Code `managed-settings.json` ドキュメントであり、MDM または `/etc/claude-code/managed-settings.json` を介してデプロイするのと同じスキーマを、ここでは YAML で表現したものです。CLI は配信されたドキュメントを、ユーザー設定とプロジェクト設定より上の管理層で、サーバー管理設定の代わりに適用します。したがって、[OS レベルのポリシーソースに限定される設定](/docs/ja/server-managed-settings#current-limitations)（`policyHelper` や `wslInheritsWindowsSettings` など）は無視されます。
+各 `code` または `cli` の値は、完全な Claude Code の `managed-settings.json` ドキュメントであり、MDM や `/etc/claude-code/managed-settings.json` でデプロイするものと同じスキーマを、ここでは YAML で表現したものです。CLI は配信されたドキュメントを、ユーザー設定やプロジェクト設定より上位の管理レベルで、サーバー管理設定の代わりに適用します。そのため、`policyHelper` や `wslInheritsWindowsSettings` など、[OS レベルのポリシーソースに限定された](/docs/ja/server-managed-settings#current-limitations) 設定は無視されます。
 
 ゲートウェイはブート時に各ドキュメントを CLI の設定スキーマに対して検証するため、認識されないトップレベルキーがあるとブートが失敗し、違反するすべてのキーを示すエラーが表示されます。スキーマの意図的にオープンな部分は引き続き任意の値を受け入れます。新しいクライアントが、ゲートウェイのスキーマが認識しないエントリを認識する可能性があるためです。これらのオープンキーには `env`、`pluginConfigs`、`permissions` の下にネストされたキーが含まれます。
 
@@ -1039,11 +1072,11 @@ Claude Code は、モデル選択設定や数値制限など、配信された `
 
 ゲートウェイの [テレメトリ](#telemetry) 設定は `OTEL_EXPORTER_OTLP_ENDPOINT` をプッシュするため、`telemetry.forward_to` を設定すると各インタラクティブクライアントでダイアログが表示されます。このダイアログは、侵害されたゲートウェイや悪意のあるゲートウェイからデベロッパーのマシンを保護するものであり、デベロッパーから組織を保護するものではありません。
 
-`claude -p` や Agent SDK セッションなどの [非インタラクティブ実行](/docs/ja/server-managed-settings#security-approval-dialogs) はダイアログを表示できません。プッシュされた設定をその実行に限り適用し、承認済みとして記録しないため、デベロッパーの次のインタラクティブセッションでは引き続きダイアログが表示されます。v2.1.207 より前では、非インタラクティブ実行が設定を承認済みとして保存したため、以降のインタラクティブセッションではそれらのダイアログが表示されませんでした。
+`claude -p`、Agent SDK のセッション、Claude Desktop の Code タブのセッションなどの [非対話型の実行](/docs/ja/server-managed-settings#security-approval-dialogs) では、ダイアログを表示できません。プッシュされた設定はその実行にのみ適用され、承認済みとして記録されないため、開発者の次の対話型セッションでは引き続きダイアログが表示されます。v2.1.207 より前は、非対話型の実行で設定が承認済みとして保存され、以降の対話型セッションでそれらについてダイアログが表示されることはありませんでした。
 
 デベロッパーが拒否した場合、Claude Code はポリシーを適用せずにそのセッションを終了します。そのため、新しいフックやダイアログが表示される env 変数を広範なポリシーにプッシュすると、マッチするすべてのデベロッパーのインタラクティブセッションでダイアログが表示されます。実行中のインタラクティブセッションでは次の 1 時間ごとのポーリング時に表示され、それ以外の場合はデベロッパーの次のインタラクティブ起動時に表示されます。
 
-`cli` キーは以前のリリースでは `settings` という名前でした。その表記は引き続きエイリアスとして受け入れられますが、新しいデプロイでは `cli` を使用してください。
+`cli` キーは以前のリリースでは `settings` という名前で、ゲートウェイは引き続きその表記をエイリアスとして受け付けます。新しいデプロイでは [`code`](#choose-cli-or-code) を使用してください。
 
 <h4 id="context-window-in-terminal-sessions">
   ターミナルセッションのコンテキストウィンドウ
@@ -1094,7 +1127,7 @@ Claude Desktop をデプロイしない場合は、ポリシーから `desktop` 
   ゲートウェイが Claude Desktop 用に導出する設定
 </h5>
 
-ゲートウェイはブートストラップレスポンスの多くを、マッチしたポリシーの `cli` ブロックとトップレベルのゲートウェイ設定から導出します：
+ゲートウェイは、ブートストラップレスポンスの大部分を、一致したポリシーの `cli` または `code` ブロックと、トップレベルのゲートウェイ設定から導出します。
 
 * `availableModels` からのモデルリスト。各モデルの 1M コンテキストオプションについては [Claude Desktop の拡張コンテキスト](#extended-context-in-claude-desktop) を参照してください
 * ツール名のみの `permissions.deny` エントリからの無効化されたツール。ポリシーの `desktop` ブロックで `disabledBuiltinTools` を設定した場合、ゲートウェイは指定した値と導出されたリストの和集合を提供します。そのため、この方法でさらにツールを無効化できますが、`permissions.deny` で無効化したツールを再度有効化することはできません
@@ -1106,6 +1139,31 @@ Claude Desktop をデプロイしない場合は、ポリシーから `desktop` 
 ポリシーの `desktop` ブロックで `disabledBuiltinTools`、`coworkEgressAllowedHosts`、または Claude Desktop 独自の `managedMcpServers` 設定を設定するには、ゲートウェイサーバー上の Claude Code v2.1.232 以降が必要です。Claude Desktop の `managedMcpServers` はオブジェクトではなく配列値を取ります。
 
 ゲートウェイは、`hooks` や `Bash(npm *)` のようなスコープ付き権限ルールなど、Claude Desktop に相当するものがないキーをブートストラップレスポンスから省略します。
+
+<a id="apply-code-settings-in-the-code-tab" />
+
+<h5 id="apply-code-settings-in-the-code-tab">
+  Code タブで `code` 設定を適用する
+</h5>
+
+ポリシーが [`code`](#choose-cli-or-code) キーの下に持つ Claude Code 設定は、次のすべてが成り立つ場合に Claude Desktop の Code タブで適用されます。
+
+* ポリシーに `desktop` キーもあること（空の `desktop: {}` でもかまいません）
+* Claude Desktop がバージョン 2.9939.2 以降であること
+* マシン上の Claude Code 管理設定が [このゲートウェイを指定している](#client-side-managed-settings) こと
+* そのマシンが、プライベートネットワーク上で HTTPS 経由でゲートウェイに到達できること
+
+最後の 2 つの条件は、セッションで Claude Code を実行するマシンに適用されます。ローカルセッションの場合はユーザー自身のコンピューターです。SSH 経由の Code タブセッションの場合はリモートホストです。
+
+`cli` を `code` に名前変更する前に、それらのマシンに [クライアント側の管理設定](#client-side-managed-settings) をデプロイしてください。最初の 2 つの条件が成り立ち、最後の 2 つのいずれかが成り立たない場合、ポリシーに一致するユーザーには次のいずれかの結果になります。
+
+* **HTTPS 経由で、Claude Desktop に Claude Code v2.1.296 以降がバンドルされている場合**: Code タブは開始されず、ユーザーのプロンプトへの応答でその理由が示されます
+* **HTTPS 経由で、Claude Desktop にそれより前のバージョンがバンドルされている場合**: Code タブは `code` 設定なしで開始され、セッション内ではそのことは何も示されません
+* **プレーン HTTP 経由の場合**: Claude Desktop にどのバージョンがバンドルされていても、Code タブは `code` 設定なしで開始されます
+
+ゲートウェイの前段にあるプロキシが `/managed/settings` に独自の 404 で応答する場合も、4 つの条件をすべて満たすマシンであっても、Code タブは `code` 設定なしで開始されます。
+
+`desktop` キーを持つポリシーで、設定を含む `code` ブロックがあると、Cowork、Chat、Code タブで WebSearch ツールがオフになります。MCP サーバーについては、[`managedMcpServers` が適用される場所](/docs/ja/managed-mcp#where-managedmcpservers-applies) を参照してください。
 
 <h5 id="set-claude-desktop-settings-directly">
   Claude Desktop の設定を直接指定する
@@ -1235,7 +1293,7 @@ managed:
 
 CLI はメトリクス、ログ、および有効な場合はトレースをゲートウェイに送信し、ゲートウェイはそれらをそのまま各設定済みの宛先にリレーします。エクスポートは HTTP 上の OpenTelemetry Protocol（OTLP）を使用します。リレーをスキップしてセッションからコレクターに直接エクスポートするには、[ポリシーでコレクターを指定](#export-directly-to-your-collector) します。CLI が出力するメトリクスとイベントについては [使用状況の監視](/docs/ja/monitoring-usage) を参照してください。
 
-`/login` でサインインしたセッションでは、CLI はゲートウェイが発行した JWT から読み取った認証済みユーザーのアイデンティティ（`user.id`、`user.email`、`user.groups` 属性）を各エクスポートに付与します。そのため、デベロッパー側の設定なしで、デベロッパーごとのコストと使用状況の帰属が機能します。デベロッパーがサインインする前に Claude Code がログに記録するイベントには、[このアイデンティティは含まれません](/docs/ja/monitoring-usage#standard-attributes)。
+`/login` でサインインしたセッションでは、CLI は各エクスポートに、ゲートウェイが発行した JWT から読み取った認証済みユーザーの ID、つまり `user.id`、`user.email`、`user.groups` 属性を付与します。そのため、開発者側の設定なしで、開発者ごとのコストと使用量の帰属が機能します。開発者がサインインする前に Claude Code がログに記録したイベントには、[この ID は含まれません](/docs/ja/monitoring-usage#standard-attributes)。開発者のグループが変更されたときにどの属性がそれに追従するかについては、[セッション中のグループの変更](#group-changes-during-an-open-session) を参照してください。
 
 ゲートウェイでサインインした [Claude Desktop](#claude-desktop-overlay) と Cowork のセッションは、テレメトリに `enduser.id` とともに `user.email` と `user.groups` を付与するため、`user.email` または `user.groups` に対する 1 つのクエリでターミナル、Desktop、Cowork の使用状況をカバーできます。`user.groups` はコンマ区切りの IdP グループリストです。
 
@@ -1344,6 +1402,26 @@ telemetry:
 `/login` でサインインしたターミナルセッションは、他の [テレメトリ変数](#telemetry) とともにプッシュされる `OTEL_RESOURCE_ATTRIBUTES` としてラベルを受け取ります。ポリシーの `env` ブロックで `OTEL_RESOURCE_ATTRIBUTES` を設定した場合、そのポリシーがマッチするターミナルセッションはラベルの代わりにその値を受け取ります。Claude Desktop は、`user.email` やその他のアイデンティティ属性とともにゲートウェイからラベルを受け取ります。
 
 Claude Code は各ラベルをすべてのメトリクスデータポイントにもコピーするため、リソース属性をインデックス化しないバックエンドでもラベルでメトリクスをフィルタリングできます。このコピーをオフにするには、[メトリクスのカーディナリティ制御](/docs/ja/monitoring-usage#metrics-cardinality-control) を参照してください。
+
+<h4 id="group-changes-during-an-open-session">
+  セッション中のグループの変更
+</h4>
+
+ターミナルセッションは、`user.groups` を OTLP リソースに付与し、さらに各メトリクスのデータポイントとイベントにも付与します。セッション中に開発者のグループが変更された場合、次の[サイレントリフレッシュ](#session)以降の使用に関するデータポイントとイベントには新しいグループが含まれます。リソースは開発者が Claude Code を再起動するまで古いグループを保持するため、データポイントまたはイベント上の属性でグループ化してください。
+
+OpenTelemetry Collector の Prometheus リモート書き込みエクスポーターで `resource_to_telemetry_conversion` をオンにすると、エクスポーターは各データポイントの `user.groups` をリソースのもので置き換えるため、すべてのデータポイントに古いグループが表示されます。データポイントの値を維持するには、そのエクスポーターの前にリソースから `user.groups` を削除してください。
+
+次の OpenTelemetry Collector の `resource` プロセッサーは、それを列挙したパイプラインで属性を削除します。
+
+```yaml theme={null}
+processors:
+  resource/drop-user-groups:
+    attributes:
+      - key: user.groups
+        action: delete
+```
+
+メトリクスパイプラインの `processors` に `resource/drop-user-groups` を追加すると、各系列は自身のデータポイントから `user_groups` ラベルを持つようになります。
 
 <h4 id="export-directly-to-your-collector">
   コレクターに直接エクスポートする

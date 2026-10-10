@@ -85,26 +85,36 @@ exit 0
   テストループを実行する
 </h2>
 
-`--environment` および `--ref` ディスパッチフラグには、スクリプトを実行するマシン上の Claude Code v2.1.224 以降が必要です。これは実行イメージ自体と同じ下限です。フックが配置され、このホストで実行イメージが開始されている場合、テストスクリプトは以下を実行します。
+`--environment` および `--ref` のディスパッチフラグを使用するには、スクリプトを実行するマシンに Claude Code v2.1.224 以降が必要です。これはランナー自体と同じ最低バージョンです。フックを設定し、このホストでランナーを起動した状態で、テストスクリプトは次の処理を行います。
 
-1. `claude -p "<prompt>" --environment <environment-id> --output-format json` でテスト環境にセッションを作成します。git チェックアウトから実行して、CLI が `origin` リモートからリポジトリを自動検出できるようにします。オプションの `--ref <branch>` は、ローカル HEAD の代わりに名前付き ref に基づいてセッションのチェックアウトを行います。コマンドはセッションを作成し、`session_id` を含む 1 行の JSON を出力し、Claude の返信を待たずに終了します。
-2. Stop フックが実行イメージ上でターンが完了したら `$E2E_REPLY_DIR/<session_id>.txt` に返信が表示されるまで待機します。
-3. `claude -p "<message>" --cloud <session_id> --output-format json` でフォローアップを送信します（[実行中のセッションにフォローアップメッセージを送信する](/docs/ja/claude-code-on-the-web#send-follow-ups-from-the-cli)を参照）。これは既存のセッションにユーザーイベントをポストし、終了します。
-4. ステップ 2 と同じ方法でフォローアップの返信を待機します。
+1. `claude -p "<prompt>" --environment <environment-id> --output-format json` を使用して、テスト環境上にセッションを作成します。CLI が `origin` リモートからリポジトリを自動検出できるように、このコマンドは Git のチェックアウト内から実行してください。オプションの `--ref <branch>` を指定すると、セッションのチェックアウトをローカルの HEAD ではなく指定した ref に基づいて作成します。このコマンドは Claude の応答を待たずに終了します。出力される内容によって、スクリプトは結果を判断できます。
+   * **セッションが作成された場合**: `{"ok":true,"session_id":"session_...","title":"...","url":"...","pool_id":"..."}` のような 1 行の JSON
+   * **セッションの作成に失敗した場合**: `{"ok":false,"error":"..."}` という行が出力され、コマンドはステータス 1 で終了します
+   * **それ以前の段階で発生する一部のエラー**（組織でクラウドセッションが利用できない場合や、プロンプトが指定されていない場合など）: JSON 行は出力されず、エラーが stderr に出力され、コマンドはステータス 1 で終了します
+2. ターンの完了時にランナー上の Stop フックによって書き込まれる `$E2E_REPLY_DIR/<session_id>.txt` に応答が現れるのを待ちます。
+3. `claude -p "<message>" --cloud <session_id> --output-format json` を使用してフォローアップを送信します（[実行中のセッションにフォローアップメッセージを送信する](/docs/ja/claude-code-on-the-web#send-follow-ups-from-the-cli)を参照）。このコマンドは既存のセッションにユーザーイベントを投稿して終了します。
+4. 手順 2 と同じ方法で、フォローアップへの応答を待ちます。
 
 <h3 id="environment-dispatch-behavior">
-  `--environment` ディスパッチ動作
+  `--environment` のディスパッチ動作
 </h3>
 
-Claude Code はセッションを作成し、セッション ID とそのリンクを出力して終了します。
+Claude Code はセッションを作成し、セッション ID とセッションへのリンクを出力して終了します。
 
-フラグは [`remote.defaultEnvironmentId`](/docs/ja/settings-reference#remote-defaultenvironmentid) 設定よりも優先されます。`--output-format stream-json` をサポートしておらず、`--resume`、`--continue`、`--teleport`、`--session-id`、`--init-only` など、セッションを再開、アタッチ、または事前設定するフラグと組み合わせることはできません。`--cloud` はセッション ID または URL で拒否され、非対話型実行では説明を含む場合に拒否されます。ベアの `--cloud` は存在しないものとして扱われます。ターミナルから、位置指定プロンプトの代わりに `--cloud` 説明としてタスクを渡すことができます。
+このフラグは [`remote.defaultEnvironmentId`](/docs/ja/settings-reference#remote-defaultenvironmentid) 設定よりも優先されます。`--output-format stream-json` には対応しておらず、`--resume`、`--continue`、`--teleport`、`--session-id`、`--init-only` など、セッションの再開、アタッチ、または事前設定を行うフラグと組み合わせることはできません。`--cloud` は、セッション ID または URL を指定した場合、および非対話型の実行で説明を伴う場合には拒否されます。値を伴わない `--cloud` は指定されていないものとして扱われます。ターミナルからは、位置引数のプロンプトの代わりに、タスクを `--cloud` の説明として渡すことができます。
 
 <h2 id="example-script">
   スクリプト例
 </h2>
 
-以下のスクリプトは `$CLAUDE_TEST_ENVIRONMENT_ID`（テスト環境の `ccpool_...` ID）に対して完全なループを実行します。これは管理ページの環境詳細ダイアログに表示されるか、[環境作成呼び出し](#create-a-dedicated-test-environment)によって返されます。各返信のセンチネルフレーズをアサートします。キャプチャフックがインストールされ、`E2E_REPLY_DIR` がエクスポートされている実行イメージを使用して、このホストで実行イメージを開始した後、セッションを実行したいリポジトリの git チェックアウトから実行します。まず、[CI からの認証](#authenticate-from-ci)で説明しているとおり、スクリプトを実行するマシンで claude.ai アカウントにサインインします。このサインインを行わないと、最初のディスパッチが `Unable to get organization UUID for cloud session creation` などのエラーで失敗します。
+このスクリプト例は、テストランナーと同じマシンで実行します。実行する前に、そのマシンを準備します。
+
+* **リポジトリのチェックアウト**: セッションで作業させたいリポジトリの git チェックアウトからスクリプトを実行します。
+* **ランナー**: キャプチャフックをインストールし、`E2E_REPLY_DIR` をエクスポートした状態で、このホストでランナーを開始します。
+* **サインイン**: [CI からの認証](#authenticate-from-ci)で説明しているとおり、スクリプトを実行するマシンで claude.ai アカウントにサインインします。
+* **環境 ID**: `CLAUDE_TEST_ENVIRONMENT_ID` にテスト環境の `ccpool_...` ID を設定します。この ID は管理ページの環境詳細ダイアログに表示されるか、[環境作成呼び出し](#create-a-dedicated-test-environment)によって返されます。
+
+以下のスクリプトは `$CLAUDE_TEST_ENVIRONMENT_ID` に対して完全なループを実行し、各返信のセンチネルフレーズをアサートします。
 
 ```bash theme={null}
 #!/usr/bin/env bash
@@ -152,7 +162,7 @@ await_reply() {
 TURN1="e2e-probe-$(date +%s)-$$: say exactly 'ok: custom tools are reachable' and nothing else"
 EXPECT1="ok: custom tools are reachable"
 create_json=$(claude -p "$TURN1" --environment "$CLAUDE_TEST_ENVIRONMENT_ID" \
-  --ref "$TEST_REPO_REF" --output-format json)
+  --ref "$TEST_REPO_REF" --output-format json < /dev/null)
 echo "create: $create_json"
 SESSION_ID=$(jq -er '.session_id' <<<"$create_json")
 
@@ -163,7 +173,7 @@ echo "turn-1 reply ok"
 # 3. Post a follow-up via the CLI.
 TURN2="e2e-probe-followup-$(date +%s): say exactly 'ok: follow-up delivered' and nothing else"
 EXPECT2="ok: follow-up delivered"
-followup_json=$(claude -p "$TURN2" --cloud "$SESSION_ID" --output-format json)
+followup_json=$(claude -p "$TURN2" --cloud "$SESSION_ID" --output-format json < /dev/null)
 echo "followup: $followup_json"
 jq -e '.ok == true' <<<"$followup_json" >/dev/null
 

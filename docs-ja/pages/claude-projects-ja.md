@@ -277,7 +277,13 @@ Claude はこのような設定を[プロジェクトメモリ](#give-a-project-
 
 スレッドはスレッドのモデルがサポートしている場合、[自動モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)で実行されるため、ほとんどのツール呼び出しはあなたに尋ねずに実行されます。スレッドがあなたの承認を必要とする場合、プロンプトはそのスレッド内にあり、スレッドはあなたがそこで答えるまで待機します。プロジェクト会話で Claude に先に進むように伝えることはそれに到達しません。
 
-各承認はそのプロンプト、またはより広いオプションを選択した場合はそのスレッドの残りをカバーします。すべてのスレッドが特定のコマンドを尋ねずに実行できるようにするか、いくつかをブロックするには、リポジトリの`.claude/settings.json`に[権限ルール](/docs/ja/permissions)を追加します。クラウドスレッドはそれらを 1 つのリポジトリを持つプロジェクトでのみ適用します。[スレッドがリポジトリから何を取得するか](#what-threads-pick-up-from-your-repositories)を参照してください。複数のリポジトリを持つプロジェクトでは、リポジトリの権限ルールはクラウドスレッドに到達しないため、自動モードとスレッド内で与える承認に依存します。
+各承認はそのプロンプト、またはより広いオプションを選択した場合はそのスレッドの残りをカバーします。
+
+すべてのスレッドが特定のコマンドを尋ねずに実行できるようにするか、いくつかをブロックするには、リポジトリの `.claude/settings.json` に[権限ルール](/docs/ja/permissions)を追加します。プロジェクト内のクラウドスレッドがそれらを適用するかどうかを確認してください。
+
+* **1 つのリポジトリ**：クラウドスレッドはルールを適用します。[スレッドがリポジトリから何を取得するか](#what-threads-pick-up-from-your-repositories)を参照してください。
+* **複数のリポジトリ、Anthropic がホストする環境**：どのリポジトリの権限ルールもクラウドスレッドに届かないため、auto モードと各スレッド内で与える承認に依存します。
+* **複数のリポジトリ、セルフホスト環境**：[どのリポジトリの設定が適用されるか](/docs/ja/self-hosted-environments-configuration#repository-settings-in-sessions-with-several-repositories)を参照してください。
 
 <h3 id="run-a-thread-on-your-own-computer">
   コンピューターでスレッドを実行する
@@ -381,16 +387,16 @@ Claude はこのような設定を[プロジェクトメモリ](#give-a-project-
   スレッドがリポジトリから取得するもの
 </h3>
 
-各クラウドスレッドはプロジェクト内のすべてのリポジトリをクローンし、すべてのリポジトリから `CLAUDE.md` とスキルを読み込みます。権限ルール、フック、`env` は、スレッドが開始するディレクトリ内の `.claude/settings.json` からのみ取得されます：プロジェクトが 1 つのリポジトリを持つ場合はリポジトリ内、複数のリポジトリを持つ場合はクローンの上で、リポジトリのファイルはそれらに対して読み込まれません。
+各クラウドスレッドはプロジェクト内のすべてのリポジトリをクローンし、すべてのリポジトリから `CLAUDE.md` とスキルを読み込みます。権限ルール、フック、`env` は、スレッドが開始するディレクトリ内の `.claude/settings.json` からのみ取得されます。
 
 | 各リポジトリ内 | 1 つのリポジトリ | 複数のリポジトリ |
 | :- | :- | :- |
 | `CLAUDE.md` | スレッド開始時に読み込まれます | スレッド開始時にすべてのリポジトリから読み込まれます |
 | `.claude/` の下のスキル、エージェント、コマンド | 読み込まれます | すべてのリポジトリから読み込まれます |
 | `.claude/settings.json` で有効化されたプラグイン | 読み込まれません。代わりに **プロジェクト設定 > プラグイン** でプラグインを追加してください | 読み込まれません。代わりに **プロジェクト設定 > プラグイン** でプラグインを追加してください |
-| `.claude/settings.json` で定義された権限ルール、フック、`env` | スレッドに適用されます。ただし、[クラウドセッションが認識しない](/docs/ja/cloud-environments#what-carries-over-from-your-setup) `env` キーは除きます | 適用されません |
+| `.claude/settings.json` で定義された権限ルール、フック、`env` | スレッドに適用されます。ただし、[クラウドセッションが認識しない](/docs/ja/cloud-environments#what-carries-over-from-your-setup) `env` キーは除きます | Anthropic ホスト環境では適用されません。セルフホスト環境については、[どのリポジトリの設定が適用されるか](/docs/ja/self-hosted-environments-configuration#repository-settings-in-sessions-with-several-repositories) を参照してください |
 
-複数のリポジトリを持つプロジェクトでは、各クローンは `CLAUDE.md` 読み込みが有効になった [追加ディレクトリ](/docs/ja/memory#load-from-additional-directories) としてスレッドに接続されます。これが、スレッドがそれらの上で開始されるにもかかわらず、すべてのリポジトリの `CLAUDE.md` とスキルが開始時に読み込まれる理由です。このようなプロジェクトでは、スタンディングルールをプロジェクト指示に記載し、[クラウド環境](#choose-an-environment-for-threads) を通じてスレッドに環境変数を提供してください。
+複数のリポジトリを持つプロジェクトでは、スタンディングルールをプロジェクト指示に記載し、[クラウド環境](#choose-an-environment-for-threads) を通じてスレッドに環境変数を提供してください。
 
 <h3 id="choose-an-environment-for-threads">
   スレッドの環境を選択する
@@ -406,7 +412,7 @@ Claude はこのような設定を[プロジェクトメモリ](#give-a-project-
 
 クラウドスレッドはマシンにのみインストールされているスキル、MCP サーバー、プラグイン、ツールを持っていません。[Remote Control](/docs/ja/remote-control) を通じてマシン上で Claude が実行するスレッドは、そこにインストールされているものを使用します。これらのそれぞれをクラウドスレッドで利用可能にするには：
 
-* スキル、サブエージェント、コマンド：プロジェクトに追加したリポジトリにコミットします。例えば、`.claude/skills/<skill-name>/SKILL.md` のスキル。各クラウドスレッドはプロジェクト内のすべてのリポジトリをクローンし、それぞれから `.claude/skills/`、`.claude/agents/`、`.claude/commands/` を読み込むため、1 つのリポジトリにコミットされたスキルはすべてのクラウドスレッドで利用可能です。クラウドスレッドは、claude.ai アカウントで有効化したスキルも読み込みます。
+* スキル、サブエージェント、コマンド：プロジェクトに追加したリポジトリにコミットします。例えば、`.claude/skills/<skill-name>/SKILL.md` のスキル。各クラウドスレッドはプロジェクト内のすべてのリポジトリをクローンし、それぞれから `.claude/skills/`、`.claude/agents/`、`.claude/commands/` を読み込むため、1 つのリポジトリにコミットされたスキルはすべてのクラウドスレッドで利用可能です。クラウドスレッドは、[claude.ai アカウントで有効化したスキル](/docs/ja/skills#skills-in-cowork-and-cloud-sessions) も読み込みます。
 * プラグイン：**プロジェクト設定 > プラグイン** で追加します。各新しいクラウドスレッドに読み込まれます。リポジトリが `.claude/settings.json` で宣言するプラグインは、クラウドスレッドでは [読み込まれません](/docs/ja/cloud-environments#what-carries-over-from-your-setup)。
 * MCP サーバー：クラウドスレッドは、claude.ai アカウントのコネクタから MCP ツールを取得します。これは、[claude.ai/customize/connectors](https://claude.ai/customize/connectors) で 1 回接続する MCP サーバーか、**プロジェクト設定 > 環境** の **コネクタを管理** リンクを通じて接続します。すべてのクラウドスレッドは、プロジェクト固有のセットアップなしでそれらすべてを使用できます。プロジェクト会話自体にはコネクタがないため、コネクタが必要な作業をクラウドスレッドのタスクとして送信してください。1 つのリポジトリを持つプロジェクトでは、クラウドスレッドはそのリポジトリの [`.mcp.json`](/docs/ja/cloud-environments#what-carries-over-from-your-setup) から MCP サーバーも読み込みます。[コネクタが Claude Code に到達する方法](/docs/ja/mcp#how-connectors-reach-claude-code) は、クラウドセッションのルールとコネクタをオフにする設定をリストしています。
 * コマンドラインツールとパッケージ：環境の [セットアップスクリプト](/docs/ja/cloud-environments#setup-scripts) にインストールします。

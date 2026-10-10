@@ -52,15 +52,34 @@
 | `--release-idle-session-min <n>` | `SELF_HOSTED_RUNNER_SESSION_IDLE_MS` | `0` | ターンが終了するか、セッションがユーザーのアクションを待つ後、N 分間の非アクティビティ後にセッションスロットをリリースします。ターン中のセッション（決して終了しないバックグラウンドタスクを保持しているセッション、または実行中のツール呼び出し内から要求された承認を含む）はアイドルとしてカウントされません。`--kill-session-after-min` とペアにして、ハードバックストップとして機能させてください。セッションのバックグラウンドタスクが終了した後、ランナーはセッションをビジーと見なします。その結果を読む後続のターンが開始されるまで、最大で [`SELF_HOSTED_RUNNER_BG_RESULT_GRACE_MS`](#environment-variable-only-settings) ウィンドウです。ランナーがシャットダウンシグナルを受け取るか、リタイア時間に達するまで、ランナーにアクティブなセッションがなくなるリリースは、通常のドレインと同じ終了パスを開始します。`--drain-grace-sec` によって管理されます。[`--defer-shutdown-max-min`](/docs/ja/self-hosted-environments-deploy#defer-the-drain-past-the-first-signal) で遅延させた最初のシグナルの後、ランナーはリリースがセッションを保持していない限り即座に終了します。`0` は無効にします。 |
 | `--remove-session-state [bool]` | `SELF_HOSTED_RUNNER_REMOVE_SESSION_STATE` | オフ | セッションがこのランナーで終了したときに、`<base-dir>/_sessions/` の下のセッションごとのディレクトリを削除します。結果に関係なく。[事前ウォーミングされたチェックアウトを再利用する](/docs/ja/self-hosted-environments-deploy#reuse-a-pre-warmed-checkout) は、それらが保持するものと、それらが残っているときに誰がそれらを読むことができるかを説明しています。削除はベストエフォート。ランナーが強制終了されるか、クリーンアップが実行される前にドレイン期限に達した場合、セッションごとのディレクトリは所定の位置に留まります。フラグがオンの場合、失敗または中断されたセッションのデバッグログはディスクに保持されません。Claude Code v2.1.268 以降が必要です。 |
 | `--retire-at <epoch-seconds>` | `SELF_HOSTED_RUNNER_RETIRE_AT` | 未設定 | ランナーを秒単位の絶対 Unix タイムスタンプでリタイアします。ランナーが既知の時間に強制終了されるインフラストラクチャ用です。[ランナーライフサイクル](/docs/ja/self-hosted-environments#runner-lifecycle) はリリースシーケンスとマージンのサイズ方法を説明しています。2001 より前または 5138 年より後の値はフラグによって拒否され、環境変数によって無視されます。 |
+| `--server-auto-mode-lists <mode>` | `SELF_HOSTED_RUNNER_SERVER_AUTO_MODE_LISTS` | `no-allow` | コントロールプレーンがセッションとともに送信する [auto モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode) 分類器のルールリストのうち、どれをそのセッションに到達させるかを指定します。`all`、`no-allow`、`none` のいずれかです。各値が何を適用するかについては、[auto モードのルールリスト](#auto-mode-rule-lists) を参照してください。無効な値を指定すると、ランナーはスタートアップ時に停止します。Claude Code v2.1.295 以降が必要です。 |
 | `--session-stop-grace-sec <n>` | `SELF_HOSTED_RUNNER_SESSION_STOP_GRACE_MS` | `5` | セッション終了後、Claude プロセスがクリーンに終了するまで待機する時間。強制終了する前に。子独自の `SessionEnd` フックがより多くの時間を必要とする場合は、値を上げてください。 |
-| `--startup-timeout-min <n>` | `SELF_HOSTED_RUNNER_STARTUP_TIMEOUT_MS` | `15` | 子が生成後 N 分以内に [アクティビティチャネル](/docs/ja/self-hosted-environments-configuration#keep-stdin-and-file-descriptor-3-attached) で初期化されたことを通知していない場合、セッションスロットをリリースします。通常の出力ではなく、子の初期化シグナルによってクリアされます。その後、`--release-idle-session-min` が引き継ぎます。`0` は無効にします。 |
+| `--startup-timeout-min <n>` | `SELF_HOSTED_RUNNER_STARTUP_TIMEOUT_MS` | `15` | 子が生成後 N 分以内に初期化されたことを通知していない場合、セッションスロットをリリースします。クローンは生成前に行われるため、クローン時間はカウントされません。通常の出力ではなく、[アクティビティチャネル](/docs/ja/self-hosted-environments-configuration#keep-stdin-and-file-descriptor-3-attached) 上の子の初期化シグナルによってクリアされます。その後、`--release-idle-session-min` が引き継ぎます。`0` は無効にします。 |
 | `--trust-workspace [bool]` | `SELF_HOSTED_RUNNER_TRUST_WORKSPACE` | オン | 各セッションのリポジトリパスの永続化された信頼をシードします。リポジトリコミットされた `permissions.allow` と `additionalDirectories` が尊重されるようにします。`false` に設定して、リポジトリコミットされた権限付与をドロップし、代わりにホスト設定の `settings.json` で許可ルールを設定します。リポジトリコミットされた `sandbox.*` 設定はどちらの方法でも適用されます。これが [リポジトリ設定ガード](/docs/ja/self-hosted-environments-deploy#harden-your-deployment) がこのフラグに関係なくそれらをスキャンする理由です。 |
-| `--use-anthropic-git-proxy` | `CLAUDE_RUNNER_USE_GIT_PROXY=1` | オフ | 顧客管理の git 認証の代わりに [Anthropic git プロキシ](/docs/ja/self-hosted-environments-deploy#use-the-anthropic-git-proxy) 経由でクローンします。`--capacity 1` と git 2.32 以降が必要です。ランナーはそれ以外の場合は起動を拒否します。書き換えフラグに優先します。 |
+| `--use-anthropic-git-proxy` | `CLAUDE_RUNNER_USE_GIT_PROXY=1` | オフ | 顧客管理の git 認証の代わりに [Anthropic git プロキシ](/docs/ja/self-hosted-environments-deploy#use-the-anthropic-git-proxy) 経由で github.com 上のリポジトリをクローンします。`--capacity 1` と git 2.32 以降が必要です。ランナーはそれ以外の場合は起動を拒否します。書き換えフラグに優先します。 |
 
 ほとんどの期間フラグには最大値があります。各タイムアウトをランタイムの 32 ビットタイマー上限（約 24.85 日）内に保つために選択されています。`--*-min` フラグは 10080 分（7 日）でキャップされます。`--drain-grace-sec` は 604800 秒（7 日）でもキャップされます。`--drain-wait-sec` は 86400 秒（24 時間）でキャップされます。`--session-stop-grace-sec` と `--post-session-hook-timeout-sec` はキャップされていません。キャップを超過する動作は表面ごとに異なります。
 
 * **フラグ**: スタートアップはエラーで失敗します。
 * **環境変数**: ランナーはそれを拒否するのではなく、値をタイマー上限にクランプします。
+
+<h3 id="auto-mode-rule-lists">
+  auto モードのルールリスト
+</h3>
+
+`--server-auto-mode-lists` を使用すると、ランナーの外部から送られる [auto モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode) 分類器ルールのうち、どれをランナー上のセッションに到達させるかを決定できます。Anthropic のコントロールプレーンは、セッションとともにルールリストを送信し、ランナーにそれらを適用するよう求めることができます。一部のエントリは、組織の管理者が作成したルールである場合があります。リストは `environment`、`soft_deny`、`allow` です。
+
+* **`environment`**: エントリによって、分類器が許可する範囲を狭めることも広げることもできます。
+* **`soft_deny`**: エントリは、ユーザーが明示的に要求した場合または `allow` の例外が適用される場合を除き、アクションをブロックします。
+* **`allow`**: `soft_deny` エントリに対する例外です。
+
+フラグの値によって、ランナーが適用するリストが決まります。
+
+* **`no-allow`**: デフォルトです。`environment` と `soft_deny` を適用し、`allow` は適用しません。`environment` エントリによって分類器が許可する範囲が広がる可能性は残るため、デフォルトではすべての緩和を排除できるわけではありません。
+* **`all`**: 3 つのリストすべてを適用します。
+* **`none`**: どのリストも適用しません。これらのリストによる緩和をすべて排除するには `none` を選択してください。この場合、`soft_deny` の制限も適用されなくなります。
+
+コントロールプレーンがランナーにリストの適用を求めるかどうかを決めるランナー設定はありません。求められなかった場合、何を設定していてもセッションはリストを受け取りません。どちらになったかを確認するには、`--log-level debug` でランナーを起動してください。すると、ランナーはセッションごとに、`the server asked this runner to apply` を含む行か、`the server did not ask this runner to apply the auto mode lists it sends` を含む行をログに記録します。
 
 <h2 id="orchestrator-cli-flags">
   オーケストレーター CLI フラグ
@@ -72,7 +91,7 @@
 | :- | :- | :- |
 | `--hook-concurrency <n>` | `4` | 並列で実行される最大 `spawn-runner` フック数。また、ポーリングごとにクレームされるスポーン要求の数もキャップします。 |
 | `--hook-timeout <sec>` | `60` | この多くの秒後にフックのプロセスツリーを終了します。タイムアウトとその 5 秒のキルグレースは `--expected-spawn-seconds` より下にある必要があります。オーケストレーターはスタートアップでこれを強制します。 |
-| `--expected-spawn-seconds <sec>` | `120` | スポーン済みランナーの予想 p99 ブート時間（秒単位）。サーバー強制範囲 10 ～ 3600。すべてのポーリングでサーバー側リースとして送信されます。ランナーが経過前に登録されない場合、セッションは新しいオーダー ID で再提供されます。すべてのレプリカはこの値を共有する必要があります。 |
+| `--expected-spawn-seconds <sec>` | `120` | オーケストレーターがスポーン要求を受信してからランナーが登録されるまでの予想 p99 時間（プラットフォーム上でのキャパシティ待ちを含む）。サーバーは 10 ～ 3600 の範囲を強制します。すべてのポーリングでサーバー側リースとして送信されます。ランナーが経過前に登録されない場合、セッションは新しいオーダー ID で再提供されます。すべてのレプリカはこの値を共有する必要があります。 |
 | `--min-idle <n>` | `0` | スタンバイランナーを積極的に生成することで、少なくとも N 個のアイドルセッションスロットを無料で保ちます。`0` はプレウォーミングを無効にします。ランナーの `--exit-if-unused-min` とペアにして、余分なスタンバイランナーが自分自身を再利用するようにします。 |
 | `--debug-dir <path>` | 未設定 | 各スポーン要求のワークオーダーとフック stderr をディスクに書き込みます。デバッグのみ。本番環境では設定しないでください。 |
 
@@ -108,6 +127,7 @@ SCM コネクタは利用できないため、このセクションのフラグ�
 | `SELF_HOSTED_RUNNER_POST_TURN_SETTLE_MS` | `7000` | ターンが終了した後、セッションのプロセスがターンの終了を Anthropic に報告している間、ランナーが `--drain-wait-sec` ドレイン用にセッションをビジーとしてカウントする時間の上限。`0` または使用不可能な値はデフォルトにフォールバックするため、ホールドをオフにすることはできません。Claude Code v2.1.275 以降が必要です。 |
 | `SELF_HOSTED_RUNNER_SIGKILL_GRACE_MS` | `30000` | ランナーが割り込み不可能な I/O でスタックしている子に `SIGKILL` を配信するのを待つ時間。その後、ランナー自体が終了します。`--post-session-hook-timeout-sec` プラス 15 秒でフロアされ、`--push-outcome-on-release` が設定されている場合は 30 秒追加されます。有効な最小値はデフォルトで 75 秒です。 |
 | `CLAUDE_RUNNER_FETCH_DEPTH` | `50` | 新規クローン用の Git フェッチ深度。正の整数、または完全なフェッチ用に `full` または `0` を設定します。ワークスペースに既に存在するリポジトリは既存の深度を保持します。 |
+| `CLAUDE_RUNNER_FETCH_SERVER_PROGRESS_CAP_MS` | `600000` | git サーバー自身の進捗値が上昇し続けている間（サーバーが大規模なリポジトリ用のパックを準備している場合など）、git フェッチが最初のデータを待機できる時間（試行ごと、ミリ秒単位）。`0` または `off` を指定すると待機がオフになり、その場合、そのようなフェッチはデータがないまま 2 分経過すると打ち切られます。その他の整数は `120000` から `1800000` の範囲（2〜30 分）に制限されます。Claude Code v2.1.295 以降が必要です。 |
 | `CLAUDE_RUNNER_SKIP_GIT_VERIFY` | 未設定 | `1` の場合、`checkout` フック実行後の `.git` 存在チェックをスキップします。フックが非 git ソースを具体化する場合は、これを設定します。 |
 | `FORCE_AUTOUPDATE_PLUGINS` | 未設定 | `1` の場合、バイナリがピン留めされていても、プラグインマーケットプレイスの自動更新を許可します。 |
 | `CLAUDE_CODE_DISABLE_ARTIFACT` | 未設定 | `1` の場合、組織の管理者設定に関係なくセッション内の Artifact ツールを無効にし、`*.frame.claudeusercontent.com` エグレス要件をドロップします。 |
@@ -178,7 +198,7 @@ SCM コネクタは利用できないため、このセクションのフラグ�
 | `claude_code_self_hosted_orchestrator_poll_errors_total{error_kind}` | 種類別の累積 PollSpawnHints 失敗：`transport`、`timeout`、`5xx`、`429`、または `4xx`。すべての 5 つのシリーズはプロセス開始から存在します。`rate(...[5m]) > 0` でアラートします。 |
 | `claude_code_self_hosted_orchestrator_queue_pending_sessions` | 今すぐクレーム可能なスポーン要求 |
 | `claude_code_self_hosted_orchestrator_queue_backing_off_sessions` | 再試行可能なフック失敗後の再試行バックオフ内のスポーン要求 |
-| `claude_code_self_hosted_orchestrator_queue_circuit_broken_sessions` | Owner が環境の **Activity** タブから再試行するまでブロックされたスポーン要求。ゼロを超える場合はアラートします。 |
+| `claude_code_self_hosted_orchestrator_queue_circuit_broken_sessions` | スポーンがブロックされているセッション。各セッションは、ユーザーが新しいメッセージを送信するか、Owner が環境の **Activity** タブから再試行するまでブロックされたままです。原因を修正した後もカウントがゼロを超えたままになる場合があります。ゼロを超える場合はアラートします。 |
 | `claude_code_self_hosted_orchestrator_pool_pending_sessions` | この環境でランナーを待機している総セッション数。環境全体の集計。すべてのオーケストレーターインスタンスで同一です。インスタンス全体で `SUM` ではなく `MAX` を使用します。 |
 | `claude_code_self_hosted_orchestrator_pool_active_sessions` | この環境内のアライブランナーに現在割り当てられているセッション。環境全体の集計。すべてのオーケストレーターインスタンスで同一です。インスタンス全体で `SUM` ではなく `MAX` を使用します。 |
 | `claude_code_self_hosted_orchestrator_spawn_hooks_total{result}` | 累積 `spawn-runner` フック結果：`ok`、`retryable`、`non_retryable`。オーケストレーターフック呼び出しをカウントします。ランナーがスポーンするセッション子ではありません。容量が 1 を超える場合、ウォームプール、同じセッション用に再度スポーンされたランナーは `sessions_started_total` と比較できないため、2 つが異なります。 |
@@ -283,7 +303,7 @@ groups:
         for: 1m
         labels: {severity: critical}
         annotations:
-          summary: "{{ $value }} セッションがサーキットブレーク — spawn-runner フックが繰り返し非再試行可能。インフラを修正してから Activity タブから再試行してください"
+          summary: "スポーンがブロックされているセッション：{{ $value }}。Activity タブで各セッションのエラーを確認し、原因を修正してから Retry を選択してください"
       - alert: ClaudeOrchestratorPollErrors
         expr: sum by (pod) (rate(claude_code_self_hosted_orchestrator_poll_errors_total[5m])) > 0
         for: 2m
@@ -318,7 +338,7 @@ groups:
 
 v2.1.260 より前では、ランナーは `--kill-session-after-min` 制限に達したすべてのセッションを終了し、`sessions_interrupted_total` でカウントしました。
 
-[`post-session` フック](/docs/ja/self-hosted-environments-configuration#post-session) の `CLAUDE_RUNNER_EXIT_REASON` はクリーンハンドオフを異なる方法で分類します。フックはリリース、スタートアップタイムアウト、サーバー割り当て解除をランナーが子を停止したため `interrupted` として報告します。これらのカウンターは、スロットがクリーンに返されたため、`completed` として同じイベントを記録します。
+[`post-session` フック](/docs/ja/self-hosted-environments-configuration#post-session) の `CLAUDE_RUNNER_EXIT_REASON` はクリーンハンドオフを異なる方法で分類します。フックは、ランナーが子を停止したため、リリース、スタートアップタイムアウト、サーバー割り当て解除、およびポーリングが先に気付いたアーカイブまたは削除を `interrupted` として報告します。これらのカウンターは、スロットがクリーンに返されたため、`completed` として同じイベントを記録します。
 
 フック受信を `sessions_completed_total` に対して直接調整する場合、完了をアンダーカウントします。セッションごとの保証にはフックを使用し、集計レートにはカウンターを使用します。
 

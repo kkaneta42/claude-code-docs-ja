@@ -34,6 +34,7 @@ claude.ai 側には以下が必要です。
 ランナーホストには以下が必要です。
 
 * `api.anthropic.com`、`claude.ai` および以下のインストールステップ用のダウンロードホストへのアウトバウンド HTTPS、および git ホストへのクローン用の Linux または macOS ホストまたはコンテナ。[ネットワーク要件テーブル](/docs/ja/self-hosted-environments-deploy#network-requirements)に完全なリストがあります。Windows はランナーホストとしてサポートされていません。代わりに Linux コンテナでランナーを実行してください。セッションは claude.ai のブラウザから開始されるため、開発者ワークステーションは影響を受けません。
+* テストセッション用のリポジトリ。公開リポジトリ、またはこのホストが認証情報を求められることなく HTTPS URL で既にクローンできるリポジトリを用意してください。
 * NTP などで実時間に同期されたクロック。クロックが 5 分以上ずれていると認証が失敗します。[トラブルシューティング](/docs/ja/self-hosted-environments-deploy#troubleshooting)を参照してください。
 
 <h3 id="software-on-the-runner-host">
@@ -57,13 +58,30 @@ claude self-hosted-runner --help
   環境とランナーをセットアップする
 </h2>
 
-Claude Code には、ガイド付きセットアップが含まれています。これは、管理 UI で環境を作成する手順を案内するインタラクティブな Claude Code セッションで、保存したシークレットファイルを使用してローカルランナーを起動し、ランナーが登録されたことを確認し、`./runner-setup/CHEAT-SHEET.md` にチートシートを書き込みます。`claude auth login` でサインインしたマシンで実行してください。このとき、Owner ロールを持つアカウントを使用する必要があります。API キーまたはサードパーティのモデルプロバイダーでは利用できません。インタラクティブセッションが不可能なホストでは、代わりに以下の手動手順を使用してください。まず、[バージョンチェック](#software-on-the-runner-host)が成功したことを確認してください。2.1.224 より古いバージョンでは、このコマンドはガイド付きセットアップではなく、単語をプロンプトとして使用する通常の Claude セッションを開始します。ガイド付きセットアップを開始するには、setup サブコマンドを実行してプロンプトに従ってください。
+[ガイド付きセットアップ](#run-the-guided-setup)または[手動手順](#set-up-manually)のいずれかを使用します。ガイド付きセットアップは、インタラクティブな Claude Code セッションを開始して残りの手順を案内する単一のコマンドです。インタラクティブセッションが不可能なホストでは、代わりに手動手順を使用してください。Owner ロールを持つユーザーが環境を作成してそのシークレットを渡した場合も、手動手順を使用してください。ガイド付きセットアップには Owner としてのサインインが必要なためです。
+
+<h3 id="run-the-guided-setup">
+  ガイド付きセットアップを実行する
+</h3>
+
+ガイド付きセットアップは、管理 UI で環境を作成する手順を案内し、保存したシークレットファイルを使用してローカルランナーを起動し、ランナーが登録されたことを確認し、`./runner-setup/CHEAT-SHEET.md` にチートシートを書き込みます。実行する前に、サインインとバージョンを確認してください。
+
+* **サインイン**：Owner ロールを持つアカウントを使用して `claude auth login` でサインインしたマシンで実行してください。API キーまたはサードパーティのモデルプロバイダーのみの場合、セッションは開始されますが、組織のチェックに失敗します。
+* **バージョン**：[バージョンチェック](#software-on-the-runner-host)が成功したことを確認してください。2.1.224 より古いバージョンでは、setup コマンドはガイド付きセットアップではなく、単語をプロンプトとして使用する Claude セッションを開始します。
+
+ガイド付きセットアップを開始するには、シェルで setup サブコマンドを実行してプロンプトに従ってください。
 
 ```bash theme={null}
 claude self-hosted-runner setup
 ```
 
-代わりに手動でセットアップするには、以下の手順に従ってください。
+セットアップ自体はテストセッションを開始しません。claude.ai/code でテストセッションを開始するよう案内されます。セットアップの最後のステップでは、セットアップが起動したランナーを停止します。そのステップの前にセットアップを終了した場合、ランナーは実行を続けます。最後のステップの後も続行するには、`./runner-setup/CHEAT-SHEET.md` に記載されたコマンドを使用してシェルでランナーを再度起動し、[セッションを環境にルーティング](#route-a-session)してください。
+
+<h3 id="set-up-manually">
+  手動でセットアップする
+</h3>
+
+claude.ai で環境を作成し、ホスト上のターミナルからランナーを起動してから、claude.ai に戻ってランナーが表示されることを確認し、セッションをランナーにルーティングします。Owner ロールを持つユーザーが既に環境を作成してそのシークレットを渡している場合は、ステップ 2 から開始してください。
 
 <Steps>
   <Step title="環境を作成する">
@@ -73,7 +91,7 @@ claude self-hosted-runner setup
   </Step>
 
   <Step title="ランナーを起動する">
-    シークレットディレクトリを作成します。このステップと次のステップは `/etc/claude` パスに root が必要です。ランナープロセスが読み取ることができるパスであれば、どのパスでも機能するため、異なるパスを使用する場合は、両方のコマンドと `--environment-secret-file` 値を一緒に調整してください。
+    シークレットディレクトリを作成します。このコマンドと次のコマンドは `/etc/claude` を使用するため root が必要です。また、これらのコマンドで作成されるシークレットファイルは、コマンドを実行したユーザーのみが読み取ることができます。ランナーを別のユーザーとして実行する場合、ランナーは `error: Failed to read environment secret file <path> (EACCES: permission denied, open '<path>')` で終了します。その場合は、`/etc/claude` の代わりにランナーのユーザーが書き込めるディレクトリを使用して両方のコマンドをランナーのユーザーとして実行し、同じパスを `--environment-secret-file` に渡してください。ランナープロセスが読み取ることができるパスであれば、どのパスでも機能します。
 
     ```bash theme={null}
     mkdir -p /etc/claude
@@ -89,23 +107,43 @@ claude self-hosted-runner setup
 
     ランナーがパスを作成または書き込みできない場合、起動時にディレクトリを名前として指定するエラーで終了し、登録されません。[トラブルシューティング](/docs/ja/self-hosted-environments-deploy#troubleshooting)を参照してください。
 
-    次に、`--environment-secret-file` と `--base-dir` を使用してランナーを起動します。ランナーは環境に登録され、作業のポーリングを開始します。ランナーが終了した場合は、手動で再起動してください。本番環境のデプロイメントは、終了したランナーを再起動するオーケストレーターの下でランナーを実行します。通常、再起動ごとに新しいファイルシステムを使用します。[事前にウォームアップされたチェックアウトを再利用する](/docs/ja/self-hosted-environments-deploy#reuse-a-pre-warmed-checkout)は、サポートされている永続ディスクセットアップについて説明しています。
+    次に、`--environment-secret-file` と `--base-dir` を使用してランナーを起動します。
 
     ```bash theme={null}
     claude self-hosted-runner --environment-secret-file '/etc/claude/environment-secret' --base-dir '<writable-dir>'
     ```
+
+    ランナーは環境に登録されると `Registered: runner_id=<runner-id>` をログに記録し、作業のポーリングを開始します。後でランナーが終了した場合は、手動で再起動してください。これが発生する状況については、[ランナーが終了した場合](#if-the-runner-exits)を参照してください。
   </Step>
 
   <Step title="ランナーが表示されることを確認する">
-    [**Cloud environments** ページ](https://claude.ai/admin-settings/cloud-environments)に戻ります。環境のステータスは、ランナーが起動してから数秒以内に **No runners deployed** から **Healthy** に変わります。環境を開いて **Activity** を選択すると、ランナー自体が表示されます。
+    [**Cloud environments** ページ](https://claude.ai/admin-settings/cloud-environments)に戻ります。環境のステータスは、ランナーが起動してから数秒以内に **No runners deployed** から **Healthy** に変わります。環境を開いて **Activity** を選択すると、ランナー自体が表示されます。管理ページにアクセスできない場合は、前のステップのランナーのログにある `Registered: runner_id=<runner-id>` の行で同じことを確認できます。
   </Step>
 
   <Step title="セッションを環境にルーティングする">
-    claude.ai/code でセッションを開始し、環境ピッカーから環境を選択します。セルフホスト環境は Anthropic ホスト環境と並んで表示されます。ランナーは、ホストが既に持っている git 認証情報を使用してクローンを作成するため、このホストが既にクローンできるリポジトリ、または公開リポジトリを選択してください。本番環境のプライベートリポジトリの認証情報オプションは、[git を設定する](/docs/ja/self-hosted-environments-deploy#configure-git)に記載されています。次に利用可能なランナーがキューに入ったセッションを取得し、`Picked up session <session-id>` をアクティブカウントと容量とともにログに記録します。ランナー自身の出力からどのホストがセッションを取得したかを確認できます。[claude.ai/code](https://claude.ai/code) でセッションの動作を監視し、Claude の返信を読んでください。セッションがキューに入ったままの場合は、[トラブルシューティング](/docs/ja/self-hosted-environments-deploy#troubleshooting)を参照してください。
+    <span id="route-a-session" />claude.ai/code でセッションを開始し、環境ピッカーから環境を選択します。セルフホスト環境は Anthropic ホスト環境と並んで表示されます。リポジトリには、[前提条件](#host-and-network)で用意したもの、つまり公開リポジトリ、またはこのホストが既にクローンできるリポジトリを選択してください。ランナーは、ホストが既に持っている git 認証情報を使用してクローンを作成します。
+
+    次に利用可能なランナーがキューに入ったセッションを取得し、`Picked up session <session-id>` をアクティブカウントと容量とともにログに記録します。ランナー自身の出力からどのホストがセッションを取得したかを確認できます。[claude.ai/code](https://claude.ai/code) でセッションの動作を監視し、Claude の返信を読んでください。
+
+    セッションが動作を開始しない場合は、表示される状況に応じて対処してください。
+
+    * **セッションがキューに入ったままになる**：[トラブルシューティング](/docs/ja/self-hosted-environments-deploy#troubleshooting)を参照してください。
+    * **セッションが git エラーで開始に失敗する**：エラーはセッションとランナーのログに表示されます。git の `could not read Username for` に続いて git ホストの URL が含まれている場合、ランナーにはそのホストの HTTPS 認証情報がありませんでした。[git を設定する](/docs/ja/self-hosted-environments-deploy#configure-git)を参照してください。本番環境のプライベートリポジトリの認証情報オプションもここに記載されています。
   </Step>
 </Steps>
 
-ランナーは設計上、アクティブセッションが終了すると終了します。[ランナーのライフサイクル](/docs/ja/self-hosted-environments#runner-lifecycle)を参照してください。本番環境では、終了時にランナーを再起動し、ランナーが起動直後に終了し続ける場合は再起動間の待機時間を長くするオーケストレーターの下にデプロイしてください。[本番環境へのデプロイ](/docs/ja/self-hosted-environments-deploy)と[ランナーが終了する場合](/docs/ja/self-hosted-environments-deploy#when-the-runner-exits)を参照してください。
+<h3 id="if-the-runner-exits">
+  ランナーが終了した場合
+</h3>
+
+このクイックスタートの途中でランナーが終了した場合は、同じコマンドで再度起動してください。ランナーは自ら終了することがあります。
+
+* **セッションの終了**：ログに `[runner:exit] account workload drained — exiting` が表示されます。ランナーは設計上、アクティブセッションが終了すると終了します。[ランナーのライフサイクル](/docs/ja/self-hosted-environments#runner-lifecycle)を参照してください。
+* **接続の喪失**：ログに `runner record gone server-side` または `poll auth failed` を含む `[runner:fatal]` の行が表示されます。ホストがスリープするなどしてランナーが Anthropic としばらく接続できなくなった場合、次に Anthropic に接続したときに終了することがあります。
+
+ターンが終了しても、テストセッションは終了しません。最初のターンの後もセッションは接続されたままで、ランナーも稼働し続けているため、先にランナーを再起動することなく[セッションにフォローアップメッセージを送信](#send-a-follow-up-message-to-a-running-session)できます。
+
+本番環境では、終了時にランナーを再起動し、ランナーが起動直後に終了し続ける場合は再起動間の待機時間を長くするオーケストレーターの下にデプロイしてください。[本番環境へのデプロイ](/docs/ja/self-hosted-environments-deploy)と[ランナーが終了する場合](/docs/ja/self-hosted-environments-deploy#when-the-runner-exits)を参照してください。
 
 <h2 id="send-a-follow-up-message-to-a-running-session">
   実行中のセッションにフォローアップメッセージを送信する

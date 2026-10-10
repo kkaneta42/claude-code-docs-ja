@@ -638,8 +638,10 @@ npm インストールをアップグレードするには、`npm install -g @an
 
 Claude Code を削除するには、インストール方法の指示に従ってください。アンインストール後も `claude` が実行される場合は、2 番目のインストールまたは古いインストーラーからの残存シェルエイリアスがある可能性があります。[競合するインストールを確認](/docs/ja/troubleshoot-install#check-for-conflicting-installations)を参照して、それを見つけて削除してください。
 
-<h3 id="native-installation">
-  ネイティブインストール
+<span id="native-installation" />
+
+<h3 id="uninstall-a-native-installation">
+  ネイティブインストールをアンインストール
 </h3>
 
 Claude Code バイナリとバージョンファイルを削除します：
@@ -660,8 +662,10 @@ Claude Code バイナリとバージョンファイルを削除します：
   </Tab>
 </Tabs>
 
-<h3 id="homebrew-installation">
-  Homebrew インストール
+<span id="homebrew-installation" />
+
+<h3 id="uninstall-with-homebrew">
+  Homebrew でアンインストール
 </h3>
 
 インストールした Homebrew cask を削除します。安定版 cask をインストールした場合：
@@ -676,8 +680,10 @@ brew uninstall --cask claude-code
 brew uninstall --cask claude-code@latest
 ```
 
-<h3 id="winget-installation">
-  WinGet インストール
+<span id="winget-installation" />
+
+<h3 id="uninstall-with-winget">
+  WinGet でアンインストール
 </h3>
 
 WinGet パッケージを削除します：
@@ -686,8 +692,10 @@ WinGet パッケージを削除します：
 winget uninstall Anthropic.ClaudeCode
 ```
 
-<h3 id="apt-/-dnf-/-apk">
-  apt / dnf / apk
+<span id="apt-/-dnf-/-apk" />
+
+<h3 id="uninstall-with-apt-dnf-or-apk">
+  apt、dnf、または apk でアンインストール
 </h3>
 
 パッケージとリポジトリ構成を削除します：
@@ -716,8 +724,10 @@ winget uninstall Anthropic.ClaudeCode
   </Tab>
 </Tabs>
 
-<h3 id="npm">
-  npm
+<span id="npm" />
+
+<h3 id="uninstall-with-npm">
+  npm でアンインストール
 </h3>
 
 グローバル npm パッケージを削除します：

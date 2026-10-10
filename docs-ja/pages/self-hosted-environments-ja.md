@@ -132,9 +132,11 @@ kill の時点を過ぎても続くターンは失われます。マージンの
 ランナーとそのセッションは数種類のアウトバウンド接続を行いますが、Anthropic からのインバウンド接続は必要ありません。
 
 * **コントロールプレーン**：ランナーは `api.anthropic.com` をポーリングして作業を取得し、セットアップの進行状況や失敗のイベントを送信します。これらはすべてアウトバウンドの HTTPS です。ポーリングはランナーのハートビートも兼ねます。
-* **SCM コネクタ**：オプションのオーケストレーター [SCM コネクタ](/docs/ja/self-hosted-environments-reference#scm-connector-flags)のトンネルが、唯一の WebSocket 接続です。
-* **Git**：ランナーは、デプロイによって提供される認証情報で認証し、HTTPS または SSH 経由で git ホストからクローンおよびプッシュを行います。[git の設定](/docs/ja/self-hosted-environments-deploy#configure-git)では、セッションごとに発行される認証情報や、git を代わりに `api.anthropic.com` 経由でルーティングする [Anthropic git プロキシ](/docs/ja/self-hosted-environments-deploy#use-the-anthropic-git-proxy)を含むオプションについて説明しています。
-* **セッションの子プロセス**：子 Claude Code プロセスは `api.anthropic.com` へのセッションのイベントストリームを保持し、モデル推論とセッション中に実行される git コマンドのために独自のアウトバウンド呼び出しを行います。エグレスの完全な一覧については[ネットワーク要件](/docs/ja/self-hosted-environments-deploy#network-requirements)を参照してください。[上の図](#how-self-hosted-environments-work)は、オプションの SCM コネクタを除くこれらの経路を示しています。
+* **Git**：ランナーは、デプロイによって提供される認証情報で認証し、HTTPS または SSH 経由で git ホストからクローンおよびプッシュを行います。セッションごとに発行される認証情報を含むオプションについては、[git の設定](/docs/ja/self-hosted-environments-deploy#configure-git)を参照してください。[Anthropic git プロキシ](/docs/ja/self-hosted-environments-deploy#use-the-anthropic-git-proxy)を使用する場合、github.com 上のリポジトリに対する git トラフィックは代わりに `api.anthropic.com` を経由します。
+* **セッションの子プロセス**：子 Claude Code プロセスは `api.anthropic.com` へのセッションのイベントストリームを保持し、モデル推論とセッション中に実行される git コマンドのために独自のアウトバウンド呼び出しを行います。[Anthropic が管理する git](/docs/ja/self-hosted-environments-deploy#use-the-anthropic-git-proxy) を使用するセッションでは、子プロセスは github.com 向けの `git` および `gh` のトラフィックを、自身が `api.anthropic.com` に対して開く WebSocket 接続経由で送信します。
+* **SCM コネクタ**：オプションのオーケストレーター [SCM コネクタ](/docs/ja/self-hosted-environments-reference#scm-connector-flags)は利用できないため、そのトンネルは開かれません。このトンネルは `api.anthropic.com` への WebSocket 接続です。
+
+エグレスの完全な一覧については[ネットワーク要件](/docs/ja/self-hosted-environments-deploy#network-requirements)を参照してください。[上の図](#how-self-hosted-environments-work)は、オプションの SCM コネクタと Anthropic が管理する git 接続を除く、これらの経路を示しています。
 
 デフォルトでは、モデル推論には Anthropic API を使用します。コントロールプレーンは各セッションに API エンドポイントを渡し、セッションは Anthropic が発行したセッションスコープの OAuth トークンで認証します。モデルリクエストを代わりに自社のクラウドアカウントに送信する方法については、[モデルリクエストを Bedrock または Agent Platform に送信する](/docs/ja/self-hosted-environments-configuration#send-model-requests-to-bedrock-or-agent-platform)を参照してください。
 

@@ -91,8 +91,10 @@ Quick setup は、メンバーの GitHub と環境のセットアップの手順
   CLI からのセッションハンドオフは一方向です：`--teleport` でクラウドセッションをターミナルにプルできますが、既存のターミナルセッションをクラウドにプッシュすることはできません。`--cloud` フラグはタスク説明を使用して現在のリポジトリの新しいクラウドセッションを作成します；`-p` とセッション ID または claude.ai/code URL を使用すると、代わりに[その既存セッションにメッセージをキューイング](/docs/ja/claude-code-on-the-web#send-follow-ups-from-the-cli)します。[Desktop アプリ](/docs/ja/desktop#continue-in-another-surface)では、Code タブのローカルセッションを **Open in** メニューからクラウドに送信できます。
 </Note>
 
-<h3 id="from-terminal-to-cloud">
-  ターミナルからクラウドへ
+<span id="from-terminal-to-cloud" />
+
+<h3 id="start-a-cloud-session-from-your-terminal">
+  ターミナルからクラウドセッションを開始
 </h3>
 
 `--cloud` フラグを使用してコマンドラインからクラウドセッションを開始します：
@@ -215,8 +217,10 @@ View: https://claude.ai/code/session_01DiUkqY2kzbUbDmW1w96rfi?from=cli&m=0
 
 送信が失敗した場合は、[クラウドセッションへの送信時のエラー](#errors-when-sending-to-a-cloud-session)を参照してください。
 
-<h3 id="from-cloud-to-terminal">
-  クラウドからターミナルへ
+<span id="from-cloud-to-terminal" />
+
+<h3 id="continue-a-cloud-session-in-your-terminal">
+  クラウドセッションをターミナルで続行
 </h3>
 
 以下のいずれかを使用してクラウドセッションをターミナルにプルします：
@@ -483,7 +487,7 @@ v2.1.274 から v2.1.289 までは、サインインメッセージは `Claude C
 [claude.ai/code](https://claude.ai/code) からセッションを再度開いて、新しい VM をプロビジョニングしてください。
 
 * **復元されるもの**: 会話履歴
-* **復元されないもの**: VM が回収されたときにまだ実行されていたバックグラウンド作業（サブエージェントやシェルコマンドなど）
+* **復元されないもの**: VM が回収されたときにまだ実行されていたバックグラウンド作業（サブエージェントやシェルコマンドなど）、および[自己ペースの `/loop`](/docs/ja/scheduled-tasks#let-claude-choose-the-interval) の保留中のウェイクアップ。ループを再開するには、`/loop` を再度実行してください。
 
 <h2 id="limitations">
   制限事項

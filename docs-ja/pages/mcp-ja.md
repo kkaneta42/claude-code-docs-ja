@@ -181,8 +181,10 @@ MCP サーバーは Claude Code に固有ではないため、サーバーのセ
 
 各々は [MCP サーバーのインストール](#installing-mcp-servers) の 4 つのオプションが取る入力の 1 つです。以下で持っている形状を見つけて、Claude Code が受け入れるコマンドに変換してください。各コマンドは `--scope project` または `--scope user` を追加しない限り、[ローカルスコープ](#local-scope) に書き込みます。
 
-<h4 id="from-a-url">
-  URL から
+<span id="from-a-url" />
+
+<h4 id="add-a-server-from-a-url">
+  URL からサーバーを追加する
 </h4>
 
 URL はサーバーがリモートであることを意味します。`https://` エンドポイントの場合、`--transport http` で追加するか、指示が SSE を使用するエンドポイントを示している場合は [オプション 2](#option-2-add-a-remote-sse-server) に従ってください。`wss://` エンドポイントの場合、`--transport` は `ws` を受け入れないため、代わりに [オプション 4](#option-4-add-a-remote-websocket-server) を使用してください。
@@ -193,8 +195,10 @@ claude mcp add --transport http example https://mcp.example.com/mcp
 
 指示が API キーまたはトークンヘッダーも提供する場合、[オプション 1](#option-1-add-a-remote-http-server) に示されているように `--header` で渡してください。
 
-<h4 id="from-an-npx-uvx-or-binary-command">
-  `npx`、`uvx`、またはバイナリコマンドから
+<span id="from-an-npx-uvx-or-binary-command" />
+
+<h4 id="add-a-server-from-an-npx-uvx-or-binary-command">
+  `npx`、`uvx`、またはバイナリコマンドからサーバーを追加する
 </h4>
 
 起動コマンドはサーバーがローカル stdio プロセスとして実行されることを意味します。コマンド全体を `--` の後に配置して、Claude Code が `-y` などのフラグをサーバーを起動するコマンドに渡し、独自のオプションとして読み込まないようにします。指示が要求する環境変数を `--env` で渡します。サーバー名の後、`--` の前に渡します。
@@ -205,8 +209,10 @@ claude mcp add example --env API_KEY=your-key -- npx -y @example/mcp-server
 
 [オプション 3](#option-3-add-a-local-stdio-server) は `--` セパレータを完全にカバーしています。
 
-<h4 id="from-an-mcpservers-json-block">
-  `mcpServers` JSON ブロックから
+<span id="from-an-mcpservers-json-block" />
+
+<h4 id="add-a-server-from-an-mcpservers-json-block">
+  `mcpServers` JSON ブロックからサーバーを追加する
 </h4>
 
 Claude Desktop などの別の MCP クライアント向けに書かれた `mcpServers` ブロックは、Claude Code が読み込むラッパーキーとエントリ形状を使用します。`claude mcp add-json` には、ラッパーではなく `mcpServers` 内のオブジェクトを渡します。2 つのエントリは最初に修復が必要です。
@@ -367,7 +373,7 @@ Claude Code は起動するたびにランタイムを選択し、終了する�
 
 v2 では、Claude Code も：
 
-* HTTP サーバーと stdio サーバーに新しいリビジョンをサポートするかどうかを尋ね、それをサポートするサーバーで使用します。フィーチャーフラグを取得するセッションでは、claude.ai コネクタサーバーにも尋ねます。他のすべてのサーバーには v1 と同様に接続します。
+* HTTP、stdio、claude.ai コネクタの各サーバーに新しいリビジョンをサポートするかどうかを尋ね、それをサポートするサーバーで使用します。他のすべてのサーバーには v1 と同様に接続します。
 * 新しいリビジョンのサーバーから [保持するストリーム](#notification-streams-on-the-v2-runtime) 上で `list_changed` 通知を受け取ります。
 * 新しいリビジョンで接続する [チャネル](#push-messages-with-channels) サーバーを登録しません。そのリビジョンはチャネルメッセージを運ぶことができないためです。
 * 予期しない発行者を示す認可応答の [MCP OAuth サインイン](#authenticate-with-remote-mcp-servers) を失敗させます。
@@ -891,7 +897,7 @@ Claude Code は、1 つ以上の設定されたサーバーが認証を必要と
   コマンドラインから認証する
 </h3>
 
-`claude mcp login <name>` コマンドは設定されたサーバーの OAuth フローをシェルから直接実行するため、セッション内の `/mcp` パネルを開く必要がありません。
+`claude mcp login <name>` コマンドは設定されたサーバーの OAuth フローをシェルから直接実行するため、セッション内の `/mcp` パネルを開く必要がありません。claude.ai コネクタの場合は、[シェルからコネクタを再度認可する](/docs/ja/remote-control#authorize-a-connector-again-from-your-shell)の手順に従ってください。
 
 ```bash theme={null}
 claude mcp login sentry
@@ -1581,8 +1587,10 @@ MCP Apps UI リソースは、`ui://` URI または `text/html;profile=mcp-app` 
   ツール検索は Microsoft Foundry の[Azure でホストされているデプロイメント](https://platform.claude.com/docs/en/build-with-claude/claude-in-microsoft-foundry#hosting-options)ではサポートされていません。これらのデプロイメントはサーバー側でツール検索を拒否します。Claude Code はこの拒否を検出し、そのデプロイメント用に MCP ツールを事前に読み込みます。[`ENABLE_TOOL_SEARCH`](#configure-tool-search) はデプロイメント自体からの拒否であるため、これをオーバーライドすることはできません。
 </Note>
 
-<h3 id="for-mcp-server-authors">
-  MCP サーバー作成者向け
+<span id="for-mcp-server-authors" />
+
+<h3 id="tool-search-for-mcp-server-authors">
+  MCP サーバー作成者向けのツール検索
 </h3>
 
 MCP サーバーを構築している場合、ツール検索が有効になるとサーバー指示フィールドがより有用になります。サーバー指示は、[スキル](/docs/ja/skills)の動作方法と同様に、Claude がいつツールを検索すべきかを理解するのに役立ちます。

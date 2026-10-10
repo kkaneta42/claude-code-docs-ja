@@ -384,7 +384,7 @@ Claude Code は、プラグインマーケットプレイスをゲートウェ�
 * **マーケットプレイスリスト**：そのマーケットプレイスを含まない [`strictKnownMarketplaces`](/docs/ja/plugins/org#allowlist-with-strictknownmarketplaces) 許可リスト、またはそのマーケットプレイスを指定する [`blockedMarketplaces`](/docs/ja/plugins/org#blocklist-with-blockedmarketplaces) エントリ
 * **環境変数**：管理設定の [`env` ブロック](/docs/ja/plugins/org#turn-updates-off-for-the-whole-fleet) で `CLAUDE_CODE_DISABLE_OFFICIAL_MARKETPLACE_AUTOINSTALL` を `"1"` に設定
 
-最初の登録は、開発者がゲートウェイにサインインする前、つまりゲートウェイポリシーがまだ届いていない時点で実行される場合があります。この最初の起動にも対応するには、ゲートウェイポリシーの [`cli` ブロック](/docs/ja/claude-apps-gateway-config#what-goes-in-cli) に加えて、[クライアント側管理設定](/docs/ja/claude-apps-gateway-config#client-side-managed-settings) でも選択した設定を配信してください。
+最初の登録は、開発者がゲートウェイにサインインする前、つまりゲートウェイポリシーがまだ届いていない時点で実行される場合があります。この最初の起動にも対応するには、ゲートウェイポリシーの [`cli` または `code` ブロック](/docs/ja/claude-apps-gateway-config#what-goes-in-cli) に加えて、[クライアント側管理設定](/docs/ja/claude-apps-gateway-config#client-side-managed-settings) でも選択した設定を配信してください。
 
 <h2 id="troubleshooting">
   トラブルシューティング

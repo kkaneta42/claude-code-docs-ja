@@ -391,8 +391,10 @@ Claude Code v2.1.212 以降でセッションを戻すには、ディスパッ�
 
 エージェントビューから新しいバックグラウンドセッションをディスパッチしたり、既存のインタラクティブセッションをバックグラウンドに送信またはコピーしたり、シェルから直接開始したりできます。
 
-<h3 id="from-agent-view">
-  エージェントビューから
+<span id="from-agent-view" />
+
+<h3 id="dispatch-an-agent-from-agent-view">
+  エージェントビューからエージェントをディスパッチする
 </h3>
 
 エージェントビューの下部の入力にプロンプトを入力して `Enter` キーを押すと、新しいバックグラウンドセッションが開始されます。セッションはプロンプトから自動的に名前が付けられます。後で `Ctrl+R` で名前を変更できます。
@@ -446,8 +448,10 @@ Claude Code v2.1.212 以降でセッションを戻すには、ディスパッ�
 
 エージェントビューがディレクトリでグループ化されている場合、ディスパッチは選択した行のディレクトリにプロンプトを送信するため、パスを再入力することなくグループを選択してそこにディスパッチできます。
 
-<h3 id="from-inside-a-session">
-  セッション内から
+<span id="from-inside-a-session" />
+
+<h3 id="send-or-copy-a-session-to-the-background">
+  セッションをバックグラウンドに送信またはコピーする
 </h3>
 
 2 つのコマンドで、作業中のセッションからバックグラウンドに作業を移動できます。`/background` は現在の会話をバックグラウンドに送信してターミナルを解放し、`/fork` はコピーを送信して、元の場所で作業を続けられるようにします。
@@ -511,8 +515,10 @@ Claude Code は、実行中の [モニター](/docs/ja/tools-reference#monitor-t
 
 セッション中に [`/add-dir`](/docs/ja/permissions#additional-directories-grant-file-access-not-configuration) で追加したディレクトリも引き継がれます。`--allow-dangerously-skip-permissions` を引き継ぐと、バックグラウンド化されたセッションでも `bypassPermissions` に切り替えられる状態が維持されますが、新たに何かを付与するわけではありません。このモードには引き続き、[権限モード、モデル、effort](#permission-mode-model-and-effort) で説明されている 1 回限りのインタラクティブな同意が必要です。
 
-<h3 id="from-your-shell">
-  シェルから
+<span id="from-your-shell" />
+
+<h3 id="dispatch-an-agent-from-your-shell">
+  シェルからエージェントをディスパッチする
 </h3>
 
 `--bg` またはその長い形式 `--background` を渡すと、直接バックグラウンドで動作するセッションを開始します。
@@ -825,7 +831,7 @@ claude agents --settings ./ci-settings.json --add-dir ../shared-lib
 | `claude daemon logs` | supervisor のログファイル [`~/.claude/daemon.log`](#where-state-is-stored) を追跡し、`Ctrl+C` を押すまで新しい行を到着次第出力する |
 | `claude daemon stop --any` | supervisor プロセスとそれがホストするバックグラウンドセッションを停止します。`--keep-workers` を渡して、バックグラウンドセッションを実行したままにして、次の supervisor が再接続できるようにします。次の `claude agents` または `claude --bg` は新しい supervisor を開始します |
 
-`claude attach` と `claude logs` は、`claude logs "auth refactor"` のように、ID の代わりに実行中のセッション名の一部を受け取ることができます。名前を渡すには Claude Code v2.1.290 以降が必要です。
+`claude attach` と `claude logs` は、`claude logs "auth refactor"` のように、ID の代わりにセッション名の一部を受け取ることができます。名前を渡すには Claude Code v2.1.290 以降が必要です。
 
 <h3 id="list-sessions-as-json">
   セッションを JSON として一覧表示
@@ -979,11 +985,14 @@ Claude Code は拒否された試みで入力した返信を保存し（`!` ま�
   セッションを開くと、保存されたトランスクリプトがないと表示される
 </h3>
 
-[別の会話からバックグラウンド化された](#from-inside-a-session)停止したセッションが最初の応答が完了する前に停止した場合、再開するものはありません。最初の応答が完了するまで、会話はバックグラウンド化された会話にのみ存在します。`claude attach` は `This session has no saved transcript` で開くことを拒否します。
+[別の会話からバックグラウンド化した](#from-inside-a-session)セッションのうち、独自のターンを実行する前に停止したセッションを開くと、Claude Code はその会話を再開します。Claude Code がその会話を見つけられない場合、セッションを開くことを拒否します：
 
-エージェントビューでは、その行を開くとリストの下に `Press enter again to restart this session fresh` が表示されます。同じ行で再度 `Enter` を押して、空の会話でセッションを再開するか、シェルから `claude respawn <id>` を実行します。
+* `claude attach` は `This session has no saved transcript` を出力します。
+* エージェントビューでは、リストの下に `Press enter again to restart this session fresh` が表示されます。
 
-元の会話は無傷です。`claude --resume` で再開するか、それで作業を続けます。詳細については、[エラーリファレンス](/docs/ja/errors#this-session-has-no-saved-transcript)を参照してください。
+同じ行で再度 `Enter` を押して空の会話でセッションを再開するか、シェルから `claude respawn <id>` を実行します。
+
+詳細については、[エラーリファレンス](/docs/ja/errors#this-session-has-no-saved-transcript)を参照してください。
 
 <h3 id="the-terminal-host-died-or-the-session-stopped-responding">
   ターミナルホストが停止したか、セッションが応答しなくなった
@@ -1095,7 +1104,7 @@ Agent view はリサーチプレビュー中に急速に進化しました。古
 
 | バージョン | 変更 |
 | - | - |
-| v2.1.290 | [`claude attach` と `claude logs`](#manage-sessions-from-the-shell) は、ID の代わりに実行中のセッションの名前の一部を受け付けます。 |
+| v2.1.290 | [`claude attach` と `claude logs`](#manage-sessions-from-the-shell) は、ID の代わりにセッションの名前の一部を受け付けます。 |
 | v2.1.290 | `/model`、`/effort`、`/rename`、`/usage` を作業中のセッションへの[ピーク返信](#peek-and-reply)として送信すると、すぐに実行されます。 |
 | v2.1.290 | 配信できない[ピーク返信](#peek-and-reply)は、`/` で始まる場合、またはセッションのプロセスの実行中に事前定義された選択肢のある質問に回答する場合、次回の再起動に向けて保存されなくなりました。 |
 | v2.1.288 | `Ctrl+F` は名前でセッションを検索し、`Alt+↑` / `Alt+↓` はグループヘッダー間を移動します。これらのキーと `Ctrl+R` は[再割り当て](/docs/ja/keybindings#agents-actions)できます。 |
