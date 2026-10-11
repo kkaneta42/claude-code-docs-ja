@@ -263,7 +263,7 @@ Claude アプリゲートウェイは、開発者の Claude Code クライアン
   開発者を接続する
 </h2>
 
-開発者は独自のラップトップから 1 つのブラウザサインインで接続し、企業の仕事用アカウントを使用します。claude.ai アカウント、API キー、またはサブスクリプションは必要ありません。モデルへのリクエストは組織のアップストリーム認証情報を使用してゲートウェイを通じて行くためです。接続は、MDM 経由でプッシュする[クライアント側管理設定](/docs/ja/claude-apps-gateway-config#client-side-managed-settings)によって駆動されるため、開発者側に手動セットアップはありません。このセクションは管理者が設定するものをカバーしています。
+開発者は独自のラップトップから 1 つのブラウザサインインで接続し、企業の仕事用アカウントを使用します。claude.ai アカウント、API キー、またはサブスクリプションは必要ありません。モデルへのリクエストは組織のアップストリーム認証情報を使用してゲートウェイを通じて行くためです。接続は、MDM 経由でプッシュする[クライアント側管理設定](/docs/ja/claude-apps-gateway-config#client-side-managed-settings)によって駆動されます。このセクションは管理者が設定するものをカバーしています。
 
 CLI はゲートウェイの TLS リーフ証明書を最初の接続時にフィンガープリントし、ホスト名ごとにピン留めします。サインイン時、サイレントセッション更新時、および管理設定フェッチ時にそのピンを再度チェックしますが、推論リクエストはピンなしで標準 TLS 検証を使用します。HTTPS プロキシを通じてルーティングされたリクエストはピンチェックをスキップするため、ゲートウェイホストを `NO_PROXY` に追加して直接接続を保つようにします。
 
@@ -287,7 +287,7 @@ openssl x509 -noout -fingerprint -sha256 -in cert.pem | cut -d= -f2 | tr -d : | 
   ゲートウェイ URL を設定する
 </h3>
 
-MDM 経由またはディスク上で直接デプロイする OS ごとの[管理設定ファイル](/docs/ja/managed-settings#delivery-mechanisms)に 3 つのキーが入ります。`forceLoginMethod` と `forceLoginGatewayUrl` は `/login` を **Cloud gateway** 画面で URL が入力された状態で直接開き、`parentSettingsBehavior: "merge"` は Claude Desktop がゲートウェイの出力許可リストを起動する Claude Code セッションに配信できるようにします。これは[Claude Desktop セッションにポリシーを配信する](#deliver-policy-to-claude-desktop-sessions)で説明されています。
+MDM 経由またはディスク上で直接デプロイする OS ごとの[管理設定ファイル](/docs/ja/managed-settings#delivery-mechanisms)に 3 つのキーが入ります。管理設定のないマシンについては、代わりに[ユーザー設定でゲートウェイ URL を設定する](#set-the-gateway-url-in-user-settings)を参照してください。`forceLoginMethod` と `forceLoginGatewayUrl` は `/login` を **Cloud gateway** 画面で URL が入力された状態で直接開き、`parentSettingsBehavior: "merge"` は Claude Desktop がゲートウェイの出力許可リストを起動する Claude Code セッションに配信できるようにします。これは[Claude Desktop セッションにポリシーを配信する](#deliver-policy-to-claude-desktop-sessions)で説明されています。
 
 ```json theme={null}
 {
@@ -299,7 +299,25 @@ MDM 経由またはディスク上で直接デプロイする OS ごとの[管�
 
 開発者は Enter キーを押して接続します。[最初の接続 TLS フィンガープリントプロンプト](#connect-developers)は引き続き表示されます。ファイルがマシンに配置されると、ゲートウェイサインインを完了していない開発者は、[Administrator policy requires a Cloud gateway sign-in](/docs/ja/errors#administrator-policy-requires-a-cloud-gateway-sign-in)で説明されているメッセージの 1 つを見ます。`CLAUDE_CODE_USE_BEDROCK` などの環境変数を通じてクラウドプロバイダーを選択する開発者はゲートウェイサインインを必要としません。
 
-開発者はこれを手動で設定することはできません。ログインピッカーにはゲートウェイオプションがなく、`forceLoginGatewayUrl` は開発者独自の設定ファイルでは無視されます。URL なしの `forceLoginMethod` のみでは、開発者を「IT 管理者に連絡してください」メッセージのままにします。ログインキーは、マシンにプッシュするファイルに属し、ゲートウェイの `managed.policies[].cli` ブロックには属しません。このブロックは既に接続されているクライアントにのみ到達します。
+ログインピッカーにはゲートウェイオプションがなく、管理設定で URL なしの `forceLoginMethod` のみを設定すると、開発者は「IT 管理者に連絡してください」メッセージのままになります。ログインキーは、マシンにプッシュするファイルに属し、ゲートウェイの `managed.policies[].cli` ブロックには属しません。このブロックは既に接続されているクライアントにのみ到達します。
+
+<h4 id="set-the-gateway-url-in-user-settings">
+  ユーザー設定でゲートウェイ URL を設定する
+</h4>
+
+管理設定のないマシンでは、各開発者に `forceLoginMethod` と `forceLoginGatewayUrl` を自分のユーザー設定ファイル `~/.claude/settings.json` に追加してもらいます。これには開発者マシンで Claude Code v2.1.295 以降が必要です。この例では `claude-gateway.internal.example.com` のゲートウェイを指定しています。
+
+```json theme={null}
+{
+  "forceLoginMethod": "gateway",
+  "forceLoginGatewayUrl": "https://claude-gateway.internal.example.com"
+}
+```
+
+開発者が Claude Code のプロンプトで `/login` を実行すると、そのアドレスで **Cloud gateway** 画面が開き、Enter キーを押して接続します。[最初の接続 TLS フィンガープリントプロンプト](#connect-developers)は引き続き表示されます。この方法で設定したキーには以下の制限が適用されます。
+
+* **ユーザー設定のみ**：Claude Code は 2 つのキーを `~/.claude/settings.json` から読み取り、プロジェクトの `.claude/settings.json` や `.claude/settings.local.json` からは読み取りません。
+* **管理設定があると無効になる**：管理設定ファイル、macOS plist または Windows HKLM ポリシー、あるいは[ポリシーヘルパー](/docs/ja/settings-reference#policyhelper)を通じて管理者の設定がマシンに届くと、Claude Code はユーザー設定で指定されたゲートウェイを無視します。
 
 <h3 id="allow-a-gateway-on-public-address-space-you-own">
   公開アドレス空間でゲートウェイを許可する

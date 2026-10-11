@@ -582,7 +582,7 @@ export const ReferenceFilter = ({placeholder, noun, facets, facetOrder, columnHe
 <ReferenceFilter
   noun="設定"
   placeholder="キーまたは用途で設定を絞り込む"
-  facetOrder={{ scope: ["Any file", "User, local, or managed", "User or managed", "Managed", "Global config"] }}
+  facetOrder={{ scope: ["Any file", "User, local, or managed", "User or managed", "User", "Managed", "Global config"] }}
   columnHelp={{
 topic: "その項目が記載されているこのページのセクションです。Sort by を使うと、表をトピックごとにグループ化できます。",
 scope: "そのキーを設定できる設定ファイル：user（~/.claude/settings.json）、project（.claude/settings.json）、local（.claude/settings.local.json）、または managed（組織がデプロイ）。Global config のキーは代わりに ~/.claude.json に記述します。",
@@ -638,7 +638,7 @@ scope: "そのキーを設定できる設定ファイル：user（~/.claude/sett
 | [`claudeMdExcludes`](#claudemdexcludes) | メモリの読み込み時に特定の [CLAUDE.md](/docs/ja/memory#exclude-specific-claude-md-files) ファイルをスキップします | メモリとコンテキスト | Any file |
 | [`cleanupPeriodDays`](#cleanupperioddays) | Claude Code が[トランスクリプト](/docs/ja/data-usage#data-retention)を削除するまで保持する日数を選択します | プライバシーとテレメトリ | Any file |
 | [`companyAnnouncements`](#companyannouncements) | 起動時に組織のお知らせを表示します | インターフェースとターミナル | Any file |
-| [`copyFullResponse`](#copyfullresponse) | [`/copy`](/docs/ja/commands) がコードブロックの選択画面を表示せずに応答全体をコピーするようにします | グローバル設定 | Global config |
+| [`copyFullResponse`](#copyfullresponse) | [`/copy`](/docs/ja/commands) がピッカーを表示せずに応答全体をコピーするようにします | グローバル設定 | Global config |
 | [`copyOnSelect`](#copyonselect) | [フルスクリーンレンダリング](/docs/ja/fullscreen#use-the-mouse)とエージェントビューで、マウスで選択したテキストの自動コピーをオフにします | グローバル設定 | Global config |
 | [`crossSessionInbound`](#crosssessioninbound) | Claude Code が[他のセッションからのメッセージ](/docs/ja/cross-session-messaging#control-inbound-messages)を配信するか、配信せずに通知を表示するか、拒否するかを選択します | エージェント、セッション、worktree | Any file |
 | [`defaultShell`](#defaultshell) | [`!` プレフィックス](/docs/ja/interactive-mode#shell-mode-with-prefix)で入力したシェルコマンドを Bash と PowerShell のどちらで実行するかを選択します | インターフェースとターミナル | Any file |
@@ -684,7 +684,7 @@ scope: "そのキーを設定できる設定ファイル：user（~/.claude/sett
 | [`fileCheckpointingEnabled`](#filecheckpointingenabled) | [`/rewind`](/docs/ja/checkpointing) が復元するファイルスナップショットをオフまたはオンにします | メモリとコンテキスト | Any file |
 | [`fileSuggestion`](#filesuggestion) | 独自のコマンドから [`@` ファイルのオートコンプリート](/docs/ja/interactive-mode#quick-commands)を提供します | インターフェースとターミナル | Any file |
 | [`footerLinksRegexes`](#footerlinksregexes) | 出力内の issue やレビューの ID を、入力ボックスの下にある[クリック可能なリンク](/docs/ja/statusline#clickable-links)にします | インターフェースとターミナル | User or managed |
-| [`forceLoginGatewayUrl`](#forcelogingatewayurl) | ログイン画面が接続する[ゲートウェイ URL](/docs/ja/claude-apps-gateway#set-the-gateway-url) を設定します | 認証とプロバイダー | Managed |
+| [`forceLoginGatewayUrl`](#forcelogingatewayurl) | ログイン画面が接続する[ゲートウェイ URL](/docs/ja/claude-apps-gateway#set-the-gateway-url) を設定します | 認証とプロバイダー | User or managed |
 | [`forceLoginMethod`](#forceloginmethod) | [ログインを](/docs/ja/authentication#restrict-login-to-your-organization) claude.ai、Claude Console、または[クラウドゲートウェイ](/docs/ja/claude-apps-gateway)に制限します | 認証とプロバイダー | Any file |
 | [`forceLoginOrgUUID`](#forceloginorguuid) | [claude.ai のログインを組織に固定](/docs/ja/authentication#restrict-login-to-your-organization)します。これを強制できるのは管理ソースのみです | 認証とプロバイダー | Any file |
 | [`forceRemoteSettingsRefresh`](#forceremotesettingsrefresh) | [サーバー管理設定](/docs/ja/server-managed-settings)が新たに取得されるまで起動をブロックします | エンタープライズと管理設定 | Managed |
@@ -831,6 +831,7 @@ scope: "そのキーを設定できる設定ファイル：user（~/.claude/sett
 | [`worktree`](#worktree) | Claude Code が git の [worktree](/docs/ja/worktrees) を作成する方法を設定します | エージェント、セッション、worktree | Any file |
 | [`worktree.baseRef`](#worktree-baseref) | 新しい [worktree](/docs/ja/worktrees) を、リモートのデフォルトブランチまたはローカルの HEAD から分岐させます | エージェント、セッション、worktree | Any file |
 | [`worktree.bgIsolation`](#worktree-bgisolation) | バックグラウンドセッションが [worktree](/docs/ja/worktrees) を使わずに作業コピーを編集できるようにします | エージェント、セッション、worktree | Any file |
+| [`worktree.location`](#worktree-location) | [Desktop の SSH セッション](/docs/ja/desktop#ssh-sessions)がリモートマシン上で worktree を作成する場所を選択します | エージェント、セッション、worktree | User |
 | [`worktree.sparsePaths`](#worktree-sparsepaths) | 各 [worktree](/docs/ja/worktrees) で必要なディレクトリのみをチェックアウトします | エージェント、セッション、worktree | Any file |
 | [`worktree.symlinkDirectories`](#worktree-symlinkdirectories) | 大きなディレクトリを複製する代わりに、各 [worktree](/docs/ja/worktrees) にシンボリックリンクします | エージェント、セッション、worktree | Any file |
 | [`wslInheritsWindowsSettings`](#wslinheritswindowssettings) | WSL が Windows のポリシーチェーンから[管理設定](/docs/ja/managed-settings)を読み取るようにします | エンタープライズと管理設定 | Managed |
@@ -1763,7 +1764,7 @@ Linux および WSL2 では、シンボリックリンクである設定ファ�
   * `"acceptEdits"`: Claude Code は確認なしでファイル編集と `mkdir` や `mv` などの一般的なファイルシステムコマンドも実行します
   * `"plan"`: Claude Code は読み取りと計画を行いますが、計画を承認するまで編集をブロックします
   * `"auto"`: Claude Code は日常的なプロンプトなしで実行します。シェルコマンドやネットワークリクエストなどのアクションが実行される前に、バックグラウンドの分類器がそれらがユーザーのリクエストに沿っているかを確認します
-  * `"dontAsk"`: Claude Code はプロンプトを表示するはずのすべての呼び出しを自動的に拒否します。読み取り、承認が不要な他のアクション、事前承認されたツールは引き続き実行されます
+  * `"dontAsk"`: Claude Code はプロンプトを表示するはずのすべての呼び出しを自動的に拒否します。作業ディレクトリ内のファイル読み取り、承認が不要な他のアクション、事前承認されたツールは引き続き実行されます。ただし、[ネットワークパス](/docs/ja/permissions#network-paths)からの読み取りは除きます
   * `"bypassPermissions"`: Claude Code はすべてを確認なしで実行します
   * `"manual"`: `"default"` のエイリアス
 * **デフォルト**: 未設定
@@ -2398,7 +2399,7 @@ Linux と WSL2 のみ。
 
 * `files` または `envVars` のエントリで、有効な `path` または `name` と `mask` または `deny` の `mode` を持つもの（キャプチャグループがない `extract` パターンなど）は、警告とともに `mode: "deny"` に低下されるため、認証情報はマスクされず、エントリを修正するまでブロックされたままです。低下した `files` エントリは、明示的な `deny` エントリのように [`filesystem.disabled`](/docs/ja/sandboxing#disable-filesystem-isolation) をピンします。警告は、管理設定がファイルシステム分離をオフにする場合、その読み取りブロックが強制されないことを記します。
 * 不明な `mode` または無効な `path` または `name` を持つエントリは削除されます。
-* 各ケースは警告します。エントリが低下または削除されるかどうかに関わらず、残りの有効なエントリは引き続き強制され、完全に無効な `credentials` 値は削除されますが、`sandbox` の残りは引き続き適用されます。
+* 各ケースは警告します。エントリが低下または削除されるかどうかに関わらず、残りの有効なエントリは引き続き強制されます。
 
 v2.1.191 以降に適用されます。v2.1.221 より前では、すべての無効なエントリが削除されました。フィールドごとの処理を持つ他の管理キーについては、[管理設定の無効なエントリ](/docs/ja/managed-settings#invalid-entries-in-managed-settings)を参照してください。
 
@@ -5681,6 +5682,28 @@ git sparse-checkout を通じて各 worktree にリストされたディレク�
 
 git リポジトリの外では、失敗する [`WorktreeCreate` フック](/docs/ja/worktrees#non-git-version-control)がブロックを解放し、セッションが作業ディレクトリをその場で編集できるようにします。その解放には Claude Code v2.1.203 以降が必要です。
 
+<h3 id="worktree-location">
+  `worktree.location`
+</h3>
+
+[Desktop の SSH セッション](/docs/ja/desktop#choose-where-ssh-session-worktrees-go)が worktree を作成するリモートマシン上のフォルダーを、`<project-root>/.claude/worktrees/` の代わりに選択します。このキーを読み込むのはデスクトップアプリのみです。`--worktree`、`EnterWorktree` ツール、分離されたサブエージェント、およびバックグラウンドセッションはこのキーを無視します。Claude Desktop v1.44121.0 以降が必要です。
+
+* **スコープ**: [`ユーザー`](#scopes)、リモートマシン上の `~/.claude/settings.json` 内
+* **タイプ**: 文字列、絶対パスまたは `~/` で始まるパス
+* **デフォルト**: 未設定。worktree はプロジェクト内に作成されます
+
+この例はフォルダーを `~/worktrees` に設定します：
+
+```json settings.json theme={null}
+{
+  "worktree": {
+    "location": "~/worktrees"
+  }
+}
+```
+
+Desktop で SSH 接続に設定された **Worktree folder** が優先されます。組織がセッションで使用できるフォルダーを制限している場合、Desktop は worktree をプロジェクト内に保持します。
+
 <h2 id="remote-desktop-and-notifications">
   リモート、デスクトップ、および通知
 </h2>
@@ -5813,7 +5836,7 @@ Claude Desktop は、デスクトップ設定から派生したポリシー（�
   `enableArtifact`
 </h3>
 
-セッション出力を claude.ai 上のプライベート Web ページとして公開する [Artifact](/docs/ja/artifacts) ツールをオフにします。`/config` で **Artifacts** 行をオフにすると、Claude Code はこのキーをユーザー設定に書き込むため、通常は手動で編集しません。Claude Code v2.1.196 以降が必要です。
+セッション出力を claude.ai 上のプライベート Web ページとして公開する [Artifact](/docs/ja/artifacts) ツールをオフにします。`/config` で **Artifacts** 行をオフにすると、Claude Code はこのキーをユーザー設定に書き込むため、通常は手動で編集しません。
 
 * **Scope**: [`Any file`](#scopes)。すべてのファイルはツールをオフにでき、どのファイルもそれをオンに戻すことはできません。
 * **Type**: Boolean
@@ -5920,7 +5943,7 @@ Claude Code はプロジェクトまたはローカル設定からの `true` を
   `sshConfigs`
 </h3>
 
-[Desktop](/docs/ja/desktop#pre-configure-ssh-connections-for-your-team) 環境ドロップダウンに SSH 接続を追加します。管理者はこれを使用して、共有接続をチームに配布します。マネージド設定で定義した接続はマネージドとして表示されるため、ユーザーはそれらを選択できますが、アプリで編集または削除することはできません。
+[Desktop](/docs/ja/desktop#pre-configure-ssh-connections-for-your-team) 環境ドロップダウンに SSH 接続を追加します。管理者はこれを使用して、共有接続をチームに配布します。管理設定で定義した接続は管理対象として表示されます。ユーザーはそれらを選択し、それらに対して [独自の **Worktree folder** を設定](/docs/ja/desktop#choose-where-ssh-session-worktrees-go) できますが、アプリでそれ以外を編集したり、接続を削除したりすることはできません。
 
 * **Scope**: [`User or managed`](#scopes)。デスクトップアプリはこのキーを読み取ります。デフォルトでは、管理対象の接続を [1 つの管理ソース](/docs/ja/managed-settings#how-claude-code-combines-managed-sources) から読み取ります。
 * **Type**: オブジェクトの配列。各オブジェクトは必須の `id`、`name`、`sshHost` と、オプションの `sshPort` および `sshIdentityFile` を持ちます
@@ -6085,7 +6108,7 @@ AWS 認証情報を JSON として出力する独自のコマンドを実行し�
 
 ユーザーがログインできるアカウントの種類を制限します。`"claudeai"` を設定して claude.ai アカウントのみを許可するか、`"console"` を設定して Claude Console アカウントのみを許可するか、`"gateway"` を設定してファーストパーティログインの代わりに [クラウドゲートウェイ](/docs/ja/claude-apps-gateway)にユーザーを送信します。管理者は管理設定で設定し、[`forceLoginOrgUUID`](#forceloginorguuid) と組み合わせて開発者の claude.ai ログインを 1 つの組織内に保つことができます。任意の設定ファイルで `"claudeai"` または `"console"` に設定した場合、Claude Code はそのファイルが適用されるセッションで [キーレス Console サインイン](/docs/ja/authentication#sign-in-without-an-api-key)の提供も停止します。
 
-* **スコープ**: [`Any file`](#scopes)。Claude Code は `"gateway"` をマシン上の管理ソース（`managed-settings.json`、macOS plist または Windows HKLM レジストリ、またはポリシーヘルパー）からのみ受け入れます。ユーザー、プロジェクト、ローカル、HKCU、およびサーバー管理設定では `"gateway"` を未設定として扱います。これは [`forceLoginGatewayUrl`](#forcelogingatewayurl) と同じルールです。
+* **スコープ**: [`Any file`](#scopes)。Claude Code は `"gateway"` を [`forceLoginGatewayUrl`](#forcelogingatewayurl) と同じソースからのみ受け入れ、それ以外の場所では未設定として扱います。
 * **タイプ**: 文字列、以下のいずれか：
   * `"claudeai"`: claude.ai アカウントのみがログインできます
   * `"console"`: Claude Console アカウントのみがログインできます
@@ -6108,9 +6131,9 @@ AWS 認証情報を JSON として出力する独自のコマンドを実行し�
 
 `/login` クラウドゲートウェイ画面が接続するゲートウェイ URL を設定して、ユーザーがアドレスを入力せずに [クラウドゲートウェイ](/docs/ja/claude-apps-gateway)に到達できるようにします。画面には URL フィールドがありません。このキーが設定されている場合、ゲートウェイ URL を表示し、ユーザーが Enter キーを押すと接続します。設定されていない場合、IT 管理者に連絡するよう指示します。
 
-このキーまたは `forceLoginMethod: "gateway"` のいずれかにより、`CLAUDE_CODE_USE_*` でクラウドプロバイダーを選択するセッションを除き、マシンはゲートウェイのみになります。その場合、`/login` はログイン方法ピッカーなしでクラウドゲートウェイ画面で開きます。残されたファーストパーティログインまたは API キーに何が起こるかについては、[管理者ポリシーがクラウドゲートウェイサインインを必要とします](/docs/ja/errors#administrator-policy-requires-a-cloud-gateway-sign-in)を参照してください。画面がエラーを表示する代わりに接続するように、両方のキーを設定します。
+管理設定では、このキーまたは `forceLoginMethod: "gateway"` のいずれかにより、`CLAUDE_CODE_USE_*` でクラウドプロバイダーを選択するセッションを除き、マシンはゲートウェイのみになります。その場合、`/login` はログイン方法ピッカーなしでクラウドゲートウェイ画面で開きます。残されたファーストパーティログインまたは API キーに何が起こるかについては、[管理者ポリシーがクラウドゲートウェイサインインを必要とします](/docs/ja/errors#administrator-policy-requires-a-cloud-gateway-sign-in)を参照してください。画面がエラーを表示する代わりに接続するように、両方のキーを設定します。
 
-* **スコープ**: [`Managed`](#scopes)。マシン上のソースからのみ読み取ります。`managed-settings.json`、macOS plist または Windows HKLM レジストリ、またはポリシーヘルパー。Claude Code は HKCU およびサーバー管理設定では無視します。
+* **スコープ**: [`User or managed`](#scopes)。マシン上の管理ソースから読み取ります。`managed-settings.json`、macOS plist または Windows HKLM レジストリ、またはポリシーヘルパー。これらのいずれもないマシンでは、Claude Code v2.1.295 以降は [ユーザー設定](/docs/ja/claude-apps-gateway#set-the-gateway-url-in-user-settings)からも読み取ります。Claude Code は HKCU およびサーバー管理設定では無視します。
 * **タイプ**: 文字列、スキームを含む完全な URL
 * **デフォルト**: 未設定。クラウドゲートウェイ画面は IT 管理者に連絡するよう指示するエラーを表示します
 
@@ -6140,7 +6163,7 @@ AWS 認証情報を JSON として出力する独自のコマンドを実行し�
 }
 ```
 
-管理ソースが空の配列を設定するか、Claude Code が解析できない値を設定する場合、Claude Code はすべてのログインを設定ミスメッセージでブロックします。
+管理ソースが空の配列、または文字列でも文字列の配列でもない値を設定した場合、Anthropic アカウントでサインインするユーザーは Claude Code を起動することもログインを完了することもできません。ユーザーには、`forceLoginOrgUUID` を名指しし、管理者に連絡するよう指示するメッセージが表示されます。誤った型の値を出力する [`policyHelper`](#policyhelper) の場合は、代わりに[その実行が失敗します](#helper-failures)。
 
 [ログインを組織に制限する](/docs/ja/authentication#restrict-login-to-your-organization)を参照して、Claude Code が Claude Console ログイン、他のログインパス、および環境認証情報をどのように扱うかを確認してください。
 
@@ -6806,12 +6829,12 @@ Claude Code は `settings.json` でこのキーを無視します。
   `copyFullResponse`
 </h3>
 
-[`/copy`](/docs/ja/commands) が応答に含まれるコードブロックがある場合に表示するピッカーなしで、毎回完全な応答をコピーします。そのピッカーで **Always copy full response** を選択すると、このキーが `true` に設定されます。`/config` に **Skip the /copy picker** として表示されます。
+[`/copy`](/docs/ja/commands) がピッカーを表示せずに、毎回完全な応答をコピーするようにします。そのピッカーで **Always copy full response** を選択すると、このキーが `true` に設定されます。`/config` に **Skip the /copy picker** として表示されます。
 
 * **スコープ**: [`グローバル設定`](#scopes)
 * **タイプ**: ブール値
   * `true`: `/copy` はピッカーを表示せずに完全な応答をコピーします
-  * `false`: 応答にコードブロックが含まれている場合、`/copy` はピッカーを表示し、1 つのコードブロックまたは完全な応答を選択できます
+  * `false`: 応答にコードブロックまたは引用ブロックが含まれている場合、`/copy` はピッカーを表示し、1 つのブロックまたは完全な応答を選択できます
 * **デフォルト**: `false`
 
 ```json ~/.claude.json theme={null}

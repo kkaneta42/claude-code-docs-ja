@@ -67,7 +67,7 @@ Team と Enterprise ダッシュボードには以下が含まれます。
 * **「GitHub app required」**：貢献メトリクスを表示するには GitHub アプリをインストールしてください
 * **「Data processing in progress」**：数日後に確認し、データが表示されない場合は GitHub アプリがインストールされていることを確認してください
 
-貢献メトリクスは GitHub Cloud と GitHub Enterprise Server をサポートしています。
+貢献メトリクスは github.com でホストされているリポジトリを対象とします。[GitHub Enterprise Server](/docs/ja/github-enterprise-server) 上のリポジトリについては、分析ダッシュボードは使用メトリクスのみを表示します。
 
 <h3 id="review-summary-metrics">
   サマリーメトリクスを確認する

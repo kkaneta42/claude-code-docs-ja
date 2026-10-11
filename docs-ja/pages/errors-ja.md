@@ -37,6 +37,7 @@
 | `Connection lost while your computer was asleep` | [自動再試行](#automatic-retries) |
 | `<model> is temporarily unavailable, so auto mode cannot determine the safety of...` | [サーバーエラー](#auto-mode-cannot-determine-the-safety-of-an-action) |
 | `Auto mode could not evaluate this action and is blocking it for safety` | [サーバーエラー](#auto-mode-cannot-determine-the-safety-of-an-action) |
+| `Not run · auto mode's check had no usable answer` | [サーバーエラー](#auto-mode-cannot-determine-the-safety-of-an-action) |
 | `Auto mode classifier transcript exceeded context window` | [サーバーエラー](#auto-mode-cannot-determine-the-safety-of-an-action) |
 | `Agent aborted: auto mode classifier request refused by the safety safeguard` | [サーバーエラー](#auto-mode-cannot-determine-the-safety-of-an-action) |
 | `The server-side auto mode classifier gave no verdict` | [サーバーエラー](#the-server-returned-no-safety-verdict) |
@@ -263,6 +264,7 @@
 | `Marketplace "<name>" is already added from a different source` | [プラグインエラー](#marketplace-is-already-added-from-a-different-source) |
 | `"<name>" is another spelling of "<reserved>", a reserved marketplace name` | [プラグインエラー](#marketplace-name-is-another-spelling-of-a-reserved-name) |
 | `Cannot add marketplace "<name>": Claude Code cannot install plugins from a marketplace with this name` | [プラグインのトラブルシューティング](/docs/ja/plugins/troubleshooting#cannot-install-plugins-from-a-marketplace-with-this-name) |
+| `Cannot add marketplace "<name>": Claude Code reserves this name and cannot register a marketplace under it` | [プラグインのトラブルシューティング](/docs/ja/plugins/troubleshooting#claude-code-reserves-this-name) |
 | `Marketplace "<name>" is added but ignored` | [プラグインのトラブルシューティング](/docs/ja/plugins/troubleshooting#marketplace-is-added-but-ignored) |
 | `Marketplace "<name>" is registered but was refused (see the debug log)` | [プラグインのトラブルシューティング](/docs/ja/plugins/troubleshooting#marketplace-is-added-but-ignored) |
 | `references ${user_config.*} in a shell-form command` | [プラグインエラー](#plugin-command-references-user-config) |
@@ -309,6 +311,7 @@
 | `Your disk quota is full on the filesystem with Claude Code's temp directory <dir> (EDQUOT)` | [ツールエラー](#disk-quota-or-temp-filesystem-is-full) |
 | `The filesystem with Claude Code's temp directory <dir>, or your disk quota on it, is full (ENOSPC)` | [ツールエラー](#disk-quota-or-temp-filesystem-is-full) |
 | `Command output was lost: the temp filesystem at <dir> is full` / `is out of inodes` | [ツールエラー](#disk-quota-or-temp-filesystem-is-full) |
+| `File is not valid UTF-8. It may use a legacy encoding such as Windows-1252, Shift-JIS or GBK, or be binary` | [ツールエラー](#file-is-not-valid-utf-8) |
 | `the source file is not valid UTF-8 text` / `the source file is not valid UTF-16 text` | [ツールエラー](#the-source-file-is-not-valid-utf-8-text) |
 | `the source file has the replacement character U+FFFD` | [ツールエラー](#the-source-file-is-not-valid-utf-8-text) |
 | `Not published: that file is on a network share` | [ツールエラー](#not-published-that-file-is-on-a-network-share) |
@@ -598,6 +601,8 @@ Claude がテキストまたはツール呼び出しを開始する前にドロ�
 ```text theme={null}
 <model> is temporarily unavailable, so auto mode cannot determine the safety of <tool> right now. Wait a moment and then try this action again.
 ```
+
+対話セッションでは、このメッセージの代わりに、ツール呼び出しの下に薄く表示される `Not run · auto mode's check had no usable answer` 行が現れます。`Ctrl+O` を押すと、[トランスクリプトビューアー](/docs/ja/interactive-mode#transcript-viewer) でメッセージを読むことができます。[The server returned no safety verdict](#the-server-returned-no-safety-verdict) で説明されている拒否でも同じ行が表示されます。v2.1.296 より前では、メッセージは呼び出しの下に赤いエラーとして表示されていました。
 
 Claude Code が障害カテゴリを判定できる場合、`temporarily unavailable` の後の括弧内にカテゴリを示します。例えば `<model> is temporarily unavailable (rate-limited), so auto mode cannot determine the safety of <tool> right now`。カテゴリは `(rate-limited)`、`(overloaded)`、`(server error)`、`(timed out)`、`(connection failed)` です。`(timed out)` または `(connection failed)` が繰り返される場合は、接続を確認してください。[Unable to connect to API](#unable-to-connect-to-api) を参照してください。v2.1.229 より前では、メッセージはカテゴリを示さず、`Wait briefly and then try this action again` と読まれていました。
 
@@ -1902,6 +1907,8 @@ A proxy is configured via HTTPS_PROXY. Check that it allows connections to the h
 Claude Code は、API リクエストと同じ [プロキシ設定](/docs/ja/network-config) を通じてチェックを送信し、各プローブに 10 秒を与えます。失敗したプローブがプロキシを通過した場合、メッセージは `HTTPS_PROXY` など、そのプロキシを設定した環境変数を名前で示します。v2.1.222 より前では、チェックはタイムアウトなしの異なるプロキシトランスポートを使用していました。`https://` スキーム付きのプロキシ URL の背後では、`Checking connectivity...` で無期限に停止してから失敗する可能性があり、同じプロキシを通じた API リクエストが成功しても失敗していました。
 
 Claude Code は、[管理設定ファイル、MDM ポリシー、またはポリシーヘルパー](/docs/ja/managed-settings) が [`forceLoginMethod`](/docs/ja/settings-reference#forceloginmethod) を `"gateway"` に設定するか、`forceLoginMethod` なしで [`forceLoginGatewayUrl`](/docs/ja/settings-reference#forcelogingatewayurl) を設定する場合、このチェックをスキップします。どちらの設定でも、Claude Code は Anthropic のサインイン方法ではなく **Cloud gateway** 画面でサインインステップを開きます。また、マシン上の管理設定ソースが存在するが読み取れない場合も、Claude Code はチェックをスキップします。そのソースがゲートウェイ設定を保持している可能性があるためです。v2.1.247 より前では、Claude Code はこの設定下でもチェックを実行し、Anthropic のエンドポイントに到達できない場合、このエラーで終了しました。
+
+管理設定のないマシンで、自身の `~/.claude/settings.json` が `forceLoginMethod` と `forceLoginGatewayUrl` で [ゲートウェイを指定している](/docs/ja/claude-apps-gateway#set-the-gateway-url-in-user-settings) 場合も、Claude Code はこのチェックをスキップします。v2.1.295 より前では、Claude Code はこの場合にもチェックを実行していました。
 
 **対応方法：**
 
@@ -3415,8 +3422,8 @@ Use '--' to separate paths from revisions, like this:
 
 Claude Code は、[動的コンテキストを挿入する](/docs/ja/skills#when-an-injected-command-fails)スキルすべてで同じエラーを表示し、挿入されたコマンドが失敗するとそのスキルの呼び出しは中止されます。コマンドの実行前に発生する、関連する 2 つの文字列があります:
 
-* `Shell command permission check failed for pattern "..."`: コマンドの権限チェックで許可されませんでした。[挿入されたコマンドに対する権限チェック](/docs/ja/skills#permission-checks-on-injected-commands)では、各権限モードでどの結果が中止につながるか、および `allowed-tools` でコマンドを事前承認する方法について説明しています
-* ``Skill <name> requires bash (`shell: bash` in frontmatter) but Git Bash was not found``: スキルのフロントマターが、bash がないマシンで bash を要求しています。Git for Windows をインストールするか、フロントマターを `shell: powershell` に変更します。[挿入されたコマンドの実行方法](/docs/ja/skills#how-injected-commands-run)を参照してください
+* `Shell command permission check failed for pattern "..."`: コマンドの権限チェックで許可されませんでした。[注入されたコマンドの権限チェック](/docs/ja/skills#permission-checks-on-injected-commands)では、各権限モードでどの結果が中止につながるか、および `allowed-tools` でコマンドを事前承認する方法を説明しています
+* ``Skill <name> requires bash (`shell: bash` in frontmatter) but Git Bash was not found``: bash がないマシンで、スキルのフロントマターが bash を要求しています。Git for Windows をインストールするか、フロントマターを `shell: powershell` に変更してください。[注入されたコマンドの実行方法](/docs/ja/skills#how-injected-commands-run)を参照してください
 
 **対処方法:**
 
@@ -3565,7 +3572,7 @@ Could not find merge-base with main. Pass the base branch explicitly (e.g. `/cod
 
 * **ベースブランチを渡さなかった場合**: Claude Code はリポジトリのデフォルトブランチと比較し、上記の例のようにベースを明示的に渡すことを提案します
 * **既にクローンにあるベースブランチを渡した場合**: ヒントは ``Make sure <branch> exists locally or on origin (try `git fetch origin <branch>`)`` となります
-* **クローンになかったベースブランチを渡した場合**: Claude Code は比較の前に origin からそれを fetch しました。ヒントは ``<branch> was fetched from origin but shares no history with HEAD. If another branch is your real base, pass it explicitly (`/code-review ultra <branch>`)`` となります。クローンがシャロークローンかどうかを Claude Code が判断できない場合は、代わりに `git fetch --unshallow origin` を提案します。v2.1.221 より前は、fetch されたすべてのベースブランチに対してヒントが `git fetch --unshallow origin` を提案していましたが、完全なクローンではそのコマンドは `fatal: --unshallow on a complete repository does not make sense` で失敗します。
+* **クローン内にないベースブランチを渡した場合**: Claude Code は比較の前に origin からそのブランチを fetch しました。ヒントは ``<branch> was fetched from origin but shares no history with HEAD. If another branch is your real base, pass it explicitly (`/code-review ultra <branch>`)`` となります。クローンがシャロークローンかどうかを Claude Code が判断できない場合は、代わりに `git fetch --unshallow origin` を提案します。v2.1.221 より前は、fetch したすべてのベースブランチに対してヒントが `git fetch --unshallow origin` を提案していましたが、完全なクローンではこのコマンドは `fatal: --unshallow on a complete repository does not make sense` で失敗します。
 
 **対処方法:**
 
@@ -3759,7 +3766,7 @@ Claude Code はメッセージを表示した後、終了コード 1 で終了�
 No conversation found with session ID: <session-id>
 ```
 
-Claude Code はメッセージを表示した後、終了コード 1 で終了します。Claude Code は、[まず現在のプロジェクトを検索し、次にこのマシン上の他のすべてのプロジェクトを検索して](/docs/ja/sessions#resume-a-session) ID を探します。v2.1.223 より前では、検索は現在のプロジェクトディレクトリとその Git worktree までで止まっていたため、セッションが最後に作業していたディレクトリから再開してください。
+Claude Code はメッセージを表示した後、終了コード 1 で終了します。Claude Code は、[まず現在のプロジェクトを、次にこのマシン上の他のすべてのプロジェクトを](/docs/ja/sessions#where-the-session-picker-looks)対象に ID を検索します。v2.1.223 より前は、検索が現在のプロジェクトディレクトリとその git worktree で止まっていたため、セッションが最後に作業していたディレクトリから再開してください。
 
 一般的な原因:
 
@@ -4613,6 +4620,25 @@ Your disk quota is full on the filesystem with Claude Code's temp directory /pri
 * または、[`CLAUDE_CODE_TMPDIR`](/docs/ja/env-vars) を容量のあるファイルシステム上のディレクトリに設定して Claude Code を再起動します
 * その後、Claude にコマンドを再度実行させます。コマンドが出力した内容は、切り詰められたのではなく失われています
 
+<h3 id="file-is-not-valid-utf-8">
+  File is not valid UTF-8
+</h3>
+
+Claude が、バイトを UTF-8 としてデコードできないファイルに対して Edit または NotebookEdit ツールを使用したため、Claude Code は変更を拒否しました。何も書き込まれていないため、ファイルは元のままです。これらのツールはファイル全体を UTF-8 として保存し直すため、デコードできなかったすべてのバイトが置換文字 `U+FFFD` に変わってしまうところでした。メッセージはツール結果に表示されます。
+
+```text wrap theme={null}
+File is not valid UTF-8. It may use a legacy encoding such as Windows-1252, Shift-JIS or GBK, or be binary. This tool saves the whole file as UTF-8, which would replace every byte it cannot decode with U+FFFD. Nothing was written. Make the change with a shell command that reads and writes the file in its own encoding, or ask the user whether to convert the file to UTF-8 first.
+```
+
+UTF-8 であるはずのファイルでも、無効なバイトシーケンスが 1 つでも含まれていればこのメッセージが表示されます。チェックはファイルのバイト全体を対象とするためです。
+
+**What to do:**
+
+* ファイルを現在のエンコーディングのまま保持するには、メッセージが指示するとおり、そのエンコーディングでファイルを読み書きするシェルコマンドで Claude に変更を行わせます
+* Edit ツールでファイルの編集を続けるには、ファイルを UTF-8 に変換するか、UTF-8 であるはずのファイルの場合は無効なバイトを修正してから、Claude に再度編集を依頼します
+
+v2.1.296 より前は、Edit と NotebookEdit はこのような編集を適用し、デコードできなかったすべてのバイトを `U+FFFD` として保存していました。これらのバージョンを使用している場合は、Claude Code をアップデートしてください。
+
 <h3 id="the-source-file-is-not-valid-utf-8-text">
   The source file is not valid UTF-8 text
 </h3>
@@ -5380,7 +5406,7 @@ Claude Code はネットワークパスを作業ディレクトリとして追�
 Claude Code がこの方法で拒否するパスには、以下が含まれます。
 
 * `\\server\share` などの UNC 共有
-* `/net/<host>` などのオートマウントパス（そのホストのオートマウント下のディレクトリから Claude Code を起動した場合を除く）
+* `/net/<host>` などのオートマウントパス（そのホストのオートマウント下のディレクトリから Claude Code を起動した場合を除く）。そのオートマウント下での読み取りは、引き続き [ネットワークパスのチェック](/docs/ja/permissions#network-paths) の対象になります。
 * シンボリックリンクまたはジャンクションを通じてネットワークロケーションに到達するローカルパス
 
 マップされたドライブ文字と `\\wsl$` パスはネットワークパスとしてカウントされません。
@@ -5510,7 +5536,7 @@ v2.1.257 より前では、`/mcp` での **再接続** と再度有効化は、�
 ソースは以下のいずれかです。
 
 * `managed-settings.json` ファイルのパスまたは `managed-settings.d` 下のドロップインファイル
-* macOS 管理設定プロファイル、`ユーザーごとの管理設定` または `デバイスレベルの管理設定`
+* macOS の管理対象環境設定プロファイル（`per-user managed preferences` または `device-level managed preferences`）
 * Windows レジストリ値、`Registry: HKLM\SOFTWARE\Policies\ClaudeCode\Settings`
 
 [Claude Code がドロップしたエントリを検索](/docs/ja/managed-settings#find-entries-claude-code-dropped) は、各ソースを解析不可能にするものをリストしています。

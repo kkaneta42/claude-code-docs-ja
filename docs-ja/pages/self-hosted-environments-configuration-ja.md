@@ -211,8 +211,8 @@ IFS=':'
 # privileges. -c commit.gpgsign=false also leaves these rescue commits
 # unsigned under --configure-git.
 # Repo-local credential.helper and pushurl still apply, and on a runner
-# before v2.1.280 so does core.sshCommand; if the hook holds credentials
-# the session didn't, see the note below the script.
+# before v2.1.280 so does core.sshCommand; see the note below the script
+# before you give this push a credential.
 g() { git -c core.fsmonitor=false -c core.hooksPath=/dev/null \
         -c commit.gpgsign=false "$@"; }
 for ws in $CLAUDE_RUNNER_WORKSPACE_PATHS; do
@@ -226,7 +226,9 @@ done
 
 スクリプト内の `GIT_ALLOW_PROTOCOL` 行は、git を HTTPS、HTTP、SSH のリモートに制限します。ランナーの環境で独自の空でない `GIT_ALLOW_PROTOCOL` リストがすでに設定されている場合、スクリプトはそのリストを維持します。
 
-フックは、ランナーホスト上の独自の環境で利用可能な git 認証情報を使用してプッシュします。[イメージに認証情報がない姿勢](/docs/ja/self-hosted-environments-deploy#configure-git)の下では、組み込みクローンが Anthropic git プロキシを通過する場合を含めて、認証情報がないため、フック内で短期間のプッシュ認証情報を発行します。フックが受け取る `CLAUDE_CODE_SESSION_ACCESS_TOKEN` のセッショントークンを独自のトークンサービスと交換し、[Verify session identity](/docs/ja/self-hosted-environments-identity) が説明するように検証します。フックがセッションが持たなかった認証情報を保持している場合は、`origin` をオペレーター提供の URL に置き換え、`-c credential.helper=` と独自のヘルパーを渡します。セッションが書き込んだ設定が引き続き影響し得る内容については、[ライフサイクルフック内の Git 設定](#git-configuration-inside-lifecycle-hooks)で説明しています。
+フックは、ランナーホスト上の独自の環境で利用可能な git 認証情報を使用してプッシュします。[イメージに認証情報がない姿勢](/docs/ja/self-hosted-environments-deploy#configure-git)の下では、組み込みクローンが Anthropic git プロキシを通過する場合を含めて、認証情報がないため、フック内で短期間のプッシュ認証情報を発行します。フックが受け取る `CLAUDE_CODE_SESSION_ACCESS_TOKEN` のセッショントークンを独自のトークンサービスと交換し、[Verify session identity](/docs/ja/self-hosted-environments-identity) が説明するように検証します。
+
+フックが git に渡す認証情報はすべて、セッションが取得できるものとして扱い、このプッシュ以上のことができないように発行してください。フック内の git はセッションが書き込める設定ファイルを読み取り、そのいずれかで指定された認証情報ヘルパーやフィルタードライバーはフックの権限で実行されます。また、これらのファイル内の設定によって、どのリモートを指定してもプッシュの送信先が変わる可能性があります。ランナーがフック内で固定する git 設定と、これらのファイルに委ねる設定については、[ライフサイクルフック内の Git 設定](#git-configuration-inside-lifecycle-hooks)を参照してください。
 
 <h4 id="hook-timing-when-the-runner-releases-a-session">
   ランナーがセッションをリリースするときのフックタイミング

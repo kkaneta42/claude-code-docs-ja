@@ -511,7 +511,7 @@ Claude Code は各ワークフローエージェントのモデルを、[サブ�
 * 通常のルーチン作業のために小さいモデルに切り替える場合は、大規模なランの前に `/model` を確認してください
 * タスクを説明するときに、最も強力なものを必要としないステージに対して小さいモデルを使用するよう Claude に依頼してください
 
-組織の [`availableModels` 許可リスト](/docs/ja/model-config#restrict-model-selection)がスクリプトがエージェントに要求するモデルをブロックする場合、そのエージェントは代わりに置き換えられたモデルで実行され、[サブエージェントと同じ置き換えルール](/docs/ja/sub-agents#choose-a-model)に従います。[`/workflows`](#watch-the-run) の実行の進捗ビューは、要求されたモデルと置き換えられたモデルの両方に名前を付ける警告を表示します。
+組織の [`availableModels` 許可リスト](/docs/ja/model-config#restrict-model-selection)が、スクリプトがエージェントに要求するモデルをブロックする場合、そのエージェントは代わりに置き換えられたモデルで実行され、[サブエージェントと同じ置き換えルール](/docs/ja/sub-agents#choose-a-model)に従います。
 
 <h3 id="set-a-size-guideline">
   サイズガイドラインを設定する

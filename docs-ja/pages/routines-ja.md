@@ -86,7 +86,7 @@ Team および Enterprise オーナーは、[claude.ai/admin-settings/claude-cod
   </Step>
 
   <Step title="リポジトリを選択する">
-    Claude が作業するための 1 つ以上の GitHub リポジトリを追加します。各リポジトリは実行の開始時にクローンされ、デフォルトブランチから開始されます。Claude は変更用に `claude/` プレフィックス付きブランチを作成します。
+    Claude が作業するための 1 つ以上の GitHub リポジトリを追加します。各リポジトリは実行の開始時にクローンされます。Claude は変更用に `claude/` プレフィックス付きブランチを作成します。
   </Step>
 
   <Step title="環境を選択する">
@@ -359,11 +359,11 @@ CLI は既存のルーチンの管理をサポートしています。`/schedule
   リポジトリとブランチの権限
 </h3>
 
-ルーチンはリポジトリをクローンするために GitHub アクセスが必要です。CLI で `/schedule` を使用してルーチンを作成する場合、Claude はアカウントが実行元のリポジトリに対して GitHub アクセスを持っているかどうかを確認し、持っていない場合はアクセスを許可する方法を名前付きで示すセットアップノートを追加します。アクセスを許可する 2 つの方法については、[GitHub 認証オプション](/docs/ja/claude-code-on-the-web#github-authentication-options)を参照してください。
+ルーティンはリポジトリをクローンするために GitHub アクセスが必要です。CLI で `/schedule` を使用してルーティンを作成する場合、Claude はアカウントが実行元のリポジトリに対して GitHub アクセスを持っているかどうかを確認し、持っていない場合はアクセスを許可する方法を名前付きで示すセットアップノートを追加します。アクセスを許可する 2 つの方法については、[GitHub 認証オプション](/docs/ja/claude-code-on-the-web#github-authentication-options)を参照してください。Team プランと Enterprise プランでは、各方法を使用する前に Claude 組織の [Owner](/docs/ja/server-managed-settings#access-control) がその方法をオンにする必要があります。[GitHub を接続する](/docs/ja/web-quickstart#connect-github)を参照してください。
 
 GitHub 接続が実行予定時に不足しているか期限切れの場合、ルーチンは最大 72 時間まで実行をスキップします。その期間内に GitHub を再接続すると、ルーチンは自動的に再開されます。接続なしで 72 時間経過すると、ルーチンはオフになり、GitHub を再接続した後に再度オンにします。
 
-追加する各リポジトリは、すべての実行でクローンされます。Claude はリポジトリのデフォルトブランチから開始します。ただし、プロンプトで別の方法を指定する場合を除きます。
+追加する各リポジトリは、すべての実行でクローンされます。Claude はリポジトリのデフォルトブランチから開始します。ただし、プロンプトで別の方法を指定する場合を除きます。[GitHub プルリクエストイベント](#add-a-github-trigger)が実行をトリガーし、そのプルリクエストのリポジトリがルーティンの最初のリポジトリである場合、そのリポジトリは代わりにプルリクエストの head コミットから開始します。
 
 Claude は、プロンプトで別のブランチへのプッシュを指示しない限り、`claude/` で始まるブランチに作業をプッシュします。実行がプッシュできるブランチを制御するには、GitHub のブランチ保護ルールまたはルールセットを使用します。Anthropic 管理のインフラストラクチャ上の実行、および [Anthropic の git プロキシ](/docs/ja/self-hosted-environments-deploy#use-the-anthropic-git-proxy)を通じてプッシュするセルフホスト実行の場合、GitHub はこれらのルールを接続した GitHub アクセスに適用するため、そのアクセスがバイパスできるルールは実行のプッシュをブロックしません。デプロイが提供する git 認証情報でプッシュするセルフホスト実行は、代わりにその認証情報に対してチェックされます。[git を設定する](/docs/ja/self-hosted-environments-deploy#configure-git)を参照してください。
 

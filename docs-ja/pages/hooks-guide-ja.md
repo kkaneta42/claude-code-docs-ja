@@ -664,7 +664,7 @@ exit 0  # exit 0 = 決定なし。通常の許可フローが適用されます
 
 `PreToolUse` では、Claude Code は各 `permissionDecision` 値を次のように処理します：
 
-* `"allow"`：インタラクティブな許可プロンプトをスキップします。Deny および ask ルール（エンタープライズ管理 deny リストを含む）は引き続き適用されます。また、[`requiresUserInteraction`](/docs/ja/mcp#require-approval-for-a-specific-tool) とマークされた MCP ツールのプロンプトと、[組織が `ask` に設定した](/docs/ja/mcp#organization-controls-on-connector-tools) コネクタツールのプロンプトも適用されます。その設定が Claude Code に到達するセッションでも適用されます。
+* `"allow"`：対話的な権限プロンプトをスキップします。拒否ルールと確認ルール（エンタープライズの管理 deny リストを含む）は引き続き適用されます。また、[ネットワークパス](/docs/ja/permissions#network-paths) からの読み取り、[`requiresUserInteraction`](/docs/ja/mcp#require-approval-for-a-specific-tool) とマークされた MCP ツール、およびその設定が Claude Code に届くセッションで [組織が `ask` に設定した](/docs/ja/mcp#organization-controls-on-connector-tools) コネクタツールに対するプロンプトも引き続き表示されます
 * `"deny"`：ツール呼び出しをキャンセルし、理由を Claude に送信します
 * `"ask"`：通常どおりユーザーに許可プロンプトを表示します
 
@@ -1015,7 +1015,7 @@ HTTP hooks は、Web サーバー、クラウド関数、または外部サー�
 
 `PreToolUse` フックは、`dontAsk` を含むすべての[権限モード](/docs/ja/permission-modes)において、権限モードのチェックより前に発火します。`permissionDecision: "deny"` を返すフックは、`bypassPermissions` モードや `--dangerously-skip-permissions` を使用している場合でもツールをブロックします。これにより、ユーザーが権限モードを変更しても回避できないポリシーを適用できます。
 
-逆は成り立ちません。`"allow"` を返すフックは、設定の拒否ルールを回避することはできず、また [`requiresUserInteraction`](/docs/ja/mcp#require-approval-for-a-specific-tool) が指定された MCP ツールや、その設定が Claude Code に反映されるセッションにおいて[組織が `ask` に設定した](/docs/ja/mcp#organization-controls-on-connector-tools)コネクタツールのプロンプトを抑制することもできません。設定ファイルやプラグインの `hooks/hooks.json` 内のフックは、制限を厳しくすることはできますが、権限ルールが許可する範囲を超えて緩めることはできません。
+逆は成り立ちません。`"allow"` を返すフックは、設定の拒否ルールを回避することはできず、また[ネットワークパス](/docs/ja/permissions#network-paths)からの読み取り、[`requiresUserInteraction`](/docs/ja/mcp#require-approval-for-a-specific-tool) が指定された MCP ツール、その設定が Claude Code に反映されるセッションにおいて[組織が `ask` に設定した](/docs/ja/mcp#organization-controls-on-connector-tools)コネクタツールのプロンプトを抑制することもできません。設定ファイルやプラグインの `hooks/hooks.json` 内のフックは、制限を厳しくすることはできますが、権限ルールが許可する範囲を超えて緩めることはできません。
 
 インストールした [mod](/docs/ja/plugins/mods/overview) が `tool.check` を処理する場合、そのフックが管理設定にない限り、`PreToolUse` フックがブロックした呼び出しを mod が承認できます。mod に対してどのルールが優先されるかは、[フックで権限を拡張する](/docs/ja/permissions#extend-permissions-with-hooks)に記載されています。
 
@@ -1083,17 +1083,21 @@ fi
 
 フックは有効な JSON を出力しているが、判断が反映されず、トランスクリプトにもエラーが表示されない場合。どの原因に該当するかを確認してください。
 
-* **JSON の前に余分な出力がある**：他の何かが先に stdout に書き込んでいます。通常はシェルプロファイル内の無条件の `echo` です。そのため出力が `{` で始まらなくなり、Claude Code はそれを JSON として解析しません。原因と修正方法はこのリストの後で説明します。
-* **フィールドの階層が間違っている**：各フィールドの配置を [JSON 出力](/docs/ja/hooks#json-output)の形式と比較してください。たとえば、`permissionDecision` はトップレベルではなく `hookSpecificOutput` の内側に配置する必要があります。
+* **JSON の前に余分な出力がある**：他の何かが先に stdout に書き込んでいます。通常はシェルプロファイル内の無条件の `echo` です。そのため出力が `{` で始まらなくなります。[JSON の前に出力されるシェルプロファイルの出力](#shell-profile-output-before-the-json)を参照してください。
+* **フィールドの階層が間違っている**：各フィールドの配置を [JSON 出力](/docs/ja/hooks#json-output)の形式と比較してください。たとえば、`permissionDecision` はトップレベルではなく `hookSpecificOutput` の内側に配置する必要があります。[フィールドの階層が間違っている](#fields-at-the-wrong-level)を参照してください。
 
-Claude Code がシェル形式のコマンドフック（`args` のないもの）を実行する場合、macOS と Linux では `sh -c` を、Windows では Git Bash を、Git Bash がインストールされていない場合はデフォルトで PowerShell を起動します。このシェルは非対話ですが、Git Bash や、`BASH_ENV` が `~/.bashrc` を指しているなどの一部の設定では、プロファイルが読み込まれます。そのプロファイルに無条件の `echo` 文が含まれていると、その出力がフックの JSON の前に付加されます。
+<h4 id="shell-profile-output-before-the-json">
+  JSON の前に出力されるシェルプロファイルの出力
+</h4>
+
+フックは非対話シェルで実行されますが、Git Bash や、`BASH_ENV` が `~/.bashrc` を指しているなどの一部の設定では、それでもプロファイルが読み込まれます。プロファイルが出力した内容はすべて、フックの JSON より先に stdout に届きます。
 
 ```text theme={null}
 Shell ready on arm64
 {"decision": "block", "reason": "Not allowed"}
 ```
 
-結合された出力は `{` で始まらなくなるため、Claude Code は stdout 全体をプレーンテキストとして扱い、JSON を無視します。終了コード 0 の場合、トランスクリプトには何も報告されず、解析の試行は[デバッグログ](/docs/ja/hooks#debug-hooks)にのみ記録されます。これを修正するには、シェルプロファイル内の echo 文を、対話シェルでのみ実行されるように囲みます。
+フックが[非同期](/docs/ja/hooks#how-async-hooks-execute)でない限り、Claude Code は `{` で始まらない出力をプレーンテキストとして読み取るため、JSON は無視されます。フックは終了コード 0 で終了しているため、トランスクリプトにもエラーは表示されません。この原因に該当するかを確認するには、`claude --debug` で Claude Code を起動してフックをトリガーし、[デバッグログ](/docs/ja/hooks#debug-hooks)で `Hook output does not start with {` を検索します。これを修正するには、プロファイル内の `echo` 文を、対話シェルでのみ実行されるように囲みます。
 
 ```bash theme={null}
 # In ~/.zshrc or ~/.bashrc
@@ -1103,6 +1107,10 @@ fi
 ```
 
 `$-` 変数にはシェルのフラグが含まれており、`i` は対話を意味します。フックは非対話シェルで実行されるため、echo はスキップされます。
+
+<h4 id="fields-at-the-wrong-level">
+  フィールドの階層が間違っている
+</h4>
 
 フックが `permissionDecision` や `additionalContext` を `hookSpecificOutput` の内側ではなくトップレベルで返した場合でも、JSON は解析されますが、Claude Code は誤って配置されたフィールドをエラーを報告せずに無視します。どのフィールドが無視されたかを確認するには、`claude --debug` で Claude Code を起動し、[デバッグログ](/docs/ja/hooks#debug-hooks)で `Hook JSON output had unrecognized keys` を検索します。
 
@@ -1119,7 +1127,7 @@ fi
 
 特定の終了コードと stdout に対する結果（イベントごとの例外を含む）を調べるには、リファレンスの[終了コードの出力](/docs/ja/hooks#exit-code-output)を参照してください。
 
-フックの終了コード、stdout、stderr を含む実行の詳細をすべて確認するには、デバッグログを読みます。`claude --debug-file /tmp/claude.log` で Claude Code を起動して既知のパスに書き込み、別のターミナルで `tail -f /tmp/claude.log` を実行します。このフラグを付けずに起動した場合は、セッションの途中で `/debug` を実行してログを有効にし、ログのパスを確認します。
+フックの終了コード、stdout、stderr を含む実行の詳細をすべて確認するには、[デバッグログ](/docs/ja/hooks#debug-hooks)を読みます。`claude --debug-file /tmp/claude.log` で Claude Code を起動して既知のパスに書き込み、別のターミナルで `tail -f /tmp/claude.log` を実行します。このフラグを付けずに起動した場合は、セッションの途中で `/debug` を実行してログを有効にし、ログのパスを確認します。
 
 <h2 id="learn-more">
   詳細を学ぶ

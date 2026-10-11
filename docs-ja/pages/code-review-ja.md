@@ -264,11 +264,11 @@ Important は、動作を壊す、データをリークする、またはロー�
 | セクション | 表示内容 |
 | :- | :- |
 | PRs reviewed | 選択した時間範囲でレビューされたプルリクエストの日次カウント |
-| Cost weekly | Code Review の週次支出 |
+| Code Review cost | 今月これまでの Code Review の支出 |
 | Feedback | 開発者が問題に対処したため自動解決されたレビューコメントのカウント |
-| Repository breakdown | リポジトリごとのレビューされた PR とコメント解決のカウント |
+| Repository breakdown | リポジトリごとのレビューされた PR、解決されたコメント、レビュー実行のカウント（推定コストと PR ごとのビューを含む） |
 
-ダッシュボードのコスト数値は活動を監視するための推定値です。請求書に正確な支出については、Anthropic の請求書を参照してください。
+Code Review cost カードに金額が表示されるのは、当月が選択されている場合のみです。アナリティクスのコスト数値は請求書と異なる場合があります。Repository breakdown のコストは割引やクレジットを適用する前の定価で推定されており、Claude がプルリクエストに投稿したレビューのみが対象です。請求書に正確な支出については、Anthropic の請求書を参照してください。
 
 <h2 id="pricing">
   料金
@@ -286,7 +286,7 @@ PR 作成後に 1 回または手動モードでは、`@claude review always` �
 
 組織が他の Claude Code 機能に Amazon Bedrock または Google Cloud の Agent Platform を使用しているかどうかに関わらず、コストは Anthropic の請求書に表示されます。Code Review の月間支出上限を設定するには、[claude.ai/admin-settings/usage](https://claude.ai/admin-settings/usage) にアクセスして Claude Code Review サービスの制限を設定してください。
 
-[分析](#view-usage) の週間コストチャートまたは管理設定のリポジトリごとの平均コスト列を通じて支出を監視してください。
+支出を監視するには、[分析ダッシュボード](#view-usage) を使用してください。
 
 <h2 id="troubleshooting">
   トラブルシューティング

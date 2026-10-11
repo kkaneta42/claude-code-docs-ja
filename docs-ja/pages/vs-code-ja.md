@@ -237,10 +237,11 @@ Claude Code パネルの上部にある **Session history** ボタンをクリ�
 
 アーカイブされたセッションを復元するには、**Archived sessions** を展開して **Unarchive session** をクリックします。アーカイブされたすべてのセッションを一度に復元するには、セッションリストの Activity Bar で **Archived sessions** ヘッダーにマウスを置き、その復元アイコンをクリックします。これには Claude Code v2.1.277 以降が必要です。v2.1.257 より前では、アクションは **Delete session** でした。これはセッションを非表示にし、復元する方法がありませんでした。その後削除したセッションは、アップグレード後に **Archived sessions** の下に表示されます。
 
-再開した会話が計画モードで終了した場合、Claude Code は計画モードを復元します。Claude Code v2.1.246 以降が必要です。Claude Code は 2 つのケースでは復元しません。
+再開した会話が plan モードで終了した場合、Claude Code は plan モードを復元します。Claude Code v2.1.246 以降が必要です。次の場合、Claude Code は復元しません。
 
 * 拡張機能が `claudeCode.initialPermissionMode` から開始権限モードを[選択](/docs/ja/permission-modes#switch-permission-modes)するか、以前の会話から引き継がれたピックがある
 * `claudeCode.claudeProcessWrapper` が設定されている
+* [拒否ルール](/docs/ja/permissions#manage-permissions)によって [`ExitPlanMode`](/docs/ja/tools-reference) ツールが除外されている場合
 
 <h3 id="resume-cloud-sessions-from-claude-ai">
   Claude.ai からクラウドセッションを再開する

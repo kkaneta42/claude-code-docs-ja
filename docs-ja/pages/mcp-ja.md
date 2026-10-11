@@ -283,7 +283,7 @@ claude mcp remove notion
   プロジェクトサーバーの承認とワークスペーストラスト
 </h4>
 
-v2.1.196 以降、`claude mcp list` と `claude mcp get` は `.mcp.json` 承認を、`claude` を実行してワークスペーストラストダイアログを受け入れるまでリポジトリにチェックインされていない設定ファイルからのみ読み込みます。クローンされたリポジトリは独自のサーバーを承認できません。プロジェクトの `.claude/settings.json` にコミットされた [`enableAllProjectMcpServers`](/docs/ja/settings-reference#enableallprojectmcpservers) または [`enabledMcpjsonServers`](/docs/ja/settings-reference#enabledmcpjsonservers) は信頼されていないフォルダでは無視され、サーバーは接続されて健全性チェックされる代わりに `⏸ Pending approval` のままです。
+`claude mcp list` と `claude mcp get` は `.mcp.json` 承認を、そのワークスペースで `claude` を実行してワークスペーストラストダイアログを受け入れるまで、リポジトリにチェックインされていない設定ファイルからのみ読み込みます。クローンされたリポジトリは独自のサーバーを承認できません。プロジェクトの `.claude/settings.json` にコミットされた [`enableAllProjectMcpServers`](/docs/ja/settings-reference#enableallprojectmcpservers) または [`enabledMcpjsonServers`](/docs/ja/settings-reference#enabledmcpjsonservers) は信頼されていないフォルダでは無視され、サーバーは接続されて健全性チェックされる代わりに `⏸ Pending approval` のままです。
 
 これらのソースからの承認は信頼されていないフォルダでも適用されます。
 
@@ -859,7 +859,7 @@ Claude Code は、1 つ以上の設定されたサーバーが認証を必要と
 
 通知は各サーバーを 1 回アナウンスし、そのサーバーが接続して再度サインインが必要になるまで、後の起動時のカウントから除外します。`/mcp` は依然としてサインインが必要なすべてのサーバーをリストします。
 
-非対話モードでは `/mcp` パネルがないため、Claude Code は OAuth フローを実行できません。v2.1.196 以降、[ツール検索](#scale-with-mcp-tool-search)が有効な（デフォルト）`claude -p` または Agent SDK 実行中に設定されたサーバーが認証を必要とするとき、Claude Code はサーバーのツールが認可されるまで利用できないことを Claude に伝えます。Claude はサーバーが設定されていないかのように応答する代わりに、サインインが必要なサーバーに名前を付けることができます。対話セッションから `/mcp` または `claude mcp login <name>` でサインインを完了してください。
+非対話モードでは `/mcp` パネルがないため、Claude Code は OAuth フローを実行できません。[ツール検索](#scale-with-mcp-tool-search)が有効な（デフォルト）`claude -p` または Agent SDK 実行中に設定されたサーバーが認証を必要とするとき、Claude Code はサーバーのツールが認可されるまで利用できないことを Claude に伝えます。これにより Claude は、サインインが必要なサーバーの名前を示すことができます。対話セッションから `/mcp` または `claude mcp login <name>` でサインインを完了してください。
 
 サーバーに `headers.Authorization` を設定し、サーバーがそのヘッダーを拒否する場合、Claude Code は OAuth にフォールバックする代わりに接続が失敗したことを報告します。トークンが MCP エンドポイントに対して有効であることを確認するか、ヘッダーを削除して OAuth フローを使用してください。
 
@@ -1048,11 +1048,11 @@ URL は `https://` を使用する必要があります。メタデータ URL �
 
 `oauth.scopes` は `authServerMetadataUrl` とサーバーが `/.well-known` で検出するスコープの両方より優先されます。MCP サーバーがリクエストされたスコープセットを決定できるようにするには、設定を解除のままにしてください。
 
-v2.1.196 以降、`oauth.scopes` が設定されていない場合、Claude Code はサーバーの `WWW-Authenticate` ヘッダーまたは保護されたリソースメタデータによって提供されるスコープをリクエストし、どちらも提供しない場合は `scope` パラメーターを送信しません。自動的に検出された認可サーバーメタデータから完全な `scopes_supported` カタログをリクエストしなくなりました。そのカタログをリクエストすると、管理者のみまたはテンプレートスコープをアドバタイズするアイデンティティプロバイダーが `invalid_scope` エラーで認可リクエストを拒否していました。設定された `authServerMetadataUrl` から取得されたメタデータは、その `scopes_supported` をリクエストされたスコープとして提供します。
+`oauth.scopes` が設定されていない場合、Claude Code は自動的に検出された認可サーバーメタデータから完全な `scopes_supported` カタログをリクエストしません。設定された `authServerMetadataUrl` から取得されたメタデータは、引き続きその `scopes_supported` をリクエストするスコープとして提供します。
 
 認可サーバーが `scopes_supported` で `offline_access` をアドバタイズする場合、Claude Code はそれをピン留めされたスコープに追加して、新しいブラウザーサインインなしでアクセストークンをリフレッシュできるようにします。
 
-サーバーが後でツール呼び出しに対して 403 `insufficient_scope` を返す場合、呼び出しは[追加の権限が必要](/docs/ja/errors#mcp-server-needs-you-to-sign-in-again)というメッセージで失敗し、サーバーが要求するスコープに名前を付けます。サーバーは `/mcp` で認証が必要として表示されます。
+サーバーが後でツール呼び出しに対して 403 `insufficient_scope` を返す場合、呼び出しは[`needs additional permissions`](/docs/ja/errors#mcp-server-needs-you-to-sign-in-again) というメッセージで失敗し、サーバーが要求するスコープの名前が示されます。サーバーは `/mcp` で認証が必要として表示されます。
 
 そのスコープがピン留めされた `oauth.scopes` にない場合は、それを追加してから `/mcp` を実行し、サーバーを再度認証してください。Claude Code はサーバーが名前を付けたスコープではなく、ピン留めされたスコープをリクエストするため、それを追加せずに再度認証する場合、取得するトークンはまだそれを欠いています。
 
@@ -1141,7 +1141,7 @@ v2.1.238 より前は、Claude Code はユーザースコープ、管理、お�
 
 Git の `GIT_CONFIG_KEY_<n>` 変数を除き、Claude Code は環境から `TOKEN`、`SECRET`、`PASSWORD`、`KEY`、または `AUTH` を含む名前のような認証情報のように見える名前を持つすべての変数を削除します。したがって、`ANTHROPIC_API_KEY` と `MY_REGISTRY_TOKEN` の両方が削除されます。Claude Code は、`ANTHROPIC_CUSTOM_HEADERS` などの名前がそのパターンに従わない固定リストの認証情報変数も削除します。
 
-これがヘルパーに適用される場合は、スクリプトにファイルまたは認証情報ストアから認証情報を読み込ませてください。サーバーの `url` が[これらの変数のいずれかを展開する](#environment-variable-expansion-in-mcp-json)場合、ヘルパーが受け取る `CLAUDE_CODE_MCP_SERVER_URL` 値にはその部分が `REDACTED` に置き換えられています。
+これがヘルパーに適用される場合は、スクリプトにファイルまたは認証情報ストアから認証情報を読み込ませてください。サーバーの `url` に `MY_REGISTRY_TOKEN` など[これらの変数のいずれかの実際の値が含まれる](#environment-variable-expansion-in-mcp-json)場合、ヘルパーが受け取る `CLAUDE_CODE_MCP_SERVER_URL` の値でも、その部分が `REDACTED` に置き換えられます。
 
 <h4 id="trust-a-folder-before-its-headershelper-runs">
   headersHelper が実行される前にフォルダーを信頼する

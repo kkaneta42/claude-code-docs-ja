@@ -470,6 +470,38 @@ Claude Code は、これらの値を OTLP リソースブロックで送信す�
   値を引用符で囲んでもスペースはエスケープされません。たとえば、`org.name="My Company"` は `My Company` ではなく、引用符を含むリテラル値 `"My Company"` になります。
 </Warning>
 
+<h3 id="attribute-telemetry-to-desktop-ssh-sessions">
+  Desktop SSH セッションにテレメトリを関連付ける
+</h3>
+
+[Desktop SSH セッション](/docs/ja/desktop#ssh-sessions)がどのリモートマシンで実行されたかを確認するには、カスタム属性で各マシンに名前を付けます。メトリクスとイベントには、セッションが実行されたマシンの名前は含まれません。
+
+各リモートマシンで、[セッションが読み取る管理設定ファイル](/docs/ja/desktop#managed-settings)内の、テレメトリをオンにする `env` ブロックに [`OTEL_RESOURCE_ATTRIBUTES`](#multi-team-organization-support) を追加します。名前は各マシンのファイルに直接書き込んでください。Claude Code は値を展開しないため、`host.name=$(hostname)` はその文字列のまま届きます。
+
+次の例では、マシンに `build-7` という名前を付けています。
+
+```json theme={null}
+{
+  "env": {
+    "CLAUDE_CODE_ENABLE_TELEMETRY": "1",
+    "OTEL_METRICS_EXPORTER": "otlp",
+    "OTEL_LOGS_EXPORTER": "otlp",
+    "OTEL_EXPORTER_OTLP_PROTOCOL": "grpc",
+    "OTEL_EXPORTER_OTLP_ENDPOINT": "http://collector.example.com:4317",
+    "OTEL_RESOURCE_ATTRIBUTES": "host.name=build-7"
+  }
+}
+```
+
+他にこの変数を設定するものがない場合、`host.name` は、Desktop SSH セッションでもそのマシン上の CLI でも、リソースブロックに含まれて届きます。カスタム属性が他にどこに表示されるかについては、[複数チームの組織のサポート](#multi-team-organization-support)を参照してください。
+
+名前が届かない場合は、次のいずれかの原因を確認してください。
+
+* **Desktop を実行しているコンピューターで設定した**: Desktop は、そこで設定した値を SSH セッションに渡しません
+* **ログインファイルでエクスポートした**: `/etc/profile` などのファイルを読み取るのはログインシェルのみです。そこで `export` した値は、ログインシェルから起動した Claude Code には届きます。Desktop はログインシェル経由で Claude Code を起動しないため、Desktop SSH セッションには届きません。
+* **値の中にスペースが含まれている**: この場合、Claude Code はどのキーもイベントやデータポイントにコピーせず、エラーも報告しません。[値からスペースを取り除いてください](#multi-team-organization-support)。
+* **他の何かがすでにこの変数を設定している**: デスクトップアプリが開始するセッションでは、起動環境ですでに設定されている変数が[設定ファイルより優先されます](/docs/ja/settings-reference#how-env-values-interact-with-your-shell)。[デバッグログ](/docs/ja/debug-your-config)には、無視された各変数の名前が記録されます。サードパーティの Desktop デプロイが、提供する環境で [OTLP エンドポイントを指定している](#how-managed-settings-lock-the-otlp-destination)場合、その環境には Desktop 独自の `OTEL_RESOURCE_ATTRIBUTES` が含まれます。
+
 <h3 id="example-configurations">
   設定例
 </h3>
@@ -1746,15 +1778,15 @@ Claude Code は生のイベントストリームのみを出力します。異�
 
 すべてのメトリクスとイベントは、以下のリソース属性でエクスポートされます:
 
-* `service.name`: ターミナルセッションの場合は `claude-code`、[Claude Desktop アプリ](/docs/ja/desktop)のコードタブから開始されたセッションの場合は `claude-code-desktop`
-* `service.version`: 現在の Claude Code バージョン、またはコードタブセッションの場合は Desktop アプリバージョン
+* `service.name`: ターミナルセッションの場合は `claude-code`、[Claude Desktop アプリ](/docs/ja/desktop)のコードタブから開始されたローカルセッションの場合は `claude-code-desktop`
+* `service.version`: 現在の Claude Code バージョン、またはローカルのコードタブセッションの場合は Desktop アプリバージョン
 * `os.type`: オペレーティングシステムタイプ (例: `linux`、`darwin`、`windows`)
 * `os.version`: オペレーティングシステムバージョン文字列
 * `host.arch`: ホストアーキテクチャ (例: `amd64`、`arm64`)
 * `wsl.version`: WSL バージョン番号 (Windows Subsystem for Linux で実行している場合のみ存在)
 * メーター名: `com.anthropic.claude_code`
 
-`service.name = claude-code` でフィルタリングするコレクターパイプラインまたはダッシュボードがある場合は、コードタブセッションからのテレメトリもキャプチャするために、フィルターに `claude-code-desktop` を追加してください。
+`service.name = claude-code` でフィルタリングするコレクターパイプラインまたはダッシュボードがある場合は、ローカルのコードタブセッションからのテレメトリもキャプチャするために、フィルターに `claude-code-desktop` を追加してください。
 
 <h2 id="roi-measurement-resources">
   ROI 測定リソース

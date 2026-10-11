@@ -210,6 +210,8 @@ git プロキシは、[オンにしない](#turn-the-anthropic-git-proxy-on)限�
 その代わり、git プロキシはランナーがサポートする範囲を制限し、ランナーに必要なものを変更します：
 
 * **github.com のみ**：Anthropic は、セッションのすべてのリポジトリが github.com 上にある場合にのみそのセッションを提供します。また、git プロキシはまだ GitHub Enterprise Server をサポートしていません。git プロキシを使用するランナーでは、別の git ホスト上のリポジトリを持つセッションは[開始に失敗します](#when-anthropic-doesnt-serve-a-session)。
+* **セッションのリポジトリのみの認証情報**：Anthropic は、セッションに含まれるリポジトリに対して git 認証情報を提供し、同じ git ホスト上の他のリポジトリに対しては提供しません。プライベートサブモジュール、パッケージマネージャーが git で取得する依存関係、または別のリポジトリにあるプラグインマーケットプレイスは、Anthropic から認証情報を受け取りません。セッションを作成するユーザーに、作成時にセッションが必要とする[すべてのリポジトリを追加する](/docs/ja/web-quickstart#start-a-task)よう依頼してください。
+* **ブランチへのプッシュのみ**：ブランチを削除するプッシュは失敗し、タグなど他の種類の ref へのプッシュも失敗します。プッシュで更新できるブランチについては、[GitHub プロキシ](/docs/ja/cloud-environments#github-proxy)を参照してください。
 * **接続済みの GitHub アカウント**：ユーザーセッションを作成したユーザーが claude.ai で GitHub を接続している必要があります。接続していない場合、セッションは[開始されません](#creator-has-no-github-connection)。
 * **`--capacity 1`**：git プロキシはランナープロセスごとに 1 つのセッションを必要とするため、並列処理のためにより多くのレプリカを実行してください。要件は [Anthropic git プロキシをオンにする](#turn-the-anthropic-git-proxy-on)に記載されています。
 * **グローバル git 設定の置き換え**：ランナーは、実行ユーザーの[グローバル git 設定を削除して置き換えます](#git-proxy-replaces-global-git-config)。専用ユーザーとして、またはコンテナ内で実行してください。

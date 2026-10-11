@@ -400,9 +400,16 @@ Terminal、Finder または File Explorer、System Settings または Settings �
 
 2 つのセッションを同時に表示するには、macOS で**Cmd**を、Windows で**Ctrl**を押しながらサイドバーのセッションをクリックします。セッションは既に開いているセッションの横の 2 番目のペインで開きます。分割がアクティブな間、別のサイドバーセッションをクリックすると、フォーカスがあるペインが置き換わります。macOS で\*\*Cmd+\\**を、Windows で**Ctrl+\\\*\*を押して、フォーカスされたペインを閉じて、単一のセッションに戻ります。
 
-Worktrees はデフォルトで`<project-root>/.claude/worktrees/`に保存されます。Settings → Claude Code の「Worktree location」でカスタムディレクトリに変更できます。また、すべての worktree ブランチ名の前に付加されるブランチプレフィックスを設定することもできます。これは Claude が作成したブランチを整理するのに便利です。完了したら、サイドバーのセッションにマウスを合わせてアーカイブアイコンをクリックして worktree を削除します。PR がマージまたはクローズされた後にセッションを自動的にアーカイブするには、Settings → Claude Code で**Auto-archive after PR merge or close**をオンにします。Auto-archive はローカルセッションで実行が完了したものにのみ適用されます。
+Worktrees はデフォルトで`<project-root>/.claude/worktrees/`に保存されます。これはカスタムディレクトリに変更できます：
 
-gitignored ファイル（`.env`など）を新しい worktrees に含めるには、プロジェクトルートに[`.worktreeinclude`ファイル](/docs/ja/worktrees#copy-gitignored-files-into-worktrees)を作成します。
+* **ローカルセッション**：**Settings > Claude Code** で **Worktree location** を設定します
+* **SSH セッション**：[SSH 接続](#choose-where-ssh-session-worktrees-go)で **Worktree folder** を設定します
+
+**Settings > Claude Code** で **Branch prefix** を設定することもできます。Desktop はすべての worktree ブランチ名の前にこれを付加するため、Claude が作成したブランチを整理するのに便利です。
+
+完了したら、サイドバーのセッションにマウスを合わせてアーカイブアイコンをクリックして worktree を削除します。プルリクエストがマージまたはクローズされたときにセッションを自動的にアーカイブするには、**Settings > Claude Code** で **Auto-archive after PR merge or close** をオンにします。Auto-archive は実行が完了したローカルセッションにのみ適用されます。
+
+gitignored ファイル（`.env`など）を新しい worktrees に含めるには、プロジェクトルートに[`.worktreeinclude`ファイル](/docs/ja/worktrees#copy-gitignored-files-into-worktrees)を作成します。worktree セッションがプロジェクト設定、フック、スキルをどこから読み取るかについては、[worktree がメインのチェックアウトと共有するもの](/docs/ja/worktrees#what-worktrees-share-with-the-main-checkout)を参照してください。
 
 <Note>
   セッション分離には[Git](https://git-scm.com/downloads)が必要です。ほとんどの Mac には Git がデフォルトで含まれています。Terminal で`git --version`を実行して確認してください。バージョン番号が表示されれば、Git がインストールされています。Git エラーが発生した場合は、[Cowork タブ](https://claude.com/product/cowork)で Claude に助けを求めてセットアップのトラブルシューティングを行ってください。
@@ -811,10 +818,27 @@ SSH 接続を追加するには、セッションを開始する前にプロン�
 * **SSH host**：`user@hostname` または `~/.ssh/config` で定義されたホスト
 * **SSH port**：空のままの場合はデフォルトで 22 になるか、SSH config のポートが使用されます
 * **SSH key (optional)**：`~/.ssh/id_ed25519` などの秘密鍵へのパス。SSH config または SSH エージェントを使用するには空のままにします。
+* **Worktree folder**：新しいセッションが worktree を作成する、リモートマシン上のフォルダ（`~/worktrees` など）。[リモートマシンのデフォルト](#choose-where-ssh-session-worktrees-go)を使用するには空のままにします。
 
 追加されると、接続は環境ドロップダウンの **SSH** の下に表示されます。それを選択して、そのマシンでセッションを開始します。Claude はリモートマシンで実行され、そのファイルとツールにアクセスできます。
 
 リモートマシンは Linux または macOS を実行する必要があります。Desktop は初回接続時にリモートマシンに Claude Code を自動的にインストールします。接続されると、SSH セッションは権限モード、コネクタ、プラグイン、および MCP サーバーをサポートします。
+
+<h4 id="choose-where-ssh-session-worktrees-go">
+  SSH セッションの worktree の作成場所を選択する
+</h4>
+
+組織がセッションで使用できるフォルダを制限していない限り、新しい SSH セッションは、次のうち最初に設定されている場所に [worktree](#work-in-parallel-with-sessions) を作成します：
+
+1. SSH 接続の **Worktree folder**
+2. リモートマシン上の `~/.claude/settings.json` にある [`worktree.location`](/docs/ja/settings-reference#worktree-location)
+3. デフォルトの `<project-root>/.claude/worktrees/`
+
+設定したフォルダ内には各プロジェクト専用のサブフォルダが作成されるため、`~/worktrees` を設定した場合、worktree のパスは `~/worktrees/<project>-<id>/<worktree-name>` になります。設定したフォルダがプロジェクト内にある場合、Desktop はそのプロジェクトではそのフォルダを無視し、デフォルトを使用します。
+
+以前に追加した接続、または組織が管理する接続に **Worktree folder** を設定するには、環境ドロップダウンでその接続にマウスを合わせて、ギアアイコンをクリックします。
+
+このフィールドには Claude Desktop v1.44121.0 以降が必要です。組織がセッションで使用できるフォルダを制限している場合、Desktop はこのフィールドを非表示にし、worktree をプロジェクト内に作成します。
 
 <h4 id="open-an-ssh-session-from-a-link">
   リンクから SSH セッションを開く
@@ -869,7 +893,7 @@ Desktop はリンクを開いたときに、未送信のテキストを置き換
   チームの SSH 接続を事前設定する
 </h4>
 
-管理者は、[管理設定](/docs/ja/managed-settings)で `sshConfigs` を設定することで、SSH 接続をチームメンバーに配布できます。この方法で定義された接続は、各ユーザーの環境ドロップダウンに自動的に表示され、管理対象として表示されるため、ユーザーはそれらを選択できますが、アプリで編集または削除することはできません。
+管理者は、[管理設定](/docs/ja/managed-settings)で `sshConfigs` を設定することで、SSH 接続をチームメンバーに配布できます。この方法で定義された接続は、各ユーザーの環境ドロップダウンに自動的に表示され、管理対象として表示されます。ユーザーはそれらを選択し、[独自の **Worktree folder** を設定](#choose-where-ssh-session-worktrees-go)できますが、アプリでそれ以外を編集したり、削除したりすることはできません。
 
 次の例は、単一の接続を事前設定しています：
 
@@ -935,6 +959,8 @@ HIPAA が有効になっている Enterprise 組織では、**Desktop** トグ�
   管理コンソールの[データとプライバシー設定](https://claude.ai/admin-settings/data-privacy-controls)の**Monitoring**下の Cowork 用 OpenTelemetry フォームは、Cowork セッションのみに適用されます。このマシン上の Cowork セッションでは、デスクトップアプリはそのコレクタを Claude Code に`OTEL_*`環境変数として渡すため、Claude Code がそのセッションで[管理コンソール設定をフェッチしない](#managed-settings)場合でも、フォームは有効になります。
 
   Code タブセッションからテレメトリをエクスポートするには、Claude Code 管理設定の`env`ブロックで`CLAUDE_CODE_ENABLE_TELEMETRY`と`OTEL_*`変数を設定します。[監視用の管理者設定](/docs/ja/monitoring-usage#administrator-configuration)に示されているとおりです。ローカル、クラウド、SSH セッションは、それぞれ[異なるソースから管理設定を読み取ります](#managed-settings)。クラウドセッションが到達できるホストについては、[ネットワークアクセス](/docs/ja/cloud-environments#network-access)を参照してください。Code タブセッションが報告する`service.name`については、[サービス情報](/docs/ja/monitoring-usage#service-information)を参照してください。
+
+  SSH セッションがどのリモートマシンで実行されたかを確認するには、[テレメトリを Desktop SSH セッションに関連付ける](/docs/ja/monitoring-usage#attribute-telemetry-to-desktop-ssh-sessions)を参照してください。
 </Note>
 
 <h3 id="managed-settings">
@@ -951,7 +977,7 @@ HIPAA が有効になっている Enterprise 組織では、**Desktop** トグ�
 | `browserExternalPageTools` | Claude が[Browser ペイン](#browse-external-sites)の外部ページを読み取るまたは操作するためのツールを使用するのを防ぐには`"disabled"`に設定します。ユーザーは引き続き外部サイトに自分でナビゲートできます。ローカル開発サーバープレビューは影響を受けません。 |
 | `disableMobileSimulatorTools` | Claude の[iOS Simulator ペイン](/docs/ja/desktop-ios-simulator#turn-off-simulator-access)でデバイスを制御およびキャプチャするためのツールをブロックするには`true`に設定します。ペインはユーザー自身のタップに対して使用可能なままです。Claude のアクセスのみが削除されます。値は JSON ブール値`true`である必要があります。文字列`"true"`は無視されます。 |
 | `disableBrowserExternalNavigation` | [Browser ペイン](#browse-external-sites)の外部ブラウジングを完全にオフにするには`true`に設定します。ユーザーも Claude も外部サイトにナビゲートできません。localhost 開発サーバープレビューは影響を受けません。値は JSON ブール値`true`である必要があります。文字列`"true"`は無視されます。 |
-| `sshConfigs` | 環境ドロップダウンに表示される[SSH 接続](#pre-configure-ssh-connections-for-your-team)を事前設定します。ユーザーは管理接続を編集または削除できません。 |
+| `sshConfigs` | 環境ドロップダウンに表示される[SSH 接続](#pre-configure-ssh-connections-for-your-team)を事前設定します。ユーザーは管理接続を削除できず、自分の **Worktree folder** 以外は編集できません。 |
 | `sshHostAllowlist` | [SSH セッション](#restrict-which-ssh-hosts-users-can-connect-to)を、解決されたホスト名がこれらのパターンのいずれかと一致するホストに制限します。管理設定からのみ読み取られます。 |
 | `disableDesktopLocalSessions` | [デバイスで実行されるコードセッション](#local-sessions-on-managed-devices)をオフにするには`true`に設定します。他のホストへの SSH セッションとクラウドセッションは利用可能なままです。値は JSON ブール値`true`である必要があります。管理設定からのみ読み取られます。Claude Desktop v1.37937.0 以降が必要です。 |
 | `disableSshSavedPasswords` | Desktop が SSH パスワードの保存を提案したり、以前に保存したパスワードを使用または表示したりしないようにするには`true`に設定します。オンにしても、保存済みのパスワードは削除されません。管理設定からのみ読み取られます。Claude Desktop v1.49585.0 以降が必要です。 |

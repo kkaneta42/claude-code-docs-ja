@@ -425,7 +425,7 @@ MCP ツールは `mcp__<server>__<tool>` という命名パターンに従いま
 
 マッチしたすべてのフックは並列で実行されます。同じハンドラーを複数の設定ファイルで定義した場合、実行は 1 回だけです。プラグインまたはスキルが持つ同じハンドラーのコピーは別個のものとして扱われます。
 
-ハンドラーは Claude Code の環境を持つ現在のディレクトリで実行されます。現在のディレクトリが存在しなくなった場合（たとえば、別のシェルがセッション中に削除した worktree や一時ディレクトリなど）、Claude Code は次のうち最初に存在するディレクトリからコマンドフックを実行します。セッションを開始したディレクトリ、プロジェクトルート、ホームディレクトリ、またはシステムの一時ディレクトリです。Claude Code は、フォールバック先のディレクトリ名を含む警告を[デバッグログ](#debug-hooks)に記録します。
+ハンドラーは Claude Code の環境を持つ現在のディレクトリで実行されます。現在のディレクトリが存在しなくなった場合（たとえば、別のシェルがセッション中に削除した worktree や一時ディレクトリなど）、Claude Code は次のうち最初に存在するディレクトリからコマンドフックを実行します。セッションを開始したディレクトリ、プロジェクトルート、ホームディレクトリ、またはシステムの一時ディレクトリです。Claude Code は、フォールバック先のディレクトリ名を含む警告を[デバッグログ](#debug-hooks)に記録します。デスクトップアプリから開始する worktree セッションについては、[worktree がメインのチェックアウトと共有するもの](/docs/ja/worktrees#what-worktrees-share-with-the-main-checkout)を参照してください。
 
 `$CLAUDE_CODE_REMOTE` 環境変数はリモート Web 環境で `"true"` に設定され、ローカル CLI では設定されません。Claude Code v2.1.199 以降では、ローカルセッションにアクティブな Remote Control 接続がある間、[`$CLAUDE_CODE_BRIDGE_SESSION_ID`](/docs/ja/env-vars) が [Remote Control](/docs/ja/remote-control) のセッション ID に設定されます。
 
@@ -645,6 +645,8 @@ Claude Code は、[終了コード 0 の解析ルール](#exit-code-0)に従い�
 
   * **`${CLAUDE_PROJECT_DIR}` は変わらない**: セッションを開始したプロジェクトルートを引き続き指すため、`${CLAUDE_PROJECT_DIR}/.claude/hooks/check-style.sh` のようなコマンドは、引き続きメインのチェックアウト内のスクリプトを実行します。
   * **`cwd` は Claude に追従する**: フックの[入力 JSON](#common-input-fields) の `cwd` フィールドは、Claude が worktree に入った後はその worktree のルートになり、Claude が `cd` を実行した後は新しいディレクトリになります。Claude がどのディレクトリで作業しているかをフックが知る必要がある場合は、このフィールドを読み取ってください。
+
+  デスクトップアプリから開始する worktree セッションで `${CLAUDE_PROJECT_DIR}` がどこを指すかについては、[worktree がメインのチェックアウトと共有するもの](/docs/ja/worktrees#what-worktrees-share-with-the-main-checkout)を参照してください。
 </Note>
 
 パス プレースホルダーを参照するフックには [exec フォーム](#exec-form-and-shell-form)を優先してください。シェル フォームでは、各プレースホルダーをダブル クォートで囲みます。
@@ -782,11 +784,11 @@ macOS と Linux では、コマンド フックは制御ターミナルのない
 | `effort` | フックの実行時に有効な [effort レベル](/docs/ja/model-config#adjust-effort-level)を保持する `level` フィールドを持つオブジェクト: `"low"`、`"medium"`、`"high"`、`"xhigh"`、または `"max"`。アクティブなモデルがサポートしていないレベルを設定した場合、`level` は Claude Code が代わりに実行したレベルを報告します。そのレベルの選び方については [effort レベルを調整](/docs/ja/model-config#adjust-effort-level)を参照してください。オブジェクトは[ステータスライン](/docs/ja/statusline#available-data)の `effort` フィールドと一致します。現在のモデルが effort パラメータをサポートしている場合、`PreToolUse`、`PostToolUse`、`Stop`、`SubagentStop` などのツール使用コンテキスト内で発火するイベントに存在します。レベルは、フック コマンドと Bash ツールでも `$CLAUDE_EFFORT` 環境変数として利用可能です。 |
 | `hook_event_name` | 発火したイベントの名前 |
 
-`--agent` で実行するか、サブエージェント内で実行する場合、2 つの追加フィールドが含まれます。
+`agent_id` と `agent_type` は、サブエージェント、[インプロセスのチームメイト](/docs/ja/agent-teams#choose-a-display-mode)、`--agent` で選択したエージェントなど、フックがどのエージェント内で発火したかをスクリプトに伝えます。
 
 | フィールド | 説明 |
 | :- | :- |
-| `agent_id` | サブエージェントの一意の識別子。フックがサブエージェント呼び出し内で発火する場合にのみ存在します。これを使用して、サブエージェント フック呼び出しをメイン スレッド呼び出しから区別します。 |
+| `agent_id` | フックが発火したサブエージェントまたはインプロセスのチームメイトの一意の識別子。 |
 | `agent_type` | エージェント名（例えば、`"Explore"` または `"security-reviewer"`）。セッションが `--agent` を使用するか、フックがサブエージェント内で発火する場合に存在します。サブエージェントの場合、サブエージェントのタイプがセッションの `--agent` 値よりも優先されます。カスタム サブエージェントとプラグイン サブエージェントが報告する値と、プラグイン スコープ名に対する matcher の記述方法については、[SubagentStart](#subagentstart) を参照してください。 |
 
 [`SessionStart`](#sessionstart) フックのみが `model` フィールドを受け取ることができ、Claude Code が常にそれを含めるとは限りません。[`PreModelSwitch`](#premodelswitch) と [`PostModelSwitch`](#postmodelswitch) フックは代わりに `from_model` と `to_model` を受け取るため、セッション中に変化するモデルを追跡するには PostModelSwitch フックを使用してください。
@@ -855,11 +857,12 @@ macOS と Linux では、コマンド フックは制御ターミナルのない
 
 ほとんどのイベントでは、Claude Code は stdout をデバッグ ログに書き込み、トランスクリプトには表示しません。例外は `UserPromptSubmit`、`UserPromptExpansion`、`SessionStart`、`PostModelSwitch` で、Claude Code はプレーン テキストの stdout を Claude が見て行動できるコンテキストとして追加します。
 
-Claude Code が stdout を [JSON 出力](#json-output)として読み取るかプレーン テキストとして読み取るかは、前後の空白を無視したうえで、その開始と終了の文字によって決まります。
+[非同期](#how-async-hooks-execute)でないフックの場合、Claude Code は、出力全体が前後に空白以外何もない 1 つの JSON オブジェクトであるときに stdout を [JSON 出力](#json-output)として解析し、それ以外の場合はプレーン テキストまたは解析失敗として扱います。
 
-* **`{` で始まり `}` で終わる**: Claude Code は JSON として解析します。出力が 2 行以上で、各行が単独で JSON として解析でき、どの行もフィールドを設定する [JSON 出力](#json-output)オブジェクトでない場合、Claude Code は出力全体をプレーン テキストとして扱います。それらの行のいずれかがフィールドを設定している場合、出力全体は解析失敗となります。
-* **`{` で始まるが `}` で終わらない**: Claude Code はプレーン テキストとして扱います。
-* **その他の文字で始まる**: JSON 配列や引用符で囲まれた JSON 文字列を含め、Claude Code はプレーン テキストとして扱います。
+* **1 行または複数行にわたる 1 つの JSON オブジェクト**: JSON 出力として解析されます。
+* **`{` で始まらない出力、または `{` で始まり `}` で終わらない出力**: プレーン テキストとして扱われます。このルールにより、JSON 配列や引用符で囲まれた JSON 文字列はプレーン テキストになります。
+* **それぞれが単独で JSON として解析できる 2 行以上の出力で、最初の行が `{` で始まり最後の行が `}` で終わるもの**: フィールドを設定する JSON 出力オブジェクトである行がない場合はプレーン テキスト、そのような行がある場合は解析失敗になります。
+* **`{` で始まり `}` で終わるが有効な JSON ではないその他の出力**: 解析失敗になります。
 
 Claude Code が stdout を JSON として解析しようとして失敗した場合、または解析されたオブジェクトが[スキーマ検証](#json-output)に失敗した場合、実行は[非ブロッキング エラー](#exit-code-output)になります。`<hook name> hook error` 通知には解析または検証のメッセージが含まれます。プレーン テキストの stdout をコンテキストとして追加するイベントでは、Claude Code は解析に失敗した stdout を追加しません。
 
@@ -1050,7 +1053,7 @@ HTTP フックはステータス コードのみでブロッキング エラー�
   フックごとに 1 つのアプローチを選択してください。終了コードのみでシグナリングするか、終了 0 して構造化制御のために JSON を出力するかのいずれかです。両方を混在させた場合、終了 2 は[ブロッキング効果](#exit-code-2-behavior-per-event)を維持し、Claude Code は引き続き JSON フィールドを読み取ります。ただし、[終了コード 2](#exit-code-2) で説明されている elicitation の例外が 1 つあります。
 </Note>
 
-フックの stdout には JSON オブジェクトのみが含まれている必要があります。シェル プロファイルがスタートアップ時にテキストを出力する場合、JSON 解析に干渉する可能性があります。トラブルシューティング ガイドの[フックの JSON が効果を持たない](/docs/ja/hooks-guide#hook-json-has-no-effect)を参照してください。
+stdout には JSON オブジェクト以外何も出力しないでください。[非同期](#how-async-hooks-execute)でないフックの場合、シェル プロファイルがスタートアップ時に出力する行など、他のテキストがあると Claude Code はオブジェクトを JSON として読み取れなくなります。そのテキストを見つけて抑制する方法については、[フックの JSON が効果を持たない](/docs/ja/hooks-guide#hook-json-has-no-effect)を参照してください。
 
 フックの `additionalContext`、`systemMessage`、`initialUserMessage` の文字列、およびプレーン stdout は 10,000 文字に制限されています。
 
@@ -1141,6 +1144,8 @@ jq -nc --arg seq "$seq" '{terminalSequence: $seq}'
 * [PostModelSwitch](#postmodelswitch): 切り替え後の次のリクエストとともに。タイミングについては [PostModelSwitch 決定制御](#postmodelswitch-decision-control)を参照してください
 
 複数のフックが同じイベントに対して `additionalContext` を返す場合、Claude はすべての値を受け取ります。
+
+文字列に `<system-reminder>` または `</system-reminder>` タグが含まれている場合、Claude はそのタグの `<` が `&lt;` に置き換えられた文字列を受け取ります。
 
 値が 10,000 文字を超える場合、Claude Code はテキストをセッション ディレクトリ内のファイルに書き込み、代わりにファイル パスと最初の最大 2,000 文字のプレビューを Claude に渡します。Claude はファイルを読むことができますが、Claude Code はそれを読むよう求めません。
 
@@ -1364,7 +1369,7 @@ echo '{"hookSpecificOutput": {"hookEventName": "SessionStart", "reloadSkills": t
   環境変数を永続化する
 </h4>
 
-SessionStart フックは `CLAUDE_ENV_FILE` 環境変数にアクセスできます。この変数は、後続の Bash コマンドのために環境変数を永続化できるファイルパスを提供します。
+SessionStart フックは `CLAUDE_ENV_FILE` 環境変数にアクセスできます。この変数はファイルパスを提供し、そのファイルに、セッション中に Claude が後で実行するシェルコマンド向けの環境変数を永続化できます。
 
 個別の環境変数を設定するには、`export` 文を `CLAUDE_ENV_FILE` に書き込みます。他のフックが設定した変数を保持するには、追記（`>>`）を使用してください。
 
@@ -1399,8 +1404,23 @@ fi
 exit 0
 ```
 
+各 Bash コマンドは、コマンド自体の前にファイルの内容をシェルコードとして実行するため、そこに書く行では `export PATH="$PATH:./node_modules/.bin"` 内の `$PATH` 参照のように、Bash が評価するものは何でも使用できます。
+
+<a id="persisted-variables-in-powershell-commands" />
+
+<h5 id="persisted-variables-in-powershell-commands">
+  PowerShell コマンドでの永続化された変数
+</h5>
+
+Claude Code v2.1.296 以降では、[PowerShell](/docs/ja/tools-reference#powershell-tool) コマンドも `CLAUDE_ENV_FILE` から変数を受け取りますが、PowerShell がファイルを実行することはありません。代わりに、Claude Code がファイルから代入を読み取り、PowerShell コマンドの環境にコピーします。これが行われるのは、このセッションのすべてのフックが書き込んだ内容と、起動前に [`CLAUDE_ENV_FILE` に設定した](/docs/ja/env-vars)スクリプトのすべてにわたって、すべての行が次のいずれかである場合のみです。
+
+* 空行または `#` コメント
+* 行頭にある 1 つの代入。`export NAME=value`、`declare -x NAME=value`、または `NAME=value` の形式で記述され、値は Bash が記述どおりにそのまま使用するものであること。値は次の要素を任意に組み合わせて構成されます：文字、数字、および `_ @ % + = : , . / -` の文字のみを使用したクォートなしのテキスト、シングルクォートで囲まれたテキスト、内部の `$`、バッククォート、`"` がバックスラッシュでエスケープされたダブルクォートで囲まれたテキスト
+
+エスケープされていない `$PATH` を含む `export PATH="$PATH:./node_modules/.bin"`、`source` コマンド、`direnv export bash` が出力する `$'...'` 文字列など、他の種類の行が 1 つでもあると、PowerShell コマンドは変数を一切受け取らず、`claude --debug` は `Session environment is not all plain assignments` をログに記録します。Bash コマンドは引き続きすべての変数を受け取ります。Windows では、Git Bash と Windows でパスの表記が異なるため、値に `/` または `\` を含む変数も PowerShell コマンドには渡されません。[サンドボックス化された](/docs/ja/sandboxing) PowerShell コマンドは変数を一切受け取りません。
+
 <Note>
-  `CLAUDE_ENV_FILE` は、SessionStart、[Setup](#setup)、[CwdChanged](#cwdchanged)、[FileChanged](#filechanged) の各フックで利用できます。その他の種類のフックはこの変数にアクセスできません。
+  `CLAUDE_ENV_FILE` は SessionStart、[Setup](#setup)、[CwdChanged](#cwdchanged)、[FileChanged](#filechanged) フックで利用できます。他のフックイベントはこの変数にアクセスできず、[`"shell": "powershell"`](#command-hook-fields) によるものか、Git Bash のない Windows でのデフォルトによるものかにかかわらず、PowerShell で実行されるフックもアクセスできません。
 </Note>
 
 <h3 id="setup">
@@ -2030,7 +2050,7 @@ Claude が [plan モード](/docs/ja/permission-modes#analyze-before-you-edit-wi
 
 | フィールド | 説明 |
 | :- | :- |
-| `permissionDecision` | `"allow"` は権限プロンプトをスキップします。ただし、[どのモードでも自動承認されないアクション](/docs/ja/permission-modes#actions-no-mode-auto-approves)と、[`updatedInput` との組み合わせ](#allow-with-updatedinput)が必要な `AskUserQuestion` および `ExitPlanMode` は除きます。`"deny"` はツール呼び出しを防ぎます。`"ask"` はユーザーに確認を求めます。`"defer"` は、後でツールを再開できるように正常に終了します。フックが何を返しても、[拒否ルールと確認ルール](/docs/ja/permissions#manage-permissions)は引き続き評価されます |
+| `permissionDecision` | `"allow"` は権限プロンプトをスキップします。ただし、[どのモードでも自動承認されない操作](/docs/ja/permission-modes#actions-no-mode-auto-approves)、[ネットワークパスからの読み取り](/docs/ja/permissions#network-paths)、および[`updatedInput` との組み合わせ](#allow-with-updatedinput)が必要な `AskUserQuestion` と `ExitPlanMode` は除きます。`"deny"` はツール呼び出しを防ぎます。`"ask"` はユーザーに確認を求めます。`"defer"` は、後でツールを再開できるように正常に終了します。フックが何を返したかにかかわらず、[拒否ルールと確認ルール](/docs/ja/permissions#manage-permissions)は引き続き評価されます |
 | `permissionDecisionReason` | `"ask"` の場合、権限プロンプトでユーザーに表示されます。誰もそのプロンプトに回答できない `-p` の実行で Claude Code が[呼び出しを拒否する](/docs/ja/headless#turn-off-permission-prompts-in-unattended-runs)場合は、代わりに Claude がツールの結果でその理由を読み取ります。`"deny"` の場合は Claude に表示されます。`"allow"` と `"defer"` の場合は、[デバッグログ](#debug-hooks)にのみ書き込まれます |
 | `updatedInput` | 実行前にツールの入力パラメーターを変更します。入力オブジェクト全体を置き換えるため、変更したフィールドとともに変更していないフィールドも含めてください。Claude Code は、権限ルールと Bash コマンドの[自動バックグラウンド化の適格性](/docs/ja/tools-reference#foreground-commands-that-move-to-the-background)を、Claude が送信した入力ではなく、フックが返した入力に対して評価します。自動承認するには `"allow"` と、変更された入力をユーザーに表示するには `"ask"` と組み合わせます。`"defer"` の場合は無視されます |
 | `additionalContext` | ツールの結果とともに Claude のコンテキストに追加される文字列。`permissionDecision` が `"defer"` の場合は無視されます。[Claude にコンテキストを追加する](#add-context-for-claude)を参照してください |
@@ -2136,7 +2156,7 @@ Claude が [plan モード](/docs/ja/permission-modes#analyze-before-you-edit-wi
 再開時に遅延されたツールが利用できなくなっている場合、プロセスはフックが発火する前に `stop_reason: "tool_deferred_unavailable"` と `is_error: true` で終了します。これは、ツールを提供していた MCP サーバーが再開されたセッションで接続されていない場合に発生します。どのツールが見つからなくなったかを特定できるように、`deferred_tool_use` ペイロードは引き続き含まれます。
 
 <Note>
-  遅延されたセッションを plan モードで再開するには、Claude Code が承認のために計画を提示できるよう、`--resume` とともに [`--permission-prompt-tool`](/docs/ja/cli-reference#cli-flags) を渡してください。特定の他の起動フラグを渡すと、再開された実行は plan モードに戻りません。[`-p` で plan モードで再開する](/docs/ja/sessions#resume-in-plan-mode-with-p)を参照してください。Claude Code v2.1.246 以降が必要です。
+  延期されたセッションを plan モードで再開するには、Claude Code が承認のために計画を提示できるよう、`--resume` とともに [`--permission-prompt-tool`](/docs/ja/cli-reference#cli-flags) を渡してください。その他の条件については、[`-p` で plan モードを再開する](/docs/ja/sessions#resume-in-plan-mode-with-p)を参照してください。Claude Code v2.1.246 以降が必要です。
 
   `-p` で再開する場合、Claude Code はそれ以外の保存された権限モードを復元しません。新しい `claude -p` の実行が開始する権限モードで実行を開始するため、遅延されたセッションで `--permission-mode` または `--dangerously-skip-permissions` を使用していた場合は、再度渡してください。`-p` なしで `claude --resume <session-id>` を使って再開する場合、Claude Code は保存された権限モードを復元します。例外については[再開時の権限モード](/docs/ja/sessions#permission-mode-on-resume)に記載されています。
 </Note>
@@ -4303,6 +4323,11 @@ Claude Code が非同期フックの結果を配信するのは、セッショ�
 
 バックグラウンド プロセスが終了した後、Claude Code はフックの JSON レスポンスに含まれる `additionalContext` フィールドと `systemMessage` フィールドを次の会話ターンで Claude に配信します。同期フックの `systemMessage` とは異なり、どちらのフィールドもユーザーには表示されません。
 
+JSON レスポンスは、stdout に単独で出力するか、それ自体だけの 1 行として出力します。
+
+* **stdout に単独で出力**: レスポンスが stdout 上の唯一のテキストである場合、整形された `jq` 出力のように複数行にまたがってもかまいません。複数行にまたがるには Claude Code v2.1.295 以降が必要です。
+* **それ自体だけの 1 行として出力**: `jq -c` を使用するなどしてレスポンスが単独で 1 行に収まる場合、非同期フックは stdout に他のテキストを出力できます。
+
 Claude Code は JSON レスポンスを同期フックと同じ[出力スキーマ](#json-output)に対して検証し、`systemMessage` が文字列でないなど、値の型が間違っているフィールドをドロップします。これは配信する代わりに行われます。`--debug` で実行すると、ドロップされた各フィールドに名前を付けた警告が表示されます。v2.1.202 より前では、非同期フックからの不正な形式の JSON 出力はセッションをクラッシュさせる可能性があり、セッションが再開されるたびにクラッシュが再発生していました。
 
 非同期フック完了通知はデフォルトで抑制されます。これらを表示するには、`Ctrl+O` で詳細モードを有効にするか、`--verbose` で Claude Code を開始します。
@@ -4455,6 +4480,8 @@ PowerShell フックで裸の `$CLAUDE_PROJECT_DIR` スペルを記述しない�
 2026-07-19T02:03:24.382Z [DEBUG] Hook output does not start with {, treating as plain text
 2026-07-19T02:03:24.382Z [DEBUG] "Hook PostToolUse:Write (PostToolUse) success:\nhook-ran"
 ```
+
+遅いフックを見つけるには、ログで所要時間で終わる `Hooks:` 行を検索します。Claude Code v2.1.296 以降では、ツール イベント、`UserPromptSubmit`、`SessionStart`、`Stop`、およびその他のいくつかのイベントに対する各コマンド フックは、何を出力したかにかかわらず、終了時にこの行を 1 つ残します。この行には、イベント名とフックがマッチしたツール名またはその他の値をコロンでつないだもの、続いて角括弧で囲まれたフックのコマンド、フックの提供元のプラグイン（ある場合）、実行の終了状態、および所要時間が示されます。例: `Hooks: PostToolUse:Write [.claude/hooks/log-write.sh] finished with status 0 (31ms)`。実行は `timed out after <N>ms`、`cancelled`、`moved to the background`、または `failed to start` で終了する場合もあります。`Notification`、`SessionEnd`、`PreCompact` などの一部のイベントでは、コマンド フックは代わりに所要時間のない `completed with status` 行を残します。
 
 より詳細なフック マッチング詳細については、`CLAUDE_CODE_DEBUG_LOG_LEVEL=verbose` を設定して、フック matcher 数とクエリ マッチングなどの追加ログ行を確認します。
 

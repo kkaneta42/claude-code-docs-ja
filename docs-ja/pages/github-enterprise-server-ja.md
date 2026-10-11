@@ -27,7 +27,7 @@ github.com 上のリポジトリについては、[クラウドで Claude Code �
 | Claude Security | ✅ サポート | Enterprise プランの公開ベータで [claude.ai/security](https://claude.ai/security) で利用可能 |
 | Teleport セッション | ✅ サポート | `--teleport` で Cloud とターミナル間でセッションを移動 |
 | プラグインマーケットプレイス | ✅ サポート | 表面によって認証情報の要件が異なります。[GHES 上のプラグインマーケットプレイス](#plugin-marketplaces-on-ghes)を参照してください |
-| 貢献度メトリクス | ✅ サポート | [分析ダッシュボード](/docs/ja/analytics) への Webhook 経由で配信 |
+| 貢献度メトリクス | ❌ サポートなし | github.com でホストされているリポジトリが必要です。[分析ダッシュボード](/docs/ja/analytics)には、GHES リポジトリでの作業に関する使用状況メトリクスが引き続き表示されます |
 | GitHub Actions | ✅ サポート | 手動ワークフロー設定が必要。`/install-github-app` は github.com のみ |
 | GitHub MCP サーバー | ❌ サポートなし | GitHub MCP サーバーは GHES インスタンスでは動作しません |
 
@@ -56,8 +56,8 @@ Owner は GHES インスタンスを Claude Code に 1 回接続します。そ�
     GHES インスタンスの GitHub App ページから、Claude がアクセスしたいリポジトリまたは組織にアプリをインストールします。最初はサブセットで開始して、後で追加できます。
   </Step>
 
-  <Step title="機能を有効にする">
-    [claude.ai/admin-settings/claude-code](https://claude.ai/admin-settings/claude-code) にアクセスし、GHES リポジトリの [Code Review](/docs/ja/code-review#set-up-code-review) と [貢献メトリクス](/docs/ja/analytics#enable-contribution-metrics) を github.com と同じ設定を使用して有効にします。
+  <Step title="Code Review を有効にする">
+    [claude.ai/admin-settings/claude-code](https://claude.ai/admin-settings/claude-code) にアクセスし、GHES リポジトリの [Code Review](/docs/ja/code-review#set-up-code-review) を github.com と同じ設定を使用して有効にします。
   </Step>
 </Steps>
 
@@ -65,7 +65,7 @@ Owner は GHES インスタンスを Claude Code に 1 回接続します。そ�
   GitHub App 権限
 </h3>
 
-マニフェストは GitHub App を以下の権限と webhook イベントで設定します。これらは一緒にクラウドセッション、コードレビュー、Claude Security、プラグインマーケットプレイス、および貢献メトリクスをカバーします。
+マニフェストは GitHub App を以下の権限と webhook イベントで設定します。これらは一緒にクラウドセッション、Code Review、Claude Security、およびプラグインマーケットプレイスをカバーします。
 
 | 権限 | アクセス | 用途 |
 | :- | :- | :- |
@@ -270,6 +270,6 @@ Claude Code は認証情報から claude.ai 組織を読み取ることができ
 * [クラウドで Claude Code を使用](/docs/ja/claude-code-on-the-web)：クラウドインフラストラクチャで Claude Code セッションを実行
 * [Code Review](/docs/ja/code-review)：自動 PR レビュー
 * [プラグインマーケットプレイス](/docs/ja/plugins/host-marketplace)：プラグインカタログの構築と配布
-* [分析](/docs/ja/analytics)：使用状況と貢献度メトリクスの追跡
+* [分析](/docs/ja/analytics)：組織全体での Claude Code の使用状況の追跡
 * [管理設定](/docs/ja/settings)：組織全体のポリシー設定
 * [ネットワーク設定](/docs/ja/network-config)：ファイアウォールと IP ホワイトリストの要件

@@ -152,7 +152,7 @@ Completed
 | 形状 | 意味 |
 | :- | :- |
 | `✻` またはアニメーション `✽` | セッションプロセスが実行中であるか、セッションがユーザーの入力を必要としています |
-| `∙` | プロセスは終了しています。行のピーク表示は引き続き可能で、返信またはアタッチすると、Claude は中断したところから再開します |
+| `∙` | プロセスは終了しています。行のピーク表示は引き続き可能で、返信またはアタッチすると、Claude は保存された会話からセッションを再起動します |
 | `✢` | イテレーション間でスリープしている [`/loop`](/docs/ja/scheduled-tasks) セッションです。行は実行回数とカウントダウンを表示します |
 
 行の右端に表示される `#N` または `!N` ラベルは [セッションのプルリクエストまたはマージリクエスト](#pull-request-status) へのリンクであり、状態アイコンの一部ではありません。
@@ -256,6 +256,8 @@ Completed
 
 バックグラウンドセッションには追記先となるターミナルのスクロールバックがないため、アタッチされたセッションは `tui` 設定に関係なく、常に [フルスクリーンモード](/docs/ja/fullscreen) でレンダリングされます。`PgUp`、`PgDn`、またはマウスホイールでスクロールし、トランスクリプトモードには `Ctrl+O` を押します。ターミナルのネイティブスクロールと tmux のコピーモードは現在のビューポートのみを表示します。これはフルスクリーンアプリケーションを実行するときと同じです。
 
+アタッチされたセッションは [ターミナルにステータスを報告しません](/docs/ja/terminal-config#see-session-status-in-your-terminal)。
+
 空のプロンプトで `←` を押すか、`/exit` を実行してデタッチし、エージェントビューに戻ります。エージェントビューからセッションを開いたか、シェルから `claude attach <id>` を実行したかに関係なく機能します。
 
 `←` は [`/btw` オーバーレイ](/docs/ja/interactive-mode#side-questions-with-%2Fbtw) が開いている間もデタッチします。Claude Code v2.1.257 以降が必要です。回答中のサイド質問は、離れている間も実行を続けます。次にアタッチすると、オーバーレイがその質問、またはその回答とともに再び開きます。
@@ -264,9 +266,9 @@ Windows では、アタッチしてから約 0.5 秒以内に `←` を押すと
 
 `Ctrl+Z` もデタッチしますが、開始した場所に戻ります。エージェントビューからアタッチした場合はエージェントビュー、`claude attach` を実行した場合はシェルです。ダイアログがフォーカスを持っていて `←` に応答しない場合は `Ctrl+Z` を使用します。
 
-`Ctrl+C` はアタッチ中も標準的な割り込み動作を保持します。デタッチするのではなく、実行中の応答または `!` シェルコマンドをキャンセルします。空のプロンプトで `Ctrl+C` を 2 回押すとデタッチします。これは他のセッションと同じです。
+`Ctrl+C` はアタッチ中も標準的な割り込み動作を保持します。デタッチするのではなく、実行中の応答または `!` シェルコマンドをキャンセルします。空のプロンプトで `Ctrl+C` を 2 回押すとデタッチします。
 
-デタッチしてもバックグラウンドセッションは停止しません。`←`、`Ctrl+Z`、`/exit`、および `Ctrl+C` または `Ctrl+D` の 2 回押しは、いずれもセッションを実行したままにします。セッション内からセッションを終了するには、`/stop` を実行します。
+デタッチしてもバックグラウンドセッションは停止しません。`←`、`Ctrl+Z`、`/exit`、および `Ctrl+C` または `Ctrl+D` の 2 回押しは、いずれもセッションを実行したままにします。`/loop` が次のイテレーションを待っている間にデタッチすると、ループは実行を続け、そのイテレーションはユーザーがいなくてもスケジュールどおりに開始されます。デタッチする前にループを停止するには、[ループを停止する](/docs/ja/scheduled-tasks#stop-a-loop) を参照してください。セッション内からセッションを終了するには、`/stop` を実行します。
 
 <h4 id="switch-sessions-without-leaving-the-terminal">
   ターミナルを離れずにセッションを切り替える
@@ -293,8 +295,9 @@ Claude Code が会話を再度開けない場合は、終了して会話を再�
 約 10 秒経過すると、Claude Code はそれ以上待たずにセッションをバックグラウンドにします。ただし、次のようなケースは例外です：
 
 * **フォアグラウンドのサブエージェントがまだ実行中**：Claude が開始した [フォアグラウンドのサブエージェント](/docs/ja/sub-agents#run-subagents-in-foreground-or-background) の作業が引き継がれるよう、Claude Code は待機を続け、`Still backgrounding after the current tool` を表示します。待たずにバックグラウンドにするには `←` を再度押しますが、その場合それらのサブエージェントは最初からやり直しになります。
-* **権限プロンプトまたは質問が回答を待っている**：権限プロンプトまたは Claude が尋ねた質問が待機している間、Claude Code は待機を続け、`Still backgrounding after the current tool — a question is waiting for your answer.` を表示します。
+* **権限プロンプトまたは質問が回答を待っている**：権限プロンプトまたは Claude が尋ねた質問が待機している間、Claude Code は待機を続け、`Still backgrounding after the current tool — a question is waiting for your answer.` を表示します。権限プロンプトでの **Yes** など、回答によってターンが続行する場合、Claude Code は現在のツールが完了した時点でセッションをバックグラウンドにします。
 * **プロンプト入力に入力した**：未送信のテキストはターミナルの入力ボックスに残り、バックグラウンドセッションには移動しないため、Claude Code は切り替えをキャンセルします。`Backgrounding cancelled — you have unsent text in the input. Send it or clear it, then press ← again.` と表示されます。
+* **ターンを停止した**：Claude Code は切り替えをキャンセルし、`Backgrounding cancelled — the turn was stopped.` を表示します。たとえば、[`Esc` で Claude を中断した](/docs/ja/interactive-mode#general-controls) 場合、メインの会話からの権限プロンプトで [コメントなしで](/docs/ja/permissions#add-a-comment-when-you-answer-a-permission-prompt) **No** を選択した場合、またはそこで Claude が尋ねた質問で `Esc` を押した場合に、ターンは停止します。セッションをバックグラウンドにするには、`←` を再度押します。
 * **キューに入れたメッセージを移動できない**：[Claude の作業中にキューに入れた](/docs/ja/interactive-mode#queue-messages-while-claude-works) メッセージは、会話とともにバックグラウンドセッションに移動します。そのいずれかを移動できない場合、セッションはフォアグラウンドに留まり、Claude Code は `Cannot open agents — 1 queued message can't move to the background. Press ← again once Claude has read it.` のような通知を表示します。
 
 `←` を押すと、会話にまだメッセージがない場合でもセッションの行が作成されるため、`→` でその行に戻れます。
@@ -513,7 +516,7 @@ Claude Code は、実行中の [モニター](/docs/ja/tools-reference#monitor-t
 * `--fallback-model`
 * `--allow-dangerously-skip-permissions`
 
-セッション中に [`/add-dir`](/docs/ja/permissions#additional-directories-grant-file-access-not-configuration) で追加したディレクトリも引き継がれます。`--allow-dangerously-skip-permissions` を引き継ぐと、バックグラウンド化されたセッションでも `bypassPermissions` に切り替えられる状態が維持されますが、新たに何かを付与するわけではありません。このモードには引き続き、[権限モード、モデル、effort](#permission-mode-model-and-effort) で説明されている 1 回限りのインタラクティブな同意が必要です。
+セッション中に [`/add-dir`](/docs/ja/permissions#additional-directories-grant-file-access-not-configuration) で追加したディレクトリも引き継がれます。`--allow-dangerously-skip-permissions` を引き継ぐと、バックグラウンド化されたセッションでも `bypassPermissions` に切り替えられる状態が維持されますが、新たに何かを付与するわけではありません。このモードには引き続き、[バイパスの免責事項への同意](/docs/ja/permission-modes#skip-all-checks-with-bypasspermissions-mode) が記録されている必要があります。
 
 <span id="from-your-shell" />
 
@@ -767,13 +770,13 @@ claude agents --permission-mode plan --model opus --effort high
 
 有効なデフォルトは、ディスパッチ入力の下のフッターに表示されます。
 
-`claude --dangerously-skip-permissions` を一度インタラクティブに実行してバイパスの免責事項に同意するまで、Claude Code は `claude --bg --permission-mode bypassPermissions` を拒否します。このモードでは、監視していないセッションが承認なしに操作を行えるためです。`claude agents` に `--dangerously-skip-permissions` または `--permission-mode bypassPermissions` を渡すと、以前に同意していない場合は同じ免責事項が表示され、同意するとビューから起動するセッションに `bypassPermissions` が適用されます。`--allow-dangerously-skip-permissions` を渡した場合も同じ免責事項が表示され、同意すると、それらのセッションをそのモードで開始せずに、`Shift+Tab` サイクルで `bypassPermissions` を利用可能にします。
+`bypassPermissions` モードで開始されるバックグラウンドセッションには、[バイパスの免責事項への同意](/docs/ja/permission-modes#skip-all-checks-with-bypasspermissions-mode) が記録されている必要があります。このモードでは、監視していないセッションが承認なしに操作を行えるためです。`claude agents` に `--dangerously-skip-permissions` または `--permission-mode bypassPermissions` を渡すと、以前に同意していない場合は同じ免責事項が表示され、同意するとビューから起動するセッションに `bypassPermissions` が適用されます。`--allow-dangerously-skip-permissions` を渡した場合も同じ免責事項が表示され、同意すると、それらのセッションをそのモードで開始せずに、`Shift+Tab` サイクルで `bypassPermissions` を利用可能にします。
 
 <h4 id="what-persists-across-restarts">
   再起動後も維持されるもの
 </h4>
 
-バックグラウンドセッションに選択した権限モード、モデル、effort は、[引き継いだ設定フラグ](#what-carries-over-when-you-background) とともに、スーパーバイザーが後でそのプロセスを [停止して再起動](#the-supervisor-process) しても維持されます。`claude --bg --dangerously-skip-permissions` または `claude --bg --permission-mode bypassPermissions` で起動したセッションは、その再起動後も `bypassPermissions` のままです。セッションの途中で `/model` や `/effort` で変更したモデルや effort も保持されます。
+バックグラウンドセッションに選択した権限モード、モデル、effort は、[引き継いだ設定フラグ](#what-carries-over-when-you-background) とともに、スーパーバイザーが後でそのプロセスを [停止して再起動](#the-supervisor-process) しても維持されます。セッションの途中で `/model` や `/effort` で変更したモデルや effort も保持されます。
 
 セッションが `--effort` や `/effort` ではなく設定から effort を取得していた場合、Claude Code はそのセッションのプロセスを開始するたびに設定を読み直します。`settings.json` で保存された effort を編集すると、その変更は `←` または `/bg` でバックグラウンドに移動するセッションと、その後の再起動に反映されます。保存された effort とは、[`effortLevel`](/docs/ja/settings-reference#effortlevel) キーまたは [`modelSettings`](/docs/ja/settings-reference#modelsettings) のエントリです。
 
@@ -822,16 +825,16 @@ claude agents --settings ./ci-settings.json --add-dir ../shared-lib
 | `claude attach <id\|name>` | このターミナルでセッションにアタッチする |
 | `claude logs <id\|name>` | セッションの最新出力を出力する |
 | `claude stop <id>` | セッションを停止する。`claude kill` も受け入れます |
-| `claude respawn <id>` | セッションを再開する。実行中または停止状態のセッションを再開します。例えば、更新された Claude Code バイナリを取得するため。再開されたセッションは保存された会話を再開します。ディスク上に会話がない場合は、新しい会話として元のプロンプトを再度実行します |
+| `claude respawn <id>` | セッションを再開する。実行中または停止状態のセッションを再開します。例えば、更新された Claude Code バイナリを取得するため。保存された会話があるセッションはその会話を再開します |
 | `claude respawn --all` | すべての実行中のセッションを再開する。例えば、すべてのセッションを一度に更新された Claude Code バイナリに移動するため |
 | `claude rm <id>` | セッションをリストから削除します。削除が安全な場合、Claude が作成した worktree も削除します。[セッションの削除で何が削除されるか](#what-deleting-a-session-removes)を参照してください。会話トランスクリプトはローカルマシンに保存され、`claude --resume` を通じて利用可能なままです |
 | `claude rm <id> --discard-unpushed <commit>@<worktree-id>` | プッシュされていないコミットで削除が拒否されたセッションを削除し、worktree をそのブランチとコミットとともに破棄します。拒否が出力した正確な値を渡します。[セッションの削除で何が削除されるか](#what-deleting-a-session-removes)を参照してください。v2.1.260 以降が必要です |
 | `claude rm <id> --force-remove-worktree <worktree-id>` | git または `WorktreeRemove` フックが worktree を削除できなかったために削除が拒否されたセッションを削除し、worktree ディレクトリを削除してそのブランチをリポジトリに残します。拒否が出力した正確な値を渡します。[セッションの削除で何が削除されるか](#what-deleting-a-session-removes)を参照してください。v2.1.268 以降が必要です |
 | `claude daemon status` | [supervisor](#the-supervisor-process) の状態、バージョン、ソケットディレクトリ、およびワーカー数を出力する |
 | `claude daemon logs` | supervisor のログファイル [`~/.claude/daemon.log`](#where-state-is-stored) を追跡し、`Ctrl+C` を押すまで新しい行を到着次第出力する |
-| `claude daemon stop --any` | supervisor プロセスとそれがホストするバックグラウンドセッションを停止します。`--keep-workers` を渡して、バックグラウンドセッションを実行したままにして、次の supervisor が再接続できるようにします。次の `claude agents` または `claude --bg` は新しい supervisor を開始します |
+| `claude daemon stop --any` | supervisor プロセスとそれがホストするバックグラウンドセッションを停止します。`--keep-workers` を渡して、バックグラウンドセッションを実行したままにして、[次の supervisor](#the-supervisor-process) が再接続できるようにします。次の `claude agents` または `claude --bg` は新しい supervisor を開始します |
 
-`claude attach` と `claude logs` は、`claude logs "auth refactor"` のように、ID の代わりにセッション名の一部を受け取ることができます。名前を渡すには Claude Code v2.1.290 以降が必要です。
+`claude attach` と `claude logs` は、`claude logs "auth refactor"` のように、ID の代わりにセッション名の一部を受け取ることができます。`claude attach` が名前でセッションを開けるのはそのプロセスが実行中の間だけなので、停止したセッションを再開するには代わりに ID を渡してください。名前を渡すには Claude Code v2.1.290 以降が必要です。
 
 <h3 id="list-sessions-as-json">
   セッションを JSON として一覧表示
@@ -889,6 +892,7 @@ Claude Code は、エージェントビューに表示されているすべて�
 * **完了したか次のメッセージを待機中で、約 1 時間未接続**：スーパーバイザーはリソースを解放するためにプロセスを停止します。質問を投げかけてターンを終了したセッションは、次のメッセージを待機中としてカウントされます。会話はディスクに保存され、次回接続または返信するときに、セッションは中断したところから再開されます。`Ctrl+T` でセッションをピンして、プロセスの実行を継続させます。
 * **スーパーバイザーが実行中に予期せず終了した**：スーパーバイザーはプロセスを再起動します。`←` または `/background` で自分でバックグラウンドに送信したセッションを、たとえば `kill` で終了した場合は、再起動されずに停止済みとしてマークされます。シャットダウンで終了したセッションについては、[セッションがシャットダウン後に失敗または停止として表示される](#sessions-show-as-failed-after-shutdown) を参照してください。
 * **自動更新後**：スーパーバイザーは新しいバージョンに再起動し、アイドル状態のセッションをバックグラウンドで移動します。動作中、ユーザーの応答を待機中、または接続中のセッションは中断されません。
+* **スーパーバイザー自体が停止した**（たとえば、そのプロセスが Claude Code の外部から終了された場合）：macOS と Linux では、各セッションのプロセスは新しいスーパーバイザーが再接続するのを約 1 分間待ち、再接続されなければ停止します。その 1 分以内にシェルで `claude agents` を実行すると、新しいスーパーバイザーが起動し、セッションの実行が継続されます。先に 1 分が経過した場合、セッションは停止しますが、保存された会話はディスクに残ります。[セッションがシャットダウン後に失敗または停止として表示される](#sessions-show-as-failed-after-shutdown) で説明されているように、セッションに接続するか返信すると、保存された会話からセッションが再起動されます。
 
 セッションのプロセスが停止または再起動されると、Claude が開始したバックグラウンドシェルコマンド、動的ワークフロー、およびバックグラウンドサブエージェントは次のプロセスに引き継がれます。実行中のモニターとサブエージェントが開始したシェルコマンドはプロセスで停止します。セッションを削除すると、引き継がれたすべてのものが停止します。代わりにプロセスで停止させるには、[`CLAUDE_CODE_DISABLE_BG_EXIT_HANDOFF`](/docs/ja/env-vars#variables) を `1` に設定してください。
 
@@ -911,7 +915,7 @@ Claude Code は、エージェントビューに表示されているすべて�
 
 ファイルを直接読み取らずにこの状態を検査するには、`claude daemon status` を実行してください。スーパーバイザーに到達可能かどうか、そのプロセス ID とバージョン、ソケットディレクトリ、およびライブバックグラウンドセッションの数を報告します。
 
-このコマンドは、実行中のスーパーバイザーが呼び出した `claude` とは異なるバージョンにある場合に警告を表示します。これは、スーパーバイザーがまだ再起動していない更新後に発生します。警告は両方のバージョンを表示し、`claude daemon stop --any` を実行して新しいバージョンを取得するよう指示します。Claude Code が OS サービスとしてインストールされている場合、提案されるコマンドはフラグなしの `claude daemon stop` です。
+このコマンドは、実行中のスーパーバイザーが呼び出した `claude` とは異なるバージョンにある場合に警告を表示します。これは、スーパーバイザーがまだ再起動していない更新後に発生します。警告は両方のバージョンを表示し、`claude daemon stop --any` を実行して新しいバージョンを取得するよう指示します。
 
 セッションはそのバージョンの不一致を無傷で生き残ります。セッションの `state.json` を更新する古い Claude Code バージョンは、認識しないフィールドを保持し、セッションをリストに保ちます。`roster.json` のセッションリストも同じルールに従うため、新しいバージョンで開始されたセッションは到達可能なままで、スーパーバイザーが再起動した後も入力を受け付け続けます。
 
@@ -963,7 +967,7 @@ Claude Code は、エージェントビューに表示されているすべて�
 
 マシンをシャットダウンまたは再起動すると、実行中のバックグラウンドセッションが停止します。入力を待機していたセッションは、戻ってきたときに `Needs input` の下に留まります。その他の実行中のセッションについては、エージェントビューが表示する内容は、最後に進捗があってからどのくらい前かによって異なります：
 
-* 48 時間以内の場合、セッションは失敗として表示されます。アタッチまたは返信すると、中断したところから再開します。
+* 48 時間以内の場合、セッションは失敗として表示されます。アタッチまたは返信すると、保存された会話から再開します。中断した作業を再開するには、続行を求める返信を送信してください。
 * 48 時間以上経過した場合（マシンが数日間オフになっていた後など）、セッションは `ended while the background service was off` として停止として表示されます。行で `Enter` を押すと、フッターに `Press enter again to resume this session (it ended while the background service was off), or ctrl+x to delete it.` が表示されます。同じ行で再度 `Enter` を押して、保存された会話を再開します。返信または `claude attach <id>` でそのフッタープロンプトなしで再開します。
 
 [トランスクリプトクリーンアップ](/docs/ja/settings-reference#cleanupperioddays)が停止したセッションの保存された会話を削除した場合、Claude Code は行を開くことを拒否します。メッセージは再開するものがないことを示しています。`claude rm <id>` は行を削除します。ただし、[保持されたケース](#what-deleting-a-session-removes)で説明されている場合を除き、`claude respawn <id>` は元のプロンプトを再度実行します。[このセッションの保存された会話はディスク上にもはやありません](/docs/ja/errors#this-sessions-saved-conversation-is-no-longer-on-disk)を参照してください。
@@ -1022,7 +1026,7 @@ Claude Code は、`Enter` からまたは `claude attach` から実行される[
 claude daemon stop --any --keep-workers
 ```
 
-新しいスーパーバイザーは実行中のセッションに再接続します。`--keep-workers` がない場合、コマンドはバックグラウンドセッションも終了します。`--any` フラグは、デフォルトであるインストール済みサービスではなく、オンデマンドで開始されたスーパーバイザーを停止したいことを確認します。
+次に、シェルで `claude agents` を実行して新しいスーパーバイザーを開始します。停止から[約 1 分](#the-supervisor-process)以内に実行すると、新しいスーパーバイザーはまだ実行中のセッションに再接続し、それらの作業は中断されることなく続行されます。それより時間がかかった場合、macOS と Linux ではその時点でセッションは自動的に停止しており、いずれかにアタッチまたは返信すると、保存された会話からそのセッションが再開されます。`--keep-workers` がない場合、コマンドはバックグラウンドセッションも終了します。`--any` フラグを指定すると、Claude Code がオンデマンドで開始したスーパーバイザーをコマンドで停止できます。
 
 スーパーバイザーが起動しても接続を受け入れることができない場合は、独自に終了してロックを解放するため、次の `claude agents` は手動停止なしで新しいものを開始します。上記の手順は、実行中のスーパーバイザーがスタールしている場合に適用されます。
 
@@ -1040,7 +1044,7 @@ Windows では、スーパーバイザーが停止要求に応答しない場合
 claude daemon stop --any --keep-workers
 ```
 
-次の `claude agents` または `claude --bg` は、保存された認証情報を読み取る新しいスーパーバイザーを開始します。`/login` ではなく `ANTHROPIC_API_KEY` などの環境変数で認証する場合は、変数が設定されているシェルからその次のコマンドを実行してください。
+[約 1 分](#the-supervisor-process)以内に、シェルで `claude agents` または `claude --bg` を実行して、保存された認証情報を読み取る新しいスーパーバイザーを開始します。`/login` ではなく `ANTHROPIC_API_KEY` などの環境変数で認証する場合は、変数が設定されているシェルからその次のコマンドを実行してください。
 
 原因と修正の完全なリストについては、[エラーリファレンス](/docs/ja/errors#could-not-resolve-authentication-method)を参照してください。
 

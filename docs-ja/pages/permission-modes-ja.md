@@ -22,7 +22,7 @@ Claude Code v2.1.283 以降では、auto モードはインタラクティブタ
 | [`acceptEdits`](#auto-approve-file-edits-with-acceptedits-mode) | 読み取り、ファイル編集、一般的なファイルシステム コマンド（`mkdir`、`touch`、`mv`、`cp` など） | 確認中のコードを反復処理する |
 | [`plan`](#analyze-before-you-edit-with-plan-mode) | 読み取り、および [auto モード](#eliminate-prompts-with-auto-mode) が利用可能な場合の分類器承認コマンド | コードベースを変更する前に探索する |
 | [`auto`](#eliminate-prompts-with-auto-mode) | すべて、バックグラウンド安全性チェック付き | 長いタスク、プロンプト疲労の軽減 |
-| [`dontAsk`](#allow-only-pre-approved-tools-with-dontask-mode) | 読み取りと事前承認ツール。プロンプトが表示されるものはすべて拒否 | ロックダウン CI とスクリプト |
+| [`dontAsk`](#allow-only-pre-approved-tools-with-dontask-mode) | 作業ディレクトリ内のファイル読み取りと事前承認済みツール。プロンプトが表示されるものはすべて拒否 | ロックダウン CI とスクリプト |
 | [`bypassPermissions`](#skip-all-checks-with-bypasspermissions-mode) | すべて | 分離されたコンテナと VM のみ |
 
 すべてのアクションを確認するモードは、CLI、`claude --help`、VS Code および JetBrains 拡張機能、デスクトップアプリでは **Manual** という名前です。その設定値は `default` で、フックと SDK 統合ではこの値が使用されます。CLI は、値を入力するあらゆる場所で `manual` をエイリアスとして受け付けます。例えば `claude --permission-mode manual` や `"defaultMode": "manual"` のように指定できます。
@@ -466,7 +466,7 @@ Claude Code v2.1.261 以降では、以下もデフォルトでブロックさ�
   作業ディレクトリ外の最初の読み取り
 </h3>
 
-[`permissions.blockReadsOutsideWorkingDirectories`](/docs/ja/settings-reference#permissions-blockreadsoutsideworkingdirectories) がオフの間、auto モードでは[作業ディレクトリ](/docs/ja/permissions#working-directories)外の読み取りを含め、ファイルの読み取りはプロンプトなしで実行されます。Claude が作業ディレクトリ外のパスに対して Read、Grep、または Glob ツールを初めて使用するとき、Claude Code はその読み取りを許可するかどうかを尋ねます。
+[`permissions.blockReadsOutsideWorkingDirectories`](/docs/ja/settings-reference#permissions-blockreadsoutsideworkingdirectories) がオフの間、auto モードでは、[ネットワークパスからの読み取り](/docs/ja/permissions#network-paths)以外のファイルの読み取りは、[作業ディレクトリ](/docs/ja/permissions#working-directories)外の読み取りを含め、プロンプトなしで実行されます。Claude が作業ディレクトリ外のパスに対して Read、Grep、または Glob ツールを初めて使用するとき、Claude Code はその読み取りを許可するかどうかを尋ねます。
 
 このプロンプトは、非インタラクティブな `-p` 実行やバックグラウンドセッションでは表示されず、そこでの読み取りは従来どおり実行されます。
 
@@ -530,16 +530,18 @@ auto モードがセッションのアクションを承認できない場合、
     各アクションは決まった決定順序で処理され、最初に該当したステップが適用されます。
 
     1. [allow、ask、または deny ルール](/docs/ja/permissions#manage-permissions)に一致するアクションは直ちに解決されます。ただし、以下の例外があります。
-       * [保護されたパス](#protected-paths)への書き込みは、allow ルールに一致する場合でも分類器に回されます
+       * [保護されたパス](#protected-paths)への書き込みは、allow ルールに一致する場合でも分類器に回されます。保護されたパスが、シンボリックリンクされた設定ファイルの参照先のファイルである場合は、[保護されたパス](#protected-paths)のリストで説明されているとおり、代わりにその書き込みでプロンプトが表示されることがあります
        * [重要なパス](#critical-paths)を対象とする `rm` および `rmdir` による削除は、どの allow ルールでも承認されません
        * [`requiresUserInteraction`](/docs/ja/mcp#require-approval-for-a-specific-tool) が指定された MCP ツールは、allow ルールに一致する場合でも直接プロンプトを表示します。その設定が Claude Code に届くセッションでは、[組織が `ask` に設定した](/docs/ja/mcp#organization-controls-on-connector-tools)コネクタツールも同様です
        * [コマンドごとの許可ドメイン](/docs/ja/sandboxing#per-command-allowed-domains-in-auto-mode)を含むシェルコマンドも、allow ルールに一致する場合でも分類器に回されます。ルールが承認するのはコマンドであって、そのホストではないためです
        * `Bash(git push *)` のように、コマンドの内容にマッチする ask ルールは、権限プロンプトにフォールバックします
        * Claude が要求したパス自体は保護されていないものの、[シンボリックリンクのチェック](/docs/ja/permissions#symlinks)によって保護されたパスに解決される書き込みは、プロンプトを表示します
+       * [ネットワークパス](/docs/ja/permissions#network-paths)からの読み取りは、allow ルールに一致する場合でもプロンプトを表示します
     2. 作業ディレクトリ内での読み取り専用アクションとファイル編集は自動承認されます。ただし、[保護されたパス](#protected-paths)への書き込みと、プロンプトを表示する[作業ディレクトリ外の最初の読み取り](#first-read-outside-the-working-directories)は除きます
        * [サーバー側の分類器レビュー](#server-side-classifier-review)が有効なセッションでは、読み取り専用のシェルコマンドと[サンドボックス化された](/docs/ja/sandboxing#sandbox-modes)シェルコマンドはそのレビューを待ち、レビューで指摘された場合はブロックされます
        * 作業ディレクトリ内への書き込みのうち、[シンボリックリンクのチェック](/docs/ja/permissions#symlinks)によって作業ディレクトリ外の場所に解決されるものは、プロンプトを表示します
        * Claude が[他の人が作成したアーティファクト](/docs/ja/artifacts#read-an-artifact-shared-with-you)を読み取る場合は、そのセクションに記載されている承認のケースが適用されます
+       * [ネットワークパス](/docs/ja/permissions#network-paths)からの読み取りは、プロンプトを表示します
     3. それ以外のすべては分類器に回されます。ただし、デフォルトの処理が適用される[重要なパスの削除](#critical-paths)は除きます。ステップ 1 で直接プロンプトを表示するコネクタツールと `requiresUserInteraction` の MCP ツールも分類器には到達しないため、組織が求める承認も同意の手順も自動承認されることはありません
     4. 分類器がブロックした場合、Claude はその理由を受け取ります。ほとんどのセッションでは、理由は文章による説明ではなく、`[Data Exfiltration]` のように分類器が該当させたルールの名前です。[拒否をレビューする](/docs/ja/auto-mode-config#review-denials)を参照してください
 
@@ -593,7 +595,7 @@ auto モードがセッションのアクションを承認できない場合、
 
 Claude Code は、プロンプトを表示する代わりに、明示的な[`ask` ルール](/docs/ja/permissions#manage-permissions)に一致するコールを拒否します。また、allow ルールが一致する場合でも組み込みの `AskUserQuestion` ツールを拒否し、その設定が Claude Code に到達するセッションで[組織が `ask` に設定したコネクタツール](/docs/ja/mcp#organization-controls-on-connector-tools)についても同じことを行います。[`_meta["anthropic/requiresUserInteraction"]`](/docs/ja/mcp#require-approval-for-a-specific-tool)でマークされた MCP ツールも同じ方法で拒否します。これは、承認カードがこのモードが収集しない回答を必要とするためです。
 
-[重要なパス](#critical-paths)（`rm -rf /` や `rm -rf ~` など）を対象とした `rm` および `rmdir` の削除は、allow ルールが一致する場合や `PreToolUse` フックが許可する場合でも拒否されます。
+[重要なパス](#critical-paths)（`rm -rf /` や `rm -rf ~` など）を対象とした `rm` および `rmdir` の削除は、allow ルールが一致する場合や `PreToolUse` フックが許可する場合でも拒否されます。[ネットワークパス](/docs/ja/permissions#network-paths)からの読み取りも同様に拒否されます。
 
 [Claude Code on the web](/docs/ja/claude-code-on-the-web) のクラウドセッションは `defaultMode: "dontAsk"` を無視します。詳細は[bypassPermissions](#skip-all-checks-with-bypasspermissions-mode)を参照してください。
 
@@ -639,7 +641,10 @@ Claude Code は [`--restricted`](/docs/ja/cli-reference#cli-flags) で開始し�
 * **受け入れた場合**: Claude Code は `skipDangerousModePermissionPrompt` を `~/.claude/settings.json` の `true` に設定するため、後のセッションではダイアログをスキップします。ダイアログを再度表示するには、そのファイルからキーを削除するか、`false` に設定してください。[`skipDangerousModePermissionPrompt` リファレンス](/docs/ja/settings-reference#skipdangerousmodepermissionprompt)には、ユーザーまたは組織が設定できる他の設定ファイルが記載されています。
 * **拒否した場合**: Claude Code は終了します。
 
-[非インタラクティブモード](/docs/ja/headless)ではダイアログは表示されず、`--bg` で開始した[バックグラウンドセッション](/docs/ja/agent-view)はインタラクティブセッションでダイアログを受け入れるまで拒否されます。
+[非対話モード](/docs/ja/headless)ではダイアログは表示されません。[バックグラウンドセッション](/docs/ja/agent-view)は、ユーザー設定または管理設定に受け入れが記録されている場合、その受け入れを尊重します。
+
+* 受け入れが記録されていない場合、`claude --bg --permission-mode bypassPermissions` は対話セッションでダイアログを受け入れるまで拒否されます。
+* `skipDangerousModePermissionPrompt` が `.claude/settings.local.json` でのみ設定されている場合、バックグラウンドセッションはバイパスのリクエストを無視した状態で開始し、通知 `Bypass permissions was requested at launch and ignored · if that was you, ~/.claude/settings.json needs "skipDangerousModePermissionPrompt": true` をピン留めします。バイパスを有効にするには、そのキーを `~/.claude/settings.json` に追加してから、新しいバックグラウンドセッションを開始してください。
 
 Linux と macOS では、Claude Code はこのモードで root として、または `sudo` の下で実行されている場合、起動を拒否します。
 
@@ -708,6 +713,7 @@ Linux と macOS では、Claude Code はこのモードで root として、ま�
 * `.devcontainer.json`
 * `.ripgreprc`、`pyrightconfig.json`
 * `.mcp.json`、`.claude.json`
+* ユーザー、プロジェクト、またはローカルの[設定ファイル](/docs/ja/settings#settings-files-and-who-they-affect)自体がシンボリックリンクである場合に、その設定ファイルが指し示すファイル（たとえば dotfiles リポジトリ内のファイル）。保護されたパスへの書き込みを分類器にルーティングするモードでは、このファイルへの書き込みは、許可ルールに一致する場合でも、代わりにプロンプトを表示します。このファイル自体のパスが別のフォルダの `.claude/settings.json` など設定ファイルのパスでもある場合、その書き込みは他の保護されたパスへの書き込みと同様に分類器に送られます
 
 <h2 id="critical-paths">
   重要なパス
@@ -727,10 +733,12 @@ Claude Code は、`rm` または `rmdir` ターゲットが以下のいずれか
 
 * ファイルシステムのルート
 * トップレベルディレクトリ、つまりルートの直接の子である `/usr`、`/etc`、`/data` などのディレクトリ
-* ホームディレクトリ
-* Windows ドライブルートとそのトップレベルディレクトリ（`C:\` や `C:\Windows` など）
+* ホームディレクトリ。Windows では、`C:\Users\LONGNA~1` のような 8.3 形式の短い名前も含まれます
+* Windows ドライブルートとそのトップレベルディレクトリ（`C:\` や `C:\Windows` など）。`\\?\C:\` や `\\localhost\C$` のような表記も `C:\` として扱われます
 * 作業ディレクトリとその親
 * 追加の作業ディレクトリとその親。ただし、削除が `rm -rf <dir>/*` のようにそれらの下のグロブである場合のみ。ディレクトリ自体に対する `rm -rf <dir>` はこのチェックをトリガーしません
+
+ホームディレクトリの 8.3 形式の短い名前、および `\\?\C:\` と `\\localhost\C$` の表記に対するチェックには Claude Code v2.1.292 以降が必要です。
 
 <h3 id="other-targets-that-count-as-critical-paths">
   重要なパスとしてカウントされるその他のターゲット
@@ -747,6 +755,7 @@ Claude Code は、以下の `rm` および `rmdir` ターゲットも重要な�
 | コマンド置換の出力のみであるターゲット。`rm` が再帰的な場合 | `rm -rf "$(pwd)"` | Claude Code はコマンドが実行される前にターゲットをチェックできません |
 | 重要なパスの後に続く末尾のコマンド置換 | `rm -rf ~/$(cmd)` | Claude Code は、置換が空に展開された場合に残るパス（この例ではホームディレクトリ）をチェックします |
 | バックスラッシュのみであるターゲット | `rm -rf "\\"` | Windows 上の Git Bash は単一のバックスラッシュを現在のドライブのルートとして読み取るため、チェックはすべてのプラットフォームで適用されます |
+| ドライブ文字の代わりに GUID でボリュームを指定する Windows パス | `rm -rf '\\?\Volume{GUID}\work\build'` | パスからはどのドライブ上にあるかがわからないため、重要なパスである可能性があります。Claude Code v2.1.292 以降が必要です |
 | 末尾が `/*` または `/*/` である一部のターゲット | `rm -rf logs/*/*`、`rm -rf logs/*/`、`cd logs && rm -rf a/*` | Claude Code は、コマンドが実行される前に、それらがどのディレクトリに及ぶかを判断できません |
 
 コマンド置換の出力のみであるターゲットのチェックをオフにするには、Claude Code を起動する環境で [`CLAUDE_CODE_DISABLE_SUBSTITUTION_RM_PROMPT=1`](/docs/ja/env-vars#variables) を設定します。

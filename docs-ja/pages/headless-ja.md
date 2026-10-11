@@ -329,7 +329,7 @@ Claude Code は起動時に各 `--mcp-config` エントリを検証し、検証�
   ツールを自動承認する
 </h3>
 
-`--allowedTools` を使用して、Claude が特定のツールを確認なしで使用できるようにします。`Read` と `Edit` を指定すると、Claude は権限を求めずにファイルを読み取り、編集できます。`Bash` を指定すると、シェルコマンドについても同様になります。ただし、[auto モード](/docs/ja/permission-modes#how-auto-mode-evaluates-actions)で開始される実行では、Claude Code は単独の `Bash` エントリを広すぎる許可ルールとして除外し、代わりに auto モードが各コマンドを評価します。この例は、これら 3 つのツールを指定してテストスイートを実行し、失敗を修正します。
+`--allowedTools` を使用して、Claude が特定のツールを確認なしで使用できるようにします。`Read` と `Edit` を指定すると、Claude は権限を求めずにファイルを読み取り、編集できます（[ネットワークパス](/docs/ja/permissions#network-paths)からの読み取りを除く）。`Bash` を指定すると、シェルコマンドについても同様になります。ただし、[auto モード](/docs/ja/permission-modes#how-auto-mode-evaluates-actions)で開始される実行では、Claude Code は単独の `Bash` エントリを広すぎる許可ルールとして除外し、代わりに auto モードが各コマンドを評価します。この例は、これら 3 つのツールを指定してテストスイートを実行し、失敗を修正します。
 
 ```bash theme={null}
 claude -p "Run the test suite and fix any failures" \
@@ -339,7 +339,7 @@ claude -p "Run the test suite and fix any failures" \
 個別のツールを指定する代わりにセッション全体のベースラインを設定するには、[権限モード](/docs/ja/permission-modes)を渡します。何も権限モードを設定しない実行は、[組み込みの開始時の権限モード](/docs/ja/permission-modes#which-mode-a-session-starts-in)になり、これは `auto` の場合があるため、使用したいモードを渡してください。
 
 * **`auto`**：`--permission-mode auto` を渡すと、ユーザーに代わって分類器がほとんどのアクションをレビューします
-* **`dontAsk`**：Claude Code は、本来なら確認を求めるすべての呼び出しを拒否します。これは制限された CI 実行に役立ちます。Manual モードで承認が不要なアクション（作業ディレクトリでのファイル読み取りや[読み取り専用コマンドセット](/docs/ja/permissions#read-only-commands)など）は引き続き実行され、`--allowedTools` エントリまたは `permissions.allow` ルールがカバーするアクションも実行されます。`AskUserQuestion`、[組織が `ask` に設定したコネクタツール](/docs/ja/mcp#organization-controls-on-connector-tools)、および [`requiresUserInteraction`](/docs/ja/mcp#require-approval-for-a-specific-tool) とマークされた MCP ツールは、許可ルールが一致する場合でも拒否されます
+* **`dontAsk`**：Claude Code は、本来なら確認を求めるすべての呼び出しを拒否します。これは制限された CI 実行に役立ちます。Manual モードで承認が不要なアクション（作業ディレクトリでのファイル読み取りや[読み取り専用コマンドセット](/docs/ja/permissions#read-only-commands)など）は引き続き実行され、`--allowedTools` エントリまたは `permissions.allow` ルールがカバーするアクションも実行されます。`AskUserQuestion`、[組織が `ask` に設定したコネクタツール](/docs/ja/mcp#organization-controls-on-connector-tools)、[`requiresUserInteraction`](/docs/ja/mcp#require-approval-for-a-specific-tool) とマークされた MCP ツール、および[ネットワークパスからの読み取り](/docs/ja/permissions#network-paths)は、許可ルールが一致する場合でも拒否されます
 * **`acceptEdits`**：Claude は確認なしでファイルを書き込み、Claude Code は `mkdir`、`touch`、`mv`、`cp` などの一般的なファイルシステムコマンドを自動承認します。[どのモードでも自動承認されないアクション](/docs/ja/permission-modes#actions-no-mode-auto-approves)は引き続き適用されます。読み取り専用コマンドセットを除き、その他のシェルコマンドとネットワークリクエストには引き続き `--allowedTools` エントリまたは `permissions.allow` ルールが必要です。完全なリストについては [`acceptEdits` が自動承認する内容](/docs/ja/permission-modes#auto-approve-file-edits-with-acceptedits-mode)を参照してください
 
 この例は `acceptEdits` をベースラインとしてリント修正を適用します。
@@ -413,7 +413,7 @@ gh pr diff "$1" | claude -p \
   会話を続ける
 </h3>
 
-`--continue` を使用して最新の会話を続けるか、`--resume` をセッション ID と共に使用して特定の会話を続けます。Claude Code v2.1.257 以降では、`--continue` を渡すと、Claude Code は終了済みの[バックグラウンドセッション](/docs/ja/sessions#resume-a-session)は開きますが、まだ実行中のものは開きません。この例はレビューを実行してから、フォローアップのプロンプトを送信します。
+`--continue` を使用して最新の会話を続けるか、`--resume` をセッション ID と共に使用して特定の会話を続けます。Claude Code v2.1.257 以降では、`--continue` を渡すと、Claude Code は終了済みの[バックグラウンドセッション](/docs/ja/sessions#where-the-session-picker-looks)は開きますが、まだ実行中のものは開きません。この例はレビューを実行してから、フォローアップのプロンプトを送信します。
 
 ```bash theme={null}
 # First request
@@ -431,7 +431,7 @@ session_id=$(claude -p "Start a review" --output-format json | jq -r '.session_i
 claude -p "Continue that review" --resume "$session_id"
 ```
 
-2 つのコマンドは異なるディレクトリから実行できます。Claude Code はこのマシン上の任意のプロジェクトから[ID でセッションを検索します](/docs/ja/sessions#resume-a-session)。v2.1.223 より前では、Claude Code は現在のプロジェクトディレクトリとその git worktree でのみ ID を探していたため、両方のコマンドを同じディレクトリから実行する必要がありました。
+2 つのコマンドは異なるディレクトリから実行できます。Claude Code はこのマシン上の任意のプロジェクトから[ID でセッションを検索します](/docs/ja/sessions#where-the-session-picker-looks)。
 
 セッション ID の代わりに、`--resume` にセッションの `.jsonl` [トランスクリプトファイル](/docs/ja/sessions#where-transcripts-are-stored)への絶対パスを渡すこともでき、Claude Code はそのファイルに保存されている会話を続けます。
 

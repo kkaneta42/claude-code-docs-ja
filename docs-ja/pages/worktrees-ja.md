@@ -268,7 +268,9 @@ worktree は独自のファイルとブランチを持ちますが、以下を�
 
   同じ読み取りの引き継ぎは `.claude/agents` と `.claude/commands` にも適用されます。スキルについては、この引き継ぎには Claude Code v2.1.277 以降が必要です。
 
-これらはすべて、worktree を `--worktree` で作成した場合も、`git worktree add` で作成した場合も、[デスクトップアプリ](/docs/ja/desktop#work-in-parallel-with-sessions)を通じて作成した場合も適用されます。
+これらはすべて、worktree を `--worktree` で作成した場合も、`git worktree add` で作成した場合も適用されます。
+
+[デスクトップアプリ](/docs/ja/desktop#work-in-parallel-with-sessions)から開始した worktree セッションでは、Claude Code は設定、フック、スキル、エージェント、コマンド、[`.mcp.json`](/docs/ja/mcp#project-scope) サーバーなどのプロジェクト設定を、worktree からではなくメインチェックアウトのルートから読み込みます。フックのコマンドはそのルートで実行され、`${CLAUDE_PROJECT_DIR}` はそのルートを指します。Claude が作業しているファイルにアクセスするには、フックの [`cwd` 入力フィールド](/docs/ja/hooks#common-input-fields)から worktree のパスを読み取ってください。`CLAUDE.md` ファイルと `.claude/rules/` は引き続き worktree から読み込まれます。
 
 <h2 id="manage-worktrees-manually">
   worktree を手動で管理する

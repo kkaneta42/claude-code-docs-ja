@@ -36,7 +36,7 @@ Claude Code は、パワーと安全性のバランスを取るために、段�
 
 v2.1.211 より前では、Claude Code は常にルールを開始ディレクトリに保存していたため、worktree またはサブディレクトリで付与された承認はリポジトリの残りの部分に適用されませんでした。以前のバージョンがサブディレクトリまたは worktree に保存したルールは、そこで開始されたセッションに引き続き適用されます。
 
-場合によっては、権限プロンプトは 1 回限りの承認のみを提供し、「今後は聞かない」オプションもセッションの残りの部分のアクションを許可するオプションもありません。Claude Code はプロンプトがそれらが許可するすべてのものをあなたに表示できる場合にのみ、これらのオプションを提供するため、プロンプトから保存するルールは、その名前のオプションが許可するものだけをカバーします。プロンプトが 1 回限りの承認のみを提供する場合、アクションを 1 回承認するか、[`/permissions`](#manage-permissions)でルール自体を追加してください。
+場合によっては、権限プロンプトは 1 回限りの承認のみを提供し、「今後は聞かない」オプションもセッションの残りの部分のアクションを許可するオプションもありません。Claude Code はプロンプトがそれらが許可するすべてのものを表示できる場合にのみ、これらのオプションを提供するため、プロンプトから保存するルールは、その名前のオプションが許可するものだけをカバーします。プロンプトが 1 回限りの承認のみを提供する場合、アクションを 1 回承認するか、[`/permissions`](#manage-permissions)でルール自体を追加してください。`watch` などの exec ラッパーで始まるコマンドや、`-delete` などのアクションを含む `find` コマンドのプロンプトを表示しないようにするには、[exec ラッパーと `find` アクション](#exec-wrappers-and-find-actions)を参照してください。
 
 <h3 id="add-a-comment-when-you-answer-a-permission-prompt">
   権限プロンプトに回答するときにコメントを追加する
@@ -91,7 +91,7 @@ Claude Code は、ツール呼び出しの承認方法を制御するいくつ�
 | `acceptEdits` | ファイル編集と一般的なファイルシステムコマンド（`mkdir`、`touch`、`mv`、`cp` など）を、作業ディレクトリまたは `additionalDirectories` 内のパスに対して自動的に受け入れます |
 | `plan` | Claude はファイルを読み取り、読み取り専用シェルコマンドを実行して探索しますが、ソースファイルを編集しません。[auto モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)が利用可能で、分類器が承認したコマンドも実行されます。CLI および VS Code 拡張機能では Plan とラベル付けされています |
 | `auto` | ルーチンプロンプトなしで実行されます。シェルコマンドやネットワークリクエストなどのアクションが実行される前に、バックグラウンド[分類器](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)がそれらがリクエストと一致することを確認します |
-| `dontAsk` | その他の場合はプロンプトを表示するすべての呼び出しを自動的に拒否します。作業ディレクトリ内のファイル読み取りおよび承認が不要なその他のアクションは実行されます。`/permissions` または `permissions.allow` ルール経由で事前に承認されたツールも実行されます。`AskUserQuestion`、MCP ツール（[`requiresUserInteraction`](/docs/ja/mcp#require-approval-for-a-specific-tool)とマークされたもの）、およびコネクタツール（[組織が `ask` に設定したもの](/docs/ja/mcp#organization-controls-on-connector-tools)）は、その設定が Claude Code に到達するセッションでは、許可していてもすべて拒否されます |
+| `dontAsk` | その他の場合はプロンプトを表示するすべての呼び出しを自動的に拒否します。作業ディレクトリ内のファイル読み取りおよび承認が不要なその他のアクションは実行されます。`/permissions` または `permissions.allow` ルール経由で事前に承認されたツールも実行されます。`AskUserQuestion`、MCP ツール（[`requiresUserInteraction`](/docs/ja/mcp#require-approval-for-a-specific-tool)とマークされたもの）、[ネットワークパスからの読み取り](#network-paths)、およびコネクタツール（[組織が `ask` に設定したもの](/docs/ja/mcp#organization-controls-on-connector-tools)）は、その設定が Claude Code に到達するセッションでは、許可していてもすべて拒否されます |
 | `bypassPermissions` | 権限プロンプトをスキップします。ただし、[どのモードも自動承認しないアクション](/docs/ja/permission-modes#actions-no-mode-auto-approves)は除きます |
 
 <Warning>
@@ -240,7 +240,7 @@ Claude が質問なしで実行するコマンドを記述し、変わる部分�
   Bash
 </h3>
 
-Bash 権限ルールはコマンド全体をマッチさせ、`*` は任意のテキストを表します。[ワイルドカードパターン](#wildcard-patterns)は各ルール形状がマッチするコマンドと `*` の配置場所を示しています。このセクションの残りは、Claude Code が複合コマンドとラッパーをどのようにマッチさせるか、ルールがマッチしないもの、読み取り専用コマンド、およびリダイレクションについて説明しています。
+Bash 権限ルールはコマンド全体をマッチさせ、`*` は任意のテキストを表します。[ワイルドカードパターン](#wildcard-patterns)は各ルール形状がマッチするコマンドと `*` の配置場所を示しています。このセクションの残りでは、Claude Code が複合コマンドとラッパーをどのようにマッチさせるか、プレフィックスルールで承認できないラッパーと `find` アクション、ルールがマッチしないもの、読み取り専用コマンド、およびリダイレクションについて説明します。
 
 <h4 id="compound-commands">
   複合コマンド
@@ -268,7 +268,18 @@ Claude Code はまた、既知の安全な環境変数の先頭の割り当て�
 
 このラッパーリストは組み込まれており、設定不可能です。`direnv exec`、`devbox run`、`mise exec`、`npx`、`docker exec` などの開発環境ランナーはリストに含まれていません。これらのツールは引数をコマンドとして実行するため、`Bash(devbox run *)` のようなルールは `run` の後に続くものをマッチさせます。これには `devbox run rm -rf .` が含まれます。環境ランナー内での作業を承認するには、ランナーと内部コマンドの両方を含む特定のルールを記述します。例えば `Bash(devbox run npm test)`。許可する内部コマンドごとに 1 つのルールを追加します。
 
-`watch`、`setsid`、`ionice`、`flock` などの Exec ラッパーは、`Bash(watch *)` のようなプレフィックスルールで自動承認することはできず、Manual モードでは常にプロンプトを表示します。同じことが `-exec` または `-delete` を使用する `find` にも適用されます。`Bash(find *)` ルールはこれらの形式をカバーしません。特定の呼び出しを承認するには、完全なコマンド文字列の正確一致ルールを記述します。
+<h4 id="exec-wrappers-and-find-actions">
+  Exec ラッパーと `find` アクション
+</h4>
+
+`Bash(watch *)` や `Bash(find *)` のようなプレフィックスルールは次のコマンドを自動承認できないため、Manual モードではプロンプトが表示されます。
+
+* **Exec ラッパー**：`watch`、`setsid`、`ionice`、`flock` など
+* **`find`**：`-exec`、`-delete`、`-fprint` など、コマンドを実行する、ファイルを削除する、またはファイルを書き込むアクションを伴う場合、または検索対象のパスをファイルから受け取る `-files0-from` を伴う場合
+
+`*` を含まない特定の呼び出しを承認するには、`Bash(find build -type f -delete)` のように、完全なコマンド文字列に対する完全一致ルールを記述します。
+
+`find . -name '*.tmp' -delete` のようにコマンドに `*` が含まれる場合、Claude Code はルールを完全一致ではなく[ワイルドカードパターン](#wildcard-patterns)として読み取るため、コマンドは引き続きプロンプトを表示します。プロンプトが表示されるたびに承認するか、そのコマンドに対して `"allow"` を返す [PreToolUse フック](/docs/ja/hooks#pretooluse-decision-control)を使用してください。
 
 <h4 id="bash-rule-limits">
   Bash ルールがマッチしないもの
@@ -301,6 +312,7 @@ Manual モードでは、このセットのコマンドは以下の場合にも�
 * **書き込み可能なフラグを持つコマンドの引用符なしグロブ**：`find`、`sort`、`sed`、`git` などの書き込み可能または実行可能なフラグを持つコマンドは、グロブが `-delete` のようなフラグに展開される可能性があるため、引用符なしのグロブが存在する場合にプロンプトを表示します。
 * **別のデーモンを指す `docker`**：読み取り専用形式の `docker` は、`-H`、`--context`、または Podman の `--url` と `--connection` などの異なるデーモンを選択するフラグを持つコマンドでプロンプトを表示します。
 * **パス開放フラグを持つ `file`**：`file` は `-m`/`--magic-file` または `-f`/`--files-from` を渡す場合にプロンプトを表示します。これらのフラグにより、`file` はフラグの値で指定されたパスを開くためです。
+* **環境変数を出力する可能性のある `ps`**：`ps auxe` や `ps aux -e` のように、引数のいずれかが `e` オプションとして機能する可能性がある場合、`ps` はプロンプトを表示します。このオプションはプロセスの環境変数を出力するためです。`ps aux` と `ps -ef` はプロンプトなしで実行されます。`ps aux -e` のようなダッシュ付き形式のチェックには Claude Code v2.1.290 以降が必要です。
 * **Windows 上のネットワークパス**：`\\server\share\file` などのネットワーク（UNC）パスを含む引数を持つコマンドは、ネットワークパスへのアクセスが Windows 認証情報をそれが指すホストに送信する可能性があるため、プロンプトを表示します。同じチェックが [PowerShell ツール](/docs/ja/tools-reference#powershell-tool)コマンドに適用されます。
 * **特殊シェル変数への書き込み**：`PATH` または `IFS` などの特定の特殊シェル変数を設定、設定解除、またはループするコマンドは、コマンドの残りが読み取り専用であっても、プロンプトを表示します。
 * **解析できないコマンド**：Claude Code がコマンドを完全に解析できない場合、読み取り専用として扱う代わりに承認を求めます。10,000 文字を超えるコマンドは、解析が超過するため常にプロンプトを表示します。
@@ -377,7 +389,7 @@ Claude のファイルツールがファイルまたはディレクトリを読�
 Claude Code は `Edit(path)` と `Read(path)` ルールに対してのみファイル権限をチェックします。代わりに `Write`、`NotebookEdit`、`Glob`、またはレガシー `MultiEdit` ツール用にパスルールを記述する場合、Claude Code はルールを受け入れますが、それを参照することはなく、[起動時に警告](/docs/ja/errors#is-not-matched-by-file-permission-checks)を表示します。ただし、`--allowedTools` で渡された `Glob` ルールは除きます。`Write(docs/**)`、`NotebookEdit(docs/**)`、または `MultiEdit(docs/**)` の代わりに `Edit(docs/**)` を使用し、`Glob(docs/**)` の代わりに `Read(docs/**)` を使用してください。Claude Code は `Write` の deny ルールなど、パスのないツール名ルールについては警告しません。それはどこでもツールレベルでそのルールをマッチさせます。v2.1.210 以降が必要です。
 
 <Warning>
-  Read と Edit deny ルールは Claude の組み込みファイルツール、`cat`、`head`、`tail`、`sed` などの Claude Code が認識する Bash ファイルコマンド、および `> file` と `< file` などの Bash [リダイレクション](#redirections)のターゲットに適用されます。これらは、そのファイルがあるディレクトリから実行する `grep -r pattern .` のような、ファイルを名前で指定せずに読み取るコマンドや、Python または Node スクリプトがファイルを自分で開くような、ファイルを間接的に読み書きする任意のサブプロセスには適用されません。パスへのすべてのプロセスのアクセスをブロックする OS レベルの強制については、[サンドボックスを有効にしてください](/docs/ja/sandboxing)。
+  Read と Edit deny ルールは Claude の組み込みファイルツール、`cat`、`head`、`tail`、`sed`、`tee` などの Claude Code が認識する Bash ファイルコマンド、および `> file` と `< file` などの Bash [リダイレクション](#redirections)のターゲットに適用されます。これらは、そのファイルがあるディレクトリから実行する `grep -r pattern .` のような、ファイルを名前で指定せずに読み取るコマンドや、Python または Node スクリプトがファイルを自分で開くような、ファイルを間接的に読み書きする任意のサブプロセスには適用されません。パスへのすべてのプロセスのアクセスをブロックする OS レベルの強制については、[サンドボックスを有効にしてください](/docs/ja/sandboxing)。
 </Warning>
 
 Read と Edit ルールの両方は、[gitignore](https://git-scm.com/docs/gitignore)パターン構文を使用し、4 つの異なるパターンタイプがあります。単一セグメントディレクトリパターンの場合、マッチング深度はルールタイプにも依存し、このセクションの後半で説明されています。
@@ -508,25 +520,44 @@ Claude Code がディスク上のパスがどこに導くかを判定できな�
 
 ツールが承認されたファイルを開くとき、[パスが権限チェックが承認した場所にまだ解決されることを確認](/docs/ja/errors#refusing-after-a-symlink-changed)。
 
+<h4 id="network-paths">
+  ネットワークパス
+</h4>
+
+Read、Grep、Glob などの Claude のファイル読み取りツールがネットワークパスから読み取る場合、その読み取りには専用の権限チェックが行われます。ネットワークパスとは別のコンピューターに到達し得るパスのことで、Windows では `\\server\share\file` のような UNC パス、macOS と Linux では `/net/fileserver/notes.txt` のような `/net` 自動マウントパスを指します。このようなパスを参照すると、そのパスが指すホストと通信する場合があり、Windows ではその通信によって認証情報がホストに送信される可能性があります。シェルコマンドには独自のチェックがあります。Manual モードでは、引数に UNC パスを含む読み取り専用の Bash または PowerShell コマンドは [Windows では引き続きプロンプトを表示します](#read-only-commands)。
+
+Claude Code v2.1.292 以降では、次のいずれもプロンプトを省略しません。
+
+* **Allow ルール**：`Read` のようなツール全体に対するルールを含め、ルールは読み取りを事前承認しません
+* **PreToolUse フック**：`"allow"` を返す[フック](#extend-permissions-with-hooks)はプロンプトをスキップしません
+* **auto モード**：プロンプトはユーザーに表示され、[分類器](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)は読み取りを判定しません
+
+`dontAsk` モードでは、Claude Code はプロンプトを表示する代わりに読み取りを拒否します。`bypassPermissions` モード、および [bypass permissions](/docs/ja/permission-modes#skip-all-checks-with-bypasspermissions-mode) が利用可能な plan モードの対話型ターミナルセッションでは、このプロンプトなしで読み取りが実行されます。
+
+このプロンプトなしでネットワーク共有上のファイルを読み取るには、まず共有にローカルパスを割り当てます。
+
+* **Windows**：[作業ディレクトリ](#working-directories)で説明されているように、共有をドライブ文字にマップし、Claude Code の起動時に `--add-dir` でそのドライブを渡します
+* **macOS と Linux**：[作業ディレクトリがネットワークパスである場合](/docs/ja/errors#working-directory-is-a-network-path)で説明されているように、`/mnt` や `/Volumes` 配下のディレクトリなどのローカルパスに共有をマウントし、そこからファイルを読み取ります
+
 <h3 id="webfetch">
   WebFetch
 </h3>
 
 WebFetch ルールは `domain:` プレフィックスを使用し、リクエストされた URL のホスト名に対してマッチします。マッチングは大文字と小文字を区別せず、`*` ワイルドカードをサポートし、ルールとホスト名の両方から末尾の `.` をストリップするため、`example.com.` と `example.com` は同じものとして扱われます。
 
-* `WebFetch(domain:example.com)` は `example.com` へのリクエストをマッチさせます
+* `WebFetch(domain:example.com)` は `example.com` へのリクエストのみをマッチさせます。`api.example.com` などのサブドメインもカバーするには、`WebFetch(domain:*.example.com)` ルールを追加します
 * `WebFetch(domain:*.example.com)` は `api.example.com` や `a.b.example.com` などの任意の深さのサブドメインをマッチさせますが、`example.com` 自体はマッチさせません
 * `WebFetch(domain:*)` はすべてのドメインをマッチさせます。ベア `WebFetch` ルールと同じではありません。[すべてのフェッチを許可または拒否](#allow-or-deny-every-fetch)を参照してください
 
 先頭の `*.` またはベア `*` 以外の任意の位置では、ワイルドカードは 2 つのドット間のテキストのみをマッチさせます。`WebFetch(domain:example.*)` は `example.org` にマッチします。ここで `*` は `org` になりますが、`example.evil.com` にはマッチしません。ここで `*` は `evil.com` になり、ドットを越えます。これにより、末尾のワイルドカードが攻撃者が登録できるドメインをマッチさせるのを防ぎます。
 
-WebFetch ルールのワイルドカードは、フェッチをマッチさせるために Claude Code v2.1.172 以降が必要です。
+`WebFetch` ルールのワイルドカードは、フェッチをマッチさせるために Claude Code v2.1.172 以降が必要です。
 
 <h4 id="allow-or-deny-every-fetch">
   すべてのフェッチを許可または拒否
 </h4>
 
-ベア `WebFetch` ルールは、`"deny": ["WebFetch"]` などの `domain:` 部分のないツール名です。それと `WebFetch(domain:*)` の両方はすべての URL をカバーしますが、Claude Code はそれらを異なる方法で適用し、`domain:` 形式のみがそのドメインをサンドボックスの [許可または拒否ドメインリスト](/docs/ja/sandboxing#network-isolation)に追加します。そのセクションはサンドボックスが尊重するワイルドカード形式とそれを追加したバージョンをリストしています。
+ベア `WebFetch` ルールは、`"deny": ["WebFetch"]` などの `domain:` 部分のないツール名です。それと `WebFetch(domain:*)` の両方はすべての URL をカバーしますが、Claude Code はそれらを異なる方法で適用し、`domain:` 形式のみがそのドメインをサンドボックスの [許可または拒否ドメインリスト](/docs/ja/sandboxing#network-isolation)に追加します。そのセクションはサンドボックスが尊重するワイルドカード形式とベア `*` を追加したバージョンをリストしています。
 
 各行は、`allow` リストと `deny` リストでルールが何をするかを示しています。
 
@@ -622,7 +653,7 @@ PreToolUse フック決定は権限ルールをバイパスしません。Claude
 
 [mod を信頼するかどうかを決定する](/docs/ja/plugins/mods/overview#decide-whether-to-trust-a-mod)を参照するか、管理設定をデプロイする場合は[組織の mod を管理する](/docs/ja/plugins/mods/admin#know-what-happens-by-default)を参照してください。
 
-[`requiresUserInteraction`](/docs/ja/mcp#require-approval-for-a-specific-tool)でマークされた MCP ツールも、フックが `"allow"` を返した場合でもプロンプトを表示します。コネクタツール（[組織が `ask` に設定](/docs/ja/mcp#organization-controls-on-connector-tools)）も同様に、その設定が Claude Code に到達するセッションではプロンプトを表示します。
+`AskUserQuestion` や `requiresUserInteraction` でマークされた MCP ツールなど、[ユーザーの操作が必要なツール](/docs/ja/permission-modes#actions-no-mode-auto-approves)では、mod の `tool.check` による承認があってもプロンプトはスキップされません。Claude Code v2.1.292 以降が必要です。[`requiresUserInteraction`](/docs/ja/mcp#require-approval-for-a-specific-tool)でマークされた MCP ツールは、フックが `"allow"` を返した場合でも引き続きプロンプトを表示します。[ネットワークパス](#network-paths)からの読み取りや、その設定が Claude Code に到達するセッションにおける[組織が `ask` に設定した](/docs/ja/mcp#organization-controls-on-connector-tools)コネクタツールも同様です。
 
 ブロッキングフックは allow ルールよりも優先されます。終了コード 2 で終了するフックは、権限ルールが評価される前にツール呼び出しを停止するため、allow ルールがコールを許可する場合でもブロックが適用されます。プロンプトなしですべての Bash コマンドを実行し、ブロックしたい少数のコマンドを除外するには、allow リストに `"Bash"` を追加し、それらの特定のコマンドを拒否する PreToolUse フックを登録します。適応できるフックスクリプトについては、[保護されたファイルへの編集をブロックする](/docs/ja/hooks-guide#block-edits-to-protected-files)を参照してください。
 
@@ -636,7 +667,7 @@ PreToolUse フック決定は権限ルールをバイパスしません。Claude
 * **セッション中**：`/add-dir` コマンドを使用します
 * **永続的な設定**：[設定ファイル](/docs/ja/settings#where-settings-live)の `additionalDirectories` に追加します
 
-追加ディレクトリ内のファイルは、元の作業ディレクトリと同じ権限ルールに従います。プロンプトなしで読み取り可能になり、ファイル編集権限は現在の権限モードに従います。
+追加ディレクトリ内のファイルは、元の作業ディレクトリと同じ権限ルールに従います。[ネットワークパス](#network-paths)のチェックを除き、プロンプトなしで読み取り可能になり、ファイル編集権限は現在の権限モードに従います。
 
 ほとんどの[ネットワークパス](/docs/ja/errors#working-directory-is-a-network-path)（`\\server\share` などの UNC 共有など）は、作業ディレクトリとして追加できません。これは、ルックアップがそれが指す名前のホストに接続する可能性があるためです。Windows では、代わりに共有をドライブ文字にマップし、起動時に `--add-dir` でドライブを渡します。
 
@@ -648,7 +679,7 @@ macOS のバックグラウンドセッションでは、セッションホス�
   セッションを別のディレクトリに移動する
 </h3>
 
-セッションを別の主要な作業ディレクトリに移動するには、現在のディレクトリの横に[ディレクトリを追加](#working-directories)するのではなく、`/cd <path>` を実行します。Claude Code は会話を保持し、新しいディレクトリの `CLAUDE.md` を読み込み、以前にそこで作業していない場合は[ワークスペースを信頼](#project-allow-rules-and-workspace-trust)するよう促します。その後、新しいディレクトリから `--resume` を実行すると、Claude Code は[移動されたセッションを検出](/docs/ja/sessions#resume-a-session)します。
+セッションを別の主要な作業ディレクトリに移動するには、現在のディレクトリの横に[ディレクトリを追加](#working-directories)するのではなく、`/cd <path>` を実行します。Claude Code は会話を保持し、新しいディレクトリの `CLAUDE.md` を読み込み、以前にそこで作業していない場合は[ワークスペースを信頼](#project-allow-rules-and-workspace-trust)するよう促します。その後、新しいディレクトリから `--resume` を実行すると、Claude Code は[移動されたセッションを検出](/docs/ja/sessions#where-the-session-picker-looks)します。
 
 移動するとすぐに、Claude Code は新しいディレクトリのプロジェクト設定を適用します。
 
@@ -671,7 +702,7 @@ Claude Code はまた、前のディレクトリのプロジェクトと[ロー�
 
 これらの例外は、`--add-dir` フラグまたは `/add-dir` コマンドで追加されたディレクトリにのみ適用されます（Agent SDK がフラグを通じて追加するディレクトリを含む）。設定ファイルの `permissions.additionalDirectories` にリストされているディレクトリは、ファイルアクセスのみを許可し、以下の設定は読み込みません。
 
-Agent SDK の TypeScript の[`additionalDirectories`](/docs/ja/agent-sdk/typescript#options)オプションと Python の[`add_dirs`](/docs/ja/agent-sdk/python#claudeagentoptions)オプションは、TypeScript オプションが設定キーと同じ名前を共有していても、例外を受け取ります。SDK は各エントリを Claude Code に `--add-dir` として渡すため、これらのディレクトリはフラグで追加されたディレクトリのように動作します。任意のフラグで追加されたディレクトリからのスキル、コマンド、およびサブエージェントは、プロジェクト[設定ソース](/docs/ja/agent-sdk/claude-code-features#control-filesystem-settings-with-settingsources)を通じて読み込まれるため、CLI で[`--setting-sources`](/docs/ja/cli-reference)を使用するか SDK で `settingSources` を使用してそのソースを除外した場合は読み込まれず、[ベアモード](/docs/ja/headless#start-faster-with-bare-mode)はそれらの中のコマンドとサブエージェントをスキップします。
+Agent SDK の TypeScript の [`additionalDirectories`](/docs/ja/agent-sdk/typescript#options) オプションと Python の [`add_dirs`](/docs/ja/agent-sdk/python#claudeagentoptions) オプションは、TypeScript オプションが設定キーと同じ名前を共有していても、例外を受け取ります。SDK は各エントリを Claude Code に `--add-dir` として渡すため、これらのディレクトリはフラグで追加されたディレクトリのように動作します。任意のフラグで追加されたディレクトリからのスキル、コマンド、およびサブエージェントは、`project` [設定ソース](/docs/ja/agent-sdk/claude-code-features#control-filesystem-settings-with-settingsources)を通じて読み込まれるため、CLI で [`--setting-sources`](/docs/ja/cli-reference) を使用するか SDK で `settingSources` を使用してそのソースを除外した場合は読み込まれず、[bare モード](/docs/ja/headless#start-faster-with-bare-mode)はそれらの中のコマンドとサブエージェントをスキップします。
 
 次の設定タイプは `--add-dir` ディレクトリから読み込まれます。
 

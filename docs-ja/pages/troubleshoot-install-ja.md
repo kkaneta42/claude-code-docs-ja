@@ -1212,7 +1212,7 @@ npm install -g @anthropic-ai/claude-code
 ログイン後に `API Error: 403 Request not allowed` が表示される場合：
 
 * **Claude Pro/Max ユーザー**：[claude.ai/settings](https://claude.ai/settings) でサブスクリプションがアクティブであることを確認してください
-* **Anthropic Console ユーザー**：アカウントに「Claude Code」または「Developer」ロールがあることを確認してください。管理者は Anthropic Console の設定 → メンバーで割り当てます。
+* **Anthropic Console ユーザー**：アカウントに「Claude Code」または「Developer」ロールがあることを確認してください。管理者は Console の Members ページ（[platform.claude.com/settings/members](https://platform.claude.com/settings/members)）でこれを割り当てます。
 * **プロキシの背後**：企業プロキシは API リクエストに干渉する可能性があります。[ネットワーク設定](/docs/ja/network-config) を参照してプロキシセットアップを確認してください。
 
 <h3 id="claude-code-access-has-not-been-granted-for-this-account">

@@ -495,7 +495,7 @@ Claude が Bash コマンドを実行する権限を求め、「はい、今後�
 
 v2.1.211 より前では、Claude Code は開始ディレクトリにファイルを保持していました。以前のバージョンがそこに残したファイルも、ルートのファイルと併せて読み込みます。両方が同じキーを設定している場合はルートの値が適用され、権限ルールは両方のファイルのものが適用されます。Agent SDK の [`resolveSettings()`](/docs/ja/agent-sdk/typescript#resolvesettings) ヘルパーは常に開始ディレクトリからファイルを読み込みます。
 
-Claude Code は共有 `.claude/settings.json` をセッションの[プライマリ作業ディレクトリ](/docs/ja/permissions#working-directories)から読み込むため、リポジトリルートにコミットされたファイルを使用するには、そこで Claude Code を開始してください。[`/cd` でセッションを移動した](/docs/ja/permissions#move-the-session-to-another-directory)後は、Claude Code は代わりに新しいディレクトリから両方のプロジェクトファイルを読み込み、ローカルファイルは同じルールで配置します。移動先のディレクトリから読み込むには Claude Code v2.1.246 以降が必要です。
+Claude Code は共有 `.claude/settings.json` をセッションの[プライマリ作業ディレクトリ](/docs/ja/permissions#working-directories)から読み込むため、リポジトリルートにコミットされたファイルを使用するには、そこで Claude Code を開始してください。[`/cd` でセッションを移動した](/docs/ja/permissions#move-the-session-to-another-directory)後は、Claude Code は代わりに新しいディレクトリから両方のプロジェクトファイルを読み込み、ローカルファイルは同じルールで配置します。移動先のディレクトリから読み込むには Claude Code v2.1.246 以降が必要です。デスクトップアプリから開始する worktree セッションについては、[worktree がメインチェックアウトと共有するもの](/docs/ja/worktrees#what-worktrees-share-with-the-main-checkout)を参照してください。
 
 <span id="managed-settings-delivery" />
 
@@ -767,7 +767,7 @@ Claude Code 内から新しいセッション用に選択を保存する場合�
 
 2 つのことが `.claude/settings.json` のキーがそれをクローンするすべての人に適用されるのを防ぎます：
 
-* **Claude Code はリポジトリファイルのキーを無視します。** [設定インデックス](/docs/ja/settings-reference#settings-index) のスコープ列で `User, local, or managed`、`User or managed`、`Managed`、または `Global config` を探してください。これらのキーは共有ファイルから適用されません。ただし、リポジトリファイルがまだオフにできるいくつかを除きます。これらのエントリのそれぞれはスコープ行でそう言っています。`Global config` キーは `~/.claude.json` からのみ適用されます。
+* **Claude Code はリポジトリファイルのキーを無視します。** [設定インデックス](/docs/ja/settings-reference#settings-index) のスコープ列で `User, local, or managed`、`User or managed`、`User`、`Managed`、または `Global config` を探してください。これらのキーは共有ファイルから適用されません。ただし、リポジトリファイルがまだオフにできるいくつかを除きます。これらのエントリのそれぞれはスコープ行でそう言っています。`Global config` キーは `~/.claude.json` からのみ適用されます。
 
   `env` キー内では、テレメトリエクスポート変数も共有ファイルから適用されません。いくつかのオフ値を除きます。[Claude Code が `env` で無視する変数](/docs/ja/settings-reference#variables-claude-code-ignores-in-env) を参照してください。
 * **キーは信頼を待っています。** `permissions.allow` ルール、`permissions.additionalDirectories`、`extraKnownMarketplaces`、およびほとんどの [`env`](/docs/ja/settings-reference#env) 値は、各チームメイトが [フォルダを信頼](/docs/ja/permissions#project-allow-rules-and-workspace-trust) した後にのみ適用されます。それまで、チームメイトにはプロンプトが表示され続け、ファイルが宣言するマーケットプレイスからプラグインを取得しません。`deny` および `ask` ルールはすぐに適用されます。

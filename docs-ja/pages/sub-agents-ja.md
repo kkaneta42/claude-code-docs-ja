@@ -304,7 +304,7 @@ Bash コマンドの場合、Claude Code はコマンド自体を 2 つの方法
   Frontmatter リファレンス
 </h3>
 
-以下のフィールドは YAML [frontmatter](/docs/ja/glossary#frontmatter) で使用できます。`name` と `description` のみが必須です。
+サブエージェントは、ファイル先頭の `---` マーカーで囲んだ YAML [フロントマター](/docs/ja/glossary#frontmatter)で設定し、閉じの `---` の後にシステムプロンプトを Markdown で記述します。`name` と `description` のみが必須です。
 
 複数単語のフィールド名は `maxTurns` や `disallowedTools` などの camelCase を使用し、テーブルと正確に一致する必要があります。Claude Code は認識しないフィールドを無視し、エラーを報告しません。サブエージェントファイルが読み込まれなかった理由を確認するには、[Claude Code がスキップするサブエージェントファイル](#subagent-files-claude-code-skips)を参照してください。
 
@@ -312,7 +312,7 @@ Bash コマンドの場合、Claude Code はコマンド自体を 2 つの方法
 | :- | :- | :- |
 | `name` | はい | 最大 256 文字の一意の識別子（`code-reviewer` や `reviewer-v2` など）。[フック](/docs/ja/hooks#subagentstart)はこの値を `agent_type` として受け取ります。ファイル名は一致する必要はありません。名前に `:` を含めることはできません。これは [プラグインスコープ付き識別子](/docs/ja/plugins/overview)（`my-plugin:reviewer` など）用に予約されています |
 | `description` | はい | Claude がこのサブエージェントに委任すべき場合 |
-| `tools` | いいえ | サブエージェントが使用できる[ツール](#available-tools)。`Read, Grep, Glob` や YAML リストなどのカンマ区切り文字列として。省略した場合、サブエージェントで利用可能なすべてのツールを継承します。リスト内のエントリがツールに解決されない場合、サブエージェントは通常、エントリに名前を付けるエラーで[起動に失敗](/docs/ja/errors#agent-would-be-spawned-with-zero-tools)します。スキルをコンテキストにプリロードするには、ここで `Skill` をリストするのではなく、`skills` フィールドを使用します |
+| `tools` | いいえ | サブエージェントが使用できる[ツール](#available-tools)。`Read, Grep, Bash` などのカンマ区切り文字列、または YAML リストとして指定します。省略した場合、サブエージェントで利用可能なすべてのツールを継承します。リスト内のエントリがツールに解決されない場合、サブエージェントは通常、エントリに名前を付けるエラーで[起動に失敗](/docs/ja/errors#agent-would-be-spawned-with-zero-tools)します。スキルをコンテキストにプリロードするには、ここで `Skill` をリストするのではなく、`skills` フィールドを使用します |
 | `disallowedTools` | いいえ | 継承または指定されたリストから削除するツール。`tools` と同じ形式。`Bash(git push *)` などの指定子を持つエントリは、[ツール全体](#available-tools)を削除します |
 | `model` | いいえ | 使用する[モデル](#choose-a-model)。`sonnet`、`opus`、`haiku`、`fable`、`claude-opus-5-5` などの完全なモデル ID、または `inherit`。省略した場合、Claude Code は[サブエージェントモデル順序](#choose-a-model)でモデルを選択します |
 | `permissionMode` | いいえ | [権限モード](#permission-modes)。`default`、`acceptEdits`、`auto`、`dontAsk`、`bypassPermissions`、`plan`、または `default` のエイリアスとしての `manual`。[プラグインサブエージェント](#choose-the-subagent-scope)では無視されます |
@@ -386,13 +386,11 @@ Claude がサブエージェントを呼び出すとき、その特定の呼び�
 * **メイン会話のモデルがそのファミリに属する**。サブエージェントはメイン会話の正確なモデル（`[1m]` サフィックスを含む）で実行されるため、メイン会話と同じ[拡張コンテキスト](/docs/ja/model-config#extended-context)ウィンドウを取得します。
 * **Claude Code がメイン会話のモデルファミリを判断できない。[Anthropic API 以外のプロバイダー](/docs/ja/third-party-integrations)上で**。これは Claude Code がバッキングモデルに解決していない[アプリケーション推論プロファイル ARN](/docs/ja/amazon-bedrock#iam-configuration)を持つ Amazon Bedrock で発生する可能性があります。このケースは `opus` エイリアスのみをカバーし、[`ANTHROPIC_DEFAULT_OPUS_MODEL`](/docs/ja/model-config#environment-variables)を設定した場合は適用されません。`opus` はその後、設定したモデルに解決されるため。
 
-`CLAUDE_CODE_SUBAGENT_MODEL` のエイリアスは、メイン会話のファミリに名前を付けた場合でも、常にエイリアスが指すバージョンに解決されます。
+`CLAUDE_CODE_SUBAGENT_MODEL` のエイリアスは、メイン会話のファミリを指定している場合でも、常にエイリアスが指すバージョンに解決されます。この変数を `inherit` に設定することは、設定しないのと同じです。
 
 `CLAUDE_CODE_SUBAGENT_MODEL` を単独で設定しても、組み込みの Explore および Plan サブエージェントが実行されるモデルは変わりません。変更するには、[すべてのサブエージェントを 1 つのモデルで実行](#run-every-subagent-on-one-model)を参照してください。
 
 v2.1.251 より前では、`CLAUDE_CODE_SUBAGENT_MODEL` はこの順序で最初に来て、呼び出しごとのパラメータと frontmatter（`model: inherit` を含む）の両方をオーバーライドしました。
-
-変数を `inherit` に設定することは、設定を解除するのと同じです。v2.1.196 より前では、その値はサブエージェントをメイン会話のモデルに強制し、他のソースを無視しました。
 
 Claude Code は、呼び出しごとのパラメータ、frontmatter、および環境変数の値を組織の [`availableModels`](/docs/ja/model-config#restrict-model-selection)許可リストに対してチェックします。ブロックされた値の場合、別のモデルに置き換えます。
 
@@ -620,7 +618,7 @@ Claude Code は、エージェントファイルが来たフォルダの信頼�
 | `default` | Manual モード。権限を求めるプロンプト |
 | `acceptEdits` | ファイル編集と作業ディレクトリまたは `additionalDirectories` 内のパスの一般的なファイルシステムコマンドを自動受け入れ |
 | `auto` | [自動モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)。バックグラウンド分類器がコマンドと保護されたディレクトリ書き込みをレビュー |
-| `dontAsk` | 権限プロンプトを自動拒否。明示的に許可されたツールは引き続き機能します。`AskUserQuestion`、[`requiresUserInteraction`](/docs/ja/mcp#require-approval-for-a-specific-tool)とマークされた MCP ツール、およびコネクタツール[組織が `ask` に設定](/docs/ja/mcp#organization-controls-on-connector-tools)したセッション（その設定が Claude Code に到達する場合）は、許可されている場合でも拒否されます |
+| `dontAsk` | 権限プロンプトを自動拒否。明示的に許可されたツールは引き続き機能します。`AskUserQuestion`、[`requiresUserInteraction`](/docs/ja/mcp#require-approval-for-a-specific-tool)とマークされた MCP ツール、[ネットワークパスからの読み取り](/docs/ja/permissions#network-paths)、および[組織が `ask` に設定した](/docs/ja/mcp#organization-controls-on-connector-tools)コネクタツール（その設定が Claude Code に届くセッションの場合）は、許可していても拒否されます |
 | `bypassPermissions` | [権限プロンプトをスキップ](/docs/ja/permission-modes#skip-all-checks-with-bypasspermissions-mode)。サブエージェントはメイン会話がそうである場合のみこのモードで実行されます |
 | `plan` | Plan モード（読み取り専用探索） |
 
@@ -1150,7 +1148,7 @@ code-reviewer サブエージェントを使用してパフォーマンスの問
 * **システムプロンプト**: エージェント独自のプロンプトと Claude Code が追加する環境詳細。Claude Code システムプロンプトではありません。カスタムサブエージェントは [マークダウン本体](#write-subagent-files) または `prompt` フィールドで定義します。組み込みエージェントは事前定義されたプロンプトを持ちます。
 * **タスクメッセージ**: Claude が作業を引き継ぐときに作成する委譲プロンプト。
 * **CLAUDE.md ファイル**: メイン会話が読み込む [CLAUDE.md 階層](/docs/ja/memory#how-claude-md-files-load) のすべてのレベル。`~/.claude/CLAUDE.md`、プロジェクトルール、`CLAUDE.local.md`、管理ポリシーファイル、およびプロジェクト指示として読み込まれる任意の [`AGENTS.md` ファイル](/docs/ja/memory#agents-md) を含みます。組み込みの Explore および Plan エージェントはこれをスキップします。定義が [`omitClaudeMd`](#supported-frontmatter-fields) を設定するサブエージェントは、管理ポリシーファイルのみを読み込むか、定義が [管理設定](#choose-the-subagent-scope) から来る場合はまったく読み込みません。
-* **Git ステータス**: Claude Code がサブエージェント開始時にリポジトリから読み込むスナップショット。Git リポジトリの外部またはスナップショットがオフになっている場合は含まれません。[`includeGitInstructions`](/docs/ja/settings-reference#includegitinstructions) を参照してください。Explore および Plan はいずれにせよそれをスキップします。
+* **Git ステータス**: Claude Code がサブエージェント開始時にリポジトリから読み込むスナップショット。そのリポジトリの [独自の worktree](/docs/ja/worktrees#isolate-subagents-with-worktrees) 内にあるサブエージェントの場合、スナップショットには worktree のブランチ、ステータス、最近のコミットが表示されます。Git リポジトリの外部またはスナップショットがオフになっている場合は含まれません。[`includeGitInstructions`](/docs/ja/settings-reference#includegitinstructions) を参照してください。Explore および Plan はいずれにせよそれをスキップします。
 * **プリロードされたスキル**: エージェントの [`skills` フィールド](#preload-skills-into-subagents) で名前が付けられたスキルの完全なコンテンツ。組み込みエージェントはスキルをプリロードしません。
 * **兄弟名簿**: `main` と、セッション内のすべての他の名前付きエージェントをリストする [システムリマインダー](/docs/ja/glossary#system-reminder)。各エージェントは [`SendMessage`](#resume-subagents) の有効な `to` 値です。Claude Code v2.1.206 以降が必要です。名簿は、サブエージェントのツールに `SendMessage` が含まれ、少なくとも 1 つの他のエージェントに名前がある場合にのみ表示されます。Claude が生成時に名前を付けたか、[エージェントチーム](/docs/ja/agent-teams) チームメイトとして実行されるかに関わらず。これはサブエージェント開始時に取得されたスナップショットであるため、後で名前が付けられたエージェントは表示されません。
 

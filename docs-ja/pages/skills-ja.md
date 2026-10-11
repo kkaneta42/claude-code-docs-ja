@@ -192,9 +192,9 @@ Claude は、失敗したコマンドや欠落したステップなど、実行�
 
 Claude Code は、開始したディレクトリと、リポジトリルートまでのすべての親ディレクトリの `.claude/skills/` からプロジェクトスキルを読み込みます。そのため、`packages/frontend/` で開始しても、ルートで定義されたスキルが取得されます。v2.1.246 以降で [`/cd` でセッションを移動する](/docs/ja/permissions#move-the-session-to-another-directory) と、Claude Code は新しいディレクトリのプロジェクトスキルを追加します。
 
-リンクされた [git worktree](/docs/ja/worktrees) で実行されているセッションでは、Claude Code は worktree ルートまでのみ親ディレクトリを検索します。Claude Code v2.1.277 以降では、worktree チェックアウトのルートに `.claude/skills` ディレクトリがない場合、Claude Code はメインチェックアウトのプロジェクトスキルを代わりに読み込みます。[worktrees がメインチェックアウトと共有するもの](/docs/ja/worktrees#what-worktrees-share-with-the-main-checkout) を参照してください。
+`--worktree` または `git worktree add` で作成したリンクされた [git worktree](/docs/ja/worktrees) で実行されているセッションでは、Claude Code は worktree ルートまでのみ親ディレクトリを検索します。Claude Code v2.1.277 以降では、worktree チェックアウトのルートに `.claude/skills` ディレクトリがない場合、Claude Code はメインチェックアウトのプロジェクトスキルを代わりに読み込みます。[worktrees がメインチェックアウトと共有するもの](/docs/ja/worktrees#what-worktrees-share-with-the-main-checkout) を参照してください。
 
-開始した場所の下の `.claude/skills/` ディレクトリ内のスキルは、起動時には読み込まれません。Claude がそのサブディレクトリ内のファイルを初めて読み込むか編集するときに読み込まれ、セッションの残りの間利用可能なままです。それまでは、`/` メニューに表示されず、名前で呼び出すことはできません。より早く読み込むには、サブディレクトリのパスで `/add-dir` を実行します。これには Claude Code v2.1.257 以降が必要です。
+開始した場所の下の `.claude/skills/` ディレクトリ内のスキルは、起動時には読み込まれません。Claude がそのサブディレクトリ内のファイルを初めて読み込むか編集するときに読み込まれ、セッションの残りの間利用可能なままです。それまでは、`/` メニューに表示されず、名前で呼び出すことはできません。より早く読み込むには、サブディレクトリのパスで `/add-dir` を実行します。これには Claude Code v2.1.257 以降が必要です。デスクトップアプリから開始する worktree セッションについては、[worktrees がメインチェックアウトと共有するもの](/docs/ja/worktrees#what-worktrees-share-with-the-main-checkout) を参照してください。
 
 ネストされたスキルが別のスキルと同じ名前を共有する場合、両方が利用可能なままです。リポジトリルートに `deploy` スキルがあり、`apps/web/.claude/skills/` に別のスキルがある場合：
 
@@ -434,7 +434,7 @@ Claude Code はフロントマターを読み込むのは、開く `---` がフ�
 | `when_to_use` | いいえ | Claude がスキルを呼び出すべき時期に関する追加コンテキスト。トリガーフレーズやリクエスト例など。スキルリストの `description` に追加され、1,536 文字の上限にカウントされます。 |
 | `argument-hint` | いいえ | オートコンプリート中に表示されるヒント。予想される引数を示します。例：`[issue-number]` または `[filename] [format]`。 |
 | `arguments` | いいえ | スキルコンテンツの [`$name` 置換](#available-string-substitutions) のための名前付き位置引数。スペース区切り文字列または YAML リストを受け入れます。名前は引数位置に順序でマップされます。 |
-| `disable-model-invocation` | いいえ | Claude がこのスキルを自動的に読み込むのを防ぐために `true` に設定します。`/name` で手動でトリガーしたいワークフローに使用します。また、スキルが [サブエージェントに事前読み込みされる](/docs/ja/sub-agents#preload-skills-into-subagents) のを防ぎます。v2.1.196 以降、スキルがプロンプトとして [スケジュール済みタスク](/docs/ja/scheduled-tasks) が発火したときに実行されるのも防ぎます。デフォルト：`false`。 |
+| `disable-model-invocation` | いいえ | Claude がこのスキルを自動的に読み込むのを防ぐために `true` に設定します。`/name` で手動でトリガーしたいワークフローに使用します。また、スキルが [サブエージェントに事前読み込みされる](/docs/ja/sub-agents#preload-skills-into-subagents) のを防ぎ、スキルをプロンプトとする [スケジュールタスク](/docs/ja/scheduled-tasks) が発火したときに実行されるのも防ぎます。デフォルト：`false`。 |
 | `user-invocable` | いいえ | Claude のみがスキルを呼び出すべき場合は `false` に設定します。Claude Code はそれを `/` メニューから非表示にし、`/name` を入力したときに実行しません。ユーザーが直接呼び出すべきではないバックグラウンド知識に使用します。デフォルト：`true`。 |
 | `allowed-tools` | いいえ | このスキルを呼び出すターン中に Claude が許可を求めずに使用できるツール。許可はあなたが次のメッセージを送信するときにクリアされます。スペースまたはコンマ区切り文字列、または YAML リストを受け入れます。[スキルのツールを事前承認する](#pre-approve-tools-for-a-skill) を参照してください。 |
 | `disallowed-tools` | いいえ | このスキルがアクティブな間、Claude の利用可能なプールから削除されるツール。バックグラウンドループの `AskUserQuestion` など、自律的なスキルが特定のツールを呼び出すべきではない場合に使用します。スペースまたはコンマ区切り文字列、または YAML リストを受け入れます。制限はあなたが次のメッセージを送信するときにクリアされます。拒否ルールと同様に、他のツールが残っている間、フィールドは [`EndConversation`](/docs/ja/tools-reference#endconversation-tool-behavior) を削除できません。 |
@@ -527,8 +527,6 @@ Run `${CLAUDE_SKILL_DIR}/scripts/render.sh <csv-file>` to render the chart.
 ```
 
 このスキルが `~/.claude/skills/render-chart/` にインストールされている場合、`${CLAUDE_SKILL_DIR}` の両方の出現はそのディレクトリに展開されます。`allowed-tools` ルールはスキル本体が Claude に実行するよう指示する正確なコマンドと一致するため、スクリプトはプロンプトなしで実行されます。
-
-`${CLAUDE_PROJECT_DIR}` 置換には Claude Code v2.1.196 以降が必要です。
 
 インデックス付き引数はシェルスタイルのクォートを使用するため、複数単語の値をクォートで囲んで単一の引数として渡します。たとえば、`/my-skill "hello world" second` は `$0` を `hello world` に展開し、`$1` を `second` に展開します。`$ARGUMENTS` プレースホルダーは常に入力されたとおりの完全な引数文字列に展開されます。
 
@@ -641,7 +639,7 @@ Claude が、レンダリングされたコンテンツがコンテキストに�
 
 [自動コンパクション](/docs/ja/how-claude-code-works#when-context-fills-up) はトークン予算内で呼び出されたスキルを前方に実行します。会話が要約されてコンテキストを解放するとき、Claude Code は各スキルの最新の呼び出しを要約の後に再度アタッチし、最初の 5,000 トークンを保持します。再度アタッチされたスキルは 25,000 トークンの結合予算を共有します。Claude Code はこの予算を最近呼び出されたスキルから開始して埋めるため、セッション内で多くを呼び出した場合、古いスキルはコンパクション後に完全にドロップできます。
 
-スキルが最初の応答の後に動作に影響を与えるのを停止しているように見える場合、コンテンツは通常まだ存在し、モデルは他のツールまたはアプローチを選択しています。スキルの `description` と指示を強化して、モデルがそれを優先し続けるようにするか、[フック](/docs/ja/hooks) を使用して動作を決定的に強制します。スキルが大きい場合、または他のスキルを呼び出した後、コンパクション後に再呼び出しして完全なコンテンツを復元します。
+セッションの途中で Claude がスキルに従わなくなった場合は、[Claude がスキルに従わなくなる](#claude-stops-following-a-skill) を参照してください。
 
 <h3 id="pre-approve-tools-for-a-skill">
   スキルのツールを事前承認する
@@ -842,6 +840,8 @@ Claude Code は、スキルが `background: false` を設定しない場合で�
 * [`CLAUDE_CODE_DISABLE_BACKGROUND_TASKS`](/docs/ja/env-vars) を `1` に設定した場合。これはすべての他のバックグラウンドタスク機能もオフにします
 * 同じスキルの以前の呼び出しがまだ実行中の間にフォークされたスキルを呼び出す場合
 * [スケジュールされたタスク](/docs/ja/scheduled-tasks) がスキルをそのプロンプトとして発火する場合
+
+[動的ワークフロー](/docs/ja/workflows) 内のエージェントがフォークされたスキルを呼び出す場合、スキルが `background: false` を設定していなくても、そのエージェントは結果を待って受け取ります。v2.1.295 より前では、Claude Code はこの場合に待機せず、スキルがバックグラウンドで実行されると、その結果はそのエージェントに届く代わりにメインの会話に届いていました。
 
 バックグラウンドで実行されるフォークされたスキルは、[バックグラウンドサブエージェントに適用される狭いツールセット](/docs/ja/sub-agents#run-subagents-in-foreground-or-background) で編集を適用します。スキルのサブエージェントは通常のエージェントタイプなので、会話をフォークするサブエージェントの例外はそれをカバーしません。スキルのステップがそのセット外のツールに依存する場合、`background: false` を設定して完全なツールセットを保持します。
 
