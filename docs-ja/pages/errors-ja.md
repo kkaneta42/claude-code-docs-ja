@@ -94,6 +94,7 @@
 | `Your account is on hold and can't use Claude Code. View details or appeal: https://claude.ai/restricted` | [認証](#your-account-is-on-hold) |
 | `Your account is on hold and can't sign in to Claude Code. View details or appeal: https://claude.ai/restricted` | [認証](#your-account-is-on-hold) |
 | `Anthropic profile login expired · Re-authenticate your Anthropic profile` | [認証](#anthropic-profile-login-expired) |
+| `Login expired · Run /login to sign in again, or re-authenticate your Anthropic profile` | [認証](#anthropic-profile-login-expired) |
 | `Anthropic profile login expired · Run /login to use your claude.ai account instead, or re-authenticate the profile` | [認証](#anthropic-profile-login-expired) |
 | `does not meet scope requirement user:profile` | [認証](#oauth-scope-requirement) |
 | `claude.ai rejected the session token` / `session token rejected` | [認証](#claude-ai-rejected-the-session-token) |
@@ -1303,6 +1304,8 @@ Login expired · Please run /login
 Failed to authenticate: OAuth session expired and could not be refreshed
 ```
 
+`or re-authenticate your Anthropic profile` で終わる `Login expired` メッセージについては、[Anthropic profile login expired](#anthropic-profile-login-expired) を参照してください。
+
 これは [OAuth トークンが取り消された、または期限切れです](#oauth-token-revoked-or-expired)とは異なる状態です。そちらのメッセージは API が返した拒否を報告します。`Login expired` は、すでに更新に失敗したログインに対して Claude Code 自身が生成するものであり、リクエストは送信されません。ログインが古くなったのではなくアカウント自体が停止されているために更新が失敗した場合、Claude Code は代わりに[アカウントが保留中です](#your-account-is-on-hold)を表示します。
 
 API キー、[`CLAUDE_CODE_OAUTH_TOKEN`](/docs/ja/env-vars)、またはサードパーティプロバイダーで認証されたセッションは保存済みのログインを使用しないため、このメッセージが表示されることはありません。
@@ -1468,26 +1471,28 @@ Your account is on hold and can't sign in to Claude Code. View details or appeal
   Anthropic プロファイルのログインの有効期限切れ
 </h3>
 
-Claude Code は Anthropic 認証情報プロファイルを通じて認証していますが、そのプロファイルに保存されたログイン認証情報の有効期限が切れており、プロファイルには Claude Code が更新に使用できるリフレッシュ用の認証情報がありません。再試行しても同じ期限切れの認証情報を読み取るだけなので、Claude Code は再試行せずに各リクエストをローカルで停止します。
+Claude Code は Anthropic の認証情報プロファイルを通じて認証していますが、保存されているログイン認証情報の有効期限が切れており、プロファイルには Claude Code が更新に使用できるリフレッシュ用の認証情報がありません。Claude Code は再試行せずに、各リクエストをローカルで停止します。
 
 ```text theme={null}
 Anthropic profile login expired · Re-authenticate your Anthropic profile
-Anthropic profile login expired · Run /login to use your claude.ai account instead, or re-authenticate the profile
+Login expired · Run /login to sign in again, or re-authenticate your Anthropic profile
 ```
-
-このメッセージは、有効な認証情報が Anthropic 認証情報プロファイルから取得される場合にのみ表示されます。対象となるのは、`ANTHROPIC_PROFILE` 環境変数で選択したプロファイル、Claude Code が Anthropic 設定ディレクトリ内でアクティブなプロファイルとして検出したプロファイル、または [API キーなしでサインイン](/docs/ja/authentication#sign-in-without-an-api-key)したときに Claude Code が書き込んだプロファイルです。API キー、`ANTHROPIC_AUTH_TOKEN` などのベアラートークン、またはサードパーティプロバイダーで認証するセッションでは、このメッセージは表示されません。
-
-[キーなしのサインインを提供している](/docs/ja/authentication#sign-in-without-an-api-key)マシンでは、`/login` を実行し、Anthropic Console アカウントを選択して再度サインインすると、キーなしの Console サインインまたは Claude Platform CLI の `ant auth login` が書き込んだプロファイルを更新できます。Claude Code はそのプロファイル内の期限切れの認証情報を置き換えます。フェデレーションプロファイルや別のツールが作成したプロファイルでは、`/login` で認証情報は更新されません。どちらの形式が表示されるかは、プロファイルを自分で選択したか、Claude Code が検出したかによって異なります。
-
-* `ANTHROPIC_PROFILE` を明示的に設定した場合、メッセージは `Re-authenticate your Anthropic profile` で終わります。
-* Claude Code が設定ディレクトリからプロファイルを検出した場合、メッセージでは `/login` が提示されます。Claude Code は、検出されたプロファイルよりも機能する `/login` を優先し、代わりに claude.ai または Console アカウントで認証するためです。v2.1.234 より前では、この場合も Claude Code は `Re-authenticate your Anthropic profile` の形式を表示していました。
 
 **対処方法：**
 
-* プロファイルに再度サインインしてから再試行します。[キーなしのサインインを提供している](/docs/ja/authentication#sign-in-without-an-api-key)マシンでは、キーなしの Console サインインまたは Claude Platform CLI の `ant auth login` が書き込んだプロファイルについては、`/login` を実行して Anthropic Console アカウントを選択します。その他のプロファイルについては、それを作成したツールを使用します
+* メッセージが `Login expired` で始まる場合は、`/login` を実行して再度サインインします
+* キーレスの Console サインインまたは Claude Platform CLI の `ant auth login` が書き込んだプロファイルを更新するには、[キーレスのサインインを提供している](/docs/ja/authentication#sign-in-without-an-api-key)マシンで `/login` を実行します。Anthropic Console アカウントを選択し、**Sign in with your Console account** を選択します。Claude Code はそのプロファイル内の期限切れの認証情報を置き換えます
+* 別のツールが作成したプロファイルを更新するには、そのツールで再度サインインします。代わりに `/login` で **Sign in with your Console account** を選択した場合、Claude Code はプロファイルをそのままにして API キーを作成します
 * 管理者がプロファイルの認証情報をプロビジョニングした場合は、新しい認証情報を発行するよう依頼します
 * `/status` を実行して、有効な認証情報ソースとプロファイル名を確認します
 * プロファイルの使用をやめるには、`ANTHROPIC_PROFILE` を設定している場合はその設定を解除してから、`/login` や `ANTHROPIC_API_KEY` などの別の方法で認証します
+
+メッセージの始まり方から、Claude Code がどのようにプロファイルを見つけたかがわかります。
+
+* Claude Code が設定ディレクトリからプロファイルを検出し、その認証モードが `user_oauth` である場合、メッセージは `Login expired` で始まり、最初に `/login` を提示します。Claude Code は、検出されたプロファイルよりも機能する `/login` を優先し、その後は claude.ai アカウントで認証します。v2.1.234 から v2.1.277 までは、この形式は `Anthropic profile login expired · Run /login to use your claude.ai account instead, or re-authenticate the profile` と表示されていました。v2.1.234 より前は、この場合も Claude Code は `Re-authenticate your Anthropic profile` の形式を表示していました。
+* `ANTHROPIC_PROFILE` でプロファイルを選択した場合、メッセージは `Anthropic profile login expired` で始まります。
+
+このメッセージは、有効な認証情報が Anthropic の認証情報プロファイルから取得されている場合にのみ表示されます。そのプロファイルとは、`ANTHROPIC_PROFILE` 環境変数で選択したもの、Claude Code が Anthropic の設定ディレクトリで有効なプロファイルとして検出したもの、または [API キーなしでサインイン](/docs/ja/authentication#sign-in-without-an-api-key)したときに Claude Code が書き込んだもののいずれかです。API キー、`ANTHROPIC_AUTH_TOKEN` などのベアラートークン、またはサードパーティプロバイダーで認証するセッションでは、このメッセージが表示されることはありません。
 
 <h3 id="oauth-scope-requirement">
   OAuth スコープの要件
@@ -4039,8 +4044,12 @@ v2.1.282 より前では、`claude plugin list` と `/plugin` は、マーケッ
 
 **対処方法：**
 
-* `claude plugin marketplace remove <name>` を実行してください。これはマーケットプレイスからインストールされたプラグインもアンインストールし、保存されたデータを削除します
-* マーケットプレイスを代わりに保持するには、メンテナーが名前を変更するまで待ってから、`claude plugin marketplace update <name>` を実行してください
+* 設定ファイルが `"source": "settings"` でインライン宣言しているマーケットプレイスを保持するには、古い名前を削除する前に名前を変更してください。マーケットプレイスを削除すると、設定ファイルからもそのエントリが削除されるためです。Claude Code v2.1.292 以降では、メッセージに次の手順が表示されます：
+  1. `extraKnownMarketplaces` にそのマーケットプレイスを記載している各設定ファイルで、エントリのキーとその `source.name` に、公式のものに見えない新しいプレーン ASCII の名前を 1 つ付けます。管理者が組織の管理設定を通じてマーケットプレイスを追加している場合は、この手順は管理者が行います
+  2. `claude plugin marketplace remove <old-name>` を実行するか、`/plugin` の **マーケットプレイス**タブで古い名前を削除します。これにより、そのプラグインもアンインストールされ、それらのデータ、オプション、シークレットが削除されます
+  3. Claude Code を再起動します。ファイルがプロジェクトの設定ファイルである場合は、プロジェクトのフォルダで起動します。その後、名前を変更したマーケットプレイスからプラグインをインストールします
+* その他のマーケットプレイスを保持するには、メンテナーが名前を変更するまで待ってから、`claude plugin marketplace update <name>` を実行してください
+* マーケットプレイスを削除するには、`claude plugin marketplace remove <name>` を実行してください。これにより、マーケットプレイスからインストールされたプラグインもアンインストールされ、それらのデータ、オプション、シークレットが削除されます
 * マーケットプレイスを公開する場合は、`marketplace.json` で名前を変更してください。ユーザーはマーケットプレイスを削除する代わりに更新します
 
 <h3 id="marketplace-is-already-added-from-a-different-source">

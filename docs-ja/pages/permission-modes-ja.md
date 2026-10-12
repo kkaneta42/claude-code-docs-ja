@@ -55,7 +55,7 @@ Claude Code は、`bypassPermissions` を含むどのモードでも、以下を
 | 実現したいこと | 開始する | 必要な隔離 | 注記 |
 | :- | :- | :- | :- |
 | すべてのアクションを自分でレビュー | Manual モード：`claude --permission-mode default` | なし | 機密作業、不慣れなコード |
-| ローカルで反復、分類器なしでプロンプトを減らす | Manual モード + [auto-allow モード](/docs/ja/sandboxing#sandbox-modes)の Bash サンドボックス：`claude --permission-mode default`、その後 `/sandbox` を実行して auto-allow を選択 | 組み込み Bash サンドボックス、macOS、Linux、WSL2 上 | 拒否ルールは依然として適用され、`Bash(git push *)` のようなコマンドに名前を付ける ask ルールは依然としてプロンプトを表示します。代わりに設定ファイルからサンドボックスをオンにするには、[`sandbox.enabled`](/docs/ja/settings-reference#sandbox-enabled) を `true` に設定します |
+| ローカルで反復、分類器なしでプロンプトを減らす | Manual モード + [auto-allow モード](/docs/ja/sandboxing#sandbox-modes)の Bash サンドボックス：`claude --permission-mode default`、その後 `/sandbox` を実行して auto-allow を選択 | 組み込み Bash サンドボックス、macOS、Linux、WSL2 上 | 拒否ルールは依然として適用され、`Bash(git push *)` のようなコマンドに名前を付ける ask ルールは依然としてプロンプトを表示します。プロンプトを表示する可能性があるその他のコマンドについては、[auto-allow モード](/docs/ja/sandboxing#auto-allow-mode)で説明しています。代わりに設定ファイルからサンドボックスをオンにするには、[`sandbox.enabled`](/docs/ja/settings-reference#sandbox-enabled) を `true` に設定します |
 | 何かを変更する前に探索 | `claude --permission-mode plan` | なし | Claude Code は[計画を承認](#review-and-approve-a-plan)するまで編集をブロックします |
 | auto モードでハンズオフで作業 | `claude --permission-mode auto`、v2.1.283 以降の[組み込み開始権限モード](#which-mode-a-session-starts-in) | なし。サンドボックスまたはコンテナは防御の深さを追加 | [サポートされているモデル](#eliminate-prompts-with-auto-mode)が必要で、組織は [auto モードをオフ](#eliminate-prompts-with-auto-mode)にできます |
 | 正確な許可リストで CI で実行 | `claude -p "run the test suite" --permission-mode dontAsk --allowedTools "Bash(npm test)" "Read"` | CI ランナーが提供するもの以外はなし | [Web 上の Claude Code](/docs/ja/claude-code-on-the-web)は設定ファイルから `dontAsk` を無視します |

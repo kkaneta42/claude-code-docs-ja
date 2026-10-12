@@ -202,8 +202,18 @@ auto-allow モードでも、次の点は引き続き適用されます。
 * 明示的な[拒否ルール](/docs/ja/permissions)は常に尊重されます
 * [重要なパス](/docs/ja/permission-modes#critical-paths)を対象とする `rm` または `rmdir` コマンドは、引き続き通常の権限フローを経由します
 * `Bash(git push *)` のような内容を限定した[確認ルール](/docs/ja/permissions)は、サンドボックス化されたコマンドであっても引き続きプロンプトを強制します
-* 単独の `Bash` 確認ルール、またはそれと同等の `Bash(*)` 形式は、サンドボックス化されて実行されるコマンドではスキップされます。通常の権限フローにフォールバックするコマンドには引き続き適用されます。[plan モード](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode)では、このルールはスキップされず、読み取り専用のものも含め、サンドボックス化されたコマンドに対してもプロンプトを表示します
+* 単独の `Bash` 確認ルール、またはそれと同等の `Bash(*)` 形式は、サンドボックス化されて実行されるコマンドではスキップされます。サンドボックス外で実行されるコマンドには引き続き適用されます。[plan モード](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode)では、このルールはスキップされず、読み取り専用のものも含め、サンドボックス化されたコマンドに対してもプロンプトを表示します
 * [Monitor ツール](/docs/ja/tools-reference#monitor-tool)のコマンドは、引き続きサンドボックス内で実行されますが、自動的には承認されません。プロンプトをスキップするには、`Bash(npm run *)` など、そのコマンドに一致する[許可ルール](/docs/ja/permissions#bash)を追加します
+
+サンドボックス化されたコマンドの中にも、自動的に承認されずに通常の[権限フロー](/docs/ja/permissions)を経由するものがあります。これは、コマンドの前に設定された変数によって実行されるプログラムが変わりうる `FOO=bar npm test` のようなコマンドや、`make CC=clang`、`eval "ls"` で発生します。その場合、プロンプトが表示されるかどうかは許可ルールと権限モードによって決まり、コマンドは引き続きサンドボックス内で実行されます。
+
+これら 3 つのコマンドでは、コマンドに一致する[許可ルール](/docs/ja/permissions#bash)を追加すると、繰り返し表示されるプロンプトが止まります。次のルールがそのパターンを示しています。
+
+* `Bash(make *)` は `make CC=clang` を承認します
+* `Bash(FOO=bar npm *)` は `FOO=bar npm test` を承認します。コマンドが変数の代入で始まる場合は、その代入をルールに含めてください
+* `Bash(eval "ls")` は `eval "ls"` を承認します。`Bash(eval *)` のようなワイルドカードルールではこのプロンプトは止まらないため、コマンド全体に一致するルールを記述してください
+
+コマンドに一致する許可ルールは、そのコマンドの[サンドボックス外での再試行](#the-unsandboxed-retry-escape-hatch)も承認するため、コマンドはプロンプトなしでサンドボックス外で実行される可能性があります。
 
 <Info>
   auto-allow モードは権限モードの設定とは独立して動作しますが、例外が 3 つあります。[plan モード](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode)、[コマンドごとの許可ドメイン](#per-command-allowed-domains-in-auto-mode)を持つ auto モードのコマンド、そして auto モードでのサンドボックス化されたコマンドに対する[サーバー側の分類器による審査](/docs/ja/permission-modes#how-the-classifier-evaluates-actions)です。「accept edits」モードでなくても、auto-allow が有効な場合、サンドボックス化された Bash コマンドは自動的に実行されます。つまり、ファイル編集ツールであればプロンプトが表示される Manual モードでも、サンドボックスの境界内でファイルを変更する Bash コマンドはプロンプトなしで実行されます。

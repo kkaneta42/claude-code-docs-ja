@@ -3321,7 +3321,18 @@ Claude Code は JSON 出力から `watchPaths` と `systemMessage` を読み取�
   WorktreeCreate
 </h3>
 
-worktree の作成時に実行されます。`claude --worktree` から作成される場合、[`isolation: "worktree"` を使用するサブエージェント](/docs/ja/sub-agents#choose-the-subagent-scope)から作成される場合、または Claude Code が独自の worktree に分離する[バックグラウンドセッション](/docs/ja/agent-view#how-file-edits-are-isolated)のために作成される場合のいずれでも実行されます。デフォルトでは、Claude Code は `git worktree` を使用して分離された作業コピーを作成します。WorktreeCreate フックを設定すると、このデフォルトの git の動作が置き換えられ、SVN、Perforce、Mercurial などの別のバージョン管理システムを使用できるようになります。
+次のような場合に Claude Code が worktree を作成したときに実行されます。
+
+* `claude --worktree` でセッションを開始した
+* Claude がセッション中に worktree を作成し、[`EnterWorktree`](/docs/ja/tools-reference) ツールでそこに切り替えた
+* [サブエージェントが `isolation: "worktree"` を使用している](/docs/ja/sub-agents#choose-the-subagent-scope)
+* [ワークフロー](/docs/ja/workflows#migrate-many-files-in-parallel)がエージェントを専用の worktree で実行した
+* Claude Code が[バックグラウンドセッション](/docs/ja/agent-view#how-file-edits-are-isolated)を専用の worktree で分離した
+* `worktree` モードの [`claude remote-control`](/docs/ja/remote-control#start-a-remote-control-session) が専用の worktree でセッションを開始した
+
+Claude が `EnterWorktree` を呼び出す代わりに Bash ツールで `git worktree add` を実行した場合、WorktreeCreate フックは実行されません。そのコマンドを検査またはブロックするには、`Bash` matcher を指定した [`PreToolUse`](#pretooluse) フックを追加してください。
+
+デフォルトでは、Claude Code は `git worktree` を使って分離された作業コピーを作成します。WorktreeCreate フックを設定すると、このデフォルトの git の動作が置き換えられ、SVN、Perforce、Mercurial など別のバージョン管理システムを使用できるようになります。
 
 フックはデフォルトの動作を完全に置き換えるため、[`.worktreeinclude`](/docs/ja/worktrees#copy-gitignored-files-into-worktrees) は処理されません。`.env` などのローカル設定ファイルを新しい worktree にコピーする必要がある場合は、フックスクリプト内でコピーしてください。
 
@@ -3390,12 +3401,22 @@ Claude Code は、`.` や `..` のセグメントを含む絶対パス、およ�
 * 対話型の [worktree セッション](/docs/ja/worktrees#start-claude-in-a-worktree)を終了し、Claude Code の確認に対して worktree の削除を選択した場合
 * [名前を付けていない](/docs/ja/sessions#name-your-sessions)対話型の worktree セッションを終了し、Claude Code が変更されたファイルや追跡されていないファイルを検出せず、確認なしで worktree を削除した場合
 * worktree 内で実行されている[バックグラウンドセッション](/docs/ja/agent-view#what-deleting-a-session-removes)を削除した場合
+* セッション中に worktree を終了して削除するよう Claude に依頼し、Claude が [`ExitWorktree`](/docs/ja/tools-reference) ツールでそれを削除した
+* [`claude remote-control`](/docs/ja/remote-control#start-a-remote-control-session) が `worktree` モードで開始したセッションがクラッシュせずに終了し、Claude Code がその worktree に変更済みファイル、未追跡ファイル、新しいコミットを見つけなかった
+* `worktree` モードで開始したセッションがまだ実行中の状態で `claude remote-control` を停止し、Claude Code がそれらの worktree に変更済みファイル、未追跡ファイル、新しいコミットを見つけなかった
+
+サブエージェントまたはワークフローのエージェントが終了したとき、Claude Code は WorktreeCreate フックがそれ用に作成した worktree を保持し、WorktreeRemove フックを実行しません。作業が完了したら、それらの worktree は自分で削除してください。
+
+`ExitWorktree` の呼び出しや `claude remote-control` のクリーンアップでは、Claude Code はフックの実行前に確認を求めません。`ExitWorktree` は、呼び出しで [`discard_changes: true`](/docs/ja/agent-sdk/typescript#exitworktree) が渡されない限りフックが作成した worktree の削除を拒否するため、その経路ではフックが最後のチェックになります。
 
 Claude Code は git を使用して変更されたファイルや追跡されていないファイルを探すため、git のチェックアウトではない worktree や git のチェックアウト内にない worktree では、ディレクトリにコミットされていない作業があっても何も検出されません。WorktreeRemove フックで何かを削除する前に、そのような作業がないかを確認してください。
 
-git ベースの worktree の場合、Claude Code は `git worktree remove` でクリーンアップを自動的に処理します。WorktreeCreate フックを設定した場合は、WorktreeRemove フックと組み合わせて、作成される worktree のクリーンアップを制御してください。
+git ベースの worktree では、Claude Code が `git worktree remove` で自動的にクリーンアップを処理します。WorktreeCreate フックを設定した場合は、WorktreeRemove フックと組み合わせてクリーンアップを制御してください。
 
-* **WorktreeRemove フックがない場合**: worktree セッションの終了時に Claude Code が worktree を削除する際、WorktreeCreate フックが返したパスに対して `git worktree remove --force` にフォールバックするため、git が認識している worktree は削除されます。git が認識していない worktree（例えば、フックが git 以外のバージョン管理システムで作成したもの）はディスク上に残ります。[バックグラウンドセッション](/docs/ja/agent-view#what-deleting-a-session-removes)の削除がフックで作成された worktree をどう扱うかについては、エージェントビューの削除ルールを参照してください。
+* **WorktreeRemove フックがない場合**：終了時または `ExitWorktree` による削除では Claude Code は git にフォールバックし、`claude remote-control` がクリーンアップする場合は worktree を保持します。
+  * **worktree セッションを終了した場合、または Claude が `ExitWorktree` を呼び出した場合**：Claude Code は WorktreeCreate フックが返したパスを `git worktree remove --force` と同様に削除するため、git が認識する worktree は削除されます。git が認識しない worktree（例：フックが git 以外のバージョン管理システムで作成したもの）はディスク上に残ります。
+  * **`claude remote-control` がセッションの worktree をクリーンアップする場合**：worktree はディスク上に残り、`claude remote-control` を実行しているターミナルに `worktree removal failed, kept: <path>` が表示されます。
+  * **バックグラウンドセッションを削除した場合**：[セッションの削除で削除されるもの](/docs/ja/agent-view#what-deleting-a-session-removes)を参照してください。
 * **フックが 0 で終了した場合**: worktree は削除されたものとみなされます。Claude Code はフックからそれ以外の情報を読み取らないため、フックがディレクトリを削除したことを確認してください。
 * **フックが 0 以外で終了した場合**: その後も `worktree_path` のディレクトリが存在していれば削除は失敗し、git へのフォールバックなしで worktree はディスク上に残ります。0 以外で終了する前にディレクトリを削除したフックは、削除済みとみなされます。失敗の報告方法については、[WorktreeRemove の入力](#worktreeremove-input)を参照してください。
 
@@ -3403,7 +3424,7 @@ Claude Code は WorktreeCreate フックが返したパスしか把握してい�
 
 Claude Code は、`systemMessage` や `continue` などの WorktreeRemove フックの [JSON 出力フィールド](#json-output)を破棄します。
 
-バックグラウンドセッションの削除では、Claude Code はフックを実行する前に保存されている worktree のパスを検証し、シンボリックリンクであるパスや、リポジトリルート以下のシンボリックリンクを経由するパスを拒否します。まだファイルを含む worktree に対してフックが実行されるのは、[エージェントビュー](/docs/ja/agent-view#what-deleting-a-session-removes)で削除を確認した場合のみです。そのような worktree に対しては、[`claude rm`](/docs/ja/agent-view#manage-sessions-from-the-shell) は代わりにセッションと worktree を保持します。v2.1.216 より前は、これらのチェックなしで保存されたパスに対してフックが実行されていました。
+バックグラウンドセッションの削除では、Claude Code はフックを実行する前に保存されている worktree のパスを検証し、シンボリックリンクであるパスや、リポジトリルートより下のシンボリックリンクを経由するパスを拒否します。この経路では、まだファイルを含む worktree に対してフックが実行されるのは、[agent view](/docs/ja/agent-view#what-deleting-a-session-removes) で削除を確認した場合のみです。そのような worktree に対して [`claude rm`](/docs/ja/agent-view#manage-sessions-from-the-shell) を実行した場合は、代わりにセッションと worktree が保持されます。v2.1.216 より前は、これらのチェックなしで保存されたパスに対してフックが実行されていました。
 
 Claude Code は、WorktreeCreate が返したパスをフック入力の `worktree_path` として渡します。この例では、そのパスを読み取ってディレクトリを削除します。
 
@@ -3444,6 +3465,7 @@ WorktreeRemove フックの終了コードによって結果が決まります�
 
 * worktree はディスク上に残り、フックのコマンドと stderr は[デバッグログ](#debug-hooks)に出力されます。
 * バックグラウンドセッションを削除しようとしていた場合、セッションも残ります。[エージェントビュー](/docs/ja/agent-view#what-deleting-a-session-removes)の拒否メッセージには、`exited 1` のようなフックの終了状況、stderr の冒頭部分の引用、およびセッションを再度削除した場合にディレクトリがそれでも削除されるかどうかが表示されます。
+* `claude remote-control` がセッションの worktree をクリーンアップしていた場合は、それを実行しているターミナルに `worktree removal failed, kept: <path>` が表示されます。
 
 <h3 id="precompact">
   PreCompact

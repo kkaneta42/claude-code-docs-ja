@@ -725,27 +725,28 @@ Claude Code は現在の作業ディレクトリとその親、`~/.claude/` の�
 * **設定ディレクトリから起動する**：使用する `.claude/` 設定を含むディレクトリから Claude Code を実行します
 
 <h2 id="how-permissions-interact-with-sandboxing">
-  権限とサンドボックス化がどのように相互作用するか
+  権限とサンドボックス化の相互作用
 </h2>
 
-権限と[サンドボックス化](/docs/ja/sandboxing)は補完的なセキュリティレイヤーです。
+権限と[サンドボックス化](/docs/ja/sandboxing)は、互いを補完するセキュリティレイヤーです。
 
-* **権限**は Claude Code が使用できるツール、およびアクセスできるファイルやドメインを制御します。これらは Bash、Read、Edit、WebFetch、MCP、およびその他すべてのツールに適用されます。ただし、他のツールが残っている場合、deny ルールまたは ask ルールは[`EndConversation`](/docs/ja/tools-reference#endconversation-tool-behavior)をブロックできません。
-* **サンドボックス化**は OS レベルの強制を提供し、シェルコマンドのファイルシステムとネットワークアクセスを制限します。これは Bash、PowerShell、および [Monitor](/docs/ja/tools-reference#monitor-tool) ツールのコマンドとその子プロセスに適用されます。
+* **権限**は、Claude Code が使用できるツールと、アクセスできるファイルやドメインを制御します。権限は Bash、Read、Edit、WebFetch、MCP をはじめとするすべてのツールに適用されます。ただし、他のツールが 1 つでも残っている間は、拒否ルールや確認ルールで [`EndConversation`](/docs/ja/tools-reference#endconversation-tool-behavior) をブロックすることはできません。
+* **サンドボックス化**は、シェルコマンドのファイルシステムおよびネットワークへのアクセスを制限する OS レベルの強制を提供します。これは Bash、PowerShell、[Monitor](/docs/ja/tools-reference#monitor-tool) ツールのコマンドとその子プロセスに適用されます。
 
-防御の多層化のために両方を使用してください。プロンプトインジェクションが Claude の意思決定をバイパスしても、サンドボックス制限は引き続き適用されます。サンドボックス設定と権限ルールからのパスとドメインは[最終的なサンドボックス構成にマージされます](/docs/ja/sandboxing#permission-rules)。
+多層防御のために両方を使用してください。プロンプトインジェクションによって Claude の意思決定が回避された場合でも、サンドボックスの制限は引き続き適用されるためです。サンドボックス設定と権限ルールの両方に含まれるパスとドメインは、[最終的なサンドボックス設定にマージされます](/docs/ja/sandboxing#permission-rules)。
 
-サンドボックス化を有効にして `autoAllowBashIfSandboxed` をデフォルトの `true` のままにすると、サンドボックス化された Bash コマンドは、権限に bare `Bash` ask ルール、または[同等の `Bash(*)` フォーム](#match-all-uses-of-a-tool)が含まれている場合でも、プロンプトなしで実行されます。サンドボックス境界がそのツール全体のプロンプトの代わりになります。
+サンドボックス化を有効にし、`autoAllowBashIfSandboxed` をデフォルトの `true` のままにしている場合、権限に単独の `Bash` 確認ルール、または[同等の `Bash(*)` 形式](#match-all-uses-of-a-tool)が含まれていても、サンドボックス化された Bash コマンドは確認なしで実行されます。サンドボックスの境界が、このツール全体に対する確認の代わりになるためです。
 
-[プランモード](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode)では、Claude Code はこの置き換えをスキップします。ask ルールがない場合、[組み込みの読み取り専用コマンド](#read-only-commands)は引き続きプロンプトなしで実行され、その他のシェルコマンドはプランニング中に通常の権限フローを通過します。プランモードの詳細については、[プランモード](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode)を参照して、Claude Code がそこでコマンドをどのようにゲートするかを確認してください。bare `Bash` ask ルールがある場合、サンドボックス化された読み取り専用コマンドを含むすべての Bash コマンドがプロンプトされます。これはサンドボックス化の外側と同じです。v2.1.212 より前では、置き換えはプランモードでも適用されていました。
+[plan モード](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode)では、Claude Code はこの代替を行いません。確認ルールがない場合、[組み込みの読み取り専用コマンド](#read-only-commands)は引き続き確認なしで実行され、それ以外のシェルコマンドは、計画中である間は通常の権限フローを経由します。plan モードで Claude Code がコマンドをどのように制御するかについては、[plan モード](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode)を参照してください。単独の `Bash` 確認ルールがある場合は、サンドボックス化されていない場合と同様に、サンドボックス化された読み取り専用コマンドを含むすべての Bash コマンドで確認が求められます。v2.1.212 より前は、この代替は plan モードでも適用されていました。
 
-これらのチェックは引き続き適用されます。
+次のチェックは引き続き適用されます。
 
-* `Bash(git push *)` のようなコンテンツスコープの ask ルールは引き続きプロンプトを強制します
-* 明示的な deny ルールは引き続き適用されます
-* [重要なパス](/docs/ja/permission-modes#critical-paths)をターゲットとする `rm` または `rmdir` コマンドは引き続き通常の権限フローを通過します
+* `Bash(git push *)` のような内容を限定した確認ルールは、引き続き確認を強制します
+* 明示的な拒否ルールは引き続き適用されます
+* [重要なパス](/docs/ja/permission-modes#critical-paths)を対象とする `rm` または `rmdir` コマンドは、引き続き通常の権限フローを経由します
+* [自動許可モード](/docs/ja/sandboxing#auto-allow-mode)で説明されているように、その他のサンドボックス化されたコマンドも通常の権限フローを経由する場合があります
 
-除外されたコマンドなど、サンドボックス化されて実行されないコマンドは、通常どおり bare `Bash` ask ルールを尊重します。この動作を変更するには、[サンドボックスモード](/docs/ja/sandboxing#sandbox-modes)を参照してください。
+除外されたコマンドなど、サンドボックス内で実行されないコマンドは、通常どおり単独の `Bash` 確認ルールに従います。この動作を変更するには、[サンドボックスモード](/docs/ja/sandboxing#sandbox-modes)を参照してください。
 
 <span id="managed-only-settings" />
 

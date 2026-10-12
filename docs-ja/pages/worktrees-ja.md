@@ -129,7 +129,7 @@ Apply the requested refactor across every affected file, then run the tests
 and report the results.
 ```
 
-各サブエージェントは一時的な worktree を取得し、サブエージェントが変更なしで完了すると Claude Code がそれを自動的に削除します。変更を含む worktree は、[以下の定期スイープ](#clean-up-subagent-and-background-session-worktrees)が作業を失わずに削除できるようになるまでディスク上に残ります。
+各サブエージェントは一時的な worktree を取得し、サブエージェントが変更なしで完了すると Claude Code がそれを自動的に削除します。変更を含む worktree は、[以下の定期スイープ](#clean-up-subagent-and-background-session-worktrees)が作業を失わずに削除できるようになるまでディスク上に残ります。[WorktreeCreate フック](/docs/ja/hooks#worktreecreate)が作成した worktree については、代わりに [WorktreeRemove](/docs/ja/hooks#worktreeremove) を参照してください。
 
 サブエージェントの worktree は `--worktree` と同じ[ベースブランチ](#choose-the-base-branch)を使用するため、`worktree.baseRef` が `"head"` に設定されていない限り、リポジトリのデフォルトブランチからブランチします。
 

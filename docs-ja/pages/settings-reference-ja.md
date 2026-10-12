@@ -1931,7 +1931,7 @@ Claude Code がサンドボックス化された Bash コマンドを権限プ�
 
 * **Scope**: [`Any file`](#scopes)
 * **Type**: ブール値
-  * `true`: Claude Code はサンドボックス化された Bash コマンドを権限プロンプトなしで実行します。`deny` ルールとコンテンツスコープ付き `ask` ルールの対象です。`CLAUDE_CODE_SUBPROCESS_ENV_SCRUB` は自動許可をオフにします
+  * `true`: Claude Code はサンドボックス化された Bash コマンドを権限プロンプトなしで実行します。ただし、[自動許可モード](/docs/ja/sandboxing#auto-allow-mode)で説明されているケースを除きます。`CLAUDE_CODE_SUBPROCESS_ENV_SCRUB` は自動許可をオフにします
   * `false`: サンドボックス化されたコマンドは通常の権限フローを通過するため、許可ルールと権限モードが決定します。`/sandbox` **Mode** タブはこれを通常権限モードと呼びます
 * **Default**: `true`
 
@@ -1946,7 +1946,7 @@ Claude Code がサンドボックス化された Bash コマンドを権限プ�
 }
 ```
 
-[サンドボックスモード](/docs/ja/sandboxing#sandbox-modes)を参照して、自動許可モードが何をプロンプトするか、および plan モードでどのように動作するかを確認してください。
+自動許可モードで引き続きプロンプトが表示される操作と、plan モードでの動作については、[自動許可モード](/docs/ja/sandboxing#auto-allow-mode)を参照してください。
 
 <h3 id="sandbox-excludedcommands">
   `sandbox.excludedCommands`

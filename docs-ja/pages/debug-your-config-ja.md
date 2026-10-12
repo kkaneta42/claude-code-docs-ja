@@ -98,18 +98,60 @@ Claude が指示を無視したり、設定した機能が表示されない場�
 
 セーフモードでも、組織からの管理フックと設定ポリシーは引き続き適用されます。管理対象のプラグイン、スキル、`CLAUDE.md`、MCP サーバーはオフになります。
 
-セーフモードで問題が続く場合、または設定自体が疑わしい場合は、通常のセットアップから何も読み込まないセッションと比較してください。[`CLAUDE_CONFIG_DIR`](/docs/ja/env-vars) を空のディレクトリに指定して `~/.claude` の下のすべてをバイパスし、`.claude` フォルダ、`.mcp.json`、または `CLAUDE.md` がないディレクトリから起動して、プロジェクト設定もスキップします。
+セーフモードで問題が続く場合、または設定自体が疑わしい場合は、自分の設定を一切使わないセッションを開始し、問題が再現するかどうかを確認してください。
 
-```bash theme={null}
-cd /tmp && CLAUDE_CONFIG_DIR=/tmp/claude-clean claude
-```
+<Steps>
+  <Step title="空のディレクトリを作成して移動する">
+    Claude Code のセッションを実行していない状態のシェルで、ディレクトリを作成して移動します。
 
-クリーンセッションには、ユーザーまたはプロジェクト設定、hooks、MCP サーバー、plugins、またはメモリがありません。最初の起動時には、テーマ選択から始まる最初の実行セットアップ画面が表示されることを想定してください。それらが表示される場合、クリーン設定ディレクトリが有効です。同じディレクトリでの後続の起動では、Claude Code がそこにオンボーディング状態を保存するため、これらの画面はスキップされます。
+    <Tabs>
+      <Tab title="Bash または Zsh">
+        ```bash theme={null}
+        mkdir -p ~/claude-clean/empty && cd ~/claude-clean/empty
+        ```
+      </Tab>
 
-* 組織がそれらをデプロイする場合、マネージド設定は引き続き適用されます。Claude Code は MDM プロファイル、レジストリポリシー、および設定ディレクトリの外の場所から `managed-settings.json` を読み取り、クリーンセッションが認証情報を取得した後、[サーバーマネージド設定を再度取得](/docs/ja/server-managed-settings#fetch-and-caching-behavior)します
-* ログインするよう再度促されます
+      <Tab title="PowerShell">
+        ```powershell theme={null}
+        New-Item -ItemType Directory -Force "$HOME/claude-clean/empty" | Out-Null
+        Set-Location "$HOME/claude-clean/empty"
+        ```
+      </Tab>
+    </Tabs>
+  </Step>
 
-問題がここで消える場合、原因は実際の `~/.claude` またはプロジェクト `.claude` ファイルのどこかにあります。ファイルを一度に 1 つずつ再導入します。ファイルを一時ディレクトリにコピーするか、プロジェクトから起動して、どれが原因かを見つけます。クリーンセッションで問題が続く場合、原因はユーザーおよびプロジェクト設定の外にあります。`/status` を実行してマネージド設定が有効かどうかを確認し、Claude Code に影響を与える[環境変数](/docs/ja/env-vars)を探してから、[トラブルシューティング](/docs/ja/troubleshooting)を参照してください。
+  <Step title="クリーンな設定ディレクトリで Claude Code を起動する">
+    同じシェルから、[`CLAUDE_CONFIG_DIR`](/docs/ja/env-vars) を `~/.claude` の代わりに新しいディレクトリに設定し、[`--setting-sources user`](/docs/ja/cli-reference#cli-flags) を渡して、`.claude/settings.json`、`CLAUDE.md`、`.mcp.json` などのプロジェクト設定をオフにします。
+
+    <Tabs>
+      <Tab title="Bash または Zsh">
+        この変数は今回の起動にのみ適用されます。
+
+        ```bash theme={null}
+        CLAUDE_CONFIG_DIR=~/claude-clean/config claude --setting-sources user
+        ```
+      </Tab>
+
+      <Tab title="PowerShell">
+        この変数はこの PowerShell セッションの残りの間ずっと設定されたままになるため、同じウィンドウでの以降の `claude` の起動でもクリーンなディレクトリが使われ続けます。通常のディレクトリに戻すには、次回の起動前に `Remove-Item Env:CLAUDE_CONFIG_DIR` を実行してください。
+
+        ```powershell theme={null}
+        $env:CLAUDE_CONFIG_DIR = "$HOME/claude-clean/config"
+        claude --setting-sources user
+        ```
+      </Tab>
+    </Tabs>
+
+    最初の起動時には、初回実行時のセットアップ画面が再び表示されます。これはクリーンな設定ディレクトリが有効になっていることを示しています。管理設定は引き続き適用され、claude.ai アカウントでログインした場合は[コネクタ](/docs/ja/mcp#use-mcp-servers-from-claude-ai)も引き続き読み込まれます。
+  </Step>
+
+  <Step title="問題を再現する">
+    クリーンなセッションで、問題を引き起こした操作を繰り返します。
+
+    * **問題が消えた場合**: 原因はユーザー設定またはプロジェクト設定にあります。`~/.claude.json` と `~/.claude` 内のファイルを 1 つずつ `~/claude-clean/config` にコピーします。どのファイルでも問題が再発しない場合は、同じシェルでプロジェクトディレクトリに移動し、`--setting-sources user` を付けずに Claude Code を起動します。Bash または Zsh では、`CLAUDE_CONFIG_DIR=~/claude-clean/config claude` を実行します。PowerShell では変数がまだ設定されているため、`claude` を実行します。
+    * **問題が続く場合**: 原因はユーザー設定とプロジェクト設定の外にあります。セッションで `/status` を実行して管理設定を確認し、シェルの[環境変数](/docs/ja/env-vars)を確認してから、[トラブルシューティング](/docs/ja/troubleshooting)を参照してください。
+  </Step>
+</Steps>
 
 <h2 id="check-common-causes">
   一般的な原因を確認する
@@ -127,7 +169,7 @@ cd /tmp && CLAUDE_CONFIG_DIR=/tmp/claude-clean claude
 | `settings.json` の値が無視されているように見える | 同じキーが `settings.local.json` で設定されている | `settings.local.json` は `settings.json` をオーバーライドし、両方とも `~/.claude/settings.json` をオーバーライドします。[設定の優先順位](/docs/ja/settings#settings-precedence)を参照してください。 |
 | Skill が `/skills` に表示されない | Skill ファイルがフォルダ内ではなく `.claude/skills/name.md` にある | フォルダを使用して、その中に `SKILL.md` を配置してください。`.claude/skills/name/SKILL.md` です。 |
 | Skill が `/skills` に表示されるが Claude が呼び出さない | Skill の frontmatter に `disable-model-invocation: true` がある、またはその説明がリクエストの表現方法と一致しない | `/skills` のバッジを確認してください。「user-only」ラベルは Claude が自動的にトリガーしないことを意味します。[skill 呼び出し](/docs/ja/skills)を参照してください。 |
-| サブディレクトリの `CLAUDE.md` 指示が無視されているように見える | サブディレクトリファイルはセッション開始時ではなく、オンデマンドで読み込まれます | [サブディレクトリファイルが読み込まれるタイミング](/docs/ja/memory#how-claude-md-files-load)を参照してください。v2.1.288 より前は、Read ツールのみがそれらを読み込んでいました。 |
+| サブディレクトリの `CLAUDE.md` 指示が無視されているように見える | サブディレクトリファイルはセッション開始時ではなく、オンデマンドで読み込まれます | サブディレクトリの `CLAUDE.md` を読み込むには、そのサブディレクトリ内の別のファイルを読むよう Claude に依頼してください。[サブディレクトリファイルが読み込まれるタイミング](/docs/ja/memory#how-claude-md-files-load)を参照してください。 |
 | サブエージェントが `CLAUDE.md` 指示を無視する | 組み込みの Explore および Plan エージェントは `CLAUDE.md` をスキップします。カスタムサブエージェントは、その定義が [`omitClaudeMd`](/docs/ja/sub-agents#supported-frontmatter-fields) を設定しない限り、メイン会話と同じ方法で読み込みます | Explore または Plan の場合、委譲プロンプトで指示を再度述べてください。`omitClaudeMd` を設定するサブエージェントの場合、フィールドを削除してください。その他のカスタムサブエージェントの場合、重要な指示をエージェントファイルの本体に配置してください。これはエージェントのシステムプロンプトになります。[起動時に読み込まれるもの](/docs/ja/sub-agents#what-loads-at-startup)を参照してください。 |
 | クリーンアップロジックがセッション終了時に実行されない | `SessionEnd` hook が設定されていない | `settings.json` に `SessionEnd` hook を追加してください。[hook イベントリスト](/docs/ja/hooks#hook-events)を参照してください。 |
 | `.mcp.json` の MCP サーバーが読み込まれない | ファイルが `.claude/` の下にあるか、そのサーバーが VS Code の `mcp.json` のように、`mcpServers` ではなくトップレベルの `servers` キーの下にある | プロジェクト MCP 設定はリポジトリルートの `.mcp.json` に配置され、`.claude/` 内ではなく、`mcpServers` キーの下にサーバーがあります。[MCP 設定](/docs/ja/mcp)を参照してください。 |

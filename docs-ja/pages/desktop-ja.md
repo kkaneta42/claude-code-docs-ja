@@ -913,6 +913,8 @@ Desktop はリンクを開いたときに、未送信のテキストを置き換
 
 各エントリには `id`、`name`、および `sshHost` が必要です。`sshPort` および `sshIdentityFile` フィールドはオプションです。ユーザーは、自分の `~/.claude/settings.json` に `sshConfigs` を追加することもできます。
 
+`sshHost` から `user@` を省略した場合、Desktop は各開発者の `~/.ssh/config` がそのホストに対して設定している `User` として接続し、設定がない場合は開発者自身のコンピューター上のユーザー名で接続します。
+
 <h4 id="restrict-which-ssh-hosts-users-can-connect-to">
   ユーザーが接続できる SSH ホストを制限する
 </h4>
@@ -936,6 +938,57 @@ Desktop はリンクを開いたときに、未送信のテキストを置き換
 パターンは大文字と小文字を区別しません。`*` はすべてのホストと一致し、`*.example.com` は `example.com` とすべてのサブドメインと一致します。その他はすべて完全一致です。チェックは `ssh -G` を経由した `~/.ssh/config` 解決後のホスト名に対して実行されるため、`Host` エイリアスと `ProxyCommand`/`ProxyJump` エントリは、解決された `HostName` が一致する限り許可されます。
 
 `sshHostAllowlist` は管理設定からのみ読み取られます。ユーザーまたはプロジェクト設定の値は無視されます。Claude Desktop アプリのみがこの設定を尊重します。Claude Code CLI と IDE 拡張機能はこれを読み取らず、Bash ツールを通じて実行される `ssh` コマンドを制限しません。これは Desktop アプリが接続するホストを管理し、ネットワーク出力ではないため、ハード境界が必要な場合は組織のネットワークまたはゼロトラストコントロールと組み合わせてください。
+
+<h4 id="turn-off-local-sessions-and-distribute-ssh-connections">
+  ローカルセッションをオフにして SSH 接続を配布する
+</h4>
+
+ローカルセッションをオフにし、SSH セッションを選択したホストに制限するには、[`disableDesktopLocalSessions`](/docs/ja/settings-reference#disabledesktoplocalsessions)、[`sshConfigs`](#pre-configure-ssh-connections-for-your-team)、[`sshHostAllowlist`](#restrict-which-ssh-hosts-users-can-connect-to) を一緒にデプロイします。
+
+<Note>
+  この構成は、Claude アカウントでサインインするユーザー向けです。[サードパーティプロバイダー](/docs/ja/third-party-integrations)を使用する場合、SSH セッションはデフォルトでオフになっており、`sshHostAllowlist` を設定するとオンにできます。これらのキーをデプロイする前に、[SSH remote sessions in Claude Desktop on 3P](https://claude.com/docs/third-party/claude-desktop/ssh-remote-sessions) をお読みください。
+</Note>
+
+次の例は、ローカルセッションをオフにし、1 つの接続を追加して、SSH セッションをその接続のホストに制限します：
+
+```json managed-settings.json theme={null}
+{
+  "disableDesktopLocalSessions": true,
+  "sshConfigs": [
+    {
+      "id": "shared-dev-vm",
+      "name": "Shared Dev VM",
+      "sshHost": "dev.example.com"
+    }
+  ],
+  "sshHostAllowlist": ["dev.example.com"]
+}
+```
+
+これらのキーはデスクトップアプリに適用されます。CLI、Cowork、クラウドセッションなど、Claude Code を実行する他の方法には影響しません：
+
+* **CLI**：どのキーも、開発者が自分のコンピューターで Claude Code CLI を実行することを妨げません
+* **Cowork**：どのキーも [Cowork](https://claude.com/docs/cowork/overview) セッションや Cowork のスケジュールタスクには適用されません
+* **クラウドセッション**：どのキーも[クラウドセッション](#cloud-sessions)を利用できるかどうかを変更しません。クラウドセッションをオフにするには、[Admin console controls](#admin-console-controls) の **Cloud sessions** 設定を使用します。
+
+この例を応用する場合は、ホスト名と Desktop のバージョンを確認してください：
+
+* **ホスト名**：`sshHostAllowlist` のパターンが、`user@` を除いた各 `sshConfigs` エントリのホスト名と一致することを確認してください。一致しない場合、開発者はその接続に接続できません。Desktop がホスト名を照合する方法については、[ユーザーが接続できる SSH ホストを制限する](#restrict-which-ssh-hosts-users-can-connect-to)を参照してください。
+* **バージョン**：`disableDesktopLocalSessions` には Claude Desktop v1.37937.0 以降が必要です
+
+3 つのキーは、配信する[管理ソース](/docs/ja/managed-settings#how-claude-code-combines-managed-sources)のうち最上位のもの 1 つにまとめて記述してください。[サーバー管理設定](/docs/ja/server-managed-settings)を配信する場合は、各コンピューターの最上位の MDM ポリシーまたは管理設定ファイルにも 3 つのキーのコピーを保持してください。Desktop は起動時にサーバー管理設定を取得し、取得が成功するまではコンピューター上のコピーが適用されます。
+
+設定が適用されていることを確認するには、開発者のコンピューターで次を確認します：
+
+<Steps>
+  <Step title="環境ドロップダウンを確認する">
+    Desktop を終了して再度開き、プロンプトボックスの環境ドロップダウンを開きます。**Local** がグレーアウトされ、**SSH** の下に **Shared Dev VM** が表示されます。**Local** がまだ利用できる場合は、Desktop のバージョン、ファイルが有効な JSON であるかどうか、およびコンピューターがどの管理ソースを読み取っているかを確認してください。
+  </Step>
+
+  <Step title="許可リストにないホストを追加する">
+    `other.example.com` など、許可リストにないホスト名で [SSH 接続を追加](#ssh-sessions)します。Desktop は接続を保存しますが、接続を拒否し、組織の設定でその接続が許可されていないことを示します。
+  </Step>
+</Steps>
 
 <h2 id="enterprise-configuration">
   エンタープライズ設定
