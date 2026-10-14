@@ -888,6 +888,8 @@ Haiku 5.5 のリクエストは、プロンプトが 100K トークンを超え�
 * ネイティブの 1M ウィンドウで実行されるモデルは、ウィンドウが埋まる前に、デフォルトで約 967K トークンの時点で圧縮します。これには、Fable モデル、Sonnet 5 以降、Haiku 5.5、Opus 4.7 以降が含まれます。カスタムの `ANTHROPIC_BASE_URL` を使用している場合は、[ゲートウェイ経由のコンテキストウィンドウ](#context-window-behind-a-gateway)を参照してください
 * [LLM ゲートウェイ](/docs/ja/llm-gateway)のエイリアスなど、Claude Code が認識できないモデル ID を使用するセッションは、Claude Code がその ID に対して想定するコンテキストウィンドウで圧縮します。[ゲートウェイまたはカスタムモデル ID のウィンドウを修正する](#correct-the-window-for-a-gateway-or-custom-model-id)を参照してください
 
+会話をアイドル状態のまま放置した場合にも Claude Code が圧縮するタイミングについては、[`idleCompaction`](/docs/ja/settings-reference#idlecompaction) 設定を参照してください。
+
 <h3 id="correct-the-window-for-a-gateway-or-custom-model-id">
   ゲートウェイまたはカスタムモデル ID のウィンドウを修正する
 </h3>

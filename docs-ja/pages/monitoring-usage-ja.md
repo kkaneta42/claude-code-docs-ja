@@ -1374,7 +1374,7 @@ API リクエストが複数回の試行の後に失敗したときに 1 回ロ�
 * `pre_tokens`: 圧縮前のおおよそのトークン数
 * `post_tokens`: 圧縮後のおおよそのトークン数
 * `error`: 圧縮が失敗した場合のエラーメッセージ
-* `precompute_reuse`: `trigger` が `"manual"` の場合にのみ設定されます。自動圧縮では、コンテキストウィンドウが埋まる前にバックグラウンドで要約を準備できます。この属性は、`/compact` がその準備済みの要約を再利用したかどうかを記録します。`"hit"` は再利用されたことを意味し、`"miss_custom_instructions"`、`"miss_hook"`、`"miss_not_ready"` は、代わりに新しい要約が計算された理由を示します
+* `precompute_reuse`: `trigger` が `"manual"` の場合、または `trigger` を `"auto"` として報告する[アイドル時の圧縮](/docs/ja/settings-reference#idlecompaction)の場合にのみ設定されます。自動圧縮はコンテキストウィンドウがいっぱいになる前にバックグラウンドで要約を準備することがあり、この属性は圧縮がその準備済みの要約を再利用したかどうかを記録します。`"hit"` は再利用されたことを意味します。`"miss_custom_instructions"`、`"miss_hook"`、`"miss_not_ready"` は、代わりに新しい要約が計算された理由を示します
 
 <h4 id="subagent-completed-event">
   サブエージェント完了イベント

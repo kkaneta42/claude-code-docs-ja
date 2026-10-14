@@ -46,7 +46,7 @@ Code タブでは、各会話は **セッション** です：独自のチャッ
 
 最初のメッセージを送信する前に、プロンプト領域で 4 つのことを設定してください：
 
-* **環境**：Claude が実行される場所を選択します。ローカルマシンの場合は**Local**、[クラウドセッション](#cloud-sessions)の場合は**Cloud**、管理するリモートマシンの場合は[**SSH 接続**](#ssh-sessions)を選択するか、Windows の場合は[**WSL ディストリビューション**](/docs/ja/desktop-wsl)を選択します。[環境設定](#environment-configuration)を参照してください。
+* **環境**：Claude が実行される場所を選択します。ローカルマシンの場合は**Local**、アプリを閉じた後も継続する[クラウドセッション](#cloud-sessions)の場合は**Cloud**、管理するリモートマシンの場合は[**SSH 接続**](#ssh-sessions)を選択するか、Windows の場合は[**WSL ディストリビューション**](/docs/ja/desktop-wsl)を選択します。SSH セッション内のタスクは [Desktop が切断されている間も継続できます](#keep-a-task-running-while-desktop-is-disconnected)が、Claude アカウントを使用している場合は、サインインの有効期限が切れると停止することがあります。[環境設定](#environment-configuration)を参照してください。
 * **プロジェクトフォルダ**：Claude が作業するフォルダまたはリポジトリを選択します。クラウドセッションの場合、[複数のリポジトリ](#run-long-running-tasks-in-the-cloud)を追加できます。
 * **モデル**：送信ボタンの横のドロップダウンから[モデル](/docs/ja/model-config#available-models)を選択します。セッション中にこれを変更できます。
 * **権限モード**：[モードセレクタ](#choose-a-permission-mode)から Claude がどの程度の自律性を持つかを選択します。セッション中にこれを変更できます。
@@ -236,7 +236,9 @@ Code タブはペインを任意のレイアウトで配置できるように構
   ターミナルでコマンドを実行する
 </h3>
 
-統合ターミナルを使用すると、別のアプリに切り替えることなく、セッションと並行してコマンドを実行できます。セッションのタイトルバーにある**Terminal**をクリックするか、macOS または Windows で**Ctrl+\`**を押します。ターミナルはセッションの作業ディレクトリで開き、Claude と同じ環境を共有するため、`npm test`や`git status`などのコマンドは Claude が編集しているのと同じファイルを見ます。2 番目のターミナルタブを開くには、ターミナルペインヘッダーの**+**をクリックするか、チャットのフォルダを右クリックして**Open in terminal**を選択します。ターミナルはローカルおよび [SSH](#ssh-sessions) セッションで利用可能です。
+統合ターミナルを使用すると、別のアプリに切り替えることなく、セッションと並行してコマンドを実行できます。セッションのタイトルバーにある**Terminal**をクリックするか、macOS または Windows で**Ctrl+\`**を押します。ターミナルはセッションの作業ディレクトリで開き、Claude と同じ環境を共有するため、`npm test`や`git status`などのコマンドは Claude が編集しているのと同じファイルを見ます。2 番目のターミナルタブを開くには、ターミナルペインヘッダーの**+**をクリックするか、チャットのフォルダを右クリックして**Open in terminal**を選択します。
+
+ターミナルはローカルおよび [SSH](#ssh-sessions) セッションで利用可能ですが、[Windows リモートマシン](#windows-remote-machines)では制限があります。
 
 <h3 id="open-and-edit-files">
   ファイルを開いて編集する
@@ -467,6 +469,10 @@ Claude は新しいセッションを提案することもできます。現在�
 クラウドセッションは複数のリポジトリもサポートしています。クラウド環境を選択した後、選択されたリポジトリの横の\*\*+\*\*ボタンをクリックして、セッションに追加のリポジトリを追加します。各リポジトリは独自のブランチセレクタを取得します。これは共有ライブラリとそのコンシューマーの更新など、複数のコードベースにまたがるタスクに便利です。
 
 クラウドセッションがどのように機能するかについての詳細については、[クラウドで Claude Code を使用する](/docs/ja/claude-code-on-the-web)を参照してください。1 つの作業本体が多くのクラウドセッションを必要とする場合、サイドバーで**Projects**を選択して[プロジェクト](/docs/ja/claude-projects)を作成します。Claude はそこから 1 つの会話でセッションを開始して追跡します。
+
+<Note>
+  [SSH セッション](#ssh-sessions)のタスクも [Desktop が切断されている間も実行を続ける](#keep-a-task-running-while-desktop-is-disconnected)ことができますが、Claude アカウントを使用している場合は、サインインの有効期限が切れると停止することがあります。
+</Note>
 
 <h3 id="continue-in-another-surface">
   別のサーフェスで続行する
@@ -772,7 +778,7 @@ Claude が別のポートを選択すると、割り当てられたポートを 
 
 * **Local**：マシンで実行され、ファイルに直接アクセスできます
 * **Cloud**：デフォルトで Anthropic が管理するインフラストラクチャで実行されます。アプリを閉じても、セッションは続行されます。
-* **SSH**：SSH 経由で接続するリモートマシンで実行されます。たとえば、独自のサーバー、クラウド VM、または dev コンテナなどです。
+* **SSH**：SSH 経由で接続するリモートマシンで実行されます。たとえば、独自のサーバー、クラウド VM、または dev コンテナなどです。実行中のタスクは [Desktop が切断されている間も続行できます](#keep-a-task-running-while-desktop-is-disconnected)が、Claude アカウントの場合はサインインの期限が切れると停止することがあります。
 * **WSL**（Windows）：マシン上の [WSL 2 ディストリビューション](/docs/ja/desktop-wsl)内で実行され、その Linux ツールチェーンとネイティブパスを使用します
 
 <h3 id="local-sessions">
@@ -812,6 +818,10 @@ Claude が別のポートを選択すると、割り当てられたポートを 
 
 SSH セッションを使用すると、デスクトップアプリをインターフェイスとして使用しながら、リモートマシンで Claude Code を実行できます。これは、クラウド VM、dev コンテナ、または特定のハードウェアまたは依存関係を持つサーバーに存在するコードベースで作業するのに便利です。
 
+<Note>
+  [サードパーティプロバイダー](/docs/ja/third-party-integrations)で Desktop を使用する場合、SSH セッションには個別のセットアップが必要です。[SSH remote sessions in Claude Desktop on 3P](https://claude.com/docs/third-party/claude-desktop/ssh-remote-sessions) を参照してください。
+</Note>
+
 SSH 接続を追加するには、セッションを開始する前にプロンプトボックスの環境ドロップダウンを開き、**SSH > Add SSH connection…** を選択して接続の詳細を入力します：
 
 * **Name**：この接続のフレンドリーラベル
@@ -822,7 +832,233 @@ SSH 接続を追加するには、セッションを開始する前にプロン�
 
 追加されると、接続は環境ドロップダウンの **SSH** の下に表示されます。それを選択して、そのマシンでセッションを開始します。Claude はリモートマシンで実行され、そのファイルとツールにアクセスできます。
 
-リモートマシンは Linux または macOS を実行する必要があります。Desktop は初回接続時にリモートマシンに Claude Code を自動的にインストールします。接続されると、SSH セッションは権限モード、コネクタ、プラグイン、および MCP サーバーをサポートします。
+リモートマシンでは Linux、macOS、または [Windows](#windows-remote-machines) を実行できます。Desktop は初回接続時にリモートマシンに Claude Code を自動的にインストールします。接続されると、SSH セッションは権限モード、コネクタ、プラグイン、および MCP サーバーをサポートします。
+
+<h4 id="remote-machine-requirements-for-ssh-sessions">
+  SSH セッションのリモートマシン要件
+</h4>
+
+Linux または macOS のリモートマシンには、サポートされているプロセッサ、SFTP を備えた SSH サーバー、`noexec` でマウントされていないインストールフォルダ、動作するシェル、およびネットワークアクセスが必要です。接続する前に、またはログイン後に接続が失敗した場合に、各要件を確認してください：
+
+* **システム**：x86\_64 または arm64 プロセッサ。マシンは Claude Code の[システム要件](/docs/ja/setup#system-requirements)も満たす必要があります。
+* **SFTP**：SSH サーバーが SFTP サブシステムを提供している必要があります。これは `sshd_config` の `Subsystem sftp` 行で有効になります。確認するには、コンピューターのターミナルで `sftp` を使用して同じホストとポートに接続します。正常に動作しているサーバーでは `sftp>` プロンプトが表示されます。
+* **接続あたりのセッション数**：macOS と Linux の Desktop は、1 つの SSH 接続で複数のセッションを開きます。サーバーの `sshd_config` で `MaxSessions 1` が設定されている場合は、OpenSSH のデフォルトである 10 などに引き上げてください。
+* **インストールフォルダ**：Desktop は、ホームディレクトリの `~/.claude/remote/` の下にヘルパープログラムと Claude Code をインストールします。そこからそれらを実行するため、そのフォルダを `noexec` でマウントされたファイルシステム上に置くことはできません。接続する各ユーザーのホームディレクトリに約 1 GB のディスク容量を確保してください。
+* **シェル**：リモートマシン上のアカウントに設定されているシェルは、Bash、Zsh、`sh` と同様に、SSH 経由で送信されたコマンドを実行できる必要があります
+* **ネットワーク**：Claude Code はリモートマシンで実行され、そこからネットワークリクエストを行うため、マシンには [Claude Code が必要とするネットワークアクセス](/docs/ja/network-config#network-access-requirements)が必要です。マシンが Claude Code をダウンロードできない場合、Desktop はコンピューター上でダウンロードしてアップロードします。Claude Code のその他のリクエストは引き続きリモートマシンから送信されます。
+
+<h4 id="use-your-ssh-configuration-on-macos-and-linux">
+  macOS と Linux で SSH 設定を使用する
+</h4>
+
+macOS と Linux では、Desktop はコンピューター上の OpenSSH クライアントを実行して接続するため、`~/.ssh/config` が使用されます。OpenSSH クライアントを介した接続には Claude Desktop v1.37937.0 以降が必要です。そのファイルの `Host` 名を **SSH host** フィールドに入力すると、`HostName`、`User`、`IdentityFile`、`CertificateFile`、`ProxyJump`、`ProxyCommand` など、そのエントリの設定が使用されます。
+
+接続を追加する前に、コンピューターのターミナルでクライアントとエントリを確認してください：
+
+* **クライアントのバージョン**：`ssh -V` を実行します。クライアントは OpenSSH 7.6 以降である必要があります。
+* **エントリ**：`ssh devbox` のように、`Host` 名を指定して `ssh` を実行します。失敗する場合は、先にエントリを修正してください。
+
+**SSH port** と **SSH key (optional)** フィールドは空のままにできます。いずれかを入力した場合、Desktop はそれをエントリと組み合わせて使用します：
+
+* **SSH port**：ここに入力した値は、エントリの `Port` を上書きします
+* **SSH key (optional)**：Desktop は、エントリの `IdentityFile` と SSH エージェント内の鍵に加えて、選択した鍵ファイルを提示します
+
+<h5 id="reach-a-machine-behind-a-jump-host">
+  ジャンプホストの背後にあるマシンに接続する
+</h5>
+
+ジャンプホスト（踏み台、バスティオンとも呼ばれます）の背後にあるマシンに接続するには、エントリで `ProxyJump` または `ProxyCommand` を設定します。次のエントリは、`bastion.example.com` を経由して `devbox.internal.example.com` に接続します：
+
+```text ~/.ssh/config theme={null}
+Host devbox
+  HostName devbox.internal.example.com
+  User alice
+  ProxyJump bastion.example.com
+```
+
+**SSH host** フィールドに `devbox` と入力します。
+
+<h5 id="raise-the-ssh-connection-timeout">
+  SSH 接続のタイムアウトを延長する
+</h5>
+
+SSH 設定でホストに `ConnectTimeout` が設定されていない場合、Desktop は `ssh` に接続のための 30 秒を与えます。ジャンプホストまたは `ProxyCommand` を経由する場合、この時間にはルートの接続にかかる時間が含まれます。ルートにそれ以上の時間が必要な場合は、エントリにより大きな値を追加します：
+
+```text ~/.ssh/config theme={null}
+Host devbox
+  HostName devbox.internal.example.com
+  User alice
+  ProxyJump bastion.example.com
+  ConnectTimeout 120
+```
+
+`ssh` はホストに対して最初に見つかった値を使用するため、このエントリは `ConnectTimeout` を設定する `Host *` エントリよりも上に配置してください。確認するには、コンピューターのターミナルで `ssh -G devbox` を実行します。その出力には `connecttimeout 120` が含まれます。値を変更した後は、Desktop を終了して再度開いてください。
+
+<h4 id="windows-remote-machines">
+  Windows リモートマシン
+</h4>
+
+Windows リモートマシンには Claude Desktop v2.31226.0 以降が必要です。
+
+Microsoft の OpenSSH Server を使用してください。マシンは x64 と ARM64 のどちらでもかまいません。SSH サーバーが起動するシェルには、`cmd.exe`、Windows PowerShell 5.1、または Git Bash を使用できます。
+
+Windows リモートマシンは、Linux リモートマシンに比べてテストが少なくなっています。依存する前に、そこで自分の作業を試してください。
+
+Windows リモートマシンでは、特に次のような制限があります：
+
+* **ターミナル**：フォルダが `C:/projects/app` のような Windows パスであるセッションでは、[ターミナル](#run-commands-in-the-terminal)は開きません
+* **サンドボックス**：Claude Code はそこではネイティブ Windows 上で実行され、コマンドはサンドボックス化されずに実行されます。[サンドボックスが実行される場所](/docs/ja/sandboxing)を参照してください。
+* **プラグイン**：Desktop は、`:` を含む名前など、Windows で保存できないファイル名またはフォルダ名を含むプラグインをコピーしません。セッションには、Desktop が除外したプラグインが一覧表示されます。
+* **MCP サーバー**：一部の Windows リモートマシンでは、`claude_desktop_config.json` の MCP サーバーに対する Claude の呼び出しが Desktop を経由するため、[Desktop が切断されている間](#limits-while-desktop-is-disconnected)は Claude がそれらのツールを呼び出せません。Claude Desktop v2.37337.0 より前では、これはすべての Windows リモートマシンに当てはまります。
+* **worktree**：worktree は `<project-root>/.claude/worktrees/` に作成されます。[別のフォルダを選択](#choose-where-ssh-session-worktrees-go)しても、Desktop はそれを無視します。
+* **以前のメッセージ**：SSH サーバーのシェルが `cmd.exe` または Windows PowerShell の場合、セッションの以前のメッセージを表示するには、接続が必要になることがあります
+* **フォーク**：SSH サーバーのシェルが `cmd.exe` または Windows PowerShell の場合、セッションをフォークできるのは最初のメッセージの時点のみです
+* **切断中の実行**：タスクが [Desktop の切断中も実行を続ける](#keep-a-task-running-while-desktop-is-disconnected)のは、プログラムを起動した接続が終了した後もそのプログラムが存続することを SSH サーバーが許可している場合のみです。確認するには、[リモートマシンをテスト](#prepare-a-long-task)してください。
+* **残存プロセス**：セッションの終了後も、Claude Code が起動したプログラムが実行を続けている可能性があるため、マシンを確認してください。Desktop がインストールする[バックグラウンドヘルパー](#keep-a-task-running-while-desktop-is-disconnected)は、そこでは自動的に停止しません。
+
+<h4 id="keep-a-task-running-while-desktop-is-disconnected">
+  Desktop の切断中もタスクを実行し続ける
+</h4>
+
+コンピューターがスリープした場合、ネットワークが切断された場合、または Desktop を終了した場合でも、タスクは完了するか、ユーザーの対応が必要になるか、いずれかの[制限](#limits-while-desktop-is-disconnected)に達するまで続行されます。蓋を閉じることはスリープとみなされます。アップデートのためのものを含め、Desktop またはコンピューターの再起動は終了とみなされます。
+
+Claude Code は、Desktop がリモートマシンにインストールするバックグラウンドヘルパーの下でプロセスとして実行されるため、実行を続けるのに SSH 接続は必要ありません。このセクションで説明する動作には Claude Desktop v2.31226.0 以降が必要です。
+
+<Warning>
+  Claude アカウントで Desktop にサインインしている場合、タスクが一晩中実行されることを当てにしないでください。Desktop は、Desktop が実行中かつ接続中の間のみタスクのサインインを更新するため、切断後にタスクのサインインの期限が切れ、タスクが停止することがあります。切断時に残っている時間は状況によって異なります。
+
+  それまでに行われた作業はリモートマシンに残り、戻ったときにメッセージを送信して続行できます。
+
+  タスクを夜通し実行する必要がある場合：
+
+  * [コンピューターをスリープさせず](/docs/ja/desktop-scheduled-tasks#how-scheduled-tasks-run)オンラインの状態に保ち、蓋を開けたまま Desktop を実行しておきます
+  * リモートマシンと経由するすべてのジャンプホストに対して、SSH エージェントが保持する鍵など、プロンプトなしで機能するログインを使用します。これにより、接続が切れた後に Desktop が自動的に再接続できます。
+
+  コンピューターがスリープ中または電源オフの間も実行する必要があるタスクの場合は、代わりに[クラウドセッション](#run-long-running-tasks-in-the-cloud)を開始してください。
+</Warning>
+
+* **スリープまたはネットワーク切断の後**：プロセスが[まだ実行されて](#limits-while-desktop-is-disconnected)おり、Desktop がプロンプトなしでログインできる場合、実行中のタスクに戻れます。ログインできない場合は、[メッセージを送信](#reconnect-after-sleep-or-a-network-loss)してください。
+* **終了後、macOS または Linux の Desktop で Claude アカウントを使用している場合**：Desktop が[プロセスに再参加](#reopen-a-session-after-you-quit-desktop)できれば、実行中のタスクに戻れます。再参加できない場合、タスクは停止します。停止したままの場合は、メッセージを送信してください。
+* **終了後、Windows の Desktop または[サードパーティプロバイダー](/docs/ja/third-party-integrations)を使用している場合**：Desktop はセッションを開いたときにプロセスを終了するため、実行中のタスクは失われます。続行するにはメッセージを送信してください。
+
+戻ったときにタスクが完了していない場合は、Desktop が再接続できないという知らせ、認証エラー、または待機中のリクエストがないか確認してください：
+
+* **Desktop が再接続できない**：セッションにその理由が表示され、通知でも知らされることがあります。Desktop は[ログインを必要とする](#reconnect-after-sleep-or-a-network-loss)場合があります。
+* **認証エラー**：[サインイントークンまたは認証情報](#limits-while-desktop-is-disconnected)の期限が切れている可能性があります。Claude アカウントの場合は、メッセージを送信して続行します。サードパーティプロバイダーの場合は、[SSH remote sessions in Claude Desktop on 3P](https://claude.com/docs/third-party/claude-desktop/ssh-remote-sessions) を参照してください。
+* **待機中のリクエスト**：[それに応答します](#handle-requests-that-arrive-while-you-are-away)
+* **いずれにも該当しない**：メッセージを送信して続行します
+
+<a id="prepare-a-long-task" />
+
+<h5 id="prepare-a-long-task">
+  長いタスクを準備する
+</h5>
+
+* **先に更新する**：長いタスクを開始する前に Desktop を更新してください。macOS と Windows では、Desktop はダウンロード済みのアップデートをインストールするために自動的に再起動することがあります。この再起動は、Claude が SSH タスクに取り組んでいる間は待機します。macOS で Claude アカウントを使用している場合、デフォルトでは、アップデートが 72 時間待機した後は、それでも再起動が実行されることがあります。
+* **Desktop を終了しない**：Desktop が Windows で実行されている場合、またはサードパーティプロバイダーを使用している場合は、長いタスクの実行中は Desktop を開いたままにしてください。終了した場合、Desktop はセッションを開いたときに[実行中のタスクを終了します](#reopen-a-session-after-you-quit-desktop)。開いたままにしても、[ユーザーを待機している](#handle-requests-that-arrive-while-you-are-away)リクエストは保護されません。
+* **リクエストを減らす**：[タスクがユーザーを待つ頻度を減らす](#handle-requests-that-arrive-while-you-are-away)権限モード、ルール、またはフックを選択します
+* **ジャンプホストを確認する**：ジャンプホストがサインイン（スマートフォンへのプッシュ通知など）を求める場合は、プロンプトなしで機能するログインに切り替えてください。そうしないと、Desktop は再接続を試みるたびに別のプッシュ通知を送信する可能性があります。
+* **リモートマシンをテストする**：短いタスクを開始し、タスクの実行中に Desktop を終了して、タスクが完了しているはずの時刻を十分に過ぎてからセッションを再度開きます。タスクが完了しておらず、セッションに認証エラーが表示されていない場合は、リモートマシンで[タスクを終了させうる要因](#limits-while-desktop-is-disconnected)を確認してください。
+* **Desktop のターミナルでコマンドを実行しない**：リモートマシンが[アイドル状態のターミナルをログアウトさせる](#limits-while-desktop-is-disconnected)場合は、Desktop の外部からの SSH ログインで独自のコマンドを実行してください
+
+<a id="limits-while-desktop-is-disconnected" />
+
+<h5 id="limits-while-desktop-is-disconnected">
+  Desktop の切断中の制限
+</h5>
+
+実行したままにしたタスクは、サインインの期限が切れたとき、リモートマシンがタスクを終了させたとき、またはヘルパーが停止または置き換えられたときに終了することがあります：
+
+* **サインイントークンまたは認証情報**：Claude アカウントの場合、トークンの期限が切れるとタスクは認証エラーで停止します。サードパーティプロバイダーの場合は、シングルサインオンや認証情報ヘルパーから取得したものなど、期限が切れる認証情報にも同じことが当てはまります。[SSH remote sessions in Claude Desktop on 3P](https://claude.com/docs/third-party/claude-desktop/ssh-remote-sessions) を参照してください。Claude アカウントの場合は、Desktop がサインインを更新できるように、[Desktop を実行して接続したままにしてください](#keep-a-task-running-while-desktop-is-disconnected)。
+* **リモートマシン**：リモートマシンが再起動した場合、または SSH 接続が閉じたときにプロセスを終了させる場合、実行中のタスクは終了します。Desktop が切断されている間、タスクが再開されることはありません。systemd-logind の `KillUserProcesses` が `yes` で、それがユーザーに適用される Linux マシンでは、この方法でプロセスが終了されます。そこでタスクを実行し続けるには、`KillExcludeUsers` などでユーザーを除外するよう管理者に依頼してください。
+* **アイドル状態のターミナル**：一部の Linux リモートマシンは、一定時間誰も入力しないターミナルをログアウトさせます（systemd-logind の `StopIdleSessionSec`）。macOS または Linux の Desktop では、セッションの[ターミナル](#run-commands-in-the-terminal)と `!` コマンドは、デフォルトで Desktop の SSH 接続を共有します。その場合、このログアウトによって Desktop の接続中に接続が終了し、実行中のタスクも一緒に終了することがあります。ターミナルペインを閉じても防げないため、[そのターミナルでコマンドを実行しないでください](#prepare-a-long-task)。
+* **Desktop のアップデート**：アップデートで新しいヘルパーが導入された場合、Desktop は後の接続時にリモートマシン上のヘルパーを置き換えるため、まだ実行中のタスクが終了することがあります
+* **長期間の不在**：Linux または macOS のリモートマシンで、Desktop が 30 日間接続しない場合、ヘルパーは停止し、その下で実行されているすべての Claude Code プロセスを終了します。それまでに接続してください。
+
+ファイルの編集と一部のツールは、Desktop が切断されている間に失敗することがあります。タスクでそれらが必要な場合は、Desktop を接続したままにしてください：
+
+* **worktree**：[worktree](#work-in-parallel-with-sessions) を使用するセッションでは、Desktop は Claude がファイルを編集する前に各編集をチェックします。Desktop が切断されている間、各編集は約 30 秒待機した後に失敗します。シェルコマンドは引き続き実行されます。Linux または macOS のリモートマシンでは、[編集が引き続き機能する場合があります](#worktree-edits-while-disconnected)。不明な場合は、worktree を使用せずにセッションを開始してください。
+* **フォルダの制限**：組織がセッションで使用できるフォルダを制限している場合、Desktop は worktree の有無にかかわらず、各ファイルの読み取り、検索、編集をチェックします。Desktop が切断されている間、それぞれ最大 10 分間待機した後に失敗します。
+* **コネクタ**：[コネクタ](#connect-external-tools)および Desktop が提供するその他のツールは Desktop を経由して実行されるため、Desktop が切断されている間は各呼び出しが約 30 秒後に失敗します
+* **ワークフロー**：Desktop は新しい[ワークフロー](/docs/ja/workflows)をそれぞれ開始前にチェックするため、Desktop が切断されている間、新しいワークフローは最大 10 分間待機した後に失敗します
+* **MCP サーバー**：Claude Code がリモートマシンで起動する MCP サーバーは Desktop を経由しないため、Claude は引き続きそれらのツールを呼び出せます。`claude_desktop_config.json` のサーバーがこれに含まれるのは、Desktop が[組み込みの SSH クライアント](#worktree-edits-while-disconnected)を使用していない場合のみです。それ以外の場合、および[一部の Windows リモートマシン](#windows-remote-machines)では、Desktop が切断されている間、Claude はそれらのツールを呼び出せません。
+
+<span id="worktree-edits-while-disconnected" />
+
+<Accordion title="worktree 内の編集が引き続き機能する場合">
+  Linux または macOS のリモートマシンでは、チェックが Desktop を経由しないため、Desktop が切断されている間も worktree 内の編集は引き続き機能します。Claude Desktop v2.37337.0 より前では、これは Linux リモートマシンにのみ当てはまります。
+
+  次のような場合には、編集は引き続き失敗します：
+
+  * **組み込みの SSH クライアント**：Desktop がそれを使用している場合。たとえば、Microsoft Store からのインストール、Microsoft の OpenSSH 9.4 以降がない Windows コンピューター、またはサードパーティプロバイダーを使用する Windows でのデフォルトの場合です
+  * **リポジトリの場所**：リポジトリがホームディレクトリ、その上位のフォルダ、または `~/.claude` である
+  * **macOS のパス**：macOS のリモートマシンで、リポジトリが `/Volumes` の下にある、またはリポジトリもしくは worktree のパス内のフォルダ名に `~` または非 ASCII 文字が含まれている
+  * **フォルダの制限**：組織がセッションで使用できるフォルダを制限している
+  * **企業ランチャー**：Claude Desktop v2.37337.0 より前で、Claude アカウントでサインインしており、組織が[企業ランチャー](/docs/ja/corporate-launcher)を介してリモートマシンで Claude Code を起動している
+
+  worktree を使用しないセッションには、組織がセッションで使用できるフォルダを制限していない限り、このようなチェックはありません。
+</Accordion>
+
+<a id="handle-requests-that-arrive-while-you-are-away" />
+
+<h5 id="handle-requests-that-arrive-while-you-are-away">
+  不在中に届いたリクエストに対応する
+</h5>
+
+Desktop が切断されている間に Claude が承認を必要とするか質問をした場合、Claude はリモートマシン上で待機します。この待機自体には時間制限はありません。Desktop がプロセスに再参加すると、リクエストが表示されます。Desktop が代わりに新しいプロセスを開始した場合、リクエストは失われます。
+
+タスクがユーザーを待機している間に、Desktop はアップデートのインストールなどのために自動的に再起動することがあります。Desktop が Windows で実行されている場合、またはサードパーティプロバイダーを使用している場合、その再起動後にリクエストは失われます。
+
+リクエストが失われた場合は、メッセージを送信して続行してください。
+
+タスクがユーザーを待つために停止する頻度を減らし、不在中にタスクからの知らせを受け取るには、離れる前に次のいずれかを設定してください：
+
+* **auto モード**：[利用可能な場合](#auto-mode-availability)は [auto モード](#choose-a-permission-mode)を選択します。ブロックが繰り返されると、[再度確認が求められます](/docs/ja/permission-modes#when-auto-mode-falls-back)。
+* **許可ルール**：リモートマシン上のユーザー設定ファイル `~/.claude/settings.json` に、タスクに必要なコマンドの[許可ルール](/docs/ja/permissions#manage-permissions)を追加します。組織が[管理設定からの権限ルールのみを受け入れる](/docs/ja/settings-reference#allowmanagedpermissionrulesonly)場合は、リモートマシンに適用される[管理設定](#managed-settings)にそれらを追加するよう管理者に依頼してください。プロジェクトの `.claude/settings.json` の許可ルールについては、[プロジェクトの許可ルールとワークスペースの信頼](/docs/ja/permissions#project-allow-rules-and-workspace-trust)を参照してください。
+* **応答するフック**：リモートマシン上の `~/.claude/settings.json` に [`PermissionRequest` フック](/docs/ja/hooks#permissionrequest)を設定し、ユーザーに代わってリクエストを許可または拒否します
+* **通知するフック**：同じファイルに `permission_prompt` matcher を使用した [`Notification` フック](/docs/ja/hooks#notification)を設定し、リクエストが待機しているときに自分宛てにメッセージを送信します
+* **Claude の完了を知らせるフック**：同じファイルに [`Stop` フック](/docs/ja/hooks#stop)を設定し、Claude が応答を終えたときに自分宛てにメッセージを送信します。API エラーによってターンが終了した場合は実行されません。その場合は、[`StopFailure` フック](/docs/ja/hooks#stopfailure)を設定してください。
+
+組織が[管理フックのみを実行する](/docs/ja/settings-reference#allowmanagedhooksonly)場合は、リモートマシンに適用される[管理設定](#managed-settings)にフックを追加するよう管理者に依頼してください。
+
+Claude Code は、Bypass permissions を含むどの権限モードでも、[いくつかのアクション](/docs/ja/permission-modes#actions-no-mode-auto-approves)を自動承認しません。権限モードに応じて、Claude Code はそのようなアクションを拒否するかユーザーに確認し、タスクはユーザーの回答を待機します。
+
+<a id="reconnect-after-sleep-or-a-network-loss" />
+
+<h5 id="reconnect-after-sleep-or-a-network-loss">
+  スリープまたはネットワーク切断の後に再接続する
+</h5>
+
+戻ったときに Desktop が再接続していない場合は、セッションでメッセージを送信してください。Desktop が自動的に再接続するのは、SSH エージェントが保持する鍵などを使用して、プロンプトなしでログインできる場合のみです。
+
+* **記憶されたパスワード**：Desktop に記憶させたパスワードもプロンプトなしで機能しますが、長期間不在にする場合は SSH エージェントが保持する鍵を使用することをお勧めします。そのパスワードでのサインインが途中で切れたり応答しなくなったりする場合、Desktop は再接続を停止してユーザーを待つことがあります。
+* **その他のプロンプト**：リモートマシンがワンタイムコードなど、その他の入力を求める場合、コンピューターに通知が届くことがあります。通知をクリックするか、セッションでメッセージを送信すると、Desktop にプロンプトが表示されます。
+
+<Accordion title="ジャンプホストがサインインを求める場合、停止が長い場合、出力が欠落している場合、またはプロセスが存在しない場合">
+  - **ジャンプホスト、不在中にプッシュ通知が止まる**：これは、ジャンプホストのサインイン（スマートフォンへのプッシュ通知など）に誰も応答しない場合に、macOS または Linux の Desktop で発生することがあります。その場合、Desktop はコンピューターの前に誰もいない間は再接続を停止します。コンピューターのロックを解除するか使用すると、Desktop が再試行できるため、別のプッシュ通知が届くことがあります。応答のない試行が 3 回続くと、ユーザーが再試行するかメッセージを送信するまで待機します。
+  - **ジャンプホスト、プッシュ通知が届き続ける**：Windows の Desktop のように、Desktop が誰も応答していないことを判別できない場合、再参加するプロセスがある間は、そのプロセスがまだ実行中かどうかにかかわらず試行を続けます。試行のたびに別のプッシュ通知が届くことがあります。試行を終了するには Desktop を終了しますが、その場合は[実行中のタスクが失われる可能性があります](#reopen-a-session-after-you-quit-desktop)。
+  - **長時間の停止**：Desktop は約 5 分ごとに 1 回の試行にペースを落とします。早く再接続するには、セッションで再試行するか、メッセージを送信します。メッセージは接続後に Desktop が配信します。
+  - **出力の欠落**：Desktop が切断されている間、ヘルパーは各セッションの最新の Claude Code 出力を 16 MiB のバッファに保持し、それより古い出力は破棄します。Desktop が再接続した後、セッションに `Loading recent output from <host>…` と表示されることがあります。Desktop がすべての出力を読み込めない場合は、`Some output produced while you were disconnected may be missing here.` という行が表示されます。この行はタスクが停止したことを意味するものではありません。
+  - **プロセスが存在しない**：Desktop の再接続時にプロセスが存在しない場合、Desktop は会話の保存された履歴から新しいプロセスを開始し、タスクを続行するよう Claude に指示することがあります。プロセスが繰り返し終了する場合、または Desktop がサードパーティプロバイダーを使用している場合、Desktop はタスクを自動的に続行しません。メッセージを送信して続行してください。
+</Accordion>
+
+<a id="reopen-a-session-after-you-quit-desktop" />
+
+<h5 id="reopen-a-session-after-you-quit-desktop">
+  Desktop を終了した後にセッションを再度開く
+</h5>
+
+Desktop を終了した後も、タスクはリモートマシン上で、完了するか、ユーザーの対応が必要になるか、いずれかの[制限](#limits-while-desktop-is-disconnected)に達するまで実行を続けます。
+
+* **macOS または Linux の Desktop で Claude アカウントを使用している場合**：Desktop を起動してセッションを開きます。Desktop がプロセスに再参加できると、実行中のタスクに戻れます。一部の Desktop アップデートの後や、組織が管理設定を変更した後など、常に再参加できるとは限りません。
+* **macOS または Linux で、Desktop が再参加できない場合**：Desktop はプロセスを終了し、会話の保存された履歴から新しいプロセスを開始します。実行中のタスクは停止し、待機していた承認や質問は失われます。アップデートの後は、Desktop がその後 Claude に続行を指示することがあります。タスクが停止したままの場合は、メッセージを送信してください。
+* **Windows の Desktop、または任意のプラットフォームでサードパーティプロバイダーを使用している場合**：タスクが完了していると見込まれるときにのみ Desktop を再起動してください。Desktop は終了後に再参加することがないため、実行中のタスクには戻れません。Desktop はセッションを開いたときにプロセスを終了し、これは Desktop の起動時に発生することがあります。メッセージを送信して続行してください。
+
+サードパーティのデプロイについては、[SSH remote sessions in Claude Desktop on 3P](https://claude.com/docs/third-party/claude-desktop/ssh-remote-sessions) を参照してください。
+
+<Warning>
+  会話の Claude Code プロセスがまだ実行されている間は、リモートマシン上でその会話に対して [`claude --resume`](/docs/ja/cli-reference#cli-flags) を実行しないでください。Claude Code はそれを阻止せず、両方のプロセスが同じ会話に書き込むことになります。不明な場合は `--fork-session` を追加すると会話のコピーで続行されますが、両方のプロセスは引き続き同じファイルを操作します。
+</Warning>
 
 <h4 id="choose-where-ssh-session-worktrees-go">
   SSH セッションの worktree の作成場所を選択する
@@ -834,7 +1070,7 @@ SSH 接続を追加するには、セッションを開始する前にプロン�
 2. リモートマシン上の `~/.claude/settings.json` にある [`worktree.location`](/docs/ja/settings-reference#worktree-location)
 3. デフォルトの `<project-root>/.claude/worktrees/`
 
-設定したフォルダ内には各プロジェクト専用のサブフォルダが作成されるため、`~/worktrees` を設定した場合、worktree のパスは `~/worktrees/<project>-<id>/<worktree-name>` になります。設定したフォルダがプロジェクト内にある場合、Desktop はそのプロジェクトではそのフォルダを無視し、デフォルトを使用します。
+設定したフォルダ内には各プロジェクト専用のサブフォルダが作成されるため、`~/worktrees` を設定した場合、worktree のパスは `~/worktrees/<project>-<id>/<worktree-name>` になります。設定したフォルダがプロジェクト内にある場合、Desktop はそのプロジェクトではそのフォルダを無視し、デフォルトを使用します。[Windows リモートマシン](#windows-remote-machines)では、Desktop は常にデフォルトを使用します。
 
 以前に追加した接続、または組織が管理する接続に **Worktree folder** を設定するには、環境ドロップダウンでその接続にマウスを合わせて、ギアアイコンをクリックします。
 

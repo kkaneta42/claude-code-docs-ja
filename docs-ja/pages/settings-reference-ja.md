@@ -692,6 +692,7 @@ scope: "そのキーを設定できる設定ファイル：user（~/.claude/sett
 | [`gcpAuthRefresh`](#gcpauthrefresh) | 独自のコマンドで [Google Cloud の認証情報](/docs/ja/google-vertex-ai#advanced-credential-configuration)を更新します | 認証とプロバイダー | Any file |
 | [`hooks`](#hooks) | Claude Code のライフサイクルの各時点で、独自のコマンドを[フック](/docs/ja/hooks)として実行します | フックと自動化 | Any file |
 | [`httpHookAllowedEnvVars`](#httphookallowedenvvars) | [HTTP フック](/docs/ja/hooks)がヘッダーに含められる環境変数を制限します | フックと自動化 | Any file |
+| [`idleCompaction`](#idlecompaction) | ターミナルセッションがアイドル状態の間に、Claude Code が長い会話を圧縮しないようにします | メモリとコンテキスト | Any file |
 | [`includeCoAuthoredBy`](#includecoauthoredby) | 非推奨です。コミットと PR の帰属表示を非表示にしたり変更したりするには `attribution` を使用してください | Git と帰属表示 | Any file |
 | [`includeGitInstructions`](#includegitinstructions) | 組み込みのコミットおよび PR の指示を Claude のコンテキストから除外します | Git と帰属表示 | Any file |
 | [`inputNeededNotifEnabled`](#inputneedednotifenabled) | Claude がユーザーの入力を待っているときに[プッシュ通知](/docs/ja/remote-control#mobile-push-notifications)を受け取ります | リモート、デスクトップ、通知 | Any file |
@@ -2952,7 +2953,7 @@ Claude Code がコンテキストに読み込む内容、コンパクト化の�
 }
 ```
 
-手動の `/compact` コマンドは自動コンパクト化がオフの間も機能し続けます。
+手動の `/compact` コマンドは自動圧縮がオフの間も機能し続けます。自動圧縮をオフにすると、[アイドル圧縮](#idlecompaction)もオフになります。
 
 <h3 id="autocompactwindow">
   `autoCompactWindow`
@@ -3162,6 +3163,53 @@ Claude Code が[メモリ](/docs/ja/memory#exclude-specific-claude-md-files)を�
 ```
 
 `-p` 実行または Agent SDK セッションでは、Claude Code はこのキーを無視します。SDK は `enableFileCheckpointing` オプションでチェックポイント作成をオンにし、ベアの `-p` 実行には `CLAUDE_CODE_ENABLE_SDK_FILE_CHECKPOINTING=true` が必要です。[Agent SDK でのファイルチェックポイント作成](/docs/ja/agent-sdk/file-checkpointing)を参照してください。
+
+<h3 id="idlecompaction">
+  `idleCompaction`
+</h3>
+
+アイドル時のコンテキスト圧縮（アイドル圧縮）は、離席している長い会話を、そのプロンプトキャッシュの有効期限が切れる少し前に[圧縮](/docs/ja/context-window#what-survives-compaction)します。これにより、次のメッセージでは会話全体ではなく要約が送信されます。戻ってくると、会話に `Compacted while idle, before the prompt cache expired` と表示されます。
+
+アイドル圧縮は、次のすべての条件を満たす会話に対してデフォルトでオンになっています。
+
+* **セッション**: インタラクティブなターミナルセッションを使用している
+* **プロンプトキャッシュ**: 会話が[1 時間のプロンプトキャッシュ TTL](/docs/ja/prompt-caching#which-ttl-each-request-gets) を使用している
+* **機能フラグ**: Claude Code が [Anthropic から機能フラグを取得](/docs/ja/env-vars#features-that-need-feature-flag-fetching)できる
+* **サイズ**: 会話のコンテキストがトークンのしきい値に達している。しきい値はデフォルトの 200,000 から[変更](#change-the-idle-compaction-threshold)できます
+* **アイドル時間**: 最後のリクエストから約 54 分が経過しており、その時点でコンピューターがスリープしていない
+
+アイドル圧縮をオフにするには、このキーを `false` に設定します。
+
+* **スコープ**: [`任意のファイル`](#scopes)
+* **タイプ**: ブール値
+  * `true`: Claude Code は条件を満たすアイドル状態の会話を圧縮します
+  * `false`: Claude Code はセッションがアイドル状態の間に圧縮しません
+* **デフォルト**: `true`
+* **セッションごとの上書き**: [`DISABLE_AUTO_COMPACT`](/docs/ja/env-vars) は自動圧縮とともにアイドル圧縮もオフにします
+
+```json settings.json theme={null}
+{
+  "idleCompaction": false
+}
+```
+
+このキーには Claude Code v2.1.290 以降が必要です。このキーを無視する以前のバージョンでアイドル圧縮を停止するには、[`autoCompactEnabled`](#autocompactenabled) をオフにします。
+
+<h4 id="change-the-idle-compaction-threshold">
+  アイドル圧縮のしきい値を変更する
+</h4>
+
+[`CLAUDE_CODE_IDLE_COMPACT_MIN_TOKENS`](/docs/ja/env-vars) に、アイドル圧縮が適用されるために会話のコンテキストが達する必要のあるトークン数を設定します。正の整数を使用してください。`100000` 未満の値は、最小のしきい値である `100000` に引き上げられます。
+
+デフォルトでは、200K のコンテキストウィンドウを使用する会話は 200,000 トークンに達する前に自動圧縮されます。この例では、しきい値を 150,000 に下げて、そのような会話も対象になるようにします。
+
+```json settings.json theme={null}
+{
+  "env": {
+    "CLAUDE_CODE_IDLE_COMPACT_MIN_TOKENS": "150000"
+  }
+}
+```
 
 <h3 id="plansdirectory">
   `plansDirectory`

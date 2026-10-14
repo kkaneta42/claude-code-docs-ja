@@ -125,7 +125,7 @@ v2.1.260 より前では、API キーまたは Claude サブスクリプショ�
 ツール定義はシステムプロンプトレイヤーに存在するため、リクエスト内のツール定義のセットがターン間で変更されるとキャッシュが無効化されます。[アドバイザーツール](/docs/ja/advisor) の切り替えは例外です。その定義はキャッシュブレークポイントの後に存在するため、`/advisor` を有効または無効にするとキャッシュされたプレフィックスはそのまま保持されます。[MCP サーバー](/docs/ja/mcp) の変更がこれを行うかどうかは、[ツール検索](/docs/ja/mcp#scale-with-mcp-tool-search) がセッションの MCP ツールを遅延させるかどうかによります。これはサポートされているモデルのデフォルトです。
 
 * **ツール遅延**: Claude Code は会話の最初のリクエストからツールリストを保持するため、セッション中にサーバーが接続または切断されても、既にキャッシュされているものは何も影響を受けません。最初のリクエスト後に接続を完了するサーバーは、Claude がオンデマンドで読み込む遅延定義としてそのツールを提供します。
-* **ツール事前読み込み**: 定義を追加するとキャッシュが無効化され、意図的に削除してもそうなります。これは、ツール検索が [その `auto` しきい値以下、無効、または利用不可](/docs/ja/mcp#configure-tool-search) である場合に適用されます。例えば、Google Cloud の Agent Platform モデル（Claude 4.5 世代より前）、カスタム `ANTHROPIC_BASE_URL` ゲートウェイ、または Microsoft Foundry の [Azure でホストされているデプロイ](https://platform.claude.com/docs/en/build-with-claude/claude-in-microsoft-foundry#hosting-options) で、Claude Code がそのデプロイがツール検索を拒否することを検出した場合です。
+* **ツール事前読み込み**: 定義を追加するとキャッシュが無効化され、意図的に削除してもそうなります。これは、ツール検索が [その `auto` しきい値以下、無効、または利用不可](/docs/ja/mcp#configure-tool-search) である場合に適用されます。例えば、Opus 4.5、Sonnet 4.5、Haiku 4.5 より前の Google Cloud の Agent Platform モデル、カスタム `ANTHROPIC_BASE_URL` ゲートウェイ、または Microsoft Foundry の [Azure でホストされているデプロイ](https://platform.claude.com/docs/en/build-with-claude/claude-in-microsoft-foundry#hosting-options) で、Claude Code がそのデプロイがツール検索を拒否することを検出した場合です。
 
 ツール検索がない場合、セッション中のサーバー変更がキャッシュを無効化するかどうかは、何が変更されたかによります。各変更について、このテーブルはキャッシュが保持されるかどうか、および次のリクエストのツール定義に何が起こるかを示します。
 

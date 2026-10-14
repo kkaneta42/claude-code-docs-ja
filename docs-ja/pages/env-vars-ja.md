@@ -220,7 +220,7 @@ Claude Code はスタートアップ時にシェル環境変数を読み込む�
 | `CLAUDE_CODE_ACCESSIBILITY` | `1` に設定すると、ネイティブのターミナルカーソルを表示したままにし、反転テキストのカーソルインジケーターを無効にします。macOS のズーム機能などの画面拡大鏡がカーソル位置を追跡できるようになります |
 | `CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD` | `1` に設定すると、`--add-dir` で指定したディレクトリからメモリファイルを読み込みます。`CLAUDE.md`、`.claude/CLAUDE.md`、`.claude/rules/*.md`、`CLAUDE.local.md` を読み込みます。デフォルトでは、追加ディレクトリからメモリファイルは読み込まれません |
 | `CLAUDE_CODE_ALT_SCREEN_FULL_REPAINT` | `1` に設定すると、[フルスクリーンレンダリング](/docs/ja/fullscreen)で増分更新を送信する代わりに、フレームごとに画面全体を再描画します。フルスクリーンモードで古いテキストの断片や位置のずれたテキストの断片が表示される場合に使用します。Claude Code は、Windows のバックグラウンドセッションと[エージェントビュー](/docs/ja/agent-view)でこれを自動的に有効にします |
-| `CLAUDE_CODE_ALWAYS_ENABLE_EFFORT` | `1` に設定すると、Claude Code がモデル ID を effort 対応として認識しない場合でも、すべてのリクエストで [effort](/docs/ja/model-config#adjust-effort-level) パラメーターを送信します。カスタム識別子でモデルを提供する [LLM ゲートウェイ](/docs/ja/llm-gateway)やサードパーティプロバイダー経由でルーティングする場合に使用します。Claude 3 モデル、Sonnet 4.0 と 4.5、Opus 4.0 と 4.1、Haiku 4.5 など、API で effort パラメーターを拒否するモデルは引き続き除外されるため、リクエストは失敗しません |
+| `CLAUDE_CODE_ALWAYS_ENABLE_EFFORT` | `1` に設定すると、Claude Code がモデル ID を effort 対応として認識しない場合でも、すべてのリクエストで [effort](/docs/ja/model-config#adjust-effort-level) パラメータを送信します。カスタム識別子でモデルを提供する [LLM ゲートウェイ](/docs/ja/llm-gateway)やサードパーティプロバイダー経由でルーティングする場合に使用します。Claude Opus 4.1、Claude Sonnet 4.5、Claude Haiku 4.5 およびそれ以前のモデルなど、API で effort パラメータを拒否するモデルは、リクエストが失敗しないよう引き続き除外されます |
 | `CLAUDE_CODE_API_KEY_HELPER_TTL_MS` | 認証情報を更新する間隔（ミリ秒）（[`apiKeyHelper`](/docs/ja/settings-reference#apikeyhelper) を使用する場合） |
 | `CLAUDE_CODE_ARTIFACT_AUTO_OPEN` | `0` に設定すると、新しい[アーティファクト](/docs/ja/artifacts#create-an-artifact)が公開されたときに Claude Code がブラウザを自動的に開かないようにします |
 | `CLAUDE_CODE_ARTIFACT_COMMENTS` | `0` に設定すると、Claude が[アーティファクトへのコメント](/docs/ja/artifacts#collect-comments-on-an-artifact)を読んで返信しないようにします。`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` によって[アーティファクトがオフになっている](/docs/ja/artifacts#availability)場合は効果がありません。Claude Code v2.1.221 以降が必要です |
@@ -270,7 +270,7 @@ Claude Code はスタートアップ時にシェル環境変数を読み込む�
 | `CLAUDE_CODE_DISABLE_FILE_CHECKPOINTING` | `1` に設定すると、ファイルの[チェックポイント機能](/docs/ja/checkpointing)を無効にします。`/rewind` コマンドでコードの変更を復元できなくなります。[`fileCheckpointingEnabled`](/docs/ja/settings-reference#filecheckpointingenabled) 設定を上書きします |
 | `CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS` | `1` に設定すると、組み込みのコミットおよび PR ワークフローの指示と git ステータスのスナップショットを Claude のコンテキストから削除します。独自の git ワークフロースキルを使用する場合に便利です。設定すると、[`includeGitInstructions`](/docs/ja/settings-reference#includegitinstructions) 設定より優先されます |
 | `CLAUDE_CODE_DISABLE_INLINE_SHELL_RM_PROMPT` | `1` に設定すると、`bash -c 'rm -rf ~'` のように `-c` でシェルに渡されるスクリプトを、Claude Code が[クリティカルパス](/docs/ja/permission-modes#removals-inside-nested-commands-and-inline-scripts)の削除について読み取らないようにします。Claude Code はそれらのスクリプト内のシェル変数と位置パラメーターの対象は引き続きチェックし、その他のクリティカルパスのチェックも引き続き実行されます。Claude Code は設定の `env` ブロックを通じて配信されたコピーを無視するため、Claude Code を起動する環境で設定してください。Claude Code v2.1.288 以降が必要です |
-| `CLAUDE_CODE_DISABLE_LEGACY_MODEL_REMAP` | `1` に設定すると、Anthropic API で Opus 4.0 と 4.1 が現在の Opus バージョンに自動的に再マッピングされないようにします。意図的に古いモデルに固定したい場合に使用します。再マッピングは Amazon Bedrock、Google Cloud's Agent Platform、Microsoft Foundry では実行されません |
+| `CLAUDE_CODE_DISABLE_LEGACY_MODEL_REMAP` | `1` に設定すると、Anthropic API で Opus 4 と Opus 4.1 が現在の Opus バージョンに自動的に再マッピングされるのを防ぎます。意図的に古いモデルを固定したい場合に使用します。再マッピングは Amazon Bedrock、Google Cloud's Agent Platform、Microsoft Foundry では実行されません |
 | `CLAUDE_CODE_DISABLE_MODEL_ACCESS_FALLBACK` | `1` に設定すると、[Amazon Bedrock](/docs/ja/amazon-bedrock#when-a-model-is-disabled-mid-session) および [Google Cloud's Agent Platform](/docs/ja/google-vertex-ai#when-a-model-is-disabled-mid-session) 上の Claude Code で、セッション中にアカウントがセッションのモデルへのアクセス権を失った場合に、古いモデルへ切り替えないようにします。代わりに、拒否されたリクエストは即座に失敗します。設定した[フォールバックモデルチェーン](/docs/ja/model-config#fallback-model-chains)はその拒否時にも引き続き切り替わり、[起動時のモデルチェック](/docs/ja/amazon-bedrock#startup-model-checks)も起動時に引き続きフォールバックします。Claude Code v2.1.285 以降が必要です |
 | `CLAUDE_CODE_DISABLE_MOUSE` | `1` に設定すると、[フルスクリーンレンダリング](/docs/ja/fullscreen)でマウストラッキングを無効にします。`PgUp` と `PgDn` によるキーボードスクロールは引き続き機能します。ターミナルのネイティブな選択時コピーの動作を維持するために使用します |
 | `CLAUDE_CODE_DISABLE_MOUSE_CLICKS` | `1` に設定すると、マウスホイールのスクロールを維持したまま、[フルスクリーンレンダリング](/docs/ja/fullscreen)でのクリック、ドラッグ、ホバーの処理を無効にします。Claude Code 内でホイールスクロールを機能させたいが、クリックでカーソルを配置したり、ツールの出力を展開したり、リンクを開いたりしたくない場合に使用します。両方が設定されている場合は `CLAUDE_CODE_DISABLE_MOUSE` が優先されます。Claude Code v2.1.195 以降が必要です |
@@ -328,6 +328,7 @@ Claude Code はスタートアップ時にシェル環境変数を読み込む�
 | `CLAUDE_CODE_IDE_HOST_OVERRIDE` | IDE 拡張機能への接続に使用するホストアドレスを上書きします。デフォルトでは、Claude Code は WSL から Windows へのルーティングを含め、正しいアドレスを自動検出します |
 | `CLAUDE_CODE_IDE_SKIP_AUTO_INSTALL` | `1` に設定すると、IDE 拡張機能の自動インストールをスキップします。[`autoInstallIdeExtension`](/docs/ja/settings-reference#autoinstallideextension) を `false` に設定するのと同等です |
 | `CLAUDE_CODE_IDE_SKIP_VALID_CHECK` | `1` に設定すると、接続時の IDE ロックファイルエントリの検証をスキップします。IDE が実行中にもかかわらず、自動接続で IDE が見つからない場合に使用します |
+| `CLAUDE_CODE_IDLE_COMPACT_MIN_TOKENS` | [アイドル時のコンテキスト圧縮](/docs/ja/settings-reference#idlecompaction)が会話に適用されるコンテキストサイズ（トークン数）（デフォルト: `200000`）。正の整数を受け付け、それ以外は無視されます。`100000` 未満の値は、最小しきい値である `100000` に引き上げられます。アイドル時の圧縮は、条件を満たす会話ではデフォルトでオンです。オフにするには、`idleCompaction` を `false` に設定してください。Claude Code v2.1.290 以降が必要です |
 | `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` | Agent ツールが新たな生成を拒否するまでに、1 つのセッションで同時に実行できる [サブエージェント](/docs/ja/sub-agents#concurrent-subagent-limit) の数（デフォルト: 20）。正の整数を数字のみで受け付けます。それ以外の値は無視されるため、この変数で上限を調整することはできますが、無効にすることはできません。Claude Code v2.1.217 以降が必要です |
 | `CLAUDE_CODE_MAX_CONTEXT_TOKENS` | Claude Code がアクティブなモデルについて想定するコンテキストウィンドウのサイズを上書きします。v2.1.193 以降、適用方法は Claude Code がモデル ID をどのように解決するかによって異なります。[ゲートウェイまたはカスタムモデル ID のウィンドウを修正する](/docs/ja/model-config#correct-the-window-for-a-gateway-or-custom-model-id) を参照してください。`ANTHROPIC_BASE_URL` を介してルーティングするモデルのコンテキストウィンドウが、その名前に対応する組み込みのサイズと一致しない場合に使用します |
 | `CLAUDE_CODE_MAX_MCP_DESCRIPTION_LENGTH` | Claude Code がモデルに送信する、各 MCP ツールの説明および各 MCP サーバーの指示の最大長（文字数）（デフォルト: 2048）。Claude Code は [それより長いテキストを切り詰めます](/docs/ja/mcp#for-mcp-server-authors)。正の整数を数字のみで受け付けます。それ以外の値は無視され、デフォルトが適用されます。Claude Code v2.1.280 以降が必要です |
@@ -452,7 +453,7 @@ Claude Code はスタートアップ時にシェル環境変数を読み込む�
 | `CLAUDE_SUBAGENT_BG_SHELL_MAX_MS` | v2.1.260 で削除され、現在は何の効果もありません。以前は、[サブエージェント](/docs/ja/sub-agents)が開始した[バックグラウンドシェルコマンド](/docs/ja/interactive-mode#background-bash-commands)を実行できる時間の上限をミリ秒で設定していました（デフォルトは 60 分）。[バックグラウンドコマンドの存続期間のルール](/docs/ja/tools-reference#background-commands)を参照してください |
 | `DEBUG` | `1` に設定するとデバッグモードを有効にします。[`--debug`](/docs/ja/cli-reference#cli-flags) で起動するのと同等です。デバッグログは `~/.claude/debug/<session-id>.txt`、または `CLAUDE_CODE_DEBUG_LOGS_DIR` で設定されたパスに書き込まれます。デバッグモードを有効にするのは真の値 `1`、`true`、`yes`、`on` のみであるため、他のツール向けに設定された `DEBUG=express:*` のような名前空間パターンではトリガーされません |
 | `DISABLE_AUTOUPDATER` | `1` に設定すると、バックグラウンドでの自動更新を無効にします。手動の `claude update` は引き続き機能します。両方をブロックするには `DISABLE_UPDATES` を使用します |
-| `DISABLE_AUTO_COMPACT` | `1` に設定すると、コンテキストの上限に近づいたときの自動圧縮を無効にします。手動の `/compact` コマンドは引き続き使用できます。コンテキスト圧縮を行うタイミングを明示的に制御したい場合に使用します。[`autoCompactEnabled`](/docs/ja/settings-reference#autocompactenabled) 設定を上書きします |
+| `DISABLE_AUTO_COMPACT` | `1` に設定すると、コンテキストの上限に近づいたときの自動的なコンテキスト圧縮を、[アイドル時の圧縮](/docs/ja/settings-reference#idlecompaction)とともに無効にします。手動の `/compact` コマンドは引き続き使用できます。圧縮が行われるタイミングを明示的に制御したい場合に使用します。[`autoCompactEnabled`](/docs/ja/settings-reference#autocompactenabled) 設定を上書きします |
 | `DISABLE_COMPACT` | `1` に設定すると、自動圧縮と手動の `/compact` コマンドの両方を含む、すべてのコンテキスト圧縮を無効にします |
 | `DISABLE_COST_WARNINGS` | `1` に設定すると、コストに関する警告メッセージを無効にします |
 | `DISABLE_DOCTOR_COMMAND` | `1` に設定すると、[`/doctor`](/docs/ja/commands#all-commands) セットアップチェックアップスキルとそのエイリアス `/checkup` を非表示にします。ユーザーがセッションからセットアップ診断を実行すべきでない管理されたデプロイで役立ちます。`claude doctor` ターミナルコマンドには影響しません。v2.1.205 より前は、この変数は `/doctor` 診断画面コマンドを非表示にしていました |
@@ -523,9 +524,9 @@ Claude Code はスタートアップ時にシェル環境変数を読み込む�
 | `VERTEX_REGION_CLAUDE_3_5_HAIKU` | Google Cloud's Agent Platform を使用する場合の Claude 3.5 Haiku のリージョンを上書きします |
 | `VERTEX_REGION_CLAUDE_3_5_SONNET` | Google Cloud's Agent Platform を使用する場合の Claude 3.5 Sonnet のリージョンを上書きします |
 | `VERTEX_REGION_CLAUDE_3_7_SONNET` | Google Cloud's Agent Platform を使用する場合の Claude 3.7 Sonnet のリージョンを上書きします |
-| `VERTEX_REGION_CLAUDE_4_0_OPUS` | Google Cloud's Agent Platform を使用する場合の Claude 4.0 Opus のリージョンを上書きします |
-| `VERTEX_REGION_CLAUDE_4_0_SONNET` | Google Cloud's Agent Platform を使用する場合の Claude 4.0 Sonnet のリージョンを上書きします |
-| `VERTEX_REGION_CLAUDE_4_1_OPUS` | Google Cloud's Agent Platform を使用する場合の Claude 4.1 Opus のリージョンを上書きします |
+| `VERTEX_REGION_CLAUDE_4_0_OPUS` | Google Cloud's Agent Platform を使用する場合の Claude Opus 4 のリージョンを上書きします |
+| `VERTEX_REGION_CLAUDE_4_0_SONNET` | Google Cloud's Agent Platform を使用する場合の Claude Sonnet 4 のリージョンを上書きします |
+| `VERTEX_REGION_CLAUDE_4_1_OPUS` | Google Cloud's Agent Platform を使用する場合の Claude Opus 4.1 のリージョンを上書きします |
 | `VERTEX_REGION_CLAUDE_4_5_OPUS` | Google Cloud's Agent Platform を使用する場合の Claude Opus 4.5 のリージョンを上書きします |
 | `VERTEX_REGION_CLAUDE_4_5_SONNET` | Google Cloud's Agent Platform を使用する場合の Claude Sonnet 4.5 のリージョンを上書きします |
 | `VERTEX_REGION_CLAUDE_4_6_OPUS` | Google Cloud's Agent Platform を使用する場合の Claude Opus 4.6 のリージョンを上書きします |
@@ -600,6 +601,7 @@ Claude Code の一部の機能は、Anthropic から取得する機能フラグ�
 * [Claude が下書きするフィードバック](/docs/ja/tools-reference#sendfeedback-tool-behavior)を利用する。この機能は、Claude Code が取得したフラグによってオンにします
 * Claude に[大きな貼り付けを、入力したテキストではなく貼り付けたテキストとして扱わせる](/docs/ja/terminal-config#how-claude-treats-pasted-text)。`[Pasted text #N]` プレースホルダーの背後にあるコンテンツは、マークなしで Claude に届きます
 * Claude Code に [API が拒否する入力スキーマを持つ MCP ツールを除外させる](/docs/ja/mcp#tools-with-invalid-input-schemas)。Claude Code はそのスキーマをそのまま送信し、それを含むリクエストは[ツールを位置で示す 400 エラー](/docs/ja/errors#tool-input-schema-is-invalid)で失敗します
+* ターミナルセッションがアイドル状態の間に、1 時間のプロンプトキャッシュの有効期限が切れる少し前に、Claude Code に[長い会話をコンパクト化させる](/docs/ja/settings-reference#idlecompaction)
 
 <h3 id="first-session-after-an-install-or-upgrade">
   インストールまたはアップグレード後の最初のセッション
