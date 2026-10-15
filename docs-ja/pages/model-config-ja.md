@@ -867,6 +867,7 @@ Haiku 5.5 のリクエストは、プロンプトが 100K トークンを超え�
 * **すべてのモデル**：設定ファイルで [`autoCompactWindow`](/docs/ja/settings-reference#autocompactwindow) を設定します（例：`~/.claude/settings.json` に `"autoCompactWindow": 200000` を記述）。`/autocompact` でモデルごとに保存したウィンドウは、そのモデルについては同じファイル内のこのキーよりも優先されます。
 * **1 回の起動のみ**：Claude Code の起動時に [`--autocompact`](/docs/ja/cli-reference#cli-flags) を渡します。このフラグは、保存済みの設定を変更することなく、その起動に限って設定を上書きします。また、`claude --autocompact auto` を実行すると、保存済みの設定に値があっても、調整済みのウィンドウでセッションが実行されます。`/autocompact` とは異なり、このフラグは管理設定など、より優先順位の高い設定スコープによって無効化されることはありません。
 * **スクリプトおよびクラウド環境**：[`CLAUDE_CODE_AUTO_COMPACT_WINDOW`](/docs/ja/env-vars) を設定します。この環境変数が設定されている間は、コマンド、フラグ、設定よりも優先され、`/autocompact` はウィンドウを変更する代わりに上書きされていることを報告します。
+* **1 つのサブエージェントのみ**：[1 つのサブエージェントの自動圧縮ウィンドウを設定する](/docs/ja/sub-agents#subagent-auto-compact-window)を参照してください。
 
 コマンドとフラグには、100K から 1M トークンまでのウィンドウサイズを次のいずれかの形式で指定できます。
 

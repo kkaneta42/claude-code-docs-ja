@@ -491,6 +491,68 @@ Print Mode では、Claude Code はデフォルトでは提案を生成しませ
 
 組織全体でプロンプト提案をオフにするには、[managed settings](/docs/ja/managed-settings) で `promptSuggestionEnabled` を `false` に設定します。また、ユーザーが独自の環境変数で再度有効にできないように、managed [`env`](/docs/ja/settings-reference#env) キーの下で `CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION` を `false` に設定します。
 
+<h2 id="you-should-know-suggestions">
+  You should know の提案
+</h2>
+
+「You should know」は、Claude が明示せずに選んだトレードオフや、誤っている可能性のある結果など、知っておくべきなのに見落としているかもしれない事柄を 1 つ探します。見つかると、プロンプト入力欄の上に短いメモを表示します。
+
+```text theme={null}
+✦ Heads up · There was a change to how folder sharing starts in June, which may have bumped usage metrics artificially.
+  1: Learn more   2: Knew this already   0: Dismiss
+```
+
+これは Claude Code の[組み込み mod](/docs/ja/plugins/mods/overview#mods-built-into-claude-code) の 1 つで、Claude Code に組み込まれたプラグインであり、デフォルトではオフになっています。Claude Code v2.1.287 以降が必要です。
+
+オンになっている間は、Claude が長めのタスクを進めるにつれて、サイドエージェントが会話をときどき読み直します。サイドエージェントは同じモデルへの別のリクエストであり、ツールを持たないため、ファイルを読んだり、コマンドを実行したり、Claude の動作を変更したりすることはできません。
+
+組織でこの mod が利用可能な場合、claude.ai アカウントまたは Console API キーで Claude API に直接接続していると、`/plugin` に表示されます。[LLM ゲートウェイ](/docs/ja/llm-gateway)や [Claude apps ゲートウェイ](/docs/ja/claude-apps-gateway)を介して接続している場合や、[`apiKeyHelper`](/docs/ja/settings-reference#apikeyhelper) からキーを取得している場合は表示されません。直接接続の場合でも、次のセッションでは表示されません。
+
+* `DISABLE_TELEMETRY` が設定されているセッションなど、mod が依存する[機能フラグを取得しない](/docs/ja/env-vars#features-that-need-feature-flag-fetching)セッション
+* フラグがまだ届いていない、[インストールまたはアップグレード後の最初のセッション](/docs/ja/env-vars#first-session-after-an-install-or-upgrade)
+
+オンにするには、Claude Code のプロンプトで次を実行します。
+
+```text theme={null}
+/plugin enable cc-plugin-you-should-know@builtin
+```
+
+`/plugin` に mod が表示されない環境では、有効化コマンドは `Plugin "cc-plugin-you-should-know@builtin" is not installed in this project` と応答します。
+
+<h3 id="cost-of-checks">
+  チェックのコスト
+</h3>
+
+mod がオンの間、チェックはセッションで使用しているのと同じモデルへのバックグラウンドリクエストであり、プランの使用制限または API コストにカウントされます。各チェックでは、Claude のコンテキストに既にあるもの、つまりツールの結果を含むこれまでの会話を送信し、その後に mod 自体の指示と最近のメモのテキストを送信します。会話部分は、Claude 自身の次のリクエストと同じ条件でセッションの[プロンプトキャッシュ](/docs/ja/prompt-caching)から読み取られます。数千トークンに及ぶ指示と、サイドエージェントの応答は、チェックのたびに全額課金されます。
+
+チェックの実行を確認するには、Claude Code を起動する前にシェルで [`CLAUDE_CODE_YOU_SHOULD_KNOW_DEBUG=1`](/docs/ja/env-vars) を設定します。
+
+<h3 id="answer-a-note">
+  メモに応答する
+</h3>
+
+空のプロンプト入力欄に、選択肢の数字だけを入力します。メモには次の選択肢があります。
+
+* **Learn more**：メモの下に短い説明を開き、独自の選択肢を表示します。
+  * **Understood**：説明を閉じ、そのトピックを既知としてマークします
+  * **Chat in main session**：メモをプロンプト入力欄に引用し、質問を追加して Claude に送信できるようにします
+  * **Dismiss**：トピックを既知としてマークせずに閉じます
+* **Knew this already**：メモを閉じ、そのトピックを既知としてマークします。
+* **Dismiss**：メモを閉じます。
+
+**Chat in main session** で送信しない限り、メインエージェントはメモを見ることはありません。
+
+Claude Code は、最近のメモと既知としてマークしたトピックを、`~/.claude/plugins/store/` の下にある `cc-plugin-you-should-know` で始まる名前のファイルに保存します。このセッションおよび以降のセッションの各チェックでは、これらを繰り返さないものとしてサイドエージェントに伝えます。どのセッションからも読み書きされないまま [`cleanupPeriodDays`](/docs/ja/settings-reference#cleanupperioddays) が経過すると、Claude Code はこのファイルを削除します。それより早く消去するには、セッションが実行されていないときにそのファイルを削除してください。
+
+<h3 id="turn-off-you-should-know">
+  You should know をオフにする
+</h3>
+
+You should know をオフにするには、次のいずれかを使用します。
+
+* Claude Code のプロンプトで `/plugin disable cc-plugin-you-should-know@builtin` を実行するか、`/plugin` の **Installed** タブからオフにする
+* 先に **Learn more** を開かずにメモで **Dismiss** を選んだ後、20 秒後に消える `Dismissed.` の行で **Turn off suggestions** を選ぶ
+
 <h2 id="emoji-shortcodes">
   絵文字ショートコード
 </h2>

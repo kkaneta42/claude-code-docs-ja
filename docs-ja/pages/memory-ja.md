@@ -258,7 +258,7 @@ paths:
 
 Claude Code は予算を超えるパターンを展開されていない状態で使用し、その文字通りのブレースはファイルをマッチさせません。v2.1.217 より前では、多くのブレースグループを持つ `paths` 値は起動時に CLI をスタールまたはクラッシュさせました。
 
-グロブ構文は `[` をブラケット式（`[abc]` など）の開始として扱います。`photos [2024/**` のようにブラケット式として読むことができない `[` を持つパターンは無効です。何もマッチせず、ルールの他のパターンは機能し続けます。ファイル名内のリテラル `[` をマッチさせるには、`photos \[2024/**` のようにエスケープしてください。v2.1.207 より前では、1 つの無効なパターンは、何もマッチしないのではなく、ルールが評価されたすべてのファイルに対して Read ツールを失敗させました。
+グロブ構文は `[` をブラケット式（`[abc]` など）の開始として扱います。`photos [2024/**` のようにブラケット式として読むことができない `[` を持つパターンは無効です。何もマッチせず、ルールの他のパターンは機能し続けます。ファイル名内のリテラル `[` をマッチさせるには、`photos \[2024/**` のようにエスケープしてください。
 
 <h4 id="rules-frontmatter-reference">
   ルールのフロントマターリファレンス
@@ -413,7 +413,7 @@ Claude Code は [`AGENTS.md`](/docs/ja/glossary#agents-md) をプロジェクト
 
 * **セッション開始時**: ワーキングディレクトリとその上位ディレクトリ内のすべての `AGENTS.md` と `.claude/AGENTS.md`。インタラクティブセッションでは、会話に `no CLAUDE.md found; AGENTS.md loaded: /home/you/repo/AGENTS.md` のような行が表示されます
 * **Claude がサブディレクトリで作業するとき**: Claude が Read ツールでそこにファイルを開き、そのサブディレクトリに 3 つの `CLAUDE.md` ファイルのいずれも含まれていない場合、サブディレクトリの `AGENTS.md`
-* **各 `AGENTS.md` 内**: [`@path` インポート](#import-additional-files) が展開され、[`claudeMdExcludes`](#exclude-specific-claude-md-files) パターンが適用され、[プロジェクト指示をスキップ](/docs/ja/sub-agents#what-loads-at-startup) するサブエージェントがこれらのファイルもスキップします
+* **各 `AGENTS.md` 内**: [`@path` インポート](#import-additional-files) が展開され、[`claudeMdExcludes`](#exclude-specific-claude-md-files) パターンが適用され、[プロジェクト指示なしで起動する](/docs/ja/sub-agents#what-loads-at-startup) サブエージェントは、これらのファイルもなしで起動します
 * **読み込まれない**: `AGENTS.local.md`、`AGENTS.override.md`、または `.agents/` ディレクトリ下のすべてのもの
 
 <Note>
@@ -495,7 +495,7 @@ Claude が `AGENTS.md` を直接読み込んでいない場合でも、`AGENTS.m
 
 ## Claude Code
 
-`src/billing/` 下の変更にはプランモードを使用してください。
+Use plan mode for changes under `src/billing/`.
 ```
 
 Claude 固有のコンテンツが不要な場合、シンボリックリンクも機能します。
@@ -692,7 +692,7 @@ v2.1.280 より前では、`/memory` と `/context` は Claude が直接読み�
 
 指示ファイルのいずれかが推奨される長さを超えている場合、起動時と `/status` の実行時に警告が表示されます。また、個々のファイルはその長さの範囲内であっても、セッション開始時の合計が上限を超える場合にも警告が表示されます。各 CLAUDE.md、ルールファイル、および `@path` インポートは、それぞれ別のファイルとしてカウントされます。
 
-[`/doctor`](/docs/ja/commands#all-commands) チェックアップは、チェックインされた CLAUDE.md のトリミングを提案します。コードベースから派生できるコンテンツ（ディレクトリレイアウト、依存関係リスト、アーキテクチャの概要など）を削除し、落とし穴、根拠、およびツールのデフォルトと異なる規約を保持します。トリムチェックには Claude Code v2.1.206 以降が必要です。
+[`/doctor`](/docs/ja/commands#all-commands) チェックアップは、チェックインされた CLAUDE.md のトリミングを提案します。コードベースから派生できるコンテンツ（ディレクトリレイアウト、依存関係リスト、アーキテクチャの概要など）を削除し、落とし穴、根拠、およびツールのデフォルトと異なる規約を保持します。
 
 <h3 id="instructions-seem-lost-after-/compact">
   `/compact` 後に指示が失われたようです

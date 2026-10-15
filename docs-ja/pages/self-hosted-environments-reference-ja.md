@@ -54,7 +54,7 @@
 | `--retire-at <epoch-seconds>` | `SELF_HOSTED_RUNNER_RETIRE_AT` | 未設定 | ランナーを秒単位の絶対 Unix タイムスタンプでリタイアします。ランナーが既知の時間に強制終了されるインフラストラクチャ用です。[ランナーライフサイクル](/docs/ja/self-hosted-environments#runner-lifecycle) はリリースシーケンスとマージンのサイズ方法を説明しています。2001 より前または 5138 年より後の値はフラグによって拒否され、環境変数によって無視されます。 |
 | `--server-auto-mode-lists <mode>` | `SELF_HOSTED_RUNNER_SERVER_AUTO_MODE_LISTS` | `no-allow` | コントロールプレーンがセッションとともに送信する [auto モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode) 分類器のルールリストのうち、どれをそのセッションに到達させるかを指定します。`all`、`no-allow`、`none` のいずれかです。各値が何を適用するかについては、[auto モードのルールリスト](#auto-mode-rule-lists) を参照してください。無効な値を指定すると、ランナーはスタートアップ時に停止します。Claude Code v2.1.295 以降が必要です。 |
 | `--session-stop-grace-sec <n>` | `SELF_HOSTED_RUNNER_SESSION_STOP_GRACE_MS` | `5` | セッション終了後、Claude プロセスがクリーンに終了するまで待機する時間。強制終了する前に。子独自の `SessionEnd` フックがより多くの時間を必要とする場合は、値を上げてください。 |
-| `--startup-timeout-min <n>` | `SELF_HOSTED_RUNNER_STARTUP_TIMEOUT_MS` | `15` | 子が生成後 N 分以内に初期化されたことを通知していない場合、セッションスロットをリリースします。クローンは生成前に行われるため、クローン時間はカウントされません。通常の出力ではなく、[アクティビティチャネル](/docs/ja/self-hosted-environments-configuration#keep-stdin-and-file-descriptor-3-attached) 上の子の初期化シグナルによってクリアされます。その後、`--release-idle-session-min` が引き継ぎます。`0` は無効にします。 |
+| `--startup-timeout-min <n>` | `SELF_HOSTED_RUNNER_STARTUP_TIMEOUT_MS` | `15` | 子が N 分以内に初期化したことを [アクティビティチャネル](/docs/ja/self-hosted-environments-configuration#keep-stdin-and-file-descriptor-3-attached) 上で通知しない場合、セッションスロットをリリースします。N 分はクローン後の生成時点から始まり、子が初期化するか状態を報告する前に出力する `user` または `assistant` メッセージごとにやり直しになります。v2.1.299 より前は、このタイムアウトはセッションの最初のそのようなメッセージの時点で適用されなくなっていました。初期化シグナル後のリリースについては、`--release-idle-session-min` を参照してください。`0` は無効にします。 |
 | `--trust-workspace [bool]` | `SELF_HOSTED_RUNNER_TRUST_WORKSPACE` | オン | 各セッションのリポジトリパスの永続化された信頼をシードします。リポジトリコミットされた `permissions.allow` と `additionalDirectories` が尊重されるようにします。`false` に設定して、リポジトリコミットされた権限付与をドロップし、代わりにホスト設定の `settings.json` で許可ルールを設定します。リポジトリコミットされた `sandbox.*` 設定はどちらの方法でも適用されます。これが [リポジトリ設定ガード](/docs/ja/self-hosted-environments-deploy#harden-your-deployment) がこのフラグに関係なくそれらをスキャンする理由です。 |
 | `--use-anthropic-git-proxy` | `CLAUDE_RUNNER_USE_GIT_PROXY=1` | オフ | 顧客管理の git 認証の代わりに [Anthropic git プロキシ](/docs/ja/self-hosted-environments-deploy#use-the-anthropic-git-proxy) 経由で github.com 上のリポジトリをクローンします。`--capacity 1` と git 2.32 以降が必要です。ランナーはそれ以外の場合は起動を拒否します。書き換えフラグに優先します。 |
 
@@ -160,7 +160,7 @@ SCM コネクタは利用できないため、このセクションのフラグ�
 
 カスタムプローブでライブネスシグナルとして `last_poll_age_ms` を使用します。無限に増加する値は、ポーリングループがスタックしていることを示します。`last_poll_at` と `last_poll_age_ms` の両方は、最初のポーリングが完了するまで `null` です。
 
-オーケストレーターはそのヘルスポートで独自の `/healthz` を提供します。そのエンドポイントは常に `200` を返し、ボディは最新のポーリングが成功したかどうかを報告する `connected` フィールドと、`queue_counts` のスポーン キュー数ごとの状態を持ちます。ステータスコードではなく `connected` でレディネスとアラートをゲートします。
+オーケストレーター自身の `/healthz` は、そのヘルスポート上で常に `200` を返します。ボディには、最新のポーリングが成功したかどうかを報告する `connected` フィールドと、`queue_counts` 内の状態ごとのスポーンキュー数が含まれます。`connected` が `false` である理由を確認するには、トップレベルの `last_error` フィールドを参照してください。このフィールドはポーリングが成功するたびに `null` にリセットされます。ステータスコードではなく `connected` でレディネスとアラートをゲートします。
 
 [SCM コネクタ](#scm-connector-flags) が設定されている場合、オーケストレーターの `/healthz` ボディは `scm_connector_connected` と、`connected`、`last_connected_at`、`last_error`、`reconnects`、`requests_forwarded` を持つ `scm_connector` オブジェクトも持ちます。`--scm-connector-host` が設定されていない場合、両方のフィールドは `null` です。
 

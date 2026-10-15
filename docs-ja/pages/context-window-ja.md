@@ -1602,7 +1602,7 @@ Claude Code のコンテキストウィンドウには、セッションにつ�
 | システムプロンプトと出力スタイル | 両方とも引き続き適用されます |
 | プロジェクトルート CLAUDE.md とスコープなしルール | ディスクから再度注入されます |
 | 自動メモリ | ディスクから再度注入されます |
-| [Git ステータススナップショット](/docs/ja/settings-reference#includegitinstructions) | Claude Code はリポジトリから新しいものを読み込みます |
+| [Git ステータススナップショット](/docs/ja/settings-reference#includegitinstructions) | セッション開始時にスナップショットがあった場合、Claude Code はリポジトリから新しいものを読み込みます |
 | [plan モード](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode)で Claude が作成したプラン | ディスクから再度注入されます |
 | `paths:` フロントマターを持つルール | Claude Code が[必要に応じて](/docs/ja/memory#path-specific-rules)再度読み込みます |
 | サブディレクトリ内のネストされた CLAUDE.md | Claude Code が[必要に応じて](/docs/ja/memory#how-claude-md-files-load)再度読み込みます |

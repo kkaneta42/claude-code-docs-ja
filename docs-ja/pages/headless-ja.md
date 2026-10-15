@@ -38,7 +38,7 @@ Claude Code は成功時にコード 0 で終了し、実行が失敗した場�
   bare モードで高速に開始する
 </h3>
 
-`--bare` を追加して、フック、スキル、カスタムコマンド、[サブエージェント](/docs/ja/sub-agents)、インストール済みプラグイン、MCP サーバー、自動メモリ、CLAUDE.md の自動検出をスキップすることで、起動時間を短縮します。これがない場合、`claude -p` は対話的セッションと同じ [コンテキスト](/docs/ja/how-claude-code-works#the-context-window) を読み込みます。これには、作業ディレクトリまたは `~/.claude` で設定されたすべてが含まれます。
+`--bare` を追加して、フック、スキル、カスタムコマンド、[サブエージェント](/docs/ja/sub-agents)、インストール済みプラグイン、MCP サーバー、自動メモリ、CLAUDE.md の自動検出をスキップすることで、起動時間を短縮します。これがない場合、`claude -p` は対話的セッションと同様にそれらを検出して読み込みます。これには、作業ディレクトリまたは `~/.claude` で設定されたすべてが含まれます。
 
 bare モードは、すべてのマシンで同じ結果が必要な CI とスクリプトに役立ちます。チームメイトの `~/.claude` のフック、またはプロジェクトの `.mcp.json` の MCP サーバーは実行されません。bare モードはそれらを読み込まないためです。`--add-dir` で指定するディレクトリは部分的な例外です。bare モードはその `.claude/skills/` フォルダからスキルを読み込みますが、その `.claude/commands/` と `.claude/agents/` フォルダはスキップします。[追加ディレクトリからのスキル](/docs/ja/skills#skills-from-additional-directories) は、何が読み込まれ、何が読み込まれないかについて説明しています。
 
@@ -184,7 +184,7 @@ claude -p "Extract the main function names from auth.py" \
   --json-schema '{"type":"object","properties":{"functions":{"type":"array","items":{"type":"string"}}},"required":["functions"]}'
 ```
 
-値が有効な JSON Schema でない場合、`claude` は `Error: --json-schema is not a valid JSON Schema` とそれに続くバリデータの診断を出力して終了します。Claude Code は `format` キーワード（例：`"format": "email"`）を使用するスキーマを受け入れますが、`format` を注釈として扱い、強制はしません。v2.1.205 より前では、Claude Code は無効なスキーマを静かに無視して非構造化テキストを返し、`format` を含むスキーマをすべて無効として扱っていました。
+値が有効な JSON Schema でない場合、`claude` は `Error: --json-schema is not a valid JSON Schema` とそれに続くバリデータの診断を出力して終了します。Claude Code は `format` キーワード（例：`"format": "email"`）を使用するスキーマを受け入れますが、`format` を注釈として扱い、強制はしません。
 
 <Tip>
   [jq](https://jqlang.org/) などのツールを使用して応答を解析し、特定のフィールドを抽出します。
@@ -281,9 +281,9 @@ API リクエストが再試行可能なエラーで失敗すると、Claude Cod
 `system/init` イベントは、モデル、ツール、MCP サーバー、読み込まれたプラグインを含むセッションメタデータを報告します。起動時のイベントが先行しない限り、ストリームの最初のイベントです。
 
 * `plugin_install` イベント（[`CLAUDE_CODE_SYNC_PLUGIN_INSTALL`](/docs/ja/env-vars) が設定されている場合）。
-* [`hook_started`、`hook_progress`、および `hook_response` イベント](/docs/ja/agent-sdk/typescript#sdkhookstartedmessage)（設定された [`SessionStart`](/docs/ja/hooks#sessionstart) または [`Setup`](/docs/ja/hooks#setup) フックが実行されている間）。これらはフックが生成するたびにストリーミングされます。Claude Code v2.1.169 から v2.1.203 では、フックの完了後に 1 つのバッチで配信されていました（それでも `system/init` より前）。v2.1.204 でライブ配信が復元されました。
+* [`hook_started`、`hook_progress`、および `hook_response` イベント](/docs/ja/agent-sdk/typescript#sdkhookstartedmessage)（設定された [`SessionStart`](/docs/ja/hooks#sessionstart) または [`Setup`](/docs/ja/hooks#setup) フックが実行されている間）。これらはフックが生成するたびにストリーミングされます。
 
-このイベントには、この Claude Code バージョンが実装しているプロトコル動作を示す文字列の optional な `capabilities` 配列も含まれます（例：`interrupt_receipt_v1` や `interrupt_cancel_queued_v1`）。バージョン文字列を比較する代わりにこれを確認して機能を検出し、認識しない値は無視してください。このフィールドには Claude Code v2.1.205 以降が必要で、それより前のバージョンでは存在しません。機能の一覧については [`SDKSystemMessage`](/docs/ja/agent-sdk/typescript#sdksystemmessage) を参照してください。
+このイベントには、この Claude Code バージョンが実装しているプロトコル動作を示す文字列の optional な `capabilities` 配列も含まれます（例：`interrupt_receipt_v1` や `interrupt_cancel_queued_v1`）。バージョン文字列を比較する代わりにこれを確認して機能を検出し、認識しない値は無視してください。機能の一覧については [`SDKSystemMessage`](/docs/ja/agent-sdk/typescript#sdksystemmessage) を参照してください。
 
 <h4 id="fail-ci-when-a-plugin-or-mcp-server-doesn’t-load">
   プラグインまたは MCP サーバーが読み込まれない場合に CI を失敗させる
@@ -388,7 +388,7 @@ claude -p "Look at my staged changes and create an appropriate commit" \
 
   * ユーザーが呼び出す[スキル](/docs/ja/skills)とカスタムコマンドは機能します。プロンプト文字列に `/skill-name` を含めると、Claude Code は実行前にそれを展開します。
   * ターミナルインターフェースでのみ動作する `/login` などの組み込みコマンドは利用できません。
-  * `/model`、`/effort`、`/fast`、`/color`、`/rename` は値を引数として受け付け（例：`/model sonnet`）、`/mcp` は引数なしでサーバーステータスのテキスト概要を出力します。これらの形式には Claude Code v2.1.205 以降が必要で、各コマンドの[利用可能性に関する注記](/docs/ja/commands#all-commands)に従います。
+  * `/model`、`/effort`、`/fast`、`/color`、`/rename` は値を引数として受け付け（例：`/model sonnet`）、`/mcp` は引数なしでサーバーステータスのテキスト概要を出力します。これらの形式は各コマンドの[利用可能性に関する注記](/docs/ja/commands#all-commands)に従います。
   * 設定を変更するには、`/config` に `key=value` を渡します（例：`/config thinking=false`）。
   * `/output-style <style>` は[出力スタイル](/docs/ja/output-styles)を切り替え、`/output-style` 単体ではそれらを一覧表示します。Claude Code v2.1.269 以降が必要です。
 </Note>
@@ -407,7 +407,7 @@ gh pr diff "$1" | claude -p \
 
 スクリプト内の `"$1"` は、コマンドラインで渡す最初の引数を表します。`bash review.sh 123` を実行すると、シェルは `"$1"` を `123` に置き換えるため、スクリプトは PR 123 の差分を取得します。Claude Code はレビューを JSON として出力し、テキストは `result` フィールドに入ります。
 
-デフォルトのプロンプトを完全に置き換える `--system-prompt` を含むその他のオプションについては、[システムプロンプトフラグ](/docs/ja/cli-reference#system-prompt-flags)を参照してください。
+デフォルトのプロンプトを完全に置き換える `--system-prompt` を含むその他のオプションについては、[システムプロンプトフラグ](/docs/ja/cli-reference#system-prompt-flags)を参照してください。置き換えた場合、実行は [git ステータスのスナップショット](/docs/ja/settings-reference#includegitinstructions)もない状態で開始されます。
 
 <h3 id="continue-conversations">
   会話を続ける

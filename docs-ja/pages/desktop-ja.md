@@ -101,7 +101,7 @@ Claude が返信した後、Code タブでは、空のプロンプトボック�
 | **Accept edits** | `acceptEdits` | Claude はファイル編集と`mkdir`、`touch`、`mv`などの一般的なファイルシステムコマンドを自動的に受け入れますが、他のターミナルコマンドの実行前には確認を求めます。ファイル変更を信頼し、より高速な反復を望む場合に使用します。 |
 | **Plan** | `plan` | Claude はファイルを読み取り、コマンドを実行して探索してから、ソースコードを編集せずにプランを提案します。アプローチを最初に確認したい複雑なタスクに適しています。 |
 | **Auto** | `auto` | Claude は日常的なプロンプトなしで実行されます。シェルコマンドやネットワークリクエストなどのアクションが実行される前に、バックグラウンド分類器がリクエストとの整合性を確認します。[auto モードが利用可能](#auto-mode-availability)な場合に表示されます。設定用の個別トグルはありません。 |
-| **Bypass permissions** | `bypassPermissions` | Claude は権限プロンプトなしで実行されます。ただし、[どのモードも自動承認しないアクション](/docs/ja/permission-modes#actions-no-mode-auto-approves)、Claude が[外部サイトで機能する](#browse-external-sites)場合の安全分類器、またはデスクトップアクション（[セッションをアーカイブする](#work-across-sessions)など Claude が常に最初に確認するもの）は除きます。CLI の`--dangerously-skip-permissions`と同等です。Pro および Max プランでは、Settings → Claude Code の「Allow bypass permissions mode」で有効にします。Team および Enterprise プランでは設定トグルはなく、組織ポリシーで制御されます。サンドボックス化されたコンテナまたは VM でのみ使用してください。 |
+| **Bypass permissions** | `bypassPermissions` | Claude は権限プロンプトなしで実行されます。ただし、[どのモードも自動承認しないアクション](/docs/ja/permission-modes#actions-no-mode-auto-approves)、Claude が[外部サイトで機能する](#browse-external-sites)場合の安全分類器、またはセッションの削除などのデスクトップアクション（[セッションのアーカイブ](#work-across-sessions)は含みません）は除きます。CLI の`--dangerously-skip-permissions`と同等です。Pro および Max プランでは、Settings → Claude Code の「Allow bypass permissions mode」で有効にします。Team および Enterprise プランでは設定トグルはなく、組織ポリシーで制御されます。サンドボックス化されたコンテナまたは VM でのみ使用してください。 |
 
 Code タブの以前のバージョンでは、これらのモードを Ask permissions、Auto accept edits、および Plan mode というラベルが付けられていました。
 
@@ -130,6 +130,10 @@ Desktop を Google Cloud の Agent Platform にルーティングする Enterpri
 Claude は dev サーバーを起動し、Browser ペインで開いて変更を確認できます。これはフロントエンド Web アプリとバックエンドサーバーの両方で機能します：Claude は API エンドポイントをテストし、サーバーログを表示し、見つけた問題を反復処理できます。ほとんどの場合、Claude はプロジェクトファイルを編集した後、サーバーを自動的に起動します。いつでも Claude にプレビューを要求することもできます。デフォルトでは、Claude は編集後に[変更を自動検証](#auto-verify-changes)します。
 
 Browser ペインは、プロジェクトから静的 HTML ファイル、PDF、画像、およびビデオを開くこともできます。チャットで HTML、PDF、画像、またはビデオパスをクリックして、Browser ペインで開きます。
+
+<Note>
+  [SSH セッション](#ssh-sessions)では、Claude は Browser ペインのツールを利用できないため、Browser ペインでアプリを開くことができません。アプリを自分で確認するには、[そのポートをコンピューターに転送](#reach-a-port-on-the-remote-machine)します。
+</Note>
 
 Browser ペインから、以下を実行できます：
 
@@ -218,6 +222,8 @@ Claude はコメントを読み取り、要求された変更を加えます。�
 
 <Note>
   PR 監視には、[GitHub CLI（`gh`）](https://cli.github.com/)がマシンにインストールされ、認証されている必要があります。`gh`がインストールされていない場合、Desktop は PR を作成しようとする最初の時点でインストールを促します。
+
+  [SSH セッション](#ssh-sessions)では、Claude はリモートマシン上でブランチをプッシュし、`gh pr create` を実行するため、**Create PR** をクリックする前にリモートマシンで `git` と `gh` をセットアップしてください。SSH セッションでは Desktop がインストールを促さないため、`gh` はリモートマシンに自分でインストールしてください。その後、リモートマシンで `git push` が機能すること、および `gh auth status` がログイン済みであると報告することを確認してください。
 </Note>
 
 <h2 id="arrange-your-workspace">
@@ -453,7 +459,7 @@ Claude がこのサーフェスを通じて別のセッションにメッセー�
 
 Claude Code はセッション間で 4 つの安全動作を適用します：
 
-* セッションをアーカイブする前に、Claude はまずユーザーに確認します。Auto および Bypass 権限を含むすべての権限モードで承認カードが表示されます。
+* Claude がセッションをアーカイブする前に承認カードが表示されます。ただし、auto モードと Bypass permissions モードでは、Claude は承認カードなしでセッションをアーカイブできます。確認を求められるようにするには、Manual に切り替えてください。
 * このサーフェスを通じて、Claude はスケジュールタスクの実行など、誰も見ていないセッションからクロスセッションメッセージを送信できず、そのようなセッションにメッセージを配信することもできません。
 * Claude Code は、受信セッションが[クロスセッションメッセージング](/docs/ja/cross-session-messaging#availability)自体を持たない場合でも、このサーフェスからの各メッセージを受信セッションの[インバウンドコントロール](/docs/ja/cross-session-messaging#control-inbound-messages)に対してチェックします。受信セッションで[`crossSessionInbound`](/docs/ja/settings-reference#crosssessioninbound)を`refuse`に設定した場合、Claude Code はこのサーフェスからのメッセージをドロップします。Claude Code は拒否を Claude デスクトップアプリに報告します。v2.1.234 より前では、Claude Code はこのサーフェスからクロスセッションメッセージングを持たない受信セッションへのすべてのメッセージをドロップしました。
 * Claude Code は各受信メッセージを引用して送信元のセッションを明示し、Claude はメッセージに基づいて行動する際も受信セッション自体の権限設定に従います。
@@ -546,7 +552,7 @@ Claude Code はまた、同じアカウントでサインインしたターミ�
 
 [スキル](/docs/ja/skills)は Claude ができることを拡張します。Claude は関連する場合に自動的にロードするか、直接呼び出すことができます：プロンプトボックスで `/` を入力するか、**+**ボタンをクリックして**Slash commands**を選択して、利用可能なものを参照します。これには [組み込みコマンド](/docs/ja/commands)、[カスタムスキル](/docs/ja/skills#create-your-first-skill)、コードベースからのプロジェクトスキル、および [インストール済みプラグイン](/docs/ja/plugins/install)からのスキルが含まれます。1 つを選択すると、入力フィールドで強調表示されます。その後にタスクを入力して、通常どおり送信します。
 
-Claude が作業中でも、他のメッセージと同じようにコマンドを送信でき、ターンが終了するとセッションはアイドル状態に戻ります。v2.1.206 より前では、ターン中に送信されたコマンドはセッションを実行中として表示したままにし、その後に送信したメッセージは配信されませんでした。
+Claude が作業中でも、他のメッセージと同じようにコマンドを送信でき、ターンが終了するとセッションはアイドル状態に戻ります。
 
 ローカルセッションは `~/.claude/skills/` からパーソナルスキルをロードします。[SSH](#ssh-sessions) セッションは、マシンからではなく、リモートホストのホームディレクトリから `~/.claude/skills/` を読み取ります。
 
@@ -693,9 +699,17 @@ Localhost アドレスは直接開き、デフォルトのポートアドレス�
 
 * **`true`**：Claude は自動的に空きポートを見つけて使用します。ほとんどの dev サーバーに適しています。
 * **`false`**：Claude はエラーで失敗します。OAuth コールバックまたは CORS 許可リストなど、サーバーが特定のポートを使用する必要がある場合に使用します。
-* **設定されていない（デフォルト）**：Claude はサーバーがそのポートを必要とするかどうかを尋ねてから、答えを保存します。
+* **設定されていない（デフォルト）**：`true` の場合と同様に、サーバーには次の空きポートが割り当てられます。ただし、以下の 1 つのケースは例外です。Claude Desktop v2.37337.0 より前では、代わりに Claude がサーバーにそのポートが必要かどうかを尋ね、回答を `launch.json` に保存します。
 
-Claude が別のポートを選択すると、割り当てられたポートを `PORT` 環境変数を通じてサーバーに渡します。
+優先ポートが使用中で `autoPort` が設定されていない場合、以下の条件がすべて当てはまると、サーバーは停止したままになります：
+
+* `npm`、`yarn`、`pnpm`、または `bun` のスクリプトを通じてサーバーを起動している。
+* 優先ポートがそのスクリプトにハードコードされている、または Claude がスクリプトを検査できない。
+* `runtimeArgs` でポートを渡していない。
+
+その場合は、ポートを解放するか、ハードコードされた値を削除するか、スクリプトに合わせて `port` を変更します。代わりに `"autoPort": true` を設定する方法は、`PORT` を読み取るスクリプトでのみ機能します。
+
+サーバーが `PORT` 環境変数からポートを読み取るようにしてください。この環境変数には割り当てられたポートが格納されます。Claude がサーバーを別のポートに移動する場合、`runtimeArgs` 内の `--port` または `-p` の値もそれに合わせて書き換えます。
 
 <h4 id="examples">
   例
@@ -785,7 +799,7 @@ Claude が別のポートを選択すると、割り当てられたポートを 
   ローカルセッション
 </h3>
 
-デスクトップアプリは常にシェル環境全体を継承するわけではありません。macOS では、Dock または Finder からアプリを起動すると、`~/.zshrc` または `~/.bashrc` などのシェルプロファイルを読み取り、`PATH` と固定された Claude Code 変数セットを抽出しますが、そこでエクスポートする他の変数は取得されません。Windows では、アプリはユーザーおよびシステム環境変数を継承しますが、PowerShell プロファイルは読み取りません。
+デスクトップアプリは常にシェル環境全体を継承するわけではありません。macOS では、Dock または Finder からアプリを起動すると、`~/.zshrc` または `~/.bashrc` などのシェルプロファイルを読み取り、Claude Code に `PATH` と固定された Claude Code 変数セットを渡しますが、そこでエクスポートする他の変数は渡しません。Windows では、アプリはユーザーおよびシステム環境変数を継承しますが、PowerShell プロファイルは読み取りません。
 
 ローカルセッションと dev サーバーの環境変数を設定するには、プロンプトボックスの環境ドロップダウンを開き、**Local** にマウスを合わせて、ギアアイコンをクリックしてローカル環境エディタを開きます。ここで保存する変数は、マシンに暗号化されて保存され、開始するすべてのローカルセッションとプレビューサーバーに適用されます。また、`~/.claude/settings.json` ファイルの `env` キーに変数を追加することもできます。ただし、これらは Claude セッションにのみ到達し、dev サーバーには到達しません。サポートされている変数の完全なリストについては、[環境変数](/docs/ja/env-vars)を参照してください。
 
@@ -840,12 +854,59 @@ SSH 接続を追加するには、セッションを開始する前にプロン�
 
 Linux または macOS のリモートマシンには、サポートされているプロセッサ、SFTP を備えた SSH サーバー、`noexec` でマウントされていないインストールフォルダ、動作するシェル、およびネットワークアクセスが必要です。接続する前に、またはログイン後に接続が失敗した場合に、各要件を確認してください：
 
-* **システム**：x86\_64 または arm64 プロセッサ。マシンは Claude Code の[システム要件](/docs/ja/setup#system-requirements)も満たす必要があります。
+* **システム**：x86\_64 または arm64 プロセッサ。マシンは Claude Code の[システム要件](/docs/ja/setup#system-requirements)も満たす必要があります。Linux では、Claude Code には glibc 2.17 以降、または musl が必要です。マシンがどちらを使用しているかを確認するには、そのマシンで `ldd --version` を実行します。Alpine Linux などの musl ベースのディストリビューションでは、[Claude Code が必要とするパッケージ](/docs/ja/setup#alpine-linux-and-musl-based-distributions)もインストールしてください。
 * **SFTP**：SSH サーバーが SFTP サブシステムを提供している必要があります。これは `sshd_config` の `Subsystem sftp` 行で有効になります。確認するには、コンピューターのターミナルで `sftp` を使用して同じホストとポートに接続します。正常に動作しているサーバーでは `sftp>` プロンプトが表示されます。
 * **接続あたりのセッション数**：macOS と Linux の Desktop は、1 つの SSH 接続で複数のセッションを開きます。サーバーの `sshd_config` で `MaxSessions 1` が設定されている場合は、OpenSSH のデフォルトである 10 などに引き上げてください。
-* **インストールフォルダ**：Desktop は、ホームディレクトリの `~/.claude/remote/` の下にヘルパープログラムと Claude Code をインストールします。そこからそれらを実行するため、そのフォルダを `noexec` でマウントされたファイルシステム上に置くことはできません。接続する各ユーザーのホームディレクトリに約 1 GB のディスク容量を確保してください。
+* **インストールフォルダ**：Desktop は、ホームディレクトリの `~/.claude/remote/` の下にヘルパープログラムと Claude Code をインストールします。そこからそれらを実行するため、そのフォルダを `noexec` でマウントされたファイルシステム上に置くことはできません。接続する各ユーザーのホームディレクトリに約 1 GB のディスク容量を確保してください。そのフォルダに含まれる内容については、[リモートマシン上のファイルとプロセス](#files-and-processes-on-the-remote-machine)を参照してください。
 * **シェル**：リモートマシン上のアカウントに設定されているシェルは、Bash、Zsh、`sh` と同様に、SSH 経由で送信されたコマンドを実行できる必要があります
-* **ネットワーク**：Claude Code はリモートマシンで実行され、そこからネットワークリクエストを行うため、マシンには [Claude Code が必要とするネットワークアクセス](/docs/ja/network-config#network-access-requirements)が必要です。マシンが Claude Code をダウンロードできない場合、Desktop はコンピューター上でダウンロードしてアップロードします。Claude Code のその他のリクエストは引き続きリモートマシンから送信されます。
+* **ネットワーク**：Claude Code はリモートマシンで実行され、そこからネットワークリクエストを行うため、マシンには [Claude Code が必要とするネットワークアクセス](/docs/ja/network-config#network-access-requirements)が必要です。マシンが Claude Code をダウンロードできない場合、Desktop はコンピューター上でダウンロードしてアップロードします。Claude Code のその他のリクエストは引き続きリモートマシンから送信されます。Linux のリモートマシンで、それらのリクエストにプロキシが必要な場合は、[SSH セッション用に設定してください](#set-a-proxy-or-a-ca-certificate-for-ssh-sessions)。
+
+<h4 id="set-a-proxy-or-a-ca-certificate-for-ssh-sessions">
+  SSH セッションのプロキシまたは CA 証明書を設定する
+</h4>
+
+Linux のリモートマシンがプロキシ経由でインターネットに接続する場合、または CA 証明書が必要な場合は、そのマシン上の `~/.claude/settings.json` の `env` に[プロキシと CA の変数](/docs/ja/network-config)を追加してください。そのマシンの `~/.profile`、`~/.bash_profile`、`~/.zprofile`、または `~/.zshrc` ですでにエクスポートしている場合でも追加してください。
+
+そのマシンのターミナルで実行した `claude` がそれらのファイルから変数を取得する場合でも、SSH セッションはそれらのファイルから変数を取得しません。その結果、セッションが応答しなくなったり、**The connection from … to the API failed** や **Authentication failed** が表示されたりすることがあり、再度サインインしても解決しません。
+
+<Steps>
+  <Step title="変数を追加する">
+    CA ファイルには [`NODE_EXTRA_CA_CERTS`](/docs/ja/network-config#custom-ca-certificates) を使用してください。Claude Code は `~/.claude/settings.json` の `SSL_CERT_FILE` に指定された CA を信頼しないためです。次の例では、プロキシと CA ファイルを設定します：
+
+    ```json ~/.claude/settings.json theme={null}
+    {
+      "env": {
+        "HTTPS_PROXY": "http://proxy.example.com:8080",
+        "NODE_EXTRA_CA_CERTS": "/etc/ssl/certs/example-ca.pem"
+      }
+    }
+    ```
+  </Step>
+
+  <Step title="メッセージを再送信する">
+    そのファイルで追加または変更した変数は数秒以内に有効になるため、メッセージを再送信してください。それでも失敗する場合は、新しいセッションを開始してください。
+  </Step>
+</Steps>
+
+<h5 id="find-a-proxy-or-ca-variable-set-elsewhere-on-the-remote-machine">
+  リモートマシンの別の場所で設定されたプロキシまたは CA の変数を見つける
+</h5>
+
+Linux のリモートマシンがプロキシまたは CA の変数を別の場所で設定していないか確認してください。セッションはその値を使用し、[どの設定ファイルの値も無視する](/docs/ja/settings-reference#how-env-values-interact-with-your-shell)ためです：
+
+<Steps>
+  <Step title="リモートマシンが設定する変数を一覧表示する">
+    コンピューターのターミナルで、自分のホストを指定して `ssh devbox env` を実行します。
+  </Step>
+
+  <Step title="変数が設定されている場所で変更する">
+    一覧にその変数がある場合は、リモートマシン上の `~/.zshenv`、`/etc/environment`、`~/.bashrc` など、その変数を設定しているファイルで変更します。
+  </Step>
+
+  <Step title="セッションに新しい値を渡す">
+    リモートマシンを再起動するか、[ヘルパーを削除する](#files-and-processes-on-the-remote-machine)手順の最初の 2 つのステップと同様に、Desktop を終了してヘルパーのプロセスを終了します。どちらの方法でも Claude の作業が中断されるため、タスクが実行されていないときに行ってください。
+  </Step>
+</Steps>
 
 <h4 id="use-your-ssh-configuration-on-macos-and-linux">
   macOS と Linux で SSH 設定を使用する
@@ -878,6 +939,97 @@ Host devbox
 
 **SSH host** フィールドに `devbox` と入力します。
 
+<h5 id="reach-a-container-on-a-remote-machine">
+  リモートマシン上のコンテナに接続する
+</h5>
+
+SSH ポートを公開していないコンテナ内でセッションを実行するには、`ProxyCommand` を使用してコンテナに接続してください。Desktop は接続先エントリの `RemoteCommand` を実行しないためです。エントリで `RemoteCommand` を使用してコンテナに入っている場合、セッションはコンテナ内ではなく、エントリがログインするマシン上で実行されます。
+
+<Steps>
+  <Step title="エントリを追加する">
+    次のエントリを `~/.ssh/config` の末尾に追加するか、`Host *` エントリがある場合は最初の `Host *` エントリの直前に追加します。Docker コンテナ `devbox`、そのユーザー `dev`、マシン `build.example.com` は自分のものに置き換えてください。このエントリのコマンドは、接続ごとにコンテナ内で SSH サーバーを起動します：
+
+    ```text ~/.ssh/config theme={null}
+    Host devbox-container
+      User dev
+      ProxyCommand ssh build.example.com docker exec -i devbox /usr/sbin/sshd -i
+    ```
+  </Step>
+
+  <Step title="コンテナを準備する">
+    * OpenSSH サーバーをインストールし、イメージを再ビルドしたりコンテナを再作成したりしても変わらないホスト鍵を用意します
+    * `User` で指定したアカウントに、`authorized_keys` ファイルなどのログイン手段を用意します
+    * コンテナが[リモートマシンの要件](#remote-machine-requirements-for-ssh-sessions)を満たしていることを確認します
+  </Step>
+
+  <Step title="許可リストを確認する">
+    管理者が [SSH ホストを制限している](#restrict-which-ssh-hosts-users-can-connect-to)場合は、コンピューターのターミナルで `ssh -G devbox-container` を実行します。出力される `hostname`（ここでは `devbox-container`）を `sshHostAllowlist` で許可するよう管理者に依頼してください。管理者がその名前を許可すると、エントリの `ProxyCommand` が接続する先はどこであっても許可されることになります。
+  </Step>
+
+  <Step title="エントリをテストしてから接続する">
+    コンピューターのターミナルで `ssh devbox-container` を実行します。報告された問題を修正し、何も尋ねられずにコンテナ内でシェルが開くまで繰り返し実行します：
+
+    * **`ssh` がパスワード、パスフレーズ、またはコードを求める場合**：SSH エージェントが保持する鍵など、プロンプトなしで機能するログインに切り替えます
+    * **`ssh` が `Cannot execute command-line and remote command.` または `Bad packet length` を報告する場合**：`build.example.com` のエントリから `RemoteCommand` と `RequestTTY` を削除します。その後は、コンピューターのターミナルで `ssh build.example.com` を実行すると、コンテナ内ではなくそのマシン上でシェルが開きます。
+    * **`ssh` が `Connection closed by UNKNOWN port 65535` を報告する場合**：同じターミナルで `ssh build.example.com docker exec devbox /usr/sbin/sshd -t` を実行します。
+      * `Missing privilege separation directory: /run/sshd` と出力された場合は、コンテナ内にそのフォルダを作成します。
+      * `no hostkeys available` と出力され、コンテナにホスト鍵がある場合は、このコマンドとエントリの両方で `exec` の後に `-u root` を追加します。
+
+    その後、**SSH host** フィールドに `devbox-container` と入力します。
+  </Step>
+</Steps>
+
+<h5 id="use-variables-from-your-shell-in-a-proxycommand">
+  `ProxyCommand` でシェルの変数を使用する
+</h5>
+
+`ProxyCommand` または `Match exec` コマンドで独自の環境変数を使用するには、`~/.zshrc` などのシェル起動ファイルでその変数をエクスポートしてから、Desktop を終了して再度開きます。Desktop は起動時にログインシェルがエクスポートする内容を読み取り、終了するまでその値を保持します。
+
+これには Claude Desktop v2.37337.0 以降と、`-0` を受け付ける `env` コマンドが必要です。これはコンピューターのターミナルで `env -0` を実行して確認できます。
+
+<Note>
+  シェルが一時的な AWS 認証情報を設定する場合は、`AWS_*` 変数をエクスポートする代わりに、[AWS CLI にプロファイルを指定してください](#use-aws-credentials-in-a-proxycommand)。
+</Note>
+
+<a id="use-aws-credentials-in-a-proxycommand" />
+
+<h5 id="use-aws-credentials-in-a-proxycommand">
+  `ProxyCommand` で AWS 認証情報を使用する
+</h5>
+
+シェル起動ファイルで一時的な AWS 認証情報を設定している場合、AWS CLI を実行する `ProxyCommand` は、ターミナルでは接続できても Desktop では失敗することがあります。シェルが `AWS_SESSION_TOKEN`、`AWS_SECURITY_TOKEN`、または `AWS_CREDENTIAL_EXPIRATION` をエクスポートしていると、Desktop の `ssh` と `ProxyCommand` は、シェルの AWS 認証情報、`AWS_REGION`、`AWS_PROFILE` を取得しません。
+
+AWS CLI にリージョンや認証情報の他の取得元がない場合、`You must specify a region` または `Unable to locate credentials` で失敗します。Desktop から接続するには、AWS CLI が `~/.aws/config` から読み取るプロファイルを指定します：
+
+<Steps>
+  <Step title="リージョンと認証情報の取得元を持つプロファイルを追加する">
+    次の例では、ヘルパープログラムから認証情報を取得する `corp` という名前のプロファイルを追加します：
+
+    ```ini ~/.aws/config theme={null}
+    [profile corp]
+    region = us-east-1
+    credential_process = /full/path/to/your-credential-helper
+    ```
+
+    * **`region`**：接続先マシンの AWS リージョンを指定します
+    * **`credential_process`**：[AWS がドキュメントで定めている JSON 形式](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-sourcing-external.html)で認証情報を出力するプログラムのフルパスを指定します。AWS CLI は、不在中の再接続を含め、接続のたびにこのプログラムを実行するため、ユーザーの入力を必要としないプログラムを選んでください。
+    * **IAM Identity Center**：`credential_process` の代わりに、プロファイルの [IAM Identity Center 設定](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-sso.html)を追加します。接続する前と、そのサインインの期限が切れたときに、ターミナルで `aws sso login --profile corp` を実行します。
+  </Step>
+
+  <Step title="ProxyCommand でプロファイルを指定する">
+    次の例では、[AWS が Session Manager 用にドキュメントで示しているコマンド](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-getting-started-enable-ssh-connections.html)に `--profile` を追加します：
+
+    ```text ~/.ssh/config theme={null}
+    Host i-*
+      ProxyCommand sh -c "aws ssm start-session --profile corp --target %h --document-name AWS-StartSSHSession --parameters 'portNumber=%p'"
+    ```
+  </Step>
+
+  <Step title="再度接続する">
+    ターミナルでホストを指定して `ssh` を実行し、エントリがそこで引き続き接続できることを確認してから、Desktop から接続します。
+  </Step>
+</Steps>
+
 <h5 id="raise-the-ssh-connection-timeout">
   SSH 接続のタイムアウトを延長する
 </h5>
@@ -893,6 +1045,53 @@ Host devbox
 ```
 
 `ssh` はホストに対して最初に見つかった値を使用するため、このエントリは `ConnectTimeout` を設定する `Host *` エントリよりも上に配置してください。確認するには、コンピューターのターミナルで `ssh -G devbox` を実行します。その出力には `connecttimeout 120` が含まれます。値を変更した後は、Desktop を終了して再度開いてください。
+
+リモートマシン自体がスマートフォンでの承認を待つ場合は、`ConnectTimeout` の設定にかかわらず、45 秒以内に承認してください。Desktop が `ServerAliveInterval` と `ServerAliveCountMax` を独自に設定し、リモートマシンがその間何も送信しないログインを `ssh` が閉じるため、この制限は延長できません。代わりにジャンプホストまたは `ProxyCommand` がユーザーを待つ場合は、リモートマシンのエントリの `ConnectTimeout` を延長して、その時間をカバーしてください。
+
+<h5 id="fix-a-match-host-block-that-only-desktop-applies">
+  Desktop だけが適用する `Match host` ブロックを修正する
+</h5>
+
+ターミナルの `ssh devbox` では使用されない設定を Desktop が使用する場合は、エントリの `HostName` 行より上にある `Match host` ブロックを探してください。ターミナルでは、`ssh` はその位置のブロックを `HostName` 行より前に読み取るため、ブロックを `devbox` と比較します。Desktop はコマンドラインで `ssh` に `HostName` の値を渡すため、`ssh` はブロックをその値と比較します。
+
+確認するには、Desktop と同様に、エントリの `HostName` と `User` の値をコマンドラインで指定して、コンピューターのターミナルで `ssh -G` を実行します：
+
+```bash theme={null}
+ssh -G -o HostName=devbox.internal.example.com -l alice devbox
+```
+
+その出力を `ssh -G devbox` の出力と比較します。`proxycommand` などのブロックの設定が最初の出力にのみ表示される場合、そのブロックは Desktop でのみ有効になります。Desktop でもスキップされるようにするには、その `Match` 行に `!originalhost devbox` を追加します：
+
+```text ~/.ssh/config theme={null}
+Match host *.internal.example.com !originalhost devbox
+```
+
+確認するには、最初のコマンドを再度実行します。ブロックの設定は出力に表示されなくなります。
+
+<h5 id="forwarding-settings-that-desktop-leaves-off">
+  Desktop がオフにする転送設定
+</h5>
+
+リモートマシンへの接続では、SSH 設定でオンになっている場合でも、Desktop は `ForwardAgent`、`ForwardX11`、`LocalForward`、`RemoteForward`、`DynamicForward`、`Tunnel` をオフのままにします。[ターミナル](#run-commands-in-the-terminal)や `!` コマンドでは、Desktop がそれらの設定に従う別の `ssh` を起動することがあるため、転送設定は[一部の場合にのみ](#limits-while-desktop-is-disconnected)適用されると考えてください。
+
+* **リモートマシン上のポートに接続するには**：[自分で転送します](#reach-a-port-on-the-remote-machine)
+* **リモートマシンから自分の鍵を使用するには**：`git push` 用など、リモートマシン自体に認証情報を設定します
+
+Desktop が SSH エージェントやポートを転送しないようにするには、コンピューターのターミナルで `ssh -G devbox` を実行します。次に、出力された `hostname` と `user` の値を使用して、`ssh -G -o HostName=devbox.internal.example.com -l alice devbox` のように、Desktop が実行しうる形でもう一度実行します。2 回目の出力には、1 回目ではスキップされる `Match` ブロックの設定が表示されることがあります。
+
+両方の出力で、`no` 以外の値を示す `forwardagent` 行と、`localforward`、`remoteforward`、または `dynamicforward` で始まる行を探します。見つかった場合は、その設定を SSH 設定から削除してください。`ProxyCommand` が `ssh` で接続するホストについても同様に行ってください。
+
+<h4 id="reach-a-port-on-the-remote-machine">
+  リモートマシン上のポートに接続する
+</h4>
+
+ポート 3000 の dev サーバーなど、リモートマシンで実行されているサーバーを開くには、ポートを自分で転送します。コンピューターのターミナルで、`-L` と接続先のホスト（`devbox` など）を指定して `ssh` を実行します：
+
+```bash theme={null}
+ssh -N -L 3000:localhost:3000 devbox
+```
+
+接続で **SSH port** または **SSH key (optional)** を入力した場合は、同じ値で `-p` または `-i` を追加します。そのコマンドを実行したままにし、コンピューターのブラウザで `http://localhost:3000` を開くと、リモートマシンのポート 3000 に接続できます。`ssh` が `open failed: administratively prohibited` と出力した場合は、マシンの管理者に TCP 転送を許可するよう依頼してください。TCP 転送は SSH サーバーの `sshd_config` の `AllowTcpForwarding` で制御されます。
 
 <h4 id="windows-remote-machines">
   Windows リモートマシン
@@ -925,7 +1124,7 @@ Windows リモートマシンでは、特に次のような制限があります
 Claude Code は、Desktop がリモートマシンにインストールするバックグラウンドヘルパーの下でプロセスとして実行されるため、実行を続けるのに SSH 接続は必要ありません。このセクションで説明する動作には Claude Desktop v2.31226.0 以降が必要です。
 
 <Warning>
-  Claude アカウントで Desktop にサインインしている場合、タスクが一晩中実行されることを当てにしないでください。Desktop は、Desktop が実行中かつ接続中の間のみタスクのサインインを更新するため、切断後にタスクのサインインの期限が切れ、タスクが停止することがあります。切断時に残っている時間は状況によって異なります。
+  Claude アカウントで Desktop にサインインしている場合、タスクが一晩中実行されることを当てにしないでください。Desktop は、Desktop が実行中かつ接続中の間のみタスクのサインインを更新するため、切断後にタスクのサインインの期限が切れ、タスクが停止することがあります。切断時に残っている時間は状況によって異なり、数分しかない場合もあります。
 
   それまでに行われた作業はリモートマシンに残り、戻ったときにメッセージを送信して続行できます。
 
@@ -1076,6 +1275,75 @@ Desktop を終了した後も、タスクはリモートマシン上で、完了
 
 このフィールドには Claude Desktop v1.44121.0 以降が必要です。組織がセッションで使用できるフォルダを制限している場合、Desktop はこのフィールドを非表示にし、worktree をプロジェクト内に作成します。
 
+<h4 id="files-and-processes-on-the-remote-machine">
+  リモートマシン上のファイルとプロセス
+</h4>
+
+Desktop は、Linux または macOS のリモートマシンに接続する各ユーザーのホームディレクトリの `~/.claude/remote/` の下に、ヘルパープログラムと Claude Code をインストールします。ヘルパーはどのネットワークポートもリッスンしませんが、Claude Code と、MCP サーバーや開発サーバーなど Claude Code が起動するプログラムはリッスンすることがあります。
+
+| フォルダ | 内容 |
+| - | - |
+| `~/.claude/remote/srv/` | ヘルパー（バージョンごとに 1 つのフォルダ） |
+| `~/.claude/remote/ccd-cli/` | Claude Code（バージョンごとに 1 つのファイル） |
+| `~/.claude/remote/run/` | ソケットやログなど、ヘルパーのランタイムファイル（接続するコンピューターごとに 1 つのフォルダ） |
+| `~/.claude/remote/plugins/` | Desktop がユーザーのコンピューターからコピーするプラグイン |
+| [`~/.claude/uploads/`](/docs/ja/claude-directory#clear-local-data) | ユーザーがメッセージに添付するファイル（セッションごとに 1 つのフォルダ） |
+
+1 人のユーザーのプロセスを一覧表示するには、リモートマシン上でそのユーザーとして `pgrep -fl "$HOME/.claude/remote/"` を実行するか、`$HOME` の代わりにそのユーザーのホームディレクトリを指定して実行します：
+
+* **ヘルパー**：接続するコンピューターごとに 1 つ以上の `server` プロセス
+* **Claude Code**：ヘルパーがユーザーのセッションのために起動するプロセス。それぞれ `2.1.295-…` のように、バージョンにちなんだ名前のファイルから起動されます
+
+Desktop は、ユーザーの SSH 接続を通じて、`~/.claude/remote/run/` の下にあるヘルパーのフォルダ内の Unix ソケット `rpc.sock` を経由してヘルパーに到達します。ソケットのモードは 600、そのフォルダのモードは 700 であるため、root を除き、マシン上の他のユーザーはそのソケットに接続できません。
+
+ヘルパーが自動的に停止する場合については、[Desktop の切断中の制限](#limits-while-desktop-is-disconnected)を参照してください。
+
+1 人のユーザーのヘルパーと Claude Code を削除するには：
+
+<Steps>
+  <Step title="Desktop を終了する">
+    ユーザーが接続する各コンピューターで Desktop を終了します。Desktop は次回接続時に両方のプログラムを再度インストールし、自動的に再接続することがあります。
+  </Step>
+
+  <Step title="プロセスを終了する">
+    リモートマシンにそのユーザーとしてログインし、[`pgrep`](#files-and-processes-on-the-remote-machine) が一覧表示する各 Claude Code プロセスの ID を指定して `kill` を実行します。それらが一覧から消えたら、各 `server` プロセスの ID を指定して `kill` を実行します。先に `server` プロセスを終了すると、Claude Code が実行中のコマンドが実行を続けることがあります。
+
+    次に、`ps -u "$(id -un)" -f` などでユーザーの残りのプロセスを一覧表示し、Claude Code が起動したと分かるものを終了します。Claude Code がバックグラウンドに残したプログラムは、`pgrep` の一覧に含まれないまま、Claude Code の終了後も実行を続けることがあります。
+  </Step>
+
+  <Step title="フォルダを削除する">
+    `~/.claude/remote/` を削除します。`~/.claude/` と `~/.claude.json` にある Claude Code 自体のファイルを削除するには、[設定ファイルを削除する](/docs/ja/setup#remove-configuration-files)を参照してください。
+  </Step>
+</Steps>
+
+<h5 id="end-one-session’s-process">
+  1 つのセッションのプロセスを終了する
+</h5>
+
+1 つのセッションの Claude Code プロセスを終了するには、Desktop がリモートマシンに接続している間に、Desktop で[セッションをアーカイブ](#work-in-parallel-with-sessions)します。プロセスは、タスクの完了後も、Desktop を終了した後も実行を続けます。
+
+worktree を持つセッションをアーカイブする前に、[セッションで並行作業する](#work-in-parallel-with-sessions)を参照してください。
+
+<h5 id="see-which-user-the-processes-run-as">
+  プロセスを実行するユーザーを確認する
+</h5>
+
+ヘルパーと Claude Code は、Desktop が SSH でログインするユーザーとして実行されます。これらのインストールと起動に `sudo` は必要ありません。ユーザーを確認するには、[`pgrep`](#files-and-processes-on-the-remote-machine) が一覧表示するプロセス ID を指定して、リモートマシンで `ps -o user= -p` を実行します。
+
+シェルコマンドや MCP サーバーなど、Claude Code が起動するプログラムも、そのユーザーとして起動します。そこでコマンドを実行する人に対して行うのと同様に、`sudo` ルールを含め、リモートマシン上のそのユーザーの権限を確認してください。
+
+<h5 id="see-who-connected-to-the-remote-machine">
+  リモートマシンに接続したユーザーを確認する
+</h5>
+
+リモートマシンに誰が接続したかを確認するには、そのマシン上の SSH サーバーのログを読みます。ログでは、Desktop からのログインはターミナルからのログインと同じように表示されます。macOS または Linux の Desktop では、エントリはセッションごとではなく、Desktop が接続するたびに記録されます。
+
+<h4 id="use-mcp-servers-set-up-on-the-remote-machine">
+  リモートマシンで設定した MCP サーバーを使用する
+</h4>
+
+SSH セッションで `~/.claude.json` またはプロジェクトの `.mcp.json` の [MCP サーバー](/docs/ja/mcp)を使用するには、リモートマシン上のそれらのファイルで設定します。Claude Code はそれらの stdio サーバーをリモートマシンで起動するため、それらのサーバーが実行するコマンドをリモートマシンにインストールしてください。`claude_desktop_config.json` のサーバーについては、[Desktop の切断中の制限](#limits-while-desktop-is-disconnected)を参照してください。
+
 <h4 id="open-an-ssh-session-from-a-link">
   リンクから SSH セッションを開く
 </h4>
@@ -1207,10 +1475,11 @@ Desktop はリンクを開いたときに、未送信のテキストを置き換
 * **Cowork**：どのキーも [Cowork](https://claude.com/docs/cowork/overview) セッションや Cowork のスケジュールタスクには適用されません
 * **クラウドセッション**：どのキーも[クラウドセッション](#cloud-sessions)を利用できるかどうかを変更しません。クラウドセッションをオフにするには、[Admin console controls](#admin-console-controls) の **Cloud sessions** 設定を使用します。
 
-この例を応用する場合は、ホスト名と Desktop のバージョンを確認してください：
+この例を応用する場合は、ホスト名、Desktop のバージョン、およびファイルの権限を確認してください：
 
 * **ホスト名**：`sshHostAllowlist` のパターンが、`user@` を除いた各 `sshConfigs` エントリのホスト名と一致することを確認してください。一致しない場合、開発者はその接続に接続できません。Desktop がホスト名を照合する方法については、[ユーザーが接続できる SSH ホストを制限する](#restrict-which-ssh-hosts-users-can-connect-to)を参照してください。
 * **バージョン**：`disableDesktopLocalSessions` には Claude Desktop v1.37937.0 以降が必要です
+* **ファイルの権限**：コンピューター上の各開発者のアカウントが管理設定ファイルを読み取れることを確認してください。アカウントが読み取れないファイル内のキーは Desktop によって適用されず、Claude Code も[それらのキーなしで起動します](/docs/ja/managed-settings#find-entries-claude-code-dropped)。
 
 3 つのキーは、配信する[管理ソース](/docs/ja/managed-settings#how-claude-code-combines-managed-sources)のうち最上位のもの 1 つにまとめて記述してください。[サーバー管理設定](/docs/ja/server-managed-settings)を配信する場合は、各コンピューターの最上位の MDM ポリシーまたは管理設定ファイルにも 3 つのキーのコピーを保持してください。Desktop は起動時にサーバー管理設定を取得し、取得が成功するまではコンピューター上のコピーが適用されます。
 
@@ -1557,6 +1826,37 @@ Claude が`npm`、`node`、またはその他の CLI コマンドなどのツー
 </h3>
 
 MCP サーバートグルが応答しない場合、または Windows でサーバーが接続に失敗する場合、サーバーが設定で正しく設定されていることを確認し、アプリを再起動し、Task Manager でサーバープロセスが実行されていることを確認し、接続エラーについてサーバーログを確認します。
+
+<h3 id="ssh-connection-fails-after-you-log-in">
+  ログイン後に SSH 接続が失敗する
+</h3>
+
+カードのタイトル、またはエラーメッセージの末尾にあるコードをこの表で探し、最後の列の指示に従ってください。メッセージを確認するには、失敗カードで **View details** を選択します。
+
+| カードのタイトル | コード | 対処方法 |
+| - | - | - |
+| `<host>'s SSH server has SFTP turned off` | `[SFTP_UNAVAILABLE]` | [リモートマシンの要件](#remote-machine-requirements-for-ssh-sessions)で説明されているとおり、サーバーの `sshd_config` で SFTP をオンにします |
+| `SFTP doesn't start on <host>` | `[SFTP_NOT_STARTED]` | コンピューターのターミナルで `sftp` を使用して同じホストに接続し、何が起動を妨げているかを確認してから、Desktop のメッセージに示されている設定とファイルを確認します |
+| `<host> allows too few SSH sessions per connection` | `[SESSION_LIMIT]` | サーバーの `sshd_config` で `MaxSessions` を引き上げます（例：OpenSSH のデフォルトである 10） |
+| `<host> is out of disk space` | `[ENOSPC]` または `[EDQUOT]` | リモートマシンのホームディレクトリまたは `/tmp` で空き容量またはクォータを確保します |
+| `This computer is out of disk space` | `[ENOSPC]` または `[EDQUOT]`（`Couldn't prepare the deploy locally` で始まるメッセージ内） | コンピューターの空き容量を確保します |
+| `Claude Code won't start on <host>` | `[CLI_UNRESPONSIVE]` | 1 分待ってから、もう一度試してください。失敗が続く場合は、メッセージに示されているコマンドをリモートマシンで実行し、そこで Claude Code が応答するかどうかを確認します。 |
+
+その他のメッセージについては、[リモートマシンの要件](#remote-machine-requirements-for-ssh-sessions)を確認してください。
+
+<h3 id="get-desktop’s-logs-for-an-ssh-problem">
+  SSH の問題について Desktop のログを取得する
+</h3>
+
+Desktop の SSH 接続の記録である `ssh.log` は、**Help** メニューから保存する Desktop のログの zip ファイルに含まれています。保存するには、**Help > Troubleshooting** を開き、使用しているシステムに対応する項目を選択します：
+
+* **macOS**：**Show Logs in Finder**
+* **Windows**：**Show Logs in File Explorer**
+* **Linux**：**Show Logs in File Manager**
+
+ファイルには環境内の名前やその他の詳細が含まれる可能性があるため、送信する前に内容を確認してください。`<host>` と `<user>` は、Desktop が置き換えた名前を表します。Desktop はすべての名前を置き換えるわけではなく、SSH のホスト名やユーザー名が記述されたまま表示される場合もあります。zip ファイルを誰かに送信する場合は、ログにホスト名が記載されていない可能性があるため、どのホストでいつ失敗したかを伝えてください。
+
+zip ファイルには、Desktop がリモートマシンにインストールするヘルパープログラムのログは含まれていません。そのログも取得するには、接続したユーザーのホームディレクトリにある [`~/.claude/remote/run/`](#files-and-processes-on-the-remote-machine) 配下のヘルパーのフォルダから `remote-server.log` をコピーします。このファイルも送信する前に内容を確認してください。
 
 <h3 id="app-won’t-quit">
   アプリが終了しない

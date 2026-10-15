@@ -6,7 +6,11 @@
 
 > Claude Code の OpenTelemetry を有効にして設定する方法を学びます。
 
-OpenTelemetry (OTel) を通じてテレメトリデータをエクスポートすることで、組織全体で Claude Code の使用状況、コスト、ツールアクティビティを追跡します。Claude Code はメトリクスを標準メトリクスプロトコル経由で時系列データとしてエクスポートし、イベントをログ/イベントプロトコル経由でエクスポートし、オプションで [トレースプロトコル](#traces-beta)経由で分散トレースをエクスポートします。
+OpenTelemetry (OTel) を通じてテレメトリデータをエクスポートすることで、組織全体で Claude Code の使用状況、コスト、ツールアクティビティを追跡します。Claude Code はメトリクスを標準メトリクスプロトコル経由で時系列データとしてエクスポートし、イベントをログ/イベントプロトコル経由でエクスポートし、オプションで [OpenTelemetry 経由の分散トレース](#traces-beta)をエクスポートします。
+
+<Note>
+  Claude API または Managed Agents については、[Claude API 向けの OpenTelemetry](https://platform.claude.com/docs/en/manage-claude/opentelemetry) を参照してください。
+</Note>
 
 <h2 id="quick-start">
   クイックスタート
@@ -641,8 +645,8 @@ Claude Tag チャネルセッションでは、Claude はメンバーではな�
 
 * `prompt.id`: ユーザーのプロンプトと、次のプロンプトまでに発生する後続のすべてのイベントを関連付ける UUID。[イベント相関属性](#event-correlation-attributes)を参照してください。
 * `workspace.host_paths`: デスクトップアプリで選択されたホストのワークスペースディレクトリ（文字列配列）
-* `workflow.run_id`: `wf_` をプレフィックスとする実行識別子。[Workflow](/docs/ja/workflows) ツールの実行に属するエージェントが発行する API イベントとツールイベントに付与されます。1 つの `workflow.run_id` でイベントをフィルタリングすると、その実行の API リクエストとツール結果を再構成できます。この識別子は、ワークフロースクリプトが起動するエージェントと、それらがさらに起動するエージェント（スキルの呼び出しなど）を対象とします。Workflow ツールの結果で報告される実行識別子と一致します。その他のすべてのイベントには含まれません。Claude Code v2.1.202 以降が必要です
-* `workflow.name`: ワークフローの名前（スクリプトの `meta.name`）。`workflow.run_id` と一緒に出力されます。組み込みワークフローの名前は、未変更の組み込みスクリプトが実行された場合にそのまま表示されます。ユーザーが作成した名前（組み込みスクリプトを編集したコピーを含む）は、`OTEL_LOG_TOOL_DETAILS=1` が設定されていない限り `custom` に置き換えられます。Claude Code v2.1.202 以降が必要です
+* `workflow.run_id`: `wf_` という接頭辞の付いた実行識別子。[Workflow](/docs/ja/workflows) ツールの実行に属するエージェントが出力する API イベントおよびツールイベントに付与されます。1 つの `workflow.run_id` でイベントをフィルタリングすると、その実行の API リクエストとツール結果を再構成できます。この識別子は、ワークフロースクリプトが生成するエージェントと、それらがさらに生成するエージェント（スキルの呼び出しなど）を対象とします。Workflow ツールの結果で報告される実行識別子と一致します。その他のすべてのイベントには含まれません。
+* `workflow.name`: ワークフローの名前（スクリプトの `meta.name`）。`workflow.run_id` と一緒に出力されます。組み込みワークフローの名前は、実行で変更されていない組み込みスクリプトが使用された場合にそのまま表示されます。ユーザーが作成した名前（組み込みスクリプトを編集したコピーを含む）は、`OTEL_LOG_TOOL_DETAILS=1` が設定されていない限り `custom` に置き換えられます。
 
 <h4 id="repository-attributes">
   リポジトリ属性

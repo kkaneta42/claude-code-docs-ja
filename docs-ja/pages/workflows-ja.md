@@ -99,7 +99,7 @@ Claude Code には、組み込みワークフローとして `/deep-research` �
 | :- | :- |
 | `↑` / `↓` | フェーズまたはエージェントを選択します |
 | `Enter` または `→` | 選択したフェーズをドリルダウンし、次にエージェントの詳細をドリルダウンします。詳細では、`Enter` で展開または折りたたみます |
-| `Esc` または `←` | 1 レベル戻ります。v2.1.203 から v2.1.205 では、`←` はフェーズまたはエージェントから戻りませんでした。これらのバージョンでは `Esc` を使用してください |
+| `Esc` または `←` | 1 レベル戻ります |
 | `j` / `k` | エージェント詳細がオーバーフローしたときにスクロールします |
 | `f` | 選択したフェーズのエージェントリストをステータスでフィルタリングします。もう一度押すとサイクルします |
 | `p` | 実行を一時停止または再開します |
@@ -167,7 +167,7 @@ Ultracode は Claude Code の設定で、セッションが実行される[努�
 /effort ultracode
 ```
 
-ultracode が既にオンの状態でセッションを開始するには、`claude --effort ultracode` で起動します。これは努力レベルを `xhigh` に設定します。Claude Code v2.1.203 以降が必要です。
+ultracode が既にオンの状態でセッションを開始するには、`claude --effort ultracode` で起動します。これにより effort レベルも `xhigh` に設定されます。
 
 `/effort` スライダーからオンにするには、`Tab` を押して **Ultracode** トグルを反転させ、`Enter` を押して適用します。[努力レベルを調整する](/docs/ja/model-config#adjust-effort-level)は ultracode をオンにするルートをリストします。
 
@@ -205,10 +205,10 @@ CLI では、実行ごとのプロンプトは計画されたフェーズとこ�
 
 `claude -p` と Agent SDK では、Claude Code はこのプロンプトを表示しません。セッションの残りの部分と同じ[権限評価](/docs/ja/agent-sdk/permissions#how-permissions-are-evaluated)を通じてワークフロー ツール呼び出しを実行するため、拒否ルール、質問ルール、および `dontAsk` モードはすべてのツール呼び出しに適用されるのと同じように適用されます。これらの実行でワークフローを開始させるには、次のいずれかを使用します。
 
-* **権限ルール**: 許可ルール内の `Workflow` はすべてのワークフローを承認し、`Workflow(<name>)` は名前で 1 つの保存されたワークフローを承認します。
-* **自動権限モード**: [分類器](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)は呼び出しをレビューし、それを承認できます。
-* **バイパス権限モード**: Claude Code は呼び出しを承認します。
-* **フック**: 呼び出しを許可する [`PreToolUse`](/docs/ja/hooks#pretooluse) フックがそれを承認します。
+* **権限ルール**: すべてのワークフローを承認するには許可ルールに `Workflow` を追加し、名前で 1 つの保存されたワークフローを承認するには `Workflow(<name>)` を追加します。
+* **auto 権限モード**: [auto モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)で実行します。auto モードでは分類器が呼び出しをレビューし、それを承認できます。
+* **バイパス権限モード**: バイパス権限モードで実行します。
+* **フック**: [`PreToolUse`](/docs/ja/hooks#pretooluse) フックから呼び出しに対して `"allow"` を返します。[plan モード](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode)では、フックの承認だけではワークフローは開始されないため、代わりに権限ルールまたはホストの承認を使用します。
 * **ホスト**: [`--permission-prompt-tool`](/docs/ja/cli-reference#cli-flags)、または Agent SDK では [`canUseTool`](/docs/ja/agent-sdk/permissions) コールバックがそれを承認します。
 
 デスクトップアプリでは、承認カードはワークフロー名、フェーズリスト、トークン使用量の注意を表示し、**Once**、**Always**、**Deny** アクションを表示します。進行状況ビューは、バックグラウンドタスクサイドペインに表示されます。
@@ -527,7 +527,7 @@ Claude Code は各ワークフローエージェントのモデルを、[サブ�
   サイズガイドラインを設定する
 </h3>
 
-サイズガイドラインは、動的ワークフローを作成するときに Claude が目指すエージェント数を Claude に指示します。Claude Code はガイドラインを上限ではなくアドバイスとして Claude に送信するため、異なるスケールを要求するプロンプトはそれでも上書きします。Claude Code v2.1.202 以降が必要です。
+サイズガイドラインは、動的ワークフローを作成するときに Claude が目指すエージェント数を Claude に指示します。Claude Code はガイドラインを上限ではなくアドバイスとして Claude に送信するため、異なるスケールを要求するプロンプトはそれでも上書きします。
 
 各値はエージェント数にマップされます。
 

@@ -228,6 +228,7 @@ HIPAA 設定が適用されると、ターミナルで一部の Claude Code 機�
 | `--cloud`、`/teleport`、[Remote Control](/docs/ja/remote-control) が拒否される | [クラウドセッション](/docs/ja/claude-code-on-the-web)と Remote Control はオフです |
 | `/feedback` と `/bug` が使用できない | フィードバックの送信はオフです |
 | Claude が[アーティファクト](/docs/ja/artifacts)を公開できない | アーティファクトの公開はオフです |
+| MCP ツールが最初からコンテキストに読み込まれる | [MCP ツール検索](/docs/ja/mcp#configure-tool-search)はオフです。`ENABLE_TOOL_SEARCH` でも管理設定でも再びオンにすることはできません |
 | `ANTHROPIC_API_KEY` を読み取る MCP サーバーやフックが認証できなくなる | Claude Code は、自身が起動するプロセスから [Anthropic の認証情報を削除します](#anthropic-credentials-in-commands-hooks-and-mcp-servers) |
 | 別の組織に `/login` した後も制限が残る | HIPAA ステータスは Claude Code が再起動するまで維持されます |
 

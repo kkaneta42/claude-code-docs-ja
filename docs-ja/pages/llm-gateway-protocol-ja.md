@@ -168,7 +168,7 @@ Claude Code はルーティングヒントも送信できます。ゲートウ�
 | :- | :- |
 | `x-claude-code-request-class` | このリクエストの種類：メイン会話のターンの場合は `main`、[サブエージェント](/docs/ja/sub-agents)のターンの場合は `subagent`、ワークフロー内で実行されているエージェントの場合は `workflow`、会話をコンパクト化する要約リクエストの場合は `compaction`、セッションタイトル、分類器、および要約などのサイドリクエストの場合は `auxiliary`。すべてのリクエストで送信されます |
 | `x-claude-code-agent-type` | リクエストを発行したサブエージェントの種類：`Explore`、`Plan`、または `general-purpose` などの組み込みエージェント型名、ユーザー定義エージェントの場合は `custom`、[エージェントチーム](/docs/ja/agent-teams)メンバーがリードのプロセスで実行されている場合は `teammate`、または [フォーク](/docs/ja/sub-agents#fork-the-current-conversation)の場合は `fork`。サブエージェント自身のターンにのみ存在します。サブエージェントのコンパクト化またはサイドリクエストはエージェント ID を保持しますが、タイプは含みません。ユーザーが選択したエージェント名は送信されません |
-| `x-claude-code-compaction` | [コンパクト化](/docs/ja/prompt-caching#compacting-the-conversation)中に会話を要約するリクエストに存在します。値は何がトリガーしたかを示します。コンテキストウィンドウが容量に近づいた場合は `auto`、`/compact` の場合は `manual`、API がリクエストが長すぎると拒否した場合は `reactive`。他のすべてのリクエストでは存在しません |
+| `x-claude-code-compaction` | [コンテキスト圧縮](/docs/ja/prompt-caching#compacting-the-conversation)中に会話を要約するリクエストに存在します。値は何がトリガーしたかを示します。コンテキストウィンドウが容量に近づいた場合は `auto`、`/compact` の場合は `manual`、API がリクエストが長すぎると拒否した場合は `reactive`。[アイドル時の圧縮](/docs/ja/settings-reference#idlecompaction)の場合も値は `auto` です。他のすべてのリクエストでは存在しません |
 | `x-claude-code-context-compacted` | コンパクト化後の最初のメイン会話リクエストに 1 回存在し、`x-claude-code-compaction` と同じ値を持ちます。このリクエストの前の会話プレフィックスはもう使用されないため、それをキーとしたキャッシュは削除できます |
 | `x-claude-code-prev-tool-durations` | このリクエストが含む結果のツール呼び出しの測定実行時間。`<name>=<ms>;<name>=<ms>` として、例えば `Bash=742;Read=9`。同じ会話のツール呼び出しのバッチ後の次のリクエストで送信されます。メインセッションまたはサブエージェントから送信されます |
 | `x-claude-code-prompt-id` | ユーザープロンプトがリクエストを提供するランダム UUID。1 つのプロンプトを提供するリクエストは値を共有します。これには、プロンプトが開始したサブエージェントのターンが含まれます。プロンプトに属性付けされていないリクエストはそれを省略します。セッションのリクエストをプロンプトでグループ化するために使用してください。Claude Code v2.1.283 以降が必要です |
@@ -291,8 +291,9 @@ Claude Code は `ANTHROPIC_BASE_URL` ゲートウェイを Anthropic フォー�
 
 Claude Code v2.1.227 以降では、組織は [MCP ツール検索](/docs/ja/mcp#scale-with-mcp-tool-search)を[管理設定](/docs/ja/managed-settings)を通じてこの変数の下で有効に保つことができます。このオーバーライドが有効な場合に Claude Code が送信する内容は、接続方法によって異なります：
 
-* 直接接続、または `ANTHROPIC_BASE_URL` で設定されたゲートウェイを通じて、Claude Code はツール検索ベータヘッダー、`defer_loading` ツールフィールド、および `tool_reference` ブロックを送信し続け、残りをストリップします
+* HIPAA 設定のない直接接続、または `ANTHROPIC_BASE_URL` で設定されたゲートウェイを通じて接続している場合、Claude Code はツール検索ベータヘッダー、`defer_loading` ツールフィールド、および `tool_reference` ブロックを送信し続けます
 * クラウドプロバイダー、または [Claude apps ゲートウェイ](/docs/ja/claude-apps-gateway)を通じてサインインしている場合、オーバーライドは効果がありません
+* [HIPAA 設定を受け取る](/docs/ja/hipaa-setup#check-how-developers-sign-in-and-connect)セッションでは、上書きは効果がなく、ツール検索はオフのままです
 
 Claude Code が送信する機能セットはリリース全体で増加します。現在のベータヘッダー文字列については、[ベータヘッダーリファレンス](https://platform.claude.com/docs/en/api/beta-headers)を参照してください。観察されたリストに固定するのではなく、新しい Claude Code リリースに対してゲートウェイをテストしてください。
 

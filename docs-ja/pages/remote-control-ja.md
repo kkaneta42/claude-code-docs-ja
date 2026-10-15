@@ -261,7 +261,7 @@ Remote Control を完全にオフにするには、[`disableRemoteControl`](/doc
 
 バイオメトリック チェックはデバイス上でオペレーティングシステムまたはブラウザを通じて実行され、パスキーサインインと同じメカニズムです。Anthropic は指紋、顔データ、またはその他のバイオメトリック情報を受け取ったり保存したりすることはありません。デバイスの公開鍵と表示名、プラットフォーム、登録時刻などの基本的なメタデータのみが保存されます。
 
-この設定は、Claude Code と [Cowork](https://claude.com/docs/cowork/overview) の両方の Remote Control に適用されます。このページでは Claude Code 側について説明します。通常の Claude チャット、ターミナルの Claude Code、および API 使用は影響を受けません。
+この設定は、Claude Code の Remote Control と、[Cowork](https://claude.com/docs/cowork/overview) の Computer access に適用されます。このページでは Claude Code 側について説明します。通常の Claude チャット、ターミナルの Claude Code、および API 使用は影響を受けません。
 
 <h3 id="enable-trusted-devices-for-your-organization">
   Team または Enterprise 組織で信頼できるデバイスを有効にする

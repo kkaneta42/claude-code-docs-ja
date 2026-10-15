@@ -384,6 +384,13 @@ Claude のファイルツールがファイルまたはディレクトリを読�
 
 `Edit` ルールはファイルを編集するすべての組み込みツールに適用されます。Claude は、Grep や Glob などのファイルを読み取るすべての組み込みツール、プロンプト内の `@file` メンション、および接続された [IDE](/docs/ja/vs-code#the-built-in-ide-mcp-server) が Claude と共有する選択およびオープンファイルコンテキストに `Read` ルールを適用するためにベストエフォートを試みます。
 
+`Read(path)` deny ルールは、プロンプトに貼り付けた画像パスと @ メンションしたディレクトリにも適用されます。
+
+* **画像パス**：ターミナルでプロンプトに画像のパスを貼り付けるか画像ファイルをドラッグし、ルールがそのパスにマッチする場合、Claude Code は画像を添付しません。貼り付けた内容に他の画像が含まれていない場合、パスはテキストとしてプロンプトに残ります。
+* **ディレクトリ**：[Claude が受け取る一覧](/docs/ja/common-workflows#reference-files-and-directories)から、ルールにマッチするファイル名とディレクトリ名が除外されます。
+
+Claude Code は v2.1.290 以降で、貼り付けた画像パスとディレクトリ一覧をチェックします。
+
 `Read` deny ルールは、同じパスの [Edit と Write ツール](/docs/ja/errors#file-is-covered-by-a-read-deny-rule)もブロックします。これには新しいファイルの作成も含まれます。NotebookEdit はカバーされないため、ツールが変更できないパスに対して `Edit` deny ルールを追加してください。チェックには編集時に Claude Code v2.1.208 以降が必要です。書き込み時には v2.1.228 以降が必要です。
 
 Claude Code は `Edit(path)` と `Read(path)` ルールに対してのみファイル権限をチェックします。代わりに `Write`、`NotebookEdit`、`Glob`、またはレガシー `MultiEdit` ツール用にパスルールを記述する場合、Claude Code はルールを受け入れますが、それを参照することはなく、[起動時に警告](/docs/ja/errors#is-not-matched-by-file-permission-checks)を表示します。ただし、`--allowedTools` で渡された `Glob` ルールは除きます。`Write(docs/**)`、`NotebookEdit(docs/**)`、または `MultiEdit(docs/**)` の代わりに `Edit(docs/**)` を使用し、`Glob(docs/**)` の代わりに `Read(docs/**)` を使用してください。Claude Code は `Write` の deny ルールなど、パスのないツール名ルールについては警告しません。それはどこでもツールレベルでそのルールをマッチさせます。v2.1.210 以降が必要です。
@@ -467,7 +474,7 @@ Windows では、パスはマッチング前に POSIX 形式に正規化され�
   gitignore パターンでは、`*` は単一のパスセグメント内でマッチし、パターン内の任意の位置に表示できます。一方、`**` はディレクトリ全体でマッチします。
 </Note>
 
-「はい、今後は聞かない」でファイルパスを承認すると、Claude Code は `[`、`]`、`*` などの gitignore パターン文字をそのパスでエスケープするため、生成されたルールは承認したリテラルパスのみをマッチさせます。自分で記述したルールはエスケープされません。v2.1.202 より前では、Claude Code はパスをエスケープなしで保存していたため、`[2024-06] Reports` という名前のディレクトリの生成されたルールは、独自のパスをマッチさせできなかったり、意図しない兄弟ディレクトリをマッチさせたりする可能性がありました。
+「はい、今後は聞かない」でファイルパスを承認すると、Claude Code は `[`、`]`、`*` などの gitignore パターン文字をそのパスでエスケープするため、生成されたルールは承認したリテラルパスのみをマッチさせます。自分で記述したルールはエスケープされません。
 
 パスに括弧をエスケープする必要はないため、`Edit(./Finance (2024)/**)` は `Finance (2024)` フォルダをそのまま記述してマッチさせます。
 
@@ -805,8 +812,6 @@ Claude Code は git を実行して 2 つを区別し、フォルダを信頼し
   設定ホーム例外はトラストステップのみをスキップします。`~/.claude/settings.local.json` は依然として[ローカルスコープ](/docs/ja/settings#compare-the-scope-of-each-settings-file)であるため、Claude Code はホームディレクトリ自体で起動したセッションでのみそれを読み込み、すべてのプロジェクトでは読み込みません。すべてのプロジェクトに許可ルールを適用するには、代わりにユーザー設定に追加してください。`~/.claude/settings.json`、または `CLAUDE_CONFIG_DIR` が設定されている場合は `$CLAUDE_CONFIG_DIR/settings.json`。
 </Note>
 
-v2.1.207 より前では、Claude Code はダイアログを受け入れる前に追跡されていないファイルのルールを適用していました。
-
 <h3 id="what-runs-before-you-trust-a-folder">
   フォルダを信頼する前に実行されるもの
 </h3>
@@ -819,7 +824,7 @@ v2.1.207 より前では、Claude Code はダイアログを受け入れる前�
 | `.claude/settings.json` 内の `permissions.allow` ルールと `additionalDirectories` | トラストダイアログを受け入れるまで使用されません。ダイアログは再度表示され、それらをリストします | 使用されません。Claude Code は stderr に[`this workspace has not been trusted`](/docs/ja/errors#workspace-has-not-been-trusted)警告を出力します |
 | プロジェクト[subagent](/docs/ja/sub-agents#hooks-in-subagent-frontmatter)のフロントマターフック、プロジェクト[`@skills-dir` プラグイン](/docs/ja/plugins/loading#plugins-shared-through-a-repository)、およびリポジトリまたは `--add-dir` ディレクトリからの[`extraKnownMarketplaces`](/docs/ja/settings-reference#extraknownmarketplaces)エントリ | 使用されず、ダイアログは提供されません | 使用されません |
 | リポジトリまたは `--add-dir` ディレクトリからの subagent のフロントマター内のインライン[`mcpServers`](/docs/ja/sub-agents#scope-mcp-servers-to-a-subagent) | 使用されず、ダイアログは提供されません | 使用されません |
-| `.mcp.json` 内のサーバー。リポジトリが[独自の設定で承認](/docs/ja/mcp#project-server-approvals-and-workspace-trust)するものを含む | Claude Code は接続する前にあなたに尋ねます。リポジトリ独自の承認はカウントされません | 承認されているかどうかに関わらず接続されます。SDK はセッティングソースがプロジェクト設定を含む場合にのみそれらを読み込みます。同じフォルダの `claude mcp list` はそのようなサーバーを保留中として報告します |
+| `.mcp.json` 内のサーバー。リポジトリが[独自の設定で承認](/docs/ja/mcp#project-server-approvals-and-workspace-trust)するものを含む | Claude Code は接続する前にユーザーに確認します。リポジトリ独自の承認はカウントされません | 承認されているかどうかに関わらず接続されます。SDK は `settingSources` がプロジェクト設定を含む場合にのみそれらを読み込みます。同じフォルダの `claude mcp list` はそのようなサーバーを依然として保留中として報告します |
 | `.mcp.json` 内のサーバー上の[`headersHelper`](/docs/ja/mcp#trust-a-folder-before-its-headershelper-runs) | トラストダイアログを受け入れるまで実行されません。ダイアログは再度表示され、ヘルパーが宣言されている場所を名前で指定します。Claude Code はそれまでサーバーを静的 `headers` のみで接続します | 実行されません。Claude Code はサーバーを静的 `headers` のみで接続し、サーバーごとに stderr に[`headersHelper not run`](/docs/ja/errors#headershelper-not-run)行を出力します |
 
 このフォルダを信頼する必要がある行については、手動で信頼してください。`~/.claude.json` で `projects["<path>"].hasTrustDialogAccepted` を `true` に設定します。`<path>` はリポジトリルート、またはリポジトリ外のフォルダ自体です。Claude Code はスキップされた subagent フックまたはインライン MCP サーバーのデバッグログ行、スキップされた許可ルールの stderr 警告、およびスキップされたヘルパーの `headersHelper not run` 行に正確なキーを出力します。

@@ -443,8 +443,8 @@ claude plugin eval . \
 
 | 終了コード | 意味 |
 | :- | :- |
-| 0 | すべてのケースが `--threshold` 以上でスコア化され、すべてのケースファイルがロードされました。 |
-| 1 | ケースが閾値以下でスコア化された、ケースファイルがロードに失敗した、ケースが見つからない、実行を開始できない、プラグインディレクトリが信頼されておらず `--trust-plugin` が渡されなかった、またはオプションが無効です。 |
+| 0 | スイートが合格しました。すべてのケースが `--threshold` 以上のスコアとなり、その他に実行を失敗させる要因もありませんでした。 |
+| 1 | ケースが閾値を下回るスコアとなった、ケースファイルのロードに失敗した、ケースが見つからなかった、実行を開始できなかった、または実行が [API エラーで終了した](#runs-ended-on-an-api-error)。プラグインディレクトリが信頼されておらず `--trust-plugin` が渡されなかった場合、オプションが無効だった場合、または `--json` の結果を書き込めなかった場合にも返されます。 |
 | 2 | 部分的な実行。`--max-cost-usd` 上限に達した、または認証情報が最初の実行の前または時点で拒否されました。それでも `results.json` は `partial: true` と理由とともに書き込まれます。 |
 | 130 | 中断。部分的な結果が書き込まれます。 |
 | 143 | 終了（CI タイムアウトなど）。 |
@@ -503,7 +503,7 @@ Claude Code セッションが開始した実行（Claude にスイートを実�
 | `cases[].name` | ケース名 |
 | `cases[].aggregates.score` | ケースの平均 with-arm 実行スコア |
 | `cases[].aggregates.delta` | with-arm スコアから without-arm スコアを引いたもの。ケースが 1 つの arm のみで実行された場合、または arm が比較可能でない場合は省略。 |
-| `cases[].arms.with[].error` | `null`、またはランが異常に終了した理由（`timed out after 300s` など）。開始したが悪く終了した実行は、生成されたものに対してグレード化されるため、null 以外のエラーはスコア 0 を意味しません。 |
+| `cases[].arms.with[].error` | `null`、または実行が異常終了した理由（`timed out after 300s` など）。こうした実行の一部は生成したものに基づいて引き続き採点されるため、null 以外のエラーはスコア 0 を意味しません。[API エラーで終了した](#runs-ended-on-an-api-error) 実行は採点されずにスコア 0 になります。 |
 | `cases[].arms.with[].aborted` | [モック](#mock-mcp-servers) が `expect:`、`abort_when`、または [agent-mock の呼び出し予算](#mock-call-budget-exceeded) によって実行を停止した場合に存在し、`server`、`tool`、`reason` を持ちます。実行はスコア 0 で、`error` は `null` のままです。 |
 | `cases[].arms.with[].skippedPaidGraders` | コスト上限がこの実行のジャッジグレーダーをスキップした場合は `true`。そのスコアは比較可能ではありません。 |
 | `costUsd`, `durationSeconds`, `claudeVersion` | 定価でのジャッジ呼び出しを含む推定コスト、壁時間秒、スイートを実行した Claude Code バージョン |
@@ -724,6 +724,20 @@ git 2.30 is too old for claude plugin eval: it ignores the environment configura
 
 v2.1.283 より前では、`claude plugin eval` は git バージョンをチェックしなかったため、古い git ではスイートはそれらのプログラムがオンのままで実行されました。
 
+<h3 id="cannot-be-evaluated-where-sessions-load-it">
+  "cannot be evaluated where sessions load it"
+</h3>
+
+シェルで、[ローカルパスから追加した](/docs/ja/plugins/loading#in-place-and-copied-plugins)マーケットプレイスからインストールしたプラグインの名前を指定して `claude plugin eval` を実行しました。現在、そのマーケットプレイスからプラグインを読み込めるセッションがないため、コマンドはこのメッセージを表示して実行を拒否し、コード 1 で終了します。
+
+```text theme={null}
+Error: formatter@my-marketplace cannot be evaluated where sessions load it: no session could load it now. Its marketplace is a folder whose catalog could not be read, or lists it no more. Check the marketplace with `claude plugin marketplace list`, or pass ./<dir> to evaluate a directory.
+```
+
+`no session could load it now.` の後の文が、何が失敗したかを示しています。
+
+シェルで `claude plugin marketplace list` を実行し、メッセージが示す問題を修正してください。たとえば、マーケットプレイスのディレクトリを復元するか、プラグインのエントリをカタログに戻します。マーケットプレイスを介さずにプラグインのソースを評価するには、`claude plugin eval ./plugins/formatter` のように、そのディレクトリをターゲットとして渡してください。
+
 <h3 id="no-eval-cases-found">
   「No eval cases found」
 </h3>
@@ -774,7 +788,9 @@ v2.1.283 より前では、`claude plugin eval` は git バージョンをチェ
   実行が 1 で終了するが、結果は問題ないように見える
 </h3>
 
-デフォルトの `--threshold` は 1.0 であるため、ケースが完璧未満のスコアを取得するとコマンドは 1 で終了します。必要なスコアに一致するしきい値を設定してください。終了 1 は、読み込みに失敗したケースファイルもカバーしており、テーブルの上の stderr で報告されます。
+すべてのケースが `--threshold` 以上のスコアを取得したにもかかわらずコマンドが 1 で終了する場合、`--json` 指定時でも、stderr の行に原因が示されます。たとえば、ケースファイルの読み込みに失敗した場合や、実行が [API エラーで終了した](#runs-ended-on-an-api-error)場合です。その他の原因については、[終了コード](#run-evals-in-ci)を参照してください。
+
+デフォルトの `--threshold` は 1.0 であるため、ケースが完璧未満のスコアを取得するとコマンドは 1 で終了します。必要なスコアに一致するしきい値を設定してください。
 
 <h3 id="json-output-path-must-end-in-json">
   `--json output path must end in .json`
@@ -788,11 +804,26 @@ v2.1.283 より前では、`claude plugin eval` は git バージョンをチェ
 
 そのグレーダーは設計上、2 アーム実行でスコアから除外され、その `scored` フィールドは `false` です。[プラグインなしベースラインと比較](#compare-against-a-no-plugin-baseline)を参照してください。
 
+<h3 id="runs-ended-on-an-api-error">
+  "ended on an API error and scored 0 without grading"
+</h3>
+
+この stderr 警告は、少なくとも 1 つの実行の最後のリクエストに対して、API がレート制限やプランの使用制限などの HTTP エラーで応答したことを意味します。このような実行はグレーダーの結果なしでスコア 0 となり、スコアや `--threshold` に関係なく、コマンドは 0 以外のコードで終了します。
+
+修正するには、影響を受けた各実行のエラーを見つけ、それが報告する原因を解決してから、スイートを再度実行してください。
+
+* **`--json` なしの場合**: エラーは実行の進行状況の行の末尾、`error:` の後にあります
+* **`--json` 指定時**: エラーは [JSON 結果](#json-result)の `cases[].arms.with[].error` または `cases[].arms.without[].error` にあります
+
+このカウントには[ベースライン](#the-no-plugin-baseline)実行も含まれます。ベースライン実行のスコアはケースの合否を決定しないため、すべてのケースが合格してもコマンドが失敗することがあります。2 アーム実行では、影響を受けたケースの `W/OUT` と `Δ` は `—` と表示されます。使用制限またはレート制限については、[実行がスイートの途中で使用制限またはレート制限エラーで失敗する](#runs-fail-with-a-usage-limit-or-rate-limit-error-partway-through)を参照してください。
+
+v2.1.299 より前では、このような実行は生成されたものに基づいてグレード化されていました。
+
 <h3 id="runs-fail-with-a-usage-limit-or-rate-limit-error-partway-through">
   実行がスイートの途中で使用制限またはレート制限エラーで失敗する
 </h3>
 
-スイート実行中にアカウントがプランの使用制限または API レート制限に達した場合、その後の各実行はそのエラーで終了し、生成されたものに基づいてグレード化され、通常はスコア 0 になります。スイートはそれでも完了し、`partial` としてマークされないため、結果は回帰のように見える可能性があります。スコアを信頼する前に `NOTES` 列または JSON の `cases[].arms.with[].error` で制限メッセージを確認してから、制限がリセットされた後に再度実行してください。制限内に留まる必要がある場合は、`--runs 1` または `--case` フィルターを使用してください。
+使用制限またはレート制限エラーで終了した実行は[グレード化されずにスコア 0 となり](#runs-ended-on-an-api-error)、コマンドは 0 以外のコードで終了します。スイートはそれでも完了し、`partial` としてマークされません。制限がリセットされた後に再度実行してください。制限内に留まる必要がある場合は、`--runs 1` または `--case` フィルターを使用してください。
 
 <h3 id="mock-call-budget-exceeded">
   "mock call budget exceeded"

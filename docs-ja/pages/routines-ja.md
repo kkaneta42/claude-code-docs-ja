@@ -52,19 +52,9 @@ Team および Enterprise オーナーは、[claude.ai/admin-settings/claude-cod
 
 作成フォームは、ルーチンのプロンプト、リポジトリ、環境、コネクタ、およびトリガーを設定します。
 
-ルーチンは完全な Claude Code クラウドセッションとして自律的に実行されます。権限モードピッカーはなく、セッションはシェルコマンドを実行し、クローンされたリポジトリにコミットされた [skills](/docs/ja/skills) を使用し、含めたコネクタを呼び出します。すべて承認を求めずに実行されます。ただし、一部の [artifact](/docs/ja/artifacts) アクションは除きます。
+ルーティンは完全な Claude Code クラウドセッションとして自律的に実行されます。権限モードピッカーはなく、セッションはシェルコマンドを実行し、クローンされたリポジトリにコミットされた[スキル](/docs/ja/skills)を使用し、含めたコネクタを呼び出します。一部の[アーティファクトアクション](#when-a-run-publishes-an-artifact-without-asking)を除き、すべて承認を求めずに実行されます。
 
 ルーチンが到達できる範囲は、選択したリポジトリ、[環境](/docs/ja/cloud-environments) のネットワークアクセスと変数、および含めたコネクタによって決定されます。これらのそれぞれをルーチンが実際に必要とするものにスコープします。
-
-ルーチンのスケジュールまたは **Run now** が実行を開始するとき、Claude は以下のすべてが当てはまる場合にのみ、既存の artifact を再公開します。承認を求めません。
-
-* artifact を編集でき、自分の組織に属している
-* artifact は公開共有されていない
-* artifact が特定の人または組織と共有されている場合、その閲覧者は自動的に各新しいバージョンを見ない
-* 公開は、ページのみを含み、サポートファイルやその他のものは追加されず、新しいバージョンを強制的に上書きしない
-* ページは、[connector calls](/docs/ja/artifacts#pull-live-data-with-mcp-connectors) などのページを超えて到達する権限を保持していない
-
-その他のすべての場合（新しい artifact を公開する場合を含む）、Claude は最初に確認します。ルーチンの仕事がページを最新に保つことである場合、既に公開した artifact を与えます。
 
 ルーチンは個別の claude.ai アカウントに属します。チームメイトと共有されず、アカウントの [usage and limits](#usage-and-limits) に対してカウントされます。ルーチンが接続された GitHub ID またはコネクタを通じて実行するすべてのことは、あなたとして表示されます。コミットとプルリクエストは GitHub ユーザーを含み、Slack メッセージ、Linear チケット、またはその他のコネクタアクションはこれらのサービスのリンクされたアカウントを使用します。
 
@@ -93,7 +83,7 @@ Team および Enterprise オーナーは、[claude.ai/admin-settings/claude-cod
     ルーチン用の [cloud environment](/docs/ja/cloud-environments) を選択します。環境は、クラウドセッションがアクセスできるものを制御します。
 
     * **Network access**: 各実行中に利用可能なインターネットアクセスのレベルを設定します
-    * **Environment variables**: Claude が各実行中に使用できる値を提供します。これらは[環境を使用するすべてのユーザーに表示される](/docs/ja/cloud-environments#what-carries-over-from-your-setup)ため、Pro および Max プランでは、Claude が実行中に呼び出す API のキーは代わりに[ネットワークシークレット](/docs/ja/cloud-environments#add-network-secrets)として保存してください。そのセクションには、シークレットが付与されないリクエストも記載されています
+    * **Environment variables**: Claude が各実行中に使用できる値を提供します。これらは[環境を使用するすべてのユーザーに表示される](/docs/ja/cloud-environments#what-carries-over-from-your-setup)ため、Anthropic がホストする環境では、Claude が実行中に呼び出す API のキーは代わりに[ネットワークシークレット](/docs/ja/cloud-environments#add-network-secrets)として保存してください。そのセクションには、シークレットが付与されないリクエストも記載されています
     * **Setup script**: ルーチンが必要とする依存関係とツールをインストールします。結果は [cached](/docs/ja/cloud-environments#environment-caching) されるため、スクリプトはセッションごとに再実行されません
 
     **Default** 環境は **Trusted** ネットワークアクセスで提供されます。これにより、[default allowlist](/docs/ja/cloud-environments#default-allowed-domains) のパッケージレジストリ、クラウドプロバイダー API、コンテナレジストリ、および一般的な開発ドメインのみがセッションのネットワークを通じて許可されます。ルーチンに追加するコネクタは Anthropic のサーバーを通じてサービスに到達するため、許可リストの変更は必要ありません。ルーチンが独自のサービスに直接到達する必要がある場合、またはそのリスト外のドメインに到達する必要がある場合は、実行前に環境の [network access](/docs/ja/cloud-environments#network-access) を編集してください。別の環境を使用するには、最初に [create one](/docs/ja/cloud-environments#configure-your-environment) してください。
@@ -382,6 +372,26 @@ Claude は、プロンプトで別のブランチへのプッシュを指示し�
 
 ルーチンフォーム外でコネクタを管理または追加するには、[claude.ai/customize/connectors](https://claude.ai/customize/connectors) にアクセスするか、CLI で `/schedule update` を使用します。
 
+<h3 id="when-a-run-publishes-an-artifact-without-asking">
+  実行が確認なしでアーティファクトを公開する場合
+</h3>
+
+ルーティンのスケジュールまたは **Run now** によって実行が開始された場合、Claude は確認を求めずに新しい[アーティファクト](/docs/ja/artifacts)を公開できます。新しいアーティファクトは、[共有する](/docs/ja/artifacts#share-an-artifact)まではユーザー本人にのみ表示されます。公開時にページのランタイム機能（[コネクタ呼び出し](/docs/ja/artifacts#pull-live-data-with-mcp-connectors)や[ファイルのダウンロード](/docs/ja/artifacts#offer-a-file-download)など）を宣言する場合、Claude は事前に確認を求めます。
+
+これらの実行では、Claude は以下のすべてが満たされる場合にのみ、確認を求めずに既存のアーティファクトを再公開します。
+
+* アーティファクトを編集でき、かつ自分の組織に属している
+* 公開内容にページ以外のもの（サポートファイルなど）が含まれる場合、そのアーティファクトを所有している
+* アーティファクトが一般公開で共有されていない
+* アーティファクトが特定のユーザーまたは組織と共有されている場合、その閲覧者に新しいバージョンが自動的に表示されない
+* 公開によって新しいバージョンを強制的に上書きしない
+* 公開でページのランタイム機能を宣言しない
+* 既存のページに、ページの範囲を超える権限付与（[コネクタ呼び出し](/docs/ja/artifacts#pull-live-data-with-mcp-connectors)など）がない
+
+API トリガーや GitHub トリガーによって開始された実行を含め、それ以外のすべての場合、Claude は事前に確認を求めます。
+
+ルーティンの役割がページを最新の状態に保つことである場合は、すでに公開済みのアーティファクトを渡してください。
+
 <h3 id="environments-and-network-access">
   環境とネットワークアクセス
 </h3>
@@ -406,7 +416,7 @@ Claude は、プロンプトで別のブランチへのプッシュを指示し�
   </Step>
 
   <Step title="ネットワークアクセスレベルを変更する">
-    **Edit environment** ダイアログで、**Network access** を **Custom** に変更し、**Allowed domains** にドメインを入力します。**Also include default list of common package managers** をチェックして、カスタムドメインと共に [デフォルト許可リスト](/docs/ja/cloud-environments#default-allowed-domains)を保持します。制限のないアクセスの場合は、代わりに **Full** を選択します。
+    **Edit cloud environment** ダイアログで、**Network access** を **Custom** に変更し、**Allowed domains** にドメインを入力します。**Also include default list of common package managers** をチェックして、カスタムドメインと共に [デフォルト許可リスト](/docs/ja/cloud-environments#default-allowed-domains)を保持します。制限のないアクセスの場合は、代わりに **Full** を選択します。
   </Step>
 
   <Step title="保存">

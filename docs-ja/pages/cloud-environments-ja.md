@@ -10,7 +10,7 @@
   クラウド環境は [クラウドセッション](/docs/ja/claude-code-on-the-web) に適用されます。これは Pro、Max、Team プランで利用可能であり、[プレミアムシートまたは Chat + Claude Code シートを持つ](https://support.claude.com/en/articles/11845131-use-claude-code-with-your-team-or-enterprise-plan) Enterprise ユーザー向けです。
 </Note>
 
-各 [クラウドセッション](/docs/ja/claude-code-on-the-web) はクラウド環境で実行されます。環境を設定して [ネットワークアクセス](#access-levels) を許可または拒否し、セッション用に [環境変数を設定](#set-environment-variables) し、Pro および Max プランではセッションが内容を見ずに使用できる [ネットワークシークレット](#add-network-secrets) を保存し、Claude が作業を開始する前に [セットアップスクリプト](#setup-scripts) を実行できます。
+各 [クラウドセッション](/docs/ja/claude-code-on-the-web) はクラウド環境で実行されます。環境を設定して [ネットワークアクセス](#access-levels) を許可または拒否し、セッション用に [環境変数を設定](#set-environment-variables) し、セッションが内容を見ずに使用できる [ネットワークシークレット](#add-network-secrets) を保存し、Claude が作業を開始する前に [セットアップスクリプト](#setup-scripts) を実行できます。
 
 同じ環境は、クラウドセッションを開始する場所に関係なく適用されます。[Desktop アプリ](/docs/ja/desktop)、[Claude モバイルアプリ](/docs/ja/mobile)、[claude.ai/code](https://claude.ai/code) のブラウザ、[`claude --cloud`](/docs/ja/claude-code-on-the-web#from-terminal-to-cloud) を使用したターミナル、[ルーチン](/docs/ja/routines)、[Claude Tag](https://claude.com/docs/claude-tag/overview) です。これらの各サーフェスは [セルフホスト環境](/docs/ja/self-hosted-environments) にもルーティングできます。[利用可能性と制限](/docs/ja/self-hosted-environments#availability-and-limitations) は、Claude Tag セッションがセルフホスト環境で実行される場合に Claude がまだ使用できないものをカバーしています。
 
@@ -44,25 +44,20 @@
   環境を設定する
 </h2>
 
-[web onboarding](/docs/ja/web-quickstart) 後に [claude.ai/code](https://claude.ai/code) で、または [Desktop app](/docs/ja/desktop#cloud-sessions) のプロンプトボックスから環境セレクターにアクセスして、環境を作成、編集、アーカイブできます。作成した環境はアカウントに個人的なものです。Owner が作成した [共有環境](#organization-shared-environments) は同じセレクターに表示されます。設定なしで利用可能な内容については、[インストール済みツール](#installed-tools) を参照してください。
+[claude.ai/code](https://claude.ai/code) で新しいセッションを開始する画面のメッセージボックスの下にある環境セレクターから、環境を追加、編集、アーカイブできます。この画面にアクセスするには、[Web オンボーディング](/docs/ja/web-quickstart) を完了してください。Desktop アプリについては、[クラウドセッション](/docs/ja/desktop#cloud-sessions) を参照してください。作成した環境はアカウントに個人的なものです。Owner が作成した [共有環境](#organization-shared-environments) も、それらと並んでセレクターに表示されます。設定なしで利用可能な内容については、[インストール済みツール](#installed-tools) を参照してください。
+
+セレクターは、新しいセッションの最初のメッセージを送信するまでしか表示されません。実行中の自分のクラウドセッションの環境を編集するには、上部のセッションタイトルの後にあるキャレットを選択し、**クラウド環境を編集** を選択します。
 
 <Steps>
   <Step title="環境セレクターを開く">
-    [claude.ai/code](https://claude.ai/code) で、メッセージボックスの上の行にある現在の環境名を表示するクラウドアイコンを選択します。セレクターの設定ページや直接 URL はありません。
-
-    <Frame>
-      <img src="https://mintcdn.com/claude-code/ZFId6l95856c5LSw/images/cloud-environment-selector.png?fit=max&auto=format&n=ZFId6l95856c5LSw&q=85&s=cc2813a5664519eaf5a89d793ce5af26" alt="claude.ai/code のメッセージボックスの上に開いた環境セレクター。環境名 Default を表示するクラウドボタンがメッセージボックスの上の行にあります。開いたメニューには、Download と Desktop only ラベルを持つ Local 行、Default 環境がチェックマークで選択され、ホバー時に設定ギアアイコンを表示する Cloud セクション、クラウド環境を追加オプション、セットアップ手順を含む Remote Control セクションが表示されます。" width="1672" height="682" data-path="images/cloud-environment-selector.png" />
-    </Frame>
+    新しいセッションの画面で、メッセージボックスの下の行にある最初のコントロールを選択します。
   </Step>
 
   <Step title="環境を追加または編集する">
-    **Cloud** を選択して環境をリストします。その後、**クラウド環境を追加** を選択するか、既存の環境にホバーして右に表示される設定アイコンを選択します。
+    * **環境を追加する**: メニュー下部の **新しい環境** を選択して **新しい環境** ダイアログを開きます。フォームに入力し、**環境を追加** を選択します。新しいセッションでは、追加した環境が使用されます。
+    * **環境を編集する**: **Cloud** の下でその環境の行を見つけます。**Cloud** が 1 行だけの場合は、それを選択してリストを開きます。環境が **Cloud** の下に表示されていない場合は、その見出しの下の **その他** 行を選択します。環境の行にホバーし、右側に表示される設定アイコンを選択してダイアログを開きます。
 
-    ダイアログには名前、ネットワークアクセスレベル、環境変数、セットアップスクリプトが含まれます。Pro または Max プランで既存のクラウド環境を編集する場合、ダイアログには [ネットワークシークレット](#add-network-secrets) も含まれます。
-
-    <Frame>
-      <img src="https://mintcdn.com/claude-code/ZFId6l95856c5LSw/images/cloud-environment-dialog.png?fit=max&auto=format&n=ZFId6l95856c5LSw&q=85&s=30d4478b31d1f879f7ee287ddab32505" alt="新しいクラウド環境ダイアログ。プレースホルダー Default を持つ Name フィールド、ネットワークアクセスセレクターが Trusted に設定され、ネットワークポリシーとアクセスレベルへのリンク、.env 形式プレースホルダーテキストを表示する環境変数ボックス（環境を使用する誰もが値を見ることができるという注記付き）、新しいセッションが開始され Claude Code が起動する前に実行される Bash スクリプトとして説明されるセットアップスクリプトボックス、キャンセルと環境を作成ボタン。" width="874" height="1372" data-path="images/cloud-environment-dialog.png" />
-    </Frame>
+    ダイアログには名前、ネットワークアクセスレベル、環境変数、セットアップスクリプトが含まれます。セッションがキーを見ることなく使用できるようにキーを保存するには、[ネットワークシークレットを追加する](#add-network-secrets) を参照してください。
   </Step>
 </Steps>
 
@@ -91,7 +86,7 @@ Anthropic ホスト型環境では、セッションは環境の値をセッシ�
 
 クラウドセッションは起動時に自身でいくつかの変数も設定します。[`CLAUDE_AUTOCOMPACT_PCT_OVERRIDE`](/docs/ja/claude-code-on-the-web#manage-context) の場合、セッションが設定する値はここで追加した値をオーバーライドするため、ここでそのキーを追加しても効果がありません。
 
-環境を使用する誰もが値を読み取ることができます。Pro および Max プランでは、エージェントプロキシがリクエストに添付できるキーに対して [ネットワークシークレット](#add-network-secrets) を代わりに使用してください。[シークレットを取得しないリクエスト](#requests-that-never-get-the-credential) はそこにリストされています。
+環境を使用する誰もが値を読み取ることができます。Anthropic ホスト型環境では、エージェントプロキシがリクエストに添付できるキーに対しては、代わりに [ネットワークシークレット](#add-network-secrets) を使用してください。[シークレットを取得しないリクエスト](#requests-that-never-get-the-credential) はそこにリストされています。
 
 <span id="add-api-credentials" />
 
@@ -101,7 +96,7 @@ Anthropic ホスト型環境では、セッションは環境の値をセッシ�
 
 ネットワークシークレットは、クラウド環境に保存する API キーまたはトークンで、Claude が環境内の任意のセッションからそのキーを見ることなく API を呼び出すことができます。Anthropic のエージェントプロキシは、各リクエストがセッションの VM を離れた後、リストしたホストへのリクエストにキーを追加するため、キー自体は VM の外部にとどまります。
 
-ネットワークシークレットは Pro および Max プランで利用可能です。Team および Enterprise プランではまだ利用できないため、**ネットワークシークレット** セクションはこれらのプランの環境ダイアログに表示されません。
+ネットワークシークレットは Pro、Max、Team、Enterprise プランで利用可能です。自分で追加できるかどうかを確認するには、[要件](#requirements) を参照してください。
 
 <h4 id="requirements">
   要件
@@ -109,9 +104,10 @@ Anthropic ホスト型環境では、セッションは環境の値をセッシ�
 
 これらの要件によって、シークレットを追加できるかどうか、および追加後にエージェントプロキシがそれを使用できるかどうかが決まります。
 
-* **ロール**: claude.ai 組織内の組織管理者ロール
-  * Team および Enterprise では、Owner がそれを保持し、Admin は保持しません
-  * Pro および Max では、独自の組織でそれを保持します
+* **ロール**: Pro、Max、Team プランでは、ロールに関係なく自分の環境でシークレットを追加および削除できます。Team および Enterprise では、Owner は claude.ai 組織内で組織管理者ロールを保持し、Admin は保持しません。これにより、次のケースで表示される内容が変わります。
+  * **Enterprise での自分の環境**: 組織管理者ロールがあれば、シークレットを追加および削除できます。ない場合、**ネットワークシークレット** セクションには「Only an organization admin can add or delete network secrets」という注記の下にシークレットが一覧表示され、**シークレットを追加** ボタンや削除ボタンはありません。Owner に [共有環境](#organization-shared-environments) へのシークレットの追加を依頼し、そこでセッションを実行してください
+  * **共有環境**: Owner が管理設定から [シークレットを追加および削除](#add-a-credential) します。組織管理者ロールがない場合は、環境のダイアログに **ネットワークシークレット** セクションがないため、Owner にシークレットの追加を依頼してください
+  * **Team での自分の環境**: 組織管理者ロールがない場合、**シークレットを追加** を選択すると、1 つのホストを指定する [短いフォーム](#add-a-secret-without-the-role) が開きます
 * **環境タイプ**: 既に存在する Anthropic ホスト型クラウド環境。[自己ホスト型環境](/docs/ja/self-hosted-environments) にはネットワークシークレットがありません
 * **API 到達可能性**: API がインターネットからの接続を受け入れます。リクエストは Anthropic のネットワークから離れるためです
 * **暗号化キー**: 組織が顧客管理の暗号化キーを使用する場合、ネットワークシークレットを保存できません
@@ -122,27 +118,39 @@ Anthropic ホスト型環境では、セッションは環境の値をセッシ�
 
 シークレットは一度に 1 つずつ追加し、追加後にシークレットを編集することはできません。シークレットのホストまたは値を変更するには、削除して再度追加します。
 
+[共有環境](#organization-shared-environments) にシークレットを追加するには、[管理設定](https://claude.ai/admin-settings) の **クラウド環境** ページから環境を編集用に開き、**ネットワークシークレット** セクションから手順 1 を続けます。Team プランで [組織管理者ロール](#requirements) を持っていない場合は、自分の環境で手順 1 に従い、その後 [短いフォームに入力](#add-a-secret-without-the-role) します。
+
 <Steps>
   <Step title="環境のネットワークシークレットを開く">
     [claude.ai/code](https://claude.ai/code) で [環境を編集用に開きます](#configure-your-environment)。**環境を編集** ダイアログで、**ネットワークシークレット** セクションを見つけます。環境に既にあるシークレットが表示され、それぞれが適用されるホストが表示されます。
   </Step>
 
   <Step title="シークレットを追加する">
-    **シークレットを追加** を選択してフォームに入力します。API キーがリクエストヘッダーで移動する場合はデフォルトの **認証情報タイプ**、**Bearer** を保持し、これらのフィールドに入力します。
+    **シークレットを追加** を選択してフォームに入力します。API キーがリクエストヘッダーで移動する場合はデフォルトの **シークレットタイプ**、**Bearer** を保持し、これらのフィールドに入力します。
 
     * **名前**: `Internal billing API` などのシークレットのラベル
     * **許可されたウェブサイト**: `api.example.com` などの API のホスト。先頭の `*.` はすべてのサブドメインと一致します
     * **カスタムヘッダー**: キーを運ぶヘッダーの 1 行。行は `Authorization` をヘッダーの **名前** として、`Bearer` を **プレフィックス** として開始します。キー自体を **値** として貼り付けます。`X-Api-Key` のようなベア値を取得するヘッダーの場合、名前を変更してプレフィックスをクリアします
 
-    別の方法で認証する API の場合、別の **認証情報タイプ** を選択します。リストは [Claude Tag](https://claude.com/docs/claude-tag/overview)（Team および Enterprise プランの Slack 統合）が [接続](https://claude.com/docs/claude-tag/admins/add-connections) に提供するものと同じです。
+    別の方法で認証する API の場合、別の **シークレットタイプ** を選択します。リストは [Claude Tag](https://claude.com/docs/claude-tag/overview)（Team および Enterprise プランの Slack 統合）が [接続](https://claude.com/docs/claude-tag/admins/add-connections) に提供するものと同じです。
   </Step>
 
   <Step title="シークレットを保存する">
-    **接続** を選択します。シークレットはリストにホストと共に表示され、ダイアログの **変更を保存** ボタンなしで保存されます。保存後に値を再度表示することはできません。
+    **追加** を選択します。シークレットはリストにホストと共に表示され、ダイアログの **変更を保存** ボタンなしで保存されます。保存後に値を再度表示することはできません。
   </Step>
 </Steps>
 
 シークレットが機能することを確認するには、環境でセッションを開始して Claude に API を呼び出すよう依頼します。例えば `curl` を使用します。API はキーがリクエストにあるかのように応答し、キーはセッションの環境変数またはファイルに表示されません。リストがシークレットを **送信されていません** とマークしている場合、その下のメモは理由と対処方法を説明しています。ホストが正確に一致せずに重複する 2 つのシークレットはマーカーを取得せず、エージェントプロキシはそのうちの 1 つだけを送信します。
+
+<h4 id="add-a-secret-without-the-role">
+  組織管理者ロールなしで Team プランでシークレットを追加する
+</h4>
+
+Team プランで [組織管理者ロール](#requirements) を持っていない場合、**シークレットを追加** フォームでは 1 つのホストに対して 1 つのシークレットを指定します。環境の [**ネットワークシークレット** セクション](#add-a-credential) で **シークレットを追加** を選択し、次のフィールドに入力してから、フォームの **シークレットを追加** ボタンを選択します。
+
+* **ホスト**: シークレットを受け取る 1 つのホスト（`api.example.com` など）。フォームは `*.` ワイルドカードを受け付けません
+* **名前**: シークレットの任意のラベル
+* **シークレットタイプ**: リクエストヘッダーで送信されるキーの場合は **トークン**、または **ユーザー名とパスワード**。トークンの場合は、キーを **値** として貼り付けます
 
 <h4 id="which-requests-get-the-credential">
   どのリクエストがシークレットを取得するか
@@ -175,7 +183,7 @@ Anthropic ホスト型環境では、セッションは環境の値をセッシ�
   環境をアーカイブする
 </h3>
 
-独自の環境の 1 つをアーカイブするには、編集用に開いて **アーカイブ** を選択します。Owner は管理設定の **クラウド環境** ページから [共有環境](#organization-shared-environments) をアーカイブします。環境を削除することはできず、アーカイブのみできます。
+自分の環境の 1 つをアーカイブするには、編集用に開いて **環境をアーカイブ** を選択し、確認します。環境が [組織と共有](#organization-shared-environments) されている場合は、代わりに Owner が [管理設定](https://claude.ai/admin-settings) の **クラウド環境** ページからアーカイブするため、自分が Owner でない場合は Owner に依頼してください。環境を削除することはできず、アーカイブのみできます。
 
 アーカイブは新しいセッションに影響し、実行中のセッションには影響しません。
 
@@ -199,7 +207,7 @@ Owner は 2 つの方法のいずれかで環境を組織で利用可能にし�
 
 Owner は [claude.ai/admin-settings/claude-code](https://claude.ai/admin-settings/claude-code) で組織の [デフォルト環境](#the-default-environment) を別途選択します。
 
-すべてのメンバーのセッションは共有環境でその変数を読み取るため、シークレットを含めないでください。[ネットワークシークレット](#add-network-secrets)（セッションが読み取ることができないキーを提供）は Team および Enterprise プランではまだ利用できません。
+共有環境のセッションに読み取れないキーを提供するには、**クラウド環境** ページで環境を編集する際に [ネットワークシークレット](#add-network-secrets) を追加します。すべてのメンバーのセッションが変数を読み取るため、変数にシークレットを含めないでください。
 
 <h3 id="set-the-environment-a-claude-tag-channel-uses">
   Claude Tag チャネルが使用する環境を設定する
@@ -216,7 +224,7 @@ Owner は [claude.ai/admin-settings/claude-code](https://claude.ai/admin-setting
 
 各環境は 1 つのネットワークアクセスレベルを設定します。これは、セッションが行える送信接続を制御します。デフォルトレベルの **Trusted** は、パッケージレジストリおよび他の [許可リストに登録されたドメイン](#default-allowed-domains) を許可します。**Custom** はカスタムドメインリストを使用します。
 
-環境のネットワークアクセスを変更するには、[編集用に開き](#configure-your-environment)、ダイアログの **Network access** セレクターを使用します。[共有環境](#organization-shared-environments) はそこで読み取り専用で開くため、Owner は [admin settings](https://claude.ai/admin-settings) の **Cloud environments** ページからネットワークアクセスを変更します。クラウドアイコンはセレクターを開き、[The Default environment](#the-default-environment) に記載されているアプリサーフェスと [routine editor](/docs/ja/routines#environments-and-network-access) に表示されます。個人環境は claude.ai アカウント設定に別ページを持ちません。
+環境のネットワークアクセスを変更するには、[編集用に開き](#configure-your-environment)、ダイアログの **Network access** セレクターを使用します。[共有環境](#organization-shared-environments) はそこで読み取り専用で開くため、Owner は [admin settings](https://claude.ai/admin-settings) の **Cloud environments** ページからネットワークアクセスを変更します。セレクターを開くコントロールは、[The Default environment](#the-default-environment) に記載されているアプリサーフェスと [routine editor](/docs/ja/routines#environments-and-network-access) に表示されます。個人環境は claude.ai アカウント設定に別ページを持ちません。
 
 Anthropic ホスト環境のネットワークアクセスを変更すると、既存のセッションはセッションの [network allowlist](#access-levels) を通じて行くリクエストについて、約 1 分以内に新しい設定に従います。新しいセッションを開始する必要はありません。
 
@@ -318,12 +326,12 @@ Anthropic ホスト環境では、各セッションは独自のオペレーテ�
 | ユーザー設定でのみ有効なプラグイン | いいえ | ユーザースコープの `enabledPlugins` はマシンの `~/.claude/settings.json` に存在します |
 | デフォルトのローカルスコープまたはユーザースコープで `claude mcp add` を使用して追加した MCP サーバー | いいえ | これらはマシンの `~/.claude.json` に書き込まれ、リポジトリには書き込まれません。`claude mcp add --scope project` でサーバーを追加します。これはリポジトリの[`.mcp.json`](/docs/ja/mcp#project-scope)に書き込まれ、そのファイルをコミットしてください。1 つのリポジトリを持つセッションはそれを読み込みます |
 | リポジトリの `.claude/settings.json` `env` ブロック内のトランスポート変数（`NODE_EXTRA_CA_CERTS` や[mTLS クライアント証明書変数](/docs/ja/network-config#mtls-authentication)など） | いいえ | ホスティング環境がセッションの API 接続を管理するため、Claude Code はこれらのキーを無視し、セッションのデバッグログで無視された各キーを記録します |
-| Claude が呼び出すサービスの API キーとトークン | Pro および Max プランでは、[ネットワークシークレット](#add-network-secrets)として | キーを環境に一度追加すると、エージェントプロキシがリストしたホストへのリクエストにそれを添付します。エージェントプロキシが[添付できない](#requests-that-never-get-the-credential)キー、または Team または Enterprise プランのキーは環境変数に留まります |
+| Claude が呼び出すサービスの API キーとトークン | Anthropic ホスト環境では、[ネットワークシークレット](#add-network-secrets)として | キーを環境に一度追加すると、エージェントプロキシがリストしたホストへのリクエストにそれを添付します。エージェントプロキシが[添付できない](#requests-that-never-get-the-credential)キーは環境変数に留まります |
 | AWS SSO のようなインタラクティブ認証 | いいえ | サポートされていません。SSO はクラウドセッションで実行できないブラウザベースのログインが必要です |
 
 クラウドセッションで独自の構成を利用可能にするには、リポジトリにコミットしてください。
 
-環境を使用する誰もが環境変数とセットアップスクリプトを読むことができます。ダイアログの**環境変数**の下のメモはそのことを述べており、シークレットをそこに置かないよう警告しています。Pro および Max プランでは、代わりにエージェントプロキシが添付できるキーを[ネットワークシークレット](#add-network-secrets)として保存してください。
+環境を使用する誰もが環境変数とセットアップスクリプトを読むことができます。ダイアログの**環境変数**の下のメモはそのことを述べており、シークレットをそこに置かないよう警告しています。Anthropic ホスト環境では、代わりにエージェントプロキシが添付できるキーを[ネットワークシークレット](#add-network-secrets)として保存してください。
 
 <h4 id="add-personal-preferences-without-committing-to-the-repo">
   リポジトリにコミットせずに個人設定を追加する

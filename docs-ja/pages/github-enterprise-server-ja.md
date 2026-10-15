@@ -22,7 +22,7 @@ github.com 上のリポジトリについては、[クラウドで Claude Code �
 
 | 機能 | GHES サポート | 注記 |
 | :- | :- | :- |
-| Cloud セッション | ✅ サポート | 所有者が GHES インスタンスを 1 回接続すると、開発者は通常通り `claude --cloud` または [claude.ai/code](https://claude.ai/code) を使用できます |
+| クラウドセッション | ✅ サポート | 所有者が GHES インスタンスを 1 回接続すると、開発者は `claude --cloud` または [claude.ai/code](https://claude.ai/code) を使用できます |
 | Code Review | ✅ サポート | github.com と同じ自動 PR レビュー |
 | Claude Security | ✅ サポート | Enterprise プランの公開ベータで [claude.ai/security](https://claude.ai/security) で利用可能 |
 | Teleport セッション | ✅ サポート | `--teleport` で Cloud とターミナル間でセッションを移動 |
@@ -35,7 +35,7 @@ github.com 上のリポジトリについては、[クラウドで Claude Code �
   管理者セットアップ
 </h2>
 
-Owner は GHES インスタンスを Claude Code に 1 回接続します。その後、組織内の開発者は追加の設定なしで GHES リポジトリを使用できます。Claude 組織で Owner または Primary Owner ロールを持ち、GHES インスタンスで GitHub Apps を作成する権限が必要です。
+Owner は GHES インスタンスを Claude Code に 1 回接続します。Claude 組織で Owner または Primary Owner ロールを持ち、GHES インスタンスで GitHub Apps を作成する権限が必要です。
 
 ガイド付きセットアップは GitHub App マニフェストを生成し、GHES インスタンスにリダイレクトしてアプリをワンクリックで作成します。環境がリダイレクトフローをブロックしている場合は、[代替の手動セットアップ](#manual-setup)が利用可能です。
 
@@ -103,7 +103,7 @@ Anthropic ホスト型セッションの場合、GHES インスタンスは Anth
   開発者ワークフロー
 </h2>
 
-管理者が GHES インスタンスを接続した後、開発者側の設定は不要です。Claude Code は作業ディレクトリの git リモートから GHES ホスト名を自動的に検出します。
+Claude Code は作業ディレクトリの git リモートから GHES ホスト名を自動的に検出します。
 
 通常通り GHES インスタンスからリポジトリをクローンします。`github.example.com` とリポジトリパスを GHES ホスト名とリポジトリに置き換えてください。
 
@@ -223,43 +223,45 @@ Claude Code はこれらのマーケットプレイスをローカルにイン�
 </h2>
 
 <h3 id="cloud-session-fails-to-clone-repository">
-  クラウドセッションがリポジトリのクローンに失敗
+  クラウドセッションでリポジトリのクローンに失敗する
 </h3>
 
-`claude --cloud` がクローンエラーで失敗する場合は、Owner が GHES インスタンスのセットアップを完了し、GitHub App が作業しているリポジトリにインストールされていることを確認してください。インスタンスを接続した Owner に確認して、Claude 設定に登録されているホスト名が git リモートのホスト名と一致することを確認してください。
+`claude --cloud` がクローンエラーで失敗する場合は、Owner が GHES インスタンスのセットアップを完了していること、および作業中のリポジトリに GitHub App がインストールされていることを確認してください。インスタンスを接続した Owner に、Claude の設定に登録されているホスト名が Git リモートのホスト名と一致しているかを確認するよう依頼してください。
+
+セッションが「Authentication failed while accessing the repository」で停止する場合は、自分の GitHub Enterprise アカウントを接続していない可能性があります。[claude.ai/code](https://claude.ai/code) のリポジトリピッカーから接続し、新しいセッションを開始してください。
 
 <h3 id="marketplace-add-fails-with-a-policy-error">
-  マーケットプレイス追加がポリシーエラーで失敗
+  マーケットプレイスの追加がポリシーエラーで失敗する
 </h3>
 
-GHES URL の `/plugin marketplace add` がブロックされている場合、組織はマーケットプレイスソースを制限しています。管理者に [管理設定](#allowlist-ghes-marketplaces-in-managed-settings) で GHES ホスト名の `hostPattern` エントリを追加するよう依頼してください。
+GHES の URL に対して `/plugin marketplace add` がブロックされる場合、組織がマーケットプレイスのソースを制限しています。管理者に依頼して、[管理設定](#allowlist-ghes-marketplaces-in-managed-settings)に GHES ホスト名の `hostPattern` エントリを追加してもらってください。
 
 <h3 id="marketplace-add-on-claude-ai-fails-with-a-github-access-error">
-  claude.ai でのマーケットプレイス追加が GitHub アクセスエラーで失敗
+  claude.ai でのマーケットプレイスの追加が GitHub アクセスエラーで失敗する
 </h3>
 
-ユーザー設定から GHES マーケットプレイスを追加する際に「Marketplace couldn't be added」のような一般的なエラーで失敗する場合は、まず GitHub Enterprise 接続を確認してください。これは、組織の GHES インスタンスが設定されており他のユーザーが接続されている場合でも、独自の GitHub Enterprise アカウントが Claude に接続されていない場合に表示されます。ダイアログは GitHub Enterprise 接続フローを指していません。また、Browse タブの「Connect to GitHub」オプションは github.com にサインインするため、GHES リポジトリへのアクセス権を付与しません。
+ユーザー設定から GHES マーケットプレイスを追加しようとして「Marketplace couldn't be added」のような一般的なエラーで失敗する場合は、まず GitHub Enterprise の接続を確認してください。このエラーは、組織の GHES インスタンスが設定済みで他のユーザーが接続していても、自分の GitHub Enterprise アカウントが Claude に接続されていない場合に表示されます。このダイアログは GitHub Enterprise の接続フローを案内せず、また Browse タブの「Connect to GitHub」オプションは github.com にサインインするものであり、GHES リポジトリへのアクセスは付与されません。
 
 次のいずれかの場所で GitHub Enterprise アカウントを接続してから、マーケットプレイスを再度追加してください。
 
-* **リポジトリピッカー**：[claude.ai/code](https://claude.ai/code) では、リポジトリピッカーが設定済みの各 GHES インスタンスの接続オプションを提供します。
-* **Git プロバイダーページ**：Owner の場合は、[**Organization settings > Git providers**](https://claude.ai/admin-settings/source-control) の GitHub セクションに移動して **Connect** をクリックします。アカウントがすでに接続されている場合は **Add organization** をクリックします。**GitHub instance** で GHES ホスト名を選択し、**Connect** をクリックします。
+* **リポジトリピッカー**：[claude.ai/code](https://claude.ai/code) のリポジトリピッカーには、設定済みの各 GHES インスタンスに対する接続オプションがあります。
+* **Git providers ページ**：Owner の場合は、[**Organization settings > Git providers**](https://claude.ai/admin-settings/source-control) の GitHub セクションに移動して **Connect** をクリックするか、アカウントが接続済みであれば **Add organization** をクリックします。**GitHub instance** で GHES ホスト名を選択し、**Connect** をクリックします。
 
-または、Owner に組織プラグイン設定でマーケットプレイスを追加するよう依頼してください。これにより、ユーザーごとの接続要件が削除されます。
+または、Owner に依頼して組織のプラグイン設定でマーケットプレイスを追加してもらうこともできます。この方法では、ユーザーごとの接続は不要になります。
 
-他の claude.ai サーフェスでは、GHES マーケットプレイスの「Repository not found. If it's private, GitHub access is required」エラーは通常、同じ接続の欠落を示しています。上記のいずれかのパスを通じて GitHub Enterprise アカウントを接続してから、もう一度試してください。
+claude.ai の他のサーフェスで、GHES マーケットプレイスに対して「Repository not found. If it's private, GitHub access is required」エラーが表示される場合も、通常は同じく接続が不足していることを示しています。上記のいずれかの方法で GitHub Enterprise アカウントを接続してから、再度お試しください。
 
 <h3 id="ghes-instance-not-reachable">
-  GHES インスタンスに到達不可
+  GHES インスタンスに到達できない
 </h3>
 
-レビューまたは Anthropic ホスト型クラウドセッションがタイムアウトする場合、GHES インスタンスは Anthropic インフラストラクチャから到達不可能な可能性があります。ファイアウォールが Anthropic の [アウトバウンド IP アドレス](https://platform.claude.com/docs/en/api/ip-addresses#outbound-ip-addresses) からのインバウンド接続を許可していることを確認してください。[セルフホスト環境](/docs/ja/self-hosted-environments) のセッションは、ネットワーク内から GHES に到達するため、代わりにランナー自体のネットワークパスを確認してください。リポジトリピッカーおよび他のホスト型セッション前フローについては、[ネットワーク要件](#network-requirements) を参照してください。
+レビューや Anthropic がホストするクラウドセッションがタイムアウトする場合、Anthropic のインフラストラクチャから GHES インスタンスに到達できない可能性があります。ファイアウォールが Anthropic の[送信元 IP アドレス](https://platform.claude.com/docs/en/api/ip-addresses#outbound-ip-addresses)からのインバウンド接続を許可していることを確認してください。[セルフホスト環境](/docs/ja/self-hosted-environments)のセッションはネットワーク内部から GHES に到達するため、そうしたセッションでクローンできない場合は、代わりにランナー自体のネットワーク経路を確認してください。リポジトリピッカーやその他のホスト型のセッション開始前フローについては、[ネットワーク要件](#network-requirements)を参照してください。
 
 <h3 id="session-start-fails-with-unable-to-get-organization-uuid">
-  セッション開始が `Unable to get organization UUID` で失敗
+  セッションの開始が `Unable to get organization UUID` で失敗する
 </h3>
 
-Claude Code は認証情報から claude.ai 組織を読み取ることができませんでした。Team または Enterprise 組織のアカウントを使用して `/login` でサインインしてください。GitHub Enterprise Server サポートはこれらのプランに限定されています。原因と、この状態が生成する他のメッセージについては、[Unable to get organization UUID](/docs/ja/claude-code-on-the-web#unable-to-get-organization-uuid) を参照してください。
+Claude Code が認証情報から claude.ai の組織を読み取れませんでした。GitHub Enterprise Server のサポートは Team プランと Enterprise プランに限定されているため、Team または Enterprise 組織のアカウントを使用して `/login` でサインインしてください。原因およびこの状態で表示されるその他のメッセージについては、[Unable to get organization UUID](/docs/ja/claude-code-on-the-web#unable-to-get-organization-uuid) を参照してください。
 
 <h2 id="related-resources">
   関連リソース

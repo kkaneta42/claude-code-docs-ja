@@ -518,7 +518,7 @@ Claude Code は、リクエストが認証情報が属するホストに送信�
 
 ゲートウェイの認証情報を`ANTHROPIC_FOUNDRY_API_KEY`に入れます。これは`x-api-key`ヘッダーとしてゲートウェイに送信されます。ベアラートークンを期待するゲートウェイは、代わりに[`ANTHROPIC_FOUNDRY_AUTH_TOKEN`](/docs/ja/env-vars)を使用できます。Claude Code はその値を`Authorization: Bearer`ヘッダーとして送信し、両方が設定されている場合は`ANTHROPIC_FOUNDRY_API_KEY`よりも優先されます。Claude Code v2.1.203 以降が必要です。
 
-独自の`Authorization`ヘッダーを挿入するゲートウェイの場合、`CLAUDE_CODE_SKIP_FOUNDRY_AUTH=1`を設定し、両方の認証情報変数を設定しないままにします。Claude Code はその後、Azure 認証情報なしでリクエストを送信し、例えば`ANTHROPIC_CUSTOM_HEADERS`を通じて提供する`Authorization`ヘッダーを保持します。v2.1.203 より前では、API キーなしで`CLAUDE_CODE_SKIP_FOUNDRY_AUTH`を使用すると、Microsoft Foundry クライアントはリクエストを送信できなくなりました。
+独自の`Authorization`ヘッダーを挿入するゲートウェイの場合、`CLAUDE_CODE_SKIP_FOUNDRY_AUTH=1`を設定し、両方の認証情報変数を設定しないままにします。Claude Code はその後、Azure 認証情報なしでリクエストを送信し、例えば`ANTHROPIC_CUSTOM_HEADERS`を通じて提供する`Authorization`ヘッダーを保持します。
 
 <Tabs>
   <Tab title="Bash or Zsh">
@@ -587,7 +587,7 @@ AWS auth skipped
 | エラー | 原因 | 修正 |
 | :- | :- | :- |
 | 2 つの認証情報ソースという名前の起動警告で、`auth may not work as expected` で終わります。古いバージョンは代わりに `Auth conflict: Both a token (SOURCE) and an API key (SOURCE) are set` を表示します。 | ゲートウェイ認証情報と保存されたログインの両方がアクティブです。変数はリクエストに使用されますが、古いログインは予期しない認証動作を引き起こす可能性があります | 変数を設定解除して保存されたログインを使用するか、`/logout` を実行してゲートウェイ認証情報を使用します |
-| 無効または認識されないトークンという名前の `401` エラー | 認証情報はゲートウェイが発行したものではないか、ゲートウェイが読むヘッダーにあります | [認証情報テーブル](#set-the-credential-variable)で変数が認証情報の種類と一致することを確認し、ゲートウェイで失効した場合はキーを再生成します |
+| 無効または認識されないトークンという名前の `401` エラー | 認証情報はゲートウェイが発行したものではないか、ゲートウェイが読まないヘッダーにあります | [認証情報テーブル](#set-the-credential-variable)で変数が認証情報の種類と一致することを確認し、ゲートウェイで失効した場合はキーを再生成します |
 | `Your apiKeyHelper script is failing`、または非対話型モードで stderr に `apiKeyHelper failed:` | [`apiKeyHelper`](/docs/ja/settings-reference#apikeyhelper) 設定のコマンドが使用可能なキーを生成しなかったため、リクエストはプレースホルダーキーを含みます | コマンドを直接実行して失敗の理由を確認し、期限切れセッションを報告する場合は認証情報プロバイダーで再認証します。[エラーリファレンス](/docs/ja/errors#your-apikeyhelper-script-is-failing)を参照してください |
 | アドレスで何も応答しない場合は `Connection refused — a firewall or proxy may be blocking it (ConnectionRefused)`、またはホスト名が解決しない場合は `Can't reach the API server — check your internet or DNS (ENOTFOUND)`。多くの場合、Claude Code が[バックオフで再試行](/docs/ja/errors#automatic-retries)している間の静かな一時停止の後です。括弧内のコードは異なります。[Unable to connect to API](/docs/ja/errors#unable-to-connect-to-api) はコードのスペルと以前の表現をカバーしています | 基本 URL で何も応答しません。アドレスが間違っているか、VPN またはファイアウォールがゲートウェイへのパスをブロックしています | 上記の [curl テスト](#verify-the-connection)を実行します。これは同じ原因で直ちに失敗し、URL とネットワークパスをゲートウェイチームで確認します |
 | `API returned an empty or malformed response (HTTP 200)` | ゲートウェイまたは中間プロキシが非 API レスポンス（多くの場合 HTML エラーまたはログインページ）を返しました | 上記の [curl リクエスト](#verify-the-connection)でテストします。Claude API レスポンス以外で応答するゲートウェイルートを修正します。[エラーリファレンス](/docs/ja/errors#api-returned-an-empty-or-malformed-response)はメッセージが報告する詳細を説明しています |

@@ -414,7 +414,7 @@ Claude はこのような設定を[プロジェクトメモリ](#give-a-project-
 
 * スキル、サブエージェント、コマンド：プロジェクトに追加したリポジトリにコミットします。例えば、`.claude/skills/<skill-name>/SKILL.md` のスキル。各クラウドスレッドはプロジェクト内のすべてのリポジトリをクローンし、それぞれから `.claude/skills/`、`.claude/agents/`、`.claude/commands/` を読み込むため、1 つのリポジトリにコミットされたスキルはすべてのクラウドスレッドで利用可能です。クラウドスレッドは、[claude.ai アカウントで有効化したスキル](/docs/ja/skills#skills-in-cowork-and-cloud-sessions) も読み込みます。
 * プラグイン：**プロジェクト設定 > プラグイン** で追加します。各新しいクラウドスレッドに読み込まれます。リポジトリが `.claude/settings.json` で宣言するプラグインは、クラウドスレッドでは [読み込まれません](/docs/ja/cloud-environments#what-carries-over-from-your-setup)。
-* MCP サーバー：クラウドスレッドは、claude.ai アカウントのコネクタから MCP ツールを取得します。これは、[claude.ai/customize/connectors](https://claude.ai/customize/connectors) で 1 回接続する MCP サーバーか、**プロジェクト設定 > 環境** の **コネクタを管理** リンクを通じて接続します。すべてのクラウドスレッドは、プロジェクト固有のセットアップなしでそれらすべてを使用できます。プロジェクト会話自体にはコネクタがないため、コネクタが必要な作業をクラウドスレッドのタスクとして送信してください。1 つのリポジトリを持つプロジェクトでは、クラウドスレッドはそのリポジトリの [`.mcp.json`](/docs/ja/cloud-environments#what-carries-over-from-your-setup) から MCP サーバーも読み込みます。[コネクタが Claude Code に到達する方法](/docs/ja/mcp#how-connectors-reach-claude-code) は、クラウドセッションのルールとコネクタをオフにする設定をリストしています。
+* MCP サーバー：クラウドスレッドは、claude.ai アカウントのコネクタから MCP ツールを取得します。これは、[claude.ai/customize/connectors](https://claude.ai/customize/connectors) で 1 回接続する MCP サーバーです。すべてのクラウドスレッドは、プロジェクト固有のセットアップなしでそれらすべてを使用できます。プロジェクト会話自体にはコネクタがないため、コネクタが必要な作業をクラウドスレッドのタスクとして送信してください。1 つのリポジトリを持つプロジェクトでは、クラウドスレッドはそのリポジトリの [`.mcp.json`](/docs/ja/cloud-environments#what-carries-over-from-your-setup) から MCP サーバーも読み込みます。[コネクタが Claude Code に到達する方法](/docs/ja/mcp#how-connectors-reach-claude-code) は、クラウドセッションのルールとコネクタをオフにする設定をリストしています。
 * コマンドラインツールとパッケージ：環境の [セットアップスクリプト](/docs/ja/cloud-environments#setup-scripts) にインストールします。
 
 実行中のクラウドスレッドが claude.ai/code でどのコネクタを持っているかを確認するには、スレッドを開き、メッセージボックスの横の **+** メニューから **コネクタ** を選択します。コネクタをそこでオフにすると、そのスレッドから削除され、アカウントのデフォルトとして保存されます。そのため、新しいスレッドと claude.ai チャットは、再度オンにするまでそれなしで開始します。クラウドスレッドは、送信後のメッセージで追加または再接続したコネクタを取得します。
@@ -435,7 +435,6 @@ Claude はこのような設定を[プロジェクトメモリ](#give-a-project-
 | プロジェクト指示 | Memory | [立ち上がりルール](#give-a-project-standing-context) すべての新しいスレッドが受け取ります |
 | プロジェクトリポジトリ | Environment | 新しいスレッドがクローンするリポジトリ |
 | クラウド環境 | Environment | 新しいスレッドが実行する [クラウド環境](#choose-an-environment-for-threads) |
-| コネクタ | Environment | claude.ai コネクタを管理するリンク。スレッドが取得します |
 | プラグイン | Plugins | 各新しいスレッドに読み込まれるプラグイン |
 | 使用量 | Usage | スレッドおよびモデル別の [トークン使用量](#usage-and-cost) |
 | Memory | Memory | プロジェクトの [メモリファイル](#give-a-project-standing-context) |

@@ -1525,7 +1525,7 @@ Windows では、`~/.claude` は `%USERPROFILE%\.claude` に解決されます�
 | - | - | - |
 | `skills/<name>/SKILL.md` | `name`, `description`, `when_to_use`, `argument-hint`, `arguments`, `disable-model-invocation`, `user-invocable`, `allowed-tools`, `disallowed-tools`, `model`, `effort`, `context`, `agent`, `background`, `hooks`, `paths`, `shell`, `metadata`, `license`, `compatibility` | [スキルフロントマター](/docs/ja/skills#frontmatter-reference) |
 | `commands/*.md` | `name` と `paths` を除くスキルフィールド | [スキルフロントマター](/docs/ja/skills#frontmatter-reference) |
-| `agents/*.md` | `name`, `description`, `tools`, `disallowedTools`, `model`, `permissionMode`, `maxTurns`, `skills`, `mcpServers`, `hooks`, `memory`, `background`, `effort`, `isolation`, `color`, `initialPrompt`, `omitClaudeMd`, `experimental` | [サブエージェントフロントマター](/docs/ja/sub-agents#supported-frontmatter-fields) |
+| `agents/*.md` | `name`, `description`, `tools`, `disallowedTools`, `model`, `permissionMode`, `maxTurns`, `autoCompactWindow`, `skills`, `mcpServers`, `hooks`, `memory`, `background`, `effort`, `isolation`, `color`, `initialPrompt`, `omitClaudeMd`, `experimental` | [サブエージェントフロントマター](/docs/ja/sub-agents#supported-frontmatter-fields) |
 | `output-styles/*.md` | `name`, `description`, `keep-coding-instructions`, `force-for-plugin` | [出力スタイルフロントマター](/docs/ja/output-styles#frontmatter) |
 | `rules/*.md` | `paths` | [ルールフロントマター](/docs/ja/memory#rules-frontmatter-reference) |
 

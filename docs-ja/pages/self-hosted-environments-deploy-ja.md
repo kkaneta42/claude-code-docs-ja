@@ -182,7 +182,7 @@ ID がない場合、`git commit` は `Please tell me who you are` で失敗し�
 * 最小限のスコープトークンを返す `credential.helper`
 * 狭くスコープされたキーを指す `GIT_SSH_COMMAND`
 
-設定するメカニズムは、ランナーの組み込みクローンとフェッチがプロンプトを無効にするため、プロンプトなしで動作する必要があります。git、SSH、Git Credential Manager が表示するプロンプト：
+<span id="git-must-work-without-a-prompt" />設定するメカニズムは、ランナーの組み込みクローンとフェッチがプロンプトを無効にするため、プロンプトなしで動作する必要があります。git、SSH、Git Credential Manager が表示するプロンプト：
 
 * ランナーは `GIT_TERMINAL_PROMPT=0` を設定するため、git はユーザー名またはパスワードを要求しません。
 * ランナーは `BatchMode=yes` で SSH を実行します。`GIT_SSH_COMMAND` を設定した場合は追加されます。SSH はパスフレーズまたはホスト確認を要求しません。
@@ -212,10 +212,10 @@ git プロキシは、[オンにしない](#turn-the-anthropic-git-proxy-on)限�
 * **github.com のみ**：Anthropic は、セッションのすべてのリポジトリが github.com 上にある場合にのみそのセッションを提供します。また、git プロキシはまだ GitHub Enterprise Server をサポートしていません。git プロキシを使用するランナーでは、別の git ホスト上のリポジトリを持つセッションは[開始に失敗します](#when-anthropic-doesnt-serve-a-session)。
 * **セッションのリポジトリのみの認証情報**：Anthropic は、セッションに含まれるリポジトリに対して git 認証情報を提供し、同じ git ホスト上の他のリポジトリに対しては提供しません。プライベートサブモジュール、パッケージマネージャーが git で取得する依存関係、または別のリポジトリにあるプラグインマーケットプレイスは、Anthropic から認証情報を受け取りません。セッションを作成するユーザーに、作成時にセッションが必要とする[すべてのリポジトリを追加する](/docs/ja/web-quickstart#start-a-task)よう依頼してください。
 * **ブランチへのプッシュのみ**：ブランチを削除するプッシュは失敗し、タグなど他の種類の ref へのプッシュも失敗します。プッシュで更新できるブランチについては、[GitHub プロキシ](/docs/ja/cloud-environments#github-proxy)を参照してください。
-* **接続済みの GitHub アカウント**：ユーザーセッションを作成したユーザーが claude.ai で GitHub を接続している必要があります。接続していない場合、セッションは[開始されません](#creator-has-no-github-connection)。
+* **接続済みの GitHub アカウント**：リポジトリを含むユーザーセッションを作成する各ユーザーに、[GitHub を接続する](/docs/ja/web-quickstart#connect-github)よう依頼してください。本人の接続がない場合、それらのセッションは[開始されません](#creator-has-no-github-connection)。
 * **`--capacity 1`**：git プロキシはランナープロセスごとに 1 つのセッションを必要とするため、並列処理のためにより多くのレプリカを実行してください。要件は [Anthropic git プロキシをオンにする](#turn-the-anthropic-git-proxy-on)に記載されています。
 * **グローバル git 設定の置き換え**：ランナーは、実行ユーザーの[グローバル git 設定を削除して置き換えます](#git-proxy-replaces-global-git-config)。専用ユーザーとして、またはコンテナ内で実行してください。
-* **ホストからのプッシュにはホストの認証情報**：ランナーの [`--push-outcome-on-release`](/docs/ja/self-hosted-environments-reference#runner-cli-flags) によるプッシュと、[`post-session` フック](/docs/ja/self-hosted-environments-configuration#post-session)が行うプッシュは、引き続きランナーホスト独自の git 認証情報と [`github.com` へのネットワーク経路](#github-com-egress-with-the-anthropic-git-proxy)を使用します。これらの認証情報については、[イメージに git 設定を含める](#ship-git-config-in-your-image)を参照してください。
+* **ホストからのプッシュにはホストの認証情報**：ランナーの [`--push-outcome-on-release`](/docs/ja/self-hosted-environments-reference#runner-cli-flags) によるプッシュと、[`post-session` フック](/docs/ja/self-hosted-environments-configuration#post-session)が行うプッシュは、引き続きランナーホスト独自の git 認証情報と [`github.com` へのネットワーク経路](#github-com-egress-with-the-anthropic-git-proxy)を使用します。これらの認証情報は[グローバル git 設定](#git-proxy-replaces-global-git-config)に置かないでください。提供方法については[イメージに git 設定を含める](#ship-git-config-in-your-image)を参照してください。
 * **セッションごとの判断**：Anthropic はランナー上の各セッションについて git を提供するかどうかを決定し、提供されないセッションは開始に失敗します。原因については [git プロキシを使用するランナーでセッションの開始に失敗する場合](#when-anthropic-doesnt-serve-a-session)で説明しています。
 
 <span id="git-proxy-replaces-global-git-config" />
@@ -356,7 +356,7 @@ Anthropic 管理の git を使用する各セッションについて、ラン�
 リポジトリ URL はコントロールプレーンから HTTPS として到達します。git ホストのホスト名を使用します。GitHub Enterprise の場合、claude.ai で [GitHub Enterprise 統合](/docs/ja/github-enterprise-server)用に設定したホスト名です。2 つの繰り返し可能なフラグはクローン前にこれらの URL を書き直します：
 
 * `--git-host-rewrite <from>=<to>`：スプリットホライズン DNS の場合。Anthropic は外部ホスト名を通じて git ホストに到達しますが、ランナーは内部ホスト名を使用する必要があります
-* `--git-ssh-rewrite <host>`：SSH のみを受け入れる git ホストの場合。`https://<host>/owner/repo` を `git@<host>:owner/repo` に書き直します
+* `--git-ssh-rewrite <host>`：SSH のみを受け入れる git ホストの場合、または SSH キーしか持たないランナーホストの場合。例えば、github.com のリポジトリを SSH でクローンするには、ランナーのコマンドに `--git-ssh-rewrite github.com` を追加します。するとランナーは `https://github.com/owner/repo` を `git@github.com:owner/repo` に書き直します。SSH は[プロンプトなしで接続](#git-must-work-without-a-prompt)できる必要があります。
 
 ホスト書き直しが最初に実行されるため、両方が必要な場合は `--git-ssh-rewrite` に内部ホスト名をリストします。チェックアウトを完全に制御するには、[`checkout` ライフサイクルフック](/docs/ja/self-hosted-environments-configuration#checkout)を使用してください。
 
@@ -578,7 +578,7 @@ secrets:
 
 ホストの停止タイムアウトに、少なくとも 3 つの部分の合計を与えてください：設定する `n` 分、リリース後の猶予、[シャットダウンタイミング](#shutdown-timing)で説明されているドレインです。デフォルト設定ではリリース後の猶予は 75 秒、ドレインは最大 80 秒かかるため、`n` 分 + 155 秒を確保してください。`--defer-shutdown-max-min` が設定されている場合、ランナーはこの合計を起動時に出力します。
 
-ランナーが終了する前に停止タイムアウトが切れると、ホストはランナーを強制終了します。まだ保持しているセッションでは `post-session` フックが実行されません。ランナーは登録解除されず、コントロールプレーンは数分以内にセッションを再キューイングします。停止タイムアウトにその合計を与えることができない場合は、`--defer-shutdown-max-min` を設定しないままにして、ランナーが最初のシグナルでドレインするようにしてください。
+ランナーが終了する前に停止タイムアウトが切れると、まだ保持しているセッションでは `post-session` フックが実行されません。ランナーは登録解除されないため、コントロールプレーンがそれらのセッションを再キューイングするまでに数分、場合によってはそれ以上かかることがあります。停止タイムアウトにその合計を与えることができない場合は、`--defer-shutdown-max-min` を設定しないままにして、ランナーが最初のシグナルでドレインするようにしてください。
 
 <h3 id="what-reaches-a-running-post-session-hook">
   実行中の post-session フックに到達するもの
@@ -720,6 +720,12 @@ claude self-hosted-runner doctor
 
 * **ランナーが環境に表示されない**：ホストが HTTPS 経由で `api.anthropic.com` に到達できること、環境シークレットが最新であること、ホストの時刻が実時間の 5 分以内であることを確認してください。より大きなずれは認証失敗を引き起こします。ランナーは認証失敗時に拒否理由を含む `[runner:fatal]` をログに記録します。
 * **ランナーが `cannot create or write to base directory` で起動時に終了する**：ランナーが `--base-dir` を作成または書き込みできません。これはデフォルトで `/workspace` です。ディレクトリの所有権を修正するか、[ランナー全体でベースディレクトリと容量を同じに保つ](#keep-the-base-directory-and-capacity-identical-across-runners)で説明されているように `--base-dir` を書き込み可能なパスに指定してください。ランナーが代わりにベースディレクトリチェックがタイムアウトしたことを示す `[runner:fatal]` をログに記録する場合、ディレクトリはハングしている NFS または CSI マウント上にあります。権限ではなくマウントヘルスを確認してください。ランナーは `--log-file` を開く前にこれらの起動失敗を stderr に出力するため、ログファイルではなくターミナルまたはプラットフォームのコンテナログで探してください。v2.1.225 より前では、ランナーは起動時にベースディレクトリをチェックしておらず、この設定ミスはピックアップ後にセッションを失敗させました。
+* **ランナーが `RegisterRunner failed:` と TLS 証明書エラーで起動時に終了する**：エラーは、例えば `self signed certificate in certificate chain` のようになります。ランナーは受け取った証明書の背後にある認証局（CA）を信頼していません。これは TLS インスペクションを行うプロキシの背後で発生します。ランナーの環境で [`NODE_EXTRA_CA_CERTS`](/docs/ja/network-config#custom-ca-certificates) をプロキシのルート CA を含む PEM ファイルに設定してください。
+
+  セッションはこれを継承するため、セッション用に再度設定する必要はありません。git はこれを読み取りません。そのプロキシを経由するクローンには、[`GIT_SSL_CAINFO`](#trust-a-private-certificate-authority-with-anthropic-managed-git) も設定してください。
+* **オーケストレーターが TLS 証明書エラーとともに `poll failed:` をログに記録し、再試行し続ける**：オーケストレーターは受け取った証明書の背後にある CA を信頼していません。これは TLS インスペクションを行うプロキシの背後で発生します。オーケストレーターの環境で [`NODE_EXTRA_CA_CERTS`](/docs/ja/network-config#custom-ca-certificates) をプロキシのルート CA を含む PEM ファイルに設定してください。`spawn-runner` フックが起動するランナーにも設定してください。
+
+  例えば、行が `poll failed: self signed certificate in certificate chain — retrying in 1s` で終わることがあり、コロンとダッシュの間には TLS ライブラリの文言が入ります。修正を確認するには、オーケストレーターの [`/healthz`](/docs/ja/self-hosted-environments-reference#health-endpoint) 本体で `connected` が `true` であることを確認してください。
 * **セッションがキューに留まる**：すべてのオンラインランナーは異なる所有者にロックされている可能性があります。各ランナーの `claude_code_self_hosted_runner_locked_account` [メトリクス](/docs/ja/self-hosted-environments-reference#prometheus-metrics)またはその `[runner:health]` ログ行の `locked_account` フィールドをチェックして、誰がそれを保持しているかを確認してください。どちらも、ランナーが `act.email` クレームを含むセッショントークンを発行された後にのみ所有者のメールアドレスを表示します。これは Claude Tag エージェントのセッションでは決して行われません。クレームがない場合、ランナーは `locked_account` シリーズを出力せず、`locked_account=yes` をログに記録します。これはランナーがロックされていることを示しますが、どの所有者にロックされているかは示しません。レプリカを追加するか、既存のランナーがドレインして再起動するのを待ってください。環境がオンデマンドランナーを使用する場合は、代わりにオーケストレーターをチェックしてください。[オンデマンドランナー](/docs/ja/self-hosted-environments-configuration#on-demand-runners)を参照してください。
 * **セッションがピックアップ直後に失敗する**：claude.ai/code でセッションを開いてエラーを確認してください。最も一般的な原因は、ランナーイメージの [git 認証情報](#configure-git)の欠落とインストールされていないビルドツールです。`--use-anthropic-git-proxy` で起動したランナーの場合は、[git プロキシを使用するランナーでセッションの開始に失敗する場合](#when-anthropic-doesnt-serve-a-session)を参照してください。書き込み不可能なベースディレクトリはセッションを失敗させるのではなく、起動時にランナーを停止させます。このリストの **ランナーが `cannot create or write to base directory` で起動時に終了する** エントリを参照してください。
 * **`--use-anthropic-git-proxy` を設定したランナーでセッションの開始に失敗する**：ランナーのログで `access denied by the git proxy`、または `/git_proxy/` を含む `api.anthropic.com` のアドレスを示す git エラーを探してください。Anthropic がそのセッションを処理したかどうかを判断して原因を修正するには、[git プロキシを使用するランナーでセッションの開始に失敗する場合](#when-anthropic-doesnt-serve-a-session)を参照してください。
@@ -741,7 +747,7 @@ claude self-hosted-runner doctor
   v2.1.274 より前では、ランナーは数回の試行後に失敗したフェッチの再試行を停止し、次のスケジュール済みのものを待ちました。失敗したターンはフェッチをトリガーしなかったため、次のスケジュール済みフェッチまで、すべてのターンが 401 で失敗しました。
 * **ポッドがドレイン中に強制終了される**：`terminationGracePeriodSeconds` をランナーが起動時にログに記録する値以上に引き上げてください。[シャットダウンタイミング](#shutdown-timing)を参照してください。
 
-ログが初期化されると、ランナーはそのライフサイクルログ（`[runner:fatal]` 行を含む）を stdout に書き込み、デバッグ出力を stderr に書き込みます。すべて JSON ではなくプレーンテキスト行として。上記のトラブルシューティングエントリで説明されている起動失敗はその前に stderr に出力されます。`--log-file` で両方のストリームをキャプチャします。これにより `self-hosted-runner doctor` がそれらをテールできるようになり、またはプラットフォームのログ収集で。
+ログが初期化されると、ランナーはそのライフサイクルログ（`[runner:fatal]` 行を含む）を stdout に書き込み、デバッグ出力を stderr に書き込みます。すべて JSON ではなくプレーンテキスト行として。上記のトラブルシューティングエントリで説明されているベースディレクトリの失敗はその前に stderr に出力されます。`--log-file` で両方のストリームをキャプチャします。これにより `self-hosted-runner doctor` がそれらをテールできるようになり、またはプラットフォームのログ収集で。
 
 各セッションの子プロセスは個別のデバッグログを書き込みます。失敗時、ランナーはログのテールを claude.ai/code のセッションと一緒に表示します。[`--remove-session-state`](/docs/ja/self-hosted-environments-reference#runner-cli-flags) でランナーを起動しない限り、失敗したセッションのログもディスク上に保持し、ランナーログにそのパスを出力します。
 

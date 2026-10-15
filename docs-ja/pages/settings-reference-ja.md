@@ -1426,7 +1426,7 @@ Claude Code は各エントリを `claude-opus-5-5` などのモデルの正規�
   * `true`: 動的ワークフローが有効になっており、モデルが `xhigh` をサポートする場合、セッションは ultracode でオンで開始されます
   * `false`: セッションは ultracode でオフで開始されます
 * **デフォルト**: 設定解除されているため、ultracode はオフです
-* **セッションごとのオーバーライド**: `/effort ultracode` はこのキーなしで 1 つのセッションで ultracode をオンにし、`/effort ultracode off` はこのキーが `true` の場合、1 つのセッションでそれをオフにします。`--effort ultracode` フラグも 1 つのセッションでそれをオンにし、`xhigh` 努力で、Claude Code v2.1.203 以降が必要です
+* **セッションごとの上書き**: `/effort ultracode` はこのキーなしで 1 つのセッションの ultracode をオンにし、`/effort ultracode off` はこのキーが `true` の場合に 1 つのセッションの ultracode をオフにします。`--effort ultracode` フラグも、1 つのセッションで `xhigh` effort にして ultracode をオンにします
 
 ```json settings.json theme={null}
 {
@@ -3134,6 +3134,7 @@ Claude Code が[メモリ](/docs/ja/memory#exclude-specific-claude-md-files)を�
   * Claude Code の起動またはシンク方法を変更する変数。`CLAUDE_CODE_PROCESS_WRAPPER`、`CLAUDE_CODE_SYNC_SKILLS`、`CLAUDE_CODE_SYNC_PLUGINS`、`CLAUDE_CODE_PLUGIN_CACHE_DIR`、`CLAUDE_CODE_PLUGIN_SEED_DIR` など。
   * 応答のないダイアログのタイマーを設定する変数: [`CLAUDE_CODE_USER_DIALOG_TIMEOUT_MS`、`CLAUDE_AFK_TIMEOUT_MS`、`CLAUDE_AFK_COUNTDOWN_MS`](/docs/ja/env-vars#variables)。
   * 添付ファイルの処理をオフにする [`CLAUDE_CODE_DISABLE_ATTACHMENTS`](/docs/ja/env-vars#variables)。
+  * Claude Code がファイルやディレクトリへの `@` メンションを展開しないようにする [`CLAUDE_CODE_DISABLE_FILE_MENTIONS`](/docs/ja/env-vars#variables)。
 
   v2.1.251 より前は、プロジェクトおよびローカル設定は `HOME` と `XDG_CONFIG_HOME` を除き、このリストのうち Claude Code がファイルを書き込む場所を選択する変数、またはセッションコンテンツをエクスポートする変数も設定できました。v2.1.290 より前は、ダイアログのタイマー変数と `CLAUDE_CODE_DISABLE_ATTACHMENTS` も設定できました。
 * Claude Code のホスティング環境が所有する `CLAUDE_CODE_REMOTE` や `CLAUDE_CODE_ACCOUNT_UUID` などのアイデンティティ変数は、すべてのファイルから無視されます。
@@ -4257,6 +4258,11 @@ Claude Code は git 関連の 2 つの部分をコンテキストとして Claud
 }
 ```
 
+[非対話モード](/docs/ja/headless) または Agent SDK でシステムプロンプトを置き換えると、このキーが `true` の場合でも、セッションはスナップショットなしで開始されます。
+
+* **`-p` 実行**: [`--system-prompt`](/docs/ja/cli-reference#system-prompt-flags) または `--system-prompt-file` を渡すと、プロンプトが置き換えられます。[`--agent`](/docs/ja/sub-agents#invoke-subagents-explicitly) または [`agent`](#agent) 設定で選択した、独自のプロンプトを持つカスタムエージェントを実行した場合も、プロンプトが置き換えられます。[bare モード](/docs/ja/headless#start-faster-with-bare-mode) 以外でスナップショットを保持するには、カスタムエージェントなしで実行し、プロンプトを置き換える代わりに [`--append-system-prompt`](/docs/ja/cli-reference#system-prompt-flags) で指示を追加してください。
+* **[Agent SDK](/docs/ja/agent-sdk/modifying-system-prompts)**: カスタムシステムプロンプトまたはカスタムのメインスレッドエージェントを使用すると、プロンプトが置き換えられます。システムプロンプトを設定しない場合、SDK は最小限のデフォルトを使用し、この場合もセッションはスナップショットなしで開始されます。[bare モード](/docs/ja/headless#start-faster-with-bare-mode) 以外でスナップショットを保持するには、カスタム `agent` なしで `claude_code` プリセットを使用してください。
+
 <h3 id="prurltemplate">
   `prUrlTemplate`
 </h3>
@@ -4745,7 +4751,7 @@ Claude Code に含まれる[スキル](/docs/ja/skills)とワークフローを�
 }
 ```
 
-GitHub エントリは、[オーナーワイルドカード形式](#owner-wildcards) `"owner/*"` を使用して、その GitHub オーナーの下のすべてのリポジトリをブロックできます。これには Claude Code v2.1.223 以降が必要です。`{ "source": "skills-dir" }` を追加して、Claude Code が `~/.claude/skills/` から [`@skills-dir` プラグイン](/docs/ja/plugins/loading#plugins-shared-through-a-repository)を読み込むのを停止し、マーケットプレイスを制限しません。[マネージドマーケットプレイス制限](/docs/ja/plugins/org#restrict-what-users-can-install)を参照してください。
+`github` エントリは、[オーナーワイルドカード形式](#owner-wildcards) `"owner/*"` を使用して、その GitHub オーナーの下のすべてのリポジトリをブロックできます。これには Claude Code v2.1.223 以降が必要です。`{ "source": "skills-dir" }` を追加すると、マーケットプレイスを制限せずに、Claude Code が `~/.claude/skills/` から [`@skills-dir` プラグイン](/docs/ja/plugins/loading#plugins-shared-through-a-repository)を読み込むのを停止できます。[管理マーケットプレイス制限](/docs/ja/plugins/org#restrict-what-users-can-install)を参照してください。
 
 <h3 id="channelsenabled">
   `channelsEnabled`
@@ -4860,8 +4866,8 @@ Claude Code v2.1.229 以降が必要です。
 | `url` | `{ "source": "url", "url": "https://plugins.example.com/marketplace.json", "headers": { "Authorization": "Bearer ${TOKEN}" } }` | `url` 必須; `headers` は認証アクセス用の HTTP ヘッダーを追加します |
 | `file` | `{ "source": "file", "path": "/opt/acme-corp/plugins/marketplace.json" }` | `path` 必須、`marketplace.json` ファイルへの絶対パス |
 | `directory` | `{ "source": "directory", "path": "/opt/acme-corp/approved-marketplaces" }` | `path` 必須、`.claude-plugin/marketplace.json` を含むディレクトリへの絶対パス |
-| `hostPattern` | `{ "source": "hostPattern", "hostPattern": "^github\\.example\\.com$" }` | `hostPattern` 必須、マーケットプレイスホストに対して一致する正規表現 |
-| `pathPattern` | `{ "source": "pathPattern", "pathPattern": "^/opt/approved/" }` | `pathPattern` 必須、`file` および `directory` ソースの `path` に対して一致する正規表現 |
+| `hostPattern` | `{ "source": "hostPattern", "hostPattern": "^github\\.example\\.com$" }` | `hostPattern` 必須、マーケットプレイスホストのどこかに一致する正規表現。ホスト全体に一致させるには `^` と `$` でアンカーします |
+| `pathPattern` | `{ "source": "pathPattern", "pathPattern": "^/opt/approved/" }` | `pathPattern` 必須、`file` および `directory` ソースの `path` のどこかに一致する正規表現。プレフィックスを固定するには `^` で始めます |
 | `skills-dir` | `{ "source": "skills-dir" }` | フィールドなし。`~/.claude/skills/` プラグインスキャンをオプトバックインします |
 
 3 つのソースタイプはテーブルを超えたルールを持ちます:
@@ -4900,7 +4906,7 @@ Claude Code v2.1.229 以降が必要です。
 
 | Rule | `strictKnownMarketplaces` | `blockedMarketplaces` |
 | - | - | - |
-| マッチングソーススペリング | `owner/repo` 形式のみ。同じリポジトリをクローンする git URL は一致しません | `github.com` リポジトリに解決する git URL を含む任意のスペリング |
+| 一致するソースの表記 | `owner/repo` 形式のみ。同じリポジトリをクローンする git URL は一致しません | 同じ github.com リポジトリに解決される git URL を含む任意の表記 |
 | オーナーの大文字と小文字 | 大文字と小文字を区別します | 大文字と小文字を区別しません |
 | `ref` | 正確なエントリルールに従います: `ref` を持つエントリはその正確な ref を持つソースのみと一致し、1 つを持たないエントリは ref を指定しないソースのみと一致します | `ref` を持たないエントリは、一致するリポジトリのすべての ref をブロックします |
 | `path` | 正確なエントリルールより緩い: `path` を持つエントリはその正確な値を必要とし、1 つを持たないエントリはリポジトリ内のすべてのパスと一致します | `path` を持たないエントリは、一致するリポジトリのすべてのパスをブロックします |
@@ -5014,7 +5020,7 @@ Claude Code v2.1.229 以降が必要です。
   `strictPluginOnlyCustomization.agents`
 </h3>
 
-`agents` サーフェスをロックします。Claude Code は `~/.claude/agents/` および `.claude/agents/` からのエージェントの読み込みを停止し、プラグインエージェント、組み込みエージェント、およびマネージドポリシーディレクトリ内のエージェントの読み込みを続けます。
+`agents` サーフェスをロックします。Claude Code は `~/.claude/agents/`、`.claude/agents/`、および `--add-dir` ディレクトリからのエージェントの読み込みを停止します。プラグインエージェント、組み込みエージェント、および管理ポリシーディレクトリ内のエージェントは引き続き読み込みます。
 
 * **Scope**: [`Managed`](#scopes)
 * **Type**: [`strictPluginOnlyCustomization`](#strictpluginonlycustomization) 配列内の文字列 `"agents"`
@@ -5136,7 +5142,7 @@ Claude Code v2.1.229 以降が必要です。
 
 * **`github`**: GitHub リポジトリ、`repo` を使用
 * **`git`**: 任意の git URL、`url` を使用
-* **`url`**: `marketplace.json` ファイルへの直接 URL、`url` とオプションの `headers` および `headersHelper` を使用して認証アクセスします。`headersHelper` は値が短命すぎてリストできないヘッダーを出力するコマンドに名前を付け、Claude Code v2.1.238 以降が必要です
+* **`url`**: `marketplace.json` ファイルへの直接 URL、`url` と、認証アクセス用のオプションの `headers` および `headersHelper` を使用。`headersHelper` は、値の有効期間が短すぎて `headers` に列挙できないヘッダーを出力するコマンドを指定し、Claude Code v2.1.238 以降が必要です
 * **`file`**: `marketplace.json` ファイルへのローカルパス、`path` を使用
 * **`directory`**: ローカルファイルシステムパス、`path` を使用。開発用、または組織が[各マシンにデプロイするマーケットプレイス](/docs/ja/plugins/mods/admin#install-your-organizations-mods)に使用します。
 * **`settings`**: ホストされたリポジトリなしで設定ファイルに直接宣言されたインラインマーケットプレイス、`name` および `plugins` を使用
@@ -5147,7 +5153,7 @@ Claude Code v2.1.229 以降が必要です。
 
 `source` オブジェクト内の `skipLfs` フィールドは受け入れられ、効果がありません。v2.1.274 より前では、Claude Code は `"skipLfs": true` を設定しない限り LFS コンテンツをダウンロードしました。
 
-URL ソースの場合、`headers` の認証情報が期限切れになり、コマンドが新しい認証情報を生成する必要がある場合は、`source` オブジェクト内に `headersHelper` を設定します。Claude Code v2.1.238 以降が必要です。コマンドが出力する必要があるもの、および Claude Code がそれを実行する場所については、[headersHelper コマンドを書く](/docs/ja/plugins/host-marketplace#write-the-headershelper-command)を参照してください。Claude Code が headersHelper コマンドをスキップするか、その出力をドロップする場合については、[Claude Code が headersHelper コマンドをスキップするか、その出力をドロップする場合](/docs/ja/plugins/host-marketplace#when-claude-code-skips-a-headershelper-command-or-drops-its-output)を参照してください。`https://` マーケットプレイス URL に `headersHelper` を設定すると、Claude Code は 2 つのポイントでコマンドを実行し、1 回の実行の出力を最大 60 秒間再利用します:
+`url` ソースの場合、`headers` の認証情報が期限切れになり、コマンドで新しい認証情報を生成する必要があるときは、`source` オブジェクト内に `headersHelper` を設定します。Claude Code v2.1.238 以降が必要です。コマンドが出力する必要があるもの、および Claude Code がそれを実行する場所については、[headersHelper コマンドを書く](/docs/ja/plugins/host-marketplace#write-the-headershelper-command)を参照してください。Claude Code がコマンドを実行しない場合については、[Claude Code が headersHelper コマンドをスキップする場合](/docs/ja/plugins/host-marketplace#when-claude-code-skips-a-headershelper-command-or-drops-its-output)を参照してください。`https://` マーケットプレイス URL に `headersHelper` を設定すると、Claude Code は 2 つの時点でコマンドを実行し、1 回の実行の出力を最大 60 秒間再利用します:
 
 * そのマーケットプレイスの `marketplace.json` の各フェッチの前（後続のリフレッシュを含む）。Claude Code はそのフェッチで出力されたヘッダーを送信します。
 * マーケットプレイス URL のオリジン上の各プラグインアーカイブダウンロードの前。つまり、同じスキーム、ホスト、ポート。Claude Code はそのダウンロードで出力を送信し、他のダウンロードはヘッダーを取得しません。
@@ -5223,7 +5229,7 @@ Claude Code v2.1.232 以降では、`extraKnownMarketplaces` を `additionalMark
 
 組み込みプラグインは、`@builtin` サフィックス付きで同じキーの下にオプションを保存します。たとえば、Claude Code が `AGENTS.md` ファイルを読み込むかどうかを制御する [**Project instructions**](/docs/ja/memory#choose-which-instruction-files-load) 設定は `pluginConfigs["cc-plugin-agents-md@builtin"].options.instructionFiles` です。v2.1.285 より前では、このプラグインの ID は `agents-md@builtin` でした。それ以降のバージョンは、どちらの ID の下のエントリも読み込みます。
 
-Claude Code はプロジェクトおよびローカルエントリを無視します。これらの値をプラグインフック、MCP、および LSP 設定に置き換えるため、クローンされたリポジトリはそれらを提供できません。v2.1.207 より前では、プロジェクトおよびローカル設定も読まれていました。
+Claude Code はこれらの値をプラグインのフック、MCP、および LSP の設定に代入するため、クローンされたリポジトリがそれらを提供できてはならず、プロジェクトおよびローカルのエントリを無視します。
 
 <h3 id="prependplugins">
   `prependPlugins`
@@ -5728,7 +5734,7 @@ git sparse-checkout を通じて各 worktree にリストされたディレク�
 }
 ```
 
-git リポジトリの外では、失敗する [`WorktreeCreate` フック](/docs/ja/worktrees#non-git-version-control)がブロックを解放し、セッションが作業ディレクトリをその場で編集できるようにします。その解放には Claude Code v2.1.203 以降が必要です。
+git リポジトリの外では、失敗する [`WorktreeCreate` フック](/docs/ja/worktrees#non-git-version-control)がブロックを解放し、セッションが作業ディレクトリをその場で編集できるようにします。
 
 <h3 id="worktree-location">
   `worktree.location`
