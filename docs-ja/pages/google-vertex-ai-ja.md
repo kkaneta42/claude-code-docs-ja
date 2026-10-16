@@ -217,7 +217,7 @@ export VERTEX_REGION_CLAUDE_4_6_SONNET=europe-west1
 * `VERTEX_REGION_CLAUDE_*`：Claude Code は `CLOUD_ML_REGION` にフォールバックします。
 * `CLOUD_ML_REGION`：Claude Code は `us-east5` にフォールバックします。
 
-[prompt caching](/docs/ja/prompt-caching)は自動的に有効になります。これを無効にするには、`DISABLE_PROMPT_CACHING=1` を設定します。デフォルトの 5 分ではなく 1 時間のキャッシュ TTL をリクエストするには、`ENABLE_PROMPT_CACHING_1H=1` を設定します。1 時間の TTL でのキャッシュ書き込みはより高いレートで課金されます。メインの会話と Claude Code が外部で行うリクエストに異なる TTL を設定するには、[TTL を自分で選択](/docs/ja/prompt-caching#choose-the-ttl-yourself)してください。
+[プロンプトキャッシュ](/docs/ja/prompt-caching)は自動的に有効になります。これを無効にするには、`DISABLE_PROMPT_CACHING=1` を設定します。デフォルトの 5 分ではなく 1 時間のキャッシュ TTL をリクエストするには、`ENABLE_PROMPT_CACHING_1H=1` を設定します。1 時間の TTL でのキャッシュ書き込みはより高いレートで課金されます。メインの会話と Claude Code が外部で行うリクエストに異なる TTL を設定するには、[TTL を自分で選択](/docs/ja/prompt-caching#choose-the-ttl-yourself)してください。
 
 レート制限を高くするには、Google Cloud サポートに連絡してください。Google Cloud の Agent Platform を使用する場合、認証が Google Cloud 認証情報を通じて処理されるため、`/logout` コマンドは利用できません。
 

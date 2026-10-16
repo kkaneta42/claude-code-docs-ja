@@ -122,7 +122,7 @@ Anthropic ホスト型環境では、セッションは環境の値をセッシ�
 
 <Steps>
   <Step title="環境のネットワークシークレットを開く">
-    [claude.ai/code](https://claude.ai/code) で [環境を編集用に開きます](#configure-your-environment)。**環境を編集** ダイアログで、**ネットワークシークレット** セクションを見つけます。環境に既にあるシークレットが表示され、それぞれが適用されるホストが表示されます。
+    [claude.ai/code](https://claude.ai/code) で [環境を編集用に開きます](#configure-your-environment)。**クラウド環境を編集** ダイアログで、**ネットワークシークレット** セクションを見つけます。環境に既にあるシークレットが表示され、それぞれが適用されるホストが表示されます。
   </Step>
 
   <Step title="シークレットを追加する">
@@ -559,7 +559,7 @@ apt update && apt install -y shellcheck
 
 `matcher` はフックを `startup` および `resume` イベントに制限し、`$CLAUDE_PROJECT_DIR` はリポジトリルートに解決されるため、フックはセッションの作業ディレクトリに関係なくスクリプトを見つけます。
 
-次に、`scripts/install_pkgs.sh` でスクリプトを作成します。クラウドの外では直ちに終了し、依存関係をインストールします。
+次に、`scripts/install_pkgs.sh` でスクリプトを作成します。クラウドの外では直ちに終了し、依存関係をインストールします。`package.json`、`package-lock.json`、およびスクリプト自体が前回のインストール成功以降変更されていない間は、`npm install` をスキップします。
 
 ```bash theme={null}
 #!/bin/bash
@@ -568,14 +568,29 @@ if [ "$CLAUDE_CODE_REMOTE" != "true" ]; then
   exit 0
 fi
 
-npm install
+cd "$CLAUDE_PROJECT_DIR" || exit 1
+hashes=node_modules/.install_pkgs.sha256
+
+if ! sha256sum --check --status "$hashes" 2>/dev/null; then
+  # Delete the old hashes first, so a failed install runs again next time
+  rm -f "$hashes"
+  if npm install; then
+    sha256sum scripts/install_pkgs.sh package.json package-lock.json > "$hashes" || rm -f "$hashes"
+  fi
+fi
+
+# pip skips requirements that are already satisfied
 pip install -r requirements.txt
 exit 0
 ```
 
 `CLAUDE_CODE_REMOTE` チェックは、インストールをクラウドセッションにスコープするものです。セッション VM の環境は変数を `true` として持ち、ローカルでは決して `true` ではないため、ラップトップではスクリプトは何もインストールする前に終了します。
 
-2 つのファイルを合わせると、すべてのクラウドセッションは起動時に新しい `npm install` と `pip install` を取得し、ローカルセッションは影響を受けません。
+`npm install` が成功したことを確認するには、クラウドセッションを開始し、Claude に `node_modules/.install_pkgs.sha256` を表示するよう依頼します。このファイルには、3 つのファイルそれぞれのハッシュが記載されています。ファイルが存在しない場合は、Claude に `npm install` を実行してエラーを報告するよう依頼してください。
+
+<Note>
+  `npm install` がワークスペースの `package.json`、`.npmrc`、`postinstall` スクリプトの入力など、他のファイルを読み込む場合は、ハッシュを保存する `sha256sum` コマンドにそれらを追加してください。そうしないと、それらのファイルのいずれかが変更された後も古いパッケージが残ったままになります。
+</Note>
 
 <h4 id="limitations-in-cloud-sessions">
   クラウドセッションの制限
@@ -587,7 +602,7 @@ SessionStart フックはクラウドでローカルと同じように動作し�
 * **クラウドのみのスコープなし**：フックはローカルとクラウドセッションの両方で実行されます。ローカル実行をスキップするには、[依存関係インストールスクリプト](#install-dependencies-with-a-sessionstart-hook) のように `CLAUDE_CODE_REMOTE` 環境変数が `true` でない限り早期に終了します。
 * **ネットワークアクセスが必要**：インストールコマンドはパッケージレジストリに到達する必要があります。環境が **None** ネットワークアクセスを使用する場合、これらのフックは失敗します。**Trusted** の下の [デフォルト許可リスト](#default-allowed-domains) は npm、PyPI、RubyGems、crates.io をカバーします。
 * **プロキシ互換性**：Anthropic ホスト環境では、すべての送信トラフィックは [セキュリティプロキシ](#security-proxy) を通じて渡されます。一部のパッケージマネージャーはこのプロキシで正しく機能しません。Bun は既知の例です。[セルフホスト環境](/docs/ja/self-hosted-environments-deploy#default-deny-egress) では、送信トラフィックは代わりに独自のネットワーク境界を通じて行きます。
-* **スタートアップレイテンシを追加**：フックはセッションが開始または再開されるたびに実行されます。[環境キャッシング](#environment-caching) の恩恵を受けるセットアップスクリプトとは異なります。依存関係が既に存在するかどうかをチェックして再インストールを避けることで、インストールスクリプトを高速に保ちます。
+* **スタートアップレイテンシを追加**：フックはセッションが開始または再開されるたびに実行されます。[環境キャッシング](#environment-caching) の恩恵を受けるセットアップスクリプトとは異なります。[依存関係インストールスクリプト](#install-dependencies-with-a-sessionstart-hook) のように、既に完了している作業をスキップすることで、インストールスクリプトを高速に保ちます。
 
 ベースイメージをカスタマイズするには、セットアップスクリプトを使用して [提供されたイメージ](#installed-tools) の上にインストールするか、`docker compose` で Claude と一緒にコンテナとして独自のイメージを実行します。ベースイメージ全体を置き換えることはまだサポートされていません。
 

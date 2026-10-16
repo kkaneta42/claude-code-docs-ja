@@ -57,7 +57,7 @@ Owner は GHES インスタンスを Claude Code に 1 回接続します。Clau
   </Step>
 
   <Step title="Code Review を有効にする">
-    [claude.ai/admin-settings/claude-code](https://claude.ai/admin-settings/claude-code) にアクセスし、GHES リポジトリの [Code Review](/docs/ja/code-review#set-up-code-review) を github.com と同じ設定を使用して有効にします。
+    [claude.ai/admin-settings/claude-code](https://claude.ai/admin-settings/claude-code) にアクセスし、GHES リポジトリの [Code Review](/docs/ja/code-review-setup) を github.com と同じ設定を使用して有効にします。
   </Step>
 </Steps>
 

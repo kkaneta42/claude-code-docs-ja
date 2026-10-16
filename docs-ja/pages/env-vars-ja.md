@@ -333,7 +333,7 @@ Claude Code はスタートアップ時にシェル環境変数を読み込む�
 | `CLAUDE_CODE_IDLE_COMPACT_MIN_TOKENS` | [アイドル時のコンテキスト圧縮](/docs/ja/settings-reference#idlecompaction)が会話に適用されるコンテキストサイズ（トークン数）（デフォルト: `200000`）。正の整数を受け付け、それ以外は無視されます。`100000` 未満の値は、最小しきい値である `100000` に引き上げられます。アイドル時の圧縮は、条件を満たす会話ではデフォルトでオンです。オフにするには、`idleCompaction` を `false` に設定してください。Claude Code v2.1.290 以降が必要です |
 | `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` | Agent ツールが新たな生成を拒否するまでに、1 つのセッションで同時に実行できる [サブエージェント](/docs/ja/sub-agents#concurrent-subagent-limit) の数（デフォルト: 20）。正の整数を数字のみで受け付けます。それ以外の値は無視されるため、この変数で上限を調整することはできますが、無効にすることはできません。Claude Code v2.1.217 以降が必要です |
 | `CLAUDE_CODE_MAX_CONTEXT_TOKENS` | Claude Code がアクティブなモデルについて想定するコンテキストウィンドウのサイズを上書きします。v2.1.193 以降、適用方法は Claude Code がモデル ID をどのように解決するかによって異なります。[ゲートウェイまたはカスタムモデル ID のウィンドウを修正する](/docs/ja/model-config#correct-the-window-for-a-gateway-or-custom-model-id) を参照してください。`ANTHROPIC_BASE_URL` を介してルーティングするモデルのコンテキストウィンドウが、その名前に対応する組み込みのサイズと一致しない場合に使用します |
-| `CLAUDE_CODE_MAX_MCP_DESCRIPTION_LENGTH` | Claude Code がモデルに送信する、各 MCP ツールの説明と各 MCP サーバーの指示の最大長（文字数）。設定した値は、両方の [デフォルトの制限](/docs/ja/mcp#for-mcp-server-authors)（4096、および Claude がツール検索を通じて読み込むツールの説明については 16384）を置き換えます。Claude Code はそれより長いテキストを切り詰めます。数字のみの正の整数を受け付けます。それ以外は無視され、デフォルトが適用されます。Claude Code v2.1.280 以降が必要です |
+| `CLAUDE_CODE_MAX_MCP_DESCRIPTION_LENGTH` | Claude Code がモデルに送信する MCP ツールの説明と MCP サーバーの指示の最大長（文字数）。設定した値は、両方の[デフォルトの制限](/docs/ja/mcp#for-mcp-server-authors)、つまり 4096 と、Claude がツール検索で読み込むツールの説明に対する 16384 を置き換えます。正の整数を数字のみで受け付けます。それ以外は無視され、デフォルトが適用されます。Claude Code v2.1.280 以降が必要です |
 | `CLAUDE_CODE_MAX_OUTPUT_TOKENS` | ほとんどのリクエストの最大出力トークン数を設定します。デフォルトと上限はモデルによって異なります。[最大出力トークン](https://platform.claude.com/docs/en/about-claude/models/overview#latest-models-comparison) を参照してください。モデルの上限を超える値は、Claude Code によって上限まで引き下げられます。Claude Code が既知のモデルに解決できないモデル ID の場合、デフォルトは 32000、上限は 128000 です。この値を増やすと、[自動圧縮](/docs/ja/costs#reduce-token-usage) が発生するまでに利用できる実質的なコンテキストウィンドウが小さくなります |
 | `CLAUDE_CODE_MAX_RETRIES` | 失敗した API リクエストを再試行する回数を上書きします（デフォルト: 10）。v2.1.186 以降は上限が 15 です。v2.1.199 以降は、`CLAUDE_CODE_RETRY_WATCHDOG` によってデフォルトが引き上げられ、上限が撤廃されます。より長い障害を待ち続ける必要がある無人セッションでは、代わりに `CLAUDE_CODE_RETRY_WATCHDOG` を設定してください |
 | `CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION` | v2.1.224 で削除され、現在は何も行いません。以前は、1 つのセッションで Claude が Agent ツールで生成できる [サブエージェント](/docs/ja/sub-agents) の総数を制限していました（デフォルト: 200）。上限を超えて生成しようとすると `Subagent spawn limit reached` で失敗していました。[同時実行サブエージェントの制限](/docs/ja/sub-agents#concurrent-subagent-limit) と [深さの制限](/docs/ja/sub-agents#let-subagents-spawn-their-own-subagents) は引き続き適用されます |
@@ -599,6 +599,7 @@ Claude Code の一部の機能は、Anthropic から取得する機能フラグ�
 * [`/skill-doctor`](/docs/ja/skills#find-unused-skills) を実行する、またはそのレポートを `/plugin` の **Stats** タブで開く
 * claude.ai アカウントで有効にした[スキル](/docs/ja/skills#where-synced-skills-load)と[プラグイン](/docs/ja/plugins/loading#synced-plugins)をターミナルセッションに同期する
 * [You should know mod](/docs/ja/interactive-mode#you-should-know-suggestions) をオンにする
+* VS Code 拡張機能のチャットパネルで [mod](/docs/ja/plugins/mods/overview#where-mods-run) が描画する内容を表示する。mod のフックは引き続き実行されます
 * [アドバイザーツール](/docs/ja/advisor#requirements)を使用する
 * [アーティファクトへのコメント](/docs/ja/artifacts#collect-comments-on-an-artifact)を読む、または返信する
 * Claude に[別の組織の公開アーティファクト](/docs/ja/artifacts#read-an-artifact-shared-with-you)を読ませる

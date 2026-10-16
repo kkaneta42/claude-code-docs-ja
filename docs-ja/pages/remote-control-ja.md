@@ -72,6 +72,7 @@ CLI、[Claude Desktop アプリ](/docs/ja/desktop)、または VS Code 拡張機
     | `-d`, `--debug[=<filter>]` | サーバーのデバッグログをオンにします。オプションでカテゴリでフィルタリングできます。フィルタは `=` 形式でのみ渡します（例：`--debug=api,hooks`）。Claude Code v2.1.282 以降が必要です。 |
     | `--debug-file <path>` | デバッグログを指定されたファイルに書き込みます。 |
     | `--verbose` | 詳細な接続とセッションログを表示します。 |
+    | `--sandbox`, `--no-sandbox` | v2.1.300 で削除されました。どちらかのフラグを渡すと、サーバーは起動せずに[エラーで終了](/docs/ja/errors#sandbox-is-not-supported-by-claude-remote-control)します。 |
 
     `remote-control` の前にグローバル `claude` フラグを渡すか、ラッパースクリプトが 1 つを追加する場合、Claude Code はそのフラグをサーバーが作成するセッションに引き継ぎません。Claude Code は `--verbose` や `--model` など、そのフラグを削除しても何が起こるかが変わらないことが既知の場合にのみフラグを通します。他のフラグ（`--settings` など）の場合、Claude Code は [起動を拒否](/docs/ja/errors#not-carried-over-to-the-sessions-remote-control-starts)し、削除するフラグを名前で指定します。
 

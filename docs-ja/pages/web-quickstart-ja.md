@@ -103,7 +103,7 @@ GitHub への接続は 1 回限りのステップです。既に GitHub CLI を�
 既にブラウザで GitHub を接続している場合、`/web-setup` は続行すると cloud セッションの接続が置き換わることを警告します。
 
 <Note>
-  [Zero Data Retention](/docs/ja/zero-data-retention) が有効な Organization、または [HIPAA 構成](/docs/ja/hipaa-setup) が適用されている Organization は、`/web-setup` または他のクラウドセッション機能を使用できません。GitHub CLI がインストールされていない、または認証されていない場合、Claude Code はブラウザオンボーディングフローを開きます。
+  [Zero Data Retention](/docs/ja/zero-data-retention) が有効な組織、または [HIPAA 構成](/docs/ja/hipaa-setup) が適用されている組織は、`/web-setup` または他のクラウドセッション機能を使用できません。[顧客管理の暗号化キー](https://platform.claude.com/docs/en/manage-claude/cmek)（CMEK）を使用している組織も、クラウドセッションを開始できません。GitHub CLI がインストールされていない、または認証されていない場合、Claude Code はブラウザオンボーディングフローを開きます。
 </Note>
 
 <Steps>

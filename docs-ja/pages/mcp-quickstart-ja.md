@@ -378,6 +378,8 @@ Claude Code がプロジェクトスコープのサーバーを初めて見る�
     ```powershell theme={null}
     $env:MCP_TIMEOUT = "60000"; claude
     ```
+
+    v2.1.299 より前は、稼働中の HTTP サーバーへの一部の接続が、`MCP_TIMEOUT` に関係なくスタートアップ時にタイムアウトしていました。これらのバージョンを使用していて、制限を引き上げた後も稼働中の HTTP サーバーがタイムアウトする場合は、[Claude Code を更新](/docs/ja/setup#update-claude-code)してください。
   </Accordion>
 
   <Accordion title="サーバーは既に存在します">

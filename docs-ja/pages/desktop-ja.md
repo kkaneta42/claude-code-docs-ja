@@ -207,7 +207,7 @@ Claude はコメントを読み取り、要求された変更を加えます。�
 * **Walk through in diff** をクリックすると、差分ビューが開き、結果を 1 つずつ確認できます。現在の差分内の結果は該当する行に表示され、そこで **Fix this one** をクリックするか、結果を却下できます。
 * **Apply fixes** をクリックすると、まだ未対応の結果を修正するよう Claude に依頼します。
 
-どのセッションでも、プロンプトボックスで Claude にレビュー結果の修正を依頼することもできます。`/code-review` が確認する内容と受け付ける引数については、[差分をローカルでレビューする](/docs/ja/code-review#review-a-diff-locally)を参照してください。
+どのセッションでも、プロンプトボックスで Claude にレビュー結果の修正を依頼することもできます。`/code-review` が確認する内容と受け付ける引数については、[`/code-review` でローカルにレビューする](/docs/ja/code-review-local)を参照してください。
 
 <h3 id="monitor-pull-request-status">
   プルリクエストステータスを監視する
@@ -1338,6 +1338,82 @@ worktree を持つセッションをアーカイブする前に、[セッショ�
 
 リモートマシンに誰が接続したかを確認するには、そのマシン上の SSH サーバーのログを読みます。ログでは、Desktop からのログインはターミナルからのログインと同じように表示されます。macOS または Linux の Desktop では、エントリはセッションごとではなく、Desktop が接続するたびに記録されます。
 
+Desktop の SSH 接続は、Claude Code の[メトリクスとイベント](/docs/ja/monitoring-usage#available-metrics-and-events)には含まれません。そこから SSH セッションがどのリモートマシンで実行されたかを確認するには、[Desktop SSH セッションにテレメトリを関連付ける](/docs/ja/monitoring-usage#attribute-telemetry-to-desktop-ssh-sessions)を参照してください。Desktop 自体の接続記録については、[SSH の問題について Desktop のログを取得する](#get-desktops-logs-for-an-ssh-problem)を参照してください。
+
+<h4 id="connections-that-close-before-login">
+  ログイン前に閉じる接続
+</h4>
+
+SSH サーバーのログに、ログイン前に閉じる接続が記録されている場合、それは Desktop による SSH ポートのテストである可能性があります。Desktop は、たとえばマシンへの接続が失敗した後などに、マシンが応答するかどうかをテストします。ポートへの接続を開き、何も送信せずにすぐに閉じます。テストは 1 回の場合もあれば、たとえば約 2 分間に 8 回など、連続して複数回行われる場合もあります。
+
+そのような接続に対してアドレスを禁止または拒否する仕組みがない場合は、Desktop のテストについて何もする必要はありません。Desktop の接続元アドレスが拒否または禁止される場合は、[SSH サーバー自体がそのアドレスを拒否しているかどうか](#check-whether-the-ssh-server-itself-refuses-the-address)と、[fail2ban が Desktop のテストをカウントしているかどうか](#check-whether-fail2ban-counts-desktops-tests)を確認してください。
+
+<h5 id="recognize-a-test-in-the-ssh-server’s-log">
+  SSH サーバーのログでテストを識別する
+</h5>
+
+ログの行を、Linux 上の OpenSSH サーバーがデフォルトの `LogLevel` でテストについて書き込む行と、サーバーのバージョンに対応する行で比較してください。Desktop が接続を閉じる前にサーバーのグリーティングが届いた場合は、代わりに最後の列の行が表示されることがあります。
+
+| OpenSSH のバージョン | テストの行 | グリーティングが先に届いた場合の行 |
+| - | - | - |
+| 6.6 から 7.9 | `Did not receive identification string from 203.0.113.7` を含む行 | 同じ行 |
+| 8.0 から 8.2 | `error: kex_exchange_identification: Connection closed by remote host` | `error: kex_exchange_identification: read: Connection reset by peer` |
+| 8.3 から 9.4 | `error: kex_exchange_identification: Connection closed by remote host`、続いて `Connection closed by 203.0.113.7 port 51234` | `error: kex_exchange_identification: read: Connection reset by peer`、続いて `Connection reset by 203.0.113.7 port 51234` |
+| 9.5 から 10.2 | `Connection closed by 203.0.113.7 port 51234` | `error: kex_exchange_identification: read: Connection reset by peer`、続いて `Connection reset by 203.0.113.7 port 51234` |
+| 10.3 から 10.5 | `Connection closed by 203.0.113.7 port 51234 [preauth]` | `error: kex_exchange_identification: read: Connection reset by peer [preauth]`、続いて `Connection reset by 203.0.113.7 port 51234 [preauth]` |
+
+ポートを開いて閉じる他のプログラムも、同じ行を残すことがあります。行にアドレスがある場合は、それが Desktop を使用するコンピューターの接続元アドレスであることを確認してください。
+
+8.0 から 8.2 の行にはアドレスがありません。アドレスを取得するには、`sshd_config` で `LogLevel VERBOSE` を設定し、root として `sshd -T | grep -i loglevel` を実行します。`loglevel VERBOSE` と出力された場合は、SSH サーバーをリロードします。その後、テストの行の前にある `Connection from 203.0.113.7 port 51234` を含む行を探してください。
+
+<a id="check-whether-the-ssh-server-itself-refuses-the-address" />
+
+<h5 id="check-whether-the-ssh-server-itself-refuses-the-address">
+  SSH サーバー自体がアドレスを拒否しているかどうかを確認する
+</h5>
+
+Desktop を使用する多数のコンピューターが共有するアドレスからの接続が拒否される場合は、SSH サーバーのログで次のように終わる行を探してください。
+
+```text theme={null}
+drop connection #0 from [203.0.113.7]:51234 on [192.0.2.10]:22 penalty: connections without attempting authentication
+```
+
+デフォルトの `LogLevel` では、OpenSSH 9.8 以降は、Desktop のテストのようにログインを試みずに閉じた接続を理由にアドレスを拒否する際に、このような行を書き込むことがあります。デフォルト設定では、数回のテストだけでこのような行が表示されることはありません。
+
+拒否を防ぐには、`sshd_config` で `PerSourcePenaltyExemptList` を接続元のアドレスに設定します（例: `PerSourcePenaltyExemptList 203.0.113.7`）。サーバーはそれらのアドレスに対して、ログイン失敗に対するものを含め、どのペナルティも適用しなくなります。ファイルを確認するには、root として `sshd -T | grep -i persourcepenalt` を実行します。リストが出力された場合は、SSH サーバーをリロードしてください。
+
+<a id="check-whether-fail2ban-counts-desktops-tests" />
+
+<h5 id="check-whether-fail2ban-counts-desktop’s-tests">
+  fail2ban が Desktop のテストをカウントしているかどうかを確認する
+</h5>
+
+fail2ban 0.10.5 以降が Desktop の接続元アドレスを禁止した場合は、`jail.conf`、`jail.local`、または `jail.d/` の下で jail のモードを確認します。
+
+* **角かっこ内でモードを指定する `filter` 行**（`filter = sshd[mode=aggressive]` など）がある場合: そのモードを使用します。
+* **標準の `filter` 行**（`[mode=%(mode)s]`）のみの場合: `mode` 行を使用し、ない場合は `normal` を使用します。
+
+モードが `normal` の場合、fail2ban は Desktop のテストの行をカウントしないため、禁止の別の原因を探してください。
+
+それ以外のモードの場合は、自分のログの行をリモートマシン上のファイルにコピーします。各行を日付から末尾まで丸ごとコピーし、テストが 2 行を残す場合は両方の行をコピーします。そこで、ファイルと jail のモード（たとえば `aggressive`）を指定して `fail2ban-regex` を実行します。
+
+```bash theme={null}
+fail2ban-regex -o ip lines.log "sshd[mode=aggressive]"
+```
+
+fail2ban がカウントする失敗ごとに、コマンドは `203.0.113.7` のようにアドレスを 1 行ずつ出力します。その場合は、[禁止を防いで](#prevent-a-ban-by-fail2ban)ください。何も出力されない場合、fail2ban はそのモードではそれらの行を 1 つもカウントしていないため、禁止の別の原因を探してください。
+
+<a id="prevent-a-ban-by-fail2ban" />
+
+<h5 id="prevent-a-ban-by-fail2ban">
+  fail2ban による禁止を防ぐ
+</h5>
+
+fail2ban が Desktop のテストを理由にアドレスを禁止しないようにするには、jail の 2 つの設定のいずれかを変更します。どちらにも代償があります。
+
+* **`mode`**: jail で設定されている箇所（`mode` 行、または `filter = sshd[mode=aggressive]` のような行の角かっこ内）で `normal` に設定します。ログインを試みずに接続して切断するクライアントのカウントなど、他のモードでのみ行われるカウントはすべて行われなくなります。
+* **`ignoreip`**: 接続元のアドレスに設定します（例: `ignoreip = 203.0.113.7`）。fail2ban は、ログイン失敗を含め、それらのアドレスからのものを一切カウントしなくなります。
+
 <h4 id="use-mcp-servers-set-up-on-the-remote-machine">
   リモートマシンで設定した MCP サーバーを使用する
 </h4>
@@ -1843,6 +1919,8 @@ MCP サーバートグルが応答しない場合、または Windows でサー�
 | `Claude Code won't start on <host>` | `[CLI_UNRESPONSIVE]` | 1 分待ってから、もう一度試してください。失敗が続く場合は、メッセージに示されているコマンドをリモートマシンで実行し、そこで Claude Code が応答するかどうかを確認します。 |
 
 その他のメッセージについては、[リモートマシンの要件](#remote-machine-requirements-for-ssh-sessions)を確認してください。
+
+<a id="get-desktops-logs-for-an-ssh-problem" />
 
 <h3 id="get-desktop’s-logs-for-an-ssh-problem">
   SSH の問題について Desktop のログを取得する

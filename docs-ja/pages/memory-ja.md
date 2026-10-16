@@ -648,6 +648,7 @@ CLAUDE.md のコンテンツは、システムプロンプト自体の一部で�
 デバッグするには：
 
 * `/context` を実行し、**Memory files** の下のリストを確認して、起動時に読み込まれるはずの CLAUDE.md と CLAUDE.local.md ファイルを確認します。そこにないファイルがある場合、Claude はそれを見ることができません。`/memory` を使用してファイルを開いて編集します。
+* `Instruction file not loaded` という通知が表示された場合は、[その意味と対処方法](/docs/ja/errors#instruction-file-not-loaded) を参照してください。
 * 作業ディレクトリのサブディレクトリにある `CLAUDE.md` は、起動時ではなくオンデマンドで読み込まれるため、**Memory files** の下には表示されません。読み込まれると、そのパスを含む `Loaded` 行がターミナルに表示されます。新しいファイルをテストするには、Claude に書き込みを依頼するのではなくシェルから作成し、そのサブディレクトリ内のファイルを読むよう Claude に依頼します。
 * 関連する CLAUDE.md がセッションに読み込まれる場所にあることを確認します（[CLAUDE.md ファイルをどこに配置するかを選択する](#choose-where-to-put-claude-md-files) を参照）。
 * 指示をより具体的にします。「Use 2-space indentation」は「format code nicely」よりも効果的です。

@@ -13,6 +13,8 @@ Claude Code は、組織が開発者の使用パターンを理解し、貢献�
 | Claude for Teams / Enterprise | [claude.ai/analytics/claude-code](https://claude.ai/analytics/claude-code) | 使用メトリクス、GitHub 統合による貢献メトリクス、リーダーボード、データエクスポート | [詳細](#access-analytics-for-team-and-enterprise) |
 | API（Claude Console） | [platform.claude.com/claude-code](https://platform.claude.com/claude-code) | 使用メトリクス、支出追跡、チームインサイト | [詳細](#access-analytics-for-api-customers) |
 
+Code Review には専用のダッシュボードがあります。レビューのアクティビティと支出については、[使用状況を表示する](/docs/ja/code-review-costs#view-usage)を参照してください。
+
 <h2 id="access-analytics-for-team-and-enterprise">
   Team と Enterprise の分析にアクセスする
 </h2>

@@ -398,9 +398,9 @@ API トリガーや GitHub トリガーによって開始された実行を含�
 
 各ルーチンは、ネットワークアクセス、環境変数、およびセットアップスクリプトを制御する [クラウド環境](/docs/ja/cloud-environments)を使用します。ルーチンはすべての実行でその環境のネットワークポリシーを継承します。
 
-**Default** 環境は **Trusted** ネットワークアクセスを使用します。これにより、セッションのネットワークを通じて [デフォルト許可リスト](/docs/ja/cloud-environments#default-allowed-domains)のみが許可されます。そのパスの外のホストへのリクエストは `403` と `x-deny-reason: host_not_allowed` で失敗します。MCP コネクタトラフィックは Anthropic のサーバーを通じてルーティングされるため、ルーチンに追加するコネクタは **Allowed domains** にホストを追加しなくても機能します。[コネクタ](#connectors)の下で不要なコネクタを削除します。
+**Default** 環境は **Trusted** ネットワークアクセスを使用します。これにより、セッションのネットワークを通じて [デフォルト許可リスト](/docs/ja/cloud-environments#default-allowed-domains)のみが許可されます。そのパス上で許可リスト外のホストへのリクエストは `403` と `x-deny-reason: host_not_allowed` で失敗します。MCP コネクタトラフィックはそのパスではなく Anthropic のサーバーを通じてルーティングされるため、ルーチンに追加するコネクタは **Allowed domains** にホストを追加しなくても機能します。[コネクタ](#connectors)の下で不要なコネクタを削除します。
 
-1 つ以上の独自の環境で追加のドメインを許可するには、以下の手順に従います。[組織共有環境](/docs/ja/cloud-environments#organization-shared-environments)はここで読み取り専用で開くため、所有者は [管理設定](https://claude.ai/admin-settings)の **Cloud environments** ページからそのネットワークアクセスを変更します。
+独自の環境のいずれかで追加のドメインを許可するには、以下の手順に従います。[組織共有環境](/docs/ja/cloud-environments#organization-shared-environments)はここで読み取り専用で開くため、オーナーは [管理設定](https://claude.ai/admin-settings)の **Cloud environments** ページからそのネットワークアクセスを変更します。
 
 <Steps>
   <Step title="ルーチンを編集用に開く">

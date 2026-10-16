@@ -895,6 +895,26 @@ Haiku 5.5 のリクエストは、プロンプトが 100K トークンを超え�
   ゲートウェイまたはカスタムモデル ID のウィンドウを修正する
 </h3>
 
+次の起動時の警告のいずれかが表示された場合、Claude Code はセッションのモデル ID を認識していないため、そのモデルのコンテキストウィンドウを判別できず、200K トークンを想定しています。
+
+```text theme={null}
+⚠ Model "my-gateway-opus" isn't recognized · context assumed to be 200k tokens · ...
+Claude Code doesn't recognize the model "my-gateway-opus", so it assumes a context window of 200k tokens. Update Claude Code, or see https://code.claude.com/docs/en/model-config#correct-the-window-for-a-gateway-or-custom-model-id to set the window.
+```
+
+Claude Code は想定した 200K で会話を[自動圧縮](#default-auto-compact-thresholds)するため、モデルの実際のコンテキストウィンドウが 200K であれば、修正の必要はありません。そうでない場合は、ID に合わせて次のいずれかの方法で実際のウィンドウを Claude Code に指定してください。
+
+* **Claude Code のバージョンより新しいモデル**：シェルで `claude update` を実行します。更新後に Claude Code がその ID を認識すれば、他に設定する必要はありません。
+* **Claude Code が認識しているモデルに対する、ゲートウェイまたはプロバイダー側の名前**：Anthropic のモデル ID を自分の ID に対応付ける [`modelOverrides`](#override-model-ids-per-version) エントリを追加します（例：`"claude-opus-4-8": "my-gateway-opus"`）。代わりに、[`modelPicker`](/docs/ja/settings-reference#fields-for-modelpicker) の行に自分の ID を記載し、`behavesAs` にそのモデルを設定することもできます。いずれの場合も、Claude Code はその ID をそのモデルとして扱います。
+* **1M のウィンドウを持つモデル**：モデルを設定する箇所で、ID の末尾に `[1m]` を付けます（例：シェルで `claude --model 'my-gateway-opus[1m]'`）。[1M コンテキストをオフにした](#turn-off-1m-context)場合は、接尾辞の有無にかかわらず同じウィンドウになります。
+* **その他のウィンドウ**：Claude Code を起動する環境で、[`CLAUDE_CODE_MAX_CONTEXT_TOKENS`](/docs/ja/env-vars) にウィンドウサイズをトークン数で設定します（例：`CLAUDE_CODE_MAX_CONTEXT_TOKENS=400000`）。`claude-` で始まらず `[1m]` 接尾辞もない認識できない ID の場合、この変数は単独で有効になります。それ以外の ID の場合は、まず[この変数がどの ID に適用されるか](#which-ids-claude_code_max_context_tokens-applies-to)を確認してください。
+
+Claude Code が ID を認識するか、指定したウィンドウを使用するようになると、その ID でセッションを開始しても警告は表示されなくなります。
+
+<h4 id="which-ids-claude_code_max_context_tokens-applies-to">
+  `CLAUDE_CODE_MAX_CONTEXT_TOKENS` が適用される ID
+</h4>
+
 [LLM ゲートウェイ](/docs/ja/llm-gateway)やその他のカスタムデプロイでは、Claude Code がその ID を Claude モデルに解決するかどうかにかかわらず、モデル ID に対してモデルの実際のウィンドウとは異なるコンテキストウィンドウを想定することがあります。Claude Code が代わりに想定すべきウィンドウを [`CLAUDE_CODE_MAX_CONTEXT_TOKENS`](/docs/ja/env-vars) に設定してください。
 
 この変数の適用方法は ID によって異なります。Claude Code は、ID が（大文字小文字を問わず）`claude-` で始まらない場合、または Google Cloud の Agent Platform で使用される `@YYYYMMDD` の日付のように、ID の読み取り時に Claude Code が取り除く接尾辞が付いている場合に、その ID をプロバイダー固有またはカスタムの表記として扱います。v2.1.259 より前の Claude Code は取り除かれた接尾辞を考慮しなかったため、日付の接尾辞が付いた認識できない `claude-` ID は、接尾辞のない `claude-` 名として扱われていました。
