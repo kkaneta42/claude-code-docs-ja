@@ -17,6 +17,293 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-10-17</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/agent-teams-ja.md                  |   8 +-
+ docs-ja/pages/agent-view-ja.md                   |   2 +-
+ docs-ja/pages/auto-mode-classifier-billing-ja.md |   4 +-
+ docs-ja/pages/changelog.md                       |  66 ++
+ docs-ja/pages/channels-ja.md                     |   8 +-
+ docs-ja/pages/claude-directory-ja.md             |   2 +-
+ docs-ja/pages/claude-security-ja.md              |   4 +-
+ docs-ja/pages/cli-reference-ja.md                |   2 +-
+ docs-ja/pages/code-review-local-ja.md            |   2 +-
+ docs-ja/pages/commands-ja.md                     |   2 +-
+ docs-ja/pages/costs-ja.md                        |   2 +-
+ docs-ja/pages/desktop-ja.md                      |  19 +-
+ docs-ja/pages/features-overview-ja.md            |   2 +-
+ docs-ja/pages/hooks-ja.md                        |   2 +-
+ docs-ja/pages/large-codebases-ja.md              |   2 +-
+ docs-ja/pages/mcp-ja.md                          |   2 +-
+ docs-ja/pages/monitoring-usage-ja.md             |   2 +-
+ docs-ja/pages/permissions-ja.md                  |   2 -
+ docs-ja/pages/prompt-caching-ja.md               |   4 +-
+ docs-ja/pages/sandboxing-ja.md                   |   4 +-
+ docs-ja/pages/security-guidance-ja.md            |   2 +-
+ docs-ja/pages/security-ja.md                     |   2 +-
+ docs-ja/pages/sessions-ja.md                     |  14 -
+ docs-ja/pages/skills-ja.md                       |  14 +-
+ docs-ja/pages/terminal-config-ja.md              |   3 +-
+ docs-ja/pages/vs-code-ja.md                      | 971 ++++++++++++-----------
+ docs-ja/pages/zero-data-retention-ja.md          |   1 +
+ 27 files changed, 635 insertions(+), 513 deletions(-)
+```
+
+<details>
+<summary>agent-teams-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/agent-teams-ja.md b/docs-ja/pages/agent-teams-ja.md
+index 54ece75..9f49b2e 100644
+--- a/docs-ja/pages/agent-teams-ja.md
++++ b/docs-ja/pages/agent-teams-ja.md
+@@ -232,5 +232,5 @@ Ask the researcher teammate to shut down
+ リーダーはシャットダウンリクエストを送信します。チームメンバーは承認して適切に終了するか、説明付きで却下できます。
+ 
+-チームの共有ディレクトリは、セッションが終了すると自動的にクリーンアップされるため、別のクリーンアップステップはありません。削除されるディレクトリと、再開されたセッションのために保持されるディレクトリについては、[Architecture](#architecture) を参照してください。
++チームの共有ディレクトリは、セッションが終了すると自動的にクリーンアップされるため、別のクリーンアップステップはありません。削除されるディレクトリと、ディスク上に残るディレクトリについては、[Architecture](#architecture) を参照してください。
+ 
+ <h3 id="enforce-quality-gates-with-hooks">
+@@ -279,8 +279,8 @@ Claude Code はタスク依存関係を自動的に管理します。チーム
+ チームとタスクはセッション派生名でローカルに保存されます。名前は `session-` の後にセッション ID の最初の 8 文字が続きます。
+ 
+-* **チーム設定**：`~/.claude/teams/{team-name}/config.json`
+-* **タスクリスト**：`~/.claude/tasks/{team-name}/`
++* **チーム設定**：`~/.claude/teams/{team-name}/config.json`。Claude Code はセッション終了時にチーム設定ディレクトリを削除します。
++* **タスクリスト**：`~/.claude/tasks/{team-name}/`。このディレクトリはセッション終了後もディスク上に残ります。[Claude Code が保持する期間](/docs/ja/claude-directory#cleaned-up-automatically) を変更するには、[`cleanupPeriodDays`](/docs/ja/settings-reference#cleanupperioddays) を設定してください。
+ 
+-Claude Code はセッション起動時にこれらの両方を自動的に生成し、チームメンバーが参加、アイドル状態になる、または離脱するときに更新します。チーム設定ディレクトリはセッション終了時に削除されます。タスクリストディレクトリはローカルに保持され、アップロードされることはないため、再開されたセッションはタスクを保持します。保持期間は、セッショントランスクリプト用に既に制御している同じ [`cleanupPeriodDays`](/docs/ja/settings-reference#cleanupperioddays) によって管理され、[保持スイープルール](/docs/ja/claude-directory#cleaned-up-automatically) に従います。
++Claude Code はセッション起動時にこれらの両方を自動的に生成し、チームメンバーが参加、アイドル状態になる、または離脱するときに更新します。
+ 
+ チーム設定はセッション ID と tmux ペイン ID などのランタイム状態を保持しているため、手動で編集したり、事前に作成したりしないでください。次の状態更新時に変更が上書きされます。
+```
+
+</details>
+
+<details>
+<summary>agent-view-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/agent-view-ja.md b/docs-ja/pages/agent-view-ja.md
+index 9e14f61..4990e66 100644
+--- a/docs-ja/pages/agent-view-ja.md
++++ b/docs-ja/pages/agent-view-ja.md
+@@ -326,5 +326,5 @@ Claude Code がセッションをバックグラウンドにすると（約 10 
+ 2 回目の押下は、たとえば [バックグラウンドサービスが応答していない](#agent-view-says-the-background-service-did-not-respond) ために停止の試みが失敗した場合でも、セッションを削除します。確認はさらに 2 秒間有効なままで、削除によってセッションのプロセス自体が終了されます。削除せずに確認を閉じるには `Esc` を押します。
+ 
+-[セッションを削除するときに削除されるもの](#what-deleting-a-session-removes) で説明されている保持されるケースを除き、削除するとセッションはリストから削除され、Claude がそのセッション用に作成した worktree は、削除方法と worktree の内容に応じて、削除、保持、またはそのまま残されます。会話のトランスクリプトは常にローカルマシンに残り、`claude --resume` から利用できます。
++[セッションを削除するときに削除されるもの](#what-deleting-a-session-removes) で説明されている保持されるケースを除き、削除するとセッションはリストから削除され、Claude がそのセッション用に作成した worktree は、削除方法と worktree の内容に応じて、削除、保持、またはそのまま残されます。会話のトランスクリプトはローカルマシンに残り、`claude --resume` から利用できます。
+ 
+ Claude Code v2.1.212 以降でセッションを戻すには、ディスパッチ入力に `/resume` と入力します。ピッカーが開き、エージェントビューを開いたリポジトリの過去のセッションが新しい順に表示されます。リストから削除したセッションも含まれますが、既に行があるセッションは表示されません。`↑`/`↓` で選択を移動し、`Enter` で選択したセッションをバックグラウンドセッションとして再開して行としてリストに戻し、`Esc` でピッカーを閉じます。
+```
+
+</details>
+
+<details>
+<summary>auto-mode-classifier-billing-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/auto-mode-classifier-billing-ja.md b/docs-ja/pages/auto-mode-classifier-billing-ja.md
+index 0d4e24e..0171771 100644
+--- a/docs-ja/pages/auto-mode-classifier-billing-ja.md
++++ b/docs-ja/pages/auto-mode-classifier-billing-ja.md
+@@ -13,5 +13,7 @@ We're changing auto mode to no longer charge for classifier requests in Claude C
+ ```
+ 
+-プロンプトで、Claude Code はこのようにチェックする最初のアクションを保留し、回答を待ちます。何も壊れていません：auto mode は動作し続け、その分類器リクエストは以前と同じように請求されます。最も一般的な原因は Claude Code と API の間の LLM ゲートウェイまたはプロキシであり、Claude Code がそれを識別できる場合、通知はそれに名前を付けます。**Enter** キーを押して続行するか、[セッションを対象にする](#make-the-session-eligible)を参照して、新しいセッションに表示されないようにしてください。
++プロンプトで、Claude Code はこのようにチェックする最初のアクションを保留し、回答を待ちます。auto モードは引き続き動作し、その分類器リクエストは以前と同じように課金されます。
++
++最も一般的な原因は Claude Code と API の間の LLM ゲートウェイまたはプロキシであり、Claude Code がそれを識別できる場合、通知はそれに名前を付けます。**Enter** キーを押して続行するか、[セッションを対象にする](#make-the-session-eligible)を参照して、新しいセッションに表示されないようにしてください。
+ 
+ <h2 id="respond-to-the-notice">
+```
+
+</details>
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index 4549ebf..490ea6e 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,70 @@
+ # Changelog
+ 
++## 2.1.302
++
++- Added `CLAUDE_CODE_AUTO_MODE_MODEL` to choose the model the client-side auto mode classifier uses; it does not change the model for server-side auto mode
++- Added an `Idle compaction` row to `/config` for turning idle compaction off or back on; the notices shown after an idle compaction now say how to turn it off
++- Added a notice to `/design-sync` and `/design-login` that standalone Claude Design (claude.ai/design) closes by December 14, 2026
++- Fixed a "Prompt is too long" error when stopping a turn while the conversation was being compacted
++- Fixed requests failing with "diagnostics: Extra inputs are not permitted" after switching to Vertex or Bedrock mid-session
++- Fixed the Read tool loading an image file of any size, or a pipe or device named like an image, entirely into memory; image sources over 128 MB are now refused
++- Fixed `/autocompact` and `/effort` saving to the wrong model when a gateway names Opus 4 or 4.1 with a prefix, such as `anthropic/claude-opus-4-1`
++- Fixed a prompt cache miss when a tool added mid-session was loaded again through ToolSearch or after compaction
++- Fixed `claude plugin` and other subcommands sometimes exiting before a queued settings or config write finished, which could lose the change or leave a `.tmp` file behind
++- Fixed plugin marketplaces re-cloning on every refresh, and newly installed git plugins showing version "unknown", when git defaults to the reftable ref format
++- Fixed the PowerShell tool not finding commands in a plugin's `bin/` folder, and reporting an error when a search that finds nothing (rg, grep, findstr, git grep) is piped into `Select-Object` or another formatting cmdlet
++- Fixed Claude in the desktop app pointing you to claude.ai settings or `/mcp` to authorize or reconnect an MCP server where that option isn't available
++- Fixed artifact publishes sometimes failing when Claude sent an empty list of edits, and Claude retrying an artifact update the wrong way after a newer version of the artifact turned it away
++- Fixed `classifier_category` missing from OpenTelemetry `tool_decision` events for most auto mode classifier blocks, and new `tool_decision` attributes pushing out `tool_use_id`, `tool_source` and `tool_parameters` when `OTEL_LOGRECORD_ATTRIBUTE_COUNT_LIMIT` is low
++- Fixed rows in the agents view staying blank after moving down a long list or folding a section
++- Fixed `claude remote-control --help` not printing its usage and exiting when not signed in
++- Fixed `/design consent` and `/design revoke` suggesting `/design-login` when they fail in a cloud session, where it isn't available; the message now points to claude.ai/design/settings
++- Fixed MCP servers showing no tools, or every tool call failing, when the server negotiates protocol version 2026-07-28 but omits `resultType`, `ttlMs` or `cacheScope`
++- Fixed prompt suggestions spending usage credits on models your plan pays for only with credits: they are now skipped after a reply billed to credits
++- Fixed URLs written in backticks being clickable only on their first row when they wrap; the whole URL is now one link in terminals that support hyperlinks
++- Fixed `claude plugin details <name>@builtin` suggesting `claude plugin list`, which never shows built-in plugins, when the plugin isn't found; it now points to `/plugin`
+```
+
+</details>
+
+<details>
+<summary>channels-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/channels-ja.md b/docs-ja/pages/channels-ja.md
+index db5ab09..7f02d90 100644
+--- a/docs-ja/pages/channels-ja.md
++++ b/docs-ja/pages/channels-ja.md
+@@ -46,5 +46,5 @@ Team、Enterprise、または Console 組織を管理している場合は、[
+ 
+         * `Marketplace "claude-plugins-official" not found`：`/plugin marketplace add anthropics/claude-plugins-official` でマーケットプレイスを追加してから、インストールを再試行してください。
+-        * プラグインが[マーケットプレイスで見つかりません](/docs/ja/plugins/install#install-a-plugin)：プラグイン名を確認してください。
++        * `Plugin "<name>" not found in marketplace "claude-plugins-official"`：ローカルにあるマーケットプレイスカタログのコピーが古くなっている可能性があります。`/plugin marketplace update claude-plugins-official` で更新してから、インストールを再試行してください。再試行しても同じメッセージが表示される場合は、[Plugin not found in marketplace](/docs/ja/plugins/troubleshooting#plugin-not-found-in-marketplace) を参照してください。
+ 
+         インストールがインストールスコープを求めるとき、ユーザースコープオプションを選択して、プラグインがすべてのプロジェクト全体で利用可能になるようにしてください。インストール概要を確認してください。`Run /reload-plugins to apply.` と報告されている場合は、[プラグイン変更を再起動なしで適用する](/docs/ja/plugins/cli-reference#reload-plugins)を参照して、プラグインの設定コマンドを利用可能にしてください。
+@@ -124,5 +124,5 @@ Team、Enterprise、または Console 組織を管理している場合は、[
+ 
+         * `Marketplace "claude-plugins-official" not found`：`/plugin marketplace add anthropics/claude-plugins-official` でマーケットプレイスを追加してから、インストールを再試行してください。
+-        * プラグインが[マーケットプレイスで見つかりません](/docs/ja/plugins/install#install-a-plugin)：プラグイン名を確認してください。
++        * `Plugin "<name>" not found in marketplace "claude-plugins-official"`：ローカルにあるマーケットプレイスカタログのコピーが古くなっている可能性があります。`/plugin marketplace update claude-plugins-official` で更新してから、インストールを再試行してください。再試行しても同じメッセージが表示される場合は、[Plugin not found in marketplace](/docs/ja/plugins/troubleshooting#plugin-not-found-in-marketplace) を参照してください。
+ 
+         インストールがインストールスコープを求めるとき、ユーザースコープオプションを選択して、プラグインがすべてのプロジェクト全体で利用可能になるようにしてください。インストール概要を確認してください。`Run /reload-plugins to apply.` と報告されている場合は、[プラグイン変更を再起動なしで適用する](/docs/ja/plugins/cli-reference#reload-plugins)を参照して、プラグインの設定コマンドを利用可能にしてください。
+@@ -189,5 +189,5 @@ Team、Enterprise、または Console 組織を管理している場合は、[
+ 
+         * `Marketplace "claude-plugins-official" not found`：`/plugin marketplace add anthropics/claude-plugins-official` でマーケットプレイスを追加してから、インストールを再試行してください。
+-        * プラグインが[マーケットプレイスで見つかりません](/docs/ja/plugins/install#install-a-plugin)：プラグイン名を確認してください。
++        * `Plugin "<name>" not found in marketplace "claude-plugins-official"`：ローカルにあるマーケットプレイスカタログのコピーが古くなっている可能性があります。`/plugin marketplace update claude-plugins-official` で更新してから、インストールを再試行してください。再試行しても同じメッセージが表示される場合は、[Plugin not found in marketplace](/docs/ja/plugins/troubleshooting#plugin-not-found-in-marketplace) を参照してください。
+ 
+         インストールがインストールスコープを求めるとき、ユーザースコープオプションを選択して、プラグインがすべてのプロジェクト全体で利用可能になるようにしてください。
+@@ -248,5 +248,5 @@ Fakechat デモを試すには、以下が必要です。
+ 
+     * `Marketplace "claude-plugins-official" not found`：`/plugin marketplace add anthropics/claude-plugins-official` でマーケットプレイスを追加してから、インストールを再試行してください。
+-    * プラグインが [マーケットプレイスで見つかりません](/docs/ja/plugins/install#install-a-plugin)：プラグイン名を確認してください。
++    * `Plugin "<name>" not found in marketplace "claude-plugins-official"`：ローカルにあるマーケットプレイスカタログのコピーが古くなっている可能性があります。`/plugin marketplace update claude-plugins-official` で更新してから、インストールを再試行してください。再試行しても同じメッセージが表示される場合は、[Plugin not found in marketplace](/docs/ja/plugins/troubleshooting#plugin-not-found-in-marketplace) を参照してください。
+```
+
+</details>
+
+<details>
+<summary>claude-directory-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/claude-directory-ja.md b/docs-ja/pages/claude-directory-ja.md
+index 22ffcb9..6a54ef6 100644
+--- a/docs-ja/pages/claude-directory-ja.md
++++ b/docs-ja/pages/claude-directory-ja.md
+@@ -291,5 +291,5 @@ Report findings with severity ratings and remediation steps.`
+           when: <>User types <C>/command-name</C></>,
+           description: <>A file at <C>commands/deploy.md</C> creates <C>/deploy</C> the same way a skill at <C>skills/deploy/SKILL.md</C> does, and both can be auto-invoked by Claude. Skills use a directory with SKILL.md, letting you bundle reference docs, templates, or scripts alongside the prompt.</>,
+-          tips: [<>Use <C>$ARGUMENTS</C> in the file to accept parameters: <C>/fix-issue 123</C></>, 'If a skill and command share a name, the skill takes precedence', 'New commands should usually be skills instead; commands remain supported'],
++          tips: [<>Use <C>$ARGUMENTS</C> in the file to accept parameters: <C>/fix-issue 123</C></>, 'If a skill and command share a name, the skill takes precedence', 'New commands should usually be skills instead; command files still work'],
+           docsLink: '/en/skills',
+           children: [{
+```
+
+</details>
+
+<details>
+<summary>claude-security-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/claude-security-ja.md b/docs-ja/pages/claude-security-ja.md
+index 1dd7ceb..e491f01 100644
+--- a/docs-ja/pages/claude-security-ja.md
++++ b/docs-ja/pages/claude-security-ja.md
+@@ -49,8 +49,8 @@ VS Code 拡張機能またはデスクトップアプリでは、[プラグイ
+ コマンドはプラグインの詳細を開き、[インストールスコープ](/docs/ja/plugins/install#install-a-plugin)を選択してインストールを開始します。
+ 
+-インストールが失敗した場合、修正は Claude Code が報告するメッセージによって異なります。
++インストールが失敗した場合は、Claude Code が報告するメッセージに応じて対処してください。
+ 
+ * `Marketplace "claude-plugins-official" not found` と報告された場合は、`/plugin marketplace add anthropics/claude-plugins-official` でマーケットプレイスを追加してから、インストールを再試行してください。
+-* マーケットプレイスで [プラグインが見つからないと報告された](/docs/ja/plugins/install#install-a-plugin)場合は、プラグイン名のタイプミスを確認してください。
++* `Plugin "claude-security" not found in marketplace "claude-plugins-official"` と報告された場合は、マーケットプレイスカタログのローカルコピーが古くなっている可能性があります。`/plugin marketplace update claude-plugins-official` で更新してから、インストールを再試行してください。再試行しても同じメッセージが表示される場合は、[マーケットプレイスでプラグインが見つからない](/docs/ja/plugins/troubleshooting#plugin-not-found-in-marketplace)を参照してください。
+ 
+ インストール概要を確認してください。`Run /reload-plugins to apply.` と報告された場合は、[プラグインの変更を再起動なしで適用](/docs/ja/plugins/cli-reference#reload-plugins)を参照して、現在のセッションでプラグインをアクティブにしてください。
+```
+
+</details>
+
+<details>
+<summary>cli-reference-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/cli-reference-ja.md b/docs-ja/pages/cli-reference-ja.md
+index 07a3fb0..4d28a4c 100644
+--- a/docs-ja/pages/cli-reference-ja.md
++++ b/docs-ja/pages/cli-reference-ja.md
+@@ -85,5 +85,5 @@
+ | `--dangerously-load-development-channels` | 承認済みの許可リストにない[チャネル](/docs/ja/channels-reference#test-during-the-research-preview)を有効にして、ローカル開発を行います。`plugin:<name>@<marketplace>` および `server:<name>` エントリを受け入れます。確認を求めるため、対話セッションで有効になります。`-p` を使用すると、Claude Code はこのフラグを無視します | `claude --dangerously-load-development-channels server:webhook` |
+ | `--dangerously-skip-permissions` | 権限プロンプトをスキップします。`--permission-mode bypassPermissions` と同等です。[権限モード](/docs/ja/permission-modes#skip-all-checks-with-bypasspermissions-mode)でこれが何をスキップし、何をスキップしないかを参照してください。`--bg` で開始されたセッションの場合、モードは[スーパーバイザーがセッションを再開するときに保持](/docs/ja/agent-view#permission-mode-model-and-effort)されます | `claude --dangerously-skip-permissions` |
+-| `--debug` | デバッグモードを有効にします。オプションのカテゴリフィルタリング（`--debug='mcp,startup'` または `--debug='!1p'` など）を使用します。フィルターは `=` 形式でのみバインドされます。スペース区切りフィルターはフィルタリングなしでデバッグモードを有効にします | `claude --debug='mcp,startup'` |
++| `--debug` | デバッグモードを有効にします。オプションのカテゴリフィルタリング（`--debug='mcp,startup'` または `--debug='!mcp'` など）を使用します。フィルターは `=` 形式でのみバインドされます。スペース区切りフィルターはフィルタリングなしでデバッグモードを有効にします | `claude --debug='mcp,startup'` |
+ | `--debug-file <path>` | デバッグログを特定のファイルパスに書き込みます。暗黙的にデバッグモードを有効にします。`CLAUDE_CODE_DEBUG_LOGS_DIR` よりも優先されます | `claude --debug-file /tmp/claude-debug.log` |
+ | `--desktop` | [Claude Desktop アプリ](/docs/ja/desktop)を現在のディレクトリで開き、ターミナルでセッションを開始せずに終了します。`--continue` を追加するか、セッション ID を使用して `--resume` を追加して、[代わりに Desktop でそのセッションを開く](/docs/ja/desktop#coming-from-the-cli)ことができます。ここで `--resume` はセッション ID のみを取り、名前またはトランスクリプトパスは取りません。プロンプトと `--verbose` および `--debug` フラグ以外の他のフラグは取りません。アプリがセッション自体を開始するため。macOS および x64 Windows で Claude サブスクリプションでサインインしている場合に利用可能です。Claude Code v2.1.285 以降が必要です | `claude --desktop` |
+```
+
+</details>
+
+<details>
+<summary>code-review-local-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/code-review-local-ja.md b/docs-ja/pages/code-review-local-ja.md
+index d47f869..98d8872 100644
+--- a/docs-ja/pages/code-review-local-ja.md
++++ b/docs-ja/pages/code-review-local-ja.md
+@@ -119,5 +119,5 @@ effort レベルとフラグの後、Claude Code は行の残りをレビュー
+ 
+ * **`ultra` を指定した場合**: Claude Code は単一の単語をベースブランチまたは PR 番号として読み取ります。ブランチや PR を指していない長いテキストは、[レビューに添付されるメモ](/docs/ja/ultrareview#pass-a-request-in-plain-words)になります。`/code-review ultra check my auth changes` は現在のブランチをレビューし、Claude は指摘事項をメモと関連付けます。
+-* **`ultra` を指定しない場合**: 残りはすべてレビュー対象になります。これは別のコマンド名で始まる場合も同様です。`/code-review /fix-issue 123` は、`/fix-issue` を 2 つ目の[スタックされたスキル](/docs/ja/skills#pass-arguments-to-skills)として読み込むのではなく、`/fix-issue 123` を対象テキストとしてレビューします。v2.1.218 より前は、`/code-review` の後にスタックされたコマンドは独立したスキルとして展開されていました。
++* **`ultra` を指定しない場合**: 残りはすべてレビュー対象になります。これは別のコマンド名で始まる場合も同様です。`/code-review /fix-issue 123` は、`/fix-issue` を 2 つ目の[スタックされたスキル](/docs/ja/skills#stack-several-skills-in-one-message)として読み込むのではなく、`/fix-issue 123` を対象テキストとしてレビューします。v2.1.218 より前は、`/code-review` の後にスタックされたコマンドは独立したスキルとして展開されていました。
+ 
+ <h2 id="run-in-the-foreground">
+```
+
+</details>
+
+<details>
+<summary>commands-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/commands-ja.md b/docs-ja/pages/commands-ja.md
+index d413795..4d40db6 100644
+--- a/docs-ja/pages/commands-ja.md
++++ b/docs-ja/pages/commands-ja.md
+@@ -11,5 +11,5 @@
+ `/` と入力するとご利用いただけるコマンドが表示されます。または `/` の後に文字を入力してフィルタリングできます。[コマンドメニューが入力内容にどのようにマッチするか](#how-the-command-menu-matches-what-you-type)では、ハイライト、タイプミス、および Claude Code がメニューから非表示にするコマンドについて説明しています。これらのコマンドは完全な名前を入力するまで表示されません。
+ 
+-コマンドはメッセージの開始時にのみ認識されます。コマンド名の後に続くテキストがその引数になります。[スキル](/docs/ja/skills#pass-arguments-to-skills)は例外です。スキル呼び出しの後に別のスキルが続く場合（例：`/skill-a /skill-b do XYZ`）、開始時に指定されたスキルが読み込まれ、末尾のテキストが各スキルに引数として渡されます。最大 6 つのスキルをチェーンできます。
++コマンドはメッセージの開始時にのみ認識されます。コマンド名の後に続くテキストがその引数になります。ターミナルのプロンプトでは、1 つのメッセージを複数の[スキル](/docs/ja/skills#stack-several-skills-in-one-message)で始めることができます。`/skill-a /skill-b do XYZ` と入力すると両方のスキルが読み込まれ、末尾のテキストが各スキルに引数として渡されます。最大 6 つのスキルをチェーンできます。
+ 
+ Claude が応答中にコマンドを送信した場合、Claude Code はそれをキューに入れ、現在のターンが終了した後に実行します。Claude Code は `/status`、`/tasks`、`/usage` など、応答を中断せずにすぐに実行するコマンドもあります。[フルスクリーンレンダリング](/docs/ja/fullscreen)では、Claude Code は `/theme` や `/help` などのダイアログコマンドもすぐに開きます。v2.1.234 より前では、Claude Code はこれらのダイアログをターンが終了するまでキューに入れていました。
+```
+
+</details>
+
+*...以降省略*
+
+</details>
+
+
+<details>
 <summary>2026-10-16</summary>
 
 **変更ファイル:**
@@ -2523,430 +2810,5 @@ index 9587871..92aa1a8 100644
 ```
 
 </details>
-
-<details>
-<summary>claude-apps-gateway-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/claude-apps-gateway-ja.md b/docs-ja/pages/claude-apps-gateway-ja.md
-index 186bb1d..41ab75e 100644
---- a/docs-ja/pages/claude-apps-gateway-ja.md
-+++ b/docs-ja/pages/claude-apps-gateway-ja.md
-@@ -76,8 +76,8 @@ Claude アプリゲートウェイは、開発者の Claude Code クライアン
- | Claude Code v2.1.195 以降 | `claude gateway` サブコマンドとゲートウェイサインインフローは v2.1.195 で提供されます。以前のパブリックビルドには含まれていません。ゲートウェイサーバーを実行するマシンと各開発者のマシンの両方が v2.1.195 以降である必要があります。`claude update` を実行して最新リリースを取得します。[Claude Platform on AWS アップストリーム](/docs/ja/claude-apps-gateway-config#claude-platform-on-aws)はゲートウェイサーバーで Claude Code v2.1.198 以降が必要です。 |
- | OpenID Connect（OIDC）ID プロバイダー | Okta、Microsoft Entra ID、Google Workspace、Keycloak、Dex、または PingFederate などの OIDC 準拠の IdP。ゲートウェイは標準 OIDC ディスカバリーと認可コードフローを実行します。SAML と LDAP はサポートされていません。 |
--| PostgreSQL 14 以降 | デバイスサインインフロー（ブラウザコールバックが書き込み、ポーリング CLI が読み取る）とレート制限カウンターをサポートします。最小層を含む任意の管理 Postgres が機能します。支出制限が設定されていない場合、ゲートウェイは数 KB の短期間有効な認証状態を保存します。[支出制限](/docs/ja/claude-apps-gateway-spend-limits)を使用すると、バックアップする必要がある耐久的な支出、監査、およびアイデンティティテーブルも保持します。`?sslmode=require` 経由の TLS が推奨されます。 |
-+| PostgreSQL 11 以降 | デバイスサインインフローとレート制限カウンターをサポートします。最小層を含むマネージド PostgreSQL サービスが利用できます。[サポートされているデータベース](/docs/ja/claude-apps-gateway-deploy#postgres)を参照してください。[支出制限](/docs/ja/claude-apps-gateway-spend-limits)を使用すると、バックアップする必要がある耐久的な支出、監査、およびアイデンティティテーブルも保持します。`?sslmode=require` 経由の TLS が推奨されます。PostgreSQL 11、12、13 には、ゲートウェイサーバーで Claude Code v2.1.290 以降が必要です。PostgreSQL プロジェクトはこれらのバージョンの保守を終了しているため、可能な場合は新しいバージョンを使用してください。 |
- | モデルアップストリーム | Amazon Bedrock 認証情報、Claude Platform on AWS 認証情報、Google Cloud 認証情報、Microsoft Foundry リソース、または Anthropic API キー。複数のアップストリームがサポートされ、フェイルオーバーがあります。 |
--| HTTPS | ゲートウェイは開発者ラップトップとサインインに使用されるブラウザから `https://` 経由で到達可能である必要があります。ゲートウェイは同じリスナーでデバイス検証ページを提供します。`listen.tls` 経由で TLS 証明書を提供するか、TLS 終了イングレスの背後で実行し、`listen.public_url` を外部オリジンに設定します。プレーン `http://` オリジンはゲートウェイホストがループバック（`localhost`、`127.0.0.1`、または `::1`）の場合にのみ受け入れられます。 |
--| プライベートネットワークアドレス | `/login` では、Claude Code はゲートウェイのホスト名または IP アドレスがプライベートアドレスのみに解決されることを要求します。RFC 1918、リンクローカル、CGNAT `100.64.0.0/10`、IPv6 ULA `fc00::/7`、またはループバック。ホストするゲートウェイの場合、宣言するブロック外のパブリックアドレスは拒否されます。デプロイメントガイドの[脅威モデル](/docs/ja/claude-apps-gateway-deploy#threat-model-summary)を参照してください。開発者マシンが HTTPS を企業プロキシ経由でルーティングする場合、サインインはプロキシホストもプライベートアドレスに解決されることを要求します。そうでない場合は、ゲートウェイホストを `NO_PROXY` に追加して、CLI が直接接続するようにします。内部ネットワークが組織が所有するパブリック IPv4 スペースから番号付けされている場合は、[これらのブロックを宣言](#allow-a-gateway-on-public-address-space-you-own)して、`/login` がそこでゲートウェイを受け入れるようにします。 |
-+| HTTPS | ゲートウェイは開発者ラップトップとサインインに使用されるブラウザから `https://` 経由で到達可能である必要があります。ゲートウェイは同じリスナーでデバイス検証ページを提供します。`listen.tls` 経由で TLS 証明書を提供するか、TLS 終了イングレスの背後で実行し、いずれの場合も `listen.public_url` を外部オリジンに設定します。`/login` では、Claude Code はゲートウェイホストがループバック（`localhost`、`127.0.0.1`、または `::1`）の場合にのみプレーン `http://` オリジンを受け入れます。 |
-+| プライベートネットワークアドレス | `/login` では、Claude Code はゲートウェイのホスト名または IP アドレスがプライベートアドレスのみに解決されることを要求します。RFC 1918、リンクローカル、CGNAT `100.64.0.0/10`、IPv6 ULA `fc00::/7`、またはループバック。ホストするゲートウェイの場合、宣言するブロック外のパブリックアドレスは拒否されます。デプロイガイドの[脅威モデル](/docs/ja/claude-apps-gateway-deploy#threat-model-summary)を参照してください。開発者マシンが HTTPS を企業プロキシ経由でルーティングする場合、サインインはプロキシホストもプライベートアドレスに解決されることを要求します。そうでない場合は、ゲートウェイホストを `NO_PROXY` に追加して、CLI が直接接続するようにします。内部ネットワークが組織が所有するパブリック IPv4 スペースから番号付けされている場合は、[これらのブロックを宣言](#allow-a-gateway-on-public-address-space-you-own)して、`/login` がそこでゲートウェイを受け入れるようにします。 |
- | Linux ランタイム | ゲートウェイサーバーはネイティブ Linux バイナリでのみ実行されます。macOS はローカル開発用に機能します。Windows はサーバープラットフォームとしてサポートされていません。 |
- 
-@@ -92,5 +92,5 @@ Claude アプリゲートウェイは、開発者の Claude Code クライアン
- 
-   <Step title="PostgreSQL データベースをプロビジョニングする">
--    最小管理層を含む任意の Postgres 14 以降が機能します。ゲートウェイは起動時に独自のスキーママイグレーションを実行するため、データベースロールはテーブルを作成および変更する権限が必要です。[`store`](/docs/ja/claude-apps-gateway-config#store)を参照してください。
-+    PostgreSQL 11 以降を使用します。最小のマネージド層で十分です。ゲートウェイは起動時に独自のスキーママイグレーションを実行するため、データベースロールはテーブルを作成および変更する権限が必要です。[`store`](/docs/ja/claude-apps-gateway-config#store)を参照してください。
-   </Step>
- 
-@@ -143,5 +143,5 @@ Claude アプリゲートウェイは、開発者の Claude Code クライアン
- 
-   <Step title="実行する">
--    [イメージ要件](/docs/ja/claude-apps-gateway-deploy#container-image)を満たす `claude` バイナリの周りにコンテナイメージを構築し、Postgres と一緒に実行します。Compose ファイルはイメージを `registry.example.com/claude-gateway:2.1.198` として参照します。独自のレジストリとイメージタグに置き換えます。
-+    [イメージ要件](/docs/ja/claude-apps-gateway-deploy#container-image)を満たす `claude` バイナリの周りにコンテナイメージをビルドし、Postgres と一緒に実行します。Compose ファイルはイメージを `registry.example.com/claude-gateway:2.1.198` として参照します。独自のレジストリとイメージタグに置き換えます。
- 
-     ```yaml docker-compose.yaml theme={null}
-```
-
-</details>
-
-<details>
-<summary>claude-apps-gateway-on-aws-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/claude-apps-gateway-on-aws-ja.md b/docs-ja/pages/claude-apps-gateway-on-aws-ja.md
-index 78986e0..383344b 100644
---- a/docs-ja/pages/claude-apps-gateway-on-aws-ja.md
-+++ b/docs-ja/pages/claude-apps-gateway-on-aws-ja.md
-@@ -170,5 +170,5 @@ export PRIVATE_SUBNETS="<subnet-id-a> <subnet-id-b>"
- 
-   <Step title="Amazon RDS for PostgreSQL をプロビジョニングする">
--    インスタンスはプライベートサブネットで実行され、パブリックアドレスがなく、ストレージ暗号化がオンです。エンジンバージョンは Postgres 16 に固定されており、ゲートウェイがサポートする PostgreSQL 14 の下限を満たし、以下のパラメータグループファミリーがインスタンスが実行するエンジンと一致することを保証します。
-+    インスタンスはプライベートサブネットで Postgres 16 を実行し、パブリックアドレスを持たず、ストレージ暗号化が有効です。
- 
-     まず、プライベートサブネットにデータベースを配置するサブネットグループと、`rds.force_ssl=1` を使用してサーバーがプレーンテキスト接続を拒否するパラメータグループを作成します。エンジンバージョンは 1 回固定されます。パラメータグループのファミリーはインスタンスが実行するエンジンのメジャーバージョンと一致する必要があるためです。
-@@ -202,5 +202,5 @@ export PRIVATE_SUBNETS="<subnet-id-a> <subnet-id-b>"
-     ```
- 
--    リテラル `--master-user-password` 引数は、コマンド実行中のプロセステーブルおよび監査/EDR ログに表示されます。これは、シークレットステップのメモがカバーする同じ露出です。共有またはモニタリングされたホストでは、代わりに `0600` ファイルを介して `--cli-input-json` でパスワードを渡してください。バンドルの `setup.sh` は、`0600` 一時ファイルを `--cli-input-json` に渡すことで、同じ方法でシークレット値をプロセス argv から保ちます。
-+    リテラル `--master-user-password` 引数は、コマンド実行中のプロセステーブルおよび監査/EDR ログに表示されます。これは、シークレットステップのメモがカバーする同じ露出です。共有またはモニタリングされたホストでは、バンドルの `setup.sh` と同様に、代わりに `0600` ファイルから `--cli-input-json` を介してパスワードを渡してください。
- 
-     インスタンスが起動するのを待ちます。これには数分かかる場合があります。その後、プライベートエンドポイントを読み取り、ゲートウェイが使用する接続文字列を組み立てます。
-@@ -213,7 +213,7 @@ export PRIVATE_SUBNETS="<subnet-id-a> <subnet-id-b>"
-     ```
- 
--    `sslmode=verify-full` は、ゲートウェイが RDS サーバー証明書のチェーンとホスト名を検証し、暗号化するだけでなく検証することを確認します。トラストアンカーは [AWS RDS 証明書バンドル](https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem)です。これは、以下のイメージビルドステップで `/etc/claude/rds-global-bundle.pem` にコピーされ、`NODE_EXTRA_CA_CERTS` を介して信頼されます。libpq スタイルの `sslrootcert=` パラメータを URL に追加しないでください。ゲートウェイのドライバーはクエリ文字列から `sslmode` のみを読み取り、`sslrootcert` を Postgres スタートアップパラメータとして転送します。サーバーはこれを拒否します。
-+    `sslmode=verify-full` により、ゲートウェイは暗号化するだけでなく、RDS サーバー証明書のチェーンとホスト名も検証します。トラストアンカーは [AWS RDS 証明書バンドル](https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem)です。これは、以下のイメージビルドステップで `/etc/claude/rds-global-bundle.pem` にコピーされ、`NODE_EXTRA_CA_CERTS` を介して信頼されます。libpq スタイルの `sslrootcert=` パラメータを URL に追加しないでください。ゲートウェイのドライバーはクエリ文字列から `sslmode` のみを読み取り、`sslrootcert` を Postgres スタートアップパラメータとして転送します。サーバーはこれを拒否します。
- 
--    ECS サービスまたは EKS ポッドはこの VPC で実行され、インスタンスのプライベートエンドポイントに到達でき、`claude-gateway-db` セキュリティグループはゲートウェイのセキュリティグループのみを許可します。
-+    ECS サービスまたは EKS ポッドは、インスタンスのプライベートエンドポイントに到達できるように、この VPC で実行する必要があります。また、`claude-gateway-db` セキュリティグループはゲートウェイのセキュリティグループのみを許可します。
-   </Step>
- 
-@@ -221,8 +221,8 @@ export PRIVATE_SUBNETS="<subnet-id-a> <subnet-id-b>"
-     `upstreams` ブロックは `auth: {}` で Bedrock を指します。ゲートウェイは ECS のタスクロールまたは EKS の IRSA ロールから AWS デフォルト認証情報チェーンを介して認証します。すべてのフィールドについては、[設定リファレンス](/docs/ja/claude-apps-gateway-config)を参照してください。
-```
-
-</details>
-
-*...以降省略*
-
-</details>
-
-
-<details>
-<summary>2026-10-06</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/admin-setup-ja.md                    |  11 +-
- docs-ja/pages/agent-view-ja.md                     | 607 +++++++++++----------
- docs-ja/pages/changelog.md                         | 193 +++++++
- docs-ja/pages/channels-ja.md                       |   8 +-
- docs-ja/pages/channels-reference-ja.md             |   2 +
- docs-ja/pages/checkpointing-ja.md                  |   6 +-
- docs-ja/pages/chrome-ja.md                         |   2 +
- docs-ja/pages/claude-code-on-the-web-ja.md         |   2 +-
- docs-ja/pages/claude-directory-ja.md               |  11 +-
- docs-ja/pages/claude-security-ja.md                |   2 +-
- docs-ja/pages/cli-reference-ja.md                  |   8 +-
- docs-ja/pages/code-review-ja.md                    |   6 +-
- docs-ja/pages/commands-ja.md                       |   4 +-
- docs-ja/pages/context-window-ja.md                 |   4 +-
- docs-ja/pages/costs-ja.md                          |   2 +-
- docs-ja/pages/debug-your-config-ja.md              |   4 +-
- docs-ja/pages/desktop-ios-simulator-ja.md          |   2 +-
- docs-ja/pages/desktop-ja.md                        |  81 +--
- docs-ja/pages/desktop-quickstart-ja.md             |   2 +-
- docs-ja/pages/env-vars-ja.md                       |   6 +-
- docs-ja/pages/errors-ja.md                         |  26 +
- docs-ja/pages/feature-availability-ja.md           |   5 +-
- docs-ja/pages/fullscreen-ja.md                     |   9 +-
- docs-ja/pages/github-enterprise-server-ja.md       |  17 +-
- docs-ja/pages/hooks-ja.md                          |   6 +-
- docs-ja/pages/interactive-mode-ja.md               |  10 +-
- docs-ja/pages/keybindings-ja.md                    |  10 +-
- docs-ja/pages/large-codebases-ja.md                |  20 +-
- docs-ja/pages/legal-and-compliance-ja.md           |   7 +-
- docs-ja/pages/mcp-ja.md                            |   2 +-
- docs-ja/pages/memory-ja.md                         |  35 +-
- docs-ja/pages/monitoring-usage-ja.md               |  10 +-
- docs-ja/pages/network-config-ja.md                 |   2 +-
- docs-ja/pages/permission-modes-ja.md               |  20 +-
- docs-ja/pages/permissions-ja.md                    |   4 +-
- docs-ja/pages/platforms-ja.md                      |   6 +-
- docs-ja/pages/prompt-caching-ja.md                 |   2 +-
- docs-ja/pages/prompt-library-ja.md                 |  42 +-
- docs-ja/pages/remote-control-ja.md                 |  64 +--
- docs-ja/pages/security-guidance-ja.md              |   2 +-
- .../pages/self-hosted-environments-deploy-ja.md    |   2 +-
- docs-ja/pages/self-hosted-environments-ja.md       |   2 +-
- docs-ja/pages/settings-reference-ja.md             |  12 +-
- docs-ja/pages/skills-ja.md                         |   4 +-
- docs-ja/pages/slack-ja.md                          |  44 +-
- docs-ja/pages/statusline-ja.md                     |   2 +-
- docs-ja/pages/sub-agents-ja.md                     |   4 +-
- docs-ja/pages/tools-reference-ja.md                |  16 +-
- docs-ja/pages/troubleshoot-install-ja.md           |   6 +-
- docs-ja/pages/ultrareview-ja.md                    |   2 +-
- docs-ja/pages/voice-dictation-ja.md                |   2 +-
- docs-ja/pages/web-quickstart-ja.md                 |   4 +-
- docs-ja/pages/workflows-ja.md                      |  10 +-
- docs-ja/pages/zero-data-retention-ja.md            |   8 +-
- 54 files changed, 833 insertions(+), 547 deletions(-)
-```
-
-**新規追加:**
-
-
-<details>
-<summary>admin-setup-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/admin-setup-ja.md b/docs-ja/pages/admin-setup-ja.md
-index cbf96c5..d7363b6 100644
---- a/docs-ja/pages/admin-setup-ja.md
-+++ b/docs-ja/pages/admin-setup-ja.md
-@@ -128,5 +128,5 @@ WSL 2 ユーティリティ VM 内のプロセスは、Windows 側のエンド
- * **クラウド環境ページ**：オーナーは[組織共有環境](/docs/ja/cloud-environments#organization-shared-environments)を作成し、メンバーのクラウドセッションの[ネットワークアクセスレベル](/docs/ja/cloud-environments#network-access)、環境変数、セットアップスクリプトを設定します。
- * **デフォルト環境**：オーナーは、[claude.ai/admin-settings/claude-code](https://claude.ai/admin-settings/claude-code) で組織のデフォルト環境を別途選択します。
--* **GitHub ページ**：組織にリンクされている GitHub アカウントについては、[接続された GitHub アカウント](#connected-github-accounts)を参照してください。
-+* **Git providers ページ**：組織にリンクされている GitHub アカウントについては、[接続された GitHub アカウント](#connected-github-accounts)を参照してください。
- 
- 権限ルールとサンドボックスは異なるレイヤーをカバーします。WebFetch を拒否すると Claude のフェッチツールがブロックされますが、Bash が許可されている場合、`curl` と `wget` は依然として任意の URL に到達できます。サンドボックスは、OS レベルで強制されるネットワークドメイン許可リストでそのギャップを閉じます。
-@@ -138,9 +138,9 @@ WSL 2 ユーティリティ VM 内のプロセスは、Windows 側のエンド
- </h3>
- 
--Team プランと Enterprise プランでは、[**Organization settings > GitHub**](https://claude.ai/admin-settings/github) に、[Claude GitHub App](https://github.com/apps/claude) を通じて Claude 組織にリンクされている GitHub 組織と個人アカウントが一覧表示されます。Claude Code、[Claude Tag](https://claude.com/docs/claude-tag/admins/configure-github)、Claude Security はこのリストを共有します。このページを開くには、Claude 組織での管理者ロールが必要です。
-+Team プランと Enterprise プランでは、[**Organization settings > Git providers**](https://claude.ai/admin-settings/source-control) の GitHub セクションに、[Claude GitHub App](https://github.com/apps/claude) を通じて Claude 組織にリンクされている GitHub 組織と個人アカウントが一覧表示されます。Claude Code、[Claude Tag](https://claude.com/docs/claude-tag/admins/configure-github)、Claude Security はこのリストを共有します。このページを開くには、Claude 組織での管理者ロールが必要です。
- 
- アカウントは管理者またはメンバーがリンクできます。
- 
--* **管理者による接続**：管理者がこのページで **Connect** をクリックし、GitHub 組織に Claude GitHub App をインストールします。この方法で組織をリンクするには、GitHub 組織のオーナーであり、かつ Claude 組織の管理者でもある人物が必要です。
-+* **管理者による接続**：管理者がこのセクションで **Connect** をクリックするか、アカウントが接続済みの場合は **Add organization** をクリックして、GitHub 組織に Claude GitHub App をインストールします。この方法で組織をリンクするには、GitHub 組織のオーナーであり、かつ Claude 組織の管理者でもある人物が必要です。
- * **メンバーによる接続**：メンバーが GitHub アカウントを Claude に接続すると（たとえば[クラウドセッションのセットアップ](/docs/ja/web-quickstart#connect-github)中など）、Claude は、そのメンバーが所有し、Claude GitHub App が既にインストールされている GitHub アカウントをリンクします。これには、メンバーの個人アカウントや、メンバーが所有する GitHub 組織が含まれる場合があります。
- 
-@@ -175,8 +175,9 @@ Team、Enterprise、Claude API、およびクラウドプロバイダープラ
- | :- | :- | :- |
- | Data usage policy | Anthropic が収集する内容、保持期間、トレーニングに使用されない内容 | [Data usage](/docs/ja/data-usage) |
--| Zero Data Retention（ZDR） | リクエスト完了後は何も保存されません。Claude for Enterprise で利用可能 | [Zero data retention](/docs/ja/zero-data-retention) |
-+| Zero Data Retention（ZDR） | リクエスト完了後は何も保存されません。Claude for Enterprise の適格なアカウントで利用可能 | [Zero data retention](/docs/ja/zero-data-retention) |
-+| HIPAA 設定 | HIPAA が有効になっている Claude for Enterprise の組織向け。Claude Code（ローカルモード）の一部の機能は無効になり、その他の機能はデフォルトで無効になります | [HIPAA 対応組織向けに Claude Code（ローカルモード）をセットアップする](/docs/ja/hipaa-setup) |
- | Security architecture | ネットワークモデル、暗号化、認証、監査証跡 | [Security](/docs/ja/security) |
-```
-
-</details>
-
-<details>
-<summary>agent-view-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/agent-view-ja.md b/docs-ja/pages/agent-view-ja.md
-index 8a6ee49..16af107 100644
---- a/docs-ja/pages/agent-view-ja.md
-+++ b/docs-ja/pages/agent-view-ja.md
-@@ -101,7 +101,7 @@ Claude が複数の独立したタスクに対して、あなたが毎ステッ
- `claude agents` を実行してエージェントビューを開きます。ターミナル全体を占有し、状態でグループ化されたすべてのセッションをリストします。ピン留めされたセッションと入力が必要なセッションが上部に表示されます。各行はセッションの名前、現在のアクティビティ、およびセッションが作成されてからの経過時間を表示します。完了したセッションの経過時間は、実行にかかった時間で固定されます。
- 
--名前は、そのセッションで [`/color`](/docs/ja/commands) によって設定されたカラーで色付けされます。`←` または `/background` で [セッションをバックグラウンドにする](#from-inside-a-session) ときにカラーが引き継がれます。
-+名前は、そのセッションで [`/color`](/docs/ja/commands) によって設定されたカラーで色付けされます。`←` または `/background` で [セッションをバックグラウンドにする](#from-inside-a-session) 場合も同様です。
- 
--デフォルトでは、リストはすべてのプロジェクト全体で開始したすべてのバックグラウンドセッションを表示します。1 つのリポジトリで作業しているセッションと別のワークツリーで作業している別のセッションの両方がここに表示されます。エージェントビューを開いたディレクトリに関係なく表示されます。リストを 1 つのプロジェクトに絞り込むには、`--cwd` を渡します：
-+デフォルトでは、リストはすべてのプロジェクト全体で開始したすべてのバックグラウンドセッションを表示します。1 つのリポジトリで作業しているセッションと別の worktree で作業している別のセッションの両方がここに表示されます。エージェントビューを開いたディレクトリに関係なく表示されます。リストを 1 つのプロジェクトに絞り込むには、`--cwd` を渡します：
- 
- ```bash theme={null}
-@@ -109,7 +109,7 @@ claude agents --cwd ~/projects/my-app
- ```
- 
--これはそのディレクトリの下で開始されたセッションのみを表示します。`~/projects/my-app/.claude/worktrees/` の下の [ワークツリーに移動した](#how-file-edits-are-isolated) セッションは、`~/projects/my-app` に属するものとしてカウントされます。
-+これはそのディレクトリの下で開始されたセッションのみを表示します。`~/projects/my-app/.claude/worktrees/` の下の [worktree に移動した](#how-file-edits-are-isolated) セッションも引き続き表示されます。
- 
--他のターミナルで開いているインタラクティブセッションは、[バックグラウンドにする](#from-inside-a-session) までは表示されません。[Subagents](/docs/ja/sub-agents) と [teammates](/docs/ja/agent-teams) はセッションが生成しても個別の行としてリストされません。
-+他のターミナルで開いているインタラクティブセッションは、[バックグラウンドにする](#from-inside-a-session) までは表示されません。セッションが生成する [サブエージェント](/docs/ja/sub-agents) と [チームメイト](/docs/ja/agent-teams) は、個別の行としてはリストされません。
- 
- ```text theme={null}
-@@ -125,9 +125,9 @@ Needs input
- Working
-   ✽ collision detection       Adding swept-AABB checks to CollisionSystem   2m
--  ✢ playtest level 3          run 12 · all checkpoints cleared           in 4m
-+  ✢ playtest level 3          all checkpoints cleared ×12                in 4m
- 
-```
-
-</details>
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index 0185085..5aac4b2 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,197 @@
- # Changelog
- 
-+## 2.1.290
-+
-+- Added `serverToolUses` to the result of a mod's `turn.step` hook: the tool calls the API ran itself (the advisor), each with its id, name, input, start and end
-+- Added `agentId` to the `tool.check` event of plugin hooks, so a hook can tell a subagent's permission check from the main session's
-+- Added `ceiling` to the question and verdict a mod's `tool.check` hook reads, naming the approval an organization requires for a tool
-+- Added `ThemeKey` and `Color` types to the plugin hooks typings, so an editor lists the theme colors a mod's drawing can name
-+- Added to `claude plugin validate`: each hook a mod registers at a gating site is listed with whether it has a `.catch` (`gatingHooks` under `--json`)
-+- Added a Deny button to the Claude apps gateway's sign-in approval page: it ends the pending sign-in, so the waiting terminal stops within seconds
-+- Added `claude attach <name>` and `claude logs <name>`: part of a session name works in place of the id
-+- Added `/claude-api managed-agents-onboard <url>` to set up the Managed Agents pattern a page describes as `ant apply` files
-+- Added `/claude-api managed-agents-onboard <quickstart-name>` to build a Console quickstart template, such as `deep-researcher`, with the `ant` CLI
-+- Added a warning when a managed settings file is a link to a file outside the managed settings folder
-+- Added a /status and doctor warning when managed settings ignore user-configured sandbox allowRead paths or allowed domains
-+- Fixed requests failing behind proxies and gateways that reject one of Claude Code's beta headers with a status other than 400, or together with a second beta
-+- Fixed long sessions with hundreds of images getting stuck on "Request rejected as unprocessable by the model" errors
-+- Fixed a turn ending at once when the API's output content filter stopped a reply while Claude was still thinking; the request is now retried once before the error is shown
-+- Fixed resumed subagents and teammates losing their earlier thinking and prompt cache after receiving a message mid-run
-+- Fixed WebFetch silently dropping page text past 100,000 characters; it now says how much was unread and takes an `offset` to read on
-+- Fixed a crash ("Maximum call stack size exceeded") when a response nested lists or quotes thousands of levels deep
-+- Fixed `/rewind` not listing a prompt sent while Claude was still working
-+- Fixed scheduled tasks (`/loop` with an interval, reminders) silently not coming back on resume once the conversation was compacted; covers compactions made from this version on
-+- Fixed scheduled tasks set in the foreground never firing after a ← or `/background` hand-off, and recurring ones firing an extra run on every resume, respawn or fork
-+- Fixed headless `--json-schema` runs exiting non-zero with `is_error: true` on a `success` result when the connection dropped after the structured output was already delivered
-```
-
-</details>
-
-<details>
-<summary>channels-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/channels-ja.md b/docs-ja/pages/channels-ja.md
-index 4f8f24b..db5ab09 100644
---- a/docs-ja/pages/channels-ja.md
-+++ b/docs-ja/pages/channels-ja.md
-@@ -48,5 +48,5 @@ Team、Enterprise、または Console 組織を管理している場合は、[
-         * プラグインが[マーケットプレイスで見つかりません](/docs/ja/plugins/install#install-a-plugin)：プラグイン名を確認してください。
- 
--        インストールがインストールスコープを求めるとき、ユーザースコープオプションを選択して、プラグインがすべてのプロジェクト全体で利用可能になるようにしてください。インストール概要を確認してください。`Run /reload-plugins to activate.` と報告されている場合は、[プラグイン変更を再起動なしで適用する](/docs/ja/plugins/cli-reference#reload-plugins)を参照して、プラグインの設定コマンドを利用可能にしてください。
-+        インストールがインストールスコープを求めるとき、ユーザースコープオプションを選択して、プラグインがすべてのプロジェクト全体で利用可能になるようにしてください。インストール概要を確認してください。`Run /reload-plugins to apply.` と報告されている場合は、[プラグイン変更を再起動なしで適用する](/docs/ja/plugins/cli-reference#reload-plugins)を参照して、プラグインの設定コマンドを利用可能にしてください。
-       </Step>
- 
-@@ -126,5 +126,5 @@ Team、Enterprise、または Console 組織を管理している場合は、[
-         * プラグインが[マーケットプレイスで見つかりません](/docs/ja/plugins/install#install-a-plugin)：プラグイン名を確認してください。
- 
--        インストールがインストールスコープを求めるとき、ユーザースコープオプションを選択して、プラグインがすべてのプロジェクト全体で利用可能になるようにしてください。インストール概要を確認してください。`Run /reload-plugins to activate.` と報告されている場合は、[プラグイン変更を再起動なしで適用する](/docs/ja/plugins/cli-reference#reload-plugins)を参照して、プラグインの設定コマンドを利用可能にしてください。
-+        インストールがインストールスコープを求めるとき、ユーザースコープオプションを選択して、プラグインがすべてのプロジェクト全体で利用可能になるようにしてください。インストール概要を確認してください。`Run /reload-plugins to apply.` と報告されている場合は、[プラグイン変更を再起動なしで適用する](/docs/ja/plugins/cli-reference#reload-plugins)を参照して、プラグインの設定コマンドを利用可能にしてください。
-       </Step>
- 
-@@ -193,5 +193,5 @@ Team、Enterprise、または Console 組織を管理している場合は、[
-         インストールがインストールスコープを求めるとき、ユーザースコープオプションを選択して、プラグインがすべてのプロジェクト全体で利用可能になるようにしてください。
- 
--        インストール概要が `Run /reload-plugins to activate.` と報告されている場合は、次のステップで再起動するため、ここではスキップできます。
-+        インストール概要で `Run /reload-plugins to apply.` と報告された場合でも、次のステップで再起動するとプラグインが読み込まれるため、ここで対応する必要はありません。
-       </Step>
- 
-@@ -252,5 +252,5 @@ Fakechat デモを試すには、以下が必要です。
-     インストールがインストールスコープを求めるとき、ユーザースコープオプションを選択して、プラグインがすべてのプロジェクト全体で利用可能になるようにしてください。
- 
--    インストール概要が `Run /reload-plugins to activate.` を報告する場合、ここで対応する必要はありません。次のステップで再起動するときにプラグインが取得されるためです。
-+    インストール概要が `Run /reload-plugins to apply.` を報告する場合、ここで対応する必要はありません。次のステップで再起動するときにプラグインが取得されるためです。
-```
-
-</details>
-
-<details>
-<summary>channels-reference-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/channels-reference-ja.md b/docs-ja/pages/channels-reference-ja.md
-index 9f399e6..97490a7 100644
---- a/docs-ja/pages/channels-reference-ja.md
-+++ b/docs-ja/pages/channels-reference-ja.md
-@@ -194,4 +194,6 @@ claude --dangerously-load-development-channels server:webhook
- ```
- 
-+開発フラグは、Claude Code が確認プロンプトを表示できる対話セッションで実行してください。`-p` を使用した非対話モードや Agent SDK 経由でフラグを渡した場合、Claude Code はフラグを無視し、チャネルは登録されません。
-+
- バイパスはエントリごとです。このフラグを `--channels` と組み合わせても、バイパスは `--channels` エントリに拡張されません。リサーチプレビュー中、あなたのチャネルは承認許可リストにないため、構築とテスト中は開発フラグに留まります。
- 
-```
-
-</details>
-
-<details>
-<summary>checkpointing-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/checkpointing-ja.md b/docs-ja/pages/checkpointing-ja.md
-index 1d40140..9c4190a 100644
---- a/docs-ja/pages/checkpointing-ja.md
-+++ b/docs-ja/pages/checkpointing-ja.md
-@@ -36,5 +36,5 @@ Claude Code は、ファイル編集ツールで行われたすべての変更
- </Note>
- 
--巻き戻しメニューには、セッション中に送信した各プロンプトが表示されます。ただし、[ターン中に送信されたメッセージ](#messages-sent-mid-turn-not-checkpointed)は除外されます。操作したいポイントを選択してから、アクションを選択します。
-+巻き戻しメニューには、セッション中に送信したプロンプトが一覧表示されます。操作したいポイントを選択してから、アクションを選択します。
- 
- * **コードと会話を復元**: コードと会話の両方をそのポイントに戻します
-@@ -115,7 +115,7 @@ cp source.txt dest.txt
- </h3>
- 
--[Claude が作業中にキューに入れたメッセージ](/docs/ja/interactive-mode#queue-messages-while-claude-works)が実行中のターン内に Claude に到達すると、新しいターンを開始する代わりにそのターンに参加します。メッセージは会話に表示されますが、Claude Code はそれのチェックポイントを作成せず、巻き戻しメニューにはリストされません。Claude Code が独自のターンとして送信するキューに入れたメッセージは、通常どおりチェックポイントを取得します。複数のキューに入れたメッセージが[そのターンを共有](/docs/ja/interactive-mode#when-claude-code-sends-what-you-queued)する場合も含まれます。
-+[Claude が作業中にキューに入れたメッセージ](/docs/ja/interactive-mode#queue-messages-while-claude-works)が実行中のターン内に Claude に到達すると、新しいターンを開始する代わりにそのターンに参加します。メッセージは会話に表示されますが、Claude Code はそれのチェックポイントを作成しません。Claude Code が新しいターンの一部として送信するキューに入れたメッセージは、通常どおりチェックポイントを取得します。複数のキューに入れたメッセージが[そのターンを共有](/docs/ja/interactive-mode#when-claude-code-sends-what-you-queued)する場合も含まれます。
- 
--そのようなメッセージを削除するか、メッセージの後に Claude が行った編集を取り消すには、ターンを開始したプロンプトに巻き戻します。これにより、メッセージが到達する前に Claude が行った作業を含む、ターン全体が巻き戻されます。
-+そのようなメッセージの後に Claude が行った編集を取り消すには、ターンを開始したプロンプトに巻き戻します。これにより、メッセージが到達する前に Claude が行った作業を含む、ターン全体が巻き戻されます。
- 
- <h3 id="symlinked-and-hard-linked-paths-not-restored">
-```
-
-</details>
-
-<details>
-<summary>chrome-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/chrome-ja.md b/docs-ja/pages/chrome-ja.md
-index 94b8452..bbb883c 100644
---- a/docs-ja/pages/chrome-ja.md
-+++ b/docs-ja/pages/chrome-ja.md
-@@ -46,4 +46,6 @@ Claude Code を Chrome で使用する前に、以下が必要です。
- * 直接 Anthropic プラン（Pro、Max、Team、または Enterprise）
- 
-+HIPAA が有効になっている Enterprise 組織では、Claude in Chrome はデフォルトでオフになっており、[Owner](/docs/ja/server-managed-settings#access-control) が [**Organization settings > Claude in Chrome**](https://claude.ai/admin-settings/browser-extension) でオンにできます。Anthropic との事業提携契約（BAA）は、Claude in Chrome を通じてサードパーティのサイトに送信されるデータを対象としていません。対象サービス（Eligible Services）の一覧については、[実装ガイド](https://trust.anthropic.com/resources?s=l1wrssd9hsbi4gak0tp5a6\&name=%5Banthropic%5D-hipaa-ready-offering-implementation-guide)を参照してください。
-+
- Chrome 統合を使用するには、`/login` でサインインする必要もあります。API キーまたは [`claude setup-token`](/docs/ja/authentication#generate-a-long-lived-token) で発行した長期間有効なトークンで認証している場合、ブラウザ拡張機能はこれらの認証情報では認証できないため、`--chrome` を渡しても Claude Code は Chrome 統合を無効のままにします。v2.1.216 より前のバージョンでは、これらのセッションでも Chrome 統合を有効にできましたが、ブラウザ拡張機能への接続はすべて 403 エラーで失敗していました。
- 
-```
-
-</details>
-
-*...以降省略*
-
-</details>
-
-
-<details>
-<summary>2026-10-05</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/admin-setup-ja.md                    |   4 +-
- docs-ja/pages/agent-view-ja.md                     |   7 +-
- docs-ja/pages/amazon-bedrock-ja.md                 |  17 +
- docs-ja/pages/artifacts-ja.md                      |   4 +-
- docs-ja/pages/best-practices-ja.md                 |  35 +-
- docs-ja/pages/channels-ja.md                       |   2 +-
- docs-ja/pages/claude-apps-gateway-config-ja.md     | 256 +++++---
- docs-ja/pages/claude-apps-gateway-deploy-ja.md     |   9 +-
- docs-ja/pages/claude-apps-gateway-ja.md            |  41 +-
- docs-ja/pages/claude-code-on-the-web-ja.md         | 166 +++--
- docs-ja/pages/claude-directory-ja.md               |   8 +-
- docs-ja/pages/cloud-environments-ja.md             |   2 +-
- docs-ja/pages/costs-ja.md                          |   2 +-
- docs-ja/pages/cross-session-messaging-ja.md        |   1 +
- docs-ja/pages/desktop-ios-simulator-ja.md          |   2 +-
- docs-ja/pages/desktop-ja.md                        |  32 +-
- docs-ja/pages/desktop-quickstart-ja.md             |   2 +-
- docs-ja/pages/env-vars-ja.md                       | 729 +++++++++++----------
- docs-ja/pages/errors-ja.md                         |  20 +-
- docs-ja/pages/fast-mode-ja.md                      |   8 +-
- docs-ja/pages/features-overview-ja.md              |   6 +-
- docs-ja/pages/fullscreen-ja.md                     |   2 +-
- docs-ja/pages/google-vertex-ai-ja.md               |  17 +
- docs-ja/pages/headless-ja.md                       |   2 +-
- docs-ja/pages/hooks-guide-ja.md                    |   2 +-
- docs-ja/pages/hooks-ja.md                          |  60 +-
- docs-ja/pages/interactive-mode-ja.md               |   4 +-
- docs-ja/pages/keybindings-ja.md                    |   6 +-
- docs-ja/pages/llm-gateway-protocol-ja.md           |  14 +-
- docs-ja/pages/managed-mcp-ja.md                    |  96 ++-
- docs-ja/pages/managed-settings-ja.md               |   4 +-
- docs-ja/pages/mcp-ja.md                            |  17 +-
- docs-ja/pages/model-config-ja.md                   |   3 +-
- docs-ja/pages/monitoring-usage-ja.md               |  45 +-
- docs-ja/pages/permission-modes-ja.md               |  13 +-
- docs-ja/pages/sandboxing-ja.md                     |   2 +-
- .../pages/self-hosted-environments-deploy-ja.md    |  19 +
- .../self-hosted-environments-quickstart-ja.md      |   2 +-
- docs-ja/pages/server-managed-settings-ja.md        |   8 +-
- docs-ja/pages/sessions-ja.md                       |   1 +
- docs-ja/pages/settings-reference-ja.md             |   6 +-
- docs-ja/pages/skills-ja.md                         |  19 +-
- docs-ja/pages/sub-agents-ja.md                     |   2 +-
- docs-ja/pages/tools-reference-ja.md                |  13 +
- docs-ja/pages/web-quickstart-ja.md                 |   8 +-
- 45 files changed, 1052 insertions(+), 666 deletions(-)
-```
 
 <!-- UPDATE_LOG_END -->

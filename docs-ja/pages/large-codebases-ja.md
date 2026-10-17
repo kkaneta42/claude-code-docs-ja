@@ -213,7 +213,7 @@ Claude のコンテンツ検索はデフォルトで `.gitignore` を尊重す�
 インストールが失敗した場合は、Claude Code が報告するメッセージに一致させます。
 
 * `Marketplace "claude-plugins-official" not found`: `/plugin marketplace add anthropics/claude-plugins-official` でマーケットプレイスを追加してから、インストールを再試行します。
-* プラグインが[マーケットプレイスで見つかりません](/docs/ja/plugins/install#install-a-plugin): プラグイン名を確認します。
+* `Plugin "<name>" not found in marketplace "claude-plugins-official"`: マーケットプレイスカタログのローカルコピーが古くなっている可能性があります。`/plugin marketplace update claude-plugins-official` で更新してから、インストールを再試行します。再試行しても同じメッセージが表示される場合は、[Plugin not found in marketplace](/docs/ja/plugins/troubleshooting#plugin-not-found-in-marketplace) を参照してください。
 
 プラグインを自分でインストールするのではなく、リポジトリ内のすべての人に対して有効にするには、[`enabledPlugins` プロジェクト設定](/docs/ja/settings-reference#plugin-settings)に追加します。
 

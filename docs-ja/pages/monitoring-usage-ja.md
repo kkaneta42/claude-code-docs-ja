@@ -772,7 +772,7 @@ Claude Code 経由で Git コミットを作成したときにインクリメン
 **属性**:
 
 * すべての[標準属性](#standard-attributes)
-* `type`: （`"input"`、`"output"`、`"cacheRead"`、`"cacheCreation"`）。`"input"` タイプには、プロンプトキャッシュから読み取られた、またはプロンプトキャッシュに書き込まれたトークンは含まれません。これらは `"cacheRead"` と `"cacheCreation"` でカウントされます
+* `type`: (`"input"`, `"output"`, `"cacheRead"`, `"cacheCreation"`)。`"input"` タイプには、プロンプトキャッシュから読み取られた、またはプロンプトキャッシュに書き込まれたトークンは含まれず、それらは `"cacheRead"` と `"cacheCreation"` でカウントされます。`"cacheCreation"` タイプは、5 分と 1 時間の[キャッシュ有効期間](/docs/ja/prompt-caching#cache-lifetime)のキャッシュ書き込みをまとめてカウントします。
 * `model`: モデル識別子（例: "claude-sonnet-5"）
 * `query_source`: リクエストを発行したサブシステムのカテゴリ。`"main"`、`"subagent"`、`"auxiliary"` のいずれか
 * `speed`: リクエストが fast mode を使用した場合は `"fast"`。それ以外の場合は含まれません

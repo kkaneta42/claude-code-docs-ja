@@ -281,7 +281,7 @@ Claude Code は `~/.claude/themes/` を監視し、ファイルが追加また�
     フルスクリーンモード
   </h4>
 
-  Claude Code は、デフォルトとフルスクリーンレンダラーの両方で `userMessageBackground`、`bashMessageBackgroundColor`、および `memoryBackgroundColor` を描画します。[フルスクリーンレンダリングモード](/docs/ja/fullscreen)でのみ `userMessageBackgroundHover` と `selectionBg` を使用します。
+  Claude Code は、`userMessageBackgroundHover`、`selectionBg`、および `composerSidebarBackground` を[フルスクリーンレンダリングモード](/docs/ja/fullscreen)でのみ使用します。`userMessageBackground`、`bashMessageBackgroundColor`、および `memoryBackgroundColor` は、デフォルトとフルスクリーンレンダラーの両方で描画します。
 
   | トークン | 制御対象 |
   | :- | :- |
@@ -290,6 +290,7 @@ Claude Code は `~/.claude/themes/` を監視し、ファイルが追加また�
   | `bashMessageBackgroundColor` | トランスクリプト内の `!` シェルコマンドエントリの背後の背景 |
   | `memoryBackgroundColor` | トランスクリプト内の `#` メモリエントリの背後の背景 |
   | `selectionBg` | マウスで選択されたテキストの背景 |
+  | `composerSidebarBackground` | 会話の横に表示されるパネル（[差分パネル](/docs/ja/fullscreen#watch-your-changes-in-the-diff-panel)や [mod のペイン](/docs/ja/plugins/mods/interface)など）の背景 |
 
   <h4 id="usage-meter-and-speaker-labels">
     使用量メーターとスピーカーラベル

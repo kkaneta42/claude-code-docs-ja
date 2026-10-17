@@ -112,7 +112,7 @@ Claude Code を Model Context Protocol（MCP）サーバーに接続できます
   IDE セキュリティ
 </h2>
 
-IDE で Claude Code を実行する場合の詳細については、[VS Code security and privacy](/docs/ja/vs-code#security-and-privacy) を参照してください。
+IDE で Claude Code を実行する場合の詳細については、[組み込みの IDE MCP サーバー](/docs/ja/vs-code#the-built-in-ide-mcp-server)を参照してください。
 
 <h2 id="cloud-execution-security">
   クラウド実行セキュリティ

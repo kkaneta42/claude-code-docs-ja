@@ -1832,7 +1832,7 @@ Claude がツールのパラメータを作成した後、ツール呼び出し�
 
 [PreToolUse の決定制御](#pretooluse-decision-control)を使用して、ツール呼び出しを許可、拒否、確認、または遅延します。
 
-タイムアウトを超えた `PreToolUse` の [Agent SDK コールバックフック](/docs/ja/agent-sdk/hooks)はツール呼び出しをブロックし、Claude はタイムアウトを示すエラー結果を受け取ります。別のフックが返した明示的な拒否は引き続き優先されます。
+`PreToolUse` の [Agent SDK コールバックフック](/docs/ja/agent-sdk/hooks)がタイムアウトを超えると、ツール呼び出しはブロックされ、Claude はタイムアウトを示すエラー結果を受け取ります。
 
 <h4 id="pretooluse-input">
   PreToolUse の入力

@@ -68,6 +68,7 @@ Claude for Enterprise 上の Claude Code 組織に対して ZDR が有効化さ�
 | 機能 | 理由 |
 | - | - |
 | [Web 上の Claude Code](/docs/ja/claude-code-on-the-web)（[Desktop アプリ](/docs/ja/desktop#cloud-sessions)から開始されたものを含む） | セッションデータのサーバー側ストレージが必要です。これには、プロンプトと完了を含む会話履歴が含まれます。 |
+| [Chat と Cowork の統合](https://support.claude.com/en/articles/17444462-set-up-and-manage-the-new-unified-claude-experience-for-your-enterprise-organization) | クラウドセッションが必要です。 |
 | [Claude Tag](https://claude.com/docs/claude-tag) | チャネルメモリとセッショントランスクリプトを保持します。 |
 | [Artifacts](/docs/ja/artifacts) | Anthropic が運用するインフラストラクチャに公開されたページコンテンツを保存する必要があります。 |
 | フィードバック送信（`/feedback`、`/bug`、`/share`） | フィードバックを送信すると、会話データが Anthropic に送信されます。 |

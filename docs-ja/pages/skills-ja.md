@@ -718,10 +718,6 @@ Fix GitHub issue $ARGUMENTS following our coding standards.
 
 スキルに引数を指定して呼び出しても、スキルのコンテンツのプレースホルダーが 1 つも受け取らない場合、Claude Code は `ARGUMENTS: <your input>` をスキルコンテンツの最後に追加するため、Claude は依然として入力したものを見ます。プレースホルダーは `$ARGUMENTS`、`$1` などのインデックス形式、または名前付き引数です。対応する引数がないインデックス付きプレースホルダーはリテラルテキストのままで、1 つを受け取ったとしてカウントされません。名前付きプレースホルダーは、位置に引数がない場合でも、空の文字列に展開されるため、カウントされます。
 
-1 つのメッセージの先頭に複数のスキルをスタックすることもできます。`/write-tests /fix-issue 123` と入力すると、両方のスキルが読み込まれ、末尾のテキスト `123` が `$ARGUMENTS` として各スキルに渡されます。
-
-Claude Code は最初のスキルと、その後にスタックされた最大 5 つのスキルを展開します。展開は、インラインのユーザー呼び出し可能スキルではない最初のトークンで停止するため、[フォークされたサブエージェント](#run-skills-in-a-subagent) として実行されるスキル（[`/code-review`](/docs/ja/code-review-local) など）、またはその引数自体がスラッシュコマンドで始まる可能性があるスキル（`/loop` など）も、そこで展開を終了します。そのトークンとその後のすべてが、展開されたすべてのスキルの引数テキストになります。v2.1.218 から `/code-review` はフォークされたサブエージェントとして実行されます。以前のバージョンではインラインで実行され、スタックされました。
-
 位置で個別の引数にアクセスするには、`$ARGUMENTS[N]` または短い `$N` を使用します。
 
 ```yaml theme={null}
@@ -745,6 +741,14 @@ description: Migrate a component from one language to another
 Migrate the $0 component from $1 to $2.
 Preserve all existing behavior and tests.
 ```
+
+<h4 id="stack-several-skills-in-one-message">
+  1 つのメッセージに複数のスキルをスタックする
+</h4>
+
+ターミナルで Claude Code のプロンプトに入力する場合、1 つのメッセージの先頭に複数のスキルをスタックできます。Agent SDK または `claude -p` を通じた場合、Claude Code は最初のスキルのみを読み込み、行の残りの部分をその引数とします。ターミナルのプロンプトで `/write-tests /fix-issue 123` と入力すると、両方のスキルが読み込まれ、末尾のテキスト `123` が `$ARGUMENTS` として各スキルに渡されます。
+
+Claude Code は最初のスキルと、その後にスタックされた最大 5 つのスキルを展開します。展開は、インラインのユーザー呼び出し可能スキルではない最初のトークンで停止します。[フォークされたサブエージェント](#run-skills-in-a-subagent) として実行されるスキル（[`/code-review`](/docs/ja/code-review-local) など）や、引数が別のコマンドで始まる可能性があるスキル（`/loop` など）をスタックした場合、展開はそこで終了します。そのトークンとその後のすべてが、展開されたすべてのスキルの引数テキストになります。
 
 <h2 id="advanced-patterns">
   高度なパターン
@@ -1044,7 +1048,7 @@ Claude Code は、`allow` ルールをスキル自身の名前と Claude の呼�
 インストールが失敗した場合は、Claude Code が報告するメッセージと一致させます。
 
 * `Marketplace "claude-plugins-official" not found`：`/plugin marketplace add anthropics/claude-plugins-official` でマーケットプレイスを追加してから、インストールを再試行します。
-* [プラグインがマーケットプレイスで見つかりません](/docs/ja/plugins/install#install-a-plugin)：プラグイン名を確認します。
+* `Plugin "<name>" not found in marketplace "claude-plugins-official"`：マーケットプレイスカタログのローカルコピーが古くなっている可能性があります。`/plugin marketplace update claude-plugins-official` で更新してから、インストールを再試行します。再試行しても同じメッセージが表示される場合は、[プラグインがマーケットプレイスで見つからない](/docs/ja/plugins/troubleshooting#plugin-not-found-in-marketplace) を参照してください。
 
 インストール概要が `Run /reload-plugins to apply.` を報告する場合、Claude Code はそのリロードを実行します。リロードが次のメッセージが会話を再読み込みすることを警告する場合は、`/reload-plugins --force` を実行してプラグインのスキルを現在のセッションで利用可能にします。その後、Claude に既存のスキルを評価するよう依頼します。例えば `evaluate my summarize-changes skill with skill-creator` です。プラグインはテストケースの作成をガイドし、ループを実行します。
 

@@ -199,8 +199,8 @@ Claude Code には 2 つのサンドボックスモードがあります。ど�
 
 auto-allow モードでも、次の点は引き続き適用されます。
 
-* 明示的な[拒否ルール](/docs/ja/permissions)は常に尊重されます
-* [重要なパス](/docs/ja/permission-modes#critical-paths)を対象とする `rm` または `rmdir` コマンドは、引き続き通常の権限フローを経由します
+* [`Bash` の拒否ルールが一致する形式](/docs/ja/permissions#bash-rule-limits)のコマンドは、引き続きブロックされます
+* [重要なパス](/docs/ja/permission-modes#which-paths-are-critical)を対象とすると認識された `rm` または `rmdir` コマンドは、引き続き通常の権限フローを経由します
 * `Bash(git push *)` のような内容を限定した[確認ルール](/docs/ja/permissions)は、サンドボックス化されたコマンドであっても引き続きプロンプトを強制します
 * 単独の `Bash` 確認ルール、またはそれと同等の `Bash(*)` 形式は、サンドボックス化されて実行されるコマンドではスキップされます。サンドボックス外で実行されるコマンドには引き続き適用されます。[plan モード](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode)では、このルールはスキップされず、読み取り専用のものも含め、サンドボックス化されたコマンドに対してもプロンプトを表示します
 * [Monitor ツール](/docs/ja/tools-reference#monitor-tool)のコマンドは、引き続きサンドボックス内で実行されますが、自動的には承認されません。プロンプトをスキップするには、`Bash(npm run *)` など、そのコマンドに一致する[許可ルール](/docs/ja/permissions#bash)を追加します
