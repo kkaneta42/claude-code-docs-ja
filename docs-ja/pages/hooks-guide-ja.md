@@ -624,7 +624,7 @@ if echo "$COMMAND" | grep -q "drop table"; then
   exit 2 # exit 2 = アクションをブロック
 fi
 
-exit 0  # exit 0 = 決定なし。通常の許可フローが適用されます
+exit 0  # exit 0 = 決定なし。通常の権限フローが適用されます
 ```
 
 終了コードは次に何が起こるかを決定します：
@@ -633,10 +633,10 @@ exit 0  # exit 0 = 決定なし。通常の許可フローが適用されます
   * `PreToolUse` hook の場合、これはツール呼び出しを承認しません：通常の [許可フロー](/docs/ja/permissions) が引き続き適用されます。
   * `UserPromptSubmit`、`UserPromptExpansion`、`SessionStart`、および `PostModelSwitch` hooks の場合、Claude Code は stdout を [プレーンテキストとして扱い](/docs/ja/hooks#exit-code-0) Claude のコンテキストに追加します。
 * **終了 2**：Claude Code はアクションをブロックします。stderr に理由を書き込みます。それがどこに着地するかはイベントによって異なります：一部のイベントはそれを Claude にフィードバックとして供給するため、調整できます。他のイベントはそれをユーザーに表示し、`ConfigChange` や `Elicitation` などのいくつかはメッセージを表示しません。一部のイベントはブロックできません：`SessionStart` などの場合、終了 2 は stderr をユーザーに表示し、実行は続行されます。[イベントごとの終了コード 2 の動作](/docs/ja/hooks#exit-code-2-behavior-per-event) で完全なリストを参照してください。
-* **その他の終了コード**：ほとんどのイベントでは、結果は hook が stdout に出力したものによって異なります：
-  * スキーマ検証に合格した解析済みオブジェクト：Claude Code は終了コードを無視し、JSON だけが結果を決定し、hook はエラーとして報告されません。`WorktreeCreate` が任意の非ゼロ終了で失敗するなどの例外は、リファレンスの [終了コード出力](/docs/ja/hooks#exit-code-output) セクションにリストされています。
-  * スキーマ検証に失敗した解析済みオブジェクト、または Claude Code が [JSON として解析しようとする](/docs/ja/hooks#exit-code-0) が有効な JSON ではない stdout：ブロックされないエラー。通知は検証またはパースメッセージを含みます。
-  * Claude Code が [プレーンテキストとして扱う](/docs/ja/hooks#exit-code-0) stdout、または空の stdout：アクションはブロックされないエラーとして進行します。トランスクリプトは `<hook name> hook error` 通知を表示し、その後 stderr の最初の行が `Failed with non-blocking status code:` で始まります。完全な stderr をキャプチャするには、`claude --debug` で [デバッグログ](/docs/ja/hooks#debug-hooks) を有効にするか、セッション中に `/debug` を実行してください。
+* **その他の終了コード**：ほとんどのイベントでは、アクションは [ブロックしないエラー](/docs/ja/hooks#exit-code-output) として続行されます。ただし、そのフックが [失敗時にアクションをブロックする](/docs/ja/hooks#block-the-action-when-a-hook-fails) ものである場合や、その JSON 出力が検証に合格した場合は除きます：
+  * スキーマ検証に合格した解析済みオブジェクト：Claude Code は終了コードを無視し、JSON だけが結果を決定し、フックはエラーとして報告されません。`WorktreeCreate` がゼロ以外の終了で失敗するなどのイベントごとの例外は、リファレンスの [終了コード出力](/docs/ja/hooks#exit-code-output) セクションに記載されています。
+  * スキーマ検証に失敗した解析済みオブジェクト、または Claude Code が [JSON として解析しようとする](/docs/ja/hooks#exit-code-0) ものの有効な JSON ではない stdout：ブロックしないエラーになります。通知には検証またはパースのメッセージが含まれます。
+  * Claude Code が [プレーンテキストとして扱う](/docs/ja/hooks#exit-code-0) stdout、または空の stdout：アクションはブロックしないエラーとして続行されます。トランスクリプトには `<hook name> hook error` 通知が表示され、続いて `Failed with non-blocking status code:` を先頭に付けた stderr の最初の行が表示されます。stderr 全体をキャプチャするには、`claude --debug` を使用するか、セッション中に `/debug` を実行して [デバッグログ](/docs/ja/hooks#debug-hooks) を有効にしてください。
 
 <h4 id="structured-json-output">
   構造化 JSON 出力
@@ -664,7 +664,13 @@ exit 0  # exit 0 = 決定なし。通常の許可フローが適用されます
 
 `PreToolUse` では、Claude Code は各 `permissionDecision` 値を次のように処理します：
 
-* `"allow"`：対話的な権限プロンプトをスキップします。拒否ルールと確認ルール（エンタープライズの管理 deny リストを含む）は引き続き適用されます。また、[ネットワークパス](/docs/ja/permissions#network-paths) からの読み取り、[`requiresUserInteraction`](/docs/ja/mcp#require-approval-for-a-specific-tool) とマークされた MCP ツール、およびその設定が Claude Code に届くセッションで [組織が `ask` に設定した](/docs/ja/mcp#organization-controls-on-connector-tools) コネクタツールに対するプロンプトも引き続き表示されます
+* `"allow"`：対話的な権限プロンプトをスキップします。拒否ルールと確認ルール（エンタープライズの管理 deny リストを含む）は引き続き適用され、次に対するプロンプトも引き続き表示されます：
+
+  * [ネットワークパス](/docs/ja/permissions#network-paths) からの読み取り
+  * [`requiresUserInteraction`](/docs/ja/mcp#require-approval-for-a-specific-tool) とマークされた MCP ツール
+  * その設定が Claude Code に届くセッションで [組織が `ask` に設定した](/docs/ja/mcp#organization-controls-on-connector-tools) コネクタツール
+
+  plan モードでの `"allow"` の動作については、[plan モードでのフックによる承認](/docs/ja/permissions#hook-approvals-in-plan-mode) を参照してください。
 * `"deny"`：ツール呼び出しをキャンセルし、理由を Claude に送信します
 * `"ask"`：通常どおりユーザーに許可プロンプトを表示します
 
@@ -1015,9 +1021,15 @@ HTTP hooks は、Web サーバー、クラウド関数、または外部サー�
 
 `PreToolUse` フックは、`dontAsk` を含むすべての[権限モード](/docs/ja/permission-modes)において、権限モードのチェックより前に発火します。`permissionDecision: "deny"` を返すフックは、`bypassPermissions` モードや `--dangerously-skip-permissions` を使用している場合でもツールをブロックします。これにより、ユーザーが権限モードを変更しても回避できないポリシーを適用できます。
 
-逆は成り立ちません。`"allow"` を返すフックは、設定の拒否ルールを回避することはできず、また[ネットワークパス](/docs/ja/permissions#network-paths)からの読み取り、[`requiresUserInteraction`](/docs/ja/mcp#require-approval-for-a-specific-tool) が指定された MCP ツール、その設定が Claude Code に反映されるセッションにおいて[組織が `ask` に設定した](/docs/ja/mcp#organization-controls-on-connector-tools)コネクタツールのプロンプトを抑制することもできません。設定ファイルやプラグインの `hooks/hooks.json` 内のフックは、制限を厳しくすることはできますが、権限ルールが許可する範囲を超えて緩めることはできません。
+逆は成り立ちません。設定ファイルやプラグインの `hooks/hooks.json` 内のフックは、制限を厳しくすることはできますが、権限ルールが許可する範囲を超えて緩めることはできません。`"allow"` を返すフックは、設定の拒否ルールを回避することはできず、以下のプロンプトを抑制することもできません。
 
-インストールした [mod](/docs/ja/plugins/mods/overview) が `tool.check` を処理する場合、そのフックが管理設定にない限り、`PreToolUse` フックがブロックした呼び出しを mod が承認できます。mod に対してどのルールが優先されるかは、[フックで権限を拡張する](/docs/ja/permissions#extend-permissions-with-hooks)に記載されています。
+* [ネットワークパス](/docs/ja/permissions#network-paths)からの読み取り
+* [`requiresUserInteraction`](/docs/ja/mcp#require-approval-for-a-specific-tool) が指定された MCP ツール
+* その設定が Claude Code に反映されるセッションにおいて、[組織が `ask` に設定した](/docs/ja/mcp#organization-controls-on-connector-tools)コネクタツール
+
+[plan モード](/docs/ja/permissions#hook-approvals-in-plan-mode)では、`PreToolUse` フックがファイル編集に対して `"allow"` を返しても、フックがない場合にその編集が受けるのと同じプロンプト、ブロック、または承認が適用されます。フックによる承認に対するこの制限を解除するには、[プランを承認する](/docs/ja/permission-modes#review-and-approve-a-plan)か、別の権限モードに切り替えてください。
+
+インストールした [mod](/docs/ja/plugins/mods/overview) が `tool.check` を処理する場合、そのフックが管理設定にない限り、`PreToolUse` フックがブロックした呼び出しを mod が承認できます。plan モードでは、mod はそのような呼び出しが読み取り専用であれば承認できますが、ファイル編集やその他の読み取り専用でない呼び出しは承認できません。mod に対してどのルールが優先されるかは、[フックで権限を拡張する](/docs/ja/permissions#extend-permissions-with-hooks)に記載されています。
 
 <h3 id="hook-not-firing">
   フックが発火しない
@@ -1042,6 +1054,7 @@ HTTP hooks は、Web サーバー、クラウド関数、または外部サー�
   ```
 * 「command not found」と表示される場合は、絶対パスまたは `${CLAUDE_PROJECT_DIR}` を使用してスクリプトを参照します。シェルのクォートを完全に回避するには、`"args": []` を追加して [exec 形式](/docs/ja/hooks#exec-form-and-shell-form)に切り替えます。これにより、シェルを介さずにスクリプトが直接起動されます
 * 「jq: command not found」と表示される場合は、`jq` をインストールするか、JSON の解析に Python/Node.js を使用します
+* メッセージに `blocking because Git Bash wasn't found` が含まれる場合は、Windows 上で Claude Code が Git Bash を見つけられず、失敗またはタイムアウトしたフックがツール呼び出しをブロックしています。修正方法については [Git Bash のない Windows で失敗したフック](/docs/ja/hooks#failed-hooks-on-windows-without-git-bash)を参照してください
 * 通知に JSON 検証メッセージが表示される場合、フックの stdout は JSON として解析されましたが、スキーマ検証に失敗しています。JSON 解析メッセージが表示される場合、stdout は JSON オブジェクトのように見えましたが、有効な JSON ではありませんでした。どちらも終了コード 0 の場合でも発生します。
 
   解析の失敗を修正するには、文字列の連結ではなく `jq` などの JSON エンコーダーを使用してペイロードを組み立て、値に含まれる引用符やバックスラッシュがエスケープされるようにします。終了コードと JSON の組み合わせについては、リファレンスの[終了コードの出力](/docs/ja/hooks#exit-code-output)セクションで説明しています

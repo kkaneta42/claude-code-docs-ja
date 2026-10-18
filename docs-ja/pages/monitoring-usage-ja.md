@@ -1091,7 +1091,7 @@ API リクエストが `stop_reason: "refusal"` を返したときにログに�
 * `event.sequence`: イベントを順序付けるためのプロセスごとのカウンター。[イベント相関属性](#event-correlation-attributes)で説明しています
 * `from_mode`: 以前の権限モード。例: `"default"`、`"plan"`、`"acceptEdits"`、`"auto"`、`"bypassPermissions"`
 * `to_mode`: 新しい権限モード
-* `trigger`: 変更の原因。`"shift_tab"`、`"exit_plan_mode"`、`"auto_gate_denied"`、`"auto_opt_in"` のいずれかです。遷移が SDK またはブリッジから発生した場合は含まれません
+* `trigger`: 変更の原因。`"shift_tab"`、`"exit_plan_mode"`、`"auto_gate_denied"`、`"auto_opt_in"` のいずれか。SDK が [`setPermissionMode()`](/docs/ja/agent-sdk/typescript#query-object) を通じて権限モードを設定した場合など、一部の変更では含まれません
 
 <h4 id="auth-event">
   認証イベント

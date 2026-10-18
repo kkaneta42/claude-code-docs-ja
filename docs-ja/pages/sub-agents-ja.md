@@ -316,7 +316,7 @@ Bash コマンドの場合、Claude Code はコマンド自体を 2 つの方法
 | `name` | はい | 最大 256 文字の一意の識別子（`code-reviewer` や `reviewer-v2` など）。[フック](/docs/ja/hooks#subagentstart)はこの値を `agent_type` として受け取ります。ファイル名は一致する必要はありません。名前に `:` を含めることはできません。これは [プラグインスコープ付き識別子](/docs/ja/plugins/overview)（`my-plugin:reviewer` など）用に予約されています |
 | `description` | はい | Claude がこのサブエージェントに委任すべき場合 |
 | `tools` | いいえ | サブエージェントが使用できる[ツール](#available-tools)。`Read, Grep, Bash` などのカンマ区切り文字列、または YAML リストとして指定します。省略した場合、サブエージェントで利用可能なすべてのツールを継承します。リスト内のエントリがツールに解決されない場合、サブエージェントは通常、エントリに名前を付けるエラーで[起動に失敗](/docs/ja/errors#agent-would-be-spawned-with-zero-tools)します。スキルをコンテキストにプリロードするには、ここで `Skill` をリストするのではなく、`skills` フィールドを使用します |
-| `disallowedTools` | いいえ | 継承または指定されたリストから削除するツール。`tools` と同じ形式。`Bash(git push *)` などの指定子を持つエントリは、[ツール全体](#available-tools)を削除します |
+| `disallowedTools` | いいえ | 継承または指定されたリストから削除するツール。`tools` と同じ形式。`Bash(git push *)` などの指定子を持つエントリでも、[ツール全体](#restrict-which-tools-a-subagent-can-use)が削除されます |
 | `model` | いいえ | 使用する[モデル](#choose-a-model)。`sonnet`、`opus`、`haiku`、`fable`、`claude-opus-5-5` などの完全なモデル ID、または `inherit`。省略した場合、Claude Code は[サブエージェントモデル順序](#choose-a-model)でモデルを選択します |
 | `permissionMode` | いいえ | [権限モード](#permission-modes)。`default`、`acceptEdits`、`auto`、`dontAsk`、`bypassPermissions`、`plan`、または `default` のエイリアスとしての `manual`。[プラグインサブエージェント](#choose-the-subagent-scope)では無視されます |
 | `maxTurns` | いいえ | サブエージェントが停止する前の最大 agentic ターン数。サブエージェントが制限に達すると、Claude Code は出力を部分的としてマークして返し、Claude は[再開](#resume-subagents)して続行できます。部分的なマーキングには Claude Code v2.1.246 以降が必要です |
@@ -475,7 +475,13 @@ v2.1.280 より前では、バックグラウンドサブエージェントは `
 
 [Task ツールのないセッション](/docs/ja/tools-reference#task-tool-availability)では、Claude Code はサブエージェントにもタスクツールを提供しません。サブエージェントが異なるモデルを実行する場合でも。インプロセスチームメイトはセッションと同じ方法に従いますが、チームメイトが独自の[分割ペイン](/docs/ja/agent-teams#choose-a-display-mode)で実行される場合、別の Claude Code プロセスとして実行されるため、独自のモデルが決定します。
 
-ツールを制限するには、`tools` フィールドを許可リストとして、または `disallowedTools` フィールドを拒否リストとして使用します。この例は `tools` を使用して、Read、Grep、Glob、および Bash のみを許可します。サブエージェントはファイルを編集、書き込み、または MCP ツールを使用することはできません。
+<h4 id="restrict-which-tools-a-subagent-can-use">
+  サブエージェントが使用できるツールを制限する
+</h4>
+
+ツールを制限するには、`tools` フィールドを許可リストとして、または `disallowedTools` フィールドを拒否リストとして使用します。両方が設定されている場合、`disallowedTools` が最初に適用され、次に `tools` が残りのプールに対して解決されます。両方にリストされているツールは削除されます。
+
+この例は `tools` を使用して、Read、Grep、Glob、および Bash のみを許可します。サブエージェントはファイルを編集、書き込み、または MCP ツールを使用することはできません。
 
 ```yaml theme={null}
 ---
@@ -495,11 +501,17 @@ disallowedTools: Write, Edit
 ---
 ```
 
-両方が設定されている場合、`disallowedTools` が最初に適用され、次に `tools` が残りのプールに対して解決されます。両方にリストされているツールは削除されます。
-
 `tools` リスト内の何もツールに解決されない場合（例えば、すべてのエントリが誤字であるか、サブエージェントで利用できないツールに名前を付けている場合）、Claude Code は通常、サブエージェントの起動を拒否し、Agent ツールは解決されないエントリに名前を付けるエラーを返します。[Agent would be spawned with zero tools](/docs/ja/errors#agent-would-be-spawned-with-zero-tools)を参照してください。メッセージと各エントリを修正する方法。v2.1.208 より前では、そのサブエージェントはツールなしで起動し、空または混乱した結果を返す可能性があります。
 
-両方のフィールドは、正確なツール名に加えて MCP サーバーレベルのパターンを受け入れます。`mcp__<server>` または `mcp__<server>__*` は、名前付きサーバーからすべてのツールを付与または削除します。`disallowedTools` では、`mcp__*` はすべての MCP ツールをすべてのサーバーから削除します。この例は、`github` MCP サーバーからすべてのツールを削除しながら、他のサーバーのツールとプール内の組み込みツールを保持します。
+`tools` フィールドと `disallowedTools` フィールドは、MCP サーバー全体を指すエントリも受け入れます。
+
+| 目的 | フィールド | エントリの例 |
+| :- | :- | :- |
+| 1 つのサーバーのすべてのツールをサブエージェントに与える | `tools` | `mcp__github__*` |
+| 1 つのサーバーのツールを除外する | `disallowedTools` | `mcp__github` または `mcp__github__*` |
+| すべてのサーバーのすべての MCP ツールを除外する | `disallowedTools` | `mcp__*` |
+
+この例は、`github` MCP サーバーのすべてのツールを削除しながら、他のサーバーのツールと組み込みツールをサブエージェントのプールに保持します。
 
 ```yaml theme={null}
 ---

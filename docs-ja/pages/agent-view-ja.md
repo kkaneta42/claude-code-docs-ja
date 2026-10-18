@@ -738,7 +738,7 @@ Claude Code は、転送したゲートウェイをそのセッションの実�
 [権限モード](/docs/ja/permissions) は、セッションの開始方法によって異なります。
 
 * **`/bg` または `←` でバックグラウンドに移動した場合**: Claude Code はセッションの権限モードを維持するため、`acceptEdits` や `auto` に切り替えていたセッションは、デタッチ後もそのモードのままです
-* **`←` で開いたエージェントビューからディスパッチした場合**: 対象自身の設定が優先され、他に何も設定されていない場合は移動元のセッションの権限モードが適用されます
+* **`←` で開いたエージェントビューからディスパッチした場合**: Claude Code は新しいセッションの権限モードを、まず対象ディレクトリの設定から、次に移動元のセッションから取得します
 * **シェルで開始した `claude agents` から、または `claude --bg` でディスパッチした場合**: [ディスパッチのデフォルト](#dispatch-defaults) を指定して開いたエージェントビューからディスパッチした場合を除き、新しいセッションはそのディレクトリで新しい `claude` セッションを開始した場合と同じように開始されます。順序は [セッションがどの権限モードで開始されるか](/docs/ja/permission-modes#which-mode-a-session-starts-in) に記載されています
 
 `←` で開いたエージェントビューからディスパッチするセッションでは、Claude Code は以下のうち最初に該当するものから権限モードを取得します。
@@ -746,7 +746,7 @@ Claude Code は、転送したゲートウェイをそのセッションの実�
 1. 対象ディレクトリの [`permissions.defaultMode`](/docs/ja/settings-reference#permissions-defaultmode)。取得元について 2 つのルールが適用されます。
    * `auto` と `bypassPermissions` は、[管理設定、`--settings` ファイル、または `~/.claude/settings.json` からのみ有効になります](/docs/ja/settings-reference#permissions-defaultmode)。
    * Claude Code は、プロジェクトの `.claude/settings.json` または `.claude/settings.local.json` の `defaultMode` が、移動元のセッションのモードより許容度の高いモードを選択している場合、それを拒否します。
-2. 移動元のセッションの権限モード
+2. 移動元のセッションの権限モード。そのセッションが `bypassPermissions` モードだった場合、新しいセッションは代わりに Manual モードで開始され、`Bypass permissions was requested at launch and ignored` という通知が表示されることがあります。これは、バイパスの免責事項への同意が `.claude/settings.local.json` または `--settings` ファイルにのみ記録されている場合に発生します。Manual モードのまま続行するか、[その同意を `~/.claude/settings.json` に追加してください](/docs/ja/permission-modes#bypass-permissions-acceptance)。
 
 Claude Code がある取得元のモードを許容度が高すぎるとして拒否した場合、リストの次の取得元で決まります。たとえば、plan モードのセッションから、チェックインされた設定で `acceptEdits` を要求するディレクトリにディスパッチした場合、新しいセッションは plan モードで開始されます。その `defaultMode` を `~/.claude/settings.json` に移すと、移動元のセッションの権限モードに関係なく適用されます。
 

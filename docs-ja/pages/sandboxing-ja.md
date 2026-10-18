@@ -1080,6 +1080,20 @@ v2.1.284 より前では、プロキシは許可されたホスト名がどの�
 * **`Command line arguments`**：[`--settings`](/docs/ja/settings#change-a-setting-for-one-session) を指定して Claude Code を起動した場合は、渡したファイルまたは JSON がこれらのキーのいずれかを設定しているか確認してください。設定している場合は、そこで値を変更するか、これらのキーを含めずに Claude Code を再起動してください。
 * **`Enterprise managed settings`**：組織の管理設定が読み込まれています。それらがこれらのキーのいずれかを設定している場合、そのキーは `/sandbox` からも、ユーザーが管理するどの設定ファイルからも変更できないため、管理者に問い合わせてください。
 
+<h3 id="/sandbox-prints-sandbox-settings-not-changed">
+  `/sandbox` が `Sandbox settings not changed` を出力する
+</h3>
+
+この行は、`/sandbox` がパネルで行った選択をプロジェクトの `.claude/settings.local.json` に保存できなかったことを意味します：
+
+```text theme={null}
+✗ Sandbox settings not changed: /home/you/project/.claude/settings.local.json couldn't be updated (EACCES). Start Claude Code in a project folder you can write to.
+```
+
+括弧内の理由が `EACCES`、`EPERM`、または `EROFS` の場合は、書き込み可能なプロジェクトフォルダで Claude Code を起動し、そのセッションで `/sandbox` を再度実行してください。
+
+理由が `Invalid JSON syntax in settings file` で始まる場合は、プロジェクトの `.claude/settings.local.json` 内の JSON を修正してから、`/sandbox` を再度実行してください。
+
 <h2 id="limitations">
   制限事項
 </h2>

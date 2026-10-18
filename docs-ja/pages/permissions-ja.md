@@ -595,11 +595,17 @@ Claude にページをフェッチするよう求めると、プロンプトな�
   MCP
 </h3>
 
-MCP ルールは Claude Code で設定されたサーバー名を使用し、オプションでそのサーバーからのツールの名前が続きます。
+MCP サーバーのすべてのツールにマッチさせるには、`mcp__<server>__*` と記述します。1 つのツールにマッチさせるには、その完全な名前 `mcp__<server>__<tool>` を記述します。
 
 * `mcp__puppeteer` は `puppeteer` サーバーによって提供されるツールをマッチさせます
 * `mcp__puppeteer__*` ワイルドカード構文を使用し、`puppeteer` サーバーからのすべてのツールもマッチさせます
 * `mcp__puppeteer__puppeteer_navigate` は `puppeteer` サーバーによって提供される `puppeteer_navigate` ツールをマッチさせます
+
+`<server>` には、そのサーバーのツール名に現れるとおりのサーバー名を記述します。次の例は、特殊文字を含む名前、プラグインのサーバー、`__` を含むか `_` で終わる名前に対して記述するルールを示しています。
+
+* **`.` やスペースなどの文字を含む名前**：これらの文字は `_` になるため、`my.server` として設定したサーバーには `mcp__my_server__*` と記述します
+* **プラグインが提供するサーバー**：`<server>` は[プラグインスコープの形式](/docs/ja/mcp#plugin-provided-mcp-servers)になるため、`my-plugin` という名前のプラグイン内の `database-tools` サーバーには `mcp__plugin_my-plugin_database-tools__*` と記述します
+* **`__` を含むか `_` で終わる `<server>`**：名前全体を使ったワイルドカード形式 `mcp__<server>__*` を記述します。`reports__v2` という名前のサーバーには `mcp__reports__v2__*` と記述します。ベアの `mcp__reports__v2` や短い `mcp__reports` は、Claude Code がどちらも `reports` という名前のサーバーのルールとして読み取るため、allow ルールとしてはそのツールにマッチしません
 
 組織が [claude.ai コネクタ](/docs/ja/mcp#organization-controls-on-connector-tools)ツールを `ask` に設定している場合、そのツールの allow ルールは有効になりません。Claude Code は `auto` および `bypassPermissions` モードでも、すべての呼び出しでプロンプトを表示します。プロンプトを表示しない `dontAsk` モードでは、Claude Code は代わりに呼び出しを拒否します。Claude Code が自分で取得するコネクタからのツールは `mcp__claude_ai_<server>__<tool>` として表示されます。
 
@@ -649,9 +655,13 @@ Claude Desktop アプリの [Cowork](https://claude.com/docs/cowork/overview)セ
 
 [Claude Code フック](/docs/ja/hooks-guide)は、実行時に権限評価を実行するカスタムシェルコマンドを登録する方法を提供します。Claude Code がツール呼び出しを行うと、PreToolUse フックは権限プロンプトの前に実行されます。ただし、[`EndConversation`](/docs/ja/tools-reference#endconversation-tool-behavior)を除くすべてのツールに対して実行されます。フック出力はツール呼び出しを拒否し、プロンプトを強制し、またはプロンプトをスキップしてコールを続行させることができます。
 
+<h3 id="precedence-among-rules-hooks-and-mods">
+  ルール、フック、mod の間の優先順位
+</h3>
+
 PreToolUse フック決定は権限ルールをバイパスしません。Claude Code は deny ルールと ask ルールを、フックが何を返すかに関係なく評価します。マッチする deny ルールはコールをブロックし、マッチする ask ルールはフックが `"allow"` または `"ask"` を返した場合でもプロンプトを表示します。これは、[権限を管理する](#manage-permissions)で説明されている deny 優先の優先順位を保持し、管理設定で設定された deny ルールを含みます。
 
-その優先順位は、設定ファイル内のフックとプラグインの `hooks/hooks.json` 内のフックをカバーしています。インストールした [mod](/docs/ja/plugins/mods/overview) が `tool.check` を処理する場合、ルールと `PreToolUse` フックが決定した後に応答し、その応答はそれらの決定を置き換えることができます。
+その優先順位は、設定ファイル内のフックとプラグインの `hooks/hooks.json` 内のフックをカバーしています。インストールした [mod](/docs/ja/plugins/mods/overview) が `tool.check` を処理する場合、ルールと `PreToolUse` フックが決定した後に応答します。[plan モード](#hook-approvals-in-plan-mode)以外、または読み取り専用のコールでは、その応答はそれらの決定を置き換えることができます。
 
 * **Ask ルール**: mod は ask ルールがプロンプトを表示するコールを承認できます
 * **`PreToolUse` フックからのブロック**: mod はコールを承認できます。ただし、フックが管理設定にある場合を除きます
@@ -663,6 +673,14 @@ PreToolUse フック決定は権限ルールをバイパスしません。Claude
 `AskUserQuestion` や `requiresUserInteraction` でマークされた MCP ツールなど、[ユーザーの操作が必要なツール](/docs/ja/permission-modes#actions-no-mode-auto-approves)では、mod の `tool.check` による承認があってもプロンプトはスキップされません。Claude Code v2.1.292 以降が必要です。[`requiresUserInteraction`](/docs/ja/mcp#require-approval-for-a-specific-tool)でマークされた MCP ツールは、フックが `"allow"` を返した場合でも引き続きプロンプトを表示します。[ネットワークパス](#network-paths)からの読み取りや、その設定が Claude Code に到達するセッションにおける[組織が `ask` に設定した](/docs/ja/mcp#organization-controls-on-connector-tools)コネクタツールも同様です。
 
 ブロッキングフックは allow ルールよりも優先されます。終了コード 2 で終了するフックは、権限ルールが評価される前にツール呼び出しを停止するため、allow ルールがコールを許可する場合でもブロックが適用されます。プロンプトなしですべての Bash コマンドを実行し、ブロックしたい少数のコマンドを除外するには、allow リストに `"Bash"` を追加し、それらの特定のコマンドを拒否する PreToolUse フックを登録します。適応できるフックスクリプトについては、[保護されたファイルへの編集をブロックする](/docs/ja/hooks-guide#block-edits-to-protected-files)を参照してください。
+
+<h3 id="hook-approvals-in-plan-mode">
+  plan モードでのフックによる承認
+</h3>
+
+[plan モード](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode)では、`ExitPlanMode` を除き、`PreToolUse` フックの `"allow"` はファイル編集やその他の読み取り専用でないコールに対して効果を持ちません。フックがない場合と同じプロンプト、ブロック、または承認が適用され、Claude Code はフックが返す `updatedInput` を引き続き適用します。フックが [`ExitPlanMode`](/docs/ja/hooks#allow-with-updatedinput) に対して `"allow"` と `updatedInput` で応答した場合、そのツールは引き続きプロンプトなしで実行されます。
+
+plan モードでは、`tool.check` を処理する mod もファイル編集やその他の読み取り専用でないコールを承認できません。ただし、そのようなコールをブロックすることは引き続き可能です。フックと mod による承認に対するこの制限を解除するには、[プランを承認する](/docs/ja/permission-modes#review-and-approve-a-plan)か、別の権限モードに切り替えてください。
 
 <h2 id="working-directories">
   作業ディレクトリ

@@ -476,7 +476,7 @@ Bash 入力がどのコマンドを実行するかを Claude Code が判断で�
 | `async` | いいえ | `true` の場合、ブロックせずにバックグラウンドで実行されます。[バックグラウンドでフックを実行](#run-hooks-in-the-background)を参照してください |
 | `asyncRewake` | いいえ | `true` の場合、バックグラウンドで実行され、終了コード 2 で Claude を起動します。フックの stderr、または stderr が空の場合は stdout が [システムリマインダー](/docs/ja/glossary#system-reminder)として Claude に表示されるため、Claude は長時間実行されるバックグラウンドの失敗に対応できます |
 | `shell` | いいえ | このフックに使用するシェル。`"bash"` または `"powershell"` を受け入れます。デフォルトは `"bash"`、または Git Bash がインストールされていない場合は Windows で `"powershell"`。`"powershell"` を設定すると、Windows 上で PowerShell 経由でコマンドが実行されます。フックは PowerShell を直接生成するため、`CLAUDE_CODE_USE_POWERSHELL_TOOL` は不要です。`args` が設定されている場合は無視されます |
-| `onFailure` | いいえ | フックが失敗したときにアクションがどうなるか。`"continue"`（デフォルト）または `"block"`。[フックが失敗したときにアクションをブロックする](#block-the-action-when-a-hook-fails)を参照してください。Claude Code v2.1.295 以降が必要です |
+| `onFailure` | いいえ | フックが失敗したときに、フックをトリガーしたアクションを続行するかどうか。`"continue"` または `"block"`。`"block"` の場合と、このフィールドを未設定のままにした場合については、[フックが失敗したときにアクションをブロックする](#block-the-action-when-a-hook-fails)を参照してください。Claude Code v2.1.295 以降が必要です |
 
 <a id="exec-form-and-shell-form" />
 
@@ -829,13 +829,13 @@ macOS と Linux では、コマンド フックは制御ターミナルのない
 
 * **成功**: フックが 0 で終了します。Claude Code はフックが出力した [JSON 出力](#json-output)フィールドを適用し、それらのフィールドがアクションをブロックまたは拒否しない限り、アクションは進行します。例外については[バックグラウンド プロセスを開始するフック](#hooks-that-start-a-background-process)を参照してください。
 * **ブロッキング エラー**: フックが 2 で終了します。[ブロック可能なイベント](#exit-code-2-behavior-per-event)では、Claude Code はアクションを停止します。
-* **非ブロッキング エラー**: フックがその他のコードで終了するか、起動しない、無効な JSON を出力するなど、その他の方法で失敗します。アクションは進行し、`PreToolUse` などのイベントではトランスクリプトに `<hook name> hook error` 通知が表示されます。失敗したフックでアクションをブロックしたい場合は、[`onFailure: "block"`](#block-the-action-when-a-hook-fails) を設定してください。
+* **非ブロッキング エラー**: フックがその他のコードで終了するか、起動しない、無効な JSON を出力するなど、その他の方法で失敗します。アクションは進行します。ただし、`onFailure` を `"block"` に設定したフックなど、[失敗時にアクションをブロックするフック](#block-the-action-when-a-hook-fails)は例外です。`PreToolUse` などのイベントでは、トランスクリプトに `<hook name> hook error` 通知が表示されます。
 
-フックが stdout に出力する内容によって結果が変わることがあります。例えば、`PreToolUse` フックが 1 で終了しても、検証に合格する JSON を出力した場合、実行は成功となり、JSON フィールドが何が起こるかを決定します。`PreToolUse` などのイベントでフックの結果を確認するには、stdout に出力した内容を最初の列で、終了コードを上部の行で照合してください。
+フックが stdout に出力する内容によって結果が変わることがあります。例えば、`PreToolUse` フックが 1 で終了しても、検証に合格する JSON を出力した場合、その JSON によって何が起こるかが決まることがあります。`PreToolUse` などのイベントでフックの結果を確認するには、stdout に出力した内容を最初の列で、終了コードを上部の行で照合してください。
 
 | stdout | 終了 0 | 終了 2 | その他の終了コード |
 | :- | :- | :- | :- |
-| [スキーマ検証](#json-output)に合格する JSON オブジェクト | 成功。フィールドが適用されます | ブロッキング エラー。Claude Code はフィールドを引き続き読み取りますが、それらでブロックを上書きすることはできません | 成功。Claude Code は終了コードを無視し、フィールドのみが結果を決定します。[`onFailure: "block"`](#block-the-action-when-a-hook-fails) を設定している場合、これは失敗としてカウントされます |
+| [スキーマ検証](#json-output)に合格する JSON オブジェクト | 成功。フィールドが適用されます | ブロッキング エラー。Claude Code はフィールドを引き続き読み取りますが、それらでブロックを上書きすることはできません | 成功。Claude Code は終了コードを無視し、フィールドのみが結果を決定します。[失敗時にアクションをブロックするフック](#block-the-action-when-a-hook-fails)の場合は、代わりに失敗としてカウントされます |
 | [解析できない](#exit-code-0)、またはスキーマ検証に失敗する JSON | 非ブロッキング エラー。通知には解析または検証のメッセージが含まれます | ブロッキング エラー。stderr が理由になります | 非ブロッキング エラー。通知には解析または検証のメッセージが含まれます |
 | [プレーン テキスト](#exit-code-0)、または何もなし | 成功 | ブロッキング エラー。stderr が理由になります | 非ブロッキング エラー。通知には stderr の最初の行が含まれます |
 
@@ -864,7 +864,7 @@ macOS と Linux では、コマンド フックは制御ターミナルのない
 * **それぞれが単独で JSON として解析できる 2 行以上の出力で、最初の行が `{` で始まり最後の行が `}` で終わるもの**: フィールドを設定する JSON 出力オブジェクトである行がない場合はプレーン テキスト、そのような行がある場合は解析失敗になります。
 * **`{` で始まり `}` で終わるが有効な JSON ではないその他の出力**: 解析失敗になります。
 
-Claude Code が stdout を JSON として解析しようとして失敗した場合、または解析されたオブジェクトが[スキーマ検証](#json-output)に失敗した場合、実行は[非ブロッキング エラー](#exit-code-output)になります。`<hook name> hook error` 通知には解析または検証のメッセージが含まれます。プレーン テキストの stdout をコンテキストとして追加するイベントでは、Claude Code は解析に失敗した stdout を追加しません。
+[失敗時にアクションをブロックするフック](#block-the-action-when-a-hook-fails)でない限り、解析失敗、または[スキーマ検証](#json-output)に失敗する解析済みオブジェクトは[非ブロッキング エラー](#exit-code-output)になります。`<hook name> hook error` 通知には解析または検証のメッセージが含まれます。プレーン テキストの stdout をコンテキストとして追加するイベントでは、Claude Code は解析に失敗した stdout を追加しません。
 
 終了 0 のフックからの stderr を Claude が見ることはありません。`PreToolUse` などのイベントで自分で読むには、[デバッグ ログ](#debug-hooks)を有効にしてください。`PostToolUse` または `PostToolUseFailure` フックから Claude に警告を表示するには、代わりに終了 2 を使用してください。そうすれば、ツールがすでに実行されていても [Claude は stderr を確認できます](#exit-code-2-behavior-per-event)。
 
@@ -907,7 +907,9 @@ PreToolUse:Bash hook error: [${CLAUDE_PROJECT_DIR}/.claude/hooks/no-rm.sh]: Bloc
   その他の終了コード
 </h4>
 
-フックが 0 または 2 以外のコードで終了し、stdout にプレーン テキストを出力するか何も出力しない場合、実行は[非ブロッキング エラー](#exit-code-output)になります。トランスクリプトには、`Failed with non-blocking status code:` とフックの stderr の最初の行を含む `<hook name> hook error` 通知が表示されます。例えば、`Bash` の `PreToolUse` フックが stderr に `something broke` を出力して 1 で終了した場合、`PreToolUse:Bash hook error` 通知には次の行が含まれます。
+[失敗時にアクションをブロックするフック](#block-the-action-when-a-hook-fails)でない限り、0 または 2 以外の終了コードで、stdout にプレーン テキストを出力するか何も出力しない場合は[非ブロッキング エラー](#exit-code-output)になります。アクションが進行した場合、トランスクリプトには、`Failed with non-blocking status code:` とフックの stderr の最初の行を含む `<hook name> hook error` 通知が表示されます。
+
+例えば、`Bash` の `PreToolUse` フックが stderr に `something broke` を出力して 1 で終了した場合、`PreToolUse:Bash hook error` 通知には次の行が含まれます。
 
 ```text theme={null}
 Failed with non-blocking status code: something broke
@@ -915,10 +917,16 @@ Failed with non-blocking status code: something broke
 
 最初の行だけでなく完全な stderr を取得するには、[デバッグ ログ](#debug-hooks)を有効にしてください。
 
-起動できないフックも非ブロッキング エラーになります。シェル形式では、スクリプト パスが存在しないか実行可能でない場合、シェルは 127 などのコードで終了し、通知にはインタープリターのメッセージが含まれます（例: `Failed with non-blocking status code: /bin/sh: /path/to/hook.sh: No such file or directory`）。ポリシー フックを設定するときは、最初の実行時にこの通知に注意してください。`settings.json` でパスを入力ミスすると、フックは一度も実行されません。代わりにアクションをブロックするには、[`onFailure: "block"`](#block-the-action-when-a-hook-fails) を設定してください。
+[失敗時にアクションをブロックするフック](#block-the-action-when-a-hook-fails)でない限り、起動できないフックも非ブロッキング エラーになります。シェル形式では、スクリプト パスが存在しないか実行可能でない場合、シェルは 127 などのコードで終了し、通知にはインタープリターのメッセージが含まれます。例えば、スクリプト パスが存在しない場合、通知には次のような行が含まれます。
+
+```text theme={null}
+Failed with non-blocking status code: /bin/sh: /path/to/hook.sh: No such file or directory
+```
+
+ポリシー フックを設定するときは、最初の実行時にこの通知に注意してください。`settings.json` でパスを入力ミスすると、フックは一度も実行されません。フックが起動できないときにアクションをブロックするには、[`onFailure: "block"`](#block-the-action-when-a-hook-fails) を設定してください。
 
 <Warning>
-  stdout に有効な JSON がない場合、1 が従来の Unix 失敗コードであっても、Claude Code は終了コード 1 を非ブロッキング エラーとして扱います。フックがポリシーを実施することを目的としている場合は、`exit 2` を使用してください。
+  1 が従来の Unix 失敗コードであっても、有効な JSON 出力のない終了コード 1 は、[失敗時にアクションをブロックするフック](#block-the-action-when-a-hook-fails)でない限り非ブロッキング エラーになります。フックがポリシーを実施することを目的としている場合は、`exit 2` を使用してください。
 </Warning>
 
 <h4 id="timeouts">
@@ -929,7 +937,7 @@ Failed with non-blocking status code: something broke
 
 [`PreModelSwitch`](#premodelswitch) では、タイムアウトでキャンセルされたフックはモデルの切り替えをブロックします。`PreToolUse` では、2 つのフック ファミリーで動作が異なります。
 
-* タイムアウトした `command`、`http`、または `mcp_tool` フックはツール呼び出しをブロックしません。呼び出しは通常の[権限フロー](/docs/ja/permissions)を通じて続行されるため、停止したフックがゲートとして機能することを当てにしないでください。`command` または `http` フックがタイムアウトしたときに呼び出しをブロックするには、[`onFailure: "block"`](#block-the-action-when-a-hook-fails) を設定してください。
+* タイムアウトした `command`、`http`、または `mcp_tool` フックはツール呼び出しをブロックしません。ただし、[失敗時にアクションをブロックするフック](#block-the-action-when-a-hook-fails)は例外です。呼び出しは通常の[権限フロー](/docs/ja/permissions)を通じて続行されるため、停止したフックがゲートとして機能することを当てにしないでください。`command` または `http` フックがタイムアウトしたときに呼び出しをブロックするには、[`onFailure: "block"`](#block-the-action-when-a-hook-fails) を設定してください。
 * タイムアウトを超えた [Agent SDK コールバック フック](/docs/ja/agent-sdk/hooks)は[ツール呼び出しをブロックします](#pretooluse)。
 
 <h4 id="hooks-that-start-a-background-process">
@@ -959,7 +967,11 @@ Failed with non-blocking status code: something broke
   フックが失敗したときにアクションをブロックする
 </h4>
 
-ほとんどのイベントでは、フックが失敗またはタイムアウトしても Claude Code はアクションを実行するため、パスが間違っていたりスクリプトがクラッシュしたりするポリシー フックはすべてを通過させてしまいます。代わりにアクションをブロックするには、`command` または `http` フックに `"onFailure": "block"` を設定します。デフォルト値は `"continue"` です。Claude Code v2.1.295 以降が必要です。
+ほとんどのイベントでは、フックが失敗またはタイムアウトしても Claude Code はアクションを実行するため、パスが間違っていたりスクリプトがクラッシュしたりするポリシー フックはすべてを通過させてしまいます。代わりにアクションをブロックするには、`command` または `http` フックに `"onFailure": "block"` を設定します。Claude Code v2.1.295 以降が必要です。
+
+<Note>
+  Git Bash のない Windows では、`onFailure` が未設定のシェル形式の `PreToolUse` または `PermissionRequest` コマンド フックが失敗した場合、代わりに[ツール呼び出しをブロック](#failed-hooks-on-windows-without-git-bash)することがあります。
+</Note>
 
 `.claude/settings.json` 内のこの `PreToolUse` フックは、各 Bash コマンドの前にプロジェクト スクリプトを実行し、スクリプトが失敗した場合はコマンドをブロックします。
 
@@ -1006,6 +1018,25 @@ Error: Cannot find module '/path/to/project/.claude/hooks/check-command.js'
 
 * **`Stop`、`SubagentStop`、`TaskCompleted`、`TeammateIdle` フック**: これらのイベントでの終了コード 2 は Claude を作業に戻しますが、Claude は実行されないフックを修復できません
 * **バックグラウンド コマンド フック**: [`async` または `asyncRewake`](#run-hooks-in-the-background) を設定したコマンド フック
+
+<h4 id="failed-hooks-on-windows-without-git-bash">
+  Git Bash のない Windows で失敗したフック
+</h4>
+
+ブロックされたツール呼び出しのエラーに次のテキストが含まれている場合、`PreToolUse` または `PermissionRequest` コマンド フックが失敗またはタイムアウトし、呼び出しをブロックしています。
+
+```text theme={null}
+blocking because Git Bash wasn't found and this hook doesn't set "shell" to "powershell", so only exit code 0 or 2 counts as its verdict.
+```
+
+`shell` が設定されていないシェル形式のフックは、Git Bash がインストールされていない場合は PowerShell で実行されるため、Bash 向けに書かれたスクリプトはそのままでは実行できないことがあります。フックに合った修正方法を選んでください。
+
+* **フックが Bash 向けに書かれている**: [Git for Windows](https://git-scm.com/downloads/win) をインストールするか、Claude Code が見つけられない場所に Git Bash がインストールされている場合は [`CLAUDE_CODE_GIT_BASH_PATH`](/docs/ja/env-vars) を設定してから、新しいセッションを開始します
+* **フックが `.cmd` や `.bat` ファイルではなく 1 つの `.exe` を実行する**: プログラムを `command` に、その引数を `args` に指定して [exec 形式](#exec-form-and-shell-form)を使用し、[`"onFailure": "block"`](#block-the-action-when-a-hook-fails) を追加します。これにより Claude Code はシェルを介さずにプログラムを起動します。`"onFailure": "block"` がない場合、プログラムが失敗した、存在しない、またはタイムアウトしたときに呼び出しが進行することがあります
+* **フックが PowerShell 向けに書かれている**: フックに `"shell": "powershell"` と [`"onFailure": "block"`](#block-the-action-when-a-hook-fails) を追加します。`"onFailure": "block"` がない場合、フックがそれでも失敗またはタイムアウトしたときに呼び出しが進行することがあります。フックが失敗した理由を調べるには、[デバッグ ログ](#debug-hooks)を確認してください
+* **フックが失敗したときにアクションを進行させたい**: フックに `"onFailure": "continue"` を追加します
+
+このエラーを表示するフックでは、呼び出しを拒否しない JSON を出力した場合でも、0 または 2 以外の終了コードはすべて[失敗](#block-the-action-when-a-hook-fails)としてカウントされます。
 
 <h4 id="exit-code-2-behavior-per-event">
   イベントごとの終了コード 2 動作
@@ -1060,11 +1091,11 @@ HTTP フックは終了コードと stdout の代わりに HTTP ステータス 
 * **2xx で空の本体**: 成功、終了コード 0 で出力なしと同等
 * **2xx で JSON オブジェクト本体**: コマンド フックと同じ [JSON 出力](#json-output)スキーマを使用して解析。スキーマ検証に失敗した本体は非ブロッキング エラー
 * **2xx でその他の本体（プレーン テキストなど）**: 非ブロッキング エラー。2xx 以外のステータスと同じように処理されます。Claude Code はテキストを Claude のコンテキストに追加しません
-* **2xx 以外のステータス**: 非ブロッキング エラー、実行は続行
-* **接続失敗**: 非ブロッキング エラー、実行は続行
+* **2xx 以外のステータス**: 非ブロッキング エラー
+* **接続失敗**: 非ブロッキング エラー
 * **タイムアウト**: [タイムアウト](#timeouts)で説明されているとおり、フックはキャンセルされます
 
-HTTP フックはステータス コードのみでブロッキング エラーを通知できません。2xx 以外のステータスや接続の失敗は[非ブロッキング エラー](#exit-code-output)です。ツール呼び出しをブロックまたは権限を拒否するには、適切な決定フィールドを含む JSON 本体を持つ 2xx レスポンスを返します。リクエストが失敗した場合や 2xx 以外のステータスを返した場合にアクションをブロックするには、[`onFailure: "block"`](#block-the-action-when-a-hook-fails) を設定してください。
+[非ブロッキング エラー](#exit-code-output)の後は、[失敗時にアクションをブロックするフック](#block-the-action-when-a-hook-fails)でない限り、アクションは進行します。ツール呼び出しをブロックまたは権限を拒否するには、適切な[決定フィールド](#decision-control)を含む JSON 本体を持つ 2xx レスポンスを返します。リクエストが失敗した場合や 2xx 以外のステータスを返した場合にアクションをブロックするには、[`onFailure: "block"`](#block-the-action-when-a-hook-fails) を設定してください。
 
 <h3 id="json-output">
   JSON 出力
@@ -1573,6 +1604,8 @@ UserPromptSubmit フックは、セッションにカスタムタイトルがあ
 }
 ```
 
+プロンプトが入力した[スキル](/docs/ja/skills)またはカスタムコマンド（`/deploy staging` など）の場合、フックは展開されたスキルの内容ではなく、入力したとおりの行を受け取ります。フックがプロンプトをブロックするとコマンドは実行されないため、スキルが [`` !`<command>` `` で挿入する](/docs/ja/skills#inject-dynamic-context)シェルコマンドも実行されません。代わりにコマンドの名前や引数で照合するには、[UserPromptExpansion](#userpromptexpansion) を使用してください。
+
 <h4 id="userpromptsubmit-decision-control">
   UserPromptSubmit の決定制御
 </h4>
@@ -2076,7 +2109,7 @@ Claude Code v2.1.271 以降では、Claude Code が [auto モード](/docs/ja/pe
 
 | フィールド | 説明 |
 | :- | :- |
-| `permissionDecision` | `"allow"` は権限プロンプトをスキップします。ただし、[どのモードでも自動承認されないアクション](/docs/ja/permission-modes#actions-no-mode-auto-approves)、[ネットワークパスからの読み取り](/docs/ja/permissions#network-paths)、および [`updatedInput` との組み合わせ](#allow-with-updatedinput)が必要な `AskUserQuestion` と `ExitPlanMode` は除きます。`"deny"` はツール呼び出しを防ぎます。`"ask"` はユーザーに確認を求めます。`"defer"` は正常に終了し、後でツールを再開できるようにします。フックが何を返しても、[拒否ルールと確認ルール](/docs/ja/permissions#manage-permissions)は引き続き評価されます |
+| `permissionDecision` | `"allow"` は権限プロンプトをスキップします。ただし、[どのモードでも自動承認されないアクション](/docs/ja/permission-modes#actions-no-mode-auto-approves)と[ネットワークパスからの読み取り](/docs/ja/permissions#network-paths)は除きます。`AskUserQuestion` と `ExitPlanMode` には [`"allow"` と組み合わせた `updatedInput`](#allow-with-updatedinput) が必要です。plan モードについては、[plan モードでのフックによる承認](/docs/ja/permissions#hook-approvals-in-plan-mode)を参照してください。`"deny"` はツール呼び出しを防ぎます。`"ask"` はユーザーに確認を求めます。`"defer"` は、後でツールを再開できるよう正常に終了します。フックが何を返しても、[拒否ルールと確認ルール](/docs/ja/permissions#manage-permissions)は引き続き評価されます |
 | `permissionDecisionReason` | `"ask"` の場合、権限プロンプトでユーザーに表示されます。そのプロンプトに誰も応答できない `-p` の実行で Claude Code が[呼び出しを拒否する](/docs/ja/headless#turn-off-permission-prompts-in-unattended-runs)場合は、代わりに Claude がツールの結果でその理由を読み取ります。`"deny"` の場合、Claude に表示されます。`"allow"` と `"defer"` の場合、[デバッグログ](#debug-hooks)にのみ書き込まれます |
 | `updatedInput` | 実行前にツールの入力パラメータを変更します。入力オブジェクト全体を置き換えるため、変更したフィールドとともに変更していないフィールドも含めてください。Claude Code は、権限ルールと Bash コマンドの[自動バックグラウンド化の適格性](/docs/ja/tools-reference#foreground-commands-that-move-to-the-background)を、Claude が送信した入力ではなく、フックが返した入力に対して評価します。自動承認するには `"allow"` と、変更した入力をユーザーに表示するには `"ask"` と組み合わせます。`"defer"` の場合は無視されます |
 | `additionalContext` | ツールの結果とともに Claude のコンテキストに追加される文字列。`permissionDecision` が `"defer"` の場合は無視されます。[Claude にコンテキストを追加する](#add-context-for-claude)を参照してください |
@@ -3718,9 +3751,13 @@ matcher は、完全な名前、`claude-opus-4-6|claude-opus-5` のような `|`
 
 Claude Code は判定に関係なく、フックが返した `systemMessage` をユーザーに表示します。そのため、コストを報告するフックは `{"systemMessage": "..."}` を返して 0 で終了できます。
 
-タイムアウトまでに応答しない PreModelSwitch フックは、切り替えをブロックします。ほかのイベントでタイムアウトがどう作用するかについては、[タイムアウト](#timeouts)を参照してください。このイベントのデフォルトのタイムアウトは 30 秒です。`PreModelSwitch` は `command`、`http`、`mcp_tool` のフックのみを実行するため、`prompt` と `agent` のデフォルトは適用されません。
+<h4 id="premodelswitch-timeouts-and-other-exit-codes">
+  PreModelSwitch timeouts and other exit codes
+</h4>
 
-0 または 2 以外のコードで終了し、JSON の判定を出力しないフックは、[その他の終了コード](#other-exit-codes)で説明しているとおり、ブロックしないエラーになります。
+タイムアウトまでに応答しない PreModelSwitch フックは、切り替えをブロックします。このイベントのデフォルトのタイムアウトは 30 秒です。
+
+0 または 2 以外の終了コードの動作については、[その他の終了コード](#other-exit-codes)を参照してください。
 
 <h3 id="postmodelswitch">
   PostModelSwitch
