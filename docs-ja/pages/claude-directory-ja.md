@@ -1706,11 +1706,14 @@ claude purge ~/work/my-repo
 claude purge ~/work/my-repo --yes
 ```
 
-パスの代わりに `--all` を渡して、すべてのプロジェクトの状態を一度にパージします。これは `history.jsonl` をフィルタリングするのではなく、完全に削除します。`-i` を渡して、削除計画を 1 つずつステップスルーします。
+その他のオプション：
+
+* パスの代わりに `--all` を渡して、すべてのプロジェクトの状態を一度にパージします。これは `history.jsonl` をフィルタリングするのではなく、完全に削除します。
+* `-i` を渡して、削除計画を 1 つずつステップスルーします。
 
 コマンドは `shell-snapshots/` と `backups/` をそのままにしておきます。これらはプロジェクトスコープではないため、計画出力で警告します。マシン上で誰かが [`/heapdump`](/docs/ja/troubleshooting#high-cpu-or-memory-usage) を実行した場合は、それが書き込んだ `.heapsnapshot` ファイルも削除してください。ヒープスナップショットには会話全体とプロセスが保持していた認証情報が含まれており、保持スイープもパージもそれには触れません。
 
-[保持するべき状態ファイル](#state-files-to-keep)を除き、上記のアプリケーションデータパスのいずれかを手動で削除することもできます。新しいセッションは影響を受けません。以下の表は、過去のセッションで失うものを示しています。
+[保持するべき状態ファイル](#state-files-to-keep)を除き、上記のアプリケーションデータパスのいずれかを手動で削除することもできます。
 
 | 削除 | 失うもの |
 | - | - |
@@ -1726,7 +1729,7 @@ claude purge ~/work/my-repo --yes
 | `~/.claude/remote-settings.json` | なし。次の起動時に再取得されます |
 | `~/.claude/cache/changelog.md` | なし。バックグラウンドで更新されます |
 | `~/.claude/policy-limits.json` | なし。自動的に更新されます |
-| `~/.claude/tasks/` | 再開されたセッションが取得するタスクリスト |
+| `~/.claude/tasks/` | まだ使用中のものを含む[タスクリスト](/docs/ja/interactive-mode#task-list) |
 | `~/.claude/skills/.trash/`、`~/.claude/plugins/.trash/` | Claude Code が削除した[同期されたスキル](/docs/ja/skills#how-synced-skills-behave)と[同期されたプラグイン](/docs/ja/plugins/loading#synced-plugins)を復元する機会 |
 | `~/.claude/plugins/installed_plugins.set-aside.<date>.<hash>.json`、`~/.claude/plugins/installed_plugins.unreadable.<date>.<hash>.kept` | Claude Code が削除したプラグインインストールレコード、または読み込めなかったファイルのコピー。何もそれらを読み込み直しません |
 | `~/.claude/debug/`、`~/.claude/plans/`、`~/.claude/session-env/`、`~/.claude/shell-snapshots/`、`~/.claude/backups/` | ユーザーに見える何もなし |

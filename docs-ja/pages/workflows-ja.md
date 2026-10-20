@@ -153,10 +153,6 @@ Claude Code はあなたの入力でキーワードをハイライトし、Claud
 * スケジュールされたタスクプロンプト
 * ウェブフック ペイロードまたはプルリクエストコメントが会話にリレーされた場合
 
-<Note>
-  v2.1.210 より前は、キーワードはこれらのルートのいずれからでもワークフローを開始しました。ウェブフック ペイロードまたはプルリクエストコメントが会話にリレーされた場合も含みます。
-</Note>
-
 <h3 id="let-claude-decide-with-ultracode">
   ultracode で Claude に決めさせる
 </h3>
@@ -175,7 +171,7 @@ ultracode がオンの場合、Claude はタスクがワークフローを必要
 
 ultracode をオンにすると既に大規模な実行にオプトインしているため、これらのチェックはオンの間は適用されません。
 
-* [「Large workflow」警告](#cost)はワークフロー実行に表示されません
+* [`Large workflow` 警告](#cost)はワークフロー実行に表示されません
 * セッションの[同時サブエージェント制限](/docs/ja/sub-agents#concurrent-subagent-limit)は、Claude が Agent ツールで生成するサブエージェントに対して強制されません
 * 自動権限モード では、[ワークフロー起動を承認](#approve-the-plan-before-it-runs)するよう求められません
 

@@ -627,15 +627,13 @@ fi
 exit 0  # exit 0 = 決定なし。通常の権限フローが適用されます
 ```
 
-終了コードは次に何が起こるかを決定します：
+0 と 2 以外の終了コードで有効な JSON 出力がない場合、ほとんどのイベントではアクションが続行されます。ただし、そのフックが [失敗時にアクションをブロックする](/docs/ja/hooks#block-the-action-when-a-hook-fails) ものである場合は除きます。`onFailure` が `"block"` に設定されたフックはその一例です。異議がないことを報告するには 0 で終了し、アクションをブロックするには 2 で終了します：
 
-* **終了 0**：hook は異議を報告しません。
-  * `PreToolUse` hook の場合、これはツール呼び出しを承認しません：通常の [許可フロー](/docs/ja/permissions) が引き続き適用されます。
-  * `UserPromptSubmit`、`UserPromptExpansion`、`SessionStart`、および `PostModelSwitch` hooks の場合、Claude Code は stdout を [プレーンテキストとして扱い](/docs/ja/hooks#exit-code-0) Claude のコンテキストに追加します。
-* **終了 2**：Claude Code はアクションをブロックします。stderr に理由を書き込みます。それがどこに着地するかはイベントによって異なります：一部のイベントはそれを Claude にフィードバックとして供給するため、調整できます。他のイベントはそれをユーザーに表示し、`ConfigChange` や `Elicitation` などのいくつかはメッセージを表示しません。一部のイベントはブロックできません：`SessionStart` などの場合、終了 2 は stderr をユーザーに表示し、実行は続行されます。[イベントごとの終了コード 2 の動作](/docs/ja/hooks#exit-code-2-behavior-per-event) で完全なリストを参照してください。
-* **その他の終了コード**：ほとんどのイベントでは、アクションは [ブロックしないエラー](/docs/ja/hooks#exit-code-output) として続行されます。ただし、そのフックが [失敗時にアクションをブロックする](/docs/ja/hooks#block-the-action-when-a-hook-fails) ものである場合や、その JSON 出力が検証に合格した場合は除きます：
-  * スキーマ検証に合格した解析済みオブジェクト：Claude Code は終了コードを無視し、JSON だけが結果を決定し、フックはエラーとして報告されません。`WorktreeCreate` がゼロ以外の終了で失敗するなどのイベントごとの例外は、リファレンスの [終了コード出力](/docs/ja/hooks#exit-code-output) セクションに記載されています。
-  * スキーマ検証に失敗した解析済みオブジェクト、または Claude Code が [JSON として解析しようとする](/docs/ja/hooks#exit-code-0) ものの有効な JSON ではない stdout：ブロックしないエラーになります。通知には検証またはパースのメッセージが含まれます。
+* **終了 0**：`PreToolUse` hook から 0 で終了しても、ツール呼び出しは通常の [権限フロー](/docs/ja/permissions) を経由します。終了 0 はツール呼び出しを承認しないためです。`UserPromptSubmit`、`UserPromptExpansion`、`SessionStart`、および `PostModelSwitch` hooks の場合、Claude Code は [プレーンテキストとして扱う](/docs/ja/hooks#exit-code-0) stdout を Claude のコンテキストに追加します。
+* **終了 2**：stderr に理由を書き込みます。イベントによって、Claude がそれをフィードバックとして受け取って調整できる場合、ユーザーに表示される場合、`ConfigChange` や `Elicitation` のようにメッセージが表示されない場合があります。一部のイベントはブロックできません：`SessionStart` などの場合、終了 2 は stderr をユーザーに表示し、実行は続行されます。[イベントごとの終了コード 2 の動作](/docs/ja/hooks#exit-code-2-behavior-per-event) で完全なリストを参照してください。
+* **その他の終了コード**：`WorktreeCreate` がゼロ以外の終了で失敗するなどのイベントごとの例外については、[終了コード出力](/docs/ja/hooks#exit-code-output) を参照してください。その他のイベントでは、そのフックが失敗時にアクションをブロックするものでない限り、フックが stdout に出力した内容から該当するケースを確認してください：
+  * スキーマ検証に合格した解析済みオブジェクト：Claude Code は終了コードを無視し、JSON だけが結果を決定し、フックはエラーとして報告されません。
+  * スキーマ検証に失敗した解析済みオブジェクト、または Claude Code が [JSON として解析しようとする](/docs/ja/hooks#exit-code-0) ものの有効な JSON ではない stdout：アクションはブロックしないエラーとして続行されます。検証またはパースのメッセージについては、`<hook name> hook error` 通知を確認してください。
   * Claude Code が [プレーンテキストとして扱う](/docs/ja/hooks#exit-code-0) stdout、または空の stdout：アクションはブロックしないエラーとして続行されます。トランスクリプトには `<hook name> hook error` 通知が表示され、続いて `Failed with non-blocking status code:` を先頭に付けた stderr の最初の行が表示されます。stderr 全体をキャプチャするには、`claude --debug` を使用するか、セッション中に `/debug` を実行して [デバッグログ](/docs/ja/hooks#debug-hooks) を有効にしてください。
 
 <h4 id="structured-json-output">
@@ -662,17 +660,13 @@ exit 0  # exit 0 = 決定なし。通常の権限フローが適用されます
 
 `"deny"` を使用すると、Claude Code はツール呼び出しをキャンセルし、`permissionDecisionReason` を Claude にフィードバックとして返します。
 
-`PreToolUse` では、Claude Code は各 `permissionDecision` 値を次のように処理します：
+`PreToolUse` では、`"ask"` を返してユーザーに通常の権限プロンプトを表示したり、`"allow"` を返して対話的な権限プロンプトをスキップしたりすることもできます。`"allow"` の場合でも、拒否ルールと確認ルール（エンタープライズの管理 deny リストを含む）は引き続き適用され、次に対するプロンプトも引き続き表示されます：
 
-* `"allow"`：対話的な権限プロンプトをスキップします。拒否ルールと確認ルール（エンタープライズの管理 deny リストを含む）は引き続き適用され、次に対するプロンプトも引き続き表示されます：
-
-  * [ネットワークパス](/docs/ja/permissions#network-paths) からの読み取り
-  * [`requiresUserInteraction`](/docs/ja/mcp#require-approval-for-a-specific-tool) とマークされた MCP ツール
-  * その設定が Claude Code に届くセッションで [組織が `ask` に設定した](/docs/ja/mcp#organization-controls-on-connector-tools) コネクタツール
+* [ネットワークパス](/docs/ja/permissions#network-paths) からの読み取り
+* [`requiresUserInteraction`](/docs/ja/mcp#require-approval-for-a-specific-tool) とマークされた MCP ツール
+* その設定が Claude Code に届くセッションで [組織が `ask` に設定した](/docs/ja/mcp#organization-controls-on-connector-tools) コネクタツール
 
   plan モードでの `"allow"` の動作については、[plan モードでのフックによる承認](/docs/ja/permissions#hook-approvals-in-plan-mode) を参照してください。
-* `"deny"`：ツール呼び出しをキャンセルし、理由を Claude に送信します
-* `"ask"`：通常どおりユーザーに許可プロンプトを表示します
 
 4 番目の値 `"defer"` は、`-p` フラグ付きの [非インタラクティブモード](/docs/ja/headless) で利用可能です。プロセスを終了し、ツール呼び出しを保持して、Agent SDK ラッパーが入力を収集して再開できるようにします。リファレンスの [ツール呼び出しを後で延期する](/docs/ja/hooks#defer-a-tool-call-for-later) を参照してください。
 
@@ -892,8 +886,8 @@ Claude Code が実行中に設定ファイルを直接編集する場合、フ�
 
 * `"ok": true`：アクションが続行されます
 * `"ok": false`：何が起こるかはイベントによって異なります：
-  * `Stop` および `SubagentStop`：`reason` は Claude にフィードバックとして返されるため、作業を続けます。ただし、レスポンスが `"impossible": true` も設定している場合は、その条件が決して満たされることのない条件として印付けられ、その場合 Claude Code は停止を許可してターンが終了します
-  * `PreToolUse`：ツール呼び出しが拒否されます。デフォルトではターンが終了し、拒否の `reason` は警告行としてチャットに表示されます。hook に `continueOnBlock: true` を設定すると、代わりに `reason` を Claude にツールエラーとして返すため、調整して続行できます。v2.1.210 より前では、拒否の `reason` は Claude にツールエラーとして返され、ターンが続行されていました
+  * `Stop` および `SubagentStop`：`reason` は Claude にフィードバックとして返されるため、作業を続けます。ただし、応答が `"impossible": true` も設定している場合は、その条件が決して満たされることのない条件として印付けられ、その場合 Claude Code は停止を許可してターンが終了します
+  * `PreToolUse`：ツール呼び出しが拒否されます。デフォルトではターンが終了し、拒否の `reason` は警告行としてチャットに表示されます。フックに `continueOnBlock: true` を設定すると、代わりに `reason` を Claude にツールエラーとして返すため、調整して続行できます
   * `PostToolUse`：デフォルトではターンが終了し、`reason` は警告行としてチャットに表示されます。`continueOnBlock: true` を設定すると、`reason` を Claude にフィードバックとして返し、代わりにターンを続行します
   * `PostToolBatch`、`UserPromptSubmit`、および `UserPromptExpansion`：ターンが終了し、`reason` は警告行としてチャットに表示されます
 
@@ -1019,15 +1013,16 @@ HTTP hooks は、Web サーバー、クラウド関数、または外部サー�
   フックと権限モード
 </h3>
 
-`PreToolUse` フックは、`dontAsk` を含むすべての[権限モード](/docs/ja/permission-modes)において、権限モードのチェックより前に発火します。`permissionDecision: "deny"` を返すフックは、`bypassPermissions` モードや `--dangerously-skip-permissions` を使用している場合でもツールをブロックします。これにより、ユーザーが権限モードを変更しても回避できないポリシーを適用できます。
+設定ファイルやプラグインの `hooks/hooks.json` 内のフックでは、権限ルールが許可する範囲を超えて制限を緩めることはできず、フックの `"deny"` はすべての権限モードで有効です。
 
-逆は成り立ちません。設定ファイルやプラグインの `hooks/hooks.json` 内のフックは、制限を厳しくすることはできますが、権限ルールが許可する範囲を超えて緩めることはできません。`"allow"` を返すフックは、設定の拒否ルールを回避することはできず、以下のプロンプトを抑制することもできません。
-
-* [ネットワークパス](/docs/ja/permissions#network-paths)からの読み取り
-* [`requiresUserInteraction`](/docs/ja/mcp#require-approval-for-a-specific-tool) が指定された MCP ツール
-* その設定が Claude Code に反映されるセッションにおいて、[組織が `ask` に設定した](/docs/ja/mcp#organization-controls-on-connector-tools)コネクタツール
+* **`"allow"` に対して引き続き有効なもの**：`"allow"` を返すフックは、設定の拒否ルールを回避することはできず、以下のプロンプトを抑制することもできません。
+  * [ネットワークパス](/docs/ja/permissions#network-paths)からの読み取り
+  * [`requiresUserInteraction`](/docs/ja/mcp#require-approval-for-a-specific-tool) が指定された MCP ツール
+  * その設定が Claude Code に反映されるセッションにおいて、[組織が `ask` に設定した](/docs/ja/mcp#organization-controls-on-connector-tools)コネクタツール
 
 [plan モード](/docs/ja/permissions#hook-approvals-in-plan-mode)では、`PreToolUse` フックがファイル編集に対して `"allow"` を返しても、フックがない場合にその編集が受けるのと同じプロンプト、ブロック、または承認が適用されます。フックによる承認に対するこの制限を解除するには、[プランを承認する](/docs/ja/permission-modes#review-and-approve-a-plan)か、別の権限モードに切り替えてください。
+
+* **すべての権限モードでの `"deny"`**：`permissionDecision: "deny"` を返すフックは、`bypassPermissions` モードや `--dangerously-skip-permissions` を使用している場合でもツールをブロックします。`PreToolUse` フックは、`dontAsk` を含むすべての[権限モード](/docs/ja/permission-modes)において、権限モードのチェックより前に発火します。これにより、ユーザーが権限モードを変更しても回避できないポリシーを適用できます。
 
 インストールした [mod](/docs/ja/plugins/mods/overview) が `tool.check` を処理する場合、そのフックが管理設定にない限り、`PreToolUse` フックがブロックした呼び出しを mod が承認できます。plan モードでは、mod はそのような呼び出しが読み取り専用であれば承認できますが、ファイル編集やその他の読み取り専用でない呼び出しは承認できません。mod に対してどのルールが優先されるかは、[フックで権限を拡張する](/docs/ja/permissions#extend-permissions-with-hooks)に記載されています。
 

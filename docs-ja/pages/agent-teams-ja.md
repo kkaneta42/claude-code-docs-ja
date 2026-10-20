@@ -557,7 +557,7 @@ Agent teams は実験的な機能です。現在の制限事項は以下の通�
 * **シャットダウンが遅い可能性がある**: teammates は現在のリクエストまたはツール呼び出しを完了してからシャットダウンするため、時間がかかる可能性があります。
 * **セッションごとに 1 つのチーム**: セッションは正確に 1 つのチームを持ち、そのセッションにスコープされています。追加の名前付きチームを作成したり、セッション間でチームを共有したりすることはできません。
 * **ネストされたチーム非対応**: teammates は独自の teammates をスポーンできません。lead のみがチームを管理できます。
-* **インプロセス teammates からのバックグラウンド subagents 非対応**: インプロセス teammate 自身の subagents はフォアグラウンドで実行されます。これは teammate のバックグラウンド作業が lead のプロセスより長く存続できないためです。Claude Code は、teammate が `background: true` を設定する定義を持つ subagent をスポーンする場合、エラーを返します。teammate の `run_in_background: true` リクエストも失敗し、[Claude Code がフォアグラウンドまたはバックグラウンドを選択する方法](/docs/ja/sub-agents#run-subagents-in-foreground-or-background)で説明されているようにエラーが発生するか、フォアグラウンドで静かに実行されます。メイン会話から起動された Subagents は[バックグラウンドデフォルト](/docs/ja/sub-agents#run-subagents-in-foreground-or-background)に従います。
+* **インプロセスのチームメイトからのバックグラウンドサブエージェント非対応**: インプロセスのチームメイト自身のサブエージェントはフォアグラウンドで実行されます。これはチームメイトのバックグラウンド作業がチームリーダーのプロセスより長く存続できないためです。Claude Code は、チームメイトが `background: true` を設定する定義を持つサブエージェントをスポーンする場合、エラーを返します。チームメイトの `run_in_background: true` リクエストも失敗し、エラーが発生するか、フォアグラウンドで静かに実行されます。メイン会話から起動されたサブエージェントは[バックグラウンドのデフォルト](/docs/ja/sub-agents#run-subagents-in-foreground-or-background)に従います。
 * **Lead は固定**: メインセッションはその存続期間中、lead です。teammate を lead に昇格させたり、リーダーシップを譲渡したりすることはできません。
 * **権限はスポーン時に設定**: teammates は[権限](#permissions)の下で説明されている権限モードで開始します。スポーン後に個別の teammate の権限モードを変更できますが、スポーン時に teammate ごとの権限モードを設定することはできません。
 * **分割ペインは tmux または iTerm2 が必要**: デフォルトのインプロセスモードはすべてのターミナルで機能します。分割ペインモードは VS Code の統合ターミナル、Windows Terminal、または Ghostty ではサポートされていません。

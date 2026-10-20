@@ -38,7 +38,7 @@
 
 * **このリポジトリで Code Review がオンになっていない**：Claude はコマンドに対してコメントもチェック実行も投稿しません。Owner に[リポジトリを追加する](/docs/ja/code-review-setup#add-more-repositories)よう依頼してください。
 * **コメントが条件を満たしていない**：新しいトップレベルのコメントではなく、インラインコメントやレビュー本文だった場合、またはコマンドがコメントの先頭になかった場合です。新しいコメントを投稿せずに以前のコメントを編集した場合も対象外で、プルリクエストはオープンである必要があります。[コメントコマンドの条件](/docs/ja/code-review-pull-requests#comment-commands)を確認し、条件を満たす新しいコメントを投稿してください。
-* **書き込みアクセス権がない**：リポジトリに対する write、maintain、または admin の権限が必要です。フォークからのプルリクエストの場合は、ベースリポジトリに対する権限が対象になります。組織でヒントがオンになっている場合、Claude は「No review was started: manual reviews can only be requested by someone with write access to this repository.」と返信します。書き込みアクセス権を持つ人に代わりにコメントしてもらってください。
+* **書き込みアクセス権がない**：リポジトリに対する write、maintain、または admin の権限が必要です。フォークからのプルリクエストの場合は、ベースリポジトリに対する権限が対象になります。プルリクエストが自分のものでない場合、Claude は[ヒント](/docs/ja/code-review-setup#turn-tip-comments-on-or-off)として「No review was started: manual reviews can only be requested by someone with write access to this repository.」と返信することがあります。書き込みアクセス権を持つ人に代わりにコメントしてもらってください。
 * **予算が尽きた**：Claude は「⚠️ Code review skipped」で始まるコメントを投稿します。[レビューが実行されず、PR に予算に関するメッセージが表示される](#review-didn’t-run-and-the-pr-shows-a-budget-message)を参照してください。
 
 <h3 id="review-didn’t-run-and-the-pr-shows-a-budget-message">

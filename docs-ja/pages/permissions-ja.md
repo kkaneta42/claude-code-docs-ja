@@ -240,123 +240,123 @@ Claude が質問なしで実行するコマンドを記述し、変わる部分�
   Bash
 </h3>
 
-Bash 権限ルールはコマンド全体をマッチさせ、`*` は任意のテキストを表します。[ワイルドカードパターン](#wildcard-patterns)は各ルール形状がマッチするコマンドと `*` の配置場所を示しています。このセクションの残りでは、Claude Code が複合コマンドとラッパーをどのようにマッチさせるか、プレフィックスルールで承認できないラッパーと `find` アクション、ルールがマッチしないもの、読み取り専用コマンド、およびリダイレクションについて説明します。
+Bash ルールはコマンドテキスト全体に対してマッチし、`*` は任意のテキストを表します。各ルールの形がどのコマンドにマッチするか、また `*` をどこに置くべきかについては、[ワイルドカードパターン](#wildcard-patterns)を参照してください。このセクションの残りの部分では、Claude Code が複合コマンドとラッパーをどのようにマッチさせるか、プレフィックスルールでは承認できないラッパーと `find` アクション、ルールがマッチしないもの、読み取り専用コマンド、およびリダイレクトについて説明します。
 
 <h4 id="compound-commands">
   複合コマンド
 </h4>
 
 <Tip>
-  Claude Code はシェルオペレータを認識しているため、`Bash(safe-cmd *)` のようなルールは、`safe-cmd && other-cmd` コマンドを実行する権限を与えません。認識されるコマンド区切り文字は `&&`、`||`、`;`、`|`、`|&`、`&`、および改行です。ルールは各サブコマンドを独立して個別にマッチさせる必要があります。
+  Claude Code はシェル演算子を認識するため、`Bash(safe-cmd *)` のようなルールで `safe-cmd && other-cmd` というコマンドの実行権限が与えられることはありません。認識されるコマンド区切りは `&&`、`||`、`;`、`|`、`|&`、`&`、および改行です。ルールは各サブコマンドに個別にマッチする必要があります。
 </Tip>
 
-Deny ルールと ask ルールは、サブシェル内のネストされたコマンド、コマンド置換、または `for` ループなどの制御フロー本体内のコマンドを含む、マッチするサブコマンドが存在する場合に適用されます。`Bash(git clean *)` のような ask ルールは、[auto モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)でも、`cd /tmp && git clean -f` または `echo "$(git clean -f)"` に対してプロンプトを表示します。
+拒否ルールと確認ルールは、いずれかのサブコマンドがマッチした場合に適用されます。これにはサブシェル、コマンド置換、または `for` ループのような制御フローの本体の中にネストされたコマンドも含まれます。`Bash(git clean *)` のような確認ルールは、[auto モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)であっても、`cd /tmp && git clean -f` や `echo "$(git clean -f)"` に対して引き続き確認を求めます。
 
-`&&` または `||` の後に何もない場合（`npm test &&` など）、Claude Code はコマンドを解析不可能として扱い、allow ルールマッチングのためにサブコマンドに分割しないため、`Bash(npm *)` のようなルールはそれを承認しません。
+`npm test &&` のように `&&` や `||` の後に何もない場合、Claude Code はそのコマンドを解析不能として扱い、許可ルールのマッチングのためにサブコマンドへ分割しません。そのため、`Bash(npm *)` のようなルールではそのコマンドは承認されません。
 
-「はい、今後は聞かない」で複合コマンドを承認すると、Claude Code は複合文字列全体の単一ルールではなく、承認が必要な各サブコマンドの個別ルールを保存します。たとえば、`git status && npm test` を承認すると、`npm test` のルールが保存されるため、将来の `npm test` 呼び出しは `&&` の前に何があるかに関係なく認識されます。`cd` をサブディレクトリに移動するようなサブコマンドは、そのパスの独自の Read ルールを生成します。単一の複合コマンドに対して最大 5 つのルールが保存される場合があります。
+複合コマンドを「Yes, and don't ask again」で承認すると、Claude Code は複合文字列全体に対する単一のルールではなく、承認が必要な各サブコマンドごとに個別のルールを保存します。たとえば、`git status && npm test` を承認すると `npm test` のルールが保存されるため、今後の `npm test` の呼び出しは `&&` の前に何があっても認識されます。作業ディレクトリの外にあるディレクトリへの `cd` のようなサブコマンドは、そのパスに対する独自の Read ルールを生成します。1 つの複合コマンドに対して保存されるルールは最大 5 つです。
 
 <h4 id="process-wrappers">
   ラッパー
 </h4>
 
-Bash ルールをマッチさせる前に、Claude Code は固定されたラッパーセットをストリップするため、`Bash(npm test *)` のようなルールは `timeout 30 npm test` もマッチさせます。ストリップされるラッパーは `timeout`、`time`、`nice`、`nohup`、`stdbuf`、およびシェルビルトイン `command` と `builtin`、および zsh の `noglob` です。各ラッパーは引数を実際のコマンドとして実行します。ストリップされない関連する 2 つの形式があります。コマンドを検索する `command -v` クエリ形式と、zsh の `nocorrect` です。
+Bash ルールをマッチさせる前に、Claude Code は固定されたラッパーのセットを取り除きます。そのため、`Bash(npm test *)` のようなルールは `timeout 30 npm test` にもマッチします。取り除かれるラッパーは `timeout`、`time`、`nice`、`nohup`、`stdbuf`、さらにシェル組み込みの `command` と `builtin`、および zsh の `noglob` です。これらはいずれも引数を実際のコマンドとして実行します。関連する 2 つの形式は取り除かれません。コマンドを実行するのではなく検索するクエリ形式の `command -v` と、zsh の `nocorrect` です。
 
-Claude Code はまた、既知の安全な環境変数の先頭の割り当てをストリップするため、`Bash(npm test *)` は `NODE_ENV=test npm test` にマッチします。Allow ルールは他の変数の割り当てを超えてマッチしません。Deny ルールまたは ask ルールは任意の先頭の割り当てを超えてマッチするため、`Bash(rm *)` を deny で使用すると、`FOO=bar rm -rf tmp/` にマッチします。
+Claude Code は、特定の既知の安全な環境変数の先頭での代入も取り除くため、`Bash(npm test *)` は `NODE_ENV=test npm test` にマッチします。許可ルールは、それ以外の変数の代入を越えてマッチすることはありません。拒否ルールまたは確認ルールは先頭のあらゆる代入を越えてマッチするため、deny にある `Bash(rm *)` は `FOO=bar rm -rf tmp/` にも引き続きマッチします。
 
-ベア `xargs` もストリップされるため、`Bash(grep *)` は `xargs grep pattern` にマッチします。ストリップは `xargs` にフラグがない場合にのみ適用されます。`xargs -n1 grep pattern` のような呼び出しは `xargs` コマンドとしてマッチされるため、内部コマンド用に記述されたルールはそれをカバーしません。
+フラグなしの `xargs` も取り除かれるため、`Bash(grep *)` は `xargs grep pattern` にマッチします。取り除きが適用されるのは `xargs` にフラグがない場合のみです。`xargs -n1 grep pattern` のような呼び出しは `xargs` コマンドとしてマッチされるため、内側のコマンド向けに書かれたルールではカバーされません。
 
-このラッパーリストは組み込まれており、設定不可能です。`direnv exec`、`devbox run`、`mise exec`、`npx`、`docker exec` などの開発環境ランナーはリストに含まれていません。これらのツールは引数をコマンドとして実行するため、`Bash(devbox run *)` のようなルールは `run` の後に続くものをマッチさせます。これには `devbox run rm -rf .` が含まれます。環境ランナー内での作業を承認するには、ランナーと内部コマンドの両方を含む特定のルールを記述します。例えば `Bash(devbox run npm test)`。許可する内部コマンドごとに 1 つのルールを追加します。
+このラッパーリストは組み込みであり、設定できません。`direnv exec`、`devbox run`、`mise exec`、`npx`、`docker exec` などの開発環境ランナーはリストに含まれていません。これらのツールは引数をコマンドとして実行するため、`Bash(devbox run *)` のようなルールは `run` の後に続くものすべてにマッチし、`devbox run rm -rf .` も含まれます。環境ランナー内での作業を承認するには、`Bash(devbox run npm test)` のように、ランナーと内側のコマンドの両方を含む具体的なルールを書いてください。許可したい内側のコマンドごとに 1 つのルールを追加します。
 
 <h4 id="exec-wrappers-and-find-actions">
-  Exec ラッパーと `find` アクション
+  exec ラッパーと `find` アクション
 </h4>
 
-`Bash(watch *)` や `Bash(find *)` のようなプレフィックスルールは次のコマンドを自動承認できないため、Manual モードではプロンプトが表示されます。
+`Bash(watch *)` や `Bash(find *)` のようなプレフィックスルールでは次のコマンドを自動承認できないため、Manual モードではこれらについて確認が求められます。
 
-* **Exec ラッパー**：`watch`、`setsid`、`ionice`、`flock` など
-* **`find`**：`-exec`、`-delete`、`-fprint` など、コマンドを実行する、ファイルを削除する、またはファイルを書き込むアクションを伴う場合、または検索対象のパスをファイルから受け取る `-files0-from` を伴う場合
+* **exec ラッパー**: `watch`、`setsid`、`ionice`、`flock` など
+* **`find`**: `-exec`、`-delete`、`-fprint` など、コマンドを実行する、ファイルを削除する、またはファイルに書き込むアクションを伴うもの、あるいは検索するパスをファイルから受け取る `-files0-from` を伴うもの
 
-`*` を含まない特定の呼び出しを承認するには、`Bash(find build -type f -delete)` のように、完全なコマンド文字列に対する完全一致ルールを記述します。
+`*` を含まない特定の呼び出しを承認するには、`Bash(find build -type f -delete)` のように、コマンド文字列全体に対する完全一致ルールを書いてください。
 
-`find . -name '*.tmp' -delete` のようにコマンドに `*` が含まれる場合、Claude Code はルールを完全一致ではなく[ワイルドカードパターン](#wildcard-patterns)として読み取るため、コマンドは引き続きプロンプトを表示します。プロンプトが表示されるたびに承認するか、そのコマンドに対して `"allow"` を返す [PreToolUse フック](/docs/ja/hooks#pretooluse-decision-control)を使用してください。
+`find . -name '*.tmp' -delete` のようにコマンドに `*` が含まれる場合、Claude Code はルールを完全一致ではなく[ワイルドカードパターン](#wildcard-patterns)として読み取るため、コマンドは引き続き確認を求めます。確認が求められるたびに承認するか、そのコマンドに対して `"allow"` を返す [PreToolUse フック](/docs/ja/hooks#pretooluse-decision-control)を使用してください。
 
 <h4 id="bash-rule-limits">
   Bash ルールがマッチしないもの
 </h4>
 
-Bash ルールは Claude が記述したコマンドテキストにマッチします。Claude Code が[複合コマンド](#compound-commands)を分割し、[ラッパー](#process-wrappers)をストリップした後です。同じプログラムを別の形式で呼び出した場合、マッチしません。そのため、deny または ask ルールは Claude が通常生成する呼び出しをカバーし、プログラムの周りのセキュリティ境界ではありません。`deny` または `ask` のこれらのルールは最初の形式を停止し、他の形式は停止しません。
+Bash ルールは、Claude Code が[複合コマンド](#compound-commands)を分割し[ラッパー](#process-wrappers)を取り除いた後の、Claude が書いたコマンドテキストにマッチします。別の形式で呼び出された同じプログラムにはマッチしないため、拒否ルールや確認ルールは Claude が通常生成する呼び出しをカバーするものであり、プログラムに対するセキュリティ境界ではありません。`deny` または `ask` にある以下のルールは、最初の形式は止めますが、その他の形式は止めません。
 
-| ルール | 停止 | 停止しない |
+| ルール | 止めるもの | 止めないもの |
 | :- | :- | :- |
 | `Bash(curl *)` | `curl https://example.com` | `/usr/bin/curl https://example.com`、`sh -c 'curl https://example.com'` |
 | `Bash(rm *)` | `rm -rf build/` | `/bin/rm -rf build/`、`bash -c 'rm -rf build/'` |
 | `Bash(git push *)` | `git push origin main` | `git -C . push origin main`、`git -c push.default=current push origin main`、`git 'push' origin main` |
 
-最後の列のコマンドは、他のルールと権限モードによって決定されます。
+最後の列のコマンドは、他のルールと権限モードによって決まります。
 
-コマンドテキストに依存しないファイルシステムとネットワークの強制には、[サンドボックス](/docs/ja/sandboxing)を使用してください。実行前に独自のロジックで完全なコマンドテキストを検査するには、[PreToolUse フック](#extend-permissions-with-hooks)を使用してください。
+コマンドテキストに依存しないファイルシステムおよびネットワークの強制には、[サンドボックス化](/docs/ja/sandboxing)を使用してください。コマンドの実行前に独自のロジックでコマンドテキスト全体を検査するには、[PreToolUse フック](#extend-permissions-with-hooks)を使用してください。
 
 <h4 id="read-only-commands">
   読み取り専用コマンド
 </h4>
 
-Claude Code は、Bash コマンドの組み込みセットを読み取り専用として認識し、[`permissions.blockReadsOutsideWorkingDirectories`](/docs/ja/settings-reference#permissions-blockreadsoutsideworkingdirectories)がフェンスするパスを除き、すべてのモードで権限プロンプトなしで実行します。セットには `ls`、`cat`、`echo`、`pwd`、`head`、`tail`、`grep`、`find`、`wc`、`which`、`diff`、`stat`、`du`、`cd`、および `git` の読み取り専用形式が含まれます。セットは設定不可能です。これらのコマンドの 1 つにプロンプトを要求するには、それに対して `ask` または `deny` ルールを追加します。auto モードでは、これらのコマンドは分類器のレビューを待つこともできます。[分類器がアクションを評価する方法](/docs/ja/permission-modes#how-the-classifier-evaluates-actions)を参照してください。
+Claude Code は組み込みの Bash コマンドのセットを読み取り専用として認識し、すべてのモードで権限プロンプトなしに実行します。ただし、作業ディレクトリ外のパスについて [`permissions.blockReadsOutsideWorkingDirectories`](/docs/ja/settings-reference#permissions-blockreadsoutsideworkingdirectories) によって変更される場合を除きます。このセットには `ls`、`cat`、`echo`、`pwd`、`head`、`tail`、`grep`、`find`、`wc`、`which`、`diff`、`stat`、`du`、`cd`、および `git` の読み取り専用形式が含まれます。このセットは設定できません。これらのコマンドのいずれかで確認を必須にするには、そのコマンドに対する `ask` または `deny` ルールを追加してください。auto モードでは、これらのコマンドも分類器のレビューを待つことがあります。[分類器がアクションを評価する方法](/docs/ja/permission-modes#how-the-classifier-evaluates-actions)を参照してください。
 
-`ls > out.txt` などのリダイレクトはターゲットのチェックを追加します。[リダイレクション](#redirections)を参照してください。
+`ls > out.txt` のようなリダイレクトでは、対象に対するチェックが追加されます。[リダイレクト](#redirections)を参照してください。
 
-すべてのフラグが読み取り専用であるコマンドに対しては、引用符なしのグロブパターンが許可されるため、`ls *.ts` および `wc -l src/*.py` はプロンプトなしで実行されます。
+すべてのフラグが読み取り専用であるコマンドでは、引用符で囲まれていない glob パターンが許可されるため、`ls *.ts` や `wc -l src/*.py` は確認なしで実行されます。
 
-Manual モードでは、このセットのコマンドは以下の場合にもプロンプトを表示します。
+Manual モードでは、このセットのコマンドでも次の場合には確認が求められます。
 
-* **書き込み可能なフラグを持つコマンドの引用符なしグロブ**：`find`、`sort`、`sed`、`git` などの書き込み可能または実行可能なフラグを持つコマンドは、グロブが `-delete` のようなフラグに展開される可能性があるため、引用符なしのグロブが存在する場合にプロンプトを表示します。
-* **別のデーモンを指す `docker`**：読み取り専用形式の `docker` は、`-H`、`--context`、または Podman の `--url` と `--connection` などの異なるデーモンを選択するフラグを持つコマンドでプロンプトを表示します。
-* **パス開放フラグを持つ `file`**：`file` は `-m`/`--magic-file` または `-f`/`--files-from` を渡す場合にプロンプトを表示します。これらのフラグにより、`file` はフラグの値で指定されたパスを開くためです。
-* **環境変数を出力する可能性のある `ps`**：`ps auxe` や `ps aux -e` のように、引数のいずれかが `e` オプションとして機能する可能性がある場合、`ps` はプロンプトを表示します。このオプションはプロセスの環境変数を出力するためです。`ps aux` と `ps -ef` はプロンプトなしで実行されます。`ps aux -e` のようなダッシュ付き形式のチェックには Claude Code v2.1.290 以降が必要です。
-* **Windows 上のネットワークパス**：`\\server\share\file` などのネットワーク（UNC）パスを含む引数を持つコマンドは、ネットワークパスへのアクセスが Windows 認証情報をそれが指すホストに送信する可能性があるため、プロンプトを表示します。同じチェックが [PowerShell ツール](/docs/ja/tools-reference#powershell-tool)コマンドに適用されます。
-* **特殊シェル変数への書き込み**：`PATH` または `IFS` などの特定の特殊シェル変数を設定、設定解除、またはループするコマンドは、コマンドの残りが読み取り専用であっても、プロンプトを表示します。
-* **解析できないコマンド**：Claude Code がコマンドを完全に解析できない場合、読み取り専用として扱う代わりに承認を求めます。10,000 文字を超えるコマンドは、解析が超過するため常にプロンプトを表示します。
+* **書き込み可能なフラグを持つコマンドでの引用符なしの glob**: `find`、`sort`、`sed`、`git` など、書き込みまたは実行が可能なフラグを持つコマンドは、引用符で囲まれていない glob が存在する場合に確認を求めます。glob が `-delete` のようなフラグに展開される可能性があるためです。
+* **別のデーモンを指す `docker`**: `docker` の読み取り専用形式は、`-H`、`--context`、または Podman の `--url` や `--connection` など、別のデーモンを選択するフラグをコマンドが含む場合に確認を求めます。
+* **パスを開くフラグを伴う `file`**: `file` は、`-m`/`--magic-file` または `-f`/`--files-from` を渡す場合に確認を求めます。これらのフラグにより、`file` がフラグの値で指定されたパスを開くためです。
+* **環境変数を出力する可能性のある `ps`**: `ps` は、`ps auxe` や `ps aux -e` のように、引数のいずれかが `e` オプションとして機能しうる場合に確認を求めます。このオプションはプロセスの環境変数を出力するためです。`ps aux` と `ps -ef` は確認なしで実行されます。`ps aux -e` のようなダッシュ付き形式のチェックには Claude Code v2.1.290 以降が必要です。
+* **Windows 上のネットワークパス**: `\\server\share\file` のようなネットワーク（UNC）パスを引数に含むコマンドは確認を求めます。ネットワークパスへのアクセスにより、Windows の認証情報がそのパスで指定されたホストに送信される可能性があるためです。同じチェックが [PowerShell ツール](/docs/ja/tools-reference#powershell-tool)のコマンドにも適用されます。
+* **特殊なシェル変数への書き込み**: `PATH` や `IFS` など、特定の特殊なシェル変数を設定、解除、またはループするコマンドは、コマンドの残りの部分が読み取り専用であっても確認を求めます。
+* **解析できないコマンド**: Claude Code がコマンドを完全に解析できない場合、そのコマンドを読み取り専用として扱うのではなく承認を求めます。10,000 文字を超えるコマンドは、解析できる範囲を超えるため常に確認を求めます。
 
-作業ディレクトリまたは[追加ディレクトリ](#working-directories)内のパスへの `cd` も読み取り専用です。`cd packages/api && ls` のような複合コマンドは、各部分が独立して適格である場合、プロンプトなしで実行されます。これらの組み合わせは、各部分が読み取り専用であっても、プロンプトを表示します。
+作業ディレクトリまたは[追加ディレクトリ](#working-directories)内のパスへの `cd` も読み取り専用であり、`cd packages/api && ls` のような複合コマンドは、各部分がそれぞれ条件を満たす場合に確認なしで実行されます。以下の組み合わせは、各部分が読み取り専用であっても確認を求めます。
 
-* **`cd` と `git`**：`cd` が異なるディレクトリに変更される場合にプロンプトを表示します。新しいディレクトリで `git` を実行するとそのディレクトリのフックを実行できるためです。ターゲットが現在の作業ディレクトリに解決される `cd` は、操作なしであり、プロンプトをトリガーしません。
-* **`cd` とリダイレクト**：Claude Code が `cd` 実行後にリダイレクトターゲットが解決するディレクトリを判定できない場合にプロンプトを表示します。唯一のリダイレクトターゲットが `/dev/null` であるコマンド（`cd app; grep -r pattern . 2>/dev/null` など）は、`/dev/null` は作業ディレクトリに依存しないため、プロンプトを表示しません。
+* **`cd` と `git`**: `cd` が別のディレクトリに移動する場合に確認を求めます。新しいディレクトリで `git` を実行すると、そのディレクトリのフックが実行される可能性があるためです。対象が現在の作業ディレクトリに解決される `cd` は何もしない操作であり、確認は発生しません。
+* **`cd` とリダイレクト**: `cd` の実行後にリダイレクト先がどのディレクトリを基準に解決されるかを Claude Code が判断できない場合に確認を求めます。`cd app; grep -r pattern . 2>/dev/null` のように、リダイレクト先が `/dev/null` のみであるコマンドは確認を求めません。`/dev/null` は作業ディレクトリに依存しないためです。
 
 <Warning>
-  コマンド引数を制約しようとする Bash 権限パターンは脆弱です。たとえば、`Bash(curl http://github.com/ *)` は curl を GitHub URL に制限することを意図していますが、次のようなバリエーションにはマッチしません。
+  コマンドの引数を制限しようとする Bash 権限パターンは脆弱です。たとえば、`Bash(curl http://github.com/ *)` は curl を GitHub の URL に制限することを意図していますが、次のようなバリエーションにはマッチしません。
 
-  * URL の前のオプション：`curl -X GET http://github.com/...`
-  * 異なるプロトコル：`curl https://github.com/...`
-  * リダイレクト：`curl -L http://short.example.com/xyz`（GitHub にリダイレクト）
-  * 変数：`URL=http://github.com && curl $URL`
+  * URL の前のオプション: `curl -X GET http://github.com/...`
+  * 異なるプロトコル: `curl https://github.com/...`
+  * リダイレクト: GitHub にリダイレクトされる `curl -L http://short.example.com/xyz`
+  * 変数: `URL=http://github.com && curl $URL`
 
-  より信頼性の高い URL フィルタリングについては、以下を検討してください。
+  より信頼性の高い URL フィルタリングのためには、次の方法を検討してください。
 
-  * **Bash ネットワークツールを制限する**：deny ルールを使用して `curl`、`wget` などのコマンドをブロックし、許可されたドメインに対して `WebFetch(domain:github.com)` 権限で WebFetch ツールを使用します。deny ルールは、同じプログラムをパスで呼び出した場合や `sh -c` 内で呼び出した場合にはマッチしないため、制限を確実に保持する必要がある場合は[サンドボックスネットワーク許可リスト](/docs/ja/sandboxing#network-isolation)と組み合わせてください。[Bash ルールがマッチしないもの](#bash-rule-limits)を参照してください。
-  * **PreToolUse フックを使用する**：Bash コマンドの URL を検証し、許可されていないドメインをブロックするフックを実装します。
-  * **CLAUDE.md ガイダンスを追加する**：`CLAUDE.md` で許可された curl パターンについて説明します。これは Claude が試みることを形作りますが、境界を強制しないため、上記のオプションの 1 つと組み合わせてください。
+  * **Bash のネットワークツールを制限する**: 拒否ルールを使用して `curl`、`wget` などのコマンドを止め、許可するドメインについては WebFetch ツールと `WebFetch(domain:github.com)` 権限を使用します。拒否ルールはパス指定や `sh -c` 内の同じプログラムにはマッチしないため、制限を確実に維持する必要がある場合は[サンドボックスのネットワーク許可リスト](/docs/ja/sandboxing#network-isolation)と組み合わせてください。[Bash ルールがマッチしないもの](#bash-rule-limits)を参照してください
+  * **PreToolUse フックを使用する**: Bash コマンド内の URL を検証し、許可されていないドメインをブロックするフックを実装します
+  * **CLAUDE.md にガイダンスを追加する**: 許可する curl パターンを `CLAUDE.md` に記述します。これは Claude が試みる内容を方向付けますが境界を強制するものではないため、上記のいずれかの方法と組み合わせてください
 
-  WebFetch のみを使用しても、ネットワークアクセスは防止されません。Bash が許可されている場合、Claude は `curl`、`wget` または他のツールを使用して任意の URL に到達できます。
+  WebFetch を使用するだけではネットワークアクセスは防げないことに注意してください。Bash が許可されている場合、Claude は引き続き `curl`、`wget`、その他のツールを使用して任意の URL にアクセスできます。
 </Warning>
 
 <h4 id="redirections">
-  リダイレクション
+  リダイレクト
 </h4>
 
-コマンドが出力または入力をリダイレクトする場合、Claude Code はリダイレクトターゲットをファイルルールに対してチェックします。Claude が直接そのファイルを書き込みまたは読み取ったかのようにです。
+コマンドが出力または入力をリダイレクトする場合、Claude Code は、Claude がそのファイルを直接書き込んだり読み取ったりした場合と同様に、リダイレクト先をファイルルールと照合してチェックします。
 
-* **出力リダイレクト**：`> file`、`>> file`、または `2> file` の場合、チェックは `Edit` allow ルールと deny ルール、[保護されたパス](/docs/ja/permission-modes#protected-paths)、および[作業ディレクトリ](#working-directories)をカバーします。`Bash(git commit *)` のようなルールはコマンドを許可し、ターゲットは許可しません。`~` で始まるターゲットまたはグロブ文字を含むターゲットは承認が必要です。
-* **入力リダイレクト**：`< file` の場合、チェックは `Read` allow ルールと deny ルール、および作業ディレクトリをカバーします。作業ディレクトリの外のターゲットは、allow ルールがカバーしない限り承認が必要です。グロブパターンを含むターゲット、または同じコマンド内の `cd` に続く相対パスは、allow ルールがカバーしている場合でも承認が必要です。Claude Code は v2.1.257 以降で入力ターゲットをチェックします。
+* **出力リダイレクト**: `> file`、`>> file`、`2> file` の場合、チェックは `Edit` の許可ルールと拒否ルール、[保護されたパス](/docs/ja/permission-modes#protected-paths)、および[作業ディレクトリ](#working-directories)を対象とします。`Bash(git commit *)` のようなルールはコマンドを許可するものであり、リダイレクト先を許可するものではありません。`~` で始まる、または glob 文字を含むリダイレクト先には承認が必要です。
+* **入力リダイレクト**: `< file` の場合、チェックは `Read` の許可ルールと拒否ルール、および作業ディレクトリを対象とします。作業ディレクトリ外のリダイレクト先には、許可ルールでカバーされていない限り承認が必要です。glob パターンを含むリダイレクト先、または同じコマンド内の `cd` の後に続く相対パスは、許可ルールでカバーされていても承認が必要です。Claude Code は v2.1.257 以降で入力先をチェックします。
 
-ターゲットの背後にファイルがない場合はチェックされません。`/dev/null`、`2>&1` や `<&3` などのファイルディスクリプタ形式、および here-docs と here-strings です。
+背後にファイルが存在しないリダイレクト先はチェックされません。`/dev/null`、`2>&1` や `<&3` のようなファイルディスクリプタ形式、およびヒアドキュメントとヒアストリングがこれに該当します。
 
-Claude Code はまた、`tee` コマンドが書き込むファイルをチェックします。これには `make | tee build.log` などのパイプラインが含まれます。チェックは `Edit` allow ルールと deny ルール、[保護されたパス](/docs/ja/permission-modes#protected-paths)、および[作業ディレクトリ](#working-directories)をカバーします。`Bash(tee *)` のような allow ルールは、作業ディレクトリの外の宛先をカバーしません。Claude Code は v2.1.269 以降で `tee` ターゲットをチェックします。
+Claude Code は、`make | tee build.log` のようなパイプライン内を含め、`tee` コマンドが書き込むファイルもチェックします。チェックは `Edit` の許可ルールと拒否ルール、[保護されたパス](/docs/ja/permission-modes#protected-paths)、および[作業ディレクトリ](#working-directories)を対象とします。`Bash(tee *)` のような許可ルールは、作業ディレクトリ外の書き込み先をカバーしません。Claude Code は v2.1.269 以降で `tee` の書き込み先をチェックします。
 
 <h3 id="powershell">
   PowerShell
 </h3>
 
-PowerShell 権限ルールは Bash ルールと同じ形状を使用しています。`*` を使用したワイルドカードは任意の位置でマッチし、`:*` サフィックスは末尾の ` *` と同等であり、ベア `PowerShell` または `PowerShell(*)` はすべてのコマンドをマッチさせます。この設定により、`Get-ChildItem` および `git commit` コマンドが許可され、`Remove-Item` がブロックされます。
+PowerShell の権限ルールは Bash ルールと同じ形式を使用します。`*` によるワイルドカードは任意の位置でマッチし、`:*` サフィックスは末尾の ` *` と同等であり、単独の `PowerShell` または `PowerShell(*)` はすべてのコマンドにマッチします。次の設定は、`Remove-Item` をブロックしつつ、`Get-ChildItem` と `git commit` コマンドを許可します。
 
 ```json theme={null}
 {
@@ -372,49 +372,49 @@ PowerShell 権限ルールは Bash ルールと同じ形状を使用していま
 }
 ```
 
-一般的なエイリアスはマッチング前に正規化されます。コマンドレット名用に記述されたルールはそのエイリアスもマッチさせるため、`PowerShell(Get-ChildItem *)` は `gci`、`ls`、`dir` もマッチさせます。マッチングは大文字と小文字を区別しません。
+一般的なエイリアスはマッチング前に正規化されます。コマンドレット名に対して書かれたルールはそのエイリアスにもマッチするため、`PowerShell(Get-ChildItem *)` は `gci`、`ls`、`dir` にもマッチします。マッチングでは大文字と小文字は区別されません。
 
-Claude Code は PowerShell AST を解析し、複合コマンド内の各コマンドを独立してチェックします。パイプオペレータ `|`、ステートメント区切り文字 `;`、および PowerShell 7 以降のチェーンオペレータ `&&` と `||` は複合コマンドをサブコマンドに分割します。複合コマンドが許可されるには、ルールがすべてのサブコマンドをマッチさせる必要があります。
+Claude Code は PowerShell の AST を解析し、複合コマンド内の各コマンドを個別にチェックします。パイプライン演算子 `|`、ステートメント区切り `;`、および PowerShell 7 以降ではチェーン演算子 `&&` と `||` によって、複合コマンドはサブコマンドに分割されます。複合コマンドが許可されるには、ルールがすべてのサブコマンドにマッチする必要があります。
 
 <h3 id="read-and-edit">
   Read と Edit
 </h3>
 
-Claude のファイルツールがファイルまたはディレクトリを読み取るのをブロックするには、`Read(./.env)` または `Read(./secrets/**)` などのパスに対して `Read` deny ルールを追加します。[機密ファイルを除外](/docs/ja/settings-reference#exclude-sensitive-files)にはペースト可能な例があります。プロジェクトに `.claudeignore` ファイルがある場合、そのファイルは効果がないため、そのエントリを `Read` deny ルールに移してください。
+Claude のファイルツールによるファイルやディレクトリの読み取りをブロックするには、`Read(./.env)` や `Read(./secrets/**)` のように、そのパスに対する `Read` 拒否ルールを追加してください。[機密ファイルを除外する](/docs/ja/settings-reference#exclude-sensitive-files)に、そのまま貼り付けて使える例があります。プロジェクトに `.claudeignore` ファイルがある場合、それは効果がないため、そのエントリを `Read` 拒否ルールに移してください。
 
-`Edit` ルールはファイルを編集するすべての組み込みツールに適用されます。Claude は、Grep や Glob などのファイルを読み取るすべての組み込みツール、プロンプト内の `@file` メンション、および接続された [IDE](/docs/ja/vs-code#the-built-in-ide-mcp-server) が Claude と共有する選択およびオープンファイルコンテキストに `Read` ルールを適用するためにベストエフォートを試みます。
+`Edit` ルールは、ファイルを編集するすべての組み込みツールに適用されます。Claude は、Grep や Glob のようなファイルを読み取るすべての組み込みツール、プロンプト内の `@file` メンション、および接続された [IDE](/docs/ja/vs-code#the-built-in-ide-mcp-server) が Claude と共有する選択範囲や開いているファイルのコンテキストに対して、`Read` ルールをベストエフォートで適用しようとします。
 
-`Read(path)` deny ルールは、プロンプトに貼り付けた画像パスと @ メンションしたディレクトリにも適用されます。
+`Read(path)` 拒否ルールは、プロンプトに貼り付けた画像パスや @ メンションしたディレクトリにも適用されます。
 
-* **画像パス**：ターミナルでプロンプトに画像のパスを貼り付けるか画像ファイルをドラッグし、ルールがそのパスにマッチする場合、Claude Code は画像を添付しません。貼り付けた内容に他の画像が含まれていない場合、パスはテキストとしてプロンプトに残ります。
-* **ディレクトリ**：[Claude が受け取る一覧](/docs/ja/common-workflows#reference-files-and-directories)から、ルールにマッチするファイル名とディレクトリ名が除外されます。
+* **画像パス**: ターミナルでプロンプトに画像のパスを貼り付けたり画像ファイルをドラッグしたりしたときに、ルールがそのパスにマッチする場合、Claude Code は画像を添付しません。貼り付けた内容に他の画像が含まれていない場合、パスはテキストとしてプロンプトに残ります。
+* **ディレクトリ**: [Claude が受け取る一覧](/docs/ja/common-workflows#reference-files-and-directories)から、ルールにマッチするファイル名とディレクトリ名が除外されます。
 
-Claude Code は v2.1.290 以降で、貼り付けた画像パスとディレクトリ一覧をチェックします。
+Claude Code は v2.1.290 以降で、貼り付けられた画像パスとディレクトリ一覧をチェックします。
 
-`Read` deny ルールは、同じパスの [Edit と Write ツール](/docs/ja/errors#file-is-covered-by-a-read-deny-rule)もブロックします。これには新しいファイルの作成も含まれます。NotebookEdit はカバーされないため、ツールが変更できないパスに対して `Edit` deny ルールを追加してください。チェックには編集時に Claude Code v2.1.208 以降が必要です。書き込み時には v2.1.228 以降が必要です。
+`Read` 拒否ルールは、同じパスに対する [Edit ツールと Write ツール](/docs/ja/errors#file-is-covered-by-a-read-deny-rule)もブロックします。これにはそのパスへの新しいファイルの作成も含まれます。NotebookEdit は対象外であるため、どのツールにも変更させたくないパスには `Edit` 拒否ルールを追加してください。Write ツールの場合、このチェックには Claude Code v2.1.228 以降が必要です。
 
-Claude Code は `Edit(path)` と `Read(path)` ルールに対してのみファイル権限をチェックします。代わりに `Write`、`NotebookEdit`、`Glob`、またはレガシー `MultiEdit` ツール用にパスルールを記述する場合、Claude Code はルールを受け入れますが、それを参照することはなく、[起動時に警告](/docs/ja/errors#is-not-matched-by-file-permission-checks)を表示します。ただし、`--allowedTools` で渡された `Glob` ルールは除きます。`Write(docs/**)`、`NotebookEdit(docs/**)`、または `MultiEdit(docs/**)` の代わりに `Edit(docs/**)` を使用し、`Glob(docs/**)` の代わりに `Read(docs/**)` を使用してください。Claude Code は `Write` の deny ルールなど、パスのないツール名ルールについては警告しません。それはどこでもツールレベルでそのルールをマッチさせます。v2.1.210 以降が必要です。
+Claude Code は、ファイル権限を `Edit(path)` ルールと `Read(path)` ルールに対してのみチェックします。代わりに `Write`、`NotebookEdit`、`Glob`、または従来の `MultiEdit` ツールに対するパスルールを書いた場合、Claude Code はそのルールを受け入れますが参照することはなく、[起動時に警告します](/docs/ja/errors#is-not-matched-by-file-permission-checks)。ただし、`--allowedTools` で渡された `Glob` ルールは除きます。`Write(docs/**)`、`NotebookEdit(docs/**)`、`MultiEdit(docs/**)` の代わりに `Edit(docs/**)` を、`Glob(docs/**)` の代わりに `Read(docs/**)` を使用してください。`Write` に対する拒否ルールのような、パスを持たないツール名のルールについては、Claude Code は警告しません。そのルールはあらゆる場所でツールレベルでマッチします。
 
 <Warning>
-  Read と Edit deny ルールは Claude の組み込みファイルツール、`cat`、`head`、`tail`、`sed`、`tee` などの Claude Code が認識する Bash ファイルコマンド、および `> file` と `< file` などの Bash [リダイレクション](#redirections)のターゲットに適用されます。これらは、そのファイルがあるディレクトリから実行する `grep -r pattern .` のような、ファイルを名前で指定せずに読み取るコマンドや、Python または Node スクリプトがファイルを自分で開くような、ファイルを間接的に読み書きする任意のサブプロセスには適用されません。パスへのすべてのプロセスのアクセスをブロックする OS レベルの強制については、[サンドボックスを有効にしてください](/docs/ja/sandboxing)。
+  Read と Edit の拒否ルールは、Claude の組み込みファイルツール、`cat`、`head`、`tail`、`sed`、`tee` など Claude Code が Bash 内で認識するファイルコマンド、および `> file` や `< file` のような Bash [リダイレクト](#redirections)の対象に適用されます。ファイルを含むディレクトリから実行される `grep -r pattern .` のようにファイル名を指定せずにファイルを読み取るコマンドや、ファイル自体を開く Python や Node のスクリプトのように間接的にファイルを読み書きする任意のサブプロセスには適用されません。すべてのプロセスによるパスへのアクセスをブロックする OS レベルの強制には、[サンドボックスを有効にしてください](/docs/ja/sandboxing)。
 </Warning>
 
-Read と Edit ルールの両方は、[gitignore](https://git-scm.com/docs/gitignore)パターン構文を使用し、4 つの異なるパターンタイプがあります。単一セグメントディレクトリパターンの場合、マッチング深度はルールタイプにも依存し、このセクションの後半で説明されています。
+Read ルールと Edit ルールはどちらも、4 つの異なるパターンタイプを持つ [gitignore](https://git-scm.com/docs/gitignore) パターン構文を使用します。単一セグメントのディレクトリパターンの場合、マッチする深さはルールの種類にも依存します。これについてはこのセクションの後半で説明します。
 
-| パターン | 意味 | 例 | マッチ |
+| パターン | 意味 | 例 | マッチするもの |
 | - | - | - | - |
-| `//path` | ファイルシステムルートからの絶対パス | `Read(//Users/alice/secrets/**)` | `/Users/alice/secrets/**` |
+| `//path` | ファイルシステムのルートからの絶対パス | `Read(//Users/alice/secrets/**)` | `/Users/alice/secrets/**` |
 | `~/path` | ホームディレクトリからのパス | `Read(~/Documents/*.pdf)` | `/Users/alice/Documents/*.pdf` |
-| `/path` | 設定ソースからの相対パス | `Edit(/src/**/*.ts)` | プロジェクト設定の `<primary working directory>/src/**/*.ts` |
+| `/path` | 設定ソースからの相対パス | `Edit(/src/**/*.ts)` | プロジェクト設定では `<primary working directory>/src/**/*.ts` |
 | `path` または `./path` | 現在のディレクトリからの相対パス | `Read(*.env)` | `<cwd>/*.env` |
 
 <Warning>
-  `/Users/alice/file` のようなパターンは絶対パスではありません。単一の先頭スラッシュは設定ソースにアンカーされており、ファイルシステムルートではありません。絶対パスには `//Users/alice/file` を使用してください。
+  `/Users/alice/file` のようなパターンは絶対パスではありません。先頭の単一のスラッシュは、ファイルシステムのルートではなく設定ソースを基準にします。絶対パスには `//Users/alice/file` を使用してください。
 </Warning>
 
-`/path` パターンは、それを定義する設定ソースに関連付けられたディレクトリにアンカーされるため、同じルールは配置場所に応じて異なる場所にマッチします。
+`/path` パターンは、それを定義する設定ソースに関連付けられたディレクトリを基準にするため、同じルールでも配置する場所によって異なる場所にマッチします。
 
-| ルール定義場所 | `/path` の解決先 |
+| ルールの定義場所 | `/path` の解決先 |
 | :- | :- |
 | `.claude/settings.json` のプロジェクト設定 | `<primary working directory>/path` |
 | `.claude/settings.local.json` のローカル設定 | `<primary working directory>/path` |
@@ -422,36 +422,36 @@ Read と Edit ルールの両方は、[gitignore](https://git-scm.com/docs/gitig
 | `--settings <file>` で渡されたファイル | `<directory of file>/path` |
 | CLI フラグまたはセッションルール | `<primary working directory>/path` |
 
-`/permissions` を通じて追加するルールは、保存先の設定ファイルの行に従います。
+`/permissions` で追加したルールは、保存先の設定ファイルに対応する行に従います。
 
-ローカル設定ルールは、v2.1.211 以降で Claude Code が [ファイルを保存](#permission-system)するリポジトリルートではなく、セッションの [primary working directory](#working-directories) にアンカーされます。リポジトリルートで開始されたセッションでは、2 つのディレクトリは同じです。[worktree](/docs/ja/worktrees)セッションでは、`Edit(/src/**)` などの共有ルールはそのワークツリー独自の `src/` ディレクトリをマッチさせます。
+v2.1.211 以降、ローカル設定のルールは、Claude Code が[ファイルを保存する](#permission-system)リポジトリのルートではなく、セッションの[プライマリ作業ディレクトリ](#working-directories)を基準にします。リポジトリのルートで開始されたセッションでは 2 つのディレクトリは同じです。[worktree](/docs/ja/worktrees) セッションでは、`Edit(/src/**)` のような共有ルールはその worktree 自体の `src/` ディレクトリにマッチします。
 
-`Read(/secrets/**)` のような deny ルールをユーザー設定で記述すると、プロジェクト内の `secrets` ディレクトリではなく、`~/.claude/secrets/**` をブロックします。すべてのプロジェクト内で適用されるルールをユーザー設定で記述するには、代わりに `//` 絶対パスまたは `~/` ホーム相対パスを使用してください。
+ユーザー設定にある `Read(/secrets/**)` のような拒否ルールは、プロジェクト内の `secrets` ディレクトリではなく、`~/.claude/secrets/**` をブロックします。すべてのプロジェクト内で適用されるルールをユーザー設定に書くには、代わりに `//` の絶対パスまたは `~/` のホーム相対パスを使用してください。
 
-Windows では、パスはマッチング前に POSIX 形式に正規化されます。`C:\Users\alice` は `/c/Users/alice` になるため、そのドライブ上の任意の場所の `.env` ファイルをマッチさせるには `//c/**/.env` を使用します。すべてのドライブにわたってマッチさせるには、`//**/.env` を使用します。
+Windows では、パスはマッチング前に POSIX 形式に正規化されます。`C:\Users\alice` は `/c/Users/alice` になるため、そのドライブ上の任意の場所にある `.env` ファイルにマッチさせるには `//c/**/.env` を使用してください。すべてのドライブにわたってマッチさせるには、`//**/.env` を使用してください。
 
-例：
+例:
 
-* `Edit(/docs/**)`：`<primary working directory>/docs/` での編集。`/docs/` や `<primary working directory>/.claude/docs/` ではありません
-* `Read(~/.zshrc)`：ホームディレクトリの `.zshrc` の読み取り
-* `Edit(//tmp/scratch.txt)`：絶対パス `/tmp/scratch.txt` の編集
-* `Read(src/**)`：allow ルールとしては `<current-directory>/src/` からの読み取りのみ。deny ルールまたは ask ルールとしては、現在のディレクトリの下の任意の深さにある `src` ディレクトリにマッチします
+* `Edit(/docs/**)`: `<primary working directory>/docs/` 内の編集。`/docs/` や `<primary working directory>/.claude/docs/` ではありません
+* `Read(~/.zshrc)`: ホームディレクトリの `.zshrc` の読み取り
+* `Edit(//tmp/scratch.txt)`: 絶対パス `/tmp/scratch.txt` の編集
+* `Read(src/**)`: 許可ルールとしては `<current-directory>/src/` からのみ読み取り、拒否ルールまたは確認ルールとしては現在のディレクトリ配下の任意の深さにある `src` ディレクトリにマッチ
 
-ルールはそのアンカーの下のファイルのみをマッチさせます。その範囲内で、マッチング深度はパターン形状に依存し、単一セグメントディレクトリパターンの場合、ルールタイプにも依存します。以下で説明されています。ベアファイル名は gitignore セマンティクスに従い、任意の深さでマッチするため、`Read(.env)` と `Read(**/.env)` は同等です。
+ルールはその基準点の配下にあるファイルにのみマッチします。その範囲内では、マッチする深さはパターンの形と、単一セグメントのディレクトリパターンの場合はルールの種類に依存します。これについては以下で説明します。単独のファイル名は gitignore のセマンティクスに従い任意の深さでマッチするため、`Read(.env)` と `Read(**/.env)` は同等です。
 
-| Deny ルール | ブロック | ブロックしない |
+| 拒否ルール | ブロックするもの | ブロックしないもの |
 | - | - | - |
-| `Read(.env)` または `Read(**/.env)` | 現在のディレクトリ以下の任意の `.env` | 親ディレクトリまたは別のプロジェクト内の `.env` |
-| `Read(//**/.env)` | ファイルシステム上の任意の場所の `.env` | なし。ルールはファイルシステムルートにアンカーされています |
+| `Read(.env)` または `Read(**/.env)` | 現在のディレクトリ以下にある任意の `.env` | 親ディレクトリや別のプロジェクトにある `.env` |
+| `Read(//**/.env)` | ファイルシステム上のあらゆる場所にある任意の `.env` | なし。ルールはファイルシステムのルートを基準にしています |
 
-単一ディレクトリセグメント（`src/**` など）を持つ相対パターンは、ルールタイプに応じて異なる深さでマッチします。
+`src/**` のように単一のディレクトリセグメントを持つ相対パターンは、ルールの種類によって異なる深さでマッチします。
 
-* **Allow ルール**：`Edit(src/**)` は `<cwd>/src` とその下のファイルのみをマッチさせます。任意の深さでディレクトリ名を許可するには、`Edit(**/src/**)` を記述してください。
-* **Deny と ask ルール**：`Read(secrets/**)` は現在のディレクトリの下の任意の深さで `secrets` という名前のディレクトリをマッチさせるため、ルールはネストされたコピーにも適用されます。
+* **許可ルール**: `Edit(src/**)` は `<cwd>/src` とその配下のファイルのみにマッチします。任意の深さのディレクトリ名を許可するには、`Edit(**/src/**)` と書いてください。
+* **拒否ルールと確認ルール**: `Read(secrets/**)` は現在のディレクトリ配下の任意の深さにある `secrets` という名前のディレクトリにマッチするため、ルールはネストされたコピーにも適用されます。
 
-他のすべてのパターン形状は、すべてのルールタイプで同じ深さでマッチします。`Edit(/src/**)` と `Edit(src/components/**)` はそのアンカーされた場所でのみマッチし、`Edit(**/src/**)` は任意の深さでマッチします。
+その他のすべてのパターンの形は、どのルールの種類でも同じ深さでマッチします。`Edit(/src/**)` と `Edit(src/components/**)` は基準となる場所でのみマッチし、`Edit(**/src/**)` は任意の深さでマッチします。
 
-次の例は、トップレベルの `src/` ディレクトリと `vendor/` の下のネストされたコピーを持つプロジェクトに対する各パターン形状を示しています。
+次の例は、トップレベルの `src/` ディレクトリと `vendor/` 配下にネストされたコピーを持つプロジェクトに対して、各パターンの形がどのようにマッチするかを示しています。
 
 ```text theme={null}
 <current-directory>/
@@ -463,121 +463,121 @@ Windows では、パスはマッチング前に POSIX 形式に正規化され�
             └── lib.js
 ```
 
-| ルール | `src/app.ts` をマッチ | `vendor/pkg/src/lib.js` をマッチ |
+| ルール | `src/app.ts` にマッチ | `vendor/pkg/src/lib.js` にマッチ |
 | :- | :- | :- |
-| Allow ルールとしての `Edit(src/**)` | はい | いいえ |
-| Deny または ask ルールとしての `Edit(src/**)` | はい | はい |
-| 任意のルールタイプの `Edit(/src/**)` | はい | いいえ |
-| 任意のルールタイプの `Edit(**/src/**)` | はい | はい |
+| 許可ルールとしての `Edit(src/**)` | はい | いいえ |
+| 拒否ルールまたは確認ルールとしての `Edit(src/**)` | はい | はい |
+| 任意のルールの種類での `Edit(/src/**)` | はい | いいえ |
+| 任意のルールの種類での `Edit(**/src/**)` | はい | はい |
 
 <Note>
-  gitignore パターンでは、`*` は単一のパスセグメント内でマッチし、パターン内の任意の位置に表示できます。一方、`**` はディレクトリ全体でマッチします。
+  gitignore パターンでは、`*` は単一のパスセグメント内でマッチし、パターン内の任意の位置に置くことができます。一方、`**` はディレクトリをまたいでマッチします。
 </Note>
 
-「はい、今後は聞かない」でファイルパスを承認すると、Claude Code は `[`、`]`、`*` などの gitignore パターン文字をそのパスでエスケープするため、生成されたルールは承認したリテラルパスのみをマッチさせます。自分で記述したルールはエスケープされません。
+ファイルパスを「Yes, and don't ask again」で承認すると、Claude Code はそのパス内の `[`、`]`、`*` などの gitignore パターン文字をエスケープするため、生成されたルールは承認したリテラルのパスのみにマッチします。自分で書いたルールはエスケープされません。
 
-パスに括弧をエスケープする必要はないため、`Edit(./Finance (2024)/**)` は `Finance (2024)` フォルダをそのまま記述してマッチさせます。
+パス内の括弧をエスケープする必要はないため、`Edit(./Finance (2024)/**)` は表記どおりの `Finance (2024)` フォルダにマッチします。
 
-パスが gitignore パターンとして使用可能でない deny または ask ルールは、その正確なパスを保護します。使用可能でないパターンを持つ allow ルールは何も承認しません。
+gitignore パターンとして使用できないパスを持つ拒否ルールまたは確認ルールも、その正確なパスを引き続き保護します。使用できないパターンを持つ許可ルールは何も承認しません。
 
-deny または ask パターンが `!` で始まる場合、gitignore 否定です。それは、その前にリストされた `path` または `./path` ルールから、それがマッチするパスを削除します。1 つの設定ファイルの `deny` リストで、`Read(*.env)` の後に `Read(!sample.env)` が続く場合、名前が `.env` で終わるすべてのファイルを任意の深さでブロックしますが、`sample.env` という名前のファイルは除きます。最初にリストされた `!` ルールは何も削除しません。
+`!` で始まる拒否パターンまたは確認パターンは gitignore の否定です。これは、その前に列挙された `path` または `./path` ルールから、マッチするパスを除外します。1 つの設定ファイルの `deny` リストで、`Read(*.env)` の後に `Read(!sample.env)` が続く場合、名前が `.env` で終わる任意の深さのファイルをすべてブロックしますが、`sample.env` という名前のファイルは除外されます。最初に列挙された `!` ルールは何も除外しません。
 
-削除は同じソースからのルールにのみ到達します。プロジェクト設定または `--disallowedTools` の `Read(!.env)` は、管理設定または他の設定ファイルからの `Read(./.env)` deny をキャンセルしません。
+除外が及ぶのは同じソースのルールのみです。プロジェクト設定または `--disallowedTools` にある `Read(!.env)` は、管理設定やその他の設定ファイルにある `Read(./.env)` 拒否を取り消しません。
 
-2 つの制限は、`!` パターンが削除できるものを狭めます。
+`!` パターンで除外できる範囲は、次の 2 つの制限によって狭まります。
 
-* Claude Code は、`!` の後に `/`、`~/`、または `//` が続く場合でも、`!` パターンを現在のディレクトリから相対的に読み取るため、パターンはこれらのプレフィックスの 1 つでアンカーされたルールに到達できません。`Read(!~/notes/public/**)` は `Read(~/notes/**)` から何も削除しません。
-* 削除は、ルールが全体としてブロックするディレクトリ内のファイルを再度開くことはできません。`Read(secrets/**)` と `Read(!secrets/public/**)` では、Claude Code は `secrets/public` をそれ以外の `secrets` と一緒にブロックします。
+* Claude Code は、`!` の後に `/`、`~/`、`//` が続く場合でも `!` パターンを現在のディレクトリからの相対パスとして読み取るため、パターンはこれらのプレフィックスのいずれかを基準とするルールには及びません。`Read(!~/notes/public/**)` は `Read(~/notes/**)` から何も除外しません。
+* 除外によって、ルールがディレクトリ全体としてブロックしているディレクトリ内のファイルを再び開くことはできません。`Read(secrets/**)` と `Read(!secrets/public/**)` がある場合、Claude Code は `secrets` の残りの部分と一緒に `secrets/public` も引き続きブロックします。
 
 <h4 id="symlinks">
   シンボリックリンク
 </h4>
 
-Claude がシンボリックリンクを通じてファイルパスにアクセスするとき、権限チェックは 2 つのパスをカバーします。Claude が要求したパスと、それが解決するファイルです。これは macOS、Linux、Windows 上のシンボリックリンク、および Windows 上のディレクトリジャンクションに適用されます。
+Claude が要求したファイルパスがシンボリックリンクを経由する場合、権限チェックは 2 つのパスを対象とします。Claude が要求したパスと、その解決先のファイルです。これは macOS、Linux、Windows のシンボリックリンクと、Windows のディレクトリジャンクションに適用されます。
 
 <h5 id="how-rules-match-a-symlinked-path">
-  ルールがシンボリックリンク付きパスをマッチさせる方法
+  ルールがシンボリックリンクされたパスにマッチする仕組み
 </h5>
 
-Allow ルールと deny ルールは、要求されたパスと解決先のファイルを異なる方法で扱います。
+許可ルールと拒否ルールは、要求されたパスとその解決先のファイルを異なる方法で扱います。
 
-* **Allow ルール**：要求されたパスと解決先のファイルの両方がマッチする場合にのみ適用されます。許可されたディレクトリ内のシンボリックリンクがそれの外を指している場合、ルールはマッチしません。
-* **Deny ルール**：要求されたパスまたは解決先のファイルのいずれかがマッチする場合に適用されます。拒否されたファイルを指すシンボリックリンク自体が拒否されます。たとえば、`Read(./project/**)` が許可され、`Read(~/.ssh/**)` が拒否されている場合、`./project/key` にあるシンボリックリンクが `~/.ssh/id_rsa` を指している場合、ターゲットが allow ルールに失敗し、deny ルールにマッチするため、ブロックされます。
+* **許可ルール**: 要求されたパスとその解決先のファイルの両方がマッチする場合にのみ適用されます。許可されたディレクトリ内にあり、その外を指すシンボリックリンクを介した読み取りは、ルールにマッチしません。
+* **拒否ルール**: 要求されたパスまたはその解決先のファイルのいずれかがマッチする場合に適用されます。拒否されたファイルを指すシンボリックリンクは、それ自体が拒否されます。たとえば、`Read(./project/**)` が許可され、`Read(~/.ssh/**)` が拒否されている場合、`~/.ssh/id_rsa` を指す `./project/key` のシンボリックリンクはブロックされます。リンク先が許可ルールを満たさず、拒否ルールにマッチするためです。
 
-macOS と Linux では、シンボリックリンク付きディレクトリを通じて記述された deny または ask ルール（`//`、`~/`、または `/` パターン）は、そのディレクトリの実際の場所にも適用されます。たとえば macOS では、`/etc` が `/private/etc` に解決される場合、`Read(//etc/**)` は `/private/etc/hosts` もブロックします。v2.1.268 より前では、シンボリックリンク付きディレクトリを通じて記述された deny または ask ルールは、その実際の場所で指定されたパスに適用されませんでした。
+macOS と Linux では、`//`、`~/`、`/` パターンを使ってシンボリックリンクされたディレクトリを経由して書かれた拒否ルールまたは確認ルールは、そのディレクトリの実際の場所にも適用されます。たとえば、`/etc` が `/private/etc` に解決される macOS では、`Read(//etc/**)` は `/private/etc/hosts` もブロックします。v2.1.268 より前では、シンボリックリンクされたディレクトリを経由して書かれた拒否ルールまたは確認ルールは、実際の場所で指定されたパスには適用されませんでした。
 
-Grep と Glob は `path` 引数が解決するディレクトリを検索します。Claude Code はそのディレクトリに `Read` deny ルールを適用します。
+Grep と Glob は、`path` 引数の解決先のディレクトリを検索します。Claude Code は、そのディレクトリに `Read` 拒否ルールを適用します。
 
 <h5 id="writes-through-a-symlink">
-  シンボリックリンクを通じた書き込み
+  シンボリックリンクを介した書き込み
 </h5>
 
-Claude が編集または書き込みを要求するパスがそれ自体がシンボリックリンクである場合、Edit と Write ツールは [書き込みを拒否し、Claude をリンクのターゲットに向ける](/docs/ja/errors#refusing-after-a-symlink-changed)。
+Claude が編集または書き込みを求めるパス自体がシンボリックリンクである場合、Edit ツールと Write ツールは[書き込みを拒否し、Claude にリンク先を指示します](/docs/ja/errors#refusing-after-a-symlink-changed)。
 
-ディレクトリへのパスがシンボリックリンクである場合、またはファイルへのパスがシンボリックリンクを通じている場合、または Bash または PowerShell コマンドが書き込みを行う場合、書き込みはシンボリックリンクを通じて渡される可能性があります。これらの書き込みについて、何が起こるかは、書き込みが解決するファイルが [working directories](#working-directories) と [protected paths](/docs/ja/permission-modes#protected-paths) に対してどこに位置するかに依存します。
+ファイルへの経路上のディレクトリがシンボリックリンクである場合や、Bash または PowerShell のコマンドが書き込みを行う場合は、書き込みがシンボリックリンクを通過することがあります。このような書き込みでは、書き込みの解決先のファイルが[作業ディレクトリ](#working-directories)と[保護されたパス](/docs/ja/permission-modes#protected-paths)に対してどこに位置するかによって動作が決まります。
 
-* **作業ディレクトリの外に解決**：要求されたパスが作業ディレクトリ内にあり、解決先のファイルがそうでない場合、書き込みは [`acceptEdits` モード](/docs/ja/permission-modes#auto-approve-file-edits-with-acceptedits-mode)で自動承認されません。[auto モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)では、allow ルールが書き込みを承認しない限り、分類器が決定する代わりに、書き込みについてプロンプトが表示されます。プロンプトは、書き込みが解決するパスを指定します。
-* **要求されたパスが指定しない保護されたパスに解決**：[protected paths テーブル](/docs/ja/permission-modes#protected-paths)は各権限モードの結果を示しますが、テーブルが書き込みを分類器にルーティングする場合を除き、この書き込みはプロンプトを表示します。
+* **作業ディレクトリ外に解決される場合**: 要求されたパスが作業ディレクトリ内にあり、その解決先のファイルが作業ディレクトリ外にある場合、[`acceptEdits` モード](/docs/ja/permission-modes#auto-approve-file-edits-with-acceptedits-mode)では書き込みは自動承認されません。[auto モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)では、許可ルールが書き込みを承認しない限り、分類器が判断するのではなくユーザーに確認が求められます。確認には書き込みの解決先のパスが表示されます。
+* **要求されたパスが指定していない保護されたパスに解決される場合**: [保護されたパスの表](/docs/ja/permission-modes#protected-paths)に各権限モードでの結果が示されています。ただし、表で書き込みが分類器に回される場合、この書き込みでは代わりにユーザーに確認が求められます。
 
 <h5 id="paths-that-can’t-be-resolved-or-that-change">
-  解決できないパスまたは変更されるパス
+  解決できない、または変化するパス
 </h5>
 
-Claude Code がディスク上のパスがどこに導くかを判定できない場合（たとえば、シンボリックリンクがループを形成する場合）、Read、Edit、Write ツールは [操作を拒否](/docs/ja/errors#refusing-after-a-symlink-changed)。
+たとえばパス上のシンボリックリンクがループを形成しているなどの理由で、Claude Code がパスのディスク上の行き先を判断できない場合、Read、Edit、Write ツールは[操作を拒否します](/docs/ja/errors#refusing-after-a-symlink-changed)。
 
-ツールが承認されたファイルを開くとき、[パスが権限チェックが承認した場所にまだ解決されることを確認](/docs/ja/errors#refusing-after-a-symlink-changed)。
+その後ツールが承認済みのファイルを開くときには、[パスが引き続き権限チェックで承認された場所に解決されることを確認します](/docs/ja/errors#refusing-after-a-symlink-changed)。
 
 <h4 id="network-paths">
   ネットワークパス
 </h4>
 
-Read、Grep、Glob などの Claude のファイル読み取りツールがネットワークパスから読み取る場合、その読み取りには専用の権限チェックが行われます。ネットワークパスとは別のコンピューターに到達し得るパスのことで、Windows では `\\server\share\file` のような UNC パス、macOS と Linux では `/net/fileserver/notes.txt` のような `/net` 自動マウントパスを指します。このようなパスを参照すると、そのパスが指すホストと通信する場合があり、Windows ではその通信によって認証情報がホストに送信される可能性があります。シェルコマンドには独自のチェックがあります。Manual モードでは、引数に UNC パスを含む読み取り専用の Bash または PowerShell コマンドは [Windows では引き続きプロンプトを表示します](#read-only-commands)。
+Read、Grep、Glob など、Claude のファイル読み取りツールがネットワークパスから読み取る場合、その読み取りには独自の権限チェックが行われます。ネットワークパスとは、別のコンピューターに到達しうるパスのことです。Windows では `\\server\share\file` のような UNC パス、macOS と Linux では `/net/fileserver/notes.txt` のような `/net` 自動マウントパスが該当します。このようなパスを参照すると、そのパスで指定されたホストに接続する可能性があり、Windows ではその接続によってホストに認証情報が送信される可能性があります。シェルコマンドには独自のチェックがあります。Manual モードでは、UNC パスを引数に含む読み取り専用の Bash または PowerShell コマンドは [Windows 上で引き続き確認を求めます](#read-only-commands)。
 
-Claude Code v2.1.292 以降では、次のいずれもプロンプトを省略しません。
+Claude Code v2.1.292 以降では、次のいずれの場合も確認はそのまま残ります。
 
-* **Allow ルール**：`Read` のようなツール全体に対するルールを含め、ルールは読み取りを事前承認しません
-* **PreToolUse フック**：`"allow"` を返す[フック](#extend-permissions-with-hooks)はプロンプトをスキップしません
-* **auto モード**：プロンプトはユーザーに表示され、[分類器](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)は読み取りを判定しません
+* **許可ルール**: `Read` のようなツール全体に対するルールを含め、ルールは読み取りを事前承認しません
+* **PreToolUse フック**: `"allow"` を返す[フック](#extend-permissions-with-hooks)は確認をスキップしません
+* **auto モード**: 確認はユーザーに届き、[分類器](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)は読み取りを判断しません
 
-`dontAsk` モードでは、Claude Code はプロンプトを表示する代わりに読み取りを拒否します。`bypassPermissions` モード、および [bypass permissions](/docs/ja/permission-modes#skip-all-checks-with-bypasspermissions-mode) が利用可能な plan モードの対話型ターミナルセッションでは、このプロンプトなしで読み取りが実行されます。
+`dontAsk` モードでは、Claude Code は確認を求める代わりに読み取りを拒否します。`bypassPermissions` モード、および[権限のバイパス](/docs/ja/permission-modes#skip-all-checks-with-bypasspermissions-mode)が利用可能な plan モードの対話型ターミナルセッションでは、読み取りはこの確認なしで実行されます。
 
-このプロンプトなしでネットワーク共有上のファイルを読み取るには、まず共有にローカルパスを割り当てます。
+この確認なしでネットワーク共有上のファイルを読み取るには、まず共有にローカルパスを割り当ててください。
 
-* **Windows**：[作業ディレクトリ](#working-directories)で説明されているように、共有をドライブ文字にマップし、Claude Code の起動時に `--add-dir` でそのドライブを渡します
-* **macOS と Linux**：[作業ディレクトリがネットワークパスである場合](/docs/ja/errors#working-directory-is-a-network-path)で説明されているように、`/mnt` や `/Volumes` 配下のディレクトリなどのローカルパスに共有をマウントし、そこからファイルを読み取ります
+* **Windows**: [作業ディレクトリ](#working-directories)で説明されているように、共有をドライブ文字にマッピングし、Claude Code の起動時に `--add-dir` でそのドライブを渡します
+* **macOS と Linux**: [Working directory is a network path](/docs/ja/errors#working-directory-is-a-network-path) で説明されているように、`/mnt` や `/Volumes` 配下のディレクトリなどのローカルパスに共有をマウントし、そこからファイルを読み取ります
 
 <h3 id="webfetch">
   WebFetch
 </h3>
 
-WebFetch ルールは `domain:` プレフィックスを使用し、リクエストされた URL のホスト名に対してマッチします。マッチングは大文字と小文字を区別せず、`*` ワイルドカードをサポートし、ルールとホスト名の両方から末尾の `.` をストリップするため、`example.com.` と `example.com` は同じものとして扱われます。
+WebFetch ルールは `domain:` プレフィックスを使用し、要求された URL のホスト名に対してマッチします。マッチングでは大文字と小文字は区別されず、`*` ワイルドカードをサポートし、ルールとホスト名の両方から末尾の `.` を取り除くため、`example.com.` と `example.com` は同じものとして扱われます。
 
-* `WebFetch(domain:example.com)` は `example.com` へのリクエストのみをマッチさせます。`api.example.com` などのサブドメインもカバーするには、`WebFetch(domain:*.example.com)` ルールを追加します
-* `WebFetch(domain:*.example.com)` は `api.example.com` や `a.b.example.com` などの任意の深さのサブドメインをマッチさせますが、`example.com` 自体はマッチさせません
-* `WebFetch(domain:*)` はすべてのドメインをマッチさせます。ベア `WebFetch` ルールと同じではありません。[すべてのフェッチを許可または拒否](#allow-or-deny-every-fetch)を参照してください
+* `WebFetch(domain:example.com)` は `example.com` へのリクエストのみにマッチします。`api.example.com` のようなサブドメインもカバーするには、`WebFetch(domain:*.example.com)` ルールを追加してください
+* `WebFetch(domain:*.example.com)` は、`api.example.com` や `a.b.example.com` など任意の深さのサブドメインにマッチしますが、`example.com` 自体にはマッチしません
+* `WebFetch(domain:*)` はすべてのドメインにマッチします。これは単独の `WebFetch` ルールとは異なります。[すべての取得を許可または拒否する](#allow-or-deny-every-fetch)を参照してください
 
-先頭の `*.` またはベア `*` 以外の任意の位置では、ワイルドカードは 2 つのドット間のテキストのみをマッチさせます。`WebFetch(domain:example.*)` は `example.org` にマッチします。ここで `*` は `org` になりますが、`example.evil.com` にはマッチしません。ここで `*` は `evil.com` になり、ドットを越えます。これにより、末尾のワイルドカードが攻撃者が登録できるドメインをマッチさせるのを防ぎます。
+先頭の `*.` または単独の `*` 以外の位置では、ワイルドカードは 2 つのドットの間のテキストにのみマッチします。`WebFetch(domain:example.*)` は `*` が `org` になる `example.org` にはマッチしますが、`*` が `evil.com` になってドットをまたぐ必要がある `example.evil.com` にはマッチしません。これにより、末尾のワイルドカードが攻撃者が登録しうるドメインにマッチすることを防ぎます。
 
-`WebFetch` ルールのワイルドカードは、フェッチをマッチさせるために Claude Code v2.1.172 以降が必要です。
+`WebFetch` ルールのワイルドカードで取得をマッチさせるには、Claude Code v2.1.172 以降が必要です。
 
 <h4 id="allow-or-deny-every-fetch">
-  すべてのフェッチを許可または拒否
+  すべての取得を許可または拒否する
 </h4>
 
-ベア `WebFetch` ルールは、`"deny": ["WebFetch"]` などの `domain:` 部分のないツール名です。それと `WebFetch(domain:*)` の両方はすべての URL をカバーしますが、Claude Code はそれらを異なる方法で適用し、`domain:` 形式のみがそのドメインをサンドボックスの [許可または拒否ドメインリスト](/docs/ja/sandboxing#network-isolation)に追加します。そのセクションはサンドボックスが尊重するワイルドカード形式とベア `*` を追加したバージョンをリストしています。
+単独の `WebFetch` ルールとは、`"deny": ["WebFetch"]` のように `domain:` 部分を持たないツール名です。これと `WebFetch(domain:*)` はどちらもすべての URL をカバーしますが、Claude Code はそれらを異なる方法で適用し、`domain:` 形式のみがそのドメインをサンドボックスの[許可または拒否ドメインリスト](/docs/ja/sandboxing#network-isolation)にも追加します。そのセクションには、サンドボックスが受け入れるワイルドカード形式と、単独の `*` が追加されたバージョンが記載されています。
 
-各行は、`allow` リストと `deny` リストでルールが何をするかを示しています。
+各行は、ルールが `allow` リストと `deny` リストでそれぞれ何をするかを示しています。
 
-| ルール | `allow` で | `deny` で |
+| ルール | `allow` の場合 | `deny` の場合 |
 | :- | :- | :- |
-| `WebFetch` | Claude はプロンプトなしでフェッチします。サンドボックス化されたコマンドが到達できるホストを変更しません。 | Claude Code は `WebFetch` ツールを削除するため、Claude はまったくフェッチできません。サンドボックス化されたコマンドが到達できるホストを変更しません。 |
-| `WebFetch(domain:*)` | Claude はプロンプトなしでフェッチし、サンドボックス化されたコマンドは任意のホストに到達できます。 | Claude Code はツールを保持し、各フェッチを拒否し、サンドボックス化されたコマンドはホストに到達できません。 |
+| `WebFetch` | Claude は確認なしで取得します。サンドボックス化されたコマンドが到達できるホストは変わりません。 | Claude Code は `WebFetch` ツールを削除するため、Claude は一切取得できません。サンドボックス化されたコマンドが到達できるホストは変わりません。 |
+| `WebFetch(domain:*)` | Claude は確認なしで取得し、サンドボックス化されたコマンドは任意のホストに到達できます。 | Claude Code はツールを保持したまま各取得を拒否し、サンドボックス化されたコマンドはどのホストにも到達できません。 |
 
-2 つの形式は [artifacts](/docs/ja/artifacts)（Artifact ツールが claude.ai に公開するページ）の読み取りについても異なります。ベア `WebFetch` deny または ask ルールはこれらの読み取りに適用されません。`claude.ai` または `*.claudeusercontent.com` コンテンツホストをカバーする `domain:` ルール（`WebFetch(domain:claude.ai)` または `WebFetch(domain:*)` など）は、各読み取りを拒否するか、その前にプロンプトを表示します。[`Artifact` ルール](/docs/ja/artifacts#disable-artifacts)も同じことを行います。
+2 つの形式は、Artifact ツールが claude.ai に公開するページである[アーティファクト](/docs/ja/artifacts)の読み取りについても異なります。単独の `WebFetch` 拒否ルールまたは確認ルールは、それらの読み取りには適用されません。`WebFetch(domain:claude.ai)` や `WebFetch(domain:*)` のように、`claude.ai` または `*.claudeusercontent.com` コンテンツホストをカバーする `domain:` ルールは、各読み取りを拒否するか、その前に確認を求めます。[`Artifact` ルール](/docs/ja/artifacts#disable-artifacts)も同じ動作をします。
 
-ルールが読み取りをブロックするとき、拒否はルールを指定します。v2.1.268 より前では、ベア `WebFetch` deny ルールはすべての artifact 読み取りをブロックし、ベア ask ルールはそれぞれの前にプロンプトを表示していました。
+ルールが読み取りをブロックすると、拒否メッセージにそのルールが表示されます。v2.1.268 より前では、単独の `WebFetch` 拒否ルールはすべてのアーティファクトの読み取りをブロックし、単独の確認ルールはそれぞれの読み取りの前に確認を求めていました。
 
-Claude がフェッチを自由に行えるようにしながら、サンドボックス許可リストをそのままにするには、ベア形式を使用してください。この `settings.json` はそれを行います。
+サンドボックスの許可リストをそのままにしつつ Claude に自由に取得させるには、単独の形式を使用します。次の `settings.json` はそれを行います。
 
 ```json theme={null}
 {
@@ -587,41 +587,41 @@ Claude がフェッチを自由に行えるようにしながら、サンドボ�
 }
 ```
 
-Claude にページをフェッチするよう求めると、プロンプトなしでフェッチします。[サンドボックス化](/docs/ja/sandboxing)された `curl` をサンドボックス許可リストの外のホストに対して実行するよう求めると、Claude Code はそのホストに対してプロンプトを表示します。ベア形式はホストを許可リストに追加しなかったためです。
+Claude にページの取得を依頼すると、確認なしで取得します。サンドボックスの許可リスト外のホストに対して[サンドボックス化された](/docs/ja/sandboxing) `curl` の実行を依頼した場合、単独のルールはそのホストを許可リストに追加していないため、Claude Code は引き続きそのホストについて確認を求めます。
 
-[auto モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)では、Claude は代わりにホストを分類器がレビューするコマンドの [per-command allowed domains](/docs/ja/sandboxing#per-command-allowed-domains-in-auto-mode) に指定します。
+[auto モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)では、Claude は代わりに、分類器がレビューできるよう、コマンドの[コマンドごとの許可ドメイン](/docs/ja/sandboxing#per-command-allowed-domains-in-auto-mode)にそのホストを指定します。
 
 <h3 id="mcp">
   MCP
 </h3>
 
-MCP サーバーのすべてのツールにマッチさせるには、`mcp__<server>__*` と記述します。1 つのツールにマッチさせるには、その完全な名前 `mcp__<server>__<tool>` を記述します。
+MCP サーバーのすべてのツールにマッチさせるには、`mcp__<server>__*` と書きます。1 つのツールにマッチさせるには、その完全な名前 `mcp__<server>__<tool>` を書きます。
 
-* `mcp__puppeteer` は `puppeteer` サーバーによって提供されるツールをマッチさせます
-* `mcp__puppeteer__*` ワイルドカード構文を使用し、`puppeteer` サーバーからのすべてのツールもマッチさせます
-* `mcp__puppeteer__puppeteer_navigate` は `puppeteer` サーバーによって提供される `puppeteer_navigate` ツールをマッチさせます
+* `mcp__puppeteer` は `puppeteer` サーバーが提供する任意のツールにマッチします
+* `mcp__puppeteer__*` はワイルドカード構文を使用し、同じく `puppeteer` サーバーのすべてのツールにマッチします
+* `mcp__puppeteer__puppeteer_navigate` は `puppeteer` サーバーが提供する `puppeteer_navigate` ツールにマッチします
 
-`<server>` には、そのサーバーのツール名に現れるとおりのサーバー名を記述します。次の例は、特殊文字を含む名前、プラグインのサーバー、`__` を含むか `_` で終わる名前に対して記述するルールを示しています。
+`<server>` には、そのサーバーのツール名に表示されるとおりにサーバー名を書きます。以下の例は、特殊文字を含む名前、プラグインのサーバー、および `__` を含む、または `_` で終わる名前について書くべきルールを示しています。
 
-* **`.` やスペースなどの文字を含む名前**：これらの文字は `_` になるため、`my.server` として設定したサーバーには `mcp__my_server__*` と記述します
-* **プラグインが提供するサーバー**：`<server>` は[プラグインスコープの形式](/docs/ja/mcp#plugin-provided-mcp-servers)になるため、`my-plugin` という名前のプラグイン内の `database-tools` サーバーには `mcp__plugin_my-plugin_database-tools__*` と記述します
-* **`__` を含むか `_` で終わる `<server>`**：名前全体を使ったワイルドカード形式 `mcp__<server>__*` を記述します。`reports__v2` という名前のサーバーには `mcp__reports__v2__*` と記述します。ベアの `mcp__reports__v2` や短い `mcp__reports` は、Claude Code がどちらも `reports` という名前のサーバーのルールとして読み取るため、allow ルールとしてはそのツールにマッチしません
+* **`.` やスペースなどの文字を含む名前**: これらの文字は `_` になるため、`my.server` として設定したサーバーには `mcp__my_server__*` と書きます
+* **プラグインが提供するサーバー**: `<server>` は[プラグインスコープの形式](/docs/ja/mcp#plugin-provided-mcp-servers)をとるため、`my-plugin` という名前のプラグイン内の `database-tools` サーバーには `mcp__plugin_my-plugin_database-tools__*` と書きます
+* **`__` を含む、または `_` で終わる `<server>`**: 名前全体を使ったワイルドカード形式 `mcp__<server>__*` を書きます。`reports__v2` という名前のサーバーには、`mcp__reports__v2__*` と書きます。単独の `mcp__reports__v2` や短い `mcp__reports` は、Claude Code がどちらも `reports` という名前のサーバーに対するルールとして読み取るため、許可ルールとしてはそのツールにマッチしません
 
-組織が [claude.ai コネクタ](/docs/ja/mcp#organization-controls-on-connector-tools)ツールを `ask` に設定している場合、そのツールの allow ルールは有効になりません。Claude Code は `auto` および `bypassPermissions` モードでも、すべての呼び出しでプロンプトを表示します。プロンプトを表示しない `dontAsk` モードでは、Claude Code は代わりに呼び出しを拒否します。Claude Code が自分で取得するコネクタからのツールは `mcp__claude_ai_<server>__<tool>` として表示されます。
+組織が [claude.ai コネクタ](/docs/ja/mcp#organization-controls-on-connector-tools)のツールを `ask` に設定しており、その設定がセッション内の Claude Code に届いている場合、そのツールに対する許可ルールは効果を持ちません。Claude Code は `auto` モードや `bypassPermissions` モードであっても、すべての呼び出しで確認を求めます。確認を一切求めない `dontAsk` モードでは、Claude Code は代わりに呼び出しを拒否します。Claude Code 自体が取得するコネクタのツールは、`mcp__claude_ai_<server>__<tool>` として表示されます。
 
-Claude Desktop アプリの [Cowork](https://claude.com/docs/cowork/overview)セッションでは、Claude は組み込み `Bash` ツールではなく Cowork の `mcp__workspace__bash` ツールを通じてシェルコマンドを実行し、Cowork は同様に `mcp__workspace__web_fetch` をウェブフェッチに提供します。Claude Code はまた、全体の `Bash` または `WebFetch` ツールを指す deny ルールをこれらの Cowork ツールに適用するため、管理された `Bash` deny ルールは Claude が Cowork でシェルコマンドを実行するのを停止します。Claude Code がそのような呼び出しをブロックするとき、メッセージは Cowork ツールを指定します。`Permission to use mcp__workspace__bash has been denied.` Allow ルールは引き継がれません。Claude Code は `Bash` allow ルールを `mcp__workspace__bash` に適用することはありません。
+Claude Desktop アプリの [Cowork](https://claude.com/docs/cowork/overview) セッションでは、Claude は組み込みの `Bash` ツールではなく Cowork の `mcp__workspace__bash` ツールを通じてシェルコマンドを実行し、同様に Cowork は Web 取得用に `mcp__workspace__web_fetch` を提供します。Claude Code は、`Bash` または `WebFetch` ツール全体を指定する拒否ルールをこれらの Cowork ツールにも適用するため、管理設定の `Bash` 拒否ルールは Claude が Cowork でシェルコマンドを実行するのを止めます。Claude Code がそのような呼び出しをブロックすると、メッセージには Cowork ツールの名前が表示されます: `Permission to use mcp__workspace__bash has been denied.` 許可ルールは引き継がれません。Claude Code が `Bash` 許可ルールを `mcp__workspace__bash` に適用することはありません。
 
 <h3 id="agent-subagents">
-  Agent（subagents）
+  Agent（サブエージェント）
 </h3>
 
-`Agent(AgentName)` ルールを使用して、Claude が使用できる [subagents](/docs/ja/sub-agents) を制御します。
+`Agent(AgentName)` ルールを使用して、Claude が使用できる[サブエージェント](/docs/ja/sub-agents)を制御します。
 
-* `Agent(Explore)` は Explore subagent をマッチさせます
-* `Agent(Plan)` は Plan subagent をマッチさせます
-* `Agent(my-custom-agent)` は `my-custom-agent` という名前のカスタム subagent をマッチさせます
+* `Agent(Explore)` は Explore サブエージェントにマッチします
+* `Agent(Plan)` は Plan サブエージェントにマッチします
+* `Agent(my-custom-agent)` は `my-custom-agent` という名前のカスタムサブエージェントにマッチします
 
-これらのルールを設定の `deny` 配列に追加するか、`--disallowedTools` CLI フラグを使用して特定のエージェントを無効にします。Explore エージェントを無効にするには：
+特定のエージェントを無効にするには、これらのルールを設定の `deny` 配列に追加するか、`--disallowedTools` CLI フラグを使用します。Explore エージェントを無効にするには、次のようにします。
 
 ```json theme={null}
 {
@@ -635,18 +635,18 @@ Claude Desktop アプリの [Cowork](https://claude.com/docs/cowork/overview)セ
   Cd
 </h3>
 
-`Cd` ルールは、[`/cd` コマンド](/docs/ja/commands)がセッションを移動できるディレクトリを制御します。`Cd` はモデル呼び出し可能なツールではありません。Claude はそれを呼び出すことはできず、ルールは自分で `/cd` を実行する場合にのみ適用されます。
+`Cd` ルールは、[`/cd` コマンド](/docs/ja/commands)がセッションを移動できるディレクトリを制御します。`Cd` はモデルが呼び出せるツールではありません。Claude はこれを呼び出すことができず、ルールはユーザー自身が `/cd` を実行した場合にのみ適用されます。
 
-ベア `Cd` deny ルールは `/cd` を完全に無効にします。`Cd(<path-pattern>)` deny ルールはマッチするターゲットをブロックします。Deny ルールはターゲットのすべてのスペルをチェックします。これには、それが解決する各シンボリックリンクホップが含まれるため、1 つのパス用に記述されたルールは、それに解決するターゲットもブロックします。
+単独の `Cd` 拒否ルールは `/cd` を完全に無効にします。`Cd(<path-pattern>)` 拒否ルールは、マッチする移動先をブロックします。拒否ルールは、解決の過程で経由する各シンボリックリンクのホップを含め、移動先のあらゆる表記をチェックするため、あるパスに対して書かれたルールは、そのパスに解決される移動先もブロックします。
 
-任意の `Cd` allow ルールを追加すると、`/cd` をホワイトリストモードに切り替えます。解決されたターゲットディレクトリは、allow ルールの 1 つにマッチする必要があります。そうでない場合、`/cd` は拒否します。`Cd` ルールが設定されていない場合、`/cd` はデフォルト動作を保持し、見慣れないディレクトリを信頼するようにプロンプトを表示します。
+`Cd` 許可ルールを 1 つでも追加すると、`/cd` は許可リストモードに切り替わります。解決された移動先のディレクトリがいずれかの許可ルールにマッチする必要があり、マッチしない場合 `/cd` は拒否します。`Cd` ルールが設定されていない場合、`/cd` はデフォルトの動作を維持し、見慣れないディレクトリを信頼するかどうかの確認を求めます。
 
-パスパターンは [Read と Edit ルール](#read-and-edit)から `//`、`~/`、`/` アンカーを共有しますが、マッチングはディレクトリパス全体にアンカーされます。gitignore スタイルではなく、`*` は正確に 1 つのパスセグメントをマッチさせ、`**` はセグメント全体でマッチさせます。末尾の `/**` はその名前付きルートもマッチさせます。
+パスパターンは [Read と Edit のルール](#read-and-edit)と同じ `//`、`~/`、`/` の基準を共有しますが、マッチングは gitignore スタイルではなくディレクトリパス全体に対して行われます。`*` はちょうど 1 つのパスセグメントにマッチし、`**` はセグメントをまたいでマッチします。末尾の `/**` は、指定されたルート自体にもマッチします。
 
-| ルール | マッチ | マッチしない |
+| ルール | マッチするもの | マッチしないもの |
 | - | - | - |
 | `Cd(~/code/*)` | `~/code/app` | `~/code/app/src`、`~/code` |
-| `Cd(~/code/**)` | `~/code` およびその下のディレクトリ | `~/code` の外のディレクトリ |
+| `Cd(~/code/**)` | `~/code` およびその配下の任意のディレクトリ | `~/code` 外のディレクトリ |
 | `Cd(**/node_modules)` | 現在のディレクトリ配下の任意の深さにある任意の `node_modules` ディレクトリ | `node_modules/pkg` |
 
 <h2 id="extend-permissions-with-hooks">
@@ -762,7 +762,7 @@ Claude Code は現在の作業ディレクトリとその親、`~/.claude/` の�
 
 サンドボックス化を有効にし、`autoAllowBashIfSandboxed` をデフォルトの `true` のままにしている場合、権限に単独の `Bash` 確認ルール、または[同等の `Bash(*)` 形式](#match-all-uses-of-a-tool)が含まれていても、サンドボックス化された Bash コマンドは確認なしで実行されます。サンドボックスの境界が、このツール全体に対する確認の代わりになるためです。
 
-[plan モード](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode)では、Claude Code はこの代替を行いません。確認ルールがない場合、[組み込みの読み取り専用コマンド](#read-only-commands)は引き続き確認なしで実行され、それ以外のシェルコマンドは、計画中である間は通常の権限フローを経由します。plan モードで Claude Code がコマンドをどのように制御するかについては、[plan モード](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode)を参照してください。単独の `Bash` 確認ルールがある場合は、サンドボックス化されていない場合と同様に、サンドボックス化された読み取り専用コマンドを含むすべての Bash コマンドで確認が求められます。v2.1.212 より前は、この代替は plan モードでも適用されていました。
+[plan モード](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode)では、Claude Code はこの代替を行いません。確認ルールがない場合、[組み込みの読み取り専用コマンド](#read-only-commands)は引き続き確認なしで実行され、それ以外のシェルコマンドは、計画中である間は通常の権限フローを経由します。plan モードで Claude Code がコマンドをどのように制御するかについては、[plan モード](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode)を参照してください。単独の `Bash` 確認ルールがある場合は、サンドボックス化されていない場合と同様に、サンドボックス化された読み取り専用コマンドを含むすべての Bash コマンドで確認が求められます。
 
 次のチェックは引き続き適用されます。
 

@@ -795,7 +795,7 @@ scope: "そのキーを設定できる設定ファイル：user（~/.claude/sett
 | [`spinnerTipsEnabled`](#spinnertipsenabled) | Claude の作業中にスピナーに表示されるヒントを非表示にします | インターフェースとターミナル | Any file |
 | [`spinnerTipsOverride`](#spinnertipsoverride) | スピナーのローテーションに独自のヒントを追加するか、組み込みのヒントを置き換えます | インターフェースとターミナル | Any file |
 | [`spinnerVerbs`](#spinnerverbs) | ターンの実行中に表示される動詞を追加または置き換えます | インターフェースとターミナル | Any file |
-| [`sshConfigs`](#sshconfigs) | Desktop の環境ドロップダウンに [SSH 接続](/docs/ja/desktop#pre-configure-ssh-connections-for-your-team)を追加します | リモート、デスクトップ、通知 | User or managed |
+| [`sshConfigs`](#sshconfigs) | Desktop の環境セレクターに [SSH 接続](/docs/ja/desktop#pre-configure-ssh-connections-for-your-team)を追加します | リモート、デスクトップ、通知 | User or managed |
 | [`sshHostAllowlist`](#sshhostallowlist) | [Desktop の SSH セッション](/docs/ja/desktop#restrict-which-ssh-hosts-users-can-connect-to)が到達できるホストを制限します | リモート、デスクトップ、通知 | Managed |
 | [`statusLine`](#statusline) | 独自のコマンドを実行して、プロンプトの下に[ステータスライン](/docs/ja/statusline)を表示します | インターフェースとターミナル | Any file |
 | [`strictKnownMarketplaces`](#strictknownmarketplaces) | ユーザーが追加およびインストール元として使用できる[マーケットプレイス](/docs/ja/plugins/overview)のソースの許可リストを指定します | プラグインとスキル | Managed |
@@ -3283,18 +3283,18 @@ v2.1.276 を通じて、このキーを[バックグラウンドタスク](/docs
   インターフェースとターミナル
 </h2>
 
-Claude Code がターミナルでどのように見え、動作するかを変更します。テーマ、エディタモード、ステータスライン、スピナー、セッション内の通知、アクセシビリティなどです。[ターミナル設定](/docs/ja/terminal-config)を参照してください。
+ターミナルでの Claude Code の見た目と動作を変更します。テーマ、エディターモード、ステータスライン、スピナー、セッション内の通知、アクセシビリティが対象です。[ターミナル設定](/docs/ja/terminal-config)を参照してください。
 
 <h3 id="askuserquestiontimeout">
   `askUserQuestionTimeout`
 </h3>
 
-回答されていない [`AskUserQuestion`](/docs/ja/tools-reference) ダイアログがアイドル時間の経過後に自動的に続行し、既に選択していたオプションを送信するようにします。席を離れて Claude に続行させたい場合に設定します。デフォルトでは、質問は回答されるまで待機します。タイマーが一時停止する場合や開始されない場合については、[質問の自動続行タイムアウト](/docs/ja/tools-reference#question-auto-continue-timeout)を参照してください。
+回答されていない [`AskUserQuestion`](/docs/ja/tools-reference) ダイアログを、一定時間操作がなかった後に自動で続行させ、その時点で選択済みのオプションを送信します。席を外している間も Claude に作業を続けさせたい場合に設定します。デフォルトでは、質問は回答されるまで待機します。タイマーが一時停止する場合や開始しない場合については、[質問の自動続行タイムアウト](/docs/ja/tools-reference#question-auto-continue-timeout)を参照してください。
 
-* **スコープ**: [`ユーザーまたはマネージド`](#scopes)
-* **タイプ**: 文字列、`"60s"`、`"5m"`、`"10m"`、または `"never"` のいずれか
+* **スコープ**: [`User or managed`](#scopes)
+* **型**: 文字列。`"60s"`、`"5m"`、`"10m"`、`"never"` のいずれか
 * **デフォルト**: `"never"`
-* **セッションごとのオーバーライド**: [`CLAUDE_AFK_TIMEOUT_MS`](/docs/ja/env-vars) はこのキーより優先されます
+* **セッションごとの上書き**: 1 つのセッションについては、[`CLAUDE_AFK_TIMEOUT_MS`](/docs/ja/env-vars) がこのキーより優先されます
 
 ```json settings.json theme={null}
 {
@@ -3302,18 +3302,18 @@ Claude Code がターミナルでどのように見え、動作するかを変�
 }
 ```
 
-`/config` に**質問の自動続行タイムアウト**として表示され、このキーをユーザー設定に書き込みます。管理設定または `--settings` フラグがキーを設定している場合、Claude Code は行を非表示にします。
+`/config` では **Question auto-continue timeout** として表示され、このキーをユーザー設定に書き込みます。管理設定または `--settings` フラグでこのキーが設定されている間、Claude Code はこの行を非表示にします。
 
 <h3 id="autocontinueatusagelimit">
   `autoContinueAtUsageLimit`
 </h3>
 
-claude.ai の使用制限がセッションを停止した後、開いているセッションで待機し、リセット後にタスクを自動的に続行します。[自動続行をオフにする](/docs/ja/interactive-mode#turn-automatic-continue-off)を参照してください。Claude Code v2.1.234 以降が必要です。
+claude.ai の使用制限によってセッションが停止した後、開いているセッションで待機し、リセット後にタスクを自動的に続行します。[自動続行をオフにする](/docs/ja/interactive-mode#turn-automatic-continue-off)を参照してください。Claude Code v2.1.234 以降が必要です。
 
-* **スコープ**: [`ユーザーまたはマネージド`](#scopes)。ユーザー設定、`--settings`、およびマネージド設定からのみ読み取ります。これらのいずれもキーを設定しない場合、プロジェクトまたはローカル設定ファイルがキーを設定すると、機能は無視されるのではなくオフになります。
-* **タイプ**: ブール値
-  * `true`: claude.ai の使用制限がセッションを停止した後、Claude Code は開いているセッションで待機し、リセット後にタスクを自動的に続行します
-  * `false`: Claude Code は独自に待機を開始しません。[使用制限オプションメニューから自分で待機を開始](/docs/ja/interactive-mode#start-a-wait-yourself)できます
+* **スコープ**: [`User or managed`](#scopes)。ユーザー設定、`--settings`、管理設定からのみ読み取られます。これらのいずれでもキーが設定されていない場合、プロジェクト設定ファイルまたはローカル設定ファイルでこのキーを設定すると、無視されるのではなく機能がオフになります。
+* **型**: Boolean
+  * `true`: claude.ai の使用制限によってセッションが停止した後、Claude Code は開いているセッションで待機し、リセット後にタスクを自動的に続行します
+  * `false`: Claude Code は自動的には待機を開始しません。使用制限のオプションメニューから[自分で待機を開始する](/docs/ja/interactive-mode#start-a-wait-yourself)ことは引き続き可能です
 * **デフォルト**: `true`
 
 ```json settings.json theme={null}
@@ -3322,18 +3322,18 @@ claude.ai の使用制限がセッションを停止した後、開いている�
 }
 ```
 
-`/config` に**使用制限で自動的に続行**として表示され、このキーをユーザー設定に書き込みます。マネージド設定または `--settings` フラグがキーを設定している場合、Claude Code は行を非表示にします。
+`/config` では **Continue automatically at usage limit** として表示され、このキーをユーザー設定に書き込みます。管理設定または `--settings` フラグでこのキーが設定されている間、Claude Code はこの行を非表示にします。
 
 <h3 id="autoscrollenabled">
   `autoScrollEnabled`
 </h3>
 
-[フルスクリーンレンダリング](/docs/ja/fullscreen)で会話の下部に新しい出力を追従します。オフにすると、Claude が作業を続ける間、スクロールした場所に留まります。権限プロンプトは引き続き表示されます。
+[フルスクリーンレンダリング](/docs/ja/fullscreen)で、新しい出力に追従して会話の末尾までスクロールします。オフにすると、Claude が作業を続けている間もスクロールした位置にとどまります。権限プロンプトは引き続きスクロールして表示領域に入ります。
 
-* **スコープ**: [`任意のファイル`](#scopes)
-* **タイプ**: ブール値
-  * `true`: 会話は新しい出力の下部に追従します
-  * `false`: Claude が作業を続ける間、スクロールした場所に留まります。権限プロンプトはトランスクリプトの下に表示されます
+* **スコープ**: [`Any file`](#scopes)
+* **型**: Boolean
+  * `true`: 会話は新しい出力に追従して末尾までスクロールします
+  * `false`: Claude が作業を続けている間も、スクロールした位置にとどまります。権限プロンプトは引き続きトランスクリプトの下に表示されます
 * **デフォルト**: `true`
 
 ```json settings.json theme={null}
@@ -3342,20 +3342,20 @@ claude.ai の使用制限がセッションを停止した後、開いている�
 }
 ```
 
-`/config` にフルスクリーンレンダリングがオンの場合**自動スクロール**として表示され、このキーをユーザー設定に書き込みます。
+フルスクリーンレンダリングがオンの場合、`/config` では **Auto-scroll** として表示され、このキーをユーザー設定に書き込みます。
 
 <h3 id="axscreenreader">
   `axScreenReader`
 </h3>
 
-スクリーンリーダーフレンドリーな出力をレンダリングします。装飾的なボーダーやアニメーションのないフラットテキストです。スクリーンリーダーモードはクラシックレンダラーを使用するため、アクティブな間は `tui` 設定は効果がありません。接続された[バックグラウンドセッション](/docs/ja/agent-view)は引き続きフルスクリーンでレンダリングされます。
+スクリーンリーダーに適した出力、つまり装飾的な枠線やアニメーションのないフラットなテキストをレンダリングします。スクリーンリーダーモードはクラシックレンダラーを使用するため、有効な間は `tui` 設定は効果がありません。アタッチされた[バックグラウンドセッション](/docs/ja/agent-view)は引き続きフルスクリーンでレンダリングされます。
 
-* **スコープ**: [`任意のファイル`](#scopes)
-* **タイプ**: ブール値
-  * `true`: Claude Code は装飾的なボーダーやアニメーションのないフラットテキストをレンダリングし、クラシックレンダラーを使用します
-  * `false`: Claude Code は通常通りレンダリングします
-* **デフォルト**: 未設定、スクリーンリーダーモードはオフです
-* **セッションごとのオーバーライド**: [`--ax-screen-reader`](/docs/ja/cli-reference#cli-flags) は [`CLAUDE_AX_SCREEN_READER`](/docs/ja/env-vars) より優先され、両方ともこのキーより優先されます
+* **スコープ**: [`Any file`](#scopes)
+* **型**: Boolean
+  * `true`: Claude Code はクラシックレンダラーを使用し、装飾的な枠線やアニメーションのないフラットなテキストをレンダリングします
+  * `false`: Claude Code は通常どおりレンダリングします
+* **デフォルト**: 未設定。スクリーンリーダーモードはオフです
+* **セッションごとの上書き**: 1 つのセッションについては、[`--ax-screen-reader`](/docs/ja/cli-reference#cli-flags) が [`CLAUDE_AX_SCREEN_READER`](/docs/ja/env-vars) より優先され、どちらもこのキーより優先されます
 
 ```json settings.json theme={null}
 {
@@ -3367,16 +3367,16 @@ claude.ai の使用制限がセッションを停止した後、開いている�
   `bashEditDiffEnabled`
 </h3>
 
-Bash コマンドの実行中に Git リポジトリで変更されたファイルを Claude Code が記録するかどうかを選択します。記録する場合、コマンド後にターミナルでそれらの diff が表示され、[PostToolUse Bash フック](/docs/ja/hooks#bash)は変更されたファイルのリストを受け取ります。
+Bash コマンドの実行中に Git リポジトリ内のどのファイルが変更されたかを Claude Code が記録するかどうかを選択します。記録する場合、コマンドの後にターミナルでその差分が表示され、[PostToolUse Bash フック](/docs/ja/hooks#bash)は変更されたファイルのリストを受け取ります。
 
-リストされたファイルは常にコマンドが変更したものとは限りません。コマンドの実行中に別のプログラムまたは別の Bash 呼び出しが行った変更もそこに表示される可能性があります。
+リストに含まれるファイルが、必ずしもそのコマンドによって変更されたものとは限りません。コマンドの実行中に別のプログラムや別の Bash 呼び出しが行った変更も含まれることがあります。
 
-キーを `true` に設定して、すべての権限モードで記録します。Claude Code v2.1.269 以降が必要です。
+すべての権限モードで記録するには、キーを `true` に設定します。Claude Code v2.1.269 以降が必要です。
 
-* **スコープ**: [`ユーザーまたはマネージド`](#scopes)。`true` はユーザー設定、`--settings` で渡された JSON、または[マネージド設定](/docs/ja/managed-settings)からのみカウントされるため、リポジトリの `.claude/settings.json` または `.claude/settings.local.json` の `true` は記録をオンにできません。リポジトリファイルの `false` は[より高い優先度](/docs/ja/settings#settings-precedence)のファイルが `true` を設定しない限り、引き続きオフになります。
-* **タイプ**: ブール値
-* **デフォルト**: 未設定、Claude Code は自動モードと `bypassPermissions` モードで Claude が Bash を通じてファイルを編集するように指示する場合に変更を記録します
-* **セッションごとのオーバーライド**: [`CLAUDE_CODE_BASH_EDIT_DIFF`](/docs/ja/env-vars) はこのキーより優先されます
+* **スコープ**: [`User or managed`](#scopes)。`true` はユーザー設定、`--settings` で渡された JSON、または[管理設定](/docs/ja/managed-settings)からのものだけが有効になるため、リポジトリの `.claude/settings.json` や `.claude/settings.local.json` にある `true` では記録をオンにできません。いずれかのリポジトリファイルにある `false` は、[優先順位のより高い](/docs/ja/settings#settings-precedence)ファイルで `true` が設定されていない限り、記録をオフにします。
+* **型**: Boolean
+* **デフォルト**: 未設定。Claude Code は、auto モードと `bypassPermissions` モードにおいて、Bash を通じてファイルを編集するよう Claude に指示した場合に変更を記録します
+* **セッションごとの上書き**: 1 つのセッションについては、[`CLAUDE_CODE_BASH_EDIT_DIFF`](/docs/ja/env-vars) がこのキーより優先されます
 
 ```json settings.json theme={null}
 {
@@ -3388,11 +3388,11 @@ Bash コマンドの実行中に Git リポジトリで変更されたファイ�
   `companyAnnouncements`
 </h3>
 
-スタートアップ時に組織のアナウンスメントをユーザーに表示します。複数をリストする場合、Claude Code は各セッションでランダムに 1 つを選択します。ユーザーの最初の起動時には最初のエントリが表示されます。
+起動時に組織からのお知らせをユーザーに表示します。複数指定した場合、Claude Code はセッションごとにランダムに 1 つを選びます。ユーザーが初めて起動したときは最初のエントリを表示します。
 
-* **スコープ**: [`任意のファイル`](#scopes)
-* **タイプ**: 文字列の配列
-* **デフォルト**: 未設定、アナウンスメントは表示されません
+* **スコープ**: [`Any file`](#scopes)
+* **型**: 文字列の配列
+* **デフォルト**: 未設定。お知らせは表示されません
 
 ```json settings.json theme={null}
 {
@@ -3406,15 +3406,15 @@ Bash コマンドの実行中に Git リポジトリで変更されたファイ�
   `defaultShell`
 </h3>
 
-入力ボックスで[`!` プレフィックス](/docs/ja/interactive-mode#shell-mode-with-prefix)で入力したシェルコマンド、Claude Code が直接実行してセッションに追加するコマンドを実行するかどうかを選択します。Bash または PowerShell。
+入力ボックスで [`!` プレフィックス](/docs/ja/interactive-mode#shell-mode-with-prefix)を付けて入力したシェルコマンド、つまり Claude Code が直接実行してセッションに追加するコマンドを、Bash と PowerShell のどちらで実行するかを選択します。
 
-`"powershell"` は[PowerShell ツール](/docs/ja/tools-reference#powershell-tool)がオンの場合のみ機能します。このツールは Git Bash のない Windows ではデフォルトでオンであり、Git Bash を使用する Windows では claude.ai および Console アカウント用にオンです。Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry セッション、および macOS、Linux、WSL では、`CLAUDE_CODE_USE_POWERSHELL_TOOL=1` を設定してツールをオンにします。そのツールをオフにするには、その変数を `0` に設定します。
+`"powershell"` は [PowerShell ツール](/docs/ja/tools-reference#powershell-tool)がオンの場合にのみ機能します。このツールは、Git Bash のない Windows ではデフォルトでオンになり、Git Bash のある Windows では claude.ai アカウントと Console アカウントの場合にデフォルトでオンになります。Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry のセッション、および macOS、Linux、WSL では、`CLAUDE_CODE_USE_POWERSHELL_TOOL=1` を設定してツールをオンにします。この変数を `0` に設定するとツールがオフになります。
 
-* **スコープ**: [`任意のファイル`](#scopes)
-* **タイプ**: 文字列、以下のいずれか:
+* **スコープ**: [`Any file`](#scopes)
+* **型**: 文字列。次のいずれか:
   * `"bash"`: Claude Code は `!` コマンドを Bash で実行します
   * `"powershell"`: Claude Code は `!` コマンドを PowerShell で実行します
-* **デフォルト**: `"bash"`、または Bash が利用できない Windows では `"powershell"`
+* **デフォルト**: `"bash"`。Bash が利用できない Windows では `"powershell"`
 
 ```json settings.json theme={null}
 {
@@ -3422,18 +3422,18 @@ Bash コマンドの実行中に Git リポジトリで変更されたファイ�
 }
 ```
 
-指定したシェルが利用できない場合、Claude Code は他方を使用します。`"powershell"` は PowerShell ツールがオフの場合 Bash にフォールバックし、`"bash"` は Bash がインストールされていない場合 PowerShell にフォールバックします。
+指定したシェルが利用できない場合、Claude Code はもう一方を使用します。PowerShell ツールがオフの場合 `"powershell"` は Bash にフォールバックし、Bash がインストールされていない場合 `"bash"` は PowerShell にフォールバックします。
 
 <h3 id="dialogexpiry">
   `dialogExpiry`
 </h3>
 
-Claude Code が[リモートクライアントに転送](/docs/ja/remote-control#limitations)するダイアログ（Remote Control または SDK ホストなど）および[保留中のクロスセッションメッセージ](/docs/ja/cross-session-messaging#control-inbound-messages)の承認ダイアログの期限を設定します。Claude Code v2.1.236 以降では、同じ期限が誰もターミナルにいない可能性があるセッションの途中の[Fable 使用クレジット同意プロンプト](/docs/ja/model-config#fable-and-usage-credits)を制限します。期限前に回答が到着しない場合、Claude Code はダイアログをキャンセルし、デフォルトのアクションなしで続行します。Claude Code v2.1.224 以降が必要です。
+Claude Code が Remote Control や SDK ホストなどの[リモートクライアントに転送する](/docs/ja/remote-control#limitations)ダイアログ、および[保留されたクロスセッションメッセージ](/docs/ja/cross-session-messaging#control-inbound-messages)の承認ダイアログの期限を設定します。Claude Code v2.1.236 以降では、ターミナルに誰もいない可能性のあるセッションにおいて、セッション途中の [Fable 使用クレジットの同意プロンプト](/docs/ja/model-config#fable-and-usage-credits)にも同じ期限が適用されます。期限までに回答がない場合、Claude Code はダイアログをキャンセルし、何もしないデフォルトの動作で続行します。Claude Code v2.1.224 以降が必要です。
 
-* **スコープ**: [`ユーザーまたはマネージド`](#scopes)
-* **タイプ**: 文字列、`"60s"`、`"5m"`、`"10m"`、または期限を無効にする `"never"` のいずれか
+* **スコープ**: [`User or managed`](#scopes)
+* **型**: 文字列。`"60s"`、`"5m"`、`"10m"`、または期限を無効にする `"never"` のいずれか
 * **デフォルト**: `"5m"`
-* **セッションごとのオーバーライド**: [`CLAUDE_CODE_USER_DIALOG_TIMEOUT_MS`](/docs/ja/env-vars) はこのキーより優先されます
+* **セッションごとの上書き**: 1 つのセッションについては、[`CLAUDE_CODE_USER_DIALOG_TIMEOUT_MS`](/docs/ja/env-vars) がこのキーより優先されます
 
 ```json settings.json theme={null}
 {
@@ -3441,17 +3441,17 @@ Claude Code が[リモートクライアントに転送](/docs/ja/remote-control
 }
 ```
 
-権限プロンプトと[`AskUserQuestion`](/docs/ja/tools-reference#askuserquestion-tool-behavior)質問は独自のフローを使用し、この期限の対象ではありません。Claude Code v2.1.232 以降では `/config` に**ダイアログの有効期限**として表示され、このキーをユーザー設定に書き込みます。行には Claude Code v2.1.232 以降が必要であり、マネージド設定または `--settings` フラグがキーを設定している場合、Claude Code は行を非表示にします。
+権限プロンプトと [`AskUserQuestion`](/docs/ja/tools-reference#askuserquestion-tool-behavior) の質問は独自のフローを使用するため、この期限の対象にはなりません。`/config` では **Dialog expiry** として表示され、このキーをユーザー設定に書き込みます。この行には Claude Code v2.1.232 以降が必要で、管理設定または `--settings` フラグでこのキーが設定されている間、Claude Code はこの行を非表示にします。
 
 <h3 id="editormode">
   `editorMode`
 </h3>
 
-入力プロンプトのキーバインディングモードを選択します。
+入力プロンプトのキーバインドモードを選択します。
 
-* **スコープ**: [`任意のファイル`](#scopes)
-* **タイプ**: 文字列、以下のいずれか:
-  * `"normal"`: プロンプト入力の標準キーバインディング
+* **スコープ**: [`Any file`](#scopes)
+* **型**: 文字列。次のいずれか:
+  * `"normal"`: プロンプト入力での標準的なキーバインド
   * `"vim"`: NORMAL、INSERT、VISUAL モードを備えた vim スタイルの編集
 * **デフォルト**: `"normal"`
 
@@ -3461,18 +3461,18 @@ Claude Code が[リモートクライアントに転送](/docs/ja/remote-control
 }
 ```
 
-`/config` に**エディタモード**として表示され、このキーをユーザー設定に書き込みます。
+`/config` では **Editor mode** として表示され、このキーをユーザー設定に書き込みます。
 
 <h3 id="emojicompletionenabled">
   `emojiCompletionEnabled`
 </h3>
 
-プロンプト入力で `:` とショートコードを入力するときに絵文字の提案を表示し、`:heart:` などの完成したショートコードを絵文字に置き換えます。`false` に設定して両方をオフにします。
+プロンプト入力で `:` に続けてショートコードを入力したときに絵文字の候補を表示し、`:heart:` のような完成したショートコードを対応する絵文字に置き換えます。両方をオフにするには `false` に設定します。
 
-* **スコープ**: [`任意のファイル`](#scopes)
-* **タイプ**: ブール値
-  * `true`: Claude Code は `:` の後に絵文字の提案を表示し、完成したショートコードを絵文字に置き換えます
-  * `false`: Claude Code は絵文字を提案せず、ショートコードを置き換えません
+* **スコープ**: [`Any file`](#scopes)
+* **型**: Boolean
+  * `true`: Claude Code は `:` の後に絵文字の候補を表示し、完成したショートコードを絵文字に置き換えます
+  * `false`: Claude Code は絵文字の候補を表示せず、ショートコードの置き換えも行いません
 * **デフォルト**: `true`
 
 ```json settings.json theme={null}
@@ -3489,11 +3489,11 @@ Claude Code が[リモートクライアントに転送](/docs/ja/remote-control
   `fileSuggestion`
 </h3>
 
-組み込みのファイル提案の代わりに、`@` ファイルパスオートコンプリートを提供する独自のコマンドを実行します。組み込み提案は高速ファイルシステムトラバーサルを使用します。大規模なモノレポは事前構築されたファイルインデックスなどのプロジェクト固有のインデックスでより良い結果が得られる場合があります。
+組み込みのファイル候補の代わりに、独自のコマンドを実行して `@` ファイルパスのオートコンプリートを提供します。組み込みの候補は高速なファイルシステム走査を使用しますが、大規模なモノレポでは、事前にビルドされたファイルインデックスのようなプロジェクト固有のインデックスを使用したほうがうまくいく場合があります。
 
-* **スコープ**: [`任意のファイル`](#scopes)。[ステータスラインとファイル提案ゲート](#status-line-and-file-suggestion-gates)の下では、Claude Code はコマンドをオフにするか、マネージド値のみを実行し、警告なしにあなたのコマンドをスキップします。
-* **タイプ**: `type`（常に `"command"`）と `command`（実行するシェルコマンド）を持つオブジェクト
-* **デフォルト**: 未設定、Claude Code は組み込みのファイル提案を使用します
+* **スコープ**: [`Any file`](#scopes)。[ステータスラインとファイル候補のゲート](#status-line-and-file-suggestion-gates)の下では、Claude Code はコマンドをオフにするか管理設定の値のみを実行し、ユーザーのコマンドは警告なしにスキップします。
+* **型**: 常に `"command"` である `type` と、実行するシェルコマンドである `command` を持つオブジェクト
+* **デフォルト**: 未設定。Claude Code は組み込みのファイル候補を使用します
 
 ```json settings.json theme={null}
 {
@@ -3504,19 +3504,19 @@ Claude Code が[リモートクライアントに転送](/docs/ja/remote-control
 }
 ```
 
-これを保存した後、プロンプトで `@` に続けてパスの一部を入力します。提案はコマンドの出力から取得されます。
+これを保存した後、プロンプトで `@` に続けてパスの一部を入力すると、コマンドの出力から候補が表示されます。
 
 <h4 id="command-input-and-output">
-  コマンド入力と出力
+  コマンドの入力と出力
 </h4>
 
-Claude Code は[フック](/docs/ja/hooks)と同じ環境変数（`CLAUDE_PROJECT_DIR` を含む）でコマンドを実行し、5 秒後に待機を停止します。コマンドは stdin で `query` フィールドを持つ JSON を受け取ります。これまでに入力したものを保持します:
+Claude Code は、`CLAUDE_PROJECT_DIR` を含め、[フック](/docs/ja/hooks)と同じ環境変数でコマンドを実行し、5 秒後に待機を打ち切ります。コマンドは、それまでに入力された内容を保持する `query` フィールドを含む JSON を stdin で受け取ります。
 
 ```json theme={null}
 {"query": "src/comp"}
 ```
 
-stdout にニューラインで区切られたファイルパスを出力します。Claude Code は最大 15 個を表示します:
+改行区切りのファイルパスを stdout に出力します。Claude Code が表示するのは最大 15 件です。
 
 ```text theme={null}
 src/components/Button.tsx
@@ -3524,7 +3524,7 @@ src/components/Modal.tsx
 src/components/Form.tsx
 ```
 
-次のスクリプトはクエリを読み取り、リポジトリファイルインデックスに渡します:
+次のスクリプトはクエリを読み取り、リポジトリのファイルインデックスに渡します。
 
 ```bash theme={null}
 #!/bin/bash
@@ -3539,13 +3539,13 @@ your-repo-file-index --query "$query" | head -20
   `footerLinksRegexes`
 </h3>
 
-ターン出力（ツール結果（ファイルコンテンツと取得されたページを含む）および Claude 自身の応答）に正規表現がマッチするときに、入力ボックスの下のフッターに追加のクリック可能なバッジをレンダリングします。プロジェクト CLI によって出力される ID（レビューツールおよび問題トラッカーなど）をセッションリンクに変換するために使用します。
+正規表現がターンの出力（ファイルの内容や取得したページを含むツールの結果、および Claude 自身の応答）に一致したとき、入力ボックスの下のフッターにクリック可能なバッジを追加でレンダリングします。レビューツールや課題トラッカーなどのプロジェクトの CLI が出力する ID を、セッション内のリンクに変換するために使用します。
 
-* **スコープ**: [`ユーザーまたはマネージド`](#scopes)
-* **タイプ**: オブジェクトの配列。各オブジェクトは `type` を `"regex"` に設定し、`pattern` 正規表現、`url` テンプレート、およびオプションの `label` を持ちます。`url` および `label` の `{name}` プレースホルダーは `pattern` の名前付きキャプチャグループから入力されます
-* **デフォルト**: 未設定、バッジはレンダリングされません
+* **スコープ**: [`User or managed`](#scopes)
+* **型**: オブジェクトの配列。各オブジェクトは `"regex"` に設定された `type`、正規表現の `pattern`、`url` テンプレート、およびオプションの `label` を持ちます。`url` と `label` 内の `{name}` プレースホルダーは、`pattern` の名前付きキャプチャグループから埋められます
+* **デフォルト**: 未設定。バッジはレンダリングされません
 
-この例は `PROJ-1234` などの問題キーにマッチし、キャプチャされたキーから各リンクを構築します:
+この例では `PROJ-1234` のような課題キーに一致させ、キャプチャしたキーから各リンクを構築します。
 
 ```json settings.json theme={null}
 {
@@ -3560,49 +3560,49 @@ your-repo-file-index --query "$query" | head -20
 }
 ```
 
-これが設定されている場合、`PROJ-1234` がツール結果または Claude の応答に表示されると、`PROJ-1234` バッジがフッターに表示され、`https://issues.example.com/browse/PROJ-1234` にリンクします。
+この設定では、ツールの結果または Claude の応答に `PROJ-1234` が現れると、`https://issues.example.com/browse/PROJ-1234` にリンクする `PROJ-1234` バッジがフッターに表示されます。
 
 <h4 id="badge-constraints">
   バッジの制約
 </h4>
 
-各エントリの URL、ラベル、およびバッジ数は次のように制限されます:
+各エントリの URL、ラベル、バッジの数には次の制限があります。
 
 | 制約 | 動作 |
 | :- | :- |
-| URL オリジン | キャプチャされた値は URL エンコードされ、構築された URL はテンプレートのリテラルオリジンを共有する必要があります。キャプチャはパスセグメントまたはクエリ値を入力できますが、リンクが指す場所を変更することはできません |
-| URL 長 | 2048 文字より長い構築された URL は削除されます |
-| URL スキーム | `https`、`http`、または認識されたエディタまたはワークスペースディープリンクスキーム: `vscode`、`vscode-insiders`、`cursor`、`windsurf`、`zed`、`jetbrains`、`idea`、`slack`、`linear`、`notion`、`figma` である必要があります |
-| ラベル | マッチしたテキストにデフォルト設定され、28 表示列に切り詰められます |
-| バッジ数 | 最大 5 個のバッジがレンダリングされます。最も古いものは新しいマッチに置き換えられ、`/clear` はそれらを削除します |
+| URL のオリジン | キャプチャされた値は URL エンコードされ、構築された URL はテンプレートのリテラルのオリジンと同じでなければなりません。キャプチャはパスセグメントやクエリ値を埋めることはできますが、リンク先を変更することはできません |
+| URL の長さ | 2048 文字を超える構築された URL は破棄されます |
+| URL スキーム | `https`、`http`、または認識されるエディターやワークスペースのディープリンクスキーム（`vscode`、`vscode-insiders`、`cursor`、`windsurf`、`zed`、`jetbrains`、`idea`、`slack`、`linear`、`notion`、`figma`）でなければなりません |
+| ラベル | デフォルトは一致したテキストで、表示幅 28 カラムに切り詰められます |
+| バッジの数 | レンダリングされるバッジは最大 5 個です。新しい一致によって最も古いものが置き換えられ、`/clear` でバッジは削除されます |
 
-ターンが完了すると、Claude Code はメインスレッドでターン出力に対して各エントリの `pattern` 正規表現をマッチングするため、遅い正規表現は完了するまで UI をブロックします。`(a+)+$` などのネストされた量指定子は特定の入力に対して指数関数的に長くかかり、セッションをフリーズさせる可能性があるため、各 `pattern` を線形に保ち、`+` または `*` のネストを避けてください。
+ターンが完了すると、Claude Code はメインスレッド上で各エントリの `pattern` 正規表現をターンの出力に照合するため、遅い正規表現は完了するまで UI をブロックします。`(a+)+$` のようなネストされた量指定子は、特定の入力に対して指数関数的に時間がかかり、セッションをフリーズさせることがあるため、各 `pattern` は線形に保ち、`+` や `*` のネストは避けてください。
 
-フッターバッジは[カスタムステータスライン](/docs/ja/statusline)が設定されている場合と並んでレンダリングされます。どちらも他方を置き換えません。セッションデータから独自のコンテンツを計算するスクリプト駆動行にはステータスラインを使用し、会話から ID をリンクに変換するにはフッターバッジを使用します。
+[カスタムステータスライン](/docs/ja/statusline)が設定されている場合、フッターバッジはそれと並んでレンダリングされ、どちらも他方を置き換えることはありません。セッションデータから独自に内容を計算するスクリプト駆動の行にはステータスラインを使用し、スクリプトなしで会話中の ID をリンクに変換するにはフッターバッジを使用します。
 
 <h3 id="keybindingflavor">
   `keybindingFlavor`
 </h3>
 
 <Warning>
-  v2.1.261 以降非推奨であり、効果がありません。プロンプトのワード編集キーは常に[readline 規約に従います](/docs/ja/interactive-mode#make-ctrl-w-delete-back-to-whitespace)。Bash のように。Claude Code は引き続き `keybindingFlavor` を受け入れるため、それを設定する設定ファイルは有効なままです。
+  v2.1.261 以降は非推奨となり、効果はありません。プロンプトの単語編集キーは、Bash と同様に常に [readline の慣例に従います](/docs/ja/interactive-mode#make-ctrl-w-delete-back-to-whitespace)。Claude Code は引き続き `keybindingFlavor` を受け付けるため、これを設定している設定ファイルは有効なままです。
 </Warning>
 
-v2.1.238 から v2.1.260 では、`"readline"` に設定すると `Ctrl+W` は前の単語だけでなく前の空白文字に戻って削除されました。
+v2.1.238 から v2.1.260 では、これを `"readline"` に設定すると、`Ctrl+W` が直前の単語だけでなく直前の空白までを削除するようになりました。
 
-* **スコープ**: [`任意のファイル`](#scopes)
-* **タイプ**: 文字列、`"classic"` または `"readline"`
+* **スコープ**: [`Any file`](#scopes)
+* **型**: 文字列。`"classic"` または `"readline"`
 * **デフォルト**: 未設定
 
 <h3 id="maxprosewidth">
   `maxProseWidth`
 </h3>
 
-Claude の応答の散文の幅を制限して、行が広いターミナルで読みやすく保ちます。段落、見出し、リスト、およびブロック引用はこの多くの列内でラップされ、テーブルとコードブロックはターミナルの全幅を保ちます。Claude Code v2.1.282 以降が必要です。
+Claude の応答に含まれる文章の幅に上限を設け、幅の広いターミナルでも行を読みやすく保ちます。段落、見出し、リスト、引用ブロックはこのカラム数の範囲内で折り返され、表とコードブロックはターミナルの全幅を維持します。Claude Code v2.1.282 以降が必要です。
 
-* **スコープ**: [`任意のファイル`](#scopes)
-* **タイプ**: ターミナル列の数、整数、最小 `40`。Claude Code は他の値を無視します
-* **デフォルト**: 未設定、散文はターミナルエッジでラップされます
+* **スコープ**: [`Any file`](#scopes)
+* **型**: ターミナルのカラム数。整数で、最小値は `40`。Claude Code はそれ以外の値を無視します
+* **デフォルト**: 未設定。文章はターミナルの端で折り返されます
 
 ```json settings.json theme={null}
 {
@@ -3614,11 +3614,11 @@ Claude の応答の散文の幅を制限して、行が広いターミナルで�
   `prefersReducedMotion`
 </h3>
 
-スピナー、シマー、フラッシュエフェクトなどのインターフェースアニメーションを削減またはオフにします。`/config` に**モーションを削減**として表示されます。
+スピナー、シマー、フラッシュ効果などのインターフェースのアニメーションを抑えるか、オフにします。`/config` では **Reduce motion** として表示されます。
 
-* **スコープ**: [`任意のファイル`](#scopes)
-* **タイプ**: ブール値
-  * `true`: Claude Code はスピナー、シマー、フラッシュエフェクトなどのインターフェースアニメーションを削減またはオフにします
+* **スコープ**: [`Any file`](#scopes)
+* **型**: Boolean
+  * `true`: Claude Code はスピナー、シマー、フラッシュ効果などのインターフェースのアニメーションを抑えるか、オフにします
   * `false`: 未設定と同じです。Claude Code はアニメーションを表示します
 * **デフォルト**: `false`
 
@@ -3632,14 +3632,14 @@ Claude の応答の散文の幅を制限して、行が広いターミナルで�
   `promptSuggestionEnabled`
 </h3>
 
-[プロンプト提案](/docs/ja/interactive-mode#prompt-suggestions)を表示または非表示にします。プロンプト入力に表示される灰色の予測です。`false` に設定するか、`/config` で**プロンプト提案**をオフにして非表示にします。
+プロンプト入力に表示されるグレーアウトされた予測である[プロンプト候補](/docs/ja/interactive-mode#prompt-suggestions)の表示・非表示を切り替えます。非表示にするには、`false` に設定するか、`/config` で **Prompt suggestions** をオフにします。
 
-* **スコープ**: [`任意のファイル`](#scopes)
-* **タイプ**: ブール値
-  * `true`: プロンプト入力にプロンプト提案が表示されます
-  * `false`: Claude Code はプロンプト提案を非表示にします
+* **スコープ**: [`Any file`](#scopes)
+* **型**: Boolean
+  * `true`: プロンプト入力にプロンプト候補が表示されます
+  * `false`: Claude Code はプロンプト候補を非表示にします
 * **デフォルト**: `true`
-* **セッションごとのオーバーライド**: [`CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION`](/docs/ja/env-vars) はこのキーより優先されます
+* **セッションごとの上書き**: 1 つのセッションについては、[`CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION`](/docs/ja/env-vars) がこのキーより優先されます
 
 ```json settings.json theme={null}
 {
@@ -3647,18 +3647,18 @@ Claude の応答の散文の幅を制限して、行が広いターミナルで�
 }
 ```
 
-プロンプト提案には、テレメトリがオンの claude.ai または Console アカウントが必要です。Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、または [`DISABLE_TELEMETRY`](/docs/ja/env-vars) によるテレメトリがオフの場合、このキーは効果がなく、`CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION=1` のみがそれらをオンにします。
+プロンプト候補には、テレメトリがオンになっている claude.ai アカウントまたは Console アカウントが必要です。Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry の場合、または [`DISABLE_TELEMETRY`](/docs/ja/env-vars) などでテレメトリがオフになっている場合、このキーは効果がなく、`CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION=1` でのみオンにできます。
 
 <h3 id="respectgitignore">
   `respectGitignore`
 </h3>
 
-`@` ファイルピッカーが `.gitignore` パターンにマッチするファイルを除外するかどうかを制御します。`/config` に**ファイルピッカーで .gitignore を尊重**として表示されます。
+`@` ファイルピッカーが `.gitignore` のパターンに一致するファイルを除外するかどうかを制御します。`/config` では **Respect .gitignore in file picker** として表示されます。
 
-* **スコープ**: [`任意のファイル`](#scopes)。設定ファイルがそれを設定しない場合、Claude Code は `~/.claude.json` の `respectGitignore` にフォールバックします。これは `/config` トグルが書き込みます。
-* **タイプ**: ブール値
-  * `true`: `@` ファイルピッカーは `.gitignore` パターンにマッチするファイルを除外します
-  * `false`: `@` ファイルピッカーは `.gitignore` パターンにマッチするファイルを含めます
+* **スコープ**: [`Any file`](#scopes)。どの設定ファイルでも設定されていない場合、Claude Code は `/config` のトグルが書き込む `~/.claude.json` 内の `respectGitignore` にフォールバックします。
+* **型**: Boolean
+  * `true`: `@` ファイルピッカーは `.gitignore` のパターンに一致するファイルを除外します
+  * `false`: `@` ファイルピッカーは `.gitignore` のパターンに一致するファイルを含めます
 * **デフォルト**: `true`
 
 ```json settings.json theme={null}
@@ -3671,12 +3671,12 @@ Claude の応答の散文の幅を制限して、行が広いターミナルで�
   `respondToBashCommands`
 </h3>
 
-入力ボックスで[`!` プレフィックス](/docs/ja/interactive-mode#shell-mode-with-prefix)でシェルコマンドを実行した後、Claude が応答するかどうかを選択します。デフォルトでは、Claude Code はコマンドの出力を会話に追加し、Claude がそれに応答します。このキーを `false` に設定して、応答なしでコンテキストに出力を追加し、複数のコマンドを実行して一緒に質問できるようにします。
+入力ボックスで [`!` プレフィックス](/docs/ja/interactive-mode#shell-mode-with-prefix)を付けてシェルコマンドを実行した後に、Claude が応答するかどうかを選択します。デフォルトでは、Claude Code はコマンドの出力を会話に追加し、Claude がそれに応答します。このキーを `false` に設定すると、応答なしで出力がコンテキストに追加されるため、複数のコマンドを実行してからまとめて質問できます。
 
-* **スコープ**: [`任意のファイル`](#scopes)
-* **タイプ**: ブール値
+* **スコープ**: [`Any file`](#scopes)
+* **型**: Boolean
   * `true`: Claude Code はコマンドの出力を会話に追加し、Claude がそれに応答します
-  * `false`: Claude Code は応答なしでコンテキストに出力を追加します
+  * `false`: Claude Code は応答なしで出力をコンテキストに追加します
 * **デフォルト**: `true`
 
 ```json settings.json theme={null}
@@ -3685,18 +3685,18 @@ Claude の応答の散文の幅を制限して、行が広いターミナルで�
 }
 ```
 
-[`!` プレフィックスでシェルモード](/docs/ja/interactive-mode#shell-mode-with-prefix)を参照してください。
+[`!` プレフィックスによるシェルモード](/docs/ja/interactive-mode#shell-mode-with-prefix)を参照してください。
 
 <h3 id="showclearcontextonplanaccept">
   `showClearContextOnPlanAccept`
 </h3>
 
-Claude が[プランモード](/docs/ja/permission-modes#review-and-approve-a-plan)でプランを完了すると、承認メニューが表示されます。計画は多くのコンテキストを使用できるため、このキーはそのメニューに最初のオプション**はい、コンテキストをクリアして…** を追加します。これはプランを承認し、会話コンテキストをクリアし、プランだけから実装を開始します。ラベルの残りはセッションが続く権限モードに名前を付け、計画がコンテキストをどの程度使用したかを示します。
+[plan モード](/docs/ja/permission-modes#review-and-approve-a-plan)で Claude が計画を完成させると、承認メニューが表示されます。計画には多くのコンテキストが使われることがあるため、このキーはそのメニューに最初のオプションとして **Yes, clear context and …** を追加します。このオプションは計画を承認し、会話のコンテキストをクリアして、計画のみに基づいて実装を開始します。ラベルの残りの部分には、セッションが続行する権限モードと、計画にどれだけのコンテキストが使われたかが表示されます。
 
-* **スコープ**: [`任意のファイル`](#scopes)
-* **タイプ**: ブール値
-  * `true`: プラン承認メニューは最初のオプション**はい、コンテキストをクリアして…** を取得します。これはプランを承認し、会話コンテキストをクリアします
-  * `false`: プラン承認メニューはクリアコンテキストオプションを表示しません
+* **スコープ**: [`Any file`](#scopes)
+* **型**: Boolean
+  * `true`: 計画の承認メニューに、計画を承認して会話のコンテキストをクリアする最初のオプション **Yes, clear context and …** が追加されます
+  * `false`: 計画の承認メニューにコンテキストをクリアするオプションは表示されません
 * **デフォルト**: `false`
 
 ```json settings.json theme={null}
@@ -3709,12 +3709,12 @@ Claude が[プランモード](/docs/ja/permission-modes#review-and-approve-a-pl
   `showTurnDuration`
 </h3>
 
-各応答後のターン期間メッセージを表示または非表示にします。例えば「Cooked for 1m 6s · done 6:05 PM」。「done」の後の時計はターンが完了した時刻を示します。[`timeFormat`](#timeformat) と [`timeZone`](#timezone) はその形式とゾーンを制御します。`/config` に**ターン期間を表示**として表示されます。
+各応答の後に表示されるターンの所要時間メッセージ（「Cooked for 1m 6s · done 6:05 PM」など）の表示・非表示を切り替えます。「done」の後の時刻はターンが終了した時刻を示し、その形式とタイムゾーンは [`timeFormat`](#timeformat) と [`timeZone`](#timezone) で制御します。`/config` では **Show turn duration** として表示されます。
 
-* **スコープ**: [`任意のファイル`](#scopes)。古いバージョンの `~/.claude.json` の値は、設定ファイルがそれを設定しない場合に適用されます。
-* **タイプ**: ブール値
-  * `true`: 各応答後にターン期間メッセージが表示されます
-  * `false`: Claude Code はターン期間メッセージを非表示にします
+* **スコープ**: [`Any file`](#scopes)。どの設定ファイルでも設定されていない場合、古いバージョンによる `~/.claude.json` 内の値が適用されます。
+* **型**: Boolean
+  * `true`: 各応答の後にターンの所要時間メッセージが表示されます
+  * `false`: Claude Code はターンの所要時間メッセージを非表示にします
 * **デフォルト**: `true`
 
 ```json settings.json theme={null}
@@ -3727,11 +3727,11 @@ Claude が[プランモード](/docs/ja/permission-modes#review-and-approve-a-pl
   `spellcheck`
 </h3>
 
-入力時にプロンプト入力でスペルミスのある単語に下線を引きます。インストールするスペルチェッカーを使用します。Claude Code はプロンプト入力ボックスのテキストのみをチェックします。[入力時にスペルをチェック](/docs/ja/interactive-mode#check-spelling-as-you-type)は aspell、hunspell、または ispell のインストールとチェッカーがカバーするものについて説明しています。Claude Code v2.1.235 以降が必要です。
+インストールしたスペルチェッカーを使用して、入力中のプロンプト入力内のスペルミスに下線を引きます。Claude Code がチェックするのは入力ボックス内のテキストのみです。aspell、hunspell、ispell のインストール方法とチェッカーの対象範囲については、[入力中にスペルをチェックする](/docs/ja/interactive-mode#check-spelling-as-you-type)を参照してください。Claude Code v2.1.235 以降が必要です。
 
-* **スコープ**: [`ユーザーまたはマネージド`](#scopes)。それを設定する最高層のブロックが全体として適用されます。
-* **タイプ**: `enabled`（ブール値）、`checker`（`"aspell"`、`"hunspell"`、`"ispell"`、または `"auto"`）、`language`（文字列、チェッカーの辞書名として渡される）、および `color`（文字列、ターミナルカラー名、`#rrggbb`、`rgb(r,g,b)`、`ansi256(n)`、または `ansi:<name>`）を持つオブジェクト
-* **デフォルト**: 未設定、スペルチェックはオフです。`checker` はデフォルトで `"auto"`、`PATH` で見つかった最初の 3 つです。`language` はデフォルトでチェッカー自身の辞書です。`color` はデフォルトでテーマのエラーカラーです
+* **スコープ**: [`User or managed`](#scopes)。これを設定している最上位の階層のブロック全体が適用されます。
+* **型**: `enabled`（Boolean）、`checker`（`"aspell"`、`"hunspell"`、`"ispell"`、または `"auto"`）、`language`（文字列。辞書名としてチェッカーに渡されます）、`color`（文字列。ターミナルのカラー名、`#rrggbb`、`rgb(r,g,b)`、`ansi256(n)`、または `ansi:<name>`）を持つオブジェクト
+* **デフォルト**: 未設定。スペルチェックはオフです。`checker` のデフォルトは `"auto"` で、`PATH` 上で最初に見つかった 3 つのうちのいずれかです。`language` のデフォルトはチェッカー自身の辞書です。`color` のデフォルトはテーマのエラーカラーです
 
 ```json settings.json theme={null}
 {
@@ -3743,12 +3743,12 @@ Claude が[プランモード](/docs/ja/permission-modes#review-and-approve-a-pl
   `spinnerTipsEnabled`
 </h3>
 
-Claude が作業している間、スピナーラインは「Plan Mode を使用して複雑なリクエストに備えてから変更を加えます。Shift+Tab を 2 回押して有効にします」などの Claude Code 機能に関する短いヒントをローテーションします。このキーを `false` に設定して非表示にします。`/config` に**ヒントを表示**として表示されます。
+Claude の作業中、スピナーの行には Claude Code の機能に関する短いヒント（「Use Plan Mode to prepare for a complex request before making changes. Press Shift+Tab twice to enable.」など）が順に表示されます。これらを非表示にするには、このキーを `false` に設定します。`/config` では **Show tips** として表示されます。
 
-* **スコープ**: [`任意のファイル`](#scopes)
-* **タイプ**: ブール値
-  * `true`: Claude が作業している間、スピナーにヒントが表示されます
-  * `false`: Claude Code はスピナーヒントを非表示にします
+* **スコープ**: [`Any file`](#scopes)
+* **型**: Boolean
+  * `true`: Claude の作業中、スピナーにヒントが表示されます
+  * `false`: Claude Code はスピナーのヒントを非表示にします
 * **デフォルト**: `true`
 
 ```json settings.json theme={null}
@@ -3761,38 +3761,38 @@ Claude が作業している間、スピナーラインは「Plan Mode を使用
   `spinnerTipsOverride`
 </h3>
 
-Claude Code が Claude の作業中に表示する[スピナーヒント](#spinnertipsenabled)に独自のヒントを追加するか、組み込みヒントを置き換えます。Claude Code はあなたのヒントを組み込みのものと同じローテーションに入れます。
+Claude の作業中に Claude Code が表示する[スピナーのヒント](#spinnertipsenabled)に独自のヒントを追加するか、組み込みのヒントを独自のものに置き換えます。Claude Code は独自のヒントを組み込みのヒントと同じローテーションに入れます。
 
-[`spinnerTipsEnabled`](#spinnertipsenabled) を `false` に設定すると、Claude Code はすべてのヒント（あなたのものを含む）を非表示にします。
+[`spinnerTipsEnabled`](#spinnertipsenabled) を `false` に設定すると、Claude Code は独自のヒントも含めてすべてのヒントを非表示にします。
 
-* **スコープ**: [`任意のファイル`](#scopes)。Claude Code はヒントオブジェクト、`tipsFile`、`label`、および `excludeDefault` をユーザー設定、`--settings` フラグ、およびマネージド設定から尊重します。プロジェクトおよびローカル設定からは、プレーン文字列ヒントのみを読み取ります。
-* **タイプ**: `tips`、`tipsFile`、`label`、および `excludeDefault` フィールドを持つオブジェクト。各フィールドはオプションです
-* **デフォルト**: 未設定、Claude Code は組み込みヒントのみを表示します
+* **スコープ**: [`Any file`](#scopes)。Claude Code は、ユーザー設定、`--settings` フラグ、管理設定からのヒントオブジェクト、`tipsFile`、`label`、`excludeDefault` を受け入れます。プロジェクト設定とローカル設定からは、プレーンな文字列のヒントのみを読み取ります。
+* **型**: `tips`、`tipsFile`、`label`、`excludeDefault` フィールドを持つオブジェクト。各フィールドはオプションです
+* **デフォルト**: 未設定。Claude Code は組み込みのヒントのみを表示します
 
-ヒントオブジェクト、`tipsFile`、`label`、およびスコープ行のルール（プロジェクトおよびローカル設定がプレーン文字列のみを提供）には Claude Code v2.1.247 以降が必要です。
+ヒントオブジェクト、`tipsFile`、`label`、およびプロジェクト設定とローカル設定はプレーンな文字列のみを提供するというスコープの規則には、Claude Code v2.1.247 以降が必要です。
 
-各 `tips` エントリはプレーン文字列またはこれらのフィールドを持つオブジェクトです:
+各 `tips` エントリは、プレーンな文字列か、次のフィールドを持つオブジェクトです。
 
 | フィールド | 必須 | 説明 |
 | :- | :- | :- |
-| `id` | はい | 最大 64 文字、数字、`.`、`_`、または `-`。Claude Code はヒントの表示履歴をキーにするため、ヒントのクールダウンはリストの並べ替えを生き残ります。同じ id を持つ 2 つのエントリのうち、Claude Code は最初のものを使用します |
-| `text` | はい | ヒント、最大 500 文字の 1 行。Claude Code は ANSI エスケープと制御文字を削除し、空白を折りたたみます |
-| `cooldownSessions` | いいえ | Claude Code がヒントを再度表示する前に待機するセッション数、`0` から `1000`、デフォルト `0` |
-| `priority` | いいえ | 同じ期間表示されていないヒント間の順序、より高い最初、`-10` から `10`、デフォルト `0` |
+| `id` | はい | 最大 64 文字の英字、数字、`.`、`_`、`-`。Claude Code はこれをキーとしてヒントの表示履歴を管理するため、リストの順序を変更してもヒントのクールダウンは維持されます。同じ id を持つエントリが 2 つある場合、Claude Code は最初のものを使用します |
+| `text` | はい | ヒント。最大 500 文字の 1 行です。Claude Code は ANSI エスケープと制御文字を取り除き、空白をまとめます |
+| `cooldownSessions` | いいえ | Claude Code がヒントを再表示するまでに待機するセッション数。`0` から `1000`、デフォルトは `0` |
+| `priority` | いいえ | 表示されていない期間が同じヒント同士の順序。値が大きいほど先に表示されます。`-10` から `10`、デフォルトは `0` |
 
-Claude Code はプレーン文字列をこれらのデフォルトを持つヒントとして読み取り、位置ベースの id を読み取るため、リストを並べ替えるとその表示履歴がリセットされます。ヒントに `id` を付けて、編集全体で履歴を保持します。
+Claude Code はプレーンな文字列を、これらのデフォルト値と位置に基づく id を持つヒントとして読み取るため、リストの順序を変更するとその表示履歴はリセットされます。編集をまたいで履歴を保持するには、ヒントに `id` を付けてください。
 
-Claude Code は `tips` と `tipsFile` 全体で最大 200 個のヒントを読み取り、設定ファイルを拒否する代わりに、デバッグ警告で無効なエントリを削除します。
+Claude Code が読み取るヒントは `tips` と `tipsFile` を合わせて最大 200 件で、無効なエントリは設定ファイルを拒否するのではなく、デバッグ警告とともに破棄します。
 
-残りのフィールドを使用して、ヒントファイルに名前を付け、プレフィックスを設定し、組み込みヒントを非表示にします:
+残りのフィールドを使用して、ヒントファイルの指定、プレフィックスの設定、組み込みのヒントの非表示を行います。
 
-* `tipsFile`: ローカル JSON ファイルへの絶対パスまたは `~/` パス。同じエントリの配列、またはオブジェクト（`tips` 配列を持つ）を保持します。最大 256 KB。Claude Code はプロセスごとに 1 回ファイルを読み取るため、次の起動時に編集が読み込まれます。[サーバー管理設定](/docs/ja/server-managed-settings)を通じて設定することはできません。インライン `tips` をそこに展開するか、オンディスク `managed-settings.json` にパスを展開します。
-* `label`: Claude Code がユーザー、`--settings`、およびマネージド設定からのヒントの前に表示するプレフィックス。最大 40 文字。デフォルトは `Tip`、組み込みヒントと同じプレフィックスであり、プロジェクトおよびローカル設定からのヒントは常にそれを使用します。
-* `excludeDefault`: `true` に設定して、組み込みヒントを非表示にし、あなたのヒントのみを表示します。Claude Code がヒントを読み込めない場合（例えば `tipsFile` が存在しないか、すべてのエントリが無効な場合）、空のスピナーの代わりに組み込みローテーションを保持します。
+* `tipsFile`: 同じエントリの配列、または `tips` 配列を持つオブジェクトを保持するローカル JSON ファイルへの絶対パスまたは `~/` パス。最大 256 KB です。Claude Code はファイルをプロセスごとに 1 回読み取るため、編集内容は次回の起動時に読み込まれます。[サーバー管理設定](/docs/ja/server-managed-settings)では設定できません。サーバー管理設定ではインラインの `tips` をデプロイするか、ディスク上の `managed-settings.json` でパスをデプロイしてください。
+* `label`: ユーザー設定、`--settings`、管理設定からのヒントの前に Claude Code が表示するプレフィックス。最大 40 文字です。デフォルトは組み込みのヒントと同じプレフィックスの `Tip` で、プロジェクト設定とローカル設定からのヒントには常にこれが使われます。
+* `excludeDefault`: `true` に設定すると、組み込みのヒントを非表示にして独自のヒントのみを表示します。`tipsFile` が存在しない、またはすべてのエントリが無効であるなどの理由で Claude Code が独自のヒントを 1 つも読み込めない場合、空のスピナーではなく組み込みのローテーションを維持します。
 
-複数の設定ファイルがキーを設定する場合、Claude Code はすべてのファイルからヒントを表示し、マネージド設定、`--settings` フラグ、およびユーザー設定のうち、各 `tipsFile`、`label`、および `excludeDefault` を設定する最高優先度のものから取得します。
+複数の設定ファイルでこのキーが設定されている場合、Claude Code はそれらすべてのヒントを表示し、`tipsFile`、`label`、`excludeDefault` はそれぞれ、管理設定、`--settings` フラグ、ユーザー設定のうち、それを設定している最も優先順位の高いものから取得します。
 
-この例（ユーザー設定）は、プレーン文字列ヒントとオブジェクトヒントを `Acme tip` プレフィックスの下のローテーションに追加します:
+この例はユーザー設定に記述するもので、`Acme tip` プレフィックスの下で、プレーンな文字列のヒントとオブジェクトのヒントをローテーションに追加します。
 
 ```json settings.json theme={null}
 {
@@ -3811,29 +3811,29 @@ Claude Code は `tips` と `tipsFile` 全体で最大 200 個のヒントを読�
 }
 ```
 
-例の各フィールドは Claude Code がヒントを表示する方法の 1 つを変更します:
+例の各フィールドは、Claude Code によるヒントの表示方法をそれぞれ 1 点ずつ変更します。
 
-* `label`: Claude Code は両方のヒントを `Tip: ...` の代わりに `Acme tip: ...` として表示します。
-* プレーン文字列: Claude Code はデフォルトを付与するため、次のセッションで再度表示される可能性があります。
-* `id`: Claude Code は 2 番目のヒントの表示履歴を `gateway-errors` にキーにするため、そのクールダウンはヒントを追加または並べ替えた後も適用されます。
-* `cooldownSessions`: Claude Code が `gateway-errors` ヒントを表示した後、そのヒントを 5 セッション後まで再度表示しません。
-* `priority`: `gateway-errors` ヒントと別のヒントが同じ期間表示されていない場合（例えば、どちらも表示されていない場合）、Claude Code は `gateway-errors` を最初に表示します。プレーン文字列はデフォルト優先度 `0` を持ちます。
+* `label`: Claude Code は両方のヒントを `Tip: ...` ではなく `Acme tip: ...` として表示します。
+* プレーンな文字列: Claude Code はデフォルト値を適用するため、直後のセッションで再び表示されることがあります。
+* `id`: Claude Code は 2 つ目のヒントの表示履歴を `gateway-errors` をキーとして管理するため、ヒントを追加したり順序を変更したりした後もクールダウンが適用されます。
+* `cooldownSessions`: Claude Code は `gateway-errors` ヒントを表示した後、5 セッション後までそのヒントを再表示しません。
+* `priority`: `gateway-errors` ヒントと別のヒントが同じセッション数だけ表示されていない場合（たとえば、どちらもまだ表示されていない場合）、Claude Code は `gateway-errors` を先に表示します。プレーンな文字列はデフォルトの優先度 `0` を持ちます。
 
-Claude が作業している間、Claude Code はあなたのプレフィックス（例えば `Acme tip: Run /review before opening a PR`）でスピナーにあなたのヒントを表示します。
+Claude の作業中、Claude Code は `Acme tip: Run /review before opening a PR` のように、スピナーに独自のプレフィックス付きでヒントを表示します。
 
 <h3 id="spinnerverbs">
   `spinnerVerbs`
 </h3>
 
-ターンが進行中の間、スピナーは「Accomplishing」、「Architecting」、または「Baking」などのローテーション動詞を表示します。このキーを使用して、そのローテーションに独自の動詞を追加するか、組み込みリストを置き換えます。
+ターンの進行中、スピナーには「Accomplishing」、「Architecting」、「Baking」などの動詞が順に表示されます。このキーを使用すると、そのローテーションに独自の動詞を追加したり、組み込みのリストを独自のものに置き換えたりできます。
 
-* **スコープ**: [`任意のファイル`](#scopes)
-* **タイプ**: `verbs` 文字列の配列と `mode` を持つオブジェクト。以下のいずれか:
-  * `"append"`: Claude Code は組み込みセットに動詞を追加します
-  * `"replace"`: Claude Code はあなたの動詞のみを表示します
-* **デフォルト**: 未設定、Claude Code は組み込み動詞を使用します
+* **スコープ**: [`Any file`](#scopes)
+* **型**: 文字列の `verbs` 配列と、次のいずれかである `mode` を持つオブジェクト:
+  * `"append"`: Claude Code は組み込みのセットに独自の動詞を追加します
+  * `"replace"`: Claude Code は独自の動詞のみを表示します
+* **デフォルト**: 未設定。Claude Code は組み込みの動詞を使用します
 
-この例は 2 つの動詞を組み込みセットに追加します:
+この例では、組み込みのセットに 2 つの動詞を追加します。
 
 ```json settings.json theme={null}
 {
@@ -3844,19 +3844,19 @@ Claude が作業している間、Claude Code はあなたのプレフィック�
 }
 ```
 
-`"replace"` モードで空の `verbs` 配列の場合、Claude Code は組み込み動詞を保持します。
+`"replace"` モードで `verbs` 配列が空の場合、Claude Code は組み込みの動詞を維持します。
 
 <h3 id="statusline">
   `statusLine`
 </h3>
 
-[ステータスライン](/docs/ja/statusline)をプロンプトの下にレンダリングする独自のコマンドを実行します。モデル、コスト、git ブランチなどのコンテキストを含みます。オプションのフィールドは間隔を調整し、定期的な再実行を追加し、スクリプトが `vim.mode` 自体をレンダリングする場合は組み込みの vim モードインジケーターを非表示にします。
+独自のコマンドを実行して、モデル、コスト、git ブランチなどのコンテキストを含む[ステータスライン](/docs/ja/statusline)をプロンプトの下にレンダリングします。オプションのフィールドで、間隔の調整、定期的な再実行の追加、スクリプト自体が `vim.mode` をレンダリングする場合の組み込みの vim モードインジケーターの非表示を行えます。
 
-* **スコープ**: [`任意のファイル`](#scopes)。[`allowManagedHooksOnly`](#allowmanagedhooksonly) がオンの場合、または [`disableAllHooks`](#disableallhooks) がマネージド設定の外で設定されている場合、マネージド設定値のみが実行されます。
-* **タイプ**: `type` を `"command"` に設定し、`command` 文字列を持つオブジェクト。オプションで `padding` を文字数として、`refreshInterval` を秒数として（最小 `1`）、`hideVimModeIndicator` をブール値として
-* **デフォルト**: 未設定、ステータスラインなし
+* **スコープ**: [`Any file`](#scopes)。[`allowManagedHooksOnly`](#allowmanagedhooksonly) がオンの場合、または [`disableAllHooks`](#disableallhooks) が管理設定以外で設定されている場合、管理設定の値のみが実行されます。
+* **型**: `"command"` に設定された `type` と `command` 文字列を持つオブジェクト。加えて、文字数を表すオプションの `padding`、秒数を表すオプションの `refreshInterval`（最小値 `1`）、Boolean であるオプションの `hideVimModeIndicator` を持ちます
+* **デフォルト**: 未設定。ステータスラインは表示されません
 
-この例はモデル名とコンテキスト使用量を出力し、2 文字の水平間隔を追加します:
+この例では、モデル名とコンテキストの使用量を出力し、2 文字分の水平方向の間隔を追加します。
 
 ```json settings.json theme={null}
 {
@@ -3868,17 +3868,17 @@ Claude が作業している間、Claude Code はあなたのプレフィック�
 }
 ```
 
-例には[`jq`](https://jqlang.org/)がインストールされている必要があり、シェルで実行されます。PowerShell および Git Bash の同等物については、[Windows 設定](/docs/ja/statusline#windows-configuration)を参照してください。完全なセットアップについては、[ステータスラインを手動で設定](/docs/ja/statusline#manually-configure-a-status-line)を参照してください。
+この例では [`jq`](https://jqlang.org/) がインストールされている必要があり、シェルで実行されます。PowerShell と Git Bash での同等の設定については [Windows での設定](/docs/ja/statusline#windows-configuration)を、完全な設定手順については[ステータスラインを手動で設定する](/docs/ja/statusline#manually-configure-a-status-line)を参照してください。
 
 <h3 id="subagentstatusline">
   `subagentStatusLine`
 </h3>
 
-Claude が[サブエージェント](/docs/ja/sub-agents)を実行する場合、Claude Code はプロンプトの下のタスク表示にそれらをリストします。サブエージェントごとに 1 行。`name · description · token count` を表示します。このキーを使用すると、独自のコマンドを実行してそれらの行を書き直すことができます。例えば、各サブエージェントのコンテキスト使用量をパーセンテージとして表示します。各リフレッシュで、Claude Code は表示されている行を 1 つの JSON オブジェクトとして stdin に送信します。`tasks` 配列は各サブエージェントの `id`、`name`、`status`、`model`、`tokenCount` などを含みます。書き直した各 `id` の行を `{"id", "content"}` 行として置き換えます。書き直さない行はデフォルトレンダリングを保持します。
+Claude が[サブエージェント](/docs/ja/sub-agents)を実行すると、Claude Code はプロンプトの下のタスク表示にそれらを一覧表示し、サブエージェントごとに `name · description · token count` を示す行を 1 行ずつ表示します。このキーを使用すると、独自のコマンドを実行してそれらの行を書き換えられます。たとえば、各サブエージェントのコンテキスト使用量をパーセンテージで表示できます。更新のたびに、Claude Code は表示中の行を 1 つの JSON オブジェクトとして stdin に送信します。このオブジェクトには、各サブエージェントの `id`、`name`、`status`、`model`、`tokenCount` などを含む `tasks` 配列が含まれます。Claude Code は、`{"id", "content"}` 行として書き戻された各 `id` の行を置き換えます。書き戻さなかった行はデフォルトのレンダリングのままです。
 
-* **スコープ**: [`任意のファイル`](#scopes)。[`allowManagedHooksOnly`](#allowmanagedhooksonly) がオンの場合、または [`disableAllHooks`](#disableallhooks) がマネージド設定の外で設定されている場合、マネージド設定値のみが実行されます。
-* **タイプ**: `type` を `"command"` に設定し、`command` 文字列を持つオブジェクト
-* **デフォルト**: 未設定、Claude Code はデフォルト行をレンダリングします
+* **スコープ**: [`Any file`](#scopes)。[`allowManagedHooksOnly`](#allowmanagedhooksonly) がオンの場合、または [`disableAllHooks`](#disableallhooks) が管理設定以外で設定されている場合、管理設定の値のみが実行されます。
+* **型**: `"command"` に設定された `type` と `command` 文字列を持つオブジェクト
+* **デフォルト**: 未設定。Claude Code はデフォルトの行をレンダリングします
 
 ```json settings.json theme={null}
 {
@@ -3889,18 +3889,18 @@ Claude が[サブエージェント](/docs/ja/sub-agents)を実行する場合�
 }
 ```
 
-[サブエージェントステータスライン](/docs/ja/statusline#subagent-status-lines)を参照してください。
+[サブエージェントのステータスライン](/docs/ja/statusline#subagent-status-lines)を参照してください。
 
 <h3 id="syntaxhighlightingdisabled">
   `syntaxHighlightingDisabled`
 </h3>
 
-Claude Code は組み込みハイライターを使用して、ターミナルに表示される diff、コードブロック、ファイルプレビューで言語別にコードを色付けします。プラグインまたは言語サーバーは関与しません。このキーを `true` に設定して、代わりにプレーンテキストとして表示します。例えば、色がターミナルテーマと競合する場合やスクリーンリーダーを遅くする場合。
+Claude Code は、ターミナルに表示する差分、コードブロック、ファイルプレビュー内のコードを、組み込みのハイライターで言語ごとに色分けします。プラグインや言語サーバーは関与しません。このキーを `true` に設定すると、代わりにプレーンテキストとして表示します。たとえば、色がターミナルのテーマと合わない場合や、スクリーンリーダーの動作が遅くなる場合に使用します。
 
-* **スコープ**: [`任意のファイル`](#scopes)
-* **タイプ**: ブール値
-  * `true`: Claude Code は diff、コードブロック、ファイルプレビューの構文ハイライトをオフにします
-  * `false`: Claude Code は構文をハイライトします
+* **スコープ**: [`Any file`](#scopes)
+* **型**: Boolean
+  * `true`: Claude Code は差分、コードブロック、ファイルプレビューでシンタックスハイライトをオフにします
+  * `false`: Claude Code はシンタックスハイライトを行います
 * **デフォルト**: `false`
 
 ```json settings.json theme={null}
@@ -3913,14 +3913,14 @@ Claude Code は組み込みハイライターを使用して、ターミナル�
   `terminalProgressBarEnabled`
 </h3>
 
-一部のターミナルは、それらで実行されているプログラムのタブまたはタスクバーに進捗インジケーターを表示できます。Claude が作業している間、Claude Code はターミナルに進行中の状態を報告するため、別のタブまたはウィンドウからセッションがまだビジーかどうかを確認できます。[バックグラウンドサブエージェント](/docs/ja/sub-agents#run-subagents-in-foreground-or-background)または[動的ワークフロー](/docs/ja/workflows)がまだ実行されている間、インジケーターはターンの終了後も表示されたままになり、セッションがアイドル状態になるとクリアされます。
+一部のターミナルでは、その中で実行されているプログラムの進行状況インジケーターをタブやタスクバーに表示できます。Claude の作業中、Claude Code はターミナルに進行中の状態を報告するため、別のタブやウィンドウからセッションがまだビジーかどうかを確認できます。ターンの終了後も、[バックグラウンドサブエージェント](/docs/ja/sub-agents#run-subagents-in-foreground-or-background)や[動的ワークフロー](/docs/ja/workflows)がまだ実行中の間はインジケーターが表示されたままになり、セッションがアイドル状態になるとクリアされます。
 
-Claude Code はインジケーターをサポートするターミナルでのみ報告します。ConEmu、Ghostty 1.2.0 以降、および iTerm2 3.6.6 以降。このキーを `false` に設定して、Claude Code がそれを報告するのを停止します。`/config` に**ターミナル進捗バー**として表示されます。
+Claude Code がこれを報告するのは、インジケーターをサポートするターミナル（ConEmu、Ghostty 1.2.0 以降、iTerm2 3.6.6 以降）のみです。Claude Code による報告を停止するには、このキーを `false` に設定します。`/config` では **Terminal progress bar** として表示されます。
 
-* **スコープ**: [`任意のファイル`](#scopes)。古いバージョンの `~/.claude.json` の値は、設定ファイルがそれを設定しない場合に適用されます。
-* **タイプ**: ブール値
-  * `true`: サポートするターミナルでターミナル進捗バーが表示されます
-  * `false`: Claude Code はターミナル進捗バーを非表示にします
+* **スコープ**: [`Any file`](#scopes)。どの設定ファイルでも設定されていない場合、古いバージョンによる `~/.claude.json` 内の値が適用されます。
+* **型**: Boolean
+  * `true`: サポートしているターミナルでターミナルのプログレスバーが表示されます
+  * `false`: Claude Code はターミナルのプログレスバーを非表示にします
 * **デフォルト**: `true`
 
 ```json settings.json theme={null}
@@ -3933,12 +3933,12 @@ Claude Code はインジケーターをサポートするターミナルでの�
   `terminalTitleFromRename`
 </h3>
 
-Claude Code はターミナルタブのタイトルを設定します。デフォルトでは、会話から生成されたタイトルを使用し、`/rename` または `--name` で[セッションに名前を付ける](/docs/ja/sessions#name-your-sessions)と、タブはその名前を代わりに表示します。このキーを `false` に設定して、セッションに名前を付けた後も、生成されたタイトルをタブに保持します。名前自体は引き続き適用されるため、`/resume <name>` とセッションピッカーはそれを見つけます。
+Claude Code はターミナルのタブのタイトルを設定します。デフォルトでは会話から生成したタイトルを使用し、`/rename` または `--name` でセッションに[名前](/docs/ja/sessions#name-your-sessions)を付けると、タブには代わりにその名前が表示されます。セッションに名前を付けた後も生成されたタイトルをタブに表示し続けるには、このキーを `false` に設定します。名前自体は引き続き適用されるため、`/resume <name>` やセッションピッカーで見つけることができます。
 
-* **スコープ**: [`任意のファイル`](#scopes)
-* **タイプ**: ブール値
-  * `true`: ターミナルタブのタイトルは設定したセッション名を表示します
-  * `false`: タブは会話から生成された Claude Code のタイトルを保持します
+* **スコープ**: [`Any file`](#scopes)
+* **型**: Boolean
+  * `true`: ターミナルのタブのタイトルに、設定したセッション名が表示されます
+  * `false`: タブには Claude Code が会話から生成したタイトルが表示されたままになります
 * **デフォルト**: `true`
 
 ```json settings.json theme={null}
@@ -3947,24 +3947,24 @@ Claude Code はターミナルタブのタイトルを設定します。デフ�
 }
 ```
 
-Claude Code がターミナルタイトルを更新するのを完全に停止するには、代わりに [`CLAUDE_CODE_DISABLE_TERMINAL_TITLE`](/docs/ja/env-vars) を `1` に設定します。
+Claude Code によるターミナルのタイトルの更新を完全に停止するには、代わりに [`CLAUDE_CODE_DISABLE_TERMINAL_TITLE`](/docs/ja/env-vars) を `1` に設定します。
 
 <h3 id="theme">
   `theme`
 </h3>
 
-インターフェースのカラーテーマを選択します。`/config` に**テーマ**として表示されます。
+インターフェースのカラーテーマを選択します。`/config` では **Theme** として表示されます。
 
-* **スコープ**: [`任意のファイル`](#scopes)。古いバージョンの `~/.claude.json` の値は、設定ファイルがそれを設定しない場合に適用されます。
-* **タイプ**: 文字列、以下のいずれか:
-  * `"auto"`: ターミナルの明るいまたは暗い背景に一致します
+* **スコープ**: [`Any file`](#scopes)。どの設定ファイルでも設定されていない場合、古いバージョンによる `~/.claude.json` 内の値が適用されます。
+* **型**: 文字列。次のいずれか:
+  * `"auto"`: ターミナルのライトまたはダークの背景に合わせます
   * `"dark"`: ダークテーマ
   * `"light"`: ライトテーマ
-  * `"dark-daltonized"`: 色覚異常フレンドリーな色を持つダークテーマ
-  * `"light-daltonized"`: 色覚異常フレンドリーな色を持つライトテーマ
+  * `"dark-daltonized"`: 色覚多様性に配慮した色を使用するダークテーマ
+  * `"light-daltonized"`: 色覚多様性に配慮した色を使用するライトテーマ
   * `"dark-ansi"`: ターミナルの ANSI カラーパレットのみを使用するダークテーマ
   * `"light-ansi"`: ターミナルの ANSI カラーパレットのみを使用するライトテーマ
-  * `"custom:<slug>"` または `"custom:<plugin-name>:<slug>"`: `~/.claude/themes/` またはプラグインからのカスタムテーマ
+  * `"custom:<slug>"` または `"custom:<plugin-name>:<slug>"`: `~/.claude/themes/` またはプラグインのカスタムテーマ
 * **デフォルト**: `"dark"`
 
 ```json settings.json theme={null}
@@ -3973,21 +3973,21 @@ Claude Code がターミナルタイトルを更新するのを完全に停止�
 }
 ```
 
-[カスタムテーマを作成](/docs/ja/terminal-config#create-a-custom-theme)を参照してください。
+[カスタムテーマを作成する](/docs/ja/terminal-config#create-a-custom-theme)を参照してください。
 
 <h3 id="timeformat">
   `timeFormat`
 </h3>
 
-Claude Code がインターフェースに表示する時刻の書き方を選択します。例えば、各ターン期間メッセージの終わりの `done 6:05 PM` と[トランスクリプトビューアー](/docs/ja/interactive-mode#transcript-viewer)のタイムスタンプ。プリセットを選択するには、`/config` を実行して**時間形式**を設定します。Claude Code v2.1.257 以降が必要です。
+各ターンの所要時間メッセージの末尾にある `done 6:05 PM` や、[トランスクリプトビューアー](/docs/ja/interactive-mode#transcript-viewer)のタイムスタンプなど、Claude Code がインターフェースに表示する時刻の書式を選択します。プリセットを選ぶには、`/config` を実行して **Time format** を設定します。Claude Code v2.1.257 以降が必要です。
 
-* **スコープ**: [`任意のファイル`](#scopes)
-* **タイプ**: 文字列、以下のいずれか:
-  * `"auto"`: 未設定と同じです。各時刻は組み込み形式を保持し、ターン期間メッセージではロケールに従います
+* **スコープ**: [`Any file`](#scopes)
+* **型**: 文字列。次のいずれか:
+  * `"auto"`: 未設定と同じです。各時刻は組み込みの書式を維持し、ターンの所要時間メッセージではロケールに従います
   * `"12-hour"`: 12 時間制
   * `"24-hour"`: 24 時間制
-  * `"24-hour-utc"`: UTC での 24 時間制。分の後に `Z` が付きます。例えば `18:05Z`。Claude Code はこのプリセットの [`timeZone`](#timezone) を無視します
-  * `"%H:%M"` などの strftime パターン: Claude Code はパターンで各時刻を書きます。`%` を含む値はパターンであり、プリセット外の他の値は `"auto"` としてカウントされます
+  * `"24-hour-utc"`: UTC の 24 時間制で、`18:05Z` のように分の後に `Z` が付きます。このプリセットでは Claude Code は [`timeZone`](#timezone) を無視します
+  * `"%H:%M"` のような strftime パターン: Claude Code は各時刻をそのパターンで書き出します。`%` を含む値はすべてパターンとして扱われ、プリセット以外のそれ以外の値は `"auto"` とみなされます
 * **デフォルト**: `"auto"`
 
 ```json settings.json theme={null}
@@ -3996,7 +3996,7 @@ Claude Code がインターフェースに表示する時刻の書き方を選�
 }
 ```
 
-`/config` はプリセットのみを提供するため、strftime パターンを使用するには、キーを設定ファイルに追加します。この例は各時刻を 2 桁の 24 時間制として表示します:
+`/config` ではプリセットのみが選択できるため、strftime パターンを使用するには、設定ファイルにキーを追加します。この例では、各時刻を 2 桁の 24 時間制で表示します。
 
 ```json settings.json theme={null}
 {
@@ -4004,7 +4004,7 @@ Claude Code がインターフェースに表示する時刻の書き方を選�
 }
 ```
 
-ターン期間メッセージとトランスクリプトビューアーは `18:05` などの時刻を表示します。トランスクリプトビューアーでは、パターンはタイムスタンプ全体であるため、日付をそこに含める場合は日付ディレクティブを追加します。この例は時計の前に日付を配置します:
+すると、ターンの所要時間メッセージとトランスクリプトビューアーに `18:05` のような時刻が表示されます。トランスクリプトビューアーではパターンがタイムスタンプ全体となるため、日付も表示したい場合は日付のディレクティブを追加します。この例では時刻の前に日付を付けます。
 
 ```json settings.json theme={null}
 {
@@ -4012,17 +4012,17 @@ Claude Code がインターフェースに表示する時刻の書き方を選�
 }
 ```
 
-同じサーフェスは `2026-09-01 18:05` などの時刻を表示します。
+すると、同じ箇所に `2026-09-01 18:05` のような時刻が表示されます。
 
 <h3 id="timezone">
   `timeZone`
 </h3>
 
-インターフェースの時刻をシステムの時刻以外のタイムゾーンで表示します。[IANA タイムゾーン名](https://www.iana.org/time-zones)（`"UTC"` または `"Europe/Dublin"` など）に設定します。[`timeFormat`](#timeformat) が制御する時刻はこのゾーンで表示されます。`timeFormat` が `"24-hour-utc"` の場合、時刻は UTC のままであり、Claude Code はこのキーを無視します。`/config` にはこのキーの行がないため、設定ファイルで設定します。Claude Code v2.1.257 以降が必要です。
+インターフェースの時刻を、システムのタイムゾーン以外のタイムゾーンで表示します。`"UTC"` や `"Europe/Dublin"` などの [IANA タイムゾーン名](https://www.iana.org/time-zones)を設定します。これにより、[`timeFormat`](#timeformat) が制御する時刻がこのタイムゾーンで表示されます。`timeFormat` が `"24-hour-utc"` の場合、時刻は UTC のままとなり、Claude Code はこのキーを無視します。`/config` にはこのキーの行がないため、設定ファイルで設定してください。Claude Code v2.1.257 以降が必要です。
 
-* **スコープ**: [`任意のファイル`](#scopes)
-* **タイプ**: 文字列、IANA タイムゾーン名。Claude Code が名前を認識しない場合、システムタイムゾーンを使用します
-* **デフォルト**: 未設定、時刻はシステムタイムゾーンで表示されます
+* **スコープ**: [`Any file`](#scopes)
+* **型**: 文字列。IANA タイムゾーン名です。Claude Code が名前を認識できない場合は、システムのタイムゾーンを使用します
+* **デフォルト**: 未設定。時刻はシステムのタイムゾーンで表示されます
 
 ```json settings.json theme={null}
 {
@@ -4034,14 +4034,14 @@ Claude Code がインターフェースに表示する時刻の書き方を選�
   `tui`
 </h3>
 
-ターミナル UI レンダラーを選択します。ちらつきのない[alt-screen レンダラー](/docs/ja/fullscreen)を仮想スクロールバックで使用するには `"fullscreen"` を使用するか、クラシックメインスクリーンレンダラーには `"default"` を使用します。`/tui fullscreen` または `/tui default` を実行すると、このキーが書き込まれます。
+ターミナル UI のレンダラーを選択します。仮想化されたスクロールバックを備えたちらつきのない[代替スクリーンレンダラー](/docs/ja/fullscreen)には `"fullscreen"` を、クラシックなメインスクリーンレンダラーには `"default"` を使用します。`/tui fullscreen` または `/tui default` を実行すると、このキーが自動で書き込まれます。
 
-* **スコープ**: [`任意のファイル`](#scopes)
-* **タイプ**: 文字列、以下のいずれか:
-  * `"default"`: クラシックメインスクリーンレンダラー
-  * `"fullscreen"`: 仮想スクロールバック付きのちらつきのない alt-screen レンダラー
-* **デフォルト**: 未設定、Claude Code は[レンダラーを自動的に選択](/docs/ja/fullscreen#fullscreen-by-default)します
-* **セッションごとのオーバーライド**: [`CLAUDE_CODE_NO_FLICKER`](/docs/ja/env-vars) と [`CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN`](/docs/ja/env-vars) はこのキーより優先されます。`CLAUDE_CODE_NO_FLICKER=1` はフルスクリーンをオンにし、`CLAUDE_CODE_NO_FLICKER=0` または `CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN=1` はオフにします。両方が設定されている場合、Claude Code はオフにします
+* **スコープ**: [`Any file`](#scopes)
+* **型**: 文字列。次のいずれか:
+  * `"default"`: クラシックなメインスクリーンレンダラー
+  * `"fullscreen"`: 仮想化されたスクロールバックを備えた、ちらつきのない代替スクリーンレンダラー
+* **デフォルト**: 未設定。Claude Code が[レンダラーを自動で選択します](/docs/ja/fullscreen#fullscreen-by-default)
+* **セッションごとの上書き**: 1 つのセッションについては、[`CLAUDE_CODE_NO_FLICKER`](/docs/ja/env-vars) と [`CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN`](/docs/ja/env-vars) がこのキーより優先されます。`CLAUDE_CODE_NO_FLICKER=1` はフルスクリーンをオンにし、`CLAUDE_CODE_NO_FLICKER=0` または `CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN=1` はオフにします。両方が設定されている場合、Claude Code はオフにします
 
 ```json settings.json theme={null}
 {
@@ -4049,20 +4049,20 @@ Claude Code がインターフェースに表示する時刻の書き方を選�
 }
 ```
 
-tmux `-CC` の下または Windows への SSH 経由では、Claude Code は `CLAUDE_CODE_NO_FLICKER=1` を設定しない限りクラシックレンダラーを保持します。[エージェントビュー](/docs/ja/agent-view)から開かれたバックグラウンドセッションは、この設定に関係なく常にフルスクリーンレンダラーを使用します。
+tmux `-CC` の下や、Windows への SSH 接続では、`CLAUDE_CODE_NO_FLICKER=1` を設定しない限り、Claude Code はクラシックレンダラーを維持します。[エージェントビュー](/docs/ja/agent-view)から開いたバックグラウンドセッションは、この設定にかかわらず常にフルスクリーンレンダラーを使用します。
 
 <h3 id="verbose">
   `verbose`
 </h3>
 
-デフォルトでは、トランスクリプトは各ツール呼び出しを短い要約に折りたたみます。例えば、Claude が実行したコマンドと出力の行数。詳細を表示したい場合は `Ctrl+O` を押してトランスクリプト全体を展開ビューに切り替えます。このキーを `true` に設定して、すべてのツール呼び出しの完全な入力と出力をインラインで表示します。フック、MCP サーバー、または長いシェルコマンドをデバッグする場合に便利です。`/config` に**詳細出力**として表示されます。
+デフォルトでは、トランスクリプトは各ツール呼び出しを、Claude が実行したコマンドとその出力の行数などの短い要約に折りたたみます。詳細を見たいときは `Ctrl+O` を押して、トランスクリプト全体を展開ビューに切り替えます。このキーを `true` に設定すると、すべてのツール呼び出しの入力と出力の全体が発生時にインラインで表示されます。これは、フック、MCP サーバー、長いシェルコマンドをデバッグする際に便利です。`/config` では **Verbose output** として表示されます。
 
-* **スコープ**: [`任意のファイル`](#scopes)。古いバージョンの `~/.claude.json` の値は、設定ファイルがそれを設定しない場合に適用されます。
-* **タイプ**: ブール値
-  * `true`: 完全なツール出力が表示されます
-  * `false`: ツール出力の切り詰められた要約が表示されます
+* **スコープ**: [`Any file`](#scopes)。どの設定ファイルでも設定されていない場合、古いバージョンによる `~/.claude.json` 内の値が適用されます。
+* **型**: Boolean
+  * `true`: ツールの出力全体が表示されます
+  * `false`: ツールの出力の切り詰められた要約が表示されます
 * **デフォルト**: `false`
-* **セッションごとのオーバーライド**: [`--verbose`](/docs/ja/cli-reference#cli-flags) はこのキーより優先されます
+* **セッションごとの上書き**: 1 つのセッションについては、[`--verbose`](/docs/ja/cli-reference#cli-flags) がこのキーより優先されます
 
 ```json settings.json theme={null}
 {
@@ -4070,21 +4070,21 @@ tmux `-CC` の下または Windows への SSH 経由では、Claude Code は `CL
 }
 ```
 
-[`viewMode`](#viewmode) 値またはスティッキー `/focus` 選択はこのキーを毎セッション上書きします。
+[`viewMode`](#viewmode) の値または保持された `/focus` の選択は、すべてのセッションでこのキーを上書きします。
 
 <h3 id="viewmode">
   `viewMode`
 </h3>
 
-Claude Code が開始するトランスクリプトビューを設定します。`"default"`、`"verbose"`、または `"focus"`。設定されている場合、スティッキー `/focus` 選択と [`verbose`](#verbose) 設定の両方を上書きします。
+Claude Code が開始時に使用するトランスクリプトビューを `"default"`、`"verbose"`、`"focus"` から設定します。設定すると、保持された `/focus` の選択と [`verbose`](#verbose) 設定の両方を上書きします。
 
-* **スコープ**: [`任意のファイル`](#scopes)
-* **タイプ**: 文字列、以下のいずれか:
-  * `"default"`: 切り詰められたツール出力を持つ通常のトランスクリプト
-  * `"verbose"`: 完全なツール出力を持つトランスクリプト
-  * `"focus"`: 最後のプロンプトのみ、ツール呼び出しの 1 行の要約（編集 diffstats を含む）、および最終応答。フォーカスビューは[フルスクリーンレンダラー](#tui)が必要です
-* **デフォルト**: 未設定、`verbose` 設定と最後の `/focus` 選択が適用されます
-* **セッションごとのオーバーライド**: [`--verbose`](/docs/ja/cli-reference#cli-flags) はこのキーより優先されます
+* **スコープ**: [`Any file`](#scopes)
+* **型**: 文字列。次のいずれか:
+  * `"default"`: ツールの出力が切り詰められた通常のトランスクリプト
+  * `"verbose"`: ツールの出力全体を含むトランスクリプト
+  * `"focus"`: 最後のプロンプト、編集の diffstat を含むツール呼び出しの 1 行の要約、最終的な応答のみ。フォーカスビューには[フルスクリーンレンダラー](#tui)が必要です
+* **デフォルト**: 未設定。`verbose` 設定と最後の `/focus` の選択が適用されます
+* **セッションごとの上書き**: 1 つのセッションについては、[`--verbose`](/docs/ja/cli-reference#cli-flags) がこのキーより優先されます
 
 ```json settings.json theme={null}
 {
@@ -4096,10 +4096,10 @@ Claude Code が開始するトランスクリプトビューを設定します�
   `vimInsertModeRemaps`
 </h3>
 
-[vim エディタモード](/docs/ja/interactive-mode#vim-editor-mode)で 2 キーの INSERT モードシーケンスを Escape にマップします。各キーは正確に 2 つの印字可能文字で、順序で入力され、`"<Esc>"` は唯一のサポートされているターゲットです。Claude Code は他のエントリを無視します。Claude Code v2.1.208 以降が必要です。
+[vim エディターモード](/docs/ja/interactive-mode#vim-editor-mode)で、2 キーの INSERT モードのシーケンスを Escape にマッピングします。各キーは続けて入力する印字可能な文字ちょうど 2 文字で、サポートされるターゲットは `"<Esc>"` のみです。Claude Code はそれ以外のエントリを無視します。
 
-* **スコープ**: [`ユーザーまたはマネージド`](#scopes)。リポジトリはキーストロークを再マップできません。
-* **タイプ**: 2 文字シーケンスを `"<Esc>"` にマップするオブジェクト
+* **スコープ**: [`User or managed`](#scopes)。リポジトリがユーザーのキー入力を再マッピングすることはできません。
+* **型**: 2 文字のシーケンスを `"<Esc>"` にマッピングするオブジェクト
 * **デフォルト**: 未設定
 
 ```json settings.json theme={null}
@@ -4110,21 +4110,21 @@ Claude Code が開始するトランスクリプトビューを設定します�
 }
 ```
 
-`editorMode` が `"vim"` でない限り効果がありません。[INSERT モードキーシーケンスを再マップ](/docs/ja/interactive-mode#remap-insert-mode-key-sequences)を参照してください。Claude Code v2.1.208 以降が必要です。
+`editorMode` が `"vim"` でない限り効果はありません。[INSERT モードのキーシーケンスを再マッピングする](/docs/ja/interactive-mode#remap-insert-mode-key-sequences)を参照してください。
 
 <h3 id="voice">
   `voice`
 </h3>
 
-[音声ディクテーション](/docs/ja/voice-dictation)をオンにし、ディクテーションキーの動作を選択します。Claude Code は `/voice` を実行するとこのオブジェクトを書き込みます。
+[音声入力](/docs/ja/voice-dictation)をオンにし、音声入力キーの動作を選択します。`/voice` を実行すると、Claude Code がこのオブジェクトを自動で書き込みます。
 
-* **スコープ**: [`任意のファイル`](#scopes)
-* **タイプ**: `enabled` をブール値として、`autoSubmit` をホールドモードのみに適用するブール値として、`mode` を以下のいずれかとして持つオブジェクト:
-  * `"hold"`: ディクテーションキーを話している間押し続け、停止するために離します
-  * `"tap"`: キーを 1 回タップして記録を開始し、もう一度タップして送信します
-* **デフォルト**: 未設定、ディクテーションはオフです。`enabled` が `true` で `mode` が未設定の場合、Claude Code は `"hold"` を使用します
+* **スコープ**: [`Any file`](#scopes)
+* **型**: Boolean である `enabled`、ホールドモードでのみ適用される Boolean である `autoSubmit`、および次のいずれかである `mode` を持つオブジェクト:
+  * `"hold"`: 話している間は音声入力キーを押し続け、離すと停止します
+  * `"tap"`: キーを 1 回タップすると録音が開始され、もう 1 回タップすると送信されます
+* **デフォルト**: 未設定。音声入力はオフです。`enabled` が `true` で `mode` が未設定の場合、Claude Code は `"hold"` を使用します
 
-この例はディクテーションをオンにし、キーを 1 回タップして記録を開始し、もう一度タップして送信するようにします:
+この例では、音声入力をオンにし、キーを 1 回タップすると録音を開始し、もう 1 回タップすると送信するようにします。
 
 ```json settings.json theme={null}
 {
@@ -4135,22 +4135,22 @@ Claude Code が開始するトランスクリプトビューを設定します�
 }
 ```
 
-`autoSubmit` はホールドモードでキーを離すときにプロンプトを送信します。音声ディクテーションには claude.ai アカウントが必要です。
+`autoSubmit` は、ホールドモードでキーを離したときにプロンプトを送信します。音声入力には claude.ai アカウントが必要です。
 
 <h3 id="voiceenabled">
   `voiceEnabled`
 </h3>
 
 <Warning>
-  v2.1.92 以降非推奨。[`voice`](#voice) オブジェクトが置き換えました。Claude Code は引き続きそれを読み取るため、古い設定ファイルは機能し続けますが、新しい設定は `voice.enabled` を設定する必要があります。
+  v2.1.92 で [`voice`](#voice) オブジェクトに置き換えられて以降、非推奨です。古い設定ファイルが引き続き機能するように Claude Code は引き続きこれを読み取りますが、新しい設定では `voice.enabled` を設定してください。
 </Warning>
 
-`voice` オブジェクトより前の単一ブール値形式で音声ディクテーションをオンにします。両方が設定されている場合、`voice.enabled` が適用されます。
+`voice` オブジェクトより前から存在する単一の Boolean 形式で、音声入力をオンにします。両方が設定されている場合は `voice.enabled` が適用されます。
 
-* **スコープ**: [`任意のファイル`](#scopes)
-* **タイプ**: ブール値
-  * `true`: claude.ai アカウントでログインしており、組織のポリシーが音声を許可している場合、音声ディクテーションはオンです。`voice.enabled` が設定されていない限り
-  * `false`: 音声ディクテーションはオフです。`voice.enabled` が設定されていない限り
+* **スコープ**: [`Any file`](#scopes)
+* **型**: Boolean
+  * `true`: `voice.enabled` が設定されていない限り、claude.ai アカウントでログインしていて組織のポリシーで音声が許可されている場合に、音声入力がオンになります
+  * `false`: `voice.enabled` が設定されていない限り、音声入力はオフです
 * **デフォルト**: 未設定
 
 ```json settings.json theme={null}
@@ -4163,12 +4163,12 @@ Claude Code が開始するトランスクリプトビューを設定します�
   `wheelScrollAccelerationEnabled`
 </h3>
 
-[フルスクリーンレンダリング](/docs/ja/fullscreen#mouse-wheel-scrolling)での高速スクロール中にマウスホイールスクロール速度を加速します。ホイールノッチごとに一定のスクロール速度を使用するには `false` に設定します。
+[フルスクリーンレンダリング](/docs/ja/fullscreen#mouse-wheel-scrolling)で、高速スクロール時にマウスホイールのスクロール速度を加速します。ホイールの 1 ノッチごとに一定の速度でスクロールさせるには、`false` に設定します。
 
-* **スコープ**: [`任意のファイル`](#scopes)
-* **タイプ**: ブール値
-  * `true`: Claude Code は高速スクロール中にマウスホイールスクロール速度を加速します
-  * `false`: Claude Code はホイールノッチごとに一定の速度でスクロールします
+* **スコープ**: [`Any file`](#scopes)
+* **型**: Boolean
+  * `true`: Claude Code は高速スクロール時にマウスホイールのスクロール速度を加速します
+  * `false`: Claude Code はホイールの 1 ノッチごとに一定の速度でスクロールします
 * **デフォルト**: `true`
 
 ```json settings.json theme={null}
@@ -5850,7 +5850,14 @@ Claude Code が `claude-cli://` プロトコルハンドラーをオペレーテ
   `disableDesktopLocalSessions`
 </h3>
 
-開発者が SSH 経由でリモートマシンで作業する必要があるデプロイメント用に、[デスクトップアプリ](/docs/ja/desktop#local-sessions-on-managed-devices) で実行されるコードセッションをオフにします。Code タブでは、**Local** 環境は環境ドロップダウンに留まりますが、グレーアウトされて選択できず、組織がオフにしたことを示すツールチップが表示されます。Windows では WSL エントリも同じようにグレーアウトされますが、WSL セッションがマネージドデバイスで実行されるかどうかは [別途管理されます](/docs/ja/admin-setup#wsl-sessions-in-claude-code-desktop)。新しいセッションは、設定されている場合は最初の [SSH 接続](/docs/ja/desktop#ssh-sessions) にデフォルト設定され、アプリは同じマシンへの SSH 接続を含む、デバイス上のセッションの開始または再開を拒否します。他のホストへの SSH セッションとクラウドセッションは影響を受けません。デスクトップアプリはこのキーを読み取ります。ターミナル CLI は無視します。Claude Desktop v1.37937.0 以降が必要です。
+開発者が SSH 経由でリモートマシンで作業する必要があるデプロイ向けに、[デスクトップアプリ](/docs/ja/desktop#local-sessions-on-managed-devices) でデバイス上で実行される Code セッションをオフにします。キーを `true` に設定すると、ユーザーには Code タブで次のように表示されます：
+
+* **環境セレクター**: ユーザーのコンピューターのエントリはグレーアウトされて選択できなくなり、ツールチップ **Disabled by your organization** が表示されます。Windows では WSL エントリも同じようにグレーアウトされますが、WSL セッションが管理対象デバイスで実行されるかどうか自体は [別途管理されます](/docs/ja/admin-setup#wsl-sessions-in-claude-code-desktop)。
+* **新しいセッション**: 設定されている場合は、最初の [SSH 接続](/docs/ja/desktop#ssh-sessions) がデフォルトになります
+* **デバイス上のセッション**: アプリは、同じマシンへの SSH 接続を含め、デバイス上でのセッションの開始または再開を拒否します
+* **他のホストへの SSH セッションとクラウドセッション**: 影響を受けません
+
+デスクトップアプリはこのキーを読み取ります。ターミナル CLI は無視します。Claude Desktop v1.37937.0 以降が必要です。
 
 * **Scope**: [`Managed`](#scopes)。デフォルトでは、デスクトップアプリは [1 つの管理ソース](/docs/ja/managed-settings#how-claude-code-combines-managed-sources) からキーを読み取ります。
 * **Type**: Boolean。JSON Boolean `true` のみが有効です
@@ -5997,7 +6004,7 @@ Claude Code はプロジェクトまたはローカル設定からの `true` を
   `sshConfigs`
 </h3>
 
-[Desktop](/docs/ja/desktop#pre-configure-ssh-connections-for-your-team) 環境ドロップダウンに SSH 接続を追加します。管理者はこれを使用して、共有接続をチームに配布します。管理設定で定義した接続は管理対象として表示されます。ユーザーはそれらを選択し、それらに対して [独自の **Worktree folder** を設定](/docs/ja/desktop#choose-where-ssh-session-worktrees-go) できますが、アプリでそれ以外を編集したり、接続を削除したりすることはできません。
+[Desktop](/docs/ja/desktop#pre-configure-ssh-connections-for-your-team) の環境セレクターに SSH 接続を追加します。管理者は `sshConfigs` を使用して、共有接続をチームに配布します。ユーザーは管理対象の接続を選択し、それに対して [独自の **Worktree folder** を設定](/docs/ja/desktop#set-the-worktree-folder-on-an-existing-connection) できます。アプリでそれ以外のフィールドを編集したり、接続を削除したりすることはできません。
 
 * **Scope**: [`User or managed`](#scopes)。デスクトップアプリはこのキーを読み取ります。デフォルトでは、管理対象の接続を [1 つの管理ソース](/docs/ja/managed-settings#how-claude-code-combines-managed-sources) から読み取ります。
 * **Type**: オブジェクトの配列。各オブジェクトは必須の `id`、`name`、`sshHost` と、オプションの `sshPort` および `sshIdentityFile` を持ちます

@@ -309,7 +309,7 @@ v2.1.280 より前では、`y` はデフォルトで `confirm:yes` に、`n` は
 | `footer:close` | x | 選択した [エージェント](/docs/ja/sub-agents#observe-and-steer-running-forks) または [ワークフロー](/docs/ja/workflows#manage-runs) を停止します。すでに実行中でない場合は、その行を閉じます |
 | `footer:dismiss` | （バインドなし） | このアクションにキーをバインドしても効果がなく、それを名前付けする `keybindings.json` は有効なままです。v2.1.281 より前では、Backspace と Delete はフッターから選択したアーティファクトリンクを削除しました。 |
 
-フッター項目が選択されている場合（プロンプトの下のエージェントパネルの行など）、`chat:submit` を `chat:queueSubmit` または `chat:newline` に再バインドしても、`Enter` はそれを開きます。
+フッター項目が選択されている間（プロンプトの下のエージェントパネルの行など）は、`Chat` コンテキストで `Enter` を `chat:queueSubmit` または `chat:newline` に再バインドしていても、`Enter` はその項目を開きます。
 
 `Chat` バインディングは、`Shift+Tab` を `chat:cycleMode` のように `Footer` コンテキストがバインドしないキーで機能し、項目が選択されている間も機能します。
 
@@ -462,10 +462,7 @@ v2.1.283 より前では、`/mcp` ツールリストは、バインディング�
 | `abovePrompt:highlightNext` | Down | フォーカスされたセレクト内の次のオプションをハイライト |
 | `abovePrompt:highlightPrevious` | Up | フォーカスされたセレクト内の前のオプションをハイライト |
 
-2 つのコンテキストが、デフォルトでこれらのアクションに追加のキーをバインドしています：
-
-* **`AbovePrompt`**：Right と Left も `abovePrompt:next` と `abovePrompt:previous` を実行し、Space も `abovePrompt:press` を実行します
-* **`AbovePromptInput`**：Down と Up も `abovePrompt:next` と `abovePrompt:previous` を実行します
+[`AbovePrompt` コンテキスト](#contexts) では、デフォルトで Right と Left も `abovePrompt:next` と `abovePrompt:previous` を実行し、Space も `abovePrompt:press` を実行します。
 
 `AbovePrompt` コンテキストは、Up、Down、PageUp、PageDown、Home、End も [ペインのスクロールアクション](#pane-actions) `pane:scrollUp` から `pane:bottom` にバインドしています。そのため、帯でこれらのキーのいずれかを変更するには、`AbovePrompt` ブロックでスクロールアクションをバインドします。
 
@@ -768,6 +765,8 @@ Vim モードが `/config` → エディタモードで有効な場合、キー�
 * Vim キーはキーバインディングファイルを通じて再マップできません。`jj` を Escape にマップするような 2 キーの INSERT モードシーケンスをマップするには、[`vimInsertModeRemaps`](/docs/ja/interactive-mode#remap-insert-mode-key-sequences) 設定を使用してください
 * Vim NORMAL モードでは、`?` はヘルプメニューを表示します（Vim の動作）
 * Vim NORMAL モードでは、`/` は履歴検索を開きます。標準モードの Ctrl+R と同じです
+
+Claude が尋ねる質問の `Other` 行では、Vim モードで Escape を押しても質問はすぐにはキャンセルされません。[スクリーンリーダーモード](/docs/ja/accessibility)の場合を除き、この行はフォーカスするたびに INSERT モードで開始されます。`Other` 行で Escape を押すと、行が NORMAL モードに切り替わるか、入力途中の Vim コマンドが破棄され、質問は開いたままになります。質問をキャンセルするには、NORMAL モードで Escape をもう一度押してください。
 
 <h2 id="validation">
   検証

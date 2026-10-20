@@ -423,7 +423,9 @@ MCP ツールは `mcp__<server>__<tool>` という命名パターンに従いま
 * **[プロンプト フック](#prompt-and-agent-hook-fields)** （`type: "prompt"`）: Claude モデルにプロンプトを送信して、単一ターンの評価を行います。モデルは決定を JSON として返します。[プロンプト ベースのフック](#prompt-based-hooks)を参照してください。
 * **[エージェント フック](#prompt-and-agent-hook-fields)** （`type: "agent"`）: Read、Grep、Glob などのツールを使用して条件を検証してから決定を返すことができるサブエージェントを生成します。エージェント フックは実験的であり、変更される可能性があります。[エージェント ベースのフック](#agent-based-hooks)を参照してください。
 
-マッチしたすべてのフックは並列で実行されます。同じハンドラーを複数の設定ファイルで定義した場合、実行は 1 回だけです。プラグインまたはスキルが持つ同じハンドラーのコピーは別個のものとして扱われます。
+イベントが発火すると、マッチしたフックは並列で実行されます。そのうち 12 個を超えるフックがプロンプトフックまたはエージェントフックである場合、それらのうち 12 個が同時に実行され、残りは実行中のフックが終了するにつれて開始されます。待機中の各フックの [`timeout`](#common-fields) は、そのフックが開始した時点からカウントされます。
+
+同じハンドラーを複数の設定ファイルで定義した場合、実行は 1 回だけです。プラグインまたはスキルが持つ同じハンドラーのコピーは別個のものとして扱われます。
 
 ハンドラーは Claude Code の環境を持つ現在のディレクトリで実行されます。現在のディレクトリが存在しなくなった場合（たとえば、別のシェルがセッション中に削除した worktree や一時ディレクトリなど）、Claude Code は次のうち最初に存在するディレクトリからコマンドフックを実行します。セッションを開始したディレクトリ、プロジェクトルート、ホームディレクトリ、またはシステムの一時ディレクトリです。Claude Code は、フォールバック先のディレクトリ名を含む警告を[デバッグログ](#debug-hooks)に記録します。デスクトップアプリから開始する worktree セッションについては、[worktree がメインのチェックアウトと共有するもの](/docs/ja/worktrees#what-worktrees-share-with-the-main-checkout)を参照してください。
 
@@ -445,7 +447,7 @@ MCP ツールは `mcp__<server>__<tool>` という命名パターンに従いま
 
 `if` フィールドは正確に 1 つの権限ルールを保持します。ルールを組み合わせるための `&&`、`||`、またはリスト構文はありません。複数の条件を適用するには、各条件に対して個別のフック ハンドラーを定義します。
 
-ファイルツールの `if` 条件では、`"Edit(src/**)"` のような単一セグメントのディレクトリパターンは、作業ディレクトリ内の `src` ディレクトリとその配下のファイルにのみマッチします。任意の深さにある `src` という名前のディレクトリにマッチさせるには、`"Edit(**/src/**)"` と記述します。v2.1.214 より前は、`"Edit(src/**)"` は作業ディレクトリ配下の任意の深さにある `src` という名前のディレクトリにマッチしていました。
+ファイルツールの `if` 条件では、`"Edit(src/**)"` のような単一セグメントのディレクトリパターンは、作業ディレクトリ内の `src` ディレクトリとその配下のファイルにのみマッチします。任意の深さにある `src` という名前のディレクトリにマッチさせるには、`"Edit(**/src/**)"` と記述します。
 
 <h4 id="bash-if-matching">
   `if` パターンが Bash コマンドにマッチする仕組み
@@ -825,7 +827,7 @@ macOS と Linux では、コマンド フックは制御ターミナルのない
   終了コード出力
 </h3>
 
-フックの終了コードは、ツール呼び出しやプロンプトなど、フックをトリガーしたアクションを続行するかどうかを Claude Code に伝えます。完了した実行の結果は次の 3 つのいずれかです。
+フックの実行が完了すると、Claude Code はその終了コードを使用して、ツール呼び出しやプロンプトなど、フックをトリガーしたアクションを続行するかどうかを判断します。
 
 * **成功**: フックが 0 で終了します。Claude Code はフックが出力した [JSON 出力](#json-output)フィールドを適用し、それらのフィールドがアクションをブロックまたは拒否しない限り、アクションは進行します。例外については[バックグラウンド プロセスを開始するフック](#hooks-that-start-a-background-process)を参照してください。
 * **ブロッキング エラー**: フックが 2 で終了します。[ブロック可能なイベント](#exit-code-2-behavior-per-event)では、Claude Code はアクションを停止します。
@@ -853,18 +855,15 @@ macOS と Linux では、コマンド フックは制御ターミナルのない
   終了コード 0
 </h4>
 
-終了 0 は成功を意味し、構造化制御のために JSON を出力する場合に想定される終了コードです。
+終了 0 は成功を意味し、構造化制御のために JSON を出力する場合に想定される終了コードです。フックが 0 で終了しても、解析できない JSON や[スキーマ検証](#json-output)に失敗する JSON を出力した場合、[失敗時にアクションをブロックするフック](#block-the-action-when-a-hook-fails)でない限り、アクションは進行します。その実行は、フィールドが適用された成功ではなく、[非ブロッキング エラー](#exit-code-output)になります。
 
-ほとんどのイベントでは、Claude Code は stdout をデバッグ ログに書き込み、トランスクリプトには表示しません。例外は `UserPromptSubmit`、`UserPromptExpansion`、`SessionStart`、`PostModelSwitch` で、Claude Code はプレーン テキストの stdout を Claude が見て行動できるコンテキストとして追加します。
+出力を修正するには、`<hook name> hook error` 通知に含まれる解析または検証のメッセージを使用してください。[非同期](#how-async-hooks-execute)でないフックの場合、stdout が [JSON 出力](#json-output)として扱われるのは、1 行または複数行にわたる 1 つの JSON オブジェクトを、前後に空白以外何もない状態で出力した場合のみです。Claude Code はそれ以外の stdout をプレーン テキストまたは解析失敗として読み取ります。
 
-[非同期](#how-async-hooks-execute)でないフックの場合、Claude Code は、出力全体が前後に空白以外何もない 1 つの JSON オブジェクトであるときに stdout を [JSON 出力](#json-output)として解析し、それ以外の場合はプレーン テキストまたは解析失敗として扱います。
-
-* **1 行または複数行にわたる 1 つの JSON オブジェクト**: JSON 出力として解析されます。
 * **`{` で始まらない出力、または `{` で始まり `}` で終わらない出力**: プレーン テキストとして扱われます。このルールにより、JSON 配列や引用符で囲まれた JSON 文字列はプレーン テキストになります。
-* **それぞれが単独で JSON として解析できる 2 行以上の出力で、最初の行が `{` で始まり最後の行が `}` で終わるもの**: フィールドを設定する JSON 出力オブジェクトである行がない場合はプレーン テキスト、そのような行がある場合は解析失敗になります。
+* **それぞれが単独で JSON として解析できる 2 行以上の出力で、最初の行が `{` で始まり最後の行が `}` で終わるもの**: フィールドを設定する JSON 出力オブジェクトである行がない場合はプレーン テキストになります。そのような行がある場合、出力は解析失敗になるため、そのオブジェクトだけを stdout に出力してください。
 * **`{` で始まり `}` で終わるが有効な JSON ではないその他の出力**: 解析失敗になります。
 
-[失敗時にアクションをブロックするフック](#block-the-action-when-a-hook-fails)でない限り、解析失敗、または[スキーマ検証](#json-output)に失敗する解析済みオブジェクトは[非ブロッキング エラー](#exit-code-output)になります。`<hook name> hook error` 通知には解析または検証のメッセージが含まれます。プレーン テキストの stdout をコンテキストとして追加するイベントでは、Claude Code は解析に失敗した stdout を追加しません。
+ほとんどのイベントでは、Claude Code は stdout をデバッグ ログに書き込み、トランスクリプトには表示しません。例外は `UserPromptSubmit`、`UserPromptExpansion`、`SessionStart`、`PostModelSwitch` で、Claude Code はプレーン テキストの stdout を Claude が見て行動できるコンテキストとして追加します。これらのイベントでは、Claude Code は解析に失敗した stdout を追加しません。
 
 終了 0 のフックからの stderr を Claude が見ることはありません。`PreToolUse` などのイベントで自分で読むには、[デバッグ ログ](#debug-hooks)を有効にしてください。`PostToolUse` または `PostToolUseFailure` フックから Claude に警告を表示するには、代わりに終了 2 を使用してください。そうすれば、ツールがすでに実行されていても [Claude は stderr を確認できます](#exit-code-2-behavior-per-event)。
 
@@ -907,7 +906,7 @@ PreToolUse:Bash hook error: [${CLAUDE_PROJECT_DIR}/.claude/hooks/no-rm.sh]: Bloc
   その他の終了コード
 </h4>
 
-[失敗時にアクションをブロックするフック](#block-the-action-when-a-hook-fails)でない限り、0 または 2 以外の終了コードで、stdout にプレーン テキストを出力するか何も出力しない場合は[非ブロッキング エラー](#exit-code-output)になります。アクションが進行した場合、トランスクリプトには、`Failed with non-blocking status code:` とフックの stderr の最初の行を含む `<hook name> hook error` 通知が表示されます。
+`Failed with non-blocking status code:` を含む `<hook name> hook error` 通知は、フックの終了コードが 0 でも 2 でもなく、stdout がプレーン テキストまたは空だったことを意味します。[失敗時にアクションをブロックするフック](#block-the-action-when-a-hook-fails)でない限り、これは[非ブロッキング エラー](#exit-code-output)であるため、フックはアクションを停止していません。通知に表示される最初の行だけでなくフックの完全な stderr を取得するには、[デバッグ ログ](#debug-hooks)を有効にしてください。
 
 例えば、`Bash` の `PreToolUse` フックが stderr に `something broke` を出力して 1 で終了した場合、`PreToolUse:Bash hook error` 通知には次の行が含まれます。
 
@@ -915,13 +914,13 @@ PreToolUse:Bash hook error: [${CLAUDE_PROJECT_DIR}/.claude/hooks/no-rm.sh]: Bloc
 Failed with non-blocking status code: something broke
 ```
 
-最初の行だけでなく完全な stderr を取得するには、[デバッグ ログ](#debug-hooks)を有効にしてください。
-
-[失敗時にアクションをブロックするフック](#block-the-action-when-a-hook-fails)でない限り、起動できないフックも非ブロッキング エラーになります。シェル形式では、スクリプト パスが存在しないか実行可能でない場合、シェルは 127 などのコードで終了し、通知にはインタープリターのメッセージが含まれます。例えば、スクリプト パスが存在しない場合、通知には次のような行が含まれます。
+次の行のように通知にシェルの `No such file or directory` メッセージが含まれている場合、スクリプト パスが存在しないなどの理由で、フックは一度も実行されていません。
 
 ```text theme={null}
 Failed with non-blocking status code: /bin/sh: /path/to/hook.sh: No such file or directory
 ```
+
+パスが間違っている場合は、フックが設定されている場所で修正してください。シェル形式では、スクリプト パスが存在しないか実行可能でない場合、シェルは 127 などのコードで終了し、通知にはインタープリターのメッセージが含まれます。[失敗時にアクションをブロックするフック](#block-the-action-when-a-hook-fails)でない限り、起動できないフックも非ブロッキング エラーになります。
 
 ポリシー フックを設定するときは、最初の実行時にこの通知に注意してください。`settings.json` でパスを入力ミスすると、フックは一度も実行されません。フックが起動できないときにアクションをブロックするには、[`onFailure: "block"`](#block-the-action-when-a-hook-fails) を設定してください。
 
@@ -933,12 +932,9 @@ Failed with non-blocking status code: /bin/sh: /path/to/hook.sh: No such file or
   タイムアウト
 </h4>
 
-[`async: true`](#run-hooks-in-the-background) で実行するコマンド フックを除き、Claude Code は [`timeout`](#common-fields) に達した `command`、`http`、または `mcp_tool` フックをキャンセルし、フックの出力を破棄します。そのため、ほとんどのイベントでは、タイムアウトしたフックは決定を下しません。
+[`async: true`](#run-hooks-in-the-background) で実行するコマンド フックを除き、Claude Code は [`timeout`](#common-fields) に達した `command`、`http`、または `mcp_tool` フックをキャンセルし、フックの出力を破棄します。そのため、ほとんどのイベントでは、タイムアウトしたフックは決定を下しません。[`PreModelSwitch`](#premodelswitch) では、タイムアウトでキャンセルされたフックはモデルの切り替えをブロックします。
 
-[`PreModelSwitch`](#premodelswitch) では、タイムアウトでキャンセルされたフックはモデルの切り替えをブロックします。`PreToolUse` では、2 つのフック ファミリーで動作が異なります。
-
-* タイムアウトした `command`、`http`、または `mcp_tool` フックはツール呼び出しをブロックしません。ただし、[失敗時にアクションをブロックするフック](#block-the-action-when-a-hook-fails)は例外です。呼び出しは通常の[権限フロー](/docs/ja/permissions)を通じて続行されるため、停止したフックがゲートとして機能することを当てにしないでください。`command` または `http` フックがタイムアウトしたときに呼び出しをブロックするには、[`onFailure: "block"`](#block-the-action-when-a-hook-fails) を設定してください。
-* タイムアウトを超えた [Agent SDK コールバック フック](/docs/ja/agent-sdk/hooks)は[ツール呼び出しをブロックします](#pretooluse)。
+`PreToolUse` では、タイムアウトした `command`、`http`、または `mcp_tool` フックはツール呼び出しをブロックしません。ただし、[失敗時にアクションをブロックするフック](#block-the-action-when-a-hook-fails)は例外です。呼び出しは通常の[権限フロー](/docs/ja/permissions)を通じて続行されるため、停止したフックがゲートとして機能することを当てにしないでください。`command` または `http` フックがタイムアウトしたときに呼び出しをブロックするには、[`onFailure: "block"`](#block-the-action-when-a-hook-fails) を設定してください。タイムアウトを超えた [Agent SDK コールバック フック](/docs/ja/agent-sdk/hooks)は[ツール呼び出しをブロックします](#pretooluse)。
 
 <h4 id="hooks-that-start-a-background-process">
   バックグラウンド プロセスを開始するフック
@@ -1086,7 +1082,9 @@ blocking because Git Bash wasn't found and this hook doesn't set "shell" to "pow
   HTTP レスポンス処理
 </h3>
 
-HTTP フックは終了コードと stdout の代わりに HTTP ステータス コードとレスポンス本体を使用します。以下の結果はほとんどのイベントに適用されます。`WorktreeCreate` のように[イベントごとの表](#exit-code-2-behavior-per-event)に独自の失敗時の規約を持つイベントは、失敗した HTTP フックにもその規約を適用します。
+HTTP フックは終了コードと stdout の代わりに HTTP ステータス コードとレスポンス本体を使用します。リクエストが失敗した場合や 2xx 以外のステータスを返した場合にアクションをブロックするには、[`onFailure: "block"`](#block-the-action-when-a-hook-fails) を設定してください。ツール呼び出しをブロックまたは権限を拒否するには、適切な[決定フィールド](#decision-control)を含む JSON 本体を持つ 2xx レスポンスを返します。
+
+[非ブロッキング エラー](#exit-code-output)の後は、[失敗時にアクションをブロックするフック](#block-the-action-when-a-hook-fails)でない限り、アクションは進行します。`WorktreeCreate` など、[イベントごとの表](#exit-code-2-behavior-per-event)に独自の失敗時の規約を持つイベントを除き、各レスポンスまたは失敗に対する結果は次のとおりです。
 
 * **2xx で空の本体**: 成功、終了コード 0 で出力なしと同等
 * **2xx で JSON オブジェクト本体**: コマンド フックと同じ [JSON 出力](#json-output)スキーマを使用して解析。スキーマ検証に失敗した本体は非ブロッキング エラー
@@ -1094,8 +1092,6 @@ HTTP フックは終了コードと stdout の代わりに HTTP ステータス 
 * **2xx 以外のステータス**: 非ブロッキング エラー
 * **接続失敗**: 非ブロッキング エラー
 * **タイムアウト**: [タイムアウト](#timeouts)で説明されているとおり、フックはキャンセルされます
-
-[非ブロッキング エラー](#exit-code-output)の後は、[失敗時にアクションをブロックするフック](#block-the-action-when-a-hook-fails)でない限り、アクションは進行します。ツール呼び出しをブロックまたは権限を拒否するには、適切な[決定フィールド](#decision-control)を含む JSON 本体を持つ 2xx レスポンスを返します。リクエストが失敗した場合や 2xx 以外のステータスを返した場合にアクションをブロックするには、[`onFailure: "block"`](#block-the-action-when-a-hook-fails) を設定してください。
 
 <h3 id="json-output">
   JSON 出力
@@ -1318,8 +1314,6 @@ matcher の値は、セッションがどのように開始されたかに対応
 | `clear` | `/clear` |
 | `compact` | 自動または手動のコンテキスト圧縮 |
 | `fork` | 既存のセッションからフォークされた新しいセッション。`--resume` または `--continue` と併用した `--fork-session`、`/fork` によるバックグラウンドコピー、`/branch`、または[バックグラウンドに移動](/docs/ja/agent-view#from-inside-a-session)した会話 |
-
-v2.1.214 より前は、フォークされたセッションはソース `"resume"` を報告していました。
 
 対話セッションを開始したとき、起動時に `--continue` または `--resume` で会話を再開したとき、または `/clear` を実行したとき、SessionStart フックはバックグラウンドで実行されます。すぐに入力を始めることができ、再開した会話はフックを待たずに表示されます。ただし、Claude の最初の応答はフックの完了を待つため、フックのコンテキストは Claude に届きます。
 
@@ -1583,7 +1577,7 @@ InstructionsLoaded フックには決定制御がありません。指示の読�
 
 [`async: true`](#run-hooks-in-the-background) で実行するコマンドフックを除き、タイムアウトに達した `UserPromptSubmit` のコマンド、HTTP、MCP ツールのフックはキャンセルされ、その出力（`additionalContext` を含む）は破棄されます。プロンプトはそのコンテキストなしで Claude に届きます。代わりにプロンプトをブロックするには、コマンドフックまたは HTTP フックで [`onFailure: "block"`](#block-the-action-when-a-hook-fails) を設定してください。トランスクリプトには、フック名、発生したタイムアウト、出力が破棄されたことを示す通知が表示されます。
 
-タイムアウトに達した `UserPromptSubmit` の [Agent SDK コールバックフック](/docs/ja/agent-sdk/hooks)は、フック名とタイムアウトを示すメッセージとともにプロンプトをブロックします。そこでのコールバックは、フェイルオープンしてはならないポリシーゲートとして機能している可能性があるためです。セッションは継続します。v2.1.208 より前は、このイベントでのコールバックのタイムアウトは実行エラーとともにターンを終了していました。
+`UserPromptSubmit` の [Agent SDK コールバックフック](/docs/ja/agent-sdk/hooks)がタイムアウトに達すると、フック名とタイムアウトを示すメッセージとともにプロンプトがブロックされます。そこでのコールバックは、フェイルオープンしてはならないポリシーゲートとして機能している可能性があるためです。セッションは継続します。
 
 <h4 id="userpromptsubmit-input">
   UserPromptSubmit の入力
@@ -2058,11 +2052,11 @@ Web を検索します。
 
 | フィールド | 型 | 例 | 説明 |
 | :- | :- | :- | :- |
-| `status` | string | `"completed"` | フォアグラウンドのサブエージェントでは `"completed"`、バックグラウンドのサブエージェントでは `"async_launched"`。サブエージェントはデフォルトでバックグラウンドで実行されるため、`run_in_background` を省略した Agent 呼び出しでも `"async_launched"` になります |
+| `status` | string | `"completed"` | フォアグラウンドのサブエージェントの場合は `"completed"`、バックグラウンドのサブエージェントの場合は `"async_launched"`。どのサブエージェントがどちらの方法で実行されるかについては、[サブエージェントをフォアグラウンドまたはバックグラウンドで実行する](/docs/ja/sub-agents#run-subagents-in-foreground-or-background)を参照してください |
 | `agentId` | string | `"a4d2c8f1e0b3a297"` | サブエージェントの実行の識別子 |
 | `content` | array | `[{"type": "text", "text": "Found 12 endpoints..."}]` | サブエージェントの最終的なテキストブロック。または、レポートが `SubagentHandback` を経由するサブエージェントの場合は、その代わりにその引き渡しに関する短い注記 |
 | `resolvedModel` | string | `"claude-sonnet-4-5"` | サブエージェントが開始時に使用したモデル。要求されたモデルと異なる場合があります |
-| `modelsUsed` | array | `["claude-sonnet-4-5", "claude-haiku-4-5"]` | 使用されたモデルの順序付きリスト（連続する重複はまとめられます）。実行中にモデルが切り替えられた場合にのみ設定されます。Claude Code v2.1.212 以降が必要です |
+| `modelsUsed` | array | `["claude-sonnet-4-5", "claude-haiku-4-5"]` | 使用されたモデルを順に並べたもので、連続する重複はまとめられます。実行中にモデルが切り替えられた場合にのみ設定されます |
 | `totalTokens` | number | `12450` | サブエージェントの最終 API リクエストのトークン数（入力、出力、キャッシュのトークンの合計）。実行全体の合計ではありません |
 | `totalDurationMs` | number | `48211` | サブエージェントの実行の実時間 |
 | `totalToolUseCount` | number | `7` | サブエージェントが行ったツール呼び出しの数 |
@@ -2072,7 +2066,7 @@ Claude Code v2.1.271 以降では、Claude Code が [auto モード](/docs/ja/pe
 
 バックグラウンドのサブエージェントの場合、ツールはタスクがバックグラウンドに移った時点で返るため、`tool_response` には使用量のフィールドは含まれません。バックグラウンドでの起動は即座に返り、Claude Code が実行途中でバックグラウンドに移したフォアグラウンドのタスクはその移行時点で返ります。レスポンスには `status: "async_launched"`、`agentId`、`description`、`prompt`、`outputFile`、`resolvedModel` が含まれます。
 
-`completed` のレスポンスでは、`resolvedModel` はサブエージェントが開始時に使用したモデルを示し、`availableModels` などの上書きが適用された場合など、`tool_input` の `model` の値と異なることがあります。`async_launched` のレスポンスでは、`resolvedModel` はエージェントがバックグラウンドに移った時点で使用されていたモデルを示すため、バックグラウンド化の前に行われた切り替えがそこに反映されます。`modelsUsed` と、バックグラウンド化時点の `resolvedModel` の動作には Claude Code v2.1.212 以降が必要です。
+`completed` のレスポンスでは、`resolvedModel` はサブエージェントが開始時に使用したモデルを示します。これは、`availableModels` やその他の上書きが適用される場合など、`tool_input` の `model` の値と異なることがあります。`async_launched` のレスポンスでは、`resolvedModel` はエージェントがバックグラウンドに移動した時点で使用中だったモデルを示すため、バックグラウンドへの移動前に行われたモデルの切り替えはそこに反映されます。
 
 <a id="askuserquestion" />
 
@@ -2120,7 +2114,7 @@ Claude Code v2.1.271 以降では、Claude Code が [auto モード](/docs/ja/pe
 
 フックが `"ask"` を返すと、ユーザーに表示される権限プロンプトには、フックの出所を示すラベルが含まれます。任意の設定ファイルまたはエージェントのフロントマターからのフックでは `[settings]`、プラグインのフックでは `[plugin:<name>]`、スキルのフロントマターからのフックでは `[skill]` です。これにより、どの設定ソースが確認を求めているかをユーザーが把握できます。
 
-フックの `"ask"` は、[auto モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)でも権限プロンプトを強制します。分類器は引き続きツール呼び出しを拒否できますが、呼び出しを暗黙的に承認することはできません。v2.1.211 より前は、分類器は[サンドボックス](/docs/ja/sandboxing)外で実行される Bash コマンドを、フックが要求したプロンプトを表示せずに承認できました。その場合も分類器はそのコマンドに独自の安全ルールを適用しており、フックの `"deny"` は常に尊重されていました。
+フックの `"ask"` は、[auto モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)でも権限プロンプトを強制します。分類器は引き続きツール呼び出しを拒否できますが、呼び出しを黙って承認することはできません。
 
 ```json theme={null}
 {
@@ -3696,7 +3690,7 @@ matcher は、完全な名前、`claude-opus-4-6|claude-opus-5` のような `|`
 | `source` | string | リクエストの発生元。`/model <name>`、`/config` の Model 設定、fast mode をオンにした場合は `"command"`、モデルピッカーの場合は `"picker"`、Agent SDK のホストまたは Remote Control からの `set_model` リクエスト、または `apply_flag_settings` リクエストでのモデル変更の場合は `"sdk"` |
 | `context_tokens` | number | 次のリクエストがプロンプトとして再送信するトークン数。メイン会話の最後の応答の入力トークン、キャッシュ読み取りトークン、キャッシュ作成トークン、出力トークンの合計です。最初の応答の前は `0` |
 | `prompt_cache_warm` | boolean | 現在のモデルのプロンプトキャッシュがまだウォームである可能性が高いかどうか。つまり、切り替えによってそれが失われるかどうか |
-| `cache_ttl` | string | Claude Code がこのセッションで要求する[プロンプトキャッシュの有効期間](/docs/ja/prompt-caching#cache-lifetime)。`"5m"` または `"1h"` |
+| `cache_ttl` | string | この切り替え時点でのメイン会話の[プロンプトキャッシュの有効期間](/docs/ja/prompt-caching#cache-lifetime)。`"5m"` または `"1h"` |
 | `estimated_cache_write_usd` | number | `to_model` で `context_tokens` を `cache_ttl` の料金でプロンプトキャッシュに書き込む推定コスト（米ドル）。次の応答は含みません。サーバーがコンテキスト全体を再キャッシュする必要がない場合もあるため、推定値として扱ってください |
 | `pricing` | string | Claude Code が `estimated_cache_write_usd` を算出した方法。組織が独自の料金を設定している場合はその料金による `"configured"`、定価による `"catalog"`、または `to_model` の価格が不明で Claude Code がデフォルトの料金を仮定した場合は `"default"` |
 
@@ -3757,7 +3751,7 @@ Claude Code は判定に関係なく、フックが返した `systemMessage` を
 
 タイムアウトまでに応答しない PreModelSwitch フックは、切り替えをブロックします。このイベントのデフォルトのタイムアウトは 30 秒です。
 
-0 または 2 以外の終了コードの動作については、[その他の終了コード](#other-exit-codes)を参照してください。
+有効な JSON 出力なしで 0 または 2 以外の終了コードを返した場合は[ブロックしないエラー](#other-exit-codes)となり、切り替えは続行されます。ただし、[失敗時に切り替えをブロックする](#block-the-action-when-a-hook-fails)フックは例外です。
 
 <h3 id="postmodelswitch">
   PostModelSwitch
@@ -4275,7 +4269,7 @@ LLM は以下を含む JSON で応答する必要があります：
 `ok: false` で何が起こるかはイベントによって異なります：
 
 * `Stop` と `SubagentStop`：理由は Claude の次の指示としてフィードバックされ、ターンが続行されます。ただし、応答で `impossible: true` も設定されている場合は、Claude Code が停止を許可し、ターンが終了します
-* `PreToolUse`：ツール呼び出しが拒否されます。デフォルトではターンが終了し、拒否理由は警告行としてチャットに表示されます。代わりに理由をツール エラーとして Claude に返し、Claude が調整して続行できるようにするには、`continueOnBlock: true` を設定します。これはコマンド フックの `permissionDecision: "deny"` と同等です。v2.1.210 より前は、拒否理由はツール エラーとして Claude に返され、ターンは続行されていました
+* `PreToolUse`：ツール呼び出しが拒否されます。デフォルトではターンが終了し、拒否理由は警告行としてチャットに表示されます。代わりに理由をツール エラーとして Claude に返し、Claude が調整して続行できるようにするには、`continueOnBlock: true` を設定します。これはコマンド フックの `permissionDecision: "deny"` と同等です
 * `PostToolUse`：デフォルトではターンが終了し、理由は警告行としてチャットに表示されます。`continueOnBlock: true` を設定して、理由を Claude にフィードバックし、ターンを続行する代わりに使用します
 * `PostToolBatch`、`UserPromptSubmit`、`UserPromptExpansion`：ターンが終了し、理由は警告行として表示されます。これらのイベントは `continue` に関係なく `decision: "block"` でターンを終了します
 * `PostToolUseFailure`、`TaskCreated`：理由は `continueOnBlock` に関係なくツール エラーとして Claude に返され、ターンが続行されます

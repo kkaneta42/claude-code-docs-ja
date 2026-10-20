@@ -51,7 +51,8 @@
 
 Claude Code がトランスクリプトから会話を読み込むと、再開されたセッションは会話とそれに保存された状態を復元します。
 
-* 会話履歴：ツール呼び出しと結果を含む完全な履歴。前のプロセスが終了したとき（例えばクラッシュ時）に実行中だったツールは、再開時に完了または再実行されません。Claude はその呼び出しが結果の記録前に中断されたとマークされているのを確認し、再度実行する前にそれが有効になったかどうかを確認するよう指示されます。ただし、[`CLAUDE_CODE_RESUME_INTERRUPTED_TURN`](/docs/ja/env-vars#variables)が設定されている場合は除きます。
+* 会話履歴：メッセージ、ツール呼び出し、および結果。セッションが [コンテキスト圧縮](/docs/ja/context-window#what-survives-compaction)されていた場合、会話は `Conversation compacted` 行から開きます。Claude は、最後の圧縮の要約、その圧縮で要約されずに残ったメッセージ、およびそれ以降のすべてのメッセージを使って続行します。最後の圧縮で要約されたメッセージは再度読み込まれません。
+* 中断されたツール呼び出し：前のプロセスが終了したとき（例えばクラッシュ時）に実行中だったツールは、再開時に完了または再実行されません。Claude はその呼び出しが結果の記録前に中断されたとマークされているのを確認し、再度実行する前にそれが有効になったかどうかを確認するよう指示されます。ただし、[`CLAUDE_CODE_RESUME_INTERRUPTED_TURN`](/docs/ja/env-vars#variables)が設定されている場合は除きます。
 * モデル：セッションは使用していたモデルで続行されます。ただし、[モデルの設定](/docs/ja/model-config#setting-your-model)に記載されている場合は除きます。
 * エージェント：[`--agent`](/docs/ja/sub-agents#invoke-subagents-explicitly)または `agent` 設定で開始されたセッションはそのエージェントとして続行され、ツール制限とモデルを保持します。別のエージェントを選択するには、再開時に `--agent` を渡します。どちらの場合のシステムプロンプトについては、[再開された会話のシステムプロンプトフラグ](/docs/ja/cli-reference#system-prompt-flags-in-resumed-conversations)を参照してください。Claude Code は 2 つの場所でエージェントを検索します。セッションの元のディレクトリ（[そのワークスペースを信頼している](/docs/ja/permissions#project-allow-rules-and-workspace-trust)場合）と、次に再開元のディレクトリです。そのため、プロジェクトスコープのエージェントは別のディレクトリから再開する場合でも読み込まれます。Claude Code がどちらの場所でもエージェントを見つけられない場合、セッションはデフォルトのツールで再開され、[エージェント名を示す警告](/docs/ja/errors#session-agent-no-longer-available)が表示されます。
 * 権限モード：`claude --continue`、`claude --resume <session-id>`、または `claude --resume <name>`（名前が 1 つのセッションと一致する場合）で `-p` なしでターミナルから再開する場合、Claude Code はセッションが使用していた権限モードを復元します。ただし、[再開時の権限モード](#permission-mode-on-resume)に記載されている場合は除きます。このセクションでは、セッションピッカー、`/resume`、および `claude -p` で再開する場合も扱います。復元されたモードを上書きするには、`--permission-mode` または `--dangerously-skip-permissions` を渡します。
@@ -162,13 +163,13 @@ Claude Code は [`claude -p`](/docs/ja/headless)または [Agent SDK](/docs/ja/a
 | セッションピッカーから | セッションをハイライトして `Ctrl+R` を押します |
 | プラン受け入れ時 | [Plan Mode](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode)でプランを受け入れると、既に設定していない限り、プランに基づいて生成されたタイトルがセッションに付けられます |
 | claude.ai または Claude アプリから | [Remote Control セッション](/docs/ja/remote-control#connect-from-another-device)の名前を変更します。Claude Code は CLI でも同じ名前を適用します。Claude Code v2.1.221 以降が必要です |
-| デスクトップアプリから | [デスクトップアプリ](/docs/ja/desktop#work-in-parallel-with-sessions)でセッションの名前を変更します |
+| デスクトップアプリから | [デスクトップアプリ](/docs/ja/desktop#organize-and-find-sessions)でセッションの名前を変更します |
 
 CLI ルートまたは claude.ai からセッションに名前を付けたら、`claude --resume <name>` または `/resume <name>` で再開できます。デスクトップアプリセッションは[デスクトップアプリ](/docs/ja/desktop#work-in-parallel-with-sessions)で再開されます。worktree 全体での名前解決の動作については、[セッションを再開する](#resume-a-session)を参照してください。
 
 名前を付けないセッションでも、Claude Code が割り当てる 2 つのラベルが付けられます。生成されたタイトルのみが再開ハンドルとして機能します。
 
-* デフォルト表示名：名前を付けないインタラクティブセッションでも、起動時にデフォルト表示名が自動的に付けられます。Claude Code v2.1.196 以降が必要です。デフォルト名は、作業ディレクトリの名前と 2 文字のサフィックスを組み合わせたもので、例えば `my-app-3f` のようになり、[agent view](/docs/ja/agent-view)や `claude agents --json` 出力などの実行中セッションのリストでセッションを識別します。デフォルト名は再開ハンドルではありません。`claude --resume` または `/resume` に渡した場合、Claude Code はセッションを見つけません。
+* デフォルト表示名：名前を付けないインタラクティブセッションでも、起動時にデフォルト表示名が付けられます。デフォルト名は、作業ディレクトリの名前と 2 文字のサフィックスを組み合わせたもので、例えば `my-app-3f` のようになり、[agent view](/docs/ja/agent-view)や `claude agents --json` 出力などの実行中セッションのリストでセッションを識別します。デフォルト名は再開ハンドルではありません。`claude --resume` または `/resume` に渡した場合、Claude Code はセッションを見つけません。
 * 生成されたタイトル：セッションに名前を付けない場合、Claude Code はセッションのタイトルを生成します。タイトルは最初のプロンプトの短い要約で、通常は Haiku クラスモデルである小型/高速モデルへのバックグラウンドリクエストで作成されます。シェルまたはスクリプトから直接開始する `claude -p` 実行は生成されません。
 
   プランを受け入れると、生成されたタイトルがプランに基づいたタイトルに置き換わります。`claude --resume` または `/resume` にいずれかのタイトルを渡すことができ、Claude Code は設定した名前と同じ方法で解決します。

@@ -63,7 +63,9 @@ Code タブを開いた状態で、プロジェクトを選択し、Claude に�
 
 <Steps>
   <Step title="環境とフォルダを選択する">
-    **Local** を選択して、Claude をマシン上で実行し、ファイルを直接使用します。**Select folder** をクリックして、プロジェクトディレクトリを選択します。
+    [プロンプトボックスの下の行](/docs/ja/desktop#start-a-session)で、最初のコントロールである環境セレクタをクリックし、**Local** グループの一番上の項目を選択します。次に、環境セレクタの横にあるプロジェクトフォルダのコントロールをクリックし、**Open folder…** を選択して、プロジェクトのディレクトリを選択します。
+
+    プロンプトボックスの下に環境セレクタが表示されない場合は、以前のレイアウトを使用しています。[使用しているレイアウトを確認する](/docs/ja/desktop#check-which-layout-you-have)を参照してください。
 
     <Tip>
       よく知っている小さなプロジェクトから始めてください。Claude Code が何ができるかを見る最速の方法です。
@@ -72,12 +74,12 @@ Code タブを開いた状態で、プロジェクトを選択し、Claude に�
     次のオプションも選択できます。
 
     * **Cloud**: アプリを閉じても続行するクラウドセッションを実行します。クラウドセッションの動作方法については [Claude Code in the cloud](/docs/ja/claude-code-on-the-web) を参照してください。
-    * **SSH**: SSH 経由でリモートマシン（独自のサーバー、クラウド VM、dev コンテナなど）に接続します。Desktop は初回接続時にリモートマシンに Claude Code を自動的にインストールします。実行中のタスクは [Desktop が切断されている間も続行できます](/docs/ja/desktop#keep-a-task-running-while-desktop-is-disconnected)が、Claude アカウントを使用している場合は、サインインの有効期限が切れると停止することがあります。
+    * **SSH**: SSH 経由でリモートマシン（独自のサーバー、クラウド VM、dev コンテナなど）に接続します。最初に[接続を追加](/docs/ja/desktop#ssh-sessions)してください。Desktop は初回接続時にリモートマシンに Claude Code を自動的にインストールします。実行中のタスクは [Desktop が切断されている間も続行できます](/docs/ja/desktop#keep-a-task-running-while-desktop-is-disconnected)が、Claude アカウントを使用している場合は、サインインの有効期限が切れると停止することがあります。
     * **WSL**（Windows）: [WSL 2 distribution](/docs/ja/desktop-wsl) 内でセッションを実行します。Claude Code、ツール、git は Linux 側でネイティブパスで実行されます。
   </Step>
 
   <Step title="モデルを選択する">
-    送信ボタンの横のドロップダウンからモデルを選択します。利用可能なモデルの比較については [models](/docs/ja/model-config#available-models) を参照してください。後で同じドロップダウンからモデルを変更できます。
+    プロンプトボックスの下の行の右端寄りにあるモデルピッカーからモデルを選択します。利用可能なモデルの比較については [models](/docs/ja/model-config#available-models) を参照してください。後でモデルピッカーからモデルを変更できます。
   </Step>
 
   <Step title="Claude に何をするかを指示する">
@@ -87,14 +89,14 @@ Code タブを開いた状態で、プロジェクトを選択し、Claude に�
     * `main 関数のテストを追加する`
     * `このコードベースの手順を含む CLAUDE.md を作成する`
 
-    [session](/docs/ja/desktop#work-in-parallel-with-sessions) は、コードについて Claude との会話です。各セッションは独自のコンテキストと変更を追跡します。
+    [セッション](/docs/ja/desktop#work-in-parallel-with-sessions)は、コードについての Claude との会話です。各セッションは独自のコンテキストと変更を追跡します。
   </Step>
 
   <Step title="変更を確認して受け入れる">
-    次に何が起こるかは、送信ボタンの横のセレクタに表示される [permission mode](/docs/ja/desktop#choose-a-permission-mode) によって異なります。
+    プロンプトボックスの下の行で[権限モード](/docs/ja/desktop#choose-a-permission-mode)を確認し、Claude が承認を待つかどうかを確認します。
 
     * **Auto or Accept edits**: Claude はファイルの変更を適用し、`+12 -1` などのインジケータが表示されるため、diff ビューで確認できます
-    * **Manual**: Claude は各変更を提案し、適用する前にあなたの承認を待ちます。変更を受け入れるまでファイルは変更されず、変更を拒否した場合、Claude は代わりにどのように進めたいかを尋ねます
+    * **Manual**: Claude は各変更を提案し、適用する前に承認を待ちます
 
     Manual モードでは、以下が表示されます。
 
@@ -112,7 +114,7 @@ Code タブを開いた状態で、プロジェクトを選択し、Claude に�
 
 **中断して方向を変える。** Claude をいつでもリダイレクトできます。停止ボタンをクリックして即座に中断するか、修正を入力して **Enter** キーを押して、実行中のアクションを停止せずに送信します。どちらの方法でも、完了を待つ必要がなく、最初からやり直す必要もありません。
 
-**Claude により多くのコンテキストを提供する。** プロンプトボックスに `@filename` と入力して特定のファイルを会話に取り込むか、添付ボタンを使用して画像と PDF を添付するか、ファイルをプロンプトに直接ドラッグアンドドロップします。Claude が持つコンテキストが多いほど、結果は良くなります。[ファイルとコンテキストを追加する](/docs/ja/desktop#add-files-and-context-to-prompts)を参照してください。
+**Claude により多くのコンテキストを提供する。** プロンプトボックスに `@filename` と入力すると、特定のファイルを会話に取り込めます。Claude が持つコンテキストが多いほど、結果は良くなります。[ファイルとコンテキストを追加する](/docs/ja/desktop#add-files-and-context-to-prompts)を参照してください。
 
 **繰り返し可能なタスクにスキルを使用する。** `/` を入力するか、**+** → **Slash commands** をクリックして、[組み込みコマンド](/docs/ja/commands)、[カスタムスキル](/docs/ja/skills)、およびプラグインスキルを参照します。スキルは、コードレビューチェックリストやデプロイメント手順など、必要なときに呼び出すことができる再利用可能なプロンプトです。
 
@@ -125,13 +127,13 @@ Code タブを開いた状態で、プロジェクトを選択し、Claude に�
 * **Accept edits**: Claude はファイル編集を自動的に受け入れ、より高速な反復を実現します。
 * **Plan**: Claude は任意のファイルを編集せずにアプローチを提案します。これは大規模なリファクタリング前に役立ちます。
 
-**より多くの機能のためにプラグインを追加する。** プロンプトボックスの横にある **+** ボタンをクリックして **Plugins** を選択し、スキル、エージェント、MCP サーバーなどを追加する [プラグイン](/docs/ja/desktop#install-plugins)を参照してインストールします。
+**より多くの機能のためにプラグインを追加する。** スキル、エージェント、MCP サーバーなどを追加する[プラグイン](/docs/ja/desktop#install-plugins)をインストールします。
 
-**ワークスペースを整理する。** チャット、diff、ターミナル、ファイル、ブラウザーペインを任意のレイアウトにドラッグします。**Ctrl+\`** でターミナルを開いてセッションと並行してコマンドを実行するか、ファイルパスをクリックしてファイルペインで開きます。[ワークスペースを整理する](/docs/ja/desktop#arrange-your-workspace)を参照してください。
+**ワークスペースを整理する。** チャット、diff、ターミナル、ファイル、ブラウザーペインを任意のレイアウトにドラッグします。**Ctrl+\`** でターミナルを開いてセッションと並行してコマンドを実行するか、ファイルパスをクリックして開きます。[ワークスペースを整理する](/docs/ja/desktop#arrange-your-workspace)を参照してください。
 
 **アプリをプレビューする。** Desktop で開発サーバーを実行すると、アプリはブラウザーペインで開きます。ブラウザーペインは [外部サイトを開く](/docs/ja/desktop#browse-external-sites)こともできます。Claude は実行中のアプリを表示し、エンドポイントをテストし、ログを検査し、表示されているものに対して反復できます。[アプリをプレビューする](/docs/ja/desktop#preview-your-app)を参照してください。
 
-**プルリクエストを追跡する。** PR を開いた後、Claude Code は CI チェック結果を監視し、失敗を自動的に修正するか、すべてのチェックが成功したら PR をマージできます。[プルリクエストステータスを監視する](/docs/ja/desktop#monitor-pull-request-status)を参照してください。
+**プルリクエストを追跡する。** PR を開いた後、Claude Code は CI チェック結果を監視し、失敗を自動的に修正できます。[プルリクエストステータスを監視する](/docs/ja/desktop#monitor-pull-request-status)を参照してください。
 
 **Claude をスケジュールに設定する。** [スケジュール済みタスク](/docs/ja/desktop-scheduled-tasks)を設定して、Claude を定期的に自動実行します。毎朝のコードレビュー、週次の依存関係監査、または接続されたツールから情報を取得するブリーフィングです。
 

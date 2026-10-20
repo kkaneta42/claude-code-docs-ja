@@ -199,7 +199,7 @@ Claude Code は以下の JSON フィールドを stdin 経由でスクリプト�
 | `workspace.added_dirs` | `/add-dir` または `--add-dir` 経由で追加された追加ディレクトリ。追加されていない場合は空配列 |
 | `workspace.git_worktree` | 現在のディレクトリが `git worktree add` で作成されたリンク worktree 内にある場合の git worktree 名。メイン作業ツリーでは不在。`worktree.*` が [worktree セッション](/docs/ja/worktrees) 中のみに存在するのとは異なり、任意の git worktree に対して入力されます |
 | `workspace.repo.host`、`workspace.repo.owner`、`workspace.repo.name` | `origin` リモートから解析されたリポジトリ ID。例えば `"github.com"`、`"anthropics"`、`"claude-code"`。git リポジトリの外部または `origin` リモートが設定されていない場合は不在。gitlab.com プロジェクトがサブグループにネストされている場合、`owner` は `"group/subgroup"` のようなスラッシュ付きの完全な名前空間パスです。v2.1.260 より前は、これらのプロジェクトでは `workspace.repo` が不在でした |
-| `cost.total_cost_usd` | USD でのセッションの推定コスト。クライアント側で計算されます。[`modelPricing`](/docs/ja/settings-reference#modelpricing) テーブルが有効な場合を除き、定価で計算されます。実際の請求額と異なる場合があります。`/clear` で新しいセッションが開始されると \$0 にリセットされます。v2.1.211 より前は、`/clear` の後も合計が引き継がれていました |
+| `cost.total_cost_usd` | USD でのセッションの推定コスト。クライアント側で計算されます。[`modelPricing`](/docs/ja/settings-reference#modelpricing) テーブルが有効な場合を除き、定価で計算されます。実際の請求額と異なる場合があります。`/clear` で新しいセッションが開始されると \$0 にリセットされます |
 | `cost.total_duration_ms` | セッション開始からの総経過時間（ミリ秒） |
 | `cost.total_api_duration_ms` | API レスポンスを待つのに費やされた総時間（ミリ秒） |
 | `cost.total_lines_added`、`cost.total_lines_removed` | 変更されたコード行 |
@@ -1197,7 +1197,7 @@ PowerShell スクリプトをステータスラインとして実行するには
 | `label` | string | Claude Code が持っている場合はタスクの短い進捗サマリー、それ以外の場合は `description` と同じテキスト |
 | `startTime` | number | タスクが開始された時刻（Unix エポックからのミリ秒） |
 | `model` | string、省略可能 | タスクが実行される解決済みモデルの ID。モデルが解決されるまでは省略されます |
-| `effort` | string または number、省略可能 | サブエージェントの [定義フロントマター](/docs/ja/sub-agents#supported-frontmatter-fields) または個別の呼び出しで設定された推論 effort: `low`、`medium`、`high`、`xhigh`、`max`、またはトークン予算の数値。これは設定された値であり、モデルがそのレベルをサポートしていない場合、Claude Code が実際に適用する effort は異なる可能性があります。effort が設定されていない場合は省略されます。Claude Code v2.1.213 以降が必要です |
+| `effort` | string または number、省略可能 | サブエージェントの [定義フロントマター](/docs/ja/sub-agents#supported-frontmatter-fields) または個別の呼び出しで設定された推論 effort: `low`、`medium`、`high`、`xhigh`、`max`、またはトークン予算の数値。これは設定された値であり、モデルがそのレベルをサポートしていない場合、Claude Code が実際に適用する effort は異なる可能性があります。effort が設定されていない場合は省略されます |
 | `contextWindowSize` | number、省略可能 | `model` のコンテキストウィンドウ（トークン単位）。メインステータスラインの [`context_window.context_window_size`](#context-window-fields) と同じ方法で計算されるため、`tokenCount` から行ごとのパーセンテージをレンダリングできます。`model` が省略されている場合は省略されます |
 | `tokenCount` | number | サブエージェントの累計トークン数。デフォルトの行に表示される数値です |
 | `tokenSamples` | array of numbers | 直近最大 16 個の `tokenCount` の読み取り値。リフレッシュティックごとに 1 つずつ、古い順に並び、現在の値で終わります |

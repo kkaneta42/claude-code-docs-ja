@@ -274,6 +274,7 @@ Claude Code は、その他のブロックされた選択を、モデルが設�
 * **スキルまたはコマンドの上書き**: Claude Code は、ブロックされたファミリーエイリアスを含めて上書きを無視し、スキルまたはコマンドはセッションのモデルで実行されます。[サブエージェントで実行される](/docs/ja/skills#run-skills-in-a-subagent)スキルまたはコマンドは、代わりに上記のサブエージェントの動作に従います
 * **`advisorModel` 設定**: そのセッションではアドバイザーが無効になります
 * **`--advisor` フラグ**: Claude Code は起動時にエラーで終了します。[バックグラウンドセッション](/docs/ja/agent-view)では、終了する代わりにアドバイザーなしでセッションを開始します
+* **`CLAUDE_CODE_AUTO_MODE_MODEL`**: Claude Code はこの変数を無視し、[auto モードの分類器リクエスト](/docs/ja/permission-modes#default-classifier-model)に使用するモデルを、この変数を設定していない場合と同様に選択します
 
 Claude Code は、除外されたモデルを `/model` ピッカーから非表示にします。リストに含めたモデル ID が独自の行も持つかどうかは、プロバイダーによって異なります。
 
@@ -285,7 +286,7 @@ Claude Code がユーザーに代わって行うモデル変更も、同じ方�
 * **[フォールバックモデルチェーン](#fallback-model-chains)**: 許可リスト外のエントリは除外されます
 * **plan モードのアップグレード**: Anthropic API と Claude Platform on AWS では、[`opusplan`](#opusplan-model-setting) のように除外されたモデルへのアップグレードは、アップグレード先ファミリーの許可された最新バージョンを使用します。プロバイダー固有のモデル ID を持つプロバイダーの場合、および許可されたバージョンがない場合は、アップグレードはスキップされ、計画はセッションのモデルで続行されます
 * **[自動モデルフォールバック](#automatic-model-fallback)**: フォールバック先が除外されている場合、フォールバックは実行されないため、警告されたリクエストは代わりに拒否で終了します
-* **[auto モードの分類器](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)**: 分類器のデフォルトである Claude Sonnet 5 は、許可リストが Sonnet 5 を許可している場合にのみ適用されます。除外されている場合、分類器はセッションのモデル（すでに許可リストの制御下にあります）で実行されるか、セッションが [Fable モデル](#work-with-fable)で実行されている場合は Opus モデルで実行されます。Anthropic API 以外のプロバイダーでは、その Opus フォールバックは許可リストを参照せずに、`ANTHROPIC_DEFAULT_OPUS_MODEL` で設定したモデル、または設定していない場合は Opus 5 で実行されます。Claude Code v2.1.210 以降が必要です
+* **[auto モードの分類器](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)**: 許可リストが[デフォルトの分類器モデル](/docs/ja/permission-modes#default-classifier-model)を除外している場合、そのモデルを使用するはずだった分類器リクエストは、セッションのモデルで実行されるか、[Fable](#work-with-fable) セッションでは Opus モデルで実行されます。Anthropic API 以外のプロバイダーでは、その Opus フォールバックは許可リストを参照せずに、`ANTHROPIC_DEFAULT_OPUS_MODEL` で設定したモデル、または設定していない場合は Opus 5 で実行されます。Claude Code v2.1.210 以降が必要です
 * **[fast mode](/docs/ja/fast-mode)**: 有効化後にセッションが実行されるモデルが許可リスト外である場合、fast mode の有効化は拒否されます
 * **Amazon Bedrock と Google Cloud の Agent Platform での可用性フォールバック**: セッションの途中でアカウントがモデルへのアクセスを失った場合、別のモデルへの切り替えでは除外されたモデルがスキップされます。[Amazon Bedrock](/docs/ja/amazon-bedrock#when-your-organization-enforces-a-model-allowlist) および [Google Cloud の Agent Platform](/docs/ja/google-vertex-ai#when-your-organization-enforces-a-model-allowlist) での起動時のモデルチェックが除外されたモデルをスキップするのは、管理設定で [`enforceAvailableModels`](#enforce-the-allowlist-for-the-default-model) も設定されている場合のみです
 

@@ -138,7 +138,7 @@ cat build-error.txt | claude -p 'concisely explain the root cause of this build 
   パイプされた stdin は 10MB に制限されています。制限を超えた場合、Claude Code は明確なエラーを表示して終了し、ゼロ以外のステータスを返します。より大きな入力を処理するには、コンテンツをファイルに書き込み、パイプする代わりにプロンプトでファイルパスを参照してください。
 </Note>
 
-Claude Code が stdin を読み込めない場合（例えば、Claude Code を起動したプロセスが自分側の接続を切断した場合）、Claude Code は stderr に警告を出力し、コマンドラインから渡されたプロンプトで続行します。v2.1.211 より前では、Windows で stdin を読み込めないとセッションがクラッシュするか、出力なしで静かに終了していました。
+Claude Code が stdin を読み込めない場合（例えば、Claude Code を起動したプロセスが自分側の接続を切断した場合）、Claude Code は stderr に警告を出力し、コマンドラインから渡されたプロンプトで続行します。
 
 <h3 id="add-claude-to-a-build-script">
   ビルドスクリプトに Claude を追加する
@@ -213,7 +213,7 @@ claude -p "Explain recursion" --output-format stream-json --verbose --include-pa
 
 ストリームの最後の行は、最終応答テキスト、コスト、セッションメタデータを含む `result` メッセージです。
 
-コンシューマーがストリームをゆっくり読む場合、Claude Code はキューに入った出力が排出されるまで待機してから終了します。待機時間はまだキューに残っている量に応じて伸び、上限は 30 秒です。v2.1.214 より前では、終了時の待機の上限は約 2 秒であり、大きな応答の末尾が切り捨てられる可能性がありました。
+コンシューマーがストリームをゆっくり読む場合、Claude Code はキューに入った出力が排出されるまで待機してから終了します。待機時間はまだキューに残っている量に応じて伸び、上限は 30 秒です。
 
 次の例は [jq](https://jqlang.org/) を使用してテキストデルタをフィルタリングし、ストリーミングテキストのみを表示します。`-r` フラグは生の文字列（引用符なし）を出力し、`-j` は改行なしで結合するため、トークンが途切れなくストリーミングされます。
 
@@ -249,7 +249,6 @@ Claude がツール呼び出しで開始した実行は、そのツール呼び�
 
 これらのメッセージの一部がストリームに含まれていない場合は、Claude Code のバージョンを次の最小要件と照らし合わせて確認してください。
 
-* **`--forward-subagent-text` と `CLAUDE_CODE_FORWARD_SUBAGENT_TEXT`**：v2.1.211 以降
 * **あらゆるネストの深さでの転送**：v2.1.219 以降
 * **Claude がメインの会話から Skill ツールで開始するフォークされたスキル**：`tool_use` および `tool_result` ブロックには v2.1.86 以降、最初の `user` メッセージとテキストブロックおよび思考ブロックには v2.1.265 以降
 * **フォークされたスキルが生成するサブエージェントのメッセージ、およびサブエージェントや別のフォークされたスキルの中で開始されたフォークされたスキルのメッセージ**：v2.1.275 以降
@@ -336,7 +335,9 @@ claude -p "Run the test suite and fix any failures" \
   --allowedTools "Bash,Read,Edit"
 ```
 
-個別のツールを指定する代わりにセッション全体のベースラインを設定するには、[権限モード](/docs/ja/permission-modes)を渡します。何も権限モードを設定しない実行は、[組み込みの開始時の権限モード](/docs/ja/permission-modes#which-mode-a-session-starts-in)になり、これは `auto` の場合があるため、使用したいモードを渡してください。
+指定しなかったツールの呼び出しは、承認が不要であれば実行されます。[Manual モード](/docs/ja/permission-modes#available-modes)の `claude -p` 実行では、承認が必要な呼び出しは、[`PermissionRequest` フック](/docs/ja/hooks#permissionrequest)や [`--permission-prompt-tool`](/docs/ja/cli-reference#cli-flags) などによって承認されない限り拒否されます。Claude Code v2.1.302 以降では、[何も権限モードを設定しない](/docs/ja/permission-modes#which-mode-a-non-interactive-run-starts-in)場合、`claude -p` の実行は Manual モードで開始されます。
+
+個別のツールを指定する代わりにセッション全体のベースラインを設定するには、`--permission-mode` で `auto`、`dontAsk`、`acceptEdits` などの[権限モード](/docs/ja/permission-modes)を渡します。
 
 * **`auto`**：`--permission-mode auto` を渡すと、ユーザーに代わって分類器がほとんどのアクションをレビューします
 * **`dontAsk`**：Claude Code は、本来なら確認を求めるすべての呼び出しを拒否します。これは制限された CI 実行に役立ちます。Manual モードで承認が不要なアクション（作業ディレクトリでのファイル読み取りや[読み取り専用コマンドセット](/docs/ja/permissions#read-only-commands)など）は引き続き実行され、`--allowedTools` エントリまたは `permissions.allow` ルールがカバーするアクションも実行されます。`AskUserQuestion`、[組織が `ask` に設定したコネクタツール](/docs/ja/mcp#organization-controls-on-connector-tools)、[`requiresUserInteraction`](/docs/ja/mcp#require-approval-for-a-specific-tool) とマークされた MCP ツール、および[ネットワークパスからの読み取り](/docs/ja/permissions#network-paths)は、許可ルールが一致する場合でも拒否されます

@@ -122,13 +122,19 @@ Linux と WSL2 では、ランタイムは既に存在するパスにのみ書�
 mkdir -p ~/.claude && { [ -f ~/.claude.json ] || echo '{}' > ~/.claude.json; }
 ```
 
-設定ファイルが配置されたら、`npx` で Claude Code を起動し、ラップするコマンドとして `claude` を渡します：
+ランタイムをグローバルにインストールします。インストール先のプレフィックスは、書き込みを許可するすべてのパスの外側にしてください：
 
 ```bash theme={null}
-npx @anthropic-ai/sandbox-runtime claude
+npm install -g @anthropic-ai/sandbox-runtime
 ```
 
-Claude Code は、設定したファイルシステムおよびネットワーク境界を持つサンドボックス内で起動します。同じコマンドは、スタンドアロン MCP サーバーや他のヘルパープロセスのサンドボックス化にも使用できます。
+設定ファイルが配置されたら、プロジェクトディレクトリから Claude Code をランタイムを通じて起動します：
+
+```bash theme={null}
+srt claude
+```
+
+Claude Code は、設定したファイルシステムおよびネットワーク境界を持つサンドボックス内で起動します。同じ `srt` コマンドは、スタンドアロン MCP サーバーや他のヘルパープロセスのサンドボックス化にも使用できます。
 
 <h3 id="what-the-runtime-blocks-on-its-own">
   ランタイムが独自にブロックするもの

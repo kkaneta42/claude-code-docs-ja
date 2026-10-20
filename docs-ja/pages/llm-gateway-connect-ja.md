@@ -216,7 +216,7 @@ CLI は上記の環境変数と設定ファイルを読み取ります。他の�
 * **管理者によって配布される**：組織が[設定を配布](/docs/ja/llm-gateway-rollout#distribute-through-managed-settings)している場合、デスクトップアプリはゲートウェイを通じてルーティングされ、設定は不要です
 * **ローカルで設定される**：管理者配布設定がないデバイスの場合、Help → Troubleshooting → 開発者モードを有効化を開きます。これはアプリを再起動して開発者メニューを表示します。その後、Developer → Configure Third-Party Inference を開き、ゲートウェイベース URL を入力します。管理者配布設定が優先され、このフォームを読み取り専用にします
 
-ゲートウェイ設定がアクティブな場合、環境ピッカーは Anthropic ホスト型クラウド環境を提供せず、[Remote Control](/docs/ja/remote-control) は利用できません。
+ゲートウェイ設定がアクティブな場合、環境セレクターは Anthropic ホスト型クラウド環境を提供せず、[Remote Control](/docs/ja/remote-control) は利用できません。
 
 ゲートウェイ設定での SSH セッションはベータ版であり、Claude Desktop v1.40609.0 以降が必要です。接続する前に、許可リストとゲートウェイのアドレスを確認してください：
 

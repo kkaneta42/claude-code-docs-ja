@@ -321,7 +321,7 @@ Claude Code は [管理設定](/docs/ja/server-managed-settings)または `--set
 claude auto-mode defaults
 ```
 
-`jq` にパイプしなくても 1 つのルールの完全な文言を読むには、`--label` にルールのラベルの開始部分を渡します。例えば `claude auto-mode defaults --label 'Git Destructive'` のようにします。マッチングは各ルールのラベルに対する大文字小文字を区別しないプレフィックスであり、マッチしないセクションは空のリストとして出力されます。Claude Code v2.1.208 以降が必要です。
+`jq` にパイプしなくても 1 つのルールの完全な文言を読むには、`--label` にルールのラベルの開始部分を渡します。例えば `claude auto-mode defaults --label 'Git Destructive'` のようにします。マッチングは各ルールのラベルに対する大文字小文字を区別しないプレフィックスであり、マッチしないセクションは空のリストとして出力されます。
 
 分類器が実際に使用する設定を JSON として出力します。設定が指定されている場合はその設定を、そうでない場合はデフォルトを適用します：
 
@@ -359,7 +359,7 @@ claude auto-mode critique
 
 カスタムルールを作成した場合、`claude auto-mode critique` はそれらをレビューし、曖昧、冗長、または偽陽性を引き起こす可能性のあるエントリにフラグを立てます。
 
-カスタマイズを破棄して組み込みデフォルトに戻すには、reset サブコマンドを実行します。Claude Code v2.1.212 以降が必要であり、ユーザー設定ファイルから `autoMode` セクションを削除します：
+カスタマイズを破棄して組み込みデフォルトに戻すには、reset サブコマンドを実行します。このサブコマンドはユーザー設定ファイルから `autoMode` セクションを削除します：
 
 ```bash theme={null}
 claude auto-mode reset

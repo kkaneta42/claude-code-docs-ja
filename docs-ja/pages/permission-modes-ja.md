@@ -86,11 +86,9 @@ VS Code 拡張機能が開始する会話は、[権限モードを切り替え�
 | Claude Code の実行方法 | 組み込み開始権限モード |
 | :- | :- |
 | 設定ファイルが `disableAutoMode` を `"disable"` に設定 | `default` |
-| `claude -p` または [Agent SDK](/docs/ja/agent-sdk/permissions#permission-modes) | [フィーチャーフラグを取得](/docs/ja/env-vars#features-that-need-feature-flag-fetching)するセッションでは `default`。テレメトリがオフの場合やサードパーティプロバイダーなど、フィーチャーフラグを取得しないセッションでは、Claude Code v2.1.285 以降では `auto`、以前のバージョンでは `default`。`auto` デフォルトを保留するポリシーを持つ組織内のセッションは、代わりに `default` で開始します |
+| `claude -p` または [Agent SDK](/docs/ja/agent-sdk/permissions#permission-modes) | `default` |
 | 組織に [HIPAA 設定](#hipaa-configuration)が適用されており、セッションが[その対象](/docs/ja/hipaa-setup#check-how-developers-sign-in-and-connect)である | Claude Code v2.1.285 以降では `default`。auto モードへの切り替えは引き続き可能です |
 | ターミナルまたは [VS Code 拡張機能](/docs/ja/vs-code)を通じて | Claude Code v2.1.283 以降では `auto`。以前のバージョンでは、Pro、Max、または Team プランで [フィーチャーフラグを取得](/docs/ja/env-vars#features-that-need-feature-flag-fetching)するセッションでは `auto`、それ以外は `default` |
-
-[インストールまたはアップグレード後の最初のセッション](/docs/ja/env-vars#first-session-after-an-install-or-upgrade)では、Claude Code はフィーチャーフラグが到達する前に開始権限モードを選択できます。そのセッションは表が示すものとは異なる権限モードで開始する可能性があります。
 
 フラグ、設定ファイル、または組み込みデフォルトが `auto` を選択しても、auto モードがセッションで利用できない場合、Claude Code はセッションを Manual で開始します。Auto モードは、セッションが [利用可能性要件](#eliminate-prompts-with-auto-mode)を満たさない場合（設定ファイルがそれをオフにするか、サポートしていないモデルなど）、または Anthropic がサーバー側で一時的にそれをオフにした場合に利用できません。
 
@@ -100,6 +98,45 @@ VS Code 拡張機能が開始する会話は、[権限モードを切り替え�
 * VS Code 拡張機能では、新しい会話画面のカードとして、却下するまで表示されます
 
 `~/.claude/settings.json` が `auto` 以外の `defaultMode` を設定し、他の設定ファイルが設定しない場合、セッションはそのモードで開始し続けます。Pro、Max、Team プランおよび [フィーチャーフラグを取得しない](/docs/ja/env-vars#features-that-need-feature-flag-fetching)セッションでは、Claude Code はターミナルまたは VS Code 拡張機能で 1 回、設定を auto モードに変更するかどうかを尋ねます。却下した場合、設定はそのままです。
+
+<h3 id="which-mode-a-non-interactive-run-starts-in">
+  `claude -p` と Agent SDK の実行で拒否されるツール呼び出し
+</h3>
+
+Claude Code v2.1.302 以降では、[権限モードが設定されていない](#which-mode-a-session-starts-in) `claude -p` および [Agent SDK](/docs/ja/agent-sdk/permissions#permission-modes) の実行は Manual モードで開始します。このモードは SDK オプションと設定では `default` として表示されます。承認が必要な呼び出しは、許可ルール、フック、`canUseTool` コールバック、または `--permission-prompt-tool` で承認しない限り拒否されます。
+
+これらの呼び出しが承認されるようにするには、許可ルールを追加するか、auto モードで開始します。
+
+* **[許可ルールを追加する](/docs/ja/permissions#manage-permissions)**: Claude は列挙した呼び出しを実行します。`claude -p` に [`--allowedTools "Bash(npm test)"`](/docs/ja/headless#auto-approve-tools) を渡すか、SDK の [allowed-tools オプション](/docs/ja/agent-sdk/permissions#allow-and-deny-rules)を設定します。
+* **[auto モード](#eliminate-prompts-with-auto-mode)で開始する**: 分類器モデルが呼び出しをレビューするため、事前に何も列挙する必要はありません。`claude -p` に `--permission-mode auto` を渡すか、SDK の [権限モードオプション](/docs/ja/agent-sdk/permissions#set-permission-mode)を設定します。
+
+以下の例は、CLI と各 SDK での auto モードの指定方法を示しています。
+
+<Tabs>
+  <Tab title="CLI">
+    ```bash theme={null}
+    claude -p "Run the test suite and fix any failures" --permission-mode auto
+    ```
+  </Tab>
+
+  <Tab title="TypeScript">
+    ```typescript theme={null}
+    const options = {
+      permissionMode: "auto"
+    };
+    ```
+  </Tab>
+
+  <Tab title="Python">
+    ```python theme={null}
+    from claude_agent_sdk import ClaudeAgentOptions
+
+    options = ClaudeAgentOptions(permission_mode="auto")
+    ```
+  </Tab>
+</Tabs>
+
+v2.1.302 より前は、[フィーチャーフラグを取得](/docs/ja/env-vars#features-that-need-feature-flag-fetching)しない場合、例えば[サードパーティプロバイダー](/docs/ja/third-party-integrations)上や `DISABLE_TELEMETRY` を使用している場合に、これらの実行が auto モードで開始することがありました。
 
 <h3 id="start-in-a-different-mode">
   異なる権限モードで開始する
@@ -216,7 +253,7 @@ Claude Code v2.1.285 以降が必要です。これは [HIPAA 設定の最小バ
   </Tab>
 
   <Tab title="Desktop">
-    **セッション中**：Code タブで、送信ボタンの横にあるモードセレクターを使用します。すべてのモードがセレクターに表示されるわけではありません。
+    **セッション中**：Code タブで、プロンプトボックスの下の行にあるモードセレクターを使用します。すべてのモードがセレクターに表示されるわけではありません。
 
     * **Auto**：[auto モードが利用可能](#eliminate-prompts-with-auto-mode)な場合に表示されます
     * **Bypass permissions**：Pro と Max プランの Desktop 設定で **Allow bypass permissions mode** トグルが必要です。Team と Enterprise プランでは、組織ポリシーがそれを制御します
@@ -345,7 +382,10 @@ Claude Code が auto モードを利用不可と報告する場合は、まず�
   Bedrock、Agent Platform、または Foundry での auto モード
 </h3>
 
-[Amazon Bedrock](/docs/ja/amazon-bedrock)、[Google Cloud の Agent Platform](/docs/ja/google-vertex-ai)、[Microsoft Foundry](/docs/ja/microsoft-foundry)、およびサインイン済みの [Claude apps gateway](/docs/ja/claude-apps-gateway) セッションでは、auto モードはデフォルトで利用可能です。他に権限モードを設定するものがない場合、そのセクションの表に記載されているバージョンでは、[組み込みの開始権限モード](#which-mode-a-session-starts-in)でもあります。開始権限モードを自分で選択するには、[別の権限モードで開始する](#start-in-a-different-mode)の説明に従って `permissions.defaultMode` を設定するか、VS Code 拡張機能のモードインジケーターから権限モードを選択します。
+[Amazon Bedrock](/docs/ja/amazon-bedrock)、[Google Cloud の Agent Platform](/docs/ja/google-vertex-ai)、[Microsoft Foundry](/docs/ja/microsoft-foundry)、およびサインイン済みの [Claude apps gateway](/docs/ja/claude-apps-gateway) セッションでは、auto モードはデフォルトで利用可能です。そこで権限モードを設定しない場合、インタラクティブなセッションは auto モードで開始し、`claude -p` や Agent SDK の実行は Manual モード（設定値は `default`）で開始します。
+
+* **インタラクティブなターミナルセッションと VS Code セッション**: auto 以外の権限モードで開始するには、[別の権限モードで開始する](#start-in-a-different-mode)の説明に従って `permissions.defaultMode` を設定するか、VS Code 拡張機能の[モードインジケーター](#switch-permission-modes)から権限モードを選択します。これらのセッションを auto モードで開始する Claude Code のバージョンは、[セッションがどのモードで開始するか](#which-mode-a-session-starts-in)に記載されています。
+* **`claude -p` と Agent SDK の実行**: auto モードで開始するには、`claude -p` に `--permission-mode auto` を渡すか、TypeScript では `permissionMode: "auto"`、Python では `permission_mode="auto"` を渡します。権限モードを渡さない場合は、[`claude -p` および Agent SDK の実行でツール呼び出しが拒否される](#which-mode-a-non-interactive-run-starts-in)を参照してください。このセクションでは以前の Claude Code バージョンについても説明しています。
 
 これらのプロバイダーでサポートされているのは、Claude Sonnet 5 以降、Opus 4.7 以降、Haiku 5.5、および Fable モデルのみです。その他のモデルでは、セッションは代わりに Manual で開始します。これらのプロバイダーで Haiku 5.5 を使用して auto モードを利用するには、Claude Code v2.1.293 以降が必要です。
 
@@ -368,6 +408,65 @@ auto モードでは、Claude Code は独自の分類器リクエストを送信
 
 サーバーへの依頼をスキップして常に Claude Code 独自の分類器リクエストを使用するには、[`CLAUDE_CODE_AUTO_MODE_SERVER=0`](/docs/ja/env-vars) を設定します。Anthropic API への直接接続では、この変数には Claude Code v2.1.281 以降が必要です。そこで `1` に設定すると、`CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1` も設定していない限り、まだサーバーレビューが有効になっていないセッションでサーバーレビューがオンになります。`CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1` を設定して `CLAUDE_CODE_AUTO_MODE_SERVER` を未設定のままにすると、[プレリリース機能を無効にする](/docs/ja/llm-gateway-protocol#disable-pre-release-capabilities)で説明されている場合を除き、Claude Code はサーバーへの依頼も停止します。
 
+<h3 id="default-classifier-model">
+  デフォルトの分類器モデル
+</h3>
+
+デフォルトでは、分類器リクエストは Claude Sonnet 5 に送信されます。`/status` で `Auto mode server` が `Enabled` と表示されている場合、リクエストは[サーバーのレビュー](#server-side-classifier-review)の対象外の呼び出しに対してのみ送信されます。
+
+この表で、セッションに一致する最初の行を見つけてください。Sonnet 5 の代わりに、その行のモデルが使用されます。
+
+| セッション | 分類器モデル |
+| - | - |
+| Anthropic が設定した分類器モデルがある | 設定されたモデル。どのモデルかは[デバッグログを確認](#classifier-model-check)してください |
+| Claude Sonnet 4.6 で実行されている | Sonnet 4.6 |
+| [`ANTHROPIC_DEFAULT_SONNET_MODEL`](/docs/ja/model-config#environment-variables) が設定されている | その値。ただし値が Claude Sonnet 5.5 または Claude Opus 5.5 の場合は Sonnet 5 |
+
+Sonnet 5 または `ANTHROPIC_DEFAULT_SONNET_MODEL` のモデルがプロバイダーから利用できない場合、または組織の[モデルポリシー](/docs/ja/model-config#restrict-model-selection)で除外されている場合、Claude Code はフォールバックモデルを使用します。これはセッションのモデルであり、[Fable セッション](/docs/ja/model-config#work-with-fable)では Opus モデルです。
+
+<h3 id="choose-the-classifier-model">
+  分類器モデルを選択する
+</h3>
+
+Claude Code v2.1.302 以降では、[`CLAUDE_CODE_AUTO_MODE_MODEL`](/docs/ja/env-vars) を完全なモデル ID に設定すると、[デフォルト](#default-classifier-model)以外のモデルで分類器を実行できます。クラウドプロバイダー独自の完全なモデル ID も使用できます。次の `~/.claude/settings.json` の例では Claude Sonnet 4.6 を設定しています。
+
+```json theme={null}
+{
+  "env": {
+    "CLAUDE_CODE_AUTO_MODE_MODEL": "claude-sonnet-4-6"
+  }
+}
+```
+
+<h4 id="classifier-model-not-reviewing">
+  指定したモデルがレビューしない場合
+</h4>
+
+| 状況 | 動作 | 対処方法 |
+| - | - | - |
+| セッションで `/status` に [`Auto mode server`](#server-side-classifier-review) が `Enabled` と表示されている | 指定したモデルは、サーバーがレビューしないものだけをレビューします | 不要 |
+| Claude Opus 5、Claude Sonnet 5.5、Claude Opus 5.5、または組織の[モデルポリシー](/docs/ja/model-config#restrict-model-selection)で除外されているモデルを設定した | [デフォルトの分類器モデル](#default-classifier-model)がレビューします | 別のモデルを設定します |
+| Anthropic がセッション用の分類器モデルを設定した | そのモデルがレビューします | 不要 |
+| プロバイダーがそのモデルを提供できない | リクエストが失敗し、Claude Code は[レビュー対象のすべてのアクションを拒否します](/docs/ja/errors#auto-mode-cannot-determine-the-safety-of-an-action) | プロバイダーが提供するモデルを設定するか、変数を削除します |
+
+<h4 id="classifier-model-check">
+  分類器が使用したモデルを確認する
+</h4>
+
+シェルから [`--debug-file`](/docs/ja/cli-reference#cli-flags) を指定して auto モードのセッションを開始します。
+
+```bash theme={null}
+claude --permission-mode auto --debug-file classifier-debug.log
+```
+
+Claude に読み取り専用ではないシェルコマンドを実行させてから、ログで `classifier_request_started` を検索します。
+
+* **`model=` の後に指定したモデルがある**: 変数が有効になっています
+* **`model=` の後に別のモデルがある**: ログで `ignoring CLAUDE_CODE_AUTO_MODE_MODEL` を検索します。理由と必要な手順が示されています
+* **該当する行がない**: Claude Code のプロンプトで `/status` の `Auto mode server` を確認します。
+  * **`Enabled`**: [サーバー](#server-side-classifier-review)がこのセッションの呼び出しをレビューするよう設定されています。変更は不要です。
+  * **`Disabled`**: [権限モード](#switch-permission-modes)が auto であることを確認してから、Claude に読み取り専用ではない別のコマンドを実行させます。
+
 <h3 id="what-the-classifier-blocks-by-default">
   分類器がデフォルトでブロックするもの
 </h3>
@@ -384,7 +483,7 @@ auto モードでは、Claude Code は独自の分類器リクエストを送信
 * 共有インフラストラクチャの変更
 * セッション前から存在していたファイルの不可逆的な破壊
 * Force push
-* 実行時にシークレットや機密データをリポジトリの外に送信する、またはデプロイが公開する範囲を広げる変更のコミットまたはプッシュ。これには、まだシークレットを受け取っていない宛先にシークレットを渡す CI ワークフローやデプロイ設定、シークレットストアを読み取ってデータを外部に送信するスクリプトやセットアップ手順、そしてレジストリ、可視性、アーティファクト、ソースマップの設定など、デプロイが公開する範囲を広げる設定変更が含まれます。このチェックはどのブランチにも適用され、リポジトリが公開されている場合でも適用され、そのコミットやプッシュがパイプラインをトリガーするかどうかにかかわらず、変更がコミットまたはプッシュされた時点で発動します。解除するには、コミットやプッシュだけでなく、実行時の影響を明示する必要があります。v2.1.211 より前では、このチェックは代わりにデフォルトブランチに限定されていました。デフォルトブランチへのプッシュは、機密コンテンツを含む場合、依頼内容に対して変更が隠されていたり誤って説明されていたりする場合、リポジトリ外から持ち込まれたコンテンツを含む場合、または依頼したレビューを迂回する場合にブロックされていました
+* 実行時にシークレットや機密データをリポジトリの外に送信する、またはデプロイが公開する範囲を広げる変更のコミットまたはプッシュ。これには、まだシークレットを受け取っていない宛先にシークレットを渡す CI ワークフローやデプロイ設定、シークレットストアを読み取ってデータを外部に送信するスクリプトやセットアップ手順、そしてレジストリ、可視性、アーティファクト、ソースマップの設定など、デプロイが公開する範囲を広げる設定変更が含まれます。このチェックはどのブランチにも適用され、リポジトリが公開されている場合でも適用され、そのコミットやプッシュがパイプラインをトリガーするかどうかにかかわらず、変更がコミットまたはプッシュされた時点で発動します。解除するには、コミットやプッシュだけでなく、実行時の影響を明示する必要があります
 * `git reset --hard`、`git checkout -- .`、`git restore .`、`git clean -fd`、`git stash drop`、または `git stash clear`（分類器はコミットされていない変更を破棄するものと推定します）
 * HEAD のコミットがこのセッションで作成されたものでない場合の `git commit --amend`
 * v2.1.198 以降、HEAD のコミットがすでにプッシュされている場合の `git commit --amend`。メッセージのみの書き換えはブロックされません。これは、Claude がこのセッション中に作成したコミットに対し、新たにステージされたものがない状態で `--amend -m` を実行する場合です
@@ -568,9 +667,7 @@ auto モードがセッションのアクションを承認できない場合、
   </Accordion>
 
   <Accordion title="コストとレイテンシー">
-    分類器は、`/model` での選択ではなく、デフォルトで Claude Sonnet 5 で実行されます。Anthropic がサーバー側で設定した分類器モデルは、このデフォルトより優先されます。セッションのモデルが Claude Sonnet 4.6 の場合、または [`availableModels`](/docs/ja/model-config#restrict-model-selection) が Sonnet 5 を除外している場合、分類器は代わりにセッションのモデルで実行され、セッションが [Fable モデル](/docs/ja/model-config#work-with-fable)で実行されている場合は Opus モデルで実行されます。Anthropic API 以外のプロバイダーでは、この Opus のフォールバックは [`ANTHROPIC_DEFAULT_OPUS_MODEL`](/docs/ja/model-config#environment-variables) で設定したモデルであり、設定していない場合は Opus 5 です。
-
-    セッションの最初の auto モードのリクエストで、Sonnet 5 のデフォルトが検証されます。リクエストが成功すれば Sonnet 5 がセッションの分類器モデルとして維持され、モデルが利用できないために失敗した場合は、セッションは代わりにフォールバックを使用します。
+    Claude Code の分類器リクエストは、`/model` での選択とは異なるモデルで実行される場合があります。[どのモデルで実行されるか](#default-classifier-model)を参照してください。
 
     Enterprise プラン、および Claude API、[Claude Platform on AWS](/docs/ja/claude-platform-on-aws)、Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry を使用するアカウントでは、分類器の呼び出しはトークン使用量にカウントされます。各チェックではトランスクリプトの一部と保留中のアクションが送信され、実行前に往復の通信が 1 回加わります。読み取りと、保護されたパス以外での作業ディレクトリ内の編集は分類器をスキップするため、オーバーヘッドは主にシェルコマンドとネットワーク操作から生じます。サーバーがセッションのモデルリクエストの一部としてアクションをレビューする場合は、カウントされる個別の分類器呼び出しはありません。[サーバー側の分類器レビュー](#server-side-classifier-review)を参照してください。
 

@@ -9,7 +9,10 @@
 [git worktree](https://git-scm.com/docs/git-worktree) は、独自のファイルとブランチを持つ別の作業ディレクトリであり、メインのチェックアウトと同じリポジトリ履歴とリモートを共有します。各 Claude Code セッションを独自の worktree で実行すると、各セッションが編集用にファイルの個別のコピーを持つため、1 つのセッションで機能を構築しながら、2 つ目のセッションでバグを修正できます。
 
 <Note>
-  worktree には git リポジトリが必要です。その他のバージョン管理システムについては、[git のロジックを置き換えるフックを設定](#non-git-version-control)してください。[デスクトップアプリ](/docs/ja/desktop#work-in-parallel-with-sessions)では、セッションの開始時に **worktree** オプションを選択すると、そのセッション専用の worktree が作成されます。
+  別のバージョン管理システムまたはデスクトップアプリを使用している場合は、ご自身の環境に応じた手順に従ってください。
+
+  * **その他のバージョン管理システム**：worktree には git リポジトリが必要です。[git のロジックを置き換えるフックを設定](#non-git-version-control)してください
+  * **デスクトップアプリ**：[セッションを独自の worktree で実行する](/docs/ja/desktop#run-a-session-in-its-own-worktree)を参照してください
 </Note>
 
 worktree は Claude を並列で実行するいくつかの方法の 1 つで、ファイル編集を分離します。[サブエージェント](/docs/ja/sub-agents)は 1 つのセッション内で作業を分割し、[セッション間メッセージング](/docs/ja/cross-session-messaging)を使用すると、Claude は worktree 内のセッション間で調査結果を受け渡せます。アプローチを比較するには [エージェントを並列で実行する](/docs/ja/agents) を参照するか、worktree とサブエージェントを一緒に使用するには [worktree でサブエージェントを分離する](#isolate-subagents-with-worktrees) に進んでください。
@@ -270,7 +273,7 @@ worktree は独自のファイルとブランチを持ちますが、以下を�
 
 これらはすべて、worktree を `--worktree` で作成した場合も、`git worktree add` で作成した場合も適用されます。
 
-[デスクトップアプリ](/docs/ja/desktop#work-in-parallel-with-sessions)から開始した worktree セッションでは、Claude Code は設定、フック、スキル、エージェント、コマンド、[`.mcp.json`](/docs/ja/mcp#project-scope) サーバーなどのプロジェクト設定を、worktree からではなくメインチェックアウトのルートから読み込みます。フックのコマンドはそのルートで実行され、`${CLAUDE_PROJECT_DIR}` はそのルートを指します。Claude が作業しているファイルにアクセスするには、フックの [`cwd` 入力フィールド](/docs/ja/hooks#common-input-fields)から worktree のパスを読み取ってください。`CLAUDE.md` ファイルと `.claude/rules/` は引き続き worktree から読み込まれます。
+[デスクトップアプリ](/docs/ja/desktop#run-a-session-in-its-own-worktree)から開始した worktree セッションでは、Claude Code は設定、フック、スキル、エージェント、コマンド、[`.mcp.json`](/docs/ja/mcp#project-scope) サーバーなどのプロジェクト設定を、メインチェックアウトのルートから読み込みます。フックのコマンドはそのルートで実行され、`${CLAUDE_PROJECT_DIR}` はそのルートを指します。Claude が作業しているファイルにアクセスするには、フックの [`cwd` 入力フィールド](/docs/ja/hooks#common-input-fields)から worktree のパスを読み取ってください。`CLAUDE.md` ファイルと `.claude/rules/` は引き続き worktree から読み込まれます。
 
 <h2 id="manage-worktrees-manually">
   worktree を手動で管理する
@@ -434,4 +437,4 @@ worktree はファイルの分離を処理します。以下の関連ページ�
 * [セッション間メッセージング](/docs/ja/cross-session-messaging): worktree 内のセッション同士で調査結果を受け渡せるようにする
 * [エージェントチーム](/docs/ja/agent-teams): 複数の Claude セッションを自動的に調整する
 * [セッションを管理する](/docs/ja/sessions): 会話に名前を付け、再開し、切り替える
-* [デスクトップ並列セッション](/docs/ja/desktop#work-in-parallel-with-sessions): デスクトップアプリの worktree でサポートされるセッション
+* [デスクトップセッションを専用の worktree で実行する](/docs/ja/desktop#run-a-session-in-its-own-worktree): デスクトップアプリの worktree でサポートされるセッション

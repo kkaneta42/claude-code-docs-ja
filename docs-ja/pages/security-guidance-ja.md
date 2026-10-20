@@ -33,7 +33,7 @@ security guidance プラグインは、Claude が作業中に自身のコード�
 
 `/plugin` はターミナル CLI でインタラクティブパネルを開きます。Claude が `/plugin` がこの環境では利用できないと報告した場合、別の方法でインストールしてください：
 
-* **Claude デスクトップアプリ、ローカルまたは SSH セッション**：プロンプトの横にある **+** ボタンをクリックして[プラグインブラウザ](/docs/ja/desktop#install-plugins)を開き、**Plugins** をクリックしてから **Add plugin** をクリックします
+* **Claude デスクトップアプリ、ローカルまたは SSH セッション**：[プラグインをインストールする](/docs/ja/plugins/install#install-a-plugin)の **Desktop app** タブを使用します
 * **VS Code 拡張機能**：[**Manage plugins** ダイアログ](/docs/ja/vs-code#manage-plugins)からインストールします
 * **クラウドセッション**：クラウドセッションは、ユーザー設定またはリポジトリの `.claude/settings.json` からプラグインを読み込みません。[セットアップから引き継がれるもの](/docs/ja/cloud-environments#what-carries-over-from-your-setup)で説明されています。組織が管理設定を通じて配布するプラグインについては、[組織のプラグインを管理](/docs/ja/plugins/org)を参照してください
 

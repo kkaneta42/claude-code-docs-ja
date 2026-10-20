@@ -479,7 +479,7 @@ Claude Code v2.1.212 以降でセッションを戻すには、ディスパッ�
 
 フォーク後、2 つの会話は独立しています。コピーが行ったことが自動的に元の会話に入ることはありません。ただし、[クロスセッションメッセージング](/docs/ja/cross-session-messaging) が有効なセッションでは、どちらのセッションの Claude も明示的にもう一方にメッセージを送信できます。
 
-セッションのコピーには Claude Code v2.1.212 以降が必要です。v2.1.161 から v2.1.211 では、`/fork` は代わりに [フォークされたサブエージェント](/docs/ja/sub-agents#fork-the-current-conversation) を開始します。これは現在の `/subtask` です。[エージェントビューがオフになっている](#turn-off-agent-view) 場合、`/fork` はフォークされたサブエージェントの動作を維持し、`/subtask` は利用できません。
+[エージェントビューがオフになっている](#turn-off-agent-view) 場合、`/fork` はセッションをコピーする代わりに [フォークされたサブエージェント](/docs/ja/sub-agents#fork-the-current-conversation) を開始します。
 
 `/fork open a draft pull request with the work so far` のようにプロンプトを渡すと、コピーはすぐにその作業を開始します。プロンプトがない場合、コピーは最初の指示を待ちます。`claude agents` でその行を選択して `Space` を押して指示を送信するか、`claude attach <id>` を実行します。待機中、選択された行には `space to send it a prompt` が表示されます。
 
@@ -955,7 +955,15 @@ Claude Code は、エージェントビューに表示されているすべて�
 * **実行中のサブエージェントを持つワークフロー**：[動的ワークフロー](/docs/ja/workflows)にはまだ実行中のサブエージェントがあります。ワークフロー自体は転送されますが、実行中のサブエージェントは最初から再開され、ダイアログはその数を表示します。
 * **自動アーティファクト返信**：Claude が[アーティファクトのコメントに自動で返信している](/docs/ja/artifacts#let-claude-reply-to-comments-on-its-own)場合があります。これらの返信はバックグラウンドセッションで続行され、ダイアログはそのことを表示します。
 
-`/tasks` を実行してすべての実行中のものを確認し、確認してバックグラウンド化するか、`Stay` を選択して作業が完了するまで待機します。[バックグラウンド化するときに転送されるもの](#what-carries-over-when-you-background)を参照して、どのタスク種が転送され、どのタスク種が Claude Code によって停止されるかを確認してください。
+`/tasks` を実行してすべての実行中のものを確認し、確認してバックグラウンド化するか、`Stay` を選択して作業が完了するまで待機します。[バックグラウンドに移動するときに引き継がれるもの](#what-carries-over-when-you-background)を参照して、どのタスク種が引き継がれ、どのタスク種が Claude Code によって停止されるかを確認してください。
+
+<h3 id="carried-into-this-session-and-not-resumed">
+  会話にバックグラウンドエージェントが `was carried into this session and not resumed` と表示される
+</h3>
+
+この通知は、このセッションで実行されていないバックグラウンドの[サブエージェント](/docs/ja/sub-agents)を示しています。
+
+Claude はこの通知を確認して自動的に返信するため、プロンプトを入力する必要はありません。Claude の返信を読んだ後もそのサブエージェントの作業が必要な場合は、Claude に依頼してください。
 
 <h3 id="prompt-rejected-as-too-short">
   プロンプトが短すぎるとして拒否される

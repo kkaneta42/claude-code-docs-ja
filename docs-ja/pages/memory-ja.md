@@ -521,7 +521,7 @@ ln -s AGENTS.md CLAUDE.md
 * `.github/copilot-instructions.md` の Copilot ルール
 * `CLAUDE_CODE_NEW_INIT=1` が設定されている場合: `AGENTS.md`、`.devin/rules/`、`.windsurf/rules/` または `.windsurfrules`、および `.clinerules`
 
-[`/import`](/docs/ja/commands) を実行して、サポートされているコーディングエージェントの設定を Claude Code に取り込むこともできます。これにより、`AGENTS.md` などの指示ファイルの 1 回限りのコピーが一致する `CLAUDE.md` に追加され、MCP サーバー、コマンド、サブエージェント、およびスキルが引き継がれます。Claude Code v2.1.213 以降が必要です。
+[`/import`](/docs/ja/commands) を実行して、サポートされているコーディングエージェントの設定を Claude Code に取り込むこともできます。これにより、`AGENTS.md` などの指示ファイルの 1 回限りのコピーが一致する `CLAUDE.md` に追加され、MCP サーバー、コマンド、サブエージェント、およびスキルが引き継がれます。
 
 <h2 id="auto-memory">
   自動メモリ
@@ -569,7 +569,7 @@ Claude はすべてのセッションで何かを保存するわけではあり�
 
 各プロジェクトは `~/.claude/projects/<project>/memory/` に独自のメモリディレクトリを取得します。`<project>` パスは git リポジトリから派生しているため、同じリポジトリ内のすべてのワーキングツリーとサブディレクトリは 1 つの自動メモリディレクトリを共有します。git リポジトリの外では、プロジェクトルートが代わりに使用されます。
 
-`CLAUDE_CODE_PROJECT_DIR_NAME` を `CLAUDE_CONFIG_DIR` の横に設定した場合、Claude Code はその名前を、どのリポジトリを起動しても `<config dir>/projects/` の下の `<project>` ディレクトリとして使用するため、その設定ディレクトリで起動されたプロジェクトは 1 つの自動メモリディレクトリを共有します。Claude Code v2.1.234 以降が必要です。詳細は [`CLAUDE_CODE_PROJECT_DIR_NAME`](/docs/ja/sessions#name-the-project-directory-yourself) を参照してください。
+[`CLAUDE_CODE_PROJECT_DIR_NAME`](/docs/ja/sessions#name-the-project-directory-yourself) を `CLAUDE_CONFIG_DIR` と併せて設定した場合、Claude Code はどのリポジトリで起動しても、その名前を `<config dir>/projects/` の下の `<project>` ディレクトリとして使用するため、その設定ディレクトリで起動されたプロジェクトは 1 つの自動メモリディレクトリを共有します。Claude Code v2.1.234 以降が必要です。
 
 自動メモリを別の場所に保存するには、`settings.json` で `autoMemoryDirectory` を設定します。これは任意の[設定スコープ](/docs/ja/settings#settings-precedence)から読み込まれます。ユーザー、プロジェクト、ローカル、ポリシー、または `--settings` です。
 
@@ -615,7 +615,7 @@ Claude が `MEMORY.md` に書き込んだ後、Claude Code はファイルを 20
 
 Claude はセッション中にメモリファイルを読み書きします。Claude Code インターフェイスで「Saved 2 memories」または「Recalled 2 memories」などのメッセージが表示されたら、Claude は `~/.claude/projects/<project>/memory/` から積極的に更新または読み込みを行っています。
 
-Claude が YAML フロントマターで始まるメモリファイルを書き込む場合、Claude Code は書き込み時刻を ISO 8601 タイムスタンプとして `modified` フロントマターフィールドに記録します。タイムスタンプは、事実がどの程度最新であるかを、あなたと Claude がメモリを読み戻すときの両方に示します。フロントマターを持つすべてのファイルは、以前のバージョンで作成されたファイルを含め、Claude が次に書き込むときにフィールドを取得します。Claude Code はフロントマターを持たないファイルにフロントマターを追加することはありません。`modified` フィールドには Claude Code v2.1.214 以降が必要です。
+Claude が YAML フロントマターで始まるメモリファイルを書き込む場合、Claude Code は書き込み時刻を ISO 8601 タイムスタンプとして `modified` フロントマターフィールドに記録します。タイムスタンプは、事実がどの程度最新であるかを、ユーザーと、メモリを読み戻すときの Claude の両方に示します。
 
 <h3 id="audit-and-edit-your-memory">
   メモリを監査および編集する

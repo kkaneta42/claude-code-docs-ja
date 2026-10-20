@@ -33,7 +33,7 @@ Claude Code は、定期的または 1 回限りの作業をスケジュール�
 </Tip>
 
 <Note>
-  デフォルトでは、スケジュール設定されたタスクは、コミットされていない変更を含む、作業ディレクトリの現在の状態に対して実行されます。タスクを作成するときに worktree トグルを有効にすると、各実行が独立した Git worktree を取得します。これは [parallel sessions](/docs/ja/desktop#work-in-parallel-with-sessions) と同じ方法です。
+  デフォルトでは、スケジュールタスクは、コミットされていない変更を含む、作業ディレクトリの現在の状態に対して実行されます。タスクを作成するときに worktree トグルを有効にすると、各実行に独自の[独立した Git worktree](/docs/ja/desktop#run-a-session-in-its-own-worktree) が割り当てられます。
 </Note>
 
 <h2 id="create-a-scheduled-task">

@@ -15,6 +15,7 @@
 | ログインループ、OAuth エラー、`403 Forbidden`、「organization disabled」、Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry 認証情報 | [インストールとログインのトラブルシューティング](/docs/ja/troubleshoot-install#login-and-authentication) |
 | 設定が適用されない、hooks が実行されない、MCP サーバーがロードされない | [設定をデバッグする](/docs/ja/debug-your-config) |
 | セッションが auto モードで開始された、または Claude がファイルを編集してコマンドを実行する（確認なし） | [セッションが開始するモード](/docs/ja/permission-modes#which-mode-a-session-starts-in) |
+| Claude Code または Agent SDK を更新した後、`--permission-mode`、`permissionMode`、`permission_mode` のいずれも渡していない `claude -p` または SDK の実行でツール呼び出しが拒否される | [`claude -p` と Agent SDK の実行でツール呼び出しが拒否される](/docs/ja/permission-modes#which-mode-a-non-interactive-run-starts-in) |
 | `API Error: 5xx`、`529 Overloaded`、`429`、リクエスト検証エラー | [エラーリファレンス](/docs/ja/errors) |
 | `model not found` または `you may not have access to it` | [エラーリファレンス](/docs/ja/errors#theres-an-issue-with-the-selected-model) |
 | Claude が実行するコマンドが `Your disk quota is full`、`is full (ENOSPC)`、または `Command output was lost` で失敗する | [エラーリファレンス](/docs/ja/errors#disk-quota-or-temp-filesystem-is-full) |

@@ -24,7 +24,7 @@ Windows では、Code タブは Windows 自体ではなく WSL 2 ディストリ
 
 <Steps>
   <Step title="ディストリビューションを選択する">
-    Code タブで新しいセッションを開始し、環境ピッカーを開きます。インストール済みの WSL 2 ディストリビューションが **WSL** セクションに表示されます。1 つを選択してください。
+    Code タブで新しいセッションを開始し、プロンプトボックスの下（[以前のレイアウト](/docs/ja/desktop#check-which-layout-you-have)ではその上）にある[環境セレクター](/docs/ja/desktop#start-a-session)を開きます。インストール済みの WSL 2 ディストリビューションが **WSL** の下に表示されます。1 つを選択してください。
   </Step>
 
   <Step title="フォルダを選択する">
@@ -38,15 +38,29 @@ Windows では、Code タブは Windows 自体ではなく WSL 2 ディストリ
 
 ディストリビューション内の最初のセッションは、Claude がその内部をセットアップする間、少し時間がかかります。通常のフォルダピッカーから `\\wsl.localhost\...` フォルダを開くこともでき、そのディストリビューション内で再度開きます。
 
-最近使用したフォルダはディストリビューションごとにピッカーに表示されるため、プロジェクトに再接続するのは 1 クリックです。
-
 <h2 id="what-works-in-a-wsl-session">
   WSL セッションで機能するもの
 </h2>
 
 並列セッション、サイドチャット、ビジュアル diff レビュー、ブランチとプルリクエストのステータス、および worktrees はすべて機能し、ディストリビューション内の git とツールチェーンによってサポートされます。「エディタで開く」は [Remote - WSL](https://code.visualstudio.com/docs/remote/wsl) を通じてディストリビューションに接続された VS Code を開きます。
 
-WSL セッションではまだ利用できない機能がいくつかあります。統合ターミナル、コネクタとプラグイン、セッションフォーク、ファイルブラウザペイン、およびコンポーザーで `@` を入力するときのファイル提案です。
+Desktop の機能が WSL セッションで利用できない、または制限されている場合は、次のいずれかに該当するかを確認してください。
+
+* **ターミナルとコネクタ**: セッションで[統合ターミナル](/docs/ja/desktop#run-commands-in-the-terminal)、[コネクタ](/docs/ja/desktop#connect-external-tools)、またはその両方が利用できない場合があります。[ターミナルまたはコネクタが利用できない場合](#check-for-the-terminal-and-connectors)を参照してください。
+* **[プラグイン](/docs/ja/desktop#install-plugins)**: WSL セッションでは利用できません
+* **ファイル編集**: [ファイルペイン](/docs/ja/desktop#open-and-edit-files)でファイルを表示することはできますが、そこで編集することはできないため、変更は Claude に依頼してください
+* **添付ファイル**: **+** メニューに **Add files or photos** の代わりに **Add image** が表示される場合、添付できるのは画像のみです。[プロンプトにファイルとコンテキストを追加する](/docs/ja/desktop#add-files-and-context-to-prompts)を参照してください。
+
+<a id="check-for-the-terminal-and-connectors" />
+
+<h3 id="if-the-terminal-or-connectors-are-unavailable">
+  ターミナルまたはコネクタが利用できない場合
+</h3>
+
+WSL セッションの統合ターミナルやコネクタを自分でオンにすることはできません。
+
+* **Claude アカウント**: この 2 つの機能は個別に展開されています。**Help > Check for Updates…** を選択し、更新後も機能が表示されない場合は、特に対応する必要はありません。
+* **[サードパーティプロバイダー](/docs/ja/third-party-integrations)**: WSL セッションではターミナルやコネクタは利用できず、Desktop を更新してもそれは変わりません
 
 <h2 id="managed-devices">
   管理対象デバイス

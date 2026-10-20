@@ -554,6 +554,12 @@ secrets:
 * **[`--retire-at`](/docs/ja/self-hosted-environments-reference#runner-cli-flags) を使用する場合**：リタイア時刻とホストが停止する時刻の間に、典型的なターンが終了するのに十分な時間、[ランナーのライフサイクル](/docs/ja/self-hosted-environments#runner-lifecycle)で説明されているバックグラウンドタスクの待機時間、およびログに記録された時間を確保してください。リタイア時刻は起動のたびに計算します。例えば `date +%s` にランナーの想定稼働時間を加えます。
 * **[`--defer-shutdown-max-min`](#defer-the-drain-past-the-first-signal) を使用する場合**：停止タイムアウトには、設定した分数と、ドレイン開始前のさらなる待機時間（デフォルト設定では 75 秒）も含める必要があります。両方については[最初のシグナルを超えてドレインを遅延させる](#defer-the-drain-past-the-first-signal)で説明しています。ランナーはこの長い時間も起動時にログに記録します。
 
+<h3 id="post-a-status-message-before-a-restart">
+  再起動の前にステータスメッセージを投稿する
+</h3>
+
+セッションを中断する再起動の前に、[Owner](/docs/ja/cloud-environments#organization-shared-environments) に [**Cloud environments** 管理ページ](https://claude.ai/admin-settings/cloud-environments)から環境にステータスメッセージを投稿してもらいます。[claude.ai/code](https://claude.ai/code) では、メンバーはその環境内の自分のセッションでメッセージを確認できます。投稿時に Owner に有効期限を設定してもらうか、ランナーが復帰したらメッセージを削除してもらってください。
+
 <h3 id="defer-the-drain-past-the-first-signal">
   最初のシグナルを超えてドレインを遅延させる
 </h3>
@@ -632,7 +638,7 @@ secrets:
   バージョンをピンする
 </h2>
 
-各セッションの子 Claude Code プロセスはランナー独自のバイナリを実行し、ランナーはセッション内でオートアップデートをオフにするため、すべてのセッションはホストにインストールされたか、イメージに組み込まれたバージョンを実行します。ホストレベルのアップデートはランナーが次に開始するときに有効になります。
+各セッションの子プロセスはデフォルトでランナー独自のバイナリを実行し、ランナーは自身が起動するセッション内でオートアップデートをオフにします。このデフォルトでは、すべてのセッションはホストにインストールされたか、イメージに組み込まれたバージョンを実行します。ホストレベルのアップデートはランナーが次に開始するときに有効になります。
 
 セッションが実行するバージョンと、それを変更するタイミングを選択します。
 
@@ -640,6 +646,7 @@ secrets:
 * **フリートを 1 つのバージョンに保持するには**：ピンされたバージョンでイメージをビルドするか、ベアホストで特定のバージョンをインストールし、[オートアップデートを無効にしてください](/docs/ja/setup#disable-auto-updates)
 * **固定フリートをアップグレードするには**：現在のバージョンとインストールするバージョンの間の [changelog](/docs/en/changelog) のエントリを確認してから、新しいバージョンをインストールするか、イメージを再ビルドしてランナーを再起動してください
 * **オンデマンドランナーをアップグレードするには**：現在のバージョンとインストールするバージョンの間の [changelog](/docs/en/changelog) のエントリを確認してから、[`spawn-runner` フック](/docs/ja/self-hosted-environments-configuration#the-spawn-runner-hook)が起動するイメージを変更してください。新しいランナーにはそれぞれ新しいバージョンが適用されます。すでに起動しているランナー（[`--min-idle`](/docs/ja/self-hosted-environments-reference#orchestrator-cli-flags) によって起動されたスタンバイランナーを含む）は、終了するまでそのバージョンを維持します。その作業指示は一度しか使用できないため、再起動しないでください。
+* **セッションが別のバイナリを起動する場合**：[`--exec-path`](/docs/ja/self-hosted-environments-reference#runner-cli-flags) または [`command` フック](/docs/ja/self-hosted-environments-configuration#command)を使用してランナー独自のもの以外の Claude Code バイナリを起動する場合、セッションはそのバイナリのバージョンを実行します。ランナーをアップデートするときは、そのバイナリもアップデートしてください。
 * **プラグイン**：プラグインマーケットプレイスもオートアップデートしません。ランナーの環境で `FORCE_AUTOUPDATE_PLUGINS=1` を設定して、バイナリがピンされたままの間、プラグインをオートアップデートさせます
 
 <h2 id="scale-the-fleet">
@@ -699,6 +706,7 @@ Anthropic は、コネクタのツールをランナーからではなく、Anth
   * **フラグを有効にする前に**: ソースリモート上の `claude/*` ref にプッシュできるユーザーを制限してください。再開時、ランナーは以前にプッシュされたブランチを、誰がプッシュしたかを検証せずにフェッチします。
 * **セッションの途中で追加したリポジトリのクローンが失敗することがある**: Claude は HTTPS 経由の `git clone` でリポジトリをクローンします。[`--use-anthropic-git-proxy`](#use-the-anthropic-git-proxy) を使用していないランナーでは、ホスト上にリポジトリを読み取れるものが何もない場合、クローンは git の認証エラーで失敗します。可能であれば、セッションの作成時に、セッションで必要なすべてのリポジトリを選択してください。
 * **一部のコネクタがセルフホストセッションに表示されない**: claude.ai の設定でまだ接続していないコネクタはセルフホストセッションに表示されず、セッションから接続を求められることもありません。まず設定で接続してから、新しいセッションを開始してください。また、すでに実行中のセッションにコネクタを追加しても、そのツールは Claude で使用できるようになりません。新しく追加したコネクタを反映するには、新しいセッションを開始してください。
+* **誰かがセッションをアーカイブまたは削除した場合、またはセッションのメニューからランナーを解放した場合**: [`--push-outcome-on-release`](/docs/ja/self-hosted-environments-reference#runner-cli-flags) によるプッシュは当てにしないでください。このような場合にコミットを保存するには、[`post-session` フック](/docs/ja/self-hosted-environments-configuration#post-session)から `HEAD` を退避用ブランチにプッシュしてください。そこにある例をもとにする場合は、コミットされていない変更が何もないときでもプッシュするように変更してください。この例はスナップショットのコミットを作成した後にのみプッシュするためです。
 
 <h3 id="report-an-issue">
   問題を報告する
@@ -745,6 +753,7 @@ claude self-hosted-runner doctor
   セッションの約 30 分後にすべての呼び出しが失敗し始める場合、ラッパースクリプトがセッションの stdin を切断した可能性があります。そのため、トークンローテーションがそれに到達できません。[stdin とファイルディスクリプタ 3 を接続したままにする](/docs/ja/self-hosted-environments-configuration#keep-stdin-and-file-descriptor-3-attached)を参照してください。
 
   v2.1.274 より前では、ランナーは数回の試行後に失敗したフェッチの再試行を停止し、次のスケジュール済みのものを待ちました。失敗したターンはフェッチをトリガーしなかったため、次のスケジュール済みフェッチまで、すべてのターンが 401 で失敗しました。
+* **claude.ai/code でターンが `This model needs a newer version of Claude Code` で失敗する**：ランナーがセッションの開始に使用する Claude Code のバージョンが、セッションのモデルが必要とするバージョンより古いため、API が[リクエストを拒否します](/docs/ja/errors#claude-code-does-not-support-this-model)。[バージョンを固定する](#pin-the-version)で説明されているように、ランナーをメッセージが求めるバージョン以降にアップグレードしてください。それまでは、セッション内で別のモデルを選択できます。
 * **ポッドがドレイン中に強制終了される**：`terminationGracePeriodSeconds` をランナーが起動時にログに記録する値以上に引き上げてください。[シャットダウンタイミング](#shutdown-timing)を参照してください。
 
 ログが初期化されると、ランナーはそのライフサイクルログ（`[runner:fatal]` 行を含む）を stdout に書き込み、デバッグ出力を stderr に書き込みます。すべて JSON ではなくプレーンテキスト行として。上記のトラブルシューティングエントリで説明されているベースディレクトリの失敗はその前に stderr に出力されます。`--log-file` で両方のストリームをキャプチャします。これにより `self-hosted-runner doctor` がそれらをテールできるようになり、またはプラットフォームのログ収集で。

@@ -41,6 +41,7 @@
 | `Auto mode classifier transcript exceeded context window` | [サーバーエラー](#auto-mode-cannot-determine-the-safety-of-an-action) |
 | `Agent aborted: auto mode classifier request refused by the safety safeguard` | [サーバーエラー](#auto-mode-cannot-determine-the-safety-of-an-action) |
 | `The server-side auto mode classifier gave no verdict` | [サーバーエラー](#the-server-returned-no-safety-verdict) |
+| `<tool> was not reviewed and did not run: the conversation is too long for auto mode's classifier` | [サーバーエラー](#was-not-reviewed-and-did-not-run) |
 | `Auto mode is unavailable — the server returned no safety verdict for the last 10 responses` | [サーバーエラー](#the-server-returned-no-safety-verdict) |
 | `Agent terminated early due to an API error` | [サーバーエラー](#agent-terminated-early-due-to-an-api-error) |
 | `You've hit your session limit` / `You've hit your weekly limit` / `You've hit your Opus limit` / `You've hit your Sonnet limit` | [使用制限](#youve-hit-your-session-limit) |
@@ -471,7 +472,7 @@ Claude が [advisor](/docs/ja/advisor) に相談している間は、長い advi
 | [`CLAUDE_CODE_RETRY_WATCHDOG_MAX_WAIT_MS`](/docs/ja/env-vars) | 未設定 | `CLAUDE_CODE_RETRY_WATCHDOG` が設定されている場合に、各 API リクエストが `429` および `529` エラーの解消を待つのに費やす最大時間。単位はミリ秒です。未設定の場合、待機時間に制限はありません。Claude Code v2.1.295 以降が必要です。 |
 | [`CLAUDE_CODE_OVERLOADED_RETRY_BASE_DELAY_MS`](/docs/ja/env-vars) | 500 | API が `529` 過負荷エラーで拒否したリクエストの再試行間のバックオフにおける、開始時の遅延 (ミリ秒)。API が容量の上限に達している場合に、再試行をより長い期間に分散させるには、最大 32000 まで値を引き上げてください。`CLAUDE_CODE_RETRY_WATCHDOG` が `1` に設定されている場合、または拒否されたリクエストが [fast mode](/docs/ja/fast-mode#handle-rate-limits) で送信された場合は効果がありません。Claude Code v2.1.292 以降が必要です。 |
 | [`CLAUDE_CODE_OVERLOADED_RETRY_MAX_DELAY_MS`](/docs/ja/env-vars) | 32000 | API が `529` 過負荷エラーで拒否したリクエストの再試行間のバックオフにおける、遅延の上限 (ミリ秒)。API が容量の上限に達している場合に、後の再試行の間隔が引き続き広がるようにするには、最大 64000 まで値を引き上げてください。`CLAUDE_CODE_RETRY_WATCHDOG` が `1` に設定されている場合、または拒否されたリクエストが [fast mode](/docs/ja/fast-mode#handle-rate-limits) で送信された場合は効果がありません。Claude Code v2.1.296 以降が必要です。 |
-| [`API_TIMEOUT_MS`](/docs/ja/env-vars) | 600000 | リクエストごとのタイムアウト (ミリ秒)。低速なネットワークやプロキシを使用する場合は値を引き上げてください。[No response from API](#no-response-from-api) で説明しているように、Claude Code がレスポンスヘッダーを待機する時間の上限にもなります。 |
+| [`API_TIMEOUT_MS`](/docs/ja/env-vars) | 600000 | 各リクエストの試行がレスポンスヘッダーを受信するまでの制限時間 (ミリ秒)。その後のストリーミングレスポンスの実行時間は制限しません。低速なネットワークやプロキシを使用する場合は値を引き上げてください。これがファーストバイトの期限の上限となる仕組みについては、[No response from API](#no-response-from-api) を参照してください。 |
 | [`CLAUDE_CODE_NONSTREAMING_TIMEOUT_RETRIES`](/docs/ja/env-vars) | 未設定 | タイムアウトした[非ストリーミングリクエスト](#streaming-response-ended-before-any-complete-data-was-received)の再送信回数の上限。上限に達すると、リクエストは失敗します。生成にタイムアウトより長い時間がかかる Claude の応答は、再送信のたびに再びタイムアウトするため、より早く失敗させるには `0` などの小さな値を設定してください。非ストリーミングの各試行は、ローカルセッションでは 300 秒後に、`API_TIMEOUT_MS` に正の値を設定している場合はその時間の経過後にタイムアウトします。Claude Code v2.1.285 以降が必要です。 |
 | [`CLAUDE_STREAM_FIRST_BYTE_TIMEOUT_MS`](/docs/ja/env-vars) | 未設定 | ストリーミングリクエストの最初のレスポンスバイトの期限 (ミリ秒)。Claude Code v2.1.242 以降が必要です。これが未設定の場合に Claude Code が期限をどのように決定するかについては、[No response from API](#no-response-from-api) を参照してください。 |
 
@@ -535,7 +536,7 @@ API は接続期限前に応答しませんでした。
 Request timed out
 ```
 
-これは高負荷期間中、またはモデルが非常に大きなレスポンスを生成しているときに発生する可能性があります。デフォルトのリクエストタイムアウトは 10 分です。
+デフォルトのリクエストタイムアウトは 10 分です。
 
 **対応方法：**
 
@@ -627,7 +628,7 @@ Claude がテキストまたはツール呼び出しを開始する前にドロ�
 <model> is temporarily unavailable, so auto mode cannot determine the safety of <tool> right now. Wait a moment and then try this action again.
 ```
 
-対話セッションでは、このメッセージの代わりに、ツール呼び出しの下に薄く表示される `Not run · auto mode's check had no usable answer` 行が現れます。`Ctrl+O` を押すと、[トランスクリプトビューアー](/docs/ja/interactive-mode#transcript-viewer) でメッセージを読むことができます。[The server returned no safety verdict](#the-server-returned-no-safety-verdict) で説明されている拒否でも同じ行が表示されます。v2.1.296 より前では、メッセージは呼び出しの下に赤いエラーとして表示されていました。
+対話セッションでは、このメッセージの代わりに、ツール呼び出しの下に薄く表示される `Not run · auto mode's check had no usable answer` 行が現れます。`Ctrl+O` を押すと、[トランスクリプトビューアー](/docs/ja/interactive-mode#transcript-viewer) でメッセージを読むことができます。[The server returned no safety verdict](#the-server-returned-no-safety-verdict) で説明されている `gave no verdict` 拒否でも同じ行が表示されます。v2.1.296 より前では、メッセージは呼び出しの下に赤いエラーとして表示されていました。
 
 Claude Code が障害カテゴリを判定できる場合、`temporarily unavailable` の後の括弧内にカテゴリを示します。例えば `<model> is temporarily unavailable (rate-limited), so auto mode cannot determine the safety of <tool> right now`。カテゴリは `(rate-limited)`、`(overloaded)`、`(server error)`、`(timed out)`、`(connection failed)` です。`(timed out)` または `(connection failed)` が繰り返される場合は、接続を確認してください。[Unable to connect to API](#unable-to-connect-to-api) を参照してください。v2.1.229 より前では、メッセージはカテゴリを示さず、`Wait briefly and then try this action again` と読まれていました。
 
@@ -638,6 +639,7 @@ Claude Code が障害カテゴリを判定できる場合、`temporarily unavail
 * 数秒後に再試行してください。Claude は同じメッセージを見て、通常は自動的に再試行します。一時的な障害は [auto モードの利用資格](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode) とは無関係です。設定を変更する必要はありません
 * 再試行が失敗し続ける場合は、読み取り専用タスクを続行し、後でブロックされたアクションに戻ってください
 * Amazon Bedrock では、メッセージがすべての再試行で返される場合は、アカウントがそれが示すモデルを呼び出せることを確認してください。標準の Amazon Bedrock モデルの場合、[IAM policy](/docs/ja/amazon-bedrock#iam-configuration) がそれを呼び出すことを許可していることを確認してください。Mantle モデル ID の場合は、[AWS アカウントチームに連絡してください](/docs/ja/amazon-bedrock#mantle-endpoint-errors)
+* メッセージがすべての再試行で返され、[`CLAUDE_CODE_AUTO_MODE_MODEL`](/docs/ja/permission-modes#choose-the-classifier-model) で設定したモデルを示している場合は、セッションが実行されている API またはクラウドプロバイダーがそのモデル ID を提供していることを確認してください。提供していない場合は、変数を提供されているモデル ID に設定するか、変数の設定を解除して [デフォルトの分類器モデル](/docs/ja/permission-modes#default-classifier-model) を使用してください。
 
 OAuth トークンの有効期限が切れたか、別のセッションによってローテーションされたために分類器リクエストが失敗した場合、Claude Code はトークンをリフレッシュし、リクエストを 1 回再試行するため、日常的なトークンの有効期限切れはこのメッセージとして表示されません。v2.1.216 より前では、有効期限が切れたまたはローテーションされたトークンによってすべての分類器リクエストが失敗し、トークンがリフレッシュされるまで auto モードはこのメッセージで確認対象のすべてのアクションを拒否していました。
 
@@ -672,7 +674,7 @@ v2.1.225 より前では、Claude Code はこれらの拒否を一時停止し�
 * 対話セッションでは、別の [権限モード](/docs/ja/permission-modes) に切り替えて、プロンプトが表示されたときにアクションを承認できるようにしてください
 * トリガーするコンテンツなしで新しい会話を開始してください
 
-会話が分類器のコンテキストウィンドウより大きくなった場合：
+会話が Claude Code の分類器リクエストには長すぎ、Claude Code が [自動で圧縮](#was-not-reviewed-and-did-not-run) できない場合：
 
 ```text theme={null}
 Auto mode classifier transcript exceeded context window — falling back to manual approval (try /compact to reduce conversation size)
@@ -715,12 +717,36 @@ Auto mode is unavailable — the server returned no safety verdict for the last 
 
 **対応方法：**
 
+* 対話セッションでは、`Ctrl+O` を押して [トランスクリプトビューアー](/docs/ja/interactive-mode#transcript-viewer) で拒否のテキストを読んでください。
+* 拒否が `(the conversation is too long for the check)` を示している場合は、Claude Code のプロンプトで `/compact` を実行して会話を短くしてください。会話が短くなるまでは、別のメッセージを送信しても同じ拒否になります。[自動圧縮](/docs/ja/settings-reference#autocompactenabled) をオフにしている場合は、次回 Claude Code が自動で圧縮するように再度オンにしてください。
 * 別のメッセージを送信して、Claude が再度試行するようにしてください。レスポンスのカウントはリセットされます。
 * 停止が繰り返され、リクエストが [LLM ゲートウェイまたはプロキシ](/docs/ja/llm-gateway) を経由する場合は、それがストリーミングレスポンスを途中で切り詰めたり書き換えたりしていないかを確認してください。[サーバー側の分類器レビュー](/docs/ja/permission-modes#server-side-classifier-review) にはどのゲートウェイの動作が拒否を引き起こすかが記載され、[ゲートウェイ互換性ガイド](/docs/ja/llm-gateway-protocol#feature-pass-through) には変更せずにそのまま渡すべきものが記載されています。
 * Claude Code を開始する前に `CLAUDE_CODE_AUTO_MODE_SERVER=0` を設定して、代わりに Claude Code 独自の分類器リクエストを使用してください。v2.1.281 より前では、Claude Code は Anthropic API への直接接続でこの変数を読み取りませんでした。
 * 代わりにアクションを自分で承認するには、[auto モードから切り替えてください](/docs/ja/permission-modes#switch-permission-modes)
 
 v2.1.280 より前では、Claude Code は判定のないレスポンスからの各アクションを直ちに拒否し、ターンを停止することはありませんでした。
+
+v2.1.302 より前では、Anthropic API への直接接続において、Claude Code はサーバーのチェックには長くなりすぎた会話を圧縮しませんでした。
+
+<h3 id="was-not-reviewed-and-did-not-run">
+  Was not reviewed and did not run
+</h3>
+
+`was not reviewed and did not run` 拒否は、会話が長すぎて [auto モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode) の分類器がアクションをチェックできず、アクションが実行されなかったことを意味します。Claude Code は次のメッセージを Claude に返します。
+
+```text theme={null}
+<tool> was not reviewed and did not run: the conversation is too long for auto mode's classifier. Claude Code will try to compact the conversation before the next request; if this action is still needed after that, issue it again and it will be reviewed normally.
+```
+
+コンテキスト圧縮が失敗した場合、分類器がチェックできない以降のアクションには、次の 2 つの別のメッセージのいずれかが表示されます。
+
+* [`gave no verdict (the conversation is too long for the check)`](#the-server-returned-no-safety-verdict) 拒否
+* [`Auto mode classifier transcript exceeded context window`](#auto-mode-cannot-determine-the-safety-of-an-action) メッセージ
+
+**対応方法：**
+
+* メッセージが予告している圧縮が成功した場合は、何もする必要はありません。
+* これら 2 つのメッセージのいずれかが表示された場合は、Claude Code のプロンプトで `/compact` を実行して、自分で会話を短くしてください。[自動圧縮](/docs/ja/settings-reference#autocompactenabled) をオフにしている場合は、次回 Claude Code が自動で圧縮するように再度オンにしてください。
 
 <h3 id="agent-terminated-early-due-to-an-api-error">
   Agent terminated early due to an API error
@@ -4554,7 +4580,8 @@ Agent 'code-reviewer' would be spawned with zero tools — refusing. Its tools l
 * エラーが指定する各エントリを [サブエージェントが利用可能なツール](/docs/ja/sub-agents#available-tools) に対して修正します
 * セッションが持たないツールのエントリを削除します。例えば、接続されていないサーバーからの MCP ツール
 * エントリが接続済みの MCP サーバーを指定している場合は、エントリを、そのサーバーの [ツール名](/docs/ja/permissions#mcp) に綴られているサーバー名（例えば `mcp__reports__v2__get_totals` の `reports__v2`）と比較します。そのサーバーには、`mcp__reports__v2__*`、つまり `mcp__` の後に名前全体と `__*` を続けたものを記述します。`reports` という名前のサーバーを指す短い `mcp__reports` では、サブエージェントは `reports__v2` のツールを 1 つも取得しません
-* [バックグラウンドサブエージェントが削除する](/docs/ja/sub-agents#available-tools) ツール（例えば `CronCreate`）の場合、エントリを削除します。ツールを保持するには、[フォークモードをオフにして](/docs/ja/sub-agents#turn-fork-mode-on-or-off) Claude にサブエージェントをフォアグラウンドで実行するよう依頼します
+* [バックグラウンドサブエージェントが削除する](/docs/ja/sub-agents#available-tools) ツール（例えば `CronCreate`）の場合、エントリを削除します
+* 代わりに `CronCreate` などのツールを保持するには、[Claude にサブエージェントを待機させます](/docs/ja/sub-agents#let-claude-wait-for-a-subagent)。Claude が待機するサブエージェントはフォアグラウンドで実行され、ツールを保持するためです。定義で `background: true` が設定されている場合は、サブエージェントがバックグラウンドのままになるため、先にそのフィールドを削除します
 * `tools` フィールドを削除して、サブエージェントに [サブエージェントが利用可能なすべてのツール](/docs/ja/sub-agents#available-tools) を与えます
 * `Agent` のみを含む `tools` リストの場合、[深さ制限](/docs/ja/sub-agents#let-subagents-spawn-their-own-subagents) を上げるか、エージェントに少なくとも 1 つの他のツールを与えます。Claude Code はその制限で `Agent` を保留するため、リストに他に何もない場合、ツールに解決されません
 

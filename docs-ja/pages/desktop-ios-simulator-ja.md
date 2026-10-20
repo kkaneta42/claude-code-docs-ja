@@ -160,7 +160,7 @@ Claude がアプリを実行またはテストしたいことを認識してい�
 * Xcode と iOS シミュレータがインストールされており、Xcode バージョンが [要件](#requirements)を満たしていることを確認します。
 * 組織が Claude Code を管理している場合、[シミュレータツールはポリシーによって無効にされている可能性があります](#turn-off-simulator-access)。
 * Enterprise 組織で HIPAA 設定が有効になっている場合、シミュレータペインは利用できません。
-* シミュレータペインには Claude Desktop v1.24012.0 以降が必要です。**Claude → Check for Updates** を開き、アプリを再起動します。
+* シミュレータペインには Claude Desktop v1.24012.0 以降が必要です。**Claude > Check for Updates…** を開き、アプリを再起動します。
 
 <h3 id="the-simulator-pane-says-no-simulators-were-found">
   シミュレータペインにシミュレータが見つからないと表示される
@@ -174,5 +174,5 @@ Xcode がインストールされていますが、iOS シミュレータがリ�
 
 * [Desktop でのコンピュータの使用](/docs/ja/desktop#let-claude-use-your-computer)：専用ペインのないアプリの画面制御
 * [CLI からのコンピュータの使用](/docs/ja/computer-use)：CLI が iOS シミュレータに到達する方法
-* [セッションで並列に作業する](/docs/ja/desktop#work-in-parallel-with-sessions)：セッションが変更を分離する方法
+* [独自の worktree でセッションを実行する](/docs/ja/desktop#run-a-session-in-its-own-worktree)：セッションが変更を分離する方法
 * [Claude Code Desktop を始める](/docs/ja/desktop-quickstart)

@@ -183,7 +183,7 @@ Claude Code は、`Ctrl+O` で[トランスクリプトビューア](#transcript
   INSERT モードのキーシーケンスを再マップ
 </h3>
 
-[`vimInsertModeRemaps`](/docs/ja/settings-reference#viminsertmoderemaps) 設定は、2 キーの INSERT モードシーケンスを Escape にマップするため、`jj` のようなマッピングで NORMAL モードに戻ります。Claude Code v2.1.208 以降が必要です。
+[`vimInsertModeRemaps`](/docs/ja/settings-reference#viminsertmoderemaps) 設定は、2 キーの INSERT モードシーケンスを Escape にマップするため、`jj` のようなマッピングで NORMAL モードに戻ります。
 
 以下の `~/.claude/settings.json` の例は、vim モードをオンにして `jj` を Escape にマップします：
 
@@ -248,8 +248,8 @@ Claude Code は、ユーザー設定ファイル、`--settings` フラグ、お�
 | `cc` | 行を変更 |
 | `C` | 行の終わりまで変更 |
 | `cw`/`ce`/`cb` | 単語を変更/終わりまで/戻す |
-| `s` | 文字を置換：カーソルの下の文字を削除して INSERT モードに入ります。Claude Code v2.1.211 以降が必要です |
-| `S` | 行を置換：行をクリアして INSERT モードに入ります。Claude Code v2.1.211 以降が必要です |
+| `s` | 文字を置換：カーソルの下の文字を削除して INSERT モードに入ります |
+| `S` | 行を置換：行をクリアして INSERT モードに入ります |
 | `yy`/`Y` | 行をヤンク（コピー） |
 | `yw`/`ye`/`yb` | 単語をヤンク/終わりまで/戻す |
 | `p` | カーソルの後に貼り付け |
@@ -471,7 +471,7 @@ Claude Code は、以下を含むいくつかの状況で個別の提案もス�
 * 会話の最初のターンの後、一部のセッションで
 * 前の応答がエラーで終了した場合
 * Plan Mode にいる場合
-* アカウントが使用制限に近い、またはその制限に達している場合。制限に達するまで提案をオンのままにするには、[`CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION`](/docs/ja/env-vars) を `true` に設定します。v2.1.238 より前では、変数が `true` に設定されていても、Claude Code は制限に近い場合にそれらをスキップしていました
+* アカウントが使用制限に近い、またはその制限に達している場合。制限に達するまでこのスキップが適用されないようにするには、[`CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION`](/docs/ja/env-vars) を `true` に設定します。v2.1.238 より前では、変数が `true` に設定されていても、Claude Code は制限に近い場合に提案をスキップしていました
 * [agent team](/docs/ja/agent-teams) では、デフォルトでチームメイトのセッションで。リーダーのセッションは提案を表示します
 
 `Showing fewer prompt suggestions · use one to bring them back` という通知は、提案を使用しないまま連続して多数見送ったため、Claude Code が提案を表示する頻度を下げていることを意味します。通常の頻度に戻すには、提案を使用するか、[`CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION`](/docs/ja/env-vars) を `true` に設定します。
@@ -759,7 +759,7 @@ Claude は補足質問に対して、会話に既に含まれている内容か�
 
 5 つの最新の以前の補足質問は、現在の回答の上に薄い色のリストとして表示され、古いものの数がカウントされます。これらは会話履歴から除外されます。
 
-オーバーレイを却下した後に戻るには、質問なしで `/btw` を実行します。オーバーレイは最新のやり取りで再度開きます。v2.1.212 より前では、質問なしの `/btw` は代わりに使用メッセージを出力していました。
+オーバーレイを却下した後に戻るには、質問なしで `/btw` を実行します。オーバーレイは最新のやり取りで再度開きます。
 
 回答が表示されたら、オーバーレイはこれらのキーを受け入れます。
 

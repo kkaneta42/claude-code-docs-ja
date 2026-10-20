@@ -502,7 +502,7 @@ Claude Desktop は同じブラウザ SSO ステップでゲートウェイのア
   CI パイプラインとリモートマシン
 </h3>
 
-無人パイプラインのサービストークンフローはありません。ゲートウェイサインインは常にブラウザデバイスフローを実行するため、サインインを承認する開発者がない CI ジョブは認証できません。これらをプロバイダーに対して直接設定します。
+無人パイプラインのサービストークンフローはありません。ゲートウェイサインインは常にブラウザデバイスフローを実行するため、サインインを承認する開発者がない CI ジョブは認証できません。これらをプロバイダーに対して直接設定します。`forceLoginMethod` と `forceLoginGatewayUrl` は開発者マシンにデプロイし、CI ランナーには設定しないでください。管理設定でこれらが設定されているマシンでは、`ANTHROPIC_API_KEY`、`ANTHROPIC_AUTH_TOKEN`、または `apiKeyHelper` で認証するセッションは[起動時に終了します](/docs/ja/errors#administrator-policy-requires-a-cloud-gateway-sign-in)。
 
 開発者がサインインすると、そのマシンでの各 Claude Code セッションはゲートウェイセッションを使用します。非対話的な `claude -p` 実行と Agent SDK によって開始されたセッションを含みます。Claude Code は[ゲートウェイポリシー](/docs/ja/claude-apps-gateway-config#managed)をそれぞれに適用します。
 
