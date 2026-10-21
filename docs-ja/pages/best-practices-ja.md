@@ -24,13 +24,11 @@ LLM のパフォーマンスはコンテキストが満杯になるにつれて�
 
 ***
 
-<h2 id="give-claude-a-way-to-verify-its-work">
-  Claude に自分の作業を検証する方法を与える
-</h2>
+## Claude に自分の作業を検証する方法を与える
 
-<Tip>
-  Claude が実行できるチェックを与えてください。テスト、ビルド、比較するスクリーンショットです。これは、あなたが見守るセッションと、あなたが立ち去ることができるセッションの違いです。
-</Tip>
+> [!TIP]
+>
+> Claude が実行できるチェックを与えてください。テスト、ビルド、比較するスクリーンショットです。これは、あなたが見守るセッションと、あなたが立ち去ることができるセッションの違いです。
 
 Claude は、作業が完了したように見えるときに停止します。実行できるチェックがないと、「完了したように見える」が唯一の利用可能なシグナルであり、あなたが検証ループになります。すべての間違いはあなたがそれに気付くのを待ちます。Claude が実行できるパスまたはフェイルを生成するものを与えると、ループは自動的に閉じます。Claude は作業を行い、チェックを実行し、結果を読み、チェックが合格するまで反復します。
 
@@ -55,74 +53,66 @@ Claude に成功を主張するのではなく、証拠を示すよう指示し�
 
 ***
 
-<h2 id="explore-first-then-plan-then-code">
-  最初に探索し、次に計画し、その後コーディングする
-</h2>
+## 最初に探索し、次に計画し、その後コーディングする
 
-<Tip>
-  研究と計画を実装から分離して、間違った問題を解決することを避けます。
-</Tip>
+> [!TIP]
+>
+> 研究と計画を実装から分離して、間違った問題を解決することを避けます。
 
 Claude が直接コーディングにジャンプさせると、間違った問題を解決するコードが生成される可能性があります。[Plan Mode](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode) を使用して、探索を実行から分離します。
 
 推奨されるワークフローには 4 つのフェーズがあります。
 
-<Steps>
-  <Step title="探索">
-    `Shift+Tab` を押してステータスバーに `⏸ plan mode on` と表示されるまで Plan Mode に入るか、`claude --permission-mode plan` でセッションを開始します。Claude はファイルを読み取り、変更を加えずに質問に答えます。
+**1. 探索**
 
-    ```txt title="claude (plan mode)" wrap theme={null}
-    read /src/auth and understand how we handle sessions and login.
-    also look at how we manage environment variables for secrets.
-    ```
-  </Step>
+`Shift+Tab` を押してステータスバーに `⏸ plan mode on` と表示されるまで Plan Mode に入るか、`claude --permission-mode plan` でセッションを開始します。Claude はファイルを読み取り、変更を加えずに質問に答えます。
 
-  <Step title="計画">
-    Claude に詳細な実装計画を作成するよう依頼します。
+```txt title="claude (plan mode)" wrap theme={null}
+read /src/auth and understand how we handle sessions and login.
+also look at how we manage environment variables for secrets.
+```
 
-    ```txt title="claude (plan mode)" wrap theme={null}
-    I want to add Google OAuth. What files need to change?
-    What's the session flow? Create a plan.
-    ```
+**2. 計画**
 
-    `Ctrl+G` を押して、Claude が進む前に、テキストエディタで計画を開いて直接編集します。
-  </Step>
+Claude に詳細な実装計画を作成するよう依頼します。
 
-  <Step title="実装">
-    計画を承認するか `Shift+Tab` を押して Plan Mode を終了し、Claude にコーディングさせ、計画に対して検証します。
+```txt title="claude (plan mode)" wrap theme={null}
+I want to add Google OAuth. What files need to change?
+What's the session flow? Create a plan.
+```
 
-    ```txt title="claude" wrap theme={null}
-    implement the OAuth flow from your plan. write tests for the
-    callback handler, run the test suite and fix any failures.
-    ```
-  </Step>
+`Ctrl+G` を押して、Claude が進む前に、テキストエディタで計画を開いて直接編集します。
 
-  <Step title="コミット">
-    Claude に説明的なメッセージでコミットし、PR を作成するよう依頼します。
+**3. 実装**
 
-    ```txt title="claude" wrap theme={null}
-    commit with a descriptive message and open a PR
-    ```
-  </Step>
-</Steps>
+計画を承認するか `Shift+Tab` を押して Plan Mode を終了し、Claude にコーディングさせ、計画に対して検証します。
 
-<Callout>
-  Plan Mode は便利ですが、オーバーヘッドも追加します。
+```txt title="claude" wrap theme={null}
+implement the OAuth flow from your plan. write tests for the
+callback handler, run the test suite and fix any failures.
+```
 
-  スコープが明確で修正が小さいタスク（タイプミスの修正、ログ行の追加、変数の名前変更など）の場合は、Claude に直接実行するよう依頼します。
+**4. コミット**
 
-  計画は、アプローチについて不確実な場合、変更が複数のファイルを変更する場合、または変更されるコードに不慣れな場合に最も役立ちます。差分を 1 文で説明できる場合は、計画をスキップします。
-</Callout>
+Claude に説明的なメッセージでコミットし、PR を作成するよう依頼します。
+
+```txt title="claude" wrap theme={null}
+commit with a descriptive message and open a PR
+```
+
+Plan Mode は便利ですが、オーバーヘッドも追加します。
+
+スコープが明確で修正が小さいタスク（タイプミスの修正、ログ行の追加、変数の名前変更など）の場合は、Claude に直接実行するよう依頼します。
+
+計画は、アプローチについて不確実な場合、変更が複数のファイルを変更する場合、または変更されるコードに不慣れな場合に最も役立ちます。差分を 1 文で説明できる場合は、計画をスキップします。
 
 ***
 
-<h2 id="provide-specific-context-in-your-prompts">
-  プロンプトで具体的なコンテキストを提供する
-</h2>
+## プロンプトで具体的なコンテキストを提供する
 
-<Tip>
-  指示がより正確であるほど、必要な修正が少なくなります。
-</Tip>
+> [!TIP]
+>
+> 指示がより正確であるほど、必要な修正が少なくなります。
 
 Claude は意図を推測できますが、あなたの心を読むことはできません。特定のファイルを参照し、制約を述べ、例のパターンを指摘します。
 
@@ -135,13 +125,11 @@ Claude は意図を推測できますが、あなたの心を読むことはで�
 
 曖昧なプロンプトは、探索していて方向転換を余裕を持ってできるときに役立つことがあります。「このファイルで何を改善しますか？」のようなプロンプトは、あなたが尋ねることを考えなかったことを表面化させることができます。
 
-<h3 id="provide-rich-content">
-  リッチコンテンツを提供する
-</h3>
+### リッチコンテンツを提供する
 
-<Tip>
-  `@` を使用してファイルを参照したり、スクリーンショット/画像を貼り付けたり、データを直接パイプしたりします。
-</Tip>
+> [!TIP]
+>
+> `@` を使用してファイルを参照したり、スクリーンショット/画像を貼り付けたり、データを直接パイプしたりします。
 
 Claude にリッチデータを提供するにはいくつかの方法があります。
 
@@ -153,19 +141,15 @@ Claude にリッチデータを提供するにはいくつかの方法があり�
 
 ***
 
-<h2 id="configure-your-environment">
-  環境を設定する
-</h2>
+## 環境を設定する
 
 いくつかのセットアップステップにより、Claude Code はすべてのセッション全体で大幅に効果的になります。拡張機能の完全な概要と各機能をいつ使用するかについては、[Claude Code を拡張](/docs/ja/features-overview)を参照してください。
 
-<h3 id="write-an-effective-claude-md">
-  効果的な CLAUDE.md を書く
-</h3>
+### 効果的な CLAUDE.md を書く
 
-<Tip>
-  `/init` を実行して、現在のプロジェクト構造に基づいてスターター CLAUDE.md ファイルを生成し、時間をかけて改善します。
-</Tip>
+> [!TIP]
+>
+> `/init` を実行して、現在のプロジェクト構造に基づいてスターター CLAUDE.md ファイルを生成し、時間をかけて改善します。
 
 CLAUDE.md は Claude がすべての会話の開始時に読む特別なファイルです。Bash コマンド、コードスタイル、ワークフロールールを含めます。これにより、Claude はコードだけからは推測できない永続的なコンテキストを取得します。
 
@@ -201,13 +185,11 @@ Claude が 1 つの指示をスキップし続ける場合は、その行だけ�
 
 CLAUDE.md ファイルは `@path/to/import` 構文を使用して追加ファイルをインポートできます。インポートルールと CLAUDE.md ファイルが存在できる場所については、[CLAUDE.md ファイル](/docs/ja/memory#claude-md-files)を参照してください。
 
-<h3 id="configure-permissions">
-  権限を設定する
-</h3>
+### 権限を設定する
 
-<Tip>
-  制御を失わずにプロンプトを減らすには、`/permissions` で信頼するツールを事前承認し、`/sandbox` でサンドボックス化されたコマンドを質問なしで実行させます。自分でエディットとコマンドを承認したい場合は、Manual モードに切り替えます。
-</Tip>
+> [!TIP]
+>
+> 制御を失わずにプロンプトを減らすには、`/permissions` で信頼するツールを事前承認し、`/sandbox` でサンドボックス化されたコマンドを質問なしで実行させます。自分でエディットとコマンドを承認したい場合は、Manual モードに切り替えます。
 
 Claude Code v2.1.283 以降では、auto mode は対話型ターミナルと VS Code セッションの[組み込みの開始権限モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)です。別の分類器モデルがほとんどのアクションをレビューし、スコープエスカレーション、未知のインフラストラクチャ、敵対的なコンテンツ駆動のアクションなど、リスクがあるように見えるものだけをブロックします。以前のバージョンでは、auto mode は Pro、Max、Team プランでのみ対話型ターミナルと VS Code セッションの組み込みの開始権限モードです。
 
@@ -218,47 +200,39 @@ Manual モードでは、Claude Code はシステムを変更する可能性の�
 
 [権限モード](/docs/ja/permission-modes)、[権限ルール](/docs/ja/permissions)、[サンドボックス](/docs/ja/sandboxing)の詳細をお読みください。
 
-<h3 id="use-cli-tools">
-  CLI ツールを使用する
-</h3>
+### CLI ツールを使用する
 
-<Tip>
-  Claude Code に `gh`、`aws`、`gcloud`、`sentry-cli` などの CLI ツールを使用して外部サービスと対話するよう指示します。
-</Tip>
+> [!TIP]
+>
+> Claude Code に `gh`、`aws`、`gcloud`、`sentry-cli` などの CLI ツールを使用して外部サービスと対話するよう指示します。
 
 CLI ツールは外部サービスと対話する最もコンテキスト効率的な方法です。GitHub を使用する場合は、`gh` CLI をインストールします。Claude は問題の作成、プルリクエストのオープン、コメントの読み取りにそれを使用する方法を知っています。`gh` がなければ、Claude は GitHub API を使用できますが、認証されていないリクエストはしばしばレート制限に達します。
 
 Claude は、それが既に知らない CLI ツールを学ぶのにも効果的です。`Use 'foo-cli-tool --help' to learn about foo tool, then use it to solve A, B, C.` のようなプロンプトを試してください。
 
-<h3 id="connect-mcp-servers">
-  MCP サーバーを接続する
-</h3>
+### MCP サーバーを接続する
 
-<Tip>
-  `claude mcp add` をサーバー名と URL またはコマンドで実行して、Notion、Figma、またはデータベースなどの外部ツールを接続します。例えば：`claude mcp add --transport http notion https://mcp.notion.com/mcp`。
-</Tip>
+> [!TIP]
+>
+> `claude mcp add` をサーバー名と URL またはコマンドで実行して、Notion、Figma、またはデータベースなどの外部ツールを接続します。例えば：`claude mcp add --transport http notion https://mcp.notion.com/mcp`。
 
 [MCP サーバー](/docs/ja/mcp)を使用すると、Claude に問題トラッカーから機能を実装したり、データベースをクエリしたり、監視データを分析したり、Figma からデザインを統合したり、ワークフローを自動化したりするよう依頼できます。
 
-<h3 id="set-up-hooks">
-  フックを設定する
-</h3>
+### フックを設定する
 
-<Tip>
-  例外なしで毎回発生する必要があるアクションにはフックを使用します。
-</Tip>
+> [!TIP]
+>
+> 例外なしで毎回発生する必要があるアクションにはフックを使用します。
 
 [フック](/docs/ja/hooks-guide)は Claude のワークフロー内の特定のポイントで自動的にスクリプトを実行します。CLAUDE.md の指示とは異なり、フックは決定論的であり、アクションが発生することを保証します。
 
 Claude はあなたのためにフックを書くことができます。*「すべてのファイル編集後に eslint を実行するフックを書く」* または *「migrations フォルダへの書き込みをブロックするフックを書く」* のようなプロンプトを試してください。`.claude/settings.json` を直接編集してフックを設定し、`/hooks` を実行して設定されているものを参照します。
 
-<h3 id="create-skills">
-  スキルを作成する
-</h3>
+### スキルを作成する
 
-<Tip>
-  `.claude/skills/` に `SKILL.md` ファイルを作成して、Claude にドメイン知識と再利用可能なワークフローを提供します。
-</Tip>
+> [!TIP]
+>
+> `.claude/skills/` に `SKILL.md` ファイルを作成して、Claude にドメイン知識と再利用可能なワークフローを提供します。
 
 [スキル](/docs/ja/skills)は、プロジェクト、チーム、またはドメイン固有の情報で Claude の知識を拡張します。Claude は関連するときに自動的にそれらを適用するか、`/skill-name` で直接呼び出すことができます。
 
@@ -298,13 +272,11 @@ Analyze and fix the GitHub issue: $ARGUMENTS.
 
 `/fix-issue 1234` を実行して呼び出します。副作用のあるワークフローで、手動でトリガーしたい場合は `disable-model-invocation: true` を使用します。
 
-<h3 id="create-custom-subagents">
-  カスタムサブエージェントを作成する
-</h3>
+### カスタムサブエージェントを作成する
 
-<Tip>
-  `.claude/agents/` に特化したアシスタントを定義して、Claude が分離されたタスクに委譲できるようにします。
-</Tip>
+> [!TIP]
+>
+> `.claude/agents/` に特化したアシスタントを定義して、Claude が分離されたタスクに委譲できるようにします。
 
 [サブエージェント](/docs/ja/sub-agents)は独自のコンテキストと独自の許可されたツールセットで実行されます。メインの会話を乱さずに、多くのファイルを読み取ったり、特化した焦点が必要なタスクに役立ちます。
 
@@ -326,13 +298,11 @@ Provide specific line references and suggested fixes.
 
 Claude に明示的にサブエージェントを使用するよう指示します。*「サブエージェントを使用してこのコードをセキュリティの問題についてレビューする。」*
 
-<h3 id="install-plugins">
-  プラグインをインストールする
-</h3>
+### プラグインをインストールする
 
-<Tip>
-  `/plugin` を実行してマーケットプレイスを参照します。プラグインは設定なしでスキル、ツール、統合を追加します。
-</Tip>
+> [!TIP]
+>
+> `/plugin` を実行してマーケットプレイスを参照します。プラグインは設定なしでスキル、ツール、統合を追加します。
 
 [プラグイン](/docs/ja/plugins/overview)は、コミュニティと Anthropic からの単一のインストール可能なユニットにスキル、フック、サブエージェント、MCP サーバーをバンドルします。型付き言語を使用する場合は、[コード インテリジェンス プラグイン](/docs/ja/plugins/code-intelligence)をインストールして、Claude に正確なシンボルナビゲーションと編集後の自動エラー検出を提供します。
 
@@ -340,19 +310,15 @@ Claude に明示的にサブエージェントを使用するよう指示しま�
 
 ***
 
-<h2 id="communicate-effectively">
-  効果的にコミュニケーションする
-</h2>
+## 効果的にコミュニケーションする
 
 Claude に他のエンジニアに尋ねるような質問をしてください。より大きな機能については、Claude にあなたにインタビューさせて、実装を開始する前に仕様を書いてもらいます。
 
-<h3 id="ask-codebase-questions">
-  コードベースの質問をする
-</h3>
+### コードベースの質問をする
 
-<Tip>
-  シニアエンジニアに尋ねるような質問を Claude にしてください。
-</Tip>
+> [!TIP]
+>
+> シニアエンジニアに尋ねるような質問を Claude にしてください。
 
 新しいコードベースにオンボーディングするときは、Claude Code を学習と探索に使用します。別のエンジニアに尋ねるのと同じ種類の質問を Claude に尋ねることができます。
 
@@ -364,13 +330,11 @@ Claude に他のエンジニアに尋ねるような質問をしてください�
 
 Claude Code をこのように使用することは、効果的なオンボーディングワークフローであり、ラップアップ時間を改善し、他のエンジニアの負荷を軽減します。特別なプロンプトは必要ありません。直接質問してください。
 
-<h3 id="let-claude-interview-you">
-  Claude にあなたにインタビューさせる
-</h3>
+### Claude にあなたにインタビューさせる
 
-<Tip>
-  より大きな機能については、Claude に最初にあなたにインタビューさせます。最小限のプロンプトで開始し、Claude に `AskUserQuestion` ツールを使用してあなたにインタビューするよう依頼します。
-</Tip>
+> [!TIP]
+>
+> より大きな機能については、Claude に最初にあなたにインタビューさせます。最小限のプロンプトで開始し、Claude に `AskUserQuestion` ツールを使用してあなたにインタビューするよう依頼します。
 
 Claude は、技術的な実装、UI/UX、エッジケース、トレードオフなど、あなたがまだ考えていないことについて質問します。`[brief description]` をあなたの機能に置き換えてからプロンプトを送信してください。
 
@@ -388,19 +352,15 @@ Keep interviewing until we've covered everything, then write a complete spec to 
 
 ***
 
-<h2 id="manage-your-session">
-  セッションを管理する
-</h2>
+## セッションを管理する
 
 会話は永続的で可逆的です。これを有利に使用してください。
 
-<h3 id="course-correct-early-and-often">
-  早期かつ頻繁に方向転換する
-</h3>
+### 早期かつ頻繁に方向転換する
 
-<Tip>
-  Claude が軌道を外れていることに気付いたらすぐに修正してください。
-</Tip>
+> [!TIP]
+>
+> Claude が軌道を外れていることに気付いたらすぐに修正してください。
 
 最良の結果は、タイトなフィードバックループから生まれます。Claude は時々最初の試みで問題を完全に解決しますが、それを迅速に修正することは一般的により良い解決策をより速く生成します。
 
@@ -411,13 +371,11 @@ Keep interviewing until we've covered everything, then write a complete spec to 
 
 1 つのセッションで同じ問題について Claude を 2 回以上修正した場合、コンテキストは失敗したアプローチで乱雑です。`/clear` を実行し、学んだことを組み込んだより具体的なプロンプトで新しく開始します。より良いプロンプトを持つクリーンなセッションは、ほぼ常に蓄積された修正を持つ長いセッションを上回ります。
 
-<h3 id="manage-context-aggressively">
-  コンテキストを積極的に管理する
-</h3>
+### コンテキストを積極的に管理する
 
-<Tip>
-  関連のないタスク間で `/clear` を実行してコンテキストをリセットします。
-</Tip>
+> [!TIP]
+>
+> 関連のないタスク間で `/clear` を実行してコンテキストをリセットします。
 
 Claude Code はコンテキスト制限に近づくと会話履歴を自動的にコンパクトにします。これにより、重要なコードと決定を保持しながらスペースを解放します。
 
@@ -430,13 +388,11 @@ Claude Code はコンテキスト制限に近づくと会話履歴を自動的�
 * CLAUDE.md でコンパクション動作をカスタマイズします。`"When compacting, always preserve the full list of modified files and any test commands"` のような指示を使用して、重要なコンテキストが要約を生き残ることを確認します
 * 会話履歴に入らない簡単な質問については、[`/btw`](/docs/ja/interactive-mode#side-questions-with-%2Fbtw) を使用します。答えは会話履歴に入らないため、コンテキストを増やさずに詳細をチェックできます。
 
-<h3 id="use-subagents-for-investigation">
-  調査にサブエージェントを使用する
-</h3>
+### 調査にサブエージェントを使用する
 
-<Tip>
-  `"use subagents to investigate X"` で研究を委譲します。彼らは別のコンテキストで探索し、実装のためにメインの会話をクリーンに保ちます。
-</Tip>
+> [!TIP]
+>
+> `"use subagents to investigate X"` で研究を委譲します。彼らは別のコンテキストで探索し、実装のためにメインの会話をクリーンに保ちます。
 
 コンテキストが基本的な制約であるため、サブエージェントを使用して研究をコンテキストの外に保ちます。Claude がコードベースを研究するとき、多くのファイルを読み取り、すべてがコンテキストを消費します。サブエージェントは別のコンテキストウィンドウで実行され、要約を報告します。
 
@@ -447,47 +403,39 @@ refresh, and whether we have any existing OAuth utilities I should reuse.
 
 Claude が何かを実装した後、検証にサブエージェントを使用することもできます。[敵対的なレビューステップを追加する](#add-an-adversarial-review-step)を参照してください。
 
-<h3 id="rewind-with-checkpoints">
-  チェックポイントで巻き戻す
-</h3>
+### チェックポイントで巻き戻す
 
-<Tip>
-  送信するすべてのプロンプトはチェックポイントを作成します。以前のチェックポイントに会話、コード、またはその両方を復元できます。
-</Tip>
+> [!TIP]
+>
+> 送信するすべてのプロンプトはチェックポイントを作成します。以前のチェックポイントに会話、コード、またはその両方を復元できます。
 
 Claude は変更前に自動的にファイルをスナップショットするため、チェックポイントはそれらを復元できます。`Escape` をダブルタップするか `/rewind` を実行して、巻き戻しメニューを開きます。会話のみを復元したり、コードのみを復元したり、両方を復元したり、選択したメッセージから要約したりできます。詳細については、[チェックポイント](/docs/ja/checkpointing)を参照してください。
 
 すべての動きを慎重に計画する代わりに、Claude に何か危険なことを試すよう指示できます。うまくいかない場合は、巻き戻して別のアプローチを試してください。チェックポイントはセッション全体で保持されるため、ターミナルを閉じても後で巻き戻すことができます。
 
-<Warning>
-  チェックポイントは Claude が行った変更のみを追跡します。Bash コマンドまたは外部プロセスを通じて行われた変更はキャプチャされません。これは git の代替ではありません。
-</Warning>
+> [!WARNING]
+>
+> チェックポイントは Claude が行った変更のみを追跡します。Bash コマンドまたは外部プロセスを通じて行われた変更はキャプチャされません。これは git の代替ではありません。
 
-<h3 id="resume-conversations">
-  会話を再開する
-</h3>
+### 会話を再開する
 
-<Tip>
-  `/rename` でセッションに名前を付け、ブランチのように扱います。各ワークストリームは独自の永続的なコンテキストを取得します。
-</Tip>
+> [!TIP]
+>
+> `/rename` でセッションに名前を付け、ブランチのように扱います。各ワークストリームは独自の永続的なコンテキストを取得します。
 
 Claude Code は会話をローカルに保存するため、タスクが複数のセッションにまたがる場合、コンテキストを再度説明する必要はありません。[`claude --continue`](/docs/ja/sessions#resume-a-session)を実行して最新のセッションを選択するか、`claude --resume` を実行してリストから選択します。`oauth-migration` などの説明的な名前でセッションに名前を付けて、後で見つけやすくします。[セッションを管理](/docs/ja/sessions)を参照して、再開、ブランチ、命名制御の完全なセットを確認してください。
 
 ***
 
-<h2 id="automate-and-scale">
-  自動化とスケール
-</h2>
+## 自動化とスケール
 
 1 つの Claude で効果的になったら、並列セッション、非対話モード、ファンアウトパターンで出力を乗算します。
 
-<h3 id="run-non-interactive-mode">
-  非対話モードを実行する
-</h3>
+### 非対話モードを実行する
 
-<Tip>
-  CI、プリコミットフック、またはスクリプトで `claude -p "prompt"` を使用します。ストリーミング JSON 出力の場合は `--output-format stream-json --verbose` を追加します。
-</Tip>
+> [!TIP]
+>
+> CI、プリコミットフック、またはスクリプトで `claude -p "prompt"` を使用します。ストリーミング JSON 出力の場合は `--output-format stream-json --verbose` を追加します。
 
 `claude -p "your prompt"` を使用すると、対話的なプロンプトなしで Claude を非対話的に実行できます。実行は `--no-session-persistence` を渡さない限り、再開可能なセッションを作成します。[非対話モード](/docs/ja/headless)は、Claude を CI パイプライン、プリコミットフック、または自動化されたワークフローに統合する方法です。出力形式を使用すると、結果をプログラムで解析できます。プレーンテキスト、JSON、またはストリーミング JSON です。
 
@@ -504,13 +452,11 @@ claude -p "Analyze this log file" --output-format stream-json --verbose
 
 最初のコマンドはプレーンテキストを出力します。`json` 形式は `result` フィールドを持つ単一の JSON オブジェクトを返します。`stream-json` 形式は 1 行に 1 つの JSON オブジェクトを出力し、初期化イベントで始まります。
 
-<h3 id="run-multiple-claude-sessions">
-  複数の Claude セッションを実行する
-</h3>
+### 複数の Claude セッションを実行する
 
-<Tip>
-  複数の Claude セッションを並列で実行して、開発を高速化し、分離された実験を実行するか、複雑なワークフローを開始します。
-</Tip>
+> [!TIP]
+>
+> 複数の Claude セッションを並列で実行して、開発を高速化し、分離された実験を実行するか、複雑なワークフローを開始します。
 
 自分で行いたい調整の量に合わせて、並列アプローチを選択し、セッションが相互に検出結果を渡す必要があるときはメッセージングを追加します。
 
@@ -533,35 +479,31 @@ claude -p "Analyze this log file" --output-format stream-json --verbose
 
 テストで同様のことを行うことができます。1 つの Claude にテストを書かせ、別の Claude にそれらをパスするコードを書かせます。
 
-<h3 id="fan-out-across-files">
-  ファイル全体にファンアウトする
-</h3>
+### ファイル全体にファンアウトする
 
-<Tip>
-  各タスクに対して `claude -p` を呼び出すループを実行します。バッチ操作用にツールを事前承認するには `--allowedTools` を使用します。
-</Tip>
+> [!TIP]
+>
+> 各タスクに対して `claude -p` を呼び出すループを実行します。バッチ操作用にツールを事前承認するには `--allowedTools` を使用します。
 
 大規模な移行または分析の場合、多くの並列 Claude 呼び出し全体で作業を配布できます。[`/batch <instruction>`](/docs/ja/commands#all-commands) を実行して、Claude が変更を 5～30 個のサブエージェント全体に分割させます。各サブエージェントは独自の worktree で作業します。代わりに独自のスクリプトからファンアウトを駆動するには、`claude -p` をループします。
 
-<Steps>
-  <Step title="タスクリストを生成する">
-    Claude に移行が必要なファイルのリストをファイルに書き込ませます。次のステップのループがそれを読み取ることができるように、`list all 2,000 Python files that need migrating and save the list to files.txt` のようなプロンプトを使用します
-  </Step>
+**1. タスクリストを生成する**
 
-  <Step title="リストをループするスクリプトを書く">
-    ```bash theme={null}
-    for file in $(cat files.txt); do
-      claude -p "Migrate $file from Python 2 to Python 3. Return OK or FAIL." \
-        --allowedTools "Edit,Bash(git commit *)" \
-        --permission-mode dontAsk
-    done
-    ```
-  </Step>
+Claude に移行が必要なファイルのリストをファイルに書き込ませます。次のステップのループがそれを読み取ることができるように、`list all 2,000 Python files that need migrating and save the list to files.txt` のようなプロンプトを使用します
 
-  <Step title="いくつかのファイルでテストしてから、すべてのファイルで実行する">
-    最初の 2～3 ファイルで何が悪いかに基づいてプロンプトを改善し、完全なセットで実行します。`--allowedTools` フラグは移行に必要なツールを事前承認し、[`--permission-mode dontAsk`](/docs/ja/permission-modes#allow-only-pre-approved-tools-with-dontask-mode) は承認が必要になるそれ以外のすべてを拒否します。これは無人で実行しているときに重要です。
-  </Step>
-</Steps>
+**2. リストをループするスクリプトを書く**
+
+```bash theme={null}
+for file in $(cat files.txt); do
+  claude -p "Migrate $file from Python 2 to Python 3. Return OK or FAIL." \
+    --allowedTools "Edit,Bash(git commit *)" \
+    --permission-mode dontAsk
+done
+```
+
+**3. いくつかのファイルでテストしてから、すべてのファイルで実行する**
+
+最初の 2～3 ファイルで何が悪いかに基づいてプロンプトを改善し、完全なセットで実行します。`--allowedTools` フラグは移行に必要なツールを事前承認します。[`--permission-mode dontAsk`](/docs/ja/permission-modes#allow-only-pre-approved-tools-with-dontask-mode) は承認が必要になるそれ以外のすべてを拒否します。これは無人で実行しているときに重要です。ただし、インストールした [mod](/docs/ja/plugins/mods/overview) がそれらの呼び出しの一部を承認する場合があります。
 
 Claude を既存のデータ/処理パイプラインに統合することもできます。
 
@@ -569,9 +511,7 @@ Claude を既存のデータ/処理パイプラインに統合することもで
 claude -p "<your prompt>" --output-format json | your_command
 ```
 
-<h3 id="run-autonomously-with-auto-mode">
-  auto モードで自律的に実行する
-</h3>
+### auto モードで自律的に実行する
 
 無中断の実行とバックグラウンドのセーフティチェックについては、[auto モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)を使用します。分類器モデルはコマンドを実行前にレビューし、スコープエスカレーション、未知のインフラストラクチャ、敵対的なコンテンツ駆動のアクションをブロックしながら、日常的な作業をプロンプトなしで進めさせます。
 
@@ -581,13 +521,11 @@ claude --permission-mode auto -p "fix all lint errors"
 
 `-p` フラグを使用した非対話実行で分類器が繰り返しアクションをブロックするとき、Claude Code は実行を停止しません。[auto モードがフォールバックするとき](/docs/ja/permission-modes#when-auto-mode-falls-back)を参照して、代わりに何が起こるか、およびしきい値を確認してください。
 
-<h3 id="add-an-adversarial-review-step">
-  敵対的なレビューステップを追加する
-</h3>
+### 敵対的なレビューステップを追加する
 
-<Tip>
-  タスクが完了したと見なす前に、サブエージェントに新しいコンテキストで差分をレビューさせ、ギャップを報告させます。
-</Tip>
+> [!TIP]
+>
+> タスクが完了したと見なす前に、サブエージェントに新しいコンテキストで差分をレビューさせ、ギャップを報告させます。
 
 Claude が無人で作業する期間が長いほど、作業が完了したと見なす前に独立したチェックが重要になります。新しい[サブエージェント](/docs/ja/sub-agents)コンテキストで実行されるレビュアーは、差分と提供されたクライテリアのみを見て、変更を生成した推論は見ないため、独自の条件で結果を評価します。
 
@@ -601,15 +539,11 @@ nothing outside the task's scope changed. Report gaps, not style preferences.
 
 レビュアーはサブエージェントとして実行されるため、実装セッションはギャップを直接受け取り、ウィンドウ間で検出結果をコピーすることなく、それらを修正して再レビューできます。
 
-<Callout>
-  ギャップを見つけるようにプロンプトされたレビュアーは、作業が健全であっても、通常はいくつかを報告します。それはそれが求められたことだからです。すべての検出結果を追求することは、過度なエンジニアリングにつながります。追加の抽象化レイヤー、防御的なコード、および発生し得ないケースのテストです。レビュアーに、正確性または記載された要件に影響するギャップのみを指摘するよう指示し、残りはオプションとして扱います。
-</Callout>
+ギャップを見つけるようにプロンプトされたレビュアーは、作業が健全であっても、通常はいくつかを報告します。それはそれが求められたことだからです。すべての検出結果を追求することは、過度なエンジニアリングにつながります。追加の抽象化レイヤー、防御的なコード、および発生し得ないケースのテストです。レビュアーに、正確性または記載された要件に影響するギャップのみを指摘するよう指示し、残りはオプションとして扱います。
 
 ***
 
-<h2 id="avoid-common-failure-patterns">
-  一般的な失敗パターンを避ける
-</h2>
+## 一般的な失敗パターンを避ける
 
 これらは一般的な間違いです。早期に認識することで時間を節約できます。
 
@@ -626,9 +560,7 @@ nothing outside the task's scope changed. Report gaps, not style preferences.
 
 ***
 
-<h2 id="develop-your-intuition">
-  直感を開発する
-</h2>
+## 直感を開発する
 
 このガイドのパターンは固定されていません。それらはすべての状況で一般的にうまく機能する出発点ですが、すべての状況に最適ではない可能性があります。
 
@@ -638,9 +570,7 @@ nothing outside the task's scope changed. Report gaps, not style preferences.
 
 時間をかけて、ガイドが捉えることができない直感を開発します。具体的にするべき時と開放的にするべき時、計画すべき時と探索すべき時、コンテキストをクリアすべき時と蓄積させるべき時を知ります。
 
-<h2 id="related-resources">
-  関連リソース
-</h2>
+## 関連リソース
 
 * [Claude Code の仕組み](/docs/ja/how-claude-code-works)：agentic ループ、ツール、コンテキスト管理
 * [Claude Code を拡張](/docs/ja/features-overview)：スキル、フック、MCP、サブエージェント、プラグイン

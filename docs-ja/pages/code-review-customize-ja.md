@@ -13,21 +13,17 @@
 
 リポジトリのルートに `REVIEW.md` を追加してマージします。その後、[デフォルトブランチを保護](#which-branch-review-md-is-read-from)します。
 
-<Note>
-  レビューの徹底度や実行タイミングを変更するには、Owner に[レビューレベル](/docs/ja/code-review-setup#set-the-default-review-level)または [**Review runs** 設定](/docs/ja/code-review-setup#set-when-reviews-run)の変更を依頼してください。
-</Note>
+> [!NOTE]
+>
+> レビューの徹底度や実行タイミングを変更するには、Owner に[レビューレベル](/docs/ja/code-review-setup#set-the-default-review-level)または [**Review runs** 設定](/docs/ja/code-review-setup#set-when-reviews-run)の変更を依頼してください。
 
-<h2 id="use-claude-md-for-project-wide-rules">
-  プロジェクト全体のルールには CLAUDE.md を使用する
-</h2>
+## プロジェクト全体のルールには CLAUDE.md を使用する
 
 Code Review は、リポジトリの `CLAUDE.md` ファイルをプロジェクトのコンテキストとして読み込みます。そのルールのいずれかに違反する変更は、問題に応じた[重大度レベル](/docs/ja/code-review-pull-requests#severity-levels)の検出結果になります。
 
 レビューでは、リポジトリのルートにある `CLAUDE.md` と、変更された各ファイルの親ディレクトリにある `CLAUDE.md` ファイルが読み込まれます。サブディレクトリの `CLAUDE.md` は、プルリクエストがそのパス配下のファイルを変更した場合に読み込まれます。
 
-<h2 id="use-review-md-for-review-only-rules">
-  レビュー専用のルールには REVIEW\.md を使用する
-</h2>
+## レビュー専用のルールには REVIEW\.md を使用する
 
 `REVIEW.md` は、Code Review をリポジトリに合わせて調整するための、リポジトリのルートに置くファイルです。サブディレクトリに `REVIEW.md` を追加して、ルートのファイルに加えて、そのパス配下の変更に対するチェックを追加することもできます。
 
@@ -46,13 +42,11 @@ your-repo/
 
 サブディレクトリのファイルに頼る前に、デフォルトブランチを保護し、[ブランチ構成に応じてレビューが何を読み込むか](#what-a-review-reads-for-each-branch-setup)を確認してください。
 
-<Note>
-  Code Review サービスとローカルの [`/code-review` コマンド](/docs/ja/code-review-local)は別々のツールであり、読み込むファイルが異なります。サービスは `CLAUDE.md` と `REVIEW.md` の両方を読み込みます。自分のマシン上の Claude Code セッション内で実行する `/code-review` コマンドは、`CLAUDE.md` ファイルを読み込みますが、`REVIEW.md` は読み込みません。両方で適用したいガイダンスは `CLAUDE.md` に記述し、`REVIEW.md` はプルリクエストのレビューに固有のルールのために使用してください。
-</Note>
+> [!NOTE]
+>
+> Code Review サービスとローカルの [`/code-review` コマンド](/docs/ja/code-review-local)は別々のツールであり、読み込むファイルが異なります。サービスは `CLAUDE.md` と `REVIEW.md` の両方を読み込みます。自分のマシン上の Claude Code セッション内で実行する `/code-review` コマンドは、`CLAUDE.md` ファイルを読み込みますが、`REVIEW.md` は読み込みません。両方で適用したいガイダンスは `CLAUDE.md` に記述し、`REVIEW.md` はプルリクエストのレビューに固有のルールのために使用してください。
 
-<h3 id="example-review-md">
-  REVIEW\.md の例
-</h3>
+### REVIEW\.md の例
 
 この `REVIEW.md` は、バックエンドサービス向けに重大度を再調整し、nit の数に上限を設け、生成されたファイルをスキップし、リポジトリ固有のチェックを追加します。
 
@@ -84,9 +78,7 @@ Report at most five Nits per review.
 - Database queries are scoped to the caller's tenant
 ```
 
-<h3 id="choose-what-to-write-in-review-md">
-  REVIEW\.md に何を書くかを決める
-</h3>
+### REVIEW\.md に何を書くかを決める
 
 `REVIEW.md` は自由形式の Markdown で、レビューが何を検出して報告するかを変更します。レビューの形式は変更しません。発生している問題を見つけ、示されているような指示を追加してください。[例](#example-review-md)では最初の 4 つを使用しています。
 
@@ -100,9 +92,7 @@ Report at most five Nits per review.
 
 `REVIEW.md` にはレビューの動作を変える指示だけを記述し、一般的なプロジェクトのコンテキストは `CLAUDE.md` に残してください。
 
-<h3 id="which-branch-review-md-is-read-from">
-  REVIEW\.md がどのブランチから読み込まれるか
-</h3>
+### REVIEW\.md がどのブランチから読み込まれるか
 
 Code Review は、`REVIEW.md` をプルリクエストのベースブランチまたはデフォルトブランチから読み込み、プルリクエスト自体の変更から読み込むことはありません。レビューの動作を変更するには、まず `REVIEW.md` の変更をマージしてください。
 
@@ -112,9 +102,7 @@ Code Review は、`REVIEW.md` をプルリクエストのベースブランチ�
 * パス、ファイル、または問題の種類を除外する
 * nit コメントの数に上限を設ける
 
-<h4 id="what-counts-as-branch-protection">
-  ブランチ保護とみなされるもの
-</h4>
+#### ブランチ保護とみなされるもの
 
 Code Review は、次の設定を保護とみなします。
 
@@ -123,9 +111,7 @@ Code Review は、次の設定を保護とみなします。
 
 ルールセットは、更新を制限している場合、または少なくとも 1 件の承認を伴うプルリクエストを必須にしている場合に保護とみなされます。プルリクエストを必須にしている場合は、新しいプッシュ時にその承認を取り消すか、最後のプッシュ以降の承認を必須にする必要もあります。
 
-<h4 id="what-a-review-reads-for-each-branch-setup">
-  ブランチ構成ごとにレビューが読み込むもの
-</h4>
+#### ブランチ構成ごとにレビューが読み込むもの
 
 下の表の 1 列目から、リポジトリの状況に該当するものを見つけてください。
 
@@ -138,9 +124,7 @@ Code Review は、次の設定を保護とみなします。
 
 チェック実行で `REVIEW.md` について言及されている場合は、[The check run mentions REVIEW.md](/docs/ja/code-review-troubleshooting#the-check-run-mentions-review-md) を参照してください。
 
-<h2 id="related-resources">
-  関連リソース
-</h2>
+## 関連リソース
 
 * [Code Review](/docs/ja/code-review)：サービスの概要とレビューの実行方法
 * [プルリクエストでレビューを確認・依頼する](/docs/ja/code-review-pull-requests#severity-levels)：各重大度レベルの意味と検出結果の表示方法

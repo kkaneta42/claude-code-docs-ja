@@ -8,28 +8,26 @@
 
 デスクトップアプリは、グラフィカルインターフェース付きの Claude Code を提供するため、コンピューター上のフォルダー内のコードに対して Claude に作業を依頼し、ターミナルを使用せずにその変更をレビューできます。このページでは、アプリのインストールと **Code** タブで最初のセッションを開始する方法について説明します。Claude Code には [Pro、Max、Team、または Enterprise サブスクリプション](https://claude.com/pricing?utm_source=claude_code\&utm_medium=docs\&utm_content=desktop_quickstart_pricing)が必要です。
 
-<CardGroup cols={3}>
-  <Card title="macOS 用にダウンロード" icon="apple" href="https://claude.ai/api/desktop/darwin/universal/dmg/latest/redirect?utm_source=claude_code&utm_medium=docs">
-    Intel と Apple Silicon 向けのユニバーサルビルド
-  </Card>
+> **[macOS 用にダウンロード](https://claude.ai/api/desktop/darwin/universal/dmg/latest/redirect?utm_source=claude_code\&utm_medium=docs)**
+>
+> Intel と Apple Silicon 向けのユニバーサルビルド
 
-  <Card title="Windows 用にダウンロード" icon="windows" href="https://claude.ai/api/desktop/win32/x64/setup/latest/redirect?utm_source=claude_code&utm_medium=docs">
-    x64 プロセッサ向け
-  </Card>
+> **[Windows 用にダウンロード](https://claude.ai/api/desktop/win32/x64/setup/latest/redirect?utm_source=claude_code\&utm_medium=docs)**
+>
+> x64 プロセッサ向け
 
-  <Card title="Linux 用 Claude を入手（ベータ版）" icon="linux" href="/docs/ja/desktop-linux">
-    Ubuntu と Debian 向けの apt または .deb
-  </Card>
-</CardGroup>
+> **[Linux 用 Claude を入手（ベータ版）](/docs/ja/desktop-linux)**
+>
+> Ubuntu と Debian 向けの apt または .deb
 
 Windows ARM64 の場合は、[ARM64 インストーラー](https://claude.ai/api/desktop/win32/arm64/setup/latest/redirect?utm_source=claude_code\&utm_medium=docs)をダウンロードしてください。Linux では apt でインストールします。[Claude Desktop on Linux](/docs/ja/desktop-linux)を参照してください。
 
-<Note>
-  以下のケースは他のページで説明されています。
-
-  * **既にセットアップ済み**: [Claude Code Desktop を使用する](/docs/ja/desktop)で Code タブが実行できるすべての機能を参照してください
-  * **ターミナルで `claude` を使用したい**: [CLI をインストール](/docs/ja/quickstart)してください
-</Note>
+> [!NOTE]
+>
+> 以下のケースは他のページで説明されています。
+>
+> * **既にセットアップ済み**: [Claude Code Desktop を使用する](/docs/ja/desktop)で Code タブが実行できるすべての機能を参照してください
+> * **ターミナルで `claude` を使用したい**: [CLI をインストール](/docs/ja/quickstart)してください
 
 デスクトップアプリには 3 つのタブがあります。
 
@@ -39,76 +37,66 @@ Windows ARM64 の場合は、[ARM64 インストーラー](https://claude.ai/api
 
 Chat と Cowork は [Claude ヘルプセンター](https://support.claude.com/)で説明されています。デスクトップアプリのインストールとデプロイは [Claude Desktop サポート記事](https://support.claude.com/en/collections/16163169-claude-desktop)で説明されています。このページは **Code** タブに焦点を当てています。
 
-<h2 id="install">
-  インストール
-</h2>
+## インストール
 
-<Steps>
-  <Step title="インストールしてサインインする">
-    macOS と Windows では、上記のリンクからインストーラーをダウンロードして実行します。Linux では、[Claude Desktop on Linux](/docs/ja/desktop-linux) のインストール手順に従ってください。macOS の Applications フォルダ、Windows の Start メニュー、または Linux のアプリケーションランチャーから Claude を起動し、Anthropic アカウントでサインインします。
-  </Step>
+**1. インストールしてサインインする**
 
-  <Step title="Code タブを開く">
-    上部中央の **Code** タブをクリックします。Code をクリックするとアップグレードを促すメッセージが表示される場合は、最初に[有料プランにサブスクライブ](https://claude.com/pricing?utm_source=claude_code\&utm_medium=docs\&utm_content=desktop_quickstart_upgrade)する必要があります。オンラインでサインインするよう促すメッセージが表示される場合は、サインインを完了してアプリを再起動してください。403 エラーが表示される場合は、[認証のトラブルシューティング](/docs/ja/desktop#403-or-authentication-errors-in-the-code-tab)を参照してください。
-  </Step>
-</Steps>
+macOS と Windows では、上記のリンクからインストーラーをダウンロードして実行します。Linux では、[Claude Desktop on Linux](/docs/ja/desktop-linux) のインストール手順に従ってください。macOS の Applications フォルダ、Windows の Start メニュー、または Linux のアプリケーションランチャーから Claude を起動し、Anthropic アカウントでサインインします。
+
+**2. Code タブを開く**
+
+上部中央の **Code** タブをクリックします。Code をクリックするとアップグレードを促すメッセージが表示される場合は、最初に[有料プランにサブスクライブ](https://claude.com/pricing?utm_source=claude_code\&utm_medium=docs\&utm_content=desktop_quickstart_upgrade)する必要があります。オンラインでサインインするよう促すメッセージが表示される場合は、サインインを完了してアプリを再起動してください。403 エラーが表示される場合は、[認証のトラブルシューティング](/docs/ja/desktop#403-or-authentication-errors-in-the-code-tab)を参照してください。
 
 デスクトップアプリには Claude Code が含まれています。Code タブを使用するために Node.js または CLI をインストールする必要はありません。
 
-<h2 id="start-your-first-session">
-  最初のセッションを開始する
-</h2>
+## 最初のセッションを開始する
 
 Code タブを開いた状態で、プロジェクトを選択し、Claude に何かをさせます。
 
-<Steps>
-  <Step title="環境とフォルダを選択する">
-    [プロンプトボックスの下の行](/docs/ja/desktop#start-a-session)で、最初のコントロールである環境セレクタをクリックし、**Local** グループの一番上の項目を選択します。次に、環境セレクタの横にあるプロジェクトフォルダのコントロールをクリックし、**Open folder…** を選択して、プロジェクトのディレクトリを選択します。
+**1. 環境とフォルダを選択する**
 
-    プロンプトボックスの下に環境セレクタが表示されない場合は、以前のレイアウトを使用しています。[使用しているレイアウトを確認する](/docs/ja/desktop#check-which-layout-you-have)を参照してください。
+[プロンプトボックスの下の行](/docs/ja/desktop#start-a-session)で、最初のコントロールである環境セレクタをクリックし、**Local** グループの一番上の項目を選択します。次に、環境セレクタの横にあるプロジェクトフォルダのコントロールをクリックし、**Open folder…** を選択して、プロジェクトのディレクトリを選択します。
 
-    <Tip>
-      よく知っている小さなプロジェクトから始めてください。Claude Code が何ができるかを見る最速の方法です。
-    </Tip>
+プロンプトボックスの下に環境セレクタが表示されない場合は、以前のレイアウトを使用しています。[使用しているレイアウトを確認する](/docs/ja/desktop#check-which-layout-you-have)を参照してください。
 
-    次のオプションも選択できます。
+> [!TIP]
+>
+> よく知っている小さなプロジェクトから始めてください。Claude Code が何ができるかを見る最速の方法です。
 
-    * **Cloud**: アプリを閉じても続行するクラウドセッションを実行します。クラウドセッションの動作方法については [Claude Code in the cloud](/docs/ja/claude-code-on-the-web) を参照してください。
-    * **SSH**: SSH 経由でリモートマシン（独自のサーバー、クラウド VM、dev コンテナなど）に接続します。最初に[接続を追加](/docs/ja/desktop#ssh-sessions)してください。Desktop は初回接続時にリモートマシンに Claude Code を自動的にインストールします。実行中のタスクは [Desktop が切断されている間も続行できます](/docs/ja/desktop#keep-a-task-running-while-desktop-is-disconnected)が、Claude アカウントを使用している場合は、サインインの有効期限が切れると停止することがあります。
-    * **WSL**（Windows）: [WSL 2 distribution](/docs/ja/desktop-wsl) 内でセッションを実行します。Claude Code、ツール、git は Linux 側でネイティブパスで実行されます。
-  </Step>
+次のオプションも選択できます。
 
-  <Step title="モデルを選択する">
-    プロンプトボックスの下の行の右端寄りにあるモデルピッカーからモデルを選択します。利用可能なモデルの比較については [models](/docs/ja/model-config#available-models) を参照してください。後でモデルピッカーからモデルを変更できます。
-  </Step>
+* **Cloud**: アプリを閉じても続行するクラウドセッションを実行します。クラウドセッションの動作方法については [Claude Code in the cloud](/docs/ja/claude-code-on-the-web) を参照してください。
+* **SSH**: SSH 経由でリモートマシン（独自のサーバー、クラウド VM、dev コンテナなど）に接続します。最初に[接続を追加](/docs/ja/desktop#ssh-sessions)してください。Desktop は初回接続時にリモートマシンに Claude Code を自動的にインストールします。実行中のタスクは [Desktop が切断されている間も続行できます](/docs/ja/desktop#keep-a-task-running-while-desktop-is-disconnected)が、Claude アカウントを使用している場合は、サインインの有効期限が切れると停止することがあります。
+* **WSL**（Windows）: [WSL 2 distribution](/docs/ja/desktop-wsl) 内でセッションを実行します。Claude Code、ツール、git は Linux 側でネイティブパスで実行されます。
 
-  <Step title="Claude に何をするかを指示する">
-    Claude に何をさせたいかを入力します。
+**2. モデルを選択する**
 
-    * `TODO コメントを見つけて修正する`
-    * `main 関数のテストを追加する`
-    * `このコードベースの手順を含む CLAUDE.md を作成する`
+プロンプトボックスの下の行の右端寄りにあるモデルピッカーからモデルを選択します。利用可能なモデルの比較については [models](/docs/ja/model-config#available-models) を参照してください。後でモデルピッカーからモデルを変更できます。
 
-    [セッション](/docs/ja/desktop#work-in-parallel-with-sessions)は、コードについての Claude との会話です。各セッションは独自のコンテキストと変更を追跡します。
-  </Step>
+**3. Claude に何をするかを指示する**
 
-  <Step title="変更を確認して受け入れる">
-    プロンプトボックスの下の行で[権限モード](/docs/ja/desktop#choose-a-permission-mode)を確認し、Claude が承認を待つかどうかを確認します。
+Claude に何をさせたいかを入力します。
 
-    * **Auto or Accept edits**: Claude はファイルの変更を適用し、`+12 -1` などのインジケータが表示されるため、diff ビューで確認できます
-    * **Manual**: Claude は各変更を提案し、適用する前に承認を待ちます
+* `TODO コメントを見つけて修正する`
+* `main 関数のテストを追加する`
+* `このコードベースの手順を含む CLAUDE.md を作成する`
 
-    Manual モードでは、以下が表示されます。
+[セッション](/docs/ja/desktop#work-in-parallel-with-sessions)は、コードについての Claude との会話です。各セッションは独自のコンテキストと変更を追跡します。
 
-    1. 各ファイルで何が変更されるかを正確に示す [diff view](/docs/ja/desktop#review-changes-with-diff-view)
-    2. 各変更を承認または拒否するための Accept/Reject ボタン
-    3. Claude があなたのリクエストを処理する際のリアルタイム更新
-  </Step>
-</Steps>
+**4. 変更を確認して受け入れる**
 
-<h2 id="now-what">
-  次は何をしますか？
-</h2>
+プロンプトボックスの下の行で[権限モード](/docs/ja/desktop#choose-a-permission-mode)を確認し、Claude が承認を待つかどうかを確認します。
+
+* **Auto or Accept edits**: Claude はファイルの変更を適用し、`+12 -1` などのインジケータが表示されるため、diff ビューで確認できます
+* **Manual**: Claude は各変更を提案し、適用する前に承認を待ちます
+
+Manual モードでは、以下が表示されます。
+
+1. 各ファイルで何が変更されるかを正確に示す [diff view](/docs/ja/desktop#review-changes-with-diff-view)
+2. 各変更を承認または拒否するための Accept/Reject ボタン
+3. Claude があなたのリクエストを処理する際のリアルタイム更新
+
+## 次は何をしますか？
 
 最初の編集が完了しました。Desktop が実行できるすべての機能の完全なリファレンスについては、[Claude Code Desktop を使用する](/docs/ja/desktop)を参照してください。次に試すべきことをいくつか紹介します。
 
@@ -139,9 +127,7 @@ Code タブを開いた状態で、プロジェクトを選択し、Claude に�
 
 **準備ができたらスケールアップする。** サイドバーから [並列セッション](/docs/ja/desktop#work-in-parallel-with-sessions)を開いて複数のタスクを同時に実行します。各セッションは必要に応じて独自の Git worktree で実行でき、[タスクペイン](/docs/ja/desktop#watch-background-tasks)を開いてセッションが実行しているサブエージェントとバックグラウンドコマンドを監視します。[サイドチャット](/docs/ja/desktop#ask-a-side-question-without-derailing-the-session)を開いてメインスレッドを脱線させずに質問を尋ねます。[長時間実行される作業をクラウドに送信](/docs/ja/desktop#run-long-running-tasks-in-the-cloud)して、アプリを閉じても続行するか、タスクが予想より長くかかる場合は[すでに開始したセッションをクラウドに移動](/docs/ja/desktop#continue-in-another-surface)します。[GitHub、Slack、Linear などの外部ツールを接続](/docs/ja/desktop#extend-claude-code)して、ワークフローをまとめます。
 
-<h2 id="what’s-next">
-  次のステップ
-</h2>
+## 次のステップ
 
 * [Claude Code Desktop を使用する](/docs/ja/desktop)：権限モード、並列セッション、diff ビュー、コネクタ、およびエンタープライズ設定
 * [CLI から移行する場合](/docs/ja/desktop#coming-from-the-cli)：Desktop と CLI を同じプロジェクトで実行し、機能、フラグの同等物、および Desktop で利用できない機能を比較する

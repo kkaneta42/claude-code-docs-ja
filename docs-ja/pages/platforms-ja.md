@@ -8,9 +8,7 @@
 
 Claude Code は、どこでも同じ基盤となるエンジンを実行しますが、各サーフェスは異なる作業方法に合わせて調整されています。このページは、ワークフローに適したプラットフォームを選択し、既に使用しているツールを接続するのに役立ちます。
 
-<h2 id="where-to-run-claude-code">
-  Claude Code を実行する場所
-</h2>
+## Claude Code を実行する場所
 
 プロジェクトがどこにあるか、どのように作業したいかに基づいてプラットフォームを選択します。
 
@@ -27,9 +25,7 @@ CLI はターミナルネイティブな作業に最も完全なサーフェス�
 
 同じプロジェクトで複数のサーフェスを混在させることができます。設定、プロジェクトメモリ、MCP サーバーはローカルサーフェス全体で共有されます。
 
-<h2 id="connect-your-tools">
-  ツールを接続する
-</h2>
+## ツールを接続する
 
 統合により、Claude はコードベース外のサービスと連携できます。
 
@@ -44,9 +40,7 @@ CLI はターミナルネイティブな作業に最も完全なサーフェス�
 
 ここにリストされていない統合については、[MCP サーバー](/docs/ja/mcp)と[コネクター](/docs/ja/desktop#connect-external-tools)により、ほぼすべてのものを接続できます。Linear、Notion、Google Drive、または独自の内部 API など。
 
-<h2 id="work-when-you-are-away-from-your-terminal">
-  ターミナルから離れているときに作業する
-</h2>
+## ターミナルから離れているときに作業する
 
 Claude Code は、ターミナルにいない時に作業するための複数の方法を提供しています。これらは、何が作業をトリガーするか、Claude がどこで実行されるか、そしてセットアップにどの程度の手間が必要かが異なります。
 
@@ -61,13 +55,9 @@ Claude Code は、ターミナルにいない時に作業するための複数�
 
 どこから始めるべきか不確かな場合は、[CLI をインストール](/docs/ja/quickstart)してプロジェクトディレクトリで実行します。ターミナルを使用したくない場合は、[Desktop](/docs/ja/desktop-quickstart) がグラフィカルインターフェースで同じエンジンを提供します。
 
-<h2 id="related-resources">
-  関連リソース
-</h2>
+## 関連リソース
 
-<h3 id="platforms">
-  プラットフォーム
-</h3>
+### プラットフォーム
 
 * [CLI クイックスタート](/docs/ja/quickstart)：ターミナルでインストールして最初のコマンドを実行
 * [Desktop](/docs/ja/desktop)：ビジュアル Diff レビュー、並列セッション、コンピューター使用、Dispatch
@@ -77,9 +67,7 @@ Claude Code は、ターミナルにいない時に作業するための複数�
 * [Projects](/docs/ja/claude-projects)：Claude が多くのクラウドセッションを調整し、作業内容について報告する 1 つの会話
 * [モバイル](/docs/ja/mobile)：コンピューターから離れている間にタスクを開始および監視するための [iOS](https://apps.apple.com/us/app/claude-by-anthropic/id6473753684) および [Android](https://play.google.com/store/apps/details?id=com.anthropic.claude) 用 Claude アプリ
 
-<h3 id="integrations">
-  統合
-</h3>
+### 統合
 
 * [Chrome](/docs/ja/chrome)：ログインしたセッションでブラウザタスクを自動化
 * [Computer use](/docs/ja/computer-use)：Claude が macOS でアプリを開いてスクリーンを制御できるようにする
@@ -89,11 +77,9 @@ Claude Code は、ターミナルにいない時に作業するための複数�
 * [Slack](/docs/ja/slack)：Pro および Max プランで、チームチャットからタスクを送信して PR を受け取る
 * [Claude Tag](https://claude.com/docs/claude-tag)：Team および Enterprise プランで組織の共有 ID として `@Claude` を実行
 
-<h3 id="remote-access">
-  リモートアクセス
-</h3>
+### リモートアクセス
 
 * [Dispatch](/docs/ja/desktop#sessions-from-dispatch)：携帯電話からタスクをメッセージして Desktop セッションを生成
 * [Remote Control](/docs/ja/remote-control)：携帯電話またはブラウザから実行中のセッションを操作
 * [Channels](/docs/ja/channels)：チャットアプリまたは独自のサーバーからセッションにイベントをプッシュ
-* [Scheduled tasks](/docs/ja/scheduled-tasks)：定期的なスケジュールでプロンプトを実行
+* [スケジュールオプション](/docs/ja/scheduled-tasks#compare-scheduling-options)：定期的なスケジュールでプロンプトを実行

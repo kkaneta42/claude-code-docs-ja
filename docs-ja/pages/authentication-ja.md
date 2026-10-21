@@ -8,9 +8,7 @@
 
 Claude Code は、セットアップに応じて複数の認証方法をサポートしています。個人ユーザーは claude.ai アカウントでログインでき、チームは Claude for Teams または Enterprise、Claude Console、または Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry などのクラウドプロバイダーを使用できます。
 
-<h2 id="log-in-to-claude-code">
-  Claude Code にログインする
-</h2>
+## Claude Code にログインする
 
 [Claude Code をインストール](/docs/ja/setup#install-claude-code)した後、ターミナルで `claude` を実行します。初回起動時に、Claude Code はログインするためのブラウザウィンドウを開きます。`ANTHROPIC_API_KEY` 環境変数を設定していて、そのキーを使用するかどうかを Claude Code に尋ねられたときにキーを承認した場合、Claude Code はログインプロンプトをスキップします。
 
@@ -34,9 +32,7 @@ Claude Code は、セットアップに応じて複数の認証方法をサポ�
 
 ログインに問題がある場合は、[認証のトラブルシューティング](/docs/ja/troubleshoot-install#login-and-authentication)を参照してください。
 
-<h3 id="log-in-with-multiple-accounts">
-  複数のアカウントでログインする
-</h3>
+### 複数のアカウントでログインする
 
 複数のアカウント（仕事用と個人用など）に同時にログインしたままにするには、各アカウントに独自の設定ディレクトリを指定します。`claude` を起動するときに、[`CLAUDE_CONFIG_DIR`](/docs/ja/env-vars#variables) 環境変数を使用するアカウントのディレクトリに設定します。各ディレクトリには、独自の設定、セッション履歴、および claude.ai ログインまたは API キーがあります。たとえば、Bash または Zsh では、`~/.bashrc` または `~/.zshrc` に次のエイリアスを追加して、`claude-work` が仕事用アカウントを使用し、`claude` が個人用アカウントを保持するようにできます。
 
@@ -46,9 +42,7 @@ alias claude-work='CLAUDE_CONFIG_DIR=~/.claude-work claude'
 
 新しいターミナルを開いて初めて `claude-work` を実行した後、Claude Code は新しいディレクトリのログインとセットアップを実行します。別のディレクトリは、Claude Code がそのような種類のサインインを設定ディレクトリの外に保存するため、2 つの Claude Console サインイン[API キーなし](#sign-in-without-an-api-key)を区別しません。
 
-<h2 id="set-up-team-authentication">
-  チーム認証を設定する
-</h2>
+## チーム認証を設定する
 
 チームと組織の場合、Claude Code アクセスを以下のいずれかの方法で設定できます。
 
@@ -59,67 +53,57 @@ alias claude-work='CLAUDE_CONFIG_DIR=~/.claude-work claude'
 * [Google Cloud の Agent Platform](/docs/ja/google-vertex-ai)
 * [Microsoft Foundry](/docs/ja/microsoft-foundry)
 
-<h3 id="claude-for-teams-or-enterprise">
-  Claude for Teams または Enterprise
-</h3>
+### Claude for Teams または Enterprise
 
 [Claude for Teams](https://claude.com/pricing?utm_source=claude_code\&utm_medium=docs\&utm_content=authentication_teams#team-&-enterprise) と [Claude for Enterprise](https://anthropic.com/contact-sales?utm_source=claude_code\&utm_medium=docs\&utm_content=authentication_enterprise) は、Claude Code を使用する組織に最適なエクスペリエンスを提供します。チームメンバーは Claude Code と Web 上の Claude の両方にアクセスでき、一元化された請求とチーム管理が可能です。
 
 * **Claude for Teams**: コラボレーション機能、管理ツール、SSO、請求管理、および組織全体の Claude Code 設定のための [サーバー管理設定](/docs/ja/server-managed-settings)を備えたセルフサービスプラン。小規模なチームに最適です。
 * **Claude for Enterprise**: ドメインキャプチャ、ロールベースの権限、およびコンプライアンス API を追加します。セキュリティとコンプライアンス要件を持つ大規模な組織に最適です。
 
-<Steps>
-  <Step title="購読">
-    [Claude for Teams](https://claude.com/pricing?utm_source=claude_code\&utm_medium=docs\&utm_content=authentication_teams_step#team-&-enterprise) に購読するか、[Claude for Enterprise](https://anthropic.com/contact-sales?utm_source=claude_code\&utm_medium=docs\&utm_content=authentication_enterprise_step) の営業に連絡してください。
-  </Step>
+**1. 購読**
 
-  <Step title="チームメンバーを招待">
-    管理ダッシュボードからチームメンバーを招待します。
-  </Step>
+[Claude for Teams](https://claude.com/pricing?utm_source=claude_code\&utm_medium=docs\&utm_content=authentication_teams_step#team-&-enterprise) に購読するか、[Claude for Enterprise](https://anthropic.com/contact-sales?utm_source=claude_code\&utm_medium=docs\&utm_content=authentication_enterprise_step) の営業に連絡してください。
 
-  <Step title="インストールしてログイン">
-    チームメンバーは Claude Code をインストールし、claude.ai アカウントでログインします。
-  </Step>
-</Steps>
+**2. チームメンバーを招待**
 
-<h3 id="claude-console-authentication">
-  Claude Console 認証
-</h3>
+管理ダッシュボードからチームメンバーを招待します。
+
+**3. インストールしてログイン**
+
+チームメンバーは Claude Code をインストールし、claude.ai アカウントでログインします。
+
+### Claude Console 認証
 
 API ベースの請求を希望する組織の場合、Claude Console を通じてアクセスを設定できます。
 
-<Steps>
-  <Step title="Console アカウントを作成または使用">
-    既存の Claude Console アカウントを使用するか、新しいアカウントを作成します。
-  </Step>
+**1. Console アカウントを作成または使用**
 
-  <Step title="ユーザーを追加">
-    以下のいずれかの方法でユーザーを追加できます。
+既存の Claude Console アカウントを使用するか、新しいアカウントを作成します。
 
-    * [platform.claude.com/settings/members](https://platform.claude.com/settings/members) にある Console の Members ページからユーザーを一括招待します。**Invite** をクリックします
-    * [SSO を設定](https://support.claude.com/en/articles/13132885-setting-up-single-sign-on-sso)
-  </Step>
+**2. ユーザーを追加**
 
-  <Step title="ロールを割り当て">
-    ユーザーを招待する際に、以下のいずれかを割り当てます。
+以下のいずれかの方法でユーザーを追加できます。
 
-    * **Claude Code** ロール: ユーザーは Claude Code API キーのみを作成できます
-    * **Developer** ロール: ユーザーはあらゆる種類の API キーを作成できます
-  </Step>
+* [platform.claude.com/settings/members](https://platform.claude.com/settings/members) にある Console の Members ページからユーザーを一括招待します。**Invite** をクリックします
+* [SSO を設定](https://support.claude.com/en/articles/13132885-setting-up-single-sign-on-sso)
 
-  <Step title="ユーザーがセットアップを完了">
-    招待された各ユーザーは以下を実行する必要があります。
+**3. ロールを割り当て**
 
-    * Console 招待を受け入れる
-    * [システム要件を確認](/docs/ja/setup#system-requirements)
-    * [Claude Code をインストール](/docs/ja/setup#install-claude-code)
-    * Console アカウント認証情報でログイン
-  </Step>
-</Steps>
+ユーザーを招待する際に、以下のいずれかを割り当てます。
 
-<h4 id="sign-in-without-an-api-key">
-  API キーなしでサインイン
-</h4>
+* **Claude Code** ロール: ユーザーは Claude Code API キーのみを作成できます
+* **Developer** ロール: ユーザーはあらゆる種類の API キーを作成できます
+
+**4. ユーザーがセットアップを完了**
+
+招待された各ユーザーは以下を実行する必要があります。
+
+* Console 招待を受け入れる
+* [システム要件を確認](/docs/ja/setup#system-requirements)
+* [Claude Code をインストール](/docs/ja/setup#install-claude-code)
+* Console アカウント認証情報でログイン
+
+#### API キーなしでサインイン
 
 API キーを作成しなくても Console アカウントにサインインできます。組織が開発者による API キーの作成を許可していない場合でも可能です。`/login` プロンプトで Anthropic Console アカウントを選択すると、Claude Code はサインイン方法を尋ねます。Claude Code v2.1.242 以降が必要です。両方のルートは Console にブラウザーでサインインしますが、Claude Code がその後に保存する内容が異なります。
 
@@ -144,29 +128,23 @@ API キーを作成しなくても Console アカウントにサインインで�
 
 プロファイルに関するその他すべてのことがこのサインインに適用されます。これには、他の認証情報に対するランク付け、`/status` で取得される `Profile` 行、および claude.ai ログインが必要な機能が含まれます。[Anthropic プロファイルとフェデレーション認証情報](#anthropic-profiles-and-federation-credentials)を参照してください。
 
-<h3 id="cloud-provider-authentication">
-  クラウドプロバイダー認証
-</h3>
+### クラウドプロバイダー認証
 
 Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry を使用するチームの場合。
 
-<Steps>
-  <Step title="プロバイダーセットアップに従う">
-    [Amazon Bedrock ドキュメント](/docs/ja/amazon-bedrock)、[Google Cloud の Agent Platform ドキュメント](/docs/ja/google-vertex-ai)、または [Microsoft Foundry ドキュメント](/docs/ja/microsoft-foundry)に従ってください。
-  </Step>
+**1. プロバイダーセットアップに従う**
 
-  <Step title="設定を配布">
-    環境変数とクラウド認証情報を生成するための手順をユーザーに配布します。[ここで設定を管理する方法](/docs/ja/settings)についてさらに詳しく読んでください。
-  </Step>
+[Amazon Bedrock ドキュメント](/docs/ja/amazon-bedrock)、[Google Cloud の Agent Platform ドキュメント](/docs/ja/google-vertex-ai)、または [Microsoft Foundry ドキュメント](/docs/ja/microsoft-foundry)に従ってください。
 
-  <Step title="Claude Code をインストール">
-    ユーザーは [Claude Code をインストール](/docs/ja/setup#install-claude-code)できます。
-  </Step>
-</Steps>
+**2. 設定を配布**
 
-<h3 id="restrict-login-to-your-organization">
-  ログインを組織に制限する
-</h3>
+環境変数とクラウド認証情報を生成するための手順をユーザーに配布します。[ここで設定を管理する方法](/docs/ja/settings)についてさらに詳しく読んでください。
+
+**3. Claude Code をインストール**
+
+ユーザーは [Claude Code をインストール](/docs/ja/setup#install-claude-code)できます。
+
+### ログインを組織に制限する
 
 開発者の claude.ai ログインが特定の Anthropic 組織に属することを要求するには、[管理設定](/docs/ja/managed-settings)で [`forceLoginMethod`](/docs/ja/settings-reference#forceloginmethod) と [`forceLoginOrgUUID`](/docs/ja/settings-reference#forceloginorguuid) を設定します。`forceLoginOrgUUID` を組織 ID に設定します。組織 ID は Claude for Teams または Enterprise 組織の [claude.ai 管理設定](https://claude.ai/admin-settings/organization)に表示されます。Claude Code は他の組織への claude.ai ログインについてエラーを報告し、使用中の claude.ai 認証情報がリストされていない組織に属している場合、起動時に終了します。
 
@@ -192,9 +170,7 @@ Claude Code v2.1.212 以降では、ここにリストされているすべて�
 * **Amazon Bedrock などのクラウドプロバイダーセッション**: `ANTHROPIC_API_KEY`、`ANTHROPIC_AUTH_TOKEN`、または `apiKeyHelper` 認証情報、または以前の Claude Console ログインによって保存された API キーがマシン上にまだ存在する間のみブロックされます。それを削除するとセッションが開始します。これらのセッションはクラウドプロバイダーに対して認証され、クラウドプロバイダーのアクセスポリシーがそれらを管理します
 * **[Anthropic プロファイルまたはフェデレーション認証情報](#anthropic-profiles-and-federation-credentials)**: `ANTHROPIC_API_KEY`、`ANTHROPIC_AUTH_TOKEN`、または `apiKeyHelper` 認証情報、または以前の Claude Console ログインによって保存された API キーもマシン上に存在する場合を除き、ブロックされません。キーはプロファイルが属する組織を確認しません
 
-<h3 id="restrict-which-api-providers-a-machine-may-use">
-  マシンが使用できる API プロバイダーを制限する
-</h3>
+### マシンが使用できる API プロバイダーを制限する
 
 [管理設定](/docs/ja/managed-settings)の [`allowedProviders`](/docs/ja/settings-reference#allowedproviders) は、Anthropic API、Amazon Bedrock、LLM ゲートウェイなど、管理マシンが Claude に到達できるサービスをリストします。これは `forceLoginMethod` と `forceLoginOrgUUID` を補完します。これらは、セッションが Anthropic と通信するときに使用するアカウントを管理します。Claude Code v2.1.285 以降が必要です。
 
@@ -212,9 +188,7 @@ Claude Code v2.1.212 以降では、ここにリストされているすべて�
 * **管理マシンにデプロイする**: リストをポリシーの残りを含む管理ソースに配置します。エントリの [スコープ注記](/docs/ja/settings-reference#allowedproviders)は、サーバー管理リストがそれとどのように組み合わされるかを示します。
 * **サーバー管理設定のみ**: [サーバー管理設定](/docs/ja/server-managed-settings)でのみ設定するリストは、組織の設定を取得するセッションにのみ到達するため、デバイス管理で到達できないマシンの利便性として扱い、強制として扱わないでください。[プラットフォーム可用性](/docs/ja/server-managed-settings#platform-availability)はどのセッションがそれらを取得するかをリストします。
 
-<h2 id="credential-management">
-  認証情報管理
-</h2>
+## 認証情報管理
 
 Claude Code は認証情報を安全に管理します。
 
@@ -232,9 +206,7 @@ Claude Code は認証情報を安全に管理します。
 
 `apiKeyHelper`、`ANTHROPIC_API_KEY`、および `ANTHROPIC_AUTH_TOKEN` は CLI およびそれをラップするサーフェス（VS Code 拡張機能、Agent SDK、GitHub Actions を含む）に適用されます。Claude Desktop とクラウドセッションは `apiKeyHelper` を呼び出したり、これらの環境変数を読み込んだりしません。OAuth を使用します。ただし、[サードパーティ推論設定](/docs/ja/llm-gateway-connect#desktop-app)を実行しているデスクトップセッションは、その設定の認証情報で認証します。
 
-<h3 id="renew-an-expiring-login">
-  期限切れ間近のログインを更新する
-</h3>
+### 期限切れ間近のログインを更新する
 
 `/login` で作成したログインが期限切れまで 3 日以内になると、Claude Code はスタートアップ時に警告を表示します。`Your login expires in 3 days · run /login to renew`。
 
@@ -248,9 +220,7 @@ Claude Code は認証情報を安全に管理します。
 
 更新を早期に行うことは、無人で実行されるセッションにとって最も重要です。[agent view のバックグラウンドセッション](/docs/ja/agent-view)または [Remote Control](/docs/ja/remote-control) セッションがログインより長く実行される場合、認証情報が期限切れになると進行が停止し、再度サインインするまで復旧できません。
 
-<h3 id="authentication-precedence">
-  認証の優先順位
-</h3>
+### 認証の優先順位
 
 複数の認証情報が存在する場合、Claude Code は以下の順序で 1 つを選択します。
 
@@ -272,9 +242,7 @@ Claude Code は認証情報を安全に管理します。
 
 [Cloud sessions](/docs/ja/claude-code-on-the-web) は常にサブスクリプション認証情報を使用します。クラウド環境で `ANTHROPIC_API_KEY` または `ANTHROPIC_AUTH_TOKEN` を設定しても、サブスクリプション認証情報はオーバーライドされません。
 
-<h4 id="anthropic-profiles-and-federation-credentials">
-  Anthropic プロファイルおよびフェデレーション認証情報
-</h4>
+#### Anthropic プロファイルおよびフェデレーション認証情報
 
 プロファイルは、[Anthropic 設定ディレクトリ](https://platform.claude.com/docs/en/manage-claude/wif-reference#configuration-directory)内の名前付き認証情報設定ファイルです。デフォルトでは macOS および Linux では `~/.config/anthropic`、Windows では `%APPDATA%\Anthropic` です。プロファイルの認証モードは、[Workload Identity Federation（WIF）](https://platform.claude.com/docs/en/manage-claude/workload-identity-federation)用に設定した場合は `oidc_federation`、または [`ant auth login`](https://platform.claude.com/docs/en/cli-sdks-libraries/cli/authentication) が書き込んだ場合、または [API キーなしで Console アカウントにサインイン](#sign-in-without-an-api-key)した場合は `user_oauth` です。
 
@@ -299,9 +267,7 @@ Claude Code が選択したソースを確認するには、`/status` を実行�
 * **名前付きプロファイルまたはフェデレーション変数**: `ANTHROPIC_PROFILE` をアンセットするか、フェデレーション変数のいずれかをアンセットします
 * **アクティブプロファイル**: [API キーなしで Console アカウントにサインイン](#sign-in-without-an-api-key)して現在の認証情報を書き込んだ `user_oauth` プロファイルの場合は `/logout` を実行し、`ant auth login` が現在の認証情報を書き込んだプロファイルの場合は `ant auth logout` を実行し、どちらの認証モードでも設定ディレクトリの `configs/` からプロファイルのファイルを削除します
 
-<h3 id="generate-a-long-lived-token">
-  長期トークンを生成する
-</h3>
+### 長期トークンを生成する
 
 CI パイプライン、スクリプト、または対話的なブラウザログインが利用できない他の環境の場合、`claude setup-token` で 1 年間の OAuth トークンを生成します。
 
@@ -311,25 +277,23 @@ claude setup-token
 
 このコマンドは `/login` と同じブラウザ認可フローを開き、ブラウザでアクセスを承認した後、トークンはターミナルに出力されます。トークンはどこにも保存されません。トークンをコピーして、認証したい場所で `CLAUDE_CODE_OAUTH_TOKEN` 環境変数として設定します。
 
-<Tabs>
-  <Tab title="macOS, Linux, WSL">
-    ```bash theme={null}
-    export CLAUDE_CODE_OAUTH_TOKEN=your-token
-    ```
-  </Tab>
+**macOS, Linux, WSL**
 
-  <Tab title="Windows PowerShell">
-    ```powershell theme={null}
-    $env:CLAUDE_CODE_OAUTH_TOKEN = "your-token"
-    ```
-  </Tab>
+```bash theme={null}
+export CLAUDE_CODE_OAUTH_TOKEN=your-token
+```
 
-  <Tab title="Windows CMD">
-    ```batch theme={null}
-    set CLAUDE_CODE_OAUTH_TOKEN=your-token
-    ```
-  </Tab>
-</Tabs>
+**Windows PowerShell**
+
+```powershell theme={null}
+$env:CLAUDE_CODE_OAUTH_TOKEN = "your-token"
+```
+
+**Windows CMD**
+
+```batch theme={null}
+set CLAUDE_CODE_OAUTH_TOKEN=your-token
+```
 
 このトークンは Claude サブスクリプションで認証され、Pro、Max、Team、または Enterprise プランが必要です。モデルリクエストのみを実行できるため、[Remote Control](/docs/ja/remote-control) セッションを確立したり、[claude.ai コネクタ](/docs/ja/mcp#use-mcp-servers-from-claude-ai)をフェッチしたりすることはできません。ローカルで設定した MCP サーバーは引き続き機能します。
 

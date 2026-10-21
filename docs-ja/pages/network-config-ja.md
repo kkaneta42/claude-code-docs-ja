@@ -10,17 +10,13 @@ Claude Code は、環境変数を通じてさまざまなエンタープライ�
 
 Claude Code を起動する前に、これらの環境変数を設定してください。シェルでエクスポートされた変数は起動時に 1 回読み込まれるため、実行中のセッションはシェル環境への後の変更を取得しません。
 
-<Note>
-  このページに表示されているすべての環境変数は、[`settings.json`](/docs/ja/settings) でも設定できます。
-</Note>
+> [!NOTE]
+>
+> このページに表示されているすべての環境変数は、[`settings.json`](/docs/ja/settings) でも設定できます。
 
-<h2 id="proxy-configuration">
-  プロキシ設定
-</h2>
+## プロキシ設定
 
-<h3 id="environment-variables">
-  環境変数
-</h3>
+### 環境変数
 
 Claude Code は標準的なプロキシ環境変数に対応しています。Claude Desktop セッションでアプリがプロバイダー接続を管理する場合、Claude Code はマネージド設定と `~/.claude/settings.json` からのみこれらを読み込みます。スコープルールについては [mTLS 認証](#mtls-authentication) を参照してください。
 
@@ -43,13 +39,11 @@ export NO_PROXY="*"
 
 Claude Code は `localhost`、`::1`、または `127.0.0.0/8` への WebSocket 接続をプロキシ経由で送信しないため、`NO_PROXY` でこれらのループバックエントリは不要です。
 
-<Note>
-  Claude Code は SOCKS プロキシをサポートしていません。
-</Note>
+> [!NOTE]
+>
+> Claude Code は SOCKS プロキシをサポートしていません。
 
-<h3 id="basic-authentication">
-  基本認証
-</h3>
+### 基本認証
 
 プロキシが基本認証を必要とする場合は、プロキシ URL に認証情報を含めます。
 
@@ -57,17 +51,15 @@ Claude Code は `localhost`、`::1`、または `127.0.0.0/8` への WebSocket �
 export HTTPS_PROXY=http://username:password@proxy.example.com:8080
 ```
 
-<Warning>
-  スクリプトにパスワードをハードコーディングすることは避けてください。代わりに環境変数またはセキュアな認証情報ストレージを使用してください。
-</Warning>
+> [!WARNING]
+>
+> スクリプトにパスワードをハードコーディングすることは避けてください。代わりに環境変数またはセキュアな認証情報ストレージを使用してください。
 
-<Tip>
-  高度な認証（NTLM、Kerberos など）が必要なプロキシの場合は、認証方法をサポートする LLM Gateway サービスの使用を検討してください。
-</Tip>
+> [!TIP]
+>
+> 高度な認証（NTLM、Kerberos など）が必要なプロキシの場合は、認証方法をサポートする LLM Gateway サービスの使用を検討してください。
 
-<h2 id="ca-certificate-store">
-  CA 証明書ストア
-</h2>
+## CA 証明書ストア
 
 デフォルトでは、Claude Code はバンドルされた Mozilla CA 証明書とオペレーティングシステムの証明書ストアの両方を信頼しています。OS ストアを読み取るには、`tls.getCACertificates` を備えたランタイムが必要です。ネイティブインストーラーは常にこれを備えており、npm インストールは Node 22.15 以降が必要です。古い Node バージョンでは、バンドルされたセットと `NODE_EXTRA_CA_CERTS` のみが適用されます。エンタープライズ TLS インスペクションプロキシは、ルート証明書が OS 信頼ストアにインストールされており、ランタイムがそれを読み取ることができる場合、追加の設定なしで動作します。このようなプロキシが gzip 圧縮されたリクエストボディを正しく処理できない場合は、[`CLAUDE_CODE_GZIP_REQUEST_BODIES=0`](/docs/ja/env-vars) を設定して、Claude API、テレメトリ、およびアーティファクト公開のリクエストの圧縮をオフにしてください。
 
@@ -85,13 +77,11 @@ OS 証明書ストアのみを信頼するには：
 export CLAUDE_CODE_CERT_STORE=system
 ```
 
-<Note>
-  `CLAUDE_CODE_CERT_STORE` には、専用の `settings.json` スキーマキーがありません。`~/.claude/settings.json` の `env` ブロック、またはプロセス環境で直接設定してください。
-</Note>
+> [!NOTE]
+>
+> `CLAUDE_CODE_CERT_STORE` には、専用の `settings.json` スキーマキーがありません。`~/.claude/settings.json` の `env` ブロック、またはプロセス環境で直接設定してください。
 
-<h2 id="custom-ca-certificates">
-  カスタム CA 証明書
-</h2>
+## カスタム CA 証明書
 
 エンタープライズ環境でカスタム CA を使用している場合は、Claude Code をそれを直接信頼するように設定します。
 
@@ -99,9 +89,7 @@ export CLAUDE_CODE_CERT_STORE=system
 export NODE_EXTRA_CA_CERTS=/path/to/ca-cert.pem
 ```
 
-<h2 id="mtls-authentication">
-  mTLS 認証
-</h2>
+## mTLS 認証
 
 エンタープライズ環境でクライアント証明書認証が必要な場合：
 
@@ -145,9 +133,7 @@ Claude Code はセッションのデバッグログで無視された各キー�
 
 アプリがプロバイダー接続を管理する [Claude Desktop](/docs/ja/desktop) セッション（[サードパーティプロバイダー](/docs/ja/third-party-integrations)の Code タブや Cowork セッションなど）では、Claude Code はこれらの変数とプロキシ変数 `HTTP_PROXY`、`HTTPS_PROXY`、および `NO_PROXY` を [管理設定](/docs/ja/managed-settings) と `~/.claude/settings.json` からのみ読み込みます。リポジトリ独自の設定ファイルではこれらを無視するため、チェックアウトされたリポジトリはアプリから認証情報が来るセッションの TLS またはプロキシパスをリダイレクトできません。claude.ai を通じてサインインしたローカル、SSH、または WSL Code タブセッションでは、アプリは接続を管理せず、Claude Code はすべての設定スコープからこれらの変数を読み込みます（任意のターミナルセッションと同様）。[クラウドセッション](/docs/ja/claude-code-on-the-web)はどこから開始しても上記のクラウドセッションルールに従います。v2.1.217 より前では、アプリが接続を管理していた場合、Claude Code はすべての設定ファイルでこれらの変数を無視していました。
 
-<h2 id="verify-your-configuration">
-  設定を確認する
-</h2>
+## 設定を確認する
 
 通常、プロキシアドレスが間違っているか、証明書パスが不正かは、後のリクエストで [接続エラーまたは証明書エラー](/docs/ja/errors#network-and-connection-errors) が発生することで判明します。Claude Code はこれらの設定のほとんどを読み込む際に検証しないためです。起動時にチェックされる唯一の設定はプロキシ URL です。`http://` スキームが欠落しているなど、値を解析できない場合、Claude Code は修正する必要がある変数を名前に含むエラーで起動を停止します。
 
@@ -173,35 +159,27 @@ Claude Code がこれらのファイルの 1 つを読み込めない場合、�
 * **mTLS client cert** および **mTLS client key**: ファイルが読み込まれた場合にのみ表示されるため、行がない場合は読み込みが失敗し、デバッグログに理由が記載されています。
 * **Additional CA cert(s)**: ファイルが読み込まれたことを確認せずに `NODE_EXTRA_CA_CERTS` パスを表示するため、デバッグログでこれを確認します。
 
-<h2 id="apply-network-settings-to-background-agents">
-  バックグラウンドエージェントにネットワーク設定を適用する
-</h2>
+## バックグラウンドエージェントにネットワーク設定を適用する
 
 [バックグラウンドエージェント](/docs/ja/agent-view)は、それらをディスパッチしたターミナルの内部では実行されません。ユーザーごとのスーパーバイザープロセスがオンデマンドで起動し、シェルより長く存続し、すべての `claude agents`、`--bg`、および `/background` セッションをホストします。[バックグラウンドセッションがどのようにホストされるか](/docs/ja/agent-view#how-background-sessions-are-hosted)を参照してください。これにより、このページの設定がこれらのセッションに到達する方法が変わります。
 
-<h3 id="set-network-variables-in-settings-not-the-shell">
-  シェルではなく設定でネットワーク変数を設定する
-</h3>
+### シェルではなく設定でネットワーク変数を設定する
 
 スーパーバイザーはすべてのターミナルで共有される 1 つのプロセスです。これは最初にそれを起動したシェルの環境を継承します。プロキシ、CA パス、または mTLS 変数をシェルにのみエクスポートする場合、そのシェルがスーパーバイザーをコールドスタートしたときはバックグラウンドエージェントに到達しますが、別のシェルが起動した場合は静かに到達しません。
 
 代わりに、`~/.claude/settings.json` の `env` ブロックまたは[マネージド設定](/docs/ja/settings)に同じ変数を配置してください。このページのすべての変数をそこで設定でき、設定はすべてのマシンのすべてのバックグラウンドセッションに到達する唯一の設定です。
 
-<h3 id="configure-a-corporate-launcher-as-a-setting">
-  企業ランチャーを設定として構成する
-</h3>
+### 企業ランチャーを設定として構成する
 
 一部の組織では、すべての Claude Code プロセスが、サンドボックス化、ネットワーク制御、または認証情報インジェクションを適用する企業ランチャーを通じて起動することが必要です。スーパーバイザーとそのワーカーは、`PATH` で `claude` を検索するのではなく、固定パスから Claude Code を起動するため、すべてのバックグラウンドエージェントは `PATH` の前に配置したラッパーをバイパスします。
 
 [`processWrapper`](/docs/ja/settings-reference#processwrapper) 設定を設定して、スーパーバイザー、そのワーカー、および[ランチャーがカバーするもの](/docs/ja/corporate-launcher#what-the-launcher-covers)の下にリストされている他のバックグラウンドプロセスをランチャーでプレフィックスします。同等の [`CLAUDE_CODE_PROCESS_WRAPPER`](/docs/ja/env-vars) 環境変数は、両方が設定されている場合に優先され、同じルールの対象となります。マネージド設定または `~/.claude/settings.json` を通じて配信し、シェルエクスポートではありません。[企業ランチャーの背後で Claude Code を実行する](/docs/ja/corporate-launcher)は、ランチャーが満たす必要があるコントラクト、それが到達するもの、到達しないもの、およびロールアウト方法をカバーしています。
 
-<Note>
-  既に実行中のスーパーバイザーは、起動時に開始した起動設定を保持します。ランチャー設定をデプロイした後、[`claude daemon stop --any`](/docs/ja/agent-view#the-supervisor-process) を実行して、次の `claude agents` または `--bg` がそれを尊重するスーパーバイザーを起動するようにします。
-</Note>
+> [!NOTE]
+>
+> 既に実行中のスーパーバイザーは、起動時に開始した起動設定を保持します。ランチャー設定をデプロイした後、[`claude daemon stop --any`](/docs/ja/agent-view#the-supervisor-process) を実行して、次の `claude agents` または `--bg` がそれを尊重するスーパーバイザーを起動するようにします。
 
-<h2 id="streaming-idle-watchdogs">
-  ストリーミングのアイドルウォッチドッグ
-</h2>
+## ストリーミングのアイドルウォッチドッグ
 
 Claude Code は、ストリーミング中のモデルの応答が途絶えたときにそれを中止する 4 つの独立したタイマーを実行します。これにより、切断された接続はハングしたままにならず、失敗して再試行されます。レスポンスヘッダーがまったく返されないリクエストは、次の 2 つのいずれかの形で終了します。
 
@@ -232,9 +210,7 @@ Claude Code は、ストリーミング中のモデルの応答が途絶えた�
 
 ファーストバイト期限が発動した場合は、応答がまだ始まっていないため、保持すべき部分的な出力はありません。Claude Code がリクエストを再送信する方法と、代わりにターンが終了する場合については、[No response from API](/docs/ja/errors#no-response-from-api) を参照してください。
 
-<h2 id="network-access-requirements">
-  ネットワークアクセス要件
-</h2>
+## ネットワークアクセス要件
 
 Claude Code は以下の URL へのアクセスが必要です。プロキシ設定とファイアウォールルールでこれらをホワイトリストに登録してください。特にコンテナ化された環境や制限されたネットワーク環境では重要です。初回実行時のセットアップ接続確認は、`api.anthropic.com` または `platform.claude.com` に到達できない場合、ここを指します。確認メッセージと復旧手順については、[Anthropic サービスに接続できない](/docs/ja/errors#unable-to-connect-to-anthropic-services)を参照してください。
 
@@ -244,6 +220,7 @@ Claude Code は以下の URL へのアクセスが必要です。プロキシ設
 | `claude.ai` | claude.ai アカウント認証 |
 | `claude.com` | claude.ai アカウントサインインがブラウザで `claude.com` ページを開き、`claude.ai` にリダイレクトされます。事前承認された WebFetch ドキュメント検索も CLI からこのホストに到達します |
 | `platform.claude.com` | Anthropic Console アカウント認証。OAuth トークン交換、更新、失効も claude.ai アカウントではこのホストに送信されるため、Console と claude.ai の両方のサインインに必要です |
+| `sso.claude.com` | シングルサインオン（SSO）を使用する組織向けのブラウザサインインフローの一部。プロキシがこのホストをブロックすると、それらのサインインが失敗する可能性があります |
 | `mcp-proxy.anthropic.com` | [claude.ai からの MCP コネクタ](/docs/ja/mcp#use-mcp-servers-from-claude-ai)（組織管理者が設定するコネクタを含む）。コネクタトラフィックはこのプロキシを経由してルーティングされます。コネクタは claude.ai 認証ユーザーではデフォルトで有効です。Claude Code がそれらを取得するのを停止するには、[`ENABLE_CLAUDEAI_MCP_SERVERS=false`](/docs/ja/env-vars) または [`disableClaudeAiConnectors`](/docs/ja/settings-reference#disableclaudeaiconnectors) 設定を設定してください |
 | `downloads.claude.ai` | プラグイン実行ファイルダウンロード、ネイティブインストーラー、ネイティブ自動更新プログラム、更新バージョンチェック |
 | `storage.googleapis.com` | `/plugin` に表示されるプラグインインストール数とメタデータ |
@@ -267,17 +244,13 @@ npm または独自のバイナリ配布を通じて Claude Code をインスト
 
 [`ANTHROPIC_BASE_URL`](/docs/ja/llm-gateway-connect#set-the-base-url-and-credential) を使用して [LLM ゲートウェイ](/docs/ja/llm-gateway)を経由してルーティングする場合、[高速モード](/docs/ja/fast-mode)の可用性チェックはゲートウェイベース URL ではなく `api.anthropic.com` を呼び出します。チェックは設定された HTTP プロキシを尊重するため、ネットワークブロックが原因の場合、プロキシ内の `api.anthropic.com` のホワイトリストエントリが修正です。ネットワークブロックはホストがプロキシを通じても到達不可能な場合にのみチェックに失敗し、高速モードは接続エラーを報告します。チェックがゲートウェイ発行の認証情報を提示し、Anthropic がそれを拒否する場合も同じ接続エラーが表示されます。ホワイトリストはそこでは役に立ちません。何もブロックされていないためです。[プロキシと LLM ゲートウェイの背後で高速モードを使用する](/docs/ja/fast-mode#use-fast-mode-behind-proxies-and-llm-gateways)を参照して、それを復元する変数を確認してください。
 
-<h3 id="organization-ip-allowlists-and-proxy-egress">
-  組織 IP ホワイトリストとプロキシ出力
-</h3>
+### 組織 IP ホワイトリストとプロキシ出力
 
 組織で Claude に対して [IP ホワイトリスト](https://support.claude.com/en/articles/13200993-restrict-access-to-claude-with-ip-allowlisting)が有効になっている場合、`bridge.claudeusercontent.com` を `claude.ai` および `api.anthropic.com` と同じプロキシ出力を経由してルーティングしてください。たとえば、同じ Zscaler アプリセグメントまたは Netskope ステアリングポリシーに配置することで実現できます。そのようにルーティングできない場合は、プロキシがそのホストに使用する出力アドレスを組織の IP ホワイトリストに追加してください。ただし、そのアドレスが組織専用の場合のみです。共有プロキシ出力範囲は、プロキシベンダーの他の顧客も許可します。
 
 Anthropic は、到着元のアドレスを使用して、組織の IP ホワイトリストに対して `bridge.claudeusercontent.com` への接続をチェックします。プロキシがそのホストのトラフィックを、そのホワイトリストにないアドレスを通じて送信する場合、Claude Code の残りの部分は機能していても、[Chrome の Claude](/docs/ja/chrome) 拡張機能に接続できません。
 
-<h3 id="github-allow-lists-and-firewalls">
-  GitHub ホワイトリストとファイアウォール
-</h3>
+### GitHub ホワイトリストとファイアウォール
 
 Anthropic ホスト環境での [Web 上の Claude Code](/docs/ja/claude-code-on-the-web) と [Code Review](/docs/ja/code-review) は Anthropic 管理インフラストラクチャからリポジトリに接続します。[自己ホスト環境](/docs/ja/self-hosted-environments)のセッションはネットワーク内から接続します。ただし、ランナーが [Anthropic git プロキシ](/docs/ja/self-hosted-environments-deploy#use-the-anthropic-git-proxy)にオプトインする場合は除きます。これは Anthropic 側から取得します。
 
@@ -285,25 +258,19 @@ GitHub Enterprise Cloud 組織が IP アドレスでアクセスを制限して�
 
 ファイアウォールの背後にある自己ホスト [GitHub Enterprise Server](/docs/ja/github-enterprise-server) インスタンスの場合、Anthropic の[アウトバウンド IP アドレス](https://platform.claude.com/docs/en/api/ip-addresses#outbound-ip-addresses)をホワイトリストに登録して、Anthropic インフラストラクチャが GHES ホストに到達してリポジトリをクローンし、レビューコメントを投稿できるようにしてください。[自己ホスト環境](/docs/ja/self-hosted-environments-deploy#configure-git)のセッションはネットワーク内から GHES ホストに到達するため、その露出は Anthropic ホストセッション、リポジトリピッカーなどのホスト前セッションフロー、および [Anthropic git プロキシ](/docs/ja/self-hosted-environments-deploy#use-the-anthropic-git-proxy)にオプトインする自己ホストランナーにのみ適用されます。これは Anthropic 側から取得します。[SCM コネクタ](/docs/ja/self-hosted-environments-reference#scm-connector-flags)は利用できないため、ホスト前セッションフローはネットワーク内でのみルーティング可能な GHES ホストに到達できません。
 
-<h3 id="desktop-and-claude-ai">
-  デスクトップと claude.ai
-</h3>
+### デスクトップと claude.ai
 
 前述のテーブルはスタンドアロン CLI をカバーしています。Claude Desktop アプリと browser の claude.ai は、アプリケーションコードとユーザーコンテンツを追加の Anthropic CDN ホストから読み込みます。これには `assets-proxy.anthropic.com` と、これらのアプリで [artifacts](/docs/ja/artifacts) を提供する他の `*.claudeusercontent.com` オリジンが含まれます。`claude.ai` を許可しながらこれらのホストをブロックすると、エラーではなく空白ページが表示されます。Desktop ページの [ネットワークアクセス要件](/docs/ja/desktop#network-access-requirements)を参照してください。
 
 Claude Desktop と claude.ai は、一部のコネクタが提供する [MCP Apps](https://claude.com/docs/connectors/building/mcp-apps/getting-started) など、会話内の一部のツール結果をインタラクティブなウィジェットとしてレンダリングすることもあります。これらのウィジェットは `claudemcpcontent.com` の生成されたサブドメインから読み込まれるため、ワイルドカードをそのまま残して `*.claudemcpcontent.com` を許可してください。これをブロックしても、アプリの残りの部分は引き続き機能しますが、これらのウィジェットは読み込まれません。
 
-<h4 id="third-party-hosts-for-artifact-fonts-and-libraries">
-  アーティファクトのフォントとライブラリ用のサードパーティホスト
-</h4>
+#### アーティファクトのフォントとライブラリ用のサードパーティホスト
 
 [Google Fonts](/docs/ja/artifacts#improve-the-visual-design) からタイプフェイスを読み込む [artifact](/docs/ja/artifacts) は、`fonts.googleapis.com` と `fonts.gstatic.com` もリクエストします。両方のホストはオプションです。それらをブロックすると、artifacts はフォールバックタイプフェイスでレンダリングされます。フォントリクエストが即座に失敗するように、高速拒否でブロックしてください。ページの最初のレンダリングを遅延させるのではなく。
 
 Artifacts は React やチャートパッケージなどの JavaScript ライブラリを `cdnjs.cloudflare.com`、`cdn.jsdelivr.net`、`cdn.tailwindcss.com`、`code.jquery.com`、および `unpkg.com` から読み込むことができ、他の外部ホストからは読み込めません。これらのホストをブロックすると、ライブラリに依存する artifact の部分は機能しません。ブロックされたフォントとは異なり、ブロックされたライブラリにはフォールバックがありません。ここでも高速拒否でブロックしてください。ブロックされたライブラリリクエストが即座に失敗するように、タイムアウトするまでハングするのではなく。
 
-<h2 id="additional-resources">
-  追加リソース
-</h2>
+## 追加リソース
 
 * [設定ファイルと優先順位](/docs/ja/settings)
 * [環境変数リファレンス](/docs/ja/env-vars)

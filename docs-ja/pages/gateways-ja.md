@@ -17,58 +17,44 @@ Claude Code には自社ホスト型ゲートウェイである [Claude apps ゲ
 * [ゲートウェイが claude.ai サブスクリプションとどのように相互作用するか](#subscriptions-and-gateways)
 * [ゲートウェイとは別に設定されるもの](#configure-separately-from-the-gateway)
 
-<h2 id="how-a-gateway-works">
-  ゲートウェイの仕組み
-</h2>
+## ゲートウェイの仕組み
 
 各開発者の Claude Code はゲートウェイのアドレスにリクエストを送信し、ゲートウェイが発行した認証情報で認証します。
 
 ゲートウェイは開発者を認証し、設定したアクセスおよび予算ルールを適用し、組織の認証情報を使用してリクエストをプロバイダーに転送します。プロバイダーは Anthropic の API または Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry などの [クラウドプロバイダー](/docs/ja/third-party-integrations) である可能性があります。ゲートウェイの設定によって決定されます。Claude apps ゲートウェイ、または単一の Anthropic 形式エンドポイントを公開する別のゲートウェイを使用する場合、プロバイダーを変更しても開発者マシンに触れる必要はありません。
 
-<Frame>
-  <img src="https://mintcdn.com/claude-code/-uq-4JE0W_JO5Er5/images/llm-gateway-flow.svg?fit=max&auto=format&n=-uq-4JE0W_JO5Er5&q=85&s=1c1a8dcc0cfcc3a58652cc8e28cd3e20" alt="Claude Code がゲートウェイを通じてルーティングされることを示す図。開発者マシンゾーンでは、Claude Code CLI と VS Code 拡張機能が、開発者ごとの認証情報を使用してゲートウェイアドレスにリクエストを送信します。あなたのインフラストラクチャというラベルのゾーンでは、ゲートウェイが認証、使用状況の追跡、予算、ルーティングを処理し、組織の認証情報を使用してリクエストを転送します。モデルプロバイダーゾーンでは、実線矢印が設定したプロバイダー（Anthropic API として表示）に向かい、破線矢印が他のプロバイダーオプション（Amazon Bedrock、Google Cloud、Microsoft Foundry の例として示されている）に向かいます。" width="780" height="322" data-path="images/llm-gateway-flow.svg" />
-</Frame>
+![Claude Code がゲートウェイを通じてルーティングされることを示す図。開発者マシンゾーンでは、Claude Code CLI と VS Code 拡張機能が、開発者ごとの認証情報を使用してゲートウェイアドレスにリクエストを送信します。あなたのインフラストラクチャというラベルのゾーンでは、ゲートウェイが認証、使用状況の追跡、予算、ルーティングを処理し、組織の認証情報を使用してリクエストを転送します。モデルプロバイダーゾーンでは、実線矢印が設定したプロバイダー（Anthropic API として表示）に向かい、破線矢印が他のプロバイダーオプション（Amazon Bedrock、Google Cloud、Microsoft Foundry の例として示されている）に向かいます。](https://mintcdn.com/claude-code/-uq-4JE0W_JO5Er5/images/llm-gateway-flow.svg?fit=max\&auto=format\&n=-uq-4JE0W_JO5Er5\&q=85\&s=1c1a8dcc0cfcc3a58652cc8e28cd3e20)
 
 2 種類の認証情報が関係しています。
 
 * **開発者認証情報**: 各開発者が保有し、ゲートウェイによって発行されます。ゲートウェイに対して認証し、使用状況の追跡で開発者を識別します
 * **プロバイダー認証情報**: ゲートウェイが保有し、プロバイダーアカウント用の 1 つの認証情報で、すべての転送されたトラフィックで共有されます
 
-<h2 id="choose-a-gateway">
-  ゲートウェイの選択
-</h2>
+## ゲートウェイの選択
 
 Claude Code は Anthropic 独自のゲートウェイ、または組織が既に実行しているゲートウェイで機能します。
 
-<h3 id="claude-apps-gateway">
-  Claude apps ゲートウェイ
-</h3>
+### Claude apps ゲートウェイ
 
 Claude apps ゲートウェイは Anthropic の自社ホスト型ゲートウェイで、`claude` バイナリに含まれています。Amazon Bedrock、Claude Platform on AWS、Google Cloud、Microsoft Foundry、または Anthropic API にアップストリームとしてルーティングします。開発者は `/login` を通じて企業の ID プロバイダーでサインインし、ゲートウェイは IdP グループによってモデルアクセスと [管理設定](/docs/ja/managed-settings) を強制し、[OpenTelemetry Protocol（OTLP）](/docs/ja/monitoring-usage) 使用状況メトリクスを独自の可観測性スタックに出力します。
 
-これは各 Claude Code リリースと共にビルドおよびテストされるため、Claude Code が送信するヘッダーとリクエストフィールドを転送します。別途保守されるゲートウェイは、各リリースでそれらのヘッダーとフィールドが変更されるため、[転送ルールを更新](/docs/ja/llm-gateway-protocol#forward-as-open-lists) する必要があります。Claude apps ゲートウェイは CLI と共にリリースされるため、最新の状態を保つリストはありません。[可用性と制限事項](/docs/ja/claude-apps-gateway#availability-and-limitations) を参照して、ゲートウェイセッションで異なる動作をする機能の小さなセットを確認してください。
+これは各 Claude Code リリースと共にビルドおよびテストされるため、Claude Code が送信する `anthropic-beta` の値とリクエストフィールドを転送します。別途保守されるゲートウェイは、各リリースでそれらの値とフィールドが変更されるため、[転送ルールを更新](/docs/ja/llm-gateway-protocol#forward-as-open-lists) する必要があります。Claude apps ゲートウェイは CLI と共にリリースされるため、最新の状態を保つリストはありません。[可用性と制限事項](/docs/ja/claude-apps-gateway#availability-and-limitations) を参照して、ゲートウェイセッションで異なる動作をする機能の小さなセットを確認してください。
 
 ゲートウェイサインインはブラウザ SSO ステップであり、サービストークンフローはないため、サインインを承認する開発者がない CI パイプラインはそれを通じて認証できません。それらをプロバイダーに直接設定してください。Agent SDK セッションと、開発者がサインインしたマシンで実行される `claude -p` は、そのマシンのゲートウェイセッションを使用し、そのポリシーによって管理されます。[CI パイプラインとリモートマシン](/docs/ja/claude-apps-gateway#ci-pipelines-and-remote-machines) を参照してください。
 
 [Claude apps ゲートウェイ](/docs/ja/claude-apps-gateway) を参照してデプロイしてください。
 
-<h3 id="other-gateways">
-  他のゲートウェイ
-</h3>
+### 他のゲートウェイ
 
 組織が既に LLM ゲートウェイまたは API ゲートウェイを実行している場合、代わりにそれを使用できます。Anthropic は他のゲートウェイ製品を推奨、保守、または監査せず、任意のゲートウェイを通じて Claude Code を非 Claude モデルにルーティングすることをサポートしていません。[他の LLM ゲートウェイ](/docs/ja/llm-gateway) を参照して、管理者ロールアウトチェックリスト、ゲートウェイが実装する必要があるもの、および Claude Code をそれに指すようにする方法を確認してください。
 
-<h2 id="subscriptions-and-gateways">
-  サブスクリプションとゲートウェイ
-</h2>
+## サブスクリプションとゲートウェイ
 
 開発者がゲートウェイ認証情報を使用してゲートウェイ経由で接続する場合、使用状況は API レートで組織のプロバイダーアカウントに請求され、claude.ai サブスクリプションは使用または請求されません。実行するゲートウェイの [`ANTHROPIC_AUTH_TOKEN`](/docs/ja/env-vars) を設定するか、`/login` で Claude apps ゲートウェイにサインインすると、そのセッションのサブスクリプションログインがオフになります。その認証情報の下で転送されるすべてのリクエストは、ゲートウェイのプロバイダー認証情報の背後にあるアカウントに請求されます。
 
 例外は、ゲートウェイ認証情報なしで `ANTHROPIC_BASE_URL` のみを設定することです。リクエストはまだゲートウェイを通じてルーティングされますが、保存された claude.ai ログインはアクティブな認証情報のままなので、サブスクリプションの使用制限と請求が適用されます。[他の LLM ゲートウェイ](/docs/ja/llm-gateway#subscriptions-and-gateways) はその設定とゲートウェイが機能するために転送する必要があるものについて説明しています。
 
-<h2 id="configure-separately-from-the-gateway">
-  ゲートウェイとは別に設定する
-</h2>
+## ゲートウェイとは別に設定する
 
 ゲートウェイはモデル API リクエストをルーティングします。ゲートウェイが処理することを期待するかもしれないいくつかのことは、別の場所で設定されます。
 
@@ -79,9 +65,7 @@ Claude apps ゲートウェイは Anthropic の自社ホスト型ゲートウェ
 * **テレメトリの宛先**: Claude Code がゲートウェイセッションのテレメトリを送信する場所は、セッションがどのようにサインインしたかに依存し、[開発者に対して何が強制されるか](/docs/ja/claude-apps-gateway#whats-enforced-on-developers) は各種類のセッションのエクスポート先を示しています。
 * **企業 HTTP プロキシ**: `HTTPS_PROXY` は Claude Code とそれが通信するすべてのサーバー（ゲートウェイを含む）の間に位置します。ネットワークが必要な場合、ゲートウェイに加えて [プロキシを設定](/docs/ja/network-config) してください。Claude apps ゲートウェイをホストする場合、[サインインはプロキシホストもプライベートネットワーク上にあることを確認します](/docs/ja/claude-apps-gateway#prerequisites)。そうでない場合、ゲートウェイホストを `NO_PROXY` に追加して、CLI がそれに直接接続するようにします。
 
-<h2 id="next-steps">
-  次のステップ
-</h2>
+## 次のステップ
 
 次のページはゲートウェイを実行する人によって異なります。Anthropic のゲートウェイは `claude` バイナリから実行され、独自のセットアップガイドがあります。組織が既に実行しているゲートウェイには、実装するプロトコルと管理者ロールアウトチェックリストがあります。
 

@@ -6,23 +6,19 @@
 
 > CLAUDE_CODE_SESSION_ACCESS_TOKEN JWT を検証して、自己ホスト環境内のセッションからのリクエストをネットワーク上のサービスが信頼できるようにします。
 
-<Note>
-  自己ホスト環境は Team および Enterprise プランでパブリックベータ版です。[オーナー](/docs/ja/cloud-environments#organization-shared-environments)が [**Cloud environments** 管理ページ](https://claude.ai/admin-settings/cloud-environments)で **Allow self-hosted environments** をオンにすることで有効になります。このページではセッション ID 検証について説明します。セットアップについては[クイックスタート](/docs/ja/self-hosted-environments-quickstart)を、フリート構成については[本番環境へのデプロイ](/docs/ja/self-hosted-environments-deploy)を参照してください。
-</Note>
+> [!NOTE]
+>
+> 自己ホスト環境は Team および Enterprise プランでパブリックベータ版です。[オーナー](/docs/ja/cloud-environments#organization-shared-environments)が [**Cloud environments** 管理ページ](https://claude.ai/admin-settings/cloud-environments)で **Allow self-hosted environments** をオンにすることで有効になります。このページではセッション ID 検証について説明します。セットアップについては[クイックスタート](/docs/ja/self-hosted-environments-quickstart)を、フリート構成については[本番環境へのデプロイ](/docs/ja/self-hosted-environments-deploy)を参照してください。
 
 [自己ホスト環境](/docs/ja/self-hosted-environments)では、[ウェブ上の Claude Code](/docs/ja/claude-code-on-the-web) セッションが Anthropic のインフラストラクチャではなく、お客様が運用するインフラストラクチャ上で実行されます。セッションはお客様のネットワーク内で実行されるため、Claude はお客様の内部サービスを直接呼び出すことができます。これらのサービスは、リクエストが環境内の Claude Code セッションから来たことを確認し、そのセッションを作成したユーザーまたはサービス ID を識別する方法が必要です。
 
 自己ホスト環境内のすべてのセッションは、`CLAUDE_CODE_SESSION_ACCESS_TOKEN` 環境変数に署名付き JSON Web Token（JWT）を受け取ります。セッションはトークンをベアラー認証情報として提示します。たとえば、Claude が実行するスクリプトは `curl -H "Authorization: Bearer $CLAUDE_CODE_SESSION_ACCESS_TOKEN"` を使用してお客様のサービスを呼び出すことができます。Anthropic はトークンに署名し、検証キーを公開 JWKS エンドポイントで公開します。お客様のサービスはこれらのキーを取得し、署名を検証し、クレームを読んでアクセス権を決定します。
 
-<h2 id="the-session-token">
-  セッショントークン
-</h2>
+## セッショントークン
 
 検証コードを作成する前に、トークンが何を確立するか、および JWT ライブラリが見る形式を理解してください。
 
-<h3 id="what-the-token-proves">
-  トークンが証明すること
-</h3>
+### トークンが証明すること
 
 有効なトークンは一部の事実を確立し、意図的に他の事実は確立しません。
 
@@ -34,9 +30,7 @@
 * `aud` クレームを環境 ID（[**Cloud environments** 管理ページ](https://claude.ai/admin-settings/cloud-environments)で環境と共に表示される `ccpool_...` 値）に対して検証し、他の組織の環境に発行されたトークンを拒否します。
 * トークンから派生させた認証情報を、単一のコーディングセッションが実行できることにスコープします。セッションの作成者ができるすべてのことではなく。[派生認証情報のスコープ](#scope-derived-credentials)を参照してください。
 
-<h3 id="token-format">
-  トークン形式
-</h3>
+### トークン形式
 
 `CLAUDE_CODE_SESSION_ACCESS_TOKEN` の値は `sk-ant-cc-` プレフィックスの後に標準的な 3 部構成の JWT が続きます。
 
@@ -48,15 +42,11 @@ JWT ライブラリに値を渡す前にプレフィックスを削除します�
 
 署名アルゴリズムは `ES256` で、これは P-256 曲線上の ECDSA と SHA-256 です。トークンヘッダーは、それに署名した JWKS 内のキーを識別する `kid` を持ちます。
 
-<h2 id="verify-the-token">
-  トークンを検証する
-</h2>
+## トークンを検証する
 
 検証は 2 つの場所のいずれかで実行されます。ネットワーク上のサービスは Anthropic の公開キーに対してトークンを暗号的に検証し、セッション内のラッパースクリプトはランナーバイナリの組み込みデコーダーを代わりに使用できます。
 
-<h3 id="verify-the-token-from-your-service">
-  サービスからトークンを検証する
-</h3>
+### サービスからトークンを検証する
 
 Anthropic は検証キーを公開の認証なしエンドポイントで公開します。
 
@@ -68,122 +58,116 @@ https://api.anthropic.com/v1/code/.well-known/jwks.json
 
 これらのチェックに対して各受信トークンを検証します。
 
-<Steps>
-  <Step title="プレフィックスを確認する">
-    値が `sk-ant-cc-` で始まらない場合は拒否し、そのプレフィックスを削除します。残りは標準的なコンパクト JWT です。
-  </Step>
+**1. プレフィックスを確認する**
 
-  <Step title="署名を検証する">
-    JWKS を取得し、トークンヘッダーの `kid` と一致するキーを選択し、`ES256` 署名を検証します。`alg` ヘッダーが `ES256` でないトークンを拒否します。キャッシュされたキーセットにない `kid` を持つトークンが到着した場合、拒否する前に JWKS を 1 回再取得します。ローテーション後、新しいトークンはキャッシュされたセットにまだないキーで署名されます。
-  </Step>
+値が `sk-ant-cc-` で始まらない場合は拒否し、そのプレフィックスを削除します。残りは標準的なコンパクト JWT です。
 
-  <Step title="発行者を検証する">
-    `iss` が正確に `ccr` でない場合、トークンを拒否します。
-  </Step>
+**2. 署名を検証する**
 
-  <Step title="環境に対してオーディエンスを検証する">
-    `aud` クレームは配列です。環境 ID（`ccpool_...` の形式）を含まない限り、トークンを拒否します。環境 ID は [**Cloud environments** 管理ページ](https://claude.ai/admin-settings/cloud-environments)の環境の詳細ダイアログに表示され、環境のセッショントークンのいずれかに `ccr:pool_id` クレームとして表示されます。このチェックはトークンを環境にスコープし、他の組織に発行されたトークンを拒否するものです。
-  </Step>
+JWKS を取得し、トークンヘッダーの `kid` と一致するキーを選択し、`ES256` 署名を検証します。`alg` ヘッダーが `ES256` でないトークンを拒否します。キャッシュされたキーセットにない `kid` を持つトークンが到着した場合、拒否する前に JWKS を 1 回再取得します。ローテーション後、新しいトークンはキャッシュされたセットにまだないキーで署名されます。
 
-  <Step title="ロールを検証する">
-    `ccr:role` が正確に `session_worker` でない場合、トークンを拒否します。環境シークレット、ランナートークン、ワークオーダーなど、自己ホスト環境用に発行された他のトークンは同じキーセットで署名されていますが、異なるロールを持ちます。
-  </Step>
+**3. 発行者を検証する**
 
-  <Step title="有効期限を検証する">
-    `exp` が過去の場合、トークンを拒否します。Anthropic はセッショントークンをデフォルトで 4 時間の有効期限、最大 8 時間で発行します。ランナーは有効期限前にトークンを更新し、新しい値をセッションにプッシュするため、Claude が更新後に開始するサブプロセスはそれを継承します。したがって、1 つのセッションは有効期間中にサービスに複数の異なる有効なトークンを提示できます。
-  </Step>
+`iss` が正確に `ccr` でない場合、トークンを拒否します。
 
-  <Step title="ID を読む">
-    作成ユーザーの ID は `act` クレームにあります。`act.sub` はプレフィックス形式 `user:<id>` の Anthropic ユーザー ID で、`act.email` は作成サーフェスが記録した場合、メールアドレスです。組織のサービス ID が作成するセッション（Claude Tag チャネルセッションを含む）は代わりに `agent:` サブジェクトを持つため、ID クレームが存在しないかどうかをテストするのではなく、`act.sub` が `user:` プレフィックスを持つ場合にのみセッションをユーザー作成として扱います。完全な構造とフラット重複クレームについては、[クレームリファレンス](#claims-reference)を参照してください。
-  </Step>
-</Steps>
+**4. 環境に対してオーディエンスを検証する**
+
+`aud` クレームは配列です。環境 ID（`ccpool_...` の形式）を含まない限り、トークンを拒否します。環境 ID は [**Cloud environments** 管理ページ](https://claude.ai/admin-settings/cloud-environments)の環境の詳細ダイアログに表示され、環境のセッショントークンのいずれかに `ccr:pool_id` クレームとして表示されます。このチェックはトークンを環境にスコープし、他の組織に発行されたトークンを拒否するものです。
+
+**5. ロールを検証する**
+
+`ccr:role` が正確に `session_worker` でない場合、トークンを拒否します。環境シークレット、ランナートークン、ワークオーダーなど、自己ホスト環境用に発行された他のトークンは同じキーセットで署名されていますが、異なるロールを持ちます。
+
+**6. 有効期限を検証する**
+
+`exp` が過去の場合、トークンを拒否します。Anthropic はセッショントークンをデフォルトで 4 時間の有効期限、最大 8 時間で発行します。ランナーは有効期限前にトークンを更新し、新しい値をセッションにプッシュするため、Claude が更新後に開始するサブプロセスはそれを継承します。したがって、1 つのセッションは有効期間中にサービスに複数の異なる有効なトークンを提示できます。
+
+**7. ID を読む**
+
+作成ユーザーの ID は `act` クレームにあります。`act.sub` はプレフィックス形式 `user:<id>` の Anthropic ユーザー ID で、`act.email` は作成サーフェスが記録した場合、メールアドレスです。組織のサービス ID が作成するセッション（Claude Tag チャネルセッションを含む）は代わりに `agent:` サブジェクトを持つため、ID クレームが存在しないかどうかをテストするのではなく、`act.sub` が `user:` プレフィックスを持つ場合にのみセッションをユーザー作成として扱います。完全な構造とフラット重複クレームについては、[クレームリファレンス](#claims-reference)を参照してください。
 
 チェックは標準 JWT ライブラリに直接マップされます。以下の例は、JWKS フェッチ、キャッシング、および `kid` 選択を処理する [`jose`](https://www.npmjs.com/package/jose) を使用した Node.js での完全なシーケンスと、[`PyJWT`](https://pyjwt.readthedocs.io/) とその組み込み JWKS クライアントを使用した Python で実装しています。
 
-<Tabs>
-  <Tab title="Node.js (jose)">
-    ```typescript theme={null}
-    import { createRemoteJWKSet, jwtVerify } from "jose";
+**Node.js (jose)**
 
-    const JWKS = createRemoteJWKSet(
-      new URL("https://api.anthropic.com/v1/code/.well-known/jwks.json")
-    );
+```typescript theme={null}
+import { createRemoteJWKSet, jwtVerify } from "jose";
 
-    const PREFIX = "sk-ant-cc-";
-    const EXPECTED_POOL_ID = "ccpool_...";
+const JWKS = createRemoteJWKSet(
+  new URL("https://api.anthropic.com/v1/code/.well-known/jwks.json")
+);
 
-    export async function verifySessionToken(raw: string) {
-      if (!raw.startsWith(PREFIX)) {
-        throw new Error("not a self-hosted runner session token");
-      }
-      const jwt = raw.slice(PREFIX.length);
+const PREFIX = "sk-ant-cc-";
+const EXPECTED_POOL_ID = "ccpool_...";
 
-      const { payload } = await jwtVerify(jwt, JWKS, {
-        issuer: "ccr",
-        audience: EXPECTED_POOL_ID,
-        algorithms: ["ES256"],
-      });
+export async function verifySessionToken(raw: string) {
+  if (!raw.startsWith(PREFIX)) {
+    throw new Error("not a self-hosted runner session token");
+  }
+  const jwt = raw.slice(PREFIX.length);
 
-      if (payload["ccr:role"] !== "session_worker") {
-        throw new Error("token is not a session_worker token");
-      }
+  const { payload } = await jwtVerify(jwt, JWKS, {
+    issuer: "ccr",
+    audience: EXPECTED_POOL_ID,
+    algorithms: ["ES256"],
+  });
 
-      const act = payload.act as { email?: string; sub?: string };
-      return {
-        sessionId: payload["ccr:session_id"] as string,
-        poolId: payload["ccr:pool_id"] as string,
-        orgId: payload["ccr:org_id"] as string,
-        creatorEmail: act?.email,
-        creatorSub: act?.sub,
-      };
+  if (payload["ccr:role"] !== "session_worker") {
+    throw new Error("token is not a session_worker token");
+  }
+
+  const act = payload.act as { email?: string; sub?: string };
+  return {
+    sessionId: payload["ccr:session_id"] as string,
+    poolId: payload["ccr:pool_id"] as string,
+    orgId: payload["ccr:org_id"] as string,
+    creatorEmail: act?.email,
+    creatorSub: act?.sub,
+  };
+}
+```
+
+**Python (PyJWT)**
+
+```python theme={null}
+import jwt
+from jwt import PyJWKClient
+
+JWKS_URL = "https://api.anthropic.com/v1/code/.well-known/jwks.json"
+PREFIX = "sk-ant-cc-"
+EXPECTED_POOL_ID = "ccpool_..."
+
+jwks = PyJWKClient(JWKS_URL)
+
+
+def verify_session_token(raw: str) -> dict:
+    if not raw.startswith(PREFIX):
+        raise ValueError("not a self-hosted runner session token")
+    token = raw.removeprefix(PREFIX)
+
+    signing_key = jwks.get_signing_key_from_jwt(token)
+    payload = jwt.decode(
+        token,
+        signing_key.key,
+        algorithms=["ES256"],
+        issuer="ccr",
+        audience=EXPECTED_POOL_ID,
+    )
+
+    if payload.get("ccr:role") != "session_worker":
+        raise ValueError("token is not a session_worker token")
+
+    act = payload.get("act") or {}
+    return {
+        "session_id": payload["ccr:session_id"],
+        "pool_id": payload["ccr:pool_id"],
+        "org_id": payload["ccr:org_id"],
+        "creator_email": act.get("email"),
+        "creator_sub": act.get("sub"),
     }
-    ```
-  </Tab>
+```
 
-  <Tab title="Python (PyJWT)">
-    ```python theme={null}
-    import jwt
-    from jwt import PyJWKClient
-
-    JWKS_URL = "https://api.anthropic.com/v1/code/.well-known/jwks.json"
-    PREFIX = "sk-ant-cc-"
-    EXPECTED_POOL_ID = "ccpool_..."
-
-    jwks = PyJWKClient(JWKS_URL)
-
-
-    def verify_session_token(raw: str) -> dict:
-        if not raw.startswith(PREFIX):
-            raise ValueError("not a self-hosted runner session token")
-        token = raw.removeprefix(PREFIX)
-
-        signing_key = jwks.get_signing_key_from_jwt(token)
-        payload = jwt.decode(
-            token,
-            signing_key.key,
-            algorithms=["ES256"],
-            issuer="ccr",
-            audience=EXPECTED_POOL_ID,
-        )
-
-        if payload.get("ccr:role") != "session_worker":
-            raise ValueError("token is not a session_worker token")
-
-        act = payload.get("act") or {}
-        return {
-            "session_id": payload["ccr:session_id"],
-            "pool_id": payload["ccr:pool_id"],
-            "org_id": payload["ccr:org_id"],
-            "creator_email": act.get("email"),
-            "creator_sub": act.get("sub"),
-        }
-    ```
-  </Tab>
-</Tabs>
-
-<h3 id="verify-the-token-inside-the-session">
-  セッション内でトークンを検証する
-</h3>
+### セッション内でトークンを検証する
 
 [ラッパースクリプト](/docs/ja/self-hosted-environments-configuration#wrapper-scripts)はセッション内で Claude が開始する前に実行されます。JWT ライブラリを呼び出す代わりに、ランナーバイナリの `self-hosted-runner decode-token` サブコマンドを実行できます。サブコマンドは位置引数、`CLAUDE_CODE_SESSION_ACCESS_TOKEN`、またはパイプされた stdin からトークンを読み取ります（この順序で）。その後、プレフィックスを削除し、JWKS エンドポイントに対して署名を検証し、有効期限をチェックし、クレームを JSON として出力します。サブコマンドは署名と有効期限チェックのみを実行します。`iss`、`aud`、または `ccr:role` はチェックしません。ラッパーの認証決定がこれらのクレームに依存する場合、出力された JSON からそれらを読み取り、明示的に比較します。
 
@@ -199,9 +183,7 @@ https://api.anthropic.com/v1/code/.well-known/jwks.json
 
 `decode-token` が JWKS エンドポイントからキーを取得できない場合、またはトークンを検証できない場合は、理由を stderr に出力し、クレームは出力せずに、コード 1 で終了します。JWKS エンドポイントに到達できないオフライン検査の場合のみ、`decode-token` に `--no-verify` を渡します。
 
-<h2 id="claims-reference">
-  クレームリファレンス
-</h2>
+## クレームリファレンス
 
 以下の表は、検証に関連するセッショントークンクレームをリストしています。`ccr:*` 名前空間と `act` チェーンから ID を読み取ります。フラット `account_email`、`organization_uuid`、および `account_uuid` クレームは、削除される可能性のある後方互換性の重複です。組織のサービス ID が作成するセッション（Claude Tag チャネルセッションを含む）は、`act.sub` に `agent:` サブジェクトを持ち、`act.email`、`ccr:account_id`、`account_email`、および `account_uuid` を省略します。2 つのメールクレームはユーザー作成セッションでもオプションです。Anthropic はセッション作成時にそれらを記録するのは、作成リクエストの認証情報がメールを持つ場合のみで、CLI からディスパッチされたセッションは両方を欠く可能性があるため、メールではなく `act.sub` または `ccr:account_id` で ID をキーにします。トークンはこのテーブルを超えて追加のクレームを持つこともできます。認識しないクレームは無視します。
 
@@ -223,9 +205,7 @@ https://api.anthropic.com/v1/code/.well-known/jwks.json
 | `account_uuid` | 文字列 | 作成ユーザーの Anthropic アカウント UUID。 |
 | `act` | オブジェクト | [RFC 8693](https://www.rfc-editor.org/rfc/rfc8693) 委任チェーン。[`act` チェーン](#the-act-chain)を参照してください。 |
 
-<h3 id="the-act-chain">
-  `act` チェーン
-</h3>
+### `act` チェーン
 
 `act` クレームは、セッションを作成したユーザーまたはサービス ID から、ランナーを認めた[環境](/docs/ja/self-hosted-environments#key-concepts)のシークレット、およびそのシークレットを作成した ID までの完全な委任パスを記録します。作成者は最も外側のアクターであるため、`act.sub` は直接それらを識別します。
 
@@ -238,9 +218,7 @@ https://api.anthropic.com/v1/code/.well-known/jwks.json
 | `act.act.act` | 環境。`act.act.act.sub` は `ccr:pool:<pool_id>`。 |
 | `act.act.act.act` | ランナーが登録した環境シークレットを作成した ID。チェーンはここで終わります。 |
 
-<h2 id="scope-derived-credentials">
-  派生認証情報のスコープ
-</h2>
+## 派生認証情報のスコープ
 
 セッショントークンはセッションを作成したユーザーまたはサービス ID を識別しますが、それを作成者が直接ログインするのと同等として扱わないでください。トークンはセッション内の環境変数に存在するため、Claude が実行するコード、およびセッションが開始するツールまたは MCP サーバーは、それを読んで提示できます。
 
@@ -252,9 +230,7 @@ https://api.anthropic.com/v1/code/.well-known/jwks.json
 * **有効期限を制限する**: 派生認証情報をトークンの `exp` またはそれより短い期間にバインドします。
 * **セッションとして監査する**: `ccr:session_id` と `jti` を作成者 ID と共に記録して、アクションを特定のセッションにトレースバックできるようにします。
 
-<h2 id="related-environment-variables">
-  関連環境変数
-</h2>
+## 関連環境変数
 
 作成者 ID は、トークンを検証しない 2 つのサーフェスのプレーンテキスト環境変数にも表示されます。
 
@@ -263,9 +239,7 @@ https://api.anthropic.com/v1/code/.well-known/jwks.json
 
 オーケストレーター側の決定（マシンイメージの選択など）にはプレーンテキスト変数を使用します。ランナーの環境を信頼するのではなく、ダウンストリームサービスが独立した暗号化証明を必要とする場合は `CLAUDE_CODE_SESSION_ACCESS_TOKEN` を使用します。
 
-<h2 id="what’s-next">
-  次のステップ
-</h2>
+## 次のステップ
 
 * [自己ホスト環境](/docs/ja/self-hosted-environments): 環境、ランナー、およびセッションモデル。[クイックスタート](/docs/ja/self-hosted-environments-quickstart)と[本番環境へのデプロイ](/docs/ja/self-hosted-environments-deploy)はセットアップと運用を保持しています。
 * [セッションをカスタマイズする](/docs/ja/self-hosted-environments-configuration): トークンを使用するラッパースクリプト、および `spawn-runner` フック

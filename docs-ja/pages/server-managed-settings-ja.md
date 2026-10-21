@@ -8,13 +8,11 @@
 
 サーバー管理設定により、組織の所有者は claude.ai コンソールの [**Organization settings > Claude Code > Managed settings**](https://claude.ai/admin-settings/claude-code) から Claude Code を一元的に構成できます。Claude Code クライアントは、ユーザーが対象となる認証情報を使用して、サーバー管理配信がサポートされているプラットフォームで認証すると、これらの設定を自動的に取得します。対象となる認証情報とプラットフォームについては、[プラットフォームの可用性](#platform-availability)を参照してください。
 
-<Note>
-  サーバー管理設定は [Claude for Teams](https://claude.com/pricing?utm_source=claude_code\&utm_medium=docs\&utm_content=server_settings_teams#team-&-enterprise) および [Claude for Enterprise](https://anthropic.com/contact-sales?utm_source=claude_code\&utm_medium=docs\&utm_content=server_settings_enterprise) カスタマー向けに利用可能です。
-</Note>
+> [!NOTE]
+>
+> サーバー管理設定は [Claude for Teams](https://claude.com/pricing?utm_source=claude_code\&utm_medium=docs\&utm_content=server_settings_teams#team-&-enterprise) および [Claude for Enterprise](https://anthropic.com/contact-sales?utm_source=claude_code\&utm_medium=docs\&utm_content=server_settings_enterprise) カスタマー向けに利用可能です。
 
-<h2 id="requirements">
-  要件
-</h2>
+## 要件
 
 サーバー管理設定を使用するには、以下が必要です。
 
@@ -22,9 +20,7 @@
 * Claude 組織の Owner または Primary Owner ロール（設定を表示および編集するため）
 * `api.anthropic.com` へのネットワークアクセス
 
-<h2 id="choose-between-server-managed-and-endpoint-managed-settings">
-  サーバー管理設定とエンドポイント管理設定の選択
-</h2>
+## サーバー管理設定とエンドポイント管理設定の選択
 
 Claude Code は、一元的な構成のための 2 つのアプローチをサポートしています。サーバー管理設定は Anthropic のサーバーから構成を配信します。[エンドポイント管理設定](/docs/ja/managed-settings#delivery-mechanisms)は、ネイティブ OS ポリシー（macOS 管理設定、Windows レジストリ）または管理設定ファイルを通じてデバイスに直接配置されます。
 
@@ -35,73 +31,67 @@ Claude Code は、一元的な構成のための 2 つのアプローチをサ�
 
 デバイスが MDM またはエンドポイント管理ソリューションに登録されている場合、エンドポイント管理設定はより強力なセキュリティ保証を提供します。これは、設定ファイルが OS レベルでユーザーの変更から保護される可能性があるためです。エンドポイント管理設定は Anthropic がホストする環境の[クラウドセッション](/docs/ja/model-config#surface-coverage)に到達しないため、開発者がクラウドセッションを実行する組織はサーバー管理設定も構成する必要があります。[自己ホスト環境](/docs/ja/self-hosted-environments)内のセッションも、ランナーイメージ内の管理設定ファイルを読み取ります。以下の[設定の優先順位](#settings-precedence)は、そのファイルが適用される場合を示しています。
 
-<h2 id="configure-server-managed-settings">
-  サーバー管理設定を構成する
-</h2>
+## サーバー管理設定を構成する
 
-<Steps>
-  <Step title="管理コンソールを開く">
-    claude.ai コンソールで、[**Organization settings > Claude Code > Managed settings**](https://claude.ai/admin-settings/claude-code) に移動します。
+**1. 管理コンソールを開く**
 
-    Team または Enterprise の組織で、このページにアクセス権がないと表示された場合は、[Owner または Primary Owner](#access-control) に変更を依頼してください。
-  </Step>
+claude.ai コンソールで、[**Organization settings > Claude Code > Managed settings**](https://claude.ai/admin-settings/claude-code) に移動します。
 
-  <Step title="設定を定義する">
-    設定を JSON として追加します。OS レベルのポリシー配信に限定された設定を除き、[`settings.json` で使用できるすべての設定](/docs/ja/settings-reference#all-settings)がサポートされます。その短いリストについては[現在の制限事項](#current-limitations)を参照してください。これには、[フック](/docs/ja/hooks)、[環境変数](/docs/ja/env-vars)、および `allowManagedPermissionRulesOnly` などの[管理設定専用の設定](/docs/ja/managed-settings#managed-only-settings)が含まれます。
+Team または Enterprise の組織で、このページにアクセス権がないと表示された場合は、[Owner または Primary Owner](#access-control) に変更を依頼してください。
 
-    この例では、権限の拒否リストを強制し、ユーザーが権限をバイパスできないようにし、権限ルールを管理設定で定義されたものに制限します。`Bash(curl *)` ルールは [Claude が記述するとおりの](/docs/ja/permissions#bash-rule-limits) `curl` にマッチし、`/usr/bin/curl` や `sh -c 'curl …'` にはマッチしません。コマンドのテキストに依存しないネットワークの強制には、[`allowManagedDomainsOnly` を含む `sandbox` ブロック](/docs/ja/sandboxing#configure-the-sandbox-for-your-organization)を追加してください。
+**2. 設定を定義する**
 
-    ```json theme={null}
-    {
-      "permissions": {
-        "deny": [
-          "Bash(curl *)",
-          "Read(./.env)",
-          "Read(./.env.*)",
-          "Read(./secrets/**)"
-        ],
-        "disableBypassPermissionsMode": "disable"
-      },
-      "allowManagedPermissionRulesOnly": true
-    }
-    ```
+設定を JSON として追加します。OS レベルのポリシー配信に限定された設定を除き、[`settings.json` で使用できるすべての設定](/docs/ja/settings-reference#all-settings)がサポートされます。その短いリストについては[現在の制限事項](#current-limitations)を参照してください。これには、[フック](/docs/ja/hooks)、[環境変数](/docs/ja/env-vars)、および `allowManagedPermissionRulesOnly` などの[管理設定専用の設定](/docs/ja/managed-settings#managed-only-settings)が含まれます。
 
-    フックは `settings.json` と同じ形式を使用します。
+この例では、権限の拒否リストを強制し、ユーザーが権限をバイパスできないようにし、権限ルールを管理設定で定義されたものに制限します。`Bash(curl *)` ルールは [Claude が記述するとおりの](/docs/ja/permissions#bash-rule-limits) `curl` にマッチし、`/usr/bin/curl` や `sh -c 'curl …'` にはマッチしません。コマンドのテキストに依存しないネットワークの強制には、[`allowManagedDomainsOnly` を含む `sandbox` ブロック](/docs/ja/sandboxing#configure-the-sandbox-for-your-organization)を追加してください。
 
-    この例では、組織全体でファイルが編集されるたびに監査スクリプトを実行します。
+```json theme={null}
+{
+  "permissions": {
+    "deny": [
+      "Bash(curl *)",
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(./secrets/**)"
+    ],
+    "disableBypassPermissionsMode": "disable"
+  },
+  "allowManagedPermissionRulesOnly": true
+}
+```
 
-    ```json theme={null}
-    {
-      "hooks": {
-        "PostToolUse": [
-          {
-            "matcher": "Edit|Write",
-            "hooks": [
-              { "type": "command", "command": "/usr/local/bin/audit-edit.sh" }
-            ]
-          }
+フックは `settings.json` と同じ形式を使用します。
+
+この例では、組織全体でファイルが編集されるたびに監査スクリプトを実行します。
+
+```json theme={null}
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          { "type": "command", "command": "/usr/local/bin/audit-edit.sh" }
         ]
       }
-    }
-    ```
+    ]
+  }
+}
+```
 
-    フックはシェルコマンドを実行するため、対話型セッションのユーザーには、Claude Code がフックを適用する前に[セキュリティ承認ダイアログ](#security-approval-dialogs)が表示されます。
+フックはシェルコマンドを実行するため、対話型セッションのユーザーには、Claude Code がフックを適用する前に[セキュリティ承認ダイアログ](#security-approval-dialogs)が表示されます。
 
-    組織が信頼するリポジトリ、バケット、ドメインを [auto モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)の分類器が把握できるように設定するには、同じ方法で `autoMode` ブロックを配信します。`autoMode` のエントリが分類器のブロック対象にどのように影響するか、および `environment`、`allow`、`soft_deny`、`hard_deny` フィールドに関する重要な警告については、[auto モードを設定する](/docs/ja/auto-mode-config)を参照してください。
-  </Step>
+組織が信頼するリポジトリ、バケット、ドメインを [auto モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)の分類器が把握できるように設定するには、同じ方法で `autoMode` ブロックを配信します。`autoMode` のエントリが分類器のブロック対象にどのように影響するか、および `environment`、`allow`、`soft_deny`、`hard_deny` フィールドに関する重要な警告については、[auto モードを設定する](/docs/ja/auto-mode-config)を参照してください。
 
-  <Step title="保存してデプロイする">
-    変更を保存します。Claude Code クライアントは、次回の起動時または 1 時間ごとのポーリングサイクルで更新された設定を受け取ります。
+**3. 保存してデプロイする**
 
-    エディターは、公開されている Claude Code 設定の JSON スキーマに照らして JSON をチェックします。解析可能な JSON に問題が見つかった場合は、警告が表示され、保存ボタンのラベルが変わります。設定がすでに保存されている場合のラベルは **Update with errors**、まだ設定が保存されていない場合は **Add with errors** です。スキーマの警告は保存をブロックしないため、このボタンでも保存は行われます。
+変更を保存します。Claude Code クライアントは、次回の起動時または 1 時間ごとのポーリングサイクルで更新された設定を受け取ります。
 
-    スキーマは[最新リリースに追従していない場合がある](/docs/ja/settings#edit-a-settings-file)ため、エディターが[設定リファレンス](/docs/ja/settings-reference#all-settings)に記載されているキーや値を警告することがあります。Claude Code は保存されたキーと値を受け取り、読み込む際に[独自の検証](#invalid-entries-in-delivered-settings)を実行します。
-  </Step>
-</Steps>
+エディターは、公開されている Claude Code 設定の JSON スキーマに照らして JSON をチェックします。解析可能な JSON に問題が見つかった場合は、警告が表示され、保存ボタンのラベルが変わります。設定がすでに保存されている場合のラベルは **Update with errors**、まだ設定が保存されていない場合は **Add with errors** です。スキーマの警告は保存をブロックしないため、このボタンでも保存は行われます。
 
-<h3 id="verify-settings-delivery">
-  設定の配信を確認する
-</h3>
+スキーマは[最新リリースに追従していない場合がある](/docs/ja/settings#edit-a-settings-file)ため、エディターが[設定リファレンス](/docs/ja/settings-reference#all-settings)に記載されているキーや値を警告することがあります。Claude Code は保存されたキーと値を受け取り、読み込む際に[独自の検証](#invalid-entries-in-delivered-settings)を実行します。
+
+### 設定の配信を確認する
 
 設定が適用されていることを確認するには、ユーザーに Claude Code を再起動してもらいます。[セキュリティ承認ダイアログ](#security-approval-dialogs)をトリガーする設定が含まれている場合、Claude Code が次に管理設定を取得したとき（次回の起動時、または実行中の対話型セッションでは 1 時間以内）に、ユーザーには管理設定の内容を説明するプロンプトが表示されます。また、ユーザーに `/permissions` を実行してもらい、有効な権限ルールを表示することで、管理された権限ルールが有効になっていることを確認することもできます。
 
@@ -116,9 +106,7 @@ Claude Code は、一元的な構成のための 2 つのアプローチをサ�
 
 実行中のセッションでは、取得に失敗した後、および取得スキップの原因の一部（ユーザーのシェルでエクスポートされたサードパーティプロバイダーの変数やカスタムの `ANTHROPIC_BASE_URL` など）について、`/status` に同じ行が表示されます。
 
-<h3 id="access-control">
-  アクセス制御
-</h3>
+### アクセス制御
 
 次のロールがサーバー管理設定を管理できます。
 
@@ -127,15 +115,11 @@ Claude Code は、一元的な構成のための 2 つのアプローチをサ�
 
 設定の変更は組織内のすべてのユーザーに適用されるため、アクセスは信頼できる担当者に限定してください。
 
-<h3 id="managed-only-settings">
-  管理設定専用の設定
-</h3>
+### 管理設定専用の設定
 
 ほとんどの[設定キー](/docs/ja/settings-reference#all-settings)はどのスコープでも機能します。一部のキーは管理設定からのみ読み取られ、ユーザーまたはプロジェクトの設定ファイルに配置しても効果はありません。権限とプラグインの制御については[管理設定専用の設定](/docs/ja/managed-settings#managed-only-settings)を参照するか、完全な一覧については[すべての設定](/docs/ja/settings-reference#all-settings)インデックスの Scope 列を確認してください。
 
-<h3 id="current-limitations">
-  現在の制限事項
-</h3>
+### 現在の制限事項
 
 サーバー管理設定には次の制限があります。
 
@@ -145,13 +129,9 @@ Claude Code は、一元的な構成のための 2 つのアプローチをサ�
   Claude Code は、[システムパス](/docs/ja/managed-mcp#exclusive-control-with-managed-mcp-json)にデプロイされた `managed-mcp.json` を管理設定の階層とは別に読み取るため、サーバー管理設定が有効な場合でもこのファイルは引き続き適用されます。
 * `policyHelper` や `wslInheritsWindowsSettings` など、OS レベルのポリシーソースに限定された設定は反映されません。代わりに MDM またはシステムの `managed-settings.json` ファイルでデプロイしてください。その方法でデプロイされた `policyHelper` は、そのソースが[管理階層内の優先順位](/docs/ja/managed-settings#precedence-within-the-managed-tier)に従って選択されたものである場合にのみ実行されます。
 
-<h2 id="settings-delivery">
-  設定配信
-</h2>
+## 設定配信
 
-<h3 id="settings-precedence">
-  設定の優先順位
-</h3>
+### 設定の優先順位
 
 サーバー管理設定と[エンドポイント管理設定](/docs/ja/managed-settings#delivery-mechanisms)は、いずれも Claude Code [設定階層](/docs/ja/settings#settings-precedence)の最上位を占めます。ここで設定したキーは、ユーザー自身の設定ファイルや `--settings` の値に含まれる同じキーよりも優先されます。ただし、[管理設定の優先順位の例外](/docs/ja/settings#exceptions-to-managed-settings-precedence)は除きます。
 
@@ -163,9 +143,7 @@ Claude Code は、一元的な構成のための 2 つのアプローチをサ�
 
 管理コンソールでサーバー管理構成をクリアして、エンドポイント管理 plist またはレジストリポリシーにフォールバックする意図がある場合、[キャッシュされた設定](#fetch-and-caching-behavior)はクライアントマシンに保持され、次の成功したフェッチまで続きます。また、[次の起動時にのみ適用される](#fetch-and-caching-behavior)キー（`model` など）は、各クライアントが再起動するまで有効なままです。`/status` を実行して、どの管理ソースがアクティブであるかを確認してください。
 
-<h3 id="per-key-exceptions-across-managed-sources">
-  管理ソース全体でのキー単位の例外
-</h3>
+### 管理ソース全体でのキー単位の例外
 
 これらのキーはマージなしルールの例外です。
 
@@ -178,9 +156,7 @@ Claude Code は、一元的な構成のための 2 つのアプローチをサ�
 * **`allowedProviders`**：マシンに設定されたリストとサーバー管理リストは、[そのエントリの Scope ノート](/docs/ja/settings-reference#allowedproviders)に記載されているように組み合わされます。Claude Code v2.1.285 以降が必要です。
 * **ゲートウェイサインインキー**：Claude Code は [`forceLoginGatewayUrl`](/docs/ja/settings-reference#forcelogingatewayurl)、[`gatewayInternalNetworks`](/docs/ja/settings-reference#gatewayinternalnetworks)、または [`forceLoginMethod`](/docs/ja/settings-reference#forceloginmethod) の `"gateway"` 値をサーバー管理設定から読み取ることはありません。したがって、サーバー管理設定の値は適用されず、MDM ポリシーまたは管理設定ファイルで設定されたものも隠されません。[`managedSourcesBehavior` エントリ](/docs/ja/settings-reference#managedsourcesbehavior)は、マシン上のどの管理ソースがそれらを提供するかを説明しています。
 
-<h3 id="fetch-and-caching-behavior">
-  フェッチとキャッシング動作
-</h3>
+### フェッチとキャッシング動作
 
 Claude Code は起動時に Anthropic のサーバーから設定をフェッチし、アクティブなセッション中は 1 時間ごとに更新をポーリングします。
 
@@ -217,9 +193,7 @@ Claude Code は Workload Identity Federation 変数と `ANTHROPIC_PROFILE` お�
 
 Claude Code はほとんどの設定更新を実行中のセッションに再起動なしで適用します。OpenTelemetry エクスポーター構成、`model` キー、および `env` ブロックからの変数の削除を含む一部の更新は、次の起動時にのみ適用されます。
 
-<h3 id="invalid-entries-in-delivered-settings">
-  配信された設定の無効なエントリ
-</h3>
+### 配信された設定の無効なエントリ
 
 ペイロードの一部がスキーマ検証に失敗した場合、Claude Code は検証エラーを表示し、残りのすべての有効な設定を適用します。[管理設定の無効なエントリ](/docs/ja/managed-settings#invalid-entries-in-managed-settings)は、削除されるもの、およびどのキーがより厳密な値にフォールバックするかを説明しています。Claude Code v2.1.169 以降が必要です。
 
@@ -240,9 +214,7 @@ Claude Code はほとんどの設定更新を実行中のセッションに再�
 
 配信の問題をデバッグするには、`claude --debug-file <path>` を実行し、ログで `Remote settings` を検索してください。組織にロールアウトする前に、テストマシンで `claude doctor` を使用してペイロード変更を検証してください。
 
-<h3 id="enforce-fail-closed-startup">
-  強制的にクローズされた起動を適用する
-</h3>
+### 強制的にクローズされた起動を適用する
 
 デフォルトでは、起動時にリモート設定フェッチが失敗した場合、CLI は最後の成功したフェッチからキャッシュされた設定で続行します。ただし、[Claude Code が保留する値](#fetch-and-caching-behavior)はフェッチが成功するまで保留されたままです。それを一度もフェッチしたことがないマシンでは、CLI はサーバー管理設定なしで続行し、デバイス上の[エンドポイント管理設定](/docs/ja/managed-settings#delivery-mechanisms)は引き続き適用されます。
 
@@ -273,9 +245,7 @@ Claude Code はほとんどの設定更新を実行中のセッションに再�
 
 `claude auth` サブコマンド（`claude auth login` など）はこのチェックとゲートウェイ起動終了から除外されるため、期限切れの認証情報が設定フェッチが失敗する理由である場合、ユーザーは再認証できます。
 
-<h3 id="security-approval-dialogs">
-  セキュリティ承認ダイアログ
-</h3>
+### セキュリティ承認ダイアログ
 
 セキュリティリスクをもたらす可能性のある特定の設定には、対話型セッションで Claude Code が適用する前に明示的なユーザー承認が必要です。
 
@@ -289,9 +259,7 @@ Claude Code はほとんどの設定更新を実行中のセッションに再�
 
 [`claudeMd`](/docs/ja/settings-reference#claudemd) キーを通じて配信される管理 CLAUDE.md は、Claude Code が実行するコマンドではなく Claude の命令テキストであるため、承認は必要ありません。Claude Code は、これらの命令に従う際に Claude が使用するツールの[権限](/docs/ja/permissions)をチェックします。v2.1.260 より前は、`claudeMd` 値は承認も必要でした。
 
-<h4 id="approval-memory">
-  承認メモリ
-</h4>
+#### 承認メモリ
 
 Claude Code は、設定ディレクトリ `~/.claude`（[`CLAUDE_CONFIG_DIR`](/docs/ja/env-vars) を設定しない限り）に承認を記録します。記録内容は、設定フェッチが使用する認証情報によって異なります。
 
@@ -317,9 +285,7 @@ Claude Code は常にダイアログを表示できるわけではありませ�
 * **エラーがダイアログを閉じる前に答える**：Claude Code は配信された設定を適用せず、最後に承認された設定を保持します。それを表示できる次のセッションでダイアログを再度表示します。
 * **`claude -p` または Agent SDK セッションなどの非対話型実行**：Claude Code はダイアログを表示できないため、配信された設定が承認を必要とする場合、その実行のためだけにそれらを適用します。[ローカルキャッシュ](#fetch-and-caching-behavior)に承認済みとして記録したり、書き込んだりしません。次の対話型セッションはダイアログを表示します。ユーザーが対話型セッションで承認するまで、各非対話型実行は起動時に設定を再度フェッチします。v2.1.207 より前は、非対話型実行は設定を承認済みとして保存したため、後続の対話型セッションはそれらのダイアログを表示しませんでした。
 
-<h4 id="environment-variables-and-the-approval-dialog">
-  環境変数と承認ダイアログ
-</h4>
+#### 環境変数と承認ダイアログ
 
 Claude Code は、承認ダイアログを表示せずに配信された一部の `env` 変数を適用します。以下を含みます。
 
@@ -339,16 +305,14 @@ Claude Code は、配信値によって [`API_FORCE_IDLE_TIMEOUT`](/docs/ja/env-
 
 [`ENABLE_BETA_TRACING_DETAILED`](/docs/ja/env-vars#variables) または [`OTEL_LOG_RAW_API_BODIES`](/docs/ja/env-vars#variables) の `0` または `false` などの偽の値は、詳細なトレーシングまたは生 API ボディキャプチャをオフにするだけなので、ダイアログなしで適用されます。どちらかの変数の他の空でない値は承認を必要とします。
 
-<h2 id="platform-availability">
-  プラットフォームの可用性
-</h2>
+## プラットフォームの可用性
 
 サーバー管理設定は `api.anthropic.com` への直接接続が必要です。配信にはセッションが以下のいずれかの認証情報で認証される必要があります。
 
 * Team または Enterprise OAuth ログイン
 * `CLAUDE_CODE_OAUTH_TOKEN` を通じて提供される OAuth トークン
 * 直接設定された API キー
-* Anthropic プロファイルの `user_oauth`（\[Anthropic プロファイル]\(/ja/authentication#anthropic-profiles-and-federation-credentials）、ただしプロファイルが Anthropic API 以外の `base_url` を設定していない場合）。Claude Code v2.1.257 以降が必要です。
+* Anthropic プロファイルの `user_oauth`（[Anthropic プロファイル](/docs/ja/authentication#anthropic-profiles-and-federation-credentials)、ただしプロファイルが Anthropic API 以外の `base_url` を設定していない場合）。Claude Code v2.1.257 以降が必要です。
 
 [`apiKeyHelper`](/docs/ja/settings-reference#apikeyhelper) スクリプトによって返されたキーも [Workload Identity Federation](https://platform.claude.com/docs/en/manage-claude/workload-identity-federation) 認証情報も設定フェッチをトリガーしません。
 
@@ -367,17 +331,13 @@ Claude Desktop アプリの [Cowork](https://claude.com/docs/cowork/overview) �
 
 Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、および [Claude Platform on AWS](/docs/ja/claude-platform-on-aws) デプロイメントの場合、自己ホスト型の [Claude apps ゲートウェイ](/docs/ja/claude-apps-gateway) は同等のリモート管理設定配信を提供します。ゲートウェイにサインインしたクライアントは、`api.anthropic.com` の代わりにゲートウェイから管理設定をフェッチします。起動時の失敗セマンティクスは異なります。ゲートウェイに到達できないゲートウェイクライアントはキャッシュされた設定にフォールバックする代わりにエラーで終了しますが、時間ごとのバックグラウンド更新は両方のチャネルで fail-open です。
 
-<h2 id="audit-logging">
-  監査ログ
-</h2>
+## 監査ログ
 
 設定変更の監査ログイベントは、コンプライアンス API または監査ログエクスポートを通じて利用可能です。アクセスについては、Anthropic アカウントチームにお問い合わせください。
 
 監査イベントには、実行されたアクションのタイプ、アクションを実行したアカウントとデバイス、および前の値と新しい値への参照が含まれます。
 
-<h2 id="security-considerations">
-  セキュリティに関する考慮事項
-</h2>
+## セキュリティに関する考慮事項
 
 サーバー管理設定は一元的なポリシー適用を提供しますが、クライアント側の制御として機能し、セキュリティ境界ではありません。管理されていないデバイスでは、ユーザーは管理者または sudo アクセス権を持つ必要なく、これらをバイパスできます。
 
@@ -396,9 +356,7 @@ Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、および
 
 ユーザーがクライアントが提供する認証情報でアクセスできる組織を制限するには、Claude ヘルプセンターの[テナント制限を使用したネットワークレベルのアクセス制御の適用](https://support.claude.com/en/articles/13198485-enforce-network-level-access-control-with-tenant-restrictions)を参照してください。より強力な適用保証については、MDM ソリューションに登録されているデバイスで[エンドポイント管理設定](/docs/ja/managed-settings#delivery-mechanisms)を使用してください。
 
-<h2 id="see-also">
-  関連項目
-</h2>
+## 関連項目
 
 Claude Code 構成を管理するための関連ページ：
 

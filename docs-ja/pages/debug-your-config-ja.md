@@ -10,9 +10,7 @@ Claude が指示を無視したり、設定した機能が表示されない場�
 
 インストール、認証、接続の問題については、代わりに [トラブルシューティング インストールとログイン](/docs/ja/troubleshoot-install) を参照してください。
 
-<h2 id="see-what-loaded-into-context">
-  コンテキストに読み込まれた内容を確認する
-</h2>
+## コンテキストに読み込まれた内容を確認する
 
 `/context` コマンドは、現在のセッションでコンテキストウィンドウを占めているすべての内容をカテゴリ別に表示します。カテゴリは、システムプロンプト、システムツール、MCP ツール、カスタムサブエージェント（それぞれの読み込み元を含む）、メモリファイル、スキル、会話メッセージです。まずこのコマンドを実行して、`CLAUDE.md`、ルール、スキルの説明がそもそも存在するかどうかを確認してください。`/context` のスキルセクションには[バンドルスキル](/docs/ja/skills#bundled-skills)も含まれますが、これは `/skills` には表示されません。
 
@@ -35,13 +33,11 @@ Claude が指示を無視したり、設定した機能が表示されない場�
 
 指示が複数の解釈ができるほど曖昧な場合、2 つのファイルが矛盾する指示を与えている場合、またはファイルが長くなりすぎて個々のルールへの注意が薄れている場合には、指示の遵守率が低下します。[効果的な指示を書く](/docs/ja/memory#write-effective-instructions)では、遵守率を高く保つための具体性、サイズ、構造のパターンを説明しています。
 
-<Note>
-  CLAUDE.md と権限は、それぞれ異なる問題を解決します。CLAUDE.md は、Claude が適切な判断を下せるようにプロジェクトの仕組みを伝えます。[権限](/docs/ja/permissions)と[フック](/docs/ja/hooks)は、Claude の判断に関係なく制限を強制します。「ここではこのやり方をする」という内容には CLAUDE.md を使用してください。セキュリティ境界や、決して起きてはならないことなど、ガイダンスではなく保証が必要なものには、権限またはフックを使用してください。
-</Note>
+> [!NOTE]
+>
+> CLAUDE.md と権限は、それぞれ異なる問題を解決します。CLAUDE.md は、Claude が適切な判断を下せるようにプロジェクトの仕組みを伝えます。[権限](/docs/ja/permissions)と[フック](/docs/ja/hooks)は、Claude の判断に関係なく制限を強制します。「ここではこのやり方をする」という内容には CLAUDE.md を使用してください。セキュリティ境界や、決して起きてはならないことなど、ガイダンスではなく保証が必要なものには、権限またはフックを使用してください。
 
-<h2 id="check-resolved-settings">
-  解決された設定を確認する
-</h2>
+## 解決された設定を確認する
 
 設定はマネージド、ユーザー、プロジェクト、ローカルスコープ全体でマージされます。マネージド設定が存在する場合は常に優先されます。その他の場合、より近いスコープが、ローカル、プロジェクト、ユーザーの順序でより広いスコープをオーバーライドします。一部の設定は、コマンドラインフラグまたは [環境変数](/docs/ja/env-vars) で設定することもでき、これは別のオーバーライドレイヤーとして機能します。設定が適用されないように見える場合、設定した値は通常、別のスコープまたは環境変数によってオーバーライドされています。
 
@@ -49,9 +45,7 @@ Claude が指示を無視したり、設定した機能が表示されない場�
 
 `/status` を実行して、マネージド設定が有効かどうかを含む、どの設定ソースがアクティブかを確認します。特定のキーに対して Claude Code がどのスコープを使用するかを理解するには、[設定の優先順位](/docs/ja/settings#settings-precedence) を参照してください。
 
-<h2 id="check-mcp-servers">
-  MCP サーバーを確認する
-</h2>
+## MCP サーバーを確認する
 
 `/mcp` を実行して、すべての設定されたサーバー、その接続ステータス、および現在のプロジェクトに対して承認したかどうかを確認します。サーバーは正しく定義されていても、いくつかの一般的な理由でツールを提供しない場合があります：
 
@@ -61,9 +55,7 @@ Claude が指示を無視したり、設定した機能が表示されない場�
 
 設定場所とスコープルールについては、[MCP](/docs/ja/mcp) を参照してください。
 
-<h2 id="check-hooks">
-  Hooks を確認する
-</h2>
+## Hooks を確認する
 
 `/hooks` を実行して、現在のセッションに登録されているすべてのフックをイベント別にグループ化して一覧表示します。定義したフックが表示されない場合、Claude Code はそのフックを読み込んでいません。次の原因がないか確認してください：
 
@@ -81,9 +73,7 @@ Claude が指示を無視したり、設定した機能が表示されない場�
 
 `/hooks` がフックを表示しても発火しない場合、次のステップはフック評価をライブで監視することです。`claude --debug` でセッションを開始し、ツール呼び出しをトリガーします。デバッグログは各イベント、チェックされたマッチャー、フックの終了コードと出力を記録します。ログ形式については [フックをデバッグする](/docs/ja/hooks#debug-hooks) を、一般的な失敗パターンについては [hooks トラブルシューティング](/docs/ja/hooks-guide#limitations-and-troubleshooting) を参照してください。
 
-<h2 id="test-against-a-clean-configuration">
-  クリーン設定に対してテストする
-</h2>
+## クリーン設定に対してテストする
 
 [`claude --safe-mode`](/docs/ja/cli-reference#cli-flags) で開始します。これにより、次のようなカスタマイズが無効になった状態でセッションが起動します。
 
@@ -100,62 +90,54 @@ Claude が指示を無視したり、設定した機能が表示されない場�
 
 セーフモードで問題が続く場合、または設定自体が疑わしい場合は、自分の設定を一切使わないセッションを開始し、問題が再現するかどうかを確認してください。
 
-<Steps>
-  <Step title="空のディレクトリを作成して移動する">
-    Claude Code のセッションを実行していない状態のシェルで、ディレクトリを作成して移動します。
+**1. 空のディレクトリを作成して移動する**
 
-    <Tabs>
-      <Tab title="Bash または Zsh">
-        ```bash theme={null}
-        mkdir -p ~/claude-clean/empty && cd ~/claude-clean/empty
-        ```
-      </Tab>
+Claude Code のセッションを実行していない状態のシェルで、ディレクトリを作成して移動します。
 
-      <Tab title="PowerShell">
-        ```powershell theme={null}
-        New-Item -ItemType Directory -Force "$HOME/claude-clean/empty" | Out-Null
-        Set-Location "$HOME/claude-clean/empty"
-        ```
-      </Tab>
-    </Tabs>
-  </Step>
+**Bash または Zsh**
 
-  <Step title="クリーンな設定ディレクトリで Claude Code を起動する">
-    同じシェルから、[`CLAUDE_CONFIG_DIR`](/docs/ja/env-vars) を `~/.claude` の代わりに新しいディレクトリに設定し、[`--setting-sources user`](/docs/ja/cli-reference#cli-flags) を渡して、`.claude/settings.json`、`CLAUDE.md`、`.mcp.json` などのプロジェクト設定をオフにします。
+```bash theme={null}
+mkdir -p ~/claude-clean/empty && cd ~/claude-clean/empty
+```
 
-    <Tabs>
-      <Tab title="Bash または Zsh">
-        この変数は今回の起動にのみ適用されます。
+**PowerShell**
 
-        ```bash theme={null}
-        CLAUDE_CONFIG_DIR=~/claude-clean/config claude --setting-sources user
-        ```
-      </Tab>
+```powershell theme={null}
+New-Item -ItemType Directory -Force "$HOME/claude-clean/empty" | Out-Null
+Set-Location "$HOME/claude-clean/empty"
+```
 
-      <Tab title="PowerShell">
-        この変数はこの PowerShell セッションの残りの間ずっと設定されたままになるため、同じウィンドウでの以降の `claude` の起動でもクリーンなディレクトリが使われ続けます。通常のディレクトリに戻すには、次回の起動前に `Remove-Item Env:CLAUDE_CONFIG_DIR` を実行してください。
+**2. クリーンな設定ディレクトリで Claude Code を起動する**
 
-        ```powershell theme={null}
-        $env:CLAUDE_CONFIG_DIR = "$HOME/claude-clean/config"
-        claude --setting-sources user
-        ```
-      </Tab>
-    </Tabs>
+同じシェルから、[`CLAUDE_CONFIG_DIR`](/docs/ja/env-vars) を `~/.claude` の代わりに新しいディレクトリに設定し、[`--setting-sources user`](/docs/ja/cli-reference#cli-flags) を渡して、`.claude/settings.json`、`CLAUDE.md`、`.mcp.json` などのプロジェクト設定をオフにします。
 
-    最初の起動時には、初回実行時のセットアップ画面が再び表示されます。これはクリーンな設定ディレクトリが有効になっていることを示しています。管理設定は引き続き適用され、claude.ai アカウントでログインした場合は[コネクタ](/docs/ja/mcp#use-mcp-servers-from-claude-ai)も引き続き読み込まれます。
-  </Step>
+**Bash または Zsh**
 
-  <Step title="問題を再現する">
-    クリーンなセッションで、問題を引き起こした操作を繰り返します。
+この変数は今回の起動にのみ適用されます。
 
-    * **問題が消えた場合**: 原因はユーザー設定またはプロジェクト設定にあります。`~/.claude.json` と `~/.claude` 内のファイルを 1 つずつ `~/claude-clean/config` にコピーします。どのファイルでも問題が再発しない場合は、同じシェルでプロジェクトディレクトリに移動し、`--setting-sources user` を付けずに Claude Code を起動します。Bash または Zsh では、`CLAUDE_CONFIG_DIR=~/claude-clean/config claude` を実行します。PowerShell では変数がまだ設定されているため、`claude` を実行します。
-    * **問題が続く場合**: 原因はユーザー設定とプロジェクト設定の外にあります。セッションで `/status` を実行して管理設定を確認し、シェルの[環境変数](/docs/ja/env-vars)を確認してから、[トラブルシューティング](/docs/ja/troubleshooting)を参照してください。
-  </Step>
-</Steps>
+```bash theme={null}
+CLAUDE_CONFIG_DIR=~/claude-clean/config claude --setting-sources user
+```
 
-<h2 id="check-common-causes">
-  一般的な原因を確認する
-</h2>
+**PowerShell**
+
+この変数はこの PowerShell セッションの残りの間ずっと設定されたままになるため、同じウィンドウでの以降の `claude` の起動でもクリーンなディレクトリが使われ続けます。通常のディレクトリに戻すには、次回の起動前に `Remove-Item Env:CLAUDE_CONFIG_DIR` を実行してください。
+
+```powershell theme={null}
+$env:CLAUDE_CONFIG_DIR = "$HOME/claude-clean/config"
+claude --setting-sources user
+```
+
+最初の起動時には、初回実行時のセットアップ画面が再び表示されます。これはクリーンな設定ディレクトリが有効になっていることを示しています。管理設定は引き続き適用され、claude.ai アカウントでログインした場合は[コネクタ](/docs/ja/mcp#use-mcp-servers-from-claude-ai)も引き続き読み込まれます。
+
+**3. 問題を再現する**
+
+クリーンなセッションで、問題を引き起こした操作を繰り返します。
+
+* **問題が消えた場合**: 原因はユーザー設定またはプロジェクト設定にあります。`~/.claude.json` と `~/.claude` 内のファイルを 1 つずつ `~/claude-clean/config` にコピーします。どのファイルでも問題が再発しない場合は、同じシェルでプロジェクトディレクトリに移動し、`--setting-sources user` を付けずに Claude Code を起動します。Bash または Zsh では、`CLAUDE_CONFIG_DIR=~/claude-clean/config claude` を実行します。PowerShell では変数がまだ設定されているため、`claude` を実行します。
+* **問題が続く場合**: 原因はユーザー設定とプロジェクト設定の外にあります。セッションで `/status` を実行して管理設定を確認し、シェルの[環境変数](/docs/ja/env-vars)を確認してから、[トラブルシューティング](/docs/ja/troubleshooting)を参照してください。
+
+## 一般的な原因を確認する
 
 ほとんどの設定の問題は、少数の場所とシンタックスのルールに遡ることができます。バグだと思う前に、以下を確認してください。
 
@@ -179,9 +161,7 @@ Claude が指示を無視したり、設定した機能が表示されない場�
 | MCP サーバーが予期された環境変数なしで起動する | サーバーの設定エントリがそれらを設定していない、および Claude Code が stdio サーバーに渡す環境に含まれていない。その環境は、[サブプロセスから削除される変数](/docs/ja/monitoring-usage#administrator-configuration)を除いた独自の環境です | サーバーの `.mcp.json` エントリ内でサーバーごとの `env` を設定してください。これは起動環境またはワークスペーストラストに依存しません。 |
 | `Bash(rm *)` 拒否ルールが `/bin/rm` または `find -delete` をブロックしない | Bash ルールは基になる実行可能ファイルではなく、リテラルコマンド文字列にマッチします。[Bash ルールがマッチしないもの](/docs/ja/permissions#bash-rule-limits)を参照してください | [PreToolUse hook](/docs/ja/hooks-guide)または[サンドボックス](/docs/ja/sandboxing)を使用して、ハード保証を取得してください。 |
 
-<h2 id="related-resources">
-  関連リソース
-</h2>
+## 関連リソース
 
 各設定サーフェスの完全なリファレンスについては、専用ページを参照してください：
 

@@ -6,81 +6,12 @@
 
 > Microsoft Foundry を通じて Claude Code を構成する方法について学びます。セットアップ、構成、トラブルシューティングを含みます。
 
-export const ContactSalesCard = ({surface}) => {
-  const utm = content => `utm_source=claude_code&utm_medium=docs&utm_content=${surface}_${content}`;
-  const iconArrowRight = (size = 13) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <line x1="5" y1="12" x2="19" y2="12" />
-      <polyline points="12 5 19 12 12 19" />
-    </svg>;
-  const STYLES = `
-.cc-cs {
-  --cs-slate: #141413;
-  --cs-clay: #d97757;
-  --cs-clay-deep: #c6613f;
-  --cs-gray-000: #ffffff;
-  --cs-gray-700: #3d3d3a;
-  --cs-border-default: rgba(31, 30, 29, 0.15);
-  font-family: inherit;
-}
-.dark .cc-cs {
-  --cs-slate: #f0eee6;
-  --cs-gray-000: #262624;
-  --cs-gray-700: #bfbdb4;
-  --cs-border-default: rgba(240, 238, 230, 0.14);
-}
-.cc-cs-card {
-  display: flex; align-items: center; justify-content: space-between;
-  gap: 16px; padding: 14px 16px; margin: 0;
-  background: var(--cs-gray-000); border: 0.5px solid var(--cs-border-default);
-  border-radius: 8px; flex-wrap: wrap;
-}
-.cc-cs-text { font-size: 13px; color: var(--cs-gray-700); line-height: 1.5; flex: 1; min-width: 240px; }
-.cc-cs-text strong { font-weight: 550; color: var(--cs-slate); }
-.cc-cs-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-.cc-cs-btn-clay {
-  display: inline-flex; align-items: center; gap: 8px;
-  background: var(--cs-clay-deep); color: #fff; border: none;
-  border-radius: 8px; padding: 8px 14px;
-  font-size: 13px; font-weight: 500;
-  transition: background-color 0.15s; white-space: nowrap;
-}
-.cc-cs-btn-clay:hover { background: var(--cs-clay); }
-.cc-cs-btn-ghost {
-  display: inline-flex; align-items: center; gap: 8px;
-  background: transparent; color: var(--cs-gray-700);
-  border: 0.5px solid var(--cs-border-default);
-  border-radius: 8px; padding: 8px 14px;
-  font-size: 13px; font-weight: 500;
-}
-.cc-cs-btn-ghost:hover { background: rgba(0, 0, 0, 0.04); }
-.dark .cc-cs-btn-ghost:hover { background: rgba(255, 255, 255, 0.04); }
-@media (max-width: 720px) {
-  .cc-cs-actions { width: 100%; }
-}
-`;
-  return <div className="cc-cs not-prose">
-      <style>{STYLES}</style>
-      <div className="cc-cs-card">
-        <div className="cc-cs-text">
-          <strong>Deploying Claude Code across your organization?</strong> Talk to sales about enterprise plans, SSO, and centralized billing.
-        </div>
-        <div className="cc-cs-actions">
-          <a href={`https://claude.com/pricing?${utm('view_plans')}#plans-business`} className="cc-cs-btn-ghost">
-            View plans
-          </a>
-          <a href={`https://claude.com/contact-sales?${utm('contact_sales')}`} className="cc-cs-btn-clay">
-            Contact sales {iconArrowRight()}
-          </a>
-        </div>
-      </div>
-    </div>;
-};
+**Deploying Claude Code across your organization?** Talk to sales about enterprise plans, SSO, and centralized billing.
 
-<ContactSalesCard surface="foundry" />
+View plans
+Contact sales
 
-<h2 id="prerequisites">
-  前提条件
-</h2>
+## 前提条件
 
 Microsoft Foundry で Claude Code を構成する前に、以下を確認してください：
 
@@ -88,17 +19,13 @@ Microsoft Foundry で Claude Code を構成する前に、以下を確認して�
 * Microsoft Foundry リソースとデプロイメントを作成するための RBAC 権限
 * Azure CLI がインストールされ、構成されている（オプション - 認証情報を取得する別のメカニズムがない場合のみ必要）
 
-<Note>
-  Claude Code を複数のユーザーにデプロイする場合は、[モデルバージョンをピン留めして](#4-pin-model-versions)、ロールアウト前に実施してください。
-</Note>
+> [!NOTE]
+>
+> Claude Code を複数のユーザーにデプロイする場合は、[モデルバージョンをピン留めして](#4-pin-model-versions)、ロールアウト前に実施してください。
 
-<h2 id="setup">
-  セットアップ
-</h2>
+## セットアップ
 
-<h3 id="1-provision-microsoft-foundry-resource">
-  1. Microsoft Foundry リソースをプロビジョニングする
-</h3>
+### Microsoft Foundry リソースをプロビジョニングする
 
 まず、Azure で Claude リソースを作成します：
 
@@ -112,9 +39,7 @@ Microsoft Foundry で Claude Code を構成する前に、以下を確認して�
 
    デプロイを設定する際に、[ホスティングオプション](https://platform.claude.com/docs/en/build-with-claude/claude-in-microsoft-foundry#hosting-options)も選択します。これにより、推論が Azure で実行されるか、Anthropic インフラストラクチャで実行されるかが決まります。
 
-<h3 id="2-configure-azure-credentials">
-  2) Azure 認証情報を構成する
-</h3>
+### Azure 認証情報を構成する
 
 Claude Code は Microsoft Foundry の 3 つの認証方法をサポートしています。セキュリティ要件に最適な方法を選択してください：
 
@@ -122,13 +47,11 @@ Claude Code は Microsoft Foundry の 3 つの認証方法をサポートして�
 * [Microsoft Entra ID](#use-microsoft-entra-id)：Claude Code は Azure SDK のデフォルト認証情報チェーンを通じて（たとえば `az login` セッションから）トークンを取得するため、API キーを保存する必要がありません
 * [ベアラートークン](#use-a-bearer-token)：別のプロセスが Microsoft Entra ID アクセストークンを取得し、それを `ANTHROPIC_FOUNDRY_AUTH_TOKEN` で渡します
 
-<Note>
-  Microsoft Foundry を使用する場合、認証が Azure 認証情報を通じて処理されるため、`/logout` コマンドは利用できません。
-</Note>
+> [!NOTE]
+>
+> Microsoft Foundry を使用する場合、認証が Azure 認証情報を通じて処理されるため、`/logout` コマンドは利用できません。
 
-<h4 id="use-an-api-key">
-  API キーを使用する
-</h4>
+#### API キーを使用する
 
 Microsoft Foundry ポータルからキーをコピーし、環境変数として設定します：
 
@@ -141,9 +64,7 @@ Microsoft Foundry ポータルからキーをコピーし、環境変数とし�
 export ANTHROPIC_FOUNDRY_API_KEY=your-azure-api-key
 ```
 
-<h4 id="use-microsoft-entra-id">
-  Microsoft Entra ID を使用する
-</h4>
+#### Microsoft Entra ID を使用する
 
 `ANTHROPIC_FOUNDRY_API_KEY` と `ANTHROPIC_FOUNDRY_AUTH_TOKEN` を設定しないままにします。すると Claude Code は Azure SDK の[デフォルト認証情報チェーン](https://learn.microsoft.com/en-us/azure/developer/javascript/sdk/authentication/credential-chains#defaultazurecredential-overview)を使用します。
 これは、ローカルおよびリモートワークロードを認証するためのさまざまな方法をサポートしています。
@@ -156,9 +77,7 @@ az login
 
 ID に必要なロールについては、[Azure RBAC 設定](#azure-rbac-configuration)を参照してください。
 
-<h4 id="use-a-bearer-token">
-  ベアラートークンを使用する
-</h4>
+#### ベアラートークンを使用する
 
 Claude Code は、すべてのリクエストで `ANTHROPIC_FOUNDRY_AUTH_TOKEN` の値を `Authorization: Bearer` ヘッダーとして送信します。ホストアプリケーションやサインインスクリプトなど、別のプロセスがすでにアクセストークンを取得している場合に、このオプションを使用します。
 
@@ -170,9 +89,7 @@ export ANTHROPIC_FOUNDRY_AUTH_TOKEN=your-entra-access-token
 
 `ANTHROPIC_FOUNDRY_AUTH_TOKEN` は `ANTHROPIC_FOUNDRY_API_KEY` およびデフォルト認証情報チェーンより優先されます。
 
-<h3 id="3-configure-claude-code">
-  3. Claude Code を構成する
-</h3>
+### Claude Code を構成する
 
 Microsoft Foundry を有効にするには、以下の環境変数を設定します：
 
@@ -188,13 +105,11 @@ export ANTHROPIC_FOUNDRY_RESOURCE={resource}
 
 `ANTHROPIC_FOUNDRY_RESOURCE` には、`my-resource` のようにリソース名のみを設定します。URL やホスト名を設定した場合、メッセージを送信した時点で Claude Code は[それを拒否します](/docs/ja/errors#anthropic-foundry-resource-must-be-a-foundry-resource-name)。
 
-<h3 id="4-pin-model-versions">
-  4. モデルバージョンをピン留めする
-</h3>
+### モデルバージョンをピン留めする
 
-<Warning>
-  すべてのデプロイに対して特定のモデルバージョンをピン留めしてください。ピン留めなしでは、`sonnet` や `opus` などのモデルエイリアスが Claude Code の Microsoft Foundry 用の組み込みデフォルトに解決されます。これは最新リリースより遅れている可能性があり、アカウントでまだ利用できない場合があります。Microsoft Foundry にはスタートアップモデルチェックがないため、デフォルトが利用できない場合、リクエストは失敗します。Azure デプロイを作成するときは、「最新に自動更新」ではなく、特定のモデルバージョンを選択してください。
-</Warning>
+> [!WARNING]
+>
+> すべてのデプロイに対して特定のモデルバージョンをピン留めしてください。ピン留めなしでは、`sonnet` や `opus` などのモデルエイリアスが Claude Code の Microsoft Foundry 用の組み込みデフォルトに解決されます。これは最新リリースより遅れている可能性があり、アカウントでまだ利用できない場合があります。Microsoft Foundry にはスタートアップモデルチェックがないため、デフォルトが利用できない場合、リクエストは失敗します。Azure デプロイを作成するときは、「最新に自動更新」ではなく、特定のモデルバージョンを選択してください。
 
 モデル変数をステップ 1 で作成したデプロイ名と一致するように設定します。
 
@@ -218,9 +133,7 @@ export ENABLE_PROMPT_CACHING_1H=1
 
 メインの会話と、Claude Code がその外部で実行するリクエストとで異なる TTL を設定するには、[TTL を自分で選択](/docs/ja/prompt-caching#choose-the-ttl-yourself)してください。
 
-<h3 id="5-run-claude-code">
-  5. Claude Code を実行する
-</h3>
+### Claude Code を実行する
 
 環境変数を設定したら、プロジェクトディレクトリから Claude Code を起動します：
 
@@ -232,9 +145,7 @@ Claude Code は環境から `CLAUDE_CODE_USE_FOUNDRY` およびその他の Micr
 
 セットアップを確認するには、Claude Code 内で `/status` を実行します。API プロバイダー行に `Microsoft Foundry` が表示され、設定したリソース名またはベース URL が表示されます。
 
-<h2 id="azure-rbac-configuration">
-  Azure RBAC 構成
-</h2>
+## Azure RBAC 構成
 
 `Azure AI User` および `Cognitive Services User` デフォルトロールには、Claude モデルを呼び出すために必要なすべての権限が含まれています。
 
@@ -254,9 +165,7 @@ Claude Code は環境から `CLAUDE_CODE_USE_FOUNDRY` およびその他の Micr
 
 詳細については、[Microsoft Foundry RBAC ドキュメント](https://learn.microsoft.com/en-us/azure/ai-foundry/concepts/rbac-azure-ai-foundry)を参照してください。
 
-<h2 id="1m-token-context-window">
-  1M トークンのコンテキストウィンドウ
-</h2>
+## 1M トークンのコンテキストウィンドウ
 
 Microsoft Foundry では、デプロイがどのモデルを提供しているかを Claude Code が判別できる場合、Fable モデル、Sonnet 5 以降、Opus 4.7 以降は、`[1m]` サフィックスを付けなくてもデフォルトで [1M トークンのコンテキストウィンドウ](https://platform.claude.com/docs/en/build-with-claude/context-windows#context-window-sizes-by-model)で動作します。Claude Code は、モデル変数に指定されたデプロイ名からモデルを読み取ります。各デプロイには `claude-opus-4-8` のようにモデル ID を名前として付けるか、[`modelOverrides`](/docs/ja/model-config#override-model-ids-per-version) でモデルをデプロイ名にマッピングしてください。モデルと照合できないデプロイ名の場合、[別のウィンドウを宣言](/docs/ja/model-config#correct-the-window-for-a-gateway-or-custom-model-id)しない限り、Claude Code は 200K のウィンドウを想定します。
 
@@ -274,9 +183,7 @@ Microsoft Foundry では、デプロイがどのモデルを提供している�
 
 Opus 4.6 と Sonnet 4.6 は、[サードパーティデプロイ向けにモデルを固定する](/docs/ja/model-config#pin-models-for-third-party-deployments)で説明されているように、`ANTHROPIC_DEFAULT_OPUS_MODEL` または `ANTHROPIC_DEFAULT_SONNET_MODEL` のデプロイ名に `[1m]` を付加すると 1M のウィンドウを利用できます。v2.1.287 より前では、Microsoft Foundry 上の Fable モデルおよび Opus 4.7 以降でもこのサフィックスが必要で、付けない場合はデフォルトで 200K のウィンドウで動作していました。
 
-<h2 id="troubleshooting">
-  トラブルシューティング
-</h2>
+## トラブルシューティング
 
 「Failed to get token from azureADTokenProvider: ChainedTokenCredential authentication failed」というエラーが表示される場合：
 
@@ -286,9 +193,7 @@ Opus 4.6 と Sonnet 4.6 は、[サードパーティデプロイ向けにモデ�
 
 * `ANTHROPIC_FOUNDRY_RESOURCE` がプレースホルダーではなく、実際のリソース名に設定されていることを確認してください。Claude Code はこの値からエンドポイント URL を構築するため、不正な名前は存在しないホストを指します。
 
-<h2 id="additional-resources">
-  その他のリソース
-</h2>
+## その他のリソース
 
 * [Microsoft Foundry ドキュメント](https://learn.microsoft.com/en-us/azure/ai-foundry/what-is-azure-ai-foundry)
 * [Microsoft Foundry モデル](https://ai.azure.com/explore/models)

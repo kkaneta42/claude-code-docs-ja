@@ -8,9 +8,7 @@
 
 Claude Code は専用プラグインを通じて JetBrains IDEs と統合され、インタラクティブな diff ビューイング、選択コンテキスト共有など、様々な機能を提供します。
 
-<h2 id="supported-ides">
-  サポートされている IDE
-</h2>
+## サポートされている IDE
 
 Claude Code プラグインは、以下を含むほとんどの JetBrains IDEs で動作します。
 
@@ -21,9 +19,7 @@ Claude Code プラグインは、以下を含むほとんどの JetBrains IDEs �
 * PhpStorm
 * GoLand
 
-<h2 id="features">
-  機能
-</h2>
+## 機能
 
 * **クイック起動**: `Cmd+Esc`（Mac）または `Ctrl+Esc`（Windows/Linux）を使用してエディタから Claude Code を直接開くか、UI の Claude Code ボタンをクリックします
 * **Diff ビューイング**: Claude Code はコードの変更をターミナルではなく IDE の diff ビューアで開きます。`/config` の **Diff tool** 設定でこれを変更できます
@@ -31,43 +27,29 @@ Claude Code プラグインは、以下を含むほとんどの JetBrains IDEs �
 * **ファイル参照ショートカット**: `Cmd+Option+K`（Mac）または `Alt+Ctrl+K`（Linux/Windows）を使用して `@src/auth.ts#L1-99` などのファイル参照を挿入します
 * **診断共有**: Claude は [`getDiagnostics` ツール](#the-built-in-ide-mcp-server)を呼び出して IDE の検査診断（lint や構文エラーなど）を読み取ります。Claude Code は編集後に独自にプラグインから診断をリクエストしません
 
-<h2 id="installation">
-  インストール
-</h2>
+## インストール
 
 プラグインは IDE の統合ターミナルで `claude` コマンドを実行し、それに接続します。独自の CLI コピーをバンドルしていないため、両方をインストールする必要があります。
 
-<Steps>
-  <Step title="Claude Code CLI をインストールする">
-    まだインストールしていない場合は、[クイックスタート](/docs/ja/quickstart) に従って CLI をインストールしてください。`claude` が PATH にない場合、プラグインは'Claude Code を起動できません'という通知を表示します。
-  </Step>
+**1. Claude Code CLI をインストールする**
 
-  <Step title="JetBrains プラグインをインストールする">
-    JetBrains マーケットプレイスから [Claude Code プラグイン](https://plugins.jetbrains.com/plugin/27310-claude-code-beta-) をインストールし、IDE を再起動します。
-  </Step>
-</Steps>
+まだインストールしていない場合は、[クイックスタート](/docs/ja/quickstart) に従って CLI をインストールしてください。`claude` が PATH にない場合、プラグインは'Claude Code を起動できません'という通知を表示します。
+
+**2. JetBrains プラグインをインストールする**
+
+JetBrains マーケットプレイスから [Claude Code プラグイン](https://plugins.jetbrains.com/plugin/27310-claude-code-beta-) をインストールし、IDE を再起動します。
 
 `claude` が IDE が見つけられない場所にインストールされている場合は、プラグインの [Claude コマンド設定](#general-settings) でフルパスを設定してください。
 
 Claude Code は、任意の有料 Claude サブスクリプション（Pro、Max、Team、または Enterprise）または Claude Console アカウントで動作し、API キーは不要です。`claude` を初めて実行するときに [ログイン](/docs/ja/authentication#log-in-to-claude-code) するよう求められます。
 
-<h2 id="usage">
-  使用方法
-</h2>
+## 使用方法
 
-<span id="from-your-ide" />
-
-<h3 id="run-claude-code-from-your-ide">
-  IDE から Claude Code を実行する
-</h3>
+### IDE から Claude Code を実行する
 
 IDE の統合ターミナルから `claude` を実行すると、すべての統合機能がアクティブになります。
 
-<span id="from-external-terminals" />
-
-<h3 id="connect-from-an-external-terminal">
-  外部ターミナルから接続する
-</h3>
+### 外部ターミナルから接続する
 
 任意の外部ターミナルで `/ide` コマンドを使用して Claude Code を JetBrains IDE に接続し、すべての機能をアクティブにします。
 
@@ -83,13 +65,9 @@ claude
 
 Claude が IDE と同じファイルにアクセスできるようにしたい場合は、IDE プロジェクトルートと同じディレクトリから Claude Code を起動してください。
 
-<h2 id="configuration">
-  設定
-</h2>
+## 設定
 
-<h3 id="claude-code-settings">
-  Claude Code 設定
-</h3>
+### Claude Code 設定
 
 Claude Code の設定を通じて IDE 統合を設定します。
 
@@ -99,28 +77,22 @@ Claude Code の設定を通じて IDE 統合を設定します。
 
 **Diff tool** エントリは Claude Code が IDE に接続されている場合にのみ `/config` に表示されるため、JetBrains ターミナルから `claude` を実行するか、外部ターミナルから最初に [`/ide`](/docs/ja/commands) を実行してください。基になる設定については [`diffTool`](/docs/ja/settings-reference#difftool) を参照してください。
 
-<h3 id="plugin-settings">
-  プラグイン設定
-</h3>
+### プラグイン設定
 
 **Settings → Tools → Claude Code \[Beta]** に移動して Claude Code プラグインを設定します。
 
-<h4 id="general-settings">
-  一般設定
-</h4>
+#### 一般設定
 
 * **Claude command**: Claude を実行するカスタムコマンドを指定します（例：`claude`、`/usr/local/bin/claude`、または `npx @anthropic-ai/claude-code`）
 * **Suppress notification for when Claude Command is not found**: Claude コマンドが見つからないことに関する通知をスキップします
 * **Enable using Option+Enter for multi-line prompts**: macOS のみ。有効にすると、Option+Enter は Claude Code プロンプトに新しい行を挿入します。Option キーが予期せずキャプチャされる場合は無効にしてください。ターミナルの再起動が必要です。
 * **Enable automatic updates**: プラグインの更新を自動的にチェックしてインストールします。再起動時に適用されます
 
-<Tip>
-  WSL ユーザー向け: Claude コマンドとして `wsl -d Ubuntu -- bash -lic "claude"` を設定します（`Ubuntu` を WSL ディストリビューション名に置き換えてください）
-</Tip>
+> [!TIP]
+>
+> WSL ユーザー向け: Claude コマンドとして `wsl -d Ubuntu -- bash -lic "claude"` を設定します（`Ubuntu` を WSL ディストリビューション名に置き換えてください）
 
-<h4 id="esc-key-configuration">
-  ESC キー設定
-</h4>
+#### ESC キー設定
 
 ESC キーが JetBrains ターミナルで Claude Code 操作を中断しない場合：
 
@@ -132,57 +104,45 @@ ESC キーが JetBrains ターミナルで Claude Code 操作を中断しない�
 
 これにより、ESC キーが Claude Code 操作を適切に中断できるようになります。
 
-<h2 id="special-configurations">
-  特別な設定
-</h2>
+## 特別な設定
 
-<h3 id="remote-development">
-  リモート開発
-</h3>
+### リモート開発
 
-<Warning>
-  JetBrains リモート開発を使用する場合、ローカルクライアントマシンではなく、**Settings → Plugin (Host)** を通じてリモートホストにプラグインをインストールする必要があります。
-</Warning>
+> [!WARNING]
+>
+> JetBrains リモート開発を使用する場合、ローカルクライアントマシンではなく、**Settings → Plugin (Host)** を通じてリモートホストにプラグインをインストールする必要があります。
 
-<h3 id="wsl-configuration">
-  WSL 設定
-</h3>
+### WSL 設定
 
 Claude Code を WSL2 の JetBrains IDE で使用していて「No available IDEs detected」が表示される場合、原因は通常 WSL2 の NAT ネットワークまたは Windows ファイアウォールが WSL2 と Windows ホストで実行されている IDE 間の接続をブロックしていることです。WSL1 はホストのネットワークを直接使用するため、影響を受けません。
 
-<h4 id="allow-wsl2-traffic-through-windows-firewall">
-  Windows ファイアウォール経由で WSL2 トラフィックを許可する
-</h4>
+#### Windows ファイアウォール経由で WSL2 トラフィックを許可する
 
 これは推奨される修正方法です。既存の WSL2 ネットワークモードを保持するためです。
 
-<Steps>
-  <Step title="WSL2 IP アドレスを見つける">
-    WSL シェル内から以下を実行します。
+**1. WSL2 IP アドレスを見つける**
 
-    ```bash theme={null}
-    hostname -I
-    ```
+WSL シェル内から以下を実行します。
 
-    サブネットをメモします。アドレスの最初の 2 つのセグメントを取得し、その後に `.0.0/16` を付けます。例えば、アドレスが `172.21.123.45` の場合、サブネットは `172.21.0.0/16` です。
-  </Step>
+```bash theme={null}
+hostname -I
+```
 
-  <Step title="ファイアウォールルールを作成する">
-    PowerShell を管理者として開き、以下を実行します。IP 範囲をサブネットに合わせて調整してください。
+サブネットをメモします。アドレスの最初の 2 つのセグメントを取得し、その後に `.0.0/16` を付けます。例えば、アドレスが `172.21.123.45` の場合、サブネットは `172.21.0.0/16` です。
 
-    ```powershell theme={null}
-    New-NetFirewallRule -DisplayName "Allow WSL2 Internal Traffic" -Direction Inbound -Protocol TCP -Action Allow -RemoteAddress 172.21.0.0/16 -LocalAddress 172.21.0.0/16
-    ```
-  </Step>
+**2. ファイアウォールルールを作成する**
 
-  <Step title="IDE と Claude Code を再起動する">
-    両方を閉じて再度開き、新しいルールが有効になるようにします。
-  </Step>
-</Steps>
+PowerShell を管理者として開き、以下を実行します。IP 範囲をサブネットに合わせて調整してください。
 
-<h4 id="switch-wsl2-to-mirrored-networking">
-  WSL2 をミラーリングネットワークに切り替える
-</h4>
+```powershell theme={null}
+New-NetFirewallRule -DisplayName "Allow WSL2 Internal Traffic" -Direction Inbound -Protocol TCP -Action Allow -RemoteAddress 172.21.0.0/16 -LocalAddress 172.21.0.0/16
+```
+
+**3. IDE と Claude Code を再起動する**
+
+両方を閉じて再度開き、新しいルールが有効になるようにします。
+
+#### WSL2 をミラーリングネットワークに切り替える
 
 ミラーリングネットワークには Windows 11 22H2 以降が必要です。Windows 10 を使用している場合は、代わりに上記のファイアウォールルールを使用してください。
 
@@ -195,13 +155,9 @@ networkingMode=mirrored
 
 その後、PowerShell から `wsl --shutdown` で WSL を再起動します。
 
-<h2 id="troubleshooting">
-  トラブルシューティング
-</h2>
+## トラブルシューティング
 
-<h3 id="plugin-not-working">
-  プラグインが動作しない
-</h3>
+### プラグインが動作しない
 
 プラグインがインストールされているが Claude Code 機能が IDE に表示されない場合：
 
@@ -210,9 +166,7 @@ networkingMode=mirrored
 * IDE を完全に再起動してください（複数回実行する必要がある場合があります）
 * リモート開発の場合、プラグインがリモートホストにインストールされていることを確認してください
 
-<h3 id="ide-not-detected">
-  IDE が検出されない
-</h3>
+### IDE が検出されない
 
 `/ide` コマンドが「No available IDEs detected」を表示する場合：
 
@@ -221,9 +175,7 @@ networkingMode=mirrored
 * `/ide` を実行せずに自動接続が期待される場合は、IDE の統合ターミナルから `claude` を起動したことを確認してください
 * WSL ユーザーの場合、上記の [WSL 設定](#wsl-configuration) を参照してください
 
-<h3 id="command-not-found">
-  コマンドが見つからない
-</h3>
+### コマンドが見つからない
 
 Claude アイコンをクリックして「command not found」が表示される場合：
 
@@ -231,9 +183,7 @@ Claude アイコンをクリックして「command not found」が表示され�
 2. プラグイン設定で Claude コマンドパスを設定してください
 3. WSL ユーザーの場合、設定セクションで説明されている WSL コマンド形式を使用してください
 
-<h2 id="security-considerations">
-  セキュリティに関する考慮事項
-</h2>
+## セキュリティに関する考慮事項
 
 Claude Code が [`acceptEdits` 権限モード](/docs/ja/permission-modes#auto-approve-file-edits-with-acceptedits-mode)で JetBrains IDE で実行される場合、IDE によって自動的に実行される可能性のある IDE 設定ファイルを変更できる場合があります。これにより、`acceptEdits` モードで Claude Code を実行するリスクが増加し、Bash 実行に対する Claude Code の権限プロンプトをバイパスできる可能性があります。
 
@@ -245,9 +195,7 @@ JetBrains IDEs で実行する場合は、以下を検討してください。
 
 Claude Code のインストールまたはログインの問題については、[インストールとログインのトラブルシューティング](/docs/ja/troubleshoot-install) を参照してください。
 
-<h3 id="the-built-in-ide-mcp-server">
-  組み込み IDE MCP サーバー
-</h3>
+### 組み込み IDE MCP サーバー
 
 プラグインがアクティブな場合、CLI が自動的に接続するローカル MCP サーバーが実行されます。これは、CLI が IDE のネイティブ diff ビューアーで diff を開き、`@` メンションの現在の選択を読み取り、Claude が検査診断を読み取る方法です。
 
@@ -271,6 +219,6 @@ JetBrains プラグインは、モデルにコード実行ツールを公開し�
 
 **リッスンインターフェース。** サーバーがバインドするネットワークインターフェースは、**Settings → Tools → Claude Code \[Beta] → Networking (Advanced)** の下の **Accept connections from all network interfaces** によって制御されます。設定が無効な場合、サーバーは `127.0.0.1` のみでリッスンし、他のホストからはアクセスできません。有効な場合、ポートはローカルネットワークからアクセス可能です。この設定は、WSL2 のデフォルト NAT ネットワークやリモート IDE セットアップなど、CLI がループバック経由で IDE に到達できない場合のために存在します。[WSL 設定](#wsl-configuration) を参照してください。
 
-<Warning>
-  **Accept connections from all network interfaces** を有効にすると、IDE MCP ポートがローカルネットワークからアクセス可能になります。接続にはロックファイルからの認証トークンが必要ですが、トランスポートが暗号化されていない `ws://` であるため、設定がオンの場合、セッショントラフィックとそのトークンの両方がネットワーク上をクリアテキストで通過します。ループバックが本当に機能しない場合にのみオンにしてください。WSL2 の場合は、[ミラーリングネットワークに切り替える](#switch-wsl2-to-mirrored-networking) ことをお勧めします。これにより、Windows ループバックインターフェースが Linux VM と共有され、ソケットはループバック上に留まります。
-</Warning>
+> [!WARNING]
+>
+> **Accept connections from all network interfaces** を有効にすると、IDE MCP ポートがローカルネットワークからアクセス可能になります。接続にはロックファイルからの認証トークンが必要ですが、トランスポートが暗号化されていない `ws://` であるため、設定がオンの場合、セッショントラフィックとそのトークンの両方がネットワーク上をクリアテキストで通過します。ループバックが本当に機能しない場合にのみオンにしてください。WSL2 の場合は、[ミラーリングネットワークに切り替える](#switch-wsl2-to-mirrored-networking) ことをお勧めします。これにより、Windows ループバックインターフェースが Linux VM と共有され、ソケットはループバック上に留まります。

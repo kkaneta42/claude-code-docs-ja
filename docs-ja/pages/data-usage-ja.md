@@ -6,36 +6,26 @@
 
 > Anthropic の Claude のデータ使用ポリシーについて学習します
 
-<h2 id="data-policies">
-  データポリシー
-</h2>
+## データポリシー
 
-<h3 id="data-training-policy">
-  データトレーニングポリシー
-</h3>
+### データトレーニングポリシー
 
 **コンシューマーユーザー（Free、Pro、Max プラン）**：
 将来の Claude モデルの改善のためにデータを使用することを許可するかどうかを選択できます。この設定がオンの場合、Free、Pro、Max アカウントからのデータを使用して新しいモデルをトレーニングします（これらのアカウントから Claude Code を使用する場合も含みます）。
 
 **商用ユーザー**：（Team および Enterprise プラン、API、サードパーティプラットフォーム、Claude Gov）既存のポリシーを維持します。Anthropic は、商用条件の下で Claude Code に送信されたコードまたはプロンプトを使用して生成モデルをトレーニングしません。ただし、カスタマーがモデル改善のためにデータを提供することを選択した場合は除きます（例えば、[Developer Partner Program](https://support.claude.com/ja/articles/11174108-about-the-development-partner-program)）。
 
-<h3 id="development-partner-program">
-  Development Partner Program
-</h3>
+### Development Partner Program
 
 [Development Partner Program](https://support.claude.com/ja/articles/11174108-about-the-development-partner-program) などを通じて、トレーニング用の資料を提供する方法に明示的にオプトインした場合、提供された資料を使用してモデルをトレーニングする可能性があります。組織管理者は、組織の Development Partner Program に明示的にオプトインできます。このプログラムは Anthropic ファーストパーティ API でのみ利用可能であり、Amazon Bedrock または Google Cloud の Agent Platform ユーザーは利用できないことに注意してください。
 
-<h3 id="feedback-using-the-/feedback-command">
-  `/feedback` コマンドを使用したフィードバック
-</h3>
+### `/feedback` コマンドを使用したフィードバック
 
 `/feedback` コマンドを使用して Claude Code に関するフィードバックを送信することを選択した場合、製品とサービスを改善するためにフィードバックを使用する可能性があります。`/feedback`、`/bug`、`/share` を通じて共有されたトランスクリプトは、同じパスを通じてレポートされ、5 年間保持されます。
 
 [Claude が作成したフィードバック](/docs/ja/tools-reference#sendfeedback-tool-behavior) では、Claude はフィードバックレポートを作成し、レビュー用にマシンにキューイングすることもできます。Claude Code は、ドラフトを送信することを選択するまで何も送信しません。送信されたドラフトは、他の `/feedback` レポートと同じ送信パスと保持期間を通じて処理されます。
 
-<h3 id="session-quality-surveys">
-  セッション品質調査
-</h3>
+### セッション品質調査
 
 Claude Code で「How is Claude doing this session?」プロンプトが表示されたときに、この調査に応答する場合（「Dismiss」を選択する場合を含む）、数値評価のみが記録されます。この調査の一部として、会話トランスクリプト、入力、出力、またはその他のセッションデータは収集または保存されません。サムズアップ/ダウンフィードバックまたは `/feedback` レポートとは異なり、このセッション品質調査は単純な製品満足度メトリックです。
 
@@ -49,9 +39,7 @@ Claude Code で「How is Claude doing this session?」プロンプトが表示�
 
 これらの調査を無効にするには、`CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY=1` を設定します。調査は、`DISABLE_TELEMETRY`、`DO_NOT_TRACK`、または `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` が設定されている場合にも無効になります。無効にする代わりに頻度を制御するには、設定ファイルで [`feedbackSurveyRate`](/docs/ja/settings-reference#feedbacksurveyrate) を `0` から `1` の間の確率に設定します。非必須トラフィックをブロックしているが、独自の [OpenTelemetry collector](/docs/ja/monitoring-usage) を通じて調査応答をキャプチャしている組織は、`CLAUDE_CODE_ENABLE_FEEDBACK_SURVEY_FOR_OTEL=1` を設定することで調査をオプトバックインできます。調査は、設定されたコレクターのみに数値評価をログします。トランスクリプト共有フォローアップおよび他のすべての Anthropic バウンドフィードバックトラフィックは無効のままです。
 
-<h3 id="data-retention">
-  データ保持
-</h3>
+### データ保持
 
 Anthropic は、アカウントタイプと設定に基づいて Claude Code データを保持します。
 
@@ -75,21 +63,15 @@ Web 上の個別の Claude Code セッションはいつでも削除できます
 
 詳細については、[Commercial Terms of Service](https://www.anthropic.com/legal/commercial-terms)（Team、Enterprise、API ユーザー向け）または [Consumer Terms](https://www.anthropic.com/legal/consumer-terms)（Free、Pro、Max ユーザー向け）および [Privacy Policy](https://www.anthropic.com/legal/privacy) を確認してください。
 
-<h2 id="data-access">
-  データアクセス
-</h2>
+## データアクセス
 
 すべてのファーストパーティユーザーの場合、[ローカル Claude Code](#local-claude-code-data-flow-and-dependencies) および [リモート Claude Code](#cloud-execution-data-flow-and-dependencies) に対してログされるデータについて詳しく知ることができます。[Remote Control](/docs/ja/remote-control) セッションは、すべての実行がマシン上で行われるため、ローカルデータフローに従います。接続中、セッショントランスクリプトは [Connection and security](/docs/ja/remote-control#connection-and-security) に記載されているように、デバイス間で会話を同期するために Anthropic サーバーにも保存されます。リモート Claude Code の場合、Claude は Claude Code セッションを開始するリポジトリにアクセスします。Claude は接続したが、セッションを開始していないリポジトリにはアクセスしません。
 
-<h2 id="local-claude-code-data-flow-and-dependencies">
-  ローカル Claude Code：データフローと依存関係
-</h2>
+## ローカル Claude Code：データフローと依存関係
 
 下の図は、Claude Code がインストール中および通常の操作中に外部サービスにどのように接続するかを示しています。実線は必須の接続を示し、破線はオプションまたはユーザーが開始するデータフローを表します。
 
-<img src="https://mintcdn.com/claude-code/YR4DRZyI3CdsXkiT/images/claude-code-data-flow.svg?fit=max&auto=format&n=YR4DRZyI3CdsXkiT&q=85&s=2846ea92cfc2297b8620c31c82b482ad" className="dark:hidden" alt="Claude Code の外部接続を示す図：インストール/更新は配布サーバーに接続し、ユーザーリクエストは Anthropic の Console 認証と public-api に接続します。オプションのテレメトリフローはメトリクスとエラーレポートを Anthropic とサードパーティサービスに送信します。/feedback で送信されたフィードバックは Google Cloud Storage に送信され、オプションで GitHub issue を作成します" width="720" height="520" data-path="images/claude-code-data-flow.svg" />
-
-<img src="https://mintcdn.com/claude-code/_xqph1dUOslCOwsj/images/claude-code-data-flow-dark.svg?fit=max&auto=format&n=_xqph1dUOslCOwsj&q=85&s=4fb6e8c88a9740845217bf2a2b040877" className="hidden dark:block" alt="Claude Code の外部接続を示す図：インストール/更新は配布サーバーに接続し、ユーザーリクエストは Anthropic の Console 認証と public-api に接続します。オプションのテレメトリフローはメトリクスとエラーレポートを Anthropic とサードパーティサービスに送信します。/feedback で送信されたフィードバックは Google Cloud Storage に送信され、オプションで GitHub issue を作成します" width="720" height="520" data-path="images/claude-code-data-flow-dark.svg" />
+![Claude Code の外部接続を示す図：インストール/更新は配布サーバーに接続し、ユーザーリクエストは Anthropic の Console 認証と public-api に接続します。オプションのテレメトリフローはメトリクスとエラーレポートを Anthropic とサードパーティサービスに送信します。/feedback で送信されたフィードバックは Google Cloud Storage に送信され、オプションで GitHub issue を作成します](https://mintcdn.com/claude-code/YR4DRZyI3CdsXkiT/images/claude-code-data-flow.svg?fit=max\&auto=format\&n=YR4DRZyI3CdsXkiT\&q=85\&s=2846ea92cfc2297b8620c31c82b482ad)
 
 Claude Code はローカルで実行されます。LLM と相互作用するために、Claude Code はネットワーク経由でデータを送信します。このデータには、すべてのユーザープロンプトとモデル出力が含まれ、TLS 1.2 以上で転送中に暗号化されます。Claude Code はほとんどの一般的な VPN と LLM プロキシと互換性があります。
 
@@ -104,9 +86,7 @@ Claude Code はローカルで実行されます。LLM と相互作用するた�
 
 Claude Code は Anthropic の API 上に構築されています。API ロギング手順を含む API セキュリティコントロールの詳細については、[Anthropic Trust Center](https://trust.anthropic.com) のコンプライアンスアーティファクトを参照してください。
 
-<h3 id="cloud-execution-data-flow-and-dependencies">
-  クラウド実行：データフローと依存関係
-</h3>
+### クラウド実行：データフローと依存関係
 
 [クラウドセッション](/docs/ja/claude-code-on-the-web)は、デフォルトではローカルではなく Anthropic 管理の仮想マシンで実行されます。組織が[自己ホスト環境](/docs/ja/self-hosted-environments)にルーティングするセッションは、制御するインフラストラクチャ上で実行されます。マシン上に留まるもの、および Anthropic に送信されるものについては、[インフラストラクチャに留まるもの](/docs/ja/self-hosted-environments#what-stays-on-your-infrastructure)を参照してください。Anthropic ホスト型クラウドセッションでは：
 
@@ -117,9 +97,7 @@ Claude Code は Anthropic の API 上に構築されています。API ロギン
 
 クラウド実行のセキュリティの詳細については、[セキュリティ](/docs/ja/security#cloud-execution-security)を参照してください。
 
-<h2 id="telemetry-services">
-  テレメトリサービス
-</h2>
+## テレメトリサービス
 
 Claude Code は 2 種類の運用テレメトリを送信します。使用メトリクスとエラーレポートです。以下の環境変数を使用して各々をオフにすることができます。または `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` を設定することで、すべての非必須トラフィックを一度に無効にできます。`DISABLE_TELEMETRY` または `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` を設定すると、[Remote Control](/docs/ja/remote-control#requirements) が依存するフィーチャーフラグ評価も無効になります。`DISABLE_ERROR_REPORTING` はそうではありません。
 
@@ -138,27 +116,23 @@ Claude Code は 2 種類の運用テレメトリを送信します。使用メ�
 
 Amazon Bedrock や Google Cloud の Agent Platform などのサードパーティプロバイダーを使用している場合、または Anthropic 認証情報が設定されていない場合、`/feedback` はレポートを Anthropic に送信する代わりに、`~/.claude/feedback-bundles/` の下のローカルアーカイブに書き込みます。既知の API キーおよびトークンパターンは、アーカイブが書き込まれる前に削除されます。Anthropic アカウント担当者にファイルを送信するか、サポートリクエストに添付するまで、何もマシンから出ません。
 
-<h2 id="default-behaviors-by-api-provider">
-  API プロバイダーのデフォルト動作
-</h2>
+## API プロバイダーのデフォルト動作
 
 デフォルトでは、Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、または Claude Platform on AWS を使用する場合、エラーレポート、テレメトリ、およびバグレポートは無効になります。セッション品質調査と WebFetch ドメインセーフティチェックは例外であり、プロバイダーに関係なく実行されます。署名済みの [Claude apps gateway](/docs/ja/claude-apps-gateway) セッションでは、Anthropic への使用分析、エラーレポート、および調査評価はゲートウェイ認証情報自体によって無効になり、それらを再度有効にする設定はありません。`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` を設定することで、調査を含むすべての非必須トラフィックをオプトアウトできます。この変数は WebFetch チェックや公式プラグインマーケットプレイスの自動インストールに影響を与えません。それぞれに独自のオプトアウトがあります。WebFetch の場合は [settings](/docs/ja/settings) の `skipWebFetchPreflight`、マーケットプレイスの場合は `CLAUDE_CODE_DISABLE_OFFICIAL_MARKETPLACE_AUTOINSTALL` です。以下は完全なデフォルト動作です：
 
 | サービス | Claude API | Google Cloud の Agent Platform API | Amazon Bedrock API | Microsoft Foundry API | Claude Platform on AWS |
 | - | - | - | - | - | - |
-| **メトリクス** | デフォルトオン。<br />`DISABLE_TELEMETRY=1` で無効にします。 | デフォルトオフ。<br />`CLAUDE_CODE_USE_VERTEX` は 1 である必要があります。 | デフォルトオフ。<br />`CLAUDE_CODE_USE_BEDROCK` は 1 である必要があります。 | デフォルトオフ。<br />`CLAUDE_CODE_USE_FOUNDRY` は 1 である必要があります。 | デフォルトオフ。<br />`CLAUDE_CODE_USE_ANTHROPIC_AWS` は 1 である必要があります。 |
-| **エラーレポート** | v2.1.198 以降の Pro および Max サインインではオン、それ以外はオフ。<br />`DISABLE_ERROR_REPORTING=1` で無効にします。 | デフォルトオフ。<br />`CLAUDE_CODE_USE_VERTEX` は 1 である必要があります。 | デフォルトオフ。<br />`CLAUDE_CODE_USE_BEDROCK` は 1 である必要があります。 | デフォルトオフ。<br />`CLAUDE_CODE_USE_FOUNDRY` は 1 である必要があります。 | デフォルトオフ。<br />`CLAUDE_CODE_USE_ANTHROPIC_AWS` は 1 である必要があります。 |
-| **Claude API（`/feedback` レポート）** | デフォルトオン。<br />`DISABLE_FEEDBACK_COMMAND=1` で無効にします。 | デフォルトオフ。<br />`CLAUDE_CODE_USE_VERTEX` は 1 である必要があります。 | デフォルトオフ。<br />`CLAUDE_CODE_USE_BEDROCK` は 1 である必要があります。 | デフォルトオフ。<br />`CLAUDE_CODE_USE_FOUNDRY` は 1 である必要があります。 | デフォルトオフ。<br />`CLAUDE_CODE_USE_ANTHROPIC_AWS` は 1 である必要があります。 |
-| **セッション品質調査** | デフォルトオン。<br />`CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY=1` で無効にします。 | デフォルトオン。<br />`CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY=1` で無効にします。 | デフォルトオン。<br />`CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY=1` で無効にします。 | デフォルトオン。<br />`CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY=1` で無効にします。 | デフォルトオン。<br />`CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY=1` で無効にします。 |
-| **WebFetch ドメインセーフティチェック** | デフォルトオン。<br />[settings](/docs/ja/settings) で `skipWebFetchPreflight: true` で無効にします。 | デフォルトオン。<br />[settings](/docs/ja/settings) で `skipWebFetchPreflight: true` で無効にします。 | デフォルトオン。<br />[settings](/docs/ja/settings) で `skipWebFetchPreflight: true` で無効にします。 | デフォルトオン。<br />[settings](/docs/ja/settings) で `skipWebFetchPreflight: true` で無効にします。 | デフォルトオン。<br />[settings](/docs/ja/settings) で `skipWebFetchPreflight: true` で無効にします。 |
+| **メトリクス** | デフォルトオン。 `DISABLE_TELEMETRY=1` で無効にします。 | デフォルトオフ。 `CLAUDE_CODE_USE_VERTEX` は 1 である必要があります。 | デフォルトオフ。 `CLAUDE_CODE_USE_BEDROCK` は 1 である必要があります。 | デフォルトオフ。 `CLAUDE_CODE_USE_FOUNDRY` は 1 である必要があります。 | デフォルトオフ。 `CLAUDE_CODE_USE_ANTHROPIC_AWS` は 1 である必要があります。 |
+| **エラーレポート** | v2.1.198 以降の Pro および Max サインインではオン、それ以外はオフ。 `DISABLE_ERROR_REPORTING=1` で無効にします。 | デフォルトオフ。 `CLAUDE_CODE_USE_VERTEX` は 1 である必要があります。 | デフォルトオフ。 `CLAUDE_CODE_USE_BEDROCK` は 1 である必要があります。 | デフォルトオフ。 `CLAUDE_CODE_USE_FOUNDRY` は 1 である必要があります。 | デフォルトオフ。 `CLAUDE_CODE_USE_ANTHROPIC_AWS` は 1 である必要があります。 |
+| **Claude API（`/feedback` レポート）** | デフォルトオン。 `DISABLE_FEEDBACK_COMMAND=1` で無効にします。 | デフォルトオフ。 `CLAUDE_CODE_USE_VERTEX` は 1 である必要があります。 | デフォルトオフ。 `CLAUDE_CODE_USE_BEDROCK` は 1 である必要があります。 | デフォルトオフ。 `CLAUDE_CODE_USE_FOUNDRY` は 1 である必要があります。 | デフォルトオフ。 `CLAUDE_CODE_USE_ANTHROPIC_AWS` は 1 である必要があります。 |
+| **セッション品質調査** | デフォルトオン。 `CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY=1` で無効にします。 | デフォルトオン。 `CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY=1` で無効にします。 | デフォルトオン。 `CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY=1` で無効にします。 | デフォルトオン。 `CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY=1` で無効にします。 | デフォルトオン。 `CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY=1` で無効にします。 |
+| **WebFetch ドメインセーフティチェック** | デフォルトオン。 [settings](/docs/ja/settings) で `skipWebFetchPreflight: true` で無効にします。 | デフォルトオン。 [settings](/docs/ja/settings) で `skipWebFetchPreflight: true` で無効にします。 | デフォルトオン。 [settings](/docs/ja/settings) で `skipWebFetchPreflight: true` で無効にします。 | デフォルトオン。 [settings](/docs/ja/settings) で `skipWebFetchPreflight: true` で無効にします。 | デフォルトオン。 [settings](/docs/ja/settings) で `skipWebFetchPreflight: true` で無効にします。 |
 
 すべての環境変数は `settings.json` にチェックインできます（[settings reference](/docs/ja/settings-reference) を参照）。
 
 ホストプラットフォームが `CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST` を設定する場合、メトリクスは Google Cloud の Agent Platform、Amazon Bedrock、Microsoft Foundry、および Claude Platform on AWS でデフォルトでオンになり、標準の `DISABLE_TELEMETRY` オプトアウトに従います。エラーレポートと `/feedback` レポートは、これらのプロバイダーではデフォルトでオフのままです。
 
-<h3 id="webfetch-domain-safety-check">
-  WebFetch ドメインセーフティチェック
-</h3>
+### WebFetch ドメインセーフティチェック
 
 URL をフェッチする前に、WebFetch ツールは要求されたホスト名を `api.anthropic.com` に送信して、Anthropic が管理するセーフティブロックリストに対してチェックします。ホスト名のみが送信され、完全な URL、パス、またはページコンテンツは送信されません。Claude Code はチェックに合格したホスト名を 5 分間キャッシュし、ブロックされたまたは失敗したホスト名は次のリクエストで再チェックします。
 

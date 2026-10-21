@@ -8,14 +8,12 @@
 
 このページでは、管理者が Claude Code 用の LLM ゲートウェイをロールアウトする手順を説明します。[ゲートウェイ要件](#gateway-requirements)を満たすゲートウェイ製品がデプロイされていることを前提としています。特定の製品のデプロイまたは運用はここでは説明しません。ベンダーのドキュメントに従って、お客様のゲートウェイをデプロイしてください。
 
-<Note>
-  * 自分のマシン上の Claude Code を既存のゲートウェイに接続するには、[Claude Code を LLM ゲートウェイに接続する](/docs/ja/llm-gateway-connect)を参照してください
-  * Claude Code がゲートウェイに送信する内容と転送する内容については、[ゲートウェイプロトコルリファレンス](/docs/ja/llm-gateway-protocol)を参照してください
-</Note>
+> [!NOTE]
+>
+> * 自分のマシン上の Claude Code を既存のゲートウェイに接続するには、[Claude Code を LLM ゲートウェイに接続する](/docs/ja/llm-gateway-connect)を参照してください
+> * Claude Code がゲートウェイに送信する内容と転送する内容については、[ゲートウェイプロトコルリファレンス](/docs/ja/llm-gateway-protocol)を参照してください
 
-<h2 id="prerequisites">
-  前提条件
-</h2>
+## 前提条件
 
 ロールアウトを完了するには、以下が必要です。
 
@@ -26,9 +24,7 @@
 * 開発者マシンに設定ファイルを配信する方法。MDM または設定管理など
   * まだない場合は、[設定がデバイスに到達する方法](/docs/ja/admin-setup#decide-how-settings-reach-devices)でオプションを比較してください
 
-<h3 id="gateway-requirements">
-  ゲートウェイ要件
-</h3>
+### ゲートウェイ要件
 
 ゲートウェイを提供する製品がどれであれ、以下を満たす必要があります。
 
@@ -41,9 +37,7 @@
 
 オプションで、`GET /v1/models` を提供して、Claude Code が [モデル検出](/docs/ja/llm-gateway-protocol#model-discovery)でゲートウェイからモデルピッカーを入力できるようにします。
 
-<h2 id="rollout-steps">
-  ロールアウトステップ
-</h2>
+## ロールアウトステップ
 
 ロールアウトは 5 つのステップで構成され、各ステップにはチェックポイントがあります。
 
@@ -61,98 +55,86 @@
 | ゲートウェイ管理認証情報 | ゲートウェイ製品が管理またはテストインターフェース用に発行する場合は、あなた | `<gateway-key>` |
 | 開発者キー | 各開発者（[開発者認証情報を発行する](#issue-developer-credentials)でゲートウェイが発行） | `<developer-key>` |
 
-<h3 id="confirm-the-gateway-routes-your-models">
-  ゲートウェイがモデルをルーティングしていることを確認する
-</h3>
+### ゲートウェイがモデルをルーティングしていることを確認する
 
 ゲートウェイはプロバイダー認証情報で既に設定されており、ベース URL でリッスンしており、リクエストをプロバイダーの API に転送しているはずです。デプロイメントから 2 つの値を代入して、最小限のリクエストでパスが端から端まで機能することをテストします。
 
 * `<gateway-key>` は、現在ゲートウェイを呼び出すことができる認証情報です。管理キー、テストキー、または既に発行した自分の開発者キーです。すべてのゲートウェイ製品に個別の管理認証情報があるわけではありません。ない場合は、まず [開発者認証情報を発行する](#issue-developer-credentials)で自分用の開発者キーを発行してください。
 * `model` はゲートウェイがルーティングするように設定されている Claude モデル名です。例では `claude-sonnet-4-6` を使用しています。設定した名前に置き換えてください。
 
-<Tabs>
-  <Tab title="Bash or Zsh">
-    ```bash theme={null}
-    curl -X POST "https://llm-gateway.example.com/v1/messages" \
-      -H "Authorization: Bearer <gateway-key>" \
-      -H "anthropic-version: 2023-06-01" \
-      -H "content-type: application/json" \
-      -d '{"model": "claude-sonnet-4-6", "max_tokens": 1, "messages": [{"role": "user", "content": "."}]}'
-    ```
-  </Tab>
+**Bash or Zsh**
 
-  <Tab title="PowerShell">
-    ```powershell theme={null}
-    Invoke-RestMethod -Method Post -Uri "https://llm-gateway.example.com/v1/messages" `
-      -Headers @{ "Authorization" = "Bearer <gateway-key>"; "anthropic-version" = "2023-06-01" } `
-      -ContentType "application/json" `
-      -Body '{"model": "claude-sonnet-4-6", "max_tokens": 1, "messages": [{"role": "user", "content": "."}]}'
-    ```
-  </Tab>
-</Tabs>
+```bash theme={null}
+curl -X POST "https://llm-gateway.example.com/v1/messages" \
+  -H "Authorization: Bearer <gateway-key>" \
+  -H "anthropic-version: 2023-06-01" \
+  -H "content-type: application/json" \
+  -d '{"model": "claude-sonnet-4-6", "max_tokens": 1, "messages": [{"role": "user", "content": "."}]}'
+```
+
+**PowerShell**
+
+```powershell theme={null}
+Invoke-RestMethod -Method Post -Uri "https://llm-gateway.example.com/v1/messages" `
+  -Headers @{ "Authorization" = "Bearer <gateway-key>"; "anthropic-version" = "2023-06-01" } `
+  -ContentType "application/json" `
+  -Body '{"model": "claude-sonnet-4-6", "max_tokens": 1, "messages": [{"role": "user", "content": "."}]}'
+```
 
 **チェックポイント**：`content` フィールド付きの `200` は、ゲートウェイがそのモデル名でプロバイダーに到達したことを意味します。`404` はその名前がゲートウェイでルーティングされていないことを意味します。プロバイダーからの `401` はゲートウェイのプロバイダー認証情報が間違っていることを意味します。
 
 ゲートウェイのルーティング設定内の Claude モデル名ごとに 1 回リクエストを繰り返します。ゲートウェイがルーティングしない名前は、それを選択した開発者に `404` を返すため、ロールアウト前にすべての名前をテストしてください。
 
-<Note>
-  ゲートウェイをリダイレクトの背後で提供することは避けてください。リダイレクトはリクエストボディを削除したり、推論リクエストの認証情報ヘッダーを削除したりする可能性があり、[モデルディスカバリー](/docs/ja/llm-gateway-protocol#model-discovery)はリダイレクトを失敗として扱うため、認証情報がリダイレクトターゲットに漏洩することはありません。
-</Note>
+> [!NOTE]
+>
+> ゲートウェイをリダイレクトの背後で提供することは避けてください。リダイレクトはリクエストボディを削除したり、推論リクエストの認証情報ヘッダーを削除したりする可能性があり、[モデルディスカバリー](/docs/ja/llm-gateway-protocol#model-discovery)はリダイレクトを失敗として扱うため、認証情報がリダイレクトターゲットに漏洩することはありません。
 
-<h3 id="issue-developer-credentials">
-  開発者認証情報を発行する
-</h3>
+### 開発者認証情報を発行する
 
 各開発者は、認証するためにゲートウェイキーが必要です。製品の認証情報管理ドキュメントに従って、ゲートウェイで開発者ごとに認証情報を作成します。
 
 新しく発行されたキーが [ゲートウェイがモデルをルーティングしていることを確認する](#confirm-the-gateway-routes-your-models)と同じリクエストでゲートウェイに対して機能することを確認し、`<gateway-key>` を新しい `<developer-key>` に置き換えます。
 
-<Tabs>
-  <Tab title="Bash or Zsh">
-    ```bash theme={null}
-    curl -X POST "https://llm-gateway.example.com/v1/messages" \
-      -H "Authorization: Bearer <developer-key>" \
-      -H "anthropic-version: 2023-06-01" \
-      -H "content-type: application/json" \
-      -d '{"model": "claude-sonnet-4-6", "max_tokens": 1, "messages": [{"role": "user", "content": "."}]}'
-    ```
-  </Tab>
+**Bash or Zsh**
 
-  <Tab title="PowerShell">
-    ```powershell theme={null}
-    Invoke-RestMethod -Method Post -Uri "https://llm-gateway.example.com/v1/messages" `
-      -Headers @{ "Authorization" = "Bearer <developer-key>"; "anthropic-version" = "2023-06-01" } `
-      -ContentType "application/json" `
-      -Body '{"model": "claude-sonnet-4-6", "max_tokens": 1, "messages": [{"role": "user", "content": "."}]}'
-    ```
-  </Tab>
-</Tabs>
+```bash theme={null}
+curl -X POST "https://llm-gateway.example.com/v1/messages" \
+  -H "Authorization: Bearer <developer-key>" \
+  -H "anthropic-version: 2023-06-01" \
+  -H "content-type: application/json" \
+  -d '{"model": "claude-sonnet-4-6", "max_tokens": 1, "messages": [{"role": "user", "content": "."}]}'
+```
+
+**PowerShell**
+
+```powershell theme={null}
+Invoke-RestMethod -Method Post -Uri "https://llm-gateway.example.com/v1/messages" `
+  -Headers @{ "Authorization" = "Bearer <developer-key>"; "anthropic-version" = "2023-06-01" } `
+  -ContentType "application/json" `
+  -Body '{"model": "claude-sonnet-4-6", "max_tokens": 1, "messages": [{"role": "user", "content": "."}]}'
+```
 
 **チェックポイント**：`content` フィールド付きの `200` は、開発者キーがゲートウェイに到達し、ゲートウェイがそれを転送することを意味します。[前のステップ](#confirm-the-gateway-routes-your-models)が成功した場合のここでの `401` は、開発者キーが間違っているか、ゲートウェイでまだ有効になっていないことを意味します。
 
 開発者ごとに 1 つのキーを発行することは、共有キーではなく、開発者ごとの使用状況の属性化と個別のオフボーディングを機能させるものです。キーを保持する環境変数は、ゲートウェイが読み取るヘッダーによって異なります。`Authorization: Bearer` ヘッダーで認証情報をチェックするゲートウェイの場合、開発者は `ANTHROPIC_AUTH_TOKEN` でキーを設定します。`x-api-key` ヘッダーからキーを読み取るゲートウェイの場合、開発者は代わりに `ANTHROPIC_API_KEY` を設定します。[認証情報テーブル](/docs/ja/llm-gateway-connect#set-the-credential-variable)はマッピングをカバーしています。
 
-<h3 id="test-claude-code-against-the-gateway">
-  ゲートウェイに対して Claude Code をテストする
-</h3>
+### ゲートウェイに対して Claude Code をテストする
 
 ロールアウトが fleet 全体に配布する同じ設定を使用して、ゲートウェイを通じて Claude Code を自分で実行してください。これらをターミナルに直接入力し、`.env` またはセッティングファイルには入力しないでください。これらはこのターミナルセッションのみ有効なため、セッションを閉じるとマシンは通常の設定に戻ります。ゲートウェイが `x-api-key` ヘッダーを読み取る場合は、`ANTHROPIC_AUTH_TOKEN` の代わりに `ANTHROPIC_API_KEY` を使用してください。
 
-<Tabs>
-  <Tab title="Bash or Zsh">
-    ```bash theme={null}
-    export ANTHROPIC_BASE_URL=https://llm-gateway.example.com
-    export ANTHROPIC_AUTH_TOKEN="<developer-key>"
-    ```
-  </Tab>
+**Bash or Zsh**
 
-  <Tab title="PowerShell">
-    ```powershell theme={null}
-    $env:ANTHROPIC_BASE_URL = "https://llm-gateway.example.com"
-    $env:ANTHROPIC_AUTH_TOKEN = "<developer-key>"
-    ```
-  </Tab>
-</Tabs>
+```bash theme={null}
+export ANTHROPIC_BASE_URL=https://llm-gateway.example.com
+export ANTHROPIC_AUTH_TOKEN="<developer-key>"
+```
+
+**PowerShell**
+
+```powershell theme={null}
+$env:ANTHROPIC_BASE_URL = "https://llm-gateway.example.com"
+$env:ANTHROPIC_AUTH_TOKEN = "<developer-key>"
+```
 
 次に、ゲートウェイを通じてワンショットプロンプトを送信します。
 
@@ -167,15 +149,11 @@ claude -p "Reply with one word: connected"
 
 間違ったまたは到達不可能なベース URL は異なる症状を生成します。Claude Code は [バックオフで接続を再試行](/docs/ja/errors#automatic-retries)し、エラーを報告する前に数分間出力がない状態で待機できます。コマンドがハングしているように見える場合は、待つ代わりにゲートウェイログをチェックしてください。到着するリクエストがないことは、`ANTHROPIC_BASE_URL` がゲートウェイを指していないことを意味します。
 
-<h3 id="distribute-the-configuration">
-  設定を配布する
-</h3>
+### 設定を配布する
 
 すべての開発者マシンにはゲートウェイアドレスと認証情報が必要です。[マネージドセッティング](/docs/ja/managed-settings#delivery-mechanisms)を通じて中央から配布できるため、開発者は何も設定する必要がなく、または開発者に値を設定させることができます。
 
-<h4 id="what-to-distribute">
-  配布する内容
-</h4>
+#### 配布する内容
 
 どちらのパスを選択するかに関わらず、同じ変数セットが適用されます。ほとんどのロールアウトは `ANTHROPIC_BASE_URL` と認証情報のみが必要です。ゲートウェイセットアップが必要とする場合は、条件付き行を含めてください。
 
@@ -191,9 +169,7 @@ claude -p "Reply with one word: connected"
 | `ANTHROPIC_MODEL` または [`ANTHROPIC_DEFAULT_HAIKU_MODEL`](/docs/ja/model-config) | Claude Code がメインセッションとバックグラウンドトラフィックに要求するモデル名を設定します | ゲートウェイが Claude Code のデフォルトと一致しないモデル名をルーティングする場合、または [バックグラウンド機能](/docs/ja/costs#background-token-usage)を別のモデルにルーティングする場合。オーバーライド名と、オーバーライドが設定されていない場合に Claude Code が要求する組み込みモデル ID の両方をルーティングしてください。一部のバックグラウンドサブコールはオーバーライドに関わらず組み込み ID を要求するため。[モデル設定](/docs/ja/model-config)は、セッションの各部分が使用するモデルをカバーしています。 |
 | `ANTHROPIC_BEDROCK_BASE_URL`、`ANTHROPIC_VERTEX_BASE_URL`、`ANTHROPIC_FOUNDRY_BASE_URL`、または `ANTHROPIC_AWS_BASE_URL`（[そのプロバイダーの変数](/docs/ja/llm-gateway-connect#route-to-a-cloud-provider-through-a-gateway)付き） | Claude Code をゲートウェイ経由でプロバイダー固有のベース URL を通じてポイントします。Amazon Bedrock と Google Cloud の Agent Platform はそれらのプロバイダーのネイティブリクエスト形式にも切り替わります | ゲートウェイが Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、または AWS 上の Claude Platform の前面にある場合。[API 形式](/docs/ja/llm-gateway-protocol#api-formats)を参照してください。 |
 
-<h4 id="distribute-through-managed-settings">
-  マネージドセッティングを通じて配布する
-</h4>
+#### マネージドセッティングを通じて配布する
 
 [マネージドセッティングファイル](/docs/ja/managed-settings#delivery-mechanisms)の `env` ブロックを通じて変数を配布し、MDM、レジストリポリシー、または設定管理によってプッシュします。
 
@@ -220,9 +196,7 @@ claude -p "Reply with one word: connected"
 * CI ランナーは [ランナーの環境](/docs/ja/llm-gateway-connect#configure-each-surface)で `ANTHROPIC_BASE_URL` と認証情報を設定する必要があります。
 * マネージドされた Windows マシン上の WSL は、[`wslInheritsWindowsSettings`](/docs/ja/settings-reference#wslinheritswindowssettings)が `true` の場合のみ Windows マネージドセッティングを読み取ります。
 
-<h4 id="the-hipaa-configuration-behind-a-gateway">
-  ゲートウェイ経由での HIPAA 設定
-</h4>
+#### ゲートウェイ経由での HIPAA 設定
 
 ゲートウェイを経由するセッションは HIPAA 設定の対象外です。[開発者のサインイン方法と接続方法を確認する](/docs/ja/hipaa-setup#check-how-developers-sign-in-and-connect)に、対象となるサインイン方法と接続方法が記載されています。
 
@@ -233,9 +207,7 @@ claude -p "Reply with one word: connected"
 
 これらのキーの代わりに `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` を使用しないでください。これは一部の機能をオフにしますが、自動アップデーターもオフにし、WebFetch はオンのままになります。
 
-<h4 id="hand-developers-the-values-to-set-themselves">
-  開発者に値を自分で設定させる
-</h4>
+#### 開発者に値を自分で設定させる
 
 マネージドセッティング配布が設定されていない場合は、各開発者に [接続ページ](/docs/ja/llm-gateway-connect#configure-claude-code-yourself)に従うために必要なものを送信します。
 
@@ -248,34 +220,30 @@ claude -p "Reply with one word: connected"
 
 **チェックポイント**：開発者マシンで、`claude` はログイン画面を表示せずにセッションを開始します。配布された認証情報が認証を満たすためです。次に `/status` を実行し、**Status** タブを開きます。`Anthropic base URL` 行はゲートウェイアドレスを表示し、マネージド配布の場合 `Setting sources` 行にはマネージドセッティングが含まれます。ログイン画面、または欠落している `Anthropic base URL` 行は、設定がマシンに到達しなかったことを意味します。
 
-<h3 id="verify-the-rollout">
-  ロールアウトを検証する
-</h3>
+### ロールアウトを検証する
 
 ゲートウェイホストではなく開発者マシンからすべてが機能することを確認し、テストが開発者が使用するネットワークパスをカバーするようにします。ストリーミングリクエストを送信します。これはエンドポイント、ストリーミングパススルー、およびモデルルーティングを一度にチェックします。
 
-<Tabs>
-  <Tab title="Bash or Zsh">
-    ```bash theme={null}
-    curl -N -X POST "https://llm-gateway.example.com/v1/messages" \
-      -H "Authorization: Bearer <developer-key>" \
-      -H "anthropic-version: 2023-06-01" \
-      -H "content-type: application/json" \
-      -d '{"model": "claude-sonnet-4-6", "max_tokens": 16, "stream": true, "messages": [{"role": "user", "content": "count to 3"}]}'
-    ```
-  </Tab>
+**Bash or Zsh**
 
-  <Tab title="PowerShell">
-    ```powershell theme={null}
-    $body = '{"model": "claude-sonnet-4-6", "max_tokens": 16, "stream": true, "messages": [{"role": "user", "content": "count to 3"}]}'
-    $body | curl.exe -N -X POST "https://llm-gateway.example.com/v1/messages" `
-      -H "Authorization: Bearer <developer-key>" `
-      -H "anthropic-version: 2023-06-01" `
-      -H "content-type: application/json" `
-      --data-binary '@-'
-    ```
-  </Tab>
-</Tabs>
+```bash theme={null}
+curl -N -X POST "https://llm-gateway.example.com/v1/messages" \
+  -H "Authorization: Bearer <developer-key>" \
+  -H "anthropic-version: 2023-06-01" \
+  -H "content-type: application/json" \
+  -d '{"model": "claude-sonnet-4-6", "max_tokens": 16, "stream": true, "messages": [{"role": "user", "content": "count to 3"}]}'
+```
+
+**PowerShell**
+
+```powershell theme={null}
+$body = '{"model": "claude-sonnet-4-6", "max_tokens": 16, "stream": true, "messages": [{"role": "user", "content": "count to 3"}]}'
+$body | curl.exe -N -X POST "https://llm-gateway.example.com/v1/messages" `
+  -H "Authorization: Bearer <developer-key>" `
+  -H "anthropic-version: 2023-06-01" `
+  -H "content-type: application/json" `
+  --data-binary '@-'
+```
 
 `data:` 行が段階的に到着するのが見えるはずです。一時停止後にすべての応答が一度に到着することは、ゲートウェイがバッファリングしていることを意味し、Claude Code を停止させます。`404` はモデル名がルーティングされていないことを意味します。モデル名ごとに繰り返します。
 
@@ -289,9 +257,7 @@ claude -p "Reply with one word: connected"
 
 最後に、送信したメッセージのゲートウェイログをチェックします。認証情報は開発者を識別し、[`x-claude-code-session-id` ヘッダー](/docs/ja/llm-gateway-protocol#request-headers)はセッションごとにリクエストをグループ化します。機能が [トラブルシューティング症状](/docs/ja/llm-gateway-connect#troubleshoot-gateway-errors)で失敗する場合、ゲートウェイはヘッダーを削除またはエラーを書き直しています。上記の [ゲートウェイ要件](#gateway-requirements)を参照してください。
 
-<h2 id="maintain-the-gateway">
-  ゲートウェイを維持する
-</h2>
+## ゲートウェイを維持する
 
 ロールアウト後、3 種類の変更が時間とともにゲートウェイに到達します。各変更には、監視する症状と実行するアクションがあります。
 
@@ -303,9 +269,7 @@ claude -p "Reply with one word: connected"
 
 キーごとのレート制限をサイズ設定するときは、クライアント [一時的な障害を再試行](/docs/ja/errors#automatic-retries)することを考慮に入れます。`429` レスポンスを含め、バックオフで最大 10 回、`Retry-After` を尊重します。[互換性ガイド](/docs/ja/llm-gateway-protocol)を各 Claude Code リリースが送信する内容のリファレンスとして保持します。
 
-<h3 id="plan-claude-code-version-upgrades">
-  Claude Code バージョンアップグレードを計画する
-</h3>
+### Claude Code バージョンアップグレードを計画する
 
 一部の Claude Code の動作はゲートウェイで設定されるのではなく、インストールされたバージョンに組み込まれているため、開発者を新しいリリースに移行すると、ゲートウェイ設定が変更されていない場合でも、デプロイメント全体の動作が変わる可能性があります。これが発生するタイミングを制御するには、[`requiredMaximumVersion`](/docs/ja/settings-reference#requiredmaximumversion)でテスト済みバージョンに開発者をピンします。または、独自のチャネルを通じて Claude Code を配布する場合は、[`DISABLE_UPDATES`](/docs/ja/setup#disable-auto-updates)を使用します。ピンを上げる前に、新しいリリースの[changelog](/docs/en/changelog)エントリを読み、[ゲートウェイに対してテスト](#test-claude-code-against-the-gateway)します。
 
@@ -317,9 +281,7 @@ claude -p "Reply with one word: connected"
 | モデル機能の仮定 | インストールされたバージョンが認識しないモデル ID（ゲートウェイエイリアス `prod-opus` など）は、[adaptive reasoning](/docs/ja/model-config#adaptive-reasoning-and-fixed-thinking-budgets)、effort パラメータ、および[コンテキストウィンドウ](/docs/ja/model-config#correct-the-window-for-a-gateway-or-custom-model-id)のデフォルト仮定で実行されます。後のバージョンが ID を認識するか、マップを作成するまで | ゲートウェイで Anthropic モデル ID をルーティングするか、Anthropic モデル ID をエイリアスにマップする[`modelOverrides`](/docs/ja/model-config#override-model-ids-per-version)エントリを追加します。クラウドプロバイダー接続では、代わりに[ピンされたモデルの機能を宣言](/docs/ja/model-config#customize-pinned-model-display-and-capabilities)できます |
 | デフォルトモデルとエイリアス | 新しいセッションがデフォルトで開始するモデル、および `opus` や `sonnet` などのエイリアスが解決するモデルは、[各バージョンに組み込まれており](/docs/ja/model-config#pin-models-for-third-party-deployments)、開発者がアップグレードするときに変更できます | 新しいセッションが開始するモデルの場合は[`ANTHROPIC_DEFAULT_MODEL`](/docs/ja/model-config#set-a-default-model-for-new-sessions)、各エイリアスが解決する内容の場合は[`ANTHROPIC_DEFAULT_*_MODEL`](/docs/ja/model-config#environment-variables)変数（`ANTHROPIC_DEFAULT_OPUS_MODEL` など）。`ANTHROPIC_DEFAULT_MODEL` には Claude Code v2.1.236 以降が必要です |
 
-<h2 id="related-resources">
-  関連リソース
-</h2>
+## 関連リソース
 
 * [Claude Code を LLM ゲートウェイに接続する](/docs/ja/llm-gateway-connect)：開発者向けのセットアップ手順。サーフェスごとの設定とトラブルシューティングテーブル。開発者に配布できます
 * [ゲートウェイ互換性ガイド](/docs/ja/llm-gateway-protocol)：ゲートウェイオペレーター向けのリファレンス。エンドポイント、転送するヘッダー、および機能パススルーテーブルをカバーしています

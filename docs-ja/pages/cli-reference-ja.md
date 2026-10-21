@@ -6,9 +6,7 @@
 
 > Claude Code コマンドラインインターフェースの完全なリファレンス。コマンドとフラグを含みます。
 
-<h2 id="cli-commands">
-  CLI コマンド
-</h2>
+## CLI コマンド
 
 これらのコマンドを使用して、セッションを開始し、コンテンツをパイプし、会話を再開し、更新を管理できます。
 
@@ -55,9 +53,7 @@
 
 `claude --dangerously-skip-permissions daemon <subcommand>` は `daemon` サブコマンドを実行するため、`claude` がフラグを含むようにエイリアスされている場合でもサブコマンドは機能します。先頭の `--dangerously-skip-permissions` または `--allow-dangerously-skip-permissions` のみがこの方法で `daemon` にルーティングされます。`daemon` の前にそれ以外のフラグがある場合、サブコマンドは実行されません。
 
-<h2 id="cli-flags">
-  CLI フラグ
-</h2>
+## CLI フラグ
 
 これらのコマンドラインフラグを使用して Claude Code の動作をカスタマイズします。`claude --help` はすべてのフラグをリストアップしていないため、フラグが `--help` に表示されていないことは、そのフラグが利用できないことを意味しません。
 
@@ -110,12 +106,12 @@
 | `--max-turns` | エージェンティックターンの数を制限します（プリントモードのみ）。制限に達するとエラーで終了します。デフォルトでは制限がありません。`--input-format stream-json` を使用する場合、制限がターンを終了するときにキューに入れられたメッセージは引き続きキューに入れられ、独自の制限で新しいターンを開始します | `claude -p --max-turns 3 "query"` |
 | `--mcp-config` | JSON ファイルまたは文字列から MCP サーバーを読み込みます（スペース区切り）。このフラグを `-p` で渡すと、Claude Code は最初のターンを実行する前に、まだ保留中のサーバーが接続されるまで待機します。デフォルトでは [`MCP_TIMEOUT`](/docs/ja/env-vars) スタートアップタイムアウト 30 秒まで待機します。[キャッシュされたツールリスト](/docs/ja/mcp#managing-your-servers)を持つサーバーは待機をスキップし、最初の使用時に接続します。[自己ホスト環境](/docs/ja/self-hosted-environments-configuration#connection-timing)では、代わりにより短い待機時間が適用されます。待機には Claude Code v2.1.221 以降が必要です | `claude --mcp-config ./mcp.json` |
 | `--model` | `sonnet`、`opus`、`haiku`、`fable` などの[モデルエイリアス](/docs/ja/model-config#model-aliases)またはモデルの完全な名前を使用して、現在のセッションのモデルを設定します。[`model`](/docs/ja/settings-reference#model) 設定と [`ANTHROPIC_MODEL`](/docs/ja/model-config#environment-variables) をオーバーライドします | `claude --model claude-sonnet-5` |
-| `--name`, `-n` | セッションの表示名を設定します。`/resume` とターミナルタイトルに表示されます。`claude --resume <name>` で名前付きセッションを再開できます。<br /><br />[`/rename`](/docs/ja/commands)はセッション中に名前を変更し、プロンプトバーにも表示します | `claude -n "my-feature-work"` |
+| `--name`, `-n` | セッションの表示名を設定します。`/resume` とターミナルタイトルに表示されます。`claude --resume <name>` で名前付きセッションを再開できます。 [`/rename`](/docs/ja/commands)はセッション中に名前を変更し、プロンプトバーにも表示します | `claude -n "my-feature-work"` |
 | `--no-chrome` | このセッションの [Chrome ブラウザ統合](/docs/ja/chrome)を無効にします | `claude --no-chrome` |
 | `--no-session-persistence` | セッション永続性を無効にして、セッションがディスクに保存されず、再開できないようにします。プリントモードのみ。[`CLAUDE_CODE_SKIP_PROMPT_HISTORY`](/docs/ja/env-vars)環境変数は任意のモードで同じことを行います | `claude -p --no-session-persistence "query"` |
 | `--output-format` | プリントモードの出力形式を指定します（オプション：`text`、`json`、`stream-json`） | `claude -p "query" --output-format json` |
 | `--permission-mode` | 指定された[権限モード](/docs/ja/permission-modes)で開始します。`default`、`acceptEdits`、`plan`、`auto`、`dontAsk`、`bypassPermissions`、または `manual` を `default` のエイリアスとして受け入れます。`manual` エイリアスは UI が Manual とラベル付けする権限モードを選択し、Claude Code v2.1.200 以降が必要です。`claude --help` は `default` の代わりにそれをリストアップし、両方の値が機能します。設定ファイルの `defaultMode` を上書きします。このフラグまたは `--dangerously-skip-permissions` がない場合、新しいセッションは[セッションが開始される権限モード](/docs/ja/permission-modes#which-mode-a-session-starts-in)で説明されている権限モードで開始されます。このセクションでは `-p` 実行がどのモードで開始されるかについても説明しています | `claude --permission-mode plan` |
-| `--permission-prompt-tool` | 非対話モードで権限プロンプトを処理する MCP ツールを指定します。その実行で読み込まれる MCP サーバー上のツールの完全な名前（`mcp__<server>__<tool>` など）を渡します。Claude Code は、最初のターンを実行する前に、そのツールの MCP サーバーが接続されるまで待機します。デフォルトでは [`MCP_TIMEOUT`](/docs/ja/env-vars) スタートアップタイムアウト 30 秒まで待機します。<br /><br />プロンプトツールは、[ユーザーインタラクションが必要](/docs/ja/mcp#require-approval-for-a-specific-tool)とマークされた MCP ツールを承認できません。Claude Code はそのようなツールに対する `allow` 結果を拒否に変換します。この制限には Claude Code v2.1.199 以降が必要です | `claude -p --mcp-config ./mcp.json --permission-prompt-tool mcp__permissions__approve "query"` |
+| `--permission-prompt-tool` | 非対話モードで権限プロンプトを処理する MCP ツールを指定します。その実行で読み込まれる MCP サーバー上のツールの完全な名前（`mcp__<server>__<tool>` など）を渡します。Claude Code は、最初のターンを実行する前に、そのツールの MCP サーバーが接続されるまで待機します。デフォルトでは [`MCP_TIMEOUT`](/docs/ja/env-vars) スタートアップタイムアウト 30 秒まで待機します。 プロンプトツールは、[ユーザーインタラクションが必要](/docs/ja/mcp#require-approval-for-a-specific-tool)とマークされた MCP ツールを承認できません。Claude Code はそのようなツールに対する `allow` 結果を拒否に変換します。この制限には Claude Code v2.1.199 以降が必要です | `claude -p --mcp-config ./mcp.json --permission-prompt-tool mcp__permissions__approve "query"` |
 | `--permission-prompts` | プリントモードで権限プロンプトに誰が答えるかを設定します。デフォルトの `host` を使用すると、Claude Code はそれらをエージェント SDK ホストまたは `--permission-prompt-tool` ツールに送信します。誰も答えられない場合は `none` を渡し、Claude Code は代わりにそれらを拒否します。[無人実行で権限プロンプトをオフにする](/docs/ja/headless#turn-off-permission-prompts-in-unattended-runs)を参照してください。Claude Code v2.1.259 以降が必要です | `claude -p --permission-prompts none "query"` |
 | `--plugin-dir` | ディレクトリまたは `.zip` アーカイブからプラグインを読み込むか、[プラグインのフォルダ](/docs/ja/plugins/create#load-a-directory-or-archive-for-one-session)から複数を読み込みます。このセッションのみ。各フラグは 1 つのパスを取ります。より多くのパスについてはフラグを繰り返します。`--plugin-dir A --plugin-dir B.zip`。プラグインのフォルダを渡すには Claude Code v2.1.265 以降が必要です | `claude --plugin-dir ./my-plugin` |
 | `--plugin-url` | URL からプラグイン `.zip` アーカイブをフェッチします。このセッションのみ。複数のプラグインについてはフラグを繰り返すか、単一の引用値でスペース区切り URL を渡します | `claude --plugin-url https://example.com/plugin.zip` |
@@ -144,9 +140,7 @@
 | `--version`, `-v` | バージョン番号を出力します | `claude -v` |
 | `--worktree`, `-w` | Claude を `<repo>/.claude/worktrees/<name>` の分離された [git ワークツリー](/docs/ja/worktrees)で開始します。名前を指定しない場合、Claude Code は 1 つを生成します。`#<number>`、GitHub プルリクエスト URL、または GitLab マージリクエスト URL を渡して、[`origin` からそのプルリクエストまたはマージリクエストをフェッチし、ワークツリーをそれから分岐](/docs/ja/worktrees#branch-from-a-pull-request)させます。GitLab マージリクエストから分岐するには Claude Code v2.1.233 以降が必要です | `claude -w feature-auth` |
 
-<h3 id="system-prompt-flags">
-  システムプロンプトフラグ
-</h3>
+### システムプロンプトフラグ
 
 Claude Code はシステムプロンプトをカスタマイズするための 5 つのフラグを提供します。4 つはそのテキストを設定し、`--system-prompt-snapshot` を使用して、会話がそれで開始したテキストを保持するかどうかを制御します。5 つすべて対話モードと非対話モードの両方で機能します。
 
@@ -174,9 +168,7 @@ Claude Code のデフォルト ID がタスクに適合するかどうかに基�
 
 プロジェクト間で切り替えて共有できる永続的なペルソナについては、[出力スタイル](/docs/ja/output-styles)を使用します。Claude が常に従うべきプロジェクト規約については、[CLAUDE.md](/docs/ja/memory)を使用します。[エージェント SDK ガイド（システムプロンプト）](/docs/ja/agent-sdk/modifying-system-prompts#decide-on-a-starting-point)は同じ決定をより詳しく説明しています。
 
-<h4 id="system-prompt-flags-in-resumed-conversations">
-  再開された会話でのシステムプロンプトフラグ
-</h4>
+#### 再開された会話でのシステムプロンプトフラグ
 
 デフォルトでは、Claude Code はシステムプロンプトを 1 回構築します。会話の最初のリクエストで、適用されたシステムプロンプトフラグからのテキストを使用して、セッションに記録します。会話がコンパクトされるまで、その後のすべてのリクエストは、`--resume` または `--continue` で会話に戻った後を含めて、その記録されたプロンプトを使用します。その後の起動で異なるシステムプロンプトフラグテキストを渡すか、何も渡さない場合、会話がコンパクトされるか、新しい会話を開始するときに有効になります。
 
@@ -184,9 +176,7 @@ Claude Code のデフォルト ID がタスクに適合するかどうかに基�
 
 代わりに、例えば `--continue` 実行全体でその文言を反復処理する場合など、すべてのリクエストでプロンプトを再構築するには、`--system-prompt-snapshot off` を渡します。v2.1.265 より前は、システムプロンプトフラグのいずれかを渡すと、`--system-prompt-snapshot on` を渡さない限り、記録もオフになりました。
 
-<h2 id="see-also">
-  関連項目
-</h2>
+## 関連項目
 
 * [Chrome 拡張機能](/docs/ja/chrome) - ブラウザ自動化と Web テスト
 * [インタラクティブモード](/docs/ja/interactive-mode) - ショートカット、入力モード、インタラクティブ機能

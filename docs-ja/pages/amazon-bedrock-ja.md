@@ -6,81 +6,12 @@
 
 > Amazon Bedrock を通じた Claude Code の設定方法（セットアップ、IAM 設定、トラブルシューティングを含む）について学習します。
 
-export const ContactSalesCard = ({surface}) => {
-  const utm = content => `utm_source=claude_code&utm_medium=docs&utm_content=${surface}_${content}`;
-  const iconArrowRight = (size = 13) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <line x1="5" y1="12" x2="19" y2="12" />
-      <polyline points="12 5 19 12 12 19" />
-    </svg>;
-  const STYLES = `
-.cc-cs {
-  --cs-slate: #141413;
-  --cs-clay: #d97757;
-  --cs-clay-deep: #c6613f;
-  --cs-gray-000: #ffffff;
-  --cs-gray-700: #3d3d3a;
-  --cs-border-default: rgba(31, 30, 29, 0.15);
-  font-family: inherit;
-}
-.dark .cc-cs {
-  --cs-slate: #f0eee6;
-  --cs-gray-000: #262624;
-  --cs-gray-700: #bfbdb4;
-  --cs-border-default: rgba(240, 238, 230, 0.14);
-}
-.cc-cs-card {
-  display: flex; align-items: center; justify-content: space-between;
-  gap: 16px; padding: 14px 16px; margin: 0;
-  background: var(--cs-gray-000); border: 0.5px solid var(--cs-border-default);
-  border-radius: 8px; flex-wrap: wrap;
-}
-.cc-cs-text { font-size: 13px; color: var(--cs-gray-700); line-height: 1.5; flex: 1; min-width: 240px; }
-.cc-cs-text strong { font-weight: 550; color: var(--cs-slate); }
-.cc-cs-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-.cc-cs-btn-clay {
-  display: inline-flex; align-items: center; gap: 8px;
-  background: var(--cs-clay-deep); color: #fff; border: none;
-  border-radius: 8px; padding: 8px 14px;
-  font-size: 13px; font-weight: 500;
-  transition: background-color 0.15s; white-space: nowrap;
-}
-.cc-cs-btn-clay:hover { background: var(--cs-clay); }
-.cc-cs-btn-ghost {
-  display: inline-flex; align-items: center; gap: 8px;
-  background: transparent; color: var(--cs-gray-700);
-  border: 0.5px solid var(--cs-border-default);
-  border-radius: 8px; padding: 8px 14px;
-  font-size: 13px; font-weight: 500;
-}
-.cc-cs-btn-ghost:hover { background: rgba(0, 0, 0, 0.04); }
-.dark .cc-cs-btn-ghost:hover { background: rgba(255, 255, 255, 0.04); }
-@media (max-width: 720px) {
-  .cc-cs-actions { width: 100%; }
-}
-`;
-  return <div className="cc-cs not-prose">
-      <style>{STYLES}</style>
-      <div className="cc-cs-card">
-        <div className="cc-cs-text">
-          <strong>Deploying Claude Code across your organization?</strong> Talk to sales about enterprise plans, SSO, and centralized billing.
-        </div>
-        <div className="cc-cs-actions">
-          <a href={`https://claude.com/pricing?${utm('view_plans')}#plans-business`} className="cc-cs-btn-ghost">
-            View plans
-          </a>
-          <a href={`https://claude.com/contact-sales?${utm('contact_sales')}`} className="cc-cs-btn-clay">
-            Contact sales {iconArrowRight()}
-          </a>
-        </div>
-      </div>
-    </div>;
-};
+**Deploying Claude Code across your organization?** Talk to sales about enterprise plans, SSO, and centralized billing.
 
-<ContactSalesCard surface="bedrock" />
+View plans
+Contact sales
 
-<h2 id="prerequisites">
-  前提条件
-</h2>
+## 前提条件
 
 Claude Code を Amazon Bedrock で設定する前に、以下を確認してください。
 
@@ -91,37 +22,29 @@ Claude Code を Amazon Bedrock で設定する前に、以下を確認してく�
 
 Amazon Bedrock 認証情報を使用してサインインするには、以下の [Amazon Bedrock でサインイン](#sign-in-with-bedrock)に従ってください。チーム全体に Claude Code をデプロイするには、[手動でセットアップ](#set-up-manually)の手順を使用し、ロールアウト前に[モデルバージョンをピン留め](#4-pin-model-versions)してください。
 
-<h2 id="sign-in-with-bedrock">
-  Bedrock でサインイン
-</h2>
+## Bedrock でサインイン
 
 AWS 認証情報を持っていて、Amazon Bedrock を通じて Claude Code の使用を開始したい場合、ログインウィザードがその手順を案内します。AWS 側の前提条件はアカウントごとに 1 回完了します。ウィザードが Claude Code 側を処理します。
 
-<Steps>
-  <Step title="AWS アカウントで Anthropic モデルを有効にする">
-    [Amazon Bedrock コンソール](https://console.aws.amazon.com/bedrock/)で、モデルカタログを開き、Anthropic モデルを選択して、ユースケースフォームを送信します。送信直後にアクセスが許可されます。AWS Organizations については[ユースケースの詳細を送信](#1-submit-use-case-details)を、権限については[IAM 設定](#iam-configuration)を参照してください。
-  </Step>
+**1. AWS アカウントで Anthropic モデルを有効にする**
 
-  <Step title="Claude Code を起動して Amazon Bedrock を選択する">
-    `claude` を実行します。ログインプロンプトで、**3rd-party platform** を選択してから、**Amazon Bedrock** を選択します。既にサインインしていてチャットプロンプトが表示されている場合は、`/setup-bedrock` を実行してウィザードを開きます。`CLAUDE_CODE_USE_BEDROCK=1` が設定されるまで、Claude Code は[コマンドメニューからコマンドを非表示にします](/docs/ja/commands#how-the-command-menu-matches-what-you-type)。完全に入力してください。
-  </Step>
+[Amazon Bedrock コンソール](https://console.aws.amazon.com/bedrock/)で、モデルカタログを開き、Anthropic モデルを選択して、ユースケースフォームを送信します。送信直後にアクセスが許可されます。AWS Organizations については[ユースケースの詳細を送信](#1-submit-use-case-details)を、権限については[IAM 設定](#iam-configuration)を参照してください。
 
-  <Step title="ウィザードプロンプトに従う">
-    AWS への認証方法を選択します。`~/.aws` ディレクトリから検出された AWS プロファイル、Amazon Bedrock API キー、アクセスキーとシークレット、または環境に既に存在する認証情報です。ウィザードはリージョンを要求し、アカウントが呼び出せる Claude モデルを確認し、それらをピン留めできます。結果は[ユーザー設定ファイル](/docs/ja/settings)の `env` ブロックに保存されるため、環境変数を自分でエクスポートする必要はありません。
-  </Step>
-</Steps>
+**2. Claude Code を起動して Amazon Bedrock を選択する**
+
+`claude` を実行します。ログインプロンプトで、**3rd-party platform** を選択してから、**Amazon Bedrock** を選択します。既にサインインしていてチャットプロンプトが表示されている場合は、`/setup-bedrock` を実行してウィザードを開きます。`CLAUDE_CODE_USE_BEDROCK=1` が設定されるまで、Claude Code は[コマンドメニューからコマンドを非表示にします](/docs/ja/commands#how-the-command-menu-matches-what-you-type)。完全に入力してください。
+
+**3. ウィザードプロンプトに従う**
+
+AWS への認証方法を選択します。`~/.aws` ディレクトリから検出された AWS プロファイル、Amazon Bedrock API キー、アクセスキーとシークレット、または環境に既に存在する認証情報です。ウィザードはリージョンを要求し、アカウントが呼び出せる Claude モデルを確認し、それらをピン留めできます。結果は[ユーザー設定ファイル](/docs/ja/settings)の `env` ブロックに保存されるため、環境変数を自分でエクスポートする必要はありません。
 
 サインイン後、いつでも `/setup-bedrock` を実行してウィザードを再度開き、認証情報、リージョン、またはモデルピンを変更できます。モデルピンステップは、現在ピン留めされているモデルから開始します。ウィザードは `~/.claude/settings.json` に書き込むか、[`CLAUDE_CONFIG_DIR`](/docs/ja/env-vars#variables) が設定されている場合は `$CLAUDE_CONFIG_DIR/settings.json` に書き込みます。
 
-<h2 id="set-up-manually">
-  手動でセットアップする
-</h2>
+## 手動でセットアップする
 
 ウィザードの代わりに環境変数を使用して Amazon Bedrock を設定する場合（例えば CI やスクリプト化されたエンタープライズロールアウト）、以下の手順に従ってください。
 
-<h3 id="1-submit-use-case-details">
-  1. ユースケースの詳細を送信する
-</h3>
+### ユースケースの詳細を送信する
 
 Anthropic モデルを初めて呼び出す前に、ユースケースの詳細を送信してください。これは AWS アカウントごとに 1 回行います。
 
@@ -132,9 +55,7 @@ Anthropic モデルを初めて呼び出す前に、ユースケースの詳細�
 
 AWS Organizations を使用している場合、[`PutUseCaseForModelAccess` API](https://docs.aws.amazon.com/bedrock/latest/APIReference/API_PutUseCaseForModelAccess.html) を使用して管理アカウントからフォームを 1 回送信できます。この呼び出しには `bedrock:PutUseCaseForModelAccess` IAM 権限が必要です。承認は自動的に子アカウントに拡張されます。
 
-<h3 id="2-configure-aws-credentials">
-  2. AWS 認証情報を設定する
-</h3>
+### AWS 認証情報を設定する
 
 Claude Code は AWS SDK のデフォルト認証情報チェーンを使用します。Amazon EC2 インスタンスプロファイルや Amazon ECS タスク認証情報など、マシンがすでにそのチェーンに認証情報を提供している場合は、[ステップ 3](#3-configure-claude-code) に進んでください。
 
@@ -146,9 +67,7 @@ AWS は、専用ソフトウェアを開発する場合や実データを扱う�
 * [AWS Management Console 認証情報](#use-aws-management-console-credentials): AWS Management Console の認証情報を使ってブラウザでサインインし、一時的な認証情報を取得します。ルートユーザー、IAM ユーザー、または IAM とのフェデレーションを通じて AWS アカウントにアクセスしている場合、AWS は[この方法を推奨しています](https://docs.aws.amazon.com/signin/latest/userguide/command-line-sign-in.html)。
 * [Amazon Bedrock API キー](#use-an-amazon-bedrock-api-key): AWS 認証情報の代わりに、Amazon Bedrock でのみ機能するベアラートークンで認証します
 
-<h4 id="use-aws-configure">
-  `aws configure` を使用する
-</h4>
+#### `aws configure` を使用する
 
 `aws configure` を実行し、プロンプトが表示されたらアクセスキー ID、シークレットアクセスキー、デフォルトリージョンを入力します。
 
@@ -158,9 +77,7 @@ aws configure
 
 AWS CLI はキーを `~/.aws/credentials` の `default` プロファイルに保存し、認証情報チェーンはそこからキーを読み取ります。
 
-<h4 id="export-an-access-key">
-  アクセスキーをエクスポートする
-</h4>
+#### アクセスキーをエクスポートする
 
 アクセスキーを環境変数としてエクスポートします。`AWS_SESSION_TOKEN` は一時的な認証情報の場合にのみ必要なため、アクセスキーが IAM ユーザーのものである場合はその行を省略してください。
 
@@ -170,9 +87,7 @@ export AWS_SECRET_ACCESS_KEY=your-secret-access-key
 export AWS_SESSION_TOKEN=your-session-token
 ```
 
-<h4 id="use-an-sso-profile">
-  SSO プロファイルを使用する
-</h4>
+#### SSO プロファイルを使用する
 
 プロファイルがない場合は、`aws configure sso` で作成します。次に IAM Identity Center にサインインし、認証情報チェーンがそのプロファイルを使用するように `AWS_PROFILE` を設定します。これらのコマンドを実行する前に、`your-profile-name` を AWS プロファイルの名前に置き換えてください。
 
@@ -184,9 +99,7 @@ export AWS_PROFILE=your-profile-name
 
 Claude Code は、プロファイルの `sso_region` で指定された IAM Identity Center リージョンからロール認証情報をリクエストします。これは Amazon Bedrock を実行するリージョンと一致する必要はありません。
 
-<h4 id="use-aws-management-console-credentials">
-  AWS Management Console 認証情報を使用する
-</h4>
+#### AWS Management Console 認証情報を使用する
 
 `aws login` コマンドには AWS CLI 2.32.0 以降が必要です。ID に必要な IAM ポリシーについては、[`aws login` に関する AWS の手順](https://docs.aws.amazon.com/signin/latest/userguide/command-line-sign-in.html)を参照してください。
 
@@ -198,9 +111,7 @@ aws login
 
 セッションは最大 12 時間有効で、その後は再度 `aws login` を実行します。
 
-<h4 id="use-an-amazon-bedrock-api-key">
-  Amazon Bedrock API キーを使用する
-</h4>
+#### Amazon Bedrock API キーを使用する
 
 Amazon Bedrock API キーは、AWS 認証情報の代わりにリクエストを認証するベアラートークンです。AWS は [2 種類のキー](https://docs.aws.amazon.com/bedrock/latest/userguide/api-keys.html)を発行します。
 
@@ -215,9 +126,7 @@ export AWS_BEARER_TOKEN_BEDROCK=your-bedrock-api-key
 
 `AWS_BEARER_TOKEN_BEDROCK` が設定されている場合、他の AWS 認証情報が存在していても、Claude Code はこのキーで認証し、認証情報チェーンを解決しません。[Amazon Bedrock API キーについて詳しく学ぶ](https://aws.amazon.com/blogs/machine-learning/accelerate-ai-development-with-amazon-bedrock-api-keys/)。
 
-<h4 id="credential-caching-and-resolution-timeout">
-  認証情報キャッシングと解決タイムアウト
-</h4>
+#### 認証情報キャッシングと解決タイムアウト
 
 Claude Code は AWS デフォルト認証情報プロバイダーチェーンを 1 回解決し、解決された認証情報をメモリに保持します。認証情報の有効期限の 5 分前まで、または有効期限がない場合は 1 時間の間、それらを再利用するため、SSO でサポートされたプロファイルは認証情報の有効期間ごとに約 1 回 IAM Identity Center から認証情報をリクエストします。API からの認証情報エラーはキャッシュをクリアし、再試行は新しい認証情報を解決します。
 
@@ -227,9 +136,7 @@ Claude Code は AWS デフォルト認証情報プロバイダーチェーンを
 
 Amazon Bedrock API キーで認証する場合を除き、[セットアップウィザード](#sign-in-with-bedrock)は認証情報を検証する際に行う各 AWS 呼び出しに同じ制限を適用し、各モデルチェック前の認証情報ルックアップにも適用します。認証情報検証中に、制限を超えるチェックは [`Timed out after 60s waiting for AWS`](/docs/ja/errors#bedrock-setup-verification-timed-out-waiting-for-aws) で失敗します。
 
-<h4 id="advanced-credential-configuration">
-  高度な認証情報設定
-</h4>
+#### 高度な認証情報設定
 
 Claude Code は AWS SSO および企業 ID プロバイダーの自動認証情報更新をサポートしています。これらの設定を Claude Code 設定ファイルに追加してください（ファイルの場所については [Settings](/docs/ja/settings) を参照）。
 
@@ -240,9 +147,7 @@ Claude Code は AWS SSO および企業 ID プロバイダーの自動認証情�
 
 `awsAuthRefresh` コマンドを実行する前に、Claude Code は STS `GetCallerIdentity` 呼び出しを行って、認証情報が実際に期限切れであることを確認し、認証情報がまだ機能している場合はコマンドをスキップします。Claude Code はこのチェックを [プロキシ設定](/docs/ja/network-config#proxy-configuration) を通じて送信し、`HTTPS_PROXY` と `NO_PROXY` を尊重します。v2.1.239 より前では、Claude Code はこのチェックを直接送信し、プロキシを通じてのみエグレスを許可するネットワークでスタートアップでハングしていました。
 
-<h5 id="example-configuration">
-  設定例
-</h5>
+##### 設定例
 
 ```json theme={null}
 {
@@ -253,9 +158,7 @@ Claude Code は AWS SSO および企業 ID プロバイダーの自動認証情�
 }
 ```
 
-<h5 id="configuration-settings-explained">
-  設定の説明
-</h5>
+##### 設定の説明
 
 **`awsAuthRefresh`**: `.aws` ディレクトリを変更するコマンド（認証情報、SSO キャッシュ、または設定ファイルの更新など）に使用してください。コマンドの出力はユーザーに表示されますが、インタラクティブ入力はサポートされていません。これは CLI が URL またはコードを表示し、ブラウザで認証を完了するブラウザベースの SSO フローに適しています。
 
@@ -278,9 +181,7 @@ Claude Code は AWS SSO および企業 ID プロバイダーの自動認証情�
 
 `awsCredentialExport` を `awsAuthRefresh` なしで設定する場合、Claude Code はエクスポートされた認証情報を直接使用し、スタートアップで AWS デフォルト認証情報プロバイダーチェーンを再解決しません。
 
-<h3 id="3-configure-claude-code">
-  3. Claude Code を設定する
-</h3>
+### Claude Code を設定する
 
 Amazon Bedrock を有効にするには、以下の環境変数を設定してください。
 
@@ -316,13 +217,11 @@ Claude Code で Amazon Bedrock を有効にする場合、以下の点に注意�
 * WebSearch ツールは Amazon Bedrock では利用できません。[WebSearch ツールの動作](/docs/ja/tools-reference#websearch-tool-behavior)を参照してください。
 * `AWS_PROFILE` のような他のプロセスにリークしたくない環境変数に設定ファイルを使用できます。詳細については [Settings](/docs/ja/settings) を参照してください。
 
-<h3 id="4-pin-model-versions">
-  4. モデルバージョンをピンする
-</h3>
+### モデルバージョンをピンする
 
-<Warning>
-  複数のユーザーにデプロイする場合、特定のモデルバージョンをピンしてください。ピンしない場合、`sonnet` や `opus` などのモデルエイリアスは Claude Code の Amazon Bedrock 用の組み込みデフォルトに解決されます。これは最新リリースより遅れる可能性があり、アカウントでまだ利用できない場合があります。Claude Code はスタートアップ時にデフォルトが利用できない場合、[以前のモデルまたは下位層のモデルにフォールバック](#startup-model-checks)しますが、ピンすることでユーザーが新しいモデルに移行するタイミングを制御できます。
-</Warning>
+> [!WARNING]
+>
+> 複数のユーザーにデプロイする場合、特定のモデルバージョンをピンしてください。ピンしない場合、`sonnet` や `opus` などのモデルエイリアスは Claude Code の Amazon Bedrock 用の組み込みデフォルトに解決されます。これは最新リリースより遅れる可能性があり、アカウントでまだ利用できない場合があります。Claude Code はスタートアップ時にデフォルトが利用できない場合、[以前のモデルまたは下位層のモデルにフォールバック](#startup-model-checks)しますが、ピンすることでユーザーが新しいモデルに移行するタイミングを制御できます。
 
 これらの環境変数を特定の Amazon Bedrock モデル ID に設定してください。
 
@@ -357,9 +256,9 @@ export ANTHROPIC_DEFAULT_HAIKU_MODEL='us.anthropic.claude-haiku-4-5-20251001-v1:
 * `--model`、`ANTHROPIC_MODEL`、または `model` 設定でプライマリモデルを選択する場合、バックグラウンドタスクはそのモデルを使用します。Claude Code が [`ANTHROPIC_DEFAULT_MODEL`](/docs/ja/model-config#set-a-default-model-for-new-sessions) で設定したモデルでセッションを開始する場合、バックグラウンドタスクもそのモデルを使用します。`ANTHROPIC_DEFAULT_SONNET_MODEL` なしで `ANTHROPIC_DEFAULT_OPUS_MODEL` を設定することも、組み込み Sonnet モデルが独自の Opus を操舵するアカウントで有効になっていない可能性があるため、選択としてカウントされます。
 * バックグラウンドタスクに Haiku を使用するには、`ANTHROPIC_DEFAULT_HAIKU_MODEL` をアカウントで利用可能なモデル ID に設定してください。
 
-<Warning>
-  Opus モデルは Sonnet モデルよりトークンあたりの価格が高いため、プライマリモデルをピンしない場合は Opus のレートで請求されます。Sonnet 4.5 をプライマリモデルとして使用するには、`ANTHROPIC_MODEL` をその完全なモデル ID に設定してください。`ANTHROPIC_DEFAULT_SONNET_MODEL` でデフォルトを指定し、`ANTHROPIC_DEFAULT_OPUS_MODEL` を設定していないデプロイでは、指定した Sonnet モデルがデフォルトとして維持されます。
-</Warning>
+> [!WARNING]
+>
+> Opus モデルは Sonnet モデルよりトークンあたりの価格が高いため、プライマリモデルをピンしない場合は Opus のレートで請求されます。Sonnet 4.5 をプライマリモデルとして使用するには、`ANTHROPIC_MODEL` をその完全なモデル ID に設定してください。`ANTHROPIC_DEFAULT_SONNET_MODEL` でデフォルトを指定し、`ANTHROPIC_DEFAULT_OPUS_MODEL` を設定していないデプロイでは、指定した Sonnet モデルがデフォルトとして維持されます。
 
 v2.1.280 より前では、Amazon Bedrock のプライマリモデルは Opus 5 にデフォルト設定され、`opus` エイリアスは v2.1.219 から Opus 5 に解決されました。v2.1.207 から v2.1.218 では、Amazon Bedrock のプライマリモデルは Opus 4.8 にデフォルト設定され、`opus` エイリアスは Opus 4.8 に解決されました。
 
@@ -382,11 +281,11 @@ export ANTHROPIC_MODEL='arn:aws:bedrock:us-east-2:your-account-id:application-in
 
 1 時間のキャッシュ TTL はデフォルトの 5 分より高いレートで請求されます。[キャッシュの有効期間](/docs/ja/prompt-caching#cache-lifetime)を参照してください。メイン会話と Claude Code が外部で行うリクエストに異なる TTL を設定するには、[TTL を自分で選択してください](/docs/ja/prompt-caching#choose-the-ttl-yourself)。
 
-<Note>プロンプトキャッシングはすべての Amazon Bedrock リージョンで利用できない場合があります。キャッシュトークンカウントがゼロのままの場合、Amazon Bedrock ドキュメントの [サポートされているモデル、リージョン、および制限](https://docs.aws.amazon.com/bedrock/latest/userguide/prompt-caching.html#prompt-caching-models)を確認してください。</Note>
+> [!NOTE]
+>
+> プロンプトキャッシングはすべての Amazon Bedrock リージョンで利用できない場合があります。キャッシュトークンカウントがゼロのままの場合、Amazon Bedrock ドキュメントの [サポートされているモデル、リージョン、および制限](https://docs.aws.amazon.com/bedrock/latest/userguide/prompt-caching.html#prompt-caching-models)を確認してください。
 
-<h4 id="map-each-model-version-to-an-inference-profile">
-  各モデルバージョンを推論プロファイルにマップする
-</h4>
+#### 各モデルバージョンを推論プロファイルにマップする
 
 `ANTHROPIC_DEFAULT_*_MODEL` 環境変数は、モデルファミリーごとに 1 つの推論プロファイルを設定します。組織が同じファミリーの複数のバージョンを `/model` ピッカーで公開し、それぞれを独自のアプリケーション推論プロファイル ARN にルーティングする必要がある場合は、[設定ファイル](/docs/ja/settings#where-settings-live)の `modelOverrides` 設定を使用してください。
 
@@ -405,9 +304,7 @@ export ANTHROPIC_MODEL='arn:aws:bedrock:us-east-2:your-account-id:application-in
 
 ユーザーが `/model` でこれらのバージョンのいずれかを選択すると、Claude Code はマップされた ARN で Amazon Bedrock を呼び出します。同じマッピングは `--model` または `ANTHROPIC_MODEL` を通じて Anthropic モデル ID を直接渡す場合に適用されます。オーバーライドのないバージョンは、組み込み Amazon Bedrock モデル ID またはスタートアップで検出された一致する推論プロファイルにフォールバックします。v2.1.200 より前では、`--model` と `ANTHROPIC_MODEL` の値はオーバーライドマップを通さずに Amazon Bedrock に到達していました。オーバーライドが `availableModels` および他のモデル設定とどのように相互作用するかについては、[Override model IDs per version](/docs/ja/model-config#override-model-ids-per-version) を参照してください。
 
-<h2 id="startup-model-checks">
-  スタートアップモデルチェック
-</h2>
+## スタートアップモデルチェック
 
 Claude Code が Amazon Bedrock で設定されて起動する場合、使用予定のモデルがアカウントでアクセス可能であることを確認します。
 
@@ -421,9 +318,7 @@ Claude Code が Amazon Bedrock で設定されて起動する場合、使用予�
 
 これらのチェックがアカウントが呼び出せないモデルを見つけた場合、Claude Code はこのマシンで最大 1 日間その拒否を記憶し、その時間中は Amazon Bedrock に再度問い合わせることなく記憶されたモデルをスキップして起動します。Claude Code は、現在のデフォルトモデルの記憶された拒否を、最後のチェック以降 10 分が経過すると起動時に再度チェックするため、管理者が再度有効にしたデフォルトが戻ります。メモリをオフにするには、[`CLAUDE_CODE_SKIP_MODEL_ACCESS_MEMORY=1`](/docs/ja/env-vars)を設定してください。
 
-<h3 id="when-your-organization-enforces-a-model-allowlist">
-  組織がモデルの許可リストを強制する場合
-</h3>
+### 組織がモデルの許可リストを強制する場合
 
 管理設定で [`enforceAvailableModels`](/docs/ja/model-config#enforce-the-allowlist-for-the-default-model) を設定すると、スタートアップモデルチェックは `availableModels` リストで許可されたモデルのみを使用します。これは Amazon Bedrock Invoke API に適用され、Claude Code v2.1.287 以降が必要です。`enforceAvailableModels` のないリストでは、これらのチェックは制限されません。
 
@@ -438,9 +333,7 @@ Claude Code が Amazon Bedrock で設定されて起動する場合、使用予�
 
 エイリアス、バージョンプレフィックス、`modelOverrides` エントリについては、[サードパーティデプロイ用にモデルをピン留めする](/docs/ja/model-config#pin-models-for-third-party-deployments)を参照してください。
 
-<h3 id="when-a-model-is-disabled-mid-session">
-  モデルがセッション中に無効化される場合
-</h3>
+### モデルがセッション中に無効化される場合
 
 セッションが実行されているモデルへのアカウントアクセスが失われた場合（例えば、管理者が Amazon Bedrock アカウントでそれを無効化した場合）、Claude Code は各リクエストが失敗する代わりにセッションを別のモデルに切り替え、`Switched to <fallback> because <model> is not available` を表示します。スタートアップフォールバックと同じモデルを試します。同じティアの以前のバージョンを最初に試し、Opus セッションで Opus バージョンが利用できない場合、デフォルト Sonnet モデルを試します。
 
@@ -448,9 +341,7 @@ Claude Code が Amazon Bedrock で設定されて起動する場合、使用予�
 
 設定した[フォールバックモデルチェーン](/docs/ja/model-config#fallback-model-chains)はティア切り替えを置き換えます。これらの拒否では Claude Code は設定したフォールバックに切り替えます。拒否されたリクエストが切り替わるのではなく失敗するようにするには、[`CLAUDE_CODE_DISABLE_MODEL_ACCESS_FALLBACK=1`](/docs/ja/env-vars)を設定してください。設定したフォールバックチェーンはこれらの拒否で切り替わります。すべての拒否されたリクエストが失敗するようにしたい場合は、チェーンも削除してください。
 
-<h2 id="cross-region-inference-profile-prefixes">
-  クロスリージョン推論プロファイルプレフィックス
-</h2>
+## クロスリージョン推論プロファイルプレフィックス
 
 Amazon Bedrock の [Invoke API](https://docs.aws.amazon.com/bedrock/latest/APIReference/API_runtime_InvokeModelWithResponseStream.html) では、Claude Code は組み込みのデフォルトモデルを [クロスリージョン推論プロファイル](https://docs.aws.amazon.com/bedrock/latest/userguide/inference-profiles-support.html) ID に解決します。独自の推論プロファイルを通じてモデルバージョンをルーティングするには、[各モデルバージョンを推論プロファイルにマップする](#map-each-model-version-to-an-inference-profile) を参照してください。このテーブルは、解決された各 AWS リージョンに対して Claude Code が優先するプレフィックスを示しています。
 
@@ -486,9 +377,7 @@ Claude Code は、自分で設定した Amazon Bedrock 推論プロファイル 
 * AWS GovCloud リージョンでは、Claude Code は常に `us-gov.` を使用します。これは GovCloud パーティション内でルーティングする唯一のプレフィックスです。
 * 有効な値の 1 つではない値を設定した場合、Claude Code はリージョン導出の優先プレフィックスにフォールバックします。
 
-<h2 id="iam-configuration">
-  IAM 設定
-</h2>
+## IAM 設定
 
 Claude Code に必要な権限を持つ IAM ポリシーを作成します。
 
@@ -537,13 +426,11 @@ Claude Code に必要な権限を持つ IAM ポリシーを作成します。
 
 詳細については、[Amazon Bedrock IAM ドキュメント](https://docs.aws.amazon.com/bedrock/latest/userguide/security-iam.html)を参照してください。
 
-<Note>
-  コスト追跡とアクセス制御を簡素化するために、Claude Code 用の専用 AWS アカウントを作成してください。
-</Note>
+> [!NOTE]
+>
+> コスト追跡とアクセス制御を簡素化するために、Claude Code 用の専用 AWS アカウントを作成してください。
 
-<h2 id="1m-token-context-window">
-  1M トークンコンテキストウィンドウ
-</h2>
+## 1M トークンコンテキストウィンドウ
 
 Fable モデル、Sonnet 5 以降、および Opus 4.7 以降は、Amazon Bedrock の Invoke API と [Mantle エンドポイント](#use-the-mantle-endpoint)の両方で、デフォルトで [1M トークンコンテキストウィンドウ](https://platform.claude.com/docs/ja/build-with-claude/context-windows#context-window-sizes-by-model)で実行されます。`[1m]` サフィックスは不要です。アプリケーション推論プロファイル ARN は、[`modelOverrides`](#map-each-model-version-to-an-inference-profile) のエントリがそのモデルを ARN にマッピングしている場合に 1M ウィンドウを使用します。代わりに 200K ウィンドウを維持するには、[`CLAUDE_CODE_DISABLE_1M_CONTEXT=1`](/docs/ja/model-config#turn-off-1m-context) を設定します。
 
@@ -551,9 +438,7 @@ Invoke API 上の Opus 4.6 と Sonnet 4.6 は、`[1m]` バリアントを選択�
 
 v2.1.287 より前は、Fable モデルと Opus 4.7 以降は Invoke API ではデフォルトで 200K ウィンドウで実行され、`[1m]` サフィックスを付けることで 1M ウィンドウを使用していました。
 
-<h2 id="service-tiers">
-  サービスティア
-</h2>
+## サービスティア
 
 [Amazon Bedrock サービスティア](https://docs.aws.amazon.com/bedrock/latest/userguide/service-tiers-inference.html)を使用すると、コストとレイテンシーのトレードオフを行うことができます。`ANTHROPIC_BEDROCK_SERVICE_TIER` を `default`、`flex`、または `priority` に設定します。
 
@@ -563,9 +448,7 @@ export ANTHROPIC_BEDROCK_SERVICE_TIER=priority
 
 Claude Code は、各リクエストで `X-Amzn-Bedrock-Service-Tier` ヘッダーとしてこれを送信します。ティアの可用性はモデルとリージョンによって異なります。予約容量は、この設定の代わりに[プロビジョニングされたスループット](https://docs.aws.amazon.com/bedrock/latest/userguide/prov-throughput.html) ARN をモデル ID として使用します。
 
-<h2 id="aws-guardrails">
-  AWS Guardrails
-</h2>
+## AWS Guardrails
 
 [Amazon Bedrock Guardrails](https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails.html)を使用すると、Claude Code のコンテンツフィルタリングを実装できます。[Amazon Bedrock コンソール](https://console.aws.amazon.com/bedrock/)で Guardrail を作成し、バージョンを公開してから、Guardrail ヘッダーを [settings file](/docs/ja/settings) に追加します。クロスリージョン推論プロファイルを使用している場合は、Guardrail でクロスリージョン推論を有効にしてください。
 
@@ -583,17 +466,13 @@ Claude Code は、各リクエストで `X-Amzn-Bedrock-Service-Tier` ヘッダ�
 
 guardrail が応答を途中でブロックした場合、それまでにストリーミングされたテキストはそのまま残り、応答はブロックされた応答用に guardrail で設定されたメッセージで終了します。
 
-<h2 id="use-the-mantle-endpoint">
-  Mantle エンドポイントを使用する
-</h2>
+## Mantle エンドポイントを使用する
 
 Mantle は、Bedrock Invoke API ではなく、ネイティブ Anthropic API シェイプを通じて Claude モデルを提供する Amazon Bedrock エンドポイントです。同じ [AWS 認証情報](#2-configure-aws-credentials) と [`awsAuthRefresh` 設定](#advanced-credential-configuration) を使用します。
 
 Mantle は `bedrock-mantle:` プレフィックスの下に独自の IAM アクションを持つため、[IAM 設定](#iam-configuration) の `bedrock:` アクションはこれをカバーしていません。推論用に `bedrock-mantle:CreateInference` と、トークンカウント用に `bedrock-mantle:CountTokens` を IAM アイデンティティに付与します。AWS ドキュメントの [推論リクエストの実行](https://docs.aws.amazon.com/bedrock/latest/userguide/inference.html) と [トークンのカウント](https://docs.aws.amazon.com/bedrock/latest/userguide/count-tokens.html)、および [サービス認可リファレンス](https://docs.aws.amazon.com/service-authorization/latest/reference/list_amazonbedrockpoweredbyawsmantle.html) を参照して、すべての Mantle アクションを確認してください。
 
-<h3 id="enable-mantle">
-  Mantle を有効にする
-</h3>
+### Mantle を有効にする
 
 AWS 認証情報が既に設定されている場合、`CLAUDE_CODE_USE_MANTLE` を設定して、リクエストを Mantle エンドポイントにルーティングします。
 
@@ -606,9 +485,7 @@ Claude Code は AWS リージョンからエンドポイント URL を構築し�
 
 Claude Code 内で `/status` を実行して確認します。Mantle がアクティブな場合、プロバイダー行は `Amazon Bedrock (Mantle)` を表示します。
 
-<h3 id="select-a-mantle-model">
-  Mantle モデルを選択する
-</h3>
+### Mantle モデルを選択する
 
 Mantle は `anthropic.` で始まり、バージョンサフィックスのないモデル ID を使用します。例えば `anthropic.claude-sonnet-5` または `anthropic.claude-haiku-4-5` です。アカウントで利用可能なモデルは、組織に付与されたものに依存します。追加のモデル ID は AWS からのオンボーディング資料に記載されています。AWS アカウントチームに連絡して、許可リストされたモデルへのアクセスをリクエストしてください。
 
@@ -618,9 +495,7 @@ Mantle は `anthropic.` で始まり、バージョンサフィックスのな�
 claude --model anthropic.claude-haiku-4-5
 ```
 
-<h3 id="run-mantle-alongside-the-invoke-api">
-  Mantle を Invoke API と並行して実行する
-</h3>
+### Mantle を Invoke API と並行して実行する
 
 Mantle で利用可能なモデルは、今日使用するすべてのモデルを含まない場合があります。`CLAUDE_CODE_USE_BEDROCK` と `CLAUDE_CODE_USE_MANTLE` の両方を設定すると、Claude Code は同じセッションから両方のエンドポイントを呼び出せます。Mantle 形式に一致するモデル ID は Mantle にルーティングされ、他のすべてのモデル ID は Amazon Bedrock Invoke API に移動します。
 
@@ -641,9 +516,7 @@ Mantle モデルを `/model` ピッカーに表示するには、[settings file]
 
 両方のプロバイダーがアクティブな場合、`/status` は `Amazon Bedrock + Amazon Bedrock (Mantle)` を表示します。
 
-<h3 id="route-mantle-through-a-gateway">
-  Mantle をゲートウェイ経由でルーティングする
-</h3>
+### Mantle をゲートウェイ経由でルーティングする
 
 組織がモデルトラフィックを集中化された [LLM gateway](/docs/ja/llm-gateway) を通じてルーティングし、AWS 認証情報をサーバー側に注入する場合、クライアント側認証を無効にして、Claude Code が SigV4 署名または `x-api-key` ヘッダーなしでリクエストを送信するようにします。
 
@@ -653,9 +526,7 @@ export CLAUDE_CODE_SKIP_MANTLE_AUTH=1
 export ANTHROPIC_BEDROCK_MANTLE_BASE_URL=https://your-gateway.example.com
 ```
 
-<h3 id="mantle-environment-variables">
-  Mantle 環境変数
-</h3>
+### Mantle 環境変数
 
 これらの変数は Mantle エンドポイントに固有です。完全なリストについては、[Environment variables](/docs/ja/env-vars) を参照してください。
 
@@ -666,13 +537,9 @@ export ANTHROPIC_BEDROCK_MANTLE_BASE_URL=https://your-gateway.example.com
 | `CLAUDE_CODE_SKIP_MANTLE_AUTH` | プロキシセットアップのクライアント側認証をスキップ |
 | `ANTHROPIC_SMALL_FAST_MODEL_AWS_REGION` | Haiku クラスモデルの AWS リージョンをオーバーライド（Bedrock と共有） |
 
-<h2 id="troubleshooting">
-  トラブルシューティング
-</h2>
+## トラブルシューティング
 
-<h3 id="authentication-loop-with-sso-and-corporate-proxies">
-  SSO と企業プロキシでの認証ループ
-</h3>
+### SSO と企業プロキシでの認証ループ
 
 AWS SSO を使用しているときにブラウザのサインインタブが繰り返し開く場合は、[settings file](/docs/ja/settings) から `awsAuthRefresh` 設定を削除してください。
 
@@ -680,9 +547,7 @@ AWS SSO を使用しているときにブラウザのサインインタブが繰
 
 ネットワーク環境が自動ブラウザベースの SSO フローに干渉する場合は、`awsAuthRefresh` に依存する代わりに、Claude Code を開始する前に手動で `aws sso login` を使用してください。
 
-<h3 id="certificate-errors-behind-a-tls-inspecting-proxy">
-  TLS 検査プロキシの背後での証明書エラー
-</h3>
+### TLS 検査プロキシの背後での証明書エラー
 
 Claude Code は、[CA certificate store](/docs/ja/network-config#ca-certificate-store) 設定を AWS へのリクエストに適用します。これには以下が含まれます：
 
@@ -697,9 +562,7 @@ v2.1.260 より前では、Claude Code は設定されたプロキシを通過�
 
 v2.1.261 より前では、**Use credentials already in my environment** オプションを使用した setup wizard のモデルチェックの背後での認証情報ルックアップは、実行時のデフォルト証明書ストアのみを信頼していました。ルート証明書が OS ストアにのみある TLS 検査プロキシの背後では、影響を受けるリクエストは `unable to get local issuer certificate` で失敗するか、ウィザードはモデルを `unreachable` として表示していましたが、推論リクエストは成功していました。v2.1.261 以降に更新してください。
 
-<h3 id="region-issues">
-  リージョンの問題
-</h3>
+### リージョンの問題
 
 リージョンの問題が発生した場合：
 
@@ -713,9 +576,7 @@ v2.1.261 より前では、**Use credentials already in my environment** オプ�
 
 Claude Code は Amazon Bedrock [Invoke API](https://docs.aws.amazon.com/bedrock/latest/APIReference/API_runtime_InvokeModelWithResponseStream.html) を使用し、Converse API はサポートしていません。
 
-<h3 id="streaming-errors-behind-a-gateway-or-proxy">
-  ゲートウェイまたはプロキシの背後でのストリーミングエラー
-</h3>
+### ゲートウェイまたはプロキシの背後でのストリーミングエラー
 
 Amazon Bedrock は `InvokeModelWithResponseStream` レスポンスをバイナリイベントストリーム形式でストリーミングし、ヘッダー `Content-Type: application/vnd.amazon.eventstream` を含みます。Claude Code と Amazon Bedrock の間のゲートウェイまたはプロキシは、Amazon Bedrock が送信したレスポンスボディとそのヘッダー（`Content-Type` を含む）を変更されずに転送する必要があります。
 
@@ -729,17 +590,13 @@ Amazon Bedrock は `InvokeModelWithResponseStream` レスポンスをバイナ�
 
 ストリームをサーバー送信イベントに変換するゲートウェイは、Amazon Bedrock API を提供していません。Anthropic Messages API リクエストも受け入れる場合は、`CLAUDE_CODE_USE_BEDROCK` の代わりに `ANTHROPIC_BASE_URL` を使用して [LLM gateway](/docs/ja/llm-gateway-connect) として接続してください。
 
-<h3 id="zero-token-counts-in-/context">
-  /context でのゼロトークンカウント
-</h3>
+### /context でのゼロトークンカウント
 
 `/context` コマンドは、ツールスキーマを Amazon Bedrock count-tokens API に送信することで、各ツールグループのトークンをカウントします。Claude Code v2.1.196 より前のバージョンでは、スキーマが count-tokens API が受け入れないフィールドを含んでいたため、Amazon Bedrock がそのリクエストを拒否し、すべてのツールグループが 0 トークンを表示していました。メッセージやメモリファイルなど、内訳の他の行は影響を受けません。
 
 v2.1.196 以降に更新してください。
 
-<h3 id="mantle-endpoint-errors">
-  Mantle エンドポイントエラー
-</h3>
+### Mantle エンドポイントエラー
 
 `CLAUDE_CODE_USE_MANTLE` を設定した後、`/status` が `Amazon Bedrock (Mantle)` を表示しない場合、変数がプロセスに到達していません。Claude Code を起動したシェルでエクスポートされているか、[settings file](/docs/ja/settings) の `env` ブロックで設定されていることを確認してください。
 
@@ -750,9 +607,7 @@ Mantle エンドポイントからの `403` が何を意味するかは、エラ
 
 モデル ID を名前付ける `400` は、そのモデルが Mantle で提供されていないことを意味します。Mantle は標準 Amazon Bedrock カタログとは別の独自のモデルラインアップを持っているため、`us.anthropic.claude-sonnet-4-6` などの推論プロファイル ID は機能しません。Mantle 形式の ID を使用するか、[両方のエンドポイントを有効にして](#run-mantle-alongside-the-invoke-api)、Claude Code が各リクエストをモデルが利用可能なエンドポイントにルーティングするようにしてください。
 
-<h2 id="additional-resources">
-  追加リソース
-</h2>
+## 追加リソース
 
 * [Amazon Bedrock ドキュメント](https://docs.aws.amazon.com/bedrock/)
 * [Amazon Bedrock 料金](https://aws.amazon.com/bedrock/pricing/)

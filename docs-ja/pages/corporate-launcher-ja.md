@@ -12,15 +12,13 @@
 
 `PATH` 上の `claude` コマンドをラップするランチャーはこれらのプロセスに到達できません。これらのプロセスは `claude` を検索せずにバイナリの直接パスから起動するためです。
 
-<Note>
-  `CLAUDE_CODE_PROCESS_WRAPPER` には Claude Code v2.1.208 以降が必要です。以前のバージョンは変数を無視し、すべてのプロセスをラップなしで起動します。同等の [`processWrapper` 設定](/docs/ja/settings-reference#processwrapper)には v2.1.210 以降が必要です。以前のバージョンはそれを未知のキーとして無視し、ランチャーを適用せず、エラーを報告しません。
+> [!NOTE]
+>
+> `CLAUDE_CODE_PROCESS_WRAPPER` には Claude Code v2.1.208 以降が必要です。以前のバージョンは変数を無視し、すべてのプロセスをラップなしで起動します。同等の [`processWrapper` 設定](/docs/ja/settings-reference#processwrapper)には v2.1.210 以降が必要です。以前のバージョンはそれを未知のキーとして無視し、ランチャーを適用せず、エラーを報告しません。
+>
+> どちらの形式を展開した後でも、[検証ステップ](#set-up-the-launcher)を使用して、実行中のバージョンがそれを適用していることを確認してください。
 
-  どちらの形式を展開した後でも、[検証ステップ](#set-up-the-launcher)を使用して、実行中のバージョンがそれを適用していることを確認してください。
-</Note>
-
-<h2 id="what-the-launcher-covers">
-  ランチャーがカバーするもの
-</h2>
+## ランチャーがカバーするもの
 
 `CLAUDE_CODE_PROCESS_WRAPPER` が設定されている場合、Claude Code は以下の各プロセスをランチャーを通じて起動します。
 
@@ -33,9 +31,7 @@
 
 Windows では、変数は無視されます。ランチャーコントラクトは `exec` に依存しており、Windows はこれをサポートしていません。変数が設定されている Windows マシンはすべてのプロセスをラップなしで実行し、正常に動作します。唯一の信号は[デバッグログ](/docs/ja/troubleshooting)の警告です。ランチャーポリシーが Windows をカバーしている場合、変数はそこでそれを満たしません。ロールアウトを計画する際に Windows マシンをラップなしとしてカウントしてください。
 
-<h3 id="processes-that-start-outside-the-launcher">
-  ランチャーの外で起動するプロセス
-</h3>
+### ランチャーの外で起動するプロセス
 
 以下のプロセスはランチャーを通じて起動しません。
 
@@ -44,78 +40,70 @@ Windows では、変数は無視されます。ランチャーコントラクト
 * `--worktree` と `--tmux` を組み合わせた再起動：ターミナルマルチプレクサーがそのペインを起動し、Claude Code のバイナリではありません。
 * [Claude in Chrome](/docs/ja/chrome) が登録するネイティブメッセージングホスト：ブラウザーが起動し、Claude Code のバイナリではありません。
 
-<h3 id="helper-process-names-in-process-monitors">
-  プロセスモニターのヘルパープロセス名
-</h3>
+### プロセスモニターのヘルパープロセス名
 
 ランチャーが設定されている場合、`ps` と Activity Monitor は Claude Code の `claude bg-pty-host` と `claude bg-spare` ラベルをバックグラウンドヘルパープロセスに対して表示しなくなります。これはランチャーの `exec` が引数リストを再構築するためです。ラベルを失うことは隠蔽ではなく副作用です。プロセスはそれ以外は変更されず、Claude Code は表示名ではなくバイナリパスで独自のプロセスを識別します。
 
-<h2 id="set-up-the-launcher">
-  ランチャーをセットアップする
-</h2>
+## ランチャーをセットアップする
 
-<Steps>
-  <Step title="ランチャースクリプトを作成する">
-    `/opt/corp/launcher` などの絶対パスに実行可能スクリプトを作成します。Claude Code はそれを完全な Claude Code コマンドをその引数として実行し、スクリプトは `exec "$@"` を呼び出して終了し、自身を Claude Code に置き換える必要があります。
+**1. ランチャースクリプトを作成する**
 
-    ```bash theme={null}
-    #!/bin/sh
-    # Your organization's setup: enter the sandbox, apply
-    # network controls, or inject credentials.
-    exec "$@"
-    ```
+`/opt/corp/launcher` などの絶対パスに実行可能スクリプトを作成します。Claude Code はそれを完全な Claude Code コマンドをその引数として実行し、スクリプトは `exec "$@"` を呼び出して終了し、自身を Claude Code に置き換える必要があります。
 
-    `chmod +x` で実行可能にします。セットアップ部分は、Claude Code を実行する前にランチャーが実行する必要があることです。[下記のランチャーコントラクト](#the-launcher-contract)はスクリプトが従う必要があるルールをリストしています。
+```bash theme={null}
+#!/bin/sh
+# Your organization's setup: enter the sandbox, apply
+# network controls, or inject credentials.
+exec "$@"
+```
 
-    <Note>
-      以前に `~/.local/bin/claude` シンボリックリンクをランチャーで置き換えた場合は、同じ変更で元のシンボリックリンクを復元してください。置き換えられたシンボリックリンクにより、最初のラップされたセッションがバックグラウンドサービスを両方のランチャーを通じて同時に起動し、インストールを外部管理状態に置きます。`/doctor` がそれを報告し、自動更新はファイルをそのままにし、古いバージョンのクリーンアップはインストーラーが再びそのパスを管理するまで無効のままです。
-    </Note>
-  </Step>
+`chmod +x` で実行可能にします。セットアップ部分は、Claude Code を実行する前にランチャーが実行する必要があることです。[下記のランチャーコントラクト](#the-launcher-contract)はスクリプトが従う必要があるルールをリストしています。
 
-  <Step title="設定で CLAUDE_CODE_PROCESS_WRAPPER を設定する">
-    デタッチされたバックグラウンドサービスがそれを継承するように、設定ファイルの `env` ブロックで変数を設定します。シェル `export` では不十分です。バックグラウンドサービスはオンデマンドで起動し、シェルより長く存続し、シェルプロファイルを再読み込みしません。
+> [!NOTE]
+>
+> 以前に `~/.local/bin/claude` シンボリックリンクをランチャーで置き換えた場合は、同じ変更で元のシンボリックリンクを復元してください。置き換えられたシンボリックリンクにより、最初のラップされたセッションがバックグラウンドサービスを両方のランチャーを通じて同時に起動し、インストールを外部管理状態に置きます。`/doctor` がそれを報告し、自動更新はファイルをそのままにし、古いバージョンのクリーンアップはインストーラーが再びそのパスを管理するまで無効のままです。
 
-    1 台のマシンの場合は、`~/.claude/settings.json` に追加します。組織内のすべてのマシンにデプロイするには、同じブロックを[管理設定](/docs/ja/managed-settings)に配置します。
+**2. 設定で CLAUDE\_CODE\_PROCESS\_WRAPPER を設定する**
 
-    ```json theme={null}
-    {
-      "env": {
-        "CLAUDE_CODE_PROCESS_WRAPPER": "/opt/corp/launcher"
-      }
-    }
-    ```
+デタッチされたバックグラウンドサービスがそれを継承するように、設定ファイルの `env` ブロックで変数を設定します。シェル `export` では不十分です。バックグラウンドサービスはオンデマンドで起動し、シェルより長く存続し、シェルプロファイルを再読み込みしません。
 
-    複数のソースが変数を設定する場合、管理設定値は `~/.claude/settings.json` とシェルでエクスポートされた値の両方をオーバーライドするため、ユーザーは自己生成を別のランチャーにポイントできません。
+1 台のマシンの場合は、`~/.claude/settings.json` に追加します。組織内のすべてのマシンにデプロイするには、同じブロックを[管理設定](/docs/ja/managed-settings)に配置します。
 
-    [`processWrapper` 設定](/docs/ja/settings-reference#processwrapper)は名前付きのトップレベル設定キーと同じ値を持ちます。組織が設定を `env` ブロックではなく個別のキーとしてプッシュする場合に設定します。`processWrapper` 設定には Claude Code v2.1.210 以降が必要です。次の設定ファイルはキーを通じて同じランチャーを設定します。
+```json theme={null}
+{
+  "env": {
+    "CLAUDE_CODE_PROCESS_WRAPPER": "/opt/corp/launcher"
+  }
+}
+```
 
-    ```json theme={null}
-    {
-      "processWrapper": "/opt/corp/launcher"
-    }
-    ```
+複数のソースが変数を設定する場合、管理設定値は `~/.claude/settings.json` とシェルでエクスポートされた値の両方をオーバーライドするため、ユーザーは自己生成を別のランチャーにポイントできません。
 
-    両方が設定されている場合、`CLAUDE_CODE_PROCESS_WRAPPER` が優先されます。
+[`processWrapper` 設定](/docs/ja/settings-reference#processwrapper)は名前付きのトップレベル設定キーと同じ値を持ちます。組織が設定を `env` ブロックではなく個別のキーとしてプッシュする場合に設定します。`processWrapper` 設定には Claude Code v2.1.210 以降が必要です。次の設定ファイルはキーを通じて同じランチャーを設定します。
 
-    `processWrapper` は名前付き設定であるため、[リモート管理設定](/docs/ja/managed-settings#delivery-mechanisms)を通じてそれを配信する組織は、[セキュリティ承認ダイアログ](/docs/ja/server-managed-settings#security-approval-dialogs)に管理者が提供した実行可能ファイルを実行する他の設定と一緒にリストされているのを見ます。
+```json theme={null}
+{
+  "processWrapper": "/opt/corp/launcher"
+}
+```
 
-    プロジェクトおよびローカル設定はランチャーを設定できません。リポジトリにコミットされたファイルが、マシン上のすべての Claude Code プロセスの前にバイナリを配置できてはならないため、Claude Code は `.claude/settings.json` または `.claude/settings.local.json` の `CLAUDE_CODE_PROCESS_WRAPPER` を無視して[デバッグログ](/docs/ja/troubleshooting)に警告を記録し、これらのファイルから `processWrapper` キーを読み込むことはありません。
-  </Step>
+両方が設定されている場合、`CLAUDE_CODE_PROCESS_WRAPPER` が優先されます。
 
-  <Step title="バックグラウンドサービスとセッションを再起動する">
-    実行中のバックグラウンドサービスと開いている `claude` セッションは起動時に変数を 1 回読み込むため、再起動されるまでラップなしでプロセスを起動し続けます。`claude daemon stop --any` を実行してオンデマンドサービスを停止します。`claude agents` などそれを必要とする次のコマンドがラップされたものを起動します。その後、開いている `claude` セッションを再起動します。
+`processWrapper` は名前付き設定であるため、[リモート管理設定](/docs/ja/managed-settings#delivery-mechanisms)を通じてそれを配信する組織は、[セキュリティ承認ダイアログ](/docs/ja/server-managed-settings#security-approval-dialogs)に管理者が提供した実行可能ファイルを実行する他の設定と一緒にリストされているのを見ます。
 
-    手動で再起動できないマシンでは、設定プッシュ後に起動された最初のセッションが残されたラップなしのオンデマンドサービスを自動的に廃止します。新しいセッションが起動しないマシンは、セッションが起動するまでラップなしのバックグラウンドサービスを保持します。
-  </Step>
+プロジェクトおよびローカル設定はランチャーを設定できません。リポジトリにコミットされたファイルが、マシン上のすべての Claude Code プロセスの前にバイナリを配置できてはならないため、Claude Code は `.claude/settings.json` または `.claude/settings.local.json` の `CLAUDE_CODE_PROCESS_WRAPPER` を無視して[デバッグログ](/docs/ja/troubleshooting)に警告を記録し、これらのファイルから `processWrapper` キーを読み込むことはありません。
 
-  <Step title="検証する">
-    セッションで `/status` を実行します。Self-exec エントリは解決された起動コマンドを表示し、実行中のバックグラウンドサービスがそれと一致しない場合に警告します。`claude daemon status` は同じ情報をシェルから出力します。変数を設定解除して `/status` にエントリが表示されなくなった後でも出力されます。
-  </Step>
-</Steps>
+**3. バックグラウンドサービスとセッションを再起動する**
 
-<h2 id="the-launcher-contract">
-  ランチャーコントラクト
-</h2>
+実行中のバックグラウンドサービスと開いている `claude` セッションは起動時に変数を 1 回読み込むため、再起動されるまでラップなしでプロセスを起動し続けます。`claude daemon stop --any` を実行してオンデマンドサービスを停止します。`claude agents` などそれを必要とする次のコマンドがラップされたものを起動します。その後、開いている `claude` セッションを再起動します。
+
+手動で再起動できないマシンでは、設定プッシュ後に起動された最初のセッションが残されたラップなしのオンデマンドサービスを自動的に廃止します。新しいセッションが起動しないマシンは、セッションが起動するまでラップなしのバックグラウンドサービスを保持します。
+
+**4. 検証する**
+
+セッションで `/status` を実行します。Self-exec エントリは解決された起動コマンドを表示し、実行中のバックグラウンドサービスがそれと一致しない場合に警告します。`claude daemon status` は同じ情報をシェルから出力します。変数を設定解除して `/status` にエントリが表示されなくなった後でも出力されます。
+
+## ランチャーコントラクト
 
 ランチャーが実行できない場合、Claude Code はプロセスをラップなしで起動する代わりに起動を拒否します。Windows では、[変数は無視され](#what-the-launcher-covers)、プロセスはラップなしで起動します。Claude Code はスクリプトをこれらのルールに保持します。
 
@@ -132,9 +120,7 @@ Windows では、変数は無視されます。ランチャーコントラクト
 * **標準入力を読み取らない。** パスワードを尋ねるコマンドなど、`exec` の前に標準入力を読み取るコマンドは、来ない入力を待ち続けてセッションを停止させる可能性があります。また、Claude Code 向けの入力を奪ってしまい、セッションがその入力なしで実行され、エラーが報告されないこともあります。そのようなコマンドの入力は `/dev/null` からリダイレクトしてください。
 * **他のプログラムは絶対パスで呼び出す。** ランチャーは、シェルプロファイルが追加するディレクトリを含まない `PATH` で起動する場合があります。
 
-<h3 id="format-of-the-launcher-value">
-  ランチャー値の形式
-</h3>
+### ランチャー値の形式
 
 `CLAUDE_CODE_PROCESS_WRAPPER` と `processWrapper` 設定は同じ形式を使用します。ほとんどのランチャーでは、値はスクリプトの絶対パスです（`/opt/corp/launcher` など）。
 
@@ -148,9 +134,7 @@ Windows では、変数は無視されます。ランチャーコントラクト
 
 設定ファイルでは、配列形式を JSON 文字列の中に記述し、引用符をエスケープします: `"[\"/opt/corp/launcher\", \"--profile\", \"cc\"]"`。
 
-<h3 id="pass-arguments-to-the-launcher">
-  ランチャーに引数を渡す
-</h3>
+### ランチャーに引数を渡す
 
 ランチャー独自の引数は[値](#format-of-the-launcher-value)のパスの後に記述し、スクリプト内で `exec` の呼び出し前に取り除きます。これらの引数は、Claude Code のコマンドより前に、最初にスクリプトに渡されます。次のスクリプトは値 `/opt/corp/launcher --profile cc` 用に書かれたもので、プロファイル名を保存してから、`shift` で両方の引数を取り除きます。
 
@@ -166,15 +150,11 @@ exec "$@"
 
 Claude Code が値から解決した起動コマンドを確認するには、[検証ステップ](#set-up-the-launcher)を使用します。
 
-<h2 id="relationship-to-claude_code_shell_prefix">
-  `CLAUDE_CODE_SHELL_PREFIX` との関係
-</h2>
+## `CLAUDE_CODE_SHELL_PREFIX` との関係
 
 `CLAUDE_CODE_PROCESS_WRAPPER` は Claude Code 独自のプロセスをラップし、コマンドを分離された argv トークンとしてランチャーに渡して `exec` します。[`CLAUDE_CODE_SHELL_PREFIX`](/docs/ja/env-vars) は Claude Code が代わりに実行するシェルコマンド（Bash ツール呼び出し、hooks、stdio MCP サーバーを起動するコマンドなど）をラップし、各コマンドを `$1` の単一のシェル引用文字列として渡して、ラッパーが再評価します。一方用に書かれたランチャーはもう一方として機能しません。
 
-<h2 id="related-resources">
-  関連リソース
-</h2>
+## 関連リソース
 
 * [エージェントビュー](/docs/ja/agent-view)：ランチャーがカバーするバックグラウンドセッションとスーパーバイザープロセス
 * [環境変数](/docs/ja/env-vars)：`CLAUDE_CODE_PROCESS_WRAPPER` リファレンスエントリ

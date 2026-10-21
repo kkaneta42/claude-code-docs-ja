@@ -14,9 +14,7 @@
 
 Claude が応答中にコマンドを送信した場合、Claude Code はそれをキューに入れ、現在のターンが終了した後に実行します。Claude Code は `/status`、`/tasks`、`/usage` など、応答を中断せずにすぐに実行するコマンドもあります。[フルスクリーンレンダリング](/docs/ja/fullscreen)では、Claude Code は `/theme` や `/help` などのダイアログコマンドもすぐに開きます。v2.1.234 より前では、Claude Code はこれらのダイアログをターンが終了するまでキューに入れていました。
 
-<h2 id="commands-across-a-typical-workflow">
-  典型的なワークフロー全体でのコマンド
-</h2>
+## 典型的なワークフロー全体でのコマンド
 
 ほとんどのコマンドはセッション内の特定の時点で有用です。プロジェクトのセットアップから変更のリリースまでです。
 
@@ -32,9 +30,7 @@ Claude が応答中にコマンドを送信した場合、Claude Code はそれ�
 
 **何か問題がある場合。** `/rewind` はコードと会話をチェックポイントまで戻すか、会話の一部を要約します。`/doctor` はセットアップチェックアップを実行して、インストールと設定の問題を診断し、修正できます。`/debug` はランタイム問題を診断し、`/feedback` はセッションコンテキストが添付されたバグレポートを報告します。
 
-<h2 id="all-commands">
-  すべてのコマンド
-</h2>
+## すべてのコマンド
 
 以下の表は、Claude Code に含まれるすべてのコマンドを一覧にしています。ほとんどは組み込みコマンドで、その動作は CLI にコード化されています。2 種類のエントリが標記されています：
 
@@ -47,9 +43,9 @@ Claude が応答中にコマンドを送信した場合、Claude Code はそれ�
 
 以下の表では、`<arg>` は必須引数を示し、`[arg]` はオプション引数を示します。
 
-<Note>
-  すべてのコマンドがすべてのユーザーに表示されるわけではありません。可用性はプラットフォーム、プラン、環境によって異なります。たとえば、`/desktop` は Claude サブスクリプションでサインインしている場合、macOS と x64 Windows にのみ表示され、`/upgrade` は Enterprise プランには表示されません。
-</Note>
+> [!NOTE]
+>
+> すべてのコマンドがすべてのユーザーに表示されるわけではありません。可用性はプラットフォーム、プラン、環境によって異なります。たとえば、`/desktop` は Claude サブスクリプションでサインインしている場合、macOS と x64 Windows にのみ表示され、`/upgrade` は Enterprise プランには表示されません。
 
 | コマンド | 目的 |
 | :- | :- |
@@ -59,7 +55,7 @@ Claude が応答中にコマンドを送信した場合、Claude Code はそれ�
 | `/artifact-capabilities` | **[Skill](/docs/ja/skills#bundled-skills).** 公開された[アーティファクト](/docs/ja/artifacts)が使用できるランタイム機能のリファレンスを読み込みます。たとえば、[コネクタを呼び出す](/docs/ja/artifacts#pull-live-data-with-mcp-connectors)か[ファイルダウンロードを提供する](/docs/ja/artifacts#offer-a-file-download)など、アカウントが持つものを含みます。Claude は通常、1 つを使用するページを構築する前にそれを自動的に読み込みます。[アーティファクト](/docs/ja/artifacts#availability)が利用可能な場所で利用できます |
 | `/artifact-diagramming` | **[Skill](/docs/ja/skills#bundled-skills).** [アーティファクト](/docs/ja/artifacts)で Claude が従うべき図作成ガイダンスを読み込みます：図が役立つ場合、何を描くか、明るいテーマと暗いテーマで読みやすいままのインライン SVG を書く方法。Claude Code v2.1.221 以降が必要です |
 | `/artifacts` | 所有または共有されている[アーティファクト](/docs/ja/artifacts#find-an-artifact-again)を一覧表示し、セッションに添付するか、ブラウザで開くか、そのリンクをコピーします。[アーティファクト](/docs/ja/artifacts#availability)が利用可能な場所で利用できます。Claude Code v2.1.208 以降が必要です。`Enter` で添付するには v2.1.216 が必要です |
-| `/auto-mode-setup` | プロジェクトと最近のセッションから [`autoMode.environment` エントリ](/docs/ja/auto-mode-config#generate-environment-entries)をドラフトし、ドラフトを確認してユーザー設定に保存します。Pro、Max、または Team プランと Claude Code v2.1.228 以降が必要です。ネイティブ Windows では v2.1.233 以降が必要です |
+| `/auto-mode-setup` | プロジェクトと最近のセッションから [`autoMode.environment` エントリ](/docs/ja/auto-mode-config#generate-environment-entries)をドラフトし、ドラフトを確認してユーザー設定に保存します。Pro、Max、または Team プランでは、Claude Code v2.1.228 以降が必要です。ネイティブ Windows では v2.1.233 以降が必要です。Enterprise プランまたは Claude Console の API キーを使用する場合は、v2.1.283 以降が必要です。コマンドが見つからない場合は、[`/auto-mode-setup` が "Unknown command" を返す](/docs/ja/auto-mode-config#auto-mode-setup-returns-unknown-command)を参照してください |
 | `/autocompact [auto\|<tokens>]` | 自動圧縮ウィンドウを設定します：Claude Code が自動的に圧縮する前にコンテキストウィンドウがどのくらい満杯になるかです。`500k` などのサイズを渡すか、`auto` を渡してモデル用に調整されたウィンドウに戻します。Claude Code は値をユーザー設定に保存し、現在のセッションに適用します。受け入れられる値と何がそれを上書きするかについては、[自動圧縮ウィンドウを設定する](/docs/ja/model-config#set-the-auto-compact-window)を参照してください。引数がない場合、現在のウィンドウを表示するダイアログが開きます。Claude Code v2.1.221 以降が必要です |
 | `/autofix-pr [prompt]` | 現在のブランチの PR を監視し、CI が失敗するか、レビュアーがコメントを残すと修正をプッシュする[クラウドセッション](/docs/ja/claude-code-on-the-web#auto-fix-pull-requests)を生成します。`gh pr view` で現在チェックアウトされているブランチから開いている PR を検出します。別の PR を監視するには、最初にそのブランチをチェックアウトします。デフォルトでは、クラウドセッションはすべての CI 失敗とレビューコメントを修正するよう指示されます。別の指示を与えるためにプロンプトを渡します。たとえば `/autofix-pr only fix lint and type errors`。`gh` CLI と[クラウドセッション](/docs/ja/claude-code-on-the-web)へのアクセスが必要です |
 | `/background [prompt]` | 現在のセッションをデタッチして[バックグラウンドエージェント](/docs/ja/agent-view)として実行し、このターミナルを解放します。デタッチする前に別の指示を送るためにプロンプトを渡します。`claude agents` でセッションを監視します。このセッションが実行し続けている間に会話を新しいバックグラウンドセッションにコピーするには、`/fork` を使用します。エイリアス：`/bg` |
@@ -69,7 +65,7 @@ Claude が応答中にコマンドを送信した場合、Claude Code はそれ�
 | `/bug [report]` | バグを報告するか、会話を共有します。セッション履歴をどのくらい含めるかを選択し、何かが送信される前に同意画面で確認します。ファーストパーティ接続で Anthropic にサインインしている場合、レポートは Anthropic に送信されます。サードパーティプロバイダーの場合、または Anthropic 認証情報がない場合、Claude Code はレポートを [`~/.claude/feedback-bundles/` 配下のローカルアーカイブ](/docs/ja/data-usage#telemetry-services)に書き込み、自分で転送します。[VS Code 拡張機能](/docs/ja/vs-code#use-the-prompt-box)では、`/bug` は代わりに拡張機能独自のフィードバックダイアログを開きます。Claude Code v2.1.229 以降が必要です。Claude が応答している間に実行すると、Claude Code はダイアログをすぐに開きます。v2.1.232 より前は、Claude Code はターンが終了するまでコマンドをキューに入れていました。エイリアス：`/share`。v2.1.212 より前は、`/bug` と `/share` は `/feedback` のエイリアスでした |
 | `/cd <path>` | このセッションを新しい作業ディレクトリに移動し、会話を保持します。部分的なパスを入力して一致するディレクトリの提案を表示し、`Tab` を押して 1 つを受け入れます。Claude Code が新しいディレクトリからすぐに適用するもの、および `/cd` が `/add-dir` とどのように異なるかについては、[セッションを別のディレクトリに移動する](/docs/ja/permissions#move-the-session-to-another-directory)を参照してください |
 | `/chrome` | [Claude in Chrome](/docs/ja/chrome) 設定を構成します |
-| `/claude-api [migrate\|upgrade\|managed-agents-onboard\|prompt-audit\|cost-optimize\|build-eval\|hillclimb\|preserved-thinking-migration]` | **[Skill](/docs/ja/skills#bundled-skills).** プロジェクトの言語用に [Claude API](https://platform.claude.com/docs/en/api/overview) および [Managed Agents](https://platform.claude.com/docs/en/managed-agents/overview) リファレンス資料を読み込みます。コードが `anthropic` または `@anthropic-ai/sdk` をインポートするときも自動的にアクティブになります。各サブコマンドが何をするか、および必要なバージョンについては、[Claude API プロジェクトで作業する](/docs/ja/skills#work-on-claude-api-projects)を参照してください |
+| `/claude-api [migrate\|upgrade\|managed-agents-onboard\|managed-agents-secure\|prompt-audit\|cost-optimize\|build-eval\|hillclimb\|preserved-thinking-migration]` | **[Skill](/docs/ja/skills#bundled-skills).** プロジェクトの言語用に [Claude API](https://platform.claude.com/docs/en/api/overview) および [Managed Agents](https://platform.claude.com/docs/en/managed-agents/overview) リファレンス資料を読み込みます。コードが `anthropic` または `@anthropic-ai/sdk` をインポートするときも自動的にアクティブになります。各サブコマンドが何をするか、および必要なバージョンについては、[Claude API プロジェクトで作業する](/docs/ja/skills#work-on-claude-api-projects)を参照してください |
 | `/claude-in-chrome [task]` | **[Skill](/docs/ja/skills#bundled-skills).** Claude にブラウザでタスクを実行させます。ページのテスト、フォームの入力、コンソールログの読み取りなど、[Claude in Chrome](/docs/ja/chrome) を通じて。Chrome 統合がセッションで有効な場合（たとえば `claude --chrome` など）、または Claude Code が[拡張機能をインストール](/docs/ja/chrome#install-the-extension-when-claude-asks)することを提案できる場合に利用可能です |
 | `/clear [name]` | 空のコンテキストで新しい会話を開始します。前の会話に `/resume` ピッカーでラベルを付けるために名前を渡します。同じ会話を続けながらコンテキストを解放するには、代わりに `/compact` を使用します。`/resume` で前の会話を再開するか、同じ Claude Code プロセスで、[rewind メニューの previous-session エントリ](/docs/ja/checkpointing#rewind-past-a-cleared-conversation)から復元します。エイリアス：`/reset`、`/new` |
 | `/code-review [low\|medium\|high\|xhigh\|max\|ultra] [--fix] [--comment] [--max-findings n\|all\|default] [pr#\|branch\|path]` | **[Skill](/docs/ja/skills#bundled-skills).** 現在の差分、または渡す PR 番号、ブランチ、またはパスを正確性バグについてレビューします。モデルと effort レベルに応じて、レビューはクリーンアップの機会もカバーします。`--fix` を渡して検出結果を適用し、`--comment` を渡して GitHub PR または GitLab マージリクエストに投稿するか、`ultra` を渡してディープ[クラウドレビュー](/docs/ja/ultrareview)を実行します。GitLab マージリクエストに投稿するには Claude Code v2.1.257 以降が必要です。`github.com` PR ターゲットで `ultra` を使用する場合、`--post` を渡して [PR に完成した検出結果を投稿する](/docs/ja/ultrareview#post-findings-to-the-pull-request)ことを起動ダイアログで事前選択します。`--post` には Claude Code v2.1.227 以降が必要です。effort レベル、ターゲット、および `/simplify` との関係については、[`/code-review` でローカルにレビューする](/docs/ja/code-review-local)を参照してください。エイリアス：`/review` |
@@ -83,7 +79,8 @@ Claude が応答中にコマンドを送信した場合、Claude Code はそれ�
 | `/debug [description]` | **[Skill](/docs/ja/skills#bundled-skills).** 現在のセッションのデバッグログを有効にし、セッションデバッグログを読んで問題をトラブルシューティングします。デバッグログはデフォルトではオフです。`claude --debug` で開始した場合を除き、セッション中に `/debug` を実行するとその時点からログのキャプチャを開始します。オプションで問題を説明して分析にフォーカスを当てます |
 | `/deep-research <question>` | **[Workflow](/docs/ja/workflows#bundled-workflows).** 質問に関する Web 検索をファンアウトし、ソースをフェッチして相互チェックし、引用付きのレポートを合成します |
 | `/design [brief]` | **[Skill](/docs/ja/skills#bundled-skills).** UI モックアップ、スクリーンフロー、ランディングページ、またはポスターを 1 つのキャンバス上のアートボードとしてドラフトし、Claude Design [アーティファクト](/docs/ja/artifacts#draft-a-design-canvas)として公開します。たとえば `/design a settings screen for a mobile banking app`。デスクトップブラウザでアートボードを編集し、編集は自動的に保存されます。各アートボードを PNG または PDF としてエクスポートできます。Claude Code v2.1.265 以降が必要です。[アーティファクトが利用可能](/docs/ja/artifacts#availability)なセッション、およびアカウントで [Design テンプレートが利用可能](/docs/ja/artifacts#start-from-a-slides-design-or-docs-template)である必要があります。組織がそのテンプレートをオフにしている場合、`/design` はデザインをドラフトしません。Anthropic API で利用可能です。Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、および Claude Platform on AWS では、アーティファクトが利用できないため、コマンドは利用できません |
-| `/design-login` | `/design-sync` のデザインシステムアクセスを claude.ai アカウントで認可します |
+| `/design consent`, `/design revoke` | Claude に [Claude Design](https://claude.ai/design) へのアクセスを許可するか、その許可を取り消します。Claude の返信で `/design consent` を実行するよう求められた場合は、Claude Code のプロンプトに自分で入力してください |
+| `/design-login` | `/design-sync` のデザインシステムアクセスを claude.ai アカウントで認可します。`/design-sync` または `/design consent` から指示されたときは、いつでも `/design-login` でサインインしてください |
 | `/design-sync [hint]` | **[Skill](/docs/ja/skills#bundled-skills).** リポジトリの React デザインシステムを変換して [Claude Design](https://claude.ai/design) にアップロードし、生成されるデザインが実際のコンポーネントを使用するようにします。オプションでデザインシステムに名前を付けます。たとえば `/design-sync Acme DS`。初回同期はすべてのコンポーネントを検証し、大規模なリポジトリでは数時間かかる場合があります。Anthropic API で利用可能です。claude.ai が必要ですが、Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、Claude Platform on AWS、または [Claude apps gateway](/docs/ja/claude-apps-gateway#availability-and-limitations) 経由では CLI が claude.ai に接続しないため、コマンドは利用できません |
 | `/desktop` | 現在のセッションを Claude Code Desktop アプリで続行します。macOS または x64 Windows と Claude サブスクリプションが必要です。エイリアス：`/app` |
 | `/diff` | 作業ツリーの変更（Claude がこれまでに行った編集を含む）を確認します。[/diff で変更を確認する](/docs/ja/interactive-mode#review-changes-with-%2Fdiff)を参照してください |
@@ -139,7 +136,7 @@ Claude が応答中にコマンドを送信した場合、Claude Code はそれ�
 | `/run` | **[Skill](/docs/ja/skills#bundled-skills).** プロジェクトのアプリを起動して操作し、テストに合格するだけでなく、変更が実際に機能していることを確認します。[アプリを実行して検証する](/docs/ja/skills#run-and-verify-your-app)を参照してください |
 | `/run-skill-generator` | **[Skill](/docs/ja/skills#bundled-skills).** プロジェクトごとの[スキル](/docs/ja/skills#run-and-verify-your-app)を書くことで、クリーンな環境からプロジェクトのアプリをビルド、起動、操作する方法を `/run` と `/verify` に教えます |
 | `/sandbox` | [サンドボックスモード](/docs/ja/sandboxing)を切り替えます。サポートされているプラットフォームでのみ利用可能です |
-| `/schedule [description]` | クラウドで実行される[ルーティン](/docs/ja/routines)を作成、更新、一覧表示、または実行します。Claude はセットアップを会話形式でガイドします。[ルーティンの最近の実行](/docs/ja/routines#manage-routines-from-the-cli)について質問することもできます。エイリアス：`/routines` |
+| `/schedule [description]` | [クラウドスケジュールタスク](/docs/ja/routines)（旧称ルーティン）を作成、更新、一覧表示、または実行します。Claude はセットアップを会話形式でガイドします。[スケジュールタスクの最近の実行](/docs/ja/routines#manage-scheduled-tasks-from-the-cli)について質問することもできます。エイリアス：`/routines` |
 | `/scroll-speed` | マウスホイールの[スクロール速度](/docs/ja/fullscreen#mouse-wheel-scrolling)をインタラクティブに調整します。[フルスクリーンレンダリング](/docs/ja/fullscreen)でのみ利用可能で、JetBrains IDE ターミナルでは利用できません |
 | `/security-review` | 現在のブランチの変更をセキュリティ脆弱性について分析します。ブランチと origin のデフォルトブランチ間の差分をレビューし、インジェクション、認証の問題、データ公開などのリスクを特定します。`origin` リモートが必要です。レビューが `ambiguous argument` エラーで失敗した場合、[エラーリファレンス](/docs/ja/errors#security-review-fails-without-origin-head)を参照してください |
 | `/setup-bedrock` | インタラクティブなウィザードを通じて [Amazon Bedrock](/docs/ja/amazon-bedrock) の認証、リージョン、モデルピンを設定します。`CLAUDE_CODE_USE_BEDROCK=1` が設定されるまで[コマンドメニューから非表示](#how-the-command-menu-matches-what-you-type)です。完全に入力してください。初めて Amazon Bedrock を使用するユーザーはログイン画面からこのウィザードにアクセスすることもできます |
@@ -173,9 +170,7 @@ Claude が応答中にコマンドを送信した場合、Claude Code はそれ�
 | `/workflow-authoring` | **[Skill](/docs/ja/skills#bundled-skills).** [動的ワークフロー](/docs/ja/workflows)スクリプトを書くためのリファレンスを読み込みます：スクリプト API、再開動作、品質パターン、実装例。Claude は通常、スクリプトを書く前にそれを自動的に読み込みます。[保存されたスクリプトを手で編集する](/docs/ja/workflows#edit-a-saved-script)前に自分で実行してください。動的ワークフローが有効な場合に利用可能で、Claude Code v2.1.248 以降が必要です |
 | `/workflows` | [ワークフロー](/docs/ja/workflows#watch-the-run)の進捗ビューを開いて、実行中および完了したワークフローを監視、一時停止、再開、または保存します |
 
-<h2 id="how-the-command-menu-matches-what-you-type">
-  コマンドメニューが入力内容にどのようにマッチするか
-</h2>
+## コマンドメニューが入力内容にどのようにマッチするか
 
 Claude Code は、入力時に `/` メニューをフィルタリングします。以下の各項目は、フィルタリング中に気付く可能性のあることを説明しています。
 
@@ -184,15 +179,11 @@ Claude Code は、入力時に `/` メニューをフィルタリングします
 * **利用できないコマンド**: Claude Code はメニューからそれらを除外します。何も一致しない場合、Claude Code は `No commands match "/name"` と表示します。ほとんどの利用できないコマンドは、送信時に[不明なコマンド](/docs/ja/errors#unknown-command)を返します。ただし、[Console API キーの `/schedule`](/docs/ja/routines#schedule-returns-unknown-command)など、独自の利用可能性メッセージで応答するものもあります。組織のポリシーがコマンドを無効にしている場合、一部のコマンドは独自のメッセージで応答します。
 * **非表示コマンド**: Claude Code は、`/heapdump` などの利用可能なコマンドをいくつか、設計上の理由からメニューから除外しています。部分的な名前は非表示コマンドをメニューに表示させることはありません。部分的な一致が表示されるものと一致しない場合、Claude Code は同じ一致なしメッセージを表示します。完全な名前を入力すると、Claude Code はコマンドを一度だけリストに表示し、完全な名前を送信するとそれを実行します。
 
-<h2 id="mcp-prompts">
-  MCP プロンプト
-</h2>
+## MCP プロンプト
 
 MCP サーバーはコマンドとして表示されるプロンプトを公開できます。詳細については、[MCP プロンプト](/docs/ja/mcp#use-mcp-prompts-as-commands)を参照してください。
 
-<h2 id="see-also">
-  関連項目
-</h2>
+## 関連項目
 
 * [スキル](/docs/ja/skills): 独自のコマンドを作成
 * [インタラクティブモード](/docs/ja/interactive-mode): キーボードショートカット、Vim モード、およびコマンド履歴

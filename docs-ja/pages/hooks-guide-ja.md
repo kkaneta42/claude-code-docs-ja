@@ -12,74 +12,68 @@ Hooks はユーザー定義のシェルコマンドです。Claude Code はそ�
 
 Claude Code を拡張する他の方法については、Claude に追加の指示と実行可能なコマンドを与えるための [skills](/docs/ja/skills)、分離されたコンテキストでタスクを実行するための [subagents](/docs/ja/sub-agents)、プロジェクト全体で共有する拡張機能をパッケージ化するための [plugins](/docs/ja/plugins/overview) を参照してください。
 
-<Tip>
-  このガイドでは一般的なユースケースと始め方をカバーしています。完全なイベントスキーマ、JSON 入力/出力形式、非同期 hooks や MCP ツール hooks などの高度な機能については、[Hooks リファレンス](/docs/ja/hooks) を参照してください。
-</Tip>
+> [!TIP]
+>
+> このガイドでは一般的なユースケースと始め方をカバーしています。完全なイベントスキーマ、JSON 入力/出力形式、非同期 hooks や MCP ツール hooks などの高度な機能については、[Hooks リファレンス](/docs/ja/hooks) を参照してください。
 
-<h2 id="set-up-your-first-hook">
-  最初の hook をセットアップする
-</h2>
+## 最初の hook をセットアップする
 
 Hook を作成するには、[設定ファイル](#configure-hook-location) に `hooks` ブロックを追加します。このチュートリアルではデスクトップ通知 hook を作成するため、Claude があなたの入力を待っているときにアラートを受け取ることができます。ターミナルを監視する代わりに。
 
-<Steps>
-  <Step title="hook を設定に追加する">
-    `~/.claude/settings.json` を開き、`Notification` hook を追加します。ファイルが存在しない場合は、作成してください。以下の例は macOS 用に `osascript` を使用しています。Linux と Windows のコマンドについては、[Claude が入力を必要とするときに通知を受け取る](#get-notified-when-claude-needs-input) を参照してください。
+**1. hook を設定に追加する**
 
-    ```json theme={null}
-    {
-      "hooks": {
-        "Notification": [
+`~/.claude/settings.json` を開き、`Notification` hook を追加します。ファイルが存在しない場合は、作成してください。以下の例は macOS 用に `osascript` を使用しています。Linux と Windows のコマンドについては、[Claude が入力を必要とするときに通知を受け取る](#get-notified-when-claude-needs-input) を参照してください。
+
+```json theme={null}
+{
+  "hooks": {
+    "Notification": [
+      {
+        "matcher": "",
+        "hooks": [
           {
-            "matcher": "",
-            "hooks": [
-              {
-                "type": "command",
-                "command": "osascript -e 'display notification \"Claude Code needs your attention\" with title \"Claude Code\"'"
-              }
-            ]
+            "type": "command",
+            "command": "osascript -e 'display notification \"Claude Code needs your attention\" with title \"Claude Code\"'"
           }
         ]
       }
-    }
-    ```
+    ]
+  }
+}
+```
 
-    設定ファイルに既に `hooks` キーがある場合は、オブジェクト全体を置き換えるのではなく、`Notification` を既存のイベントキーの兄弟として追加します。各イベント名は単一の `hooks` オブジェクト内のキーです：
+設定ファイルに既に `hooks` キーがある場合は、オブジェクト全体を置き換えるのではなく、`Notification` を既存のイベントキーの兄弟として追加します。各イベント名は単一の `hooks` オブジェクト内のキーです：
 
-    ```json theme={null}
-    {
-      "hooks": {
-        "PostToolUse": [
-          {
-            "matcher": "Edit|Write",
-            "hooks": [{ "type": "command", "command": "jq -r '.tool_input.file_path' | xargs npx prettier --write" }]
-          }
-        ],
-        "Notification": [
-          {
-            "matcher": "",
-            "hooks": [{ "type": "command", "command": "osascript -e 'display notification \"Claude Code needs your attention\" with title \"Claude Code\"'" }]
-          }
-        ]
+```json theme={null}
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [{ "type": "command", "command": "jq -r '.tool_input.file_path' | xargs npx prettier --write" }]
       }
-    }
-    ```
+    ],
+    "Notification": [
+      {
+        "matcher": "",
+        "hooks": [{ "type": "command", "command": "osascript -e 'display notification \"Claude Code needs your attention\" with title \"Claude Code\"'" }]
+      }
+    ]
+  }
+}
+```
 
-    CLI で実現したい内容を説明して、Claude にフックを書いてもらうこともできます。
-  </Step>
+CLI で実現したい内容を説明して、Claude にフックを書いてもらうこともできます。
 
-  <Step title="設定を確認する">
-    Claude Code のプロンプトで `/hooks` と入力して hooks ブラウザを開きます。新しいフックが `Notification` の下のリストに表示されます。
-  </Step>
+**2. 設定を確認する**
 
-  <Step title="フックをテストする">
-    `Esc` を押して CLI に戻ります。ステータスバーに `⏸ manual mode on` が表示されるまで `Shift+Tab` を押し、権限が必要な操作を Claude に依頼してから、ターミナル以外のウィンドウに切り替えます。デスクトップ通知を受け取るはずです。
-  </Step>
-</Steps>
+Claude Code のプロンプトで `/hooks` と入力して hooks ブラウザを開きます。新しいフックが `Notification` の下のリストに表示されます。
 
-<h2 id="what-you-can-automate">
-  自動化できるもの
-</h2>
+**3. フックをテストする**
+
+`Esc` を押して CLI に戻ります。ステータスバーに `⏸ manual mode on` が表示されるまで `Shift+Tab` を押し、権限が必要な操作を Claude に依頼してから、ターミナル以外のウィンドウに切り替えます。デスクトップ通知を受け取るはずです。
+
+## 自動化できるもの
 
 Hooks を使用すると、Claude Code のライフサイクルの主要なポイントでコードを実行できます：編集後にファイルをフォーマットし、実行前にコマンドをブロックし、Claude が入力を必要とするときに通知を送信し、セッション開始時にコンテキストを注入するなど。Hook イベントの完全なリストについては、[Hooks リファレンス](/docs/ja/hooks#hook-lifecycle) を参照してください。
 
@@ -87,9 +81,7 @@ Hooks を使用すると、Claude Code のライフサイクルの主要なポ�
 
 本番環境での hooks の例として、別のモデルレビューを実行し、その結果をセッションにフィードバックする場合は、[`security-guidance` プラグインが Claude Code と統合する方法](/docs/ja/security-guidance#how-the-plugin-integrates-with-claude-code) を参照してください。
 
-<h3 id="get-notified-when-claude-needs-input">
-  Claude が入力を必要とするときに通知を受け取る
-</h3>
+### Claude が入力を必要とするときに通知を受け取る
 
 Claude が作業を完了して入力を必要とするときはいつでもデスクトップ通知を取得し、ターミナルをチェックせずに他のタスクに切り替えることができます。
 
@@ -97,95 +89,93 @@ Claude が作業を完了して入力を必要とするときはいつでもデ�
 
 以下の各タブはプラットフォームのネイティブ通知コマンドを使用します。これを `~/.claude/settings.json` に追加します：
 
-<Tabs>
-  <Tab title="macOS">
-    ```json theme={null}
-    {
-      "hooks": {
-        "Notification": [
+**macOS**
+
+```json theme={null}
+{
+  "hooks": {
+    "Notification": [
+      {
+        "matcher": "",
+        "hooks": [
           {
-            "matcher": "",
-            "hooks": [
-              {
-                "type": "command",
-                "command": "osascript -e 'display notification \"Claude Code needs your attention\" with title \"Claude Code\"'"
-              }
-            ]
+            "type": "command",
+            "command": "osascript -e 'display notification \"Claude Code needs your attention\" with title \"Claude Code\"'"
           }
         ]
       }
-    }
-    ```
+    ]
+  }
+}
+```
 
-    <Accordion title="通知が表示されない場合">
-      `osascript` は組み込みの Script Editor アプリを通じて通知をルーティングします。Script Editor に通知権限がない場合、コマンドは何も表示せずに失敗し、macOS は権限の付与を求めません。
+> **通知が表示されない場合**
+>
+> `osascript` は組み込みの Script Editor アプリを通じて通知をルーティングします。Script Editor に通知権限がない場合、コマンドは何も表示せずに失敗し、macOS は権限の付与を求めません。
+>
+> Terminal でこれを 1 回実行して、Script Editor を通知設定に表示させます：
+>
+> ```bash theme={null}
+> osascript -e 'display notification "test"'
+> ```
+>
+> まだ何も表示されません。**System Settings > Notifications** を開き、リストで **Script Editor** を見つけて、**Allow Notifications** をオンにします。コマンドを再度実行して、テスト通知が表示されることを確認します。
 
-      Terminal でこれを 1 回実行して、Script Editor を通知設定に表示させます：
+**Linux**
 
-      ```bash theme={null}
-      osascript -e 'display notification "test"'
-      ```
-
-      まだ何も表示されません。**System Settings > Notifications** を開き、リストで **Script Editor** を見つけて、**Allow Notifications** をオンにします。コマンドを再度実行して、テスト通知が表示されることを確認します。
-    </Accordion>
-  </Tab>
-
-  <Tab title="Linux">
-    ```json theme={null}
-    {
-      "hooks": {
-        "Notification": [
+```json theme={null}
+{
+  "hooks": {
+    "Notification": [
+      {
+        "matcher": "",
+        "hooks": [
           {
-            "matcher": "",
-            "hooks": [
-              {
-                "type": "command",
-                "command": "notify-send 'Claude Code' 'Claude Code needs your attention'"
-              }
-            ]
+            "type": "command",
+            "command": "notify-send 'Claude Code' 'Claude Code needs your attention'"
           }
         ]
       }
-    }
-    ```
+    ]
+  }
+}
+```
 
-    <Accordion title="通知が表示されない場合">
-      `notify-send` はデスクトップ通知デーモンが必要です。ヘッドレスサーバー、SSH セッション、ほとんどのコンテナにはこれがありません。まずコマンドを直接テストしてください：
+> **通知が表示されない場合**
+>
+> `notify-send` はデスクトップ通知デーモンが必要です。ヘッドレスサーバー、SSH セッション、ほとんどのコンテナにはこれがありません。まずコマンドを直接テストしてください：
+>
+> ```bash theme={null}
+> notify-send 'Claude Code' 'test'
+> ```
+>
+> コマンドが見つからない場合は、Debian と Ubuntu で `libnotify-bin` パッケージをインストールするか、ディストリビューションの同等のものをインストールしてください。
 
-      ```bash theme={null}
-      notify-send 'Claude Code' 'test'
-      ```
+**Windows (PowerShell)**
 
-      コマンドが見つからない場合は、Debian と Ubuntu で `libnotify-bin` パッケージをインストールするか、ディストリビューションの同等のものをインストールしてください。
-    </Accordion>
-  </Tab>
-
-  <Tab title="Windows (PowerShell)">
-    ```json theme={null}
-    {
-      "hooks": {
-        "Notification": [
+```json theme={null}
+{
+  "hooks": {
+    "Notification": [
+      {
+        "matcher": "",
+        "hooks": [
           {
-            "matcher": "",
-            "hooks": [
-              {
-                "type": "command",
-                "command": "powershell.exe -Command \"[System.Reflection.Assembly]::LoadWithPartialName('System.Windows.Forms'); [System.Windows.Forms.MessageBox]::Show('Claude Code needs your attention', 'Claude Code')\""
-              }
-            ]
+            "type": "command",
+            "command": "powershell.exe -Command \"[System.Reflection.Assembly]::LoadWithPartialName('System.Windows.Forms'); [System.Windows.Forms.MessageBox]::Show('Claude Code needs your attention', 'Claude Code')\""
           }
         ]
       }
-    }
-    ```
+    ]
+  }
+}
+```
 
-    <Accordion title="ダイアログが表示されない場合">
-      このコマンドは画面の隅の通知ではなくダイアログボックスを開くため、ダイアログがターミナルウィンドウの背後で開く可能性があります。まず PowerShell でコマンドを直接テストしてください。
-
-      Claude Code を WSL 内で実行する場合、`powershell.exe` が Windows interop を通じて `PATH` で利用可能である必要があります。
-    </Accordion>
-  </Tab>
-</Tabs>
+> **ダイアログが表示されない場合**
+>
+> このコマンドは画面の隅の通知ではなくダイアログボックスを開くため、ダイアログがターミナルウィンドウの背後で開く可能性があります。まず PowerShell でコマンドを直接テストしてください。
+>
+> Claude Code を WSL 内で実行する場合、`powershell.exe` が Windows interop を通じて `PATH` で利用可能である必要があります。
 
 空の `matcher` はすべての通知タイプで発火します。特定のイベントでのみ発火させるには、次のいずれかの値に設定します：
 
@@ -214,9 +204,7 @@ Claude Code は `permission_prompt` をターミナルと Claude Desktop、VS Co
 
 Claude Code のプロンプトで `/hooks` と入力し、`Notification` の下にフックが表示されることを確認します。
 
-<h3 id="auto-format-code-after-edits">
-  編集後にコードを自動フォーマットする
-</h3>
+### 編集後にコードを自動フォーマットする
 
 Claude が編集するすべてのファイルで [Prettier](https://prettier.io/) を自動的に実行し、手動操作なしでフォーマットの一貫性を保ちます。
 
@@ -246,83 +234,77 @@ hook をテストするには、Claude に JavaScript ファイルにシング�
 
 ファイルが `Bash` コマンドで書き直されるときを含め、特定のファイルがどのように変更されても再フォーマットするには、代わりに [FileChanged](/docs/ja/hooks#filechanged) hook を使用してください。
 
-<Note>
-  このページの Bash の例は JSON 解析に `jq` を使用します。macOS で `brew install jq`、Debian と Ubuntu で `apt-get install jq` でインストールするか、[`jq` ダウンロード](https://jqlang.org/download/) を参照してください。
-</Note>
+> [!NOTE]
+>
+> このページの Bash の例は JSON 解析に `jq` を使用します。macOS で `brew install jq`、Debian と Ubuntu で `apt-get install jq` でインストールするか、[`jq` ダウンロード](https://jqlang.org/download/) を参照してください。
 
-<h3 id="block-edits-to-protected-files">
-  保護されたファイルへの編集をブロックする
-</h3>
+### 保護されたファイルへの編集をブロックする
 
 Claude が `.env`、`package-lock.json`、`.git/` 内のものなどの機密ファイルを変更するのを防ぎます。Claude は編集がブロックされた理由を説明するフィードバックを受け取るため、アプローチを調整できます。
 
 この例は hook が呼び出す別のスクリプトファイルを使用します。スクリプトはターゲットファイルパスを保護されたパターンのリストに対してチェックし、終了コード 2 で編集をブロックします。
 
-<Steps>
-  <Step title="hook スクリプトを作成する">
-    これを `.claude/hooks/protect-files.sh` に保存します：
+**1. hook スクリプトを作成する**
 
-    ```bash theme={null}
-    #!/bin/bash
-    # protect-files.sh
+これを `.claude/hooks/protect-files.sh` に保存します：
 
-    INPUT=$(cat)
-    FILE_PATH=$(echo "$INPUT" | jq -r '.tool_input.file_path // empty')
+```bash theme={null}
+#!/bin/bash
+# protect-files.sh
 
-    # Windows バックスラッシュセパレータを正規化して、以下のパターンがマッチするようにします
-    FILE_PATH="${FILE_PATH//\\//}"
+INPUT=$(cat)
+FILE_PATH=$(echo "$INPUT" | jq -r '.tool_input.file_path // empty')
 
-    PROTECTED_PATTERNS=(".env" "package-lock.json" ".git/")
+# Windows バックスラッシュセパレータを正規化して、以下のパターンがマッチするようにします
+FILE_PATH="${FILE_PATH//\\//}"
 
-    for pattern in "${PROTECTED_PATTERNS[@]}"; do
-      if [[ "$FILE_PATH" == *"$pattern"* ]]; then
-        echo "Blocked: $FILE_PATH matches protected pattern '$pattern'" >&2
-        exit 2
-      fi
-    done
+PROTECTED_PATTERNS=(".env" "package-lock.json" ".git/")
 
-    exit 0
-    ```
-  </Step>
+for pattern in "${PROTECTED_PATTERNS[@]}"; do
+  if [[ "$FILE_PATH" == *"$pattern"* ]]; then
+    echo "Blocked: $FILE_PATH matches protected pattern '$pattern'" >&2
+    exit 2
+  fi
+done
 
-  <Step title="macOS と Linux でスクリプトを実行可能にする">
-    Hook スクリプトが Claude Code で実行されるには、実行可能である必要があります：
+exit 0
+```
 
-    ```bash theme={null}
-    chmod +x .claude/hooks/protect-files.sh
-    ```
-  </Step>
+**2. macOS と Linux でスクリプトを実行可能にする**
 
-  <Step title="hook を登録する">
-    `.claude/settings.json` に `PreToolUse` hook を追加して、`Edit` または `Write` ツール呼び出しの前にスクリプトを実行します：
+Hook スクリプトが Claude Code で実行されるには、実行可能である必要があります：
 
-    ```json theme={null}
-    {
-      "hooks": {
-        "PreToolUse": [
+```bash theme={null}
+chmod +x .claude/hooks/protect-files.sh
+```
+
+**3. hook を登録する**
+
+`.claude/settings.json` に `PreToolUse` hook を追加して、`Edit` または `Write` ツール呼び出しの前にスクリプトを実行します：
+
+```json theme={null}
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
           {
-            "matcher": "Edit|Write",
-            "hooks": [
-              {
-                "type": "command",
-                "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/protect-files.sh"
-              }
-            ]
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/protect-files.sh"
           }
         ]
       }
-    }
-    ```
-  </Step>
+    ]
+  }
+}
+```
 
-  <Step title="hook をテストする">
-    Claude に `.env` ファイルにコメントを追加するよう求めてください。Claude Code は実行前に編集をブロックし、スクリプトの `Blocked:` メッセージを Claude にフィードバックとして渡します。
-  </Step>
-</Steps>
+**4. hook をテストする**
 
-<h3 id="re-inject-context-after-compaction">
-  圧縮後にコンテキストを再注入する
-</h3>
+Claude に `.env` ファイルにコメントを追加するよう求めてください。Claude Code は実行前に編集をブロックし、スクリプトの `Blocked:` メッセージを Claude にフィードバックとして渡します。
+
+### 圧縮後にコンテキストを再注入する
 
 Claude のコンテキストウィンドウがいっぱいになると、圧縮は会話を要約してスペースを解放します。これは重要な詳細を失う可能性があります。`compact` マッチャーで `SessionStart` hook を使用して、すべての圧縮後に重要なコンテキストを再注入します。
 
@@ -348,9 +330,7 @@ Claude Code はコマンドが stdout に書き込むプレーンテキストを
 
 `echo` を `git log --oneline -5` などの動的出力を生成するコマンドに置き換えて、最近のコミットを表示できます。すべてのセッション開始時にコンテキストを注入する場合は、代わりに [CLAUDE.md](/docs/ja/memory) を使用することを検討してください。環境変数については、リファレンスの [`CLAUDE_ENV_FILE`](/docs/ja/hooks#persist-environment-variables) を参照してください。
 
-<h3 id="audit-configuration-changes">
-  設定変更を監査する
-</h3>
+### 設定変更を監査する
 
 セッション中に設定またはスキルファイルが変更されたときを追跡します。`ConfigChange` イベントは外部プロセスまたはエディタが設定ファイルを変更したときに発火するため、コンプライアンスのために変更をログに記録したり、不正な変更をブロックしたりできます。
 
@@ -378,9 +358,7 @@ Claude Code はコマンドが stdout に書き込むプレーンテキストを
 
 hook が変更を記録することを確認するには、セッションが実行中に別のエディタで設定ファイルを編集してから、`~/claude-config-audit.log` を開きます：hook は変更ごとに 1 つの JSON 行をタイムスタンプ、ソース、ファイルパスとともに追加します。
 
-<h3 id="reload-environment-when-directory-or-files-change">
-  ディレクトリまたはファイルが変更されたときに環境をリロードする
-</h3>
+### ディレクトリまたはファイルが変更されたときに環境をリロードする
 
 一部のプロジェクトは、どのディレクトリにいるかに応じて異なる環境変数を設定します。[direnv](https://direnv.net/) などのツールはシェルで自動的にこれを行いますが、Claude の Bash ツールはそれらの変更を自動的に取得しません。
 
@@ -437,9 +415,7 @@ hook が変更を記録することを確認するには、セッションが実
 
 入力スキーマ、`watchPaths` 出力、および `CLAUDE_ENV_FILE` の詳細については、[CwdChanged](/docs/ja/hooks#cwdchanged) および [FileChanged](/docs/ja/hooks#filechanged) リファレンスエントリを参照してください。
 
-<h3 id="auto-approve-specific-permission-prompts">
-  特定の許可プロンプトを自動承認する
-</h3>
+### 特定の許可プロンプトを自動承認する
 
 常に許可するツール呼び出しの承認ダイアログをスキップします。この例は `ExitPlanMode` を自動承認します。これは Claude がプランの提示を終了して続行するよう求めるときに呼び出すツールです。プランが準備できるたびにプロンプトが表示されることはありません。
 
@@ -469,11 +445,11 @@ Hook が承認すると、Claude Code は Plan Mode を終了し、Plan Mode に
 
 特定の許可モードを設定する代わりに、hook の出力に `setMode` エントリを含む `updatedPermissions` 配列を含めることができます。`mode` 値は `default`、`acceptEdits`、または `bypassPermissions` などの任意の許可モードであり、`destination: "session"` は現在のセッションのみに適用します。
 
-<Note>
-  `bypassPermissions` は、セッションが既にバイパスモードで起動された場合にのみ適用されます：`--dangerously-skip-permissions`、`--permission-mode bypassPermissions`、`--allow-dangerously-skip-permissions`、または [ユーザー、`--settings`、または管理設定](/docs/ja/settings-reference#permissions-defaultmode) の `permissions.defaultMode: "bypassPermissions"`。[`permissions.disableBypassPermissionsMode`](/docs/ja/permissions#managed-settings) で無効化されている場合、または [制限モード](/docs/ja/cli-reference#cli-flags) でセッションを開始した場合は適用されません。
-
-  Claude Code は `defaultMode` として永続化することはありません。
-</Note>
+> [!NOTE]
+>
+> `bypassPermissions` は、セッションが既にバイパスモードで起動された場合にのみ適用されます：`--dangerously-skip-permissions`、`--permission-mode bypassPermissions`、`--allow-dangerously-skip-permissions`、または [ユーザー、`--settings`、または管理設定](/docs/ja/settings-reference#permissions-defaultmode) の `permissions.defaultMode: "bypassPermissions"`。[`permissions.disableBypassPermissionsMode`](/docs/ja/permissions#managed-settings) で無効化されている場合、または [制限モード](/docs/ja/cli-reference#cli-flags) でセッションを開始した場合は適用されません。
+>
+> Claude Code は `defaultMode` として永続化することはありません。
 
 セッションを `acceptEdits` に切り替えるには、hook は stdout に次の JSON を書き込みます：
 
@@ -493,9 +469,7 @@ Hook が承認すると、Claude Code は Plan Mode を終了し、Plan Mode に
 
 マッチャーをできるだけ狭く保ちます。`.*` でマッチングするか、マッチャーを空のままにすると、ファイル書き込みやシェルコマンドを含むすべての許可プロンプトが自動承認されます。決定フィールドの完全なセットについては、[PermissionRequest リファレンス](/docs/ja/hooks#permissionrequest-decision-control) を参照してください。
 
-<h2 id="how-hooks-work">
-  hooks の仕組み
-</h2>
+## hooks の仕組み
 
 Claude Code は、ライフサイクルの特定のポイントで hook イベントを発火させます。イベントが発火すると、Claude Code はすべてのマッチングする hooks を並列で実行します。重複するハンドラーの扱い方については、[Hook ハンドラーフィールド](/docs/ja/hooks#hook-handler-fields) を参照してください。以下の表は各イベントとそれがトリガーされるときを示しています：
 
@@ -542,9 +516,7 @@ Claude Code は、ライフサイクルの特定のポイントで hook イベ�
 * `"type": "prompt"`：シングルターン LLM 評価。[プロンプトベースの hooks](#prompt-based-hooks) を参照してください。
 * `"type": "agent"`：ツールアクセス付きマルチターン検証。エージェント hooks は実験的であり、変更される可能性があります。[エージェントベースの hooks](#agent-based-hooks) を参照してください。
 
-<h3 id="combine-results-from-multiple-hooks">
-  複数の hooks からの結果を組み合わせる
-</h3>
+### 複数の hooks からの結果を組み合わせる
 
 複数の hooks が同じイベントにマッチする場合、すべての hook のコマンドが完了してから Claude Code は結果をマージします。1 つの hook が `deny` を返しても、兄弟 hooks の実行は停止されません。1 つの hook の `deny` が別の hook の副作用を抑制することに依存しないでください。
 
@@ -576,15 +548,11 @@ Claude Code は、ライフサイクルの特定のポイントで hook イベ�
 
 Claude が `rm -rf /tmp/build` を実行しようとするとき、両方の hooks が並列で実行されます。ログ hook はコマンドを `~/.claude/bash.log` に書き込み、0 で終了します。これは決定がないことを報告します。ガードレール hook は 2 で終了し、ツール呼び出しを拒否します。deny が優先されるため、Claude Code はコマンドをブロックし、Claude にガードレールの stderr を表示します。ログエントリはまだ書き込まれます。なぜなら、ログ hook は既に実行されているからです。
 
-<h3 id="read-input-and-return-output">
-  入力を読み取り、出力を返す
-</h3>
+### 入力を読み取り、出力を返す
 
 Hooks は stdin、stdout、stderr、および終了コードを通じて Claude Code と通信します。イベントが発火すると、Claude Code はイベント固有のデータを JSON としてスクリプトの stdin に渡します。スクリプトはそのデータを読み取り、作業を行い、終了コードを通じて Claude Code に次に何をするかを伝えます。
 
-<h4 id="hook-input">
-  Hook 入力
-</h4>
+#### Hook 入力
 
 すべてのイベントには `session_id`（セッションの一意の ID）や `cwd`（イベントが発火したときの作業ディレクトリ）などの共通フィールドが含まれていますが、各イベントタイプは異なるデータを追加します。Claude が Bash コマンドを実行するとき、`PreToolUse` hook は stdin で次のフィールドを受け取ります：
 
@@ -608,9 +576,7 @@ Hooks は stdin、stdout、stderr、および終了コードを通じて Claude 
 
 スクリプトはその JSON を解析し、これらのフィールドのいずれかに基づいて動作できます。`UserPromptSubmit` hooks は代わりに `prompt` テキストを取得し、`SessionStart` hooks は `source`（`startup`、`resume`、`clear`、`compact`、または `fork`）を取得するなど。リファレンスの [共通入力フィールド](/docs/ja/hooks#common-input-fields) で共有フィールドを参照し、各イベントのセクションでイベント固有のスキーマを参照してください。
 
-<h4 id="hook-output">
-  Hook 出力
-</h4>
+#### Hook 出力
 
 スクリプトは stdout または stderr に書き込み、特定のコードで終了することで、Claude Code に次に何をするかを伝えます。以下は、コマンドをブロックする `PreToolUse` hook の例です：
 
@@ -636,15 +602,13 @@ exit 0  # exit 0 = 決定なし。通常の権限フローが適用されます
   * スキーマ検証に失敗した解析済みオブジェクト、または Claude Code が [JSON として解析しようとする](/docs/ja/hooks#exit-code-0) ものの有効な JSON ではない stdout：アクションはブロックしないエラーとして続行されます。検証またはパースのメッセージについては、`<hook name> hook error` 通知を確認してください。
   * Claude Code が [プレーンテキストとして扱う](/docs/ja/hooks#exit-code-0) stdout、または空の stdout：アクションはブロックしないエラーとして続行されます。トランスクリプトには `<hook name> hook error` 通知が表示され、続いて `Failed with non-blocking status code:` を先頭に付けた stderr の最初の行が表示されます。stderr 全体をキャプチャするには、`claude --debug` を使用するか、セッション中に `/debug` を実行して [デバッグログ](/docs/ja/hooks#debug-hooks) を有効にしてください。
 
-<h4 id="structured-json-output">
-  構造化 JSON 出力
-</h4>
+#### 構造化 JSON 出力
 
 終了コードはブロックするか沈黙するかのみを許可します。より多くの制御のために、終了 0 して stdout に JSON オブジェクトを出力します。
 
-<Note>
-  終了 2 で stderr メッセージでブロックするか、終了 0 で JSON で構造化制御を使用します。hook ごとに 1 つのアプローチを選択してください。混在させた場合の動作については、[終了コード出力](/docs/ja/hooks#exit-code-output) を参照してください。
-</Note>
+> [!NOTE]
+>
+> 終了 2 で stderr メッセージでブロックするか、終了 0 で JSON で構造化制御を使用します。hook ごとに 1 つのアプローチを選択してください。混在させた場合の動作については、[終了コード出力](/docs/ja/hooks#exit-code-output) を参照してください。
 
 たとえば、`PreToolUse` hook はツール呼び出しを拒否して理由を Claude に伝えたり、ユーザーの承認のためにエスカレートしたりできます：
 
@@ -689,9 +653,7 @@ exit 0  # exit 0 = 決定なし。通常の権限フローが適用されます
 
 `type: "prompt"` の Hooks は出力を異なる方法で処理します：[プロンプトベースの hooks](#prompt-based-hooks) を参照してください。
 
-<h3 id="filter-hooks-with-matchers">
-  マッチャーで hooks をフィルタリングする
-</h3>
+### マッチャーで hooks をフィルタリングする
 
 マッチャーなしでは、hook はそのイベントのすべての発生で発火します。マッチャーを使用すると、それを絞り込むことができます。たとえば、ファイル編集後にのみフォーマッターを実行したい場合（すべてのツール呼び出しの後ではなく）、`PostToolUse` hook にマッチャーを追加します：
 
@@ -712,9 +674,9 @@ exit 0  # exit 0 = 決定なし。通常の権限フローが適用されます
 
 `"Edit|Write"` マッチャーは `Edit` または `Write` ツール呼び出しでのみ発火し、`Bash`、`Read`、または他のツールでは発火しません。カンマもまた同じ方法で代替を区切るため、`"Edit, Write"` は同等です。[マッチャーパターン](/docs/ja/hooks#matcher-patterns) を参照して、プレーン名と正規表現がどのように評価されるかを確認してください。
 
-<Note>
-  Claude はまた、シェルコマンドを実行することでファイルを作成または変更できます。コンプライアンススキャンまたは監査ログなど、hook がすべてのファイル変更を確認する必要がある場合は、ターンごとに 1 回作業ツリーをスキャンする [`Stop`](/docs/ja/hooks#stop) hook を追加してください。呼び出しごとのカバレッジの場合は、`Bash|PowerShell` もマッチさせ、スクリプトで `git status --porcelain` を使用して変更されたファイルと追跡されていないファイルをリストアップしてください。[PowerShell hook 入力セクション](/docs/ja/hooks#powershell) は、`Bash` だけをマッチさせるのが十分でない理由を説明しています。ディスク上の特定のファイルが変更されたときに hook を実行するには、それを書き込んだものが何であれ、[FileChanged](/docs/ja/hooks#filechanged) hook を使用してください。
-</Note>
+> [!NOTE]
+>
+> Claude はまた、シェルコマンドを実行することでファイルを作成または変更できます。コンプライアンススキャンまたは監査ログなど、hook がすべてのファイル変更を確認する必要がある場合は、ターンごとに 1 回作業ツリーをスキャンする [`Stop`](/docs/ja/hooks#stop) hook を追加してください。呼び出しごとのカバレッジの場合は、`Bash|PowerShell` もマッチさせ、スクリプトで `git status --porcelain` を使用して変更されたファイルと追跡されていないファイルをリストアップしてください。[PowerShell hook 入力セクション](/docs/ja/hooks#powershell) は、`Bash` だけをマッチさせるのが十分でない理由を説明しています。ディスク上の特定のファイルが変更されたときに hook を実行するには、それを書き込んだものが何であれ、[FileChanged](/docs/ja/hooks#filechanged) hook を使用してください。
 
 各イベントタイプは特定のフィールドでマッチします：
 
@@ -741,79 +703,75 @@ exit 0  # exit 0 = 決定なし。通常の権限フローが適用されます
 
 以下のタブは、異なるイベントタイプのいくつかのマッチャーを示しています。
 
-<Tabs>
-  <Tab title="すべての Bash コマンドをログに記録する">
-    `Bash` ツール呼び出しのみをマッチし、各コマンドをファイルにログに記録します。`PostToolUse` イベントはコマンドが完了した後に発火するため、`tool_input.command` は実行されたものを含みます。Hook は stdin で JSON としてイベントデータを受け取り、`jq -r '.tool_input.command'` はコマンド文字列のみを抽出し、`>>` はログファイルに追加します：
+**すべての Bash コマンドをログに記録する**
 
-    ```json theme={null}
-    {
-      "hooks": {
-        "PostToolUse": [
+`Bash` ツール呼び出しのみをマッチし、各コマンドをファイルにログに記録します。`PostToolUse` イベントはコマンドが完了した後に発火するため、`tool_input.command` は実行されたものを含みます。Hook は stdin で JSON としてイベントデータを受け取り、`jq -r '.tool_input.command'` はコマンド文字列のみを抽出し、`>>` はログファイルに追加します：
+
+```json theme={null}
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
           {
-            "matcher": "Bash",
-            "hooks": [
-              {
-                "type": "command",
-                "command": "jq -r '.tool_input.command' >> ~/.claude/command-log.txt"
-              }
-            ]
+            "type": "command",
+            "command": "jq -r '.tool_input.command' >> ~/.claude/command-log.txt"
           }
         ]
       }
-    }
-    ```
-  </Tab>
+    ]
+  }
+}
+```
 
-  <Tab title="MCP ツールをマッチさせる">
-    MCP ツールは組み込みツールとは異なる命名規則を使用します：`mcp__<server>__<tool>`。ここで `<server>` は MCP サーバー名で、`<tool>` はそれが提供するツールです。たとえば、`mcp__github__search_repositories` または `mcp__filesystem__read_file`。[プラグインバンドルサーバー](/docs/ja/mcp#plugin-provided-mcp-servers) からのツールは、`mcp__plugin_my-plugin_db__query` などのスコープ付きサーバーセグメントを使用します。特定のサーバーからすべてのツールをターゲットするために正規表現マッチャーを使用するか、`mcp__.*__write.*` のようなパターンでサーバー全体でマッチします。リファレンスの [MCP ツールをマッチさせる](/docs/ja/hooks#match-mcp-tools) を参照して、完全な例のリストを確認してください。
+**MCP ツールをマッチさせる**
 
-    以下のコマンドは hook の JSON 入力からツール名を `jq` で抽出し、stderr に書き込みます。stderr に書き込むことで stdout をクリーンに保ち、メッセージを [デバッグログ](/docs/ja/hooks#debug-hooks) に送信します：
+MCP ツールは組み込みツールとは異なる命名規則を使用します：`mcp__<server>__<tool>`。ここで `<server>` は MCP サーバー名で、`<tool>` はそれが提供するツールです。たとえば、`mcp__github__search_repositories` または `mcp__filesystem__read_file`。[プラグインバンドルサーバー](/docs/ja/mcp#plugin-provided-mcp-servers) からのツールは、`mcp__plugin_my-plugin_db__query` などのスコープ付きサーバーセグメントを使用します。特定のサーバーからすべてのツールをターゲットするために正規表現マッチャーを使用するか、`mcp__.*__write.*` のようなパターンでサーバー全体でマッチします。リファレンスの [MCP ツールをマッチさせる](/docs/ja/hooks#match-mcp-tools) を参照して、完全な例のリストを確認してください。
 
-    ```json theme={null}
-    {
-      "hooks": {
-        "PreToolUse": [
+以下のコマンドは hook の JSON 入力からツール名を `jq` で抽出し、stderr に書き込みます。stderr に書き込むことで stdout をクリーンに保ち、メッセージを [デバッグログ](/docs/ja/hooks#debug-hooks) に送信します：
+
+```json theme={null}
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "mcp__github__.*",
+        "hooks": [
           {
-            "matcher": "mcp__github__.*",
-            "hooks": [
-              {
-                "type": "command",
-                "command": "echo \"GitHub tool called: $(jq -r '.tool_name')\" >&2"
-              }
-            ]
+            "type": "command",
+            "command": "echo \"GitHub tool called: $(jq -r '.tool_name')\" >&2"
           }
         ]
       }
-    }
-    ```
-  </Tab>
+    ]
+  }
+}
+```
 
-  <Tab title="セッション終了時にクリーンアップする">
-    `SessionEnd` イベントはセッションが終了した理由のマッチャーをサポートします。この hook は `clear`（`/clear` を実行するとき）でのみ発火し、通常の終了では発火しません：
+**セッション終了時にクリーンアップする**
 
-    ```json theme={null}
-    {
-      "hooks": {
-        "SessionEnd": [
+`SessionEnd` イベントはセッションが終了した理由のマッチャーをサポートします。この hook は `clear`（`/clear` を実行するとき）でのみ発火し、通常の終了では発火しません：
+
+```json theme={null}
+{
+  "hooks": {
+    "SessionEnd": [
+      {
+        "matcher": "clear",
+        "hooks": [
           {
-            "matcher": "clear",
-            "hooks": [
-              {
-                "type": "command",
-                "command": "rm -f /tmp/claude-scratch-*.txt"
-              }
-            ]
+            "type": "command",
+            "command": "rm -f /tmp/claude-scratch-*.txt"
           }
         ]
       }
-    }
-    ```
-  </Tab>
-</Tabs>
+    ]
+  }
+}
+```
 
-<h4 id="filter-by-tool-name-and-arguments-with-the-if-field">
-  `if` フィールドでツール名と引数でフィルタリングする
-</h4>
+#### `if` フィールドでツール名と引数でフィルタリングする
 
 `if` フィールドは [許可ルール構文](/docs/ja/permissions) を使用して、ツール名と引数の両方で hooks をフィルタリングするため、hook プロセスはツール呼び出しがマッチするときにのみ生成されます。これは `matcher` を超えており、ツール名のみでグループレベルでフィルタリングします。
 
@@ -854,9 +812,7 @@ Claude Code がどのコマンドが Bash 入力を実行するかを判断で�
 
 `if` はツールイベントでのみ機能します：`PreToolUse`、`PostToolUse`、`PostToolUseFailure`、`PermissionRequest`、および `PermissionDenied`。他のイベントに追加すると、hook が実行されるのを防ぎます。
 
-<h3 id="configure-hook-location">
-  hook の場所を設定する
-</h3>
+### hook の場所を設定する
 
 Hook を追加する場所がそのスコープを決定します：
 
@@ -876,9 +832,7 @@ hooks を無効にするには、設定ファイルで `"disableAllHooks": true`
 
 Claude Code が実行中に設定ファイルを直接編集する場合、ファイルウォッチャーは通常、hook の変更を自動的に取得します。
 
-<h2 id="prompt-based-hooks">
-  プロンプトベースの hooks
-</h2>
+## プロンプトベースの hooks
 
 決定論的なルールではなく判断が必要な決定については、`type: "prompt"` hooks を使用します。シェルコマンドを実行する代わりに、Claude Code はプロンプトと hook の入力データを Claude モデルに送信して決定を下します。より多くの機能が必要な場合は、`model` フィールドで異なるモデルを指定できます。
 
@@ -912,13 +866,11 @@ Claude Code が実行中に設定ファイルを直接編集する場合、フ�
 
 完全な設定オプションについては、リファレンスの [プロンプトベースの hooks](/docs/ja/hooks#prompt-based-hooks) を参照してください。
 
-<h2 id="agent-based-hooks">
-  エージェントベースの hooks
-</h2>
+## エージェントベースの hooks
 
-<Warning>
-  エージェント hooks は実験的です。動作と設定は将来のリリースで変更される可能性があります。本番ワークフローについては、[コマンド hooks](/docs/ja/hooks#command-hook-fields) を優先してください。
-</Warning>
+> [!WARNING]
+>
+> エージェント hooks は実験的です。動作と設定は将来のリリースで変更される可能性があります。本番ワークフローについては、[コマンド hooks](/docs/ja/hooks#command-hook-fields) を優先してください。
 
 検証がファイルの検査またはコマンドの実行を必要とする場合、`type: "agent"` hooks を使用します。プロンプト hooks は単一の LLM 呼び出しを行いますが、エージェント hooks は条件を返す前にファイルを読み取り、コードを検索し、他のツールを使用できる subagent を生成します。
 
@@ -948,9 +900,7 @@ Hook 入力データだけで決定を下すのに十分な場合はプロンプ
 
 完全な設定オプションについては、リファレンスの [エージェントベースの hooks](/docs/ja/hooks#agent-based-hooks) を参照してください。
 
-<h2 id="http-hooks">
-  HTTP hooks
-</h2>
+## HTTP hooks
 
 `type: "http"` hooks を使用して、シェルコマンドを実行する代わりに、イベントデータを HTTP エンドポイントに POST します。エンドポイントはコマンド hook が stdin で受け取るのと同じ JSON を受け取り、HTTP レスポンスボディを使用して同じ JSON 形式で結果を返します。
 
@@ -988,13 +938,9 @@ HTTP hooks は、Web サーバー、クラウド関数、または外部サー�
 
 完全な設定オプションとレスポンス処理については、リファレンスの [HTTP hooks](/docs/ja/hooks#http-hook-fields) を参照してください。
 
-<h2 id="limitations-and-troubleshooting">
-  制限事項とトラブルシューティング
-</h2>
+## 制限事項とトラブルシューティング
 
-<h3 id="limitations">
-  制限事項
-</h3>
+### 制限事項
 
 フックを設計する際は、以下の制約に留意してください。
 
@@ -1009,9 +955,7 @@ HTTP hooks は、Web サーバー、クラウド関数、または外部サー�
 * `Stop` フックは、タスクの完了時だけでなく、Claude が応答を終えるたびに発火します。ユーザーによる中断では発火しません。API エラーの場合は代わりに [StopFailure](/docs/ja/hooks#stopfailure) が発火します。
 * 複数の `PreToolUse` フックがツールの引数を書き換えるために [`updatedInput`](/docs/ja/hooks#pretooluse) を返す場合、最後に完了したものが有効になります。フックは並列に実行されるため、順序は非決定的です。同じツールの入力を複数のフックで変更することは避けてください。
 
-<h3 id="hooks-and-permission-modes">
-  フックと権限モード
-</h3>
+### フックと権限モード
 
 設定ファイルやプラグインの `hooks/hooks.json` 内のフックでは、権限ルールが許可する範囲を超えて制限を緩めることはできず、フックの `"deny"` はすべての権限モードで有効です。
 
@@ -1024,11 +968,13 @@ HTTP hooks は、Web サーバー、クラウド関数、または外部サー�
 
 * **すべての権限モードでの `"deny"`**：`permissionDecision: "deny"` を返すフックは、`bypassPermissions` モードや `--dangerously-skip-permissions` を使用している場合でもツールをブロックします。`PreToolUse` フックは、`dontAsk` を含むすべての[権限モード](/docs/ja/permission-modes)において、権限モードのチェックより前に発火します。これにより、ユーザーが権限モードを変更しても回避できないポリシーを適用できます。
 
-インストールした [mod](/docs/ja/plugins/mods/overview) が `tool.check` を処理する場合、そのフックが管理設定にない限り、`PreToolUse` フックがブロックした呼び出しを mod が承認できます。plan モードでは、mod はそのような呼び出しが読み取り専用であれば承認できますが、ファイル編集やその他の読み取り専用でない呼び出しは承認できません。mod に対してどのルールが優先されるかは、[フックで権限を拡張する](/docs/ja/permissions#extend-permissions-with-hooks)に記載されています。
+> [!NOTE]
+>
+> マシンに[管理設定](/docs/ja/settings#check-what-your-organization-enforces)がなく、セッションで Team または Enterprise プランの [`/login` 認証情報](/docs/ja/authentication#authentication-precedence)を使用していない場合、`PreToolUse` フックがブロックした呼び出しを [mod](/docs/ja/plugins/mods/overview) が承認できます。代わりに API キーや長期間有効な [`CLAUDE_CODE_OAUTH_TOKEN`](/docs/ja/authentication#generate-a-long-lived-token) で実行されるセッションは、そのログインが保存されている場合でも、そのログインを使用していません。
+>
+> plan モードでは、mod がそのようなブロックされた呼び出しを承認できるのは読み取り専用の場合のみであり、ファイル編集は承認できません。mod の承認がルールやフックを通過しないケースについては、[フックで権限を拡張する](/docs/ja/permissions#precedence-among-rules-hooks-and-mods)を参照してください。
 
-<h3 id="hook-not-firing">
-  フックが発火しない
-</h3>
+### フックが発火しない
 
 フックは設定されているが、一度も実行されない場合。
 
@@ -1036,9 +982,7 @@ HTTP hooks は、Web サーバー、クラウド関数、または外部サー�
 * matcher のパターンがツール名と正確に一致していることを確認します。matcher は大文字と小文字を区別します
 * 正しいイベントタイプをトリガーしていることを確認します。`PreToolUse` はツールの実行前に、`PostToolUse` は実行後に発火します。`PermissionRequest` フックは Claude Code がユーザーに権限を求めようとするときに発火します。非対話の場合については[制限事項](#limitations)を参照してください
 
-<h3 id="hook-error-in-output">
-  出力にフックエラーが表示される
-</h3>
+### 出力にフックエラーが表示される
 
 トランスクリプトに「PreToolUse hook error: ...」のようなメッセージが表示される場合。
 
@@ -1055,9 +999,7 @@ HTTP hooks は、Web サーバー、クラウド関数、または外部サー�
   解析の失敗を修正するには、文字列の連結ではなく `jq` などの JSON エンコーダーを使用してペイロードを組み立て、値に含まれる引用符やバックスラッシュがエスケープされるようにします。終了コードと JSON の組み合わせについては、リファレンスの[終了コードの出力](/docs/ja/hooks#exit-code-output)セクションで説明しています
 * スクリプトがまったく実行されていない場合は、実行可能にします：`chmod +x ./my-hook.sh`
 
-<h3 id="/hooks-shows-no-hooks-configured">
-  `/hooks` にフックが設定されていないと表示される
-</h3>
+### `/hooks` にフックが設定されていないと表示される
 
 設定ファイルを編集したが、フックがメニューに表示されない場合。
 
@@ -1066,9 +1008,7 @@ HTTP hooks は、Web サーバー、クラウド関数、または外部サー�
 * 設定ファイルが正しい場所にあることを確認します。プロジェクトのフックは `.claude/settings.json`、グローバルのフックは `~/.claude/settings.json` です
 * メニューに `Only hooks from managed settings run here` と表示される場合は、組織が [`allowManagedHooksOnly`](/docs/ja/settings-reference#allowmanagedhooksonly) を設定しています。ユーザー、プロジェクト、ローカルの設定ファイル内のフックは実行されず、一覧にも表示されません
 
-<h3 id="stop-hook-hits-the-block-cap">
-  Stop フックがブロック上限に達する
-</h3>
+### Stop フックがブロック上限に達する
 
 Claude が停止せずに作業を続け、その後 Stop フックが連続してブロックした回数が多すぎるという警告とともにターンを終了する場合。
 
@@ -1085,18 +1025,14 @@ fi
 
 フックが収束するまでに正当な理由で 8 回を超える反復が必要な場合は、[`CLAUDE_CODE_STOP_HOOK_BLOCK_CAP`](/docs/ja/env-vars) で上限を引き上げてください。
 
-<h3 id="hook-json-has-no-effect">
-  フックの JSON が効果を持たない
-</h3>
+### フックの JSON が効果を持たない
 
 フックは有効な JSON を出力しているが、判断が反映されず、トランスクリプトにもエラーが表示されない場合。どの原因に該当するかを確認してください。
 
 * **JSON の前に余分な出力がある**：他の何かが先に stdout に書き込んでいます。通常はシェルプロファイル内の無条件の `echo` です。そのため出力が `{` で始まらなくなります。[JSON の前に出力されるシェルプロファイルの出力](#shell-profile-output-before-the-json)を参照してください。
 * **フィールドの階層が間違っている**：各フィールドの配置を [JSON 出力](/docs/ja/hooks#json-output)の形式と比較してください。たとえば、`permissionDecision` はトップレベルではなく `hookSpecificOutput` の内側に配置する必要があります。[フィールドの階層が間違っている](#fields-at-the-wrong-level)を参照してください。
 
-<h4 id="shell-profile-output-before-the-json">
-  JSON の前に出力されるシェルプロファイルの出力
-</h4>
+#### JSON の前に出力されるシェルプロファイルの出力
 
 フックは非対話シェルで実行されますが、Git Bash や、`BASH_ENV` が `~/.bashrc` を指しているなどの一部の設定では、それでもプロファイルが読み込まれます。プロファイルが出力した内容はすべて、フックの JSON より先に stdout に届きます。
 
@@ -1116,15 +1052,11 @@ fi
 
 `$-` 変数にはシェルのフラグが含まれており、`i` は対話を意味します。フックは非対話シェルで実行されるため、echo はスキップされます。
 
-<h4 id="fields-at-the-wrong-level">
-  フィールドの階層が間違っている
-</h4>
+#### フィールドの階層が間違っている
 
 フックが `permissionDecision` や `additionalContext` を `hookSpecificOutput` の内側ではなくトップレベルで返した場合でも、JSON は解析されますが、Claude Code は誤って配置されたフィールドをエラーを報告せずに無視します。どのフィールドが無視されたかを確認するには、`claude --debug` で Claude Code を起動し、[デバッグログ](/docs/ja/hooks#debug-hooks)で `Hook JSON output had unrecognized keys` を検索します。
 
-<h3 id="check-what-a-hook-did">
-  フックの動作を確認する
-</h3>
+### フックの動作を確認する
 
 `Ctrl+O` を押してトランスクリプトビューを開き、フックの結果を確認します。
 
@@ -1137,9 +1069,7 @@ fi
 
 フックの終了コード、stdout、stderr を含む実行の詳細をすべて確認するには、[デバッグログ](/docs/ja/hooks#debug-hooks)を読みます。`claude --debug-file /tmp/claude.log` で Claude Code を起動して既知のパスに書き込み、別のターミナルで `tail -f /tmp/claude.log` を実行します。このフラグを付けずに起動した場合は、セッションの途中で `/debug` を実行してログを有効にし、ログのパスを確認します。
 
-<h2 id="learn-more">
-  詳細を学ぶ
-</h2>
+## 詳細を学ぶ
 
 * [Hooks リファレンス](/docs/ja/hooks)：完全なイベントスキーマ、JSON 出力形式、非同期 hooks、および MCP ツール hooks
 * [セキュリティに関する考慮事項](/docs/ja/hooks#security-considerations)：共有または本番環境に hooks をデプロイする前に確認してください

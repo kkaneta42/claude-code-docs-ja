@@ -8,15 +8,15 @@
 
 HIPAA 設定は Claude Enterprise プランの組織設定で、保護対象医療情報（PHI）を扱い、Anthropic と[事業提携契約（BAA）](https://support.claude.com/en/articles/8114513-business-associate-agreements-baa-for-commercial-customers)を締結している組織を対象としています。この設定は Claude Code（ローカルモード）と Cowork（ローカルモード）に適用され、両製品の機能を制限します。
 
-<Note>
-  「（ローカルモード）」とは、[クラウドセッション](/docs/ja/claude-code-on-the-web)ではなくローカルセッションを意味します。ローカルセッションは次のいずれかで実行されます。
-
-  * ターミナルの Claude Code
-  * Claude Desktop の Code タブの Claude Code
-  * Claude Desktop の Cowork
-
-  VS Code および JetBrains 向けの Claude Code 拡張機能は（ローカルモード）には含まれません。HIPAA 設定が適用された後も引き続き動作しますが、BAA の対象外です。対象サービス（Eligible Services）の完全な一覧については、[実装ガイド](https://trust.anthropic.com/resources?s=l1wrssd9hsbi4gak0tp5a6\&name=%5Banthropic%5D-hipaa-ready-offering-implementation-guide)を参照してください。
-</Note>
+> [!NOTE]
+>
+> 「（ローカルモード）」とは、[クラウドセッション](/docs/ja/claude-code-on-the-web)ではなくローカルセッションを意味します。ローカルセッションは次のいずれかで実行されます。
+>
+> * ターミナルの Claude Code
+> * Claude Desktop の Code タブの Claude Code
+> * Claude Desktop の Cowork
+>
+> VS Code および JetBrains 向けの Claude Code 拡張機能は（ローカルモード）には含まれません。HIPAA 設定が適用された後も引き続き動作しますが、BAA の対象外です。対象サービス（Eligible Services）の完全な一覧については、[実装ガイド](https://trust.anthropic.com/resources?s=l1wrssd9hsbi4gak0tp5a6\&name=%5Banthropic%5D-hipaa-ready-offering-implementation-guide)を参照してください。
 
 このページは、開発者のコンピューターを準備する IT 管理者またはセキュリティ管理者を対象としています。設定そのものは Claude 組織の Primary Owner が適用します。BAA に含まれる内容、設定の適用方法、適用日のスケジュール方法については、[HIPAA 対応 Enterprise プランで Claude Code（ローカルモード）と Cowork（ローカルモード）を使用する](https://support.claude.com/en/articles/17318731)で説明しています。
 
@@ -30,15 +30,11 @@ HIPAA 設定は Claude Enterprise プランの組織設定で、保護対象医�
 | 適用された後 | Owner が再びオンにするまで Code タブはオフになります。[コンピューター上で設定を確認する](#confirm-the-configuration-on-a-computer) |
 | 継続的に | [ローカルセッションデータを管理する](#manage-local-session-data) |
 
-<h2 id="prepare-computers-before-the-hipaa-configuration-is-applied">
-  HIPAA 設定が適用される前にコンピューターを準備する
-</h2>
+## HIPAA 設定が適用される前にコンピューターを準備する
 
 このセクションの作業から始め、設定が適用される前に完了しておくことをお勧めします。
 
-<h3 id="check-how-developers-sign-in-and-connect">
-  開発者のサインイン方法と接続方法を確認する
-</h3>
+### 開発者のサインイン方法と接続方法を確認する
 
 HIPAA 設定が有効になるのは、開発者が Claude Enterprise アカウントでサインインし、Claude Code が Claude API に直接接続しているセッションのみです。それ以外の接続でも開発者は Claude Code を引き続き使用できますが、[HIPAA 設定](#what-developers-see-in-claude-code)は適用されません。
 
@@ -52,9 +48,7 @@ HIPAA 設定が有効になるのは、開発者が Claude Enterprise アカウ�
 | Claude Enterprise のサインインがないコンピューター上での `ANTHROPIC_AUTH_TOKEN` または `apiKeyHelper` | いいえ |
 | Claude Console の API キーまたは[フェデレーション認証情報](/docs/ja/authentication#anthropic-profiles-and-federation-credentials) | いいえ。これらのセッションは Claude Console 組織に属し、独自の契約と設定を持ちます |
 
-<h4 id="check-how-a-computer-connects">
-  コンピューターの接続方法を確認する
-</h4>
+#### コンピューターの接続方法を確認する
 
 コンピューターでターミナルを開き、`claude` を実行して、プロンプトで `/status` と入力します。**Status** タブには次の行が表示されます。
 
@@ -66,9 +60,7 @@ HIPAA 設定が有効になるのは、開発者が Claude Enterprise アカウ�
 
 コンピューターが HIPAA 設定の対象外の接続を使用している場合は、[管理設定](#deploy-managed-settings)を使用して、クラウドプロバイダー、ゲートウェイ、および `ANTHROPIC_API_KEY`、`ANTHROPIC_AUTH_TOKEN`、`apiKeyHelper` で設定された認証情報をブロックできます。
 
-<h3 id="update-claude-code-and-claude-desktop">
-  Claude Code と Claude Desktop を更新する
-</h3>
+### Claude Code と Claude Desktop を更新する
 
 HIPAA 設定には、Claude Code v2.1.285 以降と Claude Desktop v2.19675.0 以降が必要です。組織でターミナルと [Claude Desktop アプリ](/docs/ja/desktop)の両方を使用している場合は、両方を更新してください。
 
@@ -82,9 +74,7 @@ claude --version
 
 インストールされている Claude Desktop のバージョンを確認するには、[バージョンを確認する](/docs/ja/desktop#check-your-version)を参照してください。
 
-<h4 id="what-developers-see-on-an-older-version">
-  古いバージョンで開発者に表示される内容
-</h4>
+#### 古いバージョンで開発者に表示される内容
 
 HIPAA 設定が適用された組織では、Anthropic のサーバーは最小バージョンより古いバージョンからのリクエストを拒否します。Anthropic は最小バージョンを随時引き上げますが、ユーザー側で設定する必要はありません。
 
@@ -95,9 +85,7 @@ HIPAA 設定が適用された組織では、Anthropic のサーバーは最小�
 
 開発者がサポートされているバージョンを使い続けるようにするには、[Claude Code を最新の状態に保ちます](/docs/ja/setup#update-claude-code)。Claude Desktop については、[Claude Desktop を更新する](https://claude.com/docs/cowork/hipaa-setup#update-claude-desktop)を参照してください。
 
-<h3 id="allow-network-access">
-  ネットワークアクセスを許可する
-</h3>
+### ネットワークアクセスを許可する
 
 この表のホストを、プロキシとファイアウォールでポート 443 の HTTPS 経由で許可してください。個別のパスではなく、ホスト全体を許可します。
 
@@ -105,6 +93,7 @@ HIPAA 設定が適用された組織では、Anthropic のサーバーは最小�
 | :- | :- |
 | `api.anthropic.com` | Claude API リクエスト、テレメトリ、および HIPAA 設定がオンであることを Claude Code に伝える組織ポリシー |
 | `claude.ai`、`claude.com`、`platform.claude.com` | サインインとトークンの更新 |
+| `sso.claude.com` | 組織でシングルサインオンを使用している場合のサインイン |
 | `downloads.claude.ai` | ネイティブインストーラーとその更新 |
 | `mcp-proxy.anthropic.com` | [claude.ai のコネクタ](/docs/ja/mcp#use-mcp-servers-from-claude-ai) |
 
@@ -120,9 +109,7 @@ Claude Code は、起動時と、セッションが使用されている間は�
 
 特定のコンピューターがポリシーを取得したかどうかを確認するには、[コンピューター上で設定を確認する](#confirm-the-configuration-on-a-computer)を参照してください。
 
-<h3 id="deploy-managed-settings">
-  管理設定をデプロイする
-</h3>
+### 管理設定をデプロイする
 
 [管理設定](/docs/ja/managed-settings)を使用すると、開発者に Claude Enterprise アカウントでサインインさせ、クラウドプロバイダーとゲートウェイをブロックし、すべてのコンピューターがローカルセッションデータを保持する日数を設定できます。これらの設定は、HIPAA 設定が有効かどうかにかかわらず適用されます。
 
@@ -141,9 +128,7 @@ Claude Code は、起動時と、セッションが使用されている間は�
 
 サンドボックス化、ネットワーク許可リスト、認証情報の保護、ローカルデータの保持を含むより完全な `managed-settings.json` については、[設定例リポジトリ](https://github.com/anthropics/claude-code/tree/main/examples/settings)の `settings-hipaa.json` と `README-hipaa.md` を参照してください。
 
-<h4 id="what-each-key-does">
-  各キーの役割
-</h4>
+#### 各キーの役割
 
 次の表は、各キーに設定する値と、それに対して Claude Code が適用する内容を示しています。
 
@@ -154,23 +139,19 @@ Claude Code は、起動時と、セッションが使用されている間は�
 | [`allowedProviders`](/docs/ja/settings-reference#allowedproviders) | `["anthropic"]` | Claude Code はクラウドプロバイダーまたはゲートウェイ上での起動を拒否します |
 | [`cleanupPeriodDays`](/docs/ja/settings-reference#cleanupperioddays) | 記録管理ポリシーでコンピューターがセッションデータを保持できる日数 | すべてのコンピューターが同じ日数の経過後に古いセッションデータを削除します |
 
-<Warning>
-  デプロイする前に `forceLoginOrgUUID` の値を確認してください。組織 ID と一致しない場合、claude.ai アカウントでサインインするすべての開発者に対して Claude Code が起動時に終了します。
-</Warning>
+> [!WARNING]
+>
+> デプロイする前に `forceLoginOrgUUID` の値を確認してください。組織 ID と一致しない場合、claude.ai アカウントでサインインするすべての開発者に対して Claude Code が起動時に終了します。
 
 HIPAA 設定は `cleanupPeriodDays` を制限しないため、開発者は自分の設定でこの値を引き上げることができます。管理設定でこれを設定すると、Claude Code は開発者の値を無視します。
 
 `forceLoginMethod` または `forceLoginOrgUUID` が設定されている場合、Claude Code は `ANTHROPIC_API_KEY`、`ANTHROPIC_AUTH_TOKEN`、`apiKeyHelper` で認証するセッションも拒否します。
 
-<h4 id="confirm-the-settings-loaded">
-  設定が読み込まれたことを確認する
-</h4>
+#### 設定が読み込まれたことを確認する
 
 設定が適用されたコンピューターで `claude` を実行し、Claude Enterprise アカウントでサインインして、`/status` と入力します。`Setting sources` 行には `Enterprise managed settings` と、その後に `(file)` などの括弧付きのソースが表示され、`Allowed providers` 行には `Anthropic API (managed allowedProviders)` と表示されます。`Setting sources` に表示されない場合や、`Allowed providers` 行がない場合は、[ポリシーが適用されていることを確認する](/docs/ja/managed-settings#check-that-a-policy-is-in-force)を参照してください。
 
-<h4 id="sessions-the-managed-settings-keys-don’t-block">
-  管理設定のキーでブロックされないセッション
-</h4>
+#### 管理設定のキーでブロックされないセッション
 
 これらのキーをデプロイしても、一部のセッションは HIPAA 設定なしで実行される可能性があります。
 
@@ -180,35 +161,31 @@ HIPAA 設定は `cleanupPeriodDays` を制限しないため、開発者は自�
 
 HIPAA 設定なしで実行されるセッションが BAA の対象となるかどうかについては、[HIPAA 対応 Enterprise プランで Claude Code（ローカルモード）と Cowork（ローカルモード）を使用する](https://support.claude.com/en/articles/17318731)を参照してください。
 
-<h2 id="confirm-the-configuration-on-a-computer">
-  コンピューター上で設定を確認する
-</h2>
+## コンピューター上で設定を確認する
 
 組織に設定が適用された後、管理対象のコンピューター 1 台でこの確認を行ってください。
 
-<Steps>
-  <Step title="Claude Code を再起動する">
-    実行中のセッションを終了し、ターミナルを開いて `claude` を実行します。使用中の実行中セッションは、再起動しなくても約 1 時間以内に設定を取得します。再起動すると、Claude Code はすぐに設定を取得します。
-  </Step>
+**1. Claude Code を再起動する**
 
-  <Step title="起動時の通知を確認する">
-    Claude Code の起動時に `Per your organization's policy, some features are limited · /status for details` と表示されることを確認します。
-  </Step>
+実行中のセッションを終了し、ターミナルを開いて `claude` を実行します。使用中の実行中セッションは、再起動しなくても約 1 時間以内に設定を取得します。再起動すると、Claude Code はすぐに設定を取得します。
 
-  <Step title="フッターを確認する">
-    プロンプトの下にあるフッターの右側に `HIPAA configured` タグが表示されることを確認します。v2.1.286 より前は、タグは `HIPAA` と表示されていました。
-  </Step>
+**2. 起動時の通知を確認する**
 
-  <Step title="/status を実行する">
-    プロンプトで `/status` と入力します。**Status** タブの `Organization configuration` 行に `HIPAA` が表示されていることを確認します。
-  </Step>
+Claude Code の起動時に `Per your organization's policy, some features are limited · /status for details` と表示されることを確認します。
 
-  <Step title="Claude Desktop を確認する">
-    HIPAA 設定を適用すると、組織の Code タブはオフになります。組織で Code タブを使用している場合は、Owner に [**Organization settings > Claude Code**](https://claude.ai/admin-settings/claude-code) に移動して **Desktop** トグルをオンにするよう依頼してください。Cowork については、[Claude Desktop で HIPAA 設定を確認する](https://claude.com/docs/cowork/hipaa-setup#confirm-the-hipaa-configuration-in-claude-desktop)を参照してください。
+**3. フッターを確認する**
 
-    Claude Desktop を再読み込みするか、再度サインインします。タイトルバーに **HIPAA configured** ラベルが表示されることを確認します。Mac では、サイドバーを開くと表示されます。
-  </Step>
-</Steps>
+プロンプトの下にあるフッターの右側に `HIPAA configured` タグが表示されることを確認します。v2.1.286 より前は、タグは `HIPAA` と表示されていました。
+
+**4. /status を実行する**
+
+プロンプトで `/status` と入力します。**Status** タブの `Organization configuration` 行に `HIPAA` が表示されていることを確認します。
+
+**5. Claude Desktop を確認する**
+
+HIPAA 設定を適用すると、組織の Code タブはオフになります。組織で Code タブを使用している場合は、Owner に [**Organization settings > Claude Code**](https://claude.ai/admin-settings/claude-code) に移動して **Desktop** トグルをオンにするよう依頼してください。Cowork については、[Claude Desktop で HIPAA 設定を確認する](https://claude.com/docs/cowork/hipaa-setup#confirm-the-hipaa-configuration-in-claude-desktop)を参照してください。
+
+Claude Desktop を再読み込みするか、再度サインインします。タイトルバーに **HIPAA configured** ラベルが表示されることを確認します。Mac では、サイドバーを開くと表示されます。
 
 `/status` に `HIPAA` が表示されない場合は、次の原因を順に確認してください。
 
@@ -216,9 +193,7 @@ HIPAA 設定なしで実行されるセッションが BAA の対象となるか
 2. **ポリシーの取得がブロックされている**：`/status` で `Organization policy` 行を探します。この行に原因が示されます。セッション外では `claude doctor` を実行して同じ行を確認します。この行には、Claude Code がポリシーをどこから読み込んだか、またはポリシーが読み込まれなかった理由が示されます。プロキシで `api.anthropic.com` を許可してから、Claude Code を再起動してください。
 3. **設定がまだ適用されていない**：Primary Owner に設定を適用したかどうかを確認してください。
 
-<h2 id="what-developers-see-in-claude-code">
-  Claude Code で開発者に表示される内容
-</h2>
+## Claude Code で開発者に表示される内容
 
 HIPAA 設定が適用されると、ターミナルで一部の Claude Code 機能がオフになるか、動作が変わります。次の表は、開発者から問い合わせを受ける可能性が高い変更を示しています。[HIPAA 機能の利用可否の表](https://support.claude.com/en/articles/8114513-business-associate-agreements-baa-for-commercial-customers)には、Owner が再びオンにできる機能を含め、Claude Code と Cowork のすべての機能が記載されています。
 
@@ -232,9 +207,7 @@ HIPAA 設定が適用されると、ターミナルで一部の Claude Code 機�
 | `ANTHROPIC_API_KEY` を読み取る MCP サーバーやフックが認証できなくなる | Claude Code は、自身が起動するプロセスから [Anthropic の認証情報を削除します](#anthropic-credentials-in-commands-hooks-and-mcp-servers) |
 | 別の組織に `/login` した後も制限が残る | HIPAA ステータスは Claude Code が再起動するまで維持されます |
 
-<h3 id="anthropic-credentials-in-commands-hooks-and-mcp-servers">
-  コマンド、フック、MCP サーバーにおける Anthropic の認証情報
-</h3>
+### コマンド、フック、MCP サーバーにおける Anthropic の認証情報
 
 HIPAA 設定が適用されると、Claude Code は、自身が起動するシェルコマンド、フック、MCP サーバーの環境から、`ANTHROPIC_API_KEY` や `ANTHROPIC_AUTH_TOKEN` など、Anthropic への接続に使用する認証情報を削除します。
 
@@ -242,23 +215,17 @@ HIPAA 設定はクラウドプロバイダーや GitHub の認証情報は削除
 
 Claude が使用できるコマンドとホストを制限するには、[権限ルール](/docs/ja/permissions)と[サンドボックス](/docs/ja/sandboxing)を参照してください。
 
-<h2 id="manage-local-session-data">
-  ローカルセッションデータを管理する
-</h2>
+## ローカルセッションデータを管理する
 
 Claude Code（ローカルモード）と Cowork（ローカルモード）は、各開発者のコンピューターにセッションデータを保存します。そのデータの保護と削除は組織の責任です。
 
-<h3 id="claude-code-data">
-  Claude Code のデータ
-</h3>
+### Claude Code のデータ
 
 [アプリケーションデータ](/docs/ja/claude-directory#application-data)には、Claude Code（ローカルモード）がコンピューターに保存する内容、保持期間のスイープが `cleanupPeriodDays` の経過後に削除する内容、および誰かが削除するまで残る内容が記載されています。同じページには、HIPAA 設定が適用された組織で何が異なるかも記載されています。
 
 保持期間のスイープは誰かが Claude Code を起動したときにのみ実行されるため、誰も起動しないコンピューターではデータが保持されたままになります。
 
-<h3 id="code-tab-data">
-  Code タブのデータ
-</h3>
+### Code タブのデータ
 
 Code タブは次の場所にデータを保存します。
 
@@ -269,15 +236,11 @@ Code タブは次の場所にデータを保存します。
 
 Windows では、`~` は `%USERPROFILE%` を意味します。
 
-<h3 id="cowork-data">
-  Cowork のデータ
-</h3>
+### Cowork のデータ
 
 [各コンピューターの Cowork データを管理する](https://claude.com/docs/cowork/hipaa-setup#manage-cowork-data-on-each-computer)には、Cowork（ローカルモード）がデータを保存する場所と、Claude Desktop が削除する内容が記載されています。
 
-<h3 id="delete-session-data-right-away">
-  セッションデータをすぐに削除する
-</h3>
+### セッションデータをすぐに削除する
 
 保持期間のスイープで削除される前に開発者のセッションデータを削除する必要がある場合は、1 つのコマンドでその大部分を削除できます。その開発者としてコンピューターにサインインし、任意のシェルを開いて、インストールされている Claude Code のバージョンに対応するコマンドを実行します。
 
@@ -297,15 +260,11 @@ claude project purge --all --yes
 
 パージでは、`paste-cache/` 内の貼り付けられたテキストなど、セッションの内容を保持する可能性のある他のパスは残ります。手動で削除できるパスは、[ローカルデータを消去する](/docs/ja/claude-directory#clear-local-data)に記載されています。再割り当ての前などにコンピューターを完全に消去するには、[コンピューターをワイプします](#offboard-a-developer)。
 
-<h3 id="offboard-a-developer">
-  開発者をオフボーディングする
-</h3>
+### 開発者をオフボーディングする
 
 開発者のシートやアカウントを削除しても、そのコンピューター上のものは何も削除されず、`/logout` でもセッションデータは削除されません。すべてを削除するには、デバイス管理ツールでコンピューターをワイプできます。
 
-<h2 id="related-resources">
-  関連リソース
-</h2>
+## 関連リソース
 
 * [HIPAA 対応組織向けに Cowork（ローカルモード）をセットアップする](https://claude.com/docs/cowork/hipaa-setup)
 * [管理設定をデプロイする](/docs/ja/managed-settings)

@@ -6,19 +6,13 @@
 
 > Claude Code のセキュリティ対策とセキュアな使用方法のベストプラクティスについて学びます。
 
-<h2 id="how-we-approach-security">
-  セキュリティへのアプローチ方法
-</h2>
+## セキュリティへのアプローチ方法
 
-<h3 id="security-foundation">
-  セキュリティの基盤
-</h3>
+### セキュリティの基盤
 
 コードのセキュリティは最優先事項です。Claude Code はセキュリティを中核に据えて構築されており、Anthropic の包括的なセキュリティプログラムに従って開発されています。詳細情報とリソース（SOC 2 Type 2 レポート、ISO 27001 証明書など）については、[Anthropic Trust Center](https://trust.anthropic.com) をご覧ください。
 
-<h3 id="permission-based-architecture">
-  パーミッションベースのアーキテクチャ
-</h3>
+### パーミッションベースのアーキテクチャ
 
 セッションの権限モードは、Claude が事前に確認せずに実行できるアクションを決定します。auto モードは、対話型のターミナルセッションと VS Code セッションにおける組み込みの開始権限モードです。[セッションがどのモードで開始されるか](/docs/ja/permission-modes#which-mode-a-session-starts-in) では、以前のバージョン、その他のサーフェス、および開始権限モードを変更する設定について説明しています。
 
@@ -27,9 +21,7 @@
 
 ユーザーと組織は、これらの権限を直接設定します。詳細な権限設定については、[Permissions](/docs/ja/permissions) を参照してください。
 
-<h3 id="built-in-protections">
-  組み込み保護機能
-</h3>
+### 組み込み保護機能
 
 agentic システムのリスクを軽減するために：
 
@@ -40,28 +32,20 @@ agentic システムのリスクを軽減するために：
 * **プロンプト疲労の軽減**: ユーザーごと、コードベースごと、または組織ごとに頻繁に使用される安全なコマンドのホワイトリスト化をサポート
 * **Accept Edits モード**: ファイル編集と `mkdir`、`touch`、`rm`、`mv`、`cp`、`sed` などの固定セットのファイルシステム Bash コマンドを作業ディレクトリ内のパスに対して自動承認します。その他の Bash コマンドとスコープ外のパスはプロンプトが表示されます
 
-<h3 id="user-responsibility">
-  ユーザーの責任
-</h3>
+### ユーザーの責任
 
 承認前に、提案されたコードとコマンドの安全性を確認する責任があります。
 
-<h2 id="protect-against-prompt-injection">
-  プロンプトインジェクションから保護する
-</h2>
+## プロンプトインジェクションから保護する
 
 プロンプトインジェクションは、攻撃者が悪意のあるテキストを挿入することで AI アシスタントの指示をオーバーライドまたは操作しようとする手法です。Claude Code にはこれらの攻撃に対する複数のセーフガードが含まれています：
 
-<h3 id="core-protections">
-  コア保護機能
-</h3>
+### コア保護機能
 
 * **権限モード**: Manual モードでは、機密操作には明示的な承認が必要です
 * **ネットワークコマンド承認**: `curl` や `wget` などのウェブからコンテンツを取得するコマンドはデフォルトでは自動承認されません。Manual モードでは他の読み取り専用以外の Bash コマンドと同様にプロンプトが表示されるため、一度承認するか、`Bash(curl *)` のような明示的な許可ルールを追加できます。Claude がこれらを実行しないようにするには、[`permissions.deny`](/docs/ja/permissions#tool-specific-permission-rules) に追加してください。deny ルールは[書かれたとおりの](/docs/ja/permissions#bash-rule-limits)コマンドにマッチします。コマンドテキストに依存しないネットワーク強制については、[sandbox ネットワーク分離](/docs/ja/sandboxing#network-isolation) を参照してください
 
-<h3 id="privacy-safeguards">
-  プライバシーセーフガード
-</h3>
+### プライバシーセーフガード
 
 データを保護するために、複数のセーフガードを実装しています：
 
@@ -71,9 +55,7 @@ agentic システムのリスクを軽減するために：
 
 詳細については、[Commercial Terms of Service](https://www.anthropic.com/legal/commercial-terms)（Team、Enterprise、API ユーザー向け）または [Consumer Terms](https://www.anthropic.com/legal/consumer-terms)（Free、Pro、Max ユーザー向け）および [Privacy Policy](https://www.anthropic.com/legal/privacy) をご確認ください。
 
-<h3 id="additional-safeguards">
-  追加のセーフガード
-</h3>
+### 追加のセーフガード
 
 * **ネットワークリクエスト承認**: Manual モードでは、ネットワークリクエストを行うほとんどのツールはデフォルトでユーザー承認が必要です
 * **Web ページの要約**: ほとんどのフェッチでは、WebFetch がページに対して別のモデル呼び出しを実行し、Claude は生のページではなくその呼び出しの回答を受け取ります。[WebFetch ツールの動作](/docs/ja/tools-reference#webfetch-tool-behavior) を参照してください
@@ -84,9 +66,9 @@ agentic システムのリスクを軽減するために：
 * **フェイルクローズドマッチング**: Manual モードでは、マッチしないコマンドはデフォルトで承認が必要です
 * **セキュアな認証情報ストレージ**: API キーとトークンは、利用可能な場合は macOS Keychain に保存されます。Linux ではモード `0600` のファイルに保存され、Windows ではユーザープロファイルディレクトリのアクセス制御を継承するファイルに保存されます。[Credential Management](/docs/ja/authentication#credential-management) を参照してください
 
-<Warning>
-  **Windows WebDAV セキュリティリスク**: Windows で Claude Code を実行する場合、WebDAV を有効にしたり、Claude Code に `\\*` などの WebDAV サブディレクトリを含む可能性のあるパスへのアクセスを許可することはお勧めしません。[WebDAV は Microsoft によって非推奨になっています](https://learn.microsoft.com/en-us/windows/whats-new/deprecated-features#:~:text=The%20Webclient%20\(WebDAV\)%20service%20is%20deprecated) セキュリティリスクのため。WebDAV を有効にすると、Claude Code がリモートホストへのネットワークリクエストをトリガーし、パーミッションシステムをバイパスする可能性があります。
-</Warning>
+> [!WARNING]
+>
+> **Windows WebDAV セキュリティリスク**: Windows で Claude Code を実行する場合、WebDAV を有効にしたり、Claude Code に `\\*` などの WebDAV サブディレクトリを含む可能性のあるパスへのアクセスを許可することはお勧めしません。[WebDAV は Microsoft によって非推奨になっています](https://learn.microsoft.com/en-us/windows/whats-new/deprecated-features#:~:text=The%20Webclient%20\(WebDAV\)%20service%20is%20deprecated) セキュリティリスクのため。WebDAV を有効にすると、Claude Code がリモートホストへのネットワークリクエストをトリガーし、パーミッションシステムをバイパスする可能性があります。
 
 **信頼できないコンテンツを使用する場合のベストプラクティス**：
 
@@ -96,27 +78,21 @@ agentic システムのリスクを軽減するために：
 4. 仮想マシン（VM）を使用してスクリプトを実行し、ツール呼び出しを行います。特に外部 Web サービスと対話する場合
 5. `/feedback` で疑わしい動作を報告します
 
-<Warning>
-  これらの保護機能はリスクを大幅に軽減しますが、どのシステムもすべての攻撃に完全に免疫があるわけではありません。AI ツールを使用する場合は常に良好なセキュリティプラクティスを維持してください。
-</Warning>
+> [!WARNING]
+>
+> これらの保護機能はリスクを大幅に軽減しますが、どのシステムもすべての攻撃に完全に免疫があるわけではありません。AI ツールを使用する場合は常に良好なセキュリティプラクティスを維持してください。
 
-<h2 id="mcp-security">
-  MCP セキュリティ
-</h2>
+## MCP セキュリティ
 
 Claude Code を Model Context Protocol（MCP）サーバーに接続できます。プロジェクトスコープのサーバーは `.mcp.json` で定義され、このファイルはソース管理にチェックインできます。[その他のスコープ](/docs/ja/mcp#mcp-installation-scopes)のサーバーや [claude.ai コネクタ](/docs/ja/mcp#how-connectors-reach-claude-code)はリポジトリの外部で設定され、プラグインもサーバーを追加できるため、`.mcp.json` を確認しても、セッションが読み込む可能性のあるすべてのサーバーがわかるわけではありません。組織内で実行されるサーバーを制限するには、[マネージド MCP 設定](/docs/ja/managed-mcp)を参照してください。
 
 独自の MCP サーバーを作成するか、信頼できるプロバイダーからの MCP サーバーを使用することをお勧めします。Claude Code パーミッションを MCP サーバー用に設定できます。Anthropic は MCP サーバーを [リスティング基準](https://claude.com/docs/connectors/building/review-criteria) に照らして確認してから [Anthropic Directory](https://claude.ai/directory) に追加しますが、MCP サーバーのセキュリティ監査または管理は行いません。
 
-<h2 id="ide-security">
-  IDE セキュリティ
-</h2>
+## IDE セキュリティ
 
 IDE で Claude Code を実行する場合の詳細については、[組み込みの IDE MCP サーバー](/docs/ja/vs-code#the-built-in-ide-mcp-server)を参照してください。
 
-<h2 id="cloud-execution-security">
-  クラウド実行セキュリティ
-</h2>
+## クラウド実行セキュリティ
 
 [クラウドセッション](/docs/ja/claude-code-on-the-web) を使用する場合、追加のセキュリティ制御が実施されます。組織が [self-hosted environment](/docs/ja/self-hosted-environments) にルーティングするセッションは独自のインフラストラクチャで実行され、分離、ネットワーク出力、および Git 認証情報は展開の責任です。Anthropic ホスト環境では：
 
@@ -132,22 +108,16 @@ IDE で Claude Code を実行する場合の詳細については、[組み込�
 
 [Remote Control](/docs/ja/remote-control) セッションは異なる方法で動作します：Web インターフェースはローカルマシンで実行されている Claude Code プロセスに接続します。すべてのコード実行とファイルアクセスはローカルに留まり、セッショントラフィックは TLS 経由で Anthropic API を通じて流れます。接続中、セッショントランスクリプトはデバイス間で会話を同期するために Anthropic サーバーに保存されます。これは [Connection and security](/docs/ja/remote-control#connection-and-security) で説明されています。クラウド VM またはサンドボックスは関与しません。接続は複数の短命で狭くスコープされた認証情報を使用し、各認証情報は特定の目的に限定され、独立して有効期限が切れ、単一の侵害された認証情報のブラストラディウスを制限します。
 
-<h2 id="security-best-practices">
-  セキュリティベストプラクティス
-</h2>
+## セキュリティベストプラクティス
 
-<h3 id="working-with-sensitive-code">
-  機密コードの使用
-</h3>
+### 機密コードの使用
 
 * 承認前にすべての提案された変更を確認してください
 * 機密リポジトリにはプロジェクト固有のパーミッション設定を使用してください
 * さらに分離を強化するには、Claude Code（ローカルモード）のプロセス全体を [サンドボックスランタイム](/docs/ja/sandbox-environments#sandbox-runtime) または [dev container](/docs/ja/devcontainer) 内で実行してください
 * `/permissions` で定期的にパーミッション設定を監査してください
 
-<h3 id="team-security">
-  チームセキュリティ
-</h3>
+### チームセキュリティ
 
 * [managed settings](/docs/ja/settings#where-settings-live) を使用して組織標準を実施してください
 * 承認されたパーミッション設定をバージョン管理を通じて共有してください
@@ -155,9 +125,7 @@ IDE で Claude Code を実行する場合の詳細については、[組み込�
 * [OpenTelemetry metrics](/docs/ja/monitoring-usage) を通じて Claude Code の使用を監視してください
 * [`ConfigChange` hooks](/docs/ja/hooks#configchange) でセッション中の設定変更を監査またはブロックしてください
 
-<h3 id="reporting-security-issues">
-  セキュリティ問題の報告
-</h3>
+### セキュリティ問題の報告
 
 Claude Code でセキュリティ脆弱性を発見した場合：
 
@@ -166,9 +134,7 @@ Claude Code でセキュリティ脆弱性を発見した場合：
 3. 詳細な再現手順を含めてください
 4. 公開開示前に問題に対処する時間を与えてください
 
-<h2 id="related-resources">
-  関連リソース
-</h2>
+## 関連リソース
 
 * [Security guidance plugin](/docs/ja/security-guidance)：Claude がセッション中に独自のコード変更の脆弱性をレビューして修正します
 * [`/security-review`](/docs/ja/commands#all-commands)：現在のブランチの変更に対してオンデマンドのセキュリティパスを実行します

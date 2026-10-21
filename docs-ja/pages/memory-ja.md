@@ -19,9 +19,7 @@ Claude Code の各セッションは、新しいコンテキストウィンド�
 * [自動メモリを設定する](#auto-memory)ので Claude が自動的にメモを取ります
 * [指示が従われていない場合のトラブルシューティング](#troubleshoot-memory-issues)
 
-<h2 id="claude-md-vs-auto-memory">
-  CLAUDE.md と自動メモリ
-</h2>
+## CLAUDE.md と自動メモリ
 
 Claude Code には 2 つの相互補完的なメモリシステムがあります。どちらも各会話の開始時に読み込まれます。Claude はこれらをコンテキストとして扱い、強制的な設定ではありません。アクションをブロックするには、Claude の判断に関わらず [PreToolUse hook](/docs/ja/hooks-guide) を使用してください。より具体的で簡潔な指示ほど、Claude はそれに従う可能性が高くなります。
 
@@ -37,15 +35,11 @@ Claude の動作をガイドしたい場合は CLAUDE.md ファイルを使用�
 
 Subagent も独自の自動メモリを保持できます。詳細については、[subagent 設定](/docs/ja/sub-agents#enable-persistent-memory)を参照してください。
 
-<h2 id="claude-md-files">
-  CLAUDE.md ファイル
-</h2>
+## CLAUDE.md ファイル
 
 CLAUDE.md ファイルは、プロジェクト、個人のワークフロー、または組織全体に対して Claude に永続的な指示を与えるマークダウンファイルです。これらのファイルはプレーンテキストで記述し、Claude はすべてのセッションの開始時にそれらを読みます。リポジトリが代わりに `AGENTS.md` を使用している場合は、[AGENTS.md](#agents-md) を参照してください。
 
-<h3 id="when-to-add-to-claude-md">
-  CLAUDE.md に追加するタイミング
-</h3>
+### CLAUDE.md に追加するタイミング
 
 CLAUDE.md を、そうでなければ何度も説明し直すことになる内容を記述する場所として扱ってください。以下の場合に追加してください。
 
@@ -56,15 +50,13 @@ CLAUDE.md を、そうでなければ何度も説明し直すことになる内�
 
 すべてのセッションで Claude が保持すべき事実に限定してください。ビルドコマンド、規約、プロジェクトレイアウト、「常に X を実行する」ルールなどです。エントリが複数ステップの手順である場合、またはコードベースの 1 つの部分にのみ関連する場合は、代わりに [スキル](/docs/ja/skills) または [パススコープ付きルール](#organize-rules-with-claude/rules/) に移動してください。[拡張機能の概要](/docs/ja/features-overview#build-your-setup-over-time) では、各メカニズムをいつ使用するかについて説明しています。
 
-<h3 id="choose-where-to-put-claude-md-files">
-  CLAUDE.md ファイルの配置場所を選択する
-</h3>
+### CLAUDE.md ファイルの配置場所を選択する
 
 CLAUDE.md ファイルはいくつかの場所に配置でき、それぞれ異なるスコープを持ちます。以下の表は、ロード順に、最も広いスコープから最も具体的なスコープまでリストしているため、プロジェクト指示はユーザー指示の後のコンテキストに表示されます。
 
 | スコープ | 場所 | 目的 | ユースケース例 | 共有対象 |
 | - | - | - | - | - |
-| **管理ポリシー** | • macOS: `/Library/Application Support/ClaudeCode/CLAUDE.md`<br />• Linux と WSL: `/etc/claude-code/CLAUDE.md`<br />• Windows: `C:\Program Files\ClaudeCode\CLAUDE.md` | IT/DevOps が管理する組織全体の指示 | 企業のコーディング標準、セキュリティポリシー、コンプライアンス要件 | 組織内のすべてのユーザー |
+| **管理ポリシー** | • macOS: `/Library/Application Support/ClaudeCode/CLAUDE.md` • Linux と WSL: `/etc/claude-code/CLAUDE.md` • Windows: `C:\Program Files\ClaudeCode\CLAUDE.md` | IT/DevOps が管理する組織全体の指示 | 企業のコーディング標準、セキュリティポリシー、コンプライアンス要件 | 組織内のすべてのユーザー |
 | **ユーザー指示** | `~/.claude/CLAUDE.md` | すべてのプロジェクトの個人的な設定 | コードスタイルの設定、個人的なツーリングショートカット | 自分のみ（すべてのプロジェクト） |
 | **プロジェクト指示** | `./CLAUDE.md` または `./.claude/CLAUDE.md`。`./AGENTS.md` がそれらの代わりに、または一緒にロードされるタイミングについては [AGENTS.md](#agents-md) を参照してください | プロジェクトのチーム共有指示 | プロジェクトアーキテクチャ、コーディング標準、一般的なワークフロー | ソース管理を通じたチームメンバー |
 | **ローカル指示** | `./CLAUDE.local.md` | 個人的なプロジェクト固有の設定。`.gitignore` に追加してください | サンドボックス URL、推奨テストデータ | 自分のみ（現在のプロジェクト） |
@@ -73,21 +65,17 @@ CLAUDE.md ファイルはいくつかの場所に配置でき、それぞれ異�
 
 大規模なプロジェクトの場合、[プロジェクトルール](#organize-rules-with-claude/rules/) を使用してトピック固有のファイルに指示を分割できます。ルールを使用すると、特定のファイルタイプまたはサブディレクトリに指示をスコープできます。
 
-<h3 id="set-up-a-project-claude-md">
-  プロジェクト CLAUDE.md をセットアップする
-</h3>
+### プロジェクト CLAUDE.md をセットアップする
 
 プロジェクト CLAUDE.md は `./CLAUDE.md` または `./.claude/CLAUDE.md` に保存できます。このファイルを作成し、プロジェクトで作業する誰もが適用される指示を追加してください。ビルドおよびテストコマンド、コーディング標準、アーキテクチャの決定、命名規約、一般的なワークフローなどです。これらの指示はバージョン管理を通じてチームと共有されるため、個人的な設定ではなくプロジェクトレベルの標準に焦点を当ててください。ファイルがロードされたことを確認するには、セッションで `/context` を実行し、**Memory files** の下のリストを確認してください。
 
-<Tip>
-  `/init` を実行して、開始用の CLAUDE.md を自動的に生成します。Claude はコードベースを分析し、発見したビルドコマンド、テスト指示、プロジェクト規約を含むファイルを作成します。CLAUDE.md が既に存在する場合、`/init` は上書きするのではなく改善を提案します。そこから Claude が自分で発見しない指示で洗練させてください。
+> [!TIP]
+>
+> `/init` を実行して、開始用の CLAUDE.md を自動的に生成します。Claude はコードベースを分析し、発見したビルドコマンド、テスト指示、プロジェクト規約を含むファイルを作成します。CLAUDE.md が既に存在する場合、`/init` は上書きするのではなく改善を提案します。そこから Claude が自分で発見しない指示で洗練させてください。
+>
+> 代わりにインタラクティブなマルチフェーズフローの場合は、`/init` を実行する前に `CLAUDE_CODE_NEW_INIT` 環境変数を `1` に設定してください。シェルまたは [環境変数を設定する](/docs/ja/env-vars#set-environment-variables) に示されているように設定ファイルの `env` ブロックで設定します。設定すると、`/init` はセットアップするアーティファクト（CLAUDE.md ファイル、スキル、フック）を尋ねます。その後、サブエージェントでコードベースを探索し、フォローアップの質問を通じてギャップを埋め、ファイルを書き込む前に確認可能な提案を提示します。変数は `/init` の実行方法のみを変更するため、設定したままにしておくことができます。
 
-  代わりにインタラクティブなマルチフェーズフローの場合は、`/init` を実行する前に `CLAUDE_CODE_NEW_INIT` 環境変数を `1` に設定してください。シェルまたは [環境変数を設定する](/docs/ja/env-vars#set-environment-variables) に示されているように設定ファイルの `env` ブロックで設定します。設定すると、`/init` はセットアップするアーティファクト（CLAUDE.md ファイル、スキル、フック）を尋ねます。その後、サブエージェントでコードベースを探索し、フォローアップの質問を通じてギャップを埋め、ファイルを書き込む前に確認可能な提案を提示します。変数は `/init` の実行方法のみを変更するため、設定したままにしておくことができます。
-</Tip>
-
-<h3 id="write-effective-instructions">
-  効果的な指示を書く
-</h3>
+### 効果的な指示を書く
 
 Claude は CLAUDE.md ファイルをコンテキストとして扱い、強制的な設定ではないため、指示の書き方は Claude がそれらに従う信頼性に影響します。検証可能なほど具体的な指示を書いてください。
 
@@ -101,9 +89,7 @@ Claude は CLAUDE.md ファイルをコンテキストとして扱い、強制�
 * **構造**: 関連する指示をマークダウンヘッダーと箇条書きの下にグループ化してください。整理されたセクションは、密集した段落よりも Claude が従いやすくなります。
 * **一貫性**: 2 つの指示が矛盾している場合、Claude は 1 つを任意に選択する可能性があります。CLAUDE.md ファイル、サブディレクトリ内のネストされた CLAUDE.md ファイル、および [`.claude/rules/`](#organize-rules-with-claude/rules/) を定期的に確認して、古い指示または矛盾する指示を削除してください。Claude に見つけてもらうには、[プロンプト監査を実行](#audit-your-instruction-files) してください。
 
-<h4 id="audit-your-instruction-files">
-  指示ファイルを監査する
-</h4>
+#### 指示ファイルを監査する
 
 Claude に指示ファイルで古い内容または矛盾する内容をチェックさせるには、セッションで `/doctor prompt-audit` を実行してください。Claude は、古いモデル用に書かれた指示、存在しないファイルまたはコマンドへの参照、互いに矛盾するファイルなどの問題を探します。提案された編集を含む調査結果のレポートが表示され、Claude に適用するよう依頼するまでファイル内の何も変更されません。
 
@@ -111,9 +97,7 @@ Claude に指示ファイルで古い内容または矛盾する内容をチェ�
 
 監査はバンドルされた `/claude-api` スキルを通じて実行されます。そのスキルが [`skillOverrides`](/docs/ja/skills#override-skill-visibility-from-settings) で無効になっているか、[`disableBundledSkills`](/docs/ja/settings-reference#disablebundledskills) で無効になっている場合は利用できません。`/doctor prompt-audit` には Claude Code v2.1.283 以降が必要です。
 
-<h3 id="import-additional-files">
-  追加ファイルをインポートする
-</h3>
+### 追加ファイルをインポートする
 
 CLAUDE.md ファイルは `@path/to/import` 構文を使用して追加ファイルをインポートできます。インポートされたファイルは展開され、それらを参照する CLAUDE.md と一緒に起動時にコンテキストにロードされます。
 
@@ -145,17 +129,15 @@ See @README for project overview and @package.json for available npm commands fo
 - @~/.claude/my-project-instructions.md
 ```
 
-<Warning>
-  プロジェクトレベルのメモリファイル内のインポートは、上記のホームディレクトリのインポートのように、パスが作業ディレクトリの外に解決される場合、外部インポートとなります。Claude Code が初めてプロジェクトで外部インポートを検出すると、ファイルをリストする承認ダイアログが表示されます。拒否すると、インポートは無効のままになり、ダイアログは再度表示されません。
+> [!WARNING]
+>
+> プロジェクトレベルのメモリファイル内のインポートは、上記のホームディレクトリのインポートのように、パスが作業ディレクトリの外に解決される場合、外部インポートとなります。Claude Code が初めてプロジェクトで外部インポートを検出すると、ファイルをリストする承認ダイアログが表示されます。拒否すると、インポートは無効のままになり、ダイアログは再度表示されません。
+>
+> Claude Code はダイアログを表示して、共有プロジェクトに他の人がコミットしたファイルから保護します。`~/.claude/CLAUDE.md` や `~/.claude/rules/` などのユーザースコープのメモリファイルは、自分で書いたファイルです。デスクトップでの [Cowork](https://claude.com/product/cowork) セッションを除き、Claude Code はダイアログなしでそれらのインポートをロードし、他の個人設定と同様に信頼します。
+>
+> デスクトップの Cowork セッションでは、Claude Code はユーザースコープファイル内のセッションの作業ディレクトリの外に解決されるパスを持つインポートをスキップし、ファイルの残りをロードします。これらのセッションでは、それ自体がシンボリックリンクまたはハードリンクである `~/.claude/CLAUDE.md` と、作業ディレクトリの外を指すシンボリックリンクされた `~/.claude/rules/` ディレクトリまたはルールファイルもスキップします。
 
-  Claude Code はダイアログを表示して、共有プロジェクトに他の人がコミットしたファイルから保護します。`~/.claude/CLAUDE.md` や `~/.claude/rules/` などのユーザースコープのメモリファイルは、自分で書いたファイルです。デスクトップでの [Cowork](https://claude.com/product/cowork) セッションを除き、Claude Code はダイアログなしでそれらのインポートをロードし、他の個人設定と同様に信頼します。
-
-  デスクトップの Cowork セッションでは、Claude Code はユーザースコープファイル内のセッションの作業ディレクトリの外に解決されるパスを持つインポートをスキップし、ファイルの残りをロードします。これらのセッションでは、それ自体がシンボリックリンクまたはハードリンクである `~/.claude/CLAUDE.md` と、作業ディレクトリの外を指すシンボリックリンクされた `~/.claude/rules/` ディレクトリまたはルールファイルもスキップします。
-</Warning>
-
-<h3 id="how-claude-md-files-load">
-  CLAUDE.md ファイルのロード方法
-</h3>
+### CLAUDE.md ファイルのロード方法
 
 Claude Code は、現在の作業ディレクトリとそれより上のすべてのディレクトリから `CLAUDE.md` と `CLAUDE.local.md` をロードします。`foo/bar/` で Claude Code を実行すると、`foo/bar/CLAUDE.md`、`foo/CLAUDE.md`、およびそれらと一緒にある `CLAUDE.local.md` ファイルから指示をロードします。
 
@@ -167,9 +149,7 @@ Claude はまた、現在の作業ディレクトリの下のサブディレク�
 
 CLAUDE.md ファイル内のブロックレベル HTML コメント（`<!-- maintainer notes -->`）は、コンテンツが Claude のコンテキストに注入される前に削除されます。コンテキストトークンを消費せずに、人間のメンテナーのためのメモを残すために使用してください。コードブロック内のコメントは保持されます。Read ツールで CLAUDE.md ファイルを直接開くと、コメントは表示されたままになります。
 
-<h4 id="load-from-additional-directories">
-  追加ディレクトリからロードする
-</h4>
+#### 追加ディレクトリからロードする
 
 `--add-dir` フラグは、メインの作業ディレクトリの外の追加ディレクトリに Claude がアクセスできるようにします。デフォルトでは、これらのディレクトリからの CLAUDE.md ファイルはロードされません。
 
@@ -183,19 +163,15 @@ CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1 claude --add-dir ../shared-config
 
 これは追加ディレクトリから `CLAUDE.md`、`.claude/CLAUDE.md`、`.claude/rules/*.md`、および `CLAUDE.local.md` をロードします。`CLAUDE.local.md` は [`--setting-sources`](/docs/ja/cli-reference) から `local` を除外する場合はスキップされます。
 
-<h3 id="organize-rules-with-claude/rules/">
-  `.claude/rules/` でルールを整理する
-</h3>
+### `.claude/rules/` でルールを整理する
 
 大規模なプロジェクトの場合、`.claude/rules/` ディレクトリを使用して指示を複数のファイルに整理できます。これにより、指示がモジュール化され、チームが保守しやすくなります。ルールは [特定のファイルパスにスコープ](#path-specific-rules) することもできるため、Claude が一致するファイルで作業するときにのみコンテキストにロードされ、ノイズを減らしてコンテキストスペースを節約します。
 
-<Note>
-  ルールはすべてのセッションまたは一致するファイルが開かれるときにコンテキストにロードされます。タスク固有の指示で常にコンテキストに含まれる必要がない場合は、代わりに [スキル](/docs/ja/skills) を使用してください。これは、呼び出すときまたは Claude がプロンプトに関連していると判断したときにのみロードされます。
-</Note>
+> [!NOTE]
+>
+> ルールはすべてのセッションまたは一致するファイルが開かれるときにコンテキストにロードされます。タスク固有の指示で常にコンテキストに含まれる必要がない場合は、代わりに [スキル](/docs/ja/skills) を使用してください。これは、呼び出すときまたは Claude がプロンプトに関連していると判断したときにのみロードされます。
 
-<h4 id="set-up-rules">
-  ルールをセットアップする
-</h4>
+#### ルールをセットアップする
 
 プロジェクトの `.claude/rules/` ディレクトリにマークダウンファイルを配置してください。各ファイルは 1 つのトピックをカバーし、`testing.md` や `api-design.md` のような説明的なファイル名を持つ必要があります。すべての `.md` ファイルは再帰的に発見されるため、`frontend/` や `backend/` のようなサブディレクトリにルールを整理できます。
 
@@ -213,9 +189,7 @@ your-project/
 
 [`--setting-sources`](/docs/ja/cli-reference) から `project` を除外する場合、プロジェクトルールはスキップされます。v2.1.211 より前では、パススコープ付きルールやネストされた `.claude/rules/` ディレクトリ内のルールを含む、オンデマンドでロードするルールは、`project` が除外されている場合でもロードされました。
 
-<h4 id="path-specific-rules">
-  パススコープ付きルール
-</h4>
+#### パススコープ付きルール
 
 ルールは YAML フロントマターと `paths` フィールドを使用して特定のファイルにスコープできます。これらの条件付きルールは、指定されたパターンに一致するファイルで Claude が作業するときにのみ適用されます。
 
@@ -260,9 +234,7 @@ Claude Code は予算を超えるパターンを展開されていない状態�
 
 グロブ構文は `[` をブラケット式（`[abc]` など）の開始として扱います。`photos [2024/**` のようにブラケット式として読むことができない `[` を持つパターンは無効です。何もマッチせず、ルールの他のパターンは機能し続けます。ファイル名内のリテラル `[` をマッチさせるには、`photos \[2024/**` のようにエスケープしてください。
 
-<h4 id="rules-frontmatter-reference">
-  ルールのフロントマターリファレンス
-</h4>
+#### ルールのフロントマターリファレンス
 
 ファイル先頭の `---` マーカーの間に YAML [フロントマター](/docs/ja/glossary#frontmatter) を記述してルールを設定します。`paths` は Claude Code がルールから読む唯一のフィールドです。他のフィールドはエラーなしで無視されます。Claude Code はルールをコンテキストにロードする前にフロントマターを削除します。
 
@@ -272,9 +244,7 @@ Claude Code は予算を超えるパターンを展開されていない状態�
 
 マーカー間の YAML が解析できない場合、Claude Code はフロントマターを無視し、`paths` がないかのようにルールをロードします。`claude --debug` を実行して解析エラーを確認してください。
 
-<h4 id="share-rules-across-projects-with-symlinks">
-  シンボリックリンクを使用してプロジェクト間でルールを共有する
-</h4>
+#### シンボリックリンクを使用してプロジェクト間でルールを共有する
 
 `.claude/rules/` ディレクトリはシンボリックリンクをサポートしているため、共有ルールセットを保持し、複数のプロジェクトにリンクできます。循環シンボリックリンクは検出され、適切に処理されます。
 
@@ -291,9 +261,7 @@ ln -s ~/company-standards/security.md .claude/rules/security.md
 
 `.claude/rules/` または `CLAUDE.md` のシンボリックリンクを、UNC 共有 `\\server\share` や `/net` または `/Network` の下のパスなどのネットワークパスに向けた場合、リンクされた指示はロードされません。そのようなパスを検索すると、その名前が示すホストに接続する可能性があるため、Claude Code はリンクをたどりません。`\\wsl$` パスはネットワークパスとしてカウントされません。
 
-<h4 id="user-level-rules">
-  ユーザーレベルルール
-</h4>
+#### ユーザーレベルルール
 
 `~/.claude/rules/` の個人的なルールはマシン上のすべてのプロジェクトに適用されます。プロジェクト固有ではない設定に使用してください。
 
@@ -305,29 +273,23 @@ ln -s ~/company-standards/security.md .claude/rules/security.md
 
 Claude Code はプロジェクトルールの前にユーザーレベルルールをロードするため、プロジェクトルールはユーザールールより後に Claude のコンテキストに表示されます。どちらのセットも他方を上書きしません。ユーザールールとプロジェクトルールが矛盾する場合、Claude はどちらかに従う可能性があるため、2 つを一貫性のあるものに保ってください。
 
-<h3 id="manage-claude-md-for-large-teams">
-  大規模なチーム向けに CLAUDE.md を管理する
-</h3>
+### 大規模なチーム向けに CLAUDE.md を管理する
 
 Claude Code を複数のチームにデプロイする組織の場合、指示を一元化し、どの CLAUDE.md ファイルがロードされるかを制御できます。
 
-<h4 id="deploy-organization-wide-claude-md">
-  組織全体の CLAUDE.md をデプロイする
-</h4>
+#### 組織全体の CLAUDE.md をデプロイする
 
 組織は、マシン上のすべてのユーザーに適用される一元管理の CLAUDE.md をデプロイできます。このファイルは個別の設定で除外することはできません。
 
-<Steps>
-  <Step title="管理ポリシーの場所にファイルを作成する">
-    * macOS: `/Library/Application Support/ClaudeCode/CLAUDE.md`
-    * Linux と WSL: `/etc/claude-code/CLAUDE.md`
-    * Windows: `C:\Program Files\ClaudeCode\CLAUDE.md`
-  </Step>
+**1. 管理ポリシーの場所にファイルを作成する**
 
-  <Step title="設定管理システムでデプロイする">
-    MDM、グループポリシー、Ansible、または同様のツールを使用して、開発者マシン全体にファイルを配布してください。その他の組織全体の設定オプションについては、[管理設定](/docs/ja/managed-settings) を参照してください。
-  </Step>
-</Steps>
+* macOS: `/Library/Application Support/ClaudeCode/CLAUDE.md`
+* Linux と WSL: `/etc/claude-code/CLAUDE.md`
+* Windows: `C:\Program Files\ClaudeCode\CLAUDE.md`
+
+**2. 設定管理システムでデプロイする**
+
+MDM、グループポリシー、Ansible、または同様のツールを使用して、開発者マシン全体にファイルを配布してください。その他の組織全体の設定オプションについては、[管理設定](/docs/ja/managed-settings) を参照してください。
 
 `claudeMd` キーを使用すると、別のファイルをデプロイする代わりに、管理された CLAUDE.md コンテンツを `managed-settings.json` に直接配置できます。
 
@@ -359,9 +321,7 @@ Claude Code を複数のチームにデプロイする組織の場合、指示�
 
 設定ルールは、Claude が何をするかに関わらず、クライアントによって強制されます。CLAUDE.md 指示は Claude の動作を形作りますが、ハード強制レイヤーではありません。
 
-<h4 id="exclude-specific-claude-md-files">
-  特定の CLAUDE.md ファイルを除外する
-</h4>
+#### 特定の CLAUDE.md ファイルを除外する
 
 大規模なモノレポでは、祖先の CLAUDE.md ファイルに、作業に関連しない指示が含まれている可能性があります。`claudeMdExcludes` 設定を使用すると、パスまたはグロブパターンで特定のファイルをスキップできます。
 
@@ -382,9 +342,7 @@ Claude Code を複数のチームにデプロイする組織の場合、指示�
 
 管理ポリシー CLAUDE.md ファイルは除外できません。これにより、個別の設定に関わらず、組織全体の指示が常に適用されることが保証されます。
 
-<h2 id="agents-md">
-  AGENTS.md
-</h2>
+## AGENTS.md
 
 Claude Code は [`AGENTS.md`](/docs/ja/glossary#agents-md) をプロジェクト指示として読み込むことができるため、他のコーディングエージェント向けにセットアップされたリポジトリは、`CLAUDE.md`、インポート、またはセッティングを追加することなく動作します。このテーブルは、リポジトリ内の指示ファイルの組み合わせごとに Claude が既定で読み込むものを示しています。
 
@@ -396,13 +354,11 @@ Claude Code は [`AGENTS.md`](/docs/ja/glossary#agents-md) をプロジェクト
 
 既定の動作を変更する場合（例えば、Claude に常に両方のファイルを読み込ませたい、`CLAUDE.md` のみを読み込ませたい、または組織が管理する指示のみを読み込ませたい場合）は、[**Project instructions** セッティングを変更](#choose-which-instruction-files-load) してください。
 
-<Note>
-  `AGENTS.md` を直接読み込むには Claude Code v2.1.277 以降が必要です。一部のセッションでは Claude が [`AGENTS.md` を読み込むことができない](#when-agents-md-support-is-unavailable) ため、代わりに [`CLAUDE.md` からインポート](#share-one-file-with-other-coding-tools) してください。
-</Note>
+> [!NOTE]
+>
+> `AGENTS.md` を直接読み込むには Claude Code v2.1.277 以降が必要です。一部のセッションでは Claude が [`AGENTS.md` を読み込むことができない](#when-agents-md-support-is-unavailable) ため、代わりに [`CLAUDE.md` からインポート](#share-one-file-with-other-coding-tools) してください。
 
-<h3 id="when-claude-code-reads-agents-md">
-  Claude Code が AGENTS.md を読み込むとき
-</h3>
+### Claude Code が AGENTS.md を読み込むとき
 
 既定では、Claude はワーキングディレクトリまたはその上位ディレクトリに `CLAUDE.md` がない場合にのみ `AGENTS.md` を読み込みます。このチェックに該当するファイルは以下の通りです。
 
@@ -416,13 +372,11 @@ Claude Code は [`AGENTS.md`](/docs/ja/glossary#agents-md) をプロジェクト
 * **各 `AGENTS.md` 内**: [`@path` インポート](#import-additional-files) が展開され、[`claudeMdExcludes`](#exclude-specific-claude-md-files) パターンが適用され、[プロジェクト指示なしで起動する](/docs/ja/sub-agents#what-loads-at-startup) サブエージェントは、これらのファイルもなしで起動します
 * **読み込まれない**: `AGENTS.local.md`、`AGENTS.override.md`、または `.agents/` ディレクトリ下のすべてのもの
 
-<Note>
-  `CLAUDE.local.md` が該当するため、`AGENTS.md` に依存するプロジェクトに `CLAUDE.local.md` を追加して独自のコミットされていない指示を保持すると、Claude は `AGENTS.md` を読み込まなくなります。`CLAUDE.local.md` を保持しながら Claude に `AGENTS.md` を読み込ませるには、**Project instructions** を [`claude-md-and-agents-md`](#choose-which-instruction-files-load) に設定してください。
-</Note>
+> [!NOTE]
+>
+> `CLAUDE.local.md` が該当するため、`AGENTS.md` に依存するプロジェクトに `CLAUDE.local.md` を追加して独自のコミットされていない指示を保持すると、Claude は `AGENTS.md` を読み込まなくなります。`CLAUDE.local.md` を保持しながら Claude に `AGENTS.md` を読み込ませるには、**Project instructions** を [`claude-md-and-agents-md`](#choose-which-instruction-files-load) に設定してください。
 
-<h3 id="choose-which-instruction-files-load">
-  Claude が読み込む指示ファイルを選択する
-</h3>
+### Claude が読み込む指示ファイルを選択する
 
 Claude が読み込むファイルを変更するには、Claude Code セッションで `/config` と入力してセッティングパネルを開き、**Project instructions** を以下のいずれかの値に設定します。
 
@@ -449,9 +403,7 @@ v2.1.285 より前は、このプラグインの ID は `agents-md@builtin` で�
 
 変更は次のメッセージから、およびすべての新しいセッションで適用されます。
 
-<h3 id="when-agents-md-support-is-unavailable">
-  AGENTS.md サポートが利用できないとき
-</h3>
+### AGENTS.md サポートが利用できないとき
 
 これらのセッションでは Claude は `CLAUDE.md` ファイルのみを読み込み、**Project instructions** は `/config` セッティングパネルに表示されません。
 
@@ -461,9 +413,7 @@ v2.1.285 より前は、このプラグインの ID は `agents-md@builtin` で�
 
 v2.1.281 より前では、Amazon Bedrock 上のセッションやテレメトリが無効になっているセッションなど、一部のセッションは `CLAUDE.md` ファイルのみを読み込みます。これらのバージョンでは Claude Code を更新してください。これらのセッションのいずれかで Claude に `AGENTS.md` を提供するには、[`CLAUDE.md` からインポート](#share-one-file-with-other-coding-tools) してください。
 
-<h3 id="where-agents-md-differs-from-claude-md">
-  AGENTS.md が CLAUDE.md と異なる点
-</h3>
+### AGENTS.md が CLAUDE.md と異なる点
 
 Claude が **Project instructions** セッティングを通じて読み込む `AGENTS.md` は、これらの場所で `CLAUDE.md` と異なります。
 
@@ -473,9 +423,7 @@ Claude が **Project instructions** セッティングを通じて読み込む `
 | [`CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD`](#load-from-additional-directories) が設定されている間に `--add-dir` で追加するディレクトリ | それらの `CLAUDE.md` が読み込まれる | それらの `AGENTS.md` は読み込まれません |
 | ワーキングディレクトリの外のファイルの `@path` インポート | Claude Code はあなたに [外部インポート](#import-additional-files) の承認を求めます | このプロジェクトに対して既に外部インポートを承認している場合のみ読み込まれ、プロンプトはありません |
 
-<h3 id="remove-an-earlier-agents-md-workaround">
-  以前の AGENTS.md 回避策を削除する
-</h3>
+### 以前の AGENTS.md 回避策を削除する
 
 Claude Code が独自に `AGENTS.md` を読み込む前にそれを読み込むようにセットアップした場合、各一般的なセットアップで以下を実行してください。
 
@@ -484,9 +432,7 @@ Claude Code が独自に `AGENTS.md` を読み込む前にそれを読み込む�
 * **`AGENTS.md` にシンボリックリンクされた `CLAUDE.md`**: 何もしないか、シンボリックリンクを削除してください。どちらの場合でも Claude はコンテンツを 1 回読み込みます。
 * **`AGENTS.md` を出力する `SessionStart` フック**: 削除してください。Claude が `AGENTS.md` を直接読み込むと、フックはコンテキストに 2 番目のコピーを追加します。
 
-<h3 id="share-one-file-with-other-coding-tools">
-  他のコーディングツールと 1 つのファイルを共有する
-</h3>
+### 他のコーディングツールと 1 つのファイルを共有する
 
 Claude が `AGENTS.md` を直接読み込んでいない場合でも、`AGENTS.md` の隣に `CLAUDE.md` に `@AGENTS.md` インポートを配置することで、すべてのツールが共有する 1 つのファイルとして保持できます。プロジェクトに `CLAUDE.md` もある場合、**Project instructions** を `claude-md` に設定した場合、または [`AGENTS.md` を読み込むことができない](#when-agents-md-support-is-unavailable) セッションで実行してください。インポートの下に Claude 固有の指示を追加すると、Claude はインポートされたファイルを最初に読み込み、その後残りを読み込みます。
 
@@ -511,9 +457,7 @@ ln -s AGENTS.md CLAUDE.md
 
 どちらのアプローチでも、次のセッションで `/context` を実行し、**Memory files** の下に `CLAUDE.md` が表示されることを確認してください。
 
-<h3 id="migrate-instructions-from-other-tools">
-  他のツールから指示を移行する
-</h3>
+### 他のツールから指示を移行する
 
 [`/init`](/docs/ja/commands) を実行すると、他のツールの指示ファイルが読み込まれ、関連する部分が生成された `CLAUDE.md` に組み込まれます。
 
@@ -523,9 +467,7 @@ ln -s AGENTS.md CLAUDE.md
 
 [`/import`](/docs/ja/commands) を実行して、サポートされているコーディングエージェントの設定を Claude Code に取り込むこともできます。これにより、`AGENTS.md` などの指示ファイルの 1 回限りのコピーが一致する `CLAUDE.md` に追加され、MCP サーバー、コマンド、サブエージェント、およびスキルが引き継がれます。
 
-<h2 id="auto-memory">
-  自動メモリ
-</h2>
+## 自動メモリ
 
 自動メモリを使用すると、Claude は何も書かずにセッション間で知識を蓄積できます。Claude は作業中に自分自身のためにメモを 4 種類保存します。Claude はメモリファイルのフロントマターに `type` フィールドとして種類を記録します。
 
@@ -538,9 +480,7 @@ Claude はアーキテクチャ、ファイルパス、デバッグ修正など�
 
 Claude はすべてのセッションで何かを保存するわけではありません。情報が将来の会話で役立つかどうかに基づいて、何を記憶する価値があるかを決定します。
 
-<h3 id="enable-or-disable-auto-memory">
-  自動メモリを有効または無効にする
-</h3>
+### 自動メモリを有効または無効にする
 
 自動メモリはローカルセッションではデフォルトで有効です。[Claude Tag](https://claude.com/docs/claude-tag/overview) セッション以外では、[セルフホスト環境](/docs/ja/self-hosted-environments-configuration#how-each-session’s-config-is-assembled)のセッションはデフォルトで自動メモリがオフの状態で実行されます。
 
@@ -563,9 +503,7 @@ Claude はすべてのセッションで何かを保存するわけではあり�
 
 環境変数を使用して自動メモリを無効にするには、`CLAUDE_CODE_DISABLE_AUTO_MEMORY=1` を設定します。
 
-<h3 id="storage-location">
-  ストレージの場所
-</h3>
+### ストレージの場所
 
 各プロジェクトは `~/.claude/projects/<project>/memory/` に独自のメモリディレクトリを取得します。`<project>` パスは git リポジトリから派生しているため、同じリポジトリ内のすべてのワーキングツリーとサブディレクトリは 1 つの自動メモリディレクトリを共有します。git リポジトリの外では、プロジェクトルートが代わりに使用されます。
 
@@ -599,9 +537,7 @@ Claude はすべてのセッションで何かを保存するわけではあり�
 
 Claude Code は [`cleanupPeriodDays`](/docs/ja/settings-reference#cleanupperioddays) 保持期間後に古いセッショントランスクリプトを削除しますが、メモリディレクトリ内のメモリファイルをその[保持スイープ](/docs/ja/claude-directory#cleaned-up-automatically)から除外します。`MEMORY.md` とトピックファイルは、あなたまたは Claude が編集または削除するまで保持されます。
 
-<h3 id="how-it-works">
-  仕組み
-</h3>
+### 仕組み
 
 `MEMORY.md` の最初の 200 行、または最初の 25KB のいずれか先に来る方が、すべての会話の開始時に読み込まれます。そのしきい値を超えるコンテンツはセッション開始時に読み込まれません。Claude は詳細なメモを別のトピックファイルに移動することで、`MEMORY.md` を簡潔に保ちます。
 
@@ -617,15 +553,11 @@ Claude はセッション中にメモリファイルを読み書きします。C
 
 Claude が YAML フロントマターで始まるメモリファイルを書き込む場合、Claude Code は書き込み時刻を ISO 8601 タイムスタンプとして `modified` フロントマターフィールドに記録します。タイムスタンプは、事実がどの程度最新であるかを、ユーザーと、メモリを読み戻すときの Claude の両方に示します。
 
-<h3 id="audit-and-edit-your-memory">
-  メモリを監査および編集する
-</h3>
+### メモリを監査および編集する
 
 自動メモリファイルはプレーンマークダウンで、いつでも編集または削除できます。[`/memory`](#view-and-edit-with-%2Fmemory) を実行して、セッション内からメモリファイルを参照して開きます。
 
-<h2 id="view-and-edit-with-/memory">
-  `/memory` で表示および編集する
-</h2>
+## `/memory` で表示および編集する
 
 `/memory` コマンドは、ユーザーおよびプロジェクトスコープ全体にわたる CLAUDE.md、CLAUDE.local.md、およびその他のメモリファイルの場所をリストします。これには、まだ存在しないファイルのユーザーおよびプロジェクト CLAUDE.md エントリも含まれます。また、自動メモリのオン/オフを切り替えたり、自動メモリフォルダを開くオプションを提供したりできます。任意のファイルを選択してエディタで開きます。まだ存在しないファイルを選択すると、最初にそれが作成されます。起動時に読み込まれた `CLAUDE.md` ファイルとルールファイルを確認するには、`/context` を実行します。
 
@@ -633,15 +565,11 @@ VS Code などの GUI エディタはファイルを別のウィンドウで開�
 
 Claude に何かを記憶するよう求めるとき、「常に npm ではなく pnpm を使用する」または「API テストがローカル Redis インスタンスを必要とすることを覚えておく」のように、Claude はそれを自動メモリに保存します。代わりに CLAUDE.md に指示を追加するには、Claude に直接「これを CLAUDE.md に追加する」と尋ねるか、`/memory` を通じてファイルを自分で編集します。
 
-<h2 id="troubleshoot-memory-issues">
-  メモリの問題をトラブルシューティングする
-</h2>
+## メモリの問題をトラブルシューティングする
 
 CLAUDE.md と自動メモリに関する最も一般的な問題と、それらをデバッグするための手順を以下に示します。
 
-<h3 id="claude-isn’t-following-my-claude-md">
-  Claude が CLAUDE.md に従っていない
-</h3>
+### Claude が CLAUDE.md に従っていない
 
 CLAUDE.md のコンテンツは、システムプロンプト自体の一部ではなく、システムプロンプトの後のユーザーメッセージとして配信されます。Claude はそれを読んで従おうとしますが、特に曖昧または矛盾した指示の場合、厳密な準拠を保証することはできません。
 
@@ -659,13 +587,11 @@ CLAUDE.md のコンテンツは、システムプロンプト自体の一部で�
 
 システムプロンプトレベルで指示が必要な場合は、[`--append-system-prompt`](/docs/ja/cli-reference#system-prompt-flags) を使用します。起動時に渡すため、対話的な使用よりもスクリプトと自動化に適しています。会話を再開するときの動作については、[再開された会話でのシステムプロンプトフラグ](/docs/ja/cli-reference#system-prompt-flags-in-resumed-conversations) を参照してください。
 
-<Tip>
-  [`InstructionsLoaded` フック](/docs/ja/hooks#instructionsloaded) を使用して、どの `CLAUDE.md` とルールファイルが読み込まれたか、いつ読み込まれたか、なぜ読み込まれたかをログに記録します。これは、パス固有のルールまたはサブディレクトリ内の遅延読み込みファイルをデバッグするのに役立ちます。
-</Tip>
+> [!TIP]
+>
+> [`InstructionsLoaded` フック](/docs/ja/hooks#instructionsloaded) を使用して、どの `CLAUDE.md` とルールファイルが読み込まれたか、いつ読み込まれたか、なぜ読み込まれたかをログに記録します。これは、パス固有のルールまたはサブディレクトリ内の遅延読み込みファイルをデバッグするのに役立ちます。
 
-<h3 id="my-agents-md-isn’t-loading">
-  AGENTS.md が読み込まれていない
-</h3>
+### AGENTS.md が読み込まれていない
 
 リポジトリに `AGENTS.md` があり、Claude がそれが何を言っているかを知らないようである場合、通常の原因はプロジェクトパスのどこかに `CLAUDE.md` があることです。デフォルトでは、Claude は、作業ディレクトリまたはそれより上のディレクトリに `CLAUDE.md` または `CLAUDE.local.md` がない場合にのみ `AGENTS.md` を読み込みます。以下の順序で確認します：
 
@@ -679,15 +605,11 @@ v2.1.280 より前では、`/memory` と `/context` は Claude が直接読み�
 
 見つけた `CLAUDE.md` を保持したい場合、またはセッションが `AGENTS.md` を読み込むことができない場合は、[`AGENTS.md` の横に `AGENTS.md` をインポートする `CLAUDE.md` を追加します](#share-one-file-with-other-coding-tools)。
 
-<h3 id="i-don’t-know-what-auto-memory-saved">
-  自動メモリが何を保存したかわからない
-</h3>
+### 自動メモリが何を保存したかわからない
 
 `/memory` を実行し、自動メモリフォルダを選択して、Claude が保存したものを参照します。すべてはプレーンマークダウンであり、読み取り、編集、または削除できます。
 
-<h3 id="my-claude-md-is-too-large">
-  CLAUDE.md が大きすぎる
-</h3>
+### CLAUDE.md が大きすぎる
 
 200 行を超えるファイルはより多くのコンテキストを消費し、準拠を減らす可能性があります。Claude Code は 4 MiB を超えるファイルをスキップします。[パススコープルール](#path-specific-rules) を使用して、Claude が一致するファイルで作業する場合にのみ指示を読み込むか、すべてのセッションで必要でないコンテンツをトリミングします。[`@path` インポート](#import-additional-files) に分割すると、組織化に役立ちますが、インポートされたファイルは起動時に読み込まれるため、コンテキストは削減されません。
 
@@ -695,9 +617,7 @@ v2.1.280 より前では、`/memory` と `/context` は Claude が直接読み�
 
 [`/doctor`](/docs/ja/commands#all-commands) チェックアップは、チェックインされた CLAUDE.md のトリミングを提案します。コードベースから派生できるコンテンツ（ディレクトリレイアウト、依存関係リスト、アーキテクチャの概要など）を削除し、落とし穴、根拠、およびツールのデフォルトと異なる規約を保持します。
 
-<h3 id="instructions-seem-lost-after-/compact">
-  `/compact` 後に指示が失われたようです
-</h3>
+### `/compact` 後に指示が失われたようです
 
 プロジェクトルート CLAUDE.md はコンテキスト圧縮後も保持されます。`/compact` の後、Claude はディスクから再度読み込み、セッションに再度注入します。サブディレクトリ内のネストされた CLAUDE.md ファイルと [`paths:` フロントマター](#path-specific-rules) を持つルールは、オンデマンドで再度読み込まれます。
 
@@ -705,9 +625,7 @@ v2.1.280 より前では、`/memory` と `/context` は Claude が直接読み�
 
 サイズ、構造、具体性に関するガイダンスについては、[効果的な指示を書く](#write-effective-instructions) を参照してください。
 
-<h2 id="related-resources">
-  関連リソース
-</h2>
+## 関連リソース
 
 * [設定をデバッグする](/docs/ja/debug-your-config): CLAUDE.md または設定が有効にならない理由を診断する
 * [Skills](/docs/ja/skills): オンデマンドで読み込まれる反復可能なワークフローをパッケージ化する

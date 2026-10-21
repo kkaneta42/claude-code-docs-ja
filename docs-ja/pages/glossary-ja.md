@@ -8,125 +8,91 @@
 
 この用語集は Claude Code の用語を定義しています。各エントリは、その概念について詳しく説明されているページにリンクしています。トークン、temperature、RAG などのモデルレベルの概念については、[プラットフォーム用語集](https://platform.claude.com/docs/ja/about-claude/glossary)を参照してください。Claude Desktop のデスクトップ拡張機能、MCPB、DXT などの用語については、[Claude ヘルプセンター](https://support.claude.com/)を参照してください。
 
-<h2 id="a">
-  A
-</h2>
+## A
 
-<h3 id="agents-md">
-  AGENTS.md
-</h3>
+### AGENTS.md
 
 AI コーディングエージェント向けに作成するプロジェクト指示のマークダウンファイル。リポジトリに AGENTS.md があり、[CLAUDE.md](#claude-md) がない場合、Claude はこれをプロジェクト指示として読み込みます。別のファイルを追加する必要はありません。`/config` の **Project instructions** 設定を変更して、Claude が両方のファイルを読み込むか、CLAUDE.md のみを読み込むかを指定できます。AGENTS.md を直接読み込むには、Claude Code v2.1.277 以降が必要です。一部のセッションでは Claude が [AGENTS.md を読み込めない](/docs/ja/memory#when-agents-md-support-is-unavailable) ため、代わりに [CLAUDE.md からインポート](/docs/ja/memory#share-one-file-with-other-coding-tools) してください。
 
 詳細情報: [AGENTS.md](/docs/ja/memory#agents-md)
 
-<h3 id="agent-teams">
-  Agent teams
-</h3>
+### Agent teams
 
 複数の独立した Claude Code セッションがチームリーダーによって調整され、共有タスクリストとピアツーピアメッセージングを備えています。単一のセッション内で実行され、親にのみレポートする [subagents](#subagent) とは異なり、チームメイトはそれぞれ独自のコンテキストウィンドウを持ち、任意のメンバーと直接対話できます。Agent teams は実験的機能であり、デフォルトでは無効になっています。[Enable agent teams](/docs/ja/agent-teams#enable-agent-teams) を参照してください。
 
 詳細情報: [Run agent teams](/docs/ja/agent-teams)
 
-<h3 id="agentic-coding">
-  Agentic coding
-</h3>
+### Agentic coding
 
 AI がファイルを読み取り、コマンドを実行し、自律的に変更を加えることができるワークフロー。あなたが見守ったり、リダイレクトしたり、立ち去ったりできます。これは、テキストのみで応答するチャットベースのアシスタントとは異なり、自分で適用する必要があります。Claude Code は agentic です。なぜなら、アドバイスするだけでなく、行動できる [tools](#tool) を持っているからです。
 
 詳細情報: [How Claude Code works](/docs/ja/how-claude-code-works)
 
-<h3 id="agentic-harness">
-  Agentic harness
-</h3>
+### Agentic harness
 
 言語モデルを有能なコーディングエージェントに変える、ツール、コンテキスト管理、実行環境。Claude Code はハーネスです。Claude はその中のモデルです。ハーネスはファイルアクセス、シェル実行、権限ゲーティング、メモリロード、およびアクションをチェーンするループを提供します。
 
 詳細情報: [How Claude Code works](/docs/ja/how-claude-code-works)
 
-<h3 id="agentic-loop">
-  Agentic loop
-</h3>
+### Agentic loop
 
 Claude がすべてのタスクで実行するサイクル: コンテキストを収集し、アクションを実行し、結果を検証し、完了するまで繰り返します。各ツール使用は次のステップに情報を提供します。ループはいつでも中断してリダイレクトできます。[hooks](#hook)、[skills](#skill)、[MCP](#mcp-model-context-protocol) を含むほとんどの拡張ポイントは、このループの特定のフェーズにプラグインします。
 
 詳細情報: [How Claude Code works](/docs/ja/how-claude-code-works#the-agentic-loop)
 
-<h3 id="artifact">
-  Artifact
-</h3>
+### Artifact
 
 Claude Code がセッションから claude.ai 上のプライベート URL に公開するライブでインタラクティブな Web ページ。出力を視覚的に確認したり、ターミナルテキストを読む代わりに共有したりできます。セッションが再公開されると、ページはその場で更新されます。Claude Code から作成した Artifact は、claude.ai の会話から作成した Artifact と同じギャラリーに表示されます。共有オプションはプランに依存します: [Share an artifact](/docs/ja/artifacts#share-an-artifact) を参照してください。
 
 詳細情報: [Share session output as artifacts](/docs/ja/artifacts)
 
-<h3 id="auto-memory">
-  Auto memory
-</h3>
+### Auto memory
 
 Claude が自分自身のために書いたメモ。あなたの修正と設定に基づいて、git リポジトリごとに `~/.claude/projects/` に保存されます。同じリポジトリのすべてのワークツリーは 1 つの auto memory ディレクトリを共有します。`MEMORY.md` インデックスの最初の 200 行または 25 KB がすべてのセッションの開始時にロードされます。Auto memory は、あなたが書く [CLAUDE.md](#claude-md) に対する Claude が書いた対応物です。
 
 詳細情報: [Auto memory](/docs/ja/memory#auto-memory)
 
-<h3 id="auto-mode">
-  Auto mode
-</h3>
+### Auto mode
 
 [permission mode](#permission-mode) の一種。承認プロンプトを表示する代わりに、別の分類器モデルが各アクションをレビューするため、Claude Code はほとんどのアクションをあなたに尋ねることなく実行できます。Claude Code は、あなたの明示的な ask ルールに一致するアクションの前にはあなたに尋ねます。Claude Code v2.1.283 以降では、auto mode はインタラクティブターミナルと VS Code セッションの [built-in starting permission mode](/docs/ja/permission-modes#which-mode-a-session-starts-in) であり、以前のバージョンでは Pro、Max、Team プランのみです。分類器はスコープエスカレーション、信頼されていないインフラストラクチャ、および [prompt injection](#prompt-injection) をブロックします。ツール結果はそれが見るものから削除されるため、ファイルまたは Web ページ内の悪意のあるコンテンツはそれを直接操作することはできません。
 
 詳細情報: [Eliminate prompts with auto mode](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)
 
-<h2 id="b">
-  B
-</h2>
+## B
 
-<h3 id="bare-mode">
-  Bare mode
-</h3>
+### Bare mode
 
 `--bare` を使用すると、Claude Code は hooks、skills、カスタムコマンド、subagents、インストール済み plugins、MCP servers、auto memory、CLAUDE.md を読み込まずに起動します。ただし、`--add-dir` で渡したディレクトリ内の skills は除きます。CI とスクリプト呼び出しで、すべてのマシンで同じ結果が必要な場合に推奨されます。
 
 詳細情報: [Start faster with bare mode](/docs/ja/headless#start-faster-with-bare-mode)
 
-<h3 id="bundled-skills">
-  Bundled skills
-</h3>
+### Bundled skills
 
 Claude Code に含まれるプロンプトベースのプレイブック。`/batch`、`/code-review`、`/debug`、`/loop` など。固定ロジックを実行する組み込みコマンドとは異なり、bundled skills は Claude に詳細なプロンプトを与え、作業をオーケストレーションさせるため、エージェントを生成し、ファイルを読み取り、コードベースに適応できます。
 
 詳細情報: [Bundled skills](/docs/ja/skills#bundled-skills)
 
-<h2 id="c">
-  C
-</h2>
+## C
 
-<h3 id="channel">
-  Channel
-</h3>
+### Channel
 
 実行中のセッションにイベントをプッシュする [MCP サーバー](#mcp-model-context-protocol)で、ユーザーがターミナルから離れている間に起きた出来事に Claude が反応できるようにします。チャネルは双方向にすることができ、Claude は受信したイベントを読み取り、同じチャネルを通じて返信します。リサーチプレビューには Telegram、Discord、iMessage が含まれています。
 
 詳細: [チャネル](/docs/ja/channels)
 
-<h3 id="checkpoint">
-  Checkpoint
-</h3>
+### Checkpoint
 
 ターンを開始するプロンプトを送信するたびに作成される復元ポイントです。Claude Code は編集のたびにその前のファイルのスナップショットを取得するため、チェックポイントによってファイルを元に戻すことができます。`Esc` を 2 回押すか `/rewind` を実行すると、コード、会話、またはその両方を以前の時点に復元したり、選択したメッセージ以降の会話の一部を要約したりできます。チェックポイントは会話とともに保存されるため、再開したセッションでも `/rewind` でチェックポイントに戻ることができます。チェックポイントは git とは別のものであり、Bash ツールを通じて行われた変更は追跡しません。
 
 詳細: [チェックポイント機能](/docs/ja/checkpointing)
 
-<h3 id="claude-directory">
-  `.claude` directory
-</h3>
+### `.claude` directory
 
 Claude Code がプロジェクトスコープの設定（設定、フック、スキル、サブエージェント、ルール、自動メモリ）を読み込むディレクトリです。プロジェクトではルートに `.claude/` があり、ユーザーレベルのデフォルトは `~/.claude/` にあります。
 
 詳細: [`.claude` ディレクトリ](/docs/ja/claude-directory)
 
-<h3 id="claude-md">
-  CLAUDE.md
-</h3>
+### CLAUDE.md
 
 ユーザーが Claude 向けに記述する永続的な指示の markdown ファイルで、すべてのセッションの開始時にシステムプロンプトの後のユーザーメッセージとして読み込まれます。プロジェクトの規約、アーキテクチャに関するメモ、「常に X を行う」といったルールをここに記述します。プロジェクトルートの CLAUDE.md は[コンテキスト圧縮](#compaction)後も保持され、圧縮後にディスクから改めて読み込まれます。
 
@@ -134,17 +100,15 @@ CLAUDE.md は、プロジェクトスコープでは `./CLAUDE.md` または `./
 
 詳細: [CLAUDE.md ファイル](/docs/ja/memory#claude-md-files)
 
-<h3 id="cloud-session">
-  Cloud session
-</h3>
+### Cloud session
 
-ユーザーのマシンではなくクラウドインフラストラクチャ上で実行されるため、ノートパソコンを閉じた後も実行され続ける Claude Code セッションです。デフォルトでは Anthropic が管理するインフラストラクチャ上で実行されますが、組織が運用する[セルフホスト環境](/docs/ja/self-hosted-environments)で実行することもできます。クラウドセッションは、claude.ai/code、Claude モバイルアプリ、**Cloud** を選択した Desktop アプリ、`claude --cloud`、または[ルーティン](/docs/ja/routines)から開始します。ターミナル、IDE、または **Local** を選択した Desktop アプリでのセッションはローカルセッションです。別のデバイスからローカルセッションにアクセスするには、[Remote Control](#remote-control) を使用します。
+ユーザーのマシンではなくクラウドインフラストラクチャ上で実行されるため、ノートパソコンを閉じた後も実行され続ける Claude Code セッションです。デフォルトでは Anthropic が管理するインフラストラクチャ上で実行されますが、組織が運用する[セルフホスト環境](/docs/ja/self-hosted-environments)で実行することもできます。クラウドセッションは、claude.ai/code、Claude モバイルアプリ、**Cloud** を選択した Desktop アプリ、`claude --cloud`、または[クラウドスケジュールタスク](/docs/ja/routines)から開始します。
+
+ターミナル、IDE、または **Local** を選択した Desktop アプリでのセッションはローカルセッションです。別のデバイスからローカルセッションにアクセスするには、[Remote Control](#remote-control) を使用します。
 
 詳細: [クラウドで Claude Code を使用する](/docs/ja/claude-code-on-the-web)
 
-<h3 id="command">
-  Command
-</h3>
+### Command
 
 プロンプトに `/name` と入力して呼び出す、再利用可能な指示です。`/clear`、`/model`、`/compact` などの組み込みコマンドはセッションを制御します。独自のコマンドを `.claude/commands/` 内のファイルとして定義することも、[プラグイン](#plugin)からインストールすることもできます。複数ステップのコマンドをパッケージ化するには、[スキル](#skill)の使用が推奨されます。
 
@@ -152,81 +116,57 @@ CLAUDE.md は、プロジェクトスコープでは `./CLAUDE.md` または `./
 
 詳細: [コマンド](/docs/ja/commands) · [スキル](/docs/ja/skills)
 
-<h3 id="compaction">
-  Compaction
-</h3>
+### Compaction
 
 [コンテキストウィンドウ](#context-window)が上限に近づいたときに、会話を自動的に要約する処理です。まず古いツール出力がクリアされ、次に会話が要約されます。プロジェクトルートの CLAUDE.md と自動メモリは圧縮後も保持され、ディスクから再読み込みされますが、会話の中でのみ与えられた指示は失われる可能性があります。手動で実行するには `/compact` を実行します。`/compact focus on the API changes` のように重点を指定することもできます。
 
 詳細: [コンテキスト圧縮後も保持されるもの](/docs/ja/context-window#what-survives-compaction) · [コンテキストがいっぱいになったとき](/docs/ja/how-claude-code-works#when-context-fills-up)
 
-<h3 id="connector">
-  Connector
-</h3>
+### Connector
 
 Claude Code で設定するのではなく、claude.ai アカウントに追加された [MCP サーバー](#mcp-server)です。そのアカウントで Claude Code にサインインすると、ローカルで追加したサーバーとともにコネクタが `/mcp` に表示されます。組織はコネクタをプロビジョニングし、ツールごとの制御を設定することもできます。
 
 詳細: [claude.ai の MCP サーバーを使用する](/docs/ja/mcp#use-mcp-servers-from-claude-ai)
 
-<h3 id="context-window">
-  Context window
-</h3>
+### Context window
 
 セッションの作業メモリで、会話履歴、ファイルの内容、コマンド出力、CLAUDE.md、自動メモリ、読み込まれたスキル、システム指示を保持します。作業を進めるにつれてコンテキストが埋まっていき、やがて[コンテキスト圧縮](#compaction)によって要約されます。何が容量を使用しているかを確認するには、`/context` を実行します。基盤となるモデルの概念については、[プラットフォーム用語集](https://platform.claude.com/docs/en/about-claude/glossary#context-window)を参照してください。
 
 詳細: [コンテキストウィンドウを確認する](/docs/ja/context-window)
 
-<h2 id="d">
-  D
-</h2>
+## D
 
-<h3 id="dispatch">
-  Dispatch
-</h3>
+### Dispatch
 
 電話で開始されたタスクルーター。Claude モバイルアプリからコーディングタスクを送信すると、Desktop アプリで Claude Code セッションを生成します。プロンプトは自動的に正しいツールにルーティングされます。Pro および Max プランで利用可能です。
 
 詳細情報: [Sessions from Dispatch](/docs/ja/desktop#sessions-from-dispatch)
 
-<h2 id="e">
-  E
-</h2>
+## E
 
-<h3 id="effort-level">
-  Effort level
-</h3>
+### Effort level
 
 各ステップで適応的推論を行うかどうか、またどの程度行うかをモデルが決定できるようにする設定です。より高い努力はより多くの思考トークンとより深い推論を意味し、より低い努力はより速く、より安価です。Effort は Fable モデル、Opus 4.6 以降、Sonnet 4.6 以降、および Haiku 5.5 でサポートされています。
 
 詳細情報: [Adjust effort level](/docs/ja/model-config#adjust-effort-level)
 
-<h3 id="extended-thinking">
-  Extended thinking
-</h3>
+### Extended thinking
 
 モデルが応答する前に実行する可視的なステップバイステップの推論。[effort level](#effort-level) で調整するか、固定思考予算を持つモデルで `MAX_THINKING_TOKENS` で思考トークンをキャップできます。思考はターミナルのグレーイタリックテキストで表示されます。
 
 詳細情報: [Use extended thinking](/docs/ja/model-config#extended-thinking)
 
-<h2 id="f">
-  F
-</h2>
+## F
 
-<h3 id="frontmatter">
-  Frontmatter
-</h3>
+### Frontmatter
 
 Markdown ファイルの最上部にある YAML 設定ブロックで、開始の `---` 行と終了の `---` 行の間に配置されます。Skills、subagents、output styles、および rules は、それぞれ frontmatter から設定を読み込みます。例えば、skill の `description` や subagent の `tools` などであり、終了の `---` の後のすべてを指示として扱います。開始の `---` はファイルの最初の行である必要があります。各ファイルタイプは独自のフィールドセットを受け入れます。
 
 詳細情報：[Skill frontmatter](/docs/ja/skills#frontmatter-reference)、[Subagent frontmatter](/docs/ja/sub-agents#supported-frontmatter-fields)、[Output style frontmatter](/docs/ja/output-styles#frontmatter)、[Rule frontmatter](/docs/ja/memory#rules-frontmatter-reference)
 
-<h2 id="h">
-  H
-</h2>
+## H
 
-<h3 id="hook">
-  Hook
-</h3>
+### Hook
 
 Claude Code のライフサイクルの特定のポイント（ツール実行前、ファイル編集後、セッション開始時など）で自動的に実行されるユーザー定義ハンドラー。ハンドラーはシェルコマンド、HTTP エンドポイント、MCP ツール、LLM プロンプト、または subagent にできます。Hooks は決定論的です。モデルの裁量ではなく、固定ライフサイクルポイントで発火します。
 
@@ -238,73 +178,51 @@ Claude Code のライフサイクルの特定のポイント（ツール実行�
 
 詳細情報: [Get started with hooks](/docs/ja/hooks-guide) · [Hooks reference](/docs/ja/hooks)
 
-<h2 id="m">
-  M
-</h2>
+## M
 
-<h3 id="managed-settings">
-  Managed settings
-</h3>
+### Managed settings
 
 IT または DevOps によって組織全体で実施される設定。Anthropic のサーバーから管理コンソール経由で配信されるか、`~/.claude` の外の OS レベルパスにデバイスにデプロイされます。ユーザーおよびプロジェクト設定は managed settings をオーバーライドすることはできません。サーバー管理配信は[対象となる構成](/docs/ja/server-managed-settings#platform-availability)に適用されます。[セキュリティに関する考慮事項](/docs/ja/server-managed-settings#security-considerations)を参照してください。セキュリティポリシー、コンプライアンス要件、またはフロート全体の標準化されたツールに使用します。
 
 詳細情報: [Server-managed settings](/docs/ja/server-managed-settings) · [Settings files](/docs/ja/settings#where-settings-live)
 
-<h3 id="mcp-model-context-protocol">
-  MCP (Model Context Protocol)
-</h3>
+### MCP (Model Context Protocol)
 
 AI ツールを外部データソースとサービスに接続するためのオープン標準。MCP servers は Claude に Slack、Jira、データベース、ブラウザ、および数百の他の統合用の新しいツールを提供します。`/mcp` を使用するか、`.mcp.json` に追加してサーバーを接続します。プロトコル自体については、[プラットフォーム用語集](https://platform.claude.com/docs/ja/about-claude/glossary#mcp-model-context-protocol)を参照してください。
 
 詳細情報: [Model Context Protocol](/docs/ja/mcp)
 
-<h3 id="mcp-server">
-  MCP server
-</h3>
+### MCP server
 
 Claude に [MCP](#mcp-model-context-protocol) 経由でツール、プロンプト、またはリソースを提供するプログラム。`claude mcp add` を使用して、`.mcp.json` で、[plugin](#plugin) を通じて、または claude.ai [connector](#connector) としてサーバーを追加します。ローカル stdio サーバーは Claude Code がその構成の `command` および `args` フィールドから開始するプロセスとして実行されます。これはプロンプトで入力する [commands](#command) とは関係ありません。
 
 詳細情報: [Model Context Protocol](/docs/ja/mcp)
 
-<h3 id="mcp-tool-search">
-  MCP Tool Search
-</h3>
+### MCP Tool Search
 
 コンテキスト節約メカニズム。MCP ツールスキーマを必要になるまで遅延させます。スタートアップ時にはツール名とサーバー命令のみがロードされます。Claude は特定のツールを使用することを決定したときにオンデマンドで完全なスキーマを取得します。これにより、アイドル MCP servers がコンテキストをあまり消費しないようにします。
 
 詳細情報: [Scale with MCP Tool Search](/docs/ja/mcp#scale-with-mcp-tool-search)
 
-<h2 id="n">
-  N
-</h2>
+## N
 
-<h3 id="non-interactive-mode">
-  Non-interactive mode
-</h3>
+### Non-interactive mode
 
 単一のプロンプトを実行して会話セッションなしで終了するモード。`-p` または `--print` で呼び出されます。CI、スクリプト、パイピングに使用されます。`--no-session-persistence` を渡さない限り、実行は再開可能なセッションとして保存されます。[Agent SDK](/docs/ja/agent-sdk/overview) は Python および TypeScript の同等物です。以前は headless mode と呼ばれていました。
 
 詳細情報: [Run Claude Code programmatically](/docs/ja/headless)
 
-<h2 id="o">
-  O
-</h2>
+## O
 
-<h3 id="output-style">
-  Output style
-</h3>
+### Output style
 
 Claude Code が Claude に与える指示を変更して、応答動作、トーン、または形式を設定する設定です。プロジェクトコンテキストを Claude Code のデフォルト指示と一緒に追加する [CLAUDE.md](#claude-md) とは異なり、カスタム出力スタイルは独自の指示を追加し、デフォルトのソフトウェアエンジニアリング指示を省くことができます。
 
 詳細情報: [Output styles](/docs/ja/output-styles)
 
-<h2 id="p">
-  P
-</h2>
+## P
 
-<h3 id="permission-mode">
-  Permission mode
-</h3>
+### Permission mode
 
 セッションのベースライン承認動作。CLI で `Shift+Tab` でサイクルするか、VS Code、Desktop、claude.ai のモードセレクターを使用します。利用可能なモードは `default`、`acceptEdits`、`plan`、`auto`、`dontAsk`、`bypassPermissions` です。
 
@@ -312,97 +230,71 @@ Claude Code が Claude に与える指示を変更して、応答動作、トー
 
 詳細情報: [Permission mode を選択する](/docs/ja/permission-modes)
 
-<h3 id="permission-rule">
-  Permission rule
-</h3>
+### Permission rule
 
 ツール名と引数パターンに基づいてツール呼び出しを許可、質問、または拒否する設定エントリ。ルールは deny→ask→allow で評価され、最初にマッチしたものが優先されます。Permission rules は、より広い [permission mode](#permission-mode) の上に層状化された細粒度制御です。
 
 詳細情報: [権限を設定する](/docs/ja/permissions)
 
-<h3 id="plan-mode">
-  Plan mode
-</h3>
+### Plan mode
 
 [permission mode](#permission-mode) の一種。Claude はソースファイルを編集せずに変更を研究および提案します。読み取り、検索、探索コマンドを実行でき、その後、何かに触れる前に承認用の計画を提示します。`/plan` を入力するか、`Shift+Tab` を押して plan mode に入ります。
 
 詳細情報: [編集前に分析する（plan mode）](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode)
 
-<h3 id="plugin">
-  Plugin
-</h3>
+### Plugin
 
 skills、hooks、subagents、MCP servers のバンドル。単一のインストール可能なユニットとしてパッケージ化されます。Plugin skills は `plugin-name:skill-name` として名前空間化されるため、複数のプラグインが共存できます。[marketplace](/docs/ja/plugins/overview) を通じてチーム全体にプラグインを配布します。
 
 詳細情報: [Plugins](/docs/ja/plugins/overview)
 
-<h3 id="project-trust">
-  Project trust
-</h3>
+### Project trust
 
 Claude Code がその設定をロードする前に、ディレクトリを受け入れるダイアログ。受け入れはプロジェクトディレクトリごとに保存されます。ただし、ホームディレクトリの場合は、信頼は現在のセッションのみ保持され、起動するたびにプロンプトが再度表示されます。ディレクトリを信頼するまで、Claude Code はそのリポジトリが提供するコンテンツの一部（`.claude/settings.json` のプロジェクト許可ルールや marketplace など）を保留します。[フォルダーを信頼する前に実行されるもの](/docs/ja/permissions#what-runs-before-you-trust-a-folder) には、各種類のコンテンツが記載されており、`-p` セッションがダイアログなしで実行するものも含まれます。
 
 詳細情報: [`.claude` ディレクトリ](/docs/ja/claude-directory)
 
-<h3 id="prompt-injection">
-  Prompt injection
-</h3>
+### Prompt injection
 
 ファイル、ウェブページ、またはツール結果に埋め込まれた敵対的な指示。Claude を、あなたが決して求めなかったアクションにリダイレクトしようとします。Claude Code の防御には、権限システム、コマンドインジェクション検出、信頼検証が含まれます。[Auto mode](#auto-mode) は、ツール結果の疑わしいコンテンツをスキャンするサーバー側プローブと、ツール結果を見ない分類器を追加します。そのため、注入されたテキストが直接それを操作することはできません。
 
 詳細情報: [Prompt injection から保護する](/docs/ja/security#protect-against-prompt-injection)
 
-<h2 id="r">
-  R
-</h2>
+## R
 
-<h3 id="remote-control">
-  Remote Control
-</h3>
+### Remote Control
 
 ローカル Claude Code セッションを電話またはブラウザから claude.ai 経由で続行する方法です。コード実行とファイルはマシンに留まります。インターフェースはリモートです。クラウドサンドボックスで実行される [cloud session](/docs/ja/claude-code-on-the-web) とは異なります。
 
 詳細情報: [Remote Control](/docs/ja/remote-control)
 
-<h3 id="rules">
-  Rules
-</h3>
+### Rules
 
 `.claude/rules/` 内のモジュール化された指示ファイルで、CLAUDE.md と一緒にロードされます。ルールは YAML フロントマターの `paths:` でパススコープを設定できます。これにより、Claude が一致するファイルを読み取る、書き込む、または編集するときにのみロードされ、関連するまではコンテキストを軽量に保てます。
 
 詳細情報: [Organize rules with `.claude/rules/`](/docs/ja/memory#organize-rules-with-claude/rules/)
 
-<h2 id="s">
-  S
-</h2>
+## S
 
-<h3 id="sandboxing">
-  Sandboxing
-</h3>
+### Sandboxing
 
 Bash ツールの OS レベルのファイルシステムおよびネットワーク分離。コマンドは事前に定義した境界内で実行されるため、Claude はコマンドごとの承認プロンプトなしで自由に作業できます。Sandboxing は [permission rules](#permission-rule) とは別のレイヤーです。
 
 詳細情報: [Sandboxing](/docs/ja/sandboxing)
 
-<h3 id="session">
-  Session
-</h3>
+### Session
 
 現在のディレクトリに関連付けられた会話。独自の独立した [context window](#context-window) を持ちます。セッションは `claude -c` で再開でき、`--fork-session` でフォークして履歴を新しいセッション ID の下に保存でき、またはターミナル全体で並列実行できます。`/clear` を実行すると新しいセッションが開始されます。前のセッションは保存されたままで、`/resume` を通じて利用可能です。各セッションのトランスクリプトは `~/.claude/projects/` に保存されます。
 
 詳細情報: [Work with sessions](/docs/ja/how-claude-code-works#work-with-sessions)
 
-<h3 id="settings-layers">
-  Settings layers
-</h3>
+### Settings layers
 
 Claude Code が設定を読み取る階層。優先順位の高い順から低い順: [managed policy](#managed-settings)、`--settings` フラグで渡す設定、`.claude/settings.local.json` のローカル設定、`.claude/settings.json` のプロジェクト設定、`~/.claude/settings.json` のユーザー設定。配列はレイヤー全体でマージされます。スカラーは高いレイヤーの値が低いレイヤーの値を上書きします。[Settings precedence](/docs/ja/settings#settings-precedence) を参照してください。
 
 詳細情報: [Settings files](/docs/ja/settings#where-settings-live)
 
-<h3 id="skill">
-  Skill
-</h3>
+### Skill
 
 指示、知識、またはワークフローを含む `SKILL.md` ファイル。Claude はそれをツールキットに追加します。Claude は関連する場合に自動的にスキルをロードします。また、`/skill-name` で直接呼び出すこともできます。Skills は Agent Skills オープン標準に従います。Claude Code はそれを呼び出し制御と subagent 実行で拡張します。
 
@@ -410,9 +302,7 @@ Skills は custom commands の推奨される後継者です。`.claude/commands
 
 詳細情報: [Extend Claude with skills](/docs/ja/skills)
 
-<h3 id="subagent">
-  Subagent
-</h3>
+### Subagent
 
 独自のコンテキストウィンドウ、カスタムシステムプロンプト、特定のツールアクセス、独立した権限で実行される特化した AI アシスタント。委任されたタスクで機能し、メイン会話に要約を返します。大規模な探索をプライマリコンテキストから除外するか、並列研究を実行するために subagents を使用します。subagent は、それを生成したセッション内に留まります。別々のセッション間で調査結果を渡すには、自分で実行する場合は [cross-session messaging](/docs/ja/cross-session-messaging) を使用してください。
 
@@ -420,17 +310,13 @@ Skills は custom commands の推奨される後継者です。`.claude/commands
 
 詳細情報: [Create custom subagents](/docs/ja/sub-agents)
 
-<h3 id="surface">
-  Surface
-</h3>
+### Surface
 
 Claude Code にアクセスする任意の場所: CLI、VS Code、JetBrains、Desktop、または claude.ai。すべてのサーフェスは同じエンジンを共有します。マシン上のセッションはローカルの CLAUDE.md、設定、スキルを読み取ります。[cloud sessions](/docs/ja/cloud-environments#what-carries-over-from-your-setup) はリポジトリの新しいクローンから開始され、マシン上の `~/.claude/` を読み取りません。Slack と Chrome 拡張機能は、サーフェス自体ではなくサーフェスに接続する統合です。
 
 詳細情報: [Platforms and integrations](/docs/ja/platforms)
 
-<h3 id="system-prompt">
-  System prompt
-</h3>
+### System prompt
 
 Claude Code がすべてのリクエストで会話の前に送信する指示。Claude がツールをどのように使用するか、安全に動作する方法、および応答をどのようにフォーマットするかについて説明します。`--append-system-prompt` でシステムプロンプトに追加するか、`--system-prompt` で置き換えることができます。システムプロンプトは [prompt cache](/docs/ja/prompt-caching#how-the-cache-is-organized) の最初のレイヤーです。
 
@@ -438,9 +324,7 @@ Claude Code がすべてのリクエストで会話の前に送信する指示�
 
 詳細情報: [System prompt flags](/docs/ja/cli-reference#system-prompt-flags)
 
-<h3 id="system-reminder">
-  System reminder
-</h3>
+### System reminder
 
 Claude Code が [harness](#agentic-harness) として会話に追加するメッセージ。Claude に文脈を提供します。システムリマインダーは自分で送信しません。Claude Code はセッションの実行中にそれらを挿入します。たとえば、セッションが開始されるとき、フックがテキストを返すとき、またはファイルがディスク上で変更されるときです。Claude はそれらをメッセージと一緒に読みます。以下のすべてがシステムリマインダーとして Claude に到達します:
 
@@ -455,61 +339,43 @@ Claude Code が [harness](#agentic-harness) として会話に追加するメッ
 
 詳細情報: [Context Claude Code adds outside the system prompt](/docs/ja/agent-sdk/modifying-system-prompts#context-claude-code-adds-outside-the-system-prompt)
 
-<h2 id="t">
-  T
-</h2>
+## T
 
-<h3 id="teleport">
-  Teleport
-</h3>
+### Teleport
 
 コマンド `/teleport`。クラウド Claude Code セッションをローカルターミナルにプルします。Claude はブランチをフェッチし、会話履歴をロードし、クラウドセッションの最後の状態から再開します。逆方向は `--cloud` です。ローカルタスクをクラウドで実行するために送信します。
 
 詳細情報: [ターミナルでクラウドセッションを続行する](/docs/ja/claude-code-on-the-web#from-cloud-to-terminal)
 
-<h3 id="tool">
-  Tool
-</h3>
+### Tool
 
 Claude が実行できるアクション: ファイルを読み取る、コードを編集する、シェルコマンドを実行する、web を検索する、subagent を生成する。Tools は Claude Code を agentic にするものです。それらなしでは、Claude はテキストのみで応答できます。各ツール使用は、[agentic loop](#agentic-loop) での Claude の次の決定に情報を提供する結果を返します。
 
 詳細情報: [Tools available to Claude](/docs/ja/tools-reference)
 
-<h3 id="transcript">
-  Transcript
-</h3>
+### Transcript
 
 [session](#session) の保存されたレコード。会話はあなたと Claude が交換するもの。トランスクリプトはその会話をファイルとして保存したもので、デフォルトでは `~/.claude/projects/<project>/<session-id>.jsonl` に保存されます。Claude Code は再開時にファイルを読み込み直します。これにより、セッション終了後も会話が続きます。同じ会話の画面上のビューについては、[transcript viewer](/docs/ja/interactive-mode#transcript-viewer) を参照してください。
 
 詳細情報: [トランスクリプトの保存場所](/docs/ja/sessions#where-transcripts-are-stored)
 
-<h3 id="turn">
-  Turn
-</h3>
+### Turn
 
 Claude が [session](#session) 内で行う 1 つの完全な応答です。Turn は、メッセージを送信するときに開始され、Claude が応答を終了するときに終了します。その間に任意の数の [tool](#tool) 呼び出しがあります。[Stop hooks](#hook) は各 turn の終了時に発火します。セッションは多くの turn で構成され、[agentic loop](#agentic-loop) は 1 つの内部で何が起こるかを説明します。
 
 詳細情報: [How Claude Code works](/docs/ja/how-claude-code-works#the-agentic-loop)
 
-<h2 id="v">
-  V
-</h2>
+## V
 
-<h3 id="verification-loop">
-  Verification loop
-</h3>
+### Verification loop
 
 もっともらしく見える結果をそのまま受け入れるのではなく、作業が実際に完了したことをセッションが確認する方法です。テストスイート、ビルド、スクリーンショット比較など、Claude が実行できるチェックを提供すると、Claude は 1 回の試行で停止せず、チェックが成功するまで反復します。検証ループは [`/goal`](/docs/ja/goal)、無人実行、および[動的ワークフロー](/docs/ja/workflows)の前提条件です。検証ループがなければ、エージェントが完了したかどうかを判断するのはエージェント自身だけになります。
 
 詳細情報: [Claude に作業を検証する方法を提供する](/docs/ja/best-practices#give-claude-a-way-to-verify-its-work)
 
-<h2 id="w">
-  W
-</h2>
+## W
 
-<h3 id="worktree-isolation">
-  Worktree isolation
-</h3>
+### Worktree isolation
 
 Claude を `.claude/worktrees/` の別の git worktree で実行する分離モード。`-w` フラグまたはサブエージェント設定の `isolation: worktree` で有効にされます。変更は別のディレクトリの別のブランチに留まるため、並列エージェントはそれぞれ自分用のファイルのコピーを編集します。
 
@@ -517,9 +383,7 @@ Claude を `.claude/worktrees/` の別の git worktree で実行する分離モ�
 
 ***
 
-<h2 id="deprecated-and-renamed-terms">
-  非推奨および名前変更された用語
-</h2>
+## 非推奨および名前変更された用語
 
 これらの用語は古いドキュメント、ブログ投稿、コミュニティコンテンツに表示されます。このサイトを検索するときは現在の名前を使用してください。
 

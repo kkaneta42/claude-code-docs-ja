@@ -6,9 +6,7 @@
 
 > Claude Code が使用するモデル、effort レベル、拡張コンテキスト、自動圧縮ウィンドウを設定します
 
-<h2 id="available-models">
-  利用可能なモデル
-</h2>
+## 利用可能なモデル
 
 Claude Code の `model` 設定には、次のいずれかを設定できます。
 
@@ -21,13 +19,11 @@ Claude Code の `model` 設定には、次のいずれかを設定できます�
 
 さまざまな種類の作業にどのモデルと effort レベルが適しているかについては、ブログの [Choosing a Claude model and effort level in Claude Code](https://claude.com/blog/claude-model-and-effort-level-in-claude-code) を参照してください。
 
-<Note>
-  `ANTHROPIC_BASE_URL` はリクエストの送信先を変更するものであり、どのモデルが応答するかを変更するものではありません。LLM ゲートウェイ経由で Claude にルーティングするには、[LLM ゲートウェイ](/docs/ja/llm-gateway)を参照してください。
-</Note>
+> [!NOTE]
+>
+> `ANTHROPIC_BASE_URL` はリクエストの送信先を変更するものであり、どのモデルが応答するかを変更するものではありません。LLM ゲートウェイ経由で Claude にルーティングするには、[LLM ゲートウェイ](/docs/ja/llm-gateway)を参照してください。
 
-<h3 id="model-aliases">
-  モデルエイリアス
-</h3>
+### モデルエイリアス
 
 モデルエイリアスを使用すると、正確なバージョン番号を覚えなくてもモデル設定を選択できます。
 
@@ -52,8 +48,6 @@ Claude Code の `model` 設定には、次のいずれかを設定できます�
 | Amazon Bedrock、Google Cloud's Agent Platform | Opus 5.5 | Sonnet 4.5 | Haiku 4.5 |
 | Microsoft Foundry | Opus 4.6 | Sonnet 4.5 | Haiku 4.5 |
 
-<span id="fable-alias-resolution" />
-
 `ANTHROPIC_DEFAULT_FABLE_MODEL` を設定しない限り、`fable` エイリアスは Fable 5.1 に解決されます。ただし [Claude apps gateway](/docs/ja/claude-apps-gateway) のセッションでは、`fable` と `best` は Fable 5 に解決されます。
 
 `claude-fable-5-1` を提供するように設定されていないゲートウェイは、そのモデルへのリクエストを拒否します。Fable 5.1 を提供しているゲートウェイ経由で使用するには、`/model claude-fable-5-1` で選択してください。
@@ -64,13 +58,11 @@ Claude Code の `model` 設定には、次のいずれかを設定できます�
 
 エイリアスはプロバイダーの推奨バージョンを指しており、時間の経過とともに更新されます。特定のバージョンに固定するには、完全なモデル名（例: `claude-opus-5-5`）を使用するか、`ANTHROPIC_DEFAULT_OPUS_MODEL` などの対応する環境変数を設定してください。
 
-<Note>
-  Sonnet 5.5 には Claude Code v2.1.284 以降、Opus 5.5 には v2.1.280 以降が必要です。古いバージョンからこれらのモデルへのリクエストが失敗する場合は、[Claude Code does not support this model](/docs/ja/errors#claude-code-does-not-support-this-model) を参照してください。Haiku 5.5 では v2.1.293 以降を使用してください。アップグレードするには `claude update` を実行します。
-</Note>
+> [!NOTE]
+>
+> Sonnet 5.5 には Claude Code v2.1.284 以降、Opus 5.5 には v2.1.280 以降が必要です。古いバージョンからこれらのモデルへのリクエストが失敗する場合は、[Claude Code does not support this model](/docs/ja/errors#claude-code-does-not-support-this-model) を参照してください。Haiku 5.5 では v2.1.293 以降を使用してください。アップグレードするには `claude update` を実行します。
 
-<h3 id="work-with-fable">
-  Fable を使用する
-</h3>
+### Fable を使用する
 
 [Claude Fable 5.1](https://platform.claude.com/docs/en/about-claude/models/overview) と Claude Fable 5 は Claude Code で最も高性能なモデルであり、1 回の作業時間に収まらない規模のタスクに適しています。長時間の自律的なセッションを維持し、行動する前に調査を行い、小規模なモデルよりも頻繁に自身の作業を検証します。Fable 5.1 は新しいリリースです。
 
@@ -90,15 +82,13 @@ Fable を最大限に活用するには:
 * **検証のリマインダーを省く**: Fable は少ない指示で自身の作業を検証するため、テストや確認を促すリマインダーは通常不要です。
 * **より大きなタスクを任せる**: 通常なら分割するような作業を与えてください。Fable は長いセッションでも文脈を見失いません。
 
-<Note>
-  Fable 5.1 には Claude Code v2.1.257 以降が必要です。古いバージョンからのリクエストが失敗する場合は、[Claude Code does not support this model](/docs/ja/errors#claude-code-does-not-support-this-model) を参照してください。アップグレードするには `claude update` を実行します。ゼロデータ保持での利用可否については、[ZDR でのモデルの利用可否](/docs/ja/zero-data-retention#model-availability-under-zdr)を参照してください。
-</Note>
+> [!NOTE]
+>
+> Fable 5.1 には Claude Code v2.1.257 以降が必要です。古いバージョンからのリクエストが失敗する場合は、[Claude Code does not support this model](/docs/ja/errors#claude-code-does-not-support-this-model) を参照してください。アップグレードするには `claude update` を実行します。ゼロデータ保持での利用可否については、[ZDR でのモデルの利用可否](/docs/ja/zero-data-retention#model-availability-under-zdr)を参照してください。
 
 Anthropic API では、[`availableModels`](#restrict-model-selection) または[組織のモデル制限](#organization-model-restrictions)によって除外されない限り、Fable モデルは `/model` ピッカーに表示されます。組織が Fable をまったく使用できない場合（たとえば[ゼロデータ保持](/docs/ja/zero-data-retention#model-availability-under-zdr)の下にある場合）、その行はグレーアウトされた状態でピッカーに残り、理由が注記されます。
 
-<h4 id="fable-and-usage-credits">
-  Fable と使用クレジット
-</h4>
+#### Fable と使用クレジット
 
 プランやシート階層によっては、Fable の使用量がプランに含まれる上限から差し引かれるのではなく、[使用クレジット](https://support.claude.com/en/articles/12429409-extra-usage-for-paid-claude-plans)に課金される場合があります。その場合、`/model` ピッカーの Fable の行に「Requires usage credits」と表示されます。使用クレジットを管理するには、[サブスクリプションに使用クレジットを追加する](/docs/ja/costs#add-usage-credits-to-your-subscription)を参照してください。
 
@@ -121,9 +111,7 @@ Anthropic API では、[`availableModels`](#restrict-model-selection) または[
 
 `-p` フラグを使用した[非対話モード](/docs/ja/headless)や、プロンプトを表示しない Agent SDK アプリケーションでは、Claude Code は同意を求めません。そこで Fable のリクエストが使用クレジットに課金される場合、Claude Code は確認なしで課金します。
 
-<h3 id="setting-your-model">
-  モデルの設定
-</h3>
+### モデルの設定
 
 モデルはいくつかの方法で設定できます。以下は優先順位の高い順です。
 
@@ -202,9 +190,7 @@ claude --model opus
 }
 ```
 
-<h4 id="set-a-default-model-for-new-sessions">
-  新しいセッションのデフォルトモデルを設定する
-</h4>
+#### 新しいセッションのデフォルトモデルを設定する
 
 セッションがデフォルトで開始するモデルを選択するには、`ANTHROPIC_DEFAULT_MODEL=<alias|name>` を設定します。Claude Code v2.1.236 以降が必要です。
 
@@ -228,9 +214,7 @@ Claude Code が新しいセッションをこの変数のモデルで開始す�
 
 新しいセッションがこの変数のモデルで開始される場合、`claude --resume`、`--continue`、または `/resume` ピッカーで再開したセッションもそのモデルで開始されます。Claude Code はそのセッションのトランスクリプトに保存されたモデルを復元しません。それ以外の場合、[セッションを再開](#setting-your-model)するときに Claude Code はこの変数を使用しません。
 
-<h4 id="a-new-session-starts-on-a-different-model-than-you-picked">
-  新しいセッションが選択したものとは異なるモデルで開始される
-</h4>
+#### 新しいセッションが選択したものとは異なるモデルで開始される
 
 `/model` でモデルを選択したのに次のセッションが別のモデルで開始される場合、通常は次のような原因があります。
 
@@ -239,9 +223,7 @@ Claude Code が新しいセッションをこの変数のモデルで開始す�
 * **Claude Code が選択を保存できなかった。** `/model` は `~/.claude/settings.json` に `model` を書き込みます。別のツールがそのファイルを生成している、または読み取り専用のコピーにリンクしているなどの理由でそのファイルに書き込めない場合、選択したモデルはそのセッションの間だけ有効で、次回の起動時には古い値が読み込まれます。ファイルを生成しているツールで `model` を設定するか、ファイルを書き込み可能にしてください。[Claude Code で行った変更が新しいセッションで失われる](/docs/ja/settings#a-change-you-made-in-claude-code-is-lost-in-new-sessions)を参照してください。
 * **セッションを再開した。** `claude --resume` または `--continue` で再開したセッションは、通常、現在のデフォルトではなく[使用していたモデルを維持](#setting-your-model)します。
 
-<h2 id="restrict-model-selection">
-  モデル選択を制限する
-</h2>
+## モデル選択を制限する
 
 管理者は、[管理設定またはポリシー設定](/docs/ja/managed-settings)の `availableModels` を使用して、ユーザーが選択できるモデルを制限できます。エントリは、`sonnet` のようなモデルファミリー、`claude-sonnet-4-5` のようなバージョンプレフィックス、または `claude-sonnet-4-5-20250929` のような完全なモデル ID に一致します。バージョンプレフィックスは、それにさらにセグメントを付け加えた後続のモデル ID にも一致するため、`claude-fable-5` は Fable 5 と Fable 5.1 の両方を許可し、`claude-fable-5-1` は Fable 5.1 のみを許可します。リストが許可するモデルをブロックする方法や、各モデル ID エントリがその ID で指定されたバージョンのみを許可するようにする方法については、[特定のモデルやバージョンをブロックする](#block-specific-models-or-versions)を参照してください。
 
@@ -296,9 +278,7 @@ Claude Code がユーザーに代わって行うモデル変更も、同じ方�
 }
 ```
 
-<h3 id="surface-coverage">
-  サーフェスごとの適用範囲
-</h3>
+### サーフェスごとの適用範囲
 
 すべてのサーフェスは、受け取った許可リストを適用します。各サーフェスに届く配信メカニズムは次のように異なります。
 
@@ -315,17 +295,13 @@ Claude Code がユーザーに代わって行うモデル変更も、同じ方�
 * Desktop の Code タブは [SSH セッション](/docs/ja/desktop#ssh-sessions)もホストしており、これらは実行先のリモートホストから管理設定ファイルを読み取ります。[Desktop の管理設定](/docs/ja/desktop#managed-settings)を参照してください。
 * claude.ai および Desktop アプリのモデルピッカーは、組織の許可リストによって除外されたモデルを非表示にするかグレーアウトします。ピッカーの状態はユーザーの利便性のためのものであり、許可リストを適用するものではありません。
 
-<h3 id="default-model-behavior">
-  デフォルトモデルの動作
-</h3>
+### デフォルトモデルの動作
 
 デフォルトのプレフィックス一致では、`availableModels` 単独では、[`enforceAvailableModels`](#enforce-the-allowlist-for-the-default-model) も設定するまで、Default オプションはアカウントに対するシステムの[ランタイムデフォルト](#default-model-setting)のままになります。そのデフォルトが制限したいモデルである場合は、`enforceAvailableModels` も設定するか、[そのモデルをブロック](#block-specific-models-or-versions)してください。
 
 `availableModels: []` の場合、名前を指定したモデル選択はブロックされ、`enforceAvailableModels` は効果を持ちません。
 
-<h3 id="enforce-the-allowlist-for-the-default-model">
-  Default モデルに許可リストを適用する
-</h3>
+### Default モデルに許可リストを適用する
 
 管理設定で、空でない `availableModels` とともに `enforceAvailableModels: true` を設定すると、許可リストが Default オプションにも適用されます。これには Claude Code v2.1.175 以降が必要です。
 
@@ -342,9 +318,7 @@ Claude Code がユーザーに代わって行うモデル変更も、同じ方�
 
 両方のキーは、配信する管理ソースのうち最も順位の高いものに一緒にデプロイしてください。デフォルトでは Claude Code はそのソースのみを読み取るため、管理コンソールが何らかの設定を配信している場合、管理設定ファイルに配置したペアは無視されます。[Claude Code が管理ソースを組み合わせる方法](/docs/ja/managed-settings#how-claude-code-combines-managed-sources)のオプトインのマージを使用する場合でも、Claude Code は `availableModels` を設定するソースより下位のソースからの `modelOverrides` マップを無視します。
 
-<h3 id="control-the-model-users-run-on">
-  ユーザーが実行するモデルを制御する
-</h3>
+### ユーザーが実行するモデルを制御する
 
 `model` 設定は初期選択であり、適用ではありません。これはセッション開始時にどのモデルがアクティブになるかを設定しますが、ユーザーは引き続き `/model` を開いて Default を選択できます。Default は、[`enforceAvailableModels`](#enforce-the-allowlist-for-the-default-model) または[特定のバージョンをブロックするキー](#block-specific-models-or-versions)が適用されない限り、`model` の設定値に関係なくシステムの[ランタイムデフォルト](#default-model-setting)に解決されます。
 
@@ -371,23 +345,17 @@ Claude Code がユーザーに代わって行うモデル変更も、同じ方�
 
 `enforceAvailableModels` や `env` ブロックがない場合、ピッカーで Default を選択したユーザーには、`model` で固定されたバージョンではなく[ランタイムデフォルト](#default-model-setting)が適用されます。この 2 つの設定は異なる範囲をカバーします。`enforceAvailableModels` は Default を許可リストに従わせ、`env` ブロックは `sonnet` などの許可されたエイリアスがどのバージョンに解決されるかを固定します。モデルファミリーを制限するだけで十分な場合は `enforceAvailableModels` のみを使用し、特定のバージョンも固定する必要がある場合は `env` ブロックを追加してください。
 
-<h3 id="merge-behavior">
-  マージの動作
-</h3>
+### マージの動作
 
 Claude Code が適用する管理設定で `availableModels` が定義されている場合、[独自のものを提供するホストプラットフォーム](/docs/ja/settings#exceptions-to-managed-settings-precedence)を除き、そのリストのみが適用されます。ユーザー設定、プロジェクト設定、ローカル設定のエントリでそれを拡張することはできず、Claude Code は管理ソース間で `availableModels` をマージすることもありません。どのソースのリストが適用されるかについては、[Claude Code が管理ソースを組み合わせる方法](/docs/ja/managed-settings#how-claude-code-combines-managed-sources)を参照してください。それ以外の場合、ユーザー設定、プロジェクト設定、ローカル設定のリストは、他の配列設定と同様に[連結され、重複が除去されます](/docs/ja/settings#settings-precedence)。Claude Code v2.1.175 より前は、優先順位の低いスコープのエントリは、管理リストに置き換えられるのではなく、管理リストにマージされていました。
 
 有効なリスト内で、ファミリー内の特定のモデルを指定するエントリ（バージョンプレフィックスまたは完全なモデル ID）は、そのファミリーのワイルドカードエントリを無効にします。`["sonnet", "claude-sonnet-4-5"]` は、すべての Sonnet モデルではなく、Sonnet 4.5 のバージョンのみを許可します。
 
-<h3 id="mantle-model-ids">
-  Mantle のモデル ID
-</h3>
+### Mantle のモデル ID
 
 `availableModels` 内の `anthropic.` で始まるエントリは、カスタムオプションとして `/model` ピッカーに追加されます。これは、[サードパーティのデプロイ向けにモデルを固定する](#pin-models-for-third-party-deployments)で説明されているエイリアス一致の例外です。[Amazon Bedrock Mantle エンドポイント](/docs/ja/amazon-bedrock#use-the-mantle-endpoint)が有効な場合、Claude Code は Mantle 形式に一致するエントリをそのエンドポイントにルーティングします。この設定は引き続きピッカーをリストされたエントリに制限し、Mantle ID にはファミリー名が含まれているため、特定のエントリとしてカウントされ、そのファミリーのワイルドカードを無効にします。Mantle ID と併せて、選択可能なままにしたいバージョンプレフィックスまたは完全な ID をリストしてください。[マージの動作](#merge-behavior)を参照してください。
 
-<h3 id="block-specific-models-or-versions">
-  特定のモデルやバージョンをブロックする
-</h3>
+### 特定のモデルやバージョンをブロックする
 
 `claude-opus-5` のような `availableModels` エントリは、Opus 5.5 など、それを拡張する後続のリリースも、Claude Code がサポートした時点で許可します。リリースを保留するための管理設定が 2 つあり、どちらも Claude Code v2.1.283 以降が必要です。
 
@@ -417,9 +385,7 @@ Default オプションも、[`enforceAvailableModels`](#enforce-the-allowlist-f
 
 Claude Code は、両方のキーを管理設定からのみ読み取ります。ユーザー設定、プロジェクト設定、ローカル設定、または `--settings` でいずれかを設定した場合、Claude Code は警告を表示してそれを無視します。
 
-<h3 id="organization-model-restrictions">
-  組織のモデル制限
-</h3>
+### 組織のモデル制限
 
 Claude Enterprise プランの組織管理者は、claude.ai 管理コンソールで個々のモデルを無効にすることで、メンバーが実行できるモデルを制限します。この制限は、Claude Code の認証時にアカウントのエンタイトルメントとともに配信され、設定内の `availableModels` リストとは別のものです。また、サーバーはセッション作成時に同じ制限を独立して適用します。Claude Code v2.1.187 以降が必要です。
 
@@ -440,9 +406,7 @@ Claude Console にはモデル制限の制御機能はありません。Anthropi
 
 両方の制限は同時に適用されます。モデルが選択可能になるのは、`availableModels` で許可されていて、かつ組織によって制限されていない場合のみです。組織の制限が適用されるのは、Anthropic API および [LLM ゲートウェイ](/docs/ja/llm-gateway)のデプロイ上のセッションのみです。その他のプロバイダーでは、代わりに `availableModels` を使用してください。
 
-<h2 id="organization-default-model">
-  組織のデフォルトモデル
-</h2>
+## 組織のデフォルトモデル
 
 Claude Enterprise プランの組織管理者は、claude.ai の管理コンソールから、組織全体またはカスタムロールごとに Claude Code メンバー向けのデフォルトモデルを設定できます。設定されている場合、Default オプションはそのモデルに解決されます。Claude Code v2.1.196 以降が必要です。
 
@@ -473,9 +437,7 @@ v2.1.199 以降では、組織のデフォルトがユーザーのアカウン�
 
 組織のデフォルトは、Anthropic API で認証されたセッションにのみ適用されます。[LLM ゲートウェイ](/docs/ja/llm-gateway)のデプロイを含むその他の環境でデフォルトを設定するには、代わりに[管理設定](/docs/ja/managed-settings)の `model` キーを使用してください。
 
-<h2 id="organization-effort-limits">
-  組織の effort 上限
-</h2>
+## 組織の effort 上限
 
 組織は、[effort レベル](#adjust-effort-level)に 2 つの方法で上限を設定できます。Claude Enterprise プランでは、組織の管理者が以下で説明するロールごとの effort 上限を設定します。Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry を含むすべてのプランとプロバイダーでは、代わりに [`maxEffortLevel`](/docs/ja/settings-reference#maxeffortlevel) 管理設定によってクライアント側で effort に上限が設定されます。1 つのモデルに両方が適用される場合は、低いほうの上限が適用されます。
 
@@ -483,13 +445,9 @@ Claude Enterprise プランの組織管理者は、ロールレベルの[組織�
 
 effort 上限は[組織のモデル制限](#organization-model-restrictions)と一緒に配信され、同じセッションに適用されます。
 
-<h2 id="special-model-behavior">
-  特殊なモデルの動作
-</h2>
+## 特殊なモデルの動作
 
-<h3 id="default-model-setting">
-  `default` モデル設定
-</h3>
+### `default` モデル設定
 
 `default` の動作はアカウントの種類によって異なります。
 
@@ -505,9 +463,7 @@ v2.1.280 より前は、`default` は Pro と Team Standard では Sonnet 5 に�
 
 Fable モデルは、どのプランやプロバイダーでもアカウント種類ごとのデフォルトにはなりません。`/model` で Fable モデルを選ぶと、ユーザー設定に選択中のモデルとして保存されるため、以降のセッションはそのモデルで開始されます。v2.1.257 で Claude Code が保存済みの Fable 5 の選択に対して行う一度限りの変更については、[Fable を使用する](#work-with-fable)を参照してください。
 
-<h3 id="opusplan-model-setting">
-  `opusplan` モデル設定
-</h3>
+### `opusplan` モデル設定
 
 `opusplan` モデルエイリアスは、自動化されたハイブリッドアプローチを提供します。
 
@@ -524,9 +480,7 @@ plan モードの Opus フェーズは `opus` モデル設定と同じコンテ�
 
 計画の境界で切り替えるのではなく、タスクの途中で Claude が 2 つ目のモデルに相談するタイミングを判断するハイブリッドアプローチについては、[advisor ツール](/docs/ja/advisor)を参照してください。
 
-<h3 id="fallback-model-chains">
-  フォールバックモデルチェーン
-</h3>
+### フォールバックモデルチェーン
 
 プライマリモデルが過負荷状態、利用不可、またはその他の再試行不可能なサーバーエラーを返した場合、Claude Code はリクエストを失敗させる代わりにフォールバックモデルに切り替えることができます。認証、請求、レート制限、リクエストサイズ、トランスポートのエラー、および[組織のポリシーチェックによる拒否](/docs/ja/errors#automatic-retries)では切り替えは発生せず、通常の再試行とエラー処理に従います。[Amazon Bedrock](/docs/ja/amazon-bedrock#when-a-model-is-disabled-mid-session) または [Google Cloud's Agent Platform](/docs/ja/google-vertex-ai#when-a-model-is-disabled-mid-session) がアカウントで呼び出せないモデルを拒否した場合は切り替えが発生します。Claude Code はこれを認証エラーではなく、モデルが利用不可であるものとして扱います。
 
@@ -557,9 +511,7 @@ Claude Code は起動時にチェーンを確認せず、`/status` にも表示�
 
 Claude Code はチェーンを[サブエージェント](/docs/ja/sub-agents)にも適用します。サブエージェントのリクエストがフェイルオーバーすると、Claude Code は設定されたフォールバックモデルを順に試し、サブエージェントはリクエストを受け付けたモデルで処理を続行します。セッションのモデルは変わりません。v2.1.247 より前は、チェーンの対象となる失敗が発生するとサブエージェントが終了していました。
 
-<h3 id="automatic-model-fallback">
-  自動モデルフォールバック
-</h3>
+### 自動モデルフォールバック
 
 このセクションでは、Fable モデル、Opus 5.5、Sonnet 5.5、Opus 5 からのコンテンツに基づくフォールバックについて説明します。モデルが過負荷状態または利用不可の場合の可用性に基づくフォールバックについては、[フォールバックモデルチェーン](#fallback-model-chains)を参照してください。
 
@@ -579,9 +531,7 @@ Claude Code は、警告されたリクエストをそのカテゴリのフォ�
 
 フォールバックモデルは [`availableModels`](#restrict-model-selection) と照合されます。ブロックされている場合、フォールバックは発生しません。拒否は通常のエラーとして表示され、セッションのモデルは変わりません。
 
-<h4 id="effort-level-after-a-fallback">
-  フォールバック後の effort レベル
-</h4>
+#### フォールバック後の effort レベル
 
 Claude Code がセッションをフォールバックモデルに切り替える際は、警告されたリクエストが実行されていた effort レベルを維持します。たとえば、デフォルトの `medium` で動作している Opus 5.5 のセッションが Opus 4.8 にフォールバックした場合、Opus 4.8 のデフォルトは `high` ですが、`medium` のままになります。
 
@@ -592,17 +542,13 @@ Claude Code がセッションをフォールバックモデルに切り替え�
 
 セッション内で `/effort status` を実行すると有効なレベルを確認でき、`/effort` を実行すると変更できます。
 
-<h4 id="check-what-triggered-fallback">
-  フォールバックのきっかけを確認する
-</h4>
+#### フォールバックのきっかけを確認する
 
 フォールバックは、特殊な内容を何も送信する前に、セッションの最初のリクエストで発生することがあります。最初のリクエストには、CLAUDE.md の内容や git status などのワークスペースのコンテキストが含まれるためです。セキュリティや生物学に関する資料を含むリポジトリでは、そのコンテキストだけで分類器が反応することがあります。
 
 カスタマイズがきっかけかどうかを確認するには、`claude --safe-mode` でセッションを開始します。これにより、CLAUDE.md、スキル、MCP サーバー、フックなどのカスタマイズが無効になります。git status やディレクトリ名はカスタマイズではないため、引き続き含まれます。
 
-<h4 id="ask-before-switching">
-  切り替える前に確認する
-</h4>
+#### 切り替える前に確認する
 
 リクエストが警告されるたびにどうするかを判断したい場合は、`/config` を実行して **Switch models when a message is flagged** を選択し、**Ask each time** を選びます。設定ファイルで [`switchModelsOnFlag`](/docs/ja/settings-reference#switchmodelsonflag) を `false` に設定することもできます。すると、Claude Code はモデルを切り替えることになる警告されたリクエストで一時停止し、フォールバックモデルに切り替えるか、プロンプトを編集して再試行するかの 2 つの選択肢を表示します。
 
@@ -619,9 +565,7 @@ Claude Code がセッションをフォールバックモデルに切り替え�
 * [サブエージェント](/docs/ja/sub-agents)では、Claude Code は確認を表示せず、モデルを切り替えることになる警告されたリクエストはフォールバックモデルで再実行されます。
 * フォールバック先が [`availableModels`](#restrict-model-selection) によってブロックされている場合、Claude Code は確認を表示しません。ターゲットがブロックされている場合の自動フォールバックと同様に、警告されたリクエストは拒否で終了します。
 
-<h4 id="enable-fallback-on-bedrock-agent-platform-and-foundry">
-  Bedrock、Agent Platform、Foundry でフォールバックを有効にする
-</h4>
+#### Bedrock、Agent Platform、Foundry でフォールバックを有効にする
 
 [Amazon Bedrock](/docs/ja/amazon-bedrock)、[Google Cloud's Agent Platform](/docs/ja/google-vertex-ai)、[Microsoft Foundry](/docs/ja/microsoft-foundry) では、モデル ID がプロバイダー固有であるため、自動フォールバックは Claude Code が関係する各モデルを識別できる場合にのみ動作します。
 
@@ -637,17 +581,13 @@ Claude Code がセッションをフォールバックモデルに切り替え�
 
 また、フォールバックモデルのコンテキストウィンドウはセッションのコンテキストウィンドウ以上である必要があります。そうでない場合、Claude Code は切り替えず、警告されたリクエストは同じ拒否で終了します。これらのプロバイダーでは、フォールバック元モデルはデフォルトで [1M コンテキストウィンドウ](#extended-context)で動作します。`ANTHROPIC_DEFAULT_OPUS_MODEL` の Opus 4.8 や `ANTHROPIC_DEFAULT_SONNET_MODEL` の Sonnet 5 など、同じく 1M で動作するモデルを、Claude Code が[そのモデルと照合できる](#pin-models-for-third-party-deployments) ID で固定してください。
 
-<h4 id="security-research-and-biology-workloads">
-  セキュリティ研究と生物学のワークロード
-</h4>
+#### セキュリティ研究と生物学のワークロード
 
 ペネトレーションテスト、Capture the Flag（CTF）演習、生物学に関連するコードベースなど、攻撃的セキュリティや生物学のワークロードでは、フォールバックが頻繁に、多くの場合最初のリクエストで発生します。Fable 5.1、Fable 5、Opus 5.5 で本格的な生物学の作業を行う場合、モデルを切り替える最初の警告されたリクエストによってセッションが Opus 5 に移行し、Opus 5 には生物学のフォールバックがないため、その後の生物学で警告されたリクエストはそこで拒否となります。Opus 5 と Sonnet 5.5 では、最初に警告されたリクエストからその拒否が発生します。
 
 これはこれらの分野における想定どおりのルーティングであり、アカウントに対する警告ではありません。組織がこの作業に Fable クラスの能力を必要とする場合は、Anthropic のアカウントチームに信頼済みアクセスプログラムについてお問い合わせください。
 
-<h3 id="adjust-effort-level">
-  effort レベルを調整する
-</h3>
+### effort レベルを調整する
 
 [effort レベル](https://platform.claude.com/docs/en/build-with-claude/effort)はアダプティブ推論を制御します。アダプティブ推論では、タスクの複雑さに基づいて、各ステップで思考するかどうか、どの程度思考するかをモデルが判断します。低い effort は単純なタスクに対してより高速かつ低コストで、高い effort は複雑な問題に対してより深い推論を提供します。
 
@@ -680,11 +620,9 @@ Claude Code はユーザー設定の [`modelSettings`](/docs/ja/settings-referen
 
 `max` は最も深い推論レベルです。`CLAUDE_CODE_EFFORT_LEVEL` 環境変数で設定しない限り、Claude Code は `max` を現在のセッションにのみ適用します。
 
-<Note>
-  [Remote Control](/docs/ja/remote-control#what-connected-devices-see) で接続したスマートフォンやブラウザの effort コントロールから選んだレベルは、そのセッションにのみ適用されます。
-</Note>
-
-<span id="non-interactive-effort" />
+> [!NOTE]
+>
+> [Remote Control](/docs/ja/remote-control#what-connected-devices-see) で接続したスマートフォンやブラウザの effort コントロールから選んだレベルは、そのセッションにのみ適用されます。
 
 [`-p` 実行](/docs/ja/headless)で `/effort` を使ってレベルを設定した場合、Claude Code はそのセッションにのみ適用し、デフォルトとしては保存しません。
 
@@ -704,8 +642,6 @@ ultracode は次のいずれかの方法でオンにできます。
 
 永続化される `effortLevel` 設定と `CLAUDE_CODE_EFFORT_LEVEL` 環境変数は `ultracode` を受け付けません。`CLAUDE_CODE_EFFORT_LEVEL` または [effort 上限](#organization-effort-limits)によってセッションのレベルが設定されている場合、ultracode はそのレベルでオンのままになります。
 
-<span id="when-ultracode-is-available" />
-
 次の場合、Ultracode は利用できません。
 
 * [ワークフローがオフになっている](/docs/ja/workflows#turn-workflows-off)
@@ -713,9 +649,7 @@ ultracode は次のいずれかの方法でオンにできます。
 
 これらの場合、`--effort ultracode` は ultracode をオフにした状態で、モデルと上限が許容する最も高い effort レベル（最大 `xhigh`）でセッションを開始します。
 
-<h4 id="choose-an-effort-level">
-  effort レベルを選ぶ
-</h4>
+#### effort レベルを選ぶ
 
 各レベルは、トークン消費と能力のトレードオフです。デフォルトはほとんどのコーディングタスクに適しています。異なるバランスが必要な場合に調整してください。
 
@@ -734,15 +668,11 @@ effort のスケールはモデルごとに調整されているため、同じ�
 
 Opus 5.5 は[デフォルトで `medium`](#adjust-effort-level) であり、Opus 5 のデフォルトである `high` より 1 段階低くなっています。Anthropic のテストでは、`medium` の Opus 5.5 は、コーディングやナレッジワークの評価で `high` の Opus 5 と同等以上の結果を示しています。同じレベルでは、Opus 5.5 は Opus 5 よりもターンあたりの思考量が多くなる傾向があります。Opus 5 から Opus 5.5 に移行する際は、Opus 5 で使用していたレベルを引き継ぐのではなく、`medium` から始めてください。自分の作業に対してレベルをテストするには、Opus 5.5 のプロンプティングガイドの [Calibrate effort](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-opus-5-5#calibrate-effort) を参照してください。
 
-<h4 id="use-ultrathink-for-one-off-deep-reasoning">
-  一度限りの深い推論に ultrathink を使う
-</h4>
+#### 一度限りの深い推論に ultrathink を使う
 
 プロンプトのどこかに `ultrathink` を含めると、セッションの effort 設定を変更せずに、そのターンでより深い推論を要求できます。Claude Code はこのキーワードを認識し、コンテキスト内に指示を追加します。API に送信される effort レベルは変わりません。「think」、「think hard」、「think more」などのその他の表現は、Claude Code が通常のプロンプトテキストとしてそのまま渡し、キーワードとしては認識しません。
 
-<h4 id="set-the-effort-level">
-  effort レベルを設定する
-</h4>
+#### effort レベルを設定する
 
 effort は次のいずれかの方法で変更できます。
 
@@ -760,9 +690,7 @@ effort は次のいずれかの方法で変更できます。
 
 サポートされているモデルが選択されている場合、effort スライダーは `/model` に表示されます。現在の effort レベルはセッションヘッダーのモデル名の横にも「with low effort」のように表示されるため、`/model` を開かずにどの設定が有効かを確認できます。フッターにも、起動時と変更時に effort レベルが短時間表示されます。
 
-<h4 id="adaptive-reasoning-and-fixed-thinking-budgets">
-  アダプティブ推論と固定の思考予算
-</h4>
+#### アダプティブ推論と固定の思考予算
 
 アダプティブ推論では、各ステップで思考が任意になるため、Claude は日常的なプロンプトにはより速く応答し、より深い思考はそれが役立つステップのために取っておけます。現在のレベルよりも思考の頻度を増やしたり減らしたりしたい場合は、プロンプトまたは `CLAUDE.md` で直接そう伝えることができます。モデルは effort 設定の範囲内でその指示に応えます。
 
@@ -770,9 +698,7 @@ Fable モデル、Sonnet 5 以降、Haiku 5.5、Opus 4.7 以降は常にアダ�
 
 Opus 4.6 と Sonnet 4.6 では、`CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING=1` を設定すると、`MAX_THINKING_TOKENS` で制御される以前の固定の思考予算に戻せます。[環境変数](/docs/ja/env-vars)を参照してください。
 
-<h3 id="extended-thinking">
-  拡張思考
-</h3>
+### 拡張思考
 
 拡張思考は、Claude が応答する前に出力する推論です。[アダプティブ推論](#adjust-effort-level)をサポートするモデルでは、effort レベルが思考量の主な制御手段です。以下の設定は、思考のオン/オフと表示方法を制御します。Anthropic API で思考をオフにしている場合、Opus 5 など[その組み合わせを受け付けない](/docs/ja/errors#effort-isnt-available-with-thinking-turned-off)ことを Claude Code が把握しているモデルには、より高いレベルではなく effort `high` を送信します。
 
@@ -786,13 +712,7 @@ Opus 5.5、Sonnet 5.5、Haiku 5.5、Fable モデルでは思考をオフにで�
 
 Claude Code はデフォルトで思考の出力を折りたたみます。`Ctrl+O` を押して詳細モードを切り替えると、推論がグレーの斜体テキストで表示されます。Anthropic API 上の対話セッションはデフォルトで編集済みの思考ブロックを受け取るため、展開時に完全な要約を表示したい場合は、[設定](/docs/ja/settings)で `showThinkingSummaries: true` を設定してください。折りたたまれていても編集済みであっても、生成されたすべての思考トークンに対して課金されます。
 
-<a id="extended-context-with-1m" />
-
-<span id="sonnet-5-5-and-sonnet-5-context-window" />
-
-<h3 id="extended-context">
-  拡張コンテキスト
-</h3>
+### 拡張コンテキスト
 
 Fable 5.1、Fable 5、Sonnet 5 以降、Haiku 5.5、Opus 4.6 以降、Sonnet 4.6 は、大規模なコードベースでの長いセッション向けに [100 万トークンのコンテキストウィンドウ](https://platform.claude.com/docs/en/build-with-claude/context-windows#context-window-sizes-by-model)をサポートしています。
 
@@ -810,9 +730,7 @@ Claude Code がこれらのプラン要件を確認するのは、Anthropic API 
 
 Anthropic API では、1M コンテキストウィンドウは標準のモデル料金を使用し、200K を超えるトークンに対する割増料金はありません。ただし、Haiku 5.5 は [100K トークンを超えるプロンプトではコストが高くなります](#haiku-5-5-context-window-and-pricing)。拡張コンテキストがサブスクリプションに含まれるプランでは、使用量は引き続きサブスクリプションでカバーされます。使用クレジットを通じて拡張コンテキストにアクセスするプランでは、トークンは使用クレジットに請求されます。
 
-<h4 id="select-1m-context-for-opus-4-6-or-sonnet-4-6">
-  Opus 4.6 または Sonnet 4.6 で 1M コンテキストを選択する
-</h4>
+#### Opus 4.6 または Sonnet 4.6 で 1M コンテキストを選択する
 
 1M バリアントを名前で選択するには、モデルエイリアスまたは完全なモデル名に `[1m]` サフィックスを付けます。
 
@@ -825,26 +743,18 @@ Anthropic API では、1M コンテキストウィンドウは標準のモデル
 /model opus[1m]
 ```
 
-<span id="context-window-behind-a-gateway" />
-
-<h4 id="context-window-behind-an-llm-gateway">
-  LLM ゲートウェイの背後でのコンテキストウィンドウ
-</h4>
+#### LLM ゲートウェイの背後でのコンテキストウィンドウ
 
 `ANTHROPIC_BASE_URL` を [LLM ゲートウェイ](/docs/ja/llm-gateway)やその他のプロキシに設定した場合、Claude Code は認識する各モデルに、Anthropic API 上と同じコンテキストウィンドウを割り当てます。Fable 5.1、Fable 5、Sonnet 5 以降、Haiku 5.5、Opus 4.7 以降は、`[1m]` バリアントを選択しなくても 1M ウィンドウを使用でき、Opus 4.6 のように `[1m]` バリアントを通じてのみ 1M に到達するモデルは、バリアントなしでは 200K で動作します。Claude Code は、ゲートウェイやその背後のサーバーが強制するより低い制限を検出できません。ゲートウェイが 200K トークンを超えるリクエストを拒否する場合は、Claude Code を起動する環境で [`CLAUDE_CODE_AUTO_COMPACT_WINDOW=200000`](/docs/ja/env-vars) を設定して、すべてのモデルのセッションが[その境界で圧縮される](#set-the-auto-compact-window)ようにしてください。
 
-<h4 id="turn-off-1m-context">
-  1M コンテキストをオフにする
-</h4>
+#### 1M コンテキストをオフにする
 
 セッションを 200K ウィンドウに保つには、シェルまたは[設定ファイル](/docs/ja/env-vars#set-environment-variables)で `CLAUDE_CODE_DISABLE_1M_CONTEXT=1` を設定します。Claude Code はモデルピッカーから `[1m]` のモデルバリアントを削除します。Fable モデル、Sonnet 5 以降、Opus 4.7 以降など、デフォルトで 1M ウィンドウで動作するモデルでは、そのモデルのコンテキストウィンドウを 200K として扱います。
 
 * 自動圧縮がオンの場合、セッションは[自動圧縮](#set-the-auto-compact-window)によって 200K の境界で圧縮されます。Claude Code は自動圧縮のウィンドウをモデルのコンテキストウィンドウに制限するため、自動圧縮のウィンドウを 200K より大きく設定しても制限は解除されません。
 * 自動圧縮がオフの場合、セッションは圧縮されず、200K の境界で[コンテキスト制限エラー](/docs/ja/errors#prompt-is-too-long)により停止します。
 
-<h4 id="haiku-5-5-context-window-and-pricing">
-  Haiku 5.5 のコンテキストウィンドウと料金
-</h4>
+#### Haiku 5.5 のコンテキストウィンドウと料金
 
 Anthropic API では、Haiku 5.5 はすべてのプランで 1M コンテキストウィンドウで動作し、選択する `[1m]` サフィックスはありません。モデル ID は `claude-haiku-5-5` です。使用するには、セッション内で `/model claude-haiku-5-5` を実行するか、シェルから `claude --model claude-haiku-5-5` で Claude Code を起動します。
 
@@ -852,22 +762,22 @@ Haiku 5.5 のリクエストは、プロンプトが 100K トークンを超え�
 
 セッションはデフォルトで約 967K トークンで自動圧縮されます。より早く圧縮するには、モデルに[より小さい自動圧縮ウィンドウを設定](#set-the-auto-compact-window)してください。
 
-<h2 id="context-window-and-auto-compaction">
-  コンテキストウィンドウと自動圧縮
-</h2>
+## コンテキストウィンドウと自動圧縮
 
 自動圧縮ウィンドウとは、Claude Code が会話を圧縮する前にコンテキストウィンドウがどこまで埋まってよいかを示すものです。各メカニズムでコンテキスト圧縮が何を保持し何を破棄するかについては、[コンテキスト圧縮後に残るもの](/docs/ja/context-window#what-survives-compaction)を参照してください。
 
-<h3 id="set-the-auto-compact-window">
-  自動圧縮ウィンドウを設定する
-</h3>
+### 自動圧縮ウィンドウを設定する
+
+> [!NOTE]
+>
+> Claude Code が `CLAUDE_CODE_AUTO_COMPACT_WINDOW` の値について警告した場合は、[この変数の値と警告](#claude_code_auto_compact_window-values)を参照してください。
 
 自動圧縮ウィンドウは次の場所で設定できます。
 
 * **現在のモデルについて、現在のセッションとそれ以降のセッション**：`/autocompact 500k` のように、値を指定して `/autocompact` を実行します。Claude Code はこの値をユーザー設定の [`modelSettings`](/docs/ja/settings-reference#modelsettings) に現在のモデル用として保存し、現在のセッションに適用します。管理設定など、より優先順位の高い[設定スコープ](/docs/ja/settings#settings-precedence)がそのモデルまたはすべてのモデルに対して独自のウィンドウを設定している場合、コマンドは値を保存しますが、セッションではそのスコープのウィンドウが維持され、コマンドはその旨を表示します。使用中のモデル向けに調整されたウィンドウに戻すには、`/autocompact auto` を実行します。v2.1.288 より前は、このコマンドはすべてのモデルに共通の 1 つのウィンドウを、トップレベルの `autoCompactWindow` として保存していました。
 * **すべてのモデル**：設定ファイルで [`autoCompactWindow`](/docs/ja/settings-reference#autocompactwindow) を設定します（例：`~/.claude/settings.json` に `"autoCompactWindow": 200000` を記述）。`/autocompact` でモデルごとに保存したウィンドウは、そのモデルについては同じファイル内のこのキーよりも優先されます。
 * **1 回の起動のみ**：Claude Code の起動時に [`--autocompact`](/docs/ja/cli-reference#cli-flags) を渡します。このフラグは、保存済みの設定を変更することなく、その起動に限って設定を上書きします。また、`claude --autocompact auto` を実行すると、保存済みの設定に値があっても、調整済みのウィンドウでセッションが実行されます。`/autocompact` とは異なり、このフラグは管理設定など、より優先順位の高い設定スコープによって無効化されることはありません。
-* **スクリプトおよびクラウド環境**：[`CLAUDE_CODE_AUTO_COMPACT_WINDOW`](/docs/ja/env-vars) を設定します。この環境変数が設定されている間は、コマンド、フラグ、設定よりも優先され、`/autocompact` はウィンドウを変更する代わりに上書きされていることを報告します。
+* **スクリプトおよびクラウド環境**：[`CLAUDE_CODE_AUTO_COMPACT_WINDOW`](/docs/ja/env-vars) に `200000` などのトークン数を設定します。Claude Code が[値を無視する](#claude_code_auto_compact_window-values)場合を除き、この変数はコマンド、フラグ、`autoCompactWindow` 設定よりも優先されます。その場合、`/autocompact` は値を保存せずに上書きされていることを報告します。ステータスラインの `used_percentage` はモデルのコンテキストウィンドウ全体を基準に計測されるため、この変数が設定されている間は、その割合はコンテキスト圧縮が実行されるタイミングを示しません。
 * **1 つのサブエージェントのみ**：[1 つのサブエージェントの自動圧縮ウィンドウを設定する](/docs/ja/sub-agents#subagent-auto-compact-window)を参照してください。
 
 コマンドとフラグには、100K から 1M トークンまでのウィンドウサイズを次のいずれかの形式で指定できます。
@@ -876,11 +786,23 @@ Haiku 5.5 のリクエストは、プロンプトが 100K トークンを超え�
 * `500k` や `1M` のような `k` または `M` の接尾辞付きの値
 * 100 から 1000 までの数値のみ（千単位を意味し、`200` は 200,000 に設定されます）
 
-環境変数には単純なトークン数のみを指定できます。Claude Code は、ウィンドウの上限をモデルのコンテキストウィンドウに制限します。
+どの方法でウィンドウを設定しても、Claude Code はウィンドウの上限をモデルのコンテキストウィンドウに制限します。
 
-<h3 id="default-auto-compact-thresholds">
-  デフォルトの自動圧縮のしきい値
-</h3>
+#### `CLAUDE_CODE_AUTO_COMPACT_WINDOW` の値と警告
+
+`CLAUDE_CODE_AUTO_COMPACT_WINDOW` の値を引用した警告は、その値が 100,000 から 1,000,000 の範囲外であるか、トークン数ではないことを意味します。警告を止めるには、`CLAUDE_CODE_AUTO_COMPACT_WINDOW=200000` のように、この範囲内の数値を設定してください。Claude Code v2.1.304 以降では、`200k` や `1M` のように、千を表す `k` または百万を表す `M` を付けて数値を記述することもできます。
+
+表示された警告の文言を最初の列で探し、同じ行でセッションが使用するウィンドウと変更すべき内容を確認してください。
+
+| 警告に含まれる文言 | セッションが使用するウィンドウ | 変更する内容 |
+| :- | :- | :- |
+| `reads as <N> tokens, so Claude Code treats it as the 100k minimum` | 100,000 トークンとモデルのコンテキストウィンドウのうち小さい方 | `200000` など `100000` 以上の値を設定します。`200` を千単位のつもりで指定した場合は `200k` を設定します |
+| `is too large, so Claude Code treats it as the 1M maximum` | 1,000,000 トークンとモデルのコンテキストウィンドウのうち小さい方 | すでに最大のウィンドウになっています。警告を止めるには、`1M` または `1000000` を設定します |
+| `isn't a usable size, so Claude Code ignores it` | `--autocompact`、`/autocompact`、`autoCompactWindow` で指定したウィンドウ。いずれも設定されていない場合は[デフォルト](#default-auto-compact-thresholds) | `200000` などの数値を設定するか、変数の設定を解除します |
+
+接尾辞のない数値はそのままのトークン数として読み取られるため、`/autocompact 200` は 200,000 を意味するのに対し、`CLAUDE_CODE_AUTO_COMPACT_WINDOW=200` は 200 トークンを意味します。
+
+### デフォルトの自動圧縮のしきい値
 
 自動圧縮ウィンドウを設定していない場合、Claude Code は会話がモデルのコンテキスト上限に達した時点で圧縮します。ただし、次のセッションは例外です。
 
@@ -892,9 +814,7 @@ Haiku 5.5 のリクエストは、プロンプトが 100K トークンを超え�
 
 会話をアイドル状態のまま放置した場合にも Claude Code が圧縮するタイミングについては、[`idleCompaction`](/docs/ja/settings-reference#idlecompaction) 設定を参照してください。
 
-<h3 id="correct-the-window-for-a-gateway-or-custom-model-id">
-  ゲートウェイまたはカスタムモデル ID のウィンドウを修正する
-</h3>
+### ゲートウェイまたはカスタムモデル ID のウィンドウを修正する
 
 次の起動時の警告のいずれかが表示された場合、Claude Code はセッションのモデル ID を認識していないため、そのモデルのコンテキストウィンドウを判別できず、200K トークンを想定しています。
 
@@ -912,9 +832,7 @@ Claude Code は想定した 200K で会話を[自動圧縮](#default-auto-compac
 
 Claude Code が ID を認識するか、指定したウィンドウを使用するようになると、その ID でセッションを開始しても警告は表示されなくなります。
 
-<h4 id="which-ids-claude_code_max_context_tokens-applies-to">
-  `CLAUDE_CODE_MAX_CONTEXT_TOKENS` が適用される ID
-</h4>
+#### `CLAUDE_CODE_MAX_CONTEXT_TOKENS` が適用される ID
 
 [LLM ゲートウェイ](/docs/ja/llm-gateway)やその他のカスタムデプロイでは、Claude Code がその ID を Claude モデルに解決するかどうかにかかわらず、モデル ID に対してモデルの実際のウィンドウとは異なるコンテキストウィンドウを想定することがあります。Claude Code が代わりに想定すべきウィンドウを [`CLAUDE_CODE_MAX_CONTEXT_TOKENS`](/docs/ja/env-vars) に設定してください。
 
@@ -932,18 +850,14 @@ Claude Code が ID を認識するか、指定したウィンドウを使用す�
 
 Claude Code が認識できないモデル ID の場合、[`CLAUDE_CODE_DISABLE_UNKNOWN_MODEL_WINDOW_ENFORCEMENT=1`](/docs/ja/env-vars) を設定すると、API が [Claude Code の認識する長すぎるエラー](/docs/ja/errors#prompt-is-too-long)で会話を拒否した後にのみ、Claude Code が圧縮するようになります。ゲートウェイがエラーを Claude Code の認識できない文言に[書き換える](/docs/ja/llm-gateway-connect#troubleshoot-gateway-errors)場合、Claude Code はこの復旧処理を実行しません。
 
-<h2 id="checking-your-current-model">
-  現在のモデルの確認
-</h2>
+## 現在のモデルの確認
 
 現在使用しているモデルは、2 つの場所で確認できます。
 
 * [ステータスライン](/docs/ja/statusline)内（設定されている場合）
 * `/status` 内。アカウント情報も表示されます。
 
-<h2 id="add-a-custom-model-option">
-  カスタムモデルオプションを追加する
-</h2>
+## カスタムモデルオプションを追加する
 
 `ANTHROPIC_CUSTOM_MODEL_OPTION` を使用すると、組み込みのエイリアスを置き換えることなく、`/model` ピッカーにカスタムエントリを 1 つ追加できます。これは、Claude Code がデフォルトで一覧表示しないモデル ID をテストする場合に便利です。LLM ゲートウェイのデプロイでは、`CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY=1` が設定されていると、Claude Code はゲートウェイの `/v1/models` エンドポイントからピッカーに項目を取り込めます。そのため、この環境変数が必要になるのは、検出が無効になっている場合、または検出で目的のモデルが返されない場合のみです。[ゲートウェイのモデル検出](/docs/ja/llm-gateway-protocol#model-discovery)を参照してください。
 
@@ -970,9 +884,7 @@ Claude Code は `ANTHROPIC_CUSTOM_MODEL_OPTION` に設定されたモデル ID �
 
 `my-gateway/claude-opus-5-5` のようにファミリー名を含むカスタム ID は、そのファミリーの特定のエントリとして扱われ、そのファミリーのワイルドカードが無効になります。そのため、選択可能なままにしたいバージョンも併せて一覧に含めてください。[マージの動作](#merge-behavior)を参照してください。
 
-<h2 id="environment-variables">
-  環境変数
-</h2>
+## 環境変数
 
 エイリアスがマッピングされるモデル名を制御するには、次の環境変数を使用します。各値は完全なモデル名、または API プロバイダーにおける同等の識別子である必要があります。セッション開始時のモデルを選択するには、この表には記載されていない [`ANTHROPIC_DEFAULT_MODEL`](#set-a-default-model-for-new-sessions) を設定します。
 
@@ -989,9 +901,7 @@ Claude Code は `ANTHROPIC_CUSTOM_MODEL_OPTION` に設定されたモデル ID �
 注: `ANTHROPIC_SMALL_FAST_MODEL` は非推奨となり、
 `ANTHROPIC_DEFAULT_HAIKU_MODEL` に置き換えられました。
 
-<h3 id="pin-models-for-third-party-deployments">
-  サードパーティデプロイ向けのモデルの固定
-</h3>
+### サードパーティデプロイ向けのモデルの固定
 
 [Amazon Bedrock](/docs/ja/amazon-bedrock)、[Google Cloud's Agent Platform](/docs/ja/google-vertex-ai)、[Microsoft Foundry](/docs/ja/microsoft-foundry)、または [Claude Platform on AWS](/docs/ja/claude-platform-on-aws) を通じて Claude Code をデプロイする場合は、ユーザーに配布する前にモデルバージョンを固定してください。
 
@@ -999,9 +909,9 @@ Claude Code は `ANTHROPIC_CUSTOM_MODEL_OPTION` に設定されたモデル ID �
 
 Amazon Bedrock と Google Cloud's Agent Platform では、ユーザーが `--model`、`ANTHROPIC_MODEL`、または `model` 設定などで特定の Sonnet または Opus バージョンでセッションを開始すると、そのバージョンが対応するエイリアスのセッションのデフォルトとして固定されます。起動時チェックは置き換えられた組み込みのデフォルトをスキップし、フォールバック通知は表示されません。v2.1.211 より前は、セッションモデルが明示的に設定されていてもチェックが実行され、通知が表示されることがありました。
 
-<Warning>
-  初期セットアップの一環として、モデルの環境変数を特定のバージョン ID に設定してください。固定することで、ユーザーが新しいモデルに移行するタイミングを制御できます。
-</Warning>
+> [!WARNING]
+>
+> 初期セットアップの一環として、モデルの環境変数を特定のバージョン ID に設定してください。固定することで、ユーザーが新しいモデルに移行するタイミングを制御できます。
 
 プロバイダーに応じたバージョン固有のモデル ID を指定して、次の環境変数を使用します。
 
@@ -1029,15 +939,13 @@ export ANTHROPIC_DEFAULT_OPUS_MODEL='claude-opus-4-6[1m]'
 
 `ANTHROPIC_DEFAULT_*_MODEL` 変数を設定すると、`/model` ピッカーには、そのファミリーの組み込みの行（1M コンテキストの行を含む）の代わりに、そのモデルの行が 1 つ表示されます。その変数にサフィックスを追加せずに 1M ウィンドウを利用するには、ユーザーが `/model opus[1m]` を実行します。すると Claude Code は、変数で指定されたモデルにサフィックスを適用します。`/model sonnet[1m]` も同様に動作します。
 
-<Note>
-  [MDM または管理設定ファイル](/docs/ja/managed-settings#delivery-mechanisms)を通じて配布される `availableModels` 許可リストは、サードパーティプロバイダーを使用する場合でも適用されます。[サーバー管理設定はそこには配布されません](/docs/ja/server-managed-settings#platform-availability)。
+> [!NOTE]
+>
+> [MDM または管理設定ファイル](/docs/ja/managed-settings#delivery-mechanisms)を通じて配布される `availableModels` 許可リストは、サードパーティプロバイダーを使用する場合でも適用されます。[サーバー管理設定はそこには配布されません](/docs/ja/server-managed-settings#platform-availability)。
+>
+> フィルタリングは、`opus` などのモデルエイリアス、`claude-opus-4-8` などのバージョンプレフィックス、またはプロバイダー形式の完全なモデル ID に対して照合されます。`us.anthropic.` などのプロバイダー固有のプレフィックスは取り除かれないため、特定のモデルを許可するには、プロバイダー形式の完全な ID を記載するか、[`modelOverrides`](#override-model-ids-per-version) を通じてマッピングしてください。固定したモデルの場合、その ID は対応する `ANTHROPIC_DEFAULT_*_MODEL` 変数に設定した値です。照合の前に、許可リストのエントリと要求されたモデルの両方から `[1m]` サフィックスが取り除かれます。
 
-  フィルタリングは、`opus` などのモデルエイリアス、`claude-opus-4-8` などのバージョンプレフィックス、またはプロバイダー形式の完全なモデル ID に対して照合されます。`us.anthropic.` などのプロバイダー固有のプレフィックスは取り除かれないため、特定のモデルを許可するには、プロバイダー形式の完全な ID を記載するか、[`modelOverrides`](#override-model-ids-per-version) を通じてマッピングしてください。固定したモデルの場合、その ID は対応する `ANTHROPIC_DEFAULT_*_MODEL` 変数に設定した値です。照合の前に、許可リストのエントリと要求されたモデルの両方から `[1m]` サフィックスが取り除かれます。
-</Note>
-
-<h3 id="customize-pinned-model-display-and-capabilities">
-  固定モデルの表示と機能のカスタマイズ
-</h3>
+### 固定モデルの表示と機能のカスタマイズ
 
 サードパーティプロバイダーでモデルを固定すると、`/model` ピッカーのその行には、Claude Code が固定した ID を認識する場合はデフォルトでモデル名が表示され、認識しない場合は生の ID が表示されます。
 
@@ -1080,9 +988,7 @@ export ANTHROPIC_DEFAULT_OPUS_MODEL_DESCRIPTION='Opus 4.7 routed through a Bedro
 export ANTHROPIC_DEFAULT_OPUS_MODEL_SUPPORTED_CAPABILITIES='effort,xhigh_effort,max_effort,thinking,adaptive_thinking,interleaved_thinking'
 ```
 
-<h3 id="override-model-ids-per-version">
-  バージョンごとのモデル ID の上書き
-</h3>
+### バージョンごとのモデル ID の上書き
 
 Claude Code を組み込み、[`CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST`](/docs/ja/env-vars) を設定しているプラットフォームでは、ホストのモデル設定が管理設定のモデル設定より優先されます。一方、管理設定の `availableModels` 許可リストは、ホストが独自のものを提供しない限り引き続き有効です。ホストがどのキーと変数を上書きするかについては、[管理設定の優先順位の例外](/docs/ja/settings#exceptions-to-managed-settings-precedence)を参照してください。
 
@@ -1116,9 +1022,7 @@ Claude Code を組み込み、[`CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST`](/docs/ja/
 
 [管理設定](/docs/ja/managed-settings)で `availableModels` が設定されている場合、`--model` または上記の環境変数を通じて直接渡された Anthropic モデル ID には、管理設定の `modelOverrides` のみが適用されます。Claude Code はそれらの ID に対するユーザー設定やプロジェクト設定の上書きを無視し、管理リストで除外された ID は、どの設定ソースの `modelOverrides` を通じても解決しません。この管理ソースの制限には Claude Code v2.1.200 以降が必要です。ブロックされた ID の扱いについては、[モデル選択の制限](#restrict-model-selection)を参照してください。
 
-<h3 id="prompt-caching-configuration">
-  プロンプトキャッシュの設定
-</h3>
+### プロンプトキャッシュの設定
 
 Claude Code は、パフォーマンスを最適化しコストを削減するために、自動的に[プロンプトキャッシュ](/docs/ja/prompt-caching)を使用します。プロンプトキャッシュは、グローバルに、または特定のモデル階層ごとに無効にできます。
 
@@ -1132,9 +1036,7 @@ Claude Code は、パフォーマンスを最適化しコストを削減する�
 
 メインの会話とサブエージェントのキャッシュ TTL を個別に選択するには、[TTL を自分で選択する](/docs/ja/prompt-caching#choose-the-ttl-yourself)を参照してください。キャッシュミスが発生する原因については、[Claude Code がプロンプトキャッシュを使用する方法](/docs/ja/prompt-caching)を参照してください。
 
-<h2 id="version-history">
-  バージョン履歴
-</h2>
+## バージョン履歴
 
 この表は、各モデルエイリアスの解決先モデルが変更された Claude Code のバージョンを、新しい順に示しています。
 

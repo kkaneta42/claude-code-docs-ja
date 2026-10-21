@@ -10,9 +10,7 @@ Claude Code CLI でプロンプトを入力する代わりに、話して入力�
 
 [ホールドモード](#hold-to-record) では、ディクテーション機能は [エージェントビュー](/docs/ja/agent-view#peek-and-reply) でも機能します。dispatch 入力またはピークパネルの返信がフォーカスされている間にプッシュトークキーを長押しすると、バックグラウンドセッションにディクテーションを行うことができます。
 
-<h2 id="requirements">
-  要件
-</h2>
+## 要件
 
 音声ディクテーションは、記録された音声を Anthropic のサーバーにストリーミングして文字起こしします。音声はローカルで処理されません。以下のすべてが必要です。
 
@@ -26,9 +24,7 @@ Claude Code CLI でプロンプトを入力する代わりに、話して入力�
 
 Claude Code [VS Code 拡張機能](/docs/ja/vs-code)も、同じ Claude.ai アカウント要件で音声ディクテーションをサポートしています。マイクはローカル マシンにあり、拡張機能はリモート ホストで実行されるため、SSH、Dev Containers、Codespaces などの VS Code Remote セッションでは利用できません。
 
-<h2 id="enable-voice-dictation">
-  音声ディクテーションを有効にする
-</h2>
+## 音声ディクテーションを有効にする
 
 `/voice` を実行して音声ディクテーションを有効にします。有効にすると、Claude Code はマイク チェックを実行します。macOS では、ターミナルにマイク権限がまだ付与されていない場合、システム マイク権限プロンプトがトリガーされます。
 
@@ -61,9 +57,7 @@ Voice mode enabled (hold). Hold space to record. Dictation language: en (/config
 
 文字起こしは両方のモードでコーディング語彙用に調整されています。`regex`、`OAuth`、`JSON`、`localhost` などの一般的な開発用語は正しく認識され、現在のプロジェクト名と git ブランチ名は認識ヒントとして自動的に追加されます。
 
-<h2 id="hold-to-record">
-  長押しして録音
-</h2>
+## 長押しして録音
 
 長押しモードはプッシュツートーク機能です。キーを押している間は録音が実行され、キーを離すと停止します。これはデフォルト モードです。
 
@@ -73,9 +67,9 @@ Voice mode enabled (hold). Hold space to record. Dictation language: en (/config
 
 `Space` を長押しまたはタップして音声入力を開始するのは、キープレスがプロンプトに入力される場所のみです。[トランスクリプト ビューアー](/docs/ja/interactive-mode#transcript-viewer)では、`Space` は会話をページングし、[vim モード](/docs/ja/interactive-mode#vim-editor-mode)の INSERT 外では コマンドです。[修飾子の組み合わせにリバインド](#rebind-the-dictation-key)（`meta+k` など）は テキストを入力しないため、これらの場所からも音声入力を開始します。
 
-<Tip>
-  ウォームアップをスキップするには、`/voice tap` で[タップモード](#tap-to-record-and-send)に切り替えるか、`meta+k` などの[修飾子の組み合わせにリバインド](#rebind-the-dictation-key)してください。修飾子の組み合わせは最初のキープレスで録音を開始します。
-</Tip>
+> [!TIP]
+>
+> ウォームアップをスキップするには、`/voice tap` で[タップモード](#tap-to-record-and-send)に切り替えるか、`meta+k` などの[修飾子の組み合わせにリバインド](#rebind-the-dictation-key)してください。修飾子の組み合わせは最初のキープレスで録音を開始します。
 
 音声はプロンプトに話すときに表示され、文字起こしが確定されるまで薄く表示されます。`Space` を離して録音を停止し、テキストを確定します。文字起こしはカーソル位置に挿入され、カーソルは挿入されたテキストの末尾に留まるため、任意の順序で入力と音声ディクテーションを混在させることができます。`Space` を再度長押しして別の録音を追加するか、カーソルを最初に移動して、プロンプト内の別の場所に音声を挿入します。
 
@@ -87,9 +81,7 @@ Voice mode enabled (hold). Hold space to record. Dictation language: en (/config
 
 デフォルトでは、キーを離すと文字起こしが挿入され、`Enter` を押すのを待ちます。`voice` 設定オブジェクトで `"autoSubmit": true` を設定して、文字起こしが少なくとも 3 語以上の場合、キーを離すときにプロンプトを自動的に送信します。
 
-<h2 id="tap-to-record-and-send">
-  タップして録音して送信
-</h2>
+## タップして録音して送信
 
 タップモードは単一のキープレスで録音を切り替えます。1 回タップして開始し、話してから、もう 1 回タップしてプロンプトを送信します。ウォームアップはなく、キーを押し続ける必要はありません。
 
@@ -101,9 +93,7 @@ Claude Code は文字起こしを挿入し、文字起こしが少なくとも 3
 
 最初のタップはプロンプト入力が空の場合にのみ録音を開始するため、メッセージを作成しながら通常どおりスペースを入力できます。2 番目のタップは入力内容に関係なく録音を停止します。15 秒以上の無音または 2 分間の合計の後、録音も自動的に停止します。
 
-<h2 id="cancel-a-recording">
-  録音をキャンセルする
-</h2>
+## 録音をキャンセルする
 
 `Esc` キーまたは `Ctrl+C` キーを押して、ディクテーションを確定する代わりにキャンセルできます。Claude Code はマイクを停止し、トランスクリプトを破棄し、プロンプトを録音開始前の状態に復元します。
 
@@ -111,36 +101,34 @@ Claude Code は文字起こしを挿入し、文字起こしが少なくとも 3
 
 どちらのキーもキャンセルを実行する以外の処理は行いません。`Esc` は Claude の応答を中断しませんし、`Ctrl+C` はプロンプトをクリアしたり、[Claude Code を終了する 2 回のプレスの最初のプレス](/docs/ja/interactive-mode#general-controls)としてカウントされません。
 
-<h2 id="change-the-dictation-language">
-  音声ディクテーション言語を変更する
-</h2>
+## 音声ディクテーション言語を変更する
 
 音声ディクテーションは、Claude の応答言語を制御する同じ [`language` 設定](/docs/ja/settings-reference#language)を使用します。その設定が空の場合、音声ディクテーションはデフォルトで英語になります。VS Code 拡張機能では、`language` が空の場合、音声ディクテーションは VS Code の `accessibility.voice.speechLanguage` 設定を使用してから、デフォルトで英語になります。
 
-<Accordion title="サポートされている音声ディクテーション言語">
-  | 言語 | コード |
-  | :- | :- |
-  | チェコ語 | `cs` |
-  | デンマーク語 | `da` |
-  | オランダ語 | `nl` |
-  | 英語 | `en` |
-  | フランス語 | `fr` |
-  | ドイツ語 | `de` |
-  | ギリシャ語 | `el` |
-  | ヒンディー語 | `hi` |
-  | インドネシア語 | `id` |
-  | イタリア語 | `it` |
-  | 日本語 | `ja` |
-  | 韓国語 | `ko` |
-  | ノルウェー語 | `no` |
-  | ポーランド語 | `pl` |
-  | ポルトガル語 | `pt` |
-  | ロシア語 | `ru` |
-  | スペイン語 | `es` |
-  | スウェーデン語 | `sv` |
-  | トルコ語 | `tr` |
-  | ウクライナ語 | `uk` |
-</Accordion>
+> **サポートされている音声ディクテーション言語**
+>
+> | 言語 | コード |
+> | :- | :- |
+> | チェコ語 | `cs` |
+> | デンマーク語 | `da` |
+> | オランダ語 | `nl` |
+> | 英語 | `en` |
+> | フランス語 | `fr` |
+> | ドイツ語 | `de` |
+> | ギリシャ語 | `el` |
+> | ヒンディー語 | `hi` |
+> | インドネシア語 | `id` |
+> | イタリア語 | `it` |
+> | 日本語 | `ja` |
+> | 韓国語 | `ko` |
+> | ノルウェー語 | `no` |
+> | ポーランド語 | `pl` |
+> | ポルトガル語 | `pt` |
+> | ロシア語 | `ru` |
+> | スペイン語 | `es` |
+> | スウェーデン語 | `sv` |
+> | トルコ語 | `tr` |
+> | ウクライナ語 | `uk` |
 
 `/config` で言語を設定するか、設定で直接設定します。[BCP 47 言語コード](https://en.wikipedia.org/wiki/IETF_language_tag)または言語名のいずれかを使用できます。
 
@@ -152,9 +140,7 @@ Claude Code は文字起こしを挿入し、文字起こしが少なくとも 3
 
 `language` 設定がサポートされているリストにない場合、`/voice` は有効化時に警告を表示し、音声ディクテーションの場合は英語にフォールバックします。Claude のテキスト応答はこのフォールバックの影響を受けません。
 
-<h2 id="rebind-the-dictation-key">
-  音声ディクテーション キーをリバインドする
-</h2>
+## 音声ディクテーション キーをリバインドする
 
 音声ディクテーション キーは `Chat` コンテキストの `voice:pushToTalk` にバインドされ、デフォルトは `Space` です。同じバインディングは長押しモードとタップモードの両方を制御します。[`~/.claude/keybindings.json`](/docs/ja/keybindings)でリバインドします。
 
@@ -178,9 +164,7 @@ Claude Code は文字起こしを挿入し、文字起こしが少なくとも 3
 
 一部のキーはターミナル アプリケーションに配信されず、まったくバインドできません。たとえば、`Caps Lock` をバインドしようとするとエラーが表示されます。完全なキーバインディング構文と予約済みショートカットのリストについては、[キーボード ショートカットをカスタマイズする](/docs/ja/keybindings)を参照してください。
 
-<h2 id="troubleshooting">
-  トラブルシューティング
-</h2>
+## トラブルシューティング
 
 音声ディクテーションが起動または記録されない場合の一般的な問題：
 
@@ -200,33 +184,27 @@ Claude Code は文字起こしを挿入し、文字起こしが少なくとも 3
 * **`No speech detected`**：オーディオは文字起こしサービスに到達しましたが、単語は認識されませんでした。マイクに近づいて話し、背景ノイズを減らし、[ディクテーション言語](#change-the-dictation-language) が話している言語と一致することを確認してください。
 * **文字起こしが乱れているか、言語が間違っている**：ディクテーションはデフォルトで英語です。別の言語でディクテーションしている場合は、最初に `/config` で設定してください。[ディクテーション言語を変更する](#change-the-dictation-language) を参照してください。
 
-<h3 id="terminal-not-listed-in-macos-microphone-settings">
-  Terminal not listed in macOS Microphone settings
-</h3>
+### Terminal not listed in macOS Microphone settings
 
 ターミナルアプリがシステム設定 → プライバシーとセキュリティ → マイク に表示されない場合、有効にできるトグルはありません。ターミナルの権限状態をリセットして、次の `/voice` 実行が新しい macOS 権限プロンプトをトリガーするようにしてください。
 
-<Steps>
-  <Step title="Reset the microphone permission for your terminal">
-    `tccutil reset Microphone <bundle-id>` を実行します。`<bundle-id>` をターミナルの識別子に置き換えてください：組み込みターミナルの場合は `com.apple.Terminal`、iTerm2 の場合は `com.googlecode.iterm2`。その他のターミナルの場合は、`osascript -e 'id of app "AppName"'` で識別子を調べてください。
+**1. Reset the microphone permission for your terminal**
 
-    <Warning>
-      バンドル ID なしで `tccutil reset Microphone` を実行できますが、Mac 上のすべてのアプリ（Zoom や Slack などのアプリを含む）からマイクアクセスを取り消します。各アプリは次の使用時にアクセスを再度リクエストする必要があるため、アクティブな通話中に実行しないでください。
-    </Warning>
-  </Step>
+`tccutil reset Microphone <bundle-id>` を実行します。`<bundle-id>` をターミナルの識別子に置き換えてください：組み込みターミナルの場合は `com.apple.Terminal`、iTerm2 の場合は `com.googlecode.iterm2`。その他のターミナルの場合は、`osascript -e 'id of app "AppName"'` で識別子を調べてください。
 
-  <Step title="Quit and relaunch your terminal">
-    macOS は既に実行中のプロセスに再度プロンプトを表示しません。ウィンドウを閉じるだけでなく、Cmd+Q でターミナルアプリを終了してから、再度開いてください。
-  </Step>
+> [!WARNING]
+>
+> バンドル ID なしで `tccutil reset Microphone` を実行できますが、Mac 上のすべてのアプリ（Zoom や Slack などのアプリを含む）からマイクアクセスを取り消します。各アプリは次の使用時にアクセスを再度リクエストする必要があるため、アクティブな通話中に実行しないでください。
 
-  <Step title="Trigger a fresh prompt">
-    Claude Code を起動して `/voice` を実行してください。macOS がマイクアクセスを求めます。許可してください。
-  </Step>
-</Steps>
+**2. Quit and relaunch your terminal**
 
-<h2 id="see-also">
-  関連項目
-</h2>
+macOS は既に実行中のプロセスに再度プロンプトを表示しません。ウィンドウを閉じるだけでなく、Cmd+Q でターミナルアプリを終了してから、再度開いてください。
+
+**3. Trigger a fresh prompt**
+
+Claude Code を起動して `/voice` を実行してください。macOS がマイクアクセスを求めます。許可してください。
+
+## 関連項目
 
 * [キーボード ショートカットをカスタマイズする](/docs/ja/keybindings): `voice:pushToTalk` および他の CLI キーボード アクションをリバインドする
 * [すべての設定](/docs/ja/settings-reference#voice): `voice`、`language`、およびその他の設定キー

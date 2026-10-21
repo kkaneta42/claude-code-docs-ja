@@ -18,13 +18,11 @@ evals を使用して以下を実行します。
 
 このページはプラグインとスキル作成者向けで、動作するプラグインがあり、その動作をテストしたい場合、および CI でプラグイン変更をゲートするチーム向けです。Claude Code 会話内で 1 つのスキルを反復処理する場合、[skill-creator プラグイン](/docs/ja/skills#run-evals-with-skill-creator) は独自の `evals/evals.json` 形式で同様の比較を実行し、どちらのツールも他方のケースファイルを読み込みません。プラグインを作成するには [プラグインを作成する](/docs/ja/plugins/create) を参照してください。プラグインの動作ではなく構文とスキーマエラーをチェックするには、[`claude plugin validate`](/docs/ja/plugins/cli-reference#plugin-validate) を使用します。
 
-<Note>
-  すべての eval 実行とすべてのジャッジグレーダーは、アカウント上の実際のモデル呼び出しで、プランの使用量または API 請求に対してカウントされます。そのため、最初に [要件](#requirements) を確認してください。その後、[最初の eval スイートを作成](#create-your-first-eval-suite) するか、既にスイートがある場合は [CI で evals を実行](#run-evals-in-ci) に進んでください。
-</Note>
+> [!NOTE]
+>
+> すべての eval 実行とすべてのジャッジグレーダーは、アカウント上の実際のモデル呼び出しで、プランの使用量または API 請求に対してカウントされます。そのため、最初に [要件](#requirements) を確認してください。その後、[最初の eval スイートを作成](#create-your-first-eval-suite) するか、既にスイートがある場合は [CI で evals を実行](#run-evals-in-ci) に進んでください。
 
-<h2 id="requirements">
-  要件
-</h2>
+## 要件
 
 プラグイン evals を実行するには、以下が必要です。
 
@@ -33,37 +31,27 @@ evals を使用して以下を実行します。
 * `plugin.json` または `.claude-plugin/plugin.json` マニフェストを含むプラグインディレクトリ、または [skills-directory プラグイン](/docs/ja/plugins/loading#plugins-shared-through-a-repository)。
 * 通常の Claude Code セッションで使用するのと同じ認証とモデルプロバイダー。Eval 実行、judge-scored graders、および `claude plugin eval init` はユーザーの認証情報でモデルを呼び出すため、プランの使用制限または API 請求に対してカウントされます。コマンドがコストを報告する場合、その数値はそれらの呼び出しの [定価見積もり](/docs/ja/costs) です。Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry で Claude Code を実行している場合は、通常のセッションと同じプロバイダー変数をエクスポートするシェルからスイートを実行してください。[`env` フィールド](#prompt-md-fields) で説明されているとおり、各実行はそのシェルからこれらの変数を継承するためです。
 
-<h2 id="how-an-eval-run-works">
-  eval 実行の仕組み
-</h2>
+## eval 実行の仕組み
 
 eval スイートはプラグイン内の `evals/` というディレクトリに存在し、[ケースを作成して改善する](#write-and-refine-cases) に示すようにレイアウトされます。各ケースは [プロンプト](#set-run-limits-and-tools-in-prompt-md) と 1 つ以上の [グレーダー](#grade-the-result) を含む独自のサブディレクトリです。プロンプトは、プラグインを使用している人が入力するようなもので、そのスキルの 1 つが処理すべきリクエストなどです。
 
-<h3 id="what-happens-in-a-run">
-  実行中に何が起こるか
-</h3>
+### 実行中に何が起こるか
 
 ケースの各実行について、Claude Code は新しい [分離された](#how-runs-are-isolated) [非対話型セッション](/docs/ja/headless) を開始し、プラグインのみをロードし、プロンプトを送信し、Claude が完了するか、ケースのターン制限または時間制限に達するまで動作させます。その後、各グレーダーは最終的な返信、トランスクリプト、または Claude が作成したファイルをチェックし、合格または不合格を判定します。
 
-<h3 id="how-a-case-is-scored">
-  ケースのスコア化方法
-</h3>
+### ケースのスコア化方法
 
 非決定論的なエージェントの 1 回の実行では、ほとんど情報が得られないため、各ケースはデフォルトで 3 回実行されます。実行のスコアは、重み付けを設定した場合は重み付けされた、合格したグレーダーの割合であり、ケースのスコアは実行全体の平均です。ケースは、そのスコアが [`--threshold`](#command-options)（デフォルトは `1.0`）を満たすときに合格します。
 
 モデル呼び出しでは、スイートはおおよそ cases × runs のエージェント実行をプラグインで行い、[プラグインなしベースライン](#the-no-plugin-baseline) でも同じ数だけ行い、さらに実行ごとに `llm` または `baseline` グレーダーごとに 3 つの短いジャッジ呼び出しを行います。
 
-<h3 id="the-no-plugin-baseline">
-  プラグインなしベースライン
-</h3>
+### プラグインなしベースライン
 
 プラグインなしでも Claude が同じくらい上手くいく可能性があるため、単独のスコアが高いだけではプラグインが役に立ったことを示しません。この 2 つを分離するために、各ケースの実行はプラグインをロードせずに繰り返され、2 つのスコア `WITH` と `W/OUT` が得られます。その差 `Δ` は、プラグインが貢献したものです。ケースがプラグインの有無にかかわらず 1.0 でスコアされた場合、プラグインはそれが合格した理由ではありません。
 
 2 つの実行セットは with-arm と without-arm と呼ばれます。[プラグインなしベースラインに対してスコアを付ける](#compare-against-a-no-plugin-baseline) では、どのケースが with-arm のみを実行するか、およびグレーダーが 2 つの arm にわたってどのようにスコア化されるかについて説明します。
 
-<h2 id="create-your-first-eval-suite">
-  最初の eval スイートを作成する
-</h2>
+## 最初の eval スイートを作成する
 
 このチュートリアルは、独自のプラグイン用に 1 つのケースを作成し、実行し、結果を読みます。開始する前に、以下があることを確認してください。
 
@@ -71,70 +59,66 @@ eval スイートはプラグイン内の `evals/` というディレクトリ�
 * プラグインのルートディレクトリで開いているターミナル（`plugin.json` または `.claude-plugin/plugin.json` を含むディレクトリ）
 * テストしたいプラグイン内の 1 つのスキルと、ユーザーが入力すべきリクエスト（それがスキルをトリガーすべき）
 
-<Steps>
-  <Step title="ケースを作成する">
-    プラグインルートから、以下を実行します。
+**1. ケースを作成する**
 
-    ```bash theme={null}
-    claude plugin eval init
-    ```
+プラグインルートから、以下を実行します。
 
-    Claude Code がこのディレクトリをまだ信頼していない場合、最初に `Trust this plugin directory?` と尋ねます。`y` で答えてください。
+```bash theme={null}
+claude plugin eval init
+```
 
-    その後、対話型 Claude Code セッションが開きます。Claude はプラグインを読み、良い結果がどのようなものかを尋ね、プラグインをトリガーすべき、またはトリガーすべきでないプロンプトを提案し、各プロンプト用のグレーダーを設計し、それらを試行として 1 回実行して動作を確認し、`evals/` の下にプロンプトごとに 1 つのケースディレクトリを作成します。各ディレクトリにはそのプロンプトに基づいた名前が付けられます。
+Claude Code がこのディレクトリをまだ信頼していない場合、最初に `Trust this plugin directory?` と尋ねます。`y` で答えてください。
 
-    Claude がスイートの準備ができたことを伝えたら、`/exit` または Ctrl+D でそのセッションを終了してシェルに戻ります。
+その後、対話型 Claude Code セッションが開きます。Claude はプラグインを読み、良い結果がどのようなものかを尋ね、プラグインをトリガーすべき、またはトリガーすべきでないプロンプトを提案し、各プロンプト用のグレーダーを設計し、それらを試行として 1 回実行して動作を確認し、`evals/` の下にプロンプトごとに 1 つのケースディレクトリを作成します。各ディレクトリにはそのプロンプトに基づいた名前が付けられます。
 
-    プラグインルートで既に Claude Code セッションが開いている場合は、代わりにそこで Claude に `claude plugin eval init` を実行するよう依頼できます。Claude はコマンドを実行し、その会話で同じ質問をします。
+Claude がスイートの準備ができたことを伝えたら、`/exit` または Ctrl+D でそのセッションを終了してシェルに戻ります。
 
-    ケースを自分で作成して、ファイルが正確に何を含むかを確認したい場合は、[ケースを手動で作成する](#write-a-case-manually) に従い、ここに戻ってそれを実行します。
-  </Step>
+プラグインルートで既に Claude Code セッションが開いている場合は、代わりにそこで Claude に `claude plugin eval init` を実行するよう依頼できます。Claude はコマンドを実行し、その会話で同じ質問をします。
 
-  <Step title="スイートを実行する">
-    プラグインルートのシェルに戻り、`evals/` の下のすべてのケースを実行します。
+ケースを自分で作成して、ファイルが正確に何を含むかを確認したい場合は、[ケースを手動で作成する](#write-a-case-manually) に従い、ここに戻ってそれを実行します。
 
-    ```bash theme={null}
-    claude plugin eval .
-    ```
+**2. スイートを実行する**
 
-    ステップ 1 でこのディレクトリを既に信頼しているため、実行はすぐに開始されます。代わりにケースを手動で作成した場合、実行は最初に `Trust this plugin directory? [y/N]` と尋ねます。`y` で答えてください。[実行がアクセスできるもの](#security) は、同意していることを説明します。
+プラグインルートのシェルに戻り、`evals/` の下のすべてのケースを実行します。
 
-    各ケースはプラグイン付きで 3 回、プラグインなしで 3 回実行されるため、1 つのケースは 6 回の実行です。各実行が完了すると、その実行のスコアと各グレーダーの判定を含む進捗行が出力されます。
-  </Step>
+```bash theme={null}
+claude plugin eval .
+```
 
-  <Step title="サマリーを読む">
-    スイートが完了すると、サマリーテーブルが表示され、その後にレポートの場所が表示されます。
+ステップ 1 でこのディレクトリを既に信頼しているため、実行はすぐに開始されます。代わりにケースを手動で作成した場合、実行は最初に `Trust this plugin directory? [y/N]` と尋ねます。`y` で答えてください。[実行がアクセスできるもの](#security) は、同意していることを説明します。
 
-    ```text theme={null}
-    CASE        WITH  W/OUT Δ      RUNS COST    NOTES
-    first-case  1.00  0.33  +0.67  6    $0.41
+各ケースはプラグイン付きで 3 回、プラグインなしで 3 回実行されるため、1 つのケースは 6 回の実行です。各実行が完了すると、その実行のスコアと各グレーダーの判定を含む進捗行が出力されます。
 
-    1 case(s) · mean Δ +0.67 · 74s · $0.41
-    Report: /Users/you/my-plugin/evals/results/2026-09-10T17-02-11-482Z/report.html
-    Published: https://claude.ai/... · keep local next time with --no-publish
-    ```
+**3. サマリーを読む**
 
-    `WITH` はプラグインをロードしたケースのスコア、`W/OUT` はロードしないでのスコア、正の `Δ` はプラグインがスコアを上げたことを意味します。`COST` はモデル呼び出しの定価見積もりで、`NOTES` は最も高い重みの失敗したグレーダーの説明、または with-arm の実行エラーを示します。
-  </Step>
+スイートが完了すると、サマリーテーブルが表示され、その後にレポートの場所が表示されます。
 
-  <Step title="レポートを開いて反復する">
-    `Published:` URL、または `Published:` 行が表示されない場合は `Report:` パスを開いて、すべての実行のすべてのグレーダーの判定と説明を確認し、`llm` グレーダーについてはジャッジの投票と判定した抜粋を確認します。`Published:` 行は、アカウントが [レポートを公開](#html-report) できる場合にのみ表示されます。
+```text theme={null}
+CASE        WITH  W/OUT Δ      RUNS COST    NOTES
+first-case  1.00  0.33  +0.67  6    $0.41
 
-    最初の一般的な発見は、ケースの `tool_used: Skill` グレーダーが失敗している `Δ` がほぼゼロで、Claude が自然な表現でスキルを選択していないことを意味します。スキルの [`description`](/docs/ja/skills#frontmatter-reference) を調整し、`claude plugin eval .` を再度実行し、比較します。
+1 case(s) · mean Δ +0.67 · 74s · $0.41
+Report: /Users/you/my-plugin/evals/results/2026-09-10T17-02-11-482Z/report.html
+Published: https://claude.ai/... · keep local next time with --no-publish
+```
 
-    実行回数を減らして 1 つのケースを反復するには、1 つの arm を 1 回実行します。1 回の実行はノイズが多いため、信頼する前にデフォルトの 3 回で変更を確認してください。1 つの arm では、テーブルは `WITH`、`W/OUT`、`Δ` の列の代わりに `SCORE` と `PASS%` の列を表示します。
+`WITH` はプラグインをロードしたケースのスコア、`W/OUT` はロードしないでのスコア、正の `Δ` はプラグインがスコアを上げたことを意味します。`COST` はモデル呼び出しの定価見積もりで、`NOTES` は最も高い重みの失敗したグレーダーの説明、または with-arm の実行エラーを示します。
 
-    ```bash theme={null}
-    claude plugin eval . --case <case-name> --runs 1 --ablation none
-    ```
+**4. レポートを開いて反復する**
 
-    `<case-name>` を `evals/` の下のディレクトリ名の 1 つに置き換えます。
-  </Step>
-</Steps>
+`Published:` URL、または `Published:` 行が表示されない場合は `Report:` パスを開いて、すべての実行のすべてのグレーダーの判定と説明を確認し、`llm` グレーダーについてはジャッジの投票と判定した抜粋を確認します。`Published:` 行は、アカウントが [レポートを公開](#html-report) できる場合にのみ表示されます。
 
-<h2 id="write-and-refine-cases">
-  ケースを作成して改善する
-</h2>
+最初の一般的な発見は、ケースの `tool_used: Skill` グレーダーが失敗している `Δ` がほぼゼロで、Claude が自然な表現でスキルを選択していないことを意味します。スキルの [`description`](/docs/ja/skills#frontmatter-reference) を調整し、`claude plugin eval .` を再度実行し、比較します。
+
+実行回数を減らして 1 つのケースを反復するには、1 つの arm を 1 回実行します。1 回の実行はノイズが多いため、信頼する前にデフォルトの 3 回で変更を確認してください。1 つの arm では、テーブルは `WITH`、`W/OUT`、`Δ` の列の代わりに `SCORE` と `PASS%` の列を表示します。
+
+```bash theme={null}
+claude plugin eval . --case <case-name> --runs 1 --ablation none
+```
+
+`<case-name>` を `evals/` の下のディレクトリ名の 1 つに置き換えます。
+
+## ケースを作成して改善する
 
 `claude plugin eval init` が作成するケースは、開いて変更し、追加できるプレーンファイルです。ケースはプラグインの eval ディレクトリの下のディレクトリで、`prompt.md`、`case.yaml`、またはその両方を含みます。グレーダーのないケースは読み込みに失敗するため、各ケースには `graders/<name>.md` ファイルまたは `case.yaml` の `graders:` エントリとして、少なくとも 1 つのグレーダーを付与してください。ケースをグループ化するには、それ自体がケースではないディレクトリの下にネストします。`graders/` やフィクスチャファイルなど、ケースディレクトリ内のすべてはそのケースに属します。
 
@@ -156,9 +140,7 @@ my-plugin/
     └── results/               # written by each run; add to .gitignore
 ```
 
-<h3 id="write-a-case-manually">
-  ケースを手動で作成する
-</h3>
+### ケースを手動で作成する
 
 Claude にケースを `claude plugin eval init` で作成させることが推奨パスです。代わりに自分で作成するには、空のテンプレートから開始します。次のコマンドは、プレースホルダー `prompt.md` と 1 つのプレースホルダーグレーダーを含む `first-case` という名前のケースを作成し、何も実行しません。
 
@@ -215,17 +197,13 @@ input_match: '"skill"\s*:\s*"(?:[\w-]+:)?your-skill-name"'
 
 両方のファイルを保存したら、[クイックスタート](#create-your-first-eval-suite) が行うように、プラグインルートから `claude plugin eval .` でケースを実行します。
 
-<h3 id="set-run-limits-and-tools-in-prompt-md">
-  prompt.md で実行制限とツールを設定する
-</h3>
+### prompt.md で実行制限とツールを設定する
 
 `prompt.md` フロントマターでケースの `max_turns`、`timeout_seconds`、`model`、`tags`、および使用可能な `allowed_tools` を設定します。[prompt.md フロントマター](#prompt-md-fields) リファレンスはすべてのフィールドとそのデフォルトをリストします。
 
 Claude は本文を正確に作成したとおりに受け取ります。その中の `@path` メンションはファイル添付に展開されないため、Claude がファイルを読む必要がある場合は、`allowed_tools` でツールを付与します。
 
-<h3 id="grade-the-result">
-  グレーダーを選択して重み付けする
-</h3>
+### グレーダーを選択して重み付けする
 
 グレーダーのフロントマターはその `type` を設定し、オプションで実行のスコアでより多くをカウントする `weight` と、ベースラインに対してどのようにスコア化されるかを制御する [`arm`](#compare-against-a-no-plugin-baseline) を設定します。6 つのタイプのうち、`regex`、`tool_used`、`tool_order`、`file_exists` はトランスクリプトとファイルから計算され、コストはかかりませんが、`llm` と `baseline` はジャッジモデルを呼び出し、実行のコストに追加されます。
 
@@ -235,9 +213,7 @@ Claude は本文を正確に作成したとおりに受け取ります。その�
 
 デフォルトでは、`llm` および `baseline` グレーダーのジャッジは、Claude Code がバックグラウンドタスクに使用するモデルです。ジャッジを自分で選択するには、`--judge-model sonnet` または完全なモデル ID を渡します。
 
-<h4 id="choose-graders-that-give-a-stable-signal">
-  安定した信号を与えるグレーダーを選択する
-</h4>
+#### 安定した信号を与えるグレーダーを選択する
 
 `llm` グレーダーはモデルに判定を求めるため、その答えは実行間で異なる可能性があり、読む必要があるテキストが長いほど異なります。これらの習慣はスイートのスコアを十分に安定させて信頼できるようにします。
 
@@ -246,9 +222,7 @@ Claude は本文を正確に作成したとおりに受け取ります。その�
 * ケースの `tool_used: Skill` グレーダーが合格しているが `Δ` が負の場合、プラグインの前にジャッジを疑います。小さいジャッジモデルは、ルーブリックが説明する内容と異なる形式であるため、正しい答えを間違いとマークできます。`--judge-model sonnet` で再実行し、形式が判定を決定しないようにルーブリックを厳しくします。
 * ビルドまたはテストが実行内で合格したことを確認するには、プロンプトで Claude にそれを実行し、結果をファイルに書き込むよう依頼し、そのファイルをグレード化し、コマンドが `tool_used` グレーダーで実行されたことを主張します。その `input_match` はコマンドに名前を付けます。
 
-<h3 id="compare-against-a-no-plugin-baseline">
-  プラグインなしベースラインに対してスコア化する
-</h3>
+### プラグインなしベースラインに対してスコア化する
 
 プラグインがテスト対象の場合、ケースは通常 2 つの arm で実行されます。with-arm はプラグインをロードした実行で、without-arm はプラグインをまったくロードせずに同じ回数行う実行です。サマリーとレポートは両方のスコアと `Δ`（with-arm スコアから without-arm スコアを引いたもの）を表示します。
 
@@ -270,9 +244,7 @@ Claude は本文を正確に作成したとおりに受け取ります。その�
 * **`arm: both`**: グレーダーに `arm: both` を設定して、それに関わらず両方の arm でスコア化します。これは「スキルを呼び出してはいけない」チェックに `min: 0` と `max: 0` を使用する場合に必要です。
 * **`--ablation none`**: `--ablation none` の下では何も除外されないため、同じスイートは 2 つのモードで異なる絶対スコアを生成できます。
 
-<h3 id="use-a-different-eval-directory">
-  別の eval ディレクトリを使用する
-</h3>
+### 別の eval ディレクトリを使用する
 
 `evals/` が既に別のツールで使用されている場合は、スイートを別のディレクトリに保持します。プラグインの `plugin.json` にそのディレクトリを記録して、すべての実行とすべての共同作業者がそれを使用するようにするか、単一の実行のためにコマンドラインで渡すことができます。
 
@@ -281,15 +253,11 @@ Claude は本文を正確に作成したとおりに受け取ります。その�
 
 両方を設定した場合、フラグのディレクトリが使用されます。`qa` または `quality/evals` などのプレーンディレクトリ名の相対パスを指定します。絶対パスまたは `..` を含むパスは受け入れられません。フラグ値としてはエラーで、マニフェスト値として使用できない場合は `Warning:` 行が出力され、実行は `evals/` を使用します。ケース、結果、および `init` 出力はすべてそのディレクトリに移動します。
 
-<h2 id="set-up-fixtures-and-mocks">
-  フィクスチャとモックをセットアップする
-</h2>
+## フィクスチャとモックをセットアップする
 
 ケースはプロンプト以上のものが必要な場合があります。ワークスペース内のファイルまたは git リポジトリ、続行する以前の会話、またはプラグインが通信する MCP サーバーからの回答。これらのそれぞれはケースの横にセットアップされるため、実行は繰り返し可能なままです。
 
-<h3 id="add-setup-or-history-with-case-yaml">
-  ワークスペースまたは会話をシードする
-</h3>
+### ワークスペースまたは会話をシードする
 
 各実行は空のワークスペースで開始されます。ケースがプロンプト以上のものが必要な場合は、`context` ブロックを含む `case.yaml` を `prompt.md` の横に追加します。
 
@@ -312,9 +280,7 @@ context:
 
 スキャフォールドスクリプトは、小さな固定環境を持つ空のワークスペースで開始されます。この環境には、シェルの `PATH`、実行の一時ホームディレクトリに設定された `HOME`、`TMPDIR`、および `TERM=dumb` などのいくつかの定数が含まれます。シェルのそれ以外のものはスクリプトに渡されず、ケースの `EVAL_*` 変数も渡されません。スクリプトが 0 以外で終了するか、120 秒より長く実行された場合、その実行は `scaffold failed` エラーでスコア 0 になります。スクリプトが書き込むプロジェクト設定は[読み込まれない](#how-runs-are-isolated)ため、スクリプトはファイルと git の状態のためだけに使用してください。
 
-<h3 id="mock-mcp-servers">
-  MCP サーバーをモックする
-</h3>
+### MCP サーバーをモックする
 
 スキルが MCP ツールを呼び出すプラグインを評価できます。その背後にある実際のサービスなしで。スイート全体の場合は `evals/mocks/<server>/<tool>.md` の下に 1 つのツールごとに 1 つの Markdown ファイルを配置するか、1 つのケースの場合はケース独自の `mocks/` ディレクトリの下に配置します。`<server>` はプラグインの [MCP 設定](/docs/ja/plugins/components#mcp-servers) のサーバーの名前です。
 
@@ -348,23 +314,17 @@ Created issue #4821: {{input.title}}
 * **`--allow-real-servers`**: モックしていない各サーバーの実際のプロセスを開始し、モックしたツールには引き続きそれぞれのファイルから回答します。
 * **`--mocks off`**: `mocks/` を完全に無視し、プラグインが宣言するすべてのサーバーを開始します。
 
-<h4 id="replay-agent-mock-answers">
-  エージェントモック回答を再生する
-</h4>
+#### エージェントモック回答を再生する
 
 `type: agent` モックは [`--judge-model`](#command-options) への呼び出しで答えるため、その出力は実行間で異なり、ジャッジを変更すると変わります。実行がエラーまたは中止なしで完了すると、Claude Code はエージェントモックが返した各回答を、結果ディレクトリ内の `mock-recordings/` の下に保存します。
 
 そこにある `ADOPT.txt` を開くと、各記録と、その記録のコピー先となる `.replay/<server>/` ディレクトリ（記録を生成したモックの横）を確認できます。記録をそこにコピーした後は、以降の実行で同一の呼び出しに対してモデル呼び出しなしでその記録から回答します。`mocks/.replay/` を `mocks/` の残りと一緒にコミットして、CI 実行が繰り返し可能になるようにします。
 
-<h2 id="run-evals">
-  evals を実行する
-</h2>
+## evals を実行する
 
 スイートが存在すると、`claude plugin eval` はそれを実行します。ターゲット引数でどのプラグインとケースを実行するかを選択し、`--allow-tools` でケースが読み取り専用セット以上に必要とするツールを付与し、他のオプションで実行数、モデル、コスト、出力を制御します。
 
-<h3 id="choose-what-to-evaluate">
-  評価対象を選択する
-</h3>
+### 評価対象を選択する
 
 ほとんどの場合、プラグインルートから `claude plugin eval .` を実行します。これはスイート内のすべてのケースをロードされたプラグインで実行します。単一のケースファイルを実行するか、開発中のプラグインではなくインストール済みのプラグインを評価するには、別のターゲットを渡します。
 
@@ -380,9 +340,7 @@ Created issue #4821: {{input.title}}
 
 ターゲットを `--tag`、`--allow-tools`、`--json` の前に配置します。最初の 2 つはリストを取り、`--json` はオプションのパスを取るため、それぞれは後に続くターゲットを独自の値として読み取ります。
 
-<h3 id="grant-tools">
-  ツールを付与する
-</h3>
+### ツールを付与する
 
 実行は権限を求めるために停止することはありません。付与しなかった許可が必要な組み込みツール（`Bash`、`Write`、`Edit`、`WebFetch`、`WebSearch` など）はセッションから削除されるため、Claude はそれらをまったく呼び出すことができません。
 
@@ -396,9 +354,7 @@ claude plugin eval . --allow-tools Write Edit "Bash(npm test *)"
 
 任意の形式で `Bash` を付与すると、すべてのコマンドは Claude Code の [OS レベルサンドボックス](/docs/ja/sandboxing) の下で実行されます。書き込みは実行のワークスペースに限定され、ホームディレクトリと Claude Code 設定は読み取り不可で、ネットワークアクセスは `--allow-tools "WebFetch(domain:example.com)"` で付与するドメインに限定されます。サンドボックスバックエンドのないマシンで Bash または PowerShell を付与すると、Claude Code は制限なしで実行するのではなく各実行を拒否し、ケースは実行エラーを表示し、通常はスコア 0 になります。ネイティブ Windows にはバックエンドがないため、WSL2 の下でシェル付与スイートを実行します。Linux では、最初に `bubblewrap` と `socat` をインストールします。[サンドボックスの前提条件](/docs/ja/sandboxing) を参照してください。
 
-<h3 id="command-options">
-  コマンドオプション
-</h3>
+### コマンドオプション
 
 この表は、実行数、モデル、スコアリング、コスト、ツール付与、モック、出力のオプションをカバーしています。`claude plugin eval --help` を実行して完全なリストを確認します。これには `--case`、`--tag`、`--eval-dir`、`--no-scaffold`、`--report`、`--verbose` も含まれます。
 
@@ -422,9 +378,7 @@ claude plugin eval . --allow-tools Write Edit "Bash(npm test *)"
 | `--publish-report` | | Claude Code セッションが開始した実行など、デフォルトではローカルに留まる場所でもレポートを公開します。 |
 | `--keep-temp` | オフ | すべての実行のサンドボックスディレクトリを保持し、そのパスを出力します（Claude が生成したものをデバッグするため）。 |
 
-<h3 id="run-evals-in-ci">
-  CI で evals を実行する
-</h3>
+### CI で evals を実行する
 
 CI ジョブで、`--json` でスイートを実行して結果をアーカイブ用に書き込み、終了コードでビルドを失敗させます。ジョブが [最初の実行信頼プロンプト](#security) で待機しないように `--trust-plugin` を渡し、スコアが時間とともに比較可能になるように両方のモデルを固定し、レポートをローカルに保持し、コスト上限を上限として設定します。
 
@@ -461,19 +415,15 @@ CI ランナーには、以下も必要です。
 
 コストを予測可能に保つために、クイックな毎変更スイートにはジャッジを呼び出さないグレーダーのみを付与し、`Δ` が不要な場所で `--ablation none` を使用し、`partial: true` ドキュメントと `skippedPaidGraders` を持つ実行をチャートするトレンドから除外します。
 
-<h2 id="read-the-results">
-  結果を読む
-</h2>
+## 結果を読む
 
 少なくとも 1 つのケースを持つすべての実行は、eval ディレクトリ内に `results/<timestamp>/` ディレクトリを書き込み、`aggregate-result.json` と `report.html` を含みます。パスターゲットの場合はプラグインの下。プラグインに名前を付けた場合は現在のディレクトリの下。[ターゲットテーブル](#choose-what-to-evaluate) に示すように。サマリーテーブル、JSON、レポートはすべて同じ結果データをレンダリングします。
 
-<h3 id="html-report">
-  HTML レポート
-</h3>
+### HTML レポート
 
 `report.html` は単一の自己完結型ファイルで、外部リクエストを行わないため、CI ジョブに添付したり、ディスクから開いたりできます。この例は、`--threshold 0.8` で実行された 3 ケーススイートのレポートの上部です。表示されるコストは定価見積もりで、モデルとケース数によって異なります。
 
-<img src="https://mintcdn.com/claude-code/qq7LHDi_F0aeFHgk/images/plugin-eval-report.png?fit=max&auto=format&n=qq7LHDi_F0aeFHgk&q=85&s=106eb6e6a70a6565f891ea3a4564f87d" alt="eval レポートの上部。「Plugin effect: +33.3 pts vs baseline, improved 2, flat 1, regressed 0 of 3 cases」と読む判定行、スイートスコア、アブレーション デルタ、ベースラインスコア、閾値を通過するケース、完全な実行の 5 つのサマリータイル、その後、デルタ、スコアバー、2 つのグレーダーが両方とも合格を示す 1 つの実行を持つ最初のケース。" width="1360" height="1032" data-path="images/plugin-eval-report.png" />
+![eval レポートの上部。「Plugin effect: +33.3 pts vs baseline, improved 2, flat 1, regressed 0 of 3 cases」と読む判定行、スイートスコア、アブレーション デルタ、ベースラインスコア、閾値を通過するケース、完全な実行の 5 つのサマリータイル、その後、デルタ、スコアバー、2 つのグレーダーが両方とも合格を示す 1 つの実行を持つ最初のケース。](https://mintcdn.com/claude-code/qq7LHDi_F0aeFHgk/images/plugin-eval-report.png?fit=max\&auto=format\&n=qq7LHDi_F0aeFHgk\&q=85\&s=106eb6e6a70a6565f891ea3a4564f87d)
 
 上から下に読みます。
 
@@ -486,9 +436,7 @@ claude.ai サブスクリプションでサインインしており、[アーテ
 
 Claude Code セッションが開始した実行（Claude にスイートを実行するよう依頼するなど）もローカルに留まり、その `Report:` 行は `kept local` と言います。そのコマンドに `--publish-report` を追加して公開します。
 
-<h3 id="json-result">
-  JSON 結果
-</h3>
+### JSON 結果
 
 `aggregate-result.json` および `--json` 出力は、CI スクリプトが解析するための `schemaVersion: 1` を持つバージョン付きドキュメントです。フィールド名は camelCase で、新しいフィールドは既存のフィールドを名前変更せずに追加されるため、認識しないフィールドを無視するようにスクリプトを作成します。
 
@@ -508,17 +456,13 @@ Claude Code セッションが開始した実行（Claude にスイートを実�
 | `cases[].arms.with[].skippedPaidGraders` | コスト上限がこの実行のジャッジグレーダーをスキップした場合は `true`。そのスコアは比較可能ではありません。 |
 | `costUsd`, `durationSeconds`, `claudeVersion` | 定価でのジャッジ呼び出しを含む推定コスト、壁時間秒、スイートを実行した Claude Code バージョン |
 
-<h2 id="security">
-  実行がアクセスできるもの
-</h2>
+## 実行がアクセスできるもの
 
 `claude plugin eval` はターゲットプラグインのスキル、フック、エージェントを読み込み、ユーザーのマシン上で、ユーザーとして eval スイートを実行します。プラグインを指定することは `claude --plugin-dir` と同じ信頼判断であるため、信頼できるプラグインのみを評価してください。
 
 このセクションで説明する分離は、テスト中のエージェントが到達できるものを制限します。これはプラグイン自体のコードに対する境界ではなく、スイートが合格したことは、プラグインが安全であるかどうかについて何も述べていません。
 
-<h3 id="trust-the-plugin-directory">
-  プラグインディレクトリを信頼する
-</h3>
+### プラグインディレクトリを信頼する
 
 初めて `claude plugin eval` をディレクトリに対して実行する場合、Claude Code は何かを読み込む前に `Trust this plugin directory?` と尋ねます。ただし、インタラクティブな `claude` セッションでそこで既に信頼プロンプトを受け入れている場合は除きます。Git リポジトリ内では、「はい」と答えるとリポジトリ全体が信頼され、インタラクティブセッションでも同様です。stdin または stdout がターミナルでない場合、または `--json` の下では、実行は尋ねることができず、終了コード 1 で拒否されます。`--trust-plugin` を渡して信頼を自分で主張してください。これは自分のマシンで実行するプラグインに対してのみ行ってください。パスとして与えるのではなく名前で指定したターゲット、つまりインストール済みプラグインまたはスキルディレクトリプラグインは、プロンプトをスキップします。
 
@@ -532,9 +476,7 @@ Claude Code セッションが開始した実行（Claude にスイートを実�
 
 自分で作成していないフックがプラグインに含まれている場合、または実際の MCP サーバーを開始する場合は、コンテナや CI ランナーなどの分離された環境で実行しない限り、スコアを参考情報として扱ってください。フックとサーバーはエージェントのサンドボックスの外で実行され、グレーダーが読み取るファイルを変更する可能性があるためです。
 
-<h3 id="how-runs-are-isolated">
-  実行がどのように分離されるか
-</h3>
+### 実行がどのように分離されるか
 
 各実行は、一時的なホームディレクトリ、作業ディレクトリ、Claude Code 設定を取得し、テスト中のエージェントはそこで `claude -p` 子プロセスとして実行され、プラグインのみが読み込まれます。ケースを作成する際は、これらの結果を念頭に置いてください。
 
@@ -544,9 +486,7 @@ Claude Code セッションが開始した実行（Claude にスイートを実�
 * **ケース定義はエージェントから隠されています。** 実行は eval ディレクトリを読み取ることができないため、Claude はケースのプロンプト、グレーダー、または兄弟ケースを見ることができません。
 * **シェルコマンド外のネットワークサンドボックスはありません。** 付与するシェルコマンドはサンドボックスのネットワークルールの下で実行されます。`WebFetch(domain:…)` 付与はそのドメインに直接到達し、プラグイン自体のフックと開始する実際の MCP サーバーは任意のホストに到達できます。
 
-<h2 id="eval-suite-reference">
-  Eval スイートリファレンス
-</h2>
+## Eval スイートリファレンス
 
 eval スイートに含めることができるものはすべて、プラグインの eval ディレクトリの下に配置されます。このディレクトリは、[別のディレクトリを設定](#use-a-different-eval-directory)していない限り `evals/` です。`prompt.md` または `case.yaml` を含むディレクトリはケースとみなされます。グレーダーが 1 つもないケースは、`graders` を示す `invalid case.yaml` エラーで読み込みに失敗します。このツリーは、`claude plugin eval` が eval ディレクトリ内で読み書きするすべてのファイルを示しています。
 
@@ -572,9 +512,7 @@ evals/
     └── mock-recordings/           # クリーン実行からのエージェント-モック応答。ADOPT.txt 付き
 ```
 
-<h3 id="prompt-md-fields">
-  prompt.md フロントマター
-</h3>
+### prompt.md フロントマター
 
 `prompt.md` フロントマターは以下のフィールドを受け入れます。未知のキーはエラーです。
 
@@ -594,9 +532,7 @@ evals/
 | `append_system_prompt` | | 子セッションのシステムプロンプトに追加されるテキスト |
 | `env` | `{}` | 子セッション用の追加環境変数。キーは `EVAL_[A-Z0-9_]*` にマッチする必要があります。その他のキーは実行を失敗させます。実行は、シェルからの許可リストのみを継承します。`PATH` とロケール、プロキシと証明書設定、モデルプロバイダーを選択・認証する変数、ほとんどの `ANTHROPIC_*` と `CLAUDE_CODE_*` 設定、および `EVAL_*` です。プラグインに他のもの（ツールチェーン設定など）を渡すには、`EVAL_*` 変数としてエクスポートしてください |
 
-<h3 id="case-yaml-fields">
-  case.yaml フィールド
-</h3>
+### case.yaml フィールド
 
 `case.yaml` は YAML でケースを説明する別の方法または補足です。他のファイルを指すフィールドを追加します。`schema_version: "1.1"` と `name` が必須です。`prompt.md` フィールドの `description`、`tags`、`plugins`、`runs`、`expected_outcome` はトップレベルに配置されます。`model`、`max_turns`、`timeout_seconds`、`allowed_tools`、`append_system_prompt`、`env` は `execution:` の下に配置されます。両方のファイルが存在する場合、`prompt.md` フロントマターは一致する `case.yaml` フィールドを上書きし、`prompt.md` 本文がプロンプトになり、`graders/*.md` は `case.yaml` にリストされたグレーダーの後に追加されます。
 
@@ -610,9 +546,7 @@ evals/
 | `execution.prompt` | プロンプト。ケース全体を `case.yaml` に保持し、`prompt.md` を省略する場合 |
 | `graders` | グレーダーのリスト。各グレーダーは `name` と `graders/*.md` ファイルがフロントマターで取得するのと同じキーを持ちます。`llm` グレーダーの場合、ルーブリックを `criteria` に配置します |
 
-<h3 id="grader-frontmatter">
-  グレーダーフロントマター
-</h3>
+### グレーダーフロントマター
 
 `graders/` の下のすべてのグレーダーファイルは、フロントマターでこれらのキーと、そのタイプのオプションを取得します。グレーダーの名前は `.md` なしのファイル名です。
 
@@ -622,9 +556,7 @@ evals/
 | `weight` | `1` | 実行のスコアにおける相対的な重み。任意の正の数 |
 | `arm` | 未設定 | `with-only` は [2 アーム実行](#compare-against-a-no-plugin-baseline)でグレーダーをスコアリングから除外します。`both` は Claude Code が除外する可能性があるグレーダーを両方のアームでスコアリングするよう強制します |
 
-<h4 id="what-a-grader-can-look-at">
-  グレーダーが見ることができるもの
-</h4>
+#### グレーダーが見ることができるもの
 
 `regex` グレーダーは `target` を取得し、`llm` グレーダーは `focus` を取得します。両方とも同じ値を受け入れます。
 
@@ -636,9 +568,7 @@ evals/
 | `{ source: file, path: <path> }` | 実行後のワークスペース内の 1 つのファイルの内容。プラグインが生成したものをグレードするために使用します。PNG、JPEG、GIF、または WebP ファイルは `llm` ジャッジに画像として表示されます。`llm` ジャッジは `.pptx` または PDF などの他のバイナリファイルを拒否します。画像にレンダリングするか、テキストとして書き出してグレードしてください |
 | `mock_calls` | Claude が [モック化された MCP ツール](#mock-mcp-servers)に行った各呼び出し。その入力とモックの応答を含みます |
 
-<h4 id="grader-types">
-  グレーダータイプ
-</h4>
+#### グレーダータイプ
 
 以下の各グレーダータイプは、そのオプションと合格時を列挙しています。
 
@@ -651,9 +581,7 @@ evals/
 | `llm` | `criteria`、`focus` | ジャッジモデルが少なくとも 3 回中 2 回のルーブリックで PASS に投票します。`.md` レイアウトではファイル本文が criteria です |
 | `baseline` | `baseline_file`、`criteria` | ジャッジが実行が `baseline_file`（ケースディレクトリ内の `.jsonl`）の参照トランスクリプトと同じくらい criteria を満たしていることを検出します |
 
-<h3 id="mock-files">
-  モックファイル
-</h3>
+### モックファイル
 
 `mocks/<server>/` の下の `<tool>.md` ファイルは 1 つのツールに答えます。その本文はツール結果で、`{{input.<field>}}` と `{{file:fixtures/<name>}}` の置換があります。そのフロントマターは以下のキーを受け入れます。
 
@@ -671,9 +599,7 @@ evals/
 
 ケース独自の `mocks/` ディレクトリは同じレイアウトを使用し、スイートのモックをファイルごとに上書きします。
 
-<h4 id="expect-patterns">
-  expect での正規表現パターン
-</h4>
+#### expect での正規表現パターン
 
 `expect:` 内の `/regex/` 値は、Claude Code がスイートの読み込み時にチェックする小さな方言を使用します。
 
@@ -686,33 +612,23 @@ evals/
 
 各パターンは最大長までの値のみをチェックし、それより長い値は違反とみなされます。量指定子はその長さを短くし、先頭の `^` は長くするため、パターンは `^` でアンカーし、量指定子は少なくしてください。
 
-<h2 id="troubleshooting">
-  トラブルシューティング
-</h2>
+## トラブルシューティング
 
 これらは著者が最も頻繁に遭遇する問題であり、表示される内容に基づいてキーが付けられています。
 
-<h3 id="plugin-eval-is-currently-in-early-access">
-  「plugin eval is currently in early access」
-</h3>
+### 「plugin eval is currently in early access」
 
 ビルドはコマンドの一般提供より前のものです。`claude update` を実行してから、新しいセッションでコマンドを再度実行してください。
 
-<h3 id="plugin-eval-is-currently-unavailable">
-  「plugin eval is currently unavailable」
-</h3>
+### 「plugin eval is currently unavailable」
 
 Anthropic がサーバー側でコマンドをオフにしています。マシン上の何もそれをオンに戻すことはできません。`claude update` を実行して、後で新しいセッションで再度試してください。
 
-<h3 id="is-not-a-trusted-plugin-directory-and-this-run-cannot-stop-to-ask-you-about-it">
-  「is not a trusted plugin directory, and this run cannot stop to ask you about it」
-</h3>
+### 「is not a trusted plugin directory, and this run cannot stop to ask you about it」
 
 これは Claude Code がまだ信頼していないディレクトリに対する最初の実行であり、stdin または stdout がターミナルでないか、`--json` を渡したため、質問することができません。ターミナルで `claude plugin eval <dir>` を一度実行してプロンプトに答えるか、プラグインのコードとスイートを信頼する場合は `--trust-plugin` を渡してください。[実行がアクセスできるもの](#security)を参照してください。
 
-<h3 id="git-is-too-old-for-claude-plugin-eval">
-  「is too old for claude plugin eval」
-</h3>
+### 「is too old for claude plugin eval」
 
 `PATH` 上の `git` が 2.31 より古いため、`claude plugin eval` はケースを実行する前に停止し、バージョンを名前付けするメッセージで 1 で終了しました。
 
@@ -724,9 +640,7 @@ git 2.30 is too old for claude plugin eval: it ignores the environment configura
 
 v2.1.283 より前では、`claude plugin eval` は git バージョンをチェックしなかったため、古い git ではスイートはそれらのプログラムがオンのままで実行されました。
 
-<h3 id="cannot-be-evaluated-where-sessions-load-it">
-  "cannot be evaluated where sessions load it"
-</h3>
+### "cannot be evaluated where sessions load it"
 
 シェルで、[ローカルパスから追加した](/docs/ja/plugins/loading#in-place-and-copied-plugins)マーケットプレイスからインストールしたプラグインの名前を指定して `claude plugin eval` を実行しました。現在、そのマーケットプレイスからプラグインを読み込めるセッションがないため、コマンドはこのメッセージを表示して実行を拒否し、コード 1 で終了します。
 
@@ -738,23 +652,17 @@ Error: formatter@my-marketplace cannot be evaluated where sessions load it: no s
 
 シェルで `claude plugin marketplace list` を実行し、メッセージが示す問題を修正してください。たとえば、マーケットプレイスのディレクトリを復元するか、プラグインのエントリをカタログに戻します。マーケットプレイスを介さずにプラグインのソースを評価するには、`claude plugin eval ./plugins/formatter` のように、そのディレクトリをターゲットとして渡してください。
 
-<h3 id="no-eval-cases-found">
-  「No eval cases found」
-</h3>
+### 「No eval cases found」
 
 有効な eval ディレクトリの下に `<case>/prompt.md` または `<case>/case.yaml` が存在しないか、`--case` および `--tag` フィルターがケースと一致しません。プラグインルートから実行するか、`claude plugin eval init` を実行してスイートを作成してください。
 
-<h3 id="the-baseline-arm-shows-no-plugin-or-delta-is-zero">
-  ベースラインアームにプラグインが表示されない、またはデルタがゼロ
-</h3>
+### ベースラインアームにプラグインが表示されない、またはデルタがゼロ
 
 サマリーに `W/OUT` 列がない場合、またはケースが「ablation requested but no plugin resolved」で失敗する場合、通常の原因はケースのプラグインが見つからなかったことです。すべてのケースが `context.history_file` を通じてトランスクリプトを再開する場合は、列がないことは想定どおりです。これらのケースは[デフォルトで 1 つのアーム](#compare-against-a-no-plugin-baseline)で実行されるためです。それ以外の場合は、`plugins: ["../.."]` をケースに追加し、ケースディレクトリからプラグインディレクトリへのパスを指定してください。
 
 プラグインが読み込まれたにもかかわらず `Δ` がゼロに近く、`tool_used: Skill` グレーダーが失敗している場合、これは通常、スキルの `description` がプロンプトの表現でトリガーされていないことを意味する実際の発見です。説明を調整して、同じスイートを再度実行してください。
 
-<h3 id="agent-type-’-’-not-found-for-one-of-your-plugin’s-agents">
-  プラグインのエージェントの 1 つに対して「Agent type '...' not found」
-</h3>
+### プラグインのエージェントの 1 つに対して「Agent type '...' not found」
 
 デフォルトでは、各ケースはプラグインありとプラグインなしの両方で実行され、プラグインなしの実行は[プラグインなしベースライン](#the-no-plugin-baseline)です。Claude がベースライン実行でプラグインのエージェントの 1 つをディスパッチする場合、Agent ツール呼び出しは `Agent type '<plugin>:<agent-name>' not found. Available agents: ...` で失敗します。リストは、[組み込みサブエージェント](/docs/ja/sub-agents#built-in-subagents)など、プラグインなしで存在するエージェントのみを名前付けします。
 
@@ -762,51 +670,37 @@ Error: formatter@my-marketplace cannot be evaluated where sessions load it: no s
 
 プラグインが読み込まれた実行では、`allowed_tools` に `Agent` をリストするケースは、名前空間付きの名前でプラグインのエージェントの 1 つをディスパッチできます。たとえば、`my-plugin` という名前のプラグイン内の `code-reviewer` エージェントであれば `my-plugin:code-reviewer` です。ベースライン実行をスキップするには、`--ablation none` を渡してください。
 
-<h3 id="everything-scores-zero-although-the-right-files-were-produced">
-  正しいファイルが生成されたにもかかわらず、すべてがゼロスコアになる
-</h3>
+### 正しいファイルが生成されたにもかかわらず、すべてがゼロスコアになる
 
 グレーダーが `files`（作成されたパスのリスト）をターゲットにしているが、ファイルの内容を意図していました。`{ source: file, path: <path> }` を `target` または `focus` として使用してください。
 
 別途、`file_exists` は実行中に作成されたファイルのみをカウントするため、スキャフォルドが作成したファイルまたは Claude が編集のみしたファイルは見えません。その内容をグレードするか、`Edit` で `tool_used` を使用してください。
 
-<h3 id="a-regex-over-the-trace-doesn’t-match-text-i-can-see">
-  トレース上の正規表現が表示されるテキストと一致しない
-</h3>
+### トレース上の正規表現が表示されるテキストと一致しない
 
 * **ターゲットが間違っている**: デフォルトの `target` はトレースではなく `last_message` です。
 * **JSON エスケープ**: `target` を `trace` にする場合、行ごとに JSON であるため、引用符は `\"` として表示されます。
 * **正規表現構文**: 正規表現は JavaScript 構文を使用するため、`(?i)` を記述するのではなく、`flags` に `i` を入れてください。
 
-<h3 id="tools-are-denied-mcp-tools-are-missing-or-bash-won’t-run">
-  ツールが拒否される、MCP ツールが見つからない、または Bash が実行されない
-</h3>
+### ツールが拒否される、MCP ツールが見つからない、または Bash が実行されない
 
 読み取り専用セット以外のすべてのものには、`--allow-tools Bash Write` などの許可が必要です。個人用 MCP サーバーは実行中に読み込まれません。プラグイン自体のサーバーは、[オプトイン](#mock-mcp-servers)しない限り開始されず、それらのツールは `--allow-tools "mcp__plugin_<plugin>_<server>__*"` 許可も必要です。モック化されたツールはどちらも必要ありません。
 
-<h3 id="the-run-exits-1-but-the-results-look-fine">
-  実行が 1 で終了するが、結果は問題ないように見える
-</h3>
+### 実行が 1 で終了するが、結果は問題ないように見える
 
 すべてのケースが `--threshold` 以上のスコアを取得したにもかかわらずコマンドが 1 で終了する場合、`--json` 指定時でも、stderr の行に原因が示されます。たとえば、ケースファイルの読み込みに失敗した場合や、実行が [API エラーで終了した](#runs-ended-on-an-api-error)場合です。その他の原因については、[終了コード](#run-evals-in-ci)を参照してください。
 
 デフォルトの `--threshold` は 1.0 であるため、ケースが完璧未満のスコアを取得するとコマンドは 1 で終了します。必要なスコアに一致するしきい値を設定してください。
 
-<h3 id="json-output-path-must-end-in-json">
-  `--json output path must end in .json`
-</h3>
+### `--json output path must end in .json`
 
 `--json` の後にターゲットを配置したため、出力パスとして読み取られました。`claude plugin eval . --json` のようにターゲットを最初に配置するか、`--json` に明示的な `.json` パスを指定してください。
 
-<h3 id="a-grader-shows-passed-false-under-a-run-that-scored-1-0">
-  グレーダーが 1.0 のスコアを取得した実行の下で passed: false を表示する
-</h3>
+### グレーダーが 1.0 のスコアを取得した実行の下で passed: false を表示する
 
 そのグレーダーは設計上、2 アーム実行でスコアから除外され、その `scored` フィールドは `false` です。[プラグインなしベースラインと比較](#compare-against-a-no-plugin-baseline)を参照してください。
 
-<h3 id="runs-ended-on-an-api-error">
-  "ended on an API error and scored 0 without grading"
-</h3>
+### "ended on an API error and scored 0 without grading"
 
 この stderr 警告は、少なくとも 1 つの実行の最後のリクエストに対して、API がレート制限やプランの使用制限などの HTTP エラーで応答したことを意味します。このような実行はグレーダーの結果なしでスコア 0 となり、スコアや `--threshold` に関係なく、コマンドは 0 以外のコードで終了します。
 
@@ -819,27 +713,19 @@ Error: formatter@my-marketplace cannot be evaluated where sessions load it: no s
 
 v2.1.299 より前では、このような実行は生成されたものに基づいてグレード化されていました。
 
-<h3 id="runs-fail-with-a-usage-limit-or-rate-limit-error-partway-through">
-  実行がスイートの途中で使用制限またはレート制限エラーで失敗する
-</h3>
+### 実行がスイートの途中で使用制限またはレート制限エラーで失敗する
 
 使用制限またはレート制限エラーで終了した実行は[グレード化されずにスコア 0 となり](#runs-ended-on-an-api-error)、コマンドは 0 以外のコードで終了します。スイートはそれでも完了し、`partial` としてマークされません。制限がリセットされた後に再度実行してください。制限内に留まる必要がある場合は、`--runs 1` または `--case` フィルターを使用してください。
 
-<h3 id="mock-call-budget-exceeded">
-  "mock call budget exceeded"
-</h3>
+### "mock call budget exceeded"
 
 1 回の実行内のすべての `type: agent` [モック](#mock-mcp-servers)は、ケースの `max_turns` の 4 倍という 1 つの呼び出し予算を共有します。デフォルトの 10 では 40 回の呼び出しです。`.replay/` の記録から応答された呼び出しもカウントされ、ケースの `mock budget` 進行状況の行に予算が表示されます。予算を超えた呼び出しは、スコア 0 とこの理由で実行を中止させるため、エージェントモックを多数呼び出すスキルについては、ケースの `max_turns` を上げてください。
 
-<h3 id="runs-time-out-or-hit-the-turn-cap">
-  実行がタイムアウトするか、ターンキャップに達する
-</h3>
+### 実行がタイムアウトするか、ターンキャップに達する
 
 デフォルトは 10 ターンと 300 秒です。より多くを必要とするタスクの場合、ケースで `max_turns` と `timeout_seconds` を上げ、厳密な実行ごとの制限ではなく、`--max-cost-usd` をコスト上限として使用してください。
 
-<h2 id="see-also">
-  関連項目も参照
-</h2>
+## 関連項目も参照
 
 * [プラグインを作成する](/docs/ja/plugins/create): テストしているプラグインを構築し、開発中に `--plugin-dir` でロードします
 * [プラグインコマンドリファレンス](/docs/ja/plugins/cli-reference#plugin-eval): `plugin eval` および `plugin eval init` コマンドエントリ。マニフェストの [`experimental.evals`](/docs/ja/plugins/manifest-reference#fields) キーはマニフェストリファレンスにあります

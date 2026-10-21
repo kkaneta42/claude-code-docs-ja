@@ -16,9 +16,7 @@ We're changing auto mode to no longer charge for classifier requests in Claude C
 
 最も一般的な原因は Claude Code と API の間の LLM ゲートウェイまたはプロキシであり、Claude Code がそれを識別できる場合、通知はそれに名前を付けます。**Enter** キーを押して続行するか、[セッションを対象にする](#make-the-session-eligible)を参照して、新しいセッションに表示されないようにしてください。
 
-<h2 id="respond-to-the-notice">
-  ダイアログに応答する
-</h2>
+## ダイアログに応答する
 
 ダイアログはあなたが答えるまでアクションを保留します：
 
@@ -29,9 +27,7 @@ We're changing auto mode to no longer charge for classifier requests in Claude C
 
 ダイアログが答えを待つことができない場合、Claude Code は同じテキストを報告し、セッションは自動モードで続行されます。ただし、このマシンでの過去 24 時間以内のゲートウェイ確認がそれを却下している場合を除きます。[非対話型モード](/docs/ja/headless)で `-p` を使用する場合、テキストは stderr に出力され、`stream-json` 出力では `system` 警告メッセージが発行されます。これは Agent SDK アプリケーションがメッセージストリームから読み取ることができます。
 
-<h2 id="make-the-session-eligible">
-  セッションを対応可能にする
-</h2>
+## セッションを対応可能にする
 
 ゲートウェイが原因の場合、会社の管理者またはゲートウェイプロバイダーに、リクエストと返信を変更せずに通すよう依頼してください。つまり、ゲートウェイが認識しない `safeguards` リクエストフィールドなどのリクエストヘッダーとボディフィールドをそのまま転送し、`safeguard_results` フィールドなどのキーをドロップしたり、tool-use ID を書き換えたりせずにレスポンスとストリーミングイベントを返すことです。[ゲートウェイ互換性ガイド](/docs/ja/llm-gateway-protocol#feature-pass-through)で説明されているとおりです。このようにトラフィックを通すゲートウェイは、この機能と将来の機能で動作し続けます。その後、新しいセッションはサーバーのチェックを再度使用します。
 
@@ -45,9 +41,7 @@ export CLAUDE_CODE_AUTO_MODE_SERVER=0
 
 `CLAUDE_CODE_AUTO_MODE_SERVER` は一時的な設定であり、後のリリースで削除される可能性があります。
 
-<h2 id="why-the-notice-appears">
-  ダイアログが表示される理由
-</h2>
+## ダイアログが表示される理由
 
 [サーバー側分類器レビュー](/docs/ja/permission-modes#server-side-classifier-review)は、サーバーに分類器チェックをリクエストするセッションを一覧表示します。Pro、Max、Team プランではダイアログが表示されることはありません。ダイアログが表示される場合、通常の原因は以下の通りです：
 
@@ -58,9 +52,7 @@ auto mode のセッションをチェックするには、Claude Code プロン�
 
 ゲートウェイがレスポンスを短縮したり、Claude Code が読み取れない形式にレスポンスを書き換えたりする場合、このダイアログの代わりに判定がない拒否が表示されます。[サーバー側分類器レビュー](/docs/ja/permission-modes#server-side-classifier-review)を参照してください。
 
-<h2 id="related-resources">
-  関連リソース
-</h2>
+## 関連リソース
 
 * [Auto モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)：Auto モードとは何か、およびデフォルトでブロックされるもの
 * [サーバー側分類器レビュー](/docs/ja/permission-modes#server-side-classifier-review)：どのセッションがサーバーにアクションをチェックするよう要求するか、および各セッションに必要な Claude Code バージョン

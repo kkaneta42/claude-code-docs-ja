@@ -6,81 +6,12 @@
 
 > Google Cloud の Agent Platform（旧 Vertex AI）を通じた Claude Code の設定方法について学びます。セットアップ、IAM 設定、トラブルシューティングを含みます。
 
-export const ContactSalesCard = ({surface}) => {
-  const utm = content => `utm_source=claude_code&utm_medium=docs&utm_content=${surface}_${content}`;
-  const iconArrowRight = (size = 13) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <line x1="5" y1="12" x2="19" y2="12" />
-      <polyline points="12 5 19 12 12 19" />
-    </svg>;
-  const STYLES = `
-.cc-cs {
-  --cs-slate: #141413;
-  --cs-clay: #d97757;
-  --cs-clay-deep: #c6613f;
-  --cs-gray-000: #ffffff;
-  --cs-gray-700: #3d3d3a;
-  --cs-border-default: rgba(31, 30, 29, 0.15);
-  font-family: inherit;
-}
-.dark .cc-cs {
-  --cs-slate: #f0eee6;
-  --cs-gray-000: #262624;
-  --cs-gray-700: #bfbdb4;
-  --cs-border-default: rgba(240, 238, 230, 0.14);
-}
-.cc-cs-card {
-  display: flex; align-items: center; justify-content: space-between;
-  gap: 16px; padding: 14px 16px; margin: 0;
-  background: var(--cs-gray-000); border: 0.5px solid var(--cs-border-default);
-  border-radius: 8px; flex-wrap: wrap;
-}
-.cc-cs-text { font-size: 13px; color: var(--cs-gray-700); line-height: 1.5; flex: 1; min-width: 240px; }
-.cc-cs-text strong { font-weight: 550; color: var(--cs-slate); }
-.cc-cs-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-.cc-cs-btn-clay {
-  display: inline-flex; align-items: center; gap: 8px;
-  background: var(--cs-clay-deep); color: #fff; border: none;
-  border-radius: 8px; padding: 8px 14px;
-  font-size: 13px; font-weight: 500;
-  transition: background-color 0.15s; white-space: nowrap;
-}
-.cc-cs-btn-clay:hover { background: var(--cs-clay); }
-.cc-cs-btn-ghost {
-  display: inline-flex; align-items: center; gap: 8px;
-  background: transparent; color: var(--cs-gray-700);
-  border: 0.5px solid var(--cs-border-default);
-  border-radius: 8px; padding: 8px 14px;
-  font-size: 13px; font-weight: 500;
-}
-.cc-cs-btn-ghost:hover { background: rgba(0, 0, 0, 0.04); }
-.dark .cc-cs-btn-ghost:hover { background: rgba(255, 255, 255, 0.04); }
-@media (max-width: 720px) {
-  .cc-cs-actions { width: 100%; }
-}
-`;
-  return <div className="cc-cs not-prose">
-      <style>{STYLES}</style>
-      <div className="cc-cs-card">
-        <div className="cc-cs-text">
-          <strong>Deploying Claude Code across your organization?</strong> Talk to sales about enterprise plans, SSO, and centralized billing.
-        </div>
-        <div className="cc-cs-actions">
-          <a href={`https://claude.com/pricing?${utm('view_plans')}#plans-business`} className="cc-cs-btn-ghost">
-            View plans
-          </a>
-          <a href={`https://claude.com/contact-sales?${utm('contact_sales')}`} className="cc-cs-btn-clay">
-            Contact sales {iconArrowRight()}
-          </a>
-        </div>
-      </div>
-    </div>;
-};
+**Deploying Claude Code across your organization?** Talk to sales about enterprise plans, SSO, and centralized billing.
 
-<ContactSalesCard surface="vertex" />
+View plans
+Contact sales
 
-<h2 id="prerequisites">
-  前提条件
-</h2>
+## 前提条件
 
 Claude Code を Google Cloud の Agent Platform（旧 Vertex AI）で設定する前に、以下を確認してください。
 
@@ -92,47 +23,37 @@ Claude Code を Google Cloud の Agent Platform（旧 Vertex AI）で設定す�
 
 Google Cloud の Agent Platform 認証情報でサインインするには、以下の[Agent Platform でサインイン](#sign-in-with-agent-platform)に従ってください。チーム全体に Claude Code をデプロイするには、[手動セットアップ](#set-up-manually)の手順を使用し、ロールアウト前に[モデルバージョンをピン留めして](#5-pin-model-versions)ください。
 
-<h2 id="sign-in-with-agent-platform">
-  Agent Platform でサインイン
-</h2>
+## Agent Platform でサインイン
 
 Google Cloud 認証情報を持っていて、Google Cloud の Agent Platform を通じて Claude Code の使用を開始したい場合、ログインウィザードがそれをガイドします。GCP 側の前提条件はプロジェクトごとに 1 回完了します。ウィザードが Claude Code 側を処理します。
 
-<Steps>
-  <Step title="GCP プロジェクトで Claude モデルを有効にする">
-    プロジェクトの[Google Cloud の Agent Platform API を有効にして](#1-enable-agent-platform-api)、[Google Cloud の Agent Platform Model Garden](https://console.cloud.google.com/vertex-ai/model-garden)で必要な Claude モデルへのアクセスをリクエストしてください。アカウントに必要な権限については、[IAM 設定](#iam-configuration)を参照してください。
-  </Step>
+**1. GCP プロジェクトで Claude モデルを有効にする**
 
-  <Step title="Claude Code を起動して Google Cloud の Agent Platform を選択する">
-    `claude` を実行します。ログインプロンプトで、**3rd-party platform**、次に **Google Vertex AI** を選択します。これはログインプロンプトが Google Cloud の Agent Platform に対して使用しているラベルです。既にサインインしている場合は、`/login` を実行して同じメニューを開きます。
-  </Step>
+プロジェクトの[Google Cloud の Agent Platform API を有効にして](#1-enable-agent-platform-api)、[Google Cloud の Agent Platform Model Garden](https://console.cloud.google.com/vertex-ai/model-garden)で必要な Claude モデルへのアクセスをリクエストしてください。アカウントに必要な権限については、[IAM 設定](#iam-configuration)を参照してください。
 
-  <Step title="ウィザードプロンプトに従う">
-    Google Cloud への認証方法を選択します。`gcloud` からの Application Default Credentials、サービスアカウントキーファイル、または環境内に既にある認証情報です。ウィザードはプロジェクトとリージョンを検出し、プロジェクトが呼び出せる Claude モデルを確認し、それらをピン留めできます。結果は[ユーザー設定ファイル](/docs/ja/settings)の `env` ブロックに保存されるため、環境変数を自分でエクスポートする必要はありません。
-  </Step>
-</Steps>
+**2. Claude Code を起動して Google Cloud の Agent Platform を選択する**
+
+`claude` を実行します。ログインプロンプトで、**3rd-party platform**、次に **Google Vertex AI** を選択します。これはログインプロンプトが Google Cloud の Agent Platform に対して使用しているラベルです。既にサインインしている場合は、`/login` を実行して同じメニューを開きます。
+
+**3. ウィザードプロンプトに従う**
+
+Google Cloud への認証方法を選択します。`gcloud` からの Application Default Credentials、サービスアカウントキーファイル、または環境内に既にある認証情報です。ウィザードはプロジェクトとリージョンを検出し、プロジェクトが呼び出せる Claude モデルを確認し、それらをピン留めできます。結果は[ユーザー設定ファイル](/docs/ja/settings)の `env` ブロックに保存されるため、環境変数を自分でエクスポートする必要はありません。
 
 サインイン後、いつでも `/setup-vertex` を実行してウィザードを再度開き、認証情報、プロジェクト、リージョン、またはモデルピンを変更できます。モデルピンステップは、現在ピン留めされているモデルから開始します。ウィザードは `~/.claude/settings.json` に書き込むか、[`CLAUDE_CONFIG_DIR`](/docs/ja/env-vars#variables)が設定されている場合は `$CLAUDE_CONFIG_DIR/settings.json` に書き込みます。
 
-<h2 id="region-configuration">
-  リージョン設定
-</h2>
+## リージョン設定
 
 Claude Code は Google Cloud の Agent Platform の[グローバル](https://cloud.google.com/blog/products/ai-machine-learning/global-endpoint-for-claude-models-generally-available-on-vertex-ai)、マルチリージョン、および地域別エンドポイントをサポートしています。`CLOUD_ML_REGION` を `global`、`eu` または `us` などのマルチリージョンロケーション、または `us-east5` などの特定のリージョンに設定します。Claude Code は各フォームの正しい Google Cloud の Agent Platform ホスト名を選択します。これには、マルチリージョンロケーション用の `aiplatform.eu.rep.googleapis.com` および `aiplatform.us.rep.googleapis.com` ホストが含まれます。
 
-<Note>
-  Google Cloud の Agent Platform は、すべてのエンドポイントタイプで Claude Code デフォルトモデルをサポートしていない場合があります。モデルの可用性は、[特定のリージョン](https://cloud.google.com/vertex-ai/generative-ai/docs/learn/locations#genai-partner-models)、マルチリージョンロケーション、および[グローバルエンドポイント](https://cloud.google.com/vertex-ai/generative-ai/docs/partner-models/use-partner-models#supported_models)によって異なります。サポートされているロケーションに切り替えるか、サポートされているモデルを指定する必要がある場合があります。
-</Note>
+> [!NOTE]
+>
+> Google Cloud の Agent Platform は、すべてのエンドポイントタイプで Claude Code デフォルトモデルをサポートしていない場合があります。モデルの可用性は、[特定のリージョン](https://cloud.google.com/vertex-ai/generative-ai/docs/learn/locations#genai-partner-models)、マルチリージョンロケーション、および[グローバルエンドポイント](https://cloud.google.com/vertex-ai/generative-ai/docs/partner-models/use-partner-models#supported_models)によって異なります。サポートされているロケーションに切り替えるか、サポートされているモデルを指定する必要がある場合があります。
 
-<h2 id="set-up-manually">
-  手動でセットアップする
-</h2>
+## 手動でセットアップする
 
 ウィザードの代わりに環境変数を通じて Google Cloud の Agent Platform を設定するには、例えば CI またはスクリプト化されたエンタープライズロールアウトで、以下の手順に従ってください。
 
-<h3 id="1-enable-agent-platform-api">
-  1. Agent Platform API を有効にする
-</h3>
+### Agent Platform API を有効にする
 
 GCP プロジェクトで Google Cloud の Agent Platform API を有効にします。`YOUR-PROJECT-ID` を GCP プロジェクト ID に置き換えてください。以下の設定手順でも同じように置き換えます。
 
@@ -144,9 +65,7 @@ gcloud config set project YOUR-PROJECT-ID
 gcloud services enable aiplatform.googleapis.com
 ```
 
-<h3 id="2-request-model-access">
-  2. モデルアクセスをリクエストする
-</h3>
+### モデルアクセスをリクエストする
 
 Google Cloud の Agent Platform で Claude モデルへのアクセスをリクエストします。
 
@@ -155,9 +74,7 @@ Google Cloud の Agent Platform で Claude モデルへのアクセスをリク�
 3. 目的の Claude モデルへのアクセスをリクエストします（例：Claude Sonnet 4.6）
 4. 承認を待ちます（24 ～ 48 時間かかる場合があります）
 
-<h3 id="3-configure-gcp-credentials">
-  3) GCP 認証情報を設定する
-</h3>
+### GCP 認証情報を設定する
 
 Claude Code は標準的な Google Cloud 認証を使用します。
 
@@ -165,13 +82,11 @@ Claude Code は標準的な Google Cloud 認証を使用します。
 
 Claude Code は、同じ Application Default Credentials チェーンを通じて [X.509 証明書ベースのワークロード ID フェデレーション](https://cloud.google.com/iam/docs/workload-identity-federation-with-x509-certificates)をサポートしています。`GOOGLE_APPLICATION_CREDENTIALS` を認証情報設定ファイルのパスに設定します。
 
-<Note>
-  Claude Code は Google Cloud の Agent Platform リクエストを `ANTHROPIC_VERTEX_PROJECT_ID` のプロジェクトにアドレス指定します。`GCLOUD_PROJECT`、`GOOGLE_CLOUD_PROJECT`、または `GOOGLE_APPLICATION_CREDENTIALS` で参照される認証情報ファイルが異なるプロジェクトを持つ場合でも同じです。
-</Note>
+> [!NOTE]
+>
+> Claude Code は Google Cloud の Agent Platform リクエストを `ANTHROPIC_VERTEX_PROJECT_ID` のプロジェクトにアドレス指定します。`GCLOUD_PROJECT`、`GOOGLE_CLOUD_PROJECT`、または `GOOGLE_APPLICATION_CREDENTIALS` で参照される認証情報ファイルが異なるプロジェクトを持つ場合でも同じです。
 
-<h4 id="advanced-credential-configuration">
-  高度な認証情報設定
-</h4>
+#### 高度な認証情報設定
 
 Claude Code は `gcpAuthRefresh` 設定を通じて GCP の自動認証情報更新をサポートしています。これを Claude Code の [設定ファイル](/docs/ja/settings)（例：`~/.claude/settings.json`）に追加します。Claude Code が GCP 認証情報の有効期限が切れているか読み込めないことを検出すると、リクエストを再試行する前に新しい認証情報を取得するために設定されたコマンドを実行します。
 
@@ -190,9 +105,7 @@ Claude Code は `gcpAuthRefresh` 設定を通じて GCP の自動認証情報更
 
 Claude Code はコマンドの出力を表示しますが、コマンドに対話的な入力を送信することはできません。これは、CLI が URL を表示し、ブラウザで認証を完了するブラウザベースの認証フローに適しています。認証が完了しない場合、更新コマンドは 3 分後にタイムアウトします。`.claude/settings.json` などのプロジェクト設定で `gcpAuthRefresh` を設定した場合、Claude Code は設定ファイルの [ワークスペース信頼ルールと同じルール](/docs/ja/permissions#what-runs-before-you-trust-a-folder)の下でそれを実行します。これには、信頼したことのないフォルダ内の `-p` セッションが含まれます。
 
-<h3 id="4-configure-claude-code">
-  4. Claude Code を設定する
-</h3>
+### Claude Code を設定する
 
 次の環境変数を設定します。
 
@@ -228,13 +141,11 @@ Claude Code は [MCP tool search](/docs/ja/mcp#scale-with-mcp-tool-search)と事
 
 すべてのモデルでツール検索を無効にするには、`ENABLE_TOOL_SEARCH=false` を設定します。v2.1.221 より前は、Claude Code は `ENABLE_TOOL_SEARCH=true` を設定しない限り、Google Cloud の Agent Platform 上のすべてのモデルでツール検索を無効にしていました。
 
-<h3 id="5-pin-model-versions">
-  5. モデルバージョンをピン留めする
-</h3>
+### モデルバージョンをピン留めする
 
-<Warning>
-  複数のユーザーにデプロイする場合は、特定のモデルバージョンをピン留めしてください。ピン留めなしでは、`sonnet` および `opus` などのモデルエイリアスは Claude Code の Google Cloud の Agent Platform 用の組み込みデフォルトに解決され、最新リリースより遅れる可能性があり、プロジェクトでまだ有効になっていない可能性があります。Claude Code は、デフォルトが利用できない場合、[スタートアップ時](#startup-model-checks)に前のバージョンまたは下位層のモデルにフォールバックしますが、ピン留めすることで、ユーザーが新しいモデルに移行するタイミングを制御できます。
-</Warning>
+> [!WARNING]
+>
+> 複数のユーザーにデプロイする場合は、特定のモデルバージョンをピン留めしてください。ピン留めなしでは、`sonnet` および `opus` などのモデルエイリアスは Claude Code の Google Cloud の Agent Platform 用の組み込みデフォルトに解決され、最新リリースより遅れる可能性があり、プロジェクトでまだ有効になっていない可能性があります。Claude Code は、デフォルトが利用できない場合、[スタートアップ時](#startup-model-checks)に前のバージョンまたは下位層のモデルにフォールバックしますが、ピン留めすることで、ユーザーが新しいモデルに移行するタイミングを制御できます。
 
 これらの環境変数を特定の Google Cloud の Agent Platform モデル ID に設定します。
 
@@ -260,9 +171,9 @@ Claude Code は、ピン留め変数が設定されていない場合、これ�
 * `--model`、`ANTHROPIC_MODEL`、または `model` 設定でプライマリモデルを選択すると、バックグラウンドタスクはそのモデルを使用します。[`ANTHROPIC_DEFAULT_MODEL`](/docs/ja/model-config#set-a-default-model-for-new-sessions)で設定したモデルで Claude Code がセッションを開始する場合、バックグラウンドタスクもそのモデルを使用します。`ANTHROPIC_DEFAULT_SONNET_MODEL` なしで `ANTHROPIC_DEFAULT_OPUS_MODEL` を設定することも、組み込み Sonnet モデルがプロジェクトで有効になっていない可能性があるため、選択としてカウントされます。
 * バックグラウンドタスクに Haiku を使用するには、`ANTHROPIC_DEFAULT_HAIKU_MODEL` をプロジェクトで利用可能なモデル ID に設定します。
 
-<Warning>
-  Opus モデルは Sonnet モデルよりトークンあたりの価格が高いため、プライマリモデルをピン留めしない場合は Opus レートで課金されます。Sonnet 4.5 をプライマリモデルとして使用するには、`ANTHROPIC_MODEL` をその完全なモデル ID に設定します。`ANTHROPIC_DEFAULT_SONNET_MODEL` でデフォルトを制御し、`ANTHROPIC_DEFAULT_OPUS_MODEL` を設定しないデプロイは、制御された Sonnet モデルをデフォルトとして保ちます。
-</Warning>
+> [!WARNING]
+>
+> Opus モデルは Sonnet モデルよりトークンあたりの価格が高いため、プライマリモデルをピン留めしない場合は Opus レートで課金されます。Sonnet 4.5 をプライマリモデルとして使用するには、`ANTHROPIC_MODEL` をその完全なモデル ID に設定します。`ANTHROPIC_DEFAULT_SONNET_MODEL` でデフォルトを制御し、`ANTHROPIC_DEFAULT_OPUS_MODEL` を設定しないデプロイは、制御された Sonnet モデルをデフォルトとして保ちます。
 
 v2.1.280 より前は、Google Cloud の Agent Platform 上のプライマリモデルは Opus 5 にデフォルト設定され、`opus` エイリアスは v2.1.219 から Opus 5 に解決されました。v2.1.207 ～ v2.1.218 では、Google Cloud の Agent Platform 上のプライマリモデルは Opus 4.8 にデフォルト設定され、`opus` エイリアスは Opus 4.8 に解決されました。
 
@@ -273,15 +184,11 @@ export ANTHROPIC_MODEL='claude-opus-4-8'
 export ANTHROPIC_DEFAULT_HAIKU_MODEL='claude-haiku-4-5@20251001'
 ```
 
-<h3 id="6-verify-your-configuration">
-  6. 設定を確認する
-</h3>
+### 設定を確認する
 
 Claude Code を起動して `/status` を実行し、セットアップを確認します。`API provider` 行は `Google Vertex AI` を表示し、`GCP project`、`Default region`、および `Model` 行はプロジェクト ID、リージョン、および解決されたモデルを表示します。プロバイダー行が見つからない場合、環境変数がプロセスに到達していません。`claude` を起動したシェルでエクスポートされているか、[設定ファイル](/docs/ja/settings)の `env` ブロックで設定されていることを確認してください。
 
-<h2 id="startup-model-checks">
-  起動時のモデルチェック
-</h2>
+## 起動時のモデルチェック
 
 Claude Code が Google Cloud の Agent Platform で設定されて起動すると、使用するモデルがプロジェクトでアクセス可能であることを確認します。
 
@@ -295,9 +202,7 @@ Claude Code デフォルトより古いモデルバージョンをピン留め�
 
 これらのチェックがプロジェクトが呼び出せないモデルを見つけた場合、Claude Code はこのマシン上でその拒否を最大 1 日間記憶し、その間の起動時に記憶されたモデルをスキップして Agent Platform に再度問い合わせません。Claude Code は、現在のデフォルトモデルの記憶された拒否を、最後のチェック以降 10 分が経過した後に起動時に再度チェックするため、管理者が再度有効にしたデフォルトが戻ります。メモリをオフにするには、[`CLAUDE_CODE_SKIP_MODEL_ACCESS_MEMORY=1`](/docs/ja/env-vars)を設定してください。
 
-<h3 id="when-your-organization-enforces-a-model-allowlist">
-  組織がモデル許可リストを強制している場合
-</h3>
+### 組織がモデル許可リストを強制している場合
 
 管理設定で [`enforceAvailableModels`](/docs/ja/model-config#enforce-the-allowlist-for-the-default-model) を設定すると、起動時のモデルチェックは `availableModels` リストで許可されたモデルのみを使用します。これには Claude Code v2.1.287 以降が必要です。`enforceAvailableModels` のないリストは、これらのチェックを制限しません。
 
@@ -312,9 +217,7 @@ Claude Code デフォルトより古いモデルバージョンをピン留め�
 
 エイリアス、バージョンプレフィックス、`modelOverrides` エントリについては、[サードパーティデプロイ向けにモデルをピン留めする](/docs/ja/model-config#pin-models-for-third-party-deployments)を参照してください。
 
-<h3 id="when-a-model-is-disabled-mid-session">
-  セッション中にモデルが無効化された場合
-</h3>
+### セッション中にモデルが無効化された場合
 
 プロジェクトがセッションで実行しているモデルへのアクセスを失った場合（例えば、管理者が [Model Garden](https://console.cloud.google.com/vertex-ai/model-garden)で無効化した場合）、Claude Code は各リクエストが失敗する代わりにセッションを別のモデルに切り替え、`Switched to <fallback> because <model> is not available` を表示します。起動時フォールバックと同じモデルを試します。同じティアの以前のバージョンを最初に試し、Opus セッションで Opus バージョンが利用できない場合は、デフォルト Sonnet モデルを試します。
 
@@ -322,9 +225,7 @@ Claude Code デフォルトより古いモデルバージョンをピン留め�
 
 設定した[フォールバックモデルチェーン](/docs/ja/model-config#fallback-model-chains)はティア切り替えを置き換えます。これらの拒否時に Claude Code は設定したフォールバックに切り替えます。拒否されたリクエストが切り替わらずに失敗するようにするには、[`CLAUDE_CODE_DISABLE_MODEL_ACCESS_FALLBACK=1`](/docs/ja/env-vars)を設定してください。設定したフォールバックチェーンはこれらの拒否時に切り替わります。すべての拒否されたリクエストが失敗するようにしたい場合は、チェーンも削除してください。
 
-<h2 id="iam-configuration">
-  IAM 設定
-</h2>
+## IAM 設定
 
 `roles/aiplatform.user` ロールを割り当てます。このロールには必要な権限が含まれています。
 
@@ -334,13 +235,11 @@ Claude Code デフォルトより古いモデルバージョンをピン留め�
 
 詳細については、[Google Cloud の Agent Platform IAM ドキュメント](https://cloud.google.com/vertex-ai/docs/general/access-control)を参照してください。
 
-<Note>
-  Claude Code 用に専用の GCP プロジェクトを作成して、コスト追跡とアクセス制御を簡素化してください。
-</Note>
+> [!NOTE]
+>
+> Claude Code 用に専用の GCP プロジェクトを作成して、コスト追跡とアクセス制御を簡素化してください。
 
-<h2 id="1m-token-context-window">
-  100 万トークンコンテキストウィンドウ
-</h2>
+## 100 万トークンコンテキストウィンドウ
 
 Fable モデル、Sonnet 5 以降、および Opus 4.7 以降は、Google Cloud の Agent Platform でデフォルトで[100 万トークンコンテキストウィンドウ](https://platform.claude.com/docs/ja/build-with-claude/context-windows#context-window-sizes-by-model)で実行され、`[1m]` サフィックスは不要です。代わりに 200K ウィンドウを維持するには、[`CLAUDE_CODE_DISABLE_1M_CONTEXT=1`](/docs/ja/model-config#turn-off-1m-context) を設定します。
 
@@ -348,9 +247,7 @@ Opus 4.6 と Sonnet 4.6 は、`[1m]` バリアントを選択すると 100 万�
 
 v2.1.287 より前は、Fable モデルと Opus 4.7 以降は Google Cloud の Agent Platform でデフォルトで 200K ウィンドウで実行され、`[1m]` サフィックスによって 100 万ウィンドウを使用していました。
 
-<h2 id="troubleshooting">
-  トラブルシューティング
-</h2>
+## トラブルシューティング
 
 「デフォルト認証情報を読み込めません」エラーが発生した場合：
 
@@ -375,9 +272,7 @@ v2.1.287 より前は、Fable モデルと Opus 4.7 以降は Google Cloud の A
 * 地域別エンドポイントの場合、プライマリモデルと小型/高速モデルが選択したリージョンでサポートされていることを確認してください
 * より良い可用性のために `CLOUD_ML_REGION=global` に切り替えることを検討してください
 
-<h2 id="additional-resources">
-  追加リソース
-</h2>
+## 追加リソース
 
 * [Google Cloud の Agent Platform ドキュメント](https://cloud.google.com/vertex-ai/docs)
 * [Google Cloud の Agent Platform 価格](https://cloud.google.com/vertex-ai/pricing)

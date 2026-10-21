@@ -6,9 +6,11 @@
 
 > SSO サインイン、グループごとのモデルアクセス、OTLP テレメトリを備えた自己ホスト型ゲートウェイを通じて、Amazon Bedrock、Claude Platform on AWS、Google Cloud、または Microsoft Foundry で Claude Code を実行します。
 
-<Note>
-  Claude アプリゲートウェイは、[データレジデンシー](/docs/ja/claude-apps-gateway-deploy#compliance-posture)要件を満たすなど、独自のクラウドプロバイダーを通じて推論をルーティングする必要がある、または希望する組織向けに設計されています。この要件がない場合、SCIM プロビジョニングや web・モバイル上の Claude Code などの他の機能へのアクセスを希望する場合は、Claude Enterprise の方がより適切である可能性があります。すべてのデプロイメント方法の完全な比較については、[機能可用性](/docs/ja/feature-availability)ページを参照してください。
-</Note>
+> [!NOTE]
+>
+> Claude アプリゲートウェイは、[データレジデンシー](/docs/ja/claude-apps-gateway-deploy#compliance-posture)要件を満たすなど、独自のクラウドプロバイダーを通じて推論をルーティングする必要がある、または希望する組織向けに設計されています。この要件がない場合、SCIM プロビジョニングや web・モバイル上の Claude Code などの他の機能へのアクセスを希望する場合は、Claude Enterprise の方がより適切である可能性があります。すべてのデプロイメント方法の完全な比較については、[機能可用性](/docs/ja/feature-availability)ページを参照してください。
+>
+> Claude Code は一度に 1 つのサインインのみを使用します。ゲートウェイへのサインインは、Claude for Teams または Enterprise のログインに代わるものです。ゲートウェイセッションは claude.ai の管理コンソールで設定した[サーバー管理設定](/docs/ja/server-managed-settings)を取得しないため、ゲートウェイの [`managed` ブロック](/docs/ja/claude-apps-gateway-config#managed)から配信してください。そのブロックには `forceLoginMethod` と `forceLoginOrgUUID` を含めないでください。含めると、[サインイン済みの一部のセッションが起動時に終了します](/docs/ja/claude-apps-gateway-config#client-side-managed-settings)。ゲートウェイセッションで失われるものについては、[可用性と制限事項](#availability-and-limitations)を参照してください。
 
 Claude アプリゲートウェイは、開発者の Claude Code クライアントとモデルプロバイダーの間に位置する自己ホスト型サービスです。開発者は API キーやクラウド認証情報を保持する代わりに、企業の ID プロバイダー（IdP）でサインインします。ゲートウェイはアップストリーム認証情報を保持し、IdP グループによるモデルアクセスと[管理設定](/docs/ja/managed-settings)を強制し、使用状況テレメトリを独自の可観測性スタックにリレーします。
 
@@ -23,11 +25,9 @@ Claude アプリゲートウェイは、開発者の Claude Code クライアン
 
 関連ページはさらに詳しく説明しています。[設定リファレンス](/docs/ja/claude-apps-gateway-config)はクイックスタートが書き込む YAML ファイルのすべてのオプションをカバーし、[デプロイメントガイド](/docs/ja/claude-apps-gateway-deploy)は IdP ごとのセットアップ、Kubernetes と Cloud Run デプロイメント、および運用をカバーしています。
 
-<h2 id="why-claude-apps-gateway">
-  Claude apps gateway を使用する理由
-</h2>
+## Claude apps gateway を使用する理由
 
-[ゲートウェイの概要](/docs/ja/gateways)はゲートウェイが何をするか、なぜ実行するかをカバーしています。Claude apps gateway は Anthropic 独自のゲートウェイで、`claude` バイナリに組み込まれており、各 Claude Code リリースと一緒にテストされているため、Claude Code が送信するヘッダーとリクエストフィールドを、オペレーターが個別の許可リストを維持することなく転送します。デプロイされると、以下が得られます。
+[ゲートウェイの概要](/docs/ja/gateways)はゲートウェイが何をするか、なぜ実行するかをカバーしています。Claude apps gateway は Anthropic 独自のゲートウェイで、`claude` バイナリに組み込まれており、各 Claude Code リリースと一緒にテストされているため、Claude Code が送信する `anthropic-beta` の値とリクエストフィールドを、オペレーターが個別の許可リストを維持することなく転送します。デプロイされると、以下が得られます。
 
 * **認証情報**：アップストリーム API キーまたはクラウド認証情報は、インフラストラクチャ内にのみ存在します。開発者は企業 SSO で認証し、短期間有効なベアラートークンを受け取るため、オフボーディングは IdP で発生します。ユーザーをプロビジョニング解除すると、ゲートウェイアクセスはセッション有効期間内に期限切れになります。デフォルトは 1 時間です。
 * **アクセス制御**：IdP グループはモデル許可リストと[管理設定](/docs/ja/managed-settings)ポリシーにマップされます。ゲートウェイはモデルアクセスをサーバー側で強制し、許可されていないモデルのリクエストを拒否し、各グループの管理設定ポリシーを選択します。CLI は[管理設定層](/docs/ja/settings#settings-precedence)でこれを適用します。異なるチームは異なるモデル、ツール、および権限を取得し、開発者はポリシーがロックしているものをオーバーライドできません。
@@ -35,19 +35,15 @@ Claude アプリゲートウェイは、開発者の Claude Code クライアン
 * **テレメトリ**：各設定先は、デフォルトではトークン数、モデル、ユーザーアイデンティティ、レイテンシを含む[OpenTelemetry Protocol（OTLP）メトリクス](/docs/ja/monitoring-usage)を受け取り、ログとトレースは宛先ごとのオプトインです。
 * **アップストリームルーティング**：クライアントは Anthropic Messages API をゲートウェイに話しかけ、ゲートウェイは各アップストリーム（Amazon Bedrock、[Claude Platform on AWS](/docs/ja/claude-platform-on-aws)、Google Cloud の Agent Platform、Microsoft Foundry、または Anthropic API）に対して変換し、それらの間でフェイルオーバーします。開発者が気付いたり再設定したりすることなく、リージョン、プロバイダー、またはフェイルオーバー順序を変更できます。
 
-<Frame>
-  <img src="https://mintcdn.com/claude-code/VbyXug8hBU9UK6oT/images/claude-gateway-architecture.svg?fit=max&auto=format&n=VbyXug8hBU9UK6oT&q=85&s=9e4f1190fc56718144190a3db61c63af" alt="Claude Code クライアントと Claude Desktop の Chat、Cowork、Code タブがベアラートークンを使用して HTTPS 経由でインフラストラクチャ内の自己ホスト型 Claude apps ゲートウェイに接続し、IdP に対してユーザーにサインインし、PostgreSQL に認証状態を保存し、テレメトリを OTLP コレクターにリレーし、Amazon Bedrock、Claude Platform on AWS、Google Cloud、Microsoft Foundry、または Anthropic API に推論を転送する図" width="760" height="320" data-path="images/claude-gateway-architecture.svg" />
-</Frame>
+![Claude Code クライアントと Claude Desktop の Chat、Cowork、Code タブがベアラートークンを使用して HTTPS 経由でインフラストラクチャ内の自己ホスト型 Claude apps ゲートウェイに接続し、IdP に対してユーザーにサインインし、PostgreSQL に認証状態を保存し、テレメトリを OTLP コレクターにリレーし、Amazon Bedrock、Claude Platform on AWS、Google Cloud、Microsoft Foundry、または Anthropic API に推論を転送する図](https://mintcdn.com/claude-code/VbyXug8hBU9UK6oT/images/claude-gateway-architecture.svg?fit=max\&auto=format\&n=VbyXug8hBU9UK6oT\&q=85\&s=9e4f1190fc56718144190a3db61c63af)
 
-<Note>
-  ゲートウェイ独自のデータプレーンは、Anthropic API が設定されたアップストリームでない限り、Anthropic インフラストラクチャに何も送信しません。テレメトリ、監査ログ、管理設定、および開発者の IdP アイデンティティがどこに行くかを制御し、ゲートウェイはそれらのいずれも Anthropic に送信しません。残りのトラフィック CLI プロセスが送信できる方法と、それを閉じる方法については、[コンプライアンスポスチャ](/docs/ja/claude-apps-gateway-deploy#compliance-posture)を参照してください。
-</Note>
+> [!NOTE]
+>
+> ゲートウェイ独自のデータプレーンは、Anthropic API が設定されたアップストリームでない限り、Anthropic インフラストラクチャに何も送信しません。テレメトリ、監査ログ、管理設定、および開発者の IdP アイデンティティがどこに行くかを制御し、ゲートウェイはそれらのいずれも Anthropic に送信しません。残りのトラフィック CLI プロセスが送信できる方法と、それを閉じる方法については、[コンプライアンスポスチャ](/docs/ja/claude-apps-gateway-deploy#compliance-posture)を参照してください。
 
 ゲートウェイを通じてどの Claude Code 機能が機能するか、およびサーバー自体が何をサポートするかについては、以下の[可用性と制限](#availability-and-limitations)を参照してください。コスト、バイパス、複数ゲートウェイの実行、サーバーレスプラットフォームなどの決定については、[デプロイメントガイド](/docs/ja/claude-apps-gateway-deploy#deployment)を参照してください。
 
-<h3 id="other-gateway-implementations">
-  その他のゲートウェイ実装
-</h3>
+### その他のゲートウェイ実装
 
 既に要件を満たす LLM ゲートウェイまたは API ゲートウェイを実行している場合は、それを使い続けてください。[その他の LLM ゲートウェイ](/docs/ja/llm-gateway)は Claude Code をそれに対して設定することをカバーしています。
 
@@ -55,19 +51,19 @@ Claude アプリゲートウェイは、開発者の Claude Code クライアン
 
 プロトコルへの破壊的な変更は事前に発表されますが、無期限の後方互換性は保証されません。
 
-<h2 id="quickstart">
-  クイックスタート
-</h2>
+> [!NOTE]
+>
+> ゲートウェイのサインイントークンは、サインインを承認した開発者を識別するものであり、それを使用するプログラムを識別するものではありません。Claude Code は独自のクライアント ID やシークレットを持たずにサインインするため、ゲートウェイにはどのプログラムがサインインしているかを検証する方法がありません。任意のクライアントが `User-Agent` やその他のリクエストフィールドを設定できるため、これらはルーティングやメトリクスに使用し、リクエストが Claude Code から送信されたことの証明としては使用しないでください。
+
+## クイックスタート
 
 このクイックスタートは最小限のパスを説明しています。IdP で OAuth クライアントを登録し、`gateway.yaml` を書き、Docker Compose で Postgres と一緒にゲートウェイを実行し、エンドツーエンドでサインインを確認します。Amazon Bedrock アップストリームを使用します。Claude Platform on AWS、Google Cloud の Agent Platform、Microsoft Foundry、および Anthropic API は、[設定リファレンス](/docs/ja/claude-apps-gateway-config#upstreams)に示されているように `upstreams` ブロックをスワップすることで同様にサポートされます。最後に、開発者が `/login` できるゲートウェイがあります。
 
-<Note>
-  **プライベートネットワークにデプロイします。** Claude Code は、アドレスがプライベートであるゲートウェイにのみ接続します。これはセキュリティガードです。信頼されたゲートウェイは開発者マシンでコマンドを実行する設定をプッシュできるためです。ゲートウェイを内部ロードバランサーまたは VPN の背後に配置し、プライベート IP にのみ解決するホスト名を付けます。内部ネットワークが組織が所有するパブリック IPv4 スペースから番号付けされている場合は、[所有するパブリックアドレススペースでゲートウェイを許可する](#allow-a-gateway-on-public-address-space-you-own)を参照してください。
-</Note>
+> [!NOTE]
+>
+> **プライベートネットワークにデプロイします。** Claude Code は、アドレスがプライベートであるゲートウェイにのみ接続します。これはセキュリティガードです。信頼されたゲートウェイは開発者マシンでコマンドを実行する設定をプッシュできるためです。ゲートウェイを内部ロードバランサーまたは VPN の背後に配置し、プライベート IP にのみ解決するホスト名を付けます。内部ネットワークが組織が所有するパブリック IPv4 スペースから番号付けされている場合は、[所有するパブリックアドレススペースでゲートウェイを許可する](#allow-a-gateway-on-public-address-space-you-own)を参照してください。
 
-<h3 id="prerequisites">
-  前提条件
-</h3>
+### 前提条件
 
 開始する前に、以下を用意してください。
 
@@ -81,187 +77,181 @@ Claude アプリゲートウェイは、開発者の Claude Code クライアン
 | プライベートネットワークアドレス | `/login` では、Claude Code はゲートウェイのホスト名または IP アドレスがプライベートアドレスのみに解決されることを要求します。RFC 1918、リンクローカル、CGNAT `100.64.0.0/10`、IPv6 ULA `fc00::/7`、またはループバック。ホストするゲートウェイの場合、宣言するブロック外のパブリックアドレスは拒否されます。デプロイガイドの[脅威モデル](/docs/ja/claude-apps-gateway-deploy#threat-model-summary)を参照してください。開発者マシンが HTTPS を企業プロキシ経由でルーティングする場合、サインインはプロキシホストもプライベートアドレスに解決されることを要求します。そうでない場合は、ゲートウェイホストを `NO_PROXY` に追加して、CLI が直接接続するようにします。内部ネットワークが組織が所有するパブリック IPv4 スペースから番号付けされている場合は、[これらのブロックを宣言](#allow-a-gateway-on-public-address-space-you-own)して、`/login` がそこでゲートウェイを受け入れるようにします。 |
 | Linux ランタイム | ゲートウェイサーバーはネイティブ Linux バイナリでのみ実行されます。macOS はローカル開発用に機能します。Windows はサーバープラットフォームとしてサポートされていません。 |
 
-<h3 id="steps">
-  ステップ
-</h3>
+### ステップ
 
-<Steps>
-  <Step title="IdP で OAuth クライアントを登録する">
-    リダイレクト URI がそれと一致する必要があるため、まずゲートウェイのホスト名を決定します。新しい OIDC ウェブアプリケーションを作成し、リダイレクト URI を `https://claude-gateway.<your-domain>/oauth/callback` に設定します。ホストはステップ 3 で [`listen.public_url`](/docs/ja/claude-apps-gateway-config#listen) として設定する値と同じです。`client_id` と `client_secret` をメモします。IdP ごとの手順は[ID プロバイダーセットアップ](/docs/ja/claude-apps-gateway-deploy#identity-provider-setup)にあります。
-  </Step>
+**1. IdP で OAuth クライアントを登録する**
 
-  <Step title="PostgreSQL データベースをプロビジョニングする">
-    PostgreSQL 11 以降を使用します。最小のマネージド層で十分です。ゲートウェイは起動時に独自のスキーママイグレーションを実行するため、データベースロールはテーブルを作成および変更する権限が必要です。[`store`](/docs/ja/claude-apps-gateway-config#store)を参照してください。
-  </Step>
+リダイレクト URI がそれと一致する必要があるため、まずゲートウェイのホスト名を決定します。新しい OIDC ウェブアプリケーションを作成し、リダイレクト URI を `https://claude-gateway.<your-domain>/oauth/callback` に設定します。ホストはステップ 3 で [`listen.public_url`](/docs/ja/claude-apps-gateway-config#listen) として設定する値と同じです。`client_id` と `client_secret` をメモします。IdP ごとの手順は[ID プロバイダーセットアップ](/docs/ja/claude-apps-gateway-deploy#identity-provider-setup)にあります。
 
-  <Step title="gateway.yaml を書く">
-    シークレットは `${ENV_VAR}` 展開経由で読み取られるため、ファイル自体はバージョン管理に存在できます。`/login` がパブリックアドレスを拒否するため、プライベート IP に解決する `public_url` ホスト名を使用します。最小設定には 5 つのセクションがあり、他のすべてのフィールドにはデフォルトがあります。
+**2. PostgreSQL データベースをプロビジョニングする**
 
-    ```yaml gateway.yaml theme={null}
-    listen:
-      host: 0.0.0.0
-      port: 8080
-      # ホストがループバックアドレスでない限り必須。IdP
-      # redirect_uri とディスカバリードキュメントに使用されます。
-      public_url: https://claude-gateway.internal.example.com
+PostgreSQL 11 以降を使用します。最小のマネージド層で十分です。ゲートウェイは起動時に独自のスキーママイグレーションを実行するため、データベースロールはテーブルを作成および変更する権限が必要です。[`store`](/docs/ja/claude-apps-gateway-config#store)を参照してください。
 
-    oidc:
-      issuer: https://login.example.com        # /.well-known/openid-configuration を提供する必要があります
-      client_id: 0oa1example2
-      client_secret: ${OIDC_CLIENT_SECRET}
-      allowed_email_domains: [example.com]        # 組織外の id_tokens を拒否します
-      userinfo_fallback: true                  # id_token が email/groups を省略する IdP の場合。それ以外の場合は無害です
+**3. gateway.yaml を書く**
 
-    session:
-      jwt_secret: ${GATEWAY_JWT_SECRET}        # openssl rand -base64 32
-      ttl_hours: 1                             # IdP プロビジョニング解除時の失効レイテンシもバウンドします
+シークレットは `${ENV_VAR}` 展開経由で読み取られるため、ファイル自体はバージョン管理に存在できます。`/login` がパブリックアドレスを拒否するため、プライベート IP に解決する `public_url` ホスト名を使用します。最小設定には 5 つのセクションがあり、他のすべてのフィールドにはデフォルトがあります。
 
-    store:
-      postgres_url: ${GATEWAY_POSTGRES_URL}    # 管理 Postgres の場合は ?sslmode=require を追加します
+```yaml gateway.yaml theme={null}
+listen:
+  host: 0.0.0.0
+  port: 8080
+  # ホストがループバックアドレスでない限り必須。IdP
+  # redirect_uri とディスカバリードキュメントに使用されます。
+  public_url: https://claude-gateway.internal.example.com
 
-    upstreams:
-      - provider: bedrock
-        region: us-east-1
-        auth: {} # 空：AWS デフォルト認証情報チェーン
-    # （IRSA、EC2/ECS タスクロール、環境変数、~/.aws）
+oidc:
+  issuer: https://login.example.com        # /.well-known/openid-configuration を提供する必要があります
+  client_id: 0oa1example2
+  client_secret: ${OIDC_CLIENT_SECRET}
+  allowed_email_domains: [example.com]        # 組織外の id_tokens を拒否します
+  userinfo_fallback: true                  # id_token が email/groups を省略する IdP の場合。それ以外の場合は無害です
 
-    # モデルはアップストリームごとに自動的に変換されます。組み込みカタログ
-    # は claude-opus-4-8 を us.anthropic.claude-opus-4-8 にマップし、
-    # Bedrock がサポートするすべての Claude モデルに対して同様にマップします。false に設定し、
-    # `models:` リストを追加して、特定のモデルのみを公開します。
-    auto_include_builtin_models: true
-    ```
+session:
+  jwt_secret: ${GATEWAY_JWT_SECRET}        # openssl rand -base64 32
+  ttl_hours: 1                             # IdP プロビジョニング解除時の失効レイテンシもバウンドします
 
-    この設定は、デフォルト Amazon Bedrock モデルカタログを使用した動作するサインインループに十分です。実行されたら、[`managed.policies`](/docs/ja/claude-apps-gateway-config#managed) 経由でグループごとの RBAC と管理設定を追加し、[`telemetry`](/docs/ja/claude-apps-gateway-config#telemetry) 経由でテレメトリファンアウトを追加し、[`models`](/docs/ja/claude-apps-gateway-config#models) 経由でマルチアップストリームフェイルオーバー、プロビジョニング済みスループット ARN、または非米国リージョンを追加します。
+store:
+  postgres_url: ${GATEWAY_POSTGRES_URL}    # 管理 Postgres の場合は ?sslmode=require を追加します
 
-    <Note>
-      Amazon Bedrock アップストリームは、`inference-profile/us.anthropic.*` ARN と基礎となる `foundation-model/anthropic.*` ARN の両方に対して `bedrock:InvokeModel` と `bedrock:InvokeModelWithResponseStream` を持つ AWS プリンシパルが必要です。また、そのアカウントについて、Bedrock コンソールのモデルカタログから Anthropic の一度限りのユースケースフォームが提出されている必要もあります。
+upstreams:
+  - provider: bedrock
+    region: us-east-1
+    auth: {} # 空：AWS デフォルト認証情報チェーン
+# （IRSA、EC2/ECS タスクロール、環境変数、~/.aws）
 
-      静的キーではなく、EKS の IRSA、ECS タスクロール、または EC2 インスタンスプロファイルを使用して認証情報を提供します。[`upstreams` リファレンス](/docs/ja/claude-apps-gateway-config#upstreams)には、完全な IAM 詳細、クロスクラウド認証情報マトリックス、および他のプロバイダーの `auth` ブロックがあります。
-    </Note>
-  </Step>
+# モデルはアップストリームごとに自動的に変換されます。組み込みカタログ
+# は claude-opus-4-8 を us.anthropic.claude-opus-4-8 にマップし、
+# Bedrock がサポートするすべての Claude モデルに対して同様にマップします。false に設定し、
+# `models:` リストを追加して、特定のモデルのみを公開します。
+auto_include_builtin_models: true
+```
 
-  <Step title="実行する">
-    [イメージ要件](/docs/ja/claude-apps-gateway-deploy#container-image)を満たす `claude` バイナリの周りにコンテナイメージをビルドし、Postgres と一緒に実行します。Compose ファイルはイメージを `registry.example.com/claude-gateway:2.1.198` として参照します。独自のレジストリとイメージタグに置き換えます。
+この設定は、デフォルト Amazon Bedrock モデルカタログを使用した動作するサインインループに十分です。実行されたら、[`managed.policies`](/docs/ja/claude-apps-gateway-config#managed) 経由でグループごとの RBAC と管理設定を追加し、[`telemetry`](/docs/ja/claude-apps-gateway-config#telemetry) 経由でテレメトリファンアウトを追加し、[`models`](/docs/ja/claude-apps-gateway-config#models) 経由でマルチアップストリームフェイルオーバー、プロビジョニング済みスループット ARN、または非米国リージョンを追加します。
 
-    ```yaml docker-compose.yaml theme={null}
-    services:
-      gateway:
-        image: registry.example.com/claude-gateway:2.1.198
-        ports: ["8080:8080"]
-        volumes: ["./gateway.yaml:/etc/claude/gateway.yaml:ro"]
-        environment:
-          OIDC_CLIENT_SECRET: ${OIDC_CLIENT_SECRET}
-          GATEWAY_JWT_SECRET: ${GATEWAY_JWT_SECRET}
-          GATEWAY_POSTGRES_URL: postgres://gw:pw@postgres/gateway
-          # AWS 認証情報：本番環境では、これらを省略し、インスタンス
-          # ロールを使用します。ローカル Compose テストの場合、独自のものを渡します。
-          AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-          AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-          AWS_SESSION_TOKEN: ${AWS_SESSION_TOKEN}
-        depends_on:
-          postgres:
-            condition: service_healthy
+> [!NOTE]
+>
+> Amazon Bedrock アップストリームは、`inference-profile/us.anthropic.*` ARN と基礎となる `foundation-model/anthropic.*` ARN の両方に対して `bedrock:InvokeModel` と `bedrock:InvokeModelWithResponseStream` を持つ AWS プリンシパルが必要です。また、そのアカウントについて、Bedrock コンソールのモデルカタログから Anthropic の一度限りのユースケースフォームが提出されている必要もあります。
+>
+> 静的キーではなく、EKS の IRSA、ECS タスクロール、または EC2 インスタンスプロファイルを使用して認証情報を提供します。[`upstreams` リファレンス](/docs/ja/claude-apps-gateway-config#upstreams)には、完全な IAM 詳細、クロスクラウド認証情報マトリックス、および他のプロバイダーの `auth` ブロックがあります。
+
+**4. 実行する**
+
+[イメージ要件](/docs/ja/claude-apps-gateway-deploy#container-image)を満たす `claude` バイナリの周りにコンテナイメージをビルドし、Postgres と一緒に実行します。Compose ファイルはイメージを `registry.example.com/claude-gateway:2.1.198` として参照します。独自のレジストリとイメージタグに置き換えます。
+
+```yaml docker-compose.yaml theme={null}
+services:
+  gateway:
+    image: registry.example.com/claude-gateway:2.1.198
+    ports: ["8080:8080"]
+    volumes: ["./gateway.yaml:/etc/claude/gateway.yaml:ro"]
+    environment:
+      OIDC_CLIENT_SECRET: ${OIDC_CLIENT_SECRET}
+      GATEWAY_JWT_SECRET: ${GATEWAY_JWT_SECRET}
+      GATEWAY_POSTGRES_URL: postgres://gw:pw@postgres/gateway
+      # AWS 認証情報：本番環境では、これらを省略し、インスタンス
+      # ロールを使用します。ローカル Compose テストの場合、独自のものを渡します。
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_SESSION_TOKEN: ${AWS_SESSION_TOKEN}
+    depends_on:
       postgres:
-        image: postgres:16-alpine
-        environment: { POSTGRES_USER: gw, POSTGRES_PASSWORD: pw, POSTGRES_DB: gateway }
-        healthcheck:
-          test: ["CMD-SHELL", "pg_isready -U gw"]
-          interval: 5s
-        volumes: ["pgdata:/var/lib/postgresql/data"]
-    volumes: { pgdata: }
-    ```
+        condition: service_healthy
+  postgres:
+    image: postgres:16-alpine
+    environment: { POSTGRES_USER: gw, POSTGRES_PASSWORD: pw, POSTGRES_DB: gateway }
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gw"]
+      interval: 5s
+    volumes: ["pgdata:/var/lib/postgresql/data"]
+volumes: { pgdata: }
+```
 
-    ゲートウェイは、設定を読み取り、Postgres に接続してスキーママイグレーションを適用し、IdP に対して OIDC ディスカバリーを実行し、アップストリームクライアントを構築し、リッスンを開始する単一の Linux バイナリです。
+ゲートウェイは、設定を読み取り、Postgres に接続してスキーママイグレーションを適用し、IdP に対して OIDC ディスカバリーを実行し、アップストリームクライアントを構築し、リッスンを開始する単一の Linux バイナリです。
 
-    起動は設定、Postgres 接続、OIDC ディスカバリー、およびアップストリームクライアント構築に対して失敗時に閉じられます。これらのいずれかが到達不可能または設定が誤っている場合、ゲートウェイは低下した状態でトラフィックを提供するのではなく、エラーで終了します。
+起動は設定、Postgres 接続、OIDC ディスカバリー、およびアップストリームクライアント構築に対して失敗時に閉じられます。これらのいずれかが到達不可能または設定が誤っている場合、ゲートウェイは低下した状態でトラフィックを提供するのではなく、エラーで終了します。
 
-    成功した起動は推論パスを検証しません。Amazon Bedrock と Google Cloud の Agent Platform インスタンス認証情報は起動時ではなく最初のリクエストで解決されるためです。
+成功した起動は推論パスを検証しません。Amazon Bedrock と Google Cloud の Agent Platform インスタンス認証情報は起動時ではなく最初のリクエストで解決されるためです。
 
-    起動シーケンスについて stderr を監視します。ログ行は `[gateway] <timestamp> <level> <message>` 形式を使用し、監査イベントは `evt` フィールド付きの単一行 JSON であり、起動バナーは以下で省略され、マイグレーションとリッスン行の間に出力されます。新しいデータベースはスキーママイグレーションごとに 1 行の `migration N applied` を出力します。既にマイグレーションされたデータベースは出力しません。順番に以下が表示されます。
+起動シーケンスについて stderr を監視します。ログ行は `[gateway] <timestamp> <level> <message>` 形式を使用し、監査イベントは `evt` フィールド付きの単一行 JSON であり、起動バナーは以下で省略され、マイグレーションとリッスン行の間に出力されます。新しいデータベースはスキーママイグレーションごとに 1 行の `migration N applied` を出力します。既にマイグレーションされたデータベースは出力しません。順番に以下が表示されます。
 
-    ```text theme={null}
-    {"ts":"2026-06-10T17:03:21.114Z","evt":"config.load","path":"/etc/claude/gateway.yaml","sha256":"…"}
-    [gateway] 2026-06-10T17:03:21.395Z info waiting for migration lock (another replica may be migrating; check pg_locks for key 6775156 if this persists)
-    [gateway] 2026-06-10T17:03:21.408Z info migration 1 applied
-    …
-    [gateway] 2026-06-10T17:03:21.431Z info migration 6 applied
-    [gateway] 2026-06-10T17:03:21.512Z info claude gateway listening on http://0.0.0.0:8080
-    ```
+```text theme={null}
+{"ts":"2026-06-10T17:03:21.114Z","evt":"config.load","path":"/etc/claude/gateway.yaml","sha256":"…"}
+[gateway] 2026-06-10T17:03:21.395Z info waiting for migration lock (another replica may be migrating; check pg_locks for key 6775156 if this persists)
+[gateway] 2026-06-10T17:03:21.408Z info migration 1 applied
+…
+[gateway] 2026-06-10T17:03:21.431Z info migration 6 applied
+[gateway] 2026-06-10T17:03:21.512Z info claude gateway listening on http://0.0.0.0:8080
+```
 
-    ゲートウェイは、`access_control.allow_cidrs` が空であることを示す警告もログに記録します。これはここでは想定どおりです。許可リストを設定するまで、ゲートウェイがサーブするクライアントアドレスを制限するものがないためです。[`access_control` リファレンス](/docs/ja/claude-apps-gateway-config#http-tuning)には推奨範囲があります。
+ゲートウェイは、`access_control.allow_cidrs` が空であることを示す警告もログに記録します。これはここでは想定どおりです。許可リストを設定するまで、ゲートウェイがサーブするクライアントアドレスを制限するものがないためです。[`access_control` リファレンス](/docs/ja/claude-apps-gateway-config#http-tuning)には推奨範囲があります。
 
-    起動が `claude gateway listening on` 行の前に終了する場合、stderr の最後の行は問題を名前付けます。
+起動が `claude gateway listening on` 行の前に終了する場合、stderr の最後の行は問題を名前付けます。
 
-    * 到達不可能な Postgres
-    * DDL 権限のない Postgres ロール
-    * 到達不可能または無効な OIDC ディスカバリードキュメント
-    * 違反フィールドパスを含む設定スキーマ違反
+* 到達不可能な Postgres
+* DDL 権限のない Postgres ロール
+* 到達不可能または無効な OIDC ディスカバリードキュメント
+* 違反フィールドパスを含む設定スキーマ違反
 
-    修正して再起動します。
+修正して再起動します。
 
-    既に TLS 終了イングレスがある場合は、Compose をスキップし、`claude gateway --config gateway.yaml` でバイナリを直接実行します。`public_url` をイングレスオリジンに設定し、`listen` をループバックまたはクラスター内アドレスにバインドします。
-  </Step>
+既に TLS 終了イングレスがある場合は、Compose をスキップし、`claude gateway --config gateway.yaml` でバイナリを直接実行します。`public_url` をイングレスオリジンに設定し、`listen` をループバックまたはクラスター内アドレスにバインドします。
 
-  <Step title="認証サーフェスを確認する">
-    3 つのチェックは、ゲートウェイが開発者に渡す前に実際のユーザーを認証できることを確認します。
+**5. 認証サーフェスを確認する**
 
-    例はゲートウェイのパブリック URL を使用します。イングレスのないローカル Compose セットアップの場合、最初の 2 つのチェックで `http://localhost:8080` に置き換えます。3 番目のチェックは `verification_uri_complete` を開きます。これは `public_url` から構築されるため、ローカル Compose の場合は `gateway.yaml` で `public_url: http://localhost:8080` を設定し、ゲートウェイが `public_url` から IdP `redirect_uri` を構築するため、ステップ 1 の OAuth クライアントに 2 番目のリダイレクト URI として `http://localhost:8080/oauth/callback` を追加します。検証リンクはローカルブラウザで開きます。
+3 つのチェックは、ゲートウェイが開発者に渡す前に実際のユーザーを認証できることを確認します。
 
-    Windows PowerShell では、`curl.exe` を実行します。ベア `curl` は `Invoke-WebRequest` のエイリアスであり、これらのフラグを拒否します。
+例はゲートウェイのパブリック URL を使用します。イングレスのないローカル Compose セットアップの場合、最初の 2 つのチェックで `http://localhost:8080` に置き換えます。3 番目のチェックは `verification_uri_complete` を開きます。これは `public_url` から構築されるため、ローカル Compose の場合は `gateway.yaml` で `public_url: http://localhost:8080` を設定し、ゲートウェイが `public_url` から IdP `redirect_uri` を構築するため、ステップ 1 の OAuth クライアントに 2 番目のリダイレクト URI として `http://localhost:8080/oauth/callback` を追加します。検証リンクはローカルブラウザで開きます。
 
-    まず、ディスカバリードキュメントを取得します。これはゲートウェイが起動し、設定が有効であり、すべての起動チェックが合格したことを確認します。
+Windows PowerShell では、`curl.exe` を実行します。ベア `curl` は `Invoke-WebRequest` のエイリアスであり、これらのフラグを拒否します。
 
-    ```bash theme={null}
-    curl -s https://claude-gateway.internal.example.com/.well-known/oauth-authorization-server | jq
-    ```
+まず、ディスカバリードキュメントを取得します。これはゲートウェイが起動し、設定が有効であり、すべての起動チェックが合格したことを確認します。
 
-    ```json theme={null}
-    {
-      "issuer": "https://claude-gateway.internal.example.com",
-      "device_authorization_endpoint": "…/oauth/device_authorization",
-      "token_endpoint": "…/oauth/token",
-      "grant_types_supported": ["urn:ietf:params:oauth:grant-type:device_code", "refresh_token"]
-    }
-    ```
+```bash theme={null}
+curl -s https://claude-gateway.internal.example.com/.well-known/oauth-authorization-server | jq
+```
 
-    レスポンスには `response_types_supported` や `scopes_supported` などの追加フィールドが含まれます。
+```json theme={null}
+{
+  "issuer": "https://claude-gateway.internal.example.com",
+  "device_authorization_endpoint": "…/oauth/device_authorization",
+  "token_endpoint": "…/oauth/token",
+  "grant_types_supported": ["urn:ietf:params:oauth:grant-type:device_code", "refresh_token"]
+}
+```
 
-    次に、デバイス認可をリクエストします。これはデバイスサインインフローが機能し、Postgres が到達可能で書き込み可能であることを確認します。
+レスポンスには `response_types_supported` や `scopes_supported` などの追加フィールドが含まれます。
 
-    ```bash theme={null}
-    curl -s -X POST https://claude-gateway.internal.example.com/oauth/device_authorization | jq
-    ```
+次に、デバイス認可をリクエストします。これはデバイスサインインフローが機能し、Postgres が到達可能で書き込み可能であることを確認します。
 
-    ```json theme={null}
-    {
-      "device_code": "…",
-      "user_code": "WDJB-MJHT",
-      "verification_uri": "https://claude-gateway.internal.example.com/device",
-      "verification_uri_complete": "https://claude-gateway.internal.example.com/device?user_code=WDJB-MJHT",
-      "expires_in": 600,
-      "interval": 5
-    }
-    ```
+```bash theme={null}
+curl -s -X POST https://claude-gateway.internal.example.com/oauth/device_authorization | jq
+```
 
-    3 番目に、ブラウザで `verification_uri_complete` を開いてコードを確認することでブラウザレッグをテストします。IdP のサインインページにリダイレクトされ、サインイン後、ゲートウェイに戻ってサインイン確認に着地する必要があります。
+```json theme={null}
+{
+  "device_code": "…",
+  "user_code": "WDJB-MJHT",
+  "verification_uri": "https://claude-gateway.internal.example.com/device",
+  "verification_uri_complete": "https://claude-gateway.internal.example.com/device?user_code=WDJB-MJHT",
+  "expires_in": 600,
+  "interval": 5
+}
+```
 
-    最初に失敗したチェックを使用して問題を特定します。
+3 番目に、ブラウザで `verification_uri_complete` を開いてコードを確認することでブラウザレッグをテストします。IdP のサインインページにリダイレクトされ、サインイン後、ゲートウェイに戻ってサインイン確認に着地する必要があります。
 
-    * **最初のチェックが失敗**：起動が完了しませんでした。stderr を確認してください
-    * **2 番目のチェックが失敗**：Postgres がゲートウェイから到達不可能であるか、ロールが書き込みできません。接続文字列と権限を確認してください
-    * **3 番目のチェックが IdP に到達しない**：IdP のリダイレクト URI が `https://<gateway>/oauth/callback` と正確に一致することを確認してください
-    * **3 番目のチェックが IdP に到達しますが、エラーで戻ります**：ゲートウェイの監査ログを読みます。これは `email domain not allowed` などの理由を含むすべての認証拒否を記録します
-  </Step>
+最初に失敗したチェックを使用して問題を特定します。
 
-  <Step title="開発者をログインさせる">
-    この最後のステップはサーバーではなく開発者マシンで発生します。そのマシンの[管理設定ファイル](/docs/ja/managed-settings#delivery-mechanisms)で `forceLoginMethod` を `"gateway"` に、`forceLoginGatewayUrl` をゲートウェイの `public_url` に、`parentSettingsBehavior` を `"merge"` に設定し、`/login` を実行し、**Cloud gateway** 画面で Enter キーを押し、ブラウザサインインを完了します。以下の[ゲートウェイ URL を設定](#set-the-gateway-url)では、3 つのキーと、それらをすべての開発者マシンに配布する方法を説明しています。
-  </Step>
-</Steps>
+* **最初のチェックが失敗**：起動が完了しませんでした。stderr を確認してください
+* **2 番目のチェックが失敗**：Postgres がゲートウェイから到達不可能であるか、ロールが書き込みできません。接続文字列と権限を確認してください
+* **3 番目のチェックが IdP に到達しない**：IdP のリダイレクト URI が `https://<gateway>/oauth/callback` と正確に一致することを確認してください
+* **3 番目のチェックが IdP に到達しますが、エラーで戻ります**：ゲートウェイの監査ログを読みます。これは `email domain not allowed` などの理由を含むすべての認証拒否を記録します
 
-<h2 id="connect-developers">
-  開発者を接続する
-</h2>
+**6. 開発者をログインさせる**
+
+この最後のステップはサーバーではなく開発者マシンで発生します。そのマシンの[管理設定ファイル](/docs/ja/managed-settings#delivery-mechanisms)で `forceLoginMethod` を `"gateway"` に、`forceLoginGatewayUrl` をゲートウェイの `public_url` に、`parentSettingsBehavior` を `"merge"` に設定し、`/login` を実行し、**Cloud gateway** 画面で Enter キーを押し、ブラウザサインインを完了します。以下の[ゲートウェイ URL を設定](#set-the-gateway-url)では、3 つのキーと、それらをすべての開発者マシンに配布する方法を説明しています。
+
+## 開発者を接続する
 
 開発者は独自のラップトップから 1 つのブラウザサインインで接続し、企業の仕事用アカウントを使用します。claude.ai アカウント、API キー、またはサブスクリプションは必要ありません。モデルへのリクエストは組織のアップストリーム認証情報を使用してゲートウェイを通じて行くためです。接続は、MDM 経由でプッシュする[クライアント側管理設定](/docs/ja/claude-apps-gateway-config#client-side-managed-settings)によって駆動されます。このセクションは管理者が設定するものをカバーしています。
 
@@ -283,9 +273,7 @@ openssl x509 -noout -fingerprint -sha256 -in cert.pem | cut -d= -f2 | tr -d : | 
 
 セッションは `ttl_hours` 有効期限の前にサイレントに更新されます。IdP プロビジョニング解除後の更新が失敗すると、Claude Code は開発者に再度ログインするよう促します。
 
-<h3 id="set-the-gateway-url">
-  ゲートウェイ URL を設定する
-</h3>
+### ゲートウェイ URL を設定する
 
 MDM 経由またはディスク上で直接デプロイする OS ごとの[管理設定ファイル](/docs/ja/managed-settings#delivery-mechanisms)に 3 つのキーが入ります。管理設定のないマシンについては、代わりに[ユーザー設定でゲートウェイ URL を設定する](#set-the-gateway-url-in-user-settings)を参照してください。`forceLoginMethod` と `forceLoginGatewayUrl` は `/login` を **Cloud gateway** 画面で URL が入力された状態で直接開き、`parentSettingsBehavior: "merge"` は Claude Desktop がゲートウェイの出力許可リストを起動する Claude Code セッションに配信できるようにします。これは[Claude Desktop セッションにポリシーを配信する](#deliver-policy-to-claude-desktop-sessions)で説明されています。
 
@@ -301,9 +289,7 @@ MDM 経由またはディスク上で直接デプロイする OS ごとの[管�
 
 ログインピッカーにはゲートウェイオプションがなく、管理設定で URL なしの `forceLoginMethod` のみを設定すると、開発者は「IT 管理者に連絡してください」メッセージのままになります。ログインキーは、マシンにプッシュするファイルに属し、ゲートウェイの `managed.policies[].cli` ブロックには属しません。このブロックは既に接続されているクライアントにのみ到達します。
 
-<h4 id="set-the-gateway-url-in-user-settings">
-  ユーザー設定でゲートウェイ URL を設定する
-</h4>
+#### ユーザー設定でゲートウェイ URL を設定する
 
 管理設定のないマシンでは、各開発者に `forceLoginMethod` と `forceLoginGatewayUrl` を自分のユーザー設定ファイル `~/.claude/settings.json` に追加してもらいます。これには開発者マシンで Claude Code v2.1.295 以降が必要です。この例では `claude-gateway.internal.example.com` のゲートウェイを指定しています。
 
@@ -319,17 +305,15 @@ MDM 経由またはディスク上で直接デプロイする OS ごとの[管�
 * **ユーザー設定のみ**：Claude Code は 2 つのキーを `~/.claude/settings.json` から読み取り、プロジェクトの `.claude/settings.json` や `.claude/settings.local.json` からは読み取りません。
 * **管理設定があると無効になる**：管理設定ファイル、macOS plist または Windows HKLM ポリシー、あるいは[ポリシーヘルパー](/docs/ja/settings-reference#policyhelper)を通じて管理者の設定がマシンに届くと、Claude Code はユーザー設定で指定されたゲートウェイを無視します。
 
-<h3 id="allow-a-gateway-on-public-address-space-you-own">
-  公開アドレス空間でゲートウェイを許可する
-</h3>
+### 公開アドレス空間でゲートウェイを許可する
 
 一部の組織は、キャリアの独自アドレス空間またはレガシー `/8` など、所有する公開 IPv4 ブロックから内部ネットワークに番号を付けるため、ゲートウェイはプライベートアドレスを持つことができません。これらのブロックを `gatewayInternalNetworks` 管理設定にリストします。`/login` は、開発者のマシンが同じブロック内のアドレスからそれに接続するときに、リストされたブロック内のゲートウェイを受け入れます。これには開発者マシンで Claude Code v2.1.268 以降が必要です。以前のバージョンはキーを無視し、プライベートアドレスルールを適用します。
 
-<Warning>
-  `gatewayInternalNetworks` は、公開アドレス空間から番号が付けられている内部ネットワーク用です。ゲートウェイをインターネットに公開することを安全にするわけではありません。信頼されたゲートウェイは開発者マシンでコマンドを実行する設定をプッシュできます。
-
-  ファイアウォールまたはロードバランサーのルールでゲートウェイをネットワークの外から到達不可能に保ちます。ゲートウェイの [`access_control.allow_cidrs`](/docs/ja/claude-apps-gateway-config#http-tuning) をここで宣言するのと同じブロックに設定して、ゲートウェイ自体が他の場所からのクライアントを拒否するようにします。ロードバランサーまたはイングレスの背後にある場合、`listen.trusted_proxies` もそのフロントエンドに設定します。そうしないと、ゲートウェイは `allow_cidrs` を開発者のアドレスではなくフロントエンド自身のアドレスと照合するためです。
-</Warning>
+> [!WARNING]
+>
+> `gatewayInternalNetworks` は、公開アドレス空間から番号が付けられている内部ネットワーク用です。ゲートウェイをインターネットに公開することを安全にするわけではありません。信頼されたゲートウェイは開発者マシンでコマンドを実行する設定をプッシュできます。
+>
+> ファイアウォールまたはロードバランサーのルールでゲートウェイをネットワークの外から到達不可能に保ちます。ゲートウェイの [`access_control.allow_cidrs`](/docs/ja/claude-apps-gateway-config#http-tuning) をここで宣言するのと同じブロックに設定して、ゲートウェイ自体が他の場所からのクライアントを拒否するようにします。ロードバランサーまたはイングレスの背後にある場合、`listen.trusted_proxies` もそのフロントエンドに設定します。そうしないと、ゲートウェイは `allow_cidrs` を開発者のアドレスではなくフロントエンド自身のアドレスと照合するためです。
 
 キーをログインキーと同じ管理設定ソースに追加します。管理設定ファイル、MDM プロファイル、またはレジストリポリシーです。Claude Code はユーザー、プロジェクト、およびサーバー管理設定でそれを無視します。
 
@@ -364,9 +348,7 @@ Claude Code はゲートウェイに接続する前に `/login` でリストを�
 
 宣言されたブロックはサインインできるユーザーを絞りますが、マシンがどこにあるかを証明しません。そのため、組織が管理するアドレス空間のみを宣言します。クラウドプロバイダーの公開範囲など、他のテナントと共有されるブロックは、それに含まれるすべてのユーザーが同じチェックを通過できるようにします。
 
-<h3 id="deliver-policy-to-claude-desktop-sessions">
-  Claude Desktop セッションにポリシーを配信する
-</h3>
+### Claude Desktop セッションにポリシーを配信する
 
 Claude Desktop は Cowork タブと Code タブ、および有効にした場合は Chat タブを、埋め込み Claude Code セッションで実行し、それらのモデルリクエストをゲートウェイを通じて送信します。ゲートウェイが `/user/bootstrap` で提供する設定から構築されたポリシーを各セッションに渡します。モデル許可リスト、無効化されたツール、および一致したポリシーの `cli` または `code` ブロックから派生した出力許可リスト、および[`desktop` オーバーレイ](/docs/ja/claude-apps-gateway-config#claude-desktop-overlay)です。
 
@@ -374,9 +356,7 @@ Claude Desktop は Cowork タブと Code タブ、および有効にした場合
 
 起動プロセスによって渡される設定は親設定です。Claude Code は、管理者がデプロイした管理ソースを持つマシンで親設定を無視します。ただし、[ポリシーを配信するソース](/docs/ja/managed-settings#which-managed-source-claude-code-uses)が `parentSettingsBehavior: "merge"` を設定する場合を除きます。
 
-<h4 id="which-machines-need-the-opt-in">
-  どのマシンがオプトインを必要とするか
-</h4>
+#### どのマシンがオプトインを必要とするか
 
 Claude Desktop のみを実行するマシンはそれを必要とします。Claude Desktop は埋め込みセッションにモデルリストと無効化されたツールリストを適用しますが、出力許可リストは親設定としてのみそれらに到達します。`WebFetch` ドメインルールとサンドボックスネットワークルールの形式です。オプトインなしでは、これらのセッションは出力制限なしで実行され、何も警告しません。ゲートウェイはポリシーが許可しないモデルの推論リクエストを引き続き拒否します。
 
@@ -386,33 +366,27 @@ Claude Desktop のみを実行するマシンはそれを必要とします。Cl
 
 [`policyHelper`](/docs/ja/settings-reference#policyhelper)が管理設定を提供するフリートはそれを使用できません。Claude Code はそれらのフリートで親設定をマージしません。ヘルパーの出力からのみ管理設定を読み取るためです。
 
-<h4 id="set-the-opt-in">
-  オプトインを設定する
-</h4>
+#### オプトインを設定する
 
 [ゲートウェイ URL を設定する](#set-the-gateway-url)から管理設定スニペットをデプロイし、ファイルを上回るクライアント側ソースにミラーリングしてから検証します。
 
-<Steps>
-  <Step title="管理設定ファイルにオプトインをデプロイする">
-    [上記のスニペット](#set-the-gateway-url)には既に `parentSettingsBehavior: "merge"` が含まれているため、マシンにプッシュするファイルはそれを含みます。
-  </Step>
+**1. 管理設定ファイルにオプトインをデプロイする**
 
-  <Step title="ファイルを上回るソースにスニペットをミラーリングする">
-    Claude Code は `parentSettingsBehavior` を[選択されたソース](/docs/ja/managed-settings#which-managed-source-claude-code-uses)からのみ読み取ります。ソースにポリシーキーを追加すると、そのソースが選択されたものになる可能性があるため、クライアント側ソースでは `parentSettingsBehavior` のみではなくスニペット全体をミラーリングします。[クライアント側管理設定](/docs/ja/claude-apps-gateway-config#client-side-managed-settings)は Group Policy または設定プロファイルを通じてポリシーを配信するフリートをカバーしています。macOS の管理設定プリストまたは Windows の HKLM ポリシーは `managed-settings.json` ファイルを上回り、ゲートウェイ独自のリモート管理設定は両方を上回るため、ゲートウェイにサインインするマシンでは、ゲートウェイポリシーの [`cli` または `code` ブロック](/docs/ja/claude-apps-gateway-config#managed)にも `parentSettingsBehavior` を設定します。
-  </Step>
+[上記のスニペット](#set-the-gateway-url)には既に `parentSettingsBehavior: "merge"` が含まれているため、マシンにプッシュするファイルはそれを含みます。
 
-  <Step title="どのソースが選択されているかを確認する">
-    Claude Desktop のみを実行するマシンで、Agent SDK の [`resolveSettings()`](/docs/ja/agent-sdk/typescript#resolvesettings) を呼び出し、その `sources` リストの `managed` エントリで `policyOrigin` を読み取ります。値は選択されたクライアント側ソース `plist`、`hklm`、または `file` に名前を付けます。これはスニペットを含む必要があるソースです。
+**2. ファイルを上回るソースにスニペットをミラーリングする**
 
-    Cowork セッションと Chat セッションはゲートウェイポリシーをフェッチしないため、ゲートウェイのブロックはそれらにとって選択されたソースではありません。
+Claude Code は `parentSettingsBehavior` を[選択されたソース](/docs/ja/managed-settings#which-managed-source-claude-code-uses)からのみ読み取ります。ソースにポリシーキーを追加すると、そのソースが選択されたものになる可能性があるため、クライアント側ソースでは `parentSettingsBehavior` のみではなくスニペット全体をミラーリングします。[クライアント側管理設定](/docs/ja/claude-apps-gateway-config#client-side-managed-settings)は Group Policy または設定プロファイルを通じてポリシーを配信するフリートをカバーしています。macOS の管理設定プリストまたは Windows の HKLM ポリシーは `managed-settings.json` ファイルを上回り、ゲートウェイ独自のリモート管理設定は両方を上回るため、ゲートウェイにサインインするマシンでは、ゲートウェイポリシーの [`cli` または `code` ブロック](/docs/ja/claude-apps-gateway-config#managed)にも `parentSettingsBehavior` を設定します。
 
-    Code タブのセッションは、ポリシーの設定が `code` の下にあり、[Code タブの条件](/docs/ja/claude-apps-gateway-config#apply-code-settings-in-the-code-tab)が満たされている場合にそれをフェッチします。その場合、ゲートウェイの `code` 設定がそのセッションの選択されたソースになります。
-  </Step>
-</Steps>
+**3. どのソースが選択されているかを確認する**
 
-<h3 id="restrict-parent-settings">
-  親設定を制限する
-</h3>
+Claude Desktop のみを実行するマシンで、Agent SDK の [`resolveSettings()`](/docs/ja/agent-sdk/typescript#resolvesettings) を呼び出し、その `sources` リストの `managed` エントリで `policyOrigin` を読み取ります。値は選択されたクライアント側ソース `plist`、`hklm`、または `file` に名前を付けます。これはスニペットを含む必要があるソースです。
+
+Cowork セッションと Chat セッションはゲートウェイポリシーをフェッチしないため、ゲートウェイのブロックはそれらにとって選択されたソースではありません。
+
+Code タブのセッションは、ポリシーの設定が `code` の下にあり、[Code タブの条件](/docs/ja/claude-apps-gateway-config#apply-code-settings-in-the-code-tab)が満たされている場合にそれをフェッチします。その場合、ゲートウェイの `code` 設定がそのセッションの選択されたソースになります。
+
+### 親設定を制限する
 
 `parentSettingsBehavior: "merge"` をデプロイすると、Claude Code を起動するホストプロセスは親設定を提供できます。Claude Desktop だけでなく、Agent SDK アプリケーションまたは IDE 拡張機能も同様です。
 
@@ -425,9 +399,7 @@ Claude Code は親が提供した [`sandbox.credentials`](/docs/ja/settings-refe
 * **`mode: mask` を持つ `envVars` エントリ**：転送されません。`deny` は親チャネルが `envVars` エントリを通じて表現できる唯一の制限です。
 * **[`awsPairs` と `sigv4`](/docs/ja/sandboxing#re-sign-aws-requests)**：制限のみ転送されます。`sigv4` からは `deny` 値のみが保持され、親が `sigv4` ブロックをまったく定義する場合、すべての 3 つのリクエスト形式 `streaming`、`presigned`、および `sigv4a` を `deny` にピン留めします。`awsPairs` ペアは再署名できる形式では転送されません。従来の AWS 変数の 1 つに名前を付けるペアは、`AWS_ACCESS_KEY_ID`、`AWS_SECRET_ACCESS_KEY`、および `AWS_SESSION_TOKEN` の自動ペアリングを抑制したままにする不活性エントリに置き換えられます。
 
-<h4 id="deploy-the-locks">
-  ロックをデプロイする
-</h4>
+#### ロックをデプロイする
 
 親設定をフィルターがサポートする制限のみに可能な限り近く保つために、すべての 5 つの `allowManaged*Only` ロックと、それらが管理する許可リストを、マージオプトインと同じソースに追加します。
 
@@ -456,9 +428,7 @@ Claude Code は親が提供した [`sandbox.credentials`](/docs/ja/settings-refe
 
 OS ポリシー（HKLM レジストリポリシーまたは管理設定プリストなど）はこのファイルを上回るため、ファイルではなくそれを通じてスニペット全体を配信します。ゲートウェイのリモート管理設定は OS ポリシーとファイルソースを上回りますが、接続されたクライアントにのみ到達します。ロック、許可リスト、およびマージオプトインをポリシーの [`cli` または `code` ブロック](/docs/ja/claude-apps-gateway-config#managed)にミラーリングし、このファイルをデプロイしたままにします。接続しないマシンはファイルからのみポリシーを取得するためです。
 
-<h4 id="lock-behavior-across-sources">
-  ソース全体のロック動作
-</h4>
+#### ソース全体のロック動作
 
 1 つのロックを設定しても、他のロックは制限されません。各キーは[設定リファレンス](/docs/ja/settings-reference#all-settings)で文書化されています。
 
@@ -472,9 +442,7 @@ OS ポリシー（HKLM レジストリポリシーまたは管理設定プリス
 * **MCP サーバー**：どの管理ソースにも親が提供した設定にも `allowedMcpServers` がない状態でロックすると、`deniedMcpServers` がブロックしないすべてのサーバーが読み込まれます。
 * **読み取りパス**：`allowRead` エントリは `denyRead` 領域内のパスのみを再許可するため、管理 `denyRead` とペアにします。
 
-<h4 id="settings-the-locks-don’t-cover">
-  ロックがカバーしない設定
-</h4>
+#### ロックがカバーしない設定
 
 5 つのロックすべてが設定されていても、以下の親が提供した設定はフィルターを通過します。
 
@@ -488,9 +456,7 @@ OS ポリシー（HKLM レジストリポリシーまたは管理設定プリス
 
 デフォルトの最初の勝ちの設定の下では、管理値が親の値をブロックするのは、それが最優先の管理ソースにある場合のみです。ただし、[MCP サーバーロック](#lock-behavior-across-sources)がオンの間の `allowedMcpServers` は除きます。`managedSourcesBehavior` マージオプトインの下では、[Claude Code が管理ソースを組み合わせる方法](/docs/ja/managed-settings#how-claude-code-combines-managed-sources)が代わりにどのソースの値が適用されるかを示します。
 
-<h3 id="connect-claude-desktop">
-  Claude Desktop を接続する
-</h3>
+### Claude Desktop を接続する
 
 [Claude Desktop](/docs/ja/desktop)は異なる MDM キーを通じて同じゲートウェイに接続します。Claude Desktop の[管理設定](https://claude.com/docs/third-party/claude-desktop/configuration)で `bootstrapUrl` を `<listen.public_url>/user/bootstrap` に設定し、ユーザーのポリシーを `desktop` キーでオプトインします。[Claude Desktop オーバーレイ](/docs/ja/claude-apps-gateway-config#claude-desktop-overlay)は両方の部分をカバーしています。ゲートウェイサーバーで Claude Code v2.1.203 以降が必要です。
 
@@ -498,9 +464,7 @@ Claude Desktop は同じブラウザ SSO ステップでゲートウェイのア
 
 接続すると、Claude Desktop は有効なすべてのタブからモデルリクエストをゲートウェイを通じて送信します。デフォルトで Cowork タブと Code タブを表示します。Chat タブもオンにするには、Claude Desktop の[管理設定](https://claude.com/docs/third-party/claude-desktop/configuration)で `chatTabEnabled` を `true` に設定するか、Claude Code v2.1.227 以降を実行しているゲートウェイのポリシーの [`desktop` ブロック](/docs/ja/claude-apps-gateway-config#claude-desktop-overlay)で設定します。
 
-<h3 id="ci-pipelines-and-remote-machines">
-  CI パイプラインとリモートマシン
-</h3>
+### CI パイプラインとリモートマシン
 
 無人パイプラインのサービストークンフローはありません。ゲートウェイサインインは常にブラウザデバイスフローを実行するため、サインインを承認する開発者がない CI ジョブは認証できません。これらをプロバイダーに対して直接設定します。`forceLoginMethod` と `forceLoginGatewayUrl` は開発者マシンにデプロイし、CI ランナーには設定しないでください。管理設定でこれらが設定されているマシンでは、`ANTHROPIC_API_KEY`、`ANTHROPIC_AUTH_TOKEN`、または `apiKeyHelper` で認証するセッションは[起動時に終了します](/docs/ja/errors#administrator-policy-requires-a-cloud-gateway-sign-in)。
 
@@ -508,9 +472,7 @@ Claude Desktop は同じブラウザ SSO ステップでゲートウェイのア
 
 デバイスフローはポーリング CLI を承認ブラウザから分離するため、ディスプレイのないリモート開発ボックスは引き続き機能します。開発者はリモートマシンで SSH 経由で `/login` を実行し、ラップトップのブラウザで検証リンクを開きます。
 
-<h3 id="whats-enforced-on-developers">
-  開発者に何が強制されるか
-</h3>
+### 開発者に何が強制されるか
 
 これらの保証はすべての `/login` を通じてサインインしたセッションに適用されます。Claude Desktop が起動する埋め込みセッションは[Claude Desktop セッションにポリシーを配信する](#deliver-policy-to-claude-desktop-sessions)で説明されているようにポリシーを取得し、テレメトリの箇条書きはそれらのエクスポートがどこに行くかを示します。
 
@@ -528,15 +490,11 @@ Claude Desktop は同じブラウザ SSO ステップでゲートウェイのア
   * ゲートウェイの検出ドキュメントがゲートウェイ URL 独自のスキーム、ホスト、およびポートで `revocation_endpoint` をアドバタイズする場合、`/logout` は保存されたトークンをそのエンドポイントに送信して、ゲートウェイがその側でセッションを終了できるようにします。リクエストはベストエフォートであるため、エンドポイントが応答するかどうかに関係なく、サインアウトは開発者のマシンで完了します。失効には開発者マシンで Claude Code v2.1.275 以降が必要です。
   * `claude` バイナリのゲートウェイサーバーはアドバタイズしないため、そこからのサインアウトは開発者のマシンでのみセッションを終了します。サーバー側でセッションを強制的に終了するには、[JWT シークレットローテーション](/docs/ja/claude-apps-gateway-deploy#jwt-secret-rotation)を参照してください。
 
-<h3 id="what-the-organization-can-see">
-  組織が見ることができるもの
-</h3>
+### 組織が見ることができるもの
 
 使用状況テレメトリは開発者のアイデンティティ、トークン数、モデル、およびレイテンシを組織のコレクターに伝えます。ゲートウェイはプロンプトまたは完了コンテンツをログまたは保存しません。ログやトレースなどのより豊富なテレメトリが収集されるかどうか。コマンドやファイルパスを含む可能性があるのは、組織の[宛先ごとの選択](/docs/ja/claude-apps-gateway-config#telemetry)です。
 
-<h2 id="availability-and-limitations">
-  利用可能性と制限事項
-</h2>
+## 利用可能性と制限事項
 
 この表は、開発者がゲートウェイ経由で接続した場合にどの Claude Code の機能が動作するか、およびゲートウェイサーバー自体が何をサポートしているかをまとめたものです。サポートされていない項目については、「注記」列に代替手段を記載しています。
 
@@ -566,9 +524,7 @@ Claude Desktop は同じブラウザ SSO ステップでゲートウェイのア
 | Helm チャート | 利用不可 | ゲートウェイは標準のステートレスな Deployment として動作します。[デプロイガイド](/docs/ja/claude-apps-gateway-deploy#kubernetes)を参照してください |
 | 管理 UI | 利用不可 | 設定は YAML ファイルで行います。変更するには再デプロイしてください |
 
-<h2 id="next-steps">
-  次のステップ
-</h2>
+## 次のステップ
 
 クイックスタートは Docker Compose で実行されている最小設定を残します。さらに進めるには。
 

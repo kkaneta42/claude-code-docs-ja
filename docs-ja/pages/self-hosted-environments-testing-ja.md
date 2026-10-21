@@ -6,23 +6,19 @@
 
 > CI から自己ホスト実行イメージを検証します。CLI でセッションをディスパッチし、Stop フックを通じて Claude の返信を読み取り、完全なループをスクリプト化します。
 
-<Note>
-  自己ホスト環境は Team および Enterprise プランでパブリックベータ版です。[利用可能性と制限事項](/docs/ja/self-hosted-environments#availability-and-limitations)に有効化パスが記載されています。このページは CI テストレシピです。セットアップについては[クイックスタート](/docs/ja/self-hosted-environments-quickstart)を、フリートレシピについては[本番環境へのデプロイ](/docs/ja/self-hosted-environments-deploy)をご覧ください。
-</Note>
+> [!NOTE]
+>
+> 自己ホスト環境は Team および Enterprise プランでパブリックベータ版です。[利用可能性と制限事項](/docs/ja/self-hosted-environments#availability-and-limitations)に有効化パスが記載されています。このページは CI テストレシピです。セットアップについては[クイックスタート](/docs/ja/self-hosted-environments-quickstart)を、フリートレシピについては[本番環境へのデプロイ](/docs/ja/self-hosted-environments-deploy)をご覧ください。
 
 [自己ホスト環境](/docs/ja/self-hosted-environments)では、Claude Code の[クラウドセッション](/docs/ja/claude-code-on-the-web)は、ユーザーが構築・管理する実行イメージ上で実行されます。新しいイメージを本番環境にロールアウトする前に、スクリプトからテスト環境に対して完全なセッションを実行します。セッションを作成し、Claude の返信を読み取り、フォローアップを送信し、その返信も読み取ります。これは実行イメージ、git アクセス、カスタムツールを検証する CI スモークテストの形です。
 
 このレシピは、[環境と実行イメージのセットアップ](/docs/ja/self-hosted-environments-quickstart#set-up-an-environment-and-runner)が完了していることを前提としています。また、CI ジョブがテストスクリプトと同じホスト上で実行イメージプロセスを開始することを想定しています。これは新しい実行イメージをテストするための自然なセットアップです。実行イメージにインストールする Stop フックは、各ターンの最終返信をローカルファイルに書き込み、スクリプトがそこから読み取ります。そのため、Anthropic API への呼び出しは 2 つのディスパッチだけです。テスト実行イメージが別のインフラストラクチャ上にある場合は、[リモートテスト実行イメージ](#remote-test-runners)をご覧ください。
 
-<h2 id="install-the-capture-hook-on-your-test-runner">
-  テスト実行イメージにキャプチャフックをインストールする
-</h2>
+## テスト実行イメージにキャプチャフックをインストールする
 
 読み取りは Claude Code の[Stop フック](/docs/ja/hooks#stop)を通じて機能します。Claude がターンを完了すると、フックは最終アシスタントメッセージを stdin JSON の `last_assistant_message` として受け取り、`$E2E_REPLY_DIR/<session_id>.txt` に追加します。[commit-nudge Stop フック](/docs/ja/self-hosted-environments-configuration#prompt-sessions-to-push-their-work)と同じ方法でインストールします。実行イメージホストの `~/.claude/` にインストールします。実行イメージはこれをすべてのセッションにシードします。
 
-<h3 id="save-the-hook-files">
-  フックファイルを保存する
-</h3>
+### フックファイルを保存する
 
 実行イメージホストに以下の 2 つのファイルを保存します。
 
@@ -70,9 +66,7 @@ jq -r '.last_assistant_message // empty' >> "$E2E_REPLY_DIR/$sid.txt" 2>/dev/nul
 exit 0
 ```
 
-<h3 id="before-you-start-the-runner">
-  実行イメージを開始する前に
-</h3>
+### 実行イメージを開始する前に
 
 フックには以下の要件があります。
 
@@ -81,9 +75,7 @@ exit 0
 
 このフックはテスト環境にサービスを提供する実行イメージにのみインストールします。`E2E_REPLY_DIR` が存在するたびにすべてのセッションの最終返信をディスクに書き込みます。これは使い捨ての CI 実行イメージでは無害ですが、変数が誤って設定される可能性がある本番環境実行イメージには含めるべきではありません。
 
-<h2 id="run-the-test-loop">
-  テストループを実行する
-</h2>
+## テストループを実行する
 
 `--environment` および `--ref` のディスパッチフラグを使用するには、スクリプトを実行するマシンに Claude Code v2.1.224 以降が必要です。これはランナー自体と同じ最低バージョンです。フックを設定し、このホストでランナーを起動した状態で、テストスクリプトは次の処理を行います。
 
@@ -95,17 +87,13 @@ exit 0
 3. `claude -p "<message>" --cloud <session_id> --output-format json` を使用してフォローアップを送信します（[実行中のセッションにフォローアップメッセージを送信する](/docs/ja/claude-code-on-the-web#send-follow-ups-from-the-cli)を参照）。このコマンドは既存のセッションにユーザーイベントを投稿して終了します。
 4. 手順 2 と同じ方法で、フォローアップへの応答を待ちます。
 
-<h3 id="environment-dispatch-behavior">
-  `--environment` のディスパッチ動作
-</h3>
+### `--environment` のディスパッチ動作
 
 Claude Code はセッションを作成し、セッション ID とセッションへのリンクを出力して終了します。
 
 このフラグは [`remote.defaultEnvironmentId`](/docs/ja/settings-reference#remote-defaultenvironmentid) 設定よりも優先されます。`--output-format stream-json` には対応しておらず、`--resume`、`--continue`、`--teleport`、`--session-id`、`--init-only` など、セッションの再開、アタッチ、または事前設定を行うフラグと組み合わせることはできません。`--cloud` は、セッション ID または URL を指定した場合、および非対話型の実行で説明を伴う場合には拒否されます。値を伴わない `--cloud` は指定されていないものとして扱われます。ターミナルからは、位置引数のプロンプトの代わりに、タスクを `--cloud` の説明として渡すことができます。
 
-<h2 id="example-script">
-  スクリプト例
-</h2>
+## スクリプト例
 
 このスクリプト例は、テストランナーと同じマシンで実行します。実行する前に、そのマシンを準備します。
 
@@ -186,9 +174,7 @@ echo "PASS: test-environment round-trip (session $SESSION_ID)"
 
 `TURN1`/`TURN2` プロンプトと `EXPECT1`/`EXPECT2` センチネルを、カスタム MCP ツールの 1 つを実行するよう Claude に依頼し、その出力をアサートするなど、セットアップを実行するものに置き換えます。
 
-<h2 id="remote-test-runners">
-  リモートテスト実行イメージ
-</h2>
+## リモートテスト実行イメージ
 
 テスト実行イメージが別のインフラストラクチャ上にある場合（CI ジョブがファイルシステムを共有できない永続的な Kubernetes フリートなど）、Stop フックのファイル書き込みをドライバーがリッスンするエンドポイントへの POST に置き換えます。
 
@@ -206,37 +192,27 @@ exit 0
 
 ドライバー側では、POST を受け入れ、テストが要求するまで返信を保持するものを実行します。CI ジョブ内の小さな HTTP リスナーや、既に実行している webhook レシーバーなどです。フックはインフラストラクチャ上で実行されるため、エンドポイントは実行イメージからのみ到達可能である必要があります。
 
-<h2 id="authenticate-from-ci">
-  CI から認証する
-</h2>
+## CI から認証する
 
 `claude -p ... --environment` と `claude -p ... --cloud` の両方は claude.ai OAuth トークンで認証します。`sk-ant-xxxxx` などの API キーはどちらの呼び出しでも受け入れられません。2 つのアプローチにより、CI でトークンを利用できるようになります。
 
-<h3 id="long-lived-ci-host">
-  長期間存続する CI ホスト
-</h3>
+### 長期間存続する CI ホスト
 
 スクリプトを実行するマシン上で、自動化用の専用ユーザーアカウントを使用して、`claude auth login` を 1 回対話的に実行します。Claude Code はトークンを macOS では OS キーチェーンに、Linux と Windows では `~/.claude/.credentials.json` に保存します。キーチェーンに書き込みできない macOS ホスト（SSH セッションでログインキーチェーンがロックされたままの場合など）では、Claude Code はトークンを `~/.claude/.credentials.json` にも保存します。[認証情報管理](/docs/ja/authentication#credential-management)を参照してください。
 
 CLI は各呼び出しで短期アクセストークンを自動的に更新しますが、基盤となるリフレッシュトークングラントは初期ログインから 30 日間に制限されているため、そのホストで 30 日ごとに `claude auth login` を対話的に再実行してください。
 
-<h3 id="ephemeral-ci-runners">
-  エフェメラル CI 実行イメージ
-</h3>
+### エフェメラル CI 実行イメージ
 
 現在、これに対する長期間存続する CI トークンはありません。クラウドセッション制御を付与するスコープ `user:sessions:claude_code` はサーバー側で 30 日間に制限されているため、1 年間の推論のみのトークンを発行する `claude setup-token` はこれをカバーしていません。[環境シークレット](/docs/ja/self-hosted-environments-quickstart#set-up-an-environment-and-runner)も受け入れられません。これは実行イメージが環境に登録することのみを認可し、セッションを作成することは認可しないためです。
 
 エフェメラル実行イメージに保存されたログインをプロビジョニングするには、[`CLAUDE_CODE_OAUTH_REFRESH_TOKEN` と `CLAUDE_CODE_OAUTH_SCOPES`](/docs/ja/env-vars#variables) を設定して、`claude auth login` がブラウザなしでトークンを交換できるようにします。リフレッシュグラントに対して同じ 30 日間の上限が適用されます。人間のアカウントにバインドされていないマシンアイデンティティパスが必要な場合は、Anthropic アカウントチームにお問い合わせください。
 
-<h2 id="create-a-dedicated-test-environment">
-  専用テスト環境を作成する
-</h2>
+## 専用テスト環境を作成する
 
 CI の各実行ごとにクリーンな環境を取得するために、環境をプログラムで作成および削除します。CI ジョブが開始する runner がこのフレッシュな環境に登録されます。以下の作成および削除呼び出しは、claude.ai の **Cloud environments** 管理ページが使用するのと同じエンドポイントであり、`anthropic-beta: ccr-byoc-2025-07-29` ヘッダーが必要です。
 
-<h3 id="mint-the-admin-token">
-  管理トークンを生成する
-</h3>
+### 管理トークンを生成する
 
 `$ADMIN_TOKEN` は、Owner ロールを保持するアカウントの claude.ai OAuth アクセストークンであり、[CI から認証する](#authenticate-from-ci)と同じ方法で生成されます。
 
@@ -244,9 +220,7 @@ CI の各実行ごとにクリーンな環境を取得するために、環境�
 * **各実行ごとにフレッシュに読み取る**: CLI はアクセストークンをローテーションし、同じ 30 日間のリフレッシュ許可上限が適用されるため、コピーを保存しないでください。
 * **stdin 経由で渡す**: 例が行うように、トークンが curl の引数リストまたはビルドログに記録されないようにします。
 
-<h3 id="create-the-environment">
-  環境を作成する
-</h3>
+### 環境を作成する
 
 レスポンスをキャプチャして出力しないようにします。`pool_secret` は、runner を環境に登録できる長期間有効な認証情報であるため、マスクされた CI シークレットとして保存し、環境 ID のみを出力します。トークンをプロセスリストから除外する `-H @-` 形式には curl 7.55 以降が必要です。古い curl は `@-` をリテラルヘッダーとして扱い、認可なしでリクエストを送信します。
 
@@ -265,9 +239,7 @@ ENVIRONMENT_SECRET=$(jq -er .pool_secret <<<"$create")
 
 このホストで runner を開始します。`SELF_HOSTED_RUNNER_ENVIRONMENT_SECRET=$ENVIRONMENT_SECRET` と、[キャプチャフックをテスト runner にインストールする](#install-the-capture-hook-on-your-test-runner)に従う capture hook および `E2E_REPLY_DIR` を使用してから、テストスクリプトを実行します。
 
-<h3 id="delete-the-environment">
-  環境を削除する
-</h3>
+### 環境を削除する
 
 各 CI 実行がクリーンな状態で開始されるように、実行が終了したときに環境を削除します。
 

@@ -15,9 +15,7 @@
 * [Claude Agent SDK](/docs/ja/agent-sdk/overview)：GitHub Actions 外のカスタム自動化。Claude Code GitHub Action は SDK の上に構築されています
 * [GitHub Enterprise Server](/docs/ja/github-enterprise-server)：自己ホスト型 GitHub での Claude Code
 
-<h2 id="setup">
-  セットアップ
-</h2>
+## セットアップ
 
 Claude Code GitHub Action は 2 つの方法のいずれかでセットアップできます。
 
@@ -26,9 +24,7 @@ Claude Code GitHub Action は 2 つの方法のいずれかでセットアップ
 
 どちらのパスでも、リポジトリへの管理者アクセスが必要です。
 
-<h3 id="quick-setup">
-  クイックセットアップ
-</h3>
+### クイックセットアップ
 
 `/install-github-app` は github.com リポジトリでのみ機能します。リポジトリの git リモートが gitlab.com または bitbucket.org にある場合、コマンドは通知を出力して終了し、セットアップを開始しません。GitLab パイプラインから Claude Code を実行するには、[Claude Code GitLab CI/CD](/docs/ja/gitlab-ci-cd) を参照してください。
 
@@ -54,49 +50,43 @@ Claude Code はその後、選択したワークフローファイルを含む�
 
 GitHub App をインストールした後、Claude Code は GitHub Actions セットアップを続行するかどうかを尋ねます。**Skip for now** を選択して、GitHub App のインストールのみで停止します。後で `/install-github-app` を再度実行してワークフローとシークレットのステップを完了します。
 
-<Note>
-  * GitHub App をインストールすると、複数の権限を付与します。完全なセットについては [GitHub App 権限](#github-app-permissions) を参照してください
-  * クイックセットアップは Claude API と Claude サブスクリプションで機能します。Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry を使用する場合は、[クラウドプロバイダーで Claude Code GitHub Actions を使用する](/docs/ja/github-actions-cloud-providers) を参照してください
-</Note>
+> [!NOTE]
+>
+> * GitHub App をインストールすると、複数の権限を付与します。完全なセットについては [GitHub App 権限](#github-app-permissions) を参照してください
+> * クイックセットアップは Claude API と Claude サブスクリプションで機能します。Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry を使用する場合は、[クラウドプロバイダーで Claude Code GitHub Actions を使用する](/docs/ja/github-actions-cloud-providers) を参照してください
 
-<h3 id="manual-setup">
-  手動セットアップ
-</h3>
+### 手動セットアップ
 
 `/install-github-app` を実行せずに Claude Code GitHub Action を設定するには、アプリをインストールし、シークレットを追加し、ワークフローファイルを自分でコピーします。
 
-<Steps>
-  <Step title="Claude GitHub App をインストール">
-    [Claude GitHub App](https://github.com/apps/claude) をリポジトリにインストールします。Claude Code GitHub Action はアプリの 3 つの権限に依存しています。
+**1. Claude GitHub App をインストール**
 
-    * **Contents**：読み取りと書き込み。Claude がリポジトリファイルを変更できるようにするため
-    * **Issues**：読み取りと書き込み。Claude がイシューに応答できるようにするため
-    * **Pull requests**：読み取りと書き込み。Claude が PR を作成し、変更をプッシュできるようにするため
+[Claude GitHub App](https://github.com/apps/claude) をリポジトリにインストールします。Claude Code GitHub Action はアプリの 3 つの権限に依存しています。
 
-    インストール中に、他の Claude 機能が使用する権限も付与します。完全なセットについては [GitHub App 権限](#github-app-permissions) を参照してください。
-  </Step>
+* **Contents**：読み取りと書き込み。Claude がリポジトリファイルを変更できるようにするため
+* **Issues**：読み取りと書き込み。Claude がイシューに応答できるようにするため
+* **Pull requests**：読み取りと書き込み。Claude が PR を作成し、変更をプッシュできるようにするため
 
-  <Step title="認証シークレットを追加">
-    認証方法に応じて、リポジトリに以下のシークレットのいずれかを追加します。GitHub の [GitHub Actions でシークレットを使用する](https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions) ガイドを参照してください。
+インストール中に、他の Claude 機能が使用する権限も付与します。完全なセットについては [GitHub App 権限](#github-app-permissions) を参照してください。
 
-    * `ANTHROPIC_API_KEY`：[Claude Console](https://platform.claude.com) からの Claude API キー
-    * `CLAUDE_CODE_OAUTH_TOKEN`：Claude サブスクリプションで認証する OAuth トークン。Pro、Max、Team、Enterprise プランで利用可能。`claude setup-token` をローカルで実行して生成します。[長期トークンを生成する](/docs/ja/authentication#generate-a-long-lived-token) を参照してください
+**2. 認証シークレットを追加**
 
-    ワークフローファイルで、シークレットを一致する入力に渡します。API キーの場合は `anthropic_api_key`、OAuth トークンの場合は `claude_code_oauth_token`。
-  </Step>
+認証方法に応じて、リポジトリに以下のシークレットのいずれかを追加します。GitHub の [GitHub Actions でシークレットを使用する](https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions) ガイドを参照してください。
 
-  <Step title="ワークフローファイルをコピー">
-    [examples/claude.yml](https://github.com/anthropics/claude-code-action/blob/main/examples/claude.yml) をリポジトリの `.github/workflows/` ディレクトリにコピーします。ファイルは単なる例ではなく、動作するワークフローです。コミットされたとおり、Claude はイシューまたはプルリクエストで誰かが `@claude` とメンションするたびに応答し、`ANTHROPIC_API_KEY` シークレットで認証します。代わりに `CLAUDE_CODE_OAUTH_TOKEN` を追加した場合は、ワークフローの `anthropic_api_key` 行を `claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}` に変更します。
-  </Step>
-</Steps>
+* `ANTHROPIC_API_KEY`：[Claude Console](https://platform.claude.com) からの Claude API キー
+* `CLAUDE_CODE_OAUTH_TOKEN`：Claude サブスクリプションで認証する OAuth トークン。Pro、Max、Team、Enterprise プランで利用可能。`claude setup-token` をローカルで実行して生成します。[長期トークンを生成する](/docs/ja/authentication#generate-a-long-lived-token) を参照してください
 
-<Tip>
-  セットアップ後、イシューまたは PR コメントで `@claude` をタグ付けして Claude Code GitHub Action をテストします。
-</Tip>
+ワークフローファイルで、シークレットを一致する入力に渡します。API キーの場合は `anthropic_api_key`、OAuth トークンの場合は `claude_code_oauth_token`。
 
-<h3 id="set-up-for-an-organization">
-  組織向けセットアップ
-</h3>
+**3. ワークフローファイルをコピー**
+
+[examples/claude.yml](https://github.com/anthropics/claude-code-action/blob/main/examples/claude.yml) をリポジトリの `.github/workflows/` ディレクトリにコピーします。ファイルは単なる例ではなく、動作するワークフローです。コミットされたとおり、Claude はイシューまたはプルリクエストで誰かが `@claude` とメンションするたびに応答し、`ANTHROPIC_API_KEY` シークレットで認証します。代わりに `CLAUDE_CODE_OAUTH_TOKEN` を追加した場合は、ワークフローの `anthropic_api_key` 行を `claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}` に変更します。
+
+> [!TIP]
+>
+> セットアップ後、イシューまたは PR コメントで `@claude` をタグ付けして Claude Code GitHub Action をテストします。
+
+### 組織向けセットアップ
 
 クイックセットアップまたは手動セットアップでは、一度に 1 つのリポジトリを設定します。Claude Code GitHub Action を組織全体にロールアウトするには、以下を実行します。
 
@@ -117,9 +107,7 @@ GitHub App をインストールした後、Claude Code は GitHub Actions セ�
 
 セキュリティレビューでのデータ処理と保持に関する質問については、[データ使用](/docs/ja/data-usage) と [セキュリティ](/docs/ja/security) を参照してください。
 
-<h3 id="uninstall">
-  アンインストール
-</h3>
+### アンインストール
 
 Claude Code GitHub Action を削除するには、インストールに適用される各セットアップを元に戻します。
 
@@ -129,9 +117,7 @@ Claude Code GitHub Action を削除するには、インストールに適用さ
 
 [クラウドプロバイダー](/docs/ja/github-actions-cloud-providers) を設定した場合は、`AWS_ROLE_TO_ASSUME`、`GCP_*` シークレット、または `AZURE_*` シークレットなどのプロバイダーシークレットも削除し、`APP_ID` と `APP_PRIVATE_KEY` シークレットとともにカスタム GitHub App をアンインストールします。
 
-<h3 id="github-app-permissions">
-  GitHub App 権限
-</h3>
+### GitHub App 権限
 
 [Claude GitHub App](https://github.com/apps/claude) は、Claude Code GitHub Action、[Code Review](/docs/ja/code-review)、cloud sessions の Claude Code on the web の [プルリクエストの auto-fix](/docs/ja/claude-code-on-the-web#auto-fix-pull-requests) など、GitHub と統合するすべての Claude 機能で共有されます。GitHub App は、すべての機能をカバーする単一の権限セットを持つため、セットには Claude Code GitHub Action が使用しない権限が含まれます。
 
@@ -159,35 +145,27 @@ Claude Code GitHub Action を削除するには、インストールに適用さ
 
 Claude Code GitHub Action がこれらの権限で何ができるかを制限する方法の詳細については、[セキュリティドキュメント](https://github.com/anthropics/claude-code-action/blob/main/docs/security.md) を参照してください。
 
-<h2 id="interactive-and-automation-modes">
-  インタラクティブモードと自動化モード
-</h2>
+## インタラクティブモードと自動化モード
 
 Claude Code GitHub Action はワークフロー設定から実行方法を検出します。
 
 * **インタラクティブモード**：ワークフローが `prompt` 入力を提供しない場合、Claude はトリガーフレーズ（デフォルトは `@claude`）をイシューまたはプルリクエストコメント、プルリクエストレビュー、または新しく開かれたイシューの本文またはタイトルで待機し、そのリクエストに応答します。進捗と結果は、トリガーするイシューまたは PR のコメントとして表示されます。
 * **自動化モード**：ワークフローが `prompt` 入力を提供する場合、Claude は [実行をトリガーできるユーザーのチェック](#who-can-trigger-runs) のみに従って、待機せずに実行します。デフォルトでは、結果はコメントではなくワークフロー実行ログに表示されます。Claude は、プロンプトが指示し、[コード レビュー例](#run-a-skill) のようにツールがある場合、イシューまたはプルリクエストに投稿できます。
 
-<h3 id="who-can-trigger-runs">
-  実行をトリガーできるユーザー
-</h3>
+### 実行をトリガーできるユーザー
 
 両方のモードで、Claude Code GitHub Action はトリガーするアクターに対して 2 つのチェックを実行してから Claude を開始します。どちらかのチェックが拒否すると、実行は失敗します。
 
 * **書き込みアクセス**：イシューおよびプルリクエストイベントで、トリガーするユーザーはリポジトリへの書き込みアクセスを持つ必要があります。書き込みアクセスのない特定のユーザーを許可するには、`allowed_non_write_users` を設定し、独自の `github_token` 入力を渡します。`schedule` トリガーなど、ユーザーが作成しないイベントはこのチェックをスキップします。
 * **人間のアクター**：すべてのイベントで、Claude Code GitHub Action は `allowed_bots` にリストされていない限り、ボットアクターを拒否します。これにより、ボットが Claude をループでトリガーするのを防ぎます。このチェックはスケジュール実行にも適用されます。GitHub はこれらを、通常はワークフローの `cron` スケジュールを最後に変更したリポジトリユーザーに属性付けします。そのユーザーがボットの場合は、`allowed_bots` にリストします。
 
-<h2 id="example-use-cases">
-  使用例
-</h2>
+## 使用例
 
 [examples ディレクトリ](https://github.com/anthropics/claude-code-action/tree/main/examples) には、さまざまなシナリオ用の使用可能なワークフローが含まれています。
 
 このページの例は API キー認証を示しています。Claude サブスクリプションで認証する場合は、任意の例の `anthropic_api_key` 行を `claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}` に置き換えます。
 
-<h3 id="respond-to-claude-mentions">
-  @claude メンションに応答
-</h3>
+### @claude メンションに応答
 
 このワークフローは Claude Code GitHub Action をインタラクティブモードで実行するため、イシューまたは PR コメントで誰かが `@claude` とメンションするたびに Claude が応答します。
 
@@ -234,9 +212,7 @@ jobs:
 
 Claude は同じイシューまたは PR のコメントで応答し、作業中に更新します。
 
-<h3 id="run-a-skill">
-  スキルを実行
-</h3>
+### スキルを実行
 
 `prompt` 入力は、プレーンテキストだけでなく [スキル](/docs/ja/skills) 呼び出しも受け入れます。
 
@@ -278,9 +254,7 @@ jobs:
 
 Claude は下書きおよび閉じられたプルリクエスト、レビューが不要と判断するプルリクエスト（自動化されたものや些細なものなど）、および Claude からのコメントが既にあるプルリクエストをスキップします。
 
-<h3 id="run-on-a-schedule">
-  スケジュールで実行
-</h3>
+### スケジュールで実行
 
 `prompt` 入力を使用すると、Claude Code GitHub Action は cron スケジュールを含む任意の GitHub イベントで自動化モードで実行されます。プレーンテキストプロンプトの場合、Claude は `claude_args` の `--allowedTools` または `settings` 入力の [`permissions.allow` ルール](/docs/ja/permissions#permission-rule-syntax) でプロンプトが必要とするツールを付与するまで、シェルまたは GitHub API アクセスを持ちません。代わりにスキルを呼び出す場合、Claude は [`allowed-tools` frontmatter](/docs/ja/skills#pre-approve-tools-for-a-skill) が付与するツールを使用できます。GitHub はスケジュール済みワークフローをデフォルトブランチからのみ実行し、パブリックリポジトリではリポジトリアクティビティがない 60 日後にスケジュールを無効にします。
 
@@ -308,31 +282,23 @@ jobs:
             --allowedTools "mcp__github__list_commits,mcp__github__list_issues"
 ```
 
-<h2 id="best-practices">
-  ベストプラクティス
-</h2>
+## ベストプラクティス
 
-<h3 id="define-project-standards-in-claude-md">
-  CLAUDE.md でプロジェクト標準を定義
-</h3>
+### CLAUDE.md でプロジェクト標準を定義
 
 リポジトリルートに `CLAUDE.md` ファイルを作成して、コードスタイルガイドライン、レビュー基準、プロジェクト固有のルール、および推奨パターンを定義します。Claude は PR を作成し、リクエストに応答するときにこれらのガイドラインに従います。詳細については、[メモリドキュメント](/docs/ja/memory) を参照してください。
 
-<h3 id="protect-your-credentials">
-  認証情報を保護
-</h3>
+### 認証情報を保護
 
-<Warning>
-  API キーまたは OAuth トークンをリポジトリに直接コミットしないでください。常に GitHub Secrets として保存し、ワークフローで参照します。例えば `anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}`。
-</Warning>
+> [!WARNING]
+>
+> API キーまたは OAuth トークンをリポジトリに直接コミットしないでください。常に GitHub Secrets として保存し、ワークフローで参照します。例えば `anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}`。
 
 ワークフローに必要な権限のみを付与し、マージする前に Claude の変更を確認します。
 
 権限と認証を含むセキュリティガイダンスについては、[Claude Code Action セキュリティドキュメント](https://github.com/anthropics/claude-code-action/blob/main/docs/security.md) を参照してください。
 
-<h3 id="manage-costs">
-  コストを管理
-</h3>
+### コストを管理
 
 各実行は 2 種類のリソースを消費します。
 
@@ -350,9 +316,7 @@ jobs:
 
 組織全体での使用追跡については、[分析ダッシュボード](/docs/ja/analytics) と [監視](/docs/ja/monitoring-usage) を参照してください。使用量がどのように測定され、請求されるかについては、[コスト](/docs/ja/costs) を参照してください。
 
-<h2 id="use-a-cloud-provider">
-  クラウドプロバイダーを使用
-</h2>
+## クラウドプロバイダーを使用
 
 デフォルトでは、Claude Code GitHub Action は API キーまたは OAuth トークンで Claude API を直接呼び出します。代わりに独自のクラウドアカウント経由で推論をルーティングするには、プロバイダーの入力を設定し、[クラウドプロバイダーで Claude Code GitHub Actions を使用する](/docs/ja/github-actions-cloud-providers) に従います。
 
@@ -362,13 +326,9 @@ jobs:
 
 3 つのプロバイダーすべてで、Claude API キーではなく OIDC ID フェデレーション経由で認証するため、リポジトリに静的クラウド認証情報を保存しません。
 
-<h2 id="troubleshooting">
-  トラブルシューティング
-</h2>
+## トラブルシューティング
 
-<h3 id="claude-not-responding-to-claude-commands">
-  Claude が @claude コマンドに応答しない
-</h3>
+### Claude が @claude コマンドに応答しない
 
 * GitHub App がリポジトリにインストールされていることを確認します
 * リポジトリでワークフローが有効になっていることを確認します
@@ -376,29 +336,21 @@ jobs:
 * コメントに `@claude` が完全な単語として含まれていることを確認します。`/claude` または `@claude-bot` ではなく
 * コメントするユーザーがリポジトリへの書き込みアクセスを持つことを確認します。[実行をトリガーできるユーザー](#who-can-trigger-runs) の例外を参照してください
 
-<h3 id="ci-not-running-on-claude’s-commits">
-  CI が Claude のコミットで実行されない
-</h3>
+### CI が Claude のコミットで実行されない
 
 * GitHub はデフォルトの `GITHUB_TOKEN` で作成されたコミットでワークフローをトリガーしません。Claude Code GitHub Action に `github_token: ${{ secrets.GITHUB_TOKEN }}` を渡す場合は、Claude GitHub App として認証するようにそれを削除するか、代わりにカスタムアプリトークンを渡します
 * CI ワークフローのトリガーに Claude のプッシュが生成するイベント（`push` または `pull_request` など）が含まれていることを確認します
 
-<h3 id="authentication-errors">
-  認証エラー
-</h3>
+### 認証エラー
 
 * API キーまたは OAuth トークンが有効であることを確認します。ワークフローをデバッグする前に `claude` でローカルでテストします
 * Bedrock、Agent Platform、Foundry の場合は、クラウドプロバイダーページの [トラブルシューティングセクション](/docs/ja/github-actions-cloud-providers#troubleshooting) を参照してください
 
 その他のソリューションについては、Claude Code GitHub Action の [FAQ](https://github.com/anthropics/claude-code-action/blob/main/docs/faq.md) を参照してください。
 
-<h2 id="advanced-configuration">
-  高度な設定
-</h2>
+## 高度な設定
 
-<h3 id="action-parameters">
-  アクション パラメータ
-</h3>
+### アクション パラメータ
 
 これらは最も一般的に使用される入力です。各パラメータは `anthropics/claude-code-action` ステップの `with:` キーにマップされます。
 
@@ -419,9 +371,7 @@ jobs:
 
 完全な入力リストについては、Claude Code GitHub Action の[設定リファレンス](https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md#inputs)を参照してください。
 
-<h3 id="pass-cli-arguments">
-  CLI 引数を渡す
-</h3>
+### CLI 引数を渡す
 
 `claude_args` パラメータは、任意の [Claude Code CLI 引数](/docs/ja/cli-reference)を受け入れます。
 
@@ -437,9 +387,7 @@ claude_args: "--max-turns 5 --model claude-sonnet-5 --mcp-config /path/to/config
 * `--allowedTools`: 許可されたツールのカンマ区切りリスト。`--allowed-tools` エイリアスも機能します
 * `--debug`: デバッグ出力を有効にします
 
-<h2 id="upgrade-from-beta">
-  ベータ版からアップグレード
-</h2>
+## ベータ版からアップグレード
 
 ワークフローがまだ `anthropics/claude-code-action@beta` を参照している場合は、v1 に更新します。
 
@@ -450,9 +398,7 @@ claude_args: "--max-turns 5 --model claude-sonnet-5 --mcp-config /path/to/config
 
 完全な入力マッピングと前後の例については、[マイグレーションガイド](https://github.com/anthropics/claude-code-action/blob/main/docs/migration-guide.md) を参照してください。
 
-<h2 id="what’s-next">
-  次のステップ
-</h2>
+## 次のステップ
 
 * [クラウドプロバイダーで Claude Code GitHub Actions を使用する](/docs/ja/github-actions-cloud-providers)：Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry 経由で推論をルーティング
 * [設定リファレンス](https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md#inputs)：アクション入力の完全なリスト

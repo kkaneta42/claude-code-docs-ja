@@ -10,9 +10,7 @@
 
 デフォルトでは、Claude apps gateway はすべての推論を 1 つの共有アップストリーム認証情報を通じて転送するため、プロバイダーの請求書はすべてをその認証情報に属するものとして記録し、個々の開発者には記録しません。Amazon Bedrock では、[開発者ごとの AWS コスト属性](/docs/ja/claude-apps-gateway-config#per-developer-aws-cost-attribution) がこれを変更します。開発者ごとの制限がない場合、1 つの暴走したエージェント フリートが組織全体のコミットメントを使い果たす可能性があります。支出制限は、その共有請求書の上に gateway の開発者ごとのビューとサーキット ブレーカーです。
 
-<h2 id="set-a-cap">
-  上限を設定する
-</h2>
+## 上限を設定する
 
 `gateway.yaml` で [`admin:`](/docs/ja/claude-apps-gateway-config#admin) ブロックが設定されている場合、gateway は `/v1/organizations/spend_limits` で管理 API を提供し、すべての推論リクエストで上限をリアルタイムに適用します。上限自体は `gateway.yaml` ではなく、その API を通じて設定されます。各 `POST /v1/organizations/spend_limits` リクエストは `{scope, amount, period}` から 1 つの上限を作成または置き換えます。API は Anthropic の公開 [Admin API](https://platform.claude.com/docs/en/manage-claude/admin-api) 支出制限エンドポイントのワイヤー形状をミラーリングするため、そのコントラクトに対して記述された HTTP クライアントは、ベース URL を変更することで gateway をターゲットにできます。
 
@@ -42,18 +40,14 @@ curl -sS https://claude-gateway.internal.example.com/v1/organizations/spend_limi
 
 グループまたは組織の上限は、各メンバーが継承する座席ごとのデフォルトであり、共有プールではありません。期間ごとに、開発者の有効な上限は次の順序で解決されます。ユーザーごとのオーバーライド、次に最も制限的なグループ上限、次に組織のデフォルト、次に無制限。[`admin.group_limit_mode: max`](/docs/ja/claude-apps-gateway-config#admin) は、複数グループのタイブレークを最も制限的ではないものに反転させます。
 
-<h3 id="authenticate-to-the-admin-api">
-  管理 API に認証する
-</h3>
+### 管理 API に認証する
 
 次のいずれかを送信します。
 
 * [`admin.write_keys`](/docs/ja/claude-apps-gateway-config#admin) のキーと一致する `x-api-key` ヘッダー（フルアクセス）、または `admin.read_keys`（`GET` のみアクセス）。各キーは監査ログに `admin-key:<id>` として表示される `id` を持つため、Terraform、CI、および各自動化に独自のキーを付与します。
 * `groups` クレームが [`admin.admin_groups`](/docs/ja/claude-apps-gateway-config#admin) のいずれかを含む gateway ベアラートークン。これはフルアクセスで、`oidc:<sub>` として監査されるため、人間の管理者には推奨されます。
 
-<h2 id="how-enforcement-works">
-  適用方法
-</h2>
+## 適用方法
 
 各 `/v1/messages` リクエストで、gateway は開発者の上限と期間から現在までの支出を 1 つの Postgres クエリで解決します。いずれかの上限を超えている開発者は `429` を返し、`error.type: billing_error` と `x-should-retry: false` ヘッダーが付きます。
 
@@ -63,9 +57,7 @@ v2.1.227 以降では、`<public_url>/protocol` のプロトコルリファレ�
 
 上限は UTC カレンダー境界でリセットされます。毎日 00:00 UTC、毎週月曜日、毎月 1 日です。gateway は `/v1/messages/count_tokens` をブロックしません。トークンカウントは無料だからです。
 
-<h3 id="how-requests-are-priced">
-  リクエストの価格設定方法
-</h3>
+### リクエストの価格設定方法
 
 各レスポンスの後、使用量メーターはトークンカウントを読み取り、日次、週次、月次のカウンターにコストを追加します。クライアントに送信されたバイトには触れないため、メーリング障害はレスポンスを破壊できません。金額は USD の推定値で、請求書ではなくサーキットブレーカーです。請求については、プロバイダーの使用状況レポートに対して調整してください。
 
@@ -80,17 +72,13 @@ v2.1.227 以降では、`<public_url>/protocol` のプロトコルリファレ�
 
 クライアント中止も請求されます。アップストリームの最終使用量フレームなしでストリームが終了した場合、メーターはクライアントに既に送信されたテキストについて、出力トークンあたり約 4 文字のフロア推定値を請求します。そのため、リクエストを早期に中止しても上限を回避できません。
 
-<h3 id="postgres-availability">
-  Postgres の可用性
-</h3>
+### Postgres の可用性
 
 事前チェッククエリは 2 秒のタイムアウトで Postgres にクエリします。ストアに到達できない場合またはタイムアウトする場合、デフォルトでは適用は開いた状態で失敗します。リクエストは進行し、gateway は警告をログに記録し、レスポンスは `anthropic-ratelimit-unified-*` ヘッダーを含みません。[`enforcement.fail_closed_on_error: true`](/docs/ja/claude-apps-gateway-config#enforcement) を設定して、代わりに閉じた状態で失敗させます。これは同じ `429 billing_error` を返しますが、メッセージは `spend limit unavailable` で、期間、リセット時刻、`retry-after` ヘッダーはありません。フェイルオープンはストア停止が推論停止になるのを防ぎます。フェイルクローズは計測されていない支出がないことを保証します。
 
 フェイルオープンは、ロードバランサーまたはオーケストレーターが引き続き gateway にトラフィックをルーティングしている間のみ役立ちます。[停止動作](/docs/ja/claude-apps-gateway-deploy#outage-behavior) で `store.readiness_grace_seconds` を参照してください。これにより、レプリカは短い停止を通じてレディネスチェックに合格し続けます。
 
-<h3 id="usage-warnings-in-claude-code">
-  Claude Code での使用警告
-</h3>
+### Claude Code での使用警告
 
 Claude Code は開発者が上限に近づくと警告します。最も消費されている上限の使用率が 75% を超えた時点で 1 回、95% を超えた時点で再度警告します。ゲートウェイがリクエストをブロックすると、Claude Code はゲートウェイの `429` メッセージを `admin.blocked_message` を含めてそのまま表示します。また、上限を `/usage` に表示し、開発者の [ステータスライン](/docs/ja/statusline#spend-limit-fields) スクリプトにも渡します。
 
@@ -106,9 +94,7 @@ Claude Code は開発者が上限に近づくと警告します。最も消費�
 
 開発者に表示される支出額はゲートウェイ独自の [推定値](#how-requests-are-priced) であり、上限の適用に使われるのと同じ数値です。プロバイダーの請求書の金額ではありません。Claude Code はゲートウェイへの別のリクエストでドル金額を取得します。[コンプライアンス体制](/docs/ja/claude-apps-gateway-deploy#compliance-posture) で推奨されているように開発者のマシンで `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` を設定している場合、Claude Code はそのリクエストを行いません。この変数が設定されている場合、またはゲートウェイサーバーが v2.1.284 より古い場合、バーとステータスラインは使用率のみの表示になります。
 
-<h2 id="admin-api-reference">
-  管理 API リファレンス
-</h2>
+## 管理 API リファレンス
 
 以下のエンドポイントは `/v1/organizations/spend_limits` の下で提供されます。
 
@@ -133,9 +119,7 @@ Claude Code は開発者が上限に近づくと警告します。最も消費�
 
 ゲートウェイは支出制限エンドポイントのみを提供します。`spend_limit_increase_requests` キューなどの他の Admin API サーフェスは、ゲートウェイの管理 API の一部ではありません。
 
-<h3 id="/effective">
-  `/effective`
-</h3>
+### `/effective`
 
 `GET /v1/organizations/spend_limits/effective` は Anthropic の `SpendSummary` スキーマを返します。各行はプリンシパルの期間で、解決された上限、期間から現在までの支出、および `actor` オブジェクトを持ちます。ゲートウェイ固有の違い：
 
@@ -154,25 +138,19 @@ Claude Code は開発者が上限に近づくと警告します。最も消費�
 | `q` | OIDC `sub`、最後に見られたメール、および最後に見られた表示名に対する大文字と小文字を区別しない部分文字列フィルター。 |
 | `limit` / `page` | ページサイズ（1～1000、デフォルト 20）および前のレスポンスの `next_page` からの不透明なカーソル。 |
 
-<Warning>
-  `q=` と `user_ids[]=` は GET クエリ文字列に乗るため、任意のフロントプロキシまたはロードバランサーはそれらをアクセスログでキャプチャします。PII ログポリシーが厳しい場合は、そこでこれらのパラメーターをスクラブしてください。
-</Warning>
+> [!WARNING]
+>
+> `q=` と `user_ids[]=` は GET クエリ文字列に乗るため、任意のフロントプロキシまたはロードバランサーはそれらをアクセスログでキャプチャします。PII ログポリシーが厳しい場合は、そこでこれらのパラメーターをスクラブしてください。
 
-<h3 id="/audit">
-  `/audit`
-</h3>
+### `/audit`
 
 支出制限の変更トレイルを返します。誰がどの上限を変更したか、前後のスナップショット、最新順。`has_more` は正確です。このエンドポイントは最初のパーティワイヤー形状ではなく、ローカル Admin API 規約に従います。
 
-<h3 id="pagination">
-  ページネーション
-</h3>
+### ページネーション
 
 生のリストは `after_id` と `before_id` でページングされます。これらは相互に排他的な `spl_…` ID です。結果は作成順に並べられ、`has_more` はトラバーサル方向を反映します。`/effective` は、前のレスポンスの `next_page` トークンとして渡される不透明な `?page=` でページングされ、プリンシパルは昇順に並べられるため、支出が記録されている間もページは安定したままです。`limit` は両方で 1～1000、デフォルト 20 です。`/audit` は `after_id`（前のページの最後のイベントの数値 `id`）でページングされ、その `limit` はデフォルト 100 です。
 
-<h2 id="data-lifecycle">
-  データライフサイクル
-</h2>
+## データライフサイクル
 
 gateway は 4 つの支出関連テーブルを保持します。時間ごとのスイープが保持期間を適用します。
 
@@ -185,9 +163,7 @@ gateway は 4 つの支出関連テーブルを保持します。時間ごとの
 
 開発者が去る場合、`DELETE /v1/organizations/spend_limits/{id}` 経由でユーザーごとの上限を削除します。その支出とアイデンティティ行は上記の保持期間で期限切れになります。1 人を即座に削除するには、オフボーディングまたはデータサブジェクトアクセスリクエスト（DSAR）の場合、gateway データベースに対して直接 `DELETE FROM principal_emails WHERE principal = '<sub>'` を実行します。これにより、メール、名前、およびグループを保持する唯一のテーブルが削除されます。`spend` と `admin_audit` 行は疑似匿名 OIDC `sub` のみを参照し、独自のウィンドウで期限切れになります。
 
-<h2 id="related">
-  関連
-</h2>
+## 関連
 
 * [`admin` と `enforcement` 設定](/docs/ja/claude-apps-gateway-config#admin)：管理 API の有効化と保持のチューニング
 * [デプロイメントガイド](/docs/ja/claude-apps-gateway-deploy#postgres)：Postgres スキーマとバックアップガイダンス

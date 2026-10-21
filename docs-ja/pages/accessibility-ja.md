@@ -10,9 +10,7 @@ Claude Code には、ビジュアルターミナルインターフェースを�
 
 スクリーンリーダーモードはオプトインです。スクリーン拡大鏡、モーション削減、またはスクリーンリーダーの代わりにカラーブラインド対応テーマを使用する場合は、[アクセシビリティ設定](#accessibility-settings)テーブルから `CLAUDE_CODE_ACCESSIBILITY`、`prefersReducedMotion`、または `theme` を設定してください。スクリーンリーダーモードはターミナルインターフェースのみを適応させるため、VS Code 拡張機能のチャットパネルではこれを必要としません。Claude Code v2.1.236 以降では、拡張機能は設定なしで[スクリーンリーダーにコンバーセーション活動を通知](/docs/ja/vs-code#use-a-screen-reader)します。
 
-<h2 id="turn-on-screen-reader-mode">
-  スクリーンリーダーモードをオンにする
-</h2>
+## スクリーンリーダーモードをオンにする
 
 スクリーンリーダーを使用する頻度に合わせて方法を選択してください。
 
@@ -26,15 +24,11 @@ SSH 経由で Claude Code を使用する場合は、Claude Code が実行され
 
 Claude Code が最初に出力する行がモードを確認します。`[Screen Reader Mode: on via flag]`、`[Screen Reader Mode: on via env]`、または `[Screen Reader Mode: on via settings]` です。
 
-<h2 id="turn-off-screen-reader-mode">
-  スクリーンリーダーモードをオフにする
-</h2>
+## スクリーンリーダーモードをオフにする
 
 モードをオンにした方法を逆にします。フラグなしで開始するか、環境変数を設定解除するか、`axScreenReader` を `false` に設定します。`CLAUDE_AX_SCREEN_READER` を `0` に設定すると、設定が `true` の場合でもモードはオフのままです。
 
-<h2 id="accessibility-settings">
-  アクセシビリティ設定
-</h2>
+## アクセシビリティ設定
 
 次の表は、各アクセシビリティオプション、フラグ、環境変数、または設定として設定するかどうか、および何を変更するかを示しています。
 
@@ -50,9 +44,7 @@ Claude Code が最初に出力する行がモードを確認します。`[Screen
 | [`theme`](/docs/ja/settings-reference#theme) | 設定 | 色覚異常対応の `dark-daltonized` および `light-daltonized` テーマを含むインターフェースカラー。[`/theme`](/docs/ja/commands#all-commands) で選択することもできます。 |
 | [`preferredNotifChannel`](/docs/ja/settings-reference#preferrednotifchannel) | 設定 | 値を `"terminal_bell"` にすると、Claude があなたを待機している場合、スクリーンリーダーモード外でターミナルベルが鳴ります。 |
 
-<h2 id="what-your-screen-reader-hears">
-  スクリーンリーダーが聞く内容
-</h2>
+## スクリーンリーダーが聞く内容
 
 スクリーンリーダーモードでは、Claude Code はフラットテキストを書き込みます：
 
@@ -92,17 +84,13 @@ Claude Code はターミナルカーソルを入力キャレットに保つた�
 
 [権限モード](/docs/ja/permission-modes) を `Shift+Tab` でサイクルすると、Claude Code は `[plan mode on]` または `[accept edits on]` などのランディングした権限モードを発表します。Claude Code は発表を 1 回印刷し、後の再描画では繰り返しません。
 
-<h3 id="read-earlier-output-without-losing-your-place">
-  読んでいる位置を失わずに以前の出力を読む
-</h3>
+### 読んでいる位置を失わずに以前の出力を読む
 
 以前の出力を読んでいる間にスクリーンリーダーがプロンプトに戻ってしまう場合、スクリーンリーダーはターミナルカーソルに追従しています。Claude Code は新しいテキストを書き込むたびに、ターミナルカーソルをプロンプトに戻します。
 
 読んでいる位置を保つには、スクリーンリーダーがターミナルカーソルに追従しないようにします。NVDA では、`NVDA+6` を押すとレビューカーソルがターミナルカーソルに追従しなくなります。もう一度 `NVDA+6` を押すと、追従が再びオンになります。
 
-<h3 id="jump-between-turns">
-  ターン間をジャンプする
-</h3>
+### ターン間をジャンプする
 
 Claude Code はターン境界で OSC 133 シェル統合マーカーを発行するため、ターミナルの前のプロンプトへジャンプするキーはトランスクリプト全体を読まずにターン間を移動します：
 
@@ -113,9 +101,7 @@ Claude Code はターン境界で OSC 133 シェル統合マーカーを発行�
 
 macOS Terminal はマーカーに作用せず、Claude Code は WezTerm では発行しません。これらのターミナルでは、代わりにスクロールバックで `you:` ラベルを検索してください。
 
-<h2 id="answer-menus-and-prompts">
-  メニューとプロンプトに答える
-</h2>
+## メニューとプロンプトに答える
 
 スクリーンリーダーモードでは、通常は矢印キーで操作するメニュー（権限プロンプトを含む）が番号付きリストになります。Claude Code は各オプションを番号付き行として発表し、その後に有効な範囲を示す `Select with numbers` プロンプトを発表します。希望するオプションの番号を入力して Enter キーを押します。
 
@@ -126,9 +112,7 @@ macOS Terminal はマーカーに作用せず、Claude Code は WezTerm では�
 
 はい/いいえプロンプトは、2 つのオプションメニューの代わりに、入力された回答を求めます。`y` または `n` と入力して Enter キーを押します。`yes` と `no` も機能します。
 
-<h2 id="hear-when-claude-code-needs-you">
-  Claude Code があなたの注意を必要とするときに聞く
-</h2>
+## Claude Code があなたの注意を必要とするときに聞く
 
 スクリーンリーダーモードでは、Claude Code があなたの注意を必要とするときにターミナルベルが鳴るため、トランスクリプトを常に確認する必要がありません。ベルは以下の場合に鳴ります：
 
@@ -138,9 +122,7 @@ macOS Terminal はマーカーに作用せず、Claude Code は WezTerm では�
 
 ベルはターミナルの標準アラートです。これを消音にするには、ターミナルアプリケーションのベル設定を変更してください。スクリーンリーダーモード外では、[`preferredNotifChannel`](/docs/ja/settings-reference#preferrednotifchannel) を `"terminal_bell"` に設定して、Claude があなたの対応を待っているときに[同様のベル](/docs/ja/terminal-config#get-a-terminal-bell-or-notification)を取得します。
 
-<h2 id="known-limitations">
-  既知の制限事項
-</h2>
+## 既知の制限事項
 
 一部の動作はスクリーンリーダーモード用に適応していません。
 
@@ -150,8 +132,6 @@ macOS Terminal はマーカーに作用せず、Claude Code は WezTerm では�
 * Claude Code はコストを終了時に出力するサマリーで発表し、ターンごとではありません。
 * スクリーンリーダーモードは `-p` フラグで[非対話型モード](/docs/ja/headless)を変更しません。非対話型モードは既にプレーンテキストを書き込み、スクリプト作成の代替案のままです。
 
-<h2 id="report-an-issue">
-  問題を報告する
-</h2>
+## 問題を報告する
 
 スクリーンリーダー、拡大鏡、またはターミナルで何かが機能しない場合は、[Claude Code issue tracker](https://github.com/anthropics/claude-code/issues) で問題を開き、タイトルに支援技術を記載してください。レポートにオペレーティングシステム、ターミナルアプリケーション、支援技術の名前とバージョンを含めます。

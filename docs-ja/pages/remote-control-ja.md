@@ -17,13 +17,11 @@ Remote Control は [claude.ai/code](https://claude.ai/code) または Claude ア
 
 [Web 上の Claude Code](/docs/ja/claude-code-on-the-web) はクラウドインフラストラクチャで実行されるのに対し、Remote Control セッションはマシン上で直接実行され、ローカルファイルシステムと相互作用します。Web およびモバイルインターフェースは、そのローカルセッションへのウィンドウにすぎません。そのため、コンピュータはオンのままである必要があり、`claude` プロセスは実行され続ける必要があります。
 
-<Note>
-  Remote Control は Claude Code の機能です。その他の Claude 製品での会話については、[Claude ヘルプセンター](https://support.claude.com)を参照してください。
-</Note>
+> [!NOTE]
+>
+> Remote Control は Claude Code の機能です。その他の Claude 製品での会話については、[Claude ヘルプセンター](https://support.claude.com)を参照してください。
 
-<h2 id="requirements">
-  要件
-</h2>
+## 要件
 
 Remote Control を使用する前に、環境が以下の条件を満たしていることを確認してください。
 
@@ -38,125 +36,117 @@ Remote Control を使用する前に、環境が以下の条件を満たして�
   * `DISABLE_TELEMETRY` または `DO_NOT_TRACK` のみを設定した場合、組織が [Trusted Devices](#trusted-devices) を要求しない限り、Remote Control は利用可能なままです。要求する場合は、Remote Control を使用するために変数を設定解除してください。いずれかの変数を設定した状態で Remote Control を使用するには、Claude Code v2.1.283 以降が必要です。
 * **ワークスペース信頼**: まだ信頼していないディレクトリで、`claude remote-control` は信頼を有効にする内容を出力し、開始する前に `Trust <directory>? [y/N]` と尋ねます。`y` と答えると選択が保存されます。ただし、ホームディレクトリでは信頼は保存されず、実行するたびに質問が返されます。標準入力または出力がターミナルでない場合、コマンドは質問できず、[`Workspace not trusted`](/docs/ja/errors#workspace-not-trusted-when-starting-remote-control) エラーで終了します。
 
-<h2 id="start-a-remote-control-session">
-  リモートコントロールセッションを開始する
-</h2>
+## リモートコントロールセッションを開始する
 
 CLI、[Claude Desktop アプリ](/docs/ja/desktop)、または VS Code 拡張機能からリモートコントロールセッションを開始できます。CLI は 3 つの呼び出しモードを提供し、Desktop アプリと VS Code は `/remote-control` コマンドを使用します。
 
-<Tabs>
-  <Tab title="サーバーモード">
-    プロジェクトディレクトリで、以下を実行します：
+**サーバーモード**
 
-    ```bash theme={null}
-    claude remote-control
-    ```
+プロジェクトディレクトリで、以下を実行します：
 
-    リモートコントロールの 1 回限りの確認を受け入れるまで、`claude remote-control` は何をするかを説明し、サーバーを開始する前に `Enable Remote Control? (y/n)` と尋ねます。`y` と答えて受け入れ、サーバーを開始します。拒否した場合、Claude Code はサーバーを開始せずに終了し、次回コマンドを実行するときに再度尋ねます。
+```bash theme={null}
+claude remote-control
+```
 
-    プロセスはターミナルでサーバーモードで実行され続け、リモート接続を待機します。[別のデバイスから接続](#connect-from-another-device)するために使用できるセッション URL が表示され、スペースバーを押すと携帯電話からの高速アクセス用 QR コードが表示されます。リモートセッションがアクティブな間、ターミナルは接続ステータスとツールアクティビティを表示します。
+リモートコントロールの 1 回限りの確認を受け入れるまで、`claude remote-control` は何をするかを説明し、サーバーを開始する前に `Enable Remote Control? (y/n)` と尋ねます。`y` と答えて受け入れ、サーバーを開始します。拒否した場合、Claude Code はサーバーを開始せずに終了し、次回コマンドを実行するときに再度尋ねます。
 
-    `remote-control` の後に以下のフラグを渡します：
+プロセスはターミナルでサーバーモードで実行され続け、リモート接続を待機します。[別のデバイスから接続](#connect-from-another-device)するために使用できるセッション URL が表示され、スペースバーを押すと携帯電話からの高速アクセス用 QR コードが表示されます。リモートセッションがアクティブな間、ターミナルは接続ステータスとツールアクティビティを表示します。
 
-    | フラグ | 説明 |
-    | - | - |
-    | `--name "My Project"` | claude.ai/code のセッションリストに表示されるカスタムセッションタイトルを設定します。 |
-    | `--remote-control-session-name-prefix <prefix>` | 明示的な名前が設定されていない場合の自動生成セッション名のプレフィックス。デフォルトはマシンのホスト名で、`myhost-graceful-unicorn` のような名前が生成されます。`CLAUDE_REMOTE_CONTROL_SESSION_NAME_PREFIX` を設定して同じ効果を得ることができます。 |
-    | `-c`, `--continue` | このディレクトリの最後のサーバーが開始したセッションを復元します。新しいセッションを作成する代わりに。[サーバーを停止した後のセッションの再開](#resume-sessions-after-stopping-the-server)を参照してください。`--session-id`、`--spawn`、`--capacity`、または `--create-session-in-dir` と組み合わせることはできません。Claude Code v2.1.200 以降が必要です。 |
-    | `--session-id <id>` | ID でセッションを 1 つ復元します。[サーバーを停止した後のセッションの再開](#resume-sessions-after-stopping-the-server)を参照してください。`--continue`、`--spawn`、`--capacity`、または `--create-session-in-dir` と組み合わせることはできません。Claude Code v2.1.200 以降が必要です。 |
-    | `--spawn <mode>` | サーバーがセッションを作成する方法。<br />• `same-dir`（デフォルト）：すべてのセッションが現在の作業ディレクトリを共有するため、同じファイルを編集している場合は競合する可能性があります。<br />• `worktree`：オンデマンドセッションごとに独自の [git worktree](/docs/ja/worktrees) を取得します。git リポジトリまたは [`WorktreeCreate` フック](/docs/ja/hooks#worktreecreate)が必要です。<br />• `session`：シングルセッションモード。正確に 1 つのセッションを提供し、追加の接続を拒否します。起動時にのみ設定します。<br />実行時に `w` を押して `same-dir` と `worktree` の間で切り替えます。 |
-    | `--capacity <N>` | 同時セッションの最大数。デフォルトは 32 です。`--spawn=session` では使用できません。 |
-    | `--[no-]create-session-in-dir` | サーバーが起動するときに現在のディレクトリに 1 つのセッションを事前作成し、すぐに入力できる場所を用意します。`worktree` モードでは、このセッションは現在のディレクトリに留まり、オンデマンドセッションは分離された worktree を取得します。デフォルトでオンです。`--no-create-session-in-dir` を渡して何もない状態で開始する場合、Claude Code はサーバーを停止するときにサーバーのセッションをアーカイブするため、[再開](#resume-sessions-after-stopping-the-server)するものはありません。 |
-    | `--permission-mode <mode>` | サーバーのセッションの開始 [権限モード](/docs/ja/permission-modes)（`acceptEdits` など）を設定します。`manual` を `default` のエイリアスとして受け入れます。認識されないモードはサーバーを起動時に停止し、有効なモードをリストします。 |
-    | `--chrome` / `--no-chrome` | サーバーが作成するセッションで [Chrome 統合](/docs/ja/chrome)をオンまたはオフにして、別のデバイスから作業している間に Claude がマシン上で Chrome を使用できるようにします。どちらのフラグもない場合、サーバーが事前作成するセッションと claude.ai/code または Claude アプリから自分で開始するセッションは、[Chrome をデフォルトで有効にした](/docs/ja/chrome#enable-chrome-by-default)場合でも、Chrome がオフで開始されます。サーバーが [プロジェクト](/docs/ja/claude-projects)スレッドの 1 つに対して開始するセッションは、`bypassPermissions` モードを除き、代わりにその設定に従います。Claude Code v2.1.273 以降が必要です。 |
-    | `-d`, `--debug[=<filter>]` | サーバーのデバッグログをオンにします。オプションでカテゴリでフィルタリングできます。フィルタは `=` 形式でのみ渡します（例：`--debug=api,hooks`）。Claude Code v2.1.282 以降が必要です。 |
-    | `--debug-file <path>` | デバッグログを指定されたファイルに書き込みます。 |
-    | `--verbose` | 詳細な接続とセッションログを表示します。 |
-    | `--sandbox`, `--no-sandbox` | v2.1.300 で削除されました。どちらかのフラグを渡すと、サーバーは起動せずに[エラーで終了](/docs/ja/errors#sandbox-is-not-supported-by-claude-remote-control)します。 |
+`remote-control` の後に以下のフラグを渡します：
 
-    `remote-control` の前にグローバル `claude` フラグを渡すか、ラッパースクリプトが 1 つを追加する場合、Claude Code はそのフラグをサーバーが作成するセッションに引き継ぎません。Claude Code は `--verbose` や `--model` など、そのフラグを削除しても何が起こるかが変わらないことが既知の場合にのみフラグを通します。他のフラグ（`--settings` など）の場合、Claude Code は [起動を拒否](/docs/ja/errors#not-carried-over-to-the-sessions-remote-control-starts)し、削除するフラグを名前で指定します。
+| フラグ | 説明 |
+| - | - |
+| `--name "My Project"` | claude.ai/code のセッションリストに表示されるカスタムセッションタイトルを設定します。 |
+| `--remote-control-session-name-prefix <prefix>` | 明示的な名前が設定されていない場合の自動生成セッション名のプレフィックス。デフォルトはマシンのホスト名で、`myhost-graceful-unicorn` のような名前が生成されます。`CLAUDE_REMOTE_CONTROL_SESSION_NAME_PREFIX` を設定して同じ効果を得ることができます。 |
+| `-c`, `--continue` | このディレクトリの最後のサーバーが開始したセッションを復元します。新しいセッションを作成する代わりに。[サーバーを停止した後のセッションの再開](#resume-sessions-after-stopping-the-server)を参照してください。`--session-id`、`--spawn`、`--capacity`、または `--create-session-in-dir` と組み合わせることはできません。Claude Code v2.1.200 以降が必要です。 |
+| `--session-id <id>` | ID でセッションを 1 つ復元します。[サーバーを停止した後のセッションの再開](#resume-sessions-after-stopping-the-server)を参照してください。`--continue`、`--spawn`、`--capacity`、または `--create-session-in-dir` と組み合わせることはできません。Claude Code v2.1.200 以降が必要です。 |
+| `--spawn <mode>` | サーバーがセッションを作成する方法。 • `same-dir`（モードが保存されていない場合のデフォルト）：すべてのセッションが現在の作業ディレクトリを共有するため、同じファイルを編集している場合は競合する可能性があります。 • `worktree`：オンデマンドセッションごとに独自の [git worktree](/docs/ja/worktrees) を取得します。git リポジトリまたは [`WorktreeCreate` フック](/docs/ja/hooks#worktreecreate)が必要です。 • `session`：シングルセッションモード。正確に 1 つのセッションを提供し、追加の接続を拒否します。起動時にのみ設定します。 実行時に `w` を押して `same-dir` と `worktree` の間で切り替えます。切り替え先のモードが[このプロジェクトのデフォルト](#set-the-default-spawn-mode-for-a-project)になります。 |
+| `--capacity <N>` | 同時セッションの最大数。デフォルトは 32 です。`--spawn=session` では使用できません。 |
+| `--[no-]create-session-in-dir` | サーバーが起動するときに現在のディレクトリに 1 つのセッションを事前作成し、すぐに入力できる場所を用意します。`worktree` モードでは、このセッションは現在のディレクトリに留まり、オンデマンドセッションは分離された worktree を取得します。デフォルトでオンです。`--no-create-session-in-dir` を渡して何もない状態で開始する場合、Claude Code はサーバーを停止するときにサーバーのセッションをアーカイブするため、[再開](#resume-sessions-after-stopping-the-server)するものはありません。 |
+| `--permission-mode <mode>` | サーバーのセッションの開始 [権限モード](/docs/ja/permission-modes)（`acceptEdits` など）を設定します。`manual` を `default` のエイリアスとして受け入れます。認識されないモードはサーバーを起動時に停止し、有効なモードをリストします。 |
+| `--chrome` / `--no-chrome` | サーバーが作成するセッションで [Chrome 統合](/docs/ja/chrome)をオンまたはオフにして、別のデバイスから作業している間に Claude がマシン上で Chrome を使用できるようにします。どちらのフラグもない場合、サーバーが事前作成するセッションと claude.ai/code または Claude アプリから自分で開始するセッションは、[Chrome をデフォルトで有効にした](/docs/ja/chrome#enable-chrome-by-default)場合でも、Chrome がオフで開始されます。サーバーが [プロジェクト](/docs/ja/claude-projects)スレッドの 1 つに対して開始するセッションは、`bypassPermissions` モードを除き、代わりにその設定に従います。Claude Code v2.1.273 以降が必要です。 |
+| `-d`, `--debug[=<filter>]` | サーバーのデバッグログをオンにします。オプションでカテゴリでフィルタリングできます。フィルタは `=` 形式でのみ渡します（例：`--debug=api,hooks`）。Claude Code v2.1.282 以降が必要です。 |
+| `--debug-file <path>` | デバッグログを指定されたファイルに書き込みます。 |
+| `--verbose` | 詳細な接続とセッションログを表示します。 |
+| `--sandbox`, `--no-sandbox` | v2.1.300 で削除されました。どちらかのフラグを渡すと、サーバーは起動せずに[エラーで終了](/docs/ja/errors#sandbox-is-not-supported-by-claude-remote-control)します。 |
 
-    セッションをサンドボックス化するには、設定ファイルで [サンドボックス](/docs/ja/sandboxing)をオンにします。
+`remote-control` の前にグローバル `claude` フラグを渡すか、ラッパースクリプトが 1 つを追加する場合、Claude Code はそのフラグをサーバーが作成するセッションに引き継ぎません。Claude Code は `--verbose` や `--model` など、そのフラグを削除しても何が起こるかが変わらないことが既知の場合にのみフラグを通します。他のフラグ（`--settings` など）の場合、Claude Code は [起動を拒否](/docs/ja/errors#not-carried-over-to-the-sessions-remote-control-starts)し、削除するフラグを名前で指定します。
 
-    Claude Code はヘルプを出力する前にリモートコントロール適格性をチェックするため、適格なアカウントでサインインしていない場合、`claude remote-control --help` はこのフラグリストの代わりにエラーを返します。
-  </Tab>
+セッションをサンドボックス化するには、設定ファイルで [サンドボックス](/docs/ja/sandboxing)をオンにします。
 
-  <Tab title="インタラクティブセッション">
-    リモートコントロールを有効にした通常のインタラクティブ Claude Code セッションを開始するには、`--remote-control` フラグ（または `--rc`）を使用します：
+ターミナルに `remote-control` のフラグを表示するには、`claude remote-control --help` を実行します。v2.1.302 より前は、適格なサインインがない場合、このコマンドは代わりに[トラブルシューティング](#troubleshooting)に記載されているエラーのいずれかを返していました。
 
-    ```bash theme={null}
-    claude --remote-control
-    ```
+**インタラクティブセッション**
 
-    オプションでセッションの名前を渡します：
+Remote Control を有効にした通常のインタラクティブ Claude Code セッションを開始するには、`--remote-control` フラグ（または `--rc`）を使用します：
 
-    ```bash theme={null}
-    claude --remote-control "My Project"
-    ```
+```bash theme={null}
+claude --remote-control
+```
 
-    これにより、ターミナルで完全なインタラクティブセッションが得られ、claude.ai または Claude アプリからも制御できます。`claude remote-control`（サーバーモード）とは異なり、セッションがリモートで利用可能な間、ローカルでメッセージを入力できます。
-  </Tab>
+オプションでセッションの名前を渡します：
 
-  <Tab title="既存のセッションから">
-    既に Claude Code セッションにいて、それをリモートで続行したい場合は、`/remote-control`（または `/rc`）コマンドを使用します：
+```bash theme={null}
+claude --remote-control "My Project"
+```
 
-    ```text theme={null}
-    /remote-control
-    ```
+これにより、ターミナルで完全なインタラクティブセッションが得られ、claude.ai または Claude アプリからも制御できます。`claude remote-control`（サーバーモード）とは異なり、セッションがリモートで利用可能な間、ローカルでメッセージを入力できます。
 
-    カスタムセッションタイトルを設定するには、引数として名前を渡します：
+**既存のセッションから**
 
-    ```text theme={null}
-    /remote-control My Project
-    ```
+既に Claude Code セッションにいて、それをリモートで続行したい場合は、`/remote-control`（または `/rc`）コマンドを使用します：
 
-    これにより、現在の会話履歴を引き継ぐリモートコントロールセッションが開始されます。
+```text theme={null}
+/remote-control
+```
 
-    リモートコントロールの 1 回限りの確認を受け入れるまで、`/remote-control` が接続する前にダイアログが表示されます。**Enable Remote Control** を選択して受け入れて接続します。**Never mind** を選択するか Esc を押すと、Claude Code は接続せず、次回 `/remote-control` を実行するときに再度尋ねます。
+カスタムセッションタイトルを設定するには、引数として名前を渡します：
 
-    `--verbose` フラグはこのコマンドでは利用できません。
-  </Tab>
+```text theme={null}
+/remote-control My Project
+```
 
-  <Tab title="VS Code">
-    [Claude Code VS Code 拡張機能](/docs/ja/vs-code)で、プロンプトボックスに `/remote-control` または `/rc` と入力します。
+これにより、現在の会話履歴を引き継ぐリモートコントロールセッションが開始されます。
 
-    ```text theme={null}
-    /remote-control
-    ```
+リモートコントロールの 1 回限りの確認を受け入れるまで、`/remote-control` が接続する前にダイアログが表示されます。**Enable Remote Control** を選択して受け入れて接続します。**Never mind** を選択するか Esc を押すと、Claude Code は接続せず、次回 `/remote-control` を実行するときに再度尋ねます。
 
-    リモートコントロールがオンの間、Claude Code はプロンプトボックスフッターに **Remote Control** インジケーターを表示します。セッションが接続されたら、インジケーターをクリックしてセッションに直接移動するか、[claude.ai/code](https://claude.ai/code) のセッションリストで見つけます。Claude Code はセッション URL を会話にも投稿します。切断するには、`/remote-control` を再度実行します。
+`--verbose` フラグはこのコマンドでは利用できません。
 
-    CLI とは異なり、VS Code コマンドは名前引数を受け入れたり、QR コードを表示したりしません。セッションタイトルは会話履歴または最初のプロンプトから派生します。
-  </Tab>
+**VS Code**
 
-  <Tab title="Desktop アプリ">
-    [Claude Desktop アプリの](/docs/ja/desktop) Code タブのローカルセッションで、プロンプトボックスに `/remote-control` または `/rc` と入力します。
+[Claude Code VS Code 拡張機能](/docs/ja/vs-code)で、プロンプトボックスに `/remote-control` または `/rc` と入力します。
 
-    ```text theme={null}
-    /remote-control
-    ```
+```text theme={null}
+/remote-control
+```
 
-    セッションが接続されたら、[claude.ai/code](https://claude.ai/code) のセッションリストで見つけます。切断するには、`/remote-control` を再度実行します。
+リモートコントロールがオンの間、Claude Code はプロンプトボックスフッターに **Remote Control** インジケーターを表示します。セッションが接続されたら、インジケーターをクリックしてセッションに直接移動するか、[claude.ai/code](https://claude.ai/code) のセッションリストで見つけます。Claude Code はセッション URL を会話にも投稿します。切断するには、`/remote-control` を再度実行します。
 
-    代わりにデフォルトですべてのセッションでリモートコントロールをオンにするには、[すべてのセッションでリモートコントロールを有効にする](#enable-remote-control-for-all-sessions)を参照してください。
-  </Tab>
-</Tabs>
+CLI とは異なり、VS Code コマンドは名前引数を受け入れたり、QR コードを表示したりしません。セッションタイトルは会話履歴または最初のプロンプトから派生します。
 
-<h3 id="check-connection-status">
-  接続ステータスを確認する
-</h3>
+**Desktop アプリ**
+
+[Claude Desktop アプリの](/docs/ja/desktop) Code タブのローカルセッションで、プロンプトボックスに `/remote-control` または `/rc` と入力します。
+
+```text theme={null}
+/remote-control
+```
+
+セッションが接続されたら、[claude.ai/code](https://claude.ai/code) のセッションリストで見つけます。切断するには、`/remote-control` を再度実行します。
+
+代わりにデフォルトですべてのセッションでリモートコントロールをオンにするには、[すべてのセッションでリモートコントロールを有効にする](#enable-remote-control-for-all-sessions)を参照してください。
+
+### 接続ステータスを確認する
 
 インタラクティブセッションで、リモートコントロールが接続されている間、ターミナルは claude.ai のセッションにリンクする `/rc active` インジケーターを表示します。ターミナルが狭すぎてそれに収まらない場合、インジケーターは非表示になります。セッション URL と [別のデバイスから接続](#connect-from-another-device)するための QR コードを表示するには、`/remote-control` を再度実行してステータスパネルを開きます。パネルでは、ローカルセッションが実行され続ける間、リモートコントロールを切断することもできます。
 
-<span id="session-ended-elsewhere" />インタラクティブセッションで接続が失敗した場合、インジケーターは失敗を表示するように変わり、Claude Code は理由を通知で表示し、会話に追加します。`/remote-control` を実行して再接続します。ただし、理由がセッションが別の場所で変更されたことを示している場合を除きます：
+インタラクティブセッションで接続が失敗した場合、インジケーターは失敗を表示するように変わり、Claude Code は理由を通知で表示し、会話に追加します。`/remote-control` を実行して再接続します。ただし、理由がセッションが別の場所で変更されたことを示している場合を除きます：
 
 * **Another connection took over this session**：別のデバイスまたは Claude Code セッションがそれを持っています。セッションを取り戻したい場合にのみ `/remote-control` を実行します。
 * **This session was ended or archived from another device or app**：セッションを戻したい場合にのみ `/remote-control` を実行します。Claude Code はアーカイブされたセッションを再度開きます。
 * **The server no longer reports this session**：別のデバイスまたはアプリから削除された可能性があります。
 
-<h3 id="connect-from-another-device">
-  別のデバイスから接続する
-</h3>
+### 別のデバイスから接続する
 
 リモートコントロールセッションがアクティブになったら、別のデバイスから接続するいくつかの方法があります：
 
@@ -177,30 +167,26 @@ CLI、[Claude Desktop アプリ](/docs/ja/desktop)、または VS Code 拡張機
 
 Claude アプリをまだ持っていない場合は、Claude Code 内で `/mobile` を実行して、[claude.ai/mobile](https://claude.ai/mobile) を開く QR コードを表示します。これにより、携帯電話の適切なアプリストアが開きます。
 
-<h3 id="what-connected-devices-see">
-  接続されたデバイスが表示するもの
-</h3>
+### 接続されたデバイスが表示するもの
 
 接続されたデバイスは、ターミナルの会話をリアルタイムで表示します。これらのケースは通常のメッセージを超えています：
 
 * **圧縮と `/clear`**：Claude Code が [会話を圧縮](/docs/ja/context-window#what-survives-compaction)している間、接続されたデバイスは進行状況を表示し、会話が圧縮された場所を表示します。`/clear` を実行すると、接続されたデバイスでも会話がリセットされます。
 * **`/resume` で会話を切り替える**：接続されたデバイスは、切り替え先の会話のタイトルまたは以前の履歴を受け取りませんが、両方向の新しいメッセージは、ターミナルで開いている会話に対して送受信されます。デバイスから元の会話で作業するには、ターミナルで `/resume` を実行して戻します。
 * **`/teleport` でセッションをプル**：[クラウドセッション](/docs/ja/claude-code-on-the-web#from-cloud-to-terminal)を `/teleport` でターミナルにプルすると、接続されたデバイスはプルされた会話の以前の履歴を受け取りません。両方向の新しいメッセージはプルされた会話に対して送受信され、これはターミナルで開いている会話になります。
-* **他のセッションからのメッセージ**：[クロスセッションメッセージング](/docs/ja/cross-session-messaging)では、同じ接続が異なるマシン上の独自のセッション間および [クラウドセッション](/docs/ja/claude-code-on-the-web)からのメッセージを運びます。
+* **他のセッションからのメッセージ**：[クロスセッションメッセージング](/docs/ja/cross-session-messaging)では、同じ接続が異なるマシン上の自分のセッション間のメッセージを運びます。
 * **変更の差分**：セッションのディレクトリが git リポジトリにある場合、接続されたデバイスの差分ペインは変更を表示します。リポジトリのデフォルトブランチより先のコミットを持つブランチでは、ペインはブランチが分割されてからの変更を表示します。これにはコミットされていない編集が含まれます。デフォルトブランチ自体、またはそれより先ではないブランチでは、ペインはコミットされていない変更のみを表示します。
 * **モデル**：接続されたデバイスから [モデル](/docs/ja/model-config)を選択すると、Claude Code はそのモデルでセッションを実行します。Claude Code v2.1.238 以降が必要です。デバイスのモデルコントロールから選択したモデルは現在のセッションにのみ適用されます。デバイスからインタラクティブセッションに `/model <name>` を送信すると、Claude Code は新しいセッションのデフォルトも設定します。
 * **努力レベル**：接続されたデバイスから [努力レベル](/docs/ja/model-config#adjust-effort-level)を設定すると、`/effort` またはデバイスの努力コントロールで、Claude Code はそれをマシン上のセッションに適用します。`CLAUDE_CODE_EFFORT_LEVEL` でレベルをピン留めした場合、セッションはそのレベルを保持し、Claude Code は努力コントロールから別の選択を拒否します。努力コントロールからレベルを選択するには、マシン上の Claude Code v2.1.234 以降が必要です。
 * **接続失敗後の再接続**：`/remote-control` を実行して再接続します。その間に圧縮が会話を書き直したか、`/resume` で会話を切り替えた場合、Claude Code はセッションリストに残す代わりに、使用していたサーバーセッションをアーカイブします。[アーカイブされたセッションをフィルタリング](/docs/ja/claude-code-on-the-web#archive-sessions)して見つけることができます。デバイスがまだ接続されている間に会話を切り替えてもセッションはアーカイブされません。
 
-<h3 id="enable-remote-control-for-all-sessions">
-  すべてのセッションでリモートコントロールを有効にする
-</h3>
+### すべてのセッションでリモートコントロールを有効にする
 
 リモートコントロールは、`claude remote-control`、`claude --remote-control`、または `/remote-control` を明示的に実行するか、自動接続がオンになっている場合にのみアクティブになります。すべてのインタラクティブセッションで自動接続をオンにするには、Claude Code 内で `/config` を実行し、**Enable Remote Control for all sessions** を設定します。トグルは 3 つの値を取ります：
 
 * **`true`**：インタラクティブセッションが開始するときに自動的に接続します。
 * **`false`**：自動接続をオフにします。ただし、[管理設定](/docs/ja/managed-settings)からの `true` はそれをランク付けします。Claude Code は選択をユーザー設定に保存するためです。プロジェクトまたはローカル設定（`.claude/settings.json`、`.claude/settings.local.json`）の `false` は、管理 `true` の上でも自動接続をオフにします。
-* **`default`**：選択をクリアし、設定されている場合は組織の管理者デフォルトに従います。そうでない場合は Claude Code の現在のデフォルトに従います。
+* **`default`**：選択をクリアし、設定されている場合は組織の管理者デフォルトに従います。そうでない場合は Claude Code の現在のデフォルトに従います。`DISABLE_TELEMETRY` または `DO_NOT_TRACK` を設定している場合は、[`DISABLE_TELEMETRY` または `DO_NOT_TRACK` を設定している場合の自動接続](#auto-connect-with-disable-telemetry-or-do-not-track)を参照してください。
 
 VS Code 拡張機能と Desktop アプリにも自動接続のトグルがあります：
 
@@ -213,9 +199,16 @@ VS Code 拡張機能と Desktop アプリにも自動接続のトグルがあり
 
 この設定がオンの場合、各インタラクティブ Claude Code プロセスは 1 つのリモートセッションを登録します。複数のインスタンスを実行する場合、各インスタンスは独自のリモートセッションを取得します。単一のプロセスから複数の同時セッションを実行するには、代わりに [サーバーモード](#start-a-remote-control-session)を使用します。
 
-<h3 id="resume-sessions-after-stopping-the-server">
-  サーバーを停止した後のセッションの再開
-</h3>
+#### `DISABLE_TELEMETRY` または `DO_NOT_TRACK` を設定している場合の自動接続
+
+`DISABLE_TELEMETRY` または `DO_NOT_TRACK` のみが設定されている場合、セッションは組織の管理者デフォルトや Claude Code 自体のデフォルトによっては自動接続されません。`DISABLE_GROWTHBOOK` や LLM ゲートウェイなど、他の要因で Remote Control が利用できない場合は、代わりに[要件](#requirements)から確認してください。
+
+`DISABLE_TELEMETRY` または `DO_NOT_TRACK` のみが設定されている状態で自動接続をオンにするには、Claude Code v2.1.283 以降が必要です。自動接続するには、組織が[信頼済みデバイス](#trusted-devices)を必須にしているかどうかを確認してください：
+
+* **必須でない場合**：`/config` で **Enable Remote Control for all sessions** を `true` に設定します。
+* **必須の場合**：`DISABLE_TELEMETRY` または `DO_NOT_TRACK` が設定されている間は Remote Control を利用できません。2 つの変数のうち設定した方を解除してください。それでもセッションが自動接続されない場合は、`/config` で **Enable Remote Control for all sessions** を `true` に設定します。
+
+### サーバーを停止した後のセッションの再開
 
 Ctrl+C で `claude remote-control` を停止すると、提供していたセッションは携帯電話またはブラウザからの応答を停止します。別の `claude remote-control` を同じディレクトリで実行していなかったり、`--no-create-session-in-dir` で開始していなかった限り、Claude Code はそれらをアーカイブしません。それらを復元するには、同じディレクトリで次のコマンドのいずれかを実行します：
 
@@ -231,9 +224,16 @@ Ctrl+C で `claude remote-control` を停止すると、提供していたセッ
 
 Claude Desktop またはリモートコントロールがオンだった IDE 拡張機能で会話を再開する場合、Claude Code は新しいセッションをセッションリストに追加する代わりに、既存の claude.ai セッションに再度アタッチします。
 
-<h2 id="connection-and-security">
-  接続とセキュリティ
-</h2>
+### プロジェクトのデフォルトの spawn モードを設定する
+
+`claude remote-control` が起動時に `Spawn mode: <mode> (saved for this folder; press w to change)` と出力する場合、サーバーはこのプロジェクト用に以前保存された spawn モードで起動しています。
+
+保存されたモードは、自分のターミナルで行った選択に基づきます。`claude remote-control` がそこで `Spawn mode for this project:` と尋ねた場合、Claude Code は回答した内容（`same-dir` の場合は `1`、`worktree` の場合は `2`）を保持しています。実行中に `w` を押した場合、Claude Code は切り替え先のモードを保持しています。これは `--spawn same-dir` または `--spawn worktree` で開始した実行でも同様です。
+
+* サーバーが `same-dir` または `worktree` モードで実行されている間、サーバーのターミナルで `w` を押すともう一方のモードに切り替わります。切り替えには git リポジトリまたは `WorktreeCreate` フックが必要です。
+* 1 回の実行だけ別のモードを使用するには、`--spawn <mode>` を渡します。
+
+## 接続とセキュリティ
 
 ローカル Claude Code セッションは、アウトバウンド HTTPS リクエストのみを行い、マシン上のインバウンドポートを開くことはありません。Remote Control を開始すると、Anthropic API に登録され、作業をポーリングします。別のデバイスから接続すると、サーバーは Web またはモバイルクライアントとローカルセッション間のメッセージをストリーミング接続経由でルーティングします。
 
@@ -243,15 +243,13 @@ Remote Control が接続されている間、セッショントランスクリ�
 
 Remote Control を完全にオフにするには、[`disableRemoteControl`](/docs/ja/settings-reference#disableremotecontrol) 設定を使用します。[Zero Data Retention](/docs/ja/zero-data-retention) が有効になっている組織、または [HIPAA 構成](/docs/ja/hipaa-setup) が適用されている組織は、Remote Control を有効にすることはできません。
 
-<h2 id="trusted-devices">
-  信頼できるデバイス
-</h2>
+## 信頼できるデバイス
 
-<Note>
-  信頼できるデバイスは現在ベータ版です。エクスペリエンスが改善されるにつれて、機能と機能が進化する可能性があります。
-
-  信頼できるデバイスは Pro、Max、Team、および Enterprise プランで利用可能であり、デフォルトではオフになっています。Team および Enterprise プランでは、Owner が組織に対してこれをオンにします。Pro および Max プランでは、設定の Cowork またはアカウントページで、自分で **信頼できるデバイスを要求** をオンにします。
-</Note>
+> [!NOTE]
+>
+> 信頼できるデバイスは現在ベータ版です。エクスペリエンスが改善されるにつれて、機能と機能が進化する可能性があります。
+>
+> 信頼できるデバイスは Pro、Max、Team、および Enterprise プランで利用可能であり、デフォルトではオフになっています。Team および Enterprise プランでは、Owner が組織に対してこれをオンにします。Pro および Max プランでは、設定の Cowork またはアカウントページで、自分で **信頼できるデバイスを要求** をオンにします。
 
 信頼できるデバイスは、組織のメンバー、または Pro もしくは Max プランではあなた自身が、claude.ai、Claude モバイルアプリ、または Claude Desktop から Remote Control セッションを表示または操作する前に、デバイスを確認する必要があります。これは、署名されたアカウントだけでなく、既知のデバイスと最近の認証に Remote Control アクセスを結び付けます。
 
@@ -264,29 +262,23 @@ Remote Control を完全にオフにするには、[`disableRemoteControl`](/doc
 
 この設定は、Claude Code の Remote Control と、[Cowork](https://claude.com/docs/cowork/overview) の Computer access に適用されます。このページでは Claude Code 側について説明します。通常の Claude チャット、ターミナルの Claude Code、および API 使用は影響を受けません。
 
-<h3 id="enable-trusted-devices-for-your-organization">
-  Team または Enterprise 組織で信頼できるデバイスを有効にする
-</h3>
+### Team または Enterprise 組織で信頼できるデバイスを有効にする
 
 Owner は claude.ai 組織設定から設定を有効にします。
 
-<Steps>
-  <Step title="Capabilities ページに移動する">
-    [**Organization settings > Capabilities > Remote sessions**](https://claude.ai/admin-settings/capabilities) に移動します。**Require trusted devices** トグルはそのセクションに表示されます。
-  </Step>
+**1. Capabilities ページに移動する**
 
-  <Step title="信頼できるデバイスを要求をオンにする">
-    この設定は組織のすべてのメンバーと、トグルを有効にした後に開始された Remote Control セッションに適用されます。トグルがオンになる前に既に実行されていたセッションは遡及的に保護されず、終了するまでデバイス要件なしで続行されます。チームごとまたはプロジェクトごとのスコープは利用できません。
-  </Step>
+[**Organization settings > Capabilities > Remote sessions**](https://claude.ai/admin-settings/capabilities) に移動します。**Require trusted devices** トグルはそのセクションに表示されます。
 
-  <Step title="メンバーに何を期待するかを伝える">
-    設定が有効になった後、メンバーがブラウザ、電話、またはデスクトップアプリから新しい Remote Control セッションを初めて表示または操作するときに、そのデバイスを登録するよう求められます。事前に知らせることで混乱を避けられます。
-  </Step>
-</Steps>
+**2. 信頼できるデバイスを要求をオンにする**
 
-<h3 id="what-members-see">
-  メンバーが見るもの
-</h3>
+この設定は組織のすべてのメンバーと、トグルを有効にした後に開始された Remote Control セッションに適用されます。トグルがオンになる前に既に実行されていたセッションは遡及的に保護されず、終了するまでデバイス要件なしで続行されます。チームごとまたはプロジェクトごとのスコープは利用できません。
+
+**3. メンバーに何を期待するかを伝える**
+
+設定が有効になった後、メンバーがブラウザ、電話、またはデスクトップアプリから新しい Remote Control セッションを初めて表示または操作するときに、そのデバイスを登録するよう求められます。事前に知らせることで混乱を避けられます。
+
+### メンバーが見るもの
 
 登録はデバイスごとに 1 回限りのステップです。その後、唯一の目に見える変化は時折のバイオメトリック プロンプトです。
 
@@ -296,9 +288,7 @@ Owner は claude.ai 組織設定から設定を有効にします。
 * **プラットフォーム認証器がない**: Face ID、Touch ID、または Windows Hello がないマシン上のメンバーは、ハードウェアセキュリティキーを使用するか、段階的認証の代わりにサインインできます。
 * **ターミナルで**: Claude Code を実行しているマシンは、開発者が CLI にサインインするときに独自の認証情報を自動的に受け取ります。ターミナルに別の登録ステップはありません。
 
-<h3 id="manage-enrolled-devices">
-  登録されたデバイスを管理する
-</h3>
+### 登録されたデバイスを管理する
 
 メンバーはアカウント設定から独自のデバイスを確認および取り消すことができます。
 
@@ -306,9 +296,7 @@ Owner は claude.ai 組織設定から設定を有効にします。
 
 紛失または盗難されたデバイスの場合、メンバーはこのページから削除します。メンバーがサインインできない場合、管理者は管理コンソールで **Sign out everywhere** を使用してそのメンバーのすべてのセッションと登録されたデバイスを取り消すことができます。その後、メンバーは保持しているデバイスを再登録します。
 
-<h2 id="remote-control-vs-cloud-sessions">
-  リモートコントロール対クラウドセッション
-</h2>
+## リモートコントロール対クラウドセッション
 
 リモートコントロールと[クラウドセッション](/docs/ja/claude-code-on-the-web)は、どちらも claude.ai/code インターフェースを使用します。主な違いは、セッションが実行される場所です。リモートコントロールはお客様のマシン上で実行されるため、ローカル MCP サーバー、ツール、プロジェクト設定が利用可能なままです。クラウドセッションはクラウドインフラストラクチャ上で実行され、デフォルトでは Anthropic が管理します。
 
@@ -325,9 +313,7 @@ Claude Code は、ターミナルにいない時に作業するための複数�
 | [Self-hosted environments](/docs/ja/self-hosted-environments) | [クラウドセッション](/docs/ja/claude-code-on-the-web)を開始し、組織の環境を選択 | あなたの組織のインフラストラクチャ | [ランナーをデプロイ](/docs/ja/self-hosted-environments-quickstart)、Team および Enterprise プラン | ネットワーク内で実行する必要があるクラウドセッション |
 | [Scheduled tasks](/docs/ja/scheduled-tasks) | スケジュールを設定 | [CLI](/docs/ja/scheduled-tasks)、[Desktop](/docs/ja/desktop-scheduled-tasks)、または[クラウド](/docs/ja/routines) | 頻度を選択 | 日次レビューなどの定期的な自動化 |
 
-<h2 id="mobile-push-notifications">
-  モバイルプッシュ通知
-</h2>
+## モバイルプッシュ通知
 
 リモートコントロールがアクティブな場合、Claude はお客様の電話にプッシュ通知を送信できます。
 
@@ -335,23 +321,21 @@ Claude がプッシュを送信するタイミングを決定します。通常�
 
 モバイルプッシュ通知を設定するには：
 
-<Steps>
-  <Step title="Claude モバイルアプリをインストール">
-    [iOS](https://apps.apple.com/us/app/claude-by-anthropic/id6473753684) または [Android](https://play.google.com/store/apps/details?id=com.anthropic.claude) 用の Claude アプリをダウンロードしてください。
-  </Step>
+**1. Claude モバイルアプリをインストール**
 
-  <Step title="Claude Code アカウントでサインイン">
-    ターミナルで Claude Code に使用するのと同じアカウントと組織を使用してください。
-  </Step>
+[iOS](https://apps.apple.com/us/app/claude-by-anthropic/id6473753684) または [Android](https://play.google.com/store/apps/details?id=com.anthropic.claude) 用の Claude アプリをダウンロードしてください。
 
-  <Step title="通知を許可">
-    オペレーティングシステムからの通知権限プロンプトを受け入れてください。
-  </Step>
+**2. Claude Code アカウントでサインイン**
 
-  <Step title="Claude Code でプッシュを有効化">
-    ターミナルで `/config` を実行し、プロアクティブな通知の場合は **Push when Claude decides**、権限プロンプトと質問の場合は **Push when actions required**、またはその両方を有効にしてください。
-  </Step>
-</Steps>
+ターミナルで Claude Code に使用するのと同じアカウントと組織を使用してください。
+
+**3. 通知を許可**
+
+オペレーティングシステムからの通知権限プロンプトを受け入れてください。
+
+**4. Claude Code でプッシュを有効化**
+
+ターミナルで `/config` を実行し、プロアクティブな通知の場合は **Push when Claude decides**、権限プロンプトと質問の場合は **Push when actions required**、またはその両方を有効にしてください。
 
 通知が届かない場合：
 
@@ -361,9 +345,7 @@ Claude がプッシュを送信するタイミングを決定します。通常�
 
 Claude Code は、お客様がターミナルに入力中または接続されたターミナルにフォーカスしている間、モバイルプッシュ通知をスキップします。これをマシンにいるときはいつでも（別のウィンドウにいる場合でも）に拡張するには、[`CLAUDE_CLIENT_PRESENCE_FILE`](/docs/ja/env-vars) をマーカーファイルパスに設定してください。ファイルが存在する間は通知がスキップされます。スクリーンロックリスナーまたは同様のツールを設定して、スクリーンがロック解除されたときにファイルを作成し、スクリーンがロックされたときに削除してください。
 
-<h2 id="limitations">
-  制限事項
-</h2>
+## 制限事項
 
 * **対話型プロセスごとに 1 つのリモートセッション**: サーバーモード以外では、各 Claude Code インスタンスは一度に 1 つのリモートセッションをサポートします。単一のプロセスから複数のセッションを同時に実行するには、[サーバーモード](#start-a-remote-control-session)を使用してください。
 * **ローカルプロセスを実行し続ける必要がある**: Remote Control はローカルプロセスとして実行されます。ターミナルを閉じる、マシン上でセッションを実行している Desktop アプリや VS Code を終了する、またはその他の方法で `claude` プロセスを停止すると、[再開する](#resume-sessions-after-stopping-the-server)までセッションはオフラインになります。リモートマシン上のターミナルから `claude` を実行する場合は、SSH から切断した後もセッションが実行され続けるように、`tmux` または `screen` の中で起動してください。
@@ -387,46 +369,38 @@ Claude Code は、お客様がターミナルに入力中または接続され�
   * `/output-style`（v2.1.269 以降）: スタイル名を引数として渡すか（例: `/output-style concise`）、引数なしで実行してスタイルを一覧表示します。モバイルと Web からは、[組み込みスタイル](/docs/ja/output-styles#built-in-output-styles)のみを一覧表示・選択できます。[カスタムスタイル](/docs/ja/output-styles#create-a-custom-output-style)を使用するには、セッション自体で選択してください。
   * `/focus`（v2.1.281 以降）: `on` または `off` を引数として渡すか（例: `/focus on`）、引数なしで実行して[フォーカスビュー](/docs/ja/commands#all-commands)を切り替えます。どちらの形式も現在のセッションにのみ適用され、保存済みの選択は変更されません。
 
-<h2 id="authorize-a-connector-again-from-your-shell">
-  シェルからコネクタを再度認可する
-</h2>
+## シェルからコネクタを再度認可する
 
 Remote Control で操作しているセッションで claude.ai コネクタの認証が必要になった場合、モバイルアプリや Web からは `/mcp` パネルを利用できません。セッションが実行されているマシン上のターミナルから認可リンクを取得し、使用しているデバイスでそのリンクを開いてください。このコマンドはモバイルアプリや Web からは実行できません。そこから送信した `!` で始まる行は Claude へのメッセージとして送られ、[シェルモード](/docs/ja/interactive-mode#shell-mode-with-prefix)では実行されません。
 
-<Steps>
-  <Step title="認可リンクを取得する">
-    セッションが実行されているマシン上のターミナル（SSH 経由など）で、コネクタ名を引用符で囲んで `claude mcp login` を実行します。コネクタ名は `claude.ai` で始まります。たとえば Slack コネクタの場合は `claude.ai Slack` です。次のコマンドは Slack コネクタのリンクを取得します。
+**1. 認可リンクを取得する**
 
-    ```bash theme={null}
-    claude mcp login "claude.ai Slack" --no-browser
-    ```
+セッションが実行されているマシン上のターミナル（SSH 経由など）で、コネクタ名を引用符で囲んで `claude mcp login` を実行します。コネクタ名は `claude.ai` で始まります。たとえば Slack コネクタの場合は `claude.ai Slack` です。次のコマンドは Slack コネクタのリンクを取得します。
 
-    このコマンドは claude.ai のリンクを出力して終了します。ブラウザでリンクを開き、claude.ai で認可を完了してください。`--no-browser` を指定すると、コマンドがそのマシン上でブラウザを開かなくなります。そのマシンは、使用しているデバイスとは限らないためです。
-  </Step>
+```bash theme={null}
+claude mcp login "claude.ai Slack" --no-browser
+```
 
-  <Step title="セッションでコネクタを使用する">
-    新しいセッションを開始するか、すでに実行中のセッションでコネクタを再接続します。
+このコマンドは claude.ai のリンクを出力して終了します。ブラウザでリンクを開き、claude.ai で認可を完了してください。`--no-browser` を指定すると、コマンドがそのマシン上でブラウザを開かなくなります。そのマシンは、使用しているデバイスとは限らないためです。
 
-    * **新しいセッション**：認可後に開始したセッションは、追加の手順なしでコネクタに接続します。
-    * **実行中のセッション**：Claude Code のプロンプトで、またはモバイルアプリや Web から、同じ名前を引用符なしで指定して `/mcp reconnect` を実行します。セッションがモバイルアプリや Web からこのコマンドを受け付けるかどうかを確認するには、[モバイルと Web から使用できるコマンド](#limitations)の `/mcp` の項目を参照してください。
+**2. セッションでコネクタを使用する**
 
-    次のコマンドは Slack コネクタを再接続します。
+新しいセッションを開始するか、すでに実行中のセッションでコネクタを再接続します。
 
-    ```text theme={null}
-    /mcp reconnect claude.ai Slack
-    ```
+* **新しいセッション**：認可後に開始したセッションは、追加の手順なしでコネクタに接続します。
+* **実行中のセッション**：Claude Code のプロンプトで、またはモバイルアプリや Web から、同じ名前を引用符なしで指定して `/mcp reconnect` を実行します。セッションがモバイルアプリや Web からこのコマンドを受け付けるかどうかを確認するには、[モバイルと Web から使用できるコマンド](#limitations)の `/mcp` の項目を参照してください。
 
-    ターミナルでは、Claude Code が `Successfully reconnected to claude.ai Slack` と出力します。モバイルアプリや Web からの場合、応答は `Reconnected "claude.ai Slack".` です。
-  </Step>
-</Steps>
+次のコマンドは Slack コネクタを再接続します。
 
-<h2 id="troubleshooting">
-  トラブルシューティング
-</h2>
+```text theme={null}
+/mcp reconnect claude.ai Slack
+```
 
-<h3 id="remote-control-requires-a-claude-ai-subscription">
-  "Remote Control requires a claude.ai subscription"
-</h3>
+ターミナルでは、Claude Code が `Successfully reconnected to claude.ai Slack` と出力します。モバイルアプリや Web からの場合、応答は `Reconnected "claude.ai Slack".` です。
+
+## トラブルシューティング
+
+### "Remote Control requires a claude.ai subscription"
 
 claude.ai アカウントでサインインしていないか、別の認証情報がログインより優先されています。メッセージは以下のいずれかの形式です。
 
@@ -436,21 +410,15 @@ claude.ai アカウントでサインインしていないか、別の認証情�
 
 `claude auth login` を実行して claude.ai オプションを選択してください。メッセージが `ANTHROPIC_API_KEY` または `ANTHROPIC_AUTH_TOKEN` を名前に挙げている場合は、それが設定されている場所（シェル環境または [設定ファイル](/docs/ja/settings-reference#env) の `env` ブロック）から削除してください。`apiKeyHelper` を名前に挙げている場合は、その設定を削除してください。
 
-<h3 id="remote-control-requires-a-full-scope-login-token">
-  "Remote Control requires a full-scope login token"
-</h3>
+### "Remote Control requires a full-scope login token"
 
 `claude setup-token` または `CLAUDE_CODE_OAUTH_TOKEN` 環境変数から取得した長期トークンで認証されています。これらのトークンはモデルリクエストのみを実行できるため、Remote Control セッションを確立できません。代わりに `claude auth login` を実行して、フルスコープセッショントークンで認証してください。
 
-<h3 id="unable-to-determine-your-organization-for-remote-control-eligibility">
-  "Unable to determine your organization for Remote Control eligibility"
-</h3>
+### "Unable to determine your organization for Remote Control eligibility"
 
 キャッシュされたアカウント情報が古いか不完全です。`claude auth login` を実行してリフレッシュしてください。
 
-<h3 id="remote-control-isn’t-enabled-for-this-account">
-  "Remote Control isn't enabled for this account"
-</h3>
+### "Remote Control isn't enabled for this account"
 
 Claude Code は、サインインしているアカウントの Remote Control 利用可能性を確認し、チェック結果がオフでした。通常の原因は、プラン変更後に期限切れになったキャッシュされた権限です。`claude auth logout` を実行してから `claude auth login` を実行してリフレッシュし、古いバージョンを使用している場合は Claude Code を更新してください。
 
@@ -458,32 +426,24 @@ Claude Code は、サインインしているアカウントの Remote Control �
 
 v2.1.239 より前では、このメッセージは「Remote Control is not yet enabled for your account」と表示されていました。
 
-<h3 id="couldn’t-verify-remote-control-eligibility">
-  "Couldn't verify Remote Control eligibility"
-</h3>
+### "Couldn't verify Remote Control eligibility"
 
 Claude Code は、Remote Control がアカウントに対して有効になっているかどうかを確認するためにフィーチャーフラグサービスに到達できませんでした。通常の原因は、オフラインであるか、プロキシがリクエストをブロックしていることです。ネットワークアクセスが可能になったら再試行するか、詳細については `claude doctor` を実行してください。関連メッセージ「Couldn't verify your organization's Remote Control policy」は、Claude Code がそのポリシーの読み取りでエラーに遭遇したことを意味し、同じ修正方法があります。
 
-<h3 id="remote-control-requires-feature-flag-evaluation">
-  "Remote Control requires feature-flag evaluation"
-</h3>
+### "Remote Control requires feature-flag evaluation"
 
 フィーチャーフラグ評価をオフにする [環境変数](/docs/ja/env-vars#features-that-need-feature-flag-fetching) が設定されており、完全なメッセージは Claude Code が見つけた変数を名前に挙げています。v2.1.154 より前のバージョンでは、同じ設定により「Remote Control is not yet enabled for your account」が代わりに生成されます。実行する内容は、メッセージが名前に挙げている変数によって異なります。
 
 * **`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` または `DISABLE_GROWTHBOOK`**：シェル環境または [`settings.json` ファイル](/docs/ja/settings-reference#all-settings) の `env` ブロックで設定されている場所から変数を設定解除してください。
 * **`DISABLE_TELEMETRY` または `DO_NOT_TRACK`**：Pro、Max、Team、または Enterprise プランで `DISABLE_GROWTHBOOK` が設定解除されている場合、これらの変数は組織が [Trusted Devices](#trusted-devices) を要求しない限り Remote Control を利用可能なままにします。要求する場合は、Remote Control を使用するために変数を設定されている場所から設定解除してください。v2.1.154 から v2.1.282 までは、どちらかの変数がこのメッセージを生成したため、Claude Code を v2.1.283 以降に更新してください。
 
-<h3 id="remote-control-is-only-available-when-using-claude-via-api-anthropic-com">
-  "Remote Control is only available when using Claude via api.anthropic.com"
-</h3>
+### "Remote Control is only available when using Claude via api.anthropic.com"
 
 セッションが Anthropic API と直接通信していませんが、Remote Control にはこれが必要です。これは Amazon Bedrock、Google Cloud の Agent Platform、および Microsoft Foundry で発生します。また、[`ANTHROPIC_BASE_URL`](/docs/ja/env-vars) が `api.anthropic.com` 以外のホスト（[LLM ゲートウェイ](/docs/ja/llm-gateway) やプロキシなど）を指している場合にも発生します。claude.ai でサインインしている場合でも同様です。完全な原因リストについては、[エラーリファレンス](/docs/ja/errors#remote-control-requires-the-anthropic-api) を参照してください。
 
 メッセージは、セッションを Anthropic API から遠ざけたもの（`CLAUDE_CODE_USE_BEDROCK` やカスタム `ANTHROPIC_BASE_URL` など）を名前に挙げています。適格な claude.ai ログインがある場合は、名前に挙げられた変数を設定解除し、[設定](/docs/ja/settings) の `env` キーで設定した場合はそこから削除して、セッションを再起動してください。
 
-<h3 id="remote-control-is-disabled-by-your-organizations-policy">
-  "Remote Control is disabled by your organization's policy"
-</h3>
+### "Remote Control is disabled by your organization's policy"
 
 ポリシーが Remote Control をブロックしています。以下の原因を順番に確認してください。
 
@@ -494,9 +454,7 @@ Claude Code は、Remote Control がアカウントに対して有効になっ�
 
 v2.1.281 より前では、このメッセージは Claude Code がこのマシンで組織のポリシーを読み込んでいない場合（例えば、オフラインで開始した後）にも表示されていました。後のバージョンではその状態を [`Couldn't verify your organization's policy for remote control`](#couldnt-verify-your-organizations-policy-for-remote-control) として報告します。
 
-<h3 id="remote-control-was-turned-off-by-your-organizations-policy">
-  "Remote Control was turned off by your organization's policy"
-</h3>
+### "Remote Control was turned off by your organization's policy"
 
 セッションの接続中に組織のポリシーが Remote Control を許可しなくなったため、Claude Code はセッションを切断しました。セッションがどうなるかは、Remote Control をどのように開始したかによって異なります。
 
@@ -507,9 +465,7 @@ v2.1.281 より前では、このメッセージは Claude Code がこのマシ�
 
 Remote Control は自動的には再接続しません。組織が再び許可した後にオンに戻すには、セッションで `/remote-control` を実行するか、シェルで `claude remote-control` を実行してください。このマシンの Claude Code が変更されたポリシーを取得するまで、どちらのコマンドも [`Remote Control is disabled by your organization's policy`](#remote-control-is-disabled-by-your-organizations-policy) で失敗します。開いているセッションは約 1 時間に 1 回ポリシーを取得します。Remote Control をブロックしている原因を確認するには、コマンドが出力する完全なテキストをその項目と照合してください。
 
-<h3 id="couldnt-verify-your-organizations-policy-for-remote-control">
-  "Couldn't verify your organization's policy for remote control"
-</h3>
+### "Couldn't verify your organization's policy for remote control"
 
 Claude Code は組織のポリシーを取得できず、代わりに使用するためにこのマシンに保存されたコピーがないため、組織がそれを許可していることを確認できるまで Remote Control をオフのままにしておきます。これは通常、Claude Code をオフラインで開始するか VPN が接続する前に開始する場合、またはプロキシがリクエストに干渉する場合に発生します。遅い接続では、最初のリクエストがまだ進行中の間に表示されることもあります。
 
@@ -522,9 +478,7 @@ Claude Code は組織のポリシーを取得できず、代わりに使用す�
 
 v2.1.281 より前では、この状態は `Remote Control is disabled by your organization's policy` と表示されていました。
 
-<h3 id="remote-credentials-fetch-failed">
-  "Remote credentials fetch failed"
-</h3>
+### "Remote credentials fetch failed"
 
 Claude Code は、接続を確立するために Anthropic API から短期認証情報を取得できませんでした。`--verbose` で再実行して完全なエラーを確認してください。
 
@@ -538,43 +492,31 @@ claude remote-control --verbose
 * ネットワークまたはプロキシの問題：ファイアウォールまたはプロキシが送信 HTTPS リクエストをブロックしている可能性があります。Remote Control には、ポート 443 の Anthropic API へのアクセスが必要です。
 * セッション作成失敗：`Session creation failed — see debug log` も表示される場合、失敗はセットアップの前の段階で発生しました。サブスクリプションがアクティブであることを確認してください。
 
-<h3 id="couldnt-reconnect-to-your-remote-control-session">
-  "Couldn't reconnect to your Remote Control session"
-</h3>
+### "Couldn't reconnect to your Remote Control session"
 
 `claude --resume` または `claude --continue` で会話を再開すると、Claude Code はその会話に記録された Remote Control セッションに再接続します。このメッセージは、ネットワーク中断やサーバーエラーなど、一時的である可能性がある理由で再接続が失敗したことを意味するため、Claude Code はリモートセッションがまだ存在するかどうかを確認できません。
 
 `/remote-control` を実行して接続を再試行するか、`claude --remote-control` で新しいセッションを開始して新しい Remote Control セッションを作成してください。その間、ローカルセッションは Remote Control なしで実行し続けます。
 
-<h3 id="previous-session-is-unavailable">
-  "Previous session is unavailable — run /remote-control to start a new one"
-</h3>
+### "Previous session is unavailable — run /remote-control to start a new one"
 
 Claude Code は前の Remote Control セッションを復元できず、自動的に新しいセッションを開始する代わりに停止しました。`claude --resume` または `claude --continue` で会話を再開した後、または Claude Code が [切断後に自動的に再接続](/docs/ja/errors#remote-control-couldnt-refresh-your-login) した後に、このメッセージが表示される場合があります。
 
 `/remote-control` を実行して、現在のログインの下で新しい Remote Control セッションを開始してください。その間、ローカルセッションは Remote Control なしで実行し続けます。関連メッセージ `Remote Control could not verify the signed-in account — run /remote-control to reconnect` も同じ方法で修正できます。`Previous session is unavailable` の後に Claude Code を再起動せずに `/remote-control` を実行する場合、Claude Code は会話の以前のメッセージを新しいセッションから除外します。
 
-<h3 id="remote-control-got-an-unexpected-server-response">
-  "Remote Control got an unexpected server response"
-</h3>
+### "Remote Control got an unexpected server response"
 
 Remote Control サーバーはリクエストを受け入れましたが、リモートセッションを作成するか認証情報を取得する際に、このバージョンの Claude Code が読み取れない形式で応答しました。同じバージョンで再試行すると同じ方法で失敗します。`claude update` を実行してから、`/remote-control` を実行して再接続してください。
 
-<h3 id="your-organization-requires-trusted-devices-for-remote-control-but-this-device-is-not-enrolled">
-  "Your organization requires Trusted Devices for Remote Control, but this device is not enrolled"
-</h3>
+### "Your organization requires Trusted Devices for Remote Control, but this device is not enrolled"
 
 組織は [Trusted Devices](#trusted-devices) を有効にしており、このマシンはまだ登録されていません。Claude Code で `/login` を実行してください。登録はサインインの一部として行われ、個別の登録コマンドはありません。
 
-<h3 id="session-expired-for-trusted-device-check">
-  "session expired for trusted-device check"
-</h3>
+### "session expired for trusted-device check"
 
 サインインが 18 時間以上前のものです。Claude Code で `/login` を実行するか、claude.ai またはモバイルアプリが Face ID、Touch ID、Windows Hello、またはパスキーで確認するよう求めるときに確認してください。[Trusted Devices](#trusted-devices) を参照してください。
 
-<h2 id="related-resources">
-  関連リソース
-</h2>
+## 関連リソース
 
 * [Web 上の Claude Code](/docs/ja/claude-code-on-the-web): マシン上ではなくクラウドでセッションを実行します。[クラウド環境](/docs/ja/cloud-environments)を通じて設定します
 * [クロスセッションメッセージング](/docs/ja/cross-session-messaging): Claude が他のマシンまたは [クラウドセッション](/docs/ja/claude-code-on-the-web)上のセッションにメッセージを送信できるようにします

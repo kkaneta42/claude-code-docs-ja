@@ -8,13 +8,13 @@
 
 Claude Code はカスタマイズ可能なキーボードショートカットをサポートしています。`/keybindings` を実行して、`~/.claude/keybindings.json` に設定ファイルを作成または開きます。
 
-<h2 id="configuration-file">
-  設定ファイル
-</h2>
+## 設定ファイル
 
 キーバインディング設定ファイルは、`bindings` 配列を持つオブジェクトです。各ブロックはコンテキストとキーストロークからアクションへのマップを指定します。
 
-<Note>キーバインディングファイルへの変更は自動的に検出され、Claude Code を再起動することなく適用されます。</Note>
+> [!NOTE]
+>
+> キーバインディングファイルへの変更は自動的に検出され、Claude Code を再起動することなく適用されます。
 
 | フィールド | 説明 |
 | :- | :- |
@@ -40,9 +40,7 @@ Claude Code はカスタマイズ可能なキーボードショートカット�
 }
 ```
 
-<h2 id="contexts">
-  コンテキスト
-</h2>
+## コンテキスト
 
 各バインディングブロックは、バインディングが適用される**コンテキスト**を指定します。
 
@@ -78,15 +76,11 @@ Claude Code はカスタマイズ可能なキーボードショートカット�
 
 v2.1.205 より前では、`Doctor` コンテキストと `/doctor` 診断スクリーン用の `doctor:fix` アクションが存在していました。
 
-<h2 id="available-actions">
-  利用可能なアクション
-</h2>
+## 利用可能なアクション
 
 アクションは `namespace:action` 形式に従います。例えば、メッセージを送信する `chat:submit` や、タスクリストを表示する `app:toggleTodos` などです。各コンテキストには特定のアクションが利用可能です。
 
-<h3 id="app-actions">
-  アプリケーションアクション
-</h3>
+### アプリケーションアクション
 
 `Global` コンテキストで利用可能なアクション：
 
@@ -98,9 +92,7 @@ v2.1.205 より前では、`Doctor` コンテキストと `/doctor` 診断スク
 | `app:toggleTodos` | Ctrl+T | Claude のやることリストの表示を切り替えます。これは [`/tasks`](/docs/ja/commands) バックグラウンドタスクビューではありません |
 | `app:toggleTranscript` | Ctrl+O | 詳細トランスクリプトの表示を切り替え |
 
-<h3 id="history-actions">
-  履歴アクション
-</h3>
+### 履歴アクション
 
 コマンド履歴をナビゲートするためのアクション：
 
@@ -110,9 +102,7 @@ v2.1.205 より前では、`Doctor` コンテキストと `/doctor` 診断スク
 | `history:previous` | Up | 前の履歴項目 |
 | `history:next` | Down | 次の履歴項目 |
 
-<h3 id="chat-actions">
-  チャットアクション
-</h3>
+### チャットアクション
 
 `Chat` コンテキストで利用可能なアクション：
 
@@ -137,9 +127,7 @@ v2.1.205 より前では、`Doctor` コンテキストと `/doctor` 診断スク
 
 \*VT モードなし Windows （Node \<24.2.0/\<22.17.0、Bun \<1.2.23） では、デフォルトは Meta+M です。
 
-<h3 id="autocomplete-actions">
-  オートコンプリートアクション
-</h3>
+### オートコンプリートアクション
 
 `Autocomplete` コンテキストで利用可能なアクション：
 
@@ -150,9 +138,7 @@ v2.1.205 より前では、`Doctor` コンテキストと `/doctor` 診断スク
 | `autocomplete:previous` | Up | 前の候補 |
 | `autocomplete:next` | Down | 次の候補 |
 
-<h3 id="confirmation-actions">
-  確認アクション
-</h3>
+### 確認アクション
 
 `Confirmation` コンテキストで利用可能なアクション：
 
@@ -195,9 +181,7 @@ v2.1.257 より前では、`confirm:toggleExplanation` アクション（デフ�
 
 v2.1.280 より前では、`y` はデフォルトで `confirm:yes` に、`n` は `confirm:no` にバインドされていました。v2.1.280 より前に `/keybindings` で `keybindings.json` を作成した場合、ファイルは両方のバインディングをリストし、それらの 2 行を削除するまで有効なままです。
 
-<h3 id="permission-actions">
-  権限アクション
-</h3>
+### 権限アクション
 
 権限ダイアログの `Confirmation` コンテキストで利用可能なアクション：
 
@@ -205,9 +189,7 @@ v2.1.280 より前では、`y` はデフォルトで `confirm:yes` に、`n` は
 | :- | :- | :- |
 | `permission:toggleDebug` | （バインドなし） | Claude Code はこのアクションに応答しません。このアクションを指定する `keybindings.json` は引き続き有効です |
 
-<h3 id="transcript-actions">
-  トランスクリプトアクション
-</h3>
+### トランスクリプトアクション
 
 `Transcript` コンテキストで利用可能なアクション：
 
@@ -218,9 +200,7 @@ v2.1.280 より前では、`y` はデフォルトで `confirm:yes` に、`n` は
 
 `transcript:toggleShowAll` はクラシックレンダラーのみで適用されます。[フルスクリーンレンダリング](/docs/ja/fullscreen) では、トランスクリプトビューアは show-all トグルを提供しません。
 
-<h3 id="history-search-actions">
-  履歴検索アクション
-</h3>
+### 履歴検索アクション
 
 `HistorySearch` コンテキストで利用可能なアクション：
 
@@ -234,9 +214,7 @@ v2.1.280 より前では、`y` はデフォルトで `confirm:yes` に、`n` は
 
 `historySearch:next`、`historySearch:accept`、`historySearch:cancel`、および `historySearch:execute` のデフォルトは、クラシックレンダラーのインライン履歴検索に適用されます。これは常にすべてのプロジェクトからプロンプトを検索します。`historySearch:cycleScope` は [フルスクリーンレンダリング](/docs/ja/fullscreen) でのみ有効です。ここで `Ctrl+R` は検索ダイアログを開き、`Ctrl+S` はそのスコープをサイクルします。ダイアログの他のキーは固定されており、再バインドできません：`Enter` または `Tab` はハイライトされたマッチをプロンプト入力に配置し、`Esc` はキャンセルします。
 
-<h3 id="task-actions">
-  タスクアクション
-</h3>
+### タスクアクション
 
 `Task` コンテキストで利用可能なアクション：
 
@@ -244,9 +222,7 @@ v2.1.280 より前では、`y` はデフォルトで `confirm:yes` に、`n` は
 | :- | :- | :- |
 | `task:background` | Ctrl+B、Ctrl+X Ctrl+B | 現在のタスクをバックグラウンドに移動 |
 
-<h3 id="theme-actions">
-  テーマアクション
-</h3>
+### テーマアクション
 
 `ThemePicker` コンテキストで利用可能なアクション：
 
@@ -254,9 +230,7 @@ v2.1.280 より前では、`y` はデフォルトで `confirm:yes` に、`n` は
 | :- | :- | :- |
 | `theme:toggleSyntaxHighlighting` | Ctrl+T | 構文ハイライトを切り替え |
 
-<h3 id="help-actions">
-  ヘルプアクション
-</h3>
+### ヘルプアクション
 
 `Help` コンテキストで利用可能なアクション：
 
@@ -264,9 +238,7 @@ v2.1.280 より前では、`y` はデフォルトで `confirm:yes` に、`n` は
 | :- | :- | :- |
 | `help:dismiss` | Escape | ヘルプメニューを閉じる |
 
-<h3 id="tabs-actions">
-  タブアクション
-</h3>
+### タブアクション
 
 `Tabs` コンテキストで利用可能なアクション：
 
@@ -279,9 +251,7 @@ v2.1.280 より前では、`y` はデフォルトで `confirm:yes` に、`n` は
 
 `Up` と `Down` はタブ行とタブのコンテンツ間でフォーカスを移動し、コンテンツ内のリストはフォーカスを持つ間のみキーに応答します。
 
-<h3 id="attachments-actions">
-  添付ファイルアクション
-</h3>
+### 添付ファイルアクション
 
 `Attachments` コンテキストで利用可能なアクション：
 
@@ -292,9 +262,7 @@ v2.1.280 より前では、`y` はデフォルトで `confirm:yes` に、`n` は
 | `attachments:remove` | Backspace、Delete | 選択した添付ファイルを削除 |
 | `attachments:exit` | Down、Escape | 添付ファイルナビゲーションを終了 |
 
-<h3 id="footer-actions">
-  フッターアクション
-</h3>
+### フッターアクション
 
 `Footer` コンテキストで利用可能なアクション：
 
@@ -313,9 +281,7 @@ v2.1.280 より前では、`y` はデフォルトで `confirm:yes` に、`n` は
 
 `Chat` バインディングは、`Shift+Tab` を `chat:cycleMode` のように `Footer` コンテキストがバインドしないキーで機能し、項目が選択されている間も機能します。
 
-<h3 id="message-selector-actions">
-  メッセージセレクターアクション
-</h3>
+### メッセージセレクターアクション
 
 [リワインドメニュー](/docs/ja/checkpointing) のメッセージリストでは、[選択アクション](#select-actions) とそのデフォルトキーを使用してメッセージを移動して選択します。これらのアクションの `Select` バインディングもそこに適用されます。`MessageSelector` コンテキストには、独自のアクションまたはデフォルトバインディングはありません。このリストのみのキーを変更するには、`MessageSelector` ブロックで `select:accept` などの選択アクションをバインドします。
 
@@ -336,9 +302,7 @@ v2.1.280 より前では、`y` はデフォルトで `confirm:yes` に、`n` は
 
 v2.1.283 より前では、このリストは `Select` バインディングを無視し、独自のアクション `messageSelector:up`、`messageSelector:down`、`messageSelector:top`、`messageSelector:bottom`、および `messageSelector:select` を持っていました。`keybindings.json` がそれらの名前の 1 つをバインドする場合、バインディングはこのリストで同じことを行う選択アクションとして機能し続けます。`Home` と `End` はリストのいずれかの端にジャンプします。v2.1.283 より前では、`Shift+K` や `Shift+J` などのキーがデフォルトでそれを行いました。
 
-<h3 id="diff-actions">
-  差分アクション
-</h3>
+### 差分アクション
 
 これらのアクションは、Claude Code の以前の差分ビューアにのみ作用します。このビューアは、`/plugin` で [`cc-plugin-diff` mod](/docs/ja/plugins/mods/overview#mods-built-into-claude-code) を無効にした後、[フルスクリーンレンダリング](/docs/ja/fullscreen) 以外で `/diff` を実行すると開きます。この mod が有効な間は、`/diff` は代わりに [差分ダイアログ](/docs/ja/interactive-mode#diff-dialog) を開きます。これらのアクションを指定する `keybindings.json` は、どちらの場合でもエラーなく読み込まれます。
 
@@ -368,9 +332,7 @@ v2.1.283 より前では、ファイルリストは `Select` バインディン�
 | `scroll:top` | G、Home | トップにジャンプ |
 | `scroll:bottom` | Shift+G、End | ボトムにジャンプ |
 
-<h3 id="diff-panel-actions">
-  差分パネルアクション
-</h3>
+### 差分パネルアクション
 
 `/diff` がフルスクリーンレンダリングで開く [差分パネル](/docs/ja/interactive-mode#diff-panel) のアクション。`app:cycleDiffBase` は `DiffPanel` コンテキストにあり、パネルが開いている間はアクティブです。その他は `Global` です。
 
@@ -385,9 +347,7 @@ v2.1.283 より前では、ファイルリストは `Select` バインディン�
 | `app:toggleDiffNoiseFilter` | （バインドなし） | パネルのテストファイルと生成ファイルを表示または非表示 |
 | `app:toggleDiffPreSession` | （バインドなし） | このセッション前の変更を展開または折りたたむ |
 
-<h3 id="model-picker-actions">
-  モデルピッカーアクション
-</h3>
+### モデルピッカーアクション
 
 `ModelPicker` コンテキストで利用可能なアクション：
 
@@ -397,9 +357,7 @@ v2.1.283 より前では、ファイルリストは `Select` バインディン�
 | `modelPicker:increaseEffort` | Right | 努力レベルを増加 |
 | `modelPicker:thisSessionOnly` | s | ハイライトされたモデルをこのセッションのみに適用 |
 
-<h3 id="effort-slider-actions">
-  努力スライダーアクション
-</h3>
+### 努力スライダーアクション
 
 `EffortSlider` コンテキストで利用可能なアクション。引数なしで `/effort` を実行するときに開くスライダー。スライダーの Enter と Escape キーは再バインドできません。
 
@@ -410,9 +368,7 @@ v2.1.283 より前では、ファイルリストは `Select` バインディン�
 | `effortSlider:toggleUltracode` | Tab | このセッションの [ultracode](/docs/ja/workflows#let-claude-decide-with-ultracode) をオンまたはオフにします。スライダーが [それを提供する](/docs/ja/model-config#when-ultracode-is-available) 場合。v2.1.284 以降が必要 |
 | `effortSlider:thisSessionOnly` | s | フォーカスされた [努力レベル](/docs/ja/model-config#adjust-effort-level) をこのセッションのみに適用します。v2.1.257 以降が必要 |
 
-<h3 id="select-actions">
-  選択アクション
-</h3>
+### 選択アクション
 
 `Select` コンテキストで利用可能なアクション：
 
@@ -433,9 +389,7 @@ v2.1.280 より前では、これらの他のリストは Home、End、および
 
 v2.1.283 より前では、`/mcp` ツールリストは、バインディングに関係なく固定 PageUp と PageDown キーでページングしました。
 
-<h3 id="plugin-actions">
-  プラグインアクション
-</h3>
+### プラグインアクション
 
 `Plugin` コンテキストで利用可能なアクション：
 
@@ -445,9 +399,7 @@ v2.1.283 より前では、`/mcp` ツールリストは、バインディング�
 | `plugin:install` | I | 選択したプラグインをインストール |
 | `plugin:favorite` | F | 選択したプラグインをお気に入りにして、インストール済みタブの上部付近でソート |
 
-<h3 id="above-prompt-actions">
-  プロンプト上部アクション
-</h3>
+### プロンプト上部アクション
 
 プロンプトの上にある帯のアクション。この帯は、[mod](/docs/ja/plugins/mods/interface#pick-where-to-draw) がボタン、入力フィールド、セレクトを描画する共有ストリップです。`abovePrompt:toggle` と `abovePrompt:focus` は `Chat` コンテキストで適用されます。その他のアクションは、帯またはペイン内でキーボードフォーカスを持っているものの [コンテキスト](#contexts) で適用されます。
 
@@ -466,9 +418,7 @@ v2.1.283 より前では、`/mcp` ツールリストは、バインディング�
 
 `AbovePrompt` コンテキストは、Up、Down、PageUp、PageDown、Home、End も [ペインのスクロールアクション](#pane-actions) `pane:scrollUp` から `pane:bottom` にバインドしています。そのため、帯でこれらのキーのいずれかを変更するには、`AbovePrompt` ブロックでスクロールアクションをバインドします。
 
-<h3 id="pane-actions">
-  ペインアクション
-</h3>
+### ペインアクション
 
 [mod](/docs/ja/plugins/mods/interface#know-which-keys-your-mod-can-receive) が描画するペインのアクション。スクロール、サイズ変更、閉じるの各アクションは `Pane` [コンテキスト](#contexts) で適用されます。`pane:close` は `PaneField` コンテキストでも適用されるため、ペインのフィールドのいずれかがフォーカスを持っている間も機能します。`pane:next` と `pane:previous` は、複数のペインが開いている間、`Global` コンテキストで適用されます。
 
@@ -488,9 +438,7 @@ v2.1.283 より前では、`/mcp` ツールリストは、バインディング�
 
 `Pane` コンテキストは、Tab、Shift+Tab、Enter、Escape も帯と同じ [プロンプト上部アクション](#above-prompt-actions) にバインドしており、ペインの入力フィールドとセレクトは `AbovePromptInput` と `AbovePromptSelect` コンテキストを使用します。ペイン内で各キーが何をするかは、[キーボードフォーカスとホットキー](/docs/ja/plugins/mods/interface#know-which-keys-your-mod-can-receive) に記載されています。
 
-<h3 id="settings-actions">
-  設定アクション
-</h3>
+### 設定アクション
 
 `Settings` コンテキストで利用可能なアクション。`select:accept` と `confirm:no` アクションは [選択](#select-actions) と [確認](#confirmation-actions) コンテキストから再利用されます。設定固有の動作：変更は各設定を変更するとすぐに適用されるため、Escape はパネルを閉じ、変更を保存します。拒否するのではなく。
 
@@ -498,12 +446,11 @@ v2.1.283 より前では、`/mcp` ツールリストは、バインディング�
 | :- | :- | :- |
 | `settings:search` | / | 検索モードに入る |
 | `settings:retry` | R | エラー時に使用データの読み込みを再試行 |
+| `settings:fixUsage` | F | `/usage` フッターが修正を提示している場合に、Claude Code が適用できる [`/usage` の推奨事項](/docs/ja/costs#apply-recommendations-with-the-fix-shortcut) をセッションに送信します。v2.1.305 以降が必要 |
 | `select:accept` | Enter、Space | 選択した設定を変更またはそのサブメニューを開く |
 | `confirm:no` | Escape | パネルを閉じます。変更は既に保存されています |
 
-<h3 id="agents-actions">
-  エージェントアクション
-</h3>
+### エージェントアクション
 
 `Agents` コンテキストで利用可能なアクション。`claude agents` で開く [エージェントビュー](/docs/ja/agent-view) で適用されます。v2.1.257 以降が必要です。
 
@@ -522,9 +469,7 @@ v2.1.283 より前では、`/mcp` ツールリストは、バインディング�
 
 バインディングはエージェントビューで単一キーストロークで発火するため、`chat:externalEditor` にバインドされた Ctrl+X Ctrl+E コードはエディタをそこで開きません。
 
-<h3 id="voice-actions">
-  音声アクション
-</h3>
+### 音声アクション
 
 [音声ディクテーション](/docs/ja/voice-dictation) が有効な場合、`Chat` コンテキストで利用可能なアクション：
 
@@ -532,9 +477,7 @@ v2.1.283 より前では、`/mcp` ツールリストは、バインディング�
 | :- | :- | :- |
 | `voice:pushToTalk` | Space | プロンプトをディクテーション。`/voice` モードに応じて保持またはタップ |
 
-<h3 id="scroll-actions">
-  スクロールアクション
-</h3>
+### スクロールアクション
 
 [フルスクリーンレンダリング](/docs/ja/fullscreen) が有効な場合、`Scroll` コンテキストで利用可能なアクション：
 
@@ -559,13 +502,9 @@ v2.1.283 より前では、`/mcp` ツールリストは、バインディング�
 | `selection:extendLineStart` | Shift+Home | アクティブな選択を行の開始に拡張 |
 | `selection:extendLineEnd` | Shift+End | アクティブな選択を行の終了に拡張 |
 
-<h2 id="keystroke-syntax">
-  キーストロークシンタックス
-</h2>
+## キーストロークシンタックス
 
-<h3 id="modifiers">
-  モディファイア
-</h3>
+### モディファイア
 
 `+` セパレータでモディファイアキーを使用します。
 
@@ -585,15 +524,11 @@ meta+p          macOS の Option + P、その他の場所では Alt + P
 ctrl+shift+c    複数のモディファイア
 ```
 
-<h3 id="uppercase-letters">
-  大文字
-</h3>
+### 大文字
 
 Claude Code はキー名を大文字と小文字を区別せずに解析するため、`K` は `k` と同じバインディングであり、`ctrl+K` は `ctrl+k` と同じです。Shift とレターをバインドするには、`shift+k` と記述します。
 
-<h3 id="non-us-keyboard-layouts">
-  非 US キーボードレイアウト
-</h3>
+### 非 US キーボードレイアウト
 
 Ctrl ショートカットのキー名は、アクティブなキーボードレイアウトが他の文字を入力する場合でも、ラテン文字として記述してください。
 
@@ -602,9 +537,7 @@ Claude Code がキーボードで押したキーをバインディングにマ�
 * キリル文字などの非ラテンレイアウトの場合、Claude Code はターミナルが Kitty キーボードプロトコルを使用し、その位置を報告する場合、キーの US レイアウト位置で Ctrl ショートカットをマッチさせます。そのようなターミナルでロシア語レイアウトがアクティブな場合、Ctrl キーと物理的な W キーを押すと `ctrl+w` がトリガーされます。位置を報告しないターミナルでは、Claude Code はターミナルがキープレスに対して送信するものをマッチさせます。ASCII 制御コードは Latin ショートカットをトリガーし、キリル文字として到着するキープレスはバインディングにマッチしません。
 * AZERTY などのラテン文字を並べ替えるレイアウトの場合、Claude Code はキーが入力する文字をマッチさせるため、Ctrl キーと A というラベルのキーを押すと `ctrl+a` がトリガーされます。
 
-<h3 id="chords">
-  コード
-</h3>
+### コード
 
 コードはスペースで区切られたキーストロークのシーケンスです。
 
@@ -614,9 +547,7 @@ ctrl+k ctrl+s   Ctrl+K を押して、リリースしてから Ctrl+S
 
 各キーストロークは、その前のキーストロークから 3 秒以内に押してください。それより長く待つと、Claude Code はコードをキャンセルし、そのことを示す簡潔な通知を表示します。
 
-<h3 id="special-keys">
-  特殊キー
-</h3>
+### 特殊キー
 
 * `escape` または `esc` - Escape キー
 * `enter` または `return` - Enter キー
@@ -628,9 +559,7 @@ ctrl+k ctrl+s   Ctrl+K を押して、リリースしてから Ctrl+S
 * `backspace`、`delete` - Delete キー
 * `wheelup`、`wheeldown` - マウスホイールスクロールイベント
 
-<h2 id="unbind-default-shortcuts">
-  デフォルトのショートカットのバインドを解除する
-</h2>
+## デフォルトのショートカットのバインドを解除する
 
 アクションを `null` に設定すると、デフォルトのショートカットのバインドを解除できます。
 
@@ -710,9 +639,7 @@ Claude Code は、`ctrl+x` プレフィックスに以下のデフォルトの c
 
 プレフィックス上の chord の一部だけのバインドを解除し、すべてを解除しなかった場合、そのプレフィックスを押すと、残りのバインディングのために引き続き chord 待機モードに入ります。
 
-<h2 id="reserved-shortcuts">
-  予約済みショートカット
-</h2>
+## 予約済みショートカット
 
 これらのショートカットは再バインドできません。
 
@@ -726,9 +653,7 @@ Claude Code は、`ctrl+x` プレフィックスに以下のデフォルトの c
 | Ctrl+H | ASCII バックスペースバイトを送信します。[Claude Code が Windows で読み込む方法](/docs/ja/terminal-config#fix-backspace-deleting-a-whole-word-on-windows)は、ターミナルと [`CLAUDE_CODE_BS_AS_CTRL_BACKSPACE`](/docs/ja/env-vars) 環境変数によって異なります |
 | Caps Lock | ターミナルアプリケーションに配信されない |
 
-<h2 id="terminal-conflicts">
-  ターミナルの競合
-</h2>
+## ターミナルの競合
 
 一部のショートカットはターミナルマルチプレクサと競合する可能性があります。
 
@@ -738,9 +663,7 @@ Claude Code は、`ctrl+x` プレフィックスに以下のデフォルトの c
 | Ctrl+A | GNU screen プレフィックス |
 | Ctrl+Z | Unix プロセス一時停止（SIGTSTP） |
 
-<h2 id="text-fields">
-  テキストフィールド
-</h2>
+## テキストフィールド
 
 ベアレター、数字、またはスペースをバインドした場合でも、ダイアログまたはパネル内のテキストフィールドでそのキャラクターを入力できます。このようなフィールドの 1 つは、Claude が質問する「Other」の回答です。フィールドがフォーカスを持っている間、Ctrl、Alt、または Cmd なしで押したプリント可能なキーはフィールドに送られ、Claude Code はそれをバインディングと照合しません。
 
@@ -752,9 +675,7 @@ Claude Code は、`ctrl+x` プレフィックスに以下のデフォルトの c
 
 メインプロンプトでは、Claude Code はすべてのキーを `Chat` などのアクティブなコンテキストと照合し、バインディングがそれを取らない場合にのみキーを入力します。
 
-<h2 id="vim-mode-interaction">
-  Vim モードの相互作用
-</h2>
+## Vim モードの相互作用
 
 Vim モードが `/config` → エディタモードで有効な場合、キーバインディングと Vim モードは独立して動作します。
 
@@ -768,14 +689,13 @@ Vim モードが `/config` → エディタモードで有効な場合、キー�
 
 Claude が尋ねる質問の `Other` 行では、Vim モードで Escape を押しても質問はすぐにはキャンセルされません。[スクリーンリーダーモード](/docs/ja/accessibility)の場合を除き、この行はフォーカスするたびに INSERT モードで開始されます。`Other` 行で Escape を押すと、行が NORMAL モードに切り替わるか、入力途中の Vim コマンドが破棄され、質問は開いたままになります。質問をキャンセルするには、NORMAL モードで Escape をもう一度押してください。
 
-<h2 id="validation">
-  検証
-</h2>
+## 検証
 
 Claude Code はキーバインディングを検証し、以下の警告をデバッグログに書き込みます。
 
 * 解析エラー（無効な JSON または構造）
 * スペルミスのあるモディファイア（例：`ctl+k`）。Claude Code は認識できない部分を削除し、残りのキーストロークにバインディングを適用します。この例では `k` です。
+* キー文字列内の `+` の隣にあるスペース（例：`ctrl+ k`）。Claude Code はこの文字列を、`ctrl+` の後に `k` が続く[コード](#chords)として読み取ります。`ctrl+` 単独に一致するキー入力はないため、このバインディングは発火しません。スペースを削除してください。
 * 無効なコンテキスト名
 * 無効なアクション値（アクションが文字列または `null` ではない場合など）
 * 不明なアクション名（登録されたアクションのタイプミスなど）。Claude Code はバインディングをスキップし、そのキーのデフォルトバインディングを有効に保ちます。

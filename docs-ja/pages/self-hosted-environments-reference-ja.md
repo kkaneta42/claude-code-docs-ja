@@ -6,17 +6,15 @@
 
 > セルフホストランナーとオーケストレーターの完全なリファレンス：CLI フラグ、環境変数、Prometheus メトリクス。
 
-<Note>
-  セルフホスト環境は Team および Enterprise プランでパブリックベータ版です。[Owner](/docs/ja/cloud-environments#organization-shared-environments) が [**Cloud environments** 管理ページ](https://claude.ai/admin-settings/cloud-environments) で **Allow self-hosted environments** をオンにすることで有効になります。このページはフラグとメトリクスのリファレンスです。セットアップについては [クイックスタート](/docs/ja/self-hosted-environments-quickstart) を、フリート構成については [本番環境へのデプロイ](/docs/ja/self-hosted-environments-deploy) をご覧ください。
-</Note>
+> [!NOTE]
+>
+> セルフホスト環境は Team および Enterprise プランでパブリックベータ版です。[Owner](/docs/ja/cloud-environments#organization-shared-environments) が [**Cloud environments** 管理ページ](https://claude.ai/admin-settings/cloud-environments) で **Allow self-hosted environments** をオンにすることで有効になります。このページはフラグとメトリクスのリファレンスです。セットアップについては [クイックスタート](/docs/ja/self-hosted-environments-quickstart) を、フリート構成については [本番環境へのデプロイ](/docs/ja/self-hosted-environments-deploy) をご覧ください。
 
 このページは、[セルフホスト環境](/docs/ja/self-hosted-environments) で実行する 2 つのプロセスのリファレンスです。ランナーはホスト上で Claude Code [クラウドセッション](/docs/ja/claude-code-on-the-web) を実行し、オプションのオートスケーリングオーケストレーターはセッションがキューに入ると同時にランナーを起動します。それぞれ独自のフラグテーブルを持っています。どちらも Linux または macOS ホスト上で実行され、`/workspace` や `~/.claude` などのデフォルトを想定しています。インストール済みバージョンの権限あるリストについては、`claude self-hosted-runner --help` を実行してください。
 
 メトリクスシリーズと一部の API フィールドは、これらのページが環境と呼ぶものに対して `pool` を使用しています。どちらの用語も同じものを指しています。環境 ID は `pool_id` フィールドで、形式は `ccpool_...` です。これらのページが `pool` 識別子を示す場所では、環境を指しています。CLI フラグと環境変数では `environment` と表記されます。例えば `--environment-secret-file` のように。非推奨の `pool` 表記はまだ機能します。[`--environment-secret-file` 行](#runner-cli-flags) で説明されているとおりです。
 
-<h2 id="runner-cli-flags">
-  Runner CLI フラグ
-</h2>
+## Runner CLI フラグ
 
 ほとんどのフラグには対応する環境変数があります。両方が設定されている場合、フラグが優先されます。期間フラグは CLI では分または秒を取りますが、対応する環境変数は常にミリ秒単位で、`_MS` サフィックスで示され、デフォルト列はフラグの単位を示します。`--exit-if-unused-min 10` は `SELF_HOSTED_RUNNER_IDLE_SHUTDOWN_MS=600000` と同等であり、`SELF_HOSTED_RUNNER_STARTUP_TIMEOUT_MS: "15"` のような Helm 値は 15 分のデフォルトではなく 15 ミリ秒を意味します。
 
@@ -63,9 +61,7 @@
 * **フラグ**: スタートアップはエラーで失敗します。
 * **環境変数**: ランナーはそれを拒否するのではなく、値をタイマー上限にクランプします。
 
-<h3 id="auto-mode-rule-lists">
-  auto モードのルールリスト
-</h3>
+### auto モードのルールリスト
 
 `--server-auto-mode-lists` を使用すると、ランナーの外部から送られる [auto モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode) 分類器ルールのうち、どれをランナー上のセッションに到達させるかを決定できます。Anthropic のコントロールプレーンは、セッションとともにルールリストを送信し、ランナーにそれらを適用するよう求めることができます。一部のエントリは、組織の管理者が作成したルールである場合があります。リストは `environment`、`soft_deny`、`allow` です。
 
@@ -81,9 +77,7 @@
 
 コントロールプレーンがランナーにリストの適用を求めるかどうかを決めるランナー設定はありません。求められなかった場合、何を設定していてもセッションはリストを受け取りません。どちらになったかを確認するには、`--log-level debug` でランナーを起動してください。すると、ランナーはセッションごとに、`the server asked this runner to apply` を含む行か、`the server did not ask this runner to apply the auto mode lists it sends` を含む行をログに記録します。
 
-<h2 id="orchestrator-cli-flags">
-  オーケストレーター CLI フラグ
-</h2>
+## オーケストレーター CLI フラグ
 
 `self-hosted-runner orchestrator` サブコマンド（[オンデマンドランナー](/docs/ja/self-hosted-environments-configuration#on-demand-runners) を生成）は、`--api-url`、`--environment-secret-file`、`--hooks-dir`、`--health-port`、`--log-level` をランナーと同じデフォルトで受け入れます。ランナーのフラグに 1 つある場合は同じ環境変数を使用します。ただし、`--hooks-dir` は必須で、`spawn-runner` フックを含む必要があります。また、独自のフラグも取ります。
 
@@ -95,9 +89,7 @@
 | `--min-idle <n>` | `0` | スタンバイランナーを積極的に生成することで、少なくとも N 個のアイドルセッションスロットを無料で保ちます。`0` はプレウォーミングを無効にします。ランナーの `--exit-if-unused-min` とペアにして、余分なスタンバイランナーが自分自身を再利用するようにします。 |
 | `--debug-dir <path>` | 未設定 | 各スポーン要求のワークオーダーとフック stderr をディスクに書き込みます。デバッグのみ。本番環境では設定しないでください。 |
 
-<h3 id="scm-connector-flags">
-  SCM コネクタフラグ
-</h3>
+### SCM コネクタフラグ
 
 SCM コネクタは利用できないため、このセクションのフラグは未設定のままにしてください。`--scm-connector-host` を設定した場合、接続は開かず、オーケストレーターは再試行を続けます。ランナーはセッションキューとして開始されます。
 
@@ -113,9 +105,7 @@ SCM コネクタは利用できないため、このセクションのフラグ�
 
 各接続試行時に、オーケストレーターは既存の環境シークレットを送信し、指数バックオフで自動的に再試行します。30 秒とジッターでキャップされます。
 
-<h2 id="environment-variable-only-settings">
-  環境変数のみの設定
-</h2>
+## 環境変数のみの設定
 
 これらのランナー設定は環境からのみ読み取られ、ほとんどのデプロイメントがデフォルトのままにしておく動作をカバーしています。
 
@@ -132,9 +122,7 @@ SCM コネクタは利用できないため、このセクションのフラグ�
 | `FORCE_AUTOUPDATE_PLUGINS` | 未設定 | `1` の場合、バイナリがピン留めされていても、プラグインマーケットプレイスの自動更新を許可します。 |
 | `CLAUDE_CODE_DISABLE_ARTIFACT` | 未設定 | `1` の場合、組織の管理者設定に関係なくセッション内の Artifact ツールを無効にし、`*.frame.claudeusercontent.com` エグレス要件をドロップします。 |
 
-<h2 id="telemetry">
-  テレメトリ
-</h2>
+## テレメトリ
 
 セッション子は、オフにしない限り、運用テレメトリを Anthropic に送信します。コードまたはリポジトリコンテンツは送信されません。ランナープロセスでテレメトリ変数を設定します。ランナーはサーバー提供の環境変数を適用した後、それらを再アサートするため、オペレーターの設定は常に優先されます。
 
@@ -142,9 +130,7 @@ SCM コネクタは利用できないため、このセクションのフラグ�
 
 `CLAUDE_CODE_ENABLE_TELEMETRY` は無関係です。これは [監視](/docs/ja/monitoring-usage) で説明されているように、独自のコレクターへの OpenTelemetry エクスポートを有効にし、Anthropic のアナリティクスを制御しません。
 
-<h2 id="health-endpoint">
-  ヘルスエンドポイント
-</h2>
+## ヘルスエンドポイント
 
 ランナーは設定されたヘルスポートで `GET /healthz` を提供します。レスポンスは、プロセスが生存している限り、ポーリングループがどの状態にあるかに関係なく `200 OK` です。したがって、このエンドポイントの HTTP プローブはデッドプロセスのみを検出します。JSON ボディは現在の状態を説明します。
 
@@ -164,9 +150,7 @@ SCM コネクタは利用できないため、このセクションのフラグ�
 
 [SCM コネクタ](#scm-connector-flags) が設定されている場合、オーケストレーターの `/healthz` ボディは `scm_connector_connected` と、`connected`、`last_connected_at`、`last_error`、`reconnects`、`requests_forwarded` を持つ `scm_connector` オブジェクトも持ちます。`--scm-connector-host` が設定されていない場合、両方のフィールドは `null` です。
 
-<h2 id="prometheus-metrics">
-  Prometheus メトリクス
-</h2>
+## Prometheus メトリクス
 
 各ランナーは `/healthz` と同じポートで `GET /metrics` で Prometheus メトリクスを提供します。主要なシリーズ：
 
@@ -318,17 +302,13 @@ groups:
           summary: "オーケストレーター {{ $labels.pod }}：5 分間に 3 回以上の spawn-runner フック失敗"
 ```
 
-<h3 id="pass-through-session-child-metrics">
-  セッション子メトリクスをパススルーする
-</h3>
+### セッション子メトリクスをパススルーする
 
 各セッションは独自の子プロセスで実行され、独自の OpenTelemetry メトリクスを持ちます。`--capacity` が 1 を超える場合、ランナーはそれらの子メトリクスの公開方法を書き換えます。ランナーホストで `OTEL_METRICS_EXPORTER=prometheus` を設定し、セッションの環境で `CLAUDE_CODE_ENABLE_TELEMETRY=1` を設定します。例えば、[ラッパースクリプト](/docs/ja/self-hosted-environments-configuration#wrapper-scripts) またはセッションが継承するランナー独自の環境から、各子のカウンターとゲージ計器をランナー独自の `/metrics` エンドポイントで再公開します。ランナーのシリーズと並んで。ランナーは子のエクスポーターを書き換えて、ヘルスポートのループバックのみのレシーバーに OTLP 経由でプッシュし、各シリーズに `session_id` および `client_platform` ラベルでタグ付けし、セッションが終了するとセッションのシリーズを削除します。ヒストグラムはパススルーしません。ランナー独自のプレフィックスと衝突する子メトリクスの名前は削除されます。
 
 デフォルトの `--capacity 1` では、書き換えは適用されません。セッションの子は通常どおりポート 9464 で独自の Prometheus エンドポイントをバインドします。
 
-<h3 id="session-lifecycle-counter-semantics">
-  セッションライフサイクルカウンターセマンティクス
-</h3>
+### セッションライフサイクルカウンターセマンティクス
 
 `sessions_started_total`、`sessions_completed_total`、`sessions_failed_total`、`sessions_interrupted_total` カウンターは、各セッションがどのように終了したかで分類します。スポーンされたすべてのセッション子はスポーン時に `sessions_started_total` をインクリメントし、終了時に他の 3 つのうち正確に 1 つをインクリメントします。したがって、`sessions_started_total` から他の 3 つの合計を引いたものは、現在実行中のセッション子の数に等しくなります。
 
@@ -357,9 +337,7 @@ v2.1.260 より前では、ランナーは `--kill-session-after-min` 制限に�
 
 セッションごとの結果報告については、代わりに [`post-session` フック](/docs/ja/self-hosted-environments-configuration#post-session) を使用してください。VM プリエンプションなどの突然のランナー終了を除き、子プロセスがスポーンされたすべてのセッション終了で発火します。[フック独自の契約](/docs/ja/self-hosted-environments-configuration#post-session) に従って。
 
-<h2 id="what’s-next">
-  次のステップ
-</h2>
+## 次のステップ
 
 * [セルフホスト環境](/docs/ja/self-hosted-environments)：環境、ランナー、セッションモデル。[クイックスタート](/docs/ja/self-hosted-environments-quickstart) と [本番環境へのデプロイ](/docs/ja/self-hosted-environments-deploy) はセットアップと運用を保持しています。
 * [セッションをカスタマイズする](/docs/ja/self-hosted-environments-configuration)：ラッパースクリプト、ライフサイクルフック、オンデマンドランナー。

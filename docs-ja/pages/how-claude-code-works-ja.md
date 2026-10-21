@@ -10,15 +10,11 @@ Claude Code はターミナルで実行される agentic アシスタントで�
 
 このガイドでは、コアアーキテクチャ、組み込み機能、および [Claude Code を効果的に使用するためのヒント](#work-effectively-with-claude-code) について説明します。ステップバイステップのウォークスルーについては、[一般的なワークフロー](/docs/ja/common-workflows) を参照してください。スキル、MCP、フックなどの拡張機能については、[Claude Code を拡張する](/docs/ja/features-overview) を参照してください。
 
-<h2 id="the-agentic-loop">
-  agentic ループ
-</h2>
+## agentic ループ
 
 Claude にタスクを与えると、3 つのフェーズを通じて作業します。**コンテキストの収集**、**アクションの実行**、**結果の検証** です。これらのフェーズは相互に融合します。Claude はツールを使用して、コードを理解するためのファイル検索、変更を加えるための編集、作業を確認するためのテスト実行など、様々な場面で活用します。
 
-<img src="https://mintcdn.com/claude-code/ikqp3_70mqIahteV/images/agentic-loop.svg?fit=max&auto=format&n=ikqp3_70mqIahteV&q=85&s=4a30fb7ce2815012a9f27c955e2c6bb0" className="dark:hidden" alt="agentic ループの図：プロンプトから Claude がコンテキストを収集し、アクションを実行し、結果を検証し、タスク完了まで繰り返します。任意の時点で中断できます。" width="720" height="280" data-path="images/agentic-loop.svg" />
-
-<img src="https://mintcdn.com/claude-code/_xqph1dUOslCOwsj/images/agentic-loop-dark.svg?fit=max&auto=format&n=_xqph1dUOslCOwsj&q=85&s=75e1d55ed76857a952f9a2dffbab02df" className="hidden dark:block" alt="agentic ループの図：プロンプトから Claude がコンテキストを収集し、アクションを実行し、結果を検証し、タスク完了まで繰り返します。任意の時点で中断できます。" width="720" height="280" data-path="images/agentic-loop-dark.svg" />
+![agentic ループの図：プロンプトから Claude がコンテキストを収集し、アクションを実行し、結果を検証し、タスク完了まで繰り返します。任意の時点で中断できます。](https://mintcdn.com/claude-code/ikqp3_70mqIahteV/images/agentic-loop.svg?fit=max\&auto=format\&n=ikqp3_70mqIahteV\&q=85\&s=4a30fb7ce2815012a9f27c955e2c6bb0)
 
 ループは、あなたが何を求めるかに応じて適応します。コードベースに関する質問は、コンテキスト収集だけで済むかもしれません。バグ修正は 3 つのフェーズすべてを繰り返し循環します。リファクタリングは広範な検証を伴うかもしれません。Claude は前のステップから学んだことに基づいて各ステップが何を必要とするかを判断し、数十のアクションを連鎖させ、途中で軌道修正します。
 
@@ -26,9 +22,7 @@ Claude にタスクを与えると、3 つのフェーズを通じて作業し�
 
 agentic ループは 2 つのコンポーネントによって駆動されます。推論する [モデル](#models) と、アクションを実行する [ツール](#tools) です。Claude Code はモデルの周りのレイヤーで、ツールを提供し、モデルが見るコンテキストを管理します。この周囲のレイヤーが agentic ハーネスという用語が指すものです。
 
-<h3 id="models">
-  モデル
-</h3>
+### モデル
 
 Claude Code は Claude モデルを使用して、コードを理解し、タスクについて推論します。Claude は任意の言語のコードを読み、コンポーネントがどのように接続されているかを理解し、目標を達成するために何を変更する必要があるかを判断できます。複雑なタスクの場合、作業をステップに分割し、実行し、学んだことに基づいて調整します。
 
@@ -36,9 +30,7 @@ Claude Code は Claude モデルを使用して、コードを理解し、タス
 
 このガイドで「Claude が選択する」または「Claude が決定する」と言う場合、モデルが推論を行っています。
 
-<h3 id="tools">
-  ツール
-</h3>
+### ツール
 
 ツールは Claude Code を agentic にするものです。ツールがなければ、Claude はテキストで応答することしかできません。ツールがあれば、Claude はアクションを実行できます。コードを読み、ファイルを編集し、コマンドを実行し、ウェブを検索し、外部サービスと相互作用します。各ツール使用は情報を返し、ループにフィードバックされ、Claude の次の決定に情報を与えます。
 
@@ -67,9 +59,7 @@ Claude はプロンプトと学んだことに基づいて、どのツールを�
 
 **基本機能の拡張：** 組み込みツールが基盤です。[スキル](/docs/ja/skills) で Claude が知ることを拡張し、[MCP](/docs/ja/mcp) で外部サービスに接続し、[フック](/docs/ja/hooks) でワークフローを自動化し、[subagent](/docs/ja/sub-agents) にタスクをオフロードできます。これらの拡張は、コア agentic ループの上に層を形成します。ニーズに合った拡張を選択するためのガイダンスについては、[Claude Code を拡張する](/docs/ja/features-overview) を参照してください。
 
-<h2 id="what-claude-can-access">
-  Claude がアクセスできるもの
-</h2>
+## Claude がアクセスできるもの
 
 ディレクトリで `claude` を実行すると、Claude Code は以下にアクセスできます。
 
@@ -82,15 +72,11 @@ Claude はプロンプトと学んだことに基づいて、どのツールを�
 
 Claude はプロジェクト全体を見ることができるため、プロジェクト全体で作業できます。「認証バグを修正して」と Claude に求めると、関連ファイルを検索し、複数のファイルを読んでコンテキストを理解し、それらを横断して調整された編集を行い、テストを実行して修正を検証し、求めればコミットします。これは現在のファイルのみを見るインラインコードアシスタントとは異なります。
 
-<h2 id="environments-and-interfaces">
-  環境とインターフェース
-</h2>
+## 環境とインターフェース
 
 [agentic ループ](#the-agentic-loop)、[ツール](#tools)、および機能は、Claude Code を使用するあらゆる場所で同じです。変わるのは、コードが実行される場所とそれとの相互作用方法です。
 
-<h3 id="execution-environments">
-  実行環境
-</h3>
+### 実行環境
 
 Claude Code は 3 つの環境で実行され、各環境はコード実行場所に対して異なるトレードオフを持ちます。
 
@@ -100,23 +86,17 @@ Claude Code は 3 つの環境で実行され、各環境はコード実行場�
 | **クラウド** | Anthropic 管理 VM、または [セルフホスト環境](/docs/ja/self-hosted-environments)（組織が運用） | タスクをオフロード、ローカルにないリポジトリで作業 |
 | **リモートコントロール** | マシン、ブラウザから制御 | ウェブ UI を使用しながら実行とファイルをローカルに保つ |
 
-<h3 id="interfaces">
-  インターフェース
-</h3>
+### インターフェース
 
 Claude Code には、ターミナル、[デスクトップアプリ](/docs/ja/desktop)、[IDE 拡張機能](/docs/ja/vs-code)、[claude.ai/code](https://claude.ai/code)、[リモートコントロール](/docs/ja/remote-control)、[Slack](/docs/ja/slack)、[CI/CD パイプライン](/docs/ja/github-actions) を通じてアクセスできます。インターフェースは Claude の表示方法と相互作用方法を決定しますが、基盤となる agentic ループは同じです。完全なリストについては、[Claude Code をどこでも使用する](/docs/ja/overview#use-claude-code-everywhere) を参照してください。
 
-<h2 id="work-with-sessions">
-  セッションで作業する
-</h2>
+## セッションで作業する
 
 Claude Code は作業中にローカルで会話を保存します。各メッセージ、ツール使用、結果は `~/.claude/projects/` の下のプレーンテキスト JSONL ファイルに書き込まれ、[巻き戻し](#undo-changes-with-checkpoints)、[再開、フォーク](#resume-or-fork-sessions) セッションが可能になります。Claude がコード変更を行う前に、影響を受けるファイルのスナップショットも作成されるため、必要に応じて元に戻すことができます。パス、保持期間、このデータをクリアする方法については、[`~/.claude` のアプリケーションデータ](/docs/ja/claude-directory#application-data) を参照してください。
 
 **セッションは独立しています。** 各新規セッションは、前のセッションの会話履歴なしで、新しいコンテキストウィンドウで開始されます。Claude は [自動メモリ](/docs/ja/memory#auto-memory) を使用してセッション間で学習を保持でき、[CLAUDE.md](/docs/ja/memory) に独自の永続的な指示を追加できます。
 
-<h3 id="work-across-branches">
-  ブランチ間で作業する
-</h3>
+### ブランチ間で作業する
 
 各 Claude Code 会話は、現在のディレクトリに結び付けられたセッションです。`/resume` ピッカーはデフォルトで現在の worktree からのセッションを表示し、キーボードショートカットを使用してリストを他の worktree またはプロジェクトに拡張できます。ピッカーショートカットの完全なリストと名前解決の仕組みについては、[セッションを管理する](/docs/ja/sessions#use-the-session-picker) を参照してください。
 
@@ -124,29 +104,21 @@ Claude は現在のブランチのファイルを見ます。ブランチを切�
 
 セッションはディレクトリに結び付けられているため、[git worktrees](/docs/ja/worktrees) を使用して並列 Claude Code セッションを実行できます。これは個別のブランチ用に別のディレクトリを作成します。
 
-<h3 id="resume-or-fork-sessions">
-  セッションを再開またはフォークする
-</h3>
+### セッションを再開またはフォークする
 
 `claude --continue` または `claude --resume` でセッションを再開すると、同じセッション ID を使用して中断したところから再開し、新しいメッセージを既存の会話に追加します。`--fork-session` または `/branch` でフォークすると、履歴を新しいセッション ID にコピーし、元のセッションは変更されません。
 
-<img src="https://mintcdn.com/claude-code/ikqp3_70mqIahteV/images/session-continuity.svg?fit=max&auto=format&n=ikqp3_70mqIahteV&q=85&s=04ed0984a58e4127e05b3640265241a3" className="dark:hidden" alt="セッション継続性の図：再開は同じセッションを続行し、フォークは新しい ID で新しいブランチを作成します。" width="560" height="280" data-path="images/session-continuity.svg" />
-
-<img src="https://mintcdn.com/claude-code/_xqph1dUOslCOwsj/images/session-continuity-dark.svg?fit=max&auto=format&n=_xqph1dUOslCOwsj&q=85&s=886a384bce8298594e43f124617ea665" className="hidden dark:block" alt="セッション継続性の図：再開は同じセッションを続行し、フォークは新しい ID で新しいブランチを作成します。" width="560" height="280" data-path="images/session-continuity-dark.svg" />
+![セッション継続性の図：再開は同じセッションを続行し、フォークは新しい ID で新しいブランチを作成します。](https://mintcdn.com/claude-code/ikqp3_70mqIahteV/images/session-continuity.svg?fit=max\&auto=format\&n=ikqp3_70mqIahteV\&q=85\&s=04ed0984a58e4127e05b3640265241a3)
 
 再開フラグ、`/resume` ピッカー、命名、同じセッションが 2 つのターミナルで開いている場合の動作については、[セッションを管理する](/docs/ja/sessions) を参照してください。
 
-<h3 id="the-context-window">
-  コンテキストウィンドウ
-</h3>
+### コンテキストウィンドウ
 
 Claude のコンテキストウィンドウは、会話履歴、ファイルコンテンツ、コマンド出力、[CLAUDE.md](/docs/ja/memory)、[自動メモリ](/docs/ja/memory#auto-memory)、読み込まれたスキル、システム指示を保持します。作業を進めると、コンテキストが満杯になります。Claude は自動的にコンパクト化しますが、会話の早い段階からの指示が失われる可能性があります。永続的なルールを CLAUDE.md に入れ、`/context` を実行してスペースを使用しているものを確認してください。
 
 対話的なウォークスルーについては、[コンテキストウィンドウを探索する](/docs/ja/context-window) を参照してください。
 
-<h4 id="context-claude-code-adds-on-its-own">
-  コンテキスト Claude Code が独自に追加するもの
-</h4>
+#### コンテキスト Claude Code が独自に追加するもの
 
 Claude が `Co-Authored-By` トレーラーをコミットに追加するなど、自分で書いていないルールに従う場合、そのルールは [システムリマインダー](/docs/ja/glossary#system-reminder) から来ている可能性があります。作業を進めると、Claude Code はメッセージと共に独自のコンテキストを会話に追加します：
 
@@ -157,9 +129,7 @@ Claude が `Co-Authored-By` トレーラーをコミットに追加するなど�
 
 属性行を変更または削除するには、[`attribution`](/docs/ja/settings-reference#attribution) を設定します。Claude Code の組み込みコミットおよびプルリクエスト指示を削除するには、[`includeGitInstructions`](/docs/ja/settings-reference#includegitinstructions) を `false` に設定します。その他のスイッチについては、[エージェントが置き換えるコンテキストをオフにする](/docs/ja/agent-sdk/modifying-system-prompts#turn-off-the-context-your-agent-replaces) を参照してください。
 
-<h4 id="when-context-fills-up">
-  コンテキストが満杯になったとき
-</h4>
+#### コンテキストが満杯になったとき
 
 Claude Code はコンテキストウィンドウの制限に近づくと、自動的にコンテキストを管理します。古いツール出力をクリアし、必要に応じて会話を要約します。リクエストと主要なコードスニペットは保持されます。会話の早い段階からの詳細な指示は失われる可能性があります。会話履歴に依存するのではなく、永続的なルールを CLAUDE.md に入れてください。
 
@@ -169,9 +139,7 @@ Claude Code はコンテキストウィンドウの制限に近づくと、自�
 
 `/context` を実行してスペースを使用しているものを確認してください。MCP ツール定義はデフォルトで遅延され、[ツール検索](/docs/ja/mcp#scale-with-mcp-tool-search) を通じてオンデマンドで読み込まれるため、Claude が特定のツールを使用するまで、ツール名とサーバー指示のみがコンテキストを消費します。
 
-<h4 id="manage-context-with-skills-and-subagents">
-  スキルと subagent でコンテキストを管理する
-</h4>
+#### スキルと subagent でコンテキストを管理する
 
 コンパクト化を超えて、他の機能を使用してコンテキストに読み込まれるものを制御できます。
 
@@ -181,23 +149,17 @@ Claude Code はコンテキストウィンドウの制限に近づくと、自�
 
 各機能のコストについては [コンテキストコスト](/docs/ja/features-overview#understand-context-costs) を参照し、コンテキスト管理のヒントについては [トークン使用量を削減する](/docs/ja/costs#reduce-token-usage) を参照してください。
 
-<h2 id="stay-safe-with-checkpoints-and-permissions">
-  チェックポイントと権限で安全に保つ
-</h2>
+## チェックポイントと権限で安全に保つ
 
 Claude には 2 つのセーフティメカニズムがあります。チェックポイントはファイル変更を元に戻すことができ、権限は Claude が質問なしにできることを制御します。
 
-<h3 id="undo-changes-with-checkpoints">
-  チェックポイントで変更を元に戻す
-</h3>
+### チェックポイントで変更を元に戻す
 
 **ファイル編集は可逆的です。** Claude がファイルを編集する前に、現在の内容のスナップショットを作成します。何か問題が発生した場合は、`Esc` キーを 2 回押して前の状態に戻すか、Claude に元に戻すよう依頼してください。
 
 チェックポイントは git とは別で、会話を再開するときも利用可能です。ファイル変更のみをカバーし、復元は [シンボリックリンクとハードリンクされたファイルをスキップします](/docs/ja/checkpointing#symlinked-and-hard-linked-paths-not-restored)。リモートシステム（データベース、API、デプロイメント）に影響を与えるアクションはチェックポイント化できません。これらは権限モードと権限ルールで制御します。
 
-<h3 id="control-what-claude-can-do">
-  Claude ができることを制御する
-</h3>
+### Claude ができることを制御する
 
 権限モードを選択して、Claude が質問なしにできることを設定します。`Shift+Tab` を押して権限モードをサイクルさせます。
 
@@ -210,15 +172,11 @@ Claude には 2 つのセーフティメカニズムがあります。チェッ�
 
 ***
 
-<h2 id="work-effectively-with-claude-code">
-  Claude Code を効果的に使用する
-</h2>
+## Claude Code を効果的に使用する
 
 これらのヒントは Claude Code からより良い結果を得るのに役立ちます。特定のプロンプト、検証、計画の詳細については、[ベストプラクティス](/docs/ja/best-practices)を参照してください。
 
-<h3 id="ask-claude-code-for-help">
-  Claude Code に助言を求める
-</h3>
+### Claude Code に助言を求める
 
 Claude Code はそれの使い方を教えることができます。「hooks をどのようにセットアップするのか」や「CLAUDE.md を構造化する最良の方法は何か」といった質問をしてください。Claude が説明します。
 
@@ -227,9 +185,7 @@ Claude Code はそれの使い方を教えることができます。「hooks �
 * `/init` はプロジェクト用のスターター CLAUDE.md を生成します
 * `/doctor` はセットアップチェックアップを実行し、インストールと設定の問題を診断し、修正することができます
 
-<h3 id="it’s-a-conversation">
-  これは会話です
-</h3>
+### これは会話です
 
 Claude Code は会話型です。完璧なプロンプトは必要ありません。やりたいことから始めて、その後改善します：
 
@@ -247,18 +203,14 @@ That's not quite right. The issue is in the session handling.
 
 最初の試みが正しくない場合、最初からやり直す必要はありません。反復します。
 
-<h4 id="interrupt-and-steer">
-  割り込みと操舵
-</h4>
+#### 割り込みと操舵
 
 任意の時点で Claude をリダイレクトでき、最初からやり直す必要はありません。以下のいずれかを実行してください：
 
 * **`Esc` キーを押す**と Claude が直ちに停止します。実行中のツール呼び出しがキャンセルされ、Claude は次の指示を待ちます。メッセージがキューに入っている場合、Claude Code は[次にそれらを送信します](/docs/ja/interactive-mode#queue-messages-while-claude-works)。
 * **修正を入力して `Enter` キーを押す**と Claude を停止せずに実行します。メッセージは入力ボックスの上にキューに入っているものとして表示されます。Claude がツール呼び出しを実行している場合、それらの呼び出しが完了するとすぐに、同じターン内でメッセージを読み取り、次のステップの前に調整します。[Claude が作業している間にメッセージをキューに入れる](/docs/ja/interactive-mode#queue-messages-while-claude-works)は、他のキューに入っているエントリがいつ送信されるかについて説明しています。
 
-<h3 id="delegate-don’t-dictate">
-  指示するのではなく委譲する
-</h3>
+### 指示するのではなく委譲する
 
 有能な同僚に委譲することを考えてください。コンテキストと方向性を提供し、その後 Claude が詳細を理解することを信頼してください：
 
@@ -269,16 +221,12 @@ The relevant code is in src/payments/. Can you investigate and fix it?
 
 どのファイルを読むか、どのコマンドを実行するかを指定する必要はありません。Claude がそれを理解します。
 
-<h2 id="what’s-next">
-  次のステップ
-</h2>
+## 次のステップ
 
-<CardGroup cols={2}>
-  <Card title="機能で拡張する" icon="puzzle-piece" href="/docs/ja/features-overview">
-    スキルと MCP 接続を追加
-  </Card>
+> **[機能で拡張する](/docs/ja/features-overview)**
+>
+> スキルと MCP 接続を追加
 
-  <Card title="一般的なワークフロー" icon="graduation-cap" href="/docs/ja/common-workflows">
-    典型的なタスクのステップバイステップガイド
-  </Card>
-</CardGroup>
+> **[一般的なワークフロー](/docs/ja/common-workflows)**
+>
+> 典型的なタスクのステップバイステップガイド

@@ -18,9 +18,7 @@ Claude Code はターミナル設定なしで任意のターミナルで動作�
 
 このページは、ターミナルが Claude Code に正しい信号を送信するようにするためのものです。Claude Code 自体が応答するキーを変更するには、代わりに [キーバインディング](/docs/ja/keybindings) を参照してください。
 
-<h2 id="enter-multiline-prompts">
-  複数行のプロンプトを入力する
-</h2>
+## 複数行のプロンプトを入力する
 
 Enter キーを押すとメッセージが送信されます。送信せずに改行を追加するには、Ctrl+J を押すか、`\` を入力してから Enter を押してください。どちらの方法もセットアップなしですべてのターミナルで機能します。
 
@@ -46,37 +44,31 @@ tmux 内で実行している場合、外側のターミナルがサポートし
 
 改行を別のキーにバインドするか、Enter が改行を挿入し Shift+Enter が送信するように動作を入れ替えるには、[キーバインディングファイル](/docs/ja/keybindings)で `chat:newline` および `chat:submit` アクションをマップしてください。
 
-<h2 id="enable-option-key-shortcuts-on-macos">
-  macOS で Option キーショートカットを有効にする
-</h2>
+## macOS で Option キーショートカットを有効にする
 
 Claude Code の一部のショートカットは Option キーを使用します。例えば、Option+Enter で改行したり、Option+P でモデルを切り替えたりします。macOS では、ほとんどのターミナルはデフォルトで Option を修飾キーとして送信しないため、これを有効にするまでこれらのショートカットは機能しません。ターミナル設定は通常「Use Option as Meta Key」というラベルが付いています。Meta は、現在 Option または Alt というラベルが付いているキーの歴史的な Unix 名です。
 
-<Tabs>
-  <Tab title="Apple Terminal">
-    設定 → プロファイル → キーボードを開き、「Use Option as Meta Key」をチェックします。
+**Apple Terminal**
 
-    Claude Code の初回実行時のターミナルセットアッププロンプトを受け入れた場合、これはすでに完了しています。そのプロンプトは `/terminal-setup` を実行し、Option を Meta として有効にし、Apple Terminal プロファイルで可聴ベルをオフにします。
+設定 → プロファイル → キーボードを開き、「Use Option as Meta Key」をチェックします。
 
-    [スクリーンリーダーモード](/docs/ja/accessibility)では、`/terminal-setup` はベル設定を変更しないままにするため、ターミナルベルは可聴のままです。以前の実行でベルがオフになった場合は、設定 → プロファイル → 詳細 → 「可聴ベル」でオンに戻してください。
-  </Tab>
+Claude Code の初回実行時のターミナルセットアッププロンプトを受け入れた場合、これはすでに完了しています。そのプロンプトは `/terminal-setup` を実行し、Option を Meta として有効にし、Apple Terminal プロファイルで可聴ベルをオフにします。
 
-  <Tab title="iTerm2">
-    設定 → プロファイル → キー → 一般を開き、左 Option キーと右 Option キーを「Esc+」に設定します。
+[スクリーンリーダーモード](/docs/ja/accessibility)では、`/terminal-setup` はベル設定を変更しないままにするため、ターミナルベルは可聴のままです。以前の実行でベルがオフになった場合は、設定 → プロファイル → 詳細 → 「可聴ベル」でオンに戻してください。
 
-    iTerm2 で `/terminal-setup` を実行すると、設定 → 一般 → 選択の下で「Applications in terminal may access clipboard」が有効になり、`/copy` コマンドがシステムクリップボードに書き込むことができます。このコマンドは tmux 内から実行された場合でも iTerm2 を検出します。変更を有効にするために iTerm2 を再起動してください。
-  </Tab>
+**iTerm2**
 
-  <Tab title="VS Code">
-    VS Code 設定に `"terminal.integrated.macOptionIsMeta": true` を追加します。
-  </Tab>
-</Tabs>
+設定 → プロファイル → キー → 一般を開き、左 Option キーと右 Option キーを「Esc+」に設定します。
+
+iTerm2 で `/terminal-setup` を実行すると、設定 → 一般 → 選択の下で「Applications in terminal may access clipboard」が有効になり、`/copy` コマンドがシステムクリップボードに書き込むことができます。このコマンドは tmux 内から実行された場合でも iTerm2 を検出します。変更を有効にするために iTerm2 を再起動してください。
+
+**VS Code**
+
+VS Code 設定に `"terminal.integrated.macOptionIsMeta": true` を追加します。
 
 Ghostty、Kitty、およびその他のターミナルについては、ターミナルの設定ファイルで Option-as-Alt または Option-as-Meta 設定を探してください。
 
-<h2 id="get-a-terminal-bell-or-notification">
-  ターミナルベルまたは通知を取得する
-</h2>
+## ターミナルベルまたは通知を取得する
 
 Claude がタスクを完了するか権限プロンプトで一時停止し、ターミナルから離れているように見える場合、通知イベントが発火します。[各通知タイプが発火するタイミング](/docs/ja/hooks#notification)を参照して、正確なタイミングを確認してください。これをターミナルベルまたはデスクトップ通知として表示することで、長いタスクが実行されている間に他の作業に切り替えることができます。
 
@@ -90,21 +82,17 @@ Claude がタスクを完了するか権限プロンプトで一時停止し、�
 
 デスクトップ通知は SSH 経由でローカルマシンに到達するため、リモートセッションでもアラートを受け取ることができます。Ghostty と Kitty はさらなるセットアップなしで OS 通知センターに転送します。iTerm2 では転送を有効にする必要があります：
 
-<Steps>
-  <Step title="Open iTerm2 notification settings">
-    Go to Settings → Profiles → Terminal.
-  </Step>
+**1. Open iTerm2 notification settings**
 
-  <Step title="Enable alerts">
-    Check "Notification Center Alerts", then click "Filter Alerts" and enable "Send escape sequence-generated alerts".
-  </Step>
-</Steps>
+Go to Settings → Profiles → Terminal.
+
+**2. Enable alerts**
+
+Check "Notification Center Alerts", then click "Filter Alerts" and enable "Send escape sequence-generated alerts".
 
 通知がまだ表示されない場合は、ターミナルアプリケーションが OS 設定で通知権限を持っていることを確認し、tmux 内で実行している場合は[パススルーを有効にしてください](#configure-tmux)。
 
-<h3 id="play-a-sound-with-a-notification-hook">
-  通知フックで音を再生する
-</h3>
+### 通知フックで音を再生する
 
 任意のターミナルで[通知フック](/docs/ja/hooks-guide#get-notified-when-claude-needs-input)を設定して、Claude があなたの注意が必要な場合に音を再生するか、カスタムコマンドを実行できます。フックは組み込み通知と並行して実行され、それを置き換えるのではなく、Warp や VS Code 統合ターミナルなどのデスクトップ通知を受け取らないターミナルは、フックを使用するか、代わりに`preferredNotifChannel`を`"terminal_bell"`に設定できます。
 
@@ -122,9 +110,7 @@ Claude がタスクを完了するか権限プロンプトで一時停止し、�
 }
 ```
 
-<h2 id="see-session-status-in-your-terminal">
-  ターミナルでセッションのステータスを確認する
-</h2>
+## ターミナルでセッションのステータスを確認する
 
 ターミナルが OSC 7501 Program Status Protocol を実装している場合、対話型の各 Claude Code セッションが作業中か、ユーザーの応答待ちか、完了したかを表示できます。これは、長時間のタスクを実行する場合や複数のセッションを同時に実行する場合に役立ちます。Claude Code 側でオンにする設定はありません。ターミナルがこのプロトコルを実装しているかどうか、またどこにステータスが表示されるかについては、ターミナルのドキュメントを確認してください。
 
@@ -135,9 +121,7 @@ Claude がタスクを完了するか権限プロンプトで一時停止し、�
 * **バックグラウンドセッション**：[バックグラウンドセッション](/docs/ja/agent-view)は、アタッチしている間であっても、ターミナルにステータスを報告しません。代わりにエージェントビューにステータスが表示されます。
 * **[`CLAUDE_CODE_DISABLE_TERMINAL_TITLE`](/docs/ja/env-vars#variables)**：この変数を `1` に設定している場合、Claude Code はサポートの有無を確認せず、ステータスも報告しません。この変数の設定を解除してください。
 
-<h2 id="configure-tmux">
-  tmux を設定する
-</h2>
+## tmux を設定する
 
 Claude Code が tmux 内で実行される場合、デフォルトでは Shift+Enter が改行を挿入する代わりに送信してしまい、デスクトップ通知と[プログレスバー](/docs/ja/settings-reference#terminalprogressbarenabled)が外側のターミナルに到達しません。これらの行を `~/.tmux.conf` に追加してから、`tmux source-file ~/.tmux.conf` を実行して、実行中のサーバーに適用してください。
 
@@ -149,25 +133,19 @@ set -as terminal-features 'xterm*:extkeys'
 
 `allow-passthrough` 行により、通知とプログレス更新が tmux に飲み込まれるのではなく、外側のターミナルに到達できるようになります。`extended-keys` 行により、tmux が Shift+Enter と通常の Enter を区別できるようになり、改行ショートカットが機能するようになります。
 
-<h2 id="fix-backspace-deleting-a-whole-word-on-windows">
-  Windows で Backspace がワード全体を削除する問題を修正する
-</h2>
+## Windows で Backspace がワード全体を削除する問題を修正する
 
 Windows では、Claude Code は Backspace として到着した `^H` を Ctrl+Backspace として読み込み、[前のワードを削除します](/docs/ja/interactive-mode#text-editing)。ただし、`TERM_PROGRAM` が `mintty` または `TERM` が `cygwin` の場合は除きます。macOS と Linux では、Claude Code はこれをプレーン Backspace として読み込みます。
 
 Backspace を押すたびにワード全体が削除される場合、ターミナルはプレーン Backspace に対して `^H` を送信しています。[`CLAUDE_CODE_BS_AS_CTRL_BACKSPACE=0`](/docs/ja/env-vars) を設定してください。その後、Backspace と Ctrl+H は各々 1 文字を削除します。macOS または Linux で Ctrl+Backspace が 1 文字だけを削除する場合、ターミナルが `^H` を送信しているため、代わりに変数を `1` に設定してください。
 
-<h2 id="match-the-color-theme">
-  カラーテーマを合わせる
-</h2>
+## カラーテーマを合わせる
 
 `/theme` コマンドを使用するか、`/config` のテーマピッカーを使用して、ターミナルに合わせた Claude Code テーマを選択します。auto オプションを選択すると、ターミナルの明るい背景または暗い背景が検出されるため、ターミナルが OS の外観の変更に従うたびにテーマが従います。Claude Code はターミナルアプリケーションによって設定されるターミナル自体のカラースキームを制御しません。
 
 インターフェースの下部に表示される内容をカスタマイズするには、現在のモデル、作業ディレクトリ、git ブランチ、またはその他のコンテキストを表示する[カスタムステータスライン](/docs/ja/statusline)を設定します。
 
-<h3 id="create-a-custom-theme">
-  カスタムテーマを作成する
-</h3>
+### カスタムテーマを作成する
 
 組み込みプリセットに加えて、`/theme` には定義したカスタムテーマと、インストール済みの[プラグイン](/docs/ja/plugins/components#themes-and-output-styles)によって提供されたテーマが一覧表示されます。リストの最後にある\*\*新しいカスタムテーマ…\*\*を選択して、対話的に作成します。テーマに名前を付けてから、個別のカラートークンを選択してオーバーライドします。カスタムテーマがハイライトされている間に `Ctrl+E` を押して編集します。
 
@@ -199,133 +177,117 @@ Claude Code は `~/.claude/themes/` を監視し、ファイルが追加また�
 
 以下のリファレンスは、`overrides` で設定できるトークンをカバーしています。`/theme` の対話的エディターは、同じトークンをライブプレビューと共に表示し、さらにオンボーディング画面のカラーなどの単一目的のアクセントをいくつか表示します（ここでは省略されています）。
 
-<Accordion title="カラートークンリファレンス">
-  次の例は、以下のいくつかのグループからトークンを組み合わせています。ブランドアクセント、プランモードボーダー、diff 背景、およびメッセージ背景です。
+> **カラートークンリファレンス**
+>
+> 次の例は、以下のいくつかのグループからトークンを組み合わせています。ブランドアクセント、プランモードボーダー、diff 背景、およびメッセージ背景です。
+>
+> ```json ~/.claude/themes/midnight.json theme={null}
+> {
+>   "name": "Midnight",
+>   "base": "dark",
+>   "overrides": {
+>     "claude": "#a78bfa",
+>     "planMode": "#38bdf8",
+>     "diffAdded": "#14532d",
+>     "diffRemoved": "#7f1d1d",
+>     "userMessageBackground": "#1e1b4b"
+>   }
+> }
+> ```
+>
+> #### テキストとアクセントカラー
+>
+> プライマリブランドアクセントと、インターフェース全体で使用されるフォアグラウンドテキストの色合いを制御します。
+>
+> | トークン | 制御対象 |
+> | :- | :- |
+> | `claude` | プライマリブランドアクセント、スピナーとアシスタントラベルに使用 |
+> | `text` | デフォルトのフォアグラウンドテキスト |
+> | `inverseText` | ステータスバッジなどの色付き背景の上に描画されるテキスト |
+> | `inactive` | ヒント、タイムスタンプ、無効な項目などのセカンダリテキスト |
+> | `subtle` | 薄いボーダーと強調されていないセカンダリテキスト |
+> | `suggestion` | オートコンプリート候補とピッカーの選択ハイライト |
+> | `permission` | パーミッションプロンプトとピッカーを含むダイアログボーダー |
+> | `remember` | メモリと `CLAUDE.md` インジケーター |
+>
+> #### ステータスカラー
+>
+> メッセージとインジケーター全体で成功、失敗、警告状態を通知します。
+>
+> | トークン | 制御対象 |
+> | :- | :- |
+> | `success` | 成功メッセージと合格チェック |
+> | `error` | エラーメッセージと失敗 |
+> | `warning` | 警告、注意メッセージ、および auto モードインジケーター |
+> | `merged` | マージされたプルリクエストステータス |
+>
+> #### 入力ボックスとモードインジケーター
+>
+> 入力ボックスのボーダーカラーと、パーミッションモードまたはインジケーターがアクティブな間に表示されるアクセントを設定します。
+>
+> | トークン | 制御対象 |
+> | :- | :- |
+> | `promptBorder` | 入力ボックスボーダー |
+> | `planMode` | Plan モードアクセント、プランメッセージ、および Plan モードダイアログ |
+> | `autoAccept` | Accept-edits モードアクセント |
+> | `bashBorder` | `!` シェルコマンドを入力するときの入力ボックスボーダー |
+> | `ide` | IDE 接続インジケーター |
+> | `fastMode` | Fast モードインジケーター |
+> | `effortUltra` | [ultracode](/docs/ja/model-config#adjust-effort-level) がオンの間、入力ボックスボーダーの `ultracode` タグ。このカラーのオーバーライドは Claude Code v2.1.239 以降で有効になります |
+>
+> #### Diff レンダリング
+>
+> ファイル編集とレビューで追加および削除されたコードを色付けします。
+>
+> | トークン | 制御対象 |
+> | :- | :- |
+> | `diffAdded` | 追加された行の背景 |
+> | `diffRemoved` | 削除された行の背景 |
+> | `diffAddedDimmed` | 編集を拒否した後に表示される薄い diff の追加行の背景 |
+> | `diffRemovedDimmed` | 編集を拒否した後に表示される薄い diff の削除行の背景 |
+> | `diffAddedWord` | 追加された行内のワードレベルハイライト |
+> | `diffRemovedWord` | 削除された行内のワードレベルハイライト |
+>
+> #### フルスクリーンモード
+>
+> Claude Code は、`userMessageBackgroundHover`、`selectionBg`、および `composerSidebarBackground` を[フルスクリーンレンダリングモード](/docs/ja/fullscreen)でのみ使用します。`userMessageBackground`、`bashMessageBackgroundColor`、および `memoryBackgroundColor` は、デフォルトとフルスクリーンレンダラーの両方で描画します。
+>
+> | トークン | 制御対象 |
+> | :- | :- |
+> | `userMessageBackground` | トランスクリプト内のメッセージの背後の背景 |
+> | `userMessageBackgroundHover` | ホバーまたは展開されている間のメッセージの背後の背景 |
+> | `bashMessageBackgroundColor` | トランスクリプト内の `!` シェルコマンドエントリの背後の背景 |
+> | `memoryBackgroundColor` | トランスクリプト内の `#` メモリエントリの背後の背景 |
+> | `selectionBg` | マウスで選択されたテキストの背景 |
+> | `composerSidebarBackground` | 会話の横に表示されるパネル（[差分パネル](/docs/ja/fullscreen#watch-your-changes-in-the-diff-panel)や [mod のペイン](/docs/ja/plugins/mods/interface)など）の背景 |
+>
+> #### 使用量メーターとスピーカーラベル
+>
+> `/usage` ビューに表示されるバーと、メッセージを Claude のメッセージと区別するラベルを調整します。
+>
+> | トークン | 制御対象 |
+> | :- | :- |
+> | `rate_limit_fill` | 使用量メーターの塗りつぶされた部分 |
+> | `rate_limit_empty` | 使用量メーターの塗りつぶされていない部分 |
+> | `briefLabelYou` | メッセージの `You` ラベルのカラー |
+> | `briefLabelClaude` | アシスタントメッセージの `Claude` ラベルのカラー |
+>
+> #### シマーバリアントとサブエージェントカラー
+>
+> いくつかのトークンには、スピナーのアニメーション化されたグラデーションで使用される明るいカラーを提供するペアのシマーバリアントがあります。アニメーションが一致しないように見える場合は、ベーストークンと一緒にシマーをオーバーライドします。
+>
+> * `claude` と `claudeShimmer`
+> * `warning` と `warningShimmer`
+> * `permission` と `permissionShimmer`
+> * `promptBorder` と `promptBorderShimmer`
+> * `inactive` と `inactiveShimmer`
+> * `fastMode` と `fastModeShimmer`
+>
+> 各[サブエージェント](/docs/ja/sub-agents)と並列タスクは、トランスクリプト内で区別できるように 8 つの名前付きカラーの 1 つで表示されます。トークン名は `<color>_FOR_SUBAGENTS_ONLY` パターンに従います。ここで `<color>` は `red`、`blue`、`green`、`yellow`、`purple`、`orange`、`pink`、または `cyan` です。これらをオーバーライドして、各名前付きカラーの外観を変更します。たとえば、定義に `color: blue` を持つサブエージェントは、`blue_FOR_SUBAGENTS_ONLY` 値を使用して描画されます。
+>
+> Claude Code は、プロンプト入力で [`ultrathink`](/docs/ja/model-config#use-ultrathink-for-one-off-deep-reasoning) キーワードを 7 色の虹グラデーションでレンダリングします。トークン名は `rainbow_<color>` と `rainbow_<color>_shimmer` パターンに従います。ここで `<color>` は `red`、`orange`、`yellow`、`green`、`blue`、`indigo`、または `violet` です。
 
-  ```json ~/.claude/themes/midnight.json theme={null}
-  {
-    "name": "Midnight",
-    "base": "dark",
-    "overrides": {
-      "claude": "#a78bfa",
-      "planMode": "#38bdf8",
-      "diffAdded": "#14532d",
-      "diffRemoved": "#7f1d1d",
-      "userMessageBackground": "#1e1b4b"
-    }
-  }
-  ```
-
-  <h4 id="text-and-accent-colors">
-    テキストとアクセントカラー
-  </h4>
-
-  プライマリブランドアクセントと、インターフェース全体で使用されるフォアグラウンドテキストの色合いを制御します。
-
-  | トークン | 制御対象 |
-  | :- | :- |
-  | `claude` | プライマリブランドアクセント、スピナーとアシスタントラベルに使用 |
-  | `text` | デフォルトのフォアグラウンドテキスト |
-  | `inverseText` | ステータスバッジなどの色付き背景の上に描画されるテキスト |
-  | `inactive` | ヒント、タイムスタンプ、無効な項目などのセカンダリテキスト |
-  | `subtle` | 薄いボーダーと強調されていないセカンダリテキスト |
-  | `suggestion` | オートコンプリート候補とピッカーの選択ハイライト |
-  | `permission` | パーミッションプロンプトとピッカーを含むダイアログボーダー |
-  | `remember` | メモリと `CLAUDE.md` インジケーター |
-
-  <h4 id="status-colors">
-    ステータスカラー
-  </h4>
-
-  メッセージとインジケーター全体で成功、失敗、警告状態を通知します。
-
-  | トークン | 制御対象 |
-  | :- | :- |
-  | `success` | 成功メッセージと合格チェック |
-  | `error` | エラーメッセージと失敗 |
-  | `warning` | 警告、注意メッセージ、および auto モードインジケーター |
-  | `merged` | マージされたプルリクエストステータス |
-
-  <h4 id="input-box-and-mode-indicators">
-    入力ボックスとモードインジケーター
-  </h4>
-
-  入力ボックスのボーダーカラーと、パーミッションモードまたはインジケーターがアクティブな間に表示されるアクセントを設定します。
-
-  | トークン | 制御対象 |
-  | :- | :- |
-  | `promptBorder` | 入力ボックスボーダー |
-  | `planMode` | Plan モードアクセント、プランメッセージ、および Plan モードダイアログ |
-  | `autoAccept` | Accept-edits モードアクセント |
-  | `bashBorder` | `!` シェルコマンドを入力するときの入力ボックスボーダー |
-  | `ide` | IDE 接続インジケーター |
-  | `fastMode` | Fast モードインジケーター |
-  | `effortUltra` | [ultracode](/docs/ja/model-config#adjust-effort-level) がオンの間、入力ボックスボーダーの `ultracode` タグ。このカラーのオーバーライドは Claude Code v2.1.239 以降で有効になります |
-
-  <h4 id="diff-rendering">
-    Diff レンダリング
-  </h4>
-
-  ファイル編集とレビューで追加および削除されたコードを色付けします。
-
-  | トークン | 制御対象 |
-  | :- | :- |
-  | `diffAdded` | 追加された行の背景 |
-  | `diffRemoved` | 削除された行の背景 |
-  | `diffAddedDimmed` | 編集を拒否した後に表示される薄い diff の追加行の背景 |
-  | `diffRemovedDimmed` | 編集を拒否した後に表示される薄い diff の削除行の背景 |
-  | `diffAddedWord` | 追加された行内のワードレベルハイライト |
-  | `diffRemovedWord` | 削除された行内のワードレベルハイライト |
-
-  <h4 id="fullscreen-mode">
-    フルスクリーンモード
-  </h4>
-
-  Claude Code は、`userMessageBackgroundHover`、`selectionBg`、および `composerSidebarBackground` を[フルスクリーンレンダリングモード](/docs/ja/fullscreen)でのみ使用します。`userMessageBackground`、`bashMessageBackgroundColor`、および `memoryBackgroundColor` は、デフォルトとフルスクリーンレンダラーの両方で描画します。
-
-  | トークン | 制御対象 |
-  | :- | :- |
-  | `userMessageBackground` | トランスクリプト内のメッセージの背後の背景 |
-  | `userMessageBackgroundHover` | ホバーまたは展開されている間のメッセージの背後の背景 |
-  | `bashMessageBackgroundColor` | トランスクリプト内の `!` シェルコマンドエントリの背後の背景 |
-  | `memoryBackgroundColor` | トランスクリプト内の `#` メモリエントリの背後の背景 |
-  | `selectionBg` | マウスで選択されたテキストの背景 |
-  | `composerSidebarBackground` | 会話の横に表示されるパネル（[差分パネル](/docs/ja/fullscreen#watch-your-changes-in-the-diff-panel)や [mod のペイン](/docs/ja/plugins/mods/interface)など）の背景 |
-
-  <h4 id="usage-meter-and-speaker-labels">
-    使用量メーターとスピーカーラベル
-  </h4>
-
-  `/usage` ビューに表示されるバーと、メッセージを Claude のメッセージと区別するラベルを調整します。
-
-  | トークン | 制御対象 |
-  | :- | :- |
-  | `rate_limit_fill` | 使用量メーターの塗りつぶされた部分 |
-  | `rate_limit_empty` | 使用量メーターの塗りつぶされていない部分 |
-  | `briefLabelYou` | メッセージの `You` ラベルのカラー |
-  | `briefLabelClaude` | アシスタントメッセージの `Claude` ラベルのカラー |
-
-  <h4 id="shimmer-variants-and-subagent-colors">
-    シマーバリアントとサブエージェントカラー
-  </h4>
-
-  いくつかのトークンには、スピナーのアニメーション化されたグラデーションで使用される明るいカラーを提供するペアのシマーバリアントがあります。アニメーションが一致しないように見える場合は、ベーストークンと一緒にシマーをオーバーライドします。
-
-  * `claude` と `claudeShimmer`
-  * `warning` と `warningShimmer`
-  * `permission` と `permissionShimmer`
-  * `promptBorder` と `promptBorderShimmer`
-  * `inactive` と `inactiveShimmer`
-  * `fastMode` と `fastModeShimmer`
-
-  各[サブエージェント](/docs/ja/sub-agents)と並列タスクは、トランスクリプト内で区別できるように 8 つの名前付きカラーの 1 つで表示されます。トークン名は `<color>_FOR_SUBAGENTS_ONLY` パターンに従います。ここで `<color>` は `red`、`blue`、`green`、`yellow`、`purple`、`orange`、`pink`、または `cyan` です。これらをオーバーライドして、各名前付きカラーの外観を変更します。たとえば、定義に `color: blue` を持つサブエージェントは、`blue_FOR_SUBAGENTS_ONLY` 値を使用して描画されます。
-
-  Claude Code は、プロンプト入力で [`ultrathink`](/docs/ja/model-config#use-ultrathink-for-one-off-deep-reasoning) キーワードを 7 色の虹グラデーションでレンダリングします。トークン名は `rainbow_<color>` と `rainbow_<color>_shimmer` パターンに従います。ここで `<color>` は `red`、`orange`、`yellow`、`green`、`blue`、`indigo`、または `violet` です。
-</Accordion>
-
-<h2 id="switch-to-fullscreen-rendering">
-  フルスクリーンレンダリングに切り替える
-</h2>
+## フルスクリーンレンダリングに切り替える
 
 [スクリーンリーダーモード](/docs/ja/accessibility)では、このセクションは適用されません。Claude Code は、添付された[バックグラウンドセッション](/docs/ja/agent-view)を除き、常にプレーンなスクロールテキストとしてレンダリングされます。また、他のセッションで `/tui fullscreen` を実行した場合、Claude Code はレンダラーを切り替える代わりに説明を出力します。
 
@@ -335,53 +297,41 @@ Claude Code は `~/.claude/themes/` を監視し、ファイルが追加また�
 
 `/tui fullscreen` を実行して切り替え、設定を保存します。会話はそのまま再起動され、[フルスクリーン開始に失敗](/docs/ja/fullscreen#fullscreen-renderer-didnt-finish-starting)しない限り、今後のセッションはフルスクリーンで開始されます。Claude Code を起動する前に、`CLAUDE_CODE_NO_FLICKER` 環境変数を設定することもできます。
 
-<CodeGroup>
-  ```bash Bash and Zsh theme={null}
-  CLAUDE_CODE_NO_FLICKER=1 claude
-  ```
+```bash Bash and Zsh theme={null}
+CLAUDE_CODE_NO_FLICKER=1 claude
+```
 
-  ```powershell PowerShell theme={null}
-  $env:CLAUDE_CODE_NO_FLICKER = "1"; claude
-  ```
+```powershell PowerShell theme={null}
+$env:CLAUDE_CODE_NO_FLICKER = "1"; claude
+```
 
-  ```json ~/.claude/settings.json theme={null}
-  {
-    "env": {
-      "CLAUDE_CODE_NO_FLICKER": "1"
-    }
+```json ~/.claude/settings.json theme={null}
+{
+  "env": {
+    "CLAUDE_CODE_NO_FLICKER": "1"
   }
-  ```
-</CodeGroup>
+}
+```
 
-<h2 id="cap-response-width-in-wide-terminals">
-  幅広いターミナルでレスポンス幅を制限する
-</h2>
+## 幅広いターミナルでレスポンス幅を制限する
 
 幅広いターミナルでは、Claude のレスポンス内の各行のテキストがウィンドウの全幅に渡ります。代わりに設定した列数でテキストを折り返すには、設定で [`maxProseWidth`](/docs/ja/settings-reference#maxprosewidth) を設定してください。
 
-<h2 id="paste-large-content">
-  大量のコンテンツを貼り付ける
-</h2>
+## 大量のコンテンツを貼り付ける
 
 800 文字以上または 3 行以上をプロンプトに貼り付けると、Claude Code は入力を `[Pasted text #1 +120 lines]` などのプレースホルダーに折りたたんで、入力ボックスが使用可能な状態を保ちます。送信時に完全なコンテンツを送信します。ファイル全体やログが長いなど、非常に大きな入力の場合は、コンテンツをファイルに書き込んで、貼り付けの代わりに Claude にそれを読むよう依頼してください。会話トランスクリプトが読みやすくなり、Claude が後のターンでパスによってファイルを参照できます。VS Code 統合ターミナルは、非常に大きな貼り付けから Claude Code に到達する前に文字をドロップできるため、そこではファイルを使用してください。
 
 貼り付けに [目に見えない Unicode 文字](/docs/ja/interactive-mode#invisible-characters-in-prompts) が含まれている場合、Claude Code は Enter キーを押すときにそれらを削除し、クリーンアップされたプロンプトを入力ボックスに戻して、別の Enter で送信できるようにします。
 
-<h3 id="how-claude-treats-pasted-text">
-  Claude が貼り付けたテキストをどのように処理するか
-</h3>
+### Claude が貼り付けたテキストをどのように処理するか
 
 送信すると、Claude は各 `[Pasted text #N]` プレースホルダーの背後にあるコンテンツを、他の場所から貼り付けたテキストとして表示され、入力したテキストではなく表示されます。Claude には、貼り付けには入力していない指示が含まれる可能性があり、入力したメッセージがそれを要求する場所でのみ指示に従うよう指示されます。[機能フラグを取得](/docs/ja/env-vars#features-that-need-feature-flag-fetching) しないセッションでは、貼り付けはマークされません。
 
-<h3 id="delete-and-restore-a-collapsed-paste">
-  折りたたまれた貼り付けを削除して復元する
-</h3>
+### 折りたたまれた貼り付けを削除して復元する
 
 `Ctrl+W` や `Ctrl+K` などの単語または行ショートカットで削除するか、`df]` などの `f`/`t` モーションを使用した vim 削除で削除し、削除範囲が `[Pasted text #N]` プレースホルダー内に達する場合、Claude Code はプレースホルダー全体を削除します。復元するには、単語または行ショートカットの後に [`Ctrl+Y`](/docs/ja/interactive-mode#text-editing) で削除を貼り付け直すか、vim 削除の後に [`p` NORMAL モード](/docs/ja/interactive-mode#editing-normal-mode) で復元してください。
 
-<h3 id="recall-a-prompt-that-had-pasted-text">
-  貼り付けたテキストを含むプロンプトを呼び出す
-</h3>
+### 貼り付けたテキストを含むプロンプトを呼び出す
 
 Claude Code は折りたたまれたコンテンツを各 `[Pasted text #N]` プレースホルダーの背後に `~/.claude/paste-cache/` に保持するため、[コマンド履歴](/docs/ja/interactive-mode#command-history) からプロンプトを呼び出して再送信すると、完全な貼り付けコンテンツが再度送信され、後のセッションでも含まれます。
 
@@ -390,9 +340,7 @@ Claude Code は折りたたまれたコンテンツを各 `[Pasted text #N]` プ
 * テキストが残っているプレーンプロンプトでは、Claude Code はプレースホルダーを削除して残りのテキストを送信します。
 * [シェルモード](/docs/ja/interactive-mode#shell-mode-with-prefix) コマンドまたは `/` コマンドでは、削除が実行内容を変更する可能性があり、プロンプトの削除が空のままになる場合、Claude Code は送信をキャンセルし、元のテキストを入力に保持します。プレースホルダーはまだ含まれています。プレースホルダーを削除するか、コマンドを編集してから再送信してください。
 
-<h2 id="edit-prompts-with-vim-keybindings">
-  Vim キーバインディングでプロンプトを編集する
-</h2>
+## Vim キーバインディングでプロンプトを編集する
 
 Claude Code には、プロンプト入力用の Vim スタイルの編集モードが含まれています。`/config` → Editor mode から有効にするか、`~/.claude/settings.json` で [`editorMode`](/docs/ja/settings-reference#editormode) を `"vim"` に設定することで有効にできます。Editor mode を `normal` に戻すと、オフになります。
 
@@ -402,9 +350,7 @@ Vim モーションはキーバインディングファイルを通じて再マ�
 
 INSERT モードで Enter キーを押すと、標準的な Vim とは異なり、プロンプトが送信されます。代わりに NORMAL モードで `o` または `O` を使用するか、Ctrl+J を使用して改行を挿入してください。
 
-<h2 id="related-resources">
-  関連リソース
-</h2>
+## 関連リソース
 
 * [インタラクティブモード](/docs/ja/interactive-mode)：完全なキーボードショートカットリファレンスと Vim キーテーブル
 * [キーバインディング](/docs/ja/keybindings)：Enter と Shift+Enter を含む任意の Claude Code ショートカットを再マップ

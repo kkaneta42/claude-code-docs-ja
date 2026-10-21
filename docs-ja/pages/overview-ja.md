@@ -8,223 +8,211 @@
 
 Claude Code は AI を活用したコーディングアシスタントで、機能の構築、バグの修正、開発タスクの自動化を支援します。コードベース全体を理解し、複数のファイルとツール間で作業して目標を達成できます。
 
-<h2 id="get-started">
-  はじめに
-</h2>
+## はじめに
 
 Claude Code は複数のサーフェスで実行されます。ターミナル、IDE 拡張機能、デスクトップアプリ、Web です。下のタブから 1 つを選択してはじめましょう。ほとんどのサーフェスには [Claude サブスクリプション](https://claude.com/pricing?utm_source=claude_code\&utm_medium=docs\&utm_content=overview_pricing)または [Anthropic Console](https://platform.claude.com/) アカウントが必要です。Terminal CLI、VS Code、JetBrains も [サードパーティプロバイダー](/docs/ja/third-party-integrations)をサポートしています。
 
-<Tabs>
-  <Tab title="Terminal">
-    ターミナルで Claude Code を直接操作するための機能豊富な CLI です。ファイルを編集し、コマンドを実行し、コマンドラインからプロジェクト全体を管理できます。
+**Terminal**
 
-    Claude Code をインストールするには、ターミナルを開いてシステムのコマンドを実行してください。ターミナルを使用したことがない場合は、[ターミナルガイド](/docs/ja/terminal-guide)でターミナルを開いてコマンドを貼り付ける方法を確認できます。
+ターミナルで Claude Code を直接操作するための機能豊富な CLI です。ファイルを編集し、コマンドを実行し、コマンドラインからプロジェクト全体を管理できます。
 
-    <Tabs>
-      <Tab title="ネイティブインストール（推奨）">
-        **macOS、Linux、WSL：**
+Claude Code をインストールするには、ターミナルを開いてシステムのコマンドを実行してください。ターミナルを使用したことがない場合は、[ターミナルガイド](/docs/ja/terminal-guide)でターミナルを開いてコマンドを貼り付ける方法を確認できます。
 
-        ```bash theme={null}
-        curl -fsSL https://claude.ai/install.sh | bash
-        ```
+**ネイティブインストール（推奨）**
 
-        Windows では、PowerShell を使用している場合はシェルプロンプトに `PS C:\` と表示され、CMD を使用している場合は `PS` なしで `C:\` と表示されます。
+**macOS、Linux、WSL：**
 
-        **Windows PowerShell：**
+```bash theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null}
+curl -fsSL https://claude.ai/install.sh | bash
+```
 
-        ```powershell theme={null}
-        irm https://claude.ai/install.ps1 | iex
-        ```
+Windows では、PowerShell を使用している場合はシェルプロンプトに `PS C:\` と表示され、CMD を使用している場合は `PS` なしで `C:\` と表示されます。
 
-        **Windows CMD：**
+**Windows PowerShell：**
 
-        ```batch theme={null}
-        curl -fsSL https://claude.ai/install.cmd -o install.cmd && install.cmd && del install.cmd
-        ```
+```powershell theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null}
+irm https://claude.ai/install.ps1 | iex
+```
 
-        インストールコマンドは、Claude Code のダウンロード中に進行状況を表示しません。インストーラーが完了したら、新しいターミナルウィンドウを開いて `claude --version` を実行してください。インストールが正常に完了すると、バージョン番号が表示されます。シェルが `claude` が見つからない、または認識されていないと表示される場合は、インストールディレクトリがまだ PATH に含まれていません。[PATH を修正する](/docs/ja/troubleshoot-install#command-not-found-claude-after-installation)を参照してください。
+**Windows CMD：**
 
-        `The token '&&' is not a valid statement separator` というエラーが表示される場合は、CMD ではなく PowerShell を使用しています。`'irm' is not recognized as an internal or external command` というエラーが表示される場合は、PowerShell ではなく CMD を使用しています。
+```batch theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null}
+curl -fsSL https://claude.ai/install.cmd -o install.cmd && install.cmd && del install.cmd
+```
 
-        インストールコマンドが `syntax error near unexpected token '<'`、`403`、またはその他のエラーで失敗する場合は、[インストールのトラブルシューティング](/docs/ja/troubleshoot-install#find-your-error)を参照して、エラーを修正方法に照合し、代替インストール方法を確認してください。
+インストールコマンドは、Claude Code のダウンロード中に進行状況を表示しません。インストーラーが完了したら、新しいターミナルウィンドウを開いて `claude --version` を実行してください。インストールが正常に完了すると、バージョン番号が表示されます。シェルが `claude` が見つからない、または認識されていないと表示される場合は、インストールディレクトリがまだ PATH に含まれていません。[PATH を修正する](/docs/ja/troubleshoot-install#command-not-found-claude-after-installation)を参照してください。
 
-        [Git for Windows](https://git-scm.com/downloads/win) は、Claude Code が Bash ツールを使用できるようにネイティブ Windows で推奨されます。Git for Windows がインストールされていない場合、Claude Code はシェルツールとして PowerShell を代わりに使用します。WSL セットアップは Git for Windows を必要としません。
+`The token '&&' is not a valid statement separator` というエラーが表示される場合は、CMD ではなく PowerShell を使用しています。`'irm' is not recognized as an internal or external command` というエラーが表示される場合は、PowerShell ではなく CMD を使用しています。
 
-        <Info>
-          ネイティブインストールは、最新バージョンに保つために自動的にバックグラウンドで更新されます。
-        </Info>
-      </Tab>
+インストールコマンドが `syntax error near unexpected token '<'`、`403`、またはその他のエラーで失敗する場合は、[インストールのトラブルシューティング](/docs/ja/troubleshoot-install#find-your-error)を参照して、エラーを修正方法に照合し、代替インストール方法を確認してください。
 
-      <Tab title="Homebrew">
-        ```bash theme={null}
-        brew install --cask claude-code
-        ```
+[Git for Windows](https://git-scm.com/downloads/win) は、Claude Code が Bash ツールを使用できるようにネイティブ Windows で推奨されます。Git for Windows がインストールされていない場合、Claude Code はシェルツールとして PowerShell を代わりに使用します。WSL セットアップは Git for Windows を必要としません。
 
-        Homebrew は 2 つの cask を提供しています。`claude-code` は安定リリースチャネルを追跡しており、通常は約 1 週間遅れており、大きな回帰を伴うリリースをスキップします。`claude-code@latest` は最新チャネルを追跡し、新しいバージョンが出荷されるとすぐに受け取ります。
+> [!NOTE]
+>
+> ネイティブインストールは、最新バージョンに保つために自動的にバックグラウンドで更新されます。
 
-        <Info>
-          Homebrew インストールは自動更新されません。インストールした cask に応じて、`brew upgrade claude-code` または `brew upgrade claude-code@latest` を実行して、最新の機能とセキュリティ修正を取得してください。
-        </Info>
-      </Tab>
+**Homebrew**
 
-      <Tab title="WinGet">
-        ```powershell theme={null}
-        winget install Anthropic.ClaudeCode
-        ```
+```bash theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null}
+brew install --cask claude-code
+```
 
-        <Info>
-          WinGet インストールは自動更新されません。最新の機能とセキュリティ修正を取得するために、定期的に `winget upgrade Anthropic.ClaudeCode` を実行してください。
-        </Info>
-      </Tab>
-    </Tabs>
+Homebrew は 2 つの cask を提供しています。`claude-code` は安定リリースチャネルを追跡しており、通常は約 1 週間遅れており、大きな回帰を伴うリリースをスキップします。`claude-code@latest` は最新チャネルを追跡し、新しいバージョンが出荷されるとすぐに受け取ります。
 
-    また、Debian、Fedora、RHEL、Alpine で [apt、dnf、または apk](/docs/ja/setup#install-with-linux-package-managers) を使用してインストールすることもできます。
+> [!NOTE]
+>
+> Homebrew インストールは自動更新されません。インストールした cask に応じて、`brew upgrade claude-code` または `brew upgrade claude-code@latest` を実行して、最新の機能とセキュリティ修正を取得してください。
 
-    その後、任意のプロジェクトで Claude Code を開始します。`your-project` をマシン上のプロジェクトディレクトリへのパスに置き換えてください：
+**WinGet**
 
-    ```bash theme={null}
-    cd your-project
-    claude
-    ```
+```powershell theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null}
+winget install Anthropic.ClaudeCode
+```
 
-    初回使用時に、Claude Code からログインするよう促されます。`ANTHROPIC_API_KEY` 環境変数を設定しており、そのキーを使用するかどうか Claude Code に尋ねられたときに承認すると、Claude Code はログインプロンプトをスキップします。[クイックスタートに進む →](/docs/ja/quickstart)
+> [!NOTE]
+>
+> WinGet インストールは自動更新されません。最新の機能とセキュリティ修正を取得するために、定期的に `winget upgrade Anthropic.ClaudeCode` を実行してください。
 
-    <Tip>
-      インストールオプション、手動更新、またはアンインストール手順については [高度なセットアップ](/docs/ja/setup) を参照してください。問題が発生した場合は [インストールのトラブルシューティング](/docs/ja/troubleshoot-install) にアクセスしてください。
-    </Tip>
-  </Tab>
+また、Debian、Fedora、RHEL、Alpine で [apt、dnf、または apk](/docs/ja/setup#install-with-linux-package-managers) を使用してインストールすることもできます。
 
-  <Tab title="VS Code">
-    VS Code 拡張機能は、インラインの差分表示、@-メンション、プラン確認、会話履歴をエディター内で直接提供します。
+その後、任意のプロジェクトで Claude Code を開始します。`your-project` をマシン上のプロジェクトディレクトリへのパスに置き換えてください：
 
-    * [VS Code 用にインストール](vscode:extension/anthropic.claude-code)
-    * [Cursor 用にインストール](cursor:extension/anthropic.claude-code)
+```bash theme={null}
+cd your-project
+claude
+```
 
-    または、拡張機能ビュー（Mac では `Cmd+Shift+X`、Windows/Linux では `Ctrl+Shift+X`）で「Claude Code」を検索してください。インストール後、コマンドパレット（`Cmd+Shift+P` / `Ctrl+Shift+P`）を開き、「Claude Code」と入力して、**新しいタブで開く** を選択します。
+初回使用時に、Claude Code からログインするよう促されます。`ANTHROPIC_API_KEY` 環境変数を設定しており、そのキーを使用するかどうか Claude Code に尋ねられたときに承認すると、Claude Code はログインプロンプトをスキップします。[クイックスタートに進む →](/docs/ja/quickstart)
 
-    [VS Code ではじめる →](/docs/ja/vs-code#get-started)
-  </Tab>
+> [!TIP]
+>
+> インストールオプション、手動更新、またはアンインストール手順については [高度なセットアップ](/docs/ja/setup) を参照してください。問題が発生した場合は [インストールのトラブルシューティング](/docs/ja/troubleshoot-install) にアクセスしてください。
 
-  <Tab title="Desktop app">
-    IDE またはターミナルの外で Claude Code を実行するためのスタンドアロンアプリです。差分を視覚的に確認し、複数のセッションを並行実行し、定期的なタスクをスケジュール設定し、クラウドセッションを開始できます。
+**VS Code**
 
-    ダウンロードしてインストール：
+VS Code 拡張機能は、インラインの差分表示、@-メンション、プラン確認、会話履歴をエディター内で直接提供します。
 
-    * [macOS](https://claude.ai/api/desktop/darwin/universal/dmg/latest/redirect?utm_source=claude_code\&utm_medium=docs)（Intel および Apple Silicon）
-    * [Windows](https://claude.ai/api/desktop/win32/x64/setup/latest/redirect?utm_source=claude_code\&utm_medium=docs)（x64）
-    * [Windows ARM64](https://claude.ai/api/desktop/win32/arm64/setup/latest/redirect?utm_source=claude_code\&utm_medium=docs)
-    * Ubuntu または Debian では、アプリはベータ版です。[Linux インストール手順](/docs/ja/desktop-linux)に従って apt でインストールしてください。
+* [VS Code 用にインストール](vscode:extension/anthropic.claude-code)
+* [Cursor 用にインストール](cursor:extension/anthropic.claude-code)
 
-    インストール後、Claude を起動し、サインインして、**Code** タブをクリックしてコーディングを開始します。アプリには Claude Code が含まれているため、CLI を別途インストールする必要はありません。[有料サブスクリプション](https://claude.com/pricing?utm_source=claude_code\&utm_medium=docs\&utm_content=overview_desktop_pricing)が必要です。
+または、拡張機能ビュー（Mac では `Cmd+Shift+X`、Windows/Linux では `Ctrl+Shift+X`）で「Claude Code」を検索してください。インストール後、コマンドパレット（`Cmd+Shift+P` / `Ctrl+Shift+P`）を開き、「Claude Code」と入力して、**新しいタブで開く** を選択します。
 
-    [デスクトップアプリについて詳しく →](/docs/ja/desktop-quickstart)
-  </Tab>
+[VS Code ではじめる →](/docs/ja/vs-code#get-started)
 
-  <Tab title="Web">
-    ローカルセットアップなしでブラウザで Claude Code を実行します。長時間実行されるタスクを開始して完了を待つ、ローカルにないリポジトリで作業する、または複数のタスクを並行実行できます。長期的な作業の場合は、[プロジェクト](/docs/ja/claude-projects)を作成して、Claude に複数のセッションを調整させることができます。デスクトップブラウザと [iOS および Android 用 Claude アプリ](/docs/ja/mobile)で利用できます。
+**Desktop app**
 
-    [claude.ai/code](https://claude.ai/code) でコーディングを開始します。
+IDE またはターミナルの外で Claude Code を実行するためのスタンドアロンアプリです。差分を視覚的に確認し、複数のセッションを並行実行し、定期的なタスクをスケジュール設定し、クラウドセッションを開始できます。
 
-    [Web ではじめる →](/docs/ja/web-quickstart)
-  </Tab>
+ダウンロードしてインストール：
 
-  <Tab title="JetBrains">
-    IntelliJ IDEA、PyCharm、WebStorm、その他の JetBrains IDE 用のプラグインで、インタラクティブな差分表示と選択コンテキスト共有機能があります。
+* [macOS](https://claude.ai/api/desktop/darwin/universal/dmg/latest/redirect?utm_source=claude_code\&utm_medium=docs)（Intel および Apple Silicon）
+* [Windows](https://claude.ai/api/desktop/win32/x64/setup/latest/redirect?utm_source=claude_code\&utm_medium=docs)（x64）
+* [Windows ARM64](https://claude.ai/api/desktop/win32/arm64/setup/latest/redirect?utm_source=claude_code\&utm_medium=docs)
+* Ubuntu または Debian では、アプリはベータ版です。[Linux インストール手順](/docs/ja/desktop-linux)に従って apt でインストールしてください。
 
-    JetBrains Marketplace から [Claude Code プラグイン](https://plugins.jetbrains.com/plugin/27310-claude-code-beta-) をインストールして IDE を再起動します。プラグインには Claude Code CLI が必要で、別途インストールしてください。[JetBrains セットアップステップ](/docs/ja/jetbrains#installation)を参照してください。
+インストール後、Claude を起動し、サインインして、**Code** タブをクリックしてコーディングを開始します。アプリには Claude Code が含まれているため、CLI を別途インストールする必要はありません。[有料サブスクリプション](https://claude.com/pricing?utm_source=claude_code\&utm_medium=docs\&utm_content=overview_desktop_pricing)が必要です。
 
-    [JetBrains ではじめる →](/docs/ja/jetbrains)
-  </Tab>
-</Tabs>
+[デスクトップアプリについて詳しく →](/docs/ja/desktop-quickstart)
 
-<h2 id="what-you-can-do">
-  できること
-</h2>
+**Web**
+
+ローカルセットアップなしでブラウザで Claude Code を実行します。長時間実行されるタスクを開始して完了を待つ、ローカルにないリポジトリで作業する、または複数のタスクを並行実行できます。長期的な作業の場合は、[プロジェクト](/docs/ja/claude-projects)を作成して、Claude に複数のセッションを調整させることができます。デスクトップブラウザと [iOS および Android 用 Claude アプリ](/docs/ja/mobile)で利用できます。
+
+[claude.ai/code](https://claude.ai/code) でコーディングを開始します。
+
+[Web ではじめる →](/docs/ja/web-quickstart)
+
+**JetBrains**
+
+IntelliJ IDEA、PyCharm、WebStorm、その他の JetBrains IDE 用のプラグインで、インタラクティブな差分表示と選択コンテキスト共有機能があります。
+
+JetBrains Marketplace から [Claude Code プラグイン](https://plugins.jetbrains.com/plugin/27310-claude-code-beta-) をインストールして IDE を再起動します。プラグインには Claude Code CLI が必要で、別途インストールしてください。[JetBrains セットアップステップ](/docs/ja/jetbrains#installation)を参照してください。
+
+[JetBrains ではじめる →](/docs/ja/jetbrains)
+
+## できること
 
 Claude Code を使用できるいくつかの方法を紹介します：
 
-<AccordionGroup>
-  <Accordion title="先延ばしにしている作業を自動化する" icon="wand-magic-sparkles">
-    Claude Code は、1 日を費やす退屈なタスクを処理します：テストされていないコードのテスト作成、プロジェクト全体のリントエラー修正、マージコンフリクト解決、依存関係の更新、リリースノートの作成。
+> **先延ばしにしている作業を自動化する**
+>
+> Claude Code は、1 日を費やす退屈なタスクを処理します：テストされていないコードのテスト作成、プロジェクト全体のリントエラー修正、マージコンフリクト解決、依存関係の更新、リリースノートの作成。
+>
+> ```bash theme={null}
+> claude "write tests for the auth module, run them, and fix any failures"
+> ```
 
-    ```bash theme={null}
-    claude "write tests for the auth module, run them, and fix any failures"
-    ```
-  </Accordion>
+> **機能を構築し、バグを修正する**
+>
+> プレーンテキストで実現したいことを説明します。Claude Code はアプローチを計画し、複数のファイル間でコードを作成し、動作を検証します。
+>
+> バグの場合は、エラーメッセージを貼り付けるか、症状を説明します。Claude Code はコードベース全体で問題をトレースし、根本原因を特定し、修正を実装します。詳細な例については [一般的なワークフロー](/docs/ja/common-workflows) を参照してください。
 
-  <Accordion title="機能を構築し、バグを修正する" icon="hammer">
-    プレーンテキストで実現したいことを説明します。Claude Code はアプローチを計画し、複数のファイル間でコードを作成し、動作を検証します。
+> **コミットとプルリクエストを作成する**
+>
+> Claude Code は git と直接連携します。変更をステージングし、コミットメッセージを作成し、ブランチを作成し、プルリクエストを開きます。
+>
+> ```bash theme={null}
+> claude "commit my changes with a descriptive message"
+> ```
+>
+> CI では、[GitHub Actions](/docs/ja/github-actions) または [GitLab CI/CD](/docs/ja/gitlab-ci-cd) でコードレビューと問題トリアージを自動化できます。
 
-    バグの場合は、エラーメッセージを貼り付けるか、症状を説明します。Claude Code はコードベース全体で問題をトレースし、根本原因を特定し、修正を実装します。詳細な例については [一般的なワークフロー](/docs/ja/common-workflows) を参照してください。
-  </Accordion>
+> **MCP でツールを接続する**
+>
+> [Model Context Protocol（MCP）](/docs/ja/mcp) は、AI ツールを外部データソースに接続するためのオープンスタンダードです。MCP を使用すると、Claude Code は Google Drive のデザインドキュメントを読み取り、Jira のチケットを更新し、Slack からデータをプルするか、独自のカスタムツーリングを使用できます。[MCP クイックスタート](/docs/ja/mcp-quickstart) は、最初のサーバーをエンドツーエンドで接続します。
 
-  <Accordion title="コミットとプルリクエストを作成する" icon="code-branch">
-    Claude Code は git と直接連携します。変更をステージングし、コミットメッセージを作成し、ブランチを作成し、プルリクエストを開きます。
+> **指示、スキル、フックでカスタマイズする**
+>
+> [`CLAUDE.md`](/docs/ja/memory) はプロジェクトルートに追加するマークダウンファイルで、Claude Code はすべてのセッションの開始時に読み取ります。コーディング標準、アーキテクチャの決定、推奨ライブラリ、レビューチェックリストを設定するために使用します。リポジトリに他のコーディングエージェント用の `AGENTS.md` が既にある場合、Claude Code は `CLAUDE.md` の代わりに [それを読み取ることができます](/docs/ja/memory#agents-md)。Claude は作業しながら [自動メモリ](/docs/ja/memory#auto-memory) も構築し、ユーザーが何も書かなくてもセッション間で学習内容を保存します。
+>
+> [スキル](/docs/ja/skills) を作成して、チームが共有できる反復可能なワークフローをパッケージ化します（`/review-pr` や `/deploy-staging` など）。
+>
+> [フック](/docs/ja/hooks) を使用すると、ファイル編集後の自動フォーマットやコミット前のリント実行など、Claude Code アクション前後にシェルコマンドを実行できます。
 
-    ```bash theme={null}
-    claude "commit my changes with a descriptive message"
-    ```
+> **エージェントを並行実行し、カスタムエージェントを構築する**
+>
+> [複数の Claude Code エージェント](/docs/ja/sub-agents) を生成して、タスクの異なる部分に同時に取り組みます。リードエージェントが作業を調整し、サブタスクを割り当て、結果をマージします。
+>
+> 複数の完全なセッションを並行して実行し、1 つの画面から監視するには、[バックグラウンドエージェント](/docs/ja/agent-view) を使用します。完全にカスタムなワークフローの場合、[Agent SDK](/docs/ja/agent-sdk/overview) を使用すると、Claude Code のツールと機能を活用した独自のエージェントを構築でき、オーケストレーション、ツールアクセス、権限を完全に制御できます。
 
-    CI では、[GitHub Actions](/docs/ja/github-actions) または [GitLab CI/CD](/docs/ja/gitlab-ci-cd) でコードレビューと問題トリアージを自動化できます。
-  </Accordion>
+> **CLI でパイプ、スクリプト、自動化する**
+>
+> Claude Code は構成可能で Unix 哲学に従います。ログをパイプで渡し、CI で実行するか、他のツールと連鎖させます：
+>
+> ```bash theme={null}
+> # 最近のログ出力を分析する
+> tail -200 app.log | claude -p "Slack me if you see any anomalies"
+>
+> # CI で翻訳を自動化する
+> claude -p "translate new strings into French and raise a PR for review"
+>
+> # ファイル全体でバルク操作
+> git diff main --name-only | claude -p "review these changed files for security issues"
+> ```
+>
+> すべてのコマンドとフラグのセットについては [CLI リファレンス](/docs/ja/cli-reference) を参照してください。
 
-  <Accordion title="MCP でツールを接続する" icon="plug">
-    [Model Context Protocol（MCP）](/docs/ja/mcp) は、AI ツールを外部データソースに接続するためのオープンスタンダードです。MCP を使用すると、Claude Code は Google Drive のデザインドキュメントを読み取り、Jira のチケットを更新し、Slack からデータをプルするか、独自のカスタムツーリングを使用できます。[MCP クイックスタート](/docs/ja/mcp-quickstart) は、最初のサーバーをエンドツーエンドで接続します。
-  </Accordion>
+> **定期的なタスクをスケジュール設定する**
+>
+> 繰り返される作業を自動化するためにスケジュールで Claude を実行します：朝の PR レビュー、夜間の CI 障害分析、週次の依存関係監査、または PR マージ後のドキュメント同期。
+>
+> * [クラウドスケジュールタスク](/docs/ja/routines)（旧称ルーティン）はクラウドで実行されるため、コンピューターがオフの場合でも実行し続けます。API 呼び出しまたは GitHub イベントでトリガーすることもできます。Web、デスクトップアプリ、または CLI で `/schedule` を実行して作成します。
+> * [デスクトップスケジュールタスク](/docs/ja/desktop-scheduled-tasks) はマシン上で実行され、ローカルファイルとツールに直接アクセスできます
+> * [`/loop`](/docs/ja/scheduled-tasks) は CLI セッション内でプロンプトを繰り返し、クイックポーリングを行います
 
-  <Accordion title="指示、スキル、フックでカスタマイズする" icon="sliders">
-    [`CLAUDE.md`](/docs/ja/memory) はプロジェクトルートに追加するマークダウンファイルで、Claude Code はすべてのセッションの開始時に読み取ります。コーディング標準、アーキテクチャの決定、推奨ライブラリ、レビューチェックリストを設定するために使用します。リポジトリに他のコーディングエージェント用の `AGENTS.md` が既にある場合、Claude Code は `CLAUDE.md` の代わりに [それを読み取ることができます](/docs/ja/memory#agents-md)。Claude は作業しながら [自動メモリ](/docs/ja/memory#auto-memory) も構築し、ユーザーが何も書かなくてもセッション間で学習内容を保存します。
+> **どこからでも作業する**
+>
+> セッションは単一のサーフェスに限定されません。コンテキストが変わるにつれて、環境間で作業を移動します：
+>
+> * デスクから離れて、電話または [リモートコントロール](/docs/ja/remote-control) を使用した任意のブラウザから作業を続けます
+> * [Dispatch](/docs/ja/desktop#sessions-from-dispatch) にメッセージを送信して、電話からタスクを送信し、作成されたデスクトップセッションを開きます
+> * [Web](/docs/ja/claude-code-on-the-web) または [Claude モバイルアプリ](/docs/ja/mobile) で長時間実行されるタスクを開始し、`claude --teleport` でターミナルにプルします。Teleport には claude.ai サブスクリプションが必要です。
+> * `/desktop` を実行して、現在のターミナルセッションを [デスクトップアプリ](/docs/ja/desktop) に続行し、差分を視覚的に確認できます。`/desktop` ハンドオフには claude.ai サブスクリプションが必要です。macOS と x64 Windows で利用可能です。
+> * チームチャットからタスクをルーティング：[Slack](/docs/ja/slack) で `@Claude` にメンションしてバグレポートを送信し、プルリクエストを取得します
 
-    [スキル](/docs/ja/skills) を作成して、チームが共有できる反復可能なワークフローをパッケージ化します（`/review-pr` や `/deploy-staging` など）。
-
-    [フック](/docs/ja/hooks) を使用すると、ファイル編集後の自動フォーマットやコミット前のリント実行など、Claude Code アクション前後にシェルコマンドを実行できます。
-  </Accordion>
-
-  <Accordion title="エージェントを並行実行し、カスタムエージェントを構築する" icon="users">
-    [複数の Claude Code エージェント](/docs/ja/sub-agents) を生成して、タスクの異なる部分に同時に取り組みます。リードエージェントが作業を調整し、サブタスクを割り当て、結果をマージします。
-
-    複数の完全なセッションを並行して実行し、1 つの画面から監視するには、[バックグラウンドエージェント](/docs/ja/agent-view) を使用します。完全にカスタムなワークフローの場合、[Agent SDK](/docs/ja/agent-sdk/overview) を使用すると、Claude Code のツールと機能を活用した独自のエージェントを構築でき、オーケストレーション、ツールアクセス、権限を完全に制御できます。
-  </Accordion>
-
-  <Accordion title="CLI でパイプ、スクリプト、自動化する" icon="terminal">
-    Claude Code は構成可能で Unix 哲学に従います。ログをパイプで渡し、CI で実行するか、他のツールと連鎖させます：
-
-    ```bash theme={null}
-    # 最近のログ出力を分析する
-    tail -200 app.log | claude -p "Slack me if you see any anomalies"
-
-    # CI で翻訳を自動化する
-    claude -p "translate new strings into French and raise a PR for review"
-
-    # ファイル全体でバルク操作
-    git diff main --name-only | claude -p "review these changed files for security issues"
-    ```
-
-    すべてのコマンドとフラグのセットについては [CLI リファレンス](/docs/ja/cli-reference) を参照してください。
-  </Accordion>
-
-  <Accordion title="定期的なタスクをスケジュール設定する" icon="clock">
-    繰り返される作業を自動化するためにスケジュールで Claude を実行します：朝の PR レビュー、夜間の CI 障害分析、週次の依存関係監査、または PR マージ後のドキュメント同期。
-
-    * [ルーティン](/docs/ja/routines) はクラウドで実行されるため、コンピューターがオフの場合でも実行し続けます。API 呼び出しまたは GitHub イベントでトリガーすることもできます。Web、デスクトップアプリ、または CLI で `/schedule` を実行して作成します。
-    * [デスクトップスケジュール済みタスク](/docs/ja/desktop-scheduled-tasks) はマシン上で実行され、ローカルファイルとツールに直接アクセスできます
-    * [`/loop`](/docs/ja/scheduled-tasks) は CLI セッション内でプロンプトを繰り返し、クイックポーリングを行います
-  </Accordion>
-
-  <Accordion title="どこからでも作業する" icon="globe">
-    セッションは単一のサーフェスに限定されません。コンテキストが変わるにつれて、環境間で作業を移動します：
-
-    * デスクから離れて、電話または [リモートコントロール](/docs/ja/remote-control) を使用した任意のブラウザから作業を続けます
-    * [Dispatch](/docs/ja/desktop#sessions-from-dispatch) にメッセージを送信して、電話からタスクを送信し、作成されたデスクトップセッションを開きます
-    * [Web](/docs/ja/claude-code-on-the-web) または [Claude モバイルアプリ](/docs/ja/mobile) で長時間実行されるタスクを開始し、`claude --teleport` でターミナルにプルします。Teleport には claude.ai サブスクリプションが必要です。
-    * `/desktop` を実行して、現在のターミナルセッションを [デスクトップアプリ](/docs/ja/desktop) に続行し、差分を視覚的に確認できます。`/desktop` ハンドオフには claude.ai サブスクリプションが必要です。macOS と x64 Windows で利用可能です。
-    * チームチャットからタスクをルーティング：[Slack](/docs/ja/slack) で `@Claude` にメンションしてバグレポートを送信し、プルリクエストを取得します
-  </Accordion>
-</AccordionGroup>
-
-<h2 id="use-claude-code-everywhere">
-  Claude Code をどこでも使用する
-</h2>
+## Claude Code をどこでも使用する
 
 各 [サーフェス](/docs/ja/glossary#surface) は同じ基盤となる Claude Code エンジンに接続するため、repo の CLAUDE.md ファイル、設定、MCP サーバーはすべてのサーフェスで機能します。
 
@@ -235,16 +223,14 @@ Claude Code を使用できるいくつかの方法を紹介します：
 | ローカルセッションを電話または別のデバイスから続行する | [リモートコントロール](/docs/ja/remote-control) |
 | Telegram、Discord、iMessage、または独自の webhook からセッションにイベントをプッシュする | [チャネル](/docs/ja/channels) |
 | ローカルでタスクを開始し、モバイルで続行する | [`claude --cloud`](/docs/ja/claude-code-on-the-web#from-terminal-to-cloud)、その後 [Claude モバイルアプリ](/docs/ja/mobile) |
-| 定期的なスケジュールで Claude を実行する | [ルーティン](/docs/ja/routines) または [デスクトップスケジュール済みタスク](/docs/ja/desktop-scheduled-tasks) |
+| 定期的なスケジュールで Claude を実行する | [クラウドスケジュールタスク](/docs/ja/routines) または [Desktop スケジュールタスク](/docs/ja/desktop-scheduled-tasks) |
 | PR レビューと問題トリアージを自動化する | [GitHub Actions](/docs/ja/github-actions) または [GitLab CI/CD](/docs/ja/gitlab-ci-cd) |
 | すべての PR で自動コードレビューを取得する | [GitHub Code Review](/docs/ja/code-review) |
 | Slack からプルリクエストへバグレポートをルーティングする | [Slack](/docs/ja/slack) |
 | ライブ Web アプリケーションをデバッグする | [Chrome](/docs/ja/chrome) |
 | 独自のワークフロー用のカスタムエージェントを構築する | [Agent SDK](/docs/ja/agent-sdk/overview) |
 
-<h2 id="next-steps">
-  次のステップ
-</h2>
+## 次のステップ
 
 Claude Code をインストールしたら、これらのガイドでさらに詳しく学べます。
 

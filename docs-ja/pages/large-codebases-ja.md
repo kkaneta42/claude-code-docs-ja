@@ -10,15 +10,11 @@
 
 このガイドでは、個々の開発者とエンジニアリングチームが Claude をタスクが触れるコードベースの部分にスコープする方法を示します。各セクションでは、設定が個人用マシンに固有か、リポジトリにコミットされるかを記載しています。
 
-<h2 id="what-this-guide-covers">
-  このガイドで説明する内容
-</h2>
+## このガイドで説明する内容
 
 [下の表](#settings-on-this-page)は各設定とその目的を一覧表示しています。[その後のファイルツリー](#the-example-monorepo)は、このページのすべてのコード例が参照するサンプルモノレポです。
 
-<h3 id="settings-on-this-page">
-  このページの設定
-</h3>
+### このページの設定
 
 以下の各設定は独立しています。相互に置き換わるのではなく層状に重なるため、リポジトリに適したものを適用してください。[Claude を開始する場所を選択](#choose-where-to-start-claude)は設定ファイルが存在する場所を決定するため、最初にそれを読んでください。[すべてをまとめる](#put-it-together)はそれらすべてを組み合わせたものを示しています。
 
@@ -33,13 +29,11 @@
 | 関連する場合にのみ読み込まれる 1 つの領域に固有の手順を Claude に提供する | ディレクトリごとの [スキル](#add-per-directory-skills) |
 | 多くのディレクトリごとの CLAUDE.md ファイルを、すべてがインストールする 1 つの規約セットに置き換える | 内部マーケットプレイスの [プラグイン](#centralize-conventions-when-layering-stops-scaling) |
 
-<Tip>
-  [サブエージェントで調査を実行する](/docs/ja/best-practices#use-subagents-for-investigation)など、任意のリポジトリでコンテキストを小さく保つワークフロー技術については、[Claude Code のベストプラクティス](/docs/ja/best-practices)を参照してください。組織内のすべての開発者にベースライン設定をロールアウトするには、[組織向けに Claude Code をセットアップする](/docs/ja/admin-setup)を参照してください。
-</Tip>
+> [!TIP]
+>
+> [サブエージェントで調査を実行する](/docs/ja/best-practices#use-subagents-for-investigation)など、任意のリポジトリでコンテキストを小さく保つワークフロー技術については、[Claude Code のベストプラクティス](/docs/ja/best-practices)を参照してください。組織内のすべての開発者にベースライン設定をロールアウトするには、[組織向けに Claude Code をセットアップする](/docs/ja/admin-setup)を参照してください。
 
-<h3 id="the-example-monorepo">
-  サンプルモノレポ
-</h3>
+### サンプルモノレポ
 
 このページ全体の例は、3 つのパッケージを持つモノレポを参照しています。同じパターンは大規模シングルツリーコードベースで機能します。例が `packages/api/` を使用する場合は、`src/backend/` や `lib/core/` などの独自のサブシステムディレクトリに置き換えてください。
 
@@ -60,9 +54,7 @@ monorepo/
       src/
 ```
 
-<h2 id="choose-where-to-start-claude">
-  Claude を起動する場所を選ぶ
-</h2>
+## Claude を起動する場所を選ぶ
 
 `claude` を起動する場所によって、追加の権限付与なしで Claude が読み取りや編集を行えるファイル、起動時にコンテキストへ読み込まれる CLAUDE.md ファイル、適用されるプロジェクト設定が決まります。
 
@@ -75,9 +67,7 @@ monorepo/
 
 以下の各セクションでは、その設定ファイルをリポジトリのルートに置くべきか、起動するサブディレクトリに置くべきか、またコミットするかローカルに保持するかを示しています。
 
-<h2 id="layer-claude-md-files-by-directory">
-  ディレクトリごとに CLAUDE.md ファイルを層状にする
-</h2>
+## ディレクトリごとに CLAUDE.md ファイルを層状にする
 
 大規模コードベースでは、リポジトリルートの単一の CLAUDE.md は、すべてのサブシステムの規約をカバーするために成長する傾向があり、現在のタスクに関連しない命令でコンテキストを消費するか、有用であるには一般的すぎます。命令をディレクトリごとのファイルに分割すると、Claude はリポジトリ全体のルールと、作業中のコードの規約のみを読み込みます。
 
@@ -116,9 +106,7 @@ Knex クエリビルダーでデータベースクエリを記述します。ル
 
 CLAUDE.md ファイルがどのように読み込まれ、相互作用するかについての詳細は、[メモリとプロジェクト命令](/docs/ja/memory)を参照してください。
 
-<h3 id="choose-between-per-directory-claude-md-and-path-scoped-rules">
-  ディレクトリごとの CLAUDE.md とパススコープルールの選択
-</h3>
+### ディレクトリごとの CLAUDE.md とパススコープルールの選択
 
 ディレクトリごとの `CLAUDE.md` ファイルと [パススコープルール](/docs/ja/memory#path-specific-rules)の下の `.claude/rules/` の両方により、ツリーの一部に命令をターゲットできます。ファイルが存在する場所と読み込まれるタイミングが異なります。
 
@@ -129,9 +117,7 @@ CLAUDE.md ファイルがどのように読み込まれ、相互作用するか�
 
 スキルもカバーする比較については、[同様の機能を比較](/docs/ja/features-overview#compare-similar-features)を参照してください。
 
-<h3 id="exclude-irrelevant-claude-md-files">
-  関連のない CLAUDE.md ファイルを除外する
-</h3>
+### 関連のない CLAUDE.md ファイルを除外する
 
 リポジトリルートから Claude を開始すると、各サブディレクトリの CLAUDE.md はセッション中に[オンデマンドで読み込まれる](/docs/ja/memory#how-claude-md-files-load)場合があります。`claudeMdExcludes` 設定は特定のファイルをパスまたはグロブパターンでスキップして、読み込まれないようにします。
 
@@ -159,15 +145,11 @@ CLAUDE.md ファイルがどのように読み込まれ、相互作用するか�
 
 完全な除外ドキュメントについては、[特定の CLAUDE.md ファイルを除外](/docs/ja/memory#exclude-specific-claude-md-files)を参照してください。
 
-<h2 id="reduce-what-claude-reads">
-  Claude が読む内容を削減する
-</h2>
+## Claude が読む内容を削減する
 
 命令は Claude のコンテキストに入るもののほんの一部です。ファイル読み取りは、コードベースとともに成長するもう 1 つのコストです。以下の設定は関連のないパスの読み取りをブロックし、徹底的なファイルスキャンを言語サーバーのルックアップに置き換えます。
 
-<h3 id="block-reads-of-generated-and-vendored-code">
-  生成されたコードとベンダーコードの読み取りをブロックする
-</h3>
+### 生成されたコードとベンダーコードの読み取りをブロックする
 
 Claude のコンテンツ検索はデフォルトで `.gitignore` を尊重するため、`node_modules/`、`dist/`、`build/` などのそこにリストされているパスは、追加の設定なしで検索結果から除外されます。
 
@@ -198,9 +180,7 @@ Claude のコンテンツ検索はデフォルトで `.gitignore` を尊重す�
 
 拒否ルールは、ファイルを自分で開くサブプロセスをカバーしません。完全なパターン構文については、[Read および Edit 権限ルール](/docs/ja/permissions#read-and-edit)を参照してください。
 
-<h3 id="reduce-file-reads-with-code-intelligence">
-  コード インテリジェンスでファイル読み取りを削減する
-</h3>
+### コード インテリジェンスでファイル読み取りを削減する
 
 大規模コードベースでは、シンボルが定義または使用されている場所を見つけることは、多くのファイル読み取りと grep 呼び出しを消費する可能性があります。[コード インテリジェンス プラグイン](/docs/ja/plugins/code-intelligence)は Claude を言語サーバーに接続して、ツリーをスキャンする代わりに、定義にジャンプしたり、参照を見つけたり、型エラーを直接表示したりできます。
 
@@ -221,15 +201,11 @@ Claude のコンテンツ検索はデフォルトで `.gitignore` を尊重す�
 
 これは上記の `claudeMdExcludes` と `Read` 拒否ルールとよく組み合わされます。これらは関連のないコンテンツをコンテキストから除外し、コード インテリジェンスは Claude が定義を見つけるために残りを読むのを防ぎます。
 
-<h2 id="scope-worktrees-and-file-access">
-  ワークツリーとファイルアクセスをスコープする
-</h2>
+## ワークツリーとファイルアクセスをスコープする
 
 これらの設定は、ワークツリーでディスク上にあるもの、および開始ポイントを超えて Claude が読み取り、書き込みできるディレクトリを制御します。
 
-<h3 id="check-out-only-the-directories-you-need">
-  必要なディレクトリのみをチェックアウトする
-</h3>
+### 必要なディレクトリのみをチェックアウトする
 
 `--worktree` フラグは新しい git ワークツリーでセッションを開始して、変更がメインチェックアウトから分離されたままになるようにします。デフォルトではリポジトリ全体をチェックアウトします。大規模リポジトリでは、`worktree.sparsePaths` 設定は git sparse-checkout を使用して、リストされたディレクトリとルートレベルのファイルのみをディスクに書き込むため、ワークツリーはより速く開始し、より少ないスペースを使用します。
 
@@ -278,15 +254,13 @@ Sparse checkout では、sparse worktree が存在する間、git がリポジ�
 
 これは各ワークツリーの `node_modules/` からメインリポジトリのコピーへのシンボリックリンクを作成し、ディスク上で複製するのではなく。
 
-<Note>
-  `sparsePaths` と `symlinkDirectories` 設定は、ワークツリーが作成される前に開始ディレクトリから読み込まれます。作成後、セッションの作業ディレクトリはワークツリールートで、起動したサブディレクトリではありません。したがって、ワークツリー内のプロジェクト設定はワークツリールートの `.claude/settings.json`（リポジトリルートのファイルのチェックアウトされたコピー）から読み込まれます。許可ルールやフックなど、ワークツリー内で必要な他の設定は、リポジトリルートの `.claude/settings.json` に配置します。
-</Note>
+> [!NOTE]
+>
+> `sparsePaths` と `symlinkDirectories` 設定は、ワークツリーが作成される前に開始ディレクトリから読み込まれます。作成後、セッションの作業ディレクトリはワークツリールートで、起動したサブディレクトリではありません。したがって、ワークツリー内のプロジェクト設定はワークツリールートの `.claude/settings.json`（リポジトリルートのファイルのチェックアウトされたコピー）から読み込まれます。許可ルールやフックなど、ワークツリー内で必要な他の設定は、リポジトリルートの `.claude/settings.json` に配置します。
 
 完全なワークツリー設定リファレンスについては、[ワークツリー設定](/docs/ja/settings-reference#worktree)を参照してください。
 
-<h3 id="grant-access-across-packages-or-repositories">
-  パッケージまたはリポジトリ全体でアクセスを付与する
-</h3>
+### パッケージまたはリポジトリ全体でアクセスを付与する
 
 このセクションは、サブディレクトリから Claude を開始するとき、またはタスクが複数のチェックアウトにまたがるときに適用されます。単一の大規模ツリーのリポジトリルートから開始する場合、Claude はすでにすべてのファイルにアクセスでき、これをスキップできます。
 
@@ -330,9 +304,7 @@ CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1 claude --add-dir ../shared
 
 この領域のすべての人が必要とする兄弟ディレクトリについては、`additionalDirectories` を `.claude/settings.json` にコミットします。個人的な選択または 1 回限りのアクセスについては、`.claude/settings.local.json` を使用するか、起動時に `--add-dir` を渡します。
 
-<h2 id="add-per-directory-skills">
-  ディレクトリごとのスキルを追加する
-</h2>
+## ディレクトリごとのスキルを追加する
 
 任意のサブディレクトリは、独自のスタックにスコープされた[スキル](/docs/ja/skills)を定義できます。スキルは Claude が関連性があると判断したときにオンデマンドで読み込まれるため、API 固有のツーリングはフロントエンド作業中にコンテキストを消費しません。
 
@@ -381,9 +353,7 @@ Each route file has a corresponding `.test.ts` file.
 
 スキルの作成と整理の詳細については、[スキル](/docs/ja/skills)を参照してください。
 
-<h3 id="keep-skills-discoverable">
-  スキルを発見可能に保つ
-</h3>
+### スキルを発見可能に保つ
 
 スキルが多くのディレクトリに分散すると、Claude が選択できるリストが大きくなる可能性があります。Claude は発見されたすべてのスキルの名前と説明を読むことでスキルを選択し、選択されたスキルの完全なコンテンツのみがコンテキストに読み込まれます。このセクションでは、そのリストを小さく保つ方法について説明します。
 
@@ -399,9 +369,7 @@ PR 規約やデプロイチェックリストなど、多くのディレクト�
 
 使用されていないスキルを見つけるには、OpenTelemetry [ログエクスポーター](/docs/ja/monitoring-usage)を有効にして `OTEL_LOG_TOOL_DETAILS=1` を設定し、スキル名が編集されずに逐語的に記録されるようにします。[`skill_activated` イベント](/docs/ja/monitoring-usage#skill-activated-event)はその `skill.name` 属性のすべての呼び出しを記録し、`invocation_trigger` はコマンド、Claude、またはネストされたスキルが呼び出したかどうかを記録します。これにより、統合または廃止するものを判断できます。
 
-<h2 id="centralize-conventions-when-layering-stops-scaling">
-  レイアリングが拡張を停止したときに規約を一元化する
-</h2>
+## レイアリングが拡張を停止したときに規約を一元化する
 
 ディレクトリごとの CLAUDE.md ファイルは、コードベースが成長するにつれて管理が難しくなる可能性があります。規約は漂流し、ファイルは古くなり、誰もルートを所有していません。これを解決することは通常、各開発者が独自の領域で作業するのではなく、リポジトリの Claude Code セットアップを保守するチームに該当します。
 
@@ -413,17 +381,13 @@ PR 規約やデプロイチェックリストなど、多くのディレクト�
 
 プラットフォームチームがこれらを一元的に適用する方法については、[server-managed or endpoint-managed settings](/docs/ja/server-managed-settings#choose-between-server-managed-and-endpoint-managed-settings)を参照してください。
 
-<h3 id="recommend-the-right-plugin-at-session-start">
-  セッション開始時に正しいプラグインを推奨する
-</h3>
+### セッション開始時に正しいプラグインを推奨する
 
 規約がプラグインに存在すると、チームメイトがツリーの不慣れな部分で Claude を開始しても、その領域の所有者が保守するプラグインについてのシグナルがありません。[`SessionStart` hook](/docs/ja/hooks#sessionstart)はこのギャップを埋めることができます。フックが stdout に出力するプレーンテキストはすべて、最初のプロンプトの前に Claude のコンテキストに追加されるためです。
 
 たとえば、[hook input](/docs/ja/hooks#common-input-fields)から起動ディレクトリを読み取り、リポジトリにコミットされたパスからプラグインへのマップで検索し、Claude が最初の応答で中継する推奨事項を出力するスクリプトを書くことができます。フックを書き込み、登録する方法については、[Automate actions with hooks](/docs/ja/hooks-guide)を参照してください。
 
-<h2 id="put-it-together">
-  すべてをまとめる
-</h2>
+## すべてをまとめる
 
 以下の組み合わせ設定はモノレポレイアウトを使用します。同じファイルは大規模シングルツリーのすべてのサブディレクトリで機能します。各サブディレクトリの `.claude/settings.json` はルートファイルに層状にされるのではなく、自己完結型である必要があります。
 
@@ -494,9 +458,7 @@ monorepo/
 * オンデマンドで利用可能な api-testing スキルを持ちます
 * `.claude/`、`packages/api/`、`packages/shared/`、ルートレベルのファイルを含むワークツリーを作成し、ルート設定ファイルからワークツリー全体に適用される拒否ルール
 
-<h2 id="scope-and-plan-changes-that-span-packages">
-  パッケージにまたがる変更をスコープし、計画する
-</h2>
+## パッケージにまたがる変更をスコープし、計画する
 
 上記の設定は Claude が見るものを制御します。共有型を更新し、それを使用するすべての呼び出しサイトを更新するなど、単一の変更が複数のパッケージに触れる場合、タスクをスコープし、シーケンスする方法も結果に影響します。
 
@@ -505,9 +467,7 @@ monorepo/
 * **1 つのセッションで Claude に全体の変更を与える**: 共有編集とその呼び出しサイトを一緒に引き渡すことで、各編集の背後にある決定を一貫性のあるものに保ちます。パッケージごとに再導出するのではなく
 * **編集する前に計画する**: [最初に計画](/docs/ja/best-practices#explore-first-then-plan-then-code)し、[Plan Mode](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode) で Claude が計画をファイルに書き込みます。長いクロスパッケージセッションは [コンテキストをコンパクト化](/docs/ja/context-window#what-survives-compaction)します。Claude Code は各コンパクト化の後に計画ファイルを再度注入するため、計画は会話履歴が存在しない場合でも生き残ります。
 
-<h2 id="next-steps">
-  次のステップ
-</h2>
+## 次のステップ
 
 このセットアップが完了したら、それを改善できます。
 

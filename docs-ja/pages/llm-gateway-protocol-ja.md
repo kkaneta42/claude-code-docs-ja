@@ -10,10 +10,10 @@
 
 [Claude apps ゲートウェイ](/docs/ja/claude-apps-gateway)は Anthropic の自己ホスト型ゲートウェイであり、`GET /protocol` でその独自のエンドポイントリファレンスを提供しており、そのゲートウェイのサインイン、推論、管理設定、モデル検出、およびテレメトリエンドポイントをカバーしています。このガイドとは別のドキュメントです。
 
-<Note>
-  * 既存またはサードパーティのゲートウェイを組織にロールアウトするには、[LLM ゲートウェイのロールアウト](/docs/ja/llm-gateway-rollout)を参照してください
-  * Claude Code を認証情報を使用してゲートウェイに認証する個別の開発者の場合は、[Claude Code を LLM ゲートウェイに接続](/docs/ja/llm-gateway-connect)を参照してください
-</Note>
+> [!NOTE]
+>
+> * 既存またはサードパーティのゲートウェイを組織にロールアウトするには、[LLM ゲートウェイのロールアウト](/docs/ja/llm-gateway-rollout)を参照してください
+> * Claude Code を認証情報を使用してゲートウェイに認証する個別の開発者の場合は、[Claude Code を LLM ゲートウェイに接続](/docs/ja/llm-gateway-connect)を参照してください
 
 このページでは、以下について説明します：
 
@@ -32,9 +32,7 @@
 
 変更なしで転送とマークされていないものは、使用または無視するものです。
 
-<h2 id="api-formats">
-  API フォーマット
-</h2>
+## API フォーマット
 
 ゲートウェイは、Claude Code クライアントに対して以下の API フォーマットのうち少なくとも 1 つを公開する必要があります。クライアントはフォーマットを選択し、下の表の「選択方法」列にある変数を使って Claude Code をゲートウェイに向けます。
 
@@ -46,15 +44,11 @@ Google Cloud's Agent Platform は Google Cloud の Claude エンドポイント�
 | Amazon Bedrock InvokeModel | `ANTHROPIC_BEDROCK_BASE_URL` と `CLAUDE_CODE_USE_BEDROCK=1` | `/model/{model}/invoke`、`/model/{model}/invoke-with-response-stream`、`/model/{model}/count-tokens`（任意） | `anthropic_beta` および `anthropic_version` リクエストボディフィールド |
 | Google Cloud's Agent Platform rawPredict | `ANTHROPIC_VERTEX_BASE_URL` と `CLAUDE_CODE_USE_VERTEX=1` | `:rawPredict`、`:streamRawPredict`、`count-tokens:rawPredict`（任意） | `anthropic-beta` および `anthropic-version` リクエストヘッダー、ならびに `anthropic_version` リクエストボディフィールド |
 
-<h3 id="foundry-and-claude-platform-on-aws">
-  Foundry と Claude Platform on AWS
-</h3>
+### Foundry と Claude Platform on AWS
 
 Microsoft Foundry と [Claude Platform on AWS](/docs/ja/claude-platform-on-aws) は Anthropic Messages フォーマットを実装しています。Claude Code はそれぞれ専用の変数 `ANTHROPIC_FOUNDRY_BASE_URL` と `ANTHROPIC_AWS_BASE_URL` を通じてこれらにルーティングしますが、いずれかの前段に置かれるゲートウェイは上記の Anthropic Messages の行を実装します。Claude Platform on AWS の前段に置かれるゲートウェイは、`anthropic-workspace-id` ヘッダーも転送する必要があります。このヘッダーは[同プラットフォームがすべてのリクエストで必須としている](/docs/ja/claude-platform-on-aws)ものです。
 
-<h3 id="optional-endpoints-and-startup-traffic">
-  任意のエンドポイントと起動時のトラフィック
-</h3>
+### 任意のエンドポイントと起動時のトラフィック
 
 任意のエンドポイントはトークンカウント用のエンドポイントのみです。これらが存在しない場合、Claude Code はコンテキスト使用量を文字数ベースで推定する方法にフォールバックします。
 
@@ -69,9 +63,7 @@ Microsoft Foundry と [Claude Platform on AWS](/docs/ja/claude-platform-on-aws) 
 
 [fast mode](/docs/ja/fast-mode) の利用可否チェックはゲートウェイのログには一切現れません。このチェックは `ANTHROPIC_BASE_URL` に従わず `api.anthropic.com` を直接呼び出すため、`api.anthropic.com` への直接の外向き通信をブロックしているネットワークでは、ゲートウェイ経由の推論は動作し続けていても、fast mode が接続エラーを報告することがあります。[WebFetch のドメイン安全性チェック](/docs/ja/data-usage#webfetch-domain-safety-check)も `api.anthropic.com` を直接呼び出します。これを復旧させる変数については、[プロキシや LLM ゲートウェイの背後で fast mode を使用する](/docs/ja/fast-mode#use-fast-mode-behind-proxies-and-llm-gateways)を参照してください。
 
-<h3 id="streaming">
-  ストリーミング
-</h3>
+### ストリーミング
 
 Claude Code はストリーミングの推論応答を、到着したそばからイベントごとに読み取ります。そのため、ゲートウェイがストリームをどのように中継するかによって、ユーザーに表示される内容が変わります。
 
@@ -81,9 +73,7 @@ Claude Code はストリーミングの推論応答を、到着したそばか�
 * Claude Code は、[ストリーミングのアイドルタイムアウト](/docs/ja/network-config#streaming-idle-watchdogs)を超えて 1 バイトも届かない状態が続くと、ストリーミング応答を中止します。長い思考の一時停止中は、アップストリームの SSE `ping` イベントがストリーム上の唯一のバイトになることがあるため、それらを除去またはバッファリングするゲートウェイは、応答の途中でこのタイムアウトを発生させる可能性があります。Amazon Bedrock のバイナリイベントストリームのように ping を送信しないアップストリームから変換するゲートウェイも、独自の `ping` イベントを送出しない限り、同じ空白が生じます。
 * [Amazon Bedrock InvokeModel フォーマット](#api-formats)では、Claude Code は `/model/{model}/invoke-with-response-stream` のレスポンスを、Bedrock が返すバイナリの `application/vnd.amazon.eventstream` ボディとして読み取ります。そのため、ゲートウェイがそれを Server-Sent Events に変換したり、その `Content-Type` ヘッダーを書き換えたりすると、解析できなくなります。その場合にユーザーに何が表示されるかは[ゲートウェイまたはプロキシの背後でのストリーミングエラー](/docs/ja/amazon-bedrock#streaming-errors-behind-a-gateway-or-proxy)で説明しています。
 
-<h3 id="format-mismatch-with-the-upstream">
-  アップストリームとのフォーマットの不一致
-</h3>
+### アップストリームとのフォーマットの不一致
 
 クライアントがどのフォーマットを使用するかによって、ゲートウェイが受信する内容が決まります。よくある障害パターンは、クライアントがゲートウェイに送信するフォーマットと、その背後にあるアップストリームプロバイダーが受け付けるフォーマットの不一致です。
 
@@ -94,44 +84,36 @@ Claude Code はストリーミングの推論応答を、到着したそばか�
 
 アップストリームが Amazon Bedrock または Google Cloud's Agent Platform である場合は、代わりにそのプロバイダーのフォーマットを公開することで、橋渡しを回避できます。そのフォーマットのクライアント設定については、[ゲートウェイ経由でクラウドプロバイダーにルーティングする](/docs/ja/llm-gateway-connect#route-to-a-cloud-provider-through-a-gateway)を参照してください。
 
-<h2 id="how-the-connection-method-changes-client-behavior">
-  接続方法がクライアント動作にどのように影響するか
-</h2>
+## 接続方法によるクライアントの動作の違い
 
-開発者がゲートウェイに接続する方法によって、Claude Code が送信するモデル ID、`anthropic-beta` 値、リクエストフィールド、および適用するデフォルトが決まります。ゲートウェイは、次の 3 つのクライアント動作のいずれかを認識します。
+開発者がゲートウェイにどのように接続するかによって、Claude Code が送信するモデル ID、`anthropic-beta` の値、リクエストフィールド、および適用するデフォルトが決まります。ゲートウェイから見えるクライアントの動作は、次の 3 つのいずれかです。
 
-* **Amazon Bedrock または Agent Platform 形式**: 開発者が `CLAUDE_CODE_USE_BEDROCK=1` を `ANTHROPIC_BEDROCK_BASE_URL` と共に設定するか、`CLAUDE_CODE_USE_VERTEX=1` を `ANTHROPIC_VERTEX_BASE_URL` と共に設定して、ゲートウェイを指します。Claude Code はそのプロバイダーのモデル ID、リクエストフィールド、およびデフォルトを使用します。
-* **Anthropic Messages 形式**: 開発者が `ANTHROPIC_BASE_URL` をゲートウェイに設定します。Claude Code はゲートウェイを Claude API として扱い、どのアップストリームに転送するかを判断できません。
-* **Claude apps ゲートウェイサインイン**: 開発者が [Claude apps ゲートウェイ](/docs/ja/claude-apps-gateway) にサインインします。そのゲートウェイは Anthropic Messages 形式で通信しますが、任意のアップストリームにルーティングできるため、Claude Code は Amazon Bedrock と Agent Platform も受け入れる `anthropic-beta` 値とモデル機能の仮定のみを送信します。
+* **Amazon Bedrock または Agent Platform 形式**：開発者が `CLAUDE_CODE_USE_BEDROCK=1` と `ANTHROPIC_BEDROCK_BASE_URL`、または `CLAUDE_CODE_USE_VERTEX=1` と `ANTHROPIC_VERTEX_BASE_URL` を設定し、ゲートウェイを指すようにします。Claude Code はそのプロバイダーのモデル ID、リクエストフィールド、デフォルトを使用します。
+* **Anthropic Messages 形式**：開発者が `ANTHROPIC_BASE_URL` にゲートウェイを設定します。Claude Code はゲートウェイを Claude API として扱い、転送先のアップストリームを判別できません。
+* **Claude apps ゲートウェイへのサインイン**：開発者が [Claude apps ゲートウェイ](/docs/ja/claude-apps-gateway)にサインインします。このゲートウェイは Anthropic Messages 形式を使用しますが、任意のアップストリームにルーティングできるため、Claude Code は Amazon Bedrock と Agent Platform も受け付ける `anthropic-beta` の値とモデル機能の前提のみを送信します。
 
-<h3 id="requests-and-defaults-by-connection-method">
-  接続方法別のリクエストとデフォルト
-</h3>
+### 接続方法ごとのリクエストとデフォルト
 
-以下の表は、3 つの接続方法を比較しており、1 行に 1 つの動作が示されています。Microsoft Foundry と Claude Platform on AWS は除外されています。これらも Anthropic Messages 形式を使用しますが、Claude Code は独自の変数を通じてそれらに到達します。詳細については、[Microsoft Foundry](/docs/ja/microsoft-foundry) および [Claude Platform on AWS](/docs/ja/claude-platform-on-aws) ページを参照してください。
+次の表は、3 つの接続方法を 1 行につき 1 つの動作で比較したものです。Microsoft Foundry と Claude Platform on AWS は、Anthropic Messages 形式を使用するものの Claude Code が独自の変数を通じて接続するため、この表には含まれていません。これらについては、[Microsoft Foundry](/docs/ja/microsoft-foundry) と [Claude Platform on AWS](/docs/ja/claude-platform-on-aws) のページを参照してください。
 
-| 動作 | Amazon Bedrock または Agent Platform 形式 | Anthropic Messages 形式 | Claude apps ゲートウェイサインイン |
+| 動作 | Amazon Bedrock または Agent Platform 形式 | Anthropic Messages 形式 | Claude apps ゲートウェイへのサインイン |
 | :- | :- | :- | :- |
-| デフォルトでリクエストに含まれるモデル ID | プロバイダーの形式（Amazon Bedrock の `us.anthropic.claude-opus-4-8` など） | Anthropic ID（`claude-opus-4-8` など） | Anthropic ID |
-| 送信される `anthropic-beta` 値 | Amazon Bedrock と Agent Platform が受け入れるサブセット | [機能パススルー](#feature-pass-through) に記載されている完全なセット。ただし、開発者が [`CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS`](#disable-pre-release-capabilities) を設定する場合を除く | Amazon Bedrock と Agent Platform が受け入れるサブセット |
-| Claude Code が認識しないモデル ID（ゲートウェイエイリアスなど）のリクエストフィールド | 適応的推論ではなく固定予算での思考、および努力またはコンテキスト管理フィールドなし | 適応的推論、努力、コンテキスト管理を含む、現在の Claude モデルが Claude API で受け入れるすべてのもの。Amazon Bedrock または Agent Platform アップストリームはこれらを拒否する可能性があります | Amazon Bedrock または Agent Platform 形式と同じ |
-| 開発者がオプトインした場合の 1 時間の [プロンプトキャッシュ TTL](/docs/ja/prompt-caching#choose-the-ttl-yourself) | `cache_control` の `ttl` フィールドを通じてリクエストされ、ベータ値なし | `ttl` フィールドと `anthropic-beta` の `extended-cache-ttl` 値を通じてリクエストされ、転送する必要があります | Claude apps ゲートウェイの [可用性と制限](/docs/ja/claude-apps-gateway#availability-and-limitations) テーブルを参照してください |
-| `ANTHROPIC_DEFAULT_HAIKU_MODEL` がモデルをピンしない限り、[バックグラウンドタスク](/docs/ja/costs#background-token-usage) 用のモデル | デフォルト Sonnet モデル、またはモデルが選択されたら、[Amazon Bedrock](/docs/ja/amazon-bedrock#4-pin-model-versions) および [Agent Platform](/docs/ja/google-vertex-ai#5-pin-model-versions) ページで説明されているメインモデル | メインモデル、または `ANTHROPIC_API_KEY` または `apiKeyHelper` が Anthropic Console キーを提供し、`ANTHROPIC_AUTH_TOKEN` が設定されていない場合のデフォルト Haiku モデル | メインモデル |
+| リクエスト内のデフォルトのモデル ID | プロバイダーの形式（Amazon Bedrock の `us.anthropic.claude-opus-4-8` など） | Anthropic の ID（`claude-opus-4-8` など） | Anthropic の ID |
+| 送信される `anthropic-beta` の値 | Amazon Bedrock と Agent Platform が受け付けるサブセット | [機能のパススルー](#feature-pass-through)で説明しているすべての値（開発者が [`CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS`](#disable-pre-release-capabilities) を設定している場合を除く） | Amazon Bedrock と Agent Platform が受け付けるサブセット |
+| Claude Code が認識しないモデル ID（ゲートウェイのエイリアスなど）に対するリクエストフィールド | アダプティブ推論ではなく固定予算での思考を使用し、effort やコンテキスト管理のフィールドは送信しません。[会話途中のシステムメッセージ](#feature-pass-through)は引き続き送信します | 現行の Claude モデルが Claude API で受け付けるすべてのフィールド（アダプティブ推論、effort、コンテキスト管理を含む）。Amazon Bedrock または Agent Platform のアップストリームではこれらが拒否される場合があります | Amazon Bedrock または Agent Platform 形式と同じ |
+| 開発者がオプトインした場合の 1 時間の[プロンプトキャッシュ TTL](/docs/ja/prompt-caching#choose-the-ttl-yourself) | `cache_control` の `ttl` フィールドでリクエストされ、ベータ値は使用しません | `ttl` フィールドに加えて `anthropic-beta` の `extended-cache-ttl` 値でリクエストされます。この値は転送する必要があります | Claude apps ゲートウェイの[利用可能性と制限事項](/docs/ja/claude-apps-gateway#availability-and-limitations)の表を参照してください |
+| [バックグラウンドタスク](/docs/ja/costs#background-token-usage)のモデル（`ANTHROPIC_DEFAULT_HAIKU_MODEL` でモデルを固定している場合を除く） | [Amazon Bedrock](/docs/ja/amazon-bedrock#4-pin-model-versions) と [Agent Platform](/docs/ja/google-vertex-ai#5-pin-model-versions) のページで説明しているとおり、デフォルトの Sonnet モデル、またはメインモデルが選択されている場合はそのメインモデル | メインモデル。ただし、`ANTHROPIC_API_KEY` または `apiKeyHelper` が Anthropic Console のキーを提供し、`ANTHROPIC_AUTH_TOKEN` が未設定の場合はデフォルトの Haiku モデル | メインモデル |
 
-各接続がサポートする機能とデフォルトで Anthropic に送信するテレメトリについては、[機能の可用性](/docs/ja/feature-availability#availability-by-model-provider) および [API プロバイダー別のデフォルト動作](/docs/ja/data-usage#default-behaviors-by-api-provider) を参照してください。
+各接続方法でサポートされる機能と、デフォルトで Anthropic に送信されるテレメトリについては、[機能の利用可能性](/docs/ja/feature-availability#availability-by-model-provider)と [API プロバイダーごとのデフォルトの動作](/docs/ja/data-usage#default-behaviors-by-api-provider)を参照してください。
 
-<h3 id="settings-for-unrecognized-model-ids">
-  認識されないモデル ID の設定
-</h3>
+### 認識されないモデル ID の設定
 
-2 つのクライアント側設定により、開発者が使用する接続方法に関係なく、Claude Code が認識しないモデル ID に対して何を想定するかが変わります。
+開発者がどの接続方法を使用しているかにかかわらず、Claude Code が認識しないモデル ID について想定する内容は、2 つのクライアント側の設定で変更できます。
 
-* **コンテキストウィンドウ**: Claude Code は 200K を想定し、ID が `[1m]` を含む場合は 1M を想定します。実際のウィンドウを宣言するには、[ゲートウェイまたはカスタムモデル ID のウィンドウを修正する](/docs/ja/model-config#correct-the-window-for-a-gateway-or-custom-model-id) を参照してください
-* **機能**: ゲートウェイエイリアスに背後にあるモデルの機能を付与するには、配布する設定の [`modelOverrides`](/docs/ja/errors#unrecognized-model-id-on-a-request) エントリを使用して、そのモデルの Anthropic ID をエイリアスにマップします。`ANTHROPIC_DEFAULT_*_MODEL_SUPPORTED_CAPABILITIES` 変数が適用される場所については、[機能パススルー](#feature-pass-through) を参照してください
+* **コンテキストウィンドウ**：Claude Code は 200K を想定し、ID に `[1m]` が含まれる場合は 1M を想定します。実際のウィンドウサイズを宣言するには、[ゲートウェイまたはカスタムモデル ID のウィンドウを修正する](/docs/ja/model-config#correct-the-window-for-a-gateway-or-custom-model-id)を参照してください
+* **機能**：ゲートウェイのエイリアスに、その背後にあるモデルの機能を持たせるには、配布する設定の [`modelOverrides`](/docs/ja/errors#unrecognized-model-id-on-a-request) エントリで、そのモデルの Anthropic ID をエイリアスにマッピングします。`ANTHROPIC_DEFAULT_*_MODEL_SUPPORTED_CAPABILITIES` 変数が適用される場面については、[機能のパススルー](#feature-pass-through)を参照してください
 
-<h2 id="request-headers">
-  リクエストヘッダー
-</h2>
+## リクエストヘッダー
 
 Claude Code は API リクエストにこれらのヘッダーを含めます。ヘッダー名はワイヤ上では大文字と小文字を区別しません。`anthropic-version` および `anthropic-beta` を変更なしで転送し、アップストリームが [AWS 上の Claude Platform](/docs/ja/claude-platform-on-aws) の場合は `anthropic-workspace-id` も転送してください。残りはゲートウェイがルーティング、属性、およびトレース用に使用でき、転送する必要はありません。
 
@@ -148,9 +130,7 @@ Claude Code は API リクエストにこれらのヘッダーを含めます。
 
 開発者が `ANTHROPIC_CUSTOM_HEADERS` を設定した場合、それらのヘッダーもリクエストに表示されます。
 
-<h3 id="gateway-hint-headers">
-  ゲートウェイヒントヘッダー
-</h3>
+### ゲートウェイヒントヘッダー
 
 Claude Code はルーティングヒントも送信できます。ゲートウェイまたはルーターがリクエストをスケジュール、キャッシュ、または属性付けするために使用できるリクエストごとの事実です。Claude Code v2.1.273 以降が必要です。
 
@@ -182,9 +162,7 @@ Claude Code はルーティングヒントも送信できます。ゲートウ�
 * 不在：コンパクト化呼び出し、サイドリクエスト、および新しいプロンプトの最初のリクエストはそれを含みません。不足しているヘッダーをツールを実行しなかったターンとして読まないでください
 * 時間：各エントリは権限プロンプトとフックを除外し、並列ツール呼び出しは各自の時間を報告するため、エントリはリクエスト間のギャップに加算されません
 
-<h3 id="forward-as-open-lists">
-  オープンリストとして転送
-</h3>
+### オープンリストとして転送
 
 ヘッダーとボディフィールドをクローズドリストではなく、オープンリストとして扱ってください。Claude Code はリリース全体で機能を獲得し、新しい `anthropic-beta` 値、新しいリクエストボディフィールド、および時々新しい `anthropic-*` または `x-claude-code-*` ヘッダーとして到着します。
 
@@ -192,9 +170,7 @@ Anthropic フォーマットアップストリームに転送する場合、今�
 
 例外は Amazon Bedrock や Google Cloud の Agent Platform などの非 Anthropic アップストリームです。スキーマの違いを橋渡けするのはゲートウェイの仕事です。[機能パススルー](#feature-pass-through)を参照してください。
 
-<h2 id="response-headers">
-  レスポンスヘッダー
-</h2>
+## レスポンスヘッダー
 
 Claude Code はこれらのレスポンスヘッダーを読み取り、ストリームの停止を検出し、再試行するかどうかと再試行のタイミングを決定し、使用量制限を表示します。表には各ヘッダーについて返すべき内容を示しています。また、エラーレスポンスボディは未修正のまま転送してください。これにより Claude Code の[機能拒否リカバリー](#automatic-retry-and-error-forwarding)がアップストリームのエラーメッセージと一致させることができます。
 
@@ -205,9 +181,7 @@ Claude Code はこれらのレスポンスヘッダーを読み取り、スト�
 | `x-should-retry` | アップストリームの値を未修正のまま渡してください。Claude Code はこのヘッダーを失敗したリクエストを再試行するかどうかを決定する際の 1 つの入力として読み取ります。`true` はレスポンスが再試行可能であることを示し、`false` は再試行不可能であることを示します。再試行回数、バックオフ、および Claude Code が再試行する失敗については、[自動再試行](/docs/ja/errors#automatic-retries)を参照してください |
 | `anthropic-ratelimit-unified-*` | すべてのレスポンスでアップストリームの値を未修正のまま転送してください。Claude Code はこれらを成功したレスポンスで読み取り、claude.ai でサインインしている開発者にプラン制限に対する使用量を表示し、`429` では一時的なスロットルからプラン制限または支出上限を区別します。[使用量制限](/docs/ja/errors#usage-limits)を参照してください |
 
-<h2 id="system-prompt-attribution-block">
-  システムプロンプト属性ブロック
-</h2>
+## システムプロンプト属性ブロック
 
 Claude Code は、クライアントバージョンと会話から派生したフィンガープリントを含む短い属性ブロックをシステムプロンプトの前に付加します。`api.anthropic.com` エンドポイントは変更されていない状態で最初のシステムブロックとして到着したときに処理前にブロックを削除するため、ファーストパーティプロンプトキャッシングに影響しません。他のアップストリームはプロンプトの一部として受け取ります。
 
@@ -229,47 +203,54 @@ Claude Code v2.1.181 から、リクエストがカスタムベース URL を通
 * リクエストボディをキーとするプロンプトキャッシュを実装します。
 * Amazon Bedrock、Microsoft Foundry、Google Cloud の Agent Platform などのサードパーティプロバイダーにリクエストを転送します。Anthropic Messages 形式またはプロバイダー独自の形式で、変更されるプレフィックスはそのプロバイダー上のプロンプトキャッシュ再利用を削減します。
 
-<h2 id="feature-pass-through">
-  機能パススルー
-</h2>
+## 機能パススルー
 
 Claude Code は `ANTHROPIC_BASE_URL` ゲートウェイを Anthropic フォーマットエンドポイントとして扱い、`api.anthropic.com` に送信するベータヘッダーとリクエストボディフィールドを送信します。ただし、直接接続用に予約されている小さな診断とデフォルトのセットは除きます。以下で説明するきめ細かいツールストリーミングデフォルトなど、そのセットはリリースごとに異なるため、その内容に依存しないでください。
 
-機能がボディフィールドを追加する場合、それらはベータヘッダーと組み合わされ、ペアは一緒に移動します。ヘッダーを削除しながらボディを渡すゲートウェイ、または Anthropic フォーマットボディを異なるスキーマのアップストリームに転送するゲートウェイは、ハード `400` エラーを生成します。両方の半分が一緒に存在しない場合のみ、機能は静かにオフになります。リクエストボディをコンテンツ検査のために書き直したり編集したりするゲートウェイは、削除と同じ方法でペアリングを壊すため、変更せずに検査してください。表は機能がペアリングから逸脱する場所を記載しています。
-
 きめ細かいツールストリーミングは直接接続デフォルトの 1 つです。リクエストがカスタムベース URL を通じてルーティングされるときはデフォルトでオフになり、開発者が [`CLAUDE_CODE_ENABLE_FINE_GRAINED_TOOL_STREAMING=1`](/docs/ja/env-vars) を設定するとゲートウェイはそれを受け取ります。
+
+### ベータヘッダーとボディフィールドのペア
+
+機能がボディフィールドを追加する場合、それらはベータヘッダーと組み合わされ、ペアは一緒に移動します。ヘッダーを削除しながらボディを渡すゲートウェイ、または Anthropic フォーマットボディを異なるスキーマのアップストリームに転送するゲートウェイは、`400` エラーを生成します。両方の半分が一緒に存在しない場合、機能は静かにオフになります。
+
+リクエストボディをコンテンツ検査のために書き直したり編集したりするゲートウェイは、削除と同じ方法でペアリングを壊すため、変更せずに検査してください。表は機能がペアリングから逸脱する場所を記載しています。
 
 | 機能 | ヘッダーとボディペア | 壊れた場合の症状 | 修復 |
 | :- | :- | :- | :- |
 | [適応的推論](/docs/ja/model-config#adjust-effort-level) | ベータヘッダーなし。Claude Code は Claude Opus 4.6、Claude Sonnet 4.6、Claude Haiku 5.5、Claude Fable 5 以降のモデルに `thinking: {"type": "adaptive"}` を送信し、ゲートウェイエイリアスなど認識しないモデル名を、フィールドを受け取る現在のモデルとして扱います | `thinking` フィールドまたは `adaptive` タグを命名する `400`。アップストリームモデルビルドがそれを受け入れない場合 | アップストリームをアップグレードしてください。Opus 4.6 および Sonnet 4.6 では、開発者は代わりに `CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING=1` を設定できます |
-| [コンテキスト管理](https://platform.claude.com/docs/en/build-with-claude/context-editing) | コンテキスト管理ベータヘッダーは `context_management` ボディフィールドと組み合わされます | `Extra inputs are not permitted` を含む `400`。ゲートウェイが Anthropic フォーマットリクエストを受け入れるが Amazon Bedrock に転送する場合に一般的です | 両方を転送するか、[`CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1`](#disable-pre-release-capabilities) |
+| [コンテキスト管理](https://platform.claude.com/docs/en/build-with-claude/context-editing) | コンテキスト管理ベータヘッダーは `context_management` ボディフィールドと組み合わされます | `Extra inputs are not permitted` を含む `400`。ゲートウェイが Anthropic フォーマットリクエストを受け入れるが Amazon Bedrock に転送する場合に一般的です。v2.1.304 以降では、Claude Code は[このペアなしで自動的に再試行します](#automatic-retry-and-error-forwarding) | 両方を転送するか、[`CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1`](#disable-pre-release-capabilities) |
 | [拡張コンテキスト](https://platform.claude.com/docs/en/build-with-claude/context-windows#context-window-sizes-by-model)および[インターリーブ思考](https://platform.claude.com/docs/en/build-with-claude/extended-thinking#interleaved-thinking) | ベータヘッダーのみ。ボディフィールドなし | ヘッダーが削除されると静かに利用不可。アップストリームは機能リクエストを見ません | `anthropic-beta` をそのまま転送してください |
-| ベータ[ツールフィールド](https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview) | ツール関連ベータヘッダーは `strict` および `defer_loading` などのツールスキーマフィールドと組み合わされます | ボディがヘッダーなしで渡される場合、認識されないツールスキーマフィールドを命名する `400` | 両方を転送するか、[`CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1`](#disable-pre-release-capabilities) |
+| ベータ[ツールフィールド](https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview) | ツール関連ベータヘッダーは `strict` および `defer_loading` などのツールスキーマフィールドと組み合わされます | ボディがヘッダーなしで渡される場合、認識されないツールスキーマフィールドを命名する `400`。`defer_loading` については、[ツール検索なしでの再試行](#retry-without-tool-search)を参照してください | 両方を転送するか、[`CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1`](#disable-pre-release-capabilities) |
 | [努力](https://platform.claude.com/docs/en/build-with-claude/effort)および[構造化出力](https://platform.claude.com/docs/en/build-with-claude/structured-outputs) | `output_config` ボディフィールドは努力、構造化出力フォーマット、およびタスク予算設定を含みます。各々は独自のベータヘッダーと組み合わされます | `output_config` を命名する `400`。多くの場合 `Extra inputs are not permitted`。Amazon Bedrock および Google Cloud の Agent Platform アップストリーム上 | フィールドとそのヘッダーを一緒に転送するか、開発者に [`CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1`](#disable-pre-release-capabilities) を設定してもらってください。この変数はフォーマットとタスク予算設定を削除しますが、努力は削除しません。フォーマットのみを削除するには、代わりに [`CLAUDE_CODE_DISABLE_STRUCTURED_OUTPUTS=1`](/docs/ja/env-vars) を設定できます。これには v2.1.288 以降が必要です |
+| 会話中のシステムメッセージ | ベータヘッダーなし。Claude Code は Claude Opus 4.8、それ以降にリリースされたモデル、および認識されないモデル ID に対して、一部のリマインダーや添付テキストを `messages` 内の `role: "system"` エントリとして送信します | `Unexpected role "system"` などの `400` | Claude Code は[システムメッセージなしで再試行します](#automatic-retry-and-error-forwarding)。Claude Opus 4.8 より前にリリースされたモデルのエイリアスでシステムメッセージを停止するには、配布する設定に [`modelOverrides` エントリ](#settings-for-unrecognized-model-ids)を追加してください |
+| [ターンごとに設定される努力](/docs/ja/prompt-caching#changing-effort-level) | Opus 5.5、Sonnet 5.5、Haiku 5.5、Fable 5.1 では、ベータヘッダーが `role: "system"` エントリ（システムメッセージ、または空のコンテンツを持つエントリ）上の `output_config.effort` と組み合わされます | ゲートウェイが空のエントリからフィールドを削除すると、`messages.N: system content must contain at least one block` を含む `400` | 両方を転送するか、開発者に [`CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1`](#disable-pre-release-capabilities) を設定してもらい、フィールドと空のエントリの送信を停止してください |
 | [プロンプトキャッシング](/docs/ja/prompt-caching) | ベータペアリングなし。Claude Code は `cache_control` マーカーを `system` ブロックおよび `messages` エントリ（会話の途中で追加される `role: "system"` エントリを含む）に付加します | エラーなし。会話は毎ターン、キャッシュされていない入力として課金されます。`usage` でキャッシュアクティビティがほとんどまたはまったくない高い `input_tokens` として表示されます | `cache_control` が表示される場所ならどこでも変更なしで転送し、ブロック形式の `system` またはメッセージコンテンツをプレーン文字列に変換しないでください |
 | [トークンカウント](https://platform.claude.com/docs/en/build-with-claude/token-counting) | ベータペアリングなし。`count_tokens` エンドポイントを使用します | エラーなし。Claude Code は文字ベースの推定にフォールバックするため、`/context` は概算カウントを表示します | 正確なトークンカウントのためにエンドポイントを公開してください |
 
 `ANTHROPIC_DEFAULT_*_MODEL_SUPPORTED_CAPABILITIES` [変数](/docs/ja/model-config)は、プロバイダー設定でのみモデル機能を宣言します：`CLAUDE_CODE_USE_BEDROCK`、`CLAUDE_CODE_USE_VERTEX`、`CLAUDE_CODE_USE_FOUNDRY`、および [`CLAUDE_CODE_USE_MANTLE`](/docs/ja/amazon-bedrock#use-the-mantle-endpoint)。`ANTHROPIC_BASE_URL` ゲートウェイの背後では効果がありません。
 
-<h3 id="automatic-retry-and-error-forwarding">
-  自動リトライとエラー転送
-</h3>
+### 自動リトライとエラー転送
 
-アップストリーム拒否後に Claude Code が実行する内容は、何が拒否されたかによって異なります：
+アップストリームがこれらの機能のいずれかを拒否した場合、Claude Code は拒否された部分を除いてリクエストを自動的に再試行できます：
 
 * アップストリームが `thinking` フィールド、会話中のシステムメッセージ、またはそのようなメッセージの `cache_control` マーカーを拒否する場合、Claude Code はリクエストをリトライし、拒否された機能を会話の残りの部分で無効にします
 * アップストリームが[思考署名](https://platform.claude.com/docs/en/build-with-claude/extended-thinking)を拒否する場合（`bound to a different conversation` という `400` を含む）、Claude Code はリクエストを以前の思考ブロックなしでリトライし、それらを後のすべてのリクエストから除外します。新しい応答には依然として思考が含まれます
 * ゲートウェイまたはそのアップストリームが [advisor ツール](/docs/ja/advisor)エントリを `tools` で認識されないツールタイプとして拒否する場合、Claude Code はそのエントリとその `anthropic-beta` 値なしでリクエストを 1 回リトライします。その後のそのベース URL へのリクエストは Claude Code が終了するまで advisor を除外し、その時間は `/advisor` は開発者に利用不可です。Claude Code はこの拒否を `Input tag` の後にツールタイプを命名するメッセージを含む `400` または `422` レスポンスによって認識します。例えば `Input tag 'advisor_20260301'` です。v2.1.280 より前では、Claude Code はこの拒否をリトライしませんでした
 * アップストリームが `output_config.effort` を拒否する場合、Claude Code は努力なしでリクエストを再試行し、Claude Code が終了するまでそのモデルへの以降のリクエストから努力を除外します。Claude Code はこの拒否を、メッセージが `Extra inputs are not permitted` とともに `output_config.effort` を挙げている、またはモデルが努力パラメーターをサポートしていないと述べている `400` によって認識します
-* Claude Code はコンテキスト管理またはツールスキーマフィールド拒否をリトライしません。それらの `400` エラーは開発者に到達します
+* アップストリームが `context_management` フィールドまたはその `anthropic-beta` 値を拒否する場合、ゲートウェイにはそれらを除いたリクエストがもう一度届きます。後のリクエストでゲートウェイが再びそれらを受け取り、アップストリームが再び拒否した場合も、同じ再試行が行われます。Claude Code はこの拒否をメッセージによって認識します。たとえば `context_management: Extra inputs are not permitted` を含むメッセージです。v2.1.304 より前では、Claude Code はこの拒否を再試行しませんでした
+* アップストリームが `strict` など `defer_loading` 以外のベータツールフィールドを拒否する場合、`400` は開発者に届きます。その前に、ゲートウェイには[ツール検索フィールドを除いた](#retry-without-tool-search)リクエストが再び届くことがあります。このようなフィールドの送信を停止するには、開発者に [`CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1`](#disable-pre-release-capabilities) を設定してもらってください
 
 `bound to a different conversation` 拒否は API の[保存された思考](https://platform.claude.com/docs/en/build-with-claude/preserved-thinking)チェックから来ます。これは、`system`、`tools`、または以前の `messages` コンテンツが思考を生成したリクエストと異なる場合に失敗します。そのコンテンツのいずれかを書き直すゲートウェイは、拒否自体を引き起こす可能性があります。[ライブラリ、プロキシ、およびゲートウェイ](https://platform.claude.com/docs/en/build-with-claude/preserved-thinking#libraries-proxies-gateways)は、変更なしで渡すべき内容をカバーしています。
 
-リトライロジックはアップストリームのエラー文言に一致するため、アップストリームエラーレスポンスボディを変更なしで転送してください。アップストリームエラーを独自のエンベロープでラップするゲートウェイは、ステータスコードを保持する場合でも回復パスを壊します。ただし、エンベロープのメッセージが安定した `capability_rejected:` トークンを含む場合は除きます。[Claude apps ゲートウェイはクラウドプロバイダーのエラー文言をそれらのトークンに置き換えます](/docs/ja/claude-apps-gateway-config#upstream-error-messages)。例えば `capability_rejected: prompt_too_long` です。
+この再試行ロジックの大部分はアップストリームのエラー文言に一致するため、エラーレスポンスボディを変更なしで転送してください。アップストリームエラーを独自のエンベロープでラップするゲートウェイは、ステータスコードを保持する場合でも回復パスを壊します。ただし、エンベロープのメッセージが安定した `capability_rejected:` トークンを含む場合は除きます。[Claude apps ゲートウェイはクラウドプロバイダーのエラー文言をそれらのトークンに置き換えます](/docs/ja/claude-apps-gateway-config#upstream-error-messages)。例えば `capability_rejected: prompt_too_long` です。
 
-<h3 id="disable-pre-release-capabilities">
-  プレリリース機能を無効化
-</h3>
+#### ツール検索なしでの再試行
+
+v2.1.305 以降では、[`defer_loading` フィールドと `tool_reference` ブロック](/docs/ja/mcp#tool-search-through-a-gateway)を含むリクエストは、Claude Code が原因を認識できない `400` または `422` の後に、それらを除いた形で再び届くことがあります。再試行が成功すると、以降のリクエストでもそれらは省略されます。
+
+ゲートウェイ側で何も変更しなくても開発者のリクエストは引き続き機能し、MCP ツールは事前に読み込まれます。Claude Code は後でツール検索を再度試すため、ゲートウェイでは再び拒否されたリクエストとその再試行が見られることがあります。すべてのリクエストからこれらのフィールドを除外するには、開発者に `ENABLE_TOOL_SEARCH=false` を設定してもらってください。ツール検索自体については、Claude Code はゲートウェイが `defer_loading` フィールドと `tool_reference` ブロックをその `anthropic-beta` 値とともに転送することを想定しています。
+
+### プレリリース機能を無効化
 
 ゲートウェイまたはそのアップストリームがプレリリースの `anthropic-beta` 値やそれと組み合わされるボディフィールドを拒否し、両方の半分を転送できない場合は、開発者に `CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1` を設定してもらってください。この変数を設定すると、Claude Code はプレリリース機能とそれと組み合わされる `anthropic-beta` 値の送信を停止します。対象には次のものが含まれます：
 
@@ -282,8 +263,9 @@ Claude Code は `ANTHROPIC_BASE_URL` ゲートウェイを Anthropic フォー�
 この変数はすべての `anthropic-beta` 値を削除するわけではありません。そのまま残るものには次のものがあります：
 
 * 拡張コンテキスト、インターリーブ思考、および努力の `anthropic-beta` 値（クラウドプロバイダーもこれらを受け入れます）
-* `output_config.effort` フィールド。これを拒否するアップストリームについては、[自動リトライとエラー転送](#automatic-retry-and-error-forwarding)を参照してください
+* 最上位の `output_config.effort` フィールド。これを拒否するアップストリームについては、[自動リトライとエラー転送](#automatic-retry-and-error-forwarding)を参照してください
 * 適応的推論の `thinking` フィールド（ベータヘッダーはありません）
+* [会話中のシステムメッセージ](#feature-pass-through)を運ぶ `role: "system"` エントリ
 * サブスクリプション認証に必要な OAuth の `anthropic-beta` 値
 * 開発者が [`ANTHROPIC_BETAS`](/docs/ja/env-vars) または [`CLAUDE_CODE_EXTRA_BODY`](/docs/ja/env-vars) を通じて自分で追加したヘッダー値とボディフィールド
 
@@ -297,17 +279,13 @@ Claude Code v2.1.227 以降では、組織は [MCP ツール検索](/docs/ja/mcp
 
 Claude Code が送信する機能セットはリリース全体で増加します。現在のベータヘッダー文字列については、[ベータヘッダーリファレンス](https://platform.claude.com/docs/en/api/beta-headers)を参照してください。観察されたリストに固定するのではなく、新しい Claude Code リリースに対してゲートウェイをテストしてください。
 
-<h2 id="model-discovery">
-  モデル検出
-</h2>
+## モデル検出
 
 `ANTHROPIC_BASE_URL` が Anthropic Messages フォーマットを公開するゲートウェイを指す場合、Claude Code はスタートアップ時にゲートウェイの `/v1/models` エンドポイントをクエリし、返されたモデルを `/model` ピッカーに追加できます。あなたまたはあなたの管理者が [`modelPicker`](/docs/ja/settings-reference#modelpicker) ラインアップで `replaceBuiltInOptions` を設定した場合、Claude Code はピッカーから検出されたモデルを非表示にします。
 
 開発者は [`CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY=1`](/docs/ja/env-vars) を設定することで有効にします。独自の環境またはマネージド設定を通じて。検出はデフォルトでオフになっているため、共有 API キーでバックアップされたゲートウェイはすべてのユーザーにキーがアクセスできるすべてのモデルを表示しません。
 
-<h3 id="when-discovery-runs">
-  検出が実行される場合
-</h3>
+### 検出が実行される場合
 
 検出は Anthropic Messages フォーマットにのみ適用されます。以下の場合は実行されません：
 
@@ -316,9 +294,7 @@ Claude Code が送信する機能セットはリリース全体で増加しま�
 
 検出は [非必須トラフィックがオフになっている](/docs/ja/llm-gateway-connect#turn-off-traffic-outside-the-gateway-path) 場合でも実行されます。リクエストはゲートウェイのみに送信されるためです。v2.1.257 より前では、非必須トラフィックがオフになっている間は検出は実行されませんでした。
 
-<h3 id="request-and-response">
-  リクエストとレスポンス
-</h3>
+### リクエストとレスポンス
 
 リクエストは 3 秒のタイムアウト付きの `GET /v1/models?limit=1000` であり、リダイレクトはクレデンシャルがリダイレクトターゲットにリークされないように失敗として扱われます。`/v1/models` に遅く応答するか、リダイレクトするゲートウェイ（`http` から `https` へのリダイレクトでも）は検出を静かに失敗させます。設定されたベース URL で直接エンドポイントを提供してください。
 
@@ -350,9 +326,7 @@ Claude Code はレスポンスの `data` 配列の各エントリから `id`、�
 
 Claude Code は `id` が文字列内の任意の場所に `claude` または `anthropic` を含むエントリを保持し、大文字と小文字を区別せずにマッチングし、残りを無視します。`vertex_ai/claude-sonnet-4-6` または `bedrock/anthropic.claude-sonnet-4-5` などのプロバイダープレフィックス付き ID はフィルターを通過します。どちらの部分文字列も含まない ID は通過しません。v2.1.223 より前では、Claude Code は `id` が `claude` または `anthropic` で始まる場合のみエントリを保持し、プロバイダープレフィックス付き ID を非表示にしていました。
 
-<h3 id="picker-entries-and-caching">
-  ピッカーエントリとキャッシング
-</h3>
+### ピッカーエントリとキャッシング
 
 ピッカーは、開発者が Claude Code で `/model` を実行するときに開く対話型モデルリストです。各検出されたエントリは、ゲートウェイが `id` と異なるものを送信する場合、`display_name` をその名前として使用します。それ以外の場合、エントリは Claude Code が [`id` を認識する](/docs/ja/model-config#customize-pinned-model-display-and-capabilities) 場合はモデルの名前を表示し、認識しない場合は `id` を表示します。たとえば、`id` が `my-gateway-claude-sonnet-4-6` で `display_name` がないエントリは `Sonnet 4.6` として表示されます。
 
@@ -367,9 +341,7 @@ Claude Code は `id` が文字列内の任意の場所に `claude` または `an
 
 結果は `~/.claude/cache/gateway-models.json` にキャッシュされます。Windows では `%USERPROFILE%\.claude\cache\gateway-models.json`。各スタートアップで更新されます。[`CLAUDE_CONFIG_DIR`](/docs/ja/env-vars) を設定した場合、キャッシュはそのディレクトリの代わりにそのディレクトリの下に存在します。リクエストが失敗するか、ゲートウェイが `/v1/models` を実装しない場合、ピッカーは前回のスタートアップからのキャッシュリストまたは組み込みモデルリストにフォールバックします。ゲートウェイが検出フィルターと一致しないエイリアスの下で Claude モデルを提供する場合、開発者は [モデル設定](/docs/ja/model-config) 変数を使用してそれらのエイリアスを手動で追加できます。
 
-<h2 id="related-resources">
-  関連リソース
-</h2>
+## 関連リソース
 
 ゲートウェイドキュメントセットの残りと基礎となる API リファレンス：
 

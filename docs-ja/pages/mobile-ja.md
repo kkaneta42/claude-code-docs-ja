@@ -8,35 +8,29 @@
 
 Claude アプリ for [iOS](https://apps.apple.com/us/app/claude-by-anthropic/id6473753684) と [Android](https://play.google.com/store/apps/details?id=com.anthropic.claude) は、コードが実行される場所ではなく、Claude Code セッションのクライアントです。携帯電話からクラウド上の [クラウドセッション](#start-and-monitor-cloud-sessions) と [プロジェクト](/docs/ja/claude-projects)、[リモートコントロール](#continue-a-local-session-with-remote-control) を通じて自分のマシンで実行されているセッション、または [Dispatch](/docs/ja/desktop#sessions-from-dispatch) を通じて Desktop アプリにアクセスできます。
 
-<Note>
-  Claude Code には別のモバイルアプリはありません。クラウドセッションとリモートコントロールは両方とも Claude アプリの **Code** タブに存在し、Dispatch はアプリでメッセージを送って依頼するタスクです。
-</Note>
+> [!NOTE]
+>
+> Claude Code には別のモバイルアプリはありません。クラウドセッションとリモートコントロールは両方とも Claude アプリの **Code** タブに存在し、Dispatch はアプリでメッセージを送って依頼するタスクです。
 
-<h2 id="get-the-app">
-  アプリを入手する
-</h2>
+## アプリを入手する
 
-<Steps>
-  <Step title="Claude アプリをダウンロード">
-    Claude アプリを [iOS](https://apps.apple.com/us/app/claude-by-anthropic/id6473753684) または [Android](https://play.google.com/store/apps/details?id=com.anthropic.claude) にインストールします。iPad では同じ iOS アプリをインストールしてください。
+**1. Claude アプリをダウンロード**
 
-    <Tip>
-      Claude Code セッションで `/mobile` を実行すると、[claude.ai/mobile](https://claude.ai/mobile) のスキャン可能な QR コードが表示されます。これはお客様の電話に適切なアプリストアを開きます。`/ios` と `/android` も同じ機能です。
-    </Tip>
-  </Step>
+Claude アプリを [iOS](https://apps.apple.com/us/app/claude-by-anthropic/id6473753684) または [Android](https://play.google.com/store/apps/details?id=com.anthropic.claude) にインストールします。iPad では同じ iOS アプリをインストールしてください。
 
-  <Step title="サインイン">
-    Claude Code に使用するのと同じ claude.ai アカウントと組織でサインインします。クラウドセッションとリモートコントロールには claude.ai アカウントが必要なため、Anthropic Console API キーまたは Amazon Bedrock などのサードパーティプロバイダーからはアクセスできません。
-  </Step>
+> [!TIP]
+>
+> Claude Code セッションで `/mobile` を実行すると、[claude.ai/mobile](https://claude.ai/mobile) のスキャン可能な QR コードが表示されます。これはお客様の電話に適切なアプリストアを開きます。`/ios` と `/android` も同じ機能です。
 
-  <Step title="Code タブを開く">
-    アプリのナビゲーションで **Code** をタップしてセッションにアクセスするか、スマートフォンで [claude.ai/code/new](https://claude.ai/code/new) を開いてアプリで新しい Code セッションを開始します。Code タブが表示されない場合、お客様のプランまたは組織にこれらの機能が含まれていない可能性があります。[サブスクリプションプランごとの利用可能性](/docs/ja/feature-availability#availability-by-subscription-plan)を参照してください。
-  </Step>
-</Steps>
+**2. サインイン**
 
-<h2 id="work-from-your-phone">
-  スマートフォンから作業する
-</h2>
+Claude Code に使用するのと同じ claude.ai アカウントと組織でサインインします。クラウドセッションとリモートコントロールには claude.ai アカウントが必要なため、Anthropic Console API キーまたは Amazon Bedrock などのサードパーティプロバイダーからはアクセスできません。
+
+**3. Code タブを開く**
+
+アプリのナビゲーションで **Code** をタップしてセッションにアクセスするか、スマートフォンで [claude.ai/code/new](https://claude.ai/code/new) を開いてアプリで新しい Code セッションを開始します。Code タブが表示されない場合、お客様のプランまたは組織にこれらの機能が含まれていない可能性があります。[サブスクリプションプランごとの利用可能性](/docs/ja/feature-availability#availability-by-subscription-plan)を参照してください。
+
+## スマートフォンから作業する
 
 アプリからクラウドセッションを開始したり、プロジェクトを開いたり、コンピュータで実行されている Claude Code セッションを操作したり、Dispatch にタスクをメッセージで送ったりできます。アプリはすべてで同じですが、作業が行われる場所が異なります。
 
@@ -53,17 +47,13 @@ Claude アプリ for [iOS](https://apps.apple.com/us/app/claude-by-anthropic/id6
 
 クラウドセッションとリモートコントロールは **Code** タブから実行されます。アプリでタスクとしてメッセージを送る Dispatch については、[Dispatch からのセッション](/docs/ja/desktop#sessions-from-dispatch)を参照してください。
 
-<h3 id="start-and-monitor-cloud-sessions">
-  クラウドセッションを開始および監視する
-</h3>
+### クラウドセッションを開始および監視する
 
 クラウドセッションはクラウドインフラストラクチャでタスクを実行し、Anthropic が管理するため、スマートフォンを置いた後もセッションが続行されます。Code タブからリポジトリとブランチを選択し、タスクを説明して送信します。セッションはデバイス間で永続化されます。ラップトップで開始したタスクはスマートフォンから確認できる状態で待機し、スマートフォンから開始したタスクはデスクに戻ったときに待機しています。
 
 アプリでセッションを開いて進捗を確認したり、Claude の質問に答えたり、新しい方向に操作したりできます。Claude に [プルリクエストを監視](/docs/ja/claude-code-on-the-web#auto-fix-pull-requests)させて、CI の失敗やレビューコメントが到着したときに修正することもできます。GitHub を接続して環境をセットアップするには、[クラウドクイックスタート](/docs/ja/web-quickstart)に従い、クラウドセッションで実行できるすべてのことについては [クラウドで Claude Code を使用する](/docs/ja/claude-code-on-the-web)を参照してください。
 
-<h3 id="continue-a-local-session-with-remote-control">
-  リモートコントロールでローカルセッションを続行する
-</h3>
+### リモートコントロールでローカルセッションを続行する
 
 リモートコントロールは Claude アプリをマシンで実行されている Claude Code セッションに接続するため、コード実行とファイルシステムアクセスはローカルのままで、スマートフォンからセッションを操作できます。コンピュータで `claude remote-control` を使用してセッションを開始するか、既に開いているセッションで `/remote-control` を実行します。その後、ターミナルが表示できる QR コードをスキャンするか、Claude アプリを開いて **Code** をタップし、リストからセッションを選択します。各オプションについては、[別のデバイスから接続](/docs/ja/remote-control#connect-from-another-device)を参照してください。
 
@@ -74,17 +64,13 @@ Claude アプリで添付ファイルを追加すると、ローカルセッシ�
 
 要件、呼び出しモード、トラブルシューティングについては、[リモートコントロール概要](/docs/ja/remote-control)を参照してください。
 
-<h3 id="get-push-notifications">
-  プッシュ通知を取得する
-</h3>
+### プッシュ通知を取得する
 
 リモートコントロールがアクティブな場合、Claude はスマートフォンにプッシュ通知を送信できます。通常は、長時間実行されるタスクが完了したときまたは決定が必要なときです。プロンプトで 1 つをリクエストすることもできます。例えば、`notify me when the tests finish` のようにです。2 つの `/config` トグルと配信トラブルシューティングについては、[モバイルプッシュ通知](/docs/ja/remote-control#mobile-push-notifications)を参照してください。
 
 Dispatch は、生成した Code セッションが完了したときまたは承認が必要なときに独自の通知を送信します。これについては [Dispatch からのセッション](/docs/ja/desktop#sessions-from-dispatch)で説明されています。
 
-<h2 id="limitations">
-  制限事項
-</h2>
+## 制限事項
 
 モバイルクライアントはセッションが必要とするほとんどのことをカバーしていますが、いくつかの制限があります。
 
@@ -92,9 +78,7 @@ Dispatch は、生成した Code セッションが完了したときまたは�
 * **権限モード**: クラウドセッションでは Accept edits、Plan、Auto を、Remote Control セッションでは Manual、Accept edits、Plan、Auto を選択できます。どちらの場合でも、アプリから Bypass permissions を選択することはできません。Auto が利用可能な条件については、[権限モードを切り替える](/docs/ja/permission-modes#switch-permission-modes)を参照してください。
 * **Dispatch プラン**: Dispatch には Pro または Max プランが必要であり、Team または Enterprise では利用できません。
 
-<h2 id="related-resources">
-  関連リソース
-</h2>
+## 関連リソース
 
 * [プラットフォームと統合](/docs/ja/platforms): Claude Code が実行されるすべてのサーフェスを比較します
 * [Web の Claude Code](/docs/ja/claude-code-on-the-web): クラウドセッションの実行方法とターミナルとの間で作業を移動する方法

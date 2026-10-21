@@ -15,76 +15,62 @@
 * [Claude Code が読み込む変数を検索する](#variables)
 * [変数が機能フラグ取得をオフにする場合](#features-that-need-feature-flag-fetching)、どの機能が動作しなくなるかを確認する
 
-<h2 id="set-environment-variables">
-  環境変数を設定する
-</h2>
+## 環境変数を設定する
 
 シェルで設定した変数はそのターミナルセッション中のみ有効ですが、設定ファイル内の変数は `claude` を実行するたびに適用されます。
 
-<span id="in-your-shell" />
-
-<h3 id="set-variables-in-your-shell">
-  シェルで変数を設定する
-</h3>
+### シェルで変数を設定する
 
 `claude` を起動する前に変数を設定します。
 
-<Tabs>
-  <Tab title="macOS、Linux、WSL">
-    ```bash theme={null}
-    export API_TIMEOUT_MS="1200000"
-    claude
-    ```
+**macOS、Linux、WSL**
 
-    すべてのセッションで設定するには、`export` 行を `~/.bashrc`、`~/.zshrc`、またはシェルのプロファイルファイルに追加します。
-  </Tab>
+```bash theme={null}
+export API_TIMEOUT_MS="1200000"
+claude
+```
 
-  <Tab title="Windows PowerShell">
-    ```powershell theme={null}
-    $env:API_TIMEOUT_MS = "1200000"
-    claude
-    ```
+すべてのセッションで設定するには、`export` 行を `~/.bashrc`、`~/.zshrc`、またはシェルのプロファイルファイルに追加します。
 
-    すべてのセッションで設定するには、`[Environment]::SetEnvironmentVariable("API_TIMEOUT_MS", "1200000", "User")` を実行して新しいターミナルを開きます。
-  </Tab>
+**Windows PowerShell**
 
-  <Tab title="Windows CMD">
-    ```batch theme={null}
-    set API_TIMEOUT_MS=1200000
-    claude
-    ```
+```powershell theme={null}
+$env:API_TIMEOUT_MS = "1200000"
+claude
+```
 
-    すべてのセッションで設定するには、`setx API_TIMEOUT_MS "1200000"` を実行して新しいターミナルを開きます。
-  </Tab>
-</Tabs>
+すべてのセッションで設定するには、`[Environment]::SetEnvironmentVariable("API_TIMEOUT_MS", "1200000", "User")` を実行して新しいターミナルを開きます。
+
+**Windows CMD**
+
+```batch theme={null}
+set API_TIMEOUT_MS=1200000
+claude
+```
+
+すべてのセッションで設定するには、`setx API_TIMEOUT_MS "1200000"` を実行して新しいターミナルを開きます。
 
 代入行は成功時に何も出力しないため、同じシェルで変数を出力して確認します。
 
-<Tabs>
-  <Tab title="macOS、Linux、WSL">
-    ```bash theme={null}
-    echo $API_TIMEOUT_MS
-    ```
-  </Tab>
+**macOS、Linux、WSL**
 
-  <Tab title="Windows PowerShell">
-    ```powershell theme={null}
-    echo $env:API_TIMEOUT_MS
-    ```
-  </Tab>
+```bash theme={null}
+echo $API_TIMEOUT_MS
+```
 
-  <Tab title="Windows CMD">
-    ```batch theme={null}
-    echo %API_TIMEOUT_MS%
-    ```
-  </Tab>
-</Tabs>
+**Windows PowerShell**
 
-<span id="in-settings-files" />
+```powershell theme={null}
+echo $env:API_TIMEOUT_MS
+```
 
-<h3 id="set-variables-in-settings-files">
-  設定ファイルで変数を設定する
-</h3>
+**Windows CMD**
+
+```batch theme={null}
+echo %API_TIMEOUT_MS%
+```
+
+### 設定ファイルで変数を設定する
 
 `settings.json` ファイルの `env` キーの下に変数を追加します。ファイルが存在しない場合は作成します。Claude Code はファイルから直接読み込むため、`claude` がどのように起動されたかに関わらず有効になります。実行中のセッションは、ファイルを保存するときに新しい値と変更された値を環境に適用しますが、[OpenTelemetry monitoring](/docs/ja/monitoring-usage) のように起動時に変数を一度だけ読み込む機能は、再起動するまで起動時の値を保持します。ファイルから変数を削除しても、実行中のセッションではその変数は設定解除されません。削除は `claude` を次に起動するときに有効になります。
 
@@ -110,9 +96,7 @@ Claude Code はこれらの値を記述されたとおりに環境にコピー�
 
 各ファイルの場所については [Settings files](/docs/ja/settings#where-settings-live) を、複数のファイルが同じ変数を設定する場合の組み合わせ方については [Settings precedence](/docs/ja/settings#settings-precedence) を参照してください。
 
-<h2 id="precedence">
-  優先順位
-</h2>
+## 優先順位
 
 いくつかの動作には環境変数と専用の設定キーの両方があり、Claude Code がどちらを最初に読むかはキーごとに異なります。`ANTHROPIC_MODEL` と `CLAUDE_CODE_AUTO_CONNECT_IDE` の場合、Claude Code は変数を最初に読み、変数が設定されていない場合にのみ `model` または `autoConnectIde` 設定を使用します。設定しているペアについては、以下の変数の行と [設定リファレンス](/docs/ja/settings-reference) のキーのエントリを確認してください。
 
@@ -126,26 +110,23 @@ Claude Code はこれらの値を記述されたとおりに環境にコピー�
 
 Claude Code はスタートアップ時にシェル環境変数を読み込むため、それらへの変更は次回 `claude` を起動するときに有効になります。設定ファイルの `env` キーの下に設定された変数は、[設定ファイルで変数を設定する](#in-settings-files) で説明されているスタートアップのみの例外を除き、ファイルが変更されたときに実行中のセッションに再適用されます。
 
-<h2 id="variables">
-  変数
-</h2>
+## 変数
 
 タイムアウト、トークン予算、再試行回数などの数値変数は、通常の数字に加えて指数表記と桁区切りの表記も受け付けます。ただし、変数の行に数字のみを受け付けると記載されている場合を除きます。たとえば、Claude Code は `2e3` を 2000、`64_000` を 64000 として読み取ります。v2.1.211 より前は、これらの表記によって、`1e6` がタイムアウトを 1 に設定するなど、はるかに小さい値が警告なく設定されることがありました。
 
-<Note>
-  動作をオンまたはオフにする変数では、オンにするには `1`、`true`、`yes`、`on` のいずれかを、オフにするには `0`、`false`、`no`、`off` のいずれかを設定します。大文字と小文字は区別されません。
-
-  一部の変数は、設定されているかどうかのみを読み取ります。そのため、`0` を含む空でない値はすべて動作をオンにし、動作をオフにするには変数の設定を解除するか空の値を設定します。次の変数がこのように動作します。
-
-  * `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`
-  * `DISABLE_TELEMETRY`
-  * `DISABLE_ERROR_REPORTING`
-  * `CLAUDE_CODE_TMUX_TRUECOLOR`
-  * `FALLBACK_FOR_ALL_PRIMARY_MODELS`
-  * `IS_DEMO`
-
-  もう 1 つの変数には独自のルールがあります。`FORCE_HYPERLINK` は数値を読み取るため、`0` のみがオフにします。各変数の行にも、それぞれのルールが記載されています。
-</Note>
+> [!NOTE]
+>
+> 動作をオンまたはオフにする変数では、オンにするには `1`、`true`、`yes`、`on` のいずれかを、オフにするには `0`、`false`、`no`、`off` のいずれかを設定します。大文字と小文字は区別されません。
+>
+> 一部の変数は、設定されているかどうかのみを読み取ります。そのため、`0` を含む空でない値はすべて動作をオンにし、動作をオフにするには変数の設定を解除するか空の値を設定します。次の変数がこのように動作します。
+>
+> * `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`
+> * `DISABLE_TELEMETRY`
+> * `DISABLE_ERROR_REPORTING`
+> * `CLAUDE_CODE_TMUX_TRUECOLOR`
+> * `IS_DEMO`
+>
+> もう 1 つの変数には独自のルールがあります。`FORCE_HYPERLINK` は数値を読み取るため、`0` のみがオフにします。各変数の行にも、それぞれのルールが記載されています。
 
 | 変数 | 目的 |
 | :- | :- |
@@ -154,7 +135,7 @@ Claude Code はスタートアップ時にシェル環境変数を読み込む�
 | `ANTHROPIC_AWS_API_KEY` | AWS Console で生成された [Claude Platform on AWS](/docs/ja/claude-platform-on-aws) 用のワークスペース API キー。`x-api-key` として送信され、AWS SigV4 より優先されます |
 | `ANTHROPIC_AWS_BASE_URL` | [Claude Platform on AWS](/docs/ja/claude-platform-on-aws) のエンドポイント URL を上書きします。カスタムリージョンを使用する場合や、[LLM ゲートウェイ](/docs/ja/llm-gateway)経由でルーティングする場合に使用します。デフォルトは `https://aws-external-anthropic.{region}.api.aws` です。Claude Code は [Amazon Bedrock と同じ優先順位](/docs/ja/amazon-bedrock#3-configure-claude-code)でリージョンを解決します |
 | `ANTHROPIC_AWS_WORKSPACE_ID` | [Claude Platform on AWS](/docs/ja/claude-platform-on-aws) で必須です。すべてのリクエストで `anthropic-workspace-id` ヘッダーとして送信されます |
-| `ANTHROPIC_BASE_URL` | API エンドポイントを上書きして、プロキシまたはゲートウェイ経由でリクエストをルーティングします。ファーストパーティ以外のホストに設定すると、[MCP ツール検索](/docs/ja/mcp#scale-with-mcp-tool-search)はデフォルトで無効になります。プロキシが `tool_reference` ブロックを転送する場合は `ENABLE_TOOL_SEARCH=true` を設定します。v2.1.196 以降、これが `api.anthropic.com` 以外のホストを指している場合、[Remote Control](/docs/ja/remote-control#requirements) は無効になります。これは Amazon Bedrock、Google Cloud's Agent Platform、Microsoft Foundry での動作と同じです |
+| `ANTHROPIC_BASE_URL` | API エンドポイントを上書きして、プロキシまたはゲートウェイ経由でリクエストをルーティングします。そのゲートウェイが MCP ツール検索を拒否した場合の動作については、[LLM ゲートウェイ経由のツール検索](/docs/ja/mcp#tool-search-through-a-gateway)を参照してください。v2.1.196 以降、これが `api.anthropic.com` 以外のホストを指している場合、[Remote Control](/docs/ja/remote-control#requirements) は無効になります。これは Amazon Bedrock、Google Cloud's Agent Platform、Microsoft Foundry での動作と同じです |
 | `ANTHROPIC_BEDROCK_BASE_URL` | Amazon Bedrock のエンドポイント URL を上書きします。カスタムの Amazon Bedrock エンドポイントを使用する場合や、[LLM ゲートウェイ](/docs/ja/llm-gateway)経由でルーティングする場合に使用します。[Amazon Bedrock](/docs/ja/amazon-bedrock) を参照してください |
 | `ANTHROPIC_BEDROCK_MANTLE_BASE_URL` | Amazon Bedrock Mantle のエンドポイント URL を上書きします。[Mantle エンドポイント](/docs/ja/amazon-bedrock#use-the-mantle-endpoint)を参照してください |
 | `ANTHROPIC_BEDROCK_REGION_PREFIX` | AWS リージョンから導出されるプレフィックスの代わりに Claude Code が最初に試す、クロスリージョン推論プロファイルのプレフィックス（`us`、`eu`、`apac`、`jp`、`au`、`global` のいずれか）。AWS GovCloud リージョンでは無視されます。Claude Code v2.1.224 以降が必要です。[Amazon Bedrock](/docs/ja/amazon-bedrock#cross-region-inference-profile-prefixes) を参照してください |
@@ -196,7 +177,7 @@ Claude Code はスタートアップ時にシェル環境変数を読み込む�
 | `ANTHROPIC_VERTEX_PROJECT_ID` | Google Cloud's Agent Platform へのリクエストの宛先となる GCP プロジェクト ID。[GCP 認証情報を設定する](/docs/ja/google-vertex-ai#3-configure-gcp-credentials)を参照してください |
 | `ANTHROPIC_WORKSPACE_ID` | [ワークロードアイデンティティフェデレーション](https://platform.claude.com/docs/en/manage-claude/workload-identity-federation)のワークスペース ID。フェデレーションルールのスコープが複数のワークスペースにまたがる場合に設定し、トークン交換でどのワークスペースを対象にするかを指定します |
 | `API_FORCE_IDLE_TIMEOUT` | バイトが届かない場合にストリーミングのモデルレスポンスを中止する、5 分間のボディアイドルタイムアウトを上書きします。低速な[ゲートウェイ](/docs/ja/llm-gateway)やローカルモデルがチャンク間で 5 分以上停止する場合などにタイムアウトをオフにするには `0` を、すべてのプロバイダーでオンのままにするには `1` を設定します。設定されていない場合、タイムアウトは Anthropic API への直接接続、[Claude Platform on AWS](/docs/ja/claude-platform-on-aws)、`CLAUDE_ENABLE_BYTE_WATCHDOG_BEDROCK=1` を設定した Amazon Bedrock 以外のプロバイダーで有効です。[ストリームウォッチドッグ](/docs/ja/network-config#streaming-idle-watchdogs)はこれとは独立して動作し、ここで `0` を設定した場合でも、長時間の無応答の停止を中止します |
-| `API_TIMEOUT_MS` | 各 API リクエストの試行がレスポンスヘッダーを受信するまでの時間（ミリ秒）（デフォルト：600000、つまり 10 分。最大：2147483647）。その後ストリーミングレスポンスが実行される時間は制限しません。正の値を設定すると、[非ストリーミングリクエスト](/docs/ja/errors#streaming-response-ended-before-any-complete-data-was-received)の各試行はその時間内に完了する必要があります。低速なネットワークでリクエストがタイムアウトする場合や、プロキシ経由でルーティングする場合は、この値を増やしてください |
+| `API_TIMEOUT_MS` | 各 API リクエストの試行がレスポンスヘッダーを受信するまでの制限時間（ミリ秒）。その後のストリーミングレスポンスの継続時間は制限しません。デフォルトは 600000（10 分）、最大値は 2147483647 です。正の値を設定すると、[非ストリーミングリクエスト](/docs/ja/errors#streaming-response-ended-before-any-complete-data-was-received)の各試行はその時間内に完了する必要があります。低速なネットワークでリクエストがタイムアウトする場合や、プロキシ経由でルーティングする場合に値を増やします。この制限をなくすには `0` を設定します。これには Claude Code v2.1.305 以降が必要です。`0` の場合でも、ローカルセッションでは非ストリーミングの試行は 300 秒後にタイムアウトします |
 | `AWS_BEARER_TOKEN_BEDROCK` | 認証用の Amazon Bedrock API キー（[Amazon Bedrock API キー](https://aws.amazon.com/blogs/machine-learning/accelerate-ai-development-with-amazon-bedrock-api-keys/)を参照） |
 | `BASH_DEFAULT_TIMEOUT_MS` | フォアグラウンドの Bash または PowerShell ツールコマンドのデフォルトタイムアウト（ミリ秒）（デフォルト：120000、つまり 2 分）。[バックグラウンドコマンドのデフォルトの時間制限](/docs/ja/tools-reference#time-limit-for-background-commands)を超える値を設定すると、無人セッションではそのデフォルトが置き換えられます。バックグラウンドの時間制限には Claude Code v2.1.285 以降が必要です |
 | `BASH_MAX_OUTPUT_LENGTH` | Claude Code がコマンドの結果に読み込む bash 出力の最大文字数（デフォルト：30000、最大：150000）。[`bashOutputMaxChars`](/docs/ja/settings-reference#bashoutputmaxchars) 設定を行っている場合、Claude Code はこの変数を無視します。[出力の制限](/docs/ja/tools-reference#output-limits)を参照してください |
@@ -204,8 +185,6 @@ Claude Code はスタートアップ時にシェル環境変数を読み込む�
 | `BETA_TRACING_ENDPOINT` | [詳細なベータトレーシング](/docs/ja/monitoring-usage#traces-beta)用の OTLP/HTTP エンドポイント。`ENABLE_BETA_TRACING_DETAILED=1` を設定すると、ログとトレースは設定済みのエクスポーターではなくこのエンドポイントに送信されます。シェル、ユーザー設定、または管理設定で設定します。[プロジェクト設定とローカル設定](/docs/ja/settings-reference#variables-claude-code-ignores-in-env)では無視されます |
 | `CCR_FORCE_BUNDLE` | `1` に設定すると、[`claude --cloud`](/docs/ja/claude-code-on-the-web#send-local-repositories-without-github) がリモートからクローンする代わりに、ローカルリポジトリをバンドルしてアップロードするよう強制します |
 | `CLAUDECODE` | Claude Code が起動するサブプロセス（Bash および PowerShell ツール、tmux セッション、[フック](/docs/ja/hooks)コマンド、[ステータスライン](/docs/ja/statusline)コマンド、stdio [MCP サーバー](/docs/ja/mcp)のサブプロセス）で `1` に設定されます。IDE 拡張機能も、統合ターミナルでこれを設定します。スクリプトが Claude Code によって起動されたサブプロセス内で実行されているかどうかを検出するために使用します。現在のプロセスが、Claude Code が起動した stdio MCP サーバー内ではなく、ツール呼び出しやフックによって直接起動されたかどうかを確認するには、代わりに `CLAUDE_CODE_CHILD_SESSION` を使用します |
-| `CLAUDE_AFK_COUNTDOWN_MS` | 未回答の [`AskUserQuestion`](/docs/ja/tools-reference) ダイアログで、自動続行の何ミリ秒前に画面上のカウントダウンを表示するか。デフォルトは `20000`（20 秒）で、自動続行のタイムアウトが上限です。自動続行がオンでない限り効果はありません。[`askUserQuestionTimeout`](/docs/ja/settings-reference#askuserquestiontimeout) 設定と `CLAUDE_AFK_TIMEOUT_MS` を参照してください。[プロジェクト設定とローカル設定](/docs/ja/settings-reference#variables-claude-code-ignores-in-env)では無視されます。Claude Code v2.1.198 以降が必要です |
-| `CLAUDE_AFK_TIMEOUT_MS` | 未回答の [`AskUserQuestion`](/docs/ja/tools-reference) ダイアログが、ユーザーの応答なしで自動続行するまでのアイドル時間（ミリ秒）。自動続行はデフォルトでオフです。[`askUserQuestionTimeout`](/docs/ja/settings-reference#askuserquestiontimeout) 設定でオプトインします。この変数はデモや自動テスト向けの上書き用です。設定すると、その設定より優先され、設定が未設定または `never` の場合でも自動続行をオンにします。`0` を設定してもタイムアウトはオフにならず、ダイアログが即座に閉じます。[プロジェクト設定とローカル設定](/docs/ja/settings-reference#variables-claude-code-ignores-in-env)では無視されます。v2.1.200 より前は、自動続行はデフォルトでオンで、タイムアウトは `60000`（60 秒）でした。Claude Code v2.1.198 以降が必要です |
 | `CLAUDE_AGENT_SDK_DISABLE_BUILTIN_AGENTS` | `1` に設定すると、Explore や Plan などの組み込みの[サブエージェント](/docs/ja/sub-agents)タイプをすべて無効にします。非対話モード（`-p` フラグ）でのみ適用されます。まっさらな状態から始めたい SDK ユーザーに便利です。これにより、Agent ツール呼び出しで `subagent_type` が省略されたときに Claude Code が実行するサブエージェントである `general-purpose` も削除されます。その場合、そのような呼び出しは [`subagent_type is required`](/docs/ja/errors#subagent-type-is-required) で失敗します |
 | `CLAUDE_AGENT_SDK_MCP_NO_PREFIX` | `1` に設定すると、SDK で作成された MCP サーバーのツール名で `mcp__<server>__` プレフィックスを省略します。ツールは元の名前を使用します。SDK での使用のみ |
 | `CLAUDE_ASYNC_AGENT_STALL_TIMEOUT_MS` | サブエージェントのストールタイムアウト（ミリ秒）。Claude Code v2.1.286 以降では[ワークフローエージェント](/docs/ja/workflows#when-an-agent-stalls-and-restarts)も対象になります。デフォルトは `600000`（10 分）です。ストリームウォッチドッグがオンのときに `CLAUDE_STREAM_IDLE_TIMEOUT_MS` を引き上げると、[低速または停止した API レスポンスを処理する](/docs/ja/agent-sdk/typescript#handle-slow-or-stalled-api-responses)で説明されているように、デフォルトもそれに合わせて引き上げられます |
@@ -228,7 +207,7 @@ Claude Code はスタートアップ時にシェル環境変数を読み込む�
 | `CLAUDE_CODE_ARTIFACT_PUBLISH_EDITS` | `0` に設定すると、Claude が[アーティファクト](/docs/ja/artifacts#update-an-artifact)の公開処理の一環としてファイルに小さな変更を適用しないようにします。その場合、Claude はファイル編集ツールでファイルを編集し、別のステップとして公開します。Claude Code v2.1.300 以降が必要です |
 | `CLAUDE_CODE_ATTRIBUTION_HEADER` | `0` に設定すると、クライアントのバージョンとプロンプトのフィンガープリントを含む[帰属ブロック](/docs/ja/llm-gateway-protocol#system-prompt-attribution-block)を、システムプロンプトの先頭から省略します。Anthropic API への直接接続でのキャッシュは、どちらの場合も影響を受けません。一部の直接接続構成では、`0` を設定した場合でも、Claude Code は [auto モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)の分類器リクエストでブロックを保持します。どの接続と認証情報が対象になるかは、[システムプロンプトの帰属ブロック](/docs/ja/llm-gateway-protocol#system-prompt-attribution-block)で確認してください。v2.1.181 より前は、カスタムベース URL と Microsoft Foundry の接続ではブロックにリクエストごとのトークンが含まれていました。そのため、それらのバージョンでは、LLM ゲートウェイがリクエストボディに基づいてキャッシュする場合、リクエストをサードパーティプロバイダーに転送する場合、または Microsoft Foundry に直接接続する場合に `0` に設定してください |
 | `CLAUDE_CODE_AUTO_BACKGROUND_WORKER_CHECKIN_SECONDS` | v2.1.283 で削除されました。代わりに `CLAUDE_CODE_WORKER_CHECKIN_SCHEDULE` を使用してください |
-| `CLAUDE_CODE_AUTO_COMPACT_WINDOW` | [自動圧縮ウィンドウ](/docs/ja/model-config#set-the-auto-compact-window)をトークン単位で `100000` から `1000000` の範囲で設定します。`500000` のようなプレーンな整数のみを受け付けます。`500k` のような値は `500` として読み取られ、最小値の 100K に制限されます。実際のウィンドウは、モデルのコンテキストウィンドウが上限になります。`/autocompact` コマンド、`--autocompact` フラグ、`autoCompactWindow` 設定より優先されます。ステータスラインの `used_percentage` は常にモデルのコンテキストウィンドウ全体を基準に測定されるため、この変数を設定すると、そのパーセンテージはコンテキスト圧縮が実行されるタイミングを示さなくなります |
+| `CLAUDE_CODE_AUTO_COMPACT_WINDOW` | 自動圧縮ウィンドウ（圧縮前にコンテキストがどこまで埋まるか）を `100000` から `1000000` トークンの範囲で設定します。`200k` などのサフィックス付きの値には v2.1.304 以降が必要です。ウィンドウを設定する他の方法との優先順位と、ステータスラインの `used_percentage` への影響については、[自動圧縮ウィンドウを設定する](/docs/ja/model-config#set-the-auto-compact-window)を参照してください |
 | `CLAUDE_CODE_AUTO_CONNECT_IDE` | 自動的な [IDE 接続](/docs/ja/vs-code)を上書きします。デフォルトでは、サポートされている IDE の統合ターミナル内で起動すると、Claude Code は自動的に接続します。これを防ぐには `false` に設定します。tmux が親ターミナルを隠している場合など、自動検出が失敗したときに接続を強制的に試行するには `true` に設定します。[`autoConnectIde`](/docs/ja/settings-reference#autoconnectide) グローバル設定より優先されます |
 | `CLAUDE_CODE_AUTO_MODE_MODEL` | [auto モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)で Claude Code が送信する分類器リクエストのモデルを設定します。`claude-sonnet-4-6` のような完全なモデル ID を使用します。Claude Code がこれを無視するケースについては、[分類器モデルを選択する](/docs/ja/permission-modes#choose-the-classifier-model)を参照してください。Claude Code v2.1.302 以降が必要です |
 | `CLAUDE_CODE_AUTO_MODE_SERVER` | Claude Code がサーバーに [auto モードのアクションのレビュー](/docs/ja/permission-modes#server-side-classifier-review)を依頼するかどうかを制御します。代わりに Claude Code 独自の分類器リクエストを使用するには、`0` に設定します。Anthropic API への直接接続では v2.1.281 以降が必要です。リンク先のセクションには、変数が設定されていない場合にどのセッションがサーバーに依頼するか、またどのバージョンからかが記載されています。Claude Code v2.1.271 以降が必要です |
@@ -247,7 +226,6 @@ Claude Code はスタートアップ時にシェル環境変数を読み込む�
 | `CLAUDE_CODE_DEBUG_LOG_LEVEL` | デバッグログファイルに書き込まれる最小ログレベル。値：`verbose`、`debug`（デフォルト）、`info`、`warn`、`error`。ステータスラインコマンドの完全な出力など、大量の診断情報を含めるには `verbose` に設定し、ノイズを減らすには `error` に引き上げます |
 | `CLAUDE_CODE_DISABLE_1M_CONTEXT` | `1` に設定すると、[1M コンテキストウィンドウ](/docs/ja/model-config#extended-context)のサポートをオフにします。Claude Code はモデルピッカーから `[1m]` モデルバリアントを削除し、デフォルトで 1M ウィンドウで実行されるモデルを 200K ウィンドウに制限します。[1M コンテキストをオフにする](/docs/ja/model-config#turn-off-1m-context)を参照してください。コンプライアンス要件のあるエンタープライズ環境で便利です。認識されない `[1m]` モデル ID のウィンドウを補正する際の役割については、[ゲートウェイまたはカスタムモデル ID のウィンドウを補正する](/docs/ja/model-config#correct-the-window-for-a-gateway-or-custom-model-id)を参照してください |
 | `CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING` | `1` に設定すると、Opus 4.6 と Sonnet 4.6 で[適応型推論](/docs/ja/model-config#adjust-effort-level)を無効にし、`MAX_THINKING_TOKENS` で制御される固定の思考予算にフォールバックします。常に適応型推論を使用する [Fable モデル](/docs/ja/model-config#extended-thinking)、Sonnet 5 以降、Haiku 5.5、Opus 4.7 以降には効果がありません |
-| `CLAUDE_CODE_DISABLE_ADMIN_ENV_UNION` | `1` に設定すると、Claude Code が管理者ソース間で[管理設定](/docs/ja/managed-settings#precedence-within-the-managed-tier)の `env` ブロックをキーごとにマージしないようにします。これにより、v2.1.223 より前と同様に、優先順位が最も高いソースの `env` ブロック全体のみが適用されます。Claude Code は設定の `env` ブロックを通じて配信されたコピーを無視するため、Claude Code を起動する環境で設定してください。Claude Code v2.1.223 以降が必要です |
 | `CLAUDE_CODE_DISABLE_ADVISOR_TOOL` | `1` に設定すると、[アドバイザーツール](/docs/ja/advisor)を無効にします。`/advisor` コマンドは使用できなくなり、設定された `advisorModel` は無視され、`--advisor` フラグは受け付けられますが効果はありません。そのため、このフラグを渡す既存のスクリプトはエラーなしで引き続き動作します |
 | `CLAUDE_CODE_DISABLE_AGENT_VIEW` | `1` に設定すると、[バックグラウンドエージェントとエージェントビュー](/docs/ja/agent-view)（`claude agents`、`--bg`、`/background`、オンデマンドのスーパーバイザー）をオフにします。[`disableAgentView`](/docs/ja/settings-reference#disableagentview) 設定と同等です |
 | `CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN` | `1` に設定すると、[フルスクリーンレンダリング](/docs/ja/fullscreen)を無効にし、従来のメイン画面レンダラーを使用します。会話はターミナルのネイティブのスクロールバックに残るため、`Cmd+f` や tmux のコピーモードが通常どおり機能します。`CLAUDE_CODE_NO_FLICKER` と [`tui`](/docs/ja/settings-reference#tui) 設定より優先されます。`/tui default` で切り替えることもできます。常にフルスクリーンレンダリングを使用する、[エージェントビュー](/docs/ja/agent-view)から開いたバックグラウンドセッションには適用されません |
@@ -258,12 +236,12 @@ Claude Code はスタートアップ時にシェル環境変数を読み込む�
 | `CLAUDE_CODE_DISABLE_BACKGROUND_TASKS` | `1` に設定すると、Bash ツールとサブエージェントツールの `run_in_background` パラメーター、自動バックグラウンド化、Ctrl+B ショートカットを含む、すべてのバックグラウンドタスク機能を無効にします |
 | `CLAUDE_CODE_DISABLE_BEDROCK_CONTENT_TYPE_DEFAULT` | `1` に設定すると、`Content-Type` ヘッダーが欠落しているか空の [Amazon Bedrock](/docs/ja/amazon-bedrock) ストリーミングレスポンスを、Claude Code が Amazon Bedrock のバイナリイベントストリームとして扱わないようにします。デフォルトでは、Claude Code は、ゲートウェイがそれ以外は変更されていないレスポンスからヘッダーを削除したと想定してボディをデコードするため、ストリーミングは引き続き機能します。ストリームをサーバー送信イベントとして再送出するゲートウェイの場合にのみ設定してください。その場合、Claude Code はヘッダーのないボディをサーバー送信イベントとして読み取ります。Claude Code v2.1.239 以降が必要です |
 | `CLAUDE_CODE_DISABLE_BEDROCK_CONTENT_TYPE_GUARD` | `1` に設定すると、[Amazon Bedrock](/docs/ja/amazon-bedrock) のストリーミングレスポンスが `application/vnd.amazon.eventstream` の content-type を持つかどうかのチェックをスキップします。この変数がない場合、レスポンスが異なる content-type を持つと、Claude Code はその type を示すエラーでリクエストを失敗させます。これは[ゲートウェイまたはプロキシがレスポンスを変換している](/docs/ja/amazon-bedrock#streaming-errors-behind-a-gateway-or-proxy)ことを意味します。この変数を設定するのではなく、`Content-Type` ヘッダーとボディを変更せずに転送するようゲートウェイを設定してください。Claude Code v2.1.208 以降が必要です |
-| `CLAUDE_CODE_DISABLE_BG_EXIT_HANDOFF` | `1` に設定すると、[スーパーバイザー](/docs/ja/agent-view#the-supervisor-process)が[バックグラウンドセッション](/docs/ja/agent-view)のプロセスを停止、再起動、または更新したときに、そのセッションで実行中のバックグラウンドシェルコマンド、動的ワークフロー、および v2.1.198 以降ではバックグラウンドサブエージェントを、セッションの次のプロセスに引き渡すのではなく停止します。影響するのはこの引き渡しのみです。`←` または [`/background`](/docs/ja/agent-view#from-inside-a-session) でセッションをバックグラウンド化した場合は、進行中のバックグラウンド作業は引き続き引き継がれます。`CLAUDE_DISABLE_ADOPT` は両方をオフにします。Claude Code v2.1.196 以降が必要です |
+| `CLAUDE_CODE_DISABLE_BG_EXIT_HANDOFF` | `1` に設定すると、[スーパーバイザー](/docs/ja/agent-view#the-supervisor-process)が[バックグラウンドセッション](/docs/ja/agent-view)のプロセスを停止、再起動、または更新したときに、そのセッションの実行中の作業をセッションの次のプロセスに引き継ぐ代わりに停止します。その作業とは、セッションで実行中のバックグラウンドシェルコマンドと動的ワークフロー、および v2.1.198 以降ではバックグラウンドサブエージェントです。影響するのはその引き継ぎのみです。`←` または [`/background`](/docs/ja/agent-view#from-inside-a-session) でセッションをバックグラウンド化した場合は、実行中のバックグラウンド作業は引き続き引き継がれます。Claude Code v2.1.196 以降が必要です |
 | `CLAUDE_CODE_DISABLE_BG_SHELL_PRESSURE_REAP` | `1` に設定すると、メモリ逼迫時に Claude Code が[バックグラウンドシェルコマンド](/docs/ja/interactive-mode#background-bash-commands)を終了しないようにします。デフォルトでは、macOS と Linux で、オペレーティングシステムが深刻なメモリ逼迫を報告し、かつセッションがターンやサブエージェントの実行なしで 30 分間アイドル状態だった場合、Claude Code はバックグラウンドシェルを終了します。Windows にはメモリ逼迫のシグナルがないため、この変数は効果がありません。Claude Code v2.1.193 以降が必要です |
 | `CLAUDE_CODE_DISABLE_BUNDLED_SKILLS` | `1` に設定すると、Claude Code に含まれる[スキル](/docs/ja/skills)とワークフローを無効にします。バンドルスキルとワークフローは完全に削除され、`/init` などの組み込みコマンドは入力可能なままですが、モデルからは隠されます。`/doctor` は組み込みコマンドと同様に入力可能なままです。隠すには、代わりに `DISABLE_DOCTOR_COMMAND` を使用します。プラグイン、`.claude/skills/`、`.claude/commands/` のスキルは影響を受けません。[`disableBundledSkills`](/docs/ja/settings-reference#disablebundledskills) 設定と同等です |
 | `CLAUDE_CODE_DISABLE_CFC_PROMPT` | `1` に設定すると、[Claude in Chrome](/docs/ja/chrome) のブラウザツールを利用可能なままにしつつ、システムプロンプトの Chrome セクションと `/claude-in-chrome` [バンドルスキル](/docs/ja/skills#bundled-skills)を省略します。Claude Code を組み込み、独自のブラウザガイダンスを提供するホスト向けです。Claude Code v2.1.257 以降が必要です |
 | `CLAUDE_CODE_DISABLE_CLAUDE_MDS` | `1` に設定すると、ユーザー、プロジェクト、自動メモリのファイルを含む、すべての CLAUDE.md メモリファイルをコンテキストに読み込まないようにします |
-| `CLAUDE_CODE_DISABLE_CRON` | `1` に設定すると、[スケジュールタスク](/docs/ja/scheduled-tasks)を無効にします。`/loop` スキルと cron ツールは使用できなくなり、セッションの途中ですでに実行中のタスクを含め、スケジュール済みのタスクはすべて実行されなくなります |
+| `CLAUDE_CODE_DISABLE_CRON` | `1` に設定すると、[セッションスコープのスケジュールタスク](/docs/ja/scheduled-tasks)を無効にします。`/loop` スキルと cron ツールは使用できなくなり、セッション途中ですでに実行中のタスクを含め、すでにスケジュールされたタスクは起動しなくなります |
 | `CLAUDE_CODE_DISABLE_DANGEROUS_RM_TIMEOUT` | `1` に設定すると、[クリティカルパスの削除](/docs/ja/permission-modes#critical-paths)に関するプロンプトの時間制限をオフにします。その場合、`auto` モードでは Claude Code はこれらの削除を代わりに分類器に送信し、`bypassPermissions` モードではプロンプトがユーザーの回答を待ちます。Claude Code は設定の `env` ブロックを通じて配信されたコピーを無視するため、Claude Code を起動する環境で設定してください。Claude Code v2.1.281 以降が必要です |
 | `CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS` | `1` に設定すると、プレリリースの `anthropic-beta` リクエストヘッダー、それと対になるボディフィールド、`defer_loading` や `eager_input_streaming` などのベータ版ツールスキーマフィールドを API リクエストから除去します。プロキシゲートウェイが `anthropic-beta` ヘッダーについて `Unexpected value(s)` エラー、または `Extra inputs are not permitted` エラーでリクエストを拒否する場合に使用します。[プレリリース機能を無効にする](/docs/ja/llm-gateway-protocol#disable-pre-release-capabilities)には、[MCP ツール検索](/docs/ja/mcp#scale-with-mcp-tool-search)を含めこの変数が削除するものと、Claude Code が引き続き送信するものが記載されています |
 | `CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS` | `1` に設定すると、組み込みの [Explore および Plan サブエージェント](/docs/ja/sub-agents#built-in-subagents)を無効にします。Claude は代わりに検索ツールまたは汎用サブエージェントで探索し、[plan モード](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode)は Explore エージェントと Plan エージェントを起動せずにファイルを直接読み取ります。`Explore` または `Plan` という名前のカスタムサブエージェントは影響を受けません。Agent SDK または非対話モードですべての組み込みサブエージェントタイプを削除するには、代わりに `CLAUDE_AGENT_SDK_DISABLE_BUILTIN_AGENTS` を使用します。Claude Code v2.1.198 以降が必要です |
@@ -275,6 +253,7 @@ Claude Code はスタートアップ時にシェル環境変数を読み込む�
 | `CLAUDE_CODE_DISABLE_INLINE_SHELL_RM_PROMPT` | `1` に設定すると、`bash -c 'rm -rf ~'` のように `-c` でシェルに渡されるスクリプトを、Claude Code が[クリティカルパス](/docs/ja/permission-modes#removals-inside-nested-commands-and-inline-scripts)の削除について読み取らないようにします。Claude Code はそれらのスクリプト内のシェル変数と位置パラメーターの対象は引き続きチェックし、その他のクリティカルパスのチェックも引き続き実行されます。Claude Code は設定の `env` ブロックを通じて配信されたコピーを無視するため、Claude Code を起動する環境で設定してください。Claude Code v2.1.288 以降が必要です |
 | `CLAUDE_CODE_DISABLE_LEGACY_MODEL_REMAP` | `1` に設定すると、Anthropic API で Opus 4 と Opus 4.1 が現在の Opus バージョンに自動的に再マッピングされるのを防ぎます。意図的に古いモデルを固定したい場合に使用します。再マッピングは Amazon Bedrock、Google Cloud's Agent Platform、Microsoft Foundry では実行されません |
 | `CLAUDE_CODE_DISABLE_MODEL_ACCESS_FALLBACK` | `1` に設定すると、[Amazon Bedrock](/docs/ja/amazon-bedrock#when-a-model-is-disabled-mid-session) および [Google Cloud's Agent Platform](/docs/ja/google-vertex-ai#when-a-model-is-disabled-mid-session) 上の Claude Code で、セッション中にアカウントがセッションのモデルへのアクセス権を失った場合に、古いモデルへ切り替えないようにします。代わりに、拒否されたリクエストは即座に失敗します。設定した[フォールバックモデルチェーン](/docs/ja/model-config#fallback-model-chains)はその拒否時にも引き続き切り替わり、[起動時のモデルチェック](/docs/ja/amazon-bedrock#startup-model-checks)も起動時に引き続きフォールバックします。Claude Code v2.1.285 以降が必要です |
+| `CLAUDE_CODE_DISABLE_MOUNTED_DRIVE_RM_PROMPT` | `1` に設定すると、`/Volumes/USB` などのパスに対する[マウントされたドライブのプロンプト](/docs/ja/permission-modes#the-mounted-drive-prompt)をオフにします。Claude Code は[設定の `env` ブロックではこれを無視する](/docs/ja/settings-reference#variables-claude-code-ignores-in-env)ため、[Claude Code を起動する環境で設定してください](#set-variables-in-your-shell)。Claude Code v2.1.304 以降が必要です |
 | `CLAUDE_CODE_DISABLE_MOUSE` | `1` に設定すると、[フルスクリーンレンダリング](/docs/ja/fullscreen)でマウストラッキングを無効にします。`PgUp` と `PgDn` によるキーボードスクロールは引き続き機能します。ターミナルのネイティブな選択時コピーの動作を維持するために使用します |
 | `CLAUDE_CODE_DISABLE_MOUSE_CLICKS` | `1` に設定すると、マウスホイールのスクロールを維持したまま、[フルスクリーンレンダリング](/docs/ja/fullscreen)でのクリック、ドラッグ、ホバーの処理を無効にします。Claude Code 内でホイールスクロールを機能させたいが、クリックでカーソルを配置したり、ツールの出力を展開したり、リンクを開いたりしたくない場合に使用します。両方が設定されている場合は `CLAUDE_CODE_DISABLE_MOUSE` が優先されます。Claude Code v2.1.195 以降が必要です |
 | `CLAUDE_CODE_DISABLE_MTLS_RELOAD_ON_STALE_CONNECTION` | `1` に設定すると、接続リセットや TLS ハンドシェイクエラーなど、API リクエストが接続レベルのエラーで失敗したときに、Claude Code が [mTLS クライアント証明書と鍵](/docs/ja/network-config#mtls-authentication)を再読み込みしないようにします。再読み込みを無効にすると、Claude Code はローテーションされたファイルを、次に設定を適用するときか次回の起動時にのみ読み込みます。Claude Code v2.1.232 以降が必要です |
@@ -316,7 +295,7 @@ Claude Code はスタートアップ時にシェル環境変数を読み込む�
 | `CLAUDE_CODE_FORCE_SESSION_PERSISTENCE` | `1` に設定すると、この `claude` が別の Claude Code セッション内から起動された場合でも、トランスクリプトの永続化、プロンプト履歴、`claude agents` への登録を強制します。`screen` セッションや、Claude Code の Bash ツールが最初に起動したバックグラウンドランチャーなどから継承された `CLAUDE_CODE_CHILD_SESSION` 値によって、本来のトップレベルセッションがネストされたセッションと誤分類される場合に使用します。v2.1.178 以降、Claude Code は tmux のケースを自動的に検出して継承されたマーカーを無視するため、tmux ではこの変数は不要になりました。v2.1.169 以前でも有効です。この変数が上書きするネストされたセッションの検出が削除されていた v2.1.170 および v2.1.171 では効果がありません |
 | `CLAUDE_CODE_FORCE_STRIKETHROUGH` | ターミナルが取り消し線をサポートしているものの、`TERM_PROGRAM` が転送されていない SSH 経由など自動検出されない場合に、`1` に設定すると Claude の応答内の `~~text~~` を強制的に取り消し線で表示します。これがない場合、検出されないターミナルではテキストが取り消し線で表示されず、`~~` マーカーがそのまま表示されます。Claude Code v2.1.186 以降が必要です |
 | `CLAUDE_CODE_FORCE_SYNC_OUTPUT` | ターミナルがサポートしているものの自動検出されない場合に、`1` に設定すると DEC プライベートモード 2026 の [同期出力](https://gist.github.com/christianparpart/d8a62cc1ab659194337d73e399004036) を強制的に有効にします。BSU/ESU を実装しているものの機能プローブに応答しない Emacs `eat` などのエミュレーターに便利です。tmux の下では効果がありません。[フルスクリーンレンダリング](/docs/ja/fullscreen) に切り替える `CLAUDE_CODE_NO_FLICKER` とは異なり、これはレンダラーを変更しません |
-| `CLAUDE_CODE_FORCE_TERMINAL_IMAGES` | ターミナルが Unicode プレースホルダー付きの kitty グラフィックスプロトコル画像を描画するものの自動検出されない場合に、`1` に設定すると [mod の `Image` 要素](/docs/ja/plugins/mods/reference#elements) を画像として描画します。[Claude Code が検出するターミナル](/docs/ja/plugins/mods/gallery#image-and-client) と、tmux や screen 内では役に立たない理由を参照してください |
+| `CLAUDE_CODE_FORCE_TERMINAL_IMAGES` | ターミナルが Unicode プレースホルダー付きの kitty グラフィックプロトコル画像を描画できるにもかかわらず、`Image` の淡色表示された `alt` テキストが表示される場合に、`1` に設定すると [mod の `Image` 要素](/docs/ja/plugins/mods/reference#elements)を画像として描画します。[`Image` を描画するターミナル](/docs/ja/plugins/mods/gallery#image-and-client)と、tmux や screen 内でこの変数が役に立たない理由を参照してください |
 | `CLAUDE_CODE_FORK_SUBAGENT` | fork モードを制御します。fork モードはデフォルトでオンで、Claude が自ら[フォーク](/docs/ja/sub-agents#fork-the-current-conversation)を開始できるようにします。fork モードがオンの間、Claude はマシン上の対話型ターミナル、VS Code、またはデスクトップのセッションで[サブエージェントを待機する](/docs/ja/sub-agents#run-subagents-in-foreground-or-background)こともできません。`0` に設定すると fork モードをオフにします。バージョンについては、[fork モードをオフにする](/docs/ja/sub-agents#turn-fork-mode-on-or-off)を参照してください |
 | `CLAUDE_CODE_FORWARD_SUBAGENT_TEXT` | `1` に設定すると、`claude -p --output-format stream-json` の出力に [サブエージェント](/docs/ja/sub-agents) のテキストと思考ブロックを出力します。これは [`--forward-subagent-text`](/docs/ja/cli-reference#cli-flags) フラグと同じ動作です。ハーネスが `claude` を呼び出し、フラグ自体を渡せない場合にこの変数を使用します。stream-json 出力を伴う非対話モード以外ではエラーで終了するフラグとは異なり、この変数はそのような場合には無視されるため、プロセス全体で設定されていてもネストされた呼び出しは引き続き動作します。Claude Code v2.1.211 以降が必要です |
 | `CLAUDE_CODE_GATEWAY_HINT_HEADERS` | `1` に設定すると、カスタムプロキシや、Amazon Bedrock、Claude Platform on AWS などのサードパーティプロバイダーで、`x-claude-code-request-class` や `x-claude-code-compaction` などの [ゲートウェイヒントヘッダー](/docs/ja/llm-gateway-protocol#gateway-hint-headers) を送信します。`0` に設定すると、Claude Code がデフォルトでこれらを送信する Anthropic API への直接接続を含むすべての接続で、送信を停止します。Claude Code v2.1.273 以降が必要です |
@@ -336,10 +315,9 @@ Claude Code はスタートアップ時にシェル環境変数を読み込む�
 | `CLAUDE_CODE_MAX_CONTEXT_TOKENS` | Claude Code がアクティブなモデルについて想定するコンテキストウィンドウのサイズを上書きします。v2.1.193 以降、適用方法は Claude Code がモデル ID をどのように解決するかによって異なります。[ゲートウェイまたはカスタムモデル ID のウィンドウを修正する](/docs/ja/model-config#correct-the-window-for-a-gateway-or-custom-model-id) を参照してください。`ANTHROPIC_BASE_URL` を介してルーティングするモデルのコンテキストウィンドウが、その名前に対応する組み込みのサイズと一致しない場合に使用します |
 | `CLAUDE_CODE_MAX_MCP_DESCRIPTION_LENGTH` | Claude Code がモデルに送信する MCP ツールの説明と MCP サーバーの指示の最大長（文字数）。設定した値は、両方の[デフォルトの制限](/docs/ja/mcp#for-mcp-server-authors)、つまり 4096 と、Claude がツール検索で読み込むツールの説明に対する 16384 を置き換えます。正の整数を数字のみで受け付けます。それ以外は無視され、デフォルトが適用されます。Claude Code v2.1.280 以降が必要です |
 | `CLAUDE_CODE_MAX_OUTPUT_TOKENS` | ほとんどのリクエストの最大出力トークン数を設定します。デフォルトと上限はモデルによって異なります。[最大出力トークン](https://platform.claude.com/docs/en/about-claude/models/overview#latest-models-comparison) を参照してください。モデルの上限を超える値は、Claude Code によって上限まで引き下げられます。Claude Code が既知のモデルに解決できないモデル ID の場合、デフォルトは 32000、上限は 128000 です。この値を増やすと、[自動圧縮](/docs/ja/costs#reduce-token-usage) が発生するまでに利用できる実質的なコンテキストウィンドウが小さくなります |
-| `CLAUDE_CODE_MAX_RETRIES` | 失敗した API リクエストを再試行する回数を上書きします（デフォルト: 10）。v2.1.186 以降は上限が 15 です。v2.1.199 以降は、`CLAUDE_CODE_RETRY_WATCHDOG` によってデフォルトが引き上げられ、上限が撤廃されます。より長い障害を待ち続ける必要がある無人セッションでは、代わりに `CLAUDE_CODE_RETRY_WATCHDOG` を設定してください |
+| `CLAUDE_CODE_MAX_RETRIES` | 失敗した API リクエストを再試行する回数を上書きします（デフォルト: 10）。`529` overloaded エラーでは、より早く再試行が停止することがあります。たとえば、Opus モデルで API キーを使用している場合、3 回目の `529` で停止し、[Repeated 529 Overloaded errors](/docs/ja/errors#api-error-repeated-529-overloaded-errors) を表示します。[フォールバックモデル](/docs/ja/settings-reference#fallbackmodel)を設定している場合、Claude Code はエラーを表示する代わりにそのモデルに切り替えます。v2.1.186 以降は 15 が上限です。v2.1.199 以降、`CLAUDE_CODE_RETRY_WATCHDOG` はデフォルトを引き上げ、上限を撤廃します。より長い障害の間待機する必要がある無人セッションでは、代わりに `CLAUDE_CODE_RETRY_WATCHDOG` を設定してください |
 | `CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION` | v2.1.224 で削除され、現在は何も行いません。以前は、1 つのセッションで Claude が Agent ツールで生成できる [サブエージェント](/docs/ja/sub-agents) の総数を制限していました（デフォルト: 200）。上限を超えて生成しようとすると `Subagent spawn limit reached` で失敗していました。[同時実行サブエージェントの制限](/docs/ja/sub-agents#concurrent-subagent-limit) と [深さの制限](/docs/ja/sub-agents#let-subagents-spawn-their-own-subagents) は引き続き適用されます |
 | `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH` | メインの会話の下に許可される [サブエージェントの階層](/docs/ja/sub-agents#let-subagents-spawn-their-own-subagents) の数（デフォルト: 3）。デフォルトでは、サブエージェントは独自のサブエージェントを生成でき、3 番目の階層のサブエージェントはそれ以上生成できません。`1` に設定するとネストをオフにします。v2.1.217 から v2.1.218 ではデフォルトが 1 だったため、制限を引き上げない限りサブエージェントは独自のサブエージェントを生成できませんでした。v2.1.219 でデフォルトが 3 に引き上げられました。正の整数を数字のみで受け付けます。それ以外の値は無視されるため、制限を調整することはできますが、撤廃することはできません。Claude Code v2.1.217 以降が必要です |
-| `CLAUDE_CODE_MAX_TOOL_USE_CONCURRENCY` | 並列に実行できる読み取り専用ツールおよびサブエージェントの最大数（デフォルト: 10）。値を大きくすると並列性が高まりますが、より多くのリソースを消費します |
 | `CLAUDE_CODE_MAX_TURNS` | 明示的な制限が渡されていない場合のエージェントターン数の上限。[`--max-turns`](/docs/ja/cli-reference#cli-flags) を渡すのと同等で、両方が設定されている場合はフラグが優先されます。正の整数でない値は、上限なしとして扱われるのではなく、起動時にエラーで拒否されます |
 | `CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION` | [WebSearch](/docs/ja/tools-reference#session-search-limit) 呼び出しの上限（デフォルト: 200）。Claude が上限に達すると、それ以降の WebSearch 呼び出しは、すでに収集した情報で作業を続け、その旨を回答に記載するよう Claude に伝える通知を返します。上限値の制約なしに正の整数を受け付けます。それ以外は無視されてデフォルトが適用されるため、上限を引き上げることはできますが、オフにすることはできません。Claude Code v2.1.212 以降が必要です |
 | `CLAUDE_CODE_MCP_ALLOWLIST_ENV` | `1` に設定すると、シェル環境を継承する代わりに、安全な最小限のベースライン環境とサーバーに設定された `env` のみで stdio MCP サーバーを起動します |
@@ -389,6 +367,7 @@ Claude Code はスタートアップ時にシェル環境変数を読み込む�
 | `CLAUDE_CODE_RESUME_PROMPT` | `CLAUDE_CODE_RESUME_INTERRUPTED_TURN` が中断されたターンをプロンプトの再送信なしで続行する場合、または `-p` で [遅延されたツール呼び出し](/docs/ja/hooks#defer-a-tool-call-for-later) を再開する場合に、Claude Code が Claude に送信する継続メッセージを上書きします。デフォルトは `Continue from where you left off.` です。空の文字列を指定するとデフォルトが使用されます |
 | `CLAUDE_CODE_RETRY_WATCHDOG` | 評価ハーネス、CI ジョブ、リモートワーカーなどの無人セッションでは `1` に設定します。`429` および `529` の容量エラーを、`CLAUDE_CODE_MAX_RETRIES` 回の試行後に失敗させるのではなく、無期限に再試行します。標準速度のリクエストが、支出制限や使用クレジットの枯渇を報告する `429` を受け取った場合、それがスケジュールに従ってリセットされる [ゲートウェイの支出上限](/docs/ja/errors#spend-limit-reached) によるものであっても、Claude Code は直ちに失敗します。v2.1.239 より前は、ウォッチドッグはこれらを無期限に再試行していました。fast mode のリクエストについては、[レート制限の処理](/docs/ja/fast-mode#handle-rate-limits) を参照してください。ウォッチドッグは試行の間に最大 5 分、またはレスポンスにレート制限のリセット時刻が含まれている場合は制限がリセットされるまでバックオフするため、使用制限に達したセッションは残りの時間枠が過ぎるのを待ちます。v2.1.199 以降では、サーバーエラー、タイムアウト、接続の切断など、その他の一時的なエラーに対するデフォルトの再試行回数も 300（約 3 時間のバックオフ）に引き上げ、`CLAUDE_CODE_MAX_RETRIES` を明示的に設定した場合の上限 15 を撤廃します。Claude Code v2.1.186 以降が必要です |
 | `CLAUDE_CODE_RETRY_WATCHDOG_MAX_WAIT_MS` | `CLAUDE_CODE_RETRY_WATCHDOG` が設定されている場合に、各 API リクエストが `429` および `529` エラーをやり過ごすために待機する最大時間（ミリ秒）。その時間を使い切ると、次に同様のエラーが発生した時点でリクエストは終了します。30 分を表す `1800000` のように、正の整数を数字のみで指定します。未設定の場合、待機時間に制限はありません。Claude Code v2.1.295 以降が必要です |
+| `CLAUDE_CODE_RETRY_WATCHDOG_USAGE_LIMIT_RECHECK_MS` | `CLAUDE_CODE_RETRY_WATCHDOG` が設定された状態でリクエストが [使用制限](/docs/ja/errors#youve-hit-your-session-limit) のリセットを待機している間に、その制限がすでに解除されたかどうかを確認する最小間隔（ミリ秒）。確認で制限の解除がわかると、リクエストは直ちに送信されます。`60000`（1 分）から `10800000`（3 時間）までの整数を数字のみで指定します。確認は、使用クレジットを使用していない間の claude.ai サブスクリプションのセッション制限または週間制限に対してのみ行われ、`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` が設定されている間は行われません。この変数が未設定の場合、または値がその範囲外の場合、確認は行われません。Claude Code v2.1.305 以降が必要です |
 | `CLAUDE_CODE_SAFE_MODE` | `1` に設定するとセーフモードで起動します。壊れた設定のトラブルシューティングのために、CLAUDE.md、スキル、プラグイン、フック、MCP サーバー、カスタムコマンドとエージェント、出力スタイル、ワークフロー、カスタムテーマ、カスタムキーボードショートカット、ステータスラインおよびファイル候補のコマンド、LSP サーバー、自動メモリが読み込まれません。ポリシーで設定されたフック、ステータスライン、ファイル候補のコマンドを含め、管理設定のポリシーは引き続き適用されます。管理プラグイン、管理スキル、管理 CLAUDE.md、ポリシーで設定された MCP サーバーは適用されません。[`--safe-mode`](/docs/ja/cli-reference#cli-flags) を渡すのと同等です。直接起動された子プロセスはこの変数を継承します |
 | `CLAUDE_CODE_SCRIPT_CAPS` | `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB` が設定されている場合に、特定のスクリプトをセッションごとに呼び出せる回数を制限する JSON オブジェクト。キーはコマンドテキストと照合される部分文字列で、値は整数の呼び出し回数の上限です。たとえば、`{"deploy.sh": 2}` は `deploy.sh` の呼び出しを最大 2 回まで許可します。照合は部分文字列ベースのため、`./scripts/deploy.sh $(evil)` のようなシェル展開のトリックも上限にカウントされます。`xargs` や `find -exec` による実行時のファンアウトは検出されません。これは多層防御のための制御です |
 | `CLAUDE_CODE_SCROLL_SPEED` | [フルスクリーンレンダリング](/docs/ja/fullscreen#mouse-wheel-scrolling) でのマウスホイールのスクロール倍率を設定します。20 以下の任意の正の値を受け付けます。これには、すでにホイールイベントを増幅するターミナルで加速されたトラックパッドやホイールのスクロールを遅くするための、`0.5` のような 1 未満の小数値も含まれます。ターミナルが増幅なしでノッチごとに 1 つのホイールイベントを送信する場合、`vim` に合わせるには `3` に設定します。Claude Code が独自のスクロール処理を使用する JetBrains IDE のターミナルでは無視されます |
@@ -422,7 +401,6 @@ Claude Code はスタートアップ時にシェル環境変数を読み込む�
 | `CLAUDE_CODE_SYNC_SKILLS_WAIT_TIMEOUT_MS` | `CLAUDE_CODE_SYNC_SKILLS` が設定されている場合に、最初のクエリが初期のスキル一覧を待機するタイムアウト（ミリ秒）（デフォルト: 5000）。超過すると、最初のクエリはすでに届いたスキルで実行されます。いずれの場合もダウンロードはバックグラウンドで完了し、Claude はスキルを呼び出す際にそのスキルのダウンロードを待機します |
 | `CLAUDE_CODE_SYNTAX_HIGHLIGHT` | `false` に設定すると、差分出力のシンタックスハイライトを無効にします。色がターミナルの設定に干渉する場合に便利です。コードブロックとファイルプレビューのハイライトも無効にするには、[`syntaxHighlightingDisabled`](/docs/ja/settings-reference#syntaxhighlightingdisabled) 設定を使用してください |
 | `CLAUDE_CODE_TASK_LIST_ID` | セッション間でタスクリストを共有します。[Task ツールを持つセッション](/docs/ja/tools-reference#task-tool-availability) で、複数の Claude Code インスタンスに同じ ID を設定すると、共有タスクリストで連携できます。[タスクリスト](/docs/ja/interactive-mode#task-list) を参照してください |
-| `CLAUDE_CODE_TEAM_TEARDOWN_PARK_TIMEOUT_MS` | 非対話セッションが終了時に [エージェントチーム](/docs/ja/agent-teams) の解体が完了するまで待機する時間を、ミリ秒単位で上書きします。1000 から 60000 を受け付けます。範囲外の値は無視され、デフォルトの 10000 が適用されます。Claude Code v2.1.206 以降が必要です |
 | `CLAUDE_CODE_TMPDIR` | 内部の一時ファイルに使用する一時ディレクトリを上書きします。Claude Code は、Unix ではこのパスに `/claude-{uid}/` を、Windows では `/claude/` を追加します。デフォルト: macOS では `/tmp`、Linux と Windows では `os.tmpdir()`。一時パスが長すぎると失敗するツールがあるため、macOS と Linux では、上書きしたパスが長い場合、[サンドボックス化](/docs/ja/sandboxing) された Bash サブプロセスはシステムのデフォルトの下にある短いフォールバックの `$TMPDIR` を受け取ります。サンドボックス化されていない Bash コマンドは、シェルの `$TMPDIR` が設定されている場合はそれを継承します。ネイティブ Windows では、シェルが `$TMPDIR` を設定していない場合、`$TMPDIR` を参照する Bash コマンドは上書きした値を受け取り、上書きを設定していない場合は `%TEMP%` を受け取ります。Claude Code 自身の一時ファイルは常に上書きした値を使用します。シェル、ユーザー設定、または管理設定で設定してください。[プロジェクト設定およびローカル設定](/docs/ja/settings-reference#variables-claude-code-ignores-in-env) では無視されます |
 | `CLAUDE_CODE_TMUX_TRUECOLOR` | `1` など、空でない任意の値に設定すると、tmux 内で 24 ビットのトゥルーカラー出力を許可します。ほとんどのオン/オフ変数とは異なり、**`0` または `false` に設定してもトゥルーカラーは許可されます**。256 色への制限に戻すには、変数を未設定にしてください。tmux は設定しない限りトゥルーカラーのエスケープシーケンスをパススルーしないため、デフォルトでは `$TMUX` が設定されていると Claude Code は 256 色に制限します。`~/.tmux.conf` に `set -ga terminal-overrides ',*:Tc'` を追加した後にこれを設定してください。その他の tmux の設定については、[ターミナルの設定](/docs/ja/terminal-config) を参照してください |
 | `CLAUDE_CODE_TOOL_MEMORY_CGROUP_EXCLUDE` | Linux と WSL で、Claude Code が [ツールのメモリ上限から除外する](/docs/ja/tools-reference#memory-limit-on-linux-and-wsl) プロセスの種類（`mcp` や `lsp` など）をカンマ区切りのリストで設定します。`none` を設定するとすべての種類に上限を適用し、`all-new` を設定すると Bash、PowerShell、Monitor ツールのコマンドにのみ上限を適用します。何を指定しても、Claude Code は Bash、PowerShell、Monitor ツールのコマンドを上限の対象に保ちます。Claude Code v2.1.246 以降が必要です |
@@ -433,7 +411,6 @@ Claude Code はスタートアップ時にシェル環境変数を読み込む�
 | `CLAUDE_CODE_USE_BEDROCK` | [Amazon Bedrock](/docs/ja/amazon-bedrock) を使用します |
 | `CLAUDE_CODE_USE_FOUNDRY` | [Microsoft Foundry](/docs/ja/microsoft-foundry) を使用します |
 | `CLAUDE_CODE_USE_MANTLE` | Amazon Bedrock の [Mantle エンドポイント](/docs/ja/amazon-bedrock#use-the-mantle-endpoint)を使用します |
-| `CLAUDE_CODE_USE_NATIVE_FILE_SEARCH` | `1` に設定すると、ripgrep の代わりに Node.js のファイル API を使用してカスタムコマンド、サブエージェント、出力スタイルを検出します。バンドルされた ripgrep バイナリが環境で利用できない場合やブロックされている場合に設定します。Grep ツールやファイル検索ツールには影響しません |
 | `CLAUDE_CODE_USE_POWERSHELL_TOOL` | PowerShell ツールを制御します。Git Bash のない Windows では、ツールは自動的に有効になります。無効にするには `0` に設定します。Git Bash がインストールされている Windows では、claude.ai アカウントと Console アカウントではデフォルトでオンになっています。Amazon Bedrock、Google Cloud's Agent Platform、Microsoft Foundry のセッションで有効にするには `1` に、オフにするには `0` に設定します。Linux、macOS、WSL では、`1` に設定すると有効になり、`PATH` 上に `pwsh` が必要です。Windows で有効にすると、Claude は Git Bash を経由せずに PowerShell コマンドをネイティブに実行できます。[PowerShell ツール](/docs/ja/tools-reference#powershell-tool)を参照してください |
 | `CLAUDE_CODE_USE_VERTEX` | [Google Cloud's Agent Platform](/docs/ja/google-vertex-ai) を使用します |
 | `CLAUDE_CODE_WEBFETCH_CACHE_TTL_MS` | [WebFetch](/docs/ja/tools-reference#webfetch-tool-behavior) が取得した各 URL のレスポンスをキャッシュしておく時間をミリ秒で設定します。デフォルトは `900000`（15 分）です。数字のみを受け付けます。`0`、小数、その他の表記ではデフォルトが維持されます。Claude Code は起動ごとに 1 回だけ値を読み取るため、設定の `env` ブロックでの変更は次に `claude` を起動したときに適用されます。Claude Code v2.1.233 以降が必要です |
@@ -444,7 +421,6 @@ Claude Code はスタートアップ時にシェル環境変数を読み込む�
 | `CLAUDE_CODE_WORKFLOW_PREFIX_STAGGER_MS` | [ワークフロー](/docs/ja/workflows)のエージェントが自身の最初のリクエストを送信する前に、同じプレフィックスを持つ兄弟エージェントの最初の応答が始まるのを待機する時間の上限（ミリ秒）。ファンアウトで[プロンプトキャッシュのプレフィックス](/docs/ja/workflows#prompt-caching-in-a-fan-out)を共有する複数のエージェントが開始されると、Claude Code は最初のエージェント以外を最大この時間だけ保留し、残りのエージェントがそれぞれキャッシュなしでプレフィックスを処理する代わりに、キャッシュされたプレフィックスを読み取れるようにします。デフォルトは `5000` です。待機を無効にするには `0` に設定します。`DISABLE_PROMPT_CACHING` が設定されている場合、エージェントは待機しません。Claude Code v2.1.229 以降が必要です |
 | `CLAUDE_CODE_YOU_SHOULD_KNOW_DEBUG` | `1` に設定すると、このセッションで [You should know mod](/docs/ja/interactive-mode#you-should-know-suggestions) が行った直近 3 回のチェックそれぞれについて、プロンプトの上に 1 行ずつ表示します。メモが表示されないときに、mod がチェックを行っていることを確認するために使用します。Claude Code v2.1.287 以降が必要です |
 | `CLAUDE_CONFIG_DIR` | 設定ディレクトリを上書きします（デフォルト: `~/.claude`）。すべての設定、セッション履歴、プラグインはこのパスの下に保存されます。認証情報については、[Claude Code が認証情報を保存する場所](/docs/ja/authentication#credential-management)を参照してください。複数のアカウントを並行して使用する場合に便利です。例: `alias claude-work='CLAUDE_CONFIG_DIR=~/.claude-work claude'`。シェル、ユーザー設定、または管理設定で設定します。設定ファイルでは[絶対パス](#in-settings-files)を記述します。[プロジェクト設定とローカル設定](/docs/ja/settings-reference#variables-claude-code-ignores-in-env)では無視されます |
-| `CLAUDE_DISABLE_ADOPT` | `1` に設定すると、`←` を押すか [`/background`](/docs/ja/agent-view#from-inside-a-session) でセッションをバックグラウンドに移したときに、進行中のバックグラウンド作業を引き継ぐ代わりに停止します。Claude Code はバックグラウンドに移す前に確認を求め、本来なら引き継がれるタスクを停止します。Claude Code v2.1.195 以降が必要です |
 | `CLAUDE_EFFORT` | Bash ツールのサブプロセスとフックコマンドで、サブプロセスの開始時に有効な [effort レベル](/docs/ja/model-config#adjust-effort-level)（`low`、`medium`、`high`、`xhigh`、または `max`）に自動的に設定されます。[フック](/docs/ja/hooks)に渡される `effort.level` フィールドと一致します。現在のモデルが effort パラメーターをサポートしている場合にのみ設定されます |
 | `CLAUDE_ENABLE_BYTE_WATCHDOG` | `1` に設定するとバイトレベルのストリーミングアイドルウォッチドッグを強制的に有効にし、`0` に設定すると強制的に無効にします。`0` は、[最初のバイトの期限](/docs/ja/network-config#streaming-idle-watchdogs)が適用される接続でその期限もオフにします。未設定の場合、ウォッチドッグは Anthropic API と [Claude Platform on AWS](/docs/ja/claude-platform-on-aws) への直接接続、および `ANTHROPIC_BASE_URL` または `ANTHROPIC_AWS_BASE_URL` を介して到達する[ゲートウェイ](/docs/ja/gateways)接続でのストリーミングレスポンスに対して、デフォルトで有効になります。v2.1.222 より前はこれらのゲートウェイ接続では実行されなかったため、キープアライブの ping が届いている間でも、イベントレベルのウォッチドッグが停止を報告することがありました。タイムアウトとタイマーの相互作用については、[ストリーミングアイドルウォッチドッグ](/docs/ja/network-config#streaming-idle-watchdogs)を参照してください |
 | `CLAUDE_ENABLE_BYTE_WATCHDOG_BEDROCK` | `1` に設定すると、Amazon Bedrock の `vnd.amazon.eventstream` レスポンスでバイトレベルのストリーミングアイドルウォッチドッグを有効にし、Bedrock のストリーミングリクエストで[最初のバイトの期限](/docs/ja/network-config#streaming-idle-watchdogs)も有効にします。デフォルトではオフです。タイムアウトは `CLAUDE_STREAM_IDLE_TIMEOUT_MS` で設定します |
@@ -482,10 +458,9 @@ Claude Code はスタートアップ時にシェル環境変数を読み込む�
 | `DO_NOT_TRACK` | `1` に設定すると、テレメトリをオプトアウトします。[機能フラグの取得](#features-that-need-feature-flag-fetching)への影響を含め、`DISABLE_TELEMETRY` と同じ効果があります。Claude Code はこの変数を標準的なブール値として読み取るため、`0` ではテレメトリはオンのままになります。また、多くの開発者向け CLI で認識されているツール横断の慣例としてこの変数を尊重します |
 | `ENABLE_BETA_TRACING_DETAILED` | `1` に設定し、`BETA_TRACING_ENDPOINT` を OTLP/HTTP コレクターのエンドポイントに設定すると、[詳細なベータトレーシング](/docs/ja/monitoring-usage#traces-beta)がオンになり、コンテンツを含むスパン属性と `claude_code.hook` スパンが追加されます。対話型の CLI セッションでは、組織がベータの許可リストに登録されている必要もあります。どちらの変数も[プロジェクト設定とローカル設定](/docs/ja/settings-reference#variables-claude-code-ignores-in-env)では無視されます |
 | `ENABLE_CLAUDEAI_MCP_SERVERS` | `false` に設定すると、Claude Code が [claude.ai の MCP サーバー](/docs/ja/mcp#use-mcp-servers-from-claude-ai)を取得しないようにします。ログインしているユーザーに対してはデフォルトで有効です。プロジェクト単位または組織単位で無効にするには、代わりに設定で [`disableClaudeAiConnectors`](/docs/ja/settings-reference#disableclaudeaiconnectors) を設定します |
-| `ENABLE_PROMPT_CACHING_1H` | `1` に設定すると、デフォルトの 5 分ではなく 1 時間の[プロンプトキャッシュ TTL](/docs/ja/prompt-caching#cache-lifetime) をリクエストします。API キー、[Amazon Bedrock](/docs/ja/amazon-bedrock)、[Google Cloud's Agent Platform](/docs/ja/google-vertex-ai)、[Microsoft Foundry](/docs/ja/microsoft-foundry)、[Claude Platform on AWS](/docs/ja/claude-platform-on-aws) のユーザーを対象としています。含まれる使用量の範囲内のサブスクリプションユーザーは、[メインの会話](/docs/ja/prompt-caching#which-ttl-each-request-gets)で自動的に 1 時間の TTL を受け取ります。[使用クレジット](https://support.claude.com/en/articles/12429409-extra-usage-for-paid-claude-plans)を利用しているサブスクリプションユーザーは、これを設定すると 1 時間の TTL を維持できます。1 時間のキャッシュ書き込みにはより高い料金が課金されます。代わりにリクエストのバケットごとに TTL を選択するには、`CLAUDE_CODE_PROMPT_CACHE_TTL` と `CLAUDE_CODE_SUBAGENT_PROMPT_CACHE_TTL` を使用します。これらはこの変数より優先されます |
+| `ENABLE_PROMPT_CACHING_1H` | `1` に設定すると、デフォルトの 5 分ではなく 1 時間の[プロンプトキャッシュ TTL](/docs/ja/prompt-caching#cache-lifetime) をリクエストします。API キー、[Amazon Bedrock](/docs/ja/amazon-bedrock)、[Google Cloud's Agent Platform](/docs/ja/google-vertex-ai)、[Microsoft Foundry](/docs/ja/microsoft-foundry)、[Claude Platform on AWS](/docs/ja/claude-platform-on-aws) のユーザー向けです。サブスクリプションユーザーが含まれる使用量の範囲内にある場合、Claude Code は[メインの会話](/docs/ja/prompt-caching#which-ttl-each-request-gets)で 1 時間の TTL を自動的にリクエストします。[使用クレジット](https://support.claude.com/en/articles/12429409-extra-usage-for-paid-claude-plans)を利用しているサブスクリプションユーザーは、これを設定して 1 時間の TTL を維持できます。1 時間のキャッシュ書き込みは高い料金で課金されます。メインの会話とそれ以外のリクエストで TTL を個別に選択するには、この変数より優先される `CLAUDE_CODE_PROMPT_CACHE_TTL` と `CLAUDE_CODE_SUBAGENT_PROMPT_CACHE_TTL` を使用してください |
 | `ENABLE_PROMPT_CACHING_1H_BEDROCK` | 非推奨です。代わりに `ENABLE_PROMPT_CACHING_1H` を使用してください |
-| `ENABLE_TOOL_SEARCH` | [MCP ツール検索](/docs/ja/mcp#scale-with-mcp-tool-search)を制御します。未設定の場合、Claude Code はデフォルトですべての MCP ツールを遅延読み込みしますが、`ANTHROPIC_BASE_URL` がファーストパーティ以外のホストを指している場合は代わりに事前に読み込みます。`true` は、そのようなホストでも遅延読み込みを維持します。`auto` は、ツール定義がコンテキストの 10% 以内に収まる場合に事前に読み込みます。`auto:N` はカスタムのしきい値を設定します（5% の場合は `auto:5` など）。`false` はすべてのツールを事前に読み込みます。この値にかかわらずすべてのツールを事前に読み込むモデルとデプロイについては、[ツール検索を設定する](/docs/ja/mcp#configure-tool-search)を参照してください |
-| `FALLBACK_FOR_ALL_PRIMARY_MODELS` | `1` などの空でない任意の値に設定すると、フォールバックモデルが設定されていない場合に、Claude Code がすべてのモデルで過負荷エラーが繰り返されたときに再試行を停止するようにします。ほとんどのオン/オフ変数とは異なり、**`0` や `false` に設定してもこれは有効になります**。デフォルトの再試行動作に戻すには、変数の設定を解除してください。この変数がない場合、Claude Code がこのように再試行を停止するのは、Claude のサブスクリプションではなく API キーまたは[サードパーティプロバイダー](/docs/ja/third-party-integrations)で認証しているときに、Opus、Fable、または Mythos モデルと認識したモデルに対してのみです。Claude Code v2.1.160 以降では、Claude Code はどのプライマリモデルでも過負荷エラーが繰り返されると、設定された[フォールバックモデルチェーン](/docs/ja/model-config#fallback-model-chains)に切り替えるため、この変数はフォールバックモデルへの切り替えには影響しません |
+| `ENABLE_TOOL_SEARCH` | [MCP ツール検索](/docs/ja/mcp#scale-with-mcp-tool-search)を制御します。未設定または `true` の場合、[ツール検索をオフのままにするケース](/docs/ja/mcp#configure-tool-search)を除き、MCP ツールを遅延読み込みします。`auto` では、ツール定義がコンテキストの 10% 以内に収まる場合に事前に読み込みます。`auto:N` はカスタムのしきい値を設定します（例: 5% の場合は `auto:5`）。`false` ではすべてのツールを事前に読み込みます。ゲートウェイがツール検索を拒否する場合は、[LLM ゲートウェイ経由のツール検索](/docs/ja/mcp#tool-search-through-a-gateway)を参照してください |
 | `FORCE_AUTOUPDATE_PLUGINS` | `1` に設定すると、メインの自動更新が `DISABLE_AUTOUPDATER` で無効になっている場合でも、プラグインの自動更新を強制します |
 | `FORCE_HYPERLINK` | ターミナルがクリック可能な OSC 8 ハイパーリンクをサポートしているのに自動検出されない場合、`1` に設定すると有効になり、`0` に設定すると無効になります。未設定の場合、Claude Code はターミナルのサポートを検出した場合にのみハイパーリンクを有効にします。Claude Code はこの値をブール値ではなく数値として解析するため、`false`、`no`、`off` などの値はハイパーリンクを無効にするのではなく有効にします。フッターの [PR またはマージリクエストのバッジ](/docs/ja/interactive-mode#pr-review-status)は、SSH 経由など Claude Code がターミナルのサポートを検出できない場合でもハイパーリンクとして表示されます。バッジをプレーンテキストとして表示するには `0` に設定します |
 | `FORCE_PROMPT_CACHING_5M` | `1` に設定すると、本来 1 時間の TTL が適用される場合でも、5 分のプロンプトキャッシュ TTL を強制します。`CLAUDE_CODE_PROMPT_CACHE_TTL`、`CLAUDE_CODE_SUBAGENT_PROMPT_CACHE_TTL`、`ENABLE_PROMPT_CACHING_1H`、および `promptCacheTtl` と `subagentPromptCacheTtl` 設定を上書きします |
@@ -551,9 +526,7 @@ Claude Code はスタートアップ時にシェル環境変数を読み込む�
 
 `CLAUDE_CODE_ENABLE_TELEMETRY` と、エクスポートをオンにする、エクスポート先を選択する、またはコンテンツを取得する OpenTelemetry 変数は、シェル、ユーザー設定、または管理設定で設定します。Claude Code は、そのセクションで説明されているオフの値を除き、[プロジェクト設定とローカル設定ではこれらを無視します](/docs/ja/settings-reference#variables-claude-code-ignores-in-env)。`OTEL_RESOURCE_ATTRIBUTES` と、`OTEL_METRIC_EXPORT_INTERVAL` などのエクスポート間隔、タイムアウト、圧縮に関する変数は、プロジェクト設定とローカル設定からも引き続き適用されます。
 
-<h2 id="what-the-subprocess-environment-scrub-removes">
-  サブプロセス環境のスクラブで削除されるもの
-</h2>
+## サブプロセス環境のスクラブで削除されるもの
 
 [`CLAUDE_CODE_SUBPROCESS_ENV_SCRUB`](#variables) を `1` に設定すると、Claude Code は Bash コマンド、フック、stdio MCP サーバーなど、自身が起動するサブプロセスの環境から認証情報を削除します。これにより、プロンプトインジェクション攻撃が読み取れる情報が減ります。Claude Code のプロセス自体は、独自の API 呼び出しのために認証情報を保持します。
 
@@ -581,9 +554,7 @@ Linux では、スクラブは Bash サブプロセスを分離された PID 名
 
 v2.1.251 より前のバージョンでは、スクラブは `ANTHROPIC_API_KEY` と `AWS_SECRET_ACCESS_KEY` を削除し、表に示したその他の例示の変数は変更せずに残していました。
 
-<h2 id="features-that-need-feature-flag-fetching">
-  機能フラグの取得が必要な機能
-</h2>
+## 機能フラグの取得が必要な機能
 
 Claude Code の一部の機能は、Anthropic から取得する機能フラグによってオンになります。次のセッションでは、Claude Code はこの取得をスキップします。
 
@@ -593,7 +564,6 @@ Claude Code の一部の機能は、Anthropic から取得する機能フラグ�
 
 取得がオフの場合、次のことはできません。
 
-* [`/auto-mode-setup`](/docs/ja/auto-mode-config#generate-environment-entries) を実行して `autoMode.environment` のエントリを下書きする
 * `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` または `DISABLE_GROWTHBOOK` を設定した状態で [Remote Control](/docs/ja/remote-control) を使用する。`DISABLE_TELEMETRY` と `DO_NOT_TRACK` については、[Remote Control の要件](/docs/ja/remote-control#requirements)を参照してください
 * [Remote Control](/docs/ja/remote-control#requirements) が利用できない場合に、[このマシン以外のセッションにメッセージを送る](/docs/ja/cross-session-messaging#message-sessions-on-other-machines)。このマシン上のセッション間のメッセージングは、取得がオフでも機能します
 * [`claude import` または `/import` コマンド](/docs/ja/cli-reference#cli-commands)を実行する
@@ -609,9 +579,7 @@ Claude Code の一部の機能は、Anthropic から取得する機能フラグ�
 * Claude Code に [API が拒否する入力スキーマを持つ MCP ツールを除外させる](/docs/ja/mcp#tools-with-invalid-input-schemas)。Claude Code はそのスキーマをそのまま送信し、それを含むリクエストは[ツールを位置で示す 400 エラー](/docs/ja/errors#tool-input-schema-is-invalid)で失敗します
 * ターミナルセッションがアイドル状態の間に、1 時間のプロンプトキャッシュの有効期限が切れる少し前に、Claude Code に[長い会話をコンパクト化させる](/docs/ja/settings-reference#idlecompaction)
 
-<h3 id="first-session-after-an-install-or-upgrade">
-  インストールまたはアップグレード後の最初のセッション
-</h3>
+### インストールまたはアップグレード後の最初のセッション
 
 Claude Code をインストールした後、または機能が追加されたバージョンにアップグレードした後の最初のセッションでは、[フラグで制御される機能](#features-that-need-feature-flag-fetching)が利用できないことがあります。そのセッション中に Claude Code が機能フラグを取得すると、フラグはマシンに保存されるため、そのマシンでの次のセッションでは機能が利用できます。
 
@@ -620,9 +588,7 @@ Claude Code をインストールした後、または機能が追加された�
 * **実行のたびにクリーンな環境になる場合**: 各実行が CI コンテナや、以前のセッションが保存したフラグのないその他の環境で開始される場合、すべての実行が最初のセッションになります
 * **API キーのないゲートウェイトークンの場合**: API キーなしで `ANTHROPIC_AUTH_TOKEN` を使用して認証し、`ANTHROPIC_BASE_URL` が [LLM ゲートウェイ](/docs/ja/llm-gateway)など Anthropic 以外のホストを指している場合、Claude Code にはフラグを取得するための認証情報がありません
 
-<h2 id="see-also">
-  関連項目
-</h2>
+## 関連項目
 
 * [設定](/docs/ja/settings)：すべての `settings.json` 設定（`env` キーを含む）
 * [CLI リファレンス](/docs/ja/cli-reference)：起動時フラグ

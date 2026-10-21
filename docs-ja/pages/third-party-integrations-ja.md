@@ -6,83 +6,14 @@
 
 > Claude Code が様々なサードパーティサービスとインフラストラクチャと統合して、エンタープライズデプロイメント要件を満たす方法について学びます。
 
-export const ContactSalesCard = ({surface}) => {
-  const utm = content => `utm_source=claude_code&utm_medium=docs&utm_content=${surface}_${content}`;
-  const iconArrowRight = (size = 13) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <line x1="5" y1="12" x2="19" y2="12" />
-      <polyline points="12 5 19 12 12 19" />
-    </svg>;
-  const STYLES = `
-.cc-cs {
-  --cs-slate: #141413;
-  --cs-clay: #d97757;
-  --cs-clay-deep: #c6613f;
-  --cs-gray-000: #ffffff;
-  --cs-gray-700: #3d3d3a;
-  --cs-border-default: rgba(31, 30, 29, 0.15);
-  font-family: inherit;
-}
-.dark .cc-cs {
-  --cs-slate: #f0eee6;
-  --cs-gray-000: #262624;
-  --cs-gray-700: #bfbdb4;
-  --cs-border-default: rgba(240, 238, 230, 0.14);
-}
-.cc-cs-card {
-  display: flex; align-items: center; justify-content: space-between;
-  gap: 16px; padding: 14px 16px; margin: 0;
-  background: var(--cs-gray-000); border: 0.5px solid var(--cs-border-default);
-  border-radius: 8px; flex-wrap: wrap;
-}
-.cc-cs-text { font-size: 13px; color: var(--cs-gray-700); line-height: 1.5; flex: 1; min-width: 240px; }
-.cc-cs-text strong { font-weight: 550; color: var(--cs-slate); }
-.cc-cs-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-.cc-cs-btn-clay {
-  display: inline-flex; align-items: center; gap: 8px;
-  background: var(--cs-clay-deep); color: #fff; border: none;
-  border-radius: 8px; padding: 8px 14px;
-  font-size: 13px; font-weight: 500;
-  transition: background-color 0.15s; white-space: nowrap;
-}
-.cc-cs-btn-clay:hover { background: var(--cs-clay); }
-.cc-cs-btn-ghost {
-  display: inline-flex; align-items: center; gap: 8px;
-  background: transparent; color: var(--cs-gray-700);
-  border: 0.5px solid var(--cs-border-default);
-  border-radius: 8px; padding: 8px 14px;
-  font-size: 13px; font-weight: 500;
-}
-.cc-cs-btn-ghost:hover { background: rgba(0, 0, 0, 0.04); }
-.dark .cc-cs-btn-ghost:hover { background: rgba(255, 255, 255, 0.04); }
-@media (max-width: 720px) {
-  .cc-cs-actions { width: 100%; }
-}
-`;
-  return <div className="cc-cs not-prose">
-      <style>{STYLES}</style>
-      <div className="cc-cs-card">
-        <div className="cc-cs-text">
-          <strong>Deploying Claude Code across your organization?</strong> Talk to sales about enterprise plans, SSO, and centralized billing.
-        </div>
-        <div className="cc-cs-actions">
-          <a href={`https://claude.com/pricing?${utm('view_plans')}#plans-business`} className="cc-cs-btn-ghost">
-            View plans
-          </a>
-          <a href={`https://claude.com/contact-sales?${utm('contact_sales')}`} className="cc-cs-btn-clay">
-            Contact sales {iconArrowRight()}
-          </a>
-        </div>
-      </div>
-    </div>;
-};
-
 組織は Anthropic を通じて直接、またはクラウドプロバイダーを通じて Claude Code をデプロイできます。このページは、適切な構成を選択するのに役立ちます。
 
-<ContactSalesCard surface="third_party_overview" />
+**Deploying Claude Code across your organization?** Talk to sales about enterprise plans, SSO, and centralized billing.
 
-<h2 id="compare-deployment-options">
-  デプロイメントオプションの比較
-</h2>
+View plans
+Contact sales
+
+## デプロイメントオプションの比較
 
 ほとんどの組織では、Claude for Teams または Claude for Enterprise が最適なエクスペリエンスを提供します。チームメンバーは、単一のサブスクリプション、一元化された請求、インフラストラクチャセットアップが不要で、Claude Code と Web 上の Claude の両方にアクセスできます。
 
@@ -122,7 +53,8 @@ export const ContactSalesCard = ({surface}) => {
 
     <tr>
       <td>請求</td>
-      <td><strong>Teams:</strong> シートあたりのサブスクリプション（PAYG 利用可能）、<a href="https://claude.com/pricing?utm_source=claude_code&utm_medium=docs&utm_content=third_party_pricing#team-&-enterprise">価格</a>を参照<br /><strong>Enterprise:</strong> <a href="https://claude.com/contact-sales?utm_source=claude_code&utm_medium=docs&utm_content=third_party_enterprise">営業に連絡</a></td>
+      <td>**Teams:** シートあたりのサブスクリプション（PAYG 利用可能）、[価格](https://claude.com/pricing?utm_source=claude_code\&utm_medium=docs\&utm_content=third_party_pricing#team-&-enterprise)を参照\
+      **Enterprise:** [営業に連絡](https://claude.com/contact-sales?utm_source=claude_code\&utm_medium=docs\&utm_content=third_party_enterprise)</td>
       <td>PAYG</td>
       <td>AWS 経由の PAYG</td>
       <td>AWS Marketplace 経由の PAYG</td>
@@ -206,9 +138,7 @@ export const ContactSalesCard = ({surface}) => {
 
 Amazon Bedrock と Google Vertex AI の場合、ログインプロンプトで `claude` を実行して**3rd-party platform** を選択し、インタラクティブセットアップウィザードを起動することもできます。
 
-<h2 id="configure-proxies-and-gateways">
-  プロキシとゲートウェイの構成
-</h2>
+## プロキシとゲートウェイの構成
 
 ほとんどの組織は、追加の構成なしでクラウドプロバイダーを直接使用できます。ただし、組織に特定のネットワークまたは管理要件がある場合は、企業プロキシまたは LLM ゲートウェイを構成する必要がある場合があります。これらは一緒に使用できる異なる構成です。
 
@@ -219,51 +149,35 @@ Amazon Bedrock と Google Vertex AI の場合、ログインプロンプトで `
 
 組織が[顧客管理暗号化キー](https://platform.claude.com/docs/en/manage-claude/cmek)（CMEK）を使用し、Claude Code を LLM ゲートウェイまたはカスタム `ANTHROPIC_BASE_URL` を通じてルーティングする場合、CMEK はそれらのセッションの Claude Code の運用テレメトリには適用されません。すべての開発者のテレメトリをオフにするには、[組織のテレメトリをオフにする](/docs/ja/managed-settings#turn-telemetry-off-for-your-organization)に示されているように、管理設定を通じて `DISABLE_TELEMETRY` を配信します。
 
-<h2 id="best-practices-for-organizations">
-  組織のベストプラクティス
-</h2>
+## 組織のベストプラクティス
 
-<h3 id="invest-in-documentation-and-memory">
-  ドキュメントとメモリに投資する
-</h3>
+### ドキュメントとメモリに投資する
 
 Claude Code がコードベースを理解できるように、ドキュメントに投資してください。組織は複数のレベルで CLAUDE.md ファイルをデプロイできます。[CLAUDE.md ファイルをどこに配置できるか](/docs/ja/memory#choose-where-to-put-claude-md-files)と[組織全体の CLAUDE.md をデプロイする方法](/docs/ja/memory#deploy-organization-wide-claude-md)をご覧ください。
 
-<h3 id="simplify-deployment">
-  デプロイメントを簡素化する
-</h3>
+### デプロイメントを簡素化する
 
 カスタム開発環境がある場合は、Claude Code をインストールする「ワンクリック」の方法を作成することが、組織全体での採用を促進するための鍵となります。
 
-<h3 id="start-with-guided-usage">
-  ガイド付き使用から始める
-</h3>
+### ガイド付き使用から始める
 
 新しいユーザーに Claude Code をコードベースの Q\&A、または小さなバグ修正または機能リクエストで試すことをお勧めします。Claude Code にプランを作成するよう依頼します。Claude の提案を確認し、軌道を外れている場合はフィードバックを提供します。時間が経つにつれて、ユーザーがこの新しいパラダイムをより理解するようになると、Claude Code をより積極的に実行させるのに効果的になります。
 
-<h3 id="pin-model-versions-for-cloud-providers">
-  クラウドプロバイダーのモデルバージョンをピン留めする
-</h3>
+### クラウドプロバイダーのモデルバージョンをピン留めする
 
 [Amazon Bedrock](/docs/ja/amazon-bedrock)、[Google Cloud の Agent Platform](/docs/ja/google-vertex-ai)、[Microsoft Foundry](/docs/ja/microsoft-foundry)、または [Claude Platform on AWS](/docs/ja/claude-platform-on-aws) を通じてデプロイする場合は、`ANTHROPIC_DEFAULT_FABLE_MODEL`、`ANTHROPIC_DEFAULT_OPUS_MODEL`、`ANTHROPIC_DEFAULT_SONNET_MODEL`、および `ANTHROPIC_DEFAULT_HAIKU_MODEL` を使用して特定のモデルバージョンをピン留めします。ピン留めしない場合、モデルエイリアスは Claude Code のそのプロバイダーの組み込みデフォルトに解決され、最新リリースより遅れる可能性があり、アカウントでまだ有効になっていない可能性があります。ピン留めすることで、ユーザーが新しいモデルに移行するタイミングを制御できます。各プロバイダーがデフォルトが利用できない場合に何を行うかについては、[モデル構成](/docs/ja/model-config#pin-models-for-third-party-deployments)を参照してください。
 
-<h3 id="configure-security-policies">
-  セキュリティポリシーを構成する
-</h3>
+### セキュリティポリシーを構成する
 
 セキュリティチームは、Claude Code が実行できることと実行できないことに対する管理権限を構成できます。これはローカル構成によって上書きされません。[詳細をご覧ください](/docs/ja/security)。
 
 これらのデプロイメントオプションのうち、管理対象マシンが使用できるものを制限するには、管理設定で [`allowedProviders`](/docs/ja/settings-reference#allowedproviders) を設定します。たとえば、`["bedrock"]` は Amazon Bedrock のみを許可します。Mantle エンドポイントも有効にする Bedrock フリートは `"mantle"` も一覧に含めます。このエントリは、管理対象の `env` ピン留めも必要なエンドポイント変数を示します。Claude Code v2.1.285 以降が必要です。
 
-<h3 id="leverage-mcp-for-integrations">
-  統合に MCP を活用する
-</h3>
+### 統合に MCP を活用する
 
 MCP は Claude Code にチケット管理システムやエラーログへの接続など、より多くの情報を提供する優れた方法です。1 つの中央チームが MCP サーバーを構成し、`.mcp.json` 構成をコードベースにチェックインして、すべてのユーザーが恩恵を受けられるようにします。[詳細をご覧ください](/docs/ja/mcp)。
 
-<h2 id="next-steps">
-  次のステップ
-</h2>
+## 次のステップ
 
 デプロイメントオプションを選択し、チームのアクセスを構成したら、以下を実行します。
 

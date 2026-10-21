@@ -10,52 +10,42 @@
 
 このページは、マネージド設定をデプロイするか、設定が適用されない理由をデバッグする管理者向けです。強制する内容を決定するには、[強制する内容を決定する](/docs/ja/admin-setup#decide-what-to-enforce) テーブルから始めてください。claude.ai コンソールパスについては、[サーバーマネージド設定](/docs/ja/server-managed-settings) を参照してください。開発者自身の値がどのファイルに入るかについては、[設定](/docs/ja/settings) を参照してください。
 
-<h2 id="deploy-a-managed-settings-file">
-  マネージド設定ファイルをデプロイする
-</h2>
+## マネージド設定ファイルをデプロイする
 
 これは各マシンにポリシーを配置する最速の方法です。`managed-settings.json` ファイルです。マネージド設定の配信方法をまだ選択していない場合、またはデバイスが MDM 下にあるか開発者がクラウドセッションを実行している場合は、最初に [配信メカニズムを選択する](#choose-a-delivery-mechanism) を読んでください。
 
-<Steps>
-  <Step title="managed-settings.json を作成する">
-    強制することを決定したキーを保持する `managed-settings.json` を作成します。これは `settings.json` と同じ JSON 形式です。[強制する内容を決定する](/docs/ja/admin-setup#decide-what-to-enforce) テーブルは各コントロールの背後にあるキーをリストしており、[設定リファレンス](/docs/ja/settings-reference) の各エントリは、マネージドソースがそれを設定できるかどうかを示しています。このファイルは 2 つのファイル読み取りをブロックし、バイパスモードをオフにし、Claude Code がユーザー、プロジェクト、ローカルファイルおよび `--allowedTools` からの権限ルールを無視するようにします。
+**1. managed-settings.json を作成する**
 
-    ```json managed-settings.json theme={null}
-    {
-      "permissions": {
-        "deny": [
-          "Read(./.env)",
-          "Read(./secrets/**)"
-        ],
-        "disableBypassPermissionsMode": "disable"
-      },
-      "allowManagedPermissionRulesOnly": true
-    }
-    ```
+強制することを決定したキーを保持する `managed-settings.json` を作成します。これは `settings.json` と同じ JSON 形式です。[強制する内容を決定する](/docs/ja/admin-setup#decide-what-to-enforce) テーブルは各コントロールの背後にあるキーをリストしており、[設定リファレンス](/docs/ja/settings-reference) の各エントリは、マネージドソースがそれを設定できるかどうかを示しています。このファイルは 2 つのファイル読み取りをブロックし、バイパスモードをオフにし、Claude Code がユーザー、プロジェクト、ローカルファイルおよび `--allowedTools` からの権限ルールを無視するようにします。
 
-    ログイン方法、モデル、MCP サーバー、マーケットプレイスを含むより多くのマネージドキーの形状を示すより完全な例については、[組織のマネージド設定](/docs/ja/settings-example#an-organizations-managed-settings) を参照してください。
-  </Step>
+```json managed-settings.json theme={null}
+{
+  "permissions": {
+    "deny": [
+      "Read(./.env)",
+      "Read(./secrets/**)"
+    ],
+    "disableBypassPermissionsMode": "disable"
+  },
+  "allowManagedPermissionRulesOnly": true
+}
+```
 
-  <Step title="ファイルを各マシンに配置する">
-    ファイルを `managed-settings.json` として、オペレーティングシステムのシステムディレクトリに保存します。フリート上のファイルを配置するために既に使用しているツールを使用します。
+ログイン方法、モデル、MCP サーバー、マーケットプレイスを含むより多くのマネージドキーの形状を示すより完全な例については、[組織のマネージド設定](/docs/ja/settings-example#an-organizations-managed-settings) を参照してください。
 
-    * **macOS**: `/Library/Application Support/ClaudeCode/managed-settings.json`
-    * **Linux と WSL**: `/etc/claude-code/managed-settings.json`
-    * **Windows**: `C:\Program Files\ClaudeCode\managed-settings.json`
-  </Step>
+**2. ファイルを各マシンに配置する**
 
-  <Step title="ポリシーが適用されたことを確認する">
-    1 つのマシンで、Claude Code 内で `/status` を実行します。`Setting sources` 行は `Enterprise managed settings (file)` を表示します。その後、フリートの残りにロールアウトします。[ポリシーが有効であることを確認する](#check-that-a-policy-is-in-force) は、行が見つからない場合に何を確認するかについて説明しています。
-  </Step>
-</Steps>
+ファイルを `managed-settings.json` として、オペレーティングシステムのシステムディレクトリに保存します。フリート上のファイルを配置するために既に使用しているツールを使用します。
 
-<span id="managed-settings-delivery" />
+* **macOS**: `/Library/Application Support/ClaudeCode/managed-settings.json`
+* **Linux と WSL**: `/etc/claude-code/managed-settings.json`
+* **Windows**: `C:\Program Files\ClaudeCode\managed-settings.json`
 
-<span id="delivery-mechanisms" />
+**3. ポリシーが適用されたことを確認する**
 
-<h2 id="choose-a-delivery-mechanism">
-  配信メカニズムを選択する
-</h2>
+1 つのマシンで、Claude Code 内で `/status` を実行します。`Setting sources` 行は `Enterprise managed settings (file)` を表示します。その後、フリートの残りにロールアウトします。[ポリシーが有効であることを確認する](#check-that-a-policy-is-in-force) は、行が見つからない場合に何を確認するかについて説明しています。
+
+## 配信メカニズムを選択する
 
 上記の手順で作成したファイルは、管理設定をマシンに配置する 4 つの方法のうちの 1 つです。どのメカニズムも `settings.json` ファイルと同じポリシーキーを扱うため、[設定リファレンス](/docs/ja/settings-reference)はそのすべてに当てはまります。一部のキーは特定のソースに結び付いており、各エントリの Scope 行にそれが記載されています:
 
@@ -83,9 +73,7 @@ Jamf、Iru、Intune、グループポリシー用のスターターテンプレ�
 
 これらのいずれかと併せて `managed-mcp.json` を通じてデプロイする、または [`managedMcpServers`](/docs/ja/settings-reference#managedmcpservers) キーを通じて提供する管理 MCP サーバーについては、[管理 MCP 設定](/docs/ja/managed-mcp)を参照してください。
 
-<h3 id="where-and-when-a-policy-applies">
-  ポリシーが適用される場所とタイミング
-</h3>
+### ポリシーが適用される場所とタイミング
 
 デプロイされたポリシーは、次のように開発者のセッションに反映されます:
 
@@ -105,11 +93,7 @@ Jamf、Iru、Intune、グループポリシー用のスターターテンプレ�
 * **承認が必要な変更**: [次回の起動まで待機する更新](/docs/ja/server-managed-settings#fetch-and-caching-behavior)を除き、フックや `env` 変数など[承認が必要な](/docs/ja/server-managed-settings#security-approval-dialogs)設定に対するサーバー管理の変更は、対話型セッションでは開発者がダイアログを承認するまで待機し、IDE 拡張機能または Agent SDK がホストするセッションでは現在の実行に適用されます。その他のサーバー管理の変更は、次回のポーリングで適用されます。
 * **長期間のセッション**: 数週間開いたままのセッションは、ロールアウトに遅れることがあります。[`requiredMinimumVersion`](/docs/ja/settings-reference#requiredminimumversion) は古いバイナリの起動をブロックしますが、すでに実行中のセッションを終了させることはありません。
 
-<span id="format-the-policy-for-each-platform" />
-
-<h3 id="where-each-mechanism-stores-the-policy">
-  各メカニズムがポリシーを保存する場所
-</h3>
+### 各メカニズムがポリシーを保存する場所
 
 キーはどこでも同じですが、各メカニズムはそれらを異なる場所と形式で保存します:
 
@@ -119,9 +103,7 @@ Jamf、Iru、Intune、グループポリシー用のスターターテンプレ�
 * **ファイルベース**: システムディレクトリ内の `managed-settings.json`、オプションの `managed-settings.d/` ディレクトリ、および `managed-mcp.json`。システムディレクトリは、macOS では `/Library/Application Support/ClaudeCode/`、Linux と WSL では `/etc/claude-code/`、Windows では `C:\Program Files\ClaudeCode\` です。Claude Code は、従来の Windows パス `C:\ProgramData\ClaudeCode\managed-settings.json` を読み取りません。
 * **Windows HKCU レジストリ**: `HKCU\SOFTWARE\Policies\ClaudeCode` の下にある同じ `Settings` 値。
 
-<h3 id="split-a-file-based-policy-across-teams">
-  ファイルベースのポリシーをチーム間で分割する
-</h3>
+### ファイルベースのポリシーをチーム間で分割する
 
 複数のチームが 1 つのポリシーの一部をそれぞれ所有している場合は、1 つの共有ファイルを編集する代わりに、各部分を同じシステムディレクトリ内の `managed-settings.json` の隣にある `managed-settings.d/` 内の個別のファイルに配置します。
 
@@ -136,13 +118,7 @@ Claude Code は最初に `managed-settings.json` をマージし、次にディ�
 * **[`extraKnownMarketplaces`](/docs/ja/settings-reference#extraknownmarketplaces) と [`managedMcpServers`](/docs/ja/settings-reference#managedmcpservers)**: 同じ名前を持つ後のエントリが前のエントリ全体を置き換えます
 * **[`modelPicker`](/docs/ja/settings-reference#modelpicker)**: 後のラインナップが前のラインナップ全体を置き換えます
 
-<span id="precedence-within-the-managed-tier" />
-
-<span id="which-managed-source-claude-code-uses" />
-
-<h2 id="how-claude-code-combines-managed-sources">
-  Claude Code が管理されたソースを組み合わせる方法
-</h2>
+## Claude Code が管理されたソースを組み合わせる方法
 
 組織が同じマシンに複数の管理されたソースを配信する場合、[`managedSourcesBehavior`](/docs/ja/settings-reference#managedsourcesbehavior) キーは Claude Code が他のソースに対して何を行うかを決定します。
 
@@ -163,13 +139,9 @@ Claude Code は、最初に最優先度の順でソースをチェックしま�
 
 このダイアグラムはランク付けを示し、どちらの設定でも Claude Code が最初の 3 つのソースから読み取るクロスソースキーの例を示しています。
 
-<img src="https://mintcdn.com/claude-code/zuWID2B-Rxm8DEC8/images/managed-source-precedence.svg?fit=max&auto=format&n=zuWID2B-Rxm8DEC8&q=85&s=53f6be49f06eff48e01422c8ae1bc2e6" className="dark:hidden" alt="リモート設定から上部を通じて MDM、管理設定ファイル、および下部の HKCU レジストリにランク付けされた 4 つの管理設定ソースを示すダイアグラム。デフォルトではポリシーキーを持つ最初のソースがポリシーを提供し、残りはスキップされます。managedSourcesBehavior を merge に設定すると、ポリシーキーを持つすべての管理者ソースが寄与し、キーの種類ごとに組み合わされ、HKCU レジストリは除外されます。サイドパネルは、サンドボックスロック、forceRemoteSettingsRefresh、および変数ごとの env マージなどのクロスソースキーが、HKCU レジストリを除外するすべての管理者ソースから読み取られることを示しています。" width="680" height="330" data-path="images/managed-source-precedence.svg" />
+![リモート設定から上部を通じて MDM、管理設定ファイル、および下部の HKCU レジストリにランク付けされた 4 つの管理設定ソースを示すダイアグラム。デフォルトではポリシーキーを持つ最初のソースがポリシーを提供し、残りはスキップされます。managedSourcesBehavior を merge に設定すると、ポリシーキーを持つすべての管理者ソースが寄与し、キーの種類ごとに組み合わされ、HKCU レジストリは除外されます。サイドパネルは、サンドボックスロック、forceRemoteSettingsRefresh、および変数ごとの env マージなどのクロスソースキーが、HKCU レジストリを除外するすべての管理者ソースから読み取られることを示しています。](https://mintcdn.com/claude-code/zuWID2B-Rxm8DEC8/images/managed-source-precedence.svg?fit=max\&auto=format\&n=zuWID2B-Rxm8DEC8\&q=85\&s=53f6be49f06eff48e01422c8ae1bc2e6)
 
-<img src="https://mintcdn.com/claude-code/zuWID2B-Rxm8DEC8/images/managed-source-precedence-dark.svg?fit=max&auto=format&n=zuWID2B-Rxm8DEC8&q=85&s=ae407a9a08a3d680e80cf1a2af845d71" className="hidden dark:block" alt="リモート設定から上部を通じて MDM、管理設定ファイル、および下部の HKCU レジストリにランク付けされた 4 つの管理設定ソースを示すダイアグラム。デフォルトではポリシーキーを持つ最初のソースがポリシーを提供し、残りはスキップされます。managedSourcesBehavior を merge に設定すると、ポリシーキーを持つすべての管理者ソースが寄与し、キーの種類ごとに組み合わされ、HKCU レジストリは除外されます。サイドパネルは、サンドボックスロック、forceRemoteSettingsRefresh、および変数ごとの env マージなどのクロスソースキーが、HKCU レジストリを除外するすべての管理者ソースから読み取られることを示しています。" width="680" height="330" data-path="images/managed-source-precedence-dark.svg" />
-
-<h3 id="present-admin-documents">
-  管理者ドキュメントが存在するとみなされる場合
-</h3>
+### 管理者ドキュメントが存在するとみなされる場合
 
 [管理されたソースのランク付け](#how-claude-code-combines-managed-sources)において、Claude Code は、存在する管理者ドキュメントの下にあるユーザーが書き込み可能な HKCU レジストリを決して適用しません。ドキュメントは次の場合に存在するとみなされます。
 
@@ -178,9 +150,7 @@ Claude Code は、最初に最優先度の順でソースをチェックしま�
 
 WSL では、`/etc/claude-code` もユーザーが書き込み可能であり、[`wslInheritsWindowsSettings`](/docs/ja/settings-reference#wslinheritswindowssettings) エントリに、Windows のドキュメントがそれより上に位置する場合が示されています。
 
-<h3 id="keys-read-from-every-admin-source">
-  すべての管理者ソースから読み取られるキー
-</h3>
+### すべての管理者ソースから読み取られるキー
 
 デフォルトの `"first-wins"` 設定では、Claude Code はほとんどのキーを[選択したソース](#how-claude-code-combines-managed-sources)からのみ読み取り、選択したソースがそのキーを設定しないままにしている場合でも、低いランクのソースの値を無視します。
 
@@ -212,9 +182,7 @@ WSL では、`/etc/claude-code` もユーザーが書き込み可能であり、
 
 管理者ソースが `allowManagedMcpServersOnly` または `allowedMcpServers` リストを設定し、その値が実行中のものではない場合、`/status` と `claude doctor` はそのソースとキーに名前を付けます。
 
-<h3 id="compose-every-managed-source">
-  すべての管理されたソースを構成する
-</h3>
+### すべての管理されたソースを構成する
 
 組織が配信するすべての管理者ソースを Claude Code に適用させるには、デプロイする最も高いランクのソースで [`managedSourcesBehavior`](/docs/ja/settings-reference#managedsourcesbehavior) を `"merge"` に設定します。Claude Code はキーまたはポリシーキーを持つ最も高いランクのソースからのみキーを読み取るため、低いソースはそれ自体をそれより上のソースとのマージにオプトインすることはできず、サーバー管理設定を受け取らないマシンは MDM プロファイルにもキーが必要です。ユーザーが書き込み可能な HKCU レジストリは別のソースとマージされることはありません。Claude Code v2.1.242 以降が必要です。
 
@@ -235,9 +203,7 @@ WSL では、`/etc/claude-code` もユーザーが書き込み可能であり、
 
 マシンで組み合わされたソースを確認するには、[`/status` の `Setting sources` 行を読み取ります](#read-the-source-in-/status)。そのセクションは各ラベルが何を意味するかを説明しています。
 
-<h3 id="compute-the-policy-with-a-helper-program">
-  ヘルパープログラムでポリシーを計算する
-</h3>
+### ヘルパープログラムでポリシーを計算する
 
 [`policyHelper`](/docs/ja/settings-reference#policyhelper) は MDM ポリシーまたは管理設定ファイルが名前を付ける実行可能ファイルであり、Claude Code はそれを実行して起動時に管理設定を計算します。選択されたソースが 1 つを構成し、ヘルパーが `managedSettings` オブジェクトを出力する場合、その出力は Claude Code が読み取る内容を変更します。
 
@@ -245,15 +211,7 @@ WSL では、`/etc/claude-code` もユーザーが書き込み可能であり、
 
 ヘルパー実行が失敗する場合、および 1 つが失敗する場合に Claude Code が何を行うかについては、[ヘルパー失敗](/docs/ja/settings-reference#helper-failures)を参照してください。
 
-<span id="parent-settings-from-embedding-hosts" />
-
-<span id="control-policy-from-an-embedding-host" />
-
-<span id="merge-policy-from-an-embedding-host" />
-
-<h3 id="let-an-embedding-host-add-policy">
-  埋め込みホストにポリシーを追加させる
-</h3>
+### 埋め込みホストにポリシーを追加させる
 
 別のアプリケーション（Claude Desktop、IDE 拡張機能、Agent SDK アプリなど）が Claude Code を起動する場合、そのホストは SDK `managedSettings` オプションを通じて独自の管理設定を渡すことができます。Claude Code はこれらを親設定と呼びます。
 
@@ -276,9 +234,7 @@ Claude Code はまた、親が提供する値にこれらのチェックを適�
 * `allowedProviders` の場合、[選択された管理ソース](#which-managed-source-claude-code-uses)のリストが親が提供するリストをブロックし、[`managedSourcesBehavior`](/docs/ja/settings-reference#managedsourcesbehavior) の `"merge"` オプトインの下では、任意の管理者ソースのリストがブロックします。Claude Code v2.1.285 以降が必要です
 * 親が提供する `blockedMarketplaces` は、管理ソースが設定するブロックリストに加えて適用されます。Claude Code v2.1.282 以降が必要です。
 
-<h4 id="keep-cowork-folder-access-when-only-managed-rules-apply">
-  管理されたルールのみが適用される場合に Cowork フォルダアクセスを保持する
-</h4>
+#### 管理されたルールのみが適用される場合に Cowork フォルダアクセスを保持する
 
 Claude Desktop アプリの [Cowork](https://claude.com/docs/cowork/overview) はそのセッションを Claude Code で実行し、各セッションにそのワーキングフォルダ（ユーザーが接続するフォルダなど）へのアクセスを許可します。セッションを起動するときに提供するアロー ルを通じて。管理ポリシーが [`allowManagedPermissionRulesOnly`](/docs/ja/settings-reference#allowmanagedpermissionrulesonly) を設定する場合、Claude Code は管理ポリシーのアロー ルのみを保持します。ホストが親設定として、`--allowedTools` として、または設定ファイルで提供するアロー ルをドロップするため、これらのフォルダへの書き込みは事前承認を失います。編集前に確認を求める Cowork セッションでは、Cowork はプロンプトを表示できず、Claude は各書き込みを保護された場所またはそれより上のパスの外のパスに解決されるため、ブロックされたと報告します。
 
@@ -297,9 +253,7 @@ Claude Desktop アプリの [Cowork](https://claude.com/docs/cowork/overview) �
 
 ポリシーをデプロイした後、Claude は新しい Cowork セッションでそのフォルダの下にファイルを保存できます。[読み取りと編集ルール](/docs/ja/permissions#read-and-edit)はパス構文（絶対パスの `//` 形式を含む）をカバーしています。
 
-<h3 id="what-a-developer-can-change">
-  開発者が変更できるもの
-</h3>
+### 開発者が変更できるもの
 
 開発者の独自の設定ファイル、`--settings` 値、およびプロジェクトファイルは管理値をオーバーライドしません。[例外](/docs/ja/settings#exceptions-to-managed-settings-precedence)は、より厳しい下位レベルの値がカウントされることのみを許可します。これらのケースはそのルールの外にあります。
 
@@ -309,19 +263,11 @@ Claude Desktop アプリの [Cowork](https://claude.com/docs/cowork/overview) �
 * **サーバー管理キャッシュ**: サーバー管理設定は Anthropic のサーバーから取得され、ローカルキャッシュへの編集は[次の成功したフェッチまでのみ続きます](/docs/ja/server-managed-settings#security-considerations)。
 * **その他のツール**: 管理設定は Claude Code のみをバインドします。別のツールから API を呼び出す開発者はそれらの下にはありません。
 
-<span id="verify-enforcement" />
-
-<span id="verify-that-a-policy-is-in-force" />
-
-<h2 id="check-that-a-policy-is-in-force">
-  ポリシーが有効であることを確認する
-</h2>
+## ポリシーが有効であることを確認する
 
 開発者がポリシーが適用されていないと報告している場合、またはロールアウトがフリートへのプッシュ前に完了したことを確認したい場合があります。そのマシン上の 2 つのコマンドがこれに答えます。`/status` は Claude Code が選択した管理対象ソースを表示し、`claude doctor` はドロップしたものをリストします。
 
-<h3 id="read-the-source-in-/status">
-  /status でソースを読む
-</h3>
+### /status でソースを読む
 
 開発者のマシンで Claude Code 内で `/status` を実行し、`Setting sources` 行を読みます。管理対象ソースが有効な場合、その行は `Enterprise managed settings` をリストし、括弧内に Claude Code が選択したソースを表示します。
 
@@ -344,11 +290,7 @@ Claude Code がマシン上で管理対象ソースを見つけたが選択し�
   代わりにサーバー管理設定を通じてデプロイした場合は、`claude doctor` を実行します。これは[フェッチ結果](/docs/ja/server-managed-settings#verify-settings-delivery)を報告します。
 * **行が展開したソース以外のソースを名前で示す**：高優先度のソースが存在し、Claude Code があなたのソースを無視しました。`Skipped sources` がそれをリストします。[Claude Code が管理対象ソースを組み合わせる方法](#how-claude-code-combines-managed-sources)は順序を示します。
 
-<span id="invalid-entries-in-managed-settings" />
-
-<h3 id="find-entries-claude-code-dropped">
-  Claude Code がドロップしたエントリを見つける
-</h3>
+### Claude Code がドロップしたエントリを見つける
 
 管理対象設定ファイル、MDM プロファイル、レジストリ値、またはサーバー管理ペイロードがスキーマ検証に失敗した場合、Claude Code は最初に修復できる個別エントリ（無効なパーミッション ルールなど）をスキップし、各エントリに対して警告を表示します。Claude Code はその後、値がまだ失敗するものをドロップします。ただし、値が[閉じた状態で失敗するキー](#keys-that-fail-closed)のいずれかに属する場合は除きます。
 
@@ -377,9 +319,7 @@ Claude Code は [`policyHelper`](/docs/ja/settings-reference#policyhelper) が�
 * `-p` を使用した非インタラクティブ実行は stderr に概要を出力します。
 * [`claude doctor`](/docs/ja/debug-your-config) は各無効なエントリをそのソースとフィールドでリストします。
 
-<h4 id="keys-that-fail-closed">
-  閉じた状態で失敗するキー
-</h4>
+#### 閉じた状態で失敗するキー
 
 管理対象ソースが `allowManagedPermissionRulesOnly`、`disableAutoMode`、または `skipDangerousModePermissionPrompt` などの単一の制限的な値を持つトップレベル キーを Claude Code が読み取ることができない値に設定した場合、キーはあなたがそれを修正するまでその値として読み取られます。レポートはキーが `was present but invalid` であったと言い、Claude Code が値として扱う値を名前で示します。`sandbox` 内のキーについては、[`sandbox` 内の無効な値](#invalid-values-inside-sandbox)を参照してください。
 
@@ -429,9 +369,7 @@ Claude Code は `permissions`、`autoMode`、`worktree`、および `attribution
 
 この許容度は管理対象設定にのみ適用されます。ユーザー、プロジェクト、およびローカル設定ファイルは厳密なままです。JSON またはトップレベルの形状が検証に失敗するファイルは全体として拒否され、報告されます。不正形式のパーミッション ルールなどの個別エントリが失敗する場合は、警告とともにスキップされ、ファイルの残りが適用されます。
 
-<h4 id="invalid-values-inside-sandbox">
-  `sandbox` 内の無効な値
-</h4>
+#### `sandbox` 内の無効な値
 
 管理対象 `sandbox` ブロック内の 1 つの値が無効な場合、Claude Code はブロック全体をドロップしません。各フィールドを独立して検証するためです。このフィールドごとの処理には Claude Code v2.1.283 以降が必要です。v2.1.283 より前のバージョンでは、`credentials` 以外の値が無効な場合、Claude Code は [`credentials`](/docs/ja/settings-reference#invalid-credential-entries-in-managed-settings) を除くすべての `sandbox` フィールドをドロップします。
 
@@ -444,11 +382,7 @@ Claude Code は `permissions`、`autoMode`、`worktree`、および `attribution
 * `network.deniedDomains` またはそのいずれかのエントリが無効な間、Claude Code は `network.allowedDomains` も保留するため、管理対象アローリストは拒否リストを修正するまで何も許可しません。
 * `filesystem.denyRead`、`filesystem.denyWrite`、またはそのいずれかのエントリが無効な間、Claude Code は `filesystem.allowRead` と `filesystem.allowWrite` の両方を保留するため、拒否リストを修正するまで何も許可しません。
 
-<span id="managed-only-settings" />
-
-<h2 id="keys-only-a-managed-source-can-set">
-  マネージドソースのみが設定できるキー
-</h2>
+## マネージドソースのみが設定できるキー
 
 Claude Code は以下のキーをマネージドソースからのみ読み込みます。ユーザーまたはプロジェクト設定ファイルに配置しても効果がありません。
 
@@ -480,17 +414,15 @@ Claude Code は以下のキーをマネージドソースからのみ読み込�
 | [`strictPluginOnlyCustomization`](/docs/ja/settings-reference#strictpluginonlycustomization) | ユーザーおよびプロジェクトソースからのスキル、エージェント、フック、MCP サーバーをブロックします。`true` はすべて 4 つをロックし、配列はどれをロックするかを指定します |
 | [`wslInheritsWindowsSettings`](/docs/ja/settings-reference#wslinheritswindowssettings) | HKLM レジストリまたは `C:\Program Files\ClaudeCode` の下のファイルに設定されている場合、WSL に Windows ポリシーチェーンを読み込ませ、[Windows 管理ドキュメントが存在しない](#present-admin-documents)場合にのみ `/etc/claude-code` を読み込みます。エントリは順序を指定します |
 
-<Note>
-  Team および Enterprise プランでは、Owner が [Claude Code 管理設定](https://claude.ai/admin-settings/claude-code)で組織全体の [Remote Control](/docs/ja/remote-control) と[クラウドセッション](/docs/ja/claude-code-on-the-web)を有効または無効にします。Owner が Remote Control をオフにすると、Claude Code v2.1.286 以降を実行している接続済みのセッションも切断されます。各セッションは、次に組織のポリシーを更新したとき（約 1 時間に 1 回）に切断されます。それらのセッションで何が起こるかについては、[`Remote Control was turned off by your organization's policy`](/docs/ja/remote-control#remote-control-was-turned-off-by-your-organizations-policy) を参照してください。
+> [!NOTE]
+>
+> Team および Enterprise プランでは、Owner が [Claude Code 管理設定](https://claude.ai/admin-settings/claude-code)で組織全体の [Remote Control](/docs/ja/remote-control) と[クラウドセッション](/docs/ja/claude-code-on-the-web)を有効または無効にします。Owner が Remote Control をオフにすると、Claude Code v2.1.286 以降を実行している接続済みのセッションも切断されます。各セッションは、次に組織のポリシーを更新したとき（約 1 時間に 1 回）に切断されます。それらのセッションで何が起こるかについては、[`Remote Control was turned off by your organization's policy`](/docs/ja/remote-control#remote-control-was-turned-off-by-your-organizations-policy) を参照してください。
+>
+> Remote Control は [`disableRemoteControl`](/docs/ja/settings-reference#disableremotecontrol) 設定でデバイスごとに無効にすることもできます。クラウドセッションにはデバイスごとの管理設定キーはありません。
+>
+> これらの組織設定が特定のマシンに到達したかどうかを確認するには、そこで `claude doctor` を実行し、`Organization policy` 行を読みます。この行は Claude Code がポリシーをどこから読み込んだか、または読み込まなかった理由を示します。Claude Code v2.1.261 以降が必要です。実行中のセッションでは、ポリシーが読み込まれなかった場合、`/status` は同じ行を表示します。
 
-  Remote Control は [`disableRemoteControl`](/docs/ja/settings-reference#disableremotecontrol) 設定でデバイスごとに無効にすることもできます。クラウドセッションにはデバイスごとの管理設定キーはありません。
-
-  これらの組織設定が特定のマシンに到達したかどうかを確認するには、そこで `claude doctor` を実行し、`Organization policy` 行を読みます。この行は Claude Code がポリシーをどこから読み込んだか、または読み込まなかった理由を示します。Claude Code v2.1.261 以降が必要です。実行中のセッションでは、ポリシーが読み込まれなかった場合、`/status` は同じ行を表示します。
-</Note>
-
-<h2 id="turn-telemetry-off-for-your-organization">
-  組織のテレメトリをオフにする
-</h2>
+## 組織のテレメトリをオフにする
 
 Claude Code は、Anthropic API を直接、LLM ゲートウェイを通じて、またはカスタム `ANTHROPIC_BASE_URL` を通じて使用するセッションで、デフォルトで Anthropic 運用 [テレメトリ](/docs/ja/data-usage#telemetry-services) を送信します。[API プロバイダーごとのデフォルト動作](/docs/ja/data-usage#default-behaviors-by-api-provider) はどのプロバイダーがそれを送信するかを示しています。すべての開発者が各人のシェルに依存することなく、マネージド設定の `env` ブロックを通じて `DISABLE_TELEMETRY` を配信することでオフにします。この例は、ポリシーが到達するすべてのユーザーに対して `DISABLE_TELEMETRY` を設定します。
 
@@ -510,9 +442,7 @@ Claude Code は `1` の値を [承認ダイアログ](/docs/ja/server-managed-se
 
 組織がカスタマー管理暗号化キーを使用し、Claude Code をゲートウェイを通じてルーティングする場合、[プロキシとゲートウェイを構成する](/docs/ja/third-party-integrations#configure-proxies-and-gateways) はこれらのセッションがこの変数を必要とする理由を示しています。
 
-<h2 id="see-also">
-  関連項目
-</h2>
+## 関連項目
 
 * [組織向けに Claude Code をセットアップする](/docs/ja/admin-setup): 強制する内容と方法を決定します
 * [サーバーマネージド設定](/docs/ja/server-managed-settings): claude.ai コンソールまたはゲートウェイからポリシーを配信します

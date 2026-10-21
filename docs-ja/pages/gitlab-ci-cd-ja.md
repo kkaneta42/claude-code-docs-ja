@@ -6,19 +6,17 @@
 
 > Claude Code を GitLab CI/CD で開発ワークフローに統合する方法を学びます
 
-<Info>
-  Claude Code for GitLab CI/CD は現在ベータ版です。機能と機能性は、エクスペリエンスを改善する際に進化する可能性があります。
+> [!NOTE]
+>
+> Claude Code for GitLab CI/CD は現在ベータ版です。機能と機能性は、エクスペリエンスを改善する際に進化する可能性があります。
+>
+> この統合は GitLab によって保守されています。サポートについては、以下の [GitLab issue](https://gitlab.com/gitlab-org/gitlab/-/issues/573776) を参照してください。
 
-  この統合は GitLab によって保守されています。サポートについては、以下の [GitLab issue](https://gitlab.com/gitlab-org/gitlab/-/issues/573776) を参照してください。
-</Info>
+> [!NOTE]
+>
+> この統合は [Claude Code CLI and Agent SDK](/docs/ja/agent-sdk/overview) の上に構築されており、CI/CD ジョブとカスタム自動化ワークフローで Claude をプログラム的に使用できます。
 
-<Note>
-  この統合は [Claude Code CLI and Agent SDK](/docs/ja/agent-sdk/overview) の上に構築されており、CI/CD ジョブとカスタム自動化ワークフローで Claude をプログラム的に使用できます。
-</Note>
-
-<h2 id="why-use-claude-code-with-gitlab">
-  GitLab で Claude Code を使用する理由
-</h2>
+## GitLab で Claude Code を使用する理由
 
 * **インスタント MR 作成**: 必要なことを説明すると、Claude は変更と説明を含む完全な MR を提案します
 * **自動実装**: 単一のコマンドまたはメンションで issue を実行可能なコードに変換します
@@ -27,9 +25,7 @@
 * **エンタープライズ対応**: Claude API、Amazon Bedrock、または Google Cloud の Agent Platform を選択して、データレジデンシーと調達のニーズを満たします
 * **デフォルトでセキュア**: GitLab ランナーで実行され、ブランチ保護と承認が適用されます
 
-<h2 id="how-it-works">
-  仕組み
-</h2>
+## 仕組み
 
 Claude Code は GitLab CI/CD を使用して AI タスクを分離されたジョブで実行し、MR 経由で結果をコミットバックします。
 
@@ -44,9 +40,7 @@ Claude Code は GitLab CI/CD を使用して AI タスクを分離されたジ�
 
 地域エンドポイントを選択して、既存のクラウド契約を使用しながらレイテンシーを削減し、データソブリンティ要件を満たします。
 
-<h2 id="what-can-claude-do">
-  Claude にはどのようなことができますか？
-</h2>
+## Claude にはどのようなことができますか？
 
 GitLab パイプラインでは、Claude Code は以下のことができます：
 
@@ -56,13 +50,9 @@ GitLab パイプラインでは、Claude Code は以下のことができます�
 * テストまたはコメントで特定されたバグおよび低下を修正する
 * フォローアップコメントに応答して、リクエストされた変更を反復する
 
-<h2 id="setup">
-  セットアップ
-</h2>
+## セットアップ
 
-<h3 id="quick-setup">
-  クイックセットアップ
-</h3>
+### クイックセットアップ
 
 最速で始める方法は、`.gitlab-ci.yml` に最小限のジョブを追加し、API キーをマスク変数として設定することです。
 
@@ -109,13 +99,11 @@ claude:
 
 ジョブと `ANTHROPIC_API_KEY` 変数を追加した後、**CI/CD** → **Pipelines** からジョブを手動で実行してテストするか、MR からトリガーして Claude が提案した更新をブランチで実装し、必要に応じて MR を開くことができます。
 
-<Note>
-  Claude API の代わりに Amazon Bedrock または Google Cloud の Agent Platform で実行する場合は、認証と環境セットアップについて下記の [Amazon Bedrock と Google Cloud を使用する](#using-with-amazon-bedrock-and-google-cloud) セクションを参照してください。
-</Note>
+> [!NOTE]
+>
+> Claude API の代わりに Amazon Bedrock または Google Cloud の Agent Platform で実行する場合は、認証と環境セットアップについて下記の [Amazon Bedrock と Google Cloud を使用する](#using-with-amazon-bedrock-and-google-cloud) セクションを参照してください。
 
-<h3 id="manual-setup-recommended-for-production">
-  手動セットアップ（本番環境に推奨）
-</h3>
+### 手動セットアップ（本番環境に推奨）
 
 より制御されたセットアップが必要な場合またはエンタープライズプロバイダーが必要な場合：
 
@@ -134,13 +122,9 @@ claude:
    * 「Comments (notes)」のプロジェクト webhook をイベントリスナー（使用している場合）に追加します
    * コメントに `@claude` が含まれている場合、リスナーが `AI_FLOW_INPUT` や `AI_FLOW_CONTEXT` などの変数を使用してパイプライントリガー API を呼び出すようにします
 
-<h2 id="example-use-cases">
-  使用例
-</h2>
+## 使用例
 
-<h3 id="turn-issues-into-mrs">
-  Issue を MR に変換する
-</h3>
+### Issue を MR に変換する
 
 Issue コメント内：
 
@@ -150,9 +134,7 @@ Issue コメント内：
 
 Claude は Issue とコードベースを分析し、ブランチで変更を記述して、レビュー用の MR を開きます。
 
-<h3 id="get-implementation-help">
-  実装サポートを取得する
-</h3>
+### 実装サポートを取得する
 
 MR ディスカッション内：
 
@@ -162,9 +144,7 @@ MR ディスカッション内：
 
 Claude は変更を提案し、適切なキャッシング機能を備えたコードを追加し、MR を更新します。
 
-<h3 id="fix-bugs-quickly">
-  バグを素早く修正する
-</h3>
+### バグを素早く修正する
 
 Issue または MR コメント内：
 
@@ -174,77 +154,69 @@ Issue または MR コメント内：
 
 Claude はバグを特定し、修正を実装し、ブランチを更新するか新しい MR を開きます。
 
-<h2 id="using-with-amazon-bedrock-and-google-cloud">
-  Amazon Bedrock と Google Cloud での使用
-</h2>
+## Amazon Bedrock と Google Cloud での使用
 
 エンタープライズ環境では、Claude Code をクラウドインフラストラクチャ全体で実行でき、同じ開発者体験を得られます。
 
-<Tabs>
-  <Tab title="Amazon Bedrock">
-    ### 前提条件
+**Amazon Bedrock**
 
-    Amazon Bedrock で Claude Code をセットアップする前に、以下が必要です。
+### 前提条件
 
-    1. 目的の Claude モデルへの Amazon Bedrock アクセス権を持つ AWS アカウント
-    2. AWS IAM で OIDC アイデンティティプロバイダーとして設定された GitLab
-    3. Amazon Bedrock 権限を持つ IAM ロールと、GitLab プロジェクト/refs に制限されたトラストポリシー
-    4. ロール引き受けのための GitLab CI/CD 変数：
-       * `AWS_ROLE_TO_ASSUME`（ロール ARN）
-       * `AWS_REGION`（Amazon Bedrock リージョン）
+Amazon Bedrock で Claude Code をセットアップする前に、以下が必要です。
 
-    ### セットアップ手順
+1. 目的の Claude モデルへの Amazon Bedrock アクセス権を持つ AWS アカウント
+2. AWS IAM で OIDC アイデンティティプロバイダーとして設定された GitLab
+3. Amazon Bedrock 権限を持つ IAM ロールと、GitLab プロジェクト/refs に制限されたトラストポリシー
+4. ロール引き受けのための GitLab CI/CD 変数：
+   * `AWS_ROLE_TO_ASSUME`（ロール ARN）
+   * `AWS_REGION`（Amazon Bedrock リージョン）
 
-    GitLab CI ジョブが OIDC 経由で IAM ロールを引き受けることを許可するよう AWS を設定します（静的キーは不要）。
+### セットアップ手順
 
-    **必須セットアップ：**
+GitLab CI ジョブが OIDC 経由で IAM ロールを引き受けることを許可するよう AWS を設定します（静的キーは不要）。
 
-    1. Amazon Bedrock を有効にし、目的の Claude モデルへのアクセスをリクエストします
-    2. まだ存在しない場合は、GitLab 用の IAM OIDC プロバイダーを作成します
-    3. GitLab OIDC プロバイダーによって信頼され、プロジェクトと保護された refs に制限された IAM ロールを作成します
-    4. Amazon Bedrock invoke API に対する最小権限パーミッションをアタッチします
+**必須セットアップ：**
 
-    [Amazon Bedrock ジョブの例](#configuration-examples)を使用して、実行時にジョブの OIDC トークンを一時的な AWS 認証情報と交換します。
-  </Tab>
+1. Amazon Bedrock を有効にし、目的の Claude モデルへのアクセスをリクエストします
+2. まだ存在しない場合は、GitLab 用の IAM OIDC プロバイダーを作成します
+3. GitLab OIDC プロバイダーによって信頼され、プロジェクトと保護された refs に制限された IAM ロールを作成します
+4. Amazon Bedrock invoke API に対する最小権限パーミッションをアタッチします
 
-  <Tab title="Google Cloud's Agent Platform">
-    ### 前提条件
+[Amazon Bedrock ジョブの例](#configuration-examples)を使用して、実行時にジョブの OIDC トークンを一時的な AWS 認証情報と交換します。
 
-    Google Cloud's Agent Platform で Claude Code をセットアップする前に、以下が必要です。
+**Google Cloud's Agent Platform**
 
-    1. 以下を備えた Google Cloud プロジェクト：
-       * Google Cloud's Agent Platform API が有効化されている
-       * GitLab OIDC を信頼するよう設定された Workload Identity Federation
-    2. 必要な Google Cloud's Agent Platform ロールのみを持つ専用サービスアカウント
-    3. GitLab CI/CD 変数：
-       * `GCP_WORKLOAD_IDENTITY_PROVIDER`（`//iam.googleapis.com/` プレフィックスなしのプロバイダーリソース名。例：`projects/123456789/locations/global/workloadIdentityPools/my-pool/providers/my-provider`）
-       * `GCP_SERVICE_ACCOUNT`（サービスアカウントメール）
-       * `GCP_PROJECT_ID`（Google Cloud プロジェクト ID）
+### 前提条件
 
-    ### セットアップ手順
+Google Cloud's Agent Platform で Claude Code をセットアップする前に、以下が必要です。
 
-    Workload Identity Federation 経由で GitLab CI ジョブがサービスアカウントを偽装することを許可するよう Google Cloud を設定します。
+1. 以下を備えた Google Cloud プロジェクト：
+   * Google Cloud's Agent Platform API が有効化されている
+   * GitLab OIDC を信頼するよう設定された Workload Identity Federation
+2. 必要な Google Cloud's Agent Platform ロールのみを持つ専用サービスアカウント
+3. GitLab CI/CD 変数：
+   * `GCP_WORKLOAD_IDENTITY_PROVIDER`（`//iam.googleapis.com/` プレフィックスなしのプロバイダーリソース名。例：`projects/123456789/locations/global/workloadIdentityPools/my-pool/providers/my-provider`）
+   * `GCP_SERVICE_ACCOUNT`（サービスアカウントメール）
+   * `GCP_PROJECT_ID`（Google Cloud プロジェクト ID）
 
-    **必須セットアップ：**
+### セットアップ手順
 
-    1. IAM Credentials API、STS API、および Google Cloud's Agent Platform API を有効にします
-    2. GitLab OIDC 用の Workload Identity Pool とプロバイダーを作成します
-    3. Google Cloud's Agent Platform ロールを持つ専用サービスアカウントを作成します
-    4. WIF プリンシパルにサービスアカウントを偽装するパーミッションを付与します
+Workload Identity Federation 経由で GitLab CI ジョブがサービスアカウントを偽装することを許可するよう Google Cloud を設定します。
 
-    [Agent Platform ジョブの例](#configuration-examples)を使用して、キーを保存することなく認証します。
-  </Tab>
-</Tabs>
+**必須セットアップ：**
 
-<h2 id="configuration-examples">
-  設定例
-</h2>
+1. IAM Credentials API、STS API、および Google Cloud's Agent Platform API を有効にします
+2. GitLab OIDC 用の Workload Identity Pool とプロバイダーを作成します
+3. Google Cloud's Agent Platform ロールを持つ専用サービスアカウントを作成します
+4. WIF プリンシパルにサービスアカウントを偽装するパーミッションを付与します
+
+[Agent Platform ジョブの例](#configuration-examples)を使用して、キーを保存することなく認証します。
+
+## 設定例
 
 以下は、パイプラインに適応させることができる、すぐに使用できるスニペットです。
 
-<h3 id="amazon-bedrock-job-example-oidc">
-  Amazon Bedrock ジョブの例（OIDC）
-</h3>
+### Amazon Bedrock ジョブの例（OIDC）
 
 **前提条件：**
 
@@ -301,13 +273,11 @@ claude-bedrock:
     CLAUDE_CODE_USE_BEDROCK: "1"
 ```
 
-<Note>
-  Amazon Bedrock のモデル ID にはリージョン固有のプレフィックスが含まれます（例：`us.anthropic.claude-sonnet-4-6`）。ワークフローがサポートしている場合は、ジョブ設定またはプロンプトを通じて目的のモデルを渡します。
-</Note>
+> [!NOTE]
+>
+> Amazon Bedrock のモデル ID にはリージョン固有のプレフィックスが含まれます（例：`us.anthropic.claude-sonnet-4-6`）。ワークフローがサポートしている場合は、ジョブ設定またはプロンプトを通じて目的のモデルを渡します。
 
-<h3 id="agent-platform-job-example-workload-identity-federation">
-  Agent Platform ジョブの例（Workload Identity Federation）
-</h3>
+### Agent Platform ジョブの例（Workload Identity Federation）
 
 **前提条件：**
 
@@ -377,23 +347,17 @@ claude-vertex:
     ANTHROPIC_VERTEX_PROJECT_ID: "$GCP_PROJECT_ID"
 ```
 
-<Note>
-  Workload Identity Federation では、サービスアカウントキーを保存する必要がありません。リポジトリ固有の信頼条件と最小権限のサービスアカウントを使用します。
-</Note>
+> [!NOTE]
+>
+> Workload Identity Federation では、サービスアカウントキーを保存する必要がありません。リポジトリ固有の信頼条件と最小権限のサービスアカウントを使用します。
 
-<h2 id="best-practices">
-  ベストプラクティス
-</h2>
+## ベストプラクティス
 
-<h3 id="claude-md-configuration">
-  CLAUDE.md 設定
-</h3>
+### CLAUDE.md 設定
 
 リポジトリのルートに `CLAUDE.md` ファイルを作成して、コーディング標準、レビュー基準、プロジェクト固有のルールを定義します。Claude はランの実行中にこのファイルを読み込み、変更を提案する際にあなたの規約に従います。
 
-<h3 id="security-considerations">
-  セキュリティに関する考慮事項
-</h3>
+### セキュリティに関する考慮事項
 
 **API キーやクラウド認証情報をリポジトリにコミットしないでください**。常に GitLab CI/CD 変数を使用してください：
 
@@ -402,17 +366,13 @@ claude-vertex:
 * ジョブの権限とネットワーク出力を制限します
 * Claude の MR を他のコントリビューターと同じようにレビューします
 
-<h3 id="optimizing-performance">
-  パフォーマンスの最適化
-</h3>
+### パフォーマンスの最適化
 
 * `CLAUDE.md` を焦点を絞った簡潔なものに保ちます
 * 明確なイシュー/MR の説明を提供して、反復を減らします
 * ランナーで npm とパッケージのインストールをキャッシュします（可能な場合）
 
-<h3 id="ci-costs">
-  CI コスト
-</h3>
+### CI コスト
 
 Claude Code を GitLab CI/CD で使用する場合、関連するコストに注意してください：
 
@@ -430,40 +390,28 @@ Claude Code を GitLab CI/CD で使用する場合、関連するコストに注
   * 適切な `--max-turns` とジョブ `timeout` 値を設定します
   * 並列実行を制御するために同時実行を制限します
 
-<h2 id="troubleshooting">
-  トラブルシューティング
-</h2>
+## トラブルシューティング
 
-<h3 id="claude-not-responding-to-claude-commands">
-  Claude が @claude コマンドに応答しない
-</h3>
+### Claude が @claude コマンドに応答しない
 
 * パイプラインがトリガーされていることを確認してください（手動、MR イベント、またはノート イベント リスナー/webhook 経由）
 * `ANTHROPIC_API_KEY` またはクラウドプロバイダー変数が存在することを確認してください
 * コメントに `@claude` が含まれていること（`/claude` ではなく）、メンション トリガーが設定されていることを確認してください
 
-<h3 id="job-can’t-write-comments-or-open-mrs">
-  ジョブがコメントを書き込めない、または MR を開けない
-</h3>
+### ジョブがコメントを書き込めない、または MR を開けない
 
 * `CI_JOB_TOKEN` がプロジェクトに対して十分な権限を持っていることを確認するか、`api` スコープを持つプロジェクト アクセス トークンを使用してください
 * `mcp__gitlab` ツールが `--allowedTools` で有効になっていることを確認してください
 * ジョブが MR のコンテキストで実行されているか、`AI_FLOW_*` 変数を経由して十分なコンテキストを持っていることを確認してください
 
-<h3 id="authentication-errors">
-  認証エラー
-</h3>
+### 認証エラー
 
 * **Claude API の場合**: `ANTHROPIC_API_KEY` が有効で期限切れでないことを確認してください
 * **Amazon Bedrock または Google Cloud の Agent Platform の場合**: OIDC/WIF 設定、ロール偽装、シークレット名を確認してください。リージョンとモデルの可用性を確認してください
 
-<h2 id="advanced-configuration">
-  高度な設定
-</h2>
+## 高度な設定
 
-<h3 id="common-parameters-and-variables">
-  一般的なパラメータと変数
-</h3>
+### 一般的なパラメータと変数
 
 これらの CLI フラグ、GitLab キーワード、および変数を使用して、ジョブ内の Claude Code 実行を制御します。
 
@@ -473,13 +421,11 @@ Claude Code を GitLab CI/CD で使用する場合、関連するコストに注
 * `ANTHROPIC_API_KEY`: Claude API に必要です（Amazon Bedrock または Google Cloud の Agent Platform では使用されません）
 * プロバイダー固有の環境: `AWS_REGION`、Google Cloud の Agent Platform のプロジェクト/リージョン変数
 
-<Note>
-  正確なフラグとパラメータは `@anthropic-ai/claude-code` のバージョンによって異なる場合があります。ジョブ内で `claude --help` を実行して、サポートされているオプションを確認してください。
-</Note>
+> [!NOTE]
+>
+> 正確なフラグとパラメータは `@anthropic-ai/claude-code` のバージョンによって異なる場合があります。ジョブ内で `claude --help` を実行して、サポートされているオプションを確認してください。
 
-<h3 id="customizing-claude’s-behavior">
-  Claude の動作をカスタマイズする
-</h3>
+### Claude の動作をカスタマイズする
 
 Claude をガイドする方法は 2 つあります。
 

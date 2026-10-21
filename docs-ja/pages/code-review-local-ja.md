@@ -10,40 +10,36 @@
 
 このコマンドはどのプランでも使用できます。レビューはユーザー自身のセッションで実行されるため、セッションの他の部分と同じように、プランの使用量または API の課金にカウントされます。
 
-<Note>
-  GitHub 上でリポジトリ内のすべてのプルリクエストを自動的にレビューするには、Owner が組織に対して有効にするマネージドサービスである [Code Review](/docs/ja/code-review) を参照してください。
-</Note>
+> [!NOTE]
+>
+> GitHub 上でリポジトリ内のすべてのプルリクエストを自動的にレビューするには、Owner が組織に対して有効にするマネージドサービスである [Code Review](/docs/ja/code-review) を参照してください。
 
 `/review` は `/code-review` のエイリアスです。v2.1.223 より前は、`/review` は GitHub プルリクエストに対してシングルパスの読み取り専用レビューを実行する別のコマンドでした。
 
-<Steps>
-  <Step title="/code-review を実行する">
-    次のコマンドを実行します。
+**1. /code-review を実行する**
 
-    ```text theme={null}
-    /code-review
-    ```
+次のコマンドを実行します。
 
-    対象を指定しない場合、レビューは現在のブランチ上の変更を対象とします。代わりにプルリクエスト、別のブランチ、パス、またはコミットの範囲をレビュー対象にするには、[レビュー対象を選択する](#choose-what-to-review)を参照してください。
+```text theme={null}
+/code-review
+```
 
-    フラグを追加することもできます。
+対象を指定しない場合、レビューは現在のブランチ上の変更を対象とします。代わりにプルリクエスト、別のブランチ、パス、またはコミットの範囲をレビュー対象にするには、[レビュー対象を選択する](#choose-what-to-review)を参照してください。
 
-    * `--fix`: レビュー後に、指摘事項を作業ツリーに適用するよう Claude に求めます。その編集は[権限モード](/docs/ja/permission-modes)に従います。
-    * `--comment`: 指摘事項を GitHub プルリクエストにはインラインコメントとして、[GitLab マージリクエスト](#post-findings-to-a-gitlab-merge-request)には単一のノートとして投稿します
-  </Step>
+フラグを追加することもできます。
 
-  <Step title="作業を続ける">
-    レビューは独自のコンテキストウィンドウを持つバックグラウンドの[サブエージェント](/docs/ja/sub-agents)として実行されるため、会話を圧迫しません。指摘事項はレビューが完了すると会話に届きます。
-  </Step>
+* `--fix`: レビュー後に、指摘事項を作業ツリーに適用するよう Claude に求めます。その編集は[権限モード](/docs/ja/permission-modes)に従います。
+* `--comment`: 指摘事項を GitHub プルリクエストにはインラインコメントとして、[GitLab マージリクエスト](#post-findings-to-a-gitlab-merge-request)には単一のノートとして投稿します
 
-  <Step title="指摘事項に対応する">
-    レビューで見つかった問題を修正するよう Claude に依頼します。`--fix` または `--comment` を指定した場合、Claude はレビューの一環として指摘事項を適用または投稿し、その編集の承認を求められることがあります。
-  </Step>
-</Steps>
+**2. 作業を続ける**
 
-<h2 id="choose-what-to-review">
-  レビュー対象を選択する
-</h2>
+レビューは独自のコンテキストウィンドウを持つバックグラウンドの[サブエージェント](/docs/ja/sub-agents)として実行されるため、会話を圧迫しません。指摘事項はレビューが完了すると会話に届きます。
+
+**3. 指摘事項に対応する**
+
+レビューで見つかった問題を修正するよう Claude に依頼します。`--fix` または `--comment` を指定した場合、Claude はレビューの一環として指摘事項を適用または投稿し、その編集の承認を求められることがあります。
+
+## レビュー対象を選択する
 
 現在のブランチ以外のものをレビューするには、effort レベルとフラグの後に対象を入力します。Claude はそのテキストをレビュー対象として受け取ります。対象には、プルリクエスト番号、ブランチ名、ファイルパス、または Git のリビジョン範囲を指定できます。レビューしたいものを 1 列目から探し、2 列目に示されている内容を入力してください。
 
@@ -60,9 +56,7 @@
 
 `ultra` を指定した場合、[effort レベルとフラグの後のテキスト](#text-after-the-effort-level-and-flags)で説明しているように、Claude Code は対象を異なる方法で解釈します。
 
-<h2 id="what-the-review-reads-and-edits">
-  レビューが読み取るものと編集するもの
-</h2>
+## レビューが読み取るものと編集するもの
 
 レビューを実行する前に、特に `--fix` を使用する場合は、次の点を確認してください。
 
@@ -70,9 +64,7 @@
 * **巻き戻し**: バックグラウンドのレビューは、`--fix` による編集をセッションの[チェックポイント](/docs/ja/checkpointing#subagent-edits-not-restored)の外で適用します。その後に `/rewind` を実行しても、Claude がすでに会話内で編集していたファイルしか復元されません。レビューによる他のファイルへの編集は残るため、git を使用して元に戻してください。レビューが[フォアグラウンドで実行される](#run-in-the-foreground)場合は、ユーザー自身のターン中に作業ツリーを編集するため、`/rewind` で通常どおりその編集を復元できます。
 * **指示**: レビューは、非対話の `-p` 実行を含め、`CLAUDE.md` に従います。`REVIEW.md` は読み取りません。このファイルは、GitHub プルリクエストに対するマネージドの [Code Review サービス](/docs/ja/code-review-customize#use-review-md-for-review-only-rules)を設定するものです。
 
-<h2 id="how-findings-are-reported">
-  指摘事項の報告方法
-</h2>
+## 指摘事項の報告方法
 
 次のどちらの実行でも、Claude は指摘事項を応答内のテキストとして報告します。
 
@@ -83,9 +75,7 @@
 
 セッションの後半で Claude が報告済みの指摘事項を修正すると、Claude は再度それらを報告します。その後、Claude Code は更新された指摘事項のリスト内の各指摘事項を、修正済み、スキップ、または変更不要としてマークします。
 
-<h2 id="tune-effort-and-arguments">
-  effort と引数を調整する
-</h2>
+## effort と引数を調整する
 
 `--fix` と `--comment` のほかに、このコマンドは次のフラグを受け付けます。
 
@@ -103,26 +93,20 @@
 
 v2.1.223 より前は、レベルを指定しない `/code-review` は常にセッションの現在の effort を使用していました。
 
-<h3 id="post-findings-to-a-gitlab-merge-request">
-  指摘事項を GitLab マージリクエストに投稿する
-</h3>
+### 指摘事項を GitLab マージリクエストに投稿する
 
 GitLab マージリクエストに対して `--comment` を渡すと、Claude Code は GitLab の `glab` CLI を通じて指摘事項を投稿します。Claude Code v2.1.257 以降が必要です。`glab` がインストールされていない場合、Claude は代わりにターミナルに指摘事項を出力します。
 
 マージリクエストは URL または `!123` 形式の参照で渡してください。Claude Code が数字のみやブランチ名をマージリクエストとして扱うのは、チェックアウトの origin が `gitlab.com` にある場合のみです。セルフマネージドの GitLab インスタンスでは、URL または `!123` 形式を渡してください。
 
-<h3 id="text-after-the-effort-level-and-flags">
-  effort レベルとフラグの後のテキスト
-</h3>
+### effort レベルとフラグの後のテキスト
 
 effort レベルとフラグの後、Claude Code は行の残りをレビュー対象として読み取ります。`ultra` 引数はこの解釈を変更します。
 
 * **`ultra` を指定した場合**: Claude Code は単一の単語をベースブランチまたは PR 番号として読み取ります。ブランチや PR を指していない長いテキストは、[レビューに添付されるメモ](/docs/ja/ultrareview#pass-a-request-in-plain-words)になります。`/code-review ultra check my auth changes` は現在のブランチをレビューし、Claude は指摘事項をメモと関連付けます。
 * **`ultra` を指定しない場合**: 残りはすべてレビュー対象になります。これは別のコマンド名で始まる場合も同様です。`/code-review /fix-issue 123` は、`/fix-issue` を 2 つ目の[スタックされたスキル](/docs/ja/skills#stack-several-skills-in-one-message)として読み込むのではなく、`/fix-issue 123` を対象テキストとしてレビューします。v2.1.218 より前は、`/code-review` の後にスタックされたコマンドは独立したスキルとして展開されていました。
 
-<h2 id="run-in-the-foreground">
-  フォアグラウンドで実行する
-</h2>
+## フォアグラウンドで実行する
 
 レビューをフォアグラウンドで実行するには、次のいずれかを行います。
 
@@ -132,16 +116,14 @@ effort レベルとフラグの後、Claude Code は行の残りをレビュー�
 
 v2.1.218 より前は、レビューは会話内で実行されていました。
 
-<h2 id="let-claude-start-the-review">
-  Claude にレビューを開始させる
-</h2>
+## Claude にレビューを開始させる
 
 Claude は、ユーザーがコマンドを入力しなくても、自ら `/code-review` を開始できます。
 
 * **自然な言葉で依頼した場合**: 変更をレビューするよう Claude に依頼すると、Claude はスキルを実行できます
-* **スケジュールタスクから**: `/code-review` をプロンプトとする[スケジュールタスク](/docs/ja/scheduled-tasks)はレビューを実行します
+* **スケジュールタスクから**: `/code-review` をプロンプトとする[セッションスコープのスケジュールタスク](/docs/ja/scheduled-tasks)はレビューを実行します
 
-スケジュールタスクが[クラウドレビュー](#escalate-to-ultrareview)を起動することはないため、`/code-review` は `ultra` 引数なしでスケジュールしてください。
+セッションスコープのスケジュールタスクが[クラウドレビュー](#escalate-to-ultrareview)を起動することはないため、`/code-review` は `ultra` 引数なしでスケジュールしてください。
 
 `/code-review` をユーザーが入力できる状態に保ちつつ、Claude とスケジュールタスクの両方がレビューを開始しないようにするには、`~/.claude/settings.json` などの[設定ファイル](/docs/ja/settings#where-settings-live)に [`skillOverrides`](/docs/ja/skills#override-skill-visibility-from-settings) エントリを追加します。
 
@@ -155,9 +137,7 @@ Claude は、ユーザーがコマンドを入力しなくても、自ら `/code
 
 v2.1.246 より前は、Claude が自ら `/code-review` を開始するのは、Anthropic から取得した機能フラグによって有効化されている場合のみでした。[機能フラグを取得しないセッション](/docs/ja/env-vars#features-that-need-feature-flag-fetching)では、`/code-review` はユーザーが入力した場合にのみ実行され、スケジュールされた `/code-review` はプレーンテキストとして Claude に届いていました。
 
-<h2 id="escalate-to-ultrareview">
-  ultrareview にエスカレーションする
-</h2>
+## ultrareview にエスカレーションする
 
 `/code-review ultra --fix` は、より詳細な [ultrareview](/docs/ja/ultrareview) をクラウドで実行し、その指摘事項がセッションに戻ってきた時点で、作業ツリーに適用するよう Claude に求めます。
 
@@ -169,15 +149,13 @@ ultrareview は独自のスコープを使用します。
 
 対象が `github.com` のプルリクエストである場合、完了した指摘事項を GitHub アカウントからのコメントとして [PR に投稿する](/docs/ja/ultrareview#post-findings-to-the-pull-request)よう Claude に指示できます。Claude Code v2.1.227 以降が必要です。
 
-<Note>
-  ultrareview には claude.ai アカウントでの認証が必要です。Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry では利用できず、Zero Data Retention が有効になっている組織や [HIPAA 構成](/docs/ja/hipaa-setup)が適用されている組織でも利用できません。これらの場合、`/code-review ultra` は代わりにセッション内でローカルレビューを実行します。[顧客管理の暗号化キー](https://platform.claude.com/docs/en/manage-claude/cmek)（CMEK）を使用する組織は ultrareview を実行できません。変更をローカルでレビューするには、`/code-review` を実行してください。
-</Note>
+> [!NOTE]
+>
+> ultrareview には claude.ai アカウントでの認証が必要です。Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry では利用できず、Zero Data Retention が有効になっている組織や [HIPAA 構成](/docs/ja/hipaa-setup)が適用されている組織でも利用できません。これらの場合、`/code-review ultra` は代わりにセッション内でローカルレビューを実行します。[顧客管理の暗号化キー](https://platform.claude.com/docs/en/manage-claude/cmek)（CMEK）を使用する組織は ultrareview を実行できません。変更をローカルでレビューするには、`/code-review` を実行してください。
 
 スクリプトや CI ジョブからクラウドレビューを実行するには、[`claude ultrareview` サブコマンド](/docs/ja/ultrareview#run-ultrareview-non-interactively)を使用します。このサブコマンドは指摘事項を待機し、stdout に出力します。
 
-<h2 id="change-or-build-on-the-review">
-  レビューを変更する、またはレビューを基に構築する
-</h2>
+## レビューを変更する、またはレビューを基に構築する
 
 `/code-review` は[バンドルスキル](/docs/ja/skills#bundled-skills)です。その指示は Claude Code に組み込まれているため、開いたり編集したりできる `SKILL.md` ファイルはディスク上にありません。すべてのレビューに従わせたいプロジェクトのルールがある場合は、`CLAUDE.md` に追加してください。さらに踏み込むには、次のいずれかのページから始めてください。
 
@@ -187,9 +165,7 @@ ultrareview は独自のスコープを使用します。
 
 このコマンドは v2.1.147 より前は `/simplify` という名前で、デフォルトで修正を適用していました。バグを見つけるために `/simplify` をスクリプト化していた場合は、`/code-review --fix` に切り替えてください。
 
-<h2 id="related-resources">
-  関連リソース
-</h2>
+## 関連リソース
 
 * [Code Review](/docs/ja/code-review): 組織の GitHub 上のすべてのプルリクエストをレビューするマネージドサービス
 * [Ultrareview](/docs/ja/ultrareview): より詳細なクラウドレビューのセットアップ、制限、コスト

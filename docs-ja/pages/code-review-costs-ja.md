@@ -11,15 +11,11 @@
 * **各レビューのコスト**：[レビューレベル](/docs/ja/code-review-setup#set-the-default-review-level)、変更の規模、周辺コードの複雑さ、検証が必要な候補の問題の数に応じて増減します
 * **レビューの数**：各リポジトリで[レビューが実行される頻度](#how-often-reviews-run)によって決まります
 
-<h2 id="pricing">
-  料金
-</h2>
+## 料金
 
 Code Review は、プランに含まれる使用量とは別に、[使用クレジット](https://support.claude.com/en/articles/12429409-extra-usage-for-paid-claude-plans)を通じてトークン使用量に基づいて課金されます。レビューは、PR を作成した開発者やレビューを依頼した開発者ではなく、組織に対して課金されます。組織が他の Claude Code 機能に Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry のいずれを使用しているかにかかわらず、コストは Anthropic の請求書に記載されます。
 
-<h3 id="how-often-reviews-run">
-  レビューが実行される頻度
-</h3>
+### レビューが実行される頻度
 
 管理ページから追加したリポジトリは、最も多くのレビューが実行される **After every push** から始まります。各リポジトリの [**Review runs** 設定](/docs/ja/code-review-setup#set-when-reviews-run)によって、プルリクエストが受けるレビューの数が決まります。
 
@@ -34,9 +30,7 @@ Code Review は、プランに含まれる使用量とは別に、[使用クレ�
 * **`@claude review`**：今後のプッシュをサブスクライブせずに、1 回だけレビューを実行します
 * **ドラフトとフォークからのプルリクエスト**：[自動レビューはどちらもスキップする](/docs/ja/code-review-pull-requests#review-drafts-and-pull-requests-from-forks)ため、これらへのプッシュでレビューが増えることはありません
 
-<h2 id="estimate-your-spend">
-  支出を見積もる
-</h2>
+## 支出を見積もる
 
 本格的に展開する前に、小規模なパイロットを実施して、自組織のプルリクエストから月間の支出を見積もります。
 
@@ -47,9 +41,7 @@ Code Review は、プランに含まれる使用量とは別に、[使用クレ�
 
 リポジトリの平均値は、そのプルリクエストの規模と選択したレビューレベルに応じて変動します。
 
-<h2 id="limit-your-spend">
-  支出を制限する
-</h2>
+## 支出を制限する
 
 Code Review の月間支出上限を設定するには、[claude.ai/admin-settings/usage](https://claude.ai/admin-settings/usage) に移動し、Claude Code Review サービスの上限を構成します。この上限は組織全体に適用されます。
 
@@ -63,9 +55,7 @@ Code Review の月間支出上限を設定するには、[claude.ai/admin-settin
 
 支出を監視するには、[分析ダッシュボード](#view-usage)を使用します。
 
-<h2 id="view-usage">
-  使用状況を確認する
-</h2>
+## 使用状況を確認する
 
 [claude.ai/analytics/code-review](https://claude.ai/analytics/code-review) に移動すると、組織全体の Code Review のアクティビティを確認できます。
 
@@ -78,9 +68,7 @@ Code Review の月間支出上限を設定するには、[claude.ai/admin-settin
 
 Code Review cost カードには、当月が選択されている場合にのみ金額が表示されます。分析のコスト数値は請求書と異なる場合があります。Repository breakdown のコストは割引やクレジットを適用する前の定価で推定されており、Claude がプルリクエストに投稿したレビューのみが対象です。請求書と一致する正確な支出については、Anthropic の請求書を参照してください。
 
-<h2 id="related-resources">
-  関連リソース
-</h2>
+## 関連リソース
 
 * [Code Review をセットアップする](/docs/ja/code-review-setup)：各リポジトリでレビューレベルとレビューの実行タイミングを選択する場所
 * [プルリクエストでレビューを確認・依頼する](/docs/ja/code-review-pull-requests)：コメントコマンド、フォークからのプルリクエスト、レビューがスキップされたときに開発者に表示される予算メッセージ

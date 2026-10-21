@@ -6,13 +6,13 @@
 
 > IdP にゲートウェイを登録し、コンテナをビルドして Kubernetes または Cloud Run にデプロイし、ヘルスチェック、シークレットローテーション、アップグレード、セキュリティを運用します。
 
-<Info>
-  **まずゲートウェイのネットワークを計画してください。** サインイン時、Claude Code は、ホスト名がパブリック IP アドレスに解決される Claude apps gateway を拒否します。インターネットから到達できないアドレスであっても同様です。
-
-  Claude apps gateway は、シェルコマンドを実行するフックを含む設定をユーザーのマシンにプッシュできます。このチェックは、ユーザーがパブリックインターネット上の悪意のあるゲートウェイに誤ってサインインするのを防ぐのに役立ちます。自社のゲートウェイもインターネットから切り離しておいてください。
-
-  ゲートウェイを実行する場所を選ぶ前に、ゲートウェイのアドレスを選んでください。通常は、ユーザーが内部ネットワーク上または VPN 経由でアクセスするプライベートアドレスです。内部ネットワークがパブリック IPv4 範囲を使用している場合は、ゲートウェイとユーザーのマシンの両方を含む範囲を 1 つ指定できます。Claude Code は、その一致をゲートウェイが内部ネットワーク上にあることを示すものとみなします。[ゲートウェイのアドレスを選択する](#choose-an-address-for-the-gateway) を参照してください。どちらもネットワークに合わない場合は、Anthropic のアカウントチームにお問い合わせください。
-</Info>
+> [!NOTE]
+>
+> **まずゲートウェイのネットワークを計画してください。** サインイン時、Claude Code は、ホスト名がパブリック IP アドレスに解決される Claude apps gateway を拒否します。インターネットから到達できないアドレスであっても同様です。
+>
+> Claude apps gateway は、シェルコマンドを実行するフックを含む設定をユーザーのマシンにプッシュできます。このチェックは、ユーザーがパブリックインターネット上の悪意のあるゲートウェイに誤ってサインインするのを防ぐのに役立ちます。自社のゲートウェイもインターネットから切り離しておいてください。
+>
+> ゲートウェイを実行する場所を選ぶ前に、ゲートウェイのアドレスを選んでください。通常は、ユーザーが内部ネットワーク上または VPN 経由でアクセスするプライベートアドレスです。内部ネットワークがパブリック IPv4 範囲を使用している場合は、ゲートウェイとユーザーのマシンの両方を含む範囲を 1 つ指定できます。Claude Code は、その一致をゲートウェイが内部ネットワーク上にあることを示すものとみなします。[ゲートウェイのアドレスを選択する](#choose-an-address-for-the-gateway) を参照してください。どちらもネットワークに合わない場合は、Anthropic のアカウントチームにお問い合わせください。
 
 このページでは、[Claude apps gateway](/docs/ja/claude-apps-gateway) の運用側について説明します。ID プロバイダー（IdP）で OAuth クライアントを登録し、ゲートウェイをコンテナとしてデプロイし、日々運用します。ゲートウェイが起動時に読み込む `gateway.yaml` ファイルのすべてのオプションについては、[設定リファレンス](/docs/ja/claude-apps-gateway-config) を参照してください。
 
@@ -25,9 +25,7 @@
 
 サインインまたはブート中に失敗が発生した場合は、[トラブルシューティング](#troubleshooting) に直接進んでください。これは表示されるエラーに基づいてキー付けされています。
 
-<h2 id="identity-provider-setup">
-  ID プロバイダーのセットアップ
-</h2>
+## ID プロバイダーのセットアップ
 
 単一のリダイレクト URI `https://<gateway>/oauth/callback` を持つ機密 OAuth/OpenID Connect（OIDC）ウェブアプリケーションを ID プロバイダーに登録し、ゲートウェイアクセスを持つべきユーザーまたはグループに割り当てます。ゲートウェイは、登録のクライアントシークレットを使用して IdP に対して認証します。IdP が代わりに[証明書認証情報](/docs/ja/claude-apps-gateway-config#certificate-client-authentication)を使用する場合は、登録にアップロードした証明書を使用して認証します。
 
@@ -45,15 +43,13 @@
 * **Microsoft Entra ID**：`issuer` = `https://login.microsoftonline.com/<tenant-id>/v2.0`。Entra はグループ名ではなくグループオブジェクト ID を発行するため、`managed.policies.match.groups` で GUID を使用するか、人間が読める名前のためにアプリロールを使用します。テナントが `groups` の代わりに `roles` の下でロールを発行する場合は、`oidc.groups_claim: roles` を設定します。
 * **Google Workspace**：`issuer` = `https://accounts.google.com`。Google の id\_token はグループを含みません。Google を IdP として、グループベースの `allowed_groups` または `managed.policies` を使用するには、[`oidc.google_groups`](/docs/ja/claude-apps-gateway-config#oidc) を設定します。これは、ドメイン全体の委任を持つサービスアカウントを使用して Admin SDK Directory API を通じて各ユーザーのグループを検索します。これなしで、メンバーシップゲーティングに `oidc.allowed_email_domains` を使用し、ポリシー割り当てに `managed.policies.match.email_domain` を使用します。Google は標準の `offline_access` スコープも無視します。リフレッシュトークンの場合は、`oidc.scopes: [openid, profile, email]` と `oidc.extra_auth_params: { access_type: offline, prompt: consent }` を設定します。
 
-<Warning>
-  リフレッシュトークンにより、ゲートウェイは開発者のセッションをサイレントに更新でき、開発者をブラウザに戻す必要がありません。また、IdP がユーザーを無効にすると、次のリフレッシュが失敗し、セッションは `ttl_hours` 内に終了するため、プロビジョニング解除を駆動します。ゲートウェイはデフォルトでリフレッシュトークンを取得するために `offline_access` をリクエストします。IdP がオフラインアクセスに明示的な同意を必要とする場合は、OAuth クライアントを設定してそれを許可します。
+> [!WARNING]
+>
+> リフレッシュトークンにより、ゲートウェイは開発者のセッションをサイレントに更新でき、開発者をブラウザに戻す必要がありません。また、IdP がユーザーを無効にすると、次のリフレッシュが失敗し、セッションは `ttl_hours` 内に終了するため、プロビジョニング解除を駆動します。ゲートウェイはデフォルトでリフレッシュトークンを取得するために `offline_access` をリクエストします。IdP がオフラインアクセスに明示的な同意を必要とする場合は、OAuth クライアントを設定してそれを許可します。
+>
+> IdP がリフレッシュトークンをまったく発行できない場合、ゲートウェイは引き続き機能しますが、サイレント更新がないため、開発者はセッションの有効期限が切れるとブラウザログインを再実行します。これが 1 時間ごとに発生するのを防ぐには、[`session.ttl_hours`](/docs/ja/claude-apps-gateway-config#session) を `8` または `12` に上げます。トレードオフはプロビジョニング解除の遅延です。リフレッシュトークンなしでは、無効にされたユーザーはより長い TTL が経過するまでアクセスを保持します。
 
-  IdP がリフレッシュトークンをまったく発行できない場合、ゲートウェイは引き続き機能しますが、サイレント更新がないため、開発者はセッションの有効期限が切れるとブラウザログインを再実行します。これが 1 時間ごとに発生するのを防ぐには、[`session.ttl_hours`](/docs/ja/claude-apps-gateway-config#session) を `8` または `12` に上げます。トレードオフはプロビジョニング解除の遅延です。リフレッシュトークンなしでは、無効にされたユーザーはより長い TTL が経過するまでアクセスを保持します。
-</Warning>
-
-<h2 id="deployment">
-  デプロイ
-</h2>
+## デプロイ
 
 ゲートウェイは単一のステートレス Linux バイナリで、Postgres を通じて調整されるため、環境内で他のステートレスサービスをデプロイするのと同じ方法でデプロイします。ゲートウェイはネットワーク内に置き、開発者が HTTPS 経由で到達でき、ゲートウェイから IdP に到達できるようにします。また、本番認証情報を保持する他のサービスと同様に扱います。
 
@@ -75,9 +71,7 @@
 
 ALB の 60 秒などのデフォルトは、静かなストリームを開いたままにするのに十分です。[AWS の実装例](/docs/ja/claude-apps-gateway-on-aws#troubleshooting) はとにかくそれを 1 時間に引き上げ、トラブルシューティング行は v2.1.229 より古いゲートウェイをカバーしており、現在 ping を取得する上流でサイレント期間中に何も送信しませんでした。
 
-<h3 id="choose-an-address-for-the-gateway">
-  ゲートウェイのアドレスを選択する
-</h3>
+### ゲートウェイのアドレスを選択する
 
 Claude Code は、次の 2 つの方法のいずれかでゲートウェイのアドレスを受け付けます：
 
@@ -86,9 +80,7 @@ Claude Code は、次の 2 つの方法のいずれかでゲートウェイの�
 
 両方を含む単一のブロックがない場合は、代わりにゲートウェイにプライベートアドレスを割り当ててください。
 
-<h3 id="container-image">
-  コンテナイメージ
-</h3>
+### コンテナイメージ
 
 標準 Claude Code リリースのネイティブ `claude` バイナリの周りに独自のイメージをビルドします：
 
@@ -104,9 +96,7 @@ Claude Code は、次の 2 つの方法のいずれかでゲートウェイの�
 * **書き込み可能な状態ディレクトリ**：ゲートウェイは任意のユーザーとして実行されますが、最小限のイメージには書き込み可能なホームがありません。`CLAUDE_CONFIG_DIR` を `/tmp/.claude` などの書き込み可能なパスに設定します。
 * **コンテナコマンド**：`claude gateway --config /etc/claude/gateway.yaml`。設定ファイルは読み取り専用でマウントされ、シークレットは環境変数として提供されます。ゲートウェイは `listen.port` でリッスンします。デフォルトは `8080` です。
 
-<h3 id="kubernetes">
-  Kubernetes
-</h3>
+### Kubernetes
 
 ゲートウェイをデプロイメントとして実行します。他のステートレスサービスと同様です：
 
@@ -118,9 +108,7 @@ AWS での完全な実装例（ECS Fargate または EKS、Amazon RDS、AWS Secr
 
 静的キーよりもプラットフォームのワークロードアイデンティティを優先します。[`upstreams` リファレンス](/docs/ja/claude-apps-gateway-config#upstreams) にはプラットフォームごとのセットアップ詳細があります。クロスクラウドペアリング（例えば GKE 上の Amazon Bedrock 上流）の場合は、上流の `auth` ブロックで明示的な認証情報を設定します。
 
-<h3 id="cloud-run">
-  Cloud Run
-</h3>
+### Cloud Run
 
 サービスを以下のように設定します：
 
@@ -131,9 +119,7 @@ AWS での完全な実装例（ECS Fargate または EKS、Amazon RDS、AWS Secr
 
 Google Cloud での完全な実装例（Cloud Run または GKE、Cloud SQL、Secret Manager をカバー）については、[Google Cloud にデプロイする](/docs/ja/claude-apps-gateway-on-gcp) を参照してください。
 
-<h3 id="push-the-gateway-url-to-developer-machines">
-  ゲートウェイ URL を開発者マシンにプッシュする
-</h3>
+### ゲートウェイ URL を開発者マシンにプッシュする
 
 ゲートウェイが稼働したら、MDM を通じて、または OS ごとの `managed-settings.json` を直接書き込むことで、管理設定を通じて各開発者のマシンに `forceLoginMethod`、`forceLoginGatewayUrl`、および `parentSettingsBehavior: "merge"` をプッシュします。
 
@@ -141,9 +127,7 @@ Google Cloud での完全な実装例（Cloud Run または GKE、Cloud SQL、Se
 
 各メカニズムがポリシーを保存する場所については [where each mechanism stores the policy](/docs/ja/managed-settings#where-each-mechanism-stores-the-policy) を参照し、Claude Desktop `bootstrapUrl` 相当については [Client-side managed settings](/docs/ja/claude-apps-gateway-config#client-side-managed-settings) を参照してください。
 
-<h3 id="large-rollouts">
-  大規模なロールアウト
-</h3>
+### 大規模なロールアウト
 
 サインインはクライアント IP アドレスごとにレート制限されており、デフォルトは小規模なチームに適しています。各アドレスは 10 分ごとに 30 回のサインイン開始と 10 回のコード送信を取得します。数千人の開発者へのロールアウトは、次の 2 つの理由のいずれかで、最初の朝にこれらの制限に達する可能性があります：
 
@@ -166,15 +150,11 @@ IdP がリフレッシュトークンを発行する場合、Claude Code はセ�
 
 制限に達すると、Claude Code v2.1.274 以降は `The gateway is limiting sign-in attempts right now` を表示します。v2.1.274 以降のゲートウェイは、検証ページに `Too many attempts came from your network address` を表示し、確認する設定を表示します。また、変更する設定に名前を付ける `sign-in refused` ログ行も書き込みます。
 
-<h2 id="operations">
-  運用
-</h2>
+## 運用
 
 ゲートウェイがトラフィックを提供したら、日々の運用はそのログを読み込み、その健全性をプローブし、スケジュールに従ってシークレットをローテーションすることです。サブセクションは各々をカバーし、Postgres が保持するもの、アップグレードとロールバックがどのように動作するかをカバーします。
 
-<h3 id="logs">
-  ログ
-</h3>
+### ログ
 
 ゲートウェイは stderr に 2 つのストリームを書き込みます。両方とも JSON フレンドリーです：
 
@@ -192,9 +172,7 @@ IdP がリフレッシュトークンを発行する場合、Claude Code はセ�
   * `admin.denied` は、拒否された admin-API 認証試行をクライアント IP、メソッド、パス、理由で記録します。提示されたキーマテリアルなし：`x-api-key` が提示されたが設定されたキーと一致しなかった場合は `invalid_key`、`Authorization` ヘッダーのみが提示され、ゲートウェイセッションとして `admin.admin_groups` で検証されなかった場合は `bearer_rejected`、どちらのヘッダーも提示されなかった場合は `no_credentials`
 * **運用ログ**：ブート、警告、上流エラーの人間が読める `[gateway]` プレフィックス付きの行。`CLAUDE_GATEWAY_LOG_LEVEL` 環境変数は詳細度を制御し、`debug`、`info`、`warn`、`error` を受け入れます。デフォルトは `info` です。`debug` では、各サインインと更新は id\_token のクレーム名（値ではなく）もログに記録され、`userinfo_fallback` が提供した場合は userinfo クレーム名もログに記録されるため、PII をログに記録することなく `email_claim` と `groups_claim` 設定を診断できます。監査イベントには影響しません。常に発行されます。
 
-<h3 id="health">
-  ヘルス
-</h3>
+### ヘルス
 
 ゲートウェイは `GET /healthz` を liveness プローブとして、`GET /readyz` を readiness プローブとして提供します。`/readyz` はストアが到達可能であることを検証します。[`store.readiness_grace_seconds`](/docs/ja/claude-apps-gateway-config#store) を設定した場合、`/readyz` はストアが応答を停止した後、最大その秒数の間、ready を報告し続けます。
 
@@ -202,9 +180,7 @@ IdP がリフレッシュトークンを発行する場合、Claude Code はセ�
 
 `/.well-known/oauth-authorization-server` の OAuth ディスカバリードキュメントは、設定ロード、OIDC ディスカバリー、上流クライアント構築、Postgres マイグレーションがすべて成功した後にのみ `200` を返すため、エンドツーエンドのブートチェックとしても機能します。
 
-<h3 id="concurrent-upstream-requests">
-  同時上流リクエスト
-</h3>
+### 同時上流リクエスト
 
 デフォルトでは、各ゲートウェイレプリカは最大 256 個のリクエストを同時に上流に送信します。ストリーミング応答はストリームが終了するまで制限に対してカウントされます。
 
@@ -221,13 +197,11 @@ IdP がリフレッシュトークンを発行する場合、Claude Code はセ�
 
 CPU でオートスケールする場合、制限でのレプリカはスケールアウトをトリガーせずにリクエストをキューに入れるため、レプリカが `client requests are open` 警告をログに記録するときに表示される CPU レベルより下のターゲットを設定します。
 
-<Warning>
-  開いているすべてのリクエストは、ストリーミング中およびスロットを待つ間、ゲートウェイプロセスでメモリを保持します。制限を 256 に保つ場合、オーバーロードされたレプリカのメモリは引き続き増加します。待機中のリクエストはリクエストボディを保持するため。ピーク時に開いているリクエスト数のコンテナメモリをサイズし、制限を変更するときにメモリを監視します。メモリが不足したレプリカは強制終了され、保持するすべてのストリームがドロップされます。
-</Warning>
+> [!WARNING]
+>
+> 開いているすべてのリクエストは、ストリーミング中およびスロットを待つ間、ゲートウェイプロセスでメモリを保持します。制限を 256 に保つ場合、オーバーロードされたレプリカのメモリは引き続き増加します。待機中のリクエストはリクエストボディを保持するため。ピーク時に開いているリクエスト数のコンテナメモリをサイズし、制限を変更するときにメモリを監視します。メモリが不足したレプリカは強制終了され、保持するすべてのストリームがドロップされます。
 
-<h3 id="outage-behavior">
-  障害時の動作
-</h3>
+### 障害時の動作
 
 Postgres がダウンした場合、ゲートウェイ自体はサインイン済みの開発者にサービスを提供し続け、新しいサインインは失敗します。開発者が実際に機能し続けるかどうかは、オーケストレーターが readiness をどのように処理するかに依存します：
 
@@ -238,9 +212,7 @@ Postgres がダウンした場合、ゲートウェイ自体はサインイン�
 
 IdP がダウンした場合、既存セッションは `ttl_hours` まで機能し、新しいログインは失敗します。セッション更新は再試行の回答を取得し、IdP が戻ったら成功します。IdP が頻繁なメンテナンスウィンドウを持つ場合は、より長い `ttl_hours` を設定します。
 
-<h4 id="readiness-grace-period">
-  Readiness グレースピリオド
-</h4>
+#### Readiness グレースピリオド
 
 データベースフェイルオーバーなどの短い Postgres 障害を通じてサインイン済みの開発者が機能し続けるようにするには、[`store.readiness_grace_seconds`](/docs/ja/claude-apps-gateway-config#store) をフェイルオーバーが取る時間より長く設定します。たとえば `300`。支出制限がオンで、デフォルトの fail-open 動作では、ready のままであるレプリカを通じたリクエストは Postgres が回復するまでメーター化されないため、フェイルオーバーをカバーする値を低く保ちます。[`enforcement.fail_closed_on_error: true`](/docs/ja/claude-apps-gateway-config#enforcement) を設定した場合、ゲートウェイはレプリカが引き続き readiness チェックに合格している間でも、Postgres が回復するまで、サインイン済みの開発者の推論を `429` `spend limit unavailable` メッセージで拒否します。
 
@@ -248,9 +220,7 @@ IdP がダウンした場合、既存セッションは `ttl_hours` まで機能
 
 readiness プローブを `/healthz` に指定する場合、レプリカは障害を通じてそれに合格し続けますが、`/healthz` は never not-ready を報告するため、Postgres 接続が回復しないレプリカは引き続き合格し続けます。
 
-<h3 id="jwt-secret-rotation">
-  JWT シークレットローテーション
-</h3>
+### JWT シークレットローテーション
 
 既存セッションが有効なままになるように、段階的にシークレットをローテーションします：
 
@@ -260,9 +230,7 @@ readiness プローブを `/healthz` に指定する場合、レプリカは障�
 
 ローテーションは、有効期限が切れる前にセッションを強制的に削除する唯一の方法でもあります。ベアラートークンは JWT シークレットに対してローカルに検証されるため、セッションごとの取り消しはありません。シークレットを完全に置き換え、配列に古いものを保持しないと、すべての未処理セッションが一度に無効になります。個別のオフボーディングの場合は、IdP でユーザーをプロビジョニング解除します。セッションは `ttl_hours` 内に終了します。
 
-<h3 id="postgres">
-  Postgres
-</h3>
+### Postgres
 
 ゲートウェイは状態を PostgreSQL データベースに保存します：
 
@@ -283,9 +251,7 @@ readiness プローブを `/healthz` に指定する場合、レプリカは障�
 
 支出制限が使用されている場合、失われたデータベースは失われた支出追跡とキャップを意味し、開発者の再ログインだけではないため、定期的なバックアップを実行します。保持を待つのではなく、出発した開発者を直ちに削除するには、`DELETE FROM principal_emails WHERE principal = '<sub>'` を直接実行します。これはメール、名前、グループを保持する唯一のテーブルを削除します。`spend` と `admin_audit` 行は疑似匿名 OIDC `sub` のみを参照します。
 
-<h3 id="upgrades">
-  アップグレード
-</h3>
+### アップグレード
 
 レプリカはステートレスであるため、ローリング再起動はゲートウェイの状態を失いません。ゲートウェイはブート時にスキーママイグレーションを実行します。つまり、新しいバイナリをデプロイするとデータベースが自動的にマイグレーションされます。同時実行レプリカは Postgres アドバイザリロックでシリアライズされるため、各マイグレーションを適用するのは 1 つだけです。
 
@@ -309,15 +275,11 @@ readiness プローブを `/healthz` に指定する場合、レプリカは障�
 
 独自のイメージでゲートウェイのバージョンをピン留めするため、新しい Claude Code リリースのセキュリティ修正を含む修正は、ピンを更新して再デプロイするときにのみデプロイメントに到達します。ゲートウェイを、本番認証情報を保持する他のサービスに使用するのと同じパッチングケーデンスに含めます。
 
-<h2 id="security">
-  セキュリティ
-</h2>
+## セキュリティ
 
 このセクションは、セキュリティレビューが尋ねる質問に答えます：ゲートウェイを通じてどのデータが流れ、どこに行くか、設計が防御する攻撃、コンプライアンスアンケートに属する回答。
 
-<h3 id="data-flow">
-  データフロー
-</h3>
+### データフロー
 
 | データ | パス | ゲートウェイによって Anthropic に送信 |
 | - | - | - |
@@ -327,9 +289,7 @@ readiness プローブを `/healthz` に指定する場合、レプリカは障�
 | 管理設定 | ゲートウェイ YAML → CLI | なし |
 | 監査ログ | ゲートウェイ stderr → アグリゲーター | なし |
 
-<h3 id="threat-model-summary">
-  脅威モデルの概要
-</h3>
+### 脅威モデルの概要
 
 ゲートウェイはネットワーク境界内に位置しますが、個々の開発者ラップトップは信頼されていないと見なされます。設計はこれを 3 つの方法で説明します：
 
@@ -348,17 +308,13 @@ readiness プローブを `/healthz` に指定する場合、レプリカは障�
 * **侵害されたゲートウェイホスト**：ホストは上流認証情報を保持し、[管理設定](/docs/ja/claude-apps-gateway-config#managed) をすべての接続された開発者に配布するため、ゲートウェイの設定の制御は MDM の制御に匹敵します。CLI の [承認ダイアログ](/docs/ja/server-managed-settings#approval-memory) はシェル対応設定のサイレント変更を制限しますが、ホストセキュリティに置き換わりません。
 * **悪意のある OIDC プロバイダー**：プロバイダーはゲートウェイが信頼する id\_token に署名するため、任意のアイデンティティを主張できます。IdP の検証と保護はあなたの責任です。
 
-<h3 id="user-code-brute-force-resistance">
-  ユーザーコードブルートフォース耐性
-</h3>
+### ユーザーコードブルートフォース耐性
 
 開発者が `/device` 検証ページに入力する `user_code` は、20 文字のアルファベットから引き出された 8 文字です。これは 20⁸ または約 2.56×10¹⁰ の組み合わせを生成し、10 分後に期限切れになります。
 
 ゲートウェイは [`rate_limits`](/docs/ja/claude-apps-gateway-config#http-tuning) を通じて設定可能なデバイスグラントエンドポイントに IP ごとのレート制限を適用します。多くの開発者が単一の共有企業 NAT アドレスからサインインする場合は、制限を上げます。[大規模ロールアウト](#large-rollouts) は、それらのサイズを決定する方法を示しています。制限はサインインフローにのみ適用され、推論には適用されません。
 
-<h3 id="compliance-posture">
-  コンプライアンス体制
-</h3>
+### コンプライアンス体制
 
 * **データレジデンシー**：ゲートウェイ自体のデータプレーンは、Anthropic API が設定された上流の場合を除き、Anthropic に何も送信しません。その場合、既存のデータ処理契約が推論パスに適用されます。テレメトリ、監査、アイデンティティ、設定は設定した宛先にのみ行きます。
 * **ホストプロセストラフィック**：ホストプロセスは Claude Code CLI です。`claude gateway` は Amazon Bedrock および Google Cloud の Agent Platform デプロイメントと同じサードパーティルールの下で実行され、Anthropic に何も送信しません。v2.1.227 より前では、ホストプロセスは製品バージョンとプラットフォームなどのスタートアップテレメトリを送信していました。これはコンテナ環境で `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1` を設定することでオフにできました。これらのリリースはまた、ボート時に本文または認証情報なしで 1 つの `HEAD` リクエストを `https://api.anthropic.com` の `/api/hello` に送信していました。または環境が `ANTHROPIC_BASE_URL` を設定した場合はそれに、環境が `HTTPS_PROXY` などのプロキシ変数または mTLS クライアント証明書も設定していない限り。彼らは応答を無視したため、エグレスファイアウォールでそのリクエストをブロックしてもゲートウェイに影響しませんでした。
@@ -371,9 +327,7 @@ readiness プローブを `/healthz` に指定する場合、レプリカは障�
 * **TLS**：本番環境で `public_url` を HTTPS 経由で提供します。ゲートウェイ自体のリスナー経由で `listen.tls` を使用するか、プレーン HTTP レプリカの前の TLS 終了 ingress から `listen.public_url` を設定します。どちらの場合でも。ゲートウェイはプレーン HTTP を拒否しません。IdP は本番環境で HTTPS を提供する必要があり、Postgres は `?sslmode=require` をサポートします。ingress で `Strict-Transport-Security` を設定します。
 * **脆弱性開示**：[セキュリティ問題の報告](/docs/ja/security#reporting-security-issues) に従います
 
-<h3 id="plugin-marketplace-requests">
-  プラグインマーケットプレイスのリクエスト
-</h3>
+### プラグインマーケットプレイスのリクエスト
 
 Claude Code は、プラグインマーケットプレイスをゲートウェイ経由ではなく、各開発者のマシンから直接取得します。ホストの一覧は [ネットワークアクセス要件](/docs/ja/network-config#network-access-requirements) に記載されています。
 
@@ -386,9 +340,7 @@ Claude Code は、プラグインマーケットプレイスをゲートウェ�
 
 最初の登録は、開発者がゲートウェイにサインインする前、つまりゲートウェイポリシーがまだ届いていない時点で実行される場合があります。この最初の起動にも対応するには、ゲートウェイポリシーの [`cli` または `code` ブロック](/docs/ja/claude-apps-gateway-config#what-goes-in-cli) に加えて、[クライアント側管理設定](/docs/ja/claude-apps-gateway-config#client-side-managed-settings) でも選択した設定を配信してください。
 
-<h2 id="troubleshooting">
-  トラブルシューティング
-</h2>
+## トラブルシューティング
 
 ご質問やフィードバックについては、[Claude Code サポート](https://support.claude.com/en/collections/14445694-claude-code)をご利用いただくか、[Claude Code GitHub リポジトリ](https://github.com/anthropics/claude-code/issues)で issue を開いてください。Anthropic のアカウントチームに問い合わせることもできます。問題を報告する際は、以下の情報を含めてください。
 
@@ -442,9 +394,7 @@ gateway の stderr には監査イベントストリームが含まれ、監査�
 
 Claude Code がゲートウェイサインイン後に `couldn't load your organization's managed settings` を報告する場合、Claude Code は理由を示し、その場で再起動して、会話を再開します。Claude Code が再起動できない場合（例えば、バックグラウンドセッション）、Claude Code はセッションを終了し、サインインを保持します。
 
-<h3 id="request-headers-too-large-after-sign-in">
-  サインイン後にリクエストヘッダーが大きすぎる
-</h3>
+### サインイン後にリクエストヘッダーが大きすぎる
 
 開発者が多数の IdP グループに所属している場合、サインイン後に開発者のリクエストが `431` エラーで失敗することがあります。
 
@@ -463,9 +413,7 @@ groups クレームを削減する際は、以下の設定で指定したグル�
 * **[`managed.policies`](/docs/ja/claude-apps-gateway-config#managed) 内の `match.groups`**: 開発者に適用されるポリシーを決定します
 * **`rbac_group` [支出上限](/docs/ja/claude-apps-gateway-spend-limits)**: 開発者に適用されるグループ上限を決定します
 
-<h2 id="related">
-  関連
-</h2>
+## 関連
 
 * [Claude apps gateway の概要](/docs/ja/claude-apps-gateway)：クイックスタートと開発者接続
 * [設定リファレンス](/docs/ja/claude-apps-gateway-config)：すべての `gateway.yaml` オプション

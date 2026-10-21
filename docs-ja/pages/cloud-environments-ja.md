@@ -6,21 +6,28 @@
 
 > Claude Code クラウドセッション用のクラウド環境を設定します。ネットワークアクセスレベル、環境変数、セットアップスクリプト、環境キャッシュを構成できます。
 
-<Note>
-  クラウド環境は [クラウドセッション](/docs/ja/claude-code-on-the-web) に適用されます。これは Pro、Max、Team プランで利用可能であり、[プレミアムシートまたは Chat + Claude Code シートを持つ](https://support.claude.com/en/articles/11845131-use-claude-code-with-your-team-or-enterprise-plan) Enterprise ユーザー向けです。
-</Note>
+> [!NOTE]
+>
+> クラウド環境は [クラウドセッション](/docs/ja/claude-code-on-the-web) に適用されます。これは Pro、Max、Team プランで利用可能であり、[プレミアムシートまたは Chat + Claude Code シートを持つ](https://support.claude.com/en/articles/11845131-use-claude-code-with-your-team-or-enterprise-plan) Enterprise ユーザー向けです。
 
 各 [クラウドセッション](/docs/ja/claude-code-on-the-web) はクラウド環境で実行されます。環境を設定して [ネットワークアクセス](#access-levels) を許可または拒否し、セッション用に [環境変数を設定](#set-environment-variables) し、セッションが内容を見ずに使用できる [ネットワークシークレット](#add-network-secrets) を保存し、Claude が作業を開始する前に [セットアップスクリプト](#setup-scripts) を実行できます。
 
-同じ環境は、クラウドセッションを開始する場所に関係なく適用されます。[Desktop アプリ](/docs/ja/desktop)、[Claude モバイルアプリ](/docs/ja/mobile)、[claude.ai/code](https://claude.ai/code) のブラウザ、[`claude --cloud`](/docs/ja/claude-code-on-the-web#from-terminal-to-cloud) を使用したターミナル、[ルーチン](/docs/ja/routines)、[Claude Tag](https://claude.com/docs/claude-tag/overview) です。これらの各サーフェスは [セルフホスト環境](/docs/ja/self-hosted-environments) にもルーティングできます。[利用可能性と制限](/docs/ja/self-hosted-environments#availability-and-limitations) は、Claude Tag セッションがセルフホスト環境で実行される場合に Claude がまだ使用できないものをカバーしています。
+同じ環境は、クラウドセッションを開始する場所に関係なく適用されます。
 
-<Info>
-  [Remote Control](/docs/ja/remote-control) セッションは Web とモバイルインターフェイスを自分のマシン上のセッションに接続します。これはクラウド環境ではなく、自分のマシンのネットワークとファイルを使用します。Claude Tag チャネルセッションは [共有環境](#organization-shared-environments) または [セルフホスト環境](/docs/ja/self-hosted-environments) のいずれかの組織レベルの環境のみを使用します。
-</Info>
+* [Desktop アプリ](/docs/ja/desktop)
+* [Claude モバイルアプリ](/docs/ja/mobile)
+* [claude.ai/code](https://claude.ai/code) のブラウザ
+* [`claude --cloud`](/docs/ja/claude-code-on-the-web#from-terminal-to-cloud) を使用したターミナル
+* [クラウドスケジュールタスク](/docs/ja/routines)
+* [Claude Tag](https://claude.com/docs/claude-tag/overview)
 
-<h2 id="the-default-environment">
-  Default 環境
-</h2>
+これらの各サーフェスは [セルフホスト環境](/docs/ja/self-hosted-environments) にもルーティングできます。[利用可能性と制限](/docs/ja/self-hosted-environments#availability-and-limitations) は、Claude Tag セッションがセルフホスト環境で実行される場合に Claude がまだ使用できないものをカバーしています。
+
+> [!NOTE]
+>
+> [Remote Control](/docs/ja/remote-control) セッションは Web とモバイルインターフェイスを自分のマシン上のセッションに接続します。これはクラウド環境ではなく、自分のマシンのネットワークとファイルを使用します。Claude Tag チャネルセッションは [共有環境](#organization-shared-environments) または [セルフホスト環境](/docs/ja/self-hosted-environments) のいずれかの組織レベルの環境のみを使用します。
+
+## Default 環境
 
 環境がまだない場合、オンボーディングは **Default** 環境をセットアップします。どのように設定されるかは、オンボーディングの場所によって異なります。
 
@@ -40,30 +47,24 @@
 
 デフォルトでは不十分な場合は環境を設定します。Claude が [デフォルト許可リスト](#default-allowed-domains) 外のドメインに到達する必要がある場合、セッション用に環境変数を設定する必要がある場合、または作業を開始する前に依存関係をインストールする必要がある場合です。
 
-<h2 id="configure-your-environment">
-  環境を設定する
-</h2>
+## 環境を設定する
 
 [claude.ai/code](https://claude.ai/code) で新しいセッションを開始する画面のメッセージボックスの下にある環境セレクターから、環境を追加、編集、アーカイブできます。この画面にアクセスするには、[Web オンボーディング](/docs/ja/web-quickstart) を完了してください。Desktop アプリについては、[クラウドセッション](/docs/ja/desktop#cloud-sessions) を参照してください。作成した環境はアカウントに個人的なものです。Owner が作成した [共有環境](#organization-shared-environments) も、それらと並んでセレクターに表示されます。設定なしで利用可能な内容については、[インストール済みツール](#installed-tools) を参照してください。
 
 セレクターは、新しいセッションの最初のメッセージを送信するまでしか表示されません。実行中の自分のクラウドセッションの環境を編集するには、上部のセッションタイトルの後にあるキャレットを選択し、**クラウド環境を編集** を選択します。
 
-<Steps>
-  <Step title="環境セレクターを開く">
-    新しいセッションの画面で、メッセージボックスの下の行にある最初のコントロールを選択します。
-  </Step>
+**1. 環境セレクターを開く**
 
-  <Step title="環境を追加または編集する">
-    * **環境を追加する**: メニュー下部の **新しい環境** を選択して **新しい環境** ダイアログを開きます。フォームに入力し、**環境を追加** を選択します。新しいセッションでは、追加した環境が使用されます。
-    * **環境を編集する**: **Cloud** の下でその環境の行を見つけます。**Cloud** が 1 行だけの場合は、それを選択してリストを開きます。環境が **Cloud** の下に表示されていない場合は、その見出しの下の **その他** 行を選択します。環境の行にホバーし、右側に表示される設定アイコンを選択してダイアログを開きます。
+新しいセッションの画面で、メッセージボックスの下の行にある最初のコントロールを選択します。
 
-    ダイアログには名前、ネットワークアクセスレベル、環境変数、セットアップスクリプトが含まれます。セッションがキーを見ることなく使用できるようにキーを保存するには、[ネットワークシークレットを追加する](#add-network-secrets) を参照してください。
-  </Step>
-</Steps>
+**2. 環境を追加または編集する**
 
-<h3 id="set-environment-variables">
-  環境変数を設定する
-</h3>
+* **環境を追加する**: メニュー下部の **新しい環境** を選択して **新しい環境** ダイアログを開きます。フォームに入力し、**環境を追加** を選択します。新しいセッションでは、追加した環境が使用されます。
+* **環境を編集する**: **Cloud** の下でその環境の行を見つけます。**Cloud** が 1 行だけの場合は、それを選択してリストを開きます。環境が **Cloud** の下に表示されていない場合は、その見出しの下の **その他** 行を選択します。環境の行にホバーし、右側に表示される設定アイコンを選択してダイアログを開きます。
+
+ダイアログには名前、ネットワークアクセスレベル、環境変数、セットアップスクリプトが含まれます。セッションがキーを見ることなく使用できるようにキーを保存するには、[ネットワークシークレットを追加する](#add-network-secrets) を参照してください。
+
+### 環境変数を設定する
 
 環境変数は `.env` 形式を使用し、1 行に 1 つの `KEY=value` ペアです。プレーン値は引用符が不要で、一致するペアで値を引用符で囲む場合、引用符は値の一部にはなりません。複数行にまたがる値または `#` を含む値を引用符で囲みます。引用符なしの値では、`#` はコメントを開始し、行の残りは削除されます。
 
@@ -88,19 +89,13 @@ Anthropic ホスト型環境では、セッションは環境の値をセッシ�
 
 環境を使用する誰もが値を読み取ることができます。Anthropic ホスト型環境では、エージェントプロキシがリクエストに添付できるキーに対しては、代わりに [ネットワークシークレット](#add-network-secrets) を使用してください。[シークレットを取得しないリクエスト](#requests-that-never-get-the-credential) はそこにリストされています。
 
-<span id="add-api-credentials" />
-
-<h3 id="add-network-secrets">
-  ネットワークシークレットを追加する
-</h3>
+### ネットワークシークレットを追加する
 
 ネットワークシークレットは、クラウド環境に保存する API キーまたはトークンで、Claude が環境内の任意のセッションからそのキーを見ることなく API を呼び出すことができます。Anthropic のエージェントプロキシは、各リクエストがセッションの VM を離れた後、リストしたホストへのリクエストにキーを追加するため、キー自体は VM の外部にとどまります。
 
 ネットワークシークレットは Pro、Max、Team、Enterprise プランで利用可能です。自分で追加できるかどうかを確認するには、[要件](#requirements) を参照してください。
 
-<h4 id="requirements">
-  要件
-</h4>
+#### 要件
 
 これらの要件によって、シークレットを追加できるかどうか、および追加後にエージェントプロキシがそれを使用できるかどうかが決まります。
 
@@ -112,39 +107,33 @@ Anthropic ホスト型環境では、セッションは環境の値をセッシ�
 * **API 到達可能性**: API がインターネットからの接続を受け入れます。リクエストは Anthropic のネットワークから離れるためです
 * **暗号化キー**: 組織が顧客管理の暗号化キーを使用する場合、ネットワークシークレットを保存できません
 
-<h4 id="add-a-credential">
-  シークレットを追加する
-</h4>
+#### シークレットを追加する
 
 シークレットは一度に 1 つずつ追加し、追加後にシークレットを編集することはできません。シークレットのホストまたは値を変更するには、削除して再度追加します。
 
 [共有環境](#organization-shared-environments) にシークレットを追加するには、[管理設定](https://claude.ai/admin-settings) の **クラウド環境** ページから環境を編集用に開き、**ネットワークシークレット** セクションから手順 1 を続けます。Team プランで [組織管理者ロール](#requirements) を持っていない場合は、自分の環境で手順 1 に従い、その後 [短いフォームに入力](#add-a-secret-without-the-role) します。
 
-<Steps>
-  <Step title="環境のネットワークシークレットを開く">
-    [claude.ai/code](https://claude.ai/code) で [環境を編集用に開きます](#configure-your-environment)。**クラウド環境を編集** ダイアログで、**ネットワークシークレット** セクションを見つけます。環境に既にあるシークレットが表示され、それぞれが適用されるホストが表示されます。
-  </Step>
+**1. 環境のネットワークシークレットを開く**
 
-  <Step title="シークレットを追加する">
-    **シークレットを追加** を選択してフォームに入力します。API キーがリクエストヘッダーで移動する場合はデフォルトの **シークレットタイプ**、**Bearer** を保持し、これらのフィールドに入力します。
+[claude.ai/code](https://claude.ai/code) で [環境を編集用に開きます](#configure-your-environment)。**クラウド環境を編集** ダイアログで、**ネットワークシークレット** セクションを見つけます。環境に既にあるシークレットが表示され、それぞれが適用されるホストが表示されます。
 
-    * **名前**: `Internal billing API` などのシークレットのラベル
-    * **許可されたウェブサイト**: `api.example.com` などの API のホスト。先頭の `*.` はすべてのサブドメインと一致します
-    * **カスタムヘッダー**: キーを運ぶヘッダーの 1 行。行は `Authorization` をヘッダーの **名前** として、`Bearer` を **プレフィックス** として開始します。キー自体を **値** として貼り付けます。`X-Api-Key` のようなベア値を取得するヘッダーの場合、名前を変更してプレフィックスをクリアします
+**2. シークレットを追加する**
 
-    別の方法で認証する API の場合、別の **シークレットタイプ** を選択します。リストは [Claude Tag](https://claude.com/docs/claude-tag/overview)（Team および Enterprise プランの Slack 統合）が [接続](https://claude.com/docs/claude-tag/admins/add-connections) に提供するものと同じです。
-  </Step>
+**シークレットを追加** を選択してフォームに入力します。API キーがリクエストヘッダーで移動する場合はデフォルトの **シークレットタイプ**、**Bearer** を保持し、これらのフィールドに入力します。
 
-  <Step title="シークレットを保存する">
-    **追加** を選択します。シークレットはリストにホストと共に表示され、ダイアログの **変更を保存** ボタンなしで保存されます。保存後に値を再度表示することはできません。
-  </Step>
-</Steps>
+* **名前**: `Internal billing API` などのシークレットのラベル
+* **許可されたウェブサイト**: `api.example.com` などの API のホスト。先頭の `*.` はすべてのサブドメインと一致します
+* **カスタムヘッダー**: キーを運ぶヘッダーの 1 行。行は `Authorization` をヘッダーの **名前** として、`Bearer` を **プレフィックス** として開始します。キー自体を **値** として貼り付けます。`X-Api-Key` のようなベア値を取得するヘッダーの場合、名前を変更してプレフィックスをクリアします
+
+別の方法で認証する API の場合、別の **シークレットタイプ** を選択します。リストは [Claude Tag](https://claude.com/docs/claude-tag/overview)（Team および Enterprise プランの Slack 統合）が [接続](https://claude.com/docs/claude-tag/admins/add-connections) に提供するものと同じです。
+
+**3. シークレットを保存する**
+
+**追加** を選択します。シークレットはリストにホストと共に表示され、ダイアログの **変更を保存** ボタンなしで保存されます。保存後に値を再度表示することはできません。
 
 シークレットが機能することを確認するには、環境でセッションを開始して Claude に API を呼び出すよう依頼します。例えば `curl` を使用します。API はキーがリクエストにあるかのように応答し、キーはセッションの環境変数またはファイルに表示されません。リストがシークレットを **送信されていません** とマークしている場合、その下のメモは理由と対処方法を説明しています。ホストが正確に一致せずに重複する 2 つのシークレットはマーカーを取得せず、エージェントプロキシはそのうちの 1 つだけを送信します。
 
-<h4 id="add-a-secret-without-the-role">
-  組織管理者ロールなしで Team プランでシークレットを追加する
-</h4>
+#### 組織管理者ロールなしで Team プランでシークレットを追加する
 
 Team プランで [組織管理者ロール](#requirements) を持っていない場合、**シークレットを追加** フォームでは 1 つのホストに対して 1 つのシークレットを指定します。環境の [**ネットワークシークレット** セクション](#add-a-credential) で **シークレットを追加** を選択し、次のフィールドに入力してから、フォームの **シークレットを追加** ボタンを選択します。
 
@@ -152,15 +141,11 @@ Team プランで [組織管理者ロール](#requirements) を持っていな�
 * **名前**: シークレットの任意のラベル
 * **シークレットタイプ**: リクエストヘッダーで送信されるキーの場合は **トークン**、または **ユーザー名とパスワード**。トークンの場合は、キーを **値** として貼り付けます
 
-<h4 id="which-requests-get-the-credential">
-  どのリクエストがシークレットを取得するか
-</h4>
+#### どのリクエストがシークレットを取得するか
 
 エージェントプロキシは、リクエストのホストがそのシークレットにリストしたものと一致する場合、シークレットをリクエストに添付します。セッションは、環境の [ネットワークアクセスレベル](#access-levels) がそれ以外の場合は許可しない場合でも、[シークレットを取得しないホスト](#requests-that-never-get-the-credential) を除いて、これらのホストに到達できます。シークレットは、削除するまで、それを開始した人に関係なく、環境で実行されるすべてのセッションに適用されます。
 
-<h4 id="requests-that-never-get-the-credential">
-  シークレットを取得しないリクエスト
-</h4>
+#### シークレットを取得しないリクエスト
 
 エージェントプロキシは、追加したシークレットをこれらのリクエストに添付しません。
 
@@ -169,9 +154,7 @@ Team プランで [組織管理者ロール](#requirements) を持っていな�
 * **セットアップスクリプトリクエスト**: Claude Code は [セットアップスクリプト](#setup-scripts) が実行された後、起動時にエージェントプロキシに接続します
 * **Claude Code のテレメトリエクスポート**: Claude Code は [テレメトリエクスポート](/docs/ja/monitoring-usage#telemetry-from-cloud-sessions-and-claude-tag) を実行するコマンドではなく自身で送信し、そのリクエストはエージェントプロキシを通過しません
 
-<h3 id="select-an-environment-from-the-cli">
-  CLI から環境を選択する
-</h3>
+### CLI から環境を選択する
 
 ターミナルで `/remote-env` を実行して、[`claude --cloud`](/docs/ja/claude-code-on-the-web#from-terminal-to-cloud) などの CLI から作成するクラウドセッションのデフォルト環境を選択します。コマンドは既存の環境のピッカーを開き、選択を [ユーザー設定](/docs/ja/settings#where-settings-live) の `remote.defaultEnvironmentId` キーに保存するため、マシン上のすべてのプロジェクトに適用されます。同じキーが [設定レイヤー](/docs/ja/settings#settings-precedence) の高い優先度で設定されている場合（リポジトリのプロジェクト設定など）を除きます。
 
@@ -179,9 +162,7 @@ Team プランで [組織管理者ロール](#requirements) を持っていな�
 
 `/remote-env` はデフォルトのみを設定します。セッションを開始せず、環境を追加または編集することはできません。[環境セレクター](#configure-your-environment) から管理します。
 
-<h3 id="archive-an-environment">
-  環境をアーカイブする
-</h3>
+### 環境をアーカイブする
 
 自分の環境の 1 つをアーカイブするには、編集用に開いて **環境をアーカイブ** を選択し、確認します。環境が [組織と共有](#organization-shared-environments) されている場合は、代わりに Owner が [管理設定](https://claude.ai/admin-settings) の **クラウド環境** ページからアーカイブするため、自分が Owner でない場合は Owner に依頼してください。環境を削除することはできず、アーカイブのみできます。
 
@@ -190,11 +171,11 @@ Team プランで [組織管理者ロール](#requirements) を持っていな�
 * 環境で既に実行中のセッションは引き続き機能します。
 * 環境はセレクターと `/remote-env` から消えるため、新しいセッション用に選択できません。
 * 環境のネットワークシークレットは実行中のセッションに添付されたままです。アーカイブする前に不要なものを削除してください。
-* アーカイブされた環境では、どのサーフェスでも新しいセッションを開始できません。環境が保存された [CLI デフォルト](#select-an-environment-from-the-cli) だった場合、リストに 1 つがある場合は Claude Code は Anthropic ホスト型環境で CLI クラウドセッションを開始し、そうでない場合は [Remote Control ブリッジ環境](#the-default-environment) ではないリスト内の最初の環境で開始します。[ルーチン](/docs/ja/routines#environments-and-network-access) など環境で明示的に設定されたものは、新しいセッションをそこで開始できません。別の環境を指してください。
+* アーカイブされた環境では、どのサーフェスでも新しいセッションを開始できません。
+  * **保存された CLI デフォルト**: 環境が保存された [CLI デフォルト](#select-an-environment-from-the-cli) だった場合、リストに Anthropic ホスト型環境があれば、Claude Code はそこで CLI クラウドセッションを開始します。ない場合は、リスト内で [Remote Control ブリッジ環境](#the-default-environment) ではない最初の環境で開始します。
+  * **明示的に設定されたもの**: [クラウドスケジュールタスク](/docs/ja/routines#environments-and-network-access) など、その環境を明示的に指定して設定されたものは、その環境で新しいセッションを開始できません。別の環境を指すようにしてください。
 
-<h3 id="organization-shared-environments">
-  組織共有環境
-</h3>
+### 組織共有環境
 
 Team および Enterprise プランでは、Owner は組織のすべてのメンバーと共有されるクラウド環境を作成できます。同じロールは **クラウド環境** 管理ページで他のすべてを管理します。[自己ホスト型環境](/docs/ja/self-hosted-environments) を含みます。Admin ロールはページを開くことができません。それを開くことができるロールの完全なリストは、[サーバー管理設定を管理する](/docs/ja/server-managed-settings#access-control) ためのものです。
 
@@ -203,38 +184,32 @@ Team および Enterprise プランでは、Owner は組織のすべてのメン
 Owner は 2 つの方法のいずれかで環境を組織で利用可能にします。
 
 * **共有環境を作成する**: [管理設定](https://claude.ai/admin-settings) の **クラウド環境** ページを使用します。これは Owner が共有環境を編集およびアーカイブする場所でもあります。各環境には名前、[ネットワークアクセスレベル](#access-levels)、`.env` 形式の [環境変数](#set-environment-variables)、および [セットアップスクリプト](#setup-scripts) があります。
-* **個人環境を共有する**: 環境セレクターで独自の環境の 1 つを編集用に開き、**それを使用できるユーザー** 行から共有します。環境はその ID を保持するため、既にそれを使用しているセッションとルーチンは影響を受けず、すべてのメンバーはそれを見てセッションを開始できます。
+* **個人環境を共有する**: 環境セレクターで独自の環境の 1 つを編集用に開き、**それを使用できるユーザー** 行から共有します。環境はその ID を保持するため、既にそれを使用しているセッションとスケジュールタスクは影響を受けず、すべてのメンバーはそれを見てセッションを開始できます。
 
 Owner は [claude.ai/admin-settings/claude-code](https://claude.ai/admin-settings/claude-code) で組織の [デフォルト環境](#the-default-environment) を別途選択します。
 
 共有環境のセッションに読み取れないキーを提供するには、**クラウド環境** ページで環境を編集する際に [ネットワークシークレット](#add-network-secrets) を追加します。すべてのメンバーのセッションが変数を読み取るため、変数にシークレットを含めないでください。
 
-<h3 id="set-the-environment-a-claude-tag-channel-uses">
-  Claude Tag チャネルが使用する環境を設定する
-</h3>
+### Claude Tag チャネルが使用する環境を設定する
 
 [Claude Tag](https://claude.com/docs/claude-tag/overview) チャネルでは、Claude はメンバーではなく組織の共有アイデンティティとして機能するため、チャネルセッションは組織レベルの環境のみを使用します。共有環境または [自己ホスト型環境](/docs/ja/self-hosted-environments)。チャネルに .NET などの [事前インストール](#installed-tools) されていないツールチェーンを提供するには、Owner は **クラウド環境** 管理ページから [共有環境](#organization-shared-environments) を作成し、それをインストールする [セットアップスクリプト](#setup-scripts) を使用できます。チャネルを環境に指す 2 つの方法のいずれかで：
 
 * [claude.ai/admin-settings/claude-code](https://claude.ai/admin-settings/claude-code) で共有環境または自己ホスト型環境を組織の [デフォルト環境](#the-default-environment) として設定します。
 * Claude Tag 管理設定で [チャネルに 1 つをピンする](https://claude.com/docs/claude-tag/admins/troubleshooting#channel-sessions-use-the-wrong-environment-or-can%E2%80%99t-find-one)。
 
-<h2 id="network-access">
-  ネットワークアクセス
-</h2>
+## ネットワークアクセス
 
 各環境は 1 つのネットワークアクセスレベルを設定します。これは、セッションが行える送信接続を制御します。デフォルトレベルの **Trusted** は、パッケージレジストリおよび他の [許可リストに登録されたドメイン](#default-allowed-domains) を許可します。**Custom** はカスタムドメインリストを使用します。
 
-環境のネットワークアクセスを変更するには、[編集用に開き](#configure-your-environment)、ダイアログの **Network access** セレクターを使用します。[共有環境](#organization-shared-environments) はそこで読み取り専用で開くため、Owner は [admin settings](https://claude.ai/admin-settings) の **Cloud environments** ページからネットワークアクセスを変更します。セレクターを開くコントロールは、[The Default environment](#the-default-environment) に記載されているアプリサーフェスと [routine editor](/docs/ja/routines#environments-and-network-access) に表示されます。個人環境は claude.ai アカウント設定に別ページを持ちません。
+環境のネットワークアクセスを変更するには、[編集用に開き](#configure-your-environment)、ダイアログの **Network access** セレクターを使用します。[共有環境](#organization-shared-environments) はそこで読み取り専用で開くため、Owner は [admin settings](https://claude.ai/admin-settings) の **Cloud environments** ページからネットワークアクセスを変更します。セレクターを開くコントロールは、[The Default environment](#the-default-environment) に記載されているアプリサーフェスと [クラウドスケジュールタスクエディター](/docs/ja/routines#environments-and-network-access) に表示されます。個人環境は claude.ai アカウント設定に別ページを持ちません。
 
 Anthropic ホスト環境のネットワークアクセスを変更すると、既存のセッションはセッションの [network allowlist](#access-levels) を通じて行くリクエストについて、約 1 分以内に新しい設定に従います。新しいセッションを開始する必要はありません。
 
-<Note>
-  セッションまたはルーチンで有効にした MCP コネクターは、**Allowed domains** にホストを追加しなくても機能します。コネクタートラフィックはセッションのネットワークではなく Anthropic のサーバーを通じて移動するためです。これは [Security and isolation](/docs/ja/claude-code-on-the-web#security-and-isolation) に記載されている同じ Anthropic バウンドチャネルに依存しています。不要なコネクターをオフにして、Claude が到達できるツールを制限します。
-</Note>
+> [!NOTE]
+>
+> セッションまたはスケジュールタスクで有効にした MCP コネクタは、**Allowed domains** にホストを追加しなくても機能します。コネクタのトラフィックはセッションのネットワークではなく Anthropic のサーバーを通じて移動するためです。これは [Security and isolation](/docs/ja/claude-code-on-the-web#security-and-isolation) に記載されている同じ Anthropic バウンドチャネルに依存しています。不要なコネクタをオフにして、Claude が到達できるツールを制限します。
 
-<h3 id="access-levels">
-  アクセスレベル
-</h3>
+### アクセスレベル
 
 [environment dialog](#configure-your-environment) の **Network access** フィールドは、4 つのレベルのいずれかを取ります。
 
@@ -252,9 +227,7 @@ Anthropic ホスト環境のネットワークアクセスを変更すると、�
 * 環境の [ネットワークシークレット](#add-network-secrets) にリストしたホスト（[シークレットを取得しないホスト](#requests-that-never-get-the-credential) を除く）
 * Anthropic API（Claude Code 独自のリクエスト用。[Security and isolation](/docs/ja/claude-code-on-the-web#security-and-isolation) に記載されているように **None** でも）
 
-<h3 id="allow-specific-domains">
-  特定のドメインを許可する
-</h3>
+### 特定のドメインを許可する
 
 Trusted リストにないドメインを許可するには、環境のネットワークアクセス設定で **Custom** を選択し、**Allowed domains** フィールドに 1 行に 1 つのドメインをリストします。この例は、内部プロジェクトが必要とする 3 つのホストを許可します。
 
@@ -273,9 +246,7 @@ registry.example.com
 
 各環境は独自の許可ドメインリストを持ちます。管理者がすべてのメンバーの環境にプッシュできる組織レベルの許可リストはありません。[server-managed setting](/docs/ja/server-managed-settings) も環境のネットワーク許可リストにドメインを追加しません。チームに 1 つの標準リストを提供するには、Owner が **Custom** ネットワークアクセスとそのリストを持つ [organization-shared environment](#organization-shared-environments) を作成できます。
 
-<h3 id="github-proxy">
-  GitHub プロキシ
-</h3>
+### GitHub プロキシ
 
 Anthropic ホスト環境では、すべての GitHub 操作は、環境の [access level](#access-levels) に関係なく、セッションの VM の外に実際の GitHub 認証情報を保つ専用プロキシを通じて行われます。自己ホスト型環境のセッションは、デプロイが提供する認証情報で git 操作を認証します。[Configure git](/docs/ja/self-hosted-environments-deploy#configure-git) はオプションをカバーしており、セッションごとにミントされた認証情報と同じプロキシへのオプトインが含まれます。プロキシは以下を提供します。
 
@@ -287,28 +258,22 @@ Anthropic ホスト環境では、すべての GitHub 操作は、環境の [acc
 
 パブリックリポジトリからのコミットされたファイルは `raw.githubusercontent.com` を通じて到着し、[security proxy](#security-proxy) が代わりに処理します。そのドメインはデフォルト [Trusted list](#default-allowed-domains) にあるため、環境の [access level](#access-levels) がそれを除外しない限り、それらのファイルは到達可能なままです。
 
-<h3 id="security-proxy">
-  セキュリティプロキシ
-</h3>
+### セキュリティプロキシ
 
 Anthropic ホスト環境のクラウドセッションは、セキュリティと不正使用防止のための HTTP/HTTPS ネットワークプロキシの背後で実行されます。[self-hosted environment](/docs/ja/self-hosted-environments-deploy#default-deny-egress) では、送信トラフィックは代わりに独自のネットワーク境界を通じて離脱します。Anthropic ホストセッションからのすべての送信インターネットトラフィックはこのプロキシを通じて渡され、以下を提供します。
 
 * 悪意のあるリクエストに対する保護
 * レート制限と不正使用防止
 
-<h2 id="what’s-available-in-cloud-sessions">
-  クラウドセッションで利用可能な機能
-</h2>
+## クラウドセッションで利用可能な機能
 
 Anthropic ホスト環境では、各セッションは独自のオペレーティングシステムと CPU アーキテクチャに関係なく、Ubuntu 24.04 を x86\_64 で実行する新しい仮想マシン（VM）を取得し、リポジトリがクローンされ、一般的なツールチェーンが事前にインストールされています。依存関係が Ruby ネイティブ拡張機能付きの gem やプリビルド Python wheels などのプリコンパイル済みバイナリを提供する場合は、VM に合わせて x86\_64 Linux ビルドを使用してください。このセクションでは、Anthropic ホストのデフォルト、組み込み GitHub ツール、[テストとサービスの実行](#run-tests-start-services-and-add-packages)方法、各 VM が取得する[リソース制限](#resource-limits)、および[時間制限](#time-limits)について説明します。
 
-<Note>
-  組織が[セルフホスト環境](/docs/ja/self-hosted-environments)にルーティングするセッションは、代わりに独自のランナーで実行され、ランナーイメージが提供するツールを使用します。
-</Note>
+> [!NOTE]
+>
+> 組織が[セルフホスト環境](/docs/ja/self-hosted-environments)にルーティングするセッションは、代わりに独自のランナーで実行され、ランナーイメージが提供するツールを使用します。
 
-<h3 id="what-carries-over-from-your-setup">
-  セットアップから引き継がれるもの
-</h3>
+### セットアップから引き継がれるもの
 
 クラウドセッションはリポジトリの新しいクローンから開始されます。リポジトリにコミットしたものはすべて利用可能です。独自のマシンにのみインストールまたは構成したものはセッションでは利用できません。組織のポリシーは[サーバー管理設定](/docs/ja/server-managed-settings)を通じて別途到着します。
 
@@ -333,9 +298,7 @@ Anthropic ホスト環境では、各セッションは独自のオペレーテ�
 
 環境を使用する誰もが環境変数とセットアップスクリプトを読むことができます。ダイアログの**環境変数**の下のメモはそのことを述べており、シークレットをそこに置かないよう警告しています。Anthropic ホスト環境では、代わりにエージェントプロキシが添付できるキーを[ネットワークシークレット](#add-network-secrets)として保存してください。
 
-<h4 id="add-personal-preferences-without-committing-to-the-repo">
-  リポジトリにコミットせずに個人設定を追加する
-</h4>
+#### リポジトリにコミットせずに個人設定を追加する
 
 Anthropic ホスト環境では、共有リポジトリに置きたくない設定のために、`~/.claude/CLAUDE.md` を書き込む[セットアップスクリプト](#setup-scripts)を追加してください。Claude Code はそのファイルをセッション内で[ユーザー指示](/docs/ja/memory#choose-where-to-put-claude-md-files)として読み込みます。この例では、コミットメッセージに関する設定を指定します：
 
@@ -351,9 +314,7 @@ EOF
 
 次のクラウドセッションで `/context` を実行し、**Memory files** の下に `/root/.claude/CLAUDE.md` が表示されることを確認してください。
 
-<h3 id="installed-tools">
-  インストール済みツール
-</h3>
+### インストール済みツール
 
 クラウドセッションには、一般的な言語ランタイム、ビルドツール、データベースが事前にインストールされています。以下の表は、カテゴリ別に含まれるものをまとめています。
 
@@ -379,9 +340,7 @@ Node.js バージョンは `/opt/node20`、`/opt/node21`、`/opt/node22` にイ�
 
 このリストの外のツールチェーン（.NET SDK など）は、パッケージレジストリが[デフォルト許可リスト](#default-allowed-domains)にある場合でも、事前にインストールされていません。[セットアップスクリプト](#setup-scripts)でインストールしてください。
 
-<h3 id="work-with-github-issues-and-pull-requests">
-  GitHub の issue とプルリクエストを操作する
-</h3>
+### GitHub の issue とプルリクエストを操作する
 
 クラウドセッションには、Claude が issue を読み取り、プルリクエストをリストし、diff を取得し、セットアップなしでコメントを投稿できる組み込み GitHub ツールが含まれています。これらのツールは[GitHub プロキシ](#github-proxy)を通じて認証され、[GitHub 認証オプション](/docs/ja/claude-code-on-the-web#github-authentication-options)で構成した方法を使用するため、トークンはコンテナに入りません。
 
@@ -396,9 +355,7 @@ Node.js バージョンは `/opt/node20`、`/opt/node21`、`/opt/node22` にイ�
 
 GitHub の[`gh` CLI](https://cli.github.com)は事前にインストールされています。組み込みツールがカバーしていない GitHub 操作が必要な場合は、`gh api` で REST API を呼び出すよう Claude に依頼してください。`gh workflow list` など、REST API を使用する `gh` サブコマンドも動作します。`gh pr` や `gh issue` など、GraphQL を使用するサブコマンドはプロキシによって[拒否されます](#github-proxy)。`gh` は `GH_TOKEN` を自動的に読み取るため、`gh auth login` を実行する必要はありません。
 
-<h3 id="link-output-back-to-the-session">
-  セッションに出力をリンクバックする
-</h3>
+### セッションに出力をリンクバックする
 
 各クラウドセッションは claude.ai 上にトランスクリプト URL を持ち、セッションは `CLAUDE_CODE_REMOTE_SESSION_ID` 環境変数から独自の ID を読み取ることができます。これを使用して、PR 本文、コミットメッセージ、Slack 投稿、または生成されたレポートに追跡可能なリンクを配置し、レビュアーがそれらを生成した実行を開くことができるようにします。
 
@@ -410,21 +367,15 @@ Claude が投稿する Slack メッセージやレポートファイルなど、
 echo "https://claude.ai/code/${CLAUDE_CODE_REMOTE_SESSION_ID/#cse_/session_}"
 ```
 
-<h3 id="run-tests-start-services-and-add-packages">
-  テストの実行、サービスの開始、パッケージの追加
-</h3>
+### テストの実行、サービスの開始、パッケージの追加
 
 セッション VM へのシェルアクセスは取得できません。Claude がすべてのコマンドを実行するため、このセクションのタスクをプロンプトでリクエストとして表現してください。
 
-<h4 id="run-tests">
-  テストの実行
-</h4>
+#### テストの実行
 
 Claude はタスクに取り組む際にテストを実行します。プロンプトでリクエストしてください。例えば「`tests/` の失敗したテストを修正してください」または「各変更後に pytest を実行してください」。[事前にインストールされたツールチェーン](#installed-tools)に付属するテストランナー（pytest や cargo test など）は追加のセットアップなしで動作します。プロジェクトが依存関係として宣言するランナー（jest など）は依存関係と共にインストールされます。
 
-<h4 id="start-services">
-  サービスの開始
-</h4>
+#### サービスの開始
 
 PostgreSQL と Redis は事前にインストールされていますが、デフォルトでは実行されていません。必要なものを開始するよう Claude に依頼してください。実行するコマンドは次のとおりです：
 
@@ -440,15 +391,11 @@ Docker はコンテナ化されたサービスを実行するために利用可�
 
 イメージが大きいか遅い場合は、[セットアップスクリプト](#setup-scripts)に `docker compose pull` または `docker compose build` を追加してください。[環境キャッシュ](#environment-caching)はプルされたイメージを保持するため、各新しいセッションはディスク上にそれらを持ちます。キャッシュはファイルのみを保存し、実行中のプロセスは保存しないため、Claude は各セッションでコンテナを開始します。
 
-<h4 id="add-packages">
-  パッケージの追加
-</h4>
+#### パッケージの追加
 
 事前にインストールされていないパッケージを追加するには、[セットアップスクリプト](#setup-scripts)を使用してください。[環境キャッシュ](#environment-caching)はスクリプトがインストールするものを保持するため、そこにインストールするパッケージは各セッションの開始時に利用可能で、毎回再インストールする必要はありません。セッション中に Claude にパッケージをインストールするよう依頼することもできますが、これらのインストールは他のセッションに引き継がれません。
 
-<h3 id="resource-limits">
-  リソース制限
-</h3>
+### リソース制限
 
 Anthropic ホスト環境のクラウドセッションは、時間とともに変わる可能性のある概算リソース上限で実行されます：
 
@@ -458,9 +405,7 @@ Anthropic ホスト環境のクラウドセッションは、時間とともに�
 
 VM は大規模なビルドジョブやメモリ集約的なテストなど、大幅により多くのメモリを必要とするタスクを停止する可能性があります。これらの制限を超えるワークロードの場合は、[Remote Control](/docs/ja/remote-control)を使用して Claude Code を独自のハードウェアで実行するか、組織が運用するコンピュートで[セルフホスト環境](/docs/ja/self-hosted-environments)でクラウドセッションを実行してください。
 
-<h3 id="time-limits">
-  時間制限
-</h3>
+### 時間制限
 
 Anthropic ホスト環境では、ビルド、インストール、テスト実行など、クラウドセッションでの長時間実行作業に対して、これらの時間制限が適用されます。各エントリは制限を定義するセクションにリンクしています。
 
@@ -473,9 +418,7 @@ Anthropic ホスト環境では、ビルド、インストール、テスト実�
 
 環境のセッションのコマンドタイムアウトを上げるには、[`BASH_DEFAULT_TIMEOUT_MS` と `BASH_MAX_TIMEOUT_MS`](/docs/ja/env-vars#variables)をその[環境変数](#set-environment-variables)に追加してください。どちらもミリ秒を取ります。例えば、`BASH_DEFAULT_TIMEOUT_MS=600000` は 10 分をデフォルトにします。
 
-<h2 id="setup-scripts">
-  セットアップスクリプト
-</h2>
+## セットアップスクリプト
 
 セットアップスクリプトは、新しいクラウドセッションが開始されるときに実行される Bash スクリプトです。Claude Code が起動する前です。セットアップスクリプトを使用して、依存関係をインストールし、ツールを設定し、またはセッションが必要とするプリインストールされていないものをフェッチします。
 
@@ -490,9 +433,7 @@ Anthropic ホスト環境では、ビルド、インストール、テスト実�
 apt update && apt install -y shellcheck
 ```
 
-<h3 id="script-requirements">
-  スクリプト要件
-</h3>
+### スクリプト要件
 
 セットアップスクリプトには、対応する 3 つの制約があります。
 
@@ -500,9 +441,7 @@ apt update && apt install -y shellcheck
 * **5 分以内に完了**：スクリプトの総実行時間を約 5 分以内に保つため、[環境キャッシュ](#environment-caching) をビルドできます。セットアップが 5 分以上かかる場合、環境はキャッシュされません。独立したインストールを `&` と `wait` で並列実行し、フィットしない単一ダウンロードを [SessionStart フック](#setup-scripts-vs-sessionstart-hooks) に移動して、バックグラウンドで起動します。新しいセッションがセットアップ中にハングまたはタイムアウトする場合は、[新しいセッションがセットアップ中にハングまたはタイムアウトする](/docs/ja/web-quickstart#new-sessions-hang-or-time-out-during-setup) を参照してください。
 * **インストール用のネットワークアクセス**：パッケージインストールはレジストリに到達する必要があります。デフォルトの **Trusted** レベルは npm、PyPI、RubyGems、crates.io を含む [一般的なパッケージレジストリ](#default-allowed-domains) をカバーします。**None** ネットワークアクセスでは、インストールは失敗します。
 
-<h3 id="environment-caching">
-  環境キャッシング
-</h3>
+### 環境キャッシング
 
 セットアップスクリプトは、環境でセッションを開始する最初の時間に実行されます。セットアップが [約 5 分以内](#script-requirements) に完了すると、Anthropic はファイルシステムをスナップショットし、そのスナップショットを後のセッションの開始点として再利用します。新しいセッションはディスク上に既に依存関係、ツール、Docker イメージを持ち、セットアップスクリプトステップをスキップします。これにより、スクリプトが大規模なツールチェーンをインストールしたりコンテナイメージをプルしたりする場合でも、スタートアップが高速に保たれます。セットアップが約 5 分以上かかる場合、環境はキャッシュされません。
 
@@ -512,9 +451,7 @@ apt update && apt install -y shellcheck
 
 キャッシングを有効にするか、スナップショットを自分で管理する必要はありません。
 
-<h3 id="setup-scripts-vs-sessionstart-hooks">
-  セットアップスクリプト対 SessionStart フック
-</h3>
+### セットアップスクリプト対 SessionStart フック
 
 セットアップスクリプトを使用して VM 自体をプロビジョニングします。[プリインストール](#installed-tools) されていないツールチェーンと CLI ツール。[SessionStart フック](/docs/ja/hooks#sessionstart) をプロジェクトセットアップに使用します。クラウドとローカルで実行する必要があります。`npm install` などです。
 
@@ -531,9 +468,7 @@ apt update && apt install -y shellcheck
 * **Anthropic ホスト環境**：Claude Code はリポジトリおよび組織の [サーバー管理設定](/docs/ja/server-managed-settings) からフックを実行します。[Claude Tag](https://claude.com/docs/claude-tag/overview) セッションはサーバー管理設定を受け取らないため、サーバー管理設定からのフックはそこで実行されません。
 * **[セルフホスト環境](/docs/ja/self-hosted-environments-configuration#permissions-and-tool-approval)**：Claude Code はオペレーターがランナーホストの `~/.claude/` からシードしたフックも実行し、ランナーイメージの管理設定ファイルのフック（そのファイルが [Claude Code が適用する管理ソース](/docs/ja/managed-settings#how-claude-code-combines-managed-sources) のいずれかである場合）。
 
-<h3 id="install-dependencies-with-a-sessionstart-hook">
-  SessionStart フックで依存関係をインストールする
-</h3>
+### SessionStart フックで依存関係をインストールする
 
 クラウドセッションのみに依存関係をインストールするには、SessionStart フックを実行場所をチェックするスクリプトと組み合わせます。
 
@@ -588,13 +523,11 @@ exit 0
 
 `npm install` が成功したことを確認するには、クラウドセッションを開始し、Claude に `node_modules/.install_pkgs.sha256` を表示するよう依頼します。このファイルには、3 つのファイルそれぞれのハッシュが記載されています。ファイルが存在しない場合は、Claude に `npm install` を実行してエラーを報告するよう依頼してください。
 
-<Note>
-  `npm install` がワークスペースの `package.json`、`.npmrc`、`postinstall` スクリプトの入力など、他のファイルを読み込む場合は、ハッシュを保存する `sha256sum` コマンドにそれらを追加してください。そうしないと、それらのファイルのいずれかが変更された後も古いパッケージが残ったままになります。
-</Note>
+> [!NOTE]
+>
+> `npm install` がワークスペースの `package.json`、`.npmrc`、`postinstall` スクリプトの入力など、他のファイルを読み込む場合は、ハッシュを保存する `sha256sum` コマンドにそれらを追加してください。そうしないと、それらのファイルのいずれかが変更された後も古いパッケージが残ったままになります。
 
-<h4 id="limitations-in-cloud-sessions">
-  クラウドセッションの制限
-</h4>
+#### クラウドセッションの制限
 
 SessionStart フックはクラウドでローカルと同じように動作しますが、これらの注意事項があります。
 
@@ -606,277 +539,271 @@ SessionStart フックはクラウドでローカルと同じように動作し�
 
 ベースイメージをカスタマイズするには、セットアップスクリプトを使用して [提供されたイメージ](#installed-tools) の上にインストールするか、`docker compose` で Claude と一緒にコンテナとして独自のイメージを実行します。ベースイメージ全体を置き換えることはまだサポートされていません。
 
-<h2 id="default-allowed-domains">
-  デフォルト許可ドメイン
-</h2>
+## デフォルト許可ドメイン
 
 **Trusted** ネットワークアクセスでは、セッションはデフォルトで次のドメインに到達できます。`*` でマークされたドメインはワイルドカードサブドメインマッチングを示すため、`*.gcr.io` は `gcr.io` のすべてのサブドメインを許可します。
 
-<AccordionGroup>
-  <Accordion title="Anthropic サービス">
-    * api.anthropic.com
-    * docs.claude.com
-    * platform.claude.com
-    * code.claude.com
-    * claude.ai
-    * claude.com
-    * support.claude.com
-    * anthropic.com
-    * [www.anthropic.com](http://www.anthropic.com)
-  </Accordion>
+> **Anthropic サービス**
+>
+> * api.anthropic.com
+> * docs.claude.com
+> * platform.claude.com
+> * code.claude.com
+> * claude.ai
+> * claude.com
+> * support.claude.com
+> * anthropic.com
+> * [www.anthropic.com](http://www.anthropic.com)
 
-  <Accordion title="バージョン管理">
-    * github.com
-    * [www.github.com](http://www.github.com)
-    * api.github.com
-    * npm.pkg.github.com
-    * raw\.githubusercontent.com
-    * pkg-npm.githubusercontent.com
-    * objects.githubusercontent.com
-    * release-assets.githubusercontent.com
-    * codeload.github.com
-    * avatars.githubusercontent.com
-    * camo.githubusercontent.com
-    * gist.github.com
-    * gitlab.com
-    * [www.gitlab.com](http://www.gitlab.com)
-    * registry.gitlab.com
-    * bitbucket.org
-    * [www.bitbucket.org](http://www.bitbucket.org)
-    * api.bitbucket.org
-  </Accordion>
+> **バージョン管理**
+>
+> * github.com
+> * [www.github.com](http://www.github.com)
+> * api.github.com
+> * npm.pkg.github.com
+> * raw\.githubusercontent.com
+> * pkg-npm.githubusercontent.com
+> * objects.githubusercontent.com
+> * release-assets.githubusercontent.com
+> * codeload.github.com
+> * avatars.githubusercontent.com
+> * camo.githubusercontent.com
+> * gist.github.com
+> * gitlab.com
+> * [www.gitlab.com](http://www.gitlab.com)
+> * registry.gitlab.com
+> * bitbucket.org
+> * [www.bitbucket.org](http://www.bitbucket.org)
+> * api.bitbucket.org
 
-  <Accordion title="コンテナレジストリ">
-    * registry-1.docker.io
-    * auth.docker.io
-    * index.docker.io
-    * hub.docker.com
-    * [www.docker.com](http://www.docker.com)
-    * production.cloudflare.docker.com
-    * production.cloudfront.docker.com
-    * download.docker.com
-    * gcr.io
-    * \*.gcr.io
-    * ghcr.io
-    * mcr.microsoft.com
-    * \*.data.mcr.microsoft.com
-    * public.ecr.aws
-  </Accordion>
+> **コンテナレジストリ**
+>
+> * registry-1.docker.io
+> * auth.docker.io
+> * index.docker.io
+> * hub.docker.com
+> * [www.docker.com](http://www.docker.com)
+> * production.cloudflare.docker.com
+> * production.cloudfront.docker.com
+> * download.docker.com
+> * gcr.io
+> * \*.gcr.io
+> * ghcr.io
+> * mcr.microsoft.com
+> * \*.data.mcr.microsoft.com
+> * public.ecr.aws
 
-  <Accordion title="クラウドプラットフォーム">
-    * cloud.google.com
-    * accounts.google.com
-    * gcloud.google.com
-    * \*.googleapis.com
-    * storage.googleapis.com
-    * compute.googleapis.com
-    * container.googleapis.com
-    * azure.com
-    * portal.azure.com
-    * microsoft.com
-    * [www.microsoft.com](http://www.microsoft.com)
-    * \*.microsoftonline.com
-    * packages.microsoft.com
-    * dotnet.microsoft.com
-    * dot.net
-    * visualstudio.com
-    * dev.azure.com
-    * \*.amazonaws.com
-    * \*.api.aws
-    * oracle.com
-    * [www.oracle.com](http://www.oracle.com)
-    * java.com
-    * [www.java.com](http://www.java.com)
-    * java.net
-    * [www.java.net](http://www.java.net)
-    * download.oracle.com
-    * yum.oracle.com
-    * \*.r2.cloudflarestorage.com
-  </Accordion>
+> **クラウドプラットフォーム**
+>
+> * cloud.google.com
+> * accounts.google.com
+> * gcloud.google.com
+> * \*.googleapis.com
+> * storage.googleapis.com
+> * compute.googleapis.com
+> * container.googleapis.com
+> * azure.com
+> * portal.azure.com
+> * microsoft.com
+> * [www.microsoft.com](http://www.microsoft.com)
+> * \*.microsoftonline.com
+> * packages.microsoft.com
+> * dotnet.microsoft.com
+> * dot.net
+> * visualstudio.com
+> * dev.azure.com
+> * \*.amazonaws.com
+> * \*.api.aws
+> * oracle.com
+> * [www.oracle.com](http://www.oracle.com)
+> * java.com
+> * [www.java.com](http://www.java.com)
+> * java.net
+> * [www.java.net](http://www.java.net)
+> * download.oracle.com
+> * yum.oracle.com
+> * \*.r2.cloudflarestorage.com
 
-  <Accordion title="JavaScript と Node パッケージマネージャー">
-    * registry.npmjs.org
-    * [www.npmjs.com](http://www.npmjs.com)
-    * [www.npmjs.org](http://www.npmjs.org)
-    * npmjs.com
-    * npmjs.org
-    * yarnpkg.com
-    * registry.yarnpkg.com
-    * jsr.io
-    * npm.jsr.io
-  </Accordion>
+> **JavaScript と Node パッケージマネージャー**
+>
+> * registry.npmjs.org
+> * [www.npmjs.com](http://www.npmjs.com)
+> * [www.npmjs.org](http://www.npmjs.org)
+> * npmjs.com
+> * npmjs.org
+> * yarnpkg.com
+> * registry.yarnpkg.com
+> * jsr.io
+> * npm.jsr.io
 
-  <Accordion title="Python パッケージマネージャー">
-    * pypi.org
-    * [www.pypi.org](http://www.pypi.org)
-    * files.pythonhosted.org
-    * pythonhosted.org
-    * test.pypi.org
-    * pypi.python.org
-    * pypa.io
-    * [www.pypa.io](http://www.pypa.io)
-  </Accordion>
+> **Python パッケージマネージャー**
+>
+> * pypi.org
+> * [www.pypi.org](http://www.pypi.org)
+> * files.pythonhosted.org
+> * pythonhosted.org
+> * test.pypi.org
+> * pypi.python.org
+> * pypa.io
+> * [www.pypa.io](http://www.pypa.io)
 
-  <Accordion title="Ruby パッケージマネージャー">
-    * rubygems.org
-    * [www.rubygems.org](http://www.rubygems.org)
-    * api.rubygems.org
-    * index.rubygems.org
-    * ruby-lang.org
-    * [www.ruby-lang.org](http://www.ruby-lang.org)
-    * rubyforge.org
-    * [www.rubyforge.org](http://www.rubyforge.org)
-    * rubyonrails.org
-    * [www.rubyonrails.org](http://www.rubyonrails.org)
-    * rvm.io
-    * get.rvm.io
-  </Accordion>
+> **Ruby パッケージマネージャー**
+>
+> * rubygems.org
+> * [www.rubygems.org](http://www.rubygems.org)
+> * api.rubygems.org
+> * index.rubygems.org
+> * ruby-lang.org
+> * [www.ruby-lang.org](http://www.ruby-lang.org)
+> * rubyforge.org
+> * [www.rubyforge.org](http://www.rubyforge.org)
+> * rubyonrails.org
+> * [www.rubyonrails.org](http://www.rubyonrails.org)
+> * rvm.io
+> * get.rvm.io
 
-  <Accordion title="Rust パッケージマネージャー">
-    * crates.io
-    * [www.crates.io](http://www.crates.io)
-    * index.crates.io
-    * static.crates.io
-    * rustup.rs
-    * static.rust-lang.org
-    * [www.rust-lang.org](http://www.rust-lang.org)
-  </Accordion>
+> **Rust パッケージマネージャー**
+>
+> * crates.io
+> * [www.crates.io](http://www.crates.io)
+> * index.crates.io
+> * static.crates.io
+> * rustup.rs
+> * static.rust-lang.org
+> * [www.rust-lang.org](http://www.rust-lang.org)
 
-  <Accordion title="Go パッケージマネージャー">
-    * proxy.golang.org
-    * sum.golang.org
-    * index.golang.org
-    * golang.org
-    * [www.golang.org](http://www.golang.org)
-    * goproxy.io
-    * pkg.go.dev
-  </Accordion>
+> **Go パッケージマネージャー**
+>
+> * proxy.golang.org
+> * sum.golang.org
+> * index.golang.org
+> * golang.org
+> * [www.golang.org](http://www.golang.org)
+> * goproxy.io
+> * pkg.go.dev
 
-  <Accordion title="JVM パッケージマネージャー">
-    * maven.org
-    * repo.maven.org
-    * central.maven.org
-    * repo1.maven.org
-    * repo.maven.apache.org
-    * maven.google.com
-    * jcenter.bintray.com
-    * gradle.org
-    * [www.gradle.org](http://www.gradle.org)
-    * services.gradle.org
-    * plugins.gradle.org
-    * plugins-artifacts.gradle.org
-    * kotlinlang.org
-    * [www.kotlinlang.org](http://www.kotlinlang.org)
-    * spring.io
-    * repo.spring.io
-  </Accordion>
+> **JVM パッケージマネージャー**
+>
+> * maven.org
+> * repo.maven.org
+> * central.maven.org
+> * repo1.maven.org
+> * repo.maven.apache.org
+> * maven.google.com
+> * jcenter.bintray.com
+> * gradle.org
+> * [www.gradle.org](http://www.gradle.org)
+> * services.gradle.org
+> * plugins.gradle.org
+> * plugins-artifacts.gradle.org
+> * kotlinlang.org
+> * [www.kotlinlang.org](http://www.kotlinlang.org)
+> * spring.io
+> * repo.spring.io
 
-  <Accordion title="その他のパッケージマネージャー">
-    * packagist.org（PHP Composer）
-    * [www.packagist.org](http://www.packagist.org)
-    * repo.packagist.org
-    * nuget.org（.NET NuGet）
-    * [www.nuget.org](http://www.nuget.org)
-    * api.nuget.org
-    * pub.dev（Dart/Flutter）
-    * api.pub.dev
-    * hex.pm（Elixir/Erlang）
-    * [www.hex.pm](http://www.hex.pm)
-    * cpan.org（Perl CPAN）
-    * [www.cpan.org](http://www.cpan.org)
-    * metacpan.org
-    * [www.metacpan.org](http://www.metacpan.org)
-    * api.metacpan.org
-    * cocoapods.org（iOS/macOS）
-    * [www.cocoapods.org](http://www.cocoapods.org)
-    * cdn.cocoapods.org
-    * haskell.org
-    * [www.haskell.org](http://www.haskell.org)
-    * hackage.haskell.org
-    * swift.org
-    * [www.swift.org](http://www.swift.org)
-  </Accordion>
+> **その他のパッケージマネージャー**
+>
+> * packagist.org（PHP Composer）
+> * [www.packagist.org](http://www.packagist.org)
+> * repo.packagist.org
+> * nuget.org（.NET NuGet）
+> * [www.nuget.org](http://www.nuget.org)
+> * api.nuget.org
+> * pub.dev（Dart/Flutter）
+> * api.pub.dev
+> * hex.pm（Elixir/Erlang）
+> * [www.hex.pm](http://www.hex.pm)
+> * cpan.org（Perl CPAN）
+> * [www.cpan.org](http://www.cpan.org)
+> * metacpan.org
+> * [www.metacpan.org](http://www.metacpan.org)
+> * api.metacpan.org
+> * cocoapods.org（iOS/macOS）
+> * [www.cocoapods.org](http://www.cocoapods.org)
+> * cdn.cocoapods.org
+> * haskell.org
+> * [www.haskell.org](http://www.haskell.org)
+> * hackage.haskell.org
+> * swift.org
+> * [www.swift.org](http://www.swift.org)
 
-  <Accordion title="Linux ディストリビューション">
-    * archive.ubuntu.com
-    * security.ubuntu.com
-    * ubuntu.com
-    * [www.ubuntu.com](http://www.ubuntu.com)
-    * \*.ubuntu.com
-    * ppa.launchpad.net
-    * launchpad.net
-    * [www.launchpad.net](http://www.launchpad.net)
-    * \*.nixos.org
-  </Accordion>
+> **Linux ディストリビューション**
+>
+> * archive.ubuntu.com
+> * security.ubuntu.com
+> * ubuntu.com
+> * [www.ubuntu.com](http://www.ubuntu.com)
+> * \*.ubuntu.com
+> * ppa.launchpad.net
+> * launchpad.net
+> * [www.launchpad.net](http://www.launchpad.net)
+> * \*.nixos.org
 
-  <Accordion title="開発ツールとプラットフォーム">
-    * dl.k8s.io（Kubernetes）
-    * pkgs.k8s.io
-    * k8s.io
-    * [www.k8s.io](http://www.k8s.io)
-    * releases.hashicorp.com（HashiCorp）
-    * apt.releases.hashicorp.com
-    * rpm.releases.hashicorp.com
-    * archive.releases.hashicorp.com
-    * hashicorp.com
-    * [www.hashicorp.com](http://www.hashicorp.com)
-    * repo.anaconda.com（Anaconda/Conda）
-    * conda.anaconda.org
-    * anaconda.org
-    * [www.anaconda.com](http://www.anaconda.com)
-    * anaconda.com
-    * continuum.io
-    * apache.org（Apache）
-    * [www.apache.org](http://www.apache.org)
-    * archive.apache.org
-    * downloads.apache.org
-    * eclipse.org（Eclipse）
-    * [www.eclipse.org](http://www.eclipse.org)
-    * download.eclipse.org
-    * nodejs.org（Node.js）
-    * [www.nodejs.org](http://www.nodejs.org)
-    * developer.apple.com
-    * developer.android.com
-    * pkg.stainless.com
-    * binaries.prisma.sh
-  </Accordion>
+> **開発ツールとプラットフォーム**
+>
+> * dl.k8s.io（Kubernetes）
+> * pkgs.k8s.io
+> * k8s.io
+> * [www.k8s.io](http://www.k8s.io)
+> * releases.hashicorp.com（HashiCorp）
+> * apt.releases.hashicorp.com
+> * rpm.releases.hashicorp.com
+> * archive.releases.hashicorp.com
+> * hashicorp.com
+> * [www.hashicorp.com](http://www.hashicorp.com)
+> * repo.anaconda.com（Anaconda/Conda）
+> * conda.anaconda.org
+> * anaconda.org
+> * [www.anaconda.com](http://www.anaconda.com)
+> * anaconda.com
+> * continuum.io
+> * apache.org（Apache）
+> * [www.apache.org](http://www.apache.org)
+> * archive.apache.org
+> * downloads.apache.org
+> * eclipse.org（Eclipse）
+> * [www.eclipse.org](http://www.eclipse.org)
+> * download.eclipse.org
+> * nodejs.org（Node.js）
+> * [www.nodejs.org](http://www.nodejs.org)
+> * developer.apple.com
+> * developer.android.com
+> * pkg.stainless.com
+> * binaries.prisma.sh
 
-  <Accordion title="クラウドサービスと監視">
-    * http-intake.logs.datadoghq.com
-    * \*.datadoghq.com
-    * \*.datadoghq.eu
-    * api.honeycomb.io
-  </Accordion>
+> **クラウドサービスと監視**
+>
+> * http-intake.logs.datadoghq.com
+> * \*.datadoghq.com
+> * \*.datadoghq.eu
+> * api.honeycomb.io
 
-  <Accordion title="コンテンツ配信とミラー">
-    * sourceforge.net
-    * \*.sourceforge.net
-    * packagecloud.io
-    * \*.packagecloud.io
-    * fonts.googleapis.com
-    * fonts.gstatic.com
-  </Accordion>
+> **コンテンツ配信とミラー**
+>
+> * sourceforge.net
+> * \*.sourceforge.net
+> * packagecloud.io
+> * \*.packagecloud.io
+> * fonts.googleapis.com
+> * fonts.gstatic.com
 
-  <Accordion title="スキーマと設定">
-    * json-schema.org
-    * [www.json-schema.org](http://www.json-schema.org)
-    * json.schemastore.org
-    * [www.schemastore.org](http://www.schemastore.org)
-  </Accordion>
+> **スキーマと設定**
+>
+> * json-schema.org
+> * [www.json-schema.org](http://www.json-schema.org)
+> * json.schemastore.org
+> * [www.schemastore.org](http://www.schemastore.org)
 
-  <Accordion title="Model Context Protocol">
-    * \*.modelcontextprotocol.io
-  </Accordion>
-</AccordionGroup>
+> **Model Context Protocol**
+>
+> * \*.modelcontextprotocol.io
 
-<h2 id="related-resources">
-  関連リソース
-</h2>
+## 関連リソース
 
 * [Cloud sessions reference](/docs/ja/claude-code-on-the-web)：クラウドセッションを開始、管理、共有します
 * [Cloud sessions quickstart](/docs/ja/web-quickstart)：GitHub を接続して最初のクラウドセッションを開始します
 * [Claude Tag](https://claude.com/docs/claude-tag/overview)：Claude が Slack から開始するセッションは同じ環境で実行されます
-* [Routines](/docs/ja/routines)：スケジュール実行は同じ環境とネットワークアクセスレベルを使用します
+* [Cloud scheduled tasks](/docs/ja/routines)：スケジュール実行は同じ環境とネットワークアクセスレベルを使用します
 * [Remote Control](/docs/ja/remote-control)：代わりに独自のマシンのネットワークとファイルでセッションを実行します
 * [Self-hosted environments](/docs/ja/self-hosted-environments)：組織独自のインフラストラクチャでクラウドセッションを実行します
 * [SessionStart hooks](/docs/ja/hooks#sessionstart)：ローカルとクラウドセッションで実行されるリポジトリコミットセットアップ

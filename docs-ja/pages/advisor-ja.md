@@ -6,9 +6,9 @@
 
 > メインモデルをより強力な advisor モデルと組み合わせて、タスク中の重要な瞬間に Claude が相談できるようにします。
 
-<Note>
-  advisor ツールは実験的機能であり、Anthropic API が必要です。Amazon Bedrock、Claude Platform on AWS、Google Cloud の Agent Platform、Microsoft Foundry では利用できません。動作、価格設定、および利用可能性は変更される可能性があります。
-</Note>
+> [!NOTE]
+>
+> advisor ツールは実験的機能であり、Anthropic API が必要です。Amazon Bedrock、Claude Platform on AWS、Google Cloud の Agent Platform、Microsoft Foundry では利用できません。動作、価格設定、および利用可能性は変更される可能性があります。
 
 advisor ツールを使用すると、Claude はタスク中の重要な瞬間（アプローチをコミットする前、繰り返し発生するエラーで行き詰まった場合、またはタスク完了を宣言する前など）に、通常はより強力な 2 番目のモデルに相談できます。advisor は、すべてのツール呼び出しと結果を含む完全な会話を受け取り、Claude が続行する前に適用するガイダンスを返します。
 
@@ -16,17 +16,13 @@ advisor は Anthropic インフラストラクチャ上でサーバー側で実�
 
 このページでは、advisor を有効にする方法、受け入れられるモデルペアリング、相談中に Claude が表示する内容、および advisor 使用量がどのように課金されるかについて説明します。
 
-<h2 id="when-to-use-the-advisor">
-  advisor を使用する場合
-</h2>
+## advisor を使用する場合
 
 advisor は、ほとんどのターンが定型的であるが、プラン品質が結果を決定する長い複数ステップのタスクに適しています。例としては、大規模なリファクタリング、エラーが繰り返し発生するデバッグセッション、および Claude が完了を宣言する前に独立して確認したいタスクが挙げられます。
 
 計画する必要がほとんどない短いタスク、またはすべてのターンで最強のモデルが必要な作業では、価値が低くなります。その場合は、[メインモデルを切り替える](/docs/ja/model-config#setting-your-model)か、[advisor が opusplan およびサブエージェントとどのように比較されるか](#compare-with-related-features)を参照して、2 番目の意見を得る他の方法を確認してください。
 
-<h2 id="enable-the-advisor">
-  advisor を有効にする
-</h2>
+## advisor を有効にする
 
 advisor モデルは 3 つの方法で設定できます。
 
@@ -38,9 +34,7 @@ advisor モデルは 3 つの方法で設定できます。
 
 一部のプランでは、Fable を advisor として使用する場合、Fable の使用を使用クレジットに請求することへの 1 回限りの[同意](/docs/ja/model-config#fable-and-usage-credits)も必要です。その同意を与える前に何が起こるかについては、[Fable advisor と使用クレジット](#fable-advisor-and-usage-credits)を参照してください。
 
-<h3 id="use-the-/advisor-command">
-  `/advisor` コマンドを使用する
-</h3>
+### `/advisor` コマンドを使用する
 
 引数なしで `/advisor` を実行して、利用可能な advisor モデルをリストするピッカーを開くか、モデルを直接渡します。
 
@@ -62,9 +56,7 @@ Claude Code は、現在のメインモデルがサポートしていない advi
 
 一部のプランでは、Fable を advisor として使用する場合、Fable の使用を使用クレジットに請求することへの 1 回限りの[同意](/docs/ja/model-config#fable-and-usage-credits)も必要です。その同意を与える前に `/advisor fable` が何をするかについては、[Fable advisor と使用クレジット](#fable-advisor-and-usage-credits)を参照してください。
 
-<h3 id="set-advisormodel-in-settings">
-  設定で `advisorModel` を設定する
-</h3>
+### 設定で `advisorModel` を設定する
 
 セッションを開かずにデフォルトとして advisor を構成するには、設定ファイルで設定します。
 
@@ -74,9 +66,7 @@ Claude Code は、現在のメインモデルがサポートしていない advi
 }
 ```
 
-<h3 id="use-the-advisor-flag">
-  `--advisor` フラグを使用する
-</h3>
+### `--advisor` フラグを使用する
 
 保存された設定を変更せずに単一セッションの advisor を設定するには、フラグを使用して起動します。
 
@@ -95,9 +85,7 @@ Claude Code はそのセッションの `advisorModel` 設定の代わりにフ�
 
 リクエストされたモデルが advisor として機能できるものの、セッションのメインモデルより[下位にランク付けされている](#choose-an-advisor-model)場合でも、Claude Code はセッションを開始します。バックグラウンドセッション以外では、そのモデルがメインモデルに対して `cannot advise` であるという警告も起動時に表示します。
 
-<h2 id="choose-an-advisor-model">
-  アドバイザーモデルを選択する
-</h2>
+## アドバイザーモデルを選択する
 
 Claude Code はアドバイザーの役割における能力に基づいてモデルをランク付けしており、アドバイザーはセッションのメインモデルと同等以上のランクである必要があります。行は最も低いランクのメインモデルから最も高いランクのメインモデルの順に並んでいます。
 
@@ -125,9 +113,7 @@ Claude Code はリクエストを送信する前にペアリングを検証し�
 * Claude Code が添付したアドバイザーのペアリングを API が拒否した場合、Claude Code はアドバイザーなしでそのリクエストを再送信します。会話はアドバイザーなしで続行されるため、エラーは表示されず、アドバイザー呼び出しも行われません。その後 `/advisor` で別のアドバイザーを選択した場合、変更は `/clear` または `/compact` の後と新しいセッションで有効になります。
 * メインモデルまたはアドバイザーが Claude Code が認識しないモデルの場合、アドバイザーは添付されません。
 
-<h3 id="fable-advisor-and-usage-credits">
-  Fable アドバイザーと使用クレジット
-</h3>
+### Fable アドバイザーと使用クレジット
 
 一部のプランでは、Fable の使用は使用クレジットに請求され、アドバイザーとしての Fable も同じ方法で請求されます。アカウントが [Fable の使用を使用クレジットに請求するための 1 回限りの同意](/docs/ja/model-config#fable-and-usage-credits) を必要とする場合、Claude Code は `/model` で Fable モデルを選択するときにそれを要求し、その同意を受け入れるまで Fable をアドバイザーとして適用しません。
 
@@ -135,9 +121,7 @@ Claude Code はリクエストを送信する前にペアリングを検証し�
 
 同意を受け入れるには、`/model fable` を実行し、Fable で続行することを選択します。Claude Code は同意を記録し、[Fable を選択したモデルとして保存します](/docs/ja/model-config#default-model-setting)。その後、Fable をアドバイザーとして選択します。
 
-<h3 id="common-model-pairings">
-  一般的なモデルペアリング
-</h3>
+### 一般的なモデルペアリング
 
 受け入れられたペアリングはすべて機能します。これらの組み合わせは、異なる方法でコストと能力のバランスを取ります。
 
@@ -150,17 +134,13 @@ Claude Code はリクエストを送信する前にペアリングを検証し�
 | Fable メイン + Fable アドバイザー | Fable が利用可能な場合の最高能力ペアリング。Claude Code は Opus または Sonnet アドバイザーを Fable メインモデルに適用しません |
 | Sonnet メイン + Sonnet アドバイザー | 日常的な見落としをキャッチするための低コストの 2 番目の意見 |
 
-<h2 id="when-claude-consults-the-advisor">
-  Claude が advisor に相談する場合
-</h2>
+## Claude が advisor に相談する場合
 
 Claude は advisor をいつ呼び出すかを決定します。アプローチをコミットする前、エラーが繰り返し発生する場合、およびタスク完了を宣言する前に相談する傾向がありますが、タイミングはルールベースではなくモデル駆動です。
 
 プロンプトで相談をリクエストするのと同じ方法で、プロンプトで相談をリクエストできます。例えば、`continue する前に advisor に相談してください`。advisor 呼び出しをキャップまたは強制する設定はありません。タスク中に Claude が advisor に相談する頻度を増やしたい場合は、指示で言及してください。
 
-<h2 id="what-you-see-during-a-session">
-  セッション中に表示される内容
-</h2>
+## セッション中に表示される内容
 
 Claude が advisor を呼び出すと、トランスクリプトに呼び出しが進行中の advisor モデル名を含む `Advising` 行が表示されます。結果が返されると、行は advisor がガイダンスを提供したかどうかを報告します。
 
@@ -172,9 +152,7 @@ Claude は一般的に advisor のガイダンスに従いますが、独自の�
 
 advisor は常に完全な会話を受け取り、Claude がタイミングを制御します。より多くの制御または異なる構成については、[advisor がサブエージェントおよび opusplan とどのように比較されるか](#compare-with-related-features)を参照してください。
 
-<h2 id="cost">
-  コスト
-</h2>
+## コスト
 
 Claude が advisor を呼び出すと、advisor モデルが会話を読むため、各呼び出しはメインモデルの使用に加えて advisor モデルのレートでトークンを消費します。これらの advisor トークンがどのように課金されるかは、お支払い方法によって異なります。
 
@@ -187,17 +165,13 @@ Claude は各ターンではなく決定ポイントで advisor を呼び出す�
 
 advisor トークンが API レスポンスでどのように報告されるかについては、Claude API ドキュメントの[使用量と課金](https://platform.claude.com/docs/en/agents-and-tools/tool-use/advisor-tool#usage-and-billing)を参照してください。
 
-<h2 id="impact-on-prompt-caching">
-  プロンプトキャッシュへの影響
-</h2>
+## プロンプトキャッシュへの影響
 
 セッション中に advisor を有効または無効にしても、メインモデルの[プロンプトキャッシュ](/docs/ja/prompt-caching)は無効になりません。[モデルを切り替える](/docs/ja/prompt-caching#switching-models)とは異なり、`/advisor` を切り替えるとキャッシュされたプレフィックスはそのまま保持され、advisor が返したガイダンスは後のターンでトランスクリプトの一部としてキャッシュされます。
 
 advisor モデル自体の会話の読み取りはキャッシュされません。各 advisor 呼び出しは完全なトランスクリプトを新たに処理し、呼び出し間での再利用はありません。
 
-<h2 id="requirements">
-  要件
-</h2>
+## 要件
 
 advisor ツールには、以下のすべてが必要です。
 
@@ -205,9 +179,7 @@ advisor ツールには、以下のすべてが必要です。
 * **サポートされているメインモデル**：Fable、Opus 4.6 以降、Sonnet 4.6 以降、Haiku 4.5、または Haiku 5.5。各メインモデルがどの advisor を受け入れるかについては、[advisor モデルを選択する](#choose-an-advisor-model)を参照してください。
 * **フィーチャーフラグ取得**：Claude Code は Anthropic から取得するフィーチャーフラグを通じて advisor をオンにします。`DISABLE_TELEMETRY` など、フラグ取得をオフにする変数が設定されているセッションでは、advisor はオフのままです。[フィーチャーフラグ取得が必要な機能](/docs/ja/env-vars#features-that-need-feature-flag-fetching)を参照してください。
 
-<h2 id="turn-the-advisor-off">
-  advisor をオフにする
-</h2>
+## advisor をオフにする
 
 advisor の使用を停止するには、`/advisor off` を実行するか、`/advisor` ピッカーで **No advisor** を選択します。
 
@@ -217,9 +189,7 @@ advisor の使用を停止するには、`/advisor off` を実行するか、`/a
 
 advisor ツール全体を無効にするには、`CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1` を設定します。`/advisor` コマンドは利用できなくなり、設定された `advisorModel` は無視されます。`--advisor` フラグは受け入れられますが、効果はありません。[環境変数](/docs/ja/env-vars)を参照してください。
 
-<h2 id="compare-with-related-features">
-  関連機能との比較
-</h2>
+## 関連機能との比較
 
 advisor は、モデルの強みを組み合わせるいくつかの方法の 1 つです。2 番目のモデルをいつ関与させるかに基づいて選択します。
 
@@ -230,9 +200,7 @@ advisor は、モデルの強みを組み合わせるいくつかの方法の 1 
 | [サブエージェント](/docs/ja/sub-agents#choose-a-model)（`model` 設定） | 委任されたサブタスク全体 | Claude が委任するか、サブエージェントを呼び出します |
 | [`/model`](/docs/ja/model-config#setting-your-model) | 後続のすべてのリクエストから | モデルを切り替えます |
 
-<h2 id="see-also">
-  関連項目
-</h2>
+## 関連項目
 
 * [モデル構成](/docs/ja/model-config)：モデルを切り替え、努力レベルを設定し、`opusplan` を使用します
 * [コストを効果的に管理する](/docs/ja/costs)：モデル全体のトークン使用量を追跡します

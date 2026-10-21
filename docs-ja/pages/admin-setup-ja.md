@@ -10,9 +10,9 @@ Claude Code は、ローカル開発者設定よりも優先されるマネー�
 
 このページでは、展開の決定を順番に説明します。各行は以下のセクションと、その領域の参照ページにリンクしています。
 
-<Note>
-  SSO、SCIM プロビジョニング、シート割り当ては Claude アカウントレベルで設定されます。これらの手順については、[Claude Enterprise Administrator Guide](https://claude.com/resources/tutorials/claude-enterprise-administrator-guide) と [シート割り当て](https://support.claude.com/en/articles/11845131-use-claude-code-with-your-team-or-enterprise-plan) を参照してください。
-</Note>
+> [!NOTE]
+>
+> SSO、SCIM プロビジョニング、シート割り当ては Claude アカウントレベルで設定されます。これらの手順については、[Claude Enterprise Administrator Guide](https://claude.com/resources/tutorials/claude-enterprise-administrator-guide) と [シート割り当て](https://support.claude.com/en/articles/11845131-use-claude-code-with-your-team-or-enterprise-plan) を参照してください。
 
 | 決定 | 選択内容 | 参照 |
 | :- | :- | :- |
@@ -22,9 +22,7 @@ Claude Code は、ローカル開発者設定よりも優先されるマネー�
 | [使用状況の可視性をセットアップする](#set-up-usage-visibility) | 支出と採用を追跡する方法 | [Analytics](/docs/ja/analytics)、[Monitoring](/docs/ja/monitoring-usage)、[Costs](/docs/ja/costs) |
 | [データ処理を確認する](#review-data-handling) | データ保持とコンプライアンス体制 | [Data usage](/docs/ja/data-usage)、[Security](/docs/ja/security) |
 
-<h2 id="choose-your-api-provider">
-  API プロバイダーを選択する
-</h2>
+## API プロバイダーを選択する
 
 Claude Code は複数の API プロバイダーのいずれかを通じて Claude に接続します。選択は課金、認証、継承するコンプライアンス体制、および開発者が使用できる Claude Code 機能に影響します。
 
@@ -36,23 +34,21 @@ Claude Code は複数の API プロバイダーのいずれかを通じて Claud
 | Google Cloud の Agent Platform | 既存の GCP コンプライアンス制御と課金を継承したい場合 |
 | Microsoft Foundry | 既存の Azure コンプライアンス制御と課金を継承したい場合 |
 
-一部の Claude Code 機能には claude.ai アカウントが必要です。[web 上の Claude Code](/docs/ja/claude-code-on-the-web)、[Routines](/docs/ja/routines)、[Code Review](/docs/ja/code-review)、[Remote Control](/docs/ja/remote-control)、および [Chrome 拡張機能](/docs/ja/chrome) は、Console API キーまたはクラウドプロバイダーの認証情報だけでは利用できません。Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry を通じてデプロイする場合は、開発者が Claude for Teams または Enterprise シートも必要かどうかを検討してください。各機能ページにはプラン要件が記載されています。
+一部の Claude Code 機能には claude.ai アカウントが必要です。[クラウドセッション](/docs/ja/claude-code-on-the-web)、[クラウドのスケジュールタスク](/docs/ja/routines)、[Code Review](/docs/ja/code-review)、[Remote Control](/docs/ja/remote-control)、および [Chrome 拡張機能](/docs/ja/chrome) は、Console API キーまたはクラウドプロバイダーの認証情報だけでは利用できません。Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry を通じてデプロイする場合は、開発者が Claude for Teams または Enterprise シートも必要かどうかを検討してください。各機能ページにはプラン要件が記載されています。
 
 認証、リージョン、機能パリティをカバーする完全なプロバイダー比較については、[エンタープライズ展開概要](/docs/ja/third-party-integrations) を参照してください。各プロバイダーの認証セットアップは [Authentication](/docs/ja/authentication) にあります。
 
 [ネットワーク設定](/docs/ja/network-config) のプロキシとファイアウォール要件は、プロバイダーに関係なく適用されます。複数のプロバイダーの前に単一のエンドポイントを配置したい場合、または集中化されたリクエストログを記録したい場合は、[LLM gateway](/docs/ja/llm-gateway) を参照してください。
 
-<h2 id="decide-how-settings-reach-devices">
-  設定がデバイスに到達する方法を決定する
-</h2>
+## 設定がデバイスに到達する方法を決定する
 
 管理設定は、組織ポリシーを定義します。Claude Code は以下の表に示す 4 つのソースを優先順位順にチェックします。[Claude Code がマネージドソースを組み合わせる方法](/docs/ja/managed-settings#precedence-within-the-managed-tier)は、どのソースが適用されるか、ポリシーヘルパーが何を変更するか、およびすべてのソースを構成する方法を説明しています。この表は決定マップです。
 
 | メカニズム | 配信 | 優先度 | プラットフォーム |
 | :- | :- | :- | :- |
 | Server-managed | claude.ai 管理コンソール、またはゲートウェイサインイン用の自己ホスト型 [Claude apps gateway](/docs/ja/claude-apps-gateway) | 最高 | すべて |
-| plist / registry policy | macOS: `com.anthropic.claudecode` plist<br />Windows: `HKLM\SOFTWARE\Policies\ClaudeCode` | 高 | macOS、Windows |
-| File-based managed | macOS: `/Library/Application Support/ClaudeCode/managed-settings.json`<br />Linux と WSL: `/etc/claude-code/managed-settings.json`<br />Windows: `C:\Program Files\ClaudeCode\managed-settings.json` | 中 | すべて |
+| plist / registry policy | macOS: `com.anthropic.claudecode` plist Windows: `HKLM\SOFTWARE\Policies\ClaudeCode` | 高 | macOS、Windows |
+| File-based managed | macOS: `/Library/Application Support/ClaudeCode/managed-settings.json` Linux と WSL: `/etc/claude-code/managed-settings.json` Windows: `C:\Program Files\ClaudeCode\managed-settings.json` | 中 | すべて |
 | Windows user registry | `HKCU\SOFTWARE\Policies\ClaudeCode` | 最低 | Windows のみ |
 
 Claude Code はスタートアップ時に server-managed 設定をフェッチし、セッション中は 1 時間ごとに更新します。デプロイするエンドポイントインフラストラクチャはありません。claude.ai 管理コンソール経由の配信には Claude for Teams または Enterprise プランが必要です。Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry でのデプロイは、[Claude apps gateway](/docs/ja/claude-apps-gateway) を実行することで同じリモート配信を取得できます。または、ファイルベースまたは OS レベルのメカニズムのいずれかを代わりに使用してください。
@@ -65,9 +61,7 @@ plist と HKLM レジストリの場所は任意のプロバイダーで機能�
 
 どのメカニズムを選択しても、マネージド値はユーザーおよびプロジェクト設定よりも優先されます。ただし、セキュリティに関する [例外](/docs/ja/settings#exceptions-to-managed-settings-precedence)がいくつかあります。`permissions.allow` や `permissions.deny` などの配列設定は、すべてのソースからのエントリをマージするため、開発者はマネージドリストを拡張できますが、削除することはできません。`fallbackModel`、`availableModels`、および [`modelPicker`](/docs/ja/settings-reference#modelpicker) の場合、マネージド値は下位レイヤーとマージするのではなく、置き換えます。
 
-<h3 id="wsl-sessions-in-claude-code-desktop">
-  Claude Code Desktop の WSL セッション
-</h3>
+### Claude Code Desktop の WSL セッション
 
 Windows では、[Claude Code Desktop は WSL 2 ディストリビューション内で Code セッションを実行できます](/docs/ja/desktop-wsl)。セッションの Claude Code プロセスはディストリビューション内で実行されるため、上記の WSL 検出パスを通じて管理設定を解決します。`wslInheritsWindowsSettings: true` がデプロイされていない限り、Windows のみのソースはそれに到達しません。
 
@@ -87,9 +81,7 @@ WSL セッションが有効になった後、管理設定をそれらに拡張�
 
 WSL 2 ユーティリティ VM 内のプロセスは、Windows 側のエンドポイント検出センサーに表示されません。ディストリビューション内のプロセスとファイルアクティビティを観察するには、エンドポイント検出ベンダーの WSL ガイダンスで、ディストリビューション内で実行できる Linux センサーと、それが必要とする除外を確認してください。Claude Code の [OpenTelemetry ツール実行テレメトリ](/docs/ja/monitoring-usage)は WSL とネイティブセッションで同じように出力されます。
 
-<h2 id="decide-what-to-enforce">
-  実装する内容を決定する
-</h2>
+## 実装する内容を決定する
 
 マネージド設定は、ツール、サンドボックス実行、MCP サーバーとプラグインソース、および実行するフック を制限できます。各行は、それを駆動する設定キーを持つ制御サーフェスです。
 
@@ -133,9 +125,7 @@ WSL 2 ユーティリティ VM 内のプロセスは、Windows 側のエンド�
 
 これらの制御が防御する脅威モデルについては、[セキュリティ](/docs/ja/security)を参照してください。
 
-<h3 id="connected-github-accounts">
-  接続された GitHub アカウント
-</h3>
+### 接続された GitHub アカウント
 
 Team プランと Enterprise プランでは、[**Organization settings > Git providers**](https://claude.ai/admin-settings/source-control) の GitHub セクションに、[Claude GitHub App](https://github.com/apps/claude) を通じて Claude 組織にリンクされている GitHub 組織と個人アカウントが一覧表示されます。Claude Code、[Claude Tag](https://claude.com/docs/claude-tag/admins/configure-github)、Claude Security はこのリストを共有します。このページを開くには、Claude 組織での管理者ロールが必要です。
 
@@ -150,9 +140,7 @@ Claude 組織からアカウントのリンクを解除するには、その行�
 
 Enterprise プランでは、リンクおよびリンク解除に対応する [Compliance API](https://platform.claude.com/docs/en/api/compliance/activities/list) のアクティビティタイプは `github_app_installation_linked` と `github_app_installation_unlinked` です。
 
-<h2 id="set-up-usage-visibility">
-  使用状況の可視性をセットアップする
-</h2>
+## 使用状況の可視性をセットアップする
 
 必要なレポート内容に基づいて監視を選択してください。ダッシュボード、API、支出管理は Claude for Teams または Enterprise プランと Claude Console 組織で異なるため、機能に基づいてレポートを計画する前に「利用可能性」列を確認してください。
 
@@ -165,9 +153,7 @@ Enterprise プランでは、リンクおよびリンク解除に対応する [C
 
 Teams および Enterprise では、ユーザーごとの使用状況と支出の数値は分析ダッシュボードではなく、組織の分析設定の [支出レポート](https://support.claude.com/en/articles/12883420-view-usage-analytics-for-team-and-enterprise-plans) から取得されます。クラウドプロバイダーは AWS Cost Explorer、GCP Billing、または Azure Cost Management を通じて支出を公開します。Claude チャット、Claude Code、Cowork 全体にわたるエンタープライズ予算計画については、[Claude Enterprise 消費ガイド](https://support.claude.com/en/articles/14782391-claude-enterprise-consumption-guide) を参照してください。
 
-<h2 id="review-data-handling">
-  データ処理を確認する
-</h2>
+## データ処理を確認する
 
 Team、Enterprise、Claude API、およびクラウドプロバイダープランでは、Anthropic はコードまたはプロンプトでモデルをトレーニングしません。API プロバイダーが保持とコンプライアンス体制を決定します。
 
@@ -180,9 +166,7 @@ Team、Enterprise、Claude API、およびクラウドプロバイダープラ�
 
 リクエストレベルの監査ログが必要な場合、またはデータの機密性によってトラフィックをルーティングしたい場合は、開発者とプロバイダーの間にゲートウェイを配置することをお勧めします。セルフホスト型の [Claude apps gateway](/docs/ja/claude-apps-gateway) は IdP の ID とともにリクエストごとの監査ログを記録します。または、別の [LLM ゲートウェイ](/docs/ja/llm-gateway)を使用することもできます。ゲートウェイを経由するセッションは HIPAA 設定の対象外です。対象となるサインイン方法と接続方法については、[開発者のサインイン方法と接続方法を確認する](/docs/ja/hipaa-setup#check-how-developers-sign-in-and-connect)に記載されています。規制要件と認定については、[Legal and compliance](/docs/ja/legal-and-compliance) を参照してください。
 
-<h2 id="verify-and-onboard">
-  検証とオンボード
-</h2>
+## 検証とオンボード
 
 マネージド設定を設定した後、開発者に Claude Code 内で `/status` を実行させてください。**Status** タブの `Setting sources` 行に `Enterprise managed settings` が表示され、その後に括弧内のソースが続きます。[アクティブな設定を検証](/docs/ja/managed-settings#verify-enforcement) にラベルが記載されています。
 
@@ -200,9 +184,7 @@ Team、Enterprise、Claude API、およびクラウドプロバイダープラ�
 
 開発者が「You haven't been added to your organization yet」というメッセージを見た場合、そのシートには Claude Code アクセスが含まれておらず、管理コンソールで更新する必要があります。
 
-<h2 id="next-steps">
-  次のステップ
-</h2>
+## 次のステップ
 
 プロバイダーと配信メカニズムを選択したら、詳細な設定に進みます。
 

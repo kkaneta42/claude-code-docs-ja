@@ -15,9 +15,7 @@
 * 大きなファイルをフォーカスされたモジュールに分割し、各モジュールがサイズ予算以下になるまで
 * ラベル付きの問題バックログを処理し、キューが空になるまで
 
-<h2 id="compare-ways-to-keep-a-session-running">
-  セッションを実行し続ける方法の比較
-</h2>
+## セッションを実行し続ける方法の比較
 
 3 つのアプローチが、プロンプト間で現在のセッションを実行し続けます。次のターンを開始するべき内容に基づいて選択します。
 
@@ -31,19 +29,15 @@
 
 [自動モード](/docs/ja/auto-mode-config)は、単一のターン内でツール呼び出しを承認しますが、新しいターンを開始しません。Claude は作業が完了したと判断すると停止します。`/goal` は、すべてのターンの後にあなたの条件をチェックする別の評価器を追加するため、コンプリーションは作業を行っているモデルではなく、新しいモデルによって決定されます。この 2 つは相互に補完的です。自動モードはツールごとのプロンプトを削除し、`/goal` はターンごとのプロンプトを削除します。
 
-<Tip>
-  上記のアプローチは、現在のセッションを実行し続けます。また、夜間テストや朝のトリアージなど、開いているセッションとは無関係に実行される作業をスケジュールすることもできます。クラウドルーチンとデスクトップスケジュール済みタスクについては、[スケジューリング オプション](/docs/ja/scheduled-tasks#compare-scheduling-options)を参照してください。
-</Tip>
+> [!TIP]
+>
+> 上記のアプローチは、現在のセッションを実行し続けます。また、夜間テストや朝のトリアージなど、開いているセッションとは無関係に実行される作業をスケジュールすることもできます。クラウドおよび Desktop のスケジュールタスクについては、[スケジューリングオプション](/docs/ja/scheduled-tasks#compare-scheduling-options)を参照してください。
 
-<h2 id="use-/goal">
-  `/goal` を使用する
-</h2>
+## `/goal` を使用する
 
 1 つのセッションで 1 つのゴールがアクティブになります。同じコマンドは引数に応じてゴールを設定、確認、クリアします。
 
-<h3 id="set-a-goal">
-  ゴールを設定する
-</h3>
+### ゴールを設定する
 
 `/goal` の後に満たしたい条件を実行します。ゴールがすでにアクティブな場合、新しいゴールがそれを置き換えます。
 
@@ -57,9 +51,7 @@
 
 ゴールがアクティブな間、トランスクリプトは評価者が返す各判定を表示し、Ctrl+O を押すと、その背後にある理由を確認できます。ステータスビューは最新の理由も表示するため、Claude が次に何に向かって作業しているかを確認できます。
 
-<h3 id="write-an-effective-condition">
-  効果的な条件を書く
-</h3>
+### 効果的な条件を書く
 
 [評価者](#how-evaluation-works)は、Claude が会話で提示した内容に対して条件を判定します。独立してコマンドを実行したりファイルを読み取ったりしないため、Claude 自身の出力が実証できるものとして条件を書いてください。「`test/auth` のすべてのテストが合格する」は、Claude がテストを実行し、結果がトランスクリプトに表示されて評価者が読むことができるため、機能します。
 
@@ -73,9 +65,7 @@
 
 ゴールの実行時間を制限するには、条件に `or stop after 20 turns` などのターンまたは時間句を含めます。Claude は各ターンでその句に対する進捗を報告し、評価者は会話からそれを判定します。
 
-<h3 id="check-status">
-  ステータスを確認する
-</h3>
+### ステータスを確認する
 
 引数なしで `/goal` を実行して、現在の状態を確認します。
 
@@ -95,9 +85,7 @@
 
 ゴールがアクティブではないが、セッションの前半で達成された場合、ステータスは達成された条件とその期間、ターン数、トークン支出を表示します。
 
-<h3 id="clear-a-goal">
-  ゴールをクリアする
-</h3>
+### ゴールをクリアする
 
 `/goal clear` を実行して、解決前にアクティブなゴールを削除します。
 
@@ -109,17 +97,13 @@ Claude は `Goal cleared:` の後に条件を出力して確認するか、何�
 
 `stop`、`off`、`reset`、`none`、`cancel` は `clear` のエイリアスとして受け入れられます。`/clear` を実行して新しい会話を開始すると、アクティブなゴールも削除されます。
 
-<h3 id="resume-with-an-active-goal">
-  アクティブなゴールで再開する
-</h3>
+### アクティブなゴールで再開する
 
 セッションを再開すると、Claude Code はセッションが終了したときにまだアクティブだったゴールを復元します。Claude Code はすべての再開ルートで復元します。`--continue`、セッション ID、名前、または[トランスクリプトファイルパス](/docs/ja/sessions#resume-a-session)を使用した `--resume`、および[セッションピッカー](/docs/ja/sessions#use-the-session-picker)です。v2.1.239 より前では、Claude Code は `claude --resume` ピッカーを除くすべてのルートでゴールを復元していました。
 
 Claude Code は条件を引き継ぎますが、ターン数、タイマー、トークン支出ベースラインをリセットします。既に達成またはクリアされたゴールは復元しません。
 
-<h3 id="run-non-interactively">
-  非対話的に実行する
-</h3>
+### 非対話的に実行する
 
 `/goal` は[非対話的モード](/docs/ja/headless)、[デスクトップアプリ](/docs/ja/desktop)、および[リモートコントロール](/docs/ja/remote-control)で機能します。`-p` でゴールを設定すると、ループが単一の呼び出しで完了まで実行されます。
 
@@ -131,9 +115,7 @@ claude -p "/goal CHANGELOG.md has an entry for every PR merged this week"
 
 Ctrl+C でプロセスを中断して、解決前に非対話的なゴールを停止します。
 
-<h2 id="how-evaluation-works">
-  評価の仕組み
-</h2>
+## 評価の仕組み
 
 `/goal` は、セッションスコープの [プロンプトベースの Stop フック](/docs/ja/hooks#prompt-based-hooks) のラッパーです。Claude が各ターンを終了するたびに、Claude Code は条件と現在までの会話を、設定済みの [小型高速モデル](/docs/ja/model-config) に送信します。モデルは 3 つの判定のいずれかを返します。各判定には短い理由が付きます。
 
@@ -143,15 +125,11 @@ Ctrl+C でプロセスを中断して、解決前に非対話的なゴールを�
 
 Claude が評価者に答え続けても進捗がない場合（複数ターン連続でツール使用がない場合）、Claude Code はループを停止し、警告を出力し、ゴールがまだ設定された状態で制御をあなたに返します。評価は次のプロンプト後に再開されます。[フック ガイド](/docs/ja/hooks-guide#stop-hook-hits-the-block-cap) では、基礎となるメカニズムについて説明しています。
 
-<h3 id="when-a-turn-fails">
-  ターンが失敗した場合
-</h3>
+### ターンが失敗した場合
 
 ターンが失敗した場合、Claude Code はエラーが修正が必要なものである場合、ゴールをクリアします。その他のエラーの場合、ゴールは設定されたままになります。
 
-<h4 id="errors-you-have-to-fix-clear-the-goal">
-  修正が必要なエラーはゴールをクリアします
-</h4>
+#### 修正が必要なエラーはゴールをクリアします
 
 修正するまでクリアされないエラーでターンが失敗した場合、Claude Code はゴールをクリアし、原因を名前で示す警告を出力します。警告は `Goal cleared after an unrecoverable error` で始まり、`Run /goal again to continue` で終わります。原因を修正してから、`/goal <condition>` で [ゴールを再度設定](#set-a-goal) してください。4 つの種類の失敗がゴールをクリアします。
 
@@ -160,9 +138,7 @@ Claude が評価者に答え続けても進捗がない場合（複数ターン�
 * [自動コンパクション](/docs/ja/model-config#set-the-auto-compact-window) でクリアできないコンテキストオーバーフロー
 * 利用できないモデル
 
-<h4 id="other-errors-retry-or-pause-the-goal">
-  その他のエラーはゴールを再試行または一時停止します
-</h4>
+#### その他のエラーはゴールを再試行または一時停止します
 
 その他の失敗の場合、ゴールは設定されたままになります。Claude Code v2.1.269 以降のインタラクティブセッションでは、Claude Code は原因を名前で示す行を出力し、自動的に再試行するか、あなたを待ちます。
 
@@ -171,9 +147,7 @@ Claude が評価者に答え続けても進捗がない場合（複数ターン�
 
 いつでもメッセージを送信して、次のターンをすぐに開始できます。自動再試行をオフにするには、[`CLAUDE_CODE_GOAL_CHECKIN_MINUTES`](/docs/ja/env-vars) を `0` に設定します。これにより、[チェックイン](#background-work-defers-evaluation) もオフになります。
 
-<h3 id="background-work-defers-evaluation">
-  バックグラウンド作業は評価を遅延させます
-</h3>
+### バックグラウンド作業は評価を遅延させます
 
 サブエージェントまたはバックグラウンドシェルコマンドがターン終了時に実行中の場合、Claude Code はそのターンの評価をスキップします。バックグラウンド作業が実行されていない状態で終了する次のターンの終了時に評価されます。バックグラウンド作業が完了すると、Claude Code は結果を新しいターンとして Claude に配信するため、プロンプトを入力する必要はありません。
 
@@ -188,31 +162,25 @@ v2.1.239 より前では、この方法でバックオフするのはアイド�
 
 チェックインには Claude Code v2.1.234 以降が必要です。
 
-<h3 id="evaluation-model-and-cost">
-  評価モデルとコスト
-</h3>
+### 評価モデルとコスト
 
 別のモデルで評価するには、[`ANTHROPIC_DEFAULT_HAIKU_MODEL`](/docs/ja/model-config#environment-variables) を設定します。
 
-<Warning>
-  Claude Code は `/goal` 評価だけでなく、小型高速モデルを使用するあらゆる場所で `ANTHROPIC_DEFAULT_HAIKU_MODEL` を読み取ります。これを設定すると、Claude Code は [`haiku` エイリアス](/docs/ja/model-config#model-aliases) をそのモデルに解決し、会話要約などの [バックグラウンド機能](/docs/ja/costs#background-token-usage) をそれで実行します。
-</Warning>
+> [!WARNING]
+>
+> Claude Code は `/goal` 評価だけでなく、小型高速モデルを使用するあらゆる場所で `ANTHROPIC_DEFAULT_HAIKU_MODEL` を読み取ります。これを設定すると、Claude Code は [`haiku` エイリアス](/docs/ja/model-config#model-aliases) をそのモデルに解決し、会話要約などの [バックグラウンド機能](/docs/ja/costs#background-token-usage) をそれで実行します。
 
 評価者は、セッションが設定されているプロバイダーで実行されます。ツールを呼び出さないため、Claude が既に会話で表示したものだけを判定できます。
 
-<Note>
-  評価トークンは、プロバイダー用に設定された小型高速モデルで課金され、通常はメインターンの支出と比べて無視できるほどです。
-</Note>
+> [!NOTE]
+>
+> 評価トークンは、プロバイダー用に設定された小型高速モデルで課金され、通常はメインターンの支出と比べて無視できるほどです。
 
-<h2 id="requirements">
-  要件
-</h2>
+## 要件
 
 Claude Code は、評価器がフック システムの一部であるため、[ワークスペース信頼ルール（設定ファイル内のフックと同じ）](/docs/ja/permissions#what-runs-before-you-trust-a-folder)の下で `/goal` を利用可能にします。[`disableAllHooks`](/docs/ja/hooks#disable-or-remove-hooks) が `true` の場合（設定の優先順位が適用された後）、または [`allowManagedHooksOnly`](/docs/ja/settings-reference#allowmanagedhooksonly) が管理設定で設定されている場合、`/goal` は利用できません。いずれの場合も、コマンドは何もしないのではなく、理由を伝えます。
 
-<h2 id="see-also">
-  関連項目
-</h2>
+## 関連項目
 
 * [プロンプトを `/loop` で繰り返し実行する](/docs/ja/scheduled-tasks#run-a-prompt-repeatedly-with-%2Floop)：条件が成立するまでではなく、時間間隔で再実行する
 * [プロンプトベースの hook](/docs/ja/hooks-guide#prompt-based-hooks)：カスタム評価ロジックが必要な場合は、独自の Stop hook を作成する

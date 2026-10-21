@@ -6,19 +6,15 @@
 
 > Artifacts は Claude Code の成果物を claude.ai 上のライブでインタラクティブなページに変え、プライベートに保つ、組織と共有する、または公開リンクで公開することができます。
 
-<Note>
-  Artifacts は Pro、Max、Team、Enterprise プランで利用可能で、[`/login`](/docs/ja/setup#authenticate) でサインインしたセッションが必要です。要件の完全なセットについては、[利用可能性](#availability)を参照してください。
-</Note>
+> [!NOTE]
+>
+> Artifacts は Pro、Max、Team、Enterprise プランで利用可能で、[`/login`](/docs/ja/setup#authenticate) でサインインしたセッションが必要です。要件の完全なセットについては、[利用可能性](#availability)を参照してください。
 
 [アーティファクト](https://claude.com/features/artifacts)は、Claude Code がセッションから claude.ai 上のプライベート URL に公開するライブでインタラクティブな Web ページです。ブラウザで開くと、セッションが続く間、その場で更新されます。他の人にも見てもらいたい場合は、ページヘッダーから共有します。
 
-<Frame>
-  <img src="https://mintcdn.com/claude-code/kaHIYYMIYMYPxQg9/images/artifacts-viewer.png?fit=max&auto=format&n=kaHIYYMIYMYPxQg9&q=85&s=dbfd671cdb0d15f49f808b9e89778fe1" alt="claude.ai/code/artifact で開かれたアーティファクト。ビューアヘッダーには、アーティファクトタイトル acme-funnel-fix、Share ボタン、著者アバターが表示されています。Share メニューが開いており、Always share latest version トグル、Sharing version 2 と表示されたバージョンピッカー、Everyone at Acme オーディエンスセレクタ、Copy link ボタンが表示されています。ヘッダーの下には、2 つのモバイルモックアップが並んで表示され、ファネルチャート、メトリクスカードの行が表示されています。" width="2511" height="1890" data-path="images/artifacts-viewer.png" />
-</Frame>
+![claude.ai/code/artifact で開かれたアーティファクト。ビューアヘッダーには、アーティファクトタイトル acme-funnel-fix、Share ボタン、著者アバターが表示されています。Share メニューが開いており、Always share latest version トグル、Sharing version 2 と表示されたバージョンピッカー、Everyone at Acme オーディエンスセレクタ、Copy link ボタンが表示されています。ヘッダーの下には、2 つのモバイルモックアップが並んで表示され、ファネルチャート、メトリクスカードの行が表示されています。](https://mintcdn.com/claude-code/kaHIYYMIYMYPxQg9/images/artifacts-viewer.png?fit=max\&auto=format\&n=kaHIYYMIYMYPxQg9\&q=85\&s=dbfd671cdb0d15f49f808b9e89778fe1)
 
-<h2 id="when-to-use-an-artifact">
-  アーティファクトを使用する場合
-</h2>
+## アーティファクトを使用する場合
 
 ターミナルテキストが Claude が生成したものを表示するのに適さない場合にアーティファクトを使用してください。つまり、1 行ずつ読むよりも見たり操作したりする方が簡単な出力です。Claude はセッションが到達できるもの（コードベースや [接続されたツール](/docs/ja/mcp) を通じて取得するデータを含む）からページを構築するため、説明に段落が必要になるようなものを表示できます。たとえば、Claude に以下のことを依頼してください。
 
@@ -31,15 +27,11 @@
 
 これらに対応するプロンプトについては [構築できるもの](#what-you-can-build) を参照し、コネクタバックアップボードのプロンプトについては [MCP コネクタを使用してライブデータを取得](#pull-live-data-with-mcp-connectors) を参照してください。
 
-<h3 id="what-an-artifact-is-not">
-  アーティファクトではないもの
-</h3>
+### アーティファクトではないもの
 
 アーティファクトは作業のキャプチャです。バックエンドのない 1 つの自己完結型ページなので、複数のルートを提供することはできません。バックエンドを備えたホストされた内部ツールの場合は、代わりに独自のインフラストラクチャにデプロイしてください。制限の完全なセットについては [ページの制約](#page-constraints) を参照してください。
 
-<h2 id="create-an-artifact">
-  アーティファクトを作成する
-</h2>
+## アーティファクトを作成する
 
 Claude は出力がページに適している場合、自動的にアーティファクトを公開することがあります。また、直接リクエストすることもできます。リクエストするには、機能の名前を指定するか、希望する視覚的な出力をプレーンテキストで説明してください。テキストとして読むより見る方が簡単なもの（注釈付きの diff、チャート、比較するオプションのセットなど）が良い候補です。以下のプロンプトは 2 つの例です。詳細は[構築できるもの](#what-you-can-build)を参照してください。
 
@@ -64,9 +56,7 @@ Claude はアーティファクトのタイトルと、チャートやカレン�
 
 Claude が公開できないと応答した場合、またはリンクなしでローカル HTML ファイルを書き込んだ場合、セッションでアーティファクトが有効になっていません。[利用可能性](#availability)の要件を確認してください。ターミナルに `Artifacts need a claude.ai login` と表示された場合は、サインイン方法について[該当するエラーの項目](/docs/ja/errors#artifacts-need-a-claude-ai-login)を参照してください。
 
-<h3 id="when-claude-code-asks-before-publishing">
-  公開前に Claude Code が確認する場合
-</h3>
+### 公開前に Claude Code が確認する場合
 
 入力したプロンプトに応じて Claude が公開する新しいアーティファクトは、権限プロンプトや分類器のレビューなしで処理されます。以下の場合、Claude Code はまず確認を求めるか、[auto モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)では分類器に公開をレビューさせます。
 
@@ -75,7 +65,7 @@ Claude が公開できないと応答した場合、またはリンクなしで�
 | セッションが [plan モード](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode)になっている | 各アーティファクトの最初の公開前に確認する |
 | 公開が、[コネクタ呼び出し](#pull-live-data-with-mcp-connectors)や[ファイルダウンロード](#offer-a-file-download)など、ページのランタイム機能を宣言している | その公開の前に確認する |
 | アーティファクトを公開共有している | 変更前に会話ごとに 1 回確認する |
-| 入力したプロンプトではなく、セッション内で実行された[スケジュールタスク](/docs/ja/scheduled-tasks)によって開始されたターンで Claude が公開する | 各アーティファクトの最初の公開前に確認する |
+| 入力したプロンプトではなく、セッション内で実行された[セッションスコープのスケジュールタスク](/docs/ja/scheduled-tasks)によって開始されたターンで Claude が公開する | 各アーティファクトの最初の公開前に確認する |
 | Claude がユーザーの承認なしではファイルを読み取れない | 公開前に確認する。`Artifact` ツールの許可ルールがあっても、このプロンプトはスキップされない |
 | [Manual](/docs/ja/permission-modes) モードまたは `acceptEdits` モードで、Claude がユーザーの承認なしでは編集できないアーティファクトのファイル（Manual モードでのプロジェクトファイルなど）に小さな変更を加える | 変更を公開する前に確認する。ファイルの編集にはユーザーの承認が必要なため、`Artifact` ツールが許可ルールの対象になっていても確認される |
 
@@ -83,9 +73,7 @@ Claude が公開できないと応答した場合、またはリンクなしで�
 
 公開のプロンプトに `Also makes 1 edit to that file on disk.` のような文が含まれている場合、Claude はアーティファクトのファイルの変更と公開を 1 つのステップで行います。プロンプトを承認すると、Claude Code はページを公開してから、変更をファイルに書き込みます。
 
-<h2 id="update-an-artifact">
-  アーティファクトを更新する
-</h2>
+## アーティファクトを更新する
 
 Claude にページを修正するよう依頼するか、長時間実行されるタスクが進行状況に応じて再度公開するようにします。Claude は基になるファイルを編集し、同じ URL に再度公開します。
 
@@ -101,9 +89,7 @@ Claude にページを修正するよう依頼するか、長時間実行され�
 https://claude.ai/code/artifact/5fbea6f3-... を本日の数値で更新します。
 ```
 
-<h2 id="find-an-artifact-again">
-  アーティファクトを再度見つける
-</h2>
+## アーティファクトを再度見つける
 
 Claude Code で `/artifacts` を実行すると、所有しているアーティファクトと共有されているアーティファクトが一覧表示されます。現在のセッションのアーティファクトは **This session** の下に最初に表示されます。
 
@@ -112,12 +98,11 @@ Claude Code で `/artifacts` を実行すると、所有しているアーティ
 * **`Enter`**：現在のセッションにすでに添付されている場合はブラウザで開き、添付されていない場合は添付します。v2.1.216 より前のバージョンでは、`Enter` キーでブラウザで開きました
 * **`o`**：ブラウザで開きます
 * **`c`**：リンクをコピーします
+* **`d`**：[クラウドセッション](/docs/ja/claude-code-on-the-web)以外では、確認後に所有しているアーティファクトを完全に削除します。そのリンクは自分を含むすべてのユーザーに対して機能しなくなります
 
-Claude Code は claude.ai アカウントからリストを読み込むため、新しいセッションでも、`/clear` の後でリンクがターミナルからスクロールアウトした場合でも機能します。
+Claude Code は claude.ai アカウントからリストを読み込むため、`/artifacts` は新しいセッションでも、`/clear` の後でアーティファクトのリンクがターミナルからスクロールアウトした場合でも機能します。
 
-<h2 id="share-an-artifact">
-  アーティファクトを共有する
-</h2>
+## アーティファクトを共有する
 
 新しいアーティファクトは最初、あなただけに表示されます。共有するには、ブラウザでアーティファクトを開き、ページヘッダーの **Share** コントロールを使用してください。ヘッダーには [claude.ai/code/artifacts](https://claude.ai/code/artifacts) のギャラリーへのリンクもあり、作成したすべてのアーティファクトが一覧表示されます。
 
@@ -128,9 +113,7 @@ Claude Code は claude.ai アカウントからリストを読み込むため、
 * **組織内**: Team プランと Enterprise プランでは、組織内の特定のユーザーまたは全員にアクセス権を付与できます。ビューアーは、ページを表示するために claude.ai に組織のメンバーとしてサインインします。
 * **公開**: インターネット上の誰でも開くことができるリンクを共有でき、claude.ai へのサインインは不要です。Team プランと Enterprise プランでは、Owner が [組織に対して公開共有を有効にする](#control-public-sharing) まで、公開共有はオフになっています。
 
-<h3 id="let-someone-edit-with-you">
-  他のユーザーと一緒に編集する
-</h3>
+### 他のユーザーと一緒に編集する
 
 共有相手はデフォルトではビューアーです。公開した各バージョンを表示できますが、ページを変更することはできません。Team プランと Enterprise プランでは、ユーザーをエディターにすることもできます。共有ダイアログで、ユーザーを追加し、その役割を **viewer** から **editor** に切り替えます。
 
@@ -138,9 +121,7 @@ Claude Code は claude.ai アカウントからリストを読み込むため、
 
 Claude がページの古いコピーを保持している間にエディターが公開した場合、Claude Code はそのコピーに基づく公開を拒否します。その後、Claude は自身の変更を新しいバージョンにマージして、再度公開します。
 
-<h2 id="read-an-artifact-shared-with-you">
-  共有されたアーティファクトを読む
-</h2>
+## 共有されたアーティファクトを読む
 
 誰かがアーティファクトを共有した場合、Claude にそれを読ませることができます。Claude にその URL を提供するか、[`/artifacts`](#find-an-artifact-again) から添付してください。
 
@@ -155,9 +136,7 @@ Claude は他の人が書いたページを、[WebFetch](/docs/ja/tools-referenc
 
 Claude が WebFetch でアーティファクトを読む場合も、WebFetch 自体の [プロンプトのルール](/docs/ja/tools-reference#webfetch-tool-behavior) は引き続き適用されます。
 
-<h2 id="collect-comments-on-an-artifact">
-  アーティファクトのコメントを収集する
-</h2>
+## アーティファクトのコメントを収集する
 
 組織内でアーティファクトを共有すると、共有相手はページにコメントを残すことができ、Claude がそのコメントを読んで返信することができます。Claude Code v2.1.221 以降が必要です。Claude がコメントを読む場合は 2 つあります。
 
@@ -180,9 +159,7 @@ Claude がコメントを読めないと言う場合は、バージョン、セ�
 * Claude Code をインストールした後、または v2.1.221 より前のバージョンからアップグレードした後の最初のセッションではありません。[インストールまたはアップグレード後の最初のセッション](/docs/ja/env-vars#first-session-after-an-install-or-upgrade)では、Claude はまだコメントを読めない可能性があります。新しいセッションを開始して、もう一度試してください。
 * フィーチャーフラグ取得をオフにしていません。
 
-<h3 id="let-claude-reply-to-comments-on-its-own">
-  Claude にコメントに自動で返信させる
-</h3>
+### Claude にコメントに自動で返信させる
 
 セッションがアーティファクトを公開した後、Claude Code はそのアーティファクトのコメントを監視します。アーティファクトを編集できるユーザーが Claude にコメントを送信すると、すぐにセッションに到達し、Claude はスレッドを読んで、ユーザーが依頼しなくても返信できます。
 
@@ -208,9 +185,7 @@ Claude Code が自動で開始した監視は、アーティファクトで数�
 
 コメントを配信するサービスが利用できなくなるか、応答を停止した場合、Claude Code はしばらく再接続を試み、その後、セッションが監視していた各アーティファクトの監視を停止します。
 
-<h2 id="pull-live-data-with-mcp-connectors">
-  MCP コネクタで ライブデータを取得する
-</h2>
+## MCP コネクタで ライブデータを取得する
 
 アーティファクトは、誰かがそれを表示するたびに [MCP コネクタ](/docs/ja/mcp#use-mcp-servers-from-claude-ai) を呼び出すことができるため、ページはセッションから取得したスナップショットではなく、現在のデータを表示します。アーティファクトからのコネクタ呼び出しは Pro、Max、Team、Enterprise プランで利用可能であり、Claude Code v2.1.209 以降が必要です。以前のバージョンでは、Claude はセッション中に収集したデータでページを公開します。
 
@@ -224,9 +199,7 @@ Claude はページの公開の一部として、ページが呼び出す可能�
 
 ページはロード時にデータを取得し、間隔で更新するか、表示者がページの更新コントロールを使用するときに更新できます。応答はビューアのブラウザにキャッシュされるため、再度開いたページはキャッシュされた応答からすぐにレンダリングされ、その後新しい結果で更新されます。
 
-<h3 id="how-connector-calls-work-for-viewers">
-  ビューアのコネクタ呼び出しの仕組み
-</h3>
+### ビューアのコネクタ呼び出しの仕組み
 
 公開されたページがコネクタを呼び出すとき、呼び出しはそれを公開した人のアカウントではなく、ページを表示している人のアカウントを使用します。
 
@@ -238,9 +211,7 @@ Claude はページの公開の一部として、ページが呼び出す可能�
 
 [アーティファクトを共有](#share-an-artifact) する場合、組織内またはパブリックで共有できます。これはプランと組織の設定によります。コネクタ呼び出しは、claude.ai にサインインせずにパブリックリンクを開いたビューア、または組織外からアクセスしたビューアに対しては実行されません。そのビューアはページをライブセクションなしで表示します。
 
-<h3 id="the-page-shows-no-live-data-for-a-viewer">
-  ページがビューアのライブデータを表示しない
-</h3>
+### ページがビューアのライブデータを表示しない
 
 コネクタバックアップページがレンダリングされても、組織内のビューアのライブセクションが空のままの場合は、これらの原因を確認してください。
 
@@ -251,9 +222,7 @@ Claude はページの公開の一部として、ページが呼び出す可能�
 
   Claude がページを公開し、そのコネクタのツールがセッションで利用可能な場合、Claude Code はページが宣言するツール名をそれらと照合し、一致しない名前について Claude に警告し、一致しない場合は公開を拒否します。v2.1.265 より前では、それらをチェックせずにページを公開していました。
 
-<h2 id="offer-a-file-download">
-  ファイルダウンロードを提供する
-</h2>
+## ファイルダウンロードを提供する
 
 アーティファクトは、ページが生成するファイル（テーブルの CSV エクスポートやチャートの PNG など）をビューアーに提供できます。ビューアーはページ上のダウンロードコントロール（ボタンなど）を通じてそれを保存します。ファイルダウンロードは claude.ai が提供するランタイム機能で、アカウント単位で有効になるため、Claude はコントロールを構築する前にアカウントがこの機能を持っているかどうかを確認します。
 
@@ -267,15 +236,11 @@ Add a button that downloads this table as a CSV file.
 
 Claude はダウンロード機能を公開の一部として宣言します。これは[コネクターを宣言](#pull-live-data-with-mcp-connectors)する方法と同じです。
 
-<h2 id="what-you-can-build">
-  構築できるもの
-</h2>
+## 構築できるもの
 
 アーティファクトは単一の HTML ページであるため、HTML、CSS、およびインラインの JavaScript で表現できるものはすべてスコープ内です。以下のパターンが最も頻繁に発生します。
 
-<h3 id="walk-through-a-change">
-  変更を通じて説明する
-</h3>
+### 変更を通じて説明する
 
 差分またはデザイン変更をレンダリングするページを、関連する行の横に注釈を付けてリクエストします。これにより、レビュアーは説明から再構築するのではなく、コードの横にあなたの推論を読むことができます。
 
@@ -283,9 +248,7 @@ Claude はダウンロード機能を公開の一部として宣言します。�
 このプルリクエストを通じて説明するアーティファクトを作成してください。差分をマージン注釈でレンダリングし、重大度別に検出結果をカラーコーディングしてください。
 ```
 
-<h3 id="compare-alternatives">
-  代替案を比較する
-</h3>
+### 代替案を比較する
 
 1 つのページに複数のバリアントをリクエストして、互いに評価できるようにします。これはレイアウト、コピー、API シェイプ、または実装計画に機能します。
 
@@ -293,9 +256,7 @@ Claude はダウンロード機能を公開の一部として宣言します。�
 設定パネルの 4 つの明らかに異なるレイアウトを含むアーティファクトを作成してください。密度とグループ化を変更し、それぞれの下に 1 行のトレードオフを含むグリッドとしてレイアウトしてください。
 ```
 
-<h3 id="tune-with-interactive-controls">
-  インタラクティブコントロールで調整する
-</h3>
+### インタラクティブコントロールで調整する
 
 スライダー、トグル、または入力フィールドを調整しているものにバインドするようリクエストします。これにより、説明する代わりに値を直接探索できます。
 
@@ -303,9 +264,7 @@ Claude はダウンロード機能を公開の一部として宣言します。�
 イージングカーブ、期間、および遅延のスライダーを含むアーティファクトを構築してください。これにより、このトランジションの値を試すことができます。移動するとアニメーションがライブで表示されます。
 ```
 
-<h3 id="bring-the-result-back-to-your-session">
-  結果をセッションに戻す
-</h3>
+### 結果をセッションに戻す
 
 アーティファクトは、Claude に返す決定の軽量エディタとして機能できます。エクスポートコントロールをリクエストして、ターミナルに貼り付けることができるテキストを生成します。これにより、ページとの相互作用の結果がページに留まるのではなく、セッションに流れ込みます。
 
@@ -313,9 +272,7 @@ Claude はダウンロード機能を公開の一部として宣言します。�
 各オープンイシューをドラッグ可能なカードとして Now、Next、Later、Cut 列全体に配置するトリアージボードアーティファクトを作成してください。「Copy as prompt」ボタンを追加して、ここに貼り付けるための最終的な順序を提供してください。
 ```
 
-<h3 id="track-work-in-progress">
-  進行中の作業を追跡する
-</h3>
+### 進行中の作業を追跡する
 
 長いタスクが実行される間、Claude にアーティファクトを最新の状態に保つよう依頼します。これにより、リンクを持つ人は誰でもターミナルを読まずにフォローできます。
 
@@ -323,9 +280,7 @@ Claude はダウンロード機能を公開の一部として宣言します。�
 この移行計画をチェックリストアーティファクトに変換してください。完了したアイテムをチェックし、スキップしたものについてはメモを追加してください。
 ```
 
-<h2 id="improve-the-visual-design">
-  ビジュアルデザインを改善する
-</h2>
+## ビジュアルデザインを改善する
 
 Claude がアーティファクトを構築する際、組み込みのデザインスキルを適用するため、ページは追加のプロンプトなしで意図的なパレット、タイポグラフィ、レイアウトを取得します。そのスキルはまた、独自のものを選択する前に、プロジェクト内の既存のデザインシステムを探します。デザイントークンは、デザインシステムが再利用する名前付きの色、タイポグラフィ、スペーシング値です。アーティファクトを製品のブランディングと一致させるために、Claude が見つけられる場所（プロジェクトの [CLAUDE.md](/docs/ja/memory) またはリポジトリのテーマファイルなど）に記録します。
 
@@ -341,21 +296,17 @@ Claude はデザインシステムを独自の選択肢より高い優先度と�
 
 タイポグラフィについて、Claude は Google Fonts からタイプフェイスを読み込むことができます。これはアーティファクトページが読み込むことができる唯一の外部フォントソースです。Claude は他のタイプフェイスを `@font-face` データ URI としてインライン化し、すべてのタイプフェイスにフォールバックスタックを提供するため、フォントが読み込まれない場合でもページは引き続きレンダリングされます。特定のタイプフェイスを使用するには、プロンプトまたはデザインシステムで名前を付けます。
 
-<h2 id="start-from-a-slides-design-or-docs-template">
-  スライド、デザイン、またはドキュメントテンプレートから開始する
-</h2>
+## スライド、デザイン、またはドキュメントテンプレートから開始する
 
 ページをゼロから構築する代わりに、Claude は claude.ai アカウント上のテンプレートの 1 つからアーティファクトを開始できます。プレゼンテーション用の [Claude Slides](https://support.claude.com/en/articles/17153992-what-are-artifacts-and-how-do-i-use-them#h_11d5a9a5fa)、ビジュアルデザイン用の [Claude Design](https://support.claude.com/en/articles/14604416-get-started-with-claude-design)、または他の人が読んで編集するドキュメント用の [Claude Docs](https://support.claude.com/en/articles/16923645-get-started-with-claude-docs) です。各テンプレートは claude.ai 上の独自のエディターで開き、あなたとチームメンバーが直接変更するか Claude に変更を依頼でき、PowerPoint、PDF、Word などの形式にエクスポートできます。
 
 テンプレートから開始するには、「移行ノートを木曜日のレビュー用のデッキに変換する」や「このプランをチーム用のドキュメントとして作成する」など、必要な内容を説明します。Claude は一致するテンプレートを選択し、リクエストとセッションが既に持っている内容から入力し、リンクを提供します。デッキまたはデザインの場合、`/slides` または `/design` をブリーフと共に実行することもできます。
 
-<Note>
-  テンプレートはベータ版です。Pro、Max、Team プランではデフォルトで有効になっています。Enterprise プランでは、Owner が **Organization settings > Artifacts** の下で [各テンプレートを有効にします](https://support.claude.com/en/articles/16994751-artifacts-admin-guide-for-team-and-enterprise-plans)。組織で Slides テンプレートが無効になっている場合、`/slides` は表示されません。Design テンプレートが無効になっている場合、`/design` はデザインを作成しません。両方のコマンドには Claude Code v2.1.265 以降と [アーティファクトが利用可能](#availability) なセッションが必要です。
-</Note>
+> [!NOTE]
+>
+> テンプレートはベータ版です。Pro、Max、Team プランではデフォルトで有効になっています。Enterprise プランでは、Owner が **Organization settings > Artifacts** の下で [各テンプレートを有効にします](https://support.claude.com/en/articles/16994751-artifacts-admin-guide-for-team-and-enterprise-plans)。組織で Slides テンプレートが無効になっている場合、`/slides` は表示されません。Design テンプレートが無効になっている場合、`/design` はデザインを作成しません。両方のコマンドには Claude Code v2.1.265 以降と [アーティファクトが利用可能](#availability) なセッションが必要です。
 
-<h3 id="make-a-slide-deck">
-  スライドデッキを作成する
-</h3>
+### スライドデッキを作成する
 
 デッキが何をカバーしているか、誰のためのものかを説明するブリーフと共に `/slides` を実行します。
 
@@ -365,9 +316,7 @@ Claude はデザインシステムを独自の選択肢より高い優先度と�
 
 Claude は Claude Slides アーティファクトを作成し、リンクを提供します。デスクトップブラウザーで開いてデッキを編集またはプレゼンテーションします。ブリーフなしで `/slides` を実行した場合、Claude は何かを作成する前にデッキが何についてであるべきかを尋ねます。
 
-<h3 id="draft-a-design-canvas">
-  デザインキャンバスを作成する
-</h3>
+### デザインキャンバスを作成する
 
 UI、画面フロー、ランディングページ、またはポスターをモックアップするために、ページを構築するのではなく、`/design` をブリーフと共に実行します。Claude はデザインを 1 つのキャンバス上のアートボードとして作成し、キャンバスを Claude Design アーティファクトとして公開します。ブリーフは描画する内容を指定します。
 
@@ -377,9 +326,7 @@ UI、画面フロー、ランディングページ、またはポスターをモ
 
 公開されたアーティファクトをデスクトップブラウザーで開いてアートボードを確認します。アートボード上の要素を選択して変更すると、編集は自動的に保存されます。各アートボードを PNG または PDF としてエクスポートできます。
 
-<h3 id="write-a-document-with-claude-docs">
-  Claude Docs でドキュメントを作成する
-</h3>
+### Claude Docs でドキュメントを作成する
 
 Claude Docs は Claude Code にコマンドではなく claude.ai [コネクター](/docs/ja/mcp#use-mcp-servers-from-claude-ai) として到達します。接続されている場合、`/mcp` はそれを `claude.ai Claude Docs` としてリストします。他の人のためのドキュメントのリクエストは、アーティファクトページではなく Claude Docs に送られます。仕様、提案、またはセッションで作成したプランの書き込みです。Claude はドキュメントが作成されたときにドキュメントのリンクを提供します。
 
@@ -387,9 +334,7 @@ README などのコードベースに属するドキュメントはファイル�
 
 コネクターをオフにするには、`claude.ai Claude Docs` を `deniedMcpServers` に追加するか、[claude.ai コネクターを無効にする](/docs/ja/mcp#disable-claude-ai-connectors) で説明されている `/mcp` トグルを使用します。
 
-<h2 id="page-constraints">
-  ページの制約
-</h2>
+## ページの制約
 
 各アーティファクトは 1 つの自己完結したページです。Claude Code は公開するファイルを HTML ドキュメントシェルでラップし、厳密なコンテンツセキュリティポリシー（CSP）の下で提供します。これはページが実行できることを形作ります。
 
@@ -409,9 +354,7 @@ README などのコードベースに属するドキュメントはファイル�
 * 必要のないインタラクティビティを省略する
 * ページが大規模なデータセットを完全にインライン化するのではなく要約するようにする
 
-<h2 id="availability">
-  利用可能性
-</h2>
+## 利用可能性
 
 Artifacts には以下のすべての条件が必要です。いずれかが満たされていない場合、Claude はローカル HTML ファイルを作成するか、公開できないと述べます。
 
@@ -427,9 +370,7 @@ Artifacts が組織に対して許可されているかどうかは、Claude Cod
 
 プロキシ、VPN、またはウェブフィルターが関係している場合は、IT 管理者に `api.anthropic.com` を許可するよう依頼してください。Claude Code はバックグラウンドで再試行を続け、ポリシーが読み込まれて許可されると、Artifacts が利用可能になります。
 
-<h2 id="disable-artifacts">
-  アーティファクトを無効にする
-</h2>
+## アーティファクトを無効にする
 
 組織の設定に関わらず、自分のセッションのアーティファクトをオフにするには、以下のいずれかを使用します。
 
@@ -446,45 +387,31 @@ Artifacts が組織に対して許可されているかどうかは、Claude Cod
 
 `domain:` 部分のない `WebFetch` 拒否またはアスクルールを追加した場合、アーティファクトをオフにしたり、アーティファクト読み取りをブロックしたりしません。[`deny` または `ask` の `WebFetch(domain:claude.ai)` ルールはアーティファクト読み取りに適用されます](/docs/ja/permissions#allow-or-deny-every-fetch)。
 
-<h2 id="manage-artifacts-for-your-organization">
-  組織のアーティファクトを管理する
-</h2>
+## 組織のアーティファクトを管理する
 
 Team プランと Enterprise プランのオーナーは、[claude.ai 管理設定](https://claude.ai/admin-settings/artifacts)からアーティファクトを管理できます。アーティファクトのコンテンツは Anthropic が運用するインフラストラクチャに保存され、アーティファクトが[公開で共有](#control-public-sharing)されていない限り、発行元の組織の認証済みメンバーと共有先の人のみに表示されます。
 
-<h3 id="enable-or-disable-artifacts">
-  アーティファクトを有効または無効にする
-</h3>
+### アーティファクトを有効または無効にする
 
 組織全体のアーティファクトを有効または無効にするには、[**Organization settings > Artifacts**](https://claude.ai/admin-settings/artifacts)に移動して、**Artifacts** トグルを使用します。ロールベースのアクセス制御を備えた Enterprise プランでは、アーティファクトを特定のロールにスコープすることもできます。[**Organization settings > Roles**](https://claude.ai/admin-settings/roles)に移動してロールを編集し、**Artifacts** 権限を設定します。
 
-<h3 id="control-connector-calls-from-artifacts">
-  アーティファクトからのコネクタ呼び出しを制御する
-</h3>
+### アーティファクトからのコネクタ呼び出しを制御する
 
 [アーティファクトからのコネクタ呼び出し](#pull-live-data-with-mcp-connectors)には、アーティファクトのオン/オフを切り替える **Artifacts** トグルとは別の専用トグルがあります。[**Organization settings > Capabilities**](https://claude.ai/admin-settings/capabilities)に移動して、**Enable artifact connectors** トグルを使用します。同じトグルは claude.ai の会話で作成されたアーティファクトからのコネクタ呼び出しも管理します。
 
-<h3 id="control-public-sharing">
-  公開共有を制御する
-</h3>
+### 公開共有を制御する
 
 公開共有は Team プランと Enterprise プランではデフォルトでオフになっています。メンバーがサインインなしで誰でも表示できるパブリックリンクにアーティファクトを公開できるようにするには、[**Organization settings > Artifacts**](https://claude.ai/admin-settings/artifacts)に移動して、**Artifacts** トグルの下の **External sharing** をオンにします。オフに戻すと、各アーティファクトのオーディエンスを変更することなく、既存のパブリックリンク経由のアクセスがブロックされます。再度有効にすると、アクセスが再開されます。
 
-<h3 id="set-a-retention-policy">
-  保持ポリシーを設定する
-</h3>
+### 保持ポリシーを設定する
 
 アーティファクトが自動削除される前に保持される期間を設定するには、[**Organization settings > Data and privacy**](https://claude.ai/admin-settings/data-privacy-controls)に移動します。作成者にのみプライベートなアーティファクトと共有されたアーティファクトに対して、別々の保持期間を設定できます。
 
-<h3 id="review-the-audit-log">
-  監査ログを確認する
-</h3>
+### 監査ログを確認する
 
 アーティファクトの公開、共有、削除は、それぞれ組織の監査ログに `claude_artifact_*` イベントタイプの下に表示されます。これは claude.ai の会話で作成されたアーティファクトに使用されるのと同じファミリーです。
 
-<h3 id="allowlist-the-viewer-domain">
-  ビューアドメインをホワイトリストに登録する
-</h3>
+### ビューアドメインをホワイトリストに登録する
 
 claude.ai のビューアは、サンドボックス化された `*.claudeusercontent.com` オリジンから各アーティファクトを読み込みます。組織が送信ネットワークアクセスを制限している場合は、`claude.ai` と共にそのドメインをホワイトリストに追加します。完全なリストについては、[ネットワークアクセス要件](/docs/ja/network-config#network-access-requirements)を参照してください。
 
@@ -492,23 +419,19 @@ claude.ai のビューアは、サンドボックス化された `*.claudeuserco
 
 アーティファクトは、React やチャートパッケージなどの JavaScript ライブラリを `cdnjs.cloudflare.com`、`cdn.jsdelivr.net`、`cdn.tailwindcss.com`、`code.jquery.com`、および `unpkg.com` から読み込むことができ、他の外部ホストからは読み込めません。これらのホストをブロックすると、ライブラリに依存するアーティファクトの部分が機能しません。ブロックされたフォントとは異なり、ブロックされたライブラリにはフォールバックがありません。ブロックされたライブラリリクエストが即座に失敗するように、ここでも高速拒否でブロックして、タイムアウトするまでハングしないようにします。
 
-<h3 id="list-and-delete-artifacts-with-the-compliance-api">
-  Compliance API でアーティファクトをリストおよび削除する
-</h3>
+### Compliance API でアーティファクトをリストおよび削除する
 
 [Compliance API](https://docs.claude.com/en/api/compliance)は、組織のアーティファクトをリストアップし、特定のバージョンのコンテンツを取得し、アーティファクトを削除するエンドポイントを提供します。
 
 | Method | Endpoint |
 | :- | :- |
-| `GET` | `/v1/compliance/code/artifacts` |
-| `GET` | `/v1/compliance/code/artifacts/{artifact_id}/versions/{version_id}` |
-| `DELETE` | `/v1/compliance/code/artifacts/{artifact_id}` |
+| `GET` | `/v1/compliance/apps/code/artifacts` |
+| `GET` | `/v1/compliance/apps/code/artifacts/{artifact_id}/versions/{version_id}` |
+| `DELETE` | `/v1/compliance/apps/code/artifacts/{artifact_id}` |
 
-リクエストとレスポンススキーマについては、[Compliance API リファレンス](https://docs.claude.com/en/api/compliance/code/artifacts)を参照してください。
+リクエストとレスポンスのスキーマについては、[Compliance API リファレンス](https://platform.claude.com/docs/en/api/compliance/apps/code/artifacts)を参照してください。
 
-<h2 id="related-resources">
-  関連リソース
-</h2>
+## 関連リソース
 
 * アーティファクトと組み合わせる[プロンプティングパターンとワークフロー](/docs/ja/prompt-library)を参照する
 * 再利用するアーティファクトプロンプトを[スキル](/docs/ja/skills)に変換して、コマンドとして呼び出せるようにする
