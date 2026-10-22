@@ -77,9 +77,9 @@ Claude Code は、ツール呼び出しの承認方法を制御するいくつ�
 | :- | :- |
 | `default` | 各ツールの最初の使用時に権限を促します。CLI、VS Code と JetBrains 拡張機能、およびデスクトップアプリでは Manual とラベル付けされており、Claude Code は `manual` をエイリアスとして受け入れます |
 | `acceptEdits` | ファイル編集と一般的なファイルシステムコマンド（`mkdir`、`touch`、`mv`、`cp` など）を、作業ディレクトリまたは `additionalDirectories` 内のパスに対して自動的に受け入れます |
-| `plan` | Claude はファイルを読み取り、読み取り専用シェルコマンドを実行して探索しますが、ソースファイルを編集しません。[auto モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)が利用可能で、分類器が承認したコマンドも実行されます。CLI および VS Code 拡張機能では Plan とラベル付けされています |
+| `plan` | Claude はファイルを読み取り、読み取り専用シェルコマンドを実行して探索しますが、ソースファイルを編集しません。[auto モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)が利用可能な場合は、分類器が承認したコマンドも実行されます。CLI および VS Code 拡張機能では Plan とラベル付けされています |
 | `auto` | ルーチンプロンプトなしで実行されます。シェルコマンドやネットワークリクエストなどのアクションが実行される前に、バックグラウンド[分類器](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)がそれらがリクエストと一致することを確認します |
-| `dontAsk` | その他の場合はプロンプトを表示するすべての呼び出しを自動的に拒否します。ただし、インストールした [mod](/docs/ja/plugins/mods/overview) がそれらの呼び出しの一部を承認することは引き続き可能です。作業ディレクトリ内のファイル読み取りおよび承認が不要なその他のアクションは実行されます。`/permissions` または `permissions.allow` ルール経由で事前に承認されたツールも実行されます。`AskUserQuestion`、MCP ツール（[`requiresUserInteraction`](/docs/ja/mcp#require-approval-for-a-specific-tool)とマークされたもの）、[ネットワークパスからの読み取り](#network-paths)、およびコネクタツール（[組織が `ask` に設定したもの](/docs/ja/mcp#organization-controls-on-connector-tools)）は、その設定が Claude Code に到達するセッションでは、許可していてもすべて拒否されます |
+| `dontAsk` | その他の場合はプロンプトを表示するすべての呼び出しを自動的に拒否します。ただし、インストールした [mod](/docs/ja/plugins/mods/overview) がそれらの呼び出しの一部を承認することは引き続き可能です。作業ディレクトリ内のファイル読み取りおよび承認が不要なその他のアクションは実行されます。`/permissions` または `permissions.allow` ルール経由で事前に承認されたツールも実行されます。`AskUserQuestion`、MCP ツール（[`requiresUserInteraction`](/docs/ja/mcp#require-approval-for-a-specific-tool)とマークされたもの）、[ネットワークパスからの読み取り](#network-paths)、および[組織が `ask` に設定した](/docs/ja/mcp#organization-controls-on-connector-tools)コネクタツール（その設定が Claude Code に届くセッションの場合）は、許可していてもすべて拒否されます |
 | `bypassPermissions` | 権限プロンプトをスキップします。ただし、[どのモードも自動承認しないアクション](/docs/ja/permission-modes#actions-no-mode-auto-approves)は除きます |
 
 > [!WARNING]
@@ -202,9 +202,9 @@ Claude が質問なしで実行するコマンドを記述し、変わる部分�
 }
 ```
 
-許可ルールは、リテラル `mcp__<server>__` プレフィックスの後でのみツール名 glob を受け入れます。サーバーセグメントは glob フリーである必要があるため、ルールは設定した特定のサーバーに名前を付けます。`mcp__puppeteer__*` は `puppeteer` サーバーからのすべてのツールにマッチし、`mcp__github__get_*` はその `get_` ツールにマッチします。`"*"`、`"B*"`、または `"mcp__*"` などのアンカーなし許可 glob は警告とともにスキップされ、自動承認されません。
+許可ルールは、リテラル `mcp__<server>__` プレフィックスの後でのみツール名 glob を受け入れます。サーバーセグメントは glob フリーである必要があるため、ルールは設定した特定のサーバーに名前を付けます。`mcp__puppeteer__*` は `puppeteer` サーバーからのすべてのツールにマッチし、`mcp__github__get_*` はその `get_` ツールにマッチします。`"*"`、`"B*"`、または `"mcp__*"` などのアンカーなし許可 glob はスキップされ、何も自動承認しません。
 
-ツール名がマッチしない既知のツールを持つ拒否ルールまたは確認ルールは、タイプミスをキャッチするためにスタートアップ警告を生成します。`_` または `*` を含むツール名はチェックから除外されます。また、Claude Code が削除したツール（`TaskOutput` など）の名前も除外されます。
+ツール名が既知のどのツールにもマッチしない拒否ルールまたは確認ルールは、タイプミスを検出するために[スタートアップ警告](/docs/ja/errors#matches-no-tool)を生成します。`_` または `*` を含むツール名はチェックから除外されます。また、Claude Code が削除したツール（`TaskOutput` など）の名前も除外されます。
 
 トランスクリプトと権限ダイアログに表示されるツールのラベルは、その正規名と異なる場合があります。たとえば、トランスクリプトで `Stop Task` というラベルが付いているツールの正規名は `TaskStop` です。権限ルールと [hook マッチャー](/docs/ja/hooks) はラベルにはマッチしないため、`Stop Task` として記述されたルールはマッチしません。拒否ルールと確認ルールの場合、上記のスタートアップ警告がミスマッチをキャッチします。[ツール参照](/docs/ja/tools-reference) に記載されている正規名を使用してください。
 
@@ -241,7 +241,7 @@ Claude Code は、特定の既知の安全な環境変数の先頭での代入�
 `Bash(watch *)` や `Bash(find *)` のようなプレフィックスルールでは次のコマンドを自動承認できないため、Manual モードではこれらについて確認が求められます。
 
 * **exec ラッパー**: `watch`、`setsid`、`ionice`、`flock` など
-* **`find`**: `-exec`、`-delete`、`-fprint` など、コマンドを実行する、ファイルを削除する、またはファイルに書き込むアクションを伴うもの、あるいは検索するパスをファイルから受け取る `-files0-from` を伴うもの
+* **`find`**: `-exec`、`-delete`、`-rm`、`-fprint` など、コマンドを実行する、ファイルを削除する、またはファイルに書き込むアクションを伴うもの、あるいは検索するパスをファイルから受け取る `-files0-from` を伴うもの
 
 `*` を含まない特定の呼び出しを承認するには、`Bash(find build -type f -delete)` のように、コマンド文字列全体に対する完全一致ルールを書いてください。
 
@@ -460,6 +460,27 @@ macOS と Linux では、`//`、`~/`、`/` パターンを使ってシンボリ�
 
 Grep と Glob は、`path` 引数の解決先のディレクトリを検索します。Claude Code は、そのディレクトリに `Read` 拒否ルールを適用します。
 
+##### シンボリックリンクを介した添付
+
+`Read` 拒否ルールは次の添付にも適用され、それぞれを指定されたパスまたはその解決先のファイルのいずれかでマッチさせます。ルールが添付にマッチした場合、Claude Code はその添付を会話から除外します。
+
+* **`@` メンション**: プロンプトでメンションしたファイルまたはディレクトリ。拒否されたファイルは会話に何も残さず、[ディレクトリの一覧](#read-and-edit)からはルールがカバーする名前が除外されます。
+* **貼り付けた画像**: ターミナルでプロンプトにパスを貼り付けたりドラッグしたりした画像
+* **変更されたファイル**: ディスク上で変更された後に Claude Code が再度読み取るファイル
+* **IDE コンテキスト**: 接続された IDE が共有する選択範囲や開いているファイルのコンテキスト
+
+[`permissions.blockReadsOutsideWorkingDirectories`](/docs/ja/settings-reference#permissions-blockreadsoutsideworkingdirectories) が有効な場合、または [`--restricted`](/docs/ja/cli-reference#cli-flags) セッションでは、その設定またはフラグが Claude のファイル読み取りを拒否するパスからの添付も除外されます。
+
+`@` メンションしたファイルの代わりに次の行が表示される場合、たとえばシンボリックリンクがループを形成しているなどの理由で、Claude Code がパスの行き先を特定できなかったことを意味します。
+
+```text theme={null}
+Referenced <path> (not read: could not be examined)
+```
+
+Claude には代わりにファイルツールでそのパスを読み取るよう指示されます。Claude Code がパスを調べる時間が足りなかっただけの場合は、これで成功することがあります。
+
+パスのシンボリックリンクが解決されない場合は、その読み取りも[拒否される](/docs/ja/errors#refusing-after-a-symlink-changed)ため、ディスク上のリンクを修正するか、解決可能なパスでファイルを `@` メンションしてください。
+
 ##### シンボリックリンクを介した書き込み
 
 Claude が編集または書き込みを求めるパス自体がシンボリックリンクである場合、Edit ツールと Write ツールは[書き込みを拒否し、Claude にリンク先を指示します](/docs/ja/errors#refusing-after-a-symlink-changed)。
@@ -489,7 +510,7 @@ Claude Code v2.1.292 以降では、次のいずれの場合も確認はその�
 
 この確認なしでネットワーク共有上のファイルを読み取るには、まず共有にローカルパスを割り当ててください。
 
-* **Windows**: [作業ディレクトリ](#working-directories)で説明されているように、共有をドライブ文字にマッピングし、Claude Code の起動時に `--add-dir` でそのドライブを渡します
+* **Windows**: [作業ディレクトリ](#working-directories)で説明されているように、共有をドライブ文字にマッピングし、Claude Code の起動時に `--add-dir` でそのドライブを渡します。後から `/add-dir` で追加したドライブや、設定ファイルの `additionalDirectories` に列挙したドライブの配下の読み取りでは、引き続き確認が求められます。`Z:` にマッピングした共有でこれらの確認をなくすには、PowerShell で `claude --add-dir Z:\` を使用して新しいセッションを開始してください。
 * **macOS と Linux**: [Working directory is a network path](/docs/ja/errors#working-directory-is-a-network-path) で説明されているように、`/mnt` や `/Volumes` 配下のディレクトリなどのローカルパスに共有をマウントし、そこからファイルを読み取ります
 
 ### WebFetch
@@ -545,7 +566,9 @@ MCP サーバーのすべてのツールにマッチさせるには、`mcp__<ser
 
 * **`.` やスペースなどの文字を含む名前**: これらの文字は `_` になるため、`my.server` として設定したサーバーには `mcp__my_server__*` と書きます
 * **プラグインが提供するサーバー**: `<server>` は[プラグインスコープの形式](/docs/ja/mcp#plugin-provided-mcp-servers)をとるため、`my-plugin` という名前のプラグイン内の `database-tools` サーバーには `mcp__plugin_my-plugin_database-tools__*` と書きます
-* **`__` を含む、または `_` で終わる `<server>`**: 名前全体を使ったワイルドカード形式 `mcp__<server>__*` を書きます。`reports__v2` という名前のサーバーには、`mcp__reports__v2__*` と書きます。単独の `mcp__reports__v2` や短い `mcp__reports` は、Claude Code がどちらも `reports` という名前のサーバーに対するルールとして読み取るため、許可ルールとしてはそのツールにマッチしません
+* **`__` を含む、または `_` で終わる `<server>`**: 名前全体を使ったワイルドカード形式 `mcp__<server>__*` を書きます。`reports__v2` という名前のサーバーには、`mcp__reports__v2__*` と書きます。単独の `mcp__reports__v2` や短い `mcp__reports` は、Claude Code がどちらも `reports` という名前のサーバーに対するルールとして読み取るため、許可ルールとしてはそのツールにマッチしません。
+
+  一方、拒否ルールまたは確認ルールとしては、これら 2 つの名前はいずれも `reports__v2` サーバーのすべてのツールもカバーします。`reports` という名前のサーバーだけをカバーするには、`mcp__reports__<tool>` 形式でツールごとに 1 つのルールを書くか、いずれかのサーバーの名前を変更してください。
 
 組織が [claude.ai コネクタ](/docs/ja/mcp#organization-controls-on-connector-tools)のツールを `ask` に設定しており、その設定がセッション内の Claude Code に届いている場合、そのツールに対する許可ルールは効果を持ちません。Claude Code は `auto` モードや `bypassPermissions` モードであっても、すべての呼び出しで確認を求めます。確認を一切求めない `dontAsk` モードでは、Claude Code は代わりに呼び出しを拒否します。Claude Code 自体が取得するコネクタのツールは、`mcp__claude_ai_<server>__<tool>` として表示されます。
 

@@ -978,9 +978,19 @@ v2.1.284 より前では、プロキシは許可されたホスト名がどの�
 ✗ Sandbox settings not changed: /home/you/project/.claude/settings.local.json couldn't be updated (EACCES). Start Claude Code in a project folder you can write to.
 ```
 
-括弧内の理由が `EACCES`、`EPERM`、または `EROFS` の場合は、書き込み可能なプロジェクトフォルダで Claude Code を起動し、そのセッションで `/sandbox` を再度実行してください。
+括弧内の理由が `EACCES`、`EPERM`、または `EROFS` の場合は、書き込み可能なプロジェクトフォルダで Claude Code を起動し、そのセッションで `/sandbox` を再度実行してください。理由が `Invalid JSON syntax in settings file` で始まる場合は、プロジェクトの `.claude/settings.local.json` 内の JSON を修正してから、`/sandbox` を再度実行してください。
 
-理由が `Invalid JSON syntax in settings file` で始まる場合は、プロジェクトの `.claude/settings.local.json` 内の JSON を修正してから、`/sandbox` を再度実行してください。
+書き込み可能なプロジェクトフォルダを利用できない場合は、代わりにユーザー設定からサンドボックスをオンにしてください。`~/.claude/settings.json` に次を追加します：
+
+```json theme={null}
+{
+  "sandbox": {
+    "enabled": true
+  }
+}
+```
+
+これにより[自動許可モード](#sandbox-modes)がオンになります。通常の権限モードにするには、[`sandbox.autoAllowBashIfSandboxed`](/docs/ja/settings-reference#sandbox-autoallowbashifsandboxed) も `false` に設定してください。この変更は、実行中のセッションで Claude が次にシェルコマンドを実行した時点で有効になり、その後 `/sandbox` の **Mode** タブに有効なモードが表示されます。
 
 ## 制限事項
 

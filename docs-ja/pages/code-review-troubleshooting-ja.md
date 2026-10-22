@@ -66,10 +66,14 @@
 
 ## チェック実行に REVIEW\.md が記載されている
 
-チェック実行に表示される `REVIEW.md` に関するメッセージのうち、次の 2 つはブランチ保護に関するものです。
+チェック実行に表示される `REVIEW.md` に関するメッセージのうち、次の 3 つを取り上げます。
 
 * **「This review applied the repository's review instructions (REVIEW\.md) from its default branch, which is not protected against direct pushes.」**：レビューはルートのファイルのみを読み込みました。ブランチを保護すると何が変わるかについては、[REVIEW.md の読み込み元ブランチ](/docs/ja/code-review-customize#which-branch-review-md-is-read-from)を参照してください。
 * **「were not applied to this review: branch protection could not be confirmed」**：レビューは `REVIEW.md` を読み込みませんでした。
+* **「they link to a file this pull request modifies, or carry more links than the review checks」**：レビューはルートの `REVIEW.md`、またはメッセージに示された数のサブディレクトリの `REVIEW.md` ファイルをスキップしました。スキップされたファイルについて、次の各原因を確認してください。ルートの `REVIEW.md` の場合は、[それがインクルードするファイル](/docs/ja/code-review-customize#include-other-files-in-review-md)も確認してください。
+  * **リンクが多すぎる**：64 個を超える Markdown リンクが含まれています。リンクを [64 個以下](/docs/ja/code-review-customize#include-other-files-in-review-md)に減らしてください。
+  * **レビューが解析できないリンク**：不正な形式の Markdown リンクが含まれています。リンクを修正するか削除してください。
+  * **変更されたファイルへのリンク**：このプルリクエストが変更するファイルまたはフォルダーにリンクしており、レビューはそのリンクを含む行だけを除外することができませんでした。ルールを `REVIEW.md` 自体に記述してください。
 
 ## セットアップの問題
 

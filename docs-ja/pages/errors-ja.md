@@ -83,6 +83,8 @@
 | `Your account does not have access to Claude. Please login again or contact your administrator.` | [認証](#oauth-token-revoked-or-expired) |
 | `API Error: 401 Invalid authentication credentials` | [認証](#api-error-401-invalid-authentication-credentials) |
 | `Login expired · Please run /login` | [認証](#login-expired) |
+| `The browser can't return the sign-in to Claude Code automatically` | [認証](#couldnt-start-the-local-sign-in-listener) |
+| `Couldn't start the local listener that receives the browser sign-in. Try again.` | [認証](#couldnt-start-the-local-sign-in-listener) |
 | `Failed to start OAuth callback server` | [認証](#failed-to-start-oauth-callback-server) |
 | `Claude login not accepted · Run /login, then try again` | [認証](#claude-login-not-accepted) |
 | `Artifacts need a claude.ai login` | [認証](#artifacts-need-a-claude-ai-login) |
@@ -317,6 +319,7 @@
 | `Failed to write to <name>'s inbox — nothing was sent` | [ツールエラー](#failed-to-write-to-a-teammate-inbox) |
 | `Failed to write the plan approval request to the lead's inbox — plan not submitted` | [ツールエラー](#failed-to-write-to-a-teammate-inbox) |
 | `Its agent definition was not restored: the folder its definition file came from is not trusted` | [ツールエラー](#teammate-agent-definition-not-restored) |
+| `Only a teammate can approve a shutdown request` | [ツールエラー](#only-a-teammate-can-approve-a-shutdown-request) |
 | `Message too large for cross-session delivery` | [ツールエラー](#message-too-large-for-cross-session-delivery) |
 | `Too many messages to this session just now` | [ツールエラー](#too-many-messages-to-this-session-just-now) |
 | `Cross-session message was dropped at the recipient session's inbox` | [ツールエラー](#cross-session-message-dropped-at-the-inbox) |
@@ -332,6 +335,7 @@
 | `Your disk quota is full on the filesystem with Claude Code's temp directory <dir> (EDQUOT)` | [ツールエラー](#disk-quota-or-temp-filesystem-is-full) |
 | `The filesystem with Claude Code's temp directory <dir>, or your disk quota on it, is full (ENOSPC)` | [ツールエラー](#disk-quota-or-temp-filesystem-is-full) |
 | `Command output was lost: the temp filesystem at <dir> is full` / `is out of inodes` | [ツールエラー](#disk-quota-or-temp-filesystem-is-full) |
+| `The command was not started: this computer's disk is full (ENOSPC)` / `(EDQUOT)` | [ツールエラー](#disk-quota-or-temp-filesystem-is-full) |
 | `File is not valid UTF-8. It may use a legacy encoding such as Windows-1252, Shift-JIS or GBK, or be binary` | [ツールエラー](#file-is-not-valid-utf-8) |
 | `the source file is not valid UTF-8 text` / `the source file is not valid UTF-16 text` | [ツールエラー](#the-source-file-is-not-valid-utf-8-text) |
 | `the source file has the replacement character U+FFFD` | [ツールエラー](#the-source-file-is-not-valid-utf-8-text) |
@@ -353,7 +357,7 @@
 | `Can't open — this session is running in another terminal` | [バックグラウンドセッションエラー](#this-session-is-running-in-another-terminal) |
 | `This conversation is already open in another running Claude session` | [バックグラウンドセッションエラー](#this-session-is-running-in-another-terminal) |
 | `This session's saved conversation is no longer on disk` | [バックグラウンドセッションエラー](#this-sessions-saved-conversation-is-no-longer-on-disk) |
-| `Bypass permissions was requested at launch and ignored` | [bypassPermissions モードですべてのチェックをスキップする](/docs/ja/permission-modes#bypass-permissions-acceptance) |
+| `Bypass permissions was requested at launch and ignored` | [バックグラウンドセッションで Bypass permissions が無視される](/docs/ja/permission-modes#bypass-permissions-ignored-in-a-background-session) |
 | `kept <id> — its worktree is still at <path>` | [バックグラウンドセッションエラー](#worktree-has-commits-that-are-not-pushed-anywhere) |
 | `kept <id> — <n> unpushed commits on <branch>` | [バックグラウンドセッションエラー](#worktree-has-commits-that-are-not-pushed-anywhere) |
 | `kept <id> — worktree has commits that are not pushed anywhere` | [バックグラウンドセッションエラー](#worktree-has-commits-that-are-not-pushed-anywhere) |
@@ -404,10 +408,16 @@
 | `API Error: ANTHROPIC_FOUNDRY_RESOURCE must be a Foundry resource name` | [設定の警告](#anthropic-foundry-resource-must-be-a-foundry-resource-name) |
 | `headersHelper not run — this workspace has no persisted trust` | [設定の警告](#headershelper-not-run) |
 | `Invalid permission rule "..." was skipped: Malformed Tool(content) rule` | [設定の警告](#malformed-tool-content-rule) |
+| `matches no tool · check for typos` / `matches no known tool — check for typos` | [設定の警告](#matches-no-tool) |
 | `... is not matched by file permission checks` | [設定の警告](#is-not-matched-by-file-permission-checks) |
+| `Write(<path>) never matches · use Edit(<path>)` / `Glob(<path>) never matches · use Read(<path>)` | [設定の警告](#is-not-matched-by-file-permission-checks) |
 | `... has a wildcard before the rest of the command` | [設定の警告](#has-a-wildcard-before-the-rest-of-the-command) |
+| `allows any option at its * · use an exact value` | [設定の警告](#has-a-wildcard-before-the-rest-of-the-command) |
 | `Denying Bash also turns off the PowerShell tool, so Claude has neither` | [設定の警告](#denying-bash-also-turns-off-the-powershell-tool) |
 | `CLAUDE_CODE_DISABLE_1M_CONTEXT is set, but the 200K limit isn't enforced` | [設定の警告](#the-200k-limit-isnt-enforced) |
+| `CLAUDE_CODE_AUTO_COMPACT_WINDOW="<value>" reads as <N> tokens, so Claude Code treats it as the 100k minimum` | [`CLAUDE_CODE_AUTO_COMPACT_WINDOW` の値と警告](/docs/ja/model-config#claude_code_auto_compact_window-values) |
+| `CLAUDE_CODE_AUTO_COMPACT_WINDOW="<value>" is too large, so Claude Code treats it as the 1M maximum` | [`CLAUDE_CODE_AUTO_COMPACT_WINDOW` の値と警告](/docs/ja/model-config#claude_code_auto_compact_window-values) |
+| `CLAUDE_CODE_AUTO_COMPACT_WINDOW="<value>" isn't a usable size, so Claude Code ignores it` | [`CLAUDE_CODE_AUTO_COMPACT_WINDOW` の値と警告](/docs/ja/model-config#claude_code_auto_compact_window-values) |
 | `Model "<model>" isn't recognized · context assumed to be 200k tokens` | [ゲートウェイまたはカスタムモデル ID のウィンドウを修正する](/docs/ja/model-config#correct-the-window-for-a-gateway-or-custom-model-id) |
 | `Claude Code doesn't recognize the model "<model>", so it assumes a context window of 200k tokens` | [ゲートウェイまたはカスタムモデル ID のウィンドウを修正する](/docs/ja/model-config#correct-the-window-for-a-gateway-or-custom-model-id) |
 | `[claude-code:unrecognized_model]` | [設定の警告](#unrecognized-model-id-on-a-request) |
@@ -501,6 +511,7 @@ API 自体から返される 5xx は、API 内部の予期しない障害を示�
 
 * [status.claude.com](https://status.claude.com) またはメッセージに示されているプロバイダーのステータスページで、アクティブなインシデントを確認してください
 * 1 分待ってから、メッセージを再度送信してください。元のメッセージはまだ会話に残っているため、長いプロンプトの場合は、全体を貼り付ける代わりに `try again` と入力できます。
+* [`ANTHROPIC_BASE_URL`](/docs/ja/env-vars) が [LLM ゲートウェイ](/docs/ja/llm-gateway) を指しており、すべてのリクエストがこの形で失敗する場合は、Claude Code がデフォルトで送信するツール検索フィールドをゲートウェイが拒否していないかを確認してください。確認するには、[Tool search through an LLM gateway](/docs/ja/mcp#tool-search-through-a-gateway) の説明に従って `ENABLE_TOOL_SEARCH=false` を設定してから、再度試してください。v2.1.304 より前では、`ENABLE_TOOL_SEARCH` でオンにしない限り、ゲートウェイの背後ではツール検索はオフになっていました。
 * エラーが投稿されたインシデントなしで続く場合は、`/feedback` を実行して、Anthropic がリクエストの詳細で調査できるようにしてください。環境で `/feedback` が利用できない場合は、[Report an error](#report-an-error) を参照してください。
 
 ### API Error: Repeated 529 Overloaded errors
@@ -1281,6 +1292,7 @@ Please run /login · API Error: 401 Invalid authentication credentials
 * `/status` にログインのみが表示される場合は、`/login` を 1 回実行します。認証情報が取り消されていた場合は、新しいログインで置き換えられます。
 * 同じログインアカウントで同じメッセージが再び表示される場合、そのアカウントまたは組織はもう有効ではありません。`/status` が報告するアカウントと組織を確認し、組織の管理者にアクセスの復元を依頼してください。
 * [`ANTHROPIC_BASE_URL`](/docs/ja/env-vars) が [LLM ゲートウェイ](/docs/ja/llm-gateway)を指している場合、`401` の後のテキストは Anthropic ではなくゲートウェイのメッセージであり、`/login` では変わりません。代わりに、ゲートウェイが想定する認証情報を修正してください。
+* ゲートウェイが求める認証情報を設定した後もすべてのリクエストが `401` で失敗する場合は、Claude Code がデフォルトで送信するツール検索のフィールドをゲートウェイが拒否していないかを確認します。確認するには、[LLM ゲートウェイ経由のツール検索](/docs/ja/mcp#tool-search-through-a-gateway)の説明に従って `ENABLE_TOOL_SEARCH=false` を設定してから、再試行してください。v2.1.304 より前では、`ENABLE_TOOL_SEARCH` でオンにしない限り、ゲートウェイ経由ではツール検索はオフでした。
 
 ### ログインの有効期限切れ
 
@@ -1352,20 +1364,30 @@ Couldn't save your login. Try logging in again.
 * その他のプラットフォームでは、再度 `/login` を実行します
 * それでもログインが保存されない場合は、キーチェーンのロック解除コマンドやその他の認証情報ストレージの復旧手順について、[ログインしていない、またはトークンの有効期限切れ](/docs/ja/troubleshoot-install#not-logged-in-or-token-expired)を参照してください
 
-### OAuth コールバックサーバーの起動に失敗しました
+### Couldn't start the local listener that receives the browser sign-in
 
-`/login`、`claude auth login`、または `claude setup-token` がブラウザ経由でサインインする際、Claude Code はブラウザがサインイン結果を返せるように `127.0.0.1` でリッスンポートを開きます。このメッセージは、Claude Code がそのポートを開けなかったことを意味し、ブラウザウィンドウやログイン URL が表示される前にサインインが停止します。
+`/login`、`claude auth login`、または `claude setup-token` からのこれらのメッセージはいずれも、ブラウザがサインイン結果を返す `127.0.0.1` 上のポートを Claude Code が開けなかったことを意味します。
 
-```text theme={null}
-Failed to start OAuth callback server: Failed to start server. Is port 0 in use?
+`The browser can't return the sign-in to Claude Code automatically` で始まる通知の場合、サインインはそのポートを使わずに続行されます。ブラウザは開かず、代わりにサインインするための URL の上に通知が表示されます：
+
+```text wrap theme={null}
+The browser can't return the sign-in to Claude Code automatically. After you sign in, paste the code shown.
 ```
 
-メッセージが `Is port 0 in use?` で終わる場合、IPv4 ループバックアドレス `127.0.0.1` でリッスンする試み自体が失敗しています。ログイン URL が生成される前に失敗が発生するため、回避策として `Paste code here if prompted` フローを使用することはできません。
+`Couldn't start the local listener` を含むメッセージの場合、サインインは停止しています。これはたとえば、`claude auth login` に入力をパイプで渡した場合に発生します：
+
+```text theme={null}
+Couldn't start the local listener that receives the browser sign-in. Try again.
+```
 
 **対処方法：**
 
-* ローカルリスナーを使わずにすぐにサインインするには：claude.ai サブスクリプションを使用している場合は、サインインが機能するマシンで [`claude setup-token`](/docs/ja/authentication#generate-a-long-lived-token) を実行し、出力されたトークンをこのマシンで `CLAUDE_CODE_OAUTH_TOKEN` として設定します。それ以外の場合は、`ANTHROPIC_API_KEY` に [Claude Console](https://platform.claude.com/settings/keys) のキーを設定します。Claude Code が認証情報をどのように選択するかについては、[認証の優先順位](/docs/ja/authentication#authentication-precedence)で説明しています。
-* 代わりにこのマシンでブラウザによるサインインを使用するには、Claude Code が `127.0.0.1` でリッスンできる必要があります。サンドボックス内で実行している場合は、サンドボックスのポリシーでローカルポートでのリッスンが許可されていることを確認してから、再度 `/login` を実行します。リッスンできるはずなのに失敗する場合は、`/feedback` を実行して、環境の詳細をレポートに含めてください。
+* **`The browser can't return the sign-in to Claude Code automatically`**：先に何かを修正する必要はありません。通知の下に表示された URL をブラウザで開いてサインインします。ブラウザにコードが表示されたら、Claude Code の `Paste code here >` プロンプトに貼り付けると、そこからサインインが続行されます。
+* **`Couldn't start the local listener that receives the browser sign-in`**：同じコマンドを再度実行します。同じように停止する場合は、ブラウザの代わりにトークンまたは API キーでサインインします。または、`claude auth login` に入力をパイプで渡していた場合は、貼り付けたコードを受け取れるようにターミナルで実行します。
+* **ブラウザの代わりにトークンまたは API キーでサインインするには**：claude.ai サブスクリプションを使用している場合は、サインインが機能するマシンで [`claude setup-token`](/docs/ja/authentication#generate-a-long-lived-token) を実行します。次に、出力されたトークンをこのマシンの [`CLAUDE_CODE_OAUTH_TOKEN`](/docs/ja/env-vars) 環境変数に設定します。それ以外の場合は、`ANTHROPIC_API_KEY` 環境変数に [Claude Console](https://platform.claude.com/settings/keys) のキーを設定します。Claude Code が認証情報をどのように選択するかについては、[認証の優先順位](/docs/ja/authentication#authentication-precedence)で説明しています。
+* **ブラウザからの自動的な返却を再び有効にするには**：Claude Code が `127.0.0.1` でリッスンできる必要があります。サンドボックス内で実行している場合は、サンドボックスのポリシーがローカルポートでのリッスンを許可していることを確認してから、再度サインインします。そこでリッスンが機能するはずなのに通知が表示され続ける場合は、環境の詳細がレポートに含まれるように `/feedback` を実行してください。
+
+v2.1.305 より前では、ポートを開けなかった時点でサインインが停止し、サインイン用の URL は表示されませんでした。メッセージはたとえば `Failed to start OAuth callback server: Failed to start server. Is port 0 in use?` のようになっていました。それらのバージョンでは、Claude Code を更新して再度サインインするか、ブラウザの代わりにトークンまたは API キーでサインインしてください。
 
 ### Claude ログインが受け付けられませんでした
 
@@ -1836,8 +1858,9 @@ v2.1.227 より前では、これらの各コード付きメッセージは `Una
 * 同じシェルから `curl -I https://api.anthropic.com` を実行して、API ホストに到達できることを確認してください。Windows PowerShell では、組み込みの `Invoke-WebRequest` エイリアスが使用されないように `curl.exe -I https://api.anthropic.com` を使用してください。
 * 企業プロキシの背後にいる場合は、Claude Code を起動する前に `HTTPS_PROXY` を設定し、[ネットワーク設定](/docs/ja/network-config) を参照してください。
 * LLM ゲートウェイまたはリレーを経由してルーティングする場合は、[`ANTHROPIC_BASE_URL`](/docs/ja/env-vars) をそのアドレスに設定してください。セットアップについては [Claude Code を LLM ゲートウェイに接続する](/docs/ja/llm-gateway-connect) を参照してください。
+* `ANTHROPIC_BASE_URL` がすでにゲートウェイを指しており、すべてのリクエストが `Connection dropped` で終わる場合は、Claude Code がデフォルトで送信するツール検索フィールドをゲートウェイが拒否していないか確認してください。確認するには、[LLM ゲートウェイを介したツール検索](/docs/ja/mcp#tool-search-through-a-gateway) の説明に従って `ENABLE_TOOL_SEARCH=false` を設定し、再試行してください。v2.1.304 より前では、ゲートウェイの背後では `ENABLE_TOOL_SEARCH` でオンにしない限り、ツール検索はオフでした。
 * ファイアウォールが [ネットワークアクセス要件](/docs/ja/network-config#network-access-requirements) に記載されているホストを許可していることを確認してください。
-* 断続的な障害は [自動的に再試行](#automatic-retries) されます。永続的な障害はローカルネットワークの問題を示しています。
+* 断続的な障害は [自動的に再試行](#automatic-retries) されます。
 
 `curl` が成功しても Claude Code が失敗する場合、原因は通常、ネットワーク自体ではなく、ランタイムとネットワークの間にあります。
 
@@ -2190,6 +2213,7 @@ v2.1.162 より前では、Claude Code は圧縮を試行し、失敗時に単�
 * 大きな `CLAUDE.md` メモリファイルをトリミングするか、[パススコープルール](/docs/ja/memory#path-specific-rules)に指示を移動して、関連する場合にのみ読み込むようにしてください
 * 自動圧縮はデフォルトでオンであり、通常このエラーを防ぎます。`/config` または [`DISABLE_AUTO_COMPACT`](/docs/ja/env-vars) でオフにした場合は、オンに戻してください。オフのままにする場合は、ウィンドウが満杯になる前に `/compact` を自分で実行してください。
 * より多くのトークンを受け付けるモデルで 200K トークン付近でエラーが発生する場合、原因の 1 つとして、Claude Code が認識しないモデル ID が考えられます。Claude Code はそのような ID に対して 200K のウィンドウを想定するため、その上限を超えて作業を続けるには、[モデルの実際のコンテキストウィンドウを指定してください](/docs/ja/model-config#correct-the-window-for-a-gateway-or-custom-model-id)。
+* Claude が会話を圧縮している最中に停止した直後にこのエラーが表示された場合、会話は変更されておらず、まだ圧縮が必要な大きさのままです。`/compact` を実行してから、メッセージを再送信してください。エラーの再発を防ぐには、Claude Code を v2.1.304 以降に[更新](/docs/ja/setup#update-claude-code)してください。v2.1.304 より前は、そのタイミングで停止するとターンがこのエラーで終了することがありました。
 
 [コンテキストウィンドウを探索](/docs/ja/context-window)して、コンテキストがどのように満杯になるかのインタラクティブビューを確認してください。
 
@@ -2414,6 +2438,7 @@ There's an issue with the selected model (claude-...). It may not exist or you m
 * 完全なバージョン付き ID ではなく、`sonnet` や `opus` などのエイリアスを使用してください。エイリアスは保守されたデフォルトに解決されるため、古くなりません。[モデル設定](/docs/ja/model-config)を参照してください。
 * 間違ったモデルが CLI で戻り続ける場合は、古い ID がどこかに設定されています。[優先順位順](/docs/ja/model-config#setting-your-model)でモデルを設定できる場所を確認し、古い値を削除してください。
 * Claude Code は期限切れの claude.ai ログインを、このエラーではなく [ログイン期限切れ](#login-expired)として報告します。v2.1.206 より前では、更新できなくなった期限切れのログインはすべてのモデルでこのエラーにより失敗しました。古いバージョンでこれが表示される場合は、`/login` を実行してください。
+* [`ANTHROPIC_BASE_URL`](/docs/ja/env-vars) が [LLM ゲートウェイ](/docs/ja/llm-gateway)を指しており、すべてのモデルがこのように失敗する場合は、Claude Code がデフォルトで送信するツール検索のフィールドをゲートウェイが拒否していないか確認してください。確認するには、[LLM ゲートウェイ経由のツール検索](/docs/ja/mcp#tool-search-through-a-gateway)の説明に従って `ENABLE_TOOL_SEARCH=false` を設定し、もう一度試します。v2.1.304 より前は、`ENABLE_TOOL_SEARCH` でオンにしない限り、ゲートウェイ経由ではツール検索はオフになっていました。
 * Google Cloud の Agent Platform デプロイについては、[Google Cloud の Agent Platform トラブルシューティング](/docs/ja/google-vertex-ai#troubleshooting)を参照してください。
 
 ### Model is not a recognized model id
@@ -2620,7 +2645,7 @@ Note: Opus 4.8 is less capable than the current main model (Sonnet 5.5), so the 
 同じ状態を報告する他のメッセージ：
 
 * 対話セッションでは、`Advisor will not activate on the main model (advisor is less capable); subagents may still use it and may use more tokens · /advisor` という通知が表示されます。
-* `--advisor` フラグを付けて起動した場合は、`"<advisor>" cannot advise "<main model>" (the advisor must be at least as capable as the main model). The advisor will not be used for the main model.` という警告が表示され、セッションはそのまま開始されます。
+* [非対話モード](/docs/ja/headless)で `--advisor` フラグを付けて起動し、その実行が[バックグラウンドセッション](/docs/ja/agent-view)でない場合、警告が stderr に出力され、実行はそのまま開始されます。警告は `"<advisor>" cannot advise "<main model>" (the advisor must be at least as capable as the main model). The advisor will not be used for the main model.` です。対話セッションでは、この警告は[デバッグログ](#configuration-warnings)にのみ書き込まれます。
 
 **対応方法：**
 
@@ -4413,6 +4438,20 @@ Its agent definition was not restored: the folder its definition file came from 
 * [デバッグログ](/docs/ja/debug-your-config) が指定するフォルダで `claude` を実行し、信頼ダイアログを受け入れます。定義は Claude Code がチームメイトを次に復帰させるときに再適用されます。チームリーダーのセッションを再起動する必要はありません
 * または、`~/.claude.json` の `hasTrustDialogAccepted` エントリを `true` に設定します。デバッグログが出力する正確な `projects["<path>"]` キーを使用します
 
+### Only a teammate can approve a shutdown request
+
+送信したセッションがチームメイトとして実行されていないため、Claude Code は [エージェントチーム](/docs/ja/agent-teams) のシャットダウン承認を拒否しました。何も送信されず、何もシャットダウンされていません。拒否は送信セッションのツール結果に表示されます。
+
+```text wrap theme={null}
+Only a teammate can approve a shutdown request, and this session is not running as one. Nothing was sent. To shut down a teammate, send that teammate a shutdown_request message. The teammate is the one that approves it.
+```
+
+**What to do:**
+
+* 拒否がチームリーダーのセッションに表示された場合は、まずチームメイトがその後シャットダウンしたかどうかを確認します。拒否は代わりに `shutdown_request` を送信するよう指示とともに Claude に返され、ターンは続行します。対話型のチームリーダーセッションでは、チームメイトがシャットダウン要求を承認すると `<name> has shut down.` が表示されます。
+* チームメイトがまだ実行中の場合は、チームリーダーのプロンプトでチームメイトをシャットダウンするよう依頼します（例: `Ask the researcher teammate to shut down`）。[チームメイトをシャットダウンする](/docs/ja/agent-teams#shut-down-teammates) を参照してください。
+* `claude --resume` で自分で再開した元チームメイトがこの拒否を受け取った場合、何も送信されていません。そのセッションを終了するには、そのプロンプトで `/exit` を実行します。
+
 ### Message too large for cross-session delivery
 
 Claude の [クロスセッションメッセージ](/docs/ja/cross-session-messaging) は、このマシン上の別のセッションに対して長すぎて送信できませんでした。Claude Code はそれを拒否し、受信セッションは何も受け取りませんでした。拒否はターミナルのバナーではなく、送信セッションのツール結果に表示されます。両方のサイズとメッセージを適合させる方法を指定します。
@@ -4546,7 +4585,15 @@ Command killed: its output file was replaced or could no longer be verified
 
 ### Disk quota or temp filesystem is full
 
-Claude Code は各 Bash および PowerShell コマンドの出力を一時ディレクトリの下のファイルに保存します。コマンドがゼロ以外のコードで終了し、出力がまったくない場合、Claude Code はそのファイルを保持するファイルシステムが容量不足またはアイノード不足であるか、またはそれに対するディスク割り当てが使い果たされているかをチェックします。そうである場合、診断はコマンドの結果に空の出力の代わりに表示されます。
+Claude Code は各 Bash および PowerShell コマンドの出力を一時ディレクトリの下のファイルに保存します。コマンドの結果に表示される以下のメッセージは、そのディレクトリを保持するファイルシステム、またはそれに対するユーザーのディスク割り当てが満杯であることを意味します。
+
+ファイルシステムまたはそれに対するユーザーの割り当てが満杯であるために Claude Code がそのファイルを作成できない場合、コマンドは開始されず、結果は次のようになります。
+
+```text wrap theme={null}
+The command was not started: this computer's disk is full (ENOSPC), so the file that captures command output could not be created. Nothing ran. If this is the user's own computer, tell them before deleting anything to make room.
+```
+
+コマンドがゼロ以外のコードで終了し、出力がまったくない場合、Claude Code は出力ファイルを保持するファイルシステムをチェックします。そのファイルシステムが容量不足またはアイノード不足である場合、またはそれに対するディスク割り当てが使い果たされている場合、コマンドの結果では空の出力の代わりに診断が表示されます。
 
 ```text wrap theme={null}
 Your disk quota is full on the filesystem with Claude Code's temp directory /private/tmp/claude-501/-Users-you-my-project/1f0e62dc-4b0a-4f5e-9c2d-8a7b6c5d4e3f/tasks (EDQUOT), so any output this command printed was lost, and it may have failed because it could not write. Delete files you no longer need there, or restart Claude Code with CLAUDE_CODE_TMPDIR set to a directory on another filesystem.
@@ -4557,12 +4604,15 @@ Your disk quota is full on the filesystem with Claude Code's temp directory /pri
 * `Your disk quota is full ... (EDQUOT)`: そのファイルシステムに対するユーザー自身の割り当てが使い果たされています。割り当ては、ファイルシステムがまだ空き容量を表示している間に満杯になる可能性があります
 * `The filesystem with Claude Code's temp directory ..., or your disk quota on it, is full (ENOSPC)`: ファイルシステム、またはそれに対するユーザーの割り当てに、容量が残っていません
 * `Command output was lost: the temp filesystem at ... is full` または `... is out of inodes`: ファイルシステムにはほぼ空き容量がないか、アイノードが不足しています
+* `The command was not started: this computer's disk is full (ENOSPC)` または `... (EDQUOT)`: ファイルシステムに出力ファイル用の容量が残っていないか、`EDQUOT` の場合はそれに対するユーザー自身の割り当てが使い果たされています
 
 **What to do:**
 
-* Claude Code の一時ディレクトリを保持するファイルシステム上で不要になったファイルを削除します。`EDQUOT` の場合、自分の割り当てにカウントされるファイルを削除します。`out of inodes` の場合、少数の大きなファイルではなく、多くのファイルを削除します。各ファイルはサイズに関係なく 1 つのアイノードを取ります
+* Claude Code の一時ディレクトリを保持するファイルシステム上で不要になったファイルを削除します。メッセージにそのディレクトリが示されていない場合は、[`CLAUDE_CODE_TMPDIR`](/docs/ja/env-vars) のリファレンスでデフォルトの場所を確認します。`EDQUOT` の場合、自分の割り当てにカウントされるファイルを削除します。`out of inodes` の場合、少数の大きなファイルではなく、多くのファイルを削除します。各ファイルはサイズに関係なく 1 つのアイノードを取ります
 * または、[`CLAUDE_CODE_TMPDIR`](/docs/ja/env-vars) を容量のあるファイルシステム上のディレクトリに設定して Claude Code を再起動します
-* その後、Claude にコマンドを再度実行させます。コマンドが出力した内容は、切り詰められたのではなく失われています
+* その後、Claude にコマンドを再度実行させます
+
+v2.1.305 より前は、ディスクが満杯のために Claude Code が開始できなかったコマンドは、オペレーティングシステムのエラーテキストのみを返していました。そのテキストは、例えば `ENOSPC: no space left on device, open <path>.output` のようなものでした。
 
 ### File is not valid UTF-8
 
@@ -5229,7 +5279,14 @@ tmux 内では、Claude Code は tmux サーバーのグローバル環境を通
 
 ## 設定の警告
 
-Claude Code はこれらのメッセージのほとんどを会話ではなく stderr に書き込み、そのほとんどを起動時に書き込みます。メッセージがデバッグログや会話ビューの起動時通知など別の場所に表示される場合や、リクエスト時の[認識されないモデルの診断行](#unrecognized-model-id-on-a-request)のように別のタイミングで表示される場合は、各項目にその旨を記載しています。
+対話セッションで Claude Code が起動時に出した警告を見つけるには、まず起動バナーの下を確認し、次にデバッグログを確認します。
+
+* **起動バナーの下の行**: [`⚠ Deny rule Bsh matches no tool · check for typos`](#matches-no-tool) など、[権限ルール](/docs/ja/permissions)に関する一部の警告
+* **デバッグログ**: Claude Code はデバッグモードでのみこのログを保持します。ログ内の警告を読むには、シェルから `claude --debug-file <path>` で Claude Code を起動し、そのパスにあるファイルを開きます。
+
+テキスト出力の[非対話モード](/docs/ja/headless)では、[バックグラウンドセッション](/docs/ja/agent-view)の外であれば、起動時の警告を stderr で確認します。
+
+v2.1.305 より前では、対話セッションでも stderr を確認してください。現在はバナーの下の行として表示される権限ルールの警告も同様です。
 
 ### Claude Code exited after an unrecoverable interface error
 
@@ -5349,11 +5406,15 @@ Ignoring 2 permissions.allow entries from .claude/settings.local.json: this work
 
 ### Working directory is a network path
 
-Claude Code はネットワークパスを作業ディレクトリとして追加しません。ネットワークパスを参照すると、そのパスが示すホストに接続する可能性があり、Windows ではその接続によってホストに認証情報が送信される場合があるため、Claude Code はパスを参照せずに拒否します。このメッセージは、そのようなパスで `/add-dir` を実行したとき、または起動時の警告として表示されます。起動時に表示された場合、Claude Code はそのディレクトリなしで起動します。
+Claude Code はネットワークパスを作業ディレクトリとして追加しません。ネットワークパスを参照すると、そのパスが示すホストに接続する可能性があり、Windows ではその接続によってホストに認証情報が送信される場合があります。そのため、Claude Code はパスを参照せずに拒否します。
+
+ネットワークパスを指定して `/add-dir` を実行すると、次のメッセージが表示されます。
 
 ```text theme={null}
 \\server\share is a network path, which cannot be added as a working directory. On Windows, map the share to a drive letter and pass it at launch with --add-dir (a drive letter added mid-session does not yet carry remote-read trust).
 ```
+
+代わりに `--add-dir` または `permissions.additionalDirectories` で起動時に渡した場合、Claude Code はそのディレクトリなしで起動します。対話セッションでは、このメッセージは他の[起動時の警告](#configuration-warnings)とともにデバッグログに書き込まれるため、起動時には表示されません。
 
 Claude Code がこの方法で拒否するパスには次のものがあります。
 
@@ -5600,46 +5661,92 @@ Invalid permission rule "Bash(ls) x" was skipped: Malformed Tool(content) rule. 
 
 v2.1.260 より前では、Claude Code は括弧が対応していないルールを `Mismatched parentheses` として報告していました。
 
-### Is not matched by file permission checks
+### Matches no tool · check for typos
 
-Claude Code は、[設定ファイル](/docs/ja/settings#where-settings-live)のいずれか、[管理設定](/docs/ja/managed-settings)、または `--allowedTools`、`--disallowedTools`、`--settings` フラグの値の中に、パスを指定した `Write`、`NotebookEdit`、`MultiEdit`、または `Glob` の[権限ルール](/docs/ja/permissions#read-and-edit)を見つけました。Claude Code はファイルの権限を `Edit` ルールと `Read` ルールに対してのみチェックするため、それ以外のファイルツールを指定したパスルールは参照されません。Claude Code はそのルールを保持し、それ以外は何も変更しません。警告には、ルール、括弧内のソース、および記述すべき置き換え後のルールが示されます。
+起動バナーの下に表示されるこの行は、Claude Code がツール名を認識できない拒否ルールまたは確認ルールの[権限ルール](/docs/ja/permissions)を示しており、そのルールは意図したツールに適用されません。`Bsh` と記述された拒否ルールは Bash には適用されず、正規名ではなくトランスクリプトに表示されるツールのラベルを使用したルールも同様です。行には、記述したとおりのルールが繰り返し表示されます。
 
 ```text theme={null}
-Permission deny rule (.claude/settings.json): Write(docs/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(docs/**) instead (Edit rules cover all file-editing tools).
+⚠ Deny rule Bsh matches no tool · check for typos
 ```
+
+テキスト出力の[非対話モード](/docs/ja/headless)では、Claude Code は代わりに長い形式の警告を stderr に出力します。
+
+```text theme={null}
+Permission deny rule "Bsh" matches no known tool — check for typos.
+```
+
+**対処方法:**
+
+* ルール内のツール名を修正します。たとえば、`Bsh` の代わりに `Bash` とします。正規名は[ツールリファレンス](/docs/ja/tools-reference)で確認できます。
+* ルールが定義されている場所を確認するには、セッションで `/permissions` を実行してルールを選択します。詳細には、`From project local settings` や、`--disallowedTools` の値の場合は `From CLI argument` など、ルールの出所が示されます。
+* 詳細に `From enterprise managed settings` と表示されている場合は、自分ではそのルールを変更できないため、[管理設定](/docs/ja/managed-settings)を管理している担当者にこの行を転送してください。
+
+[バックグラウンドセッション](/docs/ja/agent-view)、または `--output-format json` や `stream-json` を使用している場合、Claude Code は警告を stderr ではなくデバッグログに書き込みます。`--debug` を付けて実行すると、`~/.claude/debug/<session-id>.txt` に記録されます。
+
+v2.1.305 より前では、対話セッションは行を表示する代わりに、起動時に長い形式を stderr に出力していました。
+
+### Is not matched by file permission checks
+
+Claude Code は、[設定ファイル](/docs/ja/settings#where-settings-live)のいずれか、[管理設定](/docs/ja/managed-settings)、または `--allowedTools`、`--disallowedTools`、`--settings` フラグの値の中に、パスを指定した `Write`、`NotebookEdit`、`MultiEdit`、または `Glob` の[権限ルール](/docs/ja/permissions#read-and-edit)を見つけました。Claude Code はファイルの権限を `Edit` ルールと `Read` ルールに対してのみチェックするため、それ以外のファイルツールを指定したパスルールは参照されません。Claude Code はそのルールを保持し、それ以外は何も変更しません。
+
+* **対話セッション**: 完全な警告は[デバッグログ](#configuration-warnings)に書き込まれ、この形式の拒否ルールまたは確認ルールは、起動バナーの下に次の行としても表示されます。
+
+  ```text theme={null}
+  ⚠ Deny rule Write(docs/**) never matches · use Edit(docs/**)
+  ```
+
+  この形式の許可ルールには行は表示されません。ルールが定義されている場所を確認するには、セッションで `/permissions` を実行してルールを選択します。
+* **テキスト出力の[非対話モード](/docs/ja/headless)**: stderr の完全な警告には、ルール、括弧内のソース、および記述すべき置き換え後のルールが示されます。
+
+  ```text theme={null}
+  Permission deny rule (.claude/settings.json): Write(docs/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(docs/**) instead (Edit rules cover all file-editing tools).
+  ```
+* **[バックグラウンドセッション](/docs/ja/agent-view)、または `--output-format json` や `stream-json`**: 機械可読な出力をクリーンに保つため、完全な警告は stderr ではなくデバッグログに書き込まれます。`--debug` を付けて実行すると、`~/.claude/debug/<session-id>.txt` に記録されます。
 
 **対処方法:**
 
 * `Write(path)`、`NotebookEdit(path)`、およびレガシーの `MultiEdit(path)` ルールを `Edit(path)` に置き換えます。`Edit` ルールはすべてのファイル編集ツールに適用されます。
 * Claude Code が `Glob` ルールを警告なしで受け入れる `--allowedTools` を除き、`Glob(path)` ルールを `Read(path)` に置き換えます。
-* 警告の括弧内に示されたソースでルールを修正します。ソースは設定ファイルのパスか、`--allowed-tools` と `--disallowed-tools` の場合はフラグそのものです。ディスク上に存在しない `claude-settings-<hash>.json` パスは、インラインの `--settings` 値を表します。そのフラグに渡す JSON を修正してください。
+* 完全な警告の括弧内に示されたソースでルールを修正します。ソースは設定ファイルのパスか、`--allowed-tools` と `--disallowed-tools` の場合はフラグそのものです。ディスク上に存在しない `claude-settings-<hash>.json` パスは、インラインの `--settings` 値を表します。そのフラグに渡す JSON を修正してください。
 * `Write` や `Glob` などのツール名のみのルールはそのままにします。Claude Code はこれらを[ツールレベル](/docs/ja/permissions#match-all-uses-of-a-tool)で照合し、警告を出しません。
-* ソースが `managed policy settings` となっている場合は、自分では解消できないため、管理設定を管理している担当者に警告を転送してください。
+* 管理設定由来のルールの場合、完全な警告の括弧内は `managed policy settings` となり、`/permissions` のルールの詳細には `From enterprise managed settings` と表示されます。自分では解消できないため、管理設定を管理している担当者にその警告を転送してください。
 
-[バックグラウンドセッション](/docs/ja/agent-view)、または `--output-format json` や `stream-json` を使用している場合、機械可読な出力をクリーンに保つため、Claude Code は警告を stderr ではなくデバッグログに書き込みます。`--debug` を付けて実行すると、`~/.claude/debug/<session-id>.txt` に記録されます。v2.1.210 より前では、Claude Code はこれらのルールを警告なしで受け入れていました。
+v2.1.210 より前では、Claude Code はこれらのルールを警告なしで受け入れていました。v2.1.305 より前では、対話セッションは完全な警告を stderr に出力していました。
 
 ### Has a wildcard before the rest of the command
 
 Claude Code は、[設定ファイル](/docs/ja/settings#where-settings-live)のいずれか、[管理設定](/docs/ja/managed-settings)、または `--allowedTools` や `--settings` フラグの値の中に、`Bash(git * main)` や `Bash(git -C * status *)` のように、どのコマンドであるかを決定する後続の単語よりも前に `*` がある `Bash` 許可ルールを見つけました。`*` はその位置に挿入されたオプションを含む任意のテキストに一致します。`Bash(git * main)` は `git -c core.fsmonitor=<script> diff main` も承認してしまい、この場合 `-c` によって git はコマンドで指定されたプログラムを実行します。照合のルールについては、[ワイルドカードパターン](/docs/ja/permissions#wildcard-patterns)を参照してください。
 
-この警告は、ワイルドカードが意図よりも広い範囲に一致するルールを絞り込めるようにするためのものです。Claude Code はルールを保持し、照合の方法も一切変更しません。警告には、ルールと括弧内のソースが示されます。
+この警告は、ワイルドカードが意図よりも広い範囲に一致するルールを絞り込めるようにするためのものです。Claude Code はルールを保持し、照合の方法も一切変更しません。テキスト出力の[非対話モード](/docs/ja/headless)では、stderr の警告にルールと括弧内のソースが示されます。
 
 ```text theme={null}
 Permission allow rule (.claude/settings.json): Bash(git -C * status *) has a wildcard before the rest of the command, so it also matches any options inserted at that position and approves them without a prompt. For git, options such as -c and --exec-path can run arbitrary commands. Replace that * with the exact value you mean, or only use * after the subcommand (for example Bash(git status *)).
 ```
 
+対話セッションでは、完全な警告は[デバッグログ](#configuration-warnings)に書き込まれ、ルールは起動バナーの下に次の行として表示されます。
+
+```text theme={null}
+⚠ Allow rule Bash(git -C * status *) allows any option at its * · use an exact value
+```
+
+ルールが定義されている場所を確認するには、セッションで `/permissions` を実行してルールを選択します。
+
 **対処方法:**
 
 * サブコマンドの前にある `*` を、意図する正確な値に置き換えます。`Bash(git * main)` の代わりに `Bash(git checkout main)` とします。
 * すべての `*` をサブコマンドの後に移動します。`Bash(git -C * status *)` の代わりに `Bash(git status *)` とします。許可したいサブコマンドごとに 1 つのルールを記述してください。
-* 警告の括弧内に示されたソースでルールを修正します。ソースは設定ファイルのパスか、`--allowed-tools` フラグそのものです。ディスク上に存在しない `claude-settings-<hash>.json` パスは、インラインの `--settings` 値を表します。そのフラグに渡す JSON を修正してください。
-* ソースが `managed policy settings` となっている場合は、自分では解消できないため、管理設定を管理している担当者に警告を転送してください。
+* 完全な警告の括弧内に示されたソースでルールを修正します。ソースは設定ファイルのパスか、`--allowed-tools` フラグそのものです。ディスク上に存在しない `claude-settings-<hash>.json` パスは、インラインの `--settings` 値を表します。そのフラグに渡す JSON を修正してください。
+* 管理設定由来のルールの場合、完全な警告の括弧内は `managed policy settings` となり、`/permissions` のルールの詳細には `From enterprise managed settings` と表示されます。自分では解消できないため、管理設定を管理している担当者にその警告を転送してください。
 
 [バックグラウンドセッション](/docs/ja/agent-view)、または `--output-format json` や `stream-json` を使用している場合、機械可読な出力をクリーンに保つため、Claude Code は警告を stderr ではなくデバッグログに書き込みます。`--debug` を付けて実行すると、`~/.claude/debug/<session-id>.txt` に記録されます。v2.1.246 より前では、Claude Code はこれらのルールを警告なしで受け入れていました。
 
+v2.1.305 より前では、対話セッションは行を表示する代わりに、完全な警告を stderr に出力していました。
+
 ### Denying Bash also turns off the PowerShell tool
 
-`--disallowedTools Bash` を使用した場合や、設定ファイルのいずれかでツール名のみの `Bash` または `Bash(*)` の[拒否ルール](/docs/ja/permissions#match-all-uses-of-a-tool)を使用した場合など、Bash ツール全体を削除しました。Git Bash がインストールされた Windows では、[Bash を拒否すると PowerShell ツールもオフになる](/docs/ja/tools-reference#bash-deny-rules-also-turn-off-the-powershell-tool)ため、セッションはシェルツールなしで開始されます。Claude Code は起動時に次の警告を表示します。
+`--disallowedTools Bash` を使用した場合や、設定ファイルのいずれかでツール名のみの `Bash` または `Bash(*)` の[拒否ルール](/docs/ja/permissions#match-all-uses-of-a-tool)を使用した場合など、Bash ツール全体を削除しました。Git Bash がインストールされた Windows では、[Bash を拒否すると PowerShell ツールもオフになる](/docs/ja/tools-reference#bash-deny-rules-also-turn-off-the-powershell-tool)ため、セッションはシェルツールなしで開始されます。
+
+テキスト出力の[非対話モード](/docs/ja/headless)では、Claude Code は起動時にこの警告を stderr に出力し、対話セッションでは[デバッグログ](#configuration-warnings)にのみ書き込みます。
 
 ```text theme={null}
 Denying Bash also turns off the PowerShell tool, so Claude has neither. To use PowerShell, set CLAUDE_CODE_USE_POWERSHELL_TOOL=1.
@@ -5651,6 +5758,8 @@ Denying Bash also turns off the PowerShell tool, so Claude has neither. To use P
 * ツール全体ではなく特定のコマンドをブロックするには、同じ設定ファイルまたはフラグで、ツール名のみの `Bash` エントリを `Bash(git push *)` のような範囲を限定したルールに置き換えます。Claude は Bash ツールを維持し、PowerShell ツールは、この変数も設定するか、範囲を限定した [`PowerShell` 権限ルール](/docs/ja/permissions#powershell)を追加するまでオフのままです。
 
 [バックグラウンドセッション](/docs/ja/agent-view)、または `--output-format json` や `stream-json` を使用している場合、Claude Code は警告を stderr ではなくデバッグログに書き込みます。`--debug` を付けて実行すると、`~/.claude/debug/<session-id>.txt` に記録されます。v2.1.287 より前では、Claude Code は同じように PowerShell ツールをオフにしていましたが、警告は表示していませんでした。
+
+v2.1.305 より前では、対話セッションでも起動時に警告を stderr に出力していました。
 
 ### crossSessionInbound must be one of accept, hold, refuse
 
@@ -5701,7 +5810,9 @@ Claude Code は、ネイティブの 1M ウィンドウを持つと認識する�
 * メッセージにこのバージョンが認識しないモデル ID が示されている場合は、`claude update` を実行します。その ID を 1M コンテキストモデルとして認識するバージョンでは、追加の設定なしで上限が強制されます。
 * 代わりにセッションでモデルの完全なウィンドウを使用したい場合は、`CLAUDE_CODE_DISABLE_1M_CONTEXT` の設定を解除します。この警告は 200K の上限が強制されていないことを報告するだけです
 
-[バックグラウンドセッション](/docs/ja/agent-view)、または `--output-format json` や `stream-json` を使用している場合、Claude Code は警告を stderr ではなくデバッグログに書き込みます。
+テキスト出力の[非対話モード](/docs/ja/headless)では、この警告は stderr に表示されます。対話セッション、[バックグラウンドセッション](/docs/ja/agent-view)、または `--output-format json` や `stream-json` を使用している場合は、代わりにデバッグログに書き込まれます。`--debug` を付けて実行すると、`~/.claude/debug/<session-id>.txt` に記録されます。
+
+v2.1.305 より前では、対話セッションは起動時に警告を stderr に出力していました。
 
 ### リクエストでの認識されないモデル ID
 

@@ -58,6 +58,7 @@ Claude がリポジトリの `.claude/worktrees/` ディレクトリの外のパ
 
 * **worktree がクリーンな場合**: 名前のないセッションでは、Claude は worktree とそのブランチを自動的に削除します。[名前付き](/docs/ja/sessions#name-your-sessions)セッションでは最初にプロンプトが表示されるため、後で使用するために worktree を保持できます
 * **worktree に作業が含まれている場合**: Claude は worktree を保持するか削除するかを求めるプロンプトを表示します。保持するとディレクトリとブランチが保存されます。後で戻るには、Claude Code が終了時に出力する `claude --worktree <name> --resume` コマンドを実行します。削除すると worktree ディレクトリとそのブランチが、その中のすべての作業とともに削除されます
+* **別のブランチがチェックアウトされている場合**: worktree が自身のブランチ以外のブランチ上にあり、そのブランチに worktree の開始コミット以降のコミットがある場合、Claude は worktree を保持するか削除するかを求めるプロンプトを表示します。どちらを選択しても、その別のブランチとそのコミットは保持されます。削除すると、worktree ディレクトリと、Claude が worktree とともに作成した worktree 自身のブランチが削除されます
 * **worktree の状態を検証できない場合**: Claude Code が worktree の変更をカウントできない、またはサブモジュールのチェックアウトを検査できない場合、worktree を自動的に削除するのではなくプロンプトを表示します。プロンプトには確認できなかった内容が示されます
 
 `-p` を使用した非対話実行には終了プロンプトがないため、Claude はその worktree をクリーンアップしません。また Claude Code は、作成時に各 worktree に設定したロックを、後続のセッションの[古いロックのスイープ](#clean-up-subagent-and-background-session-worktrees)が解放するまでそのまま残します。削除するには `git worktree remove` を実行します。worktree がロックされているために git が拒否した場合は、先にその worktree に対して `git worktree unlock` を実行してください。

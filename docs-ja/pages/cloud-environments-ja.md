@@ -164,7 +164,7 @@ Team プランで [組織管理者ロール](#requirements) を持っていな�
 
 ### 環境をアーカイブする
 
-自分の環境の 1 つをアーカイブするには、編集用に開いて **環境をアーカイブ** を選択し、確認します。環境が [組織と共有](#organization-shared-environments) されている場合は、代わりに Owner が [管理設定](https://claude.ai/admin-settings) の **クラウド環境** ページからアーカイブするため、自分が Owner でない場合は Owner に依頼してください。環境を削除することはできず、アーカイブのみできます。
+自分の環境の 1 つをアーカイブするには、編集用に開いて **環境をアーカイブ** を選択し、確認します。環境が [組織と共有](#organization-shared-environments) されている場合は、代わりに Owner が [管理設定](https://claude.ai/admin-settings) の **クラウド環境** ページからアーカイブするため、自分が Owner でない場合は Owner に依頼してください。
 
 アーカイブは新しいセッションに影響し、実行中のセッションには影響しません。
 
@@ -174,6 +174,8 @@ Team プランで [組織管理者ロール](#requirements) を持っていな�
 * アーカイブされた環境では、どのサーフェスでも新しいセッションを開始できません。
   * **保存された CLI デフォルト**: 環境が保存された [CLI デフォルト](#select-an-environment-from-the-cli) だった場合、リストに Anthropic ホスト型環境があれば、Claude Code はそこで CLI クラウドセッションを開始します。ない場合は、リスト内で [Remote Control ブリッジ環境](#the-default-environment) ではない最初の環境で開始します。
   * **明示的に設定されたもの**: [クラウドスケジュールタスク](/docs/ja/routines#environments-and-network-access) など、その環境を明示的に指定して設定されたものは、その環境で新しいセッションを開始できません。別の環境を指すようにしてください。
+
+Anthropic ホスト型環境が不要になったら、アーカイブしてください。環境のダイアログにも **クラウド環境** 管理ページにも、Anthropic ホスト型環境を削除するオプションはありません。環境が [自己ホスト型](/docs/ja/self-hosted-environments) の場合は、Owner が管理設定の **クラウド環境** ページから削除できます。自分が Owner でない場合は、Owner に削除を依頼してください。
 
 ### 組織共有環境
 
@@ -274,6 +276,10 @@ Anthropic ホスト環境では、各セッションは独自のオペレーテ�
 > 組織が[セルフホスト環境](/docs/ja/self-hosted-environments)にルーティングするセッションは、代わりに独自のランナーで実行され、ランナーイメージが提供するツールを使用します。
 
 ### セットアップから引き継がれるもの
+
+> [!NOTE]
+>
+> この表のリポジトリ設定のうち、[プロジェクト](/docs/ja/claude-projects)内のクラウドスレッドが読み込むのは、リポジトリルートの `CLAUDE.md`、`.claude/CLAUDE.md`、および[パス固有](/docs/ja/memory#path-specific-rules)ではない `.claude/rules/` ファイルのみです。[スレッドがリポジトリから取り込むもの](/docs/ja/claude-projects#what-threads-pick-up-from-your-repositories)を参照してください。
 
 クラウドセッションはリポジトリの新しいクローンから開始されます。リポジトリにコミットしたものはすべて利用可能です。独自のマシンにのみインストールまたは構成したものはセッションでは利用できません。組織のポリシーは[サーバー管理設定](/docs/ja/server-managed-settings)を通じて別途到着します。
 
@@ -465,12 +471,12 @@ apt update && apt install -y shellcheck
 
 ユーザーレベルの `~/.claude/settings.json` に SessionStart フックがある場合、クラウドではそれらを期待しないでください。ユーザーレベルの設定はマシンに留まります。どの他のフックが実行されるかは、セッションが実行される場所によって異なります。
 
-* **Anthropic ホスト環境**：Claude Code はリポジトリおよび組織の [サーバー管理設定](/docs/ja/server-managed-settings) からフックを実行します。[Claude Tag](https://claude.com/docs/claude-tag/overview) セッションはサーバー管理設定を受け取らないため、サーバー管理設定からのフックはそこで実行されません。
+* **Anthropic ホスト環境**：Claude Code は組織の [サーバー管理設定](/docs/ja/server-managed-settings) からフックを実行し、[プロジェクト](/docs/ja/claude-projects#what-threads-pick-up-from-your-repositories) のスレッド以外ではリポジトリからもフックを実行します。[Claude Tag](https://claude.com/docs/claude-tag/overview) セッションはサーバー管理設定を受け取らないため、サーバー管理設定からのフックはそこで実行されません。
 * **[セルフホスト環境](/docs/ja/self-hosted-environments-configuration#permissions-and-tool-approval)**：Claude Code はオペレーターがランナーホストの `~/.claude/` からシードしたフックも実行し、ランナーイメージの管理設定ファイルのフック（そのファイルが [Claude Code が適用する管理ソース](/docs/ja/managed-settings#how-claude-code-combines-managed-sources) のいずれかである場合）。
 
 ### SessionStart フックで依存関係をインストールする
 
-クラウドセッションのみに依存関係をインストールするには、SessionStart フックを実行場所をチェックするスクリプトと組み合わせます。
+[プロジェクト](/docs/ja/claude-projects#what-threads-pick-up-from-your-repositories) 外のクラウドセッションでのみ依存関係をインストールするには、SessionStart フックを実行場所をチェックするスクリプトと組み合わせます。
 
 まず、SessionStart フックをリポジトリの `.claude/settings.json` に追加します。この設定は、セッションが開始または再開されるたびに Claude Code に `scripts/install_pkgs.sh` をリポジトリから実行するよう指示します。
 
@@ -532,6 +538,7 @@ exit 0
 SessionStart フックはクラウドでローカルと同じように動作しますが、これらの注意事項があります。
 
 * **セッションごとに 1 つのリポジトリ**：Anthropic ホスト環境では、複数のリポジトリを持つセッションはどのリポジトリの `.claude/settings.json` からもフックをロードしないため、そこで定義した SessionStart フックは実行されません。これらのセッションの依存関係は、代わりに [セットアップスクリプト](#setup-scripts) でインストールしてください。セルフホスト環境については、[どのリポジトリの設定が適用されるか](/docs/ja/self-hosted-environments-configuration#repository-settings-in-sessions-with-several-repositories) を参照してください。
+* **プロジェクトのクラウドスレッドでは実行されない**：[プロジェクト](/docs/ja/claude-projects#what-threads-pick-up-from-your-repositories) 内のクラウドスレッドは、リポジトリの数にかかわらず、リポジトリの `.claude/settings.json` からフックを実行しません。Anthropic ホスト環境では、スレッドの依存関係は [セットアップスクリプト](#setup-scripts) でインストールしてください。セルフホスト環境では、代わりに [ランナーホストの設定](/docs/ja/self-hosted-environments-configuration#repository-settings-in-sessions-with-several-repositories) にあるフックを使用してください。
 * **クラウドのみのスコープなし**：フックはローカルとクラウドセッションの両方で実行されます。ローカル実行をスキップするには、[依存関係インストールスクリプト](#install-dependencies-with-a-sessionstart-hook) のように `CLAUDE_CODE_REMOTE` 環境変数が `true` でない限り早期に終了します。
 * **ネットワークアクセスが必要**：インストールコマンドはパッケージレジストリに到達する必要があります。環境が **None** ネットワークアクセスを使用する場合、これらのフックは失敗します。**Trusted** の下の [デフォルト許可リスト](#default-allowed-domains) は npm、PyPI、RubyGems、crates.io をカバーします。
 * **プロキシ互換性**：Anthropic ホスト環境では、すべての送信トラフィックは [セキュリティプロキシ](#security-proxy) を通じて渡されます。一部のパッケージマネージャーはこのプロキシで正しく機能しません。Bun は既知の例です。[セルフホスト環境](/docs/ja/self-hosted-environments-deploy#default-deny-egress) では、送信トラフィックは代わりに独自のネットワーク境界を通じて行きます。

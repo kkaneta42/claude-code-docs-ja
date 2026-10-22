@@ -22,7 +22,7 @@ Claude Code をインストールするには、ターミナルを開いてシ�
 
 **macOS、Linux、WSL：**
 
-```bash theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null}
+```bash theme={null}
 curl -fsSL https://claude.ai/install.sh | bash
 ```
 
@@ -30,13 +30,13 @@ Windows では、PowerShell を使用している場合はシェルプロンプ�
 
 **Windows PowerShell：**
 
-```powershell theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null}
+```powershell theme={null}
 irm https://claude.ai/install.ps1 | iex
 ```
 
 **Windows CMD：**
 
-```batch theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null}
+```batch theme={null}
 curl -fsSL https://claude.ai/install.cmd -o install.cmd && install.cmd && del install.cmd
 ```
 
@@ -54,7 +54,7 @@ curl -fsSL https://claude.ai/install.cmd -o install.cmd && install.cmd && del in
 
 **Homebrew**
 
-```bash theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null}
+```bash theme={null}
 brew install --cask claude-code
 ```
 
@@ -66,7 +66,7 @@ Homebrew は 2 つの cask を提供しています。`claude-code` は安定リ
 
 **WinGet**
 
-```powershell theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null}
+```powershell theme={null}
 winget install Anthropic.ClaudeCode
 ```
 

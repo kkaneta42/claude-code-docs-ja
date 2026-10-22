@@ -94,7 +94,7 @@
 
 1 つのチームの共有設定は、リポジトリにコミットされるため、それをクローンした全員が同じ権限、hooks、プラグインマーケットプレイスを取得します。リポジトリのトップレベルに `.claude/settings.json` のようなファイルを保存してください。コミットする前に知っておくべきことは以下の通りです。
 
-* **クラウドセッションもこれを読みます。** [クラウドセッション](/docs/ja/settings#settings-in-cloud-sessions)はリポジトリのクローンから開始されるため、コミットされたファイルはそこにも適用されます。
+* **[プロジェクト](/docs/ja/claude-projects#what-threads-pick-up-from-your-repositories)外のクラウドセッションもこれを読みます。** 1 つのリポジトリを持つ[クラウドセッション](/docs/ja/settings#settings-in-cloud-sessions)はクローン内で開始されるため、コミットされたファイルはそこにも適用されます。
 * **テレメトリは管理設定または個人設定に入ります。** Claude Code は、リポジトリの設定ファイルの [OpenTelemetry エクスポーター変数](/docs/ja/settings-reference#variables-claude-code-ignores-in-env)を無視します。ただし、テレメトリをオフにする値は除きます。組織の[管理設定](/docs/ja/monitoring-usage#administrator-configuration)、または各ユーザーの `~/.claude/settings.json` で設定してください。
 * **許可ルールは信頼を待ちます。** 許可ルールと `extraKnownMarketplaces` エントリは、各ユーザーが[このフォルダ自体を信頼](/docs/ja/permissions#project-allow-rules-and-workspace-trust)した後に有効になります。親フォルダだけではなく、このフォルダ自体を信頼する必要があります。拒否ルールと確認ルールは、信頼されているセッションでもそうでないセッションでも、すべてのセッションで適用されます。
 * **hook はリポジトリ内のスクリプトです。** このファイルの hook は `.claude/hooks/block-rm.sh` を実行します。[hook がどのように解決されるか](/docs/ja/hooks#how-a-hook-resolves)では、これを書く方法について説明しています。

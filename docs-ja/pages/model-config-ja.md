@@ -441,7 +441,11 @@ v2.1.199 以降では、組織のデフォルトがユーザーのアカウン�
 
 組織は、[effort レベル](#adjust-effort-level)に 2 つの方法で上限を設定できます。Claude Enterprise プランでは、組織の管理者が以下で説明するロールごとの effort 上限を設定します。Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry を含むすべてのプランとプロバイダーでは、代わりに [`maxEffortLevel`](/docs/ja/settings-reference#maxeffortlevel) 管理設定によってクライアント側で effort に上限が設定されます。1 つのモデルに両方が適用される場合は、低いほうの上限が適用されます。
 
-Claude Enterprise プランの組織管理者は、ロールレベルの[組織のモデル制限](#organization-model-restrictions)とあわせて、カスタムロールごとにモデル単位で [effort レベル](#adjust-effort-level)の最大値を設定できます。上限を超えるレベルは `/effort` ピッカーに表示されず、`--effort` または `/effort` でより高いレベルを指定した場合は、代わりに上限のレベルで実行されます。対話型セッションとプレーンテキストの `--print` 実行では、要求されたレベルと適用されたレベルを示す警告が表示されます。`json` または `stream-json` 出力の場合やバックグラウンドエージェントでは、上限への制限は警告なしで適用されます。上限はモデルごとに設定されるため、モデルを切り替えると利用可能なレベルが変わることがあります。ユーザーの複数のロールが同じモデルを許可している場合は、最も制限の緩い上限が適用されます。Claude Code v2.1.195 以降が必要です。
+Claude Enterprise プランの組織管理者は、ロールレベルの[組織のモデル制限](#organization-model-restrictions)とあわせて、カスタムロールごとにモデル単位で [effort レベル](#adjust-effort-level)の最大値を設定できます。Claude Code v2.1.195 以降が必要です。
+
+* 上限を超えるレベルは `/effort` ピッカーに表示されず、`--effort` または `/effort` でより高いレベルを指定した場合は、代わりに上限のレベルで実行されます。上限を超える `--effort` を指定してプレーンテキストの `--print` 実行を開始すると、要求されたレベルと適用されたレベルを示す警告が stderr に出力されます。対話型セッション、`json` または `stream-json` 出力の場合、およびバックグラウンドエージェントでは、この警告は代わりに[デバッグログ](/docs/ja/errors#configuration-warnings)に記録されます。
+* 上限はモデルごとに設定されるため、モデルを切り替えると利用可能なレベルが変わることがあります。
+* ユーザーの複数のロールが同じモデルを許可している場合は、最も制限の緩い上限が適用されます。
 
 effort 上限は[組織のモデル制限](#organization-model-restrictions)と一緒に配信され、同じセッションに適用されます。
 
@@ -843,7 +847,7 @@ Claude Code が ID を認識するか、指定したウィンドウを使用す�
 * Claude Code がプロバイダー固有またはカスタムの表記を認識できるモデルに解決できず、ID に `[1m]` が含まれていない場合、この変数は直接適用され、宣言されたウィンドウでプロアクティブなコンテキスト圧縮が継続されます。
 * Claude Code がプロバイダー固有またはカスタムの表記を認識できるモデルに解決できず、ID に（大文字小文字を問わず）`[1m]` が含まれている場合、Claude Code はその ID に 1M のウィンドウを想定し、この変数は単独では適用されません。プロアクティブなコンテキスト圧縮を維持しながらウィンドウを修正するには、[`CLAUDE_CODE_DISABLE_1M_CONTEXT=1`](/docs/ja/env-vars) も設定してください。この変数を設定すると、Claude Code はその ID を `[1m]` のない同じ表記と同様にサイズ設定するため、`CLAUDE_CODE_MAX_CONTEXT_TOKENS` は、タグのない表記に適用される場合と同じ条件で適用されます。
 
-  宣言されたウィンドウが 200K を超える場合、Claude Code は 200K の上限が適用されないことを示す[起動時の警告](/docs/ja/errors#the-200k-limit-isnt-enforced)を表示します。この構成では、この警告は想定どおりの動作です。
+  宣言されたウィンドウが 200K を超える場合、この構成では [200K の上限が適用されない](/docs/ja/errors#the-200k-limit-isnt-enforced)という警告が表示されるのは想定どおりの動作です。
 * ID が Claude Code の認識するモデルに解決される場合、または ID が（大文字小文字を問わず）Claude Code が取り除く接尾辞のない `claude-` 名のみの場合、この変数は [`DISABLE_COMPACT`](/docs/ja/env-vars) も設定したときにのみ有効になります。`DISABLE_COMPACT` はすべてのコンテキスト圧縮を無効にします。
 
   たとえば、`anthropic/claude-opus-4-8`、`us.anthropic.claude-…-v1:0`、日付付きの `claude-sonnet-4-5@20250929` など、Claude Code が認識している Claude モデル名を含む ID は、そのモデルに解決されます。これには `[1m]` も含む ID も含まれます。`CLAUDE_CODE_DISABLE_1M_CONTEXT` が設定されている場合でも、Claude Code は `claude-opus-4-8[1m]` を Opus 4.8 に解決します。

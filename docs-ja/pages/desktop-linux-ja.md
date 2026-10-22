@@ -21,13 +21,13 @@ Linux 上のデスクトップアプリは、macOS と Windows と同じ Chat、
 
 ### Cowork の要件
 
-Cowork は [Dispatch とより長い agentic work](https://claude.com/docs/cowork/overview) 用のデスクトップタブです。Linux では、Cowork はこれらのタスクを、デスクトップアプリが QEMU と KVM でホストする仮想マシン内で実行します。Cowork を使用するには、マシンが以下を必要とします。
+Cowork は、[Dispatch とより長い agentic work](https://claude.com/docs/cowork/overview) のためのデスクトップアプリの一部です。Linux では、Cowork はこれらのタスクを、デスクトップアプリが QEMU と KVM でホストする仮想マシン内で実行します。Cowork を使用するには、マシンが以下を必要とします。
 
-* **ハードウェア仮想化**：ファームウェア設定で有効にされていること。これがない場合、Cowork タブは「Cowork requires hardware virtualization (KVM)」と報告します。
-* **QEMU と UEFI ファームウェア**：x86\_64 では `qemu-system-x86`、`ovmf`、`virtiofsd`、または arm64 では `qemu-system-arm`、`qemu-efi-aarch64`、`virtiofsd`。`apt install claude-desktop` はデフォルトで推奨パッケージとしてこれらをインストールします。`--no-install-recommends` でインストールした場合、またはシステムが推奨パッケージをスキップする最小イメージの場合、Cowork タブは「Cowork requires QEMU」と報告し、実行する `apt install` コマンドを表示します。Ubuntu 22.04 には `virtiofsd` パッケージがありません。アプリはそこでバンドルされたコピーを使用します。
+* **ハードウェア仮想化**：ファームウェア設定で有効にされていること。これがない場合、Cowork は「Cowork requires hardware virtualization (KVM)」と報告します。
+* **QEMU と UEFI ファームウェア**：x86\_64 では `qemu-system-x86`、`ovmf`、`virtiofsd`、または arm64 では `qemu-system-arm`、`qemu-efi-aarch64`、`virtiofsd`。`apt install claude-desktop` はデフォルトで推奨パッケージとしてこれらをインストールします。`--no-install-recommends` でインストールした場合、またはシステムが推奨パッケージをスキップする最小イメージの場合、Cowork は「Cowork requires QEMU」と報告し、実行する `apt install` コマンドを表示します。Ubuntu 22.04 には `virtiofsd` パッケージがありません。アプリはそこでバンドルされたコピーを使用します。
 * **`/dev/kvm` へのアクセス**：`sudo usermod -aG kvm $USER` でユーザーを `kvm` グループに追加し、ログアウトしてからログインし直してください。一部のデスクトップ環境は、グループなしでログインユーザーに `/dev/kvm` へのアクセスを許可しますが、Cowork は `/dev/vhost-vsock` も必要とし、これは `kvm` グループメンバーのみが開くことができます。`/dev/kvm` が既に機能している場合でも、グループに参加してください。
 
-アプリはこれらの要件を起動時に 1 回チェックします。パッケージをインストール後にアプリを再起動し、グループに参加後にログアウトしてからログインし直してください。`/dev/vhost-vsock` が見つからず、実行中のカーネルが `/lib/modules` の下にモジュールディレクトリを持たない場合、Cowork タブは、カーネルが Cowork が必要とする仮想化サポートを含まず、手動で追加できないことを報告します。この組み合わせは ChromeOS とコンテナベースの Linux 環境で一般的です。
+アプリはこれらの要件を起動時に 1 回チェックします。パッケージをインストール後にアプリを再起動し、グループに参加後にログアウトしてからログインし直してください。`/dev/vhost-vsock` が見つからず、実行中のカーネルが `/lib/modules` の下にモジュールディレクトリを持たない場合、Cowork は、カーネルが Cowork が必要とする仮想化サポートを含まず、手動で追加できないことを報告します。この組み合わせは ChromeOS とコンテナベースの Linux 環境で一般的です。
 
 ## インストール
 
@@ -137,7 +137,7 @@ sudo rm /etc/apt/sources.list.d/claude-desktop.list
 * `libc6 (>= 2.34)`：ディストリビューションがパッケージがサポートするより古いです。Ubuntu 20.04 は `libc6` 2.31 を搭載しています。Ubuntu 22.04 以降または Debian 12 以降にアップグレードしてください。
 * すべての欠落している依存関係が `:amd64` または `:arm64` サフィックス付きで `not installable` を表示する場合：マシンのアーキテクチャと異なるアーキテクチャの `.deb` をダウンロードしました。`dpkg --print-architecture` を実行して一致する `.deb` をダウンロードするか、[apt リポジトリからインストール](#install) してください。これはアーキテクチャのパッケージを選択します。
 
-### root として --no-sandbox なしで実行することはサポートされていません
+### Running as root without `--no-sandbox` is not supported
 
 `claude-desktop` がこのメッセージで終了する場合、root として起動しました。通常のユーザーとしてログインして、そこから起動してください。
 
@@ -153,7 +153,7 @@ Claude Desktop はサインインをデスクトップのキーリング（GNOME
 
 ### Cowork が利用できない
 
-Cowork タブがこれらのメッセージのいずれかを表示する場合は、名前が付けられている要件を修正してから、アプリを再起動してください。
+Cowork でこれらのメッセージのいずれかが表示される場合は、名前が付けられている要件を修正してから、アプリを再起動してください。
 
 * **Cowork には QEMU が必要です**：メッセージが一覧表示する [QEMU と UEFI ファームウェアパッケージ](#cowork-requirements) をインストールしてください。
 * **Cowork にはハードウェア仮想化（KVM）が必要です**：ファームウェア設定で [ハードウェア仮想化](#cowork-requirements) をオンにしてください。

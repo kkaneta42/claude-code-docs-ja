@@ -81,62 +81,62 @@ WSL セッションが有効になった後、管理設定をそれらに拡張�
 
 WSL 2 ユーティリティ VM 内のプロセスは、Windows 側のエンドポイント検出センサーに表示されません。ディストリビューション内のプロセスとファイルアクティビティを観察するには、エンドポイント検出ベンダーの WSL ガイダンスで、ディストリビューション内で実行できる Linux センサーと、それが必要とする除外を確認してください。Claude Code の [OpenTelemetry ツール実行テレメトリ](/docs/ja/monitoring-usage)は WSL とネイティブセッションで同じように出力されます。
 
-## 実装する内容を決定する
+## 適用する内容を決める
 
-マネージド設定は、ツール、サンドボックス実行、MCP サーバーとプラグインソース、および実行するフック を制限できます。各行は、それを駆動する設定キーを持つ制御サーフェスです。
+管理設定では、ツールのロックダウン、実行のサンドボックス化、MCP サーバーやプラグインソースの制限、実行するフックの制御を行えます。各行は制御対象とそれを動かす設定キーを示しています。
 
-| 制御 | 機能 | キー設定 |
+| 制御 | 内容 | 主な設定 |
 | :- | :- | :- |
-| [権限ルール](/docs/ja/permissions) | 特定のツールとコマンドを許可、確認、または拒否する | `permissions.allow`、`permissions.deny` |
-| [権限ロックダウン](/docs/ja/permissions#managed-only-settings) | マネージド設定を[権限ルールの唯一の設定ソース](/docs/ja/settings-reference#allowmanagedpermissionrulesonly)にします。`--dangerously-skip-permissions` を無効にする | `allowManagedPermissionRulesOnly`、`permissions.disableBypassPermissionsMode` |
-| [開始権限モード](/docs/ja/permission-modes#which-mode-a-session-starts-in) | 組み込みの開始権限モードの代わりに、開発者のターミナルセッションが開始する権限モードを選択するか、自動モードを削除します。[権限モードの切り替え](/docs/ja/permission-modes#switch-permission-modes)は、VS Code 拡張機能が `defaultMode` を読み取る時期を一覧表示します | `permissions.defaultMode`、`permissions.disableAutoMode` |
-| [サンドボックス](/docs/ja/sandboxing) | ドメイン許可リスト付きの OS レベルのファイルシステムとネットワーク分離 | `sandbox.enabled`、`sandbox.network.allowedDomains` |
-| [マネージドポリシー CLAUDE.md](/docs/ja/memory#deploy-organization-wide-claude-md) | すべてのセッションで読み込まれる組織全体の指示。除外できません | マネージドポリシーパスのファイル |
-| [MCP サーバー制御](/docs/ja/managed-mcp) | ユーザーが追加または接続できる MCP サーバーを制限し、固定セットをデプロイするか、リモートサーバーをすべてのユーザーに提供します | `allowedMcpServers`、`deniedMcpServers`、`allowManagedMcpServersOnly`、`managedMcpServers`、またはデプロイされた `managed-mcp.json` ファイル |
-| [プラグインマーケットプレイス制御](/docs/ja/plugins/org#restrict-what-users-can-install) | ユーザーが追加およびインストールできるマーケットプレイスソースを制限し、単一実行のためにプラグイン、エージェント、MCP サーバーをサイドロードする CLI フラグを拒否し、[`command` プラグインソース](/docs/ja/plugins/marketplace-reference#command-plugin-source)をブロックし、どのマーケットプレイスのプラグインを提案できるかをホワイトリストに登録します | `strictKnownMarketplaces`、`blockedMarketplaces`、`disableSideloadFlags`、`disableCommandPluginSources`、`pluginSuggestionMarketplaces` |
-| [カスタマイズロックダウン](/docs/ja/settings-reference#strictpluginonlycustomization) | スキル、エージェント、フック、MCP サーバーをユーザーおよびプロジェクトソースからブロックし、プラグインまたはマネージド設定からのみ取得できるようにします。スキルをロックすると、開発者が claude.ai で有効にした[スキル](/docs/ja/skills#where-synced-skills-load)の同期も停止します | `strictPluginOnlyCustomization` |
-| [claude.ai 同期を無効にする](/docs/ja/settings-reference#syncclaudeaiskills) | Claude Code が開発者が claude.ai で有効にした[スキル](/docs/ja/skills#how-synced-skills-behave)と[プラグイン](/docs/ja/plugins/loading#synced-plugins)を読み込むのを停止します。組織の claude.ai でスキルをオフにすると、Claude Code は両方の同期を停止します。v2.1.273 以降では、既に同期したものも削除します。スキルをオフにせずにどちらか一方を停止するには、マネージド設定でそのキーを `false` に設定します | `syncClaudeAiSkills`、`syncClaudeAiPlugins` |
-| [フック制限](/docs/ja/settings-reference#allowmanagedhooksonly) | 実行するフックを制限し、HTTP フック URL を制限します。[`allowManagedHooksOnly` で実行される内容](/docs/ja/settings-reference#what-runs-under-allowmanagedhooksonly)の完全な効果リストを参照してください | `allowManagedHooksOnly`、`allowedHttpHookUrls` |
-| [ログイン強制](/docs/ja/settings-reference#forceloginmethod) | ログインを特定の方法または Anthropic 組織に制限します。メソッド制限は VS Code 拡張機能、Agent SDK、`claude setup-token`、`/install-github-app` 全体に適用され、ターミナルのインタラクティブログイン画面（`/login` または初回オンボーディングで到達）はメソッドを事前選択しますが強制しません。Claude Code は、ターミナル、VS Code 拡張機能、Agent SDK での claude.ai アカウントログインの組織を検証し、Claude Console ログインまたは[ゲートウェイ](/docs/ja/claude-apps-gateway)サインインではチェックしません。v2.1.212 より前は、ターミナルログインのみが両方のキーを適用していました。設定すると、`ANTHROPIC_API_KEY`、`ANTHROPIC_AUTH_TOKEN`、または `apiKeyHelper` によって認証されたセッションはスタートアップでブロックされます。クラウドプロバイダーセッションは影響を受けません | `forceLoginMethod`、`forceLoginOrgUUID` |
-| [プロバイダー制限](/docs/ja/settings-reference#allowedproviders) | マシンが使用できる API プロバイダーを制限します。リストに記載されていないプロバイダー上のセッションはスタートアップ時、ログイン時、および次に API に接続するときに拒否されます。Claude Code v2.1.285 以降が必要です | `allowedProviders` |
-| [エージェントビューを無効にする](/docs/ja/agent-view#how-background-sessions-are-hosted) | `claude agents`、`--bg`、`/background`、およびオンデマンドスーパーバイザーをオフにします | `disableAgentView` |
-| [企業ランチャーを構成する](/docs/ja/corporate-launcher) | [バックグラウンドエージェントスーパーバイザー](/docs/ja/agent-view#how-background-sessions-are-hosted)、そのワーカー、および[その他のカバーされたバックグラウンドプロセス](/docs/ja/corporate-launcher#what-the-launcher-covers)に、エージェントビューをオフにする代わりに、必須の企業ランチャーをプレフィックスします | `processWrapper` |
-| [モデル制限](/docs/ja/model-config#restrict-model-selection) | `availableModels` はピッカーに表示されるモデルをフィルタリングします。`enforceAvailableModels` を追加すると、自動選択されたデフォルトモデルも制限されます。このセッティングが CLI、ウェブ、IDE にどのように到達するかについては、[サーフェスカバレッジ](/docs/ja/model-config#surface-coverage)を参照してください | `availableModels`、`enforceAvailableModels` |
-| [エフォートキャップ](/docs/ja/settings-reference#maxeffortlevel) | すべてのモデルまたはモデルごとに、すべてのプロバイダーで[エフォートレベル](/docs/ja/model-config#adjust-effort-level)をキャップします | `maxEffortLevel` |
-| [バージョンフロア](/docs/ja/settings-reference#minimumversion) | 自動更新が組織全体の最小値以下をインストールするのを防ぎます | `minimumVersion` |
-| [必須バージョン範囲](/docs/ja/settings-reference#requiredminimumversion) | 実行中のバージョンが組織承認範囲外の場合、まったく起動を拒否します。ダウングレードのみをブロックする `minimumVersion` より強力です | `requiredMinimumVersion`、`requiredMaximumVersion` |
-| [テレメトリオプトアウト](/docs/ja/data-usage#telemetry-services) | すべてのデバイスで Anthropic バウンドの使用メトリクス、エラーレポート、およびサーベイをオフにします | `env` に `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` を `1` に設定します。リンクされたセクションはカテゴリごとの変数を一覧表示します |
+| [権限ルール](/docs/ja/permissions) | 特定のツールやコマンドを許可、確認、または拒否します | `permissions.allow`、`permissions.deny` |
+| [権限のロックダウン](/docs/ja/permissions#managed-only-settings) | 管理設定を[権限ルールの唯一の設定ソース](/docs/ja/settings-reference#allowmanagedpermissionrulesonly)にします。`--dangerously-skip-permissions` を無効にします | `allowManagedPermissionRulesOnly`、`permissions.disableBypassPermissionsMode` |
+| [開始時の権限モード](/docs/ja/permission-modes#which-mode-a-session-starts-in) | 組み込みの開始時権限モードの代わりに、開発者のターミナルセッションが開始する権限モードを選択するか、auto モードを削除します。VS Code 拡張機能が設定された `defaultMode` を読み込むタイミングについては、[権限モードの切り替え](/docs/ja/permission-modes#switch-permission-modes)を参照してください | `permissions.defaultMode`、`permissions.disableAutoMode` |
+| [サンドボックス化](/docs/ja/sandboxing) | ドメイン許可リストを使用した OS レベルのファイルシステムおよびネットワークの分離 | `sandbox.enabled`、`sandbox.network.allowedDomains` |
+| [管理ポリシーの CLAUDE.md](/docs/ja/memory#deploy-organization-wide-claude-md) | クライアントで強制されるルールではなく、組織全体で Claude に与える動作のガイダンス | 管理ポリシーのパスに置くファイル |
+| [MCP サーバーの制御](/docs/ja/managed-mcp) | ユーザーが追加または接続できる MCP サーバーを制限したり、固定のセットをデプロイしたり、各ユーザー自身のサーバーに加えてリモートサーバーを全ユーザーに提供したりします | `allowedMcpServers`、`deniedMcpServers`、`allowManagedMcpServersOnly`、`managedMcpServers`、またはデプロイされた `managed-mcp.json` ファイル |
+| [プラグインマーケットプレイスの制御](/docs/ja/plugins/org#restrict-what-users-can-install) | ユーザーが追加およびインストールできるマーケットプレイスソースを制限し、単一の実行のためにプラグイン、エージェント、MCP サーバーをサイドロードする CLI フラグを拒否し、[`command` プラグインソース](/docs/ja/plugins/marketplace-reference#command-plugin-source)をブロックし、どのマーケットプレイスのプラグインを提案できるかを許可リストで指定します | `strictKnownMarketplaces`、`blockedMarketplaces`、`disableSideloadFlags`、`disableCommandPluginSources`、`pluginSuggestionMarketplaces` |
+| [カスタマイズのロックダウン](/docs/ja/settings-reference#strictpluginonlycustomization) | ユーザーおよびプロジェクトのソースからのスキル、エージェント、フック、MCP サーバーをブロックし、プラグインまたは管理設定からのみ提供されるようにします。スキルをロックすると、[開発者が claude.ai で有効にしたスキル](/docs/ja/skills#where-synced-skills-load)の同期も停止します | `strictPluginOnlyCustomization` |
+| [claude.ai 同期の無効化](/docs/ja/settings-reference#syncclaudeaiskills) | 開発者が claude.ai で有効にした[スキル](/docs/ja/skills#how-synced-skills-behave)と[プラグイン](/docs/ja/plugins/loading#synced-plugins)を Claude Code が読み込まないようにします。claude.ai で組織の Skills をオフにすると、Claude Code は両方の同期を停止し、v2.1.273 以降では同期済みのものも削除します。Skills をオフにせずにいずれかを停止するには、管理設定でそのキーを `false` に設定します | `syncClaudeAiSkills`、`syncClaudeAiPlugins` |
+| [フックの制限](/docs/ja/settings-reference#allowmanagedhooksonly) | 実行するフックと HTTP フックの URL を制限します。影響の全一覧は [`allowManagedHooksOnly` で実行されるもの](/docs/ja/settings-reference#what-runs-under-allowmanagedhooksonly)を参照してください | `allowManagedHooksOnly`、`allowedHttpHookUrls` |
+| [ログインの強制](/docs/ja/settings-reference#forceloginmethod) | ログインを特定の方法または Anthropic 組織に制限します。方法の制限は VS Code 拡張機能、Agent SDK、`claude setup-token`、`/install-github-app` 全体に適用されます。`/login` または初回のオンボーディングで表示されるターミナルの対話型ログイン画面では、その方法が事前に選択されますが、強制はされません。Claude Code は、ターミナル、VS Code 拡張機能、Agent SDK での claude.ai アカウントのログインについて組織を検証しますが、Claude Console のログインや[ゲートウェイ](/docs/ja/claude-apps-gateway)のサインインについては確認しません。v2.1.212 より前は、いずれのキーもターミナルのログインにのみ適用されていました。設定されている場合、`ANTHROPIC_API_KEY`、`ANTHROPIC_AUTH_TOKEN`、または `apiKeyHelper` で認証されたセッションは起動時にブロックされます。クラウドプロバイダーのセッションは影響を受けませんが、これらの認証情報のいずれか、または以前の Claude Console ログインで保存された API キーも存在する場合は例外としてブロックされます | `forceLoginMethod`、`forceLoginOrgUUID` |
+| [プロバイダーの制限](/docs/ja/settings-reference#allowedproviders) | マシンが使用できる API プロバイダーを制限します。リストにないプロバイダーのセッションは、起動時、ログイン時、および次に API に接続したときに拒否されます。Claude Code v2.1.285 以降が必要です | `allowedProviders` |
+| [エージェントビューの無効化](/docs/ja/agent-view#how-background-sessions-are-hosted) | `claude agents`、`--bg`、`/background`、およびオンデマンドのスーパーバイザーをオフにします | `disableAgentView` |
+| [企業ランチャーの設定](/docs/ja/corporate-launcher) | エージェントビューをオフにする代わりに、[バックグラウンドエージェントのスーパーバイザー](/docs/ja/agent-view#how-background-sessions-are-hosted)、そのワーカー、および[対象となるその他のバックグラウンドプロセス](/docs/ja/corporate-launcher#what-the-launcher-covers)の前に、必須の企業ランチャーを付加します | `processWrapper` |
+| [モデルの制限](/docs/ja/model-config#restrict-model-selection) | `availableModels` はピッカーに表示されるモデルを絞り込みます。`enforceAvailableModels` を追加すると、自動選択されるデフォルトモデルも制約されます。この設定が CLI、Web、IDE にどのように適用されるかは[サーフェスの対応範囲](/docs/ja/model-config#surface-coverage)を参照してください | `availableModels`、`enforceAvailableModels` |
+| [effort の上限](/docs/ja/settings-reference#maxeffortlevel) | すべてのプロバイダーで、すべてのモデルまたはモデルごとに [effort レベル](/docs/ja/model-config#adjust-effort-level)の上限を設定します | `maxEffortLevel` |
+| [バージョンの下限](/docs/ja/settings-reference#minimumversion) | 組織全体の最小バージョンを下回るバージョンが自動更新でインストールされないようにします | `minimumVersion` |
+| [必須バージョン範囲](/docs/ja/settings-reference#requiredminimumversion) | 実行中のバージョンが組織で承認された範囲外の場合、起動自体を拒否します。ダウングレードのみをブロックする `minimumVersion` よりも強力です | `requiredMinimumVersion`、`requiredMaximumVersion` |
+| [テレメトリのオプトアウト](/docs/ja/data-usage#telemetry-services) | すべてのデバイスで、Anthropic に送信される使用状況メトリクス、エラーレポート、アンケートをオフにします | `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` を `1` に設定した `env`。カテゴリごとの変数はリンク先のセクションに記載されています |
 
-メンバーが claude.ai または Anthropic API を通じてサインインし、Claude Enterprise プランを使用している場合、何もデプロイせずに組織の管理者設定からモデルを管理することもできます。
+メンバーが claude.ai または Anthropic API 経由でサインインし、Claude Enterprise プランを利用している場合は、何もデプロイせずに組織の管理設定からモデルを管理することもできます。
 
-* [組織モデル制限](/docs/ja/model-config#organization-model-restrictions)：個別のモデルを無効にします。サーバー側で強制されます。
-* [組織デフォルトモデル](/docs/ja/model-config#organization-default-model)：新しいセッションが開始するモデルを設定します。メンバーは引き続きモデルを切り替えることができます。起動時にメンバーを組織のデフォルトに戻すには、そのセクションで説明されている上書きをオンにします。メンバーが選択できるモデルを制限するには、[組織モデル制限](/docs/ja/model-config#organization-model-restrictions)を使用します。
-* [組織エフォート制限](/docs/ja/model-config#organization-effort-limits)：ロールごとのエフォートレベルをキャップします。サーバー側で強制されます。
+* [組織のモデル制限](/docs/ja/model-config#organization-model-restrictions)：個々のモデルを無効にします。サーバー側で強制されます。
+* [組織のデフォルトモデル](/docs/ja/model-config#organization-default-model)：新しいセッションが開始するモデルを設定します。メンバーは引き続きモデルを切り替えられます。起動時にデフォルトに戻すには、そのセクションで説明している上書きをオンにします。メンバーが選択できるモデルを制限するには、[組織のモデル制限](/docs/ja/model-config#organization-model-restrictions)を使用します。
+* [組織の effort 制限](/docs/ja/model-config#organization-effort-limits)：ロールごとに effort レベルの上限を設定します。サーバー側で強制されます。
 
-これらの制御は、Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、または[AWS 上の Claude Platform](/docs/ja/claude-platform-on-aws)のセッションには到達しません。これらのプロバイダーでは、代わりにマネージド設定を使用してください。制限には `availableModels`、デフォルトには `model`、エフォートキャップには [`maxEffortLevel`](/docs/ja/settings-reference#maxeffortlevel) を使用します。
+これらの制御はいずれも、Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、または [Claude Platform on AWS](/docs/ja/claude-platform-on-aws) 上のセッションには適用されません。これらのプロバイダーでは、代わりに管理設定を使用してください。制限には `availableModels`、デフォルトには `model`、effort の上限には [`maxEffortLevel`](/docs/ja/settings-reference#maxeffortlevel) を使用します。
 
-[クラウドセッション](/docs/ja/claude-code-on-the-web)には、claude.ai 上に独自の管理サーフェスがあります。
+[クラウドセッション](/docs/ja/claude-code-on-the-web)には、claude.ai 上に独自の管理画面があります。
 
-* **クラウド環境ページ**：オーナーは[組織共有環境](/docs/ja/cloud-environments#organization-shared-environments)を作成し、メンバーのクラウドセッションの[ネットワークアクセスレベル](/docs/ja/cloud-environments#network-access)、環境変数、セットアップスクリプトを設定します。
-* **デフォルト環境**：オーナーは、[claude.ai/admin-settings/claude-code](https://claude.ai/admin-settings/claude-code) で組織のデフォルト環境を別途選択します。
-* **Git providers ページ**：組織にリンクされている GitHub アカウントについては、[接続された GitHub アカウント](#connected-github-accounts)を参照してください。
+* **クラウド環境ページ**：Owner は、メンバーのクラウドセッションの[ネットワークアクセスレベル](/docs/ja/cloud-environments#network-access)、環境変数、セットアップスクリプトを設定する[組織共有環境](/docs/ja/cloud-environments#organization-shared-environments)を作成します。
+* **デフォルト環境**：Owner は、組織のデフォルト環境を [claude.ai/admin-settings/claude-code](https://claude.ai/admin-settings/claude-code) で別途選択します。
+* **Git プロバイダーページ**：組織にリンクされた GitHub アカウントについては、[接続された GitHub アカウント](#connected-github-accounts)を参照してください。
 
-権限ルールとサンドボックスは異なるレイヤーをカバーします。WebFetch を拒否すると Claude のフェッチツールがブロックされますが、Bash が許可されている場合、`curl` と `wget` は依然として任意の URL に到達できます。サンドボックスは、OS レベルで強制されるネットワークドメイン許可リストでそのギャップを閉じます。
+権限ルールとサンドボックス化は異なるレイヤーを対象とします。WebFetch を拒否すると Claude のフェッチツールはブロックされますが、Bash が許可されている場合、`curl` や `wget` は引き続き任意の URL にアクセスできます。サンドボックス化は、OS レベルで強制されるネットワークドメインの許可リストによってこのギャップを埋めます。
 
 これらの制御が防御する脅威モデルについては、[セキュリティ](/docs/ja/security)を参照してください。
 
 ### 接続された GitHub アカウント
 
-Team プランと Enterprise プランでは、[**Organization settings > Git providers**](https://claude.ai/admin-settings/source-control) の GitHub セクションに、[Claude GitHub App](https://github.com/apps/claude) を通じて Claude 組織にリンクされている GitHub 組織と個人アカウントが一覧表示されます。Claude Code、[Claude Tag](https://claude.com/docs/claude-tag/admins/configure-github)、Claude Security はこのリストを共有します。このページを開くには、Claude 組織での管理者ロールが必要です。
+Team プランと Enterprise プランでは、[**Organization settings > Git providers**](https://claude.ai/admin-settings/source-control) の GitHub セクションに、[Claude GitHub App](https://github.com/apps/claude) を通じて Claude 組織にリンクされた GitHub 組織と個人アカウントが一覧表示されます。Claude Code、[Claude Tag](https://claude.com/docs/claude-tag/admins/configure-github)、Claude Security はこの一覧を共有します。このページを開くには、Claude 組織の管理者ロールが必要です。
 
 アカウントは管理者またはメンバーがリンクできます。
 
-* **管理者による接続**：管理者がこのセクションで **Connect** をクリックするか、アカウントが接続済みの場合は **Add organization** をクリックして、GitHub 組織に Claude GitHub App をインストールします。この方法で組織をリンクするには、GitHub 組織のオーナーであり、かつ Claude 組織の管理者でもある人物が必要です。
-* **メンバーによる接続**：メンバーが GitHub アカウントを Claude に接続すると（たとえば[クラウドセッションのセットアップ](/docs/ja/web-quickstart#connect-github)中など）、Claude は、そのメンバーが所有し、Claude GitHub App が既にインストールされている GitHub アカウントをリンクします。これには、メンバーの個人アカウントや、メンバーが所有する GitHub 組織が含まれる場合があります。
+* **管理者による接続**：管理者がそのセクションで **Connect** をクリックするか、アカウントが接続済みの場合は **Add organization** をクリックし、GitHub 組織に Claude GitHub App をインストールします。この方法で組織をリンクするには、GitHub 組織の Owner であり、かつ Claude 組織の管理者でもあるユーザーが必要です。
+* **メンバーによる接続**：メンバーが自分の GitHub アカウントを Claude に接続すると（たとえば[クラウドセッションのセットアップ](/docs/ja/web-quickstart#connect-github)中）、Claude は、そのメンバーが所有し、Claude GitHub App がすでにインストールされている GitHub アカウントをリンクします。これには、メンバーの個人アカウントや、メンバーが所有する GitHub 組織が含まれる場合があります。
 
-**Not linked** とマークされた行は、ユーザー自身の GitHub サインインに由来するものです。これは、Claude GitHub App がインストールされている、ユーザーが GitHub 上で参照できるアカウントです。
+**Not linked** と表示されている行は、自分自身の GitHub サインインに由来するものです。これは、GitHub 上で自分が参照でき、Claude GitHub App がインストールされているアカウントです。
 
-Claude 組織からアカウントのリンクを解除するには、その行のメニューを開き、**Unlink from this workspace** を選択します。リンクを解除しても Claude GitHub App は GitHub 上にインストールされたままとなり、そのアカウントのオーナーの誰かが次に GitHub を Claude に接続したときに、アカウントは再びリンクされます。再びリンクされないようにするには、GitHub 上でそのアカウントから Claude GitHub App をアンインストールしてください。
+Claude 組織からアカウントのリンクを解除するには、その行のメニューを開いて **Unlink from this workspace** を選択します。リンクを解除しても Claude GitHub App は GitHub 上にインストールされたままであり、そのアカウントのいずれかの Owner が次に GitHub を Claude に接続すると、アカウントは再びリンクされます。再びリンクされないようにするには、GitHub 上でそのアカウントから Claude GitHub App をアンインストールしてください。
 
 Enterprise プランでは、リンクおよびリンク解除に対応する [Compliance API](https://platform.claude.com/docs/en/api/compliance/activities/list) のアクティビティタイプは `github_app_installation_linked` と `github_app_installation_unlinked` です。
 

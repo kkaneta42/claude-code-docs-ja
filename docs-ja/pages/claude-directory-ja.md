@@ -175,7 +175,7 @@ Claude Code は、以下の場合に年齢ベースのスイープをスキッ�
 
 | `~/.claude/` 下のパス | 内容 |
 | - | - |
-| `history.jsonl` | 入力したすべてのプロンプト。タイムスタンプとプロジェクトパス付き。上矢印リコール、`Ctrl+R` 履歴検索、`!` シェルコマンド補完に使用されます。[HIPAA 設定がセッションに適用されている](/docs/ja/hipaa-setup#check-how-developers-sign-in-and-connect)場合、各スイープで `cleanupPeriodDays` より古いエントリが削除されます |
+| `history.jsonl` | 入力したプロンプトが、タイムスタンプとプロジェクトパスとともに記録されます。上矢印キーによる呼び出し、`Ctrl+R` による履歴検索、`!` によるシェルコマンドの補完に使用されます。[HIPAA 設定がセッションに適用される](/docs/ja/hipaa-setup#check-how-developers-sign-in-and-connect)場合、各クリーンアップ処理で `cleanupPeriodDays` より古いエントリが削除されます。 |
 | `stats-cache.json` | `/usage` で表示される集計トークンとコスト数 |
 | `remote-settings.json` | 組織の[サーバー管理設定](/docs/ja/server-managed-settings)のキャッシュコピー。組織が何も設定していない場合は `{}`。セッションが[それらを取得](/docs/ja/server-managed-settings#platform-availability)する場合にのみ存在します。Claude Code は起動時と、セッション中は 1 時間ごとに更新を確認します。ログアウト時に削除されます |
 | `cache/changelog.md` | Claude Code チェンジログのキャッシュコピー。`/release-notes` で表示されます。バックグラウンドで更新されます |

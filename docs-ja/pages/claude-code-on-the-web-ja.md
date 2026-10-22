@@ -8,7 +8,7 @@
 
 > [!NOTE]
 >
-> クラウドセッションは Pro、Max、Team プランで利用でき、Premium シートまたは Chat + Claude Code シートを持つ Enterprise ユーザーも対象です。
+> クラウドセッションは Pro、Max、Team プランで利用でき、Premium シートまたは Chat + Claude Code シートを持つ Enterprise ユーザーも対象です。Enterprise 組織が[カスタムロール](https://support.claude.com/en/articles/13930452)でアクセスを管理している場合は、クラウドセッションの権限を含むロールも必要です。Owner にロールの確認を依頼し、不足している場合は [**Organization settings > Roles**](https://claude.ai/admin-settings/roles) で追加してもらってください。
 
 クラウドセッションは、マシン上ではなくクラウドインフラストラクチャで実行される Claude Code セッションです。デフォルトでは Anthropic が管理するインフラストラクチャで実行されるか、ルーティングされた場合は組織の[セルフホスト環境](/docs/ja/self-hosted-environments)で実行されます。セッションはラップトップを閉じた後も実行を続け、任意のデバイスから確認または操作できます。クラウドセッションは、Claude および Claude Code のその他の使用量と合わせてプランの使用制限にカウントされ、クラウド VM に対する別途料金はかかりません。
 
@@ -264,7 +264,7 @@ Claude Code はこれらの差分を raw git blob コンテンツから計算す
 
 * **`/model`、`/effort`、`/color`、`/rename`**：ターミナルピッカーまたはスライダーを開く代わりに、引数として値を渡します。例えば `/model sonnet` のように使用します。引数形式は各コマンドの[利用可能性に関する注記](/docs/ja/commands#all-commands)に従います。
 * **`/fast`**：アカウントで[利用可能な場合](/docs/ja/fast-mode#requirements)、セッションの[ファストモード](/docs/ja/fast-mode#use-fast-mode-in-cloud-sessions)を切り替えます。セッションの環境で Claude Code v2.1.271 以降が必要です。
-* **`/config`**：ブラウザの claude.ai/code では、値を設定する代わりに Claude Code セクションの設定を開き、`key=value` を含むコマンド後のテキストは無視されます。クラウドセッションの設定を変更するには、[環境変数](/docs/ja/cloud-environments#set-environment-variables)を環境に設定するか、1 つのリポジトリを持つセッションでキーをそのリポジトリの `.claude/settings.json` にコミットします。[クラウドセッションの設定](/docs/ja/settings#settings-in-cloud-sessions)には各セッションが読み込むものが記載されています。
+* **`/config`**：ブラウザの claude.ai/code では、値を設定する代わりに Claude Code セクションの設定を開き、`key=value` を含むコマンド後のテキストは無視されます。クラウドセッションの設定を変更するには、環境に[環境変数](/docs/ja/cloud-environments#set-environment-variables)を設定します。[プロジェクト](/docs/ja/claude-projects)外で 1 つのリポジトリを持つセッションでは、代わりにキーをそのリポジトリの `.claude/settings.json` にコミットします。[クラウドセッションの設定](/docs/ja/settings#settings-in-cloud-sessions)には各セッションが読み込むものが記載されています。
 
 コンテキスト管理の場合：
 
@@ -278,7 +278,7 @@ Claude Code はこれらの差分を raw git blob コンテンツから計算す
 
 自動圧縮ウィンドウを変更するには、環境変数で [`CLAUDE_CODE_AUTO_COMPACT_WINDOW`](/docs/ja/env-vars) を設定するか、変数が設定されていないセッションで [`/autocompact`](/docs/ja/commands#all-commands) をトークン数で実行します。
 
-[Subagents](/docs/ja/sub-agents)はローカルと同じように機能します。Claude は Agent ツールでそれらをスポーンして、研究または並列作業を別のコンテキストウィンドウにオフロードし、メイン会話を軽くすることができます。リポジトリの `.claude/agents/` で定義された Subagents は自動的にピックアップされます。
+[サブエージェント](/docs/ja/sub-agents)はローカルと同じように機能します。Claude は Agent ツールでサブエージェントをスポーンして、調査や並列作業を別のコンテキストウィンドウにオフロードし、メインの会話を軽く保つことができます。[プロジェクト](/docs/ja/claude-projects#what-threads-pick-up-from-your-repositories)のスレッド以外では、リポジトリの `.claude/agents/` で定義されたサブエージェントが自動的に読み込まれます。
 
 [Agent teams](/docs/ja/agent-teams)はデフォルトでオフですが、[環境変数](/docs/ja/cloud-environments#set-environment-variables)に `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` を追加することで有効にできます。
 
@@ -428,7 +428,10 @@ v2.1.274 から v2.1.289 までは、サインインメッセージは `Claude C
 [claude.ai/code](https://claude.ai/code) からセッションを再度開いて、新しい VM をプロビジョニングしてください。
 
 * **復元されるもの**: 会話履歴
-* **復元されないもの**: VM が回収されたときにまだ実行されていたバックグラウンド作業（サブエージェントやシェルコマンドなど）、および[自己ペースの `/loop`](/docs/ja/scheduled-tasks#let-claude-choose-the-interval) の保留中のウェイクアップ。ループを再開するには、`/loop` を再度実行してください。
+* **復元されないもの**: VM が回収されたときにまだ実行中または保留中だったバックグラウンド作業。以下が含まれます。
+  * **シェルコマンド**: Claude Code は、どのコマンドが停止したかを Claude に伝えます。まだ必要なコマンドを再実行するよう Claude に依頼してください。
+  * **サブエージェント**: Claude Code は、どのサブエージェントが停止したか、そしてそのうちどれを最初からやり直す代わりに[再開](/docs/ja/sub-agents#resume-subagents)できるかを Claude に伝えます。作業を続けるよう Claude に依頼してください。
+  * **セッションスコープのスケジュールタスク**: [セッション内でスケジュールした](/docs/ja/scheduled-tasks)タスクや、次の反復を待っている `/loop` は、再度開いたセッションには引き継がれません。タスクを再度スケジュールするよう Claude に依頼するか、`/loop` を再度実行してループを再開してください。
 
 ## 制限事項
 

@@ -174,7 +174,9 @@ Claude Code でできることのその他のアイデアについては、[一�
 * **ブックマーク**: 応答にカーソルを合わせて **Bookmark response** をクリックすると保存されます。保存済みの応答で **Remove bookmark** をクリックすると削除されます。
 
   保存した応答を確認するには、Bookmarks パネルを開きます。Claude Code パネル上部のブックマークアイコンをクリックするか、コマンドメニューの Context セクションで **Bookmarks** を選択するか、`/bookmarks` と入力します。Claude Code v2.1.286 以降が必要です。
-* **Claude から送られたファイル**: セッションが [Remote Control](/docs/ja/remote-control#start-a-remote-control-session) に接続されていて、Claude が [`SendUserFile` ツール](/docs/ja/tools-reference)でファイルを送った場合、会話には **Sent report.md, chart.png** のような行が表示されます。ファイル名をクリックするとエディターで開きます。
+* **Claude から送られたファイル**: セッションが [Remote Control](/docs/ja/remote-control#start-a-remote-control-session) に接続されていて、Claude が [`SendUserFile` ツール](/docs/ja/tools-reference)でファイルを送った場合、会話には **Sent report.md, chart.png** のような行が表示されます。ファイル名をクリックするとエディターで開きます。この行は Focus view でも表示されたままになります。Claude Code v2.1.295 以降が必要です。
+
+  パスがネットワークホストを指しているファイルは、`\\server\share\report.md` のようにクリックできない完全なパスとして表示されます。そのファイルを開くとそのホストに接続することになり、Windows では [Windows の認証情報がそのホストに送信される可能性がある](/docs/ja/permissions#read-only-commands)ため、Claude Code はそのファイルをリンクにしません。
 * **コンテキストインジケーター**: プロンプトボックスには、Claude のコンテキストウィンドウをどれだけ使用しているかが表示されます。Claude は必要に応じて自動的に圧縮しますが、`/compact` を手動で実行することもできます。
 * **プロンプトキャッシュの時計**: コンテキストインジケーターの横にある時計アイコンは、会話の[プロンプトキャッシュ](/docs/ja/prompt-caching)の有効期限が切れるまでの残り時間を推定して表示します。キャッシュの 5 分または 1 時間の[有効期間](/docs/ja/prompt-caching#cache-lifetime)からカウントダウンし、キャッシュを使用する応答があるたびにカウントダウンがリセットされます。コンテキスト圧縮を除き、[キャッシュを無効化するアクション](/docs/ja/prompt-caching#actions-that-invalidate-the-cache)では時計はリセットされないため、モデルを切り替えた後も残り時間が表示されることがあります。
   * カウントダウンが終わるまで、アイコンには **12m** のように残りの分数が表示されます。

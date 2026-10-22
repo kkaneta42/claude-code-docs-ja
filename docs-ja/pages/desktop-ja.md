@@ -6,7 +6,7 @@
 
 > Claude Code Desktop をさらに活用する：Git 分離による並列セッション、ドラッグアンドドロップペインレイアウト、統合ターミナルとファイルエディタ、サイドチャット、コンピュータ使用、電話から Dispatch セッションを送信、ビジュアル diff レビュー、アプリプレビュー、PR 監視、コネクタ、エンタープライズ設定。
 
-Claude Desktop アプリには 3 つのタブがあります：**Chat** は会話用、**Cowork** は [Dispatch とより長い agentic work](https://claude.com/product/cowork) 用、**Code** はソフトウェア開発用です。このページは Code タブのリファレンスです。
+Claude Desktop アプリでは、Claude Code は **Code** タブです。アプリにはチャットと [Cowork](https://claude.com/product/cowork) もあり、Cowork は Dispatch やより長いエージェント型の作業を担います。このページは Code タブのリファレンスです。
 
 > **[macOS 用にダウンロード](https://claude.ai/api/desktop/darwin/universal/dmg/latest/redirect?utm_source=claude_code\&utm_medium=docs)**
 >
@@ -214,7 +214,7 @@ Code タブはペインを任意のレイアウトで配置できるように構
 
 ### セッションの詳細を確認する
 
-セッション詳細パネルは、チャットの横に表示されるカードのセットで、セッションの実行場所、変更内容、実行中の内容を表示します。このパネルはセッションを開始した後、チャットの幅が十分にある場合に表示されます。
+セッション詳細パネルは、チャットの横に表示されるカードのセットで、セッションの実行場所、変更内容、実行中の内容、およびコンテキストの使用状況を表示します。このパネルはセッションを開始した後、チャットの幅が十分にある場合に表示されます。
 
 #### セッション詳細パネルを表示または非表示にする
 
@@ -298,7 +298,14 @@ macOS で\*\*Cmd+/**を、Windows で**Ctrl+/\*\*を押して、Code タブで�
 
 ### 使用状況を確認する
 
-モデルピッカーの横の使用状況リングをクリックして、現在のコンテキストウィンドウ使用状況と期間中のプラン使用状況を確認します。コンテキスト使用状況はセッションごと、プラン使用状況はすべての Claude Code サーフェス全体で共有されます。
+このセッションのコンテキストウィンドウがどの程度埋まっているかを確認するには、使用している Code タブのレイアウトを確認します：
+
+* **現在のレイアウト**：[セッション詳細パネル](#see-session-details)の**Context**カードのヘッダーにパーセンテージで表示されます。カードを開くと、ウィンドウを使用している内容をカテゴリ別に確認できます。
+* **[以前のレイアウト](#check-which-layout-you-have)**：モデルピッカーの横の使用状況リングをクリックします。そのポップオーバーにコンテキストウィンドウの使用状況が表示されます。
+
+どちらのレイアウトでも、プロンプトボックスに`/context`と入力すると、このセッションのコンテキストウィンドウのカテゴリ別の内訳がチャットに出力されます。
+
+どちらのレイアウトにも、モデルピッカーの横に使用状況リングがあります。これをクリックするとプランの使用状況が表示されます。プランの使用状況はすべての Claude Code サーフェス全体で共有されます。
 
 ## Claude にコンピュータを使用させる
 
@@ -398,7 +405,7 @@ gitignored ファイル（`.env`など）を新しい worktrees に含めるに�
 
 > [!NOTE]
 >
-> セッション分離には[Git](https://git-scm.com/downloads)が必要です。ほとんどの Mac には Git がデフォルトで含まれています。Terminal で`git --version`を実行して確認してください。バージョン番号が表示されれば、Git がインストールされています。Git エラーが発生した場合は、[Cowork タブ](https://claude.com/product/cowork)で Claude に助けを求めてセットアップのトラブルシューティングを行ってください。
+> セッション分離には[Git](https://git-scm.com/downloads)が必要です。ほとんどの Mac には Git がデフォルトで含まれています。Terminal で`git --version`を実行して確認してください。バージョン番号が表示されれば、Git がインストールされています。Git エラーが発生した場合は、[Cowork](https://claude.com/product/cowork) で Claude に助けを求めてセットアップのトラブルシューティングを行ってください。
 
 ### セッションにフォルダを追加する
 
@@ -462,10 +469,9 @@ Claude は他の Code タブセッションをリストアップし、各セッ�
 
 Claude がこのサーフェスを通じて別のセッションにメッセージを送信する場合、Claude Code はそこにカードとして表示され、送信セッションのタイトルでラベル付けされ、戻るリンクが付いているため、メッセージがどこから来たかを常に知ることができます。受信セッションがタスクの途中にある場合、Claude Code はメッセージを保持し、Claude は現在の作業が完了したら読み取ります。受信する Claude は返信でき、Claude Code はこのサーフェスを通じて返信を配信します。Claude はアーカイブされたセッションに配信できず、メッセージが届かない場合は通知します。
 
-Claude Code はセッション間で 4 つの安全動作を適用します：
+Claude Code はセッション間で 3 つの安全動作を適用します：
 
 * Claude がセッションをアーカイブする前に承認カードが表示されます。ただし、auto モードと Bypass permissions モードでは、Claude は承認カードなしでセッションをアーカイブできます。確認を求められるようにするには、Manual に切り替えてください。
-* このサーフェスを通じて、Claude はスケジュールタスクの実行など、誰も見ていないセッションからクロスセッションメッセージを送信できず、そのようなセッションにメッセージを配信することもできません。
 * Claude Code は、受信セッションが[クロスセッションメッセージング](/docs/ja/cross-session-messaging#availability)自体を持たない場合でも、このサーフェスからの各メッセージを受信セッションの[インバウンドコントロール](/docs/ja/cross-session-messaging#control-inbound-messages)に対してチェックします。受信セッションで[`crossSessionInbound`](/docs/ja/settings-reference#crosssessioninbound)を`refuse`に設定した場合、Claude Code はこのサーフェスからのメッセージをドロップします。Claude Code は拒否を Claude デスクトップアプリに報告します。v2.1.234 より前では、Claude Code はこのサーフェスからクロスセッションメッセージングを持たない受信セッションへのすべてのメッセージをドロップしました。
 * Claude Code は各受信メッセージを引用して送信元のセッションを明示し、Claude はメッセージに基づいて行動する際も受信セッション自体の権限設定に従います。
 
@@ -514,7 +520,7 @@ Claude は新しいセッションを提案することもできます。現在�
 
 ### Dispatch からのセッション
 
-[Dispatch](https://support.claude.com/en/articles/13947068)は、[Cowork](https://claude.com/product/cowork)タブに存在する Claude との永続的な会話です。Dispatch にタスクをメッセージで送信すると、それをどのように処理するかを決定します。
+[Dispatch](https://support.claude.com/en/articles/13947068)は、[Cowork](https://claude.com/product/cowork) 内に存在する Claude との永続的な会話です。Dispatch にタスクをメッセージで送信すると、それをどのように処理するかを決定します。
 
 タスクは 2 つの方法で Code セッションになります：「Claude Code セッションを開いてログインバグを修正する」など直接要求するか、Dispatch がタスクが開発作業であると判断して自動的に生成するかです。通常 Code にルーティングされるタスクには、バグの修正、依存関係の更新、テストの実行、またはプルリクエストの作成が含まれます。リサーチ、ドキュメント編集、スプレッドシート作業は Cowork に留まります。
 
@@ -528,7 +534,7 @@ Dispatch は、ターミナルから離れているときに Claude で作業す
 
 ## Claude Code を拡張する
 
-外部サービスを接続し、再利用可能なワークフローを追加し、Claude の動作をカスタマイズし、プレビューサーバーを設定します。コネクタ、スキル、プラグインを 1 か所で管理するには、サイドバーの**Customize**をクリックします。Desktop アプリの [Cowork](https://claude.com/product/cowork) タブは、CLI の `~/.claude` ディレクトリではなく、この Customize 設定からスキル、プラグイン、コネクタをソースとし、claude.ai アカウント経由で同期します。
+外部サービスを接続し、再利用可能なワークフローを追加し、Claude の動作をカスタマイズし、プレビューサーバーを設定します。コネクタ、スキル、プラグインを 1 か所で管理するには、サイドバーの**Customize**をクリックします。Desktop アプリの [Cowork](https://claude.com/product/cowork) は、CLI の `~/.claude` ディレクトリではなく、claude.ai アカウント経由で同期されるこの Customize 設定から、スキル、プラグイン、コネクタを取得します。
 
 Claude Code はまた、同じアカウントでサインインしたターミナルセッションで、claude.ai アカウント用に有効化されたスキルとプラグインもロードします。[claude.ai から同期されたスキル](/docs/ja/skills#how-synced-skills-behave)および [claude.ai から同期されたプラグイン](/docs/ja/plugins/loading#synced-plugins)を参照してください。
 

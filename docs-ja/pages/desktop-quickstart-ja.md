@@ -6,7 +6,9 @@
 
 > Claude デスクトップアプリをインストールして、Code タブを開き、コンピューター上のプロジェクトフォルダーで最初の Claude Code セッションを開始します。
 
-デスクトップアプリは、グラフィカルインターフェース付きの Claude Code を提供するため、コンピューター上のフォルダー内のコードに対して Claude に作業を依頼し、ターミナルを使用せずにその変更をレビューできます。このページでは、アプリのインストールと **Code** タブで最初のセッションを開始する方法について説明します。Claude Code には [Pro、Max、Team、または Enterprise サブスクリプション](https://claude.com/pricing?utm_source=claude_code\&utm_medium=docs\&utm_content=desktop_quickstart_pricing)が必要です。
+デスクトップアプリは、グラフィカルインターフェース付きの Claude Code を提供します。コンピューター上のフォルダー内のコードに対して Claude に作業を依頼し、ターミナルを使用せずにその変更をレビューできます。
+
+Claude Code は、アプリのサイドバー上部にある **Code** タブにあります。このページでは、アプリのインストールと、そこで最初のセッションを開始する方法について説明します。Claude Code には [Pro、Max、Team、または Enterprise サブスクリプション](https://claude.com/pricing?utm_source=claude_code\&utm_medium=docs\&utm_content=desktop_quickstart_pricing)が必要です。
 
 > **[macOS 用にダウンロード](https://claude.ai/api/desktop/darwin/universal/dmg/latest/redirect?utm_source=claude_code\&utm_medium=docs)**
 >
@@ -27,15 +29,9 @@ Windows ARM64 の場合は、[ARM64 インストーラー](https://claude.ai/api
 > 以下のケースは他のページで説明されています。
 >
 > * **既にセットアップ済み**: [Claude Code Desktop を使用する](/docs/ja/desktop)で Code タブが実行できるすべての機能を参照してください
-> * **ターミナルで `claude` を使用したい**: [CLI をインストール](/docs/ja/quickstart)してください
-
-デスクトップアプリには 3 つのタブがあります。
-
-* **Chat**: ファイルアクセスなしの一般的な会話。claude.ai と同様です。
-* **Cowork**: あなたが他の作業をしている間も独立して作業を実行する自律型バックグラウンドエージェント。
-* **Code**: ローカルファイルへの直接アクセスを備えたインタラクティブなコーディングアシスタント。権限モードに応じて、Claude が提案する各変更を承認するか、Claude が変更を加えた後にレビューします。
-
-Chat と Cowork は [Claude ヘルプセンター](https://support.claude.com/)で説明されています。デスクトップアプリのインストールとデプロイは [Claude Desktop サポート記事](https://support.claude.com/en/collections/16163169-claude-desktop)で説明されています。このページは **Code** タブに焦点を当てています。
+> * **ターミナルで `claude` を使用したい**: [CLI](/docs/ja/quickstart) を別途インストールしてください
+> * **Chat または Cowork を使用している**: [Claude ヘルプセンター](https://support.claude.com/)を参照してください
+> * **デスクトップアプリのインストールやデプロイについて詳しく知りたい**: [Claude Desktop サポート記事](https://support.claude.com/en/collections/16163169-claude-desktop)を参照してください
 
 ## インストール
 
@@ -45,7 +41,11 @@ macOS と Windows では、上記のリンクからインストーラーをダ�
 
 **2. Code タブを開く**
 
-上部中央の **Code** タブをクリックします。Code をクリックするとアップグレードを促すメッセージが表示される場合は、最初に[有料プランにサブスクライブ](https://claude.com/pricing?utm_source=claude_code\&utm_medium=docs\&utm_content=desktop_quickstart_upgrade)する必要があります。オンラインでサインインするよう促すメッセージが表示される場合は、サインインを完了してアプリを再起動してください。403 エラーが表示される場合は、[認証のトラブルシューティング](/docs/ja/desktop#403-or-authentication-errors-in-the-code-tab)を参照してください。
+サイドバー上部の **Code** タブをクリックします。タブにアイコンしか表示されていない場合は、アイコンにカーソルを合わせると名前が表示されます。**Code** をクリックした後にメッセージやエラーが表示された場合は、該当する対処法に従ってください。
+
+* **アップグレードを促すメッセージ**：最初に[有料プランにサブスクライブ](https://claude.com/pricing?utm_source=claude_code\&utm_medium=docs\&utm_content=desktop_quickstart_upgrade)する必要があります
+* **オンラインでサインインするよう促すメッセージ**：サインインを完了してアプリを再起動してください
+* **403 エラー**：[認証のトラブルシューティング](/docs/ja/desktop#403-or-authentication-errors-in-the-code-tab)を参照してください
 
 デスクトップアプリには Claude Code が含まれています。Code タブを使用するために Node.js または CLI をインストールする必要はありません。
 
@@ -87,13 +87,13 @@ Claude に何をさせたいかを入力します。
 
 プロンプトボックスの下の行で[権限モード](/docs/ja/desktop#choose-a-permission-mode)を確認し、Claude が承認を待つかどうかを確認します。
 
-* **Auto or Accept edits**: Claude はファイルの変更を適用し、`+12 -1` などのインジケータが表示されるため、diff ビューで確認できます
+* **Auto or Accept edits**: Claude はファイルの変更を適用し、`+12 -1` などのインジケータが表示されるため、[差分ビュー](/docs/ja/desktop#review-changes-with-diff-view)で確認できます
 * **Manual**: Claude は各変更を提案し、適用する前に承認を待ちます
 
 Manual モードでは、以下が表示されます。
 
-1. 各ファイルで何が変更されるかを正確に示す [diff view](/docs/ja/desktop#review-changes-with-diff-view)
-2. 各変更を承認または拒否するための Accept/Reject ボタン
+1. 何が変更されるかを正確に示す差分
+2. 各変更を承認または拒否するためのボタン
 3. Claude があなたのリクエストを処理する際のリアルタイム更新
 
 ## 次は何をしますか？

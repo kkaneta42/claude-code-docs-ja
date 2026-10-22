@@ -262,6 +262,12 @@ Claude Code は、ユーザー設定ファイル、`--settings` フラグ、お�
 
 `Ctrl+V` を使用したブロック単位のビジュアルモードはサポートされていません。
 
+### vim モードで質問をキャンセル
+
+[Claude が尋ねる質問](/docs/ja/tools-reference#askuserquestion-tool-behavior)の `Other` 行に自分の回答を入力しているときは、`Esc` を 2 回押すと質問をキャンセルできます。
+
+代わりに 1 回のキー押下でキャンセルするには、[質問をキャンセルする別のキーをバインド](/docs/ja/keybindings#cancel-a-question-with-one-key-press)します。
+
 ## コマンド履歴
 
 Claude Code はあなたが入力したプロンプトの履歴を保持し、上矢印キーでの呼び出しは同じプロジェクトの過去のセッションからプロンプトを取得します。
@@ -392,6 +398,15 @@ Claude Code は、キューに入れる代わりに、送信直後に実行す�
 * [`/model`](/docs/ja/model-config#setting-your-model)：Claude Code が[キャッシュ警告](/docs/ja/prompt-caching#switching-models)を表示する場合は、確認後、Claude Code はそのターン内で次に行うリクエストに変更を適用します。
 * [`/effort`](/docs/ja/model-config#adjust-effort-level)：Claude Code が[キャッシュ警告](/docs/ja/prompt-caching#changing-effort-level)を表示する場合は、確認後、Claude Code はそのターン内で次に行うリクエストに変更を適用します。
 * [`/fast`](/docs/ja/fast-mode#toggle-fast-mode)：Claude Code はターンが開始されたときにアクティブだった fast mode 設定を保持するため、速度の変更は次のターンから適用されます。現在のモデルが fast mode をサポートしていない場合、それをオンにすると[モデルも切り替わり](/docs/ja/prompt-caching#turning-on-fast-mode)、Claude Code はそのターン内で次に行うリクエストから新しいモデルを使用します。
+
+### メッセージをキューに入れたままセッションをバックグラウンドに移動する
+
+[`←` を押した](/docs/ja/agent-view#switch-sessions-without-leaving-the-terminal)後にセッションがバックグラウンドに移動すると、キューに入れていたメッセージもセッションとともに移動します。Claude は移動先で、送信した順序でそれらを読みます。
+
+コマンドと `!` シェルコマンドは移動できません。また、[IDE の選択](/docs/ja/vs-code#the-built-in-ide-mcp-server)が付いたメッセージなど、一部のメッセージも移動できません。これらのいずれかがキューに入っている間に `←` を押すと、セッションはフォアグラウンドに留まり、`Cannot open agents` で始まる通知が表示されます。セッションをバックグラウンドに移動するには、そのエントリをキューから取り除いてから、もう一度 `←` を押します。
+
+* **コマンドと `!` シェルコマンド**：ターンの終了時に実行されるのを待つか、[取り戻して](#take-back-what-you-queued)入力ボックスをクリアします。他に何かがキューに入っている間は `!` シェルコマンドを取り戻せないため、実行されるのを待ってください。
+* **移動できないメッセージ**：Claude がそれらを読むまで待ちます
 
 ### キューに入れたものを取り戻す
 

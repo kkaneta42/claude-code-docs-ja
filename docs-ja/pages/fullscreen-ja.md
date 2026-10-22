@@ -32,6 +32,7 @@ Claude Code は、再起動されたセッションに以下を引き継ぎま�
 * [権限モード](/docs/ja/permission-modes)と[努力レベル](/docs/ja/model-config#adjust-effort-level)
 * [`/model`](/docs/ja/model-config#setting-your-model)で最後に選択したモデル
 * [`--allowed-tools` または `--disallowed-tools`](/docs/ja/cli-reference#cli-flags)で渡したルール、および `--agent`、`--agents`、`--append-system-prompt`、および `--system-prompt-snapshot` フラグ
+* 起動時に指定した `--chrome` または `--no-chrome` フラグ。これにより、[Chrome 統合](/docs/ja/chrome)はこのセッションで選択したとおりオンまたはオフのままになります
 
 Claude Code は、再起動されたプロセスに渡すことができない制限がセッションにある場合、再起動を拒否します。渡すことができない制限には以下が含まれます。
 

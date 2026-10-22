@@ -84,6 +84,7 @@ Claude は、失敗したコマンドや欠落したステップなど、実行�
 | :- | :- | :- |
 | `migrate` | 既存の Claude API コードを新しいモデルに更新する | v2.1.221 より前 |
 | `upgrade` | プロジェクトの Anthropic SDK 依存関係をメジャーバージョン間で移動します。現在は Python `anthropic` パッケージを 0.x から 1.x に移動します | v2.1.236 以降 |
+| `api-version` | Claude API コードを新しい [API バージョン](https://platform.claude.com/docs/en/api/versioning)向けに更新し、リクエストをそのバージョンに切り替える | v2.1.307 以降 |
 | `managed-agents-onboard` | 新しい Managed Agent の作成をウォークスルーする | v2.1.221 より前 |
 | `managed-agents-onboard <url>` | URL のページが説明する Managed Agent を構築する。たとえば [Managed Agents ドキュメント](https://platform.claude.com/docs/en/managed-agents/overview) 内のページなど | v2.1.290 以降 |
 | `managed-agents-onboard <quickstart-name>` | `deep-researcher` など、Console のクイックスタートテンプレートの 1 つを構築する。テンプレート名ではない単語を 1 つ指定した場合、Claude は有効な名前を一覧表示します | v2.1.290 以降 |
@@ -156,8 +157,8 @@ What did I change?
 | :- | :- | :- |
 | Enterprise | `.claude/skills/<skill-name>/SKILL.md` in the [managed settings directory](/docs/ja/managed-settings#delivery-mechanisms) | 組織がデプロイするマシン上のすべてのユーザー |
 | Personal | `~/.claude/skills/<skill-name>/SKILL.md` | このマシン上のすべてのプロジェクト。ただし [Cowork またはクラウドセッション](#skills-in-cowork-and-cloud-sessions) は除く |
-| Project | `.claude/skills/<skill-name>/SKILL.md` | このリポジトリ内のセッション。コミットするとチームも取得できます |
-| Nested | `<subdir>/.claude/skills/<skill-name>/SKILL.md` | `<subdir>` で開始されたセッション、またはその下で開始されたセッション。その上で開始されたセッションは、Claude がそこのファイルで作業を開始すると、スキルを 1 回読み込みます。[monorepos と subdirectories](#discovery-from-parent-and-nested-directories) を参照してください |
+| Project | `.claude/skills/<skill-name>/SKILL.md` | このリポジトリ内のセッション。ただし [プロジェクト内のクラウドスレッド](/docs/ja/claude-projects#what-threads-pick-up-from-your-repositories) は除く。コミットするとチームも取得できます |
+| Nested | `<subdir>/.claude/skills/<skill-name>/SKILL.md` | `<subdir>` またはその下で開始されたセッション。ただしプロジェクト内のクラウドスレッドは除く。それらのスレッド以外では、その上で開始されたセッションは、Claude がそこのファイルで作業するとスキルを読み込みます。[モノレポとサブディレクトリ](#discovery-from-parent-and-nested-directories) を参照してください |
 | Additional directory | `.claude/skills/<skill-name>/SKILL.md` in a directory you pass with `--add-dir` | そのセッション。[プロジェクト外のディレクトリ](#skills-from-additional-directories) を参照してください |
 | Plugin | `<plugin>/skills/<skill-name>/SKILL.md` | [プラグイン](/docs/ja/plugins/overview) が有効な場所。`/plugin-name:skill-name` として |
 | claude.ai account | claude.ai アカウント用に有効化されたスキル | Cowork セッション、クラウドセッション、およびそのアカウントでサインインするターミナルセッション。[claude.ai から同期されたスキル](#how-synced-skills-behave) を参照してください |
@@ -208,12 +209,12 @@ Claude Code は、起動時に `--add-dir` で渡したディレクトリの `.c
 
 ### Cowork およびクラウドセッションでスキルを使用する
 
-[Cowork](https://claude.com/product/cowork) セッションおよび [クラウドセッション](/docs/ja/cloud-environments#what-carries-over-from-your-setup)（[クラウドのスケジュールタスク](/docs/ja/routines) を含む）は、マシン上の `~/.claude/skills/` を読み込みません。対話型の Cowork セッションとスケジュール実行される Cowork セッションはどちらも、claude.ai アカウント用に有効化されたスキルを読み込みます。これらはセッション開始時に同期されます。Desktop アプリサイドバーの **Customize** または claude.ai のスキル設定から管理します。クラウドセッションは、さらにクローンされたリポジトリの `.claude/skills/` にコミットされたプロジェクトスキルを読み込みます。
+[Cowork](https://claude.com/product/cowork) セッションおよび [クラウドセッション](/docs/ja/cloud-environments#what-carries-over-from-your-setup)（[クラウドのスケジュールタスク](/docs/ja/routines) を含む）は、マシン上の `~/.claude/skills/` を読み込みません。対話型の Cowork セッションとスケジュール実行される Cowork セッションはどちらも、claude.ai アカウント用に有効化されたスキルを読み込みます。これらはセッション開始時に同期されます。Desktop アプリサイドバーの **Customize** または claude.ai のスキル設定から管理します。
 
 スキルがマシン上の `~/.claude/skills/` にのみ存在する場合、[クラウドのスケジュールタスク](/docs/ja/routines) がそれを呼び出すと、Claude Code はスキルが見つからないと報告します。これは、各実行が新しいクラウドセッションとして開始されるためです。これらのセッションで personal スキルを利用可能にするには：
 
-* Cowork およびクラウドセッションの場合、claude.ai アカウント用にスキルを有効化します。[セルフホスト環境の一部のセッション](/docs/ja/self-hosted-environments-configuration#how-each-session’s-config-is-assembled) は、アカウントのスキルを読み込みません。
-* クラウドセッションの場合、代わりにスキルをリポジトリの `.claude/skills/` にコミットできます。リポジトリの `.claude/settings.json` で宣言されたプラグインおよびユーザーセッティングでのみ有効化されたプラグインは [クラウドセッションで読み込まれません](/docs/ja/cloud-environments#what-carries-over-from-your-setup)。
+* Cowork セッション、クラウドセッション、および [プロジェクト](/docs/ja/claude-projects#what-threads-pick-up-from-your-repositories) 内のクラウドスレッドの場合、claude.ai アカウント用にスキルを有効化します。プロジェクトのクラウドスレッドでは、リポジトリの `.claude/skills/` にコミットされたスキルは利用できません。[セルフホスト環境の一部のセッション](/docs/ja/self-hosted-environments-configuration#how-each-session’s-config-is-assembled) は、アカウントのスキルを読み込みません。
+* プロジェクトスレッド以外のクラウドセッションの場合、代わりにスキルをリポジトリの `.claude/skills/` にコミットできます。リポジトリの `.claude/settings.json` で宣言されたプラグインおよびユーザー設定でのみ有効化されたプラグインは [クラウドセッションで読み込まれません](/docs/ja/cloud-environments#what-carries-over-from-your-setup)。
 
 [Desktop scheduled tasks](/docs/ja/desktop-scheduled-tasks) はマシン上でローカルに実行されるため、`~/.claude/skills/` を読み込みます。
 
@@ -399,7 +400,7 @@ Claude Code がフロントマターを読み取るのは、開始の `---` が�
 | `agent` | いいえ | `context: fork` が設定されている場合に使用するサブエージェントの種類。 |
 | `background` | いいえ | `context: fork` の場合にのみ適用されます。`false` に設定すると、[バックグラウンドで実行する](#run-skills-in-a-subagent)代わりに、スキルを呼び出したターンでフォークされたサブエージェントの結果を待ちます。デフォルト：`true`。Claude Code v2.1.218 以降が必要です。 |
 | `hooks` | いいえ | スキルが呼び出されたときに Claude Code が登録し、セッションの残りの間実行し続けるフック。設定形式と `once` オプションについては、[スキルとエージェントのフック](/docs/ja/hooks#hooks-in-skills-and-agents)を参照してください。 |
-| `paths` | いいえ | このスキルがアクティブになるタイミングを制限する glob パターン。カンマ区切りの文字列または YAML リストを受け付けます。設定すると、Claude はパターンに一致するファイルを扱っている場合にのみスキルを自動的に読み込みます。[パス固有のルール](/docs/ja/memory#path-specific-rules)と同じ形式を使用します。 |
+| `paths` | いいえ | このスキルがアクティブになるタイミングを制限する glob パターン。カンマ区切りの文字列または YAML リストを受け付けます。設定すると、Claude はパターンに一致するファイルを扱っている場合にのみスキルを自動的に読み込みます。パターンは Claude の現在の作業ディレクトリからの相対パスであり、そのディレクトリ外のファイルは一致しません。[パス固有のルール](/docs/ja/memory#path-specific-rules)と同じ glob 形式を使用します。 |
 | `shell` | いいえ | このスキル内の `` !`command` `` および ` ```! ` ブロックに使用するシェル。`bash`（デフォルト）または `powershell` を受け付けます。`powershell` を設定すると、[PowerShell ツール](/ja/tools-reference#powershell-tool)が有効な場合にインラインのシェルコマンドが PowerShell 経由で実行されます。このツールは、Git Bash のない Windows ではデフォルトでオン、Git Bash のある環境では claude.ai および Console アカウントでデフォルトでオンであり、Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry のセッション、および macOS、Linux、WSL では `CLAUDE_CODE_USE_POWERSHELL_TOOL=1` が必要です。ツールをオフにするには `0` に設定します。 |
 | `metadata` | いいえ | エンタイトルメントやカタログのフィールドなど、独自のツールが `SKILL.md` から読み取る独自のキーと値のデータのための自由形式の YAML マップ。Claude Code はその内容に基づいて動作せず、マップではない値は破棄します。`paths` などのフロントマターのフィールド名をキーとして再利用しないでください。 |
 | `license` | いいえ | スキルに適用されるライセンス。[Agent Skills](https://agentskills.io) 仕様の一部です。[Claude Code 以外でスキルのフロントマターを使用する](#using-skill-frontmatter-outside-claude-code)を参照してください。Claude Code はこのフィールドを受け付けますが、それに基づいて動作はしません。 |
@@ -756,7 +757,7 @@ PowerShell ツールも、実行するコマンドに同じタイムアウト、
 どのコマンドがこの例外の対象になるかはシェルによって異なります。
 
 * デフォルトの `bash` シェル: [出力の制限](/docs/ja/tools-reference#output-limits)に記載されているコマンド
-* `shell: powershell` で PowerShell ツールが有効な場合: `grep` と `git diff` を含み、`find` と `diff` を含まない[別のセット](/docs/ja/tools-reference#shell-selection-in-settings-hooks-and-skills)
+* `shell: powershell` で PowerShell ツールが有効な場合: `grep` と `git diff` を含み、`find` と `diff` を含まない[別のセット](/docs/ja/tools-reference#exit-code-1-from-searches-and-git-diff-in-powershell)
 
 デフォルトの `bash` シェルでは、0 以外で終了することが想定されるその他のコマンドには `|| true` を追加してください。問題を検出したときに 1 で終了するチェックスクリプトがその一例です。
 
@@ -1174,10 +1175,11 @@ if __name__ == '__main__':
 Claude がスキルを期待通りに使用しない場合：
 
 1. 説明にユーザーが自然に言うキーワードが含まれているか確認してください
-2. スキルが「利用可能なスキルは何ですか？」に表示されているか確認してください
+2. スキルが `What skills are available?` に表示されているか確認してください
 3. 説明により密接に一致するようにリクエストを言い換えてみてください
 4. スキルがユーザー呼び出し可能な場合は、`/skill-name` で直接呼び出してください
 5. `/skill-name` も認識されない場合は、Claude Code が[スキルの名前を拒否した](#characters-a-skill-name-cant-hold)かどうかを確認してください
+6. スキルが `paths` を設定している場合は、Claude が読み取り、編集、または書き込むファイルが Claude の現在の作業ディレクトリ内にあることを確認してください。スキルはその外にあるファイル（兄弟関係にある git worktree 内のファイルなど。`/add-dir` で追加したものであっても同様です）に対してはアクティブになりません。それらのファイルでスキルをアクティブにするには、その worktree で Claude Code を起動するか、[`/cd` でセッションをそこに移動](/docs/ja/permissions#move-the-session-to-another-directory)してください。
 
 frontmatter YAML が不正な形式の場合、Claude Code はスキル本体を空のメタデータで読み込むため、`/skill-name` は機能しますが Claude は `description` と照合できません。`--debug` で実行してパースエラーを確認してください。
 

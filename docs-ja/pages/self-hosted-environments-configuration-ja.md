@@ -281,7 +281,7 @@ claude self-hosted-runner orchestrator \
 | `CLAUDE_RUNNER_ATTEMPT` | ログ記録に使用するセッションごとのカウンター。再試行回数でもリクエスト数でもありません。事前ウォーミング要求では `0` ですが、セッションに対する要求でも `0` になる場合があります。 |
 | `CLAUDE_RUNNER_ORDER_SERVER_TIME` | ポーリング応答の HTTP `Date` ヘッダーからのサーバー時刻。フックがワークオーダー JWT の `exp` を検証する場合、ローカルクロックの代わりにこの値と比較して、スキューを許容してください。ゲートウェイがヘッダーを省略した場合は空です。 |
 | `CLAUDE_RUNNER_POOL_ID` | 新しいランナーが参加する環境の ID。`ccpool_...` 形式です。 |
-| `CLAUDE_RUNNER_ACCOUNT_ID` | セッションをエンキューしたアカウントのタグ付き ID。アカウントごとのルーティング、クォータ、またはチャージバック用です。利用できない場合は空で、Claude Tag チャネルセッションでは常に空です。どのアカウントもこれらのセッションをエンキューしません。 |
+| `CLAUDE_RUNNER_ACCOUNT_ID` | セッションをエンキューしたアカウントのタグ付き ID。アカウントごとのルーティング、クォータ、またはチャージバックに使用し、重複排除キーとしては使用しないでください。利用できない場合は空で、Claude Tag チャネルセッションでは常に空です。どのアカウントもこれらのセッションをエンキューしません。 |
 | `CLAUDE_RUNNER_ACCOUNT_EMAIL` | セッションをエンキューしたアカウントのメール。利用できない場合は空です。メールを個人識別情報として扱い、ログに記録しないでください。 |
 | `CLAUDE_RUNNER_PRIMARY_REPO_URL` | セッションの最初の git ソースの URL。そのリポジトリが事前ウォーミングされたランナーへのルーティング用です。セッションに git ソースがない場合は空です。 |
 | `CLAUDE_RUNNER_PRIMARY_REPO_REVISION` | セッションの最初の git ソースのリビジョン。ブランチ、SHA、タグ、または完全な参照名です。指定されていない場合は空です。 |
@@ -370,7 +370,21 @@ trap 'rc=$?; [ "$rc" -eq 0 ] || [ -n "${PERMANENT:-}" ] || exit 1' EXIT
   ```bash theme={null}
   trap 'rc=$?; your-cleanup-command || true; [ "$rc" -eq 0 ] || [ -n "${PERMANENT:-}" ] || exit 1' EXIT
   ```
-* **失敗が許容されるコマンド**：フックが以前 `set -e` を使用していなかった場合、ゼロ以外を返す最初のコマンドで停止するようになります。たとえば、何も見つからない検索や、プラットフォームが拒否する重複送信などです。フックが結果に基づいて動作する場合は、そのコマンドを `if` の条件にしてください。結果を無視する場合は、コマンドの後に `|| true` を付けてください。
+* **失敗が許容されるコマンド**：フックが以前 `set -e` を使用していなかった場合、ゼロ以外を返す最初のコマンドで停止するようになります。たとえば、何も見つからない検索などです。フックが結果に基づいて動作する場合は、そのコマンドを `if` の条件にしてください。結果を無視する場合は、コマンドの後に `|| true` を付けてください。
+* **ワークロードを送信するコマンド**：その後に `|| true` を付けないでください。`|| true` を付けると、プラットフォームが送信を拒否した場合（たとえばクォータ超過）でもフックは 0 で終了し、セッションは起動されなかったランナーを待ち続けます。
+
+  [フックの最初のルール](#the-spawn-runner-hook)にあるとおり、ワークロードには `CLAUDE_RUNNER_ORDER_ID` に基づいた名前を付けてください。そうすると、「既に存在する」という応答は同じ要求の再配信を意味するため、その応答だけを成功として扱います。それ以外の場合は、応答を stderr に出力して終了 1 にするか、どの再試行でも修正できない場合は `permanent` を呼び出します。次の例は `kubectl create` でこれを行うもので、`job.yaml` にはワークロードのみが含まれています。
+
+  ```bash theme={null}
+  if ! out=$(kubectl create -f job.yaml 2>&1); then
+    case "$out" in
+      *AlreadyExists*) ;;
+      *) printf '%s\n' "${out:-kubectl create failed}" >&2; exit 1 ;;
+    esac
+  fi
+  ```
+
+  これにより、オーケストレーターのログにそのメッセージが表示されます。フックが他のオブジェクトを作成する場合は、それぞれにオーダー ID に基づいた名前を付け、それぞれ個別のコマンドで作成し、同様に「既に存在する」という応答を成功として扱ってください。シークレットを保持するオブジェクトの場合は、コマンドの出力の代わりに固定のメッセージを出力してください。
 
 trap が機能することを確認するには、`trap` 行の直下に、`no-such-command` などの存在しないコマンドを呼び出す行を追加します。シェルからフックファイルを実行し、`echo $?` が `1` を出力することを確認してから、その行を削除します。
 
@@ -477,7 +491,7 @@ Claude Code は、ほかのソースからも MCP サーバーを読み込みま
 
 * 標準のシステムパスにあるエンタープライズスコープの[管理 MCP ファイル](/docs/ja/managed-mcp)：Linux のランナーホストでは `/etc/claude-code/managed-mcp.json`、macOS のホストでは `/Library/Application Support/ClaudeCode/managed-mcp.json` です。管理者が列挙したサーバーのみを読み込めるようにする、ロックダウンされたフリートで使用します。優先順位のルールについては、[managed-mcp.json による排他的な制御](/docs/ja/managed-mcp#exclusive-control-with-managed-mcp-json)を参照してください。このファイルがランナーホスト上にある場合、Claude Code は claude.ai のコネクタを含め、Anthropic のコントロールプレーンがセッションに配信する MCP サーバーをスキップし、セッションの子プロセスの stderr に出力される警告でそれらの名前を示します。ランナーはこの警告を `debug` ログレベルで記録します。v2.1.229 より前は、これらのセッションは起動時に `You cannot dynamically configure MCP servers when an enterprise MCP config is present` というメッセージを出して終了していました。
 * ランナーホスト上の[管理設定](/docs/ja/managed-settings)にある [`managedMcpServers`](/docs/ja/settings-reference#managedmcpservers) キー：排他的な制御を行わずに HTTP および SSE サーバーを提供するため、ほかのソースからのサーバーも引き続き読み込まれます。Claude Code v2.1.259 以降が必要です。
-* `<repo>/.mcp.json`：プロジェクトスコープです。このファイルをリポジトリにコミットしてください。そのサーバーはクラウドセッションで自動承認されます。複数のリポジトリを含むセッションでは、[読み込まれるのは最大 1 つのリポジトリのファイルのみです](#repository-settings-in-sessions-with-several-repositories)。
+* `<repo>/.mcp.json`：プロジェクトスコープです。[プロジェクト](/docs/ja/claude-projects#what-threads-pick-up-from-your-repositories)のスレッド以外では、このファイルをリポジトリにコミットすると、そのサーバーはクラウドセッションで自動承認されます。複数のリポジトリを含むセッションでは、[読み込まれるのは最大 1 つのリポジトリのファイルのみです](#repository-settings-in-sessions-with-several-repositories)。
 * ラッパースクリプトから指定する [`--mcp-config`](/docs/ja/cli-reference#cli-flags) ファイル：`exec "$CLAUDE_RUNNER_CLAUDE_BIN" "$@" --mcp-config /etc/claude/mcp.json` のように、`"$@"` の後にフラグを追加します。セッションに配信されるサーバーがセッションの途中で更新されたときにもこのファイルのサーバーを実行し続けるには、`exec` のように、ラッパーから子プロセスに[環境全体](#wrapper-scripts)を渡すようにしてください。v2.1.299 より前は、このファイル内の stdio、HTTP、SSE サーバーは、それらを指定していない最初の更新の時点でシャットダウンしていました。
 
 組織でコネクタ配信が有効になっている場合、Anthropic のコントロールプレーンは、claude.ai で設定したコネクタを、サーバーが提供する MCP 設定を通じて対話的に作成されたセッションに配信します。この配信は `api.anthropic.com` を経由します。[CLI からのディスパッチ](/docs/ja/self-hosted-environments-testing#run-the-test-loop)のようにプログラムで作成されたセッションには、コネクタは配信されません。そうしたセッションには、このセクションで挙げたほかのいずれかのソースを通じて MCP サーバーを提供してください。子プロセスの OAuth トークンにはコネクタを直接取得するためのスコープが含まれていないため、子プロセスが自らその取得を試みることはありません。配信はサーバー主導で行われます。
@@ -663,7 +677,7 @@ exec "$CLAUDE_RUNNER_CLAUDE_BIN" "$@" --permission-mode auto
 
 セッションは次の設定ファイルも読み取ります。
 
-* **プロジェクト設定**：リポジトリにコミットされた `.claude/settings.json` は、ユーザーレベルのベースラインの上に重ねて適用されます。複数のリポジトリを含むセッションでは、[有効になるのは最大 1 つのリポジトリのファイルのみです](#repository-settings-in-sessions-with-several-repositories)。
+* **プロジェクト設定**：[プロジェクト](/docs/ja/claude-projects#what-threads-pick-up-from-your-repositories) のスレッド以外では、リポジトリにコミットされた `.claude/settings.json` は、ユーザーレベルのベースラインの上に重ねて適用されます。複数のリポジトリを含むセッションでは、[有効になるのは最大 1 つのリポジトリのファイルのみです](#repository-settings-in-sessions-with-several-repositories)。
 * **管理設定**：セッションはランナーイメージの標準システムパスから [`managed-settings.json`](/docs/ja/settings#where-settings-live) を読み取ります。そのキーが [サーバー管理設定](/docs/ja/server-managed-settings) と一緒に適用されるかどうかについては、[Claude Code が管理ソースを組み合わせる方法](/docs/ja/managed-settings#how-claude-code-combines-managed-sources) を参照してください。
 
 これらのソースが適用される順序については、[設定の優先順位](/docs/ja/settings#settings-precedence) を参照してください。
@@ -674,7 +688,7 @@ Anthropic のコントロールプレーンがセッションに [Claude Code �
 * **誰がそれらを作成するか**：コントロールプレーンはセッションごとまたはサードパーティ入力からではなく、独自のデプロイメント内の固定定数からスクリプトを入力します。
 * **何がそれらを管理するか**：`--settings` を通じて配信されるフックは通常のマージされたフック設定に入り、管理層ではないため、管理設定はまだ適用されます。`disableAllHooks` はそれらを無効にし、[`allowManagedHooksOnly`](/docs/ja/settings-reference#allowmanagedhooksonly) が保つカテゴリーには含まれません。
 
-ユーザーが自分でセッションを開始すると、Claude Code は [その claude.ai アカウントで有効になっているスキル](/docs/ja/skills#skills-in-cowork-and-cloud-sessions) もそのセッションの設定ディレクトリにダウンロードします。[クラウドのスケジュールタスク](/docs/ja/routines) の実行ではオーナーのスキルは取得されず、[Bedrock または Agent Platform にモデルリクエストを送信する](#send-model-requests-to-bedrock-or-agent-platform) セッションはスキルを一切ダウンロードしません。これらのセッションで必要なスキルは、リポジトリの `.claude/skills/` にコミットするか、ランナーイメージに追加してください。
+ユーザーが自分でセッションを開始すると、Claude Code は [その claude.ai アカウントで有効になっているスキル](/docs/ja/skills#skills-in-cowork-and-cloud-sessions) もそのセッションの設定ディレクトリにダウンロードします。[クラウドのスケジュールタスク](/docs/ja/routines) の実行ではオーナーのスキルは取得されず、[Bedrock または Agent Platform にモデルリクエストを送信する](#send-model-requests-to-bedrock-or-agent-platform) セッションはスキルを一切ダウンロードしません。これらのセッションで必要なスキルは、ランナーイメージに追加するか、[プロジェクト](/docs/ja/claude-projects#what-threads-pick-up-from-your-repositories) 以外ではリポジトリの `.claude/skills/` にコミットしてください。
 
 [Claude Tag](https://claude.com/docs/claude-tag/overview) セッション以外では、セルフホスト環境のセッションはデフォルトで [自動メモリ](/docs/ja/memory#auto-memory) がオフの状態で実行されます。セッションをまたいで引き継ぐべき指示には、ランナーイメージまたはリポジトリ内の `CLAUDE.md` を使用してください。
 
@@ -682,12 +696,14 @@ Anthropic のコントロールプレーンがセッションに [Claude Code �
 
 ### 複数のリポジトリを含むセッションでのリポジトリ設定
 
-複数のリポジトリを含むセッションでは、Claude Code はセッションの開始ディレクトリからプロジェクト設定を読み取るため、プロジェクト設定として有効になるのは最大 1 つのリポジトリの `.claude/settings.json` のみです。別のリポジトリのファイルで定義されたフックは実行されず、そのファイル内の拒否ルールは適用されず、その `env` も設定されません。
+[プロジェクト](/docs/ja/claude-projects#what-threads-pick-up-from-your-repositories) 内のスレッドでは、スレッドがどこで開始しても、どのリポジトリの `.claude/settings.json` もプロジェクト設定として有効にならず、どのリポジトリの `.mcp.json` やスキルも読み込まれません。これらのスレッドにスキルを提供するには、ランナーイメージに追加してください。
+
+それ以外の複数のリポジトリを含むセッションでは、Claude Code はセッションの開始ディレクトリからプロジェクト設定を読み取るため、プロジェクト設定として有効になるのは最大 1 つのリポジトリの `.claude/settings.json` のみです。別のリポジトリのファイルで定義されたフックは実行されず、そのファイル内の拒否ルールは適用されず、その `env` も設定されません。
 
 * **`--capacity 1`（デフォルト）と組み込みのチェックアウトを使用する場合**：セッションはリポジトリリストの最初のリポジトリで開始します。そのリポジトリの `.claude/settings.json` がプロジェクト設定として有効になり、その `.mcp.json` が読み込まれますが、他のリポジトリのものは有効にならず、読み込まれません。
 * **1 より大きい `--capacity`、または [`checkout` フック](#checkout) を使用する場合**：セッションはチェックアウトを含むセッションごとのディレクトリで開始します。どのリポジトリの `.claude/settings.json` もプロジェクト設定として有効にならず、どのリポジトリの `.mcp.json` も読み込まれず、フックコマンド内の [`$CLAUDE_PROJECT_DIR`](/docs/ja/hooks#reference-scripts-by-path) はチェックアウトではなくそのディレクトリになります。
 
-各リポジトリの `CLAUDE.md` とスキルは、セッションがどこで開始しても読み込まれます。ランナーはすべてのリポジトリを [追加ディレクトリ](/docs/ja/permissions#additional-directories-grant-file-access-not-configuration) として Claude Code に渡すため、Claude Code は各リポジトリの `.claude/settings.json` から `enabledPlugins` キーと `extraKnownMarketplaces` キーも読み取ります。
+各リポジトリの `CLAUDE.md` は、セッションがどこで開始しても読み込まれます。プロジェクトのスレッド以外では、そのスキルも読み込まれます。ランナーはすべてのリポジトリを [追加ディレクトリ](/docs/ja/permissions#additional-directories-grant-file-access-not-configuration) として Claude Code に渡すため、Claude Code は各リポジトリの `.claude/settings.json` から `enabledPlugins` キーと `extraKnownMarketplaces` キーも読み取ります。
 
 すべてのセッションでフックを実行したり権限ルールを適用したりするには、ランナーホストの `~/.claude/settings.json` に記述します。ランナーは、セッションがどこで開始しても、[ホストのファイルをすべてのセッションにシードします](#how-each-session’s-config-is-assembled)。`Read` ルールまたは `Edit` ルールのパスは、`//` による絶対パスまたは `~/` によるホーム相対の [パターン](/docs/ja/permissions#read-and-edit) として記述してください。それ以外のパターンは設定ソースまたは現在のディレクトリを基準とするためです。
 

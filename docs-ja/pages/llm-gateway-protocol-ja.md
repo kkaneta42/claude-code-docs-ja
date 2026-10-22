@@ -231,9 +231,11 @@ Claude Code は `ANTHROPIC_BASE_URL` ゲートウェイを Anthropic フォー�
 
 ### 自動リトライとエラー転送
 
-アップストリームがこれらの機能のいずれかを拒否した場合、Claude Code は拒否された部分を除いてリクエストを自動的に再試行できます：
+アップストリームがこれらの機能のいずれかを拒否した場合、Claude Code は拒否された部分を削除または変更してリクエストを自動的に再試行できます：
 
-* アップストリームが `thinking` フィールド、会話中のシステムメッセージ、またはそのようなメッセージの `cache_control` マーカーを拒否する場合、Claude Code はリクエストをリトライし、拒否された機能を会話の残りの部分で無効にします
+* `thinking.type` の値 `enabled` または `adaptive` がサポートされていないと `400` が示す場合、Claude Code はもう一方のタイプで 1 回再試行し、`thinking` フィールドは維持します。そのモデルへの以降のリクエストは、Claude Code が終了するまで切り替え後のタイプを使い続けます。v2.1.121 より前では、Claude Code は再試行しなかったため、[`thinking.type.enabled is not supported`](/docs/ja/errors#thinking-type-enabled-is-not-supported-for-this-model) が開発者に届いていました
+* アップストリームが `messages` 内の `role: "system"` エントリを拒否した場合、Claude Code はそれらの会話中のシステムメッセージを除いて 1 回再試行し、そのテキストを代わりにユーザーメッセージに含めます。会話内の以降のリクエストは、開発者が `/clear` を実行するか会話が圧縮されるまでその形式を維持します
+* アップストリームが会話中のシステムメッセージの `cache_control` マーカーのみを拒否した場合、Claude Code はシステムメッセージを維持し、マーカーを移動して 1 回再試行します。その再試行と、Claude Code が終了するまでの以降のリクエストでは、マーカーは `messages` 内でシステムメッセージではない最後のエントリに付けられます
 * アップストリームが[思考署名](https://platform.claude.com/docs/en/build-with-claude/extended-thinking)を拒否する場合（`bound to a different conversation` という `400` を含む）、Claude Code はリクエストを以前の思考ブロックなしでリトライし、それらを後のすべてのリクエストから除外します。新しい応答には依然として思考が含まれます
 * ゲートウェイまたはそのアップストリームが [advisor ツール](/docs/ja/advisor)エントリを `tools` で認識されないツールタイプとして拒否する場合、Claude Code はそのエントリとその `anthropic-beta` 値なしでリクエストを 1 回リトライします。その後のそのベース URL へのリクエストは Claude Code が終了するまで advisor を除外し、その時間は `/advisor` は開発者に利用不可です。Claude Code はこの拒否を `Input tag` の後にツールタイプを命名するメッセージを含む `400` または `422` レスポンスによって認識します。例えば `Input tag 'advisor_20260301'` です。v2.1.280 より前では、Claude Code はこの拒否をリトライしませんでした
 * アップストリームが `output_config.effort` を拒否する場合、Claude Code は努力なしでリクエストを再試行し、Claude Code が終了するまでそのモデルへの以降のリクエストから努力を除外します。Claude Code はこの拒否を、メッセージが `Extra inputs are not permitted` とともに `output_config.effort` を挙げている、またはモデルが努力パラメーターをサポートしていないと述べている `400` によって認識します

@@ -141,7 +141,7 @@ CLAUDE.md ファイルがどのように読み込まれ、相互作用するか�
 * `"**/packages/legacy-*/**"`: グロブに一致する名前のすべてのパッケージを除外します。ルールを含みます
 * `"/home/user/monorepo/legacy/CLAUDE.md"`: 絶対パスで 1 つの特定のファイルを除外します
 
-管理ポリシー CLAUDE.md ファイルは除外できないため、組織全体の命令は常に適用されます。`claudeMdExcludes` は任意の [設定スコープ](/docs/ja/settings#where-settings-live)で設定できます。ユーザー、プロジェクト、ローカル、または管理。配列はスコープ全体でマージされるため、チームはプロジェクトレベルのデフォルトを設定でき、個人はローカルオーバーライドを追加できます。
+`claudeMdExcludes` は任意の[設定スコープ](/docs/ja/settings#where-settings-live)（ユーザー、プロジェクト、ローカル、または管理）で設定できます。配列はスコープ全体でマージされるため、チームはプロジェクトレベルのデフォルトを設定し、個人はローカルの上書きを追加できます。組織が[管理 CLAUDE.md ファイル](/docs/ja/memory#deploy-organization-wide-claude-md)をデプロイしている場合、どのスコープでパターンを設定していても、そのファイルに一致するパターンによってスキップされることはありません。
 
 完全な除外ドキュメントについては、[特定の CLAUDE.md ファイルを除外](/docs/ja/memory#exclude-specific-claude-md-files)を参照してください。
 
@@ -349,7 +349,7 @@ Each route file has a corresponding `.test.ts` file.
 
 別のサブディレクトリは同じ方法で異なるスキルを保持します。`packages/web/.claude/skills/component-patterns/` はテストの代わりにフロントエンドのコンポーネント規約を説明します。Claude が `packages/api/` のファイルで作業するとき、api-testing スキルを読み込みます。`packages/web/` で作業するとき、component-patterns を読み込みます。どちらのディレクトリのスキルも他方のタスク中には読み込まれません。
 
-配置の代わりにファイルパターンでスキルをスコープすることもできます。[`paths` frontmatter フィールド](/docs/ja/skills#frontmatter-reference)はグロブパターンを受け取り、Claude は一致するファイルで作業するときのみ自動的にスキルを読み込みます。これをリポジトリルートの `.claude/skills/` に存在するスキルに使用して、データベースマイグレーションスキルなど `**/migrations/**` にスコープされた特定のファイルにのみ適用します。
+配置の代わりにファイルパターンでスキルをスコープすることもできます。[`paths` フロントマターフィールド](/docs/ja/skills#frontmatter-reference)はグロブパターンを受け取り、Claude は一致するファイルで作業するときのみ自動的にスキルを読み込みます。これをリポジトリルートの `.claude/skills/` に存在するスキルに使用して、データベースマイグレーションスキルなど `**/migrations/**` にスコープされた特定のファイルにのみ適用します。
 
 スキルの作成と整理の詳細については、[スキル](/docs/ja/skills)を参照してください。
 

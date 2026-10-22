@@ -73,21 +73,21 @@ Claude Code のプロンプトで `/hooks` と入力して hooks ブラウザを
 
 `Esc` を押して CLI に戻ります。ステータスバーに `⏸ manual mode on` が表示されるまで `Shift+Tab` を押し、権限が必要な操作を Claude に依頼してから、ターミナル以外のウィンドウに切り替えます。デスクトップ通知を受け取るはずです。
 
-## 自動化できるもの
+## 自動化できること
 
-Hooks を使用すると、Claude Code のライフサイクルの主要なポイントでコードを実行できます：編集後にファイルをフォーマットし、実行前にコマンドをブロックし、Claude が入力を必要とするときに通知を送信し、セッション開始時にコンテキストを注入するなど。Hook イベントの完全なリストについては、[Hooks リファレンス](/docs/ja/hooks#hook-lifecycle) を参照してください。
+フックを使うと、Claude Code のライフサイクルの重要なタイミングでコードを実行できます。たとえば、編集後にファイルをフォーマットする、コマンドを実行前にブロックする、Claude が入力を必要としているときに通知を送る、セッション開始時にコンテキストを注入する、などです。フックイベントの完全な一覧は、[フックリファレンス](/docs/ja/hooks#hook-lifecycle)を参照してください。
 
-各例には、[設定ファイル](#configure-hook-location) に追加する準備ができた設定ブロックが含まれています。
+各例には、[設定ファイル](#configure-hook-location)に追加するだけで使える設定ブロックが含まれています。
 
-本番環境での hooks の例として、別のモデルレビューを実行し、その結果をセッションにフィードバックする場合は、[`security-guidance` プラグインが Claude Code と統合する方法](/docs/ja/security-guidance#how-the-plugin-integrates-with-claude-code) を参照してください。
+別のモデルによるレビューを実行し、その結果をセッションにフィードバックするフックの本番環境での例については、[`security-guidance` プラグインが Claude Code と統合する仕組み](/docs/ja/security-guidance#how-the-plugin-integrates-with-claude-code)を参照してください。
 
-### Claude が入力を必要とするときに通知を受け取る
+### Claude が入力を必要としているときに通知を受け取る
 
-Claude が作業を完了して入力を必要とするときはいつでもデスクトップ通知を取得し、ターミナルをチェックせずに他のタスクに切り替えることができます。
+Claude が作業を終えて入力を必要としているときにデスクトップ通知を受け取れるようにします。これにより、ターミナルを確認しなくても他のタスクに切り替えられます。
 
-このフックは `Notification` イベントを使用します。これは Claude が入力または権限を待っているときに Claude Code が発火するイベントです。正確なタイミングについては、[各通知タイプが発火するタイミング](/docs/ja/hooks#notification)を参照してください。
+このフックは `Notification` イベントを使用します。このイベントは、Claude が入力または権限を待っているときに Claude Code が発火させます。正確なタイミングについては、[各通知タイプが発火するタイミング](/docs/ja/hooks#notification)を参照してください。
 
-以下の各タブはプラットフォームのネイティブ通知コマンドを使用します。これを `~/.claude/settings.json` に追加します：
+以下の各タブでは、プラットフォームのネイティブな通知コマンドを使用しています。これを `~/.claude/settings.json` に追加します。
 
 **macOS**
 
@@ -111,15 +111,15 @@ Claude が作業を完了して入力を必要とするときはいつでもデ�
 
 > **通知が表示されない場合**
 >
-> `osascript` は組み込みの Script Editor アプリを通じて通知をルーティングします。Script Editor に通知権限がない場合、コマンドは何も表示せずに失敗し、macOS は権限の付与を求めません。
+> `osascript` は、組み込みの Script Editor アプリを経由して通知を送ります。Script Editor に通知の権限がない場合、コマンドは何も表示せずに失敗し、macOS は権限を付与するよう求めてきません。
 >
-> Terminal でこれを 1 回実行して、Script Editor を通知設定に表示させます：
+> ターミナルで次のコマンドを一度実行して、Script Editor を通知設定に表示させます。
 >
 > ```bash theme={null}
 > osascript -e 'display notification "test"'
 > ```
 >
-> まだ何も表示されません。**System Settings > Notifications** を開き、リストで **Script Editor** を見つけて、**Allow Notifications** をオンにします。コマンドを再度実行して、テスト通知が表示されることを確認します。
+> この時点ではまだ何も表示されません。**システム設定 > 通知** を開き、一覧から **Script Editor** を見つけて **通知を許可** をオンにします。コマンドを再度実行して、テスト通知が表示されることを確認します。
 
 **Linux**
 
@@ -143,13 +143,13 @@ Claude が作業を完了して入力を必要とするときはいつでもデ�
 
 > **通知が表示されない場合**
 >
-> `notify-send` はデスクトップ通知デーモンが必要です。ヘッドレスサーバー、SSH セッション、ほとんどのコンテナにはこれがありません。まずコマンドを直接テストしてください：
+> `notify-send` にはデスクトップ通知デーモンが必要ですが、ヘッドレスサーバー、SSH セッション、ほとんどのコンテナにはこれがありません。まずコマンドを直接テストしてください。
 >
 > ```bash theme={null}
 > notify-send 'Claude Code' 'test'
 > ```
 >
-> コマンドが見つからない場合は、Debian と Ubuntu で `libnotify-bin` パッケージをインストールするか、ディストリビューションの同等のものをインストールしてください。
+> コマンドが見つからない場合は、Debian や Ubuntu では `libnotify-bin` パッケージを、その他のディストリビューションでは同等のパッケージをインストールしてください。
 
 **Windows (PowerShell)**
 
@@ -173,42 +173,43 @@ Claude が作業を完了して入力を必要とするときはいつでもデ�
 
 > **ダイアログが表示されない場合**
 >
-> このコマンドは画面の隅の通知ではなくダイアログボックスを開くため、ダイアログがターミナルウィンドウの背後で開く可能性があります。まず PowerShell でコマンドを直接テストしてください。
+> このコマンドは画面の隅に通知を表示するのではなくダイアログボックスを開くため、ダイアログがターミナルウィンドウの背後に開くことがあります。まず PowerShell でコマンドを直接テストしてください。
 >
-> Claude Code を WSL 内で実行する場合、`powershell.exe` が Windows interop を通じて `PATH` で利用可能である必要があります。
+> WSL 内で Claude Code を実行している場合は、Windows の相互運用機能を通じて `powershell.exe` が `PATH` 上で利用可能である必要があります。
 
-空の `matcher` はすべての通知タイプで発火します。特定のイベントでのみ発火させるには、次のいずれかの値に設定します：
+空の `matcher` は、すべての通知タイプで発火します。特定のイベントでのみ発火させるには、次のいずれかの値を設定します。
 
 | Matcher | 発火するタイミング |
 | :- | :- |
-| `permission_prompt` | Claude がツール使用を承認する必要があるか、サンドボックス化されたコマンドの[ネットワークリクエスト](/docs/ja/sandboxing#network-isolation)を承認する必要があり、プロンプトが約 6 秒待機している |
-| `idle_prompt` | Claude が約 60 秒前に応答を完了し、その後入力していない |
+| `permission_prompt` | Claude がツールの使用またはサンドボックス化されたコマンドの[ネットワークリクエスト](/docs/ja/sandboxing#network-isolation)の承認を必要としていて、プロンプトが約 6 秒間待機したとき |
+| `idle_prompt` | Claude が約 60 秒前に応答を終え、それ以降ユーザーが入力していないとき |
 | `auth_success` | 認証が完了したとき |
-| `elicitation_dialog` | MCP サーバーが引き出しフォームを開き、約 6 秒入力していない |
-| `elicitation_url_dialog` | MCP サーバーがブラウザURL を開くよう求め、約 6 秒入力していない |
-| `elicitation_complete` | MCP サーバーが[URL モード引き出し](/docs/ja/hooks#elicitation-input)が完了したことを報告する |
-| `elicitation_response` | MCP 引き出し応答がサーバーに送り返されたとき |
-| `agent_needs_input` | バックグラウンドセッションがあなたの入力を待つのを開始するか、[agent view](/docs/ja/agent-view) が開いている間のみ発火します。また、ターミナルセッションが[agent team チームメイトのターミナルセットアップ質問](/docs/ja/agent-teams#choose-a-display-mode)を表示するか、auto mode の[分類器リクエスト料金](/docs/ja/auto-mode-classifier-billing)に関する通知を表示し、約 6 秒入力していないときも発火します |
-| `agent_completed` | バックグラウンドセッションが完了または失敗します。[agent view](/docs/ja/agent-view) が開いている間のみ発火します |
-| `quota_auto_resume_fired` | Claude Code は claude.ai 使用制限が一時停止した後、タスクを続行します：リセット時、または Claude Code 中に何かを行うことで使用可能になったとき（使用クレジットの追加、プランのアップグレード、モデルの切り替えなど）。[モデル設定の例外](/docs/ja/interactive-mode#wait-for-a-usage-limit-to-reset)を参照してください |
-| `quota_auto_resume_stale` | claude.ai 使用制限がコンピュータが約 30 分以上スリープしている間にリセットされました。Claude Code はタスクを続行する代わりに `Enter` キーを押すのを待ちます。より短いスリープの後、それは続行し、代わりに `quota_auto_resume_fired` を発火します |
-| `quota_auto_resume_disabled` | Claude Code は claude.ai 使用制限の待機をタスクを続行せずに終了します：[`autoContinueAtUsageLimit`](/docs/ja/settings-reference#autocontinueatusagelimit) がオフになったか、リセットが Claude Code が開始した待機中に 24 時間以上先に移動した、続行されたタスクが制限に引き続きヒットした、または継続がモデルに到達する前にブロックされました。`Esc` または `Ctrl+C` を押すか、**Don't continue automatically** を選択したときは発火しません |
+| `elicitation_dialog` | MCP サーバーが elicitation フォームを開き、ユーザーが約 6 秒間入力していないとき |
+| `elicitation_url_dialog` | MCP サーバーがブラウザで URL を開くよう求め、ユーザーが約 6 秒間入力していないとき |
+| `elicitation_complete` | MCP サーバーが [URL モードの elicitation](/docs/ja/hooks#elicitation-input) の完了を報告したとき |
+| `elicitation_response` | MCP elicitation の応答がサーバーに返送されたとき |
+| `agent_needs_input` | [エージェントビュー](/docs/ja/agent-view)が開いている間に、バックグラウンドセッションがユーザーの入力待ちを開始したとき。また、ターミナルセッションが[エージェントチームのチームメイトのターミナルセットアップに関する質問](/docs/ja/agent-teams#choose-a-display-mode)や、auto モードの[分類器リクエストの料金](/docs/ja/auto-mode-classifier-billing)に関するお知らせを表示し、ユーザーが約 6 秒間入力していないときにも発火します |
+| `agent_completed` | バックグラウンドセッションが終了または失敗したとき。[エージェントビュー](/docs/ja/agent-view)が開いている間にのみ発火します |
+| `quota_auto_resume_fired` | claude.ai の使用制限によって一時停止したタスクを Claude Code が続行したとき。続行はリセット時に行われるか、待機中に Claude Code で行った操作（使用クレジットの追加、プランのアップグレード、モデルの切り替えなど）によって使用量が再び利用可能になった場合はそれより早く行われます。ただし、[モデル設定の例外](/docs/ja/interactive-mode#wait-for-a-usage-limit-to-reset)があります |
+| `quota_auto_resume_stale` | コンピューターが約 30 分以上スリープしている間に claude.ai の使用制限がリセットされたとき。Claude Code は続行せず、ユーザーが `Enter` を押すのを待ちます。スリープがそれより短い場合は続行し、代わりに `quota_auto_resume_fired` を発火させます |
+| `quota_auto_resume_disabled` | Claude Code がタスクを続行せずに claude.ai の使用制限の待機を終了したとき。これは、Claude Code が自ら開始した待機中に [`autoContinueAtUsageLimit`](/docs/ja/settings-reference#autocontinueatusagelimit) がオフになった場合やリセットが 24 時間以上先に移動した場合、続行したタスクが繰り返し制限に達した場合、または続行がモデルに到達する前にブロックされた場合です。ユーザーが `Esc` または `Ctrl+C` を押した場合や、**自動的に続行しない** を選んだ場合は発火しません |
+| `plugin_notification` | [mod](/docs/ja/plugins/mods/api#show-something-without-starting-a-turn) が `$.ui.notify` で通知を発行したとき。mod がタイトルを設定していない限り、フックの `title` は mod の名前になります |
 
-Claude Code は `permission_prompt` をターミナルと Claude Desktop、VS Code 拡張機能、および Agent SDK を通じて許可リクエストに答えるその他のホストで異なる方法でタイミングします。[各通知タイプが発火するタイミング](/docs/ja/hooks#notification) を参照して、両方のタイミングを確認してください。
+Claude Code は、ターミナルと、Claude Desktop、VS Code 拡張機能、その他 Agent SDK を通じて権限リクエストに応答するホストとで、`permission_prompt` のタイミングを異なる方法で計測します。両方のタイミングについては、[各通知タイプが発火するタイミング](/docs/ja/hooks#notification)を参照してください。
 
-`quota_auto_resume_fired`、`quota_auto_resume_stale`、および `quota_auto_resume_disabled` マッチャーには Claude Code v2.1.234 以降が必要です。
+`quota_auto_resume_fired`、`quota_auto_resume_stale`、`quota_auto_resume_disabled` の matcher には Claude Code v2.1.234 以降が必要です。
 
 ターミナルセッションでは、サンドボックス化されたコマンドのネットワークリクエストに対する `permission_prompt` には Claude Code v2.1.246 以降が必要です。
 
-チームメイトのターミナルセットアップ質問に対する `agent_needs_input` には Claude Code v2.1.248 以降が必要です。
+チームメイトのターミナルセットアップに関する質問に対する `agent_needs_input` には Claude Code v2.1.248 以降が必要です。
 
-Claude Code のプロンプトで `/hooks` と入力し、`Notification` の下にフックが表示されることを確認します。
+Claude Code のプロンプトで `/hooks` と入力し、フックが `Notification` の下に表示されることを確認します。
 
 ### 編集後にコードを自動フォーマットする
 
-Claude が編集するすべてのファイルで [Prettier](https://prettier.io/) を自動的に実行し、手動操作なしでフォーマットの一貫性を保ちます。
+Claude が編集するすべてのファイルに対して [Prettier](https://prettier.io/) を自動的に実行し、手作業なしでフォーマットの一貫性を保ちます。
 
-この hook は `PostToolUse` イベントを `Edit|Write` マッチャーで使用するため、ファイル編集ツールの後にのみ実行されます。コマンドは [`jq`](https://jqlang.org/) で編集されたファイルパスを抽出し、Prettier に渡します。これをプロジェクトルートの `.claude/settings.json` に追加します：
+このフックは `Edit|Write` matcher を指定した `PostToolUse` イベントを使用するため、ファイル編集ツールの後にのみ実行されます。コマンドは [`jq`](https://jqlang.org/) で編集されたファイルのパスを抽出し、Prettier に渡します。これをプロジェクトルートの `.claude/settings.json` に追加します。
 
 ```json theme={null}
 {
@@ -228,25 +229,25 @@ Claude が編集するすべてのファイルで [Prettier](https://prettier.io
 }
 ```
 
-hook をテストするには、Claude に JavaScript ファイルにシングルクォート文字列を含む行を追加するよう求めてください。その後ファイルを開きます：Prettier のデフォルト設定では、hook はそれらをダブルクォートに書き直します。
+フックをテストするには、JavaScript ファイルにシングルクォートの文字列を含む行を追加するよう Claude に依頼してから、ファイルを開きます。Prettier のデフォルト設定では、フックがそれらをダブルクォートに書き換えます。
 
-フックが成功すると、Claude Code は会話に何も表示しません。フックが実行されたことを確認するには、編集されたファイルが再フォーマットされていることを確認するか、[フックが何をしたかを確認する](#check-what-a-hook-did)を参照してください。
+フックが成功した場合、Claude Code は会話に何も表示しません。フックが実行されたことを確認するには、編集されたファイルが再フォーマットされていることを確認するか、[フックの動作を確認する](#check-what-a-hook-did)を参照してください。
 
-ファイルが `Bash` コマンドで書き直されるときを含め、特定のファイルがどのように変更されても再フォーマットするには、代わりに [FileChanged](/docs/ja/hooks#filechanged) hook を使用してください。
+`Bash` コマンドによる書き換えを含め、どのような方法で変更されても特定のファイルを再フォーマットするには、代わりに [FileChanged](/docs/ja/hooks#filechanged) フックを使用します。
 
 > [!NOTE]
 >
-> このページの Bash の例は JSON 解析に `jq` を使用します。macOS で `brew install jq`、Debian と Ubuntu で `apt-get install jq` でインストールするか、[`jq` ダウンロード](https://jqlang.org/download/) を参照してください。
+> このページの Bash の例では、JSON の解析に `jq` を使用しています。macOS では `brew install jq`、Debian や Ubuntu では `apt-get install jq` でインストールするか、[`jq` のダウンロード](https://jqlang.org/download/)を参照してください。
 
 ### 保護されたファイルへの編集をブロックする
 
-Claude が `.env`、`package-lock.json`、`.git/` 内のものなどの機密ファイルを変更するのを防ぎます。Claude は編集がブロックされた理由を説明するフィードバックを受け取るため、アプローチを調整できます。
+Claude が `.env`、`package-lock.json`、`.git/` 内のファイルなど、機密性の高いファイルを変更しないようにします。Claude は編集がブロックされた理由を説明するフィードバックを受け取るため、アプローチを調整できます。
 
-この例は hook が呼び出す別のスクリプトファイルを使用します。スクリプトはターゲットファイルパスを保護されたパターンのリストに対してチェックし、終了コード 2 で編集をブロックします。
+この例では、フックが呼び出す別のスクリプトファイルを使用します。スクリプトは対象のファイルパスを保護パターンのリストと照合し、終了コード 2 で終了して編集をブロックします。
 
-**1. hook スクリプトを作成する**
+**1. フックスクリプトを作成する**
 
-これを `.claude/hooks/protect-files.sh` に保存します：
+これを `.claude/hooks/protect-files.sh` に保存します。
 
 ```bash theme={null}
 #!/bin/bash
@@ -255,7 +256,7 @@ Claude が `.env`、`package-lock.json`、`.git/` 内のものなどの機密フ
 INPUT=$(cat)
 FILE_PATH=$(echo "$INPUT" | jq -r '.tool_input.file_path // empty')
 
-# Windows バックスラッシュセパレータを正規化して、以下のパターンがマッチするようにします
+# Normalize Windows backslash separators so the patterns below match
 FILE_PATH="${FILE_PATH//\\//}"
 
 PROTECTED_PATTERNS=(".env" "package-lock.json" ".git/")
@@ -272,15 +273,15 @@ exit 0
 
 **2. macOS と Linux でスクリプトを実行可能にする**
 
-Hook スクリプトが Claude Code で実行されるには、実行可能である必要があります：
+Claude Code がフックスクリプトを実行するには、スクリプトが実行可能である必要があります。
 
 ```bash theme={null}
 chmod +x .claude/hooks/protect-files.sh
 ```
 
-**3. hook を登録する**
+**3. フックを登録する**
 
-`.claude/settings.json` に `PreToolUse` hook を追加して、`Edit` または `Write` ツール呼び出しの前にスクリプトを実行します：
+`Edit` または `Write` ツールの呼び出しの前にスクリプトを実行する `PreToolUse` フックを `.claude/settings.json` に追加します。
 
 ```json theme={null}
 {
@@ -300,15 +301,15 @@ chmod +x .claude/hooks/protect-files.sh
 }
 ```
 
-**4. hook をテストする**
+**4. フックをテストする**
 
-Claude に `.env` ファイルにコメントを追加するよう求めてください。Claude Code は実行前に編集をブロックし、スクリプトの `Blocked:` メッセージを Claude にフィードバックとして渡します。
+`.env` ファイルにコメントを追加するよう Claude に依頼します。Claude Code は編集が実行される前にそれをブロックし、スクリプトの `Blocked:` メッセージをフィードバックとして Claude に渡します。
 
-### 圧縮後にコンテキストを再注入する
+### コンテキスト圧縮後にコンテキストを再注入する
 
-Claude のコンテキストウィンドウがいっぱいになると、圧縮は会話を要約してスペースを解放します。これは重要な詳細を失う可能性があります。`compact` マッチャーで `SessionStart` hook を使用して、すべての圧縮後に重要なコンテキストを再注入します。
+Claude のコンテキストウィンドウがいっぱいになると、コンテキスト圧縮によって会話が要約され、空き領域が確保されます。このとき重要な詳細が失われることがあります。`compact` matcher を指定した `SessionStart` フックを使用すると、圧縮のたびに重要なコンテキストを再注入できます。
 
-Claude Code はコマンドが stdout に書き込むプレーンテキストを Claude のコンテキストに追加します。この例はプロジェクト規約と最近の作業を Claude に思い出させます。これをプロジェクトルートの `.claude/settings.json` に追加します：
+Claude Code は、コマンドが stdout に書き出したプレーンテキストを Claude のコンテキストに追加します。この例では、プロジェクトの規約と最近の作業を Claude に思い出させます。これをプロジェクトルートの `.claude/settings.json` に追加します。
 
 ```json theme={null}
 {
@@ -328,13 +329,13 @@ Claude Code はコマンドが stdout に書き込むプレーンテキストを
 }
 ```
 
-`echo` を `git log --oneline -5` などの動的出力を生成するコマンドに置き換えて、最近のコミットを表示できます。すべてのセッション開始時にコンテキストを注入する場合は、代わりに [CLAUDE.md](/docs/ja/memory) を使用することを検討してください。環境変数については、リファレンスの [`CLAUDE_ENV_FILE`](/docs/ja/hooks#persist-environment-variables) を参照してください。
+`echo` は、最近のコミットを表示する `git log --oneline -5` のように、動的な出力を生成する任意のコマンドに置き換えられます。セッション開始のたびにコンテキストを注入する場合は、代わりに [CLAUDE.md](/docs/ja/memory) の使用を検討してください。環境変数については、リファレンスの [`CLAUDE_ENV_FILE`](/docs/ja/hooks#persist-environment-variables) を参照してください。
 
-### 設定変更を監査する
+### 設定の変更を監査する
 
-セッション中に設定またはスキルファイルが変更されたときを追跡します。`ConfigChange` イベントは外部プロセスまたはエディタが設定ファイルを変更したときに発火するため、コンプライアンスのために変更をログに記録したり、不正な変更をブロックしたりできます。
+セッション中に設定ファイルやスキルファイルが変更されたタイミングを追跡します。`ConfigChange` イベントは、外部プロセスやエディターが設定ファイルを変更したときに発火するため、コンプライアンスのために変更をログに記録したり、許可されていない変更をブロックしたりできます。
 
-この例は各変更を監査ログに追加します。これを `~/.claude/settings.json` に追加します：
+この例では、各変更を監査ログに追記します。これを `~/.claude/settings.json` に追加します。
 
 ```json theme={null}
 {
@@ -354,15 +355,15 @@ Claude Code はコマンドが stdout に書き込むプレーンテキストを
 }
 ```
 
-マッチャーは設定タイプでフィルタリングします：`user_settings`、`project_settings`、`local_settings`、`policy_settings`、または `skills`。変更が有効になるのをブロックするには、終了コード 2 で終了するか、`{"decision": "block"}` を返します。完全な入力スキーマについては、[ConfigChange リファレンス](/docs/ja/hooks#configchange) を参照してください。
+matcher は設定の種類でフィルタリングします。指定できる値は `user_settings`、`project_settings`、`local_settings`、`policy_settings`、`skills` です。変更が反映されないようにブロックするには、終了コード 2 で終了するか、`{"decision": "block"}` を返します。入力スキーマの全体については、[ConfigChange リファレンス](/docs/ja/hooks#configchange)を参照してください。
 
-hook が変更を記録することを確認するには、セッションが実行中に別のエディタで設定ファイルを編集してから、`~/claude-config-audit.log` を開きます：hook は変更ごとに 1 つの JSON 行をタイムスタンプ、ソース、ファイルパスとともに追加します。
+フックが変更を記録していることを確認するには、セッションの実行中に別のエディターで設定ファイルを編集してから、`~/claude-config-audit.log` を開きます。フックは変更ごとに、タイムスタンプ、ソース、ファイルパスを含む JSON を 1 行追記します。
 
-### ディレクトリまたはファイルが変更されたときに環境をリロードする
+### ディレクトリやファイルが変更されたときに環境を再読み込みする
 
-一部のプロジェクトは、どのディレクトリにいるかに応じて異なる環境変数を設定します。[direnv](https://direnv.net/) などのツールはシェルで自動的にこれを行いますが、Claude の Bash ツールはそれらの変更を自動的に取得しません。
+プロジェクトによっては、どのディレクトリにいるかに応じて異なる環境変数を設定します。[direnv](https://direnv.net/) などのツールはシェルでこれを自動的に行いますが、Claude の Bash ツールはそれらの変更を自動的には取り込みません。
 
-`SessionStart` hook を `CwdChanged` hook とペアリングすることでこれを修正します。`SessionStart` は起動したディレクトリの変数をロードし、`CwdChanged` は Claude がディレクトリを変更するたびにそれらをリロードします。どちらも `CLAUDE_ENV_FILE` に書き込み、Claude Code は各 Bash コマンドの前にスクリプトプリアンブルとして実行します。これを `~/.claude/settings.json` に追加します：
+`SessionStart` フックと `CwdChanged` フックを組み合わせると、この問題を解決できます。`SessionStart` は起動したディレクトリの変数を読み込み、`CwdChanged` は Claude がディレクトリを変更するたびに変数を再読み込みします。どちらも `CLAUDE_ENV_FILE` に書き込み、Claude Code はこれを各 Bash コマンドの前にスクリプトのプリアンブルとして実行します。これを `~/.claude/settings.json` に追加します。
 
 ```json theme={null}
 {
@@ -391,9 +392,9 @@ hook が変更を記録することを確認するには、セッションが実
 }
 ```
 
-`direnv allow` をすべてのディレクトリで 1 回実行して、direnv が `.envrc` をロードすることが許可されるようにします。direnv の代わりに devbox または nix を使用する場合、同じパターンは `direnv export bash` の代わりに `devbox shellenv` または `devbox global shellenv` で機能します。
+`.envrc` があるディレクトリごとに一度 `direnv allow` を実行し、direnv がそのファイルを読み込めるようにします。direnv の代わりに devbox や nix を使用している場合は、`direnv export bash` の代わりに `devbox shellenv` または `devbox global shellenv` を使用すれば、同じパターンが機能します。
 
-すべてのディレクトリ変更ではなく、特定のファイルに反応するには、`FileChanged` を `matcher` で使用して、監視するファイル名をリストします（パイプで区切られています）。ウォッチリストを構築するために、この値は正規表現として評価されるのではなく、リテラルファイル名に分割されます。[FileChanged](/docs/ja/hooks#filechanged) を参照して、同じ値がファイルが変更されたときにどの hook グループが実行されるかをフィルタリングする方法を確認してください。この例は現在のディレクトリの `.envrc` と `.env` を監視します：
+ディレクトリの変更のたびではなく特定のファイルに反応させるには、監視するファイル名を `|` で区切って列挙した `matcher` を指定して `FileChanged` を使用します。監視リストを構築する際、Claude Code はこの値を正規表現として評価するのではなく、リテラルのファイル名に分割します。同じ値が、ファイルの変更時にどのフックグループを実行するかのフィルタリングにも使われる仕組みについては、[FileChanged](/docs/ja/hooks#filechanged) を参照してください。この例では、作業ディレクトリ内の `.envrc` と `.env` を監視します。
 
 ```json theme={null}
 {
@@ -413,15 +414,15 @@ hook が変更を記録することを確認するには、セッションが実
 }
 ```
 
-入力スキーマ、`watchPaths` 出力、および `CLAUDE_ENV_FILE` の詳細については、[CwdChanged](/docs/ja/hooks#cwdchanged) および [FileChanged](/docs/ja/hooks#filechanged) リファレンスエントリを参照してください。
+入力スキーマ、`watchPaths` の出力、`CLAUDE_ENV_FILE` の詳細については、[CwdChanged](/docs/ja/hooks#cwdchanged) と [FileChanged](/docs/ja/hooks#filechanged) のリファレンス項目を参照してください。
 
-### 特定の許可プロンプトを自動承認する
+### 特定の権限プロンプトを自動承認する
 
-常に許可するツール呼び出しの承認ダイアログをスキップします。この例は `ExitPlanMode` を自動承認します。これは Claude がプランの提示を終了して続行するよう求めるときに呼び出すツールです。プランが準備できるたびにプロンプトが表示されることはありません。
+常に許可しているツール呼び出しについて、承認ダイアログをスキップします。この例では、Claude が計画の提示を終えて続行の承認を求める際に呼び出すツールである `ExitPlanMode` を自動承認するため、計画が準備できるたびにプロンプトが表示されることはなくなります。
 
-上記の終了コード例とは異なり、自動承認には hook が JSON 決定を stdout に書き込む必要があります。Claude Code は `PermissionRequest` hook を実行します。これは Claude Code が許可ダイアログを表示しようとするときに実行され、hook が `"behavior": "allow"` を返すと、Claude Code はあなたの代わりにリクエストに答えます。
+上記の終了コードの例とは異なり、自動承認を行うには、フックが JSON の決定を stdout に書き出す必要があります。Claude Code は権限を求めようとするときに `PermissionRequest` フックを実行し、フックが `"behavior": "allow"` を返した場合は、ユーザーに代わってリクエストに応答します。
 
-マッチャーは hook を `ExitPlanMode` のみにスコープするため、他のプロンプトは影響を受けません。これを `~/.claude/settings.json` に追加します：
+matcher によってフックのスコープが `ExitPlanMode` のみに限定されるため、他のプロンプトには影響しません。これを `~/.claude/settings.json` に追加します。
 
 ```json theme={null}
 {
@@ -441,17 +442,17 @@ hook が変更を記録することを確認するには、セッションが実
 }
 ```
 
-Hook が承認すると、Claude Code は Plan Mode を終了し、Plan Mode に入る前にアクティブだった許可モードを復元します。トランスクリプトは、ダイアログが表示されたはずの場所に「Allowed by PermissionRequest hook」と表示されます。Hook パスは常に現在の会話を保持します：ダイアログができるように、コンテキストをクリアして新しい実装セッションを開始することはできません。
+フックが承認すると、Claude Code は plan モードを終了し、plan モードに入る前に有効だった権限モードを復元します。トランスクリプトには、ダイアログが表示されるはずだった場所に「Allowed by PermissionRequest hook」と表示されます。フックを経由する場合は常に現在の会話が維持されます。ダイアログのようにコンテキストをクリアして新しい実装セッションを開始することはできません。
 
-特定の許可モードを設定する代わりに、hook の出力に `setMode` エントリを含む `updatedPermissions` 配列を含めることができます。`mode` 値は `default`、`acceptEdits`、または `bypassPermissions` などの任意の許可モードであり、`destination: "session"` は現在のセッションのみに適用します。
+代わりに特定の権限モードを設定するには、フックの出力に `setMode` エントリを含む `updatedPermissions` 配列を含めます。`mode` の値には `default`、`acceptEdits`、`bypassPermissions` などの任意の権限モードを指定し、`destination: "session"` を指定すると現在のセッションにのみ適用されます。
 
 > [!NOTE]
 >
-> `bypassPermissions` は、セッションが既にバイパスモードで起動された場合にのみ適用されます：`--dangerously-skip-permissions`、`--permission-mode bypassPermissions`、`--allow-dangerously-skip-permissions`、または [ユーザー、`--settings`、または管理設定](/docs/ja/settings-reference#permissions-defaultmode) の `permissions.defaultMode: "bypassPermissions"`。[`permissions.disableBypassPermissionsMode`](/docs/ja/permissions#managed-settings) で無効化されている場合、または [制限モード](/docs/ja/cli-reference#cli-flags) でセッションを開始した場合は適用されません。
+> `bypassPermissions` は、バイパスモードがすでに利用可能な状態でセッションを開始した場合にのみ適用されます。具体的には、`--dangerously-skip-permissions`、`--permission-mode bypassPermissions`、`--allow-dangerously-skip-permissions`、または[ユーザー設定、`--settings`、管理設定](/docs/ja/settings-reference#permissions-defaultmode)での `permissions.defaultMode: "bypassPermissions"` のいずれかを使用した場合です。[`permissions.disableBypassPermissionsMode`](/docs/ja/permissions#managed-settings) によってバイパスモードが無効化されている場合や、[制限モード](/docs/ja/cli-reference#cli-flags)でセッションを開始した場合は適用されません。
 >
-> Claude Code は `defaultMode` として永続化することはありません。
+> Claude Code がこれを `defaultMode` として保存することはありません。
 
-セッションを `acceptEdits` に切り替えるには、hook は stdout に次の JSON を書き込みます：
+セッションを `acceptEdits` に切り替えるには、フックが次の JSON を stdout に書き出します。
 
 ```json theme={null}
 {
@@ -467,7 +468,7 @@ Hook が承認すると、Claude Code は Plan Mode を終了し、Plan Mode に
 }
 ```
 
-マッチャーをできるだけ狭く保ちます。`.*` でマッチングするか、マッチャーを空のままにすると、ファイル書き込みやシェルコマンドを含むすべての許可プロンプトが自動承認されます。決定フィールドの完全なセットについては、[PermissionRequest リファレンス](/docs/ja/hooks#permissionrequest-decision-control) を参照してください。
+matcher はできるだけ限定的にしてください。`.*` でマッチさせたり matcher を空のままにしたりすると、ファイルの書き込みやシェルコマンドを含む、すべてのツールの権限プロンプトが自動承認されてしまいます。決定フィールドの全体については、[PermissionRequest リファレンス](/docs/ja/hooks#permissionrequest-decision-control)を参照してください。
 
 ## hooks の仕組み
 
@@ -632,7 +633,7 @@ exit 0  # exit 0 = 決定なし。通常の権限フローが適用されます
 
   plan モードでの `"allow"` の動作については、[plan モードでのフックによる承認](/docs/ja/permissions#hook-approvals-in-plan-mode) を参照してください。
 
-4 番目の値 `"defer"` は、`-p` フラグ付きの [非インタラクティブモード](/docs/ja/headless) で利用可能です。プロセスを終了し、ツール呼び出しを保持して、Agent SDK ラッパーが入力を収集して再開できるようにします。リファレンスの [ツール呼び出しを後で延期する](/docs/ja/hooks#defer-a-tool-call-for-later) を参照してください。
+4 番目の値 `"defer"` は、`-p` フラグ付きの [非対話モード](/docs/ja/headless) で利用可能です。これを返すと、ツール呼び出しを保持したままターンが終了するため、Agent SDK ラッパーが入力を収集して再開できます。リファレンスの [ツール呼び出しを後で延期する](/docs/ja/hooks#defer-a-tool-call-for-later) を参照してください。
 
 `PreModelSwitch` hook は同じ `permissionDecision` フィールドを返します：`"allow"` はモデルスイッチを進行させ、`"deny"` はそれをキャンセルします。`"ask"` はインタラクティブセッションで `/model` を実行するときに確認を求めます。他の場所では、Claude Code は `"ask"` を拒否として扱います。[PreModelSwitch 決定制御](/docs/ja/hooks#premodelswitch-decision-control) を参照してください。
 
@@ -686,7 +687,7 @@ exit 0  # exit 0 = 決定なし。通常の権限フローが適用されます
 | `SessionStart` | セッションがどのように開始されたか | `startup`、`resume`、`clear`、`compact`、`fork` |
 | `Setup` | どの CLI フラグがセットアップをトリガーしたか | `init`、`maintenance` |
 | `SessionEnd` | セッションが終了した理由 | `clear`、`resume`、`logout`、`prompt_input_exit`、`other` |
-| `Notification` | 通知タイプ | `permission_prompt`、`idle_prompt`、`auth_success`、`elicitation_dialog`、`elicitation_url_dialog`、`elicitation_complete`、`elicitation_response`、`agent_needs_input`、`agent_completed`、`quota_auto_resume_fired`、`quota_auto_resume_stale`、`quota_auto_resume_disabled` |
+| `Notification` | 通知タイプ | `permission_prompt`、`idle_prompt`、`auth_success`、`elicitation_dialog`、`elicitation_url_dialog`、`elicitation_complete`、`elicitation_response`、`agent_needs_input`、`agent_completed`、`quota_auto_resume_fired`、`quota_auto_resume_stale`、`quota_auto_resume_disabled`、`plugin_notification` |
 | `SubagentStart` | エージェントタイプ | `general-purpose`、`Explore`、`Plan`、またはカスタムエージェント名 |
 | `PreCompact`、`PostCompact` | 圧縮をトリガーしたもの | `manual`、`auto` |
 | `PreModelSwitch`、`PostModelSwitch` | セッションが切り替わるモデルの正規名（[PreModelSwitch](/docs/ja/hooks#premodelswitch) で説明） | `claude-opus-5`、`claude-opus-4-6\|claude-opus-5`、`.*opus.*` |

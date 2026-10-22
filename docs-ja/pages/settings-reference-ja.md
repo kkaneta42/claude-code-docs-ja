@@ -725,7 +725,7 @@ Claude Code は各エントリを `claude-opus-5-5` などのモデルの正規�
 
 ### `showThinkingSummaries`
 
-インタラクティブセッションで Claude の[拡張思考](/docs/ja/model-config#extended-thinking)の概要を参照してください。`Ctrl+O` で思考を展開するときに完全な概要が必要な場合に設定します。設定解除または `false` の場合、Anthropic API は思考ブロックを編集し、Claude Code は折りたたまれたスタブを表示します。サードパーティプロバイダーは編集しません。
+対話セッションで Claude の[拡張思考](/docs/ja/model-config#extended-thinking)の要約を表示します。`Ctrl+O` で思考を展開したときに完全な要約を見たい場合に設定します。設定解除または `false` の場合、Anthropic API は思考ブロックを秘匿し、Claude Code は折りたたまれたスタブを表示します。
 
 * **スコープ**: [`任意のファイル`](#scopes)
 * **タイプ**: ブール値
@@ -4855,7 +4855,7 @@ Claude Desktop は、デスクトップ設定から派生したポリシー（�
 
 ### `preferredNotifChannel`
 
-タスクが完了したときまたは権限プロンプトが待機しているときに Claude Code が通知する方法を選択します。`/config` では **Local notifications** として表示されます。
+タスクが完了したときまたは権限プロンプトが待機しているときに Claude Code が通知する方法を選択します。[mod の通知](/docs/ja/plugins/mods/api#show-something-without-starting-a-turn) も同じ設定を使用します。`/config` では **Local notifications** として表示されます。
 
 * **Scope**: [`Any file`](#scopes)。Claude Code は古いバージョンによって `~/.claude.json` に残された値も読み取ります。
 * **Type**: 文字列、以下のいずれか：

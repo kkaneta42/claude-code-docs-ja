@@ -294,7 +294,7 @@ Claude Code は JSON 決定を読み取り、ツール呼び出しをブロッ�
 | `SessionStart` | セッションの開始方法 | `startup`、`resume`、`clear`、`compact`、`fork` |
 | `Setup` | セットアップをトリガーした CLI フラグ | `init`、`maintenance` |
 | `SessionEnd` | セッションが終了した理由 | `clear`、`resume`、`logout`、`prompt_input_exit`、`other` |
-| `Notification` | 通知タイプ | `permission_prompt`、`idle_prompt`、`auth_success`、`elicitation_dialog`、`elicitation_url_dialog`、`elicitation_complete`、`elicitation_response`、`agent_needs_input`、`agent_completed`、`quota_auto_resume_fired`、`quota_auto_resume_stale`、`quota_auto_resume_disabled` |
+| `Notification` | 通知タイプ | `permission_prompt`、`idle_prompt`、`auth_success`、`elicitation_dialog`、`elicitation_url_dialog`、`elicitation_complete`、`elicitation_response`、`agent_needs_input`、`agent_completed`、`quota_auto_resume_fired`、`quota_auto_resume_stale`、`quota_auto_resume_disabled`、`plugin_notification` |
 | `SubagentStart` | エージェント タイプ | `general-purpose`、`Explore`、`Plan`、カスタム エージェント名、またはプラグイン スコープ付き名前（`^my-plugin:reviewer$` など） |
 | `PreCompact`、`PostCompact` | コンテキスト圧縮をトリガーしたもの | `manual`、`auto` |
 | `PreModelSwitch`、`PostModelSwitch` | セッションの切り替え先モデルの正規名（[PreModelSwitch](#premodelswitch) で説明） | `claude-opus-5`、`claude-opus-4-6\|claude-opus-5`、`.*opus.*` |
@@ -1923,7 +1923,7 @@ Claude Code v2.1.271 以降では、Claude Code が [auto モード](/docs/ja/pe
 
 | フィールド | 説明 |
 | :- | :- |
-| `permissionDecision` | `"allow"` は権限プロンプトをスキップします。ただし、[どのモードでも自動承認されないアクション](/docs/ja/permission-modes#actions-no-mode-auto-approves)と[ネットワークパスからの読み取り](/docs/ja/permissions#network-paths)は除きます。`AskUserQuestion` と `ExitPlanMode` には [`"allow"` と組み合わせた `updatedInput`](#allow-with-updatedinput) が必要です。plan モードについては、[plan モードでのフックによる承認](/docs/ja/permissions#hook-approvals-in-plan-mode)を参照してください。`"deny"` はツール呼び出しを防ぎます。`"ask"` はユーザーに確認を求めます。`"defer"` は、後でツールを再開できるよう正常に終了します。フックが何を返しても、[拒否ルールと確認ルール](/docs/ja/permissions#manage-permissions)は引き続き評価されます |
+| `permissionDecision` | `"allow"` は権限プロンプトをスキップします。ただし、[どのモードでも自動承認されないアクション](/docs/ja/permission-modes#actions-no-mode-auto-approves)と[ネットワークパスからの読み取り](/docs/ja/permissions#network-paths)は除きます。`AskUserQuestion` と `ExitPlanMode` には [`"allow"` と組み合わせた `updatedInput`](#allow-with-updatedinput) が必要です。plan モードについては、[plan モードでのフックによる承認](/docs/ja/permissions#hook-approvals-in-plan-mode)を参照してください。`"deny"` はツール呼び出しを防ぎます。`"ask"` はユーザーに確認を求めます。`"defer"` はツールを後で再開できるようにターンを終了し、`-p` フラグを使用した[非対話モード](#defer-a-tool-call-for-later)が必要です。フックが何を返すかにかかわらず、[拒否ルールと確認ルール](/docs/ja/permissions#manage-permissions)は引き続き評価されます |
 | `permissionDecisionReason` | `"ask"` の場合、権限プロンプトでユーザーに表示されます。そのプロンプトに誰も応答できない `-p` の実行で Claude Code が[呼び出しを拒否する](/docs/ja/headless#turn-off-permission-prompts-in-unattended-runs)場合は、代わりに Claude がツールの結果でその理由を読み取ります。`"deny"` の場合、Claude に表示されます。`"allow"` と `"defer"` の場合、[デバッグログ](#debug-hooks)にのみ書き込まれます |
 | `updatedInput` | 実行前にツールの入力パラメータを変更します。入力オブジェクト全体を置き換えるため、変更したフィールドとともに変更していないフィールドも含めてください。Claude Code は、権限ルールと Bash コマンドの[自動バックグラウンド化の適格性](/docs/ja/tools-reference#foreground-commands-that-move-to-the-background)を、Claude が送信した入力ではなく、フックが返した入力に対して評価します。自動承認するには `"allow"` と、変更した入力をユーザーに表示するには `"ask"` と組み合わせます。`"defer"` の場合は無視されます |
 | `additionalContext` | ツールの結果とともに Claude のコンテキストに追加される文字列。`permissionDecision` が `"defer"` の場合は無視されます。[Claude にコンテキストを追加する](#add-context-for-claude)を参照してください |
@@ -1997,7 +1997,7 @@ Claude Code v2.1.271 以降では、Claude Code が [auto モード](/docs/ja/pe
 典型的な例は `AskUserQuestion` ツールです。Claude はユーザーに何かを尋ねたいのですが、回答するためのターミナルがありません。`-p` の実行では、`--permission-prompt-tool` で渡す MCP ツールなどの[権限ホスト](/docs/ja/headless#turn-off-permission-prompts-in-unattended-runs)がある場合にのみ `AskUserQuestion` が提供されるため、権限ホストを指定して実行を開始してください。往復の流れは次のとおりです：
 
 1. Claude が `AskUserQuestion` を呼び出します。`PreToolUse` フックが発火します。
-2. フックが `permissionDecision: "defer"` を返します。ツールは実行されません。プロセスは `stop_reason: "tool_deferred"` で終了し、保留中のツール呼び出しはトランスクリプトに保持されます。
+2. フックが `permissionDecision: "defer"` を返します。ツールは実行されません。ターンは `stop_reason: "tool_deferred"` を含む結果で終了し、保留中のツール呼び出しはトランスクリプトに残ります。
 3. 呼び出し側のプロセスが SDK の結果から `deferred_tool_use` を読み取り、独自の UI で質問を表示して、回答を待ちます。
 4. 呼び出し側のプロセスが、同じ権限ホストを指定して `claude -p --resume <session-id>` を実行します。同じツール呼び出しが再び `PreToolUse` を発火させます。
 5. フックが `updatedInput` に回答を含めて `permissionDecision: "allow"` を返します。ツールが実行され、Claude が続行します。
@@ -2018,11 +2018,16 @@ Claude Code v2.1.271 以降では、Claude Code が [auto モード](/docs/ja/pe
 }
 ```
 
-タイムアウトや再試行の上限はありません。セッションは再開するまでディスク上に残りますが、[`cleanupPeriodDays`](/docs/ja/settings-reference#cleanupperioddays) による保持期間のクリーンアップの対象となります。このクリーンアップは、[保持期間のクリーンアップのルール](/docs/ja/claude-directory#cleaned-up-automatically)に従い、デフォルトで 30 日後にセッションファイルを削除します。再開時に回答の準備ができていない場合、フックは再び `"defer"` を返すことができ、プロセスは同じ方法で終了します。呼び出し側のプロセスは、最終的にフックから `"allow"` または `"deny"` を返すことで、ループを抜けるタイミングを制御します。
+タイムアウトや再試行の上限はありません。セッションは再開するまでディスク上に残りますが、[`cleanupPeriodDays`](/docs/ja/settings-reference#cleanupperioddays) の保持期間によるクリーンアップの対象となります。このクリーンアップは、[保持期間によるクリーンアップのルール](/docs/ja/claude-directory#cleaned-up-automatically)に従い、デフォルトでは 30 日後にセッションファイルを削除します。
+
+再開時に保留されたツールが利用できなくなっている場合、再開の最初の結果は `stop_reason: "tool_deferred_unavailable"` と `is_error: true` になり、フックは発生しません。これは、ツールを提供していた MCP サーバーが再開されたセッションで接続されていない場合に発生します。どのツールが失われたかを特定できるように、`deferred_tool_use` ペイロードは引き続き含まれます。
+
+* **再開時またはその後にプロンプトを送信しなかった場合**、呼び出しはまだ保留中です。ツールが利用できる状態で再度再開すると、最初にそれが実行されます。
+* **再開時またはその後にプロンプトを送信した場合**、Claude Code はツールの結果なしでプロンプトに応答し、保留された呼び出しを破棄します。引き続きツールを呼び出す必要がある場合は、ツールが利用可能になった時点で新しいプロンプトを送信してください。
+
+プロンプトなしで再開したときに待っている回答がまだ準備できていない場合、フックは再び `"defer"` を返すことができます。プロンプトを送信した状態でフックが再び保留した場合、Claude Code はプロンプトを同じように扱います。つまり、ツールの結果なしで応答し、呼び出しを破棄します。フックが `"allow"` または `"deny"` を返すまでプロンプトなしで再開してください。これが、呼び出し元のプロセスがループを抜ける方法です。
 
 `"defer"` は、Claude がそのターンで単一のツール呼び出しを行う場合にのみ機能します。Claude が一度に複数のツール呼び出しを行う場合、`"defer"` は警告とともに無視され、ツールは通常の権限フローで処理されます。この制約は、再開時に再実行できるツールが 1 つだけであるために存在します。バッチから 1 つの呼び出しだけを遅延させると、他の呼び出しが未解決のまま残ってしまいます。
-
-再開時に遅延されたツールが利用できなくなっている場合、プロセスはフックが発火する前に `stop_reason: "tool_deferred_unavailable"` と `is_error: true` で終了します。これは、ツールを提供していた MCP サーバーが再開したセッションで接続されていない場合に発生します。`deferred_tool_use` ペイロードは引き続き含まれるため、どのツールが見つからなくなったかを特定できます。
 
 > [!NOTE]
 >
@@ -2424,6 +2429,7 @@ Claude Code が通知を送信するときに実行されます。通知タイ�
 | `quota_auto_resume_fired` | claude.ai の使用制限によってタスクが一時停止された後、Claude Code がタスクを続行したとき。続行はリセット時に行われるか、待機中に Claude Code で使用クレジットの追加、プランのアップグレード、モデルの切り替えなどを行って使用量が再び利用可能になった場合はそれより早く行われます（[モデル設定の例外](/docs/ja/interactive-mode#wait-for-a-usage-limit-to-reset)あり） |
 | `quota_auto_resume_stale` | コンピューターが約 30 分以上スリープしている間に claude.ai の使用制限がリセットされたとき。Claude Code は続行せず、ユーザーが `Enter` を押すのを待ちます。スリープがそれより短い場合は続行し、代わりに `quota_auto_resume_fired` を発火します |
 | `quota_auto_resume_disabled` | Claude Code が claude.ai の使用制限の待機を、タスクを続行せずに終了したとき。たとえば、Claude Code が自動的に開始した待機中に [`autoContinueAtUsageLimit`](/docs/ja/settings-reference#autocontinueatusagelimit) がオフにされた場合やリセットが 24 時間以上先に移動した場合、続行したタスクが繰り返し制限に達した場合、続行がモデルに到達する前にブロックされた場合です。ユーザーが `Esc` または `Ctrl+C` を押した場合や、**Don't continue automatically** を選択した場合は発火しません |
+| `plugin_notification` | [mod](/docs/ja/plugins/mods/api#show-something-without-starting-a-turn) が `$.ui.notify` で通知を発生させたとき。mod が `title` を設定していない限り、フックの `title` は mod の名前になります |
 
 `quota_auto_resume_fired`、`quota_auto_resume_stale`、`quota_auto_resume_disabled` タイプには Claude Code v2.1.234 以降が必要です。
 

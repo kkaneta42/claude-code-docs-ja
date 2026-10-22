@@ -172,7 +172,7 @@ Claude Code v2.1.285 以降が必要です。これは [HIPAA 設定の最小バ
 
 auto モードで開始したセッションのこのクリップで、ステータスバーに注目してください。`Shift+Tab` を押すたびに、`auto mode on` から `manual mode on`、`accept edits on`、`plan mode on` へと変わり、再び `auto mode on` に戻ります。
 
-<video autoPlay muted loop playsInline src="https://mintcdn.com/claude-code/oa7CKjMeIChox26S/images/permission-modes-cycle-light.mp4?fit=max&auto=format&n=oa7CKjMeIChox26S&q=85&s=198ca90aeb2e3675b3d01b7d686aab0b" aria-label="Claude Code のプロンプトの下にあるステータスバーが、Shift+Tab を押すたびに auto mode on、manual mode on、accept edits on、plan mode on、そして再び auto mode on へと変わります。" />
+<video autoPlay muted loop playsInline src="https://mintcdn.com/claude-code/tA-x-5L2YsYSVdee/images/permission-modes-cycle-light.mp4?fit=max&auto=format&n=tA-x-5L2YsYSVdee&q=85&s=3927dd62d59b01efd81b3578f2a6f971" aria-label="Claude Code のプロンプトの下にあるステータスバーが、Shift+Tab を押すたびに auto mode on、manual mode on、accept edits on、plan mode on、そして再び auto mode on へと変わります。" />
 
 すべてのモードがデフォルトサイクルに含まれるわけではありません。
 
@@ -236,7 +236,7 @@ JetBrains プラグインは IDE ターミナルで Claude Code を実行する�
 * **Auto**：[auto モードが利用可能](#eliminate-prompts-with-auto-mode)な場合に表示されます
 * **Bypass permissions**：Pro と Max プランの Desktop 設定で **Allow bypass permissions mode** トグルが必要です。Team と Enterprise プランでは、組織ポリシーがそれを制御します
 
-Cowork タブはこれらのモードを使用しません。Cowork には独自の権限モードがあり、別々に有効化され、Cowork タブはアカウントのデフォルトを超えるモードが有効化されるまでモードセレクターを表示しません。[Cowork ドキュメント](https://claude.com/docs/cowork/overview)を参照してください。
+Cowork はこれらのモードを使用しません。Cowork には独自の権限モードがあり、別々に有効化されます。また、デフォルト以外のモードがアカウントで有効化されるまで、モードセレクターはまったく表示されません。[Cowork ドキュメント](https://claude.com/docs/cowork/overview)を参照してください。
 
 Desktop 固有の詳細については、Desktop ガイドの [権限モードを選択する](/docs/ja/desktop#choose-a-permission-mode)を参照してください。
 
@@ -579,7 +579,7 @@ auto モードがセッションのアクションを承認できない場合、
 >
 > インストールした [mod](/docs/ja/plugins/mods/overview) が `tool.check` を処理する場合、その mod もアクションを承認できます。その承認がルールやフックを通過しないケースについては、[フックで権限を拡張する](/docs/ja/permissions#precedence-among-rules-hooks-and-mods)を参照してください。
 >
-> VS Code 拡張機能では、[Claude in Chrome](/docs/ja/chrome) のブラウザアクションがどのように承認されるかは、セッションがブラウザにどのように接続したかによって異なります。[VS Code セッションでの権限プロンプト](/docs/ja/chrome#permission-prompts-in-vs-code-sessions)を参照してください。
+> VS Code 拡張機能で [Claude in Chrome](/docs/ja/chrome) のブラウザアクションがどのように承認されるかについては、[VS Code セッションでの権限プロンプト](/docs/ja/chrome#permission-prompts-in-vs-code-sessions)を参照してください。
 >
 > auto モードに入ると、任意のコード実行を許可する広範な allow ルールは除外されます。
 >
@@ -667,12 +667,17 @@ Claude Code は [`--restricted`](/docs/ja/cli-reference#cli-flags) で開始し�
 * **受け入れた場合**: Claude Code は `skipDangerousModePermissionPrompt` を `~/.claude/settings.json` の `true` に設定するため、後のセッションではダイアログをスキップします。ダイアログを再度表示するには、そのファイルからキーを削除するか、`false` に設定してください。[`skipDangerousModePermissionPrompt` リファレンス](/docs/ja/settings-reference#skipdangerousmodepermissionprompt)には、ユーザーまたは組織が設定できる他の設定ファイルが記載されています。
 * **拒否した場合**: Claude Code は終了します。
 
-[非対話モード](/docs/ja/headless)ではダイアログは表示されません。[バックグラウンドセッション](/docs/ja/agent-view)は、ユーザー設定または管理設定に受け入れが記録されている場合、その受け入れを尊重します。
+[非対話モード](/docs/ja/headless)ではダイアログは表示されません。
 
-* 受け入れが記録されていない場合、`claude --bg --permission-mode bypassPermissions` は対話セッションでダイアログを受け入れるまで拒否されます。
-* `skipDangerousModePermissionPrompt` が `.claude/settings.local.json` でのみ設定されている場合、バックグラウンドセッションはバイパスのリクエストを無視した状態で開始し、通知 `Bypass permissions was requested at launch and ignored · if that was you, ~/.claude/settings.json needs "skipDangerousModePermissionPrompt": true` をピン留めします。そのキーを `~/.claude/settings.json` に追加してから、新しいバックグラウンドセッションを開始してください。通知を表示しているセッションは引き続き次のように実行されます。
+[バックグラウンドセッション](/docs/ja/agent-view)は、ユーザー設定または管理設定に受け入れが記録されている場合、その受け入れを尊重します。
+
+* 受け入れが記録されていない場合、`claude --bg --permission-mode bypassPermissions` は拒否されます。まず対話セッションでダイアログを受け入れてください。
+* `skipDangerousModePermissionPrompt` が `.claude/settings.local.json` でのみ設定されている場合、バックグラウンドセッションは[バイパスのリクエストを無視した状態](#bypass-permissions-ignored-in-a-background-session)で開始します。
+
   * `--allow-dangerously-skip-permissions` が無視された場合、`bypassPermissions` は `Shift+Tab` のサイクルから除外されます。
   * `--permission-mode bypassPermissions` または `--dangerously-skip-permissions` が無視された場合、セッションは代わりに Manual モードで開始されます。
+
+  `"skipDangerousModePermissionPrompt": true` を `~/.claude/settings.json` に追加してから、新しいバックグラウンドセッションを開始してください。
 
 Linux と macOS では、Claude Code は root として、または `sudo` の下で実行されている場合、`bypassPermissions` モードでの起動を拒否します。
 
@@ -687,6 +692,20 @@ Linux と macOS では、Claude Code は root として、または `sudo` の�
 > [!WARNING]
 >
 > `bypassPermissions` はプロンプトインジェクションまたは意図しないアクションに対する保護を提供しません。権限プロンプトがはるかに少ないバックグラウンドセーフティチェックの場合は、代わりに[オートモード](#eliminate-prompts-with-auto-mode)を使用してください。管理者は [管理設定](/docs/ja/managed-settings)で `permissions.disableBypassPermissionsMode` を `"disable"` に設定することでこのモードをブロックできます。
+
+### バックグラウンドセッションで権限バイパスが無視される
+
+この通知は、[バックグラウンドセッション](/docs/ja/agent-view)がユーザー設定または管理設定で[権限バイパスの警告](#bypass-permissions-acceptance)の受け入れを見つけられなかったため、起動時に行われたバイパスのリクエストを無視したことを意味します。
+
+```text theme={null}
+Bypass permissions was requested at launch and ignored · if that was you, ~/.claude/settings.json needs "skipDangerousModePermissionPrompt": true
+```
+
+`"skipDangerousModePermissionPrompt": true` を `~/.claude/settings.json` に追加してから、新しいバックグラウンドセッションを開始してください。
+
+### `claude agents` が対話セッションではスキップされる権限バイパスの警告を表示する
+
+対話セッションではスキップされるのに [`claude agents`](/docs/ja/agent-view#dispatch-defaults) が[権限バイパスの警告](#bypass-permissions-acceptance)を表示する場合は、`skipDangerousModePermissionPrompt` が `.claude/settings.local.json` または `--settings` ファイルで設定されていないか確認してください。対話セッションはそこにあるキーを警告の受け入れとみなしますが、`claude agents` はそうみなしません。そこで見つかったかどうかにかかわらず、警告を受け入れて、`claude agents` が参照する `~/.claude/settings.json` にキーを追加してください。
 
 ## 保護されたパス
 

@@ -276,9 +276,9 @@ Claude Code が会話を再度開けない場合は、終了して会話を再�
 
 約 10 秒経過すると、Claude Code はそれ以上待たずにセッションをバックグラウンドにします。ただし、次のようなケースは例外です：
 
-* **フォアグラウンドのサブエージェントがまだ実行中**：Claude が開始した [フォアグラウンドのサブエージェント](/docs/ja/sub-agents#run-subagents-in-foreground-or-background) の作業が引き継がれるよう、Claude Code は待機を続け、`Still backgrounding after the current tool` を表示します。待たずにバックグラウンドにするには `←` を再度押しますが、その場合それらのサブエージェントは最初からやり直しになります。
+* **フォアグラウンドのサブエージェントがまだ実行中の場合**：Claude が開始した[フォアグラウンドのサブエージェント](/docs/ja/sub-agents#run-subagents-in-foreground-or-background)の作業を引き継ぐため、Claude Code は待機を続け、`Still backgrounding after the current tool` と表示します。待たずにバックグラウンドに移すには、もう一度 `←` を押します。この場合、それらのサブエージェントは最初からやり直しになります。
 * **権限プロンプトまたは質問が回答を待っている**：権限プロンプトまたは Claude が尋ねた質問が待機している間、Claude Code は待機を続け、`Still backgrounding after the current tool — a question is waiting for your answer.` を表示します。権限プロンプトでの **Yes** など、回答によってターンが続行する場合、Claude Code は現在のツールが完了した時点でセッションをバックグラウンドにします。
-* **プロンプト入力に入力した**：未送信のテキストはターミナルの入力ボックスに残り、バックグラウンドセッションには移動しないため、Claude Code は切り替えをキャンセルします。`Backgrounding cancelled — you have unsent text in the input. Send it or clear it, then press ← again.` と表示されます。
+* **プロンプト入力に入力した**：未送信のテキストはターミナルの入力ボックスに残り、バックグラウンドセッションには移動しないため、Claude Code は切り替えをキャンセルします。`Backgrounding cancelled — you have unsent text in the input. Send it or clear it, then press ← again.` と表示されます。Claude はフォアグラウンドで作業を続けます。
 * **ターンを停止した**：Claude Code は切り替えをキャンセルし、`Backgrounding cancelled — the turn was stopped.` を表示します。たとえば、[`Esc` で Claude を中断した](/docs/ja/interactive-mode#general-controls) 場合、メインの会話からの権限プロンプトで [コメントなしで](/docs/ja/permissions#add-a-comment-when-you-answer-a-permission-prompt) **No** を選択した場合、またはそこで Claude が尋ねた質問で `Esc` を押した場合に、ターンは停止します。セッションをバックグラウンドにするには、`←` を再度押します。
 * **キューに入れたメッセージを移動できない**：[Claude の作業中にキューに入れた](/docs/ja/interactive-mode#queue-messages-while-claude-works) メッセージは、会話とともにバックグラウンドセッションに移動します。そのいずれかを移動できない場合、セッションはフォアグラウンドに留まり、Claude Code は `Cannot open agents — 1 queued message can't move to the background. Press ← again once Claude has read it.` のような通知を表示します。
 
@@ -287,6 +287,15 @@ Claude Code がセッションをバックグラウンドにすると（約 10 �
 `←` を押すと、会話にまだメッセージがない場合でもセッションの行が作成されるため、`→` でその行に戻れます。
 
 フォアグラウンドセッションでのこのショートカットは、`/config` の [`leftArrowOpensAgents`](/docs/ja/settings-reference#leftarrowopensagents) 設定でオフにできます。
+
+##### セッションがバックグラウンドに移動する際に送信されたプロンプト
+
+セッションがバックグラウンドに移動する瞬間にプロンプトまたは `!` シェルコマンドを入力すると、それは停止されるか、未送信のままになります：
+
+* **会話が閉じるときに送信された場合**：会話が閉じてエージェントビューが開くときに、応答またはコマンドは停止します
+* **その時点でまだ [フック](/docs/ja/hooks) を待っていた場合**：プロンプトは送信されず、画面上にもその旨は表示されません。これには、[`SessionStart` フック](/docs/ja/hooks#sessionstart) がまだ実行中の間に入力したプロンプトも含まれます
+
+どちらの場合も、入力したテキストは [プロンプト履歴](/docs/ja/interactive-mode#command-history) に保持されます。再度送信するには、バックグラウンドにしたセッションを開き、そのプロンプトで `↑` を押してテキストを呼び戻します。
 
 ### リストを整理する
 
@@ -362,7 +371,7 @@ Claude Code v2.1.212 以降でセッションを戻すには、[ディスパッ�
 | `Ctrl+X` | セッションを停止。2 秒以内に再度押して削除 |
 | `Shift+↑` / `Shift+↓` | 選択したセッションを並べ替え |
 | `Esc` | ピークパネルを閉じるか、入力をクリアするか、終了します。`←` でセッションをバックグラウンドにしてエージェントビューを開いた場合、最後の `Esc` は終了する代わりにその会話に戻ります。[vim エディターモード](/docs/ja/interactive-mode#vim-editor-mode) がオンの場合、入力で `Esc` を押すと、メインプロンプトと同様に INSERT から NORMAL モードに切り替わり、テキストは保持されます |
-| `Ctrl+C` | 入力をクリア。2 回押して終了 |
+| `Ctrl+C` | 入力をクリア。2 回押して終了。画面上のテキストが選択されている間は、代わりに選択を解除します。その際、[選択時に既にコピーされている](/docs/ja/settings-reference#copyonselect) 場合を除き、先に選択内容をコピーします |
 | `?` | ショートカットを表示 |
 
 [`Agents` コンテキスト](/docs/ja/keybindings#agents-actions) にアクションがあるショートカットは、[`keybindings.json`](/docs/ja/keybindings) に従います。`Ctrl+G` も、`Chat` コンテキストの `chat:externalEditor` バインディングを通じて同様に従います。
@@ -527,6 +536,18 @@ backgrounded · 7c5dcf5d · flaky-test-fix
   claude stop 7c5dcf5d      stop this session
 ```
 
+#### `--bg` を含むプロンプト
+
+`--bg` または `--background` に言及するプロンプトは、入力したとおりに渡されます。バックグラウンドセッションに送信する `--bg` という返信も同様です。たとえば、次のコマンドは 1 つのバックグラウンドセッションを開始し、2 つ目の `--bg` はそのプロンプトの一部になります。
+
+```bash theme={null}
+claude --bg "find out why --bg sessions are slow to start on this machine"
+```
+
+Claude Code が引数全体をフラグとして読み取るのは、フラグを置ける位置、つまり単独の `--` 区切りより前で、かつ別のフラグが値を期待している位置ではない場合のみです。`claude --bg "<prompt>"` のように、フラグを先頭に置いてください。
+
+結合された短いフラグの並びの後など、位置があいまいな場合、Claude Code は何も開始しません。代わりに [`Couldn't tell whether --bg is a flag or text here`](/docs/ja/errors#couldnt-tell-whether-bg-is-a-flag-or-text) で終了します。
+
 #### シェルコマンドを実行する
 
 Claude セッションの代わりにシェルコマンドをバックグラウンドジョブとして実行するには、`--exec` を渡します。次の例は `pytest -x` をバックグラウンドジョブとして実行します。
@@ -634,8 +655,8 @@ Claude がセッション用に作成した worktree がどうなるかは次の
 コマンドの後に値を指定するか、コマンドのみを入力してリストから選択します。
 
 * **モデル**: `/model <name>`。例: `/model opus`
-* **[effort レベル](/docs/ja/model-config#adjust-effort-level)**: `/effort` に `low`、`medium`、`high`、`xhigh`、`max` のいずれかを指定します。例: `/effort high`
-* **fast mode**: `/fast on` または `/fast off`。セッションが fast mode で開始されるのは、fast mode が [利用可能](/docs/ja/fast-mode#requirements) で、かつそのモデルが fast mode をサポートしている場合のみです。サポートしていないモデルでは、セッションは fast mode がオフの状態で開始されるため、まず `/model` で [fast mode をサポートするモデル](/docs/ja/fast-mode) のいずれかを選択してください。
+* **[effort レベル](/docs/ja/model-config#adjust-effort-level)**: `/effort` に `low`、`medium`、`high`、`xhigh`、`max` のいずれかを指定します。例: `/effort high`。[ultracode](/docs/ja/workflows#let-claude-decide-with-ultracode) でセッションを開始するには、代わりにシェルから [`claude agents --effort ultracode`](#dispatch-defaults) でエージェントビューを開いてください。ディスパッチ入力は `/effort ultracode` を受け付けません
+* **fast mode**: `/fast on` または `/fast off`。セッションが fast mode で開始されるのは、fast mode が [利用可能](/docs/ja/fast-mode#requirements) で、かつそのモデルが fast mode をサポートしている場合のみです。サポートしていないモデルでは、セッションは fast mode がオフの状態で開始されるため、まず `/model` で [fast mode をサポートするモデル](/docs/ja/fast-mode) のいずれかを選択してください。新しいセッションが fast mode で開始されるかどうかは、ヘッダーではなく入力の下のヒントで確認できます。
 
 選択を取り消すには、値として `default` を指定します（例: `/effort default`）。
 
@@ -681,18 +702,15 @@ Claude Code は、転送したゲートウェイをそのセッションの実�
 
 #### 権限モード
 
-[権限モード](/docs/ja/permissions) は、セッションの開始方法によって異なります。
-
-* **`/bg` または `←` でバックグラウンドに移動した場合**: Claude Code はセッションの権限モードを維持するため、`acceptEdits` や `auto` に切り替えていたセッションは、デタッチ後もそのモードのままです
-* **`←` で開いたエージェントビューからディスパッチした場合**: Claude Code は新しいセッションの権限モードを、まず対象ディレクトリの設定から、次に移動元のセッションから取得します
+* **`/bg` または `←` でバックグラウンドに移動した場合**: Claude Code はセッションの [権限モード](/docs/ja/permissions) を維持するため、`acceptEdits` や `auto` に切り替えていたセッションは、デタッチ後もそのモードのままです
 * **シェルで開始した `claude agents` から、または `claude --bg` でディスパッチした場合**: [ディスパッチのデフォルト](#dispatch-defaults) を指定して開いたエージェントビューからディスパッチした場合を除き、新しいセッションはそのディレクトリで新しい `claude` セッションを開始した場合と同じように開始されます。順序は [セッションがどの権限モードで開始されるか](/docs/ja/permission-modes#which-mode-a-session-starts-in) に記載されています
 
 `←` で開いたエージェントビューからディスパッチするセッションでは、Claude Code は以下のうち最初に該当するものから権限モードを取得します。
 
-1. 対象ディレクトリの [`permissions.defaultMode`](/docs/ja/settings-reference#permissions-defaultmode)。取得元について 2 つのルールが適用されます。
-   * `auto` と `bypassPermissions` は、[管理設定、`--settings` ファイル、または `~/.claude/settings.json` からのみ有効になります](/docs/ja/settings-reference#permissions-defaultmode)。
-   * Claude Code は、プロジェクトの `.claude/settings.json` または `.claude/settings.local.json` の `defaultMode` が、移動元のセッションのモードより許容度の高いモードを選択している場合、それを拒否します。
-2. 移動元のセッションの権限モード。そのセッションが `bypassPermissions` モードだった場合、新しいセッションは代わりに Manual モードで開始され、`Bypass permissions was requested at launch and ignored` という通知が表示されることがあります。これは、バイパスの免責事項への同意が `.claude/settings.local.json` または `--settings` ファイルにのみ記録されている場合に発生します。Manual モードのまま続行するか、[その同意を `~/.claude/settings.json` に追加してください](/docs/ja/permission-modes#bypass-permissions-acceptance)。
+1. 対象ディレクトリの [`permissions.defaultMode`](/docs/ja/settings-reference#permissions-defaultmode)。`auto` と `bypassPermissions` は、[管理設定、`--settings` ファイル、または `~/.claude/settings.json` からのみ有効になります](/docs/ja/settings-reference#permissions-defaultmode)。Claude Code は、プロジェクトの `.claude/settings.json` または `.claude/settings.local.json` の `defaultMode` が、移動元のセッションのモードより許容度の高いモードを選択している場合、それを拒否します。
+2. 移動元のセッションの権限モード。
+
+   そのセッションが `bypassPermissions` モードだった場合、新しいセッションは代わりに Manual モードで開始され、`Bypass permissions was requested at launch and ignored` という通知が表示されることがあります。これは、バイパスの免責事項への同意が `.claude/settings.local.json` または `--settings` ファイルにのみ記録されている場合に発生します。Manual モードのまま続行するか、[その同意を `~/.claude/settings.json` に追加してください](/docs/ja/permission-modes#bypass-permissions-ignored-in-a-background-session)。
 
 Claude Code がある取得元のモードを許容度が高すぎるとして拒否した場合、リストの次の取得元で決まります。たとえば、plan モードのセッションから、チェックインされた設定で `acceptEdits` を要求するディレクトリにディスパッチした場合、新しいセッションは plan モードで開始されます。その `defaultMode` を `~/.claude/settings.json` に移すと、移動元のセッションの権限モードに関係なく適用されます。
 
@@ -1030,6 +1048,11 @@ Agent view はリサーチプレビュー中に急速に進化しました。古
 | バージョン | 変更 |
 | - | - |
 | v2.1.299 | [ディスパッチ入力での `/effort` と `/fast`](#set-the-model-effort-and-fast-mode) は、次にディスパッチするセッションの effort レベルと fast mode を設定します。値を指定せずに `/model`、`/effort`、`/fast` を入力すると、ピッカーが開きます。 |
+| v2.1.299 | Claude Code は、単独の `--` 区切りより前で、かつ別のフラグの値の外にある場合にのみ [`--bg` と `--background` をフラグとして読み取り](#from-your-shell)、曖昧な位置にある場合は推測せずに拒否します。このリリースより前は、バックグラウンドセッションへのプロンプトや返信としての `--bg` や `--background` がフラグと解釈されることがありました。その結果、テキストが配信されずに、新しいバックグラウンドセッションが何度も開始されることがありました。 |
+| v2.1.296 | [セッションがバックグラウンドに移動する際](#switch-sessions-without-leaving-the-terminal)に入力したプロンプトや `!` シェルコマンドは、停止されるか未送信のままになり、そのテキストはプロンプト履歴に保持されます。このリリースより前は、応答やコマンドが見えない場所で実行され続け、`←` の直後に送信したプロンプトが見えないまま 2 回実行されることがありました。また、`SessionStart` フックの実行中に入力したプロンプトは失われ、送信されず、プロンプト履歴にも残りませんでした。 |
+| v2.1.295 | [アタッチ中のバックグラウンドセッション](#attach-to-a-session)のアイドル状態のプロンプトで `Ctrl+C` を押しても、[自己ペースの `/loop`](/docs/ja/scheduled-tasks#let-claude-choose-the-interval) の保留中のウェイクアップには影響しないため、2 回押すとデタッチされ、ループは実行を続けます。そのプロンプトで `Esc` を押すと[自己ペースのループが停止し](/docs/ja/scheduled-tasks#stop-a-loop)、`Pending wakeup cancelled` という通知が表示されます。このリリースより前は、最初の `Ctrl+C` で自己ペースのループが何の表示もなく終了することがあり、セッションとともにバックグラウンドに移動したループは `Esc` で停止しませんでした。 |
+| v2.1.295 | macOS と Linux では、[スーパーバイザー](#keep-sessions-running-after-the-supervisor-stops)が実行されていない状態で `claude agents` が終了する場合、新しいスーパーバイザーを自動的に起動しません。その場合、`claude agents` を再度実行しない限り、実行中のセッションは約 1 分後に停止し、agent view は終了時にその旨の通知を表示することがあります。このリリースより前は、終了する `claude agents` が新しいスーパーバイザーを起動していました。 |
+| v2.1.295 | ネイティブインストーラーを使用した macOS では、更新後にまとめて再起動されるバックグラウンドセッションは、付与した[保護フォルダへのアクセス](#background-sessions-can’t-read-desktop-documents-or-downloads-on-macos)を持つ同じ Claude Code エントリの下で実行されます。このリリースより前は、これらのセッションが代わりにバイナリ自身のパスの下で実行されることがありました。macOS はそのパスを別のエントリとして扱うため、更新後にフォルダアクセスのプロンプトが再び表示されることがありました。 |
 | v2.1.290 | [`claude attach` と `claude logs`](#manage-sessions-from-the-shell) は、ID の代わりにセッションの名前の一部を受け付けます。 |
 | v2.1.290 | `/model`、`/effort`、`/rename`、`/usage` を作業中のセッションへの[ピーク返信](#peek-and-reply)として送信すると、すぐに実行されます。 |
 | v2.1.290 | 配信できない[ピーク返信](#peek-and-reply)は、`/` で始まる場合、またはセッションのプロセスの実行中に事前定義された選択肢のある質問に回答する場合、次回の再起動に向けて保存されなくなりました。 |

@@ -597,7 +597,7 @@ claude mcp add --transport http shared-server --scope project https://example.co
 
 セキュリティ上の理由から、Claude Code はインタラクティブセッションで `.mcp.json` ファイルからプロジェクトスコープのサーバーを使用する前に承認を求めます。これらの承認選択をリセットするには、`claude mcp reset-project-choices` を実行してください。
 
-`claude -p` 実行、[Agent SDK](/docs/ja/headless)セッション、および[クラウドセッション](/docs/ja/claude-code-on-the-web)では、Claude Code はそのプロンプトを表示できません。プロジェクトスコープのサーバーを確認なしでロードします。Claude Code はまた、ユーザー設定またはマネージド設定で [`skipDangerousModePermissionPrompt`](/docs/ja/settings-reference#skipdangerousmodepermissionprompt) が設定された `bypassPermissions` モードで開始したセッションではプロンプトをスキップします。とにかくサーバーを除外するには：
+`claude -p` 実行、[Agent SDK](/docs/ja/headless) セッション、および[プロジェクト](/docs/ja/claude-projects#what-threads-pick-up-from-your-repositories)外の[クラウドセッション](/docs/ja/claude-code-on-the-web)では、Claude Code はそのプロンプトを表示できません。プロジェクトスコープのサーバーを確認なしでロードします。Claude Code はまた、ユーザー設定または管理設定で [`skipDangerousModePermissionPrompt`](/docs/ja/settings-reference#skipdangerousmodepermissionprompt) が設定された `bypassPermissions` モードで開始したセッションではプロンプトをスキップします。それでもサーバーを除外するには：
 
 * [`disabledMcpjsonServers`](/docs/ja/settings-reference#disabledmcpjsonservers)に追加します。これはすべての権限モードでそれをブロックします。
 * [`--setting-sources`](/docs/ja/cli-reference#cli-flags)または SDK の `settingSources` オプションでプロジェクト設定全体を除外します。
@@ -639,7 +639,7 @@ Claude Code は `.mcp.json` ファイルの環境変数の展開をサポート�
 #### サポートされている構文
 
 * `${VAR}` - 環境変数 `VAR` の値に展開されます
-* `${VAR:-default}` - `VAR` が設定されている場合は `VAR` に展開され、そうでない場合はデフォルトを使用します
+* `${VAR:-default}`：`VAR` が設定されている場合は `VAR` に展開され、そうでない場合は `default` を使用します
 
 #### 展開場所
 
@@ -1507,7 +1507,7 @@ v2.1.221 より前は、`ENABLE_TOOL_SEARCH=true` を設定しない限り、Cla
 | :- | :- |
 | （未設定） | すべての MCP ツールが遅延され、必要に応じて読み込まれます。Opus 4 および Sonnet 4 より前のモデル、[それより前の Agent Platform モデル](#configure-tool-search)、および Azure でホストされる Microsoft Foundry のデプロイでは事前に読み込まれます |
 | `true` | MCP ツールは遅延されます。フォールバックは（未設定）の場合と同じです |
-| `auto` | しきい値モード: 本来遅延させるツールの定義の合計がコンテキストウィンドウの 10% 未満である間は Claude Code がそれらを事前に読み込み、定義が 10% に達した時点ですべてを遅延させます |
+| `auto` | しきい値モード。本来遅延されるツールは、その定義の合計がコンテキストウィンドウの 10% 未満である間は事前に読み込まれます。10% 以上になるとツール検索がオンになり、その後合計が 10% を下回っても、それらのツールは[遅延されたままになる](#tools-that-stay-deferred-below-the-threshold)ことがあります |
 | `auto:N` | カスタムのパーセンテージを指定するしきい値モード。`N` は 0〜100 です。たとえば、5% の場合は `auto:5` です |
 | `false` | すべての MCP ツールが事前に読み込まれ、遅延は行われません |
 
@@ -1545,6 +1545,10 @@ ENABLE_TOOL_SEARCH=false claude
 `ANTHROPIC_BASE_URL` がゲートウェイを指している場合、ツール検索はデフォルトでオンになっているため、リクエストにはゲートウェイが転送するための `defer_loading` ツールフィールドと `tool_reference` ブロックが含まれます。ツール検索がオンの間、MCP ツールは[遅延](#scale-with-mcp-tool-search)されます。代わりにすべてのツールを事前に読み込むには、シェルまたは[設定の `env`](/docs/ja/settings-reference#env) で `ENABLE_TOOL_SEARCH=false` を設定します。v2.1.304 より前は、`ENABLE_TOOL_SEARCH` が `true`、`auto`、または `auto:N` でない限り、ゲートウェイ経由ではツール検索はオフでした。
 
 v2.1.305 以降では、原因を認識できない `400` または `422` が返された後、Claude Code は[ツール検索なしでリクエストを再試行](/docs/ja/llm-gateway-protocol#retry-without-tool-search)できます。再試行が成功した場合、画面には何も表示されず、特に対処する必要はありません。MCP ツールは代わりに事前に読み込まれます。Claude Code は後でツール検索を再度試みますが、その際にもう一度リクエストが拒否されることになります。これらのリクエストを省くには、`ENABLE_TOOL_SEARCH=false` を設定してください。
+
+#### `ENABLE_TOOL_SEARCH=auto` のしきい値を下回っても遅延されたままのツール
+
+ツールの定義の合計が `auto` のしきい値を下回っているにもかかわらず、[`/context`](/docs/ja/commands#all-commands) でツールに `(deferred)` または `(loaded on-demand)` のラベルが付いている場合、この会話ではすでにツール検索がオンになっており、そのままオンが維持されています。合計は後から減ることがあります。たとえば、セッションを再開した後に MCP サーバーが再接続している間などです。特に対処する必要はありません。Claude は、タスクで必要になったときにそれぞれのツールを読み込みます。
 
 ### サーバーを遅延読み込みの対象外にする
 

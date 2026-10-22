@@ -33,6 +33,8 @@
 
 Team および Enterprise の Owner は、[**Organization settings > Capabilities > Remote sessions**](https://claude.ai/admin-settings/capabilities) の **Scheduled tasks (Was Routines)** トグルを使用して、すべてのメンバーのスケジュールタスクをオフにできます。トグルがオフの場合、既存のスケジュールタスクは実行を停止し、メンバーは新しいスケジュールタスクを作成できません。
 
+Enterprise 組織が[カスタムロール](https://support.claude.com/en/articles/13930452)でアクセスを管理している場合は、スケジュールタスクの権限を含むロールも必要です。Owner は [**Organization settings > Roles**](https://claude.ai/admin-settings/roles) でロールの **Remote sessions** セクションにこの権限を追加できます。
+
 ## ユースケースの例
 
 各例は、トリガータイプと、スケジュールタスクに適した作業の種類を組み合わせたものです。いずれも無人で実行でき、繰り返し可能で、明確な成果に結びついています。
@@ -48,7 +50,7 @@ Team および Enterprise の Owner は、[**Organization settings > Capabilitie
 
 スケジュールタスクは、[claude.ai/code/routines](https://claude.ai/code/routines) の Web、Desktop アプリ、または CLI から作成できます。3 つのサーフェスはすべて同じクラウドアカウントに書き込むため、どれかで作成したスケジュールタスクは他のサーフェスにもすぐに表示されます。Desktop アプリの **Code** タブで、サイドバーまたはサイドバーの **More** メニューにある **Scheduled** をクリックしてから **New task** をクリックし、[Web から作成する](#create-from-the-web)の手順に進みます。
 
-スケジュールタスクは完全な Claude Code クラウドセッションとして自律的に実行されます。権限モードは選択しません。セッションはシェルコマンドを実行し、クローンされたリポジトリにコミットされた[スキル](/docs/ja/skills)を使用し、含めたコネクタを呼び出します。一部の[アーティファクトアクション](#when-a-run-publishes-an-artifact-without-asking)を除き、すべて承認を求めずに実行されます。
+スケジュールタスクは完全な Claude Code クラウドセッションとして自律的に実行されます。権限モードは選択しません。セッションはシェルコマンドを実行し、[スキル](/docs/ja/skills)を使用し、含めたコネクタを呼び出します。一部の[アーティファクトアクション](#when-a-run-publishes-an-artifact-without-asking)を除き、すべて承認を求めずに実行されます。[プロジェクト](/docs/ja/claude-projects#what-threads-pick-up-from-your-repositories)の外では、これらのスキルにはクローンされたリポジトリにコミットされたスキルも含まれます。
 
 スケジュールタスクがアクセスできる範囲は、次によって決まります。
 
@@ -116,7 +118,7 @@ Team および Enterprise の Owner は、[**Organization settings > Capabilitie
 
 **Create** をクリックします。ダイアログが閉じ、新しいタスクの詳細ページが開きます。タスクは、トリガーのいずれかが次に一致したときに実行されます。すぐに実行を開始するには、詳細ページで **Run now** をクリックします。
 
-各実行では他のセッションと並んで新しいセッションが作成され、そこで Claude が行ったことの確認、変更のレビュー、プルリクエストの作成ができます。
+実行内容を確認するには、詳細ページの **History** リストでその実行をクリックします。実行は[完全なセッションとして開き](#view-and-interact-with-runs)（実行ごとに新しいセッションが作成されます）、そこで Claude が行ったことの確認、変更のレビュー、プルリクエストの作成ができます。
 
 #### メインビューに Repositories と Environment があるダイアログ
 
@@ -147,9 +149,9 @@ API 呼び出しや GitHub イベントによってのみ開始されるもの�
 
 スケジュールトリガーは、定期的なペースで、または将来の特定の時刻に 1 回、タスクを実行します。Web のタスク作成ダイアログまたは編集ダイアログで、1 時間ごと、毎日、毎週などのプリセット頻度を選択します。
 
-* **タイムゾーン**: 時刻はローカルのタイムゾーンで入力され、自動的に変換されるため、クラウドインフラストラクチャの所在地に関係なく、タスクはその現地時刻に実行されます。
 * **正時の実行**: 9:00 のように正時ちょうどに実行をスケジュールすると、数分遅れて開始される場合があります。スケジュールした時刻に近いタイミングで開始するには、9:07 のように正時から数分ずらした時刻を選択してください。
-* **カスタム間隔**: 2 時間ごとなどのカスタム間隔の場合は、ダイアログで最も近いプリセットを選択してから、CLI で `/schedule update` を実行して特定の cron 式を設定します。最小間隔は 1 時間で、それより頻繁に実行される式は拒否されます。
+* **カスタム間隔**: プリセットにないペースの場合は、タスクを作成してから、その[編集ダイアログ](#edit-and-control-scheduled-tasks)で **Custom** を選択します。次に、2 時間ごとを表す `0 */2 * * *` などの cron 式を入力します。CLI から設定するには、[`/schedule update`](#manage-scheduled-tasks-from-the-cli) を実行します。1 時間に 1 回より頻繁に実行される式は拒否されます。
+* **タイムゾーン**: プリセット頻度を選択する場合は、時刻をローカルのタイムゾーンで入力します。
 
 #### 1 回限りの実行をスケジュールする
 
@@ -159,7 +161,7 @@ API 呼び出しや GitHub イベントによってのみ開始されるもの�
 * ロールアウト完了後にクリーンアップ PR を作成する
 * アップストリームの変更がリリースされた後にフォローアップ作業を開始する
 
-タスクは実行後に自動的にオフになり、Web UI では **Completed** と表示されます。再度実行するには、Web でタスクの編集ダイアログを開き（1 回限りのタスクでは **One-time** が表示されます）、新しい時刻を設定します。
+タスクは実行後に自動的にオフになり、Web UI では **Completed** と表示されます。再度実行するには、Web でタスクの[編集ダイアログ](#edit-and-control-scheduled-tasks)を開き、ダイアログに表示されているラベルに応じて **One-time** または **Once** を選択します。次に、ローカルのタイムゾーンで新しい日付と時刻を設定して保存します。
 
 CLI から 1 回限りの実行を作成するには、時刻を自然言語で記述します。Claude は現在時刻を基準にその表現を解釈し、保存する前に絶対タイムスタンプを確認します。
 
@@ -170,8 +172,6 @@ CLI から 1 回限りの実行を作成するには、時刻を自然言語で�
 ```text theme={null}
 /schedule in 2 weeks, open a cleanup PR that removes the feature flag
 ```
-
-定期スケジュールと同じローカル時刻から UTC への変換が、1 回限りのタイムスタンプにも適用されます。
 
 1 回限りの実行は、他のスケジュール実行と同じ 1 時間あたりの制限にカウントされます。詳細については、[使用量と制限](#usage-and-limits)を参照してください。
 
@@ -356,7 +356,7 @@ Claude は、プロンプトで別のブランチへのプッシュを指示し�
 コネクタは、アカウント上の [claude.ai インテグレーション](/docs/ja/mcp#use-mcp-servers-from-claude-ai)です。CLI で `claude mcp add` を使用してローカルに追加した MCP サーバーは claude.ai アカウントではなくマシンに保存されるため、コネクタリストには表示されません。これらのサーバーのいずれかをスケジュールタスクで使用するには、次のいずれかを行います。
 
 * **コネクタとして**: [claude.ai/customize/connectors](https://claude.ai/customize/connectors) でコネクタとして追加します
-* **リポジトリ内で**: リポジトリが 1 つのスケジュールタスクの場合は、代わりにコミットされた [`.mcp.json`](/docs/ja/mcp#project-scope) でサーバーを宣言し、クローンされるリポジトリの一部にすることもできます
+* **リポジトリ内で**: [プロジェクト](/docs/ja/claude-projects#what-threads-pick-up-from-your-repositories)外にあるリポジトリが 1 つのスケジュールタスクの場合は、代わりにコミットされた [`.mcp.json`](/docs/ja/mcp#project-scope) でサーバーを宣言することもできます。プロジェクト内のスケジュールタスクは `.mcp.json` を読み込まないため、サーバーをコネクタとして追加してください
 
 スケジュールタスクを作成すると、現在接続されているすべてのコネクタがデフォルトで含まれます。実行中に Claude がアクセスできるツールを制限するため、不要なものは削除してください。タスクの作成ダイアログまたは編集ダイアログから直接コネクタを追加することもできます。
 
@@ -452,8 +452,9 @@ CLI は `/schedule` の要件の 1 つが満たされていない場合、この
 * クラウドセッション内にいる。この場合、`/schedule` を送信すると、その環境ではコマンドを使用できないという応答が返されます。代わりに [Web UI](https://claude.ai/code/routines) からスケジュールタスクを管理してください
 * 組織のポリシーが、スケジュールタスクに必要な[クラウドセッション](/docs/ja/claude-code-on-the-web)を無効にしている。この場合、`/schedule` を送信すると代わりに [`Cloud sessions are disabled by your organization's policy`](/docs/ja/errors#cloud-sessions-are-disabled-by-your-organizations-policy) と応答されます。v2.1.268 より前は、`Unknown command: /schedule` が返されていました
 * Owner が Team または Enterprise 組織の[スケジュールタスクをオフにした](#routines-are-disabled-by-your-organizations-policy)。v2.1.227 より前は、このケースでもコマンドが表示されており、Claude がタスクを作成または実行しようとしたときに claude.ai がそれを拒否していました
+* Enterprise 組織が[カスタムロール](https://support.claude.com/en/articles/13930452)でアクセスを管理しており、どのロールにも **Remote sessions** のスケジュールタスク権限が含まれていない。いずれかのロールにこの権限を追加するよう Owner に依頼してください
 
-組織のポリシーでスケジュールタスクまたはクラウドセッションが無効になっていない限り、CLI の設定に関係なく、[claude.ai/code/routines](https://claude.ai/code/routines) でスケジュールタスクを作成・管理できます。
+原因が CLI のサインインやクラウドセッション内にいることである場合でも、[claude.ai/code/routines](https://claude.ai/code/routines) でスケジュールタスクを作成・管理できます。そのためには Pro、Max、Team、または Enterprise アカウントが必要です。組織でスケジュールタスクまたはクラウドセッションがオフになっている場合や、ロールにそれらが含まれていない場合は、Web でも作成できません。
 
 ### "Routines are disabled by your organization's policy"
 

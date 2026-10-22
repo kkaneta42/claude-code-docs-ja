@@ -476,7 +476,11 @@ PowerShell コマンドには、`CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR` 環�
 
 PowerShell コマンドは、[PowerShell コマンドでの永続化された変数](/docs/ja/hooks#persisted-variables-in-powershell-commands)に記載されている条件のもとで、フックが `CLAUDE_ENV_FILE` を通じて永続化した変数も受け取ります。Claude Code v2.1.296 以降が必要です。
 
-`grep`、`rg`、`egrep`、`fgrep`、`findstr`、`git grep` からの終了コード 1 は一致がないことを意味します。`git diff` からの終了コード 1 は差分が存在することを意味します。どちらの結果も Claude にコマンド失敗として報告されません。`robocopy` の場合、終了コード 0 から 7 は情報結果です。コピーされたファイルや検出された追加ファイルなどです。終了コード 8 以上は失敗としてカウントされます。
+### PowerShell での検索と `git diff` からの終了コード 1
+
+Claude が PowerShell ツールで実行した、何にも一致しない `grep` または `rg` の検索で `Error: Exit code 1` が表示された場合でも、検索は失敗していません。対処は不要です。このエラーは、検索がより長いコマンドの一部である場合に表示されることがあります。たとえば、`rg` が終了コード 1 で終了したとき、`rg foo | Out-Null` ではエラーが表示されますが、`rg foo` では表示されません。
+
+PowerShell ツールは、`grep`、`rg`、`egrep`、`fgrep`、`findstr`、`git grep`、`git diff` からの終了コード 1 を通常の結果として扱うことができます。これらの検索は、一致がないことを報告するために終了コード 1 を使用します。`git diff` の場合、終了コード 1 はファイルが異なることを意味します。Claude が実行したときにエラーが表示されるコマンドは、`shell: powershell` を指定したスキルでは[失敗としてカウントされます](/docs/ja/skills#when-an-injected-command-fails)。
 
 ### Windows エンコーディングと終了コード
 
@@ -484,7 +488,8 @@ PowerShell コマンドは、[PowerShell コマンドでの永続化された変
 * Claude Code はネイティブコマンドの標準入力にパイプされたテキストを UTF-8 としてエンコードします
 * Claude Code は ANSI エスケープシーケンスなしでエラー出力をキャプチャします
 * 子プロセスが標準入力で待機するコマンドは、ハングするのではなくファイルの終わりを受け取ります
-* `where.exe` からの終了コード 1 は一致がないことを意味し、`fc.exe` と `diff.exe` からはファイルが異なることを意味するため、コマンドが出力を生成する場合、Claude Code はその終了コードをコマンドエラーではなく有効な否定的な回答として扱います。Claude Code は `where.exe /Q` または `$null` へのリダイレクトなどのサイレント形式を終了コード 1 での失敗として報告します
+* `where.exe` で一致が見つからない場合、または `fc.exe` や `diff.exe` でファイルが異なると判定された場合、コマンドは失敗していなくても結果に `Error: Exit code 1` が表示されることがあります。対処は不要です。
+* `robocopy` の終了コード 1 から 7 がエラーとして表示された場合でも、コピーは失敗しておらず、対処は不要です。`robocopy` は、コピーされたファイルなどの結果を報告するために終了コード 0 から 7 で終了し、失敗した場合は 8 以上で終了します。
 
 ### プレビューの制限事項
 

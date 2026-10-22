@@ -8,7 +8,7 @@
 
 Claude Security プラグインは、Claude Code セッション内でコードベースのマルチエージェント脆弱性スキャンを実行します。Claude エージェントのチームがアーキテクチャをマッピングし、脅威モデルを構築し、脆弱性を検出し、すべての検出結果を独立してレビューしてからレポートを作成します。プラグインを使用して、リポジトリ全体をスキャンするか、[変更のみをスキャン](#scan-only-your-changes)することができます。例えば、ブランチの diff、プルリクエストの diff、または単一のコミットなどです。その後、選択した検出結果をレビューして自分で適用できるパッチに変換します。
 
-プラグインはセッション内でローカルに実行され、[Claude Code でアクセスできるモデルを使用](#models-and-providers)し、各スキャンは[使用量](/docs/ja/costs)にカウントされます。リポジトリを監視するマネージドサービスが必要な場合、または [Claude Mythos](https://platform.claude.com/docs/en/about-claude/models/introducing-claude-fable-5-and-claude-mythos-5) でスキャンを実行したい場合は、Enterprise プランで利用可能な [Claude Security](https://claude.com/product/claude-security) プロダクトを参照してください。プラグインは、GitLab や Bitbucket でホストされているリポジトリ、または受信接続を許可しないネットワーク上のリポジトリなど、マネージドプロダクトが到達できないコードに到達できます。
+プラグインはセッション内でローカルに実行され、[Claude Code でアクセスできるモデルを使用](#models-and-providers)し、各スキャンは[使用量](/docs/ja/costs)にカウントされます。リポジトリを監視するマネージドサービスが必要な場合、または [Claude Mythos](https://platform.claude.com/docs/en/about-claude/models/introducing-claude-fable-5-and-claude-mythos-5) でスキャンを実行したい場合は、Enterprise プランで利用可能な [Claude Security](https://claude.com/product/claude-security) プロダクトを参照してください。
 
 プラグインは、Claude Code に既に含まれているレビューツールとも異なります。[security guidance プラグイン](/docs/ja/security-guidance)は Claude が記述するコードをレビューし、[`/security-review`](/docs/ja/commands#all-commands)はブランチに対して単一パスを実行し、[Code Review](/docs/ja/code-review)はプルリクエストをレビューします。レイヤーがどのようにスタックするかについては、[プラグインが他のセキュリティツールとどのように適合するか](#how-the-plugin-fits-with-other-security-tools)を参照してください。
 
