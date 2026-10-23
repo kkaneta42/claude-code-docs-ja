@@ -10,7 +10,7 @@
 >
 > Ultrareview はリサーチプレビュー機能です。機能、価格、および利用可能性はフィードバックに基づいて変更される可能性があります。コマンドは `/code-review ultra` です。ultrareview がアカウントで利用可能な場合、`/ultrareview` はエイリアスです。
 
-Ultrareview は [クラウドセッション](/docs/ja/claude-code-on-the-web) として Anthropic のインフラストラクチャ上で実行される深いコードレビューです。`/code-review ultra` を実行すると、Claude Code はクラウドサンドボックスでレビュアーエージェントのフリートを起動し、ブランチまたはプルリクエストのバグを見つけます。
+Ultrareview は [クラウドセッション](/docs/ja/claude-code-on-the-web.md) として Anthropic のインフラストラクチャ上で実行される深いコードレビューです。`/code-review ultra` を実行すると、Claude Code はクラウドサンドボックスでレビュアーエージェントのフリートを起動し、ブランチまたはプルリクエストのバグを見つけます。
 
 ローカルの `/code-review` と比較して、ultrareview は以下を提供します。
 
@@ -18,7 +18,7 @@ Ultrareview は [クラウドセッション](/docs/ja/claude-code-on-the-web) �
 * **より広いカバレッジ**: より大規模なレビュアーエージェントのフリートが並行して変更を探索するため、ローカルレビューでは見落とされる可能性のある問題が浮かび上がります
 * **ローカルリソースの使用なし**: レビューはクラウドサンドボックスで完全に実行されるため、実行中はターミナルが他の作業に使用可能なままです
 
-Ultrareview は Anthropic のインフラストラクチャ上でクラウドセッションとして実行されるため、claude.ai アカウントでの認証が必要です。API キーのみでサインインしている場合は、`/login` を実行して claude.ai で認証してください。Ultrareview は Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry で Claude Code を使用する場合は利用できず、Zero Data Retention を有効にしている組織や [HIPAA 設定](/docs/ja/hipaa-setup) が適用されている組織でも利用できません。これらの場合、`/code-review ultra` は代わりにセッション内でローカルレビューを実行します。[顧客管理の暗号化キー](https://platform.claude.com/docs/en/manage-claude/cmek)（CMEK）を使用している組織は ultrareview を実行できません。変更をローカルでレビューするには、`/code-review` を実行してください。
+Ultrareview は Anthropic のインフラストラクチャ上でクラウドセッションとして実行されるため、claude.ai アカウントでの認証が必要です。API キーのみでサインインしている場合は、`/login` を実行して claude.ai で認証してください。Ultrareview は Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry で Claude Code を使用する場合は利用できず、Zero Data Retention を有効にしている組織や [HIPAA 設定](/docs/ja/hipaa-setup.md) が適用されている組織でも利用できません。これらの場合、`/code-review ultra` は代わりにセッション内でローカルレビューを実行します。[顧客管理の暗号化キー](https://platform.claude.com/docs/en/manage-claude/cmek)（CMEK）を使用している組織は ultrareview を実行できません。変更をローカルでレビューするには、`/code-review` を実行してください。
 
 ## CLI から ultrareview を実行する
 
@@ -30,7 +30,7 @@ Ultrareview は Anthropic のインフラストラクチャ上でクラウドセ
 
 引数なしの場合、ultrareview は現在のブランチとデフォルトブランチ間の差分をレビューします。これには、コミットされていない変更とステージされた変更が含まれます。
 
-ブランチレビューの場合、Claude Code はリポジトリの状態をバンドルし、[ローカルリポジトリをクラウドセッションにアップロードするためのルール](/docs/ja/claude-code-on-the-web#send-local-repositories-without-github)に従ってクラウドサンドボックスにアップロードします。このルールには、サイズ制限、チェックアウトの要件、および `.env` や `*.tfvars` ファイルなど、認証情報やキーのような名前のファイルに対するコミットされていない変更の扱いが含まれます。[プルリクエストをレビュー](#review-a-pull-request)する場合、Claude Code はマシンから何もアップロードしません。
+ブランチレビューの場合、Claude Code はリポジトリの状態をバンドルし、[ローカルリポジトリをクラウドセッションにアップロードするためのルール](/docs/ja/claude-code-on-the-web.md#send-local-repositories-without-github)に従ってクラウドサンドボックスにアップロードします。このルールには、サイズ制限、チェックアウトの要件、および `.env` や `*.tfvars` ファイルなど、認証情報やキーのような名前のファイルに対するコミットされていない変更の扱いが含まれます。[プルリクエストをレビュー](#review-a-pull-request)する場合、Claude Code はマシンから何もアップロードしません。
 
 起動前に、Claude Code はレビュー範囲、残りの無料実行回数、および推定コストを含む確認ダイアログを表示します。ブランチレビューの場合、スコープにはファイルと行数が含まれます。確認後、レビューはバックグラウンドで続行され、セッションを引き続き使用できます。
 
@@ -58,7 +58,7 @@ Ultrareview は Anthropic のインフラストラクチャ上でクラウドセ
 
 このコマンドは `#1234`、`PR 1234`、および貼り付けられた PR URL も受け入れます。貼り付けられた URL は現在のディレクトリ内のリポジトリを指す必要があります。
 
-PR モードには `github.com` 上のリポジトリが必要です。[GitHub Enterprise Server](/docs/ja/github-enterprise-server) インスタンス上のリポジトリの場合は、PR 番号なしで `/code-review ultra` を実行し、代わりにローカルブランチをレビューしてください。
+PR モードには `github.com` 上のリポジトリが必要です。[GitHub Enterprise Server](/docs/ja/github-enterprise-server.md) インスタンス上のリポジトリの場合は、PR 番号なしで `/code-review ultra` を実行し、代わりにローカルブランチをレビューしてください。
 
 PR モードでは、クラウドサンドボックスは作業ツリーをアップロードするのではなく、`github.com` からプルリクエストをクローンします。その際には Claude アカウントに接続された GitHub アカウントを使用するため、そのアカウントにはリポジトリへの読み取りアクセス権が必要です。
 
@@ -103,14 +103,14 @@ Claude Code はテキストが複数の単語を持ち、ブランチ名また�
 
 Ultrareview はレビュー作業が実行される前に差分をチェックし、それをそのままレビューできない場合に通知します。
 
-* **差分が大きすぎる**: ブランチレビューはデフォルトで最大 500 個の変更されたファイルと 8,000 個の変更された行を含むことができます。正確な値は変更される可能性があり、[拒否](/docs/ja/errors#diff-is-too-large-for-ultrareview)は有効な値、差分のサイズ、および最も変更された行を持つファイルを名前付けします。Claude Code は同じ方法で大きすぎるプルリクエストを拒否し、ファイルと行数を名前付けしますが、ファイルごとの内訳は名前付けしません。
+* **差分が大きすぎる**: ブランチレビューはデフォルトで最大 500 個の変更されたファイルと 8,000 個の変更された行を含むことができます。正確な値は変更される可能性があり、[拒否](/docs/ja/errors.md#diff-is-too-large-for-ultrareview)は有効な値、差分のサイズ、および最も変更された行を持つファイルを名前付けします。Claude Code は同じ方法で大きすぎるプルリクエストを拒否し、ファイルと行数を名前付けしますが、ファイルごとの内訳は名前付けしません。
 * **レビューするものがない**: ベースに対する差分が空の場合、ultrareview は拒否し、比較したブランチまたはコミットを名前付けし、あなたがいるケース（ベースブランチ自体にいてコミットされていない変更がない、またはコミットがすべてベースの一部である既存のブランチなど）を名前付けします。また、そのケースの解決方法を提案します。例えば、作業があるブランチに切り替える、ローカル編集をステージングまたはコミットする、または別のベースを渡すなどです。
 * **最初のコミット**: リポジトリの最初のコミットは比較する前のものがないため、ultrareview は起動ダイアログで確認した後、それ内のすべてのファイルをレビューします。追跡されていないファイルがある場合、代わりに拒否し、レビューしたいものを `git add` するよう指示します。同じサイズ制限が適用されます。
 
   最初のコミットはその確認後にのみ全体的にレビューされるため、`claude ultrareview` サブコマンドと `claude -p` はそれを拒否し、インタラクティブセッションを使用するよう指示します。Claude Code v2.1.277 以降が必要です
 * **マージベースがない**: ブランチがベースブランチと履歴を共有しない場合、またはリポジトリに比較するベースブランチがない場合、ultrareview はリポジトリ内のすべての追跡ファイルをレビューすることにフォールバックします。フォールバックは完全なクローンが必要で、同じサイズ制限を適用します。起動ダイアログで確認するか、`claude ultrareview` サブコマンドを自分で実行するときのみ起動します。`claude -p` およびどちらも起こらない他の場所では、ultrareview は拒否し、レビューがすべてのファイルをカバーすることを言い、インタラクティブセッションを使用するよう指示します。
 
-  ブランチまたは他の参照がないチェックアウト（URL をフェッチした後に `FETCH_HEAD` をチェックアウトして作成されたデタッチされた HEAD など）では、Claude Code は [レビューを拒否](/docs/ja/errors#your-checkout-has-no-branches)し、最初にブランチを作成することを提案します。
+  ブランチまたは他の参照がないチェックアウト（URL をフェッチした後に `FETCH_HEAD` をチェックアウトして作成されたデタッチされた HEAD など）では、Claude Code は [レビューを拒否](/docs/ja/errors.md#your-checkout-has-no-branches)し、最初にブランチを作成することを提案します。
 
 ## 価格と無料実行回数
 
@@ -139,7 +139,7 @@ Claude Code は会話ごとに 1 回、使用量クレジット請求の確認�
 
 Claude は、レビューが停止されたか、そのセッションが見つからなかったことを伝えることもできます。
 
-* レビューのクラウドセッションが停止されたか、レビューが完了する前に claude.ai で[アーカイブ](/docs/ja/claude-code-on-the-web#archive-sessions)された場合、Claude はそれが停止されたことを伝えます。
+* レビューのクラウドセッションが停止されたか、レビューが完了する前に claude.ai で[アーカイブ](/docs/ja/claude-code-on-the-web.md#archive-sessions)された場合、Claude はそれが停止されたことを伝えます。
 * レビューのクラウドセッションが削除された場合、またはそれを起動してから別の Claude アカウントまたは組織にサインインした場合、Claude はセッションが見つからなかったことを伝えます。
 * アカウントを切り替えた場合、レビューはそれを開始したアカウントで完了する可能性があります。レビューがまだ実行中の場合は、そのアカウントとして再度サインインし、`claude --resume` で会話を再開してそれを再度接続します。
 
@@ -147,7 +147,7 @@ Claude は、レビューが停止されたか、そのセッションが見つ�
 
 ## ultrareview を非対話的に実行する
 
-`claude ultrareview` サブコマンドを使用して、対話的セッションなしに CI またはスクリプトから ultrareview を開始します。このサブコマンドは `/code-review ultra` と同じレビューを起動し、リモートレビューが完了するまでブロックし、検出結果を stdout に出力します。
+`claude ultrareview` サブコマンドを使用して、対話的セッションなしに CI またはスクリプトから ultrareview を開始します。このサブコマンドは `/code-review ultra` と同じレビューを起動し、リモートレビューが完了するまでブロックし、検出結果を stdout に出力します。実行が `Error: Workspace not trusted` で終了する場合は、[レビューの実行前にフォルダを信頼する](#trust-the-folder-before-the-review-runs)を参照してください。
 
 ```bash theme={null}
 claude ultrareview
@@ -157,11 +157,9 @@ claude ultrareview origin/main
 
 引数なしの場合、サブコマンドは現在のブランチとデフォルトブランチ間の差分をレビューします。マージベースが存在しない場合は、`/code-review ultra` と同じ[リポジトリ全体フォールバック](#diff-limits-and-fallbacks)を使用します。PR 番号を渡して [`github.com` 上のプルリクエストをレビュー](#review-a-pull-request)するか、ベースブランチを渡してそれに対してレビューします。[ベースブランチ処理](#review-against-a-different-base)は対話的コマンドと一致します。
 
-サブコマンドを実行すると、リポジトリ全体フォールバックと課金および利用規約プロンプトに同意したことになるため、入力を待たずに実行が開始されます。自分で実行することが同意としてカウントされます。Claude がたとえば Bash ツールを通じてサブコマンドを代わりに実行する場合、Claude Code はリポジトリ全体レビューを拒否します。
+サブコマンドを実行すると、リポジトリ全体フォールバックと課金および利用規約プロンプトに同意したことになるため、確認のために実行が停止することはありません。自分で実行することが同意としてカウントされます。Claude がたとえば Bash ツールを通じてサブコマンドを代わりに実行する場合、Claude Code はリポジトリ全体レビューを拒否します。
 
 `claude -p '/code-review ultra'` では検出結果を取得できないため、スクリプトでは `claude ultrareview` を使用してください。`-p` の実行はクラウドレビューを起動し、その完了を待たずに終了します。レビューで使用クレジットが課金される場合、`-p` の実行はレビューを起動せずに停止します。v2.1.218 より前では、非対話的セッションの `/code-review ultra` はローカルレビューを実行していました。
-
-`claude ultrareview` は進捗メッセージを stderr に出力するため、stdout は解析可能なままです。これらのフラグを使用して、出力、タイムアウト、および検出結果を投稿するかどうかを制御します。
 
 | フラグ | 説明 |
 | - | - |
@@ -169,14 +167,17 @@ claude ultrareview origin/main
 | `--timeout <minutes>` | レビューが完了するまで待機する最大分数。デフォルトは 45 です |
 | `--post` | [検出結果を完了後にプルリクエストに投稿](#post-findings-to-the-pull-request)します。GitHub アカウントからの 1 つのプレーンコメントとして投稿されます。`github.com` プルリクエストターゲットで機能します。他のターゲットでは、Claude Code はフラグを無視し、そのことを通知します。Claude Code v2.1.227 以降が必要です |
 | `--no-post` | 検出結果を投稿しません。これがデフォルトであり、両方のフラグを渡す場合、Claude Code は投稿しません。Claude Code v2.1.227 以降が必要です |
+| `--trust-workspace` | 確認なしで、この実行に限り[現在のフォルダを信頼](#trust-the-folder-before-the-review-runs)します。これにより、スクリプトや CI ジョブが、信頼していないチェックアウトをレビューできます。値は取りません。PR 番号またはベースブランチはこのフラグの前に置いてください。Claude Code v2.1.309 以降が必要です |
+
+`claude ultrareview` は進捗メッセージを stderr に出力するため、stdout は解析可能なままです。
 
 `claude ultrareview` を実行するには、`/code-review ultra` と同じ認証と使用クレジット設定が必要です。
 
 サブコマンドは 3 つのコードのいずれかで終了します。
 
 * **0**：レビューが完了しました。検出結果があるかどうかに関わらず
-* **1**：レビューの起動に失敗したか、完了前に停止されたか、クラウドセッションがエラーになったか、またはタイムアウトが経過しました
-* **130**：Ctrl-C でサブコマンドを中断しました
+* **1**：レビューの起動に失敗したか、完了前に停止されたか、クラウドセッションがエラーになったか、またはタイムアウトが経過しました。[フォルダが信頼されていない](#trust-the-folder-before-the-review-runs)場合も、信頼の確認で `n` と答えるか Ctrl-C を押した場合を含め、コードは 1 になります。
+* **130**：信頼の確認時ではなく、サブコマンドがレビューを起動している間、検出結果を待っている間、または `--post` のコメントを送信している間に Ctrl-C を押しました
 
 検出結果が届く前にサブコマンドが終了した場合、検出結果はターミナルに届きません。レビューはクラウドで引き続き実行されている可能性があります。サブコマンドを再度実行すると、そのレビューを再開するのではなく新しいレビューが開始され、新しいレビューでは[無料実行が使用されるか、使用クレジットとして課金されます](#pricing-and-free-runs)。
 
@@ -185,7 +186,19 @@ claude ultrareview origin/main
 * 実行が失敗した場合、停止された場合、またはタイムアウトした場合、サブコマンドは何も投稿しません。
 * レビューが完了しても、コメントが投稿されない場合、Claude Code は理由を stderr に出力し、検出結果は stdout に残るため、手動で投稿できます。
 
-GitHub プルリクエストの自動レビューについては、[Code Review](/docs/ja/code-review) がリポジトリと直接統合され、CLI ステップなしでインライン PR コメントとして検出結果を投稿します。
+GitHub プルリクエストの自動レビューについては、[Code Review](/docs/ja/code-review.md) がリポジトリと直接統合され、CLI ステップなしでインライン PR コメントとして検出結果を投稿します。
+
+### レビューの実行前にフォルダを信頼する
+
+`claude ultrareview` が `Trust <folder>? [y/N]` と尋ねたら、`y` と答えて[フォルダを信頼](/docs/ja/permissions.md#project-allow-rules-and-workspace-trust)します。信頼すると、git と Claude Code がそのフォルダの git 設定やプロジェクト設定で指定されたプログラムを実行できるようになるため、そのコードを信頼できる場合にのみ信頼してください。
+
+CI ジョブや出力をファイルに送っている場合など、確認できないときは、[`Error: Workspace not trusted`](/docs/ja/errors#workspace-not-trusted-when-running-claude-ultrareview) で終了します。その実行に限りフォルダを信頼するには、`--trust-workspace` を末尾に追加します。
+
+```bash theme={null}
+claude ultrareview 1234 --trust-workspace
+```
+
+信頼されていないプルリクエストをレビューするには、信頼しているブランチから `claude ultrareview <PR number> --trust-workspace` を実行します。`y` と異なり、このフラグは何も保存しません。PR は[クラウドでクローンされる](#review-a-pull-request)ため、そのブランチをローカルに用意する必要はありません。
 
 ## ultrareview と /code-review の比較
 
@@ -204,5 +217,5 @@ GitHub プルリクエストの自動レビューについては、[Code Review]
 
 ## 関連リソース
 
-* [クラウドで Claude Code を使用する](/docs/ja/claude-code-on-the-web): クラウドセッションとクラウドサンドボックスの仕組みについて学習します
-* [Manage costs effectively](/docs/ja/costs): 使用量を追跡し、支出制限を設定します
+* [クラウドで Claude Code を使用する](/docs/ja/claude-code-on-the-web.md): クラウドセッションとクラウドサンドボックスの仕組みについて学習します
+* [Manage costs effectively](/docs/ja/costs.md): 使用量を追跡し、支出制限を設定します

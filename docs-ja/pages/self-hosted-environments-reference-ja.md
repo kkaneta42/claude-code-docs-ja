@@ -8,78 +8,78 @@
 
 > [!NOTE]
 >
-> セルフホスト環境は Team および Enterprise プランでパブリックベータ版です。[Owner](/docs/ja/cloud-environments#organization-shared-environments) が [**Cloud environments** 管理ページ](https://claude.ai/admin-settings/cloud-environments) で **Allow self-hosted environments** をオンにすることで有効になります。このページはフラグとメトリクスのリファレンスです。セットアップについては [クイックスタート](/docs/ja/self-hosted-environments-quickstart) を、フリート構成については [本番環境へのデプロイ](/docs/ja/self-hosted-environments-deploy) をご覧ください。
+> セルフホスト環境は Team および Enterprise プランでパブリックベータ版です。[Owner](/docs/ja/cloud-environments.md#organization-shared-environments) が [**Cloud environments** 管理ページ](https://claude.ai/admin-settings/cloud-environments) で **Allow self-hosted environments** をオンにすることで有効になります。このページはフラグとメトリクスのリファレンスです。セットアップについては [クイックスタート](/docs/ja/self-hosted-environments-quickstart.md) を、フリート構成については [本番環境へのデプロイ](/docs/ja/self-hosted-environments-deploy.md) をご覧ください。
 
-このページは、[セルフホスト環境](/docs/ja/self-hosted-environments) で実行する 2 つのプロセスのリファレンスです。ランナーはホスト上で Claude Code [クラウドセッション](/docs/ja/claude-code-on-the-web) を実行し、オプションのオートスケーリングオーケストレーターはセッションがキューに入ると同時にランナーを起動します。それぞれ独自のフラグテーブルを持っています。どちらも Linux または macOS ホスト上で実行され、`/workspace` や `~/.claude` などのデフォルトを想定しています。インストール済みバージョンの権限あるリストについては、`claude self-hosted-runner --help` を実行してください。
+このページは、[セルフホスト環境](/docs/ja/self-hosted-environments) で実行する 2 つのプロセスのリファレンスです。ランナーはホスト上で Claude Code [クラウドセッション](/docs/ja/claude-code-on-the-web.md) を実行し、オプションのオートスケーリングオーケストレーターはセッションがキューに入ると同時にランナーを起動します。それぞれ独自のフラグテーブルを持っています。どちらも Linux または macOS ホスト上で実行され、`/workspace` や `~/.claude` などのデフォルトを想定しています。インストール済みバージョンの権限あるリストについては、`claude self-hosted-runner --help` を実行してください。
 
 メトリクスシリーズと一部の API フィールドは、これらのページが環境と呼ぶものに対して `pool` を使用しています。どちらの用語も同じものを指しています。環境 ID は `pool_id` フィールドで、形式は `ccpool_...` です。これらのページが `pool` 識別子を示す場所では、環境を指しています。CLI フラグと環境変数では `environment` と表記されます。例えば `--environment-secret-file` のように。非推奨の `pool` 表記はまだ機能します。[`--environment-secret-file` 行](#runner-cli-flags) で説明されているとおりです。
 
-## Runner CLI フラグ
+## ランナーの CLI フラグ
 
-ほとんどのフラグには対応する環境変数があります。両方が設定されている場合、フラグが優先されます。期間フラグは CLI では分または秒を取りますが、対応する環境変数は常にミリ秒単位で、`_MS` サフィックスで示され、デフォルト列はフラグの単位を示します。`--exit-if-unused-min 10` は `SELF_HOSTED_RUNNER_IDLE_SHUTDOWN_MS=600000` と同等であり、`SELF_HOSTED_RUNNER_STARTUP_TIMEOUT_MS: "15"` のような Helm 値は 15 分のデフォルトではなく 15 ミリ秒を意味します。
+ほとんどのフラグには対応する環境変数があります。両方が設定されている場合は、フラグが優先されます。期間を指定するフラグは CLI では分または秒で指定しますが、対応する環境変数は常にミリ秒単位で、これは `_MS` サフィックスで示されます。また、「デフォルト」列にはフラグの単位で値を示しています。たとえば、`--exit-if-unused-min 10` は `SELF_HOSTED_RUNNER_IDLE_SHUTDOWN_MS=600000` と同等であり、`SELF_HOSTED_RUNNER_STARTUP_TIMEOUT_MS: "15"` のような Helm の値は、デフォルトの 15 分ではなく 15 ミリ秒を意味します。
 
 | フラグ | 環境変数 | デフォルト | 説明 |
 | :- | :- | :- | :- |
-| `--api-url <url>` | なし | `https://api.anthropic.com` | API ベース URL。テスト目的でのみオーバーライドしてください。 |
-| `--base-dir <path>` | `SELF_HOSTED_RUNNER_BASE_DIR` | `/workspace`; Windows では なし | リポジトリチェックアウトとセッションごとの作業ディレクトリ用のディレクトリ。ランナーはこのパスまたはその親への書き込みアクセスが必要です。ランナーはスタートアップ時にディレクトリを作成し、作成または書き込みができない場合は `cannot create or write to base directory` で終了します。v2.1.225 より前は、ランナーは最初のセッションが開始されたときにディレクトリを作成していたため、使用不可能なパスはスタートアップではなくセッションを失敗させていました。Windows はサポートされていないランナーホストであり、デフォルトはありません。フラグを渡すか変数を設定しない限り、ランナーはスタートアップ時に終了します。環境内のすべてのランナーで同じ値を使用してください。[ランナー全体でベースディレクトリと容量を同じに保つ](/docs/ja/self-hosted-environments-deploy#keep-the-base-directory-and-capacity-identical-across-runners) を参照してください。 |
-| `--capacity <n>` | なし | `1` | このランナーが処理する最大同時セッション数。すべてのセッションは同じロック済み [オーナー](/docs/ja/self-hosted-environments#key-concepts) に属します。環境内のすべてのランナーで同じ値を使用してください。[ランナー全体でベースディレクトリと容量を同じに保つ](/docs/ja/self-hosted-environments-deploy#keep-the-base-directory-and-capacity-identical-across-runners) を参照してください。 |
+| `--api-url <url>` | なし | `https://api.anthropic.com` | API のベース URL。テスト目的の場合にのみ上書きしてください。 |
+| `--base-dir <path>` | `SELF_HOSTED_RUNNER_BASE_DIR` | `/workspace`（Windows ではなし） | リポジトリのチェックアウトとセッションごとの作業ディレクトリを置くディレクトリ。ランナーには、このパスまたはその親ディレクトリへの書き込みアクセスが必要です。ランナーは起動時にこのディレクトリを作成し、作成または書き込みができない場合は `cannot create or write to base directory` を出力して終了します。v2.1.225 より前は、最初のセッションの開始時にディレクトリが作成されていたため、使用できないパスでは起動ではなくセッションが失敗していました。サポート対象のランナーホストではない Windows にはデフォルトがなく、フラグを渡すか変数を設定しない限り、ランナーは起動時に終了します。環境内のすべてのランナーで同じ値を使用してください。[ランナー間でベースディレクトリと容量を同一に保つ](/docs/ja/self-hosted-environments-deploy.md#keep-the-base-directory-and-capacity-identical-across-runners)を参照してください。 |
+| `--capacity <n>` | なし | `1` | このランナーが処理する同時セッションの最大数。すべてのセッションは、ロックされた同一の[オーナー](/docs/ja/self-hosted-environments#key-concepts)に属します。環境内のすべてのランナーで同じ値を使用してください。[ランナー間でベースディレクトリと容量を同一に保つ](/docs/ja/self-hosted-environments-deploy.md#keep-the-base-directory-and-capacity-identical-across-runners)を参照してください。 |
 | `--client-label <label>` | `SELF_HOSTED_RUNNER_CLIENT_LABEL` | ホストのホスト名 | ランナーが登録時に送信するラベル。ランナーはこれを [`claude_code_self_hosted_runner_info`](#prometheus-metrics) の `client_label` ラベルとしても報告します。Claude Code v2.1.248 以降が必要です。 |
-| `--configure-git` | `SELF_HOSTED_RUNNER_CONFIGURE_GIT=1` | オフ | スタートアップ時にグローバル git ID を書き込み、Anthropic コミット署名を有効にし、git プッシュネゴシエーションをオンにし、`Co-authored-by:` トレーラーを追加するコミットフックをインストールします。プッシュネゴシエーションには Claude Code v2.1.257 以降が必要です。[git を設定する](/docs/ja/self-hosted-environments-deploy#configure-git) を参照してください。 |
-| `--confine-repo-settings <mode>` | `SELF_HOSTED_RUNNER_CONFINE_REPO_SETTINGS` | `warn` | リポジトリのコミットされた設定がそのセッション独自のワークスペース外への書き込みまたは読み取りアクセスを許可しようとする場合、環境変数を設定する場合、またはオペレーターのサンドボックスまたはフック姿勢をオーバーライドしようとする場合（`sandbox.enabled: false` や `disableAllHooks` など）にセッションにフラグを立てるガードのモードを設定します。デフォルトの `warn` は違反をログに記録してもセッションを開始し、`enforce` はセッションを拒否し、`off` はスキャンを無効にします。[デプロイメントを強化する](/docs/ja/self-hosted-environments-deploy#harden-your-deployment) を参照してください。 |
-| `--debug-token-dir <path>` | `SELF_HOSTED_RUNNER_DEBUG_TOKEN_DIR` | 未設定 | ライブトークンをディスクに書き込んで検査します。デバッグのみ。本番環境では使用しないでください。 |
-| `--defer-shutdown-max-min <n>` | `SELF_HOSTED_RUNNER_DEFER_SHUTDOWN_MAX_MS` | `0` | 最初の `SIGTERM` または `SIGINT` で、ドレインする代わりに既にアタッチされているセッションの提供を続け、その後 N 分後に残っているものをリリースして終了します。これを設定する前に、ホストの停止タイムアウトを上げてください。[最初のシグナルの後のドレインを遅延させる](/docs/ja/self-hosted-environments-deploy#defer-the-drain-past-the-first-signal) を参照してください。`0` は無効にします。Claude Code v2.1.238 以降が必要です。 |
-| `--drain-grace-sec <n>` | `SELF_HOSTED_RUNNER_DRAIN_GRACE_MS` | `0` | ランナーがシャットダウンシグナルを受け取るか、リタイア時間に達するまで、アクティブなセッションが終了した後にランナーが終了するタイミングを制御します。`0` はポーリングなしで即座に終了し、正の値はランナーをアライブに保ち、ロック済みオーナーのキューを最初にその秒数だけ再ポーリングします。これは [強化セクション](/docs/ja/self-hosted-environments-deploy#harden-your-deployment) で説明されているセッションごとのコンテナ分離のコストがかかります。[`--defer-shutdown-max-min`](/docs/ja/self-hosted-environments-deploy#defer-the-drain-past-the-first-signal) で遅延させた最初のシグナルの後、ランナーはセッションを保持していない限り即座に終了し、ここで設定したものは関係ありません。 |
-| `--drain-marker-file <path>` | `SELF_HOSTED_RUNNER_DRAIN_MARKER_FILE` | 未設定 | ホストが `SIGTERM` を送信する前にグレースフルドレインを通知するために書き込むマーカーファイル。ドレインが開始されるときにファイルが存在する場合、ランナーはその終了を Anthropic に通常のシャットダウンシグナルではなくホストドレインとして報告します。`--drain-wait-sec` ホールドを含むドレイン自体は、フラグなしの場合と同じように実行されます。セッションが書き込みできないローカルファイルシステム上のパスを指定してください。Claude Code v2.1.271 以降が必要です。 |
-| `--drain-wait-sec <n>` | `SELF_HOSTED_RUNNER_DRAIN_WAIT_MS` | `0` | ドレインが開始されたら（[`--defer-shutdown-max-min`](/docs/ja/self-hosted-environments-deploy#defer-the-drain-past-the-first-signal) を設定していない限り `SIGTERM` で）、各セッションの進行中のターンとバックグラウンドタスクが終了するまで最大 N 秒待機してから子を終了します。この待機中、ランナーは終了したばかりのバックグラウンドタスクを、その結果を読む後続のターンが開始されるまで実行中としてカウントします。最大で [`SELF_HOSTED_RUNNER_BG_RESULT_GRACE_MS`](#environment-variable-only-settings) ウィンドウです。 |
-| `--environment-secret-file <path>` | `SELF_HOSTED_RUNNER_ENVIRONMENT_SECRET` | 必須 | 環境シークレットを含むファイルへのパス、または [オーケストレーター](/docs/ja/self-hosted-environments-configuration#on-demand-runners) によって生成されたランナーの場合は単一使用のワークオーダー JWT。`SELF_HOSTED_RUNNER_ENVIRONMENT_SECRET` はファイルパスではなくシークレット値を直接保持します。古い `--pool-secret-file` フラグと `SELF_HOSTED_RUNNER_POOL_SECRET` 変数はまだ機能し、stderr に非推奨通知を出力します。2.1.216 より前のプレビュープログラムランナービルドはこれらの古い名前のみを認識します。 |
-| `--exec-path <path>` | `SELF_HOSTED_RUNNER_EXEC_PATH` | 独自のバイナリ | 各セッション用に生成するバイナリまたはラッパースクリプト。[ラッパースクリプト](/docs/ja/self-hosted-environments-configuration#wrapper-scripts) を参照してください。 |
-| `--exit-if-unused-min <n>` | `SELF_HOSTED_RUNNER_IDLE_SHUTDOWN_MS` | `0` | 作業が割り当てられたことのない N 分間のポーリング後に終了します。オートスケーラーのスケールダウン用です。`0` は無効にします。 |
-| `--git-host-rewrite <from>=<to>` | なし | 未設定 | クローン前に `https://<from>/...` ソース URL を `https://<to>/...` に書き換えます。スプリットホライズン DNS 用です。繰り返し可能。フラグのみ。 |
-| `--git-ssh-rewrite <host>` | なし | 未設定 | クローン前に `https://<host>/...` ソース URL を `git@<host>:...` に書き換えます。SSH のみの git ホスト用です。繰り返し可能。フラグのみ。 |
-| `--health-port <port>` | `SELF_HOSTED_RUNNER_HEALTH_PORT` | `8080` | `/healthz` と `/metrics` リスナーのポート。`0` に設定して無効にします。 |
-| `--hooks-dir <path>` | `SELF_HOSTED_RUNNER_HOOKS_DIR` | 未設定 | ライフサイクルフックスクリプトのディレクトリ。[ライフサイクルフック](/docs/ja/self-hosted-environments-configuration#lifecycle-hooks) を参照してください。 |
-| `--host-config-snapshot <mode>` | `SELF_HOSTED_RUNNER_HOST_CONFIG_SNAPSHOT` | `disk` | ランナーが [ホスト設定ディレクトリ](#environment-variable-only-settings) のスタートアップスナップショットを保持する場所。各セッションをシードします。`disk` はスナップショットを `--base-dir` の下のランナー所有ディレクトリにコピーし、各セッション開始時に、すべてのファイルをメモリ内ダイジェストに対して検証します。コピー内のファイルが変更されている場合、セッションは失敗し、ランナーは再起動するまでセッションを拒否します。`memory` はスナップショット全体をヒープに保持し、64 MiB でキャップされます。キャップを超える場合、セッションはホスト設定なしで開始され、そのことを示す通知が表示されます。ランナーがディスクスナップショットを書き込めない場合、失敗をログに記録し、その実行に `memory` を使用します。Claude Code v2.1.271 以降が必要です。 |
-| `--kill-session-after-min <n>` | `SELF_HOSTED_RUNNER_MAX_LIFETIME_MS` | `0` | セッションを N 分のウォールクロック時間に制限します。スタックセッションの安全制限として機能します。v2.1.260 以降では、ランナーは制限に達したセッションをリリースして、ユーザーの次のメッセージで再開できるようにし、[`SELF_HOSTED_RUNNER_MAX_LIFETIME_GRACE_MS`](#environment-variable-only-settings) グレースウィンドウが終了した時点でまだランナー上にある場合にのみ、そのセッションを終了します。v2.1.260 より前は、ランナーは制限でセッションを終了していました。詳細と値の選択方法については、[一部のセッションはアイドルとしてカウントされない](/docs/ja/self-hosted-environments-deploy#some-sessions-don%E2%80%99t-count-as-idle) を参照してください。`0` は無効にします。 |
-| `--lock-to-account <id>` | `SELF_HOSTED_RUNNER_LOCK_TO_ACCOUNT` | 未設定 | スタートアップ時に最初のセッションでロックする代わりに、ランナーを特定のアカウントに事前ロックします。環境の組織内のメールアドレスまたは `user_...` ID を受け入れます。事前ロックされたランナーは、アカウントを持たない Claude Tag チャネルセッションを決してピックアップしません。 |
-| `--log-file <path>` | `SELF_HOSTED_RUNNER_LOG_FILE` | 未設定 | ランナーログを stdout と stderr に加えてファイルにミラーリングします。`0600` 権限で作成されます。`self-hosted-runner doctor` がローカルでログをテールするために必要です。 |
+| `--configure-git` | `SELF_HOSTED_RUNNER_CONFIGURE_GIT=1` | オフ | 起動時に、グローバルな git の ID を書き込み、Anthropic のコミット署名を有効にし、git の push negotiation をオンにし、`Co-authored-by:` トレーラーを追加するコミットフックをインストールします。push negotiation には Claude Code v2.1.257 以降が必要です。[git を設定する](/docs/ja/self-hosted-environments-deploy.md#configure-git)を参照してください。 |
+| `--confine-repo-settings <mode>` | `SELF_HOSTED_RUNNER_CONFINE_REPO_SETTINGS` | `warn` | リポジトリにコミットされた設定が、そのセッション自身のワークスペース外への書き込みまたは読み取りアクセスを付与しようとする場合、環境変数を設定しようとする場合、または `sandbox.enabled: false` や `disableAllHooks` などによってオペレーターのサンドボックスやフックの方針を上書きしようとする場合に、そのセッションを警告するガードのモードを設定します。デフォルトの `warn` は違反をログに記録したうえでセッションを開始し、`enforce` はセッションを拒否し、`off` はスキャンを無効にします。[デプロイを強化する](/docs/ja/self-hosted-environments-deploy.md#harden-your-deployment)を参照してください。 |
+| `--debug-token-dir <path>` | `SELF_HOSTED_RUNNER_DEBUG_TOKEN_DIR` | 未設定 | 検査用にライブトークンをディスクに書き込みます。デバッグ専用です。本番環境では使用しないでください。 |
+| `--defer-shutdown-max-min <n>` | `SELF_HOSTED_RUNNER_DEFER_SHUTDOWN_MAX_MS` | `0` | 最初の `SIGTERM` または `SIGINT` を受信したとき、すでにアタッチされているセッションをドレインせずに引き続き処理し、N 分後にまだアタッチされているものを解放して終了します。これを設定する前に、ホストの停止タイムアウトを引き上げてください。[最初のシグナル以降にドレインを延期する](/docs/ja/self-hosted-environments-deploy.md#defer-the-drain-past-the-first-signal)を参照してください。`0` で無効になります。Claude Code v2.1.238 以降が必要です。 |
+| `--drain-grace-sec <n>` | `SELF_HOSTED_RUNNER_DRAIN_GRACE_MS` | `0` | ランナーがシャットダウンシグナルを受信するか退役時刻に達するまでの間、アクティブなセッションが終了した後にランナーがいつ終了するかを制御します。`0` の場合は追加のポーリングを行わずに即座に終了し、正の値の場合は、終了する前にその秒数の間ランナーを稼働させ続け、ロックされたオーナーのキューを再ポーリングします。ただしその代償として、[強化のセクション](/docs/ja/self-hosted-environments-deploy.md#harden-your-deployment)で説明しているセッションごとのコンテナ分離が失われます。[`--defer-shutdown-max-min`](/docs/ja/self-hosted-environments-deploy#defer-the-drain-past-the-first-signal) で延期した最初のシグナルの後は、ここでの設定にかかわらず、ランナーはセッションを 1 つも保持しなくなった時点ですぐに終了します。 |
+| `--drain-marker-file <path>` | `SELF_HOSTED_RUNNER_DRAIN_MARKER_FILE` | 未設定 | ホストが `SIGTERM` を送信する前に、グレースフルドレインを通知するために書き込むマーカーファイル。ドレインの開始時にこのファイルが存在する場合、ランナーは自身の終了を、単なるシャットダウンシグナルではなくホストのドレインとして Anthropic に報告します。`--drain-wait-sec` による待機を含め、ドレイン自体はこのフラグがない場合と同じように実行されます。セッションから書き込めないローカルファイルシステム上のパスを指定してください。Claude Code v2.1.271 以降が必要です。 |
+| `--drain-wait-sec <n>` | `SELF_HOSTED_RUNNER_DRAIN_WAIT_MS` | `0` | ドレインが開始されると（[`--defer-shutdown-max-min`](/docs/ja/self-hosted-environments-deploy#defer-the-drain-past-the-first-signal) を設定していない限り、`SIGTERM` の受信時）、子プロセスを終了する前に、各セッションの実行中のターンとバックグラウンドタスクが完了するまで最大 N 秒待機します。この待機中、ランナーは完了したばかりのバックグラウンドタスクを、その結果を読み取るフォローアップのターンが開始されるまで、最大 [`SELF_HOSTED_RUNNER_BG_RESULT_GRACE_MS`](#environment-variable-only-settings) の期間、まだ実行中としてカウントします。[停止タイムアウトも引き上げてください](/docs/ja/self-hosted-environments-deploy.md#let-running-turns-finish-before-a-restart)。 |
+| `--environment-secret-file <path>` | `SELF_HOSTED_RUNNER_ENVIRONMENT_SECRET` | 必須 | 環境シークレットを含むファイルへのパス、または[オーケストレーター](/docs/ja/self-hosted-environments-configuration.md#on-demand-runners)によって起動されたランナーの場合は、使い捨てのワークオーダー JWT を含むファイルへのパス。`SELF_HOSTED_RUNNER_ENVIRONMENT_SECRET` は、ファイルパスではなくシークレットの値そのものを保持します。古い `--pool-secret-file` フラグと `SELF_HOSTED_RUNNER_POOL_SECRET` 変数も引き続き機能し、stderr に非推奨の通知を出力します。2.1.216 より古いプレビュープログラムのランナービルドは、これらの古い名前のみを認識します。 |
+| `--exec-path <path>` | `SELF_HOSTED_RUNNER_EXEC_PATH` | 自身のバイナリ | 各セッションで起動するバイナリまたはラッパースクリプト。[ラッパースクリプト](/docs/ja/self-hosted-environments-configuration.md#wrapper-scripts)を参照してください。 |
+| `--exit-if-unused-min <n>` | `SELF_HOSTED_RUNNER_IDLE_SHUTDOWN_MS` | `0` | オートスケーラーのスケールダウン用に、作業が一度も割り当てられないまま N 分間ポーリングした後に終了します。`0` で無効になります。 |
+| `--git-host-rewrite <from>=<to>` | なし | 未設定 | スプリットホライズン DNS 用に、クローンの前にソース URL の `https://<from>/...` を `https://<to>/...` に書き換えます。繰り返し指定可能です。フラグのみで指定できます。 |
+| `--git-ssh-rewrite <host>` | なし | 未設定 | SSH のみに対応した git ホスト用に、クローンの前にソース URL の `https://<host>/...` を `git@<host>:...` に書き換えます。繰り返し指定可能です。フラグのみで指定できます。 |
+| `--health-port <port>` | `SELF_HOSTED_RUNNER_HEALTH_PORT` | `8080` | `/healthz` と `/metrics` のリスナーのポート。`0` に設定すると無効になります。 |
+| `--hooks-dir <path>` | `SELF_HOSTED_RUNNER_HOOKS_DIR` | 未設定 | ライフサイクルフックスクリプトのディレクトリ。[ライフサイクルフック](/docs/ja/self-hosted-environments-configuration.md#lifecycle-hooks)を参照してください。 |
+| `--host-config-snapshot <mode>` | `SELF_HOSTED_RUNNER_HOST_CONFIG_SNAPSHOT` | `disk` | ランナーが各セッションの初期設定に使用する[ホスト設定ディレクトリ](#environment-variable-only-settings)の起動時スナップショットを、どこに保持するかを指定します。`disk` はスナップショットを `--base-dir` 配下のランナー所有のディレクトリにコピーし、各セッションの開始時に、すべてのファイルをメモリ内のダイジェストと照合して検証します。コピー内のファイルが変更されていた場合、そのセッションは失敗し、ランナーは再起動されるまでセッションを拒否します。`memory` はスナップショット全体をヒープ上に保持し、上限は 64 MiB です。上限を超えると、セッションはホスト設定なしで開始され、その旨を示す通知が表示されます。ランナーがディスクスナップショットを書き込めない場合は、失敗をログに記録し、その実行では `memory` を使用します。Claude Code v2.1.271 以降が必要です。 |
+| `--kill-session-after-min <n>` | `SELF_HOSTED_RUNNER_MAX_LIFETIME_MS` | `0` | スタックしたセッションに対する安全上の上限として、セッションを実時間で N 分に制限します。v2.1.260 以降では、ランナーは上限に達したセッションを解放し、そのユーザーの次のメッセージで再開できるようにします。[`SELF_HOSTED_RUNNER_MAX_LIFETIME_GRACE_MS`](#environment-variable-only-settings) の猶予期間が終了した時点でセッションがまだランナー上にある場合にのみ、そのセッションを終了させます。v2.1.260 より前は、上限に達した時点でランナーがセッションを終了させていました。詳細と値の選び方については、[アイドルとしてカウントされないセッションがある](/docs/ja/self-hosted-environments-deploy.md#some-sessions-don’t-count-as-idle)を参照してください。`0` で無効になります。 |
+| `--lock-to-account <id>` | `SELF_HOSTED_RUNNER_LOCK_TO_ACCOUNT` | 未設定 | 最初のセッションでロックする代わりに、起動時にランナーを特定のアカウントに事前ロックします。環境の組織内のメールアドレスまたは `user_...` ID を受け付けます。事前ロックされたランナーは、アカウントを持たない Claude Tag チャネルのセッションを取得することはありません。 |
+| `--log-file <path>` | `SELF_HOSTED_RUNNER_LOG_FILE` | 未設定 | stdout と stderr に加えて、ランナーのログをファイルにも出力します。ファイルは `0600` の権限で作成されます。`self-hosted-runner doctor` がローカルでログを tail するために必要です。 |
 | `--log-level <level>` | なし | `info` | `info` または `debug` |
-| `--post-session-hook-timeout-sec <n>` | `SELF_HOSTED_RUNNER_POST_SESSION_HOOK_TIMEOUT_MS` | `60` | すべてのセッション終了時（ランナーシャットダウンを含む）の [`post-session` フック](/docs/ja/self-hosted-environments-configuration#post-session) の予算 |
-| `--proxy-authorization-command <command>` | `SELF_HOSTED_RUNNER_PROXY_AUTHORIZATION_COMMAND` | 未設定 | ランナーがエグレスプロキシへのすべての接続に対して実行するシェルコマンド。トリミングされた stdout を `Proxy-Authorization` ヘッダー値として使用します。`HTTPS_PROXY` または `HTTP_PROXY` が必要で、`--proxy-authorization-file` と組み合わせることはできません。[エグレスプロキシに認証する](/docs/ja/self-hosted-environments-deploy#authenticate-to-an-egress-proxy) を参照してください。Claude Code v2.1.238 以降が必要です。 |
-| `--proxy-authorization-file <path>` | `SELF_HOSTED_RUNNER_PROXY_AUTHORIZATION_FILE` | 未設定 | ランナーがエグレスプロキシへのすべての接続に対して読み取るファイル。トリミングされた内容を `Proxy-Authorization` ヘッダー値として使用します。別のプロセスが所定の位置でローテーションするトークンの場合、このフラグを使用してください。`--proxy-authorization-command` と同じ要件を持ち、それと組み合わせることはできません。[エグレスプロキシに認証する](/docs/ja/self-hosted-environments-deploy#authenticate-to-an-egress-proxy) を参照してください。Claude Code v2.1.238 以降が必要です。 |
-| `--push-outcome-on-release` | `SELF_HOSTED_RUNNER_PUSH_OUTCOME_ON_RELEASE` | オフ | ドレインやアイドルリリースなどのランナー開始セッション終了時に、ワークスペースを削除する前に追跡された結果ブランチを `origin` にプッシュします。進行中のコミットは再起動後も生き残ります。ベストエフォート。シャットダウン予算に 30 秒を追加し、プッシュされたブランチから再開するには git 2.29 以降が必要です。有効にする前に、`claude/*` refs へのプッシュアクセスを制限してください。[再開されたセッションはプッシュされていない作業を失う](/docs/ja/self-hosted-environments-deploy#additional-limitations) を参照してください。`checkout` ライフサイクルフックを介してチェックアウトされたリポジトリはプッシュされません。代わりに [`post-session` フック](/docs/ja/self-hosted-environments-configuration#post-session) からスナップショットしてください。 |
-| `--release-idle-session-min <n>` | `SELF_HOSTED_RUNNER_SESSION_IDLE_MS` | `0` | ターンが終了するか、セッションがユーザーのアクションを待つ後、N 分間の非アクティビティ後にセッションスロットをリリースします。ターン中のセッション（決して終了しないバックグラウンドタスクを保持しているセッション、または実行中のツール呼び出し内から要求された承認を含む）はアイドルとしてカウントされません。`--kill-session-after-min` とペアにして、ハードバックストップとして機能させてください。セッションのバックグラウンドタスクが終了した後、ランナーはセッションをビジーと見なします。その結果を読む後続のターンが開始されるまで、最大で [`SELF_HOSTED_RUNNER_BG_RESULT_GRACE_MS`](#environment-variable-only-settings) ウィンドウです。ランナーがシャットダウンシグナルを受け取るか、リタイア時間に達するまで、ランナーにアクティブなセッションがなくなるリリースは、通常のドレインと同じ終了パスを開始します。`--drain-grace-sec` によって管理されます。[`--defer-shutdown-max-min`](/docs/ja/self-hosted-environments-deploy#defer-the-drain-past-the-first-signal) で遅延させた最初のシグナルの後、ランナーはリリースがセッションを保持していない限り即座に終了します。`0` は無効にします。 |
-| `--remove-session-state [bool]` | `SELF_HOSTED_RUNNER_REMOVE_SESSION_STATE` | オフ | セッションがこのランナーで終了したときに、`<base-dir>/_sessions/` の下のセッションごとのディレクトリを削除します。結果に関係なく。[事前ウォーミングされたチェックアウトを再利用する](/docs/ja/self-hosted-environments-deploy#reuse-a-pre-warmed-checkout) は、それらが保持するものと、それらが残っているときに誰がそれらを読むことができるかを説明しています。削除はベストエフォート。ランナーが強制終了されるか、クリーンアップが実行される前にドレイン期限に達した場合、セッションごとのディレクトリは所定の位置に留まります。フラグがオンの場合、失敗または中断されたセッションのデバッグログはディスクに保持されません。Claude Code v2.1.268 以降が必要です。 |
-| `--retire-at <epoch-seconds>` | `SELF_HOSTED_RUNNER_RETIRE_AT` | 未設定 | ランナーを秒単位の絶対 Unix タイムスタンプでリタイアします。ランナーが既知の時間に強制終了されるインフラストラクチャ用です。[ランナーライフサイクル](/docs/ja/self-hosted-environments#runner-lifecycle) はリリースシーケンスとマージンのサイズ方法を説明しています。2001 より前または 5138 年より後の値はフラグによって拒否され、環境変数によって無視されます。 |
-| `--server-auto-mode-lists <mode>` | `SELF_HOSTED_RUNNER_SERVER_AUTO_MODE_LISTS` | `no-allow` | コントロールプレーンがセッションとともに送信する [auto モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode) 分類器のルールリストのうち、どれをそのセッションに到達させるかを指定します。`all`、`no-allow`、`none` のいずれかです。各値が何を適用するかについては、[auto モードのルールリスト](#auto-mode-rule-lists) を参照してください。無効な値を指定すると、ランナーはスタートアップ時に停止します。Claude Code v2.1.295 以降が必要です。 |
-| `--session-stop-grace-sec <n>` | `SELF_HOSTED_RUNNER_SESSION_STOP_GRACE_MS` | `5` | セッション終了後、Claude プロセスがクリーンに終了するまで待機する時間。強制終了する前に。子独自の `SessionEnd` フックがより多くの時間を必要とする場合は、値を上げてください。 |
-| `--startup-timeout-min <n>` | `SELF_HOSTED_RUNNER_STARTUP_TIMEOUT_MS` | `15` | 子が N 分以内に初期化したことを [アクティビティチャネル](/docs/ja/self-hosted-environments-configuration#keep-stdin-and-file-descriptor-3-attached) 上で通知しない場合、セッションスロットをリリースします。N 分はクローン後の生成時点から始まり、子が初期化するか状態を報告する前に出力する `user` または `assistant` メッセージごとにやり直しになります。v2.1.299 より前は、このタイムアウトはセッションの最初のそのようなメッセージの時点で適用されなくなっていました。初期化シグナル後のリリースについては、`--release-idle-session-min` を参照してください。`0` は無効にします。 |
-| `--trust-workspace [bool]` | `SELF_HOSTED_RUNNER_TRUST_WORKSPACE` | オン | 各セッションのリポジトリパスの永続化された信頼をシードします。リポジトリコミットされた `permissions.allow` と `additionalDirectories` が尊重されるようにします。`false` に設定して、リポジトリコミットされた権限付与をドロップし、代わりにホスト設定の `settings.json` で許可ルールを設定します。リポジトリコミットされた `sandbox.*` 設定はどちらの方法でも適用されます。これが [リポジトリ設定ガード](/docs/ja/self-hosted-environments-deploy#harden-your-deployment) がこのフラグに関係なくそれらをスキャンする理由です。 |
-| `--use-anthropic-git-proxy` | `CLAUDE_RUNNER_USE_GIT_PROXY=1` | オフ | 顧客管理の git 認証の代わりに [Anthropic git プロキシ](/docs/ja/self-hosted-environments-deploy#use-the-anthropic-git-proxy) 経由で github.com 上のリポジトリをクローンします。`--capacity 1` と git 2.32 以降が必要です。ランナーはそれ以外の場合は起動を拒否します。書き換えフラグに優先します。 |
+| `--post-session-hook-timeout-sec <n>` | `SELF_HOSTED_RUNNER_POST_SESSION_HOOK_TIMEOUT_MS` | `60` | ランナーのシャットダウンを含む、すべてのセッション終了時の [`post-session` フック](/docs/ja/self-hosted-environments-configuration#post-session)に割り当てる時間 |
+| `--proxy-authorization-command <command>` | `SELF_HOSTED_RUNNER_PROXY_AUTHORIZATION_COMMAND` | 未設定 | エグレスプロキシへの接続ごとにランナーが実行するシェルコマンド。前後の空白を除去した stdout を `Proxy-Authorization` ヘッダーの値として使用します。`HTTPS_PROXY` または `HTTP_PROXY` が必要で、`--proxy-authorization-file` と組み合わせることはできません。[エグレスプロキシに認証する](/docs/ja/self-hosted-environments-deploy.md#authenticate-to-an-egress-proxy)を参照してください。Claude Code v2.1.238 以降が必要です。 |
+| `--proxy-authorization-file <path>` | `SELF_HOSTED_RUNNER_PROXY_AUTHORIZATION_FILE` | 未設定 | エグレスプロキシへの接続ごとにランナーが読み取るファイル。前後の空白を除去した内容を `Proxy-Authorization` ヘッダーの値として使用します。別のプロセスがその場でローテーションするトークンには、このフラグを使用してください。`--proxy-authorization-command` と同じ要件があり、それと組み合わせることはできません。[エグレスプロキシに認証する](/docs/ja/self-hosted-environments-deploy.md#authenticate-to-an-egress-proxy)を参照してください。Claude Code v2.1.238 以降が必要です。 |
+| `--push-outcome-on-release` | `SELF_HOSTED_RUNNER_PUSH_OUTCOME_ON_RELEASE` | オフ | ドレインやアイドル解放など、ランナーが開始したセッション終了時に、ワークスペースを削除する前に追跡中の成果ブランチを `origin` にプッシュし、進行中のコミットが再起動後も失われないようにします。ベストエフォートで行われます。シャットダウンの時間枠に 30 秒が追加され、プッシュされたブランチから再開するには git 2.29 以降が必要です。有効にする前に、プッシュアクセスを `claude/*` の ref に制限してください。[再開されたセッションではプッシュされていない作業が失われる](/docs/ja/self-hosted-environments-deploy.md#additional-limitations)を参照してください。`checkout` ライフサイクルフックでチェックアウトされたリポジトリはプッシュされません。それらについては、代わりに [`post-session` フック](/docs/ja/self-hosted-environments-configuration#post-session)からスナップショットを取得してください。 |
+| `--release-idle-session-min <n>` | `SELF_HOSTED_RUNNER_SESSION_IDLE_MS` | `0` | ターンが終了するか、セッションがユーザーのアクションを待つ状態になった後、N 分間操作がなければセッションスロットを解放します。完了しないバックグラウンドタスクを保持しているセッションや、実行中のツール呼び出しの内部から承認を要求しているセッションなど、まだターンの途中にあるセッションはアイドルとしてカウントされません。強制的な歯止めとして `--kill-session-after-min` と組み合わせてください。セッションのバックグラウンドタスクが完了した後、ランナーは、その結果を読み取るフォローアップのターンが開始されるまで、最大 [`SELF_HOSTED_RUNNER_BG_RESULT_GRACE_MS`](#environment-variable-only-settings) の期間、そのセッションをビジーとみなします。ランナーがシャットダウンシグナルを受信するか退役時刻に達するまでの間は、解放によってランナーのアクティブなセッションがなくなると、通常のドレインと同じ終了パスが開始され、`--drain-grace-sec` によって制御されます。[`--defer-shutdown-max-min`](/docs/ja/self-hosted-environments-deploy#defer-the-drain-past-the-first-signal) で延期した最初のシグナルの後は、解放によってセッションを 1 つも保持しなくなった時点で、ランナーはすぐに終了します。`0` で無効になります。 |
+| `--remove-session-state [bool]` | `SELF_HOSTED_RUNNER_REMOVE_SESSION_STATE` | オフ | このランナー上でセッションが終了したとき、結果にかかわらず、`<base-dir>/_sessions/` 配下のセッションごとのディレクトリを削除します。これらのディレクトリに何が保存され、残った場合に誰が読み取れるかについては、[事前ウォームアップされたチェックアウトを再利用する](/docs/ja/self-hosted-environments-deploy.md#reuse-a-pre-warmed-checkout)で説明しています。削除はベストエフォートで行われます。クリーンアップが実行される前にランナーが強制終了されたり、ドレインの期限に達したりした場合、セッションごとのディレクトリはそのまま残ります。このフラグをオンにすると、失敗または中断されたセッションのデバッグログはディスクに保持されません。Claude Code v2.1.268 以降が必要です。 |
+| `--retire-at <epoch-seconds>` | `SELF_HOSTED_RUNNER_RETIRE_AT` | 未設定 | 既知の時刻にランナーを強制終了するインフラ向けに、秒単位の絶対 Unix タイムスタンプでランナーを退役させます。解放の手順とマージンの見積もり方については、[ランナーのライフサイクル](/docs/ja/self-hosted-environments#runner-lifecycle)で説明しています。2001 年より前または 5138 年より後の値は、フラグでは拒否され、環境変数では無視されます。 |
+| `--server-auto-mode-lists <mode>` | `SELF_HOSTED_RUNNER_SERVER_AUTO_MODE_LISTS` | `no-allow` | コントロールプレーンがセッションとともに送信する [auto モード](/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)の分類器ルールリストのうち、どれをそのセッションに届けるかを指定します。値は `all`、`no-allow`、`none` のいずれかです。各値で何が適用されるかについては、[auto モードのルールリスト](#auto-mode-rule-lists)を参照してください。無効な値を指定すると、ランナーは起動時に停止します。Claude Code v2.1.295 以降が必要です。 |
+| `--session-stop-grace-sec <n>` | `SELF_HOSTED_RUNNER_SESSION_STOP_GRACE_MS` | `5` | セッションの終了後、強制終了する前に Claude プロセスが正常に終了するのを待つ時間。子プロセス自身の `SessionEnd` フックにより多くの時間が必要な場合は、値を引き上げてください。 |
+| `--startup-timeout-min <n>` | `SELF_HOSTED_RUNNER_STARTUP_TIMEOUT_MS` | `15` | 子プロセスが N 分以内に[アクティビティチャネル](/docs/ja/self-hosted-environments-configuration.md#keep-stdin-and-file-descriptor-3-attached)で初期化完了を通知しなかった場合、セッションスロットを解放します。N 分はクローン後の起動時点から計測が始まり、子プロセスが初期化するか状態を報告する前に `user` または `assistant` メッセージを出力するたびに、計測がやり直しになります。v2.1.299 より前は、このタイムアウトはセッションで最初にそのようなメッセージが出力された時点で適用されなくなっていました。初期化シグナル後の解放については、`--release-idle-session-min` を参照してください。`0` で無効になります。 |
+| `--trust-workspace [bool]` | `SELF_HOSTED_RUNNER_TRUST_WORKSPACE` | オン | 各セッションのリポジトリパスに対する永続的な信頼を事前に設定し、リポジトリにコミットされた `permissions.allow` と `additionalDirectories` が尊重されるようにします。`false` に設定すると、リポジトリにコミットされた権限の付与を破棄し、代わりにホスト設定の `settings.json` で許可ルールを構成します。リポジトリにコミットされた `sandbox.*` 設定はどちらの場合も適用されるため、[リポジトリ設定ガード](/docs/ja/self-hosted-environments-deploy.md#harden-your-deployment)はこのフラグに関係なくそれらをスキャンします。 |
+| `--use-anthropic-git-proxy` | `CLAUDE_RUNNER_USE_GIT_PROXY=1` | オフ | 顧客が管理する git 認証の代わりに、[Anthropic git プロキシ](/docs/ja/self-hosted-environments-deploy.md#use-the-anthropic-git-proxy)経由で github.com 上のリポジトリをクローンします。`--capacity 1` と git 2.32 以降が必要で、これらを満たさない場合、ランナーは起動を拒否します。書き換えフラグよりも優先されます。 |
 
-ほとんどの期間フラグには最大値があります。各タイムアウトをランタイムの 32 ビットタイマー上限（約 24.85 日）内に保つために選択されています。`--*-min` フラグは 10080 分（7 日）でキャップされます。`--drain-grace-sec` は 604800 秒（7 日）でもキャップされます。`--drain-wait-sec` は 86400 秒（24 時間）でキャップされます。`--session-stop-grace-sec` と `--post-session-hook-timeout-sec` はキャップされていません。キャップを超過する動作は表面ごとに異なります。
+ほとんどの期間フラグには最大値があり、各タイムアウトがランタイムの 32 ビットタイマーの上限である約 24.85 日に収まるように選ばれています。`--*-min` フラグの上限は 10080 分（7 日）、`--drain-grace-sec` は 604800 秒（同じく 7 日）、`--drain-wait-sec` は 86400 秒（24 時間）です。`--session-stop-grace-sec` と `--post-session-hook-timeout-sec` には上限がありません。上限を超えた場合の動作は、指定方法によって異なります。
 
-* **フラグ**: スタートアップはエラーで失敗します。
-* **環境変数**: ランナーはそれを拒否するのではなく、値をタイマー上限にクランプします。
+* **フラグ**：エラーで起動に失敗します。
+* **環境変数**：ランナーは値を拒否せず、タイマーの上限に切り詰めます。
 
 ### auto モードのルールリスト
 
-`--server-auto-mode-lists` を使用すると、ランナーの外部から送られる [auto モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode) 分類器ルールのうち、どれをランナー上のセッションに到達させるかを決定できます。Anthropic のコントロールプレーンは、セッションとともにルールリストを送信し、ランナーにそれらを適用するよう求めることができます。一部のエントリは、組織の管理者が作成したルールである場合があります。リストは `environment`、`soft_deny`、`allow` です。
+`--server-auto-mode-lists` を使用すると、ランナーの外部から届く [auto モード](/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)の分類器ルールのうち、どれをランナー上のセッションに届けるかを決められます。Anthropic のコントロールプレーンは、セッションとともにルールリストを送信し、それらを適用するようランナーに要求できます。一部のエントリは、組織の管理者が作成したルールである場合があります。リストは `environment`、`soft_deny`、`allow` の 3 つです。
 
-* **`environment`**: エントリによって、分類器が許可する範囲を狭めることも広げることもできます。
-* **`soft_deny`**: エントリは、ユーザーが明示的に要求した場合または `allow` の例外が適用される場合を除き、アクションをブロックします。
-* **`allow`**: `soft_deny` エントリに対する例外です。
+* **`environment`**：エントリによって、分類器が許可する範囲を広げることも狭めることもできます。
+* **`soft_deny`**：ユーザーが明示的に要求した場合や `allow` の例外が適用される場合を除き、エントリはアクションをブロックします。
+* **`allow`**：`soft_deny` のエントリに対する例外です。
 
 フラグの値によって、ランナーが適用するリストが決まります。
 
-* **`no-allow`**: デフォルトです。`environment` と `soft_deny` を適用し、`allow` は適用しません。`environment` エントリによって分類器が許可する範囲が広がる可能性は残るため、デフォルトではすべての緩和を排除できるわけではありません。
-* **`all`**: 3 つのリストすべてを適用します。
-* **`none`**: どのリストも適用しません。これらのリストによる緩和をすべて排除するには `none` を選択してください。この場合、`soft_deny` の制限も適用されなくなります。
+* **`no-allow`**：デフォルトです。`environment` と `soft_deny` を適用し、`allow` は適用しません。`environment` のエントリによって分類器が許可する範囲が広がる可能性は残るため、デフォルトではあらゆる緩和を排除できるわけではありません。
+* **`all`**：3 つのリストすべてを適用します。
+* **`none`**：いずれのリストも適用しません。これらのリストによるあらゆる緩和を排除するには、`none` を選択してください。この場合、`soft_deny` による制限も適用されなくなります。
 
-コントロールプレーンがランナーにリストの適用を求めるかどうかを決めるランナー設定はありません。求められなかった場合、何を設定していてもセッションはリストを受け取りません。どちらになったかを確認するには、`--log-level debug` でランナーを起動してください。すると、ランナーはセッションごとに、`the server asked this runner to apply` を含む行か、`the server did not ask this runner to apply the auto mode lists it sends` を含む行をログに記録します。
+コントロールプレーンがランナーにリストの適用を要求するようにするランナー設定はありません。要求がない場合、設定にかかわらず、セッションはリストを受け取りません。どちらになったかを確認するには、`--log-level debug` を指定してランナーを起動します。すると、ランナーはセッションごとに、`the server asked this runner to apply` を含む行、または `the server did not ask this runner to apply the auto mode lists it sends` を含む行をログに記録します。
 
 ## オーケストレーター CLI フラグ
 
-`self-hosted-runner orchestrator` サブコマンド（[オンデマンドランナー](/docs/ja/self-hosted-environments-configuration#on-demand-runners) を生成）は、`--api-url`、`--environment-secret-file`、`--hooks-dir`、`--health-port`、`--log-level` をランナーと同じデフォルトで受け入れます。ランナーのフラグに 1 つある場合は同じ環境変数を使用します。ただし、`--hooks-dir` は必須で、`spawn-runner` フックを含む必要があります。また、独自のフラグも取ります。
+`self-hosted-runner orchestrator` サブコマンド（[オンデマンドランナー](/docs/ja/self-hosted-environments-configuration.md#on-demand-runners) を生成）は、`--api-url`、`--environment-secret-file`、`--hooks-dir`、`--health-port`、`--log-level` をランナーと同じデフォルトで受け入れます。ランナーのフラグに 1 つある場合は同じ環境変数を使用します。ただし、`--hooks-dir` は必須で、`spawn-runner` フックを含む必要があります。また、独自のフラグも取ります。
 
 | フラグ | デフォルト | 説明 |
 | :- | :- | :- |
@@ -93,7 +93,7 @@
 
 SCM コネクタは利用できないため、このセクションのフラグは未設定のままにしてください。`--scm-connector-host` を設定した場合、接続は開かず、オーケストレーターは再試行を続けます。ランナーはセッションキューとして開始されます。
 
-コネクタは、オーケストレーターから Anthropic のコントロールプレーンへのスタンディング WebSocket 接続です。リポジトリピッカーやブランチまたは ref リゾルバーなどのホスト済みプリセッションフローが、ネットワーク内からのみルーティング可能な GitHub Enterprise Server ホストに到達できるようにするために設計されています。GitHub Enterprise Server ページの [ネットワーク要件](/docs/ja/github-enterprise-server#network-requirements) を参照して、これらのフローが必要とするものを確認してください。
+コネクタは、オーケストレーターから Anthropic のコントロールプレーンへのスタンディング WebSocket 接続です。リポジトリピッカーやブランチまたは ref リゾルバーなどのホスト済みプリセッションフローが、ネットワーク内からのみルーティング可能な GitHub Enterprise Server ホストに到達できるようにするために設計されています。GitHub Enterprise Server ページの [ネットワーク要件](/docs/ja/github-enterprise-server.md#network-requirements) を参照して、これらのフローが必要とするものを確認してください。
 
 | フラグ | デフォルト | 説明 |
 | :- | :- | :- |
@@ -112,7 +112,7 @@ SCM コネクタは利用できないため、このセクションのフラグ�
 | 環境変数 | デフォルト | 説明 |
 | :- | :- | :- |
 | `SELF_HOSTED_RUNNER_BG_RESULT_GRACE_MS` | `30000` | バックグラウンドタスクが終了した後、その結果を読み取る後続ターンが開始されていない間、ランナーがセッションをビジーと見なす時間。[`--drain-wait-sec` および `--release-idle-session-min` 行](#runner-cli-flags) はドレインおよびアイドルリリース時にホールドが適用される場所を説明し、[ランナーライフサイクル](/docs/ja/self-hosted-environments#runner-lifecycle) は `--retire-at` リタイアメント時に適用される場所を説明しています。`0` または使用不可能な値はデフォルトにフォールバックするため、ホールドをオフにすることはできません。Claude Code v2.1.228 以降が必要です。 |
-| `SELF_HOSTED_RUNNER_HOST_CONFIG_DIR` | `~/.claude` | ランナーのスタートアップスナップショットにキャプチャされ、各セッションの `CLAUDE_CONFIG_DIR` にシードされるディレクトリ。ディスク上の変更はランナーの再起動後に適用されます。変数を設定すると、ランナーが [MCP シーディング](/docs/ja/self-hosted-environments-configuration#mcp-servers) 用に `.claude.json` を読み取る場所も移動します。設定すると、独自のデフォルトを含めて、その検索を再配置します。空のディレクトリを指してシーディングを完全に無効にします。 |
+| `SELF_HOSTED_RUNNER_HOST_CONFIG_DIR` | `~/.claude` | ランナーのスタートアップスナップショットにキャプチャされ、各セッションの `CLAUDE_CONFIG_DIR` にシードされるディレクトリ。ディスク上の変更はランナーの再起動後に適用されます。変数を設定すると、ランナーが [MCP シーディング](/docs/ja/self-hosted-environments-configuration.md#mcp-servers) 用に `.claude.json` を読み取る場所も移動します。設定すると、独自のデフォルトを含めて、その検索を再配置します。空のディレクトリを指してシーディングを完全に無効にします。 |
 | `SELF_HOSTED_RUNNER_MAX_LIFETIME_GRACE_MS` | `900000` | セッションが `--kill-session-after-min` 制限に達した後、実行中のターンが終了するか、リリースが完了するのを待つ時間。その後、ランナーはセッションを終了します。 |
 | `SELF_HOSTED_RUNNER_POST_TURN_SETTLE_MS` | `7000` | ターンが終了した後、セッションのプロセスがターンの終了を Anthropic に報告している間、ランナーが `--drain-wait-sec` ドレイン用にセッションをビジーとしてカウントする時間の上限。`0` または使用不可能な値はデフォルトにフォールバックするため、ホールドをオフにすることはできません。Claude Code v2.1.275 以降が必要です。 |
 | `SELF_HOSTED_RUNNER_SIGKILL_GRACE_MS` | `30000` | ランナーが割り込み不可能な I/O でスタックしている子に `SIGKILL` を配信するのを待つ時間。その後、ランナー自体が終了します。`--post-session-hook-timeout-sec` プラス 15 秒でフロアされ、`--push-outcome-on-release` が設定されている場合は 30 秒追加されます。有効な最小値はデフォルトで 75 秒です。 |
@@ -126,9 +126,9 @@ SCM コネクタは利用できないため、このセクションのフラグ�
 
 セッション子は、オフにしない限り、運用テレメトリを Anthropic に送信します。コードまたはリポジトリコンテンツは送信されません。ランナープロセスでテレメトリ変数を設定します。ランナーはサーバー提供の環境変数を適用した後、それらを再アサートするため、オペレーターの設定は常に優先されます。
 
-1 つのコントロールはセルフホスト環境に固有です。`CLAUDE_CODE_BYOC_ENABLE_DATADOG=1` は Datadog 運用メトリクスにオプトインします。これはセルフホスト環境ではデフォルトでオフです。一般的な Claude Code テレメトリコントロール `DISABLE_TELEMETRY`、`DO_NOT_TRACK`、`DISABLE_ERROR_REPORTING`、`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` は [環境変数リファレンス](/docs/ja/env-vars) に記載されているようにセッション子に適用されます。`DISABLE_GROWTHBOOK` は関連していますが異なります。`DISABLE_GROWTHBOOK=1` を設定するとフィーチャーフラグフェッチが無効になり、`DISABLE_TELEMETRY` も設定されない限りテレメトリはオンのままです。
+1 つのコントロールはセルフホスト環境に固有です。`CLAUDE_CODE_BYOC_ENABLE_DATADOG=1` は Datadog 運用メトリクスにオプトインします。これはセルフホスト環境ではデフォルトでオフです。一般的な Claude Code テレメトリコントロール `DISABLE_TELEMETRY`、`DO_NOT_TRACK`、`DISABLE_ERROR_REPORTING`、`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` は [環境変数リファレンス](/docs/ja/env-vars.md) に記載されているようにセッション子に適用されます。`DISABLE_GROWTHBOOK` は関連していますが異なります。`DISABLE_GROWTHBOOK=1` を設定するとフィーチャーフラグフェッチが無効になり、`DISABLE_TELEMETRY` も設定されない限りテレメトリはオンのままです。
 
-`CLAUDE_CODE_ENABLE_TELEMETRY` は無関係です。これは [監視](/docs/ja/monitoring-usage) で説明されているように、独自のコレクターへの OpenTelemetry エクスポートを有効にし、Anthropic のアナリティクスを制御しません。
+`CLAUDE_CODE_ENABLE_TELEMETRY` は無関係です。これは [監視](/docs/ja/monitoring-usage.md) で説明されているように、独自のコレクターへの OpenTelemetry エクスポートを有効にし、Anthropic のアナリティクスを制御しません。
 
 ## ヘルスエンドポイント
 
@@ -201,7 +201,7 @@ SCM コネクタは利用できないため、このセクションのフラグ�
 
 完全なポーリング停止中、すべてのレプリカが切断されると、ゲートされたクエリはデータを返しません。HPA は欠落メトリクスで現在のレプリカ数を保持しますが、KEDA の Prometheus スケーラーはデフォルト `ignoreNullValues: "true"` で空の結果をゼロとして読み取り、スケールインします。ScaledObject で `ignoreNullValues: "false"` を設定し、オプションで `fallback` レプリカフロアを設定します。
 
-次の Prometheus Operator `PodMonitor` は両方のプロセスをカバーしています。`app.kubernetes.io/part-of: claude-code-self-hosted-runner` ラベルと、[Kubernetes レシピ](/docs/ja/self-hosted-environments-deploy#kubernetes) が設定する名前付き `health` ポートでポッドを選択します。デプロイメントに合わせて名前空間を調整します。
+次の Prometheus Operator `PodMonitor` は両方のプロセスをカバーしています。`app.kubernetes.io/part-of: claude-code-self-hosted-runner` ラベルと、[Kubernetes レシピ](/docs/ja/self-hosted-environments-deploy.md#kubernetes) が設定する名前付き `health` ポートでポッドを選択します。デプロイメントに合わせて名前空間を調整します。
 
 ```yaml theme={null}
 # Claude Code セルフホストランナー + オーケストレーター用の Prometheus Operator PodMonitor の例。
@@ -304,9 +304,16 @@ groups:
 
 ### セッション子メトリクスをパススルーする
 
-各セッションは独自の子プロセスで実行され、独自の OpenTelemetry メトリクスを持ちます。`--capacity` が 1 を超える場合、ランナーはそれらの子メトリクスの公開方法を書き換えます。ランナーホストで `OTEL_METRICS_EXPORTER=prometheus` を設定し、セッションの環境で `CLAUDE_CODE_ENABLE_TELEMETRY=1` を設定します。例えば、[ラッパースクリプト](/docs/ja/self-hosted-environments-configuration#wrapper-scripts) またはセッションが継承するランナー独自の環境から、各子のカウンターとゲージ計器をランナー独自の `/metrics` エンドポイントで再公開します。ランナーのシリーズと並んで。ランナーは子のエクスポーターを書き換えて、ヘルスポートのループバックのみのレシーバーに OTLP 経由でプッシュし、各シリーズに `session_id` および `client_platform` ラベルでタグ付けし、セッションが終了するとセッションのシリーズを削除します。ヒストグラムはパススルーしません。ランナー独自のプレフィックスと衝突する子メトリクスの名前は削除されます。
+各セッションは独自の子プロセスで実行され、独自の OpenTelemetry メトリクスを持ちます。`--capacity` が 1 を超える場合、ランナーはそれらの子メトリクスの公開方法を書き換えます。ランナーホストで `OTEL_METRICS_EXPORTER=prometheus` を設定し、セッションの環境で `CLAUDE_CODE_ENABLE_TELEMETRY=1` を設定します。例えば、[ラッパースクリプト](/docs/ja/self-hosted-environments-configuration.md#wrapper-scripts) またはセッションが継承するランナー独自の環境から、各子のカウンターとゲージ計器をランナー独自の `/metrics` エンドポイントで再公開します。ランナーのシリーズと並んで。ランナーは子のエクスポーターを書き換えて、ヘルスポートのループバックのみのレシーバーに OTLP 経由でプッシュし、各シリーズに `session_id` および `client_platform` ラベルでタグ付けし、セッションが終了するとセッションのシリーズを削除します。ヒストグラムはパススルーしません。ランナー独自のプレフィックスと衝突する子メトリクスの名前は削除されます。
 
 デフォルトの `--capacity 1` では、書き換えは適用されません。セッションの子は通常どおりポート 9464 で独自の Prometheus エンドポイントをバインドします。
+
+#### セッションのメトリクスをランナーのメトリクスと結合する
+
+セッション独自のメトリクスを `claude_code_self_hosted_runner_session_idle_seconds` と並べるには、ランナーの `session_id` で結合します。
+
+* **`--capacity` が 1 を超える場合**：直接結合します。ランナーの `/metrics` では、セッションのシリーズはそのメトリクスと同じ `session_id` を `session_...` 形式で持ちます。
+* **`--capacity 1` の場合**：変換した `ccr_session_id` で結合します。デフォルトでは、ポート 9464 の各 Claude Code メトリクスはこのラベルを持ち、セッション ID を `cse_...` 形式で保持しています。新しいラベルで `cse_` プレフィックスを `session_` に置き換えると、ランナーの `session_id` が得られます。メトリクス自体の `session_id` には Claude Code 独自の [`session.id`](/docs/ja/monitoring-usage#standard-attributes) が入っており、どのランナーシリーズとも一致しません。
 
 ### セッションライフサイクルカウンターセマンティクス
 
@@ -333,12 +340,12 @@ v2.1.260 より前では、ランナーは `--kill-session-after-min` 制限に�
 | バックログ | キュー深度の `claude_code_self_hosted_orchestrator_pool_pending_sessions`、および `claude_code_self_hosted_orchestrator_queue_circuit_broken_sessions`。ゼロを超える場合はアラートします。 |
 | 失敗 | `claude_code_self_hosted_runner_sessions_failed_total`。ベストエフォート。スポーン後の実際のクラッシュはインクリメントされ、`rate()` はセッションを超えて生存するランナーで意味があります。`--drain-grace-sec` が `0` を超える場合。ワンショット環境は他のターミナルカウンターと同じスクレイプウィンドウ問題を持つため、表示される非ゼロ値を調査する価値があるものとして扱います。スポーン前の失敗（チェックアウトフック失敗、git 準備、トークン問題など）は `session_init_errors_total` にのみ表示されます。 |
 
-`orchestrator_*` 行は [オンデマンドオーケストレーター](/docs/ja/self-hosted-environments-configuration#on-demand-runners) を実行している環境にのみ存在します。セッションを超えて生存するランナーを持つ固定フリートで、`--drain-grace-sec` が `0` を超える場合、スループットに `sum(rate(claude_code_self_hosted_runner_sessions_started_total[5m]))` を使用します。ワンショットフリートではそのシリーズは他のターミナルカウンターと同じスクレイプウィンドウ問題を持つため、キューに入ったセッション数に依存します。バックログを環境の **Activity** タブで確認します。[**Cloud environments** 管理ページ](https://claude.ai/admin-settings/cloud-environments)：ランナーはキュー深度シリーズをエクスポートしません。
+`orchestrator_*` 行は [オンデマンドオーケストレーター](/docs/ja/self-hosted-environments-configuration.md#on-demand-runners) を実行している環境にのみ存在します。セッションを超えて生存するランナーを持つ固定フリートで、`--drain-grace-sec` が `0` を超える場合、スループットに `sum(rate(claude_code_self_hosted_runner_sessions_started_total[5m]))` を使用します。ワンショットフリートではそのシリーズは他のターミナルカウンターと同じスクレイプウィンドウ問題を持つため、キューに入ったセッション数に依存します。バックログを環境の **Activity** タブで確認します。[**Cloud environments** 管理ページ](https://claude.ai/admin-settings/cloud-environments)：ランナーはキュー深度シリーズをエクスポートしません。
 
-セッションごとの結果報告については、代わりに [`post-session` フック](/docs/ja/self-hosted-environments-configuration#post-session) を使用してください。VM プリエンプションなどの突然のランナー終了を除き、子プロセスがスポーンされたすべてのセッション終了で発火します。[フック独自の契約](/docs/ja/self-hosted-environments-configuration#post-session) に従って。
+セッションごとの結果報告については、代わりに [`post-session` フック](/docs/ja/self-hosted-environments-configuration#post-session) を使用してください。VM プリエンプションなどの突然のランナー終了を除き、子プロセスがスポーンされたすべてのセッション終了で発火します。[フック独自の契約](/docs/ja/self-hosted-environments-configuration.md#post-session) に従って。
 
 ## 次のステップ
 
-* [セルフホスト環境](/docs/ja/self-hosted-environments)：環境、ランナー、セッションモデル。[クイックスタート](/docs/ja/self-hosted-environments-quickstart) と [本番環境へのデプロイ](/docs/ja/self-hosted-environments-deploy) はセットアップと運用を保持しています。
-* [セッションをカスタマイズする](/docs/ja/self-hosted-environments-configuration)：ラッパースクリプト、ライフサイクルフック、オンデマンドランナー。
-* [セッション ID を検証する](/docs/ja/self-hosted-environments-identity)：セッショントークン、そのクレーム、検証方法。
+* [セルフホスト環境](/docs/ja/self-hosted-environments)：環境、ランナー、セッションモデル。[クイックスタート](/docs/ja/self-hosted-environments-quickstart.md) と [本番環境へのデプロイ](/docs/ja/self-hosted-environments-deploy.md) はセットアップと運用を保持しています。
+* [セッションをカスタマイズする](/docs/ja/self-hosted-environments-configuration.md)：ラッパースクリプト、ライフサイクルフック、オンデマンドランナー。
+* [セッション ID を検証する](/docs/ja/self-hosted-environments-identity.md)：セッショントークン、そのクレーム、検証方法。

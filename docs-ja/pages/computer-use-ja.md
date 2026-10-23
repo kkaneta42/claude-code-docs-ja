@@ -12,7 +12,7 @@
 
 コンピュータ使用により、Claude はアプリを開き、スクリーンを制御し、あなたが行うのと同じ方法でマシンで作業できます。CLI から、Claude は Swift アプリをコンパイルし、起動し、すべてのボタンをクリックして、結果をスクリーンショットできます。これらはすべて、コードを書いた同じ会話内で行われます。
 
-このページでは、CLI でコンピュータ使用がどのように機能するかについて説明します。Desktop アプリについては、[Desktop でのコンピュータ使用](/docs/ja/desktop#let-claude-use-your-computer)を参照してください。
+このページでは、CLI でコンピュータ使用がどのように機能するかについて説明します。Desktop アプリについては、[Desktop でのコンピュータ使用](/docs/ja/desktop.md#let-claude-use-your-computer)を参照してください。
 
 ## コンピュータ使用でできること
 
@@ -27,9 +27,9 @@
 
 Claude はアプリやサービスと対話するいくつかの方法があります。コンピュータ使用は最も広く、最も遅いため、Claude は最初に最も正確なツールを試します。
 
-* サービスの [MCP サーバー](/docs/ja/mcp)がある場合、Claude はそれを使用します。
+* サービスの [MCP サーバー](/docs/ja/mcp.md)がある場合、Claude はそれを使用します。
 * タスクがシェルコマンドの場合、Claude は Bash を使用します。
-* タスクがブラウザ作業で、[Chrome の Claude](/docs/ja/chrome)がセットアップされている場合、Claude はそれを使用します。
+* タスクがブラウザ作業で、[Chrome の Claude](/docs/ja/chrome.md)がセットアップされている場合、Claude はそれを使用します。
 * これらのいずれも適用されない場合、Claude はコンピュータ使用を使用します。
 
 スクリーン制御は、他に何も到達できないもの（ネイティブアプリ、シミュレータ、API のないツール）のために予約されています。
@@ -90,7 +90,7 @@ sure nothing crashes. Screenshot any error states you find.
 
 Finder を承認して、Claude がデスクトップ、Dock、または Finder ウィンドウをクリックできるようにします。
 
-Claude の制御レベルはアプリカテゴリによっても異なります。ブラウザと取引プラットフォームはビューのみ、ターミナルと IDE はクリックのみ、その他すべてはフルコントロールを取得します。完全なティア分類については、[Desktop でのアプリのアクセス許可](/docs/ja/desktop#app-permissions)を参照してください。
+Claude の制御レベルはアプリカテゴリによっても異なります。ブラウザと取引プラットフォームはビューのみ、ターミナルと IDE はクリックのみ、その他すべてはフルコントロールを取得します。完全なティア分類については、[Desktop でのアプリのアクセス許可](/docs/ja/desktop.md#app-permissions)を参照してください。
 
 ## Claude がスクリーンでどのように機能するか
 
@@ -122,7 +122,7 @@ Claude が完了したときに 2 番目の通知が表示されます。
 
 > [!WARNING]
 >
-> [サンドボックス化された Bash ツール](/docs/ja/sandboxing)とは異なり、コンピュータ使用は実際のデスクトップで実行され、承認したアプリへのアクセスがあります。Claude は各アクションをチェックし、オンスクリーンコンテンツからの潜在的なプロンプトインジェクションにフラグを立てますが、信頼の境界は異なります。ベストプラクティスについては、[コンピュータ使用セーフティガイド](https://support.claude.com/en/articles/14128542)を参照してください。
+> [サンドボックス化された Bash ツール](/docs/ja/sandboxing.md)とは異なり、コンピュータ使用は実際のデスクトップで実行され、承認したアプリへのアクセスがあります。Claude は各アクションをチェックし、オンスクリーンコンテンツからの潜在的なプロンプトインジェクションにフラグを立てますが、信頼の境界は異なります。ベストプラクティスについては、[コンピュータ使用セーフティガイド](https://support.claude.com/en/articles/14128542)を参照してください。
 
 組み込みのガードレールは、設定を必要とせずにリスクを軽減します。
 
@@ -169,7 +169,7 @@ Open the iOS Simulator, launch the app, tap through the onboarding
 screens, and tell me if any screen takes more than a second to load.
 ```
 
-Claude はマウスを使用するのと同じ方法でシミュレータを制御します。このフローは CLI に適用されます。Desktop アプリでは、同じリクエストが代わりに [iOS Simulator ペイン](/docs/ja/desktop-ios-simulator) を開きます。
+Claude はマウスを使用するのと同じ方法でシミュレータを制御します。このフローは CLI に適用されます。Desktop アプリでは、同じリクエストが代わりに [iOS Simulator ペイン](/docs/ja/desktop-ios-simulator.md) を開きます。
 
 ## Desktop アプリとの違い
 
@@ -197,15 +197,15 @@ macOS は、Screen Recording を付与した後、リクエストプロセスの
 
 サーバーは適格なセットアップにのみ表示されます。以下を確認してください。
 
-* macOS を使用しています。コンピュータ使用は Linux または Windows では利用できません。Windows では、代わりに [Desktop でのコンピュータ使用](/docs/ja/desktop#let-claude-use-your-computer)を使用してください。
+* macOS を使用しています。コンピュータ使用は Linux または Windows では利用できません。Windows では、代わりに [Desktop でのコンピュータ使用](/docs/ja/desktop.md#let-claude-use-your-computer)を使用してください。
 * Pro または Max プランを使用しています。`/status` を実行してサブスクリプションを確認します。
 * claude.ai を通じて認証されています。コンピュータ使用は Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry などのサードパーティプロバイダーでは利用できません。サードパーティプロバイダーのみを通じて Claude にアクセスする場合、この機能を使用するには別の claude.ai アカウントが必要です。
 * インタラクティブセッションを使用しています。コンピュータ使用は `-p` フラグを使用した非インタラクティブモードでは利用できません。
 
 ## 関連項目
 
-* [Desktop でのコンピュータ使用](/docs/ja/desktop#let-claude-use-your-computer): グラフィカル設定ページを備えた同じ機能
-* [Chrome の Claude](/docs/ja/chrome): Web ベースのタスク用のブラウザ自動化
-* [MCP](/docs/ja/mcp): Claude を構造化ツールと API に接続する
-* [サンドボックス化](/docs/ja/sandboxing): Claude の Bash ツールがファイルシステムとネットワークアクセスを分離する方法
+* [Desktop でのコンピュータ使用](/docs/ja/desktop.md#let-claude-use-your-computer): グラフィカル設定ページを備えた同じ機能
+* [Chrome の Claude](/docs/ja/chrome.md): Web ベースのタスク用のブラウザ自動化
+* [MCP](/docs/ja/mcp.md): Claude を構造化ツールと API に接続する
+* [サンドボックス化](/docs/ja/sandboxing.md): Claude の Bash ツールがファイルシステムとネットワークアクセスを分離する方法
 * [コンピュータ使用セーフティガイド](https://support.claude.com/en/articles/14128542): 安全なコンピュータ使用のためのベストプラクティス

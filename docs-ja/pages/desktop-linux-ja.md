@@ -10,14 +10,14 @@
 >
 > Claude デスクトップアプリの Linux サポートはベータ版です。
 
-Linux 上のデスクトップアプリは、macOS と Windows と同じ Chat、Cowork、Claude Code エクスペリエンスを提供します。並列セッション、ビジュアル diff レビュー、統合ターミナルとエディタ、ライブアプリプレビューが含まれます。機能リファレンスについては、[Claude Code Desktop を使用する](/docs/ja/desktop)を参照してください。
+Linux 上のデスクトップアプリは、macOS と Windows と同じ Chat、Cowork、Claude Code エクスペリエンスを提供します。並列セッション、ビジュアル diff レビュー、統合ターミナルとエディタ、ライブアプリプレビューが含まれます。機能リファレンスについては、[Claude Code Desktop を使用する](/docs/ja/desktop.md)を参照してください。
 
 ## 要件
 
 * Debian ベースのディストリビューション：Ubuntu 22.04 以降、または Debian 12 以降
 * x86\_64 または arm64
 
-これらの要件を満たす他の Debian ベースのディストリビューションは動作する可能性がありますが、公式にはテストされていません。Fedora や Arch などの Debian ベース以外のディストリビューションでは、代わりに [CLI](/docs/ja/setup#system-requirements) を実行してください。Windows で WSL 2 を使用している場合は、Windows デスクトップアプリをインストールし、ディストリビューション内でセッションを実行してください。[Claude Code Desktop in WSL](/docs/ja/desktop-wsl) を参照してください。
+これらの要件を満たす他の Debian ベースのディストリビューションは動作する可能性がありますが、公式にはテストされていません。Fedora や Arch などの Debian ベース以外のディストリビューションでは、代わりに [CLI](/docs/ja/setup.md#system-requirements) を実行してください。Windows で WSL 2 を使用している場合は、Windows デスクトップアプリをインストールし、ディストリビューション内でセッションを実行してください。[Claude Code Desktop in WSL](/docs/ja/desktop-wsl.md) を参照してください。
 
 ### Cowork の要件
 
@@ -71,7 +71,7 @@ sudo apt update && sudo apt install claude-desktop
 
 アプリケーションランチャーから **Claude** を起動するか、ターミナルから `claude-desktop` を実行して、Anthropic アカウントでサインインします。
 
-Linux アプリは macOS と Windows と同じ方法でサインインします。claude.ai サブスクリプション、または組織の SSO を通じてサインインします。API キー認証には [CLI](/docs/ja/quickstart) を使用してください。代わりに Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、または LLM ゲートウェイで Desktop を使用する場合は、[Claude Desktop on 3P](https://claude.com/docs/third-party/claude-desktop/overview) を参照してください。これらのデプロイにおけるプロキシサーバーとカスタム認証局については、[ネットワーク設定](/docs/ja/network-config) を参照してください。
+Linux アプリは macOS と Windows と同じ方法でサインインします。claude.ai サブスクリプション、または組織の SSO を通じてサインインします。API キー認証には [CLI](/docs/ja/quickstart.md) を使用してください。代わりに Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、または LLM ゲートウェイで Desktop を使用する場合は、[Claude Desktop on 3P](https://claude.com/docs/third-party/claude-desktop/overview) を参照してください。これらのデプロイにおけるプロキシサーバーとカスタム認証局については、[ネットワーク設定](/docs/ja/network-config.md) を参照してください。
 
 ### ダウンロードしたファイルからインストールする
 
@@ -162,9 +162,9 @@ Cowork でこれらのメッセージのいずれかが表示される場合は�
 
 ## Linux ベータ版にまだ含まれていない機能
 
-* **Computer Use**: [アプリとスクリーン制御](/docs/ja/desktop#let-claude-use-your-computer)は Linux では利用できません。
-* **Dictation**: 音声入力は Linux デスクトップアプリでは利用できません。代わりに CLI で[音声ディクテーション](/docs/ja/voice-dictation)を使用してください。
+* **Computer Use**: [アプリとスクリーン制御](/docs/ja/desktop.md#let-claude-use-your-computer)は Linux では利用できません。
+* **Dictation**: 音声入力は Linux デスクトップアプリでは利用できません。代わりに CLI で[音声ディクテーション](/docs/ja/voice-dictation.md)を使用してください。
 * **Quick Entry グローバルホットキー**: X11 で動作します。ネイティブ Wayland では、デスクトップ環境の GlobalShortcuts ポータルが必要です。
 * **Fedora と RHEL**: 現在、Debian ベースのディストリビューションのみがサポートされています。追加のディストリビューションのサポートは今後提供される予定です。
 
-デスクトップアプリでまだ利用できない機能については、[CLI](/docs/ja/quickstart)は同じ Claude Code エンジンを実行し、より広い範囲の Linux ディストリビューションをサポートしています。[システム要件](/docs/ja/setup#system-requirements)を参照してください。
+デスクトップアプリでまだ利用できない機能については、[CLI](/docs/ja/quickstart.md)は同じ Claude Code エンジンを実行し、より広い範囲の Linux ディストリビューションをサポートしています。[システム要件](/docs/ja/setup.md#system-requirements)を参照してください。

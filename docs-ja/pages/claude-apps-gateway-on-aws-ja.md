@@ -8,23 +8,25 @@
 
 > [!NOTE]
 >
-> このページは、AWS で Claude apps gateway を実行する 1 つの方法を説明しています。この設定は、サポートされている本番環境デプロイメントではなく、カスタマー管理インフラストラクチャの実装例です。各部分がどのように組み合わさるかを確認してから、自分の環境に適応させてください。プラットフォーム非依存の要件については、[デプロイメントガイド](/docs/ja/claude-apps-gateway-deploy)を参照してください。
+> このページは、AWS で Claude apps gateway を実行する 1 つの方法を説明しています。この設定は、サポートされている本番環境デプロイメントではなく、カスタマー管理インフラストラクチャの実装例です。各部分がどのように組み合わさるかを確認してから、自分の環境に適応させてください。プラットフォーム非依存の要件については、[デプロイメントガイド](/docs/ja/claude-apps-gateway-deploy.md)を参照してください。
 
-この例では、Amazon Bedrock をモデルアップストリームとして使用し、[Amazon ECS](https://aws.amazon.com/ecs/) を [AWS Fargate](https://aws.amazon.com/fargate/) で実行するか、[Amazon EKS](https://aws.amazon.com/eks/) をコンピュートに使用して、AWS に Claude apps gateway をプロビジョニングします。[Okta](https://www.okta.com/) は例の ID プロバイダー（IdP）ですが、OpenID Connect（OIDC）準拠の任意の IdP が機能します。IdP ごとの詳細については、[ID プロバイダーのセットアップ](/docs/ja/claude-apps-gateway-deploy#identity-provider-setup)を参照してください。
+この例では、Amazon Bedrock をモデルアップストリームとして使用し、[Amazon ECS](https://aws.amazon.com/ecs/) を [AWS Fargate](https://aws.amazon.com/fargate/) で実行するか、[Amazon EKS](https://aws.amazon.com/eks/) をコンピュートに使用して、AWS に Claude apps gateway をプロビジョニングします。[Okta](https://www.okta.com/) は例の ID プロバイダー（IdP）ですが、OpenID Connect（OIDC）準拠の任意の IdP が機能します。IdP ごとの詳細については、[ID プロバイダーのセットアップ](/docs/ja/claude-apps-gateway-deploy.md#identity-provider-setup)を参照してください。
 
 > [!NOTE]
 >
-> Bedrock は AWS 上の唯一の Claude アップストリームではありません。ゲートウェイは、Bedrock の代わりに、または Bedrock と並行して、AWS 認証と AWS Marketplace 課金を備えた Anthropic 運営の Claude API である Claude Platform on AWS もサポートしています。そのアップストリームエントリ、認証情報、および IAM 権限は、このページの Bedrock スコープのものとは異なります。[Claude Platform on AWS アップストリームリファレンス](/docs/ja/claude-apps-gateway-config#claude-platform-on-aws)は何が変わるかをカバーしており、このページの残りは変わらずに適用されます。
+> Bedrock は AWS 上の唯一の Claude アップストリームではありません。ゲートウェイは、Bedrock の代わりに、または Bedrock と並行して、AWS 認証と AWS Marketplace 課金を備えた Anthropic 運営の Claude API である Claude Platform on AWS もサポートしています。そのアップストリームエントリ、認証情報、および IAM 権限は、このページの Bedrock スコープのものとは異なります。[Claude Platform on AWS アップストリームリファレンス](/docs/ja/claude-apps-gateway-config.md#claude-platform-on-aws)は何が変わるかをカバーしており、このページの残りは変わらずに適用されます。
 
 ## アーキテクチャ
 
 ![AWS 上の Claude apps gateway の図：Claude Code クライアントは HTTPS 経由でゲートウェイ（ECS Fargate または EKS）の前にある内部アプリケーションロードバランサーに接続し、プライベートサブネット内で Amazon RDS for PostgreSQL インスタンスと並行して実行されます。ゲートウェイは OIDC 経由でユーザーを企業 IdP に対してサインインさせ、AWS Secrets Manager からシークレットを読み取り、IAM ロールを使用してモデルリクエストを Amazon Bedrock に転送し、デプロイ時に Amazon ECR からイメージをプルします。](https://mintcdn.com/claude-code/PHweeRmDUYEKff49/images/claude-gateway-aws-architecture.svg?fit=max\&auto=format\&n=PHweeRmDUYEKff49\&q=85\&s=8599cc34aa28522cde208ee831439bb4)
 
+例のアーキテクチャ。Amazon Bedrock をモデルアップストリームとして使用しています。Claude Platform on AWS アップストリームは同じ位置を占めます。
+
 ゲートウェイは、開発者が IdP を通じてサインインするネットワーク上のプライベート HTTPS エンドポイントとして実行されます。Claude Code セッションは、ゲートウェイの IAM ロールを通じて Amazon Bedrock 上の Claude モデルに到達するため、モデル認証情報は開発者マシンに到達しません。参照設定は以下をプロビジョニングします：
 
 * **Amazon ECS on AWS Fargate** サービスまたは **Amazon EKS** デプロイメント（ゲートウェイコンテナを実行）
 * **Amazon ECR** リポジトリ（ゲートウェイイメージ用）
-* **Amazon RDS for PostgreSQL** インスタンス（プライベートサブネット内、公開アクセス不可、ゲートウェイの[ストア](/docs/ja/claude-apps-gateway-config#store)用）
+* **Amazon RDS for PostgreSQL** インスタンス（プライベートサブネット内、公開アクセス不可、ゲートウェイの[ストア](/docs/ja/claude-apps-gateway-config.md#store)用）
 * **AWS Secrets Manager** シークレット（JWT 署名キー、OIDC クライアントシークレット、Postgres URL 用）
 * **IAM ロール**（`bedrock:InvokeModel`、`bedrock:InvokeModelWithResponseStream`、`bedrock:CountTokens` 権限付き、ECS タスクロールとしてアタッチされるか、EKS 上の IAM Roles for Service Accounts（IRSA）経由でバインドされる）
 * **内部アプリケーションロードバランサー**（HTTPS 用）
@@ -36,7 +38,7 @@
 * [上記のリソース](#architecture)を作成する権限を持つ AWS アカウント
 * [AWS CLI v2](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) がインストールされ[認証済み](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-authentication.html)であること、および [Docker](https://docs.docker.com/get-started/get-docker/) がローカルにインストールされていること
 * 異なるアベイラビリティゾーンに少なくとも 2 つの[プライベートサブネット](https://docs.aws.amazon.com/vpc/latest/userguide/configure-subnets.html)を持つ [VPC](https://docs.aws.amazon.com/vpc/latest/userguide/what-is-amazon-vpc.html)。[NAT ゲートウェイ](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html)を通じたアウトバウンドインターネットアクセスがあること。内部ロードバランサーは 2 つの AZ のサブネットが必要であり、ゲートウェイは Bedrock および IdP へのエグレスが必要です
-* リダイレクト URI が `https://<gateway-host>/oauth/callback` の Okta OIDC ウェブアプリケーション。[ID プロバイダーのセットアップ](/docs/ja/claude-apps-gateway-deploy#identity-provider-setup)を参照してください
+* リダイレクト URI が `https://<gateway-host>/oauth/callback` の Okta OIDC ウェブアプリケーション。[ID プロバイダーのセットアップ](/docs/ja/claude-apps-gateway-deploy.md#identity-provider-setup)を参照してください
 * ゲートウェイ用の TLS ホスト名。通常は [Route 53 プライベートホストゾーン](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/hosted-zones-private.html)内の内部 DNS 名でロードバランサーを指し、そのホスト名用の [ACM 証明書](https://docs.aws.amazon.com/acm/latest/userguide/gs.html)があり、[AWS Private CA](https://docs.aws.amazon.com/privateca/latest/userguide/PcaWelcome.html)によってインポートまたは発行されていること
 
 ### 環境変数を設定する
@@ -93,7 +95,7 @@ aws ec2 authorize-security-group-ingress --group-id "$DB_SG" \
 
 **2. IAM ロールを作成して使用例フォームを送信する**
 
-ゲートウェイは、Bedrock で Claude モデルを呼び出す唯一の権限を持つ専用タスクロールで実行されます。[Bedrock アップストリームリファレンス](/docs/ja/claude-apps-gateway-config#amazon-bedrock)に従い、ポリシーはクロスリージョン推論プロファイル ARN と基盤となるファウンデーションモデル ARN の両方をカバーする必要があります。
+ゲートウェイは、Bedrock で Claude モデルを呼び出す唯一の権限を持つ専用タスクロールで実行されます。[Bedrock アップストリームリファレンス](/docs/ja/claude-apps-gateway-config.md#amazon-bedrock)に従い、ポリシーはクロスリージョン推論プロファイル ARN と基盤となるファウンデーションモデル ARN の両方をカバーする必要があります。
 
 ```bash theme={null}
 cat > bedrock-invoke.json <<EOF
@@ -153,7 +155,7 @@ aws iam put-role-policy --role-name claude-gateway-execution \
 
 ポリシーは、ベアの `gateway-*` ワイルドカードではなく、シークレットごとに 1 つの ARN を指定します。共有アカウントでは、ベアのワイルドカードは無関係なシークレットにも一致します。末尾の `-??????` は、Secrets Manager がすべてのシークレットの ARN に追加する 6 文字のランダムサフィックスと正確に一致します。末尾の `-*` はプレーンプレフィックスグロブであり、`gateway-postgres-url-prod` などのより長い名前にも一致します。
 
-IAM ポリシーはゲートウェイに Bedrock を呼び出す権限を付与し、Bedrock は商用リージョンでデフォルトでモデルアクセスを有効にします。残りのアカウントレベルのゲートは Anthropic の 1 回限りの使用例フォームです。アカウント内の誰もそれを送信していない場合は、[Amazon Bedrock コンソール](https://console.aws.amazon.com/bedrock/)を開き、モデルカタログから Anthropic モデルを選択して、フォームを完成させます。アクセスは送信直後に付与されます。[Claude Code on Amazon Bedrock](/docs/ja/amazon-bedrock#1-submit-use-case-details)で AWS Organizations フォームと送信者が必要な IAM 権限を参照してください。
+IAM ポリシーはゲートウェイに Bedrock を呼び出す権限を付与し、Bedrock は商用リージョンでデフォルトでモデルアクセスを有効にします。残りのアカウントレベルのゲートは Anthropic の 1 回限りの使用例フォームです。アカウント内の誰もそれを送信していない場合は、[Amazon Bedrock コンソール](https://console.aws.amazon.com/bedrock/)を開き、モデルカタログから Anthropic モデルを選択して、フォームを完成させます。アクセスは送信直後に付与されます。[Claude Code on Amazon Bedrock](/docs/ja/amazon-bedrock.md#1-submit-use-case-details)で AWS Organizations フォームと送信者が必要な IAM 権限を参照してください。
 
 EKS トラックは、2 つの ECS ロールの代わりに IRSA ロール上で両方のポリシードキュメントを再利用します。デプロイステップを参照してください。
 
@@ -208,7 +210,7 @@ ECS サービスまたは EKS ポッドは、インスタンスのプライベ�
 
 **4. gateway.yaml を書き込む**
 
-`upstreams` ブロックは `auth: {}` で Bedrock を指します。ゲートウェイは ECS のタスクロールまたは EKS の IRSA ロールから AWS デフォルト認証情報チェーンを介して認証します。すべてのフィールドについては、[設定リファレンス](/docs/ja/claude-apps-gateway-config)を参照してください。
+`upstreams` ブロックは `auth: {}` で Bedrock を指します。ゲートウェイは ECS のタスクロールまたは EKS の IRSA ロールから AWS デフォルト認証情報チェーンを介して認証します。すべてのフィールドについては、[設定リファレンス](/docs/ja/claude-apps-gateway-config.md)を参照してください。
 
 2 つの `listen` フィールドは、ゲートウェイの前段にあるものを記述します。
 
@@ -258,7 +260,7 @@ upstreams:
 
 > [!NOTE]
 >
-> `oidc` ブロックのみが Okta 固有です。Microsoft Entra ID を代わりに使用するには、`issuer` を `https://login.microsoftonline.com/<tenant-id>/v2.0` に設定し、`userinfo_fallback` と `groups` スコープをドロップし、Entra がグループ名ではなくグループ Object ID を発行することに注意してください。[`managed.policies`](/docs/ja/claude-apps-gateway-config#managed)は GUID で一致するか、`oidc.groups_claim: roles` を使用した App Roles で一致する必要があります。[ID プロバイダーセットアップ](/docs/ja/claude-apps-gateway-deploy#identity-provider-setup)を参照してください。
+> `oidc` ブロックのみが Okta 固有です。Microsoft Entra ID を代わりに使用するには、`issuer` を `https://login.microsoftonline.com/<tenant-id>/v2.0` に設定し、`userinfo_fallback` と `groups` スコープをドロップし、Entra がグループ名ではなくグループ Object ID を発行することに注意してください。[`managed.policies`](/docs/ja/claude-apps-gateway-config#managed)は GUID で一致するか、`oidc.groups_claim: roles` を使用した App Roles で一致する必要があります。[ID プロバイダーセットアップ](/docs/ja/claude-apps-gateway-deploy.md#identity-provider-setup)を参照してください。
 
 **5. AWS Secrets Manager にシークレットを保存する**
 
@@ -286,7 +288,7 @@ aws secretsmanager create-secret --name gateway-postgres-url \
 
 **6. イメージをビルドして Amazon ECR にプッシュする**
 
-[コンテナイメージ要件](/docs/ja/claude-apps-gateway-deploy#container-image)に従ってイメージをビルドし、`linux-x64` glibc バイナリをビルドコンテキストの `./claude` に配置します。これらの要件に従って独自の Dockerfile を作成するか、バンドルの [`Dockerfile`](https://github.com/anthropics/claude-code/blob/main/examples/gateway/aws/Dockerfile)から始めます。これは、前のステップで記入した `gateway.yaml` をイメージにコピーして `/etc/claude/gateway.yaml` に配置します。ECS では、その埋め込みコピーによって設定がコンテナに届きます。これが、ファイルを書き込んだ後にビルドを行う理由です。EKS トラックは代わりにデプロイ時に ConfigMap から `gateway.yaml` をマウントするため、埋め込みコピーはそこでは使用されません。
+[コンテナイメージ要件](/docs/ja/claude-apps-gateway-deploy.md#container-image)に従ってイメージをビルドし、`linux-x64` glibc バイナリをビルドコンテキストの `./claude` に配置します。これらの要件に従って独自の Dockerfile を作成するか、バンドルの [`Dockerfile`](https://github.com/anthropics/claude-code/blob/main/examples/gateway/aws/Dockerfile)から始めます。これは、前のステップで記入した `gateway.yaml` をイメージにコピーして `/etc/claude/gateway.yaml` に配置します。ECS では、その埋め込みコピーによって設定がコンテナに届きます。これが、ファイルを書き込んだ後にビルドを行う理由です。EKS トラックは代わりにデプロイ時に ConfigMap から `gateway.yaml` をマウントするため、埋め込みコピーはそこでは使用されません。
 
 イメージは、接続文字列の `sslmode=verify-full` のトラストアンカーとして AWS RDS 証明書バンドルも搭載しているため、最初にビルドコンテキストにダウンロードします。AWS はバンドルをローテーションする（新しいリージョンの CA が追加される）ため、チェックサムをピンしたりコミットしたりするのではなく、ビルドごとにダウンロードします。
 
@@ -417,9 +419,9 @@ aws ecs create-service --cluster claude-gateway --service-name claude-gateway \
 
 60 秒のグレースピリオドは、ECS がデプロイに対して失敗のカウントを始める前に、コールドタスクがイメージをプルし、ストアに接続し、最初のヘルスチェックに応答する時間を与えます。
 
-ターゲットグループの `GET /readyz` のヘルスチェックはストアが到達可能であることを検証するため、Postgres に到達できないタスクはローテーションに入りません。RDS フェイルオーバーなどの短いデータベース停止中もタスクがチェックを通過し続けるようにするには、[停止動作](/docs/ja/claude-apps-gateway-deploy#outage-behavior)の説明に従って `store.readiness_grace_seconds` を設定します。同セクションでは `/healthz` 代替案についても説明しています。
+ターゲットグループの `GET /readyz` のヘルスチェックはストアが到達可能であることを検証するため、Postgres に到達できないタスクはローテーションに入りません。RDS フェイルオーバーなどの短いデータベース停止中もタスクがチェックを通過し続けるようにするには、[停止動作](/docs/ja/claude-apps-gateway-deploy.md#outage-behavior)の説明に従って `store.readiness_grace_seconds` を設定します。同セクションでは `/healthz` 代替案についても説明しています。
 
-タスクはパブリック IP なしのプライベートサブネットで実行されるため、すべてのエグレス（Bedrock、IdP、Secrets Manager、ECR、CloudWatch Logs へ）は NAT ゲートウェイを通過します。Bedrock トラフィックをパブリックパスから外すには、[Bedrock アップストリームリファレンス](/docs/ja/claude-apps-gateway-config#amazon-bedrock)に示されているように、`bedrock-runtime` インターフェース VPC エンドポイントを作成し、アップストリームの `base_url` をそれに向けます。IdP にはインターネットエグレスが引き続き必要です。
+タスクはパブリック IP なしのプライベートサブネットで実行されるため、すべてのエグレス（Bedrock、IdP、Secrets Manager、ECR、CloudWatch Logs へ）は NAT ゲートウェイを通過します。Bedrock トラフィックをパブリックパスから外すには、[Bedrock アップストリームリファレンス](/docs/ja/claude-apps-gateway-config.md#amazon-bedrock)に示されているように、`bedrock-runtime` インターフェース VPC エンドポイントを作成し、アップストリームの `base_url` をそれに向けます。IdP にはインターネットエグレスが引き続き必要です。
 
 開発者にプライベートに解決可能なホスト名を与えることで完了します。Route 53 プライベートホストゾーンで、ゲートウェイの内部 DNS 名を ALB にエイリアスし、`listen.public_url` をそのホスト名に設定します。ALB 自体の `*.elb.amazonaws.com` 名は内部 ALB のプライベートアドレスに解決されますが、ACM 証明書を搭載できないため、独自の名前を使用します。
 
@@ -447,7 +449,7 @@ eksctl create iamserviceaccount --cluster <your-cluster> --region "$AWS_REGION" 
 
 シークレットポリシーは、Secrets Store CSI ドライバーの AWS プロバイダーがマウントするポッドのサービスアカウントを使用して行うように、ポッド自体が Secrets Manager を読み取る場合にのみ必要です。別の方法で Kubernetes Secrets を作成する場合は削除してください。プロバイダーにはポリシーの両方のアクションが必要です。ローテーションされたシークレットを調整するときに `DescribeSecret` を呼び出すため、`GetSecretValue` のみの付与では最初のデプロイ時にはマウントできますが、ローテーションが反映されなくなります。
 
-[Kubernetes デプロイ](/docs/ja/claude-apps-gateway-deploy#kubernetes)で説明されているように、ゲートウェイを標準の Deployment、Service、および Ingress としてデプロイします。設定内容は以下のとおりです。
+[Kubernetes デプロイ](/docs/ja/claude-apps-gateway-deploy.md#kubernetes)で説明されているように、ゲートウェイを標準の Deployment、Service、および Ingress としてデプロイします。設定内容は以下のとおりです。
 
 * `serviceAccountName: gateway`
 * ConfigMap からマウントされた `gateway.yaml` と `/secrets` にマウントされたシークレット
@@ -481,12 +483,12 @@ IRSA では、AWS SDK は投影されたサービスアカウントトークン�
 
 ## トラブルシューティング
 
-ゲートウェイのブートおよびログインエラーについては、プラットフォーム非依存の[トラブルシューティングテーブル](/docs/ja/claude-apps-gateway-deploy#troubleshooting)を参照してください。以下のエントリは AWS に固有です。
+ゲートウェイのブートおよびログインエラーについては、プラットフォーム非依存の[トラブルシューティングテーブル](/docs/ja/claude-apps-gateway-deploy.md#troubleshooting)を参照してください。以下のエントリは AWS に固有です。
 
 | 症状 | 原因 | 修正 |
 | - | - | - |
 | CLI `/login`: `Gateway hosts must be on your organization's private network; <host> resolves to the public (or unrecognized) address <ip>` | ゲートウェイ名が少なくとも 1 つのパブリックアドレスに解決されます。デュアルスタック内部 ALB はパブリック範囲の AAAA レコードを公開し、[プライベートネットワークチェック](/docs/ja/claude-apps-gateway#prerequisites)は解決されたすべてのアドレスがプライベートであることを要求します | ALB を `--ip-address-type ipv4` で作成するか、パブリック AAAA レコードのない別の内部専用 DNS 名を提供してください |
-| すべての Bedrock リクエストが 502 を返す。ログに `Could not load credentials from any providers` が表示される | タスクは ECS EC2 起動タイプでタスクロールなしで実行されるか、ポッドは IRSA なしで EKS ノードで実行されるため、認証情報はインスタンスメタデータから取得されます。IMDSv2 のデフォルトホップリミット 1 はコンテナ内で停止します。このページの両方のトラック（Fargate タスクロールと IRSA）はインスタンスメタデータを使用しません | タスクロールと IRSA を優先してください。インスタンス認証情報が避けられない場合は、`aws ec2 modify-instance-metadata-options --instance-id <id> --http-put-response-hop-limit 2` でホップリミットを上げてください。[プラットフォーム非依存テーブル](/docs/ja/claude-apps-gateway-deploy#troubleshooting)はトレードオフをカバーしています |
+| すべての Bedrock リクエストが 502 を返す。ログに `Could not load credentials from any providers` が表示される | タスクは ECS EC2 起動タイプでタスクロールなしで実行されるか、ポッドは IRSA なしで EKS ノードで実行されるため、認証情報はインスタンスメタデータから取得されます。IMDSv2 のデフォルトホップリミット 1 はコンテナ内で停止します。このページの両方のトラック（Fargate タスクロールと IRSA）はインスタンスメタデータを使用しません | タスクロールと IRSA を優先してください。インスタンス認証情報が避けられない場合は、`aws ec2 modify-instance-metadata-options --instance-id <id> --http-put-response-hop-limit 2` でホップリミットを上げてください。[プラットフォーム非依存テーブル](/docs/ja/claude-apps-gateway-deploy.md#troubleshooting)はトレードオフをカバーしています |
 | Bedrock リクエストが `403 AccessDeniedException` を返す | アカウントが Anthropic のワンタイム使用ケースフォームを送信していない、アカウントの最初の呼び出しで開始される自動 AWS Marketplace サブスクリプションがまだ完了していない、またはタスクロールのポリシーに推論プロファイルまたは基盤モデル ARN が不足している | Bedrock コンソールのモデルカタログから使用ケースフォームを送信してください。フォームが送信されたばかりの場合、またはこれがアカウントの最初の呼び出しの場合は、数分後に再試行してください。`bedrock:InvokeModel` と `bedrock:InvokeModelWithResponseStream` を両方の ARN ファミリーに付与してください。 |
 | Bedrock がオンデマンドスループットがサポートされていないと言う `ValidationException` を返す | カスタム `models:` エントリが、リージョンが推論プロファイルを通じてのみ提供する基盤モデル ID にマップされている | モデルをクロスリージョン推論プロファイル ID（`us.anthropic.*`）にマップしてください。組み込みカタログはすでにこれを行っています |
 | ECS タスクがゲートウェイがログに何も出力する前に `ResourceInitializationError` で停止する | 実行ロールが Secrets Manager シークレットを読み取ることができない、またはプライベートサブネットが Secrets Manager または ECR へのパスを持たない | 実行ロールに 3 つの `gateway-` シークレット ARN に対する `secretsmanager:GetSecretValue` を付与し、NAT ゲートウェイ経由でエグレスを提供するか、NAT ゲートウェイなしで Secrets Manager、ECR、CloudWatch Logs のインターフェースエンドポイント（`awslogs` ドライバーが同じステージで必要とする）と S3 ゲートウェイエンドポイントを提供してください |
@@ -496,11 +498,11 @@ IRSA では、AWS SDK は投影されたサービスアカウントトークン�
 
 ## テレメトリ
 
-ゲートウェイは、マシンごとの OTEL 設定なしで、開発者ごとの使用状況メトリクスを提供します。Claude Code は OpenTelemetry（OTLP）メトリクス、ログ、およびオプトイン トレースを出力します。[使用状況の監視](/docs/ja/monitoring-usage)は、CLI が報告するすべてをカバーしています。`/login` を通じてサインインしたセッションでは、CLI は認証された IdP ID 属性 `user.id`、`user.email`、および `user.groups` を[各エクスポートにスタンプ](/docs/ja/monitoring-usage#standard-attributes)するため、使用状況は開発者ごとにロールアップされます。
+ゲートウェイは、マシンごとの OTEL 設定なしで、開発者ごとの使用状況メトリクスを提供します。Claude Code は OpenTelemetry（OTLP）メトリクス、ログ、およびオプトイン トレースを出力します。[使用状況の監視](/docs/ja/monitoring-usage.md)は、CLI が報告するすべてをカバーしています。`/login` を通じてサインインしたセッションでは、CLI は認証された IdP ID 属性 `user.id`、`user.email`、および `user.groups` を[各エクスポートにスタンプ](/docs/ja/monitoring-usage.md#standard-attributes)するため、使用状況は開発者ごとにロールアップされます。
 
 ゲートウェイ自体は認証された OTLP リレーです。[`telemetry.forward_to`](/docs/ja/claude-apps-gateway-config#telemetry) を `listen.public_url` と一緒に設定すると、OTEL エクスポーター設定をすべての接続クライアントにプッシュし、OTLP トラフィックを指定した各宛先に逐語的に転送します。各宛先はメトリクス、ログ、およびトレースに独立してオプトインでき、デフォルトはメトリクスのみです。[`telemetry` リファレンス](/docs/ja/claude-apps-gateway-config#telemetry)で、シグナルごとのフィールドとそれらの感度トレードオフを参照してください。ゲートウェイはテレメトリをバッファリング、集約、または保存しないため、データが到達する場所はコレクターのエクスポーター設定に完全に依存します。
 
-クライアント テレメトリはデフォルトでオフです。`telemetry.forward_to` を設定することで、接続された開発者に対してオンになり、各インタラクティブ クライアントはプッシュされた設定に対するセキュリティ承認ダイアログを表示します。これは[設定リファレンス](/docs/ja/claude-apps-gateway-config#telemetry)で説明されています。AWS では、各シグナルは次のように宛先にマップされます。
+クライアント テレメトリはデフォルトでオフです。`telemetry.forward_to` を設定することで、接続された開発者に対してオンになり、各インタラクティブ クライアントはプッシュされた設定に対するセキュリティ承認ダイアログを表示します。これは[設定リファレンス](/docs/ja/claude-apps-gateway-config.md#telemetry)で説明されています。AWS では、各シグナルは次のように宛先にマップされます。
 
 ### クライアント メトリクス、ログ、およびトレース
 
@@ -518,7 +520,7 @@ ECS Fargate では、追加のセットアップは不要です。`awslogs` ド�
 
 ### 支出
 
-テレメトリは事後に使用状況を表示します。[支出制限](/docs/ja/claude-apps-gateway-spend-limits)はゲートウェイのライブ開発者ごとのビューと実装です。
+テレメトリは事後に使用状況を表示します。[支出制限](/docs/ja/claude-apps-gateway-spend-limits.md)はゲートウェイのライブ開発者ごとのビューと実装です。
 
 ## コスト属性
 
@@ -526,7 +528,7 @@ ECS Fargate では、追加のセットアップは不要です。`awslogs` ド�
 
 ### `assume_role` を使用した開発者ごと
 
-Bedrock 権限を保持し、ゲートウェイのプリンシパルを信頼する 2 番目の IAM ロールを作成し、そのプリンシパルに対して `sts:AssumeRole` を付与し、Bedrock アップストリームで [`assume_role`](/docs/ja/claude-apps-gateway-config#per-developer-aws-cost-attribution) を `session_name: email` で設定します。ゲートウェイは、開発者ごとに 1 時間に 1 回そのロールを引き受け、セッション名をメールアドレスに設定して、その結果でリクエストに署名します。Claude Code v2.1.281 以降を実行しているゲートウェイが必要です。ロールは別の AWS アカウントに配置することもできます。[別の AWS アカウントの Bedrock](/docs/ja/claude-apps-gateway-config#bedrock-in-another-aws-account) を参照してください。Terraform では、[Terraform バンドル](#terraform-reference) のタスクロールの隣に以下を配置します。
+Bedrock 権限を保持し、ゲートウェイのプリンシパルを信頼する 2 番目の IAM ロールを作成し、そのプリンシパルに対して `sts:AssumeRole` を付与し、Bedrock アップストリームで [`assume_role`](/docs/ja/claude-apps-gateway-config#per-developer-aws-cost-attribution) を `session_name: email` で設定します。ゲートウェイは、開発者ごとに 1 時間に 1 回そのロールを引き受け、セッション名をメールアドレスに設定して、その結果でリクエストに署名します。Claude Code v2.1.281 以降を実行しているゲートウェイが必要です。ロールは別の AWS アカウントに配置することもできます。[別の AWS アカウントの Bedrock](/docs/ja/claude-apps-gateway-config.md#bedrock-in-another-aws-account) を参照してください。Terraform では、[Terraform バンドル](#terraform-reference) のタスクロールの隣に以下を配置します。
 
 ```hcl theme={null}
 resource "aws_iam_role" "bedrock_user" {
@@ -561,6 +563,7 @@ resource "aws_iam_role_policy" "task_assume_bedrock_user" {
 
 ```yaml theme={null}
 models:
+  # Include the served model's id, such as claude-opus-4-8, in each id so the gateway's spend meter can price it.
   - id: platform-claude-opus-4-8
     upstream_model:
       bedrock: arn:aws:bedrock:us-east-1:123456789012:application-inference-profile/abc123
@@ -581,11 +584,49 @@ managed:
 
 ゲートウェイはモデルピッカーだけでなく、すべてのリクエストで `availableModels` を強制し、AWS 請求は有効化したタグで支出をグループ化します。`match: {}` キャッチオールがない場合、ポリシーに一致しない開発者はカタログ内のすべてのモデルを取得でき、どちらのチームのプロファイルでも請求できます。
 
-コスト：設定はチーム数とモデル数で増加し、このアップストリームの Bedrock リクエストに署名するロールは、`application-inference-profile/*` ARN を呼び出すことも許可される必要があります。そのロールはゲートウェイのプリンシパル、または `assume_role` を使用する場合は引き受けるロールです。これらの ID の価格設定方法については、[`pricing`](/docs/ja/claude-apps-gateway-config#pricing) を参照してください。
+コスト：
+
+* 設定はチーム数とモデル数に応じて増加します
+* このアップストリームの Bedrock リクエストに署名するロールは、`application-inference-profile/*` ARN を呼び出すことも許可される必要があります。そのロールはゲートウェイのプリンシパル、または `assume_role` を使用する場合は引き受けるロールです。
+
+ゲートウェイ独自の支出メーターがこれらの ID をどのように価格設定するかについては、[リクエストの価格設定方法](/docs/ja/claude-apps-gateway-spend-limits.md#how-requests-are-priced) を参照してください。
+
+#### 開発者が請求先のチームを選択できるようにする
+
+2 つのチームで作業する開発者が、各セッションをどちらのチームに請求するかを選択できるようにするには、そのチームの組み合わせに専用の IdP グループとポリシーを割り当てます。
+
+**1. 組み合わせ用のグループを追加する**
+
+IdP で、`team-platform-and-data` などの新しいグループに開発者を追加します。開発者がすでにサインインしている場合は、ゲートウェイが新しいグループを認識できるよう、`/login` を再度実行してもらうか、次の[サイレントリフレッシュ](/docs/ja/claude-apps-gateway-config.md#managed)を待ちます。
+
+**2. そのポリシーを最初に記載する**
+
+グループのポリシーを単一チームのポリシーより上に配置し、その中で両方のチームの ID を許可します。2 つのチームのポリシーで設定しているその他の設定もコピーします。
+
+```yaml theme={null}
+managed:
+  policies:
+    - match: {groups: [team-platform-and-data]}
+      cli: {availableModels: [platform-claude-opus-4-8, data-claude-opus-4-8], enforceAvailableModels: true}
+    - match: {groups: [team-platform]}
+      cli: {availableModels: [platform-claude-opus-4-8], enforceAvailableModels: true}
+    - match: {groups: [team-data]}
+      cli: {availableModels: [data-claude-opus-4-8], enforceAvailableModels: true}
+    - match: {}
+      cli: {availableModels: [claude-opus-4-8, claude-sonnet-4-6], enforceAvailableModels: true}
+```
+
+**3. 各セッションをチームの ID で開始する**
+
+開発者には、`claude --model data-claude-opus-4-8` のように、その作業の対象となるチームの ID を渡してもらいます。
+
+ゲートウェイは[最初に一致したポリシー](/docs/ja/claude-apps-gateway-config.md#managed)を適用するため、2 つのチームグループにのみ所属する開発者には `team-platform` ポリシーが適用されます。その場合、データチームの ID でのセッションは `is not in your role's availableModels allowlist` で失敗し、エラーには入力した ID ではなく Claude Code のデフォルトモデルが示されます。代わりに 1 つのポリシーの `groups` に両方のチームグループを記載すると、どちらかのチームに所属する全員が、どちらのチームのプロファイルにも請求できるようになります。
+
+ゲートウェイ独自の[支出制限](/docs/ja/claude-apps-gateway-spend-limits.md#set-a-cap)では、セッションがどの ID を使用するかにかかわらず、開発者には期間ごとに 1 つの合計と 1 つの上限があり、上限はデフォルトで所属グループの上限のうち最も低いものになります。一方のチームの低い上限によってもう一方のチームの作業が止まらないようにするには、その開発者にユーザーごとの上限を設定します。
 
 ## 次のステップ
 
-* [設定リファレンス](/docs/ja/claude-apps-gateway-config)：すべての `gateway.yaml` オプション。`managed.policies` と `telemetry` を含む
-* [デプロイメントと運用](/docs/ja/claude-apps-gateway-deploy)：IdP セットアップ、ヘルスチェック、JWT シークレットローテーション、アップグレード、およびセキュリティモデル
+* [設定リファレンス](/docs/ja/claude-apps-gateway-config.md)：すべての `gateway.yaml` オプション。`managed.policies` と `telemetry` を含む
+* [デプロイメントと運用](/docs/ja/claude-apps-gateway-deploy.md)：IdP セットアップ、ヘルスチェック、JWT シークレットローテーション、アップグレード、およびセキュリティモデル
 * [Claude apps gateway 概要](/docs/ja/claude-apps-gateway)：クイックスタートと開発者の接続
 * [Claude apps gateway の AWS サンプル](https://github.com/aws-samples/anthropic-on-aws/tree/main/claude-apps-gateway)：顧客環境の範囲をカバーする AWS 保守デプロイメントサンプル

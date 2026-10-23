@@ -8,15 +8,15 @@
 
 > [!NOTE]
 >
-> 自己ホスト環境は Team および Enterprise プランでパブリックベータ版です。[利用可能性と制限事項](/docs/ja/self-hosted-environments#availability-and-limitations)に有効化パスが記載されています。このページは CI テストレシピです。セットアップについては[クイックスタート](/docs/ja/self-hosted-environments-quickstart)を、フリートレシピについては[本番環境へのデプロイ](/docs/ja/self-hosted-environments-deploy)をご覧ください。
+> 自己ホスト環境は Team および Enterprise プランでパブリックベータ版です。[利用可能性と制限事項](/docs/ja/self-hosted-environments#availability-and-limitations)に有効化パスが記載されています。このページは CI テストレシピです。セットアップについては[クイックスタート](/docs/ja/self-hosted-environments-quickstart.md)を、フリートレシピについては[本番環境へのデプロイ](/docs/ja/self-hosted-environments-deploy.md)をご覧ください。
 
-[自己ホスト環境](/docs/ja/self-hosted-environments)では、Claude Code の[クラウドセッション](/docs/ja/claude-code-on-the-web)は、ユーザーが構築・管理する実行イメージ上で実行されます。新しいイメージを本番環境にロールアウトする前に、スクリプトからテスト環境に対して完全なセッションを実行します。セッションを作成し、Claude の返信を読み取り、フォローアップを送信し、その返信も読み取ります。これは実行イメージ、git アクセス、カスタムツールを検証する CI スモークテストの形です。
+[自己ホスト環境](/docs/ja/self-hosted-environments)では、Claude Code の[クラウドセッション](/docs/ja/claude-code-on-the-web.md)は、ユーザーが構築・管理する実行イメージ上で実行されます。新しいイメージを本番環境にロールアウトする前に、スクリプトからテスト環境に対して完全なセッションを実行します。セッションを作成し、Claude の返信を読み取り、フォローアップを送信し、その返信も読み取ります。これは実行イメージ、git アクセス、カスタムツールを検証する CI スモークテストの形です。
 
-このレシピは、[環境と実行イメージのセットアップ](/docs/ja/self-hosted-environments-quickstart#set-up-an-environment-and-runner)が完了していることを前提としています。また、CI ジョブがテストスクリプトと同じホスト上で実行イメージプロセスを開始することを想定しています。これは新しい実行イメージをテストするための自然なセットアップです。実行イメージにインストールする Stop フックは、各ターンの最終返信をローカルファイルに書き込み、スクリプトがそこから読み取ります。そのため、Anthropic API への呼び出しは 2 つのディスパッチだけです。テスト実行イメージが別のインフラストラクチャ上にある場合は、[リモートテスト実行イメージ](#remote-test-runners)をご覧ください。
+このレシピは、[環境と実行イメージのセットアップ](/docs/ja/self-hosted-environments-quickstart.md#set-up-an-environment-and-runner)が完了していることを前提としています。また、CI ジョブがテストスクリプトと同じホスト上で実行イメージプロセスを開始することを想定しています。これは新しい実行イメージをテストするための自然なセットアップです。実行イメージにインストールする Stop フックは、各ターンの最終返信をローカルファイルに書き込み、スクリプトがそこから読み取ります。そのため、Anthropic API への呼び出しは 2 つのディスパッチだけです。テスト実行イメージが別のインフラストラクチャ上にある場合は、[リモートテスト実行イメージ](#remote-test-runners)をご覧ください。
 
 ## テスト実行イメージにキャプチャフックをインストールする
 
-読み取りは Claude Code の[Stop フック](/docs/ja/hooks#stop)を通じて機能します。Claude がターンを完了すると、フックは最終アシスタントメッセージを stdin JSON の `last_assistant_message` として受け取り、`$E2E_REPLY_DIR/<session_id>.txt` に追加します。[commit-nudge Stop フック](/docs/ja/self-hosted-environments-configuration#prompt-sessions-to-push-their-work)と同じ方法でインストールします。実行イメージホストの `~/.claude/` にインストールします。実行イメージはこれをすべてのセッションにシードします。
+読み取りは Claude Code の[Stop フック](/docs/ja/hooks.md#stop)を通じて機能します。Claude がターンを完了すると、フックは最終アシスタントメッセージを stdin JSON の `last_assistant_message` として受け取り、`$E2E_REPLY_DIR/<session_id>.txt` に追加します。[commit-nudge Stop フック](/docs/ja/self-hosted-environments-configuration.md#prompt-sessions-to-push-their-work)と同じ方法でインストールします。実行イメージホストの `~/.claude/` にインストールします。実行イメージはこれをすべてのセッションにシードします。
 
 ### フックファイルを保存する
 
@@ -84,7 +84,7 @@ exit 0
    * **セッションの作成に失敗した場合**: `{"ok":false,"error":"..."}` という行が出力され、コマンドはステータス 1 で終了します
    * **それ以前の段階で発生する一部のエラー**（組織でクラウドセッションが利用できない場合や、プロンプトが指定されていない場合など）: JSON 行は出力されず、エラーが stderr に出力され、コマンドはステータス 1 で終了します
 2. ターンの完了時にランナー上の Stop フックによって書き込まれる `$E2E_REPLY_DIR/<session_id>.txt` に応答が現れるのを待ちます。
-3. `claude -p "<message>" --cloud <session_id> --output-format json` を使用してフォローアップを送信します（[実行中のセッションにフォローアップメッセージを送信する](/docs/ja/claude-code-on-the-web#send-follow-ups-from-the-cli)を参照）。このコマンドは既存のセッションにユーザーイベントを投稿して終了します。
+3. `claude -p "<message>" --cloud <session_id> --output-format json` を使用してフォローアップを送信します（[実行中のセッションにフォローアップメッセージを送信する](/docs/ja/claude-code-on-the-web.md#send-follow-ups-from-the-cli)を参照）。このコマンドは既存のセッションにユーザーイベントを投稿して終了します。
 4. 手順 2 と同じ方法で、フォローアップへの応答を待ちます。
 
 ### `--environment` のディスパッチ動作
@@ -198,13 +198,13 @@ exit 0
 
 ### 長期間存続する CI ホスト
 
-スクリプトを実行するマシン上で、自動化用の専用ユーザーアカウントを使用して、`claude auth login` を 1 回対話的に実行します。Claude Code はトークンを macOS では OS キーチェーンに、Linux と Windows では `~/.claude/.credentials.json` に保存します。キーチェーンに書き込みできない macOS ホスト（SSH セッションでログインキーチェーンがロックされたままの場合など）では、Claude Code はトークンを `~/.claude/.credentials.json` にも保存します。[認証情報管理](/docs/ja/authentication#credential-management)を参照してください。
+スクリプトを実行するマシン上で、自動化用の専用ユーザーアカウントを使用して、`claude auth login` を 1 回対話的に実行します。Claude Code はトークンを macOS では OS キーチェーンに、Linux と Windows では `~/.claude/.credentials.json` に保存します。キーチェーンに書き込みできない macOS ホスト（SSH セッションでログインキーチェーンがロックされたままの場合など）では、Claude Code はトークンを `~/.claude/.credentials.json` にも保存します。[認証情報管理](/docs/ja/authentication.md#credential-management)を参照してください。
 
 CLI は各呼び出しで短期アクセストークンを自動的に更新しますが、基盤となるリフレッシュトークングラントは初期ログインから 30 日間に制限されているため、そのホストで 30 日ごとに `claude auth login` を対話的に再実行してください。
 
 ### エフェメラル CI 実行イメージ
 
-現在、これに対する長期間存続する CI トークンはありません。クラウドセッション制御を付与するスコープ `user:sessions:claude_code` はサーバー側で 30 日間に制限されているため、1 年間の推論のみのトークンを発行する `claude setup-token` はこれをカバーしていません。[環境シークレット](/docs/ja/self-hosted-environments-quickstart#set-up-an-environment-and-runner)も受け入れられません。これは実行イメージが環境に登録することのみを認可し、セッションを作成することは認可しないためです。
+現在、これに対する長期間存続する CI トークンはありません。クラウドセッション制御を付与するスコープ `user:sessions:claude_code` はサーバー側で 30 日間に制限されているため、1 年間の推論のみのトークンを発行する `claude setup-token` はこれをカバーしていません。[環境シークレット](/docs/ja/self-hosted-environments-quickstart.md#set-up-an-environment-and-runner)も受け入れられません。これは実行イメージが環境に登録することのみを認可し、セッションを作成することは認可しないためです。
 
 エフェメラル実行イメージに保存されたログインをプロビジョニングするには、[`CLAUDE_CODE_OAUTH_REFRESH_TOKEN` と `CLAUDE_CODE_OAUTH_SCOPES`](/docs/ja/env-vars#variables) を設定して、`claude auth login` がブラウザなしでトークンを交換できるようにします。リフレッシュグラントに対して同じ 30 日間の上限が適用されます。人間のアカウントにバインドされていないマシンアイデンティティパスが必要な場合は、Anthropic アカウントチームにお問い合わせください。
 

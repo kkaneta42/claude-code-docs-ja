@@ -10,7 +10,7 @@
 >
 > スケジュールタスクはリサーチプレビュー段階です。動作、制限、API サーフェスは変更される可能性があります。
 
-クラウドスケジュールタスク（旧称ルーティン）は、保存された Claude Code の設定です。プロンプト、1 つ以上のリポジトリ、一連の[コネクタ](/docs/ja/mcp)を一度パッケージ化し、自動的に実行します。スケジュールタスクは Anthropic が管理するクラウドインフラストラクチャ上で実行されるか、ルーティングされた場合は組織の[セルフホスト環境](/docs/ja/self-hosted-environments)で実行されるため、ラップトップを閉じても動作し続けます。
+クラウドスケジュールタスク（旧称ルーティン）は、保存された Claude Code の設定です。プロンプト、1 つ以上のリポジトリ、一連の[コネクタ](/docs/ja/mcp.md)を一度パッケージ化し、自動的に実行します。スケジュールタスクは Anthropic が管理するクラウドインフラストラクチャ上で実行されるか、ルーティングされた場合は組織の[セルフホスト環境](/docs/ja/self-hosted-environments)で実行されるため、ラップトップを閉じても動作し続けます。
 
 各スケジュールタスクには、1 つ以上のトリガーを設定できます。
 
@@ -29,7 +29,7 @@
 
 > [!NOTE]
 >
-> クラウドではなくマシン上で作業をスケジュールする機能が他に 2 つあります。[Desktop スケジュールタスク](/docs/ja/desktop-scheduled-tasks)と [`/loop`](/docs/ja/scheduled-tasks) です。3 つの中から選ぶには、[スケジューリングオプションを比較する](/docs/ja/scheduled-tasks#compare-scheduling-options)を参照してください。
+> クラウドではなくマシン上で作業をスケジュールする機能が他に 2 つあります。[Desktop スケジュールタスク](/docs/ja/desktop-scheduled-tasks.md)と [`/loop`](/docs/ja/scheduled-tasks) です。3 つの中から選ぶには、[スケジューリングオプションを比較する](/docs/ja/scheduled-tasks.md#compare-scheduling-options)を参照してください。
 
 Team および Enterprise の Owner は、[**Organization settings > Capabilities > Remote sessions**](https://claude.ai/admin-settings/capabilities) の **Scheduled tasks (Was Routines)** トグルを使用して、すべてのメンバーのスケジュールタスクをオフにできます。トグルがオフの場合、既存のスケジュールタスクは実行を停止し、メンバーは新しいスケジュールタスクを作成できません。
 
@@ -50,12 +50,12 @@ Enterprise 組織が[カスタムロール](https://support.claude.com/en/articl
 
 スケジュールタスクは、[claude.ai/code/routines](https://claude.ai/code/routines) の Web、Desktop アプリ、または CLI から作成できます。3 つのサーフェスはすべて同じクラウドアカウントに書き込むため、どれかで作成したスケジュールタスクは他のサーフェスにもすぐに表示されます。Desktop アプリの **Code** タブで、サイドバーまたはサイドバーの **More** メニューにある **Scheduled** をクリックしてから **New task** をクリックし、[Web から作成する](#create-from-the-web)の手順に進みます。
 
-スケジュールタスクは完全な Claude Code クラウドセッションとして自律的に実行されます。権限モードは選択しません。セッションはシェルコマンドを実行し、[スキル](/docs/ja/skills)を使用し、含めたコネクタを呼び出します。一部の[アーティファクトアクション](#when-a-run-publishes-an-artifact-without-asking)を除き、すべて承認を求めずに実行されます。[プロジェクト](/docs/ja/claude-projects#what-threads-pick-up-from-your-repositories)の外では、これらのスキルにはクローンされたリポジトリにコミットされたスキルも含まれます。
+スケジュールタスクは完全な Claude Code クラウドセッションとして自律的に実行されます。セッションはシェルコマンドを実行し、[スキル](/docs/ja/skills.md)を使用し、含めたコネクタを呼び出します。[プロジェクト](/docs/ja/claude-projects.md#what-threads-pick-up-from-your-repositories)のスレッドの外では、これらのスキルにはクローンされたリポジトリにコミットされたスキルも含まれます。タスクの作成時に権限モードは選択しません。実行が停止してユーザーを待つ場合については、[実行中の権限プロンプト](#permission-prompts-during-a-run)を参照してください。
 
 スケジュールタスクがアクセスできる範囲は、次によって決まります。
 
 * 選択したリポジトリ
-* [環境](/docs/ja/cloud-environments)のネットワークアクセスと変数
+* [環境](/docs/ja/cloud-environments.md)のネットワークアクセスと変数
 * 含めたコネクタ
 
 それぞれを、タスクが必要とするものに限定してください。
@@ -100,19 +100,19 @@ Enterprise 組織が[カスタムロール](https://support.claude.com/en/articl
 
 **5. 環境を選択する**
 
-リポジトリを選択すると、その下に **Cloud environment** が表示されます。タスク用の[クラウド環境](/docs/ja/cloud-environments)を選択します。環境は、クラウドセッションがアクセスできるものを制御します。
+リポジトリを選択すると、その下に **Cloud environment** が表示されます。タスク用の[クラウド環境](/docs/ja/cloud-environments.md)を選択します。環境は、クラウドセッションがアクセスできるものを制御します。
 
 * **Network access**: 各実行中に利用可能なインターネットアクセスのレベルを設定します
-* **Environment variables**: Claude が各実行中に使用できる値を提供します。これらは[環境を使用するすべてのユーザーに表示される](/docs/ja/cloud-environments#what-carries-over-from-your-setup)ため、Anthropic がホストする環境では、Claude が実行中に呼び出す API のキーは代わりに[ネットワークシークレット](/docs/ja/cloud-environments#add-network-secrets)として保存してください。そのセクションには、シークレットが付与されないリクエストも記載されています
-* **Setup script**: タスクが必要とする依存関係とツールをインストールします。結果は[キャッシュ](/docs/ja/cloud-environments#environment-caching)されるため、スクリプトはセッションごとに再実行されません
+* **Environment variables**: Claude が各実行中に使用できる値を提供します。これらは[環境を使用するすべてのユーザーに表示される](/docs/ja/cloud-environments.md#what-carries-over-from-your-setup)ため、Anthropic がホストする環境では、Claude が実行中に呼び出す API のキーは代わりに[ネットワークシークレット](/docs/ja/cloud-environments.md#add-network-secrets)として保存してください。そのセクションには、シークレットが付与されないリクエストも記載されています
+* **Setup script**: タスクが必要とする依存関係とツールをインストールします。結果は[キャッシュ](/docs/ja/cloud-environments.md#environment-caching)されるため、スクリプトはセッションごとに再実行されません
 
-**Default** 環境は **Trusted** ネットワークアクセスで提供されます。これにより、パッケージレジストリ、クラウドプロバイダー API、コンテナレジストリ、一般的な開発ドメインからなる[デフォルト許可リスト](/docs/ja/cloud-environments#default-allowed-domains)のみがセッションのネットワークを通じて許可されます。タスクに追加するコネクタは Anthropic のサーバーを通じてサービスにアクセスするため、許可リストを変更する必要はありません。
+**Default** 環境は **Trusted** ネットワークアクセスで提供されます。これにより、パッケージレジストリ、クラウドプロバイダー API、コンテナレジストリ、一般的な開発ドメインからなる[デフォルト許可リスト](/docs/ja/cloud-environments.md#default-allowed-domains)のみがセッションのネットワークを通じて許可されます。タスクに追加するコネクタは Anthropic のサーバーを通じてサービスにアクセスするため、許可リストを変更する必要はありません。
 
-タスクが独自のサービスや、そのリストにないドメインに直接アクセスする必要がある場合は、実行前に環境の[ネットワークアクセス](/docs/ja/cloud-environments#network-access)を編集してください。別の環境を使用するには、先に[環境を作成](/docs/ja/cloud-environments#configure-your-environment)してください。
+タスクが独自のサービスや、そのリストにないドメインに直接アクセスする必要がある場合は、実行前に環境の[ネットワークアクセス](/docs/ja/cloud-environments.md#network-access)を編集してください。別の環境を使用するには、先に[環境を作成](/docs/ja/cloud-environments.md#configure-your-environment)してください。
 
 **6. コネクタを確認する**
 
-**Advanced settings** の **Connectors** タブに切り替えます。接続済みのすべての [MCP コネクタ](/docs/ja/mcp)がデフォルトで含まれています。タスクに不要なものは削除してください。Claude は、含まれているコネクタのすべてのツールを、書き込みも含め、実行中に権限を求めることなく使用できます。
+**Advanced settings** の **Connectors** タブに切り替えます。接続済みのすべての [MCP コネクタ](/docs/ja/mcp.md)がデフォルトで含まれています。タスクに不要なものは削除してください。Claude は、含まれているコネクタを書き込みも含めて実行中に使用できます。実行が停止して先にユーザーに確認を求める場合については、[実行中の権限プロンプト](#permission-prompts-during-a-run)を参照してください。
 
 **7. タスクを作成する**
 
@@ -341,30 +341,53 @@ GitHub トリガーは、次のいずれかのイベントカテゴリにサブ�
 
 > [!NOTE]
 >
-> アクセスを付与する 2 つの方法については、[GitHub 認証オプション](/docs/ja/claude-code-on-the-web#github-authentication-options)を参照してください。Team プランと Enterprise プランでは、各方法を使用する前に Claude 組織の [Owner](/docs/ja/server-managed-settings#access-control) がその方法をオンにする必要があります。[GitHub を接続する](/docs/ja/web-quickstart#connect-github)を参照してください。
+> アクセスを付与する 2 つの方法については、[GitHub 認証オプション](/docs/ja/claude-code-on-the-web.md#github-authentication-options)を参照してください。Team プランと Enterprise プランでは、各方法を使用する前に Claude 組織の [Owner](/docs/ja/server-managed-settings.md#access-control) がその方法をオンにする必要があります。[GitHub を接続する](/docs/ja/web-quickstart.md#connect-github)を参照してください。
 
 実行予定時に GitHub 接続が存在しないか期限切れの場合、スケジュールタスクは再接続されるまで、最大 72 時間、実行をスキップします。その期間内に GitHub を再接続すると、タスクは自動的に再開されます。接続がないまま 72 時間が経過するとタスクはオフになり、GitHub を再接続した後に再度オンにする必要があります。
 
 追加した各リポジトリは、実行のたびにクローンされます。プロンプトで別途指定しない限り、Claude はリポジトリのデフォルトブランチから開始します。[GitHub プルリクエストイベント](#add-a-github-trigger)が実行をトリガーし、そのプルリクエストのリポジトリがタスクの最初のリポジトリである場合、そのリポジトリは代わりにプルリクエストの head コミットから開始します。
 
-Claude は、プロンプトで別のブランチへのプッシュを指示しない限り、`claude/` で始まるブランチに作業をプッシュします。実行がプッシュできるブランチを制御するには、GitHub のブランチ保護ルールまたはルールセットを使用します。Anthropic 管理のインフラストラクチャ上の実行、および [Anthropic の git プロキシ](/docs/ja/self-hosted-environments-deploy#use-the-anthropic-git-proxy)を通じてプッシュするセルフホスト実行の場合、GitHub はこれらのルールを接続した GitHub アクセスに適用するため、そのアクセスがバイパスできるルールは実行のプッシュをブロックしません。デプロイが提供する git 認証情報でプッシュするセルフホスト実行は、代わりにその認証情報に対してチェックされます。[git を設定する](/docs/ja/self-hosted-environments-deploy#configure-git)を参照してください。
+Claude は、プロンプトで別のブランチへのプッシュを指示しない限り、`claude/` で始まるブランチに作業をプッシュします。実行がプッシュできるブランチを制御するには、GitHub のブランチ保護ルールまたはルールセットを使用します。Anthropic 管理のインフラストラクチャ上の実行、および [Anthropic の git プロキシ](/docs/ja/self-hosted-environments-deploy.md#use-the-anthropic-git-proxy)を通じてプッシュするセルフホスト実行の場合、GitHub はこれらのルールを接続した GitHub アクセスに適用するため、そのアクセスがバイパスできるルールは実行のプッシュをブロックしません。デプロイが提供する git 認証情報でプッシュするセルフホスト実行は、代わりにその認証情報に対してチェックされます。[git を設定する](/docs/ja/self-hosted-environments-deploy.md#configure-git)を参照してください。
 
 ### コネクタ
 
 スケジュールタスクは、接続済みの MCP コネクタを使用して、各実行中に外部サービスの読み取りと書き込みを行えます。たとえば、サポートリクエストをトリアージするタスクは、Slack チャンネルから読み取り、Linear に課題を作成することがあります。
 
-コネクタは、アカウント上の [claude.ai インテグレーション](/docs/ja/mcp#use-mcp-servers-from-claude-ai)です。CLI で `claude mcp add` を使用してローカルに追加した MCP サーバーは claude.ai アカウントではなくマシンに保存されるため、コネクタリストには表示されません。これらのサーバーのいずれかをスケジュールタスクで使用するには、次のいずれかを行います。
+コネクタは、アカウント上の [claude.ai インテグレーション](/docs/ja/mcp.md#use-mcp-servers-from-claude-ai)です。CLI で `claude mcp add` を使用してローカルに追加した MCP サーバーは claude.ai アカウントではなくマシンに保存されるため、コネクタリストには表示されません。これらのサーバーのいずれかをスケジュールタスクで使用するには、次のいずれかを行います。
 
 * **コネクタとして**: [claude.ai/customize/connectors](https://claude.ai/customize/connectors) でコネクタとして追加します
-* **リポジトリ内で**: [プロジェクト](/docs/ja/claude-projects#what-threads-pick-up-from-your-repositories)外にあるリポジトリが 1 つのスケジュールタスクの場合は、代わりにコミットされた [`.mcp.json`](/docs/ja/mcp#project-scope) でサーバーを宣言することもできます。プロジェクト内のスケジュールタスクは `.mcp.json` を読み込まないため、サーバーをコネクタとして追加してください
+* **リポジトリ内で**: リポジトリが 1 つのスケジュールタスクの場合は、代わりにコミットされた [`.mcp.json`](/docs/ja/mcp#project-scope) でサーバーを宣言することもできます。ただし、タスクが[プロジェクト](/docs/ja/claude-projects.md#what-threads-pick-up-from-your-repositories)内のスレッドとして実行される場合は除きます。その場合は、サーバーをコネクタとして追加してください。
 
 スケジュールタスクを作成すると、現在接続されているすべてのコネクタがデフォルトで含まれます。実行中に Claude がアクセスできるツールを制限するため、不要なものは削除してください。タスクの作成ダイアログまたは編集ダイアログから直接コネクタを追加することもできます。
 
 そのダイアログ以外でコネクタを管理または追加するには、[claude.ai/customize/connectors](https://claude.ai/customize/connectors) にアクセスするか、CLI で `/schedule update` を使用します。
 
+### 実行中の権限プロンプト
+
+> [!NOTE]
+>
+> 組織のセルフホスト環境で実行されるタスクについては、[権限とツールの承認](/docs/ja/self-hosted-environments-configuration.md#permissions-and-tool-approval)を参照してください。
+
+実行が Anthropic のクラウド上で新しいセッションを開始すると、auto モードが利用できない場合を除き、そのセッションは [auto モード](/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)で開始されます。auto モードでは、本来であればユーザーの承認を待つことになるアクションを、分類器モデルが許可またはブロックします。
+
+次のような場合には、実行は引き続き停止して応答を待ちます。
+
+* **auto モードでも確認を求めるアクション**: たとえば、[ask ルール](/docs/ja/permissions.md#manage-permissions)に一致するアクションです。[auto モードがアクションを評価する方法](/docs/ja/permission-modes.md#how-auto-mode-evaluates-actions)を参照してください
+* **繰り返しのブロック**: 1 回のブロックで実行が終了することはありません。ブロックが auto モードの[繰り返しブロックのしきい値](/docs/ja/permission-modes.md#repeated-block-thresholds)に達すると、実行のセッションに権限プロンプトが表示され、誰かが応答するまで待機します
+
+組織が auto モードをオフにしている場合や、タスクのモデルが auto モードをサポートしていない場合など、auto モードが利用できない場合、実行は起動時の権限モードを維持します。待機中のプロンプトに応答するには、タスクの[詳細ページ](#view-and-interact-with-runs)から実行を開きます。
+
+[プロジェクト](/docs/ja/claude-projects.md)では、実行が新しいセッションを開始する代わりにスレッドを継続することがあります。その実行は、その時点でスレッドが使用している権限モードをそのまま維持します。そのスレッドは作成時に、auto モードが利用できない場合を除き、auto モードで開始されています。そのスレッドで待機中のプロンプトに応答するには、[承認待ちのスレッドのブロックを解除する](/docs/ja/claude-projects.md#unblock-a-thread-waiting-on-approval)を参照してください。
+
 ### 実行が確認なしでアーティファクトを公開する場合
 
-スケジュールタスクのスケジュールまたは **Run now** によって実行が開始された場合、Claude は確認を求めずに新しい[アーティファクト](/docs/ja/artifacts)を公開できます。新しいアーティファクトは、[共有する](/docs/ja/artifacts#share-an-artifact)まではユーザー本人にのみ表示されます。公開時にページのランタイム機能（[コネクタ呼び出し](/docs/ja/artifacts#pull-live-data-with-mcp-connectors)や[ファイルのダウンロード](/docs/ja/artifacts#offer-a-file-download)など）を宣言する場合、Claude は事前に確認を求めます。
+[auto モード](#permission-prompts-during-a-run)での実行中、分類器が公開を許可すると、Claude は確認を求めずに[アーティファクト](/docs/ja/artifacts.md)を公開します。たとえば公開が [ask ルール](/docs/ja/permissions.md#manage-permissions)に一致する場合は、引き続き事前に確認が求められます。新しいアーティファクトは、[共有する](/docs/ja/artifacts.md#share-an-artifact)まではユーザー本人にのみ表示されます。以下の [Accept edits のルール](#artifacts-in-accept-edits-mode)は auto モードには適用されません。
+
+スケジュールタスクの役割がページを最新の状態に保つことである場合は、すでに公開済みのアーティファクトを渡してください。
+
+#### Accept edits モードでのアーティファクト
+
+スケジュールタスクのスケジュールまたは **Run now** によって実行が開始された場合、Claude は確認を求めずに新しい[アーティファクト](/docs/ja/artifacts.md)を公開できます。新しいアーティファクトは、[共有する](/docs/ja/artifacts.md#share-an-artifact)まではユーザー本人にのみ表示されます。公開時にページのランタイム機能（[コネクタ呼び出し](/docs/ja/artifacts.md#pull-live-data-with-mcp-connectors)や[ファイルのダウンロード](/docs/ja/artifacts.md#offer-a-file-download)など）を宣言する場合、Claude は事前に確認を求めます。
 
 これらの実行では、Claude は以下のすべてが満たされる場合にのみ、確認を求めずに既存のアーティファクトを再公開します。
 
@@ -374,19 +397,17 @@ Claude は、プロンプトで別のブランチへのプッシュを指示し�
 * アーティファクトが特定のユーザーまたは組織と共有されている場合、その閲覧者に新しいバージョンが自動的に表示されない
 * 公開によって新しいバージョンを強制的に上書きしない
 * 公開でページのランタイム機能を宣言しない
-* 既存のページに、ページの範囲を超える権限付与（[コネクタ呼び出し](/docs/ja/artifacts#pull-live-data-with-mcp-connectors)など）がない
+* 既存のページに、ページの範囲を超える権限付与（[コネクタ呼び出し](/docs/ja/artifacts.md#pull-live-data-with-mcp-connectors)など）がない
 
 API トリガーや GitHub トリガーによって開始された実行を含め、それ以外のすべての場合、Claude は事前に確認を求めます。
 
-スケジュールタスクの役割がページを最新の状態に保つことである場合は、すでに公開済みのアーティファクトを渡してください。
-
 ### 環境とネットワークアクセス
 
-各スケジュールタスクは、ネットワークアクセス、環境変数、セットアップスクリプトを制御する[クラウド環境](/docs/ja/cloud-environments)を使用します。タスクは、すべての実行でその環境のネットワークポリシーを継承します。
+各スケジュールタスクは、ネットワークアクセス、環境変数、セットアップスクリプトを制御する[クラウド環境](/docs/ja/cloud-environments.md)を使用します。タスクは、すべての実行でその環境のネットワークポリシーを継承します。
 
-**Default** 環境は **Trusted** ネットワークアクセスを使用します。これにより、セッションのネットワークを通じて[デフォルト許可リスト](/docs/ja/cloud-environments#default-allowed-domains)のみが許可されます。そのパス上で許可リスト外のホストへのリクエストは `403` と `x-deny-reason: host_not_allowed` で失敗します。MCP コネクタのトラフィックはそのパスではなく Anthropic のサーバーを通じてルーティングされるため、タスクに追加するコネクタは **Allowed domains** にホストを追加しなくても機能します。不要なコネクタは[コネクタ](#connectors)で削除してください。
+**Default** 環境は **Trusted** ネットワークアクセスを使用します。これにより、セッションのネットワークを通じて[デフォルト許可リスト](/docs/ja/cloud-environments.md#default-allowed-domains)のみが許可されます。そのパス上で許可リスト外のホストへのリクエストは `403` と `x-deny-reason: host_not_allowed` で失敗します。MCP コネクタのトラフィックはそのパスではなく Anthropic のサーバーを通じてルーティングされるため、タスクに追加するコネクタは **Allowed domains** にホストを追加しなくても機能します。不要なコネクタは[コネクタ](#connectors)で削除してください。
 
-独自の環境のいずれかで追加のドメインを許可するには、以下の手順に従います。[組織共有環境](/docs/ja/cloud-environments#organization-shared-environments)はここでは読み取り専用で開くため、その場合は Owner が[管理設定](https://claude.ai/admin-settings)の **Cloud environments** ページからネットワークアクセスを変更します。
+独自の環境のいずれかで追加のドメインを許可するには、以下の手順に従います。[組織共有環境](/docs/ja/cloud-environments.md#organization-shared-environments)はここでは読み取り専用で開くため、その場合は Owner が[管理設定](https://claude.ai/admin-settings)の **Cloud environments** ページからネットワークアクセスを変更します。
 
 **1. タスクを編集用に開く**
 
@@ -402,13 +423,13 @@ API トリガーや GitHub トリガーによって開始された実行を含�
 
 **4. ネットワークアクセスレベルを変更する**
 
-**Edit cloud environment** ダイアログで、**Network access** を **Custom** に変更し、**Allowed domains** にドメインを入力します。**Also include default list of common package managers** をチェックすると、カスタムドメインとともに[デフォルト許可リスト](/docs/ja/cloud-environments#default-allowed-domains)も維持されます。制限のないアクセスにするには、代わりに **Full** を選択します。
+**Edit cloud environment** ダイアログで、**Network access** を **Custom** に変更し、**Allowed domains** にドメインを入力します。**Also include default list of common package managers** をチェックすると、カスタムドメインとともに[デフォルト許可リスト](/docs/ja/cloud-environments.md#default-allowed-domains)も維持されます。制限のないアクセスにするには、代わりに **Full** を選択します。
 
 **5. 保存**
 
 **Edit cloud environment** ダイアログで **Save changes** をクリックしてから、その背後にある **Edit scheduled task** ダイアログを閉じます。新しいポリシーは次の実行から適用されます。
 
-アクセスレベルとデフォルト許可リストの詳細については、[ネットワークアクセス](/docs/ja/cloud-environments#network-access)を参照してください。
+アクセスレベルとデフォルト許可リストの詳細については、[ネットワークアクセス](/docs/ja/cloud-environments.md#network-access)を参照してください。
 
 ## 使用量と制限
 
@@ -447,10 +468,10 @@ CLI は `/schedule` の要件の 1 つが満たされていない場合、この
 
 原因は通常、以下のいずれかです。
 
-* Console API キー、[Anthropic プロフィールまたはフェデレーション認証情報](/docs/ja/authentication#anthropic-profiles-and-federation-credentials)、または Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry などのクラウドプロバイダーで認証されている。`/schedule` には claude.ai サブスクリプションでのログインが必要です。Console API キーまたはプロフィールを使用していて、フィーチャーフラグの取得が有効な場合、`/schedule` を送信すると代わりに `/schedule is available with Claude for Enterprise — ask your admin about migrating from API-key access` と表示されます。クラウドプロバイダーでログインしている場合は、引き続き `Unknown command: /schedule` が表示されます。シェルで `ANTHROPIC_API_KEY` または `ANTHROPIC_AUTH_TOKEN` が設定されている場合、または `settings.json` で `apiKeyHelper` が設定されている場合は、これらが claude.ai ログインより優先されるため、まず削除してください。プロフィールまたはフェデレーション認証情報も優先されるため、それもオフにしてください
+* Console API キー、[Anthropic プロフィールまたはフェデレーション認証情報](/docs/ja/authentication.md#anthropic-profiles-and-federation-credentials)、または Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry などのクラウドプロバイダーで認証されている。`/schedule` には claude.ai サブスクリプションでのログインが必要です。Console API キーまたはプロフィールを使用していて、フィーチャーフラグの取得が有効な場合、`/schedule` を送信すると代わりに `/schedule is available with Claude for Enterprise — ask your admin about migrating from API-key access` と表示されます。クラウドプロバイダーでログインしている場合は、引き続き `Unknown command: /schedule` が表示されます。シェルで `ANTHROPIC_API_KEY` または `ANTHROPIC_AUTH_TOKEN` が設定されている場合、または `settings.json` で `apiKeyHelper` が設定されている場合は、これらが claude.ai ログインより優先されるため、まず削除してください。プロフィールまたはフェデレーション認証情報も優先されるため、それもオフにしてください
 * 完全にサインアウトしており、API キーやその他の認証情報がない。フィーチャーフラグの取得が有効な場合、`/schedule` を送信すると `/schedule requires a claude.ai subscription. Run /login to sign in with your claude.ai account.` と表示されます。v2.1.268 より前は、サインアウトしたセッションでは Console API キーの場合と同じ Claude for Enterprise のメッセージが表示されていました
 * クラウドセッション内にいる。この場合、`/schedule` を送信すると、その環境ではコマンドを使用できないという応答が返されます。代わりに [Web UI](https://claude.ai/code/routines) からスケジュールタスクを管理してください
-* 組織のポリシーが、スケジュールタスクに必要な[クラウドセッション](/docs/ja/claude-code-on-the-web)を無効にしている。この場合、`/schedule` を送信すると代わりに [`Cloud sessions are disabled by your organization's policy`](/docs/ja/errors#cloud-sessions-are-disabled-by-your-organizations-policy) と応答されます。v2.1.268 より前は、`Unknown command: /schedule` が返されていました
+* 組織のポリシーが、スケジュールタスクに必要な[クラウドセッション](/docs/ja/claude-code-on-the-web.md)を無効にしている。この場合、`/schedule` を送信すると代わりに [`Cloud sessions are disabled by your organization's policy`](/docs/ja/errors#cloud-sessions-are-disabled-by-your-organizations-policy) と応答されます。v2.1.268 より前は、`Unknown command: /schedule` が返されていました
 * Owner が Team または Enterprise 組織の[スケジュールタスクをオフにした](#routines-are-disabled-by-your-organizations-policy)。v2.1.227 より前は、このケースでもコマンドが表示されており、Claude がタスクを作成または実行しようとしたときに claude.ai がそれを拒否していました
 * Enterprise 組織が[カスタムロール](https://support.claude.com/en/articles/13930452)でアクセスを管理しており、どのロールにも **Remote sessions** のスケジュールタスク権限が含まれていない。いずれかのロールにこの権限を追加するよう Owner に依頼してください
 
@@ -463,8 +484,8 @@ Team または Enterprise 組織の Owner が、[**Organization settings > Capab
 ## 関連リソース
 
 * [`/loop` とセッション内スケジューリング](/docs/ja/scheduled-tasks): 開いている CLI セッション内でローカルタスクをスケジュール
-* [Desktop スケジュールタスク](/docs/ja/desktop-scheduled-tasks): マシン上で実行され、ローカルファイルにアクセスできるローカルのスケジュールタスク
-* [クラウド環境](/docs/ja/cloud-environments): クラウドセッションのネットワークアクセス、環境変数、セットアップスクリプトを設定
-* [Projects](/docs/ja/claude-projects): Claude が複数のクラウドセッションにわたって並行して調整する継続的な作業。プロジェクトから作成されたスケジュールタスクは、その **Scheduled tasks** タブに表示されます
-* [MCP コネクタ](/docs/ja/mcp): Slack、Linear、Google Drive などの外部サービスを接続
-* [GitHub Actions](/docs/ja/github-actions): リポジトリイベントに応じて CI パイプラインで Claude を実行
+* [Desktop スケジュールタスク](/docs/ja/desktop-scheduled-tasks.md): マシン上で実行され、ローカルファイルにアクセスできるローカルのスケジュールタスク
+* [クラウド環境](/docs/ja/cloud-environments.md): クラウドセッションのネットワークアクセス、環境変数、セットアップスクリプトを設定
+* [Projects](/docs/ja/claude-projects.md): Claude が複数のクラウドセッションにわたって並行して調整する継続的な作業。プロジェクトから作成されたスケジュールタスクは、その **Scheduled tasks** タブに表示されます
+* [MCP コネクタ](/docs/ja/mcp.md): Slack、Linear、Google Drive などの外部サービスを接続
+* [GitHub Actions](/docs/ja/github-actions.md): リポジトリイベントに応じて CI パイプラインで Claude を実行

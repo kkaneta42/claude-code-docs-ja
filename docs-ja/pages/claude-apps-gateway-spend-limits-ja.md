@@ -8,7 +8,7 @@
 
 支出制限は、各開発者が指定された日、週、または月の間に [Claude apps gateway](/docs/ja/claude-apps-gateway) を通じて支出できる金額の上限を設定します。開発者が上限に達すると、gateway は次のリクエストで `429` を返し、期間がリセットされるか管理者が上限を引き上げるまで、その開発者をブロックします。支出制限を使用して、各開発者、グループ、または組織全体に対して、全員が共有する認証情報の上限を設定できます。
 
-デフォルトでは、Claude apps gateway はすべての推論を 1 つの共有アップストリーム認証情報を通じて転送するため、プロバイダーの請求書はすべてをその認証情報に属するものとして記録し、個々の開発者には記録しません。Amazon Bedrock では、[開発者ごとの AWS コスト属性](/docs/ja/claude-apps-gateway-config#per-developer-aws-cost-attribution) がこれを変更します。開発者ごとの制限がない場合、1 つの暴走したエージェント フリートが組織全体のコミットメントを使い果たす可能性があります。支出制限は、その共有請求書の上に gateway の開発者ごとのビューとサーキット ブレーカーです。
+デフォルトでは、Claude apps gateway はすべての推論を 1 つの共有アップストリーム認証情報を通じて転送するため、プロバイダーの請求書はすべてをその認証情報に属するものとして記録し、個々の開発者には記録しません。Amazon Bedrock では、[開発者ごとの AWS コスト属性](/docs/ja/claude-apps-gateway-config.md#per-developer-aws-cost-attribution) がこれを変更します。開発者ごとの制限がない場合、1 つの暴走したエージェント フリートが組織全体のコミットメントを使い果たす可能性があります。支出制限は、その共有請求書の上に gateway の開発者ごとのビューとサーキット ブレーカーです。
 
 ## 上限を設定する
 
@@ -34,7 +34,7 @@ curl -sS https://claude-gateway.internal.example.com/v1/organizations/spend_limi
 
 | フィールド | 値 | 説明 |
 | - | - | - |
-| `scope.type` | `user`、`rbac_group`、`organization` | `user` は OpenID Connect（OIDC）`sub` で 1 人の開発者をターゲットにします。これは ID プロバイダーが割り当てる安定したユーザー ID です。`scope.user_id` として渡します。`rbac_group` は [IdP グループ](/docs/ja/claude-apps-gateway-config#managed) を名前でターゲットにします。`scope.rbac_group_id` として渡します。`organization` は組織全体のデフォルトです。gateway は 3 つすべてを受け入れます。Anthropic の公開 `POST` は現在ユーザーのみです。 |
+| `scope.type` | `user`、`rbac_group`、`organization` | `user` は OpenID Connect（OIDC）`sub` で 1 人の開発者をターゲットにします。これは ID プロバイダーが割り当てる安定したユーザー ID です。`scope.user_id` として渡します。`rbac_group` は [IdP グループ](/docs/ja/claude-apps-gateway-config.md#managed) を名前でターゲットにします。`scope.rbac_group_id` として渡します。`organization` は組織全体のデフォルトです。gateway は 3 つすべてを受け入れます。Anthropic の公開 `POST` は現在ユーザーのみです。 |
 | `amount` | USD セントの整数文字列、または `null` | `null` は無制限です。`"0"` はゼロ上限で、すべてのリクエストをブロックします。 |
 | `period` | `daily`、`weekly`、`monthly` | スコープは期間ごとに 1 つの上限を保持でき、各々は独立して適用されます。開発者は、いずれかの上限を超えている場合、ブロックされます。 |
 
@@ -72,15 +72,21 @@ v2.1.227 以降では、`<public_url>/protocol` のプロトコルリファレ�
 
 クライアント中止も請求されます。アップストリームの最終使用量フレームなしでストリームが終了した場合、メーターはクライアントに既に送信されたテキストについて、出力トークンあたり約 4 文字のフロア推定値を請求します。そのため、リクエストを早期に中止しても上限を回避できません。
 
+#### 長いプロンプトの料金
+
+[Claude Haiku 5.5](https://platform.claude.com/docs/en/models/haiku-5-5/overview) のリスト価格には、[トークンしきい値を超えるプロンプトに対するより高い料金](/docs/ja/model-config.md#haiku-5-5-context-window-and-pricing)があります。プロンプトがしきい値を超えるリクエストを Haiku 5.5 が処理した場合、Claude Code v2.1.293 以降を実行しているゲートウェイサーバーは、リクエスト全体をその料金で価格設定します。メーターは、入力トークン、キャッシュ読み取り、キャッシュ書き込みをそのしきい値に算入します。
+
+`pricing.overrides` の行のいずれかがリクエストに一致する場合、プロンプトの長さにかかわらず、その行の料金が適用されます。
+
 ### Postgres の可用性
 
 事前チェッククエリは 2 秒のタイムアウトで Postgres にクエリします。ストアに到達できない場合またはタイムアウトする場合、デフォルトでは適用は開いた状態で失敗します。リクエストは進行し、gateway は警告をログに記録し、レスポンスは `anthropic-ratelimit-unified-*` ヘッダーを含みません。[`enforcement.fail_closed_on_error: true`](/docs/ja/claude-apps-gateway-config#enforcement) を設定して、代わりに閉じた状態で失敗させます。これは同じ `429 billing_error` を返しますが、メッセージは `spend limit unavailable` で、期間、リセット時刻、`retry-after` ヘッダーはありません。フェイルオープンはストア停止が推論停止になるのを防ぎます。フェイルクローズは計測されていない支出がないことを保証します。
 
-フェイルオープンは、ロードバランサーまたはオーケストレーターが引き続き gateway にトラフィックをルーティングしている間のみ役立ちます。[停止動作](/docs/ja/claude-apps-gateway-deploy#outage-behavior) で `store.readiness_grace_seconds` を参照してください。これにより、レプリカは短い停止を通じてレディネスチェックに合格し続けます。
+フェイルオープンは、ロードバランサーまたはオーケストレーターが引き続き gateway にトラフィックをルーティングしている間のみ役立ちます。[停止動作](/docs/ja/claude-apps-gateway-deploy.md#outage-behavior) で `store.readiness_grace_seconds` を参照してください。これにより、レプリカは短い停止を通じてレディネスチェックに合格し続けます。
 
 ### Claude Code での使用警告
 
-Claude Code は開発者が上限に近づくと警告します。最も消費されている上限の使用率が 75% を超えた時点で 1 回、95% を超えた時点で再度警告します。ゲートウェイがリクエストをブロックすると、Claude Code はゲートウェイの `429` メッセージを `admin.blocked_message` を含めてそのまま表示します。また、上限を `/usage` に表示し、開発者の [ステータスライン](/docs/ja/statusline#spend-limit-fields) スクリプトにも渡します。
+Claude Code は開発者が上限に近づくと警告します。最も消費されている上限の使用率が 75% を超えた時点で 1 回、95% を超えた時点で再度警告します。ゲートウェイがリクエストをブロックすると、Claude Code はゲートウェイの `429` メッセージを `admin.blocked_message` を含めてそのまま表示します。また、上限を `/usage` に表示し、開発者の [ステータスライン](/docs/ja/statusline.md#spend-limit-fields) スクリプトにも渡します。
 
 それぞれの表示には、開発者のマシンとゲートウェイサーバーの両方で最低限の Claude Code バージョンが必要です。
 
@@ -92,7 +98,7 @@ Claude Code は開発者が上限に近づくと警告します。最も消費�
 
 警告と使用率は `anthropic-ratelimit-unified-*` ヘッダーから取得されます。ゲートウェイは、上限が設定されている開発者に対する成功した各 `/v1/messages` レスポンスにこれらのヘッダーを追加します。ヘッダーは常に開発者自身の上限を表します。ゲートウェイは、共有クォータを表すアップストリームプロバイダーのレート制限ヘッダーを削除し、決して転送しません。
 
-開発者に表示される支出額はゲートウェイ独自の [推定値](#how-requests-are-priced) であり、上限の適用に使われるのと同じ数値です。プロバイダーの請求書の金額ではありません。Claude Code はゲートウェイへの別のリクエストでドル金額を取得します。[コンプライアンス体制](/docs/ja/claude-apps-gateway-deploy#compliance-posture) で推奨されているように開発者のマシンで `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` を設定している場合、Claude Code はそのリクエストを行いません。この変数が設定されている場合、またはゲートウェイサーバーが v2.1.284 より古い場合、バーとステータスラインは使用率のみの表示になります。
+開発者に表示される支出額はゲートウェイ独自の [推定値](#how-requests-are-priced) であり、上限の適用に使われるのと同じ数値です。プロバイダーの請求書の金額ではありません。Claude Code はゲートウェイへの別のリクエストでドル金額を取得します。[コンプライアンス体制](/docs/ja/claude-apps-gateway-deploy.md#compliance-posture) で推奨されているように開発者のマシンで `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` を設定している場合、Claude Code はそのリクエストを行いません。この変数が設定されている場合、またはゲートウェイサーバーが v2.1.284 より古い場合、バーとステータスラインは使用率のみの表示になります。
 
 ## 管理 API リファレンス
 
@@ -166,4 +172,4 @@ gateway は 4 つの支出関連テーブルを保持します。時間ごとの
 ## 関連
 
 * [`admin` と `enforcement` 設定](/docs/ja/claude-apps-gateway-config#admin)：管理 API の有効化と保持のチューニング
-* [デプロイメントガイド](/docs/ja/claude-apps-gateway-deploy#postgres)：Postgres スキーマとバックアップガイダンス
+* [デプロイメントガイド](/docs/ja/claude-apps-gateway-deploy.md#postgres)：Postgres スキーマとバックアップガイダンス

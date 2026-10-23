@@ -14,20 +14,20 @@
 >
 > MCP サーバーは、デスクトップアプリ、VS Code、Web など、他のサーフェスからも追加できます。[他のサーフェスから接続する](#connect-from-other-surfaces)を参照してください。
 
-Claude Code で MCP サーバーを接続および設定するすべての方法については、[MCP リファレンス](/docs/ja/mcp)を参照してください。
+Claude Code で MCP サーバーを接続および設定するすべての方法については、[MCP リファレンス](/docs/ja/mcp.md)を参照してください。
 
 ## 開始する前に
 
 以下があることを確認してください。
 
-* [Claude Code がインストール](/docs/ja/quickstart)され、認証されている
+* [Claude Code がインストール](/docs/ja/quickstart.md)され、認証されている
 * プロジェクトディレクトリで開いているターミナル。空のディレクトリを含む、任意のディレクトリが機能します。
 
 ## サーバーを追加して確認する
 
 以下の例は、[Claude Code ドキュメンテーション MCP サーバー](https://code.claude.com/docs/mcp)に接続します。これは Claude Code ドキュメント全体にフルテキスト検索を備えたホストされたサーバーです。認証や特別な設定は必要ないため、セットアップフローをテストするための最初のサーバーとして適しています。
 
-手順はすべてのサーバーで同じです。追加し、接続ステータスを確認し、セッションで使用し、最後にオプションのクリーンアップステップを実行します。[追加の MCP サーバーの例](#additional-mcp-server-examples)に示されているブラウザサインインなど、一部のサーバーはステップを追加します。接続するサーバーの詳細については、[Anthropic Directory](/docs/ja/mcp#find-and-build-mcp-servers)を参照してください。
+手順はすべてのサーバーで同じです。追加し、接続ステータスを確認し、セッションで使用し、最後にオプションのクリーンアップステップを実行します。[追加の MCP サーバーの例](#additional-mcp-server-examples)に示されているブラウザサインインなど、一部のサーバーはステップを追加します。接続するサーバーの詳細については、[Anthropic Directory](/docs/ja/mcp.md#find-and-build-mcp-servers)を参照してください。
 
 **1. MCP サーバーを追加する**
 
@@ -64,7 +64,7 @@ claude mcp list
 | `✘ Failed to connect` | サーバーが応答しませんでした。[トラブルシューティング](#troubleshooting)を参照してください |
 | `✘ Connection error` | 接続試行がエラーをスローしました。[トラブルシューティング](#troubleshooting)を参照してください |
 | `⏸ Pending approval (run `claude` to approve)` | まだ承認していないプロジェクトスコープのサーバー。[.mcp.json を直接編集する](#edit-mcp-json-directly)を参照してください |
-| `⊘ Disabled for this project (re-enable via /mcp)` | このプロジェクトのプロジェクトの `disabledMcpServers` リストによってこのプロジェクトに対してオフにされたサーバー。[サーバーを削除せずに無効にする](/docs/ja/mcp#disable-a-server-without-removing-it)を参照してください |
+| `⊘ Disabled for this project (re-enable via /mcp)` | このプロジェクトのプロジェクトの `disabledMcpServers` リストによってこのプロジェクトに対してオフにされたサーバー。[サーバーを削除せずに無効にする](/docs/ja/mcp.md#disable-a-server-without-removing-it)を参照してください |
 
 Windows 10 のデフォルトコンソールなど、一部のレガシー Windows コンソールはこれらの Unicode グリフをサポートしておらず、`✔` と `✘` の代わりに `√` と `×` を表示します。
 
@@ -98,7 +98,7 @@ claude mcp remove claude-code-docs
 
 > [!NOTE]
 >
-> 接続されたサーバーはそれぞれ、ツール名とサーバー命令がすべてのセッションに読み込まれるため、[Claude のコンテキストウィンドウ](/docs/ja/how-claude-code-works#the-context-window)にスペースを取ります。使用しなくなったサーバーを削除すると、そのスペースが解放されます。
+> 接続されたサーバーはそれぞれ、ツール名とサーバー命令がすべてのセッションに読み込まれるため、[Claude のコンテキストウィンドウ](/docs/ja/how-claude-code-works.md#the-context-window)にスペースを取ります。使用しなくなったサーバーを削除すると、そのスペースが解放されます。
 
 ## サーバーが保存される場所
 
@@ -126,7 +126,7 @@ claude mcp remove claude-code-docs
 
 Windows では、`~/.claude.json` は `%USERPROFILE%\.claude.json`（通常は `C:\Users\YourName\.claude.json`）に解決されます。[`CLAUDE_CONFIG_DIR`](/docs/ja/env-vars)を設定している場合、Claude Code はそのディレクトリ内から `.claude.json` を読み込みます。
 
-`claude mcp get claude-code-docs` を実行して、どのスコープがサーバーの定義を保持しているかを確認します。同じサーバーが複数で定義されている場合のスコープの相互作用については、[MCP インストールスコープ](/docs/ja/mcp#mcp-installation-scopes)を参照してください。
+`claude mcp get claude-code-docs` を実行して、どのスコープがサーバーの定義を保持しているかを確認します。同じサーバーが複数で定義されている場合のスコープの相互作用については、[MCP インストールスコープ](/docs/ja/mcp.md#mcp-installation-scopes)を参照してください。
 
 ## サーバースコープを変更する
 
@@ -208,7 +208,7 @@ Use playwright to open https://example.com and tell me the page title
 
 Sentry、Linear、Notion などのホストされたサービスは、MCP サーバーを OAuth の背後で実行します。サーバーの URL を追加し、ブラウザを通じてサインインします。
 
-以下の手順は Sentry を例として使用しています。別のサービスに接続するには、その URL を置き換えます。これは [Anthropic Directory](/docs/ja/mcp#find-and-build-mcp-servers) またはサービスのドキュメントで見つけることができます。
+以下の手順は Sentry を例として使用しています。別のサービスに接続するには、その URL を置き換えます。これは [Anthropic Directory](/docs/ja/mcp.md#find-and-build-mcp-servers) またはサービスのドキュメントで見つけることができます。
 
 **1. サーバーを追加する**
 
@@ -236,7 +236,7 @@ Claude Code に戻ると、サーバーのステータスが接続に変わり�
 
 Claude に `What Sentry projects do I have access to?` のようなサービスが必要な何かを尋ね、出力で `sentry` サーバー名でラベル付けされたツール呼び出しを探します。
 
-OAuth の代わりに静的トークンで認証するサーバーは、`--header "Authorization: Bearer <token>"` で追加時にトークンを取得します。[GitHub の例](/docs/ja/mcp#example-connect-to-github-for-code-reviews)で実装されたバージョンを参照してください。
+OAuth の代わりに静的トークンで認証するサーバーは、`--header "Authorization: Bearer <token>"` で追加時にトークンを取得します。[GitHub の例](/docs/ja/mcp.md#example-connect-to-github-for-code-reviews)で実装されたバージョンを参照してください。
 
 ## .mcp.json を直接編集する
 
@@ -275,11 +275,11 @@ Claude Code がプロジェクトスコープのサーバーを初めて見る�
 
 このガイドは `claude mcp` CLI コマンドを使用しますが、すべての Claude Code サーフェスは MCP サーバーに接続できます。
 
-* **Claude Code デスクトップアプリ**：[Connectors UI](/docs/ja/desktop#connect-external-tools)を通じてサーバーを追加します。
+* **Claude Code デスクトップアプリ**：[Connectors UI](/docs/ja/desktop.md#connect-external-tools)を通じてサーバーを追加します。
 * **Claude Desktop チャットアプリ**：Claude Code とは別のアプリです。`claude_desktop_config.json` からサーバーを CLI にコピーするには、macOS または WSL で `claude mcp add-from-claude-desktop` を実行します。
-* **VS Code**：[MCP で外部ツールに接続する](/docs/ja/vs-code#connect-to-external-tools-with-mcp)を参照してください。
-* **クラウドセッション**：[プロジェクト](/docs/ja/claude-projects#what-threads-pick-up-from-your-repositories)の外では、リポジトリに `.mcp.json` をコミットします。1 つのリポジトリを持つセッションはそれを読み込みます。プロジェクト内のクラウドスレッドは、代わりに claude.ai のコネクタを使用します。[.mcp.json を直接編集する](#edit-mcp-json-directly)と[セットアップから引き継がれるもの](/docs/ja/cloud-environments#what-carries-over-from-your-setup)を参照してください。
-* **Claude.ai**：[claude.ai/customize/connectors](https://claude.ai/customize/connectors)で追加したコネクタは、そのアカウントでサインインするとき CLI に自動的に読み込まれます。[Claude.ai から MCP サーバーを使用する](/docs/ja/mcp#use-mcp-servers-from-claude-ai)を参照してください。
+* **VS Code**：[MCP で外部ツールに接続する](/docs/ja/vs-code.md#connect-to-external-tools-with-mcp)を参照してください。
+* **クラウドセッション**：[プロジェクト](/docs/ja/claude-projects.md#what-threads-pick-up-from-your-repositories)のスレッド以外では、リポジトリに `.mcp.json` をコミットします。1 つのリポジトリを持つセッションはそれを読み込みます。プロジェクト内のクラウドスレッドは、代わりに claude.ai のコネクタを使用します。[.mcp.json を直接編集する](#edit-mcp-json-directly)と[セットアップから引き継がれるもの](/docs/ja/cloud-environments.md#what-carries-over-from-your-setup)を参照してください。
+* **Claude.ai**：[claude.ai/customize/connectors](https://claude.ai/customize/connectors)で追加したコネクタは、そのアカウントでサインインするとき CLI に自動的に読み込まれます。[Claude.ai から MCP サーバーを使用する](/docs/ja/mcp.md#use-mcp-servers-from-claude-ai)を参照してください。
 
 ## トラブルシューティング
 
@@ -347,7 +347,7 @@ Claude Code がプロジェクトスコープのサーバーを初めて見る�
 > $env:MCP_TIMEOUT = "60000"; claude
 > ```
 >
-> v2.1.299 より前は、稼働中の HTTP サーバーへの一部の接続が、`MCP_TIMEOUT` に関係なくスタートアップ時にタイムアウトしていました。これらのバージョンを使用していて、制限を引き上げた後も稼働中の HTTP サーバーがタイムアウトする場合は、[Claude Code を更新](/docs/ja/setup#update-claude-code)してください。
+> v2.1.299 より前は、稼働中の HTTP サーバーへの一部の接続が、`MCP_TIMEOUT` に関係なくスタートアップ時にタイムアウトしていました。これらのバージョンを使用していて、制限を引き上げた後も稼働中の HTTP サーバーがタイムアウトする場合は、[Claude Code を更新](/docs/ja/setup.md#update-claude-code)してください。
 
 > **サーバーは既に存在します**
 >
@@ -365,7 +365,7 @@ Claude Code がプロジェクトスコープのサーバーを初めて見る�
 >
 > `claude mcp add` で `--env KEY=value` を使用して変数を渡すか、サーバーの `.mcp.json` エントリの `env` フィールドで渡します。サーバーのドキュメントは必要な変数をリストします。
 >
-> v2.1.302 より前は、[プロトコルリビジョン 2026-07-28](/docs/ja/mcp#mcp-client-runtimes) を使用するサーバーがレスポンスから `resultType`、`ttlMs`、または `cacheScope` を省略した場合、`/mcp` はそのサーバーのステータスとして `tools fetch failed` を表示していました。これらのバージョンを使用していて、サーバーがそのステータスを表示する場合は、[Claude Code を更新](/docs/ja/setup#update-claude-code)してください。
+> v2.1.302 より前は、[プロトコルリビジョン 2026-07-28](/docs/ja/mcp.md#mcp-client-runtimes) を使用するサーバーがレスポンスから `resultType`、`ttlMs`、または `cacheScope` を省略した場合、`/mcp` はそのサーバーのステータスとして `tools fetch failed` を表示していました。これらのバージョンを使用していて、サーバーがそのステータスを表示する場合は、[Claude Code を更新](/docs/ja/setup.md#update-claude-code)してください。
 
 > **.mcp.json への変更が有効になりません**
 >
@@ -381,15 +381,15 @@ Claude Code がプロジェクトスコープのサーバーを初めて見る�
 
 > **OAuth サインインが失敗するか、ブラウザが開きません**
 >
-> `/mcp` を実行し、サーバーを選択して、再度「`Authenticate`」を選択します。ブラウザが自動的に開かない場合は、ターミナルに表示される URL をコピーして手動で開きます。固定コールバックポートと事前設定された認証情報については、[リモート MCP サーバーで認証する](/docs/ja/mcp#authenticate-with-remote-mcp-servers)を参照してください。
+> `/mcp` を実行し、サーバーを選択して、再度「`Authenticate`」を選択します。ブラウザが自動的に開かない場合は、ターミナルに表示される URL をコピーして手動で開きます。固定コールバックポートと事前設定された認証情報については、[リモート MCP サーバーで認証する](/docs/ja/mcp.md#authenticate-with-remote-mcp-servers)を参照してください。
 
 ## 次のステップ
 
 1 つのサーバーが接続されたら、MCP が有効にする残りを探索します。
 
-* [Anthropic Directory で MCP サーバーを見つける](/docs/ja/mcp#find-and-build-mcp-servers)
-* [インストールスコープを使用してチームとサーバーを共有する](/docs/ja/mcp#mcp-installation-scopes)
-* [管理設定とポリシーコントロールで組織の MCP アクセスを管理する](/docs/ja/managed-mcp)
-* [@ メンション付きでプロンプトで MCP リソースを参照する](/docs/ja/mcp#use-mcp-resources)
+* [Anthropic Directory で MCP サーバーを見つける](/docs/ja/mcp.md#find-and-build-mcp-servers)
+* [インストールスコープを使用してチームとサーバーを共有する](/docs/ja/mcp.md#mcp-installation-scopes)
+* [管理設定とポリシーコントロールで組織の MCP アクセスを管理する](/docs/ja/managed-mcp.md)
+* [@ メンション付きでプロンプトで MCP リソースを参照する](/docs/ja/mcp.md#use-mcp-resources)
 * [`/` メニューから MCP プロンプトをコマンドとして実行する](/docs/ja/mcp#use-mcp-prompts-as-commands)
 * [MCP SDK を使用して独自のサーバーを構築する](https://modelcontextprotocol.io/quickstart/server)

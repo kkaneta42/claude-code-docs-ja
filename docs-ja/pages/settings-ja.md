@@ -10,13 +10,13 @@
 
 > [!TIP]
 >
-> 特定のキーを検索するには、[すべての設定](/docs/ja/settings-reference)に移動してください。すべてのキーが、設定するファイル、デフォルト、および例とともにリストされています。
+> 特定のキーを検索するには、[すべての設定](/docs/ja/settings-reference.md)に移動してください。すべてのキーが、設定するファイル、デフォルト、および例とともにリストされています。
 
-Claude Code は `~/.claude/settings.json` などの JSON 設定ファイルから設定を読み込みます。いくつかの場所でそれらを探し、[設定を読み込むファイルが、その設定が誰に適用されるかを決定します](#settings-files-and-who-they-affect)。このページでは、これらのファイルについて説明します。設定をどのファイルに入れるか、設定を変更して適用されたことを確認する方法、および同じキーが複数のファイルで設定されている場合に Claude Code が使用する値について説明します。[権限を構成する](/docs/ja/permissions)では、Claude Code が確認なしで実行できる内容と、`allow`、`ask`、および `deny` ルールを記述する方法について説明します。
+Claude Code は `~/.claude/settings.json` などの JSON 設定ファイルから設定を読み込みます。いくつかの場所でそれらを探し、[設定を読み込むファイルが、その設定が誰に適用されるかを決定します](#settings-files-and-who-they-affect)。このページでは、これらのファイルについて説明します。設定をどのファイルに入れるか、設定を変更して適用されたことを確認する方法、および同じキーが複数のファイルで設定されている場合に Claude Code が使用する値について説明します。[権限を構成する](/docs/ja/permissions.md)では、Claude Code が確認なしで実行できる内容と、`allow`、`ask`、および `deny` ルールを記述する方法について説明します。
 
 > [!NOTE]
 >
-> このページでは、マシンで実行されている Claude Code について説明します。ターミナル、[VS Code](/docs/ja/vs-code) および [JetBrains](/docs/ja/jetbrains) 拡張機能、および [デスクトップアプリ](/docs/ja/desktop)は、すべて同じ設定ファイルを読み込みます。[Claude Code on the web](/docs/ja/claude-code-on-the-web) のクラウドセッションは別のマシンで実行され、そのうちのいくつかのみを読み込みます。[クラウドセッションの設定](#settings-in-cloud-sessions)を参照してください。
+> このページでは、マシンで実行されている Claude Code について説明します。ターミナル、[VS Code](/docs/ja/vs-code.md) および [JetBrains](/docs/ja/jetbrains.md) 拡張機能、および [デスクトップアプリ](/docs/ja/desktop.md)は、すべて同じ設定ファイルを読み込みます。[Claude Code on the web](/docs/ja/claude-code-on-the-web.md) のクラウドセッションは別のマシンで実行され、そのうちのいくつかのみを読み込みます。[クラウドセッションの設定](#settings-in-cloud-sessions)を参照してください。
 
 ## 設定ファイルと誰に影響するか
 
@@ -27,7 +27,7 @@ Claude Code は 4 つのファイルから設定を読み込み、組織は clau
 | ユーザー | `~/.claude/settings.json` | 自分自身、このマシン上のすべてのプロジェクト | 個人設定：テーマ、エディターモード、デフォルトモデル、独自の権限ルール |
 | 共有プロジェクト | `.claude/settings.json` | このファイルを含むフォルダで作業しているすべての人。git リポジトリでは、コミットしてチームメイトが取得できるようにします | チーム権限、フック、プラグイン、およびプロジェクトが必要とする環境変数 |
 | プロジェクトローカル | `.claude/settings.local.json` | 自分自身、このプロジェクトのみ。Claude Code はファイルを作成するときに git から除外します。手動で作成する場合は、自分で `.gitignore` に追加してください | 1 つのプロジェクトでの個人的な上書き、および共有する前のテスト |
-| 管理 | `managed-settings.json` およびその他の[管理ソース](/docs/ja/managed-settings#delivery-mechanisms) | 組織がデプロイするすべての人。何がこれを上書きできるかは[設定の優先順位](#settings-precedence)を参照してください | セキュリティポリシーおよびコンプライアンス要件 |
+| 管理 | `managed-settings.json` およびその他の[管理ソース](/docs/ja/managed-settings.md#delivery-mechanisms) | 組織がデプロイするすべての人。何がこれを上書きできるかは[設定の優先順位](#settings-precedence)を参照してください | セキュリティポリシーおよびコンプライアンス要件 |
 
 ファイル列では、`~/.claude` はホームディレクトリの `.claude` フォルダ、パスなしの `.claude` はプロジェクト内の `.claude` フォルダです。
 
@@ -48,7 +48,7 @@ A cloud session
 * **`~/.claude/settings.json`**：自分のマシン上のすべてのプロジェクト。チームメイトのクローンやクラウドセッションには適用されません
 * **`acme-app/.claude/settings.json`**：自分の `acme-app/`。バージョン管理にファイルをコミットした場合のみ、チームメイトのクローンとクラウドセッションに到達します。それまでは、ディスク上の他のファイルと同じ単なるファイルであり、他の誰も持っていません
 * **`acme-app/.claude/settings.local.json`**：自分の `acme-app/` のみ。Claude Code はファイルを初めて書き込むときに、グローバル git 除外に追加するため、コミットから除外されます。手動でファイルを作成する場合は、[自分で `.gitignore` に追加してください](#keep-personal-settings-out-of-a-repository)
-* **管理設定**。`managed-settings.json` ファイル、MDM ポリシー、または claude.ai コンソールからの[サーバー管理設定](/docs/ja/server-managed-settings)：組織がデプロイするすべてのマシン、または組織アカウントでサインインするマシン上のすべてのプロジェクト。クラウドセッションに到達するのはサーバー管理設定のみです
+* **管理設定**。`managed-settings.json` ファイル、MDM ポリシー、または claude.ai コンソールからの[サーバー管理設定](/docs/ja/server-managed-settings.md)：組織がデプロイするすべてのマシン、または組織アカウントでサインインするマシン上のすべてのプロジェクト。クラウドセッションに到達するのはサーバー管理設定のみです
 
 ### 設定ファイルを見つけるか作成する
 
@@ -62,13 +62,13 @@ Claude Code をインストールしても、設定ファイルは作成され�
 >
 > Windows では、`~/.claude` は `%USERPROFILE%\.claude` を意味します。ホームディレクトリのファイルを別の場所に保存するには、[`CLAUDE_CONFIG_DIR`](/docs/ja/env-vars) を設定してください。Claude Code は設定、セッション履歴、およびプラグインを代わりにそこに保存します。
 
-Claude Code は、[`~/.claude.json`](/docs/ja/claude-directory#ce-claude-json) という 5 番目のファイルも保持します。これは Claude Code 自身が書き込むもので、編集する必要はありません。サインインセッション、[MCP サーバー](/docs/ja/mcp)の設定、信頼の決定などのプロジェクトごとの状態、および `/config` が書き込む[グローバル設定キー](/docs/ja/settings-reference#global-config-settings)を保持します。
+Claude Code は、[`~/.claude.json`](/docs/ja/claude-directory#ce-claude-json) という 5 番目のファイルも保持します。これは Claude Code 自身が書き込むもので、編集する必要はありません。アカウントの詳細、[MCP サーバー](/docs/ja/mcp.md)の設定、信頼の決定などのプロジェクトごとの状態、および `/config` が書き込む[グローバル設定キー](/docs/ja/settings-reference.md#global-config-settings)を保持します。
 
 ### チームと設定を共有する
 
-`.claude/settings.json` をコミットして、リポジトリをクローンするすべての人が同じ権限、フック、およびプラグインを取得するようにします。各チームメイトは、独自の `.claude/settings.local.json` で自分用にそれを上書きできるため、個人的な例外にコミットは必要ありません。完全なチームファイルについては、[チームの共有設定](/docs/ja/settings-example#a-teams-shared-settings)を参照してください。
+`.claude/settings.json` をコミットして、リポジトリをクローンするすべての人が同じ権限、フック、およびプラグインを取得するようにします。各チームメイトは、独自の `.claude/settings.local.json` で自分用にそれを上書きできるため、個人的な例外にコミットは必要ありません。完全なチームファイルについては、[チームの共有設定](/docs/ja/settings-example.md#a-teams-shared-settings)を参照してください。
 
-コミットするものの一部は、各チームメイトが[フォルダを信頼する](/docs/ja/permissions#project-allow-rules-and-workspace-trust)まで待機し、いくつかのキーはリポジトリファイルからは決して有効になりません。[適用されない設定をトラブルシューティングする](#common-cases)で両方を説明しています。
+コミットするものの一部は、各チームメイトが[フォルダを信頼する](/docs/ja/permissions.md#project-allow-rules-and-workspace-trust)まで待機し、いくつかのキーはリポジトリファイルからは決して有効になりません。[適用されない設定をトラブルシューティングする](#common-cases)で両方を説明しています。
 
 ### リポジトリから個人設定を除外する
 
@@ -76,36 +76,36 @@ Claude Code は、[`~/.claude.json`](/docs/ja/claude-directory#ce-claude-json) �
 
 Claude Code もこのファイルに書き込み、コミットから除外し、信頼ステップなしでその許可ルールを適用します：
 
-* **Claude Code もこのファイルに書き込みます。** Claude が Bash コマンドを実行する権限を求め、「はい、今後は聞かないでください」を選択すると、Claude Code はその[権限の承認](/docs/ja/permissions#permission-system)をここに `allow` ルールとして保存します。
+* **Claude Code もこのファイルに書き込みます。** Claude が Bash コマンドを実行する権限を求め、「はい、今後は聞かないでください」を選択すると、Claude Code はその[権限の承認](/docs/ja/permissions.md#permission-system)をここに `allow` ルールとして保存します。
 * **手動で作成した場合を除き、自分で gitignore する必要はありません。** Claude Code が、まだこのファイルを無視していない git リポジトリでファイルを初めて書き込むときに、グローバル git 除外ファイルに `**/.claude/settings.local.json` を追加するため、ファイルはすべてのリポジトリでコミットから除外されます。そのファイルは、グローバル git 設定で `core.excludesFile` が絶対パスまたは `~` で始まるパスに設定されている場合はそのファイル、それ以外の場合は `$XDG_CONFIG_HOME/git/ignore`、`XDG_CONFIG_HOME` が設定されていない場合は `~/.config/git/ignore` です。手動でファイルを作成し、Claude Code がまだそれに書き込んでいない場合は、自分で `.gitignore` に追加してください。
-* **ファイルが追跡されていない間、その許可ルールは信頼を待ちません。** ファイルはリポジトリのものではなく自分のものであるため、Claude Code はコミットされたファイルに必要な[ワークスペースの信頼](/docs/ja/permissions#project-allow-rules-and-workspace-trust)ステップなしで、その `allow` ルールを適用します。ファイルが git で追跡されている場合は、信頼ステップがこのファイルにも適用されます。[ローカル設定ファイルが信頼を必要とする場合](/docs/ja/permissions#when-your-local-settings-file-needs-trust)を参照してください。
+* **ファイルが追跡されていない間、その許可ルールは信頼を待ちません。** ファイルはリポジトリのものではなく自分のものであるため、Claude Code はコミットされたファイルに必要な[ワークスペースの信頼](/docs/ja/permissions.md#project-allow-rules-and-workspace-trust)ステップなしで、その `allow` ルールを適用します。ファイルが git で追跡されている場合は、信頼ステップがこのファイルにも適用されます。[ローカル設定ファイルが信頼を必要とする場合](/docs/ja/permissions.md#when-your-local-settings-file-needs-trust)を参照してください。
 
 #### Claude Code が git リポジトリでローカルファイルを保持する場所
 
-Claude が Bash コマンドを実行する権限を求め、「はい、今後は聞かないでください」を選択すると、Claude Code はその承認を `.claude/settings.local.json` の `allow` ルールとして保存します。git リポジトリのサブディレクトリで Claude Code を開始した場合、リポジトリルートにあるそのファイルを読み書きし、承認をリポジトリ全体に適用します。[worktree](/docs/ja/worktrees) では、メインチェックアウトのルートにあるファイルを使用します。
+Claude が Bash コマンドを実行する権限を求め、「はい、今後は聞かないでください」を選択すると、Claude Code はその承認を `.claude/settings.local.json` の `allow` ルールとして保存します。git リポジトリのサブディレクトリで Claude Code を開始した場合、リポジトリルートにあるそのファイルを読み書きし、承認をリポジトリ全体に適用します。[worktree](/docs/ja/worktrees.md) では、メインチェックアウトのルートにあるファイルを使用します。
 
 ルートの場所には 2 つの条件があります：
 
 * **ファイルが代わりに `.claude/settings.json` と同じ場所に置かれる場合**：git リポジトリの外、リポジトリルートがホームディレクトリである場合、Windows の場合、またはリポジトリルートやその `.git` または `.claude` エントリの所有者が自分のユーザーでない場合。
-* **ファイル内のパスはリポジトリルートを基準にしません**：`/` で始まる権限ルールや相対サンドボックスパスは、代わりに[セッションのプライマリ作業ディレクトリを基準にします](/docs/ja/permissions#read-and-edit)。
+* **ファイル内のパスはリポジトリルートを基準にしません**：`/` で始まる権限ルールや相対サンドボックスパスは、代わりに[セッションのプライマリ作業ディレクトリを基準にします](/docs/ja/permissions.md#read-and-edit)。
 
 v2.1.211 より前では、Claude Code は開始ディレクトリにファイルを保持していました。以前のバージョンがそこに残したファイルも、ルートのファイルと併せて読み込みます。両方が同じキーを設定している場合はルートの値が適用され、権限ルールは両方のファイルのものが適用されます。Agent SDK の [`resolveSettings()`](/docs/ja/agent-sdk/typescript#resolvesettings) ヘルパーは常に開始ディレクトリからファイルを読み込みます。
 
-Claude Code は共有 `.claude/settings.json` をセッションの[プライマリ作業ディレクトリ](/docs/ja/permissions#working-directories)から読み込むため、リポジトリルートにコミットされたファイルを使用するには、そこで Claude Code を開始してください。[`/cd` でセッションを移動した](/docs/ja/permissions#move-the-session-to-another-directory)後は、Claude Code は代わりに新しいディレクトリから両方のプロジェクトファイルを読み込み、ローカルファイルは同じルールで配置します。移動先のディレクトリから読み込むには Claude Code v2.1.246 以降が必要です。デスクトップアプリから開始する worktree セッションについては、[worktree がメインチェックアウトと共有するもの](/docs/ja/worktrees#what-worktrees-share-with-the-main-checkout)を参照してください。
+Claude Code は共有 `.claude/settings.json` をセッションの[プライマリ作業ディレクトリ](/docs/ja/permissions.md#working-directories)から読み込むため、リポジトリルートにコミットされたファイルを使用するには、そこで Claude Code を開始してください。[`/cd` でセッションを移動した](/docs/ja/permissions#move-the-session-to-another-directory)後は、Claude Code は代わりに新しいディレクトリから両方のプロジェクトファイルを読み込み、ローカルファイルは同じルールで配置します。移動先のディレクトリから読み込むには Claude Code v2.1.246 以降が必要です。デスクトップアプリから開始する worktree セッションについては、[worktree がメインチェックアウトと共有するもの](/docs/ja/worktrees.md#what-worktrees-share-with-the-main-checkout)を参照してください。
 
 ### 組織が強制する内容を確認する
 
-組織が Claude Code を管理している場合、一部の設定はあらかじめ決定されており、自分のファイルに何を書いても変更できません。どの設定が該当するかを確認するには、`/status` を実行してください。`Setting sources` 行に、適用される管理ソースの名前が表示されます。管理設定は、このマシン上で Claude Code が実行されるすべての場所に適用されます。ローカル管理者権限と Claude Code 以外のツールについては、[開発者が変更できる内容](/docs/ja/managed-settings#what-a-developer-can-change)を参照してください。
+組織が Claude Code を管理している場合、一部の設定はあらかじめ決定されており、自分のファイルに何を書いても変更できません。どの設定が該当するかを確認するには、`/status` を実行してください。`Setting sources` 行に、適用される管理ソースの名前が表示されます。管理設定は、このマシン上で Claude Code が実行されるすべての場所に適用されます。ローカル管理者権限と Claude Code 以外のツールについては、[開発者が変更できる内容](/docs/ja/managed-settings.md#what-a-developer-can-change)を参照してください。
 
-管理設定は、管理設定ページで説明している[配信メカニズム](/docs/ja/managed-settings#delivery-mechanisms)を通じて届きます。最も一般的なものは次のとおりです：
+管理設定は、管理設定ページで説明している[配信メカニズム](/docs/ja/managed-settings.md#delivery-mechanisms)を通じて届きます。最も一般的なものは次のとおりです：
 
-* [サーバー管理設定](/docs/ja/server-managed-settings)。Claude Code が claude.ai 管理コンソールまたはセルフホストの [Claude apps gateway](/docs/ja/claude-apps-gateway) から取得します
+* [サーバー管理設定](/docs/ja/server-managed-settings.md)。Claude Code が claude.ai 管理コンソールまたはセルフホストの [Claude apps gateway](/docs/ja/claude-apps-gateway) から取得します
 * MDM または OS レベルのポリシー、およびシステムディレクトリ内の `managed-settings.json` ファイル
-* Claude Desktop などの埋め込みホスト。SDK の `managedSettings` オプションを通じて配信されます。[埋め込みホストからポリシーを制御する](/docs/ja/managed-settings#parent-settings-from-embedding-hosts)を参照してください
+* Claude Desktop などの埋め込みホスト。SDK の `managedSettings` オプションを通じて配信されます。[埋め込みホストからポリシーを制御する](/docs/ja/managed-settings.md#parent-settings-from-embedding-hosts)を参照してください
 
-Claude Desktop アプリで自分のマシン上で実行される [Cowork](https://claude.com/docs/cowork/overview) セッションでは、Claude Code は claude.ai 管理コンソールからサーバー管理設定を取得しません。また、組織の Claude Desktop 設定で `requireCoworkFullVmSandbox` が設定されていない限り、デバイスにデプロイされたポリシーを読み込みます。Cowork とクラウドセッションについては、[ポリシーが適用される場所と時期](/docs/ja/managed-settings#where-and-when-a-policy-applies)を参照してください。
+Claude Desktop アプリで自分のマシン上で実行される [Cowork](https://claude.com/docs/cowork/overview) セッションでは、Claude Code は claude.ai 管理コンソールからサーバー管理設定を取得しません。また、組織の Claude Desktop 設定で `requireCoworkFullVmSandbox` が設定されていない限り、デバイスにデプロイされたポリシーを読み込みます。Cowork とクラウドセッションについては、[ポリシーが適用される場所と時期](/docs/ja/managed-settings.md#where-and-when-a-policy-applies)を参照してください。
 
-管理者の場合、[組織向けに Claude Code をセットアップする](/docs/ja/admin-setup)で何を強制するかを選択する手順を、[管理設定をデプロイする](/docs/ja/managed-settings)で配信方法とポリシーが有効であることを確認する方法を説明しています。claude.ai 管理コンソールの管理設定エディターに表示されることがある警告については、[サーバー管理設定を構成する](/docs/ja/server-managed-settings#configure-server-managed-settings)を参照してください。
+管理者の場合、[組織向けに Claude Code をセットアップする](/docs/ja/admin-setup.md)で何を強制するかを選択する手順を、[管理設定をデプロイする](/docs/ja/managed-settings.md)で配信方法とポリシーが有効であることを確認する方法を説明しています。claude.ai 管理コンソールの管理設定エディターに表示されることがある警告については、[サーバー管理設定を構成する](/docs/ja/server-managed-settings.md#configure-server-managed-settings)を参照してください。
 
 ## 設定を変更する
 
@@ -119,13 +119,13 @@ Claude Code 内で `/config` を実行し、**Config** タブを開きます。�
 
 * **ほとんどのオプション**：`~/.claude/settings.json`
 * **ヒントを表示などのいくつかのオプション**：`.claude/settings.local.json`
-* **[グローバル構成オプション](/docs/ja/settings-reference#global-config-settings)**：`~/.claude.json`
+* **[グローバル構成オプション](/docs/ja/settings-reference.md#global-config-settings)**：`~/.claude.json`
 
 1 つのオプションをメニューなしで設定するには、`/config verbose=true` などの `key=value` を渡してください。
 
 > [!NOTE]
 >
-> `/config` はターミナルインターフェースの一部です。[VS Code](/docs/ja/vs-code) チャットパネルと[デスクトップアプリ](/docs/ja/desktop)はそれを開きません。設定ファイルを編集するか、これらのアプリ独自の設定を通じて設定を変更してください。
+> `/config` はターミナルインターフェースの一部です。[VS Code](/docs/ja/vs-code.md) チャットパネルと[デスクトップアプリ](/docs/ja/desktop.md)はそれを開きません。設定ファイルを編集するか、これらのアプリ独自の設定を通じて設定を変更してください。
 
 ### 設定ファイルを編集する
 
@@ -147,11 +147,11 @@ Claude Code 内で `/config` を実行し、**Config** タブを開きます。�
 }
 ```
 
-`permissions` の下の各エントリは、ツールとそれが何ができるかを名前付けするルールです。[権限を構成する](/docs/ja/permissions)は構文を説明します。`$schema` 行は Claude Code 設定の[公開 JSON スキーマ](https://json.schemastore.org/claude-code-settings.json)を指し、VS Code、Cursor、および JSON スキーマをサポートする他のエディターでオートコンプリートとインライン検証を提供します。スキーマは最新の CLI リリースより遅れることができるため、最近ドキュメント化されたキーの検証警告は、構成が無効であることを意味しません。
+`permissions` の下の各エントリは、ツールとそれが何ができるかを名前付けするルールです。[権限を構成する](/docs/ja/permissions.md)は構文を説明します。`$schema` 行は Claude Code 設定の[公開 JSON スキーマ](https://json.schemastore.org/claude-code-settings.json)を指し、VS Code、Cursor、および JSON スキーマをサポートする他のエディターでオートコンプリートとインライン検証を提供します。スキーマは最新の CLI リリースより遅れることができるため、最近ドキュメント化されたキーの検証警告は、構成が無効であることを意味しません。
 
 保存した後、Claude Code 内で `/status` を実行してファイルが読み込まれたことを確認してください。[読み込まれたものを確認する](#check-what-loaded)は `Setting sources` 行が表示するものと、壊れたファイルがどのように報告されるかを説明します。
 
-完全な個人ファイル、チームファイル、および組織ファイルについては、それが設定するすべてのキーのコメント付きで、[設定ファイルの例](/docs/ja/settings-example)を参照してください。
+完全な個人ファイル、チームファイル、および組織ファイルについては、それが設定するすべてのキーのコメント付きで、[設定ファイルの例](/docs/ja/settings-example.md)を参照してください。
 
 ### 1 つのセッションの設定を変更する
 
@@ -161,11 +161,11 @@ Claude Code 内で `/config` を実行し、**Config** タブを開きます。�
 * **そのキーのフラグ**：いくつかのキーには独自のフラグがあります。`model` の `--model` や `effortLevel` と `modelSettings` の `--effort` など。
 * **環境変数**：`model` の `ANTHROPIC_MODEL` など、キーのペアリングされた変数をエクスポートしてから `claude` を実行してください。
 
-各キーの[設定リファレンス](/docs/ja/settings-reference)のエントリは、その 1 セッションのオーバーライドと、どれが優先されるかをリストします。変更したいキーのエントリを確認してください。
+各キーの[設定リファレンス](/docs/ja/settings-reference.md)のエントリは、その 1 セッションのオーバーライドと、どれが優先されるかをリストします。変更したいキーのエントリを確認してください。
 
 セッション内で実行するコマンドはほとんどあなたの選択を保存します。`/config` で設定を変更すると、Claude Code はそれを設定ファイルに書き込み、`/model` は値を新しいセッションのデフォルトとして保存します。
 
-`/model` ピッカーで `s` を押すと、Claude Code はモデルを切り替えますが、ユーザーデフォルトとして保存しません。[努力レベルを調整する](/docs/ja/model-config#adjust-effort-level)は、Claude Code が使用しているモデルのデフォルトとして保存する `/effort` ピックと、現在のセッションのみに適用するものを説明します。
+`/model` ピッカーで `s` を押すと、Claude Code はモデルを切り替えますが、ユーザーデフォルトとして保存しません。[努力レベルを調整する](/docs/ja/model-config.md#adjust-effort-level)は、Claude Code が使用しているモデルのデフォルトとして保存する `/effort` ピックと、現在のセッションのみに適用するものを説明します。
 
 たとえば、デフォルトを変更せずに 1 つのセッションで Opus で開始するには：
 
@@ -177,16 +177,16 @@ claude --settings '{"model": "claude-opus-5-5"}'
 
 Claude Code は設定ファイルを監視し、変更時に再読み込みするため、`permissions`、`hooks`、および `apiKeyHelper` などの認証情報ヘルパーへの編集を含む、ほとんどの編集は再起動なしで実行中のセッションに適用されます。Claude Code は、セッションの途中で作成した設定ファイルも、そのフォルダがセッション開始時に存在していれば読み込みます。プロジェクトの `.claude/` フォルダについては、同じセッション内でフォルダを作成した場合でもファイルを読み込みます。
 
-再読み込みはユーザー、プロジェクト、ローカル、および管理設定をカバーし、Claude Code は検出した各設定ファイル変更に対して [`ConfigChange` hook](/docs/ja/hooks#configchange) を実行します。MDM または claude.ai コンソールから到達する管理設定ではありません。MDM または claude.ai コンソールから到達する管理設定は、保存時ではなくスケジュールに従って実行中のセッションに到達します。[配信テーブル](/docs/ja/managed-settings#choose-a-delivery-mechanism)はソースごとにそれを提供します。
+再読み込みはユーザー、プロジェクト、ローカル、および管理設定をカバーし、Claude Code は検出した各設定ファイル変更に対して [`ConfigChange` hook](/docs/ja/hooks#configchange) を実行します。MDM または claude.ai コンソールから到達する管理設定ではありません。MDM または claude.ai コンソールから到達する管理設定は、保存時ではなくスケジュールに従って実行中のセッションに到達します。[配信テーブル](/docs/ja/managed-settings.md#choose-a-delivery-mechanism)はソースごとにそれを提供します。
 
-Claude Code はセッション開始時に一度だけいくつかのキーを読み込むため、そのうちの 1 つへの編集は実行中のセッションに到達しません。`requiredMinimumVersion` などの管理者側のキーも再起動を待ちます。[ポリシーが適用される場所と時期](/docs/ja/managed-settings#where-and-when-a-policy-applies)の下にリストされています。セッション中に編集する可能性が最も高いもの：
+Claude Code はセッション開始時に一度だけいくつかのキーを読み込むため、そのうちの 1 つへの編集は実行中のセッションに到達しません。`requiredMinimumVersion` などの管理者側のキーも再起動を待ちます。[ポリシーが適用される場所と時期](/docs/ja/managed-settings.md#where-and-when-a-policy-applies)の下にリストされています。セッション中に編集する可能性が最も高いもの：
 
-* [`model`](/docs/ja/settings-reference#model)：セッション中に切り替えるには [`/model`](/docs/ja/model-config#setting-your-model) を使用してください。各モデルには独自のプロンプトキャッシュがあるため、切り替え後の最初のリクエストは会話全体をキャッシュなしで再読み込みします。[モデルを切り替える](/docs/ja/prompt-caching#switching-models)を参照してください
+* [`model`](/docs/ja/settings-reference#model)：セッション中に切り替えるには [`/model`](/docs/ja/model-config#setting-your-model) を使用してください。各モデルには独自のプロンプトキャッシュがあるため、切り替え後の最初のリクエストは会話全体をキャッシュなしで再読み込みします。[モデルを切り替える](/docs/ja/prompt-caching.md#switching-models)を参照してください
 * [`effortLevel`](/docs/ja/settings-reference#effortlevel) および [`modelSettings`](/docs/ja/settings-reference#modelsettings)：セッション中に努力を変更するには [`/effort`](/docs/ja/model-config#adjust-effort-level) を使用してください
 
 ### 読み込まれたものを確認する
 
-Claude Code 内で `/status` を実行して、どの設定ソースがアクティブであるかを確認してください。**Status** タブには、Claude Code が現在のセッション用に読み込んだ各設定ファイルをリストする `Setting sources` 行が含まれています。`User settings` または `Project local settings` など。[管理設定](/docs/ja/admin-setup#decide-how-settings-reach-devices)が有効な場合、管理設定エントリは括弧内にそれらがマシンに到達した方法を示します。
+Claude Code 内で `/status` を実行して、どの設定ソースがアクティブであるかを確認してください。**Status** タブには、Claude Code が現在のセッション用に読み込んだ各設定ファイルをリストする `Setting sources` 行が含まれています。`User settings` または `Project local settings` など。[管理設定](/docs/ja/admin-setup.md#decide-how-settings-reach-devices)が有効な場合、管理設定エントリは括弧内にそれらがマシンに到達した方法を示します。
 
 行は Claude Code が読み込んだファイルを確認します。各ファイルがどのキーを供給したかは表示されません。Claude Code が拒否したエントリをリストするには、[`claude doctor`](/docs/ja/debug-your-config) を実行してください。プロジェクトまたは管理設定が設定するモデルについては、スタートアップヘッダーがそれを設定したファイルの名前を付けます。`/status` と `/config` は異なるタブで同じダイアログを開き、**Config** タブは `settings.json` コンテンツのビューではありません。
 
@@ -196,12 +196,12 @@ JSON をタイプミスするか、Claude Code が受け入れない値にキー
 
 * **設定エラー**：ユーザー、プロジェクト、またはローカルファイルに無効な JSON またはスキーマが拒否する値があります。インタラクティブセッションの開始時に Claude Code はダイアログを表示し、Claude の助けでファイルを修正するか、終了するか、壊れた設定なしで続行できます。
 * **設定警告**：個別のエントリのみが失敗します。不正な形式の権限ルールまたは不明な hook イベント名など。Claude Code はそれらの値をスキップし、ファイルの残りを有効に保ちます。
-* **管理設定**：Claude Code はファイルの残りを強制し続けます。[管理設定の無効なエントリ](/docs/ja/managed-settings#invalid-entries-in-managed-settings)は、それが削除するものと、修正するまでどのキーがより厳密な値にフォールバックするかを説明します。有効な JSON ではない管理設定ドキュメントについては、[管理設定ドキュメントを解析できませんでした](/docs/ja/errors#managed-settings-document-could-not-be-parsed)を参照してください。
+* **管理設定**：Claude Code はファイルの残りを強制し続けます。[管理設定の無効なエントリ](/docs/ja/managed-settings.md#invalid-entries-in-managed-settings)は、それが削除するものと、修正するまでどのキーがより厳密な値にフォールバックするかを説明します。有効な JSON ではない管理設定ドキュメントについては、[管理設定ドキュメントを解析できませんでした](/docs/ja/errors.md#managed-settings-document-could-not-be-parsed)を参照してください。
 * **構成エラー**：`~/.claude.json` を解析できません。Claude Code は壊れたファイルを `~/.claude/backups/.claude.json.corrupted.<timestamp>` にコピーし、終了して手動で修正するか、デフォルト構成にリセットするかを尋ねます。`-p` 実行はエラーを出力して終了します。以前の状態を復旧するには、`~/.claude/backups/` の 5 つの最新 `.claude.json.backup.<timestamp>` ファイルの 1 つをコピーして戻してください。Claude Code はファイルを書き込む前に保存します。
 
 続行した後、`/status` を実行して影響を受けたファイルを確認し、各エラーの詳細について `claude doctor` を実行してください。
 
-`-p` 実行はダイアログを表示しません。[管理設定ドキュメントを解析できない](/docs/ja/errors#managed-settings-document-could-not-be-parsed)場合を除き、Claude Code は壊れたファイルまたは値をスキップして残りで続行するため、設定をスキップした `-p` 実行の後、`claude doctor` を実行して削除したものを確認してください。
+`-p` 実行はダイアログを表示しません。[管理設定ドキュメントを解析できない](/docs/ja/errors.md#managed-settings-document-could-not-be-parsed)場合を除き、Claude Code は壊れたファイルまたは値をスキップして残りで続行するため、設定をスキップした `-p` 実行の後、`claude doctor` を実行して削除したものを確認してください。
 
 ## 設定の優先順位
 
@@ -211,13 +211,13 @@ Settings precedence, highest first: managed settings, command line, project loca
 
 優先度が高い順に：
 
-1. **管理設定**：組織が `managed-settings.json` ファイル、MDM ポリシー、または claude.ai コンソールからの [サーバー管理設定](/docs/ja/server-managed-settings) によってデプロイする設定です。自分の設定ファイルや `--settings` のいずれも管理キーを上書きせず、`--model` などのフラグは組織が許可するモデルからのみ選択します。管理設定の [`model`](/docs/ja/settings-reference#model) は開始時のデフォルトであり、ロックではありません。ロックは [`availableModels`](/docs/ja/settings-reference#availablemodels) と [`deniedModels`](/docs/ja/settings-reference#deniedmodels) です。組織が複数の管理ソースを提供する場合、[管理層内の優先順位](/docs/ja/managed-settings#precedence-within-the-managed-tier) のルールが Claude Code が各ソースから読み込むものを指定します。
-2. **コマンドライン**：`claude` を開始するときに `--settings <file-or-json>` で渡す JSON で、そのセッションのみに適用されます。[1 つのセッションの設定を変更する](#change-a-setting-for-one-session) を参照してください。ここで設定したキーはプロジェクト設定ファイルおよびユーザー設定ファイルの同じキーを上書きし、省略したキーはそれらのファイルの値を保持します。`--model` などの他のフラグはセッションに対して 1 つの項目を設定するもので、このスタックには含まれません。どのフラグがキーを上書きするかは、[設定リファレンス](/docs/ja/settings-reference) のそのキーのエントリに記載されています。
+1. **管理設定**：組織が `managed-settings.json` ファイル、MDM ポリシー、または claude.ai コンソールからの [サーバー管理設定](/docs/ja/server-managed-settings.md) によってデプロイする設定です。自分の設定ファイルや `--settings` のいずれも管理キーを上書きせず、`--model` などのフラグは組織が許可するモデルからのみ選択します。管理設定の [`model`](/docs/ja/settings-reference#model) は開始時のデフォルトであり、ロックではありません。ロックは [`availableModels`](/docs/ja/settings-reference#availablemodels) と [`deniedModels`](/docs/ja/settings-reference#deniedmodels) です。組織が複数の管理ソースを提供する場合、[管理層内の優先順位](/docs/ja/managed-settings.md#precedence-within-the-managed-tier) のルールが Claude Code が各ソースから読み込むものを指定します。
+2. **コマンドライン**：`claude` を開始するときに `--settings <file-or-json>` で渡す JSON で、そのセッションのみに適用されます。[1 つのセッションの設定を変更する](#change-a-setting-for-one-session) を参照してください。ここで設定したキーはプロジェクト設定ファイルおよびユーザー設定ファイルの同じキーを上書きし、省略したキーはそれらのファイルの値を保持します。`--model` などの他のフラグはセッションに対して 1 つの項目を設定するもので、このスタックには含まれません。どのフラグがキーを上書きするかは、[設定リファレンス](/docs/ja/settings-reference.md) のそのキーのエントリに記載されています。
 3. **プロジェクトローカル設定** （`.claude/settings.local.json`）：このプロジェクトの個人設定です。
 4. **共有プロジェクト設定** （`.claude/settings.json`）：チームがソース管理にチェックインする設定です。
 5. **ユーザー設定** （`~/.claude/settings.json`）：すべてのプロジェクトの個人設定です。
 
-環境変数はこのスタックのレベルではありません。動作がシェル変数と設定キーの両方を持つ場合、どちらが適用されるかはレベルではなくペアごとに決定されます。シェルでエクスポートされた `ANTHROPIC_MODEL` はどのファイルからの `model` キーよりも優先されますが、`ANTHROPIC_DEFAULT_MODEL` はファイルが `model` を設定していない場合にのみ適用されます。[環境変数リファレンス](/docs/ja/env-vars#precedence) はどのキーがペアを持ち、Claude Code がどちらを最初に読み込むかを示しています。設定ファイル内の `env` ブロックは通常のキーであり、上記のレベルに従います。
+環境変数はこのスタックのレベルではありません。動作がシェル変数と設定キーの両方を持つ場合、どちらが適用されるかはレベルではなくペアごとに決定されます。シェルでエクスポートされた `ANTHROPIC_MODEL` はどのファイルからの `model` キーよりも優先されますが、`ANTHROPIC_DEFAULT_MODEL` はファイルが `model` を設定していない場合にのみ適用されます。[環境変数リファレンス](/docs/ja/env-vars.md#precedence) はどのキーがペアを持ち、Claude Code がどちらを最初に読み込むかを示しています。設定ファイル内の `env` ブロックは通常のキーであり、上記のレベルに従います。
 
 いくつかのセキュリティに敏感なキーについて、Claude Code は下位レベルからのより厳密な値を管理値より優先します。[管理設定の優先順位の例外](#exceptions-to-managed-settings-precedence) がそれらをリストしています。
 
@@ -227,7 +227,7 @@ Settings precedence, highest first: managed settings, command line, project loca
 
 * [`fallbackModel`](/docs/ja/settings-reference#fallbackmodel) は位置が意味を持つ順序付きチェーンであるため、Claude Code は最も優先度の高いファイルからの全体の値を取得します。
 * [`modelPicker`](/docs/ja/settings-reference#modelpicker) は 1 つの順序付きリストの行とリプレースフラグを保持するため、Claude Code は 2 つのソースから行をマージしません。管理設定、`--settings`、およびユーザー設定の最も高いものから全体の値を取得し、プロジェクトおよびローカル設定のキーを無視します。Claude Code v2.1.242 以降が必要です。
-* [`availableModels`](/docs/ja/settings-reference#availablemodels)：Claude Code が適用する管理設定がこれを定義する場合、Claude Code はそのリストをそのまま適用し、ユーザー、プロジェクト、またはローカル設定で追加するエントリを無視します。ただし、Claude Code を埋め込むアプリが独自のモデルリストを提供する場合を除きます。[管理設定の優先順位の例外](#exceptions-to-managed-settings-precedence) を参照してください。管理ソース全体でリストはマージされません。[Claude Code が管理ソースを結合する方法](/docs/ja/managed-settings#how-claude-code-combines-managed-sources) はどのソースのリストが適用されるかを示しています。非管理スコープ全体で Claude Code は通常どおり配列をマージします。
+* [`availableModels`](/docs/ja/settings-reference#availablemodels)：Claude Code が適用する管理設定がこれを定義する場合、Claude Code はそのリストをそのまま適用し、ユーザー、プロジェクト、またはローカル設定で追加するエントリを無視します。ただし、Claude Code を埋め込むアプリが独自のモデルリストを提供する場合を除きます。[管理設定の優先順位の例外](#exceptions-to-managed-settings-precedence) を参照してください。管理ソース全体でリストはマージされません。[Claude Code が管理ソースを結合する方法](/docs/ja/managed-settings.md#how-claude-code-combines-managed-sources) はどのソースのリストが適用されるかを示しています。非管理スコープ全体で Claude Code は通常どおり配列をマージします。
 * [`modelSettings`](/docs/ja/settings-reference#modelsettings)：Claude Code はそれを [`effortLevel`](/docs/ja/settings-reference#effortlevel) と一緒に一度に 1 つのモデルで解決します。`modelSettings` エントリはどのファイルの値がモデルに適用されるかを示しています。
 
 ### 優先順位の例
@@ -256,17 +256,17 @@ Claude が動作している間、Claude Code はスピナーの下に 1 行の�
 
 一部のキーには、設定値を上書きするコマンドラインフラグまたは環境変数があります。これはどのファイルが設定したかに関係なく機能します。`ANTHROPIC_MODEL` は [`model`](/docs/ja/settings-reference#model) 設定を上書きし、`--model` はセッション用に両方を上書きします。
 
-値を取り戻せるかどうかはキーによって異なります。変数をアンセットするか、フラグをドロップし、[設定リファレンス](/docs/ja/settings-reference) のキーのエントリと [環境変数リファレンス](/docs/ja/env-vars) の変数の行を確認して、Claude Code がどちらを使用するかを確認してください。
+値を取り戻せるかどうかはキーによって異なります。変数をアンセットするか、フラグをドロップし、[設定リファレンス](/docs/ja/settings-reference.md) のキーのエントリと [環境変数リファレンス](/docs/ja/env-vars.md) の変数の行を確認して、Claude Code がどちらを使用するかを確認してください。
 
 ### 適用されない設定をトラブルシューティングします
 
-キーを設定し、Claude Code がそのように動作しない場合は、`/status` で読み込まれたファイルを確認してから、以下で症状を見つけてください。[設定をデバッグする](/docs/ja/debug-your-config) はより広いチェックをカバーしており、クリーン設定テストを含みます。
+キーを設定し、Claude Code がそのように動作しない場合は、`/status` で読み込まれたファイルを確認してから、以下で症状を見つけてください。[設定をデバッグする](/docs/ja/debug-your-config.md) はより広いチェックをカバーしており、クリーン設定テストを含みます。
 
 #### 設定した値が無視されます
 
 別のものが同じキーを設定しているか、ファイルがその値を設定できないか、またはファイルが読み込まれませんでした：
 
-* **より高いレベルがそれを設定しています。** 別の設定ファイル、`--settings` フラグ、または管理ソースがキーを自分のものより上で設定しています。[スタック](#settings-precedence) はどちらかを示しています。フラグまたは環境変数もキーごとに決定されて、キーをそれ自体で上書きできます。[設定リファレンス](/docs/ja/settings-reference) のキーのエントリはどちらを Claude Code が使用するかを示し、[`env` エントリ](/docs/ja/settings-reference#env) は管理 `env` 値対シェルエクスポートをカバーしています。
+* **より高いレベルがそれを設定しています。** 別の設定ファイル、`--settings` フラグ、または管理ソースがキーを自分のものより上で設定しています。[スタック](#settings-precedence) はどちらかを示しています。フラグまたは環境変数もキーごとに決定されて、キーをそれ自体で上書きできます。[設定リファレンス](/docs/ja/settings-reference.md) のキーのエントリはどちらを Claude Code が使用するかを示し、[`env` エントリ](/docs/ja/settings-reference#env) は管理 `env` 値対シェルエクスポートをカバーしています。
 * **セキュリティキーは厳密な値を保持しています。** いくつかのキーについて Claude Code は任意のファイルからの制限値を優先するため、[`disableClaudeAiConnectors`](/docs/ja/settings-reference#disableclaudeaiconnectors) に対するプロジェクトの `true` は有効のままです。[管理設定の優先順位の例外](#exceptions-to-managed-settings-precedence) を参照してください。
 * **ファイルはその値を設定できません。** [`permissions.defaultMode`](/docs/ja/settings-reference#permissions-defaultmode) の値 `auto` および `bypassPermissions` はプロジェクトまたはローカル設定から有効になりません。代わりにユーザーまたは管理設定で設定するか、1 つのセッション用に `--permission-mode` を渡してください。v2.1.257 より前では、`bypassPermissions` はどのファイルからでも有効になりました。
 
@@ -277,24 +277,24 @@ Claude が動作している間、Claude Code はスピナーの下に 1 行の�
 
 Claude Code 内から新しいセッション用に選択を保存する場合（例えば `/model` でデフォルトモデルを設定する場合）、Claude Code はそれをユーザー設定ファイル `~/.claude/settings.json` に書き込みます。そのファイルに書き込むことができない場合（例えば別のツールが生成するか、読み取り専用コピーにリンクしている場合）、変更は現在のセッションに適用され、次のセッションでは失われます。ファイルを生成するツールでキーを設定するか、ファイルを書き込み可能なものに置き換えてください。
 
-ファイルに書き込むことができ、変更がまだ続かない場合は、変更が [1 つのセッション限り](#change-a-setting-for-one-session) であったか、[より高いレベルが同じキーを設定](#a-value-you-set-is-ignored) しているかを確認してください。`model` キーについては、[新しいセッションが選択したものとは異なるモデルで開始します](/docs/ja/model-config#a-new-session-starts-on-a-different-model-than-you-picked) がより多くの原因をリストしています。
+ファイルに書き込むことができ、変更がまだ続かない場合は、変更が [1 つのセッション限り](#change-a-setting-for-one-session) であったか、[より高いレベルが同じキーを設定](#a-value-you-set-is-ignored) しているかを確認してください。`model` キーについては、[新しいセッションが選択したものとは異なるモデルで開始します](/docs/ja/model-config.md#a-new-session-starts-on-a-different-model-than-you-picked) がより多くの原因をリストしています。
 
 #### 管理設定の変更が届いていません
 
-管理ソースは [配信テーブル](/docs/ja/managed-settings#choose-a-delivery-mechanism) のスケジュールで実行中のセッションに到達するため、最初にセッションを再開してください。`/status` がその後、管理者が変更したものとは異なるソースを名前付けする場合、より優先度の高いソースが適用されます。[Claude Code が管理ソースを結合する方法](/docs/ja/managed-settings#how-claude-code-combines-managed-sources) は順序を示しています。
+管理ソースは [配信テーブル](/docs/ja/managed-settings.md#choose-a-delivery-mechanism) のスケジュールで実行中のセッションに到達するため、最初にセッションを再開してください。`/status` がその後、管理者が変更したものとは異なるソースを名前付けする場合、より優先度の高いソースが適用されます。[Claude Code が管理ソースを結合する方法](/docs/ja/managed-settings.md#how-claude-code-combines-managed-sources) は順序を示しています。
 
 #### コミットされたキーがチームメイトに到達しません
 
 2 つのことが `.claude/settings.json` のキーがそれをクローンするすべての人に適用されるのを防ぎます：
 
-* **Claude Code はリポジトリファイルのキーを無視します。** [設定インデックス](/docs/ja/settings-reference#settings-index) のスコープ列で `User, local, or managed`、`User or managed`、`User`、`Managed`、または `Global config` を探してください。これらのキーは共有ファイルから適用されません。ただし、リポジトリファイルがまだオフにできるいくつかを除きます。これらのエントリのそれぞれはスコープ行でそう言っています。`Global config` キーは `~/.claude.json` からのみ適用されます。
+* **Claude Code はリポジトリファイルのキーを無視します。** [設定インデックス](/docs/ja/settings-reference.md#settings-index) のスコープ列で `User, local, or managed`、`User or managed`、`User`、`Managed`、または `Global config` を探してください。これらのキーは共有ファイルから適用されません。ただし、リポジトリファイルがまだオフにできるいくつかを除きます。これらのエントリのそれぞれはスコープ行でそう言っています。`Global config` キーは `~/.claude.json` からのみ適用されます。
 
   `env` キー内では、テレメトリエクスポート変数も共有ファイルから適用されません。いくつかのオフ値を除きます。[Claude Code が `env` で無視する変数](/docs/ja/settings-reference#variables-claude-code-ignores-in-env) を参照してください。
-* **キーは信頼を待っています。** `permissions.allow` ルール、`permissions.additionalDirectories`、`extraKnownMarketplaces`、およびほとんどの [`env`](/docs/ja/settings-reference#env) 値は、各チームメイトが [フォルダを信頼](/docs/ja/permissions#project-allow-rules-and-workspace-trust) した後にのみ適用されます。それまで、チームメイトにはプロンプトが表示され続け、ファイルが宣言するマーケットプレイスからプラグインを取得しません。`deny` および `ask` ルールはすぐに適用されます。
+* **キーは信頼を待っています。** `permissions.allow` ルール、`permissions.additionalDirectories`、`extraKnownMarketplaces`、およびほとんどの [`env`](/docs/ja/settings-reference#env) 値は、各チームメイトが [フォルダを信頼](/docs/ja/permissions.md#project-allow-rules-and-workspace-trust) した後にのみ適用されます。それまで、チームメイトにはプロンプトが表示され続け、ファイルが宣言するマーケットプレイスからプラグインを取得しません。`deny` および `ask` ルールはすぐに適用されます。
 
 #### 権限ルールが予想と異なる方法で結合されます
 
-* **権限プロンプトで「はい、今後は聞かないでください」を選択しましたが、同じツールのプロンプトが表示されます。** その選択はローカルファイルに `allow` ルールを保存し、そこの `allow` ルールはプロジェクトまたは管理ファイルからの `ask` ルールより優先されません。[権限ルールがどのように結合されるか](/docs/ja/permissions#settings-precedence) は順序を説明しています。VS Code 拡張機能では、承認カードはプロジェクトの共有ファイルを含む宛先ファイルを選択できます。これはすべての人のルールを変更します。CLI では、Claude Code はローカルファイルにのみ書き込みます。
+* **権限プロンプトで「はい、今後は聞かないでください」を選択しましたが、同じツールのプロンプトが表示されます。** その選択はローカルファイルに `allow` ルールを保存し、そこの `allow` ルールはプロジェクトまたは管理ファイルからの `ask` ルールより優先されません。[権限ルールがどのように結合されるか](/docs/ja/permissions.md#settings-precedence) は順序を説明しています。VS Code 拡張機能では、承認カードはプロジェクトの共有ファイルを含む宛先ファイルを選択できます。これはすべての人のルールを変更します。CLI では、Claude Code はローカルファイルにのみ書き込みます。
 * **組織の許可ルールは自分のルールと一緒に適用されます。** これは予想されています。Claude Code は [`permissions.allow`](/docs/ja/settings-reference#permissions-allow) をスコープ全体でマージします。ただし、組織が [`allowManagedPermissionRulesOnly`](/docs/ja/settings-reference#allowmanagedpermissionrulesonly) を設定していない限り。
 
 ### 管理設定の優先順位の例外
@@ -304,7 +304,7 @@ Claude Code 内から新しいセッション用に選択を保存する場合�
 | キー | Claude Code が優先する値 | 注記 |
 | :- | :- | :- |
 | [`disableClaudeAiConnectors`](/docs/ja/settings-reference#disableclaudeaiconnectors) | 任意のスコープからの `true` | 管理ソースが `false` を設定する場合でも優先されます |
-| [`enableArtifact`](/docs/ja/settings-reference#enableartifact) | 任意のスコープからの `false`、および任意のスコープからの `disableArtifact: true` | 管理ソースが `true` を設定する場合でも優先されます。何も [Artifact ツール](/docs/ja/artifacts#disable-artifacts) をオンに戻しません。Claude Code v2.1.242 以降が必要です |
+| [`enableArtifact`](/docs/ja/settings-reference#enableartifact) | 任意のスコープからの `false`、および任意のスコープからの `disableArtifact: true` | 管理ソースが `true` を設定する場合でも優先されます。何も [Artifact ツール](/docs/ja/artifacts.md#disable-artifacts) をオンに戻しません。Claude Code v2.1.242 以降が必要です |
 | [`isolatePeerMachines`](/docs/ja/settings-reference#isolatepeermachines) | 任意のスコープからの `true` | 管理ソースが `false` を設定する場合でも優先されます |
 | [`permissions.blockReadsOutsideWorkingDirectories`](/docs/ja/settings-reference#permissions-blockreadsoutsideworkingdirectories) | 任意のスコープからの `true` | 管理ソースが `false` を設定する場合でも優先されます。Claude Code v2.1.257 以降が必要です |
 | [`autoMode.classifyAllShell`](/docs/ja/settings-reference#automode-classifyallshell) | `~/.claude/settings.json` または `--settings` からの `true` | 管理ソースが `false` を設定する場合でも優先されます |
@@ -319,22 +319,22 @@ Claude Code を内部で実行し、[`CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST`](/do
 
 ## クラウドセッションの設定
 
-[クラウドセッション](/docs/ja/claude-code-on-the-web)は[クラウド環境](/docs/ja/cloud-environments)で実行され、マシン上ではなくリポジトリの新しいクローンで実行されます。これにより、どの設定がそこに到達するかが変わります：
+[クラウドセッション](/docs/ja/claude-code-on-the-web.md)は[クラウド環境](/docs/ja/cloud-environments.md)で実行され、マシン上ではなくリポジトリの新しいクローンで実行されます。これにより、どの設定がそこに到達するかが変わります：
 
-* **プロジェクト内のクラウドスレッド**：[プロジェクト](/docs/ja/claude-projects#what-threads-pick-up-from-your-repositories)内のクラウドスレッドでは、プロジェクトに含まれるリポジトリの数にかかわらず、リポジトリの `.claude/settings.json` の権限ルール、フック、`env` はいずれも適用されません。代わりに使用するものについては、[スレッドがリポジトリから取り込むもの](/docs/ja/claude-projects#what-threads-pick-up-from-your-repositories)に記載されています。
-* **共有プロジェクト設定**（`.claude/settings.json`）：プロジェクト外の 1 つのリポジトリを持つセッションで読み込まれます。ファイルはクローンの一部であり、セッションはその内部で開始されるためです。その設定をコミットして、それらのセッションに適用してください。
-* **複数のリポジトリを持つ共有プロジェクト設定**：Anthropic がホストする環境では、複数のリポジトリを持つセッションはクローンの上で開始され、各リポジトリの `.claude/settings.json` から `enabledPlugins` と `extraKnownMarketplaces` キーのみを読み込み、権限ルール、フック、`env`、またはその他のキーは読み込みません。これら 2 つのキーが宣言するマーケットプレイスとプラグインは、それでも[クラウドセッションでは読み込まれません](/docs/ja/cloud-environments#what-carries-over-from-your-setup)。自己ホスト型環境については、[どのリポジトリの設定が適用されるか](/docs/ja/self-hosted-environments-configuration#repository-settings-in-sessions-with-several-repositories)を参照してください。
+* **プロジェクト内のクラウドスレッド**：[プロジェクト](/docs/ja/claude-projects.md#what-threads-pick-up-from-your-repositories)内のクラウドスレッドでは、プロジェクトに含まれるリポジトリの数にかかわらず、リポジトリの `.claude/settings.json` の権限ルール、フック、`env` はいずれも適用されません。代わりに使用するものについては、[スレッドがリポジトリから取り込むもの](/docs/ja/claude-projects.md#what-threads-pick-up-from-your-repositories)に記載されています。
+* **共有プロジェクト設定**（`.claude/settings.json`）：プロジェクトのスレッド外の 1 つのリポジトリを持つセッションで読み込まれます。ファイルはクローンの一部であり、セッションはその内部で開始されるためです。その設定をコミットして、それらのセッションに適用してください。
+* **複数のリポジトリを持つ共有プロジェクト設定**：Anthropic がホストする環境では、複数のリポジトリを持つセッションはクローンの上で開始され、各リポジトリの `.claude/settings.json` から `enabledPlugins` と `extraKnownMarketplaces` キーのみを読み込み、権限ルール、フック、`env`、またはその他のキーは読み込みません。これら 2 つのキーが宣言するマーケットプレイスとプラグインは、それでも[クラウドセッションでは読み込まれません](/docs/ja/cloud-environments.md#what-carries-over-from-your-setup)。自己ホスト型環境については、[どのリポジトリの設定が適用されるか](/docs/ja/self-hosted-environments-configuration.md#repository-settings-in-sessions-with-several-repositories)を参照してください。
 * **ユーザーおよびプロジェクトローカル設定**（`~/.claude/settings.json` および `.claude/settings.local.json`）：読み込まれません。両方ともマシンに留まり、ローカルファイルはクローンにありません。
-* **管理設定**：デバイスの `managed-settings.json` ファイルまたは MDM プロファイルはクラウドセッションに到達しません。組織の[サーバー管理設定](/docs/ja/server-managed-settings)は到達します。[サーフェスカバレッジ](/docs/ja/model-config#surface-coverage)はどのクラウドセッションがそれらを受け取るかをリストします。[自己ホスト型環境](/docs/ja/self-hosted-environments)もランナーイメージの管理設定ファイルを読み込みます。[Claude Code が管理ソースを結合する方法](/docs/ja/managed-settings#how-claude-code-combines-managed-sources)はそのファイルがいつ適用されるかを説明します。
-* **`/config`**：ブラウザの claude.ai/code では、値を変更する代わりに Claude Code セクションの claude.ai 設定を開きます。クラウドセッションの設定を変更するには、環境で[環境変数](/docs/ja/cloud-environments#set-environment-variables)を設定してください。プロジェクト外の 1 つのリポジトリを持つセッションでは、代わりにそのリポジトリの `.claude/settings.json` にキーをコミットすることもできます。
+* **管理設定**：デバイスの `managed-settings.json` ファイルまたは MDM プロファイルはクラウドセッションに到達しません。組織の[サーバー管理設定](/docs/ja/server-managed-settings.md)は到達します。[サーフェスカバレッジ](/docs/ja/model-config.md#surface-coverage)はどのクラウドセッションがそれらを受け取るかをリストします。[自己ホスト型環境](/docs/ja/self-hosted-environments)もランナーイメージの管理設定ファイルを読み込みます。[Claude Code が管理ソースを結合する方法](/docs/ja/managed-settings.md#how-claude-code-combines-managed-sources)はそのファイルがいつ適用されるかを説明します。
+* **`/config`**：ブラウザの claude.ai/code では、値を変更する代わりに Claude Code セクションの claude.ai 設定を開きます。クラウドセッションの設定を変更するには、環境で[環境変数](/docs/ja/cloud-environments.md#set-environment-variables)を設定してください。プロジェクトのスレッド外の 1 つのリポジトリを持つセッションでは、代わりにそのリポジトリの `.claude/settings.json` にキーをコミットすることもできます。
 
-[セットアップから何が引き継がれるか](/docs/ja/cloud-environments#what-carries-over-from-your-setup)は残りをリストします：`CLAUDE.md`、skills、MCP サーバー、plugins、および認証情報。
+[セットアップから何が引き継がれるか](/docs/ja/cloud-environments.md#what-carries-over-from-your-setup)は残りをリストします：`CLAUDE.md`、skills、MCP サーバー、plugins、および認証情報。
 
 ## 次は何か
 
-* [すべての設定](/docs/ja/settings-reference)：すべてのキー。設定する場所と例
-* [設定ファイルの例](/docs/ja/settings-example)：個人ファイル、チームファイル、および組織の管理ファイル
-* [権限を構成する](/docs/ja/permissions)：allow、ask、および deny ルール。Claude Code が確認なしで実行するもの
-* [環境変数](/docs/ja/env-vars)：Claude Code が読み込む変数および `env` ブロック
-* [構成をデバッグする](/docs/ja/debug-your-config)：設定が適用されない場合
-* [Claude ディレクトリリファレンス](/docs/ja/claude-directory)：Claude Code が読み込むすべてのファイル。subagents、MCP サーバー、プラグイン、および `CLAUDE.md` を含む
+* [すべての設定](/docs/ja/settings-reference.md)：すべてのキー。設定する場所と例
+* [設定ファイルの例](/docs/ja/settings-example.md)：個人ファイル、チームファイル、および組織の管理ファイル
+* [権限を構成する](/docs/ja/permissions.md)：allow、ask、および deny ルール。Claude Code が確認なしで実行するもの
+* [環境変数](/docs/ja/env-vars.md)：Claude Code が読み込む変数および `env` ブロック
+* [構成をデバッグする](/docs/ja/debug-your-config.md)：設定が適用されない場合
+* [Claude ディレクトリリファレンス](/docs/ja/claude-directory.md)：Claude Code が読み込むすべてのファイル。subagents、MCP サーバー、プラグイン、および `CLAUDE.md` を含む

@@ -8,9 +8,9 @@
 
 > [!NOTE]
 >
-> このページでは、Google Cloud で Claude apps gateway を実行する 1 つの方法を説明します。この設定は、サポートされている本番環境デプロイメントではなく、カスタマー管理インフラストラクチャの実装例です。各部分がどのように組み合わさるかを確認してから、自分の環境に適応させてください。プラットフォーム非依存の要件については、[デプロイメントガイド](/docs/ja/claude-apps-gateway-deploy)を参照してください。
+> このページでは、Google Cloud で Claude apps gateway を実行する 1 つの方法を説明します。この設定は、サポートされている本番環境デプロイメントではなく、カスタマー管理インフラストラクチャの実装例です。各部分がどのように組み合わさるかを確認してから、自分の環境に適応させてください。プラットフォーム非依存の要件については、[デプロイメントガイド](/docs/ja/claude-apps-gateway-deploy.md)を参照してください。
 
-この例では、Google Cloud の Agent Platform をモデルアップストリームとして使用し、Cloud Run または GKE をコンピュートに使用して、Google Cloud に Claude apps gateway をプロビジョニングします。Google Workspace は例の ID プロバイダー（IdP）ですが、OpenID Connect（OIDC）準拠の任意の IdP が機能します。`oidc` ブロックのみが変わります。IdP ごとの詳細については、[ID プロバイダーのセットアップ](/docs/ja/claude-apps-gateway-deploy#identity-provider-setup)を参照してください。
+この例では、Google Cloud の Agent Platform をモデルアップストリームとして使用し、Cloud Run または GKE をコンピュートに使用して、Google Cloud に Claude apps gateway をプロビジョニングします。Google Workspace は例の ID プロバイダー（IdP）ですが、OpenID Connect（OIDC）準拠の任意の IdP が機能します。`oidc` ブロックのみが変わります。IdP ごとの詳細については、[ID プロバイダーのセットアップ](/docs/ja/claude-apps-gateway-deploy.md#identity-provider-setup)を参照してください。
 
 ## 構築内容
 
@@ -20,7 +20,7 @@
 
 * ゲートウェイコンテナを実行する **Cloud Run** サービスまたは **GKE** Deployment
 * ゲートウェイイメージ用の **Artifact Registry** リポジトリ
-* ゲートウェイの[ストア](/docs/ja/claude-apps-gateway-config#store)用のプライベート IP のみの **Cloud SQL for PostgreSQL** インスタンス
+* ゲートウェイの[ストア](/docs/ja/claude-apps-gateway-config.md#store)用のプライベート IP のみの **Cloud SQL for PostgreSQL** インスタンス
 * `gateway.yaml`、JWT 署名キー、OIDC クライアントシークレット、および Postgres URL 用の **Secret Manager** シークレット
 * `roles/aiplatform.user` を持つ **Service account**、Cloud Run に直接アタッチされるか、GKE 上で Workload Identity 経由でバインドされます
 * Cloud Run 前の内部 Application Load Balancer（このチュートリアルではゲートウェイ用に設定しますが、作成しません）、または GKE 上のクラス `gce-internal` の内部 **GKE Ingress** である **HTTPS フロントエンド**（お客様が提供）
@@ -31,7 +31,7 @@
 * `gcloud auth login` で認証された `gcloud` CLI、およびローカルにインストールされた Docker
 * GKE トラック用：`kubectl`、および以下のウォークスルーで作成された VPC 上の GKE クラスタ
 * Model Garden で必要な Claude モデルへのアクセス、それらを公開している地域内
-* リダイレクト URI が `https://<gateway-host>/oauth/callback` の Google Workspace OAuth 2.0 ウェブアプリケーションクライアント。[ID プロバイダーのセットアップ](/docs/ja/claude-apps-gateway-deploy#identity-provider-setup)を参照してください
+* リダイレクト URI が `https://<gateway-host>/oauth/callback` の Google Workspace OAuth 2.0 ウェブアプリケーションクライアント。[ID プロバイダーのセットアップ](/docs/ja/claude-apps-gateway-deploy.md#identity-provider-setup)を参照してください
 * ゲートウェイ用の TLS ホスト名。通常はロードバランサーを指すプライベート DNS 名
 
 プロジェクトと地域を一度設定します：
@@ -86,7 +86,7 @@ gcloud projects add-iam-policy-binding "$PROJECT_ID" \
 
 **3. イメージをビルドして Artifact Registry にプッシュする**
 
-[コンテナ イメージ要件](/docs/ja/claude-apps-gateway-deploy#container-image)に従ってイメージをビルドし（`linux-x64` glibc バイナリを使用）、プッシュします。
+[コンテナ イメージ要件](/docs/ja/claude-apps-gateway-deploy.md#container-image)に従ってイメージをビルドし（`linux-x64` glibc バイナリを使用）、プッシュします。
 
 ```bash theme={null}
 gcloud artifacts repositories create claude-gateway \
@@ -133,7 +133,7 @@ Cloud Run または GKE ランタイムは、この VPC 上にあるか、この
 
 **5. gateway.yaml を作成する**
 
-`upstreams` ブロックは Google Cloud の Agent Platform を `auth: {}` で指定するため、ゲートウェイはランタイム サービス アカウントからのアプリケーション デフォルト認証情報を使用して認証します。すべてのフィールドについては、[設定リファレンス](/docs/ja/claude-apps-gateway-config)を参照してください。
+`upstreams` ブロックは Google Cloud の Agent Platform を `auth: {}` で指定するため、ゲートウェイはランタイム サービス アカウントからのアプリケーション デフォルト認証情報を使用して認証します。すべてのフィールドについては、[設定リファレンス](/docs/ja/claude-apps-gateway-config.md)を参照してください。
 
 2 つの `listen` フィールドはゲートウェイの前面を説明します。
 
@@ -221,7 +221,11 @@ gcloud run deploy claude-gateway \
   --no-invoker-iam-check
 ```
 
-`--network`、`--subnet`、`--vpc-egress=private-ranges-only` 経由の直接 VPC エグレスにより、サービスは Cloud SQL プライベート IP に直接到達できます。各インスタンスは最大 [`store.max_connections`](/docs/ja/claude-apps-gateway-config#store) Postgres 接続を保持し、デフォルトは 5 です。最大インスタンス数 × `store.max_connections` を Cloud SQL ティアの接続制限以下に保ちます。[リファレンス アセット](#terraform-reference)は、この理由から `db-g1-small` ティアのインスタンスを 8 に制限しています。Google Cloud の Agent Platform エンドポイントと `accounts.google.com` へのパブリック エグレスは VPC を通さずにインターネットに直接移動するため、Cloud NAT は不要です。
+`--network`、`--subnet`、`--vpc-egress=private-ranges-only` 経由の直接 VPC エグレスにより、サービスは Cloud SQL プライベート IP に直接到達できます。Google Cloud の Agent Platform エンドポイントと `accounts.google.com` へのパブリック エグレスは VPC を通さずにインターネットに直接移動するため、Cloud NAT は不要です。
+
+> [!NOTE]
+>
+> 各インスタンスは最大 [`store.max_connections`](/docs/ja/claude-apps-gateway-config#store) 個の Postgres 接続を保持し、デフォルトは 5 です。[接続プールのサイズを決める](/docs/ja/claude-apps-gateway-deploy.md#size-the-connection-pool)を使用して、`--max-instances=8` をデータベースがゲートウェイ用に残している接続数と照らし合わせて確認し、ローリング アップデートで起動される追加のインスタンスも計算に含めてください。
 
 インボーカー IAM チェックは開いているか無効にする必要があります。ゲートウェイは独自の OIDC を実行し、そのクライアントは GCP トークンを持たないため、Cloud Run のインボーカー チェックは認証されていないリクエストを許可する必要があります。ゲートウェイの OIDC サインインはリクエストがコンテナに到達すると認証し、`allowed_email_domains` がサインインできるドメインをゲートします。
 
@@ -267,7 +271,7 @@ kubectl annotate serviceaccount gateway -n claude-gateway \
   iam.gke.io/gcp-service-account="claude-gateway@${PROJECT_ID}.iam.gserviceaccount.com"
 ```
 
-[Kubernetes デプロイメント](/docs/ja/claude-apps-gateway-deploy#kubernetes)で説明されているように、ゲートウェイを標準 Deployment、Service、および内部 Ingress（クラス `gce-internal`）としてデプロイします。以下を使用します。
+[Kubernetes デプロイメント](/docs/ja/claude-apps-gateway-deploy.md#kubernetes)で説明されているように、ゲートウェイを標準 Deployment、Service、および内部 Ingress（クラス `gce-internal`）としてデプロイします。以下を使用します。
 
 * `serviceAccountName: gateway`
 * Secret Manager CSI ドライバーが `/secrets` にシークレットをマウント
@@ -275,7 +279,7 @@ kubectl annotate serviceaccount gateway -n claude-gateway \
 
 ゲートウェイ Service に `timeoutSec` を上げた BackendConfig をアタッチします。GKE Ingress の背後にあるロード バランサー バックエンド サービスはデフォルトで 30 秒のタイムアウトで、長いストリーミング レスポンスを切断します。
 
-Workload Identity クラスターで `169.254.169.254` をブロックするエグレス NetworkPolicy を適用しないでください。ポッドは認証情報のためにメタデータ サーバーに到達する必要があります。ゲートウェイの組み込み [SSRF ガード](/docs/ja/claude-apps-gateway-deploy#threat-model-summary)がそこでの防御です。
+Workload Identity クラスターで `169.254.169.254` をブロックするエグレス NetworkPolicy を適用しないでください。ポッドは認証情報のためにメタデータ サーバーに到達する必要があります。ゲートウェイの組み込み [SSRF ガード](/docs/ja/claude-apps-gateway-deploy.md#threat-model-summary)がそこでの防御です。
 
 ゲートウェイはメタデータ エンドポイントに到達可能であることを示すブート警告をログに記録し、エグレス NetworkPolicy を適用することを提案します。Workload Identity の下ではその警告は予想されます。ポッドがエンドポイントを必要とするためです。
 
@@ -297,7 +301,7 @@ Workload Identity クラスターで `169.254.169.254` をブロックするエ�
 
 ## トラブルシューティング
 
-ゲートウェイブートとログインエラーについては、プラットフォーム非依存の[トラブルシューティングテーブル](/docs/ja/claude-apps-gateway-deploy#troubleshooting)を参照してください。以下のエントリは Google Cloud に固有です。
+ゲートウェイブートとログインエラーについては、プラットフォーム非依存の[トラブルシューティングテーブル](/docs/ja/claude-apps-gateway-deploy.md#troubleshooting)を参照してください。以下のエントリは Google Cloud に固有です。
 
 | 症状 | 原因 | 修正 |
 | - | - | - |
@@ -310,6 +314,6 @@ Workload Identity クラスターで `169.254.169.254` をブロックするエ�
 
 ## 次のステップ
 
-* [設定リファレンス](/docs/ja/claude-apps-gateway-config)：すべての `gateway.yaml` オプション（`managed.policies` および `telemetry` を含む）
-* [デプロイメントと運用](/docs/ja/claude-apps-gateway-deploy)：IdP セットアップ、ヘルスチェック、JWT シークレットローテーション、アップグレード、およびセキュリティモデル
+* [設定リファレンス](/docs/ja/claude-apps-gateway-config.md)：すべての `gateway.yaml` オプション（`managed.policies` および `telemetry` を含む）
+* [デプロイメントと運用](/docs/ja/claude-apps-gateway-deploy.md)：IdP セットアップ、ヘルスチェック、JWT シークレットローテーション、アップグレード、およびセキュリティモデル
 * [Claude apps gateway 概要](/docs/ja/claude-apps-gateway)：クイックスタートと開発者の接続

@@ -28,7 +28,7 @@ API は各リクエストの開始部分（プリフィックスと呼ばれま�
 
 会話レイヤーへの変更は、システムプロンプトとプロジェクトコンテキストをキャッシュされたままにします。システムプロンプトへの変更は、すべての後続コンテンツが異なるプリフィックスの後ろに配置されるようになるため、すべてを無効にします。3 番目の列は、完全なリストではなく一般的なトリガーを示しており、以下のセクションで完全なセットについて説明します。
 
-プリフィックスマッチルールは、このページのほとんどの動作を説明しています。たとえば、[plan モード](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode) と [スキル読み込み](/docs/ja/skills) は、その命令を会話メッセージとして追加するため、キャッシュされたプリフィックスはそのままです。
+プリフィックスマッチルールは、このページのほとんどの動作を説明しています。たとえば、[plan モード](/docs/ja/permission-modes.md#analyze-before-you-edit-with-plan-mode) と [スキル読み込み](/docs/ja/skills.md) は、その命令を会話メッセージとして追加するため、キャッシュされたプリフィックスはそのままです。
 
 レイヤーテーブルに表示されないが、キャッシュされたままになるものに影響する 2 つの設定があります。
 
@@ -43,14 +43,14 @@ API は各リクエストの開始部分（プリフィックスと呼ばれま�
 
 キャッシングはサーバー側で行われ、モデルを提供するインフラストラクチャで行われます。その場所は、認証方法によって異なります。
 
-* **API キー、Claude サブスクリプション、または [Claude Platform on AWS](/docs/ja/claude-platform-on-aws)**：キャッシュは Anthropic のインフラストラクチャに存在し、[Claude API](https://platform.claude.com/docs) を通じてアクセスされます。
+* **API キー、Claude サブスクリプション、または [Claude Platform on AWS](/docs/ja/claude-platform-on-aws.md)**：キャッシュは Anthropic のインフラストラクチャに存在し、[Claude API](https://platform.claude.com/docs) を通じてアクセスされます。
 * **Amazon Bedrock または Google Cloud の Agent Platform**：キャッシュはクラウドプロバイダーのサービングインフラストラクチャに存在します。
 * **Microsoft Foundry**：デプロイの [ホスティングオプション](https://platform.claude.com/docs/en/build-with-claude/claude-in-microsoft-foundry#hosting-options) によって異なります。Hosted on Azure のデプロイは Azure インフラストラクチャで提供されます。Hosted on Anthropic のデプロイは Anthropic のインフラストラクチャで提供されます。
 * **カスタム `ANTHROPIC_BASE_URL` または [LLM ゲートウェイ](/docs/ja/llm-gateway)**：キャッシュはリクエストが転送される場所に存在し、キャッシングが機能するかどうかはゲートウェイに依存します。
 
 Claude Code は会話中にシステムコンテキスト（ファイル変更通知など）も追加し、[`CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS`](/docs/ja/llm-gateway-protocol#disable-pre-release-capabilities) を設定しない限り、すべてのプロバイダーと接続でそのブロックをキャッシング用にマークします。その場合、そのブロックはキャッシュなしで送信されます。
 
-プロバイダー独自のエンドポイント、Amazon Bedrock とその [Mantle エンドポイント](/docs/ja/amazon-bedrock#use-the-mantle-endpoint)、Google Cloud の Agent Platform、および Microsoft Foundry では、Claude API と同じ方法でブロックをキャッシュします。
+プロバイダー独自のエンドポイント、Amazon Bedrock とその [Mantle エンドポイント](/docs/ja/amazon-bedrock.md#use-the-mantle-endpoint)、Google Cloud の Agent Platform、および Microsoft Foundry では、Claude API と同じ方法でブロックをキャッシュします。
 
 リクエストが [LLM ゲートウェイ](/docs/ja/llm-gateway)、カスタム `ANTHROPIC_BASE_URL`、または [`ANTHROPIC_BEDROCK_BASE_URL`](/docs/ja/env-vars) などのクラウドプロバイダーベース URL の上書きを通過する場合、キャッシュされたままになるものは、ゲートウェイが Claude Code が送信する [`cache_control` マーカー](https://platform.claude.com/docs/en/build-with-claude/prompt-caching#explicit-cache-breakpoints) をどのように処理するかに依存します。
 
@@ -58,7 +58,7 @@ Claude Code は会話中にシステムコンテキスト（ファイル変更�
 * **`cache_control` という名前の `400` エラーでマークされたリクエストを拒否する**：Claude Code はマーカーをブロックから最後の会話メッセージに移動させてリクエストを再送信し、Claude Code が終了するまでそこに保持します。ブロックはキャッシュなし入力として請求されます。会話はキャッシュされたままです。
 * **マーカーを削除して成功を返す**：会話履歴全体は、毎ターン、キャッシュなし入力として請求されます。ブロック形式のシステムコンテンツをプレーン文字列に変換するゲートウェイは、同じ方法でマーカーをドロップします。
 
-各プロバイダーが保存および処理するものについては、[データ使用](/docs/ja/data-usage) を参照してください。キャッシュがどこに存在するかに関係なく、エントリは非アクティブ期間後に期限切れになり、以下の [キャッシュの有効期間](#cache-lifetime) では TTL とそれを延長する方法について説明しています。
+各プロバイダーが保存および処理するものについては、[データ使用](/docs/ja/data-usage.md) を参照してください。キャッシュがどこに存在するかに関係なく、エントリは非アクティブ期間後に期限切れになり、以下の [キャッシュの有効期間](#cache-lifetime) では TTL とそれを延長する方法について説明しています。
 
 ## キャッシュを無効化するアクション
 
@@ -82,17 +82,17 @@ Claude Code は会話中にシステムコンテキスト（ファイル変更�
 
 v2.1.238 より前では、Claude Code はキャッシュ TTL をチェックせず、キャッシュが期限切れになった後でも確認を求めていました。
 
-[PreModelSwitch フック](/docs/ja/hooks#premodelswitch-decision-control) を使用して、この確認を必須にするか、スキップすることもできます。
+[PreModelSwitch フック](/docs/ja/hooks.md#premodelswitch-decision-control) を使用して、この確認を必須にするか、スキップすることもできます。
 
 [`opusplan` モデル設定](/docs/ja/model-config#opusplan-model-setting) は、plan モード中は Opus に、実行中は Sonnet に解決されるため、各 plan モード切り替えはモデルスイッチであり、新しいキャッシュを開始します。
 
-Fable モデル、Opus 5.5、Sonnet 5.5、および Opus 5 の [自動モデルフォールバック](/docs/ja/model-config#automatic-model-fallback) もモデルスイッチです。安全分類器がフォールバックモデルを持つカテゴリーでリクエストを警告すると、Claude Code はそのモデルでリクエストを再実行し、セッションはそこで続行されます。
+Fable モデル、Opus 5.5、Sonnet 5.5、および Opus 5 の [自動モデルフォールバック](/docs/ja/model-config.md#automatic-model-fallback) もモデルスイッチです。安全分類器がフォールバックモデルを持つカテゴリーでリクエストを警告すると、Claude Code はそのモデルでリクエストを再実行し、セッションはそこで続行されます。
 
-スキルまたはコマンドのフロントマターがセッションの現在のモデル以外の [`model`](/docs/ja/skills#frontmatter-reference) を指定する場合、そのターンもモデルスイッチです。次のリクエストはキャッシュヒットなしで会話履歴全体を読み込みます。セッションモデルは次のプロンプトで再開されます。`context: fork` スキルは、代わりに [フォークされたサブエージェントのモデル](/docs/ja/skills#run-skills-in-a-subagent) を設定します。
+スキルまたはコマンドのフロントマターがセッションの現在のモデル以外の [`model`](/docs/ja/skills#frontmatter-reference) を指定する場合、そのターンもモデルスイッチです。次のリクエストはキャッシュヒットなしで会話履歴全体を読み込みます。セッションモデルは次のプロンプトで再開されます。`context: fork` スキルは、代わりに [フォークされたサブエージェントのモデル](/docs/ja/skills.md#run-skills-in-a-subagent) を設定します。
 
 ### effort レベルの変更
 
-ほとんどのモデルでは、セッション中に [effort レベル](/docs/ja/model-config#adjust-effort-level) を変更すると、次のリクエストはキャッシュヒットなしで会話履歴全体を読み込みます。キャッシュがまだ温かい間、Claude Code は最初に変更を確認するよう求めます。
+ほとんどのモデルでは、セッション中に [effort レベル](/docs/ja/model-config.md#adjust-effort-level) を変更すると、次のリクエストはキャッシュヒットなしで会話履歴全体を読み込みます。キャッシュがまだ温かい間、Claude Code は最初に変更を確認するよう求めます。
 
 API キーまたは Claude サブスクリプションを使用する Opus 5.5、Sonnet 5.5、Haiku 5.5、および Fable 5.1 では、effort を変更してもキャッシュが保持され、Claude Code は確認なしに新しいレベルを適用します。これは Amazon Bedrock、Google Cloud の Agent Platform、または [Claude アプリゲートウェイ](/docs/ja/claude-apps-gateway) には適用されません。また、[`CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS`](/docs/ja/llm-gateway-protocol#disable-pre-release-capabilities) を設定した場合、または組織が HIPAA 構成を持つ場合にも適用されません。
 
@@ -100,16 +100,16 @@ v2.1.260 より前では、API キーまたは Claude サブスクリプショ�
 
 ### fast mode のオン
 
-[fast mode](/docs/ja/fast-mode) を有効にすると、キャッシュキーの一部であるリクエストヘッダーが追加されるため、Claude Code が fast mode をオンにして送信する最初のリクエストはキャッシュヒットなしで会話履歴全体を読み込みます。Claude Code はターンの開始時にそのヘッダーを 1 回設定し、ターン全体でそれを保持するため、Claude が作業中に fast mode をオンにすると、ヘッダーからのキャッシュミスは次のターンの最初のリクエストで発生します。これらのキャッシュされていない入力トークンは [fast mode の料金](/docs/ja/fast-mode#understand-the-cost-tradeoff) で請求されます。これが、セッションの開始時に fast mode をオンにすることが、長いセッションの深くでオンにすることより低コストである理由です。現在のモデルが fast mode をサポートしていない場合、fast mode を有効にすると [モデルも切り替わり](#switching-models)、そのスイッチ自体が実行中のターンの次のリクエストから新しいキャッシュを開始します。
+[fast mode](/docs/ja/fast-mode.md) を有効にすると、キャッシュキーの一部であるリクエストヘッダーが追加されるため、Claude Code が fast mode をオンにして送信する最初のリクエストはキャッシュヒットなしで会話履歴全体を読み込みます。Claude Code はターンの開始時にそのヘッダーを 1 回設定し、ターン全体でそれを保持するため、Claude が作業中に fast mode をオンにすると、ヘッダーからのキャッシュミスは次のターンの最初のリクエストで発生します。これらのキャッシュされていない入力トークンは [fast mode の料金](/docs/ja/fast-mode.md#understand-the-cost-tradeoff) で請求されます。これが、セッションの開始時に fast mode をオンにすることが、長いセッションの深くでオンにすることより低コストである理由です。現在のモデルが fast mode をサポートしていない場合、fast mode を有効にすると [モデルも切り替わり](#switching-models)、そのスイッチ自体が実行中のターンの次のリクエストから新しいキャッシュを開始します。
 
-コストは会話ごとに 1 回適用されます。最初の fast mode ターンの後、Claude Code はヘッダーを送信し続け、キャッシュキーの一部ではないリクエストの速度設定のみを変更します。fast mode をオフにすること、[レート制限後の標準速度への自動フォールバック](/docs/ja/fast-mode#handle-rate-limits)、およびその後にオンに戻すことはすべてキャッシュを保持します。セッション中に [使用クレジットが不足した](/docs/ja/fast-mode#handle-rate-limits) 場合、Claude Code は拒否された各 fast mode リクエストを同じ方法で標準速度で再試行するため、このフォールバックもキャッシュを保持します。`/clear` と `/compact` はこれをリセットします。これらはいずれにしてもその時点でキャッシュを再構築するためです。
+コストは会話ごとに 1 回適用されます。最初の fast mode ターンの後、Claude Code はヘッダーを送信し続け、キャッシュキーの一部ではないリクエストの速度設定のみを変更します。fast mode をオフにすること、[レート制限後の標準速度への自動フォールバック](/docs/ja/fast-mode.md#handle-rate-limits)、およびその後にオンに戻すことはすべてキャッシュを保持します。セッション中に [使用クレジットが不足した](/docs/ja/fast-mode.md#handle-rate-limits) 場合、Claude Code は拒否された各 fast mode リクエストを同じ方法で標準速度で再試行するため、このフォールバックもキャッシュを保持します。`/clear` と `/compact` はこれをリセットします。これらはいずれにしてもその時点でキャッシュを再構築するためです。
 
 ### MCP サーバーの接続または削除
 
-ツール定義はシステムプロンプトレイヤーに存在するため、リクエスト内のツール定義のセットがターン間で変更されるとキャッシュが無効化されます。[アドバイザーツール](/docs/ja/advisor) の切り替えは例外です。その定義はキャッシュブレークポイントの後に存在するため、`/advisor` を有効または無効にするとキャッシュされたプレフィックスはそのまま保持されます。[MCP サーバー](/docs/ja/mcp) の変更がこれを行うかどうかは、[ツール検索](/docs/ja/mcp#scale-with-mcp-tool-search) がセッションの MCP ツールを遅延させるかどうかによります。これはサポートされているモデルのデフォルトです。
+ツール定義はシステムプロンプトレイヤーに存在するため、リクエスト内のツール定義のセットがターン間で変更されるとキャッシュが無効化されます。[アドバイザーツール](/docs/ja/advisor.md) の切り替えは例外です。その定義はキャッシュブレークポイントの後に存在するため、`/advisor` を有効または無効にするとキャッシュされたプレフィックスはそのまま保持されます。[MCP サーバー](/docs/ja/mcp.md) の変更がこれを行うかどうかは、[ツール検索](/docs/ja/mcp.md#scale-with-mcp-tool-search) がセッションの MCP ツールを遅延させるかどうかによります。これはサポートされているモデルのデフォルトです。
 
 * **ツール遅延**: Claude Code は会話の最初のリクエストからツールリストを保持するため、セッション中にサーバーが接続または切断されても、既にキャッシュされているものは何も影響を受けません。最初のリクエスト後に接続を完了するサーバーは、Claude がオンデマンドで読み込む遅延定義としてそのツールを提供します。
-* **ツール事前読み込み**: 定義を追加するとキャッシュが無効化され、意図的に削除してもそうなります。これは、ツール検索が [オフまたは利用不可](/docs/ja/mcp#configure-tool-search) である場合に適用されます。例えば、次のような場合です。
+* **ツール事前読み込み**: 定義を追加するとキャッシュが無効化され、意図的に削除してもそうなります。これは、ツール検索が [オフまたは利用不可](/docs/ja/mcp.md#configure-tool-search) である場合に適用されます。例えば、次のような場合です。
   * Opus 4.5、Sonnet 4.5、Haiku 4.5 より前の Google Cloud の Agent Platform モデル
   * Microsoft Foundry の [Azure でホストされているデプロイ](https://platform.claude.com/docs/en/build-with-claude/claude-in-microsoft-foundry#hosting-options) で、Claude Code がそのデプロイがツール検索を拒否することを検出した場合
 
@@ -117,9 +117,9 @@ v2.1.260 より前では、API キーまたは Claude サブスクリプショ�
 
 | セッション中の変更 | キャッシュ | 次のリクエストのツール定義 |
 | - | - | - |
-| サーバーが接続する、または [動的ツール更新](/docs/ja/mcp#dynamic-tool-updates) がツールを追加する | 無効化 | 新しい定義が追加される |
+| サーバーが接続する、または [動的ツール更新](/docs/ja/mcp.md#dynamic-tool-updates) がツールを追加する | 無効化 | 新しい定義が追加される |
 | サーバーがユーザーの操作なしで切断される（例えば、stdio サーバーのプロセスが終了する） | 保持 | サーバーの定義は変更されないままです。そのツールの 1 つへの呼び出しはエラーを返します（実行される代わりに） |
-| リモートサーバーが接続切断後に [自動的に再接続](/docs/ja/mcp#automatic-reconnection) する | 保持（サーバーが再接続中に送信されたリクエストが `WaitForMcpServers` ツールを追加する場合を除き、その場合は 1 回無効化） | サーバーの定義は変更されないままです。サーバーが再接続中に送信されたリクエストは、会話がまだそれをリストしていない場合に `WaitForMcpServers` を追加でき、ツールはその後会話の残りの間リストされたままになります |
+| リモートサーバーが接続切断後に [自動的に再接続](/docs/ja/mcp.md#automatic-reconnection) する | 保持（サーバーが再接続中に送信されたリクエストが `WaitForMcpServers` ツールを追加する場合を除き、その場合は 1 回無効化） | サーバーの定義は変更されないままです。サーバーが再接続中に送信されたリクエストは、会話がまだそれをリストしていない場合に `WaitForMcpServers` を追加でき、ツールはその後会話の残りの間リストされたままになります |
 | [拒否ルール](#denying-an-entire-tool) を使用するか、`/mcp` でサーバーを無効にするなど、意図的にツールを削除する | 無効化 | 定義が削除される |
 
 ツールがプレフィックスに読み込まれる会話を再開する場合、その MCP サーバーの 1 つは最初のリクエストが送信されるときにまだ接続中である可能性があります。トランスクリプトがそのサーバーのツール定義を記録した場合、そのリクエストは記録されたとおりにそれらを含むため、サーバーが同じツールで接続を完了しても変更されません。
@@ -128,7 +128,7 @@ MCP 設定を編集しても、それ自体ではキャッシュは変更され�
 
 ### プラグインの有効化または無効化
 
-[プラグイン](/docs/ja/plugins/overview) を有効または無効にする場合、変更のコストはプラグインが提供するコンポーネントタイプによって異なります。以下のケースは各コンポーネントタイプ、Claude Code が変更を適用するタイミング、および同じセッション内でプラグインを再度無効にするときに何が起こるかをカバーしています。
+[プラグイン](/docs/ja/plugins/overview.md) を有効または無効にする場合、変更のコストはプラグインが提供するコンポーネントタイプによって異なります。以下のケースは各コンポーネントタイプ、Claude Code が変更を適用するタイミング、および同じセッション内でプラグインを再度無効にするときに何が起こるかをカバーしています。
 
 #### キャッシュを保持するプラグインコンポーネント
 
@@ -136,26 +136,26 @@ Claude Code は、プラグインのスキル、コマンド、エージェン�
 
 #### MCP サーバーを提供するプラグイン
 
-[MCP サーバー](/docs/ja/plugins/components#mcp-servers) を提供するプラグインを有効または無効にする場合、Claude Code は [MCP サーバーを接続または削除](#connecting-or-removing-an-mcp-server) するときと同じルールに従います。
+[MCP サーバー](/docs/ja/plugins/components.md#mcp-servers) を提供するプラグインを有効または無効にする場合、Claude Code は [MCP サーバーを接続または削除](#connecting-or-removing-an-mcp-server) するときと同じルールに従います。
 
 #### コード インテリジェンス プラグイン
 
-[コード インテリジェンス プラグイン](/docs/ja/plugins/code-intelligence) を有効にすると、Claude は [LSP ツール](/docs/ja/tools-reference#lsp-tool-behavior) を取得します。
+[コード インテリジェンス プラグイン](/docs/ja/plugins/code-intelligence.md) を有効にすると、Claude は [LSP ツール](/docs/ja/tools-reference.md#lsp-tool-behavior) を取得します。
 
 #### プラグイン変更が適用されるタイミング
 
 `/plugin` メニューで行った変更は [`/reload-plugins`](/docs/ja/plugins/cli-reference#reload-plugins) を通じて行われます。これは Claude Code がメニューを閉じるときに実行します。コストは、追加されたアナウンスメントまたは完全な再読み込みのいずれかで、変更が適用された後の最初のターンで支払われます。Claude Code は変更を独自に適用することもできます。
 
-* `command` ソースを持つプラグインの場合、Claude Code は [プラグイン自体を再読み込みできます](/docs/ja/plugins/loading#when-a-command-source-re-runs)。
+* `command` ソースを持つプラグインの場合、Claude Code は [プラグイン自体を再読み込みできます](/docs/ja/plugins/loading.md#when-a-command-source-re-runs)。
 * [`/plugin` インターフェースからプラグインをインストール](/docs/ja/plugins/install#install-a-plugin) する場合、Claude Code はインストール中にそれを有効化できます。インストール概要は、それが行われたかどうかを示します。
 * v2.1.246 以降で [`/cd` でセッションを移動](/docs/ja/permissions#move-the-session-to-another-directory) する場合、Claude Code は新しいディレクトリの設定が有効にするプラグインを移動の一部として適用します。`/reload-plugins` を保留させる完全な再読み込みの警告は表示されません。
-* 対話セッションでは、`--plugin-dir` で渡した [プラグインのフォルダ](/docs/ja/plugins/create#load-a-directory-or-archive-for-one-session) 内のプラグインを追加または削除する場合、変更は直ちに適用されます。それを適用すると完全な再読み込みがトリガーされる場合、Claude Code は代わりに変更を保留し、`/reload-plugins` を実行するよう通知を表示します。Claude Code v2.1.265 以降が必要です。
+* 対話セッションでは、`--plugin-dir` で渡した [プラグインのフォルダ](/docs/ja/plugins/create.md#load-a-directory-or-archive-for-one-session) 内のプラグインを追加または削除する場合、変更は直ちに適用されます。それを適用すると完全な再読み込みがトリガーされる場合、Claude Code は代わりに変更を保留し、`/reload-plugins` を実行するよう通知を表示します。Claude Code v2.1.265 以降が必要です。
 
 `/reload-plugins` が実行され、再読み込みが完全な再読み込みをトリガーする場合、Claude Code は警告を表示し、再読み込みを適用しません。それでも適用するには `/reload-plugins --force` を実行します。
 
 `/reload-plugins` は、デスクトップアプリ、Agent SDK、および [`-p` を使用した非対話モード](/docs/ja/headless) など、対話的なターミナルのないセッションでも、セッションに直接入力した場合に実行されます。Claude Code v2.1.260 以降が必要です。
 
-これらのセッションでは、再読み込みはプラグイン MCP サーバー変更を除くすべてを適用します。これらは [次のセッションで有効になり](/docs/ja/plugins/cli-reference#reload-plugins)、セッション中に完全な再読み込みのコストが発生することはありません。
+これらのセッションでは、再読み込みはプラグイン MCP サーバー変更を除くすべてを適用します。これらは [次のセッションで有効になり](/docs/ja/plugins/cli-reference.md#reload-plugins)、セッション中に完全な再読み込みのコストが発生することはありません。
 
 #### セッション内で有効にしてから無効にするプラグイン
 
@@ -163,22 +163,22 @@ Claude Code は、プラグインのスキル、コマンド、エージェン�
 
 ### ツール全体の拒否
 
-`Bash` や `WebFetch` のような裸のツール名を [拒否ルール](/docs/ja/permissions#manage-permissions) として追加する場合、Claude は `/permissions` を通じてルールを追加するか、[設定ファイルを直接編集](/docs/ja/settings#when-edits-take-effect) するかに関わらず、次のリクエストからそのツールを呼び出すことができません。これには、ターンの途中で `/permissions` を通じて追加するルールも含まれます。
+`Bash` や `WebFetch` のような裸のツール名を [拒否ルール](/docs/ja/permissions.md#manage-permissions) として追加する場合、Claude は `/permissions` を通じてルールを追加するか、[設定ファイルを直接編集](/docs/ja/settings.md#when-edits-take-effect) するかに関わらず、次のリクエストからそのツールを呼び出すことができません。これには、ターンの途中で `/permissions` を通じて追加するルールも含まれます。
 
-[ツール検索](/docs/ja/mcp#scale-with-mcp-tool-search) がアクティブな場合（サポートされているモデルのデフォルト）、リクエストのツール定義は変更されず、キャッシュされたプレフィックスは生き残ります。ツール検索が利用不可または無効な場合、Claude Code は定義を次のリクエストから削除し、キャッシュを無効化し、ルールを後で削除してもそうなります。
+[ツール検索](/docs/ja/mcp.md#scale-with-mcp-tool-search) がアクティブな場合（サポートされているモデルのデフォルト）、リクエストのツール定義は変更されず、キャッシュされたプレフィックスは生き残ります。ツール検索が利用不可または無効な場合、Claude Code は定義を次のリクエストから削除し、キャッシュを無効化し、ルールを後で削除してもそうなります。
 
-この方法でツールをブロックするのは、ツール名の位置で一致する拒否ルールのみです。裸のツール名、同等の `Bash(*)` フォーム、または [ツール名グロブ](/docs/ja/permissions#tool-name-wildcards) （`"*"` など）です。`"mcp__*"` のような MCP ツールのみに一致するグロブは、同じ方法でそれらのツールをブロックします。`Bash(rm *)` のようなスコープ付き拒否ルール、およびすべての許可ルールと確認ルールは、Claude が見るツールを変更しません。Claude Code は Claude が呼び出しを試みるときにそれらをチェックし、プレフィックスはそのまま保持されます。
+この方法でツールをブロックするのは、ツール名の位置で一致する拒否ルールのみです。裸のツール名、同等の `Bash(*)` フォーム、または [ツール名グロブ](/docs/ja/permissions.md#tool-name-wildcards) （`"*"` など）です。`"mcp__*"` のような MCP ツールのみに一致するグロブは、同じ方法でそれらのツールをブロックします。`Bash(rm *)` のようなスコープ付き拒否ルール、およびすべての許可ルールと確認ルールは、Claude が見るツールを変更しません。Claude Code は Claude が呼び出しを試みるときにそれらをチェックし、プレフィックスはそのまま保持されます。
 
 ### 会話のコンテキスト圧縮
 
-[コンテキスト圧縮](/docs/ja/context-window#what-survives-compaction) はメッセージ履歴を概要に置き換えます。設計上、これは会話レイヤーを無効化します。次のリクエストには、古いものとプレフィックスを共有しない新しい、より短い履歴があるためです。システムプロンプトレイヤーとプロジェクトコンテキストレイヤーは、キャッシュされたままにできます。
+[コンテキスト圧縮](/docs/ja/context-window.md#what-survives-compaction) はメッセージ履歴を概要に置き換えます。設計上、これは会話レイヤーを無効化します。次のリクエストには、古いものとプレフィックスを共有しない新しい、より短い履歴があるためです。システムプロンプトレイヤーとプロジェクトコンテキストレイヤーは、キャッシュされたままにできます。
 
 * **システムプロンプト**: 次のリクエストはこのレイヤーをキャッシュから読み込みます。ただし、[再開された会話](#resuming-a-session) が現在では古くなったシステムプロンプトを保持している場合を除きます。その会話が初めて圧縮されるとき、Claude Code は現在のプロンプトに切り替え、次のリクエストはこのレイヤーのキャッシュを 1 回再構築します。
 * **プロジェクトコンテキスト**: Claude Code はこのレイヤーをディスクから再読み込みします。次のリクエストがこのレイヤーをキャッシュから読み込むのは、CLAUDE.md とメモリがセッション開始以降変更されていない場合のみです。
 
 概要を生成するために、Claude Code は別のリクエストを送信します。このリクエストには、会話のシステムプロンプト、ツール、および要約対象の履歴がそのまま含まれます。末尾には要約の指示が付きます。キャッシュが温かい間、そのリクエストはキャッシュからプレフィックスを読み込みます。そのため、セッション中の `/compact` はコンテキストサイズが示唆するコストの一部で済み、ほとんどの時間を概要の生成に費やします。
 
-[キャッシュ有効期間](#cache-lifetime) より長い休止の後、読み込むキャッシュは残っていないため、要約リクエストはその履歴をキャッシュされていない入力として再処理します。これが `/compact` が [古いセッションを再開](/docs/ja/sessions#resume-a-session) するときに最もコストがかかる理由です。温かいケースと冷たいケースの両方で、圧縮後のターンは、はるかに短い概要のみのために会話キャッシュを再構築するため、そのターンは遅い部分ではありません。
+[キャッシュ有効期間](#cache-lifetime) より長い休止の後、読み込むキャッシュは残っていないため、要約リクエストはその履歴をキャッシュされていない入力として再処理します。これが `/compact` が [古いセッションを再開](/docs/ja/sessions.md#resume-a-session) するときに最もコストがかかる理由です。温かいケースと冷たいケースの両方で、圧縮後のターンは、はるかに短い概要のみのために会話キャッシュを再構築するため、そのターンは遅い部分ではありません。
 
 > [!TIP]
 >
@@ -196,7 +196,7 @@ API は各リクエストが運べる画像と PDF の数を制限します。�
 
 ### Claude Code のアップグレード
 
-新しい Claude Code バージョンは通常、システムプロンプトまたはツール定義を更新するため、アップグレード後に開始する最初の会話は先頭からキャッシュを構築します。[自動更新](/docs/ja/setup#auto-updates) は新しいバージョンをバックグラウンドでダウンロードしますが、次の起動時に適用され、セッション中には決して適用されないため、セッション中の予期しない事態ではなく、再起動後のキャッシュされていない最初のターンとしてこれが表示されます。アップグレードが適用されるタイミングを制御するには、`DISABLE_AUTOUPDATER=1` を設定します。
+新しい Claude Code バージョンは通常、システムプロンプトまたはツール定義を更新するため、アップグレード後に開始する最初の会話は先頭からキャッシュを構築します。[自動更新](/docs/ja/setup.md#auto-updates) は新しいバージョンをバックグラウンドでダウンロードしますが、次の起動時に適用され、セッション中には決して適用されないため、セッション中の予期しない事態ではなく、再起動後のキャッシュされていない最初のターンとしてこれが表示されます。アップグレードが適用されるタイミングを制御するには、`DISABLE_AUTOUPDATER=1` を設定します。
 
 > [!NOTE]
 >
@@ -223,21 +223,21 @@ API は各リクエストが運べる画像と PDF の数を制限します。�
 
 プロジェクトルートとユーザーレベルの CLAUDE.md ファイルはセッション開始時に 1 回読み取られ、メモリに保持されます。セッション中にそれらを編集してもキャッシュは無効化されませんが、編集も適用されません。Claude はセッション開始時に読み込まれたバージョンで動作し続けます。新しいコンテンツは次の `/clear`、`/compact`、または再起動時に読み込まれます。
 
-[サブディレクトリ内のネストされた CLAUDE.md ファイル](/docs/ja/memory)と[`paths:` フロントマターを持つルール](/docs/ja/memory#path-specific-rules)は、後で必要に応じて読み込まれます。読み込まれる前に自分で編集した場合は、その編集が反映されます。読み込まれた後、コンテンツは会話履歴の一部であるため、セッション中の編集は遡及的にそれを変更しません。
+[サブディレクトリ内のネストされた CLAUDE.md ファイル](/docs/ja/memory.md)と[`paths:` フロントマターを持つルール](/docs/ja/memory#path-specific-rules)は、後で必要に応じて読み込まれます。読み込まれる前に自分で編集した場合は、その編集が反映されます。読み込まれた後、コンテンツは会話履歴の一部であるため、セッション中の編集は遡及的にそれを変更しません。
 
 ### 権限モードを変更する
 
-[権限モード](/docs/ja/permission-modes)（手動から編集を受け入れるなど）を切り替えても、システムプロンプトやツール定義は変更されないため、モード変更はキャッシュセーフです。例外は [`opusplan`](/docs/ja/model-config#opusplan-model-setting) モデル設定を使用した plan mode です。これはプラン モードに入るか終了するときに、モデルを Opus と Sonnet の間で切り替えます。これにより、モード切り替えは[モデル切り替え](#switching-models)になります。
+[権限モード](/docs/ja/permission-modes.md)（手動から編集を受け入れるなど）を切り替えても、システムプロンプトやツール定義は変更されないため、モード変更はキャッシュセーフです。例外は [`opusplan`](/docs/ja/model-config#opusplan-model-setting) モデル設定を使用した plan mode です。これはプラン モードに入るか終了するときに、モデルを Opus と Sonnet の間で切り替えます。これにより、モード切り替えは[モデル切り替え](#switching-models)になります。
 
 ### 出力スタイルを変更する
 
-セッション中に [`/output-style`](/docs/ja/output-styles#change-your-output-style)、`/config`、または `outputStyle` 設定で[出力スタイル](/docs/ja/output-styles)を切り替えると、Claude は次のメッセージから新しいスタイルを使用します。Claude Code は新しいスタイルの指示をメッセージとして会話に配信するため、そのリクエストはシステムプロンプトと以前の会話をキャッシュから読み取ります。
+セッション中に [`/output-style`](/docs/ja/output-styles#change-your-output-style)、`/config`、または `outputStyle` 設定で[出力スタイル](/docs/ja/output-styles.md)を切り替えると、Claude は次のメッセージから新しいスタイルを使用します。Claude Code は新しいスタイルの指示をメッセージとして会話に配信するため、そのリクエストはシステムプロンプトと以前の会話をキャッシュから読み取ります。
 
 v2.1.251 より前では、セッション中のスタイル切り替えはキャッシュを保持していましたが、`/clear` を実行するか新しいセッションを開始するまで適用されませんでした。
 
 ### スキルとコマンドを呼び出す
 
-[スキル](/docs/ja/skills)と[コマンド](/docs/ja/commands)は、呼び出しポイントでユーザーメッセージとして指示を挿入します。会話内の以前のものは何も変わりません。frontmatter で `model` という名前を付けたスキルまたはコマンドは、そのターンの[モデル切り替え](#switching-models)になる可能性があります。
+[スキル](/docs/ja/skills.md)と[コマンド](/docs/ja/commands.md)は、呼び出しポイントでユーザーメッセージとして指示を挿入します。会話内の以前のものは何も変わりません。frontmatter で `model` という名前を付けたスキルまたはコマンドは、そのターンの[モデル切り替え](#switching-models)になる可能性があります。
 
 ### `/recap` を実行する
 
@@ -251,9 +251,9 @@ v2.1.251 より前では、セッション中のスタイル切り替えはキ�
 
 ## セッションの再開
 
-[セッションを再開](/docs/ja/sessions#resume-a-session)する場合、Claude Code は会話全体を再度送信し、リクエストはキャッシュから、そのプレフィックスの変更されていない部分で、かつ [キャッシュの有効期限](#cache-lifetime)内にある部分を読み込みます。このページの上部にあるレイヤーテーブルは、各レイヤーで何が変わるかを示しています。
+[セッションを再開](/docs/ja/sessions.md#resume-a-session)する場合、Claude Code は会話全体を再度送信し、リクエストはキャッシュから、そのプレフィックスの変更されていない部分で、かつ [キャッシュの有効期限](#cache-lifetime)内にある部分を読み込みます。このページの上部にあるレイヤーテーブルは、各レイヤーで何が変わるかを示しています。
 
-システムプロンプトは [Claude Code のアップグレード](#upgrading-claude-code)後、または再開時に異なる [`--append-system-prompt`](/docs/ja/cli-reference#system-prompt-flags) テキストがある場合に変更されます。デフォルトでは、再開された会話は開始時のシステムプロンプトを保持するため、その履歴は同じプロンプトの背後にあり、会話がコンパクト化されるか新しい会話で変更が有効になります。[再開されたセッションのシステムプロンプトフラグ](/docs/ja/cli-reference#system-prompt-flags-in-resumed-conversations)は Claude Code がすべてのリクエストでプロンプトを再構築する場合をカバーしています。
+システムプロンプトは [Claude Code のアップグレード](#upgrading-claude-code)後、または再開時に異なる [`--append-system-prompt`](/docs/ja/cli-reference#system-prompt-flags) テキストがある場合に変更されます。デフォルトでは、再開された会話は開始時のシステムプロンプトを保持するため、その履歴は同じプロンプトの背後にあり、会話がコンパクト化されるか新しい会話で変更が有効になります。[再開されたセッションのシステムプロンプトフラグ](/docs/ja/cli-reference.md#system-prompt-flags-in-resumed-conversations)は Claude Code がすべてのリクエストでプロンプトを再構築する場合をカバーしています。
 
 ## キャッシュライフタイム
 
@@ -266,7 +266,7 @@ Time to Live（TTL）は、キャッシュが生き残るギャップの長さ�
 Claude Code はリクエストごとに TTL を決定し、すべてのリクエストは 2 つの固定バケットのいずれかに該当します。
 
 * **メイン会話**: インタラクティブなターン、非インタラクティブな `-p` 実行、Agent SDK ターン、およびそれらと共にインラインで実行される Claude Code ヘルパー
-* **その他すべて**: [サブエージェント](/docs/ja/sub-agents)、[ワークフロー](/docs/ja/workflows)、プロセス内[チームメイト](/docs/ja/agent-teams)、フォーク、圧縮、セッションタイトルなど、その会話の外で Claude Code が行うリクエスト
+* **その他すべて**: [サブエージェント](/docs/ja/sub-agents.md)、[ワークフロー](/docs/ja/workflows.md)、プロセス内[チームメイト](/docs/ja/agent-teams.md)、フォーク、圧縮、セッションタイトルなど、その会話の外で Claude Code が行うリクエスト
 
 TTL を自分で選択しない限り、Claude Code は Claude サブスクリプション内でプランに含まれる使用量内でのみ 1 時間の TTL をリクエストします。そこでメイン会話に対して 1 時間をリクエストし、Anthropic がサーバー側で制御する小さなヘルパーリクエストセットをリクエストします。このテーブルは、両方の種類の請求下での各バケットのデフォルト TTL を示しています。
 
@@ -281,7 +281,7 @@ TTL を自分で選択しない限り、Claude Code は Claude サブスクリ�
 
 どちらのバケットに対しても TTL を設定できます。各コントロールは `5m` または `1h` を取り、Claude Code は他の値を無視します。
 
-* **メイン会話**: [`promptCacheTtl`](/docs/ja/settings-reference#promptcachettl) 設定、または `CLAUDE_CODE_PROMPT_CACHE_TTL` [環境変数](/docs/ja/env-vars)
+* **メイン会話**: [`promptCacheTtl`](/docs/ja/settings-reference#promptcachettl) 設定、または `CLAUDE_CODE_PROMPT_CACHE_TTL` [環境変数](/docs/ja/env-vars.md)
 * **その他すべて**: [`subagentPromptCacheTtl`](/docs/ja/settings-reference#subagentpromptcachettl) 設定、または `CLAUDE_CODE_SUBAGENT_PROMPT_CACHE_TTL` 環境変数
 
 両方の設定と両方の環境変数には Claude Code v2.1.242 以降が必要です。API キーで署名するか、クラウドプロバイダーを使用する場合は、`promptCacheTtl` を `1h` に設定して、メイン会話に 1 時間のキャッシュを与えます。その外のリクエストは、そのバケットに対しても TTL を選択するまで 5 分のデフォルトを保ちます。
@@ -295,11 +295,15 @@ TTL を自分で選択しない限り、Claude Code は Claude サブスクリ�
 5. `ENABLE_PROMPT_CACHING_1H=1`。両方のバケットに対して 1 時間をリクエストします
 6. [リクエストのバケットのデフォルト](#which-ttl-each-request-gets)
 
-キャッシング動作をデバッグする場合、2 つの TTL を比較する場合、または[管理設定](/docs/ja/managed-settings)で設定された長い TTL をオーバーライドする場合は、`FORCE_PROMPT_CACHING_5M=1` を設定します。
+キャッシング動作をデバッグする場合、2 つの TTL を比較する場合、または[管理設定](/docs/ja/managed-settings.md)で設定された長い TTL をオーバーライドする場合は、`FORCE_PROMPT_CACHING_5M=1` を設定します。
 
 メイン会話のキャッシュ書き込みが使用した TTL を確認するには、`claude -p "hello" --output-format json` を実行し、結果の `usage.cache_creation` を読みます。Claude Code は 1 時間のキャッシュ書き込みを `ephemeral_1h_input_tokens` の下で報告し、5 分のキャッシュ書き込みを `ephemeral_5m_input_tokens` の下で報告します。
 
-`ANTHROPIC_BASE_URL` で設定した LLM ゲートウェイを通じて、1 時間のリクエストの一部は `anthropic-beta` ヘッダーで移動するため、ゲートウェイを[そのヘッダーを変更されずに転送](/docs/ja/llm-gateway-protocol#request-headers)するように設定します。1 時間の TTL は[Claude アプリゲートウェイ](/docs/ja/claude-apps-gateway#availability-and-limitations)を通じて利用できません。Amazon Bedrock では、プロンプトキャッシングサポート、最小キャッシュ可能プリフィックス長、および 1 時間の TTL 可用性はすべてモデルによって異なります。キャッシュトークン数がゼロのままの場合は、Amazon Bedrock ドキュメントの[サポートされているモデル、リージョン、制限](https://docs.aws.amazon.com/bedrock/latest/userguide/prompt-caching.html#prompt-caching-models)を確認してください。
+ゲートウェイ経由または Amazon Bedrock で 1 時間の TTL を利用するには:
+
+* **`ANTHROPIC_BASE_URL` で設定した LLM ゲートウェイ**: 1 時間のリクエストの一部は `anthropic-beta` ヘッダーで送信されるため、ゲートウェイを[そのヘッダーを変更せずに転送](/docs/ja/llm-gateway-protocol.md#request-headers)するように設定します
+* **[Claude アプリゲートウェイ](/docs/ja/claude-apps-gateway)**: [ゲートウェイポリシー](/docs/ja/claude-apps-gateway-config.md#one-hour-prompt-cache)で 1 時間の TTL をリクエストするよう管理者に依頼してください
+* **Amazon Bedrock**: プロンプトキャッシュのサポート、最小キャッシュ可能プリフィックス長、および 1 時間の TTL の可用性はすべてモデルによって異なります。キャッシュトークン数がゼロのままの場合は、Amazon Bedrock ドキュメントの[サポートされているモデル、リージョン、制限](https://docs.aws.amazon.com/bedrock/latest/userguide/prompt-caching.html#prompt-caching-models)を確認してください。
 
 ## キャッシュスコープ
 
@@ -307,11 +311,11 @@ Claude Code では、キャッシュは事実上 1 つのマシンとディレ�
 
 同じディレクトリで並行して実行するセッションは、一致するプリフィックスを構築し、互いのキャッシュを読み取ります。順序付きセッションは、起動時に取得された git ステータススナップショットが一致する場合にのみプリフィックスを共有します。各会話はそのスナップショットからブランチと最近のコミットも保持するためです。
 
-基礎となる API キャッシュはより広いです。キャッシュは組織間で分離され、一部のプロバイダーでは、[組織内のワークスペース間](https://platform.claude.com/docs/ja/build-with-claude/prompt-caching#cache-storage-and-sharing)で分離されます。これらの境界内で、同じモデルとプリフィックスを持つ 2 つのリクエストは同じキャッシュを読み取ります。自動化されたプロセスのフリートを実行する Agent SDK 呼び出し元については、[ユーザーとマシン間でプロンプトキャッシングを改善](/docs/ja/agent-sdk/modifying-system-prompts#improve-prompt-caching-across-users-and-machines)を参照して、自動メモリの場所をシステムプロンプトから移動し、システムプロンプトのキャッシュエントリをユーザーとマシン間で共有します。
+基礎となる API キャッシュはより広いです。キャッシュは組織間で分離され、一部のプロバイダーでは、[組織内のワークスペース間](https://platform.claude.com/docs/ja/build-with-claude/prompt-caching#cache-storage-and-sharing)で分離されます。これらの境界内で、同じモデルとプリフィックスを持つ 2 つのリクエストは同じキャッシュを読み取ります。自動化されたプロセスのフリートを実行する Agent SDK 呼び出し元については、[ユーザーとマシン間でプロンプトキャッシングを改善](/docs/ja/agent-sdk/modifying-system-prompts.md#improve-prompt-caching-across-users-and-machines)を参照して、自動メモリの場所をシステムプロンプトから移動し、システムプロンプトのキャッシュエントリをユーザーとマシン間で共有します。
 
 ## キャッシュパフォーマンスを確認する
 
-キャッシュパフォーマンスは、API がすべての応答で報告する 2 つのトークン数として表示されます。最も直接的な方法は、`current_usage` オブジェクトを読み取る[statusline スクリプト](/docs/ja/statusline)を監視することです。
+キャッシュパフォーマンスは、API がすべての応答で報告する 2 つのトークン数として表示されます。最も直接的な方法は、`current_usage` オブジェクトを読み取る[statusline スクリプト](/docs/ja/statusline.md)を監視することです。
 
 | フィールド | 意味 |
 | - | - |
@@ -324,22 +328,22 @@ Claude Code では、キャッシュは事実上 1 つのマシンとディレ�
 
 `Prompt cache (main)` 行は、Claude Code が識別できる場合、最後のミスの可能性のある原因も名前を付けます。例えば `likely cause: tool definitions changed` のようにです。可能性のある原因テキストには Claude Code v2.1.260 以降が必要です。
 
-組織全体の可視性については、OpenTelemetry エクスポーターはユーザーとセッションごとにキャッシュ読み取りと作成トークンを報告します。メトリックとイベント属性リファレンスについては、[使用状況の監視](/docs/ja/monitoring-usage)を参照してください。
+組織全体の可視性については、OpenTelemetry エクスポーターはユーザーとセッションごとにキャッシュ読み取りと作成トークンを報告します。メトリックとイベント属性リファレンスについては、[使用状況の監視](/docs/ja/monitoring-usage.md)を参照してください。
 
 ## サブエージェントとキャッシュ
 
-[サブエージェント](/docs/ja/sub-agents)は、親とは別に、独自のシステムプロンプトとツールセットを持つ独自の会話を開始します。最初のリクエストは親のキャッシュを読み取りません。2 つのプリフィックスが異なるためです。また、独自のターン全体で独自のキャッシュを温めます。サブエージェントはメイン会話の [TTL バケット](#which-ttl-each-request-gets)の外にあるため、サブスクリプション上でも 5 分間の TTL を取得します。[より長い TTL を選択](#choose-the-ttl-yourself)するまでです。
+[サブエージェント](/docs/ja/sub-agents.md)は、親とは別に、独自のシステムプロンプトとツールセットを持つ独自の会話を開始します。最初のリクエストは親のキャッシュを読み取りません。2 つのプリフィックスが異なるためです。また、独自のターン全体で独自のキャッシュを温めます。サブエージェントはメイン会話の [TTL バケット](#which-ttl-each-request-gets)の外にあるため、サブスクリプション上でも 5 分間の TTL を取得します。[より長い TTL を選択](#choose-the-ttl-yourself)するまでです。
 
 親のキャッシュは影響を受けません。親の側から、サブエージェントの呼び出しと結果は会話に追加され、親のプリフィックスはそのままです。
 
-一方、[フォーク](/docs/ja/sub-agents#fork-the-current-conversation)は、親のシステムプロンプト、ツール、会話履歴を正確に継承するため、最初のリクエストは親のキャッシュを読み取ります。
+一方、[フォーク](/docs/ja/sub-agents.md#fork-the-current-conversation)は、親のシステムプロンプト、ツール、会話履歴を正確に継承するため、最初のリクエストは親のキャッシュを読み取ります。
 
 他のリクエストも、以前のリクエストがキャッシュしたプリフィックスを読み取ることができます。
 
 * **セッションコピー**: [`/fork`](/docs/ja/agent-view#copy-the-session-with-%2Ffork)でコピーしたセッションは、コピーされた会話の最後にメッセージとして分離命令を受け取るため、元の会話が構築したキャッシュはそのままです。
 * **コンパクト化**: [会話のコンパクト化](#compacting-the-conversation)で説明されている要約呼び出しは、同じプリフィックス共有アプローチを使用します。
-* **再開されたサブエージェント**: Claude が[サブエージェントを再開](/docs/ja/sub-agents#resume-subagents)する場合、再開実行の最初のリクエストは、元の実行が温めたキャッシュを読み取ることができます。
-* **ワークフローファンアウト**: [ワークフローファンアウト](/docs/ja/workflows#prompt-caching-in-a-fan-out)の同じプリフィックスエージェントでは、Claude Code はデフォルトで最初のエージェント以外をすべて最大 5 秒間保持するため、最初のエージェントがキャッシュしたプリフィックスを読み取ることができます。
+* **再開されたサブエージェント**: Claude が[サブエージェントを再開](/docs/ja/sub-agents.md#resume-subagents)する場合、再開実行の最初のリクエストは、元の実行が温めたキャッシュを読み取ることができます。
+* **ワークフローファンアウト**: [ワークフローファンアウト](/docs/ja/workflows.md#prompt-caching-in-a-fan-out)の同じプリフィックスエージェントでは、Claude Code はデフォルトで最初のエージェント以外をすべて最大 5 秒間保持するため、最初のエージェントがキャッシュしたプリフィックスを読み取ることができます。
 
 ## プロンプトキャッシングを無効にする
 
@@ -361,12 +365,12 @@ Claude Code では、キャッシュは事実上 1 つのマシンとディレ�
 
 `DISABLE_PROMPT_CACHING_SONNET` と `DISABLE_PROMPT_CACHING_OPUS` はそれぞれ、`sonnet` または `opus` エイリアスが解決するモデルに適用されます。別の Sonnet または Opus モデル ID をメインモデルとして設定した場合、そのモデルはキャッシングを保持します。たとえば、`claude-sonnet-5` でのセッションはキャッシングを保持しますが、`sonnet` は `claude-sonnet-5-5` に解決されます。そのモデルに対してキャッシングを無効にするには、`DISABLE_PROMPT_CACHING` を設定してください。
 
-組織全体でキャッシングポリシーを設定するには、これらのいずれかまたは [TTL 変数](#cache-lifetime)を [管理設定](/docs/ja/managed-settings)の `env` ブロックに入れます。通常の使用では、キャッシングを有効のままにしてください。
+組織全体でキャッシングポリシーを設定するには、これらのいずれかまたは [TTL 変数](#cache-lifetime)を [管理設定](/docs/ja/managed-settings.md)の `env` ブロックに入れます。通常の使用では、キャッシングを有効のままにしてください。
 
 ## 関連リソース
 
 * [Claude Code の構築から学んだ教訓: プロンプトキャッシングがすべて](https://claude.com/blog/lessons-from-building-claude-code-prompt-caching-is-everything): Plan mode、遅延ツール読み込み、コンパクト化の設計根拠
-* [コンテキストウィンドウを探索](/docs/ja/context-window): コンテキストに読み込まれるもの、いつ読み込まれるか
-* [トークン使用量を削減](/docs/ja/costs#reduce-token-usage): コンテキストサイズを管理するためのキャッシング以外の戦略
-* [コストを追跡および削減](/docs/ja/agent-sdk/cost-tracking): Agent SDK 呼び出し元のキャッシュトークン追跡と TTL 設定
+* [コンテキストウィンドウを探索](/docs/ja/context-window.md): コンテキストに読み込まれるもの、いつ読み込まれるか
+* [トークン使用量を削減](/docs/ja/costs.md#reduce-token-usage): コンテキストサイズを管理するためのキャッシング以外の戦略
+* [コストを追跡および削減](/docs/ja/agent-sdk/cost-tracking.md): Agent SDK 呼び出し元のキャッシュトークン追跡と TTL 設定
 * [プロンプトキャッシング](https://platform.claude.com/docs/ja/build-with-claude/prompt-caching): 基礎となる API メカニズム、ブレークポイント、価格設定

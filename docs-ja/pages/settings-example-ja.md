@@ -12,7 +12,7 @@
 * チームの `.claude/settings.json`（リポジトリにコミットされたもの）
 * 組織の `managed-settings.json`
 
-それぞれが読者にとって妥当なファイルなので、形状を確認して必要な部分をコピーできます。どれも推奨されるベースラインではありません。すべての値は [設定リファレンス](/docs/ja/settings-reference) のキーのエントリから取得されており、そこには型、デフォルト値、および設定できる場所が記載されています。
+それぞれが読者にとって妥当なファイルなので、形状を確認して必要な部分をコピーできます。どれも推奨されるベースラインではありません。すべての値は [設定リファレンス](/docs/ja/settings-reference.md) のキーのエントリから取得されており、そこには型、デフォルト値、および設定できる場所が記載されています。
 
 各例には 2 つのタブがあります。**コピー可能な設定ファイル** は保存するファイルです。**各キーの機能** は同じファイルですが、各キーの上にコメントがあります。Claude Code は設定ファイルのコメントを受け入れないため、最初のタブからコピーしてください。
 
@@ -94,10 +94,10 @@
 
 1 つのチームの共有設定は、リポジトリにコミットされるため、それをクローンした全員が同じ権限、hooks、プラグインマーケットプレイスを取得します。リポジトリのトップレベルに `.claude/settings.json` のようなファイルを保存してください。コミットする前に知っておくべきことは以下の通りです。
 
-* **[プロジェクト](/docs/ja/claude-projects#what-threads-pick-up-from-your-repositories)外のクラウドセッションもこれを読みます。** 1 つのリポジトリを持つ[クラウドセッション](/docs/ja/settings#settings-in-cloud-sessions)はクローン内で開始されるため、コミットされたファイルはそこにも適用されます。
-* **テレメトリは管理設定または個人設定に入ります。** Claude Code は、リポジトリの設定ファイルの [OpenTelemetry エクスポーター変数](/docs/ja/settings-reference#variables-claude-code-ignores-in-env)を無視します。ただし、テレメトリをオフにする値は除きます。組織の[管理設定](/docs/ja/monitoring-usage#administrator-configuration)、または各ユーザーの `~/.claude/settings.json` で設定してください。
-* **許可ルールは信頼を待ちます。** 許可ルールと `extraKnownMarketplaces` エントリは、各ユーザーが[このフォルダ自体を信頼](/docs/ja/permissions#project-allow-rules-and-workspace-trust)した後に有効になります。親フォルダだけではなく、このフォルダ自体を信頼する必要があります。拒否ルールと確認ルールは、信頼されているセッションでもそうでないセッションでも、すべてのセッションで適用されます。
-* **hook はリポジトリ内のスクリプトです。** このファイルの hook は `.claude/hooks/block-rm.sh` を実行します。[hook がどのように解決されるか](/docs/ja/hooks#how-a-hook-resolves)では、これを書く方法について説明しています。
+* **[プロジェクト](/docs/ja/claude-projects.md#what-threads-pick-up-from-your-repositories)のスレッド外のクラウドセッションもこれを読みます。** 1 つのリポジトリを持つ[クラウドセッション](/docs/ja/settings.md#settings-in-cloud-sessions)はクローン内で開始されるため、コミットされたファイルはそこにも適用されます。
+* **テレメトリは管理設定または個人設定に入ります。** Claude Code は、リポジトリの設定ファイルの [OpenTelemetry エクスポーター変数](/docs/ja/settings-reference.md#variables-claude-code-ignores-in-env)を無視します。ただし、テレメトリをオフにする値は除きます。組織の[管理設定](/docs/ja/monitoring-usage.md#administrator-configuration)、または各ユーザーの `~/.claude/settings.json` で設定してください。
+* **許可ルールは信頼を待ちます。** 許可ルールと `extraKnownMarketplaces` エントリは、各ユーザーが[このフォルダ自体を信頼](/docs/ja/permissions.md#project-allow-rules-and-workspace-trust)した後に有効になります。親フォルダだけではなく、このフォルダ自体を信頼する必要があります。拒否ルールと確認ルールは、信頼されているセッションでもそうでないセッションでも、すべてのセッションで適用されます。
+* **hook はリポジトリ内のスクリプトです。** このファイルの hook は `.claude/hooks/block-rm.sh` を実行します。[hook がどのように解決されるか](/docs/ja/hooks.md#how-a-hook-resolves)では、これを書く方法について説明しています。
 * **ルールはコマンドとパスを記述されたとおりにマッチします。** `Bash(git push *)` は [`git -C . push`](/docs/ja/permissions#bash-rule-limits) にはマッチしません。`Read(./.env)` 単独では、ファイルツールと `cat .env` のようにファイルを名前で指定するコマンドを停止しますが、[`grep -r` をディレクトリ上で実行](/docs/ja/permissions#read-and-edit)することは停止しません。このファイルの `sandbox` ブロックはそのギャップを埋めます。sandbox は[あなたの `Read` 拒否パス](/docs/ja/settings-reference#sandbox-filesystem-denyread)をすべてのサンドボックス化されたコマンドが読み取れないものに追加するためです。
 
 **コピー可能な設定ファイル**
@@ -236,16 +236,16 @@
 
 * `forceLoginMethod` と `forceLoginOrgUUID` はログイン方法と組織を固定します
 * `availableModels` と `enforceAvailableModels` はセッションが使用できるモデルを制限します
-* `permissions.deny` は 2 つのファイル読み取りと `curl` コマンドをブロックし（[Claude が記述する方法](/docs/ja/permissions#bash-rule-limits)）、`disableBypassPermissionsMode` は権限モードのバイパスを削除します
+* `permissions.deny` は 2 つのファイル読み取りと `curl` コマンドをブロックし（[Claude が記述する方法](/docs/ja/permissions.md#bash-rule-limits)）、`disableBypassPermissionsMode` は権限モードのバイパスを削除します
 * [`allowManagedPermissionRulesOnly`](/docs/ja/settings-reference#allowmanagedpermissionrulesonly) と [`allowManagedMcpServersOnly`](/docs/ja/settings-reference#allowmanagedmcpserversonly) は、管理権限と MCP 許可リストのみを適用対象にします
 * `allowedMcpServers` は MCP サーバーを URL で固定します
 * `strictKnownMarketplaces` は 1 つのプラグインマーケットプレイスを許可します
-* `sandbox` はコマンドを固定ネットワーク許可リストでサンドボックス化し、サンドボックス外での再試行を許可しません。その `failIfUnavailable` キーは、[サンドボックスを実行できない環境では Claude Code を起動させないようにします](/docs/ja/sandboxing#enforce-sandboxing-with-managed-settings)
+* `sandbox` はコマンドを固定ネットワーク許可リストでサンドボックス化し、サンドボックス外での再試行を許可しません。その `failIfUnavailable` キーは、[サンドボックスを実行できない環境では Claude Code を起動させないようにします](/docs/ja/sandboxing.md#enforce-sandboxing-with-managed-settings)
 * `requiredMinimumVersion` は最小 Claude Code バージョンを設定します
 * `cleanupPeriodDays` はセッショントランスクリプトおよび他のローカルデータの保持期間を 7 日に短縮します
 * `companyAnnouncements` は起動時にメッセージを表示します
 
-管理者は、このようなファイルを `managed-settings.json` として、または MDM もしくは [サーバー管理設定](/docs/ja/server-managed-settings) を通じて同じ JSON をデプロイします。デプロイされた 1 つのファイルは、それが到達するすべてのマシンまたはアカウントに適用されます。グループに異なる値を付与するには、そのグループに異なるファイルまたはプロファイルをデプロイしてください。[サーバー管理設定はまだグループごとのポリシーをサポートしていない](/docs/ja/server-managed-settings#current-limitations) ためです。
+管理者は、このようなファイルを `managed-settings.json` として、または MDM もしくは [サーバー管理設定](/docs/ja/server-managed-settings.md) を通じて同じ JSON をデプロイします。デプロイされた 1 つのファイルは、それが到達するすべてのマシンまたはアカウントに適用されます。グループに異なる値を付与するには、そのグループに異なるファイルまたはプロファイルをデプロイしてください。[サーバー管理設定はまだグループごとのポリシーをサポートしていない](/docs/ja/server-managed-settings.md#current-limitations) ためです。
 
 **コピー可能な設定ファイル**
 

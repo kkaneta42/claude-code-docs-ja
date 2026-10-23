@@ -12,30 +12,30 @@ Claude Code のコンテキストウィンドウには、セッションにつ�
 
 セッションは、代表的なトークン数を含む現実的なフローを通じて進みます。
 
-* **何も入力する前に**: CLAUDE.md、自動メモリ、MCP ツール名、スキルの説明がすべてコンテキストに読み込まれます。CLAUDE.md の代わりに [AGENTS.md ファイル](/docs/ja/memory#agents-md)が読み込まれる場合もあります。ユーザー自身のセットアップによっては、[出力スタイル](/docs/ja/output-styles)や [`--append-system-prompt`](/docs/ja/cli-reference) からのテキストなど、ここにさらに多くのものが追加される可能性があります。
-* **Claude が作業するとき**: 各ファイル読み込みがコンテキストに追加され、[パススコープ付きルール](/docs/ja/memory#path-specific-rules)は一致するファイルと一緒に自動的に読み込まれ、[PostToolUse フック](/docs/ja/hooks-guide)は各編集後に発火します。
-* **フォローアップ プロンプト**: [サブエージェント](/docs/ja/sub-agents)は独自の別のコンテキストウィンドウで研究を処理するため、大きなファイル読み込みはあなたのコンテキストウィンドウから外れます。サマリーと小さなメタデータトレーラーだけが戻ってきます。
+* **何も入力する前に**: CLAUDE.md、自動メモリ、MCP ツール名、スキルの説明がすべてコンテキストに読み込まれます。CLAUDE.md の代わりに [AGENTS.md ファイル](/docs/ja/memory.md#agents-md)が読み込まれる場合もあります。ユーザー自身のセットアップによっては、[出力スタイル](/docs/ja/output-styles.md)や [`--append-system-prompt`](/docs/ja/cli-reference) からのテキストなど、ここにさらに多くのものが追加される可能性があります。
+* **Claude が作業するとき**: 各ファイル読み込みがコンテキストに追加され、[パススコープ付きルール](/docs/ja/memory.md#path-specific-rules)は一致するファイルと一緒に自動的に読み込まれ、[PostToolUse フック](/docs/ja/hooks-guide.md)は各編集後に発火します。
+* **フォローアップ プロンプト**: [サブエージェント](/docs/ja/sub-agents.md)は独自の別のコンテキストウィンドウで研究を処理するため、大きなファイル読み込みはあなたのコンテキストウィンドウから外れます。サマリーと小さなメタデータトレーラーだけが戻ってきます。
 * **最後に**: `/compact` は会話を構造化されたサマリーに置き換えます。ほとんどのスタートアップコンテンツは自動的に再度読み込まれます。以下の表は、各メカニズムに何が起こるかを示しています。
 
 ## コンテキスト圧縮後に残るもの
 
-長いセッションでコンテキスト圧縮が行われると、Claude Code は会話履歴をコンテキストウィンドウに収まるようにまとめます。v2.1.198 以降、要約リクエストはセッションの[拡張思考](/docs/ja/model-config#extended-thinking)設定を継承するため、セッションで有効になっている場合は思考を有効にして推論し、そうでない場合はオフのままになります。思考は要約の生成方法にのみ影響します。セッション設定はその後変更されません。各種コンテンツに何が起こるかは、それらがどのように読み込まれたかによって異なります。
+長いセッションでコンテキスト圧縮が行われると、Claude Code は会話履歴をコンテキストウィンドウに収まるようにまとめます。v2.1.198 以降、要約リクエストはセッションの[拡張思考](/docs/ja/model-config.md#extended-thinking)設定を継承するため、セッションで有効になっている場合は思考を有効にして推論し、そうでない場合はオフのままになります。思考は要約の生成方法にのみ影響します。セッション設定はその後変更されません。各種コンテンツに何が起こるかは、それらがどのように読み込まれたかによって異なります。
 
 | メカニズム | 圧縮後 |
 | :- | :- |
 | システムプロンプトと出力スタイル | 両方とも引き続き適用されます |
 | プロジェクトルート CLAUDE.md とスコープなしルール | ディスクから再度注入されます |
 | 自動メモリ | ディスクから再度注入されます |
-| スキルの説明 | 現在の[スキル](/docs/ja/skills)から再構築され、再度注入されます。Claude Code v2.1.304 以降が必要です |
-| [Git ステータススナップショット](/docs/ja/settings-reference#includegitinstructions) | セッション開始時にスナップショットがあった場合、Claude Code はリポジトリから新しいものを読み込みます |
-| [plan モード](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode)で Claude が作成したプラン | ディスクから再度注入されます |
-| `paths:` フロントマターを持つルール | Claude Code が[必要に応じて](/docs/ja/memory#path-specific-rules)再度読み込みます |
-| サブディレクトリ内のネストされた CLAUDE.md | Claude Code が[必要に応じて](/docs/ja/memory#how-claude-md-files-load)再度読み込みます |
+| スキルの説明 | 現在の[スキル](/docs/ja/skills.md)から再構築され、再度注入されます。Claude Code v2.1.304 以降が必要です |
+| [Git ステータススナップショット](/docs/ja/settings-reference.md#includegitinstructions) | セッション開始時にスナップショットがあった場合、Claude Code はリポジトリから新しいものを読み込みます |
+| [plan モード](/docs/ja/permission-modes.md#analyze-before-you-edit-with-plan-mode)で Claude が作成したプラン | ディスクから再度注入されます |
+| `paths:` フロントマターを持つルール | Claude Code が[必要に応じて](/docs/ja/memory.md#path-specific-rules)再度読み込みます |
+| サブディレクトリ内のネストされた CLAUDE.md | Claude Code が[必要に応じて](/docs/ja/memory.md#how-claude-md-files-load)再度読み込みます |
 | Claude が読み込んだまたは編集したファイル | Claude Code は最大 5 つを再度読み込みます。最近変更されたものが最初です |
 | 呼び出されたスキル本体 | 再度注入されます。スキルあたり 5,000 トークン、合計 25,000 トークンでキャップされます。最も古いものが最初にドロップされます |
-| [バックグラウンドコマンド](/docs/ja/interactive-mode#background-bash-commands)とバックグラウンド[サブエージェント](/docs/ja/sub-agents#run-subagents-in-foreground-or-background) | 実行を続けます。Claude Code は Claude に対して、どのコマンドがまだ実行中であるかを通知し、重複を開始しないようにします |
+| [バックグラウンドコマンド](/docs/ja/interactive-mode.md#background-bash-commands)とバックグラウンド[サブエージェント](/docs/ja/sub-agents.md#run-subagents-in-foreground-or-background) | 実行を続けます。Claude Code は Claude に対して、どのコマンドがまだ実行中であるかを通知し、重複を開始しないようにします |
 | フックが以前に追加したコンテキスト | 会話の残りの部分と一緒にまとめられます |
-| `compact` ソースと一致する [SessionStart フック](/docs/ja/hooks-guide#re-inject-context-after-compaction) | Claude Code がそれらを実行し、その出力を圧縮されたコンテキストに追加します |
+| `compact` ソースと一致する [SessionStart フック](/docs/ja/hooks-guide.md#re-inject-context-after-compaction) | Claude Code がそれらを実行し、その出力を圧縮されたコンテキストに追加します |
 
 圧縮直後に、Claude Code はセッション内で Claude が読み込んだまたは編集したファイルのうち最大 5 つを再度読み込みます。最近変更されたものを選択します。5,000 トークンを超えるファイルはパス参照として戻ります。その内容なしで、`Read` ではなく `Referenced file` として表示されます。
 
@@ -45,19 +45,19 @@ Claude Code のコンテキストウィンドウには、セッションにつ�
 
 ## コンテキストがいっぱいになるとき
 
-Claude Code はコンテキストウィンドウの制限に近づくと自動的にコンテキスト圧縮を実行するため、コンテキストウィンドウがいっぱいになってもセッションが終了することはありません。自動パスはタイムラインの `/compact` ステップと同じ方法で機能します。保持される内容については、[コンテキストがいっぱいになるとき](/docs/ja/how-claude-code-works#when-context-fills-up)を参照してください。アイドル状態のまま放置した会話を Claude Code が圧縮する場合については、[アイドル時の圧縮](/docs/ja/settings-reference#idlecompaction)を参照してください。
+Claude Code はコンテキストウィンドウの制限に近づくと自動的にコンテキスト圧縮を実行するため、コンテキストウィンドウがいっぱいになってもセッションが終了することはありません。自動パスはタイムラインの `/compact` ステップと同じ方法で機能します。保持される内容については、[コンテキストがいっぱいになるとき](/docs/ja/how-claude-code-works.md#when-context-fills-up)を参照してください。アイドル状態のまま放置した会話を Claude Code が圧縮する場合については、[アイドル時の圧縮](/docs/ja/settings-reference.md#idlecompaction)を参照してください。
 
 自動パスが実行される前に対応することもできます。
 
 * **フォーカスを絞ってコンパクション**: `/compact` を指示付きで実行します。例えば、`/compact focus on the auth bug fix` のように、長い新しいタスクを開始する前に実行してください。サマリーは自動パスが重要だと推測するものではなく、あなたが選択したものを保持します。
-* **会話の一部をコンパクション**: `/rewind` を実行し、メッセージを選択して、**ここから要約** または **ここまで要約** を選択してください。各オプションが保持する内容と要約をガイドする方法については、[リワインドと要約](/docs/ja/checkpointing#rewind-and-summarize)を参照してください。
-* **より早くコンパクション**: [`/autocompact`](/docs/ja/commands#all-commands) をトークン数付きで実行します。例えば `/autocompact 500k` のように、自動パスが実行される前にコンテキストウィンドウがどの程度いっぱいになるかを設定してください。受け入れられる値とオーバーライドについては、[自動コンパクトウィンドウを設定](/docs/ja/model-config#set-the-auto-compact-window)を参照してください。
+* **会話の一部をコンパクション**: `/rewind` を実行し、メッセージを選択して、**ここから要約** または **ここまで要約** を選択してください。各オプションが保持する内容と要約をガイドする方法については、[リワインドと要約](/docs/ja/checkpointing.md#rewind-and-summarize)を参照してください。
+* **より早くコンパクション**: [`/autocompact`](/docs/ja/commands#all-commands) をトークン数付きで実行します。例えば `/autocompact 500k` のように、自動パスが実行される前にコンテキストウィンドウがどの程度いっぱいになるかを設定してください。受け入れられる値とオーバーライドについては、[自動コンパクトウィンドウを設定](/docs/ja/model-config.md#set-the-auto-compact-window)を参照してください。
 * **タスク間でクリア**: 関連のない作業に切り替えるときに `/clear` を実行してください。古い会話は次に必要なファイルを圧迫し、すべてのメッセージでトークンを消費します。
-* **大きな読み込みを委譲**: 研究を[サブエージェント](/docs/ja/sub-agents)に送信して、ファイルコンテンツがあなたのコンテキストウィンドウではなく、そのコンテキストウィンドウに留まるようにしてください。
+* **大きな読み込みを委譲**: 研究を[サブエージェント](/docs/ja/sub-agents.md)に送信して、ファイルコンテンツがあなたのコンテキストウィンドウではなく、そのコンテキストウィンドウに留まるようにしてください。
 
-より小さな会話ではなく、より大きなウィンドウが必要な場合、Fable モデル、Sonnet 5 以降、Haiku 5.5、Opus 4.6 以降、および Sonnet 4.6 は 100 万トークンのコンテキストウィンドウをサポートしています。プランごとの利用可能性と `[1m]` モデルバリアントの選択方法については、[拡張コンテキスト](/docs/ja/model-config#extended-context)を参照してください。コンテキスト圧縮はより大きな制限でも同じ方法で機能します。
+より小さな会話ではなく、より大きなウィンドウが必要な場合、Fable モデル、Sonnet 5 以降、Haiku 5.5、Opus 4.6 以降、および Sonnet 4.6 は 100 万トークンのコンテキストウィンドウをサポートしています。プランごとの利用可能性と `[1m]` モデルバリアントの選択方法については、[拡張コンテキスト](/docs/ja/model-config.md#extended-context)を参照してください。コンテキスト圧縮はより大きな制限でも同じ方法で機能します。
 
-自動コンパクションが実行される時点は、あなたのモデルと設定によって異なります。モデルごとの境界については[デフォルト自動コンパクトしきい値](/docs/ja/model-config#default-auto-compact-thresholds)を参照してください。Claude Code があなたのモデル ID（[LLM ゲートウェイ](/docs/ja/llm-gateway)エイリアスなど）に対して間違ったウィンドウを想定している場合は、[ゲートウェイまたはカスタムモデル ID のウィンドウを修正](/docs/ja/model-config#correct-the-window-for-a-gateway-or-custom-model-id)を参照してください。
+自動コンパクションが実行される時点は、あなたのモデルと設定によって異なります。モデルごとの境界については[デフォルト自動コンパクトしきい値](/docs/ja/model-config.md#default-auto-compact-thresholds)を参照してください。Claude Code があなたのモデル ID（[LLM ゲートウェイ](/docs/ja/llm-gateway)エイリアスなど）に対して間違ったウィンドウを想定している場合は、[ゲートウェイまたはカスタムモデル ID のウィンドウを修正](/docs/ja/model-config.md#correct-the-window-for-a-gateway-or-custom-model-id)を参照してください。
 
 ## あなた自身のセッションを確認する
 
@@ -67,9 +67,9 @@ Claude Code はコンテキストウィンドウの制限に近づくと自動�
 
 タイムラインに示されている機能の詳細なカバレッジについては、これらのページを参照してください。
 
-* [Claude Code を拡張する](/docs/ja/features-overview): CLAUDE.md とスキルとルールとフックと MCP をいつ使用するか
-* [指示とメモリを保存する](/docs/ja/memory): CLAUDE.md 階層と自動メモリ
-* [サブエージェント](/docs/ja/sub-agents): 研究を別のコンテキストウィンドウに委譲する
-* [ベストプラクティス](/docs/ja/best-practices): コンテキストを主な制約として管理する
-* [プロンプト キャッシング](/docs/ja/prompt-caching): キャッシュされたプレフィックスを無効にするアクション
-* [トークン使用量を削減する](/docs/ja/costs#reduce-token-usage): コンテキスト使用量を低く保つための戦略
+* [Claude Code を拡張する](/docs/ja/features-overview.md): CLAUDE.md とスキルとルールとフックと MCP をいつ使用するか
+* [指示とメモリを保存する](/docs/ja/memory.md): CLAUDE.md 階層と自動メモリ
+* [サブエージェント](/docs/ja/sub-agents.md): 研究を別のコンテキストウィンドウに委譲する
+* [ベストプラクティス](/docs/ja/best-practices.md): コンテキストを主な制約として管理する
+* [プロンプト キャッシング](/docs/ja/prompt-caching.md): キャッシュされたプレフィックスを無効にするアクション
+* [トークン使用量を削減する](/docs/ja/costs.md#reduce-token-usage): コンテキスト使用量を低く保つための戦略

@@ -12,13 +12,13 @@ Claude Code のゼロデータ保持（ZDR）は、Claude for Enterprise の適�
 >
 > ZDR は標準的な Claude for Enterprise プランに含まれておらず、管理者設定から有効化することはできません。適格なアカウントで利用可能であり、Anthropic による個別の有効化が必要です。組織が ZDR を必要とする場合は、[営業に連絡](https://www.anthropic.com/contact-sales?utm_source=claude_code\&utm_medium=docs\&utm_content=zero_data_retention_request)するか、Anthropic アカウントチームに連絡して適格性を確認してください。
 
-HIPAA を有効にした Claude for Enterprise の組織は、HIPAA 設定を Claude Code（ローカルモード）と Cowork（ローカルモード）に適用すると、ZDR なしで Claude Code CLI と Claude Desktop の Code タブをビジネスアソシエイト契約（BAA）の対象にできます。[HIPAA 対応組織向けに Claude Code（ローカルモード）をセットアップする](/docs/ja/hipaa-setup)を参照してください。HIPAA 設定のない組織では、Claude Code を BAA の対象とするために引き続き ZDR が必要です。対象サービス（Eligible Services）の一覧については、[実装ガイド](https://trust.anthropic.com/resources?s=l1wrssd9hsbi4gak0tp5a6\&name=%5Banthropic%5D-hipaa-ready-offering-implementation-guide)を参照してください。
+HIPAA を有効にした Claude for Enterprise の組織は、HIPAA 設定を Claude Code（ローカルモード）と Cowork（ローカルモード）に適用すると、ZDR なしで Claude Code CLI と Claude Desktop の Code タブをビジネスアソシエイト契約（BAA）の対象にできます。[HIPAA 対応組織向けに Claude Code（ローカルモード）をセットアップする](/docs/ja/hipaa-setup.md)を参照してください。HIPAA 設定のない組織では、Claude Code を BAA の対象とするために引き続き ZDR が必要です。対象サービス（Eligible Services）の一覧については、[実装ガイド](https://trust.anthropic.com/resources?s=l1wrssd9hsbi4gak0tp5a6\&name=%5Banthropic%5D-hipaa-ready-offering-implementation-guide)を参照してください。
 
 Claude for Enterprise 上の ZDR により、エンタープライズカスタマーは Claude Code をゼロデータ保持で使用し、管理機能にアクセスできます：
 
 * ユーザーごとのコスト管理
-* [Analytics](/docs/ja/analytics) ダッシュボード
-* [Server-managed settings](/docs/ja/server-managed-settings)
+* [Analytics](/docs/ja/analytics.md) ダッシュボード
+* [Server-managed settings](/docs/ja/server-managed-settings.md)
 * 監査ログ
 
 Claude for Enterprise 上の Claude Code の ZDR は、Anthropic の直接プラットフォームにのみ適用されます。Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry 上の Claude のデプロイについては、これらのプラットフォームのデータ保持ポリシーを参照してください。
@@ -33,7 +33,7 @@ ZDR は Claude for Enterprise 上の Claude Code 推論をカバーします。
 
 ### Claude Code トラフィックを ZDR 組織にルーティングする
 
-ZDR は ZDR が有効化された組織に認証するリクエストに適用されます。開発者が個人アカウントまたは別の組織の API キーで Claude Code にサインインした場合、これらのセッションはカバーされません。開発者の claude.ai ログインが ZDR 組織に属することを要求するには、`forceLoginMethod` および `forceLoginOrgUUID` マネージド設定をデプロイしてください。[組織へのログインを制限する](/docs/ja/authentication#restrict-login-to-your-organization)を参照してください。このセクションでは、これらのキーが Claude Console ログインをどのように扱うかについても説明しています。
+ZDR は ZDR が有効化された組織に認証するリクエストに適用されます。開発者が個人アカウントまたは別の組織の API キーで Claude Code にサインインした場合、これらのセッションはカバーされません。開発者の claude.ai ログインが ZDR 組織に属することを要求するには、`forceLoginMethod` および `forceLoginOrgUUID` マネージド設定をデプロイしてください。[組織へのログインを制限する](/docs/ja/authentication.md#restrict-login-to-your-organization)を参照してください。このセクションでは、これらのキーが Claude Console ログインをどのように扱うかについても説明しています。
 
 ### ZDR がカバーする内容
 
@@ -41,13 +41,13 @@ ZDR は Claude for Enterprise 上の Claude Code を通じて行われたモデ�
 
 ### ZDR がカバーしない内容
 
-ZDR は、ZDR が有効化されている組織であっても、以下には適用されません。これらの機能は[標準データ保持ポリシー](/docs/ja/data-usage#data-retention)に従います：
+ZDR は、ZDR が有効化されている組織であっても、以下には適用されません。これらの機能は[標準データ保持ポリシー](/docs/ja/data-usage.md#data-retention)に従います：
 
 | 機能 | 詳細 |
 | - | - |
 | claude.ai 上のチャット | Claude for Enterprise ウェブインターフェース経由のチャット会話は ZDR でカバーされません。 |
 | Cowork | Cowork セッションは ZDR でカバーされません。 |
-| Claude Code Analytics | プロンプトまたはモデル応答を保存しませんが、アカウントメールや使用統計などの生産性メタデータを収集します。貢献メトリクスは ZDR 組織では利用できません。[analytics ダッシュボード](/docs/ja/analytics)は使用メトリクスのみを表示します。 |
+| Claude Code Analytics | プロンプトまたはモデル応答を保存しませんが、アカウントメールや使用統計などの生産性メタデータを収集します。貢献メトリクスは ZDR 組織では利用できません。[analytics ダッシュボード](/docs/ja/analytics.md)は使用メトリクスのみを表示します。 |
 | ユーザーとシート管理 | アカウントメールやシート割り当てなどの管理データは標準ポリシーの下で保持されます。 |
 | サードパーティ統合 | サードパーティツール、MCP servers、またはその他の外部統合によって処理されたデータは ZDR でカバーされません。これらのサービスのデータ処理慣行を独立して確認してください。 |
 
@@ -57,12 +57,12 @@ Claude for Enterprise 上の Claude Code 組織に対して ZDR が有効化さ�
 
 | 機能 | 理由 |
 | - | - |
-| [Web 上の Claude Code](/docs/ja/claude-code-on-the-web)（[Desktop アプリ](/docs/ja/desktop#cloud-sessions)から開始されたものを含む） | セッションデータのサーバー側ストレージが必要です。これには、プロンプトと完了を含む会話履歴が含まれます。 |
+| [Web 上の Claude Code](/docs/ja/claude-code-on-the-web.md)（[Desktop アプリ](/docs/ja/desktop.md#cloud-sessions)から開始されたものを含む） | セッションデータのサーバー側ストレージが必要です。これには、プロンプトと完了を含む会話履歴が含まれます。 |
 | [Chat と Cowork の統合](https://support.claude.com/en/articles/17444462-set-up-and-manage-the-new-unified-claude-experience-for-your-enterprise-organization) | クラウドセッションが必要です。 |
 | [Claude Tag](https://claude.com/docs/claude-tag) | チャネルメモリとセッショントランスクリプトを保持します。 |
-| [Artifacts](/docs/ja/artifacts) | Anthropic が運用するインフラストラクチャに公開されたページコンテンツを保存する必要があります。 |
+| [Artifacts](/docs/ja/artifacts.md) | Anthropic が運用するインフラストラクチャに公開されたページコンテンツを保存する必要があります。 |
 | フィードバック送信（`/feedback`、`/bug`、`/share`） | フィードバックを送信すると、会話データが Anthropic に送信されます。 |
-| [Remote Control](/docs/ja/remote-control) | Anthropic サーバーにセッショントランスクリプトを保存して、デバイス間で会話を同期します。 |
+| [Remote Control](/docs/ja/remote-control.md) | Anthropic サーバーにセッショントランスクリプトを保存して、デバイス間で会話を同期します。 |
 
 これらの機能はクライアント側の表示に関係なく、バックエンドでブロックされます。Claude Code ターミナルの起動中に無効化された機能が表示される場合、それを使用しようとするとエラーが返され、組織のポリシーがそのアクションを許可していないことが示されます。
 

@@ -10,11 +10,11 @@
 >
 > 自己ホスト環境は Team および Enterprise プランでパブリックベータ版であり、デフォルトではオフになっています。有効化パスと除外される内容については、[利用可能性と制限事項](#availability-and-limitations)を参照してください。
 
-自己ホスト環境は、組織が運用するインフラストラクチャで Claude Code クラウドセッションを実行します。[クラウドセッション](/docs/ja/claude-code-on-the-web)は、開発者のマシン以外の場所で実行されるセッションです。開発者は claude.ai、モバイルおよびデスクトップアプリ、[`claude --cloud`](/docs/ja/claude-code-on-the-web#from-terminal-to-cloud) を使用したターミナル、および[クラウドスケジュールタスク](/docs/ja/routines)からクラウドセッションを開始します。デフォルトでは、クラウドセッションは Anthropic のインフラストラクチャで実行されます。
+自己ホスト環境は、組織が運用するインフラストラクチャで Claude Code クラウドセッションを実行します。[クラウドセッション](/docs/ja/claude-code-on-the-web.md)は、開発者のマシン以外の場所で実行されるセッションです。開発者は claude.ai、モバイルおよびデスクトップアプリ、[`claude --cloud`](/docs/ja/claude-code-on-the-web#from-terminal-to-cloud) を使用したターミナル、および[クラウドスケジュールタスク](/docs/ja/routines.md)からクラウドセッションを開始します。デフォルトでは、クラウドセッションは Anthropic のインフラストラクチャで実行されます。
 
-自己ホスト環境では、これらの同じセッションがネットワーク内で実行されます。それ以外の開発者体験は、[利用可能性と制限事項](#availability-and-limitations)の違いとデプロイページの[既知の問題](/docs/ja/self-hosted-environments-deploy#known-issues-and-limitations)を除いて同じです。
+自己ホスト環境では、これらの同じセッションがネットワーク内で実行されます。それ以外の開発者体験は、[利用可能性と制限事項](#availability-and-limitations)の違いとデプロイページの[既知の問題](/docs/ja/self-hosted-environments-deploy.md#known-issues-and-limitations)を除いて同じです。
 
-チームがクラウドセッションを使用していない場合、ここで設定することはありません。ターミナルまたは IDE のセッションは常に開発者自身のマシンで実行されます。Claude Code を常時稼働しているマシンで実行し、他のデバイスから駆動したい場合は、[リモートコントロール](/docs/ja/remote-control)を使用してください。これは Pro および Max プランでも利用可能です。セットアップの準備ができたら、[クイックスタート](/docs/ja/self-hosted-environments-quickstart)に直接進んでください。セキュリティ体制を最初に確認したい場合は、[本番環境へのデプロイ](/docs/ja/self-hosted-environments-deploy)から始めてください。このページの残りの部分では、自己ホスティングの仕組みと、それを選択する時期について説明します。
+チームがクラウドセッションを使用していない場合、ここで設定することはありません。ターミナルまたは IDE のセッションは常に開発者自身のマシンで実行されます。Claude Code を常時稼働しているマシンで実行し、他のデバイスから駆動したい場合は、[リモートコントロール](/docs/ja/remote-control.md)を使用してください。これは Pro および Max プランでも利用可能です。セットアップの準備ができたら、[クイックスタート](/docs/ja/self-hosted-environments-quickstart.md)に直接進んでください。セキュリティ体制を最初に確認したい場合は、[本番環境へのデプロイ](/docs/ja/self-hosted-environments-deploy.md)から始めてください。このページの残りの部分では、自己ホスティングの仕組みと、それを選択する時期について説明します。
 
 ## 自己ホスト環境の仕組み
 
@@ -24,23 +24,23 @@
 * **ランナー**: ネットワーク内のホストで実行されるプログラム。ランナーはセッションを実行します。概念は自己ホスト CI ランナーと同じです。
 * **セッション**: 開発者が開始した 1 つの Claude Code タスク。
 
-開発者がクラウドセッションを開始すると、セッション開始 UI に環境ピッカーが表示され、Anthropic ホスト環境と組織が作成した環境が一覧表示されます。組織の環境を選択すると、Anthropic のコントロールプレーンはセッションを環境のキューに配置し、ランナーがそれを要求し、開発者が選択したリポジトリをクローンし、ホストで Claude Code プロセスを開始して実行します。ランナーは設定した認証情報を使用して git ホストに認証します。[git の設定](/docs/ja/self-hosted-environments-deploy#configure-git)では、オプションについて説明しています。セッションはネットワーク内からの内部サービスに到達し、内部の場合は同じ方法で git ホストに到達します。Anthropic へのトラフィック（キューポーリング、セッションのイベントストリーム、およびデフォルトではモデル推論）は、`api.anthropic.com` への送信 HTTPS であり、セッションが到達できるその他のホストの短いリストは[ネットワーク要件](/docs/ja/self-hosted-environments-deploy#network-requirements)にあります。Anthropic はネットワークに接続することはありません。
+開発者がクラウドセッションを開始すると、セッション開始 UI に環境ピッカーが表示され、Anthropic ホスト環境と組織が作成した環境が一覧表示されます。組織の環境を選択すると、Anthropic のコントロールプレーンはセッションを環境のキューに配置し、ランナーがそれを要求し、開発者が選択したリポジトリをクローンし、ホストで Claude Code プロセスを開始して実行します。ランナーは設定した認証情報を使用して git ホストに認証します。[git の設定](/docs/ja/self-hosted-environments-deploy.md#configure-git)では、オプションについて説明しています。セッションはネットワーク内からの内部サービスに到達し、内部の場合は同じ方法で git ホストに到達します。Anthropic へのトラフィック（キューポーリング、セッションのイベントストリーム、およびデフォルトではモデル推論）は、`api.anthropic.com` への送信 HTTPS であり、セッションが到達できるその他のホストの短いリストは[ネットワーク要件](/docs/ja/self-hosted-environments-deploy.md#network-requirements)にあります。Anthropic はネットワークに接続することはありません。
 
 ![自己ホスト環境のアーキテクチャ図。ネットワーク境界内にはランナー、その内部の 2 つの Claude Code セッションプロセス、および git ホストが含まれており、api.anthropic.com の外側にはキュー、セッションストリーム、および推論があります。ランナーはキューをポーリングして git ホストに到達し、各セッションプロセスは独自のストリーム、推論、および git 接続を開き、すべての接続はネットワークからの送信であり、受信はありません。](https://mintcdn.com/claude-code/Y0sJ2uDoOVbOVZrQ/images/self-hosted-network-paths.svg?fit=max\&auto=format\&n=Y0sJ2uDoOVbOVZrQ\&q=85\&s=8056103fc1c5564c7f0ef219d260b99d)
 
 図の 2 つの Claude Code ボックスはセッションプロセスです。1 つのランナーが最大で設定容量まで 2 つのセッションを同時に実行しています。ランナーは一度に 1 つの[オーナー](#key-concepts)に対応し、最初のセッションを要求するときにそのオーナーにロックされるため、チェックアウトされたコードはオーナー間で混在しません。[ランナーのライフサイクル](#runner-lifecycle)では、このルールについて説明しています。
 
-ランナーを自分で開始して実行し続けるか、ホストする[オートスケーリングオーケストレーター](/docs/ja/self-hosted-environments-configuration#on-demand-runners)（セッションがキューに入るときにランナーを開始する 2 番目のプロセス）を実行できます。各ランナーは作業が完了すると自動的に終了します。どちらの方法でも、環境を一度セットアップすると、サポートされているすべてのサーフェスのピッカーに表示されます。
+ランナーを自分で開始して実行し続けるか、ホストする[オートスケーリングオーケストレーター](/docs/ja/self-hosted-environments-configuration.md#on-demand-runners)（セッションがキューに入るときにランナーを開始する 2 番目のプロセス）を実行できます。各ランナーは作業が完了すると自動的に終了します。どちらの方法でも、環境を一度セットアップすると、サポートされているすべてのサーフェスのピッカーに表示されます。
 
 ## 利用可能性と制限事項
 
 ロールアウトを計画する前に、これらを確認してください。
 
-* **プラン**: Team および Enterprise 組織向けのパブリックベータ版。自己ホスト環境はデフォルトではオフになっています。[オーナー](/docs/ja/cloud-environments#organization-shared-environments)が[**クラウド環境**管理ページ](https://claude.ai/admin-settings/cloud-environments)で**自己ホスト環境を許可**をオンにします。これには、組織に対して[ウェブ上の Claude Code](/docs/ja/claude-code-on-the-web)が有効になっている必要があります。
-* **ゼロデータ保持と HIPAA**: [ゼロデータ保持](/docs/ja/zero-data-retention)が有効になっている組織、または [HIPAA 設定](/docs/ja/hipaa-setup)が適用されている組織では利用できません。
-* **モデル推論**: ランナーを [Amazon Bedrock または Google Cloud の Agent Platform にモデルリクエストを送信する](/docs/ja/self-hosted-environments-configuration#send-model-requests-to-bedrock-or-agent-platform)ように構成しない限り、セッションは Anthropic API を使用します。いずれの場合も、セッションのコンテンツは Anthropic に送信されます。このように構成されたランナーでは、claude.ai の[サーバー管理設定](/docs/ja/server-managed-settings)と組織ポリシーはセッションに適用されません。
-* **サーフェス**: [claude.ai/code](https://claude.ai/code)、モバイルおよびデスクトップアプリ、[クラウドスケジュールタスク](/docs/ja/routines)、およびターミナルから開始されたセッション（[`claude --cloud`](/docs/ja/claude-code-on-the-web#from-terminal-to-cloud)または[`--environment`ディスパッチ](/docs/ja/self-hosted-environments-testing#run-the-test-loop)を使用）は、自己ホスト環境で実行できます。[Claude Tag](https://claude.com/docs/claude-tag/overview)セッションもそれらで実行できますが、Claude はまだそれらのセッションで[アクセスバンドル](https://claude.com/docs/claude-tag/concepts/glossary#access-bundle)を使用できません。[Claude Security](/docs/ja/claude-security)および[Code Review](/docs/ja/code-review)セッションはまだそれらにルーティングされません。これら 2 つのサーフェスのサポートは別途提供されます。
-* **リポジトリ**: セッションは GitHub からリポジトリをチェックアウトします。[GitHub 認証オプション](/docs/ja/claude-code-on-the-web#github-authentication-options)を参照してください。GitHub Enterprise Server ホストについては、その[ネットワーク要件](/docs/ja/github-enterprise-server#network-requirements)を参照してください。
+* **プラン**: Team および Enterprise 組織向けのパブリックベータ版。自己ホスト環境はデフォルトではオフになっています。[オーナー](/docs/ja/cloud-environments.md#organization-shared-environments)が[**クラウド環境**管理ページ](https://claude.ai/admin-settings/cloud-environments)で**自己ホスト環境を許可**をオンにします。これには、組織に対して[ウェブ上の Claude Code](/docs/ja/claude-code-on-the-web.md)が有効になっている必要があります。
+* **ゼロデータ保持と HIPAA**: [ゼロデータ保持](/docs/ja/zero-data-retention.md)が有効になっている組織、または [HIPAA 設定](/docs/ja/hipaa-setup.md)が適用されている組織では利用できません。
+* **モデル推論**: ランナーを [Amazon Bedrock または Google Cloud の Agent Platform にモデルリクエストを送信する](/docs/ja/self-hosted-environments-configuration.md#send-model-requests-to-bedrock-or-agent-platform)ように構成しない限り、セッションは Anthropic API を使用します。いずれの場合も、セッションのコンテンツは Anthropic に送信されます。このように構成されたランナーでは、claude.ai の[サーバー管理設定](/docs/ja/server-managed-settings.md)と組織ポリシーはセッションに適用されません。
+* **サーフェス**: [claude.ai/code](https://claude.ai/code)、モバイルおよびデスクトップアプリ、[クラウドスケジュールタスク](/docs/ja/routines.md)、およびターミナルから開始されたセッション（[`claude --cloud`](/docs/ja/claude-code-on-the-web#from-terminal-to-cloud)または[`--environment`ディスパッチ](/docs/ja/self-hosted-environments-testing#run-the-test-loop)を使用）は、自己ホスト環境で実行できます。[Claude Tag](https://claude.com/docs/claude-tag/overview)セッションもそれらで実行できますが、Claude はまだそれらのセッションで[アクセスバンドル](https://claude.com/docs/claude-tag/concepts/glossary#access-bundle)を使用できません。[Claude Security](/docs/ja/claude-security.md)および[Code Review](/docs/ja/code-review.md)セッションはまだそれらにルーティングされません。これら 2 つのサーフェスのサポートは別途提供されます。
+* **リポジトリ**: セッションは GitHub からリポジトリをチェックアウトします。[GitHub 認証オプション](/docs/ja/claude-code-on-the-web.md#github-authentication-options)を参照してください。GitHub Enterprise Server ホストについては、その[ネットワーク要件](/docs/ja/github-enterprise-server.md#network-requirements)を参照してください。
 * **請求**: 自己ホスト環境のセッションは、Anthropic ホスト環境のセッションと同じ方法で組織の Claude Code 使用量を消費します。
 
 ## 自己ホスティングを選ぶ理由
@@ -68,7 +68,7 @@
 | ランナー | デプロイする長時間稼働のプロセスです。ランナーは環境に登録し、ランナートークンを受け取り、セッションをポーリングします。 |
 | セッション | claude.ai、モバイルアプリ、またはスケジュールタスクやエージェントなどの他の Anthropic サーフェスから開始される、1 つの Claude Code タスクです。各セッションは、ランナーが生成する子 Claude Code プロセスとして実行されます。 |
 
-API のフィールド、トークンのクレーム、メトリクス名では、環境は `pool` として表記され、環境 ID は `pool_id` です。[リファレンス](/docs/ja/self-hosted-environments-reference)では、非推奨の `pool` フラグ名を含め、2 つの表記の対応を示しています。
+API のフィールド、トークンのクレーム、メトリクス名では、環境は `pool` として表記され、環境 ID は `pool_id` です。[リファレンス](/docs/ja/self-hosted-environments-reference.md)では、非推奨の `pool` フラグ名を含め、2 つの表記の対応を示しています。
 
 ランナーは一度に 1 人のオーナーにのみサービスを提供します。ランナーが最初に取得したセッションによって、ランナーはそのセッションのオーナーにロックされ、以降は設定された容量の範囲内で、そのオーナーのセッションのみを実行します。オーナーが誰になるかは、セッションの開始方法によって異なります。
 
@@ -97,7 +97,7 @@ API のフィールド、トークンのクレーム、メトリクス名では�
 
 このライフサイクルにより、オーナー間でランナーがディスクの状態を削除しなくても、各オーナーのチェックアウトされたコードが分離されます。
 
-`--retire-at` が必要かどうかは、インフラストラクチャがランナーをどのように停止するかによって決まります。`SIGTERM` を送信する kill の場合、フラグは不要です。ランナーは[シャットダウンのタイミング](/docs/ja/self-hosted-environments-deploy#shutdown-timing)で説明されているとおりにドレインするか、[`--defer-shutdown-max-min`](/docs/ja/self-hosted-environments-deploy#defer-the-drain-past-the-first-signal) を設定している場合は、すでに保持しているセッションの処理を続けます。一方、サンドボックスの存続期間の上限やスポットインスタンスの回収など、インフラストラクチャがシグナルなしで、またはドレインするには短すぎる猶予期間で、既知の時刻にホストを破棄する場合は、その時刻の数分前に設定した `--retire-at <epoch-seconds>` を渡してください。リタイア時刻になると、次のように動作します。
+`--retire-at` が必要かどうかは、インフラストラクチャがランナーをどのように停止するかによって決まります。`SIGTERM` を送信する kill の場合、フラグは不要です。ランナーは[シャットダウンのタイミング](/docs/ja/self-hosted-environments-deploy.md#shutdown-timing)で説明されているとおりにドレインするか、[`--defer-shutdown-max-min`](/docs/ja/self-hosted-environments-deploy#defer-the-drain-past-the-first-signal) を設定している場合は、すでに保持しているセッションの処理を続けます。一方、サンドボックスの存続期間の上限やスポットインスタンスの回収など、インフラストラクチャがシグナルなしで、またはドレインするには短すぎる猶予期間で、既知の時刻にホストを破棄する場合は、その時刻の数分前に設定した `--retire-at <epoch-seconds>` を渡してください。リタイア時刻になると、次のように動作します。
 
 1. ランナーは新しい作業の受け付けを停止します。
 2. ランナーは、[`--release-idle-session-min`](/docs/ja/self-hosted-environments-reference#runner-cli-flags) フラグが使用するのと同じリリース経路を通じて各アクティブセッションをリリースします。これにより、ユーザーが次のメッセージを送信したときに、セッションは新しいランナー上で再開されます。ランナーが各セッションをリリースするタイミングは、そのセッションの状態によって異なります。
@@ -105,28 +105,28 @@ API のフィールド、トークンのクレーム、メトリクス名では�
    * ターンが終了してもバックグラウンドタスクが実行中のままの場合、ランナーは最大 60 秒間それらを待ち、まだ実行中であってもセッションをリリースします。タスクが終了していても、その結果を読み取る後続のターンがまだ実行されていない場合、ランナーはそのターンが終了するまでセッションを保持します。そのターンの開始を待つ時間は、最長でも [`SELF_HOSTED_RUNNER_BG_RESULT_GRACE_MS`](/docs/ja/self-hosted-environments-reference#environment-variable-only-settings) までです。
 3. すべてのセッションがリリースされると、ランナーは終了コード 0 で終了します。
 
-kill の時点を過ぎても続くターンは失われます。マージンの見積もりについては[シャットダウンのタイミング](/docs/ja/self-hosted-environments-deploy#shutdown-timing)を参照してください。`--retire-at` を指定しない場合、シグナルなしのホスト kill はクラッシュと区別できません。コントロールプレーンはクリーンなリリースではなくワーカーの喪失として記録し、セッションは別のランナーに再度キューイングされます。
+kill の時点を過ぎても続くターンは失われます。マージンの見積もりについては[シャットダウンのタイミング](/docs/ja/self-hosted-environments-deploy.md#shutdown-timing)を参照してください。`--retire-at` を指定しない場合、シグナルなしのホスト kill はクラッシュと区別できません。コントロールプレーンはクリーンなリリースではなくワーカーの喪失として記録し、セッションは別のランナーに再度キューイングされます。
 
 ### ネットワーク経路
 
 ランナーとそのセッションは数種類のアウトバウンド接続を行いますが、Anthropic からのインバウンド接続は必要ありません。
 
 * **コントロールプレーン**：ランナーは `api.anthropic.com` をポーリングして作業を取得し、セットアップの進行状況や失敗のイベントを送信します。これらはすべてアウトバウンドの HTTPS です。ポーリングはランナーのハートビートも兼ねます。
-* **Git**：ランナーは、デプロイによって提供される認証情報で認証し、HTTPS または SSH 経由で git ホストからクローンおよびプッシュを行います。セッションごとに発行される認証情報を含むオプションについては、[git の設定](/docs/ja/self-hosted-environments-deploy#configure-git)を参照してください。[Anthropic git プロキシ](/docs/ja/self-hosted-environments-deploy#use-the-anthropic-git-proxy)を使用する場合、github.com 上のリポジトリに対する git トラフィックは代わりに `api.anthropic.com` を経由します。
-* **セッションの子プロセス**：子 Claude Code プロセスは `api.anthropic.com` へのセッションのイベントストリームを保持し、モデル推論とセッション中に実行される git コマンドのために独自のアウトバウンド呼び出しを行います。[Anthropic が管理する git](/docs/ja/self-hosted-environments-deploy#use-the-anthropic-git-proxy) を使用するセッションでは、子プロセスは github.com 向けの `git` および `gh` のトラフィックを、自身が `api.anthropic.com` に対して開く WebSocket 接続経由で送信します。
-* **SCM コネクタ**：オプションのオーケストレーター [SCM コネクタ](/docs/ja/self-hosted-environments-reference#scm-connector-flags)は利用できないため、そのトンネルは開かれません。このトンネルは `api.anthropic.com` への WebSocket 接続です。
+* **Git**：ランナーは、デプロイによって提供される認証情報で認証し、HTTPS または SSH 経由で git ホストからクローンおよびプッシュを行います。セッションごとに発行される認証情報を含むオプションについては、[git の設定](/docs/ja/self-hosted-environments-deploy.md#configure-git)を参照してください。[Anthropic git プロキシ](/docs/ja/self-hosted-environments-deploy.md#use-the-anthropic-git-proxy)を使用する場合、github.com 上のリポジトリに対する git トラフィックは代わりに `api.anthropic.com` を経由します。
+* **セッションの子プロセス**：子 Claude Code プロセスは `api.anthropic.com` へのセッションのイベントストリームを保持し、モデル推論とセッション中に実行される git コマンドのために独自のアウトバウンド呼び出しを行います。[Anthropic が管理する git](/docs/ja/self-hosted-environments-deploy.md#use-the-anthropic-git-proxy) を使用するセッションでは、子プロセスは github.com 向けの `git` および `gh` のトラフィックを、自身が `api.anthropic.com` に対して開く WebSocket 接続経由で送信します。
+* **SCM コネクタ**：オプションのオーケストレーター [SCM コネクタ](/docs/ja/self-hosted-environments-reference.md#scm-connector-flags)は利用できないため、そのトンネルは開かれません。このトンネルは `api.anthropic.com` への WebSocket 接続です。
 
-エグレスの完全な一覧については[ネットワーク要件](/docs/ja/self-hosted-environments-deploy#network-requirements)を参照してください。[上の図](#how-self-hosted-environments-work)は、オプションの SCM コネクタと Anthropic が管理する git 接続を除く、これらの経路を示しています。
+エグレスの完全な一覧については[ネットワーク要件](/docs/ja/self-hosted-environments-deploy.md#network-requirements)を参照してください。[上の図](#how-self-hosted-environments-work)は、オプションの SCM コネクタと Anthropic が管理する git 接続を除く、これらの経路を示しています。
 
-デフォルトでは、モデル推論には Anthropic API を使用します。コントロールプレーンは各セッションに API エンドポイントを渡し、セッションは Anthropic が発行したセッションスコープの OAuth トークンで認証します。モデルリクエストを代わりに自社のクラウドアカウントに送信する方法については、[モデルリクエストを Bedrock または Agent Platform に送信する](/docs/ja/self-hosted-environments-configuration#send-model-requests-to-bedrock-or-agent-platform)を参照してください。
+デフォルトでは、モデル推論には Anthropic API を使用します。コントロールプレーンは各セッションに API エンドポイントを渡し、セッションは Anthropic が発行したセッションスコープの OAuth トークンで認証します。モデルリクエストを代わりに自社のクラウドアカウントに送信する方法については、[モデルリクエストを Bedrock または Agent Platform に送信する](/docs/ja/self-hosted-environments-configuration.md#send-model-requests-to-bedrock-or-agent-platform)を参照してください。
 
-企業のエグレスプロキシもサポートされています。ランナーとオプションの[オートスケーリングオーケストレーター](/docs/ja/self-hosted-environments-configuration#on-demand-runners)は、`HTTPS_PROXY` や `NO_PROXY` など、[ネットワーク設定](/docs/ja/network-config)で説明されているプロキシおよび mTLS の環境変数に従います。これらは各プロセスの環境で設定してください。これらの変数は、コントロールプレーンへの呼び出し、オーケストレーターの [SCM コネクタ](/docs/ja/self-hosted-environments-reference#scm-connector-flags)の WebSocket、および HTTPS リモートの組み込みクローンに適用され、セッションはランナーからこれらを継承します。セッションのストリーミングは HTTPS 上の server-sent events を使用するため、経路上のプロキシはレスポンスをバッファリングしてはいけません。
+企業のエグレスプロキシもサポートされています。ランナーとオプションの[オートスケーリングオーケストレーター](/docs/ja/self-hosted-environments-configuration.md#on-demand-runners)は、`HTTPS_PROXY` や `NO_PROXY` など、[ネットワーク設定](/docs/ja/network-config.md)で説明されているプロキシおよび mTLS の環境変数に従います。これらは各プロセスの環境で設定してください。これらの変数は、コントロールプレーンへの呼び出し、オーケストレーターの [SCM コネクタ](/docs/ja/self-hosted-environments-reference.md#scm-connector-flags)の WebSocket、および HTTPS リモートの組み込みクローンに適用され、セッションはランナーからこれらを継承します。セッションのストリーミングは HTTPS 上の server-sent events を使用するため、経路上のプロキシはレスポンスをバッファリングしてはいけません。
 
-プロキシで `Proxy-Authorization` ヘッダーも必要な場合、ランナーはプロキシに対して開く各接続にそのヘッダーを追加できます。[エグレスプロキシへの認証](/docs/ja/self-hosted-environments-deploy#authenticate-to-an-egress-proxy)を参照してください。
+プロキシで `Proxy-Authorization` ヘッダーも必要な場合、ランナーはプロキシに対して開く各接続にそのヘッダーを追加できます。[エグレスプロキシへの認証](/docs/ja/self-hosted-environments-deploy.md#authenticate-to-an-egress-proxy)を参照してください。
 
 ## インフラストラクチャに保たれるもの
 
-リポジトリのチェックアウト、ビルドアーティファクト、シークレット、およびセッションが作成または変更するファイルは、プロビジョニングしたマシンに保たれます。会話自体（プロンプト、応答、ツール結果を含む）は `api.anthropic.com` に送信され、Anthropic はセッショントランスクリプトを保存して、別の[サポートされているサーフェス](#availability-and-limitations)からセッションを再開できるようにします。ランナーが[モデルリクエストを Amazon Bedrock または Google Cloud の Agent Platform に送信する](/docs/ja/self-hosted-environments-configuration#send-model-requests-to-bedrock-or-agent-platform)場合でも、会話はセッションのイベントストリーム内で引き続き `api.anthropic.com` に送信されます。
+リポジトリのチェックアウト、ビルドアーティファクト、シークレット、およびセッションが作成または変更するファイルは、プロビジョニングしたマシンに保たれます。会話自体（プロンプト、応答、ツール結果を含む）は `api.anthropic.com` に送信され、Anthropic はセッショントランスクリプトを保存して、別の[サポートされているサーフェス](#availability-and-limitations)からセッションを再開できるようにします。ランナーが[モデルリクエストを Amazon Bedrock または Google Cloud の Agent Platform に送信する](/docs/ja/self-hosted-environments-configuration.md#send-model-requests-to-bedrock-or-agent-platform)場合でも、会話はセッションのイベントストリーム内で引き続き `api.anthropic.com` に送信されます。
 
 自己ホスト環境はセッション実行をネットワークに移動させます。コントロールプレーンは Anthropic ホスト型のままです。セッションオーケストレーション、キューイング、および claude.ai インターフェースは Anthropic のインフラストラクチャで実行され続けます。
 
@@ -134,9 +134,9 @@ kill の時点を過ぎても続くターンは失われます。マージンの
 
 自己ホスト環境ページは、実行している内容によって整理されています。
 
-* [クイックスタート](/docs/ja/self-hosted-environments-quickstart): Claude Code をインストールし、環境を作成し、ランナーを開始し、最初のセッションをルーティングします。
-* [本番環境へのデプロイ](/docs/ja/self-hosted-environments-deploy): セキュリティ強化、ネットワーク送信、git 認証情報、Kubernetes および Compose レシピ、既知の問題、およびトラブルシューティング
-* [セッションをカスタマイズ](/docs/ja/self-hosted-environments-configuration): セッションごとの認証情報、ライフサイクルフック、オンデマンドランナー、MCP サーバー、および権限のためのラッパースクリプト
-* [エンドツーエンドをテスト](/docs/ja/self-hosted-environments-testing): ランナーイメージをプロモーション前に検証する CI スモークテスト
-* [リファレンス](/docs/ja/self-hosted-environments-reference): すべての CLI フラグ、環境変数、メトリック、およびヘルスエンドポイント
-* [セッション ID を検証](/docs/ja/self-hosted-environments-identity): 独自のサービスからセッショントークンを検証してから、アクセスを許可します。
+* [クイックスタート](/docs/ja/self-hosted-environments-quickstart.md): Claude Code をインストールし、環境を作成し、ランナーを開始し、最初のセッションをルーティングします。
+* [本番環境へのデプロイ](/docs/ja/self-hosted-environments-deploy.md): セキュリティ強化、ネットワーク送信、git 認証情報、Kubernetes および Compose レシピ、既知の問題、およびトラブルシューティング
+* [セッションをカスタマイズ](/docs/ja/self-hosted-environments-configuration.md): セッションごとの認証情報、ライフサイクルフック、オンデマンドランナー、MCP サーバー、および権限のためのラッパースクリプト
+* [エンドツーエンドをテスト](/docs/ja/self-hosted-environments-testing.md): ランナーイメージをプロモーション前に検証する CI スモークテスト
+* [リファレンス](/docs/ja/self-hosted-environments-reference.md): すべての CLI フラグ、環境変数、メトリック、およびヘルスエンドポイント
+* [セッション ID を検証](/docs/ja/self-hosted-environments-identity.md): 独自のサービスからセッショントークンを検証してから、アクセスを許可します。

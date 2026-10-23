@@ -18,7 +18,7 @@
 
 Claude がチャネルを通じて返信する場合、ターミナルに受信メッセージが表示されますが、返信テキストは表示されません。ターミナルはツール呼び出しと確認（「送信済み」など）を表示し、実際の返信は他のプラットフォームに表示されます。
 
-Team、Enterprise、または Console 組織を管理している場合は、[組織のチャネルを有効にする](#enterprise-controls)を参照してください。独自のチャネルを構築するには、[チャネルリファレンス](/docs/ja/channels-reference)を参照してください。
+Team、Enterprise、または Console 組織を管理している場合は、[組織のチャネルを有効にする](#enterprise-controls)を参照してください。独自のチャネルを構築するには、[チャネルリファレンス](/docs/ja/channels-reference.md)を参照してください。
 
 ## サポートされているチャネル
 
@@ -43,9 +43,9 @@ Telegram で [BotFather](https://t.me/BotFather) を開き、`/newbot` を送信
 インストールが失敗した場合は、Claude Code が報告するメッセージと照合してください。
 
 * `Marketplace "claude-plugins-official" not found`：`/plugin marketplace add anthropics/claude-plugins-official` でマーケットプレイスを追加してから、インストールを再試行してください。
-* `Plugin "<name>" not found in marketplace "claude-plugins-official"`：ローカルにあるマーケットプレイスカタログのコピーが古くなっている可能性があります。`/plugin marketplace update claude-plugins-official` で更新してから、インストールを再試行してください。再試行しても同じメッセージが表示される場合は、[Plugin not found in marketplace](/docs/ja/plugins/troubleshooting#plugin-not-found-in-marketplace) を参照してください。
+* `Plugin "<name>" not found in marketplace "claude-plugins-official"`：ローカルにあるマーケットプレイスカタログのコピーが古くなっている可能性があります。`/plugin marketplace update claude-plugins-official` で更新してから、インストールを再試行してください。再試行しても同じメッセージが表示される場合は、[Plugin not found in marketplace](/docs/ja/plugins/troubleshooting.md#plugin-not-found-in-marketplace) を参照してください。
 
-インストールがインストールスコープを求めるとき、ユーザースコープオプションを選択して、プラグインがすべてのプロジェクト全体で利用可能になるようにしてください。インストール概要を確認してください。`Run /reload-plugins to apply.` と報告されている場合は、[プラグイン変更を再起動なしで適用する](/docs/ja/plugins/cli-reference#reload-plugins)を参照して、プラグインの設定コマンドを利用可能にしてください。
+インストールがインストールスコープを求めるとき、ユーザースコープオプションを選択して、プラグインがすべてのプロジェクト全体で利用可能になるようにしてください。インストール概要を確認してください。`Run /reload-plugins to apply.` と報告されている場合は、[プラグイン変更を再起動なしで適用する](/docs/ja/plugins/cli-reference.md#reload-plugins)を参照して、プラグインの設定コマンドを利用可能にしてください。
 
 **3. トークンを設定する**
 
@@ -121,9 +121,9 @@ Claude Code に戻り、以下を実行します。
 インストールが失敗した場合は、Claude Code が報告するメッセージと照合してください。
 
 * `Marketplace "claude-plugins-official" not found`：`/plugin marketplace add anthropics/claude-plugins-official` でマーケットプレイスを追加してから、インストールを再試行してください。
-* `Plugin "<name>" not found in marketplace "claude-plugins-official"`：ローカルにあるマーケットプレイスカタログのコピーが古くなっている可能性があります。`/plugin marketplace update claude-plugins-official` で更新してから、インストールを再試行してください。再試行しても同じメッセージが表示される場合は、[Plugin not found in marketplace](/docs/ja/plugins/troubleshooting#plugin-not-found-in-marketplace) を参照してください。
+* `Plugin "<name>" not found in marketplace "claude-plugins-official"`：ローカルにあるマーケットプレイスカタログのコピーが古くなっている可能性があります。`/plugin marketplace update claude-plugins-official` で更新してから、インストールを再試行してください。再試行しても同じメッセージが表示される場合は、[Plugin not found in marketplace](/docs/ja/plugins/troubleshooting.md#plugin-not-found-in-marketplace) を参照してください。
 
-インストールがインストールスコープを求めるとき、ユーザースコープオプションを選択して、プラグインがすべてのプロジェクト全体で利用可能になるようにしてください。インストール概要を確認してください。`Run /reload-plugins to apply.` と報告されている場合は、[プラグイン変更を再起動なしで適用する](/docs/ja/plugins/cli-reference#reload-plugins)を参照して、プラグインの設定コマンドを利用可能にしてください。
+インストールがインストールスコープを求めるとき、ユーザースコープオプションを選択して、プラグインがすべてのプロジェクト全体で利用可能になるようにしてください。インストール概要を確認してください。`Run /reload-plugins to apply.` と報告されている場合は、[プラグイン変更を再起動なしで適用する](/docs/ja/plugins/cli-reference.md#reload-plugins)を参照して、プラグインの設定コマンドを利用可能にしてください。
 
 **5. トークンを設定する**
 
@@ -186,7 +186,7 @@ iMessage チャネルは Messages データベースを直接読み取り、Appl
 インストールが失敗した場合は、Claude Code が報告するメッセージと照合してください。
 
 * `Marketplace "claude-plugins-official" not found`：`/plugin marketplace add anthropics/claude-plugins-official` でマーケットプレイスを追加してから、インストールを再試行してください。
-* `Plugin "<name>" not found in marketplace "claude-plugins-official"`：ローカルにあるマーケットプレイスカタログのコピーが古くなっている可能性があります。`/plugin marketplace update claude-plugins-official` で更新してから、インストールを再試行してください。再試行しても同じメッセージが表示される場合は、[Plugin not found in marketplace](/docs/ja/plugins/troubleshooting#plugin-not-found-in-marketplace) を参照してください。
+* `Plugin "<name>" not found in marketplace "claude-plugins-official"`：ローカルにあるマーケットプレイスカタログのコピーが古くなっている可能性があります。`/plugin marketplace update claude-plugins-official` で更新してから、インストールを再試行してください。再試行しても同じメッセージが表示される場合は、[Plugin not found in marketplace](/docs/ja/plugins/troubleshooting.md#plugin-not-found-in-marketplace) を参照してください。
 
 インストールがインストールスコープを求めるとき、ユーザースコープオプションを選択して、プラグインがすべてのプロジェクト全体で利用可能になるようにしてください。
 
@@ -226,7 +226,7 @@ Fakechat をインストールして有効にすると、ブラウザで入力�
 
 Fakechat デモを試すには、以下が必要です。
 
-* Claude Code が [インストールされ、認証済み](/docs/ja/quickstart#step-1-install-claude-code)（claude.ai アカウントまたは Claude Console API キーを使用）
+* Claude Code が [インストールされ、認証済み](/docs/ja/quickstart.md#step-1-install-claude-code)（claude.ai アカウントまたは Claude Console API キーを使用）
 * [Bun](https://bun.sh) がインストール済み。事前構築されたチャネルプラグインは Bun スクリプトです。`bun --version` で確認してください。失敗する場合は、[Bun をインストール](https://bun.sh/docs/installation)してください。
 * **Team、Enterprise、または管理対象 Console org**：管理者が管理設定で [チャネルを有効にする](#enterprise-controls) 必要があります
 
@@ -241,7 +241,7 @@ Fakechat デモを試すには、以下が必要です。
 インストールが失敗した場合は、Claude Code が報告するメッセージに一致させてください。
 
 * `Marketplace "claude-plugins-official" not found`：`/plugin marketplace add anthropics/claude-plugins-official` でマーケットプレイスを追加してから、インストールを再試行してください。
-* `Plugin "<name>" not found in marketplace "claude-plugins-official"`：ローカルにあるマーケットプレイスカタログのコピーが古くなっている可能性があります。`/plugin marketplace update claude-plugins-official` で更新してから、インストールを再試行してください。再試行しても同じメッセージが表示される場合は、[Plugin not found in marketplace](/docs/ja/plugins/troubleshooting#plugin-not-found-in-marketplace) を参照してください。
+* `Plugin "<name>" not found in marketplace "claude-plugins-official"`：ローカルにあるマーケットプレイスカタログのコピーが古くなっている可能性があります。`/plugin marketplace update claude-plugins-official` で更新してから、インストールを再試行してください。再試行しても同じメッセージが表示される場合は、[Plugin not found in marketplace](/docs/ja/plugins/troubleshooting.md#plugin-not-found-in-marketplace) を参照してください。
 
 インストールがインストールスコープを求めるとき、ユーザースコープオプションを選択して、プラグインがすべてのプロジェクト全体で利用可能になるようにしてください。
 
@@ -271,7 +271,7 @@ what's in my working directory?
 
 メッセージが Claude Code セッションに到着します。ターミナルは `← fakechat · web: what's in my working directory?` のようなインバウンドチャネル行として表示し、モデルはプラグインのスコープ付きサーバー名を使用して `<channel source="plugin:fakechat:fakechat">` イベントとして受け取ります。Claude がそれを読み、作業を実行し、Fakechat の `reply` ツールを呼び出します。Claude Code が最初の返信の権限を求める場合、それを承認してください。答えがチャット UI に表示されます。
 
-Claude がターミナルから離れている間に権限プロンプトに達した場合、セッションは応答するまで一時停止します。[権限リレー機能](/docs/ja/channels-reference#relay-permission-prompts)を宣言するチャネルサーバーは、これらのプロンプトをあなたに転送して、リモートで承認または拒否できるようにします。無人使用の場合、[`--dangerously-skip-permissions`](/docs/ja/permission-modes#skip-all-checks-with-bypasspermissions-mode) はほとんどのプロンプトをバイパスしますが、信頼できる環境でのみ使用してください。それでも、[どのモードも自動承認しないアクション](/docs/ja/permission-modes#actions-no-mode-auto-approves)は引き続き適用されます。
+Claude がターミナルから離れている間に権限プロンプトに達した場合、セッションは応答するまで一時停止します。[権限リレー機能](/docs/ja/channels-reference.md#relay-permission-prompts)を宣言するチャネルサーバーは、これらのプロンプトをあなたに転送して、リモートで承認または拒否できるようにします。無人使用の場合、[`--dangerously-skip-permissions`](/docs/ja/permission-modes#skip-all-checks-with-bypasspermissions-mode) はほとんどのプロンプトをバイパスしますが、信頼できる環境でのみ使用してください。それでも、[どのモードも自動承認しないアクション](/docs/ja/permission-modes.md#actions-no-mode-auto-approves)は引き続き適用されます。
 
 チャネルを `-p` で非対話モードで実行する場合、複数選択質問やプランモード承認など、ターミナル入力が必要なツールは無効になり、セッションは入力を待つために停止することはありません。
 
@@ -292,11 +292,11 @@ iMessage は異なります。自分自身にテキストを送信するとゲ�
 
 `.mcp.json` にあるだけではメッセージをプッシュするのに十分ではありません。サーバーも `--channels` で名前を付ける必要があります。
 
-許可リストは、チャネルが宣言する場合、[パーミッションリレー](/docs/ja/channels-reference#relay-permission-prompts)もゲートします。チャネルを通じて返信できるすべてのユーザーは、セッションでのツール使用を承認または拒否できるため、その権限を信頼できる許可リスト送信者だけを追加してください。
+許可リストは、チャネルが宣言する場合、[パーミッションリレー](/docs/ja/channels-reference.md#relay-permission-prompts)もゲートします。チャネルを通じて返信できるすべてのユーザーは、セッションでのツール使用を承認または拒否できるため、その権限を信頼できる許可リスト送信者だけを追加してください。
 
 ## Enterprise コントロール
 
-管理者は 2 つの[管理設定](/docs/ja/settings)を通じて可用性を制御します。ユーザーはこれらをオーバーライドできません。デフォルトは認証方法によって異なります。
+管理者は 2 つの[管理設定](/docs/ja/settings.md)を通じて可用性を制御します。ユーザーはこれらをオーバーライドできません。デフォルトは認証方法によって異なります。
 
 * **claude.ai Team および Enterprise**：チャネルは Owner が[有効にする](#enable-channels-for-your-organization)までブロックされます。
 * **Anthropic Console と API キー認証**：チャネルはデフォルトで許可されます。組織が管理設定をデプロイする場合のみこの設定が必要です。
@@ -333,7 +333,7 @@ iMessage は異なります。自分自身にテキストを送信するとゲ�
 
 空の配列を設定すると、許可リストからすべてのチャネルプラグインをブロックしますが、`--dangerously-load-development-channels` はローカルテストのためにそのブロックをバイパスできます。開発フラグを含むチャネルを完全にブロックするには、代わりに `channelsEnabled` を設定されていないままにします。
 
-この設定には `channelsEnabled: true` が必要です。ユーザーが `--channels` にリストにないプラグインを渡す場合、Claude Code は通常起動しますが、チャネルは登録されず、スタートアップ通知はプラグインが組織の承認リストにないことを説明します。v2 MCP クライアントランタイムでは、Claude Code が[プロトコルリビジョン 2026-07-28 をネゴシエートするチャネルサーバーを登録しない](/docs/ja/mcp#push-messages-with-channels)ため、チャネルが登録に失敗することもあります。
+この設定には `channelsEnabled: true` が必要です。ユーザーが `--channels` にリストにないプラグインを渡す場合、Claude Code は通常起動しますが、チャネルは登録されず、スタートアップ通知はプラグインが組織の承認リストにないことを説明します。v2 MCP クライアントランタイムでは、Claude Code が[プロトコルリビジョン 2026-07-28 をネゴシエートするチャネルサーバーを登録しない](/docs/ja/mcp.md#push-messages-with-channels)ため、チャネルが登録に失敗することもあります。
 
 ## リサーチプレビュー
 
@@ -343,7 +343,7 @@ iMessage は異なります。自分自身にテキストを送信するとゲ�
 
 プレビュー中、`--channels` は Anthropic が管理する許可リストからのプラグイン、または管理者が [`allowedChannelPlugins`](#restrict-which-channel-plugins-can-run) を設定している場合は組織の許可リストからのプラグインのみを受け入れます。[claude-plugins-official](https://github.com/anthropics/claude-plugins-official/tree/main/external_plugins) のチャネルプラグインはデフォルトで承認されたセットです。有効な許可リストにないものを渡す場合、Claude Code は通常起動しますが、チャネルは登録されず、スタートアップ通知は理由を伝えます。
 
-構築しているチャネルをテストするには、`plugin:<name>@<marketplace>` または `server:<name>` の形式で `--dangerously-load-development-channels` に渡してください。構築するカスタムチャネルのテストについては、[リサーチプレビュー中のテスト](/docs/ja/channels-reference#test-during-the-research-preview)を参照してください。
+構築しているチャネルをテストするには、`plugin:<name>@<marketplace>` または `server:<name>` の形式で `--dangerously-load-development-channels` に渡してください。構築するカスタムチャネルのテストについては、[リサーチプレビュー中のテスト](/docs/ja/channels-reference.md#test-during-the-research-preview)を参照してください。
 
 [Claude Code GitHub リポジトリ](https://github.com/anthropics/claude-code/issues)で問題またはフィードバックを報告してください。
 
@@ -353,20 +353,20 @@ Claude Code のいくつかの機能はターミナルの外のシステムに�
 
 | 機能 | 何をするか | 適している用途 |
 | - | - | - |
-| [ウェブ上の Claude Code](/docs/ja/claude-code-on-the-web) | GitHub からクローンされた新しいクラウドサンドボックスでタスクを実行 | 後で確認する自己完結型の非同期作業を委任する |
-| [Slack の Claude](/docs/ja/slack) | チャネルまたはスレッドの `@Claude` メンションからクラウドセッションを生成 | チームの会話コンテキストから直接タスクを開始する |
-| 標準 [MCP サーバー](/docs/ja/mcp) | Claude はタスク中にそれをクエリします。セッションには何もプッシュされません | Claude にシステムを読み取るまたはクエリするオンデマンドアクセスを提供する |
-| [リモートコントロール](/docs/ja/remote-control) | claude.ai または Claude モバイルアプリからローカルセッションを駆動 | デスクから離れている間に進行中のセッションを操舵する |
+| [ウェブ上の Claude Code](/docs/ja/claude-code-on-the-web.md) | GitHub からクローンされた新しいクラウドサンドボックスでタスクを実行 | 後で確認する自己完結型の非同期作業を委任する |
+| [Slack の Claude](/docs/ja/slack.md) | チャネルまたはスレッドの `@Claude` メンションからクラウドセッションを生成 | チームの会話コンテキストから直接タスクを開始する |
+| 標準 [MCP サーバー](/docs/ja/mcp.md) | Claude はタスク中にそれをクエリします。セッションには何もプッシュされません | Claude にシステムを読み取るまたはクエリするオンデマンドアクセスを提供する |
+| [リモートコントロール](/docs/ja/remote-control.md) | claude.ai または Claude モバイルアプリからローカルセッションを駆動 | デスクから離れている間に進行中のセッションを操舵する |
 
 チャネルは、Claude 以外のソースからのイベントをすでに実行中のローカルセッションにプッシュすることで、そのリストのギャップを埋めます。
 
 * **チャットブリッジ**：Telegram、Discord、または iMessage を通じて電話から Claude に何かを尋ね、答えが同じチャットに戻ってきます。作業はマシンで実際のファイルに対して実行されます。
-* **[ウェブフックレシーバー](/docs/ja/channels-reference#example-build-a-webhook-receiver)**：CI、エラートラッカー、デプロイパイプライン、または他の外部サービスからのウェブフックが、Claude がファイルをすでに開いており、デバッグしていたことを覚えている場所に到着します。
+* **[ウェブフックレシーバー](/docs/ja/channels-reference.md#example-build-a-webhook-receiver)**：CI、エラートラッカー、デプロイパイプライン、または他の外部サービスからのウェブフックが、Claude がファイルをすでに開いており、デバッグしていたことを覚えている場所に到着します。
 
 ## 次のステップ
 
 チャネルが実行されたら、これらの関連機能を探索してください。
 
-* [独自のチャネルを構築](/docs/ja/channels-reference)して、まだプラグインがないシステムに対応する
-* [リモートコントロール](/docs/ja/remote-control)を使用して、イベントをそれに転送する代わりに電話からローカルセッションを駆動する
-* [セッションスコープのスケジュールタスク](/docs/ja/scheduled-tasks)を使用して、プッシュされたイベントに対応する代わりにタイマーでポーリングする
+* [独自のチャネルを構築](/docs/ja/channels-reference.md)して、まだプラグインがないシステムに対応する
+* [リモートコントロール](/docs/ja/remote-control.md)を使用して、イベントをそれに転送する代わりに電話からローカルセッションを駆動する
+* [セッションスコープのスケジュールタスク](/docs/ja/scheduled-tasks.md)を使用して、プッシュされたイベントに対応する代わりにタイマーでポーリングする

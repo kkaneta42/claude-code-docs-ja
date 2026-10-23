@@ -14,7 +14,7 @@
 
 > [!NOTE]
 >
-> この統合は [Claude Code CLI and Agent SDK](/docs/ja/agent-sdk/overview) の上に構築されており、CI/CD ジョブとカスタム自動化ワークフローで Claude をプログラム的に使用できます。
+> この統合は [Claude Code CLI and Agent SDK](/docs/ja/agent-sdk/overview.md) の上に構築されており、CI/CD ジョブとカスタム自動化ワークフローで Claude をプログラム的に使用できます。
 
 ## GitLab で Claude Code を使用する理由
 
@@ -292,7 +292,7 @@ claude-bedrock:
 * `GCP_PROJECT_ID`：Google Cloud プロジェクト ID
 * `CLOUD_ML_REGION`：Google Cloud の Agent Platform リージョン（例：`us-east5`）
 
-GitLab は `id_tokens:` ブロックからジョブの OIDC トークンを生成し、`GITLAB_OIDC_TOKEN` として公開します。`aud` を Workload Identity Pool プロバイダーで設定したオーディエンス値（例：GitLab インスタンス URL）に設定します。ジョブはトークンをファイルに書き込み、認証情報設定の `credential_source` エントリは Google の認証ライブラリにそこから読み込むよう指示します。`GOOGLE_APPLICATION_CREDENTIALS` を認証情報設定ファイルに設定すると、[Application Default Credentials](/docs/ja/google-vertex-ai#3-configure-gcp-credentials) を通じて Claude Code で利用可能になります。
+GitLab は `id_tokens:` ブロックからジョブの OIDC トークンを生成し、`GITLAB_OIDC_TOKEN` として公開します。`aud` を Workload Identity Pool プロバイダーで設定したオーディエンス値（例：GitLab インスタンス URL）に設定します。ジョブはトークンをファイルに書き込み、認証情報設定の `credential_source` エントリは Google の認証ライブラリにそこから読み込むよう指示します。`GOOGLE_APPLICATION_CREDENTIALS` を認証情報設定ファイルに設定すると、[Application Default Credentials](/docs/ja/google-vertex-ai.md#3-configure-gcp-credentials) を通じて Claude Code で利用可能になります。
 
 ```yaml theme={null}
 stages:

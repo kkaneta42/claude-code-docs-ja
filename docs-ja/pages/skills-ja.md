@@ -12,7 +12,7 @@
 
 > [!NOTE]
 >
-> `/help` や `/compact` などの組み込みコマンド、および `/debug` や `/code-review` などのバンドルされたスキルについては、[コマンドリファレンス](/docs/ja/commands)を参照してください。
+> `/help` や `/compact` などの組み込みコマンド、および `/debug` や `/code-review` などのバンドルされたスキルについては、[コマンドリファレンス](/docs/ja/commands.md)を参照してください。
 >
 > **カスタムコマンドはスキルにマージされました。** `.claude/commands/deploy.md` のファイルと `.claude/skills/deploy/SKILL.md` のスキルの両方が `/deploy` を作成し、同じように機能します。既存の `.claude/commands/` ファイルは引き続き機能します。スキルはオプション機能を追加します。サポートファイル用のディレクトリ、[スキルを呼び出すユーザーを制御する](#control-who-invokes-a-skill)ためのフロントマター、および Claude が関連する場合に自動的にスキルを読み込む機能です。
 
@@ -24,7 +24,7 @@ Claude Code には、`/doctor`、`/code-review`、`/batch`、`/debug`、`/loop`�
 
 バンドルされたスキルは、他のスキルと同じ方法で呼び出します。`/` の後にスキル名を入力します。Claude は関連する場合、一部のバンドルされたスキルを自動的に呼び出します。`/verify` を含む他のスキルは、呼び出した場合にのみ実行されます。これにより、これらの長時間実行されるチェックが時間とトークンを費やすタイミングを制御できます。
 
-ほとんどのバンドルされたスキルはすべてのセッションで利用可能です。いくつかは特定の機能に依存しています。たとえば、`/workflow-authoring` は [動的ワークフロー](/docs/ja/workflows) が有効な場合にのみ利用可能です。
+ほとんどのバンドルされたスキルはすべてのセッションで利用可能です。いくつかは特定の機能に依存しています。たとえば、`/workflow-authoring` は [動的ワークフロー](/docs/ja/workflows.md) が有効な場合にのみ利用可能です。
 
 バンドルされたスキルをオフにするには、[`disableBundledSkills`](/docs/ja/settings-reference#disablebundledskills) 設定を使用します。
 
@@ -32,17 +32,17 @@ Claude Code には、`/doctor`、`/code-review`、`/batch`、`/debug`、`/loop`�
 >
 > [`/doctor`](/docs/ja/commands#all-commands) セットアップチェックアップは、`disableBundledSkills` がオンの場合でも入力可能なままです。これを非表示にするには、`DISABLE_DOCTOR_COMMAND` 環境変数を設定するか、[`skillOverrides`](#override-skill-visibility-from-settings) エントリ `"doctor": "off"` を設定します。
 
-バンドルされたスキルは、[コマンドリファレンス](/docs/ja/commands) に組み込みコマンドと一緒にリストされており、目的列に **Skill** とマークされています。
+バンドルされたスキルは、[コマンドリファレンス](/docs/ja/commands.md) に組み込みコマンドと一緒にリストされており、目的列に **Skill** とマークされています。
 
 ### `/doctor` でセットアップを確認する
 
 Claude Code プロンプトで `/doctor` を実行すると、問題を診断して修正できるセットアップチェックアップが行われます。Claude はまず調査結果を報告し、何かを変更する前に確認を求めます。チェックアップは次の領域を対象とします。
 
-* **インストールの健全性**: 重複したインストールや残存しているインストール、`PATH` の問題、解析できない設定ファイル、および[リリースチャネル](/docs/ja/setup#configure-release-channel)で新しいバージョンが利用可能かどうか
-* **拡張機能**: コンテキストコストと比較した未使用のスキル、MCP サーバー、プラグイン、および低速な[フック](/docs/ja/hooks)
+* **インストールの健全性**: 重複したインストールや残存しているインストール、`PATH` の問題、解析できない設定ファイル、および[リリースチャネル](/docs/ja/setup.md#configure-release-channel)で新しいバージョンが利用可能かどうか
+* **拡張機能**: コンテキストコストと比較した未使用のスキル、MCP サーバー、プラグイン、および低速な[フック](/docs/ja/hooks.md)
 * **`CLAUDE.md` ファイル**: チェックイン済みのものと重複するローカルの `CLAUDE.md` ファイル、チェックイン済みの [Claude がコードベースから導出できる `CLAUDE.md` の内容](/docs/ja/memory#my-claude-md-is-too-large)、および残りの常時読み込まれるガイダンス。Claude は、このガイダンスをオンデマンドで読み込まれるスキルやネストされた `CLAUDE.md` ファイルに移行することを提案します
-* **権限**: [auto モード](/docs/ja/permissions#permission-modes)をデフォルトの権限モードにすることと、頻繁に拒否している読み取り専用コマンドを[事前承認](/docs/ja/permissions)することの提案
-* **使用量**: Pro、Max、Team、または Enterprise プランの場合、プランの使用量を減らすために [`/usage` が推奨する変更](/docs/ja/costs#plan-usage-breakdown)（過去 7 日間で測定）。Claude は自身で行える変更を提案し、残りはユーザーが実行するコマンドなどのアドバイスとして報告します。使用量のチェックには Claude Code v2.1.305 以降が必要です。また、[Remote Control](/docs/ja/remote-control) が接続されている間、`/doctor` はこのチェックを省略します。
+* **権限**: [auto モード](/docs/ja/permissions.md#permission-modes)をデフォルトの権限モードにすることと、頻繁に拒否している読み取り専用コマンドを[事前承認](/docs/ja/permissions.md)することの提案
+* **使用量**: Pro、Max、Team、または Enterprise プランの場合、プランの使用量を減らすために [`/usage` が推奨する変更](/docs/ja/costs#plan-usage-breakdown)（過去 7 日間で測定）。Claude は自身で行える変更を提案し、残りはユーザーが実行するコマンドなどのアドバイスとして報告します。使用量のチェックには Claude Code v2.1.305 以降が必要です。また、[Remote Control](/docs/ja/remote-control.md) が接続されている間、`/doctor` はこのチェックを省略します。
 
 セッションを開始せずに読み取り専用のインストール診断を行うには、代わりにターミナルで `claude doctor` を実行します。
 
@@ -149,178 +149,189 @@ What did I change?
 
 どちらの方法でも、Claude は編集内容の短い要約とリスクのリストで応答する必要があります。
 
-## スキルの読み込み場所を選択する
+## スキルの読み込み場所を選ぶ
 
-スキルを保存する場所によって、どのセッションがそれを読み込むかが決まります。ホームディレクトリに保存すると、すべてのプロジェクトで読み込まれます。リポジトリにコミットすると、そこで作業するすべてのユーザーと共有できます。プラグインまたはマネージドセッティングを通じて配布すると、チーム全体に到達します。
+スキルを保存する場所によって、どのセッションがそのスキルを読み込むかが決まります。ホームディレクトリ配下に保存するとすべてのプロジェクトで使え、リポジトリにコミットするとそこで作業する全員と共有でき、プラグインや管理設定で配布するとチーム全体に届けられます。
 
 | 場所 | パス | 読み込まれる場所 |
 | :- | :- | :- |
-| Enterprise | `.claude/skills/<skill-name>/SKILL.md` in the [managed settings directory](/docs/ja/managed-settings#delivery-mechanisms) | 組織がデプロイするマシン上のすべてのユーザー |
-| Personal | `~/.claude/skills/<skill-name>/SKILL.md` | このマシン上のすべてのプロジェクト。ただし [Cowork またはクラウドセッション](#skills-in-cowork-and-cloud-sessions) は除く |
-| Project | `.claude/skills/<skill-name>/SKILL.md` | このリポジトリ内のセッション。ただし [プロジェクト内のクラウドスレッド](/docs/ja/claude-projects#what-threads-pick-up-from-your-repositories) は除く。コミットするとチームも取得できます |
-| Nested | `<subdir>/.claude/skills/<skill-name>/SKILL.md` | `<subdir>` またはその下で開始されたセッション。ただしプロジェクト内のクラウドスレッドは除く。それらのスレッド以外では、その上で開始されたセッションは、Claude がそこのファイルで作業するとスキルを読み込みます。[モノレポとサブディレクトリ](#discovery-from-parent-and-nested-directories) を参照してください |
-| Additional directory | `.claude/skills/<skill-name>/SKILL.md` in a directory you pass with `--add-dir` | そのセッション。[プロジェクト外のディレクトリ](#skills-from-additional-directories) を参照してください |
-| Plugin | `<plugin>/skills/<skill-name>/SKILL.md` | [プラグイン](/docs/ja/plugins/overview) が有効な場所。`/plugin-name:skill-name` として |
-| claude.ai account | claude.ai アカウント用に有効化されたスキル | Cowork セッション、クラウドセッション、およびそのアカウントでサインインするターミナルセッション。[claude.ai から同期されたスキル](#how-synced-skills-behave) を参照してください |
+| エンタープライズ | [管理設定ディレクトリ](/docs/ja/managed-settings.md#delivery-mechanisms)内の `.claude/skills/<skill-name>/SKILL.md` | 組織がデプロイしたマシン上のすべてのユーザー |
+| 個人 | `~/.claude/skills/<skill-name>/SKILL.md` | このマシン上のすべてのプロジェクト（ただし [Cowork やクラウドセッション](#skills-in-cowork-and-cloud-sessions)を除く） |
+| プロジェクト | `.claude/skills/<skill-name>/SKILL.md` | このリポジトリでのセッション（ただし[プロジェクト内のクラウドスレッド](/docs/ja/claude-projects.md#what-threads-pick-up-from-your-repositories)を除く）。コミットすればチームも利用できます |
+| ネスト | `<subdir>/.claude/skills/<skill-name>/SKILL.md` | `<subdir>` またはその配下で開始したセッション（ただしプロジェクト内のクラウドスレッドを除く）。それらのスレッド以外では、上位ディレクトリで開始したセッションも、Claude がそこのファイルを扱った時点でスキルを読み込みます。[モノレポとサブディレクトリ](#discovery-from-parent-and-nested-directories)を参照してください |
+| 追加ディレクトリ | `--add-dir` で渡したディレクトリ内の `.claude/skills/<skill-name>/SKILL.md` | そのセッション。[プロジェクト外のディレクトリ](#skills-from-additional-directories)を参照してください |
+| プラグイン | `<plugin>/skills/<skill-name>/SKILL.md` | [プラグイン](/docs/ja/plugins/overview.md)が有効になっている場所で、`/plugin-name:skill-name` として |
+| claude.ai アカウント | claude.ai アカウントで有効にしたスキル | Cowork セッション、クラウドセッション、およびそのアカウントでサインインしたターミナルセッション。[claude.ai から同期されたスキル](#how-synced-skills-behave)を参照してください |
 
-スキルフォルダは、これらのルールにも従います：
+スキルフォルダには、次のルールも適用されます。
 
-* **シンボリックリンク付きフォルダ**: enterprise、personal、または project の場所の `<skill-name>` エントリは、ディスク上の別の場所へのシンボリックリンクにすることができます。Claude Code は、複数の場所が同じターゲットを指している場合でも、ターゲットから `SKILL.md` を読み込み、スキルを 1 回だけ読み込みます。プラグインスキルは [シンボリックリンクを異なる方法で処理します](/docs/ja/plugins/host-marketplace#share-files-within-a-marketplace-with-symlinks)。
-* **予約名 `synced`**: スキルフォルダに `synced` という名前を付けないでください。大文字小文字は問いません。Claude Code は `~/.claude/skills/synced/` を [claude.ai からダウンロードされたスキル](#where-synced-skills-load) に使用し、enterprise、personal、および project の場所でこの名前で作成したスキルをスキップします。
-* **予約名 `anthropic-skills`**: プラグイン外では、`anthropic-skills` という名前のスキルフォルダまたはコマンドファイル、または `anthropic-skills:` で始まるものは読み込まれません。[同期されたスキル用に予約された名前](#names-reserved-for-synced-skills) を参照してください。
-* **名前に含まれる文字**: プラグイン外では、ゼロ幅スペースや `<` などの文字を名前に含むスキルフォルダは読み込まれません。[スキル名に使用できない文字](#characters-a-skill-name-cant-hold) を参照してください。
-* **コマンドファイル**: `.claude/commands/` 内の Markdown ファイルは古い形式ですが、まだ機能します。`name` と `paths` を除く同じ [frontmatter](#frontmatter-reference) をサポートしています。それを呼び出すために入力するコマンド名を見つけるには、[スキルがコマンド名を取得する方法](#how-a-skill-gets-its-command-name) を参照してください。新しい作業にはスキルを使用してください。スキルは [サポートファイル](#add-supporting-files) もサポートしているためです。
-* **プラグインとしてのスキルフォルダ**: `.claude-plugin/plugin.json` をスキルフォルダに追加すると、`<name>@skills-dir` という名前の [プラグイン](/docs/ja/plugins/loading#plugins-shared-through-a-repository) として読み込まれます。これにより、エージェント、hooks、および MCP サーバーをバンドルできます。プロジェクトの `.claude/skills/` では、最初にワークスペーストラストダイアログを受け入れる必要があります。
+* **シンボリックリンクされたフォルダ**：エンタープライズ、個人、プロジェクトの各場所にある `<skill-name>` エントリは、ディスク上の別の場所にあるディレクトリへのシンボリックリンクにできます。Claude Code はリンク先から `SKILL.md` を読み込み、複数の場所が同じリンク先を指していてもスキルを 1 回だけ読み込みます。プラグインスキルは[シンボリックリンクの扱いが異なります](/docs/ja/plugins/host-marketplace.md#share-files-within-a-marketplace-with-symlinks)。
+* **予約名 `synced`**：大文字・小文字を問わず、スキルフォルダに `synced` という名前を付けないでください。Claude Code は [claude.ai からダウンロードしたスキル](#where-synced-skills-load)に `~/.claude/skills/synced/` を使用し、エンタープライズ、個人、プロジェクトの各場所でその名前で作成したスキルをスキップします。
+* **予約名 `anthropic-skills`**：プラグイン以外では、名前が `anthropic-skills` であるか `anthropic-skills:` で始まるスキルフォルダやコマンドファイルは読み込まれません。[同期スキル用に予約された名前](#names-reserved-for-synced-skills)を参照してください。
+* **名前に使える文字**：プラグイン以外では、名前にゼロ幅スペースや `<` などの文字を含むスキルフォルダは読み込まれません。[スキル名に使えない文字](#characters-a-skill-name-cant-hold)を参照してください。
+* **コマンドファイル**：`.claude/commands/` 内の Markdown ファイルは旧形式ですが、引き続き動作します。`name` と `paths` を除き、同じ[フロントマター](#frontmatter-reference)をサポートします。呼び出す際に入力する名前を確認するには、[スキルのコマンド名の決まり方](#how-a-skill-gets-its-command-name)を参照してください。スキルは[サポートファイル](#add-supporting-files)にも対応しているため、新規作成にはスキルを使うことをお勧めします。
+* **プラグインとしてのスキルフォルダ**：個人またはプロジェクトのスキルフォルダに `.claude-plugin/plugin.json` を追加すると、Claude Code はそれを独自のエージェント、フック、MCP サーバーを持つ `<name>@skills-dir` という名前の[プラグイン](/docs/ja/plugins/loading.md#plugins-shared-through-a-repository)として読み込めます。プロジェクトの `.claude/skills/` では、事前にワークスペースの信頼ダイアログを承認する必要があります。また、どちらの場所でも、管理者が[スキルディレクトリのプラグインをブロック](/docs/ja/plugins/loading.md#skills-directory-plugins-blocked-by-managed-settings)していないことが条件です。
 
-### monorepos と subdirectories でスキルを読み込む
+### モノレポとサブディレクトリでスキルを読み込む
 
-Claude Code は、開始したディレクトリと、リポジトリルートまでのすべての親ディレクトリの `.claude/skills/` からプロジェクトスキルを読み込みます。そのため、`packages/frontend/` で開始しても、ルートで定義されたスキルが取得されます。v2.1.246 以降で [`/cd` でセッションを移動する](/docs/ja/permissions#move-the-session-to-another-directory) と、Claude Code は新しいディレクトリのプロジェクトスキルを追加します。
+Claude Code は、起動したディレクトリと、そこからリポジトリルートまでのすべての親ディレクトリにある `.claude/skills/` からプロジェクトスキルを読み込みます。そのため、`packages/frontend/` で起動してもルートで定義されたスキルが読み込まれます。v2.1.246 以降で [`/cd` でセッションを移動](/docs/ja/permissions#move-the-session-to-another-directory)すると、Claude Code は移動先ディレクトリのプロジェクトスキルを追加します。
 
-`--worktree` または `git worktree add` で作成したリンクされた [git worktree](/docs/ja/worktrees) で実行されているセッションでは、Claude Code は worktree ルートまでのみ親ディレクトリを検索します。Claude Code v2.1.277 以降では、worktree チェックアウトのルートに `.claude/skills` ディレクトリがない場合、Claude Code はメインチェックアウトのプロジェクトスキルを代わりに読み込みます。[worktrees がメインチェックアウトと共有するもの](/docs/ja/worktrees#what-worktrees-share-with-the-main-checkout) を参照してください。
+`--worktree` または `git worktree add` で作成したリンク済み [Git worktree](/docs/ja/worktrees.md) で実行中のセッションでは、Claude Code は worktree のルートまでしか親ディレクトリを検索しません。Claude Code v2.1.277 以降では、worktree のチェックアウトのルートに `.claude/skills` ディレクトリがない場合、代わりにメインチェックアウトのプロジェクトスキルを読み込みます。[worktree がメインチェックアウトと共有するもの](/docs/ja/worktrees.md#what-worktrees-share-with-the-main-checkout)を参照してください。
 
-開始した場所の下の `.claude/skills/` ディレクトリ内のスキルは、起動時には読み込まれません。Claude がそのサブディレクトリ内のファイルを初めて読み込むか編集するときに読み込まれ、セッションの残りの間利用可能なままです。それまでは、`/` メニューに表示されず、名前で呼び出すことはできません。より早く読み込むには、サブディレクトリのパスで `/add-dir` を実行します。これには Claude Code v2.1.257 以降が必要です。デスクトップアプリから開始する worktree セッションについては、[worktrees がメインチェックアウトと共有するもの](/docs/ja/worktrees#what-worktrees-share-with-the-main-checkout) を参照してください。
+起動したディレクトリより下にある `.claude/skills/` ディレクトリのスキルは、起動時には読み込まれません。Claude がそのサブディレクトリ内のファイルを初めて読み取りまたは編集した時点で読み込まれ、セッションの残りの間は利用可能なままです。それまでは `/` メニューに表示されず、名前で呼び出すこともできません。より早く読み込むには、サブディレクトリのパスを指定して `/add-dir` を実行します。これには Claude Code v2.1.257 以降が必要です。デスクトップアプリから開始する worktree セッションについては、[worktree がメインチェックアウトと共有するもの](/docs/ja/worktrees.md#what-worktrees-share-with-the-main-checkout)を参照してください。
 
-ネストされたスキルが別のスキルと同じ名前を共有する場合、両方が利用可能なままです。リポジトリルートに `deploy` スキルがあり、`apps/web/.claude/skills/` に別のスキルがある場合：
+ネストされたスキルのディレクトリ名が別のスキルの名前と一致する場合、両方とも利用可能なままです。リポジトリルートに `deploy` スキルがあり、`apps/web/.claude/skills/` にももう 1 つある場合は次のようになります。
 
-* `/deploy` はルートスキルを実行します。Claude Code は、Claude 用のディレクトリ修飾バリアントもリストし、作業しているファイルが存在するディレクトリのスキルを呼び出すように指示するため、ネストされたスキルは `apps/web/` での作業に適用されます。
-* `/apps/web:deploy` はネストされたスキルを単独で実行します。その説明は、それが適用されるディレクトリに名前を付けます。
+* `/deploy` はルートのスキルを実行します。Claude Code は、ディレクトリで修飾したバリアントも Claude に対して一覧表示し、作業中のファイルを含むディレクトリのものを呼び出すよう指示するため、`apps/web/` での作業にはネストされたスキルが引き続き適用されます。
+* `/apps/web:deploy` は、ネストされたスキルを単独で実行します。その説明には、適用対象のディレクトリが記載されます。
 
 ### プロジェクト外のディレクトリからスキルを読み込む
 
-`--add-dir` または `/add-dir` でディレクトリを追加すると、Claude Code はそのディレクトリの `.claude/skills/` 内のスキルを、その `.claude/commands/` および `.claude/agents/` とともに読み込みます。Agent SDK が TypeScript の [`additionalDirectories`](/docs/ja/agent-sdk/typescript#options) または Python の [`add_dirs`](/docs/ja/agent-sdk/python#claudeagentoptions) を通じて追加するディレクトリは、SDK が `--add-dir` として渡すため、同じ方法で読み込まれます。`settings.json` の `permissions.additionalDirectories` セッティングはファイルアクセスのみを付与し、これらのいずれも読み込みません。
+`--add-dir` または `/add-dir` でディレクトリを追加すると、Claude Code はそのディレクトリの `.claude/skills/` にあるスキルを、`.claude/commands/` および `.claude/agents/` とともに読み込みます。Agent SDK が TypeScript の [`additionalDirectories`](/docs/ja/agent-sdk/typescript#options) または Python の [`add_dirs`](/docs/ja/agent-sdk/python#claudeagentoptions) で追加したディレクトリも、SDK がそれらを `--add-dir` として渡すため、同じように読み込まれます。`settings.json` の `permissions.additionalDirectories` 設定はファイルアクセスを許可するだけで、これらはいずれも読み込みません。
 
-Claude Code は、起動時に `--add-dir` で渡したディレクトリの `.claude/skills/` を監視します。[セッション中にスキルを編集する](#live-change-detection) で説明されています。追加されたディレクトリの `.claude/commands/` または `.claude/agents/` は監視しないため、そこでファイルを変更した後はセッションを再開してください。
+[セッション中にスキルを編集する](#live-change-detection)で説明しているとおり、Claude Code は起動時に `--add-dir` で渡したディレクトリ内の `.claude/skills/` を監視します。追加したディレクトリの `.claude/commands/` や `.claude/agents/` は監視しないため、そこでファイルを変更した後はセッションを再起動してください。
 
-これらの読み込みは、デフォルトで有効な `project` [セッティングソース](/docs/ja/agent-sdk/claude-code-features#control-filesystem-settings-with-settingsources) に依存します。[`strictPluginOnlyCustomization`](/docs/ja/settings-reference#strictpluginonlycustomization) ポリシー、[bare mode](/docs/ja/headless#start-faster-with-bare-mode)、および [`--safe-mode`](/docs/ja/cli-reference#cli-flags) はそれぞれ、これらのページで説明されているようにさらに制限します。追加されたディレクトリが読み込むもの（`CLAUDE.md` およびプラグインセッティングを含む）の完全なテーブルについては、[追加ディレクトリはファイルアクセスを付与し、設定は付与しない](/docs/ja/permissions#additional-directories-grant-file-access-not-configuration) を参照してください。
+これらの読み込みは、デフォルトでオンになっている `project` [設定ソース](/docs/ja/agent-sdk/claude-code-features.md#control-filesystem-settings-with-settingsources)に依存します。[`strictPluginOnlyCustomization`](/docs/ja/settings-reference#strictpluginonlycustomization) ポリシー、[bare モード](/docs/ja/headless.md#start-faster-with-bare-mode)、[`--safe-mode`](/docs/ja/cli-reference#cli-flags) は、それぞれのページで説明しているとおり、これらをさらに制限します。`CLAUDE.md` やプラグイン設定を含め、追加したディレクトリが何を読み込むかの一覧表については、[追加ディレクトリは設定ではなくファイルアクセスを許可する](/docs/ja/permissions.md#additional-directories-grant-file-access-not-configuration)を参照してください。
+
+#### 追加ディレクトリから同じ名前のスキルを実行する
+
+追加ディレクトリのスキルは、そのフォルダ名がエンタープライズ、個人、プロジェクトのスキル、または先に追加したディレクトリのスキルと衝突する場合、プレフィックスが付きます。実行するには、Claude Code のプロンプトで `/<prefix>:<skill-name>` と入力します。`/` メニューではプレフィックス付きの名前でスキルが一覧表示され、プレフィックスの由来については[スキルのコマンド名の決まり方](#how-a-skill-gets-its-command-name)で説明しています。この名前には Claude Code v2.1.309 以降が必要です。
+
+たとえば、`--add-dir ../cli` を指定し、プロジェクトと `../cli` の両方に `verify` スキルがある場合は次のようになります。
+
+* `/verify` はプロジェクトのスキルを実行します
+* `/cli:verify` は `../cli` のスキルを実行します
 
 ### 同じ名前のスキルを解決する
 
-2 つのスキルが同じディレクトリ名またはファイル名を共有する場合、各スキルがどこから来たかによって、`/name` がどちらを実行するかが決まります。フロントマターの `name` フィールドで設定された名前については、[スキルがコマンド名を取得する方法](#how-a-skill-gets-its-command-name) を参照してください。次の表は、enterprise、personal、project、nested、plugin、および claude.ai の場所、バンドルスキル、組み込みコマンド、およびコマンドファイルを対象としています：
+2 つのスキルでディレクトリ名やファイル名が同じ場合、それぞれの由来によって `/name` がどちらを実行するかが決まります。フロントマターの `name` フィールドで設定された名前については、[スキルのコマンド名の決まり方](#how-a-skill-gets-its-command-name)を参照してください。
 
-| 同じ名前の場所 | どのスキルが実行されるか |
+| 同じ名前がある場所 | 実行されるもの |
 | :- | :- |
-| enterprise、personal、および project の 2 つ | Enterprise が personal より優先され、personal が project より優先されます。`~/.claude/skills/` とプロジェクトの `.claude/skills/` の両方に `deploy` がある場合、`/deploy` は personal スキルを実行します |
-| これらの場所のいずれかと [バンドルされたスキル](#bundled-skills) | あなたのスキルがバンドルされたコマンドを置き換えますが、そのエイリアスは置き換えません。プロジェクト `code-review` スキルは `/code-review` を置き換え、バンドルされたエイリアス `/review` はあなたのスキルを実行しません |
-| これらの場所のいずれかと [組み込みコマンド](/docs/ja/commands) | ローカルのターミナルセッションでは、自分のスキルが組み込みコマンドを置き換えますが、そのエイリアスは置き換えません。プロジェクトの `usage` スキルは `/usage` を置き換え、組み込みのエイリアス `/cost` は引き続き組み込みコマンドを実行します |
+| エンタープライズ、個人、プロジェクトのうち 2 つ | 個人よりエンタープライズ、プロジェクトより個人が優先されます。`~/.claude/skills/` とプロジェクトの `.claude/skills/` の両方に `deploy` がある場合、`/deploy` は個人のものを実行します |
+| これらのいずれかの場所と[バンドルスキル](#bundled-skills) | ユーザーのスキルがバンドルされたコマンドを置き換えますが、そのエイリアスは置き換えません。プロジェクトの `code-review` スキルは `/code-review` を置き換え、バンドルされたエイリアス `/review` がユーザーのスキルを実行することはありません |
+| これらのいずれかの場所と[組み込みコマンド](/docs/ja/commands.md) | ローカルのターミナルセッションでは、ユーザーのスキルが組み込みコマンドを置き換えますが、そのエイリアスは置き換えません。プロジェクトの `usage` スキルは `/usage` を置き換え、組み込みのエイリアス `/cost` は引き続き組み込みコマンドを実行します |
 | スキルと `.claude/commands/` 内のファイル | スキル |
-| プロジェクトルートスキルとネストされたスキル | 両方が読み込まれます。[monorepos と subdirectories](#discovery-from-parent-and-nested-directories) を参照してください |
-| プラグインスキルと上記の場所のいずれかのスキル | プラグインスキルは `/plugin-name:skill-name` として名前空間化されているため、両方が読み込まれます |
-| 上記のいずれかと [claude.ai アカウントから同期されたスキル](#how-synced-skills-behave) | 他のスキルまたはコマンド。同期されたスキルはその完全な名前でのみ実行されます。[同期されたスキル名が別のコマンドと一致する場合](#when-a-synced-skill-name-matches-another-command) を参照してください |
+| プロジェクトルートのスキルとネストされたスキル | 両方とも読み込まれます。[モノレポとサブディレクトリ](#discovery-from-parent-and-nested-directories)を参照してください |
+| エンタープライズ、個人、またはプロジェクトのスキルと、[プロジェクト外の追加ディレクトリ](#skills-from-additional-directories)内のスキル | エンタープライズ、個人、またはプロジェクトのスキル。追加ディレクトリのスキルはプレフィックス付きの名前で実行されます。[追加ディレクトリから同じ名前のスキルを実行する](#run-a-same-named-skill-from-an-added-directory)を参照してください |
+| プロジェクト外の 2 つの[追加ディレクトリ](#skills-from-additional-directories) | `--add-dir` または `/add-dir` の順序で先に追加したディレクトリのスキル。もう一方は[プレフィックス付きの名前](#run-a-same-named-skill-from-an-added-directory)で実行されます |
+| プラグインスキルと上記いずれかの場所のスキル | プラグインスキルは `/plugin-name:skill-name` として名前空間が分けられるため、両方とも読み込まれます |
+| 上記のいずれかと、[claude.ai アカウントから同期された](#how-synced-skills-behave)スキルの短い名前 | もう一方のスキルまたはコマンド。同期スキルはその場合、完全な名前でのみ一覧表示・実行されます。[同期スキルの名前が別のコマンドと一致する場合](#when-a-synced-skill-name-matches-another-command)を参照してください |
 
-### Cowork およびクラウドセッションでスキルを使用する
+### Cowork とクラウドセッションでスキルを使う
 
-[Cowork](https://claude.com/product/cowork) セッションおよび [クラウドセッション](/docs/ja/cloud-environments#what-carries-over-from-your-setup)（[クラウドのスケジュールタスク](/docs/ja/routines) を含む）は、マシン上の `~/.claude/skills/` を読み込みません。対話型の Cowork セッションとスケジュール実行される Cowork セッションはどちらも、claude.ai アカウント用に有効化されたスキルを読み込みます。これらはセッション開始時に同期されます。Desktop アプリサイドバーの **Customize** または claude.ai のスキル設定から管理します。
+[Cowork](https://claude.com/product/cowork) セッションと、[クラウドスケジュールタスク](/docs/ja/routines.md)を含む[クラウドセッション](/docs/ja/cloud-environments.md#what-carries-over-from-your-setup)は、マシン上の `~/.claude/skills/` を読み込みません。対話型とスケジュール型のどちらの Cowork セッションも、セッション開始時に同期された、claude.ai アカウントで有効なスキルを読み込みます。これらは Desktop アプリのサイドバーの **Customize** から、または claude.ai のスキル設定から管理します。
 
-スキルがマシン上の `~/.claude/skills/` にのみ存在する場合、[クラウドのスケジュールタスク](/docs/ja/routines) がそれを呼び出すと、Claude Code はスキルが見つからないと報告します。これは、各実行が新しいクラウドセッションとして開始されるためです。これらのセッションで personal スキルを利用可能にするには：
+スキルがマシン上の `~/.claude/skills/` にしか存在しない場合、[クラウドスケジュールタスク](/docs/ja/routines.md)がそれを呼び出すと、Claude Code はスキルが見つからないと報告します。これは、各実行が新しいクラウドセッションとして開始されるためです。個人のスキルをこれらのセッションで利用できるようにするには、次のようにします。
 
-* Cowork セッション、クラウドセッション、および [プロジェクト](/docs/ja/claude-projects#what-threads-pick-up-from-your-repositories) 内のクラウドスレッドの場合、claude.ai アカウント用にスキルを有効化します。プロジェクトのクラウドスレッドでは、リポジトリの `.claude/skills/` にコミットされたスキルは利用できません。[セルフホスト環境の一部のセッション](/docs/ja/self-hosted-environments-configuration#how-each-session’s-config-is-assembled) は、アカウントのスキルを読み込みません。
-* プロジェクトスレッド以外のクラウドセッションの場合、代わりにスキルをリポジトリの `.claude/skills/` にコミットできます。リポジトリの `.claude/settings.json` で宣言されたプラグインおよびユーザー設定でのみ有効化されたプラグインは [クラウドセッションで読み込まれません](/docs/ja/cloud-environments#what-carries-over-from-your-setup)。
+* Cowork セッション、クラウドセッション、および[プロジェクト](/docs/ja/claude-projects.md#what-threads-pick-up-from-your-repositories)内のクラウドスレッドでは、claude.ai アカウントでスキルを有効にします。プロジェクトのクラウドスレッドでは、リポジトリの `.claude/skills/` にコミットされたスキルは利用できません。[セルフホスト環境の一部のセッション](/docs/ja/self-hosted-environments-configuration.md#how-each-session’s-config-is-assembled)は、アカウントのスキルを読み込みません。
+* プロジェクトスレッド以外のクラウドセッションでは、代わりにスキルをリポジトリの `.claude/skills/` にコミットすることもできます。リポジトリの `.claude/settings.json` で宣言されたプラグインや、ユーザー設定でのみ有効にしたプラグインは、[クラウドセッションでは読み込まれません](/docs/ja/cloud-environments.md#what-carries-over-from-your-setup)。
 
-[Desktop scheduled tasks](/docs/ja/desktop-scheduled-tasks) はマシン上でローカルに実行されるため、`~/.claude/skills/` を読み込みます。
+[Desktop スケジュールタスク](/docs/ja/desktop-scheduled-tasks.md)はマシン上でローカルに実行されるため、`~/.claude/skills/` を読み込みます。
 
 ### claude.ai から同期されたスキル
 
-このセクションは、Cowork またはクラウドセッションを使用する場合、またはターミナルで claude.ai アカウントで Claude Code にサインインする場合に適用されます。これらのセッションでは、Claude Code は claude.ai アカウント用に有効化されたスキルを読み込みます。セットアップは不要です。[同期されたスキルが読み込まれる場所](#where-synced-skills-load) で説明されています。これらのスキルには、claude.ai セッティングで作成または有効化したスキル、組織がそこで提供するスキル、および `pdf` や `xlsx` などの Anthropic の組み込みスキルが含まれます。
+このセクションは、Cowork やクラウドセッションを使用している場合、またはターミナルで claude.ai アカウントを使って Claude Code にサインインしている場合に該当します。これらのセッションでは、[同期スキルの読み込み場所](#where-synced-skills-load)で説明しているとおり、ユーザー側での設定なしに、Claude Code が claude.ai アカウントで有効なスキルを読み込みます。これらのスキルには、claude.ai の設定で作成またはオンにしたもの、組織がそこで提供するスキル、`pdf` や `xlsx` などの Anthropic の組み込みスキルが含まれます。
 
-Claude Code は、セッションが実行されるマシンで作成したファイルを読み込むのではなく、アカウントから同期されたスキルをダウンロードするため、[スキルの場所](#where-skills-live) に保存するスキルには適用されないルールを同期されたスキルに適用します。
+Claude Code は、セッションが実行されるマシン上でユーザーが作成したファイルを読み込むのではなく、アカウントから同期スキルをダウンロードします。そのため、[スキルの保存場所](#where-skills-live)に保存したスキルには適用されないルールを、同期スキルには適用します。
 
-#### 同期されたスキルが読み込まれる場所
+#### 同期スキルの読み込み場所
 
-Cowork またはクラウドセッションでは、Claude Code は claude.ai アカウント用に有効化されたスキルを読み込みます。[Cowork およびクラウドセッションでのスキル](#skills-in-cowork-and-cloud-sessions) は、これらのセッションが取得するスキルを選択する方法を説明しています。
+Cowork またはクラウドセッションでは、Claude Code は claude.ai アカウントで有効なスキルを読み込みます。これらのセッションがどのスキルを取得するかの選び方は、[Cowork とクラウドセッションでのスキル](#skills-in-cowork-and-cloud-sessions)で説明しています。
 
-ターミナルでは、Claude Code は claude.ai アカウントでサインインするセッションでこれらのスキルを同期します。セッションが開始されると、Claude Code はアカウントのスキルを `~/.claude/skills/synced/` にバックグラウンドでダウンロードし、その後セッション実行中に claude.ai の変更をチェックします。チェックでスキルが claude.ai で追加、編集、またはオフにされたことが判明すると、Claude Code は実行中のセッションで再起動なしにそれを追加、更新、または削除します。ターミナルセッションでの同期には Claude Code v2.1.273 以降が必要です。
+ターミナルでは、Claude Code は claude.ai アカウントでサインインしたセッションでこれらのスキルを同期します。セッション開始時に、Claude Code はアカウントのスキルをバックグラウンドで `~/.claude/skills/synced/` にダウンロードし、その後セッション実行中に claude.ai の変更を確認します。確認によって claude.ai でスキルが追加、編集、またはオフにされたことが分かると、Claude Code は再起動なしで、実行中のセッションでそれを追加、更新、または削除します。ターミナルセッションでの同期には Claude Code v2.1.273 以降が必要です。
 
-セッションがアイドル状態の間は、チェックの頻度が下がります：
+セッションがアイドル状態の間は、確認の頻度が下がります。
 
-* **ユーザーまたは Claude がセッションで作業している間**: 約 10 分ごとにチェックが実行されます。
-* **セッションがアイドル状態の間**: 約 40 分ごとにチェックが実行されます。セッションで再び入力すると、最後のチェックから 10 分以上経過している場合、Claude Code は数分以内にチェックします。
+* **ユーザーまたは Claude がセッションで作業している間**：約 10 分ごとに確認が実行されます。
+* **セッションがアイドル状態の間**：約 40 分ごとに確認が実行されます。セッションで再び入力したとき、前回の確認から 10 分以上経過していれば、Claude Code は数分以内に確認します。
 
-同期によって起動が遅れることはありません。Claude は、スキルを呼び出すときにのみそのスキルのダウンロードを待つためです。そのため、短い [非インタラクティブ](/docs/ja/headless) 実行は、新しく追加されたスキルがダウンロードされる前に終了することがあり、その場合は後のセッションでダウンロードされます。非インタラクティブ実行でスキルをダウンロードし、プロンプトに応答する前にリストを待つようにするには、[`CLAUDE_CODE_SYNC_SKILLS`](/docs/ja/env-vars#variables) を `1` に設定します。v2.1.273 より前では、ターミナルセッションはこの変数を設定した `-p` 実行でのみスキルをダウンロードしていました。
+Claude はスキルを呼び出すときにのみそのスキルのダウンロードを待つため、同期によって起動が遅れることはありません。そのため、短い[非対話型](/docs/ja/headless.md)の実行は、新しく追加されたスキルのダウンロード前に終了することがあり、その場合は後のセッションでダウンロードされます。非対話型の実行でスキルをダウンロードし、プロンプトに応答する前に一覧を待つようにするには、[`CLAUDE_CODE_SYNC_SKILLS`](/docs/ja/env-vars#variables) を `1` に設定します。v2.1.273 より前は、ターミナルセッションでスキルがダウンロードされるのは、この変数を設定した `-p` 実行の場合のみでした。
 
-Claude Code は、claude.ai アカウントでサインインし、[Anthropic からフィーチャーフラグを取得する](/docs/ja/env-vars#features-that-need-feature-flag-fetching) セッションでのみ同期します。これらのセッションでは同期しません：
+Claude Code が同期するのは、claude.ai アカウントでサインインし、かつ [Anthropic から機能フラグを取得する](/docs/ja/env-vars.md#features-that-need-feature-flag-fetching)セッションのみです。次のセッションでは同期しません。
 
-* `/login` で保存されたサインインを使用しないセッション。例えば、API キーで認証するセッション、または `ANTHROPIC_AUTH_TOKEN`、`CLAUDE_CODE_OAUTH_TOKEN`、または `apiKeyHelper` スクリプトが認証情報を提供するセッション
-* フィーチャーフラグを取得しないセッション。例えば、Amazon Bedrock 上のセッション、または `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` を設定したセッション
-* [bare mode](/docs/ja/headless#start-faster-with-bare-mode) のセッション、または `--safe-mode` で開始したセッション
-* 組織のマネージドセッティングが [スキルをプラグインソースにロック](/docs/ja/settings-reference#strictpluginonlycustomization-skills) するセッション、または `user` を除外する [`--setting-sources`](/docs/ja/cli-reference#cli-flags) リストで開始したセッション
+* `/login` で保存されたサインインを使用しないセッション。たとえば、API キーで認証するセッションや、`ANTHROPIC_AUTH_TOKEN`、`CLAUDE_CODE_OAUTH_TOKEN`、または `apiKeyHelper` スクリプトが認証情報を提供するセッション
+* 機能フラグを取得しないセッション。たとえば、Amazon Bedrock 上のセッションや、`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` を設定したセッション
+* [bare モード](/docs/ja/headless.md#start-faster-with-bare-mode)のセッション、または `--safe-mode` で開始したセッション
+* 組織の管理設定が[スキルをプラグインソースに限定](/docs/ja/settings-reference.md#strictpluginonlycustomization-skills)しているセッション、または `user` を含まない [`--setting-sources`](/docs/ja/cli-reference#cli-flags) リストで開始したセッション
 
-セッション中に `/login` でサインインする場合、Claude Code を再起動して同期を開始します。
+セッション中に `/login` でサインインした場合は、同期を開始するために Claude Code を再起動してください。
 
-以前のセッションが同期したスキルはディスク上に残ります。Claude Code は、同じアカウントにサインインした後のセッションでそれらを読み込みます。claude.ai に到達できない場合でも同様です。
+以前のセッションで同期したスキルはディスク上に残ります。Claude Code は、claude.ai に接続できない場合でも、同じアカウントでサインインした後のセッションでそれらを読み込みます。
 
-Claude Code は同期されたスキルをダウンロードし、アップロードしません。`~/.claude/skills/synced/` の下のファイルを編集する場合、変更は claude.ai アカウントに保存されず、後の同期で上書きまたは削除される可能性があります。同期されたスキルを変更するには、claude.ai で更新します。次の同期で新しいバージョンがダウンロードされます。
+Claude Code は同期スキルをダウンロードするだけで、アップロードすることはありません。ユーザーまたは Claude が `~/.claude/skills/synced/` 配下のファイルを編集しても、その変更は claude.ai アカウントには保存されず、後の同期で上書きまたは削除される可能性があります。同期スキルを変更するには、claude.ai で更新してください。次回の同期で新しいバージョンがダウンロードされます。
 
-同期されたスキルを確認するには、`/skills` を実行します。メニューは `claude.ai sync` の下にそれらをリストします。
+どのスキルが同期されたかを確認するには、`/skills` を実行します。メニューでは `claude.ai sync` の下に一覧表示されます。
 
-`pdf` や `xlsx` などの Anthropic のスキルの一部は常に同期します。その他については、claude.ai のスキルセッティングでスキルをオンまたはオフにして、同期するかどうかを変更します。
+`pdf` や `xlsx` など、Anthropic のスキルの一部は常に同期されます。それ以外のスキルは、claude.ai のスキル設定でオン・オフを切り替えることで、同期するかどうかを変更できます。
 
-マシンでの同期を停止するには、ユーザーセッティングで [`syncClaudeAiSkills`](/docs/ja/settings-reference#syncclaudeaiskills) を `false` に設定します。Claude Code はダウンロードを停止し、次回起動時に既に同期したスキルを `~/.claude/skills/.trash/` に移動し、それ以上読み込みません。組織は claude.ai で Skills をオフにすることで、すべてのユーザーの同期をオフにできます。同期を停止しながら Skills をオンのままにするには、[マネージドセッティング](/docs/ja/managed-settings) で同じキーを設定できます。
+マシンでの同期を停止するには、ユーザー設定で [`syncClaudeAiSkills`](/docs/ja/settings-reference#syncclaudeaiskills) を `false` に設定します。Claude Code はダウンロードを停止し、次回起動時に、すでに同期したスキルを `~/.claude/skills/.trash/` に移動して読み込まなくなります。組織は、claude.ai で Skills をオフにすることで、全員の同期をオフにできます。Skills をオンにしたまま同期を停止するには、[管理設定](/docs/ja/managed-settings.md)で同じキーを設定できます。
 
-組織が claude.ai で Skills をオフにする場合、Claude Code はダウンロードされたスキルを削除し、読み込みを停止します。削除されたスキルは `~/.claude/skills/.trash/` に移動されます。[保持期間スイープ](/docs/ja/claude-directory#cleaned-up-automatically) がそれらを削除するまで、ファイルを復旧できます。組織が Skills を再度オンにすると、Claude Code は次の同期で有効化したスキルをダウンロードします。
+組織が claude.ai で Skills をオフにすると、Claude Code はダウンロード済みのスキルを削除し、それらは読み込まれなくなります。削除されたスキルは `~/.claude/skills/.trash/` に移動され、[保持期間によるクリーンアップ](/docs/ja/claude-directory.md#cleaned-up-automatically)で削除されるまではファイルを復元できます。組織が Skills を再びオンにすると、Claude Code は次回の同期で、ユーザーが有効にしたスキルをダウンロードします。
 
-#### 同期されたスキル名が別のコマンドと一致する場合
+#### 同期スキルの名前が別のコマンドと一致する場合
 
-同期されたスキルは、その短い名前 `/<name>` または完全な名前 `/anthropic-skills:<name>` で呼び出すことができます。別のコマンドがその短い名前を使用する場合、`/<name>` は他のコマンドを実行し、同期されたスキルは `/anthropic-skills:<name>` としてのみ実行されます。ローカル `deploy` スキルと同期された `deploy` がある場合、`/deploy` はローカルスキルを実行し、`/anthropic-skills:deploy` は同期されたスキルを実行します。v2.1.269 より前では、同期されたスキルは短い名前のみを持っていました。
+同期スキルは、短い名前 `/<name>` でも、完全な名前 `/anthropic-skills:<name>` でも呼び出せます。別のコマンドが短い名前を使用している場合、`/<name>` はその別のコマンドを実行し、同期スキルは `/anthropic-skills:<name>` としてのみ実行されます。ローカルの `deploy` スキルと同期された `deploy` がある場合、`/deploy` はローカルのスキルを実行し、`/anthropic-skills:deploy` は同期されたものを実行します。v2.1.269 より前は、同期スキルには短い名前しかありませんでした。
 
-`/` メニュー、`/skills`、および `/context` では、同期されたスキルは短い名前の下に表示されるか、別のコマンドがその短い名前を使用している間は完全な名前の下に表示されます。セッションで `/skills` を実行します。リストの下の注記は、短い名前を失った各同期されたスキルを説明します。`~/.claude/` の personal スキルまたはコマンドファイルの 1 つがその名前を使用する場合、注記は名前を変更または削除して解放する内容も説明します。
+`/` メニュー、`/skills`、`/context` では、同期スキルは短い名前で表示されますが、別のコマンドが短い名前を使用している間は完全な名前で表示されます。セッションで `/skills` を実行してください。一覧の下の注記で、短い名前を失った各同期スキルについて説明されます。`~/.claude/` 内の個人スキルやコマンドファイルのいずれかがその名前を使用している場合、その名前を解放するために何の名前を変更または削除すればよいかも注記に示されます。
 
-v2.1.269 から v2.1.280 では、これらのリストはすべての同期されたスキルをその完全な名前の下に表示し、`/skills` にはそのような注記がありませんでした。両方とも v2.1.281 で変更されました。
+v2.1.269 から v2.1.280 までは、これらの一覧ではすべての同期スキルが完全な名前で表示され、`/skills` にはこのような注記がありませんでした。どちらも v2.1.281 で変更されました。
 
-短い名前を使用するコマンドは、これらのいずれかにすることができます：
+短い名前を使用するコマンドは、次のいずれかです。
 
-* 組み込みコマンドまたは [バンドルされたスキル](#bundled-skills)。例えば、バンドルされたスキルをオフにした後に利用できないもの
-* [ローカルレベル](#where-skills-live) のスキルまたは `.claude/commands/` 内のファイル
+* 組み込みコマンドまたは[バンドルスキル](#bundled-skills)。バンドルスキルをオフにした後など、セッションで利用できないものも含みます
+* いずれかの[ローカルレベル](#where-skills-live)のスキル、または `.claude/commands/` 内のファイル
 * プラグインスキル
-* [MCP プロンプト](/docs/ja/mcp#use-mcp-prompts-as-commands)
+* [MCP プロンプト](/docs/ja/mcp.md#use-mcp-prompts-as-commands)
 
-Claude Code は同期されたスキルにラベルを付けるため、どこから来たかを判断できます。`/skills` メニューと `/context` は同期されたスキルを `claude.ai sync` の下にグループ化し、`/` コマンドメニューは claude.ai から来たものとしてマークします。
+Claude Code は、由来が分かるように同期スキルにラベルを付けます。`/skills` メニューと `/context` は同期スキルを `claude.ai sync` の下にグループ化し、`/` コマンドメニューは claude.ai 由来であることを示します。
 
-名前を比較するとき、Claude Code は大文字小文字、スペース、および目に見えない文字を無視し、全幅文字とダッシュバリアントなどの互換性形式をそれらのプレーン等価物として扱います。例えば、`Commit` という名前の同期されたスキルとローカル `commit` スキルは同じ名前と見なされるため、`/commit` はローカルスキルを実行し続けます。
+名前を比較する際、Claude Code は大文字・小文字、スペース、不可視文字を無視し、全角文字やダッシュのバリアントなどの互換形式を、対応する通常の文字として扱います。たとえば、`Commit` という名前の同期スキルと `commit` という名前のローカルスキルは同じ名前とみなされるため、`/commit` は引き続きローカルスキルを実行します。
 
-別のアルファベットの見た目が似た文字だけで異なる名前は異なる名前と見なされ、`claude.ai sync` ラベルは 2 つを区別する方法です。これらのチェックとラベルには Claude Code v2.1.228 以降が必要です。
+別のアルファベットの似た文字だけが異なる名前は別の名前とみなされ、`claude.ai sync` ラベルによって両者を区別できます。これらのチェックとラベルには Claude Code v2.1.228 以降が必要です。
 
-#### 同期されたスキル用に予約された名前
+#### 同期スキル用に予約された名前
 
-Claude Code は名前 `anthropic-skills` と、`anthropic-skills:pdf` などのその名前空間内のすべての名前を、claude.ai から同期されたスキル用に予約しているため、同期されたスキルの完全な名前は他のものを実行しません。この名前は、claude.ai アカウントでサインインするかどうかに関わらず、すべてのセッションで予約されています。
+Claude Code は、`anthropic-skills` という名前と、`anthropic-skills:pdf` のようなその名前空間内のすべての名前を claude.ai から同期されたスキル用に予約しているため、同期スキルの完全な名前が他のものを実行することはありません。この名前は、claude.ai アカウントでサインインしているかどうかにかかわらず、すべてのセッションで予約されています。
 
-* **スキルフォルダ、frontmatter `name`、`.claude/commands/` 内のファイルまたはサブフォルダ、または [保存されたワークフロー](/docs/ja/workflows#save-the-workflow-for-reuse)**: 読み込まれません。[スタートアップ通知](/docs/ja/errors#a-skill-command-or-workflow-wasnt-loaded-because-its-name-is-reserved) は、名前を変更または編集する最初のアイテムに名前を付けます。
-* **`anthropic-skills` という名前のプラグイン**: 読み込まれます。そのスキルの 1 つと同期されたスキルの両方が `<name>` という名前の場合、`/anthropic-skills:<name>` は同期されたスキルを実行します。
-* **`anthropic-skills` という名前の MCP サーバー**: 接続され、そのツールは機能しますが、[そのプロンプトはコマンドとして表示されません](/docs/ja/mcp#use-mcp-prompts-as-commands)。MCP 設定でサーバーの名前を変更してそれらをリストします。
+* **スキルフォルダ、フロントマターの `name`、`.claude/commands/` 内のファイルやサブフォルダ、または[保存されたワークフロー](/docs/ja/workflows.md#save-the-workflow-for-reuse)**：読み込まれません。[起動時の通知](/docs/ja/errors.md#a-skill-command-or-workflow-wasnt-loaded-because-its-name-is-reserved)で、名前の変更または編集が必要な最初の項目が示されます。
+* **`anthropic-skills` という名前のプラグイン**：読み込まれます。そのスキルの 1 つと同期スキルの両方が `<name>` という名前の場合、`/anthropic-skills:<name>` は同期スキルを実行します。
+* **`anthropic-skills` という名前の MCP サーバー**：接続され、ツールも動作しますが、[そのプロンプトはコマンドとして表示されません](/docs/ja/mcp.md#use-mcp-prompts-as-commands)。一覧に表示するには、MCP 設定でサーバー名を変更してください。
 
-#### Claude Code が同期されたスキルの frontmatter をどのように処理するか
+#### Claude Code が同期スキルのフロントマターを扱う方法
 
-Claude Code は、同期されたスキルの frontmatter に 2 つのルールを適用します：
+Claude Code は、同期スキルのフロントマターに 2 つのルールを適用します。
 
-* フロントマターはあらゆる種類のセッションで適用されるため、`allowed-tools` による許可は通常の [権限フロー](/docs/ja/permissions) を経由します。組織が `allowManagedPermissionRulesOnly` を設定している場合、この許可は [適用されません](#when-only-managed-permission-rules-apply)。
-* Claude Code は、スキルが提供する表示テキスト（説明など）をサニタイズします。制御文字を削除し、Claude に到達するテキスト（説明など）では、テキストが Claude Code の内部フォーマットを模倣できないように、角括弧をエスケープします。このサニタイズには Claude Code v2.1.228 以降が必要です。
+* フロントマターはあらゆる種類のセッションで適用されるため、`allowed-tools` による許可は通常の[権限フロー](/docs/ja/permissions.md)を経由します。組織が `allowManagedPermissionRulesOnly` を設定している場合、その許可は[適用されません](#when-only-managed-permission-rules-apply)。
+* Claude Code は、説明など、スキルが提供する表示テキストをサニタイズします。制御文字を削除し、説明など Claude に届くテキストでは、テキストが Claude Code の内部フォーマットを模倣できないように、山括弧もエスケープします。このサニタイズには Claude Code v2.1.228 以降が必要です。
 
-#### Claude Code が同期されたスキルの本体をどのように処理するか
+#### Claude Code が同期スキルの本文を扱う方法
 
-Claude Code が同期されたスキルの本体で何をするかは、セッションが実行される場所によって異なります：
+Claude Code が同期スキルの本文をどう扱うかは、セッションの実行場所によって異なります。
 
-* クラウドセッションでは、本体はローカルスキルが持つ動作を保持します。セッションは分離されたコンテナで実行されるためです。
-* デスクトップ上の Cowork セッションでは、本体はローカルスキルが持つ動作を保持します。ただし、Claude Code はすべての `!` コマンドラインを [`disableSkillShellExecution` プレースホルダ](#inject-dynamic-context) に置き換えます。すべてのスキルに対して行うように、そこで提供します。
-* マシン上の他のセッションでは、Claude Code は [`!` コマンド](#inject-dynamic-context) を実行しません。`@` 参照が名前を付けるファイルをローカルスキルの場合のように添付しません。`${CLAUDE_PROJECT_DIR}` および `${CLAUDE_SESSION_ID}` プレースホルダを置き換えません。そのため、`@` 参照と両方のプレースホルダは Claude にリテラルテキストとして到達します。`!` コマンドラインも `disableSkillShellExecution` がオンの場合、リテラルテキストまたはそのプレースホルダとして到達します。この処理には Claude Code v2.1.228 以降が必要です。
+* クラウドセッションでは、セッションが隔離されたコンテナで実行されるため、本文はローカルスキルと同じ動作を保ちます。
+* デスクトップ上の Cowork セッションでは、本文はローカルスキルと同じ動作を保ちます。ただし、そこで提供するすべてのスキルと同様に、Claude Code はすべての `!` コマンド行を [`disableSkillShellExecution` のプレースホルダー](#inject-dynamic-context)に置き換えます。
+* マシン上のその他のセッションでは、Claude Code は [`!` コマンド](#inject-dynamic-context)を実行せず、ローカルスキルの場合のように `@` 参照が指すファイルを添付せず、`${CLAUDE_PROJECT_DIR}` と `${CLAUDE_SESSION_ID}` のプレースホルダーも置換しません。そのため、`@` 参照と両方のプレースホルダーはリテラルテキストとして Claude に届きます。`!` コマンド行もリテラルテキストとして、または `disableSkillShellExecution` がオンの場合はそのプレースホルダーとして Claude に届きます。この扱いには Claude Code v2.1.228 以降が必要です。
 
 ### セッション中にスキルを編集する
 
-Claude Code は [bare mode](/docs/ja/headless#start-faster-with-bare-mode) を除き、スキルディレクトリのファイル変更を監視します。`~/.claude/skills/`、プロジェクト `.claude/skills/`、または `--add-dir` ディレクトリ内の `.claude/skills/` の下のスキルを追加、編集、または削除すると、Claude Code は現在のセッション内で変更を取得します。再起動は不要です。
+Claude Code は、[bare モード](/docs/ja/headless.md#start-faster-with-bare-mode)の場合を除き、スキルディレクトリのファイル変更を監視します。`~/.claude/skills/`、プロジェクトの `.claude/skills/`、または `--add-dir` ディレクトリ内の `.claude/skills/` でスキルを追加、編集、削除すると、Claude Code は再起動なしで、現在のセッション内で変更を反映します。
 
-セッション開始時に存在しなかったトップレベルスキルディレクトリを作成する場合、[`/reload-skills`](/docs/ja/commands#all-commands) を実行して、そこに配置したスキルを取得します。Claude Code はまだそのディレクトリを監視していないため、そこで後の変更を行った後、`/reload-skills` を再度実行します。
+セッション開始時に存在しなかったトップレベルのスキルディレクトリを作成した場合は、[`/reload-skills`](/docs/ja/commands#all-commands) を実行して、そこに置いたスキルを読み込みます。Claude Code はまだそのディレクトリを監視していないため、その後そこで変更するたびに `/reload-skills` を再度実行してください。
 
-ライブ変更検出は `SKILL.md` テキストのみをカバーします。スキルフォルダが [プラグイン](/docs/ja/plugins/loading#plugins-shared-through-a-repository) でもある場合、`hooks/`、`.mcp.json`、`agents/`、および `output-styles/` への変更は `/reload-plugins` で有効になります。
+ライブ変更検出の対象は `SKILL.md` のテキストのみです。[プラグイン](/docs/ja/plugins/loading.md#plugins-shared-through-a-repository)でもあるスキルフォルダでは、`hooks/`、`.mcp.json`、`agents/`、`output-styles/` の変更を反映するには `/reload-plugins` が必要です。
 
 ### スキルを削除する
 
-スキルを削除する方法は、どこから来たかによって異なります：
+スキルの削除方法は、その由来によって異なります。
 
-* **Personal または project スキル**: スキルのディレクトリ `~/.claude/skills/<skill-name>/` または `.claude/skills/<skill-name>/` を削除します。Claude Code は [現在のセッションの `/skills` からそれを削除します](#live-change-detection)。Claude Code が既に読み込んだコンテンツは [スキルコンテンツライフサイクル](#skill-content-lifecycle) に従います。
-* **Enterprise スキル**: 管理者が [マネージドセッティングディレクトリ](/docs/ja/managed-settings#delivery-mechanisms) 内の `.claude/skills/` からスキルのディレクトリを削除します。例えば、Linux では `/etc/claude-code/.claude/skills/<skill-name>/`。
-* **Plugin スキル**: `/plugin` メニューから、または `/plugin uninstall <plugin-name>@<marketplace-name>` でプラグインを無効化またはアンインストールします。Claude Code は [変更が適用される](/docs/ja/plugins/cli-reference#reload-plugins) か、再起動するときにプラグインのスキルをアンロードします。
-* **claude.ai から同期されたスキル**: claude.ai のスキルセッティングで、[有効化した](#skills-in-cowork-and-cloud-sessions) 同じ場所でスキルをオフにします。Claude Code は [スキルを同期する](#where-synced-skills-load) 次回にそれを `~/.claude/skills/synced/` から削除します。代わりに手動でディレクトリを削除する場合、次の同期はスキルが claude.ai で有効なままの間、それを再度ダウンロードします。
-* **バンドルされたスキル**: [`disableBundledSkills`](#bundled-skills) を `true` に設定してバンドルされたスキルをオフにするか、[`skillOverrides`](#override-skill-visibility-from-settings) で 1 つのスキルを `"off"` に設定して非表示にします。
+* **個人またはプロジェクトのスキル**：スキルのディレクトリ `~/.claude/skills/<skill-name>/` または `.claude/skills/<skill-name>/` を削除します。Claude Code は[現在のセッションで `/skills` からそれを除外します](#live-change-detection)。Claude Code がすでにそこから読み込んだ内容は、[スキルコンテンツのライフサイクル](#skill-content-lifecycle)に従います。
+* **エンタープライズスキル**：管理者が、[管理設定ディレクトリ](/docs/ja/managed-settings.md#delivery-mechanisms)内の `.claude/skills/` からスキルのディレクトリを削除します。たとえば Linux では `/etc/claude-code/.claude/skills/<skill-name>/` です。
+* **プラグインスキル**：`/plugin` メニューから、または `/plugin uninstall <plugin-name>@<marketplace-name>` で、そのスキルを提供するプラグインを無効化またはアンインストールします。Claude Code は、[変更が適用された](/docs/ja/plugins/cli-reference.md#reload-plugins)とき、または再起動したときに、プラグインのスキルをアンロードします。
+* **claude.ai から同期されたスキル**：[有効にした](#skills-in-cowork-and-cloud-sessions)のと同じ場所で、claude.ai アカウントのスキルをオフにします。Claude Code は、次回[スキルを同期する](#where-synced-skills-load)ときに、`~/.claude/skills/synced/` からそれを削除します。代わりにディレクトリを手動で削除した場合、claude.ai でスキルが有効なままであれば、次回の同期で再びダウンロードされます。
+* **バンドルスキル**：[`disableBundledSkills`](#bundled-skills) を `true` に設定するとバンドルスキルがオフになります。また、[`skillOverrides`](#override-skill-visibility-from-settings) で特定のスキルを `"off"` に設定すると、そのスキルを非表示にできます。
 
-personal または project スキルを保持しながら Claude がそれを自動的に呼び出すのを停止するには、frontmatter で [`disable-model-invocation: true`](#control-who-invokes-a-skill) を設定するか、ファイルを編集したくない場合は [`skillOverrides`](#override-skill-visibility-from-settings) で `"user-invocable-only"` を設定します。
+個人またはプロジェクトのスキルを残したまま、Claude が自らそれを呼び出さないようにするには、フロントマターで [`disable-model-invocation: true`](#control-who-invokes-a-skill) を設定します。ファイルを編集したくない場合は、[`skillOverrides`](#override-skill-visibility-from-settings) で `"user-invocable-only"` を設定します。
 
 ## スキルを設定する
 
@@ -360,11 +371,11 @@ Deploy the application:
 3. Push to the deployment target
 ```
 
-本文自体は簡潔にしてください。スキルが読み込まれると、そのコンテンツは[ターンをまたいでコンテキストに残る](#skill-content-lifecycle)ため、すべての行が繰り返し発生するトークンコストになります。どのように、またはなぜ行うかを説明するのではなく、何をすべきかを記述し、[CLAUDE.md のコンテンツ](/docs/ja/best-practices#write-an-effective-claude-md)と同じ簡潔さの基準を適用してください。
+本文自体は簡潔にしてください。スキルが読み込まれると、そのコンテンツは[ターンをまたいでコンテキストに残る](#skill-content-lifecycle)ため、すべての行が繰り返し発生するトークンコストになります。どのように、またはなぜ行うかを説明するのではなく、何をすべきかを記述し、[CLAUDE.md のコンテンツ](/docs/ja/best-practices.md#write-an-effective-claude-md)と同じ簡潔さの基準を適用してください。
 
 ### フロントマターリファレンス
 
-スキルは、`SKILL.md` の先頭にある `---` マーカーで囲まれた YAML [フロントマター](/docs/ja/glossary#frontmatter)で設定し、スキルの指示は閉じの `---` の後に Markdown で記述します。フィールド名は、`when_to_use` を除き、ハイフンで区切られた小文字の単語を使用します。`.claude/commands/` 内の[コマンドファイル](#where-skills-live)は、`name` と `paths` を除いて同じフィールドを受け付けます。この例では 4 つのフィールドを設定しています。
+スキルは、`SKILL.md` の先頭にある `---` マーカーで囲まれた YAML [フロントマター](/docs/ja/glossary.md#frontmatter)で設定し、スキルの指示は閉じの `---` の後に Markdown で記述します。フィールド名は、`when_to_use` を除き、ハイフンで区切られた小文字の単語を使用します。`.claude/commands/` 内の[コマンドファイル](#where-skills-live)は、`name` と `paths` を除いて同じフィールドを受け付けます。この例では 4 つのフィールドを設定しています。
 
 ```yaml theme={null}
 ---
@@ -390,18 +401,18 @@ Claude Code がフロントマターを読み取るのは、開始の `---` が�
 | `when_to_use` | いいえ | トリガーとなるフレーズやリクエストの例など、Claude がスキルを呼び出すべきタイミングについての追加のコンテキスト。スキル一覧で `description` に追加され、1,536 文字の上限に含まれます。 |
 | `argument-hint` | いいえ | 想定される引数を示すためにオートコンプリート中に表示されるヒント。例：`[issue-number]` または `[filename] [format]`。 |
 | `arguments` | いいえ | スキルコンテンツでの [`$name` 置換](#available-string-substitutions)に使う名前付き位置引数。スペース区切りの文字列または YAML リストを受け付けます。名前は順番に引数の位置に対応付けられます。 |
-| `disable-model-invocation` | いいえ | `true` に設定すると、Claude がこのスキルを自動的に読み込まなくなります。`/name` で手動でトリガーしたいワークフローに使用します。また、スキルが[サブエージェントにプリロード](/docs/ja/sub-agents#preload-skills-into-subagents)されることや、このスキルをプロンプトとする[セッションスコープのスケジュールタスク](/docs/ja/scheduled-tasks)が起動したときに実行されることも防ぎます。デフォルト：`false`。 |
+| `disable-model-invocation` | いいえ | `true` に設定すると、Claude がこのスキルを自動的に読み込まなくなります。`/name` で手動でトリガーしたいワークフローに使用します。また、スキルが[サブエージェントにプリロード](/docs/ja/sub-agents.md#preload-skills-into-subagents)されることや、このスキルをプロンプトとする[セッションスコープのスケジュールタスク](/docs/ja/scheduled-tasks.md)が起動したときに実行されることも防ぎます。デフォルト：`false`。 |
 | `user-invocable` | いいえ | Claude だけがスキルを呼び出すべき場合は `false` に設定します。Claude Code は `/` メニューからスキルを非表示にし、`/name` と入力しても実行しません。ユーザーが直接呼び出すべきではない背景知識に使用します。デフォルト：`true`。 |
 | `allowed-tools` | いいえ | このスキルを呼び出したターンの間、Claude が権限を求めずに使用できるツール。この付与は次のメッセージを送信するとクリアされます。スペース区切りまたはカンマ区切りの文字列、あるいは YAML リストを受け付けます。[スキルのツールを事前承認する](#pre-approve-tools-for-a-skill)を参照してください。 |
 | `disallowed-tools` | いいえ | このスキルがアクティブな間、Claude が使用可能なツールから除外されるツール。バックグラウンドループにおける `AskUserQuestion` など、特定のツールを決して呼び出すべきではない自律型スキルに使用します。スペース区切りまたはカンマ区切りの文字列、あるいは YAML リストを受け付けます。この制限は次のメッセージを送信するとクリアされます。拒否ルールと同様に、他のツールが残っている間はこのフィールドで [`EndConversation`](/docs/ja/tools-reference#endconversation-tool-behavior) を除外することはできません。 |
-| `model` | いいえ | このスキルがアクティブなときに使用するモデル。この上書きは現在のターンの残りの間に適用され、設定には保存されません。次のプロンプトを送信すると、セッションのモデルに戻ります。[`/model`](/docs/ja/model-config) と同じ値、またはアクティブなモデルを維持する `inherit` を受け付けます。組織の [`availableModels`](/docs/ja/model-config#restrict-model-selection) 許可リストで除外されている値は使用されず、セッションは現在のモデルを維持します。[auto モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)、および[分類器がコマンドをレビューしている間の plan モード](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode)では、auto モードがサポートしていないモデルも使用されず、セッションは現在のモデルを維持します。`context: fork` の場合、この値は代わりに[フォークされたサブエージェントのモデル](#run-skills-in-a-subagent)を設定し、除外された値は[サブエージェントのモデル上書きと同じルール](/docs/ja/model-config#restrict-model-selection)に従います。 |
-| `effort` | いいえ | このスキルがアクティブなときの [effort レベル](/docs/ja/model-config#adjust-effort-level)。セッションの effort レベルを上書きします。省略した場合、レベルは [effort の解決順序](/docs/ja/model-config#adjust-effort-level)によって決まります。オプション：`low`、`medium`、`high`、`xhigh`、`max`。使用可能なレベルはモデルによって異なります。 |
+| `model` | いいえ | このスキルがアクティブなときに使用するモデル。この上書きは現在のターンの残りの間に適用され、設定には保存されません。次のプロンプトを送信すると、セッションのモデルに戻ります。[`/model`](/docs/ja/model-config) と同じ値、またはアクティブなモデルを維持する `inherit` を受け付けます。組織の [`availableModels`](/docs/ja/model-config#restrict-model-selection) 許可リストで除外されている値は使用されず、セッションは現在のモデルを維持します。[auto モード](/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)、および[分類器がコマンドをレビューしている間の plan モード](/docs/ja/permission-modes.md#analyze-before-you-edit-with-plan-mode)では、auto モードがサポートしていないモデルも使用されず、セッションは現在のモデルを維持します。`context: fork` の場合、この値は代わりに[フォークされたサブエージェントのモデル](#run-skills-in-a-subagent)を設定し、除外された値は[サブエージェントのモデル上書きと同じルール](/docs/ja/model-config.md#restrict-model-selection)に従います。 |
+| `effort` | いいえ | このスキルがアクティブなときの [effort レベル](/docs/ja/model-config.md#adjust-effort-level)。セッションの effort レベルを上書きします。省略した場合、レベルは [effort の解決順序](/docs/ja/model-config.md#adjust-effort-level)によって決まります。オプション：`low`、`medium`、`high`、`xhigh`、`max`。使用可能なレベルはモデルによって異なります。 |
 | `context` | いいえ | `fork` に設定すると、フォークされたサブエージェントコンテキストで実行されます。[サブエージェントでスキルを実行する](#run-skills-in-a-subagent)を参照してください。 |
 | `agent` | いいえ | `context: fork` が設定されている場合に使用するサブエージェントの種類。 |
 | `background` | いいえ | `context: fork` の場合にのみ適用されます。`false` に設定すると、[バックグラウンドで実行する](#run-skills-in-a-subagent)代わりに、スキルを呼び出したターンでフォークされたサブエージェントの結果を待ちます。デフォルト：`true`。Claude Code v2.1.218 以降が必要です。 |
-| `hooks` | いいえ | スキルが呼び出されたときに Claude Code が登録し、セッションの残りの間実行し続けるフック。設定形式と `once` オプションについては、[スキルとエージェントのフック](/docs/ja/hooks#hooks-in-skills-and-agents)を参照してください。 |
-| `paths` | いいえ | このスキルがアクティブになるタイミングを制限する glob パターン。カンマ区切りの文字列または YAML リストを受け付けます。設定すると、Claude はパターンに一致するファイルを扱っている場合にのみスキルを自動的に読み込みます。パターンは Claude の現在の作業ディレクトリからの相対パスであり、そのディレクトリ外のファイルは一致しません。[パス固有のルール](/docs/ja/memory#path-specific-rules)と同じ glob 形式を使用します。 |
-| `shell` | いいえ | このスキル内の `` !`command` `` および ` ```! ` ブロックに使用するシェル。`bash`（デフォルト）または `powershell` を受け付けます。`powershell` を設定すると、[PowerShell ツール](/ja/tools-reference#powershell-tool)が有効な場合にインラインのシェルコマンドが PowerShell 経由で実行されます。このツールは、Git Bash のない Windows ではデフォルトでオン、Git Bash のある環境では claude.ai および Console アカウントでデフォルトでオンであり、Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry のセッション、および macOS、Linux、WSL では `CLAUDE_CODE_USE_POWERSHELL_TOOL=1` が必要です。ツールをオフにするには `0` に設定します。 |
+| `hooks` | いいえ | スキルが呼び出されたときに Claude Code が登録し、セッションの残りの間実行し続けるフック。設定形式、`once` オプション、および[スキルフックの制限](/docs/ja/hooks.md#limits-on-skill-hooks)については、[スキルとエージェントのフック](/docs/ja/hooks.md#hooks-in-skills-and-agents)を参照してください。 |
+| `paths` | いいえ | このスキルがアクティブになるタイミングを制限する glob パターン。カンマ区切りの文字列または YAML リストを受け付けます。設定すると、Claude はパターンに一致するファイルを扱っている場合にのみスキルを自動的に読み込みます。パターンは Claude の現在の作業ディレクトリからの相対パスであり、そのディレクトリ外のファイルは一致しません。[パス固有のルール](/docs/ja/memory.md#path-specific-rules)と同じ glob 形式を使用します。 |
+| `shell` | いいえ | このスキル内の `` !`command` `` および ` ```! ` ブロックに使用するシェル。`bash`（デフォルト）または `powershell` を受け付けます。`powershell` を設定すると、[PowerShell ツール](/docs/ja/tools-reference.md#powershell-tool)が有効な場合にインラインのシェルコマンドが PowerShell 経由で実行されます。このツールは、Git Bash のない Windows ではデフォルトでオン、Git Bash のある環境では claude.ai および Console アカウントでデフォルトでオンであり、Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry のセッション、および macOS、Linux、WSL では `CLAUDE_CODE_USE_POWERSHELL_TOOL=1` が必要です。ツールをオフにするには `0` に設定します。 |
 | `metadata` | いいえ | エンタイトルメントやカタログのフィールドなど、独自のツールが `SKILL.md` から読み取る独自のキーと値のデータのための自由形式の YAML マップ。Claude Code はその内容に基づいて動作せず、マップではない値は破棄します。`paths` などのフロントマターのフィールド名をキーとして再利用しないでください。 |
 | `license` | いいえ | スキルに適用されるライセンス。[Agent Skills](https://agentskills.io) 仕様の一部です。[Claude Code 以外でスキルのフロントマターを使用する](#using-skill-frontmatter-outside-claude-code)を参照してください。Claude Code はこのフィールドを受け付けますが、それに基づいて動作はしません。 |
 | `compatibility` | いいえ | [Agent Skills](https://agentskills.io) 仕様で定義されている、想定される製品やシステムの前提条件などのスキルの環境要件。[Claude Code 以外でスキルのフロントマターを使用する](#using-skill-frontmatter-outside-claude-code)を参照してください。最大 500 文字の文字列を受け付けます。Claude Code はこのフィールドを受け付けますが、それに基づいて動作はしません。 |
@@ -412,7 +423,7 @@ Claude Code は上の表のすべてのフィールドを受け付けます。Cl
 
 | 配布経路 | 使用できるフロントマターのフィールド |
 | :- | :- |
-| [プラグイン](/docs/ja/plugins/overview)スキルを含む、[あらゆるレベル](#where-skills-live)の Claude Code スキル | 上の表のすべてのフィールド |
+| [プラグイン](/docs/ja/plugins/overview.md)スキルを含む、[あらゆるレベル](#where-skills-live)の Claude Code スキル | 上の表のすべてのフィールド |
 | claude.ai へのスキルのアップロード、Skills API、および [anthropics/skills](https://github.com/anthropics/skills) の `package_skill.py` によるパッケージ化 | `name`、`description`、`license`、`compatibility`、`metadata`、`allowed-tools` |
 
 たとえば [Cowork とクラウドセッション](#skills-in-cowork-and-cloud-sessions)やスケジュールタスクで使用するために claude.ai アカウントで個人スキルを有効にすると、そのスキルは claude.ai にアップロードされます。このアップロードにも同じルールが適用されます。
@@ -435,15 +446,16 @@ Unexpected key(s) in SKILL.md frontmatter: argument-hint. Allowed properties are
 | :- | :- | :- |
 | `~/.claude/skills/` または `.claude/skills/` 配下のスキルディレクトリ | フロントマターの `name` またはディレクトリ名 | `.claude/skills/deploy-staging/SKILL.md` → `/deploy-staging`、または `name: deploy` の場合は `/deploy` |
 | [ネストされた](#where-skills-live) `.claude/skills/` ディレクトリで、ディレクトリ名が別のスキルと衝突する場合 | 作業ディレクトリからの相対サブディレクトリパス、その後にスキルディレクトリ名 | `apps/web/.claude/skills/deploy/SKILL.md` → `/apps/web:deploy` |
+| [プロジェクト外の追加ディレクトリ](#skills-from-additional-directories)内の `.claude/skills/` で、スキルディレクトリ名がエンタープライズ、個人、またはプロジェクトのスキル、あるいはそれより前に追加されたディレクトリ内のスキルと衝突する場合 | 追加ディレクトリのフォルダー名、その後にスキルディレクトリ名。2 つの追加ディレクトリが同じフォルダー名を持つ場合、プレフィックスは親フォルダーの名前から始まります。v2.1.309 以降が必要 | `--add-dir ../cli` を指定した場合の `../cli/.claude/skills/verify/SKILL.md` → `/cli:verify`。`--add-dir ../a/cli --add-dir ../b/cli` を指定し、それぞれに `verify` スキルがあり、他の場所にはない場合、`../a/cli` 内のもの → `/verify`、もう一方 → `/b/cli:verify` |
 | `.claude/commands/` 配下のファイル | 拡張子を除いたファイル名 | `.claude/commands/deploy.md` → `/deploy` |
 | `.claude/commands/` のサブディレクトリ内のファイル | `commands/` からの相対サブディレクトリパス（各 `/` を `:` に置換）、その後に拡張子を除いたファイル名 | `.claude/commands/frontend/component.md` → `/frontend:component` |
 | プラグインの `skills/` サブディレクトリ | フロントマターの `name` またはディレクトリ名（プラグインで名前空間化） | `my-plugin/skills/review/SKILL.md` → `/my-plugin:review`、または `name: fancy` の場合は `/my-plugin:fancy` |
-| プラグインルートの `SKILL.md` | フロントマターの `name`（フォールバックとしてプラグインのディレクトリ名） | `name: review` を持つ `my-plugin/SKILL.md` → `/my-plugin:review`。[プラグインルートの単一スキル](/docs/ja/plugins/components#skills)を参照 |
+| プラグインルートの `SKILL.md` | フロントマターの `name`（フォールバックとしてプラグインのディレクトリ名） | `name: review` を持つ `my-plugin/SKILL.md` → `/my-plugin:review`。[プラグインルートの単一スキル](/docs/ja/plugins/components.md#skills)を参照 |
 | [claude.ai から同期された](#how-synced-skills-behave)スキル | claude.ai アカウント上のスキル名に `anthropic-skills:` のプレフィックスを付けたもの | アカウントのスキル `deploy` → `/anthropic-skills:deploy`、または他のコマンドがその名前を使用していない間は `/deploy` |
 
 プラグインスキルでは、フロントマターの `name` がコマンドの最後のセグメントにあるディレクトリ名を置き換えるため、`name: fancy` を持つ `my-plugin/skills/review/SKILL.md` は `/my-plugin:fancy` になります。別のコマンドがすでにその名前を使用していない限り、プレフィックスなしの `/fancy` でもスキルを呼び出せます。記述した `name` がすでにプラグイン自身のプレフィックスで始まっている場合、v2.1.246 以降の Claude Code はプレフィックスを再度追加しません。たとえば、`name: my-plugin:fancy` は `/my-plugin:fancy` のままになります。v2.1.216 から v2.1.245 までは、`name` がすでにプレフィックスを含んでいる場合、Claude Code はプレフィックスを二重に付けていました。
 
-[非対話型セッション](/docs/ja/headless)では、`help` と `feedback` という名前はターミナル専用の組み込みコマンドのために予約されていないため、これらのいずれかの名前を持つプラグインスキルはそこでプレフィックスなしのコマンドを維持します。`/login` など、その他のターミナル専用の組み込みコマンドの名前は、それらのセッションではコマンドを実行できないにもかかわらず予約されたままです。
+[非対話型セッション](/docs/ja/headless.md)では、`help` と `feedback` という名前はターミナル専用の組み込みコマンドのために予約されていないため、これらのいずれかの名前を持つプラグインスキルはそこでプレフィックスなしのコマンドを維持します。`/login` など、その他のターミナル専用の組み込みコマンドの名前は、それらのセッションではコマンドを実行できないにもかかわらず予約されたままです。
 
 プラグインルートの `SKILL.md` の場合、名前の取得元となるスキルディレクトリがないため、`name` が最後のセグメント全体を提供します。`name` フィールドがない場合、Claude Code はプラグインのディレクトリ名にフォールバックします。
 
@@ -462,7 +474,7 @@ Claude Code がディレクトリ名またはファイル名を拒否した場�
 * **プラグインの `skills/` ディレクトリまたはマニフェストの [`skills` パス](/docs/ja/plugins/components#skills)内のフォルダー**：フォルダー名を変更する必要はありません。これらの文字はスキルのコマンド名でハイフンになるため、ハイフンを使ってコマンドを入力してください。
 * **フロントマターの `name`**：`/` メニューには `name` の値が表示されず、それを入力してもスキルは呼び出されません。`name:` の行を編集して文字を取り除いてください。
 
-Claude Code がどの名前を拒否したかを確認するには、シェルから [`claude --debug`](/docs/ja/cli-reference#cli-flags) で起動し、[デバッグログ](/docs/ja/debug-your-config)で `[names]` を検索します。対話型セッションでは、[起動時の通知](/docs/ja/errors#skill-or-command-name-refused)でも名前が拒否されたことが通知されます。名前の変更や `name:` の編集を行った後は、ファイルが Claude Code が[変更を監視している](#live-change-detection)ディレクトリにある場合を除き、セッションを再起動してください。
+Claude Code がどの名前を拒否したかを確認するには、シェルから [`claude --debug`](/docs/ja/cli-reference#cli-flags) で起動し、[デバッグログ](/docs/ja/debug-your-config.md)で `[names]` を検索します。対話型セッションでは、[起動時の通知](/docs/ja/errors.md#skill-or-command-name-refused)でも名前が拒否されたことが通知されます。名前の変更や `name:` の編集を行った後は、ファイルが Claude Code が[変更を監視している](#live-change-detection)ディレクトリにある場合を除き、セッションを再起動してください。
 
 #### 利用可能な文字列置換
 
@@ -477,9 +489,9 @@ Claude Code がどの名前を拒否したかを確認するには、シェル�
 | `${CLAUDE_SESSION_ID}` | 現在のセッション ID。ログへの記録、セッション固有のファイルの作成、スキルの出力とセッションの関連付けに便利です。 |
 | `${CLAUDE_EFFORT}` | 現在の effort レベル：`low`、`medium`、`high`、`xhigh`、または `max`。アクティブな effort 設定にスキルの指示を適応させるために使用します。 |
 | `${CLAUDE_SKILL_DIR}` | スキルの `SKILL.md` ファイルを含むディレクトリ。プラグインスキルの場合、これはプラグインルートではなく、プラグイン内のスキルのサブディレクトリです。現在の作業ディレクトリに関係なく、スキルにバンドルされたスクリプトやファイルを参照するために、bash インジェクションコマンドで使用します。 |
-| `${CLAUDE_PROJECT_DIR}` | プロジェクトのルートディレクトリ。これは、[フック](/docs/ja/hooks#reference-scripts-by-path)や MCP サーバーが `CLAUDE_PROJECT_DIR` として受け取るのと同じパスです。スキルのインストール場所に関係なく、`${CLAUDE_PROJECT_DIR}/.claude/hooks/helper.sh` のようなプロジェクトローカルのスクリプトやファイルを参照するために使用します。 |
-| `${CLAUDE_PLUGIN_ROOT}` | プラグインのインストールディレクトリ。プラグインスキルでのみ置換されます。プラグインのスキル間で共有されるリソースを含め、プラグイン内のどこにバンドルされたスクリプトやファイルでも参照するために使用します。[プラグインの環境変数](/docs/ja/plugins/manifest-reference#environment-variables)を参照してください。 |
-| `${CLAUDE_PLUGIN_DATA}` | プラグインの更新後も保持される、プラグインの[永続データディレクトリ](/docs/ja/plugins/components#path-variables-and-persistent-data)。プラグインスキルでのみ置換されます。インストール済みの依存関係、生成されたファイル、更新後も残す必要があるキャッシュを参照するために使用します。 |
+| `${CLAUDE_PROJECT_DIR}` | プロジェクトのルートディレクトリ。これは、[フック](/docs/ja/hooks.md#reference-scripts-by-path)や MCP サーバーが `CLAUDE_PROJECT_DIR` として受け取るのと同じパスです。スキルのインストール場所に関係なく、`${CLAUDE_PROJECT_DIR}/.claude/hooks/helper.sh` のようなプロジェクトローカルのスクリプトやファイルを参照するために使用します。 |
+| `${CLAUDE_PLUGIN_ROOT}` | プラグインのインストールディレクトリ。プラグインスキルでのみ置換されます。プラグインのスキル間で共有されるリソースを含め、プラグイン内のどこにバンドルされたスクリプトやファイルでも参照するために使用します。[プラグインの環境変数](/docs/ja/plugins/manifest-reference.md#environment-variables)を参照してください。 |
+| `${CLAUDE_PLUGIN_DATA}` | プラグインの更新後も保持される、プラグインの[永続データディレクトリ](/docs/ja/plugins/components.md#path-variables-and-persistent-data)。プラグインスキルでのみ置換されます。インストール済みの依存関係、生成されたファイル、更新後も残す必要があるキャッシュを参照するために使用します。 |
 
 Claude Code は、`${CLAUDE_SKILL_DIR}` と `${CLAUDE_PROJECT_DIR}` を 2 つの場所で置換します。スキルの markdown コンテンツと、[`allowed-tools`](#frontmatter-reference) フロントマター内の Bash ルールです。プラグインスキルでは、Claude Code は `${CLAUDE_PLUGIN_ROOT}` と `${CLAUDE_PLUGIN_DATA}` を同じ 2 つの場所で置換します。両方の場所で同じ変数を使用することで、スキルは権限プロンプトなしでバンドルされたスクリプトを実行できます。次のスキルはこのパターンを示しています。
 
@@ -579,7 +591,7 @@ Deploy $ARGUMENTS to production:
 
 > [!NOTE]
 >
-> 通常のセッションでは、Claude が利用可能なものを把握できるようスキルの説明がコンテキストに読み込まれますが、スキルの完全なコンテンツは呼び出されたときにのみ読み込まれます。[スキルがプリロードされたサブエージェント](/docs/ja/sub-agents#preload-skills-into-subagents)は動作が異なり、起動時にスキルの完全なコンテンツが挿入されます。
+> 通常のセッションでは、Claude が利用可能なものを把握できるようスキルの説明がコンテキストに読み込まれますが、スキルの完全なコンテンツは呼び出されたときにのみ読み込まれます。[スキルがプリロードされたサブエージェント](/docs/ja/sub-agents.md#preload-skills-into-subagents)は動作が異なり、起動時にスキルの完全なコンテンツが挿入されます。
 
 #### スキル名を書く位置
 
@@ -598,13 +610,13 @@ Deploy $ARGUMENTS to production:
 
 Claude がスキルを再度呼び出し、レンダリングされたコンテンツがすでにコンテキストにあるコピーと同一である場合、Claude Code はコンテンツの 2 つ目のコピーではなく、スキルがすでに読み込まれていることを示す短い注記を追加します。引数が変わった、または[動的コンテキスト](#inject-dynamic-context)のコマンドが新しい出力を生成したためにレンダリングされたコンテンツが異なる場合、Claude Code は完全なコンテンツを再度追加します。
 
-[自動圧縮](/docs/ja/how-claude-code-works#when-context-fills-up)は、呼び出されたスキルをトークン予算の範囲内で引き継ぎます。コンテキストを解放するために会話が要約されると、Claude Code は各スキルの最新の呼び出しを要約の後に再添付し、それぞれ最初の 5,000 トークンを保持します。再添付されるスキルは、合計 25,000 トークンの予算を共有します。Claude Code はこの予算を最も新しく呼び出されたスキルから順に埋めていくため、1 つのセッションで多くのスキルを呼び出した場合、古いスキルはコンテキスト圧縮後に完全に削除されることがあります。
+[自動圧縮](/docs/ja/how-claude-code-works.md#when-context-fills-up)は、呼び出されたスキルをトークン予算の範囲内で引き継ぎます。コンテキストを解放するために会話が要約されると、Claude Code は各スキルの最新の呼び出しを要約の後に再添付し、それぞれ最初の 5,000 トークンを保持します。再添付されるスキルは、合計 25,000 トークンの予算を共有します。Claude Code はこの予算を最も新しく呼び出されたスキルから順に埋めていくため、1 つのセッションで多くのスキルを呼び出した場合、古いスキルはコンテキスト圧縮後に完全に削除されることがあります。
 
 セッションの途中で Claude がスキルに従わなくなった場合は、[Claude がスキルに従わなくなる](#claude-stops-following-a-skill)を参照してください。
 
 ### スキルのツールを事前承認する
 
-`allowed-tools` フィールドは、スキルを呼び出したターンの間、リストされたツールに権限を付与します。これにより、Claude はユーザーに承認を求めることなくそれらのツールを使用できます。スキルのコンテンツは[コンテキストに残り続けます](#skill-content-lifecycle)が、この付与は次のメッセージを送信するとクリアされます。スキルを再度呼び出すと、そのターンに対して再び適用されます。このフィールドは利用可能なツールを制限するものではありません。すべてのツールは引き続き呼び出し可能であり、リストされていないツールには引き続き[権限設定](/docs/ja/permissions)が適用されます。単一のターンではなくセッション全体でツールを事前承認するには、代わりにその権限設定に許可ルールを追加してください。
+`allowed-tools` フィールドは、スキルを呼び出したターンの間、リストされたツールに権限を付与します。これにより、Claude はユーザーに承認を求めることなくそれらのツールを使用できます。スキルのコンテンツは[コンテキストに残り続けます](#skill-content-lifecycle)が、この付与は次のメッセージを送信するとクリアされます。スキルを再度呼び出すと、そのターンに対して再び適用されます。このフィールドは利用可能なツールを制限するものではありません。すべてのツールは引き続き呼び出し可能であり、リストされていないツールには引き続き[権限設定](/docs/ja/permissions.md)が適用されます。単一のターンではなくセッション全体でツールを事前承認するには、代わりにその権限設定に許可ルールを追加してください。
 
 このフィールドは、ワークスペースの信頼によって制限されません。Claude Code は、一度も信頼したことのないフォルダーでの `-p` 実行であっても、プロジェクトスキルの `allowed-tools` を適用します。スキルは自身に広範なツールアクセスを付与できるため、リポジトリで Claude Code を実行する前に、そのリポジトリにチェックインされているスキルの `allowed-tools` を確認してください。組織全体でリポジトリのスキルからこのフィールドを無効にするには、[管理された権限ルールのみが適用される場合](#when-only-managed-permission-rules-apply)を参照してください。
 
@@ -619,11 +631,18 @@ allowed-tools: Bash(git add *) Bash(git commit *) Bash(git status *)
 ---
 ```
 
-スキルがアクティブな間、Claude が使用可能なツールからツールを除外するには、スキルのフロントマターの `disallowed-tools` にそれらをリストします。この制限は次のメッセージを送信するとクリアされます。拒否ルールと同様に、他のツールが残っている間はこのフィールドで [`EndConversation`](/docs/ja/tools-reference#endconversation-tool-behavior) を除外することはできません。すべてのスキルとプロンプトにわたってツールをブロックするには、[権限設定](/docs/ja/permissions)に拒否ルールを追加してください。
+スキルがアクティブな間、Claude が使用可能なツールからツールを除外するには、スキルのフロントマターの `disallowed-tools` にそれらをリストします。この制限は次のメッセージを送信するとクリアされます。拒否ルールと同様に、他のツールが残っている間はこのフィールドで [`EndConversation`](/docs/ja/tools-reference#endconversation-tool-behavior) を除外することはできません。すべてのスキルとプロンプトにわたってツールをブロックするには、[権限設定](/docs/ja/permissions.md)に拒否ルールを追加してください。
+
+#### 管理設定によってフックがプラグインに限定される場合
+
+組織の管理設定で `strictPluginOnlyCustomization` に `hooks` がリストされている場合、フロントマターで `hooks` を宣言している個人またはプロジェクトのスキルは、[事前承認を維持するスキル](/docs/ja/settings-reference.md#strictpluginonlycustomization-hooks)を除き、`allowed-tools` による事前承認を失います。
+
+* **確認**：Claude Code セッションで `/status` と入力します。`/status` に [`Enterprise managed settings`](/docs/ja/settings#check-what-your-organization-enforces) が表示される場合は、`strictPluginOnlyCustomization` に `hooks` がリストされているかどうかを管理者に確認してください。
+* **修正**：その設定下ではスキルのフックは実行されないため、スキルのフロントマターから `hooks` を削除します。フックを維持するには、マーケットプレイスからインストールする[プラグインにスキルを移動](/docs/ja/hooks.md#limits-on-skill-hooks)してください。
 
 #### 管理された権限ルールのみが適用される場合
 
-組織が管理設定で `allowManagedPermissionRulesOnly` を設定している場合、Claude Code はプロジェクトおよび個人のスキル、ならびに[この設定の項目に記載されているその他のソース](/docs/ja/settings-reference#allowmanagedpermissionrulesonly)にある `allowed-tools` を無視します。これには Claude Code v2.1.282 以降が必要です。
+組織が管理設定で `allowManagedPermissionRulesOnly` を設定している場合、Claude Code はプロジェクトおよび個人のスキル、ならびに[この設定の項目に記載されているその他のソース](/docs/ja/settings-reference.md#allowmanagedpermissionrulesonly)にある `allowed-tools` を無視します。これには Claude Code v2.1.282 以降が必要です。
 
 影響を受けるスキルがリストしているツールは、代わりに組織の管理ルールと通常の権限プロンプトを経由します。`/status` を実行すると、セッション内でこれまでに Claude Code が `allowed-tools` を無視した各スキルが一覧表示されます。スキル内の挿入されたコマンドのうち、どの管理ルールでも許可されていないものは、[挿入されたコマンドの権限チェック](#permission-checks-on-injected-commands)に従います。
 
@@ -723,19 +742,19 @@ git status --short
 ```
 ````
 
-ユーザー、プロジェクト、プラグイン、または[追加ディレクトリ](#skills-from-additional-directories)をソースとするスキルとカスタムコマンドでこの動作を無効にするには、[設定](/docs/ja/settings)で `"disableSkillShellExecution": true` を設定します。各コマンドは実行される代わりに `[shell command execution disabled by policy]` に置き換えられます。バンドルスキルと管理スキルは影響を受けません。この設定は、ユーザーが上書きできない[管理設定](/docs/ja/managed-settings)で使用すると特に効果的です。
+ユーザー、プロジェクト、プラグイン、または[追加ディレクトリ](#skills-from-additional-directories)をソースとするスキルとカスタムコマンドでこの動作を無効にするには、[設定](/docs/ja/settings.md)で `"disableSkillShellExecution": true` を設定します。各コマンドは実行される代わりに `[shell command execution disabled by policy]` に置き換えられます。バンドルスキルと管理スキルは影響を受けません。この設定は、ユーザーが上書きできない[管理設定](/docs/ja/managed-settings.md)で使用すると特に効果的です。
 
 この設定に関係なく、[claude.ai アカウントから同期](#how-synced-skills-behave)されたスキルにこれらのコマンドが含まれている場合、Claude Code がユーザーのマシン上でそれらを実行することはありません。この制限には Claude Code v2.1.228 以降が必要です。各種セッションで Claude がコマンドの代わりに何を受け取るかについては、[同期されたスキルの本文を Claude Code がどのように扱うか](#how-claude-code-handles-the-body-of-a-synced-skill)を参照してください。
 
 > [!TIP]
 >
-> スキルの実行時により深い推論を求めるには、スキルの内容のどこかに `ultrathink` を含めます。[一回限りの深い推論に ultrathink を使用する](/docs/ja/model-config#use-ultrathink-for-one-off-deep-reasoning)を参照してください。
+> スキルの実行時により深い推論を求めるには、スキルの内容のどこかに `ultrathink` を含めます。[一回限りの深い推論に ultrathink を使用する](/docs/ja/model-config.md#use-ultrathink-for-one-off-deep-reasoning)を参照してください。
 
 #### 注入されたコマンドの実行方法
 
 Claude Code は、スキルのフロントマターの `shell` キーとユーザーの環境から、スキルの注入されたコマンドを実行するツールを選択します。どの組み合わせでもコマンドは Bash ツールまたは PowerShell ツールを通じて実行されますが、呼び出しが即座に失敗する組み合わせが 1 つだけあります。
 
-* `shell: powershell` で、[PowerShell ツール](/docs/ja/tools-reference#powershell-tool)が有効な場合: コマンドは PowerShell ツールを通じて実行されます。
+* `shell: powershell` で、[PowerShell ツール](/docs/ja/tools-reference.md#powershell-tool)が有効な場合: コマンドは PowerShell ツールを通じて実行されます。
 * `shell: bash` で bash が利用できない場合: コマンドが実行される前に呼び出しが失敗します。これは Git Bash のない Windows で発生します。Claude Code は ``Skill <name> requires bash (`shell: bash` in frontmatter) but Git Bash was not found`` と表示します。
 * その他の組み合わせ: bash が利用できる場合、コマンドは Bash ツールを通じて実行されます。利用できない場合は PowerShell ツールを通じて実行されます。
 
@@ -743,35 +762,35 @@ Claude Code は、スキルのフロントマターの `shell` キーとユー�
 
 * **作業ディレクトリ**: Claude Code は各コマンドをセッションのシェルの現在の作業ディレクトリで実行します。このディレクトリは Claude が `cd` を実行すると移動します。毎回同じように解決される必要があるパスには [`${CLAUDE_SKILL_DIR}` または `${CLAUDE_PROJECT_DIR}`](#available-string-substitutions) を使用してください。
 * **stderr**: デフォルトの `bash` シェルでは、Claude Code は stderr を stdout にマージします。コマンドが stderr に書き込んだ内容はすべて、注入されるテキストに表示されます。
-* **タイムアウト**: 各コマンドは Bash ツールのデフォルトの 2 分の[タイムアウト](/docs/ja/tools-reference#timeout-and-output-limits)の下で実行されます。Bash ツールが[タイムアウトしたコマンドをバックグラウンドに移動](/docs/ja/tools-reference#foreground-commands-that-move-to-the-background)した場合でも、スキルはレンダリングされます。注入されるテキストにはその移動が報告され、バックグラウンドタスクとコマンドの出力を収集しているファイルの名前が示されます。Bash ツールが自動的にバックグラウンドに移動することのないコマンドの場合、Claude Code はタイムアウト時にそのコマンドを終了させます。この失敗は[呼び出しを中止します](#when-an-injected-command-fails)。
-* **出力サイズ**: Bash ツールのインライン上限を超える出力は、切り詰められたテキストではなく、ファイルパスと短いプレビューとして届きます。上限と各境界の調整方法については[出力の制限](/docs/ja/tools-reference#output-limits)を参照してください。
+* **タイムアウト**: 各コマンドは Bash ツールのデフォルトの 2 分の[タイムアウト](/docs/ja/tools-reference.md#timeout-and-output-limits)の下で実行されます。Bash ツールが[タイムアウトしたコマンドをバックグラウンドに移動](/docs/ja/tools-reference.md#foreground-commands-that-move-to-the-background)した場合でも、スキルはレンダリングされます。注入されるテキストにはその移動が報告され、バックグラウンドタスクとコマンドの出力を収集しているファイルの名前が示されます。Bash ツールが自動的にバックグラウンドに移動することのないコマンドの場合、Claude Code はタイムアウト時にそのコマンドを終了させます。この失敗は[呼び出しを中止します](#when-an-injected-command-fails)。
+* **出力サイズ**: Bash ツールのインライン上限を超える出力は、切り詰められたテキストではなく、ファイルパスと短いプレビューとして届きます。上限と各境界の調整方法については[出力の制限](/docs/ja/tools-reference.md#output-limits)を参照してください。
 
-PowerShell ツールも、実行するコマンドに同じタイムアウト、バックグラウンド移動、出力上限の動作を適用します。詳細については [PowerShell ツール](/docs/ja/tools-reference#powershell-tool)のセクションを参照してください。
+PowerShell ツールも、実行するコマンドに同じタイムアウト、バックグラウンド移動、出力上限の動作を適用します。詳細については [PowerShell ツール](/docs/ja/tools-reference.md#powershell-tool)のセクションを参照してください。
 
 #### 注入されたコマンドが失敗した場合
 
-コマンドが失敗すると、そのプレースホルダーだけでなくスキルの呼び出し全体が中止されます。その呼び出しでは、Claude がスキルの内容を目にすることはありません。中止時には `Shell command failed for pattern "..."` と表示されます。エラーメッセージには、`[stderr]` の下にコマンドの出力が含まれます。
+コマンドが失敗すると、そのプレースホルダーだけでなくスキルの呼び出し全体が中止されます。その呼び出しでは、Claude がスキルの内容を目にすることはありません。中止時には `Shell command failed for pattern "..."` と表示されます。エラーメッセージにはコマンドの出力が含まれます。
 
-デフォルトの `bash` シェルでは、0 以外の終了コードはすべて失敗とみなされます。ただし例外が 1 つあります。Claude Code は[検索コマンドと比較コマンド](/docs/ja/tools-reference#output-limits)からの終了コード 1 を通常の結果として扱い、その出力を注入します。これらのコマンドでも、終了コードが 2 以上の場合は失敗となります。
+デフォルトの `bash` シェルでは、0 以外の終了コードはすべて失敗とみなされます。ただし例外が 1 つあります。Claude Code は[検索コマンドと比較コマンド](/docs/ja/tools-reference.md#output-limits)からの終了コード 1 を通常の結果として扱い、その出力を注入します。これらのコマンドでも、終了コードが 2 以上の場合は失敗となります。
 
 どのコマンドがこの例外の対象になるかはシェルによって異なります。
 
-* デフォルトの `bash` シェル: [出力の制限](/docs/ja/tools-reference#output-limits)に記載されているコマンド
-* `shell: powershell` で PowerShell ツールが有効な場合: `grep` と `git diff` を含み、`find` と `diff` を含まない[別のセット](/docs/ja/tools-reference#exit-code-1-from-searches-and-git-diff-in-powershell)
+* デフォルトの `bash` シェル: [出力の制限](/docs/ja/tools-reference.md#output-limits)に記載されているコマンド
+* `shell: powershell` で PowerShell ツールが有効な場合: `grep` と `git diff` を含み、`find` と `diff` を含まない[別のセット](/docs/ja/tools-reference.md#exit-code-1-from-searches-and-git-diff-in-powershell)
 
 デフォルトの `bash` シェルでは、0 以外で終了することが想定されるその他のコマンドには `|| true` を追加してください。問題を検出したときに 1 で終了するチェックスクリプトがその一例です。
 
 #### 注入されたコマンド内の制御文字
 
-`No shell command in <name> was run` は、ファイル内の `!` コマンドのいずれかにタブや改行以外の生の制御文字が含まれているため、どのコマンドも実行されないことを意味します。[その文字を見つけて削除する方法](/docs/ja/errors#no-shell-command-was-run)を参照してください。
+`No shell command in <name> was run` は、ファイル内の `!` コマンドのいずれかにタブや改行以外の生の制御文字が含まれているため、どのコマンドも実行されないことを意味します。[その文字を見つけて削除する方法](/docs/ja/errors.md#no-shell-command-was-run)を参照してください。
 
 #### 注入されたコマンドの権限チェック
 
-注入されたコマンドは、スキルのレンダリング中に権限を求めることはありません。Claude Code はまず各コマンドを[権限ルール](/docs/ja/permissions)と照合します。拒否ルールに一致するコマンドは、`Shell command permission check failed for pattern "..."` で呼び出しを中止します。
+注入されたコマンドは、スキルのレンダリング中に権限を求めることはありません。Claude Code はまず各コマンドを[権限ルール](/docs/ja/permissions.md)と照合します。拒否ルールに一致するコマンドは、`Shell command permission check failed for pattern "..."` で呼び出しを中止します。
 
-[auto モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)以外では、コマンドの権限チェックが許可以外の結果を返した場合、Claude Code は同じエラーで呼び出しを中止します。これには、通常であればユーザーに確認を求めるルールも含まれます。一致しないコマンドがここで中止されないようにするには、[`allowed-tools`](#pre-approve-tools-for-a-skill) で事前に承認してください。組織が権限ルールを管理設定に限定している場合は、[管理された権限ルールのみが適用される場合](#when-only-managed-permission-rules-apply)を参照してください。拒否ルールと確認ルールは引き続き `allowed-tools` より優先されます。[権限を管理する](/docs/ja/permissions#manage-permissions)を参照してください。
+[auto モード](/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)以外では、コマンドの権限チェックが許可以外の結果を返した場合、Claude Code は同じエラーで呼び出しを中止します。これには、通常であればユーザーに確認を求めるルールも含まれます。一致しないコマンドがここで中止されないようにするには、[`allowed-tools`](#pre-approve-tools-for-a-skill) で事前に承認してください。組織が権限ルールを管理設定に限定している場合は、[管理された権限ルールのみが適用される場合](#when-only-managed-permission-rules-apply)を参照してください。拒否ルールと確認ルールは引き続き `allowed-tools` より優先されます。[権限を管理する](/docs/ja/permissions.md#manage-permissions)を参照してください。
 
-auto モードでは、本来ユーザーの承認が必要なコマンドでも呼び出しは中止されません。スキルは、最初にそのコマンドを実行するよう Claude に指示する内容とともに読み込まれ、Claude 自身による呼び出しは [auto モードの通常のチェック](/docs/ja/permission-modes#how-the-classifier-evaluates-actions)を経由します。ただし、`agent` を設定する[フォークされたスキル](#run-skills-in-a-subagent)や、Claude が[注入されたコマンドを実行するシェルツール](#how-injected-commands-run)を持たないセッションでは、引き続き呼び出しが中止されます。
+auto モードでは、本来ユーザーの承認が必要なコマンドでも呼び出しは中止されません。スキルは、最初にそのコマンドを実行するよう Claude に指示する内容とともに読み込まれ、Claude 自身による呼び出しは [auto モードの通常のチェック](/docs/ja/permission-modes.md#how-the-classifier-evaluates-actions)を経由します。ただし、`agent` を設定する[フォークされたスキル](#run-skills-in-a-subagent)や、Claude が[注入されたコマンドを実行するシェルツール](#how-injected-commands-run)を持たないセッションでは、引き続き呼び出しが中止されます。
 
 ### サブエージェントでスキルを実行する
 
@@ -779,37 +798,37 @@ auto モードでは、本来ユーザーの承認が必要なコマンドでも
 
 > [!NOTE]
 >
-> 名前に反して、`context: fork` を持つスキルは[現在の会話のフォーク](/docs/ja/sub-agents#fork-the-current-conversation)では実行されません。会話のフォークでは、これまでに話し合った内容がすべてサブエージェントに引き渡されます。タスクがその履歴に依存する場合は、`context: fork` を使用する代わりに会話をフォークしてください。
+> 名前に反して、`context: fork` を持つスキルは[現在の会話のフォーク](/docs/ja/sub-agents.md#fork-the-current-conversation)では実行されません。会話のフォークでは、これまでに話し合った内容がすべてサブエージェントに引き渡されます。タスクがその履歴に依存する場合は、`context: fork` を使用する代わりに会話をフォークしてください。
 
-フォークされたサブエージェントは[バックグラウンド](/docs/ja/sub-agents#run-subagents-in-foreground-or-background)で実行されます。実行中も作業を続けることができ、完了すると結果が会話に届きます。代わりにスキルを呼び出したターンで結果を待つには、フロントマターで `background: false` を設定します。v2.1.218 より前は、フォークされたスキルは完了するまで常にターンをブロックしていました。
+フォークされたサブエージェントは[バックグラウンド](/docs/ja/sub-agents.md#run-subagents-in-foreground-or-background)で実行されます。実行中も作業を続けることができ、完了すると結果が会話に届きます。代わりにスキルを呼び出したターンで結果を待つには、フロントマターで `background: false` を設定します。v2.1.218 より前は、フォークされたスキルは完了するまで常にターンをブロックしていました。
 
 次のような場合には、スキルで `background: false` を設定していなくても、Claude Code は結果を待ちます。
 
 * 非対話モードで、`-p` フラグまたは Agent SDK を使用している場合
 * [`CLAUDE_CODE_DISABLE_BACKGROUND_TASKS`](/docs/ja/env-vars) を `1` に設定した場合（これにより、他のすべてのバックグラウンドタスク機能もオフになります）
 * 同じスキルの以前の呼び出しがまだ実行中のときに、フォークされたスキルを呼び出した場合
-* スキルをプロンプトとする[セッションスコープのスケジュールタスク](/docs/ja/scheduled-tasks)が実行された場合
+* スキルをプロンプトとする[セッションスコープのスケジュールタスク](/docs/ja/scheduled-tasks.md)が実行された場合
 
-[動的ワークフロー](/docs/ja/workflows)内のエージェントがフォークされたスキルを呼び出した場合、スキルで `background: false` を設定していなくても、そのエージェントは結果を待って受け取ります。v2.1.295 より前は、スキルがバックグラウンドで実行された場合、そのエージェントはスキルを待機しませんでした。その場合、スキルの結果はエージェントに届かず、メインの会話に届いていました。
+[動的ワークフロー](/docs/ja/workflows.md)内のエージェントがフォークされたスキルを呼び出した場合、スキルで `background: false` を設定していなくても、そのエージェントは結果を待って受け取ります。v2.1.295 より前は、スキルがバックグラウンドで実行された場合、そのエージェントはスキルを待機しませんでした。その場合、スキルの結果はエージェントに届かず、メインの会話に届いていました。
 
-バックグラウンドで実行されるフォークは、[バックグラウンドのサブエージェントに適用される、より限定されたツールセット](/docs/ja/sub-agents#run-subagents-in-foreground-or-background)でも実行されます。スキルのサブエージェントは通常のエージェントタイプであるため、会話をフォークするサブエージェント向けの例外は適用されません。スキルの手順がそのセット外のツールに依存する場合は、`background: false` を設定して完全なツールセットを維持してください。
+バックグラウンドで実行されるフォークは、[バックグラウンドのサブエージェントに適用される、より限定されたツールセット](/docs/ja/sub-agents.md#run-subagents-in-foreground-or-background)でも実行されます。スキルのサブエージェントは通常のエージェントタイプであるため、会話をフォークするサブエージェント向けの例外は適用されません。スキルの手順がそのセット外のツールに依存する場合は、`background: false` を設定して完全なツールセットを維持してください。
 
-バックグラウンドで実行されるフォークされたスキルは、セッションの[チェックポイント](/docs/ja/checkpointing#subagent-edits-not-restored)の外で編集を適用します。その後、`/rewind` で復元されるのは、Claude が会話内ですでに編集していたファイルのみです。スキルによるその他のファイルへの編集は残るため、git を使用して元に戻してください。
+バックグラウンドで実行されるフォークされたスキルは、セッションの[チェックポイント](/docs/ja/checkpointing.md#subagent-edits-not-restored)の外で編集を適用します。その後、`/rewind` で復元されるのは、Claude が会話内ですでに編集していたファイルのみです。スキルによるその他のファイルへの編集は残るため、git を使用して元に戻してください。
 
 > [!WARNING]
 >
 > `context: fork` は、明示的な指示を持つスキルでのみ意味があります。スキルにタスクがなく「これらの API 規約を使用する」のようなガイドラインしか含まれていない場合、サブエージェントはガイドラインを受け取るものの実行可能なプロンプトがないため、意味のある出力を返さずに終了します。
 
-スキルと[サブエージェント](/docs/ja/sub-agents)は、2 つの方向で連携します。
+スキルと[サブエージェント](/docs/ja/sub-agents.md)は、2 つの方向で連携します。
 
 | アプローチ | システムプロンプト | タスク | 追加で読み込まれるもの |
 | :- | :- | :- | :- |
-| `context: fork` を持つスキル | エージェントタイプから | SKILL.md の内容 | CLAUDE.md（エージェントの[起動時コンテキスト](/docs/ja/sub-agents#what-loads-at-startup)に従う） |
-| `skills` フィールドを持つサブエージェント | サブエージェントの markdown 本文 | Claude の委任メッセージ | プリロードされたスキル + CLAUDE.md（サブエージェントの[起動時コンテキスト](/docs/ja/sub-agents#what-loads-at-startup)に従う） |
+| `context: fork` を持つスキル | エージェントタイプから | SKILL.md の内容 | CLAUDE.md（エージェントの[起動時コンテキスト](/docs/ja/sub-agents.md#what-loads-at-startup)に従う） |
+| `skills` フィールドを持つサブエージェント | サブエージェントの markdown 本文 | Claude の委任メッセージ | プリロードされたスキル + CLAUDE.md（サブエージェントの[起動時コンテキスト](/docs/ja/sub-agents.md#what-loads-at-startup)に従う） |
 
-`context: fork` では、スキルにタスクを記述し、それを実行するエージェントタイプを選択します。組み込みの Explore エージェントと Plan エージェントは、コンテキストを小さく保つために [CLAUDE.md と git status なしで起動します](/docs/ja/sub-agents#what-loads-at-startup)。タスクに必要なものはすべて SKILL.md に記述してください。`agent: Explore` を使用するフォークされたスキルは、その内容とエージェント自身のシステムプロンプトで起動し、CLAUDE.md ファイルは一切含まれません。
+`context: fork` では、スキルにタスクを記述し、それを実行するエージェントタイプを選択します。組み込みの Explore エージェントと Plan エージェントは、コンテキストを小さく保つために [CLAUDE.md と git status なしで起動します](/docs/ja/sub-agents.md#what-loads-at-startup)。タスクに必要なものはすべて SKILL.md に記述してください。`agent: Explore` を使用するフォークされたスキルは、その内容とエージェント自身のシステムプロンプトで起動し、CLAUDE.md ファイルは一切含まれません。
 
-逆に、スキルを参考資料として使用するカスタムサブエージェントを定義する場合については、[サブエージェント](/docs/ja/sub-agents#preload-skills-into-subagents)を参照してください。
+逆に、スキルを参考資料として使用するカスタムサブエージェントを定義する場合については、[サブエージェント](/docs/ja/sub-agents.md#preload-skills-into-subagents)を参照してください。
 
 #### 例: Explore エージェントを使用するリサーチスキル
 
@@ -841,7 +860,7 @@ Research $ARGUMENTS thoroughly:
 
 ### Claude のスキルへのアクセスを制限する
 
-デフォルトでは、Claude は `disable-model-invocation: true` が設定されていないすべてのスキルを呼び出せます。[`allowed-tools`](#pre-approve-tools-for-a-skill) を定義するスキルは、そのスキルを呼び出したターンの間、使用ごとの承認なしでそれらのツールへのアクセスを Claude に付与します。この付与は、ユーザーが次のメッセージを送信するとクリアされます。その他すべてのツールについては、引き続き[権限設定](/docs/ja/permissions)が基本的な承認動作を制御します。`/init` や `/security-review` など、いくつかの組み込みコマンドも Skill ツールを通じて利用できます。`/compact` などのその他の組み込みコマンドは利用できません。
+デフォルトでは、Claude は `disable-model-invocation: true` が設定されていないすべてのスキルを呼び出せます。[`allowed-tools`](#pre-approve-tools-for-a-skill) を定義するスキルは、そのスキルを呼び出したターンの間、使用ごとの承認なしでそれらのツールへのアクセスを Claude に付与します。この付与は、ユーザーが次のメッセージを送信するとクリアされます。その他すべてのツールについては、引き続き[権限設定](/docs/ja/permissions.md)が基本的な承認動作を制御します。`/init` や `/security-review` など、いくつかの組み込みコマンドも Skill ツールを通じて利用できます。`/compact` などのその他の組み込みコマンドは利用できません。
 
 Claude が呼び出せるスキルを制御する方法は 3 つあります。
 
@@ -852,7 +871,7 @@ Claude が呼び出せるスキルを制御する方法は 3 つあります。
 Skill
 ```
 
-**特定のスキルを許可または拒否する**には、[権限ルール](/docs/ja/permissions)を使用します。
+**特定のスキルを許可または拒否する**には、[権限ルール](/docs/ja/permissions.md)を使用します。
 
 ```text theme={null}
 # Allow only specific skills
@@ -873,7 +892,7 @@ Skill(deploy *)
 | 修飾されていない名前 | `Skill(deploy)` | `apps/web:deploy` として一覧表示される[ネストされたスキル](#where-skills-live) |
 | [claude.ai から同期されたスキル](#how-synced-skills-behave) | `Skill(anthropic-skills:deploy)` | Claude Desktop がプラグインとしてセッションに配信する場合のそのスキル |
 | 同期されたスキルのプラグイン形式 | `Skill(deploy:deploy)` | 同期されたスキル |
-| [パラメーター形式](/docs/ja/permissions#match-by-input-parameter)で指定したスキル | `Skill(skill:deploy)` | Claude がどの名前（エイリアスや表示名を含む）で呼び出しても、そのスキル |
+| [パラメーター形式](/docs/ja/permissions.md#match-by-input-parameter)で指定したスキル | `Skill(skill:deploy)` | Claude がどの名前（エイリアスや表示名を含む）で呼び出しても、そのスキル |
 
 v2.1.260 より前は、拒否ルールで修飾されていない名前のみを指定した場合、修飾名で一覧表示されるネストされたスキルを Claude Code はブロックしませんでした。
 
@@ -891,7 +910,7 @@ Claude Code は、`allow` ルールをスキル自身の名前と Claude の呼�
 
 ### 設定からスキルの表示を上書きする
 
-`skillOverrides` 設定は、スキル自身のフロントマターではなく[設定](/docs/ja/settings)からスキルの表示を制御します。共有プロジェクトリポジトリにチェックインされているものなど、SKILL.md を編集したくないスキルに使用してください。`/skills` メニューがこの設定を書き込んでくれます。スキルをハイライトして `Space` を押すと状態が切り替わり、`Esc` を押すと `.claude/settings.local.json` に保存されます。
+`skillOverrides` 設定は、スキル自身のフロントマターではなく[設定](/docs/ja/settings.md)からスキルの表示を制御します。共有プロジェクトリポジトリにチェックインされているものなど、SKILL.md を編集したくないスキルに使用してください。`/skills` メニューがこの設定を書き込んでくれます。スキルをハイライトして `Space` を押すと状態が切り替わり、`Esc` を押すと `.claude/settings.local.json` に保存されます。
 
 各キーはスキル名で、各値は次の 4 つの状態のいずれかです。
 
@@ -904,7 +923,7 @@ Claude Code は、`allow` ルールをスキル自身の名前と Claude の呼�
 
 `/skills` メニューでは、`"user-invocable-only"` 状態は `user-only` と表示されます。
 
-`"off"` は、ターミナルの `/` メニューに加えて、[Remote Control](/docs/ja/remote-control) クライアントや [Agent SDK](/docs/ja/agent-sdk/skills#discover-available-commands) の呼び出し元に公開されるコマンド一覧からもスキルを非表示にします。非表示のスキルをフルネームで呼び出すと、実行されずに `skillOverrides` のエラーが返されます。
+`"off"` は、ターミナルの `/` メニューに加えて、[Remote Control](/docs/ja/remote-control.md) クライアントや [Agent SDK](/docs/ja/agent-sdk/skills.md#discover-available-commands) の呼び出し元に公開されるコマンド一覧からもスキルを非表示にします。非表示のスキルをフルネームで呼び出すと、実行されずに `skillOverrides` のエラーが返されます。
 
 `skillOverrides` に含まれていないスキルは `"on"` として扱われます。次の例では、一方のスキルを名前のみに縮小し、もう一方を完全にオフにしています。
 
@@ -917,7 +936,7 @@ Claude Code は、`allow` ルールをスキル自身の名前と Claude の呼�
 }
 ```
 
-一部のバンドルスキルには、`/doctor` に対する `checkup` のようなエイリアスがあります。[管理設定](/docs/ja/managed-settings)または `--settings` フラグで渡すファイルでエイリアスの下に `skillOverrides` エントリを設定すると、Claude Code はそのエイリアスの背後にあるスキルに適用します。エイリアスを通じてできるのはスキルをさらに制限することだけで、より表示されるようにすることはできません。また、管理設定でスキル自身の名前の下にもエントリを設定した場合は、そのエントリが優先されます。v2.1.260 より前は、Claude Code はどの設定ソースでも、エイリアスの下のエントリをスキルに適用していませんでした。
+一部のバンドルスキルには、`/doctor` に対する `checkup` のようなエイリアスがあります。[管理設定](/docs/ja/managed-settings.md)または `--settings` フラグで渡すファイルでエイリアスの下に `skillOverrides` エントリを設定すると、Claude Code はそのエイリアスの背後にあるスキルに適用します。エイリアスを通じてできるのはスキルをさらに制限することだけで、より表示されるようにすることはできません。また、管理設定でスキル自身の名前の下にもエントリを設定した場合は、そのエントリが優先されます。v2.1.260 より前は、Claude Code はどの設定ソースでも、エイリアスの下のエントリをスキルに適用していませんでした。
 
 ユーザー設定、プロジェクト設定、ローカル設定では、Claude Code はエントリをスキル名とのみ照合します。そこで `review` のエントリを設定した場合、それは `review` という名前のスキルに適用され、`/review` エイリアスを介したバンドルの `/code-review` には適用されません。
 
@@ -925,11 +944,11 @@ Claude Code は、`allow` ルールをスキル自身の名前と Claude の呼�
 
 ### 使用されていないスキルを見つける
 
-[スキル一覧](#skill-descriptions-are-cut-short)に含まれるすべてのスキルは、Claude が実際に使用するかどうかにかかわらず、毎ターンのコンテキストを増やします。`/skill-doctor` を実行すると、各スキルのコストと使用頻度を確認でき、どのスキルをオフにするかを判断できます。対話セッションでは、レポートは `/plugin` マネージャーの **Stats** タブで開きます。`-p` を使用した[非対話モード](/docs/ja/headless)では、Claude Code はレポートをテキストとして出力します。
+[スキル一覧](#skill-descriptions-are-cut-short)に含まれるすべてのスキルは、Claude が実際に使用するかどうかにかかわらず、毎ターンのコンテキストを増やします。`/skill-doctor` を実行すると、各スキルのコストと使用頻度を確認でき、どのスキルをオフにするかを判断できます。対話セッションでは、レポートは `/plugin` マネージャーの **Stats** タブで開きます。`-p` を使用した[非対話モード](/docs/ja/headless.md)では、Claude Code はレポートをテキストとして出力します。
 
 レポートは、バンドルスキルとエンタープライズスキル以外の、セッション内のスキルを対象とします。一覧に含まれていながら一度も呼び出されていないスキルを指摘し、それらをオフにする場所を示します。オフにする場所が示されたスキルのうち、コンテキストコストが最も高いものから始めてください。レポートには、最近使用していないプラグインも一覧表示されます。
 
-`/skill-doctor` には Claude Code v2.1.252 以降が必要で、[フィーチャーフラグの取得](/docs/ja/env-vars#features-that-need-feature-flag-fetching)をスキップするセッションでは利用できません。スマートフォンやブラウザから [Remote Control](/docs/ja/remote-control) 経由で `/skill-doctor` を実行した場合、Claude Code は代わりに [`Skill usage reports are not available on this connection.`](/docs/ja/errors#skill-usage-reports-are-not-available-on-this-connection) と応答します。セッションが実行されているマシンのターミナルで `/skill-doctor` を実行してください。
+`/skill-doctor` には Claude Code v2.1.252 以降が必要で、[フィーチャーフラグの取得](/docs/ja/env-vars.md#features-that-need-feature-flag-fetching)をスキップするセッションでは利用できません。スマートフォンやブラウザから [Remote Control](/docs/ja/remote-control.md) 経由で `/skill-doctor` を実行した場合、Claude Code は代わりに [`Skill usage reports are not available on this connection.`](/docs/ja/errors#skill-usage-reports-are-not-available-on-this-connection) と応答します。セッションが実行されているマシンのターミナルで `/skill-doctor` を実行してください。
 
 ## スキルを評価して反復する
 
@@ -942,11 +961,11 @@ Claude Code は、`allow` ルールをスキル自身の名前と Claude の呼�
 * **個人用またはプロジェクトスキル**：[`skillOverrides`](#override-skill-visibility-from-settings) で `"off"` に設定します。
 * **プラグインが提供するスキル**：`skillOverrides` はプラグインスキルには適用されません。代わりに [`claude plugin eval`](/docs/ja/plugin-evals#the-no-plugin-baseline) を使用します。これはプラグインが読み込まれていない状態で各実行を繰り返します。
 
-ベースライン比較を自動化する 2 つのツールがあります。[プラグイン](/docs/ja/plugins/overview) で配布されるスキルの場合、[`claude plugin eval`](/docs/ja/plugin-evals) は各プロンプトを分離されたセッションでプラグインの有無で実行し、定義したグレーダーまたはそれが作成したグレーダーでスコアリングし、閾値以下の場合はゼロ以外で終了するため、CI でそれをゲートできます。Claude Code 会話内の単一スキルを反復する場合、以下のスキル作成者プラグインは独自の `evals/evals.json` 形式で同様のループを実行します。2 つの形式は相互交換可能ではありません。
+ベースライン比較を自動化する 2 つのツールがあります。[プラグイン](/docs/ja/plugins/overview.md) で配布されるスキルの場合、[`claude plugin eval`](/docs/ja/plugin-evals) は各プロンプトを分離されたセッションでプラグインの有無で実行し、定義したグレーダーまたはそれが作成したグレーダーでスコアリングし、閾値以下の場合はゼロ以外で終了するため、CI でそれをゲートできます。Claude Code 会話内の単一スキルを反復する場合、以下のスキル作成者プラグインは独自の `evals/evals.json` 形式で同様のループを実行します。2 つの形式は相互交換可能ではありません。
 
 ### skill-creator でエバルを実行する
 
-[`skill-creator` プラグイン](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/skill-creator) は Claude Code 内の比較ループを自動化します。VS Code 拡張機能またはデスクトップアプリでは、[プラグインをインストールする](/docs/ja/plugins/install#install-a-plugin) の手順に従って公式マーケットプレイスからインストールします。ターミナルでは、`claude` を実行して Claude Code を起動し、そのプロンプトで次のように入力します。
+[`skill-creator` プラグイン](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/skill-creator) は Claude Code 内の比較ループを自動化します。VS Code 拡張機能またはデスクトップアプリでは、[プラグインをインストールする](/docs/ja/plugins/install.md#install-a-plugin) の手順に従って公式マーケットプレイスからインストールします。ターミナルでは、`claude` を実行して Claude Code を起動し、そのプロンプトで次のように入力します。
 
 ```text theme={null}
 /plugin install skill-creator@claude-plugins-official
@@ -955,12 +974,12 @@ Claude Code は、`allow` ルールをスキル自身の名前と Claude の呼�
 インストールが失敗した場合は、Claude Code が報告するメッセージと一致させます。
 
 * `Marketplace "claude-plugins-official" not found`：`/plugin marketplace add anthropics/claude-plugins-official` でマーケットプレイスを追加してから、インストールを再試行します。
-* `Plugin "<name>" not found in marketplace "claude-plugins-official"`：マーケットプレイスカタログのローカルコピーが古くなっている可能性があります。`/plugin marketplace update claude-plugins-official` で更新してから、インストールを再試行します。再試行しても同じメッセージが表示される場合は、[プラグインがマーケットプレイスで見つからない](/docs/ja/plugins/troubleshooting#plugin-not-found-in-marketplace) を参照してください。
+* `Plugin "<name>" not found in marketplace "claude-plugins-official"`：マーケットプレイスカタログのローカルコピーが古くなっている可能性があります。`/plugin marketplace update claude-plugins-official` で更新してから、インストールを再試行します。再試行しても同じメッセージが表示される場合は、[プラグインがマーケットプレイスで見つからない](/docs/ja/plugins/troubleshooting.md#plugin-not-found-in-marketplace) を参照してください。
 
 インストール概要が `Run /reload-plugins to apply.` を報告する場合、Claude Code はそのリロードを実行します。リロードが次のメッセージが会話を再読み込みすることを警告する場合は、`/reload-plugins --force` を実行してプラグインのスキルを現在のセッションで利用可能にします。その後、Claude に既存のスキルを評価するよう依頼します。例えば `evaluate my summarize-changes skill with skill-creator` です。プラグインはテストケースの作成をガイドし、ループを実行します。
 
 * **テストケース**：プロンプト、入力ファイル、および期待される動作をスキルディレクトリ内の `evals/evals.json` に保存します
-* **分離された実行**：テストケースごとに [サブエージェント](/docs/ja/sub-agents) を生成して、各実行がクリーンなコンテキストで開始され、トークン数と期間を記録します
+* **分離された実行**：テストケースごとに [サブエージェント](/docs/ja/sub-agents.md) を生成して、各実行がクリーンなコンテキストで開始され、トークン数と期間を記録します
 * **グレーディング**：各アサーションを出力に対してチェックし、`grading.json` に証拠とともに合格または不合格を書き込みます
 * **ベンチマーク**：スキルあり対スキルなしの合格率、時間、トークンを `benchmark.json` に集約して、トークンと時間のオーバーヘッドに対する合格率の改善を比較できます
 * **バージョン比較**：スキルの 2 つのバージョン間でブラインド A/B テストを実行して、編集をコミットする前に改善であることを確認できます
@@ -974,8 +993,8 @@ Claude Code は、`allow` ルールをスキル自身の名前と Claude の呼�
 スキルはオーディエンスに応じて異なるスコープで配布できます。
 
 * **プロジェクトスキル**: `.claude/skills/` をバージョン管理にコミットする
-* **プラグイン**: [プラグイン](/docs/ja/plugins/overview)に `skills/` ディレクトリを作成する
-* **マネージド**: [マネージド設定](/docs/ja/managed-settings)を通じて組織全体にデプロイする
+* **プラグイン**: [プラグイン](/docs/ja/plugins/overview.md)に `skills/` ディレクトリを作成する
+* **マネージド**: [マネージド設定](/docs/ja/managed-settings.md)を通じて組織全体にデプロイする
 
 ### ビジュアル出力を生成する
 
@@ -1198,9 +1217,9 @@ Claude がスキルを不要な時に使用する場合：
 
 Claude が最初の応答でスキルに従い、その後に従わなくなった場合は、以下のいずれかのケースに該当するもので始めてください：
 
-* **Claude が毎回成立する必要があるルールをスキップした**：ルールを [hook](/docs/ja/hooks-guide) に移動してください。Claude Code は hook をそのイベントが発生するたびに実行します。例えば、ファイル編集の前など、Claude がスキルに従っているかどうかに関わらず実行されます。ルールをスキルと一緒に保つには、スキルの [`hooks` frontmatter](/docs/ja/hooks#hooks-in-skills-and-agents) で hook を定義してください。その hook はスキルが呼び出された時点からセッション終了まで適用されます。
+* **Claude が毎回成立する必要があるルールをスキップした**：ルールを [hook](/docs/ja/hooks-guide.md) に移動してください。Claude Code は hook をそのイベントが発生するたびに実行します。例えば、ファイル編集の前など、Claude がスキルに従っているかどうかに関わらず実行されます。ルールをスキルと一緒に保つには、スキルの [`hooks` frontmatter](/docs/ja/hooks#hooks-in-skills-and-agents) で hook を定義してください。その hook はスキルが呼び出された時点からセッション終了まで適用されます。
 * **Claude が判断を伴って適用すべきガイダンスをスキップした**：ガイダンスが全体的なタスクに適用されるように言い換えてください。例えば「すべての編集後にテストを実行する」ではなく「テストを実行する」ではなく、「すべての編集後にテストを実行する」と言ってください。Claude Code はスキルが呼び出された時点で会話にスキルのコンテンツを追加し、[後の段階ではファイルを再読み込みしません](#skill-content-lifecycle)。
-* **会話がコンパクト化された**：スキルを再度呼び出してコンテンツを復元してください。[コンパクト化](/docs/ja/how-claude-code-works#when-context-fills-up)後、Claude Code は [呼び出されたスキルの開始部分のみを保持できます](#skill-content-lifecycle)。そのため、最も重要な指示を `SKILL.md` の上部に配置してください。
+* **会話がコンパクト化された**：スキルを再度呼び出してコンテンツを復元してください。[コンパクト化](/docs/ja/how-claude-code-works.md#when-context-fills-up)後、Claude Code は [呼び出されたスキルの開始部分のみを保持できます](#skill-content-lifecycle)。そのため、最も重要な指示を `SKILL.md` の上部に配置してください。
 
 ### スキルの説明が短くカットされている
 
@@ -1218,17 +1237,17 @@ Claude Code はスキル名と説明のリストをコンテキストに読み�
 
 v2.1.280 より前は、`~/.claude/skills/` に `manifest.json` という名前のファイルがあると、Claude Code はそのファイルがリストしたスキルフォルダを `~/.claude/skills/.trash/` の下のタイムスタンプ付きフォルダに移動し、それらのスキルは読み込まれなくなりました。
 
-スキルを復元するには、タイムスタンプ付きフォルダからそのフォルダを `~/.claude/skills/` に戻してください。これは [保持期間スイープ](/docs/ja/claude-directory#cleaned-up-automatically) がゴミ箱エントリを削除する前に行ってください。デフォルトではゴミ箱に移動されてから 30 日後に削除されます。
+スキルを復元するには、タイムスタンプ付きフォルダからそのフォルダを `~/.claude/skills/` に戻してください。これは [保持期間スイープ](/docs/ja/claude-directory.md#cleaned-up-automatically) がゴミ箱エントリを削除する前に行ってください。デフォルトではゴミ箱に移動されてから 30 日後に削除されます。
 
 ## 関連リソース
 
-* **[設定をデバッグする](/docs/ja/debug-your-config)**：スキルが表示されない、またはトリガーされない理由を診断する
+* **[設定をデバッグする](/docs/ja/debug-your-config.md)**：スキルが表示されない、またはトリガーされない理由を診断する
 * **[スキル出力品質の評価](https://agentskills.io/skill-creation/evaluating-skills)**：agentskills.io の eval ファイル形式と反復ワークフロー
 * **[スキル作成のベストプラクティス](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices)**：Claude 製品全体に適用される作成ガイダンス
-* **[サブエージェント](/docs/ja/sub-agents)**：特化したエージェントにタスクを委任する
-* **[プラグイン](/docs/ja/plugins/overview)**：他の拡張機能でスキルをパッケージ化して配布する
-* **[フック](/docs/ja/hooks)**：ツールイベント周辺のワークフローを自動化する
-* **[メモリ](/docs/ja/memory)**：永続的なコンテキストのための CLAUDE.md ファイルを管理する
-* **[コマンド](/docs/ja/commands)**：組み込みコマンドとバンドルされたスキルのリファレンス
-* **[権限](/docs/ja/permissions)**：ツールとスキルアクセスを制御する
+* **[サブエージェント](/docs/ja/sub-agents.md)**：特化したエージェントにタスクを委任する
+* **[プラグイン](/docs/ja/plugins/overview.md)**：他の拡張機能でスキルをパッケージ化して配布する
+* **[フック](/docs/ja/hooks.md)**：ツールイベント周辺のワークフローを自動化する
+* **[メモリ](/docs/ja/memory.md)**：永続的なコンテキストのための CLAUDE.md ファイルを管理する
+* **[コマンド](/docs/ja/commands.md)**：組み込みコマンドとバンドルされたスキルのリファレンス
+* **[権限](/docs/ja/permissions.md)**：ツールとスキルアクセスを制御する
 * **[Claude Tag スキル](https://claude.com/docs/claude-tag/admins/skills-repo)**：リポジトリにコミットされたプロジェクトスキルは、そのリポジトリが Claude Tag チャネルで使用される場合にも読み込まれます

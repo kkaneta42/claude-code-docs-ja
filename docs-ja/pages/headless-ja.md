@@ -6,19 +6,19 @@
 
 > Agent SDK を使用して、CLI、Python、または TypeScript からプログラムで Claude Code を実行します。
 
-[Agent SDK](/docs/ja/agent-sdk/overview) は、Claude Code を支える同じツール、エージェントループ、およびコンテキスト管理を提供します。スクリプトと CI/CD 用の CLI として、または完全なプログラムによる制御のための [Python](/docs/ja/agent-sdk/python) および [TypeScript](/docs/ja/agent-sdk/typescript) パッケージとして利用できます。
+[Agent SDK](/docs/ja/agent-sdk/overview.md) は、Claude Code を支える同じツール、エージェントループ、およびコンテキスト管理を提供します。スクリプトと CI/CD 用の CLI として、または完全なプログラムによる制御のための [Python](/docs/ja/agent-sdk/python.md) および [TypeScript](/docs/ja/agent-sdk/typescript.md) パッケージとして利用できます。
 
-Claude Code を非対話型モードで実行するには、プロンプトと任意の [CLI オプション](/docs/ja/cli-reference) を指定して `-p` を渡します。
+Claude Code を非対話型モードで実行するには、プロンプトと任意の [CLI オプション](/docs/ja/cli-reference.md) を指定して `-p` を渡します。
 
 ```bash theme={null}
 claude -p "Find and fix the bug in auth.py" --allowedTools "Read,Edit,Bash"
 ```
 
-このページでは、CLI（`claude -p`）経由で Agent SDK を使用することについて説明しています。構造化された出力、ツール承認コールバック、およびネイティブメッセージオブジェクトを備えた Python および TypeScript SDK パッケージについては、[完全な Agent SDK ドキュメント](/docs/ja/agent-sdk/overview) を参照してください。
+このページでは、CLI（`claude -p`）経由で Agent SDK を使用することについて説明しています。構造化された出力、ツール承認コールバック、およびネイティブメッセージオブジェクトを備えた Python および TypeScript SDK パッケージについては、[完全な Agent SDK ドキュメント](/docs/ja/agent-sdk/overview.md) を参照してください。
 
 ## 基本的な使用方法
 
-任意の `claude` コマンドに `-p` （または `--print` ）フラグを追加して、非対話的に実行します。すべての [CLI オプション](/docs/ja/cli-reference) が `-p` と組み合わせられるわけではありません。Claude Code は `--bg` を拒否し、タスク説明付きの `--cloud` を拒否します。競合を示すエラーが表示されます。セッション ID 付きの `--cloud` と `-p` は代わりに [そのクラウドセッションにメッセージをキューイングして終了します](/docs/ja/claude-code-on-the-web#send-follow-ups-from-the-cli)。`-p` と組み合わせることが多いオプションには以下が含まれます。
+任意の `claude` コマンドに `-p` （または `--print` ）フラグを追加して、非対話的に実行します。すべての [CLI オプション](/docs/ja/cli-reference.md) が `-p` と組み合わせられるわけではありません。Claude Code は `--bg` を拒否し、タスク説明付きの `--cloud` を拒否します。競合を示すエラーが表示されます。セッション ID 付きの `--cloud` と `-p` は代わりに [そのクラウドセッションにメッセージをキューイングして終了します](/docs/ja/claude-code-on-the-web.md#send-follow-ups-from-the-cli)。`-p` と組み合わせることが多いオプションには以下が含まれます。
 
 * `--continue` は [会話を続行する](#continue-conversations) ため
 * `--allowedTools` は [ツールを自動承認する](#auto-approve-tools) ため
@@ -34,11 +34,11 @@ Claude Code は成功時にコード 0 で終了し、実行が失敗した場�
 
 ### bare モードで高速に開始する
 
-`--bare` を追加して、フック、スキル、カスタムコマンド、[サブエージェント](/docs/ja/sub-agents)、インストール済みプラグイン、MCP サーバー、自動メモリ、CLAUDE.md の自動検出をスキップすることで、起動時間を短縮します。これがない場合、`claude -p` は対話的セッションと同様にそれらを検出して読み込みます。これには、作業ディレクトリまたは `~/.claude` で設定されたすべてが含まれます。
+`--bare` を追加して、フック、スキル、カスタムコマンド、[サブエージェント](/docs/ja/sub-agents.md)、インストール済みプラグイン、MCP サーバー、自動メモリ、CLAUDE.md の自動検出をスキップすることで、起動時間を短縮します。これがない場合、`claude -p` は対話的セッションと同様にそれらを検出して読み込みます。これには、作業ディレクトリまたは `~/.claude` で設定されたすべてが含まれます。
 
-bare モードは、すべてのマシンで同じ結果が必要な CI とスクリプトに役立ちます。チームメイトの `~/.claude` のフック、またはプロジェクトの `.mcp.json` の MCP サーバーは実行されません。bare モードはそれらを読み込まないためです。`--add-dir` で指定するディレクトリは部分的な例外です。bare モードはその `.claude/skills/` フォルダからスキルを読み込みますが、その `.claude/commands/` と `.claude/agents/` フォルダはスキップします。[追加ディレクトリからのスキル](/docs/ja/skills#skills-from-additional-directories) は、何が読み込まれ、何が読み込まれないかについて説明しています。
+bare モードは、すべてのマシンで同じ結果が必要な CI とスクリプトに役立ちます。チームメイトの `~/.claude` のフック、またはプロジェクトの `.mcp.json` の MCP サーバーは実行されません。bare モードはそれらを読み込まないためです。`--add-dir` で指定するディレクトリは部分的な例外です。bare モードはその `.claude/skills/` フォルダからスキルを読み込みますが、その `.claude/commands/` と `.claude/agents/` フォルダはスキップします。[追加ディレクトリからのスキル](/docs/ja/skills.md#skills-from-additional-directories) は、何が読み込まれ、何が読み込まれないかについて説明しています。
 
-`--bare` がない場合、`-p` セッションはプロジェクトの `.claude/settings.json` のフックを実行し、その `.mcp.json` のサーバーに接続します。これは、信頼したことのないフォルダでも同様です。`-p` セッションはワークスペース信頼ダイアログもサーバーごとの承認プロンプトも表示しません。[フォルダを信頼する前に実行されるもの](/docs/ja/permissions#what-runs-before-you-trust-a-folder) は、`-p` の下での各種リポジトリコンテンツと、それを除外する方法について説明しています。
+`--bare` がない場合、`-p` セッションはプロジェクトの `.claude/settings.json` のフックを実行し、その `.mcp.json` のサーバーに接続します。これは、信頼したことのないフォルダでも同様です。`-p` セッションはワークスペース信頼ダイアログもサーバーごとの承認プロンプトも表示しません。[フォルダを信頼する前に実行されるもの](/docs/ja/permissions.md#what-runs-before-you-trust-a-folder) は、`-p` の下での各種リポジトリコンテンツと、それを除外する方法について説明しています。
 
 この例は、bare モードで 1 回限りの要約タスクを実行し、Read ツールを事前承認して、権限プロンプトなしで呼び出しが完了するようにします。bare モードはサブスクリプションログインを使用しないため、実行前に `ANTHROPIC_API_KEY` を設定してください。
 
@@ -55,14 +55,14 @@ bare モードでは、Claude は Bash、ファイル読み取り、ファイル
 | システムプロンプト追加 | `--append-system-prompt`、`--append-system-prompt-file` |
 | 設定 | `--settings <file-or-json>` |
 | MCP サーバー | `--mcp-config <file-or-json>` |
-| [カスタムエージェント](/docs/ja/sub-agents#choose-the-subagent-scope) | `--agents <file-or-json>` |
+| [カスタムエージェント](/docs/ja/sub-agents.md#choose-the-subagent-scope) | `--agents <file-or-json>` |
 | プラグイン | `--plugin-dir <path>`、`--plugin-url <url>` |
 
 bare モードでは、セッションの実行中に行われる処理も制限されます。
 
 * **MCP サーバー**: コマンドラインで指定されたサーバー（例えば `--mcp-config` で指定したもの）のみが接続されます。対話型セッションでは、`--ide` を渡さない限り、Claude Code は IDE への自動接続もスキップします。
-* **システムリマインダー**: Claude はプロンプトとツールの結果を受け取りますが、Claude Code が通常それらと一緒に追加する [システムリマインダー](/docs/ja/glossary#system-reminder) は含まれません。例えば、以前に読み取ったファイルがディスク上で変更されても Claude には通知されず、`--add-dir` フォルダのスキルを含む利用可能なスキルの一覧も Claude には渡されません。
-* **バックグラウンドタスク**: 実行されません。[タイムアウト](/docs/ja/tools-reference#timeout-and-output-limits) に達したコマンドは、[バックグラウンドに移行する](/docs/ja/tools-reference#background-commands) 代わりに停止します。
+* **システムリマインダー**: Claude はプロンプトとツールの結果を受け取りますが、Claude Code が通常それらと一緒に追加する [システムリマインダー](/docs/ja/glossary.md#system-reminder) は含まれません。例えば、以前に読み取ったファイルがディスク上で変更されても Claude には通知されず、`--add-dir` フォルダのスキルを含む利用可能なスキルの一覧も Claude には渡されません。
+* **バックグラウンドタスク**: 実行されません。[タイムアウト](/docs/ja/tools-reference.md#timeout-and-output-limits) に達したコマンドは、[バックグラウンドに移行する](/docs/ja/tools-reference.md#background-commands) 代わりに停止します。
 
 v2.1.286 より前は、これらの制限は部分的にしか適用されていませんでした。対話型の `--bare` セッションは通常のセッションと同じ MCP サーバーに接続し、すべての `--bare` セッションがシステムリマインダーを送信し、バックグラウンドタスクも引き続き利用可能でした。
 
@@ -78,10 +78,10 @@ Claude がターンを終え、stdin が閉じられた後も、`claude -p` の�
 
 実行は、バックグラウンドコマンド、サブエージェントとワークフロー、Monitor ウォッチ、保留中の `/loop` ウェイクアップなどのバックグラウンド作業を待機します。
 
-* **[バックグラウンドコマンド](/docs/ja/tools-reference#background-commands)**: メイン会話が開始したコマンド（例えば開発サーバーやウォッチビルド）の場合、実行はコマンドが終了するか [時間制限](/docs/ja/tools-reference#time-limit-for-background-commands) に達するまで待機します。その後、Claude はその結果を受けてもう 1 ターン実行します。コマンドの実行中は、10 分の上限によって待機が終了することはありません。
-* **バックグラウンドの [サブエージェント](/docs/ja/sub-agents) とワークフロー**: その結果は最終出力の一部であるため、実行はその作業が完了するまで開いたままになります。
-* **[Monitor](/docs/ja/tools-reference#monitor-tool) ウォッチ**: 実行は、ウォッチがタイムアウトするか 10 分の上限が待機を終了するか、どちらか先に来た方まで待機します。待機中、Claude はウォッチが報告することに応答し続けます。デフォルトでは、ウォッチは Claude が開始してから 5 分後にタイムアウトします。
-* **保留中のウェイクアップ**: プロンプトを `--input-format stream-json` ではなくテキストとして渡した実行で、Claude が [自己ペースの `/loop` ウェイクアップ](/docs/ja/scheduled-tasks#let-claude-choose-the-interval) をスケジュールした場合、実行は各ウェイクアップが発生するのを待ち、[ループが終了する](/docs/ja/scheduled-tasks#stop-a-loop) までその反復を実行します。これは 10 分の上限を超えても続きます。
+* **[バックグラウンドコマンド](/docs/ja/tools-reference.md#background-commands)**: メイン会話が開始したコマンド（例えば開発サーバーやウォッチビルド）の場合、実行はコマンドが終了するか [時間制限](/docs/ja/tools-reference.md#time-limit-for-background-commands) に達するまで待機します。その後、Claude はその結果を受けてもう 1 ターン実行します。コマンドの実行中は、10 分の上限によって待機が終了することはありません。
+* **バックグラウンドの [サブエージェント](/docs/ja/sub-agents.md) とワークフロー**: その結果は最終出力の一部であるため、実行はその作業が完了するまで開いたままになります。
+* **[Monitor](/docs/ja/tools-reference.md#monitor-tool) ウォッチ**: 実行は、ウォッチがタイムアウトするか 10 分の上限が待機を終了するか、どちらか先に来た方まで待機します。待機中、Claude はウォッチが報告することに応答し続けます。デフォルトでは、ウォッチは Claude が開始してから 5 分後にタイムアウトします。
+* **保留中のウェイクアップ**: プロンプトを `--input-format stream-json` ではなくテキストとして渡した実行で、Claude が [自己ペースの `/loop` ウェイクアップ](/docs/ja/scheduled-tasks#let-claude-choose-the-interval) をスケジュールした場合、実行は各ウェイクアップが発生するのを待ち、[ループが終了する](/docs/ja/scheduled-tasks.md#stop-a-loop) までその反復を実行します。これは 10 分の上限を超えても続きます。
 
 stderr がターミナルで、実行が 5 秒間待機した場合、Claude Code は `Waiting for background work to finish` で始まり、待機中の作業を示す行を stderr に出力します。[`json` または `stream-json` 出力](#get-structured-output) では、この行は stdout がターミナルでない場合にのみ出力されるため、スクリプトが読み取る JSON にこの行が含まれることはありません。
 
@@ -102,7 +102,7 @@ SIGTERM では、Claude Code はまだ実行中の Bash コマンドのプロセ
 
 ### 作業ディレクトリが削除された場合
 
-`claude -p` または Agent SDK セッションの作業ディレクトリがセッション中に削除された場合、セッションは実行を続けます。ディレクトリが見つからない間にターンが開始されると、Claude Code は `stream-json` 出力で [警告メッセージ](/docs/ja/agent-sdk/typescript#sdkinformationalmessage) を発行し、ディレクトリが再度存在するまでシェルコマンドは失敗します。
+`claude -p` または Agent SDK セッションの作業ディレクトリがセッション中に削除された場合、セッションは実行を続けます。ディレクトリが見つからない間にターンが開始されると、Claude Code は `stream-json` 出力で [警告メッセージ](/docs/ja/agent-sdk/typescript.md#sdkinformationalmessage) を発行し、ディレクトリが再度存在するまでシェルコマンドは失敗します。
 
 ## 例
 
@@ -118,7 +118,7 @@ SIGTERM では、Claude Code はまだ実行中の Bash コマンドのプロセ
 cat build-error.txt | claude -p 'concisely explain the root cause of this build error' > output.txt
 ```
 
-`--output-format json` を使用すると、応答ペイロードに `total_cost_usd` とモデルごとのコスト内訳が含まれるため、スクリプトの呼び出し元は [使用状況ダッシュボード](/docs/ja/costs) を参照せずに支出を追跡できます。`--continue` または `--resume` で以前の会話を続ける場合、実行は[以前の実行の支出を含めた](/docs/ja/agent-sdk/cost-tracking#accumulate-costs-across-multiple-calls)会話全体の合計を報告します。どちらの数値も[クライアント側の推定値](/docs/ja/agent-sdk/cost-tracking)であり、実際の請求額と異なる場合があります。
+`--output-format json` を使用すると、応答ペイロードに `total_cost_usd` とモデルごとのコスト内訳が含まれるため、スクリプトの呼び出し元は [使用状況ダッシュボード](/docs/ja/costs.md) を参照せずに支出を追跡できます。`--continue` または `--resume` で以前の会話を続ける場合、実行は[以前の実行の支出を含めた](/docs/ja/agent-sdk/cost-tracking.md#accumulate-costs-across-multiple-calls)会話全体の合計を報告します。どちらの数値も[クライアント側の推定値](/docs/ja/agent-sdk/cost-tracking.md)であり、実際の請求額と異なる場合があります。
 
 > [!NOTE]
 >
@@ -204,18 +204,18 @@ claude -p "Write a poem" --output-format stream-json --verbose --include-partial
   jq -rj 'select(.type == "stream_event" and .event.delta.type? == "text_delta") | .event.delta.text'
 ```
 
-コールバックとメッセージオブジェクトを使用したプログラムによるストリーミングについては、Agent SDK ドキュメントの[リアルタイムで応答をストリーミングする](/docs/ja/agent-sdk/streaming-output)を参照してください。
+コールバックとメッセージオブジェクトを使用したプログラムによるストリーミングについては、Agent SDK ドキュメントの[リアルタイムで応答をストリーミングする](/docs/ja/agent-sdk/streaming-output.md)を参照してください。
 
 #### サブエージェントのメッセージを追跡する
 
-[サブエージェント](/docs/ja/sub-agents)からのメッセージと、[サブエージェントで実行される](/docs/ja/skills#run-skills-in-a-subagent)スキルからのメッセージは、ストリームに `assistant` および `user` メッセージとして表示されます。その `parent_tool_use_id` フィールドは、各メッセージがどの実行に属するかを示します。メインの会話からのメッセージは、このフィールドに `null` を持ちます。
+[サブエージェント](/docs/ja/sub-agents.md)からのメッセージと、[サブエージェントで実行される](/docs/ja/skills.md#run-skills-in-a-subagent)スキルからのメッセージは、ストリームに `assistant` および `user` メッセージとして表示されます。その `parent_tool_use_id` フィールドは、各メッセージがどの実行に属するかを示します。メインの会話からのメッセージは、このフィールドに `null` を持ちます。
 
-フォークされたスキル、または[フォアグラウンド](/docs/ja/sub-agents#run-subagents-in-foreground-or-background)で実行されているサブエージェントからの最初のメッセージは、その実行を駆動するプロンプトまたはスキルコンテンツを含む `user` メッセージです。その最初のメッセージの後、Claude Code は以下を発行します。
+フォークされたスキル、または[フォアグラウンド](/docs/ja/sub-agents.md#run-subagents-in-foreground-or-background)で実行されているサブエージェントからの最初のメッセージは、その実行を駆動するプロンプトまたはスキルコンテンツを含む `user` メッセージです。その最初のメッセージの後、Claude Code は以下を発行します。
 
 * **デフォルト**：その実行の `tool_use` および `tool_result` ブロック。
 * **[`--forward-subagent-text`](/docs/ja/cli-reference#cli-flags) または [`CLAUDE_CODE_FORWARD_SUBAGENT_TEXT`](/docs/ja/env-vars) を使用した場合**：その実行のテキストブロックと思考ブロックも発行されるため、各実行のトランスクリプトを再構築できます。
 
-いずれかのオプションを有効にすると、Claude Code は[あらゆるネストの深さのサブエージェント](/docs/ja/sub-agents#let-subagents-spawn-their-own-subagents)からのメッセージを、Agent ツールで生成されたものかフォークされたスキルとして開始されたものかに関わらず転送します。`parent_tool_use_id` では、ネストされたサブエージェントのメッセージはそれを開始した Agent または Skill ツール呼び出しの ID を持つため、これらの ID をたどることで完全なネストツリーを再構築できます。
+いずれかのオプションを有効にすると、Claude Code は[あらゆるネストの深さのサブエージェント](/docs/ja/sub-agents.md#let-subagents-spawn-their-own-subagents)からのメッセージを、Agent ツールで生成されたものかフォークされたスキルとして開始されたものかに関わらず転送します。`parent_tool_use_id` では、ネストされたサブエージェントのメッセージはそれを開始した Agent または Skill ツール呼び出しの ID を持つため、これらの ID をたどることで完全なネストツリーを再構築できます。
 
 Claude がツール呼び出しで開始した実行は、そのツール呼び出しの ID を持ちます。`/<skill-name>` をプロンプトとして渡して開始したフォークされたスキルにはツール呼び出しがないため、そのメッセージは代わりに `forked-command-` で始まる値を持ち、スキルの完了後に届きます。実行の開始方法は最初の列で確認してください。
 
@@ -246,7 +246,7 @@ API リクエストが再試行可能なエラーで失敗すると、Claude Cod
 | `max_retries` | integer | この失敗の原因に対して許可される再試行の合計 |
 | `retry_delay_ms` | integer | 次の試行までのミリ秒 |
 | `error_status` | integer または null | 失敗した試行の HTTP ステータスコード、または試行が API から HTTP レスポンスを受け取らなかった場合は `null` |
-| `no_response` | object、optional | 失敗した試行が[時間内にレスポンスヘッダーを受け取らなかった](/docs/ja/errors#no-response-from-api)場合にのみ存在します。`waited_ms` はその試行が待機した時間で、`retry_wait_ms` は再試行が待機する時間です。Claude Code v2.1.261 以降が必要です |
+| `no_response` | object、optional | 失敗した試行が[時間内にレスポンスヘッダーを受け取らなかった](/docs/ja/errors.md#no-response-from-api)場合にのみ存在します。`waited_ms` はその試行が待機した時間で、`retry_wait_ms` は再試行が待機する時間です。Claude Code v2.1.261 以降が必要です |
 | `error` | string | エラーカテゴリ：`authentication_failed`、`oauth_org_not_allowed`、`account_on_hold`、`billing_error`、`rate_limit`、`overloaded`、`invalid_request`、`model_not_found`、`server_error`、`max_output_tokens`、`cloud_credential_error`、または `unknown` |
 | `uuid` | string | 一意のイベント識別子 |
 | `session_id` | string | イベントが属するセッション |
@@ -271,7 +271,7 @@ API リクエストが再試行可能なエラーで失敗すると、Claude Cod
 
 `--plugin-dir` のディレクトリまたはアーカイブ自体の読み込みに失敗した場合、その `plugin_errors` エントリには解決された絶対パスが `path` として含まれます。複数の `--plugin-dir` 値のうちどれが失敗したかを判断するために使用します。`path` フィールドには Claude Code v2.1.283 以降が必要です。
 
-MCP サーバーのフィールドも同じ方法で使用します。`-p` で [`--mcp-config`](/docs/ja/cli-reference#cli-flags) を渡すと、Claude Code は最初のターンを実行する前に、まだ保留中のサーバーを [`MCP_TIMEOUT`](/docs/ja/env-vars) の起動タイムアウト（デフォルトは 30 秒）まで待機します。[キャッシュされたツールリスト](/docs/ja/agent-sdk/mcp#connection-timing)を持つリモートサーバーは待機をスキップし、`system/init` に `pending` と表示され、最初のツール呼び出し時に接続します。[セルフホスト環境](/docs/ja/self-hosted-environments-configuration#connection-timing)では、代わりにより短い待機が適用されます。この待機には Claude Code v2.1.221 以降が必要です。
+MCP サーバーのフィールドも同じ方法で使用します。`-p` で [`--mcp-config`](/docs/ja/cli-reference#cli-flags) を渡すと、Claude Code は最初のターンを実行する前に、まだ保留中のサーバーを [`MCP_TIMEOUT`](/docs/ja/env-vars) の起動タイムアウト（デフォルトは 30 秒）まで待機します。[キャッシュされたツールリスト](/docs/ja/agent-sdk/mcp.md#connection-timing)を持つリモートサーバーは待機をスキップし、`system/init` に `pending` と表示され、最初のツール呼び出し時に接続します。[セルフホスト環境](/docs/ja/self-hosted-environments-configuration.md#connection-timing)では、代わりにより短い待機が適用されます。この待機には Claude Code v2.1.221 以降が必要です。
 
 Claude Code は起動時に各 `--mcp-config` エントリを検証し、検証に失敗したエントリ（例えば、`type` のない `url` エントリ）をスキップします。実行は続行されて正常に終了するため、これらのフィールドを確認して、読み込まれなかったサーバーを検出します。
 
@@ -298,22 +298,22 @@ Claude Code は起動時に各 `--mcp-config` エントリを検証し、検証�
 
 ### ツールを自動承認する
 
-`--allowedTools` を使用して、Claude が特定のツールを確認なしで使用できるようにします。`Read` と `Edit` を指定すると、Claude は権限を求めずにファイルを読み取り、編集できます（[ネットワークパス](/docs/ja/permissions#network-paths)からの読み取りを除く）。`Bash` を指定すると、シェルコマンドについても同様になります。ただし、[auto モード](/docs/ja/permission-modes#how-auto-mode-evaluates-actions)で開始される実行では、Claude Code は単独の `Bash` エントリを広すぎる許可ルールとして除外し、代わりに auto モードが各コマンドを評価します。この例は、これら 3 つのツールを指定してテストスイートを実行し、失敗を修正します。
+`--allowedTools` を使用して、Claude が特定のツールを確認なしで使用できるようにします。`Read` と `Edit` を指定すると、Claude は権限を求めずにファイルを読み取り、編集できます（[ネットワークパス](/docs/ja/permissions.md#network-paths)からの読み取りを除く）。`Bash` を指定すると、シェルコマンドについても同様になります。ただし、[auto モード](/docs/ja/permission-modes.md#how-auto-mode-evaluates-actions)で開始される実行では、Claude Code は単独の `Bash` エントリを広すぎる許可ルールとして除外し、代わりに auto モードが各コマンドを評価します。この例は、これら 3 つのツールを指定してテストスイートを実行し、失敗を修正します。
 
 ```bash theme={null}
 claude -p "Run the test suite and fix any failures" \
   --allowedTools "Bash,Read,Edit"
 ```
 
-指定しなかったツールの呼び出しは、承認が不要であれば実行されます。[Manual モード](/docs/ja/permission-modes#available-modes)の `claude -p` 実行では、承認が必要な呼び出しは、[`PermissionRequest` フック](/docs/ja/hooks#permissionrequest)や [`--permission-prompt-tool`](/docs/ja/cli-reference#cli-flags) などによって承認されない限り拒否されます。Claude Code v2.1.302 以降では、[何も権限モードを設定しない](/docs/ja/permission-modes#which-mode-a-non-interactive-run-starts-in)場合、`claude -p` の実行は Manual モードで開始されます。
+指定しなかったツールの呼び出しは、承認が不要であれば実行されます。[Manual モード](/docs/ja/permission-modes.md#available-modes)の `claude -p` 実行では、承認が必要な呼び出しは、[`PermissionRequest` フック](/docs/ja/hooks#permissionrequest)や [`--permission-prompt-tool`](/docs/ja/cli-reference#cli-flags) などによって承認されない限り拒否されます。Claude Code v2.1.302 以降では、[何も権限モードを設定しない](/docs/ja/permission-modes.md#which-mode-a-non-interactive-run-starts-in)場合、`claude -p` の実行は Manual モードで開始されます。
 
-個別のツールを指定する代わりにセッション全体のベースラインを設定するには、`--permission-mode` で `auto`、`dontAsk`、`acceptEdits` などの[権限モード](/docs/ja/permission-modes)を渡します。
+個別のツールを指定する代わりにセッション全体のベースラインを設定するには、`--permission-mode` で `auto`、`dontAsk`、`acceptEdits` などの[権限モード](/docs/ja/permission-modes.md)を渡します。
 
 * **`auto`**：`--permission-mode auto` を渡すと、ユーザーに代わって分類器がほとんどのアクションをレビューします
-* **`dontAsk`**：Claude Code は、本来なら確認を求めるすべての呼び出しを拒否します。これは制限された CI 実行に役立ちますが、インストールした [mod](/docs/ja/plugins/mods/overview) がそれらの呼び出しの一部を承認できる場合があります。mod がどの呼び出しを承認できるかを確認するには、[フックで権限を拡張する](/docs/ja/permissions#precedence-among-rules-hooks-and-mods)を参照してください。
+* **`dontAsk`**：Claude Code は、本来なら確認を求めるすべての呼び出しを拒否します。これは制限された CI 実行に役立ちますが、インストールした [mod](/docs/ja/plugins/mods/overview.md) がそれらの呼び出しの一部を承認できる場合があります。mod がどの呼び出しを承認できるかを確認するには、[フックで権限を拡張する](/docs/ja/permissions.md#precedence-among-rules-hooks-and-mods)を参照してください。
 
-  Manual モードで承認が不要なアクション（作業ディレクトリでのファイル読み取りや[読み取り専用コマンドセット](/docs/ja/permissions#read-only-commands)など）は引き続き実行されます。`--allowedTools` エントリまたは `permissions.allow` ルールがカバーするアクションも実行されます。`AskUserQuestion`、[組織が `ask` に設定したコネクタツール](/docs/ja/mcp#organization-controls-on-connector-tools)、[`requiresUserInteraction`](/docs/ja/mcp#require-approval-for-a-specific-tool) とマークされた MCP ツール、および[ネットワークパスからの読み取り](/docs/ja/permissions#network-paths)は、許可ルールが一致する場合でも拒否されます
-* **`acceptEdits`**：Claude は確認なしでファイルを書き込み、Claude Code は `mkdir`、`touch`、`mv`、`cp` などの一般的なファイルシステムコマンドを自動承認します。[どのモードでも自動承認されないアクション](/docs/ja/permission-modes#actions-no-mode-auto-approves)は引き続き適用されます。読み取り専用コマンドセットを除き、その他のシェルコマンドとネットワークリクエストには引き続き `--allowedTools` エントリまたは `permissions.allow` ルールが必要です。完全なリストについては [`acceptEdits` が自動承認する内容](/docs/ja/permission-modes#auto-approve-file-edits-with-acceptedits-mode)を参照してください
+  Manual モードで承認が不要なアクション（作業ディレクトリでのファイル読み取りや[読み取り専用コマンドセット](/docs/ja/permissions.md#read-only-commands)など）は引き続き実行されます。`--allowedTools` エントリまたは `permissions.allow` ルールがカバーするアクションも実行されます。`AskUserQuestion`、[組織が `ask` に設定したコネクタツール](/docs/ja/mcp#organization-controls-on-connector-tools)、[`requiresUserInteraction`](/docs/ja/mcp#require-approval-for-a-specific-tool) とマークされた MCP ツール、および[ネットワークパスからの読み取り](/docs/ja/permissions.md#network-paths)は、許可ルールが一致する場合でも拒否されます
+* **`acceptEdits`**：Claude は確認なしでファイルを書き込み、Claude Code は `mkdir`、`touch`、`mv`、`cp` などの一般的なファイルシステムコマンドを自動承認します。[どのモードでも自動承認されないアクション](/docs/ja/permission-modes.md#actions-no-mode-auto-approves)は引き続き適用されます。読み取り専用コマンドセットを除き、その他のシェルコマンドとネットワークリクエストには引き続き `--allowedTools` エントリまたは `permissions.allow` ルールが必要です。完全なリストについては [`acceptEdits` が自動承認する内容](/docs/ja/permission-modes#auto-approve-file-edits-with-acceptedits-mode)を参照してください
 
 この例は `acceptEdits` をベースラインとしてリント修正を適用します。
 
@@ -327,13 +327,13 @@ claude -p "Apply the lint fixes" --permission-mode acceptEdits
 
 フラグを指定すると、実行はホストに問い合わせず、待機もしません。確認を求めることになるものはすべて、`PermissionRequest` フックが許可しない限り拒否され、Claude には誰もリクエストを承認できないため再試行しないよう伝えられ、実行は続行されます。ホストのない `-p` 実行では、これらのリクエストはいずれにしても拒否されますが、このフラグは Claude に再試行しないよう伝える役割も果たします。権限ルール、[`PermissionRequest` フック](/docs/ja/hooks#permissionrequest)、および設定した権限モードが引き続き最初にすべての呼び出しを判定し、Claude Code は他の何によっても解決されないリクエストのみを拒否します。
 
-この例は [auto モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)で無人タスクを実行します。分類器は通常どおり各アクションをレビューし、Claude Code はプロンプトにフォールバックするはずだったものをすべて拒否します。
+この例は [auto モード](/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)で無人タスクを実行します。分類器は通常どおり各アクションをレビューし、Claude Code はプロンプトにフォールバックするはずだったものをすべて拒否します。
 
 ```bash theme={null}
 claude -p "Update the dependency pins and run the tests" --permission-mode auto --permission-prompts none
 ```
 
-`--permission-prompts none` を使用すると、Claude Code は [`AskUserQuestion`](/docs/ja/tools-reference#askuserquestion-tool-behavior) など人の回答を必要とするツールを削除するため、Claude はそれらを呼び出せません。[`Elicitation` フック](/docs/ja/hooks#elicitation)が応答しない [MCP エリシテーションリクエスト](/docs/ja/mcp#respond-to-mcp-elicitation-requests)はキャンセルされます。
+`--permission-prompts none` を使用すると、Claude Code は [`AskUserQuestion`](/docs/ja/tools-reference#askuserquestion-tool-behavior) など人の回答を必要とするツールを削除するため、Claude はそれらを呼び出せません。[`Elicitation` フック](/docs/ja/hooks#elicitation)が応答しない [MCP エリシテーションリクエスト](/docs/ja/mcp.md#respond-to-mcp-elicitation-requests)はキャンセルされます。
 
 `--output-format stream-json` を使用すると、拒否は `permission_denied` システムメッセージとして表示され、最終結果メッセージの `permission_denials` にそれらが一覧表示されます。
 
@@ -350,17 +350,17 @@ claude -p "Look at my staged changes and create an appropriate commit" \
   --allowedTools "Bash(git diff *),Bash(git log *),Bash(git status *),Bash(git commit *)"
 ```
 
-`--allowedTools` フラグは[権限ルールの構文](/docs/ja/settings-reference#permission-rule-syntax)を使用します。末尾の ` *` はプレフィックスマッチングを有効にするため、`Bash(git diff *)` は `git diff` で始まるすべてのコマンドを許可します。`*` の前のスペースは重要です。スペースがないと、`Bash(git diff*)` は `git diff-index` にも一致します。
+`--allowedTools` フラグは[権限ルールの構文](/docs/ja/settings-reference.md#permission-rule-syntax)を使用します。末尾の ` *` はプレフィックスマッチングを有効にするため、`Bash(git diff *)` は `git diff` で始まるすべてのコマンドを許可します。`*` の前のスペースは重要です。スペースがないと、`Bash(git diff*)` は `git diff-index` にも一致します。
 
 > [!NOTE]
 >
 > `-p` モードでは、コマンドのサポート状況が異なります。
 >
-> * ユーザーが呼び出す[スキル](/docs/ja/skills)とカスタムコマンドは機能します。プロンプト文字列に `/skill-name` を含めると、Claude Code は実行前にそれを展開します。
+> * ユーザーが呼び出す[スキル](/docs/ja/skills.md)とカスタムコマンドは機能します。プロンプト文字列に `/skill-name` を含めると、Claude Code は実行前にそれを展開します。
 > * ターミナルインターフェースでのみ動作する `/login` などの組み込みコマンドは利用できません。
-> * `/model`、`/effort`、`/fast`、`/color`、`/rename` は値を引数として受け付け（例：`/model sonnet`）、`/mcp` は引数なしでサーバーステータスのテキスト概要を出力します。これらの形式は各コマンドの[利用可能性に関する注記](/docs/ja/commands#all-commands)に従います。
+> * `/model`、`/effort`、`/fast`、`/color`、`/rename` は値を引数として受け付け（例：`/model sonnet`）、`/mcp` は引数なしでサーバーステータスのテキスト概要を出力します。これらの形式は各コマンドの[利用可能性に関する注記](/docs/ja/commands.md#all-commands)に従います。
 > * 設定を変更するには、`/config` に `key=value` を渡します（例：`/config thinking=false`）。
-> * `/output-style <style>` は[出力スタイル](/docs/ja/output-styles)を切り替え、`/output-style` 単体ではそれらを一覧表示します。Claude Code v2.1.269 以降が必要です。
+> * `/output-style <style>` は[出力スタイル](/docs/ja/output-styles.md)を切り替え、`/output-style` 単体ではそれらを一覧表示します。Claude Code v2.1.269 以降が必要です。
 
 ### システムプロンプトをカスタマイズする
 
@@ -374,11 +374,11 @@ gh pr diff "$1" | claude -p \
 
 スクリプト内の `"$1"` は、コマンドラインで渡す最初の引数を表します。`bash review.sh 123` を実行すると、シェルは `"$1"` を `123` に置き換えるため、スクリプトは PR 123 の差分を取得します。Claude Code はレビューを JSON として出力し、テキストは `result` フィールドに入ります。
 
-デフォルトのプロンプトを完全に置き換える `--system-prompt` を含むその他のオプションについては、[システムプロンプトフラグ](/docs/ja/cli-reference#system-prompt-flags)を参照してください。置き換えた場合、実行は [git ステータスのスナップショット](/docs/ja/settings-reference#includegitinstructions)もない状態で開始されます。
+デフォルトのプロンプトを完全に置き換える `--system-prompt` を含むその他のオプションについては、[システムプロンプトフラグ](/docs/ja/cli-reference.md#system-prompt-flags)を参照してください。置き換えた場合、実行は [git ステータスのスナップショット](/docs/ja/settings-reference.md#includegitinstructions)もない状態で開始されます。
 
 ### 会話を続ける
 
-`--continue` を使用して最新の会話を続けるか、`--resume` をセッション ID と共に使用して特定の会話を続けます。Claude Code v2.1.257 以降では、`--continue` を渡すと、Claude Code は終了済みの[バックグラウンドセッション](/docs/ja/sessions#where-the-session-picker-looks)は開きますが、まだ実行中のものは開きません。この例はレビューを実行してから、フォローアップのプロンプトを送信します。
+`--continue` を使用して最新の会話を続けるか、`--resume` をセッション ID と共に使用して特定の会話を続けます。Claude Code v2.1.257 以降では、`--continue` を渡すと、Claude Code は終了済みの[バックグラウンドセッション](/docs/ja/sessions.md#where-the-session-picker-looks)は開きますが、まだ実行中のものは開きません。この例はレビューを実行してから、フォローアップのプロンプトを送信します。
 
 ```bash theme={null}
 # First request
@@ -396,13 +396,13 @@ session_id=$(claude -p "Start a review" --output-format json | jq -r '.session_i
 claude -p "Continue that review" --resume "$session_id"
 ```
 
-2 つのコマンドは異なるディレクトリから実行できます。Claude Code はこのマシン上の任意のプロジェクトから[ID でセッションを検索します](/docs/ja/sessions#where-the-session-picker-looks)。
+2 つのコマンドは異なるディレクトリから実行できます。Claude Code はこのマシン上の任意のプロジェクトから[ID でセッションを検索します](/docs/ja/sessions.md#where-the-session-picker-looks)。
 
-セッション ID の代わりに、`--resume` にセッションの `.jsonl` [トランスクリプトファイル](/docs/ja/sessions#where-transcripts-are-stored)への絶対パスを渡すこともでき、Claude Code はそのファイルに保存されている会話を続けます。
+セッション ID の代わりに、`--resume` にセッションの `.jsonl` [トランスクリプトファイル](/docs/ja/sessions.md#where-transcripts-are-stored)への絶対パスを渡すこともでき、Claude Code はそのファイルに保存されている会話を続けます。
 
 ## 次のステップ
 
-* [Agent SDK クイックスタート](/docs/ja/agent-sdk/quickstart)：Python または TypeScript で最初のエージェントを構築します
-* [CLI リファレンス](/docs/ja/cli-reference)：すべての CLI フラグとオプション
-* [GitHub Actions](/docs/ja/github-actions)：GitHub ワークフローで Agent SDK を使用します
-* [GitLab CI/CD](/docs/ja/gitlab-ci-cd)：GitLab パイプラインで Agent SDK を使用します
+* [Agent SDK クイックスタート](/docs/ja/agent-sdk/quickstart.md)：Python または TypeScript で最初のエージェントを構築します
+* [CLI リファレンス](/docs/ja/cli-reference.md)：すべての CLI フラグとオプション
+* [GitHub Actions](/docs/ja/github-actions.md)：GitHub ワークフローで Agent SDK を使用します
+* [GitLab CI/CD](/docs/ja/gitlab-ci-cd.md)：GitLab パイプラインで Agent SDK を使用します

@@ -8,11 +8,11 @@
 
 サブエージェントは、特定の種類のタスクを処理する特化した AI アシスタントです。サイドタスクがメイン会話に検索結果、ログ、または再度参照しないファイルコンテンツで溢れかえる場合に使用します。サブエージェントはそのタスクを独自のコンテキストで実行し、概要のみを返します。同じ種類のワーカーを同じ指示で繰り返し生成する場合は、カスタムサブエージェントを定義します。
 
-各サブエージェントは、カスタムシステムプロンプト、特定のツールアクセス、および独立した権限を備えた独自のコンテキストウィンドウで実行されます。また、独自のリクエストを送信し、これはメイン会話と同じ [使用制限](/docs/ja/costs#plan-usage-breakdown) にカウントされます。Claude がサブエージェントの説明に一致するタスクに遭遇すると、そのサブエージェントに委譲し、サブエージェントは独立して動作して結果を返します。実際にコンテキスト節約を確認するには、[コンテキストウィンドウの可視化](/docs/ja/context-window)で、サブエージェントが独自の別のウィンドウで研究を処理するセッションを説明しています。
+各サブエージェントは、カスタムシステムプロンプト、特定のツールアクセス、および独立した権限を備えた独自のコンテキストウィンドウで実行されます。また、独自のリクエストを送信し、これはメイン会話と同じ [使用制限](/docs/ja/costs.md#plan-usage-breakdown) にカウントされます。Claude がサブエージェントの説明に一致するタスクに遭遇すると、そのサブエージェントに委譲し、サブエージェントは独立して動作して結果を返します。実際にコンテキスト節約を確認するには、[コンテキストウィンドウの可視化](/docs/ja/context-window.md)で、サブエージェントが独自の別のウィンドウで研究を処理するセッションを説明しています。
 
 > [!NOTE]
 >
-> サブエージェントは単一のセッション内で動作します。多くの独立したセッションを並行して実行し、1 つの場所から監視するには、[バックグラウンドエージェント](/docs/ja/agent-view)を参照してください。互いにメッセージを渡すセッションについては、[クロスセッションメッセージング](/docs/ja/cross-session-messaging)を参照してください。Claude が生成および監督する調整されたセッションのチームについては、[エージェントチーム](/docs/ja/agent-teams)を参照してください。
+> サブエージェントは単一のセッション内で動作します。多くの独立したセッションを並行して実行し、1 つの場所から監視するには、[バックグラウンドエージェント](/docs/ja/agent-view.md)を参照してください。互いにメッセージを渡すセッションについては、[クロスセッションメッセージング](/docs/ja/cross-session-messaging.md)を参照してください。Claude が生成および監督する調整されたセッションのチームについては、[エージェントチーム](/docs/ja/agent-teams.md)を参照してください。
 
 サブエージェントは以下に役立ちます：
 
@@ -24,7 +24,7 @@
 
 Claude は各サブエージェントの説明を使用して、タスクを委譲するかどうかを決定します。サブエージェントを作成するときは、Claude がいつそれを使用するかを知るように、明確な説明を書いてください。
 
-これらの説明はコンテキストを占有するため、短く保ってください。組み込みのサブエージェントを除いたサブエージェントの説明の合計が 15,000 トークンを超える場合、Claude Code は[スタートアップ時に総トークン数を含む警告を表示](/docs/ja/errors#agent-descriptions-are-over-the-15000-token-limit)します。サブエージェントの `description` フィールドをトリミングし、詳細を各サブエージェントのシステムプロンプトに移動します。システムプロンプトは、そのサブエージェントが実行される場合にのみロードされます。
+これらの説明はコンテキストを占有するため、短く保ってください。組み込みのサブエージェントを除いたサブエージェントの説明の合計が 15,000 トークンを超える場合、Claude Code は[スタートアップ時に総トークン数を含む警告を表示](/docs/ja/errors.md#agent-descriptions-are-over-the-15000-token-limit)します。サブエージェントの `description` フィールドをトリミングし、詳細を各サブエージェントのシステムプロンプトに移動します。システムプロンプトは、そのサブエージェントが実行される場合にのみロードされます。
 
 ## 組み込みサブエージェント
 
@@ -38,7 +38,7 @@ Explore と Plan は、調査を高速かつ低コストに保つために、CLA
 
 * **モデル**: メイン会話のモデル。メイン会話が Fable で実行されている場合、Explore のモデルは接続方法によって異なります。
   * Claude サブスクリプション、Anthropic Console アカウント、または `ANTHROPIC_BASE_URL` 経由で接続する [LLM ゲートウェイ](/docs/ja/llm-gateway)を使用する場合、Explore は [`opus` エイリアス](/docs/ja/model-config#model-aliases)が解決される Opus モデルで実行されます。
-  * Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、[Claude Platform on AWS](/docs/ja/claude-platform-on-aws)、または [Claude apps ゲートウェイ](/docs/ja/claude-apps-gateway)では、Explore はメイン会話のモデルのままです。
+  * Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、[Claude Platform on AWS](/docs/ja/claude-platform-on-aws.md)、または [Claude apps ゲートウェイ](/docs/ja/claude-apps-gateway)では、Explore はメイン会話のモデルのままです。
 * **ツール**: 読み取り専用ツール。Write と Edit は拒否されます。
 * **目的**: ファイル検出、コード検索、コードベース探索
 
@@ -50,7 +50,7 @@ Explore を呼び出すとき、Claude は徹底度レベルを指定します�
 
 **Plan**
 
-[プランモード](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode)中にプランを提示する前にコンテキストを収集するために使用される研究エージェント。
+[プランモード](/docs/ja/permission-modes.md#analyze-before-you-edit-with-plan-mode)中にプランを提示する前にコンテキストを収集するために使用される研究エージェント。
 
 * **モデル**: メイン会話から継承されます。ただし、`CLAUDE_CODE_SUBAGENT_MODEL`を設定して[すべてのサブエージェントを 1 つのモデルで実行](#run-every-subagent-on-one-model)する場合を除きます。
 * **ツール**: 読み取り専用ツール。Write と Edit は拒否されます。
@@ -74,7 +74,7 @@ Claude Code には、特定のタスク用の追加のヘルパーエージェ�
 
 | エージェント | モデル | Claude が使用する場合 |
 | :- | :- | :- |
-| claude | 独自のモデルはありません。Claude がサブエージェントとして生成する場合は[モデル順序](#choose-a-model)に従います | タスクがより特化したエージェントに適合しない場合。[サブエージェントで利用可能](#available-tools)なすべてのツールを備えたキャッチオール。また、ディスパッチされた[バックグラウンドセッション](/docs/ja/agent-view)のデフォルトエージェント。[セッションが開始される方法に応じて、開始される権限モード](/docs/ja/agent-view#permission-mode-model-and-effort)。 |
+| claude | 独自のモデルはありません。Claude がサブエージェントとして生成する場合は[モデル順序](#choose-a-model)に従います | タスクがより特化したエージェントに適合しない場合。[サブエージェントで利用可能](#available-tools)なすべてのツールを備えたキャッチオール。また、ディスパッチされた[バックグラウンドセッション](/docs/ja/agent-view.md)のデフォルトエージェント。[セッションが開始される方法に応じて、開始される権限モード](/docs/ja/agent-view.md#permission-mode-model-and-effort)。 |
 | statusline-setup | Sonnet | `/statusline`を実行してステータスラインを設定する場合 |
 | claude-code-guide | Haiku | Claude Code 機能について質問する場合 |
 
@@ -83,7 +83,7 @@ Claude Code には、特定のタスク用の追加のヘルパーエージェ�
 * 特定の組み込みタイプをブロックするには、[特定のサブエージェントを無効にする](#disable-specific-subagents)に示されているように、`permissions.deny`に追加します。
 * Claude がサブエージェントに委譲するのを防ぐには、[`permissions.deny`](/docs/ja/permissions#tool-specific-permission-rules)で`Agent`ツール自体を拒否します。
 * 組み込みの`Explore`および`Plan`サブエージェントのみを削除するには、[`CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS=1`](/docs/ja/env-vars)を設定します。Claude はファイルを直接読み取り、探索し、サブエージェントに委譲しません。Claude Code v2.1.198 以降が必要です。
-* [非インタラクティブモード](/docs/ja/headless)および[Agent SDK](/docs/ja/agent-sdk/overview)では、[`CLAUDE_AGENT_SDK_DISABLE_BUILTIN_AGENTS=1`](/docs/ja/env-vars)を設定して、すべての組み込みタイプを削除し、独自のタイプのみを提供します。
+* [非インタラクティブモード](/docs/ja/headless.md)および[Agent SDK](/docs/ja/agent-sdk/overview.md)では、[`CLAUDE_AGENT_SDK_DISABLE_BUILTIN_AGENTS=1`](/docs/ja/env-vars)を設定して、すべての組み込みタイプを削除し、独自のタイプのみを提供します。
 
 `subagent_type` を省略する Agent ツール呼び出しは、フォールバック先となる `general-purpose` サブエージェントがセッションにない場合、[`subagent_type is required`](/docs/ja/errors#subagent-type-is-required) で失敗します。
 
@@ -157,17 +157,17 @@ Claude が新しいサブエージェントを見つけられない場合は、C
 
 | 場所 | スコープ | 優先順位 | 作成方法 |
 | :- | :- | :- | :- |
-| 管理設定 | 組織全体 | 1（最高） | [管理設定](/docs/ja/settings)を通じてデプロイ |
+| 管理設定 | 組織全体 | 1（最高） | [管理設定](/docs/ja/settings.md)を通じてデプロイ |
 | `--agents` CLI フラグ | 現在のセッション | 2 | Claude Code の起動時に JSON を渡す |
 | `.claude/agents/` | 現在のプロジェクト | 3 | Claude に依頼するか、ファイルを手動で作成 |
 | `~/.claude/agents/` | すべてのプロジェクト | 4 | Claude に依頼するか、ファイルを手動で作成 |
-| プラグインの `agents/` ディレクトリ | プラグインが有効な場所 | 5（最低） | [プラグイン](/docs/ja/plugins/overview)とともにインストール |
+| プラグインの `agents/` ディレクトリ | プラグインが有効な場所 | 5（最低） | [プラグイン](/docs/ja/plugins/overview.md)とともにインストール |
 
 **プロジェクトサブエージェント**（`.claude/agents/`）は、特定のコードベースに固有のサブエージェントに最適です。バージョン管理にチェックインすると、チームで共同で使用・改善できます。
 
 プロジェクトサブエージェントは現在の作業ディレクトリから上位へたどって検出されるため、そこからリポジトリのルートまでの間にあるすべての `.claude/agents/` がスキャンされます。これらのネストされたディレクトリのうち複数が同じ `name` を定義している場合、Claude Code は作業ディレクトリに最も近い定義を使用します。
 
-`--add-dir` または `/add-dir` でディレクトリを追加すると、Claude Code はプロジェクトサブエージェントに加えて、そのディレクトリの `.claude/agents/` フォルダも読み込みます。`--add-dir` からほかにどの種類の設定が読み込まれるかについては、[追加ディレクトリ](/docs/ja/permissions#additional-directories-grant-file-access-not-configuration)を参照してください。`--add-dir` を使わずにプロジェクト間でサブエージェントを共有するには、`~/.claude/agents/` または[プラグイン](/docs/ja/plugins/overview)を使用します。
+`--add-dir` または `/add-dir` でディレクトリを追加すると、Claude Code はプロジェクトサブエージェントに加えて、そのディレクトリの `.claude/agents/` フォルダも読み込みます。`--add-dir` からほかにどの種類の設定が読み込まれるかについては、[追加ディレクトリ](/docs/ja/permissions.md#additional-directories-grant-file-access-not-configuration)を参照してください。`--add-dir` を使わずにプロジェクト間でサブエージェントを共有するには、`~/.claude/agents/` または[プラグイン](/docs/ja/plugins/overview.md)を使用します。
 
 **ユーザーサブエージェント**（`~/.claude/agents/`）は、すべてのプロジェクトで利用できる個人用のサブエージェントです。
 
@@ -215,7 +215,7 @@ claude --agents @'
 '@
 ```
 
-[非対話モード](/docs/ja/headless)では、コマンドラインで渡すには大きすぎる定義のために、`--agents` は同じオブジェクトを含む JSON ファイルへのパスも受け付けます。たとえば、`claude -p --agents ./agents.json "Review my changes"` はそのファイルから定義を読み込みます。対話セッションでは、Claude Code はファイルパスを拒否します。ファイル形式には Claude Code v2.1.281 以降が必要です。
+[非対話モード](/docs/ja/headless.md)では、コマンドラインで渡すには大きすぎる定義のために、`--agents` は同じオブジェクトを含む JSON ファイルへのパスも受け付けます。たとえば、`claude -p --agents ./agents.json "Review my changes"` はそのファイルから定義を読み込みます。対話セッションでは、Claude Code はファイルパスを拒否します。ファイル形式には Claude Code v2.1.281 以降が必要です。
 
 JSON の各トップレベルキーはエージェントの名前で、その値はそのエージェントの定義です。名前を `-` で始めないでください。定義には次のフィールドを指定できます。
 
@@ -225,9 +225,9 @@ JSON の各トップレベルキーはエージェントの名前で、その値
 
 Claude Code が読み込めない値をどう扱うか、およびそのチェックをスキップするフラグと環境変数については、[`Invalid --agents configuration`](/docs/ja/errors#invalid-agents-configuration) を参照してください。
 
-**管理サブエージェント**は組織の管理者によってデプロイされます。[管理設定ディレクトリ](/docs/ja/managed-settings#delivery-mechanisms)内の `.claude/agents/` に markdown ファイルを配置し、プロジェクトサブエージェントやユーザーサブエージェントと同じフロントマター形式を使用します。管理定義は、同じ名前のプロジェクトサブエージェントやユーザーサブエージェントよりも優先されます。
+**管理サブエージェント**は組織の管理者によってデプロイされます。[管理設定ディレクトリ](/docs/ja/managed-settings.md#delivery-mechanisms)内の `.claude/agents/` に markdown ファイルを配置し、プロジェクトサブエージェントやユーザーサブエージェントと同じフロントマター形式を使用します。管理定義は、同じ名前のプロジェクトサブエージェントやユーザーサブエージェントよりも優先されます。
 
-**プラグインサブエージェント**は、インストールした[プラグイン](/docs/ja/plugins/overview)から提供されます。カスタムサブエージェントとともに自動的に読み込まれ、@ メンションの入力補完にスコープ付きの名前で表示されます。プラグインサブエージェントの作成について詳しくは、[プラグインコンポーネントリファレンス](/docs/ja/plugins/components#agents)を参照してください。
+**プラグインサブエージェント**は、インストールした[プラグイン](/docs/ja/plugins/overview.md)から提供されます。カスタムサブエージェントとともに自動的に読み込まれ、@ メンションの入力補完にスコープ付きの名前で表示されます。プラグインサブエージェントの作成について詳しくは、[プラグインコンポーネントリファレンス](/docs/ja/plugins/components.md#agents)を参照してください。
 
 > [!NOTE]
 >
@@ -235,7 +235,7 @@ Claude Code が読み込めない値をどう扱うか、およびそのチェ�
 >
 > プラグインの作成者である場合は、代わりにフックをプラグインの [`hooks/hooks.json`](/docs/ja/plugins/components#hooks) に、MCP サーバーをプラグインの [`.mcp.json`](/docs/ja/plugins/components#mcp-servers) に含めて配布してください。これらはサブエージェント内だけでなく、プラグインが有効なときは常に適用されます。
 
-サブエージェントの定義を[エージェントチーム](/docs/ja/agent-teams)のチームメイトとして再利用することもできます。Claude にチームメイトの生成を依頼するときにサブエージェントの種類を指定すると、Claude Code はその定義の一部をチームメイトに適用します。各表示モードでどのスコープとどの部分が適用されるかについては、[チームメイトにサブエージェント定義を使用する](/docs/ja/agent-teams#use-subagent-definitions-for-teammates)を参照してください。
+サブエージェントの定義を[エージェントチーム](/docs/ja/agent-teams.md)のチームメイトとして再利用することもできます。Claude にチームメイトの生成を依頼するときにサブエージェントの種類を指定すると、Claude Code はその定義の一部をチームメイトに適用します。各表示モードでどのスコープとどの部分が適用されるかについては、[チームメイトにサブエージェント定義を使用する](/docs/ja/agent-teams.md#use-subagent-definitions-for-teammates)を参照してください。
 
 ### サブエージェントファイルを作成する
 
@@ -265,28 +265,28 @@ specific, actionable feedback on quality, security, and best practices.
 
 フロントマターはサブエージェントのメタデータと設定を定義します。本文はサブエージェントの動作を導くシステムプロンプトになります。サブエージェントが受け取るのはこのシステムプロンプトと、作業ディレクトリなどの基本的な環境情報のみで、Claude Code のシステムプロンプトは受け取りません。
 
-[非対話モード](/docs/ja/headless)では、[`--append-subagent-system-prompt`](/docs/ja/cli-reference#cli-flags) を渡すと、ネストされたサブエージェントを含むすべてのサブエージェントのシステムプロンプトの末尾にテキストを追加できます。ただし、会話自体のプロンプトを再利用する[フォークされたサブエージェント](#fork-the-current-conversation)は除きます。Claude Code v2.1.205 以降が必要です。テキストが長すぎてコマンドラインで渡せない場合は、ファイルに保存し、代わりに `--append-subagent-system-prompt-file` でそのパスを渡してください。ファイルフラグには Claude Code v2.1.261 以降が必要です。
+[非対話モード](/docs/ja/headless.md)では、[`--append-subagent-system-prompt`](/docs/ja/cli-reference#cli-flags) を渡すと、ネストされたサブエージェントを含むすべてのサブエージェントのシステムプロンプトの末尾にテキストを追加できます。ただし、会話自体のプロンプトを再利用する[フォークされたサブエージェント](#fork-the-current-conversation)は除きます。Claude Code v2.1.205 以降が必要です。テキストが長すぎてコマンドラインで渡せない場合は、ファイルに保存し、代わりに `--append-subagent-system-prompt-file` でそのパスを渡してください。ファイルフラグには Claude Code v2.1.261 以降が必要です。
 
 サブエージェントはメインの会話の現在の作業ディレクトリで開始します。サブエージェント内では、`cd` コマンドは Bash ツールや PowerShell ツールの呼び出し間で保持されず、メインの会話の作業ディレクトリにも影響しません。代わりにサブエージェントにリポジトリの分離されたコピーを与えるには、[`isolation: worktree`](#supported-frontmatter-fields) を設定します。
 
 `isolation: worktree` を持つサブエージェントは、Bash コマンドと PowerShell コマンドを自身の worktree 内で実行します。サブエージェントの実行中に worktree ディレクトリが削除された場合など、作業ディレクトリがメインのチェックアウトに解決されるコマンドは、エラーで失敗します。
 
-この作業ディレクトリのチェックは、Claude Code を起動したディレクトリを含むリポジトリ全体を対象とします。セッションが独自のリンクされた [worktree](/docs/ja/worktrees) で実行されている場合、チェックはその worktree のリンク元であるメインのチェックアウトも対象とします。
+この作業ディレクトリのチェックは、Claude Code を起動したディレクトリを含むリポジトリ全体を対象とします。セッションが独自のリンクされた [worktree](/docs/ja/worktrees.md) で実行されている場合、チェックはその worktree のリンク元であるメインのチェックアウトも対象とします。
 
 Bash コマンドについては、Claude Code はコマンド自体も 2 つの方法でチェックします。
 
 * git をメインのチェックアウトにリダイレクトするコマンドをブロックします。
 * コマンドが実行する git が worktree 内にとどまることをコマンドテキストから検証できない場合（たとえば、コマンド名が実行時に算出される場合）、そのコマンドを拒否します。
 
-リダイレクトの手段と形式のルールは、[Claude Code による分離の強制方法](/docs/ja/worktrees#how-claude-code-enforces-isolation)に記載されています。PowerShell コマンドには作業ディレクトリのチェックのみが適用されます。
+リダイレクトの手段と形式のルールは、[Claude Code による分離の強制方法](/docs/ja/worktrees.md#how-claude-code-enforces-isolation)に記載されています。PowerShell コマンドには作業ディレクトリのチェックのみが適用されます。
 
-[Monitor](/docs/ja/tools-reference#monitor-tool) コマンドには、Bash コマンドと同じ作業ディレクトリとコマンド内容のチェックが適用されます。
+[Monitor](/docs/ja/tools-reference.md#monitor-tool) コマンドには、Bash コマンドと同じ作業ディレクトリとコマンド内容のチェックが適用されます。
 
-メインの会話自体が worktree で分離されて実行されている場合、Claude Code は同じチェックをセッションと、`isolation: worktree` を持たないサブエージェントを含め、セッションが生成するすべてのサブエージェントに適用します。[Claude Code による分離の強制方法](/docs/ja/worktrees#how-claude-code-enforces-isolation)を参照してください。
+メインの会話自体が worktree で分離されて実行されている場合、Claude Code は同じチェックをセッションと、`isolation: worktree` を持たないサブエージェントを含め、セッションが生成するすべてのサブエージェントに適用します。[Claude Code による分離の強制方法](/docs/ja/worktrees.md#how-claude-code-enforces-isolation)を参照してください。
 
 ### フロントマターリファレンス
 
-サブエージェントは、ファイル先頭の `---` マーカーで囲まれた YAML [フロントマター](/docs/ja/glossary#frontmatter)で設定し、閉じの `---` の後に Markdown でシステムプロンプトを記述します。必須なのは `name` と `description` のみです。
+サブエージェントは、ファイル先頭の `---` マーカーで囲まれた YAML [フロントマター](/docs/ja/glossary.md#frontmatter)で設定し、閉じの `---` の後に Markdown でシステムプロンプトを記述します。必須なのは `name` と `description` のみです。
 
 複数の単語からなるフィールド名は `maxTurns` や `disallowedTools` のように camelCase を使用し、表と完全に一致させる必要があります。Claude Code は認識できないフィールドをエラーを報告せずに無視します。
 
@@ -295,25 +295,25 @@ Bash コマンドについては、Claude Code はコマンド自体も 2 つの
 
 | フィールド | 必須 | 説明 |
 | :- | :- | :- |
-| `name` | はい | `code-reviewer` や `reviewer-v2` などの、最大 256 文字の一意の識別子。[フック](/docs/ja/hooks#subagentstart)はこの値を `agent_type` として受け取ります。ファイル名と一致させる必要はありません。名前に `:` を含めることはできません。`:` は `my-plugin:reviewer` などの[プラグインスコープの識別子](/docs/ja/plugins/overview)用に予約されています |
+| `name` | はい | `code-reviewer` や `reviewer-v2` などの、最大 256 文字の一意の識別子。[フック](/docs/ja/hooks.md#subagentstart)はこの値を `agent_type` として受け取ります。ファイル名と一致させる必要はありません。名前に `:` を含めることはできません。`:` は `my-plugin:reviewer` などの[プラグインスコープの識別子](/docs/ja/plugins/overview.md)用に予約されています |
 | `description` | はい | Claude がこのサブエージェントに委任すべきタイミング |
-| `tools` | いいえ | サブエージェントが使用できる[ツール](#available-tools)。`Read, Grep, Bash` のようなカンマ区切りの文字列または YAML リストで指定します。省略した場合、サブエージェントが利用できるすべてのツールを継承します。リスト内のどのエントリもツールに解決されない場合、通常サブエージェントはそのエントリを示すエラーとともに[起動に失敗します](/docs/ja/errors#agent-would-be-spawned-with-zero-tools)。スキルをコンテキストにプリロードするには、ここに `Skill` を列挙するのではなく `skills` フィールドを使用します |
+| `tools` | いいえ | サブエージェントが使用できる[ツール](#available-tools)。`Read, Grep, Bash` のようなカンマ区切りの文字列または YAML リストで指定します。省略した場合、サブエージェントが利用できるすべてのツールを継承します。リスト内のどのエントリもツールに解決されない場合、通常サブエージェントはそのエントリを示すエラーとともに[起動に失敗します](/docs/ja/errors.md#agent-would-be-spawned-with-zero-tools)。スキルをコンテキストにプリロードするには、ここに `Skill` を列挙するのではなく `skills` フィールドを使用します |
 | `disallowedTools` | いいえ | 拒否するツール。継承されたリストまたは指定されたリストから削除されます。形式は `tools` と同じです。`Bash(git push *)` のような指定子付きのエントリでも、[ツール全体が削除されます](#restrict-which-tools-a-subagent-can-use) |
 | `model` | いいえ | 使用する[モデル](#choose-a-model): `sonnet`、`opus`、`haiku`、`fable`、`claude-opus-5-5` などの完全なモデル ID、または `inherit`。省略した場合、Claude Code は[サブエージェントのモデルの決定順序](#choose-a-model)に従ってモデルを選択します |
 | `permissionMode` | いいえ | [権限モード](#permission-modes): `default`、`acceptEdits`、`auto`、`dontAsk`、`bypassPermissions`、`plan`、または `default` のエイリアスとしての `manual`。[プラグインサブエージェント](#choose-the-subagent-scope)では無視されます |
 | `maxTurns` | いいえ | サブエージェントが停止するまでのエージェントターンの最大数。サブエージェントが上限に達すると、Claude Code はその出力を部分的なものとしてマークして返し、Claude はサブエージェントを[再開](#resume-subagents)して続行できます。部分的なマークには Claude Code v2.1.246 以降が必要です |
 | `autoCompactWindow` | いいえ | このサブエージェントの[自動圧縮ウィンドウ](#subagent-auto-compact-window)を、`100000` から `1000000` までのトークン数に引き下げます。Claude Code v2.1.296 以降が必要です |
-| `skills` | いいえ | 起動時にサブエージェントのコンテキストにプリロードする[スキル](/docs/ja/skills)。説明だけでなく、スキルの内容全体が注入されます。サブエージェントは、列挙されていないプロジェクト、ユーザー、プラグインのスキルも Skill ツールを通じて引き続き呼び出せます |
-| `mcpServers` | いいえ | このサブエージェントが利用できる [MCP サーバー](/docs/ja/mcp)。各エントリは、設定済みのサーバーを参照するサーバー名（例: `"slack"`）、またはサーバー名をキーとし完全な [MCP サーバー設定](/docs/ja/mcp#installing-mcp-servers)を値とするインライン定義のいずれかです。[プラグインサブエージェント](#choose-the-subagent-scope)では無視されます |
+| `skills` | いいえ | 起動時にサブエージェントのコンテキストにプリロードする[スキル](/docs/ja/skills.md)。説明だけでなく、スキルの内容全体が注入されます。サブエージェントは、列挙されていないプロジェクト、ユーザー、プラグインのスキルも Skill ツールを通じて引き続き呼び出せます |
+| `mcpServers` | いいえ | このサブエージェントが利用できる [MCP サーバー](/docs/ja/mcp.md)。各エントリは、設定済みのサーバーを参照するサーバー名（例: `"slack"`）、またはサーバー名をキーとし完全な [MCP サーバー設定](/docs/ja/mcp.md#installing-mcp-servers)を値とするインライン定義のいずれかです。[プラグインサブエージェント](#choose-the-subagent-scope)では無視されます |
 | `hooks` | いいえ | このサブエージェントにスコープされた[ライフサイクルフック](#define-hooks-for-subagents)。[プラグインサブエージェント](#choose-the-subagent-scope)では無視されます |
 | `memory` | いいえ | [永続メモリのスコープ](#enable-persistent-memory): `user`、`project`、または `local`。セッションをまたいだ学習を有効にします |
 | `background` | いいえ | `true` に設定すると、Claude が待機を求めた場合でもこのサブエージェントをバックグラウンドに維持します。デフォルトでは、Claude がメインの会話から生成するサブエージェントはすでに[バックグラウンドで開始します](#run-subagents-in-foreground-or-background) |
-| `omitClaudeMd` | いいえ | `true` に設定すると、このサブエージェントは[初期コンテキスト](#what-loads-at-startup)にユーザー、プロジェクト、ローカルの CLAUDE.md ファイルを含めずに開始します。[管理ポリシーファイル](/docs/ja/memory#how-claude-md-files-load)は引き続き読み込まれますが、[管理サブエージェント](#choose-the-subagent-scope)の場合は除きます。必要なものをすべて委任プロンプトから受け取るサブエージェントに使用します。エージェントが `--agent` または `agent` 設定によってメインセッションのエージェントとして実行される場合は無視されます。Claude Code v2.1.271 以降が必要です |
+| `omitClaudeMd` | いいえ | `true` に設定すると、このサブエージェントは[初期コンテキスト](#what-loads-at-startup)にユーザー、プロジェクト、ローカルの CLAUDE.md ファイルを含めずに開始します。[管理ポリシーファイル](/docs/ja/memory.md#how-claude-md-files-load)は引き続き読み込まれますが、[管理サブエージェント](#choose-the-subagent-scope)の場合は除きます。必要なものをすべて委任プロンプトから受け取るサブエージェントに使用します。エージェントが `--agent` または `agent` 設定によってメインセッションのエージェントとして実行される場合は無視されます。Claude Code v2.1.271 以降が必要です |
 | `effort` | いいえ | このサブエージェントがアクティブなときの effort レベル。セッションの effort レベルを上書きしますが、[`CLAUDE_CODE_EFFORT_LEVEL`](/docs/ja/env-vars#variables) 環境変数は上書きしません。オプション: `low`、`medium`、`high`、`xhigh`、`max`。利用可能なレベルはモデルによって異なります。[effort レベルを選択する](#choose-an-effort-level)を参照してください |
-| `isolation` | いいえ | `worktree` に設定すると、サブエージェントを一時的な [git worktree](/docs/ja/worktrees) で実行し、リポジトリの分離されたコピーを与えます。このコピーは、デフォルトでは親セッションの `HEAD` ではなく[デフォルトブランチ](/docs/ja/worktrees#choose-the-base-branch)から分岐します。サブエージェントが変更を加えなかった場合、worktree は自動的にクリーンアップされます |
+| `isolation` | いいえ | `worktree` に設定すると、サブエージェントを一時的な [git worktree](/docs/ja/worktrees.md) で実行し、リポジトリの分離されたコピーを与えます。このコピーは、デフォルトでは親セッションの `HEAD` ではなく[デフォルトブランチ](/docs/ja/worktrees.md#choose-the-base-branch)から分岐します。サブエージェントが変更を加えなかった場合、worktree は自動的にクリーンアップされます |
 | `color` | いいえ | タスクリストとトランスクリプトにおけるサブエージェントの表示カラー。`red`、`blue`、`green`、`yellow`、`purple`、`orange`、`pink`、`cyan` を指定できます |
-| `initialPrompt` | いいえ | このエージェントがメインセッションのエージェントとして（`--agent` または `agent` 設定によって）実行される場合に、最初のユーザーターンとして自動送信されます。[コマンド](/docs/ja/commands)と[スキル](/docs/ja/skills)は処理されます。ユーザーが指定したプロンプトの前に付加されます。[プラグインサブエージェント](#choose-the-subagent-scope)では無視されます |
-| `experimental` | いいえ | 実験的なオプションのマップ。`cacheTtl` キーを `5m` または `1h` に設定すると、このサブエージェントのリクエストの[プロンプトキャッシュの有効期間](/docs/ja/prompt-caching#choose-the-ttl-yourself)を選択できます。これは[キャッシュ有効期間の優先順位](/docs/ja/prompt-caching#choose-the-ttl-yourself)におけるフロントマターの位置で適用されます。Claude Code はそれ以外の値を無視し、Claude のサブスクリプションが使用クレジットを使用している間は `1h` を無視し、このフィールドをサブエージェントファイルからのみ読み取ります。Claude Code v2.1.248 以降が必要です |
+| `initialPrompt` | いいえ | このエージェントがメインセッションのエージェントとして（`--agent` または `agent` 設定によって）実行される場合に、最初のユーザーターンとして自動送信されます。[コマンド](/docs/ja/commands.md)と[スキル](/docs/ja/skills.md)は処理されます。ユーザーが指定したプロンプトの前に付加されます。[プラグインサブエージェント](#choose-the-subagent-scope)では無視されます |
+| `experimental` | いいえ | 実験的なオプションのマップ。`cacheTtl` キーを `5m` または `1h` に設定すると、このサブエージェントのリクエストの[プロンプトキャッシュの有効期間](/docs/ja/prompt-caching.md#choose-the-ttl-yourself)を選択できます。これは[キャッシュ有効期間の優先順位](/docs/ja/prompt-caching.md#choose-the-ttl-yourself)におけるフロントマターの位置で適用されます。Claude Code はそれ以外の値を無視し、Claude のサブスクリプションが使用クレジットを使用している間は `1h` を無視し、このフィールドをサブエージェントファイルからのみ読み取ります。Claude Code v2.1.248 以降が必要です |
 
 `cacheTtl` は、フロントマターのトップレベルではなく、`experimental` マップ内に記述します。
 
@@ -338,11 +338,11 @@ experimental:
 
 デバッグログを確認するには、`--debug` を付けて Claude Code を実行します。
 
-フロントマターに `name` がないか解析できない[プラグインサブエージェント](/docs/ja/plugins/components#agents)は、ファイル名で引き続き読み込まれます。
+フロントマターに `name` がないか解析できない[プラグインサブエージェント](/docs/ja/plugins/components.md#agents)は、ファイル名で引き続き読み込まれます。
 
 ##### セッション前に `agents` ディレクトリをチェックする
 
-`agents` ディレクトリ内でフロントマターを解析できないファイルを見つけるには、`.claude/agents` や `~/.claude/agents` などのディレクトリに対して `claude plugin validate` を実行します。Claude Code は[指定したディレクトリ](/docs/ja/plugins/cli-reference#validate-a-directory)のみをチェックし、フロントマターは解析できるが `name` がないファイルは指摘しません。Claude Code v2.1.233 以降が必要です。
+`agents` ディレクトリ内でフロントマターを解析できないファイルを見つけるには、`.claude/agents` や `~/.claude/agents` などのディレクトリに対して `claude plugin validate` を実行します。Claude Code は[指定したディレクトリ](/docs/ja/plugins/cli-reference.md#validate-a-directory)のみをチェックし、フロントマターは解析できるが `name` がないファイルは指摘しません。Claude Code v2.1.233 以降が必要です。
 
 ### モデルを選択する
 
@@ -359,12 +359,12 @@ Claude がサブエージェントを呼び出す際、その呼び出しに対�
 3. [`CLAUDE_CODE_SUBAGENT_MODEL`](/docs/ja/model-config#environment-variables) 環境変数（モデルエイリアスまたはモデル ID に設定した場合）
 4. メインの会話のモデル
 
-インストールされた [mod](/docs/ja/plugins/mods/overview) が [`agent.spawn`](/docs/ja/plugins/mods/reference#subagents) フックでモデルを設定している場合、Claude Code は呼び出しごとのパラメータの代わりにそのモデルを使用します。
+インストールされた [mod](/docs/ja/plugins/mods/overview.md) が [`agent.spawn`](/docs/ja/plugins/mods/reference#subagents) フックでモデルを設定している場合、Claude Code は呼び出しごとのパラメータの代わりにそのモデルを使用します。
 
-次の 2 つの場合、呼び出しごとのパラメータまたはフロントマターにおける `opus` などのファミリーエイリアスは、[エイリアスが指すバージョン](/docs/ja/model-config#model-aliases)ではなくメインの会話のモデルに解決されます。
+次の 2 つの場合、呼び出しごとのパラメータまたはフロントマターにおける `opus` などのファミリーエイリアスは、[エイリアスが指すバージョン](/docs/ja/model-config.md#model-aliases)ではなくメインの会話のモデルに解決されます。
 
-* **メインの会話のモデルがそのファミリーに属している場合**: サブエージェントは `[1m]` サフィックスを含め、メインの会話とまったく同じモデルで実行されるため、メインの会話と同じ[拡張コンテキスト](/docs/ja/model-config#extended-context)ウィンドウを得られます。
-* **[Anthropic API 以外のプロバイダー](/docs/ja/third-party-integrations)で、Claude Code がメインの会話のモデルファミリーを判別できない場合**: これは、Amazon Bedrock で Claude Code が基盤モデルに解決していない[アプリケーション推論プロファイル ARN](/docs/ja/amazon-bedrock#iam-configuration) を使用している場合に発生することがあります。このケースは `opus` エイリアスのみが対象で、[`ANTHROPIC_DEFAULT_OPUS_MODEL`](/docs/ja/model-config#environment-variables) を設定している場合は適用されません。その場合、`opus` は設定したモデルに解決されるためです。
+* **メインの会話のモデルがそのファミリーに属している場合**: サブエージェントは `[1m]` サフィックスを含め、メインの会話とまったく同じモデルで実行されるため、メインの会話と同じ[拡張コンテキスト](/docs/ja/model-config.md#extended-context)ウィンドウを得られます。
+* **[Anthropic API 以外のプロバイダー](/docs/ja/third-party-integrations.md)で、Claude Code がメインの会話のモデルファミリーを判別できない場合**: これは、Amazon Bedrock で Claude Code が基盤モデルに解決していない[アプリケーション推論プロファイル ARN](/docs/ja/amazon-bedrock.md#iam-configuration) を使用している場合に発生することがあります。このケースは `opus` エイリアスのみが対象で、[`ANTHROPIC_DEFAULT_OPUS_MODEL`](/docs/ja/model-config#environment-variables) を設定している場合は適用されません。その場合、`opus` は設定したモデルに解決されるためです。
 
 `CLAUDE_CODE_SUBAGENT_MODEL` 内のエイリアスは、メインの会話のファミリーを指している場合でも、常にエイリアスが指すバージョンに解決されます。この変数を `inherit` に設定することは、未設定のままにすることと同じです。
 
@@ -374,25 +374,25 @@ v2.1.251 より前は、`CLAUDE_CODE_SUBAGENT_MODEL` がこの順序の先頭に
 
 Claude Code は、呼び出しごとのパラメータ、フロントマター、環境変数の値を組織の [`availableModels`](/docs/ja/model-config#restrict-model-selection) 許可リストと照合します。ブロックされた値については、別のモデルで代替します。
 
-* ブロックされた値が `opus` などのファミリーエイリアスである場合、Claude Code は `/model` と同じ[代替ルールとプロバイダーの範囲](/docs/ja/model-config#restrict-model-selection)に従い、許可リストで許可されているそのファミリーの最新バージョンでサブエージェントを実行します。v2.1.222 より前は、ブロックされたファミリーエイリアスについても、Claude Code は継承されたモデルでサブエージェントを実行していました。
+* ブロックされた値が `opus` などのファミリーエイリアスである場合、Claude Code は `/model` と同じ[代替ルールとプロバイダーの範囲](/docs/ja/model-config.md#restrict-model-selection)に従い、許可リストで許可されているそのファミリーの最新バージョンでサブエージェントを実行します。v2.1.222 より前は、ブロックされたファミリーエイリアスについても、Claude Code は継承されたモデルでサブエージェントを実行していました。
 * その他のブロックされた値の場合、その代替が機能しないプロバイダーの場合、または許可リストでそのファミリーのどのバージョンも許可されていない場合、Claude Code は代わりに継承されたモデルでサブエージェントを実行します。`CLAUDE_CODE_SUBAGENT_MODEL` を設定している場合、Claude Code はこれらと同じルールの下でまずそのモデルを試します。
 
 対話セッションでは、いずれの代替の場合も、Claude Code は要求されたモデルとサブエージェントが実際に実行されるモデルを示す警告を表示します。
 
-サブエージェントがどのモデルで実行されているかを確認するには、[`/tasks`](/docs/ja/commands) を実行します。Claude Code はサブエージェントの行にモデルを表示し、そのサブエージェントに [effort レベル](/docs/ja/model-config#adjust-effort-level)が設定されている場合はそれも表示します。Claude Code v2.1.242 以降が必要です。
+サブエージェントがどのモデルで実行されているかを確認するには、[`/tasks`](/docs/ja/commands) を実行します。Claude Code はサブエージェントの行にモデルを表示し、そのサブエージェントに [effort レベル](/docs/ja/model-config.md#adjust-effort-level)が設定されている場合はそれも表示します。Claude Code v2.1.242 以降が必要です。
 
 呼び出しごとの `model` パラメータは、サブエージェントが[再開されたり、フォローアップメッセージを送られたり](#resume-subagents)した場合にも適用されるため、サブエージェントはそのモデルのまま維持されます。
 
-v2.1.198 以降、サブエージェントはメインの会話の[拡張思考](/docs/ja/model-config#extended-thinking)設定も継承します。セッションで思考がオンであればサブエージェントでもオンになり、オフであればオフのままです。サブエージェントごとの思考設定はありません。v2.1.198 より前は、メインの会話の設定にかかわらず、サブエージェントは拡張思考が無効な状態で実行されていました。
+v2.1.198 以降、サブエージェントはメインの会話の[拡張思考](/docs/ja/model-config.md#extended-thinking)設定も継承します。セッションで思考がオンであればサブエージェントでもオンになり、オフであればオフのままです。サブエージェントごとの思考設定はありません。v2.1.198 より前は、メインの会話の設定にかかわらず、サブエージェントは拡張思考が無効な状態で実行されていました。
 
 #### すべてのサブエージェントを 1 つのモデルで実行する
 
-`CLAUDE_CODE_SUBAGENT_MODEL` はデフォルト値であるため、サブエージェントの定義や Claude が渡すモデルのほうが引き続き優先されます。すべてのサブエージェント、[チームメイト](/docs/ja/agent-teams#specify-teammates-and-models)、[ワークフローエージェント](/docs/ja/workflows)に 1 つのモデルを適用するには、`CLAUDE_CODE_SUBAGENT_MODEL_FORCE` も `1` に設定します。Claude Code v2.1.257 以降が必要です。
+`CLAUDE_CODE_SUBAGENT_MODEL` はデフォルト値であるため、サブエージェントの定義や Claude が渡すモデルのほうが引き続き優先されます。すべてのサブエージェント、[チームメイト](/docs/ja/agent-teams.md#specify-teammates-and-models)、[ワークフローエージェント](/docs/ja/workflows.md)に 1 つのモデルを適用するには、`CLAUDE_CODE_SUBAGENT_MODEL_FORCE` も `1` に設定します。Claude Code v2.1.257 以降が必要です。
 
 * 両方の変数を設定した場合、サブエージェントは `CLAUDE_CODE_SUBAGENT_MODEL` のモデルで実行されます。
 * `CLAUDE_CODE_SUBAGENT_MODEL_FORCE` のみを設定した場合、サブエージェントはメインの会話のモデルで実行されます。ただし、組み込みの Explore サブエージェントは、[組み込みサブエージェントに記載されているモデル](#built-in-subagents)で実行されます。
 
-たとえば、すべてのサブエージェントを Haiku で実行するには、[設定ファイル](/docs/ja/settings)の `env` ブロックで両方の変数を設定します。
+たとえば、すべてのサブエージェントを Haiku で実行するには、[設定ファイル](/docs/ja/settings.md)の `env` ブロックで両方の変数を設定します。
 
 ```json theme={null}
 {
@@ -405,14 +405,14 @@ v2.1.198 以降、サブエージェントはメインの会話の[拡張思考]
 
 設定が反映されたことを確認するには、サブエージェントの実行中に [`/tasks`](/docs/ja/commands) を実行します。サブエージェントの行に、実行されているモデルが表示されます。
 
-`CLAUDE_CODE_SUBAGENT_MODEL_FORCE` が[オン](/docs/ja/env-vars)の間、Claude Code はサブエージェント定義の `model` フィールドを無視し、Claude はサブエージェントの開始時にモデルを渡せません。次のサブエージェントは引き続きメインの会話のモデルで実行されます。
+`CLAUDE_CODE_SUBAGENT_MODEL_FORCE` が[オン](/docs/ja/env-vars.md)の間、Claude Code はサブエージェント定義の `model` フィールドを無視し、Claude はサブエージェントの開始時にモデルを渡せません。次のサブエージェントは引き続きメインの会話のモデルで実行されます。
 
 * [フォーク](#fork-the-current-conversation)
-* `model: inherit` を指定した[サブエージェントで実行されるスキル](/docs/ja/skills#run-skills-in-a-subagent)
+* `model: inherit` を指定した[サブエージェントで実行されるスキル](/docs/ja/skills.md#run-skills-in-a-subagent)
 
 ### effort レベルを選択する
 
-サブエージェントを独自の [effort レベル](/docs/ja/model-config#adjust-effort-level)で実行するには、その定義で [`effort`](#supported-frontmatter-fields) フィールドを設定します。
+サブエージェントを独自の [effort レベル](/docs/ja/model-config.md#adjust-effort-level)で実行するには、その定義で [`effort`](#supported-frontmatter-fields) フィールドを設定します。
 
 フォーク以外のサブエージェントを特定の effort レベルで実行するよう Claude に依頼すると、Claude はその呼び出しに `effort` パラメータを渡すこともできます。このパラメータは `effort` フィールドを上書きし、サブエージェントが[再開](#resume-subagents)されたときも有効なままです。[`CLAUDE_CODE_EFFORT_LEVEL`](/docs/ja/env-vars#variables) 環境変数は、その両方よりも優先されます。呼び出しごとのパラメータには Claude Code v2.1.292 以降が必要です。
 
@@ -422,26 +422,24 @@ v2.1.198 以降、サブエージェントはメインの会話の[拡張思考]
 
 #### 利用可能なツール
 
-サブエージェントは、メインの会話で利用可能な[組み込みツール](/docs/ja/tools-reference)と MCP ツールを継承しますが、2 つのフィルターによって絞り込まれます。1 つ目はすべてのサブエージェントから少数のツールを削除し、2 つ目は[バックグラウンド](#run-subagents-in-foreground-or-background)で実行されるサブエージェント（デフォルト）の組み込みツールセットを縮小します。macOS、Linux、WSL では、[Glob ツールの動作](/docs/ja/tools-reference#glob-tool-behavior)で説明されているとおり、メインの会話に Glob ツールと Grep ツールがない場合でも、サブエージェントはそれらを受け取ることがあります。[フォーク](#fork-the-current-conversation)は両方のフィルターをスキップし、メインの会話とまったく同じツールプールを受け取ります。1 つ目のフィルターは、`tools` フィールドに列挙されている場合でも、次のツールを削除します。
+サブエージェントは、メインの会話で利用可能な[組み込みツール](/docs/ja/tools-reference.md)と MCP ツールを継承しますが、2 つのフィルターによって絞り込まれます。1 つ目はすべてのサブエージェントから少数のツールを削除し、2 つ目は[バックグラウンド](#run-subagents-in-foreground-or-background)で実行されるサブエージェント（デフォルト）の組み込みツールセットを縮小します。macOS、Linux、WSL では、[Glob ツールの動作](/docs/ja/tools-reference.md#glob-tool-behavior)で説明されているとおり、メインの会話に Glob ツールと Grep ツールがない場合でも、サブエージェントはそれらを受け取ることがあります。[フォーク](#fork-the-current-conversation)は両方のフィルターをスキップし、メインの会話とまったく同じツールプールを受け取ります。1 つ目のフィルターは、`tools` フィールドに列挙されている場合でも、次のツールを削除します。
 
 * `Agent`（サブエージェントが[深さの上限](#let-subagents-spawn-their-own-subagents)に達している場合）。[フォーク](#fork-the-current-conversation)ではツールは一覧に残りますが、生成する代わりにエラーを返します
 * `AskUserQuestion`
-* `EndConversation`（メインの会話のみを終了できます。[EndConversation ツールの動作](/docs/ja/tools-reference#endconversation-tool-behavior)を参照してください）
+* `EndConversation`（メインの会話のみを終了できます。[EndConversation ツールの動作](/docs/ja/tools-reference.md#endconversation-tool-behavior)を参照してください）
 * `EnterPlanMode`
 * `ExitPlanMode`（ただし、サブエージェントの [`permissionMode`](#permission-modes) が `plan` の場合は削除されません）
 * `ScheduleWakeup`
 * `WaitForMcpServers`
 * `Workflow`
 
-2 つ目のフィルターは、バックグラウンドで実行されるサブエージェントに適用されます。サブエージェントがどこで実行されても 1 つ目のフィルターの条件に従う `Agent` と `ExitPlanMode` を除き、バックグラウンドのサブエージェントはすべての MCP ツールを保持しますが、組み込みツールは次のもののみを保持します: `Read`、`Grep`、`Glob`、`LSP`、`Bash`、`PowerShell`、`Edit`、`Write`、`NotebookEdit`、`WebFetch`、`WebSearch`、`TodoWrite`、`Skill`、`ToolSearch`、`EnterWorktree`、`ExitWorktree`、`Monitor`、`TaskStop`、`SendMessage`、`Artifact`。さらに、[`SubagentHandback`](/docs/ja/tools-reference) を通じて報告するサブエージェントではそのツールも保持します。Claude Code は、継承されたものか `tools` フィールドに列挙されたものかにかかわらず、それ以外のすべての組み込みツールをバックグラウンドのサブエージェントから削除します。そのため、同じ定義でもフォアグラウンドとバックグラウンドで異なるツールに解決されることがあります。この削除によって `tools` リストが[何にも解決されなくなる](/docs/ja/errors#agent-would-be-spawned-with-zero-tools)場合を除き、エラーは報告されません。
+2 つ目のフィルターは、バックグラウンドで実行されるサブエージェントに適用されます。サブエージェントがどこで実行されても 1 つ目のフィルターの条件に従う `Agent` と `ExitPlanMode` を除き、バックグラウンドのサブエージェントはすべての MCP ツールを保持しますが、組み込みツールは次のもののみを保持します: `Read`、`Grep`、`Glob`、`LSP`、`Bash`、`PowerShell`、`Edit`、`Write`、`NotebookEdit`、`WebFetch`、`WebSearch`、`TodoWrite`、`Skill`、`ToolSearch`、`EnterWorktree`、`ExitWorktree`、`Monitor`、`TaskStop`、`SendMessage`、`Artifact`。さらに、[`SubagentHandback`](/docs/ja/tools-reference) を通じて報告するサブエージェントではそのツールも保持します。Claude Code は、継承されたものか `tools` フィールドに列挙されたものかにかかわらず、それ以外のすべての組み込みツールをバックグラウンドのサブエージェントから削除します。そのため、同じ定義でもフォアグラウンドとバックグラウンドで異なるツールに解決されることがあります。この削除によって `tools` リストが[何にも解決されなくなる](/docs/ja/errors.md#agent-would-be-spawned-with-zero-tools)場合を除き、エラーは報告されません。
 
 v2.1.280 より前は、バックグラウンドのサブエージェントは `LSP` を使用できませんでした。
 
 [`ListAgents`](/docs/ja/cross-session-messaging) は、他の組み込みツールと同様にこれらのフィルターに従います。セッション間メッセージングが有効なセッションでは、フォアグラウンドのサブエージェントはこれを継承し、バックグラウンドのサブエージェントは保持しません。
 
-[エージェントチーム](/docs/ja/agent-teams)のチームメイトは、さらにタスクツールと cron ツールを保持します: `TaskCreate`、`TaskGet`、`TaskList`、`TaskUpdate`、`CronCreate`、`CronDelete`、`CronList`。
-
-[Task ツールのないセッション](/docs/ja/tools-reference#task-tool-availability)では、サブエージェントが別のモデルで実行される場合でも、Claude Code はサブエージェントにもタスクツールを提供しません。インプロセスのチームメイトも同様にセッションに従いますが、独自の[分割ペイン](/docs/ja/agent-teams#choose-a-display-mode)にあるチームメイトは別の Claude Code プロセスとして実行されるため、そのチームメイト自身のモデルによって決まります。
+[エージェントチーム](/docs/ja/agent-teams.md)のチームメイトは、さらにタスクツールと cron ツールを保持します: `TaskCreate`、`TaskGet`、`TaskList`、`TaskUpdate`、`CronCreate`、`CronDelete`、`CronList`。[Task ツールのないセッション](/docs/ja/tools-reference.md#task-tool-availability)では、サブエージェントが別のモデルで実行される場合でも、Claude Code はサブエージェントにもタスクツールを提供しません。インプロセスのチームメイトも同様にセッションに従います。分割ペインのチームメイトがタスクツールを持つかどうかを確認するには、[Task ツールの利用可否](/docs/ja/tools-reference.md#task-tool-availability)を参照してください。
 
 #### サブエージェントが使用できるツールを制限する
 
@@ -467,7 +465,7 @@ disallowedTools: Write, Edit
 ---
 ```
 
-すべてのエントリがスペルミスである場合や、サブエージェントが利用できないツールを指定している場合など、`tools` リスト内のどれもツールに解決されない場合、通常 Claude Code はサブエージェントの起動を拒否し、Agent ツールは解決できなかったエントリを示すエラーを返します。メッセージと各エントリの修正方法については、[Agent would be spawned with zero tools](/docs/ja/errors#agent-would-be-spawned-with-zero-tools) を参照してください。
+すべてのエントリがスペルミスである場合や、サブエージェントが利用できないツールを指定している場合など、`tools` リスト内のどれもツールに解決されない場合、通常 Claude Code はサブエージェントの起動を拒否し、Agent ツールは解決できなかったエントリを示すエラーを返します。メッセージと各エントリの修正方法については、[Agent would be spawned with zero tools](/docs/ja/errors.md#agent-would-be-spawned-with-zero-tools) を参照してください。
 
 `tools` フィールドと `disallowedTools` フィールドは、MCP サーバー全体を対象とするエントリも受け付けます。
 
@@ -487,13 +485,13 @@ disallowedTools: mcp__github
 ---
 ```
 
-`Bash(git push *)` のような指定子付きの `disallowedTools` エントリは、一致するコマンドだけでなく、ツール全体をサブエージェントから削除します。Bash を保持したまま特定のコマンドをブロックするには、設定の `permissions.deny` に `Bash(git push *)` などの [Bash 拒否ルール](/docs/ja/permissions#bash)を追加します。このルールはメインの会話とサブエージェントの両方に適用されます。
+`Bash(git push *)` のような指定子付きの `disallowedTools` エントリは、一致するコマンドだけでなく、ツール全体をサブエージェントから削除します。Bash を保持したまま特定のコマンドをブロックするには、設定の `permissions.deny` に `Bash(git push *)` などの [Bash 拒否ルール](/docs/ja/permissions.md#bash)を追加します。このルールはメインの会話とサブエージェントの両方に適用されます。
 
 ##### 名前に二重アンダースコアを含む MCP サーバー
 
 `reports__v2` のように名前に `__` を含む MCP サーバーのツールをサブエージェントが 1 つも取得できない場合は、サブエージェントの `mcp__` エントリを確認してください。
 
-* **`tools` の場合**: `mcp__` に続けて[サーバーの完全な名前](/docs/ja/permissions#mcp)と `__*` を記述します（例: `mcp__reports__v2__*`）。末尾の `__*` がないと、`mcp__reports__v2` はそのサーバーのどのツールにも一致しません。
+* **`tools` の場合**: `mcp__` に続けて[サーバーの完全な名前](/docs/ja/permissions.md#mcp)と `__*` を記述します（例: `mcp__reports__v2__*`）。末尾の `__*` がないと、`mcp__reports__v2` はそのサーバーのどのツールにも一致しません。
 * **`disallowedTools` の場合**: `reports` という名前のサーバーを除外するエントリである `mcp__reports` または `mcp__reports__*` を探します。いずれかのエントリがあると、サブエージェントは `reports__v2` のすべてのツールも失います。これらのツール名も `mcp__reports__` で始まるためです。`reports` サーバーのツールのみを除外するには、代わりに `mcp__reports__run_query` のように 1 つずつ列挙します。
 
 #### 生成できるサブエージェントを制限する
@@ -526,7 +524,7 @@ tools: Agent, Read, Bash
 
 #### MCP サーバーをサブエージェントにスコープする
 
-`mcpServers` フィールドを使用すると、メインの会話では利用できない [MCP](/docs/ja/mcp) サーバーへのアクセスをサブエージェントに与えられます。ここで定義したインラインサーバーは、[エージェントファイルのフォルダに対する信頼ルール](#inline-server-trust)に従って、サブエージェントの開始時に接続され、終了時に切断されます。文字列による参照は、親セッションの接続を共有します。
+`mcpServers` フィールドを使用すると、メインの会話では利用できない [MCP](/docs/ja/mcp.md) サーバーへのアクセスをサブエージェントに与えられます。ここで定義したインラインサーバーは、[エージェントファイルのフォルダに対する信頼ルール](#inline-server-trust)に従って、サブエージェントの開始時に接続され、終了時に切断されます。文字列による参照は、親セッションの接続を共有します。
 
 > [!NOTE]
 >
@@ -563,7 +561,7 @@ MCP サーバーをメインの会話から完全に除外し、そのツール�
 メインセッションに適用される MCP の制限は、サブエージェントのフロントマターで宣言されたサーバーにも適用されます。
 
 * [`--strict-mcp-config`](/docs/ja/cli-reference) と [`--bare`](/docs/ja/cli-reference)
-* [エンタープライズ管理 MCP 設定](/docs/ja/managed-mcp)
+* [エンタープライズ管理 MCP 設定](/docs/ja/managed-mcp.md)
 * [`allowedMcpServers` および `deniedMcpServers` ポリシー](/docs/ja/managed-mcp#policy-based-control-with-allowlists-and-denylists)
 
 これらのいずれかがサーバーをブロックした場合、Claude Code はそのサーバーをスキップし、ブロックされたサーバーを示す警告を表示します。
@@ -572,9 +570,9 @@ MCP サーバーをメインの会話から完全に除外し、そのツール�
 
 #### インライン MCP サーバーに必要な信頼
 
-Claude Code は、プロジェクトの `.claude/agents/` ディレクトリ、または `--add-dir` ディレクトリの `.claude/agents/` にあるエージェントファイルからの[インライン MCP サーバー](#scope-mcp-servers-to-a-subagent)を、[エージェントファイルの取得元フォルダを信頼](/docs/ja/permissions#what-runs-before-you-trust-a-folder)した後にのみ読み込みます。v2.1.238 より前は、Claude Code は信頼を確認せずにこれらのサーバーを読み込んでいました。
+Claude Code は、プロジェクトの `.claude/agents/` ディレクトリ、または `--add-dir` ディレクトリの `.claude/agents/` にあるエージェントファイルからの[インライン MCP サーバー](#scope-mcp-servers-to-a-subagent)を、[エージェントファイルの取得元フォルダを信頼](/docs/ja/permissions.md#what-runs-before-you-trust-a-folder)した後にのみ読み込みます。v2.1.238 より前は、Claude Code は信頼を確認せずにこれらのサーバーを読み込んでいました。
 
-* **信頼として扱われないもの**: 親フォルダの信頼、および `-p` セッションや SDK セッションが[設定ファイル内のフック](/docs/ja/permissions#what-runs-before-you-trust-a-folder)のために得る自動的な信頼
+* **信頼として扱われないもの**: 親フォルダの信頼、および `-p` セッションや SDK セッションが[設定ファイル内のフック](/docs/ja/permissions.md#what-runs-before-you-trust-a-folder)のために得る自動的な信頼
 * **信頼するまで**: Claude Code はそのエージェントファイル内のすべてのインラインサーバーをスキップし、`~/.claude.json` 用の正確な `projects["<path>"].hasTrustDialogAccepted` キーをデバッグログに書き込みます
 * **`--add-dir` ディレクトリ**: 信頼済みワークスペースのリポジトリ外にあるディレクトリには、独自の信頼エントリが必要です。その `.claude/agents/` ファイルはワークスペースの信頼を継承しないためです
 
@@ -585,14 +583,15 @@ Claude Code は、次の 2 種類のサーバーについては、エージェ�
 
 #### 権限モード
 
-`permissionMode` を設定して、サブエージェントが実行される権限モードを選択します。モードの設定値を使用するため、Manual モードは `default` です。未設定のままにすると、サブエージェントはメインの会話の[権限モード](/docs/ja/permission-modes)を継承します。
+`permissionMode` を設定して、サブエージェントが実行される権限モードを選択します。モードの設定値を使用するため、Manual モードは `default` です。未設定のままにすると、サブエージェントはメインの会話の[権限モード](/docs/ja/permission-modes.md)を継承します。
 
 メインの会話の権限モードによって、Claude Code が設定した値を使用するかどうかが決まります。
 
-* メインの会話が `bypassPermissions`、`acceptEdits`、または [auto モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)の場合、サブエージェントはそれと同じモードで実行され、Claude Code は設定した `permissionMode` を無視します。auto モードでは、分類器がメインの会話のブロックルールと許可ルールを使用してサブエージェントのツール呼び出しを評価します。サブエージェントが終了すると、[auto モードでのサブエージェントの扱い](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)で説明されているとおり、分類器は最終レポートが配信される前に、サブエージェントの作業と最終レポートもレビューします。
-* メインの会話が `default`、`dontAsk`、または `plan` モードの場合、サブエージェントは設定した権限モードで実行されます。ただし、次の場合は代わりにメインの会話の権限モードを維持します。
+* メインの会話が `bypassPermissions`、`acceptEdits`、または [auto モード](/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)の場合、サブエージェントはそれと同じモードで実行され、Claude Code は設定した `permissionMode` を無視します。auto モードでは、分類器がメインの会話のブロックルールと許可ルールを使用してサブエージェントのツール呼び出しを評価します。サブエージェントが終了すると、[auto モードでのサブエージェントの扱い](/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)で説明されているとおり、分類器は最終レポートが配信される前に、サブエージェントの作業と最終レポートもレビューします。
+* メインの会話が `plan` モードの場合、サブエージェントが[エージェントチームのルール](/docs/ja/agent-teams.md#have-teammates-plan-before-implementing)の下で[エージェントチームのチームメイト](#subagent-names)として実行される場合を除き、設定した `permissionMode` にかかわらずサブエージェントは plan モードのままになります。`dontAsk` を設定した場合、サブエージェントはプロンプトも表示しません。plan モードで承認を求めることになる操作は、代わりに拒否されます。
+* メインの会話が `default` または `dontAsk` モードの場合、サブエージェントは設定した権限モードで実行されます。ただし、次の場合は代わりにメインの会話の権限モードを維持します。
   * `bypassPermissions` を設定した場合。`bypassPermissions` の例外には Claude Code v2.1.267 以降が必要です。
-  * `auto` を設定したが、設定ファイルで [`disableAutoMode`](/docs/ja/settings-reference#disableautomode) が設定されている場合や、サブエージェントのモデルが auto モードをサポートしていない場合など、サブエージェントで [auto モードが利用できない](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)場合。
+  * `auto` を設定したが、設定ファイルで [`disableAutoMode`](/docs/ja/settings-reference#disableautomode) が設定されている場合や、サブエージェントのモデルが auto モードをサポートしていない場合など、サブエージェントで [auto モードが利用できない](/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)場合。
 
 `permissionMode` は次の値と、`default` のエイリアスとしての `manual` を受け付けます。
 
@@ -600,9 +599,9 @@ Claude Code は、次の 2 種類のサーバーについては、エージェ�
 | :- | :- |
 | `default` | Manual モード: 権限を求めるプロンプトを表示します |
 | `acceptEdits` | 作業ディレクトリまたは `additionalDirectories` 内のパスに対するファイル編集と一般的なファイルシステムコマンドを自動的に承認します |
-| `auto` | [auto モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode): バックグラウンドの分類器がコマンドと保護されたディレクトリへの書き込みをレビューします |
-| `dontAsk` | プロンプトを表示することになる呼び出しを自動的に拒否します。ただし、インストールした [mod](/docs/ja/plugins/mods/overview) は[それらの呼び出しの一部](/docs/ja/permissions#precedence-among-rules-hooks-and-mods)を引き続き承認できます。明示的に許可されたツールは引き続き機能します。`AskUserQuestion`、[`requiresUserInteraction`](/docs/ja/mcp#require-approval-for-a-specific-tool) とマークされた MCP ツール、[ネットワークパスからの読み取り](/docs/ja/permissions#network-paths)、および[組織が `ask` に設定した](/docs/ja/mcp#organization-controls-on-connector-tools)コネクタツール（その設定が Claude Code に反映されるセッションの場合）は、許可していても拒否されます |
-| `bypassPermissions` | [権限プロンプトをスキップします](/docs/ja/permission-modes#skip-all-checks-with-bypasspermissions-mode)。サブエージェントがこのモードで実行されるのは、メインの会話がこのモードの場合のみです |
+| `auto` | [auto モード](/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode): バックグラウンドの分類器がコマンドと保護されたディレクトリへの書き込みをレビューします |
+| `dontAsk` | プロンプトを表示することになる呼び出しを自動的に拒否します。ただし、インストールした [mod](/docs/ja/plugins/mods/overview.md) は[それらの呼び出しの一部](/docs/ja/permissions.md#precedence-among-rules-hooks-and-mods)を引き続き承認できます。明示的に許可されたツールは引き続き機能します。`AskUserQuestion`、[`requiresUserInteraction`](/docs/ja/mcp#require-approval-for-a-specific-tool) とマークされた MCP ツール、[ネットワークパスからの読み取り](/docs/ja/permissions.md#network-paths)、および[組織が `ask` に設定した](/docs/ja/mcp#organization-controls-on-connector-tools)コネクタツール（その設定が Claude Code に反映されるセッションの場合）は、許可していても拒否されます |
+| `bypassPermissions` | [権限プロンプトをスキップします](/docs/ja/permission-modes.md#skip-all-checks-with-bypasspermissions-mode)。サブエージェントがこのモードで実行されるのは、メインの会話がこのモードの場合のみです |
 | `plan` | plan モード（読み取り専用の探索） |
 
 #### サブエージェントにスキルをプリロードする
@@ -629,7 +628,7 @@ Implement API endpoints. Follow the conventions and patterns from the preloaded 
 
 > [!NOTE]
 >
-> これは[サブエージェントでスキルを実行する](/docs/ja/skills#run-skills-in-a-subagent)ことの逆です。サブエージェントで `skills` を使用する場合、サブエージェントがシステムプロンプトを制御し、スキルの内容を読み込みます。スキルで `context: fork` を使用する場合、スキルの内容は指定したエージェントに注入されます。どちらの場合も、サブエージェントは会話履歴なしで開始します。
+> これは[サブエージェントでスキルを実行する](/docs/ja/skills.md#run-skills-in-a-subagent)ことの逆です。サブエージェントで `skills` を使用する場合、サブエージェントがシステムプロンプトを制御し、スキルの内容を読み込みます。スキルで `context: fork` を使用する場合、スキルの内容は指定したエージェントに注入されます。どちらの場合も、サブエージェントは会話履歴なしで開始します。
 
 #### 永続メモリを有効にする
 
@@ -654,7 +653,7 @@ patterns, conventions, and recurring issues you discover.
 | `project` | `.claude/agent-memory/<name-of-agent>/` | サブエージェントの知識がプロジェクト固有で、バージョン管理を通じて共有できる場合 |
 | `local` | `.claude/agent-memory-local/<name-of-agent>/` | サブエージェントの知識がプロジェクト固有だが、バージョン管理にチェックインすべきでない場合 |
 
-サブエージェントのメモリは[自動メモリ](/docs/ja/memory#auto-memory)の一部です。`autoMemoryEnabled` 設定または `CLAUDE_CODE_DISABLE_AUTO_MEMORY` で自動メモリをオフにすると、`memory` フィールドは効果を持たず、サブエージェントは以下で説明するメモリの指示やメモリツールへのアクセスなしで起動します。
+サブエージェントのメモリは[自動メモリ](/docs/ja/memory.md#auto-memory)の一部です。`autoMemoryEnabled` 設定または `CLAUDE_CODE_DISABLE_AUTO_MEMORY` で自動メモリをオフにすると、`memory` フィールドは効果を持たず、サブエージェントは以下で説明するメモリの指示やメモリツールへのアクセスなしで起動します。
 
 メモリが有効な場合:
 
@@ -696,7 +695,7 @@ hooks:
 ---
 ```
 
-Claude Code は、stdin を介してフックコマンドに[フック入力を JSON として渡します](/docs/ja/hooks#pretooluse-input)。検証スクリプトはこの JSON を読み取り、Bash コマンドを抽出し、書き込み操作をブロックするために[終了コード 2 で終了します](/docs/ja/hooks#exit-code-2-behavior-per-event)。
+Claude Code は、stdin を介してフックコマンドに[フック入力を JSON として渡します](/docs/ja/hooks.md#pretooluse-input)。検証スクリプトはこの JSON を読み取り、Bash コマンドを抽出し、書き込み操作をブロックするために[終了コード 2 で終了します](/docs/ja/hooks.md#exit-code-2-behavior-per-event)。
 
 ```bash theme={null}
 #!/bin/bash
@@ -722,11 +721,11 @@ chmod +x ./scripts/validate-readonly-query.sh
 
 ルールをテストするには、サブエージェントに `UPDATE` ステートメントを実行するよう依頼します。スクリプトは終了コード 2 で終了し、Claude Code はコマンドをブロックし、サブエージェントには `Blocked: Only SELECT queries are allowed` メッセージが表示されます。
 
-完全な入力スキーマについては[フック入力](/docs/ja/hooks#pretooluse-input)を、終了コードが動作にどう影響するかについては[終了コード](/docs/ja/hooks#exit-code-output)を参照してください。Windows では、[PowerShell でのフックの実行](/docs/ja/hooks#windows-powershell-tool)に示されているように、フックスクリプトを PowerShell で記述し、フックエントリに `shell: powershell` を追加します。
+完全な入力スキーマについては[フック入力](/docs/ja/hooks.md#pretooluse-input)を、終了コードが動作にどう影響するかについては[終了コード](/docs/ja/hooks.md#exit-code-output)を参照してください。Windows では、[PowerShell でのフックの実行](/docs/ja/hooks.md#windows-powershell-tool)に示されているように、フックスクリプトを PowerShell で記述し、フックエントリに `shell: powershell` を追加します。
 
 #### 特定のサブエージェントを無効にする
 
-[設定](/docs/ja/settings-reference#permission-settings)の `deny` 配列に追加することで、Claude が特定のサブエージェントを使用できないようにできます。`Agent(subagent-name)` の形式を使用し、`subagent-name` はサブエージェントの name フィールドと一致させます。
+[設定](/docs/ja/settings-reference.md#permission-settings)の `deny` 配列に追加することで、Claude が特定のサブエージェントを使用できないようにできます。`Agent(subagent-name)` の形式を使用し、`subagent-name` はサブエージェントの name フィールドと一致させます。
 
 ```json theme={null}
 {
@@ -742,16 +741,16 @@ chmod +x ./scripts/validate-readonly-query.sh
 claude --disallowedTools "Agent(Explore)"
 ```
 
-権限ルールについて詳しくは、[権限のドキュメント](/docs/ja/permissions#tool-specific-permission-rules)を参照してください。
+権限ルールについて詳しくは、[権限のドキュメント](/docs/ja/permissions.md#tool-specific-permission-rules)を参照してください。
 
 ### サブエージェントのフックを定義する
 
-サブエージェントは、サブエージェントのライフサイクル中に実行される[フック](/docs/ja/hooks)を定義できます。フックを設定する方法は 2 つあります。
+サブエージェントは、サブエージェントのライフサイクル中に実行される[フック](/docs/ja/hooks.md)を定義できます。フックを設定する方法は 2 つあります。
 
 * **サブエージェントのフロントマター内**: そのサブエージェントがアクティブな間のみ実行されるフックを定義します
 * **`settings.json` 内**: サブエージェント内でも発火するセッション全体のフックを定義します。`PreToolUse` や `PostToolUse` などのツールイベントは、メインの会話と同じようにサブエージェントのツール呼び出しに対して発火し、`SubagentStart` と `SubagentStop` はサブエージェントの開始時または終了時に発火します
 
-[設定ファイル、管理ポリシー設定、プラグイン](/docs/ja/hooks#hook-locations)からのフックはすべてサブエージェント内で適用されるため、`settings.json` の `PreToolUse` フックは、サブエージェントが使用するすべてのツールの前にも実行されます。
+[設定ファイル、管理ポリシー設定、プラグイン](/docs/ja/hooks.md#hook-locations)からのフックはすべてサブエージェント内で適用されるため、`settings.json` の `PreToolUse` フックは、サブエージェントが使用するすべてのツールの前にも実行されます。
 
 #### サブエージェントのフロントマター内のフック
 
@@ -761,11 +760,11 @@ claude --disallowedTools "Agent(Explore)"
 >
 > フロントマターのフックは、エージェントが Agent ツールまたは @ メンションによってサブエージェントとして生成された場合と、エージェントが [`--agent`](#invoke-subagents-explicitly) または `agent` 設定によってメインセッションとして実行される場合に発火します。メインセッションの場合、これらは [`settings.json`](/docs/ja/hooks) で定義されたフックとともに実行されます。
 
-プロジェクトレベルのサブエージェントのフロントマターのフックを実行できるようにするには、エージェントファイルを含むフォルダについて[ワークスペースの信頼ダイアログ](/docs/ja/permissions#project-allow-rules-and-workspace-trust)を承認します。`~/.claude/agents/` にあるユーザーレベルのサブエージェントのフックと、`--agents` で渡した定義のフックは、この手順なしで実行されます。信頼済みワークスペースのリポジトリ外から `--add-dir` でフォルダを追加した場合は、そのフォルダを別途信頼してください。その `.claude/agents/` のフックはワークスペースの許可を継承しません。
+プロジェクトレベルのサブエージェントのフロントマターのフックを実行できるようにするには、エージェントファイルを含むフォルダについて[ワークスペースの信頼ダイアログ](/docs/ja/permissions.md#project-allow-rules-and-workspace-trust)を承認します。`~/.claude/agents/` にあるユーザーレベルのサブエージェントのフックと、`--agents` で渡した定義のフックは、この手順なしで実行されます。信頼済みワークスペースのリポジトリ外から `--add-dir` でフォルダを追加した場合は、そのフォルダを別途信頼してください。その `.claude/agents/` のフックはワークスペースの許可を継承しません。
 
-フォルダを信頼するまで、サブエージェントは引き続き実行されますが、Claude Code はそのフロントマターのフックをスキップし、フォルダを信頼する方法を説明するエラーをデバッグログに記録します。これは設定ファイル内のフックに対するルールよりも厳格なルールです。親フォルダを信頼するだけでは不十分で、`-p` セッションは信頼済みとして扱われません。[フォルダを信頼する前に実行されるもの](/docs/ja/permissions#what-runs-before-you-trust-a-folder)で 2 つを比較しています。v2.1.218 より前は、非対話セッションを含め、信頼していないフォルダからでもフロントマターのフックが実行される可能性がありました。
+フォルダを信頼するまで、サブエージェントは引き続き実行されますが、Claude Code はそのフロントマターのフックをスキップし、フォルダを信頼する方法を説明するエラーをデバッグログに記録します。これは設定ファイル内のフックに対するルールよりも厳格なルールです。親フォルダを信頼するだけでは不十分で、`-p` セッションは信頼済みとして扱われません。[フォルダを信頼する前に実行されるもの](/docs/ja/permissions.md#what-runs-before-you-trust-a-folder)で 2 つを比較しています。v2.1.218 より前は、非対話セッションを含め、信頼していないフォルダからでもフロントマターのフックが実行される可能性がありました。
 
-すべての[フックイベント](/docs/ja/hooks#hook-events)がサポートされています。サブエージェントで最も一般的なイベントは次のとおりです。
+すべての[フックイベント](/docs/ja/hooks.md#hook-events)がサポートされています。サブエージェントで最も一般的なイベントは次のとおりです。
 
 | イベント | matcher の入力 | 発火するタイミング |
 | :- | :- | :- |
@@ -804,7 +803,7 @@ hooks:
 | `SubagentStart` | エージェントの種類名 | サブエージェントが実行を開始したとき |
 | `SubagentStop` | エージェントの種類名 | サブエージェントが完了したとき |
 
-どちらのイベントも、名前で特定のエージェントの種類を対象とする matcher をサポートしています。matcher の値は、プロジェクトレベルおよびユーザーレベルのサブエージェントではエージェントのフロントマターの `name`、[プラグインサブエージェント](/docs/ja/plugins/components#agents)では `my-plugin:db-agent` などのプラグインスコープの識別子です。スコープ付きの名前にはコロンが含まれるため、[アンカーなしの正規表現](/docs/ja/hooks#matcher-patterns)として評価されます。そのエージェントのみに一致させるには、`^my-plugin:db-agent$` のように `^` と `$` でアンカーしてください。
+どちらのイベントも、名前で特定のエージェントの種類を対象とする matcher をサポートしています。matcher の値は、プロジェクトレベルおよびユーザーレベルのサブエージェントではエージェントのフロントマターの `name`、[プラグインサブエージェント](/docs/ja/plugins/components.md#agents)では `my-plugin:db-agent` などのプラグインスコープの識別子です。スコープ付きの名前にはコロンが含まれるため、[アンカーなしの正規表現](/docs/ja/hooks.md#matcher-patterns)として評価されます。そのエージェントのみに一致させるには、`^my-plugin:db-agent$` のように `^` と `$` でアンカーしてください。
 
 この例では、`db-agent` サブエージェントが開始したときにのみセットアップスクリプトを実行し、いずれかのサブエージェントが停止したときにクリーンアップスクリプトを実行します。
 
@@ -830,7 +829,7 @@ hooks:
 }
 ```
 
-完全なフック設定形式については、[フック](/docs/ja/hooks)を参照してください。
+完全なフック設定形式については、[フック](/docs/ja/hooks.md)を参照してください。
 
 ## サブエージェントを使う
 
@@ -838,9 +837,9 @@ hooks:
 
 Claude は、リクエスト内のタスクの説明、サブエージェント設定の `description` フィールド、および現在のコンテキストに基づいて、タスクを自動的に委任します。積極的な委任を促すには、サブエージェントの description フィールドに「use proactively」のようなフレーズを含めてください。
 
-説明は簡潔にしてください。サブエージェントの説明の合計が[15,000 トークンの上限](/docs/ja/errors#agent-descriptions-are-over-the-15000-token-limit)を超えると、Claude Code は起動時に警告を表示します。ただし、その場合でもすべてのサブエージェントは読み込まれます。
+説明は簡潔にしてください。サブエージェントの説明の合計が[15,000 トークンの上限](/docs/ja/errors.md#agent-descriptions-are-over-the-15000-token-limit)を超えると、Claude Code は起動時に警告を表示します。ただし、その場合でもすべてのサブエージェントは読み込まれます。
 
-サブエージェントが[プラグイン](/docs/ja/plugins/overview)で提供されている場合は、1 つずつ確認する代わりに、現実的なプロンプト全体で Claude がどの程度確実にそのサブエージェントへ委任するかを測定できます。[`claude plugin eval`](/docs/ja/plugin-evals) は、各プロンプトをプラグインありとなしで実行し、結果をスコア化します。
+サブエージェントが[プラグイン](/docs/ja/plugins/overview.md)で提供されている場合は、1 つずつ確認する代わりに、現実的なプロンプト全体で Claude がどの程度確実にそのサブエージェントへ委任するかを測定できます。[`claude plugin eval`](/docs/ja/plugin-evals) は、各プロンプトをプラグインありとなしで実行し、結果をスコア化します。
 
 ### サブエージェントを明示的に呼び出す
 
@@ -865,7 +864,7 @@ Have the code-reviewer subagent look at my recent changes
 
 メッセージ全体は引き続き Claude に送られ、Claude はユーザーの依頼内容に基づいてサブエージェントのタスクプロンプトを作成します。@ メンションが制御するのは Claude がどのサブエージェントを呼び出すかであり、そのサブエージェントがどのようなプロンプトを受け取るかではありません。
 
-有効化された[プラグイン](/docs/ja/plugins/overview)が提供するサブエージェントは、`my-plugin:code-reviewer` のようなスコープ付きの名前で入力候補に表示されます。プラグインが[エージェントをサブフォルダーに整理している](#choose-the-subagent-scope)場合は、`my-plugin:review:security` のようになります。セッション内で現在実行中の名前付きバックグラウンドサブエージェントも入力候補に表示され、名前の横にステータスが示されます。
+有効化された[プラグイン](/docs/ja/plugins/overview.md)が提供するサブエージェントは、`my-plugin:code-reviewer` のようなスコープ付きの名前で入力候補に表示されます。プラグインが[エージェントをサブフォルダーに整理している](#choose-the-subagent-scope)場合は、`my-plugin:review:security` のようになります。セッション内で現在実行中の名前付きバックグラウンドサブエージェントも入力候補に表示され、名前の横にステータスが示されます。
 
 ピッカーを使わずにメンションを手動で入力することもできます。ローカルのサブエージェントには `@agent-<name>`、プラグインのサブエージェントには `@agent-` の後にスコープ付きの名前を続けます（例: `@agent-my-plugin:code-reviewer`）。この形式を入力している間、入力候補にはエージェントではなく一致するファイルが表示されますが、送信時にはエージェントのメンションとして解決されます。
 
@@ -875,11 +874,11 @@ Have the code-reviewer subagent look at my recent changes
 claude --agent code-reviewer
 ```
 
-エージェントの[プロンプトが空](#choose-the-subagent-scope)である場合を除き、カスタムサブエージェントのシステムプロンプトは、[`--system-prompt`](/docs/ja/cli-reference) と同様に、デフォルトの Claude Code システムプロンプトを完全に置き換えます。`CLAUDE.md` ファイルとプロジェクトメモリは、エージェントの定義で [`omitClaudeMd`](#supported-frontmatter-fields) が設定されている場合でも、通常のメッセージフローを通じて読み込まれます。独自のプロンプトを持つカスタムエージェントとして `-p` 付きでセッションを実行した場合は、[Git ステータスのスナップショット](/docs/ja/settings-reference#includegitinstructions)もなしで開始されます。
+エージェントの[プロンプトが空](#choose-the-subagent-scope)である場合を除き、カスタムサブエージェントのシステムプロンプトは、[`--system-prompt`](/docs/ja/cli-reference) と同様に、デフォルトの Claude Code システムプロンプトを完全に置き換えます。`CLAUDE.md` ファイルとプロジェクトメモリは、エージェントの定義で [`omitClaudeMd`](#supported-frontmatter-fields) が設定されている場合でも、通常のメッセージフローを通じて読み込まれます。独自のプロンプトを持つカスタムエージェントとして `-p` 付きでセッションを実行した場合は、[Git ステータスのスナップショット](/docs/ja/settings-reference.md#includegitinstructions)もなしで開始されます。
 
 起動時のヘッダーにはエージェント名が `@<name>` として表示されるので、有効になっていることを確認できます。
 
-これは組み込みサブエージェントとカスタムサブエージェントの両方で機能し、この選択はセッションを再開したときにも保持されます。Claude Code は会話とともに、エージェントのツール制限とモデルを復元します。再開時にそのエージェントがもう存在しない場合、セッションはデフォルトのツールで続行され、[そのエージェント名を示す警告](/docs/ja/errors#session-agent-no-longer-available)が表示されます。どちらの場合のシステムプロンプトについても、[再開された会話でのシステムプロンプトフラグ](/docs/ja/cli-reference#system-prompt-flags-in-resumed-conversations)を参照してください。
+これは組み込みサブエージェントとカスタムサブエージェントの両方で機能し、この選択はセッションを再開したときにも保持されます。Claude Code は会話とともに、エージェントのツール制限とモデルを復元します。再開時にそのエージェントがもう存在しない場合、セッションはデフォルトのツールで続行され、[そのエージェント名を示す警告](/docs/ja/errors.md#session-agent-no-longer-available)が表示されます。どちらの場合のシステムプロンプトについても、[再開された会話でのシステムプロンプトフラグ](/docs/ja/cli-reference.md#system-prompt-flags-in-resumed-conversations)を参照してください。
 
 プラグインが提供するサブエージェントの場合は、エージェント名だけを渡せば Claude Code が見つけます。
 
@@ -919,7 +918,7 @@ claude --agent my-plugin:security-reviewer
 * **`claude -p` と Agent SDK**: Claude は自身の判断で、またはユーザーが求めたときに、待機できます。
 * **ローカルマシン上のインタラクティブなターミナルセッション、VS Code、デスクトップアプリのセッション**: Claude がサブエージェントを待機できるようにするには、[デフォルトでオン](#turn-fork-mode-on-or-off)になっている[フォークモードをオフにします](#let-claude-wait-for-a-subagent)。
 
-`context: fork` を持つスキルについては、フォークモードがオンかどうかにかかわらず、Claude Code は代わりに[サブエージェントでスキルを実行する](/docs/ja/skills#run-skills-in-a-subagent)のルールに従います。
+`context: fork` を持つスキルについては、フォークモードがオンかどうかにかかわらず、Claude Code は代わりに[サブエージェントでスキルを実行する](/docs/ja/skills.md#run-skills-in-a-subagent)のルールに従います。
 
 #### Claude にサブエージェントを待機させる
 
@@ -937,7 +936,7 @@ claude --agent my-plugin:security-reviewer
 
 3. 先に結果が必要な場合は、Claude に待機するよう依頼します。たとえば「run the reviewer subagent and wait for its report」のように依頼します。
 
-Claude が待機している間も作業を続けるには、ターミナルで **Ctrl+B** を押すか、VS Code で [**Run in background**](/docs/ja/vs-code#move-a-running-command-or-subagent-to-the-background) をクリックします。
+Claude が待機している間も作業を続けるには、ターミナルで **Ctrl+B** を押すか、VS Code で [**Run in background**](/docs/ja/vs-code.md#move-a-running-command-or-subagent-to-the-background) をクリックします。
 
 フォークモードをオフにする代わりに [`CLAUDE_CODE_DISABLE_BACKGROUND_TASKS`](/docs/ja/env-vars) 環境変数を `1` に設定した場合、Claude はすべてのサブエージェントを待機し、**Ctrl+B** を含めてバックグラウンドタスクはオフになります。
 
@@ -947,7 +946,7 @@ Claude が待機している間も作業を続けるには、ターミナルで 
 
 バックグラウンドサブエージェントは、すべての権限プロンプトをメインセッションに表示します。それらのプロンプトのいずれかに対して、セッションの残りの期間にわたって有効な付与など、その 1 つのツール呼び出しを超えて持続する選択肢で応答すると、Claude Code はその応答をメインの会話を含むセッション全体に適用します。
 
-バックグラウンドサブエージェントは、バックグラウンドの [Bash または PowerShell コマンド](/docs/ja/tools-reference#background-commands)を[自身のターン終了後も実行したまま](/docs/ja/interactive-mode#how-backgrounding-works)にしておくことができます。そのコマンドが終了すると、Claude Code はサブエージェントに通知を送ります。
+バックグラウンドサブエージェントは、バックグラウンドの [Bash または PowerShell コマンド](/docs/ja/tools-reference.md#background-commands)を[自身のターン終了後も実行したまま](/docs/ja/interactive-mode.md#how-backgrounding-works)にしておくことができます。そのコマンドが終了すると、Claude Code はサブエージェントに通知を送ります。
 
 バックグラウンドサブエージェントの結果は、後のターンで完了通知として Claude に届きます。Claude はその通知を待ってからサブエージェントの結果を報告し、それより前に進捗を尋ねられた場合は、サブエージェントがまだ実行中であると報告します。
 
@@ -955,20 +954,20 @@ Claude が待機している間も作業を続けるには、ターミナルで 
 
 Claude Code は、サブエージェントの終了の仕方に応じて、次の 2 つのいずれかの方法で、プロンプト入力の下にあるサブエージェントパネルからバックグラウンドサブエージェントの行を消去します。
 
-* サブエージェントが正常に終了すると、Claude Code はその行を直ちに削除し、[スクリーンリーダーモード](/docs/ja/accessibility)の場合を除き、フッターに `/tasks to see subagents` を 30 秒間表示します。この 30 秒の間に [`/tasks`](/docs/ja/commands) を実行し、サブエージェント上で `Enter` を押すと、そのトランスクリプトを開けます。v2.1.232 より前では、Claude Code は失敗したサブエージェントと同様に、終了後 30 秒間その行を保持し、フッターのヒントは表示していませんでした。
+* サブエージェントが正常に終了すると、Claude Code はその行を直ちに削除し、[スクリーンリーダーモード](/docs/ja/accessibility.md)の場合を除き、フッターに `/tasks to see subagents` を 30 秒間表示します。この 30 秒の間に [`/tasks`](/docs/ja/commands) を実行し、サブエージェント上で `Enter` を押すと、そのトランスクリプトを開けます。v2.1.232 より前では、Claude Code は失敗したサブエージェントと同様に、終了後 30 秒間その行を保持し、フッターのヒントは表示していませんでした。
 * サブエージェントが失敗した場合、またはユーザーが停止した場合、Claude Code はその行を 30 秒間保持します。もっと早く行を消去するには、行を選択して `x` を押します。
 
 完了したバックグラウンドサブエージェントは、フッターのヒントと同じ 30 秒間、完了済みとしてマークされ、実行中の作業の下に並べられた状態で [`/tasks`](/docs/ja/commands) に一覧表示されたままになります。サブエージェントが終了しても、その詳細ビューは開いたままです。失敗したサブエージェントやユーザーが停止したサブエージェントは一覧から消えます。v2.1.208 より前では、完了したサブエージェントは終了した瞬間に一覧から消え、詳細ビューも閉じていました。
 
 ### サブエージェント名
 
-[エージェントチーム](/docs/ja/agent-teams#enable-agent-teams)を有効にしてセッションを開始した場合、Claude は Agent ツールの呼び出しで `name` パラメーターを渡すことでサブエージェントに名前を付けることができます。ユーザーに事前に確認せずに自らそうすることもあります。名前を付けるとサブエージェントをアドレス指定できるようになり、Claude はサブエージェントの終了後に[名前でメッセージを送ったり再開したり](#resume-subagents)できます。
+[エージェントチーム](/docs/ja/agent-teams.md#enable-agent-teams)を有効にしてセッションを開始した場合、Claude は Agent ツールの呼び出しで `name` パラメーターを渡すことでサブエージェントに名前を付けることができます。ユーザーに事前に確認せずに自らそうすることもあります。名前を付けるとサブエージェントをアドレス指定できるようになり、Claude はサブエージェントの終了後に[名前でメッセージを送ったり再開したり](#resume-subagents)できます。
 
-[エージェントチーム](/docs/ja/agent-teams)が有効なインタラクティブセッションでは、Claude がメインの会話から `name` 付きで生成したサブエージェントは、代わりにチームメイトとして起動します。ただし、その呼び出しが[フォーク](#fork-the-current-conversation)である場合、または呼び出し自体で `isolation` を渡している場合は除きます。サブエージェントのフロントマターにある `isolation` の値ではこれを防げず、その場合チームメイトはメインセッションの作業ディレクトリで実行されます。[Claude がエージェントチームを開始する方法](/docs/ja/agent-teams#how-claude-starts-agent-teams)を参照してください。
+[エージェントチーム](/docs/ja/agent-teams.md)が有効なインタラクティブセッションでは、Claude がメインの会話から `name` 付きで生成したサブエージェントは、代わりにチームメイトとして起動します。ただし、その呼び出しが[フォーク](#fork-the-current-conversation)である場合、または呼び出し自体で `isolation` を渡している場合は除きます。サブエージェントのフロントマターにある `isolation` の値ではこれを防げず、その場合チームメイトはメインセッションの作業ディレクトリで実行されます。[Claude がエージェントチームを開始する方法](/docs/ja/agent-teams.md#how-claude-starts-agent-teams)を参照してください。
 
 ### サブエージェントでの API エラー
 
-何らかの原因で[サブエージェントの応答がストリームの途中で途切れ](/docs/ja/errors#the-response-above-may-be-incomplete)、その部分的な応答にテキストは含まれているもののツール呼び出しが含まれていない場合、Claude Code は実行を終了するのではなく、サブエージェントに続行を促します。これはインタラクティブセッションでも同様です。実行がエラーで終了するのは、それらの続行の試行を使い切った場合のみです。
+何らかの原因で[サブエージェントの応答がストリームの途中で途切れ](/docs/ja/errors.md#the-response-above-may-be-incomplete)、その部分的な応答にテキストは含まれているもののツール呼び出しが含まれていない場合、Claude Code は実行を終了するのではなく、サブエージェントに続行を促します。これはインタラクティブセッションでも同様です。実行がエラーで終了するのは、それらの続行の試行を使い切った場合のみです。
 
 使用制限や繰り返し発生するサーバーエラーなどの API エラーで実行が終了したサブエージェントは、その失敗を Claude に報告します。Claude が受け取る内容は、サブエージェントがどこで実行されていたかによって異なります。
 
@@ -981,7 +980,7 @@ Claude Code は、サブエージェントの終了の仕方に応じて、次�
 ⚠ This agent switched to <model> because its earlier model could not be used.
 ```
 
-[フォールバックモデルチェーン](/docs/ja/model-config#fallback-model-chains)を設定していて、サブエージェントがそのモデルを利用できないなど、チェーンが対象とする失敗に遭遇した場合、Claude Code はサブエージェントを、チェーン内でリクエストを受け付ける最初のモデルに切り替えます。サブエージェントはエラーで終了せずに作業を続けます。
+[フォールバックモデルチェーン](/docs/ja/model-config.md#fallback-model-chains)を設定していて、サブエージェントがそのモデルを利用できないなど、チェーンが対象とする失敗に遭遇した場合、Claude Code はサブエージェントを、チェーン内でリクエストを受け付ける最初のモデルに切り替えます。サブエージェントはエラーで終了せずに作業を続けます。
 
 根本的な API エラーが解消したら、Claude にタスクの再試行を依頼するか、[サブエージェントを再開](#resume-subagents)してください。
 
@@ -992,7 +991,7 @@ Claude Code は、Claude が読む前に各サブエージェントの最終レ�
 * **バックスラッシュの挿入**: `<system-reminder>` タグや、`Human:` または `Assistant:` で始まる行など、Claude Code 自身の出力を模倣したテキストに、スキャンがバックスラッシュを挿入します。これにより、その模倣は会話の一部と誤認されることなく、通常のテキストとして読まれます。
 * **マーカー行**: レポートが `<system-reminder>` のようなタグを模倣している場合、または `bypassPermissions` や `--dangerously-skip-permissions` などの権限設定に言及している場合、スキャンは `[harness: subagent output matched instruction-shaped pattern(s):` で始まる行を先頭に追加します。権限設定への言及にはマーカー行が付きますが、テキスト自体は書かれたとおりのままです。
 
-スキャンは内容が悪意のあるものかどうかを判断せず、レポート内の指示が実行できる内容も変えません。レポートに促されて Claude が行うツール呼び出しは、引き続きセッションの[権限チェック](/docs/ja/permissions)と[サンドボックス化](/docs/ja/sandboxing)を通過します。これは[サブエージェントがアクセスできる範囲を制限すること](#control-subagent-capabilities)の代わりにはなりません。
+スキャンは内容が悪意のあるものかどうかを判断せず、レポート内の指示が実行できる内容も変えません。レポートに促されて Claude が行うツール呼び出しは、引き続きセッションの[権限チェック](/docs/ja/permissions.md)と[サンドボックス化](/docs/ja/sandboxing.md)を通過します。これは[サブエージェントがアクセスできる範囲を制限すること](#control-subagent-capabilities)の代わりにはなりません。
 
 サブエージェントの結果として Claude に返されるレポートは、サブエージェントの出力であることを示すヘッダーの下に届きます。このヘッダーは、レポート内の指示や承認の主張はサブエージェントの言葉であり、ユーザーからの権限を一切持たないことを明示します。
 
@@ -1022,7 +1021,7 @@ Research the authentication, database, and API modules in parallel using separat
 >
 > サブエージェントが完了すると、その結果はメインの会話に返されます。それぞれが詳細な結果を返す多数のサブエージェントを実行すると、かなりのコンテキストを消費する可能性があり、各サブエージェントは実行中にそれ自体のトークンも消費します。
 
-並列で実行し続ける必要がある作業や、1 つのコンテキストウィンドウに収まらない作業は、[別々のセッション](/docs/ja/agents)で実行し、Claude に[セッション間で調査結果を受け渡させます](/docs/ja/cross-session-messaging)。
+並列で実行し続ける必要がある作業や、1 つのコンテキストウィンドウに収まらない作業は、[別々のセッション](/docs/ja/agents.md)で実行し、Claude に[セッション間で調査結果を受け渡させます](/docs/ja/cross-session-messaging.md)。
 
 #### サブエージェントを連鎖させる
 
@@ -1047,7 +1046,7 @@ Use the code-reviewer subagent to find performance issues, then use the optimize
 * 特定のツール制限や権限を適用したい場合
 * 作業が自己完結しており、要約を返せる場合
 
-分離されたサブエージェントのコンテキストではなく、メインの会話のコンテキストで実行される再利用可能なプロンプトやワークフローが必要な場合は、代わりに[スキル](/docs/ja/skills)を検討してください。
+分離されたサブエージェントのコンテキストではなく、メインの会話のコンテキストで実行される再利用可能なプロンプトやワークフローが必要な場合は、代わりに[スキル](/docs/ja/skills.md)を検討してください。
 
 会話内にすでにある事柄についての質問には、サブエージェントではなく [`/btw`](/docs/ja/interactive-mode#side-questions-with-%2Fbtw) を使います。これは完全なコンテキストを参照できますが、ツールへのアクセスはなく、回答は履歴に追加されません。
 
@@ -1087,14 +1086,14 @@ Use the code-reviewer subagent to find performance issues, then use the optimize
 
 サブエージェントの使用は 2 つの上限で制御され、それぞれに独自の変数があります。この上限は、実行中のサブエージェントが多すぎるときに Claude がさらにサブエージェントを生成するのを止め、[深さの上限](#let-subagents-spawn-their-own-subagents)はサブエージェントのネストの深さを制限します。セッション全体で Claude が生成できるサブエージェントの総数に上限はありません。
 
-デフォルトでは、セッション内で 20 個のサブエージェントが実行中のとき、Agent ツールでさらに生成しようとすると `Concurrent subagent limit reached` で失敗し、そのエラーは Claude に再試行しないよう伝えます。実行中の数が上限を下回ると、再び生成できるようになります。上限を変更するには、[`CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS`](/docs/ja/env-vars) に任意の正の整数を設定します。[ultracode](/docs/ja/model-config#adjust-effort-level) が有効なセッションは対象外で、そこでは上限が適用されません。Claude Code v2.1.217 以降が必要です。
+デフォルトでは、セッション内で 20 個のサブエージェントが実行中のとき、Agent ツールでさらに生成しようとすると `Concurrent subagent limit reached` で失敗し、そのエラーは Claude に再試行しないよう伝えます。実行中の数が上限を下回ると、再び生成できるようになります。上限を変更するには、[`CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS`](/docs/ja/env-vars) に任意の正の整数を設定します。[ultracode](/docs/ja/model-config.md#adjust-effort-level) が有効なセッションは対象外で、そこでは上限が適用されません。Claude Code v2.1.217 以降が必要です。
 
 この上限がブロックするのは Claude が Agent ツールで生成するサブエージェントだけですが、他の実行も同じ枠を占有します。
 
 * [`/subtask`](#fork-the-current-conversation) で開始したセッション内のフォークは、実行中に枠を 1 つ占有し、上限によってブロックされることはありません。
 * すでに終了した[サブエージェントの再開](#resume-subagents)は、上限を確認せずに新しい枠を占有するため、再開によって実行中の数が上限を超えることがあります。
 
-[ワークフロー](/docs/ja/workflows)のエージェントや[エージェントチーム](/docs/ja/agent-teams)のチームメイトなど、他の機能が実行するエージェントは、代わりにそれぞれ独自の上限に従います。
+[ワークフロー](/docs/ja/workflows.md)のエージェントや[エージェントチーム](/docs/ja/agent-teams.md)のチームメイトなど、他の機能が実行するエージェントは、代わりにそれぞれ独自の上限に従います。
 
 ### サブエージェントのコンテキストを管理する
 
@@ -1106,12 +1105,12 @@ Use the code-reviewer subagent to find performance issues, then use the optimize
 
 * **システムプロンプト**: Claude Code のシステムプロンプトではなく、エージェント自身のプロンプトに Claude Code が追加する環境の詳細を加えたものです。カスタムサブエージェントは、[markdown 本文](#write-subagent-files)または `prompt` フィールドでこれを定義します。組み込みエージェントには定義済みのプロンプトがあります。
 * **タスクメッセージ**: 作業を引き渡すときに Claude が作成する委任プロンプトです。
-* **CLAUDE.md ファイル**: `~/.claude/CLAUDE.md`、プロジェクトのルール、`CLAUDE.local.md`、管理ポリシーファイル、プロジェクトの指示として読み込まれる [`AGENTS.md` ファイル](/docs/ja/memory#agents-md)など、メインの会話が読み込む [CLAUDE.md の階層](/docs/ja/memory#how-claude-md-files-load)のすべてのレベルです。組み込みの Explore エージェントと Plan エージェントはこれをスキップします。定義で [`omitClaudeMd`](#supported-frontmatter-fields) が設定されているサブエージェントは、管理ポリシーファイルのみを読み込みます。定義が[管理設定](#choose-the-subagent-scope)から来ている場合は、何も読み込みません。
-* **Git ステータス**: サブエージェントの開始時に Claude Code がリポジトリから読み取るスナップショットです。そのリポジトリの[独自の worktree](/docs/ja/worktrees#isolate-subagents-with-worktrees) 内のサブエージェントの場合、スナップショットには worktree のブランチ、ステータス、最近のコミットが表示されます。Git リポジトリの外にいる場合や、スナップショットがオフになっている場合は含まれません。[`includeGitInstructions`](/docs/ja/settings-reference#includegitinstructions) を参照してください。Explore と Plan は、いずれにしてもこれをスキップします。
+* **CLAUDE.md ファイル**: `~/.claude/CLAUDE.md`、プロジェクトのルール、`CLAUDE.local.md`、管理ポリシーファイル、プロジェクトの指示として読み込まれる [`AGENTS.md` ファイル](/docs/ja/memory#agents-md)など、メインの会話が読み込む [CLAUDE.md の階層](/docs/ja/memory.md#how-claude-md-files-load)のすべてのレベルです。組み込みの Explore エージェントと Plan エージェントはこれをスキップします。定義で [`omitClaudeMd`](#supported-frontmatter-fields) が設定されているサブエージェントは、管理ポリシーファイルのみを読み込みます。定義が[管理設定](#choose-the-subagent-scope)から来ている場合は、何も読み込みません。
+* **Git ステータス**: サブエージェントの開始時に Claude Code がリポジトリから読み取るスナップショットです。そのリポジトリの[独自の worktree](/docs/ja/worktrees.md#isolate-subagents-with-worktrees) 内のサブエージェントの場合、スナップショットには worktree のブランチ、ステータス、最近のコミットが表示されます。Git リポジトリの外にいる場合や、スナップショットがオフになっている場合は含まれません。[`includeGitInstructions`](/docs/ja/settings-reference#includegitinstructions) を参照してください。Explore と Plan は、いずれにしてもこれをスキップします。
 * **プリロードされたスキル**: エージェントの [`skills` フィールド](#preload-skills-into-subagents)で指定されたスキルの全内容です。組み込みエージェントはスキルをプリロードしません。
-* **兄弟エージェントの一覧**: `main` と、セッション内の他のすべての名前付きエージェントを列挙する[システムリマインダー](/docs/ja/glossary#system-reminder)です。それぞれが [`SendMessage`](#resume-subagents) の有効な `to` 値になります。この一覧は、サブエージェントのツールに `SendMessage` が含まれていて、かつ少なくとも 1 つの他のエージェントが名前を持っている場合にのみ表示されます。その名前は、Claude が生成時に付けたものでも、[エージェントチーム](/docs/ja/agent-teams)のチームメイトとして実行されていることによるものでもかまいません。これはサブエージェントの開始時に取得されたスナップショットであるため、後から名前が付けられたエージェントは表示されません。
+* **兄弟エージェントの一覧**: `main` と、セッション内の他のすべての名前付きエージェントを列挙する[システムリマインダー](/docs/ja/glossary.md#system-reminder)です。それぞれが [`SendMessage`](#resume-subagents) の有効な `to` 値になります。この一覧は、サブエージェントのツールに `SendMessage` が含まれていて、かつ少なくとも 1 つの他のエージェントが名前を持っている場合にのみ表示されます。その名前は、Claude が生成時に付けたものでも、[エージェントチーム](/docs/ja/agent-teams.md)のチームメイトとして実行されていることによるものでもかまいません。これはサブエージェントの開始時に取得されたスナップショットであるため、後から名前が付けられたエージェントは表示されません。
 
-独自のサブエージェントを、ユーザー、プロジェクト、ローカルの CLAUDE.md ファイルなしで起動するには、そのフロントマターまたは `--agents` の JSON で [`omitClaudeMd: true`](#supported-frontmatter-fields) を設定します。Explore、Plan、および `omitClaudeMd` を持つサブエージェントでも、サブディレクトリ内のファイルを扱うときには、そのサブディレクトリの `CLAUDE.md` と、一致する[パススコープのルール](/docs/ja/memory#path-specific-rules)が[読み込まれます](/docs/ja/memory#how-claude-md-files-load)。
+独自のサブエージェントを、ユーザー、プロジェクト、ローカルの CLAUDE.md ファイルなしで起動するには、そのフロントマターまたは `--agents` の JSON で [`omitClaudeMd: true`](#supported-frontmatter-fields) を設定します。Explore、Plan、および `omitClaudeMd` を持つサブエージェントでも、サブディレクトリ内のファイルを扱うときには、そのサブディレクトリの `CLAUDE.md` と、一致する[パススコープのルール](/docs/ja/memory.md#path-specific-rules)が[読み込まれます](/docs/ja/memory.md#how-claude-md-files-load)。
 
 メインの会話は、これらのサブエージェントの結果を読むときにも完全な CLAUDE.md を保持しているため、ほとんどのルールはサブエージェント自体に届く必要はありません。「`vendor/` ディレクトリを無視する」のように、ルールをどうしても届ける必要がある場合は、委任時に Claude に与えるプロンプトでそれを改めて伝えてください。
 
@@ -1119,8 +1118,8 @@ Use the code-reviewer subagent to find performance issues, then use the optimize
 
 メインの会話の一部の状態は、フォークではないサブエージェントには一切届きません。
 
-* **出力スタイル**: サブエージェントは独自のシステムプロンプトで実行されるため、[フォーク](#fork-the-current-conversation)の場合を除き、[出力スタイル](/docs/ja/output-styles)はその応答に影響しません。
-* **自動メモリ**: メインの会話の[自動メモリ](/docs/ja/memory#auto-memory)は読み込まれません。サブエージェントに独自の永続的なメモリを持たせるには、[`memory` フィールド](#enable-persistent-memory)を使います。
+* **出力スタイル**: サブエージェントは独自のシステムプロンプトで実行されるため、[フォーク](#fork-the-current-conversation)の場合を除き、[出力スタイル](/docs/ja/output-styles.md)はその応答に影響しません。
+* **自動メモリ**: メインの会話の[自動メモリ](/docs/ja/memory.md#auto-memory)は読み込まれません。サブエージェントに独自の永続的なメモリを持たせるには、[`memory` フィールド](#enable-persistent-memory)を使います。
 * **コンテキストウィンドウのサイズ**: サブエージェントのコンテキストウィンドウのサイズは、親のモデルではなく、サブエージェント自身のモデルによって決まります。より小さなウィンドウを持つモデルに委任すると、そのサブエージェントのウィンドウは小さくなります。
 
 #### サブエージェントを再開する
@@ -1133,7 +1132,7 @@ Use the code-reviewer subagent to find performance issues, then use the optimize
 * 組み込みの Explore エージェントと Plan エージェントは 1 回限りのもので、エージェント ID を返さないため、Claude はそれらを再開できません。作業を続ける必要がある場合は、`general-purpose` またはカスタムサブエージェントを使います。
 * サブエージェントが [`maxTurns`](#supported-frontmatter-fields) の上限で停止すると、Claude Code は返された出力を部分的なものとしてマークし、Claude はサブエージェントを再開して作業を続けさせることができます。
 
-Claude は、エージェントの ID または名前を `to` フィールドに指定して `SendMessage` ツールを使い、サブエージェントを再開します。`SendMessage` を使うのに[エージェントチーム](/docs/ja/agent-teams)を有効にする必要はありません。有効化が必要なのは、`shutdown_request` や `plan_approval_response` などの構造化されたチームプロトコルメッセージだけです。サブエージェントやチームメイトに加えて、セッション間メッセージングが有効なセッションでは、Claude は同じツールを使って、このマシン上または[このマシンの外](/docs/ja/cross-session-messaging#message-sessions-on-other-machines)にある[ユーザーの他の Claude Code セッション](/docs/ja/cross-session-messaging)にメッセージを送ることができます。
+Claude は、エージェントの ID または名前を `to` フィールドに指定して `SendMessage` ツールを使い、サブエージェントを再開します。`SendMessage` を使うのに[エージェントチーム](/docs/ja/agent-teams.md)を有効にする必要はありません。有効化が必要なのは、`shutdown_request` や `plan_approval_response` などの構造化されたチームプロトコルメッセージだけです。サブエージェントやチームメイトに加えて、セッション間メッセージングが有効なセッションでは、Claude は同じツールを使って、このマシン上または[このマシンの外](/docs/ja/cross-session-messaging.md#message-sessions-on-other-machines)にある[ユーザーの他の Claude Code セッション](/docs/ja/cross-session-messaging.md)にメッセージを送ることができます。
 
 サブエージェントを再開するには、以前の作業を続けるよう Claude に依頼します。
 
@@ -1145,7 +1144,7 @@ Continue that code review and now analyze the authorization logic
 [Claude resumes the subagent with full context from previous conversation]
 ```
 
-Claude が `SendMessage` ツールで完了済みのサブエージェントにメッセージを送ると、そのサブエージェントは新たな `Agent` 呼び出しなしにバックグラウンドで再開します。Claude が `TaskStop` ツールで停止したサブエージェントについても、停止した実行が終了した後は同様です。再開された実行は、[サブエージェントが最初に実行されたときのツールセット](#run-subagents-in-foreground-or-background)を維持し、[元の実行がウォームアップしたプロンプトキャッシュ](/docs/ja/prompt-caching#subagents-and-the-cache)を引き続き読み取ることができます。
+Claude が `SendMessage` ツールで完了済みのサブエージェントにメッセージを送ると、そのサブエージェントは新たな `Agent` 呼び出しなしにバックグラウンドで再開します。Claude が `TaskStop` ツールで停止したサブエージェントについても、停止した実行が終了した後は同様です。再開された実行は、[サブエージェントが最初に実行されたときのツールセット](#run-subagents-in-foreground-or-background)を維持し、[元の実行がウォームアップしたプロンプトキャッシュ](/docs/ja/prompt-caching.md#subagents-and-the-cache)を引き続き読み取ることができます。
 
 `SendMessage` ツールを持つサブエージェントも、そのメッセージを送ることができます。インタラクティブセッションでは、再開されたエージェントは、メインの会話ではなく、自身を再開したサブエージェントに報告します。そのサブエージェントは、自身の作業を終える前にその結果を待ちます。サブエージェントが、自身の起動元など報告先のエージェントにメッセージを送った場合、Claude Code はそのエージェントの結果の送り先を変更せずに、そのエージェントを再開します。
 
@@ -1165,21 +1164,21 @@ Claude が `SendMessage` ツールで完了済みのサブエージェントに�
 
 * **メインの会話のコンテキスト圧縮**: メインの会話が圧縮されても、サブエージェントのトランスクリプトは影響を受けません。これらは別のファイルに保存されています。
 * **セッションの永続性**: サブエージェントのトランスクリプトは、そのセッション内で保持されます。同じセッションを再開することで、Claude Code を再起動した後でも[サブエージェントを再開](#resume-subagents)できます。
-* **自動クリーンアップ**: Claude Code は、[保持期間のスイープルール](/docs/ja/claude-directory#cleaned-up-automatically)に従い、`cleanupPeriodDays` の保持期間（デフォルトは 30 日）が過ぎたサブエージェントのトランスクリプトを削除します。
+* **自動クリーンアップ**: Claude Code は、[保持期間のスイープルール](/docs/ja/claude-directory.md#cleaned-up-automatically)に従い、`cleanupPeriodDays` の保持期間（デフォルトは 30 日）が過ぎたサブエージェントのトランスクリプトを削除します。
 
 ##### 再起動後に名前でサブエージェントにメッセージを送る
 
 > [!NOTE]
 >
-> チームメイトとして起動したサブエージェントについては、代わりに[エージェントチームの制限事項](/docs/ja/agent-teams#limitations)を参照してください。
+> チームメイトとして起動したサブエージェントについては、代わりに[エージェントチームの制限事項](/docs/ja/agent-teams.md#limitations)を参照してください。
 
-Claude Code を再起動してセッションを再開した後、Claude が名前でサブエージェントにメッセージを送れない場合は、代わりにそのサブエージェントのエージェント ID を Claude に伝えてください。メインの会話の最後の[コンテキスト圧縮](/docs/ja/context-window#what-survives-compaction)以降に Claude がメインの会話から付けた名前は、再起動後も保持されます。その圧縮より前に付けられた名前は保持されません。名前に対応する ID を見つけるには、`~/.claude/projects/{project}/{sessionId}/subagents/` にある `agent-{agentId}.meta.json` ファイルでその名前を探します。
+Claude Code を再起動してセッションを再開した後、Claude が名前でサブエージェントにメッセージを送れない場合は、代わりにそのサブエージェントのエージェント ID を Claude に伝えてください。メインの会話の最後の[コンテキスト圧縮](/docs/ja/context-window.md#what-survives-compaction)以降に Claude がメインの会話から付けた名前は、再起動後も保持されます。その圧縮より前に付けられた名前は保持されません。名前に対応する ID を見つけるには、`~/.claude/projects/{project}/{sessionId}/subagents/` にある `agent-{agentId}.meta.json` ファイルでその名前を探します。
 
 ID で一度メッセージを送ると、より新しいエージェントがその名前を取得していない限り、サブエージェントの名前は再び機能するようになります。v2.1.299 より前では、再起動後に保持される名前はなく、エージェント ID がまだ機能する場合でも名前による送信は拒否されていました。
 
 #### 自動圧縮
 
-サブエージェントは自動圧縮をサポートしています。コンテキスト圧縮は、サブエージェント自身のコンテキストウィンドウが埋まるにつれてトリガーされ、`CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` はサブエージェントにも適用されます。この上書きがいつ有効になるかについては、[環境変数](/docs/ja/env-vars)を参照してください。
+サブエージェントは自動圧縮をサポートしています。コンテキスト圧縮は、サブエージェント自身のコンテキストウィンドウが埋まるにつれてトリガーされ、`CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` はサブエージェントにも適用されます。この上書きがいつ有効になるかについては、[環境変数](/docs/ja/env-vars.md)を参照してください。
 
 圧縮イベントは、サブエージェントのトランスクリプトファイルに記録されます。
 
@@ -1198,7 +1197,7 @@ ID で一度メッセージを送ると、より新しいエージェントが�
 
 ##### 1 つのサブエージェントに自動圧縮のウィンドウを設定する
 
-1 つのサブエージェントを通常よりも早く圧縮させるには、その[フロントマター](#supported-frontmatter-fields)で `autoCompactWindow` に `100000` から `1000000` までのトークン数を設定します。[`CLAUDE_CODE_AUTO_COMPACT_WINDOW`](/docs/ja/env-vars#variables) を設定している場合、Claude Code が[その変数の値を無視する](/docs/ja/model-config#claude_code_auto_compact_window-values)場合を除き、サブエージェントは代わりにその変数のウィンドウを使用し、このフィールドは効果を持ちません。Claude Code v2.1.296 以降が必要です。
+1 つのサブエージェントを通常よりも早く圧縮させるには、その[フロントマター](#supported-frontmatter-fields)で `autoCompactWindow` に `100000` から `1000000` までのトークン数を設定します。[`CLAUDE_CODE_AUTO_COMPACT_WINDOW`](/docs/ja/env-vars#variables) を設定している場合、Claude Code が[その変数の値を無視する](/docs/ja/model-config.md#claude_code_auto_compact_window-values)場合を除き、サブエージェントは代わりにその変数のウィンドウを使用し、このフィールドは効果を持ちません。Claude Code v2.1.296 以降が必要です。
 
 次のフロントマターは、長いログファイルを読むサブエージェントに対して `autoCompactWindow` を 200,000 トークンに設定します。
 
@@ -1214,14 +1213,14 @@ autoCompactWindow: 200000
 
 値が範囲内なのに変化が見られない場合は、次の原因を確認してください。
 
-* **値が、サブエージェントが本来継承する[自動圧縮のウィンドウ](/docs/ja/model-config#context-window-and-auto-compaction)より小さくない**: より早く圧縮させるには、そのウィンドウより小さい値を設定します。
-* **`--agent` または `agent` 設定で、セッション全体をこのサブエージェントとして実行している**: その場合、このフィールドは効果を持ちません。セッションのウィンドウを設定するには、[自動圧縮のウィンドウを設定する](/docs/ja/model-config#set-the-auto-compact-window)を参照してください。
+* **値が、サブエージェントが本来継承する[自動圧縮のウィンドウ](/docs/ja/model-config.md#context-window-and-auto-compaction)より小さくない**: より早く圧縮させるには、そのウィンドウより小さい値を設定します。
+* **`--agent` または `agent` 設定で、セッション全体をこのサブエージェントとして実行している**: その場合、このフィールドは効果を持ちません。セッションのウィンドウを設定するには、[自動圧縮のウィンドウを設定する](/docs/ja/model-config.md#set-the-auto-compact-window)を参照してください。
 
 ## 現在の会話をフォークする
 
 > [!NOTE]
 >
-> [エージェントビューがオフになっている](/docs/ja/agent-view#turn-off-agent-view)場合、`/subtask` は利用できず、代わりに `/fork` がフォークされたサブエージェントを開始します。それ以外の場合、`/fork` はセッション全体を新しい[バックグラウンドセッション](/docs/ja/agent-view#from-inside-a-session)にコピーします。
+> [エージェントビューがオフになっている](/docs/ja/agent-view.md#turn-off-agent-view)場合、`/subtask` は利用できず、代わりに `/fork` がフォークされたサブエージェントを開始します。それ以外の場合、`/fork` はセッション全体を新しい[バックグラウンドセッション](/docs/ja/agent-view.md#from-inside-a-session)にコピーします。
 
 フォークは、これまでの会話全体を継承するサブエージェントです。これにより、サブエージェントが通常提供する入力分離が削除されます。フォークはメインセッションと同じシステムプロンプト、ツール、モデル、およびメッセージ履歴を表示するため、状況を再度説明することなく、サイドタスクを渡すことができます。フォークのツール呼び出しはまだ会話から除外され、最終結果のみが返されるため、メインコンテキストウィンドウはクリーンなままです。フォークを使用する場合は、他のサブエージェントが有用であるには背景が多すぎる場合、または同じ開始点から複数のアプローチを並行して試したい場合です。
 
@@ -1250,12 +1249,12 @@ autoCompactWindow: 200000
 | `x` | 実行中の場合は選択したフォークを停止するか、実行中でなくなった場合はその行を閉じます。メインセッション行またはトランスクリプトを `Enter` で開いたフォークの行では、`x` はプロンプトに入力します |
 | `Esc` | フォーカスをプロンプト入力に戻す |
 
-フォークまたはサブエージェントのトランスクリプトが開いている場合、フォローアップメッセージと[スキル](/docs/ja/skills)はそのエージェントに送信され、組み込みコマンドはメイン会話に送信されます。ただし、次の安全策があります：
+フォークまたはサブエージェントのトランスクリプトが開いている場合、フォローアップメッセージと[スキル](/docs/ja/skills.md)はそのエージェントに送信され、組み込みコマンドはメイン会話に送信されます。ただし、次の安全策があります：
 
 * `/compact`、`/clear`、`/rewind` はメイン会話に対して動作するため、このビューからこれらのいずれかを実行する前に、Claude Code は確認を求めます。
 * `/model` と `/fast` は、表示しているエージェントではなくメイン会話のモデルと fast mode を設定するため、このビューからは実行されません。その理由は通知で表示されます。
 
-表示しているエージェントが待機中の作業が完了する前にメッセージを読むようにするには、[`Ctrl+Enter` または `Ctrl+X Ctrl+S`](/docs/ja/keybindings#chat-actions) で送信します。エージェントが待機しているシェルコマンドやサブエージェントのうち、[バックグラウンド](/docs/ja/tools-reference#background-commands)に移動できるものはバックグラウンドに移動し、実行を続けます。エージェントが応答を書いている場合、またはバックグラウンドに移動できない作業を待っている場合は、そのまま処理を続け、それが完了した時点でメッセージを読みます。Claude Code v2.1.286 以降が必要です。
+表示しているエージェントが待機中の作業が完了する前にメッセージを読むようにするには、[`Ctrl+Enter` または `Ctrl+X Ctrl+S`](/docs/ja/keybindings#chat-actions) で送信します。エージェントが待機しているシェルコマンドやサブエージェントのうち、[バックグラウンド](/docs/ja/tools-reference.md#background-commands)に移動できるものはバックグラウンドに移動し、実行を続けます。エージェントが応答を書いている場合、またはバックグラウンドに移動できない作業を待っている場合は、そのまま処理を続け、それが完了した時点でメッセージを読みます。Claude Code v2.1.286 以降が必要です。
 
 ### フォークと他のサブエージェントの違い
 
@@ -1268,7 +1267,7 @@ autoCompactWindow: 200000
 | モデル | メインセッションと同じ | サブエージェントの `model` フィールドから |
 | プロンプトキャッシュ | メインセッションと共有 | 別のキャッシュ |
 
-フォークのシステムプロンプトとツール定義は親と同じであるため、最初のリクエストは親の[プロンプトキャッシュ](/docs/ja/prompt-caching#subagents-and-the-cache)を再利用します。この再利用により、同じコンテキストが必要なタスクの場合、フォークは新しいサブエージェントよりも安価です。
+フォークのシステムプロンプトとツール定義は親と同じであるため、最初のリクエストは親の[プロンプトキャッシュ](/docs/ja/prompt-caching.md#subagents-and-the-cache)を再利用します。この再利用により、同じコンテキストが必要なタスクの場合、フォークは新しいサブエージェントよりも安価です。
 
 Claude が Agent ツール経由でフォークをスポーンするときに、`isolation: "worktree"` を渡すことができるため、フォークのファイル編集は、チェックアウトではなく、別の git worktree に書き込まれます。フォークはさらにフォークをスポーンできません。
 
@@ -1432,7 +1431,7 @@ When asked to analyze data:
 You cannot modify data. If asked to INSERT, UPDATE, DELETE, or modify schema, explain that you only have read access.
 ```
 
-Claude Code は[hook 入力を JSON として](/docs/ja/hooks#pretooluse-input)stdin を通じて hook コマンドに渡します。検証スクリプトはこの JSON を読み取り、実行されるコマンドを抽出し、SQL 書き込み操作のリストに対してチェックします。書き込み操作が検出された場合、スクリプトは[終了コード 2](/docs/ja/hooks#exit-code-2-behavior-per-event)で終了して、stderr を通じて Claude にエラーメッセージを返します。
+Claude Code は[hook 入力を JSON として](/docs/ja/hooks.md#pretooluse-input)stdin を通じて hook コマンドに渡します。検証スクリプトはこの JSON を読み取り、実行されるコマンドを抽出し、SQL 書き込み操作のリストに対してチェックします。書き込み操作が検出された場合、スクリプトは[終了コード 2](/docs/ja/hooks.md#exit-code-2-behavior-per-event)で終了して、stderr を通じて Claude にエラーメッセージを返します。
 
 プロジェクト内の任意の場所に検証スクリプトを作成します。パスは hook 設定の `command` フィールドと一致する必要があります：
 
@@ -1465,9 +1464,9 @@ macOS と Linux では、スクリプトを実行可能にします：
 chmod +x ./scripts/validate-readonly-query.sh
 ```
 
-Windows では、検証スクリプトを PowerShell で記述し、hook エントリに `shell: powershell` を追加します。[PowerShell で hooks を実行する](/docs/ja/hooks#windows-powershell-tool)を参照してください。
+Windows では、検証スクリプトを PowerShell で記述し、hook エントリに `shell: powershell` を追加します。[PowerShell で hooks を実行する](/docs/ja/hooks.md#windows-powershell-tool)を参照してください。
 
-hook は stdin を通じて JSON を受け取り、Bash コマンドは `tool_input.command` にあります。終了コード 2 は操作をブロックし、エラーメッセージを Claude にフィードバックします。終了コードと出力の詳細については[Hooks](/docs/ja/hooks#exit-code-output)を参照し、完全な入力スキーマについては[Hook 入力](/docs/ja/hooks#pretooluse-input)を参照してください。
+hook は stdin を通じて JSON を受け取り、Bash コマンドは `tool_input.command` にあります。終了コード 2 は操作をブロックし、エラーメッセージを Claude にフィードバックします。終了コードと出力の詳細については[Hooks](/docs/ja/hooks.md#exit-code-output)を参照し、完全な入力スキーマについては[Hook 入力](/docs/ja/hooks.md#pretooluse-input)を参照してください。
 
 システムプロンプトはサブエージェントに書き込みリクエストを拒否するよう指示するため、hook はバックストップです。サブエージェントが書き込みを試みた場合、Claude Code はコマンドをブロックし、サブエージェントは `Blocked: Write operations not allowed. Use SELECT queries only.` メッセージを表示します。
 
@@ -1475,6 +1474,6 @@ hook は stdin を通じて JSON を受け取り、Bash コマンドは `tool_in
 
 サブエージェントを理解したので、これらの関連機能を探索してください：
 
-* [プラグインでサブエージェントを配布する](/docs/ja/plugins/components#agents)ことで、チームまたはプロジェクト全体でサブエージェントを共有します
-* [Claude Code をプログラムで実行する](/docs/ja/headless)ことで、Agent SDK を使用して CI/CD と自動化を行います
-* [MCP サーバーを使用する](/docs/ja/mcp)ことで、サブエージェントに外部ツールとデータへのアクセスを提供します
+* [プラグインでサブエージェントを配布する](/docs/ja/plugins/components.md#agents)ことで、チームまたはプロジェクト全体でサブエージェントを共有します
+* [Claude Code をプログラムで実行する](/docs/ja/headless.md)ことで、Agent SDK を使用して CI/CD と自動化を行います
+* [MCP サーバーを使用する](/docs/ja/mcp.md)ことで、サブエージェントに外部ツールとデータへのアクセスを提供します

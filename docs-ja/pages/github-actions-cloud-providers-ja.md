@@ -6,11 +6,11 @@
 
 > Claude Code GitHub Actions を Claude API の代わりに Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry を通じて実行する
 
-[Claude Code GitHub Actions](/docs/ja/github-actions) は、デフォルトで Claude API を呼び出します。代わりに独自のクラウドアカウントを通じて推論をルーティングするには、Claude Code GitHub Action のプロバイダー入力を設定し、ワークフローの OpenID Connect（OIDC）トークンを信頼するようにクラウドを構成します。ワークフローはそのトークンで認証するため、リポジトリに長期的なクラウド認証情報を保存する必要がありません。
+[Claude Code GitHub Actions](/docs/ja/github-actions.md) は、デフォルトで Claude API を呼び出します。代わりに独自のクラウドアカウントを通じて推論をルーティングするには、Claude Code GitHub Action のプロバイダー入力を設定し、ワークフローの OpenID Connect（OIDC）トークンを信頼するようにクラウドを構成します。ワークフローはそのトークンで認証するため、リポジトリに長期的なクラウド認証情報を保存する必要がありません。
 
 > [!NOTE]
 >
-> このページは [GitHub Actions セットアップ](/docs/ja/github-actions#setup) に基づいています。ワークフローファイルと `anthropics/claude-code-action` ステップについてすでに理解していることを前提としており、クラウドプロバイダーが変更する内容のみをカバーしています。
+> このページは [GitHub Actions セットアップ](/docs/ja/github-actions.md#setup) に基づいています。ワークフローファイルと `anthropics/claude-code-action` ステップについてすでに理解していることを前提としており、クラウドプロバイダーが変更する内容のみをカバーしています。
 
 ## プロバイダーを選択する
 
@@ -29,9 +29,9 @@ Claude Code GitHub Action は 3 つのプロバイダーをサポートしてお
 * Claude Code GitHub Action が実行されるリポジトリへの管理者アクセス（GitHub App をインストールしてシークレットを追加するため）
 * クラウドアカウントでアイデンティティリソースを作成する権限：AWS の IAM ロールと OIDC アイデンティティプロバイダー、Google Cloud のワークロードアイデンティティフェデレーションリソースとサービスアカウント、または Azure の Microsoft Entra アプリケーション
 * プロバイダーでの Claude モデルアクセス：
-  * **Amazon Bedrock**: Claude モデルへのアクセスが許可されている。このページの例の `us.` モデル ID などのクロスリージョン推論プロファイルは、リージョングループのすべてのリージョンでアクセスが許可されている必要があります。[Amazon Bedrock の Claude Code](/docs/ja/amazon-bedrock) を参照してください
-  * **Google Cloud の Agent Platform**: Agent Platform API が有効になっており Claude モデルへのアクセスがあるプロジェクト。[Google Cloud の Agent Platform の Claude Code](/docs/ja/google-vertex-ai) を参照してください
-  * **Microsoft Foundry**: Claude モデルデプロイメントを備えた Foundry リソース。[Microsoft Foundry の Claude Code](/docs/ja/microsoft-foundry) を参照してください
+  * **Amazon Bedrock**: Claude モデルへのアクセスが許可されている。このページの例の `us.` モデル ID などのクロスリージョン推論プロファイルは、リージョングループのすべてのリージョンでアクセスが許可されている必要があります。[Amazon Bedrock の Claude Code](/docs/ja/amazon-bedrock.md) を参照してください
+  * **Google Cloud の Agent Platform**: Agent Platform API が有効になっており Claude モデルへのアクセスがあるプロジェクト。[Google Cloud の Agent Platform の Claude Code](/docs/ja/google-vertex-ai.md) を参照してください
+  * **Microsoft Foundry**: Claude モデルデプロイメントを備えた Foundry リソース。[Microsoft Foundry の Claude Code](/docs/ja/microsoft-foundry.md) を参照してください
 
 ## 統合をセットアップする
 
@@ -39,10 +39,10 @@ Claude Code GitHub Action は 3 つのプロバイダーをサポートしてお
 
 **1. GitHub アイデンティティを選択する**
 
-Claude Code GitHub Action はコミットをプッシュし、GitHub アイデンティティを通じてコメントを投稿します。[クイックセットアップ](/docs/ja/github-actions#quick-setup) はこのために公式 Claude GitHub App をインストールします。クラウドプロバイダーを使用する場合、アイデンティティを自分で選択します。
+Claude Code GitHub Action はコミットをプッシュし、GitHub アイデンティティを通じてコメントを投稿します。[クイックセットアップ](/docs/ja/github-actions.md#quick-setup) はこのために公式 Claude GitHub App をインストールします。クラウドプロバイダーを使用する場合、アイデンティティを自分で選択します。
 
 * **公式 [Claude GitHub App](https://github.com/apps/claude)**: リポジトリにインストールするか、既にインストールされている場合は次のステップにスキップします
-* **カスタム GitHub App**: Claude Code GitHub Action が使用する 3 つの権限のみが必要な場合に独自のアプリを作成します（[公式アプリの完全なセット](/docs/ja/github-actions#github-app-permissions) ではなく）
+* **カスタム GitHub App**: Claude Code GitHub Action が使用する 3 つの権限のみが必要な場合に独自のアプリを作成します（[公式アプリの完全なセット](/docs/ja/github-actions.md#github-app-permissions) ではなく）
 * **GitHub の自動 `GITHUB_TOKEN`**: 作成またはインストールするアプリはありませんが、GitHub はそれで作成されたコミットで CI ワークフローをトリガーしません
 
 4 番目のステップのワークフロー例はカスタムアプリで認証します。そのステップでは、他の 2 つのオプションに対して何を変更するかも説明しています。
@@ -64,7 +64,7 @@ GitHub がワークフローに発行する OIDC トークンを信頼するよ�
 AWS アカウントで信頼構成を作成し、[OIDC アイデンティティプロバイダーを作成するための AWS ガイド](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_create_oidc.html) に従います。
 
 * プロバイダー URL `https://token.actions.githubusercontent.com` とオーディエンス `sts.amazonaws.com` を使用して GitHub OIDC アイデンティティプロバイダーを追加します
-* そのプロバイダーによって Web アイデンティティとして信頼される IAM ロールを作成し、[IAM 構成](/docs/ja/amazon-bedrock#iam-configuration) からスコープ付き呼び出しポリシーをアタッチします。これは `bedrock:InvokeModel`、`bedrock:InvokeModelWithResponseStream`、`bedrock:ListInferenceProfiles`、`bedrock:GetInferenceProfile` を付与し、2 つの `aws-marketplace` サブスクリプションアクションも付与します
+* そのプロバイダーによって Web アイデンティティとして信頼される IAM ロールを作成し、[IAM 構成](/docs/ja/amazon-bedrock.md#iam-configuration) からスコープ付き呼び出しポリシーをアタッチします。これは `bedrock:InvokeModel`、`bedrock:InvokeModelWithResponseStream`、`bedrock:ListInferenceProfiles`、`bedrock:GetInferenceProfile` を付与し、2 つの `aws-marketplace` サブスクリプションアクションも付与します
 * ロールの信頼ポリシーをリポジトリに制限します。`repo:your-org/your-repo:*` などのサブジェクト条件を使用します。クレーム形式については [GitHub の OIDC 強化ガイド](https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect) を参照してください
 
 ロールの ARN をメモします。次のステップでシークレットとして追加します。
@@ -84,7 +84,7 @@ Google Cloud プロジェクトでフェデレーションリソースを作成�
 リポジトリ用のフェデレーション認証情報を持つ Microsoft Entra アプリケーションを作成し、[GitHub Actions から認証するための Microsoft ガイド](https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure-openid-connect) に従います。
 
 * Microsoft Entra アプリケーションを登録し、GitHub がリポジトリに発行するトークンを信頼するフェデレーション ID 認証情報を追加します。ユーザー割り当てマネージドアイデンティティはアプリケーションの代わりに機能します。どちらも以下でメモするクライアント ID を持ちます
-* Foundry リソースでアプリケーションに `Azure AI User` ロールを割り当てます。より狭いカスタムロールについては [Azure RBAC 構成](/docs/ja/microsoft-foundry#azure-rbac-configuration) を参照してください
+* Foundry リソースでアプリケーションに `Azure AI User` ロールを割り当てます。より狭いカスタムロールについては [Azure RBAC 構成](/docs/ja/microsoft-foundry.md#azure-rbac-configuration) を参照してください
 
 アプリケーションのクライアント ID、テナント ID、サブスクリプション ID をメモします。次のステップでシークレットとして追加します。
 
@@ -285,9 +285,9 @@ jobs:
 
 > [!TIP]
 >
-> Foundry リソース内の Claude デプロイメントと一致するモデル ID を使用します。モデル構成とバージョンピニングについては [Microsoft Foundry の Claude Code](/docs/ja/microsoft-foundry) を参照してください。
+> Foundry リソース内の Claude デプロイメントと一致するモデル ID を使用します。モデル構成とバージョンピニングについては [Microsoft Foundry の Claude Code](/docs/ja/microsoft-foundry.md) を参照してください。
 
-任意のプロバイダーで、実行時間とコストを制限するために `claude_args` に `--max-turns` を追加できます。[コストを管理する](/docs/ja/github-actions#manage-costs) を参照してください。
+任意のプロバイダーで、実行時間とコストを制限するために `claude_args` に `--max-turns` を追加できます。[コストを管理する](/docs/ja/github-actions.md#manage-costs) を参照してください。
 
 **5. セットアップをテストする**
 
@@ -298,11 +298,11 @@ jobs:
 失敗した実行は通常、2 つの場所のいずれかで中断します。
 
 * **認証エラー**: 通常は OIDC の設定ミス。ワークフローに `id-token: write` 権限が含まれていること、信頼構成のリポジトリ条件がリポジトリと正確に一致していること、ワークフロー内のシークレット名が追加したものと一致していることを確認します
-* **トリガーと CI の問題**: Claude Code GitHub Action が Claude API を呼び出す場合と同じように動作します。メインページの [トラブルシューティングセクション](/docs/ja/github-actions#troubleshooting) と Claude Code GitHub Action の [FAQ](https://github.com/anthropics/claude-code-action/blob/main/docs/faq.md) を参照してください
+* **トリガーと CI の問題**: Claude Code GitHub Action が Claude API を呼び出す場合と同じように動作します。メインページの [トラブルシューティングセクション](/docs/ja/github-actions.md#troubleshooting) と Claude Code GitHub Action の [FAQ](https://github.com/anthropics/claude-code-action/blob/main/docs/faq.md) を参照してください
 
 ## 次のステップ
 
-* [Claude Code GitHub Actions](/docs/ja/github-actions) 例、パラメーター、ベストプラクティス用
-* [Amazon Bedrock の Claude Code](/docs/ja/amazon-bedrock) Bedrock モデル ID とリージョン用
-* [Google Cloud の Agent Platform の Claude Code](/docs/ja/google-vertex-ai) Agent Platform モデル ID とリージョン用
-* [Microsoft Foundry の Claude Code](/docs/ja/microsoft-foundry) Foundry モデルとエンドポイント構成用
+* [Claude Code GitHub Actions](/docs/ja/github-actions.md) 例、パラメーター、ベストプラクティス用
+* [Amazon Bedrock の Claude Code](/docs/ja/amazon-bedrock.md) Bedrock モデル ID とリージョン用
+* [Google Cloud の Agent Platform の Claude Code](/docs/ja/google-vertex-ai.md) Agent Platform モデル ID とリージョン用
+* [Microsoft Foundry の Claude Code](/docs/ja/microsoft-foundry.md) Foundry モデルとエンドポイント構成用

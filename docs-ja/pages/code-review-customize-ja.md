@@ -6,20 +6,20 @@
 
 > REVIEW.md と CLAUDE.md を使って、Code Review がプルリクエストで指摘する内容を調整します。重大度の再調整、パスのスキップ、チェックの追加、そしてどのコピーが適用されるかを確認する方法を説明します。
 
-リポジトリに指示をコミットすることで、[Code Review](/docs/ja/code-review) がそのリポジトリで指摘する内容を変更できます。これにより、nit の量を減らしたり、生成されたファイルへのコメントを止めたり、チームが重視するルールを追加したりできます。指示は次の 2 つのファイルのいずれかに記述します。
+リポジトリに指示をコミットすることで、[Code Review](/docs/ja/code-review.md) がそのリポジトリで指摘する内容を変更できます。これにより、nit の量を減らしたり、生成されたファイルへのコメントを止めたり、チームが重視するルールを追加したりできます。指示は次の 2 つのファイルのいずれかに記述します。
 
-* **`CLAUDE.md`**：Claude Code がレビューを含むすべてのタスクで読み込む[プロジェクト指示](/docs/ja/memory)です。Code Review はこれをプロジェクトのコンテキストとして読み込み、これに違反する変更を指摘します。
+* **`CLAUDE.md`**：Claude Code がレビューを含むすべてのタスクで読み込む[プロジェクト指示](/docs/ja/memory.md)です。Code Review はこれをプロジェクトのコンテキストとして読み込み、これに違反する変更を指摘します。
 * **`REVIEW.md`**：レビュー専用の指示です。チームが何を指摘してほしいか、どの重大度で指摘するか、何をスキップするかを記述するために使用します。
 
 リポジトリのルートに `REVIEW.md` を追加してマージします。その後、[デフォルトブランチを保護](#which-branch-review-md-is-read-from)します。
 
 > [!NOTE]
 >
-> レビューの徹底度や実行タイミングを変更するには、Owner に[レビューレベル](/docs/ja/code-review-setup#set-the-default-review-level)または [**Review runs** 設定](/docs/ja/code-review-setup#set-when-reviews-run)の変更を依頼してください。
+> レビューの徹底度や実行タイミングを変更するには、Owner に[レビューレベル](/docs/ja/code-review-setup.md#set-the-default-review-level)または [**Review runs** 設定](/docs/ja/code-review-setup.md#set-when-reviews-run)の変更を依頼してください。
 
 ## プロジェクト全体のルールには CLAUDE.md を使用する
 
-Code Review は、リポジトリの `CLAUDE.md` ファイルをプロジェクトのコンテキストとして読み込みます。そのルールのいずれかに違反する変更は、問題に応じた[重大度レベル](/docs/ja/code-review-pull-requests#severity-levels)の検出結果になります。
+Code Review は、リポジトリの `CLAUDE.md` ファイルをプロジェクトのコンテキストとして読み込みます。そのルールのいずれかに違反する変更は、問題に応じた[重大度レベル](/docs/ja/code-review-pull-requests.md#severity-levels)の検出結果になります。
 
 レビューでは、リポジトリのルートにある `CLAUDE.md` と、変更された各ファイルの親ディレクトリにある `CLAUDE.md` ファイルが読み込まれます。サブディレクトリの `CLAUDE.md` は、プルリクエストがそのパス配下のファイルを変更した場合に読み込まれます。
 
@@ -127,7 +127,7 @@ Code Review は保護されたブランチから `REVIEW.md` を読み込む場�
 * **名前**：大文字と小文字を含めてファイル名を正確に一致させ、スペースを含まない名前を使用します。`REVIEW.md` と同じ場所にあるどのファイルとも名前が一致しない行は、プレーンテキストとして `REVIEW.md` に残り、チェック実行ではスキップされた取り込みとして報告されません。
 * **1 階層のみ**：すべてのファイルをルートの `REVIEW.md` に列挙します。取り込まれたファイル内やサブディレクトリの `REVIEW.md` 内の `@` 行はプレーンテキストのまま残り、別のファイルへの Markdown リンクは取り込みになりません。
 * **上限**：取り込むファイルは異なるファイルで最大 8 つまでとし、`REVIEW.md` とそれが取り込むファイルの合計を 150,000 バイト未満に保ちます。バイト数の上限に達するファイルは、途中で切り詰められるのではなく、ファイル全体がスキップされます。チェック実行では、いずれかの上限によってスキップされた取り込み行の数が報告されます。
-* **リンク**：`REVIEW.md` とそれが取り込むファイル全体で、Markdown リンクを 64 個以下に保ちます。`http`、`https`、`mailto` アドレスへのリンクと `#` アンカーへのリンクは数に含まれません。この上限を超えると、レビューは取り込まれたファイルだけでなく、ルートの `REVIEW.md` 全体をスキップします。その場合、チェック実行では[指示が適用されなかったことが示されます](/docs/ja/code-review-troubleshooting#the-check-run-mentions-review-md)。
+* **リンク**：`REVIEW.md` とそれが取り込むファイル全体で、Markdown リンクを 64 個以下に保ちます。`http`、`https`、`mailto` アドレスへのリンクと `#` アンカーへのリンクは数に含まれません。この上限を超えると、レビューは取り込まれたファイルだけでなく、ルートの `REVIEW.md` 全体をスキップします。その場合、チェック実行では[指示が適用されなかったことが示されます](/docs/ja/code-review-troubleshooting.md#the-check-run-mentions-review-md)。
 * **マージ済みのコピー**：取り込むファイルを [`REVIEW.md` が読み込まれるブランチ](#which-branch-review-md-is-read-from)にマージします。レビューは両方を同じコミットから読み込み、プルリクエスト自体の変更から読み込むことはありません。
 
 ### REVIEW\.md がどのブランチから読み込まれるか
@@ -160,12 +160,12 @@ Code Review は、次の設定を保護とみなします。
 | デフォルトブランチが保護されておらず、ベースブランチにもどちらの種類の保護ルールもない | デフォルトブランチ | ルートファイル |
 | Code Review が保護設定を確認できない。保護されていないデフォルトブランチと、クラシックなルールのみを持つベースブランチの組み合わせもこれに含まれる | なし | なし |
 
-チェック実行で `REVIEW.md` について言及されている場合は、[The check run mentions REVIEW.md](/docs/ja/code-review-troubleshooting#the-check-run-mentions-review-md) を参照してください。
+チェック実行で `REVIEW.md` について言及されている場合は、[The check run mentions REVIEW.md](/docs/ja/code-review-troubleshooting.md#the-check-run-mentions-review-md) を参照してください。
 
 ## 関連リソース
 
-* [Code Review](/docs/ja/code-review)：サービスの概要とレビューの実行方法
-* [プルリクエストでレビューを確認・依頼する](/docs/ja/code-review-pull-requests#severity-levels)：各重大度レベルの意味と検出結果の表示方法
-* [Code Review をセットアップする](/docs/ja/code-review-setup)：Owner が設定するレビューレベルとレビューの実行タイミング
+* [Code Review](/docs/ja/code-review.md)：サービスの概要とレビューの実行方法
+* [プルリクエストでレビューを確認・依頼する](/docs/ja/code-review-pull-requests.md#severity-levels)：各重大度レベルの意味と検出結果の表示方法
+* [Code Review をセットアップする](/docs/ja/code-review-setup.md)：Owner が設定するレビューレベルとレビューの実行タイミング
 * [`/code-review` でローカルにレビューする](/docs/ja/code-review-local)：`/code-review` コマンド、その引数、effort レベル
-* [メモリ](/docs/ja/memory)：Claude Code 全体で `CLAUDE.md` ファイルがどのように機能するか
+* [メモリ](/docs/ja/memory.md)：Claude Code 全体で `CLAUDE.md` ファイルがどのように機能するか

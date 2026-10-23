@@ -8,7 +8,7 @@
 
 Claude Code には、ビジュアルターミナルインターフェースをプレーンな線形テキストに置き換えるスクリーンリーダーモードがあります。ボックス、プログレスアニメーション、インプレース再描画の代わりに、Claude Code はラベル付きの行を出力し、VoiceOver や NVDA などのスクリーンリーダーが順番に読み上げます。完全な会話を保持し、ツール権限を承認し、出力を最後まで確認できます。
 
-スクリーンリーダーモードはオプトインです。スクリーン拡大鏡、モーション削減、またはスクリーンリーダーの代わりにカラーブラインド対応テーマを使用する場合は、[アクセシビリティ設定](#accessibility-settings)テーブルから `CLAUDE_CODE_ACCESSIBILITY`、`prefersReducedMotion`、または `theme` を設定してください。スクリーンリーダーモードはターミナルインターフェースのみを適応させるため、VS Code 拡張機能のチャットパネルではこれを必要としません。Claude Code v2.1.236 以降では、拡張機能は設定なしで[スクリーンリーダーにコンバーセーション活動を通知](/docs/ja/vs-code#use-a-screen-reader)します。
+スクリーンリーダーモードはオプトインです。スクリーン拡大鏡、モーション削減、またはスクリーンリーダーの代わりにカラーブラインド対応テーマを使用する場合は、[アクセシビリティ設定](#accessibility-settings)テーブルから `CLAUDE_CODE_ACCESSIBILITY`、`prefersReducedMotion`、または `theme` を設定してください。スクリーンリーダーモードはターミナルインターフェースのみを適応させるため、VS Code 拡張機能のチャットパネルではこれを必要としません。Claude Code v2.1.236 以降では、拡張機能は設定なしで[スクリーンリーダーにコンバーセーション活動を通知](/docs/ja/vs-code.md#use-a-screen-reader)します。
 
 ## スクリーンリーダーモードをオンにする
 
@@ -16,7 +16,7 @@ Claude Code には、ビジュアルターミナルインターフェースを�
 
 * 1 つのセッション用：`claude --ax-screen-reader` を実行します。
 * 1 つのシェルから開始されたセッション用：`CLAUDE_AX_SCREEN_READER` 環境変数を `1` に設定します。Bash または Zsh では `export CLAUDE_AX_SCREEN_READER=1` を実行し、PowerShell では `$env:CLAUDE_AX_SCREEN_READER = "1"` を実行します。シェルプロファイルにその行を追加して、今後のシェルでも保持します。
-* マシン上のすべてのセッション用：ユーザー[設定ファイル](/docs/ja/settings)に `"axScreenReader": true` を追加します。この設定は VS Code 統合ターミナルを含むすべてのターミナルに適用されます。
+* マシン上のすべてのセッション用：ユーザー[設定ファイル](/docs/ja/settings.md)に `"axScreenReader": true` を追加します。この設定は VS Code 統合ターミナルを含むすべてのターミナルに適用されます。
 
 メソッドを組み合わせた場合、Claude Code は [`--ax-screen-reader`](/docs/ja/cli-reference#cli-flags) フラグを [`CLAUDE_AX_SCREEN_READER`](/docs/ja/env-vars#variables) 環境変数より優先し、その環境変数を [`axScreenReader`](/docs/ja/settings-reference#axscreenreader) 設定より優先します。
 
@@ -24,9 +24,16 @@ SSH 経由で Claude Code を使用する場合は、Claude Code が実行され
 
 Claude Code が最初に出力する行がモードを確認します。`[Screen Reader Mode: on via flag]`、`[Screen Reader Mode: on via env]`、または `[Screen Reader Mode: on via settings]` です。
 
+### プロジェクト設定ではスクリーンリーダーモードをオンにできない
+
+起動時に `Screen reader mode is off: project settings can't turn it on` という行が表示される場合、プロジェクトがスクリーンリーダーモードを要求しており、ほかにモードをオンにするものがないことを意味します。Claude Code は、プロジェクトの `.claude/settings.json` および `.claude/settings.local.json` にある `axScreenReader` キーと、`env` 配下の `CLAUDE_AX_SCREEN_READER` の値を、その値にかかわらずどちらも無視します。
+
+* **モードをオンにするには**：`--ax-screen-reader` を指定して Claude Code を起動するか、シェルで `CLAUDE_AX_SCREEN_READER` を `1` に設定するか、ユーザー[設定ファイル](/docs/ja/settings.md)に `"axScreenReader": true` を追加して Claude Code を再起動します。プロジェクトのファイルを変更する必要はありません。モードをオンにすると、起動時には代わりに[確認の行](#turn-on-screen-reader-mode)が表示されます。
+* **スクリーンリーダーを使用しない場合**：何もする必要はありません。この行を表示しないようにするには、ユーザー設定ファイルに `"axScreenReader": false` を追加するか、プロジェクトの設定ファイルから `axScreenReader` キーと `CLAUDE_AX_SCREEN_READER` 変数を削除します。
+
 ## スクリーンリーダーモードをオフにする
 
-モードをオンにした方法を逆にします。フラグなしで開始するか、環境変数を設定解除するか、`axScreenReader` を `false` に設定します。`CLAUDE_AX_SCREEN_READER` を `0` に設定すると、設定が `true` の場合でもモードはオフのままです。
+モードをオンにした方法を逆にします。フラグなしで開始するか、環境変数を設定解除するか、ユーザー設定ファイルで `axScreenReader` を `false` に設定します。`CLAUDE_AX_SCREEN_READER` を `0` に設定すると、設定が `true` の場合でも Claude Code はモードをオフのままにします。
 
 ## アクセシビリティ設定
 
@@ -54,7 +61,7 @@ Claude Code が最初に出力する行がモードを確認します。`[Screen
 * Claude の返信内のテーブルは、ボックス文字グリッドではなく `Header: value` 文として読み込まれます
 * 差分は、追加された行と削除された行を `+` と `-` で示したプレーンテキストとして 1 行ずつ読み上げられるため、ファイル編集の承認プロンプトで回答する前に、提案された変更を聞くことができます
 
-Claude Code は、ターミナルのスクロールバックに印刷するすべてを残すため、スクリーンリーダーのレビューコマンドまたはターミナルの検索を使用して以前のターンを再度読むことができます。Claude Code は、スクリーンリーダーモードで [`tui` 設定](/docs/ja/settings-reference#tui) を無視します。[既知の制限事項](#known-limitations) に記載されている接続されたバックグラウンドセッションを除き、[フルスクリーンレンダリング](/docs/ja/fullscreen) の代わりにスクロールテキストを印刷します。
+Claude Code は、ターミナルのスクロールバックに印刷するすべてを残すため、スクリーンリーダーのレビューコマンドまたはターミナルの検索を使用して以前のターンを再度読むことができます。Claude Code は、スクリーンリーダーモードで [`tui` 設定](/docs/ja/settings-reference#tui) を無視します。[既知の制限事項](#known-limitations) に記載されている接続されたバックグラウンドセッションを除き、[フルスクリーンレンダリング](/docs/ja/fullscreen.md) の代わりにスクロールテキストを印刷します。
 
 Claude Code は起動時に [確認行](#turn-on-screen-reader-mode) を印刷した後、スクリーンリーダーが行を読み終えられるように、プロンプトを描画する前に 3 秒待機します。任意のキーを押すと待機を終了します。待機の長さを変更するには、[`CLAUDE_AX_STARTUP_QUIET_MS`](/docs/ja/env-vars#variables) を設定します。
 
@@ -70,19 +77,19 @@ Claude Code は起動時に [確認行](#turn-on-screen-reader-mode) を印刷�
 | `error:` | 失敗した API リクエストなどの会話内のエラー |
 | `warning:` | フォールバックモデルへの切り替えなど、Claude Code からの警告 |
 | `Permission Required:` | ユーザーの回答を待つ権限プロンプト |
-| `Cost:` | Claude Code が終了するときのセッションコスト概要（アカウントが [コストを表示](/docs/ja/costs) している場合） |
+| `Cost:` | Claude Code が終了するときのセッションコスト概要（アカウントが [コストを表示](/docs/ja/costs.md) している場合） |
 
 Claude Code はターミナルカーソルを入力キャレットに保つため、スクリーンリーダーの現在の行を読むコマンドは、編集しているプロンプトを読み込みます。
 
 入力行の末尾に入力するとき、または `Backspace` を押すと、Claude Code は変更された文字のみを書き込みます。スクリーンリーダーはそれらの文字のみをエコーします。
 
-[テキスト編集ショートカット](/docs/ja/interactive-mode#text-editing) の 1 つで単語または行を削除すると、Claude Code は削除されたテキストを発表します：
+[テキスト編集ショートカット](/docs/ja/interactive-mode.md#text-editing) の 1 つで単語または行を削除すると、Claude Code は削除されたテキストを発表します：
 
 * `Ctrl+W` または `Alt+D` で単語を削除、または macOS では `Option+Delete`、Windows では `Ctrl+Backspace`
 * `Ctrl+U` または `Cmd+Backspace` で行の開始位置まで削除
 * `Ctrl+K` で行の終了位置まで削除
 
-[権限モード](/docs/ja/permission-modes) を `Shift+Tab` でサイクルすると、Claude Code は `[plan mode on]` または `[accept edits on]` などのランディングした権限モードを発表します。Claude Code は発表を 1 回印刷し、後の再描画では繰り返しません。
+[権限モード](/docs/ja/permission-modes.md) を `Shift+Tab` でサイクルすると、Claude Code は `[plan mode on]` または `[accept edits on]` などのランディングした権限モードを発表します。Claude Code は発表を 1 回印刷し、後の再描画では繰り返しません。
 
 ### 読んでいる位置を失わずに以前の出力を読む
 
@@ -120,17 +127,17 @@ macOS Terminal はマーカーに作用せず、Claude Code は WezTerm では�
 * 権限プロンプトなど、プロンプトまたはダイアログがあなたの回答を必要としている
 * 5 秒以上実行されたツールが完了した
 
-ベルはターミナルの標準アラートです。これを消音にするには、ターミナルアプリケーションのベル設定を変更してください。スクリーンリーダーモード外では、[`preferredNotifChannel`](/docs/ja/settings-reference#preferrednotifchannel) を `"terminal_bell"` に設定して、Claude があなたの対応を待っているときに[同様のベル](/docs/ja/terminal-config#get-a-terminal-bell-or-notification)を取得します。
+ベルはターミナルの標準アラートです。これを消音にするには、ターミナルアプリケーションのベル設定を変更してください。スクリーンリーダーモード外では、[`preferredNotifChannel`](/docs/ja/settings-reference#preferrednotifchannel) を `"terminal_bell"` に設定して、Claude があなたの対応を待っているときに[同様のベル](/docs/ja/terminal-config.md#get-a-terminal-bell-or-notification)を取得します。
 
 ## 既知の制限事項
 
 一部の動作はスクリーンリーダーモード用に適応していません。
 
 * スクリーンリーダーモードは、スクリーンリーダーが実行されているときに自動的にオンになりません。
-* Claude Code は、`/plan` で [plan モード](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode)に入るなど、コマンドで行った権限モードの変更を発表しません。
-* `claude attach` または agent view から[バックグラウンドセッション](/docs/ja/agent-view)にアタッチすると、ターミナルの代替画面に入ります。これはネイティブスクロールバックがありません。これは[他のアタッチされたセッションと同じ動作](/docs/ja/fullscreen)です。抜け出すには、空のプロンプトで左矢印を押すか、ダイアログにフォーカスがある場合は Ctrl+Z を押します。
+* Claude Code は、`/plan` で [plan モード](/docs/ja/permission-modes.md#analyze-before-you-edit-with-plan-mode)に入るなど、コマンドで行った権限モードの変更を発表しません。
+* `claude attach` または agent view から[バックグラウンドセッション](/docs/ja/agent-view.md)にアタッチすると、ターミナルの代替画面に入ります。これはネイティブスクロールバックがありません。これは[他のアタッチされたセッションと同じ動作](/docs/ja/fullscreen.md)です。抜け出すには、空のプロンプトで左矢印を押すか、ダイアログにフォーカスがある場合は Ctrl+Z を押します。
 * Claude Code はコストを終了時に出力するサマリーで発表し、ターンごとではありません。
-* スクリーンリーダーモードは `-p` フラグで[非対話型モード](/docs/ja/headless)を変更しません。非対話型モードは既にプレーンテキストを書き込み、スクリプト作成の代替案のままです。
+* スクリーンリーダーモードは `-p` フラグで[非対話型モード](/docs/ja/headless.md)を変更しません。非対話型モードは既にプレーンテキストを書き込み、スクリプト作成の代替案のままです。
 
 ## 問題を報告する
 

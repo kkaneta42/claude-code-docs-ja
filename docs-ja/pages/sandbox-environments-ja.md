@@ -12,7 +12,7 @@ Claude Code は、軽量なコマンド単位のサンドボックスから完�
 
 > [!NOTE]
 >
-> より広いセキュリティモデルについては、[セキュリティ](/docs/ja/security)を参照してください。Agent SDK デプロイメントについては、[セキュアなデプロイメント](/docs/ja/agent-sdk/secure-deployment)を参照してください。
+> より広いセキュリティモデルについては、[セキュリティ](/docs/ja/security.md)を参照してください。Agent SDK デプロイメントについては、[セキュアなデプロイメント](/docs/ja/agent-sdk/secure-deployment.md)を参照してください。
 
 ## サンドボックス化アプローチの比較
 
@@ -27,13 +27,13 @@ Claude Code は、軽量なコマンド単位のサンドボックスから完�
 | [仮想マシン](#virtual-machine) | 完全なオペレーティングシステム | いいえ | 高い |
 | [クラウドセッション](#cloud-sessions) | 完全なオペレーティングシステム（Anthropic がホスト） | いいえ | なし。Claude サブスクリプションが必要で、`claude --cloud` で起動する場合を除き、接続された GitHub アカウントが必要 |
 
-[サンドボックス化された Bash ツール](/docs/ja/sandboxing)は Claude Code に組み込まれており、Bash コマンドのみを制限します。組み込みファイルツール、MCP サーバー、hooks はホスト上で直接実行されます。表内の他のすべてのアプローチは、Claude Code プロセス全体を分離境界内に配置するため、ファイルツール、MCP サーバー、hooks も制限されます。
+[サンドボックス化された Bash ツール](/docs/ja/sandboxing.md)は Claude Code に組み込まれており、Bash コマンドのみを制限します。組み込みファイルツール、MCP サーバー、hooks はホスト上で直接実行されます。表内の他のすべてのアプローチは、Claude Code プロセス全体を分離境界内に配置するため、ファイルツール、MCP サーバー、hooks も制限されます。
 
 > [!WARNING]
 >
-> サンドボックス分離はセキュリティ侵害の影響を軽減しますが、リスクを完全に排除することはできません。ネットワーク出力を許可するアプローチは、エージェントが読み取ることができるデータをリークする可能性があり、プロジェクトディレクトリを書き込み可能にマウントするアプローチはそのコードを変更する可能性があります。ハード制御としてサンドボックスに依存する前に、[セキュリティの制限事項](/docs/ja/sandboxing#security-limitations)を確認してください。
+> サンドボックス分離はセキュリティ侵害の影響を軽減しますが、リスクを完全に排除することはできません。ネットワーク出力を許可するアプローチは、エージェントが読み取ることができるデータをリークする可能性があり、プロジェクトディレクトリを書き込み可能にマウントするアプローチはそのコードを変更する可能性があります。ハード制御としてサンドボックスに依存する前に、[セキュリティの制限事項](/docs/ja/sandboxing.md#security-limitations)を確認してください。
 >
-> 分離はモデルに送信される内容を変更しません。プロンプトと Claude が読み取るファイルは、サンドボックスの有無にかかわらず、Anthropic API または設定されたプロバイダーに送信されます。Claude Code が送信する内容と削減方法については、[データ使用](/docs/ja/data-usage)を参照してください。
+> 分離はモデルに送信される内容を変更しません。プロンプトと Claude が読み取るファイルは、サンドボックスの有無にかかわらず、Anthropic API または設定されたプロバイダーに送信されます。Claude Code が送信する内容と削減方法については、[データ使用](/docs/ja/data-usage.md)を参照してください。
 
 ## アプローチを選択する
 
@@ -41,26 +41,26 @@ Claude Code は、軽量なコマンド単位のサンドボックスから完�
 
 | 実現したいこと | 開始するもの |
 | :- | :- |
-| 自分のマシンでの日常的な作業中に権限プロンプトを減らす | [サンドボックス化された Bash ツール](/docs/ja/sandboxing)（`/sandbox` で有効化） |
-| Claude に `--dangerously-skip-permissions` または自動モードで無人で作業させる | 事前設定された [dev コンテナ](/docs/ja/devcontainer)、任意のコンテナまたは VM、または [サンドボックスランタイム](#sandbox-runtime) |
+| 自分のマシンでの日常的な作業中に権限プロンプトを減らす | [サンドボックス化された Bash ツール](/docs/ja/sandboxing.md)（`/sandbox` で有効化） |
+| Claude に `--dangerously-skip-permissions` または自動モードで無人で作業させる | 事前設定された [dev コンテナ](/docs/ja/devcontainer.md)、任意のコンテナまたは VM、または [サンドボックスランタイム](#sandbox-runtime) |
 | Bash だけでなく MCP サーバーと hooks も分離し、Docker なしで実行する | サンドボックスランタイム |
-| 信頼できないリポジトリで作業する | 専用の仮想マシン、または Claude サブスクリプションがある場合は [Web 上の Claude Code](/docs/ja/claude-code-on-the-web)。`claude --cloud` で起動する場合、GitHub は不要です |
-| チーム全体でサンドボックス化された環境を標準化する | 事前設定された [dev コンテナ](/docs/ja/devcontainer)（リポジトリにコピー） |
-| ローカルセットアップなしのデバイスから Claude Code を使用する | [Web 上の Claude Code](/docs/ja/claude-code-on-the-web)（Claude サブスクリプションと接続された GitHub アカウントが必要） |
+| 信頼できないリポジトリで作業する | 専用の仮想マシン、または Claude サブスクリプションがある場合は [Web 上の Claude Code](/docs/ja/claude-code-on-the-web.md)。`claude --cloud` で起動する場合、GitHub は不要です |
+| チーム全体でサンドボックス化された環境を標準化する | 事前設定された [dev コンテナ](/docs/ja/devcontainer.md)（リポジトリにコピー） |
+| ローカルセットアップなしのデバイスから Claude Code を使用する | [Web 上の Claude Code](/docs/ja/claude-code-on-the-web.md)（Claude サブスクリプションと接続された GitHub アカウントが必要） |
 | 組織内のすべての開発者に対して分離を要求する | [組織全体で分離を強制](#enforce-isolation-across-an-organization) |
 | ネイティブ Windows ホストで作業する | コンテナまたは VM、または WSL2 内で Bash サンドボックスを実行 |
 
 ### 分離が権限モードとどのように関連するか
 
-[権限モード](/docs/ja/permission-modes)は、ツール呼び出しが実行されるかどうか、および最初にプロンプトが表示されるかどうかを決定します。分離は、コマンドが実行されたら何にアクセスできるかを制限します。この 2 つは連携して機能します。権限モードがアクションを確認なしで実行させる場合、分離境界はそれらのアクションが到達できる内容を制限します。
+[権限モード](/docs/ja/permission-modes.md)は、ツール呼び出しが実行されるかどうか、および最初にプロンプトが表示されるかどうかを決定します。分離は、コマンドが実行されたら何にアクセスできるかを制限します。この 2 つは連携して機能します。権限モードがアクションを確認なしで実行させる場合、分離境界はそれらのアクションが到達できる内容を制限します。
 
-`--dangerously-skip-permissions` を渡すと、Claude は最初にあなたに尋ねることなく行動します。[どのモードも自動承認しないアクション](/docs/ja/permission-modes#actions-no-mode-auto-approves)は依然として適用されます。
+`--dangerously-skip-permissions` を渡すと、Claude は最初にあなたに尋ねることなく行動します。[どのモードも自動承認しないアクション](/docs/ja/permission-modes.md#actions-no-mode-auto-approves)は依然として適用されます。
 
 間違いをキャッチするプロンプトがないため、選択した分離境界があなたのシステムを保護するものです。常にコンテナ、VM、または [サンドボックスランタイム](#sandbox-runtime)内で `--dangerously-skip-permissions` セッションを実行してください。ファイルツール、MCP サーバー、hooks も境界内にあります。Linux と macOS では、Claude Code はこのフラグを使用して root として実行されている場合は起動を拒否するため、コンテナ、VM、またはサンドボックスランタイムを非 root ユーザーとして実行してください。
 
-[自動モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)はプロンプトを、アクションをレビューする分類器に置き換えます。分類器はアクション単位の制御であり、分離境界ではないため、分離境界は無人実行の防御層を追加し、`--dangerously-skip-permissions` の場合のように必須ではありません。
+[自動モード](/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)はプロンプトを、アクションをレビューする分類器に置き換えます。分類器はアクション単位の制御であり、分離境界ではないため、分離境界は無人実行の防御層を追加し、`--dangerously-skip-permissions` の場合のように必須ではありません。
 
-[サンドボックス化された Bash ツール](#sandboxed-bash-tool)単独では Bash のみを制限するため、どちらのモードでも完全に無人で実行するには不十分です。アプローチを重ねることができます。サンドボックス化された Bash ツールをコンテナまたは VM 内で実行すると、外側の環境境界の上に OS レベルのコマンド制限が得られます。Bash サンドボックス自体が権限ルールおよび権限モードとどのように相互作用するかについては、[サンドボックス化が権限および権限モードとどのように関連するか](/docs/ja/sandboxing#how-sandboxing-relates-to-permissions-and-permission-modes)を参照してください。
+[サンドボックス化された Bash ツール](#sandboxed-bash-tool)単独では Bash のみを制限するため、どちらのモードでも完全に無人で実行するには不十分です。アプローチを重ねることができます。サンドボックス化された Bash ツールをコンテナまたは VM 内で実行すると、外側の環境境界の上に OS レベルのコマンド制限が得られます。Bash サンドボックス自体が権限ルールおよび権限モードとどのように相互作用するかについては、[サンドボックス化が権限および権限モードとどのように関連するか](/docs/ja/sandboxing.md#how-sandboxing-relates-to-permissions-and-permission-modes)を参照してください。
 
 ## サンドボックス化された Bash ツール
 
@@ -70,12 +70,12 @@ Claude Code は、軽量なコマンド単位のサンドボックスから完�
 
 サンドボックス化された Bash ツールは Claude Code に組み込まれています。オペレーティングシステムプリミティブを使用して、Claude が実行する Bash、PowerShell、Monitor ツールのコマンドのファイルシステムとネットワークアクセスを制限します。
 
-`/sandbox` コマンドを実行してサンドボックスパネルを開き、モードを選択してください。[サンドボックス化](/docs/ja/sandboxing)ガイドでは、承認モード、デフォルト境界、および拡大または縮小する方法について説明しています。
+`/sandbox` コマンドを実行してサンドボックスパネルを開き、モードを選択してください。[サンドボックス化](/docs/ja/sandboxing.md)ガイドでは、承認モード、デフォルト境界、および拡大または縮小する方法について説明しています。
 
 コマンド単位のサンドボックスはセッションで実行されるすべてをカバーしていません。
 
-* Read、Edit、WebFetch などの他の [組み込みツール](/docs/ja/tools-reference)は Claude Code プロセス内で実行され、任意のコードを生成しません。[権限ルール](/docs/ja/permissions)がパスまたはドメインでそれらをゲートします。
-* [MCP](/docs/ja/mcp) サーバー、[コマンドフック](/docs/ja/hooks#command-hook-fields)、[プラグインモニター](/docs/ja/plugins/components#monitors)は、ホスト上で制約なく実行される別のプロセスです。このように実行されるその他のプロセスについては、[サンドボックスの外部で実行されるもの](/docs/ja/sandboxing#what-runs-outside-the-sandbox)を参照してください。
+* Read、Edit、WebFetch などの他の [組み込みツール](/docs/ja/tools-reference.md)は Claude Code プロセス内で実行され、任意のコードを生成しません。[権限ルール](/docs/ja/permissions.md)がパスまたはドメインでそれらをゲートします。
+* [MCP](/docs/ja/mcp.md) サーバー、[コマンドフック](/docs/ja/hooks.md#command-hook-fields)、[プラグインモニター](/docs/ja/plugins/components.md#monitors)は、ホスト上で制約なく実行される別のプロセスです。このように実行されるその他のプロセスについては、[サンドボックスの外部で実行されるもの](/docs/ja/sandboxing.md#what-runs-outside-the-sandbox)を参照してください。
 
 組み込みツール、MCP サーバー、hooks をすべて 1 つの OS 境界の背後に配置するには、Claude Code プロセス全体を [サンドボックスランタイム](#sandbox-runtime)、[dev コンテナ](#dev-containers)、または [カスタムコンテナ](#custom-container)内で実行してください。
 
@@ -83,11 +83,11 @@ Claude Code は、軽量なコマンド単位のサンドボックスから完�
 
 [`@anthropic-ai/sandbox-runtime`](https://github.com/anthropics/sandbox-runtime) パッケージは、プロセス全体を、組み込み Bash サンドボックスが使用するのと同じ Seatbelt または bubblewrap 分離でラップします。Claude Code をランタイムを通じて実行すると、シェルコマンドだけでなく、セッションのツール、フック、MCP サーバーも制約されます。ランタイムはベータ版のリサーチプレビューであり、パッケージの進化に伴い、その設定形式が変わる可能性があります。
 
-このセクションでは、設定する内容とランタイムが独自に実施する内容について説明します。Agent SDK アプリケーションでランタイムをデプロイする場合は、[セキュアデプロイガイド](/docs/ja/agent-sdk/secure-deployment#sandbox-runtime)を参照してください。
+このセクションでは、設定する内容とランタイムが独自に実施する内容について説明します。Agent SDK アプリケーションでランタイムをデプロイする場合は、[セキュアデプロイガイド](/docs/ja/agent-sdk/secure-deployment.md#sandbox-runtime)を参照してください。
 
 ### ランタイムのセットアップと起動
 
-Linux と WSL2 では、ランタイムは組み込みサンドボックスと同じ `bubblewrap` および `socat` パッケージに加えて、`ripgrep` に依存します。Claude Code はこれをバンドルしていますが、スタンドアロンランタイムは PATH から解決します。[Linux と WSL2 のセットアップ](/docs/ja/sandboxing#set-up-linux-and-wsl2)で説明されているように `bubblewrap` と `socat` をインストールし、ディストリビューションのパッケージマネージャーから `ripgrep` をインストールしてください。macOS では追加のパッケージは不要です。ランタイムはそこで組み込み Seatbelt サンドボックスを使用します。
+Linux と WSL2 では、ランタイムは組み込みサンドボックスと同じ `bubblewrap` および `socat` パッケージに加えて、`ripgrep` に依存します。Claude Code はこれをバンドルしていますが、スタンドアロンランタイムは PATH から解決します。[Linux と WSL2 のセットアップ](/docs/ja/sandboxing.md#set-up-linux-and-wsl2)で説明されているように `bubblewrap` と `socat` をインストールし、ディストリビューションのパッケージマネージャーから `ripgrep` をインストールしてください。macOS では追加のパッケージは不要です。ランタイムはそこで組み込み Seatbelt サンドボックスを使用します。
 
 デフォルトでは、ランタイムはネットワークアクセスを拒否し、書き込みを組み込みランタイムパスの小さなセットに限定するため、Claude Code をランタイムを通じて起動する前に設定してください。設定を `~/.srt-settings.json` に配置するか、`--settings` で渡すファイルに配置します。パッケージの [README](https://github.com/anthropics/sandbox-runtime) に設定スキーマが記載されています。
 
@@ -102,7 +102,7 @@ Linux と WSL2 では、ランタイムは組み込みサンドボックスと�
 セッションが必要とするネットワークドメインを許可してください：
 
 * `api.anthropic.com`、または設定したプロバイダーのエンドポイント。サードパーティプロバイダーでは、`api.anthropic.com` も保持してください。WebFetch ドメインセーフティチェックは、`skipWebFetchPreflight: true` を設定しない限り、デフォルトでそれを呼び出します。
-* `claude.ai` および `platform.claude.com`。[OAuth サインインとトークンリフレッシュ](/docs/ja/network-config#network-access-requirements)に必要です。API キーで認証された実行では、これら 2 つを削除できます。
+* `claude.ai` および `platform.claude.com`。[OAuth サインインとトークンリフレッシュ](/docs/ja/network-config.md#network-access-requirements)に必要です。API キーで認証された実行では、これら 2 つを削除できます。
 
 Linux と WSL2 では、ランタイムは既に存在するパスにのみ書き込み許可を適用します。新しい環境では、最初の起動前に Claude Code の設定パスを作成してください：
 
@@ -145,7 +145,7 @@ Claude Code は、設定したファイルシステムおよびネットワー�
 
 Dev コンテナは Claude Code を Docker コンテナ内で実行します。VS Code または互換性のあるエディターが管理し、プロジェクトがマウントされます。リポジトリの `.devcontainer/` ディレクトリで独自に定義できます。
 
-claude-code リポジトリは、デフォルト拒否 iptables ファイアウォールを備えた [example dev container](/docs/ja/devcontainer) を出発点として公開しています。リポジトリにコピーし、ファイアウォール許可リスト、ベースイメージ、ピン留めされた Claude Code バージョンを環境に合わせて調整します。ファイアウォールが未承認の出力をブロックするため、このような設定は無人作業のために `--dangerously-skip-permissions` で Claude Code を実行することをサポートしています。
+claude-code リポジトリは、デフォルト拒否 iptables ファイアウォールを備えた [example dev container](/docs/ja/devcontainer.md) を出発点として公開しています。リポジトリにコピーし、ファイアウォール許可リスト、ベースイメージ、ピン留めされた Claude Code バージョンを環境に合わせて調整します。ファイアウォールが未承認の出力をブロックするため、このような設定は無人作業のために `--dangerously-skip-permissions` で Claude Code を実行することをサポートしています。
 
 ## カスタムコンテナ
 
@@ -153,7 +153,7 @@ Claude Code は、独自のネットワークポリシー、マウントされ�
 
 複数のマネージドサンドボックスおよびリモート実行サービスがコンテナをホストできます。操作するコンテナと同じチェックリストが適用されます。書き込み可能にマウントされているもの、その内部で到達可能な認証情報とトークン、ネットワーク出力ポリシーが許可するものを確認します。
 
-コマンド単位の制限のためにコンテナ内に組み込みの Bash サンドボックスを重ねることができます。特権のないコンテナには、[コンテナ内で Bubblewrap が起動しない](/docs/ja/sandboxing#bubblewrap-fails-to-start-inside-a-container)で説明されている `enableWeakerNestedSandbox` が必要です。
+コマンド単位の制限のためにコンテナ内に組み込みの Bash サンドボックスを重ねることができます。特権のないコンテナには、[コンテナ内で Bubblewrap が起動しない](/docs/ja/sandboxing.md#bubblewrap-fails-to-start-inside-a-container)で説明されている `enableWeakerNestedSandbox` が必要です。
 
 ## 仮想マシン
 
@@ -163,24 +163,24 @@ Claude Code は、独自のネットワークポリシー、マウントされ�
 
 ## クラウドセッション
 
-[クラウドセッション](/docs/ja/claude-code-on-the-web)は、分離された Anthropic 管理の仮想マシンで実行されます。ネットワークプロキシはデフォルト許可リストを強制し、別のプロキシはサンドボックス内のリポジトリアクセスのためにスコープ付き認証情報を発行しながら、GitHub トークンをサンドボックスの外に保持します。組織が[セルフホスト環境](/docs/ja/self-hosted-environments)にルーティングするセッションは、代わりにユーザーがプロビジョニングするインフラストラクチャ上で実行され、分離、エグレス制御、および git 認証情報はデプロイメントの責任です。
+[クラウドセッション](/docs/ja/claude-code-on-the-web.md)は、分離された Anthropic 管理の仮想マシンで実行されます。ネットワークプロキシはデフォルト許可リストを強制し、別のプロキシはサンドボックス内のリポジトリアクセスのためにスコープ付き認証情報を発行しながら、GitHub トークンをサンドボックスの外に保持します。組織が[セルフホスト環境](/docs/ja/self-hosted-environments)にルーティングするセッションは、代わりにユーザーがプロビジョニングするインフラストラクチャ上で実行され、分離、エグレス制御、および git 認証情報はデプロイメントの責任です。
 
-インフラストラクチャを自分でプロビジョニングせずに完全な VM 分離が必要な場合、またはローカル開発環境がないデバイスからタスクを委任する場合に、このアプローチを使用します。Claude サブスクリプションが必要です。CLI から起動しない限り、サンドボックスがリポジトリをクローンできるように、接続された GitHub アカウントも必要です。`--cloud`を使用して CLI から起動する場合、Claude Code は代わりに[ローカルリポジトリをバンドルしてアップロード](/docs/ja/claude-code-on-the-web#send-local-repositories-without-github)できます。プラン可用性と GitHub 認証オプションについては、[クラウドで Claude Code を使用する](/docs/ja/claude-code-on-the-web)を参照してください。
+インフラストラクチャを自分でプロビジョニングせずに完全な VM 分離が必要な場合、またはローカル開発環境がないデバイスからタスクを委任する場合に、このアプローチを使用します。Claude サブスクリプションが必要です。CLI から起動しない限り、サンドボックスがリポジトリをクローンできるように、接続された GitHub アカウントも必要です。`--cloud`を使用して CLI から起動する場合、Claude Code は代わりに[ローカルリポジトリをバンドルしてアップロード](/docs/ja/claude-code-on-the-web.md#send-local-repositories-without-github)できます。プラン可用性と GitHub 認証オプションについては、[クラウドで Claude Code を使用する](/docs/ja/claude-code-on-the-web.md)を参照してください。
 
 ## 組織全体で分離を強制する
 
 個々の開発者は、このページのいずれかのサンドボックス化アプローチにオプトインできます。組織が強制できるもの、およびどのツールで強制できるかは、アプローチによって異なります。
 
-* **組み込み Bash サンドボックス**：Claude Code が自体で強制する唯一のアプローチです。[管理設定](/docs/ja/managed-settings#delivery-mechanisms)を通じて `sandbox` 設定キーを配信します。MDM で管理されるファイルとして、または Claude.ai の[サーバー管理設定](/docs/ja/server-managed-settings)を通じて。デプロイするキーと開発者がポリシーを拡大するのを防ぐ方法については、[管理設定でサンドボックス化を強制](/docs/ja/sandboxing#enforce-sandboxing-with-managed-settings)を参照してください。
-* **Dev コンテナ**：[example dev container](/docs/ja/devcontainer)をリポジトリにコミットして、チーム全体で環境を標準化します。Claude Code がコンテナを要求しないため、これは強制境界ではなく慣例です。開発者が Claude Code をその外で実行できないようにする場合は、組織のデバイス管理またはソフトウェア許可リストツールでそれを強制します。
+* **組み込み Bash サンドボックス**：Claude Code が自体で強制する唯一のアプローチです。[管理設定](/docs/ja/managed-settings.md#delivery-mechanisms)を通じて `sandbox` 設定キーを配信します。MDM で管理されるファイルとして、または Claude.ai の[サーバー管理設定](/docs/ja/server-managed-settings.md)を通じて。デプロイするキーと開発者がポリシーを拡大するのを防ぐ方法については、[管理設定でサンドボックス化を強制](/docs/ja/sandboxing.md#enforce-sandboxing-with-managed-settings)を参照してください。
+* **Dev コンテナ**：[example dev container](/docs/ja/devcontainer.md)をリポジトリにコミットして、チーム全体で環境を標準化します。Claude Code がコンテナを要求しないため、これは強制境界ではなく慣例です。開発者が Claude Code をその外で実行できないようにする場合は、組織のデバイス管理またはソフトウェア許可リストツールでそれを強制します。
 * **カスタムコンテナと VM**：承認されたイメージを通じて Claude Code を配布し、組織のデバイス管理またはソフトウェア許可リストツールを使用して、その外でのインストールを防止します。
 
 ## 関連項目
 
 これらのページでは、このページで説明しているサンドボックス化アプローチの設定とポリシーの詳細について説明しています。
 
-* [サンドボックス化](/docs/ja/sandboxing)：組み込みのサンドボックス化された Bash ツールを設定します
-* [Dev コンテナ](/docs/ja/devcontainer)：事前設定された Docker 開発コンテナ
-* [セキュリティ](/docs/ja/security)：完全な Claude Code セキュリティモデル
-* [セキュアなデプロイメント](/docs/ja/agent-sdk/secure-deployment)：Agent SDK アプリケーションの分離ガイダンス
-* [設定](/docs/ja/settings-reference#sandbox-settings)：管理設定配信を含むすべてのサンドボックス設定キー
+* [サンドボックス化](/docs/ja/sandboxing.md)：組み込みのサンドボックス化された Bash ツールを設定します
+* [Dev コンテナ](/docs/ja/devcontainer.md)：事前設定された Docker 開発コンテナ
+* [セキュリティ](/docs/ja/security.md)：完全な Claude Code セキュリティモデル
+* [セキュアなデプロイメント](/docs/ja/agent-sdk/secure-deployment.md)：Agent SDK アプリケーションの分離ガイダンス
+* [設定](/docs/ja/settings-reference.md#sandbox-settings)：管理設定配信を含むすべてのサンドボックス設定キー

@@ -6,16 +6,16 @@
 
 > オートモード分類器に、組織が信頼するリポジトリ、バケット、ドメインを指定します。環境コンテキストを設定し、デフォルトのブロックおよび許可ルールをオーバーライドし、オートモード CLI サブコマンドで有効な設定を検査します。
 
-[オートモード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)を使用すると、Claude Code は、ツール呼び出しを分類器にルーティングして、不可逆的、破壊的、または環境外を対象とした操作をブロックすることで、定期的な権限プロンプトなしで実行できます。拒否および明示的な質問ルールは分類器の前に評価され、引き続きブロックまたはプロンプトを表示します。`autoMode` 設定ブロックを使用して、その分類器に組織が信頼するリポジトリ、バケット、ドメインを指定し、定期的な内部操作のブロックを停止させます。
+[オートモード](/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)を使用すると、Claude Code は、ツール呼び出しを分類器にルーティングして、不可逆的、破壊的、または環境外を対象とした操作をブロックすることで、定期的な権限プロンプトなしで実行できます。拒否および明示的な質問ルールは分類器の前に評価され、引き続きブロックまたはプロンプトを表示します。`autoMode` 設定ブロックを使用して、その分類器に組織が信頼するリポジトリ、バケット、ドメインを指定し、定期的な内部操作のブロックを停止させます。
 
 > [!NOTE]
 >
 > このページは設定リファレンスです。オートモードのオン・オフの切り替えは、権限モードページで説明されています。
 >
-> * **セッション中にオートモードに切り替える、またはそこから戻る**: [権限モードの切り替え](/docs/ja/permission-modes#switch-permission-modes)を参照してください
-> * **オートモードでセッションを開始する**: [別の権限モードで開始する](/docs/ja/permission-modes#start-in-a-different-mode)を参照してください
+> * **セッション中にオートモードに切り替える、またはそこから戻る**: [権限モードの切り替え](/docs/ja/permission-modes.md#switch-permission-modes)を参照してください
+> * **オートモードでセッションを開始する**: [別の権限モードで開始する](/docs/ja/permission-modes.md#start-in-a-different-mode)を参照してください
 
-オートモードは、Anthropic API、[AWS 上の Claude Platform](/docs/ja/claude-platform-on-aws)、Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、およびサインイン済みの[Claude アプリゲートウェイ](/docs/ja/claude-apps-gateway)セッションを含む、すべてのプロバイダーのすべてのユーザーが利用できます。Claude Code がアカウントでオートモードが利用できないと報告する場合は、[完全な要件](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)を確認してください。これには、サポートされているモデルと Team および Enterprise プランでの組織レベルの制御も含まれます。
+オートモードは、Anthropic API、[AWS 上の Claude Platform](/docs/ja/claude-platform-on-aws.md)、Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、およびサインイン済みの[Claude アプリゲートウェイ](/docs/ja/claude-apps-gateway)セッションを含む、すべてのプロバイダーのすべてのユーザーが利用できます。Claude Code がアカウントでオートモードが利用できないと報告する場合は、[完全な要件](/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)を確認してください。これには、サポートされているモデルと Team および Enterprise プランでの組織レベルの制御も含まれます。
 
 デフォルトでは、分類器は作業ディレクトリと現在のリポジトリの設定されたリモートのみを信頼します。会社のソース管理組織へのプッシュやチームクラウドバケットへの書き込みなどのアクションは、`autoMode.environment` に追加するまでブロックされます。
 
@@ -34,7 +34,7 @@ Claude のプッシュおよびプルリクエストコマンドの前に人間�
 
 ### 人間によるチェックポイントを追加する
 
-最も直接的なメカニズムは [`permissions.ask`](/docs/ja/permissions#permission-rule-syntax) です。以下のようなコンテンツスコープの ask ルールは、分類器の前に評価され、オートモードでも常に権限プロンプトを強制します。これは、明示的な ask ルールがそのアクションについてプロンプトを表示する意図を示しているためです。[設定](/docs/ja/settings#where-settings-live)にルールを追加してください。
+最も直接的なメカニズムは [`permissions.ask`](/docs/ja/permissions#permission-rule-syntax) です。以下のようなコンテンツスコープの ask ルールは、分類器の前に評価され、オートモードでも常に権限プロンプトを強制します。これは、明示的な ask ルールがそのアクションについてプロンプトを表示する意図を示しているためです。[設定](/docs/ja/settings.md#where-settings-live)にルールを追加してください。
 
 ```json theme={null}
 {
@@ -47,7 +47,7 @@ Claude のプッシュおよびプルリクエストコマンドの前に人間�
 }
 ```
 
-これらのルールは `git push` または `gh pr create` で始まるコマンドに一致します。Claude が別の方法で記述したプッシュ（例：`git -C <dir> push` または `git -c <key>=<value> push`）は、[ルールに一致しない](/docs/ja/permissions#bash-rule-limits)ため、チェックポイントされません。完全なコマンドテキストを検査するチェックポイントの場合は、[PreToolUse フック](/docs/ja/hooks#pretooluse)を追加してください。
+これらのルールは `git push` または `gh pr create` で始まるコマンドに一致します。Claude が別の方法で記述したプッシュ（例：`git -C <dir> push` または `git -c <key>=<value> push`）は、[ルールに一致しない](/docs/ja/permissions.md#bash-rule-limits)ため、チェックポイントされません。完全なコマンドテキストを検査するチェックポイントの場合は、[PreToolUse フック](/docs/ja/hooks.md#pretooluse)を追加してください。
 
 境界がどの程度厳密である必要があるかに応じて、メカニズムを選択してください。
 
@@ -55,18 +55,18 @@ Claude のプッシュおよびプルリクエストコマンドの前に人間�
 | :- | :- | :- |
 | アクション前にプロンプト表示 | `permissions.ask` | 上記のレシピのようなコンテンツスコープのルールに一致するコマンドに対して常にプロンプトを表示します。分類器は一致するアクションを自動承認できません。 |
 | アクションを実行しない | `permissions.deny` | 分類器が参照される前にブロックします。分類器もユーザーの意図も、これをオーバーライドできません。 |
-| このセッション限定の境界 | 「レビューするまでプッシュしない」のように会話で述べる | 分類器は一致するアクションをブロックしますが、[コンテキストコンパクション](/docs/ja/costs#reduce-token-usage)がそのステートメントを含むメッセージを削除すると、境界が失われる可能性があります。永続的な保証のために ask ルールまたは deny ルールを使用してください。 |
+| このセッション限定の境界 | 「レビューするまでプッシュしない」のように会話で述べる | 分類器は一致するアクションをブロックしますが、[コンテキストコンパクション](/docs/ja/costs.md#reduce-token-usage)がそのステートメントを含むメッセージを削除すると、境界が失われる可能性があります。永続的な保証のために ask ルールまたは deny ルールを使用してください。 |
 
 ## 分類器が設定を読み込む場所
 
-分類器は Claude 自体が読み込む同じ [CLAUDE.md](/docs/ja/memory) コンテンツを読み込むため、プロジェクトの CLAUDE.md に「force push を絶対にしない」のような指示があれば、Claude と分類器の両方を同時に制御します。プロジェクト規約と動作ルールについては、ここから始めてください。
+分類器は Claude 自体が読み込む同じ [CLAUDE.md](/docs/ja/memory.md) コンテンツを読み込むため、プロジェクトの CLAUDE.md に「force push を絶対にしない」のような指示があれば、Claude と分類器の両方を同時に制御します。プロジェクト規約と動作ルールについては、ここから始めてください。
 
 複数のプロジェクトに適用されるルール（信頼できるインフラストラクチャや組織全体の拒否ルールなど）については、`autoMode` 設定ブロックを使用してください。分類器は以下のスコープから `autoMode` を読み込みます。
 
 | スコープ | ファイル | 用途 |
 | :- | :- | :- |
 | 1 人の開発者 | `~/.claude/settings.json` | 個人の信頼できるインフラストラクチャ |
-| 組織全体 | [マネージド設定](/docs/ja/server-managed-settings) | すべての開発者に配布される信頼できるインフラストラクチャ |
+| 組織全体 | [マネージド設定](/docs/ja/server-managed-settings.md) | すべての開発者に配布される信頼できるインフラストラクチャ |
 | `--settings` フラグまたは Agent SDK | インライン JSON | 自動化のための呼び出しごとのオーバーライド |
 
 分類器は `.claude/settings.json` または `.claude/settings.local.json` のプロジェクト設定から `autoMode` を読み込みません。両方のファイルはリポジトリディレクトリに存在するため、チェックインされたリポジトリまたはビルドステップが独自の許可ルールを注入する可能性があります。`autoMode` ブロックを `.claude/settings.local.json` から `~/.claude/settings.json` に移動してください。
@@ -75,7 +75,7 @@ Claude のプッシュおよびプルリクエストコマンドの前に人間�
 
 > [!NOTE]
 >
-> 分類器は [権限システム](/docs/ja/permissions) の後に実行される 2 番目のゲートです。ユーザーの意図または分類器の設定に関係なく、絶対に実行してはいけないアクションについては、マネージド設定で `permissions.deny` を使用してください。これは分類器が参照される前にアクションをブロックし、オーバーライドできません。
+> 分類器は [権限システム](/docs/ja/permissions.md) の後に実行される 2 番目のゲートです。ユーザーの意図または分類器の設定に関係なく、絶対に実行してはいけないアクションについては、マネージド設定で `permissions.deny` を使用してください。これは分類器が参照される前にアクションをブロックし、オーバーライドできません。
 
 ## 信頼できるインフラストラクチャを定義する
 
@@ -95,7 +95,7 @@ Claude のプッシュおよびプルリクエストコマンドの前に人間�
   * **シークレット管理**
   * **CI/CD デプロイターゲット**
   * **ネットワーク体制**
-  * **ホスト隔離**: デフォルトは、オープンインターネットを備えた通常の開発者マシンまたは CI ランナーです。Claude Code がコンテナ、VM、またはポッド内で実行され、エグレス許可リストまたは接触してはいけないネイバーがある場合は、許可されたホスト、クラウドメタデータエンドポイントに到達可能かどうか、およびタスクが使用するクラウドプロジェクト、クラスタ、またはレジストリと使用する ID を名前付けします。このエントリがその ID を名前付けするまで、分類器は[ホストの独自の認証情報に対するリクエストをブロック](/docs/ja/permission-modes#what-the-classifier-blocks-by-default)します。Claude Code v2.1.257 以降が必要です
+  * **ホスト隔離**: デフォルトは、オープンインターネットを備えた通常の開発者マシンまたは CI ランナーです。Claude Code がコンテナ、VM、またはポッド内で実行され、エグレス許可リストまたは接触してはいけないネイバーがある場合は、許可されたホスト、クラウドメタデータエンドポイントに到達可能かどうか、およびタスクが使用するクラウドプロジェクト、クラスタ、またはレジストリと使用する ID を名前付けします。このエントリがその ID を名前付けするまで、分類器は[ホストの独自の認証情報に対するリクエストをブロック](/docs/ja/permission-modes.md#what-the-classifier-blocks-by-default)します。Claude Code v2.1.257 以降が必要です
   * **保護されたデプロイメント名前空間 / 環境**: 名前を付けるまで「機密リモートターゲット」ヒューリスティックにフォールバックします
   * **データ保持 / 機密解除**
 * **信頼スロット**: 分類器が境界内として扱うものを名前付けします。スロットは「信頼できるリポジトリ」、「ソース管理」、「信頼できる内部ドメイン」、「信頼できるクラウドバケット」、「主要な内部サービス」、および「内部パッケージレジストリ」です。リポジトリおよびソース管理エントリはデフォルトで作業リポジトリとその設定されたリモートに設定されます。他のすべての信頼スロットはデフォルトで `None configured` に設定されるため、追加するまで他に信頼できるものはありません。リポジトリの可視性は機密資料のみをスコープします。プライベートリポジトリは機密資料の許容可能な宛先ですが、リポジトリをプライベートにしてもシークレット、個人データ、または信頼されたデータがそこにクリアされることはなく、分類器は作業リポジトリの外側からポート、リポイント、または最初に読み取られたコンテンツをそのリポジトリ独自の作業として扱いません。
@@ -200,17 +200,17 @@ Claude Code はバックグラウンドでスキャンを実行し、ドラフ�
 }
 ```
 
-`/auto-mode-setup` は[バンドルされたスキル](/docs/ja/skills#bundled-skills)ではなく組み込みコマンドなため、この `skillOverrides` エントリは引き続き適用されますが、[`disableBundledSkills`](/docs/ja/settings-reference#disablebundledskills) はオフにしません。
+`/auto-mode-setup` は[バンドルされたスキル](/docs/ja/skills.md#bundled-skills)ではなく組み込みコマンドなため、この `skillOverrides` エントリは引き続き適用されますが、[`disableBundledSkills`](/docs/ja/settings-reference#disablebundledskills) はオフにしません。
 
 ### `/auto-mode-setup` が "Unknown command" を返す
 
 Claude Code のプロンプトで `/auto-mode-setup` と入力したときに `Unknown command: /auto-mode-setup` と表示される場合は、以下の原因を確認してください：
 
-* **インストールまたはアップグレード後の最初のセッション**：新しいセッションを開始してください。そこでもコマンドが見当たらない場合は、[以降のセッションもコマンドなしで開始されるセットアップ](/docs/ja/env-vars#first-session-after-an-install-or-upgrade)を参照してください。
-* **古いバージョン**：シェルで `claude --version` を実行してください。バージョンが[プランの最小要件](#generate-environment-entries)を下回っている場合は、[Claude Code を更新](/docs/ja/setup#update-claude-code)してください。
-* **テレメトリがオフ、サードパーティプロバイダー、または Claude apps ゲートウェイ**：v2.1.304 より前では、[フィーチャーフラグ取得がオフのセッション](/docs/ja/env-vars#features-that-need-feature-flag-fetching)ではこのコマンドを利用できません。セッションがこれに該当する場合は、[Claude Code を v2.1.304 以降に更新](/docs/ja/setup#update-claude-code)してください。
+* **インストールまたはアップグレード後の最初のセッション**：新しいセッションを開始してください。そこでもコマンドが見当たらない場合は、[以降のセッションもコマンドなしで開始されるセットアップ](/docs/ja/env-vars.md#first-session-after-an-install-or-upgrade)を参照してください。
+* **古いバージョン**：シェルで `claude --version` を実行してください。バージョンが[プランの最小要件](#generate-environment-entries)を下回っている場合は、[Claude Code を更新](/docs/ja/setup.md#update-claude-code)してください。
+* **テレメトリがオフ、サードパーティプロバイダー、または Claude apps ゲートウェイ**：v2.1.304 より前では、[フィーチャーフラグ取得がオフのセッション](/docs/ja/env-vars.md#features-that-need-feature-flag-fetching)ではこのコマンドを利用できません。セッションがこれに該当する場合は、[Claude Code を v2.1.304 以降に更新](/docs/ja/setup.md#update-claude-code)してください。
 
-[クラウドセッション](/docs/ja/claude-code-on-the-web)では、代わりに `/auto-mode-setup isn't available in this environment.` と出力されます。ターミナルの対話型セッションで実行してください。
+[クラウドセッション](/docs/ja/claude-code-on-the-web.md)では、代わりに `/auto-mode-setup isn't available in this environment.` と出力されます。ターミナルの対話型セッションで実行してください。
 
 ## ブロックルールと許可ルールをオーバーライドする
 
@@ -275,15 +275,15 @@ Claude Code のプロンプトで `/auto-mode-setup` と入力したときに `U
 
 ## `/permissions` から編集ルール
 
-設定ファイルを開かずに分類器ルールと `environment` エントリを表示および編集するには、[`/permissions`](/docs/ja/permissions#manage-permissions) を実行して **Auto mode** タブを選択します。このタブは Claude Code v2.1.246 以降が必要であり、[auto mode がセッションで利用可能](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)な場合にのみ表示されます。
+設定ファイルを開かずに分類器ルールと `environment` エントリを表示および編集するには、[`/permissions`](/docs/ja/permissions#manage-permissions) を実行して **Auto mode** タブを選択します。このタブは Claude Code v2.1.246 以降が必要であり、[auto mode がセッションで利用可能](/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)な場合にのみ表示されます。
 
-Claude Code は [管理設定](/docs/ja/server-managed-settings)または `--settings` フラグからのエントリを読み取り専用として表示し、タブで行ったすべての変更を `~/.claude/settings.json` に保存します。
+Claude Code は [管理設定](/docs/ja/server-managed-settings.md)または `--settings` フラグからのエントリを読み取り専用として表示し、タブで行ったすべての変更を `~/.claude/settings.json` に保存します。
 
 ## すべてのシェルコマンドを分類器を通してルーティングする
 
-デフォルトでは、狭い Bash および PowerShell の許可ルール（`Bash(npm test)` など）はオートモードで有効なままであり、Claude Code は分類器が実行される前にそれらを解決します。ただし、コマンドが [コマンドごとの許可ドメイン](/docs/ja/sandboxing#per-command-allowed-domains-in-auto-mode) を含む場合は除きます。Claude Code は、`Bash(*)` やワイルドカード化されたインタープリターなどの任意のコード実行を許可する広いルール、および [`Monitor`](/docs/ja/tools-reference#monitor-tool) という名前のすべてのルールを一時停止します。Monitor コマンドはシェルを通して実行されるためです。これは、狭いルールが、分類器が見ることなく、破壊的な引数（スクリプトパスやルールのプレフィックスが予想しなかったフラグなど）を通す可能性があることを意味します。
+デフォルトでは、狭い Bash および PowerShell の許可ルール（`Bash(npm test)` など）はオートモードで有効なままであり、Claude Code は分類器が実行される前にそれらを解決します。ただし、コマンドが [コマンドごとの許可ドメイン](/docs/ja/sandboxing.md#per-command-allowed-domains-in-auto-mode) を含む場合は除きます。Claude Code は、`Bash(*)` やワイルドカード化されたインタープリターなどの任意のコード実行を許可する広いルール、および [`Monitor`](/docs/ja/tools-reference#monitor-tool) という名前のすべてのルールを一時停止します。Monitor コマンドはシェルを通して実行されるためです。これは、狭いルールが、分類器が見ることなく、破壊的な引数（スクリプトパスやルールのプレフィックスが予想しなかったフラグなど）を通す可能性があることを意味します。
 
-`autoMode.classifyAllShell` を `true` に設定して、オートモードがアクティブな間、すべての Bash および PowerShell の許可ルールを一時停止し、分類器が許可リストに関係なくすべてのシェルコマンドを評価するようにします。ただし、[重要パスの削除](/docs/ja/permission-modes#critical-paths) は除きます。
+`autoMode.classifyAllShell` を `true` に設定して、オートモードがアクティブな間、すべての Bash および PowerShell の許可ルールを一時停止し、分類器が許可リストに関係なくすべてのシェルコマンドを評価するようにします。ただし、[重要パスの削除](/docs/ja/permission-modes.md#critical-paths) は除きます。
 
 ```json theme={null}
 {
@@ -351,21 +351,23 @@ claude auto-mode critique
 claude auto-mode reset
 ```
 
-このコマンドは削除する内容を要約し、書き込む前に `Reset auto mode configuration to defaults?` と確認を求めます。`--yes` を渡すと確認をスキップできます。Reset は `~/.claude/settings.json` のみを変更します。[managed settings](/docs/ja/server-managed-settings) または `--settings` フラグからの `autoMode` ルールは引き続き適用されます。
+このコマンドは削除する内容を要約し、書き込む前に `Reset auto mode configuration to defaults?` と確認を求めます。`--yes` を渡すと確認をスキップできます。Reset は `~/.claude/settings.json` のみを変更します。[managed settings](/docs/ja/server-managed-settings.md) または `--settings` フラグからの `autoMode` ルールは引き続き適用されます。
 
 ## 拒否の確認
 
 オートモード分類器が拒否したアクションを確認して再試行するには、`/permissions` を開いて **Recently denied** タブを選択します。ここで Claude Code は各拒否を記録しています。拒否されたアクションで `r` を押してリトライ対象としてマークします。ダイアログを終了すると、Claude Code はモデルにそのツール呼び出しを再試行できることを伝えるメッセージを送信し、会話を再開します。
 
-分類器が[アクションの安全性について判定できない](/docs/ja/errors#auto-mode-cannot-determine-the-safety-of-an-action)場合、オートモードとは別の安全チェックが分類器自身のリクエストを拒否したか、またはそのレスポンスが解析できなかったため、Claude Code はアクションを拒否しますが、**Recently denied** に記録しません。リンク先のエラーエントリでは、Claude に伝えられる内容と、必要な場合にアクションを実行する方法について説明しています。
+分類器が[アクションの安全性について判定できない](/docs/ja/errors.md#auto-mode-cannot-determine-the-safety-of-an-action)場合、オートモードとは別の安全チェックが分類器自身のリクエストを拒否したか、またはそのレスポンスが解析できなかったため、Claude Code はアクションを拒否しますが、**Recently denied** に記録しません。リンク先のエラーエントリでは、Claude に伝えられる内容と、必要な場合にアクションを実行する方法について説明しています。
 
 ### 許可ルール、環境エントリ、またはリトライで拒否を修正する
 
-分類器がブロックした内容を確認するには、会話でツール呼び出しを見つけます。呼び出しが短縮されているか、`Ran 3 shell commands` のような概要行に折りたたまれている場合は、`Ctrl+O` を押して[トランスクリプトビューア](/docs/ja/interactive-mode#transcript-viewer)を開き、展開します。
+`bash denied by auto mode · [Data Exfiltration] · /permissions` のような通知の背後にあるコマンドまたは URL を確認するには、**Recently denied** タブ、フック、または会話を使用します。
 
-画面上の拒否を報告する他の 2 つの場所では、コマンドまたは URL が省略されています。入力ボックスの近くの通知（`bash denied by auto mode · [Data Exfiltration] · /permissions` など）はツールと理由を示し、**Recently denied** タブはシェルコマンドを Claude が記述した説明で一覧表示します。これらの拒否の正確な入力をプログラムで取得するには、[`PermissionDenied` フック](/docs/ja/hooks#permissiondenied)を追加します。これは `tool_input` として受け取ります。
+* **Recently denied タブ**：`/permissions` ダイアログで、拒否された Bash または PowerShell のアクションをハイライトすると、リストの下でそのコマンドを確認できます。[スクリーンリーダーモード](/docs/ja/accessibility.md)では、代わりにすべてのコマンドがリストの前に表示されます。
+* **フック**：拒否の正確な入力をプログラムで取得するには、[`PermissionDenied` フック](/docs/ja/hooks#permissiondenied)を追加します。これは `tool_input` として入力を受け取ります。
+* **会話**：ツール呼び出しを見つけます。呼び出しが短縮されているか、`Ran 3 shell commands` のような概要行に折りたたまれている場合は、`Ctrl+O` を押して[トランスクリプトビューア](/docs/ja/interactive-mode.md#transcript-viewer)を開き、展開します。
 
-呼び出しの下のテキストは、修正すべきことがあるかどうかを示します。薄く表示された `Not run · auto mode's check had no usable answer` の行、または分類器自体の問題を報告するテキスト（`Auto mode could not evaluate this action` など）は、Claude Code が分類器からの判定なしに呼び出しをブロックしたことを意味します。`Not run` の行の場合は、`Ctrl+O` を押してメッセージ全文を読み、対処方法については[auto モードがアクションの安全性を判定できない](/docs/ja/errors#auto-mode-cannot-determine-the-safety-of-an-action)または[サーバーが安全性の判定を返さなかった](/docs/ja/errors#the-server-returned-no-safety-verdict)を参照してください。
+呼び出しの下のテキストは、修正すべきことがあるかどうかを示します。薄く表示された `Not run · auto mode's check had no usable answer` の行、または分類器自体の問題を報告するテキスト（`Auto mode could not evaluate this action` など）は、Claude Code が分類器からの判定なしに呼び出しをブロックしたことを意味します。`Not run` の行の場合は、`Ctrl+O` を押してメッセージ全文を読み、対処方法については[auto モードがアクションの安全性を判定できない](/docs/ja/errors.md#auto-mode-cannot-determine-the-safety-of-an-action)または[サーバーが安全性の判定を返さなかった](/docs/ja/errors.md#the-server-returned-no-safety-verdict)を参照してください。
 
 それ以外の場合、`Denied by auto mode classifier` と `[Production Deploy]` または `Blocked by classifier` などの理由が記載された行は、分類器が呼び出しを安全でないと判定したことを意味するため、呼び出しが何に到達しようとしていたか、または何をしようとしていたかから修正を選択します。
 
@@ -383,7 +385,7 @@ claude auto-mode reset
 
 ## 関連項目
 
-* [権限モード](/docs/ja/permission-modes#eliminate-prompts-with-auto-mode)：auto モードとは何か、デフォルトでブロックされるもの、およびどのセッションがそれで開始されるか
-* [マネージド設定](/docs/ja/server-managed-settings)：組織全体に `autoMode` 設定をデプロイする
-* [権限](/docs/ja/permissions)：分類器が実行される前に適用される許可、確認、および拒否ルール
-* [すべての設定](/docs/ja/settings-reference#automode)：`autoMode` を含むすべての設定キー
+* [権限モード](/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)：auto モードとは何か、デフォルトでブロックされるもの、およびどのセッションがそれで開始されるか
+* [マネージド設定](/docs/ja/server-managed-settings.md)：組織全体に `autoMode` 設定をデプロイする
+* [権限](/docs/ja/permissions.md)：分類器が実行される前に適用される許可、確認、および拒否ルール
+* [すべての設定](/docs/ja/settings-reference.md#automode)：`autoMode` を含むすべての設定キー

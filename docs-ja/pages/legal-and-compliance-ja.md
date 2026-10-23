@@ -36,8 +36,8 @@ Claude Code は、アクセスするプラットフォームに関係なく、An
 
 顧客が Anthropic と業務提携契約（BAA）を締結している場合、組織で利用可能なものに応じて、その BAA は次の 2 つの設定で Claude Code に適用されます。
 
-* **HIPAA 設定**：Claude for Enterprise アカウントで使用する Claude Code CLI または Claude Desktop の Code タブ。組織で HIPAA が有効化され、Claude Code（ローカルモード）と Cowork（ローカルモード）に HIPAA 設定が適用されている必要があります。[HIPAA 対応組織向けに Claude Code（ローカルモード）をセットアップする](/docs/ja/hipaa-setup)を参照してください。
-* **ゼロデータ保持**：該当する組織で [ゼロデータ保持（ZDR）](/docs/ja/zero-data-retention) が有効化された Claude Code。ZDR はすべての組織で利用できるわけではありません。
+* **HIPAA 設定**：Claude for Enterprise アカウントで使用する Claude Code CLI または Claude Desktop の Code タブ。組織で HIPAA が有効化され、Claude Code（ローカルモード）と Cowork（ローカルモード）に HIPAA 設定が適用されている必要があります。[HIPAA 対応組織向けに Claude Code（ローカルモード）をセットアップする](/docs/ja/hipaa-setup.md)を参照してください。
+* **ゼロデータ保持**：該当する組織で [ゼロデータ保持（ZDR）](/docs/ja/zero-data-retention.md) が有効化された Claude Code。ZDR はすべての組織で利用できるわけではありません。
 
 HIPAA 設定では、クラウドセッション、Remote Control、Claude モバイルアプリ内の Claude Code、およびサードパーティのクラウドプロバイダーまたはゲートウェイを経由する Claude Code は対象外です。対象サービス（Eligible Services）の完全なリストについては、[実装ガイド](https://trust.anthropic.com/resources?s=l1wrssd9hsbi4gak0tp5a6\&name=%5Banthropic%5D-hipaa-ready-offering-implementation-guide)を確認してください。
 
@@ -51,8 +51,8 @@ Claude Code の使用は、[Anthropic 使用ポリシー](https://www.anthropic.
 
 Claude Code は、OAuth トークンまたは API キーを使用して Anthropic のサーバーで認証します。これらの認証方法は異なる目的に対応しています。
 
-* **OAuth 認証**は、Claude Free、Pro、Max、Team、および Enterprise サブスクリプションプランの購入者専用に設計されており、Claude Code および他のネイティブ Anthropic アプリケーションの通常の使用をサポートするために設計されています。ログインの手順については、[Claude アカウントへのログイン](https://support.claude.com/en/articles/13189465-logging-in-to-your-claude-account)を参照してください。Claude Code が OAuth 認証を実行する方法については、[認証](/docs/ja/authentication)を参照してください。
-* **開発者**が Claude の機能と相互作用する製品またはサービスを構築している場合（[Agent SDK](/docs/ja/agent-sdk/overview)を使用している場合を含む）、[Claude Console](https://platform.claude.com/)またはサポートされているクラウドプロバイダーを通じて API キー認証を使用する必要があります。Anthropic は、サードパーティの開発者が Claude.ai ログインを自社アプリケーションに提供したり、ユーザーに代わって Free、Pro、または Max プランの認証情報を通じてリクエストをルーティングしたりすることを許可していません。さらに、開発者は Claude.ai の認証情報またはセッショントークンを収集、保存、または仲介することはできません。Claude アカウントへのサインインは、Anthropic 独自のフローを通じて完了する必要があります。
+* **OAuth 認証**は、Claude Free、Pro、Max、Team、および Enterprise サブスクリプションプランの購入者専用に設計されており、Claude Code および他のネイティブ Anthropic アプリケーションの通常の使用をサポートするために設計されています。ログインの手順については、[Claude アカウントへのログイン](https://support.claude.com/en/articles/13189465-logging-in-to-your-claude-account)を参照してください。Claude Code が OAuth 認証を実行する方法については、[認証](/docs/ja/authentication.md)を参照してください。
+* **開発者**が Claude の機能と相互作用する製品またはサービスを構築している場合（[Agent SDK](/docs/ja/agent-sdk/overview.md)を使用している場合を含む）、[Claude Console](https://platform.claude.com/)またはサポートされているクラウドプロバイダーを通じて API キー認証を使用する必要があります。Anthropic は、サードパーティの開発者が Claude.ai ログインを自社アプリケーションに提供したり、ユーザーに代わって Free、Pro、または Max プランの認証情報を通じてリクエストをルーティングしたりすることを許可していません。さらに、開発者は Claude.ai の認証情報またはセッショントークンを収集、保存、または仲介することはできません。Claude アカウントへのサインインは、Anthropic 独自のフローを通じて完了する必要があります。
 
 これは、顧客が自身の API キーまたはサードパーティ推論プロバイダーの認証情報をどのように提供および管理するかを制限するものではありません。たとえば、開発環境、シークレットマネージャー、または機械イメージで API キーを設定して、顧客の認可されたユーザーが使用できるようにすることは許可されています。ただし、その結果の使用が、Anthropic（または該当するプロバイダー）との契約に基づいてキー所有者に請求され、上記で説明されているように再販売または仲介されていない場合に限ります。また、プラットフォームが上記の「顧客は自社製品で Claude Code を提供できますか？」で説明されているように Claude Code をホストしている場合を含め、エンドユーザーが自身の Claude サブスクリプションで未修正の Claude Code バイナリにサインインすることも妨げません。
 

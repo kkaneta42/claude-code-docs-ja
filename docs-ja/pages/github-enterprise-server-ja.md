@@ -12,7 +12,7 @@
 
 GitHub Enterprise Server（GHES）サポートにより、組織は github.com ではなく自社管理の GitHub インスタンスでホストされているリポジトリで Claude Code を使用できます。Owner が GHES インスタンスを接続すると、開発者はリポジトリごとの設定なしでクラウドセッションを実行し、自動コードレビューを取得できます。インスタンスでホストされているプラグインマーケットプレイスもサポートされており、認証情報の要件は [GHES 上のプラグインマーケットプレイス](#plugin-marketplaces-on-ghes) で説明されているように、サーフェスによって異なります。
 
-github.com 上のリポジトリについては、[クラウドで Claude Code を使用する](/docs/ja/claude-code-on-the-web) および [コードレビュー](/docs/ja/code-review) を参照してください。Claude を独自の CI インフラストラクチャで実行するには、[GitHub Actions](/docs/ja/github-actions) を参照してください。
+github.com 上のリポジトリについては、[クラウドで Claude Code を使用する](/docs/ja/claude-code-on-the-web.md) および [コードレビュー](/docs/ja/code-review.md) を参照してください。Claude を独自の CI インフラストラクチャで実行するには、[GitHub Actions](/docs/ja/github-actions.md) を参照してください。
 
 ## GitHub Enterprise Server で動作する機能
 
@@ -25,7 +25,7 @@ github.com 上のリポジトリについては、[クラウドで Claude Code �
 | Claude Security | ✅ サポート | Enterprise プランの公開ベータで [claude.ai/security](https://claude.ai/security) で利用可能 |
 | Teleport セッション | ✅ サポート | `--teleport` で Cloud とターミナル間でセッションを移動 |
 | プラグインマーケットプレイス | ✅ サポート | 表面によって認証情報の要件が異なります。[GHES 上のプラグインマーケットプレイス](#plugin-marketplaces-on-ghes)を参照してください |
-| 貢献度メトリクス | ❌ サポートなし | github.com でホストされているリポジトリが必要です。[分析ダッシュボード](/docs/ja/analytics)には、GHES リポジトリでの作業に関する使用状況メトリクスが引き続き表示されます |
+| 貢献度メトリクス | ❌ サポートなし | github.com でホストされているリポジトリが必要です。[分析ダッシュボード](/docs/ja/analytics.md)には、GHES リポジトリでの作業に関する使用状況メトリクスが引き続き表示されます |
 | GitHub Actions | ✅ サポート | 手動ワークフロー設定が必要。`/install-github-app` は github.com のみ |
 | GitHub MCP サーバー | ❌ サポートなし | GitHub MCP サーバーは GHES インスタンスでは動作しません |
 
@@ -53,7 +53,7 @@ GHES インスタンスの GitHub App ページから、Claude がアクセス�
 
 **5. Code Review を有効にする**
 
-[claude.ai/admin-settings/claude-code](https://claude.ai/admin-settings/claude-code) にアクセスし、GHES リポジトリの [Code Review](/docs/ja/code-review-setup) を github.com と同じ設定を使用して有効にします。
+[claude.ai/admin-settings/claude-code](https://claude.ai/admin-settings/claude-code) にアクセスし、GHES リポジトリの [Code Review](/docs/ja/code-review-setup.md) を github.com と同じ設定を使用して有効にします。
 
 ### GitHub App 権限
 
@@ -83,9 +83,9 @@ Claude は接続を保存するときにアプリの webhook URL を生成しま
 
 ### ネットワーク要件
 
-Anthropic ホスト型セッションの場合、GHES インスタンスは Anthropic インフラストラクチャから到達可能である必要があります。これにより Claude はリポジトリをクローンしてレビューコメントを投稿できます。GHES インスタンスがファイアウォールの背後にある場合は、Anthropic の [アウトバウンド IP アドレス](https://platform.claude.com/docs/en/api/ip-addresses#outbound-ip-addresses) をホワイトリストに登録します。[自己ホスト型環境](/docs/ja/self-hosted-environments-deploy#configure-git) のセッションはネットワーク内からクローンします。ただし、ランナーが [Anthropic git プロキシ](/docs/ja/self-hosted-environments-deploy#use-the-anthropic-git-proxy) にオプトインする場合は除きます。このプロキシは Anthropic 側からフェッチし、同じ到達可能性が必要です。
+Anthropic ホスト型セッションの場合、GHES インスタンスは Anthropic インフラストラクチャから到達可能である必要があります。これにより Claude はリポジトリをクローンしてレビューコメントを投稿できます。GHES インスタンスがファイアウォールの背後にある場合は、Anthropic の [アウトバウンド IP アドレス](https://platform.claude.com/docs/en/api/ip-addresses#outbound-ip-addresses) をホワイトリストに登録します。[自己ホスト型環境](/docs/ja/self-hosted-environments-deploy.md#configure-git) のセッションはネットワーク内からクローンします。ただし、ランナーが [Anthropic git プロキシ](/docs/ja/self-hosted-environments-deploy.md#use-the-anthropic-git-proxy) にオプトインする場合は除きます。このプロキシは Anthropic 側からフェッチし、同じ到達可能性が必要です。
 
-リポジトリピッカーなどのホスト型プリセッションフローは、セッション開始前に Anthropic 側で実行されます。セッションが自己ホスト型環境で実行される場合でも、GHES インスタンスが Anthropic インフラストラクチャから到達可能である必要があります。[SCM コネクタ](/docs/ja/self-hosted-environments-reference#scm-connector-flags) は利用できないため、これらのフローは内部的にのみルーティング可能な GHES ホストに到達できません。
+リポジトリピッカーなどのホスト型プリセッションフローは、セッション開始前に Anthropic 側で実行されます。セッションが自己ホスト型環境で実行される場合でも、GHES インスタンスが Anthropic インフラストラクチャから到達可能である必要があります。[SCM コネクタ](/docs/ja/self-hosted-environments-reference.md#scm-connector-flags) は利用できないため、これらのフローは内部的にのみルーティング可能な GHES ホストに到達できません。
 
 ## 開発者ワークフロー
 
@@ -104,11 +104,11 @@ cd api-service
 claude --cloud "Add retry logic to the payment webhook handler"
 ```
 
-セッションは GHES からリポジトリをクローンし、変更をブランチにプッシュバックします。[claude.ai/code](https://claude.ai/code) で進捗を監視します。差分レビュー、自動修正、クラウドのスケジュールタスクを含む完全なクラウドセッションワークフローについては、[クラウドで Claude Code を使用する](/docs/ja/claude-code-on-the-web) を参照してください。
+セッションは GHES からリポジトリをクローンし、変更をブランチにプッシュバックします。[claude.ai/code](https://claude.ai/code) で進捗を監視します。差分レビュー、自動修正、クラウドのスケジュールタスクを含む完全なクラウドセッションワークフローについては、[クラウドで Claude Code を使用する](/docs/ja/claude-code-on-the-web.md) を参照してください。
 
 ### セッションをターミナルに Teleport する
 
-クラウドセッションをローカルターミナルに `claude --teleport` でプルします。Teleport は、ブランチをフェッチしてセッション履歴を読み込む前に、同じ GHES リポジトリのチェックアウトにいることを確認します。詳細については、[teleport 要件](/docs/ja/claude-code-on-the-web#teleport-requirements) を参照してください。
+クラウドセッションをローカルターミナルに `claude --teleport` でプルします。Teleport は、ブランチをフェッチしてセッション履歴を読み込む前に、同じ GHES リポジトリのチェックアウトにいることを確認します。詳細については、[teleport 要件](/docs/ja/claude-code-on-the-web.md#teleport-requirements) を参照してください。
 
 ## GHES 上のプラグインマーケットプレイス
 
@@ -142,11 +142,11 @@ GHES インスタンスでプラグインマーケットプレイスをホスト
 
 Claude Code は git を非対話的に実行し、マシンの `known_hosts` ファイルにないホストへの SSH 接続を拒否します。git 認証情報ヘルパーを備えた HTTPS URL は `known_hosts` 要件を回避します。
 
-マーケットプレイスの構築の完全なガイドについては、[プラグインマーケットプレイスの作成と配布](/docs/ja/plugins/create-marketplace) を参照してください。
+マーケットプレイスの構築の完全なガイドについては、[プラグインマーケットプレイスの作成と配布](/docs/ja/plugins/create-marketplace.md) を参照してください。
 
 ### 管理設定で GHES マーケットプレイスを事前登録
 
-`extraKnownMarketplaces` 設定はマーケットプレイスを事前登録して、開発者が手動セットアップなしでそれを取得できるようにします。これは [任意の設定ファイル](/docs/ja/settings-reference#extraknownmarketplaces) から機能します。リポジトリの `.claude/settings.json` を含めて、管理設定はそれを組織全体に配信します。
+`extraKnownMarketplaces` 設定はマーケットプレイスを事前登録して、開発者が手動セットアップなしでそれを取得できるようにします。これは [任意の設定ファイル](/docs/ja/settings-reference.md#extraknownmarketplaces) から機能します。リポジトリの `.claude/settings.json` を含めて、管理設定はそれを組織全体に配信します。
 
 ```json theme={null}
 {
@@ -166,11 +166,11 @@ Claude Code はこれらのマーケットプレイスをローカルにイン�
 * **完全な git URL を使用します。** `owner/repo` ショートハンドは常に github.com に解決され、GHES ホストを参照できません。
 * **HTTPS URL を優先します。** SSH クローンは GHES ホストキーを既に信頼していないマシンで失敗します。組織の標準 git 認証情報ヘルパーを備えた HTTPS URL は、認証情報が設定されているすべてのマシンで機能します。
 * **各マシンが GHES ホストからクローンできることを確認します。** マシンに認証情報がない場合、マーケットプレイスは登録されますが、インストールされず、そのプラグインは認証情報を求めるのではなく見つからないと報告されます。
-* **設定が各マシンに到達することを確認します。** 管理設定ファイルは、デバイス管理システムを通じて配置されたマシンなど、配置されたマシンにのみ有効です。[管理設定の配信メカニズム](/docs/ja/managed-settings#delivery-mechanisms) のファイルの場所を参照してください。
+* **設定が各マシンに到達することを確認します。** 管理設定ファイルは、デバイス管理システムを通じて配置されたマシンなど、配置されたマシンにのみ有効です。[管理設定の配信メカニズム](/docs/ja/managed-settings.md#delivery-mechanisms) のファイルの場所を参照してください。
 
 ### 管理設定で GHES マーケットプレイスをホワイトリストに登録
 
-組織が [管理設定](/docs/ja/settings) を使用して開発者が追加できるマーケットプレイスを制限している場合は、`hostPattern` ソースタイプを使用して、各リポジトリを列挙することなく GHES インスタンスからすべてのマーケットプレイスを許可します。各プラットフォームのファイルの場所については、[配信メカニズム](/docs/ja/managed-settings#delivery-mechanisms) を参照してください。JSON を `managed-settings.json` ファイルまたは同等の MDM ポリシーに追加します。
+組織が [管理設定](/docs/ja/settings.md) を使用して開発者が追加できるマーケットプレイスを制限している場合は、`hostPattern` ソースタイプを使用して、各リポジトリを列挙することなく GHES インスタンスからすべてのマーケットプレイスを許可します。各プラットフォームのファイルの場所については、[配信メカニズム](/docs/ja/managed-settings.md#delivery-mechanisms) を参照してください。JSON を `managed-settings.json` ファイルまたは同等の MDM ポリシーに追加します。
 
 ```json theme={null}
 {
@@ -183,7 +183,7 @@ Claude Code はこれらのマーケットプレイスをローカルにイン�
 }
 ```
 
-完全なスキーマについては、[strictKnownMarketplaces](/docs/ja/settings-reference#strictknownmarketplaces) および [extraKnownMarketplaces](/docs/ja/settings-reference#extraknownmarketplaces) 設定リファレンスを参照してください。
+完全なスキーマについては、[strictKnownMarketplaces](/docs/ja/settings-reference.md#strictknownmarketplaces) および [extraKnownMarketplaces](/docs/ja/settings-reference.md#extraknownmarketplaces) 設定リファレンスを参照してください。
 
 ## 制限事項
 
@@ -223,15 +223,15 @@ claude.ai の他のサーフェスで、GHES マーケットプレイスに対�
 
 ### セッションの開始が `Unable to get organization UUID` で失敗する
 
-Claude Code が認証情報から claude.ai の組織を読み取れませんでした。GitHub Enterprise Server のサポートは Team プランと Enterprise プランに限定されているため、Team または Enterprise 組織のアカウントを使用して `/login` でサインインしてください。原因およびこの状態で表示されるその他のメッセージについては、[Unable to get organization UUID](/docs/ja/claude-code-on-the-web#unable-to-get-organization-uuid) を参照してください。
+Claude Code が認証情報から claude.ai の組織を読み取れませんでした。GitHub Enterprise Server のサポートは Team プランと Enterprise プランに限定されているため、Team または Enterprise 組織のアカウントを使用して `/login` でサインインしてください。原因およびこの状態で表示されるその他のメッセージについては、[Unable to get organization UUID](/docs/ja/claude-code-on-the-web.md#unable-to-get-organization-uuid) を参照してください。
 
 ## 関連リソース
 
 これらのページは、このガイド全体で参照されている機能をより詳しく説明しています。
 
-* [クラウドで Claude Code を使用](/docs/ja/claude-code-on-the-web)：クラウドインフラストラクチャで Claude Code セッションを実行
-* [Code Review](/docs/ja/code-review)：自動 PR レビュー
-* [プラグインマーケットプレイス](/docs/ja/plugins/host-marketplace)：プラグインカタログの構築と配布
-* [分析](/docs/ja/analytics)：組織全体での Claude Code の使用状況の追跡
-* [管理設定](/docs/ja/settings)：組織全体のポリシー設定
-* [ネットワーク設定](/docs/ja/network-config)：ファイアウォールと IP ホワイトリストの要件
+* [クラウドで Claude Code を使用](/docs/ja/claude-code-on-the-web.md)：クラウドインフラストラクチャで Claude Code セッションを実行
+* [Code Review](/docs/ja/code-review.md)：自動 PR レビュー
+* [プラグインマーケットプレイス](/docs/ja/plugins/host-marketplace.md)：プラグインカタログの構築と配布
+* [分析](/docs/ja/analytics.md)：組織全体での Claude Code の使用状況の追跡
+* [管理設定](/docs/ja/settings.md)：組織全体のポリシー設定
+* [ネットワーク設定](/docs/ja/network-config.md)：ファイアウォールと IP ホワイトリストの要件

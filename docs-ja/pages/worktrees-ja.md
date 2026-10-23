@@ -13,9 +13,9 @@
 > 別のバージョン管理システムまたはデスクトップアプリを使用している場合は、ご自身の環境に応じた手順に従ってください。
 >
 > * **その他のバージョン管理システム**：worktree には git リポジトリが必要です。[git のロジックを置き換えるフックを設定](#non-git-version-control)してください
-> * **デスクトップアプリ**：[セッションを独自の worktree で実行する](/docs/ja/desktop#run-a-session-in-its-own-worktree)を参照してください
+> * **デスクトップアプリ**：[セッションを独自の worktree で実行する](/docs/ja/desktop.md#run-a-session-in-its-own-worktree)を参照してください
 
-worktree は Claude を並列で実行するいくつかの方法の 1 つで、ファイル編集を分離します。[サブエージェント](/docs/ja/sub-agents)は 1 つのセッション内で作業を分割し、[セッション間メッセージング](/docs/ja/cross-session-messaging)を使用すると、Claude は worktree 内のセッション間で調査結果を受け渡せます。アプローチを比較するには [エージェントを並列で実行する](/docs/ja/agents) を参照するか、worktree とサブエージェントを一緒に使用するには [worktree でサブエージェントを分離する](#isolate-subagents-with-worktrees) に進んでください。
+worktree は Claude を並列で実行するいくつかの方法の 1 つで、ファイル編集を分離します。[サブエージェント](/docs/ja/sub-agents.md)は 1 つのセッション内で作業を分割し、[セッション間メッセージング](/docs/ja/cross-session-messaging.md)を使用すると、Claude は worktree 内のセッション間で調査結果を受け渡せます。アプローチを比較するには [エージェントを並列で実行する](/docs/ja/agents.md) を参照するか、worktree とサブエージェントを一緒に使用するには [worktree でサブエージェントを分離する](#isolate-subagents-with-worktrees) に進んでください。
 
 ほとんどのセッションで必要なのは最初の 2 つのセクションだけです。[worktree で Claude を開始](#start-claude-in-a-worktree)し、[終了時にクリーンアップ](#clean-up-worktrees)します。[セッションを再開する](#resume-a-worktree-session)、[worktree の作成方法を変更する](#customize-worktree-creation)、または[失敗をデバッグする](#troubleshooting)必要がある場合は、このページの残りの部分に戻ってください。
 
@@ -29,7 +29,7 @@ claude --worktree feature-auth
 
 別のターミナルで異なる名前を使用してコマンドを再度実行すると、2 つ目の分離されたセッションを開始できます。名前を省略すると、Claude は `bright-running-fox` などの名前を生成します。
 
-対話実行には[ワークスペースの信頼](/docs/ja/security)が必要です。そのディレクトリでこれまで Claude を実行したことがない場合は、そこで `claude` を 1 回実行して信頼ダイアログを受け入れてください。そうしないと、`--worktree` はエラーで終了し、それを行うよう求めます。`-p` を使用した非対話実行は信頼チェックをスキップするため、`claude -p --worktree` はそれなしで進行します。
+対話実行には[ワークスペースの信頼](/docs/ja/security.md)が必要です。そのディレクトリでこれまで Claude を実行したことがない場合は、そこで `claude` を 1 回実行して信頼ダイアログを受け入れてください。そうしないと、`--worktree` はエラーで終了し、それを行うよう求めます。`-p` を使用した非対話実行は信頼チェックをスキップするため、`claude -p --worktree` はそれなしで進行します。
 
 > [!TIP]
 >
@@ -43,20 +43,20 @@ worktree は新しいチェックアウトなので、そこで開発環境を�
 
 セッション中に Claude に「worktree で作業する」と指示することもでき、Claude は [`EnterWorktree`](/docs/ja/tools-reference) ツールを使用して worktree を作成します。worktree に入ると、Claude はターゲットパスを指定して `EnterWorktree` を呼び出すことで、`.claude/worktrees/` の下の別の worktree に直接切り替えることができます。前の worktree はディスク上に変更されずに残ります。
 
-Claude がリポジトリの `.claude/worktrees/` ディレクトリの外のパスに入る場合、Claude Code は最初に承認を求めます。この移動により、セッションの作業ディレクトリ、書き込みアクセス、および `CLAUDE.md` や設定などのプロジェクト設定がその場所に移るためです。`EnterWorktree` の[権限ルール](/docs/ja/permissions)や「今後は確認しない」の選択ではこのプロンプトは抑制されず、`bypassPermissions` モードのみがスキップします。v2.1.206 より前は、Claude は既存の任意の worktree パスに確認なしで入ることができました。
+Claude がリポジトリの `.claude/worktrees/` ディレクトリの外のパスに入る場合、Claude Code は最初に承認を求めます。この移動により、セッションの作業ディレクトリ、書き込みアクセス、および `CLAUDE.md` や設定などのプロジェクト設定がその場所に移るためです。`EnterWorktree` の[権限ルール](/docs/ja/permissions.md)や「今後は確認しない」の選択ではこのプロンプトは抑制されず、`bypassPermissions` モードのみがスキップします。v2.1.206 より前は、Claude は既存の任意の worktree パスに確認なしで入ることができました。
 
 > [!NOTE]
 >
-> **フックのパスは worktree に追従しません。** Claude が worktree に入った後も、Claude Code は[フック](/docs/ja/hooks#reference-scripts-by-path)内の `${CLAUDE_PROJECT_DIR}` を元の場所のままにし、worktree のパスは別の方法でフックに渡します。
+> **フックのパスは worktree に追従しません。** Claude が worktree に入った後も、Claude Code は[フック](/docs/ja/hooks.md#reference-scripts-by-path)内の `${CLAUDE_PROJECT_DIR}` を元の場所のままにし、worktree のパスは別の方法でフックに渡します。
 >
 > * **`${CLAUDE_PROJECT_DIR}` は変わらない**: セッションが開始されたプロジェクトルートを引き続き指すため、`${CLAUDE_PROJECT_DIR}/.claude/hooks/check-style.sh` などのフックコマンドは引き続きメインチェックアウト内のスクリプトを実行します。
-> * **`cwd` は Claude に追従する**: フックの[入力 JSON](/docs/ja/hooks#common-input-fields) の `cwd` フィールドは worktree のルートであり、Claude が `cd` を実行すると再び移動します。フックが worktree のパスを必要とする場合はこれを読み取ります。
+> * **`cwd` は Claude に追従する**: フックの[入力 JSON](/docs/ja/hooks.md#common-input-fields) の `cwd` フィールドは worktree のルートであり、Claude が `cd` を実行すると再び移動します。フックが worktree のパスを必要とする場合はこれを読み取ります。
 
 ## worktree をクリーンアップする
 
-対話的な worktree セッションを終了すると、Claude は削除によって失われる作業がないか worktree を確認します。対象は、変更されたファイルや追跡されていないファイル、チェックアウトされたサブモジュール内のコミットされていない作業、および新しいコミットです。これらのルールは、Claude が git で作成した worktree に適用されます。[WorktreeCreate フック](/docs/ja/hooks#worktreecreate)が作成した worktree については、代わりに [WorktreeRemove](/docs/ja/hooks#worktreeremove) を参照してください。
+対話的な worktree セッションを終了すると、Claude は削除によって失われる作業がないか worktree を確認します。対象は、変更されたファイルや追跡されていないファイル、チェックアウトされたサブモジュール内のコミットされていない作業、および新しいコミットです。これらのルールは、Claude が git で作成した worktree に適用されます。[WorktreeCreate フック](/docs/ja/hooks.md#worktreecreate)が作成した worktree については、代わりに [WorktreeRemove](/docs/ja/hooks.md#worktreeremove) を参照してください。
 
-* **worktree がクリーンな場合**: 名前のないセッションでは、Claude は worktree とそのブランチを自動的に削除します。[名前付き](/docs/ja/sessions#name-your-sessions)セッションでは最初にプロンプトが表示されるため、後で使用するために worktree を保持できます
+* **worktree がクリーンな場合**: 名前のないセッションでは、Claude は worktree とそのブランチを自動的に削除します。[名前付き](/docs/ja/sessions.md#name-your-sessions)セッションでは最初にプロンプトが表示されるため、後で使用するために worktree を保持できます
 * **worktree に作業が含まれている場合**: Claude は worktree を保持するか削除するかを求めるプロンプトを表示します。保持するとディレクトリとブランチが保存されます。後で戻るには、Claude Code が終了時に出力する `claude --worktree <name> --resume` コマンドを実行します。削除すると worktree ディレクトリとそのブランチが、その中のすべての作業とともに削除されます
 * **別のブランチがチェックアウトされている場合**: worktree が自身のブランチ以外のブランチ上にあり、そのブランチに worktree の開始コミット以降のコミットがある場合、Claude は worktree を保持するか削除するかを求めるプロンプトを表示します。どちらを選択しても、その別のブランチとそのコミットは保持されます。削除すると、worktree ディレクトリと、Claude が worktree とともに作成した worktree 自身のブランチが削除されます
 * **worktree の状態を検証できない場合**: Claude Code が worktree の変更をカウントできない、またはサブモジュールのチェックアウトを検査できない場合、worktree を自動的に削除するのではなくプロンプトを表示します。プロンプトには確認できなかった内容が示されます
@@ -67,7 +67,7 @@ Windows では、worktree を削除しても worktree 外のファイルは削�
 
 ## worktree セッションを再開する
 
-worktree 内で[終了](#clean-up-worktrees)せずに終わったセッションを再開すると、Claude Code はセッションをその worktree に戻します。これは対話的な再開、`-p` を使用した[非対話モード](/docs/ja/headless)での `--continue` と `--resume`、および Agent SDK に当てはまります。`--continue` は、起動したディレクトリの下に記録されている最新のセッションを選択します。worktree 内に戻った後も、Claude は [`ExitWorktree`](/docs/ja/tools-reference) ツールで worktree を終了できます。
+worktree 内で[終了](#clean-up-worktrees)せずに終わったセッションを再開すると、Claude Code はセッションをその worktree に戻します。これは対話的な再開、`-p` を使用した[非対話モード](/docs/ja/headless.md)での `--continue` と `--resume`、および Agent SDK に当てはまります。`--continue` は、起動したディレクトリの下に記録されている最新のセッションを選択します。worktree 内に戻った後も、Claude は [`ExitWorktree`](/docs/ja/tools-reference) ツールで worktree を終了できます。
 
 セッションを worktree に戻す前に、Claude Code は worktree がメインのチェックアウトとは別のチェックアウトのままであることを検証し、チェックに失敗した worktree への再入を拒否します。git worktree の場合、チェックはその git メタデータを読み取ります。[`WorktreeCreate` フック](#non-git-version-control)が作成したものなど、git メタデータを持たない worktree はチェックに合格する場合があります。Claude Code が引き続き拒否するケースは、その回復方法とともに [Claude Code が worktree の使用を拒否する](#claude-code-refuses-to-use-a-worktree) に記載されています。メッセージとそれぞれからの回復方法については、[セッションが worktree の外で再開される](#the-session-resumes-outside-its-worktree) を参照してください。
 
@@ -87,7 +87,7 @@ Claude Code が git で作成した worktree に Claude が入るか出ると、
 
 セッションが worktree 内で分離されている間、Claude Code は以下のチェックで定義されるツール呼び出しをブロックします。セッションを `--worktree` で開始した場合も、Claude が `EnterWorktree` で worktree に入った場合も、worktree セッションを再開した場合も、同じルールが適用されます。
 
-分離されたセッションから Claude が生成するすべてのサブエージェントにも同じ強制が適用されます。これはセッションが対話的な場合でも、[バックグラウンド](/docs/ja/agent-view#how-file-edits-are-isolated)で実行される場合でも適用されます。[独自の worktree で実行されるサブエージェント](#isolate-subagents-with-worktrees)にも同じチェックが適用されます。そのバージョン履歴は [サブエージェントファイルの書き込み](/docs/ja/sub-agents#write-subagent-files) にあります。
+分離されたセッションから Claude が生成するすべてのサブエージェントにも同じ強制が適用されます。これはセッションが対話的な場合でも、[バックグラウンド](/docs/ja/agent-view.md#how-file-edits-are-isolated)で実行される場合でも適用されます。[独自の worktree で実行されるサブエージェント](#isolate-subagents-with-worktrees)にも同じチェックが適用されます。そのバージョン履歴は [サブエージェントファイルの書き込み](/docs/ja/sub-agents.md#write-subagent-files) にあります。
 
 Claude Code は 4 つのチェックを適用します。
 
@@ -96,15 +96,15 @@ Claude Code は 4 つのチェックを適用します。
 * **Git のリダイレクト**: Claude Code は、git をメインチェックアウトにリダイレクトする Bash または Monitor コマンドをブロックします。リダイレクトは、`git -C`、`--git-dir`、`GIT_DIR` または `GIT_WORK_TREE` 変数、あるいは git を実行する前のメインチェックアウトへの `cd` によって発生する可能性があります。
 * **コマンドの形式**: Claude Code は、コマンドが実行する git が worktree 内にとどまることをコマンドテキストから検証できない場合、Bash または Monitor コマンドをブロックします。これは、たとえばコマンド名が実行時に計算される場合、構文を解析できない場合、または `${!name}` や `${ command; }` などの展開がテキストに明記されていないコマンドを実行する可能性がある場合に発生します。Claude Code は、拒否されたコマンドを単純な個別のコマンドに分割するなど、書き直す方法を Claude に伝えます。このチェックをオフにすることはできません。
 
-これらのチェックが読み取るのは、編集の対象となるパス、コマンドが実行されるディレクトリ、およびコマンドのテキストです。シェルコマンドがどのファイルに書き込むかを追跡するチェックはないため、`cp` やシェルのリダイレクトなど、メインチェックアウトで git を実行せずにメインチェックアウトに書き込むコマンドは、これらのチェックでは拒否されません。Claude Code はそのようなコマンドを、[権限](/docs/ja/permissions)と[サンドボックス化](/docs/ja/sandboxing)の設定のもとで他のシェルコマンドと同様に扱います。
+これらのチェックが読み取るのは、編集の対象となるパス、コマンドが実行されるディレクトリ、およびコマンドのテキストです。シェルコマンドがどのファイルに書き込むかを追跡するチェックはないため、`cp` やシェルのリダイレクトなど、メインチェックアウトで git を実行せずにメインチェックアウトに書き込むコマンドは、これらのチェックでは拒否されません。Claude Code はそのようなコマンドを、[権限](/docs/ja/permissions.md)と[サンドボックス化](/docs/ja/sandboxing.md)の設定のもとで他のシェルコマンドと同様に扱います。
 
 チェックは、Claude Code を起動したリポジトリに適用されます。リンクされた worktree のリンク元であるメインチェックアウトも対象になります。PowerShell コマンドについては、Claude Code は作業ディレクトリのチェックのみを適用します。
 
-Claude は各拒否を、worktree の名前と続行方法を示すツールエラーとして受け取ります。拒否されたコマンドについては、[拒否メッセージの意味とその解消方法](/docs/ja/errors#command-blocked-by-the-worktree-isolation-checks) を参照してください。
+Claude は各拒否を、worktree の名前と続行方法を示すツールエラーとして受け取ります。拒否されたコマンドについては、[拒否メッセージの意味とその解消方法](/docs/ja/errors.md#command-blocked-by-the-worktree-isolation-checks) を参照してください。
 
 ## worktree でサブエージェントを分離する
 
-サブエージェントは独自の worktree で実行できるため、並列編集が競合しません。Claude に「エージェントに worktree を使用する」と指示するか、[カスタムサブエージェント](/docs/ja/sub-agents#supported-frontmatter-fields)のフロントマターに `isolation: worktree` を追加して分離を永続化します。
+サブエージェントは独自の worktree で実行できるため、並列編集が競合しません。Claude に「エージェントに worktree を使用する」と指示するか、[カスタムサブエージェント](/docs/ja/sub-agents.md#supported-frontmatter-fields)のフロントマターに `isolation: worktree` を追加して分離を永続化します。
 
 `.claude/agents/` 内のこのサブエージェントは、常に独自の worktree で実行されます。
 
@@ -119,17 +119,17 @@ Apply the requested refactor across every affected file, then run the tests
 and report the results.
 ```
 
-各サブエージェントは一時的な worktree を取得し、サブエージェントが変更なしで完了すると Claude Code がそれを自動的に削除します。変更を含む worktree は、[以下の定期スイープ](#clean-up-subagent-and-background-session-worktrees)が作業を失わずに削除できるようになるまでディスク上に残ります。[WorktreeCreate フック](/docs/ja/hooks#worktreecreate)が作成した worktree については、代わりに [WorktreeRemove](/docs/ja/hooks#worktreeremove) を参照してください。
+各サブエージェントは一時的な worktree を取得し、サブエージェントが変更なしで完了すると Claude Code がそれを自動的に削除します。変更を含む worktree は、[以下の定期スイープ](#clean-up-subagent-and-background-session-worktrees)が作業を失わずに削除できるようになるまでディスク上に残ります。[WorktreeCreate フック](/docs/ja/hooks.md#worktreecreate)が作成した worktree については、代わりに [WorktreeRemove](/docs/ja/hooks.md#worktreeremove) を参照してください。
 
 サブエージェントの worktree は `--worktree` と同じ[ベースブランチ](#choose-the-base-branch)を使用するため、`worktree.baseRef` が `"head"` に設定されていない限り、リポジトリのデフォルトブランチからブランチします。
 
-独自の worktree で実行されるサブエージェントは、[起動時に読み込む](/docs/ja/sub-agents#what-loads-at-startup)指示ファイルを、その worktree からではなくメインの会話から取得します。その worktree が `.claude/worktrees/` 配下のデフォルトの場所にある場合、サブエージェントは worktree 内のファイルを読み取る際にも、worktree のルートにある `CLAUDE.md` ファイルや `.claude/rules/` ディレクトリを読み込みません。これらが worktree のブランチ上で異なっている場合でも同様です。
+独自の worktree で実行されるサブエージェントは、[起動時に読み込む](/docs/ja/sub-agents.md#what-loads-at-startup)指示ファイルを、その worktree からではなくメインの会話から取得します。その worktree が `.claude/worktrees/` 配下のデフォルトの場所にある場合、サブエージェントは worktree 内のファイルを読み取る際にも、worktree のルートにある `CLAUDE.md` ファイルや `.claude/rules/` ディレクトリを読み込みません。これらが worktree のブランチ上で異なっている場合でも同様です。
 
 ### サブエージェントとバックグラウンドセッションの worktree をクリーンアップする
 
-Claude Code は定期的なスイープを実行し、Claude がサブエージェントと[バックグラウンドセッション](/docs/ja/agent-view#how-file-edits-are-isolated)用に作成した worktree のうち、[`cleanupPeriodDays`](/docs/ja/settings-reference#cleanupperioddays) 設定より古くなったものを、[保持スイープのルール](/docs/ja/claude-directory#cleaned-up-automatically)に従って削除します。
+Claude Code は定期的なスイープを実行し、Claude がサブエージェントと[バックグラウンドセッション](/docs/ja/agent-view.md#how-file-edits-are-isolated)用に作成した worktree のうち、[`cleanupPeriodDays`](/docs/ja/settings-reference#cleanupperioddays) 設定より古くなったものを、[保持スイープのルール](/docs/ja/claude-directory.md#cleaned-up-automatically)に従って削除します。
 
-`--worktree` セッションを[バックグラウンドに送る](/docs/ja/agent-view#send-the-session-to-the-background)と、その worktree はスイープで削除可能なバックグラウンドセッションの worktree になります。スイープは次の場合に worktree をそのまま残します。
+`--worktree` セッションを[バックグラウンドに送る](/docs/ja/agent-view.md#send-the-session-to-the-background)と、その worktree はスイープで削除可能なバックグラウンドセッションの worktree になります。スイープは次の場合に worktree をそのまま残します。
 
 * worktree にまだ作業が含まれている: 変更されたファイルや追跡されていないファイル、またはプッシュされていないコミット。
 * worktree 内のチェックアウトされたサブモジュールに変更されたファイルや追跡されていないファイルがある、または Claude Code が worktree のサブモジュールを検査できない。このチェックには Claude Code v2.1.274 以降が必要です。
@@ -151,7 +151,7 @@ Claude Code の worktree 作成のデフォルトは、ほとんどのセッシ�
 
 ### ベースブランチを選択する
 
-新しい worktree はリポジトリのデフォルトブランチからブランチするため、ほとんどのセッションではこの設定は必要ありません。代わりに現在の作業からブランチするには、[設定](/docs/ja/settings-reference#worktree)で `worktree.baseRef` を設定します。この設定は 2 つの値を受け入れます。
+新しい worktree はリポジトリのデフォルトブランチからブランチするため、ほとんどのセッションではこの設定は必要ありません。代わりに現在の作業からブランチするには、[設定](/docs/ja/settings-reference.md#worktree)で `worktree.baseRef` を設定します。この設定は 2 つの値を受け入れます。
 
 * `"fresh"`（デフォルト）: リモート上のリポジトリのデフォルトブランチ（通常は `main`）からブランチするため、worktree はリモートと一致するクリーンなツリーから開始します。
 * `"head"`: 現在のローカル `HEAD` からブランチするため、worktree はプッシュされていないコミットと機能ブランチの状態を保持します。進行中の作業で動作する必要があるサブエージェントを分離する場合に使用します。worktree 内では、`"head"` はメインチェックアウトの `HEAD` ではなく、その worktree の `HEAD` に解決されます。
@@ -204,7 +204,7 @@ worktree は新しいチェックアウトなので、メインリポジトリ�
 config/secrets.json
 ```
 
-これは Claude Code が git で作成するすべての worktree に適用されます。対象は、`--worktree` の worktree、[サブエージェントの worktree](#isolate-subagents-with-worktrees)、および[デスクトップアプリ](/docs/ja/desktop#work-in-parallel-with-sessions)の並列セッションです。[`WorktreeCreate` フック](#non-git-version-control)を使用する場合は、フックスクリプト内でファイルをコピーしてください。
+これは Claude Code が git で作成するすべての worktree に適用されます。対象は、`--worktree` の worktree、[サブエージェントの worktree](#isolate-subagents-with-worktrees)、および[デスクトップアプリ](/docs/ja/desktop.md#work-in-parallel-with-sessions)の並列セッションです。[`WorktreeCreate` フック](#non-git-version-control)を使用する場合は、フックスクリプト内でファイルをコピーしてください。
 
 ### worktree 名を再利用する
 
@@ -235,16 +235,16 @@ v2.1.208 より前は、名前を再利用すると、Claude Code は常に古�
 
 worktree は独自のファイルとブランチを持ちますが、以下をメインチェックアウトと共有します。
 
-* **リポジトリの `.git` ディレクトリ**: worktree 内の git コマンドはメインリポジトリの共有 `.git` ディレクトリに書き込み、[サンドボックス化](/docs/ja/sandboxing#filesystem-isolation)はそれらの書き込みを許可するため、サンドボックスが有効な状態でも `git commit` などのコマンドは worktree 内から動作します。
-* **プラグイン**: メインチェックアウトから[プロジェクトスコープ](/docs/ja/plugins/loading#find-where-a-plugin-is-enabled)でインストールされたプラグインは、同じリポジトリの worktree でも読み込まれるため、worktree ごとに再インストールする必要はありません。Claude Code v2.1.200 以降が必要です。
-* **権限の承認**: worktree セッションで Bash コマンドに対して「はい、今後は確認しない」を選択すると、ルールはメインチェックアウトの `.claude/settings.local.json` に保存されるため、メインチェックアウトとリポジトリの他のすべての worktree に適用され、worktree の削除後も残ります。Windows や、Claude Code が[リポジトリルートを使用しない](/docs/ja/settings#where-claude-code-looks-for-each-file)その他のケースでは、ルールはその worktree に残ります。v2.1.211 より前は、worktree で付与された承認はその worktree 内に保存され、他の場所には適用されず、worktree が削除されると失われていました。[承認が保存される場所](/docs/ja/permissions#permission-system)を参照してください。
-* **追跡されていないスキル、エージェント、コマンド**: worktree のチェックアウトのルートに `.claude/skills` ディレクトリがない場合（たとえば `.claude/skills` が gitignore されている場合）、Claude Code は worktree セッションでメインチェックアウトの[プロジェクトスキル](/docs/ja/skills#where-skills-live)を読み込みます。独自の `.claude/skills` ディレクトリを持つ worktree では、そのコピーのみが読み込まれます。
+* **リポジトリの `.git` ディレクトリ**: worktree 内の git コマンドはメインリポジトリの共有 `.git` ディレクトリに書き込み、[サンドボックス化](/docs/ja/sandboxing.md#filesystem-isolation)はそれらの書き込みを許可するため、サンドボックスが有効な状態でも `git commit` などのコマンドは worktree 内から動作します。
+* **プラグイン**: メインチェックアウトから[プロジェクトスコープ](/docs/ja/plugins/loading.md#find-where-a-plugin-is-enabled)でインストールされたプラグインは、同じリポジトリの worktree でも読み込まれるため、worktree ごとに再インストールする必要はありません。Claude Code v2.1.200 以降が必要です。
+* **権限の承認**: worktree セッションで Bash コマンドに対して「はい、今後は確認しない」を選択すると、ルールはメインチェックアウトの `.claude/settings.local.json` に保存されるため、メインチェックアウトとリポジトリの他のすべての worktree に適用され、worktree の削除後も残ります。Windows や、Claude Code が[リポジトリルートを使用しない](/docs/ja/settings.md#where-claude-code-looks-for-each-file)その他のケースでは、ルールはその worktree に残ります。v2.1.211 より前は、worktree で付与された承認はその worktree 内に保存され、他の場所には適用されず、worktree が削除されると失われていました。[承認が保存される場所](/docs/ja/permissions.md#permission-system)を参照してください。
+* **追跡されていないスキル、エージェント、コマンド**: worktree のチェックアウトのルートに `.claude/skills` ディレクトリがない場合（たとえば `.claude/skills` が gitignore されている場合）、Claude Code は worktree セッションでメインチェックアウトの[プロジェクトスキル](/docs/ja/skills.md#where-skills-live)を読み込みます。独自の `.claude/skills` ディレクトリを持つ worktree では、そのコピーのみが読み込まれます。
 
   同じ読み取りの引き継ぎは `.claude/agents` と `.claude/commands` にも適用されます。スキルについては、この引き継ぎには Claude Code v2.1.277 以降が必要です。
 
 これらはすべて、worktree を `--worktree` で作成した場合も、`git worktree add` で作成した場合も適用されます。
 
-[デスクトップアプリ](/docs/ja/desktop#run-a-session-in-its-own-worktree)から開始した worktree セッションでは、Claude Code は設定、フック、スキル、エージェント、コマンド、[`.mcp.json`](/docs/ja/mcp#project-scope) サーバーなどのプロジェクト設定を、メインチェックアウトのルートから読み込みます。フックのコマンドはそのルートで実行され、`${CLAUDE_PROJECT_DIR}` はそのルートを指します。Claude が作業しているファイルにアクセスするには、フックの [`cwd` 入力フィールド](/docs/ja/hooks#common-input-fields)から worktree のパスを読み取ってください。`CLAUDE.md` ファイルと `.claude/rules/` は引き続き worktree から読み込まれます。
+[デスクトップアプリ](/docs/ja/desktop.md#run-a-session-in-its-own-worktree)から開始した worktree セッションでは、Claude Code は設定、フック、スキル、エージェント、コマンド、[`.mcp.json`](/docs/ja/mcp#project-scope) サーバーなどのプロジェクト設定を、メインチェックアウトのルートから読み込みます。フックのコマンドはそのルートで実行され、`${CLAUDE_PROJECT_DIR}` はそのルートを指します。Claude が作業しているファイルにアクセスするには、フックの [`cwd` 入力フィールド](/docs/ja/hooks#common-input-fields)から worktree のパスを読み取ってください。`CLAUDE.md` ファイルと `.claude/rules/` は引き続き worktree から読み込まれます。
 
 ## worktree を手動で管理する
 
@@ -306,7 +306,7 @@ worktree の分離はデフォルトで git を使用します。SVN、Perforce�
 }
 ```
 
-セッションが終了するときにクリーンアップするために `WorktreeRemove` フックとペアにします。入力スキーマと削除例については、[フックリファレンス](/docs/ja/hooks#worktreecreate) を参照してください。
+セッションが終了するときにクリーンアップするために `WorktreeRemove` フックとペアにします。入力スキーマと削除例については、[フックリファレンス](/docs/ja/hooks.md#worktreecreate) を参照してください。
 
 `WorktreeCreate` フックを使用すると、git リポジトリの外で [`/batch`](/docs/ja/commands#all-commands) を実行することもできます。その場合、各 `/batch` サブエージェントはプロジェクトのバージョン管理コマンドで変更を公開し、プルリクエストを開けない場合は、代わりに公開した内容を報告します。git リポジトリの外で `/batch` を実行するには、Claude Code v2.1.281 以降が必要です。
 
@@ -337,6 +337,10 @@ Claude Code は、worktree を作成する際にリポジトリ独自のフィ�
 * **`The repository git config has a conditional include (includeIf)`**: `.git/config` 内の `includeIf` が取り込む設定をそのファイルに直接移動し、`includeIf` を削除して再試行してください。グローバル git 設定内の `includeIf` はこれをトリガーしません。
 * **`Git was not run: the repository's own git config sets <key>`**: メッセージには、`lfs.customtransfer.<name>.path` や `lfs.standalonetransferagent` など、Git LFS に実行するプログラムを指定するキーが示されます。その設定が自分のものであれば、グローバル git 設定に移動します。心当たりがない場合は、信頼していないツールやチェックアウトが書き込んだ可能性があるため、リポジトリの git 設定から削除してください。リポジトリの設定からキーがなくなったら再試行してください。
 
+### パーシャルクローンで worktree の作成が失敗する
+
+`This repository is a partial clone` を含むエラーは、worktree の開始コミットに必要なすべての git オブジェクトを Claude Code が取得できなかったことを意味します。メッセージ内の `try again` で終わる文に示された手順を実行してください。その後、その手順を実行したシェルから再試行します。`claude --worktree` を実行するか、そこで `claude` を起動して再度依頼してください。
+
 ### Claude Code が worktree の使用を拒否する
 
 `Refusing to use <path> as an isolation worktree` で始まるエラーは、Claude Code がディレクトリをセッションまたはサブエージェントの分離されたチェックアウトとして採用する前にそのディレクトリの git ID を確認し、拒否したことを意味します。このチェックは、Claude Code が worktree を作成する場合、既存の worktree に入る場合、以前の実行の worktree を再利用する場合のいずれでも実行されます。
@@ -352,13 +356,13 @@ Claude Code は、worktree を作成する際にリポジトリ独自のフィ�
 * **`it contains the protected checkout` と表示される**: 拒否されたディレクトリは、ホームディレクトリなど、メインチェックアウトの親です。削除しないでください。`WorktreeCreate` フックが返すパスや `EnterWorktree` のターゲットなど、worktree のパスを変更して、worktree がチェックアウトを含まないようにしてください。
 * **`the protected checkout <path> has a .git entry that could not be examined` または `has git metadata that could not be resolved` と表示される**: 問題は worktree ではなくメインチェックアウトの git メタデータにあります。worktree を削除しないでください。また、メッセージ末尾の worktree を再作成するようにというアドバイスは、これら 2 つの末尾には当てはまらないため無視してください。メインチェックアウトを修復し（たとえば `.git` に対する権限の問題や git の `dubious ownership` による拒否）、再試行してください。
 
-  v2.1.302 より前は、git 2.56 以降を使用している場合、`the protected checkout` の後の `<path>` に孤立した `.git` ファイルがあるときにも、`could not be resolved` という末尾が表示されていました。ここでいう孤立とは、そのファイルの `gitdir:` 行にあるパスが有効な git リポジトリにつながらないことを意味します。回復するには、[Claude Code を更新](/docs/ja/setup#update-claude-code)して再試行してください。その `gitdir:` パスがもう存在しない場合は、`.git` ファイルを削除して再試行することもできます。
+  v2.1.302 より前は、git 2.56 以降を使用している場合、`the protected checkout` の後の `<path>` に孤立した `.git` ファイルがあるときにも、`could not be resolved` という末尾が表示されていました。ここでいう孤立とは、そのファイルの `gitdir:` 行にあるパスが有効な git リポジトリにつながらないことを意味します。回復するには、[Claude Code を更新](/docs/ja/setup.md#update-claude-code)して再試行してください。その `gitdir:` パスがもう存在しない場合は、`.git` ファイルを削除して再試行することもできます。
 * **`its recorded path has a network spelling` と表示される**: Claude Code はネットワークパスにある worktree へ再開することはありません。ローカルパスに worktree を再作成してください。
 * **その他の末尾**: メッセージには、`core.worktree` リダイレクトの削除や worktree の再作成など、問題とその修正方法が示されています。それに従ってください。git ID を検証できなかったというメッセージが表示されたディレクトリを削除する前に、worktree のパス内のシンボリックリンクや git 自体の実行失敗など、示された原因に先に対処してください。ディレクトリが正常である可能性があるためです。再作成する場合は、先に古いディレクトリから必要な変更を回収してください。古いディレクトリはディスク上に残ります。
 
 ### セッションが worktree の外で再開される
 
-セッションを対話的に再開し、Claude Code がそれを worktree に戻せない場合、Claude Code は以下のいずれかのメッセージでその旨を伝えます。Claude Code が worktree バインディングをクリアすると、そのクリアをセッションのトランスクリプトに記録します。[トランスクリプトの書き込みを抑制](/docs/ja/sessions#where-transcripts-are-stored)している場合、メッセージは代わりに、バインディングをクリアできなかったこと、および Claude Code が後の再開時に worktree を再確認することを示します。
+セッションを対話的に再開し、Claude Code がそれを worktree に戻せない場合、Claude Code は以下のいずれかのメッセージでその旨を伝えます。Claude Code が worktree バインディングをクリアすると、そのクリアをセッションのトランスクリプトに記録します。[トランスクリプトの書き込みを抑制](/docs/ja/sessions.md#where-transcripts-are-stored)している場合、メッセージは代わりに、バインディングをクリアできなかったこと、および Claude Code が後の再開時に worktree を再確認することを示します。
 
 | メッセージの先頭 | 発生したことと対処方法 |
 | :- | :- |
@@ -367,7 +371,7 @@ Claude Code は、worktree を作成する際にリポジトリ独自のフィ�
 | `Did not re-enter your worktree <path>` | Claude Code は worktree バインディングを安全でないとして拒否しました。バインディングをクリアし、セッションは分離なしで続行されます。メッセージには具体的な拒否理由が含まれています。一部の拒否では再作成、その他の拒否ではパスの変更が修正方法となるため、[Claude Code が worktree の使用を拒否する](#claude-code-refuses-to-use-a-worktree) と照らし合わせてください。 |
 | `Could not re-enter your worktree <path>` | 起動した場所から Claude Code が worktree を安全と確認できませんでした。最も一般的な原因は worktree 内から起動したことです。バインディングは保持されます。メッセージの残りの部分に修正方法が示されているので、[Claude Code が worktree の使用を拒否する](#claude-code-refuses-to-use-a-worktree) と照らし合わせてください。 |
 
-`-p` を使用した[非対話モード](/docs/ja/headless)および [Agent SDK](/docs/ja/agent-sdk/sessions) が実行する再開では、Claude Code は分離なしで続行するのではなく、worktree が存在しない場合を除くすべての拒否に対して stderr エラーで再開を停止します。
+`-p` を使用した[非対話モード](/docs/ja/headless.md)および [Agent SDK](/docs/ja/agent-sdk/sessions.md) が実行する再開では、Claude Code は分離なしで続行するのではなく、worktree が存在しない場合を除くすべての拒否に対して stderr エラーで再開を停止します。
 
 `--output-format stream-json` を使用すると、拒否は stdout にもサブタイプ `error_during_execution` の `result` メッセージとして届き、その `errors` 配列に同じテキストが含まれるため、Agent SDK アプリケーションはゼロ以外の終了コードだけでなく理由も受け取れます。v2.1.260 より前は、worktree の再開拒否で `result` メッセージは生成されませんでした。
 
@@ -375,7 +379,7 @@ Claude Code は、worktree を作成する際にリポジトリ独自のフィ�
 
 * 表で `Did not re-enter` として示される拒否の場合は `Error: cannot resume into worktree <path>: ...This session was not started.`。Claude Code は終了前に worktree バインディングをクリアし、エラーにもそのことが示されます。次に会話を再開すると、セッションは worktree 分離なしで現在のディレクトリで続行されます。v2.1.260 より前は、Claude Code はクリアされたバインディングを書き込まなかったため、同じ再開を再試行するたびに同じエラーで失敗していました。
 
-  [トランスクリプトの書き込みを抑制](/docs/ja/sessions#where-transcripts-are-stored)している場合、クリアを保存できません。その場合、エラーには同じコマンドが再び拒否されることが示され、worktree なしで続行する方法として `--fork-session` と新しい会話の開始が挙げられます。
+  [トランスクリプトの書き込みを抑制](/docs/ja/sessions.md#where-transcripts-are-stored)している場合、クリアを保存できません。その場合、エラーには同じコマンドが再び拒否されることが示され、worktree なしで続行する方法として `--fork-session` と新しい会話の開始が挙げられます。
 * `Could not verify` の場合は `Error: could not verify worktree <path> for this resume, so the resume was aborted...`
 * `Could not re-enter` の場合は `Error: ...The worktree binding is kept.`
 * worktree が存在しない場合は `Notice: the worktree <path> for this session no longer exists...`。Claude Code はこれを出力し、対話的な再開と同様にセッションを続行します
@@ -388,8 +392,8 @@ stream-json の結果では、[`startup_failure_reason`](/docs/ja/agent-sdk/type
 
 worktree はファイルの分離を処理します。以下の関連ページでは、これらの分離されたチェックアウトに作業を委任する方法、チェックアウト間で調査結果を受け渡す方法、および作成したセッション間を切り替える方法について説明しています。
 
-* [サブエージェント](/docs/ja/sub-agents): セッション内の分離されたエージェントに作業を委任する
-* [セッション間メッセージング](/docs/ja/cross-session-messaging): worktree 内のセッション同士で調査結果を受け渡せるようにする
-* [エージェントチーム](/docs/ja/agent-teams): 複数の Claude セッションを自動的に調整する
-* [セッションを管理する](/docs/ja/sessions): 会話に名前を付け、再開し、切り替える
-* [デスクトップセッションを専用の worktree で実行する](/docs/ja/desktop#run-a-session-in-its-own-worktree): デスクトップアプリの worktree でサポートされるセッション
+* [サブエージェント](/docs/ja/sub-agents.md): セッション内の分離されたエージェントに作業を委任する
+* [セッション間メッセージング](/docs/ja/cross-session-messaging.md): worktree 内のセッション同士で調査結果を受け渡せるようにする
+* [エージェントチーム](/docs/ja/agent-teams.md): 複数の Claude セッションを自動的に調整する
+* [セッションを管理する](/docs/ja/sessions.md): 会話に名前を付け、再開し、切り替える
+* [デスクトップセッションを専用の worktree で実行する](/docs/ja/desktop.md#run-a-session-in-its-own-worktree): デスクトップアプリの worktree でサポートされるセッション

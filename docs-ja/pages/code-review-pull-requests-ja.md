@@ -8,7 +8,7 @@
 
 Code Review は、Claude 組織の Owner が一連の GitHub リポジトリに対してオンにするマネージドサービスです。オンにすると、Claude はそれらのリポジトリのプルリクエストをレビューし、指摘をインラインコメント、レビュー本文のサマリー、そして **Claude Code Review** という名前のチェックランとして投稿します。レビューがプルリクエストを承認したりブロックしたりすることはなく、チェックランが失敗として終了することもありません。
 
-Owner は、リポジトリごとに[レビューを実行するタイミング](/docs/ja/code-review-setup#set-when-reviews-run)と[レビューの詳細度](/docs/ja/code-review-setup#set-the-default-review-level)を制御します。
+Owner は、リポジトリごとに[レビューを実行するタイミング](/docs/ja/code-review-setup.md#set-when-reviews-run)と[レビューの詳細度](/docs/ja/code-review-setup.md#set-the-default-review-level)を制御します。
 
 > [!NOTE]
 >
@@ -26,7 +26,7 @@ Claude は各指摘を該当する行へのインラインコメントとして�
 
 レビューが推論を記録した場合、指摘には折りたたまれた **Why this was flagged** セクションがあります。これを展開すると、Claude がその問題を指摘した理由と、問題をどのように検証したかを読むことができます。
 
-リポジトリで Claude が指摘する内容や重大度の判定方法を変更するには、[Code Review をカスタマイズする](/docs/ja/code-review-customize)を参照してください。
+リポジトリで Claude が指摘する内容や重大度の判定方法を変更するには、[Code Review をカスタマイズする](/docs/ja/code-review-customize.md)を参照してください。
 
 ## 指摘に対応する
 
@@ -51,7 +51,21 @@ Claude は各指摘を該当する行へのインラインコメントとして�
 
 行情報があるもののインラインコメントとして投稿されなかった指摘は、**Files changed** タブの該当行にアノテーションとして表示されます。Important の指摘は赤、Nit は黄、既存のバグはグレーで表示されます。
 
-チェックランは neutral として終了します。プッシュでファイルが変更されなかったために自動レビューが実行されなかった場合は skipped として終了します。失敗として終了することはないため、完了したレビューが必須チェックを失敗させることはありません。指摘が表示されない場合やレビューが実行されなかった場合は、[Code Review のトラブルシューティング](/docs/ja/code-review-troubleshooting)を参照してください。
+チェックランは neutral として終了します。ファイルを変更せず[以前の結果を維持する](#when-a-push-keeps-the-earlier-result)一部のプッシュの後は skipped として終了します。失敗として終了することはないため、完了したレビューが必須チェックを失敗させることはありません。指摘が表示されない場合やレビューが実行されなかった場合は、[Code Review のトラブルシューティング](/docs/ja/code-review-troubleshooting.md)を参照してください。
+
+### プッシュで以前の結果が維持される場合
+
+プッシュ後にチェックランのタイトルが次のいずれかになっている場合、Code Review は新しいレビューを開始せず、以前のレビューの結果を維持しています。
+
+* **Code review skipped — no new changes**: 以前のレビューの [Important](#severity-levels) の指摘で未解決のものは残っていないため、新しいレビューは不要です
+* **Code review not repeated — earlier findings still open**: 新しいレビューを開始するには、未解決の Important の指摘に対する修正をプッシュするか、[そのスレッドを解決](#respond-to-findings)してから再度プッシュします
+
+github.com では、次の両方が成り立つ場合に Code Review が結果を維持することがあります。
+
+* 空のコミット、ベースブランチのクリーンなマージ、クリーンなリベースの後など、プルリクエストが引き続き同じ行を追加・削除している
+* そのレビュー以降、誰も Important の指摘のスレッドを解決していない
+
+コードを変更せずにレビューを受けるには、[`@claude review`](#comment-commands) とコメントするか、チェックランの **Re-run** をクリックします。
 
 ### スクリプトから結果を読む
 
@@ -71,6 +85,8 @@ Claude は各指摘を該当する行へのインラインコメントとして�
 gh api repos/OWNER/REPO/commits/<commit-sha>/check-runs --jq '.check_runs[] | {id, name}'
 ```
 
+**Re-run** の後など、コミットに `Claude Code Review` ランが複数ある場合、GitHub は最新のものだけを一覧表示します。
+
 **2. 重大度ごとの件数を読む**
 
 Details テキストを保持するチェックランの `output.text` フィールドから件数を読み取ります。`CHECK_RUN_ID` を ID に置き換えてください。
@@ -82,12 +98,16 @@ gh api repos/OWNER/REPO/check-runs/CHECK_RUN_ID --jq '
   // error("no severity line")'
 ```
 
-これにより、重大度ごとの件数を持ち、キーがアルファベット順に並んだ JSON オブジェクトが出力されます。例: `{"nit": 1, "normal": 2, "pre_existing": 0}`。件数には、スレッドがまだ未解決のままになっているプルリクエストの以前のレビューによる指摘も含まれます。
+これにより、重大度ごとの件数を持ち、キーがアルファベット順に並んだ JSON オブジェクトが出力されます。例: `{"nit": 1, "normal": 2, "pre_existing": 0}`。[以前の結果を維持した](#when-a-push-keeps-the-earlier-result)チェックランを除き、件数には、スレッドがまだ未解決のままになっているプルリクエストの以前のレビューによる指摘も含まれます。
+
+タイトルが `Code review skipped — no new changes` の場合、件数には以前のレビューによる未解決の Nit と既存の指摘は含まれません。この場合、以前のレビューの Important の指摘で未解決のものは残っていません。
 
 **3. 結果に基づいて処理する**
 
-スクリプトで次のケースを処理するようにします。
+スクリプトで次のケースを順に処理するようにします。
 
+* **タイトルが `Code review not repeated` で始まる**: Code Review は Important の指摘が未解決のままの[以前の結果を維持しており](#when-a-push-keeps-the-earlier-result)、チェックランに重大度の行はありません。件数より先に `gh api repos/OWNER/REPO/check-runs/CHECK_RUN_ID --jq .output.title` でタイトルを読み取ります。マージをゲートしたい場合はジョブを失敗させます。
+* **タイトルが `no new changes` で終わる**: 件数を読まずにジョブを成功させます
 * **`normal` が 0 より大きい**: マージをゲートしたい場合はジョブを失敗させます。`normal` キーには Important の指摘の件数が入っているため、Claude がマージ前に修正すべきバグを少なくとも 1 件見つけたことを意味します。この件数のみを出力するには、閉じの単一引用符の前に `| .normal` を追加します。
 * **行が存在しない**: コマンドは件数の代わりに `no severity line` を含むエラーを出力し、0 以外のステータスで終了します。これは指摘 0 件ではなく、判定なしとして扱います。失敗した、タイムアウトした、キャンセルされた、または新しいレビューに置き換えられたレビューのチェックランにはこの行がなく、完了したレビューの中にもこの行がないものがあります。
 
@@ -97,9 +117,9 @@ gh api repos/OWNER/REPO/check-runs/CHECK_RUN_ID --jq '
 
 * **オープンする、または ready にする**: **Once after PR creation** または **After every push** に設定されたリポジトリでは、プルリクエストをオープンまたは再オープンしたとき、あるいはドラフトを ready for review にしたときにレビューが開始されます。
 * **コマンドをコメントする**: プルリクエストに [`@claude review`](#comment-commands) を投稿します。
-* **コミットをプッシュする**: **After every push** に設定されたリポジトリ、または `@claude review always` でサブスクライブしたプルリクエストでは、プッシュによってレビューが開始されます。
-* **Re-run をクリックする**: フォークからではないプルリクエストでレビューが失敗またはタイムアウトした場合は、チェックランから[再実行](/docs/ja/code-review-troubleshooting#retrigger-a-failed-or-timed-out-review)します。
-* **自動再試行を待つ**: セッションが中断されたレビューは、自動的に 1 回再試行されます。再試行が行われている場合は、[チェックランのサマリー](/docs/ja/code-review-troubleshooting#retrigger-a-failed-or-timed-out-review)にその旨が表示されます。
+* **コミットをプッシュする**: **After every push** に設定されたリポジトリ、または `@claude review always` でサブスクライブしたプルリクエストでは、プッシュによってレビューが開始されます。プッシュ後もプルリクエストが同じ行を追加・削除している場合、Code Review は代わりに[以前の結果を維持](#when-a-push-keeps-the-earlier-result)することがあります。
+* **Re-run をクリックする**: フォークからではないプルリクエストでレビューが失敗またはタイムアウトした場合は、チェックランから[再実行](/docs/ja/code-review-troubleshooting.md#retrigger-a-failed-or-timed-out-review)します。フォークからではないプルリクエストでは、[以前の結果が維持された](#when-a-push-keeps-the-earlier-result)プッシュの後にも **Re-run** をクリックできます。
+* **自動再試行を待つ**: セッションが中断されたレビューは、自動的に 1 回再試行されます。再試行が行われている場合は、[チェックランのサマリー](/docs/ja/code-review-troubleshooting.md#retrigger-a-failed-or-timed-out-review)にその旨が表示されます。
 
 ### コメントコマンド
 
@@ -108,9 +128,9 @@ gh api repos/OWNER/REPO/check-runs/CHECK_RUN_ID --jq '
 | コマンド | 動作 | 使用するタイミング |
 | :- | :- | :- |
 | `@claude review` | 今後のプッシュに PR をサブスクライブせずに、1 回だけレビューを開始する | 今すぐ 1 回レビューしたい場合。たとえば **Manual** に設定されたリポジトリのプルリクエストや、他のモードですぐにもう一度レビューしたい場合 |
-| `@claude review always` | レビューを開始し、以降はプッシュでトリガーされるレビューに PR をサブスクライブする | 以降のプッシュごとに新しいレビューを開始したい場合。たとえば **Manual** に設定されたリポジトリの優先度の高い PR |
+| `@claude review always` | レビューを開始し、以降はプッシュでトリガーされるレビューに PR をサブスクライブする | 以降のプッシュでレビューを開始したい場合。たとえば **Manual** に設定されたリポジトリの優先度の高い PR |
 | `@claude review once` | `@claude review` と同じ: サブスクライブせずに 1 回だけレビューを開始する | `@claude review` と同じケース |
-| `@claude review stop` | プッシュでトリガーされるレビューへの PR のサブスクリプションを終了する。レビューを開始したり、すでにキューに入っているレビューや実行中のレビューをキャンセルしたりはしない。Claude はチェックランではなくコメントで返信する。 | **Manual** または **Once after PR creation** に設定されたリポジトリで `@claude review always` により PR をサブスクライブしたが、プッシュごとにレビューを開始する必要がなくなった場合 |
+| `@claude review stop` | プッシュでトリガーされるレビューへの PR のサブスクリプションを終了する。レビューを開始したり、すでに実行中のレビューをキャンセルしたりはしない。Claude はチェックランではなくコメントで返信する。 | **Manual** または **Once after PR creation** に設定されたリポジトリで `@claude review always` により PR をサブスクライブしたが、プッシュごとにレビューを開始する必要がなくなった場合 |
 | `@claude review off` または `@claude review pause` | `@claude review stop` と同じ | `@claude review stop` と同じケース |
 
 **After every push** に設定されたリポジトリでは、サブスクリプションの有無にかかわらずプッシュによってレビューが開始されるため、コメントでレビューを停止することはできません。そのようなリポジトリで 1 つのプルリクエストについてプッシュによるレビューの開始を止めるには、そのプルリクエストを[ドラフト](#review-drafts-and-pull-requests-from-forks)に変換してください。再び ready for review にすると、レビューが開始されます。
@@ -147,13 +167,13 @@ gh api repos/OWNER/REPO/check-runs/CHECK_RUN_ID --jq '
 
 ### Claude Code GitHub Action と併用する
 
-リポジトリで [Claude Code GitHub Action](/docs/ja/github-actions) もデフォルトの `@claude` トリガーフレーズを使ったインタラクティブモードで実行している場合、`@claude review` コメントによって Action も開始されます。2 つを区別するには、Action の `trigger_phrase` 入力を別のフレーズに設定してください。
+リポジトリで [Claude Code GitHub Action](/docs/ja/github-actions.md) もデフォルトの `@claude` トリガーフレーズを使ったインタラクティブモードで実行している場合、`@claude review` コメントによって Action も開始されます。2 つを区別するには、Action の `trigger_phrase` 入力を別のフレーズに設定してください。
 
 ## 関連リソース
 
-* [Code Review のトラブルシューティング](/docs/ja/code-review-troubleshooting): 開始されなかった、失敗した、または予算のためにスキップされたレビュー
-* [Code Review](/docs/ja/code-review): サービスの概要とレビューの実行方法
-* [Code Review をセットアップする](/docs/ja/code-review-setup): Owner 向け。Code Review をオンにし、レビューを実行するタイミングとレベルを選択する
-* [Code Review をカスタマイズする](/docs/ja/code-review-customize): `REVIEW.md` と `CLAUDE.md` で Claude が指摘する内容を変更する
-* [Code Review のコストと使用量](/docs/ja/code-review-costs): レビューの課金方法と支出上限の設定場所
+* [Code Review のトラブルシューティング](/docs/ja/code-review-troubleshooting.md): 開始されなかった、失敗した、または予算のためにスキップされたレビュー
+* [Code Review](/docs/ja/code-review.md): サービスの概要とレビューの実行方法
+* [Code Review をセットアップする](/docs/ja/code-review-setup.md): Owner 向け。Code Review をオンにし、レビューを実行するタイミングとレベルを選択する
+* [Code Review をカスタマイズする](/docs/ja/code-review-customize.md): `REVIEW.md` と `CLAUDE.md` で Claude が指摘する内容を変更する
+* [Code Review のコストと使用量](/docs/ja/code-review-costs.md): レビューの課金方法と支出上限の設定場所
 * [`/code-review` でローカルにレビューする](/docs/ja/code-review-local): Claude Code セッションからブランチのレビューを実行する

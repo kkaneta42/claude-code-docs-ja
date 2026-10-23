@@ -10,36 +10,36 @@
 
 > [!NOTE]
 >
-> キーボードショートカットはプラットフォームとターミナルによって異なる場合があります。[フルスクリーンレンダリング](/docs/ja/fullscreen)では、トランスクリプトビューアで `?` を押すと、そこで利用可能なショートカットが表示されます。
+> キーボードショートカットはプラットフォームとターミナルによって異なる場合があります。[フルスクリーンレンダリング](/docs/ja/fullscreen.md)では、トランスクリプトビューアで `?` を押すと、そこで利用可能なショートカットが表示されます。
 >
-> **macOS ユーザー**: Option/Alt キーショートカット（`Alt+B`、`Alt+F`、`Alt+D`、`Alt+Y`、`Alt+P`）を使用するには、ターミナルで Option を Meta として設定する必要があります。各ターミナルの設定については、[macOS で Option キーショートカットを有効にする](/docs/ja/terminal-config#enable-option-key-shortcuts-on-macos)を参照してください。
+> **macOS ユーザー**: Option/Alt キーショートカット（`Alt+B`、`Alt+F`、`Alt+D`、`Alt+Y`、`Alt+P`）を使用するには、ターミナルで Option を Meta として設定する必要があります。各ターミナルの設定については、[macOS で Option キーショートカットを有効にする](/docs/ja/terminal-config.md#enable-option-key-shortcuts-on-macos)を参照してください。
 
 ### 一般的なコントロール
 
 | ショートカット | 説明 | コンテキスト |
 | :- | :- | :- |
 | `Ctrl+C` | 割り込み、または入力をクリア | 実行中の操作を割り込みます。何も実行されていない場合、最初のプレスはプロンプト入力をクリアし、2 番目のプレスで Claude Code を終了します。クリアされたドラフトを元に戻すには、[クリアされたドラフトを元に戻す](#bring-back-a-cleared-draft)を参照してください |
-| `Ctrl+X Ctrl+K` | このセッション内のすべての実行中の[バックグラウンドサブエージェント](/docs/ja/sub-agents#run-subagents-in-foreground-or-background)を停止し、[アーティファクト自動返信](/docs/ja/artifacts#let-claude-reply-to-comments-on-its-own)をセッションの残りの部分で無効にします。3 秒以内に 2 回押して確認します。バックグラウンドサブエージェントの権限プロンプトが開いている間も押すことができます | サブエージェント制御 |
+| `Ctrl+X Ctrl+K` | このセッション内のすべての実行中の[バックグラウンドサブエージェント](/docs/ja/sub-agents.md#run-subagents-in-foreground-or-background)を停止し、[アーティファクト自動返信](/docs/ja/artifacts.md#let-claude-reply-to-comments-on-its-own)をセッションの残りの部分で無効にします。3 秒以内に 2 回押して確認します。バックグラウンドサブエージェントの権限プロンプトが開いている間も押すことができます | サブエージェント制御 |
 | `Ctrl+D` | Claude Code セッションを終了 | 最初のプレスで確認ヒントが表示され、800ms 以内に 2 番目のプレスで終了します。プロンプトにテキストがある場合、`Ctrl+D` はカーソルの後の文字を削除します |
 | `Ctrl+G` または `Ctrl+X Ctrl+E` | デフォルトテキストエディタで開く | プロンプトまたはカスタム応答をデフォルトテキストエディタで編集します。`Ctrl+X Ctrl+E` は readline ネイティブバインディングです。`/config` で**外部エディタで最後の応答を表示**をオンにすると、Claude の前の返信を `#` コメント付きコンテキストとしてプロンプトの上に追加します。Claude Code は保存時にコメントブロックを削除します |
-| `Ctrl+L` | 画面を再描画 | 完全なターミナル再描画を強制し、入力と会話履歴を保持します。ディスプレイが乱れたり部分的に空白になった場合に使用して復旧します。[会話をクリア](/docs/ja/fullscreen#clear-the-conversation)を参照してください（フルスクリーンレンダリング） |
-| `Ctrl+O` | トランスクリプトビューアを切り替え | 詳細なツール使用法と実行を表示し、各アシスタントメッセージにタイムスタンプと使用されたモデルを表示します。また、デフォルトで折りたたまれる行（MCP 呼び出しなど、`Called slack 3 times` という 1 行として表示される行）や[他のセッションからのメッセージ](/docs/ja/cross-session-messaging#what-a-message-looks-like)（`Message from @<sender>` プレビューとして 1 行で表示される）を展開します |
+| `Ctrl+L` | 画面を再描画 | 完全なターミナル再描画を強制し、入力と会話履歴を保持します。ディスプレイが乱れたり部分的に空白になった場合に使用して復旧します。[会話をクリア](/docs/ja/fullscreen.md#clear-the-conversation)を参照してください（フルスクリーンレンダリング） |
+| `Ctrl+O` | トランスクリプトビューアを切り替え | 詳細なツール使用法と実行を表示し、各アシスタントメッセージにタイムスタンプと使用されたモデルを表示します。また、デフォルトで折りたたまれる行（MCP 呼び出しなど、`Called slack 3 times` という 1 行として表示される行）や[他のセッションからのメッセージ](/docs/ja/cross-session-messaging.md#what-a-message-looks-like)（`Message from @<sender>` プレビューとして 1 行で表示される）を展開します |
 | `Ctrl+R` | コマンド履歴を逆検索 | 前のコマンドを対話的に検索 |
 | `Ctrl+V` または `Cmd+V`（iTerm2）または `Alt+V`（Windows および WSL） | クリップボードから画像を貼り付け | カーソルに `[Image #N]` チップを挿入して、プロンプト内で位置的に参照できます。WSL では、`Ctrl+V` と `Alt+V` の両方がバインドされています。ターミナルが `Ctrl+V` をインターセプトする場合は `Alt+V` を使用してください |
 | `Ctrl+B` | バックグラウンドで実行中のタスク | Bash コマンドとエージェントをバックグラウンドで実行します。Tmux ユーザーは 2 回押してください |
 | `Ctrl+T` | Claude のタスクチェックリストを切り替え | ステータス領域に[Claude のやることリスト](#task-list)を表示または非表示にします。これはバックグラウンドタスクビューではありません。実行中のシェルとサブエージェントを確認するには [`/tasks`](/docs/ja/commands) を使用してください |
 | `Ctrl+S` | プロンプトを保存または復元 | 入力にテキストがある場合、それを保存してプロンプトをクリアします。空のプロンプトで再度押すと、保存されたテキスト、カーソル位置、貼り付けられたコンテンツ、および入力モードが復元されるため、保存された `!` [シェルコマンド](#shell-mode-with-prefix)はシェルモードで戻ります |
 | `Ctrl+Z` | Claude Code を一時停止 | Unix のみ。プロセスをシェルに一時停止します。`fg` を実行して再開します |
-| `左/右矢印` | ダイアログタブを循環 | 権限ダイアログとメニューのタブ間を移動します。タブ付きダイアログでは、タブ行がフォーカスされている間、キーはタブを切り替えます。[タブアクション](/docs/ja/keybindings#tabs-actions)を参照して、フォーカスがどのように移動するかを確認してください |
-| `Tab` | オートコンプリート候補を受け入れるか、権限回答にコメントを追加 | プロンプト入力にオートコンプリート候補が表示されている場合、選択された候補を受け入れます。ほとんどの権限プロンプトで、**はい**または**いいえ**がフォーカスされている場合、そのオプションのコメントフィールドを開き、再度押すとフィールドを閉じます。[権限プロンプトに回答するときにコメントを追加](/docs/ja/permissions#add-a-comment-when-you-answer-a-permission-prompt)を参照してください |
+| `左/右矢印` | ダイアログタブを循環 | 権限ダイアログとメニューのタブ間を移動します。タブ付きダイアログでは、タブ行がフォーカスされている間、キーはタブを切り替えます。[タブアクション](/docs/ja/keybindings.md#tabs-actions)を参照して、フォーカスがどのように移動するかを確認してください |
+| `Tab` | オートコンプリート候補を受け入れるか、権限回答にコメントを追加 | プロンプト入力にオートコンプリート候補が表示されている場合、選択された候補を受け入れます。ほとんどの権限プロンプトで、**はい**または**いいえ**がフォーカスされている場合、そのオプションのコメントフィールドを開き、再度押すとフィールドを閉じます。[権限プロンプトに回答するときにコメントを追加](/docs/ja/permissions.md#add-a-comment-when-you-answer-a-permission-prompt)を参照してください |
 | `上/下矢印` または `Ctrl+P`/`Ctrl+N` | カーソルを移動またはコマンド履歴を移動 | 入力が複数の視覚行にまたがる場合（ラップされているか複数行かどうか）、最初にプロンプト内でカーソルを移動します。カーソルが最初または最後の視覚行にある場合、再度押すとコマンド履歴を移動します。メッセージがキューに入っている場合、最初の行から `Up` を押すと代わりに[キューに入れたものを取り戻します](#take-back-what-you-queued) |
-| `Esc` | Claude を割り込むか、ダイアログを閉じる | 現在の応答またはツール呼び出しを途中で停止して、リダイレクトできます。Claude はこれまでの作業を保持します。[メッセージがキューに入っている](#queue-messages-while-claude-works)場合、Claude Code は次にそれらを送信します。ダイアログが開いている場合、`Esc` はダイアログを閉じます。フッター項目（[サブエージェントパネル](/docs/ja/sub-agents#run-subagents-in-foreground-or-background)内の行など）が選択されている場合、`Esc` は割り込みの代わりに[それを選択解除](/docs/ja/keybindings#footer-actions)します。権限プロンプトでは、`Esc` はアクション（[コメントなしの**いいえ**](/docs/ja/permissions#add-a-comment-when-you-answer-a-permission-prompt)と同じ）を拒否します |
-| `Esc` + `Esc` | 入力ドラフトをクリアするか、巻き戻す | プロンプト入力にテキストが含まれている場合、ダブル `Esc` はそれをクリアし、ドラフトを履歴に保存して `Up` で呼び出せるようにします。入力が空の場合、ダブル `Esc` は[巻き戻しメニュー](/docs/ja/checkpointing)を開いて、前の時点からコードと会話を復元または要約できます |
+| `Esc` | Claude を割り込むか、ダイアログを閉じる | 現在の応答またはツール呼び出しを途中で停止して、リダイレクトできます。Claude はこれまでの作業を保持します。[メッセージがキューに入っている](#queue-messages-while-claude-works)場合、Claude Code は次にそれらを送信します。ダイアログが開いている場合、`Esc` はダイアログを閉じます。フッター項目（[サブエージェントパネル](/docs/ja/sub-agents.md#run-subagents-in-foreground-or-background)内の行など）が選択されている場合、`Esc` は割り込みの代わりに[それを選択解除](/docs/ja/keybindings.md#footer-actions)します。権限プロンプトでは、`Esc` はアクション（[コメントなしの**いいえ**](/docs/ja/permissions.md#add-a-comment-when-you-answer-a-permission-prompt)と同じ）を拒否します |
+| `Esc` + `Esc` | 入力ドラフトをクリアするか、巻き戻す | プロンプト入力にテキストが含まれている場合、ダブル `Esc` はそれをクリアし、ドラフトを履歴に保存して `Up` で呼び出せるようにします。入力が空の場合、ダブル `Esc` は[巻き戻しメニュー](/docs/ja/checkpointing.md)を開いて、前の時点からコードと会話を復元または要約できます |
 | `Ctrl+Enter` または `Ctrl+X Ctrl+S` | キューに入れたメッセージを今すぐ送信 | [キューに入れたメッセージ](#queue-messages-while-claude-works)とドラフトを直ちに送信します。[Claude Code がキューに入れたものを送信するとき](#when-claude-code-sends-what-you-queued)は、Claude が作業中のターンに何が起こるかについて説明しています。[シェルモード](#shell-mode-with-prefix)では、キーはコマンドをキューに入れるだけです。拡張キーを報告しないターミナルでは、`Ctrl+Enter` は通常の `Enter` として到着します。`Ctrl+X Ctrl+S` はすべてのターミナルで機能します。Claude Code v2.1.275 以降が必要です |
-| `Shift+Tab`、または Node または Bun ランタイムが VT 入力モードを有効にしない場合は Windows で `Alt+M` | 権限モードを循環 | `default`（モード指標で Manual とラベル付け）、`acceptEdits`、`plan`、および利用可能な場合は `bypassPermissions` と `auto` を循環します。`auto` から、最初のプレスは `default` に切り替わります。[権限モード](/docs/ja/permission-modes)を参照してください。ファイル権限プロンプトでは、同じキーが開いている[コメントフィールド](/docs/ja/permissions#add-a-comment-when-you-answer-a-permission-prompt)を閉じます。フィールドが開いていない場合、プロンプトがそのオプションを提供するときに、セッションの残りの部分でアクションを許可するオプションを選択します |
+| `Shift+Tab`、または Node または Bun ランタイムが VT 入力モードを有効にしない場合は Windows で `Alt+M` | 権限モードを循環 | `default`（モード指標で Manual とラベル付け）、`acceptEdits`、`plan`、および利用可能な場合は `bypassPermissions` と `auto` を循環します。`auto` から、最初のプレスは `default` に切り替わります。[権限モード](/docs/ja/permission-modes.md)を参照してください。ファイル権限プロンプトでは、同じキーが開いている[コメントフィールド](/docs/ja/permissions.md#add-a-comment-when-you-answer-a-permission-prompt)を閉じます。フィールドが開いていない場合、プロンプトがそのオプションを提供するときに、セッションの残りの部分でアクションを許可するオプションを選択します |
 | `Option+P`（macOS）または `Alt+P`（Windows/Linux） | モデルを切り替え | プロンプトをクリアせずにモデルを切り替え |
 | `Option+T`（macOS）または `Alt+T`（Windows/Linux） | 拡張思考を切り替え | 拡張思考モードを有効または無効にします。Opus 5.5、Sonnet 5.5、Haiku 5.5、または Fable モデルには効果がありません。これらは常に拡張思考を使用します。macOS で Option を Meta として設定せずに動作します |
-| `Option+O`（macOS）または `Alt+O`（Windows/Linux） | 高速モードを切り替え | [高速モード](/docs/ja/fast-mode)を有効または無効にします |
+| `Option+O`（macOS）または `Alt+O`（Windows/Linux） | 高速モードを切り替え | [高速モード](/docs/ja/fast-mode.md)を有効または無効にします |
 
 ### テキスト編集
 
@@ -67,7 +67,7 @@
 
 これらの readline 規約は Claude Code v2.1.261 以降に適用されます。以前のバージョンでそれらをオンにした [`keybindingFlavor`](/docs/ja/settings-reference#keybindingflavor) 設定は非推奨であり、効果がありません。
 
-これらのショートカットは[キーバインディング設定ファイル](/docs/ja/keybindings)で再マップできません。このファイルにはそれらのアクションがありません。
+これらのショートカットは[キーバインディング設定ファイル](/docs/ja/keybindings.md)で再マップできません。このファイルにはそれらのアクションがありません。
 
 ### テーマと表示
 
@@ -80,8 +80,8 @@
 | 方法 | ショートカット | コンテキスト |
 | :- | :- | :- |
 | クイックエスケープ | `\` + `Enter` | すべてのターミナルで機能 |
-| Option キー | `Option+Enter` | macOS で[Option を Meta として](/docs/ja/terminal-config#enable-option-key-shortcuts-on-macos)有効にした後 |
-| Shift+Enter | `Shift+Enter` | iTerm2、WezTerm、Ghostty、Kitty、Warp、Apple Terminal、Windows Terminal でネイティブ。他のターミナルについては、[複数行プロンプトを入力](/docs/ja/terminal-config#enter-multiline-prompts)を参照してください |
+| Option キー | `Option+Enter` | macOS で[Option を Meta として](/docs/ja/terminal-config.md#enable-option-key-shortcuts-on-macos)有効にした後 |
+| Shift+Enter | `Shift+Enter` | iTerm2、WezTerm、Ghostty、Kitty、Warp、Apple Terminal、Windows Terminal でネイティブ。他のターミナルについては、[複数行プロンプトを入力](/docs/ja/terminal-config.md#enter-multiline-prompts)を参照してください |
 | 制御シーケンス | `Ctrl+J` | 設定なしで任意のターミナルで機能 |
 | ペーストモード | 直接貼り付け | コードブロック、ログの場合 |
 
@@ -89,9 +89,9 @@
 
 | ショートカット | 説明 | 注記 |
 | :- | :- | :- |
-| `/` で開始 | コマンドまたはスキル | [コマンド](#commands)と[スキル](/docs/ja/skills)を参照してください |
+| `/` で開始 | コマンドまたはスキル | [コマンド](#commands)と[スキル](/docs/ja/skills.md)を参照してください |
 | `!` で開始 | シェルモード | コマンドを直接実行し、その出力をセッションに追加し、Claude がそれに応答するようにします |
-| `@` | ファイルパスメンション | ファイルパスオートコンプリートをトリガーします。[クロスセッションメッセージング](/docs/ja/cross-session-messaging#message-another-session)を使用するセッションでは、`@` の後に少なくとも 1 文字を入力すると、Claude Code はこのマシン上の他のライブセッションも提案するため、Claude にメッセージを送信するセッションを選択するよう指示できます。Claude Code v2.1.232 以降が必要です |
+| `@` | ファイルパスメンション | ファイルパスオートコンプリートをトリガーします。[クロスセッションメッセージング](/docs/ja/cross-session-messaging.md#message-another-session)を使用するセッションでは、`@` の後に少なくとも 1 文字を入力すると、Claude Code はこのマシン上の他のライブセッションも提案するため、Claude にメッセージを送信するセッションを選択するよう指示できます。Claude Code v2.1.232 以降が必要です |
 | `:` | 絵文字ショートコード | 完全な `:name:` を入力して絵文字を挿入するか、2 文字以上で候補を表示します。[絵文字ショートコード](#emoji-shortcodes)を参照してください。Claude Code v2.1.217 以降が必要です |
 | `?` 空の入力で | ショートカットヘルプパネルを切り替え | 入力にテキストが既に含まれている場合、`?` を入力すると文字が挿入されます |
 
@@ -101,32 +101,32 @@
 
 | ショートカット | 説明 |
 | :- | :- |
-| `?` | キーボードショートカットヘルプパネルを切り替えます。[フルスクリーンレンダリング](/docs/ja/fullscreen)が必要です |
-| `{` / `}` | vim 段落モーションのように、前または次のユーザープロンプトにジャンプします。[フルスクリーンレンダリング](/docs/ja/fullscreen)が必要です |
-| `Ctrl+E` | すべてのコンテンツを表示を切り替えます。クラシックレンダラーでのみ利用可能で、[フルスクリーンレンダリング](/docs/ja/fullscreen)では利用できません |
-| `[` | 完全な会話をターミナルのネイティブスクロールバックに書き込んで、`Cmd+F`、tmux コピーモード、その他のネイティブツールで検索できるようにします。[フルスクリーンレンダリング](/docs/ja/fullscreen#search-and-review-the-conversation)が必要です |
-| `v` | 会話を一時ファイルに書き込んで、`$VISUAL` または `$EDITOR` で開きます。[フルスクリーンレンダリング](/docs/ja/fullscreen)が必要です |
+| `?` | キーボードショートカットヘルプパネルを切り替えます。[フルスクリーンレンダリング](/docs/ja/fullscreen.md)が必要です |
+| `{` / `}` | vim 段落モーションのように、前または次のユーザープロンプトにジャンプします。[フルスクリーンレンダリング](/docs/ja/fullscreen.md)が必要です |
+| `Ctrl+E` | すべてのコンテンツを表示を切り替えます。クラシックレンダラーでのみ利用可能で、[フルスクリーンレンダリング](/docs/ja/fullscreen.md)では利用できません |
+| `[` | 完全な会話をターミナルのネイティブスクロールバックに書き込んで、`Cmd+F`、tmux コピーモード、その他のネイティブツールで検索できるようにします。[フルスクリーンレンダリング](/docs/ja/fullscreen.md#search-and-review-the-conversation)が必要です |
+| `v` | 会話を一時ファイルに書き込んで、`$VISUAL` または `$EDITOR` で開きます。[フルスクリーンレンダリング](/docs/ja/fullscreen.md)が必要です |
 | `q`、`Ctrl+C`、`Esc` | トランスクリプトビューを終了します。3 つすべて [`transcript:exit`](/docs/ja/keybindings) で再バインドできます |
 
 ### 音声入力
 
 | ショートカット | 説明 | 注記 |
 | :- | :- | :- |
-| `Space` を保持またはタップ | 音声ディクテーション | [音声ディクテーション](/docs/ja/voice-dictation)が有効になっている必要があります。保持して記録するか、`/voice tap` を実行してタップトグルを実行します。[再バインド可能](/docs/ja/voice-dictation#rebind-the-dictation-key) |
+| `Space` を保持またはタップ | 音声ディクテーション | [音声ディクテーション](/docs/ja/voice-dictation.md)が有効になっている必要があります。保持して記録するか、`/voice tap` を実行してタップトグルを実行します。[再バインド可能](/docs/ja/voice-dictation.md#rebind-the-dictation-key) |
 
 ## コマンド
 
-Claude Code で `/` と入力すると、利用可能なコマンドが表示されます。または `/` の後に任意の文字を入力してフィルタリングできます。`/` メニューには、組み込みコマンド、バンドルされたユーザー作成の [skills](/docs/ja/skills)、および [plugins](/docs/ja/plugins/overview) と [MCP servers](/docs/ja/mcp#use-mcp-prompts-as-commands) によって提供されるコマンドが表示されます。すべての組み込みコマンドがすべてのユーザーに表示されるわけではありません。プラットフォームまたはプランに依存するコマンドもあり、[設計上、メニューから非表示になっているが、完全な名前を入力すると実行される利用可能なコマンドもいくつかあります](/docs/ja/commands#how-the-command-menu-matches-what-you-type)。
+Claude Code で `/` と入力すると、利用可能なコマンドが表示されます。または `/` の後に任意の文字を入力してフィルタリングできます。`/` メニューには、組み込みコマンド、バンドルされたユーザー作成の [skills](/docs/ja/skills.md)、および [plugins](/docs/ja/plugins/overview.md) と [MCP servers](/docs/ja/mcp.md#use-mcp-prompts-as-commands) によって提供されるコマンドが表示されます。すべての組み込みコマンドがすべてのユーザーに表示されるわけではありません。プラットフォームまたはプランに依存するコマンドもあり、[設計上、メニューから非表示になっているが、完全な名前を入力すると実行される利用可能なコマンドもいくつかあります](/docs/ja/commands.md#how-the-command-menu-matches-what-you-type)。
 
-[フルスクリーンレンダリング](/docs/ja/fullscreen#use-the-mouse) では、`/` コマンドと `@` ファイル提案リストもマウスに応答します。行にマウスを置くとハイライトされ、クリックするとそれが選択されます。
+[フルスクリーンレンダリング](/docs/ja/fullscreen.md#use-the-mouse) では、`/` コマンドと `@` ファイル提案リストもマウスに応答します。行にマウスを置くとハイライトされ、クリックするとそれが選択されます。
 
-Claude Code に含まれるコマンドの完全なリストについては、[コマンドリファレンス](/docs/ja/commands) を参照してください。
+Claude Code に含まれるコマンドの完全なリストについては、[コマンドリファレンス](/docs/ja/commands.md) を参照してください。
 
 ### プロンプトの途中でコマンドを完成させる
 
-コマンド補完はプロンプトの途中でも機能します。スペースの後に `/` を入力し、その後に名前の最初の文字を入力します。例えば `run the tests, then /com` のようにします。名前がそれらの文字で始まるコマンドのみが一致するため、`/tmp/notes.md` のようなファイルパスではリストが開いたままになりません。Claude Code がコマンド自体を実行するのは、コマンドが [メッセージを開始する](/docs/ja/commands) 場合のみです。
+コマンド補完はプロンプトの途中でも機能します。スペースの後に `/` を入力し、その後に名前の最初の文字を入力します。例えば `run the tests, then /com` のようにします。名前がそれらの文字で始まるコマンドのみが一致するため、`/tmp/notes.md` のようなファイルパスではリストが開いたままになりません。Claude Code がコマンド自体を実行するのは、コマンドが [メッセージを開始する](/docs/ja/commands.md) 場合のみです。
 
-* **[フルスクリーンレンダリング](/docs/ja/fullscreen) の場合**：入力中に一致するコマンドがリストとして開き、行がハイライトされていないため、`Enter` キーを押すとプロンプトがそのまま送信されます。`Tab` キーを押すと最上位の一致が挿入されます。または矢印キーと `Enter` キーで行を選択します。
+* **[フルスクリーンレンダリング](/docs/ja/fullscreen.md) の場合**：入力中に一致するコマンドがリストとして開き、行がハイライトされていないため、`Enter` キーを押すとプロンプトがそのまま送信されます。`Tab` キーを押すと最上位の一致が挿入されます。または矢印キーと `Enter` キーで行を選択します。
 * **フルスクリーン外の場合**：最上位の一致の残りがカーソルでゴーストテキストとして表示され、複数のコマンドが一致する場合は `+2` などのカウントが表示されます。`Tab` キーを押すと唯一の一致が挿入されるか、複数が一致する場合はリストが開き、矢印キーと `Enter` キーで行を選択します。
 
 両方のレンダラーで、プロンプトの途中の裸の `/` で `Tab` キーを押すと、すべてのコマンドがリストされます。
@@ -170,7 +170,7 @@ Claude Code は、`Ctrl+O` で[トランスクリプトビューア](#transcript
 
 シーケンスの最初の文字を入力すると、通常通り挿入されます。1 秒以内に 2 番目の文字を押すと、保留中の文字が削除され、NORMAL モードに切り替わり、入力に文字は残りません。1 秒のウィンドウの後、または異なるキーが続く場合、両方の文字はリテラルテキストとして残るため、2 つのキーの間で一時停止することで、シーケンスを含む単語を入力できます。
 
-Claude Code は、ユーザー設定ファイル、`--settings` フラグ、および[マネージド設定](/docs/ja/managed-settings)からのみこの設定を読み込みます。プロジェクトの `.claude/settings.json` または `.claude/settings.local.json` のエントリは無視されるため、チェックアウトされたリポジトリはキーストロークを再マップできません。
+Claude Code は、ユーザー設定ファイル、`--settings` フラグ、および[マネージド設定](/docs/ja/managed-settings.md)からのみこの設定を読み込みます。プロジェクトの `.claude/settings.json` または `.claude/settings.local.json` のエントリは無視されるため、チェックアウトされたリポジトリはキーストロークを再マップできません。
 
 ### ナビゲーション（NORMAL モード）
 
@@ -197,7 +197,7 @@ Claude Code は、ユーザー設定ファイル、`--settings` フラグ、お�
 
 > [!NOTE]
 >
-> vim NORMAL モードでは、カーソルが入力の開始または終了にあり、それ以上移動できない場合、`j`/`k` と `↑`/`↓` はコマンド履歴をナビゲートします。`←` は空のプロンプトで INSERT だけでなく NORMAL モードからも[エージェントビュー](/docs/ja/agent-view)を開きます。v2.1.219 より前は、`←` は空のプロンプトで NORMAL モードでは何もしませんでした。
+> vim NORMAL モードでは、カーソルが入力の開始または終了にあり、それ以上移動できない場合、`j`/`k` と `↑`/`↓` はコマンド履歴をナビゲートします。`←` は空のプロンプトで INSERT だけでなく NORMAL モードからも[エージェントビュー](/docs/ja/agent-view.md)を開きます。v2.1.219 より前は、`←` は空のプロンプトで NORMAL モードでは何もしませんでした。
 
 ### 編集（NORMAL モード）
 
@@ -264,9 +264,9 @@ Claude Code は、ユーザー設定ファイル、`--settings` フラグ、お�
 
 ### vim モードで質問をキャンセル
 
-[Claude が尋ねる質問](/docs/ja/tools-reference#askuserquestion-tool-behavior)の `Other` 行に自分の回答を入力しているときは、`Esc` を 2 回押すと質問をキャンセルできます。
+[Claude が尋ねる質問](/docs/ja/tools-reference.md#askuserquestion-tool-behavior)の `Other` 行に自分の回答を入力しているときは、`Esc` を 2 回押すと質問をキャンセルできます。
 
-代わりに 1 回のキー押下でキャンセルするには、[質問をキャンセルする別のキーをバインド](/docs/ja/keybindings#cancel-a-question-with-one-key-press)します。
+代わりに 1 回のキー押下でキャンセルするには、[質問をキャンセルする別のキーをバインド](/docs/ja/keybindings.md#cancel-a-question-with-one-key-press)します。
 
 ## コマンド履歴
 
@@ -275,7 +275,7 @@ Claude Code はあなたが入力したプロンプトの履歴を保持し、�
 * 入力履歴は作業ディレクトリごとに保存されます
 * `/clear` を実行すると新しいセッションが開始されます。呼び出しの際には新しいセッションのプロンプトが最初に表示され、その後に以前のセッションのプロンプトが表示されます。前のセッションの会話は保存され、再開することができます。
 * 同じプロンプトを連続して 2 回送信すると、1 つの履歴エントリが記録されるため、上矢印キーを押すと前の異なるプロンプトにステップします
-* 貼り付けたテキストを含むプロンプトを呼び出すと、再度送信する際に Claude Code は完全な貼り付けコンテンツを送信します。コンテンツが [自動的にクリーンアップ](/docs/ja/claude-directory#cleaned-up-automatically) されている場合、Claude Code は文字通りの `[Pasted text #N]` 文字列を送信しません。プロンプトに何が起こるかについては、[大きなコンテンツを貼り付ける](/docs/ja/terminal-config#paste-large-content) を参照してください
+* 貼り付けたテキストを含むプロンプトを呼び出すと、再度送信する際に Claude Code は完全な貼り付けコンテンツを送信します。コンテンツが [自動的にクリーンアップ](/docs/ja/claude-directory.md#cleaned-up-automatically) されている場合、Claude Code は文字通りの `[Pasted text #N]` 文字列を送信しません。プロンプトに何が起こるかについては、[大きなコンテンツを貼り付ける](/docs/ja/terminal-config.md#paste-large-content) を参照してください
 * `!` を使用した履歴展開はデフォルトで無効になっています
 
 ### クリアした下書きを復元する
@@ -287,7 +287,7 @@ Claude Code はあなたが入力したプロンプトの履歴を保持し、�
 
 ### Ctrl+R での逆方向検索
 
-`Ctrl+R` を押してコマンド履歴をインタラクティブに検索します。[フルスクリーンレンダリング](/docs/ja/fullscreen) では、`Ctrl+R` は検索ダイアログを開きます。入力してフィルタリングし、`Up` と `Down` を押してマッチを移動し、`Ctrl+S` を押してスコープをこのセッション、このプロジェクト、すべてのプロジェクトの間で循環させます。`Enter` または `Tab` を押してマッチをプロンプト入力に配置するか、`Esc` を押してキャンセルします。以下のステップは、クラシックレンダラーのインライン検索について説明しています。
+`Ctrl+R` を押してコマンド履歴をインタラクティブに検索します。[フルスクリーンレンダリング](/docs/ja/fullscreen.md) では、`Ctrl+R` は検索ダイアログを開きます。入力してフィルタリングし、`Up` と `Down` を押してマッチを移動し、`Ctrl+S` を押してスコープをこのセッション、このプロジェクト、すべてのプロジェクトの間で循環させます。`Enter` または `Tab` を押してマッチをプロンプト入力に配置するか、`Esc` を押してキャンセルします。以下のステップは、クラシックレンダラーのインライン検索について説明しています。
 
 1. **検索を開始**: `Ctrl+R` を押して逆方向履歴検索を有効にします
 2. **クエリを入力**: 前のコマンドで検索するテキストを入力します。検索用語は一致する結果で強調表示されます
@@ -317,22 +317,22 @@ Claude Code がコマンドをバックグラウンドで実行する場合、�
 * Claude Code にコマンドをバックグラウンドで実行するよう指示する
 * `Ctrl+B` を押して、通常の Bash ツール呼び出しをバックグラウンドに移動する。Tmux ユーザーは tmux のプリフィックスキーのため、`Ctrl+B` を 2 回押す必要があります。
 
-コマンドが完了する前にタイムアウトに達した場合、Claude Code は自動的に[それをバックグラウンドに移動](/docs/ja/tools-reference#foreground-commands-that-move-to-the-background)します。停止する代わりにバックグラウンドに移動します。ただし、コマンドが `sleep` で始まる場合は除きます。[`CLAUDE_CODE_DISABLE_BACKGROUND_TASKS`](/docs/ja/env-vars#variables)でバックグラウンドタスクをオフにしているか、[ベアモード](/docs/ja/headless#start-faster-with-bare-mode)で開始している場合、コマンドはタイムアウト時に停止します。タイムアウトを変更するには、[Bash タイムアウト環境変数](/docs/ja/tools-reference#timeout-and-output-limits)を設定してください。
+コマンドが完了する前にタイムアウトに達した場合、Claude Code は自動的に[それをバックグラウンドに移動](/docs/ja/tools-reference.md#foreground-commands-that-move-to-the-background)します。停止する代わりにバックグラウンドに移動します。ただし、コマンドが `sleep` で始まる場合は除きます。[`CLAUDE_CODE_DISABLE_BACKGROUND_TASKS`](/docs/ja/env-vars#variables)でバックグラウンドタスクをオフにしているか、[ベアモード](/docs/ja/headless.md#start-faster-with-bare-mode)で開始している場合、コマンドはタイムアウト時に停止します。タイムアウトを変更するには、[Bash タイムアウト環境変数](/docs/ja/tools-reference.md#timeout-and-output-limits)を設定してください。
 
 **主な機能：**
 
 * 出力はファイルに書き込まれ、Claude は Read ツールを使用してそれを取得できます
 * バックグラウンドタスクには、追跡と出力取得のための一意の ID があります
 * バックグラウンドタスクは、Claude Code が終了するときに自動的にクリーンアップされます。macOS と Linux では、[`/tasks`](/docs/ja/commands)からバックグラウンドタスクを停止するか、Claude Code が終了時に停止する場合、`setsid` または `timeout` の下で開始されたものなど、タスクのシェルから切り離されたプロセスも停止します
-* セッションを終了する代わりにセッションをバックグラウンドにする場合、バックグラウンドセッションでバックグラウンドタスクが実行され続けます。[実行中のセッションをバックグラウンドにする](/docs/ja/agent-view#from-inside-a-session)を参照してください
+* セッションを終了する代わりにセッションをバックグラウンドにする場合、バックグラウンドセッションでバックグラウンドタスクが実行され続けます。[実行中のセッションをバックグラウンドにする](/docs/ja/agent-view.md#from-inside-a-session)を参照してください
 * 出力が 5GB を超える場合、バックグラウンドタスクは自動的に終了され、stderr に理由を示すメモが表示されます
 * macOS と Linux では、オペレーティングシステムが重大なメモリプレッシャーを報告する場合、Claude Code は実行中のバックグラウンドタスクを停止します。ただし、セッションが少なくとも 30 分間アイドル状態にあり、ターンまたはサブエージェントが実行されていない場合に限ります
-  * [デバッグログ](/docs/ja/debug-your-config)には、タスクが停止された理由、またはプレッシャーイベントがそれらを実行し続けた理由が記載されています
+  * [デバッグログ](/docs/ja/debug-your-config.md)には、タスクが停止された理由、またはプレッシャーイベントがそれらを実行し続けた理由が記載されています
   * [`CLAUDE_CODE_DISABLE_BG_SHELL_PRESSURE_REAP`](/docs/ja/env-vars) を `1` に設定して、メモリプレッシャー停止をオフにします
-* ターミナル、デスクトップアプリ、または VS Code 拡張機能から作業するローカルセッションでのバックグラウンドコマンドには時間制限がありません。`-p` 実行やクラウドセッションなど、無人で実行されるセッションでは、Claude Code はバックグラウンドコマンドを[時間制限](/docs/ja/tools-reference#time-limit-for-background-commands)に達した時点で停止します
-* フォアグラウンド[サブエージェント](/docs/ja/sub-agents#run-subagents-in-foreground-or-background)が開始したバックグラウンドコマンドは、そのサブエージェントの実行が終了するときに終了します。完了、失敗、または中断されたかどうかに関わらず。ツール参照の[バックグラウンドコマンドが停止するとき](/docs/ja/tools-reference#when-a-background-command-stops)を参照してください
+* ターミナル、デスクトップアプリ、または VS Code 拡張機能から作業するローカルセッションでのバックグラウンドコマンドには時間制限がありません。`-p` 実行やクラウドセッションなど、無人で実行されるセッションでは、Claude Code はバックグラウンドコマンドを[時間制限](/docs/ja/tools-reference.md#time-limit-for-background-commands)に達した時点で停止します
+* フォアグラウンド[サブエージェント](/docs/ja/sub-agents.md#run-subagents-in-foreground-or-background)が開始したバックグラウンドコマンドは、そのサブエージェントの実行が終了するときに終了します。完了、失敗、または中断されたかどうかに関わらず。ツール参照の[バックグラウンドコマンドが停止するとき](/docs/ja/tools-reference.md#when-a-background-command-stops)を参照してください
 
-すべてのバックグラウンドタスク機能を無効にするには、[`CLAUDE_CODE_DISABLE_BACKGROUND_TASKS`](/docs/ja/env-vars#variables)環境変数を `1` に設定してください。[ベアモード](/docs/ja/headless#start-faster-with-bare-mode)で開始することでもオフになります。
+すべてのバックグラウンドタスク機能を無効にするには、[`CLAUDE_CODE_DISABLE_BACKGROUND_TASKS`](/docs/ja/env-vars#variables)環境変数を `1` に設定してください。[ベアモード](/docs/ja/headless.md#start-faster-with-bare-mode)で開始することでもオフになります。
 
 **一般的なバックグラウンド実行コマンド：**
 
@@ -363,17 +363,17 @@ Claude Code がコマンドをバックグラウンドで実行する場合、�
 * 空のプロンプトで `Escape`、`Backspace`、または `Ctrl+U` で終了します
 * `!` で始まるテキストを空のプロンプトに貼り付けると、シェルモードが自動的に入力されます。入力された `!` の動作と一致します
 
-セッションが[厳密なサンドボックスモード](/docs/ja/sandboxing#turn-off-the-retry-with-strict-sandbox-mode)の下にリストされているものの 1 つでない限り、シェルモードで入力するコマンドは、サンドボックスを有効にしている場合でも[サンドボックス](/docs/ja/sandboxing)の外で実行されます。これは、サンドボックスが Claude が実行するコマンドに適用されるためです。
+セッションが[厳密なサンドボックスモード](/docs/ja/sandboxing.md#turn-off-the-retry-with-strict-sandbox-mode)の下にリストされているものの 1 つでない限り、シェルモードで入力するコマンドは、サンドボックスを有効にしている場合でも[サンドボックス](/docs/ja/sandboxing.md)の外で実行されます。これは、サンドボックスが Claude が実行するコマンドに適用されるためです。
 
 Claude はコマンド出力がトランスクリプトに到達すると自動的に応答するため、`! npm test` を実行して、2 番目のプロンプトなしで失敗の説明を取得できます。応答は通常のプロンプトを送信するのと同じコストがかかります。代わりに応答なしで出力をコンテキストに追加するには、`settings.json` で [`respondToBashCommands`](/docs/ja/settings-reference#respondtobashcommands) を `false` に設定します。
 
 ## Claude が作業中にメッセージをキューに入れる
 
-Claude が作業中に、メッセージを入力して `Enter` キーを押すと、Claude Code はターンを中断する代わりにメッセージをキューに入れ、送信するまでキューに入れられたエントリを会話に表示します。`!` [シェルコマンド](#shell-mode-with-prefix)と、ほとんどの[コマンド](/docs/ja/commands)も同じようにキューに入れることができます。ただし、Claude Code が送信直後に実行する `/status` などのコマンドは除きます。
+Claude が作業中に、メッセージを入力して `Enter` キーを押すと、Claude Code はターンを中断する代わりにメッセージをキューに入れ、送信するまでキューに入れられたエントリを会話に表示します。`!` [シェルコマンド](#shell-mode-with-prefix)と、ほとんどの[コマンド](/docs/ja/commands.md)も同じようにキューに入れることができます。ただし、Claude Code が送信直後に実行する `/status` などのコマンドは除きます。
 
 送信されたメッセージとキューに入れられたメッセージは、Claude が応答を開始するまでグレーで表示されるため、Claude がまだ処理していないメッセージを判別できます。
 
-[接続された IDE](/docs/ja/vs-code#the-built-in-ide-mcp-server)からの選択が付いたメッセージをキューに入れた場合、`Enter` キーを押したときに選択していた内容が保持されます。その後に選択した内容がどうであれ関係ありません。
+[接続された IDE](/docs/ja/vs-code.md#the-built-in-ide-mcp-server)からの選択が付いたメッセージをキューに入れた場合、`Enter` キーを押したときに選択していた内容が保持されます。その後に選択した内容がどうであれ関係ありません。
 
 ### Claude Code がキューに入れたものを送信するタイミング
 
@@ -395,15 +395,15 @@ Claude が作業中に、メッセージを入力して `Enter` キーを押す�
 
 Claude Code は、キューに入れる代わりに、送信直後に実行するコマンドがあります。その中には `/model`、`/effort`、`/fast` があります。これら 3 つはそれぞれ設定を変更します。モデル、effort レベル、または fast mode です。Claude Code が新しい設定を Claude が既に作業しているターンに適用するか、次のターンからのみ適用するかは、コマンドによって異なります。
 
-* [`/model`](/docs/ja/model-config#setting-your-model)：Claude Code が[キャッシュ警告](/docs/ja/prompt-caching#switching-models)を表示する場合は、確認後、Claude Code はそのターン内で次に行うリクエストに変更を適用します。
-* [`/effort`](/docs/ja/model-config#adjust-effort-level)：Claude Code が[キャッシュ警告](/docs/ja/prompt-caching#changing-effort-level)を表示する場合は、確認後、Claude Code はそのターン内で次に行うリクエストに変更を適用します。
-* [`/fast`](/docs/ja/fast-mode#toggle-fast-mode)：Claude Code はターンが開始されたときにアクティブだった fast mode 設定を保持するため、速度の変更は次のターンから適用されます。現在のモデルが fast mode をサポートしていない場合、それをオンにすると[モデルも切り替わり](/docs/ja/prompt-caching#turning-on-fast-mode)、Claude Code はそのターン内で次に行うリクエストから新しいモデルを使用します。
+* [`/model`](/docs/ja/model-config#setting-your-model)：Claude Code が[キャッシュ警告](/docs/ja/prompt-caching.md#switching-models)を表示する場合は、確認後、Claude Code はそのターン内で次に行うリクエストに変更を適用します。
+* [`/effort`](/docs/ja/model-config#adjust-effort-level)：Claude Code が[キャッシュ警告](/docs/ja/prompt-caching.md#changing-effort-level)を表示する場合は、確認後、Claude Code はそのターン内で次に行うリクエストに変更を適用します。
+* [`/fast`](/docs/ja/fast-mode#toggle-fast-mode)：Claude Code はターンが開始されたときにアクティブだった fast mode 設定を保持するため、速度の変更は次のターンから適用されます。現在のモデルが fast mode をサポートしていない場合、それをオンにすると[モデルも切り替わり](/docs/ja/prompt-caching.md#turning-on-fast-mode)、Claude Code はそのターン内で次に行うリクエストから新しいモデルを使用します。
 
 ### メッセージをキューに入れたままセッションをバックグラウンドに移動する
 
 [`←` を押した](/docs/ja/agent-view#switch-sessions-without-leaving-the-terminal)後にセッションがバックグラウンドに移動すると、キューに入れていたメッセージもセッションとともに移動します。Claude は移動先で、送信した順序でそれらを読みます。
 
-コマンドと `!` シェルコマンドは移動できません。また、[IDE の選択](/docs/ja/vs-code#the-built-in-ide-mcp-server)が付いたメッセージなど、一部のメッセージも移動できません。これらのいずれかがキューに入っている間に `←` を押すと、セッションはフォアグラウンドに留まり、`Cannot open agents` で始まる通知が表示されます。セッションをバックグラウンドに移動するには、そのエントリをキューから取り除いてから、もう一度 `←` を押します。
+コマンドと `!` シェルコマンドは移動できません。また、[IDE の選択](/docs/ja/vs-code.md#the-built-in-ide-mcp-server)が付いたメッセージなど、一部のメッセージも移動できません。これらのいずれかがキューに入っている間に `←` を押すと、セッションはフォアグラウンドに留まり、`Cannot open agents` で始まる通知が表示されます。セッションをバックグラウンドに移動するには、そのエントリをキューから取り除いてから、もう一度 `←` を押します。
 
 * **コマンドと `!` シェルコマンド**：ターンの終了時に実行されるのを待つか、[取り戻して](#take-back-what-you-queued)入力ボックスをクリアします。他に何かがキューに入っている間は `!` シェルコマンドを取り戻せないため、実行されるのを待ってください。
 * **移動できないメッセージ**：Claude がそれらを読むまで待ちます
@@ -414,7 +414,7 @@ Claude Code は、キューに入れる代わりに、送信直後に実行す�
 
 Claude Code は、入力ボックスが空で、キューに入れたものが他にない場合にのみ、キューに入れたシェルコマンドを取り戻し、その際に入力ボックスをシェルモードに切り替えます。それ以外の場合は、それらをキューに留めておき、`!` プレフィックス付きでリストし、ターンが終了した後に実行します。
 
-`←` が[セッションをバックグラウンドに移動するのを待っている](/docs/ja/agent-view#switch-sessions-without-leaving-the-terminal)間にキューに入れたテキストを取り戻した場合、テキストは入力ボックスに残り、Claude Code は切り替えをキャンセルします。セッションが移動する瞬間に取り戻した場合、テキストはフォアグラウンド画面とともに消えます。このテキストは送信されていません。取り戻した各メッセージは、それぞれ個別のエントリとして[コマンド履歴](#command-history)に保存されます。復元するには、セッションを再度開き、キューに何もない状態で空のプロンプトで `Up` キーを押します。
+`←` が[セッションをバックグラウンドに移動するのを待っている](/docs/ja/agent-view.md#switch-sessions-without-leaving-the-terminal)間にキューに入れたテキストを取り戻した場合、テキストは入力ボックスに残り、Claude Code は切り替えをキャンセルします。セッションが移動する瞬間に取り戻した場合、テキストはフォアグラウンド画面とともに消えます。このテキストは送信されていません。取り戻した各メッセージは、それぞれ個別のエントリとして[コマンド履歴](#command-history)に保存されます。復元するには、セッションを再度開き、キューに何もない状態で空のプロンプトで `Up` キーを押します。
 
 ## プロンプト提案
 
@@ -429,7 +429,7 @@ Claude Code は、これらの次のプロンプト提案を、セッション�
 
 ### Claude Code が提案をスキップする場合
 
-インタラクティブモードでは、Claude Code はデフォルトでプロンプト提案をオフにし、`/config` の **Prompt suggestions** トグルを、[フィーチャーフラグを取得しないセッション](/docs/ja/env-vars#features-that-need-feature-flag-fetching)（サードパーティプロバイダー上のセッションや Claude アプリゲートウェイを通じたセッションなど）および[インストールまたはアップグレード後の最初のセッション](/docs/ja/env-vars#first-session-after-an-install-or-upgrade)（フラグがまだ到着していないセッション）で非表示にします。
+インタラクティブモードでは、Claude Code はデフォルトでプロンプト提案をオフにし、`/config` の **Prompt suggestions** トグルを、[フィーチャーフラグを取得しないセッション](/docs/ja/env-vars.md#features-that-need-feature-flag-fetching)（サードパーティプロバイダー上のセッションや Claude アプリゲートウェイを通じたセッションなど）および[インストールまたはアップグレード後の最初のセッション](/docs/ja/env-vars.md#first-session-after-an-install-or-upgrade)（フラグがまだ到着していないセッション）で非表示にします。
 
 Claude Code は、以下を含むいくつかの状況で個別の提案もスキップします。
 
@@ -438,7 +438,7 @@ Claude Code は、以下を含むいくつかの状況で個別の提案もス�
 * 前の応答がエラーで終了した場合
 * Plan Mode にいる場合
 * アカウントが使用制限に近い、またはその制限に達している場合。制限に達するまでこのスキップが適用されないようにするには、[`CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION`](/docs/ja/env-vars) を `true` に設定します。v2.1.238 より前では、変数が `true` に設定されていても、Claude Code は制限に近い場合に提案をスキップしていました
-* [agent team](/docs/ja/agent-teams) では、デフォルトでチームメイトのセッションで。リーダーのセッションは提案を表示します
+* [agent team](/docs/ja/agent-teams.md) では、デフォルトでチームメイトのセッションで。リーダーのセッションは提案を表示します
 
 `Showing fewer prompt suggestions · use one to bring them back` という通知は、提案を使用しないまま連続して多数見送ったため、Claude Code が提案を表示する頻度を下げていることを意味します。通常の頻度に戻すには、提案を使用するか、[`CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION`](/docs/ja/env-vars) を `true` に設定します。
 
@@ -455,7 +455,7 @@ Print Mode では、Claude Code はデフォルトでは提案を生成しませ
   export CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION=false
   ```
 
-組織全体でプロンプト提案をオフにするには、[managed settings](/docs/ja/managed-settings) で `promptSuggestionEnabled` を `false` に設定します。また、ユーザーが独自の環境変数で再度有効にできないように、managed [`env`](/docs/ja/settings-reference#env) キーの下で `CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION` を `false` に設定します。
+組織全体でプロンプト提案をオフにするには、[managed settings](/docs/ja/managed-settings.md) で `promptSuggestionEnabled` を `false` に設定します。また、ユーザーが独自の環境変数で再度有効にできないように、managed [`env`](/docs/ja/settings-reference#env) キーの下で `CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION` を `false` に設定します。
 
 ## You should know の提案
 
@@ -466,14 +466,14 @@ Print Mode では、Claude Code はデフォルトでは提案を生成しませ
   1: Learn more   2: Knew this already   0: Dismiss
 ```
 
-これは Claude Code の[組み込み mod](/docs/ja/plugins/mods/overview#mods-built-into-claude-code) の 1 つで、Claude Code に組み込まれたプラグインであり、デフォルトではオフになっています。Claude Code v2.1.287 以降が必要です。
+これは Claude Code の[組み込み mod](/docs/ja/plugins/mods/overview.md#mods-built-into-claude-code) の 1 つで、Claude Code に組み込まれたプラグインであり、デフォルトではオフになっています。Claude Code v2.1.287 以降が必要です。
 
 オンになっている間は、Claude が長めのタスクを進めるにつれて、サイドエージェントが会話をときどき読み直します。サイドエージェントは同じモデルへの別のリクエストであり、ツールを持たないため、ファイルを読んだり、コマンドを実行したり、Claude の動作を変更したりすることはできません。
 
 組織でこの mod が利用可能な場合、claude.ai アカウントまたは Console API キーで Claude API に直接接続していると、`/plugin` に表示されます。[LLM ゲートウェイ](/docs/ja/llm-gateway)や [Claude apps ゲートウェイ](/docs/ja/claude-apps-gateway)を介して接続している場合や、[`apiKeyHelper`](/docs/ja/settings-reference#apikeyhelper) からキーを取得している場合は表示されません。直接接続の場合でも、次のセッションでは表示されません。
 
-* `DISABLE_TELEMETRY` が設定されているセッションなど、mod が依存する[機能フラグを取得しない](/docs/ja/env-vars#features-that-need-feature-flag-fetching)セッション
-* フラグがまだ届いていない、[インストールまたはアップグレード後の最初のセッション](/docs/ja/env-vars#first-session-after-an-install-or-upgrade)
+* `DISABLE_TELEMETRY` が設定されているセッションなど、mod が依存する[機能フラグを取得しない](/docs/ja/env-vars.md#features-that-need-feature-flag-fetching)セッション
+* フラグがまだ届いていない、[インストールまたはアップグレード後の最初のセッション](/docs/ja/env-vars.md#first-session-after-an-install-or-upgrade)
 
 オンにするには、Claude Code のプロンプトで次を実行します。
 
@@ -485,7 +485,7 @@ Print Mode では、Claude Code はデフォルトでは提案を生成しませ
 
 ### チェックのコスト
 
-mod がオンの間、チェックはセッションで使用しているのと同じモデルへのバックグラウンドリクエストであり、プランの使用制限または API コストにカウントされます。各チェックでは、Claude のコンテキストに既にあるもの、つまりツールの結果を含むこれまでの会話を送信し、その後に mod 自体の指示と最近のメモのテキストを送信します。会話部分は、Claude 自身の次のリクエストと同じ条件でセッションの[プロンプトキャッシュ](/docs/ja/prompt-caching)から読み取られます。数千トークンに及ぶ指示と、サイドエージェントの応答は、チェックのたびに全額課金されます。
+mod がオンの間、チェックはセッションで使用しているのと同じモデルへのバックグラウンドリクエストであり、プランの使用制限または API コストにカウントされます。各チェックでは、Claude のコンテキストに既にあるもの、つまりツールの結果を含むこれまでの会話を送信し、その後に mod 自体の指示と最近のメモのテキストを送信します。会話部分は、Claude 自身の次のリクエストと同じ条件でセッションの[プロンプトキャッシュ](/docs/ja/prompt-caching.md)から読み取られます。数千トークンに及ぶ指示と、サイドエージェントの応答は、チェックのたびに全額課金されます。
 
 チェックの実行を確認するには、Claude Code を起動する前にシェルで [`CLAUDE_CODE_YOU_SHOULD_KNOW_DEBUG=1`](/docs/ja/env-vars) を設定します。
 
@@ -524,9 +524,9 @@ You should know をオフにするには、次のいずれかを使用します�
 
 ## 入力中にスペルチェックを実行する
 
-Claude Code は、入力中にプロンプト入力のスペルミスのある単語に下線を引くことができます。入力ボックス内のテキストのみをチェックし、Claude の返信やファイルはチェックしません。また、入力ボックスが [シェルモード](#shell-mode-with-prefix)、`Ctrl+R` 履歴検索、または [音声入力](/docs/ja/voice-dictation) にある場合は何もチェックしません。
+Claude Code は、入力中にプロンプト入力のスペルミスのある単語に下線を引くことができます。入力ボックス内のテキストのみをチェックし、Claude の返信やファイルはチェックしません。また、入力ボックスが [シェルモード](#shell-mode-with-prefix)、`Ctrl+R` 履歴検索、または [音声入力](/docs/ja/voice-dictation.md) にある場合は何もチェックしません。
 
-スペルチェックはデフォルトでオフになっており、Claude Code は [スクリーンリーダーモード](/docs/ja/accessibility) では何もチェックしません。Claude Code v2.1.235 以降が必要です。
+スペルチェックはデフォルトでオフになっており、Claude Code は [スクリーンリーダーモード](/docs/ja/accessibility.md) では何もチェックしません。Claude Code v2.1.235 以降が必要です。
 
 ### 前提条件
 
@@ -539,7 +539,7 @@ Claude Code は [`spellcheck`](/docs/ja/settings-reference#spellcheck) 設定を
 
 **ユーザー設定**
 
-`~/.claude/settings.json` に `spellcheck` を追加してください。これは、[ユーザー設定](/docs/ja/settings#where-settings-live) の残りの部分と同様に、開くすべてのプロジェクトに適用されます。
+`~/.claude/settings.json` に `spellcheck` を追加してください。これは、[ユーザー設定](/docs/ja/settings.md#where-settings-live) の残りの部分と同様に、開くすべてのプロジェクトに適用されます。
 
 ```json theme={null}
 {
@@ -565,7 +565,7 @@ claude --settings spellcheck.json
 
 **管理設定**
 
-組織の [管理設定ソース](/docs/ja/permissions#managed-settings) の 1 つに `spellcheck` を追加してください。これは、それらの設定を受け取るすべてのユーザーに適用され、ユーザーはそれをオフにすることはできません。
+組織の [管理設定ソース](/docs/ja/permissions.md#managed-settings) の 1 つに `spellcheck` を追加してください。これは、それらの設定を受け取るすべてのユーザーに適用され、ユーザーはそれをオフにすることはできません。
 
 ```json theme={null}
 {
@@ -619,7 +619,7 @@ Claude Code がチェッカーを実行し続けることができない場合�
 
 ## プロンプト内の見えない文字
 
-貼り付けたテキストには、タグ文字、双方向制御、ゼロ幅スペースなど、ターミナルが何も描画しない Unicode 文字が含まれる可能性があるため、プロンプトには見えないテキストが含まれることがあります。コピーしたテキストがターミナルに描画されない命令を含まないようにするため、Claude Code は Enter キーを押すときにそれらの文字を削除してから、何かを送信します。プロンプトと、プロンプトに含まれる任意の折りたたまれた[貼り付けテキスト参照](/docs/ja/terminal-config#paste-large-content)の内容の両方をクリーンアップします。Claude Code はペルシア語とインド系スクリプトが書く結合文字と、絵文字シーケンス内のセレクタを保持します。
+貼り付けたテキストには、タグ文字、双方向制御、ゼロ幅スペースなど、ターミナルが何も描画しない Unicode 文字が含まれる可能性があるため、プロンプトには見えないテキストが含まれることがあります。コピーしたテキストがターミナルに描画されない命令を含まないようにするため、Claude Code は Enter キーを押すときにそれらの文字を削除してから、何かを送信します。プロンプトと、プロンプトに含まれる任意の折りたたまれた[貼り付けテキスト参照](/docs/ja/terminal-config.md#paste-large-content)の内容の両方をクリーンアップします。Claude Code はペルシア語とインド系スクリプトが書く結合文字と、絵文字シーケンス内のセレクタを保持します。
 
 Claude Code が何かを削除した場合、その Enter は何も送信しません。クリーンアップされたプロンプトは、`Removed 3 invisible characters · review and press Enter to send` などの通知とともに入力ボックスに戻り、もう一度 Enter キーを押すと、表示されたテキストが送信されます。
 
@@ -629,10 +629,10 @@ Claude Code が何かを削除した場合、その Enter は何も送信しま�
 
 `/diff` を実行して、Claude Code を離れることなく、ワーキングツリーの変更内容を確認できます。Claude がこれまでに行った編集と、コミットしていないその他の変更が表示されます。`/diff` で開くものは、有効になっているレンダラーによって異なります。
 
-* **[フルスクリーンレンダリング](/docs/ja/fullscreen)**：[diff パネル](#diff-panel)が会話の横に開きます。パネルは開いたままで、作業を続ける間も更新されます。
+* **[フルスクリーンレンダリング](/docs/ja/fullscreen.md)**：[diff パネル](#diff-panel)が会話の横に開きます。パネルは開いたままで、作業を続ける間も更新されます。
 * **クラシックレンダラー**：[diff ダイアログ](#diff-dialog)がプロンプトの上に開き、読み終わったら閉じます。
 
-パネルとダイアログはどちらも、[Claude Code に組み込まれた mod](/docs/ja/plugins/mods/overview#mods-built-into-claude-code) の 1 つである `cc-plugin-diff` によって提供されます。`/plugin` でこの mod を無効にすると、`/diff` は代わりに Claude Code の以前のパネルと [diff ビューアー](/docs/ja/keybindings#diff-actions)を開きます。
+パネルとダイアログはどちらも、[Claude Code に組み込まれた mod](/docs/ja/plugins/mods/overview.md#mods-built-into-claude-code) の 1 つである `cc-plugin-diff` によって提供されます。`/plugin` でこの mod を無効にすると、`/diff` は代わりに Claude Code の以前のパネルと [diff ビューアー](/docs/ja/keybindings.md#diff-actions)を開きます。
 
 `/diff` が git から読み取る変更では、サブモジュールは単一のエントリとして表示され、それもサブモジュールが指すコミットが変わった場合のみです。サブモジュール内のファイルへの編集はそこには表示されません。Claude がファイルを編集すると、パネルとダイアログには各ターンの編集を示すビューも表示されます。これらのターンビューは git ではなく Claude のファイル編集から作成されるため、Claude がシェルコマンドを通じて行った変更は、ワーキングツリーのビューである `Current` の下にのみ表示されます。
 
@@ -642,7 +642,7 @@ diff パネルは、変更されたファイルを追加行数と削除行数と
 
 パネルを使用するには、以下が必要です。
 
-* [フルスクリーンレンダリング](/docs/ja/fullscreen)
+* [フルスクリーンレンダリング](/docs/ja/fullscreen.md)
 * Git リポジトリ
 * 少なくとも 110 列幅のターミナル
 * Claude Code v2.1.287 以降
@@ -657,7 +657,7 @@ diff パネルは、変更されたファイルを追加行数と削除行数と
 * **パネルが除外するファイルを表示する**：リストはテストファイルと生成されたファイルをスキップし、このセッション前の変更を下部の 1 行に折りたたみます。いずれかのカウント行をクリックして展開します。
 * **パネルが比較する対象を変更する**：`Ctrl+X B` を押して、このセッションの変更から、コミットされていない変更を 1 つのリストとして、デフォルトブランチからの分岐以降のすべてに循環します。Claude Code は、各リポジトリの選択を記憶します。
 
-ファイルリストのスクロールや比較対象の変更に使うキーを再バインドするには、[Diff パネルアクション](/docs/ja/keybindings#diff-panel-actions)を参照してください。
+ファイルリストのスクロールや比較対象の変更に使うキーを再バインドするには、[Diff パネルアクション](/docs/ja/keybindings.md#diff-panel-actions)を参照してください。
 
 ### Diff ダイアログ
 
@@ -682,12 +682,12 @@ Claude がファイルを編集すると、リストの上に `source` ピッカ
 
 Claude は補足質問に対して、会話に既に含まれている内容から回答します。つまり、あなたのメッセージ、Claude の返信、および収集したツール結果から回答します。Claude が既に読んだコード、以前に下した決定、またはセッションの他の内容について質問できます。後の補足質問は、以前の補足質問も確認します。Claude Code は最新の 20 個のやり取りを各質問で再生します。これは、それらをクリアするまで続きます。質問と回答は会話履歴に入りません。ターミナルでは、却下可能なオーバーレイに表示されます。ターミナルはスレッドをメモリに保持します。`x` を押して以前のやり取りをクリアすると、Claude Code を終了するときに消えます。
 
-[VS Code 拡張機能](/docs/ja/vs-code#use-the-prompt-box)のチャットパネルでは、`/btw` はこのセクションで説明するオーバーレイではなくパネルを開き、パネル内で直接フォローアップ質問をします。パネルのスレッドはウィンドウの再読み込みを通じて保持され、そのページで説明されている保持スケジュールに従います。拡張機能は v2.1.227 以降が必要です。以前の拡張機能バージョンは `/btw` を提供していません。
+[VS Code 拡張機能](/docs/ja/vs-code.md#use-the-prompt-box)のチャットパネルでは、`/btw` はこのセクションで説明するオーバーレイではなくパネルを開き、パネル内で直接フォローアップ質問をします。パネルのスレッドはウィンドウの再読み込みを通じて保持され、そのページで説明されている保持スケジュールに従います。拡張機能は v2.1.227 以降が必要です。以前の拡張機能バージョンは `/btw` を提供していません。
 
 * **Claude が作業中に利用可能**：Claude が応答を処理している間でも `/btw` を実行できます。補足質問は独立して実行され、メインのターンを中断しません。これまでの会話のすべてが表示されます。ただし、Claude がまだ作成している返信は除きます。
 * **ツールアクセスなし**：補足質問は既にコンテキストにあるものからのみ回答します。Claude は補足質問に回答する際に、ファイルを読み取ったり、コマンドを実行したり、検索したりすることはできません。Claude がテキストとしてツール呼び出しを書き出す場合でも、回答は何も実行されなかったというメモで終わります。
-* **単一の応答**：オーバーレイにはフォローアップターンがありません。スレッドを続行するには、別の `/btw` 質問をしてください。ローカルセッションで完全なツールアクセスを続行するには、`f` を押してこの質問と回答を[バックグラウンドサブエージェント](/docs/ja/sub-agents#fork-the-current-conversation)にフォークします。
-* **低コスト**：会話の[プロンプトキャッシュ](/docs/ja/prompt-caching)がウォーム状態の間、補足質問は回答自体を超えるコストはほとんどかかりません。
+* **単一の応答**：オーバーレイにはフォローアップターンがありません。スレッドを続行するには、別の `/btw` 質問をしてください。ローカルセッションで完全なツールアクセスを続行するには、`f` を押してこの質問と回答を[バックグラウンドサブエージェント](/docs/ja/sub-agents.md#fork-the-current-conversation)にフォークします。
+* **低コスト**：会話の[プロンプトキャッシュ](/docs/ja/prompt-caching.md)がウォーム状態の間、補足質問は回答自体を超えるコストはほとんどかかりません。
 
 5 つの最新の以前の補足質問は、現在の回答の上に薄い色のリストとして表示され、古いものの数がカウントされます。これらは会話履歴から除外されます。
 
@@ -701,18 +701,18 @@ Claude は補足質問に対して、会話に既に含まれている内容か�
 | `Up` / `Down` | 回答をスクロール |
 | `Shift+Left` / `Shift+Right` | この回答と以前の `/btw` 回答の間をステップします。`Shift+Left` は古い回答に移動し、`Shift+Right` は現在の回答に戻ります。`[` と `]` も同じことを行い、ターミナルが矢印キーで `Shift` を報告しない場合に使用します。`Tab` / `Shift+Tab` は同じ回答をサイクルします。Claude Code v2.1.257 以降が必要です。v2.1.187 から v2.1.256 の間、キーはプレーン `Left` / `Right` でした |
 | `c` | 回答をクリップボードに生の Markdown としてコピーします。マウス選択の代わりにこれを使用してください。マウス選択はソーステキストではなく、ハードラップされたターミナルレンダリングをキャプチャします |
-| `f` | 親会話にこの質問と回答を継承する[フォークされたサブエージェント](/docs/ja/sub-agents#fork-the-current-conversation)を開始して、完全なツールアクセスで続行できるようにします。現在のセッションに留まり、プロンプトの下の[パネル](/docs/ja/sub-agents#observe-and-steer-running-forks)でフォークを見つけます。ローカルセッションでのみ利用可能 |
+| `f` | 親会話にこの質問と回答を継承する[フォークされたサブエージェント](/docs/ja/sub-agents.md#fork-the-current-conversation)を開始して、完全なツールアクセスで続行できるようにします。現在のセッションに留まり、プロンプトの下の[パネル](/docs/ja/sub-agents.md#observe-and-steer-running-forks)でフォークを見つけます。ローカルセッションでのみ利用可能 |
 | `x` | 現在の回答の上に表示される以前の `/btw` やり取りのリストをクリア |
 
-接続された[バックグラウンドセッション](/docs/ja/agent-view#attach-to-a-session)では、`Left` はデタッチしてエージェントビューに戻ります。これは、回答がまだ到着している間でも行われます。補足質問は、あなたが離れている間も実行を続けます。次回セッションに接続するときに、オーバーレイは補足質問、またはその回答で再度開きます。v2.1.257 より前では、`Left` はそこでデタッチしませんでした。
+接続された[バックグラウンドセッション](/docs/ja/agent-view.md#attach-to-a-session)では、`Left` はデタッチしてエージェントビューに戻ります。これは、回答がまだ到着している間でも行われます。補足質問は、あなたが離れている間も実行を続けます。次回セッションに接続するときに、オーバーレイは補足質問、またはその回答で再度開きます。v2.1.257 より前では、`Left` はそこでデタッチしませんでした。
 
-`/btw` はあなたの完全な会話を見ていますが、ツールはありません。[サブエージェント](/docs/ja/sub-agents)はツールを持ち、受け取るプロンプトから開始するか、[フォーク](/docs/ja/sub-agents#fork-the-current-conversation)の場合はこの会話のコピーから開始します。`/btw` を使用して、Claude がこのセッションから既に知っていることについて質問してください。サブエージェントを使用して、何か新しいことを見つけてください。
+`/btw` はあなたの完全な会話を見ていますが、ツールはありません。[サブエージェント](/docs/ja/sub-agents.md)はツールを持ち、受け取るプロンプトから開始するか、[フォーク](/docs/ja/sub-agents.md#fork-the-current-conversation)の場合はこの会話のコピーから開始します。`/btw` を使用して、Claude がこのセッションから既に知っていることについて質問してください。サブエージェントを使用して、何か新しいことを見つけてください。
 
 ## タスクリスト
 
 タスクリストは Claude のやることリストです。複数ステップの作業を計画するために Claude が作成したアイテムで、保留中、進行中、完了を示すインジケーターが付いています。バックグラウンドタスクビューとは別です。実行中のシェルとサブエージェントを確認するには、代わりに [`/tasks`](/docs/ja/commands) を使用してください。
 
-リストは、タスク追跡ツールを持つセッションにのみ入力されます。Claude Code は [Opus 4.7、Sonnet 4.6、Haiku 4.5、およびそれ以前のモデル](/docs/ja/tools-reference#task-tool-availability) でデフォルトでこれらのツールを提供します。他のモデル（Claude Code が認識しないモデル ID を含む）では、`CLAUDE_CODE_ENABLE_TODO_TOOLS=1` でオプトインするか、[タスクツールの利用可能性](/docs/ja/tools-reference#task-tool-availability) の下にある他の方法のいずれかを使用しない限り、リストは空のままです。セッションにツールがある場合、タスクリストは次のように機能します。
+リストは、タスク追跡ツールを持つセッションにのみ入力されます。Claude Code は [Opus 4.7、Sonnet 4.6、Haiku 4.5、およびそれ以前のモデル](/docs/ja/tools-reference.md#task-tool-availability) でデフォルトでこれらのツールを提供します。他のモデル（Claude Code が認識しないモデル ID を含む）では、`CLAUDE_CODE_ENABLE_TODO_TOOLS=1` でオプトインするか、[タスクツールの利用可能性](/docs/ja/tools-reference.md#task-tool-availability) の下にある他の方法のいずれかを使用しない限り、リストは空のままです。セッションにツールがある場合、タスクリストは次のように機能します。
 
 * `Ctrl+T` を押してタスクリストビューを切り替えます。表示は一度に最大 5 つのタスクを表示します。Claude がまだチェックリストアイテムを作成していない場合、表示するものがないため、切り替えは目に見える効果がありません
 * リストを展開したままにしておくと、Claude Code は `--resume` や `--continue` などでタスクがまだある セッションを起動する次回、展開されたビューを復元します。タスクリストが空の場合、Claude Code はそれを折りたたまれた状態で開始します
@@ -724,13 +724,13 @@ Claude は補足質問に対して、会話に既に含まれている内容か�
 
 ターミナルから離れた後に戻ると、Claude Code はこれまでのセッションで何が起きたかの 1 行の要約を表示します。この要約は、最後に完了したターンから少なくとも 3 分が経過し、ターミナルがフォーカスされていない状態で、バックグラウンドで生成されるため、戻ってきたときに準備ができています。要約はセッションに少なくとも 3 ターンがある場合にのみ表示され、連続して 2 回表示されることはありません。
 
-`/recap` を実行して、オンデマンドで要約を生成します。これはユーザー自身が要求した場合にのみ実行されます。Slack、Teams、またはプロジェクトのスレッドから中継されたメッセージに含まれていた場合は、要約の代わりに[通知](/docs/ja/errors#recap-only-runs-when-you-ask-for-it-yourself)が表示されます。クラウドのスケジュールタスクが送信したプロンプトに `/recap` が含まれていた場合も、通知が表示されます。
+`/recap` を実行して、オンデマンドで要約を生成します。これはユーザー自身が要求した場合にのみ実行されます。Slack、Teams、またはプロジェクトのスレッドから中継されたメッセージに含まれていた場合は、要約の代わりに[通知](/docs/ja/errors.md#recap-only-runs-when-you-ask-for-it-yourself)が表示されます。クラウドのスケジュールタスクが送信したプロンプトに `/recap` が含まれていた場合も、通知が表示されます。
 
 セッションの要約はすべてのプランとプロバイダーでデフォルトでオンになっています。自動要約をオフにするには、`/config` を開いて **Session recap** をオフにします。自動要約は非対話モードでは表示されません。Claude Code は自動要約と `/recap` 出力の両方を 400 文字に制限しています。
 
 ## 使用制限がリセットされるまで待機する
 
-claude.ai の[使用制限](/docs/ja/errors#youve-hit-your-session-limit)が Claude Code の途中でタスクを停止した場合、Claude Code はオープンセッションで待機し、制限がリセットされた後に自動的にタスクを続行します。自動続行は、claude.ai サブスクリプションでサインインしたインタラクティブセッションではデフォルトで有効です。Claude Code v2.1.234 以降が必要です。
+claude.ai の[使用制限](/docs/ja/errors.md#youve-hit-your-session-limit)が Claude Code の途中でタスクを停止した場合、Claude Code はオープンセッションで待機し、制限がリセットされた後に自動的にタスクを続行します。自動続行は、claude.ai サブスクリプションでサインインしたインタラクティブセッションではデフォルトで有効です。Claude Code v2.1.234 以降が必要です。
 
 Claude Code が待機している間、セッションの下部に、制限がリセットされる時刻と Claude が続行する時刻を示す行が表示されます。
 
@@ -745,9 +745,9 @@ Continuing automatically at 3:45pm · esc to cancel
 
 * **リセット時**：2 行目が `Continuing shortly · esc to cancel` に変わります。その後、会話に `Usage limit reset · continuing automatically` が表示され、Claude Code は Claude に停止した場所からタスクを再開するよう促します。最後のメッセージは再送信されません。
 * **コンピューターがスリープした後**：約 30 分以上スリープし、スリープ中に制限がリセットされた場合、1 行目は `Your usage limit has reset`、2 行目は `Press enter to continue` と表示されます。`Enter` キーを押して続行してください。スリープが短かった場合や、リセット前にスリープが終了した場合は、Claude Code が自動的に続行します。
-* **早期**：待機中に `/usage-credits` で[使用クレジットを追加](/docs/ja/costs#add-usage-credits-to-your-subscription)したり、`/upgrade` の後に再度サインインしたり、`/model` でモデルを切り替えたりした場合、Claude Code は使用可能な使用量があるかどうかを確認し、ある場合はすぐに続行します。ブラウザで自分で行ったアップグレードまたは購入の後は確認されません。[`opusplan`](/docs/ja/model-config#opusplan-model-setting) および他のモデル設定で異なるモデルでプランモードを実行する場合、Claude Code はリセットを待機します。
+* **早期**：待機中に `/usage-credits` で[使用クレジットを追加](/docs/ja/costs.md#add-usage-credits-to-your-subscription)したり、`/upgrade` の後に再度サインインしたり、`/model` でモデルを切り替えたりした場合、Claude Code は使用可能な使用量があるかどうかを確認し、ある場合はすぐに続行します。ブラウザで自分で行ったアップグレードまたは購入の後は確認されません。[`opusplan`](/docs/ja/model-config#opusplan-model-setting) および他のモデル設定で異なるモデルでプランモードを実行する場合、Claude Code はリセットを待機します。
 
-続行されたタスクは他のターンと同様に実行されます。Claude Code は通常通り[権限](/docs/ja/permissions)を要求するため、タスクはあなたが不在の間にプロンプトで停止する可能性があります。再度制限に達した場合、Claude Code は最大 2 回連続で待機を再度有効にしてから停止し、`Automatic continue stopped after repeated usage-limit hits · /rate-limit-options to try again` と表示します。
+続行されたタスクは他のターンと同様に実行されます。Claude Code は通常通り[権限](/docs/ja/permissions.md)を要求するため、タスクはあなたが不在の間にプロンプトで停止する可能性があります。再度制限に達した場合、Claude Code は最大 2 回連続で待機を再度有効にしてから停止し、`Automatic continue stopped after repeated usage-limit hits · /rate-limit-options to try again` と表示します。
 
 ### 待機をキャンセルする
 
@@ -771,7 +771,7 @@ Claude Code は以下の場合に自動的に待機を開始しません。
 * **24 時間以上先のリセット**：週単位の制限は数日先にリセットされる可能性があります。
 * **そのファミリー外のモデルを実行している間の Opus または Sonnet 制限**：次のターン時にその制限に達しない可能性があります。[`opusplan`](/docs/ja/model-config#opusplan-model-setting) および制限されたファミリーでプランモードを実行する他のモデル設定はこの例外を取得しません。
 
-これらの場合、および自動続行がオフの場合、Claude Code は自分のターミナルで制限に達したときに、リセットウィンドウごとに 1 回使用制限オプションメニューを開きます。**Wait here, then continue automatically** で始まる行を選択して待機を開始してください。[リモートコントロール](/docs/ja/remote-control)または[エージェントチーム](/docs/ja/agent-teams)メイトセッションでは、自分で `/rate-limit-options` を実行してメニューを開いてください。
+これらの場合、および自動続行がオフの場合、Claude Code は自分のターミナルで制限に達したときに、リセットウィンドウごとに 1 回使用制限オプションメニューを開きます。**Wait here, then continue automatically** で始まる行を選択して待機を開始してください。[リモートコントロール](/docs/ja/remote-control.md)または[エージェントチーム](/docs/ja/agent-teams.md)メイトセッションでは、自分で `/rate-limit-options` を実行してメニューを開いてください。
 
 Claude Code は以下の場合に待機をまったく提供しません。
 
@@ -781,7 +781,7 @@ Claude Code は以下の場合に待機をまったく提供しません。
 
 ### 自動続行をオフにする
 
-`/config` で**Continue automatically at usage limit** をオフにするか、ユーザー設定で [`autoContinueAtUsageLimit`](/docs/ja/settings-reference#autocontinueatusagelimit) を `false` に設定してください。`/config autoContinueAtUsageLimit=false` も機能します（`-p` を含む）が、`key=value` 形式は設定が無人実行を許可するため、オンに戻すことはできません。Claude Code がこのキーを読み込むどの設定ファイルかは、[設定リファレンス](/docs/ja/settings-reference#autocontinueatusagelimit)に記載されています。
+`/config` で**Continue automatically at usage limit** をオフにするか、ユーザー設定で [`autoContinueAtUsageLimit`](/docs/ja/settings-reference#autocontinueatusagelimit) を `false` に設定してください。`/config autoContinueAtUsageLimit=false` も機能します（`-p` を含む）が、`key=value` 形式は設定が無人実行を許可するため、オンに戻すことはできません。Claude Code がこのキーを読み込むどの設定ファイルかは、[設定リファレンス](/docs/ja/settings-reference.md#autocontinueatusagelimit)に記載されています。
 
 ## PR レビューステータス
 
@@ -851,8 +851,8 @@ Claude Code は、参照が指すリポジトリではなく、git remote から
 
 ## 関連項目
 
-* [スキル](/docs/ja/skills) - カスタムプロンプトとワークフロー
-* [チェックポイント](/docs/ja/checkpointing) - Claude の編集を巻き戻し、前の状態を復元
-* [CLI リファレンス](/docs/ja/cli-reference) - コマンドラインフラグとオプション
-* [設定](/docs/ja/settings) - 設定オプション
-* [メモリ管理](/docs/ja/memory) - CLAUDE.md ファイルの管理
+* [スキル](/docs/ja/skills.md) - カスタムプロンプトとワークフロー
+* [チェックポイント](/docs/ja/checkpointing.md) - Claude の編集を巻き戻し、前の状態を復元
+* [CLI リファレンス](/docs/ja/cli-reference.md) - コマンドラインフラグとオプション
+* [設定](/docs/ja/settings.md) - 設定オプション
+* [メモリ管理](/docs/ja/memory.md) - CLAUDE.md ファイルの管理

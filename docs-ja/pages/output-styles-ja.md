@@ -17,8 +17,8 @@
 >
 > 出力スタイルは Claude に従うべき指示を与えます。何かが常に起こることや決して起こらないことを保証するものではありません。一部のニーズは異なる機能に適しています。
 >
-> * Claude がプロジェクトについて知っておくべきことについては、[CLAUDE.md](/docs/ja/memory) を使用します。
-> * 各編集後のフォーマットやコマンドのブロックなど、毎回必ず起こる必要があることについては、[フック](/docs/ja/hooks-guide)を使用します。
+> * Claude がプロジェクトについて知っておくべきことについては、[CLAUDE.md](/docs/ja/memory.md) を使用します。
+> * 各編集後のフォーマットやコマンドのブロックなど、毎回必ず起こる必要があることについては、[フック](/docs/ja/hooks-guide.md)を使用します。
 > * スキル、サブエージェント、その他のオプションについては、[出力スタイルと他の機能の選択](#choose-between-an-output-style-and-other-features)を参照してください。
 
 ## 組み込み出力スタイル
@@ -46,7 +46,7 @@ Proactive スタイルでは、Claude はタスクを送信するとすぐに実
 
 スタイルの指示は、データを削除するか、共有またはプロダクションシステムを変更するアクションの前に、Claude がカンバセーション内でユーザーに確認するよう指示します。その確認は Claude が従う指示であり、権限プロンプトとは別です。
 
-Proactive スタイルに切り替えても、[権限モード](/docs/ja/permission-modes)は変わりません。権限モードは依然としてユーザーに尋ねずに実行するツール呼び出しを決定するため、権限プロンプトは切り替え前と同じ方法で表示されます。
+Proactive スタイルに切り替えても、[権限モード](/docs/ja/permission-modes.md)は変わりません。権限モードは依然としてユーザーに尋ねずに実行するツール呼び出しを決定するため、権限プロンプトは切り替え前と同じ方法で表示されます。
 
 ### Concise
 
@@ -90,14 +90,14 @@ Claude はその後停止し、待機します。`TODO(human)` コメントで�
 
 ## 出力スタイルを変更する
 
-コマンド、メニュー、または設定ファイルでスタイルを選択します。コマンドと両方のメニューは、選択内容を [ローカルプロジェクトレベル](/docs/ja/settings) の `.claude/settings.local.json` に保存します。
+コマンド、メニュー、または設定ファイルでスタイルを選択します。コマンドと両方のメニューは、選択内容を [ローカルプロジェクトレベル](/docs/ja/settings.md) の `.claude/settings.local.json` に保存します。
 
 * **`/output-style` コマンド**: `/output-style <style>` を実行してスタイルを切り替えます。例えば `/output-style concise` のように使用します。引数なしで実行すると、選択可能なスタイルが一覧表示され、現在のスタイルがマークされます。
 
-  このコマンドは [非対話型モード](/docs/ja/headless) と Agent SDK セッション、およびモバイルアプリまたは Web から [リモートコントロール](/docs/ja/remote-control#limitations) 経由でも機能します。この場合、[組み込みスタイル](#built-in-output-styles) のみをリストして選択できます。Claude Code v2.1.269 以降が必要です。
+  このコマンドは [非対話型モード](/docs/ja/headless.md) と Agent SDK セッション、およびモバイルアプリまたは Web から [リモートコントロール](/docs/ja/remote-control.md#limitations) 経由でも機能します。この場合、[組み込みスタイル](#built-in-output-styles) のみをリストして選択できます。Claude Code v2.1.269 以降が必要です。
 * **Terminal メニュー**: `/config` を実行し、**Output style** を選択してメニューからスタイルを選択します。
-* **VS Code extension**: [コマンドメニュー](/docs/ja/vs-code#use-the-prompt-box) を `/` で開き、**Output styles** を選択してスタイルを選択します。カスタムスタイルも含まれます。Claude Code v2.1.257 以降が必要です。
-* **Desktop app**: 設定ファイル（例えば `.claude/settings.local.json`、ターミナルメニューが書き込むファイル）の `outputStyle` フィールドを設定します。`/config` を実行すると、Claude Code は [**Settings > Claude Code**](/docs/ja/desktop#what%E2%80%99s-not-available-in-desktop) を開きます。メニューではなく設定画面が開きます。
+* **VS Code extension**: [コマンドメニュー](/docs/ja/vs-code.md#use-the-prompt-box) を `/` で開き、**Output styles** を選択してスタイルを選択します。カスタムスタイルも含まれます。Claude Code v2.1.257 以降が必要です。
+* **Desktop app**: 設定ファイル（例えば `.claude/settings.local.json`、ターミナルメニューが書き込むファイル）の `outputStyle` フィールドを設定します。`/config` を実行すると、Claude Code は [**Settings > Claude Code**](/docs/ja/desktop.md#what%E2%80%99s-not-available-in-desktop) を開きます。メニューではなく設定画面が開きます。
 
 メニューなしでスタイルを設定するには、設定ファイルの `outputStyle` フィールドを直接編集します。
 
@@ -109,15 +109,15 @@ Claude はその後停止し、待機します。`TODO(human)` コメントで�
 
 値は大文字と小文字を区別するため、組み込み名は `Proactive`、`Concise`、`Explanatory`、`Learning` と記述してください。`explanatory` のようにスタイル名と完全に一致しない値を指定すると、デフォルトスタイルが適用されます。`/output-style` コマンドは大文字と小文字を区別しません。
 
-プロジェクト全体でスタイルをデフォルトにするには、`~/.claude/settings.json` で `outputStyle` を設定します。プロジェクト独自の設定ファイルは [その値より優先されます](/docs/ja/settings#settings-precedence)。
+プロジェクト全体でスタイルをデフォルトにするには、`~/.claude/settings.json` で `outputStyle` を設定します。プロジェクト独自の設定ファイルは [その値より優先されます](/docs/ja/settings.md#settings-precedence)。
 
-セッション中にスタイルを切り替えると、Claude は次のメッセージから新しいスタイルを使用します。最初のメッセージのプロンプトキャッシングのコストについては、[出力スタイルの変更](/docs/ja/prompt-caching#changing-output-style) を参照してください。v2.1.251 より前は、新しいスタイルは `/clear` を実行するか新しいセッションを開始した後にのみ適用されました。
+セッション中にスタイルを切り替えると、Claude は次のメッセージから新しいスタイルを使用します。最初のメッセージのプロンプトキャッシングのコストについては、[出力スタイルの変更](/docs/ja/prompt-caching.md#changing-output-style) を参照してください。v2.1.251 より前は、新しいスタイルは `/clear` を実行するか新しいセッションを開始した後にのみ適用されました。
 
 ## カスタム出力スタイルを作成する
 
 カスタム出力スタイルは Markdown ファイルです。メタデータ用の frontmatter、その後に Claude の指示が続きます。
 
-VS Code 拡張機能では、手書きではなく [**Output styles** メニュー](/docs/ja/vs-code#use-the-prompt-box) からファイルを作成することもできます。これには Claude Code v2.1.261 以降が必要です。
+VS Code 拡張機能では、手書きではなく [**Output styles** メニュー](/docs/ja/vs-code.md#use-the-prompt-box) からファイルを作成することもできます。これには Claude Code v2.1.261 以降が必要です。
 
 **1. Markdown ファイルを作成する**
 
@@ -125,7 +125,7 @@ VS Code 拡張機能では、手書きではなく [**Output styles** メニュ�
 
 * ユーザー: `~/.claude/output-styles`
 * プロジェクト: `.claude/output-styles`
-* 管理ポリシー: [管理設定ディレクトリ](/docs/ja/managed-settings#delivery-mechanisms) 内の `.claude/output-styles`
+* 管理ポリシー: [管理設定ディレクトリ](/docs/ja/managed-settings.md#delivery-mechanisms) 内の `.claude/output-styles`
 
 プロジェクト出力スタイルは、作業ディレクトリとリポジトリルートの間のすべての `.claude/output-styles/` から読み込まれます。これらのネストされたディレクトリの複数が同じ名前のスタイルを定義する場合、Claude Code は作業ディレクトリに最も近いものを使用します。
 
@@ -153,11 +153,11 @@ Use `flowchart TD` for control flow and `sequenceDiagram` for request paths. Kee
 
 ターミナルで `/output-style <style>` を実行するか、`/config` を実行して **Output style** でスタイルを選択します。Claude は次のメッセージから新しいスタイルを使用します。ターミナルでは、Claude Code はスタイルファイルを起動時に読み込むため、実行中のセッション中に作成または編集した場合は、Claude Code を再起動して変更を反映させてください。
 
-[プラグイン](/docs/ja/plugins/manifest-reference) は `output-styles/` ディレクトリで出力スタイルを配布することもできます。
+[プラグイン](/docs/ja/plugins/manifest-reference.md) は `output-styles/` ディレクトリで出力スタイルを配布することもできます。
 
 ### Frontmatter リファレンス
 
-出力スタイルを YAML [frontmatter](/docs/ja/glossary#frontmatter) で設定します。ファイルの上部の `---` マーカーの間に記述します。すべてのフィールドはオプションであり、フィールド名はハイフンで区切られた小文字の単語を使用します。スペルが間違ったフィールドはエラーなしで無視されます。YAML が解析できない場合、スタイルはファイル名で読み込まれ、フィールドは設定されません。`claude --debug` を実行して解析エラーを確認してください。
+出力スタイルを YAML [frontmatter](/docs/ja/glossary.md#frontmatter) で設定します。ファイルの上部の `---` マーカーの間に記述します。すべてのフィールドはオプションであり、フィールド名はハイフンで区切られた小文字の単語を使用します。スペルが間違ったフィールドはエラーなしで無視されます。YAML が解析できない場合、スタイルはファイル名で読み込まれ、フィールドは設定されません。`claude --debug` を実行して解析エラーを確認してください。
 
 | フィールド | 必須 | 説明 |
 | :- | :- | :- |
@@ -175,13 +175,13 @@ Use `flowchart TD` for control flow and `sequenceDiagram` for request paths. Kee
 | 必要なもの | 使用する機能 | 適切な理由 |
 | :- | :- | :- |
 | 特定の声、長さ、または形式のすべての応答、または異なるロールの Claude | 出力スタイル | セッション全体に適用され、1 つのコマンドでスタイルを切り替えることができます |
-| Claude がプロジェクトの規約、コマンド、および構造を知っている | [CLAUDE.md](/docs/ja/memory) | Claude が知るべきコードベースについての情報を保持し、選択したスタイルに関係なく読み込まれたままになります |
-| リリースチェックリストやレビュー手順など、1 種類のタスクの指示 | [skill](/docs/ja/skills) | Claude はそれを呼び出すか、タスクが一致する場合にのみ読み込むため、関連のない応答を形成しません |
-| 各編集後のフォーマットやコマンドのブロックなど、例外なく毎回発生する必要があるもの | [hook](/docs/ja/hooks-guide) | Claude Code はライフサイクルイベントでフック自体を実行するため、Claude が指示に従うことに依存しません |
-| 焦点を絞ったタスク用に独自の指示、モデル、およびツールを備えたヘルパー | [subagent](/docs/ja/sub-agents) | 独自のシステムプロンプトを備えた別のコンテキストで実行され、会話に概要を返します |
+| Claude がプロジェクトの規約、コマンド、および構造を知っている | [CLAUDE.md](/docs/ja/memory.md) | Claude が知るべきコードベースについての情報を保持し、選択したスタイルに関係なく読み込まれたままになります |
+| リリースチェックリストやレビュー手順など、1 種類のタスクの指示 | [skill](/docs/ja/skills.md) | Claude はそれを呼び出すか、タスクが一致する場合にのみ読み込むため、関連のない応答を形成しません |
+| 各編集後のフォーマットやコマンドのブロックなど、例外なく毎回発生する必要があるもの | [hook](/docs/ja/hooks-guide.md) | Claude Code はライフサイクルイベントでフック自体を実行するため、Claude が指示に従うことに依存しません |
+| 焦点を絞ったタスク用に独自の指示、モデル、およびツールを備えたヘルパー | [subagent](/docs/ja/sub-agents.md) | 独自のシステムプロンプトを備えた別のコンテキストで実行され、会話に概要を返します |
 | Claude Code を開始するときに渡す Claude の指示への追加 | [`--append-system-prompt`](/docs/ja/cli-reference#system-prompt-flags) | 何も削除せずにシステムプロンプトに追加します |
 
-これらの機能は組み合わせることができます。たとえば、Claude が知るべきことに CLAUDE.md を使用し、応答方法に出力スタイルを使用し、保証する必要があるものに hook を使用できます。[Claude Code を拡張](/docs/ja/features-overview)すると、残りの拡張機能が比較されます。
+これらの機能は組み合わせることができます。たとえば、Claude が知るべきことに CLAUDE.md を使用し、応答方法に出力スタイルを使用し、保証する必要があるものに hook を使用できます。[Claude Code を拡張](/docs/ja/features-overview.md)すると、残りの拡張機能が比較されます。
 
 ## 出力スタイルの仕組み
 
@@ -190,7 +190,7 @@ Use `flowchart TD` for control flow and `sequenceDiagram` for request paths. Kee
 * Claude Code はすべてのリクエストで有効なスタイルの指示を送信します。
 * 完全なシステムプロンプトでは、カスタム出力スタイルは、`keep-coding-instructions` が `true` に設定されていない限り、変更のスコープ、コメントの書き方、作業の検証方法など、Claude Code の組み込みソフトウェアエンジニアリング指示のセクションを除外します。短いシステムプロンプトにはこのセクションが含まれないため、そちらではこのフィールドは効果がありません。このフィールドを確実に機能させるには、[`CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT`](/docs/ja/env-vars#variables) を `0` に設定してください。これにより、どのモデルでも完全なプロンプトが選択されます。
 
-出力スタイルはメイン会話と [フォーク](/docs/ja/sub-agents#fork-the-current-conversation) に適用されます。フォークは親の完全な会話とシステムプロンプトを継承します。その他の [サブエージェントは独自のシステムプロンプトを実行](/docs/ja/sub-agents#what-loads-at-startup) するため、スタイルはそれらの応答方法を変更しません。
+出力スタイルはメイン会話と [フォーク](/docs/ja/sub-agents.md#fork-the-current-conversation) に適用されます。フォークは親の完全な会話とシステムプロンプトを継承します。その他の [サブエージェントは独自のシステムプロンプトを実行](/docs/ja/sub-agents.md#what-loads-at-startup) するため、スタイルはそれらの応答方法を変更しません。
 
 トークン使用量はスタイルによって異なります。スタイルの指示は入力トークンを追加しますが、プロンプトキャッシングはセッション内の最初のリクエスト後にこのコストを削減します。
 
@@ -198,7 +198,7 @@ Use `flowchart TD` for control flow and `sequenceDiagram` for request paths. Kee
 
 ## 関連リソース
 
-* [設定](/docs/ja/settings): `outputStyle` フィールドが存在する場所と設定の優先順位の仕組み
-* [権限モード](/docs/ja/permission-modes): Proactive スタイルがオートモードとどのように比較されるか
-* [プラグイン](/docs/ja/plugins/overview): スキル、フック、エージェントと一緒に出力スタイルをパッケージ化して配布する
-* [設定をデバッグする](/docs/ja/debug-your-config): 出力スタイルが有効にならない理由を診断する
+* [設定](/docs/ja/settings.md): `outputStyle` フィールドが存在する場所と設定の優先順位の仕組み
+* [権限モード](/docs/ja/permission-modes.md): Proactive スタイルがオートモードとどのように比較されるか
+* [プラグイン](/docs/ja/plugins/overview.md): スキル、フック、エージェントと一緒に出力スタイルをパッケージ化して配布する
+* [設定をデバッグする](/docs/ja/debug-your-config.md): 出力スタイルが有効にならない理由を診断する

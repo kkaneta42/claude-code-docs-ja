@@ -14,14 +14,14 @@
 
 * ターミナルまたはコマンドプロンプトが開いている
 * 作業するコードプロジェクトがある
-* [Claude サブスクリプション](https://claude.com/pricing?utm_source=claude_code\&utm_medium=docs\&utm_content=quickstart_prereq)（Pro、Max、Team、または Enterprise）、[Claude Console](https://platform.claude.com/) アカウント、または[サポートされているクラウドプロバイダー](/docs/ja/third-party-integrations)経由のアクセスがある
+* [Claude サブスクリプション](https://claude.com/pricing?utm_source=claude_code\&utm_medium=docs\&utm_content=quickstart_prereq)（Pro、Max、Team、または Enterprise）、[Claude Console](https://platform.claude.com/) アカウント、または[サポートされているクラウドプロバイダー](/docs/ja/third-party-integrations.md)経由のアクセスがある
 
 > [!NOTE]
 >
 > 以下のケースについては、他のページで説明しています：
 >
 > * **ターミナルを使用したことがない場合**：[ターミナルガイド](/docs/ja/terminal-guide)から始めてください
-> * **ターミナル以外の場所で Claude Code を使用したい場合**：Claude Code は[ウェブ](https://claude.ai/code)、[デスクトップアプリ](/docs/ja/desktop)、[VS Code](/docs/ja/vs-code) および [JetBrains IDE](/docs/ja/jetbrains)、[Slack](/docs/ja/slack)、および [GitHub Actions](/docs/ja/github-actions) と [GitLab](/docs/ja/gitlab-ci-cd) を使用した CI/CD でも利用できます。[すべてのインターフェース](/docs/ja/overview#use-claude-code-everywhere)を参照してください。
+> * **ターミナル以外の場所で Claude Code を使用したい場合**：Claude Code は[ウェブ](https://claude.ai/code)、[デスクトップアプリ](/docs/ja/desktop.md)、[VS Code](/docs/ja/vs-code.md) および [JetBrains IDE](/docs/ja/jetbrains.md)、[Slack](/docs/ja/slack.md)、および [GitHub Actions](/docs/ja/github-actions.md) と [GitLab](/docs/ja/gitlab-ci-cd.md) を使用した CI/CD でも利用できます。[すべてのインターフェース](/docs/ja/overview.md#use-claude-code-everywhere)を参照してください。
 
 ## ステップ 1：Claude Code をインストールする
 
@@ -49,11 +49,11 @@ irm https://claude.ai/install.ps1 | iex
 curl -fsSL https://claude.ai/install.cmd -o install.cmd && install.cmd && del install.cmd
 ```
 
-インストールコマンドは、Claude Code のダウンロード中に進行状況を表示しません。インストーラーが完了したら、新しいターミナルウィンドウを開いて `claude --version` を実行してください。インストールが正常に完了すると、バージョン番号が表示されます。シェルが `claude` が見つからない、または認識されていないと表示される場合は、インストールディレクトリがまだ PATH に含まれていません。[PATH を修正する](/docs/ja/troubleshoot-install#command-not-found-claude-after-installation)を参照してください。
+インストールコマンドは、Claude Code のダウンロード中に進行状況を表示しません。インストーラーが完了したら、新しいターミナルウィンドウを開いて `claude --version` を実行してください。インストールが正常に完了すると、バージョン番号が表示されます。シェルが `claude` が見つからない、または認識されていないと表示される場合は、インストールディレクトリがまだ PATH に含まれていません。[PATH を修正する](/docs/ja/troubleshoot-install.md#command-not-found-claude-after-installation)を参照してください。
 
 `The token '&&' is not a valid statement separator` というエラーが表示される場合は、CMD ではなく PowerShell を使用しています。`'irm' is not recognized as an internal or external command` というエラーが表示される場合は、PowerShell ではなく CMD を使用しています。
 
-インストールコマンドが `syntax error near unexpected token '<'`、`403`、またはその他のエラーで失敗する場合は、[インストールのトラブルシューティング](/docs/ja/troubleshoot-install#find-your-error)を参照して、エラーを修正方法に照合し、代替インストール方法を確認してください。
+インストールコマンドが `syntax error near unexpected token '<'`、`403`、またはその他のエラーで失敗する場合は、[インストールのトラブルシューティング](/docs/ja/troubleshoot-install.md#find-your-error)を参照して、エラーを修正方法に照合し、代替インストール方法を確認してください。
 
 [Git for Windows](https://git-scm.com/downloads/win) は、Claude Code が Bash ツールを使用できるようにネイティブ Windows で推奨されます。Git for Windows がインストールされていない場合、Claude Code はシェルツールとして PowerShell を代わりに使用します。WSL セットアップは Git for Windows を必要としません。
 
@@ -83,7 +83,7 @@ winget install Anthropic.ClaudeCode
 >
 > WinGet インストールは自動更新されません。最新の機能とセキュリティ修正を取得するために、定期的に `winget upgrade Anthropic.ClaudeCode` を実行してください。
 
-また、Debian、Fedora、RHEL、Alpine で [apt、dnf、または apk](/docs/ja/setup#install-with-linux-package-managers) を使用してインストールすることもできます。
+また、Debian、Fedora、RHEL、Alpine で [apt、dnf、または apk](/docs/ja/setup.md#install-with-linux-package-managers) を使用してインストールすることもできます。
 
 インストールが正常に機能したことを確認するには、以下を実行してください：
 
@@ -110,10 +110,10 @@ claude
 
 * [Claude Pro、Max、Team、または Enterprise](https://claude.com/pricing?utm_source=claude_code\&utm_medium=docs\&utm_content=quickstart_login)（推奨）
 * [Claude Console](https://platform.claude.com/)（前払いクレジットによる API アクセス）。初回ログイン時に、コストを一元的に追跡するための「Claude Code」ワークスペースが Console に自動的に作成されます。
-* [Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry](/docs/ja/third-party-integrations)（エンタープライズ向けクラウドプロバイダー）
+* [Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry](/docs/ja/third-party-integrations.md)（エンタープライズ向けクラウドプロバイダー）
 * 組織で運用している場合は、セルフホストの [Claude apps ゲートウェイ](/docs/ja/claude-apps-gateway)：管理者がゲートウェイ URL を事前に設定しており、`/login` を実行すると **Cloud gateway** 画面が直接開くので、企業の SSO でサインインします
 
-一度ログインすると認証情報が保存されるため、再度ログインする必要はありません。詳しくは[認証情報の管理](/docs/ja/authentication#credential-management)を参照してください。
+一度ログインすると認証情報が保存されるため、再度ログインする必要はありません。詳しくは[認証情報の管理](/docs/ja/authentication.md#credential-management)を参照してください。
 
 Claude Code のプロンプトが表示され、その上にバージョン、現在のモデル、作業ディレクトリが表示されます。`/help` と入力すると利用可能なコマンドが表示され、`/resume` と入力すると以前の会話を再開できます。後でアカウントを切り替えたり再認証したりするには、実行中のセッション内で `/login` と入力します。
 
@@ -167,7 +167,7 @@ add a hello world function to the main file
 
 Claude Code は適切なファイルを見つけ、変更内容を表示します。変更を行う前に確認を求められた場合は、**Yes** を選択して承認します。
 
-セッションの[権限モード](/docs/ja/permission-modes)は、Claude が事前に確認せずに実行できるアクションを決定します。`Shift+Tab` を押すと、いつでも現在のセッションの権限モードを切り替えられます。
+セッションの[権限モード](/docs/ja/permission-modes.md)は、Claude が事前に確認せずに実行できるアクションを決定します。`Shift+Tab` を押すと、いつでも現在のセッションの権限モードを切り替えられます。
 
 ## ステップ 5：Claude Code で Git を使用する
 
@@ -249,7 +249,7 @@ review my changes and suggest improvements
 | `claude -c` | 現在のディレクトリで最新の会話を続行する | `claude -c` |
 | `claude -r` | 前の会話を再開する | `claude -r` |
 
-シェルコマンドの完全なリストについては [CLI リファレンス](/docs/ja/cli-reference)を参照してください。
+シェルコマンドの完全なリストについては [CLI リファレンス](/docs/ja/cli-reference.md)を参照してください。
 
 ### セッションコマンド
 
@@ -261,11 +261,11 @@ review my changes and suggest improvements
 | `/help` | 利用可能なコマンドを表示する | `/help` |
 | `/exit` または Ctrl+D 2 回 | Claude Code を終了する | `/exit` |
 
-セッションコマンドの完全なリストについては [コマンドリファレンス](/docs/ja/commands)を参照してください。
+セッションコマンドの完全なリストについては [コマンドリファレンス](/docs/ja/commands.md)を参照してください。
 
 ## 初心者向けのプロのヒント
 
-詳細については、[ベストプラクティス](/docs/ja/best-practices)と[一般的なワークフロー](/docs/ja/common-workflows)を参照してください。
+詳細については、[ベストプラクティス](/docs/ja/best-practices.md)と[一般的なワークフロー](/docs/ja/common-workflows.md)を参照してください。
 
 > **リクエストを具体的にする**
 >
@@ -306,12 +306,12 @@ review my changes and suggest improvements
 
 基本を学習したので、より高度な機能を探索してください：
 
-* [Claude Code の仕組み](/docs/ja/how-claude-code-works)：エージェント型ループ、組み込みツール、および Claude Code がプロジェクトと相互作用する方法を理解する
-* [ベストプラクティス](/docs/ja/best-practices)：効果的なプロンプティングとプロジェクト設定でより良い結果を得る
-* [一般的なワークフロー](/docs/ja/common-workflows)：一般的なタスクのステップバイステップガイド
-* [Claude Code を拡張する](/docs/ja/features-overview)：CLAUDE.md、スキル、フック、MCP などでカスタマイズする
+* [Claude Code の仕組み](/docs/ja/how-claude-code-works.md)：エージェント型ループ、組み込みツール、および Claude Code がプロジェクトと相互作用する方法を理解する
+* [ベストプラクティス](/docs/ja/best-practices.md)：効果的なプロンプティングとプロジェクト設定でより良い結果を得る
+* [一般的なワークフロー](/docs/ja/common-workflows.md)：一般的なタスクのステップバイステップガイド
+* [Claude Code を拡張する](/docs/ja/features-overview.md)：CLAUDE.md、スキル、フック、MCP などでカスタマイズする
 
-インストールオプション、手動アップデート、またはアンインストール手順については、[高度なセットアップ](/docs/ja/setup)を参照してください。
+インストールオプション、手動アップデート、またはアンインストール手順については、[高度なセットアップ](/docs/ja/setup.md)を参照してください。
 
 ## ヘルプを取得する
 

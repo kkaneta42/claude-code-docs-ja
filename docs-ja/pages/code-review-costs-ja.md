@@ -6,9 +6,9 @@
 
 > 組織が Claude Code Review に費やす金額を見積もり、上限を設定します。使用クレジットを通じたレビューの課金方法、コストを左右する要因、使用状況の確認場所について説明します。
 
-[Code Review](/docs/ja/code-review) には、レビューごとの定額料金はありません。支出額は、各レビューのコストと実行されるレビューの数によって決まります。
+[Code Review](/docs/ja/code-review.md) には、レビューごとの定額料金はありません。支出額は、各レビューのコストと実行されるレビューの数によって決まります。
 
-* **各レビューのコスト**：[レビューレベル](/docs/ja/code-review-setup#set-the-default-review-level)、変更の規模、周辺コードの複雑さ、検証が必要な候補の問題の数に応じて増減します
+* **各レビューのコスト**：[レビューレベル](/docs/ja/code-review-setup.md#set-the-default-review-level)、変更の規模、周辺コードの複雑さ、検証が必要な候補の問題の数に応じて増減します
 * **レビューの数**：各リポジトリで[レビューが実行される頻度](#how-often-reviews-run)によって決まります
 
 ## 料金
@@ -17,7 +17,7 @@ Code Review は、プランに含まれる使用量とは別に、[使用クレ�
 
 ### レビューが実行される頻度
 
-管理ページから追加したリポジトリは、最も多くのレビューが実行される **After every push** から始まります。各リポジトリの [**Review runs** 設定](/docs/ja/code-review-setup#set-when-reviews-run)によって、プルリクエストが受けるレビューの数が決まります。
+管理ページから追加したリポジトリは、最も多くのレビューが実行される **After every push** から始まります。各リポジトリの [**Review runs** 設定](/docs/ja/code-review-setup.md#set-when-reviews-run)によって、プルリクエストが受けるレビューの数が決まります。
 
 * **Once after PR creation**：プルリクエストが作成されたとき、再オープンされたとき、またはレビュー準備完了としてマークされたときにレビューが実行されます
 * **After every push**：プッシュのたびに実行されるため、コストはプッシュ回数に比例して増えます
@@ -25,10 +25,10 @@ Code Review は、プランに含まれる使用量とは別に、[使用クレ�
 
 コメントコマンド、ドラフト、フォークからのプルリクエストによって、これらの回数は次のように変わります。
 
-* **Once after PR creation または Manual モードでの `@claude review always`**：[PR をプッシュトリガーのレビューにオプトインする](/docs/ja/code-review-pull-requests#comment-commands)ため、そのコメント以降はプッシュごとに追加のコストが発生します
+* **Once after PR creation または Manual モードでの `@claude review always`**：[PR をプッシュトリガーのレビューにオプトインする](/docs/ja/code-review-pull-requests.md#comment-commands)ため、そのコメント以降はプッシュごとに追加のコストが発生します
 * **After every push モードでの `@claude review always`**：プッシュですでにレビューがトリガーされるため、このサブスクリプションによってプッシュごとのコストは変わりません
 * **`@claude review`**：今後のプッシュをサブスクライブせずに、1 回だけレビューを実行します
-* **ドラフトとフォークからのプルリクエスト**：[自動レビューはどちらもスキップする](/docs/ja/code-review-pull-requests#review-drafts-and-pull-requests-from-forks)ため、これらへのプッシュでレビューが増えることはありません
+* **ドラフトとフォークからのプルリクエスト**：[自動レビューはどちらもスキップする](/docs/ja/code-review-pull-requests.md#review-drafts-and-pull-requests-from-forks)ため、これらへのプッシュでレビューが増えることはありません
 
 ## 支出を見積もる
 
@@ -51,7 +51,7 @@ Code Review の月間支出上限を設定するには、[claude.ai/admin-settin
 * **組織の支出上限**：使用クレジットに対する組織全体の月間支出上限です。同じページで引き上げられます。
 * **使用クレジットの残高**：組織の使用クレジットの残高です。同じページでクレジットを追加できます。
 
-また、残りの額が 1 回のレビューの想定コストを下回った時点でも、Code Review はレビューをスキップします。レビューがスキップされると、開発者には原因を示し使用状況の設定へのリンクを含む [PR へのコメント](/docs/ja/code-review-troubleshooting#review-didn’t-run-and-the-pr-shows-a-budget-message)が表示されます。
+また、残りの額が 1 回のレビューの想定コストを下回った時点でも、Code Review はレビューをスキップします。レビューがスキップされると、開発者には原因を示し使用状況の設定へのリンクを含む [PR へのコメント](/docs/ja/code-review-troubleshooting.md#review-didn’t-run-and-the-pr-shows-a-budget-message)が表示されます。
 
 支出を監視するには、[分析ダッシュボード](#view-usage)を使用します。
 
@@ -70,7 +70,7 @@ Code Review cost カードには、当月が選択されている場合にのみ
 
 ## 関連リソース
 
-* [Code Review をセットアップする](/docs/ja/code-review-setup)：各リポジトリでレビューレベルとレビューの実行タイミングを選択する場所
-* [プルリクエストでレビューを確認・依頼する](/docs/ja/code-review-pull-requests)：コメントコマンド、フォークからのプルリクエスト、レビューがスキップされたときに開発者に表示される予算メッセージ
-* [Code Review](/docs/ja/code-review)：レビューで確認される内容と投稿される内容
-* [コストを効果的に管理する](/docs/ja/costs)：Claude Code のその他の機能における支出管理と使用状況の追跡
+* [Code Review をセットアップする](/docs/ja/code-review-setup.md)：各リポジトリでレビューレベルとレビューの実行タイミングを選択する場所
+* [プルリクエストでレビューを確認・依頼する](/docs/ja/code-review-pull-requests.md)：コメントコマンド、フォークからのプルリクエスト、レビューがスキップされたときに開発者に表示される予算メッセージ
+* [Code Review](/docs/ja/code-review.md)：レビューで確認される内容と投稿される内容
+* [コストを効果的に管理する](/docs/ja/costs.md)：Claude Code のその他の機能における支出管理と使用状況の追跡

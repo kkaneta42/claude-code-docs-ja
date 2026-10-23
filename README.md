@@ -17,6 +17,388 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-10-23</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/accessibility-ja.md                  |   29 +-
+ docs-ja/pages/admin-setup-ja.md                    |  118 +-
+ docs-ja/pages/advisor-ja.md                        |   38 +-
+ docs-ja/pages/agent-teams-ja.md                    |   89 +-
+ docs-ja/pages/agent-view-ja.md                     |  172 +--
+ docs-ja/pages/agents-ja.md                         |   56 +-
+ docs-ja/pages/amazon-bedrock-ja.md                 |   50 +-
+ docs-ja/pages/analytics-ja.md                      |   14 +-
+ docs-ja/pages/artifacts-ja.md                      |   72 +-
+ docs-ja/pages/authentication-ja.md                 |   86 +-
+ docs-ja/pages/auto-mode-classifier-billing-ja.md   |   22 +-
+ docs-ja/pages/auto-mode-config-ja.md               |   60 +-
+ docs-ja/pages/best-practices-ja.md                 |   72 +-
+ docs-ja/pages/champion-kit-ja.md                   |   28 +-
+ docs-ja/pages/changelog.md                         |   86 ++
+ docs-ja/pages/channels-ja.md                       |   42 +-
+ docs-ja/pages/channels-reference-ja.md             |   24 +-
+ docs-ja/pages/checkpointing-ja.md                  |   28 +-
+ docs-ja/pages/chrome-ja.md                         |   32 +-
+ docs-ja/pages/claude-apps-gateway-config-ja.md     |  149 +-
+ docs-ja/pages/claude-apps-gateway-deploy-ja.md     |  283 ++--
+ docs-ja/pages/claude-apps-gateway-ja.md            |  136 +-
+ docs-ja/pages/claude-apps-gateway-on-aws-ja.md     |   85 +-
+ docs-ja/pages/claude-apps-gateway-on-gcp-ja.md     |   28 +-
+ .../pages/claude-apps-gateway-spend-limits-ja.md   |   18 +-
+ docs-ja/pages/claude-code-on-the-web-ja.md         |  116 +-
+ docs-ja/pages/claude-directory-ja.md               |  144 +-
+ docs-ja/pages/claude-platform-on-aws-ja.md         |   18 +-
+ docs-ja/pages/claude-projects-ja.md                |  110 +-
+ docs-ja/pages/claude-security-ja.md                |   40 +-
+ docs-ja/pages/cli-reference-ja.md                  |  162 +-
+ docs-ja/pages/cloud-environments-ja.md             |  104 +-
+ docs-ja/pages/code-review-costs-ja.md              |   20 +-
+ docs-ja/pages/code-review-customize-ja.md          |   20 +-
+ docs-ja/pages/code-review-ja.md                    |   46 +-
+ docs-ja/pages/code-review-local-ja.md              |   52 +-
+ docs-ja/pages/code-review-pull-requests-ja.md      |   52 +-
+ docs-ja/pages/code-review-setup-ja.md              |   38 +-
+ docs-ja/pages/code-review-troubleshooting-ja.md    |   31 +-
+ docs-ja/pages/commands-ja.md                       |  210 +--
+ docs-ja/pages/common-workflows-ja.md               |   38 +-
+ docs-ja/pages/communications-kit-ja.md             |   22 +-
+ docs-ja/pages/computer-use-ja.md                   |   22 +-
+ docs-ja/pages/context-window-ja.md                 |   46 +-
+ docs-ja/pages/corporate-launcher-ja.md             |   28 +-
+ docs-ja/pages/costs-ja.md                          |  113 +-
+ docs-ja/pages/cross-session-messaging-ja.md        |   82 +-
+ docs-ja/pages/data-usage-ja.md                     |   34 +-
+ docs-ja/pages/debug-your-config-ja.md              |   59 +-
+ docs-ja/pages/deep-links-ja.md                     |   10 +-
+ docs-ja/pages/desktop-ios-simulator-ja.md          |   20 +-
+ docs-ja/pages/desktop-ja.md                        |  388 +++--
+ docs-ja/pages/desktop-linux-ja.md                  |   12 +-
+ docs-ja/pages/desktop-quickstart-ja.md             |   62 +-
+ docs-ja/pages/desktop-scheduled-tasks-ja.md        |   38 +-
+ docs-ja/pages/desktop-wsl-ja.md                    |   14 +-
+ docs-ja/pages/devcontainer-ja.md                   |   48 +-
+ docs-ja/pages/env-vars-ja.md                       |  604 ++++----
+ docs-ja/pages/errors-ja.md                         | 1620 +++++++++++---------
+ docs-ja/pages/fast-mode-ja.md                      |   36 +-
+ docs-ja/pages/feature-availability-ja.md           |  176 +--
+ docs-ja/pages/features-overview-ja.md              |  130 +-
+ docs-ja/pages/fullscreen-ja.md                     |   26 +-
+ docs-ja/pages/gateways-ja.md                       |   18 +-
+ docs-ja/pages/github-actions-cloud-providers-ja.md |   32 +-
+ docs-ja/pages/github-actions-ja.md                 |   46 +-
+ docs-ja/pages/github-enterprise-server-ja.md       |   38 +-
+ docs-ja/pages/gitlab-ci-cd-ja.md                   |    4 +-
+ docs-ja/pages/glossary-ja.md                       |  136 +-
+ docs-ja/pages/goal-ja.md                           |   32 +-
+ docs-ja/pages/google-vertex-ai-ja.md               |   28 +-
+ docs-ja/pages/headless-ja.md                       |   84 +-
+ docs-ja/pages/hipaa-setup-ja.md                    |   54 +-
+ docs-ja/pages/hooks-guide-ja.md                    |  149 +-
+ docs-ja/pages/hooks-ja.md                          |  301 ++--
+ docs-ja/pages/how-claude-code-works-ja.md          |   62 +-
+ docs-ja/pages/interactive-mode-ja.md               |  162 +-
+ docs-ja/pages/jetbrains-ja.md                      |   10 +-
+ docs-ja/pages/keybindings-ja.md                    |   61 +-
+ docs-ja/pages/large-codebases-ja.md                |   68 +-
+ docs-ja/pages/legal-and-compliance-ja.md           |    8 +-
+ docs-ja/pages/llm-gateway-connect-ja.md            |   88 +-
+ docs-ja/pages/llm-gateway-ja.md                    |   32 +-
+ docs-ja/pages/llm-gateway-protocol-ja.md           |   90 +-
+ docs-ja/pages/llm-gateway-rollout-ja.md            |   82 +-
+ docs-ja/pages/managed-mcp-ja.md                    |  258 ++--
+ docs-ja/pages/managed-settings-ja.md               |  108 +-
+ docs-ja/pages/mcp-ja.md                            |  193 ++-
+ docs-ja/pages/mcp-quickstart-ja.md                 |   38 +-
+ docs-ja/pages/memory-ja.md                         |  102 +-
+ docs-ja/pages/microsoft-foundry-ja.md              |   12 +-
+ docs-ja/pages/mobile-ja.md                         |   44 +-
+ docs-ja/pages/model-config-ja.md                   |  198 +--
+ docs-ja/pages/monitoring-usage-ja.md               |  168 +-
+ docs-ja/pages/network-config-ja.md                 |   74 +-
+ docs-ja/pages/output-styles-ja.md                  |   46 +-
+ docs-ja/pages/overview-ja.md                       |   92 +-
+ docs-ja/pages/permission-modes-ja.md               |  282 ++--
+ docs-ja/pages/permissions-ja.md                    |  220 +--
+ docs-ja/pages/platforms-ja.md                      |   74 +-
+ docs-ja/pages/plugin-evals-ja.md                   |   42 +-
+ docs-ja/pages/prompt-caching-ja.md                 |   98 +-
+ docs-ja/pages/prompt-library-ja.md                 |   14 +-
+ docs-ja/pages/quickstart-ja.md                     |   32 +-
+ docs-ja/pages/remote-control-ja.md                 |  116 +-
+ docs-ja/pages/routines-ja.md                       |   81 +-
+ docs-ja/pages/sandbox-environments-ja.md           |   60 +-
+ docs-ja/pages/sandboxing-ja.md                     |  180 ++-
+ docs-ja/pages/scheduled-tasks-ja.md                |   46 +-
+ docs-ja/pages/security-guidance-ja.md              |   36 +-
+ docs-ja/pages/security-ja.md                       |   60 +-
+ .../self-hosted-environments-configuration-ja.md   |  188 ++-
+ .../pages/self-hosted-environments-deploy-ja.md    |  254 +--
+ .../pages/self-hosted-environments-identity-ja.md  |   18 +-
+ docs-ja/pages/self-hosted-environments-ja.md       |   54 +-
+ .../self-hosted-environments-quickstart-ja.md      |   42 +-
+ .../pages/self-hosted-environments-reference-ja.md |  131 +-
+ .../pages/self-hosted-environments-testing-ja.md   |   14 +-
+ docs-ja/pages/server-managed-settings-ja.md        |  253 +--
+ docs-ja/pages/sessions-ja.md                       |   84 +-
+ docs-ja/pages/settings-example-ja.md               |   16 +-
+ docs-ja/pages/settings-ja.md                       |  114 +-
+ docs-ja/pages/settings-reference-ja.md             | 1353 ++++++++--------
+ docs-ja/pages/setup-ja.md                          |   50 +-
+ docs-ja/pages/skills-ja.md                         |  363 ++---
+ docs-ja/pages/slack-ja.md                          |   12 +-
+ docs-ja/pages/statusline-ja.md                     |   46 +-
+ docs-ja/pages/sub-agents-ja.md                     |  235 ++-
+ docs-ja/pages/terminal-config-ja.md                |   60 +-
+ docs-ja/pages/third-party-integrations-ja.md       |   40 +-
+ docs-ja/pages/tools-reference-ja.md                |  228 +--
+ docs-ja/pages/troubleshoot-install-ja.md           |   64 +-
+ docs-ja/pages/troubleshooting-ja.md                |   52 +-
+ docs-ja/pages/ultrareview-ja.md                    |   45 +-
+ docs-ja/pages/voice-dictation-ja.md                |   28 +-
+ docs-ja/pages/vs-code-ja.md                        |  292 ++--
+ docs-ja/pages/web-quickstart-ja.md                 |   68 +-
+ docs-ja/pages/workflows-ja.md                      |   74 +-
+ docs-ja/pages/worktrees-ja.md                      |   72 +-
+ docs-ja/pages/zero-data-retention-ja.md            |   18 +-
+ 140 files changed, 8056 insertions(+), 7079 deletions(-)
+```
+
+<details>
+<summary>accessibility-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/accessibility-ja.md b/docs-ja/pages/accessibility-ja.md
+index e07a364..4bbbc65 100644
+--- a/docs-ja/pages/accessibility-ja.md
++++ b/docs-ja/pages/accessibility-ja.md
+@@ -9,5 +9,5 @@
+ Claude Code には、ビジュアルターミナルインターフェースをプレーンな線形テキストに置き換えるスクリーンリーダーモードがあります。ボックス、プログレスアニメーション、インプレース再描画の代わりに、Claude Code はラベル付きの行を出力し、VoiceOver や NVDA などのスクリーンリーダーが順番に読み上げます。完全な会話を保持し、ツール権限を承認し、出力を最後まで確認できます。
+ 
+-スクリーンリーダーモードはオプトインです。スクリーン拡大鏡、モーション削減、またはスクリーンリーダーの代わりにカラーブラインド対応テーマを使用する場合は、[アクセシビリティ設定](#accessibility-settings)テーブルから `CLAUDE_CODE_ACCESSIBILITY`、`prefersReducedMotion`、または `theme` を設定してください。スクリーンリーダーモードはターミナルインターフェースのみを適応させるため、VS Code 拡張機能のチャットパネルではこれを必要としません。Claude Code v2.1.236 以降では、拡張機能は設定なしで[スクリーンリーダーにコンバーセーション活動を通知](/docs/ja/vs-code#use-a-screen-reader)します。
++スクリーンリーダーモードはオプトインです。スクリーン拡大鏡、モーション削減、またはスクリーンリーダーの代わりにカラーブラインド対応テーマを使用する場合は、[アクセシビリティ設定](#accessibility-settings)テーブルから `CLAUDE_CODE_ACCESSIBILITY`、`prefersReducedMotion`、または `theme` を設定してください。スクリーンリーダーモードはターミナルインターフェースのみを適応させるため、VS Code 拡張機能のチャットパネルではこれを必要としません。Claude Code v2.1.236 以降では、拡張機能は設定なしで[スクリーンリーダーにコンバーセーション活動を通知](/docs/ja/vs-code.md#use-a-screen-reader)します。
+ 
+ ## スクリーンリーダーモードをオンにする
+@@ -17,5 +17,5 @@ Claude Code には、ビジュアルターミナルインターフェースを
+ * 1 つのセッション用：`claude --ax-screen-reader` を実行します。
+ * 1 つのシェルから開始されたセッション用：`CLAUDE_AX_SCREEN_READER` 環境変数を `1` に設定します。Bash または Zsh では `export CLAUDE_AX_SCREEN_READER=1` を実行し、PowerShell では `$env:CLAUDE_AX_SCREEN_READER = "1"` を実行します。シェルプロファイルにその行を追加して、今後のシェルでも保持します。
+-* マシン上のすべてのセッション用：ユーザー[設定ファイル](/docs/ja/settings)に `"axScreenReader": true` を追加します。この設定は VS Code 統合ターミナルを含むすべてのターミナルに適用されます。
++* マシン上のすべてのセッション用：ユーザー[設定ファイル](/docs/ja/settings.md)に `"axScreenReader": true` を追加します。この設定は VS Code 統合ターミナルを含むすべてのターミナルに適用されます。
+ 
+ メソッドを組み合わせた場合、Claude Code は [`--ax-screen-reader`](/docs/ja/cli-reference#cli-flags) フラグを [`CLAUDE_AX_SCREEN_READER`](/docs/ja/env-vars#variables) 環境変数より優先し、その環境変数を [`axScreenReader`](/docs/ja/settings-reference#axscreenreader) 設定より優先します。
+@@ -25,7 +25,14 @@ SSH 経由で Claude Code を使用する場合は、Claude Code が実行され
+ Claude Code が最初に出力する行がモードを確認します。`[Screen Reader Mode: on via flag]`、`[Screen Reader Mode: on via env]`、または `[Screen Reader Mode: on via settings]` です。
+ 
++### プロジェクト設定ではスクリーンリーダーモードをオンにできない
++
++起動時に `Screen reader mode is off: project settings can't turn it on` という行が表示される場合、プロジェクトがスクリーンリーダーモードを要求しており、ほかにモードをオンにするものがないことを意味します。Claude Code は、プロジェクトの `.claude/settings.json` および `.claude/settings.local.json` にある `axScreenReader` キーと、`env` 配下の `CLAUDE_AX_SCREEN_READER` の値を、その値にかかわらずどちらも無視します。
++
++* **モードをオンにするには**：`--ax-screen-reader` を指定して Claude Code を起動するか、シェルで `CLAUDE_AX_SCREEN_READER` を `1` に設定するか、ユーザー[設定ファイル](/docs/ja/settings.md)に `"axScreenReader": true` を追加して Claude Code を再起動します。プロジェクトのファイルを変更する必要はありません。モードをオンにすると、起動時には代わりに[確認の行](#turn-on-screen-reader-mode)が表示されます。
++* **スクリーンリーダーを使用しない場合**：何もする必要はありません。この行を表示しないようにするには、ユーザー設定ファイルに `"axScreenReader": false` を追加するか、プロジェクトの設定ファイルから `axScreenReader` キーと `CLAUDE_AX_SCREEN_READER` 変数を削除します。
++
+ ## スクリーンリーダーモードをオフにする
+ 
+```
+
+</details>
+
+<details>
+<summary>admin-setup-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/admin-setup-ja.md b/docs-ja/pages/admin-setup-ja.md
+index 37e18e9..8779894 100644
+--- a/docs-ja/pages/admin-setup-ja.md
++++ b/docs-ja/pages/admin-setup-ja.md
+@@ -17,9 +17,9 @@ Claude Code は、ローカル開発者設定よりも優先されるマネー
+ | 決定 | 選択内容 | 参照 |
+ | :- | :- | :- |
+-| [API プロバイダーを選択する](#choose-your-api-provider) | Claude Code が認証される場所と課金方法 | [Authentication](/docs/ja/authentication)、[Amazon Bedrock](/docs/ja/amazon-bedrock)、[Google Cloud の Agent Platform](/docs/ja/google-vertex-ai)、[Microsoft Foundry](/docs/ja/microsoft-foundry) |
+-| [設定がデバイスに到達する方法を決定する](#decide-how-settings-reach-devices) | マネージドポリシーが開発者マシンに到達する方法 | [Server-managed settings](/docs/ja/server-managed-settings)、[Delivery mechanisms](/docs/ja/managed-settings#delivery-mechanisms) |
+-| [実行する内容を決定する](#decide-what-to-enforce) | どのツール、コマンド、統合が許可されるか | [Permissions](/docs/ja/permissions)、[Sandboxing](/docs/ja/sandboxing) |
+-| [使用状況の可視性をセットアップする](#set-up-usage-visibility) | 支出と採用を追跡する方法 | [Analytics](/docs/ja/analytics)、[Monitoring](/docs/ja/monitoring-usage)、[Costs](/docs/ja/costs) |
+-| [データ処理を確認する](#review-data-handling) | データ保持とコンプライアンス体制 | [Data usage](/docs/ja/data-usage)、[Security](/docs/ja/security) |
++| [API プロバイダーを選択する](#choose-your-api-provider) | Claude Code が認証される場所と課金方法 | [Authentication](/docs/ja/authentication.md)、[Amazon Bedrock](/docs/ja/amazon-bedrock.md)、[Google Cloud の Agent Platform](/docs/ja/google-vertex-ai.md)、[Microsoft Foundry](/docs/ja/microsoft-foundry.md) |
++| [設定がデバイスに到達する方法を決定する](#decide-how-settings-reach-devices) | マネージドポリシーが開発者マシンに到達する方法 | [Server-managed settings](/docs/ja/server-managed-settings.md)、[Delivery mechanisms](/docs/ja/managed-settings.md#delivery-mechanisms) |
++| [実行する内容を決定する](#decide-what-to-enforce) | どのツール、コマンド、統合が許可されるか | [Permissions](/docs/ja/permissions.md)、[Sandboxing](/docs/ja/sandboxing.md) |
++| [使用状況の可視性をセットアップする](#set-up-usage-visibility) | 支出と採用を追跡する方法 | [Analytics](/docs/ja/analytics.md)、[Monitoring](/docs/ja/monitoring-usage.md)、[Costs](/docs/ja/costs.md) |
++| [データ処理を確認する](#review-data-handling) | データ保持とコンプライアンス体制 | [Data usage](/docs/ja/data-usage.md)、[Security](/docs/ja/security.md) |
+ 
+ ## API プロバイダーを選択する
+@@ -35,13 +35,13 @@ Claude Code は複数の API プロバイダーのいずれかを通じて Claud
+ | Microsoft Foundry | 既存の Azure コンプライアンス制御と課金を継承したい場合 |
+ 
+-一部の Claude Code 機能には claude.ai アカウントが必要です。[クラウドセッション](/docs/ja/claude-code-on-the-web)、[クラウドのスケジュールタスク](/docs/ja/routines)、[Code Review](/docs/ja/code-review)、[Remote Control](/docs/ja/remote-control)、および [Chrome 拡張機能](/docs/ja/chrome) は、Console API キーまたはクラウドプロバイダーの認証情報だけでは利用できません。Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry を通じてデプロイする場合は、開発者が Claude for Teams または Enterprise シートも必要かどうかを検討してください。各機能ページにはプラン要件が記載されています。
++一部の Claude Code 機能には claude.ai アカウントが必要です。[クラウドセッション](/docs/ja/claude-code-on-the-web.md)、[クラウドのスケジュールタスク](/docs/ja/routines.md)、[Code Review](/docs/ja/code-review.md)、[Remote Control](/docs/ja/remote-control.md)、および [Chrome 拡張機能](/docs/ja/chrome.md) は、Console API キーまたはクラウドプロバイダーの認証情報だけでは利用できません。Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry を通じてデプロイする場合は、開発者が Claude for Teams または Enterprise シートも必要かどうかを検討してください。各機能ページにはプラン要件が記載されています。
+ 
+-認証、リージョン、機能パリティをカバーする完全なプロバイダー比較については、[エンタープライズ展開概要](/docs/ja/third-party-integrations) を参照してください。各プロバイダーの認証セットアップは [Authentication](/docs/ja/authentication) にあります。
++認証、リージョン、機能パリティをカバーする完全なプロバイダー比較については、[エンタープライズ展開概要](/docs/ja/third-party-integrations.md) を参照してください。各プロバイダーの認証セットアップは [Authentication](/docs/ja/authentication.md) にあります。
+ 
+-[ネットワーク設定](/docs/ja/network-config) のプロキシとファイアウォール要件は、プロバイダーに関係なく適用されます。複数のプロバイダーの前に単一のエンドポイントを配置したい場合、または集中化されたリクエストログを記録したい場合は、[LLM gateway](/docs/ja/llm-gateway) を参照してください。
++[ネットワーク設定](/docs/ja/network-config.md) のプロキシとファイアウォール要件は、プロバイダーに関係なく適用されます。複数のプロバイダーの前に単一のエンドポイントを配置したい場合、または集中化されたリクエストログを記録したい場合は、[LLM gateway](/docs/ja/llm-gateway) を参照してください。
+```
+
+</details>
+
+<details>
+<summary>advisor-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/advisor-ja.md b/docs-ja/pages/advisor-ja.md
+index 9c75b8a..337715c 100644
+--- a/docs-ja/pages/advisor-ja.md
++++ b/docs-ja/pages/advisor-ja.md
+@@ -21,5 +21,5 @@ advisor は Anthropic インフラストラクチャ上でサーバー側で実
+ advisor は、ほとんどのターンが定型的であるが、プラン品質が結果を決定する長い複数ステップのタスクに適しています。例としては、大規模なリファクタリング、エラーが繰り返し発生するデバッグセッション、および Claude が完了を宣言する前に独立して確認したいタスクが挙げられます。
+ 
+-計画する必要がほとんどない短いタスク、またはすべてのターンで最強のモデルが必要な作業では、価値が低くなります。その場合は、[メインモデルを切り替える](/docs/ja/model-config#setting-your-model)か、[advisor が opusplan およびサブエージェントとどのように比較されるか](#compare-with-related-features)を参照して、2 番目の意見を得る他の方法を確認してください。
++計画する必要がほとんどない短いタスク、またはすべてのターンで最強のモデルが必要な作業では、価値が低くなります。その場合は、[メインモデルを切り替える](/docs/ja/model-config.md#setting-your-model)か、[advisor が opusplan およびサブエージェントとどのように比較されるか](#compare-with-related-features)を参照して、2 番目の意見を得る他の方法を確認してください。
+ 
+ ## advisor を有効にする
+@@ -28,10 +28,10 @@ advisor モデルは 3 つの方法で設定できます。
+ 
+ * **`/advisor` コマンド**：セッション中に advisor を設定または変更し、デフォルトとして保存します
+-* **`advisorModel` 設定**：[設定ファイル](/docs/ja/settings)で永続的なデフォルトを構成します
++* **`advisorModel` 設定**：[設定ファイル](/docs/ja/settings.md)で永続的なデフォルトを構成します
+ * **`--advisor` フラグ**：起動時に単一セッションの advisor を設定します
+ 
+ これらのいずれかが advisor を有効にするのは、メインモデルが[それをサポートしている](#choose-an-advisor-model)セッションです。セッションが開始されると、Claude Code は `Advisor Tool (experimental) is on and may use more tokens · /advisor` 通知を表示します。advisor の使用を停止するには、[advisor をオフにする](#turn-the-advisor-off)を参照してください。
+ 
+-一部のプランでは、Fable を advisor として使用する場合、Fable の使用を使用クレジットに請求することへの 1 回限りの[同意](/docs/ja/model-config#fable-and-usage-credits)も必要です。その同意を与える前に何が起こるかについては、[Fable advisor と使用クレジット](#fable-advisor-and-usage-credits)を参照してください。
++一部のプランでは、Fable を advisor として使用する場合、Fable の使用を使用クレジットに請求することへの 1 回限りの[同意](/docs/ja/model-config.md#fable-and-usage-credits)も必要です。その同意を与える前に何が起こるかについては、[Fable advisor と使用クレジット](#fable-advisor-and-usage-credits)を参照してください。
+ 
+ ### `/advisor` コマンドを使用する
+@@ -45,5 +45,5 @@ advisor モデルは 3 つの方法で設定できます。
+ コマンドは `Advisor set to` で確認し、その後に advisor モデル名が続きます。選択はユーザー設定の `advisorModel` に保存され、セッション全体で保持されます。ただし、[`advisorModel` エントリ](/docs/ja/settings-reference#advisormodel)が現在のセッションにのみ適用されるとリストしている場合は除きます。
+ 
+-このコマンドは、ターミナルピッカーがない場所でも機能します。[非対話モード](/docs/ja/headless)で `-p` を使用する場合、Agent SDK 内、デスクトップアプリ内、および [Remote Control](/docs/ja/remote-control) 経由です。これには Claude Code v2.1.260 以降が必要です。これらのサーフェスでは、
++このコマンドは、ターミナルピッカーがない場所でも機能します。[非対話モード](/docs/ja/headless.md)で `-p` を使用する場合、Agent SDK 内、デスクトップアプリ内、および [Remote Control](/docs/ja/remote-control.md) 経由です。これには Claude Code v2.1.260 以降が必要です。これらのサーフェスでは、
+ 
+```
+
+</details>
+
+<details>
+<summary>agent-teams-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/agent-teams-ja.md b/docs-ja/pages/agent-teams-ja.md
+index 334b3d1..6529df8 100644
+--- a/docs-ja/pages/agent-teams-ja.md
++++ b/docs-ja/pages/agent-teams-ja.md
+@@ -9,9 +9,9 @@
+ > [!WARNING]
+ >
+-> エージェントチームは実験的機能であり、デフォルトでは無効になっています。[settings.json](/docs/ja/settings) または環境に `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` を設定して有効にしてください。その変数がない場合、セッション開始時にチームが設定されず、チームディレクトリが書き込まれず、Claude はチームメンバーをスポーンまたは提案しません。エージェントチームには、セッション再開、タスク調整、シャットダウン動作に関する[既知の制限](#limitations)があります。
++> エージェントチームは実験的機能であり、デフォルトでは無効になっています。[settings.json](/docs/ja/settings.md) または環境に `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` を設定して有効にしてください。その変数がない場合、セッション開始時にチームが設定されず、チームディレクトリが書き込まれず、Claude はチームメンバーをスポーンまたは提案しません。エージェントチームには、セッション再開、タスク調整、シャットダウン動作に関する[既知の制限](#limitations)があります。
+ 
+ エージェントチームを使用すると、複数の Claude Code インスタンスが連携して動作するように調整できます。1 つのセッションがチームリーダーとして機能し、作業を調整し、タスクを割り当て、結果を統合します。チームメンバーは独立して動作し、それぞれ独自のコンテキストウィンドウで動作し、互いに直接通信します。リーダーを経由せずに、任意のチームメンバーと直接対話することもできます。
+ 
+-チームを設定する前に、より軽量なオプションで十分かどうかを確認してください。[Subagents](/docs/ja/sub-agents) は単一セッション内で動作し、[クロスセッションメッセージング](/docs/ja/cross-session-messaging) を使用すると Claude は自分で実行するセッション間で検出結果を渡すことができます。
++チームを設定する前に、より軽量なオプションで十分かどうかを確認してください。[Subagents](/docs/ja/sub-agents.md) は単一セッション内で動作し、[クロスセッションメッセージング](/docs/ja/cross-session-messaging.md) を使用すると Claude は自分で実行するセッション間で検出結果を渡すことができます。
+ 
+ ## エージェントチームを使用する場合
+@@ -24,17 +24,19 @@
+ * **クロスレイヤー調整**：フロントエンド、バックエンド、テストにまたがる変更で、それぞれ異なるチームメンバーが担当します
+ 
+-エージェントチームは調整オーバーヘッドを追加し、単一セッションよりも大幅に多くのトークンを使用します。チームメンバーが独立して動作できる場合に最も効果的です。順序付きタスク、同じファイルの編集、または多くの依存関係を持つ作業の場合は、単一セッションまたは [subagents](/docs/ja/sub-agents) がより効果的です。
++エージェントチームは調整オーバーヘッドを追加し、単一セッションよりも大幅に多くのトークンを使用します。チームメンバーが独立して動作できる場合に最も効果的です。順序付きタスク、同じファイルの編集、または多くの依存関係を持つ作業の場合は、単一セッションまたは [subagents](/docs/ja/sub-agents.md) がより効果的です。
+ 
+ ### subagents との比較
+ 
+-エージェントチームと [subagents](/docs/ja/sub-agents) の両方を使用すると、作業を並列化できますが、動作方法が異なります。チームなしでメッセージを相互に渡す別々のセッションについては、[クロスセッションメッセージング](/docs/ja/cross-session-messaging)を参照してください。
++エージェントチームと [subagents](/docs/ja/sub-agents.md) の両方を使用すると、作業を並列化できますが、動作方法が異なります。チームなしでメッセージを相互に渡す別々のセッションについては、[クロスセッションメッセージング](/docs/ja/cross-session-messaging.md)を参照してください。
+ 
+ ![Subagent とエージェントチームのアーキテクチャを比較する図。Subagents はメインエージェントによって生成され、作業を実行し、結果を報告します。エージェントチームは共有タスクリストを通じて調整され、チームメンバーが互いに直接通信します。](https://mintcdn.com/claude-code/nsvRFSDNfpSU5nT7/images/subagents-vs-agent-teams-light.png?fit=max\&auto=format\&n=nsvRFSDNfpSU5nT7\&q=85\&s=2f8db9b4f3705dd3ab931fbe2d96e42a)
+ 
++Subagents は結果をメインエージェントに報告します。エージェントチームでは、チームメンバーがタスクリストを共有し、作業を要求し、互いに直接通信します。
+```
+
+</details>
+
+<details>
+<summary>agent-view-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/agent-view-ja.md b/docs-ja/pages/agent-view-ja.md
+index 4c8c4f0..01ddc75 100644
+--- a/docs-ja/pages/agent-view-ja.md
++++ b/docs-ja/pages/agent-view-ja.md
+@@ -15,5 +15,5 @@ Claude が複数の独立したタスクに対して、あなたが毎ステッ
+ 任意のエージェントのセッションでより直接的に作業したい場合は、行にアタッチして完全な会話に入ります。
+ 
+-エージェントビューを subagents、agent teams、worktrees と比較するには、[エージェントを並列で実行する](/docs/ja/agents)を参照してください。エージェントビューはあなたのマシン上でセッションを実行し、各セッションをディスパッチします。1 つの会話からクラウドで Claude が並列セッションを開始して追跡するには、[Projects](/docs/ja/claude-projects)を参照してください。
++エージェントビューを subagents、agent teams、worktrees と比較するには、[エージェントを並列で実行する](/docs/ja/agents.md)を参照してください。エージェントビューはあなたのマシン上でセッションを実行し、各セッションをディスパッチします。1 つの会話からクラウドで Claude が並列セッションを開始して追跡するには、[Projects](/docs/ja/claude-projects.md)を参照してください。
+ 
+ > [!NOTE]
+@@ -33,5 +33,5 @@ claude agents
+ ```
+ 
+-まだディレクトリの[ワークスペーストラストダイアログ](/docs/ja/permissions#project-allow-rules-and-workspace-trust)を受け入れていない場合、Claude Code はエージェントビューが開く前にそれを表示します。これは `claude` が表示するのと同じダイアログです。受け入れてワークスペースの信頼を保存して続行します。拒否すると、Claude Code はエージェントビューを開かずに終了します。
++まだディレクトリの[ワークスペーストラストダイアログ](/docs/ja/permissions.md#project-allow-rules-and-workspace-trust)を受け入れていない場合、Claude Code はエージェントビューが開く前にそれを表示します。これは `claude` が表示するのと同じダイアログです。受け入れてワークスペースの信頼を保存して続行します。拒否すると、Claude Code はエージェントビューを開かずに終了します。
+ 
+ エージェントビューが開き、下部に入力フィールドが表示され、セッションが開始されるとテーブルが埋まります。`Esc` を押すとシェルに戻ります。`←` でセッションをバックグラウンドにしてエージェントビューを開いた場合、`Esc` はそのセッションの会話に戻ります。セッションは離れている間も実行し続け、次にエージェントビューを開いたときに再度表示されます。
+@@ -65,5 +65,5 @@ claude agents
+ * **完了数**: 入力を待機しているセッションがない状態でバックグラウンドセッションが正常に完了すると、フッターに完了した数が一時的に表示されます。たとえば 2 つの場合は `← 2 done` と表示されます
+ 
+-待機中の数は、増減したとき、およびバックグラウンドセッションが正常に完了したときに一時的に色が変わります。[`prefersReducedMotion`](/docs/ja/settings-reference#prefersreducedmotion) をオンにすると、色の変化も `done` のカウントも表示されません。[スクリーンリーダーモード](/docs/ja/accessibility)では、`←` ヒントとそのカウントは非表示になります。
++待機中の数は、増減したとき、およびバックグラウンドセッションが正常に完了したときに一時的に色が変わります。[`prefersReducedMotion`](/docs/ja/settings-reference#prefersreducedmotion) をオンにすると、色の変化も `done` のカウントも表示されません。[スクリーンリーダーモード](/docs/ja/accessibility.md)では、`←` ヒントとそのカウントは非表示になります。
+ 
+ ### デフォルトでエージェントビューを開く
+@@ -105,5 +105,5 @@ claude agents --cwd ~/projects/my-app
+ これはそのディレクトリの下で開始されたセッションのみを表示します。`~/projects/my-app/.claude/worktrees/` の下の [worktree に移動した](#how-file-edits-are-isolated) セッションも引き続き表示されます。
+ 
+-他のターミナルで開いているインタラクティブセッションは、[バックグラウンドにする](#from-inside-a-session) までは表示されません。セッションが生成する [サブエージェント](/docs/ja/sub-agents) と [チームメイト](/docs/ja/agent-teams) は、個別の行としてはリストされません。
++他のターミナルで開いているインタラクティブセッションは、[バックグラウンドにする](#from-inside-a-session) までは表示されません。セッションが生成する [サブエージェント](/docs/ja/sub-agents.md) と [チームメイト](/docs/ja/agent-teams.md) は、個別の行としてはリストされません。
+```
+
+</details>
+
+<details>
+<summary>agents-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/agents-ja.md b/docs-ja/pages/agents-ja.md
+index 1c1cdc6..05cc96a 100644
+--- a/docs-ja/pages/agents-ja.md
++++ b/docs-ja/pages/agents-ja.md
+@@ -7,31 +7,31 @@
+ > Claude Code が複数のタスクを同時に実行する 5 つの方法を比較します。サブエージェント、エージェントビュー、エージェントチーム、動的ワークフロー、およびプロジェクトについて説明します。
+ 
+-Claude Code には、複数のタスクを同時に処理する 5 つの方法があります。[サブエージェント](/docs/ja/sub-agents)、[エージェントビュー](/docs/ja/agent-view)、[エージェントチーム](/docs/ja/agent-teams)、[動的ワークフロー](/docs/ja/workflows)、および [プロジェクト](/docs/ja/claude-projects) です。これらは、各会話に自分で留まるのか、Claude にワーカーのグループを調整させるのかという関与の度合いや、作業がマシン上で実行されるのかクラウドで実行されるのかという点で異なります。
++Claude Code には、複数のタスクを同時に処理する 5 つの方法があります。[サブエージェント](/docs/ja/sub-agents.md)、[エージェントビュー](/docs/ja/agent-view.md)、[エージェントチーム](/docs/ja/agent-teams.md)、[動的ワークフロー](/docs/ja/workflows.md)、および [プロジェクト](/docs/ja/claude-projects.md) です。これらは、各会話に自分で留まるのか、Claude にワーカーのグループを調整させるのかという関与の度合いや、作業がマシン上で実行されるのかクラウドで実行されるのかという点で異なります。
+ 
+ | アプローチ | 提供内容 | 使用する場合 |
+ | :- | :- | :- |
+-| [サブエージェント](/docs/ja/sub-agents) | 1 つのセッション内で委任されたワーカーが、独自のコンテキストでサイドタスクを実行し、サマリーを返す | サイドタスクが検索結果、ログ、またはファイルコンテンツで主な会話を埋め尽くす場合（再度参照しない） |
+-| [エージェントビュー](/docs/ja/agent-view) | `claude agents` で開く、バックグラウンドで実行されているセッションをディスパッチして監視する 1 つの画面。リサーチプレビュー | 複数の独立したタスクがあり、それらを引き継いで、一目で状態を確認し、必要な場合のみ介入したい場合 |
+-| [エージェントチーム](/docs/ja/agent-teams) | 共有タスクリストとエージェント間メッセージングを備えた複数の調整されたセッション。リーダーによって管理される。実験的で、デフォルトでは無効 | Claude にプロジェクトを分割させ、割り当てさせ、ワーカーを同期させたい場合 |
+-| [プロジェクト](/docs/ja/claude-projects) | claude.ai/code またはデスクトップアプリでの 1 つの継続的な会話。Claude は threads と呼ばれる並列セッションを開始し、クラウドで、またはリモートコントロール経由でコンピューターで実行し、各セッションにプロジェクトの指示を提供し、どのセッションがあなたを必要としているかを表示します。Pro および Max でのパブリックベータ | 作業が数日または数週間にわたる多くのタスクに及び、マシンがオフの場合でも実行を続け、各セッションをディスパッチして追跡するのではなく、一度説明したい場合 |
+-| [動的ワークフロー](/docs/ja/workflows) | 多くのサブエージェントを実行し、その結果をチェックするスクリプト。1 回のターンで調整するには大きすぎるジョブ向け | タスクが大きすぎてサブエージェント数個では対応できない場合、または検出結果を相互に検証したい場合。コードベース全体の監査、500 ファイルのマイグレーション、相互検証が必要な調査、または複数の角度から作成されたプランなど |
++| [サブエージェント](/docs/ja/sub-agents.md) | 1 つのセッション内で委任されたワーカーが、独自のコンテキストでサイドタスクを実行し、サマリーを返す | サイドタスクが検索結果、ログ、またはファイルコンテンツで主な会話を埋め尽くす場合（再度参照しない） |
++| [エージェントビュー](/docs/ja/agent-view.md) | `claude agents` で開く、バックグラウンドで実行されているセッションをディスパッチして監視する 1 つの画面。リサーチプレビュー | 複数の独立したタスクがあり、それらを引き継いで、一目で状態を確認し、必要な場合のみ介入したい場合 |
++| [エージェントチーム](/docs/ja/agent-teams.md) | 共有タスクリストとエージェント間メッセージングを備えた複数の調整されたセッション。リーダーによって管理される。実験的で、デフォルトでは無効 | Claude にプロジェクトを分割させ、割り当てさせ、ワーカーを同期させたい場合 |
++| [プロジェクト](/docs/ja/claude-projects.md) | claude.ai/code またはデスクトップアプリでの 1 つの継続的な会話。Claude は threads と呼ばれる並列セッションを開始し、クラウドで、またはリモートコントロール経由でコンピューターで実行し、各セッションにプロジェクトの指示を提供し、どのセッションがあなたを必要としているかを表示します。Pro および Max でのパブリックベータ | 作業が数日または数週間にわたる多くのタスクに及び、マシンがオフの場合でも実行を続け、各セッションをディスパッチして追跡するのではなく、一度説明したい場合 |
++| [動的ワークフロー](/docs/ja/workflows.md) | 多くのサブエージェントを実行し、その結果をチェックするスクリプト。1 回のターンで調整するには大きすぎるジョブ向け | タスクが大きすぎてサブエージェント数個では対応できない場合、または検出結果を相互に検証したい場合。コードベース全体の監査、500 ファイルのマイグレーション、相互検証が必要な調査、または複数の角度から作成されたプランなど |
+ 
+-すべてのアプローチにおいて、ワーカーは Claude セッションです。別のツールを関与させるには、それを Claude に [MCP サーバー](/docs/ja/mcp) として公開します。
++すべてのアプローチにおいて、ワーカーは Claude セッションです。別のツールを関与させるには、それを Claude に [MCP サーバー](/docs/ja/mcp.md) として公開します。
+ 
+ この作業をサポートする 3 つの追加ツールがありますが、エージェント自体を実行する方法ではありません。
+ 
+-* [Worktree](/docs/ja/worktrees) は各セッションに個別の git チェックアウトを提供するため、並列セッションはそれぞれ自分のファイルのコピーを編集します。自分で実行するセッションに使用します。エージェントビューからディスパッチしたセッションは、[ファイルを編集する前に専用の worktree に移動](/docs/ja/agent-view#how-file-edits-are-isolated) し、スポーンするサブエージェントもそれぞれ worktree を取得できます。
+-* [クロスセッションメッセージング](/docs/ja/cross-session-messaging) により、Claude はこのマシン上、別のマシン上、または [クラウド](/docs/ja/claude-code-on-the-web) 上の他の Claude Code セッションをリストして、メッセージを送信できます。自分で実行するセッションは、検出結果とステータスを相互に渡すことができます。
+```
+
+</details>
+
+*...以降省略*
+
+</details>
+
+
+<details>
 <summary>2026-10-22</summary>
 
 **変更ファイル:**
@@ -2681,206 +3063,5 @@ index b457010..5b0eaba 100644
 
 </details>
 
-
-<details>
-<summary>2026-10-11</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/agent-view-ja.md                     | 32 +++++----
- docs-ja/pages/analytics-ja.md                      |  2 +-
- docs-ja/pages/authentication-ja.md                 |  6 +-
- docs-ja/pages/auto-mode-config-ja.md               |  4 +-
- docs-ja/pages/checkpointing-ja.md                  |  4 +-
- docs-ja/pages/claude-apps-gateway-config-ja.md     |  2 +-
- docs-ja/pages/claude-apps-gateway-deploy-ja.md     |  2 +-
- docs-ja/pages/claude-apps-gateway-ja.md            | 24 ++++++-
- docs-ja/pages/cli-reference-ja.md                  | 10 +--
- docs-ja/pages/code-review-ja.md                    |  8 +--
- docs-ja/pages/commands-ja.md                       |  4 +-
- docs-ja/pages/corporate-launcher-ja.md             | 11 ++-
- docs-ja/pages/cross-session-messaging-ja.md        | 10 +--
- docs-ja/pages/desktop-ja.md                        | 34 +++++++--
- docs-ja/pages/env-vars-ja.md                       |  8 +--
- docs-ja/pages/errors-ja.md                         | 38 ++++++++--
- docs-ja/pages/github-enterprise-server-ja.md       | 10 +--
- docs-ja/pages/headless-ja.md                       |  8 +--
- docs-ja/pages/hooks-guide-ja.md                    | 22 ++++--
- docs-ja/pages/hooks-ja.md                          | 51 +++++++++----
- docs-ja/pages/interactive-mode-ja.md               |  4 +-
- docs-ja/pages/llm-gateway-connect-ja.md            |  2 +-
- docs-ja/pages/mcp-ja.md                            | 10 +--
- docs-ja/pages/monitoring-usage-ja.md               | 38 +++++++++-
- docs-ja/pages/network-config-ja.md                 |  4 +-
- docs-ja/pages/permission-modes-ja.md               | 23 ++++--
- docs-ja/pages/permissions-ja.md                    | 55 ++++++++++----
- docs-ja/pages/routines-ja.md                       |  6 +-
- docs-ja/pages/sandboxing-ja.md                     |  1 +
- .../self-hosted-environments-configuration-ja.md   |  8 ++-
- .../pages/self-hosted-environments-deploy-ja.md    |  2 +
- docs-ja/pages/sessions-ja.md                       | 84 +++++++++++-----------
- docs-ja/pages/settings-ja.md                       |  4 +-
- docs-ja/pages/settings-reference-ja.md             | 49 +++++++++----
- docs-ja/pages/skills-ja.md                         | 12 ++--
- docs-ja/pages/sub-agents-ja.md                     | 12 ++--
- docs-ja/pages/terminal-config-ja.md                | 13 ++++
- docs-ja/pages/tools-reference-ja.md                | 43 ++++++++---
- docs-ja/pages/troubleshoot-install-ja.md           |  2 +-
- docs-ja/pages/vs-code-ja.md                        |  3 +-
- docs-ja/pages/workflows-ja.md                      |  2 +-
- docs-ja/pages/worktrees-ja.md                      |  4 +-
- 42 files changed, 460 insertions(+), 211 deletions(-)
-```
-
-**新規追加:**
-
-
-<details>
-<summary>agent-view-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/agent-view-ja.md b/docs-ja/pages/agent-view-ja.md
-index 16b716c..9b9eeae 100644
---- a/docs-ja/pages/agent-view-ja.md
-+++ b/docs-ja/pages/agent-view-ja.md
-@@ -153,5 +153,5 @@ Completed
- | :- | :- |
- | `✻` またはアニメーション `✽` | セッションプロセスが実行中であるか、セッションがユーザーの入力を必要としています |
--| `∙` | プロセスは終了しています。行のピーク表示は引き続き可能で、返信またはアタッチすると、Claude は中断したところから再開します |
-+| `∙` | プロセスは終了しています。行のピーク表示は引き続き可能で、返信またはアタッチすると、Claude は保存された会話からセッションを再起動します |
- | `✢` | イテレーション間でスリープしている [`/loop`](/docs/ja/scheduled-tasks) セッションです。行は実行回数とカウントダウンを表示します |
- 
-@@ -257,4 +257,6 @@ Completed
- バックグラウンドセッションには追記先となるターミナルのスクロールバックがないため、アタッチされたセッションは `tui` 設定に関係なく、常に [フルスクリーンモード](/docs/ja/fullscreen) でレンダリングされます。`PgUp`、`PgDn`、またはマウスホイールでスクロールし、トランスクリプトモードには `Ctrl+O` を押します。ターミナルのネイティブスクロールと tmux のコピーモードは現在のビューポートのみを表示します。これはフルスクリーンアプリケーションを実行するときと同じです。
- 
-+アタッチされたセッションは [ターミナルにステータスを報告しません](/docs/ja/terminal-config#see-session-status-in-your-terminal)。
-+
- 空のプロンプトで `←` を押すか、`/exit` を実行してデタッチし、エージェントビューに戻ります。エージェントビューからセッションを開いたか、シェルから `claude attach <id>` を実行したかに関係なく機能します。
- 
-@@ -265,7 +267,7 @@ Windows では、アタッチしてから約 0.5 秒以内に `←` を押すと
- `Ctrl+Z` もデタッチしますが、開始した場所に戻ります。エージェントビューからアタッチした場合はエージェントビュー、`claude attach` を実行した場合はシェルです。ダイアログがフォーカスを持っていて `←` に応答しない場合は `Ctrl+Z` を使用します。
- 
--`Ctrl+C` はアタッチ中も標準的な割り込み動作を保持します。デタッチするのではなく、実行中の応答または `!` シェルコマンドをキャンセルします。空のプロンプトで `Ctrl+C` を 2 回押すとデタッチします。これは他のセッションと同じです。
-+`Ctrl+C` はアタッチ中も標準的な割り込み動作を保持します。デタッチするのではなく、実行中の応答または `!` シェルコマンドをキャンセルします。空のプロンプトで `Ctrl+C` を 2 回押すとデタッチします。
- 
--デタッチしてもバックグラウンドセッションは停止しません。`←`、`Ctrl+Z`、`/exit`、および `Ctrl+C` または `Ctrl+D` の 2 回押しは、いずれもセッションを実行したままにします。セッション内からセッションを終了するには、`/stop` を実行します。
-+デタッチしてもバックグラウンドセッションは停止しません。`←`、`Ctrl+Z`、`/exit`、および `Ctrl+C` または `Ctrl+D` の 2 回押しは、いずれもセッションを実行したままにします。`/loop` が次のイテレーションを待っている間にデタッチすると、ループは実行を続け、そのイテレーションはユーザーがいなくてもスケジュールどおりに開始されます。デタッチする前にループを停止するには、[ループを停止する](/docs/ja/scheduled-tasks#stop-a-loop) を参照してください。セッション内からセッションを終了するには、`/stop` を実行します。
- 
- <h4 id="switch-sessions-without-leaving-the-terminal">
-@@ -294,6 +296,7 @@ Claude Code が会話を再度開けない場合は、終了して会話を再
- 
-```
-
-</details>
-
-<details>
-<summary>analytics-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/analytics-ja.md b/docs-ja/pages/analytics-ja.md
-index 28b9c09..e44434a 100644
---- a/docs-ja/pages/analytics-ja.md
-+++ b/docs-ja/pages/analytics-ja.md
-@@ -68,5 +68,5 @@ Team と Enterprise ダッシュボードには以下が含まれます。
- * **「Data processing in progress」**：数日後に確認し、データが表示されない場合は GitHub アプリがインストールされていることを確認してください
- 
--貢献メトリクスは GitHub Cloud と GitHub Enterprise Server をサポートしています。
-+貢献メトリクスは github.com でホストされているリポジトリを対象とします。[GitHub Enterprise Server](/docs/ja/github-enterprise-server) 上のリポジトリについては、分析ダッシュボードは使用メトリクスのみを表示します。
- 
- <h3 id="review-summary-metrics">
-```
-
-</details>
-
-<details>
-<summary>authentication-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/authentication-ja.md b/docs-ja/pages/authentication-ja.md
-index 43e1d73..49d8dfe 100644
---- a/docs-ja/pages/authentication-ja.md
-+++ b/docs-ja/pages/authentication-ja.md
-@@ -97,5 +97,5 @@ API ベースの請求を希望する組織の場合、Claude Console を通じ
-     以下のいずれかの方法でユーザーを追加できます。
- 
--    * Console 内からユーザーを一括招待します。Settings -> Members -> Invite
-+    * [platform.claude.com/settings/members](https://platform.claude.com/settings/members) にある Console の Members ページからユーザーを一括招待します。**Invite** をクリックします
-     * [SSO を設定](https://support.claude.com/en/articles/13132885-setting-up-single-sign-on-sso)
-   </Step>
-@@ -124,6 +124,6 @@ API ベースの請求を希望する組織の場合、Claude Console を通じ
- API キーを作成しなくても Console アカウントにサインインできます。組織が開発者による API キーの作成を許可していない場合でも可能です。`/login` プロンプトで Anthropic Console アカウントを選択すると、Claude Code はサインイン方法を尋ねます。Claude Code v2.1.242 以降が必要です。両方のルートは Console にブラウザーでサインインしますが、Claude Code がその後に保存する内容が異なります。
- 
--* **Console アカウントでサインイン**（`（推奨）` とラベル付け）: Claude Code はそのサインインから OAuth トークンを保持し、[Anthropic プロファイル](#anthropic-profiles-and-federation-credentials)として保存します。API キーは作成されません
--* **API キーを作成**（`（レガシー）` とラベル付け）: Claude Code は Console API キーを作成し、他の認証情報と一緒に保存します
-+* **Console アカウントでサインイン**（`(recommended)` とラベル付け）: Claude Code はそのサインインから OAuth トークンを保持し、[Anthropic プロファイル](#anthropic-profiles-and-federation-credentials)として保存します。API キーは作成されません
-+* **API キーを作成**（`(legacy)` とラベル付け）: Claude Code は Console API キーを作成し、他の認証情報と一緒に保存します
- 
- 実際には、プロファイルは OAuth ログインを保存し、API キーは静的な認証情報です。Claude Code はプロファイルのログインを自動的に更新し、更新に失敗すると、再度サインインするまで [Anthropic プロファイルログイン期限切れ](/docs/ja/errors#anthropic-profile-login-expired) でリクエストが失敗します。
-```
-
-</details>
-
-<details>
-<summary>auto-mode-config-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/auto-mode-config-ja.md b/docs-ja/pages/auto-mode-config-ja.md
-index 7d4dab9..539c6cd 100644
---- a/docs-ja/pages/auto-mode-config-ja.md
-+++ b/docs-ja/pages/auto-mode-config-ja.md
-@@ -384,5 +384,7 @@ claude auto-mode reset
- 画面上の拒否を報告する他の 2 つの場所では、コマンドまたは URL が省略されています。入力ボックスの近くの通知（`bash denied by auto mode · [Data Exfiltration] · /permissions` など）はツールと理由を示し、**Recently denied** タブはシェルコマンドを Claude が記述した説明で一覧表示します。これらの拒否の正確な入力をプログラムで取得するには、[`PermissionDenied` フック](/docs/ja/hooks#permissiondenied)を追加します。これは `tool_input` として受け取ります。
- 
--呼び出しの下のテキストは、修正すべきことがあるかどうかを示します。分類器自体の問題を報告するテキスト（`is temporarily unavailable` のようなモデルや分類器エラーなど）は、Claude Code が分類器からの最終判定なしに呼び出しをブロックしたことを意味します。詳細は[オートモードがアクションの安全性を判定できない](/docs/ja/errors#auto-mode-cannot-determine-the-safety-of-an-action)を参照してください。それ以外の場合、`Denied by auto mode classifier` と `[Production Deploy]` または `Blocked by classifier` などの理由が記載された行は、分類器が呼び出しを安全でないと判定したことを意味するため、呼び出しが何に到達しようとしていたか、または何をしようとしていたかから修正を選択します。
-+呼び出しの下のテキストは、修正すべきことがあるかどうかを示します。薄く表示された `Not run · auto mode's check had no usable answer` の行、または分類器自体の問題を報告するテキスト（`Auto mode could not evaluate this action` など）は、Claude Code が分類器からの判定なしに呼び出しをブロックしたことを意味します。`Not run` の行の場合は、`Ctrl+O` を押してメッセージ全文を読み、対処方法については[auto モードがアクションの安全性を判定できない](/docs/ja/errors#auto-mode-cannot-determine-the-safety-of-an-action)または[サーバーが安全性の判定を返さなかった](/docs/ja/errors#the-server-returned-no-safety-verdict)を参照してください。
-+
-+それ以外の場合、`Denied by auto mode classifier` と `[Production Deploy]` または `Blocked by classifier` などの理由が記載された行は、分類器が呼び出しを安全でないと判定したことを意味するため、呼び出しが何に到達しようとしていたか、または何をしようとしていたかから修正を選択します。
- 
- * タスク全体を通じて Claude が必要とする宛先（パッケージレジストリ、内部ドメイン、リポジトリホストなど）：`autoMode.environment` に追加します。
-```
-
-</details>
-
-<details>
-<summary>checkpointing-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/checkpointing-ja.md b/docs-ja/pages/checkpointing-ja.md
-index 9c4190a..13c072c 100644
---- a/docs-ja/pages/checkpointing-ja.md
-+++ b/docs-ja/pages/checkpointing-ja.md
-@@ -115,7 +115,7 @@ cp source.txt dest.txt
- </h3>
- 
--[Claude が作業中にキューに入れたメッセージ](/docs/ja/interactive-mode#queue-messages-while-claude-works)が実行中のターン内に Claude に到達すると、新しいターンを開始する代わりにそのターンに参加します。メッセージは会話に表示されますが、Claude Code はそれのチェックポイントを作成しません。Claude Code が新しいターンの一部として送信するキューに入れたメッセージは、通常どおりチェックポイントを取得します。複数のキューに入れたメッセージが[そのターンを共有](/docs/ja/interactive-mode#when-claude-code-sends-what-you-queued)する場合も含まれます。
-+巻き戻しメニューでは、[Claude がまだ作業中に入力した](/docs/ja/interactive-mode#queue-messages-while-claude-works)メッセージに **No code restore**（コードの復元なし）と表示されることがあります。Claude はそのメッセージをターンの終了前に読み取っています。[チェックポイントはターンを開始するプロンプトに対して作成される](#how-checkpoints-work)ため、このメッセージ自体にはチェックポイントがありません。Claude がそのメッセージを読んだ後に行った編集は、ターンを開始したプロンプトに含まれます。
- 
--そのようなメッセージの後に Claude が行った編集を取り消すには、ターンを開始したプロンプトに巻き戻します。これにより、メッセージが到達する前に Claude が行った作業を含む、ターン全体が巻き戻されます。
-+メッセージ自体について何かをする必要はありません。セッションのその部分でのファイル変更を取り消すには、ターンを開始したプロンプトを選択し、**Restore code**（コードを復元）または **Restore code and conversation**（コードと会話を復元）を選択します。これにより、メッセージが到達する前の編集を含め、ターン全体での Claude のファイル編集が元に戻されます。マークされたメッセージを選択した場合も **Restore conversation**（会話を復元）は利用でき、会話をそのメッセージまで巻き戻し、ファイルはそのまま残します。
- 
- <h3 id="symlinked-and-hard-linked-paths-not-restored">
-```
-
-</details>
-
-<details>
-<summary>claude-apps-gateway-config-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/claude-apps-gateway-config-ja.md b/docs-ja/pages/claude-apps-gateway-config-ja.md
-index 4410b7c..eb58671 100644
---- a/docs-ja/pages/claude-apps-gateway-config-ja.md
-+++ b/docs-ja/pages/claude-apps-gateway-config-ja.md
-@@ -1712,5 +1712,5 @@ CLI の場合、OS ごとの `managed-settings.json` でこれらのキーを設
- Claude Desktop の場合、Claude Desktop 独自の[マネージド設定](https://claude.com/docs/third-party/claude-desktop/configuration)で `bootstrapUrl` キーを `<listen.public_url>/user/bootstrap` に設定します。サインインフロー及びグループごとのポリシーは、ポリシーが `desktop` キーでサーバー側で opt-in した後、CLI のものと一致します。opt-in がない場合、`/user/bootstrap` は 404 を返します。[Claude Desktop オーバーレイ](#claude-desktop-overlay)でサーバー側の半分を参照してください。
- 
--Claude Code は [`forceLoginGatewayUrl`](/docs/ja/settings-reference#forcelogingatewayurl)、[`gatewayInternalNetworks`](/docs/ja/settings-reference#gatewayinternalnetworks)、および [`forceLoginMethod`](/docs/ja/settings-reference#forceloginmethod) の `"gateway"` 値をマシン上のマネージドソースからのみ認識します。`managed-settings.json`、macOS plist または Windows HKLM レジストリ、またはポリシーヘルパーです。開発者が独自の `~/.claude/settings.json` でこれらを設定しても効果がなく、ゲートウェイペイロードで設定しても同様です。
-+Claude Code は [`forceLoginGatewayUrl`](/docs/ja/settings-reference#forcelogingatewayurl)、[`gatewayInternalNetworks`](/docs/ja/settings-reference#gatewayinternalnetworks)、および [`forceLoginMethod`](/docs/ja/settings-reference#forceloginmethod) の `"gateway"` 値をマシン上のマネージドソースから認識します。`managed-settings.json`、macOS plist または Windows HKLM レジストリ、またはポリシーヘルパーです。ゲートウェイペイロードでこれらを設定しても、ゲートウェイのサインインは設定されません。開発者自身の `~/.claude/settings.json` については、[ユーザー設定でゲートウェイ URL を設定する](/docs/ja/claude-apps-gateway#set-the-gateway-url-in-user-settings)を参照してください。
- 
- `forceLoginMethod` と `forceLoginOrgUUID` をペイロードから除外してください。Claude Code はスタートアップ認証情報チェックのためにペイロードから両方のキーを読み込みます。そのため、Anthropic が発行した認証情報をマシンに保持している開発者は、サインイン後でも[管理者ポリシーがクラウドゲートウェイサインインを必要とする](/docs/ja/errors#administrator-policy-requires-a-cloud-gateway-sign-in)の下で説明されているスタートアップ終了を取得します。
-```
-
-</details>
 
 <!-- UPDATE_LOG_END -->

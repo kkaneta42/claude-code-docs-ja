@@ -6,7 +6,7 @@
 
 > 開始されなかった、失敗した、または予算のためにスキップされた Code Review の修正、表示されない指摘事項の確認、セットアップと `REVIEW.md` の問題の解決を行います。
 
-プルリクエストで [Code Review](/docs/ja/code-review) が期待どおりに動作しない場合は、まず **Claude Code Review** チェック実行を確認してください。そのタイトルから、レビューがどこまで進んだかがわかります。
+プルリクエストで [Code Review](/docs/ja/code-review.md) が期待どおりに動作しない場合は、まず **Claude Code Review** チェック実行を確認してください。そのタイトルから、レビューがどこまで進んだかがわかります。
 
 ## レビューがどこまで進んだかを確認する
 
@@ -18,6 +18,7 @@
 | **Code review found no issues** | レビューが完了し、指摘すべき点は見つかりませんでした | 対処は不要です |
 | 問題が見つかったことを示すタイトル | レビューが完了し、指摘事項があります | 差分上に表示されない場合は、[インラインコメントとして表示されない問題を見つける](#find-issues-that-aren’t-showing-as-inline-comments)を参照してください |
 | **Code review skipped — no new changes** | 最新のプッシュに対して自動レビューが実行されませんでした | それでもレビューを受けたい場合は、`@claude review` とコメントします |
+| **Code review not repeated — earlier findings still open** | 最新のプッシュに対して自動レビューが実行されず、以前のレビューの Important の指摘事項がまだ未解決です | 修正をプッシュするか、それでもレビューを受けたい場合は `@claude review` とコメントします。[プッシュ後も以前の結果が維持される場合](/docs/ja/code-review-pull-requests.md#when-a-push-keeps-the-earlier-result)を参照してください |
 | **Code review failed** または **Code review timed out** | レビューが完了しませんでした | 再実行するには、[失敗またはタイムアウトしたレビューを再トリガーする](#retrigger-a-failed-or-timed-out-review)を参照してください |
 | **Code review declined** | レビューは実行されませんでした | チェック実行の概要を読んでください。予算または支出上限について記載されている場合は、[レビューが実行されず、PR に予算に関するメッセージが表示される](#review-didn’t-run-and-the-pr-shows-a-budget-message)を参照してください |
 | チェック実行なし | レビューが開始されていません | `@claude review` とコメントします。その後もチェック実行が表示されない場合は、[コメントコマンドでレビューが開始されなかった](#a-comment-command-didn’t-start-a-review)を参照してください |
@@ -30,9 +31,9 @@
 
 `@claude review` とコメントした後、プルリクエスト上に **Code review queued...** または **Code review in progress...** というタイトルの **Claude Code Review** チェック実行があるかを確認してください。コメントに 👀 リアクションが付いても、レビューが開始されることの確認にはなりません。チェック実行が表示されない場合は、次の各原因を確認してください。
 
-* **このリポジトリで Code Review がオンになっていない**：Claude はコマンドに対してコメントもチェック実行も投稿しません。Owner に[リポジトリを追加する](/docs/ja/code-review-setup#add-more-repositories)よう依頼してください。
-* **コメントが条件を満たしていない**：新しいトップレベルのコメントではなく、インラインコメントやレビュー本文だった場合、またはコマンドがコメントの先頭になかった場合です。新しいコメントを投稿せずに以前のコメントを編集した場合も対象外で、プルリクエストはオープンである必要があります。[コメントコマンドの条件](/docs/ja/code-review-pull-requests#comment-commands)を確認し、条件を満たす新しいコメントを投稿してください。
-* **書き込みアクセス権がない**：リポジトリに対する write、maintain、または admin の権限が必要です。フォークからのプルリクエストの場合は、ベースリポジトリに対する権限が対象になります。プルリクエストが自分のものでない場合、Claude は[ヒント](/docs/ja/code-review-setup#turn-tip-comments-on-or-off)として「No review was started: manual reviews can only be requested by someone with write access to this repository.」と返信することがあります。書き込みアクセス権を持つ人に代わりにコメントしてもらってください。
+* **このリポジトリで Code Review がオンになっていない**：Claude はコマンドに対してコメントもチェック実行も投稿しません。Owner に[リポジトリを追加する](/docs/ja/code-review-setup.md#add-more-repositories)よう依頼してください。
+* **コメントが条件を満たしていない**：新しいトップレベルのコメントではなく、インラインコメントやレビュー本文だった場合、またはコマンドがコメントの先頭になかった場合です。新しいコメントを投稿せずに以前のコメントを編集した場合も対象外で、プルリクエストはオープンである必要があります。[コメントコマンドの条件](/docs/ja/code-review-pull-requests.md#comment-commands)を確認し、条件を満たす新しいコメントを投稿してください。
+* **書き込みアクセス権がない**：リポジトリに対する write、maintain、または admin の権限が必要です。フォークからのプルリクエストの場合は、ベースリポジトリに対する権限が対象になります。プルリクエストが自分のものでない場合、Claude は[ヒント](/docs/ja/code-review-setup.md#turn-tip-comments-on-or-off)として「No review was started: manual reviews can only be requested by someone with write access to this repository.」と返信することがあります。書き込みアクセス権を持つ人に代わりにコメントしてもらってください。
 * **予算が尽きた**：Claude は「⚠️ Code review skipped」で始まるコメントを投稿します。[レビューが実行されず、PR に予算に関するメッセージが表示される](#review-didn’t-run-and-the-pr-shows-a-budget-message)を参照してください。
 
 ### レビューが実行されず、PR に予算に関するメッセージが表示される
@@ -41,11 +42,11 @@
 
 コメントには [claude.ai/admin-settings/usage](https://claude.ai/admin-settings/usage) へのリンクが含まれており、管理者はそこで予算を回復できます。コメントの文言から、どの上限に達したかがわかります。
 
-* **「has reached its monthly code review spending cap」**：[Code Review の月間支出上限](/docs/ja/code-review-costs#limit-your-spend)に達しました。レビューは次の請求期間の開始時に再開されます。それより早く再開するには、管理者に上限の引き上げを依頼してください。
+* **「has reached its monthly code review spending cap」**：[Code Review の月間支出上限](/docs/ja/code-review-costs.md#limit-your-spend)に達しました。レビューは次の請求期間の開始時に再開されます。それより早く再開するには、管理者に上限の引き上げを依頼してください。
 * **「has no extra usage available to pay for this review」**：組織の[使用クレジット](https://support.claude.com/en/articles/12429409-extra-usage-for-paid-claude-plans)残高がなくなったか、組織全体の月間支出上限に達しました。管理者に使用クレジットの追加またはその上限の引き上げを依頼してください。
 * **「is too low to start another review」**：予算または残高の残りが、1 回のレビューにかかる想定コストを下回っています。管理者に上限の引き上げまたは使用クレジットの追加を依頼してください。
 
-予算が回復したら、プルリクエストに `@claude review` とコメントして、スキップされたレビューを実行してください。[コメントコマンドの条件](/docs/ja/code-review-pull-requests#comment-commands)が適用されるため、コメントする人には書き込みアクセス権が必要です。
+予算が回復したら、プルリクエストに `@claude review` とコメントして、スキップされたレビューを実行してください。[コメントコマンドの条件](/docs/ja/code-review-pull-requests.md#comment-commands)が適用されるため、コメントする人には書き込みアクセス権が必要です。
 
 ## 失敗またはタイムアウトしたレビューを再トリガーする
 
@@ -54,7 +55,7 @@
 それ以外で、チェック実行のタイトルが **Code review failed** または **Code review timed out** の場合は、コメントまたは再実行でレビューをもう一度実行してください。
 
 * **`@claude review` とコメントする**：プルリクエストにトップレベルのコメントとして投稿します。これにより、プルリクエストを今後のプッシュの対象として登録することなく、新しいレビューが開始されます。
-* **Re-run をクリックする**：プルリクエストが[フォークからのもの](/docs/ja/code-review-pull-requests#review-drafts-and-pull-requests-from-forks)でない場合は、GitHub の **Checks** タブで **Claude Code Review** チェックの **Re-run** をクリックします。再実行はプルリクエストの現在の head コミットを対象とし、こちらもプルリクエストを今後のプッシュの対象として登録しません。
+* **Re-run をクリックする**：プルリクエストが[フォークからのもの](/docs/ja/code-review-pull-requests.md#review-drafts-and-pull-requests-from-forks)でない場合は、GitHub の **Checks** タブで **Claude Code Review** チェックの **Re-run** をクリックします。再実行はプルリクエストの現在の head コミットを対象とし、こちらもプルリクエストを今後のプッシュの対象として登録しません。
 
 ## インラインコメントとして表示されない問題を見つける
 
@@ -68,16 +69,16 @@
 
 チェック実行に表示される `REVIEW.md` に関するメッセージのうち、次の 3 つを取り上げます。
 
-* **「This review applied the repository's review instructions (REVIEW\.md) from its default branch, which is not protected against direct pushes.」**：レビューはルートのファイルのみを読み込みました。ブランチを保護すると何が変わるかについては、[REVIEW.md の読み込み元ブランチ](/docs/ja/code-review-customize#which-branch-review-md-is-read-from)を参照してください。
+* **「This review applied the repository's review instructions (REVIEW\.md) from its default branch, which is not protected against direct pushes.」**：レビューはルートのファイルのみを読み込みました。ブランチを保護すると何が変わるかについては、[REVIEW.md の読み込み元ブランチ](/docs/ja/code-review-customize.md#which-branch-review-md-is-read-from)を参照してください。
 * **「were not applied to this review: branch protection could not be confirmed」**：レビューは `REVIEW.md` を読み込みませんでした。
-* **「they link to a file this pull request modifies, or carry more links than the review checks」**：レビューはルートの `REVIEW.md`、またはメッセージに示された数のサブディレクトリの `REVIEW.md` ファイルをスキップしました。スキップされたファイルについて、次の各原因を確認してください。ルートの `REVIEW.md` の場合は、[それがインクルードするファイル](/docs/ja/code-review-customize#include-other-files-in-review-md)も確認してください。
-  * **リンクが多すぎる**：64 個を超える Markdown リンクが含まれています。リンクを [64 個以下](/docs/ja/code-review-customize#include-other-files-in-review-md)に減らしてください。
+* **「they link to a file this pull request modifies, or carry more links than the review checks」**：レビューはルートの `REVIEW.md`、またはメッセージに示された数のサブディレクトリの `REVIEW.md` ファイルをスキップしました。スキップされたファイルについて、次の各原因を確認してください。ルートの `REVIEW.md` の場合は、[それがインクルードするファイル](/docs/ja/code-review-customize.md#include-other-files-in-review-md)も確認してください。
+  * **リンクが多すぎる**：64 個を超える Markdown リンクが含まれています。リンクを [64 個以下](/docs/ja/code-review-customize.md#include-other-files-in-review-md)に減らしてください。
   * **レビューが解析できないリンク**：不正な形式の Markdown リンクが含まれています。リンクを修正するか削除してください。
   * **変更されたファイルへのリンク**：このプルリクエストが変更するファイルまたはフォルダーにリンクしており、レビューはそのリンクを含む行だけを除外することができませんでした。ルールを `REVIEW.md` 自体に記述してください。
 
 ## セットアップの問題
 
-これらのケースは、Owner が [Code Review をセットアップする](/docs/ja/code-review-setup)際に発生します。
+これらのケースは、Owner が [Code Review をセットアップする](/docs/ja/code-review-setup.md)際に発生します。
 
 ### Add a repository にリポジトリが表示されない
 
@@ -89,7 +90,7 @@
 
 ## 関連リソース
 
-* [プルリクエストでレビューを読む・依頼する](/docs/ja/code-review-pull-requests)：指摘事項とチェック実行の意味、およびコメントコマンド
-* [Code Review をセットアップする](/docs/ja/code-review-setup)：Owner 向けに、Code Review をオンにしてリポジトリを管理する方法
-* [Code Review のコストと使用量](/docs/ja/code-review-costs)：予算に関するメッセージの原因となる支出上限
-* [Code Review をカスタマイズする](/docs/ja/code-review-customize)：レビューがどの `REVIEW.md` を読み込むか
+* [プルリクエストでレビューを読む・依頼する](/docs/ja/code-review-pull-requests.md)：指摘事項とチェック実行の意味、およびコメントコマンド
+* [Code Review をセットアップする](/docs/ja/code-review-setup.md)：Owner 向けに、Code Review をオンにしてリポジトリを管理する方法
+* [Code Review のコストと使用量](/docs/ja/code-review-costs.md)：予算に関するメッセージの原因となる支出上限
+* [Code Review をカスタマイズする](/docs/ja/code-review-customize.md)：レビューがどの `REVIEW.md` を読み込むか

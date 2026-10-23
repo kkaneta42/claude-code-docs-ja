@@ -8,9 +8,9 @@
 
 > [!NOTE]
 >
-> 自己ホスト環境は Team および Enterprise プランでパブリックベータ版です。[オーナー](/docs/ja/cloud-environments#organization-shared-environments)が [**Cloud environments** 管理ページ](https://claude.ai/admin-settings/cloud-environments)で **Allow self-hosted environments** をオンにすることで有効になります。このページではセッション ID 検証について説明します。セットアップについては[クイックスタート](/docs/ja/self-hosted-environments-quickstart)を、フリート構成については[本番環境へのデプロイ](/docs/ja/self-hosted-environments-deploy)を参照してください。
+> 自己ホスト環境は Team および Enterprise プランでパブリックベータ版です。[オーナー](/docs/ja/cloud-environments.md#organization-shared-environments)が [**Cloud environments** 管理ページ](https://claude.ai/admin-settings/cloud-environments)で **Allow self-hosted environments** をオンにすることで有効になります。このページではセッション ID 検証について説明します。セットアップについては[クイックスタート](/docs/ja/self-hosted-environments-quickstart.md)を、フリート構成については[本番環境へのデプロイ](/docs/ja/self-hosted-environments-deploy.md)を参照してください。
 
-[自己ホスト環境](/docs/ja/self-hosted-environments)では、[ウェブ上の Claude Code](/docs/ja/claude-code-on-the-web) セッションが Anthropic のインフラストラクチャではなく、お客様が運用するインフラストラクチャ上で実行されます。セッションはお客様のネットワーク内で実行されるため、Claude はお客様の内部サービスを直接呼び出すことができます。これらのサービスは、リクエストが環境内の Claude Code セッションから来たことを確認し、そのセッションを作成したユーザーまたはサービス ID を識別する方法が必要です。
+[自己ホスト環境](/docs/ja/self-hosted-environments)では、[ウェブ上の Claude Code](/docs/ja/claude-code-on-the-web.md) セッションが Anthropic のインフラストラクチャではなく、お客様が運用するインフラストラクチャ上で実行されます。セッションはお客様のネットワーク内で実行されるため、Claude はお客様の内部サービスを直接呼び出すことができます。これらのサービスは、リクエストが環境内の Claude Code セッションから来たことを確認し、そのセッションを作成したユーザーまたはサービス ID を識別する方法が必要です。
 
 自己ホスト環境内のすべてのセッションは、`CLAUDE_CODE_SESSION_ACCESS_TOKEN` 環境変数に署名付き JSON Web Token（JWT）を受け取ります。セッションはトークンをベアラー認証情報として提示します。たとえば、Claude が実行するスクリプトは `curl -H "Authorization: Bearer $CLAUDE_CODE_SESSION_ACCESS_TOKEN"` を使用してお客様のサービスを呼び出すことができます。Anthropic はトークンに署名し、検証キーを公開 JWKS エンドポイントで公開します。お客様のサービスはこれらのキーを取得し、署名を検証し、クレームを読んでアクセス権を決定します。
 
@@ -169,7 +169,7 @@ def verify_session_token(raw: str) -> dict:
 
 ### セッション内でトークンを検証する
 
-[ラッパースクリプト](/docs/ja/self-hosted-environments-configuration#wrapper-scripts)はセッション内で Claude が開始する前に実行されます。JWT ライブラリを呼び出す代わりに、ランナーバイナリの `self-hosted-runner decode-token` サブコマンドを実行できます。サブコマンドは位置引数、`CLAUDE_CODE_SESSION_ACCESS_TOKEN`、またはパイプされた stdin からトークンを読み取ります（この順序で）。その後、プレフィックスを削除し、JWKS エンドポイントに対して署名を検証し、有効期限をチェックし、クレームを JSON として出力します。サブコマンドは署名と有効期限チェックのみを実行します。`iss`、`aud`、または `ccr:role` はチェックしません。ラッパーの認証決定がこれらのクレームに依存する場合、出力された JSON からそれらを読み取り、明示的に比較します。
+[ラッパースクリプト](/docs/ja/self-hosted-environments-configuration.md#wrapper-scripts)はセッション内で Claude が開始する前に実行されます。JWT ライブラリを呼び出す代わりに、ランナーバイナリの `self-hosted-runner decode-token` サブコマンドを実行できます。サブコマンドは位置引数、`CLAUDE_CODE_SESSION_ACCESS_TOKEN`、またはパイプされた stdin からトークンを読み取ります（この順序で）。その後、プレフィックスを削除し、JWKS エンドポイントに対して署名を検証し、有効期限をチェックし、クレームを JSON として出力します。サブコマンドは署名と有効期限チェックのみを実行します。`iss`、`aud`、または `ccr:role` はチェックしません。ラッパーの認証決定がこれらのクレームに依存する場合、出力された JSON からそれらを読み取り、明示的に比較します。
 
 このコマンドは作成者 ID を抽出し、メールアドレス、作成者の `act.sub` サブジェクト（`user:<id>` または `agent:<id>`）の順で優先します。
 
@@ -196,10 +196,10 @@ def verify_session_token(raw: str) -> dict:
 | `iat` | 数値 | Unix タイムスタンプとして発行された時刻。 |
 | `jti` | 文字列 | 一意のトークン識別子。 |
 | `ccr:role` | 文字列 | セッショントークンの場合、常に `session_worker`。 |
-| `ccr:session_id` | 文字列 | セッション ID。`sub` のサフィックスと同じ値。 |
+| `ccr:session_id` | 文字列 | `cse_...` 形式のセッション ID。`sub` のサフィックスと同じ値で、[`CLAUDE_CODE_REMOTE_SESSION_ID`](/docs/ja/self-hosted-environments-configuration#wrapper-scripts) と同じ文字列です。[ライフサイクルフック](/docs/ja/self-hosted-environments-configuration.md#lifecycle-hooks)が受け取る `CLAUDE_RUNNER_SESSION_ID` と照合するには、`cse_` プレフィックスを `session_` に置き換えます。 |
 | `ccr:pool_id` | 文字列 | 環境 ID。`aud` に表示される同じ値。 |
 | `ccr:org_id` | 文字列 | Anthropic 組織 ID。 |
-| `ccr:account_id` | 文字列 | 作成ユーザーの Anthropic アカウント ID。`act.sub` の値から `user:` プレフィックスを除いたもので、タグ付き `user_...` ID。[spawn-runner フック](/docs/ja/self-hosted-environments-configuration#the-spawn-runner-hook)の `CLAUDE_RUNNER_ACCOUNT_ID` が持つ値と同じで、[`--lock-to-account`](/docs/ja/self-hosted-environments-reference#runner-cli-flags) が受け入れるため、3 つは等しい文字列として比較されます。 |
+| `ccr:account_id` | 文字列 | 作成ユーザーの Anthropic アカウント ID。`act.sub` の値から `user:` プレフィックスを除いたもので、タグ付き `user_...` ID。[spawn-runner フック](/docs/ja/self-hosted-environments-configuration.md#the-spawn-runner-hook)の `CLAUDE_RUNNER_ACCOUNT_ID` が持つ値と同じで、[`--lock-to-account`](/docs/ja/self-hosted-environments-reference#runner-cli-flags) が受け入れるため、3 つは等しい文字列として比較されます。 |
 | `account_email` | 文字列 | `act.email` の重複。`act.email` がない場合は常に存在しません。 |
 | `organization_uuid` | 文字列 | Anthropic 組織 UUID。 |
 | `account_uuid` | 文字列 | 作成ユーザーの Anthropic アカウント UUID。 |
@@ -235,12 +235,12 @@ def verify_session_token(raw: str) -> dict:
 作成者 ID は、トークンを検証しない 2 つのサーフェスのプレーンテキスト環境変数にも表示されます。
 
 * **[`spawn-runner` フック](/docs/ja/self-hosted-environments-configuration#the-spawn-runner-hook)（オーケストレーター上）**: フックはキューに入れられたセッションのランナーが存在する前に実行され、`CLAUDE_RUNNER_ACCOUNT_EMAIL` や `CLAUDE_RUNNER_ACCOUNT_ID` などの変数で作成者 ID を受け取ります。オーケストレーターはワークオーダー（1 つのランナーを生成することを認可する署名付き 1 回限りのトークン）からそれらを読み取り、ワークオーダーの署名自体を検証せずに。クレームは環境シークレットが認証するオーケストレーターの Anthropic への接続を介してワークオーダーが到着するため、信頼されます。
-* **[ラッパースクリプト](/docs/ja/self-hosted-environments-configuration#wrapper-scripts)（セッション内）**: ラッパーは `CCR_SESSION_ACCOUNT_EMAIL` を受け取ります。これは作成者のメールで、署名検証なしでトークンから事前に抽出されたものです。変数は認証決定ではなく、コミットトレーラーなどのラベル付けに適しています。
+* **[ラッパースクリプト](/docs/ja/self-hosted-environments-configuration.md#wrapper-scripts)（セッション内）**: ラッパーは `CCR_SESSION_ACCOUNT_EMAIL` を受け取ります。これは作成者のメールで、署名検証なしでトークンから事前に抽出されたものです。変数は認証決定ではなく、コミットトレーラーなどのラベル付けに適しています。
 
 オーケストレーター側の決定（マシンイメージの選択など）にはプレーンテキスト変数を使用します。ランナーの環境を信頼するのではなく、ダウンストリームサービスが独立した暗号化証明を必要とする場合は `CLAUDE_CODE_SESSION_ACCESS_TOKEN` を使用します。
 
 ## 次のステップ
 
-* [自己ホスト環境](/docs/ja/self-hosted-environments): 環境、ランナー、およびセッションモデル。[クイックスタート](/docs/ja/self-hosted-environments-quickstart)と[本番環境へのデプロイ](/docs/ja/self-hosted-environments-deploy)はセットアップと運用を保持しています。
-* [セッションをカスタマイズする](/docs/ja/self-hosted-environments-configuration): トークンを使用するラッパースクリプト、および `spawn-runner` フック
-* [リファレンス](/docs/ja/self-hosted-environments-reference): CLI フラグ、環境変数、およびメトリクス
+* [自己ホスト環境](/docs/ja/self-hosted-environments): 環境、ランナー、およびセッションモデル。[クイックスタート](/docs/ja/self-hosted-environments-quickstart.md)と[本番環境へのデプロイ](/docs/ja/self-hosted-environments-deploy.md)はセットアップと運用を保持しています。
+* [セッションをカスタマイズする](/docs/ja/self-hosted-environments-configuration.md): トークンを使用するラッパースクリプト、および `spawn-runner` フック
+* [リファレンス](/docs/ja/self-hosted-environments-reference.md): CLI フラグ、環境変数、およびメトリクス

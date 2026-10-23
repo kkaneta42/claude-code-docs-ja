@@ -103,7 +103,7 @@ export ANTHROPIC_FOUNDRY_RESOURCE={resource}
 # export ANTHROPIC_FOUNDRY_BASE_URL=https://{resource}.services.ai.azure.com/anthropic
 ```
 
-`ANTHROPIC_FOUNDRY_RESOURCE` には、`my-resource` のようにリソース名のみを設定します。URL やホスト名を設定した場合、メッセージを送信した時点で Claude Code は[それを拒否します](/docs/ja/errors#anthropic-foundry-resource-must-be-a-foundry-resource-name)。
+`ANTHROPIC_FOUNDRY_RESOURCE` には、`my-resource` のようにリソース名のみを設定します。URL やホスト名を設定した場合、メッセージを送信した時点で Claude Code は[それを拒否します](/docs/ja/errors.md#anthropic-foundry-resource-must-be-a-foundry-resource-name)。
 
 ### モデルバージョンをピン留めする
 
@@ -123,15 +123,15 @@ export ANTHROPIC_DEFAULT_HAIKU_MODEL='claude-haiku-4-5'
 
 セッションタイトル生成などのバックグラウンドタスクは、通常は Haiku クラスモデルである小型/高速モデルを使用します。Microsoft Foundry では、すべてのアカウントが Haiku デプロイを持っているわけではないため、Claude Code はこれをプライマリモデルにデフォルト設定します。バックグラウンドタスクに Haiku を使用するには、上記のように、アカウントで利用可能な Haiku デプロイに `ANTHROPIC_DEFAULT_HAIKU_MODEL` を設定します。
 
-現在および従来のモデル ID については、[モデル概要](https://platform.claude.com/docs/en/about-claude/models/overview)を参照してください。環境変数の完全なリストについては、[モデル設定](/docs/ja/model-config#pin-models-for-third-party-deployments)を参照してください。
+現在および従来のモデル ID については、[モデル概要](https://platform.claude.com/docs/en/about-claude/models/overview)を参照してください。環境変数の完全なリストについては、[モデル設定](/docs/ja/model-config.md#pin-models-for-third-party-deployments)を参照してください。
 
-[プロンプトキャッシュ](/docs/ja/prompt-caching)は自動的に有効になります。デフォルトの 5 分ではなく 1 時間のキャッシュ TTL をリクエストするには、以下の変数を設定します。1 時間の TTL でのキャッシュ書き込みはより高いレートで課金されます：
+[プロンプトキャッシュ](/docs/ja/prompt-caching.md)は自動的に有効になります。デフォルトの 5 分ではなく 1 時間のキャッシュ TTL をリクエストするには、以下の変数を設定します。1 時間の TTL でのキャッシュ書き込みはより高いレートで課金されます：
 
 ```bash theme={null}
 export ENABLE_PROMPT_CACHING_1H=1
 ```
 
-メインの会話と、Claude Code がその外部で実行するリクエストとで異なる TTL を設定するには、[TTL を自分で選択](/docs/ja/prompt-caching#choose-the-ttl-yourself)してください。
+メインの会話と、Claude Code がその外部で実行するリクエストとで異なる TTL を設定するには、[TTL を自分で選択](/docs/ja/prompt-caching.md#choose-the-ttl-yourself)してください。
 
 ### Claude Code を実行する
 
@@ -167,7 +167,7 @@ Claude Code は環境から `CLAUDE_CODE_USE_FOUNDRY` およびその他の Micr
 
 ## 1M トークンのコンテキストウィンドウ
 
-Microsoft Foundry では、デプロイがどのモデルを提供しているかを Claude Code が判別できる場合、Fable モデル、Sonnet 5 以降、Opus 4.7 以降は、`[1m]` サフィックスを付けなくてもデフォルトで [1M トークンのコンテキストウィンドウ](https://platform.claude.com/docs/en/build-with-claude/context-windows#context-window-sizes-by-model)で動作します。Claude Code は、モデル変数に指定されたデプロイ名からモデルを読み取ります。各デプロイには `claude-opus-4-8` のようにモデル ID を名前として付けるか、[`modelOverrides`](/docs/ja/model-config#override-model-ids-per-version) でモデルをデプロイ名にマッピングしてください。モデルと照合できないデプロイ名の場合、[別のウィンドウを宣言](/docs/ja/model-config#correct-the-window-for-a-gateway-or-custom-model-id)しない限り、Claude Code は 200K のウィンドウを想定します。
+Microsoft Foundry では、デプロイがどのモデルを提供しているかを Claude Code が判別できる場合、Fable モデル、Sonnet 5 以降、Opus 4.7 以降は、`[1m]` サフィックスを付けなくてもデフォルトで [1M トークンのコンテキストウィンドウ](https://platform.claude.com/docs/en/build-with-claude/context-windows#context-window-sizes-by-model)で動作します。Claude Code は、モデル変数に指定されたデプロイ名からモデルを読み取ります。各デプロイには `claude-opus-4-8` のようにモデル ID を名前として付けるか、[`modelOverrides`](/docs/ja/model-config#override-model-ids-per-version) でモデルをデプロイ名にマッピングしてください。モデルと照合できないデプロイ名の場合、[別のウィンドウを宣言](/docs/ja/model-config.md#correct-the-window-for-a-gateway-or-custom-model-id)しない限り、Claude Code は 200K のウィンドウを想定します。
 
 次の `settings.json` のエントリは、`team-opus-prod` という名前のデプロイが Opus 4.8 を提供していることを Claude Code に伝えます。
 
@@ -181,7 +181,7 @@ Microsoft Foundry では、デプロイがどのモデルを提供している�
 
 代わりに 200K のウィンドウを維持するには、[`CLAUDE_CODE_DISABLE_1M_CONTEXT=1`](/docs/ja/model-config#turn-off-1m-context) を設定します。
 
-Opus 4.6 と Sonnet 4.6 は、[サードパーティデプロイ向けにモデルを固定する](/docs/ja/model-config#pin-models-for-third-party-deployments)で説明されているように、`ANTHROPIC_DEFAULT_OPUS_MODEL` または `ANTHROPIC_DEFAULT_SONNET_MODEL` のデプロイ名に `[1m]` を付加すると 1M のウィンドウを利用できます。v2.1.287 より前では、Microsoft Foundry 上の Fable モデルおよび Opus 4.7 以降でもこのサフィックスが必要で、付けない場合はデフォルトで 200K のウィンドウで動作していました。
+Opus 4.6 と Sonnet 4.6 は、[サードパーティデプロイ向けにモデルを固定する](/docs/ja/model-config.md#pin-models-for-third-party-deployments)で説明されているように、`ANTHROPIC_DEFAULT_OPUS_MODEL` または `ANTHROPIC_DEFAULT_SONNET_MODEL` のデプロイ名に `[1m]` を付加すると 1M のウィンドウを利用できます。v2.1.287 より前では、Microsoft Foundry 上の Fable モデルおよび Opus 4.7 以降でもこのサフィックスが必要で、付けない場合はデフォルトで 200K のウィンドウで動作していました。
 
 ## トラブルシューティング
 

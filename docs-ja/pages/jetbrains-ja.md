@@ -33,7 +33,7 @@ Claude Code プラグインは、以下を含むほとんどの JetBrains IDEs �
 
 **1. Claude Code CLI をインストールする**
 
-まだインストールしていない場合は、[クイックスタート](/docs/ja/quickstart) に従って CLI をインストールしてください。`claude` が PATH にない場合、プラグインは'Claude Code を起動できません'という通知を表示します。
+まだインストールしていない場合は、[クイックスタート](/docs/ja/quickstart.md) に従って CLI をインストールしてください。`claude` が PATH にない場合、プラグインは'Claude Code を起動できません'という通知を表示します。
 
 **2. JetBrains プラグインをインストールする**
 
@@ -41,7 +41,7 @@ JetBrains マーケットプレイスから [Claude Code プラグイン](https:
 
 `claude` が IDE が見つけられない場所にインストールされている場合は、プラグインの [Claude コマンド設定](#general-settings) でフルパスを設定してください。
 
-Claude Code は、任意の有料 Claude サブスクリプション（Pro、Max、Team、または Enterprise）または Claude Console アカウントで動作し、API キーは不要です。`claude` を初めて実行するときに [ログイン](/docs/ja/authentication#log-in-to-claude-code) するよう求められます。
+Claude Code は、任意の有料 Claude サブスクリプション（Pro、Max、Team、または Enterprise）または Claude Console アカウントで動作し、API キーは不要です。`claude` を初めて実行するときに [ログイン](/docs/ja/authentication.md#log-in-to-claude-code) するよう求められます。
 
 ## 使用方法
 
@@ -189,11 +189,11 @@ Claude Code が [`acceptEdits` 権限モード](/docs/ja/permission-modes#auto-a
 
 JetBrains IDEs で実行する場合は、以下を検討してください。
 
-* 編集に対して手動モードを使用する。`acceptEdits` と自動モードの両方は、[保護されたパス](/docs/ja/permission-modes#protected-paths)を除いて、作業ディレクトリ内の編集を確認なしで承認するため
+* 編集に対して手動モードを使用する。`acceptEdits` と自動モードの両方は、[保護されたパス](/docs/ja/permission-modes.md#protected-paths)を除いて、作業ディレクトリ内の編集を確認なしで承認するため
 * Claude が信頼できるプロンプトでのみ使用されることを確認するために特に注意する
 * Claude Code がアクセスして変更できるファイルを認識する
 
-Claude Code のインストールまたはログインの問題については、[インストールとログインのトラブルシューティング](/docs/ja/troubleshoot-install) を参照してください。
+Claude Code のインストールまたはログインの問題については、[インストールとログインのトラブルシューティング](/docs/ja/troubleshoot-install.md) を参照してください。
 
 ### 組み込み IDE MCP サーバー
 
@@ -203,7 +203,7 @@ Claude Code のインストールまたはログインの問題については�
 
 **選択とオープンファイルコンテキスト。** 接続中、CLI は現在のエディター選択とアクティブファイルのパスを、送信する各プロンプトのコンテキストとして含めます。トランスクリプトには、これが発生したときに `⧉ Selected N lines from <file>` という行が表示されます。
 
-[Claude が作業中にメッセージをキューに入れる](/docs/ja/interactive-mode#queue-messages-while-claude-works)場合、`Enter` キーを押したときに選択していた選択内容が保持され、その後に選択したものは何でも保持されます。
+[Claude が作業中にメッセージをキューに入れる](/docs/ja/interactive-mode.md#queue-messages-while-claude-works)場合、`Enter` キーを押したときに選択していた選択内容が保持され、その後に選択したものは何でも保持されます。
 
 `.env` などの機密ファイルを除外するには、そのパスに対して [`Read` 拒否ルール](/docs/ja/permissions#read-and-edit)を追加してください。一致する拒否ルールは、選択されたテキストとそのファイルのオープンファイル通知の両方が Claude に到達するのを防ぎます。
 

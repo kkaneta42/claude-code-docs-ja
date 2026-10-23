@@ -6,7 +6,7 @@
 
 > Claude Code を使用してコードベースの探索、バグ修正、リファクタリング、テスト、その他の日常的なタスクを実行するためのステップバイステップガイド。
 
-このページでは、日常的な開発のための短いレシピを集めています。プロンプティングとコンテキスト管理に関する高度なガイダンスについては、[ベストプラクティス](/docs/ja/best-practices)を参照してください。
+このページでは、日常的な開発のための短いレシピを集めています。プロンプティングとコンテキスト管理に関する高度なガイダンスについては、[ベストプラクティス](/docs/ja/best-practices.md)を参照してください。
 
 このページでは以下をカバーしています：
 
@@ -23,7 +23,7 @@
 
 ### 新しいコードベースを理解する
 
-モノレポまたは大規模なコードベースで Claude Code を設定する場合は、[モノレポと大規模リポジトリ](/docs/ja/large-codebases)を参照してください。
+モノレポまたは大規模なコードベースで Claude Code を設定する場合は、[モノレポと大規模リポジトリ](/docs/ja/large-codebases.md)を参照してください。
 
 #### コードベースの概要を素早く把握する
 
@@ -99,7 +99,7 @@ trace the login process from front-end to database
 >
 > * 探しているものについて具体的に説明する
 > * プロジェクトのドメイン言語を使用する
-> * 言語の[コード インテリジェンス プラグイン](/docs/ja/plugins/code-intelligence)をインストールして、Claude に正確な「定義に移動」と「参照を検索」のナビゲーションを提供する
+> * 言語の[コード インテリジェンス プラグイン](/docs/ja/plugins/code-intelligence.md)をインストールして、Claude に正確な「定義に移動」と「参照を検索」のナビゲーションを提供する
 
 ***
 
@@ -231,7 +231,7 @@ create a pr
 enhance the PR description with more context about the security improvements
 ```
 
-後でセッションを見つけるには、`claude --from-pr 1234` を実行してください。1234 を PR 番号に置き換えてください。これにより、その PR にリンクされたセッションにフィルタリングされたセッションピッカーが開きます。または、[`/resume` ピッカー](/docs/ja/sessions#use-the-session-picker)の検索に PR URL を貼り付けてください。Claude が `gh pr create` または `glab mr create` でプルリクエストを作成するとき、および Claude が[既存の PR で作業する](/docs/ja/agent-view#pull-request-status)ときに、Claude Code はセッションを PR にリンクします。
+後でセッションを見つけるには、`claude --from-pr 1234` を実行してください。1234 を PR 番号に置き換えてください。これにより、その PR にリンクされたセッションにフィルタリングされたセッションピッカーが開きます。または、[`/resume` ピッカー](/docs/ja/sessions#use-the-session-picker)の検索に PR URL を貼り付けてください。Claude が `gh pr create` または `glab mr create` でプルリクエストを作成するとき、および Claude が[既存の PR で作業する](/docs/ja/agent-view.md#pull-request-status)ときに、Claude Code はセッションを PR にリンクします。
 
 > [!TIP]
 >
@@ -351,7 +351,7 @@ What HTML structure would recreate this component?
 Explain the logic in @src/utils/auth.js
 ```
 
-これにより、ファイルが [Read ツール](/docs/ja/tools-reference#read-tool-behavior)のトークン制限（デフォルトでは 25,000 トークン）に収まる場合、ファイルの内容が会話に含まれます。256KB を超えるテキストファイルは含まれません。
+これにより、ファイルが [Read ツール](/docs/ja/tools-reference.md#read-tool-behavior)のトークン制限（デフォルトでは 25,000 トークン）に収まる場合、ファイルの内容が会話に含まれます。256KB を超えるテキストファイルは含まれません。
 
 **2. ディレクトリを参照する**
 
@@ -365,7 +365,7 @@ What's the structure of @src/components?
 Show me the data from @github:repos/owner/repo/issues
 ```
 
-これにより、@server:resource 形式を使用して接続された MCP サーバーからデータを取得します。詳細については、[MCP リソース](/docs/ja/mcp#use-mcp-resources)を参照してください。
+これにより、@server:resource 形式を使用して接続された MCP サーバーからデータを取得します。詳細については、[MCP リソース](/docs/ja/mcp.md#use-mcp-resources)を参照してください。
 
 > [!TIP]
 >
@@ -377,7 +377,7 @@ Show me the data from @github:repos/owner/repo/issues
 > * ディレクトリ参照はコンテンツではなくファイルリストを表示します
 > * 単一のメッセージで複数のファイルを参照できます（例：「@file1.js and @file2.js」）
 
-`@` 参照によってメッセージにファイルの内容やディレクトリリストが含まれないようにするには、シェルまたはユーザー設定で [`CLAUDE_CODE_DISABLE_FILE_MENTIONS=1`](/docs/ja/env-vars#variables) を設定してください。その場合、Claude は参照されたパスを、ファイルツールを使って読み込むよう促すメモとともに受け取ります。この変数には Claude Code v2.1.299 以降が必要です。また、プロジェクト設定とローカル設定では Claude Code はこの変数を無視します。
+`@` 参照によってファイルの内容やディレクトリリストが含まれないようにするには、シェル、またはユーザー設定や[管理設定](/docs/ja/managed-settings.md)の [`env` ブロック](/docs/ja/env-vars#set-variables-in-settings-files)で [`CLAUDE_CODE_DISABLE_FILE_MENTIONS`](/docs/ja/env-vars#variables) を `1` に設定してください。その場合、Claude は参照されたパスを、ファイルツールを使って読み込むよう促すメモとともに受け取ります。この変数には Claude Code v2.1.299 以降が必要です。また、プロジェクト設定とローカル設定では Claude Code はこの変数を無視します。
 
 Claude Code が `@` で参照されたファイルを含める場合、ツール呼び出しを行わないため、[`PreToolUse` フック](/docs/ja/hooks#pretooluse)は実行されません。Claude が読み込む内容をこれらのフックで制御している場合は、特定のパスをブロックするか、`@` 参照によってファイルが含まれないようにしてください：
 
@@ -394,9 +394,9 @@ Claude に長時間実行されるタスクを自動的に定期的に処理さ�
 
 | オプション | 実行場所 | 最適な用途 |
 | :- | :- | :- |
-| [クラウドスケジュールタスク](/docs/ja/routines) | クラウド（デフォルトでは Anthropic 管理） | コンピューターがオフの場合でも実行する必要があるタスク。スケジュールに加えて API 呼び出しまたは GitHub イベントでトリガーすることもできます。[claude.ai/code/routines](https://claude.ai/code/routines) で設定します。 |
-| [デスクトップスケジュール済みタスク](/docs/ja/desktop-scheduled-tasks) | デスクトップアプリ経由のマシン | ローカルファイル、ツール、またはコミットされていない変更への直接アクセスが必要なタスク。 |
-| [GitHub Actions](/docs/ja/github-actions) | CI パイプライン | オープン PR などのリポジトリイベント、またはワークフロー設定と一緒に存在する必要がある cron スケジュールに関連するタスク。 |
+| [クラウドスケジュールタスク](/docs/ja/routines.md) | クラウド（デフォルトでは Anthropic 管理） | コンピューターがオフの場合でも実行する必要があるタスク。スケジュールに加えて API 呼び出しまたは GitHub イベントでトリガーすることもできます。[claude.ai/code/routines](https://claude.ai/code/routines) で設定します。 |
+| [デスクトップスケジュール済みタスク](/docs/ja/desktop-scheduled-tasks.md) | デスクトップアプリ経由のマシン | ローカルファイル、ツール、またはコミットされていない変更への直接アクセスが必要なタスク。 |
+| [GitHub Actions](/docs/ja/github-actions.md) | CI パイプライン | オープン PR などのリポジトリイベント、またはワークフロー設定と一緒に存在する必要がある cron スケジュールに関連するタスク。 |
 | [`/loop`](/docs/ja/scheduled-tasks) | 現在の CLI セッション | セッションが開いている間のクイックポーリング。`--resume` と `--continue` は期限切れでない固定間隔のループを復元します。 |
 
 > [!TIP]
@@ -456,7 +456,7 @@ what are the limitations of Claude Code?
 claude --continue
 ```
 
-これにより、現在のディレクトリで最新のセッションが再開されます。まだセッションがない場合は、`No conversation found to continue` と出力して終了します。`claude --resume` を使用してリストから選択するか、実行中のセッション内から `/resume` を使用してください。[セッションを管理する](/docs/ja/sessions)を参照して、名前付け、ブランチ、および完全なピッカーリファレンスを確認してください。
+これにより、現在のディレクトリで最新のセッションが再開されます。まだセッションがない場合は、`No conversation found to continue` と出力して終了します。`claude --resume` を使用してリストから選択するか、実行中のセッション内から `/resume` を使用してください。[セッションを管理する](/docs/ja/sessions.md)を参照して、名前付け、ブランチ、および完全なピッカーリファレンスを確認してください。
 
 ## worktree を使用して並列セッションを実行する
 
@@ -466,7 +466,7 @@ claude --continue
 claude --worktree feature-auth
 ```
 
-別の名前で 2 番目のターミナルで同じコマンドを実行して、分離された並列セッションを開始します。コミットがないリポジトリでは、コマンドは `Failed to resolve base branch "HEAD": git rev-parse failed` というエラーで失敗します。クリーンアップ、`.worktreeinclude`、および非 git VCS サポートについては、[Worktrees](/docs/ja/worktrees) を参照してください。1 つの画面から並列セッションを監視するには、別のターミナルではなく、[バックグラウンドエージェント](/docs/ja/agent-view) を参照してください。
+別の名前で 2 番目のターミナルで同じコマンドを実行して、分離された並列セッションを開始します。コミットがないリポジトリでは、コマンドは `Failed to resolve base branch "HEAD": git rev-parse failed` というエラーで失敗します。クリーンアップ、`.worktreeinclude`、および非 git VCS サポートについては、[Worktrees](/docs/ja/worktrees.md) を参照してください。1 つの画面から並列セッションを監視するには、別のターミナルではなく、[バックグラウンドエージェント](/docs/ja/agent-view.md) を参照してください。
 
 ## 編集前に計画する
 
@@ -476,7 +476,7 @@ claude --worktree feature-auth
 claude --permission-mode plan
 ```
 
-セッション中に `Shift+Tab` を押してステータスバーが `⏸ plan mode on` と表示されるまで切り替えることもできます。承認フローとテキストエディタで計画を編集する方法については、[計画モード](/docs/ja/permission-modes#analyze-before-you-edit-with-plan-mode)を参照してください。
+セッション中に `Shift+Tab` を押してステータスバーが `⏸ plan mode on` と表示されるまで切り替えることもできます。承認フローとテキストエディタで計画を編集する方法については、[計画モード](/docs/ja/permission-modes.md#analyze-before-you-edit-with-plan-mode)を参照してください。
 
 ## 研究を subagent に委譲する
 
@@ -486,7 +486,7 @@ claude --permission-mode plan
 use a subagent to investigate how our auth system handles token refresh
 ```
 
-subagent は独自のコンテキストウィンドウでファイルを読み込み、要約を報告します。[Subagents](/docs/ja/sub-agents)を参照して、独自のツールとプロンプトを持つカスタムエージェントを定義することを確認してください。
+subagent は独自のコンテキストウィンドウでファイルを読み込み、要約を報告します。[Subagents](/docs/ja/sub-agents.md)を参照して、独自のツールとプロンプトを持つカスタムエージェントを定義することを確認してください。
 
 ## Claude をスクリプトにパイプする
 
@@ -496,22 +496,22 @@ CI、プリコミットフック、またはバッチ処理用に Claude を非�
 git log --oneline -20 | claude -p "summarize these recent commits"
 ```
 
-[非対話モード](/docs/ja/headless)を参照して、出力形式、許可フラグ、およびファンアウトパターンを確認してください。
+[非対話モード](/docs/ja/headless.md)を参照して、出力形式、許可フラグ、およびファンアウトパターンを確認してください。
 
 ## 次のステップ
 
-> **[ベストプラクティス](/docs/ja/best-practices)**
+> **[ベストプラクティス](/docs/ja/best-practices.md)**
 >
 > Claude Code から最大限の価値を得るためのパターン
 
-> **[セッションを管理する](/docs/ja/sessions)**
+> **[セッションを管理する](/docs/ja/sessions.md)**
 >
 > 会話を再開、名前付け、ブランチする
 
-> **[Worktrees](/docs/ja/worktrees)**
+> **[Worktrees](/docs/ja/worktrees.md)**
 >
 > 分離された並列セッションを実行する
 
-> **[Claude Code を拡張する](/docs/ja/features-overview)**
+> **[Claude Code を拡張する](/docs/ja/features-overview.md)**
 >
 > skill、フック、MCP、subagent、プラグインを追加する

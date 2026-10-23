@@ -14,7 +14,7 @@ Claude が複数の独立したタスクに対して、あなたが毎ステッ�
 
 任意のエージェントのセッションでより直接的に作業したい場合は、行にアタッチして完全な会話に入ります。
 
-エージェントビューを subagents、agent teams、worktrees と比較するには、[エージェントを並列で実行する](/docs/ja/agents)を参照してください。エージェントビューはあなたのマシン上でセッションを実行し、各セッションをディスパッチします。1 つの会話からクラウドで Claude が並列セッションを開始して追跡するには、[Projects](/docs/ja/claude-projects)を参照してください。
+エージェントビューを subagents、agent teams、worktrees と比較するには、[エージェントを並列で実行する](/docs/ja/agents.md)を参照してください。エージェントビューはあなたのマシン上でセッションを実行し、各セッションをディスパッチします。1 つの会話からクラウドで Claude が並列セッションを開始して追跡するには、[Projects](/docs/ja/claude-projects.md)を参照してください。
 
 > [!NOTE]
 >
@@ -32,7 +32,7 @@ Claude が複数の独立したタスクに対して、あなたが毎ステッ�
 claude agents
 ```
 
-まだディレクトリの[ワークスペーストラストダイアログ](/docs/ja/permissions#project-allow-rules-and-workspace-trust)を受け入れていない場合、Claude Code はエージェントビューが開く前にそれを表示します。これは `claude` が表示するのと同じダイアログです。受け入れてワークスペースの信頼を保存して続行します。拒否すると、Claude Code はエージェントビューを開かずに終了します。
+まだディレクトリの[ワークスペーストラストダイアログ](/docs/ja/permissions.md#project-allow-rules-and-workspace-trust)を受け入れていない場合、Claude Code はエージェントビューが開く前にそれを表示します。これは `claude` が表示するのと同じダイアログです。受け入れてワークスペースの信頼を保存して続行します。拒否すると、Claude Code はエージェントビューを開かずに終了します。
 
 エージェントビューが開き、下部に入力フィールドが表示され、セッションが開始されるとテーブルが埋まります。`Esc` を押すとシェルに戻ります。`←` でセッションをバックグラウンドにしてエージェントビューを開いた場合、`Esc` はそのセッションの会話に戻ります。セッションは離れている間も実行し続け、次にエージェントビューを開いたときに再度表示されます。
 
@@ -64,7 +64,7 @@ claude agents
 * **待機中の数**: バックグラウンドセッションが入力を待機している間、同じ位置にその数が `← 2 agents` のように表示されます。99 を超える場合は `← 99+ agents` と表示されます。カウントはターミナルがフォーカスされている間は約 10 秒ごとに更新され、フォーカスが戻ると即座に更新されます
 * **完了数**: 入力を待機しているセッションがない状態でバックグラウンドセッションが正常に完了すると、フッターに完了した数が一時的に表示されます。たとえば 2 つの場合は `← 2 done` と表示されます
 
-待機中の数は、増減したとき、およびバックグラウンドセッションが正常に完了したときに一時的に色が変わります。[`prefersReducedMotion`](/docs/ja/settings-reference#prefersreducedmotion) をオンにすると、色の変化も `done` のカウントも表示されません。[スクリーンリーダーモード](/docs/ja/accessibility)では、`←` ヒントとそのカウントは非表示になります。
+待機中の数は、増減したとき、およびバックグラウンドセッションが正常に完了したときに一時的に色が変わります。[`prefersReducedMotion`](/docs/ja/settings-reference#prefersreducedmotion) をオンにすると、色の変化も `done` のカウントも表示されません。[スクリーンリーダーモード](/docs/ja/accessibility.md)では、`←` ヒントとそのカウントは非表示になります。
 
 ### デフォルトでエージェントビューを開く
 
@@ -104,7 +104,7 @@ claude agents --cwd ~/projects/my-app
 
 これはそのディレクトリの下で開始されたセッションのみを表示します。`~/projects/my-app/.claude/worktrees/` の下の [worktree に移動した](#how-file-edits-are-isolated) セッションも引き続き表示されます。
 
-他のターミナルで開いているインタラクティブセッションは、[バックグラウンドにする](#from-inside-a-session) までは表示されません。セッションが生成する [サブエージェント](/docs/ja/sub-agents) と [チームメイト](/docs/ja/agent-teams) は、個別の行としてはリストされません。
+他のターミナルで開いているインタラクティブセッションは、[バックグラウンドにする](#from-inside-a-session) までは表示されません。セッションが生成する [サブエージェント](/docs/ja/sub-agents.md) と [チームメイト](/docs/ja/agent-teams.md) は、個別の行としてはリストされません。
 
 ```text theme={null}
 Pinned
@@ -133,7 +133,7 @@ Completed
 | 状態 | アイコン表示 | 意味 |
 | :- | :- | :- |
 | 作業中 | アニメーション | Claude がアクティブにツールを実行しているか、応答を生成しています |
-| 入力が必要 | 黄色 | Claude はユーザーにしか提供できないものを待っています。質問への回答、権限の判断、またはユーザーにしか答えられない別のプロンプト（ネットワークホストを許可する [サンドボックス](/docs/ja/sandboxing) プロンプトや MCP サーバーの [入力リクエスト](/docs/ja/mcp#respond-to-mcp-elicitation-requests) など）です。`/install-github-app` や `/mcp` 設定リストなど、アタッチされたターミナルを必要とするコマンドも、[無人のセッションをここで保留します](#attach-to-a-session) |
+| 入力が必要 | 黄色 | Claude はユーザーにしか提供できないものを待っています。質問への回答、権限の判断、またはユーザーにしか答えられない別のプロンプト（ネットワークホストを許可する [サンドボックス](/docs/ja/sandboxing.md) プロンプトや MCP サーバーの [入力リクエスト](/docs/ja/mcp.md#respond-to-mcp-elicitation-requests) など）です。`/install-github-app` や `/mcp` 設定リストなど、アタッチされたターミナルを必要とするコマンドも、[無人のセッションをここで保留します](#attach-to-a-session) |
 | アイドル | 薄い | セッションはすることがなく、次のプロンプトの準備ができています |
 | 完了 | 緑 | タスクが正常に完了しました |
 | 失敗 | 赤 | タスクがエラーで終了しました |
@@ -153,7 +153,7 @@ Completed
 
 スクリプトまたは別のプログラムからセッション状態を読み取るには、`~/.claude/jobs/` の下のファイルではなく [`claude agents --json`](#read-session-state-from-a-script) を使用します。
 
-エージェントビューが開いている間、Claude Code はローカルバックグラウンドセッションが入力を必要とし始めたとき、完了したとき、または失敗したときに、設定された [ターミナル通知チャネル](/docs/ja/terminal-config#get-a-terminal-bell-or-notification) を通じて通知を送信します。[`/loop`](/docs/ja/scheduled-tasks) セッションなどのスケジュールで実行されるセッションは、入力が必要な場合にのみ通知します。通知は Claude Code の他の部分と同じ [`preferredNotifChannel` 設定](/docs/ja/settings-reference#preferrednotifchannel) を使用し、`agent_needs_input` または `agent_completed` タイプで [`Notification` フック](/docs/ja/hooks#notification) を発火します。
+エージェントビューが開いている間、Claude Code はローカルバックグラウンドセッションが入力を必要とし始めたとき、完了したとき、または失敗したときに、設定された [ターミナル通知チャネル](/docs/ja/terminal-config.md#get-a-terminal-bell-or-notification) を通じて通知を送信します。[`/loop`](/docs/ja/scheduled-tasks) セッションなどのスケジュールで実行されるセッションは、入力が必要な場合にのみ通知します。通知は Claude Code の他の部分と同じ [`preferredNotifChannel` 設定](/docs/ja/settings-reference#preferrednotifchannel) を使用し、`agent_needs_input` または `agent_completed` タイプで [`Notification` フック](/docs/ja/hooks#notification) を発火します。
 
 バックグラウンドセッションは作業を続けるためにターミナルを開いておく必要がありません。別の [スーパーバイザープロセス](#the-supervisor-process) がセッションを実行するため、エージェントビューを閉じたり、シェルを閉じたり、新しいインタラクティブセッションを開始したりしても、ディスパッチした作業は続きます。
 
@@ -163,13 +163,13 @@ Completed
 
 ### 行の概要
 
-各行の 1 行の概要は [Haiku クラスモデル](/docs/ja/model-config) によって生成されるため、トランスクリプトを開かなくても、セッションが何をしているか、何を必要としているか、何を生成したかが行からわかります。セッションがアクティブに作業している間、行のテキストはモデルリクエストを送信せずにセッション自身の最近の出力から最大 15 秒に 1 回更新され、各ターンの終了時にはモデルが新しい概要を書きます。
+各行の 1 行の概要は [Haiku クラスモデル](/docs/ja/model-config.md) によって生成されるため、トランスクリプトを開かなくても、セッションが何をしているか、何を必要としているか、何を生成したかが行からわかります。セッションがアクティブに作業している間、行のテキストはモデルリクエストを送信せずにセッション自身の最近の出力から最大 15 秒に 1 回更新され、各ターンの終了時にはモデルが新しい概要を書きます。
 
 作業中の行はセッションが何をしていると述べているかを示し、ブロックされた行はセッションが尋ねている質問を示します。長いターンの間は、ビジーな行が古い概要を表示し続けないよう、モデルが数分ごとに概要を書き直します。概要テキストは行の残りの幅を埋めます。ターミナルの端で切り詰められた文を読むには、[ピークパネル](#peek-and-reply) を開きます。
 
 リストが [ディレクトリでグループ化](#organize-the-list) されている場合、概要はセッションの状態を示す色付きの単語で始まります。例えば `Needs input · double jump or wall climb?` のようになります。デフォルトの状態グループ化では、グループヘッダーがすでに状態を示しているため、行は概要のみを表示します。
 
-ターン終了時の概要と各ターン途中の書き直しは、通常のプロバイダーを通じた 1 回の短い Haiku クラスリクエストであり、セッション自体と同じ [データ使用条件](/docs/ja/data-usage) の下で課金および処理されます。モデルによる書き直しの間の 15 秒ごとの更新はセッション自身の出力を再利用し、リクエストを送信しません。Haiku クラスモデルが設定されていないサードパーティプロバイダーまたはゲートウェイでは、リクエストは代わりにセッションのメインモデルを使用します。モデルを選択するには [`ANTHROPIC_DEFAULT_HAIKU_MODEL`](/docs/ja/model-config#environment-variables) を設定します。
+ターン終了時の概要と各ターン途中の書き直しは、通常のプロバイダーを通じた 1 回の短い Haiku クラスリクエストであり、セッション自体と同じ [データ使用条件](/docs/ja/data-usage.md) の下で課金および処理されます。モデルによる書き直しの間の 15 秒ごとの更新はセッション自身の出力を再利用し、リクエストを送信しません。Haiku クラスモデルが設定されていないサードパーティプロバイダーまたはゲートウェイでは、リクエストは代わりにセッションのメインモデルを使用します。モデルを選択するには [`ANTHROPIC_DEFAULT_HAIKU_MODEL`](/docs/ja/model-config#environment-variables) を設定します。
 
 ### プルリクエストステータス
 
@@ -212,7 +212,7 @@ Completed
 
 ピークパネルに返信を入力して `Enter` を押すと、そのセッションに送信されます。返信の先頭に `!` を付けると、代わりに Bash コマンドを送信します。返信がどう扱われるかは、セッションと送信する内容によって異なります：
 
-* 作業中のセッション：`/model`、`/effort`、`/rename`、`/usage` はすぐに実行されます。その他の返信は応答を中断せずにセッションの [メッセージキュー](/docs/ja/interactive-mode#queue-messages-while-claude-works) に追加され、[キューに入れた入力が反映されるタイミング](/docs/ja/interactive-mode#when-claude-code-sends-what-you-queued) で反映されます。その他の [コマンド](/docs/ja/commands) は、セッション自体のプロンプトで入力するとすぐに実行されるものであっても、ターンが終了するまで待機します
+* 作業中のセッション：`/model`、`/effort`、`/rename`、`/usage` はすぐに実行されます。その他の返信は応答を中断せずにセッションの [メッセージキュー](/docs/ja/interactive-mode.md#queue-messages-while-claude-works) に追加され、[キューに入れた入力が反映されるタイミング](/docs/ja/interactive-mode.md#when-claude-code-sends-what-you-queued) で反映されます。その他の [コマンド](/docs/ja/commands.md) は、セッション自体のプロンプトで入力するとすぐに実行されるものであっても、ターンが終了するまで待機します
 * `/stop` だけの返信：セッションに届けられるのではなく、セッションが作業中でもユーザーを待っている状態でも、その場でセッションを停止します
 * [シェルジョブ](#run-a-shell-command)：返信は `/stop` も含め、入力としてコマンドのターミナルに送られます
 
@@ -220,13 +220,13 @@ Completed
 
 * 選択肢が用意された質問：パネルには選択肢が番号付きで表示されます。返信入力が空の状態で選択肢の番号を押すと入力され、`Enter` で送信できます。または、代わりに独自の回答を入力します
 * 選択肢のない質問：回答を入力します。空の入力に返信の候補が表示されている場合は、`Tab` を押して入力し、送信前に編集できます
-* 権限プロンプトまたはその他のダイアログ（[サンドボックス](/docs/ja/sandboxing) プロンプトや MCP サーバーの [入力リクエスト](/docs/ja/mcp#respond-to-mcp-elicitation-requests) など）：返信してもダイアログには答えられません。返信はキューで待機します。ダイアログに答えるには、`→` でアタッチします
+* 権限プロンプトまたはその他のダイアログ（[サンドボックス](/docs/ja/sandboxing.md) プロンプトや MCP サーバーの [入力リクエスト](/docs/ja/mcp.md#respond-to-mcp-elicitation-requests) など）：返信してもダイアログには答えられません。返信はキューで待機します。ダイアログに答えるには、`→` でアタッチします
 
 [`PermissionRequest`](/docs/ja/hooks#permissionrequest) または [`PreToolUse`](/docs/ja/hooks#pretooluse) フックが、セッションが尋ねている呼び出しについて Claude Code が検証できない出力を返した場合、行には保留中のリクエストのテキストの前に、フックイベントと `hook output invalid:` および検証エラーが表示されます。別の形で失敗したフックの場合、行にはフックが失敗したことが表示されます。セッションは引き続き同じリクエストで待機します。
 
 返信を配信できなかった場合、エラーメッセージには返信が保存されたかどうかが示されます。`!` または `/` を先頭に付けた返信は保存されません。Claude Code は、次にセッションを再起動したときに、保存された返信をセッションの次のプロンプトとして送信します。それ以外の返信は再度送信してください。
 
-[音声ディクテーション](/docs/ja/voice-dictation) を [ホールドモード](/docs/ja/voice-dictation#hold-to-record) で有効にしている場合、返信入力がフォーカスされている間にプッシュトゥトークキーを押し続けると、入力する代わりに返信をディクテーションできます。エージェントビュー下部のディスパッチ入力でも同じように機能します。
+[音声ディクテーション](/docs/ja/voice-dictation.md) を [ホールドモード](/docs/ja/voice-dictation.md#hold-to-record) で有効にしている場合、返信入力がフォーカスされている間にプッシュトゥトークキーを押し続けると、入力する代わりに返信をディクテーションできます。エージェントビュー下部のディスパッチ入力でも同じように機能します。
 
 `↑` と `↓` を使用してパネルを閉じずに隣接するセッションをピーク表示するか、`→` を使用してアタッチします。
 
@@ -234,13 +234,13 @@ Completed
 
 選択した行で `Enter` または `→` を押してアタッチします。エージェントビューは完全なインタラクティブセッションに置き換えられます。アタッチすると、Claude は不在中に何が起こったかの短い要約を投稿します。
 
-アタッチ中、セッションは他の Claude Code セッションと同様に動作します。[コマンド](/docs/ja/commands)、キーボードショートカット、機能はすべて動作しますが、以下の例外があります。
+アタッチ中、セッションは他の Claude Code セッションと同様に動作します。[コマンド](/docs/ja/commands.md)、キーボードショートカット、機能はすべて動作しますが、以下の例外があります。
 
 アタッチ中は、ターミナルにいる人がダイアログを完了できるため、`/install-github-app` と [`/mcp`](/docs/ja/mcp) 設定リストは通常どおり機能します。誰もアタッチしていない場合、これらのコマンドはダイアログを開けないため、セッションはエージェントビューの `Needs input` の下に `open this session to manage MCP servers` のような行とともに表示され、トランスクリプトの返信にも同じ内容が示されます。続行するにはアタッチしてコマンドを再度実行します。アタッチすると入力が必要な行はクリアされます。`/mcp reconnect <server>`、`/mcp enable`、および `/mcp disable` は、どちらの場合もアタッチせずに機能します。
 
-バックグラウンドセッションには追記先となるターミナルのスクロールバックがないため、アタッチされたセッションは `tui` 設定に関係なく、常に [フルスクリーンモード](/docs/ja/fullscreen) でレンダリングされます。`PgUp`、`PgDn`、またはマウスホイールでスクロールし、トランスクリプトモードには `Ctrl+O` を押します。ターミナルのネイティブスクロールと tmux のコピーモードは現在のビューポートのみを表示します。これはフルスクリーンアプリケーションを実行するときと同じです。
+バックグラウンドセッションには追記先となるターミナルのスクロールバックがないため、アタッチされたセッションは `tui` 設定に関係なく、常に [フルスクリーンモード](/docs/ja/fullscreen.md) でレンダリングされます。`PgUp`、`PgDn`、またはマウスホイールでスクロールし、トランスクリプトモードには `Ctrl+O` を押します。ターミナルのネイティブスクロールと tmux のコピーモードは現在のビューポートのみを表示します。これはフルスクリーンアプリケーションを実行するときと同じです。
 
-アタッチされたセッションは [ターミナルにステータスを報告しません](/docs/ja/terminal-config#see-session-status-in-your-terminal)。
+アタッチされたセッションは [ターミナルにステータスを報告しません](/docs/ja/terminal-config.md#see-session-status-in-your-terminal)。
 
 空のプロンプトで `←` を押すか、`/exit` を実行してデタッチし、エージェントビューに戻ります。エージェントビューからセッションを開いたか、シェルから `claude attach <id>` を実行したかに関係なく機能します。
 
@@ -252,7 +252,7 @@ Windows では、アタッチしてから約 0.5 秒以内に `←` を押すと
 
 `Ctrl+C` はアタッチ中も標準的な割り込み動作を保持します。デタッチするのではなく、実行中の応答または `!` シェルコマンドをキャンセルします。空のプロンプトで `Ctrl+C` を 2 回押すとデタッチします。
 
-デタッチしてもバックグラウンドセッションは停止しません。`←`、`Ctrl+Z`、`/exit`、および `Ctrl+C` または `Ctrl+D` の 2 回押しは、いずれもセッションを実行したままにします。`/loop` が次のイテレーションを待っている間にデタッチすると、ループは実行を続け、そのイテレーションはユーザーがいなくてもスケジュールどおりに開始されます。デタッチする前にループを停止するには、[ループを停止する](/docs/ja/scheduled-tasks#stop-a-loop) を参照してください。セッション内からセッションを終了するには、`/stop` を実行します。
+デタッチしてもバックグラウンドセッションは停止しません。`←`、`Ctrl+Z`、`/exit`、および `Ctrl+C` または `Ctrl+D` の 2 回押しは、いずれもセッションを実行したままにします。`/loop` が次のイテレーションを待っている間にデタッチすると、ループは実行を続け、そのイテレーションはユーザーがいなくてもスケジュールどおりに開始されます。デタッチする前にループを停止するには、[ループを停止する](/docs/ja/scheduled-tasks.md#stop-a-loop) を参照してください。セッション内からセッションを終了するには、`/stop` を実行します。
 
 #### ターミナルを離れずにセッションを切り替える
 
@@ -268,7 +268,7 @@ Windows では、アタッチしてから約 0.5 秒以内に `←` を押すと
 
 Claude Code が会話を再度開けない場合は、終了して会話を再開する `claude --resume` コマンドを出力します。
 
-[Claude のタスクリスト](/docs/ja/interactive-mode#task-list) は会話とともにバックグラウンドセッションに移動するため、その行に戻ったときもチェックリストはそのまま残っています。
+[Claude のタスクリスト](/docs/ja/interactive-mode.md#task-list) は会話とともにバックグラウンドセッションに移動するため、その行に戻ったときもチェックリストはそのまま残っています。
 
 `←` を押した元の行は、矢印キーまたはマウスで選択を移動した後も、太字で薄くない名前を保持するため、どのセッションから来たかがわかります。
 
@@ -276,13 +276,13 @@ Claude Code が会話を再度開けない場合は、終了して会話を再�
 
 約 10 秒経過すると、Claude Code はそれ以上待たずにセッションをバックグラウンドにします。ただし、次のようなケースは例外です：
 
-* **フォアグラウンドのサブエージェントがまだ実行中の場合**：Claude が開始した[フォアグラウンドのサブエージェント](/docs/ja/sub-agents#run-subagents-in-foreground-or-background)の作業を引き継ぐため、Claude Code は待機を続け、`Still backgrounding after the current tool` と表示します。待たずにバックグラウンドに移すには、もう一度 `←` を押します。この場合、それらのサブエージェントは最初からやり直しになります。
+* **フォアグラウンドのサブエージェントがまだ実行中の場合**：Claude が開始した[フォアグラウンドのサブエージェント](/docs/ja/sub-agents.md#run-subagents-in-foreground-or-background)の作業を引き継ぐため、Claude Code は待機を続け、`Still backgrounding after the current tool` と表示します。待たずにバックグラウンドに移すには、もう一度 `←` を押します。この場合、それらのサブエージェントは最初からやり直しになります。
 * **権限プロンプトまたは質問が回答を待っている**：権限プロンプトまたは Claude が尋ねた質問が待機している間、Claude Code は待機を続け、`Still backgrounding after the current tool — a question is waiting for your answer.` を表示します。権限プロンプトでの **Yes** など、回答によってターンが続行する場合、Claude Code は現在のツールが完了した時点でセッションをバックグラウンドにします。
 * **プロンプト入力に入力した**：未送信のテキストはターミナルの入力ボックスに残り、バックグラウンドセッションには移動しないため、Claude Code は切り替えをキャンセルします。`Backgrounding cancelled — you have unsent text in the input. Send it or clear it, then press ← again.` と表示されます。Claude はフォアグラウンドで作業を続けます。
-* **ターンを停止した**：Claude Code は切り替えをキャンセルし、`Backgrounding cancelled — the turn was stopped.` を表示します。たとえば、[`Esc` で Claude を中断した](/docs/ja/interactive-mode#general-controls) 場合、メインの会話からの権限プロンプトで [コメントなしで](/docs/ja/permissions#add-a-comment-when-you-answer-a-permission-prompt) **No** を選択した場合、またはそこで Claude が尋ねた質問で `Esc` を押した場合に、ターンは停止します。セッションをバックグラウンドにするには、`←` を再度押します。
-* **キューに入れたメッセージを移動できない**：[Claude の作業中にキューに入れた](/docs/ja/interactive-mode#queue-messages-while-claude-works) メッセージは、会話とともにバックグラウンドセッションに移動します。そのいずれかを移動できない場合、セッションはフォアグラウンドに留まり、Claude Code は `Cannot open agents — 1 queued message can't move to the background. Press ← again once Claude has read it.` のような通知を表示します。
+* **ターンを停止した**：Claude Code は切り替えをキャンセルし、`Backgrounding cancelled — the turn was stopped.` を表示します。たとえば、[`Esc` で Claude を中断した](/docs/ja/interactive-mode#general-controls) 場合、メインの会話からの権限プロンプトで [コメントなしで](/docs/ja/permissions.md#add-a-comment-when-you-answer-a-permission-prompt) **No** を選択した場合、またはそこで Claude が尋ねた質問で `Esc` を押した場合に、ターンは停止します。セッションをバックグラウンドにするには、`←` を再度押します。
+* **キューに入れたメッセージを移動できない**：[Claude の作業中にキューに入れた](/docs/ja/interactive-mode.md#queue-messages-while-claude-works) メッセージは、会話とともにバックグラウンドセッションに移動します。そのいずれかを移動できない場合、セッションはフォアグラウンドに留まり、Claude Code は `Cannot open agents — 1 queued message can't move to the background. Press ← again once Claude has read it.` のような通知を表示します。
 
-Claude Code がセッションをバックグラウンドにすると（約 10 秒経過後、または `←` を再度押した後）、Claude がフォアグラウンドでまだ実行中のシェルコマンドは停止されます。Claude Code はそのコマンドについて `Background this session?` ダイアログを表示しません。バックグラウンドセッションでは、Claude はそのコマンドが開始されたという記録を持たないため、コマンドを再度実行する場合があります。セッションの移動時にコマンドを実行し続けるには、Claude Code がまだ待機している間に `Ctrl+B` を押して [バックグラウンドコマンドに切り替えます](/docs/ja/interactive-mode#background-bash-commands)。
+Claude Code がセッションをバックグラウンドにすると（約 10 秒経過後、または `←` を再度押した後）、Claude がフォアグラウンドでまだ実行中のシェルコマンドは停止されます。Claude Code はそのコマンドについて `Background this session?` ダイアログを表示しません。バックグラウンドセッションでは、Claude はそのコマンドが開始されたという記録を持たないため、コマンドを再度実行する場合があります。セッションの移動時にコマンドを実行し続けるには、Claude Code がまだ待機している間に `Ctrl+B` を押して [バックグラウンドコマンドに切り替えます](/docs/ja/interactive-mode.md#background-bash-commands)。
 
 `←` を押すと、会話にまだメッセージがない場合でもセッションの行が作成されるため、`→` でその行に戻れます。
 
@@ -293,9 +293,9 @@ Claude Code がセッションをバックグラウンドにすると（約 10 �
 セッションがバックグラウンドに移動する瞬間にプロンプトまたは `!` シェルコマンドを入力すると、それは停止されるか、未送信のままになります：
 
 * **会話が閉じるときに送信された場合**：会話が閉じてエージェントビューが開くときに、応答またはコマンドは停止します
-* **その時点でまだ [フック](/docs/ja/hooks) を待っていた場合**：プロンプトは送信されず、画面上にもその旨は表示されません。これには、[`SessionStart` フック](/docs/ja/hooks#sessionstart) がまだ実行中の間に入力したプロンプトも含まれます
+* **その時点でまだ [フック](/docs/ja/hooks.md) を待っていた場合**：プロンプトは送信されず、画面上にもその旨は表示されません。これには、[`SessionStart` フック](/docs/ja/hooks#sessionstart) がまだ実行中の間に入力したプロンプトも含まれます
 
-どちらの場合も、入力したテキストは [プロンプト履歴](/docs/ja/interactive-mode#command-history) に保持されます。再度送信するには、バックグラウンドにしたセッションを開き、そのプロンプトで `↑` を押してテキストを呼び戻します。
+どちらの場合も、入力したテキストは [プロンプト履歴](/docs/ja/interactive-mode.md#command-history) に保持されます。再度送信するには、バックグラウンドにしたセッションを開き、そのプロンプトで `↑` を押してテキストを呼び戻します。
 
 ### リストを整理する
 
@@ -356,7 +356,7 @@ Claude Code v2.1.212 以降でセッションを戻すには、[ディスパッ�
 | `Home` / `End` | 最初または最後の行にジャンプ |
 | `Enter` | 選択したセッションにアタッチするか、入力のテキストが [フィルター](#filter-sessions) でない場合はそのテキストを送信 |
 | `Space` | 選択したセッションのピークパネルを開くまたは閉じる |
-| `Shift+Enter` | [メインプロンプトと同様に](/docs/ja/terminal-config#enter-multiline-prompts)、ディスパッチ入力に改行を挿入 |
+| `Shift+Enter` | [メインプロンプトと同様に](/docs/ja/terminal-config.md#enter-multiline-prompts)、ディスパッチ入力に改行を挿入 |
 | `Ctrl+Enter` | ディスパッチしてすぐにアタッチ。`?` オーバーレイに `ctrl+enter to start and open` が表示されるターミナルで利用可能 |
 | `→` | 選択したセッションにアタッチ |
 | `Alt+1`..`Alt+9` | フォーカスされたセッションのディレクトリ内のセッション 1～9 にアタッチ |
@@ -370,8 +370,8 @@ Claude Code v2.1.212 以降でセッションを戻すには、[ディスパッ�
 | `Ctrl+J` | ディスパッチ入力に改行を挿入 |
 | `Ctrl+X` | セッションを停止。2 秒以内に再度押して削除 |
 | `Shift+↑` / `Shift+↓` | 選択したセッションを並べ替え |
-| `Esc` | ピークパネルを閉じるか、入力をクリアするか、終了します。`←` でセッションをバックグラウンドにしてエージェントビューを開いた場合、最後の `Esc` は終了する代わりにその会話に戻ります。[vim エディターモード](/docs/ja/interactive-mode#vim-editor-mode) がオンの場合、入力で `Esc` を押すと、メインプロンプトと同様に INSERT から NORMAL モードに切り替わり、テキストは保持されます |
-| `Ctrl+C` | 入力をクリア。2 回押して終了。画面上のテキストが選択されている間は、代わりに選択を解除します。その際、[選択時に既にコピーされている](/docs/ja/settings-reference#copyonselect) 場合を除き、先に選択内容をコピーします |
+| `Esc` | ピークパネルを閉じるか、入力をクリアするか、終了します。`←` でセッションをバックグラウンドにしてエージェントビューを開いた場合、最後の `Esc` は終了する代わりにその会話に戻ります。[vim エディターモード](/docs/ja/interactive-mode.md#vim-editor-mode) がオンの場合、入力で `Esc` を押すと、メインプロンプトと同様に INSERT から NORMAL モードに切り替わり、テキストは保持されます |
+| `Ctrl+C` | 入力をクリア。2 回押して終了。画面上のテキストが選択されている間は、代わりに選択を解除します。その際、[選択時に既にコピーされている](/docs/ja/settings-reference.md#copyonselect) 場合を除き、先に選択内容をコピーします |
 | `?` | ショートカットを表示 |
 
 [`Agents` コンテキスト](/docs/ja/keybindings#agents-actions) にアクションがあるショートカットは、[`keybindings.json`](/docs/ja/keybindings) に従います。`Ctrl+G` も、`Chat` コンテキストの `chat:externalEditor` バインディングを通じて同様に従います。
@@ -384,7 +384,7 @@ Claude Code v2.1.212 以降でセッションを戻すには、[ディスパッ�
 
 エージェントビューの下部の入力にプロンプトを入力して `Enter` キーを押すと、新しいバックグラウンドセッションが開始されます。セッションはプロンプトから自動的に名前が付けられます。後で `Ctrl+R` で名前を変更できます。
 
-自動名は [Haiku クラスのモデル](/docs/ja/model-config) が書いた短いラベルです。セッションが後から取得した名前もその行に表示されます。これには、そのセッションで [プランを承認](/docs/ja/permission-modes#review-and-approve-a-plan) したときにセッションに付けられる [生成されたタイトル](/docs/ja/sessions#name-your-sessions) も含まれます。
+自動名は [Haiku クラスのモデル](/docs/ja/model-config.md) が書いた短いラベルです。セッションが後から取得した名前もその行に表示されます。これには、そのセッションで [プランを承認](/docs/ja/permission-modes.md#review-and-approve-a-plan) したときにセッションに付けられる [生成されたタイトル](/docs/ja/sessions.md#name-your-sessions) も含まれます。
 
 プロンプトに画像を貼り付けて、スクリーンショットや図をタスクに含めることができます。
 
@@ -394,10 +394,10 @@ Claude Code v2.1.212 以降でセッションを戻すには、[ディスパッ�
 
 | 入力 | 効果 |
 | :- | :- |
-| `<agent-name> <prompt>` | 最初の単語がカスタム [サブエージェント](/docs/ja/sub-agents) 名と一致する場合、そのサブエージェントがフロントマターの設定でセッションのメインエージェントとして実行されます |
+| `<agent-name> <prompt>` | 最初の単語がカスタム [サブエージェント](/docs/ja/sub-agents.md) 名と一致する場合、そのサブエージェントがフロントマターの設定でセッションのメインエージェントとして実行されます |
 | `@<agent-name>` | プロンプト内の任意の場所でカスタムサブエージェントをメンションして、メインエージェントとして実行します |
 | `@<repo>` | リポジトリをメンションして、そこでセッションを実行します。どのリポジトリがリストされるかについては [特定のディレクトリにディスパッチする](#dispatch-to-a-specific-directory) を参照してください |
-| `/<command>` | プロンプトとしてディスパッチする [スキル](/docs/ja/skills) と [コマンド](/docs/ja/commands) を候補表示します |
+| `/<command>` | プロンプトとしてディスパッチする [スキル](/docs/ja/skills.md) と [コマンド](/docs/ja/commands.md) を候補表示します |
 | `! <command>` | Claude セッションを開始する代わりに、シェルコマンドをバックグラウンドジョブとして実行します。ジョブは行として表示され、アタッチ、監視、デタッチできます |
 | `#<number>` またはプルリクエストまたはマージリクエストの URL | そのプルリクエストまたはマージリクエストで既に作業しているセッションがある場合、Claude Code は新しいセッションをディスパッチする代わりにその行を選択します |
 
@@ -411,7 +411,7 @@ Claude Code v2.1.212 以降でセッションを戻すには、[ディスパッ�
 
 スキル、独自のコマンド、および `/init` などのプロンプトを展開する組み込みコマンドは、新しいバックグラウンドセッションの最初のプロンプトとして送信されます。`isn't available in agent view` というヒントは、入力した組み込みコマンドが実行されなかったことを意味します。実行するには、[セッションにアタッチ](#attach-to-a-session) してそこで入力してください。入力した内容はすべてヒントの横の入力に残るため、編集できます。
 
-繰り返しのタスクを [スキル](/docs/ja/skills) としてパッケージ化すると、プロンプトを再入力することなく、エージェントビューから同じワークフローを繰り返し開始できます。
+繰り返しのタスクを [スキル](/docs/ja/skills.md) としてパッケージ化すると、プロンプトを再入力することなく、エージェントビューから同じワークフローを繰り返し開始できます。
 
 同じ `@name` がサブエージェントと兄弟リポジトリの両方に一致する場合、サブエージェントが優先されます。最初の単語のみによる一致も適用されるため、たまたまサブエージェント名のいずれかで始まるプロンプトは、その単語をプレーンテキストとして扱わずにそのサブエージェントをディスパッチします。明示的にしたい場合は `@` 形式を使用し、一致を避けるには別の単語でプロンプトを開始します。
 
@@ -423,7 +423,7 @@ Claude Code v2.1.212 以降でセッションを戻すには、[ディスパッ�
 * 親ディレクトリで `claude agents` を開き、プロンプトで `@<repo>` を使用して子リポジトリをメンションします。`@` を入力すると、以下の対象がリストされます。
 
   * 起動ディレクトリの 1 階層下にある Git リポジトリ
-  * 起動元のリポジトリに登録された [git worktree](/docs/ja/worktrees) のうち、そのディレクトリツリー内にあるもの（Claude が `.claude/worktrees/` の下に作成したものなど）。チェックアウトされたブランチでラベル付けされます。`git worktree add ../feature` などでリポジトリの外に追加された worktree はリストされません
+  * 起動元のリポジトリに登録された [git worktree](/docs/ja/worktrees.md) のうち、そのディレクトリツリー内にあるもの（Claude が `.claude/worktrees/` の下に作成したものなど）。チェックアウトされたブランチでラベル付けされます。`git worktree add ../feature` などでリポジトリの外に追加された worktree はリストされません
   * リストに既にセッションがあるディレクトリ
 
   名前にスペースを含むディレクトリはリストされません。
@@ -439,7 +439,7 @@ Claude Code v2.1.212 以降でセッションを戻すには、[ディスパッ�
 
 `/background` またはそのエイリアス `/bg` を実行すると、現在の会話がバックグラウンドセッションに移動します。`/bg run the test suite and fix any failures` のようにプロンプトを渡すと、先にもう 1 つ指示を与えられます。`/bg` の実行時に Claude が応答中の場合、応答はバックグラウンドセッションで続行されます。
 
-サブエージェント、バックグラウンドシェルコマンド、ワークフロー、[モニター](/docs/ja/tools-reference#monitor-tool) などのバックグラウンド作業がまだ実行中のセッションを終了しようとすると、すぐに終了する代わりに `Background work is running` ダイアログが表示されます。`Move to background and exit` を選択すると、`/background` と同じ方法でセッションをバックグラウンドに移動してシェルに戻ります。エージェントビューが [オフになっている](#turn-off-agent-view) 場合、このオプションは表示されません。
+サブエージェント、バックグラウンドシェルコマンド、ワークフロー、[モニター](/docs/ja/tools-reference.md#monitor-tool) などのバックグラウンド作業がまだ実行中のセッションを終了しようとすると、すぐに終了する代わりに `Background work is running` ダイアログが表示されます。`Move to background and exit` を選択すると、`/background` と同じ方法でセッションをバックグラウンドに移動してシェルに戻ります。エージェントビューが [オフになっている](#turn-off-agent-view) 場合、このオプションは表示されません。
 
 リスト上のバックグラウンドセッションが既にその会話の名前を持っている場合、Claude Code は新しい行の名前に `my-session (2)` のような番号を付け、既存の行の名前はそのままにします。新しい行の名前を変更するには、エージェントビューでその行を選択して `Ctrl+R` を押します。
 
@@ -447,9 +447,9 @@ Claude Code v2.1.212 以降でセッションを戻すには、[ディスパッ�
 
 `/fork` を実行すると、元のセッションを実行したまま、現在の会話を新しいバックグラウンドセッションにコピーします。コピーはその時点までの会話のすべてを持って開始されます。コピーが実行される場所については、以下の箇条書きを参照してください。また、モデル、権限モード、effort レベル、およびセッション中に追加したディレクトリや「今後は確認しない」権限付与も引き継ぎます。コピーはエージェントビューに独自の行として表示されます。
 
-フォーク後、2 つの会話は独立しています。コピーが行ったことが自動的に元の会話に入ることはありません。ただし、[クロスセッションメッセージング](/docs/ja/cross-session-messaging) が有効なセッションでは、どちらのセッションの Claude も明示的にもう一方にメッセージを送信できます。
+フォーク後、2 つの会話は独立しています。コピーが行ったことが自動的に元の会話に入ることはありません。ただし、[クロスセッションメッセージング](/docs/ja/cross-session-messaging.md) が有効なセッションでは、どちらのセッションの Claude も明示的にもう一方にメッセージを送信できます。
 
-[エージェントビューがオフになっている](#turn-off-agent-view) 場合、`/fork` はセッションをコピーする代わりに [フォークされたサブエージェント](/docs/ja/sub-agents#fork-the-current-conversation) を開始します。
+[エージェントビューがオフになっている](#turn-off-agent-view) 場合、`/fork` はセッションをコピーする代わりに [フォークされたサブエージェント](/docs/ja/sub-agents.md#fork-the-current-conversation) を開始します。
 
 `/fork open a draft pull request with the work so far` のようにプロンプトを渡すと、コピーはすぐにその作業を開始します。プロンプトがない場合、コピーは最初の指示を待ちます。`claude agents` でその行を選択して `Space` を押して指示を送信するか、`claude attach <id>` を実行します。待機中、選択された行には `space to send it a prompt` が表示されます。
 
@@ -460,19 +460,19 @@ Claude Code v2.1.212 以降でセッションを戻すには、[ディスパッ�
 コピーが開始される場所は、現在のセッションが実行されている場所によって異なります。
 
 * ディスパッチされた他のセッションと同様に、コピーは [ファイルを編集する前に独自の worktree に移動します](#how-file-edits-are-isolated)。その場合、確認にはコピーが実行される場所は記載されません。
-* セッションが開始後にリンクされた [worktree](/docs/ja/worktrees) に移動した場合、コピーは移動前にセッションがあった場所で開始され、[その場で編集する](#how-file-edits-are-isolated) 場合を除き、そこで独自の worktree を作成してコード変更を行います。元のセッションの worktree がブランチをチェックアウトしている場合、その指示には、元のセッションの作業に基づくタスクを行うコピーが新しいブランチを元のブランチに基づいて作成するよう伝える内容も含まれます。元のブランチは worktree でチェックアウトされたままだからです。確認は `runs in the origin tree` で終わります。
+* セッションが開始後にリンクされた [worktree](/docs/ja/worktrees.md) に移動した場合、コピーは移動前にセッションがあった場所で開始され、[その場で編集する](#how-file-edits-are-isolated) 場合を除き、そこで独自の worktree を作成してコード変更を行います。元のセッションの worktree がブランチをチェックアウトしている場合、その指示には、元のセッションの作業に基づくタスクを行うコピーが新しいブランチを元のブランチに基づいて作成するよう伝える内容も含まれます。元のブランチは worktree でチェックアウトされたままだからです。確認は `runs in the origin tree` で終わります。
 * メインの作業ツリーを持つリポジトリのリンクされた worktree 内でセッションを起動した場合、コピーはそのメインの作業ツリーで開始され、独自の worktree を作成するルールは同じですが、ブランチについての指示はありません。この場合も確認は `runs in the origin tree` で終わります。
 * ベアリポジトリ構成の worktree 内で起動されたセッションには戻るべきメインの作業ツリーがないため、コピーはその場所にとどまり、確認は `edits this checkout` で終わります。リンクされた worktree 内にないセッションで worktree 分離が [オフになっている](#how-file-edits-are-isolated) 場合も、コピーが開いているファイルを編集することになるため、同じ注記が表示されます。
 
-置き換えられたシステムプロンプトや `--tools` 許可リストなど、コピーが継承しない起動フラグで開始されたセッションはフォークできません。Claude Code は部分的なコピーを作成する代わりに、その旨を伝えます。エージェントビューからディスパッチされたセッションは通常どおりフォークできます。コピーは元のセッションと同じ [エージェント定義](/docs/ja/sub-agents) と追加指示で起動されます。
+置き換えられたシステムプロンプトや `--tools` 許可リストなど、コピーが継承しない起動フラグで開始されたセッションはフォークできません。Claude Code は部分的なコピーを作成する代わりに、その旨を伝えます。エージェントビューからディスパッチされたセッションは通常どおりフォークできます。コピーは元のセッションと同じ [エージェント定義](/docs/ja/sub-agents.md) と追加指示で起動されます。
 
 #### バックグラウンドに移動するときに引き継がれるもの
 
-バックグラウンドへの移動では、保存された会話から再開する新しいプロセスが開始され、進行中のバックグラウンド作業はそのプロセスに移動します。実行中のバックグラウンドシェルコマンド、バックグラウンド化されたサブエージェント、動的ワークフロー、[`/loop`](/docs/ja/scheduled-tasks) で作成したスケジュールタスク、および Claude の [アーティファクトコメントへの自動返信](/docs/ja/artifacts#let-claude-reply-to-comments-on-its-own) はすべて引き継がれ、そこで実行を続けます。サブエージェントは自身が開始したすべてのものと一緒に移動するため、その作業のすべてが移動できる場合にのみ引き継がれます。
+バックグラウンドへの移動では、保存された会話から再開する新しいプロセスが開始され、進行中のバックグラウンド作業はそのプロセスに移動します。実行中のバックグラウンドシェルコマンド、バックグラウンド化されたサブエージェント、動的ワークフロー、[`/loop`](/docs/ja/scheduled-tasks) で作成したスケジュールタスク、および Claude の [アーティファクトコメントへの自動返信](/docs/ja/artifacts.md#let-claude-reply-to-comments-on-its-own) はすべて引き継がれ、そこで実行を続けます。サブエージェントは自身が開始したすべてのものと一緒に移動するため、その作業のすべてが移動できる場合にのみ引き継がれます。
 
-[動的ワークフロー](/docs/ja/workflows) でまだサブエージェントが実行中の場合、Claude Code はバックグラウンドに移動する前に `Background this session?` ダイアログで確認を求め、再起動されるサブエージェントの数を示します。先に完了させるには `Stay` を選択します。確認すると、Claude Code はバックグラウンドセッションで実行を再生します。まだ実行中だったサブエージェントは最初からやり直されるため、それまでに使用したトークンは再度消費されます。完了したサブエージェントのうち、保存された結果を返すものと再実行されるものについては、[一時停止後の再開](/docs/ja/workflows#resume-after-a-pause) を参照してください。
+[動的ワークフロー](/docs/ja/workflows.md) でまだサブエージェントが実行中の場合、Claude Code はバックグラウンドに移動する前に `Background this session?` ダイアログで確認を求め、再起動されるサブエージェントの数を示します。先に完了させるには `Stay` を選択します。確認すると、Claude Code はバックグラウンドセッションで実行を再生します。まだ実行中だったサブエージェントは最初からやり直されるため、それまでに使用したトークンは再度消費されます。完了したサブエージェントのうち、保存された結果を返すものと再実行されるものについては、[一時停止後の再開](/docs/ja/workflows.md#resume-after-a-pause) を参照してください。
 
-Claude Code は、実行中の [モニター](/docs/ja/tools-reference#monitor-tool) など引き継げないバックグラウンド作業を停止し、モニターを所有するバックグラウンド化されたサブエージェントも一緒に停止します。そのような作業が実行中の場合、Claude Code は `Background this session?` ダイアログを表示し、作業を停止する前に確認できるようにします。
+Claude Code は、実行中の [モニター](/docs/ja/tools-reference.md#monitor-tool) など引き継げないバックグラウンド作業を停止し、モニターを所有するバックグラウンド化されたサブエージェントも一緒に停止します。そのような作業が実行中の場合、Claude Code は `Background this session?` ダイアログを表示し、作業を停止する前に確認できるようにします。
 
 バックグラウンドに移動した後、セッションは新しいサブエージェント、モニター、バックグラウンドコマンドを開始でき、それらはその後のデタッチや再アタッチをまたいで実行を続けます。
 
@@ -486,7 +486,7 @@ Claude Code は、実行中の [モニター](/docs/ja/tools-reference#monitor-t
 * `--fallback-model`
 * `--allow-dangerously-skip-permissions`
 
-セッション中に [`/add-dir`](/docs/ja/permissions#additional-directories-grant-file-access-not-configuration) で追加したディレクトリも引き継がれます。`--allow-dangerously-skip-permissions` を引き継ぐと、バックグラウンド化されたセッションでも `bypassPermissions` に切り替えられる状態が維持されますが、新たに何かを付与するわけではありません。このモードには引き続き、[バイパスの免責事項への同意](/docs/ja/permission-modes#skip-all-checks-with-bypasspermissions-mode) が記録されている必要があります。
+セッション中に [`/add-dir`](/docs/ja/permissions#additional-directories-grant-file-access-not-configuration) で追加したディレクトリも引き継がれます。`--allow-dangerously-skip-permissions` を引き継ぐと、バックグラウンド化されたセッションでも `bypassPermissions` に切り替えられる状態が維持されますが、新たに何かを付与するわけではありません。このモードには引き続き、[バイパスの免責事項への同意](/docs/ja/permission-modes.md#skip-all-checks-with-bypasspermissions-mode) が記録されている必要があります。
 
 ### シェルからエージェントをディスパッチする
 
@@ -498,9 +498,9 @@ claude --bg "investigate the flaky SettingsChangeDetector test"
 
 プロンプトは位置引数であり、`-p` の値ではありません。Claude Code は、`-p` または `--print` と組み合わせた `--bg` をセッションの作成前に拒否します。`--print` は `claude agents` がアタッチするインタラクティブセッションを開始しないためです。
 
-[信頼していない](/docs/ja/permissions#project-allow-rules-and-workspace-trust) ディレクトリのターミナルから `claude --bg` を実行すると、最初にワークスペース信頼ダイアログが表示され、同意するとセッションが開始されます。拒否すると、Claude Code はセッションを開始せずに終了します。スクリプト内など、ダイアログを表示できない場所では、コマンドは代わりに [`Workspace not trusted`](/docs/ja/errors#workspace-not-trusted-when-dispatching-a-background-session) エラーで終了します。
+[信頼していない](/docs/ja/permissions.md#project-allow-rules-and-workspace-trust) ディレクトリのターミナルから `claude --bg` を実行すると、最初にワークスペース信頼ダイアログが表示され、同意するとセッションが開始されます。拒否すると、Claude Code はセッションを開始せずに終了します。スクリプト内など、ダイアログを表示できない場所では、コマンドは代わりに [`Workspace not trusted`](/docs/ja/errors#workspace-not-trusted-when-dispatching-a-background-session) エラーで終了します。
 
-`code-reviewer` など、定義済みの特定の [サブエージェント](/docs/ja/sub-agents) をセッションのメインエージェントとして実行するには、`--bg` を `--agent` と組み合わせます。
+`code-reviewer` など、定義済みの特定の [サブエージェント](/docs/ja/sub-agents.md) をセッションのメインエージェントとして実行するには、`--bg` を `--agent` と組み合わせます。
 
 ```bash theme={null}
 claude --agent code-reviewer --bg "address review comments on PR 1234"
@@ -508,7 +508,7 @@ claude --agent code-reviewer --bg "address review comments on PR 1234"
 
 名前がどのサブエージェントにも一致しない場合、起動は失敗します。Claude Code は `no agent named` 警告を出力し、セッションをバックグラウンド化したと報告しますが、セッションは `--agent '<name>' not found` エラーで直ちに終了します。
 
-バックグラウンド化されたセッションが後で再開または再起動されると、Claude Code はエージェントとそのツール制限を復元します。システムプロンプトについては、[再開された会話でのシステムプロンプトフラグ](/docs/ja/cli-reference#system-prompt-flags-in-resumed-conversations) を参照してください。[そのワークスペースを信頼している](/docs/ja/permissions#project-allow-rules-and-workspace-trust) 場合、Claude Code はまずセッション自身のディレクトリでエージェントを検索するため、プロジェクトスコープのエージェントは、セッションが別のディレクトリから再開された場合でも読み込まれます。エージェントが存在しなくなった場合、セッションはデフォルトのツールで続行され、そのトランスクリプトは [エージェント名を示す警告](/docs/ja/errors#session-agent-no-longer-available) とともに開きます。
+バックグラウンド化されたセッションが後で再開または再起動されると、Claude Code はエージェントとそのツール制限を復元します。システムプロンプトについては、[再開された会話でのシステムプロンプトフラグ](/docs/ja/cli-reference.md#system-prompt-flags-in-resumed-conversations) を参照してください。[そのワークスペースを信頼している](/docs/ja/permissions.md#project-allow-rules-and-workspace-trust) 場合、Claude Code はまずセッション自身のディレクトリでエージェントを検索するため、プロジェクトスコープのエージェントは、セッションが別のディレクトリから再開された場合でも読み込まれます。エージェントが存在しなくなった場合、セッションはデフォルトのツールで続行され、そのトランスクリプトは [エージェント名を示す警告](/docs/ja/errors.md#session-agent-no-longer-available) とともに開きます。
 
 既存の会話をバックグラウンドで続行するには、その完全なセッション ID を `--resume` で渡します。
 
@@ -564,7 +564,7 @@ claude --bg --exec 'pytest -x'
 
 ### ファイル編集の分離方法
 
-エージェントビューからバックグラウンドセッションをディスパッチするか、`claude --bg` で開始すると、セッションは作業ディレクトリで開始されます。ファイルを編集する前に、Claude はセッションを `.claude/worktrees/` の下にある分離された [git worktree](/docs/ja/worktrees) に移動します。これにより、並列セッションは同じチェックアウトを読み取りつつ、それぞれ独自の場所に書き込めます。セッションが worktree に入ると、Claude Code はそのセッションと、セッションが生成するすべてのサブエージェントに対して [worktree 分離を強制します](/docs/ja/worktrees#how-claude-code-enforces-isolation)。
+エージェントビューからバックグラウンドセッションをディスパッチするか、`claude --bg` で開始すると、セッションは作業ディレクトリで開始されます。ファイルを編集する前に、Claude はセッションを `.claude/worktrees/` の下にある分離された [git worktree](/docs/ja/worktrees.md) に移動します。これにより、並列セッションは同じチェックアウトを読み取りつつ、それぞれ独自の場所に書き込めます。セッションが worktree に入ると、Claude Code はそのセッションと、セッションが生成するすべてのサブエージェントに対して [worktree 分離を強制します](/docs/ja/worktrees.md#how-claude-code-enforces-isolation)。
 
 Claude は以下の場合に worktree をスキップします。
 
@@ -590,14 +590,14 @@ git リポジトリではないディレクトリでフックが失敗した場�
 
 セッションの worktree のパスを確認するには、アタッチしてその作業ディレクトリを確認します。
 
-バックグラウンドセッションが生成する [サブエージェント](/docs/ja/sub-agents) は、セッションの作業ディレクトリを継承します。セッションが worktree に入ると、サブエージェントのファイル編集は作業コピーではなくその worktree に反映されます。代わりにサブエージェントに独自の別の worktree を与えるには、そのフロントマターで [`isolation: worktree`](/docs/ja/sub-agents#supported-frontmatter-fields) を設定するか、生成時に `isolation: "worktree"` を渡します。
+バックグラウンドセッションが生成する [サブエージェント](/docs/ja/sub-agents.md) は、セッションの作業ディレクトリを継承します。セッションが worktree に入ると、サブエージェントのファイル編集は作業コピーではなくその worktree に反映されます。代わりにサブエージェントに独自の別の worktree を与えるには、そのフロントマターで [`isolation: worktree`](/docs/ja/sub-agents#supported-frontmatter-fields) を設定するか、生成時に `isolation: "worktree"` を渡します。
 
 Claude が入った worktree でバックグラウンドセッションがコード変更を行った場合、Claude Code は完了前に作業を保存するよう Claude に指示します。これにより、セッションとその worktree を削除しても作業が失われません。
 
 * **コミットとプッシュ**: Claude は確認なしでコミットし、リポジトリにリモートがある場合はブランチをプッシュします。
 * **ドラフトプルリクエスト**: タスクが必要とする場合、Claude はプルリクエストを作成し、行に [`#N` ラベル](#pull-request-status) が表示されます。
 * **行わないこと**: `main` または `master` へのプッシュ、フォースプッシュ、マージ。
-* **ユーザーの git に関する指示が優先されます**: タスク、`CLAUDE.md`、または [メモリ](/docs/ja/memory) で、コミットやプッシュはユーザー自身が行うと指定されている場合、Claude は git 操作をユーザーに任せます。
+* **ユーザーの git に関する指示が優先されます**: タスク、`CLAUDE.md`、または [メモリ](/docs/ja/memory.md) で、コミットやプッシュはユーザー自身が行うと指定されている場合、Claude は git 操作をユーザーに任せます。
 
 自身で分離したのではないチェックアウトを編集するセッションは、コミットやブランチの切り替えの前に引き続き確認を求めます。これは、分離が `"none"` に設定されている場合、worktree への移動が失敗した場合、または既存の worktree 内でセッションが開始された場合に適用されます。
 
@@ -655,8 +655,8 @@ Claude がセッション用に作成した worktree がどうなるかは次の
 コマンドの後に値を指定するか、コマンドのみを入力してリストから選択します。
 
 * **モデル**: `/model <name>`。例: `/model opus`
-* **[effort レベル](/docs/ja/model-config#adjust-effort-level)**: `/effort` に `low`、`medium`、`high`、`xhigh`、`max` のいずれかを指定します。例: `/effort high`。[ultracode](/docs/ja/workflows#let-claude-decide-with-ultracode) でセッションを開始するには、代わりにシェルから [`claude agents --effort ultracode`](#dispatch-defaults) でエージェントビューを開いてください。ディスパッチ入力は `/effort ultracode` を受け付けません
-* **fast mode**: `/fast on` または `/fast off`。セッションが fast mode で開始されるのは、fast mode が [利用可能](/docs/ja/fast-mode#requirements) で、かつそのモデルが fast mode をサポートしている場合のみです。サポートしていないモデルでは、セッションは fast mode がオフの状態で開始されるため、まず `/model` で [fast mode をサポートするモデル](/docs/ja/fast-mode) のいずれかを選択してください。新しいセッションが fast mode で開始されるかどうかは、ヘッダーではなく入力の下のヒントで確認できます。
+* **[effort レベル](/docs/ja/model-config.md#adjust-effort-level)**: `/effort` に `low`、`medium`、`high`、`xhigh`、`max` のいずれかを指定します。例: `/effort high`。[ultracode](/docs/ja/workflows.md#let-claude-decide-with-ultracode) でセッションを開始するには、代わりにシェルから [`claude agents --effort ultracode`](#dispatch-defaults) でエージェントビューを開いてください。ディスパッチ入力は `/effort ultracode` を受け付けません
+* **fast mode**: `/fast on` または `/fast off`。セッションが fast mode で開始されるのは、fast mode が [利用可能](/docs/ja/fast-mode.md#requirements) で、かつそのモデルが fast mode をサポートしている場合のみです。サポートしていないモデルでは、セッションは fast mode がオフの状態で開始されるため、まず `/model` で [fast mode をサポートするモデル](/docs/ja/fast-mode.md) のいずれかを選択してください。新しいセッションが fast mode で開始されるかどうかは、ヘッダーではなく入力の下のヒントで確認できます。
 
 選択を取り消すには、値として `default` を指定します（例: `/effort default`）。
 
@@ -673,7 +673,7 @@ run the test suite
 
 * シェルから、`claude --bg` に `--model` を渡します。
 * 実行中のセッションにアタッチして `/model` を実行して切り替えます。ピッカーでの選択、または入力した `/model <name>` は、ピッカーで `s` を押してセッション限定の切り替えにしない限り、新しいセッションのデフォルトとして保存されます。セッション限定の切り替えは、セッションが再生成されても維持されます。
-* フロントマターで `model` を設定している [サブエージェント](/docs/ja/sub-agents) を、プロンプトをその名前で始めるか `@name` でメンションしてディスパッチします。ディスパッチ入力での `/model` の選択が適用されている間はサブエージェントの `model` は使用されないため、そこで `/model default` を入力してください。[`claude agents --model`](#dispatch-defaults) で起動した場合もサブエージェントの `model` は使用されないため、シェルで `--model` を付けずに `claude agents` を実行してください。
+* フロントマターで `model` を設定している [サブエージェント](/docs/ja/sub-agents.md) を、プロンプトをその名前で始めるか `@name` でメンションしてディスパッチします。ディスパッチ入力での `/model` の選択が適用されている間はサブエージェントの `model` は使用されないため、そこで `/model default` を入力してください。[`claude agents --model`](#dispatch-defaults) で起動した場合もサブエージェントの `model` は使用されないため、シェルで `--model` を付けずに `claude agents` を実行してください。
 
 ### 権限モード、モデル、effort
 
@@ -681,13 +681,13 @@ run the test suite
 
 #### 設定とプロバイダー
 
-バックグラウンドセッションは、実行されるディレクトリから [設定](/docs/ja/settings) を読み取ります。これは、[引き継いだ設定フラグ](#what-carries-over-when-you-background) を付けてそのディレクトリで `claude` を開始した場合と同じです。これにはプロジェクト設定の [`env` 値](/docs/ja/settings-reference#env) も含まれるため、そこで設定された `ANTHROPIC_MODEL` やプロバイダーの変数は、そのディレクトリ内のすべてのバックグラウンドセッションに適用されます。
+バックグラウンドセッションは、実行されるディレクトリから [設定](/docs/ja/settings.md) を読み取ります。これは、[引き継いだ設定フラグ](#what-carries-over-when-you-background) を付けてそのディレクトリで `claude` を開始した場合と同じです。これにはプロジェクト設定の [`env` 値](/docs/ja/settings-reference#env) も含まれるため、そこで設定された `ANTHROPIC_MODEL` やプロバイダーの変数は、そのディレクトリ内のすべてのバックグラウンドセッションに適用されます。
 
 バックグラウンドセッションは、ディスパッチ元のシェルの `PATH` でも実行されるため、実行するコマンドはターミナルと同じツールを見つけられます。また、`CLAUDE_CODE_USE_BEDROCK` や `CLAUDE_CODE_USE_VERTEX` などのそのシェルでのクラウドプロバイダーの選択も、その `ANTHROPIC_DEFAULT_*_MODEL` エイリアスや、そこでエクスポートした [`CLAUDE_CODE_EXTRA_BODY`](/docs/ja/env-vars) の上書きとともに保持します。
 
 #### LLM ゲートウェイ
 
-[LLM ゲートウェイ](/docs/ja/llm-gateway) を経由して Claude Code をルーティングする場合は、ゲートウェイの変数をシェルでエクスポートするのではなく、設定ファイルの `env` ブロックに記述してください。そうすれば、バックグラウンドセッションは他の設定と一緒にそれらを読み取ります。[設定ファイルで設定する](/docs/ja/llm-gateway-connect#set-in-a-settings-file) では、そのブロックと、認証情報に使用する設定ファイルを示しています。
+[LLM ゲートウェイ](/docs/ja/llm-gateway) を経由して Claude Code をルーティングする場合は、ゲートウェイの変数をシェルでエクスポートするのではなく、設定ファイルの `env` ブロックに記述してください。そうすれば、バックグラウンドセッションは他の設定と一緒にそれらを読み取ります。[設定ファイルで設定する](/docs/ja/llm-gateway-connect.md#set-in-a-settings-file) では、そのブロックと、認証情報に使用する設定ファイルを示しています。
 
 代わりにゲートウェイの `ANTHROPIC_BASE_URL` をシェルでのみエクスポートした場合、それが一緒にエクスポートした `ANTHROPIC_CUSTOM_HEADERS` や認証情報とともにバックグラウンドセッションに届くのは、[スーパーバイザー](#the-supervisor-process) 自体が同じゲートウェイをエクスポートしたシェルから開始された場合で、かつ次のいずれかの場合に限られます。
 
@@ -702,8 +702,8 @@ Claude Code は、転送したゲートウェイをそのセッションの実�
 
 #### 権限モード
 
-* **`/bg` または `←` でバックグラウンドに移動した場合**: Claude Code はセッションの [権限モード](/docs/ja/permissions) を維持するため、`acceptEdits` や `auto` に切り替えていたセッションは、デタッチ後もそのモードのままです
-* **シェルで開始した `claude agents` から、または `claude --bg` でディスパッチした場合**: [ディスパッチのデフォルト](#dispatch-defaults) を指定して開いたエージェントビューからディスパッチした場合を除き、新しいセッションはそのディレクトリで新しい `claude` セッションを開始した場合と同じように開始されます。順序は [セッションがどの権限モードで開始されるか](/docs/ja/permission-modes#which-mode-a-session-starts-in) に記載されています
+* **`/bg` または `←` でバックグラウンドに移動した場合**: Claude Code はセッションの [権限モード](/docs/ja/permissions.md) を維持するため、`acceptEdits` や `auto` に切り替えていたセッションは、デタッチ後もそのモードのままです
+* **シェルで開始した `claude agents` から、または `claude --bg` でディスパッチした場合**: [ディスパッチのデフォルト](#dispatch-defaults) を指定して開いたエージェントビューからディスパッチした場合を除き、新しいセッションはそのディレクトリで新しい `claude` セッションを開始した場合と同じように開始されます。順序は [セッションがどの権限モードで開始されるか](/docs/ja/permission-modes.md#which-mode-a-session-starts-in) に記載されています
 
 `←` で開いたエージェントビューからディスパッチするセッションでは、Claude Code は以下のうち最初に該当するものから権限モードを取得します。
 
@@ -726,15 +726,15 @@ claude agents --permission-mode plan --model opus --effort high
 
 ここでの `--effort` は、`ultracode` を含め、[トップレベルの `--effort` フラグ](/docs/ja/cli-reference#cli-flags) と同じ値を受け付けます。
 
-`--agent` は、ディスパッチのプロンプトで `@name` または最初の単語としてサブエージェントが指定されていない場合に使用される [サブエージェント](/docs/ja/sub-agents) を設定します。デフォルトは、[`agent` 設定](/docs/ja/settings-reference#agent) が設定されていればその値、そうでなければ組み込みの汎用 `claude` エージェントです。ディスパッチ入力でサブエージェントを指定すると、その両方が上書きされます。
+`--agent` は、ディスパッチのプロンプトで `@name` または最初の単語としてサブエージェントが指定されていない場合に使用される [サブエージェント](/docs/ja/sub-agents.md) を設定します。デフォルトは、[`agent` 設定](/docs/ja/settings-reference#agent) が設定されていればその値、そうでなければ組み込みの汎用 `claude` エージェントです。ディスパッチ入力でサブエージェントを指定すると、その両方が上書きされます。
 
-`claude agents` は、`--permission-mode bypassPermissions` の短縮形として `--dangerously-skip-permissions` も受け付けます。また、`--allow-dangerously-skip-permissions` を指定すると、そのモードで開始せずに、ディスパッチした各セッションの `Shift+Tab` サイクルで `bypassPermissions` を利用可能にします。どちらも [トップレベルの CLI フラグ](/docs/ja/cli-reference) と同じです。
+`claude agents` は、`--permission-mode bypassPermissions` の短縮形として `--dangerously-skip-permissions` も受け付けます。また、`--allow-dangerously-skip-permissions` を指定すると、そのモードで開始せずに、ディスパッチした各セッションの `Shift+Tab` サイクルで `bypassPermissions` を利用可能にします。どちらも [トップレベルの CLI フラグ](/docs/ja/cli-reference.md) と同じです。
 
-`--restricted` を渡すと、ビューからディスパッチするすべてのセッションが、それぞれトップレベルの `--restricted` フラグで起動されたかのように [制限モード](/docs/ja/cli-reference#cli-flags) で開始されます。Claude Code v2.1.248 以降が必要です。
+`--restricted` を渡すと、ビューからディスパッチするすべてのセッションが、それぞれトップレベルの `--restricted` フラグで起動されたかのように [制限モード](/docs/ja/cli-reference.md#cli-flags) で開始されます。Claude Code v2.1.248 以降が必要です。
 
 有効なデフォルトは、ディスパッチ入力の下のフッターに表示されます。
 
-`bypassPermissions` モードで開始されるバックグラウンドセッションには、[バイパスの免責事項への同意](/docs/ja/permission-modes#skip-all-checks-with-bypasspermissions-mode) が記録されている必要があります。このモードでは、監視していないセッションが承認なしに操作を行えるためです。`claude agents` に `--dangerously-skip-permissions` または `--permission-mode bypassPermissions` を渡すと、以前に同意していない場合は同じ免責事項が表示され、同意するとビューから起動するセッションに `bypassPermissions` が適用されます。`--allow-dangerously-skip-permissions` を渡した場合も同じ免責事項が表示され、同意すると、それらのセッションをそのモードで開始せずに、`Shift+Tab` サイクルで `bypassPermissions` を利用可能にします。
+`bypassPermissions` モードで開始されるバックグラウンドセッションには、[バイパスの免責事項への同意](/docs/ja/permission-modes.md#skip-all-checks-with-bypasspermissions-mode) が記録されている必要があります。このモードでは、監視していないセッションが承認なしに操作を行えるためです。`claude agents` に `--dangerously-skip-permissions` または `--permission-mode bypassPermissions` を渡すと、以前に同意していない場合は同じ免責事項が表示され、同意するとビューから起動するセッションに `bypassPermissions` が適用されます。`--allow-dangerously-skip-permissions` を渡した場合も同じ免責事項が表示され、同意すると、それらのセッションをそのモードで開始せずに、`Shift+Tab` サイクルで `bypassPermissions` を利用可能にします。
 
 #### 再起動後も維持されるもの
 
@@ -757,7 +757,7 @@ Claude Code は、[`/rename`](/docs/ja/commands) または `Ctrl+R` で設定し
 | [`--add-dir <path>`](/docs/ja/permissions#additional-directories-grant-file-access-not-configuration) | 追加ディレクトリへのファイルアクセスを付与します |
 | [`--plugin-dir <path>`](/docs/ja/plugins/create#load-a-directory-or-archive-for-one-session) | ローカルディレクトリからプラグインを読み込みます |
 | [`--mcp-config <file-or-json>`](/docs/ja/mcp) | 設定ファイルまたは JSON 文字列から MCP サーバーを読み込みます |
-| `--strict-mcp-config` | `--mcp-config` の MCP サーバーのみを使用し、他の MCP 設定を無視します。管理 MCP ファイルがある場合のこのフラグの動作については、[managed-mcp.json による排他的制御](/docs/ja/managed-mcp#exclusive-control-with-managed-mcp-json) を参照してください |
+| `--strict-mcp-config` | `--mcp-config` の MCP サーバーのみを使用し、他の MCP 設定を無視します。管理 MCP ファイルがある場合のこのフラグの動作については、[managed-mcp.json による排他的制御](/docs/ja/managed-mcp.md#exclusive-control-with-managed-mcp-json) を参照してください |
 
 `--add-dir`、`--plugin-dir`、`--mcp-config` は値ごとに 1 回ずつ繰り返して指定します。`claude agents` は、`--add-dir a b c` のようなスペース区切りの形式をサポートしていません。
 
@@ -807,7 +807,7 @@ claude agents --settings ./ci-settings.json --add-dir ../shared-lib
 | `state` | バックグラウンドセッション | `working`、`blocked`、`done`、`failed`、`stopped` のいずれか。各値の意味については[スクリプトからセッション状態を読み取る](#read-session-state-from-a-script)を参照してください |
 | `pid`、`status` | プロセスが生きている間 | プロセス ID および `busy`、`waiting`、`idle` のいずれか |
 | `waitingFor` | `status` が `waiting` の場合 | セッションがブロックされている内容。承認のための `permission prompt`、Claude または MCP サーバーからの質問のための `input needed`、`sandbox request`、`worker request`、`dialog open` |
-| `sessionId`、`name` | 設定されている場合 | `sessionId` は [`claude --resume`](/docs/ja/sessions) で使用可能な完全なセッション UUID です。インタラクティブセッションの `name` は、セッションに名前を付けるか、その中でプランを受け入れるまで、その[デフォルト表示名](/docs/ja/sessions#name-your-sessions)です |
+| `sessionId`、`name` | 設定されている場合 | `sessionId` は [`claude --resume`](/docs/ja/sessions) で使用可能な完全なセッション UUID です。インタラクティブセッションの `name` は、セッションに名前を付けるか、その中でプランを受け入れるまで、その[デフォルト表示名](/docs/ja/sessions.md#name-your-sessions)です |
 
 ### スクリプトからセッション状態を読み取る
 
@@ -838,7 +838,7 @@ Claude Code は、エージェントビューに表示されているすべて�
 
 各セッションはスーパーバイザーの下で独自の Claude Code プロセスであり、そのプロセスに何が起こるかはセッションの状態によって異なります。
 
-* **動作中、権限プロンプトまたは他のダイアログで一時停止中、または接続中**：プロセスは実行を続けます。実行中のサブエージェント、ワークフロー、またはモニターは動作中としてカウントされます。`/loop` のウェイクアップなど、保留中の[セッションスコープのスケジュールタスク](/docs/ja/scheduled-tasks)も同様です。
+* **動作中、権限プロンプトまたは他のダイアログで一時停止中、または接続中**：プロセスは実行を続けます。実行中のサブエージェント、ワークフロー、またはモニターは動作中としてカウントされます。`/loop` のウェイクアップなど、保留中の[セッションスコープのスケジュールタスク](/docs/ja/scheduled-tasks.md)も同様です。
 * **完了したか次のメッセージを待機中で、約 1 時間未接続**：スーパーバイザーはリソースを解放するためにプロセスを停止します。質問を投げかけてターンを終了したセッションは、次のメッセージを待機中としてカウントされます。会話はディスクに保存され、次回接続または返信するときに、セッションは中断したところから再開されます。`Ctrl+T` でセッションをピンして、プロセスの実行を継続させます。
 * **スーパーバイザーが実行中に予期せず終了した**：スーパーバイザーはプロセスを再起動します。`←` または `/background` で自分でバックグラウンドに送信したセッションを、たとえば `kill` で終了した場合は、再起動されずに停止済みとしてマークされます。シャットダウンで終了したセッションについては、[セッションがシャットダウン後に失敗または停止として表示される](#sessions-show-as-failed-after-shutdown) を参照してください。
 * **自動更新後**：スーパーバイザーは新しいバージョンに再起動し、アイドル状態のセッションをバックグラウンドで移動します。動作中、ユーザーの応答を待機中、または接続中のセッションは中断されません。
@@ -881,7 +881,7 @@ Background sessions still running will stop in about a minute. Run 'claude agent
 
 ### エージェントビューをオフにする
 
-バックグラウンドエージェントとエージェントビューを完全にオフにするには、`disableAgentView` [設定](/docs/ja/settings) を `true` に設定するか、`CLAUDE_CODE_DISABLE_AGENT_VIEW` 環境変数を設定してください。管理者は [管理設定](/docs/ja/managed-settings) を通じてこれを強制できます。
+バックグラウンドエージェントとエージェントビューを完全にオフにするには、`disableAgentView` [設定](/docs/ja/settings.md) を `true` に設定するか、`CLAUDE_CODE_DISABLE_AGENT_VIEW` 環境変数を設定してください。管理者は [管理設定](/docs/ja/managed-settings.md) を通じてこれを強制できます。
 
 ## トラブルシューティング
 
@@ -899,15 +899,15 @@ Background sessions still running will stop in about a minute. Run 'claude agent
 
 `←` を押して現在のセッションをバックグラウンドに移すと、Claude Code が `Background this session?` ダイアログを表示する場合、セッションには実行中のバックグラウンド作業があり、バックグラウンド化によって停止、再開、または無人で実行されたままになる可能性があり、Claude Code はそれを実行する前に確認します：
 
-* **移動できない作業**：セッションには、実行中の [モニター](/docs/ja/tools-reference#monitor-tool) など、バックグラウンドセッションに移動できない作業があります。ダイアログは Claude Code が停止するバックグラウンド作業を名前で表示し、転送されるタスクは別にカウントします。
-* **実行中のサブエージェントを持つワークフロー**：[動的ワークフロー](/docs/ja/workflows)にはまだ実行中のサブエージェントがあります。ワークフロー自体は転送されますが、実行中のサブエージェントは最初から再開され、ダイアログはその数を表示します。
-* **自動アーティファクト返信**：Claude が[アーティファクトのコメントに自動で返信している](/docs/ja/artifacts#let-claude-reply-to-comments-on-its-own)場合があります。これらの返信はバックグラウンドセッションで続行され、ダイアログはそのことを表示します。
+* **移動できない作業**：セッションには、実行中の [モニター](/docs/ja/tools-reference.md#monitor-tool) など、バックグラウンドセッションに移動できない作業があります。ダイアログは Claude Code が停止するバックグラウンド作業を名前で表示し、転送されるタスクは別にカウントします。
+* **実行中のサブエージェントを持つワークフロー**：[動的ワークフロー](/docs/ja/workflows.md)にはまだ実行中のサブエージェントがあります。ワークフロー自体は転送されますが、実行中のサブエージェントは最初から再開され、ダイアログはその数を表示します。
+* **自動アーティファクト返信**：Claude が[アーティファクトのコメントに自動で返信している](/docs/ja/artifacts.md#let-claude-reply-to-comments-on-its-own)場合があります。これらの返信はバックグラウンドセッションで続行され、ダイアログはそのことを表示します。
 
 `/tasks` を実行してすべての実行中のものを確認し、確認してバックグラウンド化するか、`Stay` を選択して作業が完了するまで待機します。[バックグラウンドに移動するときに引き継がれるもの](#what-carries-over-when-you-background)を参照して、どのタスク種が引き継がれ、どのタスク種が Claude Code によって停止されるかを確認してください。
 
 ### 会話にバックグラウンドエージェントが `was carried into this session and not resumed` と表示される
 
-この通知は、このセッションで実行されていないバックグラウンドの[サブエージェント](/docs/ja/sub-agents)を示しています。
+この通知は、このセッションで実行されていないバックグラウンドの[サブエージェント](/docs/ja/sub-agents.md)を示しています。
 
 Claude はこの通知を確認して自動的に返信するため、プロンプトを入力する必要はありません。Claude の返信を読んだ後もそのサブエージェントの作業が必要な場合は、Claude に依頼してください。
 
@@ -922,7 +922,7 @@ Claude はこの通知を確認して自動的に返信するため、プロン�
 * 48 時間以内の場合、セッションは失敗として表示されます。アタッチまたは返信すると、保存された会話から再開します。中断した作業を再開するには、続行を求める返信を送信してください。
 * 48 時間以上経過した場合（マシンが数日間オフになっていた後など）、セッションは `ended while the background service was off` として停止として表示されます。行で `Enter` を押すと、フッターに `Press enter again to resume this session (it ended while the background service was off), or ctrl+x to delete it.` が表示されます。同じ行で再度 `Enter` を押して、保存された会話を再開します。返信または `claude attach <id>` でそのフッタープロンプトなしで再開します。
 
-[トランスクリプトクリーンアップ](/docs/ja/settings-reference#cleanupperioddays)が停止したセッションの保存された会話を削除した場合、Claude Code は行を開くことを拒否します。メッセージは再開するものがないことを示しています。`claude rm <id>` は行を削除します。ただし、[保持されたケース](#what-deleting-a-session-removes)で説明されている場合を除き、`claude respawn <id>` は元のプロンプトを再度実行します。[このセッションの保存された会話はディスク上にもはやありません](/docs/ja/errors#this-sessions-saved-conversation-is-no-longer-on-disk)を参照してください。
+[トランスクリプトクリーンアップ](/docs/ja/settings-reference.md#cleanupperioddays)が停止したセッションの保存された会話を削除した場合、Claude Code は行を開くことを拒否します。メッセージは再開するものがないことを示しています。`claude rm <id>` は行を削除します。ただし、[保持されたケース](#what-deleting-a-session-removes)で説明されている場合を除き、`claude respawn <id>` は元のプロンプトを再度実行します。[このセッションの保存された会話はディスク上にもはやありません](/docs/ja/errors.md#this-sessions-saved-conversation-is-no-longer-on-disk)を参照してください。
 
 スリープだけではセッションを停止しません。セッションはスリープ全体で保持され、スーパーバイザーはウェイク時にそれらに再接続します。
 
@@ -944,11 +944,11 @@ Claude Code は拒否された試みで入力した返信を保存し（`!` ま�
 
 同じ行で再度 `Enter` を押して空の会話でセッションを再開するか、シェルから `claude respawn <id>` を実行します。
 
-詳細については、[エラーリファレンス](/docs/ja/errors#this-session-has-no-saved-transcript)を参照してください。
+詳細については、[エラーリファレンス](/docs/ja/errors.md#this-session-has-no-saved-transcript)を参照してください。
 
 ### ターミナルホストが停止したか、セッションが応答しなくなった
 
-[スーパーバイザー](#the-supervisor-process)は各バックグラウンドセッションのターミナルを独自のホストプロセスで実行します。そのプロセスが停止したか応答しなくなった場合、Claude Code は理由を表示し、再開を提供します。どちらの場合も会話は保存され、再開はそれを再開します。[エラーリファレンス](/docs/ja/errors#terminal-host-process-died)は完全なメッセージを引用しています。
+[スーパーバイザー](#the-supervisor-process)は各バックグラウンドセッションのターミナルを独自のホストプロセスで実行します。そのプロセスが停止したか応答しなくなった場合、Claude Code は理由を表示し、再開を提供します。どちらの場合も会話は保存され、再開はそれを再開します。[エラーリファレンス](/docs/ja/errors.md#terminal-host-process-died)は完全なメッセージを引用しています。
 
 Claude Code は、`Enter` からまたは `claude attach` から実行される[シェルコマンド](#run-a-shell-command)を実行している行を再開しません。これはコマンドを再度実行するためです。行のメッセージと `claude attach` の両方は、コマンドが再度実行されないことを示しています。
 
@@ -989,7 +989,7 @@ claude daemon stop --any --keep-workers
 
 [約 1 分](#the-supervisor-process)以内に、シェルで `claude agents` または `claude --bg` を実行して、保存された認証情報を読み取る新しいスーパーバイザーを開始します。`/login` ではなく `ANTHROPIC_API_KEY` などの環境変数で認証する場合は、変数が設定されているシェルからその次のコマンドを実行してください。
 
-原因と修正の完全なリストについては、[エラーリファレンス](/docs/ja/errors#could-not-resolve-authentication-method)を参照してください。
+原因と修正の完全なリストについては、[エラーリファレンス](/docs/ja/errors.md#could-not-resolve-authentication-method)を参照してください。
 
 ### バックグラウンドセッションに `No LLM gateway` と表示される
 
@@ -1021,7 +1021,7 @@ macOS 15 以降では、システムはローカルネットワークアクセ�
 
 エージェントビューでセッションを削除すると、Claude が作成した worktree が削除されます。ただし、[いくつかの削除は worktree を保持するか、そのディレクトリをディスク上に残す](#what-deleting-a-session-removes)ため、孤立したディレクトリが蓄積する可能性があります。Git がもはや認識しないディレクトリは `git worktree list` に表示されないため、それらを手動で削除します。
 
-プロジェクトディレクトリで `git worktree list` を使用して孤立したエントリをリストし、各エントリを `git worktree remove <path>` で削除します。[worktree をクリーンアップする](/docs/ja/worktrees#clean-up-worktrees)を参照してください。
+プロジェクトディレクトリで `git worktree list` を使用して孤立したエントリをリストし、各エントリを `git worktree remove <path>` で削除します。[worktree をクリーンアップする](/docs/ja/worktrees.md#clean-up-worktrees)を参照してください。
 
 ## 制限事項
 
@@ -1035,11 +1035,11 @@ Agent view はリサーチプレビューであり、以下の制限事項があ
 
 Claude を並列実行する他の方法、および実行するセッション間で検出結果を渡す方法については、以下を参照してください。
 
-* [エージェントを並列実行](/docs/ja/agents)：エージェントビューとサブエージェント、エージェントチーム、ワークツリーを比較
-* [クロスセッションメッセージング](/docs/ja/cross-session-messaging)：セッション間で検出結果を相互に渡す
-* [Agent teams](/docs/ja/agent-teams)：互いにメッセージを送信する複数のセッションを調整
-* [Claude Code on the web](/docs/ja/claude-code-on-the-web)：ローカルではなく、マネージドクラウド環境でセッションを実行
-* [Projects](/docs/ja/claude-projects)：Claude が 1 つの会話から並列クラウドセッションを調整し、どのセッションが必要かを通知します
+* [エージェントを並列実行](/docs/ja/agents.md)：エージェントビューとサブエージェント、エージェントチーム、ワークツリーを比較
+* [クロスセッションメッセージング](/docs/ja/cross-session-messaging.md)：セッション間で検出結果を相互に渡す
+* [Agent teams](/docs/ja/agent-teams.md)：互いにメッセージを送信する複数のセッションを調整
+* [Claude Code on the web](/docs/ja/claude-code-on-the-web.md)：ローカルではなく、マネージドクラウド環境でセッションを実行
+* [Projects](/docs/ja/claude-projects.md)：Claude が 1 つの会話から並列クラウドセッションを調整し、どのセッションが必要かを通知します
 
 ## バージョン履歴
 
@@ -1050,13 +1050,13 @@ Agent view はリサーチプレビュー中に急速に進化しました。古
 | v2.1.299 | [ディスパッチ入力での `/effort` と `/fast`](#set-the-model-effort-and-fast-mode) は、次にディスパッチするセッションの effort レベルと fast mode を設定します。値を指定せずに `/model`、`/effort`、`/fast` を入力すると、ピッカーが開きます。 |
 | v2.1.299 | Claude Code は、単独の `--` 区切りより前で、かつ別のフラグの値の外にある場合にのみ [`--bg` と `--background` をフラグとして読み取り](#from-your-shell)、曖昧な位置にある場合は推測せずに拒否します。このリリースより前は、バックグラウンドセッションへのプロンプトや返信としての `--bg` や `--background` がフラグと解釈されることがありました。その結果、テキストが配信されずに、新しいバックグラウンドセッションが何度も開始されることがありました。 |
 | v2.1.296 | [セッションがバックグラウンドに移動する際](#switch-sessions-without-leaving-the-terminal)に入力したプロンプトや `!` シェルコマンドは、停止されるか未送信のままになり、そのテキストはプロンプト履歴に保持されます。このリリースより前は、応答やコマンドが見えない場所で実行され続け、`←` の直後に送信したプロンプトが見えないまま 2 回実行されることがありました。また、`SessionStart` フックの実行中に入力したプロンプトは失われ、送信されず、プロンプト履歴にも残りませんでした。 |
-| v2.1.295 | [アタッチ中のバックグラウンドセッション](#attach-to-a-session)のアイドル状態のプロンプトで `Ctrl+C` を押しても、[自己ペースの `/loop`](/docs/ja/scheduled-tasks#let-claude-choose-the-interval) の保留中のウェイクアップには影響しないため、2 回押すとデタッチされ、ループは実行を続けます。そのプロンプトで `Esc` を押すと[自己ペースのループが停止し](/docs/ja/scheduled-tasks#stop-a-loop)、`Pending wakeup cancelled` という通知が表示されます。このリリースより前は、最初の `Ctrl+C` で自己ペースのループが何の表示もなく終了することがあり、セッションとともにバックグラウンドに移動したループは `Esc` で停止しませんでした。 |
+| v2.1.295 | [アタッチ中のバックグラウンドセッション](#attach-to-a-session)のアイドル状態のプロンプトで `Ctrl+C` を押しても、[自己ペースの `/loop`](/docs/ja/scheduled-tasks#let-claude-choose-the-interval) の保留中のウェイクアップには影響しないため、2 回押すとデタッチされ、ループは実行を続けます。そのプロンプトで `Esc` を押すと[自己ペースのループが停止し](/docs/ja/scheduled-tasks.md#stop-a-loop)、`Pending wakeup cancelled` という通知が表示されます。このリリースより前は、最初の `Ctrl+C` で自己ペースのループが何の表示もなく終了することがあり、セッションとともにバックグラウンドに移動したループは `Esc` で停止しませんでした。 |
 | v2.1.295 | macOS と Linux では、[スーパーバイザー](#keep-sessions-running-after-the-supervisor-stops)が実行されていない状態で `claude agents` が終了する場合、新しいスーパーバイザーを自動的に起動しません。その場合、`claude agents` を再度実行しない限り、実行中のセッションは約 1 分後に停止し、agent view は終了時にその旨の通知を表示することがあります。このリリースより前は、終了する `claude agents` が新しいスーパーバイザーを起動していました。 |
 | v2.1.295 | ネイティブインストーラーを使用した macOS では、更新後にまとめて再起動されるバックグラウンドセッションは、付与した[保護フォルダへのアクセス](#background-sessions-can’t-read-desktop-documents-or-downloads-on-macos)を持つ同じ Claude Code エントリの下で実行されます。このリリースより前は、これらのセッションが代わりにバイナリ自身のパスの下で実行されることがありました。macOS はそのパスを別のエントリとして扱うため、更新後にフォルダアクセスのプロンプトが再び表示されることがありました。 |
 | v2.1.290 | [`claude attach` と `claude logs`](#manage-sessions-from-the-shell) は、ID の代わりにセッションの名前の一部を受け付けます。 |
 | v2.1.290 | `/model`、`/effort`、`/rename`、`/usage` を作業中のセッションへの[ピーク返信](#peek-and-reply)として送信すると、すぐに実行されます。 |
 | v2.1.290 | 配信できない[ピーク返信](#peek-and-reply)は、`/` で始まる場合、またはセッションのプロセスの実行中に事前定義された選択肢のある質問に回答する場合、次回の再起動に向けて保存されなくなりました。 |
-| v2.1.288 | `Ctrl+F` は名前でセッションを検索し、`Alt+↑` / `Alt+↓` はグループヘッダー間を移動します。これらのキーと `Ctrl+R` は[再割り当て](/docs/ja/keybindings#agents-actions)できます。 |
+| v2.1.288 | `Ctrl+F` は名前でセッションを検索し、`Alt+↑` / `Alt+↓` はグループヘッダー間を移動します。これらのキーと `Ctrl+R` は[再割り当て](/docs/ja/keybindings.md#agents-actions)できます。 |
 | v2.1.287 | [`n:<text>` フィルター](#filter-sessions)は、名前または最初のプロンプトでセッションを検索します。いずれかのフィルターが有効な間は、折りたたんだグループが展開されて一致するセッションが表示され、最初の一致が選択されるため、`Enter` でそれを開けます。 |
 | v2.1.287 | [ピーク返信](#peek-and-reply)として送信されたコマンドは、セッションの現在のターンが終了したときに実行されます。これには、セッション自身のプロンプトで入力するとすぐに実行されるコマンドも含まれます。`/stop` だけの返信は、セッションを直ちに停止します。 |
 | v2.1.281 | [`--setting-sources`](/docs/ja/cli-reference#cli-flags) による制限は、`←` または `/bg` でバックグラウンド化したセッションと、agent view からディスパッチするセッションに[引き継がれます](#what-carries-over-when-you-background)。このリリースより前は、生成されたセッションはすべての設定ソースを読み込んでいました。 |
@@ -1065,19 +1065,19 @@ Agent view はリサーチプレビュー中に急速に進化しました。古
 | v2.1.274 | git または `WorktreeRemove` フックが worktree を削除できなかったために[削除が拒否された](#what-deleting-a-session-removes)場合、追跡対象ファイルにコミットされていない変更がないことを Claude Code が確認したチェックアウト済みサブモジュールは、再度削除してディレクトリを強制的に削除する選択肢の提示を妨げなくなりました。チェックアウト済みサブモジュール内のコミットされていない作業はコミットされていない変更として扱われ、メッセージにそのサブモジュール名が示されます。このリリースより前は、worktree 内にサブモジュールのチェックアウトがあると常にこの選択肢が提示されず、worktree にネストされたリポジトリが含まれている旨のメッセージが表示されていました。 |
 | v2.1.268 | git または `WorktreeRemove` フックが worktree を削除できなかったために[削除が拒否された](#what-deleting-a-session-removes)場合、メッセージに原因が示されるようになりました。これには、フックがどのように終了したかと、その stderr の冒頭が含まれます。リポジトリの `.claude/worktrees/` 配下にあるリンクされた worktree で、追跡対象ファイルにコミットされていない変更がなく、内部にネストされたリポジトリがなく、他のセッションのレコードがその worktree を参照していない場合は、agent view から、または `claude rm <id> --force-remove-worktree <worktree-id>` でセッションを再度削除すると、ディレクトリが強制的に削除されます。このリリースより前は、行には `worktree could not be removed (WorktreeRemove hook failed)` または git のエラーのみが表示され、フックの stderr はデバッグログにのみ出力され、再度削除しても同じように拒否されていました。 |
 | v2.1.268 | 最初の `←` で `Press ← again to open agents`（アタッチ中のセッションでは `Press ← again to go back to agents`）が表示された後、その間の素早い押下が無視された場合でも、[少なくとも 1 秒後の最初の押下で切り替わります](#switch-sessions-without-leaving-the-terminal)。このリリースより前は、無視された押下のたびに待機時間がリセットされたため、一定のペースで `←` を押し続けても、1 秒以上間を置くまで切り替わりませんでした。 |
-| v2.1.260 | [セッションをバックグラウンド化する](#from-inside-a-session)と、他のセッションの[エージェント一覧](/docs/ja/cross-session-messaging#see-which-sessions-claude-can-reach)ではその会話がバックグラウンドセッションとして 1 回だけ表示され、それらのセッションからのメッセージは移動元のターミナルに届かなくなります。このリリースより前は、そのターミナルが会話の名前で 2 つ目の対話型セッションとして一覧に残ることがあり、移動前にその会話にメッセージを送っていたセッションは、そのターミナルへの配信を続けていました。 |
+| v2.1.260 | [セッションをバックグラウンド化する](#from-inside-a-session)と、他のセッションの[エージェント一覧](/docs/ja/cross-session-messaging.md#see-which-sessions-claude-can-reach)ではその会話がバックグラウンドセッションとして 1 回だけ表示され、それらのセッションからのメッセージは移動元のターミナルに届かなくなります。このリリースより前は、そのターミナルが会話の名前で 2 つ目の対話型セッションとして一覧に残ることがあり、移動前にその会話にメッセージを送っていたセッションは、そのターミナルへの配信を続けていました。 |
 | v2.1.260 | [プッシュされていないコミットを理由に削除が拒否された](#what-deleting-a-session-removes)場合、メッセージに worktree のブランチ名とプッシュされていないコミット数が示され、セッションを再度削除すると worktree とそのコミットが破棄されます。このリリースより前は、拒否メッセージは `worktree has commits that are not pushed anywhere` のみで、再度削除しても同じように拒否されたため、セッションを削除するにはコミットをプッシュするか worktree を手動で削除する必要がありました。 |
 | v2.1.257 | `←` で、回答の途中であっても[`/btw` オーバーレイが開いている間にアタッチ中のセッションからデタッチ](#attach-to-a-session)でき、次にアタッチしたときにオーバーレイが再び開きます。このリリースより前は、オーバーレイが開いている間は `←` でデタッチできませんでした。 |
 | v2.1.257 | [`claude --resume <session-id> --bg`](#from-your-shell) を実行すると、Claude Code はそのセッションを同じ ID のまま続行するか、新しい ID でコピーを開始して理由を説明する `note:` 行を出力します。`--continue`、引数なしの `--resume`、名前またはパスを指定した `--resume` は、同じ注記とともにコピーを開始します。このリリースより前は、`--resume` と `--bg` を併用すると常に新しい ID でコピーが開始され、何も表示されませんでした。 |
 | v2.1.257 | `←` で開いた agent view からセッションをディスパッチすると、Claude Code は `permissions.defaultMode` で[対象ディレクトリに設定された権限モード](#permission-mode)でセッションを開始します。ディレクトリで設定されていない場合は、移動元のセッションの権限モードが適用されます。このリリースより前は、ディスパッチされたセッションは常に移動元のセッションの権限モードで開始され、ディレクトリの設定を上書きしていました。 |
 | v2.1.257 | agent view の `Ctrl+S`、`Ctrl+T`、`Ctrl+G` は [`keybindings.json` に従います](#keyboard-shortcuts)。`Ctrl+S` と `Ctrl+T` は `Agents` コンテキストの `agents:switchView` と `agents:togglePin` アクション、`Ctrl+G` は `Chat` コンテキストの `chat:externalEditor` バインディングに従います。このリリースより前は、agent view は `keybindings.json` を無視し、これらのキーは固定されていました。 |
-| v2.1.257 | [バックグラウンドサービス](#the-supervisor-process)の起動時に、2 つの失敗原因から回復するようになりました。macOS の npm インストールでは、自己更新中の起動は、npm がバイナリの置き換え中に配置するプレースホルダーを実行する代わりに、[インストールの完了を待ちます](/docs/ja/errors#eacces-when-starting-a-background-session)。Windows では、マシンの最後の起動より前に書き込まれた古い `daemon.lock`、または記録されたプロセス ID が現在別のプロセスに属している `daemon.lock` が置き換えられます。このリリースより前は、macOS ではインストール中の起動が `Error: claude native binary not installed.` で失敗し、Windows では `~/.claude/daemon.lock` を削除するまで、このロックによってすべての起動が [`exited before it became reachable`](/docs/ja/errors#background-service-exited-before-it-became-reachable) で失敗していました。 |
-| v2.1.257 | 別の Claude Code プロセスが npm の更新をダウンロードしている間にバックグラウンドセッションを開くかディスパッチすると、Claude Code はインストールの実行中は[最大 2 分間待機し続け](/docs/ja/errors#eacces-when-starting-a-background-session)、その後 `Claude Code is being updated by npm on this machine` というメッセージで失敗します。このリリースより前は、待機は 10 秒で打ち切られたため、ダウンロードの実行中に `Couldn't start the background service` で開く処理が失敗していました。 |
-| v2.1.257 | 承認待ちの[クロスセッションメッセージ](/docs/ja/cross-session-messaging#control-inbound-messages)を保持しているバックグラウンドセッションは、`Needs input` 行に `approve message from` と、送信者のアドレスおよび送信者が名乗る名前を表示します。このリリースより前は、行は `Needs input` に移動しても以前のテキストのままだったため、`claude agents` には待機中のメッセージやその送信者が示されませんでした。 |
+| v2.1.257 | [バックグラウンドサービス](#the-supervisor-process)の起動時に、2 つの失敗原因から回復するようになりました。macOS の npm インストールでは、自己更新中の起動は、npm がバイナリの置き換え中に配置するプレースホルダーを実行する代わりに、[インストールの完了を待ちます](/docs/ja/errors.md#eacces-when-starting-a-background-session)。Windows では、マシンの最後の起動より前に書き込まれた古い `daemon.lock`、または記録されたプロセス ID が現在別のプロセスに属している `daemon.lock` が置き換えられます。このリリースより前は、macOS ではインストール中の起動が `Error: claude native binary not installed.` で失敗し、Windows では `~/.claude/daemon.lock` を削除するまで、このロックによってすべての起動が [`exited before it became reachable`](/docs/ja/errors#background-service-exited-before-it-became-reachable) で失敗していました。 |
+| v2.1.257 | 別の Claude Code プロセスが npm の更新をダウンロードしている間にバックグラウンドセッションを開くかディスパッチすると、Claude Code はインストールの実行中は[最大 2 分間待機し続け](/docs/ja/errors.md#eacces-when-starting-a-background-session)、その後 `Claude Code is being updated by npm on this machine` というメッセージで失敗します。このリリースより前は、待機は 10 秒で打ち切られたため、ダウンロードの実行中に `Couldn't start the background service` で開く処理が失敗していました。 |
+| v2.1.257 | 承認待ちの[クロスセッションメッセージ](/docs/ja/cross-session-messaging.md#control-inbound-messages)を保持しているバックグラウンドセッションは、`Needs input` 行に `approve message from` と、送信者のアドレスおよび送信者が名乗る名前を表示します。このリリースより前は、行は `Needs input` に移動しても以前のテキストのままだったため、`claude agents` には待機中のメッセージやその送信者が示されませんでした。 |
 | v2.1.257 | 開いたバックグラウンドセッション内で `Ctrl+S` によりスタッシュしたプロンプトは[セッションとともに保持される](#what-persists-across-restarts)ため、セッションのプロセスが停止して再起動された後も `Ctrl+S` で復元できます。このリリースより前は、スタッシュは実行中のプロセス内にのみ存在し、セッションが長時間アイドル状態になってプロセスが停止したときや、停止してから再度開いたときに失われていました。 |
 | v2.1.251 | [worktree に移動していない](#how-file-edits-are-isolated)バックグラウンドセッションでは、Claude とそれが生成するサブエージェントは、リンクされた git worktree 内のファイルを編集できます。 |
 | v2.1.251 | Claude Code は、ディスパッチ元のシェルでエクスポートされたクラウドプロバイダーのゲートウェイ（`ANTHROPIC_VERTEX_BASE_URL` や、認証バイパスフラグを伴う `ANTHROPIC_BEDROCK_BASE_URL` など）を、`ANTHROPIC_BASE_URL` と同じ条件で[セッションのワーカー](#llm-gateway)に転送します。このリリースより前は、そのようなゲートウェイ経由でのみ認証されたシェルからバックグラウンド化またはディスパッチすると、エンドポイントとフラグがセッションの環境から削除されていたため、セッションのすべてのリクエストが失敗していました。 |
-| v2.1.251 | 別の Claude Code プロセスが[プラグインマーケットプレイス](/docs/ja/plugins/overview)を更新している間（[マーケットプレイスの自動更新](/docs/ja/plugins/install#keep-plugins-updated)を実行している兄弟セッションなど）にバックグラウンドセッションが開始された場合も、Claude Code はそのマーケットプレイスのプラグインを利用可能な状態に保ちます。このリリースより前は、そのようなセッションがそのマーケットプレイスのスキル、エージェント、フック、MCP サーバーを一切持たずに開始され、実行中ずっとその状態のままになることがありました。 |
+| v2.1.251 | 別の Claude Code プロセスが[プラグインマーケットプレイス](/docs/ja/plugins/overview.md)を更新している間（[マーケットプレイスの自動更新](/docs/ja/plugins/install.md#keep-plugins-updated)を実行している兄弟セッションなど）にバックグラウンドセッションが開始された場合も、Claude Code はそのマーケットプレイスのプラグインを利用可能な状態に保ちます。このリリースより前は、そのようなセッションがそのマーケットプレイスのスキル、エージェント、フック、MCP サーバーを一切持たずに開始され、実行中ずっとその状態のままになることがありました。 |
 | v2.1.248 | [ディスパッチ入力](#keyboard-shortcuts)での `Shift+Enter` はメインプロンプトと同様に改行を挿入し、`?` オーバーレイに `ctrl+enter to start and open` が表示されるターミナルでは、`Ctrl+Enter` でディスパッチしてすぐにアタッチします。このリリースより前は、`Shift+Enter` でディスパッチしてアタッチしていました。 |
 | v2.1.248 | worktree のコミットが `origin` リモートのデフォルトブランチのローカルコピーに既に含まれていて、メインのチェックアウトでそのブランチがチェックアウトされている場合、[セッションの削除](#what-deleting-a-session-removes)が成功するようになりました。このリリースより前は、`has commits that are not pushed anywhere` で削除が拒否されていました。 |
 | v2.1.248 | `←` または `/background` でバックグラウンド化されたセッションは、実行中、その worktree の [`git worktree lock`](/docs/ja/worktrees#clean-up-subagent-and-background-session-worktrees) を保持します。このリリースより前は、バックグラウンド化するとロックが解放され、クリーンアップや `git worktree remove` によって実行中のセッションの worktree が削除されることがありました。 |
@@ -1087,19 +1087,19 @@ Agent view はリサーチプレビュー中に急速に進化しました。古
 | v2.1.248 | Windows では、以前のプログラムによって win32-input-mode のままにされたターミナルタブで起動した場合も、`claude agents` がキーボード入力に応答します。このリリースより前は、Claude Code はそのようなタブが送信するキーレコードをデコードしていませんでした。 |
 | v2.1.247 | Linux と WSL では、[ターミナルホストプロセスが終了した](#the-terminal-host-died-or-the-session-stopped-responding)セッションは数秒以内に理由とともに失敗します。出力のないまま開こうとした場合は約 10 秒後に再起動の提案とともに終了し、行で `Enter` を押すと会話を保ったままセッションが再起動されます。`claude attach <id>` は原因を報告して終了します。このリリースより前は、そのようなセッションを開くと `opening… · esc to cancel` が無期限に表示され、`claude attach <id>` はエラーを報告せずに待機し続けていました。 |
 | v2.1.246 | npm インストールで、`npm install -g @anthropic-ai/claude-code` がバイナリを置き換えている間に[バックグラウンドサービス](#the-supervisor-process)の起動に失敗した場合、Claude Code はインストールの完了を最大 10 秒間待って再試行してから、[`EACCES: permission denied`](/docs/ja/errors#eacces-when-starting-a-background-session) を報告します。 |
-| v2.1.246 | [バックグラウンドサービス](#the-supervisor-process)のプロセスがエラーを出力した後に終了した場合、Claude Code は失敗を報告し、[サービスの最初のエラー行を引用します](/docs/ja/errors#background-service-exited-before-it-became-reachable)。 |
+| v2.1.246 | [バックグラウンドサービス](#the-supervisor-process)のプロセスがエラーを出力した後に終了した場合、Claude Code は失敗を報告し、[サービスの最初のエラー行を引用します](/docs/ja/errors.md#background-service-exited-before-it-became-reachable)。 |
 | v2.1.246 | [バックグラウンドサービス](#the-supervisor-process)の起動中にマシンがスリープした場合、Claude Code は失敗せずに起動を 1 回再試行します。 |
 | v2.1.246 | 新たに起動された[バックグラウンドサービス](#the-supervisor-process)が動作しているものの接続の受け入れが遅い場合、Claude Code は 45 秒ではなく約 2 分間待機します。 |
 | v2.1.246 | [バックグラウンドサービス](#the-supervisor-process)はホームディレクトリから起動するため、macOS と Linux では、起動元のディレクトリが削除または移動されていても起動が妨げられなくなりました。 |
 | v2.1.246 | `/fork` は、それ自体がコピーとして開始され、その後新しいプロンプトを記録していないセッションからも[会話全体をコピーします](#copy-the-session-with-%2Ffork)。このようなセッションには、アタッチした `/fork` のコピー、`←` または `/background` でバックグラウンドに移動した後に再アタッチしたセッション、`claude --resume <id> --fork-session` で開始したセッションがあります。このリリースより前は、そのようなセッションで新しいプロンプトを送信する前に `/fork` を実行すると、Claude Code は通常の確認を出力するものの、空の会話でコピーを開始していました。そのようなセッションを `←` または `/background` でバックグラウンドに移動した場合も、同様に会話が失われていました。 |
 | v2.1.246 | ディスパッチした直後のセッションを、ワーカープロセスの起動中に開いた場合（行で `Enter` を押した場合など）、Claude Code はプロセスの起動を待ってからアタッチします。このリリースより前は、プロセスの起動中に `Enter` を押すと、Claude Code が [`Session <id> was stopped while the respawn was in flight`](/docs/ja/errors#session-was-stopped-while-the-respawn-was-in-flight) でセッションを停止することがありました。 |
 | v2.1.246 | 名前付きセッションを[バックグラウンド化する](#from-inside-a-session)と、Claude Code はそれを 1 回だけ一覧に表示し、同じ会話を再度バックグラウンド化した場合は、既存の行の名前はそのままで、新しい行の名前に `my-session (2)` のように番号を付けます。このリリースより前は、`←` を押したターミナルが同じ名前の 2 つ目のセッションとして `claude agents --json` に表示されることがあり、同じ会話を再度バックグラウンド化すると、Claude Code はまったく同じ名前で別の行を追加していました。 |
-| v2.1.239 | [vim エディターモード](/docs/ja/interactive-mode#vim-editor-mode)がオンの場合、agent view の入力で `Esc` を押すと、メインプロンプトと同様にテキストを保持したまま INSERT モードから NORMAL モードに切り替わります。[`Esc` ショートカット](#keyboard-shortcuts)の説明どおり、NORMAL モードで入力にテキストが残っている場合は `Esc` でクリアされ、入力が空の場合は `Esc` で終了します。このリリースより前は、`Esc` で入力がクリアされていました。 |
+| v2.1.239 | [vim エディターモード](/docs/ja/interactive-mode.md#vim-editor-mode)がオンの場合、agent view の入力で `Esc` を押すと、メインプロンプトと同様にテキストを保持したまま INSERT モードから NORMAL モードに切り替わります。[`Esc` ショートカット](#keyboard-shortcuts)の説明どおり、NORMAL モードで入力にテキストが残っている場合は `Esc` でクリアされ、入力が空の場合は `Esc` で終了します。このリリースより前は、`Esc` で入力がクリアされていました。 |
 | v2.1.233 | GitLab マージリクエストにリンクされたセッションでは、Claude Code は行のラベルを GitLab の `!1234` 参照構文で表記します。マージリクエストの URL を[ディスパッチ入力](#filter-sessions)に貼り付けて、そのセッションを選択することもできます。このリリースより前は、ラベルは `#1234` と表示され、貼り付けたマージリクエストの URL は、最初のプロンプトにその URL が含まれるセッションにのみ一致していました。 |
 | v2.1.227 | 別の実行中の Claude Code セッションがその worktree ディレクトリ内で動作している間は、[セッションを削除](#what-deleting-a-session-removes)してもセッションとその worktree が保持されます。agent view では行に `not deleted` が、フッターに理由が表示され、`claude rm` は `kept <id>` と理由を出力します。理由には他のセッションのプロセス ID が示されます。このリリースより前は、他のセッションがまだ worktree 内で作業しているにもかかわらず、セッションを削除すると worktree が削除されていました。 |
-| v2.1.225 | 信頼していないディレクトリで `claude agents` を実行すると、agent view が開く前に、`claude` の起動時と同じ[ワークスペースの信頼ダイアログ](/docs/ja/permissions#project-allow-rules-and-workspace-trust)が表示されます。承諾するとそのワークスペースの信頼が保存され、拒否すると agent view を開かずに終了します。このリリースより前は、`claude agents` は確認なしで開いたため、そこからディスパッチしたセッションは、信頼を一度も求められていないディレクトリで実行されていました。 リストがディレクトリ別にグループ化されている場合、行にマウスを重ねるとハイライトされますが、[ディスパッチ先](#dispatch-to-a-specific-directory)は変わりません。矢印キーまたはクリックで行を選択すると、引き続きディスパッチ先が変わります。このリリースより前は、別のプロジェクトのセッションにマウスを重ねるだけで、次にディスパッチするセッションの開始ディレクトリが気付かないうちに変わっていました。 |
-| v2.1.221 | `/status` に `Session kind` 行が表示されます。バックグラウンドセッションでは、ターミナルがアタッチされているかどうかに応じて `background job · attached` または `background job · unattended`、それ以外のセッションでは `interactive` が表示されます。このリリースより前は、`/status` はセッションの種類を報告していませんでした。 `/fork`：Claude Code は[コピー](#from-inside-a-session)に対し、作業を元のセッションの作業から分離するよう指示します。コピーはコードを変更する前に独自の worktree を作成し、元のセッションの worktree には立ち入らず、タスクが元のセッションの作業を前提とする場合は、元のセッションのブランチを基に新しいブランチを作成します。正確な条件については、リンク先のセクションを参照してください。このリリースより前は、コピーは分離の指示を受け取らず、元のセッションがまだ作業している worktree やチェックアウトを編集してしまうことがありました。 [vim エディターモード](/docs/ja/interactive-mode#vim-editor-mode)がオンの場合、`u` でプロンプトを空になるまで元に戻した直後に `←` を押すと、テキストを削除したときやプロンプト履歴を移動したときと同じ確認が表示され、2 回目の押下でのみ切り替わります。このリリースより前は、押すとすぐに切り替わっていました。 |
-| v2.1.219 | [vim エディターモード](/docs/ja/interactive-mode#vim-editor-mode)がオンの場合、空のプロンプトで `←` を押すと、INSERT モードだけでなく NORMAL モードからも agent view が開き、フッターの `←` ヒントも NORMAL モードで表示されます。このリリースより前は、この操作とヒントは INSERT モード限定で、NORMAL モードでは空のプロンプトで `←` を押しても何も起きませんでした。Claude Code がセッションのバックグラウンド化を待っている間に入力欄に入力すると、`Backgrounding cancelled — you have unsent text in the input. Send it or clear it, then press ← again.` と表示されて切り替えがキャンセルされるため、入力した下書きが失われません。 |
+| v2.1.225 | 信頼していないディレクトリで `claude agents` を実行すると、agent view が開く前に、`claude` の起動時と同じ[ワークスペースの信頼ダイアログ](/docs/ja/permissions.md#project-allow-rules-and-workspace-trust)が表示されます。承諾するとそのワークスペースの信頼が保存され、拒否すると agent view を開かずに終了します。このリリースより前は、`claude agents` は確認なしで開いたため、そこからディスパッチしたセッションは、信頼を一度も求められていないディレクトリで実行されていました。 リストがディレクトリ別にグループ化されている場合、行にマウスを重ねるとハイライトされますが、[ディスパッチ先](#dispatch-to-a-specific-directory)は変わりません。矢印キーまたはクリックで行を選択すると、引き続きディスパッチ先が変わります。このリリースより前は、別のプロジェクトのセッションにマウスを重ねるだけで、次にディスパッチするセッションの開始ディレクトリが気付かないうちに変わっていました。 |
+| v2.1.221 | `/status` に `Session kind` 行が表示されます。バックグラウンドセッションでは、ターミナルがアタッチされているかどうかに応じて `background job · attached` または `background job · unattended`、それ以外のセッションでは `interactive` が表示されます。このリリースより前は、`/status` はセッションの種類を報告していませんでした。 `/fork`：Claude Code は[コピー](#from-inside-a-session)に対し、作業を元のセッションの作業から分離するよう指示します。コピーはコードを変更する前に独自の worktree を作成し、元のセッションの worktree には立ち入らず、タスクが元のセッションの作業を前提とする場合は、元のセッションのブランチを基に新しいブランチを作成します。正確な条件については、リンク先のセクションを参照してください。このリリースより前は、コピーは分離の指示を受け取らず、元のセッションがまだ作業している worktree やチェックアウトを編集してしまうことがありました。 [vim エディターモード](/docs/ja/interactive-mode.md#vim-editor-mode)がオンの場合、`u` でプロンプトを空になるまで元に戻した直後に `←` を押すと、テキストを削除したときやプロンプト履歴を移動したときと同じ確認が表示され、2 回目の押下でのみ切り替わります。このリリースより前は、押すとすぐに切り替わっていました。 |
+| v2.1.219 | [vim エディターモード](/docs/ja/interactive-mode.md#vim-editor-mode)がオンの場合、空のプロンプトで `←` を押すと、INSERT モードだけでなく NORMAL モードからも agent view が開き、フッターの `←` ヒントも NORMAL モードで表示されます。このリリースより前は、この操作とヒントは INSERT モード限定で、NORMAL モードでは空のプロンプトで `←` を押しても何も起きませんでした。Claude Code がセッションのバックグラウンド化を待っている間に入力欄に入力すると、`Backgrounding cancelled — you have unsent text in the input. Send it or clear it, then press ← again.` と表示されて切り替えがキャンセルされるため、入力した下書きが失われません。 |
 | v2.1.218 | プロンプトを空にした削除や、プロンプト履歴の移動から 2 秒以内に `←` を押すと、`Press ← again to open agents`（アタッチ中のセッションでは `Press ← again to go back to agents`）が表示され、少なくとも 1 秒後の 2 回目の押下でのみ切り替わります。このリリースより前は、押すとすぐに切り替わっていました。貼り付けやスクリプトによる入力の中に含まれる `←` では切り替わらなくなりました。フォアグラウンドセッションを `←` でバックグラウンド化すると、リストの上に `Your conversation moved to the background` が表示され、agent view のルートで `Esc` を押すと、シェルに終了する代わりにその会話に戻ります。終了するには引き続き `Ctrl+C` を 2 回押します。会話を再度開けない場合、Claude Code は終了し、その会話の `claude --resume` コマンドを出力します。Windows では、アタッチから約 0.5 秒以内に押された `←` は `Ambiguous ←, press again to detach` を表示し、2 回目の押下でデタッチします。 |
 | v2.1.217 | セッションの行のプルリクエストバッジは、SSH や tmux 経由など、Claude Code がターミナルのハイパーリンク対応を検出できない場合でもハイパーリンクとして表示されます。プレーンテキストとして表示するには [`FORCE_HYPERLINK=0`](/docs/ja/env-vars) を設定します。このリリースより前は、対応が検出されない場合、バッジはプレーンテキストとして表示されていました。 |
 | v2.1.216 | `/fork`：[確認メッセージ](#from-inside-a-session)は 1 行になり、コピーの状態、agent view でのその行の名前、`claude attach` 用のセッション ID が表示されます。コピーがメインの作業ツリーで実行される場合や、開いているチェックアウトを編集する場合にのみ、末尾に `runs in the origin tree` または `edits this checkout` が付きます。名前をクリックすると、このセッションがバックグラウンド化され、コピーのセッションで agent view が開きます。確認メッセージでは、コピーが継承した権限モードが繰り返し表示されなくなりました。以前のバージョンでは、クリック可能な名前のない複数行の確認メッセージが出力されていました。 Needs input：誰もアタッチしていない間に `/install-github-app` と `/mcp` の設定リストを実行すると、そのコマンド名を示す行とともにセッションが `Needs input` の下に表示され、アタッチしてコマンドを再実行すると続行されます。v2.1.208 から v2.1.215 までは、その状態ではこれらは一律に拒否されていました。 `--agent` の復元：[バックグラウンド化された `--agent` セッション](#from-your-shell)を再開または再起動すると、ワークスペースが信頼されている場合、エージェントのシステムプロンプトとツール制限が復元されます。エージェントはまずセッション自身のディレクトリで検索されます。エージェントが存在しなくなったセッションは、デフォルトのエージェントに黙って戻るのではなく、デフォルトのツールとシステムプロンプトで続行され、警告が表示された状態で開きます。 `Ctrl+X`：2 回押すと、停止の試行が失敗した場合でもセッションが削除されます。以前は停止の失敗によって保留中の削除がキャンセルされていました。また、ワーカープロセスが終了していた削除済みセッションが、次回の更新で再表示されなくなりました。 worktree の削除：worktree ディレクトリがどの git リポジトリにも属していないセッションを削除できるようになりました。このリリースより前は、そのようなセッションの削除はすべて拒否されていました。既に存在しないディレクトリはすぐにクリアされます。agent view でのダブルプレスでは、他のセッションのレコードがそのディレクトリを参照していない限り、ファイルが残っているディレクトリも削除され、フックで作成されたディレクトリについては `WorktreeRemove` フックが実行されます。`claude rm` は、ファイルが残っている場合は常にそのようなディレクトリを保持します。 |

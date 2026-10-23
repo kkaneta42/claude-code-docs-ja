@@ -12,7 +12,7 @@
 
 iOS シミュレータペインは、Claude Code Desktop の会話の横に Apple の iOS シミュレータで実行されているアプリを表示します。Claude がシミュレータでアプリをビルド、インストール、起動、またはチェックするときに、ペインが自動的に開き、デバイス画面がライブでストリーミングされます。Claude がアプリを実行してテストするのを見守ったり、Claude が作業を続けている間に自分でアプリをタップして操作したりできます。
 
-シミュレータペインはシミュレータを直接操作するため、[コンピュータの使用](/docs/ja/desktop#let-claude-use-your-computer)を必要とせず、画面を乗っ取ったり他のウィンドウを隠したりすることはありません。CLI からは、Claude は [コンピュータの使用](/docs/ja/computer-use#test-a-simulator-flow)を通じて iOS シミュレータに到達し、マウスで操作するのと同じ方法で画面上のシミュレータを制御します。
+シミュレータペインはシミュレータを直接操作するため、[コンピュータの使用](/docs/ja/desktop.md#let-claude-use-your-computer)を必要とせず、画面を乗っ取ったり他のウィンドウを隠したりすることはありません。CLI からは、Claude は [コンピュータの使用](/docs/ja/computer-use.md#test-a-simulator-flow)を通じて iOS シミュレータに到達し、マウスで操作するのと同じ方法で画面上のシミュレータを制御します。
 
 ## 要件
 
@@ -27,7 +27,7 @@ iOS シミュレータペインは、Claude Code Desktop の会話の横に Appl
 >
 > このページでは、「デバイス」はシミュレートされた iPhone または iPad を指し、Xcode の **Window → Devices and Simulators** で管理するのと同じシミュレータデバイスの 1 つであり、物理ハードウェアではありません。
 
-シミュレータペインはローカルセッションでのみ利用可能です。[クラウド](/docs/ja/desktop#run-long-running-tasks-in-the-cloud)および [SSH](/docs/ja/desktop#ssh-sessions) セッションでは、Claude は Mac 上のシミュレータに到達できないマシン上で実行されます。
+シミュレータペインはローカルセッションでのみ利用可能です。[クラウド](/docs/ja/desktop.md#run-long-running-tasks-in-the-cloud)および [SSH](/docs/ja/desktop.md#ssh-sessions) セッションでは、Claude は Mac 上のシミュレータに到達できないマシン上で実行されます。
 
 ### シミュレータペインが使用する Xcode を選択する
 
@@ -49,7 +49,7 @@ sudo xcode-select -s /Applications/Xcode-26.4.app
 
 **1. iOS プロジェクトを開く**
 
-Claude Code Desktop で **Code** タブを開き、アプリのプロジェクトを [プロジェクトフォルダ](/docs/ja/desktop#start-a-session)としてセッションを開始します。iOS シミュレータ用にアプリをビルドするプロジェクトであれば、どのプロジェクトでも動作します。
+Claude Code Desktop で **Code** タブを開き、アプリのプロジェクトを [プロジェクトフォルダ](/docs/ja/desktop.md#start-a-session)としてセッションを開始します。iOS シミュレータ用にアプリをビルドするプロジェクトであれば、どのプロジェクトでも動作します。
 
 **2. Claude にアプリを実行またはテストするよう依頼する**
 
@@ -88,7 +88,7 @@ Claude が起動したデバイスは Apple の Simulator アプリにも表示�
 
 ## セッションがデバイスを管理する方法
 
-各デバイスはそれを起動したセッションに属するため、[並列セッション](/docs/ja/desktop#work-in-parallel-with-sessions)はデバイスを共有しません。1 つのセッションのペインに表示されるのは、そのセッションの作業を反映し、別のセッションの作業ではありません。サイドバーでセッションを切り替えると、シミュレータビューが会話と一緒に切り替わり、戻すと同じデバイスが中断したところから再開されます。Claude が複数のデバイスで作業する場合、各デバイスは独自のペインを開き、セッションあたり最大 4 つまでです。
+各デバイスはそれを起動したセッションに属するため、[並列セッション](/docs/ja/desktop.md#work-in-parallel-with-sessions)はデバイスを共有しません。1 つのセッションのペインに表示されるのは、そのセッションの作業を反映し、別のセッションの作業ではありません。サイドバーでセッションを切り替えると、シミュレータビューが会話と一緒に切り替わり、戻すと同じデバイスが中断したところから再開されます。Claude が複数のデバイスで作業する場合、各デバイスは独自のペインを開き、セッションあたり最大 4 つまでです。
 
 Claude Code Desktop は、起動したシミュレータが使用されなくなると、それらをシャットダウンします。アプリを終了するとき、セッションをアーカイブするとき、またはペインからデバイスをデタッチしてから 10 分後です。Claude Code Desktop の外で起動したデバイス（Apple の Simulator アプリや Device Hub など）は、自動的にシャットダウンされることはありません。接続されたデバイスをすぐにシャットダウンするには、ペインのシャットダウンボタンを使用します。
 
@@ -106,7 +106,7 @@ Claude がシミュレータを初めて使用するときは、デスクトッ�
 
 ### 権限モードに従うアクション
 
-2 つのアクションは、1 回限りの同意ではなく、セッションの [権限モード](/docs/ja/permissions#permission-modes)に従います。
+2 つのアクションは、1 回限りの同意ではなく、セッションの [権限モード](/docs/ja/permissions.md#permission-modes)に従います。
 
 * デバイス上で URL を開く。例えば、ディープリンクをテストするか、デバイスの Safari でページを読み込むため。URL はデータをデバイスから持ち出す可能性があります。
 * アプリをビルドする。`xcodebuild` は Mac 上でプロジェクトのビルドスクリプトを実行するため。既に進行中のビルドをチェックしてもプロンプトは表示されません。
@@ -115,7 +115,7 @@ Claude がシミュレータを初めて使用するときは、デスクトッ�
 
 デスクトップアプリの設定でシミュレータアクセスをオフにできます。組織がすべてのユーザーに対してオフにする方法は 2 つあります。
 
-* `disableMobileSimulatorTools` [管理設定](/docs/ja/desktop#managed-settings)は Claude のシミュレータツールをブロックします。シミュレータペインは独自のタップで使用可能なままで、設定はアプリ内からオーバーライドできません。
+* `disableMobileSimulatorTools` [管理設定](/docs/ja/desktop.md#managed-settings)は Claude のシミュレータツールをブロックします。シミュレータペインは独自のタップで使用可能なままで、設定はアプリ内からオーバーライドできません。
 * `requireCoworkFullVmSandbox` ポリシーキー。これは Claude のツールを Mac 上ではなく分離された仮想マシン内で実行し、シミュレータペインと Claude のシミュレータツールを完全に無効にするため、設定されている間はペインがデバイスを接続できません。
 
 Claude はどちらが適用されるかを通知します。
@@ -142,7 +142,7 @@ Xcode がインストールされていますが、iOS シミュレータがリ�
 
 ## 関連項目
 
-* [Desktop でのコンピュータの使用](/docs/ja/desktop#let-claude-use-your-computer)：専用ペインのないアプリの画面制御
-* [CLI からのコンピュータの使用](/docs/ja/computer-use)：CLI が iOS シミュレータに到達する方法
-* [独自の worktree でセッションを実行する](/docs/ja/desktop#run-a-session-in-its-own-worktree)：セッションが変更を分離する方法
-* [Claude Code Desktop を始める](/docs/ja/desktop-quickstart)
+* [Desktop でのコンピュータの使用](/docs/ja/desktop.md#let-claude-use-your-computer)：専用ペインのないアプリの画面制御
+* [CLI からのコンピュータの使用](/docs/ja/computer-use.md)：CLI が iOS シミュレータに到達する方法
+* [独自の worktree でセッションを実行する](/docs/ja/desktop.md#run-a-session-in-its-own-worktree)：セッションが変更を分離する方法
+* [Claude Code Desktop を始める](/docs/ja/desktop-quickstart.md)
