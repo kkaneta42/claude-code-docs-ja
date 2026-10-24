@@ -8,11 +8,11 @@
 
 > [!WARNING]
 >
-> エージェントチームは実験的機能であり、デフォルトでは無効になっています。[settings.json](/docs/ja/settings.md) または環境に `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` を設定して有効にしてください。その変数がない場合、セッション開始時にチームが設定されず、チームディレクトリが書き込まれず、Claude はチームメンバーをスポーンまたは提案しません。エージェントチームには、セッション再開、タスク調整、シャットダウン動作に関する[既知の制限](#limitations)があります。
+> エージェントチームは実験的機能であり、デフォルトでは無効になっています。[settings.json](https://code.claude.com/docs/ja/settings.md) または環境に `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` を設定して有効にしてください。その変数がない場合、セッション開始時にチームが設定されず、チームディレクトリが書き込まれず、Claude はチームメンバーをスポーンまたは提案しません。エージェントチームには、セッション再開、タスク調整、シャットダウン動作に関する[既知の制限](#limitations)があります。
 
 エージェントチームを使用すると、複数の Claude Code インスタンスが連携して動作するように調整できます。1 つのセッションがチームリーダーとして機能し、作業を調整し、タスクを割り当て、結果を統合します。チームメンバーは独立して動作し、それぞれ独自のコンテキストウィンドウで動作し、互いに直接通信します。リーダーを経由せずに、任意のチームメンバーと直接対話することもできます。
 
-チームを設定する前に、より軽量なオプションで十分かどうかを確認してください。[Subagents](/docs/ja/sub-agents.md) は単一セッション内で動作し、[クロスセッションメッセージング](/docs/ja/cross-session-messaging.md) を使用すると Claude は自分で実行するセッション間で検出結果を渡すことができます。
+チームを設定する前に、より軽量なオプションで十分かどうかを確認してください。[Subagents](https://code.claude.com/docs/ja/sub-agents.md) は単一セッション内で動作し、[クロスセッションメッセージング](https://code.claude.com/docs/ja/cross-session-messaging.md) を使用すると Claude は自分で実行するセッション間で検出結果を渡すことができます。
 
 ## エージェントチームを使用する場合
 
@@ -23,11 +23,11 @@
 * **競合する仮説でのデバッグ**：チームメンバーが異なる理論を並列でテストし、より迅速に答えに収束できます
 * **クロスレイヤー調整**：フロントエンド、バックエンド、テストにまたがる変更で、それぞれ異なるチームメンバーが担当します
 
-エージェントチームは調整オーバーヘッドを追加し、単一セッションよりも大幅に多くのトークンを使用します。チームメンバーが独立して動作できる場合に最も効果的です。順序付きタスク、同じファイルの編集、または多くの依存関係を持つ作業の場合は、単一セッションまたは [subagents](/docs/ja/sub-agents.md) がより効果的です。
+エージェントチームは調整オーバーヘッドを追加し、単一セッションよりも大幅に多くのトークンを使用します。チームメンバーが独立して動作できる場合に最も効果的です。順序付きタスク、同じファイルの編集、または多くの依存関係を持つ作業の場合は、単一セッションまたは [subagents](https://code.claude.com/docs/ja/sub-agents.md) がより効果的です。
 
 ### subagents との比較
 
-エージェントチームと [subagents](/docs/ja/sub-agents.md) の両方を使用すると、作業を並列化できますが、動作方法が異なります。チームなしでメッセージを相互に渡す別々のセッションについては、[クロスセッションメッセージング](/docs/ja/cross-session-messaging.md)を参照してください。
+エージェントチームと [subagents](https://code.claude.com/docs/ja/sub-agents.md) の両方を使用すると、作業を並列化できますが、動作方法が異なります。チームなしでメッセージを相互に渡す別々のセッションについては、[クロスセッションメッセージング](https://code.claude.com/docs/ja/cross-session-messaging.md)を参照してください。
 
 ![Subagent とエージェントチームのアーキテクチャを比較する図。Subagents はメインエージェントによって生成され、作業を実行し、結果を報告します。エージェントチームは共有タスクリストを通じて調整され、チームメンバーが互いに直接通信します。](https://mintcdn.com/claude-code/nsvRFSDNfpSU5nT7/images/subagents-vs-agent-teams-light.png?fit=max\&auto=format\&n=nsvRFSDNfpSU5nT7\&q=85\&s=2f8db9b4f3705dd3ab931fbe2d96e42a)
 
@@ -36,8 +36,8 @@ Subagents は結果をメインエージェントに報告します。エージ�
 | | Subagents | エージェントチーム |
 | :- | :- | :- |
 | **コンテキスト** | 独自のコンテキストウィンドウ。結果は呼び出し元に返される | 独自のコンテキストウィンドウ。完全に独立 |
-| **通信** | 呼び出し元に結果を返します。Claude が生成時に[名前を付けた](/docs/ja/sub-agents.md#subagent-names)サブエージェントは、[互いにメッセージを送信](/docs/ja/sub-agents.md#what-loads-at-startup)することもできます | チームメイトが互いに直接メッセージを送信 |
-| **調整** | メインエージェントがすべての作業を管理 | メッセージを通じた自己調整、および [Task ツールを持つエージェント](/docs/ja/tools-reference.md#task-tool-availability)のための共有タスクリスト |
+| **通信** | 呼び出し元に結果を返します。Claude が生成時に[名前を付けた](https://code.claude.com/docs/ja/sub-agents.md#subagent-names)サブエージェントは、[互いにメッセージを送信](https://code.claude.com/docs/ja/sub-agents.md#what-loads-at-startup)することもできます | チームメイトが互いに直接メッセージを送信 |
+| **調整** | メインエージェントがすべての作業を管理 | メッセージを通じた自己調整、および [Task ツールを持つエージェント](https://code.claude.com/docs/ja/tools-reference.md#task-tool-availability)のための共有タスクリスト |
 | **最適な用途** | 結果のみが重要な焦点を絞ったタスク | 議論と協力が必要な複雑な作業 |
 | **トークンコスト** | 低い：結果がメインコンテキストに要約されて返される | 高い：各チームメンバーが個別の Claude インスタンス |
 
@@ -45,7 +45,7 @@ Subagents は結果をメインエージェントに報告します。エージ�
 
 ## エージェントチームを有効にする
 
-エージェントチームはデフォルトでは無効になっています。`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` 環境変数を `1` に設定して有効にしてください。シェル環境または [settings.json](/docs/ja/settings.md) を通じて設定できます。
+エージェントチームはデフォルトでは無効になっています。`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` 環境変数を `1` に設定して有効にしてください。シェル環境または [settings.json](https://code.claude.com/docs/ja/settings.md) を通じて設定できます。
 
 ```json settings.json theme={null}
 {
@@ -55,9 +55,9 @@ Subagents は結果をメインエージェントに報告します。エージ�
 }
 ```
 
-エージェントチームを有効にすると、通常の委譲も変わります。Claude は [サブエージェントに名前を付ける](/docs/ja/sub-agents.md#subagent-names) ことができます。エージェントチームが有効な間、Claude が名前を付けたサブエージェントはチームメイトとして起動するため、リクエストしなくてもチームが形成される可能性があります。詳細については、[Claude がエージェントチームを開始する方法](#how-claude-starts-agent-teams) を参照してください。この動作をオフにするには、[Claude はサブエージェントの代わりにチームメイトを生成する](#claude-spawns-teammates-instead-of-subagents) を参照してください。
+エージェントチームを有効にすると、通常の委譲も変わります。Claude は [サブエージェントに名前を付ける](https://code.claude.com/docs/ja/sub-agents.md#subagent-names) ことができます。エージェントチームが有効な間、Claude が名前を付けたサブエージェントはチームメイトとして起動するため、リクエストしなくてもチームが形成される可能性があります。詳細については、[Claude がエージェントチームを開始する方法](#how-claude-starts-agent-teams) を参照してください。この動作をオフにするには、[Claude はサブエージェントの代わりにチームメイトを生成する](#claude-spawns-teammates-instead-of-subagents) を参照してください。
 
-チームメイトの生成には、インタラクティブセッションも必要です。`-p` フラグを含む [非インタラクティブモード](/docs/ja/headless.md) では、Agent SDK セッションを含めて、Claude はチームメイトを生成せず、Claude が名前を付けたサブエージェントはエージェントチームが有効な場合でも通常の [サブエージェント](/docs/ja/sub-agents.md) として実行されます。
+チームメイトの生成には、インタラクティブセッションも必要です。`-p` フラグを含む [非インタラクティブモード](https://code.claude.com/docs/ja/headless.md) では、Agent SDK セッションを含めて、Claude はチームメイトを生成せず、Claude が名前を付けたサブエージェントはエージェントチームが有効な場合でも通常の [サブエージェント](https://code.claude.com/docs/ja/sub-agents.md) として実行されます。
 
 ## 最初のエージェントチームを開始する
 
@@ -71,9 +71,9 @@ their codebase. Spawn three teammates to explore this from different angles:
 one on UX, one on technical architecture, one playing devil's advocate.
 ```
 
-その後、Claude は [共有タスクリスト](/docs/ja/interactive-mode.md#task-list) を作成し、[Task ツールを持つセッション](/docs/ja/tools-reference.md#task-tool-availability)内で各視点のチームメンバーを生成し、問題を探索させ、完了時に調査結果を統合します。
+その後、Claude は [共有タスクリスト](https://code.claude.com/docs/ja/interactive-mode.md#task-list) を作成し、[Task ツールを持つセッション](https://code.claude.com/docs/ja/tools-reference.md#task-tool-availability)内で各視点のチームメンバーを生成し、問題を探索させ、完了時に調査結果を統合します。
 
-Claude は時々、チームを作成する代わりに [サブエージェント](/docs/ja/sub-agents.md)を使用することがあります。サブエージェントはチームメンバーと同じエージェントパネルに表示されるため、パネルだけではチームが形成されたことを確認できません。Claude がサブエージェントを生成した場合は、もう一度質問し、明示的にエージェントチームをリクエストしてください。
+Claude は時々、チームを作成する代わりに [サブエージェント](https://code.claude.com/docs/ja/sub-agents.md)を使用することがあります。サブエージェントはチームメンバーと同じエージェントパネルに表示されるため、パネルだけではチームが形成されたことを確認できません。Claude がサブエージェントを生成した場合は、もう一度質問し、明示的にエージェントチームをリクエストしてください。
 
 リーダーのターミナルには、プロンプト入力の下のエージェントパネルにチームメンバーが表示されます。パネルから以下の操作ができます。
 
@@ -106,7 +106,7 @@ Claude は時々、チームを作成する代わりに [サブエージェン�
 
 `"iterm2"` を設定して iTerm2 ネイティブ分割ペインを明示的に使用してください。このモードは [`it2` CLI](https://github.com/mkusaka/it2) が必要で、`it2` が見つからない場合はインストールコマンド付きでエラーを表示します。`it2` をインストールするか tmux に切り替えるオプションを提供するセットアッププロンプトは、ターミナルが iTerm2 で tmux がフォールバックとして利用可能な場合、`"auto"` または `"tmux"` の下に表示されます。
 
-デフォルトをオーバーライドするには、`~/.claude/settings.json` で [`teammateMode`](/docs/ja/settings-reference#teammatemode) を設定してください。
+デフォルトをオーバーライドするには、`~/.claude/settings.json` で [`teammateMode`](https://code.claude.com/docs/ja/settings-reference#teammatemode) を設定してください。
 
 ```json theme={null}
 {
@@ -140,12 +140,12 @@ Claude Code は各チームメンバーのモデルを、以下の最初に適�
 
 1. スポーンプロンプトがそのチームメンバーに対して指定するモデル。
 2. [サブエージェント定義](#use-subagent-definitions-for-teammates)からスポーンされたチームメンバーの場合、定義の `model`。ここで `inherit` はリーダーのモデルを選択します。
-3. [`CLAUDE_CODE_SUBAGENT_MODEL`](/docs/ja/model-config#environment-variables)。`inherit` 以外に設定されている場合。
+3. [`CLAUDE_CODE_SUBAGENT_MODEL`](https://code.claude.com/docs/ja/model-config#environment-variables)。`inherit` 以外に設定されている場合。
 4. リーダーの現在のモデル。
 
-インストールされている [mod](/docs/ja/plugins/mods/overview.md) が [`agent.spawn`](/docs/ja/plugins/mods/reference#subagents) フックでモデルを設定している場合、Claude Code は最初のソースの代わりにそのモデルを使用します。
+インストールされている [mod](https://code.claude.com/docs/ja/plugins/mods/overview.md) が [`agent.spawn`](https://code.claude.com/docs/ja/plugins/mods/reference#subagents) フックでモデルを設定している場合、Claude Code は最初のソースの代わりにそのモデルを使用します。
 
-[`CLAUDE_CODE_SUBAGENT_MODEL_FORCE=1`](/docs/ja/sub-agents#run-every-subagent-on-one-model) を設定した場合、最初の 2 つのソースは適用されません。Claude Code は `CLAUDE_CODE_SUBAGENT_MODEL` が `inherit` 以外に設定されている場合はそこからすべてのチームメンバーのモデルを選択し、それ以外の場合はリーダーの現在のモデルから選択します。Claude Code v2.1.257 以降が必要です。
+[`CLAUDE_CODE_SUBAGENT_MODEL_FORCE=1`](https://code.claude.com/docs/ja/sub-agents#run-every-subagent-on-one-model) を設定した場合、最初の 2 つのソースは適用されません。Claude Code は `CLAUDE_CODE_SUBAGENT_MODEL` が `inherit` 以外に設定されている場合はそこからすべてのチームメンバーのモデルを選択し、それ以外の場合はリーダーの現在のモデルから選択します。Claude Code v2.1.257 以降が必要です。
 
 v2.1.251 より前は、`CLAUDE_CODE_SUBAGENT_MODEL` がこの順序で最初に来ていました。
 
@@ -153,16 +153,16 @@ v2.1.251 より前は、`CLAUDE_CODE_SUBAGENT_MODEL` がこの順序で最初に
 >
 > `teammateDefaultModel` は v2.1.234 で削除されました。Claude Code は残された値を無視します。代わりにプロンプトでモデルを指定してください。
 
-Claude Code は、チームメンバーに対して選択したモデルを、組織の [`availableModels`](/docs/ja/model-config#restrict-model-selection) 許可リストに対してチェックします。許可リストが値をブロックすると、Claude Code は別のモデルを代替します。
+Claude Code は、チームメンバーに対して選択したモデルを、組織の [`availableModels`](https://code.claude.com/docs/ja/model-config#restrict-model-selection) 許可リストに対してチェックします。許可リストが値をブロックすると、Claude Code は別のモデルを代替します。
 
-* **`opus` などのファミリーエイリアス**：Anthropic API および AWS 上の Claude Platform では、Claude Code はチームメンバーを許可リストが許可するそのファミリーの最新バージョンで実行します。プロバイダー固有のモデル ID を持つプロバイダーでは、[代替が動作しない](/docs/ja/model-config.md#restrict-model-selection)場合、ブロックされたエイリアスは次の箇条書きに従って他のブロックされた値のようにフォールバックします。
+* **`opus` などのファミリーエイリアス**：Anthropic API および AWS 上の Claude Platform では、Claude Code はチームメンバーを許可リストが許可するそのファミリーの最新バージョンで実行します。プロバイダー固有のモデル ID を持つプロバイダーでは、[代替が動作しない](https://code.claude.com/docs/ja/model-config.md#restrict-model-selection)場合、ブロックされたエイリアスは次の箇条書きに従って他のブロックされた値のようにフォールバックします。
 * **プロバイダー固有のモデル ID を持つプロバイダーで代替が動作しないファミリーエイリアス、またはそのファミリーに許可されたバージョンがないもの、またはその他のブロックされた値**：Claude Code はチームメンバーをリーダーのモデルで実行します。`CLAUDE_CODE_SUBAGENT_MODEL` を設定した場合、Claude Code はそのモデルを最初に試し、これらの同じルールの下で実行します。
 
-デフォルトでは、チームメンバーはリーダーの [effort レベル](/docs/ja/model-config.md#adjust-effort-level)を継承します。分割ペインモードではこれは v2.1.186 から適用されます。それより前のバージョンではリーダーのセッションの effort を分割ペインのチームメンバーに渡していませんでした。
+デフォルトでは、チームメンバーはリーダーの [effort レベル](https://code.claude.com/docs/ja/model-config.md#adjust-effort-level)を継承します。分割ペインモードではこれは v2.1.186 から適用されます。それより前のバージョンではリーダーのセッションの effort を分割ペインのチームメンバーに渡していませんでした。
 
 ### チームメンバーが実装前にプランを立てるようにする
 
-複雑またはリスクの高いタスクの場合、チームメンバーが実装前にプランを立てることができます。リーダーが[プランモード](/docs/ja/permission-modes.md#analyze-before-you-edit-with-plan-mode)にある間に Claude がスポーンするチームメンバーは、プランが準備できるまで読み取り専用プランモードで動作します。まずリーダーをプランモードに切り替えてから、チームメンバーを要求してください。
+複雑またはリスクの高いタスクの場合、チームメンバーが実装前にプランを立てることができます。リーダーが[プランモード](https://code.claude.com/docs/ja/permission-modes.md#analyze-before-you-edit-with-plan-mode)にある間に Claude がスポーンするチームメンバーは、プランが準備できるまで読み取り専用プランモードで動作します。まずリーダーをプランモードに切り替えてから、チームメンバーを要求してください。
 
 ```text wrap theme={null}
 Spawn an architect teammate to refactor the authentication module.
@@ -170,7 +170,7 @@ Spawn an architect teammate to refactor the authentication module.
 
 そのチームメイトがプランを完了すると、リーダーにプラン承認リクエストを送信します。スポーン後にそのチームメイトの権限モードを変更していない場合、Claude Code はリクエストが到着するとすぐにプランを承認し、リーダーがそれをレビューすることはありません。チームメイトの編集とコマンドは、引き続き[権限](#permissions)で説明されている権限プロンプトを通過します。承認されると、チームメイトは plan モードを終了し、実装を開始します。
 
-実行中の in-process チームメイトのセッションを表示している間に [`Shift+Tab`](/docs/ja/permission-modes#switch-permission-modes) を押してそのチームメイトを plan モードにした場合、その実行のプランは Claude Code が承認するのではなく、リーダーがレビューします。ユーザーに承認は求められません。リーダーがプランを承認するか、修正のために差し戻します。
+実行中の in-process チームメイトのセッションを表示している間に [`Shift+Tab`](https://code.claude.com/docs/ja/permission-modes#switch-permission-modes) を押してそのチームメイトを plan モードにした場合、その実行のプランは Claude Code が承認するのではなく、リーダーがレビューします。ユーザーに承認は求められません。リーダーがプランを承認するか、修正のために差し戻します。
 
 ### チームメンバーと直接通信する
 
@@ -179,7 +179,7 @@ Spawn an architect teammate to refactor the authentication module.
 * **In-process モード**：エージェントパネルで上下矢印キーを使用してチームメンバーを選択し、Enter キーを押してそのセッションを表示して、メッセージを入力してください。選択したチームメンバーで `x` を押してそれを停止してください。Ctrl+T を押してタスクリストを切り替えてください。
 * **分割ペインモード**：チームメンバーのペインをクリックして、セッションと直接対話してください。各チームメンバーは独自のターミナルの完全なビューを持っています。
 
-In-process チームメイトを表示している間、プレーンテキストと[スキル](/docs/ja/skills.md)はそのチームメイトに送信され、組み込みコマンドはリーダーのセッションに送信されます。ただし、次の安全策があります。
+In-process チームメイトを表示している間、プレーンテキストと[スキル](https://code.claude.com/docs/ja/skills.md)はそのチームメイトに送信され、組み込みコマンドはリーダーのセッションに送信されます。ただし、次の安全策があります。
 
 * `/compact`、`/clear`、`/rewind` はリーダーの会話に作用するため、このビューからいずれかを実行する前に Claude Code が確認を求めます。
 * `/model` と `/fast` はチームメイトではなくリーダーのモデルと fast mode を設定するため、このビューからは実行されません。その理由を示す通知が表示されます。
@@ -190,7 +190,7 @@ In-process チームメイトを表示している間、プレーンテキスト
 
 共有タスクリストはチーム全体の作業を調整します。リーダーがタスクを作成し、チームメンバーがそれらを処理します。タスクには 3 つの状態があります。保留中、進行中、完了。タスクは他のタスクに依存することもできます。未解決の依存関係を持つ保留中のタスクは、それらの依存関係が完了するまで要求できません。
 
-[Task ツールを持たない](/docs/ja/tools-reference.md#task-tool-availability)エージェントは、共有タスクリストの代わりにメッセージを通じて調整します。
+[Task ツールを持たない](https://code.claude.com/docs/ja/tools-reference.md#task-tool-availability)エージェントは、共有タスクリストの代わりにメッセージを通じて調整します。
 
 リーダーはタスクを明示的に割り当てるか、チームメンバーが自己要求できます。
 
@@ -213,11 +213,11 @@ Ask the researcher teammate to shut down
 
 ### hooks で品質ゲートを実施する
 
-[hooks](/docs/ja/hooks.md) を使用して、チームメンバーが作業を完了したときまたはタスクが作成または完了したときのルールを実施してください。
+[hooks](https://code.claude.com/docs/ja/hooks.md) を使用して、チームメンバーが作業を完了したときまたはタスクが作成または完了したときのルールを実施してください。
 
-* [`TeammateIdle`](/docs/ja/hooks#teammateidle)：チームメンバーがアイドル状態になろうとしているときに実行されます。終了コード 2 でフィードバックを送信し、チームメンバーを動作させ続けてください。
-* [`TaskCreated`](/docs/ja/hooks#taskcreated)：タスクが作成されているときに実行されます。終了コード 2 で作成を防止し、フィードバックを送信してください。
-* [`TaskCompleted`](/docs/ja/hooks#taskcompleted)：タスクが完了としてマークされているときに実行されます。終了コード 2 で完了を防止し、フィードバックを送信してください。
+* [`TeammateIdle`](https://code.claude.com/docs/ja/hooks#teammateidle)：チームメンバーがアイドル状態になろうとしているときに実行されます。終了コード 2 でフィードバックを送信し、チームメンバーを動作させ続けてください。
+* [`TaskCreated`](https://code.claude.com/docs/ja/hooks#taskcreated)：タスクが作成されているときに実行されます。終了コード 2 で作成を防止し、フィードバックを送信してください。
+* [`TaskCompleted`](https://code.claude.com/docs/ja/hooks#taskcompleted)：タスクが完了としてマークされているときに実行されます。終了コード 2 で完了を防止し、フィードバックを送信してください。
 
 ## エージェントチームの動作方法
 
@@ -225,7 +225,7 @@ Ask the researcher teammate to shut down
 
 ### Claude がエージェントチームを開始する方法
 
-チームを開始するには、Claude にチームメンバーをリクエストしてください。Claude は [Agent ツール](/docs/ja/tools-reference.md) を呼び出して [`name`](/docs/ja/sub-agents#subagent-names) を指定し、エージェントチームが有効になっている場合にチームメンバーを起動します。ただし、呼び出しが [fork](/docs/ja/sub-agents.md#fork-the-current-conversation) であるか、呼び出し自体で `isolation` を渡す場合は除きます。Claude Code があなたに確認を求めることはありません。
+チームを開始するには、Claude にチームメンバーをリクエストしてください。Claude は [Agent ツール](https://code.claude.com/docs/ja/tools-reference.md) を呼び出して [`name`](https://code.claude.com/docs/ja/sub-agents#subagent-names) を指定し、エージェントチームが有効になっている場合にチームメンバーを起動します。ただし、呼び出しが [fork](https://code.claude.com/docs/ja/sub-agents.md#fork-the-current-conversation) であるか、呼び出し自体で `isolation` を渡す場合は除きます。Claude Code があなたに確認を求めることはありません。
 
 Claude は通常の subagent にも独自に名前を付けるため、後でメッセージを送信できます。これらの呼び出しは同じルールに従うため、チームメンバーをリクエストしなくてもチームが形成される可能性があります。subagent の代わりに使用したい場合は、[エージェントチームをオフにしてください](#claude-spawns-teammates-instead-of-subagents)。
 
@@ -242,14 +242,14 @@ Claude は通常の subagent にも独自に名前を付けるため、後でメ
 
 各エージェントのメールボックスは `~/.claude/teams/{team-name}/inboxes/{agent-name}.json` にある JSON ファイルです。Claude Code はメールボックスファイルを読み取るときにすべてのエントリを検証します。メッセージ形式と一致しないエントリはエラーとして報告され、ファイルから削除されます。有効なメッセージは引き続き配信されます。
 
-Claude Code は、メッセージがプレーンテキストであるか、プラン承認やシャットダウンリクエストなどの構造化プロトコルメッセージであるかに関わらず、受信者のメールボックスファイルへの書き込みが成功した場合にのみメッセージを送信済みとして報告します。ディスクがいっぱいであるか、メールボックスディレクトリが書き込み可能でないなど、書き込みが失敗した場合、送信エージェントはエラーを受け取り、何も送信されません。エラーメッセージと復旧手順については、[チームメンバーのインボックスへの書き込みに失敗しました](/docs/ja/errors.md#failed-to-write-to-a-teammate-inbox) を参照してください。
+Claude Code は、メッセージがプレーンテキストであるか、プラン承認やシャットダウンリクエストなどの構造化プロトコルメッセージであるかに関わらず、受信者のメールボックスファイルへの書き込みが成功した場合にのみメッセージを送信済みとして報告します。ディスクがいっぱいであるか、メールボックスディレクトリが書き込み可能でないなど、書き込みが失敗した場合、送信エージェントはエラーを受け取り、何も送信されません。エラーメッセージと復旧手順については、[チームメンバーのインボックスへの書き込みに失敗しました](https://code.claude.com/docs/ja/errors.md#failed-to-write-to-a-teammate-inbox) を参照してください。
 
 Claude Code はタスク依存関係を自動的に管理します。チームメンバーが他のタスクが依存するタスクを完了すると、ブロックされたタスクはあなたからのアクションなしにブロック解除されます。
 
 チームとタスクはセッション派生名でローカルに保存されます。名前は `session-` の後にセッション ID の最初の 8 文字が続きます。
 
 * **チーム設定**：`~/.claude/teams/{team-name}/config.json`。Claude Code はセッション終了時にチーム設定ディレクトリを削除します。
-* **タスクリスト**：`~/.claude/tasks/{team-name}/`。このディレクトリはセッション終了後もディスク上に残ります。[Claude Code が保持する期間](/docs/ja/claude-directory.md#cleaned-up-automatically) を変更するには、[`cleanupPeriodDays`](/docs/ja/settings-reference#cleanupperioddays) を設定してください。
+* **タスクリスト**：`~/.claude/tasks/{team-name}/`。このディレクトリはセッション終了後もディスク上に残ります。[Claude Code が保持する期間](https://code.claude.com/docs/ja/claude-directory.md#cleaned-up-automatically) を変更するには、[`cleanupPeriodDays`](https://code.claude.com/docs/ja/settings-reference#cleanupperioddays) を設定してください。
 
 Claude Code はセッション起動時にこれらの両方を自動的に生成し、チームメンバーが参加、アイドル状態になる、または離脱するときに更新します。
 
@@ -257,13 +257,13 @@ Claude Code はセッション起動時にこれらの両方を自動的に生�
 
 再利用可能なチームメンバーロールを定義するには、代わりに [subagent 定義を使用](#use-subagent-definitions-for-teammates) してください。
 
-チーム設定には、各メンバーの名前とエージェント ID を含む `members` 配列が含まれています。リーダーのエントリは常にエージェントタイプ `team-lead` を持ちます。チームメンバーのエントリは、リーダーが生成時に名前を付けたエージェントタイプ（[組み込みタイプ](/docs/ja/sub-agents.md#built-in-subagents) または [subagent 定義](#use-subagent-definitions-for-teammates) のいずれか）を持ち、リーダーが何も名前を付けなかった場合はフィールドを省略します。チームメンバーはこのファイルを読み取って、他のチームメンバーを発見できます。
+チーム設定には、各メンバーの名前とエージェント ID を含む `members` 配列が含まれています。リーダーのエントリは常にエージェントタイプ `team-lead` を持ちます。チームメンバーのエントリは、リーダーが生成時に名前を付けたエージェントタイプ（[組み込みタイプ](https://code.claude.com/docs/ja/sub-agents.md#built-in-subagents) または [subagent 定義](#use-subagent-definitions-for-teammates) のいずれか）を持ち、リーダーが何も名前を付けなかった場合はフィールドを省略します。チームメンバーはこのファイルを読み取って、他のチームメンバーを発見できます。
 
 プロジェクトレベルのチーム設定に相当するものはありません。プロジェクトディレクトリ内の `.claude/teams/teams.json` のようなファイルは設定として認識されません。Claude はそれを通常のファイルとして扱います。
 
 ### チームメンバーに subagent 定義を使用する
 
-どちらの表示モードでもチームメイトを生成するときに、プロジェクト、ユーザー、管理対象、またはプラグインの [サブエージェントスコープ](/docs/ja/sub-agents.md#choose-the-subagent-scope) から [サブエージェント](/docs/ja/sub-agents.md) タイプを参照できます。これにより、セキュリティレビュアーやテストランナーなどのロールを 1 回定義し、委任されたサブエージェントとエージェントチームのチームメイトの両方として再利用できます。
+どちらの表示モードでもチームメイトを生成するときに、プロジェクト、ユーザー、管理対象、またはプラグインの [サブエージェントスコープ](https://code.claude.com/docs/ja/sub-agents.md#choose-the-subagent-scope) から [サブエージェント](https://code.claude.com/docs/ja/sub-agents.md) タイプを参照できます。これにより、セキュリティレビュアーやテストランナーなどのロールを 1 回定義し、委任されたサブエージェントとエージェントチームのチームメイトの両方として再利用できます。
 
 subagent 定義を使用するには、Claude にチームメンバーを生成するよう指示するときに名前で言及してください。
 
@@ -273,42 +273,42 @@ Spawn a teammate using the security-reviewer agent type to audit the auth module
 
 Claude Code は名前を付けた subagent 定義を読み取り、これらの部分をチームメンバーに適用します。部分がチームメンバーの [表示モード](#choose-a-display-mode) に依存する場合、エントリはそのことを示します。
 
-* **`tools`**：Claude Code はチームメンバーを定義の `tools` リスト内のツールに制限します。インプロセスチームメンバーの場合、Claude Code はそのリストに `SendMessage` を追加し、[Task ツールを持つセッション](/docs/ja/tools-reference.md#task-tool-availability) では `TaskCreate`、`TaskGet`、`TaskList`、および `TaskUpdate` も追加します。
+* **`tools`**：Claude Code はチームメンバーを定義の `tools` リスト内のツールに制限します。インプロセスチームメンバーの場合、Claude Code はそのリストに `SendMessage` を追加し、[Task ツールを持つセッション](https://code.claude.com/docs/ja/tools-reference.md#task-tool-availability) では `TaskCreate`、`TaskGet`、`TaskList`、および `TaskUpdate` も追加します。
 * **`model`**：Claude Code は、生成プロンプトが 1 つを名前で指定しない場合、どちらの表示モードでも定義の `model` を使用します。[Claude Code がチームメンバーのモデルを選択する方法](#specify-teammates-and-models) を参照してください。
 * **`disallowedTools`**：インプロセスのチームメイトの場合、Claude Code は定義の `disallowedTools` にあるツールをチームメイトのツールセットから削除します。`SendMessage` と Claude Code が追加する Task ツールは、リストに記載されていても引き続き使用できます。
-* **`effort`**：インプロセスのチームメイトの場合、Claude Code は [フロントマターの effort ルール](/docs/ja/model-config.md#set-the-effort-level) に従って定義の [`effort`](/docs/ja/sub-agents#supported-frontmatter-fields) を適用します。
-* **`autoCompactWindow`**：インプロセスのチームメイトの場合、Claude Code は [そのフィールドのルール](/docs/ja/sub-agents.md#subagent-auto-compact-window) に従って定義の [`autoCompactWindow`](/docs/ja/sub-agents#supported-frontmatter-fields) を適用します。分割ペインのチームメイトはこのフィールドを無視します。Claude Code v2.1.296 以降が必要です。
+* **`effort`**：インプロセスのチームメイトの場合、Claude Code は [フロントマターの effort ルール](https://code.claude.com/docs/ja/model-config.md#set-the-effort-level) に従って定義の [`effort`](https://code.claude.com/docs/ja/sub-agents#supported-frontmatter-fields) を適用します。
+* **`autoCompactWindow`**：インプロセスのチームメイトの場合、Claude Code は [そのフィールドのルール](https://code.claude.com/docs/ja/sub-agents.md#subagent-auto-compact-window) に従って定義の [`autoCompactWindow`](https://code.claude.com/docs/ja/sub-agents#supported-frontmatter-fields) を適用します。分割ペインのチームメイトはこのフィールドを無視します。Claude Code v2.1.296 以降が必要です。
 * **本体**：インプロセスチームメンバーの場合、Claude Code は定義の本体をデフォルトシステムプロンプトに追加の指示として追加します。分割ペインチームメンバーの場合、Claude Code はデフォルトシステムプロンプトの代わりに本体を使用します。
 * **`skills`**：Claude Code はどちらの表示モードでもチームメンバーに定義の `skills` を適用しません。チームメンバーはプロジェクトおよびユーザー設定から skills をロードします。
-* **`mcpServers`**：分割ペインチームメンバーの場合、Claude Code は [そのフィールドのルール](/docs/ja/sub-agents.md#scope-mcp-servers-to-a-subagent) に従って定義の `mcpServers` を適用します。これは `--agent` で開始されたセッションもカバーします。インプロセスチームメンバーはフィールドを無視し、プロジェクトおよびユーザー設定から MCP サーバーをロードします。
+* **`mcpServers`**：分割ペインチームメンバーの場合、Claude Code は [そのフィールドのルール](https://code.claude.com/docs/ja/sub-agents.md#scope-mcp-servers-to-a-subagent) に従って定義の `mcpServers` を適用します。これは `--agent` で開始されたセッションもカバーします。インプロセスチームメンバーはフィールドを無視し、プロジェクトおよびユーザー設定から MCP サーバーをロードします。
 
 Claude がインプロセスチームメンバーにメッセージを送信し、そのチームメンバーがもう実行されていない場合、Claude Code はそれを同じセッション内に戻し、保存されている会話を復元し、メッセージを次のプロンプトとして提供します。セッションを再開した後、チームメンバーはこの方法では戻されません。[再開の制限](#limitations) に従います。
 
-Claude Code が戻すチームメンバーについて、プロジェクトの `.claude/agents/` ディレクトリまたは `--add-dir` ディレクトリから来た定義は、[エージェントファイルが存在するフォルダを信頼している](/docs/ja/permissions.md#what-runs-before-you-trust-a-folder) 場合にのみ再適用されます。親フォルダを信頼することはカウントされません。それまで、チームメンバーはすべてのインプロセスチームメンバーに Claude Code が追加するツールのみを保持して、定義のツールまたは指示なしで戻ります。[チームメンバーのエージェント定義が復元されませんでした](/docs/ja/errors.md#teammate-agent-definition-not-restored) を参照して、通知テキストを確認してください。
+Claude Code が戻すチームメンバーについて、プロジェクトの `.claude/agents/` ディレクトリまたは `--add-dir` ディレクトリから来た定義は、[エージェントファイルが存在するフォルダを信頼している](https://code.claude.com/docs/ja/permissions.md#what-runs-before-you-trust-a-folder) 場合にのみ再適用されます。親フォルダを信頼することはカウントされません。それまで、チームメンバーはすべてのインプロセスチームメンバーに Claude Code が追加するツールのみを保持して、定義のツールまたは指示なしで戻ります。[チームメンバーのエージェント定義が復元されませんでした](https://code.claude.com/docs/ja/errors.md#teammate-agent-definition-not-restored) を参照して、通知テキストを確認してください。
 
 ### 権限
 
-チームメンバーはリーダーの権限モードで開始します。ただし、[`dontAsk` モード](/docs/ja/permission-modes#allow-only-pre-approved-tools-with-dontask-mode) は継承しません。リーダーが `--dangerously-skip-permissions` で実行する場合、すべてのチームメンバーも同様に実行します。生成後、個別のチームメンバーの権限モードを変更できますが、生成時にチームメンバーごとの権限モードを設定することはできません。
+チームメンバーはリーダーの権限モードで開始します。ただし、[`dontAsk` モード](https://code.claude.com/docs/ja/permission-modes#allow-only-pre-approved-tools-with-dontask-mode) は継承しません。リーダーが `--dangerously-skip-permissions` で実行する場合、すべてのチームメンバーも同様に実行します。生成後、個別のチームメンバーの権限モードを変更できますが、生成時にチームメンバーごとの権限モードを設定することはできません。
 
-[インプロセス](#choose-a-display-mode) のチームメイトはリーダーの現在の許可ルールと拒否ルールの下で実行されるため、[`--disallowedTools`](/docs/ja/cli-reference#cli-flags)、`--tools`、`--allowedTools` はすべて適用されます。分割ペインのチームメイトについては、フラグごとに確認してください。
+[インプロセス](#choose-a-display-mode) のチームメイトはリーダーの現在の許可ルールと拒否ルールの下で実行されるため、[`--disallowedTools`](https://code.claude.com/docs/ja/cli-reference#cli-flags)、`--tools`、`--allowedTools` はすべて適用されます。分割ペインのチームメイトについては、フラグごとに確認してください。
 
 * **`--disallowedTools` と `--tools`**：チームメイトはリーダーのコマンドラインの拒否ルールとツールリストを引き継いで開始します。Claude Code v2.1.309 以降が必要です。
-* **`--allowedTools`**：Claude Code はこのフラグを分割ペインのチームメイトに渡さないため、このフラグだけで許可したアクションは分割ペインのチームメイトでは事前承認されません。これらのアクションを事前に承認するには、リーダーを開始するときに [`--settings`](/docs/ja/settings#change-a-setting-for-one-session) の `permissions.allow` にルールを記述してください。たとえば、シェルで `claude --settings '{"permissions":{"allow":["Bash(npm *)"]}}'` を実行します。これらのルールは、そのセッションのリーダーと各分割ペインのチームメイトに適用されます。
+* **`--allowedTools`**：Claude Code はこのフラグを分割ペインのチームメイトに渡さないため、このフラグだけで許可したアクションは分割ペインのチームメイトでは事前承認されません。これらのアクションを事前に承認するには、リーダーを開始するときに [`--settings`](https://code.claude.com/docs/ja/settings#change-a-setting-for-one-session) の `permissions.allow` にルールを記述してください。たとえば、シェルで `claude --settings '{"permissions":{"allow":["Bash(npm *)"]}}'` を実行します。これらのルールは、そのセッションのリーダーと各分割ペインのチームメイトに適用されます。
 
 チームメイトの権限プロンプトはリーダーセッションに表示されるため、そこで自分で承認してください。[チームメイトのプラン](#have-teammates-plan-before-implementing) を承認する必要はありません。
 
 #### エージェント間のメッセージ
 
-1 つのエージェントが `SendMessage` 経由で別のエージェントにメッセージを送信する場合、受信エージェントには、あなたからではなく別の Claude セッションから来たことが通知されます。チームメンバーは権限プロンプトを承認したり、あなたに代わって同意を提供したりすることはできません。また、アクションが拒否されたチームメンバーは、チェックをバイパスするために別のチームメンバーにそれをリレーすることはできません。[チーム外の他の Claude Code セッション](/docs/ja/cross-session-messaging.md#how-a-session-treats-an-incoming-message) から到着するメッセージにも同じルールが適用されます。
+1 つのエージェントが `SendMessage` 経由で別のエージェントにメッセージを送信する場合、受信エージェントには、あなたからではなく別の Claude セッションから来たことが通知されます。チームメンバーは権限プロンプトを承認したり、あなたに代わって同意を提供したりすることはできません。また、アクションが拒否されたチームメンバーは、チェックをバイパスするために別のチームメンバーにそれをリレーすることはできません。[チーム外の他の Claude Code セッション](https://code.claude.com/docs/ja/cross-session-messaging.md#how-a-session-treats-an-incoming-message) から到着するメッセージにも同じルールが適用されます。
 
-[auto モード](/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode) では、分類器はエージェント間のメッセージに 2 つのチェックを適用します。
+[auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode) では、分類器はエージェント間のメッセージに 2 つのチェックを適用します。
 
 * 別のエージェントからリレーされた承認クレームは、あなたからの確認ではなく、信頼できない入力として扱われます。
 * シャットダウンリクエストやプラン承認応答などの構造化プロトコルメッセージであるかどうかに関わらず、プレーンメッセージであるかどうかに関わらず、各メッセージを Claude Code が配信する前にレビューします。ブロックされたメッセージは受信者に到達することはありません。
 
 ### コンテキストと通信
 
-各チームメンバーは独自のコンテキストウィンドウを持っています。生成されると、チームメンバーは通常のセッションと同じプロジェクトコンテキストをロードします。CLAUDE.md、MCP サーバー、および skills。[`--setting-sources`](/docs/ja/cli-reference#cli-flags) でリーダーを開始する場合、チームメンバーは同じ制限されたソースリストからロードします。v2.1.281 より前では、[分割ペイン](#choose-a-display-mode) チームメンバーはすべての設定ソースをロードしていました。
+各チームメンバーは独自のコンテキストウィンドウを持っています。生成されると、チームメンバーは通常のセッションと同じプロジェクトコンテキストをロードします。CLAUDE.md、MCP サーバー、および skills。[`--setting-sources`](https://code.claude.com/docs/ja/cli-reference#cli-flags) でリーダーを開始する場合、チームメンバーは同じ制限されたソースリストからロードします。v2.1.281 より前では、[分割ペイン](#choose-a-display-mode) チームメンバーはすべての設定ソースをロードしていました。
 
 チームメンバーはまた、リーダーからの生成プロンプトを受け取ります。リーダーの会話履歴は引き継がれません。
 
@@ -316,16 +316,16 @@ Claude Code が戻すチームメンバーについて、プロジェクトの `
 
 * **自動メッセージ配信**：チームメンバーがメッセージを送信すると、受信者に自動的に配信されます。リーダーは更新をポーリングする必要はありません。
 * **アイドル通知**：チームメンバーが完了して停止すると、リーダーに自動的に通知し、最終的な回答を通知に含めます。ターンが API エラーで終了するチームメンバーは、リーダーに失敗したことを通知し、エラーテキストを含めます。
-* **共有タスクリスト**：[Task ツールを持つエージェント](/docs/ja/tools-reference.md#task-tool-availability) はタスクステータスを表示でき、利用可能な作業を要求できます。
+* **共有タスクリスト**：[Task ツールを持つエージェント](https://code.claude.com/docs/ja/tools-reference.md#task-tool-availability) はタスクステータスを表示でき、利用可能な作業を要求できます。
 * **チームメンバーメッセージング**：その名前で特定のチームメンバーにメッセージを送信します。全員に到達するには、受信者ごとに 1 つのメッセージを送信してください。
 
 リーダーは生成時に各チームメンバーに名前を割り当て、任意のチームメンバーはその名前で他のチームメンバーにメッセージを送信できます。後のプロンプトで参照できる予測可能な名前を取得するには、生成指示でリーダーに各チームメンバーを何と呼ぶかを指示してください。
 
 ### トークン使用量
 
-エージェントチームは単一セッションよりも大幅に多くのトークンを使用します。各チームメンバーは独自のコンテキストウィンドウを持ち、トークン使用量はアクティブなチームメンバーの数でスケールします。調査、レビュー、および新機能作業の場合、追加のトークンは通常価値があります。ルーチンタスクの場合、単一セッションがより費用効果的です。使用ガイダンスについては、[エージェントチームトークンコスト](/docs/ja/costs.md#agent-team-token-costs) を参照してください。
+エージェントチームは単一セッションよりも大幅に多くのトークンを使用します。各チームメンバーは独自のコンテキストウィンドウを持ち、トークン使用量はアクティブなチームメンバーの数でスケールします。調査、レビュー、および新機能作業の場合、追加のトークンは通常価値があります。ルーチンタスクの場合、単一セッションがより費用効果的です。使用ガイダンスについては、[エージェントチームトークンコスト](https://code.claude.com/docs/ja/costs.md#agent-team-token-costs) を参照してください。
 
-インプロセスチームメンバーのリクエストはメイン会話の [キャッシュ TTL バケット](/docs/ja/prompt-caching.md#which-ttl-each-request-gets) の外にあるため、Claude サブスクリプションを含め、デフォルトで 5 分間キャッシュが保持されます。1 時間保持するには、[`subagentPromptCacheTtl`](/docs/ja/settings-reference#subagentpromptcachettl) を `1h` に設定してください。API は 1 時間のキャッシュ書き込みをより高いレートで請求します。
+インプロセスチームメンバーのリクエストはメイン会話の [キャッシュ TTL バケット](https://code.claude.com/docs/ja/prompt-caching.md#which-ttl-each-request-gets) の外にあるため、Claude サブスクリプションを含め、デフォルトで 5 分間キャッシュが保持されます。1 時間保持するには、[`subagentPromptCacheTtl`](https://code.claude.com/docs/ja/settings-reference#subagentpromptcachettl) を `1h` に設定してください。API は 1 時間のキャッシュ書き込みをより高いレートで請求します。
 
 ## ユースケース例
 
@@ -377,7 +377,7 @@ httpOnly cookies. Report any issues with severity ratings."
 
 チームメンバーの数に厳しい制限はありませんが、実際の制約が適用されます。
 
-* **トークンコストは線形にスケール**：各チームメンバーは独自のコンテキストウィンドウを持ち、独立してトークンを消費します。詳細については、[エージェントチームトークンコスト](/docs/ja/costs.md#agent-team-token-costs)を参照してください。
+* **トークンコストは線形にスケール**：各チームメンバーは独自のコンテキストウィンドウを持ち、独立してトークンを消費します。詳細については、[エージェントチームトークンコスト](https://code.claude.com/docs/ja/costs.md#agent-team-token-costs)を参照してください。
 * **調整オーバーヘッドが増加**：より多くのチームメンバーは、より多くの通信、タスク調整、および競合の可能性を意味します
 * **収穫逓減**：ある時点を超えると、追加のチームメンバーは作業を比例的に高速化しません
 
@@ -448,14 +448,14 @@ Claude にチームメンバーを生成するよう指示した後、チーム�
 
 ユーザー `settings.json` で変数を `0` に設定すると、シェルエクスポートがオーバーライドされます。他の設定ソースはエージェントチームを有効にできます。
 
-* **優先度の高い設定ファイル**：プロジェクト設定、ローカル設定、および `--settings` ペイロードはユーザー設定の後に適用されるため、それらのいずれかで変数を `1` に設定する `env` エントリが優先されます。[設定の優先度](/docs/ja/settings.md#settings-precedence)を参照してください。
-* **マネージド設定**：[マネージド設定](/docs/ja/server-managed-settings.md)は他のすべてのソースの後に適用されます。組織がそこでエージェントチームを有効にしている場合は、管理者にマネージド値の変更を依頼してください。
+* **優先度の高い設定ファイル**：プロジェクト設定、ローカル設定、および `--settings` ペイロードはユーザー設定の後に適用されるため、それらのいずれかで変数を `1` に設定する `env` エントリが優先されます。[設定の優先度](https://code.claude.com/docs/ja/settings.md#settings-precedence)を参照してください。
+* **マネージド設定**：[マネージド設定](https://code.claude.com/docs/ja/server-managed-settings.md)は他のすべてのソースの後に適用されます。組織がそこでエージェントチームを有効にしている場合は、管理者にマネージド値の変更を依頼してください。
 
-変更後、Claude はまだサブエージェントに名前を付ける可能性があり、その名前は [`SendMessage` アドレス](/docs/ja/sub-agents#resume-subagents)として機能し続けます。Claude は各サブエージェントが完了したときにその結果を受け取ります。
+変更後、Claude はまだサブエージェントに名前を付ける可能性があり、その名前は [`SendMessage` アドレス](https://code.claude.com/docs/ja/sub-agents#resume-subagents)として機能し続けます。Claude は各サブエージェントが完了したときにその結果を受け取ります。
 
 ### 権限プロンプトが多すぎる
 
-チームメンバーの権限リクエストはリーダーにバブルアップし、摩擦を生じさせる可能性があります。チームメンバーを生成する前に、[権限設定](/docs/ja/permissions.md)で一般的な操作を事前承認して、中断を減らしてください。
+チームメンバーの権限リクエストはリーダーにバブルアップし、摩擦を生じさせる可能性があります。チームメンバーを生成する前に、[権限設定](https://code.claude.com/docs/ja/permissions.md)で一般的な操作を事前承認して、中断を減らしてください。
 
 ### エージェントが早期に停止する
 
@@ -486,7 +486,7 @@ Agent teams は実験的な機能です。現在の制限事項は以下の通�
 * **シャットダウンが遅い可能性がある**: teammates は現在のリクエストまたはツール呼び出しを完了してからシャットダウンするため、時間がかかる可能性があります。
 * **セッションごとに 1 つのチーム**: セッションは正確に 1 つのチームを持ち、そのセッションにスコープされています。追加の名前付きチームを作成したり、セッション間でチームを共有したりすることはできません。
 * **ネストされたチーム非対応**: teammates は独自の teammates をスポーンできません。lead のみがチームを管理できます。
-* **インプロセスのチームメイトからのバックグラウンドサブエージェント非対応**: インプロセスのチームメイト自身のサブエージェントはフォアグラウンドで実行されます。これはチームメイトのバックグラウンド作業がチームリーダーのプロセスより長く存続できないためです。Claude Code は、チームメイトが `background: true` を設定する定義を持つサブエージェントをスポーンする場合、エラーを返します。チームメイトの `run_in_background: true` リクエストも失敗し、エラーが発生するか、フォアグラウンドで静かに実行されます。メイン会話から起動されたサブエージェントは[バックグラウンドのデフォルト](/docs/ja/sub-agents.md#run-subagents-in-foreground-or-background)に従います。
+* **インプロセスのチームメイトからのバックグラウンドサブエージェント非対応**: インプロセスのチームメイト自身のサブエージェントはフォアグラウンドで実行されます。これはチームメイトのバックグラウンド作業がチームリーダーのプロセスより長く存続できないためです。Claude Code は、チームメイトが `background: true` を設定する定義を持つサブエージェントをスポーンする場合、エラーを返します。チームメイトの `run_in_background: true` リクエストも失敗し、エラーが発生するか、フォアグラウンドで静かに実行されます。メイン会話から起動されたサブエージェントは[バックグラウンドのデフォルト](https://code.claude.com/docs/ja/sub-agents.md#run-subagents-in-foreground-or-background)に従います。
 * **Lead は固定**: メインセッションはその存続期間中、lead です。teammate を lead に昇格させたり、リーダーシップを譲渡したりすることはできません。
 * **権限はスポーン時に設定**: teammates は[権限](#permissions)の下で説明されている権限モードで開始します。スポーン後に個別の teammate の権限モードを変更できますが、スポーン時に teammate ごとの権限モードを設定することはできません。
 * **分割ペインは tmux または iTerm2 が必要**: デフォルトのインプロセスモードはすべてのターミナルで機能します。分割ペインモードは VS Code の統合ターミナル、Windows Terminal、または Ghostty ではサポートされていません。
@@ -495,6 +495,6 @@ Agent teams は実験的な機能です。現在の制限事項は以下の通�
 
 並列作業と委任の関連アプローチを探索してください。
 
-* **軽量委任**：[subagents](/docs/ja/sub-agents.md) はセッション内で調査または検証用のヘルパーエージェントを生成し、エージェント間調整が必要ないタスクに適しています
-* **セッション間のメッセージング**：[クロスセッションメッセージング](/docs/ja/cross-session-messaging.md) により、Claude は自分で実行するセッション間で検出結果を渡すことができます
-* **手動並列セッション**：[Git worktrees](/docs/ja/worktrees.md) を使用すると、自動チーム調整なしで複数の Claude Code セッションを自分で実行できます
+* **軽量委任**：[subagents](https://code.claude.com/docs/ja/sub-agents.md) はセッション内で調査または検証用のヘルパーエージェントを生成し、エージェント間調整が必要ないタスクに適しています
+* **セッション間のメッセージング**：[クロスセッションメッセージング](https://code.claude.com/docs/ja/cross-session-messaging.md) により、Claude は自分で実行するセッション間で検出結果を渡すことができます
+* **手動並列セッション**：[Git worktrees](https://code.claude.com/docs/ja/worktrees.md) を使用すると、自動チーム調整なしで複数の Claude Code セッションを自分で実行できます

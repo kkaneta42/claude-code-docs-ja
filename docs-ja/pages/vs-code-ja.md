@@ -23,11 +23,11 @@ VS Code 拡張機能は、Claude Code 用のネイティブグラフィカルイ
 インストール前に、以下があることを確認してください。
 
 * VS Code 1.94.0 以上
-* Anthropic アカウント：任意の有料 Claude サブスクリプション（Pro、Max、Team、または Enterprise）または Claude Console アカウントが機能し、API キーは不要です。拡張機能を初めて開くときに、このアカウントで[サインイン](/docs/ja/authentication.md#log-in-to-claude-code)します。Amazon Bedrock や Google Cloud の Agent Platform などのサードパーティプロバイダーを通じて Claude にアクセスする場合は、セットアップ手順について[サードパーティプロバイダーを使用する](#use-third-party-providers)を参照してください。
+* Anthropic アカウント：任意の有料 Claude サブスクリプション（Pro、Max、Team、または Enterprise）または Claude Console アカウントが機能し、API キーは不要です。拡張機能を初めて開くときに、このアカウントで[サインイン](https://code.claude.com/docs/ja/authentication.md#log-in-to-claude-code)します。Amazon Bedrock や Google Cloud の Agent Platform などのサードパーティプロバイダーを通じて Claude にアクセスする場合は、セットアップ手順について[サードパーティプロバイダーを使用する](#use-third-party-providers)を参照してください。
 
 > [!TIP]
 >
-> 拡張機能には、チャットパネル用の CLI（コマンドラインインターフェース）の独自コピーが含まれています。VS Code の統合ターミナルで `claude` を実行するには、[スタンドアロン CLI インストール](/docs/ja/setup.md)も必要です。詳細については、[VS Code 拡張機能と Claude Code CLI](#vs-code-extension-vs-claude-code-cli)を参照してください。
+> 拡張機能には、チャットパネル用の CLI（コマンドラインインターフェース）の独自コピーが含まれています。VS Code の統合ターミナルで `claude` を実行するには、[スタンドアロン CLI インストール](https://code.claude.com/docs/ja/setup.md)も必要です。詳細については、[VS Code 拡張機能と Claude Code CLI](#vs-code-extension-vs-claude-code-cli)を参照してください。
 
 ## 拡張機能をインストールする
 
@@ -43,8 +43,8 @@ VS Code 拡張機能は、Claude Code 用のネイティブグラフィカルイ
 Claude Code は、ほかのエディタやコンテナでも動作します。
 
 * **その他の VS Code フォーク**：拡張機能は Devin Desktop や Kiro などのフォークにもインストールできます。エディタの拡張機能ビューで「Claude Code」を検索するか、[Open VSX レジストリ](https://open-vsx.org/extension/Anthropic/claude-code)からインストールしてください。
-* **拡張機能をインストールできないエディタ**：代わりに [CLI をインストール](/docs/ja/quickstart.md)し、エディタの統合ターミナルで `claude` を実行してください。CLI はどのターミナルでも動作します。
-* **開発コンテナ**：開発コンテナ内で Claude Code を実行するには、[開発コンテナ](/docs/ja/devcontainer.md)を参照してください。
+* **拡張機能をインストールできないエディタ**：代わりに [CLI をインストール](https://code.claude.com/docs/ja/quickstart.md)し、エディタの統合ターミナルで `claude` を実行してください。CLI はどのターミナルでも動作します。
+* **開発コンテナ**：開発コンテナ内で Claude Code を実行するには、[開発コンテナ](https://code.claude.com/docs/ja/devcontainer.md)を参照してください。
 
 > [!NOTE]
 >
@@ -94,9 +94,9 @@ Claude パネルはドラッグして VS Code 内の任意の場所に移動で�
 
 **4. 変更を確認する**
 
-プロンプトボックスの下部に表示されている[権限モード](/docs/ja/permission-modes.md#which-mode-a-session-starts-in)を確認してください。
+プロンプトボックスの下部に表示されている[権限モード](https://code.claude.com/docs/ja/permission-modes.md#which-mode-a-session-starts-in)を確認してください。
 
-* Auto または Edit automatically モードでは、Claude はワークスペース内の[ほとんどのファイル](/docs/ja/permission-modes.md#protected-paths)を確認なしで編集します。
+* Auto または Edit automatically モードでは、Claude はワークスペース内の[ほとんどのファイル](https://code.claude.com/docs/ja/permission-modes.md#protected-paths)を確認なしで編集します。
 * Manual モードでは、Claude がファイルを編集しようとすると、元の内容と提案された変更を並べて比較表示し、権限を求めます。承認、拒否、または代わりに何をすべきかを Claude に伝えることができます。承認する前に差分ビューで提案内容を直接編集した場合は、変更したことが Claude に伝えられるため、Claude はファイルが元の提案と一致しているとは想定しません。
 
   ![Claude が提案した変更の差分と、編集を行うかどうかを尋ねる権限プロンプトを表示している VS Code](https://mintcdn.com/claude-code/FVYz38sRY-VuoGHA/images/vs-code-edits.png?fit=max\&auto=format\&n=FVYz38sRY-VuoGHA\&q=85\&s=e005f9b41c541c5c7c59c082f7c4841c)
@@ -107,7 +107,7 @@ Claude パネルはドラッグして VS Code 内の任意の場所に移動で�
 
 同じ操作は、エディターのコンテキストメニューからカーソル位置で、またコマンドパレットから **Claude Code: Accept Change at Cursor** および **Claude Code: Reject Change at Cursor** として実行することもできます。
 
-Claude Code でできることのその他のアイデアについては、[一般的なワークフロー](/docs/ja/common-workflows.md)を参照してください。
+Claude Code でできることのその他のアイデアについては、[一般的なワークフロー](https://code.claude.com/docs/ja/common-workflows.md)を参照してください。
 
 > [!TIP]
 >
@@ -117,8 +117,8 @@ Claude Code でできることのその他のアイデアについては、[一�
 
 プロンプトボックスには次の機能があります。
 
-* **権限モード**: プロンプトボックス下部のモードインジケーターをクリックすると、権限モードを切り替えられます。Claude Code v2.1.283 以降では Auto が組み込みの開始時の権限モードです。それより前のバージョンでは、Pro、Max、Team プランでのみ Auto が開始時の権限モードになります。何によって変わるか、およびインジケーターで選択できるすべての権限モードについては、[拡張機能が開始時の権限モードを選択する仕組み](/docs/ja/permission-modes.md#switch-permission-modes)を参照してください。
-  * **Auto**: ユーザーに確認する代わりに、分類器がほとんどのアクションをレビューします。レビューおよびブロックされる内容については、[auto モード](/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)を参照してください。
+* **権限モード**: プロンプトボックス下部のモードインジケーターをクリックすると、権限モードを切り替えられます。Claude Code v2.1.283 以降では Auto が組み込みの開始時の権限モードです。それより前のバージョンでは、Pro、Max、Team プランでのみ Auto が開始時の権限モードになります。何によって変わるか、およびインジケーターで選択できるすべての権限モードについては、[拡張機能が開始時の権限モードを選択する仕組み](https://code.claude.com/docs/ja/permission-modes.md#switch-permission-modes)を参照してください。
+  * **Auto**: ユーザーに確認する代わりに、分類器がほとんどのアクションをレビューします。レビューおよびブロックされる内容については、[auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)を参照してください。
   * **Manual**: Claude はファイルの編集やほとんどのシェルコマンドの前に権限を求めます。
   * **Plan**: Claude は実行する内容を説明し、変更を加える前に承認を待ちます。VS Code はプランを完全な Markdown ドキュメントとして自動的に開き、Claude が作業を始める前にインラインコメントを追加してフィードバックを伝えられます。
 
@@ -130,68 +130,68 @@ Claude Code でできることのその他のアイデアについては、[一�
   * **Edit automatically**: Claude は確認せずに編集を行います。
 * **モデル**: コマンドメニューから **Switch model…** を選択すると、セッションの途中でモデルを変更できます。プロンプトボックス下部のモデル名をクリックしても、同じピッカーを開けます。Claude Code v2.1.284 以降では、プロンプトボックスに `/model` のみを入力してもピッカーが開きます。
 
-  現在のモデルが [effort レベル](/docs/ja/model-config.md#adjust-effort-level)をサポートしている場合、ピッカーには **Effort** 行も表示され、モデル名ボタンには選択したレベルが表示されます。`max` 以外のレベルを選択すると、Claude Code はそれを現在のモデルのデフォルトとして、ユーザー設定の [`modelSettings`](/docs/ja/settings-reference#modelsettings) に保存します。`max` は現在のセッションにのみ適用されます。モデル名ボタンと **Effort** 行には Claude Code v2.1.257 以降が必要です。
+  現在のモデルが [effort レベル](https://code.claude.com/docs/ja/model-config.md#adjust-effort-level)をサポートしている場合、ピッカーには **Effort** 行も表示され、モデル名ボタンには選択したレベルが表示されます。`max` 以外のレベルを選択すると、Claude Code はそれを現在のモデルのデフォルトとして、ユーザー設定の [`modelSettings`](https://code.claude.com/docs/ja/settings-reference#modelsettings) に保存します。`max` は現在のセッションにのみ適用されます。モデル名ボタンと **Effort** 行には Claude Code v2.1.257 以降が必要です。
 
-  [動的ワークフロー](/docs/ja/workflows.md)が有効で、現在のモデルがそれをサポートしている場合、**Effort** 行の下に **Ultracode** スイッチが表示されます。これをオンにすると、Claude はこのセッションの実質的なタスクごとに、選択した effort レベルで[ワークフロー](/docs/ja/workflows.md#let-claude-decide-with-ultracode)を計画します。オンの間、モデル名ボタンにはレベルの後に `· Ultracode` と表示されます。このスイッチには Claude Code v2.1.284 以降が必要です。
+  [動的ワークフロー](https://code.claude.com/docs/ja/workflows.md)が有効で、現在のモデルがそれをサポートしている場合、**Effort** 行の下に **Ultracode** スイッチが表示されます。これをオンにすると、Claude はこのセッションの実質的なタスクごとに、選択した effort レベルで[ワークフロー](https://code.claude.com/docs/ja/workflows.md#let-claude-decide-with-ultracode)を計画します。オンの間、モデル名ボタンにはレベルの後に `· Ultracode` と表示されます。このスイッチには Claude Code v2.1.284 以降が必要です。
 * **コマンドメニュー**: `/` をクリックするか `/` と入力すると、コマンドメニューが開きます。ファイルの添付、モデルの切り替え、拡張思考の切り替えなどのオプションがあります。
 
   Customize セクションには、MCP サーバー、コマンド、出力スタイル、フック、メモリ、指示、権限、プラグインなどの項目があります。ターミナルアイコンの付いた項目は統合ターミナルで開きます。
 
-  * `/usage` や [`/remote-control`](/docs/ja/remote-control) などのコマンドを一覧するには、Customize セクションで **Slash commands** を選択します。フィルターボックス付きのダイアログにコマンドが一覧表示されます。いずれかを選ぶと実行されます。プロンプトボックスに `/` と入力した場合も、引き続きインラインでコマンドが候補表示されます。Claude Code v2.1.257 以降が必要です。
+  * `/usage` や [`/remote-control`](https://code.claude.com/docs/ja/remote-control) などのコマンドを一覧するには、Customize セクションで **Slash commands** を選択します。フィルターボックス付きのダイアログにコマンドが一覧表示されます。いずれかを選ぶと実行されます。プロンプトボックスに `/` と入力した場合も、引き続きインラインでコマンドが候補表示されます。Claude Code v2.1.257 以降が必要です。
 
-    `/skills` と入力してもこのダイアログが開きます。各[スキル](/docs/ja/skills.md)の行には、**On** や **Name only** などの[表示設定](/docs/ja/skills.md#override-skill-visibility-from-settings)が表示されます。表示設定をクリックすると変更できます。ただし、プラグインのスキルなど **locked** と表示された行は変更できません。`/skills` ショートカットと表示設定のコントロールには Claude Code v2.1.280 以降が必要です。
-  * Customize セクションで **Output styles** を選択すると、カスタムスタイルを含む[出力スタイル](/docs/ja/output-styles.md)を選択できます。Claude Code v2.1.257 以降が必要です。
+    `/skills` と入力してもこのダイアログが開きます。各[スキル](https://code.claude.com/docs/ja/skills.md)の行には、**On** や **Name only** などの[表示設定](https://code.claude.com/docs/ja/skills.md#override-skill-visibility-from-settings)が表示されます。表示設定をクリックすると変更できます。ただし、プラグインのスキルなど **locked** と表示された行は変更できません。`/skills` ショートカットと表示設定のコントロールには Claude Code v2.1.280 以降が必要です。
+  * Customize セクションで **Output styles** を選択すると、カスタムスタイルを含む[出力スタイル](https://code.claude.com/docs/ja/output-styles.md)を選択できます。Claude Code v2.1.257 以降が必要です。
 
-    代わりにカスタムスタイルを作成するには、**Output styles** メニューから **Build a custom style** を選択します。Claude Code がプロジェクトレベルまたはユーザーレベルで[スタイルファイル](/docs/ja/output-styles.md#create-a-custom-output-style)を作成します。Claude Code v2.1.261 以降が必要です。
-  * Customize セクションで **Hooks** を選択すると、セッションで読み込まれている[フック](/docs/ja/hooks.md)をイベントごとにグループ化して表示できます。ユーザー、プロジェクト、ローカルの設定ファイルに保存されているフックは追加、編集、削除できます。管理設定やプラグインなど、その他のソースからのフックは読み取り専用です。Claude Code v2.1.269 以降が必要です。
-  * Customize セクションで **Permissions** を選択すると、セッションの[権限ルール](/docs/ja/permissions.md)を Allow、Ask、Deny に分けて表示できます。ユーザー、プロジェクト、ローカルの設定にルールを追加したり、そこに保存されているルールを削除したりできます。管理設定や、このセッションのみを対象とした承認など、その他のソースからのルールは読み取り専用です。Claude Code v2.1.269 以降が必要です。
-  * Customize セクションで **Memory** を選択すると、[自動メモリ](/docs/ja/memory.md#auto-memory)のオン/オフを切り替えられます。オンの間は、Claude が保存したメモリを参照したり、それらを保存しているフォルダーをファイルマネージャーで表示したりすることもできます。Claude Code v2.1.274 以降が必要です。
+    代わりにカスタムスタイルを作成するには、**Output styles** メニューから **Build a custom style** を選択します。Claude Code がプロジェクトレベルまたはユーザーレベルで[スタイルファイル](https://code.claude.com/docs/ja/output-styles.md#create-a-custom-output-style)を作成します。Claude Code v2.1.261 以降が必要です。
+  * Customize セクションで **Hooks** を選択すると、セッションで読み込まれている[フック](https://code.claude.com/docs/ja/hooks.md)をイベントごとにグループ化して表示できます。ユーザー、プロジェクト、ローカルの設定ファイルに保存されているフックは追加、編集、削除できます。管理設定やプラグインなど、その他のソースからのフックは読み取り専用です。Claude Code v2.1.269 以降が必要です。
+  * Customize セクションで **Permissions** を選択すると、セッションの[権限ルール](https://code.claude.com/docs/ja/permissions.md)を Allow、Ask、Deny に分けて表示できます。ユーザー、プロジェクト、ローカルの設定にルールを追加したり、そこに保存されているルールを削除したりできます。管理設定や、このセッションのみを対象とした承認など、その他のソースからのルールは読み取り専用です。Claude Code v2.1.269 以降が必要です。
+  * Customize セクションで **Memory** を選択すると、[自動メモリ](https://code.claude.com/docs/ja/memory.md#auto-memory)のオン/オフを切り替えられます。オンの間は、Claude が保存したメモリを参照したり、それらを保存しているフォルダーをファイルマネージャーで表示したりすることもできます。Claude Code v2.1.274 以降が必要です。
 
     保存されたメモリをクリックするとダイアログで内容を読むことができ、そこでテキストの編集、メモリの削除、エディターでのファイルのオープンが行えます。ダイアログでのメモリの表示、編集、削除には Claude Code v2.1.275 以降が必要です。
-  * Customize セクションで **Instructions** を選択すると、Claude が読み込む [CLAUDE.md ファイル](/docs/ja/memory.md#claude-md-files)を編集できます。ファイルを選ぶとエディターで開きます。ファイルがまだ存在しない場合は、Claude Code が先に作成します。Claude Code v2.1.274 以降が必要です。
+  * Customize セクションで **Instructions** を選択すると、Claude が読み込む [CLAUDE.md ファイル](https://code.claude.com/docs/ja/memory.md#claude-md-files)を編集できます。ファイルを選ぶとエディターで開きます。ファイルがまだ存在しない場合は、Claude Code が先に作成します。Claude Code v2.1.274 以降が必要です。
   * Customize セクションで **Status** を選択するか `/status` と入力すると、セッションの Claude Code のバージョン、アカウント、モデル、MCP サーバーの詳細を確認できます。Claude Code v2.1.280 以降が必要です。
-  * Customize セクションで **Sandbox** を選択するか `/sandbox` と入力すると、Claude の Bash コマンドが[サンドボックス内](/docs/ja/sandboxing.md)で実行されるかどうかを確認できます。そこでサンドボックスモードを切り替えたり、[除外コマンド](/docs/ja/settings-reference.md#sandbox-excludedcommands)を追加したりできます。Claude Code v2.1.280 以降が必要です。
-  * Customize セクションで **Claude in Chrome** を選択するか `/chrome` と入力すると、[Claude in Chrome](/docs/ja/chrome.md) の接続を確認および管理できます。いずれも claude.ai アカウントでのサインインが必要です。Claude Code v2.1.280 以降が必要です。
+  * Customize セクションで **Sandbox** を選択するか `/sandbox` と入力すると、Claude の Bash コマンドが[サンドボックス内](https://code.claude.com/docs/ja/sandboxing.md)で実行されるかどうかを確認できます。そこでサンドボックスモードを切り替えたり、[除外コマンド](https://code.claude.com/docs/ja/settings-reference.md#sandbox-excludedcommands)を追加したりできます。Claude Code v2.1.280 以降が必要です。
+  * Customize セクションで **Claude in Chrome** を選択するか `/chrome` と入力すると、[Claude in Chrome](https://code.claude.com/docs/ja/chrome.md) の接続を確認および管理できます。いずれも claude.ai アカウントでのサインインが必要です。Claude Code v2.1.280 以降が必要です。
   * Context セクションで **Export conversation** を選択するか `/export` と入力すると、会話をプレーンテキストとしてコピーしたり、ファイルに保存したりできます。`/export notes.txt` のようにファイル名を付けると、ダイアログを省略してファイルの保存先を選択できます。Claude Code v2.1.280 以降が必要です。
-  * Settings セクションには **Enable Remote Control for all sessions** があり、[`remoteControlAtStartup`](/docs/ja/settings-reference#remotecontrolatstartup) を設定して、[新しい対話型セッションが自動的に Remote Control に接続するか](/docs/ja/remote-control.md#enable-remote-control-for-all-sessions)どうかを制御します。Claude Code v2.1.203 以降が必要です。
+  * Settings セクションには **Enable Remote Control for all sessions** があり、[`remoteControlAtStartup`](https://code.claude.com/docs/ja/settings-reference#remotecontrolatstartup) を設定して、[新しい対話型セッションが自動的に Remote Control に接続するか](https://code.claude.com/docs/ja/remote-control.md#enable-remote-control-for-all-sessions)どうかを制御します。Claude Code v2.1.203 以降が必要です。
 
     VS Code ウィンドウでこのトグルをオンまたはオフにすると、その変更は以降に開始するセッションだけに限定されません。その VS Code ウィンドウですでに開いているセッションにも適用されます。オフにすると、開いているセッションは切断されます。Claude Code v2.1.261 以降では、この変更は他の VS Code ウィンドウで開いているセッションにも反映されます。
   * Settings セクションには **Focus view** もあり、ツール呼び出し、ツールの結果、思考を展開可能な行の中に隠し、ユーザーのプロンプトと Claude の応答だけを表示します。そこで切り替えるか、`Ctrl+Option+F`（Mac）/ `Ctrl+Alt+F`（Windows/Linux）を使うか、コマンドパレットから **Claude Code: Toggle Focus view** を実行して切り替えます。変更は開いているすべてのセッションに適用され、セッションをまたいで保持されます。Claude Code v2.1.221 以降が必要です。
 
-    Claude の最新の To-Do リストは表示されたままになり、Claude からの保留中の質問が対象としているテキストも表示されたままになります。これには Claude Code v2.1.225 以降が必要です。Claude が[サブエージェント](/docs/ja/sub-agents.md)を実行している間は、それらを開始したツール呼び出しグループの下に、最新のアクティビティを示すライブ進捗行が表示されます。これには Claude Code v2.1.269 以降が必要です。
+    Claude の最新の To-Do リストは表示されたままになり、Claude からの保留中の質問が対象としているテキストも表示されたままになります。これには Claude Code v2.1.225 以降が必要です。Claude が[サブエージェント](https://code.claude.com/docs/ja/sub-agents.md)を実行している間は、それらを開始したツール呼び出しグループの下に、最新のアクティビティを示すライブ進捗行が表示されます。これには Claude Code v2.1.269 以降が必要です。
   * Anthropic アカウントからサインアウトするには、Settings セクションで **Sign out** を選択するか、`/logout` と入力します。[サードパーティプロバイダー](#use-third-party-providers)を使用している場合、メニューにはどちらも表示されません。Claude Code v2.1.277 以降が必要です。
   * バグを報告するには、メニュー下部の **Report a problem** をクリックするか、`/bug` または `/feedback` と入力します。任意で説明を付けると、それがレポートにあらかじめ入力されます。ファーストパーティ接続で Anthropic にサインインしている状態でレポートを送信すると、Claude Code はそれを Anthropic に送信します。Claude Code v2.1.229 以降が必要です。
 
-    サードパーティプロバイダーを使用している場合や Anthropic の認証情報がない場合は、何も送信されません。そのことは、入力を始める前にダイアログに表示されます。送信すると、既知の API キーやトークンのパターンを伏せた上で、レポートが [`~/.claude/feedback-bundles/` 配下のローカルアーカイブ](/docs/ja/data-usage#telemetry-services)として保存されます。レポートをコンピューターに保存するには Claude Code v2.1.284 以降が必要です。
+    サードパーティプロバイダーを使用している場合や Anthropic の認証情報がない場合は、何も送信されません。そのことは、入力を始める前にダイアログに表示されます。送信すると、既知の API キーやトークンのパターンを伏せた上で、レポートが [`~/.claude/feedback-bundles/` 配下のローカルアーカイブ](https://code.claude.com/docs/ja/data-usage#telemetry-services)として保存されます。レポートをコンピューターに保存するには Claude Code v2.1.284 以降が必要です。
 
     レポートが保存されると、確認メッセージにファイル名が表示され、**Show folder** ボタンが含まれます。そのファイルを Anthropic のアカウント担当者に送るか、サポートリクエストに添付してください。
 
     組織のポリシーで製品フィードバックがオフになっている場合、メニューに **Report a problem** は表示されず、`/bug` と `/feedback` はレポートを開く代わりに `Feedback is turned off by your organization's policy or this environment's settings.` という通知を表示します。Claude Code v2.1.284 以降では、`DISABLE_FEEDBACK_COMMAND` または `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` 環境変数を設定した場合もフィードバックがオフになり、レポートを開こうとするとその通知が表示されます。
-* **サイドクエスチョン**: `/btw` に続けて質問を入力すると、[会話に追加せずに](/docs/ja/interactive-mode.md#side-questions-with-%2Fbtw)セッションについて質問できます。回答はチャットの横のパネルに開き、そこでフォローアップの質問ができます。Claude Code v2.1.227 以降が必要です。
+* **サイドクエスチョン**: `/btw` に続けて質問を入力すると、[会話に追加せずに](https://code.claude.com/docs/ja/interactive-mode.md#side-questions-with-%2Fbtw)セッションについて質問できます。回答はチャットの横のパネルに開き、そこでフォローアップの質問ができます。Claude Code v2.1.227 以降が必要です。
 
-  このスレッドはウィンドウを再読み込みしても保持されます。Claude Code は最新の 20 件のやり取りを保持し、Claude Code が[保持期間を安全に判断できる](/docs/ja/claude-directory.md#cleaned-up-automatically)限り、保存されたスレッドを [`cleanupPeriodDays`](/docs/ja/settings-reference#cleanupperioddays) のスケジュールに従って期限切れにします。スレッドを消去するには、パネルのゴミ箱アイコンをクリックします。
+  このスレッドはウィンドウを再読み込みしても保持されます。Claude Code は最新の 20 件のやり取りを保持し、Claude Code が[保持期間を安全に判断できる](https://code.claude.com/docs/ja/claude-directory.md#cleaned-up-automatically)限り、保存されたスレッドを [`cleanupPeriodDays`](https://code.claude.com/docs/ja/settings-reference#cleanupperioddays) のスケジュールに従って期限切れにします。スレッドを消去するには、パネルのゴミ箱アイコンをクリックします。
 * **応答をコピーする**: 応答にカーソルを合わせて **Copy response** をクリックするとクリップボードにコピーされます。また、`/copy` と入力すると最新の応答をコピーできます。`/copy 2` は最後から 2 番目の応答をコピーします。Claude Code v2.1.277 以降が必要です。
 * **ブックマーク**: 応答にカーソルを合わせて **Bookmark response** をクリックすると保存されます。保存済みの応答で **Remove bookmark** をクリックすると削除されます。
 
   保存した応答を確認するには、Bookmarks パネルを開きます。Claude Code パネル上部のブックマークアイコンをクリックするか、コマンドメニューの Context セクションで **Bookmarks** を選択するか、`/bookmarks` と入力します。Claude Code v2.1.286 以降が必要です。
-* **Claude から送られたファイル**: セッションが [Remote Control](/docs/ja/remote-control.md#start-a-remote-control-session) に接続されていて、Claude が [`SendUserFile` ツール](/docs/ja/tools-reference)でファイルを送った場合、会話には **Sent report.md, chart.png** のような行が表示されます。ファイル名をクリックするとエディターで開きます。この行は Focus view でも表示されたままになります。Claude Code v2.1.295 以降が必要です。
+* **Claude から送られたファイル**: セッションが [Remote Control](https://code.claude.com/docs/ja/remote-control.md#start-a-remote-control-session) に接続されていて、Claude が [`SendUserFile` ツール](https://code.claude.com/docs/ja/tools-reference)でファイルを送った場合、会話には **Sent report.md, chart.png** のような行が表示されます。ファイル名をクリックするとエディターで開きます。この行は Focus view でも表示されたままになります。Claude Code v2.1.295 以降が必要です。
 
-  パスがネットワークホストを指しているファイルは、`\\server\share\report.md` のようにクリックできない完全なパスとして表示されます。そのファイルを開くとそのホストに接続することになり、Windows では [Windows の認証情報がそのホストに送信される可能性がある](/docs/ja/permissions.md#read-only-commands)ため、Claude Code はそのファイルをリンクにしません。
+  パスがネットワークホストを指しているファイルは、`\\server\share\report.md` のようにクリックできない完全なパスとして表示されます。そのファイルを開くとそのホストに接続することになり、Windows では [Windows の認証情報がそのホストに送信される可能性がある](https://code.claude.com/docs/ja/permissions.md#read-only-commands)ため、Claude Code はそのファイルをリンクにしません。
 * **コンテキストインジケーター**: プロンプトボックスには、Claude のコンテキストウィンドウをどれだけ使用しているかが表示されます。Claude は必要に応じて自動的に圧縮しますが、`/compact` を手動で実行することもできます。
-* **プロンプトキャッシュの時計**: コンテキストインジケーターの横にある時計アイコンは、会話の[プロンプトキャッシュ](/docs/ja/prompt-caching.md)の有効期限が切れるまでの残り時間を推定して表示します。キャッシュの 5 分または 1 時間の[有効期間](/docs/ja/prompt-caching.md#cache-lifetime)からカウントダウンし、キャッシュを使用する応答があるたびにカウントダウンがリセットされます。コンテキスト圧縮を除き、[キャッシュを無効化するアクション](/docs/ja/prompt-caching.md#actions-that-invalidate-the-cache)では時計はリセットされないため、モデルを切り替えた後も残り時間が表示されることがあります。
+* **プロンプトキャッシュの時計**: コンテキストインジケーターの横にある時計アイコンは、会話の[プロンプトキャッシュ](https://code.claude.com/docs/ja/prompt-caching.md)の有効期限が切れるまでの残り時間を推定して表示します。キャッシュの 5 分または 1 時間の[有効期間](https://code.claude.com/docs/ja/prompt-caching.md#cache-lifetime)からカウントダウンし、キャッシュを使用する応答があるたびにカウントダウンがリセットされます。コンテキスト圧縮を除き、[キャッシュを無効化するアクション](https://code.claude.com/docs/ja/prompt-caching.md#actions-that-invalidate-the-cache)では時計はリセットされないため、モデルを切り替えた後も残り時間が表示されることがあります。
   * カウントダウンが終わるまで、アイコンには **12m** のように残りの分数が表示されます。
-  * カウントダウンが終わると、次の応答まで分数が消え、アイコンが赤色（またはテーマのエラーカラー）に変わります。キャッシュは期限切れになっている可能性が高いため、キャッシュが再構築される間、次のメッセージへの応答は遅く、コストも高くなると考えてください。5 分の有効期間がメッセージの間に何度も切れてしまう場合は、[TTL を自分で選択する](/docs/ja/prompt-caching.md#choose-the-ttl-yourself)を参照してください。
-  * 会話が[圧縮](/docs/ja/prompt-caching.md#compacting-the-conversation)された直後も、キャッシュが圧縮後の会話をまだカバーしていないため、次の応答までアイコンは分数なしで赤色になります。
-* **エージェントマップ**: 会話に[サブエージェント](/docs/ja/sub-agents.md)が含まれている場合、プロンプトボックス下部に **2 agents** のようなエージェント数が表示されます。そのドットは、いずれかのサブエージェントが作業中か、ユーザーの権限を待っているかを示します。
+  * カウントダウンが終わると、次の応答まで分数が消え、アイコンが赤色（またはテーマのエラーカラー）に変わります。キャッシュは期限切れになっている可能性が高いため、キャッシュが再構築される間、次のメッセージへの応答は遅く、コストも高くなると考えてください。5 分の有効期間がメッセージの間に何度も切れてしまう場合は、[TTL を自分で選択する](https://code.claude.com/docs/ja/prompt-caching.md#choose-the-ttl-yourself)を参照してください。
+  * 会話が[圧縮](https://code.claude.com/docs/ja/prompt-caching.md#compacting-the-conversation)された直後も、キャッシュが圧縮後の会話をまだカバーしていないため、次の応答までアイコンは分数なしで赤色になります。
+* **エージェントマップ**: 会話に[サブエージェント](https://code.claude.com/docs/ja/sub-agents.md)が含まれている場合、プロンプトボックス下部に **2 agents** のようなエージェント数が表示されます。そのドットは、いずれかのサブエージェントが作業中か、ユーザーの権限を待っているかを示します。
 
   エージェント数をクリックするとエージェントマップが開き、会話のサブエージェントがメインエージェントの下にツリーとして描画され、それぞれのステータス、経過時間、トークン数が表示されます。サブエージェントをクリックすると、そのプロンプトとツール呼び出しを確認したり、読み取り専用のトランスクリプトを開いたり、実行中のサブエージェントを停止したりできます。Claude Code v2.1.269 以降が必要です。
 
-  マップには、エージェントの下にセッションのその他の[バックグラウンドタスク](/docs/ja/tools-reference.md#background-commands)（バックグラウンドのシェルコマンドや[モニター](/docs/ja/tools-reference.md#monitor-tool)など）も一覧表示されます。行をクリックするとタスクのカードが開き、そこで停止できます。
+  マップには、エージェントの下にセッションのその他の[バックグラウンドタスク](https://code.claude.com/docs/ja/tools-reference.md#background-commands)（バックグラウンドのシェルコマンドや[モニター](https://code.claude.com/docs/ja/tools-reference.md#monitor-tool)など）も一覧表示されます。行をクリックするとタスクのカードが開き、そこで停止できます。
 
   Claude がバックグラウンドシェルを開始したもののサブエージェントがない場合など、エージェント数が表示されていないときにマップを開くには、プロンプトボックスに `/tasks` と入力します。マップ内のバックグラウンドタスクと、入力による `/tasks` には Claude Code v2.1.277 以降が必要です。
 
   Claude Code v2.1.286 以降では、**Stop** をクリックするか `Esc` を押すと、現在のターンが終了します。バックグラウンドエージェントは、完了するか、マップから停止するまで実行を続けます。
-* **拡張思考**: 複雑な問題について Claude がより多くの時間をかけて推論できるようにします。コマンドメニュー（`/`）からオンに切り替えます。Claude の推論は会話内に折りたたまれたブロックとして表示されます。ブロックをクリックすると内容を読むことができ、`Ctrl+O` を押すとセッション内のすべての思考ブロックを展開または折りたたむことができます。詳細は[拡張思考](/docs/ja/model-config.md#extended-thinking)を参照してください。
+* **拡張思考**: 複雑な問題について Claude がより多くの時間をかけて推論できるようにします。コマンドメニュー（`/`）からオンに切り替えます。Claude の推論は会話内に折りたたまれたブロックとして表示されます。ブロックをクリックすると内容を読むことができ、`Ctrl+O` を押すとセッション内のすべての思考ブロックを展開または折りたたむことができます。詳細は[拡張思考](https://code.claude.com/docs/ja/model-config.md#extended-thinking)を参照してください。
 * **複数行入力**: `Shift+Enter` を押すと、送信せずに改行を追加できます。これは質問ダイアログの「Other」自由記述入力でも機能します。
 
 ### ファイルとフォルダーを参照する
@@ -203,7 +203,7 @@ Explain the logic in @auth (fuzzy matches auth.js, AuthService.ts, etc.)
 What's in @src/components/ (include a trailing slash for folders)
 ```
 
-大きな PDF の場合は、ファイル全体ではなく特定のページを読むよう Claude に依頼できます。単一のページ、1～10 ページのような範囲、3 ページ以降のような終わりを指定しない範囲を指定できます。特定のページを読むには、Claude Code を実行しているマシンに [poppler-utils](/docs/ja/tools-reference.md#read-tool-behavior) が必要です。
+大きな PDF の場合は、ファイル全体ではなく特定のページを読むよう Claude に依頼できます。単一のページ、1～10 ページのような範囲、3 ページ以降のような終わりを指定しない範囲を指定できます。特定のページを読むには、Claude Code を実行しているマシンに [poppler-utils](https://code.claude.com/docs/ja/tools-reference.md#read-tool-behavior) が必要です。
 
 エディターでテキストを選択すると、Claude はハイライトされたコードを自動的に認識できます。プロンプトボックスのフッターには選択されている行数が表示されます。`Option+K`（Mac）/ `Alt+K`（Windows/Linux）を押すと、`@app.ts#5-10` のように、ファイルパスと行番号を含む @メンションが挿入されます。選択範囲インジケーターの **X** をクリックすると選択範囲が解除され、Claude はその選択範囲を受け取らなくなります。別のテキストを選択すると、インジケーターは再び表示されます。
 
@@ -228,9 +228,9 @@ What's in @src/components/ (include a trailing slash for folders)
 
 ### テキストを貼り付ける
 
-貼り付けたテキストは、[ターミナル](/docs/ja/terminal-config.md#paste-large-content)のようにプレースホルダーに折りたたまれることなく、プロンプトボックスに表示されたままになります。Claude Code が[貼り付けたテキストをマークする](/docs/ja/terminal-config.md#how-claude-treats-pasted-text)セッションでは、大きな貼り付けは、入力したものではなく貼り付けたテキストとして Claude に認識されます。
+貼り付けたテキストは、[ターミナル](https://code.claude.com/docs/ja/terminal-config.md#paste-large-content)のようにプレースホルダーに折りたたまれることなく、プロンプトボックスに表示されたままになります。Claude Code が[貼り付けたテキストをマークする](https://code.claude.com/docs/ja/terminal-config.md#how-claude-treats-pasted-text)セッションでは、大きな貼り付けは、入力したものではなく貼り付けたテキストとして Claude に認識されます。
 
-Claude Code は、プロンプトボックスに貼り付けたテキストや送信するその他すべての内容から、[不可視の Unicode 文字](/docs/ja/interactive-mode.md#invisible-characters-in-prompts)も削除します。
+Claude Code は、プロンプトボックスに貼り付けたテキストや送信するその他すべての内容から、[不可視の Unicode 文字](https://code.claude.com/docs/ja/interactive-mode.md#invisible-characters-in-prompts)も削除します。
 
 * 貼り付け時に `Removed 3 invisible characters from the pasted text` のような通知が表示された場合、テキストはそれらの文字を除いて入力されています。
 * 送信時に削除された文字に関する通知が表示された場合、何も送信されていません。クリーンアップされたテキストはプロンプトボックスに戻されています。表示されたとおりのテキストを送信するには、再度送信してください。
@@ -250,11 +250,11 @@ Claude Code は、プロンプトボックスに貼り付けたテキストや�
 
 Claude Code パネル上部の **Session history** ボタンをクリックすると、会話履歴にアクセスできます。キーワードで検索したり、時系列で参照したりできます。
 
-任意の会話をクリックすると、その会話を再開できます。その会話が現在のウィンドウの別のタブですでに開いている場合は、クリックするとそのタブに切り替わります。会話がまだ別の場所で開かれているという通知が表示された場合は、[このウィンドウで続行する方法](#the-conversation-is-still-open-somewhere-else)を参照してください。会話を開いたときにメッセージが表示されない場合は、[再開した会話が最初は空白になる理由](#a-resumed-conversation-is-blank-at-first)を参照してください。セッションの再開について詳しくは、[セッションを管理する](/docs/ja/sessions.md)を参照してください。
+任意の会話をクリックすると、その会話を再開できます。その会話が現在のウィンドウの別のタブですでに開いている場合は、クリックするとそのタブに切り替わります。会話がまだ別の場所で開かれているという通知が表示された場合は、[このウィンドウで続行する方法](#the-conversation-is-still-open-somewhere-else)を参照してください。会話を開いたときにメッセージが表示されない場合は、[再開した会話が最初は空白になる理由](#a-resumed-conversation-is-blank-at-first)を参照してください。セッションの再開について詳しくは、[セッションを管理する](https://code.claude.com/docs/ja/sessions.md)を参照してください。
 
 * **セッションタイトル**: 新しいセッションには、最初のメッセージに基づいて AI が生成したタイトルが付けられます。
 * **名前の変更とアーカイブ**: セッションにカーソルを合わせると、これらのアクションが表示されます。名前を変更してわかりやすいタイトルを付けたり、アーカイブしてリスト下部の **Archived sessions** グループに移動したりできます。
-* **[`claudeProcessWrapper`](#extension-settings) を設定していると会話が表示されない**: 拡張機能をバージョン 2.1.304 以降に更新してください。更新後は、表示されていなかった会話に加えて、このワークスペースで `claude -p` または [Agent SDK](/docs/ja/agent-sdk/overview.md) が開始したセッションもリストに含まれます。
+* **[`claudeProcessWrapper`](#extension-settings) を設定していると会話が表示されない**: 拡張機能をバージョン 2.1.304 以降に更新してください。更新後は、表示されていなかった会話に加えて、このワークスペースで `claude -p` または [Agent SDK](https://code.claude.com/docs/ja/agent-sdk/overview.md) が開始したセッションもリストに含まれます。
 
 デフォルトでは、14 日間アクティビティのないセッションは、開いている、未読である、または[グループ](#organize-sessions-into-groups)に属している場合を除き、自動的に **Archived sessions** に移動します。自動アーカイブには Claude Code v2.1.265 以降が必要です。期間を変更したりオフにしたりするには、[Archive Inactive Sessions 設定](vscode://settings/claudeCode.archiveInactiveSessions)を開き、日数または **Never** を選択します。
 
@@ -267,9 +267,9 @@ v2.1.257 より前は、このアクションは **Delete session** で、セッ
 
 再開した会話が plan モードで終了していた場合、Claude Code は plan モードを復元します。Claude Code v2.1.246 以降が必要です。次の場合、Claude Code は plan モードを復元しません。
 
-* 拡張機能が `claudeCode.initialPermissionMode` から、または以前の会話から引き継がれた選択から[開始時の権限モードを選択する](/docs/ja/permission-modes.md#switch-permission-modes)場合
+* 拡張機能が `claudeCode.initialPermissionMode` から、または以前の会話から引き継がれた選択から[開始時の権限モードを選択する](https://code.claude.com/docs/ja/permission-modes.md#switch-permission-modes)場合
 * `claudeCode.claudeProcessWrapper` を設定している場合
-* [拒否ルール](/docs/ja/permissions.md#manage-permissions)によって [`ExitPlanMode`](/docs/ja/tools-reference) ツールが除外されている場合
+* [拒否ルール](https://code.claude.com/docs/ja/permissions.md#manage-permissions)によって [`ExitPlanMode`](https://code.claude.com/docs/ja/tools-reference) ツールが除外されている場合
 
 #### 会話がまだ別の場所で開かれている場合
 
@@ -288,7 +288,7 @@ This conversation is still open somewhere else. Using it in two places at once c
 
 ### claude.ai のクラウドセッションを再開する
 
-[クラウドセッション](/docs/ja/claude-code-on-the-web.md)を実行している場合は、VS Code で直接再開できます。これには、Anthropic Console ではなく **Claude.ai Subscription** でのサインインが必要です。
+[クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md)を実行している場合は、VS Code で直接再開できます。これには、Anthropic Console ではなく **Claude.ai Subscription** でのサインインが必要です。
 
 **1. セッション履歴を開く**
 
@@ -308,7 +308,7 @@ Claude Code パネル上部の **Session history** ボタンをクリックし�
 >
 > クラウドセッションを再開すると、拡張機能は会話履歴のコピーをダウンロードします。変更は claude.ai には同期されません。
 
-Web タブには [Remote Control](/docs/ja/remote-control.md) セッションも一覧表示されます。開いているフォルダーで実行されたセッションをクリックすると、拡張機能はコピーをダウンロードする代わりにそのローカルの会話を開きます。すでにその会話を表示しているタブがある場合は、そのタブにフォーカスします。別の Claude プロセスがその会話を開いている可能性を拡張機能が排除できない場合は、代わりにダウンロードしたコピーが開かれます。
+Web タブには [Remote Control](https://code.claude.com/docs/ja/remote-control.md) セッションも一覧表示されます。開いているフォルダーで実行されたセッションをクリックすると、拡張機能はコピーをダウンロードする代わりにそのローカルの会話を開きます。すでにその会話を表示しているタブがある場合は、そのタブにフォーカスします。別の Claude プロセスがその会話を開いている可能性を拡張機能が排除できない場合は、代わりにダウンロードしたコピーが開かれます。
 
 会話の一部のダウンロードに失敗した場合は、エラーが表示され、コピーは保存されません。再試行するには、もう一度セッションを選択してください。ダウンロードできる会話がまだないセッションを選択した場合は、代わりにどこで続行すればよいかをエラーで案内します。
 
@@ -320,16 +320,16 @@ Web タブには [Remote Control](/docs/ja/remote-control.md) セッションも
 
   ダイアログでは、プランの制限に影響している要因の内訳も確認できます。
 
-  * **推奨事項**: 使用量を減らすための変更です。1 行に 1 つずつ、その変更が対象とする最近の使用量の割合とともに表示されます（例: `Trim ~/code/api/CLAUDE.md · 49k tokens per request`）。
-  * **修正ボタン**: Claude Code に適用可能な推奨事項を適用させるには、推奨事項の下にあるボタン（**Fix both** など）をクリックします。ボタンがどの行に作用し、その後セッションで何が起こるかについては、[修正ショートカットで推奨事項を適用する](/docs/ja/costs.md#apply-recommendations-with-the-fix-shortcut)を参照してください。Claude Code v2.1.305 以降が必要です。
+  * **推奨事項**: `Trim ~/code/api/CLAUDE.md · 49k tokens per request` のような、推奨される変更です。1 行に 1 つずつ表示されます
+  * **修正ボタン**: Claude Code に適用可能な推奨事項を適用させるには、推奨事項の下にあるボタン（**Fix both** など）をクリックします。ボタンがどの行に作用し、その後セッションで何が起こるかについては、[修正ショートカットで推奨事項を適用する](https://code.claude.com/docs/ja/costs.md#apply-recommendations-with-the-fix-shortcut)を参照してください。Claude Code v2.1.305 以降が必要です。
 
-    [Remote Control](/docs/ja/remote-control.md) が接続されている間、このボタンは表示されません。Remote Control の接続後に `The usage fix wasn’t fully sent. Open usage and try again.` という警告が表示された場合は、再試行する前に [Remote Control を切断](/docs/ja/remote-control.md#check-connection-status)してください。
+    [Remote Control](https://code.claude.com/docs/ja/remote-control.md) が接続されている間、このボタンは表示されません。Remote Control の接続後に `The usage fix wasn’t fully sent. Open usage and try again.` という警告が表示された場合は、再試行する前に [Remote Control を切断](https://code.claude.com/docs/ja/remote-control.md#check-connection-status)してください。
   * **帰属**: 各スキル、サブエージェント、プラグイン、MCP サーバーによる使用量を示すテーブル
 
   Day と Week のトグルを使用すると、過去 24 時間と過去 7 日間を切り替えられます。数値は概算であり、このマシン上のローカルセッションから計算されるため、他のデバイスや claude.ai での使用量は含まれません。
-* **その他のサインイン**: [サードパーティプロバイダー](#use-third-party-providers)や API キーを使用している場合など、サインイン方法にプランの制限が適用されない場合は、Usage セクションに代わりにセッション自体のコストとトークン使用量が表示されます。CLI の `/usage` でも、[Session ブロック](/docs/ja/costs.md#track-your-costs)に同じ合計が表示されます。アクティビティバーのセッションリストにも、**Account & usage** ヘッダーの下にアクティブなセッションの合計が表示されます。Claude Code v2.1.277 以降が必要です。
+* **その他のサインイン**: [サードパーティプロバイダー](#use-third-party-providers)や API キーを使用している場合など、サインイン方法にプランの制限が適用されない場合は、Usage セクションに代わりにセッション自体のコストとトークン使用量が表示されます。CLI の `/usage` でも、[Session ブロック](https://code.claude.com/docs/ja/costs.md#track-your-costs)に同じ合計が表示されます。アクティビティバーのセッションリストにも、**Account & usage** ヘッダーの下にアクティブなセッションの合計が表示されます。Claude Code v2.1.277 以降が必要です。
 
-使用量の追跡と削減について詳しくは、[コストを追跡する](/docs/ja/costs.md#track-your-costs)を参照してください。
+使用量の追跡と削減について詳しくは、[コストを追跡する](https://code.claude.com/docs/ja/costs.md#track-your-costs)を参照してください。
 
 ### チェックポイントで巻き戻す
 
@@ -339,7 +339,7 @@ VS Code 拡張機能はチェックポイントをサポートしています。
 * **Rewind code to here**: 会話履歴全体を保持しつつ、ファイルの変更を会話のこの時点まで元に戻します
 * **Fork conversation and rewind code**: 新しい会話の分岐を開始し、ファイルの変更をこの時点まで元に戻します
 
-チェックポイントの仕組みと制限について詳しくは、[チェックポイント機能](/docs/ja/checkpointing.md)を参照してください。
+チェックポイントの仕組みと制限について詳しくは、[チェックポイント機能](https://code.claude.com/docs/ja/checkpointing.md)を参照してください。
 
 ## ワークフローをカスタマイズする
 
@@ -378,7 +378,7 @@ Claude が新しいエディターグループでタブを開くと、拡張機�
 
 リロード後に Claude が中断されたステップを続行しないようにするには、[Continue After Reload 設定](vscode://settings/claudeCode.continueAfterReload)を開いてチェックを外します。
 
-VS Code の環境または [`environmentVariables` 設定](#extension-settings)で [`CLAUDE_CODE_RESUME_INTERRUPTED_TURN`](/docs/ja/env-vars#variables) やその他の `CLAUDE_CODE_RESUME_` 変数を設定しても、パネルでは効果がありません。これは、拡張機能がパネルのセッションを開始する前にそれらの変数を削除するためです。
+VS Code の環境または [`environmentVariables` 設定](#extension-settings)で [`CLAUDE_CODE_RESUME_INTERRUPTED_TURN`](https://code.claude.com/docs/ja/env-vars#variables) やその他の `CLAUDE_CODE_RESUME_` 変数を設定しても、パネルでは効果がありません。これは、拡張機能がパネルのセッションを開始する前にそれらの変数を削除するためです。
 
 #### 会話が再度開かれなかった
 
@@ -428,7 +428,7 @@ Mac では `Cmd+,`、Windows/Linux では `Ctrl+,` を押して VS Code の設�
 
 ## プラグインを管理する
 
-VS Code 拡張機能には、[プラグイン](/docs/ja/plugins/overview.md)をインストールおよび管理するためのグラフィカルインターフェースが含まれています。プロンプトボックスに `/plugins` と入力すると、**Manage plugins** インターフェースが開きます。
+VS Code 拡張機能には、[プラグイン](https://code.claude.com/docs/ja/plugins/overview.md)をインストールおよび管理するためのグラフィカルインターフェースが含まれています。プロンプトボックスに `/plugins` と入力すると、**Manage plugins** インターフェースが開きます。
 
 ### プラグインをインストールする
 
@@ -438,7 +438,7 @@ Plugins タブでは次の操作ができます。
 
 * **インストール済みのプラグイン**は上部に表示され、トグルスイッチで有効化または無効化できます。
   * プロジェクトの共有 `.claude/settings.json` でオンになっているプラグインをオフにしようとすると、拡張機能が事前に確認します。**Disable for me** は自分だけに対してオフにし、**Disable for everyone** は共有ファイルを変更します。
-  * 読み込みに失敗したプラグインの行には、短い理由が表示されます。理由をクリックすると対処方法が表示されます。これには、[プラグインのトラブルシューティング](/docs/ja/plugins/troubleshooting.md)で調べるために完全なエラーメッセージをコピーする操作も含まれます。
+  * 読み込みに失敗したプラグインの行には、短い理由が表示されます。理由をクリックすると対処方法が表示されます。これには、[プラグインのトラブルシューティング](https://code.claude.com/docs/ja/plugins/troubleshooting.md)で調べるために完全なエラーメッセージをコピーする操作も含まれます。
 * 設定済みのマーケットプレイスから**利用可能なプラグイン**がその下に表示されます
 * 検索して、名前または説明でプラグインを絞り込めます
 * 利用可能なプラグインの **Install** をクリックします
@@ -449,17 +449,17 @@ Plugins タブでは次の操作ができます。
 * **Install for this project**: プロジェクトの共同作業者と共有（プロジェクトスコープ）
 * **Install locally**: 自分だけ、このリポジトリ内のみ（ローカルスコープ）
 
-インストールが完了すると、プラグインの[設定オプション](/docs/ja/plugins/components.md#user-configuration)のうち、まだ設定されていないものを入力するフォームが表示されます。後でオプションを確認または変更するには、プラグインの行にある歯車アイコンをクリックします。
+インストールが完了すると、プラグインの[設定オプション](https://code.claude.com/docs/ja/plugins/components.md#user-configuration)のうち、まだ設定されていないものを入力するフォームが表示されます。後でオプションを確認または変更するには、プラグインの行にある歯車アイコンをクリックします。
 
 機密性の高いテキストフィールドはマスクされ、以前に保存したシークレットには **(unchanged)** と表示されます。保存済みの値を維持するには、フィールドを空欄のままにします。変更を保存すると、開いているセッションがプラグインを再読み込みし、ダイアログに **Restart Claude to apply plugin changes** と表示されます。
 
 ### プラグインをアンインストールする
 
-インストール済みの各行には、インストールされている[スコープ](/docs/ja/plugins/install.md#choose-an-install-scope)が表示されます。そのインストールをアンインストールするには、行のゴミ箱アイコンをクリックします。ゴミ箱アイコンが薄く表示されている行は、このワークスペースからアンインストールできないことを示します。たとえば、組織が管理しているプラグインや、別のプロジェクト用にインストールされたプラグインなどです。
+インストール済みの各行には、インストールされている[スコープ](https://code.claude.com/docs/ja/plugins/install.md#choose-an-install-scope)が表示されます。そのインストールをアンインストールするには、行のゴミ箱アイコンをクリックします。ゴミ箱アイコンが薄く表示されている行は、このワークスペースからアンインストールできないことを示します。たとえば、組織が管理しているプラグインや、別のプロジェクト用にインストールされたプラグインなどです。
 
 拡張機能は、次の 2 つの場合に事前に確認します。
 
-* **プロジェクトの共有 `.claude/settings.json` でオンになっているプラグイン**: **Disable for me** を選択すると、共同作業者のためにプラグインはインストールされたままになります。**Uninstall for everyone** を選択すると、[`--keep-data`](/docs/ja/plugins/cli-reference#what-an-uninstall-deletes-and-keeps) を指定してプロジェクトのインストールが削除されるため、プラグインの保存データディレクトリは残ります。すでに自分に対してプラグインをオフにしている場合は、ゴミ箱アイコンをクリックすると、確認なしで自分のインストールが削除されます。
+* **プロジェクトの共有 `.claude/settings.json` でオンになっているプラグイン**: **Disable for me** を選択すると、共同作業者のためにプラグインはインストールされたままになります。**Uninstall for everyone** を選択すると、[`--keep-data`](https://code.claude.com/docs/ja/plugins/cli-reference#what-an-uninstall-deletes-and-keeps) を指定してプロジェクトのインストールが削除されるため、プラグインの保存データディレクトリは残ります。すでに自分に対してプラグインをオフにしている場合は、ゴミ箱アイコンをクリックすると、確認なしで自分のインストールが削除されます。
 * **それ以外で、保存データを持つプラグインの最後のインストール**: データを保持するか削除するかを選択します。デフォルトは **Keep** です
 
 ### プラグインのインストールリンクを共有する
@@ -475,7 +475,7 @@ URL は 2 つのクエリパラメータを受け取ります。
 | パラメータ | 説明 |
 | - | - |
 | `plugin` | マーケットプレイスに掲載されているプラグインの名前。必須。 |
-| `marketplace` | マーケットプレイスの[ソース](/docs/ja/plugins/install.md#add-a-marketplace)。GitHub の `owner/repo`、`https://` URL、または `git@github.com:owner/repo.git` などの git SSH アドレスを指定します。省略した場合のデフォルトは `anthropics/claude-plugins-official` です。 |
+| `marketplace` | マーケットプレイスの[ソース](https://code.claude.com/docs/ja/plugins/install.md#add-a-marketplace)。GitHub の `owner/repo`、`https://` URL、または `git@github.com:owner/repo.git` などの git SSH アドレスを指定します。省略した場合のデフォルトは `anthropics/claude-plugins-official` です。 |
 
 拡張機能は、何かを開く前に両方の値をチェックします。
 
@@ -491,7 +491,7 @@ URL は 2 つのクエリパラメータを受け取ります。
 * **プラグインがすでにインストールされている**: ダイアログにその旨が表示され、何も変更されません。
 * **同じ名前の別のマーケットプレイスがすでに追加されている**: ダイアログに、リンクのマーケットプレイスが追加されなかったことが表示され、何もインストールされません。
 
-GitHub の README や issue、その他一部の Markdown ホストでは、スキームが `http` または `https` ではないリンクが除去されるため、そこでは `vscode://` リンクがプレーンテキストとして表示されます。`claude-cli://` リンクについて[リンクがクリック可能にならずプレーンテキストとして表示される](/docs/ja/deep-links.md#the-link-renders-as-plain-text-instead-of-being-clickable)で説明しているとおり、これらのホストでは URL をコードブロックに入れてください。
+GitHub の README や issue、その他一部の Markdown ホストでは、スキームが `http` または `https` ではないリンクが除去されるため、そこでは `vscode://` リンクがプレーンテキストとして表示されます。`claude-cli://` リンクについて[リンクがクリック可能にならずプレーンテキストとして表示される](https://code.claude.com/docs/ja/deep-links.md#the-link-renders-as-plain-text-instead-of-being-clickable)で説明しているとおり、これらのホストでは URL をコードブロックに入れてください。
 
 ### マーケットプレイスを管理する
 
@@ -499,7 +499,7 @@ GitHub の README や issue、その他一部の Markdown ホストでは、ス�
 
 * GitHub リポジトリ、URL、またはローカルパスを入力して、新しいマーケットプレイスを追加します
 * 更新アイコンをクリックして、マーケットプレイスのプラグインリストを更新します
-* ゴミ箱アイコンをクリックして、マーケットプレイスを削除します。削除すると[そこからインストールしたすべてのプラグインがアンインストールされる](/docs/ja/plugins/install.md#manage-marketplaces)ため、まず確認画面でそれらのプラグインが表示されます
+* ゴミ箱アイコンをクリックして、マーケットプレイスを削除します。削除すると[そこからインストールしたすべてのプラグインがアンインストールされる](https://code.claude.com/docs/ja/plugins/install.md#manage-marketplaces)ため、まず確認画面でそれらのプラグインが表示されます
 
 ダイアログで行ったプラグインの変更は、その VS Code ウィンドウで開いている Claude Code セッションにすぐに適用されます。
 
@@ -509,11 +509,11 @@ GitHub の README や issue、その他一部の Markdown ホストでは、ス�
 >
 > 拡張機能は、CLI と同じコマンドを実行してプラグインを管理します。拡張機能で設定したプラグインとマーケットプレイスは CLI でも利用でき、その逆も同様です。
 
-プラグインシステムの詳細については、[プラグイン](/docs/ja/plugins/overview.md)と[プラグインマーケットプレイス](/docs/ja/plugins/overview.md)を参照してください。
+プラグインシステムの詳細については、[プラグイン](https://code.claude.com/docs/ja/plugins/overview.md)と[プラグインマーケットプレイス](https://code.claude.com/docs/ja/plugins/overview.md)を参照してください。
 
 ### パネルに描画するプラグイン
 
-[mod](/docs/ja/plugins/mods/overview.md) を含むプラグインは、チャットパネルに描画できます。描画には、拡張機能のバージョン 2.1.299 以降が必要です。Amazon Bedrock 上のセッションなど、[機能フラグを取得しない](/docs/ja/env-vars.md#features-that-need-feature-flag-fetching)セッションでは、2.1.304 以降が必要です。そのようなプラグインからは、次のものが表示されることがあります。
+[mod](https://code.claude.com/docs/ja/plugins/mods/overview.md) を含むプラグインは、チャットパネルに描画できます。描画には、拡張機能のバージョン 2.1.299 以降が必要です。Amazon Bedrock 上のセッションなど、[機能フラグを取得しない](https://code.claude.com/docs/ja/env-vars.md#features-that-need-feature-flag-fetching)セッションでは、2.1.304 以降が必要です。そのようなプラグインからは、次のものが表示されることがあります。
 
 * 会話の横またはプロンプトボックスの上にあるペイン
 * プロンプトボックスの上に表示されるトーストまたはステータスライン
@@ -543,13 +543,13 @@ Claude はブラウザタスク用に新しいタブを開き、ブラウザの�
 
 ブラウザの操作について詳しくは、以下を参照してください。
 
-* [デフォルトで Chrome を有効にする](/docs/ja/chrome.md#enable-chrome-by-default): `@browser` と入力しなくても、各セッションの開始時にブラウザへ接続するようにします
-* [VS Code セッションでの権限プロンプト](/docs/ja/chrome.md#permission-prompts-in-vs-code-sessions): Claude Code がブラウザ操作の前に確認を求めるタイミング
-* [Chrome で Claude Code を使用する](/docs/ja/chrome.md): セットアップ手順、機能の一覧、トラブルシューティング
+* [デフォルトで Chrome を有効にする](https://code.claude.com/docs/ja/chrome.md#enable-chrome-by-default): `@browser` と入力しなくても、各セッションの開始時にブラウザへ接続するようにします
+* [VS Code セッションでの権限プロンプト](https://code.claude.com/docs/ja/chrome.md#permission-prompts-in-vs-code-sessions): Claude Code がブラウザ操作の前に確認を求めるタイミング
+* [Chrome で Claude Code を使用する](https://code.claude.com/docs/ja/chrome.md): セットアップ手順、機能の一覧、トラブルシューティング
 
 ## git で作業する
 
-Claude Code は git と統合されており、VS Code 内で直接バージョン管理ワークフローをサポートします。Claude にコミット、プルリクエストの作成、またはブランチ間での作業を依頼できます。独立した worktree とそれ自身のファイルおよびブランチで Claude を開始するには、[worktrees を使用した並列セッションの実行](/docs/ja/worktrees.md)を参照してください。
+Claude Code は git と統合されており、VS Code 内で直接バージョン管理ワークフローをサポートします。Claude にコミット、プルリクエストの作成、またはブランチ間での作業を依頼できます。独立した worktree とそれ自身のファイルおよびブランチで Claude を開始するには、[worktrees を使用した並列セッションの実行](https://code.claude.com/docs/ja/worktrees.md)を参照してください。
 
 ### コミットとプルリクエストを作成する
 
@@ -569,10 +569,10 @@ summarize the changes I've made to the auth module
 
 ### 実行中のコマンドまたはサブエージェントをバックグラウンドに移動する
 
-コマンドや[サブエージェント](/docs/ja/sub-agents.md)のために Claude が想定以上に長く待機している場合は、会話内のそのツール呼び出しの下にある **Run in background** をクリックします。Claude Code v2.1.287 以降が必要です。
+コマンドや[サブエージェント](https://code.claude.com/docs/ja/sub-agents.md)のために Claude が想定以上に長く待機している場合は、会話内のそのツール呼び出しの下にある **Run in background** をクリックします。Claude Code v2.1.287 以降が必要です。
 
-* **タイミング**：このアクションは、コマンドが約 2 秒間実行された時点、または Claude がメインの会話から起動した[サブエージェント](/docs/ja/sub-agents.md#run-subagents-in-foreground-or-background)の待機を開始した直後に表示されます。
-* **クリック後**：Claude は待機をやめてターンを続行します。コマンドまたはサブエージェントは、完了時に Claude に通知する[バックグラウンドタスク](/docs/ja/tools-reference.md#background-commands)として実行を続けます。
+* **タイミング**：このアクションは、コマンドが約 2 秒間実行された時点、または Claude がメインの会話から起動した[サブエージェント](https://code.claude.com/docs/ja/sub-agents.md#run-subagents-in-foreground-or-background)の待機を開始した直後に表示されます。
+* **クリック後**：Claude は待機をやめてターンを続行します。コマンドまたはサブエージェントは、完了時に Claude に通知する[バックグラウンドタスク](https://code.claude.com/docs/ja/tools-reference.md#background-commands)として実行を続けます。
 
 その間にタスクを確認したり停止したりするには、プロンプトボックスに `/tasks` と入力して[エージェントマップ](#use-the-prompt-box)を開きます。サブエージェントはそこでエージェントツリー内の位置を保持し、コマンドはエージェントの下に一覧表示され、その[カードに最新の出力](#monitor-background-processes)が表示されます。
 
@@ -580,14 +580,14 @@ summarize the changes I've made to the auth module
 
 VS Code では、デフォルトでサブエージェントにこのアクションは表示されません。特定のサブエージェントについてその理由を確認するには、[エージェントマップ](#use-the-prompt-box)でそのカードを開き、`Spawned by` の行を確認します：
 
-* **`Spawned by the main agent`**：サブエージェントはバックグラウンドで開始されたため、Claude はその完了を待っておらず、操作は必要ありません。代わりに Claude にサブエージェントを待機させるには、[Claude にサブエージェントを待機させる](/docs/ja/sub-agents.md#let-claude-wait-for-a-subagent)を参照してください。
-* **`Spawned by` に別のサブエージェントの名前が表示される**：このアクションは、メインエージェントが起動したサブエージェントにのみ表示され、別のサブエージェントが待機している[ネストされたサブエージェント](/docs/ja/sub-agents.md#let-subagents-spawn-their-own-subagents)には表示されません。ネストされたサブエージェントを早期に終了するには、そのカードで **Stop agent** をクリックします。待機していたサブエージェントは、その結果なしで処理を続行します。
+* **`Spawned by the main agent`**：サブエージェントはバックグラウンドで開始されたため、Claude はその完了を待っておらず、操作は必要ありません。代わりに Claude にサブエージェントを待機させるには、[Claude にサブエージェントを待機させる](https://code.claude.com/docs/ja/sub-agents.md#let-claude-wait-for-a-subagent)を参照してください。
+* **`Spawned by` に別のサブエージェントの名前が表示される**：このアクションは、メインエージェントが起動したサブエージェントにのみ表示され、別のサブエージェントが待機している[ネストされたサブエージェント](https://code.claude.com/docs/ja/sub-agents.md#let-subagents-spawn-their-own-subagents)には表示されません。ネストされたサブエージェントを早期に終了するには、そのカードで **Stop agent** をクリックします。待機していたサブエージェントは、その結果なしで処理を続行します。
 
 ### バックグラウンドプロセスを監視する
 
 プロンプトボックスに `/tasks` と入力して[エージェントマップ](#use-the-prompt-box)を開くと、セッションのバックグラウンドタスク（Claude がバックグラウンドのシェルコマンドとして実行したままにした開発サーバーなど）が一覧表示されます。タスクをクリックするとそのカードが開き、そこでタスクを停止できます。Claude Code v2.1.277 以降が必要です。
 
-バックグラウンドのシェルコマンド、またはコマンドを実行する[モニター](/docs/ja/tools-reference.md#monitor-tool)の場合、カードにはコマンドの最新の出力も表示され、コマンドの実行中は更新され続けます。
+バックグラウンドのシェルコマンド、またはコマンドを実行する[モニター](https://code.claude.com/docs/ja/tools-reference.md#monitor-tool)の場合、カードにはコマンドの最新の出力も表示され、コマンドの実行中は更新され続けます。
 
 #### バックグラウンドのサブエージェントのツール呼び出しを確認する
 
@@ -641,7 +641,7 @@ open "vscode://anthropic.claude-code/open"
 xdg-open "vscode://anthropic.claude-code/open"
 ```
 
-`xdg-open` コマンドは `xdg-utils` パッケージに含まれています。シェルでコマンドが見つからないと報告された場合は、[Linux で xdg-open が見つからない](/docs/ja/deep-links.md#xdg-open-is-not-found-on-linux)を参照してください。
+`xdg-open` コマンドは `xdg-utils` パッケージに含まれています。シェルでコマンドが見つからないと報告された場合は、[Linux で xdg-open が見つからない](https://code.claude.com/docs/ja/deep-links.md#xdg-open-is-not-found-on-linux)を参照してください。
 
 **Windows**
 
@@ -662,7 +662,7 @@ start "" "vscode://anthropic.claude-code/open"
 | パラメーター | 説明 |
 | - | - |
 | `prompt` | プロンプトボックスに事前入力するテキスト。URL エンコードされている必要があります。プロンプトは事前入力されますが、自動的には送信されません。 |
-| `session` | 新しい会話を開始する代わりに再開するセッション ID。セッションは VS Code で現在開いているワークスペースに属している必要があります。セッションが見つからない場合は、代わりに新しい会話が開始されます。セッションがすでにタブで開いている場合は、そのタブにフォーカスが移ります。セッション ID をプログラムで取得するには、[会話を続ける](/docs/ja/headless.md#continue-conversations)を参照してください。 |
+| `session` | 新しい会話を開始する代わりに再開するセッション ID。セッションは VS Code で現在開いているワークスペースに属している必要があります。セッションが見つからない場合は、代わりに新しい会話が開始されます。セッションがすでにタブで開いている場合は、そのタブにフォーカスが移ります。セッション ID をプログラムで取得するには、[会話を続ける](https://code.claude.com/docs/ja/headless.md#continue-conversations)を参照してください。 |
 
 たとえば、「review my changes」が事前入力されたタブを開くには次のようにします。
 
@@ -670,14 +670,14 @@ start "" "vscode://anthropic.claude-code/open"
 vscode://anthropic.claude-code/open?prompt=review%20my%20changes
 ```
 
-拡張機能は `vscode://anthropic.claude-code/install-plugin` も処理します。これは[特定のプラグインを対象にプラグインダイアログを開きます](#share-a-plugin-install-link)。VS Code タブではなくターミナルセッションを起動するには、CLI の `claude-cli://` ハンドラーを使用します。[リンクからセッションを起動する](/docs/ja/deep-links.md)を参照してください。
+拡張機能は `vscode://anthropic.claude-code/install-plugin` も処理します。これは[特定のプラグインを対象にプラグインダイアログを開きます](#share-a-plugin-install-link)。VS Code タブではなくターミナルセッションを起動するには、CLI の `claude-cli://` ハンドラーを使用します。[リンクからセッションを起動する](https://code.claude.com/docs/ja/deep-links.md)を参照してください。
 
 ## 設定を構成する
 
 拡張機能は、VS Code の拡張機能設定と Claude Code の設定ファイルの 2 か所で構成します。
 
 * VS Code の**拡張機能設定**：VS Code 内での拡張機能の動作を制御します。`Cmd+,`（Mac）または `Ctrl+,`（Windows/Linux）で開き、**Extensions > Claude Code** に移動します。`/` と入力して **General config…** を選択して設定を開くこともできます。
-* `~/.claude/settings.json` の **Claude Code 設定**：拡張機能と CLI の間で共有されます。許可するコマンド、環境変数、フック、MCP サーバーに使用します。Claude Code v2.1.283 以降では、会話が開始される権限モードを決める入力の 1 つにもなります。それより前のバージョンでは、Pro、Max、Team プランでのみ該当します。順序については[権限モードを切り替える](/docs/ja/permission-modes.md#switch-permission-modes)を参照してください。詳細は[設定](/docs/ja/settings.md)を参照してください。
+* `~/.claude/settings.json` の **Claude Code 設定**：拡張機能と CLI の間で共有されます。許可するコマンド、環境変数、フック、MCP サーバーに使用します。Claude Code v2.1.283 以降では、会話が開始される権限モードを決める入力の 1 つにもなります。それより前のバージョンでは、Pro、Max、Team プランでのみ該当します。順序については[権限モードを切り替える](https://code.claude.com/docs/ja/permission-modes.md#switch-permission-modes)を参照してください。詳細は[設定](https://code.claude.com/docs/ja/settings.md)を参照してください。
 
 > [!TIP]
 >
@@ -690,7 +690,7 @@ VS Code は `initialPermissionMode` をユーザー設定から読み取り、�
 | 設定 | デフォルト | 説明 |
 | - | - | - |
 | `useTerminal` | `false` | グラフィカルパネルの代わりにターミナルモードで Claude を起動します |
-| `initialPermissionMode` | - | 新しい会話の承認プロンプトを制御します：`default`、`plan`、`acceptEdits`、または `bypassPermissions`。`manual` は `default` のエイリアスで、モードインジケーターで **Manual** と表示されるモードを選択します。未設定のままにすると、拡張機能は[権限モードを切り替える](/docs/ja/permission-modes.md#switch-permission-modes)で説明されているとおりに開始時の権限モードを選択します。 |
+| `initialPermissionMode` | - | 新しい会話の承認プロンプトを制御します：`default`、`plan`、`acceptEdits`、または `bypassPermissions`。`manual` は `default` のエイリアスで、モードインジケーターで **Manual** と表示されるモードを選択します。未設定のままにすると、拡張機能は[権限モードを切り替える](https://code.claude.com/docs/ja/permission-modes.md#switch-permission-modes)で説明されているとおりに開始時の権限モードを選択します。 |
 | `preferredLocation` | `panel` | Claude を開く場所：`sidebar`（右側）または `panel`（新しいタブ） |
 | `lockEditorGroups` | `true` | [Claude がタブ用に開始したエディターグループをロック](#choose-where-claude-lives)し、Claude タブにフォーカスがある間に開いたファイルが別のグループで開くようにします。オフにすると、拡張機能はエディターグループを一切ロックしません。Claude Code v2.1.274 以降が必要です |
 | `autosave` | `true` | Claude がファイルを読み書きする前にファイルを自動保存します |
@@ -698,7 +698,7 @@ VS Code は `initialPermissionMode` をユーザー設定から読み取り、�
 | `useCtrlEnterToSend` | `false` | プロンプトの送信に Enter の代わりに Ctrl/Cmd+Enter を使用します |
 | `scrollToBottomOnSend` | `true` | メッセージを送信したときに会話を最下部までスクロールします。オフにすると、会話は表示していた位置のままになります。Claude Code v2.1.275 以降が必要です |
 | `showMessageTimestamps` | `true` | 各メッセージの送信日時を表示します。日付が変わる箇所には日付行が表示されます。Claude Code v2.1.284 以降が必要です。v2.1.290 より前はデフォルトが `false` でした |
-| `spinnerVerbs` | `{"mode": "append", "verbs": []}` | ターンの実行中に会話のスピナーが順番に表示する動詞を設定します。CLI の [`spinnerVerbs`](/docs/ja/settings-reference#spinnerverbs) と同じ `mode` および `verbs` フィールドを使用します。 |
+| `spinnerVerbs` | `{"mode": "append", "verbs": []}` | ターンの実行中に会話のスピナーが順番に表示する動詞を設定します。CLI の [`spinnerVerbs`](https://code.claude.com/docs/ja/settings-reference#spinnerverbs) と同じ `mode` および `verbs` フィールドを使用します。 |
 | `enableNewConversationShortcut` | `false` | Cmd/Ctrl+N で新しい会話を開始できるようにします |
 | `enableReopenClosedSessionShortcut` | `true` | Cmd/Ctrl+Shift+T で、最後に閉じた Claude セッションタブを再度開きます。最後に閉じたタブが Claude セッションでない場合、このショートカットは代わりに VS Code の通常の「閉じたエディターを再度開く」コマンドを実行します。 |
 | `archiveInactiveSessions` | `14` | アクティビティがないままこの日数が経過すると、[セッションを自動的にアーカイブ](#resume-past-conversations)します：`1`、`2`、`7`、または `14`。`0` に設定するとオフになります。Claude Code v2.1.265 以降が必要です |
@@ -707,7 +707,7 @@ VS Code は `initialPermissionMode` をユーザー設定から読み取り、�
 | `focusView` | `false` | ツール呼び出し、ツールの結果、思考を展開可能な行の中に隠し、ユーザーのプロンプトと Claude の応答だけを残します。Claude の最新の To-Do リストは表示されたままになります。これには Claude Code v2.1.225 以降が必要です。コマンドメニューから Focus view を切り替えることもできます。Claude Code v2.1.221 以降が必要です |
 | `respectGitIgnore` | `true` | .gitignore のパターンをファイル検索および[選択コンテキスト](#reference-files-and-folders)から除外します |
 | `usePythonEnvironment` | `true` | Claude の実行時にワークスペースの Python 環境をアクティブ化します。Python 拡張機能が必要です。 |
-| `environmentVariables` | `[]` | Claude プロセスの環境変数を設定します。共有する構成には、代わりに Claude Code 設定を使用してください。[`CLAUDE_CONFIG_DIR`](/docs/ja/env-vars) のエントリは、値が絶対パスの場合にのみ適用されます。拡張機能は `~` を展開せず、相対パスの値は無視します。 |
+| `environmentVariables` | `[]` | Claude プロセスの環境変数を設定します。共有する構成には、代わりに Claude Code 設定を使用してください。[`CLAUDE_CONFIG_DIR`](https://code.claude.com/docs/ja/env-vars) のエントリは、値が絶対パスの場合にのみ適用されます。拡張機能は `~` を展開せず、相対パスの値は無視します。 |
 | `disableLoginPrompt` | `false` | 認証プロンプトをスキップします（サードパーティプロバイダーの構成向け） |
 | `allowDangerouslySkipPermissions` | `false` | モードセレクターに Bypass permissions を追加します。インターネットにアクセスできないサンドボックスでのみ使用してください。 |
 | `claudeProcessWrapper` | - | Claude プロセスの起動に使用する実行ファイルです。バンドルされたバイナリのパスが存在する場合は、引数として渡されます。拡張機能のビルドにお使いのプラットフォーム用のバイナリが含まれていない場合は、別途インストールした `claude` バイナリを設定してください。 |
@@ -726,19 +726,19 @@ Mac では `Cmd+,`、Windows/Linux では `Ctrl+,` を押して VS Code の設�
 
 使用しているプロバイダーのセットアップガイドに従ってください。
 
-* [Amazon Bedrock での Claude Code](/docs/ja/amazon-bedrock.md)
-* [Google Cloud の Agent Platform での Claude Code](/docs/ja/google-vertex-ai.md)
-* [Microsoft Foundry での Claude Code](/docs/ja/microsoft-foundry.md)
+* [Amazon Bedrock での Claude Code](https://code.claude.com/docs/ja/amazon-bedrock.md)
+* [Google Cloud の Agent Platform での Claude Code](https://code.claude.com/docs/ja/google-vertex-ai.md)
+* [Microsoft Foundry での Claude Code](https://code.claude.com/docs/ja/microsoft-foundry.md)
 
 これらのガイドでは、`~/.claude/settings.json` でプロバイダーを設定する方法を説明しています。これにより、設定が VS Code 拡張機能と CLI の間で共有されます。
 
-サードパーティプロバイダーを使用している場合、プランの使用量バー、[音声入力](/docs/ja/voice-dictation.md)、[クラウドセッション](#resume-cloud-sessions-from-claude-ai)用の Web タブなど、claude.ai アカウントを必要とする機能は拡張機能で提供されません。これらのサインイン方法で Account & usage ダイアログに何が表示されるかについては、[アカウントと使用量を確認する](#check-account-and-usage)を参照してください。
+サードパーティプロバイダーを使用している場合、プランの使用量バー、[音声入力](https://code.claude.com/docs/ja/voice-dictation.md)、[クラウドセッション](#resume-cloud-sessions-from-claude-ai)用の Web タブなど、claude.ai アカウントを必要とする機能は拡張機能で提供されません。これらのサインイン方法で Account & usage ダイアログに何が表示されるかについては、[アカウントと使用量を確認する](#check-account-and-usage)を参照してください。
 
 以前の `/login` で残った claude.ai のサインインは使用されません。拡張機能はどのリクエストでもそれを送信しません。
 
 ## スクリーンリーダーを使用する
 
-拡張機能のチャットパネルはスクリーンリーダーに対応しています。何かをオンにする必要はありません。拡張機能は、視覚的な変化を伴わずに、すべてのユーザーに対して会話のアクティビティを読み上げます。これは、ターミナルインターフェイスを調整する CLI のオプトイン方式の[スクリーンリーダーモード](/docs/ja/accessibility.md)とは別のものです。
+拡張機能のチャットパネルはスクリーンリーダーに対応しています。何かをオンにする必要はありません。拡張機能は、視覚的な変化を伴わずに、すべてのユーザーに対して会話のアクティビティを読み上げます。これは、ターミナルインターフェイスを調整する CLI のオプトイン方式の[スクリーンリーダーモード](https://code.claude.com/docs/ja/accessibility.md)とは別のものです。
 
 チャットパネルでのスクリーンリーダーのサポートには、Claude Code v2.1.236 以降が必要です。
 
@@ -746,9 +746,9 @@ Mac では `Cmd+,`、Windows/Linux では `Ctrl+,` を押して VS Code の設�
 
 * **Claude の返信**: 拡張機能は各返信を完了時に 1 回だけ読み上げ、テキストのストリーミング中は何も読み上げません。スクリーンリーダーは、コードブロックを行数の要約として、リンクをラベルで、テーブルをセルごとに読み上げます。返信の全文はトランスクリプトで引き続き読むことができます。
 * **権限リクエストと質問**: 拡張機能は、権限プロンプトが表示されたときに、Claude が使用しようとしているツール名を含めてリクエストを読み上げます。Claude がユーザーに質問したときや、Claude がプランを完成させてユーザーのレビューを待っているときも、同様に読み上げます。
-* **ステータスの変化**: 拡張機能は、Claude が作業を開始したとき、Claude がユーザーの入力を受け付ける準備ができたとき、Claude Code が会話のコンパクト化を開始したときに読み上げます。セッションの [SessionStart](/docs/ja/hooks.md#sessionstart) フックがまだ実行中のときにプロンプトを送信すると、スクリーンリーダーは「Running start-up hooks.」とも読み上げます。
+* **ステータスの変化**: 拡張機能は、Claude が作業を開始したとき、Claude がユーザーの入力を受け付ける準備ができたとき、Claude Code が会話のコンパクト化を開始したときに読み上げます。セッションの [SessionStart](https://code.claude.com/docs/ja/hooks.md#sessionstart) フックがまだ実行中のときにプロンプトを送信すると、スクリーンリーダーは「Running start-up hooks.」とも読み上げます。
 * **キューに入れられたメッセージ**: Claude の作業中にメッセージを送信すると、拡張機能はそのメッセージについて「Message queued.」と読み上げます。
-* **エラーとモデルのプロンプト**: 拡張機能は会話中のエラーを読み上げるほか、[使用クレジットの同意プロンプト](/docs/ja/model-config.md#fable-and-usage-credits)や[フラグ付きリクエストのプロンプト](/docs/ja/model-config.md#ask-before-switching)が表示されたときにも読み上げます。
+* **エラーとモデルのプロンプト**: 拡張機能は会話中のエラーを読み上げるほか、[使用クレジットの同意プロンプト](https://code.claude.com/docs/ja/model-config.md#fable-and-usage-credits)や[フラグ付きリクエストのプロンプト](https://code.claude.com/docs/ja/model-config.md#ask-before-switching)が表示されたときにも読み上げます。
 
 Claude の作業中は、スクリーンリーダーが進行状況スピナーのアニメーションの代わりにテキストラベルを読み上げます。
 
@@ -774,11 +774,11 @@ Claude の作業中は、スクリーンリーダーが進行状況スピナー�
 
 ## VS Code 拡張機能と Claude Code CLI の比較
 
-Claude Code は、VS Code 拡張機能（グラフィカルパネル）と CLI（ターミナルのコマンドラインインターフェース）の両方で利用できます。一部の機能は CLI でのみ利用できます。CLI 専用の機能が必要な場合は、VS Code の統合ターミナルで `claude` を実行してください。これには [スタンドアロン CLI のインストール](/docs/ja/setup.md) が必要です。拡張機能は `claude` を PATH に追加しません。[VS Code で CLI を実行する](#run-cli-in-vs-code)を参照してください。
+Claude Code は、VS Code 拡張機能（グラフィカルパネル）と CLI（ターミナルのコマンドラインインターフェース）の両方で利用できます。一部の機能は CLI でのみ利用できます。CLI 専用の機能が必要な場合は、VS Code の統合ターミナルで `claude` を実行してください。これには [スタンドアロン CLI のインストール](https://code.claude.com/docs/ja/setup.md) が必要です。拡張機能は `claude` を PATH に追加しません。[VS Code で CLI を実行する](#run-cli-in-vs-code)を参照してください。
 
 | 機能 | CLI | VS Code 拡張機能 |
 | - | - | - |
-| コマンドとスキル | [すべて](/docs/ja/commands.md) | 一部（`/` を入力すると利用可能なものを確認できます） |
+| コマンドとスキル | [すべて](https://code.claude.com/docs/ja/commands.md) | 一部（`/` を入力すると利用可能なものを確認できます） |
 | MCP サーバーの設定 | はい | はい：チャットパネルで `/mcp` を使用して[サーバーを追加・管理](#connect-to-external-tools-with-mcp)できます |
 | チェックポイント | はい | はい |
 | `!` Bash ショートカット | はい | いいえ |
@@ -788,7 +788,7 @@ Claude Code は、VS Code 拡張機能（グラフィカルパネル）と CLI�
 
 VS Code から離れずに CLI を使用するには、Windows/Linux では `` Ctrl+` ``、Mac では `` Cmd+` `` を押して統合ターミナルを開き、`claude` を実行します。CLI は IDE と自動的に連携し、差分の表示や診断情報の共有などの機能を利用できます。外部ターミナルを使用する場合は、Claude Code 内で `/ide` を実行して VS Code に接続します。
 
-拡張機能をインストールしても、`claude` はシェルの PATH に追加されません。拡張機能はチャットパネル用に CLI の専用コピーを同梱していますが、ターミナルで `claude` と入力するには [スタンドアロン CLI のインストール](/docs/ja/setup.md) が必要です。一度インストールすれば、`claude mcp add` や `claude --resume` を含むこのページのコマンドが任意のターミナルで動作します。インストール後も `claude` が見つからない場合は、[PATH を確認してください](/docs/ja/troubleshoot-install.md#verify-your-path)。
+拡張機能をインストールしても、`claude` はシェルの PATH に追加されません。拡張機能はチャットパネル用に CLI の専用コピーを同梱していますが、ターミナルで `claude` と入力するには [スタンドアロン CLI のインストール](https://code.claude.com/docs/ja/setup.md) が必要です。一度インストールすれば、`claude mcp add` や `claude --resume` を含むこのページのコマンドが任意のターミナルで動作します。インストール後も `claude` が見つからない場合は、[PATH を確認してください](https://code.claude.com/docs/ja/troubleshoot-install.md#verify-your-path)。
 
 ### 拡張機能と CLI を切り替える
 
@@ -801,7 +801,7 @@ MCP（Model Context Protocol）サーバーは、Claude に外部ツール、デ
 VS Code を離れずに MCP サーバーを管理するには、チャットパネルで `/mcp` と入力します。開いたダイアログから、次の操作を行えます。
 
 * サーバーを追加する
-* ローカル、ユーザー、またはプロジェクトの[スコープ](/docs/ja/mcp.md#mcp-installation-scopes)に保存されたサーバーを削除する
+* ローカル、ユーザー、またはプロジェクトの[スコープ](https://code.claude.com/docs/ja/mcp.md#mcp-installation-scopes)に保存されたサーバーを削除する
 * サーバーを有効化または無効化する
 * サーバーに再接続する
 * OAuth 認証を管理する
@@ -821,7 +821,7 @@ claude mcp add --transport http github https://api.githubcopilot.com/mcp/ \
 
 > [!NOTE]
 >
-> 接続するサーバーを見つけるには、[MCP サーバーを見つけてビルドする](/docs/ja/mcp.md#find-and-build-mcp-servers)を参照してください。
+> 接続するサーバーを見つけるには、[MCP サーバーを見つけてビルドする](https://code.claude.com/docs/ja/mcp.md#find-and-build-mcp-servers)を参照してください。
 
 ## 組み込みの IDE MCP サーバー
 
@@ -835,8 +835,8 @@ claude mcp add --transport http github https://api.githubcopilot.com/mcp/ \
 
 **選択範囲と開いているファイルのコンテキスト。** 接続中、CLI は送信する各プロンプトに、現在のエディターの選択範囲とアクティブなファイルのパスをコンテキストとして含めます。このとき、トランスクリプトには `⧉ Selected N lines from <file>` という行が表示されます。次の場合には、このコンテキストが変わります。
 
-* **キューに入れたメッセージ**: [Claude の作業中にメッセージをキューに入れた](/docs/ja/interactive-mode.md#queue-messages-while-claude-works)場合、その後に何を選択しても、`Enter` を押した時点の選択範囲が保持されます。
-* **機密ファイル**: `.env` などの機密ファイルを除外するには、そのパスに対する [`Read` 拒否ルール](/docs/ja/permissions#read-and-edit)を追加します。一致する拒否ルールがあると、そのファイルの選択テキストと開いているファイルの通知のどちらも Claude に届かなくなります。
+* **キューに入れたメッセージ**: [Claude の作業中にメッセージをキューに入れた](https://code.claude.com/docs/ja/interactive-mode.md#queue-messages-while-claude-works)場合、その後に何を選択しても、`Enter` を押した時点の選択範囲が保持されます。
+* **機密ファイル**: `.env` などの機密ファイルを除外するには、そのパスに対する [`Read` 拒否ルール](https://code.claude.com/docs/ja/permissions#read-and-edit)を追加します。一致する拒否ルールがあると、そのファイルの選択テキストと開いているファイルの通知のどちらも Claude に届かなくなります。
 * **Attach Open File がオフの場合**: [Attach Open File 設定](#extension-settings)をオフにすると、CLI はアクティブなファイル内でテキストを選択している間だけ、そのファイルのパスを受け取ります。
 
 **トランスポートと認証。** サーバーは `127.0.0.1` の 10000〜65535 の範囲のランダムなポートにバインドされ、ポートは設定できません。トランスポートと認証トークンは次のように動作します。
@@ -869,7 +869,7 @@ claude mcp add --transport http github https://api.githubcopilot.com/mcp/ \
 }
 ```
 
-`Read` 拒否ルールはどちらのツールにも適用されないため、この例のように[拒否ルール](/docs/ja/permissions.md#mcp)で名前を指定してブロックしてください。
+`Read` 拒否ルールはどちらのツールにも適用されないため、この例のように[拒否ルール](https://code.claude.com/docs/ja/permissions.md#mcp)で名前を指定してブロックしてください。
 
 **Jupyter での実行は必ず事前に確認されます。** `mcp__ide__executeCode` が何かを暗黙のうちに実行することはありません。各呼び出しは次の手順を経ます。
 
@@ -889,14 +889,14 @@ claude mcp add --transport http github https://api.githubcopilot.com/mcp/ \
 
 | 表示される内容 | 参照先 |
 | - | - |
-| サインイン後に `API Error: 403 Request not allowed` が表示される | [403 Forbidden after login](/docs/ja/troubleshoot-install.md#403-forbidden-after-login) |
-| すでにサインインしたのに再度サインインを求められる | [Not logged in or token expired](/docs/ja/troubleshoot-install.md#not-logged-in-or-token-expired) |
-| クラウドプロバイダーの認証情報がターミナルでは機能するが拡張機能では機能しない | [Bedrock、Agent Platform、または Foundry の認証情報が読み込まれない](/docs/ja/troubleshoot-install.md#bedrock-agent-platform-or-foundry-credentials-not-loading) |
-| `SSL certificate verification failed` または `Self-signed certificate detected` | [SSL 証明書エラー](/docs/ja/errors.md#ssl-certificate-errors) |
+| サインイン後に `API Error: 403 Request not allowed` が表示される | [403 Forbidden after login](https://code.claude.com/docs/ja/troubleshoot-install.md#403-forbidden-after-login) |
+| すでにサインインしたのに再度サインインを求められる | [Not logged in or token expired](https://code.claude.com/docs/ja/troubleshoot-install.md#not-logged-in-or-token-expired) |
+| クラウドプロバイダーの認証情報がターミナルでは機能するが拡張機能では機能しない | [Bedrock、Agent Platform、または Foundry の認証情報が読み込まれない](https://code.claude.com/docs/ja/troubleshoot-install.md#bedrock-agent-platform-or-foundry-credentials-not-loading) |
+| `SSL certificate verification failed` または `Self-signed certificate detected` | [SSL 証明書エラー](https://code.claude.com/docs/ja/errors.md#ssl-certificate-errors) |
 | `Dictation error: WebSocket error:` に続いて `unable to get local issuer certificate` などの証明書エラーが表示される、または Web タブに `Remote server is not connected` が表示される | [TLS インスペクションを行うプロキシの背後で音声入力または Web タブが失敗する](#dictation-or-the-web-tab-fails-behind-a-tls-inspecting-proxy) |
-| `Claude Code process exited with code 1` またはその他のコード | [Claude Code process exited with code N](/docs/ja/errors.md#claude-code-process-exited-with-code-n) |
-| `Could not locate the Claude CLI on PATH` | [Could not locate the Claude CLI on PATH](/docs/ja/errors.md#could-not-locate-the-claude-cli-on-path) |
-| `The connection to Claude Code ended before this message completed` | [The connection to Claude Code ended before this message completed](/docs/ja/errors.md#the-connection-to-claude-code-ended-before-this-message-completed) |
+| `Claude Code process exited with code 1` またはその他のコード | [Claude Code process exited with code N](https://code.claude.com/docs/ja/errors.md#claude-code-process-exited-with-code-n) |
+| `Could not locate the Claude CLI on PATH` | [Could not locate the Claude CLI on PATH](https://code.claude.com/docs/ja/errors.md#could-not-locate-the-claude-cli-on-path) |
+| `The connection to Claude Code ended before this message completed` | [The connection to Claude Code ended before this message completed](https://code.claude.com/docs/ja/errors.md#the-connection-to-claude-code-ended-before-this-message-completed) |
 | VS Code の統合ターミナルで `claude` が見つからない | [VS Code で CLI を実行する](#run-cli-in-vs-code) |
 
 ### 拡張機能をインストールできない
@@ -929,7 +929,7 @@ macOS Tahoe 以降では、システムの Game Overlay ショートカットが
 
 ### プロンプトボックスで Ctrl+J を押すと改行が追加される
 
-プロンプトボックスで `Ctrl+J` を押したときに改行が追加されないようにするには、Claude Code の `keybindings.json` ファイルで[キーの割り当てを解除](/docs/ja/keybindings.md#unbind-default-shortcuts)します。拡張機能がこのファイルを読み取るのはバージョン 2.1.309 以降のため、古い拡張機能を使用している場合は、まず Extensions ビューで更新してください。
+プロンプトボックスで `Ctrl+J` を押したときに改行が追加されないようにするには、Claude Code の `keybindings.json` ファイルで[キーの割り当てを解除](https://code.claude.com/docs/ja/keybindings.md#unbind-default-shortcuts)します。拡張機能がこのファイルを読み取るのはバージョン 2.1.309 以降のため、古い拡張機能を使用している場合は、まず Extensions ビューで更新してください。
 
 この例は、キーの割り当てを解除する 1 つのエントリ（`Chat` ブロック内の `"ctrl+j": null`）のみを含むファイル全体です。
 
@@ -1001,7 +1001,7 @@ Claude の応答内の数式がまったく組版されない場合は、[数式
 
 ### TLS インスペクションを行うプロキシの背後で音声入力または Web タブが失敗する
 
-音声入力または Web タブが `unable to get local issuer certificate` などの証明書エラーで失敗する場合は、`~/.claude/settings.json` の `env` ブロックに [`NODE_EXTRA_CA_CERTS`](/docs/ja/network-config#custom-ca-certificates) を設定してください。値には、プロキシのルート CA 証明書を含む PEM ファイルのパスを設定します。このファイルは IT チームから入手できます。このエラーテキストは、マイクボタンまたは拡張機能のログで確認できます。
+音声入力または Web タブが `unable to get local issuer certificate` などの証明書エラーで失敗する場合は、`~/.claude/settings.json` の `env` ブロックに [`NODE_EXTRA_CA_CERTS`](https://code.claude.com/docs/ja/network-config#custom-ca-certificates) を設定してください。値には、プロキシのルート CA 証明書を含む PEM ファイルのパスを設定します。このファイルは IT チームから入手できます。このエラーテキストは、マイクボタンまたは拡張機能のログで確認できます。
 
 * **音声入力**: マイクボタンに、`Dictation error: WebSocket error:` に続けてエラーテキストが表示されます。
 * **Web タブ**: [クラウドセッション](#resume-cloud-sessions-from-claude-ai)を一覧表示するタブには、エラーテキストなしで `Remote server is not connected` が表示されます。ログでエラーテキストを確認するには、次の手順を実行します。
@@ -1047,7 +1047,7 @@ Claude Code 拡張機能をアンインストールするには：
 2. 「Claude Code」を検索します
 3. **Uninstall** をクリックします
 
-VS Code の統合ターミナルで `claude` を実行すると、Claude Code は拡張機能を自動的に再インストールします。アンインストールした状態を維持するには、`/config` で **Auto-install IDE extension** をオフにするか、[`autoInstallIdeExtension`](/docs/ja/settings-reference#autoinstallideextension) を `false` に設定します。また、[`CLAUDE_CODE_IDE_SKIP_AUTO_INSTALL`](/docs/ja/env-vars) 環境変数を `1` に設定することもできます。
+VS Code の統合ターミナルで `claude` を実行すると、Claude Code は拡張機能を自動的に再インストールします。アンインストールした状態を維持するには、`/config` で **Auto-install IDE extension** をオフにするか、[`autoInstallIdeExtension`](https://code.claude.com/docs/ja/settings-reference#autoinstallideextension) を `false` に設定します。また、[`CLAUDE_CODE_IDE_SKIP_AUTO_INSTALL`](https://code.claude.com/docs/ja/env-vars) 環境変数を `1` に設定することもできます。
 
 拡張機能のデータも削除してすべての設定をリセットするには、使用しているプラットフォームに応じて拡張機能のストレージディレクトリを削除します。
 
@@ -1069,13 +1069,13 @@ Windows の場合（PowerShell）：
 Remove-Item -Recurse -Force "$env:APPDATA\Code\User\globalStorage\anthropic.claude-code"
 ```
 
-その他のヘルプについては、[トラブルシューティングガイド](/docs/ja/troubleshooting.md)を参照してください。
+その他のヘルプについては、[トラブルシューティングガイド](https://code.claude.com/docs/ja/troubleshooting.md)を参照してください。
 
 ## 次のステップ
 
 VS Code で Claude Code のセットアップが完了したら、次のことを行いましょう：
 
-* [一般的なワークフローを確認する](/docs/ja/common-workflows.md)ことで、Claude Code を最大限に活用できます
-* [MCP サーバーをセットアップする](/docs/ja/mcp.md)ことで、外部ツールを使って Claude の機能を拡張できます。MCP サーバーの追加と管理は、チャットパネルで `/mcp` を使って行います。
-* [Claude Code の設定を構成する](/docs/ja/settings.md)ことで、許可するコマンドやフックなどをカスタマイズできます。これらの設定は拡張機能と CLI の間で共有されます。
-* Claude Code の[セキュリティ保護機能](/docs/ja/security.md)と[データの使用](/docs/ja/data-usage.md)を確認しましょう
+* [一般的なワークフローを確認する](https://code.claude.com/docs/ja/common-workflows.md)ことで、Claude Code を最大限に活用できます
+* [MCP サーバーをセットアップする](https://code.claude.com/docs/ja/mcp.md)ことで、外部ツールを使って Claude の機能を拡張できます。MCP サーバーの追加と管理は、チャットパネルで `/mcp` を使って行います。
+* [Claude Code の設定を構成する](https://code.claude.com/docs/ja/settings.md)ことで、許可するコマンドやフックなどをカスタマイズできます。これらの設定は拡張機能と CLI の間で共有されます。
+* Claude Code の[セキュリティ保護機能](https://code.claude.com/docs/ja/security.md)と[データの使用](https://code.claude.com/docs/ja/data-usage.md)を確認しましょう

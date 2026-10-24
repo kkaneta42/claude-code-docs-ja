@@ -8,13 +8,13 @@
 
 一部の組織では、ワークステーション上のすべてのプロセスが必須ランチャーを通じて起動することを要求しています。ランチャーは、企業のセキュリティ体制が依存するサンドボックス、ネットワーク制御、または認証情報の注入を適用し、それなしで起動するバイナリはポリシー違反です。
 
-`CLAUDE_CODE_PROCESS_WRAPPER` は、Claude Code がそのバイナリから起動するすべてのプロセスをランチャーを通じて起動します。[バックグラウンドサービス](/docs/ja/agent-view.md#the-supervisor-process)、[エージェントビュー](/docs/ja/agent-view.md)でそれがホストするすべてのセッション、および更新後の Claude Code の再起動が含まれます。ランチャーの絶対パスに設定すると、Claude Code はランチャーを実行し、Claude Code コマンドをその引数として渡します。
+`CLAUDE_CODE_PROCESS_WRAPPER` は、Claude Code がそのバイナリから起動するすべてのプロセスをランチャーを通じて起動します。[バックグラウンドサービス](https://code.claude.com/docs/ja/agent-view.md#the-supervisor-process)、[エージェントビュー](https://code.claude.com/docs/ja/agent-view.md)でそれがホストするすべてのセッション、および更新後の Claude Code の再起動が含まれます。ランチャーの絶対パスに設定すると、Claude Code はランチャーを実行し、Claude Code コマンドをその引数として渡します。
 
 `PATH` 上の `claude` コマンドをラップするランチャーはこれらのプロセスに到達できません。これらのプロセスは `claude` を検索せずにバイナリの直接パスから起動するためです。
 
 > [!NOTE]
 >
-> `CLAUDE_CODE_PROCESS_WRAPPER` には Claude Code v2.1.208 以降が必要です。以前のバージョンは変数を無視し、すべてのプロセスをラップなしで起動します。同等の [`processWrapper` 設定](/docs/ja/settings-reference#processwrapper)には v2.1.210 以降が必要です。以前のバージョンはそれを未知のキーとして無視し、ランチャーを適用せず、エラーを報告しません。
+> `CLAUDE_CODE_PROCESS_WRAPPER` には Claude Code v2.1.208 以降が必要です。以前のバージョンは変数を無視し、すべてのプロセスをラップなしで起動します。同等の [`processWrapper` 設定](https://code.claude.com/docs/ja/settings-reference#processwrapper)には v2.1.210 以降が必要です。以前のバージョンはそれを未知のキーとして無視し、ランチャーを適用せず、エラーを報告しません。
 >
 > どちらの形式を展開した後でも、[検証ステップ](#set-up-the-launcher)を使用して、実行中のバージョンがそれを適用していることを確認してください。
 
@@ -26,19 +26,19 @@
 * すべてのエージェントビュー行内の Claude Code セッションとターミナルホスト（サービスが準備しておく温かいスタンバイセッションを含む）。
 * 更新またはクラッシュ後にサービスが再生成するセッション。
 * 更新のインストールを完了するために Claude Code が自身を再起動するプロセス（エージェントビューの更新用再起動アクションを含む）。
-* [Remote Control](/docs/ja/remote-control.md) が起動するセッションプロセス。Claude Code v2.1.210 以降が必要です。
-* [agent teams](/docs/ja/agent-teams.md) が tmux または iTerm2 で起動するスプリットペインティームメイトセッション。ティームメイトペインはバックグラウンドプロセスではなくインタラクティブですが、Claude Code が独自のバイナリから起動するため、ランチャーがカバーします。Claude Code v2.1.210 以降が必要です。
+* [Remote Control](https://code.claude.com/docs/ja/remote-control.md) が起動するセッションプロセス。Claude Code v2.1.210 以降が必要です。
+* [agent teams](https://code.claude.com/docs/ja/agent-teams.md) が tmux または iTerm2 で起動するスプリットペインティームメイトセッション。ティームメイトペインはバックグラウンドプロセスではなくインタラクティブですが、Claude Code が独自のバイナリから起動するため、ランチャーがカバーします。Claude Code v2.1.210 以降が必要です。
 
-Windows では、変数は無視されます。ランチャーコントラクトは `exec` に依存しており、Windows はこれをサポートしていません。変数が設定されている Windows マシンはすべてのプロセスをラップなしで実行し、正常に動作します。唯一の信号は[デバッグログ](/docs/ja/troubleshooting.md)の警告です。ランチャーポリシーが Windows をカバーしている場合、変数はそこでそれを満たしません。ロールアウトを計画する際に Windows マシンをラップなしとしてカウントしてください。
+Windows では、変数は無視されます。ランチャーコントラクトは `exec` に依存しており、Windows はこれをサポートしていません。変数が設定されている Windows マシンはすべてのプロセスをラップなしで実行し、正常に動作します。唯一の信号は[デバッグログ](https://code.claude.com/docs/ja/troubleshooting.md)の警告です。ランチャーポリシーが Windows をカバーしている場合、変数はそこでそれを満たしません。ロールアウトを計画する際に Windows マシンをラップなしとしてカウントしてください。
 
 ### ランチャーの外で起動するプロセス
 
 以下のプロセスはランチャーを通じて起動しません。
 
 * ターミナルで自分で起動するセッション。これは呼び出し方法に関係なく実行されます。これらのセッションをカバーするには、`PATH` の前のディレクトリに `claude` という名前のスクリプトを配置し、ランチャーを実際のバイナリで実行します。管理されたシンボリックリンクを置き換えないでください。バックグラウンドサービスとそのセッションは `PATH` ルックアップなしで起動するため、2 つのランチャーはスタックしません。
-* `claude-cli://` ディープリンクの最初のプロセス。オペレーティングシステムのプロトコルハンドラーが直接起動します。そのセッションがバックグラウンドで起動するすべてのものはランチャーを通じて実行されます。このパスを完全に閉じるには、`disableDeepLinkRegistration` 設定で[ハンドラー登録を防止](/docs/ja/deep-links.md#registration-and-supported-platforms)してください。
+* `claude-cli://` ディープリンクの最初のプロセス。オペレーティングシステムのプロトコルハンドラーが直接起動します。そのセッションがバックグラウンドで起動するすべてのものはランチャーを通じて実行されます。このパスを完全に閉じるには、`disableDeepLinkRegistration` 設定で[ハンドラー登録を防止](https://code.claude.com/docs/ja/deep-links.md#registration-and-supported-platforms)してください。
 * `--worktree` と `--tmux` を組み合わせた再起動：ターミナルマルチプレクサーがそのペインを起動し、Claude Code のバイナリではありません。
-* [Claude in Chrome](/docs/ja/chrome.md) が登録するネイティブメッセージングホスト：ブラウザーが起動し、Claude Code のバイナリではありません。
+* [Claude in Chrome](https://code.claude.com/docs/ja/chrome.md) が登録するネイティブメッセージングホスト：ブラウザーが起動し、Claude Code のバイナリではありません。
 
 ### プロセスモニターのヘルパープロセス名
 
@@ -67,7 +67,7 @@ exec "$@"
 
 デタッチされたバックグラウンドサービスがそれを継承するように、設定ファイルの `env` ブロックで変数を設定します。シェル `export` では不十分です。バックグラウンドサービスはオンデマンドで起動し、シェルより長く存続し、シェルプロファイルを再読み込みしません。
 
-1 台のマシンの場合は、`~/.claude/settings.json` に追加します。組織内のすべてのマシンにデプロイするには、同じブロックを[管理設定](/docs/ja/managed-settings.md)に配置します。
+1 台のマシンの場合は、`~/.claude/settings.json` に追加します。組織内のすべてのマシンにデプロイするには、同じブロックを[管理設定](https://code.claude.com/docs/ja/managed-settings.md)に配置します。
 
 ```json theme={null}
 {
@@ -79,7 +79,7 @@ exec "$@"
 
 複数のソースが変数を設定する場合、管理設定値は `~/.claude/settings.json` とシェルでエクスポートされた値の両方をオーバーライドするため、ユーザーは自己生成を別のランチャーにポイントできません。
 
-[`processWrapper` 設定](/docs/ja/settings-reference#processwrapper)は名前付きのトップレベル設定キーと同じ値を持ちます。組織が設定を `env` ブロックではなく個別のキーとしてプッシュする場合に設定します。`processWrapper` 設定には Claude Code v2.1.210 以降が必要です。次の設定ファイルはキーを通じて同じランチャーを設定します。
+[`processWrapper` 設定](https://code.claude.com/docs/ja/settings-reference#processwrapper)は名前付きのトップレベル設定キーと同じ値を持ちます。組織が設定を `env` ブロックではなく個別のキーとしてプッシュする場合に設定します。`processWrapper` 設定には Claude Code v2.1.210 以降が必要です。次の設定ファイルはキーを通じて同じランチャーを設定します。
 
 ```json theme={null}
 {
@@ -89,9 +89,9 @@ exec "$@"
 
 両方が設定されている場合、`CLAUDE_CODE_PROCESS_WRAPPER` が優先されます。
 
-`processWrapper` は名前付き設定であるため、[リモート管理設定](/docs/ja/managed-settings.md#delivery-mechanisms)を通じてそれを配信する組織は、[セキュリティ承認ダイアログ](/docs/ja/server-managed-settings.md#security-approval-dialogs)に管理者が提供した実行可能ファイルを実行する他の設定と一緒にリストされているのを見ます。
+`processWrapper` は名前付き設定であるため、[リモート管理設定](https://code.claude.com/docs/ja/managed-settings.md#delivery-mechanisms)を通じてそれを配信する組織は、[セキュリティ承認ダイアログ](https://code.claude.com/docs/ja/server-managed-settings.md#security-approval-dialogs)に管理者が提供した実行可能ファイルを実行する他の設定と一緒にリストされているのを見ます。
 
-プロジェクトおよびローカル設定はランチャーを設定できません。リポジトリにコミットされたファイルが、マシン上のすべての Claude Code プロセスの前にバイナリを配置できてはならないため、Claude Code は `.claude/settings.json` または `.claude/settings.local.json` の `CLAUDE_CODE_PROCESS_WRAPPER` を無視して[デバッグログ](/docs/ja/troubleshooting.md)に警告を記録し、これらのファイルから `processWrapper` キーを読み込むことはありません。
+プロジェクトおよびローカル設定はランチャーを設定できません。リポジトリにコミットされたファイルが、マシン上のすべての Claude Code プロセスの前にバイナリを配置できてはならないため、Claude Code は `.claude/settings.json` または `.claude/settings.local.json` の `CLAUDE_CODE_PROCESS_WRAPPER` を無視して[デバッグログ](https://code.claude.com/docs/ja/troubleshooting.md)に警告を記録し、これらのファイルから `processWrapper` キーを読み込むことはありません。
 
 **3. バックグラウンドサービスとセッションを再起動する**
 
@@ -130,7 +130,7 @@ exec "$@"
 * `[` で始まる値は JSON 文字列配列として読み込まれます（`["/opt/corp/launcher", "--profile", "cc"]` など）。
 * シェル構文は機能しません。変数展開またはグロビングはなく、`;`、`|`、`&`、`$(` などの引用符なしの演算子は再解釈ではなく設定エラーとして拒否されます。
 
-値を使用できない場合、Claude Code は影響を受けるプロセスの起動を拒否し、[理由を報告](/docs/ja/errors.md#claude_code_process_wrapper-launcher-errors)します。
+値を使用できない場合、Claude Code は影響を受けるプロセスの起動を拒否し、[理由を報告](https://code.claude.com/docs/ja/errors.md#claude_code_process_wrapper-launcher-errors)します。
 
 設定ファイルでは、配列形式を JSON 文字列の中に記述し、引用符をエスケープします: `"[\"/opt/corp/launcher\", \"--profile\", \"cc\"]"`。
 
@@ -152,11 +152,11 @@ Claude Code が値から解決した起動コマンドを確認するには、[�
 
 ## `CLAUDE_CODE_SHELL_PREFIX` との関係
 
-`CLAUDE_CODE_PROCESS_WRAPPER` は Claude Code 独自のプロセスをラップし、コマンドを分離された argv トークンとしてランチャーに渡して `exec` します。[`CLAUDE_CODE_SHELL_PREFIX`](/docs/ja/env-vars) は Claude Code が代わりに実行するシェルコマンド（Bash ツール呼び出し、hooks、stdio MCP サーバーを起動するコマンドなど）をラップし、各コマンドを `$1` の単一のシェル引用文字列として渡して、ラッパーが再評価します。一方用に書かれたランチャーはもう一方として機能しません。
+`CLAUDE_CODE_PROCESS_WRAPPER` は Claude Code 独自のプロセスをラップし、コマンドを分離された argv トークンとしてランチャーに渡して `exec` します。[`CLAUDE_CODE_SHELL_PREFIX`](https://code.claude.com/docs/ja/env-vars) は Claude Code が代わりに実行するシェルコマンド（Bash ツール呼び出し、hooks、stdio MCP サーバーを起動するコマンドなど）をラップし、各コマンドを `$1` の単一のシェル引用文字列として渡して、ラッパーが再評価します。一方用に書かれたランチャーはもう一方として機能しません。
 
 ## 関連リソース
 
-* [エージェントビュー](/docs/ja/agent-view.md)：ランチャーがカバーするバックグラウンドセッションとスーパーバイザープロセス
-* [環境変数](/docs/ja/env-vars.md)：`CLAUDE_CODE_PROCESS_WRAPPER` リファレンスエントリ
-* [管理設定](/docs/ja/permissions.md#managed-settings)：`env` ブロックをフリート全体に配信
-* [ランチャーエラーリファレンス](/docs/ja/errors.md#claude_code_process_wrapper-launcher-errors)：拒否メッセージと復旧方法
+* [エージェントビュー](https://code.claude.com/docs/ja/agent-view.md)：ランチャーがカバーするバックグラウンドセッションとスーパーバイザープロセス
+* [環境変数](https://code.claude.com/docs/ja/env-vars.md)：`CLAUDE_CODE_PROCESS_WRAPPER` リファレンスエントリ
+* [管理設定](https://code.claude.com/docs/ja/permissions.md#managed-settings)：`env` ブロックをフリート全体に配信
+* [ランチャーエラーリファレンス](https://code.claude.com/docs/ja/errors.md#claude_code_process_wrapper-launcher-errors)：拒否メッセージと復旧方法

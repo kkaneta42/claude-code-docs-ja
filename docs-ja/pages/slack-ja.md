@@ -33,7 +33,7 @@ Claude Code in Slack を使用する前に、以下を確認してください�
 | :- | :- |
 | Claude プラン | Pro または Max |
 | Slack ワークスペース | どの組織によっても [Claude Tag](https://claude.com/docs/claude-tag/overview) に接続されていない。@Claude が[廃止のお知らせ](#the-legacy-claude-in-slack-bot-is-retired)で返信する場合、そのワークスペースは接続されています |
-| クラウドセッション | [クラウドセッション](/docs/ja/claude-code-on-the-web.md) がアカウントで有効になっている |
+| クラウドセッション | [クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md) がアカウントで有効になっている |
 | GitHub アカウント | [claude.ai/code](https://claude.ai/code) で接続され、少なくとも 1 つのリポジトリが認証されている |
 | Slack 認証 | Slack アカウントが Claude アプリを通じて Claude アカウントにリンクされている |
 
@@ -154,7 +154,7 @@ Slack ワークスペース管理者は、Claude アプリをワークスペー�
 
 **claude.ai/code で**: 完全な Claude Code セッション、完全な会話履歴、すべてのコード変更、ファイル操作があります。セッションは [claude.ai/code](https://claude.ai/code) の Claude Code 履歴に保存され、過去のセッションを続行したり、参照したり、プルリクエストを作成したりできます。
 
-Enterprise および Team アカウントの場合、Slack の Claude から作成されたセッションは自動的に組織に表示されます。詳細については、[クラウドセッション共有](/docs/ja/claude-code-on-the-web.md#share-sessions) を参照してください。
+Enterprise および Team アカウントの場合、Slack の Claude から作成されたセッションは自動的に組織に表示されます。詳細については、[クラウドセッション共有](https://code.claude.com/docs/ja/claude-code-on-the-web.md#share-sessions) を参照してください。
 
 ## ベストプラクティス
 
@@ -190,7 +190,7 @@ Claude Tag は Team プランと Enterprise プランで利用できます。ワ
 
 ### "Claude Code is not enabled for your account"
 
-このエラーは、Claude アカウントにまだクラウド環境がないことを意味します。Slack に接続したのと同じアカウントで [claude.ai/code](https://claude.ai/code) に 1 回サインインして、[ウェブオンボーディング](/docs/ja/web-quickstart.md#connect-github)を完了してください。これにより、デフォルトのクラウド環境が作成されるか、作成するよう求められます。エラーは次回のメンション時に解消されます。各ユーザーが個別に実行する必要があります。
+このエラーは、Claude アカウントにまだクラウド環境がないことを意味します。Slack に接続したのと同じアカウントで [claude.ai/code](https://claude.ai/code) に 1 回サインインして、[ウェブオンボーディング](https://code.claude.com/docs/ja/web-quickstart.md#connect-github)を完了してください。これにより、デフォルトのクラウド環境が作成されるか、作成するよう求められます。エラーは次回のメンション時に解消されます。各ユーザーが個別に実行する必要があります。
 
 ### セッションが開始しない
 
@@ -202,7 +202,7 @@ Claude Tag は Team プランと Enterprise プランで利用できます。ワ
 
 このエントリは [Claude Tag](https://claude.com/docs/claude-tag/overview) を使用しているワークスペースに適用されます。Claude Tag では、Claude はメンバーのアカウントではなく、組織の共有 ID としてチャンネルで機能します。[claude.ai/code](https://claude.ai/code) でチャンネルのクラウド環境を作成した場合、それは個人アカウントに属しており、Claude は個人環境でチャンネルセッションを開始できません。Claude Code はセッションを直ちに失敗させ、再試行しても役に立ちません。
 
-Owner であり、環境が自分のものである場合は、環境セレクターから[組織と共有](/docs/ja/cloud-environments.md#organization-shared-environments)してください。それ以外の場合は、Owner が[管理設定](https://claude.ai/admin-settings)の **Cloud environments** ページから組織共有環境として再作成します。
+Owner であり、環境が自分のものである場合は、環境セレクターから[組織と共有](https://code.claude.com/docs/ja/cloud-environments.md#organization-shared-environments)してください。それ以外の場合は、Owner が[管理設定](https://claude.ai/admin-settings)の **Cloud environments** ページから組織共有環境として再作成します。
 
 次の 2 つの方法で適用できます。
 
@@ -231,11 +231,11 @@ Owner でない場合は、このエントリを Owner に送信してくださ�
 
 * **GitHub のみ**: リポジトリは GitHub 上にある必要があります。
 * **一度に 1 つの PR**: 各セッションは 1 つのプルリクエストを作成できます。
-* **クラウドセッションアクセスが必要**: ユーザーは [クラウドセッション](/docs/ja/claude-code-on-the-web.md) へのアクセスが必要です。
+* **クラウドセッションアクセスが必要**: ユーザーは [クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md) へのアクセスが必要です。
 
 ## 関連リソース
 
-> **[クラウド上の Claude Code](/docs/ja/claude-code-on-the-web.md)**
+> **[クラウド上の Claude Code](https://code.claude.com/docs/ja/claude-code-on-the-web.md)**
 >
 > クラウドセッションについて詳しく学ぶ
 

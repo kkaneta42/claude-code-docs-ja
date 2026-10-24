@@ -22,16 +22,16 @@
 | アプローチ | 次のターンが開始される時期 | 停止する時期 |
 | :- | :- | :- |
 | `/goal` | 前のターンが終了するか、インタラクティブセッションで[アイドルチェックイン](#background-work-defers-evaluation)または[自動再試行](#other-errors-retry-or-pause-the-goal)が発生する | モデルが条件が満たされたことを確認するか、それが不可能であると判断するか、[修正が必要なエラー](#errors-you-have-to-fix-clear-the-goal)でターンが失敗するか、[`/goal clear`](#clear-a-goal)を実行する |
-| [`/loop`](/docs/ja/scheduled-tasks#run-a-prompt-repeatedly-with-%2Floop) | 時間間隔が経過する | あなたが停止するか、Claude が作業が完了したと判断する |
-| [Stop hook](/docs/ja/hooks-guide.md#prompt-based-hooks) | 前のターンが終了する | あなた自身のスクリプトまたはプロンプトが判断する |
+| [`/loop`](https://code.claude.com/docs/ja/scheduled-tasks#run-a-prompt-repeatedly-with-%2Floop) | 時間間隔が経過する | あなたが停止するか、Claude が作業が完了したと判断する |
+| [Stop hook](https://code.claude.com/docs/ja/hooks-guide.md#prompt-based-hooks) | 前のターンが終了する | あなた自身のスクリプトまたはプロンプトが判断する |
 
 `/goal` と Stop hook は両方とも、すべてのターンの後に実行されます。`/goal` はセッションスコープのショートカットです。条件を入力すると、現在のセッションでのみアクティブになります。Stop hook はあなたの設定ファイルに存在し、そのスコープ内のすべてのセッションに適用され、決定論的なチェックのためにスクリプトを実行するか、モデルで評価されたチェックのためにプロンプトを実行できます。
 
-[自動モード](/docs/ja/auto-mode-config.md)は、単一のターン内でツール呼び出しを承認しますが、新しいターンを開始しません。Claude は作業が完了したと判断すると停止します。`/goal` は、すべてのターンの後にあなたの条件をチェックする別の評価器を追加するため、コンプリーションは作業を行っているモデルではなく、新しいモデルによって決定されます。この 2 つは相互に補完的です。自動モードはツールごとのプロンプトを削除し、`/goal` はターンごとのプロンプトを削除します。
+[自動モード](https://code.claude.com/docs/ja/auto-mode-config.md)は、単一のターン内でツール呼び出しを承認しますが、新しいターンを開始しません。Claude は作業が完了したと判断すると停止します。`/goal` は、すべてのターンの後にあなたの条件をチェックする別の評価器を追加するため、コンプリーションは作業を行っているモデルではなく、新しいモデルによって決定されます。この 2 つは相互に補完的です。自動モードはツールごとのプロンプトを削除し、`/goal` はターンごとのプロンプトを削除します。
 
 > [!TIP]
 >
-> 上記のアプローチは、現在のセッションを実行し続けます。また、夜間テストや朝のトリアージなど、開いているセッションとは無関係に実行される作業をスケジュールすることもできます。クラウドおよび Desktop のスケジュールタスクについては、[スケジューリングオプション](/docs/ja/scheduled-tasks.md#compare-scheduling-options)を参照してください。
+> 上記のアプローチは、現在のセッションを実行し続けます。また、夜間テストや朝のトリアージなど、開いているセッションとは無関係に実行される作業をスケジュールすることもできます。クラウドおよび Desktop のスケジュールタスクについては、[スケジューリングオプション](https://code.claude.com/docs/ja/scheduled-tasks.md#compare-scheduling-options)を参照してください。
 
 ## `/goal` を使用する
 
@@ -47,7 +47,7 @@
 
 ゴールを設定すると、条件自体をディレクティブとして、すぐにターンが開始されます。別のプロンプトを送信する必要はありません。ゴールがアクティブな間、`◎ /goal active` インジケーターがゴールの実行時間を表示します。
 
-ゴールは権限モードを変更しません。ゴールターンが無人で実行されるようにするには、[オートモード](/docs/ja/auto-mode-config.md)で `/goal` を実行します。[マニュアルモード](/docs/ja/permission-modes.md)では、テストコマンドなど、設定で既に許可されていないツール呼び出しの前に、Claude はまだ確認を求めます。
+ゴールは権限モードを変更しません。ゴールターンが無人で実行されるようにするには、[オートモード](https://code.claude.com/docs/ja/auto-mode-config.md)で `/goal` を実行します。[マニュアルモード](https://code.claude.com/docs/ja/permission-modes.md)では、テストコマンドなど、設定で既に許可されていないツール呼び出しの前に、Claude はまだ確認を求めます。
 
 ゴールがアクティブな間、トランスクリプトは評価者が返す各判定を表示し、Ctrl+O を押すと、その背後にある理由を確認できます。ステータスビューは最新の理由も表示するため、Claude が次に何に向かって作業しているかを確認できます。
 
@@ -99,13 +99,13 @@ Claude は `Goal cleared:` の後に条件を出力して確認するか、何�
 
 ### アクティブなゴールで再開する
 
-セッションを再開すると、Claude Code はセッションが終了したときにまだアクティブだったゴールを復元します。Claude Code はすべての再開ルートで復元します。`--continue`、セッション ID、名前、または[トランスクリプトファイルパス](/docs/ja/sessions.md#resume-a-session)を使用した `--resume`、および[セッションピッカー](/docs/ja/sessions.md#use-the-session-picker)です。v2.1.239 より前では、Claude Code は `claude --resume` ピッカーを除くすべてのルートでゴールを復元していました。
+セッションを再開すると、Claude Code はセッションが終了したときにまだアクティブだったゴールを復元します。Claude Code はすべての再開ルートで復元します。`--continue`、セッション ID、名前、または[トランスクリプトファイルパス](https://code.claude.com/docs/ja/sessions.md#resume-a-session)を使用した `--resume`、および[セッションピッカー](https://code.claude.com/docs/ja/sessions.md#use-the-session-picker)です。v2.1.239 より前では、Claude Code は `claude --resume` ピッカーを除くすべてのルートでゴールを復元していました。
 
 Claude Code は条件を引き継ぎますが、ターン数、タイマー、トークン支出ベースラインをリセットします。既に達成またはクリアされたゴールは復元しません。
 
 ### 非対話的に実行する
 
-`/goal` は[非対話的モード](/docs/ja/headless.md)、[デスクトップアプリ](/docs/ja/desktop.md)、および[リモートコントロール](/docs/ja/remote-control.md)で機能します。`-p` でゴールを設定すると、ループが単一の呼び出しで完了まで実行されます。
+`/goal` は[非対話的モード](https://code.claude.com/docs/ja/headless.md)、[デスクトップアプリ](https://code.claude.com/docs/ja/desktop.md)、および[リモートコントロール](https://code.claude.com/docs/ja/remote-control.md)で機能します。`-p` でゴールを設定すると、ループが単一の呼び出しで完了まで実行されます。
 
 ```bash theme={null}
 claude -p "/goal CHANGELOG.md has an entry for every PR merged this week"
@@ -117,13 +117,13 @@ Ctrl+C でプロセスを中断して、解決前に非対話的なゴールを�
 
 ## 評価の仕組み
 
-`/goal` は、セッションスコープの [プロンプトベースの Stop フック](/docs/ja/hooks.md#prompt-based-hooks) のラッパーです。Claude が各ターンを終了するたびに、Claude Code は条件と現在までの会話を、設定済みの [小型高速モデル](/docs/ja/model-config.md) に送信します。モデルは 3 つの判定のいずれかを返します。各判定には短い理由が付きます。
+`/goal` は、セッションスコープの [プロンプトベースの Stop フック](https://code.claude.com/docs/ja/hooks.md#prompt-based-hooks) のラッパーです。Claude が各ターンを終了するたびに、Claude Code は条件と現在までの会話を、設定済みの [小型高速モデル](https://code.claude.com/docs/ja/model-config.md) に送信します。モデルは 3 つの判定のいずれかを返します。各判定には短い理由が付きます。
 
 * **未達成**: Claude は作業を続け、理由を次のターンのガイダンスとして受け取ります。
 * **達成**: Claude Code はゴールをクリアし、トランスクリプトに達成エントリを記録します。
 * **不可能**: 評価者は条件を満たすことが不可能だと判断しました。Claude Code はゴールをクリアし、理由とともにトランスクリプトに失敗エントリを記録します。自分でクリアする必要はありません。
 
-Claude が評価者に答え続けても進捗がない場合（複数ターン連続でツール使用がない場合）、Claude Code はループを停止し、警告を出力し、ゴールがまだ設定された状態で制御をあなたに返します。評価は次のプロンプト後に再開されます。[フック ガイド](/docs/ja/hooks-guide.md#stop-hook-hits-the-block-cap) では、基礎となるメカニズムについて説明しています。
+Claude が評価者に答え続けても進捗がない場合（複数ターン連続でツール使用がない場合）、Claude Code はループを停止し、警告を出力し、ゴールがまだ設定された状態で制御をあなたに返します。評価は次のプロンプト後に再開されます。[フック ガイド](https://code.claude.com/docs/ja/hooks-guide.md#stop-hook-hits-the-block-cap) では、基礎となるメカニズムについて説明しています。
 
 ### ターンが失敗した場合
 
@@ -133,9 +133,9 @@ Claude が評価者に答え続けても進捗がない場合（複数ターン�
 
 修正するまでクリアされないエラーでターンが失敗した場合、Claude Code はゴールをクリアし、原因を名前で示す警告を出力します。警告は `Goal cleared after an unrecoverable error` で始まり、`Run /goal again to continue` で終わります。原因を修正してから、`/goal <condition>` で [ゴールを再度設定](#set-a-goal) してください。4 つの種類の失敗がゴールをクリアします。
 
-* 認証失敗。Claude Code が独自の認証情報を管理している場合です。デスクトップアプリや [クラウドセッション](/docs/ja/claude-code-on-the-web.md) など、ホストがあなたのために認証情報を管理している場合、Claude Code はホストが独自にアクセスを復元するため、ゴールをアクティブなままにします。
+* 認証失敗。Claude Code が独自の認証情報を管理している場合です。デスクトップアプリや [クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md) など、ホストがあなたのために認証情報を管理している場合、Claude Code はホストが独自にアクセスを復元するため、ゴールをアクティブなままにします。
 * クレジット残高の枯渇
-* [自動コンパクション](/docs/ja/model-config.md#set-the-auto-compact-window) でクリアできないコンテキストオーバーフロー
+* [自動コンパクション](https://code.claude.com/docs/ja/model-config.md#set-the-auto-compact-window) でクリアできないコンテキストオーバーフロー
 * 利用できないモデル
 
 #### その他のエラーはゴールを再試行または一時停止します
@@ -143,9 +143,9 @@ Claude が評価者に答え続けても進捗がない場合（複数ターン�
 その他の失敗の場合、ゴールは設定されたままになります。Claude Code v2.1.269 以降のインタラクティブセッションでは、Claude Code は原因を名前で示す行を出力し、自動的に再試行するか、あなたを待ちます。
 
 * **再試行**: サーバーの過負荷や接続の切断など、自動的にクリアされる傾向がある失敗の場合、`Goal still active` で始まる通知は次の試行までの待機時間を示します。3 回の自動再試行後、ゴールは代わりに一時停止されます。
-* **一時停止**: API レート制限、claude.ai [使用制限](/docs/ja/errors.md#youve-hit-your-session-limit)、またはターンを終了したフックなど、再試行が繰り返されるだけの失敗の場合、`Goal paused` で始まる通知は原因を名前で示します。セッションが [使用制限がリセットされたときに自動的に続行するのを待機中](/docs/ja/interactive-mode.md#wait-for-a-usage-limit-to-reset) の場合、Claude はその後、ゴール達成に向けて作業を再開します。
+* **一時停止**: API レート制限、claude.ai [使用制限](https://code.claude.com/docs/ja/errors.md#youve-hit-your-session-limit)、またはターンを終了したフックなど、再試行が繰り返されるだけの失敗の場合、`Goal paused` で始まる通知は原因を名前で示します。セッションが [使用制限がリセットされたときに自動的に続行するのを待機中](https://code.claude.com/docs/ja/interactive-mode.md#wait-for-a-usage-limit-to-reset) の場合、Claude はその後、ゴール達成に向けて作業を再開します。
 
-いつでもメッセージを送信して、次のターンをすぐに開始できます。自動再試行をオフにするには、[`CLAUDE_CODE_GOAL_CHECKIN_MINUTES`](/docs/ja/env-vars) を `0` に設定します。これにより、[チェックイン](#background-work-defers-evaluation) もオフになります。
+いつでもメッセージを送信して、次のターンをすぐに開始できます。自動再試行をオフにするには、[`CLAUDE_CODE_GOAL_CHECKIN_MINUTES`](https://code.claude.com/docs/ja/env-vars) を `0` に設定します。これにより、[チェックイン](#background-work-defers-evaluation) もオフになります。
 
 ### バックグラウンド作業は評価を遅延させます
 
@@ -158,17 +158,17 @@ Claude が評価者に答え続けても進捗がない場合（複数ターン�
 
 v2.1.239 より前では、この方法でバックオフするのはアイドルチェックインのみでした。ターン終了時に配信されたチェックインは最初の間隔で繰り返されました。
 
-最初の間隔を変更するには、[`CLAUDE_CODE_GOAL_CHECKIN_MINUTES`](/docs/ja/env-vars) を設定します。Claude Code はあなたの値を 30 分の間隔の代わりに使用し、後続の間隔をそれに応じてスケーリングします。チェックインと [自動再試行](#other-errors-retry-or-pause-the-goal) をオフにするには、`0` に設定します。
+最初の間隔を変更するには、[`CLAUDE_CODE_GOAL_CHECKIN_MINUTES`](https://code.claude.com/docs/ja/env-vars) を設定します。Claude Code はあなたの値を 30 分の間隔の代わりに使用し、後続の間隔をそれに応じてスケーリングします。チェックインと [自動再試行](#other-errors-retry-or-pause-the-goal) をオフにするには、`0` に設定します。
 
 チェックインには Claude Code v2.1.234 以降が必要です。
 
 ### 評価モデルとコスト
 
-別のモデルで評価するには、[`ANTHROPIC_DEFAULT_HAIKU_MODEL`](/docs/ja/model-config#environment-variables) を設定します。
+別のモデルで評価するには、[`ANTHROPIC_DEFAULT_HAIKU_MODEL`](https://code.claude.com/docs/ja/model-config#environment-variables) を設定します。
 
 > [!WARNING]
 >
-> Claude Code は `/goal` 評価だけでなく、小型高速モデルを使用するあらゆる場所で `ANTHROPIC_DEFAULT_HAIKU_MODEL` を読み取ります。これを設定すると、Claude Code は [`haiku` エイリアス](/docs/ja/model-config#model-aliases) をそのモデルに解決し、会話要約などの [バックグラウンド機能](/docs/ja/costs.md#background-token-usage) をそれで実行します。
+> Claude Code は `/goal` 評価だけでなく、小型高速モデルを使用するあらゆる場所で `ANTHROPIC_DEFAULT_HAIKU_MODEL` を読み取ります。これを設定すると、Claude Code は [`haiku` エイリアス](https://code.claude.com/docs/ja/model-config#model-aliases) をそのモデルに解決し、会話要約などの [バックグラウンド機能](https://code.claude.com/docs/ja/costs.md#background-token-usage) をそれで実行します。
 
 評価者は、セッションが設定されているプロバイダーで実行されます。ツールを呼び出さないため、Claude が既に会話で表示したものだけを判定できます。
 
@@ -178,11 +178,11 @@ v2.1.239 より前では、この方法でバックオフするのはアイド�
 
 ## 要件
 
-Claude Code は、評価器がフック システムの一部であるため、[ワークスペース信頼ルール（設定ファイル内のフックと同じ）](/docs/ja/permissions.md#what-runs-before-you-trust-a-folder)の下で `/goal` を利用可能にします。[`disableAllHooks`](/docs/ja/hooks#disable-or-remove-hooks) が `true` の場合（設定の優先順位が適用された後）、または [`allowManagedHooksOnly`](/docs/ja/settings-reference#allowmanagedhooksonly) が管理設定で設定されている場合、`/goal` は利用できません。いずれの場合も、コマンドは何もしないのではなく、理由を伝えます。
+Claude Code は、評価器がフック システムの一部であるため、[ワークスペース信頼ルール（設定ファイル内のフックと同じ）](https://code.claude.com/docs/ja/permissions.md#what-runs-before-you-trust-a-folder)の下で `/goal` を利用可能にします。[`disableAllHooks`](https://code.claude.com/docs/ja/hooks#disable-or-remove-hooks) が `true` の場合（設定の優先順位が適用された後）、または [`allowManagedHooksOnly`](https://code.claude.com/docs/ja/settings-reference#allowmanagedhooksonly) が管理設定で設定されている場合、`/goal` は利用できません。いずれの場合も、コマンドは何もしないのではなく、理由を伝えます。
 
 ## 関連項目
 
-* [プロンプトを `/loop` で繰り返し実行する](/docs/ja/scheduled-tasks#run-a-prompt-repeatedly-with-%2Floop)：条件が成立するまでではなく、時間間隔で再実行する
-* [プロンプトベースの hook](/docs/ja/hooks-guide.md#prompt-based-hooks)：カスタム評価ロジックが必要な場合は、独自の Stop hook を作成する
-* [自動モード](/docs/ja/auto-mode-config.md)：ツール呼び出しを自動的に承認して、各ゴール ターンが無人で実行されるようにする
-* [スケジューリング比較](/docs/ja/scheduled-tasks.md#compare-scheduling-options)：開いているセッションとは無関係にスケジュールで作業を実行する
+* [プロンプトを `/loop` で繰り返し実行する](https://code.claude.com/docs/ja/scheduled-tasks#run-a-prompt-repeatedly-with-%2Floop)：条件が成立するまでではなく、時間間隔で再実行する
+* [プロンプトベースの hook](https://code.claude.com/docs/ja/hooks-guide.md#prompt-based-hooks)：カスタム評価ロジックが必要な場合は、独自の Stop hook を作成する
+* [自動モード](https://code.claude.com/docs/ja/auto-mode-config.md)：ツール呼び出しを自動的に承認して、各ゴール ターンが無人で実行されるようにする
+* [スケジューリング比較](https://code.claude.com/docs/ja/scheduled-tasks.md#compare-scheduling-options)：開いているセッションとは無関係にスケジュールで作業を実行する

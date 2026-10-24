@@ -8,9 +8,9 @@
 
 > [!NOTE]
 >
-> セルフホストされた環境は Team および Enterprise プランでパブリックベータ版です。[Owner](/docs/ja/cloud-environments.md#organization-shared-environments) が [**Cloud environments** 管理ページ](https://claude.ai/admin-settings/cloud-environments) で **Allow self-hosted environments** をオンにすることで有効になります。このページは動作するランナーを前提としています。セットアップについては [クイックスタート](/docs/ja/self-hosted-environments-quickstart.md) を、フリートレシピについては [本番環境へのデプロイ](/docs/ja/self-hosted-environments-deploy.md) を参照してください。
+> セルフホストされた環境は Team および Enterprise プランでパブリックベータ版です。[Owner](https://code.claude.com/docs/ja/cloud-environments.md#organization-shared-environments) が [**Cloud environments** 管理ページ](https://claude.ai/admin-settings/cloud-environments) で **Allow self-hosted environments** をオンにすることで有効になります。このページは動作するランナーを前提としています。セットアップについては [クイックスタート](https://code.claude.com/docs/ja/self-hosted-environments-quickstart.md) を、フリートレシピについては [本番環境へのデプロイ](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md) を参照してください。
 
-[セルフホストされた環境](/docs/ja/self-hosted-environments) は、デプロイするランナープロセスによって実行される独自のインフラストラクチャ上で Claude Code [クラウドセッション](/docs/ja/claude-code-on-the-web.md) を実行します。設定がない場合、そのランナーはセッションのリポジトリをクローンし、Claude Code をスポーンし、クリーンアップします。このページはランナーを操作するプラットフォームエンジニア向けです。デフォルトが適さない場合の拡張ポイント、セッションごとの認証情報プロビジョニングからチェックアウト全体の置き換えまでをカバーしています。ラッパーとフックはランナーホスト上の実行可能ファイルとして実行され、Linux または macOS であり、このページの例は POSIX シェルを想定しています。
+[セルフホストされた環境](https://code.claude.com/docs/ja/self-hosted-environments) は、デプロイするランナープロセスによって実行される独自のインフラストラクチャ上で Claude Code [クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md) を実行します。設定がない場合、そのランナーはセッションのリポジトリをクローンし、Claude Code をスポーンし、クリーンアップします。このページはランナーを操作するプラットフォームエンジニア向けです。デフォルトが適さない場合の拡張ポイント、セッションごとの認証情報プロビジョニングからチェックアウト全体の置き換えまでをカバーしています。ラッパーとフックはランナーホスト上の実行可能ファイルとして実行され、Linux または macOS であり、このページの例は POSIX シェルを想定しています。
 
 このページのいくつかのフック環境変数は `pool` を使用しています（例：`CLAUDE_RUNNER_POOL_ID`）。CLI フラグと環境変数名は `environment` を使用しています（例：`--environment-secret-file`）。
 
@@ -28,7 +28,7 @@ claude self-hosted-runner --environment-secret-file /etc/claude/environment-secr
 
 | 変数 | 説明 |
 | :- | :- |
-| `CLAUDE_CODE_SESSION_ACCESS_TOKEN` | セッション JWT。プレフィックス `sk-ant-cc-` が付きます。その `act` クレームはセッション作成者を識別し、作成サーフェスが記録した場合は作成者のメールを含みます。値はスポーン時のトークンです。更新はこどもの stdin を介して到着するため、ラッパーは初期値のみを見ます。[セッション ID を検証する](/docs/ja/self-hosted-environments-identity.md) を参照してください。 |
+| `CLAUDE_CODE_SESSION_ACCESS_TOKEN` | セッション JWT。プレフィックス `sk-ant-cc-` が付きます。その `act` クレームはセッション作成者を識別し、作成サーフェスが記録した場合は作成者のメールを含みます。値はスポーン時のトークンです。更新はこどもの stdin を介して到着するため、ラッパーは初期値のみを見ます。[セッション ID を検証する](https://code.claude.com/docs/ja/self-hosted-environments-identity.md) を参照してください。 |
 | `CCR_SESSION_ACCOUNT_EMAIL` | セッション作成者のメール。ランナーによってトークンの `act.email` クレームから署名検証なしで事前抽出されます。コミットトレーラーなどのラベリングに適しています。メールが認証情報の発行をゲートする場合、トークンを検証し、代わりにクレームから読み取ります。[セッション作成者にスコープされた認証情報をプロビジョニングする](#provision-credentials-scoped-to-the-session-creator) を参照してください。トークンが作成者メールを含まない場合（例えば、組織のサービス ID が作成するセッション）は設定されません。個人識別情報として扱います。 |
 | `CLAUDE_RUNNER_CLIENT_PLATFORM` | セッションを作成したクライアントサーフェス（`web_claude_ai`、`desktop_app`、`ios`、`claude_code_cli`、`scheduled_trigger` など）。Anthropic はセッション作成時に値を 1 回記録するため、ラッパーとすべてのライフサイクルフックは同じ値を見ます。採用分析とラベリングにのみ使用し、認可シグナルとしては使用しないでください。セッションに記録または認識されたサーフェスがない場合は設定されません。Claude Code v2.1.229 以降が必要です。 |
 | `CLAUDE_RUNNER_CLAUDE_BIN` | ランナー自体の Claude Code バイナリへの絶対パス。`exec "$CLAUDE_RUNNER_CLAUDE_BIN" "$@"` でラッパーを終了して、インストールパスをハードコードせずにピン留めされたバイナリに制御を渡します。 |
@@ -37,8 +37,8 @@ claude self-hosted-runner --environment-secret-file /etc/claude/environment-secr
 | `CLAUDE_CODE_REMOTE_SLACK_THREAD_URL` | 1 つの Slack スレッドに属する [Claude Tag](https://claude.com/docs/claude-tag/overview) セッションの場合、そのスレッドへのリンク。他のセッションでは設定されず、スレッドセッションでも設定されない場合があります。 |
 | `CLAUDE_CODE_REMOTE_SLACK_THREAD_TS` | 1 つの Slack スレッドに属する Claude Tag セッションの場合、そのスレッドの Slack タイムスタンプ（`1700000000.000100` など）。設定されない場合があり、`CLAUDE_CODE_REMOTE_SLACK_THREAD_URL` が設定されていないときに設定される場合もあるため、各変数を個別に確認してください。 |
 | `CLAUDE_SESSION_INGRESS_TOKEN_FILE` | 現在のセッション JWT を保持する、セッションごとのファイルへの絶対パス。トークン更新全体で最新に保たれます。シェルサブプロセスは、ユーザーがセッションに追加した添付ファイルをダウンロードするときに、その `Authorization` ヘッダーに対して読み取ります。`exec` は変数を自動的に保持します。子の環境を再構築するラッパーは変数を引き継ぐ必要があります。そうしないと、添付ファイルのダウンロードが静かに停止します。 |
-| `CLAUDE_CONFIG_DIR` | セッションごとの Claude 設定ディレクトリ。ランナーが起動時にキャプチャするランナーホストの設定のスナップショットからセッション開始時に書き込まれます。[権限とツール承認](#permissions-and-tool-approval) を参照してください。このディレクトリへの書き込みはこのセッションに分離されます。ディレクトリはセッション終了後、ランナーを [`--remove-session-state`](/docs/ja/self-hosted-environments-reference#runner-cli-flags) で起動しない限り `<base-dir>/_sessions/` の下に留まります。[事前ウォーミングされたチェックアウトを再利用する](/docs/ja/self-hosted-environments-deploy.md#reuse-a-pre-warmed-checkout) を参照してください。 |
-| `CLAUDE_CODE_REMOTE_MCP_CONFIG` | Anthropic のコントロールプレーンがこのセッション用に配信した MCP サーバー定義を保持する、`CLAUDE_CONFIG_DIR` 内のファイルへのパス。ラッパーが子の環境を再構築する場合は、この変数を引き継いでください。この変数がないと、コントロールプレーンが配信するサーバーを更新したときに、ラッパーが [`--mcp-config`](/docs/ja/cli-reference#cli-flags) で追加した stdio、HTTP、SSE サーバーのうち更新に含まれないものを子がシャットダウンします。Claude Code v2.1.299 以降が必要です。 |
+| `CLAUDE_CONFIG_DIR` | セッションごとの Claude 設定ディレクトリ。ランナーが起動時にキャプチャするランナーホストの設定のスナップショットからセッション開始時に書き込まれます。[権限とツール承認](#permissions-and-tool-approval) を参照してください。このディレクトリへの書き込みはこのセッションに分離されます。ディレクトリはセッション終了後、ランナーを [`--remove-session-state`](https://code.claude.com/docs/ja/self-hosted-environments-reference#runner-cli-flags) で起動しない限り `<base-dir>/_sessions/` の下に留まります。[事前ウォーミングされたチェックアウトを再利用する](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#reuse-a-pre-warmed-checkout) を参照してください。 |
+| `CLAUDE_CODE_REMOTE_MCP_CONFIG` | Anthropic のコントロールプレーンがこのセッション用に配信した MCP サーバー定義を保持する、`CLAUDE_CONFIG_DIR` 内のファイルへのパス。ラッパーが子の環境を再構築する場合は、この変数を引き継いでください。この変数がないと、コントロールプレーンが配信するサーバーを更新したときに、ラッパーが [`--mcp-config`](https://code.claude.com/docs/ja/cli-reference#cli-flags) で追加した stdio、HTTP、SSE サーバーのうち更新に含まれないものを子がシャットダウンします。Claude Code v2.1.299 以降が必要です。 |
 | `ANTHROPIC_BASE_URL` | こどもが使用する API ベース URL。コントロールプレーンによってセッションごとに配信され、通常は `https://api.anthropic.com` です。上書きしないでください。セッションの推論認証情報は Anthropic が発行した OAuth トークンであり、他のプロバイダーはこれを受け入れません。 |
 | `CLAUDE_CODE_OAUTH_TOKEN` | 子がモデル推論に使用する短期 OAuth アクセストークン。約 30 分の有効期限があります。ランナーは有効期限前に再発行し、子の stdin を介して更新を配信するため、[stdin を接続したままにしない](#keep-stdin-and-file-descriptor-3-attached) ラッパーは初期値のみを見ます。組織の IP 許可リストに依存してこのトークンの使用を制限しないでください。リークした場合に約 30 分間使用可能なままのベアラー認証情報として扱い、ログに記録したり、ディスクに書き込んだり、セッションコンテナの外に転送したりしないでください。 |
 
@@ -52,7 +52,7 @@ claude self-hosted-runner --environment-secret-file /etc/claude/environment-secr
 
 ### スクリプトが展開する引数と変数を引用符で囲む
 
-ランナーがラッパーまたは [`command` フック](#command) に渡すすべての引数と変数を引用符で囲んでください。JSON、文全体、または `Bash(npm run test *)` などの[権限ルール](/docs/ja/permissions.md#permission-rule-syntax)を保持するため、シェルが解釈する文字を含む値があります。
+ランナーがラッパーまたは [`command` フック](#command) に渡すすべての引数と変数を引用符で囲んでください。JSON、文全体、または `Bash(npm run test *)` などの[権限ルール](https://code.claude.com/docs/ja/permissions.md#permission-rule-syntax)を保持するため、シェルが解釈する文字を含む値があります。
 
 * **引数**: `"$@"` として渡します
 * **変数**: `"${CLAUDE_CODE_REMOTE_SLACK_THREAD_URL:-}"` のように、それぞれを引用符で囲みます。例えば、Slack スレッドのリンクには `?` や `&` が含まれる場合があります。
@@ -62,11 +62,11 @@ claude self-hosted-runner --environment-secret-file /etc/claude/environment-secr
 
 こどもの stdin はランナーのコントロールチャネルです。トークン更新とセッション終了シグナルがそこに到着します。ランナーはファイルディスクリプタ 3 でパイプも開き、こどものアクティビティシグナルを読み取ってアイドルおよびスタートアップタイムアウトを駆動します。プレーンな `exec "$CLAUDE_RUNNER_CLAUDE_BIN" "$@"` は両方を自動的に保持します。
 
-ラッパーが裸の `&` でこどもをバックグラウンドにする場合、こどもの stdin が切断されます。セッションは初期 OAuth トークンの約 30 分の有効期限が切れるまで健全に見えますが、その後そのトークンを使用するすべての API 呼び出しが `401 authentication_error` で失敗します。ラッパーがこどもをバックグラウンドにする必要がある場合（例えば、ティアダウントラップを生かしておくため）、stdin をファイルディスクリプタ 4 以上に保存し、明示的に再接続します。
+ラッパーが裸の `&` でこどもをバックグラウンドにする場合、こどもの stdin が切断されます。セッションは初期 OAuth トークンの約 30 分の有効期限が切れるまで健全に見えますが、その後そのトークンを使用するすべての API 呼び出しが `401 authentication_error` で失敗します。ラッパーがこどもをバックグラウンドにする必要がある場合（例えば、ティアダウントラップを生かしておくため）、stdin をファイルディスクリプタ 9 に保存し、明示的に再接続します。
 
 ```bash theme={null}
-exec 4<&0
-"$CLAUDE_RUNNER_CLAUDE_BIN" "$@" <&4 4<&- &
+exec 9<&0   # ランナーは 3 を使用し、v2.1.309 以降は 4 と 5 を予約します
+"$CLAUDE_RUNNER_CLAUDE_BIN" "$@" <&9 9<&- &
 CHILD=$!
 trap 'teardown' EXIT
 wait "$CHILD"
@@ -75,11 +75,12 @@ wait "$CHILD"
 こどもの stdout はリダイレクトできます。ファイルディスクリプタ 3 と stderr はランナーに接続したままにしてください。
 
 * **ファイルディスクリプタ 3**: こどものアクティビティシグナルをランナーに伝えます。ラッパーで閉じたり再利用したりしないでください。
+* **ファイルディスクリプタ 4 と 5**: Claude Code v2.1.309 以降のランナーは、これらを子用に予約しています。ラッパーで閉じたり再利用したりしないでください。ラッパーでいずれかを使用している場合（例えば stdin の保存のため）、その用途を 6 から 9 のディスクリプタに移してください。これらは以前のバージョンでも空いています。
 * **stderr**: ラッパーまたはこどもがゼロ以外で終了すると、ランナーは stderr の最後の数行をセッションに投稿し、自身のログにも出力します。セッションのユーザーにはこれらの行が表示されるため、シークレットを stderr に出力しないでください。また、ラッパーをデプロイする前に `set -x` を削除してください。stderr をリダイレクトしてもセッションは実行されますが、ランナーは終了コードのみで失敗を報告します。
 
 ### システムプロンプトフラグをそのまま渡す
 
-Anthropic のコントロールプレーンがセッションに送信するシステムプロンプトと追加システムプロンプトは、インラインテキストではなくファイルパスとしてラッパーに届きます。ランナーは各プロンプトをセッションの設定ディレクトリ `CLAUDE_CONFIG_DIR` 内のファイルに書き込み、そのパスをラッパーが受け取る引数の中で [`--system-prompt-file <path>` または `--append-system-prompt-file <path>`](/docs/ja/cli-reference#system-prompt-flags) として渡します。
+Anthropic のコントロールプレーンがセッションに送信するシステムプロンプトと追加システムプロンプトは、インラインテキストではなくファイルパスとしてラッパーに届きます。ランナーは各プロンプトをセッションの設定ディレクトリ `CLAUDE_CONFIG_DIR` 内のファイルに書き込み、そのパスをラッパーが受け取る引数の中で [`--system-prompt-file <path>` または `--append-system-prompt-file <path>`](https://code.claude.com/docs/ja/cli-reference#system-prompt-flags) として渡します。
 
 Claude Code v2.1.281 以降のランナーは、プロンプトをファイルとして配信します。v2.1.281 より前は、ランナーはプロンプトを `--system-prompt <text>` および `--append-system-prompt <text>` として渡していました。
 
@@ -90,7 +91,7 @@ Claude Code v2.1.281 以降のランナーは、プロンプトをファイル�
 
 ### セッション作成者にスコープされた認証情報をプロビジョニングする
 
-`decode-token` サブコマンドを使用してセッション JWT からクレームを読み取ります。引数、`CLAUDE_CODE_SESSION_ACCESS_TOKEN`、または stdin からトークンを読み取ります（この順序で）。[セッション内のトークンを検証する](/docs/ja/self-hosted-environments-identity.md#verify-the-token-inside-the-session) を参照して、何をチェックするかを確認してください。以下の例は作成者 ID をデコードし、短期 AWS 認証情報と交換し、Claude Code に exec します。
+`decode-token` サブコマンドを使用してセッション JWT からクレームを読み取ります。引数、`CLAUDE_CODE_SESSION_ACCESS_TOKEN`、または stdin からトークンを読み取ります（この順序で）。[セッション内のトークンを検証する](https://code.claude.com/docs/ja/self-hosted-environments-identity.md#verify-the-token-inside-the-session) を参照して、何をチェックするかを確認してください。以下の例は作成者 ID をデコードし、短期 AWS 認証情報と交換し、Claude Code に exec します。
 
 ```bash theme={null}
 #!/bin/bash
@@ -106,13 +107,13 @@ eval "$creds"
 exec "$CLAUDE_RUNNER_CLAUDE_BIN" "$@"
 ```
 
-抽出されたクレームが認可決定をゲートする場合、`jq -r` ではなく `jq -re` を使用して、不在のクレームが下流に文字列 `null` を渡す代わりにゼロ以外で終了するようにします。組織のサービス ID（ボットおよびエージェントセッションなど）によって作成されたセッションは、`user:` サブジェクトではなく `agent:` サブジェクトを持つため、この例はそれらを拒否します。環境がそれらのセッションを提供する場合、ラッパーが終了する代わりにデフォルト認証情報にフォールバックするかどうかを明示的に決定します。認証情報交換で代わりにメールが必要な場合は、`.act.email` を読み取り、その不在を処理します。トークンは作成サーフェスが記録した場合にのみメールを持ち、[CLI ディスパッチセッション](/docs/ja/self-hosted-environments-testing.md#run-the-test-loop) はそれを欠く可能性があります。完全なクレーム参照とランナーの外のサービスからの検証については、[セッション ID を検証する](/docs/ja/self-hosted-environments-identity.md) を参照してください。
+抽出されたクレームが認可決定をゲートする場合、`jq -r` ではなく `jq -re` を使用して、不在のクレームが下流に文字列 `null` を渡す代わりにゼロ以外で終了するようにします。組織のサービス ID（ボットおよびエージェントセッションなど）によって作成されたセッションは、`user:` サブジェクトではなく `agent:` サブジェクトを持つため、この例はそれらを拒否します。環境がそれらのセッションを提供する場合、ラッパーが終了する代わりにデフォルト認証情報にフォールバックするかどうかを明示的に決定します。認証情報交換で代わりにメールが必要な場合は、`.act.email` を読み取り、その不在を処理します。トークンは作成サーフェスが記録した場合にのみメールを持ち、[CLI ディスパッチセッション](https://code.claude.com/docs/ja/self-hosted-environments-testing.md#run-the-test-loop) はそれを欠く可能性があります。完全なクレーム参照とランナーの外のサービスからの検証については、[セッション ID を検証する](https://code.claude.com/docs/ja/self-hosted-environments-identity.md) を参照してください。
 
 ## ライフサイクルフック
 
-ライフサイクルフックは、ランナーのセッションごとのパイプラインのステージを独自のスクリプトに置き換えます。`--hooks-dir <path>` または `SELF_HOSTED_RUNNER_HOOKS_DIR` を使用して、ランナーをフックのディレクトリに指定します。ランナーは既知の名前を持つ実行可能ファイルを探します。存在しないフックはすべて組み込み動作にフォールスルーするため、必要なものだけを記述します。フックはランナー自身の権限で実行され、セッション子プロセスはその UID を共有するため、フックディレクトリを読み取り専用でマウントするか、イメージにベイクして、セッションコードが変更できないようにしてください。[強化セクション](/docs/ja/self-hosted-environments-deploy.md#harden-your-deployment)を参照してください。
+ライフサイクルフックは、ランナーのセッションごとのパイプラインのステージを独自のスクリプトに置き換えます。`--hooks-dir <path>` または `SELF_HOSTED_RUNNER_HOOKS_DIR` を使用して、ランナーをフックのディレクトリに指定します。ランナーは既知の名前を持つ実行可能ファイルを探します。存在しないフックはすべて組み込み動作にフォールスルーするため、必要なものだけを記述します。フックはランナー自身の権限で実行され、セッション子プロセスはその UID を共有するため、フックディレクトリを読み取り専用でマウントするか、イメージにベイクして、セッションコードが変更できないようにしてください。[強化セクション](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#harden-your-deployment)を参照してください。
 
-これらのフックは、[Claude Code フック](/docs/ja/hooks.md)（セッション内で実行される）とは異なります。ライフサイクルフックはランナー上で、セッションの周囲で実行されます。
+これらのフックは、[Claude Code フック](https://code.claude.com/docs/ja/hooks.md)（セッション内で実行される）とは異なります。ライフサイクルフックはランナー上で、セッションの周囲で実行されます。
 
 ### checkout
 
@@ -138,7 +139,7 @@ exec "$CLAUDE_RUNNER_CLAUDE_BIN" "$@"
 
 ランナーは git 認証情報をフックに渡しません。`CLAUDE_RUNNER_CLAUDE_BIN` はチェックアウトフック環境では設定されていないため、`decode-token` サブコマンドもここでは利用できません。代わりに、セッションの ID からセッションごとのクローン認証情報を発行するか、ホスト自身の git 認証にフォールバックしてください。
 
-* **セッションごとのクローン認証情報**：[Verify the token from your service](/docs/ja/self-hosted-environments-identity.md#verify-the-token-from-your-service) で説明されているように、`CLAUDE_RUNNER_API_BASE_URL` の下の JWKS エンドポイントに対して標準 JWT ライブラリを使用して `CLAUDE_CODE_SESSION_ACCESS_TOKEN` を検証します。その後、認証情報サービスに、トークンの `act` クレーム内の ID に対する短期間のクローン認証情報を発行させます。その認証情報は `act.sub` をキーとし、`act.email` を必須にしないでください。
+* **セッションごとのクローン認証情報**：[Verify the token from your service](https://code.claude.com/docs/ja/self-hosted-environments-identity.md#verify-the-token-from-your-service) で説明されているように、`CLAUDE_RUNNER_API_BASE_URL` の下の JWKS エンドポイントに対して標準 JWT ライブラリを使用して `CLAUDE_CODE_SESSION_ACCESS_TOKEN` を検証します。その後、認証情報サービスに、トークンの `act` クレーム内の ID に対する短期間のクローン認証情報を発行させます。その認証情報は `act.sub` をキーとし、`act.email` を必須にしないでください。
 * **ホストの git 認証**：SSH エージェント、認証情報ヘルパー、`.netrc` など、ホストが既に持っている git 認証を使用します。
 
 #### フックが失敗した場合
@@ -147,16 +148,16 @@ exec "$CLAUDE_RUNNER_CLAUDE_BIN" "$@"
 
 * **セッションが結果をプッシュするリポジトリ**：ランナーはセッションを失敗させ、0 以外の終了時にスクリプトの stderr の末尾をユーザーに表示します。理由は短い 1 行として stderr に書き込み、最後に書き込んでから 0 以外で終了してください。stderr にシークレットを出力せず、フックをデプロイする前に `set -x` を削除してください。
 
-  git の `couldn't find remote ref` がフックの stderr の末尾約 4 KB 以内に現れた場合、ランナーは代わりにブランチが削除されたものとして報告します。その場合、セッションのエラーメッセージは、ブランチがリモートにもう存在しないことを示し、ユーザーにそのブランチを復元するよう求めます。そのブランチが存在する場合は、[セッションが `no longer exists on the remote` または `couldn't find remote ref` で失敗する](/docs/ja/self-hosted-environments-deploy#no-longer-exists-on-the-remote)を参照してください。
+  git の `couldn't find remote ref` がフックの stderr の末尾約 4 KB 以内に現れた場合、ランナーは代わりにブランチが削除されたものとして報告します。その場合、セッションのエラーメッセージは、ブランチがリモートにもう存在しないことを示し、ユーザーにそのブランチを復元するよう求めます。そのブランチが存在する場合は、[セッションが `no longer exists on the remote` または `couldn't find remote ref` で失敗する](https://code.claude.com/docs/ja/self-hosted-environments-deploy#no-longer-exists-on-the-remote)を参照してください。
 * **セッションが読み取りのみを行うリポジトリ**（実行中のセッションに追加されたリポジトリなど）：ランナーはそのリポジトリをスキップし、残りのリポジトリで続行します。ランナーは `Skipped` ステップをセッションにポストし、フックがチェックアウトパスに残したものを削除します。
 
-  `Skipped` ステップがチェックアウトフックに言及している場合は、ランナーのログの `[runner:warn] checkout hook failed` 行で失敗の詳細を確認してください。ステップがソース ref が `no longer exists on remote` であると示している場合は、[セッションが `no longer exists on the remote` または `couldn't find remote ref` で失敗する](/docs/ja/self-hosted-environments-deploy#no-longer-exists-on-the-remote)を参照してください。スキップによってセッションにリポジトリがまったくなくなった場合、ランナーはとにかくセッションを失敗させます。
+  `Skipped` ステップがチェックアウトフックに言及している場合は、ランナーのログの `[runner:warn] checkout hook failed` 行で失敗の詳細を確認してください。ステップがソース ref が `no longer exists on remote` であると示している場合は、[セッションが `no longer exists on the remote` または `couldn't find remote ref` で失敗する](https://code.claude.com/docs/ja/self-hosted-environments-deploy#no-longer-exists-on-the-remote)を参照してください。スキップによってセッションにリポジトリがまったくなくなった場合、ランナーはとにかくセッションを失敗させます。
 
 フックが成功した場合、ランナーはセッション終了後にチェックアウトパスを削除します。
 
 ### post-session
 
-セッションごとに 1 回実行され、Claude Code 子プロセスが終了した後、ランナーがワークスペースを破棄する前に実行されます。このフックはコミットされていない作業を保存する唯一のチャンスです。`--capacity` が 1 より大きい場合、ランナーはフックが返された直後にセッションごとのワーキングツリーを削除し、`--capacity 1` の場合、再利用される[正規クローン](/docs/ja/self-hosted-environments-deploy.md#reuse-a-pre-warmed-checkout)は次のセッションが開始されるときにハードリセットされるため、コミットされていない追跡変更はどちらのパスでも保存されません。典型的な用途は、コミットされていない変更のスナップショットブランチをプッシュしたり、ログをアーカイブしたり、セッション終了イベントを独自のシステムに発行したりすることです。
+セッションごとに 1 回実行され、Claude Code 子プロセスが終了した後、ランナーがワークスペースを破棄する前に実行されます。このフックはコミットされていない作業を保存する唯一のチャンスです。`--capacity` が 1 より大きい場合、ランナーはフックが返された直後にセッションごとのワーキングツリーを削除し、`--capacity 1` の場合、再利用される[正規クローン](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#reuse-a-pre-warmed-checkout)は次のセッションが開始されるときにハードリセットされるため、コミットされていない追跡変更はどちらのパスでも保存されません。典型的な用途は、コミットされていない変更のスナップショットブランチをプッシュしたり、ログをアーカイブしたり、セッション終了イベントを独自のシステムに発行したりすることです。
 
 フックは子プロセスがスポーンされたセッション終了のたびに発火します。原因は何でもかまいません。以下の `CLAUDE_RUNNER_EXIT_REASON` 値がケースを列挙しています。ランナーが VM プリエンプションや停電などで突然終了する場合は発火できません。突然の終了に対する保証が必要な場合は、Claude Code `PostToolUse` フックを使用してセッション内から定期的にスナップショットを取得してください。ランナーは以下を設定します。
 
@@ -182,10 +183,10 @@ exec "$CLAUDE_RUNNER_CLAUDE_BIN" "$@"
   * サーバーがセッションをこのランナーから移動した。
   * プロセスが終了する前に、ランナーのポーリングがアーカイブまたは削除を検出した。
   * ランナーがドレイン中だった。
-  * セッションが [`--kill-session-after-min`](/docs/ja/self-hosted-environments-reference#runner-cli-flags) 制限を超えた。
+  * セッションが [`--kill-session-after-min`](https://code.claude.com/docs/ja/self-hosted-environments-reference#runner-cli-flags) 制限を超えた。
 * `abandoned`：別のランナーが要求したセッション用に予約されています。フックは現在その場合には発火しません。
 
-フック受信を[セッションライフサイクルカウンター](/docs/ja/self-hosted-environments-reference.md#session-lifecycle-counter-semantics)と比較する場合、一部の `interrupted` 受信がカウンターでは `completed` としてカウントされることを想定してください。カウンターは、リリース、スタートアップタイムアウト、サーバー移動、およびランナーのポーリングが先に検出したアーカイブまたは削除を `completed` としてカウントします。ランナーがスロットをクリーンに返したためです。
+フック受信を[セッションライフサイクルカウンター](https://code.claude.com/docs/ja/self-hosted-environments-reference.md#session-lifecycle-counter-semantics)と比較する場合、一部の `interrupted` 受信がカウンターでは `completed` としてカウントされることを想定してください。カウンターは、リリース、スタートアップタイムアウト、サーバー移動、およびランナーのポーリングが先に検出したアーカイブまたは削除を `completed` としてカウントします。ランナーがスロットをクリーンに返したためです。
 
 フックの終了ステータスはセッション結果に影響しません。失敗はログに記録され、無視されます。ランナーはセッション終了を含むランナーシャットダウンのたびに、`--post-session-hook-timeout-sec`（デフォルトは 60 秒）まで待機します。この例はコミットされていない作業をレスキューブランチに保存します。
 
@@ -214,7 +215,7 @@ done
 
 スクリプト内の `GIT_ALLOW_PROTOCOL` 行は、git を HTTPS、HTTP、SSH のリモートに制限します。ランナーの環境で独自の空でない `GIT_ALLOW_PROTOCOL` リストがすでに設定されている場合、スクリプトはそのリストを維持します。
 
-フックは、ランナーホスト上の独自の環境で利用可能な git 認証情報を使用してプッシュします。[イメージに認証情報がない姿勢](/docs/ja/self-hosted-environments-deploy.md#configure-git)の下では、組み込みクローンが Anthropic git プロキシを通過する場合を含めて、認証情報がないため、フック内で短期間のプッシュ認証情報を発行します。フックが受け取る `CLAUDE_CODE_SESSION_ACCESS_TOKEN` のセッショントークンを独自のトークンサービスと交換し、[Verify session identity](/docs/ja/self-hosted-environments-identity.md) が説明するように検証します。
+フックは、ランナーホスト上の独自の環境で利用可能な git 認証情報を使用してプッシュします。[イメージに認証情報がない姿勢](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#configure-git)の下では、組み込みクローンが Anthropic git プロキシを通過する場合を含めて、認証情報がないため、フック内で短期間のプッシュ認証情報を発行します。フックが受け取る `CLAUDE_CODE_SESSION_ACCESS_TOKEN` のセッショントークンを独自のトークンサービスと交換し、[Verify session identity](https://code.claude.com/docs/ja/self-hosted-environments-identity.md) が説明するように検証します。
 
 フックが git に渡す認証情報はすべて、セッションが取得できるものとして扱い、このプッシュ以上のことができないように発行してください。フック内の git はセッションが書き込める設定ファイルを読み取り、そのいずれかで指定された認証情報ヘルパーやフィルタードライバーはフックの権限で実行されます。また、これらのファイル内の設定によって、どのリモートを指定してもプッシュの送信先が変わる可能性があります。ランナーがフック内で固定する git 設定と、これらのファイルに委ねる設定については、[ライフサイクルフック内の Git 設定](#git-configuration-inside-lifecycle-hooks)を参照してください。
 
@@ -225,9 +226,9 @@ done
 * **ターンの後にアイドル状態、またはスタートアップでタイムアウト**：ランナーは子プロセスを停止し、このフックを完了まで実行します。その後でのみセッションをリリースします。フック実行中に送信されたユーザーメッセージは、フックが終了する前に別のランナーでセッションを再開できません。
 * **ユーザーが権限プロンプトなどのプロンプトに答えるのを待機中**：ランナーは最初にセッションをリリースし、その後このフックを実行します。フック実行中に送信されたユーザーメッセージは、フックが終了する前に別のランナーでセッションを再開できます。
 
-これはランナーがセッションをリリースするたびに適用されます。アイドルタイムアウト時、[`--retire-at`](/docs/ja/self-hosted-environments-reference#runner-cli-flags) 時、および v2.1.260 以降のランナーでは、セッションの [`--kill-session-after-min`](/docs/ja/self-hosted-environments-reference#runner-cli-flags) 制限時。ターンが終了し、バックグラウンドタスクのみを保持するセッションはここではアイドル状態としてカウントされます。v2.1.236 より前は、ランナーは両方のケースで最初にセッションをリリースし、その後このフックを実行していました。
+これはランナーがセッションをリリースするたびに適用されます。アイドルタイムアウト時、[`--retire-at`](https://code.claude.com/docs/ja/self-hosted-environments-reference#runner-cli-flags) 時、および v2.1.260 以降のランナーでは、セッションの [`--kill-session-after-min`](https://code.claude.com/docs/ja/self-hosted-environments-reference#runner-cli-flags) 制限時。ターンが終了し、バックグラウンドタスクのみを保持するセッションはここではアイドル状態としてカウントされます。v2.1.236 より前は、ランナーは両方のケースで最初にセッションをリリースし、その後このフックを実行していました。
 
-`SIGTERM` ドレイン中、ランナーはフックが終了するまでセッションリースを保持します。[Shutdown timing](/docs/ja/self-hosted-environments-deploy.md#shutdown-timing) を参照してください。
+`SIGTERM` ドレイン中、ランナーはフックが終了するまでセッションリースを保持します。[Shutdown timing](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#shutdown-timing) を参照してください。
 
 ### ライフサイクルフック内の Git 設定
 
@@ -238,7 +239,7 @@ done
 * **リモートプロトコル**：`GIT_ALLOW_PROTOCOL` は `https:http:ssh` です。ローカルパス、`file://` URL、または `git://` URL を使用するクローン、フェッチ、プッシュは、`fatal: transport 'file' not allowed` または `fatal: transport 'git' not allowed` で失敗します。
 * **SSH コマンドと認証情報プロンプト**：フック内の git は、設定ファイルの `core.sshCommand` と `core.askPass` を無視します。独自の SSH コマンドを使用するには、ランナーの環境で `GIT_SSH_COMMAND` を設定します。認証情報プロンプトプログラムを使用するには、同じくランナーの環境で `GIT_ASKPASS` を設定します。セッションはランナーの環境を継承するため、両方の変数はセッション自身の git にも渡ります。どちらにも認証情報を入れないでください。
 * **gpg プログラム**：`gpg.program`、`gpg.openpgp.program`、`gpg.x509.program`、`gpg.ssh.program` はランナーが設定するパスであり、設定ファイルの値が使われることはありません。
-* **コミット署名**：[`--configure-git`](/docs/ja/self-hosted-environments-deploy#let-the-runner-configure-git) を使用すると、フックから作成したコミットはセッションとして署名されます。このフラグがない場合、`commit.gpgsign` と `tag.gpgsign` は `false` です。
+* **コミット署名**：[`--configure-git`](https://code.claude.com/docs/ja/self-hosted-environments-deploy#let-the-runner-configure-git) を使用すると、フックから作成したコミットはセッションとして署名されます。このフラグがない場合、`commit.gpgsign` と `tag.gpgsign` は `false` です。
 
 これらの設定のいずれかを変更するには、ランナーの環境またはフック内の `git -c` オプションを使用します。
 
@@ -254,7 +255,7 @@ v2.1.280 より前は、ランナーはこれらの設定をいずれも設定�
 
 セッションごとに 1 回実行され、チェックアウト後、組み込み子スポーン の代わりになります。フックは [ラッパースクリプト](#wrapper-scripts)と同じ環境を受け取り、同じ方法で `"$CLAUDE_RUNNER_CLAUDE_BIN"` に `exec` する必要があります。`command` フックを使用して、すべてのカスタマイズをフックディレクトリに保持します。ラッパーが別の場所にある場合は `--exec-path` を使用します。`--exec-path` も設定されている場合、フラグが優先され、`command` フックは無視されます。
 
-PATH で解決された `claude` ではなく、ランナー自身のバイナリに常に `exec` してください。そうしないと、[バージョンピンニング](/docs/ja/self-hosted-environments-deploy.md#pin-the-version)を無効にしてしまいます。
+PATH で解決された `claude` ではなく、ランナー自身のバイナリに常に `exec` してください。そうしないと、[バージョンピンニング](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#pin-the-version)を無効にしてしまいます。
 
 ## オンデマンドランナー
 
@@ -280,7 +281,7 @@ claude self-hosted-runner orchestrator \
 | :- | :- |
 | `CLAUDE_RUNNER_WORK_ORDER_FILE` | 新しいランナーが登録する署名済みワークオーダー JWT を含む一時ファイルへのパス。フック終了後に削除されます。ファイルの内容をログに記録しないでください。 |
 | `CLAUDE_RUNNER_ORDER_ID` | 不透明なべき等性キー。スポーン要求ごとに一意で、Kubernetes リソース名に対して安全です。プロビジョナーの重複排除キーとしてのみ使用してください。 |
-| `CLAUDE_RUNNER_SESSION_ID` | この要求が対象とするセッション。セッションの URL に含まれる `session_...` ID の形式です。セッションの再要求のたびに繰り返されるため、ログとルーティングに使用し、重複排除キーとしては使用しないでください。[`--min-idle`](/docs/ja/self-hosted-environments-reference#orchestrator-cli-flags) が設定されている場合、事前ウォーミング要求（特定のセッションの前にスタンバイランナーをブート）では空です。変数が設定されていると仮定しないでください。 |
+| `CLAUDE_RUNNER_SESSION_ID` | この要求が対象とするセッション。セッションの URL に含まれる `session_...` ID の形式です。セッションの再要求のたびに繰り返されるため、ログとルーティングに使用し、重複排除キーとしては使用しないでください。[`--min-idle`](https://code.claude.com/docs/ja/self-hosted-environments-reference#orchestrator-cli-flags) が設定されている場合、事前ウォーミング要求（特定のセッションの前にスタンバイランナーをブート）では空です。変数が設定されていると仮定しないでください。 |
 | `CLAUDE_RUNNER_SESSION_UUID` | 正規 UUID 形式の同じセッション ID。事前ウォーミング要求では空です。 |
 | `CLAUDE_RUNNER_ATTEMPT` | ログ記録に使用するセッションごとのカウンター。再試行回数でもリクエスト数でもありません。事前ウォーミング要求では `0` ですが、セッションに対する要求でも `0` になる場合があります。 |
 | `CLAUDE_RUNNER_ORDER_SERVER_TIME` | ポーリング応答の HTTP `Date` ヘッダーからのサーバー時刻。フックがワークオーダー JWT の `exp` を検証する場合、ローカルクロックの代わりにこの値と比較して、スキューを許容してください。ゲートウェイがヘッダーを省略した場合は空です。 |
@@ -295,7 +296,7 @@ claude self-hosted-runner orchestrator \
 
 スポーンされたランナーは、環境シークレットの代わりにワークオーダーで登録します。
 
-* **ワークオーダーで開始します**。[`--environment-secret-file`](/docs/ja/self-hosted-environments-reference#runner-cli-flags) をワークオーダー JWT を含むファイルに指定するか、`SELF_HOSTED_RUNNER_ENVIRONMENT_SECRET` を JWT 値に設定します。
+* **ワークオーダーで開始します**。[`--environment-secret-file`](https://code.claude.com/docs/ja/self-hosted-environments-reference#runner-cli-flags) をワークオーダー JWT を含むファイルに指定するか、`SELF_HOSTED_RUNNER_ENVIRONMENT_SECRET` を JWT 値に設定します。
 * **フック終了前に JWT をコピーします**。オーケストレーターはフック終了後にワークオーダーファイルを削除するため、JWT を送信するワークロード（スポーンされたジョブの Kubernetes Secret など）にコピーし、ファイルパスを渡さないでください。
 * **スポーンされたランナーで `--capacity 1` を使用します**。セッションバウンドワークオーダーは正確に 1 つのランナーをそのセッションにバウンドするため、より高い容量を使用するとスロットが追加されますが、これらのスロットは作業を受け取らず、ランナーはスタートアップで警告をログに記録します。
 * **事前ウォーミングワークオーダーはアンバウンドで登録します**。スタンバイランナーはセッションにバウンドされず、固定フリートランナーのようにキューに入った作業を要求します。
@@ -308,7 +309,7 @@ claude self-hosted-runner orchestrator \
 
    * **終了 0**：送信済み。
    * **終了 1、または `--hook-timeout` の終了時点でまだ実行中**：再試行可能な失敗。セッションはバックオフして再度提供されます。
-   * **終了 2 以上**：再試行不可の失敗。ユーザーがセッションに新しいメッセージを送信するか、[Owner](/docs/ja/cloud-environments.md#organization-shared-environments) が環境の **Activity** タブでそのセッションに対して **Retry** を選択するまで、セッションは再度スポーンされることがブロックされます。
+   * **終了 2 以上**：再試行不可の失敗。ユーザーがセッションに新しいメッセージを送信するか、[Owner](https://code.claude.com/docs/ja/cloud-environments.md#organization-shared-environments) が環境の **Activity** タブでそのセッションに対して **Retry** を選択するまで、セッションは再度スポーンされることがブロックされます。
 
    セッションがバックオフしている間は、**Activity** タブにスポーンエラーなしで **Queued** と表示されるため、フックの出力はオーケストレーターのログで確認してください。ブロックされると、セッションには **Failed** と表示されます。展開すると、フックの stderr の末尾 512 文字から取得されたスポーンエラーを確認できます。対処可能なエラーを stderr に書き込み、シークレットは書き込まないでください。シェルフックでは、[一時的な失敗を再試行可能なままにしてください](#keep-transient-failures-retryable-in-a-shell-hook)。
 
@@ -321,13 +322,13 @@ claude self-hosted-runner orchestrator \
 
 #### オンデマンドランナーをアイドル時に終了させる
 
-デフォルトでは、フックが起動したランナーはセッションのターンが終了しても終了しないため、送信したワークロードは実行され続けます。ランナーを終了させるには、フックから次の[ランナーフラグ](/docs/ja/self-hosted-environments-reference.md#runner-cli-flags)を渡すようにします。
+デフォルトでは、フックが起動したランナーはセッションのターンが終了しても終了しないため、送信したワークロードは実行され続けます。ランナーを終了させるには、フックから次の[ランナーフラグ](https://code.claude.com/docs/ja/self-hosted-environments-reference.md#runner-cli-flags)を渡すようにします。
 
 | フラグ（値の例） | 渡す対象 | 動作 |
 | :- | :- | :- |
-| `--release-idle-session-min 30` | フックが起動するすべてのランナー | ランナーは指定した分数アイドル状態が続くとセッションを解放し、その後 0 で終了します。セッションはユーザーが次のメッセージを送信すると再開されますが、[プッシュされていなかった作業は失われます](/docs/ja/self-hosted-environments-deploy.md#additional-limitations)。 |
-| `--kill-session-after-min 480` | フックが起動するすべてのランナー | 各セッションをその分数に制限します。[アイドルとしてカウントされないセッション](/docs/ja/self-hosted-environments-deploy.md#some-sessions-don’t-count-as-idle)に対するバックストップとして機能するため、想定される最長のセッションより大きい値を設定してください。 |
-| `--exit-if-unused-min 60` | スタンバイランナー（事前ウォーミング要求に対してフックが起動するもの） | セッションを一度も受け取らないスタンバイは、その分数が経過すると終了します。[`--min-idle`](/docs/ja/self-hosted-environments-reference#orchestrator-cli-flags) を設定している場合、スタンバイが余剰でない限り代わりのランナーが起動されるため、ブート時間を十分に上回る値を使用してください。 |
+| `--release-idle-session-min 30` | フックが起動するすべてのランナー | ランナーは指定した分数アイドル状態が続くとセッションを解放し、その後 0 で終了します。セッションはユーザーが次のメッセージを送信すると再開されますが、[プッシュされていなかった作業は失われます](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#additional-limitations)。 |
+| `--kill-session-after-min 480` | フックが起動するすべてのランナー | 各セッションをその分数に制限します。[アイドルとしてカウントされないセッション](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#some-sessions-don’t-count-as-idle)に対するバックストップとして機能するため、想定される最長のセッションより大きい値を設定してください。 |
+| `--exit-if-unused-min 60` | スタンバイランナー（事前ウォーミング要求に対してフックが起動するもの） | セッションを一度も受け取らないスタンバイは、その分数が経過すると終了します。[`--min-idle`](https://code.claude.com/docs/ja/self-hosted-environments-reference#orchestrator-cli-flags) を設定している場合、スタンバイが余剰でない限り代わりのランナーが起動されるため、ブート時間を十分に上回る値を使用してください。 |
 
 ランナーが終了したらワークロードを削除してください。たとえば、Kubernetes Job に `ttlSecondsAfterFinished` を設定するか、VM の起動スクリプトでその後に VM を削除するようにします。
 
@@ -344,16 +345,16 @@ your-background-command >> "$HOME/claude-runner.log" 2>&1 &
 * フックの終了から約 1 秒後、オーケストレーターは `exited, but a process it started still has the hook's stdout or stderr open` をログに記録します。その行以降、オーケストレーターはその出力をさらに最大 64 KB まで `[runner:hook:spawn-runner:after-exit jti=<order id>]` の下にログとして記録し、残りは破棄します。
 * オーケストレーターが終了すると、プロセスによるそこへの書き込みは失敗します。
 
-フック自体が起動するランナーは、[環境シークレット](/docs/ja/self-hosted-environments-deploy.md#harden-your-deployment)を保持するオーケストレーターホスト上でセッションを実行します。
+フック自体が起動するランナーは、[環境シークレット](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#harden-your-deployment)を保持するオーケストレーターホスト上でセッションを実行します。
 
-v2.1.305 より前は、終了済みのフックでも、そのフックが開始したプロセスがフックの stdout または stderr を開いている間は [`--hook-timeout`](/docs/ja/self-hosted-environments-reference#orchestrator-cli-flags) に達し、次のように表示されていました。
+v2.1.305 より前は、終了済みのフックでも、そのフックが開始したプロセスがフックの stdout または stderr を開いている間は [`--hook-timeout`](https://code.claude.com/docs/ja/self-hosted-environments-reference#orchestrator-cli-flags) に達し、次のように表示されていました。
 
 * **Activity タブ**（失敗したセッションのスポーンエラー内）：`spawn-runner hook timed out after 60000ms`、またはフックの stderr の最後の行。
 * **オーケストレーターのログ**：`timed out after 60000ms, sending SIGTERM to process tree`。
 
 #### ランナーを待たずにフックを終了する
 
-すべてのオンデマンドランナーがフックの開始から約 60 秒後に停止し、同じセッションに対してフックが再び実行される場合は、フックがランナーを待機していないか確認してください。この 60 秒はデフォルトの [`--hook-timeout`](/docs/ja/self-hosted-environments-reference#orchestrator-cli-flags) であるため、独自の値を設定している場合は、フックの開始からその時間が経過した時点でランナーが停止します。
+すべてのオンデマンドランナーがフックの開始から約 60 秒後に停止し、同じセッションに対してフックが再び実行される場合は、フックがランナーを待機していないか確認してください。この 60 秒はデフォルトの [`--hook-timeout`](https://code.claude.com/docs/ja/self-hosted-environments-reference#orchestrator-cli-flags) であるため、独自の値を設定している場合は、フックの開始からその時間が経過した時点でランナーが停止します。
 
 オーケストレーターのホスト上で `claude self-hosted-runner` を起動し、フォアグラウンドまたは `wait` でそれを待機するフックは、`--hook-timeout` の終了時点でまだ実行中です。その場合、オーケストレーターはフックとその配下で実行されているプロセス（そのランナーとセッションの Claude プロセスを含む）を停止するため、実行中のターンは中断されます。
 
@@ -364,7 +365,7 @@ v2.1.305 より前は、終了済みのフックでも、そのフックが開�
 
 `set -e` を使用するシェルフックでは、再試行で解消できたはずの失敗によってセッションがブロックされることがあります。フックは失敗したコマンドで停止し、そのコマンド自体のステータスで終了します。オーケストレーターはそのステータスに終了コードコントラクトを適用します。多くの失敗は 2 以上のステータスを返します。たとえば、コマンドがインストールされていない場合の `127` や、HTTP エラー時の `curl --fail` による `22` などです。そのため、これらは最初の失敗でセッションをブロックします。
 
-フックがすでにブロックしたセッションは、ユーザーが新しいメッセージを送信するか、[Owner](/docs/ja/cloud-environments.md#organization-shared-environments) が環境の **Activity** タブでそのセッションに対して **Retry** を選択するまで、ブロックされたままです。
+フックがすでにブロックしたセッションは、ユーザーが新しいメッセージを送信するか、[Owner](https://code.claude.com/docs/ja/cloud-environments.md#organization-shared-environments) が環境の **Activity** タブでそのセッションに対して **Retry** を選択するまで、ブロックされたままです。
 
 このような失敗を代わりに終了 1 にするには、フックの `#!` 行の直下、失敗する可能性のあるものより上に次の行を配置します。
 
@@ -403,9 +404,9 @@ trap が機能することを確認するには、`trap` 行の直下に、`no-s
 
 ## モデルリクエストを Bedrock または Agent Platform に送信する
 
-組織でモデルリクエストを自社の AWS または Google Cloud アカウント経由にする必要がある場合は、ランナーを [Amazon Bedrock](/docs/ja/amazon-bedrock.md) または [Google Cloud の Agent Platform（旧 Vertex AI）](/docs/ja/google-vertex-ai.md) 向けに設定します。これにより、そのランナーが開始するすべてのセッションが、自社のクラウド認証情報を使用して自社のクラウドアカウント内のモデルを呼び出します。この設定を行わない場合、セッションはモデルリクエストを Anthropic API に送信します。
+組織でモデルリクエストを自社の AWS または Google Cloud アカウント経由にする必要がある場合は、ランナーを [Amazon Bedrock](https://code.claude.com/docs/ja/amazon-bedrock.md) または [Google Cloud の Agent Platform（旧 Vertex AI）](https://code.claude.com/docs/ja/google-vertex-ai.md) 向けに設定します。これにより、そのランナーが開始するすべてのセッションが、自社のクラウド認証情報を使用して自社のクラウドアカウント内のモデルを呼び出します。この設定を行わない場合、セッションはモデルリクエストを Anthropic API に送信します。
 
-ランナーは引き続き Anthropic にセッションをポーリングし、各セッションは引き続きイベントストリームを `api.anthropic.com` に送信します。イベントストリームにはプロンプト、応答、ツールの結果が含まれます。[利用条件と制限事項](/docs/ja/self-hosted-environments#availability-and-limitations)に記載されているプランの要件と Zero Data Retention の除外も引き続き適用されます。
+ランナーは引き続き Anthropic にセッションをポーリングし、各セッションは引き続きイベントストリームを `api.anthropic.com` に送信します。イベントストリームにはプロンプト、応答、ツールの結果が含まれます。[利用条件と制限事項](https://code.claude.com/docs/ja/self-hosted-environments#availability-and-limitations)に記載されているプランの要件と Zero Data Retention の除外も引き続き適用されます。
 
 セッションはランナーではなく環境にルーティングされ、再キューされたセッションや再開されたセッションは別のランナーで実行される場合があります。環境内のすべてのランナーを同じ方法で設定してください。開始する前に、[これらのプロバイダーでの違い](#what-differs-from-sessions-on-the-anthropic-api)を確認してください。
 
@@ -413,25 +414,25 @@ trap が機能することを確認するには、`trap` 行の直下に、`no-s
 
 モデルへのアクセス、範囲を限定したポリシーまたはロール、ネットワークアクセスを設定します。
 
-* **Amazon Bedrock**：[ユースケースの詳細を送信](/docs/ja/amazon-bedrock.md#1-submit-use-case-details)してから、[IAM 設定](/docs/ja/amazon-bedrock.md#iam-configuration)に従ってポリシーを作成し、`bedrock:InvokeModel` と `bedrock:InvokeModelWithResponseStream` を、セッションが使用する推論プロファイルとその背後にある基盤モデルに限定します
-* **Agent Platform**：[API を有効化](/docs/ja/google-vertex-ai.md#1-enable-agent-platform-api)し、[モデルへのアクセスをリクエスト](/docs/ja/google-vertex-ai.md#2-request-model-access)してから、[IAM 設定](/docs/ja/google-vertex-ai.md#iam-configuration)で説明されているカスタムロールを、`aiplatform.endpoints.predict` のみを含めて作成します
-* **Egress**：egress ルールでプロバイダーのエンドポイントへの通信を許可します。[ネットワーク要件](/docs/ja/self-hosted-environments-deploy.md#network-requirements)を参照してください。セッションがこれらに到達できない場合、Claude Code はセッションにエラーが表示されるまで何時間も再試行を続けることがあります。
+* **Amazon Bedrock**：[ユースケースの詳細を送信](https://code.claude.com/docs/ja/amazon-bedrock.md#1-submit-use-case-details)してから、[IAM 設定](https://code.claude.com/docs/ja/amazon-bedrock.md#iam-configuration)に従ってポリシーを作成し、`bedrock:InvokeModel` と `bedrock:InvokeModelWithResponseStream` を、セッションが使用する推論プロファイルとその背後にある基盤モデルに限定します
+* **Agent Platform**：[API を有効化](https://code.claude.com/docs/ja/google-vertex-ai.md#1-enable-agent-platform-api)し、[モデルへのアクセスをリクエスト](https://code.claude.com/docs/ja/google-vertex-ai.md#2-request-model-access)してから、[IAM 設定](https://code.claude.com/docs/ja/google-vertex-ai.md#iam-configuration)で説明されているカスタムロールを、`aiplatform.endpoints.predict` のみを含めて作成します
+* **Egress**：egress ルールでプロバイダーのエンドポイントへの通信を許可します。[ネットワーク要件](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#network-requirements)を参照してください。セッションがこれらに到達できない場合、Claude Code はセッションにエラーが表示されるまで何時間も再試行を続けることがあります。
 
 **2. セッションに範囲を限定した認証情報を与える**
 
-ステップ 1 のポリシーまたはロールを、それ以外に何もできない ID にアタッチします。Claude Code が受け付ける方法については、[AWS 認証情報を設定する](/docs/ja/amazon-bedrock.md#2-configure-aws-credentials)と [GCP 認証情報を設定する](/docs/ja/google-vertex-ai.md#3-configure-gcp-credentials)を参照してください。
+ステップ 1 のポリシーまたはロールを、それ以外に何もできない ID にアタッチします。Claude Code が受け付ける方法については、[AWS 認証情報を設定する](https://code.claude.com/docs/ja/amazon-bedrock.md#2-configure-aws-credentials)と [GCP 認証情報を設定する](https://code.claude.com/docs/ja/google-vertex-ai.md#3-configure-gcp-credentials)を参照してください。
 
 > [!WARNING]
 >
 > プロンプトインジェクションを含め、セッション内でコードを実行させることができる人は誰でも、認証情報が有効である限り、これらの認証情報をユーザーの費用負担で使用できます。Claude Code はセッション内で実行されるため、モデルの呼び出しに使用する認証情報はセッション内で読み取り可能である必要があります。
 >
-> Claude が実行するシェルコマンド、[Claude Code フック](/docs/ja/hooks.md)、stdio MCP サーバーはセッションの環境を継承し、Claude Code と同じユーザーとして実行されます。その結果、これらは認証情報の変数や認証情報ファイルを読み取ることができます。
+> Claude が実行するシェルコマンド、[Claude Code フック](https://code.claude.com/docs/ja/hooks.md)、stdio MCP サーバーはセッションの環境を継承し、Claude Code と同じユーザーとして実行されます。その結果、これらは認証情報の変数や認証情報ファイルを読み取ることができます。
 >
-> [デプロイを強化](/docs/ja/self-hosted-environments-deploy.md#harden-your-deployment)すると、ホストの認証情報をセッションから遠ざけることはできますが、この認証情報を遠ざけることはできません。その背後にある ID には、ステップ 1 のポリシーまたはロール以外の権限を与えないでください。
+> [デプロイを強化](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#harden-your-deployment)すると、ホストの認証情報をセッションから遠ざけることはできますが、この認証情報を遠ざけることはできません。その背後にある ID には、ステップ 1 のポリシーまたはロール以外の権限を与えないでください。
 
 選択した方法を、次のランナーの動作と照らし合わせて確認してください。
 
-* **メタデータエンドポイント**：セッションに対して[クラウドメタデータエンドポイント](/docs/ja/self-hosted-environments-deploy.md#harden-your-deployment)を完全に拒否すると、インスタンスプロファイルなど、そこから提供される認証情報も Claude Code に届きません。Amazon EKS の IAM Roles for Service Accounts（IRSA）や Workload Identity Federation の認証情報ファイルなど、ファイルベースの Web ID はこれに依存しません。
+* **メタデータエンドポイント**：セッションに対して[クラウドメタデータエンドポイント](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#harden-your-deployment)を完全に拒否すると、インスタンスプロファイルなど、そこから提供される認証情報も Claude Code に届きません。Amazon EKS の IAM Roles for Service Accounts（IRSA）や Workload Identity Federation の認証情報ファイルなど、ファイルベースの Web ID はこれに依存しません。
 * **更新**：セッションは認証情報よりも長く存続する場合があるため、ファイルベースの Web ID など、自動的に更新される方法を使用してください
 * **ラッパースクリプト**：ランナーは[ラッパースクリプト](#provision-credentials-scoped-to-the-session-creator)をセッションごとに 1 回起動するため、そこでエクスポートした認証情報は更新されません。Claude Code は環境から AWS 認証情報を読み取るため、ラッパーが他の作業のためにすでに AWS 認証情報をエクスポートしている場合、Claude Code はそれを使用してモデルリクエストに署名する可能性があります。
 
@@ -439,7 +440,7 @@ trap が機能することを確認するには、`trap` 行の直下に、`no-s
 
 コンテナ仕様やサービスユニットなど、ランナーの他の環境変数を設定している場所に、1 つのプロバイダーの変数のみを設定してから、ランナーを再起動します。例ではシェルのエクスポートとして示しています。[オンデマンドランナー](#on-demand-runners)の場合は、`spawn-runner` フックが起動するワークロードに設定します。
 
-これらのランナーは [`--confine-repo-settings enforce`](/docs/ja/self-hosted-environments-deploy#harden-your-deployment) を指定して起動してください。このモードでは、コミットされた設定が警告対象となったリポジトリでのセッションを拒否するため、まずデフォルトの `warn` モードで実行し、ログに記録された内容を解消してください。
+これらのランナーは [`--confine-repo-settings enforce`](https://code.claude.com/docs/ja/self-hosted-environments-deploy#harden-your-deployment) を指定して起動してください。このモードでは、コミットされた設定が警告対象となったリポジトリでのセッションを拒否するため、まずデフォルトの `warn` モードで実行し、ログに記録された内容を解消してください。
 
 **Amazon Bedrock**
 
@@ -450,7 +451,7 @@ export CLAUDE_CODE_USE_BEDROCK=1
 export AWS_REGION=us-east-1
 ```
 
-Claude Code がリージョンを解決する方法については、[Claude Code を設定する](/docs/ja/amazon-bedrock.md#3-configure-claude-code)を参照してください。Claude Code がリージョンに応じて使用する推論プロファイルのプレフィックスについては、[クロスリージョン推論プロファイルのプレフィックス](/docs/ja/amazon-bedrock.md#cross-region-inference-profile-prefixes)を参照してください。
+Claude Code がリージョンを解決する方法については、[Claude Code を設定する](https://code.claude.com/docs/ja/amazon-bedrock.md#3-configure-claude-code)を参照してください。Claude Code がリージョンに応じて使用する推論プロファイルのプレフィックスについては、[クロスリージョン推論プロファイルのプレフィックス](https://code.claude.com/docs/ja/amazon-bedrock.md#cross-region-inference-profile-prefixes)を参照してください。
 
 **Google Cloud の Agent Platform**
 
@@ -462,7 +463,7 @@ export CLOUD_ML_REGION=global
 export ANTHROPIC_VERTEX_PROJECT_ID=YOUR-PROJECT-ID
 ```
 
-リージョンの選択については、[リージョンの設定](/docs/ja/google-vertex-ai.md#region-configuration)を参照してください。
+リージョンの選択については、[リージョンの設定](https://code.claude.com/docs/ja/google-vertex-ai.md#region-configuration)を参照してください。
 
 **4. 変数がセッションに届いたことを確認する**
 
@@ -474,24 +475,24 @@ env | grep -E 'CLAUDE_CODE_USE_(BEDROCK|VERTEX)'
 
 `CLAUDE_CODE_USE_BEDROCK` または `CLAUDE_CODE_USE_VERTEX` を `1` に設定する行が表示されれば、変数はセッションに届いています。両方が表示された場合、Claude Code は Amazon Bedrock を使用します。何も出力されない場合は、どちらも届いていません。
 
-このコマンドが示すのは設定であり、トラフィックではありません。リクエスト自体を確認するには、クラウドアカウント自体のメトリクスまたはリクエストログで探してください。最初のメッセージが失敗した場合は、[Amazon Bedrock](/docs/ja/amazon-bedrock.md#troubleshooting) または [Agent Platform](/docs/ja/google-vertex-ai.md#troubleshooting) のトラブルシューティングを参照してください。
+このコマンドが示すのは設定であり、トラフィックではありません。リクエスト自体を確認するには、クラウドアカウント自体のメトリクスまたはリクエストログで探してください。最初のメッセージが失敗した場合は、[Amazon Bedrock](https://code.claude.com/docs/ja/amazon-bedrock.md#troubleshooting) または [Agent Platform](https://code.claude.com/docs/ja/google-vertex-ai.md#troubleshooting) のトラブルシューティングを参照してください。
 
 ### Anthropic API 上のセッションとの違い
 
 モデルリクエストを Amazon Bedrock または Google Cloud の Agent Platform に送信するセッションは、Anthropic API 上のセッションと次の点で異なります。
 
-* **claude.ai からのポリシー**：[サーバー管理設定](/docs/ja/server-managed-settings.md)はこれらのセッションに届きません。Owner が Claude Code の管理設定で設定する組織ポリシーも届かないため、Claude Code はセッション内でそれらを適用しません。依存するルールは、ランナーイメージの[管理設定ファイル](/docs/ja/managed-settings.md#delivery-mechanisms)に記述してください。
+* **claude.ai からのポリシー**：[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)はこれらのセッションに届きません。Owner が Claude Code の管理設定で設定する組織ポリシーも届かないため、Claude Code はセッション内でそれらを適用しません。依存するルールは、ランナーイメージの[管理設定ファイル](https://code.claude.com/docs/ja/managed-settings.md#delivery-mechanisms)に記述してください。
 * **アカウントのスキル**：これらのセッションは、各ユーザーの claude.ai アカウントで有効になっているスキルをダウンロードしません。[各セッションの設定の組み立て方](#how-each-session’s-config-is-assembled)を参照してください。
-* **ファイル**：claude.ai やモバイルアプリ、デスクトップアプリでセッションに添付されたファイルはセッションに届かず、Claude は [`SendUserFile` ツール](/docs/ja/tools-reference)でファイルを送り返すこともできません。代わりに、入力ファイルはリポジトリまたはランナー上に配置してください。
+* **ファイル**：claude.ai やモバイルアプリ、デスクトップアプリでセッションに添付されたファイルはセッションに届かず、Claude は [`SendUserFile` ツール](https://code.claude.com/docs/ja/tools-reference)でファイルを送り返すこともできません。代わりに、入力ファイルはリポジトリまたはランナー上に配置してください。
 * **モデルの選択**：Anthropic のコントロールプレーンが各セッションのモデルを送信し、モデルが指定されずにセッションが開始された場合、Claude Code はそのプロバイダーのデフォルトを使用します。ランナーの環境で `ANTHROPIC_MODEL` や `ANTHROPIC_DEFAULT_MODEL` を使ってモデルを選択することはできませんが、エイリアスの解決先を固定することはできます。
   * **`ANTHROPIC_MODEL` と `ANTHROPIC_DEFAULT_MODEL`**：プロバイダーのページの例では `ANTHROPIC_MODEL` を設定していますが、ランナーはセッションに渡す環境からこれらを削除します。
-  * **ファミリーごとの固定用変数**：[Amazon Bedrock](/docs/ja/amazon-bedrock.md#4-pin-model-versions) と [Agent Platform](/docs/ja/google-vertex-ai.md#5-pin-model-versions) の「モデルバージョンを固定する」に記載されている変数はセッションに届きます。これらは `opus` などのエイリアスの解決先を決定するものであり、完全なモデル ID の解決先を決定するものではありません。
-* **アカウントで提供されていないモデル**：セッションが、モデル名を示すエラーでメッセージの処理に失敗する場合があります。開発者が選択できるモデル、「モデルバージョンを固定する」で説明されているバックグラウンドモデル、[auto モード](/docs/ja/permission-modes.md#enable-auto-mode-on-bedrock-agent-platform-or-foundry)が使用する分類器モデルを有効にしてください。Amazon Bedrock では、それぞれをポリシーで許可してください。
-* **Web 検索と fast mode**：[Web 検索](/docs/ja/tools-reference.md#websearch-tool-behavior)は Amazon Bedrock では利用できず、[fast mode](/docs/ja/fast-mode.md) はどちらのプロバイダーでも利用できません。プロバイダーによって異なるその他の機能については、[プロバイダーによって異なる CLI 機能](/docs/ja/feature-availability.md#cli-capabilities-that-vary-by-provider)を参照してください。
+  * **ファミリーごとの固定用変数**：[Amazon Bedrock](https://code.claude.com/docs/ja/amazon-bedrock.md#4-pin-model-versions) と [Agent Platform](https://code.claude.com/docs/ja/google-vertex-ai.md#5-pin-model-versions) の「モデルバージョンを固定する」に記載されている変数はセッションに届きます。これらは `opus` などのエイリアスの解決先を決定するものであり、完全なモデル ID の解決先を決定するものではありません。
+* **アカウントで提供されていないモデル**：セッションが、モデル名を示すエラーでメッセージの処理に失敗する場合があります。開発者が選択できるモデル、「モデルバージョンを固定する」で説明されているバックグラウンドモデル、[auto モード](https://code.claude.com/docs/ja/permission-modes.md#enable-auto-mode-on-bedrock-agent-platform-or-foundry)が使用する分類器モデルを有効にしてください。Amazon Bedrock では、それぞれをポリシーで許可してください。
+* **Web 検索と fast mode**：[Web 検索](https://code.claude.com/docs/ja/tools-reference.md#websearch-tool-behavior)は Amazon Bedrock では利用できず、[fast mode](https://code.claude.com/docs/ja/fast-mode.md) はどちらのプロバイダーでも利用できません。プロバイダーによって異なるその他の機能については、[プロバイダーによって異なる CLI 機能](https://code.claude.com/docs/ja/feature-availability.md#cli-capabilities-that-vary-by-provider)を参照してください。
 
 ## MCP サーバー
 
-[MCP サーバー](/docs/ja/mcp.md)をすべてのセッションで利用できるようにするには、デスクトップへのインストール時と同じ `claude mcp add` コマンドを使って、イメージのビルド時に追加します。ランナーがコンテナではなくベアプロセスの場合は、ホスト上でランナーのユーザーとして同じコマンドを実行してから、ランナーを再起動します。ランナーはホストの設定を起動時に一度だけ読み込むためです。`--scope user` フラグは必須です。デフォルトのローカルスコープはディレクトリごとのキーの下に書き込みますが、ランナーはこのキーをセッションに引き継ぎません。たとえば、Dockerfile では次のようにします。
+[MCP サーバー](https://code.claude.com/docs/ja/mcp.md)をすべてのセッションで利用できるようにするには、デスクトップへのインストール時と同じ `claude mcp add` コマンドを使って、イメージのビルド時に追加します。ランナーがコンテナではなくベアプロセスの場合は、ホスト上でランナーのユーザーとして同じコマンドを実行してから、ランナーを再起動します。ランナーはホストの設定を起動時に一度だけ読み込むためです。`--scope user` フラグは必須です。デフォルトのローカルスコープはディレクトリごとのキーの下に書き込みますが、ランナーはこのキーをセッションに引き継ぎません。たとえば、Dockerfile では次のようにします。
 
 ```dockerfile theme={null}
 RUN claude mcp add --scope user sidecar -- /usr/local/bin/mcp-sidecar
@@ -502,27 +503,27 @@ RUN claude mcp add --scope user --transport http internal http://mcp-gateway.svc
 
 Claude Code は、ほかのソースからも MCP サーバーを読み込みます。
 
-* 標準のシステムパスにあるエンタープライズスコープの[管理 MCP ファイル](/docs/ja/managed-mcp.md)：Linux のランナーホストでは `/etc/claude-code/managed-mcp.json`、macOS のホストでは `/Library/Application Support/ClaudeCode/managed-mcp.json` です。管理者が列挙したサーバーのみを読み込めるようにする、ロックダウンされたフリートで使用します。優先順位のルールについては、[managed-mcp.json による排他的な制御](/docs/ja/managed-mcp.md#exclusive-control-with-managed-mcp-json)を参照してください。このファイルがランナーホスト上にある場合、Claude Code は claude.ai のコネクタを含め、Anthropic のコントロールプレーンがセッションに配信する MCP サーバーをスキップし、セッションの子プロセスの stderr に出力される警告でそれらの名前を示します。ランナーはこの警告を `debug` ログレベルで記録します。v2.1.229 より前は、これらのセッションは起動時に `You cannot dynamically configure MCP servers when an enterprise MCP config is present` というメッセージを出して終了していました。
-* ランナーホスト上の[管理設定](/docs/ja/managed-settings.md)にある [`managedMcpServers`](/docs/ja/settings-reference#managedmcpservers) キー：排他的な制御を行わずに HTTP および SSE サーバーを提供するため、ほかのソースからのサーバーも引き続き読み込まれます。Claude Code v2.1.259 以降が必要です。
-* `<repo>/.mcp.json`：プロジェクトスコープです。[プロジェクト](/docs/ja/claude-projects.md#what-threads-pick-up-from-your-repositories)のスレッド以外では、このファイルをリポジトリにコミットすると、そのサーバーはクラウドセッションで自動承認されます。複数のリポジトリを含むセッションでは、[読み込まれるのは最大 1 つのリポジトリのファイルのみです](#repository-settings-in-sessions-with-several-repositories)。
-* ラッパースクリプトから指定する [`--mcp-config`](/docs/ja/cli-reference#cli-flags) ファイル：`exec "$CLAUDE_RUNNER_CLAUDE_BIN" "$@" --mcp-config /etc/claude/mcp.json` のように、`"$@"` の後にフラグを追加します。セッションに配信されるサーバーがセッションの途中で更新されたときにもこのファイルのサーバーを実行し続けるには、`exec` のように、ラッパーから子プロセスに[環境全体](#wrapper-scripts)を渡すようにしてください。v2.1.299 より前は、このファイル内の stdio、HTTP、SSE サーバーは、それらを指定していない最初の更新の時点でシャットダウンしていました。
+* 標準のシステムパスにあるエンタープライズスコープの[管理 MCP ファイル](https://code.claude.com/docs/ja/managed-mcp.md)：Linux のランナーホストでは `/etc/claude-code/managed-mcp.json`、macOS のホストでは `/Library/Application Support/ClaudeCode/managed-mcp.json` です。管理者が列挙したサーバーのみを読み込めるようにする、ロックダウンされたフリートで使用します。優先順位のルールについては、[managed-mcp.json による排他的な制御](https://code.claude.com/docs/ja/managed-mcp.md#exclusive-control-with-managed-mcp-json)を参照してください。このファイルがランナーホスト上にある場合、Claude Code は claude.ai のコネクタを含め、Anthropic のコントロールプレーンがセッションに配信する MCP サーバーをスキップし、セッションの子プロセスの stderr に出力される警告でそれらの名前を示します。ランナーはこの警告を `debug` ログレベルで記録します。v2.1.229 より前は、これらのセッションは起動時に `You cannot dynamically configure MCP servers when an enterprise MCP config is present` というメッセージを出して終了していました。
+* ランナーホスト上の[管理設定](https://code.claude.com/docs/ja/managed-settings.md)にある [`managedMcpServers`](https://code.claude.com/docs/ja/settings-reference#managedmcpservers) キー：排他的な制御を行わずに HTTP および SSE サーバーを提供するため、ほかのソースからのサーバーも引き続き読み込まれます。Claude Code v2.1.259 以降が必要です。
+* `<repo>/.mcp.json`：プロジェクトスコープです。[プロジェクト](https://code.claude.com/docs/ja/claude-projects.md#what-threads-pick-up-from-your-repositories)のスレッド以外では、このファイルをリポジトリにコミットすると、そのサーバーはクラウドセッションで自動承認されます。複数のリポジトリを含むセッションでは、[読み込まれるのは最大 1 つのリポジトリのファイルのみです](#repository-settings-in-sessions-with-several-repositories)。
+* ラッパースクリプトから指定する [`--mcp-config`](https://code.claude.com/docs/ja/cli-reference#cli-flags) ファイル：`exec "$CLAUDE_RUNNER_CLAUDE_BIN" "$@" --mcp-config /etc/claude/mcp.json` のように、`"$@"` の後にフラグを追加します。セッションに配信されるサーバーがセッションの途中で更新されたときにもこのファイルのサーバーを実行し続けるには、`exec` のように、ラッパーから子プロセスに[環境全体](#wrapper-scripts)を渡すようにしてください。v2.1.299 より前は、このファイル内の stdio、HTTP、SSE サーバーは、それらを指定していない最初の更新の時点でシャットダウンしていました。
 
-組織でコネクタ配信が有効になっている場合、Anthropic のコントロールプレーンは、claude.ai で設定したコネクタを、サーバーが提供する MCP 設定を通じて対話的に作成されたセッションに配信します。この配信は `api.anthropic.com` を経由します。[CLI からのディスパッチ](/docs/ja/self-hosted-environments-testing.md#run-the-test-loop)のようにプログラムで作成されたセッションには、コネクタは配信されません。そうしたセッションには、このセクションで挙げたほかのいずれかのソースを通じて MCP サーバーを提供してください。子プロセスの OAuth トークンにはコネクタを直接取得するためのスコープが含まれていないため、子プロセスが自らその取得を試みることはありません。配信はサーバー主導で行われます。
+組織でコネクタ配信が有効になっている場合、Anthropic のコントロールプレーンは、claude.ai で設定したコネクタを、サーバーが提供する MCP 設定を通じて対話的に作成されたセッションに配信します。この配信は `api.anthropic.com` を経由します。[CLI からのディスパッチ](https://code.claude.com/docs/ja/self-hosted-environments-testing.md#run-the-test-loop)のようにプログラムで作成されたセッションには、コネクタは配信されません。そうしたセッションには、このセクションで挙げたほかのいずれかのソースを通じて MCP サーバーを提供してください。子プロセスの OAuth トークンにはコネクタを直接取得するためのスコープが含まれていないため、子プロセスが自らその取得を試みることはありません。配信はサーバー主導で行われます。
 
 > [!NOTE]
 >
 > コネクタを受け取ったセッションでは、ホストの `.claude.json` またはリポジトリの `.mcp.json` にある同じ名前のサーバーは接続されません。両方を使用するには、自分のサーバーに別の名前を付けてください。
 
-`settings.json` には MCP サーバーの定義は含まれず、設定スキーマにはトップレベルの `mcpServers` フィールドはありません。管理設定では、代わりに [`managedMcpServers`](/docs/ja/settings-reference#managedmcpservers) キーでサーバーを提供してください。
+`settings.json` には MCP サーバーの定義は含まれず、設定スキーマにはトップレベルの `mcpServers` フィールドはありません。管理設定では、代わりに [`managedMcpServers`](https://code.claude.com/docs/ja/settings-reference#managedmcpservers) キーでサーバーを提供してください。
 
-セッションはランナーの環境を継承するため、ランナーで [`ENABLE_TOOL_SEARCH`](/docs/ja/mcp#scale-with-mcp-tool-search) を設定すると、そのランナーが起動するすべてのセッションで MCP ツール検索を制御できます。値については MCP のページで説明しています。
+セッションはランナーの環境を継承するため、ランナーで [`ENABLE_TOOL_SEARCH`](https://code.claude.com/docs/ja/mcp#scale-with-mcp-tool-search) を設定すると、そのランナーが起動するすべてのセッションで MCP ツール検索を制御できます。値については MCP のページで説明しています。
 
 ### 最初のターンの前に MCP サーバーを待機する
 
 セルフホストのセッションは、まだ接続中の MCP サーバーを、2 つの異なる時点で短時間待機します。待機時間内に接続できなかったサーバーのツールは最初のターンの開始時には存在しませんが、ユーザーが何も操作しなくても後で利用可能になります。2 つの待機は次のとおりです。
 
-* **セッションの起動時**：ツールの一覧が最初に取得される前に、セッションは、エントリで [`alwaysLoad: true`](/docs/ja/mcp#exempt-a-server-from-deferral) を設定した HTTP または SSE サーバーを、またはランナーの環境で [`MCP_CONNECTION_NONBLOCKING=0`](/docs/ja/env-vars) を設定した場合はすべてのサーバーを、デフォルトで最大 5 秒間待機します。それ以外の場合、HTTP および SSE サーバーはバックグラウンドで接続します。ここで待機している間、セッションの初期化は遅くなります。[`MCP_CONNECT_TIMEOUT_MS`](/docs/ja/env-vars) で 5 秒のデフォルトを変更できます。
-* **最初のターン**：メッセージが届いた後、最初のターンはまだ接続中の stdio サーバーを最大 2 秒間待機します。ここで待機している間、最初の応答は遅くなります。この待機時間を変更するには、ランナーの環境で [`CLAUDE_CODE_MCP_STARTUP_WAIT_MS`](/docs/ja/env-vars) を設定します。待機の対象となるサーバーは変わりません。Claude Code v2.1.274 以降が必要です。
+* **セッションの起動時**：ツールの一覧が最初に取得される前に、セッションは、エントリで [`alwaysLoad: true`](https://code.claude.com/docs/ja/mcp#exempt-a-server-from-deferral) を設定した HTTP または SSE サーバーを、またはランナーの環境で [`MCP_CONNECTION_NONBLOCKING=0`](https://code.claude.com/docs/ja/env-vars) を設定した場合はすべてのサーバーを、デフォルトで最大 5 秒間待機します。それ以外の場合、HTTP および SSE サーバーはバックグラウンドで接続します。ここで待機している間、セッションの初期化は遅くなります。[`MCP_CONNECT_TIMEOUT_MS`](https://code.claude.com/docs/ja/env-vars) で 5 秒のデフォルトを変更できます。
+* **最初のターン**：メッセージが届いた後、最初のターンはまだ接続中の stdio サーバーを最大 2 秒間待機します。ここで待機している間、最初の応答は遅くなります。この待機時間を変更するには、ランナーの環境で [`CLAUDE_CODE_MCP_STARTUP_WAIT_MS`](https://code.claude.com/docs/ja/env-vars) を設定します。待機の対象となるサーバーは変わりません。Claude Code v2.1.274 以降が必要です。
 
 `claude mcp add` には `alwaysLoad` フラグはありません。このキーを設定するには、代わりに `claude mcp add-json` でサーバーを追加します。このコマンドはサーバーの JSON でキーを受け取り、`.claude.json` に書き込みます。Dockerfile では次のようにします。
 
@@ -534,9 +535,9 @@ RUN claude mcp add-json core '{"type":"http","url":"https://mcp.example.com/mcp"
 
 ### 組み込みのセッションツールをオフにする
 
-Anthropic のコントロールプレーンは、Claude Code Remote という名前の独自の MCP サーバーをクラウドセッションに接続します。Claude はこのサーバーのツールを使用して、[クラウドのスケジュールタスク](/docs/ja/routines.md)の作成、ほかのクラウドセッションの開始と操作、リポジトリの追加、プルリクエストのアクティビティの追跡を行います。
+Anthropic のコントロールプレーンは、Claude Code Remote という名前の独自の MCP サーバーをクラウドセッションに接続します。Claude はこのサーバーのツールを使用して、[クラウドのスケジュールタスク](https://code.claude.com/docs/ja/routines.md)の作成、ほかのクラウドセッションの開始と操作、リポジトリの追加、プルリクエストのアクティビティの追跡を行います。
 
-サーバー全体をオフにするには、設定に[サーバーレベルの拒否ルール](/docs/ja/permissions.md#mcp)を追加します。コントロールプレーンは、セッションの作成方法に応じて、3 つの名前のいずれかでサーバーを登録します。Claude Code はルール内の名前を大文字と小文字も含めて完全一致で照合するため、次のように名前ごとに 1 回ずつルールを記述してください。
+サーバー全体をオフにするには、設定に[サーバーレベルの拒否ルール](https://code.claude.com/docs/ja/permissions.md#mcp)を追加します。コントロールプレーンは、セッションの作成方法に応じて、3 つの名前のいずれかでサーバーを登録します。Claude Code はルール内の名前を大文字と小文字も含めて完全一致で照合するため、次のように名前ごとに 1 回ずつルールを記述してください。
 
 ```json theme={null}
 {
@@ -550,15 +551,15 @@ Anthropic のコントロールプレーンは、Claude Code Remote という名
 }
 ```
 
-サーバー全体を指定するルールは、サーバーに後から追加されるツールにも適用されます。1 つのツールだけをオフにして残りを維持するには、`mcp__Claude_Code_Remote__add_repo` のように、各ルールにアンダースコアを 2 つとツール名を付け加えます。ツールを削除するのではなく、サーバーの接続そのものをブロックするには、代わりに 3 つの名前を `mcp__` プレフィックスなしで [`deniedMcpServers`](/docs/ja/managed-mcp#policy-based-control-with-allowlists-and-denylists) の下に `serverName` エントリとして追加します。
+サーバー全体を指定するルールは、サーバーに後から追加されるツールにも適用されます。1 つのツールだけをオフにして残りを維持するには、`mcp__Claude_Code_Remote__add_repo` のように、各ルールにアンダースコアを 2 つとツール名を付け加えます。ツールを削除するのではなく、サーバーの接続そのものをブロックするには、代わりに 3 つの名前を `mcp__` プレフィックスなしで [`deniedMcpServers`](https://code.claude.com/docs/ja/managed-mcp#policy-based-control-with-allowlists-and-denylists) の下に `serverName` エントリとして追加します。
 
-ランナーを変更せずにセッションに適用するにはルールを[サーバー管理設定](/docs/ja/server-managed-settings.md)に、それ以外の場合はランナー上の `~/.claude/settings.json` に記述します。[モデルリクエストを Bedrock または Agent Platform に送信する](#send-model-requests-to-bedrock-or-agent-platform)ランナーでは、サーバー管理設定がそれらのセッションに届かないため、このファイルを使用してください。ランナー上の設定がセッションにどのように反映されるかについては、[権限とツールの承認](#permissions-and-tool-approval)で説明しています。
+ランナーを変更せずにセッションに適用するにはルールを[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)に、それ以外の場合はランナー上の `~/.claude/settings.json` に記述します。[モデルリクエストを Bedrock または Agent Platform に送信する](#send-model-requests-to-bedrock-or-agent-platform)ランナーでは、サーバー管理設定がそれらのセッションに届かないため、このファイルを使用してください。ランナー上の設定がセッションにどのように反映されるかについては、[権限とツールの承認](#permissions-and-tool-approval)で説明しています。
 
 ルールが有効になったことを確認するには、その環境でセッションを開始し、Claude に MCP ツールの一覧を表示するよう依頼します。Claude Code は拒否されたツールを Claude のコンテキストから削除するため、拒否されたツールは回答に含まれません。
 
 ## セッションに作業をプッシュするよう促す
 
-Anthropic ホストセッションは [`Stop` フック](/docs/ja/hooks#stop)（Claude Code フック。Claude が応答を終了するときに実行）を実行し、Claude にその作業をコミットしてプッシュするよう促します。ランナーはそれをインストールしません。それなしで、コミットされていない変更で終了するセッションはその作業をランナーのディスク上のみに残し、claude.ai/code の **Create PR** ボタンはブランチがリモートに存在するまで非アクティブなままです。
+Anthropic ホストセッションは [`Stop` フック](https://code.claude.com/docs/ja/hooks#stop)（Claude Code フック。Claude が応答を終了するときに実行）を実行し、Claude にその作業をコミットしてプッシュするよう促します。ランナーはそれをインストールしません。それなしで、コミットされていない変更で終了するセッションはその作業をランナーのディスク上のみに残し、claude.ai/code の **Create PR** ボタンはブランチがリモートに存在するまで非アクティブなままです。
 
 以下の参照実装には 2 つの部分があります。設定ブロックを `~/.claude/settings.json` にランナーホストにマージし、スクリプトを `~/.claude/hooks/stop-hook-nudge.sh` にランナーホストに保存して実行可能にします。
 
@@ -675,9 +676,9 @@ exit 0
 
 Stop フックは Claude に促すだけです。コミットとプッシュを機能させるには、以下を設定します。
 
-* **git ID**：ランナーイメージで `user.name` と `user.email` を設定するか、[`--configure-git`](/docs/ja/self-hosted-environments-deploy#let-the-runner-configure-git) を付けてランナーを起動します
-* **プッシュ用の認証情報**：[Anthropic 管理の git](/docs/ja/self-hosted-environments-deploy.md#use-the-anthropic-git-proxy) を使用するか、[イメージに git 設定を含める](/docs/ja/self-hosted-environments-deploy.md#ship-git-config-in-your-image)の説明に従って認証情報を提供します
-* **再開されたセッションの場合**：環境内のすべてのランナーで [`--push-outcome-on-release`](/docs/ja/self-hosted-environments-reference#runner-cli-flags) を設定します。これにより、再開されたセッションは、Claude がセッションのブランチにプッシュしたコミットから開始されます。このフラグの制限については、[再開されたセッションはプッシュされていない作業を失う](/docs/ja/self-hosted-environments-deploy.md#additional-limitations)を参照してください。
+* **git ID**：ランナーイメージで `user.name` と `user.email` を設定するか、[`--configure-git`](https://code.claude.com/docs/ja/self-hosted-environments-deploy#let-the-runner-configure-git) を付けてランナーを起動します
+* **プッシュ用の認証情報**：[Anthropic 管理の git](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#use-the-anthropic-git-proxy) を使用するか、[イメージに git 設定を含める](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#ship-git-config-in-your-image)の説明に従って認証情報を提供します
+* **再開されたセッションの場合**：環境内のすべてのランナーで [`--push-outcome-on-release`](https://code.claude.com/docs/ja/self-hosted-environments-reference#runner-cli-flags) を設定します。これにより、再開されたセッションは、Claude がセッションのブランチにプッシュしたコミットから開始されます。このフラグの制限については、[再開されたセッションはプッシュされていない作業を失う](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#additional-limitations)を参照してください。
 
 Stop フックが促すのは 1 ターンにつき最大 1 回です。コミットまたはプッシュが失敗しても、ターンは終了します。セッション内で git のエラーを探し、それが示す問題を修正してください。
 
@@ -695,22 +696,22 @@ Stop フックは、各サブモジュールがどのコミットにあるかを
 
 手元の `stop-hook-nudge.sh` で `GIT_OPTIONAL_LOCKS` を検索します。見つからない場合、それは以前のバージョンです。インストールしたすべての場所で[現在のスクリプト](#prompt-sessions-to-push-their-work)に置き換え、ランナーを再起動します。Stop フック設定はそのまま維持しますが、大規模なチェックアウトでは `timeout` を引き上げてください。
 
-* **タイミング**：セッションで [Bash サンドボックス](/docs/ja/sandboxing.md)をオンにして実行している場合は、今すぐ置き換えます。それ以外の場合は、次回のイメージビルドまたはランナーの再起動時に置き換えます。
+* **タイミング**：セッションで [Bash サンドボックス](https://code.claude.com/docs/ja/sandboxing.md)をオンにして実行している場合は、今すぐ置き換えます。それ以外の場合は、次回のイメージビルドまたはランナーの再起動時に置き換えます。
 * **変更点**：サブモジュール内のコミットされていないファイルで Claude が促されることはなくなりました。`.gitmodules` で `ignore = all` が指定されたサブモジュール内の新しいコミットでは、促されるようになりました。
 
 > [!WARNING]
 >
-> フックは Bash サンドボックスの外で実行されるため、現在のスクリプトの git 呼び出しは、チェックアウトの git 設定で指定されたプログラムを起動できる一部の git 機能をスキップします。すべてをスキップするわけではありません。サンドボックスだけに頼らず、[デプロイを強化する](/docs/ja/self-hosted-environments-deploy.md#harden-your-deployment)の説明に従ってセッションを分離してください。
+> フックは Bash サンドボックスの外で実行されるため、現在のスクリプトの git 呼び出しは、チェックアウトの git 設定で指定されたプログラムを起動できる一部の git 機能をスキップします。すべてをスキップするわけではありません。サンドボックスだけに頼らず、[デプロイを強化する](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#harden-your-deployment)の説明に従ってセッションを分離してください。
 
 ## 権限とツール承認
 
-セルフホストセッションには接続されたターミナルがないため、未回答の権限プロンプトはユーザーが UI で応答するまでターンを停止します。Anthropic のコントロールプレーンは各セッションのツールリストと権限ルールをワークペイロードで送信します。デフォルト設定は `Bash` を含むルーチンツール呼び出しを事前承認し、クラウドセッションは [モードに関係なくファイル編集を事前承認](/docs/ja/permission-modes.md#switch-permission-modes) します。何も事前承認しない呼び出しはセッション UI を通じてプロンプトします。
+セルフホストセッションには接続されたターミナルがないため、未回答の権限プロンプトはユーザーが UI で応答するまでターンを停止します。Anthropic のコントロールプレーンは各セッションのツールリストと権限ルールをワークペイロードで送信します。デフォルト設定は `Bash` を含むルーチンツール呼び出しを事前承認し、クラウドセッションは [モードに関係なくファイル編集を事前承認](https://code.claude.com/docs/ja/permission-modes.md#switch-permission-modes) します。何も事前承認しない呼び出しはセッション UI を通じてプロンプトします。
 
 > [!NOTE]
 >
-> [デフォルト拒否ネットワーク出力](/docs/ja/self-hosted-environments-deploy.md#default-deny-egress) を実行するセッションコンテナと [強化セクション](/docs/ja/self-hosted-environments-deploy.md#harden-your-deployment) の残りを備えた環境でのみ、オートモードをピン留めします。ルーチンツール呼び出し（`Bash` ネットワークリクエストを含む）は、デフォルト事前承認ツールセットとオートモードの両方で人間のループなしで実行されるため、ネットワーク境界がそれらの呼び出しが到達できる場所を制限するものです。
+> [デフォルト拒否ネットワーク出力](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#default-deny-egress) を実行するセッションコンテナと [強化セクション](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#harden-your-deployment) の残りを備えた環境でのみ、オートモードをピン留めします。ルーチンツール呼び出し（`Bash` ネットワークリクエストを含む）は、デフォルト事前承認ツールセットとオートモードの両方で人間のループなしで実行されるため、ネットワーク境界がそれらの呼び出しが到達できる場所を制限するものです。
 
-コントロールプレーンが送信するものに関係なくプロンプトを最小限に保つには、ラッパースクリプトまたは [`command` フック](#command) から [オートモード](/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode) をピン留めします。オートモードはセッションがルーチン権限プロンプトなしで実行されるようにします。別の分類器モデルは実行前にアクションをレビューし、拒否するものをブロックし、明示的な ask ルールはまだプロンプトを強制します。権限モードページは分類器がチェックするものをカバーしています。ランナーはラッパーを呼び出す前にサーバー計算フラグを追加し、`--permission-mode` などの単一値フラグの場合、パーサーは最後の出現を尊重するため、`"$@"` の後に追加するフラグはサーバー送信値をオーバーライドします。
+コントロールプレーンが送信するものに関係なくプロンプトを最小限に保つには、ラッパースクリプトまたは [`command` フック](#command) から [オートモード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode) をピン留めします。オートモードはセッションがルーチン権限プロンプトなしで実行されるようにします。別の分類器モデルは実行前にアクションをレビューし、拒否するものをブロックし、明示的な ask ルールはまだプロンプトを強制します。権限モードページは分類器がチェックするものをカバーしています。ランナーはラッパーを呼び出す前にサーバー計算フラグを追加し、`--permission-mode` などの単一値フラグの場合、パーサーは最後の出現を尊重するため、`"$@"` の後に追加するフラグはサーバー送信値をオーバーライドします。
 
 ```bash theme={null}
 #!/bin/bash
@@ -727,45 +728,45 @@ exec "$CLAUDE_RUNNER_CLAUDE_BIN" "$@" --permission-mode auto
 
 セッションは次の設定ファイルも読み取ります。
 
-* **プロジェクト設定**：[プロジェクト](/docs/ja/claude-projects.md#what-threads-pick-up-from-your-repositories) のスレッド以外では、リポジトリにコミットされた `.claude/settings.json` は、ユーザーレベルのベースラインの上に重ねて適用されます。複数のリポジトリを含むセッションでは、[有効になるのは最大 1 つのリポジトリのファイルのみです](#repository-settings-in-sessions-with-several-repositories)。
-* **管理設定**：セッションはランナーイメージの標準システムパスから [`managed-settings.json`](/docs/ja/settings#where-settings-live) を読み取ります。そのキーが [サーバー管理設定](/docs/ja/server-managed-settings.md) と一緒に適用されるかどうかについては、[Claude Code が管理ソースを組み合わせる方法](/docs/ja/managed-settings.md#how-claude-code-combines-managed-sources) を参照してください。
+* **プロジェクト設定**：[プロジェクト](https://code.claude.com/docs/ja/claude-projects.md#what-threads-pick-up-from-your-repositories) のスレッド以外では、リポジトリにコミットされた `.claude/settings.json` は、ユーザーレベルのベースラインの上に重ねて適用されます。複数のリポジトリを含むセッションでは、[有効になるのは最大 1 つのリポジトリのファイルのみです](#repository-settings-in-sessions-with-several-repositories)。
+* **管理設定**：セッションはランナーイメージの標準システムパスから [`managed-settings.json`](https://code.claude.com/docs/ja/settings#where-settings-live) を読み取ります。そのキーが [サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md) と一緒に適用されるかどうかについては、[Claude Code が管理ソースを組み合わせる方法](https://code.claude.com/docs/ja/managed-settings.md#how-claude-code-combines-managed-sources) を参照してください。
 
-これらのソースが適用される順序については、[設定の優先順位](/docs/ja/settings.md#settings-precedence) を参照してください。
+これらのソースが適用される順序については、[設定の優先順位](https://code.claude.com/docs/ja/settings.md#settings-precedence) を参照してください。
 
-Anthropic のコントロールプレーンがセッションに [Claude Code フック](/docs/ja/hooks.md) を提供する場合、ランナーはそれらを独自の設定の上ではなく隣に設定します。Claude Code v2.1.229 以降が必要です。
+Anthropic のコントロールプレーンがセッションに [Claude Code フック](https://code.claude.com/docs/ja/hooks.md) を提供する場合、ランナーはそれらを独自の設定の上ではなく隣に設定します。Claude Code v2.1.229 以降が必要です。
 
 * **どこに着地するか**：ランナーは提供された各フックスクリプトをセッションの設定ディレクトリの予約済み `hooks/.ccr-launcher/` サブディレクトリに書き込み、スクリプトを `--settings` で渡す別の設定ファイルに登録し、シードされた `settings.json` と `hooks/<name>` の独自のスクリプトを変更しないままにします。ランナーは各セッションの予約済みサブディレクトリを再作成し、`~/.claude/hooks/.ccr-launcher/` のホストコンテンツをセッションにシードしません。
 * **誰がそれらを作成するか**：コントロールプレーンはセッションごとまたはサードパーティ入力からではなく、独自のデプロイメント内の固定定数からスクリプトを入力します。
-* **何がそれらを管理するか**：`--settings` を通じて配信されるフックは通常のマージされたフック設定に入り、管理層ではないため、管理設定はまだ適用されます。`disableAllHooks` はそれらを無効にし、[`allowManagedHooksOnly`](/docs/ja/settings-reference#allowmanagedhooksonly) が保つカテゴリーには含まれません。
+* **何がそれらを管理するか**：`--settings` を通じて配信されるフックは通常のマージされたフック設定に入り、管理層ではないため、管理設定はまだ適用されます。`disableAllHooks` はそれらを無効にします。また、それらは [`allowManagedHooksOnly`](https://code.claude.com/docs/ja/settings-reference#allowmanagedhooksonly) が読み込んだままにするカテゴリーには含まれません。
 
-ユーザーが自分でセッションを開始すると、Claude Code は [その claude.ai アカウントで有効になっているスキル](/docs/ja/skills.md#skills-in-cowork-and-cloud-sessions) をそのセッションの設定ディレクトリにダウンロードします。[クラウドのスケジュールタスク](/docs/ja/routines.md) の実行ではオーナーのスキルは取得されず、[Bedrock または Agent Platform にモデルリクエストを送信する](#send-model-requests-to-bedrock-or-agent-platform) セッションはスキルを一切ダウンロードしません。これらのセッションで必要なスキルは、ランナーイメージに追加するか、[プロジェクト](/docs/ja/claude-projects.md#what-threads-pick-up-from-your-repositories) のスレッド以外ではリポジトリの `.claude/skills/` にコミットしてください。
+ユーザーが自分でセッションを開始すると、Claude Code は [その claude.ai アカウントで有効になっているスキル](https://code.claude.com/docs/ja/skills.md#skills-in-cowork-and-cloud-sessions) をそのセッションの設定ディレクトリにダウンロードします。[クラウドのスケジュールタスク](https://code.claude.com/docs/ja/routines.md) の実行ではオーナーのスキルは取得されず、[Bedrock または Agent Platform にモデルリクエストを送信する](#send-model-requests-to-bedrock-or-agent-platform) セッションはスキルを一切ダウンロードしません。これらのセッションで必要なスキルは、ランナーイメージに追加するか、[プロジェクト](https://code.claude.com/docs/ja/claude-projects.md#what-threads-pick-up-from-your-repositories) のスレッド以外ではリポジトリの `.claude/skills/` にコミットしてください。
 
-[Claude Tag](https://claude.com/docs/claude-tag/overview) セッション以外では、セルフホスト環境のセッションはデフォルトで [自動メモリ](/docs/ja/memory.md#auto-memory) がオフの状態で実行されます。セッションをまたいで引き継ぐべき指示には、ランナーイメージまたはリポジトリ内の `CLAUDE.md` を使用してください。
+[Claude Tag](https://claude.com/docs/claude-tag/overview) セッション以外では、セルフホスト環境のセッションはデフォルトで [自動メモリ](https://code.claude.com/docs/ja/memory.md#auto-memory) がオフの状態で実行されます。セッションをまたいで引き継ぐべき指示には、ランナーイメージまたはリポジトリ内の `CLAUDE.md` を使用してください。
 
 ランナーによるホストの `~/.claude/` のスナップショットには `projects/` ディレクトリは含まれません。自動メモリのデフォルトの保存場所はこのディレクトリの下にあります。そこにメモリファイルを置いても、ランナーはそれらをセッションにシードせず、自動メモリがオンになることもありません。
 
 ### 複数のリポジトリを含むセッションでのリポジトリ設定
 
-[プロジェクト](/docs/ja/claude-projects.md#what-threads-pick-up-from-your-repositories) 内のスレッドでは、スレッドがどこで開始しても、どのリポジトリの `.claude/settings.json` もプロジェクト設定として有効にならず、どのリポジトリの `.mcp.json` やスキルも読み込まれません。これらのスレッドにスキルを提供するには、ランナーイメージに追加してください。
+[プロジェクト](https://code.claude.com/docs/ja/claude-projects.md#what-threads-pick-up-from-your-repositories) 内のスレッドでは、スレッドがどこで開始しても、どのリポジトリの `.claude/settings.json` もプロジェクト設定として有効にならず、どのリポジトリの `.mcp.json` やスキルも読み込まれません。これらのスレッドにスキルを提供するには、ランナーイメージに追加してください。
 
 それ以外の複数のリポジトリを含むセッションでは、Claude Code はセッションの開始ディレクトリからプロジェクト設定を読み取るため、プロジェクト設定として有効になるのは最大 1 つのリポジトリの `.claude/settings.json` のみです。別のリポジトリのファイルで定義されたフックは実行されず、そのファイル内の拒否ルールは適用されず、その `env` も設定されません。
 
 * **`--capacity 1`（デフォルト）と組み込みのチェックアウトを使用する場合**：セッションはリポジトリリストの最初のリポジトリで開始します。そのリポジトリの `.claude/settings.json` がプロジェクト設定として有効になり、その `.mcp.json` が読み込まれますが、他のリポジトリのものは有効にならず、読み込まれません。
-* **1 より大きい `--capacity`、または [`checkout` フック](#checkout) を使用する場合**：セッションはチェックアウトを含むセッションごとのディレクトリで開始します。どのリポジトリの `.claude/settings.json` もプロジェクト設定として有効にならず、どのリポジトリの `.mcp.json` も読み込まれず、フックコマンド内の [`$CLAUDE_PROJECT_DIR`](/docs/ja/hooks#reference-scripts-by-path) はチェックアウトではなくそのディレクトリになります。
+* **1 より大きい `--capacity`、または [`checkout` フック](#checkout) を使用する場合**：セッションはチェックアウトを含むセッションごとのディレクトリで開始します。どのリポジトリの `.claude/settings.json` もプロジェクト設定として有効にならず、どのリポジトリの `.mcp.json` も読み込まれず、フックコマンド内の [`$CLAUDE_PROJECT_DIR`](https://code.claude.com/docs/ja/hooks#reference-scripts-by-path) はチェックアウトではなくそのディレクトリになります。
 
-各リポジトリの `CLAUDE.md` は、セッションがどこで開始しても読み込まれます。プロジェクトのスレッド以外では、そのスキルも読み込まれます。ランナーはすべてのリポジトリを [追加ディレクトリ](/docs/ja/permissions.md#additional-directories-grant-file-access-not-configuration) として Claude Code に渡すため、Claude Code は各リポジトリの `.claude/settings.json` から `enabledPlugins` キーと `extraKnownMarketplaces` キーも読み取ります。
+各リポジトリの `CLAUDE.md` は、セッションがどこで開始しても読み込まれます。プロジェクトのスレッド以外では、そのスキルも読み込まれます。ランナーはすべてのリポジトリを [追加ディレクトリ](https://code.claude.com/docs/ja/permissions.md#additional-directories-grant-file-access-not-configuration) として Claude Code に渡すため、Claude Code は各リポジトリの `.claude/settings.json` から `enabledPlugins` キーと `extraKnownMarketplaces` キーも読み取ります。
 
-すべてのセッションでフックを実行したり権限ルールを適用したりするには、ランナーホストの `~/.claude/settings.json` に記述します。ランナーは、セッションがどこで開始しても、[ホストのファイルをすべてのセッションにシードします](#how-each-session’s-config-is-assembled)。`Read` ルールまたは `Edit` ルールのパスは、`//` による絶対パスまたは `~/` によるホーム相対の [パターン](/docs/ja/permissions.md#read-and-edit) として記述してください。それ以外のパターンは設定ソースまたは現在のディレクトリを基準とするためです。
+すべてのセッションでフックを実行したり権限ルールを適用したりするには、ランナーホストの `~/.claude/settings.json` に記述します。ランナーは、セッションがどこで開始しても、[ホストのファイルをすべてのセッションにシードします](#how-each-session’s-config-is-assembled)。`Read` ルールまたは `Edit` ルールのパスは、`//` による絶対パスまたは `~/` によるホーム相対の [パターン](https://code.claude.com/docs/ja/permissions.md#read-and-edit) として記述してください。それ以外のパターンは設定ソースまたは現在のディレクトリを基準とするためです。
 
 ### リポジトリコミット権限ルール
 
-リポジトリコミット `permissions.allow` にベアな `"Edit"`、`"Write"`、または `"NotebookEdit"` エントリを入れないでください。ベアなファイルツールルールはパスに関係なくツールにマッチし、ワークスペースのみではなくホスト全体への書き込みを許可するため、ランナーの書き込みスコープ閉じ込めガードはセッションにフラグを立てます。[`--confine-repo-settings enforce`](/docs/ja/self-hosted-environments-reference#runner-cli-flags) を使用すると、ログして続行する代わりにセッションのスポーンを拒否します。[強化セクション](/docs/ja/self-hosted-environments-deploy.md#harden-your-deployment) を参照してください。
+リポジトリコミット `permissions.allow` にベアな `"Edit"`、`"Write"`、または `"NotebookEdit"` エントリを入れないでください。ベアなファイルツールルールはパスに関係なくツールにマッチし、ワークスペースのみではなくホスト全体への書き込みを許可するため、ランナーの書き込みスコープ閉じ込めガードはセッションにフラグを立てます。[`--confine-repo-settings enforce`](https://code.claude.com/docs/ja/self-hosted-environments-reference#runner-cli-flags) を使用すると、ログして続行する代わりにセッションのスポーンを拒否します。[強化セクション](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#harden-your-deployment) を参照してください。
 
-リポジトリはファイルツールルールをまったく必要としません。クラウドセッションは [モードに関係なくファイル編集を事前承認](/docs/ja/permission-modes.md#switch-permission-modes) します。ルールをコミットする場合、ワークスペースにスコープします。例えば `"Edit(/**)"`。単一の先頭スラッシュはプロジェクトルート（セッションのワークスペース）に相対的です。ベアなファイルツールルールはオペレーターのホストレベル `settings.json` では問題ありません。そのファイルはリポジトリコミットされないため。
+リポジトリはファイルツールルールをまったく必要としません。クラウドセッションは [モードに関係なくファイル編集を事前承認](https://code.claude.com/docs/ja/permission-modes.md#switch-permission-modes) します。ルールをコミットする場合、ワークスペースにスコープします。例えば `"Edit(/**)"`。単一の先頭スラッシュはプロジェクトルート（セッションのワークスペース）に相対的です。ベアなファイルツールルールはオペレーターのホストレベル `settings.json` では問題ありません。そのファイルはリポジトリコミットされないため。
 
-`defaultMode` の `auto` はイメージ全体またはユーザーレベルの設定ファイルからのみ尊重されるため、チェックアウトされたリポジトリはそれ自体にオートモードを許可できません。クラウドセッションが受け入れるモードと完全なルール構文については、[権限モード](/docs/ja/permission-modes.md) を参照してください。
+`defaultMode` の `auto` はイメージ全体またはユーザーレベルの設定ファイルからのみ尊重されるため、チェックアウトされたリポジトリはそれ自体にオートモードを許可できません。クラウドセッションが受け入れるモードと完全なルール構文については、[権限モード](https://code.claude.com/docs/ja/permission-modes.md) を参照してください。
 
 ## 次のステップ
 
-* [リファレンス](/docs/ja/self-hosted-environments-reference.md)：すべての CLI フラグ、環境変数、メトリック
-* [セッション ID を検証する](/docs/ja/self-hosted-environments-identity.md)：ランナーの外のサービスからセッショントークンを検証
+* [リファレンス](https://code.claude.com/docs/ja/self-hosted-environments-reference.md)：すべての CLI フラグ、環境変数、メトリック
+* [セッション ID を検証する](https://code.claude.com/docs/ja/self-hosted-environments-identity.md)：ランナーの外のサービスからセッショントークンを検証

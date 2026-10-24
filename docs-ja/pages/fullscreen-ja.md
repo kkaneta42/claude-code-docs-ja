@@ -20,26 +20,26 @@
 
 ## フルスクリーンレンダリングを有効にする
 
-Claude Code の会話内で `/tui fullscreen` を実行してください。CLI は [`tui` 設定](/docs/ja/settings-reference#tui)を保存し、会話をそのままにしてフルスクリーンで再起動するため、コンテキストを失わずにセッション中に切り替えることができます。`/tui default` を実行してクラシックレンダラーに戻すか、引数なしで `/tui` を実行してどのレンダラーがアクティブかを確認してください。
+Claude Code の会話内で `/tui fullscreen` を実行してください。CLI は [`tui` 設定](https://code.claude.com/docs/ja/settings-reference#tui)を保存し、会話をそのままにしてフルスクリーンで再起動するため、コンテキストを失わずにセッション中に切り替えることができます。`/tui default` を実行してクラシックレンダラーに戻すか、引数なしで `/tui` を実行してどのレンダラーがアクティブかを確認してください。
 
-[スクリーンリーダーモード](/docs/ja/accessibility.md)では、Claude Code は常にクラシックレンダラーを使用します。ただし、アタッチされた[バックグラウンドセッション](/docs/ja/agent-view.md)は引き続きフルスクリーンでレンダリングされます。他のセッションで `/tui fullscreen` を実行した場合、Claude Code は切り替えの代わりに説明を出力し、保存された `tui` 設定を変更しません。
+[スクリーンリーダーモード](https://code.claude.com/docs/ja/accessibility.md)では、Claude Code は常にクラシックレンダラーを使用します。ただし、アタッチされた[バックグラウンドセッション](https://code.claude.com/docs/ja/agent-view.md)は引き続きフルスクリーンでレンダリングされます。他のセッションで `/tui fullscreen` を実行した場合、Claude Code は切り替えの代わりに説明を出力し、保存された `tui` 設定を変更しません。
 
 Claude Code は、再起動されたセッションに以下を引き継ぎます。
 
-* 画面に表示されているとおりの会話。[`/rewind`](/docs/ja/checkpointing#rewind-and-summarize)の後、これは以下を意味します。
+* 画面に表示されているとおりの会話。[`/rewind`](https://code.claude.com/docs/ja/checkpointing#rewind-and-summarize)の後、これは以下を意味します。
   * セッションの前の方で巻き戻した場合、Claude Code はディスクに保存されている長いトランスクリプトではなく、巻き戻されたポイントから再起動されます。たとえば、最後の 3 つのメッセージを超えて巻き戻した場合、再起動されたセッションはそれらなしで開きます
   * 最初のメッセージの前に巻き戻した場合、Claude Code は空の会話で再起動されます
-* [権限モード](/docs/ja/permission-modes.md)と[努力レベル](/docs/ja/model-config.md#adjust-effort-level)
-* [`/model`](/docs/ja/model-config#setting-your-model)で最後に選択したモデル
-* [`--allowed-tools` または `--disallowed-tools`](/docs/ja/cli-reference#cli-flags)で渡したルール、および `--agent`、`--agents`、`--append-system-prompt`、および `--system-prompt-snapshot` フラグ
-* 起動時に指定した `--chrome` または `--no-chrome` フラグ。これにより、[Chrome 統合](/docs/ja/chrome.md)はこのセッションで選択したとおりオンまたはオフのままになります
+* [権限モード](https://code.claude.com/docs/ja/permission-modes.md)と[努力レベル](https://code.claude.com/docs/ja/model-config.md#adjust-effort-level)
+* [`/model`](https://code.claude.com/docs/ja/model-config#setting-your-model)で最後に選択したモデル
+* [`--allowed-tools` または `--disallowed-tools`](https://code.claude.com/docs/ja/cli-reference#cli-flags)で渡したルール、および `--agent`、`--agents`、`--append-system-prompt`、および `--system-prompt-snapshot` フラグ
+* 起動時に指定した `--chrome` または `--no-chrome` フラグ。これにより、[Chrome 統合](https://code.claude.com/docs/ja/chrome.md)はこのセッションで選択したとおりオンまたはオフのままになります
 
 Claude Code は、再起動されたプロセスに渡すことができない制限がセッションにある場合、再起動を拒否します。渡すことができない制限には以下が含まれます。
 
-* [`--system-prompt`](/docs/ja/cli-reference#cli-flags)置換、[`--tools`](/docs/ja/cli-reference#cli-flags)許可リスト、または [`--setting-sources`](/docs/ja/cli-reference#cli-flags)などの起動フラグ
-* [hook または SDK 権限更新](/docs/ja/hooks.md#permission-update-entries)がこのセッションのみに追加した拒否またはアスク ルール
+* [`--system-prompt`](https://code.claude.com/docs/ja/cli-reference#cli-flags)置換、[`--tools`](https://code.claude.com/docs/ja/cli-reference#cli-flags)許可リスト、または [`--setting-sources`](https://code.claude.com/docs/ja/cli-reference#cli-flags)などの起動フラグ
+* [hook または SDK 権限更新](https://code.claude.com/docs/ja/hooks.md#permission-update-entries)がこのセッションのみに追加した拒否またはアスク ルール
 
-その場合、Claude Code は [`Cannot switch renderers in this session`](/docs/ja/errors#cannot-switch-renderers-in-this-session)を理由とともに出力します。切り替えたり、何かを保存したりしません。
+その場合、Claude Code は [`Cannot switch renderers in this session`](https://code.claude.com/docs/ja/errors#cannot-switch-renderers-in-this-session)を理由とともに出力します。切り替えたり、何かを保存したりしません。
 
 Claude Code を起動する前に `CLAUDE_CODE_NO_FLICKER` 環境変数を設定することもできます。
 
@@ -47,25 +47,25 @@ Claude Code を起動する前に `CLAUDE_CODE_NO_FLICKER` 環境変数を設定
 CLAUDE_CODE_NO_FLICKER=1 claude
 ```
 
-[`tui`](/docs/ja/settings-reference#tui)設定と変数の両方が設定されている場合にそれらがどのように組み合わされるかについては、設定のエントリを参照してください。[フルスクリーン開始に失敗した](#fullscreen-renderer-didnt-finish-starting)後、Claude Code は変数を引き続き尊重しますが、設定は尊重しません。`/tui` コマンドは再起動されたプロセスから `CLAUDE_CODE_NO_FLICKER` をクリアして、書き込まれた設定が有効になるようにします。
+[`tui`](https://code.claude.com/docs/ja/settings-reference#tui)設定と変数の両方が設定されている場合にそれらがどのように組み合わされるかについては、設定のエントリを参照してください。[フルスクリーン開始に失敗した](#fullscreen-renderer-didnt-finish-starting)後、Claude Code は変数を引き続き尊重しますが、設定は尊重しません。`/tui` コマンドは再起動されたプロセスから `CLAUDE_CODE_NO_FLICKER` をクリアして、書き込まれた設定が有効になるようにします。
 
 ### デフォルトでフルスクリーン
 
-アタッチされた[バックグラウンドセッション](/docs/ja/agent-view.md)はフルスクリーンでレンダリングされ、[スクリーンリーダーモード](/docs/ja/accessibility.md)の他のセッションはクラシックレンダラーを使用します。それ以外の場合、Claude Code はセットアップに一致するこのテーブルの最初の行のレンダラーで開始されます。
+アタッチされた[バックグラウンドセッション](https://code.claude.com/docs/ja/agent-view.md)はフルスクリーンでレンダリングされ、[スクリーンリーダーモード](https://code.claude.com/docs/ja/accessibility.md)の他のセッションはクラシックレンダラーを使用します。それ以外の場合、Claude Code はセットアップに一致するこのテーブルの最初の行のレンダラーで開始されます。
 
 | あなたの状況 | 開始するレンダラー |
 | :- | :- |
-| [`CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN=1`](/docs/ja/env-vars)または `CLAUDE_CODE_NO_FLICKER=0` を設定した | クラシック |
+| [`CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN=1`](https://code.claude.com/docs/ja/env-vars)または `CLAUDE_CODE_NO_FLICKER=0` を設定した | クラシック |
 | `CLAUDE_CODE_NO_FLICKER=1` を設定した | フルスクリーン |
 | Claude Code がこのマシンで[フルスクリーン開始に失敗した](#fullscreen-renderer-didnt-finish-starting)後にフルスクリーンをオフにした | クラシック |
 | iTerm2 の [`tmux -CC` 統合モード](#use-with-tmux)にいるか、Windows で実行されている Claude Code に SSH 経由で接続している | クラシック |
-| [`tui` 設定](/docs/ja/settings-reference#tui)を保存した | 設定が指定するレンダラー |
-| セッションが Anthropic から[機能フラグをフェッチしない](/docs/ja/env-vars.md#features-that-need-feature-flag-fetching)、および Claude Code がこのマシンでスタートアップダイアログの提供を停止した | クラシック |
+| [`tui` 設定](https://code.claude.com/docs/ja/settings-reference#tui)を保存した | 設定が指定するレンダラー |
+| セッションが Anthropic から[機能フラグをフェッチしない](https://code.claude.com/docs/ja/env-vars.md#features-that-need-feature-flag-fetching)、および Claude Code がこのマシンでスタートアップダイアログの提供を停止した | クラシック |
 | セッションが Anthropic から機能フラグをフェッチしない、およびこのマシンの最初の Claude Code 起動が v2.1.239 以降を実行した | フルスクリーン |
 | セッションが Anthropic から機能フラグをフェッチし、Claude Code を 2026 年 5 月 6 日以降に初めて使用した | フルスクリーン |
 | その他 | クラシック |
 
-機能フラグをフェッチしないセッションには、[Amazon Bedrock](/docs/ja/amazon-bedrock.md)、[Google Cloud の Agent Platform](/docs/ja/google-vertex-ai.md)、または [Microsoft Foundry](/docs/ja/microsoft-foundry.md)を通じたセッション、およびテレメトリがオフになっているセッションが含まれます。
+機能フラグをフェッチしないセッションには、[Amazon Bedrock](https://code.claude.com/docs/ja/amazon-bedrock.md)、[Google Cloud の Agent Platform](https://code.claude.com/docs/ja/google-vertex-ai.md)、または [Microsoft Foundry](https://code.claude.com/docs/ja/microsoft-foundry.md)を通じたセッション、およびテレメトリがオフになっているセッションが含まれます。
 
 クラシックレンダラーで開始し、`tui` 設定を保存していない場合、Claude Code は起動時にスイッチを提供するダイアログを開く可能性があります。
 
@@ -102,7 +102,7 @@ CLAUDE_CODE_NO_FLICKER=1 claude
 * **リストの端にある `↑ N more` または `↓ N more` 行をクリック**すると、オプションを選択せずにリストのその端にジャンプします。Claude Code v2.1.286 以降が必要です。
 * **折りたたまれたツール結果をクリック**して展開し、完全な出力を表示します。もう一度クリックして折りたたみます。ツール呼び出しとその結果は一緒に展開されます。表示するものが多いメッセージのみがクリック可能です。
   * クリックすると、`!` シェル コマンドの出力も展開されます。古い切り詰められた結果でも、コマンド実行中のライブ進行状況行でも同様です。Claude Code v2.1.257 以降が必要です。
-  * クリックすると、送信者が [チームメイト](/docs/ja/agent-teams.md) またはセッションで実行されている別のエージェントである場合、薄い `Message from @<sender>` 行も展開されます。
+  * クリックすると、送信者が [チームメイト](https://code.claude.com/docs/ja/agent-teams.md) またはセッションで実行されている別のエージェントである場合、薄い `Message from @<sender>` 行も展開されます。
 * **macOS では `Cmd` を、Linux と Windows では `Ctrl` を押しながら URL またはファイル パスをクリック**して開きます。プレーン `http://` および `https://` URL はブラウザで開きます。Claude Code がクリックを処理する場合、Edit または Write の後に出力されたものなどのツール出力内のファイル パスは、そのファイルが選択された状態でファイル マネージャーで開きます。修飾子なしのプレーン クリックはリンクを開きません。ネイティブ ターミナルの動作と一致します。
   * Linux と WSL では、ファイル パスをクリックするには、`org.freedesktop.FileManager1` D-Bus インターフェイスを提供するファイル マネージャーが必要です。これがない場合、何も開きません。
   * Claude Code は、`\\server\share\file.ts` などのネットワーク（UNC）パスをプレーン テキストとしてレンダリングし、リンクはありません。ネットワーク パスを開くと、Windows 認証情報がそれが指定するホストに送信される可能性があるためです。
@@ -122,7 +122,7 @@ CLAUDE_CODE_NO_FLICKER=1 claude
 * **`Esc`**: Claude Code はキーの通常のアクション（実行中の応答の中断やオープン ダイアログの却下など）を実行し、選択はハイライトされたままです。
 * **`PgUp`、`PgDn`、`Ctrl+Home`、`Ctrl+End`、または `Shift`、`Alt` または `Option`、または `Cmd`、`Win`、または `Super` と矢印、`Home`、または `End` キー**: 選択は保持されます。
 * **プレーン矢印キー、`Enter`、および入力された文字を含む他のキー**: Claude Code は選択をクリアします。
-* **[`selection:clear`](/docs/ja/keybindings#scroll-actions) にバインドされたキー**: Claude Code は選択をクリアします。キーが `Esc` または選択を保持する別のキーである場合でも同様です。アクションにはデフォルト バインディングがありません。
+* **[`selection:clear`](https://code.claude.com/docs/ja/keybindings#scroll-actions) にバインドされたキー**: Claude Code は選択をクリアします。キーが `Esc` または選択を保持する別のキーである場合でも同様です。アクションにはデフォルト バインディングがありません。
 
 [トランスクリプト モード](#search-and-review-the-conversation)では、そこにリストされているナビゲーション キーも選択を保持します。
 
@@ -137,7 +137,7 @@ CLAUDE_CODE_NO_FLICKER=1 claude
 | `Ctrl+End` | 最新メッセージにジャンプして自動フォローを再度有効化 |
 | マウスホイール | 一度に数行スクロール |
 
-[コンパクション](/docs/ja/context-window.md#what-survives-compaction)されたセッションを閉じてから[再開](/docs/ja/sessions.md#what-a-resumed-session-restores)すると、上へのスクロールは `Conversation compacted` 行で止まり、それ以前のメッセージはディスク上の[トランスクリプトファイル](/docs/ja/sessions.md#where-transcripts-are-stored)に残ります。それらのメッセージから詳細を取得するには、そのファイル内を調べるよう Claude に依頼してください。
+[コンパクション](https://code.claude.com/docs/ja/context-window.md#what-survives-compaction)されたセッションを閉じてから[再開](https://code.claude.com/docs/ja/sessions.md#what-a-resumed-session-restores)すると、上へのスクロールは `Conversation compacted` 行で止まり、それ以前のメッセージはディスク上の[トランスクリプトファイル](https://code.claude.com/docs/ja/sessions.md#where-transcripts-are-stored)に残ります。それらのメッセージから詳細を取得するには、そのファイル内を調べるよう Claude に依頼してください。
 
 MacBook キーボードのような専用の `PgUp`、`PgDn`、`Home`、`End` キーがないキーボードでは、`Fn` キーを矢印キーと一緒に押してください。`Fn+↑` は `PgUp` を送信し、`Fn+↓` は `PgDn` を送信し、`Fn+←` は `Home` を送信し、`Fn+→` は `End` を送信します。`Ctrl+Fn+→` は macOS の Claude Code に到達しないため、MacBook キーボードはデフォルトでは下部へのジャンプコードが機能しません。代わりに、以下のいずれかのオプションを使用してください。
 
@@ -145,7 +145,7 @@ MacBook キーボードのような専用の `PgUp`、`PgDn`、`Home`、`End` �
 * マウスホイールで下部までスクロールしてフォローを再開。
 * `scroll:bottom` を、キーボードが送信できるコードに再バインド。
 
-これらのアクションは再バインド可能です。アクション名の完全なリスト（デフォルトバインディングがない半ページおよび全ページバリアントを含む）については、[スクロールアクション](/docs/ja/keybindings.md#scroll-actions)を参照してください。
+これらのアクションは再バインド可能です。アクション名の完全なリスト（デフォルトバインディングがない半ページおよび全ページバリアントを含む）については、[スクロールアクション](https://code.claude.com/docs/ja/keybindings.md#scroll-actions)を参照してください。
 
 スクロールアップ中は、会話の上部に薄いヘッダー行が表示され、ビューの上にスクロールした最新のプロンプトが表示されます。その行をクリックしてそのプロンプトにジャンプしてください。
 
@@ -155,7 +155,7 @@ MacBook キーボードのような専用の `PgUp`、`PgDn`、`Home`、`End` �
 
 自動フォローが一時停止されている間、レスポンスのストリーミングが終了すると、ビューはスクロールした場所に留まります。
 
-ボタンのキーボードヒントは、キーボードが送信できるものを反映します。macOS では、`Ctrl+End` が Mac キーボードから Claude Code に到達しないため、クリックするか `Fn+↓` でスクロールすることを提案します。[`scroll:bottom`](/docs/ja/keybindings#scroll-actions)を再バインドすると、ボタンはすべてのプラットフォームでコードを表示します。
+ボタンのキーボードヒントは、キーボードが送信できるものを反映します。macOS では、`Ctrl+End` が Mac キーボードから Claude Code に到達しないため、クリックするか `Fn+↓` でスクロールすることを提案します。[`scroll:bottom`](https://code.claude.com/docs/ja/keybindings#scroll-actions)を再バインドすると、ボタンはすべてのプラットフォームでコードを表示します。
 
 ターミナルが完全なラベルに対して狭すぎる場合、ボタンはトランスクリプト行の下にラップするのではなく、ヒントを短縮します。
 
@@ -179,7 +179,7 @@ export CLAUDE_CODE_SCROLL_SPEED=3
 
 このコマンドは、`CLAUDE_CODE_SCROLL_SPEED` 環境変数が設定するのと同じ値を書き込み、`~/.claude/settings.json` に永続化されます。ダイアログの最大値は 10 です。環境変数を通じてより高い値を設定した場合、ダイアログは 10 を表示し、ダイアログから保存すると 10 が永続化されます。このコマンドは JetBrains IDE ターミナルでは利用できません。
 
-基本速度とは別に、Claude Code はホイールを素早く回転させるとスクロール速度を加速するため、高速スピンは同じ数の遅いノッチよりも多くの距離をカバーします。加速をオフにして、ノッチごとに一定の速度を保つには、[`settings.json`](/docs/ja/settings-reference#all-settings)で `wheelScrollAccelerationEnabled` を `false` に設定してください。この設定には Claude Code v2.1.174 以降が必要です。
+基本速度とは別に、Claude Code はホイールを素早く回転させるとスクロール速度を加速するため、高速スピンは同じ数の遅いノッチよりも多くの距離をカバーします。加速をオフにして、ノッチごとに一定の速度を保つには、[`settings.json`](https://code.claude.com/docs/ja/settings-reference#all-settings)で `wheelScrollAccelerationEnabled` を `false` に設定してください。この設定には Claude Code v2.1.174 以降が必要です。
 
 ### JetBrains IDE ターミナルでのスクロール
 
@@ -213,7 +213,7 @@ JetBrains IDE ターミナルでは、Claude Code は独自のスクロール処
 
 ## diff パネルで変更を監視する
 
-フルスクリーン レンダリングでは、[`/diff`](/docs/ja/interactive-mode#review-changes-with-%2Fdiff) は会話の横にパネルを開くため、Claude が作業している間に変更が蓄積されるのを監視できます。[Diff パネル](/docs/ja/interactive-mode.md#diff-panel)では、パネルに表示される内容、パネルが自動的に開くタイミング、パネルを閉じたままにする方法、および比較対象を変更する方法について説明しています。
+フルスクリーン レンダリングでは、[`/diff`](https://code.claude.com/docs/ja/interactive-mode#review-changes-with-%2Fdiff) は会話の横にパネルを開くため、Claude が作業している間に変更が蓄積されるのを監視できます。[Diff パネル](https://code.claude.com/docs/ja/interactive-mode.md#diff-panel)では、パネルに表示される内容、パネルが自動的に開くタイミング、パネルを閉じたままにする方法、および比較対象を変更する方法について説明しています。
 
 ## 会話をクリアする
 
@@ -251,7 +251,7 @@ Claude Code は選択内容をシステムクリップボードに書き込み�
 
 tmux 内では、tmux ペーストバッファにも書き込みます。SSH 経由では OSC 52 エスケープシーケンスにフォールバックします。GNU screen 内では、Claude Code は長い選択もクリップボードにコピーします。v2.1.219 より前では、約 570 文字より長い選択をコピーした場合、GNU screen は base64 テキストをウィンドウに出力していました。Claude Code は各コピー後にトーストを表示し、使用したパスを通知します。
 
-一部のターミナルは OSC 52 をデフォルトでブロックします。iTerm2 は Settings → General → Selection → Applications in terminal may access clipboard をオンにするまでブロックします。iTerm2 で [`/terminal-setup`](/docs/ja/terminal-config) を実行すると、これが自動的に有効になります。
+一部のターミナルは OSC 52 をデフォルトでブロックします。iTerm2 は Settings → General → Selection → Applications in terminal may access clipboard をオンにするまでブロックします。iTerm2 で [`/terminal-setup`](https://code.claude.com/docs/ja/terminal-config) を実行すると、これが自動的に有効になります。
 
 1 回限りのネイティブ選択の場合、使用するキーはターミナルによって異なります。
 
@@ -282,7 +282,7 @@ CLAUDE_CODE_NO_FLICKER=1 CLAUDE_CODE_DISABLE_MOUSE=1 claude
 
 フルスクリーン レンダリングは、フレーム間で変更されたセルのみを送信します。Windows Terminal や他の ConPTY ベースのホストなど、一部のターミナルではこれらの位置指定書き込みが正しく統合されず、ウィンドウをリサイズするまで以前の出力の断片が画面に残ります。
 
-[`CLAUDE_CODE_ALT_SCREEN_FULL_REPAINT=1`](/docs/ja/env-vars) を設定して、増分更新を送信する代わりに、フレームごとにすべてのセルを再描画します。
+[`CLAUDE_CODE_ALT_SCREEN_FULL_REPAINT=1`](https://code.claude.com/docs/ja/env-vars) を設定して、増分更新を送信する代わりに、フレームごとにすべてのセルを再描画します。
 
 Windows PowerShell の場合：
 
@@ -297,7 +297,7 @@ macOS または Linux の場合：
 CLAUDE_CODE_ALT_SCREEN_FULL_REPAINT=1 claude
 ```
 
-Windows では、Claude Code はバックグラウンド セッションと [agent view](/docs/ja/agent-view.md) に対して既に自動的にフル リペイントを有効にしているため、直接起動したインタラクティブ フルスクリーン セッションに対してのみ変数を設定する必要があります。
+Windows では、Claude Code はバックグラウンド セッションと [agent view](https://code.claude.com/docs/ja/agent-view.md) に対して既に自動的にフル リペイントを有効にしているため、直接起動したインタラクティブ フルスクリーン セッションに対してのみ変数を設定する必要があります。
 
 ### 起動時に「Claude Code's fullscreen renderer didn't finish starting last time」が表示される
 
@@ -327,4 +327,4 @@ v2.1.236 より前では、Claude Code は失敗した開始後もセッショ�
 
 フルスクリーンレンダリングをオフにするには、`/tui default` を実行するか、その方法で有効にした場合は `CLAUDE_CODE_NO_FLICKER` を設定解除してください。`/tui default` で戻すと、Claude Code は最初にオプションのフィードバックプロンプトを表示し、何があなたに切り替えさせたのかを尋ねる場合があります。理由を入力して `Enter` キーを押して送信するか、`Esc` キーを押してスキップしてください。どちらの場合でも、CLI はクラシックレンダラーに再起動します。保存された `tui` 設定に関係なくクラシックレンダラーを強制するには、`CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN=1` を設定してください。クラシックレンダラーは、ターミナルのネイティブスクロールバックに会話を保持するため、`Cmd+f` と tmux コピーモードは通常どおり機能します。
 
-[エージェントビュー](/docs/ja/agent-view.md)または `claude attach` から開かれたバックグラウンドセッションは、常にフルスクリーンレンダリングを使用します。アタッチするターミナルは、セッションを表示するために代替スクリーンバッファに入り、クラシックレンダラーはそこではスクロールバックまたはマウス処理がないため、`tui` 設定と `CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN` はそれらに適用されません。
+[エージェントビュー](https://code.claude.com/docs/ja/agent-view.md)または `claude attach` から開かれたバックグラウンドセッションは、常にフルスクリーンレンダリングを使用します。アタッチするターミナルは、セッションを表示するために代替スクリーンバッファに入り、クラシックレンダラーはそこではスクロールバックまたはマウス処理がないため、`tui` 設定と `CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN` はそれらに適用されません。

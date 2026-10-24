@@ -12,14 +12,14 @@
 
 クロスセッションメッセージングにより、Claude は一つの Claude Code セッションから別のセッションにメッセージを配信できます。一つのセッションでの変更が別のセッションが構築しているものを破壊する場合、Claude はあなたが気付く前にそのセッションに警告することができます。一つのセッションが別のセッションがブロックされている質問を解決する場合、Claude は答えを送信することができます。
 
-メッセージは、一つの Claude が別の Claude に書くテキストの一部であり、送信者の会話履歴またはファイルではありません。会話全体またはそのコンテキストを移動するには、代わりに[セッションを再開](/docs/ja/sessions.md#resume-a-session)してください。
+メッセージは、一つの Claude が別の Claude に書くテキストの一部であり、送信者の会話履歴またはファイルではありません。会話全体またはそのコンテキストを移動するには、代わりに[セッションを再開](https://code.claude.com/docs/ja/sessions.md#resume-a-session)してください。
 
 ## クロスセッションメッセージングを使用する場合
 
 1 つのセッションが別のセッションが必要とするものを持っている場合にメッセージングを使用します。Claude は必要に応じて自動的にメッセージを送信できます。たとえば、別のセッションが実行している作業に影響する変更を加えた後、または送信するよう求めることができます。一般的なケースは次のとおりです。
 
 * **検出結果を引き継ぐ**: 1 つのセッションが破壊的な変更を発見するか決定を下すと、Claude はそれを影響を受ける領域で作業しているセッションに要約します。そこで再度説明する代わりに。
-* **並列ワークツリーを調整する**: セッションが別の[ワークツリー](/docs/ja/worktrees.md)で同じリポジトリで作業する場合、Claude は他のセッションに何がマージされたかを伝えることができます。
+* **並列ワークツリーを調整する**: セッションが別の[ワークツリー](https://code.claude.com/docs/ja/worktrees.md)で同じリポジトリで作業する場合、Claude は他のセッションに何がマージされたかを伝えることができます。
 * **長時間実行される作業からステータスを取得する**: マイグレーションまたはテスト実行を監視しているセッションに報告させるか、そこから自分で尋ねます。そのセッションがこのマシン上にある場合、Claude は[次にアイドル状態になるか終了するときに 1 つの通知を求める](#get-a-notice-when-another-session-goes-idle)こともできます。
 * **マシン間でメッセージを送信する**: 別のマシンまたはウェブ上の 1 つのセッションに到達します。
 
@@ -39,7 +39,7 @@ Claude は実際のメッセージ自体を作成するため、ユーザーの�
 Explain what we just did to the session working on the payments API
 ```
 
-ターゲットを自分で指定するには、プロンプトでセッションに言及します。`@` に続けてセッション名の最初の文字を入力し、タイプアヘッドからセッションを選択します。これは [サブエージェントを明示的に呼び出す](/docs/ja/sub-agents.md#invoke-subagents-explicitly) 場合と同じ方法です。Claude Code v2.1.232 以降が必要です。Claude Code はメンション（`@api-worker` など）を挿入し、Claude にそのセッションを指定するため、Claude はセッションを最初にリストアップせずにそのセッションにメッセージを送信できます。このプロンプトはメンションでターゲットを指定します。
+ターゲットを自分で指定するには、プロンプトでセッションに言及します。`@` に続けてセッション名の最初の文字を入力し、タイプアヘッドからセッションを選択します。これは [サブエージェントを明示的に呼び出す](https://code.claude.com/docs/ja/sub-agents.md#invoke-subagents-explicitly) 場合と同じ方法です。Claude Code v2.1.232 以降が必要です。Claude Code はメンション（`@api-worker` など）を挿入し、Claude にそのセッションを指定するため、Claude はセッションを最初にリストアップせずにそのセッションにメッセージを送信できます。このプロンプトはメンションでターゲットを指定します。
 
 ```text wrap theme={null}
 Let @api-worker know the schema migration finished
@@ -58,14 +58,14 @@ Let @api-worker know the schema migration finished
 
 受信側の Claude はアクティブなターンの間にツール呼び出しの間でメッセージを読むため、実行中のツールが中断されることはありません。受信セッションがアイドル状態の場合、Claude Code はメッセージで新しいターンを開始します。
 
-別のセッションからのメッセージはプレーンテキストとして到着します。`@` でファイルまたは [MCP リソース](/docs/ja/mcp.md#use-mcp-resources) に言及する場合、Claude は記述されたメンションを見て、Claude Code は何も添付しません。メッセージが新しいターンを開始するか、既存のターン中に到着するかに関わらず、です。Claude は依然として受信マシン上の指定されたパスを独自のツールで開くことができます。そのセッションの権限に従います。
+別のセッションからのメッセージはプレーンテキストとして到着します。`@` でファイルまたは [MCP リソース](https://code.claude.com/docs/ja/mcp.md#use-mcp-resources) に言及する場合、Claude は記述されたメンションを見て、Claude Code は何も添付しません。メッセージが新しいターンを開始するか、既存のターン中に到着するかに関わらず、です。Claude は依然として受信マシン上の指定されたパスを独自のツールで開くことができます。そのセッションの権限に従います。
 
 Claude Code は以下の場合、メッセージを拒否します。
 
 * メッセージが [サイズ上限を超えている](#limitations)。Claude Code はそれを送信セッションで拒否します。送信前に。
 * このマシン上のセッションへの急速なバースト送信が [そのセッションのインボックスが受け入れる内容](#limitations) に達しています。Claude Code はそのセッションへのさらなるメッセージを拒否します。
 * このマシンを超えたセッションが [クロスセッションメッセージを受信できないとリストに表示されている](#message-sessions-on-other-machines)。Claude Code は、メッセージがこのマシンを離れる前に送信セッションで拒否します。
-* このマシン上の返信ターゲットが、シンリンクされたターゲットなど、安全性チェックに失敗します。[クロスセッションメッセージの送信を拒否する](/docs/ja/errors.md#refusing-to-send-a-cross-session-message) にこれらのチェックが記載されています。
+* このマシン上の返信ターゲットが、シンリンクされたターゲットなど、安全性チェックに失敗します。[クロスセッションメッセージの送信を拒否する](https://code.claude.com/docs/ja/errors.md#refusing-to-send-a-cross-session-message) にこれらのチェックが記載されています。
 
 受信セッションは到着した各メッセージを独自の [インバウンドコントロール](#control-inbound-messages) に対してチェックし、チェックは 3 つの結果のいずれかで終了します。
 
@@ -73,7 +73,7 @@ Claude Code は以下の場合、メッセージを拒否します。
 * **保留中**：Claude Code はメッセージを配信されないまま脇に置きます。保留中のメッセージは、ユーザーが承認するか、後のモードまたは設定変更がそれを許可する場合にのみ Claude に到達します。
 * **拒否**：Claude Code はメッセージを配信せずに削除します。
 
-配信されると、メッセージはユーザーが入力したプロンプトと同様に [使用量](/docs/ja/costs.md) にカウントされます。受信側の Claude は `SendMessage` で送信者に返信できます。ただし、[他のマシンおよびクラウドセッションからの返信](#replies-from-other-machines-and-cloud-sessions) と [クロスセッションメッセージングをオフにする](#turn-off-cross-session-messaging) で説明されている場合を除きます。
+配信されると、メッセージはユーザーが入力したプロンプトと同様に [使用量](https://code.claude.com/docs/ja/costs.md) にカウントされます。受信側の Claude は `SendMessage` で送信者に返信できます。ただし、[他のマシンおよびクラウドセッションからの返信](#replies-from-other-machines-and-cloud-sessions) と [クロスセッションメッセージングをオフにする](#turn-off-cross-session-messaging) で説明されている場合を除きます。
 
 権限の境界はセッションごとに保たれます。Claude は、自身のセッションで拒否またはブロックされたアクション、または独自の権限設定がブロックするアクションを別のセッションに要求しないよう指示されており、その作業をユーザーに戻すよう指示されています。受信側では、[受信セッション独自の権限プロンプトとルール](#how-a-session-treats-an-incoming-message) がメッセージが要求するすべてのものに適用されます。
 
@@ -111,12 +111,12 @@ Claude は `SendMessage` ツールの `notify_when_idle` 入力で購読しま�
 Claude はメッセージのターゲットを独自に検出するため、送信を依頼する前に何かを実行する必要はありません。Claude が到達できるセッションを自分で確認するには、`/list-agents` コマンドを実行します。最初の行（存在する場合）はこのセッション自体の名前で、他のセッションがそれにメッセージを送信するために使用する名前です。以下の行は Claude が到達できるセッションです。
 
 * **サブエージェント**：現在のセッション内で実行されているエージェント。
-* **チームメイト**：このセッション独自の [エージェントチーム](/docs/ja/agent-teams.md) チームメイト。
-* **他のローカルセッション**：同じマシン上で実行されている Claude Code セッション。[バックグラウンドセッション](/docs/ja/agent-view.md) を含みます。セッションは [インボックスソケット](#the-sessions-inbox-socket) をバインドするときにのみ表示されます。
-* **[クラウドセッション](/docs/ja/claude-code-on-the-web.md)**：このセッションが [リモートコントロール](/docs/ja/remote-control.md) に接続されている間に表示されます。
-* **他のマシン上のリモートコントロールセッション**：このセッションが [リモートコントロール](/docs/ja/remote-control.md) に接続されている間に表示され、`Remote Control` とラベル付けされます。Claude Code は、リモートコントロール接続が切断されたセッションのステータスを `offline` として表示します。
+* **チームメイト**：このセッション独自の [エージェントチーム](https://code.claude.com/docs/ja/agent-teams.md) チームメイト。
+* **他のローカルセッション**：同じマシン上で実行されている Claude Code セッション。[バックグラウンドセッション](https://code.claude.com/docs/ja/agent-view.md) を含みます。セッションは [インボックスソケット](#the-sessions-inbox-socket) をバインドするときにのみ表示されます。
+* **[クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md)**：このセッションが [リモートコントロール](https://code.claude.com/docs/ja/remote-control.md) に接続されている間に表示されます。
+* **他のマシン上のリモートコントロールセッション**：このセッションが [リモートコントロール](https://code.claude.com/docs/ja/remote-control.md) に接続されている間に表示され、`Remote Control` とラベル付けされます。Claude Code は、リモートコントロール接続が切断されたセッションのステータスを `offline` として表示します。
 
-このセッションが [リモートコントロール](/docs/ja/remote-control.md) に接続されている間、Claude Code は `/list-agents` 出力からローカルセッションの詳細の一部を保留し、Claude 自体がセッションをメッセージするために検索するときに見るものは変わりません。
+このセッションが [リモートコントロール](https://code.claude.com/docs/ja/remote-control.md) に接続されている間、Claude Code は `/list-agents` 出力からローカルセッションの詳細の一部を保留し、Claude 自体がセッションをメッセージするために検索するときに見るものは変わりません。
 
 * **作業ディレクトリ**：各ローカルセッションの作業ディレクトリを除外します。
 * **セッション名**：人に属性付けできないセッション名を除外するため、名前が残っていない行は `(unnamed session)` と読みます。
@@ -124,7 +124,7 @@ Claude はメッセージのターゲットを独自に検出するため、送�
 
 出力が何かをリストアップする場合、詳細が保留されたことを示す注記で終了します。セッション独自のキーボードで `/rename` に続いて未使用の名前を実行すると、そのセッションに出力に表示される名前が付与されます。
 
-セッションは [`/rename`](/docs/ja/commands) コマンドまたは [`--name`](/docs/ja/cli-reference#cli-flags) フラグで設定した名前に応答します。設定しない場合、Claude Code はセッション自体に名前を付けます。インタラクティブセッションの場合、これは [実行中のセッションのリスト](/docs/ja/sessions.md#name-your-sessions) に表示される名前です。
+セッションは [`/rename`](https://code.claude.com/docs/ja/commands) コマンドまたは [`--name`](https://code.claude.com/docs/ja/cli-reference#cli-flags) フラグで設定した名前に応答します。設定しない場合、Claude Code はセッション自体に名前を付けます。インタラクティブセッションの場合、これは [実行中のセッションのリスト](https://code.claude.com/docs/ja/sessions.md#name-your-sessions) に表示される名前です。
 
 このセッションが Remote Control に接続されていない限り、Claude Code は `/list-agents` 出力に各ローカルセッションの作業ディレクトリを表示するため、異なるディレクトリで実行されている同じ名前のセッションを区別できます。Claude はメッセージを 2 つの方法のいずれかで送信します。名前に応答するライブセッションの数によって異なります。
 
@@ -138,23 +138,23 @@ Claude はメッセージのターゲットを独自に検出するため、送�
 | 他のセッションが実行される場所 | メッセージの移動方法 |
 | :- | :- |
 | このマシン上 | macOS および Linux 上のセッションごとのソケット、またはネイティブ Windows 上のセッションごとの名前付きパイプ。Anthropic サーバーを通じて決してない |
-| 他のマシンの 1 つ | Anthropic サーバーを通じて、そのマシンの [リモートコントロール](/docs/ja/remote-control.md) 接続を通じて到着 |
-| [クラウド](/docs/ja/claude-code-on-the-web.md) | Anthropic サーバーを通じて、クラウドセッションに直接 |
+| 他のマシンの 1 つ | Anthropic サーバーを通じて、そのマシンの [リモートコントロール](https://code.claude.com/docs/ja/remote-control.md) 接続を通じて到着 |
+| [クラウド](https://code.claude.com/docs/ja/claude-code-on-the-web.md) | Anthropic サーバーを通じて、クラウドセッションに直接 |
 
 他のマシン上のセッションとの会話を開始するには、Claude Code v2.1.225 以降と、[リストに表示される](#see-which-sessions-claude-can-reach) ターゲットが必要です。
 
 [リスト](#see-which-sessions-claude-can-reach) のセッションの行には、Claude がそのセッションにメッセージを送信したときの動作を変える状態が表示されることがあります。
 
 * **`offline`**：そのセッションの Remote Control 接続が切断されています。メッセージは送信されますが、そのセッションのマシンが再接続した後にのみ到着します。
-* **`can't receive cross-session messages (off in that session)`**：そのセッションでメッセージ送受信が [利用できない](#availability) か、その [`crossSessionInbound`](/docs/ja/settings-reference#crosssessioninbound) の値が `refuse` です。Claude Code は、メッセージがこのマシンを離れる前に、そのセッションへのメッセージを拒否します。Claude の `SendMessage` 呼び出しの結果は `Not sent` で始まり、理由が示されます。そのセッションで原因が解消されると、以降のリストにはこの状態が表示されなくなり、Claude はそのセッションにメッセージを送信できます。
+* **`can't receive cross-session messages (off in that session)`**：そのセッションでメッセージ送受信が [利用できない](#availability) か、その [`crossSessionInbound`](https://code.claude.com/docs/ja/settings-reference#crosssessioninbound) の値が `refuse` です。Claude Code は、メッセージがこのマシンを離れる前に、そのセッションへのメッセージを拒否します。Claude の `SendMessage` 呼び出しの結果は `Not sent` で始まり、理由が示されます。そのセッションで原因が解消されると、以降のリストにはこの状態が表示されなくなり、Claude はそのセッションにメッセージを送信できます。
 
-コンテナ内のセッションとホスト上のセッションは互いに到達できません。同じコンテナ内の 2 つのセッションは依然としてメッセージを送信できます。[セルフホストランナー](/docs/ja/self-hosted-environments) を含みます。WSL 2 内のセッションと同じコンピュータ上のネイティブ Windows セッションも互いに到達できません。
+コンテナ内のセッションとホスト上のセッションは互いに到達できません。同じコンテナ内の 2 つのセッションは依然としてメッセージを送信できます。[セルフホストランナー](https://code.claude.com/docs/ja/self-hosted-environments) を含みます。WSL 2 内のセッションと同じコンピュータ上のネイティブ Windows セッションも互いに到達できません。
 
 このマシンを超えたメッセージが送信される前にユーザーの承認を要求するには、[`isolatePeerMachines`](#require-approval-for-cross-machine-messages) を設定します。
 
 #### 他のマシンおよびクラウドセッションからの返信
 
-[クラウドセッション](/docs/ja/claude-code-on-the-web.md)（[セルフホストランナー](/docs/ja/self-hosted-environments) 上のものを含む）は、メッセージに [返信アドレス](#what-a-message-looks-like) が含まれている場合でも、`SendMessage` を使用して別のマシンからのメッセージに応答できません。メッセージ自体は到着します。クラウドセッションの応答は、[claude.ai/code](https://claude.ai/code) のトランスクリプトで確認してください。
+[クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md)（[セルフホストランナー](https://code.claude.com/docs/ja/self-hosted-environments) 上のものを含む）は、メッセージに [返信アドレス](#what-a-message-looks-like) が含まれている場合でも、`SendMessage` を使用して別のマシンからのメッセージに応答できません。メッセージ自体は到着します。クラウドセッションの応答は、[claude.ai/code](https://claude.ai/code) のトランスクリプトで確認してください。
 
 Claude がこのマシンを超えたセッションに送信するときにこのセッションが Remote Control に接続されていない場合、メッセージは依然として送信されますが、[返信アドレス](#what-a-message-looks-like) は含まれません。受信側の Claude はそれに応答できません。
 
@@ -173,9 +173,9 @@ Claude がこのマシンを超えたセッションに送信するときにこ�
 
 以下のいずれかで完全なテキストが表示されます。
 
-* `Ctrl+O` を押して[トランスクリプトビューア](/docs/ja/interactive-mode.md#transcript-viewer)を開き、送信者のセッション名の下で完全なテキストを読みます。
-* [フルスクリーンレンダリング](/docs/ja/fullscreen.md#use-the-mouse)では、メッセージの一部が省略されているプレビュー行をクリックすると、その場で展開されます。
-* [`--verbose`](/docs/ja/cli-reference#cli-flags) で開始されたセッションでは、Claude Code はプレビューではなく完全なテキストを表示します。
+* `Ctrl+O` を押して[トランスクリプトビューア](https://code.claude.com/docs/ja/interactive-mode.md#transcript-viewer)を開き、送信者のセッション名の下で完全なテキストを読みます。
+* [フルスクリーンレンダリング](https://code.claude.com/docs/ja/fullscreen.md#use-the-mouse)では、メッセージの一部が省略されているプレビュー行をクリックすると、その場で展開されます。
+* [`--verbose`](https://code.claude.com/docs/ja/cli-reference#cli-flags) で開始されたセッションでは、Claude Code はプレビューではなく完全なテキストを表示します。
 
 プレビューは表示内容のみを短縮します。展開するかどうかに関わらず、Claude はメッセージ全体を読みます。
 
@@ -190,19 +190,19 @@ The new column is tenant_id, and rebasing on main is safe now.
 
 ### インバウンドメッセージを制御する
 
-[`crossSessionInbound`](/docs/ja/settings-reference#crosssessioninbound) を設定して、セッションが他のセッションから到着するメッセージをどのように処理するかを選択します。
+[`crossSessionInbound`](https://code.claude.com/docs/ja/settings-reference#crosssessioninbound) を設定して、セッションが他のセッションから到着するメッセージをどのように処理するかを選択します。
 
 | 値 | 動作 |
 | :- | :- |
 | `accept` | Claude Code は各メッセージを Claude に配信します |
-| `hold` | Claude Code は各メッセージの通知を表示し、配信しません。後で `accept` が適用される場合、[優先順位ルール](/docs/ja/settings-reference.md#crosssessioninbound)に従って、Claude Code は保留中のメッセージをリリースします |
+| `hold` | Claude Code は各メッセージの通知を表示し、配信しません。後で `accept` が適用される場合、[優先順位ルール](https://code.claude.com/docs/ja/settings-reference.md#crosssessioninbound)に従って、Claude Code は保留中のメッセージをリリースします |
 | `refuse` | Claude Code は各メッセージを配信せずにドロップします |
 
 設定ファイルを編集する以外に、`/config` 行の **Messages from your other sessions** で値を選択できます。Claude Code は選択した値をユーザー設定に書き込みます。この行には Claude Code v2.1.232 以降が必要で、管理設定または `--settings` フラグがキーを設定している場合は表示されません。ユーザー設定値は適用されないためです。Claude Code はこのキーに対して `/config crossSessionInbound=value` ショートハンドを拒否します。
 
-どの値が適用されるかを確認するには、[設定リファレンス](/docs/ja/settings-reference.md#crosssessioninbound)の `crossSessionInbound` 優先順位ルールに従います。
+どの値が適用されるかを確認するには、[設定リファレンス](https://code.claude.com/docs/ja/settings-reference.md#crosssessioninbound)の `crossSessionInbound` 優先順位ルールに従います。
 
-値が適用されない場合、Claude Code は 2 つのセッションの権限モードに基づいてメッセージごとに決定します。[権限プロンプトをバイパス](/docs/ja/permission-modes.md#skip-all-checks-with-bypasspermissions-mode)するセッションを 1 つのクラスにグループ化し、他のすべてのセッションを別のクラスにグループ化します。plan モードは、バイパス権限が利用可能なインタラクティブなターミナルセッションではバイパスとしてカウントされ、[auto](/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)、`acceptEdits`、`dontAsk` はプロンプトとしてカウントされます。
+値が適用されない場合、Claude Code は 2 つのセッションの権限モードに基づいてメッセージごとに決定します。[権限プロンプトをバイパス](https://code.claude.com/docs/ja/permission-modes.md#skip-all-checks-with-bypasspermissions-mode)するセッションを 1 つのクラスにグループ化し、他のすべてのセッションを別のクラスにグループ化します。plan モードは、バイパス権限が利用可能なインタラクティブなターミナルセッションではバイパスとしてカウントされ、[auto](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)、`acceptEdits`、`dontAsk` はプロンプトとしてカウントされます。
 
 * **受信側セッションが権限をプロンプト**: Claude Code は各メッセージを配信します。送信側セッションが権限プロンプトをバイパスしていることを識別する場合のみ、承認のために 1 つを保留します。
 * **受信側セッションが権限をバイパス**: Claude Code は各メッセージを承認のために保留します。送信側セッションも同様にバイパスしていることを識別する場合のみ、1 つを配信します。
@@ -211,8 +211,8 @@ The new column is tenant_id, and rebasing on main is safe now.
 
 * **Approve** はそのメッセージを Claude に配信します。
 * **Deny** またはダイアログを閉じると、ドロップされます。
-* ダイアログが [`dialogExpiry`](/docs/ja/settings-reference#dialogexpiry) 期限を過ぎて未回答のままの場合、Claude Code はそれを閉じてメッセージをドロップします。期限のデフォルトは 5 分です。
-* [バックグラウンドセッション](/docs/ja/agent-view.md)にターミナルが接続されていない場合、Claude Code はダイアログを期限を過ぎて開いたままにします。接続後、ダイアログが完全な期限期間未回答のままの場合、Claude Code はそれを閉じてメッセージをドロップします。
+* ダイアログが [`dialogExpiry`](https://code.claude.com/docs/ja/settings-reference#dialogexpiry) 期限を過ぎて未回答のままの場合、Claude Code はそれを閉じてメッセージをドロップします。期限のデフォルトは 5 分です。
+* [バックグラウンドセッション](https://code.claude.com/docs/ja/agent-view.md)にターミナルが接続されていない場合、Claude Code はダイアログを期限を過ぎて開いたままにします。接続後、ダイアログが完全な期限期間未回答のままの場合、Claude Code はそれを閉じてメッセージをドロップします。
 * このセッションの権限モードクラスがメッセージが保留されている間に変更される場合、Claude Code はインバウンドルールを再適用し、現在受け入れるメッセージを配信し、通知を表示します。
 
 VS Code 拡張機能または Desktop アプリのセッションはダイアログを表示できません。その場合、[非インタラクティブセッション](#non-interactive-sessions)で説明しているように、Claude Code は保留中のメッセージを同じ期限まで保持します。
@@ -221,9 +221,9 @@ Claude Code は最大 100 個のメッセージを保留し、それを超える
 
 ### 非インタラクティブセッション
 
-Claude Code は [`claude -p`](/docs/ja/headless) セッションのインボックスソケットをインタラクティブなものと同様にバインドするため、長時間実行される `-p` ワーカーはメッセージを受信でき、リストに表示されます。[bare モード](/docs/ja/headless.md#start-faster-with-bare-mode)でセッションを開始する場合、Claude Code はソケットをバインドしないため、そのセッションはメッセージを受信できず、エージェントリストに表示されません。
+Claude Code は [`claude -p`](https://code.claude.com/docs/ja/headless) セッションのインボックスソケットをインタラクティブなものと同様にバインドするため、長時間実行される `-p` ワーカーはメッセージを受信でき、リストに表示されます。[bare モード](https://code.claude.com/docs/ja/headless.md#start-faster-with-bare-mode)でセッションを開始する場合、Claude Code はソケットをバインドしないため、そのセッションはメッセージを受信できず、エージェントリストに表示されません。
 
-`-p` セッションは承認ダイアログを表示できません。[インバウンドデフォルト](#control-inbound-messages)がそこでメッセージを保留する場合、Claude Code はダイアログが使用する同じ [`dialogExpiry`](/docs/ja/settings-reference#dialogexpiry) 期限（デフォルトは 5 分）でそれを保持します。
+`-p` セッションは承認ダイアログを表示できません。[インバウンドデフォルト](#control-inbound-messages)がそこでメッセージを保留する場合、Claude Code はダイアログが使用する同じ [`dialogExpiry`](https://code.claude.com/docs/ja/settings-reference#dialogexpiry) 期限（デフォルトは 5 分）でそれを保持します。
 
 * **期限前**: モードまたは設定変更によりメッセージが許可される場合、Claude Code はそれを配信します。
 * **期限後**: Claude Code はメッセージをドロップし、到達できる送信者に期限切れとして報告します。
@@ -241,14 +241,14 @@ Claude Code は、クロスセッションメッセージングが有効にな�
 ソケットのパスは 2 つの場所で見つけることができます。
 
 * `/status` は `Peer address` 行に表示します。パスは `uds:` で始まります。
-* Claude Code は[フック](/docs/ja/hooks.md)と Bash コマンドに [`CLAUDE_CODE_MESSAGING_SOCKET`](/docs/ja/env-vars#variables) 環境変数としてエクスポートします。
+* Claude Code は[フック](https://code.claude.com/docs/ja/hooks.md)と Bash コマンドに [`CLAUDE_CODE_MESSAGING_SOCKET`](https://code.claude.com/docs/ja/env-vars#variables) 環境変数としてエクスポートします。
   * メッセージングがオンで開始するセッションでは、Claude Code は `SessionStart` を含むすべてのフックが実行される前に変数をエクスポートします。
 
 macOS と Linux では、Claude Code はソケットをオペレーティングシステムユーザーに制限します。ネイティブ Windows では、代わりに各接続がまずオペレーティングシステムユーザーのみが読み取ることができるキーで認証することを要求します。どちらの方法でも、共有マシン上の別のユーザーのセッションはそれに配信できません。
 
-macOS と Linux では、Claude Code は受け入れることができないディレクトリ（例えば別のユーザーが所有するディレクトリ）にソケットを作成することも拒否し、代わりにプライベートなユーザーごとのディレクトリ `/tmp/cc-socks-<uid>` を使用します。受け入れることができるディレクトリがない場合、セッションはインボックスなしで実行されます。Claude Code は通知を表示し、`/status` は `Peer address` 行に `unavailable` と理由を表示し、[`--debug`](/docs/ja/cli-reference#cli-flags) ログは完全な拒否を記録します。
+macOS と Linux では、Claude Code は受け入れることができないディレクトリ（例えば別のユーザーが所有するディレクトリ）にソケットを作成することも拒否し、代わりにプライベートなユーザーごとのディレクトリ `/tmp/cc-socks-<uid>` を使用します。受け入れることができるディレクトリがない場合、セッションはインボックスなしで実行されます。Claude Code は通知を表示し、`/status` は `Peer address` 行に `unavailable` と理由を表示し、[`--debug`](https://code.claude.com/docs/ja/cli-reference#cli-flags) ログは完全な拒否を記録します。
 
-ソケットのパスと共に、Claude Code はセッションごとのトークンを [`CLAUDE_CODE_MESSAGING_TOKEN`](/docs/ja/env-vars#variables) としてエクスポートします。独自のセッションのソケットに投稿するスクリプトは、接続の最初の行として `{"type":"auth","token":"<token>"}` を送信できます。ここで `<token>` は `CLAUDE_CODE_MESSAGING_TOKEN` の値です。Claude Code が行を要求するかどうかはプラットフォームに依存します。
+ソケットのパスと共に、Claude Code はセッションごとのトークンを [`CLAUDE_CODE_MESSAGING_TOKEN`](https://code.claude.com/docs/ja/env-vars#variables) としてエクスポートします。独自のセッションのソケットに投稿するスクリプトは、接続の最初の行として `{"type":"auth","token":"<token>"}` を送信できます。ここで `<token>` は `CLAUDE_CODE_MESSAGING_TOKEN` の値です。Claude Code が行を要求するかどうかはプラットフォームに依存します。
 
 * **macOS と Linux（WSL 2 を含む）**: 行はオプションです。Claude Code は認証行の有無にかかわらず接続を受け入れます。
 * **ネイティブ Windows**: 行は必須です。Claude Code は最初の行が有効な認証行でない接続を閉じ、その接続からは何も配信しません。
@@ -259,9 +259,9 @@ Claude Code はソケットに到着するメッセージを、1 つの例外と
 
 * **独自の子メッセージ**: `crossSessionInbound` 値が適用されない場合、Claude Code はセッションの独自の子プロセス（フックや Bash コマンドなど）から来たことを検証したメッセージを配信します。これらは独自のセッションのソケットに投稿します。
   * Linux（WSL 2 内を含む）では、Claude Code は既に終了した子についても、プロセス証拠によって検証できます。macOS では、投稿プロセスがまだ実行中の場合のみそのように検証でき、Claude Code がプロセス ID 1 として実行されるコンテナではプロセス証拠がまったくありません。ネイティブ Windows でも同様です。
-  * 投稿プロセスが終了した後の macOS と Claude Code がプロセス ID 1 として実行されるコンテナでは、そのプロセス証拠がなく、Claude Code は代わりに接続を開いた認証行でセッションのエクスポートされた [`CLAUDE_CODE_MESSAGING_TOKEN`](/docs/ja/env-vars#variables) を送信した子を検証します。ネイティブ Windows では、そのトークンが Claude Code が独自の子メッセージを検証する唯一の方法です。
+  * 投稿プロセスが終了した後の macOS と Claude Code がプロセス ID 1 として実行されるコンテナでは、そのプロセス証拠がなく、Claude Code は代わりに接続を開いた認証行でセッションのエクスポートされた [`CLAUDE_CODE_MESSAGING_TOKEN`](https://code.claude.com/docs/ja/env-vars#variables) を送信した子を検証します。ネイティブ Windows では、そのトークンが Claude Code が独自の子メッセージを検証する唯一の方法です。
   * Claude Code がどちらの方法でも検証できない場合、それはメッセージを権限クラスを主張しない他のメッセージのように扱うため、権限プロンプトをバイパスするセッションは承認のためにそれを保留します。
-* **サンドボックス化されたセッション**: Bash コマンドが[サンドボックス](/docs/ja/sandboxing.md)内からソケットに到達できるかどうかを、サンドボックスの Unix ソケット設定 [`sandbox.network.allowAllUnixSockets` と `sandbox.network.allowUnixSockets`](/docs/ja/settings-reference#sandbox-settings) で制御します。
+* **サンドボックス化されたセッション**: Bash コマンドが[サンドボックス](https://code.claude.com/docs/ja/sandboxing.md)内からソケットに到達できるかどうかを、サンドボックスの Unix ソケット設定 [`sandbox.network.allowAllUnixSockets` と `sandbox.network.allowUnixSockets`](https://code.claude.com/docs/ja/settings-reference#sandbox-settings) で制御します。
 
 ## クロスセッションメッセージングを制限する
 
@@ -269,7 +269,7 @@ Claude Code はソケットに到着するメッセージを、1 つの例外と
 
 ### クロスマシンメッセージの承認を要求する
 
-[`isolatePeerMachines`](/docs/ja/settings-reference#isolatepeermachines)を `true` に設定して、`SendMessage` がこのマシンを超えたセッションに到達する前に明示的な承認を要求します。
+[`isolatePeerMachines`](https://code.claude.com/docs/ja/settings-reference#isolatepeermachines)を `true` に設定して、`SendMessage` がこのマシンを超えたセッションに到達する前に明示的な承認を要求します。
 
 ```json theme={null}
 {
@@ -284,9 +284,9 @@ Claude Code はソケットに到着するメッセージを、1 つの例外と
 受信と送信は別のコントロールであるため、必要な方向をオフにするか、両方をオフにします。到着するメッセージには `crossSessionInbound` を使用し、Claude がここで送信またはリストできるものには権限ルールを使用します。
 
 * **受信を停止**: `crossSessionInbound` を `refuse` に設定し、Claude Code はインバウンドピアメッセージをドロップし、配信しません。プロジェクトまたはローカル設定から、`refuse` はすべての他のソースに適用され、ユーザー設定から、管理設定または `--settings` フラグが値を設定しない限り適用されます。
-* **送信とリストを停止**: `SendMessage` と `ListAgents` に名前を付ける[権限拒否ルール](/docs/ja/permissions.md#tool-specific-permission-rules)を追加します。両方は指定子なしでベアツール名を取ります。
+* **送信とリストを停止**: `SendMessage` と `ListAgents` に名前を付ける[権限拒否ルール](https://code.claude.com/docs/ja/permissions.md#tool-specific-permission-rules)を追加します。両方は指定子なしでベアツール名を取ります。
 
-管理者は、[管理設定](/docs/ja/managed-settings.md)で組織の両側をオフにでき、拒否ルールと `refuse` を組み合わせることができます。
+管理者は、[管理設定](https://code.claude.com/docs/ja/managed-settings.md)で組織の両側をオフにでき、拒否ルールと `refuse` を組み合わせることができます。
 
 ```json theme={null}
 {
@@ -305,11 +305,11 @@ Claude Code はソケットに到着するメッセージを、1 つの例外と
 
 * **オペレーティングシステム**: macOS、Windows、Linux（WSL 2 内の Linux を含む）で利用可能です。
 
-* **このマシン上のセッション**: Amazon Bedrock、Claude Platform on AWS、Google Cloud の Agent Platform、Microsoft Foundry を含むすべてのプロバイダーで利用可能です。また、[フィーチャーフラグ取得](/docs/ja/env-vars.md#features-that-need-feature-flag-fetching)がオフで実行されるセッションでも利用可能です。これらのプロバイダーでフラグ取得がオフの場合、同一マシン上のメッセージングには Claude Code v2.1.248 以降が必要です。Claude Code はこれらのメッセージを [セッションごとのソケット](#the-sessions-inbox-socket)を通じてマシン上で配信し、Anthropic サーバーを経由することはありません。
+* **このマシン上のセッション**: Amazon Bedrock、Claude Platform on AWS、Google Cloud の Agent Platform、Microsoft Foundry を含むすべてのプロバイダーで利用可能です。また、[フィーチャーフラグ取得](https://code.claude.com/docs/ja/env-vars.md#features-that-need-feature-flag-fetching)がオフで実行されるセッションでも利用可能です。これらのプロバイダーでフラグ取得がオフの場合、同一マシン上のメッセージングには Claude Code v2.1.248 以降が必要です。Claude Code はこれらのメッセージを [セッションごとのソケット](#the-sessions-inbox-socket)を通じてマシン上で配信し、Anthropic サーバーを経由することはありません。
 
   セッションがメッセージを受け取らないようにするには、[`crossSessionInbound`](#turn-off-cross-session-messaging)を`refuse`に設定してください。
 
-* **このマシンを超えたセッション**: Claude は [ウェブ上の Claude Code](/docs/ja/claude-code-on-the-web.md)セッションと、Remote Control に接続されているセッションから他のマシン上のセッションを検出します。このセッションのアクティブな認証として claude.ai サインインが必要であり、他の [Remote Control 要件](/docs/ja/remote-control.md#requirements)も必要です。Claude は API キーまたは Amazon Bedrock、Claude Platform on AWS、Google Cloud の Agent Platform、Microsoft Foundry ではこれらのセッションを検出できません。
+* **このマシンを超えたセッション**: Claude は [ウェブ上の Claude Code](https://code.claude.com/docs/ja/claude-code-on-the-web.md)セッションと、Remote Control に接続されているセッションから他のマシン上のセッションを検出します。このセッションのアクティブな認証として claude.ai サインインが必要であり、他の [Remote Control 要件](https://code.claude.com/docs/ja/remote-control.md#requirements)も必要です。Claude は API キーまたは Amazon Bedrock、Claude Platform on AWS、Google Cloud の Agent Platform、Microsoft Foundry ではこれらのセッションを検出できません。
 
 セッションを確認するには、`/list-agents`を入力してください。`/peers`としても利用可能です。結果は、フィーチャーを持たないセッションと、`SendMessage`ツールの欠落や送信の拒否など、より狭い範囲でメッセージをブロックしたセッションを区別します。
 
@@ -317,8 +317,8 @@ Claude Code はソケットに到着するメッセージを、1 つの例外と
 * **`/list-agents`は機能するが、送信が到着しなかった**: メッセージングはオンであり、より狭い範囲の何かが適用されます。
   * **拒否ルール**: [権限拒否ルール](#turn-off-cross-session-messaging)は`SendMessage`と`ListAgents`ツールを削除します。
   * **インバウンドコントロール**: [受信セッションのインバウンドコントロール](#control-inbound-messages)は、送信したものを保持またはドロップできます。
-  * **クラウドセッションが見つからない**: クラウドセッションは、このセッションが [Remote Control](/docs/ja/remote-control.md)に接続されている間のみ表示されます。
-  * **他のマシンのセッションが見つからない**: 別のマシン上のセッションは、[Remote Control](/docs/ja/remote-control.md)で実行され、このセッションも接続されている場合にのみ表示されます。
+  * **クラウドセッションが見つからない**: クラウドセッションは、このセッションが [Remote Control](https://code.claude.com/docs/ja/remote-control.md)に接続されている間のみ表示されます。
+  * **他のマシンのセッションが見つからない**: 別のマシン上のセッションは、[Remote Control](https://code.claude.com/docs/ja/remote-control.md)で実行され、このセッションも接続されている場合にのみ表示されます。
   * **他のマシンのセッションが`offline`**: `offline`としてリストされているセッションへのメッセージは通過しますが、[そのセッションのマシンが再接続した後にのみ到着します](#message-sessions-on-other-machines)。
   * **クラウドまたは他のマシンのセッションが `can't receive cross-session messages`**: この状態でリストされているセッションへのメッセージは[このマシンから送信されず](#message-sessions-on-other-machines)、`SendMessage` の結果は `Not sent` で始まります。
   * **古いクラウドまたは他のマシンのセッションが見つからない**: Claude Code はこれらのセッションリストを最新順に読み込み、制限されたページ数の後に停止するため、Claude はそれらのページを超えて落ちたセッションを名前でメッセージすることはできません。
@@ -329,18 +329,18 @@ Claude Code はソケットに到着するメッセージを、1 つの例外と
 
 ここの制限はメッセージングチャネル自体の特性であり、機能が実行される場所に適用されます。プラットフォームとプロバイダーのギャップについては、代わりに[利用可能性](#availability)を参照してください。
 
-* **プレーンテキストのみ**: Claude はセッション間でプレーンテキストのみを送信します。構造化された[エージェントチーム](/docs/ja/agent-teams.md)プロトコルメッセージはチーム内に留まります。
-* **同じマシンメッセージサイズは上限があります**: Claude Code は、シリアル化された形式が約 100 万文字を超えると、このマシン上のセッションへのメッセージを拒否します。拒否は[正確なサイズに名前を付けます](/docs/ja/errors.md#message-too-large-for-cross-session-delivery)。受信側のセッションには何も到達しません。
-* **このマシン上のセッションへの急速なバーストは送信者で拒否されます**: このマシン上のセッションへのメッセージの急速なバーストがそのセッションのインボックスが受け入れるものに達すると、Claude Code は送信側のセッションでさらなる送信を拒否します。[拒否はバーストに名前を付けます](/docs/ja/errors.md#too-many-messages-to-this-session-just-now)。Claude に残りを 1 つのメッセージにバッチするか、待機するよう伝えます。
+* **プレーンテキストのみ**: Claude はセッション間でプレーンテキストのみを送信します。構造化された[エージェントチーム](https://code.claude.com/docs/ja/agent-teams.md)プロトコルメッセージはチーム内に留まります。
+* **同じマシンメッセージサイズは上限があります**: Claude Code は、シリアル化された形式が約 100 万文字を超えると、このマシン上のセッションへのメッセージを拒否します。拒否は[正確なサイズに名前を付けます](https://code.claude.com/docs/ja/errors.md#message-too-large-for-cross-session-delivery)。受信側のセッションには何も到達しません。
+* **このマシン上のセッションへの急速なバーストは送信者で拒否されます**: このマシン上のセッションへのメッセージの急速なバーストがそのセッションのインボックスが受け入れるものに達すると、Claude Code は送信側のセッションでさらなる送信を拒否します。[拒否はバーストに名前を付けます](https://code.claude.com/docs/ja/errors.md#too-many-messages-to-this-session-just-now)。Claude に残りを 1 つのメッセージにバッチするか、待機するよう伝えます。
 * **メッセージループはスロットルされます**: 受信側のセッションでは、Claude Code は送信者ごとに繰り返されたメッセージをレート制限し、短いウィンドウ内に到着する同一の繰り返しをドロップし、最大 50 個の受け入れられたメッセージを Claude が読むためにキューに入れます。したがって、2 つのセッション間のメッセージループは独自に停止します。
 
 ## 関連リソース
 
-* [サブエージェント](/docs/ja/sub-agents.md#resume-subagents)と[エージェントチーム](/docs/ja/agent-teams.md#messages-between-agents): 単一のセッションまたはチーム内のメッセージング
-* [バックグラウンドエージェント](/docs/ja/agent-view.md): メッセージを送信する可能性のある並列セッションをディスパッチおよび監視します
-* [リモートコントロール](/docs/ja/remote-control.md): このセッションを接続して、他のマシン上のセッションに到達します
-* [チャネル](/docs/ja/channels.md): CI 結果やチャットメッセージなどの外部イベントをセッションにプッシュします
-* [設定](/docs/ja/settings-reference.md#all-settings): `crossSessionInbound`、`isolatePeerMachines`、`dialogExpiry`
-* [権限モード](/docs/ja/permission-modes.md): インバウンドデフォルトの 2 つのクラスの背後にあるモード
-* [ツールリファレンス](/docs/ja/tools-reference.md): ツールテーブルの `ListAgents` と `SendMessage` 行
-* [エージェントを並列で実行](/docs/ja/agents.md): Claude Code が複数のエージェントを実行する方法を比較します
+* [サブエージェント](https://code.claude.com/docs/ja/sub-agents.md#resume-subagents)と[エージェントチーム](https://code.claude.com/docs/ja/agent-teams.md#messages-between-agents): 単一のセッションまたはチーム内のメッセージング
+* [バックグラウンドエージェント](https://code.claude.com/docs/ja/agent-view.md): メッセージを送信する可能性のある並列セッションをディスパッチおよび監視します
+* [リモートコントロール](https://code.claude.com/docs/ja/remote-control.md): このセッションを接続して、他のマシン上のセッションに到達します
+* [チャネル](https://code.claude.com/docs/ja/channels.md): CI 結果やチャットメッセージなどの外部イベントをセッションにプッシュします
+* [設定](https://code.claude.com/docs/ja/settings-reference.md#all-settings): `crossSessionInbound`、`isolatePeerMachines`、`dialogExpiry`
+* [権限モード](https://code.claude.com/docs/ja/permission-modes.md): インバウンドデフォルトの 2 つのクラスの背後にあるモード
+* [ツールリファレンス](https://code.claude.com/docs/ja/tools-reference.md): ツールテーブルの `ListAgents` と `SendMessage` 行
+* [エージェントを並列で実行](https://code.claude.com/docs/ja/agents.md): Claude Code が複数のエージェントを実行する方法を比較します

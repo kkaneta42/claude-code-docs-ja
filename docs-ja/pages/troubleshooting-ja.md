@@ -10,20 +10,20 @@
 
 | 症状 | 移動先 |
 | :- | :- |
-| `command not found`、インストール失敗、PATH の問題、`EACCES`、TLS エラー | [インストールとログインのトラブルシューティング](/docs/ja/troubleshoot-install.md) |
-| 更新またはインストールダウンロードが `The connection dropped while downloading the update` または `aborted` で失敗する | [インストールとログインのトラブルシューティング](/docs/ja/troubleshoot-install.md#the-connection-dropped-while-downloading-the-update) |
-| 更新またはインストールが `Release verification failed for Claude Code` で失敗する | [インストールとログインのトラブルシューティング](/docs/ja/troubleshoot-install.md#release-verification-failed) |
-| セッションのフッターに `Auto-update failed · Run claude doctor` が赤色で表示される | [インストールとログインのトラブルシューティング](/docs/ja/troubleshoot-install.md#auto-update-failed) |
-| ログインループ、OAuth エラー、`403 Forbidden`、「organization disabled」、Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry 認証情報 | [インストールとログインのトラブルシューティング](/docs/ja/troubleshoot-install.md#login-and-authentication) |
-| 設定が適用されない、hooks が実行されない、MCP サーバーがロードされない | [設定をデバッグする](/docs/ja/debug-your-config.md) |
-| セッションが auto モードで開始された、または Claude がファイルを編集してコマンドを実行する（確認なし） | [セッションが開始するモード](/docs/ja/permission-modes.md#which-mode-a-session-starts-in) |
-| Claude Code または Agent SDK を更新した後、`--permission-mode`、`permissionMode`、`permission_mode` のいずれも渡していない `claude -p` または SDK の実行でツール呼び出しが拒否される | [`claude -p` と Agent SDK の実行でツール呼び出しが拒否される](/docs/ja/permission-modes#which-mode-a-non-interactive-run-starts-in) |
-| `API Error: 5xx`、`529 Overloaded`、`429`、リクエスト検証エラー | [エラーリファレンス](/docs/ja/errors.md) |
-| `model not found` または `you may not have access to it` | [エラーリファレンス](/docs/ja/errors.md#theres-an-issue-with-the-selected-model) |
-| Claude が実行するコマンドが `Disk full:`、`Disk quota used up:`、`Nearly out of inodes:`、`The command was not started:`、`Your disk quota is full`、`is full (ENOSPC)`、または `Command output was lost` で失敗する | [エラーリファレンス](/docs/ja/errors.md#disk-quota-or-temp-filesystem-is-full) |
-| VS Code 拡張機能が接続されていない、または Claude を検出していない | [VS Code 統合](/docs/ja/vs-code.md#fix-common-issues) |
-| VS Code または SDK アプリで `Claude Code process exited with code 1` | [エラーリファレンス](/docs/ja/errors.md#claude-code-process-exited-with-code-n) |
-| JetBrains プラグインまたは IDE が検出されない | [JetBrains 統合](/docs/ja/jetbrains.md#troubleshooting) |
+| `command not found`、インストール失敗、PATH の問題、`EACCES`、TLS エラー | [インストールとログインのトラブルシューティング](https://code.claude.com/docs/ja/troubleshoot-install.md) |
+| 更新またはインストールダウンロードが `The connection dropped while downloading the update` または `aborted` で失敗する | [インストールとログインのトラブルシューティング](https://code.claude.com/docs/ja/troubleshoot-install.md#the-connection-dropped-while-downloading-the-update) |
+| 更新またはインストールが `Release verification failed for Claude Code` で失敗する | [インストールとログインのトラブルシューティング](https://code.claude.com/docs/ja/troubleshoot-install.md#release-verification-failed) |
+| セッションのフッターに `Auto-update failed · Run claude doctor` が赤色で表示される | [インストールとログインのトラブルシューティング](https://code.claude.com/docs/ja/troubleshoot-install.md#auto-update-failed) |
+| ログインループ、OAuth エラー、`403 Forbidden`、「organization disabled」、Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry 認証情報 | [インストールとログインのトラブルシューティング](https://code.claude.com/docs/ja/troubleshoot-install.md#login-and-authentication) |
+| 設定が適用されない、hooks が実行されない、MCP サーバーがロードされない | [設定をデバッグする](https://code.claude.com/docs/ja/debug-your-config.md) |
+| セッションが auto モードで開始された、または Claude がファイルを編集してコマンドを実行する（確認なし） | [セッションが開始するモード](https://code.claude.com/docs/ja/permission-modes.md#which-mode-a-session-starts-in) |
+| Claude Code または Agent SDK を更新した後、`--permission-mode`、`permissionMode`、`permission_mode` のいずれも渡していない `claude -p` または SDK の実行でツール呼び出しが拒否される | [`claude -p` と Agent SDK の実行でツール呼び出しが拒否される](https://code.claude.com/docs/ja/permission-modes#which-mode-a-non-interactive-run-starts-in) |
+| `API Error: 5xx`、`529 Overloaded`、`429`、リクエスト検証エラー | [エラーリファレンス](https://code.claude.com/docs/ja/errors.md) |
+| `model not found` または `you may not have access to it` | [エラーリファレンス](https://code.claude.com/docs/ja/errors.md#theres-an-issue-with-the-selected-model) |
+| Claude が実行するコマンドが `Disk full:`、`Disk quota used up:`、`Nearly out of inodes:`、`The command was not started:`、`Your disk quota is full`、`is full (ENOSPC)`、または `Command output was lost` で失敗する | [エラーリファレンス](https://code.claude.com/docs/ja/errors.md#disk-quota-or-temp-filesystem-is-full) |
+| VS Code 拡張機能が接続されていない、または Claude を検出していない | [VS Code 統合](https://code.claude.com/docs/ja/vs-code.md#fix-common-issues) |
+| VS Code または SDK アプリで `Claude Code process exited with code 1` | [エラーリファレンス](https://code.claude.com/docs/ja/errors.md#claude-code-process-exited-with-code-n) |
+| JetBrains プラグインまたは IDE が検出されない | [JetBrains 統合](https://code.claude.com/docs/ja/jetbrains.md#troubleshooting) |
 | CPU またはメモリ使用量が多い、応答が遅い、ハング、検索がファイルを見つけられない | [パフォーマンスと安定性](#performance-and-stability)（下記） |
 
 どれが当てはまるかわからない場合は、Claude Code 内で `/doctor` を実行して、インストール、設定、拡張機能、コンテキスト使用量の自動チェックを実行してください。確認後に適用できる修正を提案します。`claude` がまったく起動しない場合は、代わりにシェルから `claude doctor` を実行してください。MCP サーバーのステータスを確認するには `/mcp` を実行してください。
@@ -39,13 +39,13 @@ Claude Code はほとんどの開発環境で動作するように設計され�
 1. `/compact` を定期的に使用してコンテキストサイズを削減します。`Not enough messages to compact.` が返される場合、カンバセーションのターン数が少なすぎて要約できません。これは、単一の大規模なペーストがコンテキストを満杯にした場合でも、コンテキストが満杯でも発生する可能性があります
 2. 主要なタスク間で Claude Code を閉じて再起動します
 3. 大規模なビルドディレクトリを `.gitignore` ファイルに追加することを検討してください
-4. [`claude --safe-mode`](/docs/ja/cli-reference#cli-flags) で再起動して、プラグイン、MCP サーバー、またはフックが原因かどうかを確認します。セッション中のすべてのカスタマイズが無効になります。使用量が低下した場合は、[設定をデバッグする](/docs/ja/debug-your-config.md#test-against-a-clean-configuration)を参照して、どれが原因かを特定します
+4. [`claude --safe-mode`](https://code.claude.com/docs/ja/cli-reference#cli-flags) で再起動して、プラグイン、MCP サーバー、またはフックが原因かどうかを確認します。セッション中のすべてのカスタマイズが無効になります。使用量が低下した場合は、[設定をデバッグする](https://code.claude.com/docs/ja/debug-your-config.md#test-against-a-clean-configuration)を参照して、どれが原因かを特定します
 
-セッションのヒープメモリが 2.5GB を超える場合、重大なメモリ使用量警告が表示されます。メモリを解放するには、Claude Code を再起動して [`claude --continue`](/docs/ja/cli-reference#cli-flags) を実行し、新しいプロセスでカンバセーションを再開します。
+セッションのヒープメモリが 2.5GB を超える場合、重大なメモリ使用量警告が表示されます。メモリを解放するには、Claude Code を再起動して [`claude --continue`](https://code.claude.com/docs/ja/cli-reference#cli-flags) を実行し、新しいプロセスでカンバセーションを再開します。
 
-[フルスクリーンレンダリング](/docs/ja/fullscreen.md)の外では、`/compact` を実行するとメモリも解放されます。メモリ使用量が 2.5GB を下回ると、警告は消えます。
+[フルスクリーンレンダリング](https://code.claude.com/docs/ja/fullscreen.md)の外では、`/compact` を実行するとメモリも解放されます。メモリ使用量が 2.5GB を下回ると、警告は消えます。
 
-これらのステップ後もメモリ使用量が高いままの場合は、`/heapdump` を実行して 2 つのファイルを `~/Desktop` に書き込みます。`<session-id>.heapsnapshot` という名前の JavaScript ヒープスナップショットと、`<session-id>-diagnostics.json` という名前のメモリ分析です。Claude Code は[コマンドメニューからコマンドを非表示にします](/docs/ja/commands.md#how-the-command-menu-matches-what-you-type)。完全に入力してください。Linux でデスクトップフォルダがない場合、ファイルはホームディレクトリに書き込まれます。
+これらのステップ後もメモリ使用量が高いままの場合は、`/heapdump` を実行して 2 つのファイルを `~/Desktop` に書き込みます。`<session-id>.heapsnapshot` という名前の JavaScript ヒープスナップショットと、`<session-id>-diagnostics.json` という名前のメモリ分析です。Claude Code は[コマンドメニューからコマンドを非表示にします](https://code.claude.com/docs/ja/commands.md#how-the-command-menu-matches-what-you-type)。完全に入力してください。Linux でデスクトップフォルダがない場合、ファイルはホームディレクトリに書き込まれます。
 
 > [!WARNING]
 >
@@ -62,7 +62,7 @@ Claude Code はほとんどの開発環境で動作するように設計され�
 
 ### ターミナルで大きなテーブルが切り取られる
 
-200 行以上の Markdown テーブルは、最初の 200 行とそれに続く `… N more rows not shown` 行をレンダリングします。表示のみが制限されます。完全なテーブルはカンバセーションに残り、[`/copy`](/docs/ja/commands) はすべての行をコピーします。ターミナルで読むには大きすぎるテーブルの場合は、Claude にファイルに書き込むよう依頼してください。v2.1.208 より前では、Claude Code はすべての行をレンダリングしていたため、非常に大きなテーブルを含むセッションを再開すると、再レンダリング中にスタールする可能性がありました。
+200 行以上の Markdown テーブルは、最初の 200 行とそれに続く `… N more rows not shown` 行をレンダリングします。表示のみが制限されます。完全なテーブルはカンバセーションに残り、[`/copy`](https://code.claude.com/docs/ja/commands) はすべての行をコピーします。ターミナルで読むには大きすぎるテーブルの場合は、Claude にファイルに書き込むよう依頼してください。v2.1.208 より前では、Claude Code はすべての行をレンダリングしていたため、非常に大きなテーブルを含むセッションを再開すると、再レンダリング中にスタールする可能性がありました。
 
 ### 自動コンパクションがスラッシングエラーで停止する
 
@@ -72,13 +72,13 @@ Claude Code はほとんどの開発環境で動作するように設計され�
 
 1. Claude に、ファイル全体ではなく、特定の行範囲または関数など、より小さなチャンクで大きなファイルを読むよう依頼します
 2. `/compact` を実行して、大きな出力を削除するフォーカスを使用します（例：`/compact keep only the plan and the diff`）
-3. 大規模ファイルの作業を [subagent](/docs/ja/sub-agents.md) に移動して、別のコンテキストウィンドウで実行されるようにします
+3. 大規模ファイルの作業を [subagent](https://code.claude.com/docs/ja/sub-agents.md) に移動して、別のコンテキストウィンドウで実行されるようにします
 4. 以前のカンバセーションがもう必要ない場合は `/clear` を実行します
 
-`/clear` の後にエラーが再発する場合は、[`/context`](/docs/ja/debug-your-config) を実行し、`Messages` 行とその上の行を比較します：
+`/clear` の後にエラーが再発する場合は、[`/context`](https://code.claude.com/docs/ja/debug-your-config) を実行し、`Messages` 行とその上の行を比較します：
 
 * **`Messages` が最大の行である場合**：新しい会話内のファイルまたはツール出力がウィンドウを再び満杯にしているため、手順 1〜3 をもう一度実行します
-* **他の行の合計のほうが大きい場合**：セッション開始時に読み込まれるものによって作業の余地がほとんど残っていないため、[起動時に読み込まれるものを削減します](/docs/ja/errors.md#prompt-is-too-long)
+* **他の行の合計のほうが大きい場合**：セッション開始時に読み込まれるものによって作業の余地がほとんど残っていないため、[起動時に読み込まれるものを削減します](https://code.claude.com/docs/ja/errors.md#prompt-is-too-long)
 
 ### コマンドがハングまたはフリーズする
 
@@ -91,11 +91,11 @@ Claude Code が応答しないように見える場合：
 
 ### エディタの統合ターミナルでのテキストの文字化けまたは破損
 
-VS Code、Cursor、または Devin Desktop の統合ターミナルで Claude Code を実行する場合、文字がボックス、スミア、または間違ったグリフとしてレンダリングされる場合、ターミナルの GPU レンダラーが原因である可能性があります。Claude Code 内で `/terminal-setup` を実行して、`terminal.integrated.gpuAcceleration` を `"off"` に設定するか、エディタの設定で手動で設定してウィンドウをリロードします。[ターミナル設定](/docs/ja/terminal-config.md)で、`/terminal-setup` が書き込む他の設定を参照してください。
+VS Code、Cursor、または Devin Desktop の統合ターミナルで Claude Code を実行する場合、文字がボックス、スミア、または間違ったグリフとしてレンダリングされる場合、ターミナルの GPU レンダラーが原因である可能性があります。Claude Code 内で `/terminal-setup` を実行して、`terminal.integrated.gpuAcceleration` を `"off"` に設定するか、エディタの設定で手動で設定してウィンドウをリロードします。[ターミナル設定](https://code.claude.com/docs/ja/terminal-config.md)で、`/terminal-setup` が書き込む他の設定を参照してください。
 
 ### 起動時に `>0q`、終了後に `>4m` が表示される
 
-これらの文字は、0.53 より古い VTE ライブラリ上に構築されたターミナルが出力するもので、Claude Code の 2 つの制御シーケンスの末尾部分です。このテキストが表示されないようにするには、[Claude Code を更新](/docs/ja/setup.md#update-claude-code)して v2.1.301 以降にします。このバージョンでは、そのようなターミナルを識別すると両方のシーケンスをスキップします。
+これらの文字は、0.53 より古い VTE ライブラリ上に構築されたターミナルが出力するもので、Claude Code の 2 つの制御シーケンスの末尾部分です。このテキストが表示されないようにするには、[Claude Code を更新](https://code.claude.com/docs/ja/setup.md#update-claude-code)して v2.1.301 以降にします。このバージョンでは、そのようなターミナルを識別すると両方のシーケンスをスキップします。
 
 テキストが残る場合は、ターミナルのシェルから VTE バージョンを出力します：
 
@@ -107,28 +107,28 @@ VTE ベースのターミナルで結果が `5300` 未満の場合、ライブ�
 
 ### フルスクリーンレンダリングでマウスホイールが一度に 1 行スクロールする
 
-[フルスクリーンレンダリング](/docs/ja/fullscreen.md)では、Claude Code はカンバセーション自体をスクロールし、ターミナルに任せません。各ホイールノッチが希望より少ない行を移動する場合、`/scroll-speed` を実行してノッチあたりの行数を増やして保存するか、`CLAUDE_CODE_SCROLL_SPEED` 環境変数を設定します。ただし、JetBrains IDE ターミナルでは、Claude Code は独自のスクロール処理を適用し、どちらも有効になりません。[マウスホイールスクロール](/docs/ja/fullscreen.md#mouse-wheel-scrolling)で、各値が受け入れるものを参照してください。
+[フルスクリーンレンダリング](https://code.claude.com/docs/ja/fullscreen.md)では、Claude Code はカンバセーション自体をスクロールし、ターミナルに任せません。各ホイールノッチが希望より少ない行を移動する場合、`/scroll-speed` を実行してノッチあたりの行数を増やして保存するか、`CLAUDE_CODE_SCROLL_SPEED` 環境変数を設定します。ただし、JetBrains IDE ターミナルでは、Claude Code は独自のスクロール処理を適用し、どちらも有効になりません。[マウスホイールスクロール](https://code.claude.com/docs/ja/fullscreen.md#mouse-wheel-scrolling)で、各値が受け入れるものを参照してください。
 
 速度を変更せずにより速く移動するには、`PgUp` と `PgDn` を押して一度に半画面スクロールします。スクロールをターミナルのネイティブスクロールバックに戻すには、`/tui default` を実行してクラシックレンダラーに切り替えます。
 
 ### サンドボックス内で `pbcopy` などのクリップボードコマンドが失敗する
 
-[サンドボックス](/docs/ja/sandboxing.md)がオンの場合、`pbcopy`、`xclip`、`wl-copy` などのクリップボードユーティリティは、サンドボックス化された Bash コマンド内からシステムクリップボードに到達できず、Claude がテキストをパイプした後、クリップボードが変更されないままになる可能性があります。
+[サンドボックス](https://code.claude.com/docs/ja/sandboxing.md)がオンの場合、`pbcopy`、`xclip`、`wl-copy` などのクリップボードユーティリティは、サンドボックス化された Bash コマンド内からシステムクリップボードに到達できず、Claude がテキストをパイプした後、クリップボードが変更されないままになる可能性があります。
 
-Claude の出力をクリップボードに配置するには、Claude に応答でコンテンツを出力するよう依頼してから、[`/copy`](/docs/ja/commands) を実行します。`/copy` はサンドボックス化されたコマンドではなく Claude Code プロセス自体からクリップボードに書き込むため、サンドボックスはそれをブロックしません。応答全体ではなく単一のコードブロックをコピーでき、コピーしたものをファイルに書き込んで、パスを出力します。これにより、クリップボード書き込みがターミナルに到達しない場合（例えば SSH 経由）のフォールバックが提供されます。
+Claude の出力をクリップボードに配置するには、Claude に応答でコンテンツを出力するよう依頼してから、[`/copy`](https://code.claude.com/docs/ja/commands) を実行します。`/copy` はサンドボックス化されたコマンドではなく Claude Code プロセス自体からクリップボードに書き込むため、サンドボックスはそれをブロックしません。応答全体ではなく単一のコードブロックをコピーでき、コピーしたものをファイルに書き込んで、パスを出力します。これにより、クリップボード書き込みがターミナルに到達しない場合（例えば SSH 経由）のフォールバックが提供されます。
 
-Claude がテキストをこれらのツールにパイプする場合、`pbcopy *`、`wl-copy *`、または `xclip *` を [`excludedCommands`](/docs/ja/settings-reference#sandbox-excludedcommands) に追加しても、そのコマンドをサンドボックスの外で実行することはできません。
+Claude がテキストをこれらのツールにパイプする場合、`pbcopy *`、`wl-copy *`、または `xclip *` を [`excludedCommands`](https://code.claude.com/docs/ja/settings-reference#sandbox-excludedcommands) に追加しても、そのコマンドをサンドボックスの外で実行することはできません。
 
 ### SSH 経由でコピーされたテキストがローカルクリップボードに到達しない
 
-Claude Code がリモートマシンで SSH 経由で実行されている場合、ローカルマシンでクリップボードツールを実行できません。tmux の外では、[フルスクリーンレンダリング](/docs/ja/fullscreen.md)でテキストを選択するか `/copy` を実行すると、Claude Code はテキストを OSC 52 エスケープシーケンスとしてターミナルに送信します。ターミナルがそれをクリップボードに配置するかどうかを決定します。`/copy` は、テキストが到達したかどうかに関わらず `Copied to clipboard` を報告し、tmux の外では選択通知は `sent N chars via OSC 52` と表示されます。
+Claude Code がリモートマシンで SSH 経由で実行されている場合、ローカルマシンでクリップボードツールを実行できません。tmux の外では、[フルスクリーンレンダリング](https://code.claude.com/docs/ja/fullscreen.md)でテキストを選択するか `/copy` を実行すると、Claude Code はテキストを OSC 52 エスケープシーケンスとしてターミナルに送信します。ターミナルがそれをクリップボードに配置するかどうかを決定します。`/copy` は、テキストが到達したかどうかに関わらず `Copied to clipboard` を報告し、tmux の外では選択通知は `sent N chars via OSC 52` と表示されます。
 
 一部のターミナルは OSC 52 に対応していません。iTerm2 は **Settings > General > Selection > Applications in terminal may access clipboard** をオンにするまで無視し、macOS Terminal.app はそれをサポートしていません。
 
 OSC 52 なしでテキストを取得するには：
 
-* ターミナルのネイティブ選択キーを押しながらドラッグしてから、ターミナルの通常のショートカット（`Cmd+C` など）でコピーします。キーは Terminal.app では `Fn`、iTerm2 では `Option` です。[ネイティブテキスト選択を保持](/docs/ja/fullscreen.md#keep-native-text-selection)で他のターミナルのキーを一覧表示します。
-* リモートマシンで [`CLAUDE_CODE_DISABLE_MOUSE=1`](/docs/ja/env-vars) を設定して、ターミナルがセッション全体の選択を処理するようにします。
+* ターミナルのネイティブ選択キーを押しながらドラッグしてから、ターミナルの通常のショートカット（`Cmd+C` など）でコピーします。キーは Terminal.app では `Fn`、iTerm2 では `Option` です。[ネイティブテキスト選択を保持](https://code.claude.com/docs/ja/fullscreen.md#keep-native-text-selection)で他のターミナルのキーを一覧表示します。
+* リモートマシンで [`CLAUDE_CODE_DISABLE_MOUSE=1`](https://code.claude.com/docs/ja/env-vars) を設定して、ターミナルがセッション全体の選択を処理するようにします。
 
 ### 検索と発見の問題
 
@@ -152,7 +152,7 @@ sudo apt install ripgrep
 apk add ripgrep
 ```
 
-`ripgrep` は Alpine のコミュニティリポジトリにあります。`apk` がパッケージが見つからないと報告する場合は、[Alpine Linux セットアップ](/docs/ja/setup.md#alpine-linux-and-musl-based-distributions)を参照してください。
+`ripgrep` は Alpine のコミュニティリポジトリにあります。`apk` がパッケージが見つからないと報告する場合は、[Alpine Linux セットアップ](https://code.claude.com/docs/ja/setup.md#alpine-linux-and-musl-based-distributions)を参照してください。
 
 **Arch**
 
@@ -166,7 +166,7 @@ pacman -S ripgrep
 winget install BurntSushi.ripgrep.MSVC
 ```
 
-その後、`USE_BUILTIN_RIPGREP` を `0` に設定します。シェル[環境](/docs/ja/env-vars.md)または [`settings.json`](/docs/ja/settings-reference#all-settings) の `env` ブロックで設定します：
+その後、`USE_BUILTIN_RIPGREP` を `0` に設定します。シェル[環境](https://code.claude.com/docs/ja/env-vars.md)または [`settings.json`](https://code.claude.com/docs/ja/settings-reference#all-settings) の `env` ブロックで設定します：
 
 ```json theme={null}
 {

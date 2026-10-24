@@ -10,7 +10,7 @@ security guidance プラグインは、Claude が作業中に自身のコード�
 
 インストール後、プラグインは自動的に実行されます。呼び出すものはなく、覚えておく必要のある個別のコマンドもありません。
 
-このプラグインは、プルリクエストで実行される [Code Review](/docs/ja/code-review.md) のセッション内コンパニオンです。このプラグインは PR に到達するものを削減します。Code Review はそれをキャッチします。プラグインがオンデマンドレビューと CI スキャンとどのように層状になるかについては、[これが他のセキュリティツールとどのように適合するか](#how-this-fits-with-other-security-tools) を参照してください。
+このプラグインは、プルリクエストで実行される [Code Review](https://code.claude.com/docs/ja/code-review.md) のセッション内コンパニオンです。このプラグインは PR に到達するものを削減します。Code Review はそれをキャッチします。プラグインがオンデマンドレビューと CI スキャンとどのように層状になるかについては、[これが他のセキュリティツールとどのように適合するか](#how-this-fits-with-other-security-tools) を参照してください。
 
 ## 前提条件
 
@@ -21,7 +21,7 @@ security guidance プラグインは、Claude が作業中に自身のコード�
 
 ## プラグインをインストールする
 
-ターミナル Claude Code セッションで、[公式 Anthropic マーケットプレイス](/docs/ja/plugins/anthropic-marketplaces.md)からインストールします：
+ターミナル Claude Code セッションで、[公式 Anthropic マーケットプレイス](https://code.claude.com/docs/ja/plugins/anthropic-marketplaces.md)からインストールします：
 
 ```text theme={null}
 /plugin install security-guidance@claude-plugins-official
@@ -29,18 +29,18 @@ security guidance プラグインは、Claude が作業中に自身のコード�
 
 `/plugin` はターミナル CLI でインタラクティブパネルを開きます。Claude が `/plugin` がこの環境では利用できないと報告した場合、別の方法でインストールしてください：
 
-* **Claude デスクトップアプリ、ローカルまたは SSH セッション**：[プラグインをインストールする](/docs/ja/plugins/install.md#install-a-plugin)の **Desktop app** タブを使用します
-* **VS Code 拡張機能**：[**Manage plugins** ダイアログ](/docs/ja/vs-code.md#manage-plugins)からインストールします
-* **クラウドセッション**：クラウドセッションは、ユーザー設定またはリポジトリの `.claude/settings.json` からプラグインを読み込みません。[セットアップから引き継がれるもの](/docs/ja/cloud-environments.md#what-carries-over-from-your-setup)で説明されています。組織が管理設定を通じて配布するプラグインについては、[組織のプラグインを管理](/docs/ja/plugins/org.md)を参照してください
+* **Claude デスクトップアプリ、ローカルまたは SSH セッション**：[プラグインをインストールする](https://code.claude.com/docs/ja/plugins/install.md#install-a-plugin)の **Desktop app** タブを使用します
+* **VS Code 拡張機能**：[**Manage plugins** ダイアログ](https://code.claude.com/docs/ja/vs-code.md#manage-plugins)からインストールします
+* **クラウドセッション**：クラウドセッションは、ユーザー設定またはリポジトリの `.claude/settings.json` からプラグインを読み込みません。[セットアップから引き継がれるもの](https://code.claude.com/docs/ja/cloud-environments.md#what-carries-over-from-your-setup)で説明されています。組織が管理設定を通じて配布するプラグインについては、[組織のプラグインを管理](https://code.claude.com/docs/ja/plugins/org.md)を参照してください
 
 ターミナルインストールはスコープを求めます。ユーザースコープを選択して、プラグインをユーザー設定に書き込み、このマシンで開始するすべての新しいローカルセッションで読み込まれるようにします。
 
 インストールが失敗した場合、Claude Code が報告するメッセージに一致させてください：
 
 * `Marketplace "claude-plugins-official" not found`：`/plugin marketplace add anthropics/claude-plugins-official` でマーケットプレイスを追加してから、インストールを再試行してください。
-* `Plugin "<name>" not found in marketplace "claude-plugins-official"`：ローカルにあるマーケットプレイスカタログのコピーが古くなっている可能性があります。`/plugin marketplace update claude-plugins-official` で更新してから、インストールを再試行してください。再試行しても同じメッセージが表示される場合は、[マーケットプレイスでプラグインが見つからない](/docs/ja/plugins/troubleshooting.md#plugin-not-found-in-marketplace)を参照してください。
+* `Plugin "<name>" not found in marketplace "claude-plugins-official"`：ローカルにあるマーケットプレイスカタログのコピーが古くなっている可能性があります。`/plugin marketplace update claude-plugins-official` で更新してから、インストールを再試行してください。再試行しても同じメッセージが表示される場合は、[マーケットプレイスでプラグインが見つからない](https://code.claude.com/docs/ja/plugins/troubleshooting.md#plugin-not-found-in-marketplace)を参照してください。
 
-インストール概要を確認してください。`Run /reload-plugins to apply.` と報告された場合、[プラグイン変更を再起動なしで適用](/docs/ja/plugins/cli-reference.md#reload-plugins)を参照して、現在のセッションでプラグインを有効化してください。
+インストール概要を確認してください。`Run /reload-plugins to apply.` と報告された場合、[プラグイン変更を再起動なしで適用](https://code.claude.com/docs/ja/plugins/cli-reference.md#reload-plugins)を参照して、現在のセッションでプラグインを有効化してください。
 
 ### ローカルセッションでチームに対して有効化する
 
@@ -54,7 +54,7 @@ security guidance プラグインは、Claude が作業中に自身のコード�
 }
 ```
 
-管理者は、[管理設定](/docs/ja/admin-setup.md) で [`enabledPlugins`](/docs/ja/settings-reference#enabledplugins) を設定することで、組織全体でプラグインを有効化できます。
+管理者は、[管理設定](https://code.claude.com/docs/ja/admin-setup.md) で [`enabledPlugins`](https://code.claude.com/docs/ja/settings-reference#enabledplugins) を設定することで、組織全体でプラグインを有効化できます。
 
 ## プラグインがチェックする内容
 
@@ -125,7 +125,7 @@ Claude が Bash ツールを通じて `git commit` または `git push` を実�
 - `===` の代わりに `crypto.timingSafeEqual` をトークン比較に使用してください。
 ```
 
-これらのルールはレビュアーのガイダンスであり、決定論的なガードレールではありません。プラグインは違反を Claude が修正するための結果として表示しますが、書き込みをブロックしたり、すべての違反がキャッチされることを保証しません。ガイダンスは加算的のみです：脆弱性クラスを無視するように言うルールはそれらの結果を抑制しません。ハード実装の場合、プラグインを [編集をブロックするフック](/docs/ja/hooks-guide.md#block-edits-to-protected-files) または CI チェックと組み合わせてください。
+これらのルールはレビュアーのガイダンスであり、決定論的なガードレールではありません。プラグインは違反を Claude が修正するための結果として表示しますが、書き込みをブロックしたり、すべての違反がキャッチされることを保証しません。ガイダンスは加算的のみです：脆弱性クラスを無視するように言うルールはそれらの結果を抑制しません。ハード実装の場合、プラグインを [編集をブロックするフック](https://code.claude.com/docs/ja/hooks-guide.md#block-edits-to-protected-files) または CI チェックと組み合わせてください。
 
 ### カスタム編集ごとのパターンを追加する
 
@@ -167,9 +167,9 @@ patterns:
 
 ## 使用コスト
 
-[編集ごとのパターンチェック](#on-each-file-edit) はモデル呼び出しを行わず、コストを追加しません。[ターン終了](#at-the-end-of-each-turn) と [コミット](#on-each-commit-or-push-claude-makes) レビューはそれぞれ、他の Claude リクエストと同様に [使用](/docs/ja/costs.md) にカウントされる追加のモデル使用を費やします。コミットレビューは agentic であり、コミットごとに複数のモデルターンを取る可能性があります。ファイルを変更するターンごとにおよそ 1 つのレビュー呼び出しと、コミットごとに 1 つのより深いレビューを期待してください。どちらも上記のキャップの対象です。
+[編集ごとのパターンチェック](#on-each-file-edit) はモデル呼び出しを行わず、コストを追加しません。[ターン終了](#at-the-end-of-each-turn) と [コミット](#on-each-commit-or-push-claude-makes) レビューはそれぞれ、他の Claude リクエストと同様に [使用](https://code.claude.com/docs/ja/costs.md) にカウントされる追加のモデル使用を費やします。コミットレビューは agentic であり、コミットごとに複数のモデルターンを取る可能性があります。ファイルを変更するターンごとにおよそ 1 つのレビュー呼び出しと、コミットごとに 1 つのより深いレビューを期待してください。どちらも上記のキャップの対象です。
 
-両方のモデルバックアップレビューはデフォルトで Claude Opus 4.7 を使用します。`SECURITY_REVIEW_MODEL` を設定して、ターン終了レビュー用に別のモデルを選択し、`SG_AGENTIC_MODEL` をコミットレビュー用に設定します。
+デフォルトでは、両方のレビューは Claude Opus モデルで実行されます。`SECURITY_REVIEW_MODEL` を設定して、ターン終了レビュー用に別のモデルを選択し、`SG_AGENTIC_MODEL` をコミットレビュー用に設定します。
 
 プラグインはすべてのプランで利用可能です。
 
@@ -197,11 +197,11 @@ patterns:
 /plugin uninstall security-guidance@claude-plugins-official
 ```
 
-プラグインがプロジェクトの `.claude/settings.json` を通じて有効化された場合、`/plugin` から無効化すると、チェックインファイルを編集するのではなく、`.claude/settings.local.json` にオーバーライドを書き込むため、プラグインはあなたにとってオフのままで、チームメイトは影響を受けません。同じダイアログでは、共有 `.claude/settings.json` から削除することでプラグインをすべてのユーザーに対してアンインストールするオプションも提供されます。[管理設定](/docs/ja/admin-setup.md) を通じて有効化された場合、管理者のみがそれを無効化できます。
+プラグインがプロジェクトの `.claude/settings.json` を通じて有効化された場合、`/plugin` から無効化すると、チェックインファイルを編集するのではなく、`.claude/settings.local.json` にオーバーライドを書き込むため、プラグインはあなたにとってオフのままで、チームメイトは影響を受けません。同じダイアログでは、共有 `.claude/settings.json` から削除することでプラグインをすべてのユーザーに対してアンインストールするオプションも提供されます。[管理設定](https://code.claude.com/docs/ja/admin-setup.md) を通じて有効化された場合、管理者のみがそれを無効化できます。
 
 ## プラグインが Claude Code とどのように統合されるか
 
-プラグインは完全に [hooks](/docs/ja/hooks.md) 上に構築されています。これは Claude のループの特定のポイントで独自のコードを実行するメカニズムです。登録されます：
+プラグインは完全に [hooks](https://code.claude.com/docs/ja/hooks.md) 上に構築されています。これは Claude のループの特定のポイントで独自のコードを実行するメカニズムです。登録されます：
 
 | フックイベント | 目的 |
 | :- | :- |
@@ -220,12 +220,12 @@ patterns:
 | ステージ | ツール | カバーするもの |
 | :- | :- | :- |
 | セッション内 | Security guidance プラグイン | Claude が書くコードの一般的な脆弱性。同じセッション内で修正 |
-| オンデマンド、単一パス | [`/security-review`](/docs/ja/commands#all-commands) | 現在のブランチでの 1 回限りのセキュリティパス。要求時に実行 |
-| オンデマンド、深いスキャン | [Claude Security プラグイン](/docs/ja/claude-security.md) | リポジトリまたは diff のマルチエージェント脆弱性スキャン。独立して確認された検出結果とパッチ付き |
-| プルリクエスト | [Code Review](/docs/ja/code-review.md)、Team および Enterprise プラン | 完全なコードベースコンテキストを持つマルチエージェント正確性とセキュリティレビュー |
+| オンデマンド、単一パス | [`/security-review`](https://code.claude.com/docs/ja/commands#all-commands) | 現在のブランチでの 1 回限りのセキュリティパス。要求時に実行 |
+| オンデマンド、深いスキャン | [Claude Security プラグイン](https://code.claude.com/docs/ja/claude-security.md) | リポジトリまたは diff のマルチエージェント脆弱性スキャン。独立して確認された検出結果とパッチ付き |
+| プルリクエスト | [Code Review](https://code.claude.com/docs/ja/code-review.md)、Team および Enterprise プラン | 完全なコードベースコンテキストを持つマルチエージェント正確性とセキュリティレビュー |
 | CI | 既存の静的分析と依存関係スキャナー | 言語固有のルール、サプライチェーンチェック、プラグインが試みないポリシー実装 |
 
-Claude が書いている変更ではなく、既に持っているコード内のセキュリティ問題を見つけるには、セッション内で Claude に特定のファイルまたはディレクトリの脆弱性をレビューするよう依頼するか、リポジトリ全体のより深いマルチエージェントスキャンのために [Claude Security プラグイン](/docs/ja/claude-security.md) を使用してください。[`/security-review`](/docs/ja/commands#all-commands) は現在のブランチの変更のみをカバーします。どちらの場合でも、レビューは実行中のサイトまたはデプロイされたサービスではなく、チェックアウト内のソースコードを読みます。
+Claude が書いている変更ではなく、既に持っているコード内のセキュリティ問題を見つけるには、セッション内で Claude に特定のファイルまたはディレクトリの脆弱性をレビューするよう依頼するか、リポジトリ全体のより深いマルチエージェントスキャンのために [Claude Security プラグイン](https://code.claude.com/docs/ja/claude-security.md) を使用してください。[`/security-review`](https://code.claude.com/docs/ja/commands#all-commands) は現在のブランチの変更のみをカバーします。どちらの場合でも、レビューは実行中のサイトまたはデプロイされたサービスではなく、チェックアウト内のソースコードを読みます。
 
 ## トラブルシューティング
 
@@ -241,6 +241,6 @@ Claude が書いている変更ではなく、既に持っているコード内�
 
 このページが触れるピースについてさらに深く掘り下げるには：
 
-* [Code Review](/docs/ja/code-review.md)：PR 時のマルチエージェントレビューをセットアップ
-* [フックでワークフローを自動化](/docs/ja/hooks-guide.md)：同じライフサイクルポイントで独自のチェックを構築
-* [公式マーケットプレイスでプラグインを検索](/docs/ja/plugins/anthropic-marketplaces.md#find-plugins-in-the-official-marketplace)：他の公式プラグインを参照する場所
+* [Code Review](https://code.claude.com/docs/ja/code-review.md)：PR 時のマルチエージェントレビューをセットアップ
+* [フックでワークフローを自動化](https://code.claude.com/docs/ja/hooks-guide.md)：同じライフサイクルポイントで独自のチェックを構築
+* [公式マーケットプレイスでプラグインを検索](https://code.claude.com/docs/ja/plugins/anthropic-marketplaces.md#find-plugins-in-the-official-marketplace)：他の公式プラグインを参照する場所

@@ -10,13 +10,13 @@
 >
 > 動的ワークフローはすべての有料プランで利用可能で、Anthropic API アクセス、Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry で利用できます。Pro では、`/config` の Dynamic workflows 行からオンにしてください。
 
-動的ワークフローは、[サブエージェント](/docs/ja/sub-agents.md)を大規模にオーケストレーションする JavaScript スクリプトです。Claude は説明したタスク用のスクリプトを作成し、ランタイムはバックグラウンドで実行しながら、セッションは応答性を保ちます。
+動的ワークフローは、[サブエージェント](https://code.claude.com/docs/ja/sub-agents.md)を大規模にオーケストレーションする JavaScript スクリプトです。Claude は説明したタスク用のスクリプトを作成し、ランタイムはバックグラウンドで実行しながら、セッションは応答性を保ちます。
 
 1 つの会話が調整できるより多くのエージェントが必要なタスク、またはオーケストレーションを読み直して再実行できるスクリプトとしてコード化したい場合にワークフローを使用します。例としては、コードベース全体のバグスイープ、500 ファイルのマイグレーション、複数のソースに対して相互検証が必要な研究質問、1 つにコミットする前に複数の独立した角度から下書きする価値のある難しい計画があります。
 
 ## ワークフローを使用するタイミング
 
-[サブエージェント](/docs/ja/sub-agents.md)、[スキル](/docs/ja/skills.md)、[エージェントチーム](/docs/ja/agent-teams.md)、およびワークフローはすべてマルチステップタスクを実行できます。違いは、計画を保持する者です。
+[サブエージェント](https://code.claude.com/docs/ja/sub-agents.md)、[スキル](https://code.claude.com/docs/ja/skills.md)、[エージェントチーム](https://code.claude.com/docs/ja/agent-teams.md)、およびワークフローはすべてマルチステップタスクを実行できます。違いは、計画を保持する者です。
 
 | | サブエージェント | スキル | エージェントチーム | ワークフロー |
 | :- | :- | :- | :- | :- |
@@ -73,7 +73,7 @@ Claude Code には、組み込みワークフローとして `/deep-research` �
 
 | コマンド | 機能 |
 | :- | :- |
-| `/deep-research <question>` | 複数の角度から質問に対する Web 検索を展開し、見つけたソースを取得してクロスチェックし、各クレームに投票し、クロスチェックで生き残らなかったクレームがフィルタリングされた引用されたレポートを返します。[WebSearch ツール](/docs/ja/tools-reference.md#websearch-tool-behavior)が利用可能である必要があります |
+| `/deep-research <question>` | 複数の角度から質問に対する Web 検索を展開し、見つけたソースを取得してクロスチェックし、各クレームに投票し、クロスチェックで生き残らなかったクレームがフィルタリングされた引用されたレポートを返します。[WebSearch ツール](https://code.claude.com/docs/ja/tools-reference.md#websearch-tool-behavior)が利用可能である必要があります |
 
 `/deep-research` は、呼び出すときのみ実行されます。
 
@@ -118,7 +118,7 @@ Claude にタスク用のワークフローを書かせるには、2 つの方�
 ultracode: audit every API endpoint under src/routes/ for missing auth checks
 ```
 
-Claude Code はあなたの入力でキーワードをハイライトし、Claude はターンバイターンで作業するのではなく、タスク用のワークフロースクリプトを書きます。キーワードは Claude が作業をどのように構成するかのみを選択します。エージェントのツール呼び出しは、セッション内の他のツール呼び出しと同じ権限チェックと[サンドボックス化](/docs/ja/sandboxing.md)を受けます。
+Claude Code はあなたの入力でキーワードをハイライトし、Claude はターンバイターンで作業するのではなく、タスク用のワークフロースクリプトを書きます。キーワードは Claude が作業をどのように構成するかのみを選択します。エージェントのツール呼び出しは、セッション内の他のツール呼び出しと同じ権限チェックと[サンドボックス化](https://code.claude.com/docs/ja/sandboxing.md)を受けます。
 
 実行が望んだことを実行した場合、その後[コマンドとして保存](#save-the-workflow-for-reuse)できます。別の方法で構築されたオーケストレーターが既にある場合（サブエージェントプロンプトのフォルダーやスキルなど）、Claude にそれを指し示し、同じことを行うワークフローをリクエストできます。
 
@@ -128,7 +128,7 @@ Claude Code はあなたの入力でキーワードをハイライトし、Claud
 
 #### キーワードが機能する場所
 
-キーワードは、自分で入力したプロンプトでのみオプトインです。対話型プロンプト、IDE 拡張機能パネル、[Remote Control](/docs/ja/remote-control.md) クライアント、またはキーボード入力の [`origin`](/docs/ja/agent-sdk/typescript#sdkmessageorigin) を `{ kind: "human" }` としてスタンプする Agent SDK アプリケーションです。セッションに別の方法で到達した場合、ワークフローを開始しません。
+キーワードは、自分で入力したプロンプトでのみオプトインです。対話型プロンプト、IDE 拡張機能パネル、[Remote Control](https://code.claude.com/docs/ja/remote-control.md) クライアント、またはキーボード入力の [`origin`](https://code.claude.com/docs/ja/agent-sdk/typescript#sdkmessageorigin) を `{ kind: "human" }` としてスタンプする Agent SDK アプリケーションです。セッションに別の方法で到達した場合、ワークフローを開始しません。
 
 * `-p` で渡されたプロンプト
 * Agent SDK アプリケーションが人間の入力としてスタンプせずに送信するプロンプト
@@ -137,7 +137,7 @@ Claude Code はあなたの入力でキーワードをハイライトし、Claud
 
 ### ultracode で Claude に決めさせる
 
-Ultracode は Claude Code の設定で、セッションが実行される[努力レベル](/docs/ja/model-config.md#adjust-effort-level)で自動ワークフローオーケストレーションをオンにします。オンにすると、Claude はあなたが尋ねるのを待つのではなく、各実質的なタスク用にワークフローを計画します。Claude Code プロンプトでオンにします。
+Ultracode は Claude Code の設定で、セッションが実行される[努力レベル](https://code.claude.com/docs/ja/model-config.md#adjust-effort-level)で自動ワークフローオーケストレーションをオンにします。オンにすると、Claude はあなたが尋ねるのを待つのではなく、各実質的なタスク用にワークフローを計画します。Claude Code プロンプトでオンにします。
 
 ```text wrap theme={null}
 /effort ultracode
@@ -145,17 +145,17 @@ Ultracode は Claude Code の設定で、セッションが実行される[努�
 
 ultracode が既にオンの状態でセッションを開始するには、`claude --effort ultracode` で起動します。これにより effort レベルも `xhigh` に設定されます。
 
-`/effort` スライダーからオンにするには、`Tab` を押して **Ultracode** トグルを反転させ、`Enter` を押して適用します。[努力レベルを調整する](/docs/ja/model-config.md#adjust-effort-level)は ultracode をオンにするルートをリストします。
+`/effort` スライダーからオンにするには、`Tab` を押して **Ultracode** トグルを反転させ、`Enter` を押して適用します。[努力レベルを調整する](https://code.claude.com/docs/ja/model-config.md#adjust-effort-level)は ultracode をオンにするルートをリストします。
 
 ultracode がオンの場合、Claude はタスクがワークフローを必要とするかどうかを決定します。単一のリクエストは複数のワークフローに変わる可能性があります。コードを理解するためのワークフロー、変更を加えるためのワークフロー、それを検証するためのワークフローです。これはセッション内のすべてのタスクに適用されるため、各リクエストはより多くのトークンを使用し、ワークフローなしの同じリクエストよりも長くかかります。サブスクリプションプランでは、これらのトークンは使用制限に対して引き出されるため、ultracode がオンのセッションは、オフの同じ作業よりも早くセッションまたは週間制限に達します。
 
 ultracode をオンにすると既に大規模な実行にオプトインしているため、これらのチェックはオンの間は適用されません。
 
 * [`Large workflow` 警告](#cost)はワークフロー実行に表示されません
-* セッションの[同時サブエージェント制限](/docs/ja/sub-agents.md#concurrent-subagent-limit)は、Claude が Agent ツールで生成するサブエージェントに対して強制されません
+* セッションの[同時サブエージェント制限](https://code.claude.com/docs/ja/sub-agents.md#concurrent-subagent-limit)は、Claude が Agent ツールで生成するサブエージェントに対して強制されません
 * 自動権限モード では、[ワークフロー起動を承認](#approve-the-plan-before-it-runs)するよう求められません
 
-`/effort ultracode` は現在のセッション用です。すべてのセッションをそれで開始するには、[`ultracode`](/docs/ja/settings-reference#ultracode) 設定を設定します。日常的な作業に戻るときは `/effort ultracode off` で戻ります。`/effort` スライダーは [ultracode が利用可能な場合](/docs/ja/model-config.md#when-ultracode-is-available)のみトグルを提供します。
+`/effort ultracode` は現在のセッション用です。すべてのセッションをそれで開始するには、[`ultracode`](https://code.claude.com/docs/ja/settings-reference#ultracode) 設定を設定します。日常的な作業に戻るときは `/effort ultracode off` で戻ります。`/effort` スライダーは [ultracode が利用可能な場合](https://code.claude.com/docs/ja/model-config.md#when-ultracode-is-available)のみトグルを提供します。
 
 ### 実行前にプランを承認する
 
@@ -166,9 +166,9 @@ CLI では、実行ごとのプロンプトは計画されたフェーズとこ�
 * **View raw script**: 決定する前にスクリプトを読む
 * **No**: キャンセル
 
-`Ctrl+G` はスクリプトをエディターで開きます。**Yes, run it** または **No** を選択した状態で `Tab` を押すと、回答に[コメントを追加](/docs/ja/permissions.md#add-a-comment-when-you-answer-a-permission-prompt)できます。
+`Ctrl+G` はスクリプトをエディターで開きます。**Yes, run it** または **No** を選択した状態で `Tab` を押すと、回答に[コメントを追加](https://code.claude.com/docs/ja/permissions.md#add-a-comment-when-you-answer-a-permission-prompt)できます。
 
-このプロンプトが表示されるかどうかは、[権限モード](/docs/ja/permission-modes.md)によって異なります。
+このプロンプトが表示されるかどうかは、[権限モード](https://code.claude.com/docs/ja/permission-modes.md)によって異なります。
 
 | 権限モード | プロンプトが表示される場合 |
 | :- | :- |
@@ -177,17 +177,17 @@ CLI では、実行ごとのプロンプトは計画されたフェーズとこ�
 | Bypass permissions | Claude Code はプロンプトを表示しません。実行は直ちに開始されます |
 | `claude -p`, Agent SDK | Claude Code はプロンプトを表示しません |
 
-`claude -p` と Agent SDK では、Claude Code はこのプロンプトを表示しません。セッションの残りの部分と同じ[権限評価](/docs/ja/agent-sdk/permissions.md#how-permissions-are-evaluated)を通じてワークフロー ツール呼び出しを実行するため、拒否ルール、質問ルール、および `dontAsk` モードはすべてのツール呼び出しに適用されるのと同じように適用されます。これらの実行でワークフローを開始させるには、次のいずれかを使用します。
+`claude -p` と Agent SDK では、Claude Code はこのプロンプトを表示しません。セッションの残りの部分と同じ[権限評価](https://code.claude.com/docs/ja/agent-sdk/permissions.md#how-permissions-are-evaluated)を通じてワークフロー ツール呼び出しを実行するため、拒否ルール、質問ルール、および `dontAsk` モードはすべてのツール呼び出しに適用されるのと同じように適用されます。これらの実行でワークフローを開始させるには、次のいずれかを使用します。
 
 * **権限ルール**: すべてのワークフローを承認するには許可ルールに `Workflow` を追加し、名前で 1 つの保存されたワークフローを承認するには `Workflow(<name>)` を追加します。
-* **auto 権限モード**: [auto モード](/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)で実行します。auto モードでは分類器が呼び出しをレビューし、それを承認できます。
+* **auto 権限モード**: [auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)で実行します。auto モードでは分類器が呼び出しをレビューし、それを承認できます。
 * **バイパス権限モード**: バイパス権限モードで実行します。
-* **フック**: [`PreToolUse`](/docs/ja/hooks#pretooluse) フックから呼び出しに対して `"allow"` を返します。[plan モード](/docs/ja/permission-modes.md#analyze-before-you-edit-with-plan-mode)では、フックの承認だけではワークフローは開始されないため、代わりに権限ルールまたはホストの承認を使用します。
-* **ホスト**: [`--permission-prompt-tool`](/docs/ja/cli-reference#cli-flags)、または Agent SDK では [`canUseTool`](/docs/ja/agent-sdk/permissions) コールバックがそれを承認します。
+* **フック**: [`PreToolUse`](https://code.claude.com/docs/ja/hooks#pretooluse) フックから呼び出しに対して `"allow"` を返します。[plan モード](https://code.claude.com/docs/ja/permission-modes.md#analyze-before-you-edit-with-plan-mode)では、フックの承認だけではワークフローは開始されないため、代わりに権限ルールまたはホストの承認を使用します。
+* **ホスト**: [`--permission-prompt-tool`](https://code.claude.com/docs/ja/cli-reference#cli-flags)、または Agent SDK では [`canUseTool`](https://code.claude.com/docs/ja/agent-sdk/permissions) コールバックがそれを承認します。
 
 デスクトップアプリでは、承認カードはワークフロー名、フェーズリスト、トークン使用量の注意を表示し、**Once**、**Always**、**Deny** アクションを表示します。進行状況ビューは、バックグラウンドタスクサイドペインに表示されます。
 
-ワークフローが生成するサブエージェントは、[権限ルール](/docs/ja/settings-reference.md#permission-settings)を使用し、Claude Code は[サブエージェントが実行される権限モード](/docs/ja/sub-agents.md#permission-modes)の下のルールによって権限モードを選択します。長い実行でプロンプトを避けるには、エージェントが必要とするツールを開始する前に許可ルールに追加します。
+ワークフローが生成するサブエージェントは、[権限ルール](https://code.claude.com/docs/ja/settings-reference.md#permission-settings)を使用し、Claude Code は[サブエージェントが実行される権限モード](https://code.claude.com/docs/ja/sub-agents.md#permission-modes)の下のルールによって権限モードを選択します。長い実行でプロンプトを避けるには、エージェントが必要とするツールを開始する前に許可ルールに追加します。
 
 ### 再利用するためにワークフローを保存する
 
@@ -196,7 +196,7 @@ Claude が繰り返すタスク用のワークフローを書く場合、その�
 `/workflows` を実行し、保持したい実行を選択して、`s` を押します。保存ダイアログで、Tab は 2 つの保存場所を切り替えます。
 
 * プロジェクト内の `.claude/workflows/`。リポジトリをクローンする全員と共有されます
-* ホームディレクトリ内の `~/.claude/workflows/`。すべてのプロジェクトで利用可能で、あなたにのみ表示されます。[`CLAUDE_CONFIG_DIR`](/docs/ja/env-vars) を設定した場合、この場所はそのパスの下の `workflows/` ディレクトリです。
+* ホームディレクトリ内の `~/.claude/workflows/`。すべてのプロジェクトで利用可能で、あなたにのみ表示されます。[`CLAUDE_CONFIG_DIR`](https://code.claude.com/docs/ja/env-vars) を設定した場合、この場所はそのパスの下の `workflows/` ディレクトリです。
 
 保存ダイアログは個人用の場所の解決されたパスを表示します。
 
@@ -215,7 +215,7 @@ v2.1.216 より前は、Claude Code はリンクをたどり、選択した場�
 
 ### プラグインでワークフローを配布する
 
-チーム間またはリポジトリ間でワークフローを共有するには、[プラグイン](/docs/ja/plugins/overview.md)に含めます。スクリプトをプラグインルートの `workflows/` ディレクトリに配置するか、[`workflows` マニフェストフィールド](/docs/ja/plugins/manifest-reference#fields)で別の場所を指します。
+チーム間またはリポジトリ間でワークフローを共有するには、[プラグイン](https://code.claude.com/docs/ja/plugins/overview.md)に含めます。スクリプトをプラグインルートの `workflows/` ディレクトリに配置するか、[`workflows` マニフェストフィールド](https://code.claude.com/docs/ja/plugins/manifest-reference#fields)で別の場所を指します。
 
 プラグインワークフローはプラグイン名でネームスペースされます。`meta.name` が `release-audit` のスクリプトを含む `acme-tools` というプラグインは `/acme-tools:release-audit` として実行されます。
 
@@ -308,17 +308,17 @@ return audits.filter(Boolean)
 
 `agent()` 呼び出しは、実行中に停止した場合または回復不可能な API エラーが発生した場合は `null` に解決されます。`pipeline()` はその `null` を結果配列に保持するため、例は `.filter(Boolean)` で終わり、[すべての試行で停止したエージェント](#when-an-agent-stalls-and-restarts)のスロットを含め、それらのエントリを削除します。
 
-[auto モード](/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)では、スクリプトが `agent()` に渡すプロンプトは、分類器がそのサブエージェントのアクションをレビューするときにあなたからのリクエストとしてカウントされません。Claude Code はそれをスクリプトが計算したテキストとしてマークするためです。
+[auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)では、スクリプトが `agent()` に渡すプロンプトは、分類器がそのサブエージェントのアクションをレビューするときにあなたからのリクエストとしてカウントされません。Claude Code はそれをスクリプトが計算したテキストとしてマークするためです。
 
 `agent()` 呼び出しで `schema` を渡す場合、そのサブエージェントはプローズの代わりに形状に一致する JSON を返します。Claude Code はサブエージェントを開始する前にスキーマをチェックします。スキーマが矛盾していることを証明できる場合、呼び出しは矛盾を名前付けするエラーで失敗し、サブエージェントは開始されません。証明できる 1 つの矛盾は、`additionalProperties: false` が除外する `required` キーです。
 
-サブエージェントの出力が 5 回の試行後も検証に失敗する場合、呼び出しは最後の検証失敗を含むエラーで失敗します。試行回数を変更するには、[`MAX_STRUCTURED_OUTPUT_RETRIES`](/docs/ja/env-vars) を設定します。
+サブエージェントの出力が 5 回の試行後も検証に失敗する場合、呼び出しは最後の検証失敗を含むエラーで失敗します。試行回数を変更するには、[`MAX_STRUCTURED_OUTPUT_RETRIES`](https://code.claude.com/docs/ja/env-vars) を設定します。
 
 ### 保存されたスクリプトを編集する
 
-[保存したワークフロー](#save-the-workflow-for-reuse)を変更するには、その `.js` ファイルを編集するか、Claude に変更を依頼します。編集または依頼する前に、`/workflow-authoring` [バンドルされたスキル](/docs/ja/skills.md#bundled-skills)を実行して、Claude が作業する対象のスクリプト作成リファレンスを読み込みます。スキルには Claude Code v2.1.248 以降が必要です。
+[保存したワークフロー](#save-the-workflow-for-reuse)を変更するには、その `.js` ファイルを編集するか、Claude に変更を依頼します。編集または依頼する前に、`/workflow-authoring` [バンドルされたスキル](https://code.claude.com/docs/ja/skills.md#bundled-skills)を実行して、Claude が作業する対象のスクリプト作成リファレンスを読み込みます。スキルには Claude Code v2.1.248 以降が必要です。
 
-現在のセッションで編集されたバージョンを実行するには、[`/reload-skills`](/docs/ja/commands#all-commands) を実行してワークフロー ディレクトリを再度読み込み、その後 `/<name>` を再度実行します。
+現在のセッションで編集されたバージョンを実行するには、[`/reload-skills`](https://code.claude.com/docs/ja/commands#all-commands) を実行してワークフロー ディレクトリを再度読み込み、その後 `/<name>` を再度実行します。
 
 Claude Code はスクリプトを読み込んで実行するときに、ファイルの各部分に次のルールを適用します。
 
@@ -327,7 +327,7 @@ Claude Code はスクリプトを読み込んで実行するときに、ファ�
 * **`phases`**: `meta` にそれらをリストする場合、`phase()` に渡す各エントリに正確にタイトルを付けます。エントリのない `phase()` タイトルは独自の進捗グループを取得します。
 * **タイムスタンプとランダム性**: Claude Code はスクリプト内で `Date.now()`、`Math.random()`、および引数なしの `new Date()` をスローするため、[再開された実行](#resume-after-a-pause)は同じ `agent()` 呼び出しを繰り返します。代わりに `args` を通じてタイムスタンプを渡します。
 
-保存されたコピーではなく、[単一の実行のスクリプト](#how-a-workflow-runs)を編集することもできます。[一時停止後に再開](#resume-after-a-pause)は、編集されたスクリプトを再開したときにどのエージェントが再度実行されるかについて説明します。Workflow ツールの入力については、[Agent SDK リファレンス](/docs/ja/agent-sdk/typescript.md#workflow)のそのエントリを参照してください。
+保存されたコピーではなく、[単一の実行のスクリプト](#how-a-workflow-runs)を編集することもできます。[一時停止後に再開](#resume-after-a-pause)は、編集されたスクリプトを再開したときにどのエージェントが再度実行されるかについて説明します。Workflow ツールの入力については、[Agent SDK リファレンス](https://code.claude.com/docs/ja/agent-sdk/typescript.md#workflow)のそのエントリを参照してください。
 
 ## ワークフローの実行方法
 
@@ -335,17 +335,17 @@ Claude Code はスクリプトを読み込んで実行するときに、ファ�
 
 すべての実行は、セッションディレクトリの `~/.claude/projects/` 配下のファイルにスクリプトを書き込みます。実行が開始されると Claude はパスを受け取るため、それを尋ねることができます。そのファイルを開いて、Claude が作成したオーケストレーションを読んだり、前回の実行のスクリプトと比較したり、編集して Claude に編集版から再起動するよう依頼したりできます。
 
-Claude がワークフローを開始できるのは、セッションが既に読み取りを許可されているスクリプトファイルからのみです。作業ディレクトリの外に保存されているスクリプトを実行するには、まず [`/add-dir`](/docs/ja/permissions#working-directories) でそのディレクトリを追加するか、[Read 許可ルール](/docs/ja/permissions.md#read-and-edit)を設定してください。
+Claude がワークフローを開始できるのは、セッションが既に読み取りを許可されているスクリプトファイルからのみです。作業ディレクトリの外に保存されているスクリプトを実行するには、まず [`/add-dir`](https://code.claude.com/docs/ja/permissions#working-directories) でそのディレクトリを追加するか、[Read 許可ルール](https://code.claude.com/docs/ja/permissions.md#read-and-edit)を設定してください。
 
 ランタイムは実行が進むにつれて各エージェントの結果を追跡します。これが実行を[一時停止後に再開](#resume-after-a-pause)可能にする理由です。同じセッション内で。
 
 ### ファンアウトでのプロンプトキャッシング
 
-同じ実行内のエージェントは、互いの[プロンプトキャッシュ](/docs/ja/prompt-caching.md#subagents-and-the-cache)を読み取ることができます。同じモデル、努力レベル、エージェントタイプ、ツール、出力スキーマ、および作業ディレクトリで実行される 2 つのエージェントは、同じツールおよびシステムプロンプトプレフィックスを構築するため、マッチングする兄弟の応答が開始された後に開始されるエージェントは、最初のリクエストでその兄弟のキャッシュを読み取ります。
+同じ実行内のエージェントは、互いの[プロンプトキャッシュ](https://code.claude.com/docs/ja/prompt-caching.md#subagents-and-the-cache)を読み取ることができます。同じモデル、努力レベル、エージェントタイプ、ツール、出力スキーマ、および作業ディレクトリで実行される 2 つのエージェントは、同じツールおよびシステムプロンプトプレフィックスを構築するため、マッチングする兄弟の応答が開始された後に開始されるエージェントは、最初のリクエストでその兄弟のキャッシュを読み取ります。
 
-ワークフローエージェントのリクエストはメイン会話の[キャッシュ TTL バケット](/docs/ja/prompt-caching.md#which-ttl-each-request-gets)の外にあるため、そのキャッシュはデフォルトで 5 分間保持されます。Claude サブスクリプションでも同様です。1 時間保持するには、[`subagentPromptCacheTtl`](/docs/ja/settings-reference#subagentpromptcachettl) を `1h` に設定してください。API は 1 時間のキャッシュ書き込みをより高いレートで課金します。
+ワークフローエージェントのリクエストはメイン会話の[キャッシュ TTL バケット](https://code.claude.com/docs/ja/prompt-caching.md#which-ttl-each-request-gets)の外にあるため、そのキャッシュはデフォルトで 5 分間保持されます。Claude サブスクリプションでも同様です。1 時間保持するには、[`subagentPromptCacheTtl`](https://code.claude.com/docs/ja/settings-reference#subagentpromptcachettl) を `1h` に設定してください。API は 1 時間のキャッシュ書き込みをより高いレートで課金します。
 
-ファンアウトが複数のマッチングエージェントを一度に開始する場合、Claude Code は最初のエージェント以外をすべて保持し、最初のエージェントの応答が開始されるまで待機してから、保持されたエージェントを一緒にリリースして、最初のリクエストで共有プレフィックスを読み取り、各エージェントがキャッシュなしで処理するのを避けます。Claude Code は保持を [`CLAUDE_CODE_WORKFLOW_PREFIX_STAGGER_MS`](/docs/ja/env-vars) ミリ秒でキャップします。デフォルトは `5000` です。保持を無効にするには `0` に設定してください。
+ファンアウトが複数のマッチングエージェントを一度に開始する場合、Claude Code は最初のエージェント以外をすべて保持し、最初のエージェントの応答が開始されるまで待機してから、保持されたエージェントを一緒にリリースして、最初のリクエストで共有プレフィックスを読み取り、各エージェントがキャッシュなしで処理するのを避けます。Claude Code は保持を [`CLAUDE_CODE_WORKFLOW_PREFIX_STAGGER_MS`](https://code.claude.com/docs/ja/env-vars) ミリ秒でキャップします。デフォルトは `5000` です。保持を無効にするには `0` に設定してください。
 
 ### 動作と制限
 
@@ -356,7 +356,7 @@ Claude がワークフローを開始できるのは、セッションが既に�
 | 実行中のユーザー入力なし | 実行は、エージェント権限プロンプトと[使用制限待機](#when-a-run-hits-your-usage-limit)のみで一時停止します。ステージ間の署名のために、各ステージを独自のワークフローとして実行してください |
 | ワークフロー自体からの直接ファイルシステムまたはシェルアクセスなし | エージェントは読み取り、書き込み、コマンドを実行します。スクリプトはエージェントを調整します |
 | モジュール読み込みなし：`import()` を含むスクリプトは実行開始前に失敗します | スクリプト本体はプレーン JavaScript です。ライブラリが必要な作業はエージェントのタスクに配置してください |
-| 最大 16 個の同時エージェント。デフォルトでは、CPU が限定されたコンテナ内を含め、Claude Code が利用可能な CPU が少ない場合はより少ない。制限を変更するには、[`CLAUDE_CODE_WORKFLOW_MAX_CONCURRENT_AGENTS`](/docs/ja/env-vars#variables) を 1 から 256 の値に設定します。これには Claude Code v2.1.269 以降が必要です | ローカルリソース使用を制限します |
+| 最大 16 個の同時エージェント。デフォルトでは、CPU が限定されたコンテナ内を含め、Claude Code が利用可能な CPU が少ない場合はより少ない。制限を変更するには、[`CLAUDE_CODE_WORKFLOW_MAX_CONCURRENT_AGENTS`](https://code.claude.com/docs/ja/env-vars#variables) を 1 から 256 の値に設定します。これには Claude Code v2.1.269 以降が必要です | ローカルリソース使用を制限します |
 | ファンアウトでは、最初のエージェントのプロンプトキャッシュプレフィックスを共有するエージェントはデフォルトで最初のエージェントの 5 秒後までに開始します | すべてが最初のエージェント以外は、[最初のエージェントがキャッシュしたプレフィックス](#prompt-caching-in-a-fan-out)を読み取り、各エージェントがキャッシュなしで処理するのを避けます |
 | 単一の `parallel()` または `pipeline()` 呼び出しで最大 4,096 個のアイテム：ランタイムはより長いリストをエラーで拒否します | サイレント上限はスクリプトに通知せずにワークロードの一部をドロップします |
 | 実行ごとに合計 1,000 エージェント | 暴走ループを防止します |
@@ -389,23 +389,23 @@ A、B、C、D を開始していたスクリプトを編集して A、C、B、D 
 
 実行は同じ Claude Code セッション内で再開できます。実行中のワークフローがセッションを離れたときにどうなるかは、離れ方によって異なります。
 
-* [セッションをバックグラウンドに移した](/docs/ja/agent-view.md#what-carries-over-when-you-background)場合、Claude Code はバックグラウンドセッションで同じ方法で実行をリプレイし、続行します。
-* ワークフローの実行中に Claude Code を終了し、[エージェントビューがオン](/docs/ja/agent-view.md#from-inside-a-session)になっている場合、終了ダイアログに `Move to background and exit` が表示され、同じ方法で実行を引き継ぎます。代わりに `Exit and stop tasks` を選択した場合、またはこのオプションが表示されない場合、実行はセッションとともに停止します。Claude Code は実行の保存済み結果を `~/.claude/projects/` 内のそのセッションのディレクトリに保持するため、`claude --resume` で再開したセッションでは、ワークフローの再起動を Claude に依頼するとそれらをリプレイできます。新しく開始したセッションでは、Claude には再起動する以前の実行がないため、ワークフローを新しい実行として最初から開始します。
+* [セッションをバックグラウンドに移した](https://code.claude.com/docs/ja/agent-view.md#what-carries-over-when-you-background)場合、Claude Code はバックグラウンドセッションで同じ方法で実行をリプレイし、続行します。
+* ワークフローの実行中に Claude Code を終了し、[エージェントビューがオン](https://code.claude.com/docs/ja/agent-view.md#from-inside-a-session)になっている場合、終了ダイアログに `Move to background and exit` が表示され、同じ方法で実行を引き継ぎます。代わりに `Exit and stop tasks` を選択した場合、またはこのオプションが表示されない場合、実行はセッションとともに停止します。Claude Code は実行の保存済み結果を `~/.claude/projects/` 内のそのセッションのディレクトリに保持するため、`claude --resume` で再開したセッションでは、ワークフローの再起動を Claude に依頼するとそれらをリプレイできます。新しく開始したセッションでは、Claude には再起動する以前の実行がないため、ワークフローを新しい実行として最初から開始します。
 
-[クラウドセッション](/docs/ja/claude-code-on-the-web.md)では、Claude Code は実行の結果をセッションの会話履歴とともにも保存し、これはセッションの VM が回収されても残ります。[そのようなセッションを再度開いて](/docs/ja/claude-code-on-the-web.md#environment-expired)ワークフローの再起動を Claude に依頼すると、完了済みのエージェントは引き続き保存された結果を返します。
+[クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md)では、Claude Code は実行の結果をセッションの会話履歴とともにも保存し、これはセッションの VM が回収されても残ります。[そのようなセッションを再度開いて](https://code.claude.com/docs/ja/claude-code-on-the-web.md#environment-expired)ワークフローの再起動を Claude に依頼すると、完了済みのエージェントは引き続き保存された結果を返します。
 
 ローカルセッションでもクラウドセッションでも、Claude が以前の実行を再起動する際に Claude Code がその実行の保存済み結果をまったく見つけられない場合、再起動は自動的に実行を最初からやり直すのではなく、`nothing to resume` エラーで失敗します。ワークフローを新しい実行として最初から開始するよう Claude に依頼してください。
 
 ### 実行が使用制限に達した場合
 
-エージェントが claude.ai の[使用制限](/docs/ja/interactive-mode.md#wait-for-a-usage-limit-to-reset)に達すると、そのエージェントを失敗させるのではなく、実行が一時停止します。制限に達したエージェントはリセットを待ち、新しいエージェントは開始されません。制限がリセットされた直後に、待機中のエージェントが再実行され、実行は自動的に続行します。Claude Code v2.1.271 以降が必要です。それより前のバージョンでは、影響を受けたエージェントは失敗します。
+エージェントが claude.ai の[使用制限](https://code.claude.com/docs/ja/interactive-mode.md#wait-for-a-usage-limit-to-reset)に達すると、そのエージェントを失敗させるのではなく、実行が一時停止します。制限に達したエージェントはリセットを待ち、新しいエージェントは開始されません。制限がリセットされた直後に、待機中のエージェントが再実行され、実行は自動的に続行します。Claude Code v2.1.271 以降が必要です。それより前のバージョンでは、影響を受けたエージェントは失敗します。
 
 実行が待機している間、タスクパネルの進捗行と [`/workflows`](#watch-the-run) のヘッダーに制限がリセットされる時刻が表示されます。
 
 実行が一時停止するのは、以下のすべてが満たされる場合のみです。いずれかが満たされない場合、影響を受けたエージェントは代わりに失敗します。
 
-* セッションが対話型で、claude.ai サブスクリプションでサインインしていること。`claude -p` による[非対話モード](/docs/ja/headless.md)や [Agent SDK](/docs/ja/agent-sdk/overview.md)、[バックグラウンドセッション](/docs/ja/agent-view.md)、[Remote Control](/docs/ja/remote-control.md) や[エージェントチーム](/docs/ja/agent-teams.md)のチームメイトセッションでは、実行は一時停止しません。
-* [`autoContinueAtUsageLimit`](/docs/ja/settings-reference#autocontinueatusagelimit) がオンであること。これは、セッション自体が[使用制限のリセットを待つ](/docs/ja/interactive-mode.md#wait-for-a-usage-limit-to-reset)ようにするのと同じ設定です。待機中にオフにすると、待機が終了し、待機中のエージェントは失敗します。
+* セッションが対話型で、claude.ai サブスクリプションでサインインしていること。`claude -p` による[非対話モード](https://code.claude.com/docs/ja/headless.md)や [Agent SDK](https://code.claude.com/docs/ja/agent-sdk/overview.md)、[バックグラウンドセッション](https://code.claude.com/docs/ja/agent-view.md)、[Remote Control](https://code.claude.com/docs/ja/remote-control.md) や[エージェントチーム](https://code.claude.com/docs/ja/agent-teams.md)のチームメイトセッションでは、実行は一時停止しません。
+* [`autoContinueAtUsageLimit`](https://code.claude.com/docs/ja/settings-reference#autocontinueatusagelimit) がオンであること。これは、セッション自体が[使用制限のリセットを待つ](https://code.claude.com/docs/ja/interactive-mode.md#wait-for-a-usage-limit-to-reset)ようにするのと同じ設定です。待機中にオフにすると、待機が終了し、待機中のエージェントは失敗します。
 * 制限が 24 時間以内にリセットされること。週単位の制限はそれより先にリセットされる場合があります。
 * 実行がまだ 2 回待機していないこと。3 回目に制限に達すると、エージェントは失敗します。
 
@@ -418,13 +418,13 @@ A、B、C、D を開始していたスクリプトを編集して A、C、B、D 
 エージェントの再起動は、`r` で依頼した再起動も含めて最大 5 回です。6 回目の試行も停滞した場合、`agent()` 呼び出しは失敗し、エラーの冒頭にその理由が示されます。
 
 * `agent stalled on all 6 attempts`: すべての試行がウィンドウ全体にわたって出力なしでした。エージェントの作業がそれほど長く出力を生まない場合は、ウィンドウを延長してください
-* `agent lost its reply on all 6 attempts`: すべての試行で応答ストリームが途絶え、Claude Code がその待機を断念しました。[ストリーミングアイドルウォッチドッグ](/docs/ja/network-config.md#streaming-idle-watchdogs)が先に応答を終了させており、そのウォッチドッグのタイムアウトは `CLAUDE_STREAM_IDLE_TIMEOUT_MS` で設定されるため、停滞ウィンドウを延長しても効果はありません
+* `agent lost its reply on all 6 attempts`: すべての試行で応答ストリームが途絶え、Claude Code がその待機を断念しました。[ストリーミングアイドルウォッチドッグ](https://code.claude.com/docs/ja/network-config.md#streaming-idle-watchdogs)が先に応答を終了させており、そのウォッチドッグのタイムアウトは `CLAUDE_STREAM_IDLE_TIMEOUT_MS` で設定されるため、停滞ウィンドウを延長しても効果はありません
 * `agent abandoned after 6 attempts`: 試行がそれぞれ異なる形で終了しました。エラーにはそれらが順に列挙されます
 
 ウィンドウが終了する前にエージェントが出力を生成するための時間を延ばすには、次のようにします。
 
 * **1 つのエージェント**: その `agent()` 呼び出しでミリ秒単位の `stallMs` を渡します。たとえば 30 分なら `agent(prompt, { stallMs: 1800000 })` とします
-* **すべてのエージェント**: [`CLAUDE_ASYNC_AGENT_STALL_TIMEOUT_MS`](/docs/ja/env-vars#variables) を設定します。これはワークフロー外のサブエージェントにも適用されます
+* **すべてのエージェント**: [`CLAUDE_ASYNC_AGENT_STALL_TIMEOUT_MS`](https://code.claude.com/docs/ja/env-vars#variables) を設定します。これはワークフロー外のサブエージェントにも適用されます
 
 失敗後に実行が続行するかどうかは、スクリプトがエージェントをどのように呼び出したかによって異なります。
 
@@ -446,14 +446,14 @@ Claude Code は、異常に大きくなった実行についても警告しま�
 * [サイズガイドライン](#set-a-size-guideline)を自分で選択した場合、そのエージェント数が 25 エージェントのしきい値に置き換わります。組み込みのデフォルトガイドラインでは、しきい値は 25 のままです。
 * [ultracode](#let-claude-decide-with-ultracode) がオンのセッションでは、警告は表示されません。ultracode をオンにした時点で、大規模な実行をすでに許可しているためです。
 
-Claude Code は、各ワークフローエージェントのモデルを、[サブエージェントで使用するのと同じ順序](/docs/ja/sub-agents.md#choose-a-model)で選択します。スクリプトがステージに指定したモデルは、その順序における呼び出しごとのモデルとして扱われます。他に何も割り当てられていない場合、エージェントはセッションのモデルで実行されます。
+Claude Code は、各ワークフローエージェントのモデルを、[サブエージェントで使用するのと同じ順序](https://code.claude.com/docs/ja/sub-agents.md#choose-a-model)で選択します。スクリプトがステージに指定したモデルは、その順序における呼び出しごとのモデルとして扱われます。他に何も割り当てられていない場合、エージェントはセッションのモデルで実行されます。
 
 モデルのコストを管理するには、次のようにします。
 
 * 日常的な作業で普段は小さいモデルに切り替えている場合は、大規模な実行の前に `/model` を確認します
 * タスクを説明する際に、最も強力なモデルを必要としないステージには小さいモデルを使うよう Claude に依頼します
 
-組織の [`availableModels` 許可リスト](/docs/ja/model-config#restrict-model-selection)によって、スクリプトがエージェントに要求したモデルがブロックされた場合、そのエージェントは[サブエージェントと同じ置き換えルール](/docs/ja/sub-agents.md#choose-a-model)に従い、代わりのモデルで実行されます。
+組織の [`availableModels` 許可リスト](https://code.claude.com/docs/ja/model-config#restrict-model-selection)によって、スクリプトがエージェントに要求したモデルがブロックされた場合、そのエージェントは[サブエージェントと同じ置き換えルール](https://code.claude.com/docs/ja/sub-agents.md#choose-a-model)に従い、代わりのモデルで実行されます。
 
 ### サイズガイドラインを設定する
 
@@ -470,13 +470,13 @@ Claude Code は、各ワークフローエージェントのモデルを、[サ�
 
 デフォルトは `medium` です。ただし、Claude Code v2.1.271 以降で Pro プランでサインインしている場合は `small` です。値を選択するまで、`/config` の行ではその値がデフォルトとして示され、ワークフローの `Running in background` 行には適用中のサイズが表示されます。Claude Code v2.1.219 以降が必要です。それより前のバージョンのデフォルトは `unrestricted` です。
 
-ガイドラインを変更するには、`/config` の Dynamic workflow size 設定で値を選択するか、`/config workflowSizeGuideline=small` を実行します。v2.1.219 以降では、任意の設定ファイルで [`workflowSizeGuideline` キー](/docs/ja/settings-reference#workflowsizeguideline)を設定することもできます。その値は `/config` より優先され、設定ファイルで値が指定されている間、Claude Code は `/config` の行を非表示にします。
+ガイドラインを変更するには、`/config` の Dynamic workflow size 設定で値を選択するか、`/config workflowSizeGuideline=small` を実行します。v2.1.219 以降では、任意の設定ファイルで [`workflowSizeGuideline` キー](https://code.claude.com/docs/ja/settings-reference#workflowsizeguideline)を設定することもできます。その値は `/config` より優先され、設定ファイルで値が指定されている間、Claude Code は `/config` の行を非表示にします。
 
 変更は次のプロンプトから有効になります。設定にかかわらず、[ランタイムのエージェント上限](#behavior-and-limits)は引き続き適用されます。
 
 ### ワークフローをオフにする
 
-ワークフローは、CLI、デスクトップアプリ、IDE 拡張機能、`claude -p` による[非対話モード](/docs/ja/headless.md)、[Agent SDK](/docs/ja/agent-sdk/overview.md) で利用できます。すべてのサーフェスで同じ無効化設定が適用されます。
+ワークフローは、CLI、デスクトップアプリ、IDE 拡張機能、`claude -p` による[非対話モード](https://code.claude.com/docs/ja/headless.md)、[Agent SDK](https://code.claude.com/docs/ja/agent-sdk/overview.md) で利用できます。すべてのサーフェスで同じ無効化設定が適用されます。
 
 自分用にワークフローをオフにするには、次のいずれかを行います。
 
@@ -484,7 +484,7 @@ Claude Code は、各ワークフローエージェントのモデルを、[サ�
 * `~/.claude/settings.json` で `"disableWorkflows": true` を設定します。セッションをまたいで保持されます。
 * `CLAUDE_CODE_DISABLE_WORKFLOWS=1` を設定します。起動時に読み込まれるため、設定した場所で適用されます。
 
-組織全体でワークフローをオフにするには、[管理設定](/docs/ja/server-managed-settings.md)で `"disableWorkflows": true` を設定するか、[Claude Code 管理設定](https://claude.ai/admin-settings/claude-code)ページのトグルを使用します。
+組織全体でワークフローをオフにするには、[管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)で `"disableWorkflows": true` を設定するか、[Claude Code 管理設定](https://claude.ai/admin-settings/claude-code)ページのトグルを使用します。
 
 ワークフローが無効な場合:
 
@@ -493,10 +493,10 @@ Claude Code は、各ワークフローエージェントのモデルを、[サ�
 
 すでに進行中だった実行は続行します。
 
-ワークフローをオフにすると、[ultracode](#let-claude-decide-with-ultracode) も利用できなくなります。ultracode だけを禁止する管理設定はありません。ultracode が[利用可能](/docs/ja/model-config.md#when-ultracode-is-available)な環境であれば、ユーザーは `/effort ultracode` でオンにできます。[effort の上限](/docs/ja/model-config.md#organization-effort-limits)を設定すると、ultracode がオンのセッションで実行される effort レベルは下がりますが、ultracode がオフになるわけではありません。
+ワークフローをオフにすると、[ultracode](#let-claude-decide-with-ultracode) も利用できなくなります。ultracode だけを禁止する管理設定はありません。ultracode が[利用可能](https://code.claude.com/docs/ja/model-config.md#when-ultracode-is-available)な環境であれば、ユーザーは `/effort ultracode` でオンにできます。[effort の上限](https://code.claude.com/docs/ja/model-config.md#organization-effort-limits)を設定すると、ultracode がオンのセッションで実行される effort レベルは下がりますが、ultracode がオフになるわけではありません。
 
 ## 関連リソース
 
-* [エージェントを並列実行](/docs/ja/agents.md)：サブエージェント、エージェントビュー、エージェントチーム、ワークフローを比較
-* [カスタムサブエージェントを作成](/docs/ja/sub-agents.md)：ワークフローがオーケストレーションするワーカープリミティブ
-* [コストを管理](/docs/ja/costs.md)：マルチエージェント実行が使用制限にカウントされる方法
+* [エージェントを並列実行](https://code.claude.com/docs/ja/agents.md)：サブエージェント、エージェントビュー、エージェントチーム、ワークフローを比較
+* [カスタムサブエージェントを作成](https://code.claude.com/docs/ja/sub-agents.md)：ワークフローがオーケストレーションするワーカープリミティブ
+* [コストを管理](https://code.claude.com/docs/ja/costs.md)：マルチエージェント実行が使用制限にカウントされる方法

@@ -6,7 +6,7 @@
 
 > Claude Code の通知「このセッションは auto モードの無料分類器リクエストの対象ではありません」を解決する：その意味、表示される理由、対処方法。
 
-[Auto mode](/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode) では、分類器がシェルコマンドやネットワークリクエストなどのアクションをチェックしてから実行します。[サーバー側チェックが有効な場合](/docs/ja/permission-modes.md#server-side-classifier-review)、サーバーはセッション自体のモデルリクエストの一部としてこれらのチェックを実行し、料金は請求されません。この通知は、サーバーのチェックがセッションに到達していないことを意味するため、Claude Code は代わりに独自の分類器リクエストを作成しており、アカウントではこれらのリクエストはトークン使用量にカウントされます：
+[Auto mode](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode) では、分類器がシェルコマンドやネットワークリクエストなどのアクションをチェックしてから実行します。[サーバー側チェックが有効な場合](https://code.claude.com/docs/ja/permission-modes.md#server-side-classifier-review)、サーバーはセッション自体のモデルリクエストの一部としてこれらのチェックを実行し、料金は請求されません。この通知は、サーバーのチェックがセッションに到達していないことを意味するため、Claude Code は代わりに独自の分類器リクエストを作成しており、アカウントではこれらのリクエストはトークン使用量にカウントされます：
 
 ```text theme={null}
 We're changing auto mode to no longer charge for classifier requests in Claude Code. However, this session isn't eligible.
@@ -25,37 +25,37 @@ We're changing auto mode to no longer charge for classifier requests in Claude C
 
 代わりに自動モードの使用を停止するには、答えた後に `Shift+Tab` で権限モードを切り替えてください。
 
-ダイアログが答えを待つことができない場合、Claude Code は同じテキストを報告し、セッションは自動モードで続行されます。ただし、このマシンでの過去 24 時間以内のゲートウェイ確認がそれを却下している場合を除きます。[非対話型モード](/docs/ja/headless.md)で `-p` を使用する場合、テキストは stderr に出力され、`stream-json` 出力では `system` 警告メッセージが発行されます。これは Agent SDK アプリケーションがメッセージストリームから読み取ることができます。
+ダイアログが答えを待つことができない場合、Claude Code は同じテキストを報告し、セッションは自動モードで続行されます。ただし、このマシンでの過去 24 時間以内のゲートウェイ確認がそれを却下している場合を除きます。[非対話型モード](https://code.claude.com/docs/ja/headless.md)で `-p` を使用する場合、テキストは stderr に出力され、`stream-json` 出力では `system` 警告メッセージが発行されます。これは Agent SDK アプリケーションがメッセージストリームから読み取ることができます。
 
 ## セッションを対応可能にする
 
-ゲートウェイが原因の場合、会社の管理者またはゲートウェイプロバイダーに、リクエストと返信を変更せずに通すよう依頼してください。つまり、ゲートウェイが認識しない `safeguards` リクエストフィールドなどのリクエストヘッダーとボディフィールドをそのまま転送し、`safeguard_results` フィールドなどのキーをドロップしたり、tool-use ID を書き換えたりせずにレスポンスとストリーミングイベントを返すことです。[ゲートウェイ互換性ガイド](/docs/ja/llm-gateway-protocol.md#feature-pass-through)で説明されているとおりです。このようにトラフィックを通すゲートウェイは、この機能と将来の機能で動作し続けます。その後、新しいセッションはサーバーのチェックを再度使用します。
+ゲートウェイが原因の場合、会社の管理者またはゲートウェイプロバイダーに、リクエストと返信を変更せずに通すよう依頼してください。つまり、ゲートウェイが認識しない `safeguards` リクエストフィールドなどのリクエストヘッダーとボディフィールドをそのまま転送し、`safeguard_results` フィールドなどのキーをドロップしたり、tool-use ID を書き換えたりせずにレスポンスとストリーミングイベントを返すことです。[ゲートウェイ互換性ガイド](https://code.claude.com/docs/ja/llm-gateway-protocol.md#feature-pass-through)で説明されているとおりです。このようにトラフィックを通すゲートウェイは、この機能と将来の機能で動作し続けます。その後、新しいセッションはサーバーのチェックを再度使用します。
 
-ゲートウェイがサーバーのチェックを提供できないことが既にわかっている場合、セッションを開始する前に、シェルまたは [`env` 設定キー](/docs/ja/settings-reference#env)で `CLAUDE_CODE_AUTO_MODE_SERVER` を `0` に設定して、Claude Code にそこでチェックを要求しないよう指示してください。
+ゲートウェイがサーバーのチェックを提供できないことが既にわかっている場合、セッションを開始する前に、シェルまたは [`env` 設定キー](https://code.claude.com/docs/ja/settings-reference#env)で `CLAUDE_CODE_AUTO_MODE_SERVER` を `0` に設定して、Claude Code にそこでチェックを要求しないよう指示してください。
 
 ```bash theme={null}
 export CLAUDE_CODE_AUTO_MODE_SERVER=0
 ```
 
-分類器リクエストはその後、常に Claude Code 独自のものであり、同じ方法で課金され、通知は表示されません。Anthropic API への直接接続では、変数は Claude Code v2.1.281 以降が必要です。`CLAUDE_CODE_AUTO_MODE_SERVER` が設定されていない状態で `CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1` を設定すると、[プリリリース機能を無効にする](/docs/ja/llm-gateway-protocol.md#disable-pre-release-capabilities)で説明されている場合を除き、サーバーのチェックもオフになります。
+分類器リクエストはその後、常に Claude Code 独自のものであり、同じ方法で課金され、通知は表示されません。Anthropic API への直接接続では、変数は Claude Code v2.1.281 以降が必要です。`CLAUDE_CODE_AUTO_MODE_SERVER` が設定されていない状態で `CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1` を設定すると、[プリリリース機能を無効にする](https://code.claude.com/docs/ja/llm-gateway-protocol.md#disable-pre-release-capabilities)で説明されている場合を除き、サーバーのチェックもオフになります。
 
 `CLAUDE_CODE_AUTO_MODE_SERVER` は一時的な設定であり、後のリリースで削除される可能性があります。
 
 ## ダイアログが表示される理由
 
-[サーバー側分類器レビュー](/docs/ja/permission-modes.md#server-side-classifier-review)は、サーバーに分類器チェックをリクエストするセッションを一覧表示します。Pro、Max、Team プランではダイアログが表示されることはありません。ダイアログが表示される場合、通常の原因は以下の通りです：
+[サーバー側分類器レビュー](https://code.claude.com/docs/ja/permission-modes.md#server-side-classifier-review)は、サーバーに分類器チェックをリクエストするセッションを一覧表示します。Pro、Max、Team プランではダイアログが表示されることはありません。ダイアログが表示される場合、通常の原因は以下の通りです：
 
 * **LLM ゲートウェイまたはプロキシがパスに存在する**：リクエストヘッダーを削除または書き換える、認識しないリクエストフィールドを削除する、またはレスポンスを編集するもの。その場合、サーバーはチェックのリクエストを受け取らないか、Claude Code はレスポンスを受け取りません。設定またはレスポンスがゲートウェイを特定する場合、ダイアログはそれに名前を付けます。
 * **サーバー側チェックがまだプラットフォーム、リージョン、または認証情報に到達していない**：プラットフォームまたはリージョンがチェックを実行するかどうかは、そのプラットフォームのロールアウトに依存します。ダイアログが表示され、パスにゲートウェイまたはプロキシがなく、ダイアログが表示され続ける場合、これが原因である可能性が高いです。確認するには、サポートまたは会社の管理者に連絡するか、`/feedback` で報告してください。
 
 auto mode のセッションをチェックするには、Claude Code プロンプトで `/status` を実行します。その **Auto mode server** 行は、サーバーのチェックがセッションのアクションを決定している間は `Enabled` と表示され、セッションがフォールバックした後は `Disabled` と表示されます。
 
-ゲートウェイがレスポンスを短縮したり、Claude Code が読み取れない形式にレスポンスを書き換えたりする場合、このダイアログの代わりに判定がない拒否が表示されます。[サーバー側分類器レビュー](/docs/ja/permission-modes.md#server-side-classifier-review)を参照してください。
+ゲートウェイがレスポンスを短縮したり、Claude Code が読み取れない形式にレスポンスを書き換えたりする場合、このダイアログの代わりに判定がない拒否が表示されます。[サーバー側分類器レビュー](https://code.claude.com/docs/ja/permission-modes.md#server-side-classifier-review)を参照してください。
 
 ## 関連リソース
 
-* [Auto モード](/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)：Auto モードとは何か、およびデフォルトでブロックされるもの
-* [サーバー側分類器レビュー](/docs/ja/permission-modes.md#server-side-classifier-review)：どのセッションがサーバーにアクションをチェックするよう要求するか、および各セッションに必要な Claude Code バージョン
-* [ゲートウェイ互換性ガイド](/docs/ja/llm-gateway-protocol.md#feature-pass-through)：ゲートウェイがヘッダーまたはボディフィールドを削除した場合に何が破損するか
-* [サーバーが安全性判定を返さなかった](/docs/ja/errors.md#the-server-returned-no-safety-verdict)：サーバーがアクションに対して判定を与えない場合に表示される拒否
-* [コストを効果的に管理する](/docs/ja/costs.md)：トークン使用量を追跡し、Claude Code コストを削減する
+* [Auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)：Auto モードとは何か、およびデフォルトでブロックされるもの
+* [サーバー側分類器レビュー](https://code.claude.com/docs/ja/permission-modes.md#server-side-classifier-review)：どのセッションがサーバーにアクションをチェックするよう要求するか、および各セッションに必要な Claude Code バージョン
+* [ゲートウェイ互換性ガイド](https://code.claude.com/docs/ja/llm-gateway-protocol.md#feature-pass-through)：ゲートウェイがヘッダーまたはボディフィールドを削除した場合に何が破損するか
+* [サーバーが安全性判定を返さなかった](https://code.claude.com/docs/ja/errors.md#the-server-returned-no-safety-verdict)：サーバーがアクションに対して判定を与えない場合に表示される拒否
+* [コストを効果的に管理する](https://code.claude.com/docs/ja/costs.md)：トークン使用量を追跡し、Claude Code コストを削減する

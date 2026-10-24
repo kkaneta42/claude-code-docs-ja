@@ -37,9 +37,9 @@ Google Cloud 認証情報を持っていて、Google Cloud の Agent Platform �
 
 **3. ウィザードプロンプトに従う**
 
-Google Cloud への認証方法を選択します。`gcloud` からの Application Default Credentials、サービスアカウントキーファイル、または環境内に既にある認証情報です。ウィザードはプロジェクトとリージョンを検出し、プロジェクトが呼び出せる Claude モデルを確認し、それらをピン留めできます。結果は[ユーザー設定ファイル](/docs/ja/settings.md)の `env` ブロックに保存されるため、環境変数を自分でエクスポートする必要はありません。
+Google Cloud への認証方法を選択します。`gcloud` からの Application Default Credentials、サービスアカウントキーファイル、または環境内に既にある認証情報です。ウィザードはプロジェクトとリージョンを検出し、プロジェクトが呼び出せる Claude モデルを確認し、それらをピン留めできます。結果は[ユーザー設定ファイル](https://code.claude.com/docs/ja/settings.md)の `env` ブロックに保存されるため、環境変数を自分でエクスポートする必要はありません。
 
-サインイン後、いつでも `/setup-vertex` を実行してウィザードを再度開き、認証情報、プロジェクト、リージョン、またはモデルピンを変更できます。モデルピンステップは、現在ピン留めされているモデルから開始します。ウィザードは `~/.claude/settings.json` に書き込むか、[`CLAUDE_CONFIG_DIR`](/docs/ja/env-vars#variables)が設定されている場合は `$CLAUDE_CONFIG_DIR/settings.json` に書き込みます。
+サインイン後、いつでも `/setup-vertex` を実行してウィザードを再度開き、認証情報、プロジェクト、リージョン、またはモデルピンを変更できます。モデルピンステップは、現在ピン留めされているモデルから開始します。ウィザードは `~/.claude/settings.json` に書き込むか、[`CLAUDE_CONFIG_DIR`](https://code.claude.com/docs/ja/env-vars#variables)が設定されている場合は `$CLAUDE_CONFIG_DIR/settings.json` に書き込みます。
 
 ## リージョン設定
 
@@ -88,7 +88,7 @@ Claude Code は、同じ Application Default Credentials チェーンを通じ�
 
 #### 高度な認証情報設定
 
-Claude Code は `gcpAuthRefresh` 設定を通じて GCP の自動認証情報更新をサポートしています。これを Claude Code の [設定ファイル](/docs/ja/settings.md)（例：`~/.claude/settings.json`）に追加します。Claude Code が GCP 認証情報の有効期限が切れているか読み込めないことを検出すると、リクエストを再試行する前に新しい認証情報を取得するために設定されたコマンドを実行します。
+Claude Code は `gcpAuthRefresh` 設定を通じて GCP の自動認証情報更新をサポートしています。これを Claude Code の [設定ファイル](https://code.claude.com/docs/ja/settings.md)（例：`~/.claude/settings.json`）に追加します。Claude Code が GCP 認証情報の有効期限が切れているか読み込めないことを検出すると、リクエストを再試行する前に新しい認証情報を取得するために設定されたコマンドを実行します。
 
 ```json theme={null}
 {
@@ -103,7 +103,7 @@ Claude Code は `gcpAuthRefresh` 設定を通じて GCP の自動認証情報更
 
 チェックが 5 秒以内に完了しない場合、Claude Code もコマンドをスキップし、リクエストが認証情報エラーで失敗した後にのみ実行します。v2.1.261 より前は、タイムアウトしたチェックは有効期限が切れた認証情報としてカウントされたため、認証情報がまだ有効であってもコマンドがスタートアップ時にブラウザを開く可能性がありました。
 
-Claude Code はコマンドの出力を表示しますが、コマンドに対話的な入力を送信することはできません。これは、CLI が URL を表示し、ブラウザで認証を完了するブラウザベースの認証フローに適しています。認証が完了しない場合、更新コマンドは 3 分後にタイムアウトします。`.claude/settings.json` などのプロジェクト設定で `gcpAuthRefresh` を設定した場合、Claude Code は設定ファイルの [ワークスペース信頼ルールと同じルール](/docs/ja/permissions.md#what-runs-before-you-trust-a-folder)の下でそれを実行します。これには、信頼したことのないフォルダ内の `-p` セッションが含まれます。
+Claude Code はコマンドの出力を表示しますが、コマンドに対話的な入力を送信することはできません。これは、CLI が URL を表示し、ブラウザで認証を完了するブラウザベースの認証フローに適しています。認証が完了しない場合、更新コマンドは 3 分後にタイムアウトします。`.claude/settings.json` などのプロジェクト設定で `gcpAuthRefresh` を設定した場合、Claude Code は設定ファイルの [ワークスペース信頼ルールと同じルール](https://code.claude.com/docs/ja/permissions.md#what-runs-before-you-trust-a-folder)の下でそれを実行します。これには、信頼したことのないフォルダ内の `-p` セッションが含まれます。
 
 ### Claude Code を設定する
 
@@ -123,18 +123,18 @@ export VERTEX_REGION_CLAUDE_HAIKU_4_5=us-east5
 export VERTEX_REGION_CLAUDE_4_6_SONNET=europe-west1
 ```
 
-ほとんどのモデルバージョンには、対応する `VERTEX_REGION_CLAUDE_*` 変数があります。完全なリストについては、[環境変数リファレンス](/docs/ja/env-vars.md#variables)を参照してください。どのモデルがグローバルエンドポイントをサポートしているか、または地域別のみをサポートしているかを確認するには、[Google Cloud の Agent Platform Model Garden](https://console.cloud.google.com/vertex-ai/model-garden)を確認してください。
+ほとんどのモデルバージョンには、対応する `VERTEX_REGION_CLAUDE_*` 変数があります。完全なリストについては、[環境変数リファレンス](https://code.claude.com/docs/ja/env-vars.md#variables)を参照してください。どのモデルがグローバルエンドポイントをサポートしているか、または地域別のみをサポートしているかを確認するには、[Google Cloud の Agent Platform Model Garden](https://console.cloud.google.com/vertex-ai/model-garden)を確認してください。
 
 リージョン値がリージョンまたはロケーション名のような形状でない場合、Claude Code はそれを未設定として扱います。例えば、Claude Code はスラッシュ、ドット、またはスペースを含む値を未設定として扱います。Claude Code は各変数に対して異なるソースにフォールバックします。
 
 * `VERTEX_REGION_CLAUDE_*`：Claude Code は `CLOUD_ML_REGION` にフォールバックします。
 * `CLOUD_ML_REGION`：Claude Code は `us-east5` にフォールバックします。
 
-[プロンプトキャッシュ](/docs/ja/prompt-caching.md)は自動的に有効になります。これを無効にするには、`DISABLE_PROMPT_CACHING=1` を設定します。デフォルトの 5 分ではなく 1 時間のキャッシュ TTL をリクエストするには、`ENABLE_PROMPT_CACHING_1H=1` を設定します。1 時間の TTL でのキャッシュ書き込みはより高いレートで課金されます。メインの会話と Claude Code が外部で行うリクエストに異なる TTL を設定するには、[TTL を自分で選択](/docs/ja/prompt-caching.md#choose-the-ttl-yourself)してください。
+[プロンプトキャッシュ](https://code.claude.com/docs/ja/prompt-caching.md)は自動的に有効になります。これを無効にするには、`DISABLE_PROMPT_CACHING=1` を設定します。デフォルトの 5 分ではなく 1 時間のキャッシュ TTL をリクエストするには、`ENABLE_PROMPT_CACHING_1H=1` を設定します。1 時間の TTL でのキャッシュ書き込みはより高いレートで課金されます。メインの会話と Claude Code が外部で行うリクエストに異なる TTL を設定するには、[TTL を自分で選択](https://code.claude.com/docs/ja/prompt-caching.md#choose-the-ttl-yourself)してください。
 
 レート制限を高くするには、Google Cloud サポートに連絡してください。Google Cloud の Agent Platform を使用する場合、認証が Google Cloud 認証情報を通じて処理されるため、`/logout` コマンドは利用できません。
 
-Claude Code は [MCP tool search](/docs/ja/mcp.md#scale-with-mcp-tool-search)と事前ロードをモデル生成によって決定します。
+Claude Code は [MCP tool search](https://code.claude.com/docs/ja/mcp.md#scale-with-mcp-tool-search)と事前ロードをモデル生成によって決定します。
 
 * **Claude Opus 4.5、Sonnet 4.5、Haiku 4.5、およびそれ以降**：Claude Code はデフォルトでツール検索を有効にします。
 * **以前のモデル**：Claude Code は MCP ツール定義を事前にロードします。これは、これらのモデルの Agent Platform サービングスタックが必要なベータヘッダーを拒否するためです。`ENABLE_TOOL_SEARCH=true` を設定してもこれを上書きしません。
@@ -157,7 +157,7 @@ export ANTHROPIC_DEFAULT_SONNET_MODEL='claude-sonnet-5'
 export ANTHROPIC_DEFAULT_HAIKU_MODEL='claude-haiku-4-5@20251001'
 ```
 
-現在および従来のモデル ID については、[モデル概要](https://platform.claude.com/docs/en/about-claude/models/overview)を参照してください。環境変数の完全なリストについては、[モデル設定](/docs/ja/model-config.md#pin-models-for-third-party-deployments)を参照してください。
+現在および従来のモデル ID については、[モデル概要](https://platform.claude.com/docs/en/about-claude/models/overview)を参照してください。環境変数の完全なリストについては、[モデル設定](https://code.claude.com/docs/ja/model-config.md#pin-models-for-third-party-deployments)を参照してください。
 
 Claude Code は、ピン留め変数が設定されていない場合、これらのデフォルトモデルを使用します。
 
@@ -168,7 +168,7 @@ Claude Code は、ピン留め変数が設定されていない場合、これ�
 
 セッションタイトル生成などのバックグラウンドタスクは、小型/高速モデル（通常は Haiku クラスモデル）を使用します。Google Cloud の Agent Platform では、Haiku がすべてのプロジェクトまたはリージョンで有効になっていない可能性があるため、Claude Code はバックグラウンドタスクにデフォルトの Sonnet モデルを使用します。2 つの選択がどのモデルがバックグラウンドタスクを実行するかを変更します。
 
-* `--model`、`ANTHROPIC_MODEL`、または `model` 設定でプライマリモデルを選択すると、バックグラウンドタスクはそのモデルを使用します。[`ANTHROPIC_DEFAULT_MODEL`](/docs/ja/model-config#set-a-default-model-for-new-sessions)で設定したモデルで Claude Code がセッションを開始する場合、バックグラウンドタスクもそのモデルを使用します。`ANTHROPIC_DEFAULT_SONNET_MODEL` なしで `ANTHROPIC_DEFAULT_OPUS_MODEL` を設定することも、組み込み Sonnet モデルがプロジェクトで有効になっていない可能性があるため、選択としてカウントされます。
+* `--model`、`ANTHROPIC_MODEL`、または `model` 設定でプライマリモデルを選択すると、バックグラウンドタスクはそのモデルを使用します。[`ANTHROPIC_DEFAULT_MODEL`](https://code.claude.com/docs/ja/model-config#set-a-default-model-for-new-sessions)で設定したモデルで Claude Code がセッションを開始する場合、バックグラウンドタスクもそのモデルを使用します。`ANTHROPIC_DEFAULT_SONNET_MODEL` なしで `ANTHROPIC_DEFAULT_OPUS_MODEL` を設定することも、組み込み Sonnet モデルがプロジェクトで有効になっていない可能性があるため、選択としてカウントされます。
 * バックグラウンドタスクに Haiku を使用するには、`ANTHROPIC_DEFAULT_HAIKU_MODEL` をプロジェクトで利用可能なモデル ID に設定します。
 
 > [!WARNING]
@@ -186,25 +186,25 @@ export ANTHROPIC_DEFAULT_HAIKU_MODEL='claude-haiku-4-5@20251001'
 
 ### 設定を確認する
 
-Claude Code を起動して `/status` を実行し、セットアップを確認します。`API provider` 行は `Google Vertex AI` を表示し、`GCP project`、`Default region`、および `Model` 行はプロジェクト ID、リージョン、および解決されたモデルを表示します。プロバイダー行が見つからない場合、環境変数がプロセスに到達していません。`claude` を起動したシェルでエクスポートされているか、[設定ファイル](/docs/ja/settings.md)の `env` ブロックで設定されていることを確認してください。
+Claude Code を起動して `/status` を実行し、セットアップを確認します。`API provider` 行は `Google Vertex AI` を表示し、`GCP project`、`Default region`、および `Model` 行はプロジェクト ID、リージョン、および解決されたモデルを表示します。プロバイダー行が見つからない場合、環境変数がプロセスに到達していません。`claude` を起動したシェルでエクスポートされているか、[設定ファイル](https://code.claude.com/docs/ja/settings.md)の `env` ブロックで設定されていることを確認してください。
 
 ## 起動時のモデルチェック
 
 Claude Code が Google Cloud の Agent Platform で設定されて起動すると、使用するモデルがプロジェクトでアクセス可能であることを確認します。
 
-Claude Code デフォルトより古いモデルバージョンをピン留めしていて、プロジェクトが新しいバージョンを呼び出せる場合、Claude Code はピンを更新するよう促します。受け入れると、新しいモデル ID が[ユーザー設定ファイル](/docs/ja/settings.md)に書き込まれ、Claude Code が再起動されます。拒否すると、次のデフォルトバージョン変更まで記憶されます。
+Claude Code デフォルトより古いモデルバージョンをピン留めしていて、プロジェクトが新しいバージョンを呼び出せる場合、Claude Code はピンを更新するよう促します。受け入れると、新しいモデル ID が[ユーザー設定ファイル](https://code.claude.com/docs/ja/settings.md)に書き込まれ、Claude Code が再起動されます。拒否すると、次のデフォルトバージョン変更まで記憶されます。
 
 モデルをピン留めしていなくて、現在のデフォルトがプロジェクトで利用できない場合、Claude Code は現在のセッション用にフォールバックし、通知を表示します。デフォルトモデルの以前のバージョンを最初に試し、デフォルトが Opus モデルで Opus バージョンが利用できない場合は、デフォルト Sonnet モデルにフォールバックします。フォールバックは永続化されません。[Model Garden](https://console.cloud.google.com/vertex-ai/model-garden)で新しいモデルを有効にするか、[バージョンをピン留めして](#5-pin-model-versions)選択を永続化してください。
 
-特定の Sonnet または Opus バージョンでセッションを開始する場合（例えば `--model`、`ANTHROPIC_MODEL`、または[`model` 設定](/docs/ja/settings-reference#model)を使用）、そのバージョンは一致する `sonnet` または `opus` エイリアスのセッションのピン留めされたデフォルトとして機能します。Claude Code は、設定したモデルが置き換える組み込みデフォルトの可用性チェックをスキップし、設定したモデルで起動します。フォールバック通知はありません。
+特定の Sonnet または Opus バージョンでセッションを開始する場合（例えば `--model`、`ANTHROPIC_MODEL`、または[`model` 設定](https://code.claude.com/docs/ja/settings-reference#model)を使用）、そのバージョンは一致する `sonnet` または `opus` エイリアスのセッションのピン留めされたデフォルトとして機能します。Claude Code は、設定したモデルが置き換える組み込みデフォルトの可用性チェックをスキップし、設定したモデルで起動します。フォールバック通知はありません。
 
 `opus` などのモデルエイリアスはピンとして機能せず、Claude Code が認識しないモデル ID も同様です。
 
-これらのチェックがプロジェクトが呼び出せないモデルを見つけた場合、Claude Code はこのマシン上でその拒否を最大 1 日間記憶し、その間の起動時に記憶されたモデルをスキップして Agent Platform に再度問い合わせません。Claude Code は、現在のデフォルトモデルの記憶された拒否を、最後のチェック以降 10 分が経過した後に起動時に再度チェックするため、管理者が再度有効にしたデフォルトが戻ります。メモリをオフにするには、[`CLAUDE_CODE_SKIP_MODEL_ACCESS_MEMORY=1`](/docs/ja/env-vars)を設定してください。
+これらのチェックがプロジェクトが呼び出せないモデルを見つけた場合、Claude Code はこのマシン上でその拒否を最大 1 日間記憶し、その間の起動時に記憶されたモデルをスキップして Agent Platform に再度問い合わせません。Claude Code は、現在のデフォルトモデルの記憶された拒否を、最後のチェック以降 10 分が経過した後に起動時に再度チェックするため、管理者が再度有効にしたデフォルトが戻ります。メモリをオフにするには、[`CLAUDE_CODE_SKIP_MODEL_ACCESS_MEMORY=1`](https://code.claude.com/docs/ja/env-vars)を設定してください。
 
 ### 組織がモデル許可リストを強制している場合
 
-管理設定で [`enforceAvailableModels`](/docs/ja/model-config#enforce-the-allowlist-for-the-default-model) を設定すると、起動時のモデルチェックは `availableModels` リストで許可されたモデルのみを使用します。これには Claude Code v2.1.287 以降が必要です。`enforceAvailableModels` のないリストは、これらのチェックを制限しません。
+管理設定で [`enforceAvailableModels`](https://code.claude.com/docs/ja/model-config#enforce-the-allowlist-for-the-default-model) を設定すると、起動時のモデルチェックは `availableModels` リストで許可されたモデルのみを使用します。これには Claude Code v2.1.287 以降が必要です。`enforceAvailableModels` のないリストは、これらのチェックを制限しません。
 
 チェックでは各エントリを Agent Platform に送信するモデル ID と比較するため、リストはそれらの ID で記述してください。次の例では Opus 4.8 と Sonnet 4.5 を許可します。
 
@@ -215,15 +215,15 @@ Claude Code デフォルトより古いモデルバージョンをピン留め�
 }
 ```
 
-エイリアス、バージョンプレフィックス、`modelOverrides` エントリについては、[サードパーティデプロイ向けにモデルをピン留めする](/docs/ja/model-config.md#pin-models-for-third-party-deployments)を参照してください。
+エイリアス、バージョンプレフィックス、`modelOverrides` エントリについては、[サードパーティデプロイ向けにモデルをピン留めする](https://code.claude.com/docs/ja/model-config.md#pin-models-for-third-party-deployments)を参照してください。
 
 ### セッション中にモデルが無効化された場合
 
 プロジェクトがセッションで実行しているモデルへのアクセスを失った場合（例えば、管理者が [Model Garden](https://console.cloud.google.com/vertex-ai/model-garden)で無効化した場合）、Claude Code は各リクエストが失敗する代わりにセッションを別のモデルに切り替え、`Switched to <fallback> because <model> is not available` を表示します。起動時フォールバックと同じモデルを試します。同じティアの以前のバージョンを最初に試し、Opus セッションで Opus バージョンが利用できない場合は、デフォルト Sonnet モデルを試します。
 
-切り替えは、ピン留めしていないティアにのみ適用されます。これは起動時フォールバックと同じ条件です。選択した特定のバージョンでのセッションはそのモデルを保持し、フォールバックモデルチェーンがない場合、リクエストは失敗します。[auto モード](/docs/ja/permission-modes.md#enable-auto-mode-on-bedrock-agent-platform-or-foundry)では、Claude Code は Agent Platform で auto モードがサポートするモデルにのみ切り替えます。それらのモデルも利用できない場合、リクエストは失敗します。
+切り替えは、ピン留めしていないティアにのみ適用されます。これは起動時フォールバックと同じ条件です。選択した特定のバージョンでのセッションはそのモデルを保持し、フォールバックモデルチェーンがない場合、リクエストは失敗します。[auto モード](https://code.claude.com/docs/ja/permission-modes.md#enable-auto-mode-on-bedrock-agent-platform-or-foundry)では、Claude Code は Agent Platform で auto モードがサポートするモデルにのみ切り替えます。それらのモデルも利用できない場合、リクエストは失敗します。
 
-設定した[フォールバックモデルチェーン](/docs/ja/model-config.md#fallback-model-chains)はティア切り替えを置き換えます。これらの拒否時に Claude Code は設定したフォールバックに切り替えます。拒否されたリクエストが切り替わらずに失敗するようにするには、[`CLAUDE_CODE_DISABLE_MODEL_ACCESS_FALLBACK=1`](/docs/ja/env-vars)を設定してください。設定したフォールバックチェーンはこれらの拒否時に切り替わります。すべての拒否されたリクエストが失敗するようにしたい場合は、チェーンも削除してください。
+設定した[フォールバックモデルチェーン](https://code.claude.com/docs/ja/model-config.md#fallback-model-chains)はティア切り替えを置き換えます。これらの拒否時に Claude Code は設定したフォールバックに切り替えます。拒否されたリクエストが切り替わらずに失敗するようにするには、[`CLAUDE_CODE_DISABLE_MODEL_ACCESS_FALLBACK=1`](https://code.claude.com/docs/ja/env-vars)を設定してください。設定したフォールバックチェーンはこれらの拒否時に切り替わります。すべての拒否されたリクエストが失敗するようにしたい場合は、チェーンも削除してください。
 
 ## IAM 設定
 
@@ -241,9 +241,9 @@ Claude Code デフォルトより古いモデルバージョンをピン留め�
 
 ## 100 万トークンコンテキストウィンドウ
 
-Fable モデル、Sonnet 5 以降、および Opus 4.7 以降は、Google Cloud の Agent Platform でデフォルトで[100 万トークンコンテキストウィンドウ](https://platform.claude.com/docs/ja/build-with-claude/context-windows#context-window-sizes-by-model)で実行され、`[1m]` サフィックスは不要です。代わりに 200K ウィンドウを維持するには、[`CLAUDE_CODE_DISABLE_1M_CONTEXT=1`](/docs/ja/model-config#turn-off-1m-context) を設定します。
+Fable モデル、Sonnet 5 以降、および Opus 4.7 以降は、Google Cloud の Agent Platform でデフォルトで[100 万トークンコンテキストウィンドウ](https://platform.claude.com/docs/ja/build-with-claude/context-windows#context-window-sizes-by-model)で実行され、`[1m]` サフィックスは不要です。代わりに 200K ウィンドウを維持するには、[`CLAUDE_CODE_DISABLE_1M_CONTEXT=1`](https://code.claude.com/docs/ja/model-config#turn-off-1m-context) を設定します。
 
-Opus 4.6 と Sonnet 4.6 は、`[1m]` バリアントを選択すると 100 万ウィンドウを使用できます。[セットアップウィザード](#sign-in-with-agent-platform)は、モデルをピン留めするときに 100 万トークンコンテキストオプションを提供します。代わりに手動でピン留めしたモデルで有効にするには、モデル ID に `[1m]` を追加します。ピン留めを変更せずに 100 万ウィンドウを使用する方法を含む詳細については、[サードパーティデプロイ用のモデルをピン留めする](/docs/ja/model-config.md#pin-models-for-third-party-deployments)を参照してください。
+Opus 4.6 と Sonnet 4.6 は、`[1m]` バリアントを選択すると 100 万ウィンドウを使用できます。[セットアップウィザード](#sign-in-with-agent-platform)は、モデルをピン留めするときに 100 万トークンコンテキストオプションを提供します。代わりに手動でピン留めしたモデルで有効にするには、モデル ID に `[1m]` を追加します。ピン留めを変更せずに 100 万ウィンドウを使用する方法を含む詳細については、[サードパーティデプロイ用のモデルをピン留めする](https://code.claude.com/docs/ja/model-config.md#pin-models-for-third-party-deployments)を参照してください。
 
 v2.1.287 より前は、Fable モデルと Opus 4.7 以降は Google Cloud の Agent Platform でデフォルトで 200K ウィンドウで実行され、`[1m]` サフィックスによって 100 万ウィンドウを使用していました。
 
@@ -265,7 +265,7 @@ v2.1.287 より前は、Fable モデルと Opus 4.7 以降は Google Cloud の A
 * 指定したロケーションでモデルが利用可能であることを確認してください。一部のモデルは `global` またはマルチリージョンロケーション（`eu` および `us` など）でのみ提供され、特定のリージョンでは提供されていません
 * `CLOUD_ML_REGION=global` を使用している場合、[Model Garden](https://console.cloud.google.com/vertex-ai/model-garden)の「サポートされている機能」でモデルがグローバルエンドポイントをサポートしていることを確認してください。グローバルエンドポイントをサポートしていないモデルの場合は、以下のいずれかを実行してください：
   * `ANTHROPIC_MODEL` または `ANTHROPIC_DEFAULT_HAIKU_MODEL` を通じてサポートされているモデルを指定するか、
-  * [環境変数リファレンス](/docs/ja/env-vars.md#variables)に記載されているモデルの `VERTEX_REGION_CLAUDE_*` 変数を使用して、リージョンまたはマルチリージョンロケーションを設定してください
+  * [環境変数リファレンス](https://code.claude.com/docs/ja/env-vars.md#variables)に記載されているモデルの `VERTEX_REGION_CLAUDE_*` 変数を使用して、リージョンまたはマルチリージョンロケーションを設定してください
 
 429 エラーが発生した場合：
 

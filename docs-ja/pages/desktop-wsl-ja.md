@@ -20,7 +20,7 @@ Windows では、Code タブは Windows 自体ではなく WSL 2 ディストリ
 
 **1. ディストリビューションを選択する**
 
-Code タブで新しいセッションを開始し、プロンプトボックスの下（[以前のレイアウト](/docs/ja/desktop.md#check-which-layout-you-have)ではその上）にある[環境セレクター](/docs/ja/desktop.md#start-a-session)を開きます。インストール済みの WSL 2 ディストリビューションが **WSL** の下に表示されます。1 つを選択してください。
+Code タブで新しいセッションを開始し、プロンプトボックスの下（[以前のレイアウト](https://code.claude.com/docs/ja/desktop.md#check-which-layout-you-have)ではその上）にある[環境セレクター](https://code.claude.com/docs/ja/desktop.md#start-a-session)を開きます。インストール済みの WSL 2 ディストリビューションが **WSL** の下に表示されます。1 つを選択してください。
 
 **2. フォルダを選択する**
 
@@ -38,18 +38,18 @@ Code タブで新しいセッションを開始し、プロンプトボックス
 
 Desktop の機能が WSL セッションで利用できない、または制限されている場合は、次のいずれかに該当するかを確認してください。
 
-* **ターミナルとコネクタ**: セッションで[統合ターミナル](/docs/ja/desktop.md#run-commands-in-the-terminal)、[コネクタ](/docs/ja/desktop.md#connect-external-tools)、またはその両方が利用できない場合があります。[ターミナルまたはコネクタが利用できない場合](#check-for-the-terminal-and-connectors)を参照してください。
-* **[プラグイン](/docs/ja/desktop.md#install-plugins)**: WSL セッションでは利用できません
-* **ファイル編集**: [ファイルペイン](/docs/ja/desktop.md#open-and-edit-files)でファイルを表示することはできますが、そこで編集することはできないため、変更は Claude に依頼してください
-* **添付ファイル**: **+** メニューに **Add files or photos** の代わりに **Add image** が表示される場合、添付できるのは画像のみです。[プロンプトにファイルとコンテキストを追加する](/docs/ja/desktop.md#add-files-and-context-to-prompts)を参照してください。
+* **ターミナルとコネクタ**: セッションで[統合ターミナル](https://code.claude.com/docs/ja/desktop.md#run-commands-in-the-terminal)、[コネクタ](https://code.claude.com/docs/ja/desktop.md#connect-external-tools)、またはその両方が利用できない場合があります。[ターミナルまたはコネクタが利用できない場合](#check-for-the-terminal-and-connectors)を参照してください。
+* **[プラグイン](https://code.claude.com/docs/ja/desktop.md#install-plugins)**: WSL セッションでは利用できません
+* **ファイル編集**: [ファイルペイン](https://code.claude.com/docs/ja/desktop.md#open-and-edit-files)でファイルを表示することはできますが、そこで編集することはできないため、変更は Claude に依頼してください
+* **添付ファイル**: **+** メニューに **Add files or photos** の代わりに **Add image** が表示される場合、添付できるのは画像のみです。[プロンプトにファイルとコンテキストを追加する](https://code.claude.com/docs/ja/desktop.md#add-files-and-context-to-prompts)を参照してください。
 
 ### ターミナルまたはコネクタが利用できない場合
 
 WSL セッションの統合ターミナルやコネクタを自分でオンにすることはできません。
 
 * **Claude アカウント**: この 2 つの機能は個別に展開されています。**Help > Check for Updates…** を選択し、更新後も機能が表示されない場合は、特に対応する必要はありません。
-* **[サードパーティプロバイダー](/docs/ja/third-party-integrations.md)**: WSL セッションではターミナルやコネクタは利用できず、Desktop を更新してもそれは変わりません
+* **[サードパーティプロバイダー](https://code.claude.com/docs/ja/third-party-integrations.md)**: WSL セッションではターミナルやコネクタは利用できず、Desktop を更新してもそれは変わりません
 
 ## 管理対象デバイス
 
-組織によって管理されているデバイスでは、WSL セッションが利用できない場合があります。セッション開始がデバイスが管理されているというメッセージで失敗する場合、それは管理者によって制御されます。管理者の方は、デプロイメントガイドの [設定がデバイスに到達する方法を決定する](/docs/ja/admin-setup.md#decide-how-settings-reach-devices) を参照してください。
+組織によって管理されているデバイスでは、WSL セッションが利用できない場合があります。セッション開始がデバイスが管理されているというメッセージで失敗する場合、それは管理者によって制御されます。管理者の方は、デプロイメントガイドの [設定がデバイスに到達する方法を決定する](https://code.claude.com/docs/ja/admin-setup.md#decide-how-settings-reach-devices) を参照してください。

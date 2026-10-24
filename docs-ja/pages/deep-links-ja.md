@@ -158,15 +158,15 @@ Claude Code は、macOS、Linux、Windows で対話的セッションの最初�
 
 ハンドラーは検出されたターミナルエミュレーターで Claude Code を起動します。macOS では、Claude Code は最後の対話的セッションからターミナルを記憶し、再利用します。iTerm2、Ghostty、kitty、Alacritty、WezTerm、Terminal.app をサポートしています。Linux では `$TERMINAL` 環境変数を尊重し、次に `x-terminal-emulator`、次に一般的なエミュレーターのリストを使用します。Windows では Windows Terminal を優先し、次に PowerShell、次に `cmd.exe` を使用します。
 
-登録を完全に防ぐには、`settings.json` で [`disableDeepLinkRegistration`](/docs/ja/settings-reference#disabledeeplinkregistration) を `"disable"` に設定します。組織全体でこれを強制し、ユーザーが再度有効にできないようにするには、代わりに[管理設定](/docs/ja/server-managed-settings.md)で設定します。Claude Code の `disableDeepLinkRegistration` 設定が対象とするのは `claude-cli://` リンクのみです。
+登録を完全に防ぐには、`settings.json` で [`disableDeepLinkRegistration`](https://code.claude.com/docs/ja/settings-reference#disabledeeplinkregistration) を `"disable"` に設定します。組織全体でこれを強制し、ユーザーが再度有効にできないようにするには、代わりに[管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)で設定します。Claude Code の `disableDeepLinkRegistration` 設定が対象とするのは `claude-cli://` リンクのみです。
 
 ## ターミナルの代わりに VS Code タブを開く
 
-VS Code 拡張機能は `vscode://anthropic.claude-code/open` で独自のハンドラーを登録し、ターミナルウィンドウではなく Claude Code エディタータブを開きます。その URL のパラメーターについては、[他のツールから VS Code タブを起動する](/docs/ja/vs-code.md#launch-a-vs-code-tab-from-other-tools)を参照してください。
+VS Code 拡張機能は `vscode://anthropic.claude-code/open` で独自のハンドラーを登録し、ターミナルウィンドウではなく Claude Code エディタータブを開きます。その URL のパラメーターについては、[他のツールから VS Code タブを起動する](https://code.claude.com/docs/ja/vs-code.md#launch-a-vs-code-tab-from-other-tools)を参照してください。
 
 ## SSH 接続で Claude Desktop セッションを開く
 
-Claude Desktop は独自の `claude://` リンクを処理します。SSH 経由でリモートマシン上の Desktop セッションを開くには、[リンクから SSH セッションを開く](/docs/ja/desktop.md#open-an-ssh-session-from-a-link)を参照してください。
+Claude Desktop は独自の `claude://` リンクを処理します。SSH 経由でリモートマシン上の Desktop セッションを開くには、[リンクから SSH セッションを開く](https://code.claude.com/docs/ja/desktop.md#open-an-ssh-session-from-a-link)を参照してください。
 
 ## トラブルシューティング
 
@@ -194,5 +194,5 @@ macOS では、好みのターミナルで `claude` を 1 回開始すると、�
 
 これらのページは、Claude Code セッションを起動または拡張する関連する方法をカバーしています。
 
-* [Skills](/docs/ja/skills.md)：長いランブックプロンプトをリポジトリに `/skill` として保存し、ディープリンクの `q` パラメーターはそれを名前で指定するだけで済みます。
-* [非対話モード](/docs/ja/headless.md)：スクリプトから Claude を実行し、ターミナルを開かずに出力をキャプチャします。
+* [Skills](https://code.claude.com/docs/ja/skills.md)：長いランブックプロンプトをリポジトリに `/skill` として保存し、ディープリンクの `q` パラメーターはそれを名前で指定するだけで済みます。
+* [非対話モード](https://code.claude.com/docs/ja/headless.md)：スクリプトから Claude を実行し、ターミナルを開かずに出力をキャプチャします。

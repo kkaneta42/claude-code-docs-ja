@@ -8,7 +8,7 @@
 
 これは Claude Code にコピーして使用するプロンプトのライブラリです。試したことのない作業方法を探索したり、どこから始めたらよいかわからない場合に使用してください。
 
-プロンプトは、[一般的なワークフロー](/docs/ja/common-workflows.md)、[ベストプラクティス](/docs/ja/best-practices.md)、[Anthropic チームが Claude Code をどのように使用しているか](https://claude.com/blog/how-anthropic-teams-use-claude-code)など、様々な Anthropic ガイドから収集されています。これらはスクリプトではなく、出発点です。任意のプロンプトの下にある **このプロンプトが機能する理由** を開くと、その背後にあるパターンを確認できるため、独自のプロンプトを作成できます。
+プロンプトは、[一般的なワークフロー](https://code.claude.com/docs/ja/common-workflows.md)、[ベストプラクティス](https://code.claude.com/docs/ja/best-practices.md)、[Anthropic チームが Claude Code をどのように使用しているか](https://claude.com/blog/how-anthropic-teams-use-claude-code)など、様々な Anthropic ガイドから収集されています。これらはスクリプトではなく、出発点です。任意のプロンプトの下にある **このプロンプトが機能する理由** を開くと、その背後にあるパターンを確認できるため、独自のプロンプトを作成できます。
 
 ## これらのプロンプトを機能させるもの
 
@@ -20,7 +20,7 @@
 add rate limiting to the public API and make sure existing tests still pass
 ```
 
-**自分の作業をチェックする方法を与えてください。** 同じプロンプトで実行、テスト、比較、または検証を依頼して、Claude が 1 回の試行後に停止する代わりに反復するようにしてください。完成した変更を実行中のアプリに対してチェックするには、[`/verify`](/docs/ja/skills#run-and-verify-your-app)を実行してください。
+**自分の作業をチェックする方法を与えてください。** 同じプロンプトで実行、テスト、比較、または検証を依頼して、Claude が 1 回の試行後に停止する代わりに反復するようにしてください。完成した変更を実行中のアプリに対してチェックするには、[`/verify`](https://code.claude.com/docs/ja/skills#run-and-verify-your-app)を実行してください。
 
 ```text wrap theme={null}
 write the migration, run it against the dev database, and confirm the schema matches
@@ -44,20 +44,20 @@ get the bundle size under 200KB and show me what you removed
 why is the build failing? @build.log
 ```
 
-**答えてほしい方法を言ってください。** 形式、長さ、または対象者に名前を付けて、説明がどのように使用するかに適合するようにしてください。すべての応答のデフォルトとして形式を作成するには、[出力スタイル](/docs/ja/output-styles.md)を設定してください。
+**答えてほしい方法を言ってください。** 形式、長さ、または対象者に名前を付けて、説明がどのように使用するかに適合するようにしてください。すべての応答のデフォルトとして形式を作成するには、[出力スタイル](https://code.claude.com/docs/ja/output-styles.md)を設定してください。
 
 ```text wrap theme={null}
 explain how the payment retry logic works as an HTML page with a diagram, then open it in my browser
 ```
 
-各パターンの詳細については、[ベストプラクティス](/docs/ja/best-practices.md)を参照してください。
+各パターンの詳細については、[ベストプラクティス](https://code.claude.com/docs/ja/best-practices.md)を参照してください。
 
 ## これらはどこから来ているのか
 
 これらのプロンプトは、公開されている Anthropic リソースのパターンに基づいています。各カードはそのソースにリンクしています:
 
-* [一般的なワークフロー](/docs/ja/common-workflows.md): コアタスクのステップバイステップガイド
-* [ベストプラクティス](/docs/ja/best-practices.md): プロンプティングパターンとプロジェクトセットアップ
+* [一般的なワークフロー](https://code.claude.com/docs/ja/common-workflows.md): コアタスクのステップバイステップガイド
+* [ベストプラクティス](https://code.claude.com/docs/ja/best-practices.md): プロンプティングパターンとプロジェクトセットアップ
 * [Anthropic チームが Claude Code をどのように使用しているか](https://claude.com/blog/how-anthropic-teams-use-claude-code): エンジニアリング、プロダクト、デザイン、データチームからの実際のワークフロー。[法務](https://claude.com/blog/how-anthropic-uses-claude-legal)、[マーケティング](https://claude.com/blog/how-anthropic-uses-claude-marketing)、[サイバーセキュリティ](https://claude.com/blog/how-anthropic-uses-claude-cybersecurity)の詳細なダイブ
 * [agentic coding スケーリングガイド](https://resources.anthropic.com/hubfs/Scaling%20agentic%20coding%20across%20your%20organization.pdf): エンタープライズ採用ガイド
 
@@ -65,6 +65,6 @@ explain how the payment retry logic works as an HTML page with a diagram, then o
 
 ## 関連リソース
 
-このページのプロンプトは出発点です。1 つがプロジェクトで機能したら、次のステップはそれを繰り返し可能にすることです。[スキル](/docs/ja/skills.md)として保存して、チーム内の誰でも `/command` として実行でき、Claude が学習したコンベンションを [CLAUDE.md](/docs/ja/memory.md)に記録して、すべてのセッションがその文脈で開始されるようにしてください。より大きなまたはより危険な変更については、[プランモード](/docs/ja/permission-modes.md#analyze-before-you-edit-with-plan-mode)は編集が発生する前にファイルリストを表示します。
+このページのプロンプトは出発点です。1 つがプロジェクトで機能したら、次のステップはそれを繰り返し可能にすることです。[スキル](https://code.claude.com/docs/ja/skills.md)として保存して、チーム内の誰でも `/command` として実行でき、Claude が学習したコンベンションを [CLAUDE.md](https://code.claude.com/docs/ja/memory.md)に記録して、すべてのセッションがその文脈で開始されるようにしてください。より大きなまたはより危険な変更については、[プランモード](https://code.claude.com/docs/ja/permission-modes.md#analyze-before-you-edit-with-plan-mode)は編集が発生する前にファイルリストを表示します。
 
-チーム全体に Claude Code を導入している場合は、管理設定とポリシーについては [管理](/docs/ja/admin-setup.md)を、このワークがプランでどのように請求されるかについては [コストと使用状況](/docs/ja/costs.md)を参照してください。
+チーム全体に Claude Code を導入している場合は、管理設定とポリシーについては [管理](https://code.claude.com/docs/ja/admin-setup.md)を、このワークがプランでどのように請求されるかについては [コストと使用状況](https://code.claude.com/docs/ja/costs.md)を参照してください。

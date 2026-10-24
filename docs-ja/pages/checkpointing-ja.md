@@ -19,7 +19,7 @@ Claude Code は、ファイル編集ツールで行われたすべての変更�
 * 送信する各プロンプトがターンを開始するたびに新しいチェックポイントが作成されます
 * Claude Code はセッション内の最新 100 個のチェックポイントのファイルスナップショットを保持します。古いチェックポイントを破棄すると、残りのチェックポイントが参照しないスナップショットファイルが削除されます。ただし、各ファイルの最初のスナップショットは除外されます。これは VS Code 拡張機能がセッション diff のベースラインとして使用します。
 * チェックポイントはセッションと共に保存されるため、再開したセッションでも `/rewind` で戻ることができます
-* Claude Code は[保持期間スイープ](/docs/ja/claude-directory.md#cleaned-up-automatically)でセッションのファイルスナップショットを削除します。デフォルトではセッションが最後に保存されてから約 30 日後です。スナップショットが削除されたチェックポイントに巻き戻すと、[`No files were restored`](/docs/ja/errors#no-files-were-restored) エラーで失敗する可能性があります。スナップショットをより長く保持するには、[`cleanupPeriodDays`](/docs/ja/settings-reference#cleanupperioddays) を設定してください。
+* Claude Code は[保持期間スイープ](https://code.claude.com/docs/ja/claude-directory.md#cleaned-up-automatically)でセッションのファイルスナップショットを削除します。デフォルトではセッションが最後に保存されてから約 30 日後です。スナップショットが削除されたチェックポイントに巻き戻すと、[`No files were restored`](https://code.claude.com/docs/ja/errors#no-files-were-restored) エラーで失敗する可能性があります。スナップショットをより長く保持するには、[`cleanupPeriodDays`](https://code.claude.com/docs/ja/settings-reference#cleanupperioddays) を設定してください。
 
 ### 巻き戻しと要約
 
@@ -58,7 +58,7 @@ Claude Code は、ファイル編集ツールで行われたすべての変更�
 
 > [!NOTE]
 >
-> 要約はセッションを同じ状態に保ち、コンテキストを圧縮します。これは対象を絞った `/compact` のようなものです。元のセッションを保持したまま異なるアプローチを試したい場合は、代わりに [`/branch`](/docs/ja/sessions#branch-a-session) または `claude --continue --fork-session` を使用してください。
+> 要約はセッションを同じ状態に保ち、コンテキストを圧縮します。これは対象を絞った `/compact` のようなものです。元のセッションを保持したまま異なるアプローチを試したい場合は、代わりに [`/branch`](https://code.claude.com/docs/ja/sessions#branch-a-session) または `claude --continue --fork-session` を使用してください。
 
 ## 一般的なユースケース
 
@@ -79,10 +79,10 @@ Claude Code は、ファイル編集ツールで行われたすべての変更�
 
 ### サブエージェントの編集は復元されません
 
-[サブエージェント](/docs/ja/sub-agents.md)は Claude のファイル編集ツールで編集を行いますが、Claude Code は通常、セッションのチェックポイントでこれらの編集をキャプチャしません。巻き戻しがそれらを復元するかどうかは、サブエージェントの実行方法によって異なります：
+[サブエージェント](https://code.claude.com/docs/ja/sub-agents.md)は Claude のファイル編集ツールで編集を行いますが、Claude Code は通常、セッションのチェックポイントでこれらの編集をキャプチャしません。巻き戻しがそれらを復元するかどうかは、サブエージェントの実行方法によって異なります：
 
-* **フォアグラウンドフォークスキル**：[`context: fork` を持つスキル](/docs/ja/skills#run-skills-in-a-subagent)がフォアグラウンドで実行され、自分のターン中にワーキングツリーを編集するため、巻き戻しは通常どおりその編集を復元します。`background: false` を設定してフォークをフォアグラウンドで実行します。いくつかの状況（[スキルページに記載](/docs/ja/skills.md#run-skills-in-a-subagent)）では、この設定に関係なくそこで実行されます。
-* **その他のサブエージェント**：巻き戻しで復元されるのは、会話の中で Claude がすでに編集していたファイルのみです。サブエージェントによるその他のファイルへの編集は残るため、Git などのバージョン管理を使用して元に戻してください。これには、バックグラウンドで実行されるフォークスキル（デフォルト）と、バックグラウンド [`/code-review --fix`](/docs/ja/code-review-local) 実行が含まれます。
+* **フォアグラウンドフォークスキル**：[`context: fork` を持つスキル](https://code.claude.com/docs/ja/skills#run-skills-in-a-subagent)がフォアグラウンドで実行され、自分のターン中にワーキングツリーを編集するため、巻き戻しは通常どおりその編集を復元します。`background: false` を設定してフォークをフォアグラウンドで実行します。いくつかの状況（[スキルページに記載](https://code.claude.com/docs/ja/skills.md#run-skills-in-a-subagent)）では、この設定に関係なくそこで実行されます。
+* **その他のサブエージェント**：巻き戻しで復元されるのは、会話の中で Claude がすでに編集していたファイルのみです。サブエージェントによるその他のファイルへの編集は残るため、Git などのバージョン管理を使用して元に戻してください。これには、バックグラウンドで実行されるフォークスキル（デフォルト）と、バックグラウンド [`/code-review --fix`](https://code.claude.com/docs/ja/code-review-local) 実行が含まれます。
 
 ### 外部の変更は追跡されません
 
@@ -90,7 +90,7 @@ Claude Code は、ファイル編集ツールで行われたすべての変更�
 
 ### ターン中に送信されたメッセージはチェックポイントされません
 
-巻き戻しメニューでは、[Claude がまだ作業中に入力した](/docs/ja/interactive-mode.md#queue-messages-while-claude-works)メッセージに **No code restore**（コードの復元なし）と表示されることがあります。Claude はそのメッセージをターンの終了前に読み取っています。[チェックポイントはターンを開始するプロンプトに対して作成される](#how-checkpoints-work)ため、このメッセージ自体にはチェックポイントがありません。Claude がそのメッセージを読んだ後に行った編集は、ターンを開始したプロンプトに含まれます。
+巻き戻しメニューでは、[Claude がまだ作業中に入力した](https://code.claude.com/docs/ja/interactive-mode.md#queue-messages-while-claude-works)メッセージに **No code restore**（コードの復元なし）と表示されることがあります。Claude はそのメッセージをターンの終了前に読み取っています。[チェックポイントはターンを開始するプロンプトに対して作成される](#how-checkpoints-work)ため、このメッセージ自体にはチェックポイントがありません。Claude がそのメッセージを読んだ後に行った編集は、ターンを開始したプロンプトに含まれます。
 
 メッセージ自体について何かをする必要はありません。セッションのその部分でのファイル変更を取り消すには、ターンを開始したプロンプトを選択し、**Restore code**（コードを復元）または **Restore code and conversation**（コードと会話を復元）を選択します。これにより、メッセージが到達する前の編集を含め、ターン全体での Claude のファイル編集が元に戻されます。マークされたメッセージを選択した場合も **Restore conversation**（会話を復元）は利用でき、会話をそのメッセージまで巻き戻し、ファイルはそのまま残します。
 
@@ -98,7 +98,7 @@ Claude Code は、ファイル編集ツールで行われたすべての変更�
 
 チェックポイント機能は、シンボリックリンクまたはハードリンクされたファイルを巻き戻しません。`/rewind` メニューから **Restore code**（コードを復元）または **Restore code and conversation**（コードと会話を復元）を選択すると、Claude Code は追跡されたパスのうち、シンボリックリンクまたはハードリンクであるパスをスキップし、`Restored the code, but skipped N files`（コードを復元しましたが、N 個のファイルをスキップしました）という警告を表示します。スキップされたファイルは現在の内容を保持します。セッションの変更の 1 つを取り消すには、Claude に編集を逆にするよう依頼するか、ファイルを自分で編集してください。ドットファイルマネージャーがプロジェクトにシンボリックリンクする設定ファイルと、pnpm がその場所にハードリンクするファイルの両方がこのカテゴリに該当します。
 
-復元がスキップするパスを確認するには、復元する前に `/debug` でデバッグログを有効にします：`~/.claude/debug/<session-id>.txt` のデバッグログには、スキップされた各パスが記載されます。スキップの理由と復旧手順については、[エラーリファレンスのスキップされたファイルエントリ](/docs/ja/errors.md#restored-the-code-but-skipped-files)を参照してください。
+復元がスキップするパスを確認するには、復元する前に `/debug` でデバッグログを有効にします：`~/.claude/debug/<session-id>.txt` のデバッグログには、スキップされた各パスが記載されます。スキップの理由と復旧手順については、[エラーリファレンスのスキップされたファイルエントリ](https://code.claude.com/docs/ja/errors.md#restored-the-code-but-skipped-files)を参照してください。
 
 ### バージョン管理の代替ではありません
 
@@ -106,6 +106,6 @@ Claude Code は、ファイル編集ツールで行われたすべての変更�
 
 ## 関連項目
 
-* [Interactive mode](/docs/ja/interactive-mode.md) - キーボードショートカットとセッションコントロール
-* [Commands](/docs/ja/commands.md) - `/rewind` を使用したチェックポイントへのアクセス
-* [CLI reference](/docs/ja/cli-reference.md) - コマンドラインオプション
+* [Interactive mode](https://code.claude.com/docs/ja/interactive-mode.md) - キーボードショートカットとセッションコントロール
+* [Commands](https://code.claude.com/docs/ja/commands.md) - `/rewind` を使用したチェックポイントへのアクセス
+* [CLI reference](https://code.claude.com/docs/ja/cli-reference.md) - コマンドラインオプション

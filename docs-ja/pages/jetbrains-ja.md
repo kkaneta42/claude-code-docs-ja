@@ -23,7 +23,7 @@ Claude Code プラグインは、以下を含むほとんどの JetBrains IDEs �
 
 * **クイック起動**: `Cmd+Esc`（Mac）または `Ctrl+Esc`（Windows/Linux）を使用してエディタから Claude Code を直接開くか、UI の Claude Code ボタンをクリックします
 * **Diff ビューイング**: Claude Code はコードの変更をターミナルではなく IDE の diff ビューアで開きます。`/config` の **Diff tool** 設定でこれを変更できます
-* **選択コンテキスト**: IDE の現在の選択またはタブが Claude Code と自動的に共有されます。[`Read` 拒否ルール](/docs/ja/permissions#read-and-edit)は、一致するファイルのこの共有をブロックします
+* **選択コンテキスト**: IDE の現在の選択またはタブが Claude Code と自動的に共有されます。[`Read` 拒否ルール](https://code.claude.com/docs/ja/permissions#read-and-edit)は、一致するファイルのこの共有をブロックします
 * **ファイル参照ショートカット**: `Cmd+Option+K`（Mac）または `Alt+Ctrl+K`（Linux/Windows）を使用して `@src/auth.ts#L1-99` などのファイル参照を挿入します
 * **診断共有**: Claude は [`getDiagnostics` ツール](#the-built-in-ide-mcp-server)を呼び出して IDE の検査診断（lint や構文エラーなど）を読み取ります。Claude Code は編集後に独自にプラグインから診断をリクエストしません
 
@@ -33,7 +33,7 @@ Claude Code プラグインは、以下を含むほとんどの JetBrains IDEs �
 
 **1. Claude Code CLI をインストールする**
 
-まだインストールしていない場合は、[クイックスタート](/docs/ja/quickstart.md) に従って CLI をインストールしてください。`claude` が PATH にない場合、プラグインは'Claude Code を起動できません'という通知を表示します。
+まだインストールしていない場合は、[クイックスタート](https://code.claude.com/docs/ja/quickstart.md) に従って CLI をインストールしてください。`claude` が PATH にない場合、プラグインは'Claude Code を起動できません'という通知を表示します。
 
 **2. JetBrains プラグインをインストールする**
 
@@ -41,7 +41,7 @@ JetBrains マーケットプレイスから [Claude Code プラグイン](https:
 
 `claude` が IDE が見つけられない場所にインストールされている場合は、プラグインの [Claude コマンド設定](#general-settings) でフルパスを設定してください。
 
-Claude Code は、任意の有料 Claude サブスクリプション（Pro、Max、Team、または Enterprise）または Claude Console アカウントで動作し、API キーは不要です。`claude` を初めて実行するときに [ログイン](/docs/ja/authentication.md#log-in-to-claude-code) するよう求められます。
+Claude Code は、任意の有料 Claude サブスクリプション（Pro、Max、Team、または Enterprise）または Claude Console アカウントで動作し、API キーは不要です。`claude` を初めて実行するときに [ログイン](https://code.claude.com/docs/ja/authentication.md#log-in-to-claude-code) するよう求められます。
 
 ## 使用方法
 
@@ -75,7 +75,7 @@ Claude Code の設定を通じて IDE 統合を設定します。
 2. `/config` コマンドを入力します
 3. **Diff tool** を `auto` に設定して IDE に diff を表示するか、`terminal` に設定してターミナルに表示したままにします
 
-**Diff tool** エントリは Claude Code が IDE に接続されている場合にのみ `/config` に表示されるため、JetBrains ターミナルから `claude` を実行するか、外部ターミナルから最初に [`/ide`](/docs/ja/commands) を実行してください。基になる設定については [`diffTool`](/docs/ja/settings-reference#difftool) を参照してください。
+**Diff tool** エントリは Claude Code が IDE に接続されている場合にのみ `/config` に表示されるため、JetBrains ターミナルから `claude` を実行するか、外部ターミナルから最初に [`/ide`](https://code.claude.com/docs/ja/commands) を実行してください。基になる設定については [`diffTool`](https://code.claude.com/docs/ja/settings-reference#difftool) を参照してください。
 
 ### プラグイン設定
 
@@ -185,27 +185,27 @@ Claude アイコンをクリックして「command not found」が表示され�
 
 ## セキュリティに関する考慮事項
 
-Claude Code が [`acceptEdits` 権限モード](/docs/ja/permission-modes#auto-approve-file-edits-with-acceptedits-mode)で JetBrains IDE で実行される場合、IDE によって自動的に実行される可能性のある IDE 設定ファイルを変更できる場合があります。これにより、`acceptEdits` モードで Claude Code を実行するリスクが増加し、Bash 実行に対する Claude Code の権限プロンプトをバイパスできる可能性があります。
+Claude Code が [`acceptEdits` 権限モード](https://code.claude.com/docs/ja/permission-modes#auto-approve-file-edits-with-acceptedits-mode)で JetBrains IDE で実行される場合、IDE によって自動的に実行される可能性のある IDE 設定ファイルを変更できる場合があります。これにより、`acceptEdits` モードで Claude Code を実行するリスクが増加し、Bash 実行に対する Claude Code の権限プロンプトをバイパスできる可能性があります。
 
 JetBrains IDEs で実行する場合は、以下を検討してください。
 
-* 編集に対して手動モードを使用する。`acceptEdits` と自動モードの両方は、[保護されたパス](/docs/ja/permission-modes.md#protected-paths)を除いて、作業ディレクトリ内の編集を確認なしで承認するため
+* 編集に対して手動モードを使用する。`acceptEdits` と自動モードの両方は、[保護されたパス](https://code.claude.com/docs/ja/permission-modes.md#protected-paths)を除いて、作業ディレクトリ内の編集を確認なしで承認するため
 * Claude が信頼できるプロンプトでのみ使用されることを確認するために特に注意する
 * Claude Code がアクセスして変更できるファイルを認識する
 
-Claude Code のインストールまたはログインの問題については、[インストールとログインのトラブルシューティング](/docs/ja/troubleshoot-install.md) を参照してください。
+Claude Code のインストールまたはログインの問題については、[インストールとログインのトラブルシューティング](https://code.claude.com/docs/ja/troubleshoot-install.md) を参照してください。
 
 ### 組み込み IDE MCP サーバー
 
 プラグインがアクティブな場合、CLI が自動的に接続するローカル MCP サーバーが実行されます。これは、CLI が IDE のネイティブ diff ビューアーで diff を開き、`@` メンションの現在の選択を読み取り、Claude が検査診断を読み取る方法です。
 
-サーバーは `ide` という名前で、設定するものがないため `/mcp` から非表示になっています。ただし、組織が [`PreToolUse` フック](/docs/ja/hooks#pretooluse) を使用して MCP ツールをホワイトリストに登録している場合は、それが存在することを知っておく必要があります。
+サーバーは `ide` という名前で、設定するものがないため `/mcp` から非表示になっています。ただし、組織が [`PreToolUse` フック](https://code.claude.com/docs/ja/hooks#pretooluse) を使用して MCP ツールをホワイトリストに登録している場合は、それが存在することを知っておく必要があります。
 
 **選択とオープンファイルコンテキスト。** 接続中、CLI は現在のエディター選択とアクティブファイルのパスを、送信する各プロンプトのコンテキストとして含めます。トランスクリプトには、これが発生したときに `⧉ Selected N lines from <file>` という行が表示されます。
 
-[Claude が作業中にメッセージをキューに入れる](/docs/ja/interactive-mode.md#queue-messages-while-claude-works)場合、`Enter` キーを押したときに選択していた選択内容が保持され、その後に選択したものは何でも保持されます。
+[Claude が作業中にメッセージをキューに入れる](https://code.claude.com/docs/ja/interactive-mode.md#queue-messages-while-claude-works)場合、`Enter` キーを押したときに選択していた選択内容が保持され、その後に選択したものは何でも保持されます。
 
-`.env` などの機密ファイルを除外するには、そのパスに対して [`Read` 拒否ルール](/docs/ja/permissions#read-and-edit)を追加してください。一致する拒否ルールは、選択されたテキストとそのファイルのオープンファイル通知の両方が Claude に到達するのを防ぎます。
+`.env` などの機密ファイルを除外するには、そのパスに対して [`Read` 拒否ルール](https://code.claude.com/docs/ja/permissions#read-and-edit)を追加してください。一致する拒否ルールは、選択されたテキストとそのファイルのオープンファイル通知の両方が Claude に到達するのを防ぎます。
 
 **トランスポートと認証。** サーバーは OS が割り当てた一時的なポートでリッスンし、ポートは設定できません。トランスポートは暗号化されていない `ws://` です。ループバック上では、トラフィックをキャプチャできるプロセスはロックファイルからトークンも読み取ることができるため、TLS はローカル攻撃者に対する保護を追加しません。IDE の起動ごとに新しいランダム認証トークンが生成され、`~/.claude/ide/<port>.lock` のロックファイルに書き込まれ、CLI は `X-Claude-Code-Ide-Authorization` ヘッダーとして提示して接続する必要があります。`CLAUDE_CONFIG_DIR` が設定されている場合、ロックファイルは代わりに `$CLAUDE_CONFIG_DIR/ide/` に書き込まれます。
 

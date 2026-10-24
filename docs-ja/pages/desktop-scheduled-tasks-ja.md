@@ -8,28 +8,28 @@
 
 スケジュール設定されたタスクは、選択した時刻と頻度で新しいセッションを自動的に開始します。毎日のコードレビュー、依存関係の更新チェック、またはカレンダーとインボックスから情報を取得する朝のブリーフィングなど、定期的な作業に使用します。
 
-Desktop アプリの **Scheduled tasks** ページには、ローカルスケジュールタスクと[クラウドスケジュールタスク](/docs/ja/routines.md)（旧称ルーティン）の両方が一覧表示されます。
+Desktop アプリの **Scheduled tasks** ページには、ローカルスケジュールタスクと[クラウドスケジュールタスク](https://code.claude.com/docs/ja/routines.md)（旧称ルーティン）の両方が一覧表示されます。
 
 * **ローカルタスク**：マシン上で実行され、ファイルとツールに直接アクセスできますが、アプリが開いていてコンピュータが起動している場合にのみ実行されます
 * **クラウドタスク**：コンピュータがオフの場合でも実行され、API 呼び出しや GitHub イベントをきっかけに開始することもできます
 
-このページではローカルスケジュールタスクについて説明します。クラウドスケジュールタスクとそのトリガーオプションについては、[スケジュールタスクで作業を自動化する](/docs/ja/routines.md)を参照してください。
+このページではローカルスケジュールタスクについて説明します。クラウドスケジュールタスクとそのトリガーオプションについては、[スケジュールタスクで作業を自動化する](https://code.claude.com/docs/ja/routines.md)を参照してください。
 
 ## スケジュール設定オプションの比較
 
 Claude Code は、定期的または 1 回限りの作業をスケジュールするための 3 つの方法を提供します。
 
-| | [Cloud](/docs/ja/routines.md) | [Desktop](/docs/ja/desktop-scheduled-tasks.md) | [`/loop`](/docs/ja/scheduled-tasks) |
+| | [Cloud](https://code.claude.com/docs/ja/routines.md) | [Desktop](https://code.claude.com/docs/ja/desktop-scheduled-tasks.md) | [`/loop`](https://code.claude.com/docs/ja/scheduled-tasks) |
 | :- | :- | :- | :- |
 | 実行場所 | Cloud、デフォルトでは Anthropic 管理 | お客様のマシン | お客様のマシン |
 | マシンの起動が必要 | いいえ | はい | はい |
 | オープンセッションが必要 | いいえ | いいえ | はい |
-| 再起動後も永続 | はい | はい | `--resume` で復元、[例外](/docs/ja/scheduled-tasks.md#limitations)あり |
+| 再起動後も永続 | はい | はい | `--resume` で復元、[例外](https://code.claude.com/docs/ja/scheduled-tasks.md#limitations)あり |
 | ローカルファイルへのアクセス | いいえ（新規クローン） | はい | はい |
-| MCP サーバー | タスクごとに設定されたコネクタ | [設定ファイル](/docs/ja/mcp.md)とコネクタ | セッションから継承 |
-| 権限プロンプト | デフォルトで [auto モード](/docs/ja/routines.md#permission-prompts-during-a-run) | タスクごとに設定可能 | セッションから継承 |
+| MCP サーバー | タスクごとに設定されたコネクタ | [設定ファイル](https://code.claude.com/docs/ja/mcp.md)とコネクタ | セッションから継承 |
+| 権限プロンプト | デフォルトで [auto モード](https://code.claude.com/docs/ja/routines.md#permission-prompts-during-a-run) | タスクごとに設定可能 | セッションから継承 |
 | カスタマイズ可能なスケジュール | はい | はい | はい |
-| 最小間隔 | 1 時間 | Claude が設定する場合は 1 分、[フォームでは 1 時間](/docs/ja/desktop-scheduled-tasks.md#schedule-options) | 1 分 |
+| 最小間隔 | 1 時間 | Claude が設定する場合は 1 分、[フォームでは 1 時間](https://code.claude.com/docs/ja/desktop-scheduled-tasks.md#schedule-options) | 1 分 |
 
 > [!TIP]
 >
@@ -37,7 +37,7 @@ Claude Code は、定期的または 1 回限りの作業をスケジュール�
 
 > [!NOTE]
 >
-> デフォルトでは、ローカルのスケジュールタスクは、コミットされていない変更を含む、作業ディレクトリの現在の状態に対して実行されます。代わりに各実行に独自の[独立した Git worktree](/docs/ja/desktop.md#run-a-session-in-its-own-worktree) を割り当てるには、タスクを作成した後、タスクの[**Edit** フォーム](#manage-scheduled-tasks)で **Worktree** を選択します。このチェックボックスは、タスクのフォルダーが Git リポジトリである場合に使用できます。
+> デフォルトでは、ローカルのスケジュールタスクは、コミットされていない変更を含む、作業ディレクトリの現在の状態に対して実行されます。代わりに各実行に独自の[独立した Git worktree](https://code.claude.com/docs/ja/desktop.md#run-a-session-in-its-own-worktree) を割り当てるには、タスクを作成した後、タスクの[**Edit** フォーム](#manage-scheduled-tasks)で **Worktree** を選択します。このチェックボックスは、タスクのフォルダーが Git リポジトリである場合に使用できます。
 
 ## スケジュール設定されたタスクを作成する
 
@@ -45,7 +45,7 @@ Claude Code は、定期的または 1 回限りの作業をスケジュール�
 
 **1. Scheduled tasks ページを開く**
 
-[**Code** タブ](/docs/ja/desktop.md)で、サイドバーまたはサイドバーの **More** メニューにある **Scheduled** をクリックします。
+[**Code** タブ](https://code.claude.com/docs/ja/desktop.md)で、サイドバーまたはサイドバーの **More** メニューにある **Scheduled** をクリックします。
 
 **2. 新しいタスクを開始する**
 
@@ -63,7 +63,7 @@ Claude Code は、定期的または 1 回限りの作業をスケジュール�
 
 ここではいったん **Trigger** カードを飛ばし、その下の **Advanced settings** を展開します。**General** タブで **Only on this computer** をオンにします。オンにすると、タスクはローカルフォルダを使用してユーザーのマシン上で実行されます。
 
-スイッチが利用できない場合は、リポジトリ、または GitHub イベントや API トリガーをクリアしてください。これらが設定されていると、タスクは[クラウドのスケジュールタスク](/docs/ja/routines.md)になるためです。
+スイッチが利用できない場合は、リポジトリ、または GitHub イベントや API トリガーをクリアしてください。これらが設定されていると、タスクは[クラウドのスケジュールタスク](https://code.claude.com/docs/ja/routines.md)になるためです。
 
 **6. ローカルフォルダを選択する**
 
@@ -120,15 +120,15 @@ Claude Code は、定期的または 1 回限りの作業をスケジュール�
 
 > [!NOTE]
 >
-> コンピュータがオフの場合でも実行する必要があるタスク、または API 呼び出しや GitHub イベントでトリガーする必要があるタスクの場合は、代わりに [クラウドのスケジュールタスク](/docs/ja/routines.md) を作成します。
+> コンピュータがオフの場合でも実行する必要があるタスク、または API 呼び出しや GitHub イベントでトリガーする必要があるタスクの場合は、代わりに [クラウドのスケジュールタスク](https://code.claude.com/docs/ja/routines.md) を作成します。
 
 ### 実行のセッションを見つける
 
 実行によって開始されたセッションを開くには、タスクの[詳細ページ](#manage-scheduled-tasks)に移動し、**History** リストでその実行の行をクリックします。
 
-サイドバーのセッションリストには、タスクごとに 1 行ずつ並ぶ **Scheduled** グループを表示することもできます。タスクの最新の実行のセッションを開くには、そのグループ内のタスクの行をクリックします。グループを表示するには、[使用しているレイアウトを確認](/docs/ja/desktop.md#check-which-layout-you-have)してください。
+サイドバーのセッションリストには、タスクごとに 1 行ずつ並ぶ **Scheduled** グループを表示することもできます。タスクの最新の実行のセッションを開くには、そのグループ内のタスクの行をクリックします。グループを表示するには、[使用しているレイアウトを確認](https://code.claude.com/docs/ja/desktop.md#check-which-layout-you-have)してください。
 
-* **現在のレイアウト**：[**Group and sort** メニュー](/docs/ja/desktop.md#organize-and-find-sessions)を開き、**Show** を選択してから **Scheduled** を選択します。グループは折りたたまれた状態で表示されるため、見出しをクリックして展開します。**Show** に **Scheduled** が表示されるのは、タスクのうち少なくとも 1 つが **Active**（タスクの詳細ページに表示される **Status**）である場合です。表示されない場合は、グループの表示の有無にかかわらず使用できる **History** リストを使用してください。
+* **現在のレイアウト**：[**Group and sort** メニュー](https://code.claude.com/docs/ja/desktop.md#organize-and-find-sessions)を開き、**Show** を選択してから **Scheduled** を選択します。グループは折りたたまれた状態で表示されるため、見出しをクリックして展開します。**Show** に **Scheduled** が表示されるのは、タスクのうち少なくとも 1 つが **Active**（タスクの詳細ページに表示される **Status**）である場合です。表示されない場合は、グループの表示の有無にかかわらず使用できる **History** リストを使用してください。
 * **以前のレイアウト**：グループはセッションリストにあり、オンにする必要はありません
 
 どちらの方法でアクセスした場合でも、実行のセッションでは、Claude が何をしたかを確認し、変更をレビューし、権限プロンプトに応答できます。Claude はファイルを編集し、コマンドを実行し、コミットを作成し、プルリクエストを開くことができます。これはセッションを自分で開始する場合と同じです。
@@ -141,11 +141,11 @@ Claude Code は、定期的または 1 回限りの作業をスケジュール�
 
 ## スケジュール設定されたタスクの権限
 
-各タスクには独自の権限モードがあり、タスクを作成または編集するときに設定します。`~/.claude/settings.json` からの許可ルールもスケジュールタスクのセッションに適用されます。タスクが [Manual モード](/docs/ja/desktop.md#choose-a-permission-mode) で実行され、権限がないツールを実行する必要がある場合、実行は承認されるまで停止します。承認するには、[実行のセッションを見つけ](#find-a-runs-session)、そこで権限プロンプトに応答します。
+各タスクには独自の権限モードがあり、タスクを作成または編集するときに設定します。`~/.claude/settings.json` からの許可ルールもスケジュールタスクのセッションに適用されます。タスクが [Manual モード](https://code.claude.com/docs/ja/desktop.md#choose-a-permission-mode) で実行され、権限がないツールを実行する必要がある場合、実行は承認されるまで停止します。承認するには、[実行のセッションを見つけ](#find-a-runs-session)、そこで権限プロンプトに応答します。
 
 停止を避けるには、タスクを作成した後に **Run now** をクリックし、権限プロンプトを監視し、各プロンプトに対して「常に許可」を選択します。そのタスクの将来の実行は、プロンプトなしで同じツールを自動承認します。タスクの詳細ページからこれらの承認をレビューして取り消すことができます。
 
-[`requiresUserInteraction`](/docs/ja/mcp#require-approval-for-a-specific-tool) とマークされた MCP ツールは、毎回呼び出しのたびにプロンプトが表示され、常に許可オプションは提供されません。これらのツールを呼び出す実行は毎回停止します。
+[`requiresUserInteraction`](https://code.claude.com/docs/ja/mcp#require-approval-for-a-specific-tool) とマークされた MCP ツールは、毎回呼び出しのたびにプロンプトが表示され、常に許可オプションは提供されません。これらのツールを呼び出す実行は毎回停止します。
 
 ## スケジュール設定されたタスクを管理する
 
@@ -156,17 +156,17 @@ Claude Code は、定期的または 1 回限りの作業をスケジュール�
 * **Edit**: 指示、スケジュール、フォルダ、またはその他の設定を変更します
 * **Review history**: スキップされた実行を含む、すべての過去の実行を確認します。スキップされたエントリにマウスを置くと、理由が表示されます。コンピュータがスリープ状態だった、前の実行がまだ進行中だった、または他のスケジュール設定されたタスクが既に実行されていました。**Show more** をクリックして、古いエントリを読み込みます。
 * **Review allowed permissions**: **Always allowed** パネルからこのタスクの保存されたツール承認を確認および取り消します
-* **Delete**: タスクを削除します。タスクが作成したセッションは削除されず、[アーカイブ](/docs/ja/desktop.md#organize-and-find-sessions)されます。タスクの `SKILL.md` ファイルを格納するフォルダは、ディスク上の `~/.claude/scheduled-tasks/<task-name>/`、またはその変数を設定している場合は [`CLAUDE_CONFIG_DIR`](/docs/ja/env-vars) 配下の `scheduled-tasks/<task-name>/` に残ります。そのフォルダを削除するには、手動で削除してください。
+* **Delete**: タスクを削除します。タスクが作成したセッションは削除されず、[アーカイブ](https://code.claude.com/docs/ja/desktop.md#organize-and-find-sessions)されます。タスクの `SKILL.md` ファイルを格納するフォルダは、ディスク上の `~/.claude/scheduled-tasks/<task-name>/`、またはその変数を設定している場合は [`CLAUDE_CONFIG_DIR`](https://code.claude.com/docs/ja/env-vars) 配下の `scheduled-tasks/<task-name>/` に残ります。そのフォルダを削除するには、手動で削除してください。
 
 任意の Desktop セッションで Claude に尋ねることで、タスクをリスト、作成、編集、および一時停止することもできます。たとえば、「dependency-audit タスクを一時停止する」または「スケジュール設定されたタスクを表示する」などです。タスクを削除するには、その詳細ページの **Delete** ボタンを使用します。
 
 スケジュール設定されたタスクは、実行中のセッション内から `update_scheduled_task` MCP ツールを使用して、独自のスケジュールまたはプロンプトを変更することもできます。これにより、タスクは検出内容に基づいて自身をスケジュール変更できます。たとえば、リリースブランチが作成されたことを検出したときに、コードレビューを早期に実行するようにスケジュール変更します。
 
-ディスク上のタスクのプロンプトを編集するには、`~/.claude/scheduled-tasks/<task-name>/SKILL.md` を開きます（[`CLAUDE_CONFIG_DIR`](/docs/ja/env-vars) が設定されている場合はその下）。ファイルは `name` と `description` の YAML frontmatter を使用し、プロンプトが本文です。変更は次の実行時に有効になります。スケジュール、フォルダ、モデル、および有効な状態はこのファイルにはありません。Edit フォームを通じて変更するか、Claude に尋ねます。
+ディスク上のタスクのプロンプトを編集するには、`~/.claude/scheduled-tasks/<task-name>/SKILL.md` を開きます（[`CLAUDE_CONFIG_DIR`](https://code.claude.com/docs/ja/env-vars) が設定されている場合はその下）。ファイルは `name` と `description` の YAML frontmatter を使用し、プロンプトが本文です。変更は次の実行時に有効になります。スケジュール、フォルダ、モデル、および有効な状態はこのファイルにはありません。Edit フォームを通じて変更するか、Claude に尋ねます。
 
 ## 関連リソース
 
-* [クラウドスケジュールタスク](/docs/ja/routines.md): クラウドでタスクを実行し、スケジュール、API 呼び出し、または GitHub イベントに応答して実行します。コンピュータがオフの場合でも実行できます
-* [Run prompts on a schedule](/docs/ja/scheduled-tasks.md): CLI で `/loop` を使用したセッションスコープのスケジュール設定
-* [Claude Code GitHub Actions](/docs/ja/github-actions.md): マシン上ではなく CI でスケジュール設定に従って Claude を実行します
-* [Use Claude Code Desktop](/docs/ja/desktop.md): 完全な Desktop アプリガイド
+* [クラウドスケジュールタスク](https://code.claude.com/docs/ja/routines.md): クラウドでタスクを実行し、スケジュール、API 呼び出し、または GitHub イベントに応答して実行します。コンピュータがオフの場合でも実行できます
+* [Run prompts on a schedule](https://code.claude.com/docs/ja/scheduled-tasks.md): CLI で `/loop` を使用したセッションスコープのスケジュール設定
+* [Claude Code GitHub Actions](https://code.claude.com/docs/ja/github-actions.md): マシン上ではなく CI でスケジュール設定に従って Claude を実行します
+* [Use Claude Code Desktop](https://code.claude.com/docs/ja/desktop.md): 完全な Desktop アプリガイド

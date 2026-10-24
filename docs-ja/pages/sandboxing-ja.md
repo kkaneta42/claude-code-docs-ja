@@ -16,22 +16,22 @@ Bash サンドボックスは、Claude がユーザーのマシン上で実行�
 >
 > このページでは、ユーザー自身のマシン上のシェルコマンドを囲むサンドボックスについて説明します。関連する内容は他のページで説明しています。
 >
-> * クラウドセッションがどのように分離されるかについては、[セキュリティと分離](/docs/ja/claude-code-on-the-web.md#security-and-isolation)を参照してください
-> * dev container、カスタムコンテナ、仮想マシンなど、他の分離方法を比較するには、[サンドボックス環境](/docs/ja/sandbox-environments.md)を参照してください
-> * Bash 以外のツールの権限プロンプトを減らすには、[権限モード](/docs/ja/permission-modes.md)を参照してください
+> * クラウドセッションがどのように分離されるかについては、[セキュリティと分離](https://code.claude.com/docs/ja/claude-code-on-the-web.md#security-and-isolation)を参照してください
+> * dev container、カスタムコンテナ、仮想マシンなど、他の分離方法を比較するには、[サンドボックス環境](https://code.claude.com/docs/ja/sandbox-environments.md)を参照してください
+> * Bash 以外のツールの権限プロンプトを減らすには、[権限モード](https://code.claude.com/docs/ja/permission-modes.md)を参照してください
 
 ## サンドボックスが制限する内容
 
-サンドボックスがオンの間、Claude が実行するシェルコマンドはその境界内で起動し、それらのコマンドが起動するプロセスも同様に境界内で起動します。サンドボックスはデフォルトでオフです。オンにするには、[はじめに](#get-started)で示すようにセッションで `/sandbox` を実行するか、`~/.claude/settings.json` などの[設定ファイル](/docs/ja/settings.md)で [`sandbox.enabled`](/docs/ja/settings-reference#sandbox-enabled) を `true` に設定します。
+サンドボックスがオンの間、Claude が実行するシェルコマンドはその境界内で起動し、それらのコマンドが起動するプロセスも同様に境界内で起動します。サンドボックスはデフォルトでオフです。オンにするには、[はじめに](#get-started)で示すようにセッションで `/sandbox` を実行するか、`~/.claude/settings.json` などの[設定ファイル](https://code.claude.com/docs/ja/settings.md)で [`sandbox.enabled`](https://code.claude.com/docs/ja/settings-reference#sandbox-enabled) を `true` に設定します。
 
 次の表は、サンドボックス化されたコマンドがデフォルトでアクセスできる範囲と、各デフォルトを変更する設定を示しています。
 
 | アクセス | デフォルト | 変更方法 |
 | :- | :- | :- |
-| 書き込み | 作業ディレクトリ、ユーザーごとの一時ディレクトリ、および[追加したディレクトリ](/docs/ja/permissions.md#additional-directories-grant-file-access-not-configuration)。[保護されたパス](#protected-paths)は書き込みが拒否されたままです | [`filesystem.allowWrite`](/docs/ja/settings-reference#sandbox-filesystem-allowwrite)、[`filesystem.denyWrite`](/docs/ja/settings-reference#sandbox-filesystem-denywrite) |
-| 読み取り | `~/.ssh` や `~/.aws/credentials` などの認証情報ファイルを含む、マシンの大部分 | [`filesystem.denyRead`](/docs/ja/settings-reference#sandbox-filesystem-denyread)、[`credentials`](#protect-credentials) |
-| ネットワーク | 外部への直接のルートはありません。接続はマシン上のプロキシを経由し、プロキシが各ホストを許可ドメインと照合します。許可ドメインは最初は空です。[その他のホストの扱い](#hosts-outside-your-allowed-domains)は権限モードによって決まります | [`network.allowedDomains`](/docs/ja/settings-reference#sandbox-network-alloweddomains)、[`network.deniedDomains`](/docs/ja/settings-reference#sandbox-network-denieddomains) |
-| 環境変数 | Claude Code から継承され、その環境内のシークレットも含まれます | [`credentials`](#protect-credentials)、[`CLAUDE_CODE_SUBPROCESS_ENV_SCRUB`](/docs/ja/env-vars) |
+| 書き込み | 作業ディレクトリ、ユーザーごとの一時ディレクトリ、および[追加したディレクトリ](https://code.claude.com/docs/ja/permissions.md#additional-directories-grant-file-access-not-configuration)。[保護されたパス](#protected-paths)は書き込みが拒否されたままです | [`filesystem.allowWrite`](https://code.claude.com/docs/ja/settings-reference#sandbox-filesystem-allowwrite)、[`filesystem.denyWrite`](https://code.claude.com/docs/ja/settings-reference#sandbox-filesystem-denywrite) |
+| 読み取り | `~/.ssh` や `~/.aws/credentials` などの認証情報ファイルを含む、マシンの大部分 | [`filesystem.denyRead`](https://code.claude.com/docs/ja/settings-reference#sandbox-filesystem-denyread)、[`credentials`](#protect-credentials) |
+| ネットワーク | 外部への直接のルートはありません。接続はマシン上のプロキシを経由し、プロキシが各ホストを許可ドメインと照合します。許可ドメインは最初は空です。[その他のホストの扱い](#hosts-outside-your-allowed-domains)は権限モードによって決まります | [`network.allowedDomains`](https://code.claude.com/docs/ja/settings-reference#sandbox-network-alloweddomains)、[`network.deniedDomains`](https://code.claude.com/docs/ja/settings-reference#sandbox-network-denieddomains) |
+| 環境変数 | Claude Code から継承され、その環境内のシークレットも含まれます | [`credentials`](#protect-credentials)、[`CLAUDE_CODE_SUBPROCESS_ENV_SCRUB`](https://code.claude.com/docs/ja/env-vars) |
 
 Claude Code は、オープンソースの [`@anthropic-ai/sandbox-runtime`](https://github.com/anthropics/sandbox-runtime) パッケージを基にサンドボックスをビルドしています。
 
@@ -39,16 +39,16 @@ Claude Code は、オープンソースの [`@anthropic-ai/sandbox-runtime`](htt
 
 サンドボックスはシェルコマンドをラップします。次のツールとプロセスはサンドボックスの外で実行されます。
 
-* **組み込みのファイルツールと Web ツール**：Read、Edit、Write、WebFetch、WebSearch などのツールは、代わりに[権限ルール](/docs/ja/permissions.md)に従います。`denyRead` エントリは Read ツールを止めず、`allowedDomains` は WebFetch を制限しません
-* **Claude Code が起動するその他のプロセス**：コマンド[フック](/docs/ja/hooks.md)、ローカルの [MCP サーバー](/docs/ja/mcp.md)、[プラグインモニター](/docs/ja/plugins/components.md#monitors)、[LSP サーバー](/docs/ja/tools-reference.md#lsp-tool-behavior)、および[ステータスライン](/docs/ja/statusline.md)コマンドや `apiKeyHelper` などのヘルパーコマンドは、ユーザーの完全なアクセス権で実行されます
+* **組み込みのファイルツールと Web ツール**：Read、Edit、Write、WebFetch、WebSearch などのツールは、代わりに[権限ルール](https://code.claude.com/docs/ja/permissions.md)に従います。`denyRead` エントリは Read ツールを止めず、`allowedDomains` は WebFetch を制限しません
+* **Claude Code が起動するその他のプロセス**：コマンド[フック](https://code.claude.com/docs/ja/hooks.md)、ローカルの [MCP サーバー](https://code.claude.com/docs/ja/mcp.md)、[プラグインモニター](https://code.claude.com/docs/ja/plugins/components.md#monitors)、[LSP サーバー](https://code.claude.com/docs/ja/tools-reference.md#lsp-tool-behavior)、および[ステータスライン](https://code.claude.com/docs/ja/statusline.md)コマンドや `apiKeyHelper` などのヘルパーコマンドは、ユーザーの完全なアクセス権で実行されます
 
 設定によっては、一部のシェルコマンドもサンドボックスの外で実行されます。
 
-* **自分で入力したコマンド**：[`!` シェルモードのプロンプト](/docs/ja/interactive-mode#shell-mode-with-prefix)で入力したコマンドは、ほとんどのセッションでサンドボックス化されずに実行されます。入力したコマンドがサンドボックス内で実行されるセッションについては、[厳格サンドボックスモード](#turn-off-the-retry-with-strict-sandbox-mode)を参照してください
+* **自分で入力したコマンド**：[`!` シェルモードのプロンプト](https://code.claude.com/docs/ja/interactive-mode#shell-mode-with-prefix)で入力したコマンドは、ほとんどのセッションでサンドボックス化されずに実行されます。入力したコマンドがサンドボックス内で実行されるセッションについては、[厳格サンドボックスモード](#turn-off-the-retry-with-strict-sandbox-mode)を参照してください
 * **除外されたコマンド**：[`excludedCommands`](#run-commands-outside-the-sandbox-with-excludedcommands) に一致するコマンドは、サンドボックス化されずに実行されます
 * **サンドボックス外での再試行**：Claude は、通常はサンドボックス内でコマンドが失敗した後に、[そのコマンドをサンドボックス外で実行するよう求める](#the-unsandboxed-retry-escape-hatch)ことがあります
 
-このセクションで挙げたツール、プロセス、コマンドを 1 つの境界の内側に置くには、Claude Code プロセス自体を[コンテナ、仮想マシン、またはサンドボックスランタイム](/docs/ja/sandbox-environments.md)内で実行します。
+このセクションで挙げたツール、プロセス、コマンドを 1 つの境界の内側に置くには、Claude Code プロセス自体を[コンテナ、仮想マシン、またはサンドボックスランタイム](https://code.claude.com/docs/ja/sandbox-environments.md)内で実行します。
 
 ## はじめに
 
@@ -68,7 +68,7 @@ Claude Code のセッションを開始し、`/sandbox` コマンドを実行し
 これによりサンドボックスパネルが開きます。パネルには 3 つのタブがあり、Linux でオプションの seccomp フィルターが不足している場合はさらに Dependencies タブが表示されます。
 
 * **Mode**：サンドボックス化されたコマンドの承認方法を選択します。次のステップで説明します
-* **Overrides**：サンドボックス内で失敗したコマンドを、サンドボックス外での実行にフォールバックできるかどうかを選択します。これは [`allowUnsandboxedCommands`](/docs/ja/settings-reference#sandbox-allowunsandboxedcommands) 設定です
+* **Overrides**：サンドボックス内で失敗したコマンドを、サンドボックス外での実行にフォールバックできるかどうかを選択します。これは [`allowUnsandboxedCommands`](https://code.claude.com/docs/ja/settings-reference#sandbox-allowunsandboxedcommands) 設定です
 * **Config**：解決済みのサンドボックス設定を表示します
 
 パネルに Dependencies タブしか表示されない場合は、必須パッケージが不足しています。[Linux と WSL2 のセットアップ](#set-up-linux-and-wsl2)の説明に従ってインストールし、Claude Code を再起動してから、もう一度 `/sandbox` を実行してください。
@@ -79,17 +79,17 @@ Mode タブで、auto-allow または regular permissions を選択します。a
 
 **3. Bash コマンドを実行する**
 
-ビルドやテストスイートなどのコマンドを実行するよう Claude に依頼します。デフォルトでは、サンドボックス内のコマンドは、作業ディレクトリ、[ユーザーごとの一時ディレクトリ](/docs/ja/env-vars.md)、および `--add-dir`、`/add-dir`、`permissions.additionalDirectories` で[追加したディレクトリ](/docs/ja/permissions.md#additional-directories-grant-file-access-not-configuration)に書き込めます。
+ビルドやテストスイートなどのコマンドを実行するよう Claude に依頼します。デフォルトでは、サンドボックス内のコマンドは、作業ディレクトリ、[ユーザーごとの一時ディレクトリ](https://code.claude.com/docs/ja/env-vars.md)、および `--add-dir`、`/add-dir`、`permissions.additionalDirectories` で[追加したディレクトリ](https://code.claude.com/docs/ja/permissions.md#additional-directories-grant-file-access-not-configuration)に書き込めます。
 
-コマンドが新しいネットワークドメインを初めて必要とするとき、Claude Code は承認を求めるプロンプトを表示します。[auto モード](/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)では代わりに、コマンドが必要とするホストを Claude が[コマンド自体に](#per-command-allowed-domains-in-auto-mode)記載し、分類器がそれをコマンドとともに審査します。
+コマンドが新しいネットワークドメインを初めて必要とするとき、Claude Code は承認を求めるプロンプトを表示します。[auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)では代わりに、コマンドが必要とするホストを Claude が[コマンド自体に](#per-command-allowed-domains-in-auto-mode)記載し、分類器がそれをコマンドとともに審査します。
 
 サンドボックスが許可する範囲を広げたり狭めたりするには、[サンドボックス化の設定](#configure-sandboxing)を参照してください。
 
 コンテナ内でサンドボックス化されたコマンドが `Operation not permitted` で失敗する場合は、[コンテナ内で Bubblewrap の起動に失敗する](#bubblewrap-fails-to-start-inside-a-container)を参照してください。
 
-パネルでモードを選択すると、Claude Code はそれをプロジェクトのローカル設定 `.claude/settings.local.json` に保存します。この設定は現在のプロジェクトに適用されます。Claude Code はそこに設定を保存するときに、そのファイルをグローバル gitignore に追加します。すべてのプロジェクトでサンドボックスを有効にするには、ユーザー設定 `~/.claude/settings.json` で [`sandbox.enabled`](/docs/ja/settings-reference#sandbox-enabled) を `true` に設定します。組織内のすべての開発者にサンドボックス化を強制するには、[管理設定](#enforce-sandboxing-with-managed-settings)を使用します。
+パネルでモードを選択すると、Claude Code はそれをプロジェクトのローカル設定 `.claude/settings.local.json` に保存します。この設定は現在のプロジェクトに適用されます。Claude Code はそこに設定を保存するときに、そのファイルをグローバル gitignore に追加します。すべてのプロジェクトでサンドボックスを有効にするには、ユーザー設定 `~/.claude/settings.json` で [`sandbox.enabled`](https://code.claude.com/docs/ja/settings-reference#sandbox-enabled) を `true` に設定します。組織内のすべての開発者にサンドボックス化を強制するには、[管理設定](#enforce-sandboxing-with-managed-settings)を使用します。
 
-設定ファイルに書き込まずに 1 つのセッションだけサンドボックスを変更するには、[`--settings`](/docs/ja/settings#change-a-setting-for-one-session) を付けて Claude Code を起動します。たとえば次のコマンドは、ブロックされたコマンドを Claude がサンドボックス外で再試行できない、サンドボックス化されたセッションを開始します。
+設定ファイルに書き込まずに 1 つのセッションだけサンドボックスを変更するには、[`--settings`](https://code.claude.com/docs/ja/settings#change-a-setting-for-one-session) を付けて Claude Code を起動します。たとえば次のコマンドは、ブロックされたコマンドを Claude がサンドボックス外で再試行できない、サンドボックス化されたセッションを開始します。
 
 ```bash theme={null}
 claude --settings '{"sandbox": {"enabled": true, "allowUnsandboxedCommands": false}}'
@@ -97,7 +97,7 @@ claude --settings '{"sandbox": {"enabled": true, "allowUnsandboxedCommands": fal
 
 > [!WARNING]
 >
-> デフォルトでは、依存関係が不足している、またはプラットフォームがサポートされていないためにサンドボックスを起動できない場合、Claude Code はサンドボックス化せずにコマンドを実行します。代わりに起動時に Claude Code を終了させるには、[`sandbox.failIfUnavailable`](/docs/ja/settings-reference#sandbox-failifunavailable) を `true` に設定します。サンドボックス化をセキュリティゲートとして必須とする管理されたデプロイでは、この設定を使用できます。
+> デフォルトでは、依存関係が不足している、またはプラットフォームがサポートされていないためにサンドボックスを起動できない場合、Claude Code はサンドボックス化せずにコマンドを実行します。代わりに起動時に Claude Code を終了させるには、[`sandbox.failIfUnavailable`](https://code.claude.com/docs/ja/settings-reference#sandbox-failifunavailable) を `true` に設定します。サンドボックス化をセキュリティゲートとして必須とする管理されたデプロイでは、この設定を使用できます。
 
 ### コマンドがサンドボックス内で実行されることを確認する
 
@@ -165,7 +165,7 @@ Ripgrep はネイティブの Claude Code バイナリに同梱されていま�
 >
 > PowerShell から `wsl -l -v` を実行して WSL のバージョンを確認します。`Sandboxing requires WSL2` と表示される場合、ディストリビューションは WSL1 で実行されています。WSL2 にアップグレードするか、サンドボックス化せずに Claude Code を実行してください。
 >
-> WSL2 では、`cmd.exe`、`powershell.exe`、または `/mnt/c/` 配下のものなど Windows バイナリの起動を、WSL が Unix ソケット経由で Windows ホストに引き渡します。そのため、サンドボックス化されたコマンドがそれらを起動できるかどうかは、サンドボックスの [Unix ソケット設定](/docs/ja/settings-reference.md#sandbox-network-allowunixsockets)に従います。そもそもソケットをブロックするには、オプションの seccomp フィルターがインストールされている必要があります。これらの起動を許可するには、`allowAllUnixSockets` を設定します。これにより、サンドボックス化されたコマンドにすべての Unix ソケットが開放されます。
+> WSL2 では、`cmd.exe`、`powershell.exe`、または `/mnt/c/` 配下のものなど Windows バイナリの起動を、WSL が Unix ソケット経由で Windows ホストに引き渡します。そのため、サンドボックス化されたコマンドがそれらを起動できるかどうかは、サンドボックスの [Unix ソケット設定](https://code.claude.com/docs/ja/settings-reference.md#sandbox-network-allowunixsockets)に従います。そもそもソケットをブロックするには、オプションの seccomp フィルターがインストールされている必要があります。これらの起動を許可するには、`allowAllUnixSockets` を設定します。これにより、サンドボックス化されたコマンドにすべての Unix ソケットが開放されます。
 
 ### サンドボックスモード
 
@@ -173,21 +173,21 @@ Claude Code には 2 つのサンドボックスモードがあります。ど�
 
 #### auto-allow モード
 
-コマンドがサンドボックス内で実行される場合、Claude Code はプロンプトなしでそのコマンドを自動的に承認します。コマンドが [`excludedCommands`](#run-commands-outside-the-sandbox-with-excludedcommands) に一致するため、または Claude が[サンドボックス外で再試行する](#the-unsandboxed-retry-escape-hatch)ためにサンドボックス外で実行される場合、そのコマンドは通常の[権限フロー](/docs/ja/permissions.md)を経由します。
+コマンドがサンドボックス内で実行される場合、Claude Code はプロンプトなしでそのコマンドを自動的に承認します。コマンドが [`excludedCommands`](#run-commands-outside-the-sandbox-with-excludedcommands) に一致するため、または Claude が[サンドボックス外で再試行する](#the-unsandboxed-retry-escape-hatch)ためにサンドボックス外で実行される場合、そのコマンドは通常の[権限フロー](https://code.claude.com/docs/ja/permissions.md)を経由します。
 
 許可していないホストに接続するサンドボックス化されたコマンドは、サンドボックス内にとどまります。接続を通すかどうかを誰が決めるかについては、[許可されたドメイン外のホスト](#hosts-outside-your-allowed-domains)で説明しています。
 
 auto-allow モードでも、次の点は引き続き適用されます。
 
-* [`Bash` の拒否ルールが一致する形式](/docs/ja/permissions#bash-rule-limits)のコマンドは、引き続きブロックされます
-* [重要なパス](/docs/ja/permission-modes.md#which-paths-are-critical)を対象とすると認識された `rm` または `rmdir` コマンドは、引き続き通常の権限フローを経由します
-* `Bash(git push *)` のような内容を限定した[確認ルール](/docs/ja/permissions.md)は、サンドボックス化されたコマンドであっても引き続きプロンプトを強制します
-* 単独の `Bash` 確認ルール、またはそれと同等の `Bash(*)` 形式は、サンドボックス化されて実行されるコマンドではスキップされます。サンドボックス外で実行されるコマンドには引き続き適用されます。[plan モード](/docs/ja/permission-modes.md#analyze-before-you-edit-with-plan-mode)では、このルールはスキップされず、読み取り専用のものも含め、サンドボックス化されたコマンドに対してもプロンプトを表示します
-* [Monitor ツール](/docs/ja/tools-reference.md#monitor-tool)のコマンドは、引き続きサンドボックス内で実行されますが、自動的には承認されません。プロンプトをスキップするには、`Bash(npm run *)` など、そのコマンドに一致する[許可ルール](/docs/ja/permissions.md#bash)を追加します
+* [`Bash` の拒否ルールが一致する形式](https://code.claude.com/docs/ja/permissions#bash-rule-limits)のコマンドは、引き続きブロックされます
+* [重要なパス](https://code.claude.com/docs/ja/permission-modes.md#which-paths-are-critical)を対象とすると認識された `rm` または `rmdir` コマンドは、引き続き通常の権限フローを経由します
+* `Bash(git push *)` のような内容を限定した[確認ルール](https://code.claude.com/docs/ja/permissions.md)は、サンドボックス化されたコマンドであっても引き続きプロンプトを強制します
+* 単独の `Bash` 確認ルール、またはそれと同等の `Bash(*)` 形式は、サンドボックス化されて実行されるコマンドではスキップされます。サンドボックス外で実行されるコマンドには引き続き適用されます。[plan モード](https://code.claude.com/docs/ja/permission-modes.md#analyze-before-you-edit-with-plan-mode)では、このルールはスキップされず、読み取り専用のものも含め、サンドボックス化されたコマンドに対してもプロンプトを表示します
+* [Monitor ツール](https://code.claude.com/docs/ja/tools-reference.md#monitor-tool)のコマンドは、引き続きサンドボックス内で実行されますが、自動的には承認されません。プロンプトをスキップするには、`Bash(npm run *)` など、そのコマンドに一致する[許可ルール](https://code.claude.com/docs/ja/permissions.md#bash)を追加します
 
-サンドボックス化されたコマンドの中にも、自動的に承認されずに通常の[権限フロー](/docs/ja/permissions.md)を経由するものがあります。これは、コマンドの前に設定された変数によって実行されるプログラムが変わりうる `FOO=bar npm test` のようなコマンドや、`make CC=clang`、`eval "ls"` で発生します。その場合、プロンプトが表示されるかどうかは許可ルールと権限モードによって決まり、コマンドは引き続きサンドボックス内で実行されます。
+サンドボックス化されたコマンドの中にも、自動的に承認されずに通常の[権限フロー](https://code.claude.com/docs/ja/permissions.md)を経由するものがあります。これは、コマンドの前に設定された変数によって実行されるプログラムが変わりうる `FOO=bar npm test` のようなコマンドや、`make CC=clang`、`eval "ls"` で発生します。その場合、プロンプトが表示されるかどうかは許可ルールと権限モードによって決まり、コマンドは引き続きサンドボックス内で実行されます。
 
-これら 3 つのコマンドでは、コマンドに一致する[許可ルール](/docs/ja/permissions.md#bash)を追加すると、繰り返し表示されるプロンプトが止まります。次のルールがそのパターンを示しています。
+これら 3 つのコマンドでは、コマンドに一致する[許可ルール](https://code.claude.com/docs/ja/permissions.md#bash)を追加すると、繰り返し表示されるプロンプトが止まります。次のルールがそのパターンを示しています。
 
 * `Bash(make *)` は `make CC=clang` を承認します
 * `Bash(FOO=bar npm *)` は `FOO=bar npm test` を承認します。コマンドが変数の代入で始まる場合は、その代入をルールに含めてください
@@ -197,9 +197,9 @@ auto-allow モードでも、次の点は引き続き適用されます。
 
 > [!NOTE]
 >
-> auto-allow モードは権限モードの設定とは独立して動作しますが、例外が 3 つあります。[plan モード](/docs/ja/permission-modes.md#analyze-before-you-edit-with-plan-mode)、[コマンドごとの許可ドメイン](#per-command-allowed-domains-in-auto-mode)を持つ auto モードのコマンド、そして auto モードでのサンドボックス化されたコマンドに対する[サーバー側の分類器による審査](/docs/ja/permission-modes.md#how-the-classifier-evaluates-actions)です。「accept edits」モードでなくても、auto-allow が有効な場合、サンドボックス化された Bash コマンドは自動的に実行されます。つまり、ファイル編集ツールであればプロンプトが表示される Manual モードでも、サンドボックスの境界内でファイルを変更する Bash コマンドはプロンプトなしで実行されます。
+> auto-allow モードは権限モードの設定とは独立して動作しますが、例外が 3 つあります。[plan モード](https://code.claude.com/docs/ja/permission-modes.md#analyze-before-you-edit-with-plan-mode)、[コマンドごとの許可ドメイン](#per-command-allowed-domains-in-auto-mode)を持つ auto モードのコマンド、そして auto モードでのサンドボックス化されたコマンドに対する[サーバー側の分類器による審査](https://code.claude.com/docs/ja/permission-modes.md#how-the-classifier-evaluates-actions)です。「accept edits」モードでなくても、auto-allow が有効な場合、サンドボックス化された Bash コマンドは自動的に実行されます。つまり、ファイル編集ツールであればプロンプトが表示される Manual モードでも、サンドボックスの境界内でファイルを変更する Bash コマンドはプロンプトなしで実行されます。
 >
-> plan モードでは、auto-allow によって承認の範囲は広がりません。計画中に Claude Code がコマンドをどのように制御するかについては、[plan モード](/docs/ja/permission-modes.md#analyze-before-you-edit-with-plan-mode)を参照してください。
+> plan モードでは、auto-allow によって承認の範囲は広がりません。計画中に Claude Code がコマンドをどのように制御するかについては、[plan モード](https://code.claude.com/docs/ja/permission-modes.md#analyze-before-you-edit-with-plan-mode)を参照してください。
 
 #### regular permissions モード
 
@@ -213,28 +213,28 @@ auto-allow モードでも、次の点は引き続き適用されます。
 
 * **`bypassPermissions` モード**：再試行はプロンプトなしで実行されます
 * **Manual モードと `acceptEdits` モード**：「Bash command (unsandboxed)」というタイトルのプロンプトが表示されます
-* **[auto モード](/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)**：別の分類器モデルが基になるコマンドを評価します
+* **[auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)**：別の分類器モデルが基になるコマンドを評価します
 * **`dontAsk` モード**：Claude Code は再試行を拒否します
-* **plan モード**：[計画中に Claude Code がコマンドをどのように制御するか](/docs/ja/permission-modes.md#analyze-before-you-edit-with-plan-mode)を参照してください
+* **plan モード**：[計画中に Claude Code がコマンドをどのように制御するか](https://code.claude.com/docs/ja/permission-modes.md#analyze-before-you-edit-with-plan-mode)を参照してください
 
 次のルールと設定によって、再試行を誰が承認するかが変わります。
 
 * **一致する許可ルール**：`Bash(curl *)` などの許可ルールがコマンドに一致する場合、そのルールは再試行も承認するため、コマンドはプロンプトなしでサンドボックス外で実行されます
-* **パラメーターに対する確認ルール**：Bash の再試行時にプロンプトを表示させるには、`Bash(dangerouslyDisableSandbox:true)` に対する[確認ルール](/docs/ja/permissions.md#match-by-input-parameter)を追加します。auto モードと `bypassPermissions` モードでもプロンプトが表示され、このルールは一致する許可ルールより優先されます
-* **[`permissions.blockReadsOutsideWorkingDirectories`](/docs/ja/settings-reference#permissions-blockreadsoutsideworkingdirectories)**：これがオンの間にプロンプトが表示される再試行については、[どのモードでも自動承認されないアクション](/docs/ja/permission-modes.md#actions-no-mode-auto-approves)で説明しています
+* **パラメーターに対する確認ルール**：Bash の再試行時にプロンプトを表示させるには、`Bash(dangerouslyDisableSandbox:true)` に対する[確認ルール](https://code.claude.com/docs/ja/permissions.md#match-by-input-parameter)を追加します。auto モードと `bypassPermissions` モードでもプロンプトが表示され、このルールは一致する許可ルールより優先されます
+* **[`permissions.blockReadsOutsideWorkingDirectories`](https://code.claude.com/docs/ja/settings-reference#permissions-blockreadsoutsideworkingdirectories)**：これがオンの間にプロンプトが表示される再試行については、[どのモードでも自動承認されないアクション](https://code.claude.com/docs/ja/permission-modes.md#actions-no-mode-auto-approves)で説明しています
 
 #### strict sandbox モードで再試行をオフにする
 
-[サンドボックス設定](/docs/ja/settings-reference.md#sandbox-settings)で `"allowUnsandboxedCommands": false` を設定すると、サンドボックス外での再試行を無効にできます。再試行が無効になると、Claude Code は `dangerouslyDisableSandbox` パラメーターを無視します。これにより、サンドボックスが動作している間、Claude が実行するコマンドは `excludedCommands` のエントリに一致しない限りサンドボックス化されます。サンドボックスを起動できないときに Claude Code がコマンドをサンドボックス外で実行しないようにするには、[`failIfUnavailable`](/docs/ja/settings-reference#sandbox-failifunavailable) も設定します。`/sandbox` の **Overrides** タブでは、この設定は **Strict sandbox mode** として表示されます。
+[サンドボックス設定](https://code.claude.com/docs/ja/settings-reference.md#sandbox-settings)で `"allowUnsandboxedCommands": false` を設定すると、サンドボックス外での再試行を無効にできます。再試行が無効になると、Claude Code は `dangerouslyDisableSandbox` パラメーターを無視します。これにより、サンドボックスが動作している間、Claude が実行するコマンドは `excludedCommands` のエントリに一致しない限りサンドボックス化されます。サンドボックスを起動できないときに Claude Code がコマンドをサンドボックス外で実行しないようにするには、[`failIfUnavailable`](https://code.claude.com/docs/ja/settings-reference#sandbox-failifunavailable) も設定します。`/sandbox` の **Overrides** タブでは、この設定は **Strict sandbox mode** として表示されます。
 
 ユーザー設定、`--settings`、または管理設定での `false` は、プロジェクトの設定で `true` が設定されていても維持されます。ユーザー設定での `false` によってサンドボックスが管理者必須になることはないため、プロジェクトのその他のサンドボックス設定は引き続き適用されます。v2.1.285 より前は、プロジェクトの `true` がユーザー設定の `false` を上書きしていました。
 
 ユーザーまたは管理者が管理設定または `--settings` フラグで再試行を無効にすると、サンドボックスは管理者必須になります。その場合、Claude Code は、`excludedCommands` のエントリも含め、リポジトリのファイル内にあるサンドボックスを緩める設定を無視します。それらの一覧は、[管理者必須のサンドボックスにおけるリポジトリ設定](#repository-settings-under-an-admin-required-sandbox)に記載されています。
 
-strict sandbox モードは、Claude が実行するコマンドに適用されます。[`!` シェルモードのプロンプト](/docs/ja/interactive-mode#shell-mode-with-prefix)で自分で入力したコマンドは、セッションが次のいずれかでない限り、サンドボックス外で実行されます。
+strict sandbox モードは、Claude が実行するコマンドに適用されます。[`!` シェルモードのプロンプト](https://code.claude.com/docs/ja/interactive-mode#shell-mode-with-prefix)で自分で入力したコマンドは、セッションが次のいずれかでない限り、サンドボックス外で実行されます。
 
-* **[バックグラウンドセッション](/docs/ja/agent-view.md)**：strict sandbox モードはシェルモードのコマンドにも適用されます
-* **[`CLAUDE_CODE_SUBPROCESS_ENV_SCRUB`](/docs/ja/env-vars#variables) が設定された Linux セッション**：シェルモードのコマンドも含め、すべてのコマンドがサンドボックス化されて実行されます
+* **[バックグラウンドセッション](https://code.claude.com/docs/ja/agent-view.md)**：strict sandbox モードはシェルモードのコマンドにも適用されます
+* **[`CLAUDE_CODE_SUBPROCESS_ENV_SCRUB`](https://code.claude.com/docs/ja/env-vars#variables) が設定された Linux セッション**：シェルモードのコマンドも含め、すべてのコマンドがサンドボックス化されて実行されます
 
 v2.1.260 より前は、strict sandbox モードはすべてのセッションでシェルモードのコマンドをサンドボックス化していました。
 
@@ -242,13 +242,13 @@ v2.1.260 より前は、strict sandbox モードはすべてのセッション�
 
 デフォルトでは、作業ディレクトリに加えて、ユーザーごとの一時ディレクトリにもサンドボックス内から書き込めます。[ファイルシステムの分離を無効にする](#disable-filesystem-isolation)場合を除き、Claude Code はサンドボックス化されたコマンドに対して `$TMPDIR` をこのディレクトリに設定するため、一時ファイルを書き込むツールは追加の設定なしで動作します。
 
-サンドボックス化されていないコマンドは、シェルの `$TMPDIR` が設定されていればそれを継承します。そのため、ファイルシステムの分離がオンの間は、サンドボックス化されたコマンドとされていないコマンドで `$TMPDIR` が異なるディレクトリに解決されます。シェルで `$TMPDIR` が未設定または空の場合、`$TMPDIR` を参照するサンドボックス外のコマンドには、[`CLAUDE_CODE_TMPDIR`](/docs/ja/env-vars) による上書き値が渡されます。上書き値を設定していない場合や上書き値が長いパスである場合はオペレーティングシステムの一時ディレクトリが渡されるため、変数が空文字列に展開されることはありません。両者の間で一時ファイルを受け渡すには、代わりに作業ディレクトリ配下に書き込んでください。
+サンドボックス化されていないコマンドは、シェルの `$TMPDIR` が設定されていればそれを継承します。そのため、ファイルシステムの分離がオンの間は、サンドボックス化されたコマンドとされていないコマンドで `$TMPDIR` が異なるディレクトリに解決されます。シェルで `$TMPDIR` が未設定または空の場合、`$TMPDIR` を参照するサンドボックス外のコマンドには、[`CLAUDE_CODE_TMPDIR`](https://code.claude.com/docs/ja/env-vars) による上書き値が渡されます。上書き値を設定していない場合や上書き値が長いパスである場合はオペレーティングシステムの一時ディレクトリが渡されるため、変数が空文字列に展開されることはありません。両者の間で一時ファイルを受け渡すには、代わりに作業ディレクトリ配下に書き込んでください。
 
 ## サンドボックスを設定する
 
-サンドボックスの動作は `settings.json` ファイルでカスタマイズできます。設定の完全なリファレンスについては、[設定](/docs/ja/settings-reference.md#sandbox-settings)を参照してください。
+サンドボックスの動作は `settings.json` ファイルでカスタマイズできます。設定の完全なリファレンスについては、[設定](https://code.claude.com/docs/ja/settings-reference.md#sandbox-settings)を参照してください。
 
-デフォルトでは、サンドボックス化されたコマンドが書き込めるのは、現在の作業ディレクトリ、ユーザーごとの一時ディレクトリ、そして `--add-dir`、`/add-dir`、または `permissions.additionalDirectories` で[追加したディレクトリ](/docs/ja/permissions.md#additional-directories-grant-file-access-not-configuration)です。`kubectl`、`terraform`、`npm` などのサブプロセスコマンドがこれらのディレクトリの外に書き込む必要がある場合は、`sandbox.filesystem.allowWrite` を使用して特定のパスへのアクセスを付与します。
+デフォルトでは、サンドボックス化されたコマンドが書き込めるのは、現在の作業ディレクトリ、ユーザーごとの一時ディレクトリ、そして `--add-dir`、`/add-dir`、または `permissions.additionalDirectories` で[追加したディレクトリ](https://code.claude.com/docs/ja/permissions.md#additional-directories-grant-file-access-not-configuration)です。`kubectl`、`terraform`、`npm` などのサブプロセスコマンドがこれらのディレクトリの外に書き込む必要がある場合は、`sandbox.filesystem.allowWrite` を使用して特定のパスへのアクセスを付与します。
 
 ```json theme={null}
 {
@@ -263,13 +263,13 @@ v2.1.260 より前は、strict sandbox モードはすべてのセッション�
 
 これらのパスは OS レベルで適用されるため、サンドボックス内で実行されるすべてのコマンドは、その子プロセスも含めてこれらに従います。ツールが特定の場所への書き込みアクセスを必要とする場合は、`excludedCommands` でツールをサンドボックスから完全に除外するのではなく、この方法を使用することを推奨します。
 
-同じファイルシステム配列を複数の[設定スコープ](/docs/ja/settings.md#settings-precedence)で定義した場合、Claude Code はそれらをマージし、あるスコープの配列を別のスコープの配列で置き換えるのではなく、すべてのスコープのパスを結合します。[開発者がポリシーを広げないようにする](#keep-developers-from-widening-the-policy)で説明しているロックがエントリを対象としている場合、Claude Code はそのエントリをマージから除外します。
+同じファイルシステム配列を複数の[設定スコープ](https://code.claude.com/docs/ja/settings.md#settings-precedence)で定義した場合、Claude Code はそれらをマージし、あるスコープの配列を別のスコープの配列で置き換えるのではなく、すべてのスコープのパスを結合します。[開発者がポリシーを広げないようにする](#keep-developers-from-widening-the-policy)で説明しているロックがエントリを対象としている場合、Claude Code はそのエントリをマージから除外します。
 
-CLI の [`--setting-sources`](/docs/ja/cli-reference) や Agent SDK の [`settingSources`](/docs/ja/agent-sdk/claude-code-features#control-filesystem-settings-with-settingsources) で設定ソースを除外した場合、Claude Code はサンドボックス設定を構築する際に、そのソースの `sandbox.filesystem` エントリ、`Edit` 権限ルール、`Read` 拒否ルールを無視します。Claude Code v2.1.246 以降が必要です。
+CLI の [`--setting-sources`](https://code.claude.com/docs/ja/cli-reference) や Agent SDK の [`settingSources`](https://code.claude.com/docs/ja/agent-sdk/claude-code-features#control-filesystem-settings-with-settingsources) で設定ソースを除外した場合、Claude Code はサンドボックス設定を構築する際に、そのソースの `sandbox.filesystem` エントリ、`Edit` 権限ルール、`Read` 拒否ルールを無視します。Claude Code v2.1.246 以降が必要です。
 
-セッション中にこれらのファイルシステムリストを編集すると、Claude Code は[実行中のセッションに変更を適用する](/docs/ja/settings.md#when-edits-take-effect)ため、次にサンドボックス化されたコマンドは新しいパスのもとで実行されます。
+セッション中にこれらのファイルシステムリストを編集すると、Claude Code は[実行中のセッションに変更を適用する](https://code.claude.com/docs/ja/settings.md#when-edits-take-effect)ため、次にサンドボックス化されたコマンドは新しいパスのもとで実行されます。
 
-サンドボックスのファイルシステムパスは標準的な規則に従います。`/tmp/build` は絶対パスで、`~/.kube` はホームディレクトリからの相対パスです。これは、絶対パスに `//path`、プロジェクト相対パスに `/path` を使用する [Read と Edit の権限ルール](/docs/ja/permissions.md#read-and-edit)とは異なります。相対パス、末尾のスラッシュ、ワイルドカードについては、[サンドボックスのパスプレフィックス](/docs/ja/settings-reference.md#sandbox-path-prefixes)を参照してください。
+サンドボックスのファイルシステムパスは標準的な規則に従います。`/tmp/build` は絶対パスで、`~/.kube` はホームディレクトリからの相対パスです。これは、絶対パスに `//path`、プロジェクト相対パスに `/path` を使用する [Read と Edit の権限ルール](https://code.claude.com/docs/ja/permissions.md#read-and-edit)とは異なります。相対パス、末尾のスラッシュ、ワイルドカードについては、[サンドボックスのパスプレフィックス](https://code.claude.com/docs/ja/settings-reference.md#sandbox-path-prefixes)を参照してください。
 
 `sandbox.filesystem.denyWrite` と `sandbox.filesystem.denyRead` を使用して書き込みや読み取りのアクセスを拒否することもでき、`sandbox.filesystem.allowRead` を使用して拒否された領域内の特定のパスを再び許可することもできます。読み取りルールが重なる場合は、より狭いパスのルールが適用されます。
 
@@ -277,7 +277,7 @@ CLI の [`--setting-sources`](/docs/ja/cli-reference) や Agent SDK の [`settin
 | :- | :- |
 | `"denyRead": ["~/"]` と `"allowRead": ["~/projects"]` | `~/projects` は読み取り可能で、ホームディレクトリの残りはブロックされたままになります。より狭い許可が、拒否された領域のその部分を再び開きます |
 | `"allowRead": ["~/"]` と `"denyRead": ["~/.env"]` | `~/.env` はブロックされたままで、ホームディレクトリの残りは読み取り可能です。拒否はより広い許可の内側でも維持されるため、広範な許可によってシークレットが気付かないうちに再び公開されることはありません |
-| `"allowRead": ["~/"]` と `"denyRead": ["~/**/.env"]` | ホームディレクトリ配下のすべての `.env` はブロックされたままで、残りは読み取り可能です。[ワイルドカードによる拒否](/docs/ja/settings-reference.md#sandbox-path-prefixes)も、正確なパスと同じようにより広い許可の内側で維持されます |
+| `"allowRead": ["~/"]` と `"denyRead": ["~/**/.env"]` | ホームディレクトリ配下のすべての `.env` はブロックされたままで、残りは読み取り可能です。[ワイルドカードによる拒否](https://code.claude.com/docs/ja/settings-reference.md#sandbox-path-prefixes)も、正確なパスと同じようにより広い許可の内側で維持されます |
 
 以下の例では、現在のプロジェクトからの読み取りを許可しつつ、ホームディレクトリ全体からの読み取りをブロックします。相対パス `.` がプロジェクトルートに解決されるのは設定がプロジェクト設定にある場合のみなので、この設定はプロジェクトの `.claude/settings.json` に配置してください。
 
@@ -295,11 +295,11 @@ CLI の [`--setting-sources`](/docs/ja/cli-reference) や Agent SDK の [`settin
 
 同じ設定を `~/.claude/settings.json` に配置した場合、`.` は代わりに `~/.claude` に解決され、プロジェクトファイルは `denyRead` ルールによってブロックされたままになります。
 
-作業ディレクトリを読み取り可能に保ちつつ、サンドボックス化されたコマンドによるホームディレクトリやマウントされたボリュームへの読み取りアクセスを拒否するには、パスルールを書く代わりに [`permissions.blockReadsOutsideWorkingDirectories`](/docs/ja/settings-reference#permissions-blockreadsoutsideworkingdirectories) を設定します。
+作業ディレクトリを読み取り可能に保ちつつ、サンドボックス化されたコマンドによるホームディレクトリやマウントされたボリュームへの読み取りアクセスを拒否するには、パスルールを書く代わりに [`permissions.blockReadsOutsideWorkingDirectories`](https://code.claude.com/docs/ja/settings-reference#permissions-blockreadsoutsideworkingdirectories) を設定します。
 
 ### `excludedCommands` でコマンドをサンドボックスの外で実行する
 
-[`sandbox.excludedCommands`](/docs/ja/settings-reference#sandbox-excludedcommands) にコマンドパターンを記載すると、一致するコマンドがサンドボックスの外で実行されます。つまり、ファイルシステムの制限もネットワークプロキシもありません。サンドボックス内では動作せず、完全なアクセス権を委ねても信頼できるツールに使用してください。ディレクトリやホストが 1 つ追加で必要なだけのツールであれば、コマンドをサンドボックス化したままにできる `allowWrite` や `allowedDomains` で動作する場合があります。
+[`sandbox.excludedCommands`](https://code.claude.com/docs/ja/settings-reference#sandbox-excludedcommands) にコマンドパターンを記載すると、一致するコマンドがサンドボックスの外で実行されます。つまり、ファイルシステムの制限もネットワークプロキシもありません。サンドボックス内では動作せず、完全なアクセス権を委ねても信頼できるツールに使用してください。ディレクトリやホストが 1 つ追加で必要なだけのツールであれば、コマンドをサンドボックス化したままにできる `allowWrite` や `allowedDomains` で動作する場合があります。
 
 この例では、`docker compose` コマンドをサンドボックスから外します。すべてのプロジェクトに適用するには、`~/.claude/settings.json` に保存してください。
 
@@ -314,15 +314,15 @@ CLI の [`--setting-sources`](/docs/ja/cli-reference) や Agent SDK の [`settin
 
 Claude Code は、Bash と Monitor の各呼び出しに対してエントリを照合します。呼び出しとは Claude が送信するコマンドライン全体であり、複数のコマンドが連結されている場合があります。呼び出しがサンドボックスの外に出るかどうかは、以下のルールによって決まります。
 
-* **パターンの末尾は ` *` にする**: エントリは `Bash(...)` の[権限ルール](/docs/ja/permissions.md#permission-rule-syntax)と同じ構文を使用し、ワイルドカードのないパターンは完全一致になります。`docker` は引数のない `docker` のみに一致します。`docker *` は引数の有無にかかわらず `docker` に一致します
+* **パターンの末尾は ` *` にする**: エントリは `Bash(...)` の[権限ルール](https://code.claude.com/docs/ja/permissions.md#permission-rule-syntax)と同じ構文を使用し、ワイルドカードのないパターンは完全一致になります。`docker` は引数のない `docker` のみに一致します。`docker *` は引数の有無にかかわらず `docker` に一致します
 * **呼び出し内のすべてのコマンドが一致する必要がある**: `npm ci && docker compose build` は、別のエントリが `npm ci` をカバーしていない限り、サンドボックス化されたままです
 * **Claude Code は呼び出しのテキストを照合する**: 内部で `docker` を呼び出すスクリプトや `make` ターゲットは一致せず、`/usr/local/bin/docker` も一致しません
-* **サンドボックス化されたままになる呼び出しがある**: ファイルへのリダイレクト、`cd`、または `$(...)` のようなコマンド置換があると、呼び出し全体がサンドボックス化されたままになります。サンドボックス化されたままになるその他の呼び出しについては、[リファレンスのエントリ](/docs/ja/settings-reference.md#sandbox-excludedcommands)に記載されています
+* **サンドボックス化されたままになる呼び出しがある**: ファイルへのリダイレクト、`cd`、または `$(...)` のようなコマンド置換があると、呼び出し全体がサンドボックス化されたままになります。サンドボックス化されたままになるその他の呼び出しについては、[リファレンスのエントリ](https://code.claude.com/docs/ja/settings-reference.md#sandbox-excludedcommands)に記載されています
 * **エントリの保存場所が影響する場合がある**: サンドボックスが[管理者によって必須化](#repository-settings-under-an-admin-required-sandbox)されている間、Claude Code は `.claude/settings.json` と `.claude/settings.local.json` 内のエントリを無視します
 
 除外されたコマンドは、通常の権限フローを経由します。
 
-* [読み取り専用コマンド](/docs/ja/permissions.md#read-only-commands)と、許可ルールでカバーされているコマンドは、プロンプトなしで実行されます
+* [読み取り専用コマンド](https://code.claude.com/docs/ja/permissions.md#read-only-commands)と、許可ルールでカバーされているコマンドは、プロンプトなしで実行されます
 * auto モードでは、その他の除外されたコマンドを分類器がレビューします
 * `bypassPermissions` モードでは、除外されたコマンドは確認ルールに一致しない限りプロンプトなしで実行されます
 
@@ -364,9 +364,9 @@ Claude Code は、Bash と Monitor の各呼び出しに対してエントリを
 
 * ユーザー設定、管理設定、および `--settings` CLI フラグで設定できます。`.claude/settings.json` と `.claude/settings.local.json` のプロジェクト設定では設定できないため、チェックアウトしたプロジェクトがファイルシステム分離をオフにすることはできません。
 * 管理設定が `sandbox.filesystem` を何らかの形で設定している場合、または `"mode": "deny"` の `sandbox.credentials.files` エントリを記載している場合は、管理設定のみがこのキーを設定できます。これにより、そのようなデプロイで開発者がファイルシステム分離をオフにすることを防ぎます。全員に対してオフにするには、管理設定で `"disabled": true` を設定します。
-* [`CLAUDE_CODE_SUBPROCESS_ENV_SCRUB`](/docs/ja/env-vars) が設定されている場合、Claude Code は管理設定を含むすべてのソースからの `filesystem.disabled` を無視し、ファイルシステム分離をオンのまま維持します。
+* [`CLAUDE_CODE_SUBPROCESS_ENV_SCRUB`](https://code.claude.com/docs/ja/env-vars) が設定されている場合、Claude Code は管理設定を含むすべてのソースからの `filesystem.disabled` を無視し、ファイルシステム分離をオンのまま維持します。
 
-[有効な](/docs/ja/settings-reference.md#invalid-credential-entries-in-managed-settings) `mask` エントリは、起動時に Claude Code がそのエントリについて [`deny` にフォールバック](#mask-credential-files)した場合でも、このキーを固定しません。認証情報ディレクトリのようにマスクできないパスは、管理設定で明示的な `deny` エントリとして記載してください。これによりキーが固定されます。
+[有効な](https://code.claude.com/docs/ja/settings-reference.md#invalid-credential-entries-in-managed-settings) `mask` エントリは、起動時に Claude Code がそのエントリについて [`deny` にフォールバック](#mask-credential-files)した場合でも、このキーを固定しません。認証情報ディレクトリのようにマスクできないパスは、管理設定で明示的な `deny` エントリとして記載してください。これによりキーが固定されます。
 
 #### ファイルシステム分離がオフのときに変わること
 
@@ -383,7 +383,7 @@ Claude Code は、Bash と Monitor の各呼び出しに対してエントリを
 * サンドボックス化されたコマンドは、ユーザーごとの一時ディレクトリではなく、シェルの `$TMPDIR` を継承します。すべての一時ディレクトリが書き込み可能になり、Claude Code がコマンドをユーザーごとの一時ディレクトリにリダイレクトしなくなるためです。
 
   Linux では、親シェルでこの変数が設定されていないことがよくあります。Bash ツールのガイダンスは、`$TMPDIR` に頼るのではなく `mktemp -d` で作業用ディレクトリを作成するよう Claude に指示します。
-* [`autoAllowBashIfSandboxed`](/docs/ja/settings-reference#sandbox-autoallowbashifsandboxed) のデフォルトは引き続き `true` であるため、サンドボックス化されたコマンドはプロンプトなしで実行され続けます。サンドボックス化されたコマンドでプロンプトを表示するには、`false` に設定します。
+* [`autoAllowBashIfSandboxed`](https://code.claude.com/docs/ja/settings-reference#sandbox-autoallowbashifsandboxed) のデフォルトは引き続き `true` であるため、サンドボックス化されたコマンドはプロンプトなしで実行され続けます。サンドボックス化されたコマンドでプロンプトを表示するには、`false` に設定します。
 
 ### 認証情報を保護する
 
@@ -413,9 +413,9 @@ Claude Code は、Bash と Monitor の各呼び出しに対してエントリを
 
 環境変数のエントリとファイルのエントリは `"mode": "mask"` も受け付けます。これについては[認証情報をマスクする](#mask-credentials)で説明します。
 
-ファイルパスは、`sandbox.filesystem.*` 設定と同じ[プレフィックスのルール](/docs/ja/settings-reference.md#sandbox-path-prefixes)に従います。
+ファイルパスは、`sandbox.filesystem.*` 設定と同じ[プレフィックスのルール](https://code.claude.com/docs/ja/settings-reference.md#sandbox-path-prefixes)に従います。
 
-Claude Code は、セッションが読み込むすべての[設定スコープ](/docs/ja/settings.md#settings-precedence)の `deny` エントリをマージします。`deny` エントリはアクセスを狭めることしかしないため、どのスコープでも追加できますが、別のスコープが追加したエントリをどのスコープも削除することはできません。
+Claude Code は、セッションが読み込むすべての[設定スコープ](https://code.claude.com/docs/ja/settings.md#settings-precedence)の `deny` エントリをマージします。`deny` エントリはアクセスを狭めることしかしないため、どのスコープでも追加できますが、別のスコープが追加したエントリをどのスコープも削除することはできません。
 
 [設定ソースを除外した](#configure-sandboxing)場合:
 
@@ -424,17 +424,17 @@ Claude Code は、セッションが読み込むすべての[設定スコープ]
 
 組み込みの認証情報拒否リストはないため、制限されるのは記載したファイルと変数のみです。
 
-`sandbox.credentials` は、サンドボックス化された Bash コマンドにのみ影響します。サンドボックス化にかかわらずすべてのサブプロセスから認証情報を除去するには、[`CLAUDE_CODE_SUBPROCESS_ENV_SCRUB`](/docs/ja/env-vars) を設定します。
+`sandbox.credentials` は、サンドボックス化された Bash コマンドにのみ影響します。サンドボックス化にかかわらずすべてのサブプロセスから認証情報を除去するには、[`CLAUDE_CODE_SUBPROCESS_ENV_SCRUB`](https://code.claude.com/docs/ja/env-vars) を設定します。
 
 ### 認証情報をマスクする
 
-認証情報をマスクすると、Claude Code はサンドボックス化されたコマンドにセンチネルと呼ばれるセッションごとのプレースホルダーを見せ、[サンドボックスプロキシ](#network-isolation)が許可したホストへの送信リクエストで実際の値に置き換えます。[認証情報を保護する](#protect-credentials)で説明した `deny` エントリは、代わりに認証情報をブロックします。macOS 上のファイルについては、Claude Code はマスクする代わりに[ファイルをブロックします](#mask-credential-files)。すべてのフィールドは [`sandbox.credentials`](/docs/ja/settings-reference#sandbox-credentials) のリファレンスに記載されています。
+認証情報をマスクすると、Claude Code はサンドボックス化されたコマンドにセンチネルと呼ばれるセッションごとのプレースホルダーを見せ、[サンドボックスプロキシ](#network-isolation)が許可したホストへの送信リクエストで実際の値に置き換えます。[認証情報を保護する](#protect-credentials)で説明した `deny` エントリは、代わりに認証情報をブロックします。macOS 上のファイルについては、Claude Code はマスクする代わりに[ファイルをブロックします](#mask-credential-files)。すべてのフィールドは [`sandbox.credentials`](https://code.claude.com/docs/ja/settings-reference#sandbox-credentials) のリファレンスに記載されています。
 
 マスキングには以下が必要です。
 
-* **TLS 終端**: プロキシはリクエストの内容の中で実際の値を置換するため、その内容を参照できる必要があります。プロキシ自体が TLS を終端するように、[`network.tlsTerminate`](/docs/ja/settings-reference#sandbox-network-tlsterminate) を設定してください。これを設定しない場合、マスキングは何も漏らさずに失敗します。コマンドにはセンチネルしか見えませんが、センチネルはそのままサーバーに届き、認証が失敗します。この設定ミスを確認するには、ターミナルで `claude doctor` を実行し、`TLS termination is unavailable` という警告がないか確認してください。
+* **TLS 終端**: プロキシはリクエストの内容の中で実際の値を置換するため、その内容を参照できる必要があります。プロキシ自体が TLS を終端するように、[`network.tlsTerminate`](https://code.claude.com/docs/ja/settings-reference#sandbox-network-tlsterminate) を設定してください。これを設定しない場合、マスキングは何も漏らさずに失敗します。コマンドにはセンチネルしか見えませんが、センチネルはそのままサーバーに届き、認証が失敗します。この設定ミスを確認するには、ターミナルで `claude doctor` を実行し、`TLS termination is unavailable` という警告がないか確認してください。
 * **許可された送信先**: 各 `mask` エントリには `injectHosts`（実際の値の送信先として許可されるホスト）を記載できます。プロキシは[ドメイン許可リスト](#network-isolation)が許可する接続でのみ注入を行うため、各 `injectHosts` のホストは `network.allowedDomains` を通じても到達可能である必要があります。`injectHosts` のない `mask` エントリの場合、プロキシは `network.allowedDomains` 内のすべてのホストへのリクエストで実際の値に置換します。
-* **信頼できる設定スコープ**: マスキングはプロキシが実際の認証情報をどこかに送信することを認可するため、Claude Code は `mask` エントリ、`network.tlsTerminate`、[`credentials.allowPlaintextInject`](/docs/ja/settings-reference#sandbox-credentials-allowplaintextinject)、`awsPairs`、`sigv4` を、ユーザー設定、管理設定、および `--settings` フラグからのみ尊重します。リポジトリの `.claude/settings.json` や `.claude/settings.local.json` 内のこれらは無視されます。管理者がサーバー管理設定を通じて `mask` エントリ、`network.tlsTerminate`、または `credentials.allowPlaintextInject` を配布する場合、それらは[承認が必要な設定](/docs/ja/server-managed-settings.md#security-approval-dialogs)として扱われます。
+* **信頼できる設定スコープ**: マスキングはプロキシが実際の認証情報をどこかに送信することを認可するため、Claude Code は `mask` エントリ、`network.tlsTerminate`、[`credentials.allowPlaintextInject`](https://code.claude.com/docs/ja/settings-reference#sandbox-credentials-allowplaintextinject)、`awsPairs`、`sigv4` を、ユーザー設定、管理設定、および `--settings` フラグからのみ尊重します。リポジトリの `.claude/settings.json` や `.claude/settings.local.json` 内のこれらは無視されます。管理者がサーバー管理設定を通じて `mask` エントリ、`network.tlsTerminate`、または `credentials.allowPlaintextInject` を配布する場合、それらは[承認が必要な設定](https://code.claude.com/docs/ja/server-managed-settings.md#security-approval-dialogs)として扱われます。
 
 #### 環境変数をマスクする
 
@@ -460,7 +460,7 @@ Claude Code は、セッションが読み込むすべての[設定スコープ]
 }
 ```
 
-マスキングはデフォルトで値全体を置き換えます。`DATABASE_URL` 接続文字列や JWT のように構造を持つ値には、[`extract`、`decode`、`maskClaims`、`onExtractNoMatch` フィールド](/docs/ja/settings-reference#sandbox-credentials-envvars)を使用して、値を解析するツールが動作し続けるようにしてください。
+マスキングはデフォルトで値全体を置き換えます。`DATABASE_URL` 接続文字列や JWT のように構造を持つ値には、[`extract`、`decode`、`maskClaims`、`onExtractNoMatch` フィールド](https://code.claude.com/docs/ja/settings-reference#sandbox-credentials-envvars)を使用して、値を解析するツールが動作し続けるようにしてください。
 
 IPv6 の送信先は、2 つのリストで異なる書き方をしてください。
 
@@ -473,9 +473,9 @@ IPv6 の送信先は、2 つのリストで異なる書き方をしてくださ�
 
 AWS リクエストはリクエストの内容に対する SigV4 署名を持つため、`AWS_ACCESS_KEY_ID` と `AWS_SECRET_ACCESS_KEY` は一緒にマスクしてください。プロキシはアクセスキーの[センチネル](#mask-credentials)によって SigV4 リクエストを検出し、実際の値でリクエストを再署名します。これには Claude Code v2.1.221 以降が必要です。シークレットのみをマスクすると、リクエストはプロキシが検出できないプレースホルダーで署名されるため、AWS で失敗します。
 
-Claude Code は、慣例的な変数である `AWS_ACCESS_KEY_ID`、`AWS_SECRET_ACCESS_KEY`、`AWS_SESSION_TOKEN` の値全体をマスクすると、それらを自動的に 1 つの認証情報として関連付けます。AWS の認証情報が別の名前の変数にある場合は、[`credentials.awsPairs`](/docs/ja/settings-reference#sandbox-credentials-awspairs) でグループ化してください。これには Claude Code v2.1.224 以降が必要です。
+Claude Code は、慣例的な変数である `AWS_ACCESS_KEY_ID`、`AWS_SECRET_ACCESS_KEY`、`AWS_SESSION_TOKEN` の値全体をマスクすると、それらを自動的に 1 つの認証情報として関連付けます。AWS の認証情報が別の名前の変数にある場合は、[`credentials.awsPairs`](https://code.claude.com/docs/ja/settings-reference#sandbox-credentials-awspairs) でグループ化してください。これには Claude Code v2.1.224 以降が必要です。
 
-ストリーミングアップロード、署名付き URL、SigV4A リクエストは、プロキシが再計算できない署名を持ちます。これらのリクエストがマスクされたペアのプレースホルダーで署名されている場合、プロキシは壊れた署名を転送するのではなく、リクエストを失敗させます。マスクされていない認証情報で署名されたリクエストが影響を受けることはありません。これらのリクエスト形式のいずれかを代わりに転送するには、[`credentials.sigv4`](/docs/ja/settings-reference#sandbox-credentials-sigv4) を使用します。これには Claude Code v2.1.224 以降が必要です。AWS は依然としてリクエストを拒否するため、呼び出し元のツールはプロキシエラーではなく AWS 自身の拒否レスポンスを受け取ります。
+ストリーミングアップロード、署名付き URL、SigV4A リクエストは、プロキシが再計算できない署名を持ちます。これらのリクエストがマスクされたペアのプレースホルダーで署名されている場合、プロキシは壊れた署名を転送するのではなく、リクエストを失敗させます。マスクされていない認証情報で署名されたリクエストが影響を受けることはありません。これらのリクエスト形式のいずれかを代わりに転送するには、[`credentials.sigv4`](https://code.claude.com/docs/ja/settings-reference#sandbox-credentials-sigv4) を使用します。これには Claude Code v2.1.224 以降が必要です。AWS は依然としてリクエストを拒否するため、呼び出し元のツールはプロキシエラーではなく AWS 自身の拒否レスポンスを受け取ります。
 
 #### 認証情報ファイルをマスクする
 
@@ -510,11 +510,11 @@ Claude Code は、慣例的な変数である `AWS_ACCESS_KEY_ID`、`AWS_SECRET_
 
 マスクが有効であることを確認するには、サンドボックス化されたコマンドで `cat ~/.config/gh/hosts.yml` を実行するよう Claude に依頼します。Linux と WSL2 では出力にトークンの代わりにセンチネルが表示され、macOS では読み取りが失敗します。
 
-`extract` または `decode` がない場合、Claude Code はファイル全体を 1 つのセンチネルに置き換えます。これは、単独のシークレットだけを保持するファイルに適しています。部分的なマスキングと、パターンが何にも一致しない場合の動作を制御するには、[`extract`、`decode`、`maskClaims`、`onExtractNoMatch`、`maskDuplicates` フィールド](/docs/ja/settings-reference#sandbox-credentials-files)を使用してください。
+`extract` または `decode` がない場合、Claude Code はファイル全体を 1 つのセンチネルに置き換えます。これは、単独のシークレットだけを保持するファイルに適しています。部分的なマスキングと、パターンが何にも一致しない場合の動作を制御するには、[`extract`、`decode`、`maskClaims`、`onExtractNoMatch`、`maskDuplicates` フィールド](https://code.claude.com/docs/ja/settings-reference#sandbox-credentials-files)を使用してください。
 
 > [!WARNING]
 >
-> 照合でマスクするものが見つからなかった場合、`onExtractNoMatch` のデフォルト値である `warn` はエントリをスキップするため、サンドボックス化されたコマンドはマスクされていない実際のファイルを読み取れます。macOS では、ファイルシステム分離がオンのときは常に Claude Code がパターンの実行前に `mask` エントリを `deny` として適用するため、一致しない場合の結果が有効になるのは[ファイルシステム分離がオフ](#disable-filesystem-isolation)の場合のみです。このデフォルトは正当に存在しない場合がある認証情報に適しています。シークレットが存在する可能性があるもののパターンがそれを見逃す可能性がある場合は、[`deny`](/docs/ja/settings-reference#mask-fields-for-files) を使用してください。
+> 照合でマスクするものが見つからなかった場合、`onExtractNoMatch` のデフォルト値である `warn` はエントリをスキップするため、サンドボックス化されたコマンドはマスクされていない実際のファイルを読み取れます。macOS では、ファイルシステム分離がオンのときは常に Claude Code がパターンの実行前に `mask` エントリを `deny` として適用するため、一致しない場合の結果が有効になるのは[ファイルシステム分離がオフ](#disable-filesystem-isolation)の場合のみです。このデフォルトは正当に存在しない場合がある認証情報に適しています。シークレットが存在する可能性があるもののパターンがそれを見逃す可能性がある場合は、[`deny`](https://code.claude.com/docs/ja/settings-reference#mask-fields-for-files) を使用してください。
 
 `mask` は単一のファイルに適用されるため、各認証情報ファイルを個別に記載してください。Claude Code は、安全にマスクできない `mask` エントリ（ディレクトリパス、glob パターン、8 MiB を超えるファイル、UTF-8 テキストではないファイル）については `deny` にフォールバックします。
 
@@ -524,16 +524,16 @@ Claude Code は、慣例的な変数である `AWS_ACCESS_KEY_ID`、`AWS_SECRET_
 
 サンドボックス化された Bash ツールは、ファイルシステムへのアクセスを特定のディレクトリに制限します。
 
-* **デフォルトの書き込み動作**: 現在の作業ディレクトリとそのサブディレクトリ、`--add-dir`、`/add-dir`、または [`permissions.additionalDirectories`](/docs/ja/settings-reference#permissions-additionaldirectories) で追加したディレクトリ、さらに `$TMPDIR` が指すユーザーごとの一時ディレクトリへの読み取りおよび書き込みアクセス
+* **デフォルトの書き込み動作**: 現在の作業ディレクトリとそのサブディレクトリ、`--add-dir`、`/add-dir`、または [`permissions.additionalDirectories`](https://code.claude.com/docs/ja/settings-reference#permissions-additionaldirectories) で追加したディレクトリ、さらに `$TMPDIR` が指すユーザーごとの一時ディレクトリへの読み取りおよび書き込みアクセス
 * **デフォルトの読み取り動作**: 特定の拒否されたディレクトリを除き、コンピューター全体への読み取りアクセス。このデフォルトでは認証情報ファイルの読み取りも許可されるため、コマンドに読み取らせたくない[認証情報を保護](#protect-credentials)してください。
-* **読み取りブロック**: [`permissions.blockReadsOutsideWorkingDirectories`](/docs/ja/settings-reference#permissions-blockreadsoutsideworkingdirectories) をオンにすると、サンドボックス化されたコマンドは、[ブロック下のサンドボックス化されたコマンド](/docs/ja/settings-reference.md#sandboxed-commands-under-the-block)に記載されたパスを除き、ホームディレクトリおよびユーザーファイルを保持するその他のディレクトリへの読み取りアクセスも失います。このセクションでは、ブロックのこの部分が適用されない場合についても説明しています。
-* **Git worktree**: 作業ディレクトリが[リンクされた git worktree](/docs/ja/worktrees.md) である場合、サンドボックスはメインリポジトリの共有 `.git` ディレクトリへの書き込みも許可するため、`git commit` などのコマンドで ref やインデックスを更新できます。そのディレクトリ内の `hooks/` と `config` への書き込みは引き続き拒否されます。
+* **読み取りブロック**: [`permissions.blockReadsOutsideWorkingDirectories`](https://code.claude.com/docs/ja/settings-reference#permissions-blockreadsoutsideworkingdirectories) をオンにすると、サンドボックス化されたコマンドは、[ブロック下のサンドボックス化されたコマンド](https://code.claude.com/docs/ja/settings-reference.md#sandboxed-commands-under-the-block)に記載されたパスを除き、ホームディレクトリおよびユーザーファイルを保持するその他のディレクトリへの読み取りアクセスも失います。このセクションでは、ブロックのこの部分が適用されない場合についても説明しています。
+* **Git worktree**: 作業ディレクトリが[リンクされた git worktree](https://code.claude.com/docs/ja/worktrees.md) である場合、サンドボックスはメインリポジトリの共有 `.git` ディレクトリへの書き込みも許可するため、`git commit` などのコマンドで ref やインデックスを更新できます。そのディレクトリ内の `hooks/` と `config` への書き込みは引き続き拒否されます。
 
 ネットワークの分離を維持したままファイルシステムの分離を完全にスキップするには、[`sandbox.filesystem.disabled`](#disable-filesystem-isolation) を設定します。
 
 ### 保護されたパス
 
-サンドボックス化されたコマンドが書き込み可能なディレクトリ内であっても、サンドボックスは Claude Code が設定やコードを読み込むファイルへの書き込みを引き続き拒否します。これらのファイルを編集できるコマンドは、自身に権限を付与したり、Claude Code がサンドボックスの外で実行するフックや MCP サーバーを追加したりできてしまうためです。権限システムには独自の[保護されたパス](/docs/ja/permission-modes.md#protected-paths)があり、ツールの実行前に Claude Code が何を承認するかを制御します。サンドボックスのリストは、すでに実行中のコマンドに適用されます。対象となるパスは次の 4 つのグループです。
+サンドボックス化されたコマンドが書き込み可能なディレクトリ内であっても、サンドボックスは Claude Code が設定やコードを読み込むファイルへの書き込みを引き続き拒否します。これらのファイルを編集できるコマンドは、自身に権限を付与したり、Claude Code がサンドボックスの外で実行するフックや MCP サーバーを追加したりできてしまうためです。権限システムには独自の[保護されたパス](https://code.claude.com/docs/ja/permission-modes.md#protected-paths)があり、ツールの実行前に Claude Code が何を承認するかを制御します。サンドボックスのリストは、すでに実行中のコマンドに適用されます。対象となるパスは次の 4 つのグループです。
 
 * **作業ディレクトリとその上位のディレクトリ**: `.claude` 設定ファイル、`.claude/skills`、`.claude/agents`、`.claude/commands`、`.claude/hooks` ディレクトリ、`.mcp.json`、および `.claude/workflows` や `.claude/scheduled_tasks.json` など Claude Code が自ら実行するファイル
 * **作業ディレクトリのみ**: `.bashrc` や `.zshrc` などのシェル起動ファイル、`.gitconfig`、`.vscode` および `.idea` ディレクトリ、`.git` 内の `hooks` と `config`
@@ -546,7 +546,7 @@ Claude Code は、慣例的な変数である `AWS_ACCESS_KEY_ID`、`AWS_SECRET_
 
 > [!WARNING]
 >
-> Linux または WSL2 で [`allowNestedUserNamespaces`](/docs/ja/settings-reference#sandbox-allownestedusernamespaces) を `true` に設定した場合は、保護されたパスに頼らないでください。サンドボックス化されたコマンドのコードが、サンドボックスの外で実行されてしまう可能性があります。
+> Linux または WSL2 で [`allowNestedUserNamespaces`](https://code.claude.com/docs/ja/settings-reference#sandbox-allownestedusernamespaces) を `true` に設定した場合は、保護されたパスに頼らないでください。サンドボックス化されたコマンドのコードが、サンドボックスの外で実行されてしまう可能性があります。
 
 ご使用のマシンで解決されたこれらのパスの大部分を確認するには、`/sandbox` を実行して **Config** タブを開きます。ここでは、これらのパスがユーザー自身の `denyWrite` エントリと混在して **Denied within allowed** の下に一覧表示されます。
 
@@ -574,17 +574,17 @@ Claude Code はサンドボックスの外、ユーザーのマシン上でサ�
 以下の設定と動作により、プロキシが許可するホストが制御されます。
 
 * **ドメイン制限**: 許可ドメインは最初は空です。コマンドが新しいドメインを初めて必要とした場合の動作については、[許可ドメイン外のホスト](#hosts-outside-your-allowed-domains)で説明しています。
-* **承認の選択**: プロンプトで Yes を選択すると、Claude Code は現在のセッションの残りの間、そのホストを許可します。「Yes, and don't ask again」を選択すると、Claude Code は `WebFetch(domain:...)` 許可ルールを[ローカル設定](/docs/ja/permissions.md#permission-system)に保存するため、今後のセッションでもそのホストは許可されたままになります。サンドボックスが[管理者必須](#repository-settings-under-an-admin-required-sandbox)の場合、Claude Code はルールをユーザー設定に保存し、すべてのプロジェクトに適用されます。
-* **事前許可ドメイン**: [`allowedDomains`](/docs/ja/settings-reference#sandbox-network-alloweddomains) でドメインを事前に許可すると、プロンプトを完全に回避できます。[権限ルール](#permission-rules)で説明しているように、Claude Code は `WebFetch(domain:...)` 許可ルールのドメインも事前に許可します。
-* **厳格な許可リスト**: ユーザー設定、管理設定、または CLI の `--settings` 設定で [`strictAllowlist`](/docs/ja/settings-reference#sandbox-network-strictallowlist) を `true` に設定すると、Claude Code はプロンプトを表示する代わりに、サンドボックス化されたコマンドから許可リスト外のホストへのアクセスを拒否します。許可リストは `allowedDomains` と `WebFetch(domain:...)` 許可ルールのドメインの合計で、`allowManagedDomainsOnly` が設定されている場合は管理設定のエントリのみとなります。リポジトリのエントリについては、[管理者必須のサンドボックスなしで適用されるロック](#locks-that-apply-without-an-admin-required-sandbox)で説明しています。Claude Code はこれをサンドボックス化されたコマンドにのみ適用します。`WebFetch` などのプロセス内ツールは引き続き[権限ルール](#permission-rules)に従います。リポジトリの `.claude/settings.json` または `.claude/settings.local.json` で設定しても効果はありません。Claude Code v2.1.219 以降が必要です。
-* **管理設定によるロックダウン**: 管理設定で [`allowManagedDomainsOnly`](/docs/ja/settings-reference#sandbox-network-allowmanageddomainsonly) が設定されている場合、許可されていないドメインはプロンプトを表示せずに自動的にブロックされ、管理設定の `allowedDomains` と `WebFetch(domain:...)` 許可ルールのみが適用されます。
-* **企業プロキシ**: ネットワークで送信トラフィックを企業プロキシ経由にする必要がある場合は、[プロキシ設定](/docs/ja/network-config.md#proxy-configuration)の説明に従って `HTTPS_PROXY`、`HTTP_PROXY`、`NO_PROXY` を設定します。[バックグラウンドエージェント](/docs/ja/network-config.md#set-network-variables-in-settings-not-the-shell)にも適用されるよう設定の `env` ブロックで設定するか、Claude Code を起動する環境で設定してください。Claude Code はドメイン許可リストを適用したうえで、許可された接続をその上流プロキシ経由でトンネリングします。`http://` と `https://` のプロキシ URL が使用でき、必要に応じて URL に Basic 認証を含めることもできます。
+* **承認の選択**: プロンプトで Yes を選択すると、Claude Code は現在のセッションの残りの間、そのホストを許可します。「Yes, and don't ask again」を選択すると、Claude Code は `WebFetch(domain:...)` 許可ルールを[ローカル設定](https://code.claude.com/docs/ja/permissions.md#permission-system)に保存するため、今後のセッションでもそのホストは許可されたままになります。サンドボックスが[管理者必須](#repository-settings-under-an-admin-required-sandbox)の場合、Claude Code はルールをユーザー設定に保存し、すべてのプロジェクトに適用されます。
+* **事前許可ドメイン**: [`allowedDomains`](https://code.claude.com/docs/ja/settings-reference#sandbox-network-alloweddomains) でドメインを事前に許可すると、プロンプトを完全に回避できます。[権限ルール](#permission-rules)で説明しているように、Claude Code は `WebFetch(domain:...)` 許可ルールのドメインも事前に許可します。
+* **厳格な許可リスト**: ユーザー設定、管理設定、または CLI の `--settings` 設定で [`strictAllowlist`](https://code.claude.com/docs/ja/settings-reference#sandbox-network-strictallowlist) を `true` に設定すると、Claude Code はプロンプトを表示する代わりに、サンドボックス化されたコマンドから許可リスト外のホストへのアクセスを拒否します。許可リストは `allowedDomains` と `WebFetch(domain:...)` 許可ルールのドメインの合計で、`allowManagedDomainsOnly` が設定されている場合は管理設定のエントリのみとなります。リポジトリのエントリについては、[管理者必須のサンドボックスなしで適用されるロック](#locks-that-apply-without-an-admin-required-sandbox)で説明しています。Claude Code はこれをサンドボックス化されたコマンドにのみ適用します。`WebFetch` などのプロセス内ツールは引き続き[権限ルール](#permission-rules)に従います。リポジトリの `.claude/settings.json` または `.claude/settings.local.json` で設定しても効果はありません。Claude Code v2.1.219 以降が必要です。
+* **管理設定によるロックダウン**: 管理設定で [`allowManagedDomainsOnly`](https://code.claude.com/docs/ja/settings-reference#sandbox-network-allowmanageddomainsonly) が設定されている場合、許可されていないドメインはプロンプトを表示せずに自動的にブロックされ、管理設定の `allowedDomains` と `WebFetch(domain:...)` 許可ルールのみが適用されます。
+* **企業プロキシ**: ネットワークで送信トラフィックを企業プロキシ経由にする必要がある場合は、[プロキシ設定](https://code.claude.com/docs/ja/network-config.md#proxy-configuration)の説明に従って `HTTPS_PROXY`、`HTTP_PROXY`、`NO_PROXY` を設定します。[バックグラウンドエージェント](https://code.claude.com/docs/ja/network-config.md#set-network-variables-in-settings-not-the-shell)にも適用されるよう設定の `env` ブロックで設定するか、Claude Code を起動する環境で設定してください。Claude Code はドメイン許可リストを適用したうえで、許可された接続をその上流プロキシ経由でトンネリングします。`http://` と `https://` のプロキシ URL が使用でき、必要に応じて URL に Basic 認証を含めることもできます。
 
 `WebFetch(domain:...)` ルールでは、サンドボックスは 2 つのワイルドカード形式を認識します。`*.example.com` のような先頭の `*.` と、単独の `*` です。単独の `*` 形式には Claude Code v2.1.186 以降が必要です。`WebFetch(domain:example.*)` のようにそれ以外の位置にあるワイルドカードは、フェッチには引き続き一致しますが、サンドボックス化されたコマンドには効果がありません。
 
 > [!NOTE]
 >
-> 組み込みプロキシは、要求されたホスト名に基づいて許可リストを適用し、デフォルトでは TLS トラフィックの終端や検査を行いません。実験的な [`network.tlsTerminate`](/docs/ja/settings-reference#sandbox-network-tlsterminate) 設定を使用すると、組み込みプロキシ自体が TLS を終端します。これは [`mask` 認証情報エントリ](#mask-credentials)に必要です。デフォルトの影響については[セキュリティ上の制限](#security-limitations)を、脅威モデルで TLS の検査が必要な場合は[カスタムプロキシ設定](#custom-proxy-configuration)を参照してください。
+> 組み込みプロキシは、要求されたホスト名に基づいて許可リストを適用し、デフォルトでは TLS トラフィックの終端や検査を行いません。実験的な [`network.tlsTerminate`](https://code.claude.com/docs/ja/settings-reference#sandbox-network-tlsterminate) 設定を使用すると、組み込みプロキシ自体が TLS を終端します。これは [`mask` 認証情報エントリ](#mask-credentials)に必要です。デフォルトの影響については[セキュリティ上の制限](#security-limitations)を、脅威モデルで TLS の検査が必要な場合は[カスタムプロキシ設定](#custom-proxy-configuration)を参照してください。
 
 #### 許可ドメイン外のホスト
 
@@ -592,12 +592,12 @@ Claude Code はサンドボックスの外、ユーザーのマシン上でサ�
 
 | 権限モード | 接続の扱い |
 | :- | :- |
-| `bypassPermissions` モード、および[権限のバイパスが利用可能](/docs/ja/permission-modes.md#skip-all-checks-with-bypasspermissions-mode)な plan モード | プロンプトなしで許可 |
+| `bypassPermissions` モード、および[権限のバイパスが利用可能](https://code.claude.com/docs/ja/permission-modes.md#skip-all-checks-with-bypasspermissions-mode)な plan モード | プロンプトなしで許可 |
 | 手動モード、`acceptEdits` モード、およびそれ以外の plan モード | プロンプトが表示される |
 | auto モード | コマンドが[ホストを列挙](#per-command-allowed-domains-in-auto-mode)し、分類器がそのリストを承認した場合を除き拒否 |
 | `dontAsk` モード | 拒否 |
 
-[`strictAllowlist`](/docs/ja/settings-reference#sandbox-network-strictallowlist) または [`allowManagedDomainsOnly`](/docs/ja/settings-reference#sandbox-network-allowmanageddomainsonly) がオンの場合、組み込みのサンドボックスプロキシはすべての権限モードで接続を拒否します。`bypassPermissions` モードでは、これらのいずれかがオンでない限り、許可ドメイン外のホストは許可されます。そのモードでコマンドがサンドボックスの外に出られる場合については、[サンドボックスなしでの再試行というエスケープハッチ](#the-unsandboxed-retry-escape-hatch)で説明しています。[`deniedDomains`](/docs/ja/settings-reference#sandbox-network-denieddomains) にあるホストへの接続も、すべての権限モードで拒否されます。
+[`strictAllowlist`](https://code.claude.com/docs/ja/settings-reference#sandbox-network-strictallowlist) または [`allowManagedDomainsOnly`](https://code.claude.com/docs/ja/settings-reference#sandbox-network-allowmanageddomainsonly) がオンの場合、組み込みのサンドボックスプロキシはすべての権限モードで接続を拒否します。`bypassPermissions` モードでは、これらのいずれかがオンでない限り、許可ドメイン外のホストは許可されます。そのモードでコマンドがサンドボックスの外に出られる場合については、[サンドボックスなしでの再試行というエスケープハッチ](#the-unsandboxed-retry-escape-hatch)で説明しています。[`deniedDomains`](https://code.claude.com/docs/ja/settings-reference#sandbox-network-denieddomains) にあるホストへの接続も、すべての権限モードで拒否されます。
 
 #### ローカルアドレスに解決されるホスト名
 
@@ -609,13 +609,13 @@ Claude Code はサンドボックスの外、ユーザーのマシン上でサ�
 
 #### auto モードでのコマンドごとの許可ドメイン
 
-サンドボックス化がオンの [auto モード](/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)では、Claude は接続ごとにネットワーク承認をトリガーする代わりに、コマンドが必要とするホストをコマンド自体に指定します。サンドボックス内で実行される各 Bash、PowerShell、または [Monitor](/docs/ja/tools-reference.md#monitor-tool) コマンドは、サンドボックスの許可リストを超えるホストのリストを持つことができます。`registry.npmjs.org` のようなドメイン、`*.pythonhosted.org` のようなワイルドカード、または IP アドレスで、それぞれにオプションで `:port` を付けられます。分類器はホストをコマンドと一緒に審査します。Claude Code v2.1.271 以降が必要です。
+サンドボックス化がオンの [auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)では、Claude は接続ごとにネットワーク承認をトリガーする代わりに、コマンドが必要とするホストをコマンド自体に指定します。サンドボックス内で実行される各 Bash、PowerShell、または [Monitor](https://code.claude.com/docs/ja/tools-reference.md#monitor-tool) コマンドは、サンドボックスの許可リストを超えるホストのリストを持つことができます。`registry.npmjs.org` のようなドメイン、`*.pythonhosted.org` のようなワイルドカード、または IP アドレスで、それぞれにオプションで `:port` を付けられます。分類器はホストをコマンドと一緒に審査します。Claude Code v2.1.271 以降が必要です。
 
 承認されたリストは、そのコマンドの実行中に限り、そのコマンドに対してのみそれらのホストを開放します。セッションの許可ホストや設定には何も追加されず、次のコマンドは独自のホストを指定します。
 
-ホストを持つコマンドは、権限ルールやサンドボックスの[自動許可モード](#sandbox-modes)によって承認されるのではなく、分類器に送られます。[確認ルール](/docs/ja/permissions.md#manage-permissions)によってコマンドにプロンプトが強制される場合、ターミナルの権限ダイアログではコマンドの横にホストが一覧表示され、そこで承認すると両方が対象になります。
+ホストを持つコマンドは、権限ルールやサンドボックスの[自動許可モード](#sandbox-modes)によって承認されるのではなく、分類器に送られます。[確認ルール](https://code.claude.com/docs/ja/permissions.md#manage-permissions)によってコマンドにプロンプトが強制される場合、ターミナルの権限ダイアログではコマンドの横にホストが一覧表示され、そこで承認すると両方が対象になります。
 
-コマンドごとのリストは、サンドボックスがデフォルトで拒否する範囲のみを広げます。[`deniedDomains`](/docs/ja/settings-reference#sandbox-network-denieddomains) のエントリは引き続きブロックされます。[`strictAllowlist`](/docs/ja/settings-reference#sandbox-network-strictallowlist) または [`allowManagedDomainsOnly`](/docs/ja/settings-reference#sandbox-network-allowmanageddomainsonly) が許可リストをロックしている場合、Claude Code はコマンドごとのリストを拒否します。
+コマンドごとのリストは、サンドボックスがデフォルトで拒否する範囲のみを広げます。[`deniedDomains`](https://code.claude.com/docs/ja/settings-reference#sandbox-network-denieddomains) のエントリは引き続きブロックされます。[`strictAllowlist`](https://code.claude.com/docs/ja/settings-reference#sandbox-network-strictallowlist) または [`allowManagedDomainsOnly`](https://code.claude.com/docs/ja/settings-reference#sandbox-network-allowmanageddomainsonly) が許可リストをロックしている場合、Claude Code はコマンドごとのリストを拒否します。
 
 コマンドごとのリストが適用されている間、Claude Code は、承認されたどのコマンドにも列挙されていないホストへの接続を、プロンプトや分類器のチェックなしに拒否します。拒否の際はコマンドの結果にホスト名が示され、Claude はそのホストを追加してコマンドを再実行します。
 
@@ -638,18 +638,18 @@ Claude Code はサンドボックスの外、ユーザーのマシン上でサ�
 * **Linux**: 分離に [bubblewrap](https://github.com/containers/bubblewrap) を使用します
 * **WSL2**: Linux と同じく bubblewrap を使用します
 
-[`@anthropic-ai/sandbox-runtime`](https://github.com/anthropics/sandbox-runtime) パッケージを単独で実行して、Claude Code プロセスをラップすることもできます。[サンドボックスランタイム](/docs/ja/sandbox-environments.md#sandbox-runtime)を参照してください。
+[`@anthropic-ai/sandbox-runtime`](https://github.com/anthropics/sandbox-runtime) パッケージを単独で実行して、Claude Code プロセスをラップすることもできます。[サンドボックスランタイム](https://code.claude.com/docs/ja/sandbox-environments.md#sandbox-runtime)を参照してください。
 
 ## サンドボックスが権限と権限モードにどのように関連するか
 
-サンドボックス、[権限ルール](/docs/ja/permissions.md)、および[権限モード](/docs/ja/permission-modes.md)は補完的なレイヤーです。以下のセクションでは、サンドボックスが各レイヤーとどのように相互作用するかについて説明します。
+サンドボックス、[権限ルール](https://code.claude.com/docs/ja/permissions.md)、および[権限モード](https://code.claude.com/docs/ja/permission-modes.md)は補完的なレイヤーです。以下のセクションでは、サンドボックスが各レイヤーとどのように相互作用するかについて説明します。
 
 ### 権限ルール
 
 権限ルールとサンドボックスは異なるものを制御します。
 
-* **権限ルール**は Claude Code が使用できるツールを制御し、ツールが実行される前に評価されます。Bash、Read、Edit、WebFetch、MCP、およびその他のツールを含むすべてのツールに適用されます。ただし、deny ルールまたは ask ルールは、他のツールが残っている間は[`EndConversation`](/docs/ja/tools-reference#endconversation-tool-behavior)をブロックできません。
-* **サンドボックス化**は OS レベルの強制を提供し、シェルコマンドがファイルシステムおよびネットワークレベルでアクセスできるものを制限します。Bash、PowerShell、および [Monitor](/docs/ja/tools-reference.md#monitor-tool) ツールのコマンドとその子プロセスに適用されます。
+* **権限ルール**は Claude Code が使用できるツールを制御し、ツールが実行される前に評価されます。Bash、Read、Edit、WebFetch、MCP、およびその他のツールを含むすべてのツールに適用されます。ただし、deny ルールまたは ask ルールは、他のツールが残っている間は[`EndConversation`](https://code.claude.com/docs/ja/tools-reference#endconversation-tool-behavior)をブロックできません。
+* **サンドボックス化**は OS レベルの強制を提供し、シェルコマンドがファイルシステムおよびネットワークレベルでアクセスできるものを制限します。Bash、PowerShell、および [Monitor](https://code.claude.com/docs/ja/tools-reference.md#monitor-tool) ツールのコマンドとその子プロセスに適用されます。
 
 この 2 つのレイヤーは、強制方法も異なります。Claude Code は、コマンド文字列に基づいて、またはオートモードでは別の分類器がコマンドが安全かどうかについての判断に基づいて、コマンドが実行される前に権限の決定を評価します。オペレーティングシステムは、実行中のプロセスにサンドボックス境界を強制するため、モデルが実行することを選択したものに関係なく、また許可されたコマンドがその名前が示唆するもの以上のことを行う場合でも、それが保持されます。
 
@@ -673,15 +673,15 @@ Claude Code はサンドボックスの外、ユーザーのマシン上でサ�
 
 ### 権限モード
 
-`/sandbox` は[権限モード](/docs/ja/permission-modes.md)ではありません。権限モードは、ツール呼び出しが実行されるかどうか、および最初にプロンプトが表示されるかどうかを決定しますが、サンドボックスは Bash コマンドが実行されたら何にアクセスできるかを制限します。制御対象と、アクション単位のプロンプトに代わるものが異なります。
+`/sandbox` は[権限モード](https://code.claude.com/docs/ja/permission-modes.md)ではありません。権限モードは、ツール呼び出しが実行されるかどうか、および最初にプロンプトが表示されるかどうかを決定しますが、サンドボックスは Bash コマンドが実行されたら何にアクセスできるかを制限します。制御対象と、アクション単位のプロンプトに代わるものが異なります。
 
 | | 制御対象 | プロンプトに代わるもの |
 | :- | :- | :- |
 | `/sandbox` | Bash コマンドが実行されたら何にアクセスできるか | [オートアロー モード](#sandbox-modes)のサンドボックス境界自体 |
-| [オートモード](/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode) | 各ツール呼び出しが実行されるかどうか | アクションをレビューする分類器 |
-| `--dangerously-skip-permissions` | 各ツール呼び出しが実行されるかどうか | なし。[保護されたパス](/docs/ja/permission-modes.md#protected-paths)チェックもスキップされます。[モードが自動承認しないアクション](/docs/ja/permission-modes.md#actions-no-mode-auto-approves)は引き続き適用されます |
+| [オートモード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode) | 各ツール呼び出しが実行されるかどうか | アクションをレビューする分類器 |
+| `--dangerously-skip-permissions` | 各ツール呼び出しが実行されるかどうか | なし。[保護されたパス](https://code.claude.com/docs/ja/permission-modes.md#protected-paths)チェックもスキップされます。[どのモードも自動承認しないアクション](https://code.claude.com/docs/ja/permission-modes.md#actions-no-mode-auto-approves)は引き続き適用されます |
 
-サンドボックスの[オートアロー モード](#sandbox-modes)は[オートモード](/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)とは別です。オートアロー はサンドボックス境界がそれらを含むため Bash コマンドを承認し、オートモードはアクションをレビューするために分類器を使用します。この 2 つは独立して機能し、[サンドボックス モード](#sandbox-modes)の下にリストされている例外を除いて組み合わせることができます。無人実行の分離境界を選択するには、[サンドボックス環境](/docs/ja/sandbox-environments.md#how-isolation-relates-to-permission-modes)を参照してください。各フラグを開始する一般的な権限モードとサンドボックスペアリングのテーブルについては、[一般的なセットアップ](/docs/ja/permission-modes.md#common-setups)を参照してください。
+サンドボックスの[オートアロー モード](#sandbox-modes)は[オートモード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)とは別です。オートアロー はサンドボックス境界がそれらを含むため Bash コマンドを承認し、オートモードはアクションをレビューするために分類器を使用します。この 2 つは独立して機能し、[サンドボックス モード](#sandbox-modes)の下にリストされている例外を除いて組み合わせることができます。無人実行の分離境界を選択するには、[サンドボックス環境](https://code.claude.com/docs/ja/sandbox-environments.md#how-isolation-relates-to-permission-modes)を参照してください。各フラグを開始する一般的な権限モードとサンドボックスペアリングのテーブルについては、[一般的なセットアップ](https://code.claude.com/docs/ja/permission-modes.md#common-setups)を参照してください。
 
 ## 組織のサンドボックスを設定する
 
@@ -689,7 +689,7 @@ Claude Code はサンドボックスの外、ユーザーのマシン上でサ�
 
 ### 管理設定でサンドボックス化を実施する
 
-すべての開発者にサンドボックスを要求するには、[管理設定](/docs/ja/managed-settings.md#delivery-mechanisms)を通じて `sandbox` キーを配信します。MDM で管理されるファイルまたは claude.ai の[サーバー管理設定](/docs/ja/server-managed-settings.md)を通じて配信します。
+すべての開発者にサンドボックスを要求するには、[管理設定](https://code.claude.com/docs/ja/managed-settings.md#delivery-mechanisms)を通じて `sandbox` キーを配信します。MDM で管理されるファイルまたは claude.ai の[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)を通じて配信します。
 
 以下の管理設定はサンドボックスを有効化し、プラットフォームがサポートされていない場合や依存関係が不足している場合は Claude Code の起動を拒否し、モデルがサンドボックス外でコマンドを再試行するのを防止します。
 
@@ -713,11 +713,11 @@ Claude Code はサンドボックスの外、ユーザーのマシン上でサ�
 * 分離なしで実行する必要がある組織承認済みのツールについて `excludedCommands` を追加します。この設定により、[リポジトリの設定でコマンドをサンドボックスの外に出すことができなくなる](#repository-settings-under-an-admin-required-sandbox)ためです
 * `~/.aws` や `~/.ssh` などの認証情報ディレクトリと、秘密の環境変数について [`sandbox.credentials`](#protect-credentials) エントリを追加します。デフォルトの読み取りポリシーではこれらが引き続き許可されるためです
 
-この設定は Claude が実行するコマンドをサンドボックス化します。開発者は依然として [`!` シェルモードプロンプト](/docs/ja/interactive-mode#shell-mode-with-prefix)でコマンドを入力し、Claude Code の外の任意のターミナルで既に持っているのと同じアクセス権でサンドボックス外で実行できます。入力されたコマンドがサンドボックス内で実行されるセッションについては、[strict サンドボックスモード](#turn-off-the-retry-with-strict-sandbox-mode)を参照してください。
+この設定は Claude が実行するコマンドをサンドボックス化します。開発者は依然として [`!` シェルモードプロンプト](https://code.claude.com/docs/ja/interactive-mode#shell-mode-with-prefix)でコマンドを入力し、Claude Code の外の任意のターミナルで既に持っているのと同じアクセス権でサンドボックス外で実行できます。入力されたコマンドがサンドボックス内で実行されるセッションについては、[strict サンドボックスモード](#turn-off-the-retry-with-strict-sandbox-mode)を参照してください。
 
 サンドボックスはネイティブ Windows では実行されないため、`failIfUnavailable` が設定されていると、それらのマシンでは Claude Code が起動時に終了します。フリートに Windows ホストが含まれている場合は、次の方法を取れます。
 
-* **オペレーティングシステムごとに設定を配信する**：MDM を通じて、または[管理設定ファイル](/docs/ja/managed-settings.md#delivery-mechanisms)として、macOS と Linux のマシンにのみデプロイします。[サーバー管理設定](/docs/ja/server-managed-settings.md#current-limitations)は組織内のすべてのユーザーに適用されます
+* **オペレーティングシステムごとに設定を配信する**：MDM を通じて、または[管理設定ファイル](https://code.claude.com/docs/ja/managed-settings.md#delivery-mechanisms)として、macOS と Linux のマシンにのみデプロイします。[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md#current-limitations)は組織内のすべてのユーザーに適用されます
 * **Windows ユーザーをサポートされている環境に移行する**：WSL2 またはコンテナ内で Claude Code を実行してもらいます
 
 ### 開発者がポリシーを広げるのを防ぐ
@@ -726,23 +726,23 @@ Claude Code はサンドボックスの外、ユーザーのマシン上でサ�
 
 管理設定で設定されていない限り、開発者のユーザー設定または `--settings` で次のキーをオンにできます。サンドボックスが[管理者必須](#repository-settings-under-an-admin-required-sandbox)でない限り、リポジトリの `.claude/settings.json` でもオンにできます。いずれもサンドボックスを弱めるため、使用させたくない場合は管理設定で `false` に設定してください。
 
-* [`enableWeakerNestedSandbox`](/docs/ja/settings-reference#sandbox-enableweakernestedsandbox)
-* [`enableWeakerNetworkIsolation`](/docs/ja/settings-reference#sandbox-enableweakernetworkisolation)
-* [`network.allowAllUnixSockets`](/docs/ja/settings-reference#sandbox-network-allowallunixsockets)
-* [`network.allowLocalBinding`](/docs/ja/settings-reference#sandbox-network-allowlocalbinding)
-* [`allowAppleEvents`](/docs/ja/settings-reference#sandbox-allowappleevents)（リポジトリではオンにできません）
-* [`allowNestedUserNamespaces`](/docs/ja/settings-reference#sandbox-allownestedusernamespaces)（リポジトリではオンにできません）
+* [`enableWeakerNestedSandbox`](https://code.claude.com/docs/ja/settings-reference#sandbox-enableweakernestedsandbox)
+* [`enableWeakerNetworkIsolation`](https://code.claude.com/docs/ja/settings-reference#sandbox-enableweakernetworkisolation)
+* [`network.allowAllUnixSockets`](https://code.claude.com/docs/ja/settings-reference#sandbox-network-allowallunixsockets)
+* [`network.allowLocalBinding`](https://code.claude.com/docs/ja/settings-reference#sandbox-network-allowlocalbinding)
+* [`allowAppleEvents`](https://code.claude.com/docs/ja/settings-reference#sandbox-allowappleevents)（リポジトリではオンにできません）
+* [`allowNestedUserNamespaces`](https://code.claude.com/docs/ja/settings-reference#sandbox-allownestedusernamespaces)（リポジトリではオンにできません）
 
-管理設定で `allowManagedReadPathsOnly` を `true` に設定して、管理設定からの `allowRead` エントリのみが尊重されるようにします。これにより、開発者が組織承認済みのパスを超えて読み取りアクセスを広げるのを防止します。ネットワークドメインを同じ方法で管理値にロックするには、[`allowManagedDomainsOnly`](/docs/ja/settings-reference#sandbox-network-allowmanageddomainsonly) を設定します。`allowManagedDomainsOnly` がオンの場合、[プロキシポート](#custom-proxy-configuration)を設定できるのは管理設定のみです。
+管理設定で `allowManagedReadPathsOnly` を `true` に設定して、管理設定からの `allowRead` エントリのみが尊重されるようにします。これにより、開発者が組織承認済みのパスを超えて読み取りアクセスを広げるのを防止します。ネットワークドメインを同じ方法で管理値にロックするには、[`allowManagedDomainsOnly`](https://code.claude.com/docs/ja/settings-reference#sandbox-network-allowmanageddomainsonly) を設定します。`allowManagedDomainsOnly` がオンの場合、[プロキシポート](#custom-proxy-configuration)を設定できるのは管理設定のみです。
 
-管理設定が `sandbox.filesystem` を設定するか、`"mode": "deny"` を含む `sandbox.credentials.files` エントリをリストする場合、管理設定のみが [`filesystem.disabled`](#disable-filesystem-isolation) を設定できるため、開発者はそのキーでファイルシステム分離をオフにすることはできません。[有効な](/docs/ja/settings-reference.md#invalid-credential-entries-in-managed-settings) `mask` エントリはキーをロックしません。[どの設定がそれを無効にできるか](#which-settings-can-disable-it)を参照してください。
+管理設定が `sandbox.filesystem` を設定するか、`"mode": "deny"` を含む `sandbox.credentials.files` エントリをリストする場合、管理設定のみが [`filesystem.disabled`](#disable-filesystem-isolation) を設定できるため、開発者はそのキーでファイルシステム分離をオフにすることはできません。[有効な](https://code.claude.com/docs/ja/settings-reference.md#invalid-credential-entries-in-managed-settings) `mask` エントリはキーをロックしません。[どの設定がそれを無効にできるか](#which-settings-can-disable-it)を参照してください。
 
 #### 管理者必須のサンドボックスにおけるリポジトリ設定
 
 次のいずれかの設定が有効な間、サンドボックスは管理者必須になります。
 
-* [`allowUnsandboxedCommands`](/docs/ja/settings-reference#sandbox-allowunsandboxedcommands) が管理設定で `false` に設定されている場合、または管理設定で `true` に設定されていない限り `--settings` フラグで `false` に設定されている場合
-* [`allowManagedDomainsOnly`](/docs/ja/settings-reference#sandbox-network-allowmanageddomainsonly) が管理設定で `true` に設定されている場合
+* [`allowUnsandboxedCommands`](https://code.claude.com/docs/ja/settings-reference#sandbox-allowunsandboxedcommands) が管理設定で `false` に設定されている場合、または管理設定で `true` に設定されていない限り `--settings` フラグで `false` に設定されている場合
+* [`allowManagedDomainsOnly`](https://code.claude.com/docs/ja/settings-reference#sandbox-network-allowmanageddomainsonly) が管理設定で `true` に設定されている場合
 
 これらの設定はサンドボックスをオンにしないため、`enabled` も設定してください。
 
@@ -784,7 +784,7 @@ Claude Code v2.1.285 以降が必要です。v2.1.282 から v2.1.284 では、�
 
 ネットワーク上の別の場所にある企業プロキシを通じてサンドボックストラフィックをルーティングするには、代わりに [ネットワーク分離](#network-isolation)の **企業プロキシ** の項目で説明されているように `HTTPS_PROXY` を設定します。そうすることで、Claude Code の許可リストが引き続き適用されます。
 
-サンドボックス化されたコマンドをプロキシに向けるには、[サンドボックス設定](/docs/ja/settings-reference.md#sandbox-settings)でプロキシがリッスンする localhost のポートを設定します。
+サンドボックス化されたコマンドをプロキシに向けるには、[サンドボックス設定](https://code.claude.com/docs/ja/settings-reference.md#sandbox-settings)でプロキシがリッスンする localhost のポートを設定します。
 
 ```json theme={null}
 {
@@ -821,7 +821,7 @@ Claude Code はそれ以外の場所で設定されたポートを無視しま�
 
 ### コマンドがホスト許可なしエラーで失敗する
 
-多くの CLI ツールは特定のホストに到達する必要があります。プロンプトが表示されたらホストを承認するか、[`allowedDomains`](/docs/ja/settings-reference#sandbox-network-alloweddomains) に追加してください。組織が `allowManagedDomainsOnly` で許可リストをロックしている場合はプロンプトが表示されないため、管理者にホストの追加を依頼してください。
+多くの CLI ツールは特定のホストに到達する必要があります。プロンプトが表示されたらホストを承認するか、[`allowedDomains`](https://code.claude.com/docs/ja/settings-reference#sandbox-network-alloweddomains) に追加してください。組織が `allowManagedDomainsOnly` で許可リストをロックしている場合はプロンプトが表示されないため、管理者にホストの追加を依頼してください。
 
 ### `jest` がハングまたは失敗する
 
@@ -829,11 +829,11 @@ Claude Code はそれ以外の場所で設定されたポートを無視しま�
 
 ### Go ベースの CLI が macOS で TLS 検証に失敗する
 
-`gh`、`gcloud`、`terraform` などのツールは [Seatbelt](#os-level-enforcement) の下で TLS 検証に失敗する可能性があります。これらのツールをサンドボックス外で実行するには、各ツールのパターン（`gh *` など）を [`excludedCommands`](#run-commands-outside-the-sandbox-with-excludedcommands) に追加してください。そのツールはユーザーの完全なアクセス権と保存された認証情報で実行されます。`httpProxyPort` を MITM プロキシとカスタム CA で使用している場合は、代わりに [`enableWeakerNetworkIsolation`](/docs/ja/settings-reference#sandbox-enableweakernetworkisolation) を `true` に設定してください。
+`gh`、`gcloud`、`terraform` などのツールは [Seatbelt](#os-level-enforcement) の下で TLS 検証に失敗する可能性があります。これらのツールをサンドボックス外で実行するには、各ツールのパターン（`gh *` など）を [`excludedCommands`](#run-commands-outside-the-sandbox-with-excludedcommands) に追加してください。そのツールはユーザーの完全なアクセス権と保存された認証情報で実行されます。`httpProxyPort` を MITM プロキシとカスタム CA で使用している場合は、代わりに [`enableWeakerNetworkIsolation`](https://code.claude.com/docs/ja/settings-reference#sandbox-enableweakernetworkisolation) を `true` に設定してください。
 
 ### `open`、`osascript`、またはブラウザベースの認証フローが macOS でエラー `-600` で失敗する
 
-サンドボックスはデフォルトで Apple Events をブロックします。ユーザー、管理、または CLI 設定で [`allowAppleEvents`](/docs/ja/settings-reference#sandbox-allowappleevents) を `true` に設定して、それらを許可してください。Claude Code はプロジェクト設定ではこのキーを無視します。
+サンドボックスはデフォルトで Apple Events をブロックします。ユーザー、管理、または CLI 設定で [`allowAppleEvents`](https://code.claude.com/docs/ja/settings-reference#sandbox-allowappleevents) を `true` に設定して、それらを許可してください。Claude Code はプロジェクト設定ではこのキーを無視します。
 
 `allowAppleEvents` を有効にするとコード実行の分離が削除されます。サンドボックス化されたコマンドはユーザープロンプトなしで他のアプリケーションをサンドボックス化されていない状態で起動でき、macOS オートメーション同意プロンプト（TCC）の対象となる実行中のアプリケーションに AppleScript コマンドを送信できるためです。または、`open *` などのパターンを [`excludedCommands`](#run-commands-outside-the-sandbox-with-excludedcommands) に追加してください。その場合、各 `open` 呼び出しは権限フローを経由します。また、`open` は Claude が書いたものを含め、任意のファイルやアプリを起動できます。
 
@@ -846,30 +846,30 @@ Claude Code はそれ以外の場所で設定されたポートを無視しま�
 Linux と WSL2 では、サンドボックス内のコマンドはデフォルトでユーザー名前空間を作成できないため、それに依存するツールは失敗します：
 
 * Chromium が `No usable sandbox!` で終了する
-* `unshare -U true` が `unshare: unshare failed: Operation not permitted` を出力する。[`allowAllUnixSockets`](/docs/ja/settings-reference#sandbox-network-allowallunixsockets) がオンの場合は、代わりに `No space left on device` を出力することがある
+* `unshare -U true` が `unshare: unshare failed: Operation not permitted` を出力する。[`allowAllUnixSockets`](https://code.claude.com/docs/ja/settings-reference#sandbox-network-allowallunixsockets) がオンの場合は、代わりに `No space left on device` を出力することがある
 * ルートレス Podman が `cannot clone: Operation not permitted` を出力する、またはそれより前に自身のフォルダのいずれかで `read-only file system` により停止する
 
-[`CLAUDE_CODE_SUBPROCESS_ENV_SCRUB`](/docs/ja/env-vars#variables) が `1` に設定されたセッションでは、Chromium または Electron を `--no-sandbox` で起動し、その他のツールは Claude Code の外で自分で実行してください。そのセッションでは[すべてのコマンドがサンドボックス内で実行される](#turn-off-the-retry-with-strict-sandbox-mode)ため、以下の他の修正で挙げる設定は効果がありません。
+[`CLAUDE_CODE_SUBPROCESS_ENV_SCRUB`](https://code.claude.com/docs/ja/env-vars#variables) が `1` に設定されたセッションでは、Chromium または Electron を `--no-sandbox` で起動し、その他のツールは Claude Code の外で自分で実行してください。そのセッションでは[すべてのコマンドがサンドボックス内で実行される](#turn-off-the-retry-with-strict-sandbox-mode)ため、以下の他の修正で挙げる設定は効果がありません。
 
 各修正は、挙げたツールに対して機能しますが、分離の一部を犠牲にします：
 
 * Chromium または Electron の場合は、ブラウザを `--no-sandbox` で起動します。Claude Code のサンドボックスはそのままですが、ブラウザは独自のサンドボックスなしで Web コンテンツを実行します。
 * ルートレス Podman、Buildah、またはブラウザや `unshare` を実行するスクリプトやテストコマンドの場合は、`podman *` などのパターンを [`sandbox.excludedCommands`](#run-commands-outside-the-sandbox-with-excludedcommands) に追加します。一致するコマンドはユーザーの完全なアクセス権でサンドボックス外で実行され、Claude は実行前に作業ディレクトリ内のスクリプトを編集できます。パターンは Claude が実行するコマンドに一致する必要があるため、ブラウザの場合はブラウザではなくテストコマンドに一致させてください。
-* Chromium や Electron 独自のサンドボックスを維持する場合、またはネストされた bubblewrap や `unshare` を実行する場合は、プロジェクトの `.claude/settings.json` ではなく `~/.claude/settings.json` で [`sandbox.allowNestedUserNamespaces`](/docs/ja/settings-reference#sandbox-allownestedusernamespaces) を `true` に設定します。Claude Code v2.1.305 以降が必要です。`unshare` は他の任意のプログラムを起動できるため、`unshare` で始まるコマンドは、どの `excludedCommands` パターンを指定してもサンドボックス内のままです。この設定だけではルートレス Podman や Buildah には不十分です。サンドボックスはこれらを他の方法でも停止するためです。
+* Chromium や Electron 独自のサンドボックスを維持する場合、またはネストされた bubblewrap や `unshare` を実行する場合は、プロジェクトの `.claude/settings.json` ではなく `~/.claude/settings.json` で [`sandbox.allowNestedUserNamespaces`](https://code.claude.com/docs/ja/settings-reference#sandbox-allownestedusernamespaces) を `true` に設定します。Claude Code v2.1.305 以降が必要です。`unshare` は他の任意のプログラムを起動できるため、`unshare` で始まるコマンドは、どの `excludedCommands` パターンを指定してもサンドボックス内のままです。この設定だけではルートレス Podman や Buildah には不十分です。サンドボックスはこれらを他の方法でも停止するためです。
 
 > [!WARNING]
 >
 > `allowNestedUserNamespaces` を `true` に設定すると、セキュリティ境界がオフになります。サンドボックス化されたコマンドのコードが、最終的にサンドボックス外で実行される可能性があります。
 >
-> [保護されたパス](#protected-paths)や [`credentials.files`](/docs/ja/settings-reference#sandbox-credentials-files) エントリを含め、サンドボックスのどの制限にも、悪意のあるコマンドの阻止を期待しないでください。[自動許可モード](#auto-allow-mode)では、そのようなコマンドが権限プロンプトなしで実行される可能性があります。組織にセキュリティチームがある場合は、この設定をオンにする前に確認してください。
+> [保護されたパス](#protected-paths)や [`credentials.files`](https://code.claude.com/docs/ja/settings-reference#sandbox-credentials-files) エントリを含め、サンドボックスのどの制限にも、悪意のあるコマンドの阻止を期待しないでください。[自動許可モード](#auto-allow-mode)では、そのようなコマンドが権限プロンプトなしで実行される可能性があります。組織にセキュリティチームがある場合は、この設定をオンにする前に確認してください。
 
 ### `pbcopy`、`xclip`、または `wl-copy` がクリップボードを更新しない
 
 `pbcopy`、`xclip`、`wl-copy` のクリップボードユーティリティはサンドボックス内からシステムクリップボードに到達できない場合があり、その場合はパイプされたテキストが到達しません。
 
-Claude の出力をクリップボードに配置するには、Claude に応答で出力するよう依頼してから、[`/copy`](/docs/ja/commands) を実行してください。`/copy` はサンドボックス化されたコマンドではなく Claude Code プロセスからクリップボードに書き込みます。
+Claude の出力をクリップボードに配置するには、Claude に応答で出力するよう依頼してから、[`/copy`](https://code.claude.com/docs/ja/commands) を実行してください。`/copy` はサンドボックス化されたコマンドではなく Claude Code プロセスからクリップボードに書き込みます。
 
-Claude がテキストをこれらのツールの 1 つにパイプする場合、ツールを [`excludedCommands`](/docs/ja/settings-reference#sandbox-excludedcommands) に追加しても、それだけではその呼び出しはサンドボックス外に出ません。
+Claude がテキストをこれらのツールの 1 つにパイプする場合、ツールを [`excludedCommands`](https://code.claude.com/docs/ja/settings-reference#sandbox-excludedcommands) に追加しても、それだけではその呼び出しはサンドボックス外に出ません。
 
 ### git コマンドが `unable to unlink old` で失敗する
 
@@ -883,13 +883,13 @@ Claude がテキストをこれらのツールの 1 つにパイプする場合�
 
 ### Bubblewrap がコンテナ内で起動に失敗する
 
-非特権コンテナでは、[bubblewrap](#os-level-enforcement) は新しい `/proc` ファイルシステムをマウントできないため、サンドボックス化されたコマンドは `bwrap` エラー（`Can't mount proc on /newroot/proc: Operation not permitted` など）で失敗します。[`enableWeakerNestedSandbox`](/docs/ja/settings-reference#sandbox-enableweakernestedsandbox) を `true` に設定して、サンドボックスが代わりにコンテナの既存の `/proc` をバインドマウントするようにしてください。この設定は、外部コンテナが既に必要な分離境界を提供する場合にのみ使用してください。新しい `/proc` マウントであれば隠されるプロセス情報を、この設定はサンドボックス化されたコマンドに公開するためです。
+非特権コンテナでは、[bubblewrap](#os-level-enforcement) は新しい `/proc` ファイルシステムをマウントできないため、サンドボックス化されたコマンドは `bwrap` エラー（`Can't mount proc on /newroot/proc: Operation not permitted` など）で失敗します。[`enableWeakerNestedSandbox`](https://code.claude.com/docs/ja/settings-reference#sandbox-enableweakernestedsandbox) を `true` に設定して、サンドボックスが代わりにコンテナの既存の `/proc` をバインドマウントするようにしてください。この設定は、外部コンテナが既に必要な分離境界を提供する場合にのみ使用してください。新しい `/proc` マウントであれば隠されるプロセス情報を、この設定はサンドボックス化されたコマンドに公開するためです。
 
 ### 0 バイトの読み取り専用ファイルが `.claude` 設定パスに表示され、「はい、今後は聞かない」が保存されない
 
 Linux と WSL2 では、サンドボックスはサンドボックス化されたコマンドが実行されている間に、まだ存在しないファイルに対する書き込み拒否を保持するために、そこに 0 バイトの読み取り専用プレースホルダーを作成します。サンドボックスはその後プレースホルダーを削除します。SIGKILL などによってセッションがそのクリーンアップが実行される前に強制終了された場合、プレースホルダーは残ります。後のセッションは毎回起動時にそれらを読み取り専用で再度バインドするため、プレースホルダーが残っている箇所では、権限の選択を保存するなどの設定書き込みが失敗します。
 
-ターミナルで `claude doctor` を実行して、残されたプレースホルダーファイルをリストアップしてください。[`Sandbox mask files left behind at write-deny paths`](/docs/ja/errors#stale-sandbox-mask-files-left-by-a-killed-session) 警告はその一部の名前を表示し、残りをカウントします。そのプロジェクトで他の Claude Code セッションが実行されていない間に、`rm` で各ファイルを削除してください。v2.1.257 より前では、Claude Code は同じプレースホルダーを残していましたが、警告していませんでした。
+ターミナルで `claude doctor` を実行して、残されたプレースホルダーファイルをリストアップしてください。[`Sandbox mask files left behind at write-deny paths`](https://code.claude.com/docs/ja/errors#stale-sandbox-mask-files-left-by-a-killed-session) 警告はその一部の名前を表示し、残りをカウントします。そのプロジェクトで他の Claude Code セッションが実行されていない間に、`rm` で各ファイルを削除してください。v2.1.257 より前では、Claude Code は同じプレースホルダーを残していましたが、警告していませんでした。
 
 ### サンドボックスがオンの状態で SSH 経由の `git` が失敗する
 
@@ -932,7 +932,7 @@ SSH 経由の単純な `ssh`、`scp`、`rsync` は、[データベースクラ�
 
 プロキシを使用するツールは、ホストが許可されていない場合に異なる形で失敗します。ネットワークのプロンプトが表示されるか、ツールがプロキシから `403` レスポンスを受け取ります。
 
-ツールが接続できるようにするには、それを必要とするコマンドを [`excludedCommands`](#run-commands-outside-the-sandbox-with-excludedcommands) でサンドボックス外で実行してください。この例では 1 つのスクリプトを除外し、[ask ルール](/docs/ja/permissions.md)を追加して、実行ごとに承認するようにしています：
+ツールが接続できるようにするには、それを必要とするコマンドを [`excludedCommands`](#run-commands-outside-the-sandbox-with-excludedcommands) でサンドボックス外で実行してください。この例では 1 つのスクリプトを除外し、[ask ルール](https://code.claude.com/docs/ja/permissions.md)を追加して、実行ごとに承認するようにしています：
 
 ```json theme={null}
 {
@@ -951,7 +951,7 @@ SSH 経由の単純な `ssh`、`scp`、`rsync` は、[データベースクラ�
 
 デフォルトでは、サンドボックス化されたコマンドは、開発サーバーやコンテナ内のデータベースなど、マシン上でサンドボックス外で実行されているサーバーに直接接続できません。変更できる内容はプラットフォームによって異なります：
 
-* **macOS**：[`network.allowLocalBinding`](/docs/ja/settings-reference#sandbox-network-allowlocalbinding) を `true` に設定します。これにより、サンドボックス化されたコマンドはネットワークポートでリッスンし、localhost の任意のポートに接続できるようになります。これには、そこでリッスンしている他のすべてのサービスが含まれます。その結果、認証を必要としない localhost サービス（デバッガーなど）がサンドボックス外でコマンドの代わりに動作できるようになり、非ループバックアドレスでリッスンするコマンドは他のマシンからの接続を受け入れます
+* **macOS**：[`network.allowLocalBinding`](https://code.claude.com/docs/ja/settings-reference#sandbox-network-allowlocalbinding) を `true` に設定します。これにより、サンドボックス化されたコマンドはネットワークポートでリッスンし、localhost の任意のポートに接続できるようになります。これには、そこでリッスンしている他のすべてのサービスが含まれます。その結果、認証を必要としない localhost サービス（デバッガーなど）がサンドボックス外でコマンドの代わりに動作できるようになり、非ループバックアドレスでリッスンするコマンドは他のマシンからの接続を受け入れます
 * **Linux と WSL2**：サンドボックス化されたコマンドの `localhost` はそのコマンド専用です。コマンドはポートでリッスンでき、自身が起動したサーバーに到達できます。`localhost` または `127.0.0.1` への直接接続はホスト上のサーバーには到達せず、`allowLocalBinding` は効果がありません。ホストのサーバーを必要とするコマンドは、[`excludedCommands`](#run-commands-outside-the-sandbox-with-excludedcommands) でサンドボックス外で実行してください。そこではファイルシステムやネットワークの制限はありません。サンドボックスプロキシを経由する接続については、[ローカルアドレスに解決されるホスト名](#hostnames-that-resolve-to-local-addresses)を参照してください
 
 この例では macOS でこの設定をオンにします：
@@ -990,11 +990,11 @@ v2.1.284 より前では、プロキシは許可されたホスト名がどの�
 
 ### `/sandbox` が `Sandbox settings are overridden by a higher-priority configuration` で失敗する
 
-上位の[設定レベル](/docs/ja/settings.md#settings-precedence)が `sandbox.enabled`、`sandbox.autoAllowBashIfSandboxed`、または `sandbox.allowUnsandboxedCommands` を設定している場合、`/sandbox` はパネルを開く代わりに `Error: Sandbox settings are overridden by a higher-priority configuration and cannot be changed locally.` を出力します。パネルは選択内容を `.claude/settings.local.json` に保存しますが、そこに保存された値はそれらのレベルを上書きできません。
+上位の[設定レベル](https://code.claude.com/docs/ja/settings.md#settings-precedence)が `sandbox.enabled`、`sandbox.autoAllowBashIfSandboxed`、または `sandbox.allowUnsandboxedCommands` を設定している場合、`/sandbox` はパネルを開く代わりに `Error: Sandbox settings are overridden by a higher-priority configuration and cannot be changed locally.` を出力します。パネルは選択内容を `.claude/settings.local.json` に保存しますが、そこに保存された値はそれらのレベルを上書きできません。
 
 管理設定と `--settings` はローカル設定より優先されます。このセッションでどれが読み込まれたかを確認するには、`/status` を実行して `Setting sources` 行を確認してください：
 
-* **`Command line arguments`**：[`--settings`](/docs/ja/settings#change-a-setting-for-one-session) を指定して Claude Code を起動した場合は、渡したファイルまたは JSON がこれらのキーのいずれかを設定しているか確認してください。設定している場合は、そこで値を変更するか、これらのキーを含めずに Claude Code を再起動してください。
+* **`Command line arguments`**：[`--settings`](https://code.claude.com/docs/ja/settings#change-a-setting-for-one-session) を指定して Claude Code を起動した場合は、渡したファイルまたは JSON がこれらのキーのいずれかを設定しているか確認してください。設定している場合は、そこで値を変更するか、これらのキーを含めずに Claude Code を再起動してください。
 * **`Enterprise managed settings`**：組織の管理設定が読み込まれています。それらがこれらのキーのいずれかを設定している場合、そのキーは `/sandbox` からも、ユーザーが管理するどの設定ファイルからも変更できないため、管理者に問い合わせてください。
 
 ### `/sandbox` が `Sandbox settings not changed` を出力する
@@ -1017,7 +1017,7 @@ v2.1.284 より前では、プロキシは許可されたホスト名がどの�
 }
 ```
 
-これにより[自動許可モード](#sandbox-modes)がオンになります。通常の権限モードにするには、[`sandbox.autoAllowBashIfSandboxed`](/docs/ja/settings-reference#sandbox-autoallowbashifsandboxed) も `false` に設定してください。この変更は、実行中のセッションで Claude が次にシェルコマンドを実行した時点で有効になり、その後 `/sandbox` の **Mode** タブに有効なモードが表示されます。
+これにより[自動許可モード](#sandbox-modes)がオンになります。通常の権限モードにするには、[`sandbox.autoAllowBashIfSandboxed`](https://code.claude.com/docs/ja/settings-reference#sandbox-autoallowbashifsandboxed) も `false` に設定してください。この変更は、実行中のセッションで Claude が次にシェルコマンドを実行した時点で有効になり、その後 `/sandbox` の **Mode** タブに有効なモードが表示されます。
 
 ## 制限事項
 
@@ -1025,7 +1025,7 @@ v2.1.284 より前では、プロキシは許可されたホスト名がどの�
 
 ### セキュリティ上の制限
 
-* **ネットワークフィルタリング**：サンドボックスは、プロセスが接続できるドメインを制限します。デフォルトでは、組み込みプロキシは発信トラフィックの TLS を終端または検査しないため、暗号化された接続の内容は検査されません。実験的な [`network.tlsTerminate`](/docs/ja/settings-reference#sandbox-network-tlsterminate) 設定は、[`mask` 認証情報置換](#mask-credentials)のためにプロキシで TLS を終了しますが、コンテンツフィルタリングは追加しません。ポリシーで許可されるのは信頼できるドメインのみであることを確認する責任があります。
+* **ネットワークフィルタリング**：サンドボックスは、プロセスが接続できるドメインを制限します。デフォルトでは、組み込みプロキシは発信トラフィックの TLS を終端または検査しないため、暗号化された接続の内容は検査されません。実験的な [`network.tlsTerminate`](https://code.claude.com/docs/ja/settings-reference#sandbox-network-tlsterminate) 設定は、[`mask` 認証情報置換](#mask-credentials)のためにプロキシで TLS を終了しますが、コンテンツフィルタリングは追加しません。ポリシーで許可されるのは信頼できるドメインのみであることを確認する責任があります。
 
 > [!WARNING]
 >
@@ -1035,17 +1035,17 @@ v2.1.284 より前では、プロキシは許可されたホスト名がどの�
 * **ファイルシステム権限昇格**：過度に広いファイルシステム書き込み権限は権限昇格攻撃を有効にする可能性があります。`$PATH` の実行可能ファイルを含むディレクトリ、システム設定ディレクトリ、またはユーザーシェル設定ファイル（`.bashrc` または `.zshrc`）への書き込みを許可すると、他のユーザーまたはシステムプロセスがこれらのファイルにアクセスするときに異なるセキュリティコンテキストでコード実行につながる可能性があります。
 * **Linux サンドボックス強度**：Linux 実装は強力なファイルシステムとネットワーク分離を提供しますが、特権付き名前空間のない Docker 環境内で動作できるようにする `enableWeakerNestedSandbox` モードが含まれています。このオプションはセキュリティを大幅に弱め、追加の分離が別の方法で実施される場合にのみ使用する必要があります。
 * **macOS での Apple Events**：macOS サンドボックスはデフォルトで Apple Events をブロックします。`allowAppleEvents` 設定はこの制限を解除して、`open` や `osascript` などのツールが動作するようにしますが、コード実行分離を削除します。サンドボックス化されたコマンドは、ユーザープロンプトなしで他のアプリケーションをサンドボックス化されていない状態で起動でき、実行中のアプリケーションに AppleScript コマンドを送信できます。これはアプリごとの macOS オートメーション同意プロンプト（TCC）の対象です。これはユーザー、管理、または CLI 設定からのみ有効です。プロジェクト設定では有効にできません。
-* **Linux および WSL2 でのユーザー名前空間**：デフォルトでは、サンドボックス化されたコマンドはユーザー名前空間を作成できません。[`allowNestedUserNamespaces`](/docs/ja/settings-reference#sandbox-allownestedusernamespaces) を `true` に設定すると、セキュリティ境界をオフにすることになり、サンドボックス化されたコマンドのコードがサンドボックス外で実行される可能性があります。この設定をオンにする前に、[Linux のサンドボックス内で Chromium または rootless Podman が失敗する](#chromium-or-rootless-podman-fails-inside-the-sandbox-on-linux)の警告を確認してください。
+* **Linux および WSL2 でのユーザー名前空間**：デフォルトでは、サンドボックス化されたコマンドはユーザー名前空間を作成できません。[`allowNestedUserNamespaces`](https://code.claude.com/docs/ja/settings-reference#sandbox-allownestedusernamespaces) を `true` に設定すると、セキュリティ境界をオフにすることになり、サンドボックス化されたコマンドのコードがサンドボックス外で実行される可能性があります。この設定をオンにする前に、[Linux のサンドボックス内で Chromium または rootless Podman が失敗する](#chromium-or-rootless-podman-fails-inside-the-sandbox-on-linux)の警告を確認してください。
 
 ### スコープ
 
 サンドボックスはシェルコマンドとその子プロセスを分離します。サンドボックスの対象外となるツールとヘルパープロセスは、[サンドボックス外で実行されるもの](#what-runs-outside-the-sandbox)に記載されています。コンピュータ使用とサブエージェントとサンドボックスの関係は次のとおりです。
 
-* **コンピュータ使用**：Claude がアプリを開いてスクリーンを制御する場合、分離された環境ではなく実際のデスクトップで実行されます。アプリごとの権限プロンプトが各アプリケーションをゲートします。[CLI でのコンピュータ使用](/docs/ja/computer-use.md)または [Desktop でのコンピュータ使用](/docs/ja/desktop.md#let-claude-use-your-computer)を参照してください。
-* **サブエージェント**：[subagents](/docs/ja/sub-agents.md)は親セッションと同じプロセスで実行され、同じサンドボックス設定を使用します。親セッションでサンドボックス化が有効な場合、サブエージェント内の Bash コマンドはサンドボックス化されます。
-* **バックグラウンドセッション**：[バックグラウンドセッション](/docs/ja/agent-view.md)は独自のプロセスで実行され、[その設定](/docs/ja/agent-view.md#settings-and-provider)でサンドボックス化が有効になっている場合、その Bash コマンドはサンドボックス化されます。
-* **プロセス全体を囲む境界**：[サンドボックス外で実行されるもの](#what-runs-outside-the-sandbox)に記載されたプロセスも境界の内側に置くには、承認したホストに限定したネットワーク許可リストを指定して [sandbox runtime](/docs/ja/sandbox-environments.md#sandbox-runtime) 内で Claude Code（ローカルモード）を実行するか、ファイアウォールスクリプトを備えた [dev container](/docs/ja/devcontainer.md) 内で実行します。バックグラウンドサービスとそれがホストするセッションについては、[企業ランチャーの背後で Claude Code を実行する](/docs/ja/corporate-launcher.md)を参照してください。
-* **Mod**：[mod](/docs/ja/plugins/mods/overview.md) は Claude Code 内で独自のコードを実行するプラグインであり、mod が起動するプロセスはサンドボックス外で実行されます。[mod がアクセスできる範囲](/docs/ja/plugins/mods/overview.md#what-a-mod-can-reach)を参照してください。
+* **コンピュータ使用**：Claude がアプリを開いてスクリーンを制御する場合、分離された環境ではなく実際のデスクトップで実行されます。アプリごとの権限プロンプトが各アプリケーションをゲートします。[CLI でのコンピュータ使用](https://code.claude.com/docs/ja/computer-use.md)または [Desktop でのコンピュータ使用](https://code.claude.com/docs/ja/desktop.md#let-claude-use-your-computer)を参照してください。
+* **サブエージェント**：[subagents](https://code.claude.com/docs/ja/sub-agents.md)は親セッションと同じプロセスで実行され、同じサンドボックス設定を使用します。親セッションでサンドボックス化が有効な場合、サブエージェント内の Bash コマンドはサンドボックス化されます。
+* **バックグラウンドセッション**：[バックグラウンドセッション](https://code.claude.com/docs/ja/agent-view.md)は独自のプロセスで実行され、[その設定](https://code.claude.com/docs/ja/agent-view.md#settings-and-provider)でサンドボックス化が有効になっている場合、その Bash コマンドはサンドボックス化されます。
+* **プロセス全体を囲む境界**：[サンドボックス外で実行されるもの](#what-runs-outside-the-sandbox)に記載されたプロセスも境界の内側に置くには、承認したホストに限定したネットワーク許可リストを指定して [sandbox runtime](https://code.claude.com/docs/ja/sandbox-environments.md#sandbox-runtime) 内で Claude Code（ローカルモード）を実行するか、ファイアウォールスクリプトを備えた [dev container](https://code.claude.com/docs/ja/devcontainer.md) 内で実行します。バックグラウンドサービスとそれがホストするセッションについては、[企業ランチャーの背後で Claude Code を実行する](https://code.claude.com/docs/ja/corporate-launcher.md)を参照してください。
+* **Mod**：[mod](https://code.claude.com/docs/ja/plugins/mods/overview.md) は Claude Code 内で独自のコードを実行するプラグインであり、mod が起動するプロセスはサンドボックス外で実行されます。[mod がアクセスできる範囲](https://code.claude.com/docs/ja/plugins/mods/overview.md#what-a-mod-can-reach)を参照してください。
 
 > [!WARNING]
 >
@@ -1053,8 +1053,8 @@ v2.1.284 より前では、プロキシは許可されたホスト名がどの�
 
 ## 関連項目
 
-* [Sandbox environments](/docs/ja/sandbox-environments.md)：組み込みサンドボックスと dev コンテナ、コンテナ、VM を比較する
-* [Security](/docs/ja/security.md)：セキュリティ機能とベストプラクティス
-* [Permissions](/docs/ja/permissions.md)：許可設定とアクセス制御
-* [All settings](/docs/ja/settings-reference.md)：すべての設定キー
-* [CLI reference](/docs/ja/cli-reference.md)：コマンドラインオプション
+* [Sandbox environments](https://code.claude.com/docs/ja/sandbox-environments.md)：組み込みサンドボックスと dev コンテナ、コンテナ、VM を比較する
+* [Security](https://code.claude.com/docs/ja/security.md)：セキュリティ機能とベストプラクティス
+* [Permissions](https://code.claude.com/docs/ja/permissions.md)：許可設定とアクセス制御
+* [All settings](https://code.claude.com/docs/ja/settings-reference.md)：すべての設定キー
+* [CLI reference](https://code.claude.com/docs/ja/cli-reference.md)：コマンドラインオプション

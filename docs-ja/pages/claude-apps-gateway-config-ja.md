@@ -6,7 +6,7 @@
 
 > gateway.yaml のすべてのオプションのリファレンス：リスナーと TLS、OIDC、セッション、Postgres ストア、Amazon Bedrock、Claude Platform on AWS、Google Cloud の Agent Platform、Microsoft Foundry アップストリーム、モデルルーティング、マネージドポリシー、テレメトリー。
 
-Claude apps gateway デプロイメントは、慣例的に `gateway.yaml` という 1 つの YAML ファイルで設定されます。このファイルは、ゲートウェイが行うすべてのことを定義します：どこでリッスンするか、開発者がどのようにサインインするか、推論がどこに行くか、どのポリシーとテレメトリーが適用されるかです。このページは、そのファイル内のすべてのオプションのリファレンスです。最初のファイルを作成するには、[クイックスタート](/docs/ja/claude-apps-gateway#quickstart)から始めてください。これは最小限の動作設定を構築して実行します。設定に満足したら、[デプロイメントガイド](/docs/ja/claude-apps-gateway-deploy.md)で、Kubernetes、Cloud Run、または独自のプラットフォームでのコンテナ化とホスティングについて説明しています。
+Claude apps gateway デプロイメントは、慣例的に `gateway.yaml` という 1 つの YAML ファイルで設定されます。このファイルは、ゲートウェイが行うすべてのことを定義します：どこでリッスンするか、開発者がどのようにサインインするか、推論がどこに行くか、どのポリシーとテレメトリーが適用されるかです。このページは、そのファイル内のすべてのオプションのリファレンスです。最初のファイルを作成するには、[クイックスタート](https://code.claude.com/docs/ja/claude-apps-gateway#quickstart)から始めてください。これは最小限の動作設定を構築して実行します。設定に満足したら、[デプロイメントガイド](https://code.claude.com/docs/ja/claude-apps-gateway-deploy.md)で、Kubernetes、Cloud Run、または独自のプラットフォームでのコンテナ化とホスティングについて説明しています。
 
 ゲートウェイは、`claude gateway --config /path/to/gateway.yaml` でスタートアップ時にファイルを 1 回読み込みます。すべてのオプションはブート時にスキーマに対して検証されるため、形式が正しくない設定は、最初の使用時ではなく、フィールドレベルのエラーで開始時に失敗します。
 
@@ -62,11 +62,11 @@ Claude apps gateway デプロイメントは、慣例的に `gateway.yaml` と�
 
 `oidc` ブロックは、ゲートウェイを ID プロバイダーに接続し、誰がサインインできるかを決定します。発行者と OAuth クライアントを指定し、メールアドレスとグループを伝えるクレームをマッピングし、メールドメインまたはグループによってサインインを制限します。
 
-OpenID Connect（OIDC）は、ゲートウェイが ID プロバイダーとの間で使用する SSO プロトコルです。IdP 側で登録する内容については、[ID プロバイダーのセットアップ](/docs/ja/claude-apps-gateway-deploy.md#identity-provider-setup)を参照してください。
+OpenID Connect（OIDC）は、ゲートウェイが ID プロバイダーとの間で使用する SSO プロトコルです。IdP 側で登録する内容については、[ID プロバイダーのセットアップ](https://code.claude.com/docs/ja/claude-apps-gateway-deploy.md#identity-provider-setup)を参照してください。
 
 | フィールド | 必須 | 説明 |
 | - | - | - |
-| `issuer` | はい | OIDC ディスカバリのベース。`/.well-known/openid-configuration` でディスカバリを提供する必要があります。本番環境では HTTPS を使用してください。ゲートウェイは `http://` の issuer も受け入れます。`http://localhost:8081` のようなループバックの issuer は、ゲートウェイの環境で `CLAUDE_GATEWAY_ALLOW_LOOPBACK=1` が設定されていない限り、[SSRF ガード](/docs/ja/claude-apps-gateway-deploy.md#threat-model-summary)によって拒否されます。 |
+| `issuer` | はい | OIDC ディスカバリのベース。`/.well-known/openid-configuration` でディスカバリを提供する必要があります。本番環境では HTTPS を使用してください。ゲートウェイは `http://` の issuer も受け入れます。`http://localhost:8081` のようなループバックの issuer は、ゲートウェイの環境で `CLAUDE_GATEWAY_ALLOW_LOOPBACK=1` が設定されていない限り、[SSRF ガード](https://code.claude.com/docs/ja/claude-apps-gateway-deploy.md#threat-model-summary)によって拒否されます。 |
 | `client_id` | はい | OAuth クライアント登録から取得 |
 | `client_secret` | `token_endpoint_auth_method` が `private_key_jwt` でない場合 | OAuth クライアント登録から取得。[証明書によるクライアント認証](#certificate-client-authentication)を使用する場合は省略してください。 |
 | `allowed_email_domains` | いいえ | `email` クレームがこれらのドメインのいずれにも含まれない id\_token を拒否します（大文字と小文字は区別しません）。マルチテナント IdP の設定ミスに対する多層防御です。この設定とは無関係に、`email_verified` クレームが明示的に `false` である id\_token は常に拒否されます。 |
@@ -74,7 +74,7 @@ OpenID Connect（OIDC）は、ゲートウェイが ID プロバイダーとの�
 | `groups_claim` | いいえ | グループメンバーシップを伝える id\_token クレーム。デフォルトは `groups`。Microsoft Entra はアプリロールを `roles` の下に発行します。フラットなキー、またはネストされたクレーム用の `/resource_access/gateway/roles` のような RFC 6901 JSON Pointer を受け付けます。 |
 | `google_groups` | いいえ | Google の id\_token にはグループクレームが含まれないため、Google Workspace Admin SDK Directory API を通じて、サインインしたユーザーのグループを検索します。`service_account_json_path` には、`https://www.googleapis.com/auth/admin.directory.group.readonly` スコープでドメイン全体の委任が設定されたサービスアカウントのキーファイルを、`admin_email` にはサービスアカウントが偽装する Workspace 管理者を設定します。Directory API では実際の管理者サブジェクトが必要です。各ユーザーのグループのメールアドレスがそのユーザーのグループクレームになるため、`allowed_groups` と `managed.policies.match.groups` はグループのメールアドレスで照合します。 |
 | `email_claim` | いいえ | ユーザーのメールアドレスを伝える id\_token クレーム。デフォルトは `email`。ADFS や Entra B2C などの一部の IdP は、代わりに `upn` または `preferred_username` を発行します。フラットなキー、JSON Pointer、またはフォールバックキーのリスト（最初に存在するキーが使用されます）を受け付けます。 |
-| `scopes` | いいえ | ゲートウェイが要求する OIDC スコープを完全に上書きします。デフォルトは `[openid, profile, email, offline_access]`。IdP が認識しないスコープを拒否する場合や、グループやメールアドレスを発行するためにカスタムスコープが必要な場合に設定します。`openid` を含める必要があります。`offline_access` を外すとリフレッシュトークンが無効になるため、開発者は `session.ttl_hours` ごとにブラウザログインをやり直すことになります。Google のリフレッシュトークンフローなど、IdP ごとのスコープのレシピについては[ID プロバイダーのセットアップ](/docs/ja/claude-apps-gateway-deploy.md#identity-provider-setup)を参照してください。 |
+| `scopes` | いいえ | ゲートウェイが要求する OIDC スコープを完全に上書きします。デフォルトは `[openid, profile, email, offline_access]`。IdP が認識しないスコープを拒否する場合や、グループやメールアドレスを発行するためにカスタムスコープが必要な場合に設定します。`openid` を含める必要があります。`offline_access` を外すとリフレッシュトークンが無効になるため、開発者は `session.ttl_hours` ごとにブラウザログインをやり直すことになります。Google のリフレッシュトークンフローなど、IdP ごとのスコープのレシピについては[ID プロバイダーのセットアップ](https://code.claude.com/docs/ja/claude-apps-gateway-deploy.md#identity-provider-setup)を参照してください。 |
 | `scope_on_refresh` | いいえ | ゲートウェイがリフレッシュトークンを交換する際にも、サインインリクエストと同じリストで `scope` を送信します。デフォルトは `false` で、リフレッシュリクエストは `scope` を省略します。ほとんどの IdP はリフレッシュのたびに id\_token を返すため、この設定は不要です。IdP が再度 `openid` を要求された場合にのみリフレッシュ時に id\_token を返す場合は `true` に設定します。Okta はリフレッシュグラントについてこの動作を文書化しています。id\_token がない場合、すべてのリフレッシュは、IdP の userinfo エンドポイントがリフレッシュされたアクセストークンを受け入れるかどうかに依存します。サインインの制限やポリシーの照合にグループを使用しており、IdP のリフレッシュ時の id\_token にグループが含まれない場合は、ゲートウェイが userinfo エンドポイントからグループを補完できるよう `userinfo_fallback: true` も設定してください。要求されたよりも少ないスコープしか付与していない IdP は、`invalid_scope` でリフレッシュを拒否する可能性があります。これには、この設定がオンの間に `scopes` にエントリを追加した場合の既存セッションも含まれます。設定後に `token_endpoint` でリフレッシュが失敗し始めた場合は、このキーを削除してください。ゲートウェイサーバーで Claude Code v2.1.260 以降が必要です。 |
 | `extra_auth_params` | いいえ | IdP の認可リクエストにそのまま付加される追加のクエリパラメータ。これは IdP 固有の動作を上書きするための仕組みで、たとえば Google のリフレッシュトークン用の `access_type: offline`、一部の Entra テナント用の `domain_hint`、ステップアップフロー用の `acr_values` などがあります。ゲートウェイが管理するプロトコルパラメータ（`state`、`nonce`、`redirect_uri`、PKCE、`scope`、`response_type`、`response_mode`、`client_id`）は上書きできません。 |
 | `userinfo_fallback` | いいえ | id\_token にメールアドレスまたはグループが含まれない場合、`/userinfo` から取得します。Keycloak の軽量アクセストークン、Okta の組織サーバー、ADFS の最小トークンで必要です。id\_token が引き続き正となり、userinfo は欠けている部分を補うだけです。デフォルトは `false`。 |
@@ -140,14 +140,14 @@ SHA-1 サムプリントを、アップロードした証明書について IdP 
 ゲートウェイは起動時に鍵と証明書を一度だけ読み取るため、ファイルの変更は再起動後にのみ有効になります。IdP が持っていない証明書をトークンリクエストが提示することのないよう、次の順序でローテーションしてください。
 
 1. 新しい証明書を、古い証明書と並べて IdP にアップロードします。
-2. `gateway.yaml` が読み込む鍵と証明書のファイルを置き換えてから、ゲートウェイを再起動します。複数のレプリカを実行している場合は、古い証明書を削除するまで IdP が両方の証明書を持っているため、[ローリング再起動](/docs/ja/claude-apps-gateway-deploy.md#upgrades)が機能します。
+2. `gateway.yaml` が読み込む鍵と証明書のファイルを置き換えてから、ゲートウェイを再起動します。複数のレプリカを実行している場合は、古い証明書を削除するまで IdP が両方の証明書を持っているため、[ローリング再起動](https://code.claude.com/docs/ja/claude-apps-gateway-deploy.md#upgrades)が機能します。
 3. すべてのレプリカが再起動したら、古い証明書を IdP から削除します。
 
 #### フォワードプロキシ経由の IdP リクエスト
 
 推論のアップストリームは、すべてのバージョンで `HTTPS_PROXY` と `HTTP_PROXY` に従います。ゲートウェイ自身の IdP へのリクエスト（ディスカバリ、JWKS、トークン、userinfo）は、`oidc.use_proxy: true` を設定しない限り直接送信されます。この設定には v2.1.227 以降が必要です。プロキシ変数が設定されていて、`use_proxy` が未設定で、issuer が `NO_PROXY` の対象外である場合、ゲートウェイはそれらのリクエストを直接送信し続け、起動時にどちらかを選択するよう求める通知をログに記録します。`use_proxy: false` にすると直接送信が維持され、通知は表示されなくなります。
 
-`use_proxy: true` の場合、Pod は各 IdP エンドポイントのホスト名を自分で解決し、解決した IP アドレスへの `CONNECT` をプロキシに依頼します。そのため、プロキシは issuer だけでなく、ディスカバリドキュメントに記載されたすべてのホストの IP アドレスへの `CONNECT` を受け入れる必要があります。`http://` のプロキシ URL を使用してください。`ca_cert_pem` と [SSRF ガード](/docs/ja/claude-apps-gateway-deploy.md#threat-model-summary)は、プロキシ経由のパスにも適用されます。
+`use_proxy: true` の場合、Pod は各 IdP エンドポイントのホスト名を自分で解決し、解決した IP アドレスへの `CONNECT` をプロキシに依頼します。そのため、プロキシは issuer だけでなく、ディスカバリドキュメントに記載されたすべてのホストの IP アドレスへの `CONNECT` を受け入れる必要があります。`http://` のプロキシ URL を使用してください。`ca_cert_pem` と [SSRF ガード](https://code.claude.com/docs/ja/claude-apps-gateway-deploy.md#threat-model-summary)は、プロキシ経由のパスにも適用されます。
 
 [プロキシのみのエグレス](#proxy-only-egress)は、これらの両方を変更します。これが有効な間、IdP リクエストは `use_proxy: false` を設定しない限りプロキシに従い、ゲートウェイは各 IdP ホスト名を事前に解決せずにプロキシに渡します。
 
@@ -184,7 +184,7 @@ export CLAUDE_GATEWAY_PROXY_IS_EGRESS_BOUNDARY=1
 
 > [!WARNING]
 >
-> プロキシの許可リストが少なくともゲートウェイ自身のチェックと同程度に厳格である場合にのみ、これをオンにしてください。プロキシは、`169.254.169.254` や `metadata.google.internal` などのクラウドメタデータエンドポイント、リンクローカルアドレス、プロキシホスト自身のループバックを拒否する必要があります。また、名前だけでなく、名前の解決先のアドレスによって拒否する必要があります。ゲートウェイは、それらのいずれかに解決されるホスト名をもはや捕捉しないためです。要求された場所ならどこにでも接続するプロキシは、これらのリクエストについてゲートウェイの [SSRF ガード](/docs/ja/claude-apps-gateway-deploy.md#threat-model-summary)を無効にしてしまいます。
+> プロキシの許可リストが少なくともゲートウェイ自身のチェックと同程度に厳格である場合にのみ、これをオンにしてください。プロキシは、`169.254.169.254` や `metadata.google.internal` などのクラウドメタデータエンドポイント、リンクローカルアドレス、プロキシホスト自身のループバックを拒否する必要があります。また、名前だけでなく、名前の解決先のアドレスによって拒否する必要があります。ゲートウェイは、それらのいずれかに解決されるホスト名をもはや捕捉しないためです。要求された場所ならどこにでも接続するプロキシは、これらのリクエストについてゲートウェイの [SSRF ガード](https://code.claude.com/docs/ja/claude-apps-gateway-deploy.md#threat-model-summary)を無効にしてしまいます。
 
 ### `session`
 
@@ -201,12 +201,12 @@ export CLAUDE_GATEWAY_PROXY_IS_EGRESS_BOUNDARY=1
 
 | フィールド | 必須 | 説明 |
 | - | - | - |
-| `postgres_url` | はい | カンマ区切りのリストではなく、ホストが 1 つの `postgres://` または `postgresql://` URL。ゲートウェイは起動時とアップグレード時に独自のスキーママイグレーションを実行するため、ロールには対象スキーマでテーブルを作成および変更する権限が必要です。[アップグレード](/docs/ja/claude-apps-gateway-deploy.md#upgrades)と [Postgres](/docs/ja/claude-apps-gateway-deploy.md#postgres) を参照してください。 |
+| `postgres_url` | はい | カンマ区切りのリストではなく、ホストが 1 つの `postgres://` または `postgresql://` URL。ゲートウェイは起動時とアップグレード時に独自のスキーママイグレーションを実行するため、ロールには対象スキーマでテーブルを作成および変更する権限が必要です。[アップグレード](https://code.claude.com/docs/ja/claude-apps-gateway-deploy.md#upgrades)と [Postgres](https://code.claude.com/docs/ja/claude-apps-gateway-deploy.md#postgres) を参照してください。 |
 | `username` | いいえ | `postgres_url` 内のユーザーを上書きします |
 | `password` | いいえ | データベースの認証情報。認証情報が URL に含まれないよう、`postgres_url` ではなくここで設定してください。任意の文字を受け付け、URL の認証情報よりも優先されます。 |
-| `max_connections` | いいえ | レプリカごとの Postgres コネクションプールのサイズ。デフォルトは `5` で、控えめな値であり共有データベースに適しています。[支出制限](#admin)を有効にすると、ゲートウェイは推論リクエストごとにいくつかのデータベース操作を行うため、負荷のかかる専用データベースでは、[コネクションプールのサイズを決める](/docs/ja/claude-apps-gateway-deploy.md#size-the-connection-pool)で許容される範囲内で値を上げてください。 |
+| `max_connections` | いいえ | レプリカごとの Postgres コネクションプールのサイズ。デフォルトは `5` で、控えめな値であり共有データベースに適しています。[支出制限](#admin)を有効にすると、ゲートウェイは推論リクエストごとにいくつかのデータベース操作を行うため、負荷のかかる専用データベースでは、[コネクションプールのサイズを決める](https://code.claude.com/docs/ja/claude-apps-gateway-deploy.md#size-the-connection-pool)で許容される範囲内で値を上げてください。 |
 | `connect_timeout_seconds` | いいえ | ゲートウェイが Postgres 接続を開く際に待機する秒数。`1` から `60` までの整数で、デフォルトは `5`。新しいゲートウェイインスタンスの起動時に接続試行がタイムアウトする場合は値を上げてください。ゲートウェイサーバーで Claude Code v2.1.274 以降が必要です。それより前のバージョンでは、このキーが設定されていると起動を拒否します。 |
-| `readiness_grace_seconds` | いいえ | Postgres が応答しなくなった後、`/readyz` が ready を報告し続ける秒数。`0` から `3600` までの整数で、デフォルトは `0`。値の選び方については[障害時の動作](/docs/ja/claude-apps-gateway-deploy.md#outage-behavior)を参照してください。ゲートウェイサーバーで Claude Code v2.1.282 以降が必要です。それより前のバージョンでは、このキーが設定されていると起動を拒否します。 |
+| `readiness_grace_seconds` | いいえ | Postgres が応答しなくなった後、`/readyz` が ready を報告し続ける秒数。`0` から `3600` までの整数で、デフォルトは `0`。値の選び方については[障害時の動作](https://code.claude.com/docs/ja/claude-apps-gateway-deploy.md#outage-behavior)を参照してください。ゲートウェイサーバーで Claude Code v2.1.282 以降が必要です。それより前のバージョンでは、このキーが設定されていると起動を拒否します。 |
 
 ローカル開発では、`postgres_url` を使い捨ての Postgres コンテナに向けてください。例: `docker run --rm -p 5432:5432 -e POSTGRES_HOST_AUTH_METHOD=trust postgres`。
 
@@ -233,13 +233,13 @@ Amazon Bedrock、Claude Platform on AWS、Google Cloud の Agent Platform、Micr
 
 ゲートウェイがアップストリームのレスポンスを返すとき、アップストリームのステータスコードは維持されます。アップストリームのメッセージを維持するかどうかはプロバイダーによって異なります。Anthropic API アップストリームのエラー本文は、変更されずに開発者に届きます。
 
-Amazon Bedrock、Claude Platform on AWS、Google Cloud の Agent Platform、Microsoft Foundry のアップストリームは、エラーテキストにアカウント ID、ロール ARN、プロジェクト ID を含めることがあります。ゲートウェイはその全文を[運用ログ](/docs/ja/claude-apps-gateway-deploy.md#logs)に記録します。これらのアップストリームから開発者に表示される内容は、拒否の内容によって異なります。
+Amazon Bedrock、Claude Platform on AWS、Google Cloud の Agent Platform、Microsoft Foundry のアップストリームは、エラーテキストにアカウント ID、ロール ARN、プロジェクト ID を含めることがあります。ゲートウェイはその全文を[運用ログ](https://code.claude.com/docs/ja/claude-apps-gateway-deploy.md#logs)に記録します。これらのアップストリームから開発者に表示される内容は、拒否の内容によって異なります。
 
 * Anthropic の標準エラーエンベロープでの `400` または `413`: `prompt is too long` などのアップストリーム自身のメッセージ。Claude Platform on AWS、Agent Platform、Microsoft Foundry は、モデル API の拒否についてこのエンベロープを返します。
 * プロバイダー独自の形式での `400` または `413`: `capability_rejected:` トークン。ゲートウェイが拒否を分類できない場合は、`400` では `upstream rejected the request`、`413` では `request too large for this upstream`。
 * その他のステータス: `429` での `upstream rate limit exceeded` など、ステータスごとの汎用的な文言。
 
-たとえば、ゲートウェイは Amazon Bedrock の `Input is too long for requested model.` を `capability_rejected: prompt_too_long` に置き換えます。Claude Code は、`prompt is too long` の場合と同様に、このトークンに対して[自動的にコンパクト化](/docs/ja/errors.md#prompt-is-too-long)します。
+たとえば、ゲートウェイは Amazon Bedrock の `Input is too long for requested model.` を `capability_rejected: prompt_too_long` に置き換えます。Claude Code は、`prompt is too long` の場合と同様に、このトークンに対して[自動的にコンパクト化](https://code.claude.com/docs/ja/errors.md#prompt-is-too-long)します。
 
 クラウドアップストリームの `400` または `413` のメッセージを維持すること、または `capability_rejected:` トークンに置き換えることには、ゲートウェイ v2.1.233 以降が必要です。
 
@@ -300,7 +300,7 @@ upstreams:
 
 IdP トークンにメールアドレスが含まれない場合、ゲートウェイは `x-claude-gateway-user-id` のみを送信し、2 つのメールヘッダーは省略します。IdP がメールアドレスを別のクレームに格納している場合は、[`oidc.email_claim`](#oidc) をそのクレームに設定してください。
 
-Claude Code が送信する [`x-claude-code-*` ヘッダー](/docs/ja/llm-gateway-protocol#request-headers)（`x-claude-code-session-id` など）は、プロキシには届きません。ゲートウェイはこれらをどのアップストリームにも渡さないため、上の表のヘッダーを使用して開発者ごとにリクエストをグループ化してください。
+Claude Code が送信する [`x-claude-code-*` ヘッダー](https://code.claude.com/docs/ja/llm-gateway-protocol#request-headers)（`x-claude-code-session-id` など）は、プロキシには届きません。ゲートウェイはこれらをどのアップストリームにも渡さないため、上の表のヘッダーを使用して開発者ごとにリクエストをグループ化してください。
 
 開発者のメールアドレスを含むリクエストに対してプロキシが `429` を返した場合、ゲートウェイは次のアップストリームにフェイルオーバーする代わりに、そのレスポンスをそのまま開発者に返すため、プロキシのユーザーごとの予算やレート制限が維持されます。プロキシのその他のレスポンスは、通常の[フェイルオーバールール](#upstreams)に従います。開発者の IdP トークンにメールアドレスが含まれない場合、ゲートウェイはメールヘッダーなしでその開発者のリクエストを転送するため、そうしたリクエストへの `429` はアップストリームの容量としてカウントされ、フェイルオーバーします。ゲートウェイサーバーが v2.1.267 より前の場合は、すべての `429` がフェイルオーバーしていました。
 
@@ -308,11 +308,11 @@ Claude Code が送信する [`x-claude-code-*` ヘッダー](/docs/ja/llm-gatewa
 
 > [!NOTE]
 >
-> Amazon Bedrock アップストリームで `forward_user_identity` を設定すると、ゲートウェイは起動時に `Unrecognized key(s) in object: 'forward_user_identity'` で終了します。プロキシが Bedrock の前段にある場合は、代わりに `provider: anthropic` アップストリームとして列挙してください。ゲートウェイはそのアップストリームに Anthropic Messages 形式を送信するため、プロキシで [Bedrock 向けにリクエストを変換](/docs/ja/llm-gateway-protocol.md#format-mismatch-with-the-upstream)する必要があります。代わりに AWS に対して各開発者を識別させるには、[開発者ごとの AWS コスト帰属](#per-developer-aws-cost-attribution)を参照してください。
+> Amazon Bedrock アップストリームで `forward_user_identity` を設定すると、ゲートウェイは起動時に `Unrecognized key(s) in object: 'forward_user_identity'` で終了します。プロキシが Bedrock の前段にある場合は、代わりに `provider: anthropic` アップストリームとして列挙してください。ゲートウェイはそのアップストリームに Anthropic Messages 形式を送信するため、プロキシで [Bedrock 向けにリクエストを変換](https://code.claude.com/docs/ja/llm-gateway-protocol.md#format-mismatch-with-the-upstream)する必要があります。代わりに AWS に対して各開発者を識別させるには、[開発者ごとの AWS コスト帰属](#per-developer-aws-cost-attribution)を参照してください。
 
 #### Amazon Bedrock
 
-ゲートウェイが置き換える、または前段に置くクライアント側の Amazon Bedrock デプロイについては、[Amazon Bedrock での Claude Code](/docs/ja/amazon-bedrock.md) を参照してください。ゲートウェイ側のアップストリームは次のとおりです。
+ゲートウェイが置き換える、または前段に置くクライアント側の Amazon Bedrock デプロイについては、[Amazon Bedrock での Claude Code](https://code.claude.com/docs/ja/amazon-bedrock.md) を参照してください。ゲートウェイ側のアップストリームは次のとおりです。
 
 ```yaml theme={null}
 upstreams:
@@ -338,7 +338,7 @@ upstreams:
 | セットアップ | 方法 |
 | - | - |
 | IAM 権限 | ゲートウェイのプリンシパルに、推論プロファイル ARN と基盤となる基盤モデル ARN の両方に対する `bedrock:InvokeModel` と `bedrock:InvokeModelWithResponseStream` を付与します。US リージョンの組み込みカタログの場合は `arn:aws:bedrock:<region>:<account>:inference-profile/us.anthropic.*` と `arn:aws:bedrock:*::foundation-model/anthropic.*` です。また、基盤モデル ARN に対する `bedrock:CountTokens` も付与してください。ゲートウェイはこれを使用して、クライアントが中断したリクエストの入力トークン数を無料でカウントし、[支出制限](#admin)を正確に保ちます。これがない場合、ゲートウェイはそのカウントのために 1 トークンの Bedrock リクエストにフォールバックします。 |
-| モデルアクセス | Amazon Bedrock は、商用リージョンではデフォルトでモデルアクセスを有効にしています。残るアカウントレベルの関門は、Anthropic の 1 回限りのユースケースフォームです。AWS アカウント内の誰もまだ送信していない場合は、Amazon Bedrock コンソールを開き、Model catalog から Anthropic モデルを選択してフォームに記入してください。AWS Organizations 用のフォームと送信者に必要な権限については、[ユースケースの詳細を送信する](/docs/ja/amazon-bedrock.md#1-submit-use-case-details)を参照してください。 |
+| モデルアクセス | Amazon Bedrock は、商用リージョンではデフォルトでモデルアクセスを有効にしています。残るアカウントレベルの関門は、Anthropic の 1 回限りのユースケースフォームです。AWS アカウント内の誰もまだ送信していない場合は、Amazon Bedrock コンソールを開き、Model catalog から Anthropic モデルを選択してフォームに記入してください。AWS Organizations 用のフォームと送信者に必要な権限については、[ユースケースの詳細を送信する](https://code.claude.com/docs/ja/amazon-bedrock.md#1-submit-use-case-details)を参照してください。 |
 | EKS（IRSA） | 上記のポリシーと、ゲートウェイのサービスアカウントにスコープを限定した、クラスターの OIDC プロバイダー用の信頼ポリシーを持つ IAM ロールを作成します。サービスアカウントに `eks.amazonaws.com/role-arn: arn:aws:iam::<acct>:role/claude-gateway` のアノテーションを付けます。`auth: {}` がそれを取得します。 |
 | ECS / EC2 | IAM ロールをタスク定義またはインスタンスプロファイルにアタッチします。`auth: {}` がそれを取得します。 |
 | その他の環境 | `AWS_ACCESS_KEY_ID`、`AWS_SECRET_ACCESS_KEY`、`AWS_SESSION_TOKEN` 環境変数で認証情報を渡すか、`${VAR}` 展開を使用して `auth:` で明示的に設定します |
@@ -428,7 +428,7 @@ models:
 
 デフォルトでは、ゲートウェイはすべての Bedrock リクエストに 1 つの認証情報で署名するため、AWS からはすべての開発者のリクエストが単一の IAM プリンシパルによるものに見えます。[`assume_role`](#bedrock-in-another-aws-account) に `session_name: email` を追加すると、ゲートウェイは開発者ごとに 1 時間に 1 回、セッション名をその開発者のメールアドレスに設定して `sts:AssumeRole` を呼び出し、返された認証情報でその開発者のリクエストに署名します。これにより、各開発者のリクエストは、その開発者自身の引き受けたロールのセッションで AWS に届きます。ロールはゲートウェイ自身のアカウントにあってもかまいません。
 
-Claude Code v2.1.281 以降を実行しているゲートウェイが必要です。[AWS でのコスト帰属](/docs/ja/claude-apps-gateway-on-aws.md#cost-attribution)では、IAM ロールと、AWS の請求でセッションがどこに表示されるかを説明しています。
+Claude Code v2.1.281 以降を実行しているゲートウェイが必要です。[AWS でのコスト帰属](https://code.claude.com/docs/ja/claude-apps-gateway-on-aws.md#cost-attribution)では、IAM ロールと、AWS の請求でセッションがどこに表示されるかを説明しています。
 
 ```yaml theme={null}
 upstreams:
@@ -444,13 +444,13 @@ upstreams:
 
 アクティブな開発者 1 人につき、ゲートウェイのレプリカごとに 1 時間あたり 1 回の STS 呼び出しが発生し、同時に発生した最初のリクエストは 1 回の呼び出しを共有します。
 
-ゲートウェイは、このロールで独自の呼び出しも 1 つ行います。[支出制限](/docs/ja/claude-apps-gateway-spend-limits.md)を正確に保つための、クライアントが中断したリクエストのトークンカウントです。そのカウントとその [1 トークンのフォールバックリクエスト](#amazon-bedrock)は共有の `claude-apps-gateway` セッションで署名されるため、AWS はフォールバックを開発者ではなく `claude-apps-gateway` に帰属させます。
+ゲートウェイは、このロールで独自の呼び出しも 1 つ行います。[支出制限](https://code.claude.com/docs/ja/claude-apps-gateway-spend-limits.md)を正確に保つための、クライアントが中断したリクエストのトークンカウントです。そのカウントとその [1 トークンのフォールバックリクエスト](#amazon-bedrock)は共有の `claude-apps-gateway` セッションで署名されるため、AWS はフォールバックを開発者ではなく `claude-apps-gateway` に帰属させます。
 
 厳密な開発者ごとの帰属を行うには、列挙するすべての Bedrock アップストリームで `session_name` 付きの `assume_role` を設定してください。これがないアップストリームは、処理するリクエストに自身の認証情報で署名します。
 
 #### Amazon Bedrock Mantle エンドポイント
 
-`mantle` プロバイダーは、Amazon Bedrock の [Mantle エンドポイント](/docs/ja/amazon-bedrock.md#use-the-mantle-endpoint)に推論を送信します。ゲートウェイサーバーで Claude Code v2.1.283 以降が必要です。それより前のゲートウェイリリースは起動時にこれを拒否するため、追加する前にすべてのレプリカをアップグレードしてください。
+`mantle` プロバイダーは、Amazon Bedrock の [Mantle エンドポイント](https://code.claude.com/docs/ja/amazon-bedrock.md#use-the-mantle-endpoint)に推論を送信します。ゲートウェイサーバーで Claude Code v2.1.283 以降が必要です。それより前のゲートウェイリリースは起動時にこれを拒否するため、追加する前にすべてのレプリカをアップグレードしてください。
 
 次の例では Mantle を最初に置き、`models` フィールドで除外されたすべてのモデルを提供するために、その後ろに Amazon Bedrock アップストリームを置いています。
 
@@ -474,7 +474,7 @@ upstreams:
 | `auth` | いいえ | [Amazon Bedrock](#amazon-bedrock) アップストリームの `auth` ブロックと同じキーを、同じルールで受け付けます。 |
 | `base_url` | いいえ | 導出されたエンドポイントを上書きします。末尾の `/anthropic` パスは残してください。 |
 
-アップストリームの AWS ID に、推論とトークンカウント用の Mantle 独自の IAM アクションを付与してください。これらは [Mantle エンドポイントを使用する](/docs/ja/amazon-bedrock.md#use-the-mantle-endpoint)に記載されています。
+アップストリームの AWS ID に、推論とトークンカウント用の Mantle 独自の IAM アクションを付与してください。これらは [Mantle エンドポイントを使用する](https://code.claude.com/docs/ja/amazon-bedrock.md#use-the-mantle-endpoint)に記載されています。
 
 ゲートウェイが認識しない Mantle モデル ID の場合は、トップレベルの [`models:`](#models) ブロックに、`upstream_model` でこのアップストリームの名前をその ID にマッピングするエントリを追加します。その後、そのエントリの `id` をこのアップストリームの `models` フィールドにも追加してください。
 
@@ -483,13 +483,13 @@ upstreams:
 * **`guardrail`**: ゲートウェイは Mantle に送信するリクエストに [Bedrock ガードレール](#apply-an-amazon-bedrock-guardrail)を適用しないため、いずれかの `bedrock` アップストリームで `guardrail` が設定されている状態で `mantle` アップストリームが列挙されていると、起動を拒否します。
 * **`assume_role`**: `mantle` アップストリームは [`assume_role`](#bedrock-in-another-aws-account) を受け付けません。Mantle が処理するリクエストは `mantle` アップストリーム自身の `auth` 認証情報で送信され、[開発者ごとに帰属](#per-developer-aws-cost-attribution)されません。
 
-Mantle 自身のエラーレスポンスの意味については、[Mantle エンドポイントのエラー](/docs/ja/amazon-bedrock.md#mantle-endpoint-errors)を参照してください。
+Mantle 自身のエラーレスポンスの意味については、[Mantle エンドポイントのエラー](https://code.claude.com/docs/ja/amazon-bedrock.md#mantle-endpoint-errors)を参照してください。
 
 #### Claude Platform on AWS
 
 Claude Platform on AWS は、AWS インフラストラクチャ上の `aws-external-anthropic.<region>.api.aws` でファーストパーティの Anthropic API を提供します。ファーストパーティのモデル ID を使用し、`anthropic-beta` ヘッダーを送信されたとおりに尊重し、`count_tokens` を提供するため、Bedrock 固有の変換は一切適用されません。`anthropicAws` プロバイダーには Claude Code v2.1.198 以降が必要です。それより前のゲートウェイリリースは起動時にこれを拒否します。
 
-同じプラットフォームのクライアント側のデプロイについては、[Claude Platform on AWS での Claude Code](/docs/ja/claude-platform-on-aws.md) を参照してください。ゲートウェイ側のアップストリームは次のとおりです。
+同じプラットフォームのクライアント側のデプロイについては、[Claude Platform on AWS での Claude Code](https://code.claude.com/docs/ja/claude-platform-on-aws.md) を参照してください。ゲートウェイ側のアップストリームは次のとおりです。
 
 ```yaml theme={null}
 upstreams:
@@ -522,7 +522,7 @@ upstreams:
 
 #### Google Cloud Agent Platform
 
-同等のクライアント側のセットアップについては、[Google Cloud での Claude Code](/docs/ja/google-vertex-ai.md) を参照してください。ゲートウェイ側のアップストリームは次のとおりです。
+同等のクライアント側のセットアップについては、[Google Cloud での Claude Code](https://code.claude.com/docs/ja/google-vertex-ai.md) を参照してください。ゲートウェイ側のアップストリームは次のとおりです。
 
 ```yaml theme={null}
 upstreams:
@@ -550,7 +550,7 @@ upstreams:
 
 #### Microsoft Foundry
 
-クライアント側の Microsoft Foundry デプロイについては、[Microsoft Foundry での Claude Code](/docs/ja/microsoft-foundry.md) を参照してください。ゲートウェイ側のアップストリームは次のとおりです。
+クライアント側の Microsoft Foundry デプロイについては、[Microsoft Foundry での Claude Code](https://code.claude.com/docs/ja/microsoft-foundry.md) を参照してください。ゲートウェイ側のアップストリームは次のとおりです。
 
 ```yaml theme={null}
 upstreams:
@@ -687,7 +687,7 @@ CLI は、特定のリクエストをどのアップストリームが処理す�
 
 ### `admin`
 
-オプション。`/v1/organizations/spend_limits` を有効にします。これは Anthropic のパブリック Admin API をミラーリングし、`/v1/messages` でデベロッパーごとの支出強制を行います。キャップの設定と強制方法については [支出制限](/docs/ja/claude-apps-gateway-spend-limits.md) を参照してください。このセクションでは、この機能をオンにしてチューニングする `gateway.yaml` キーについて説明します。
+オプション。`/v1/organizations/spend_limits` を有効にします。これは Anthropic のパブリック Admin API をミラーリングし、`/v1/messages` でデベロッパーごとの支出強制を行います。キャップの設定と強制方法については [支出制限](https://code.claude.com/docs/ja/claude-apps-gateway-spend-limits.md) を参照してください。このセクションでは、この機能をオンにしてチューニングする `gateway.yaml` キーについて説明します。
 
 ```yaml theme={null}
 admin:
@@ -708,9 +708,9 @@ admin:
 | フィールド | 必須 | 説明 |
 | - | - | - |
 | `write_keys` | いいえ | `{id, key}` の配列。これらのいずれかと一致する `x-api-key` は、支出制限をリスト、設定、削除できます。キー値は最低 32 文字である必要があります。`id` は `read_keys` と `write_keys` 全体で一意である必要があります。 |
-| `read_keys` | いいえ | `{id, key}` の配列。読み取り専用：すべての `GET` エンドポイント（キャップのリスト、ID による 1 つの取得、[`/effective`](/docs/ja/claude-apps-gateway-spend-limits#%2Feffective) と [`/audit`](/docs/ja/claude-apps-gateway-spend-limits#%2Faudit) の読み取りを含む）。 |
+| `read_keys` | いいえ | `{id, key}` の配列。読み取り専用：すべての `GET` エンドポイント（キャップのリスト、ID による 1 つの取得、[`/effective`](https://code.claude.com/docs/ja/claude-apps-gateway-spend-limits#%2Feffective) と [`/audit`](https://code.claude.com/docs/ja/claude-apps-gateway-spend-limits#%2Faudit) の読み取りを含む）。 |
 | `admin_groups` | いいえ | IdP グループ名。`groups` クレームにこれらのいずれかを含むゲートウェイ JWT は、完全な管理者アクセス（読み取りと書き込み）を持ち、`oidc:<sub>` として監査されます。人間の管理者にはこれを使用し、マシンには API キーを使用してください。このリストの空のエントリはブート時にゲートウェイを停止します。[ゲートウェイをブート時に停止させる matcher 値](#matcher-values-that-stop-the-gateway-at-boot) を参照してください。 |
-| `blocked_message` | いいえ | ブロックされたデベロッパーが見る `429 billing_error` に逐語的に追加されます。URL や Slack チャンネルなど、完全な指示を記述してください。設定されていない場合、ゲートウェイはデフォルトメッセージのみを送信します。[強制の仕組み](/docs/ja/claude-apps-gateway-spend-limits.md#how-enforcement-works) を参照してください。 |
+| `blocked_message` | いいえ | ブロックされたデベロッパーが見る `429 billing_error` に逐語的に追加されます。URL や Slack チャンネルなど、完全な指示を記述してください。設定されていない場合、ゲートウェイはデフォルトメッセージのみを送信します。[強制の仕組み](https://code.claude.com/docs/ja/claude-apps-gateway-spend-limits.md#how-enforcement-works) を参照してください。 |
 | `audit_retention_days` | いいえ | デフォルト `365`。古い `admin_audit` 行は削除されます。 |
 | `spend_retention_months` | いいえ | デフォルト `13`。この期間より古い `spend` カウンター行は削除されます。デフォルトは前年比レポート用に完全な 1 年と現在の部分月を保持します。 |
 | `identity_retention_days` | いいえ | デフォルト `90`。`principal_emails` 行の最終確認からの TTL。この行は各デベロッパーのメール、表示名、グループ（PII）を保持します。意図的に支出保持より短くしているため、プロビジョニング解除されたアイデンティティは期限切れになりますが、その匿名支出カウンターは残ります。 |
@@ -726,7 +726,7 @@ admin:
 
 ### `pricing`
 
-`pricing` ブロックは、支出メーターに USD リスト価格の代わりに請求する内容を指示するため、キャップと [`/effective`](/docs/ja/claude-apps-gateway-spend-limits#%2Feffective) は契約レートを反映します。金額は USD のままで、請求書ではなく見積もりです。2 つの前提条件があります：
+`pricing` ブロックは、支出メーターに USD リスト価格の代わりに請求する内容を指示するため、キャップと [`/effective`](https://code.claude.com/docs/ja/claude-apps-gateway-spend-limits#%2Feffective) は契約レートを反映します。金額は USD のままで、請求書ではなく見積もりです。2 つの前提条件があります：
 
 * ゲートウェイサーバー上の Claude Code v2.1.227 以降。以前のバージョンはブート時に不明なキーを拒否します。
 * [`admin:`](#admin) ブロック、または v2.1.268 以降では、少なくとも 1 つのポリシーを持つ [`managed:`](#managed) ブロック。`pricing` が設定されていて、どちらのブロックもない場合、それを読むものがないため、ゲートウェイは起動を拒否します。
@@ -750,7 +750,7 @@ pricing:
 
 メーターが上書き行をどのようにマッチングするか：
 
-* 行は、`upstream`（[`upstreams[].name`](#upstreams)）が `model` に対して処理するリクエストのリスト価格を置き換えます。これには、より高い [fast mode](/docs/ja/fast-mode.md#understand-the-cost-tradeoff) レートも含まれるため、fast リクエストと標準リクエストは同じ 4 つのレートでメーターされます。
+* 行は、`upstream`（[`upstreams[].name`](#upstreams)）が `model` に対して処理するリクエストのリスト価格を置き換えます。これには、より高い [fast mode](https://code.claude.com/docs/ja/fast-mode.md#understand-the-cost-tradeoff) レートも含まれるため、fast リクエストと標準リクエストは同じ 4 つのレートでメーターされます。
 * `claude-sonnet-4-6` などの組み込み ID（[`models[].id`](#models) と同様にマッチング）は、メーターがそのモデルとして価格設定するすべての日付付き形式、地域の Amazon Bedrock 形式、または Google Cloud の Agent Platform 形式をカバーします。エイリアスや推論プロファイル ARN などの他の文字列は、クライアントが送信した ID または上流に送信された文字列と大文字小文字を区別せずにマッチングします。
 * 行が重複する場合、メーターは最初の行ではなく最も具体的な行を選択します：`model` が上流に送信された正確なモデル文字列である行、次にクライアントが送信した正確な ID とマッチングする行、次に組み込みモデルを指定する行。
 * 不明な上流名はブート失敗を引き起こし、1 つの上流に対して同じモデルを指定する 2 つの行も同様です（1 つの組み込みモデルの 2 つの表記を含む）。ゲートウェイはブート時に、リクエスト可能なモデルが使用できない行について警告します。
@@ -777,7 +777,7 @@ v2.1.271 より前のゲートウェイサーバーは、`multiplier` を 1 よ�
 
 #### サインイン済みクライアントにレートを送信する
 
-ゲートウェイサーバー上の v2.1.268 以降では、ゲートウェイは `pricing` からのレートを、提供する [`managed`](#managed) ポリシーに [`modelPricing`](/docs/ja/settings-reference#modelpricing) 管理設定としても入れます。ポリシーにマッチするデベロッパーは、`/usage`、ステータスライン、OpenTelemetry で、各モデル ID を処理する最初の上流の `pricing` レートを確認できます。ポリシーにマッチしないデベロッパーは管理設定を受け取らないため、その数字はリスト価格のままです。クライアントは Claude Code v2.1.242 以降で設定を適用します。
+ゲートウェイサーバー上の v2.1.268 以降では、ゲートウェイは `pricing` からのレートを、提供する [`managed`](#managed) ポリシーに [`modelPricing`](https://code.claude.com/docs/ja/settings-reference#modelpricing) 管理設定としても入れます。ポリシーにマッチするデベロッパーは、`/usage`、ステータスライン、OpenTelemetry で、各モデル ID を処理する最初の上流の `pricing` レートを確認できます。ポリシーにマッチしないデベロッパーは管理設定を受け取らないため、その数字はリスト価格のままです。クライアントは Claude Code v2.1.242 以降で設定を適用します。
 
 * ゲートウェイが追加するもの：ポリシーの `cli` ブロックが既に `modelPricing` を設定していない限り、ゲートウェイは `multiplier` と、クライアントがリクエストできるすべてのモデル ID について、その ID を処理する最初の上流の上書き行を追加します。フェイルオーバー上流のみが請求するレートはゲートウェイに留まります。
 * 1 つのポリシーをオプトアウトする：そのポリシーの `cli` ブロックで `modelPricing` を `{}` に設定すると、そのデベロッパーはリスト価格のままです。
@@ -848,11 +848,11 @@ managed:
 >
 > ゲートウェイは独自のユーザーディレクトリを保持しません。ユーザーの IdP トークンから各リクエストを認可し、トークンの `groups` クレームからグループメンバーシップを読み取り、それに対してポリシーを評価します。列挙するロスターはなく、事前作成するアカウントもなく、したがって SCIM エンドポイントもありません。SCIM が同期する先がないためです。
 >
-> ユーザーとグループのライフサイクル管理は、信頼できる情報源である IdP のネイティブ SCIM プロビジョニングまたは専用のアイデンティティガバナンスプラットフォームで実行してください。そこで管理されるメンバーシップとプロビジョニング解除は、トークンを通じてゲートウェイに自動的に反映されます。Claude アカウント自体の SCIM プロビジョニングが必要な場合、それは [Claude for Enterprise](/docs/ja/admin-setup.md) の機能です。
+> ユーザーとグループのライフサイクル管理は、信頼できる情報源である IdP のネイティブ SCIM プロビジョニングまたは専用のアイデンティティガバナンスプラットフォームで実行してください。そこで管理されるメンバーシップとプロビジョニング解除は、トークンを通じてゲートウェイに自動的に反映されます。Claude アカウント自体の SCIM プロビジョニングが必要な場合、それは [Claude for Enterprise](https://code.claude.com/docs/ja/admin-setup.md) の機能です。
 >
 > 2 つの伝播タイミングがあります：
 >
-> * **ポリシーの内容**：ポリシーを編集して再デプロイすると、接続された Claude Code クライアントの次の管理設定ポーリング時（1 時間以内）に反映されます。ただし [次の起動時にのみ適用される変更](/docs/ja/server-managed-settings.md#fetch-and-caching-behavior) は除きます。
+> * **ポリシーの内容**：ポリシーを編集して再デプロイすると、接続された Claude Code クライアントの次の管理設定ポーリング時（1 時間以内）に反映されます。ただし [次の起動時にのみ適用される変更](https://code.claude.com/docs/ja/server-managed-settings.md#fetch-and-caching-behavior) は除きます。
 > * **グループメンバーシップ**：ユーザーのグループメンバーシップを変更すると、どのポリシーがそのユーザーにマッチするかが変わります。これは次のセッション再発行時、つまり次のサイレントリフレッシュ時に有効になり、`session.ttl_hours` が上限となります。
 >
 > Claude Desktop は [独自のスケジュール](#when-a-policy-change-reaches-claude-desktop) に従います。
@@ -861,10 +861,10 @@ managed:
 
 `availableModels` に Claude Code のデフォルトモデルが含まれていない場合、デベロッパーが `/model` などでリストにあるモデルを選択するまで、セッションは `400` レスポンスを受け取ります。ゲートウェイセッションでは、デフォルトは `opus` エイリアスが解決される Opus モデルであり、`availableModels` だけではこれは変わりません。
 
-これを解決するには、同じ `cli` ブロックで [`enforceAvailableModels: true`](/docs/ja/model-config#enforce-the-allowlist-for-the-default-model) を設定し、リストに含まれるエントリの種類を確認します：
+これを解決するには、同じ `cli` ブロックで [`enforceAvailableModels: true`](https://code.claude.com/docs/ja/model-config#enforce-the-allowlist-for-the-default-model) を設定し、リストに含まれるエントリの種類を確認します：
 
 * **`sonnet` などのエイリアス、または `claude-sonnet-4-6` などの組み込み ID**：セッションはそれらのモデルのいずれかで開始し、`/model` の Default オプションはそのモデルに解決されます
-* **リストにエイリアスも組み込み ID もない場合**：セッションは引き続き組み込みのデフォルトで開始する可能性があるため、そのポリシーの `cli` ブロックで [`model`](/docs/ja/model-config#control-the-model-users-run-on) もリスト内の ID のいずれかに設定してください
+* **リストにエイリアスも組み込み ID もない場合**：セッションは引き続き組み込みのデフォルトで開始する可能性があるため、そのポリシーの `cli` ブロックで [`model`](https://code.claude.com/docs/ja/model-config#control-the-model-users-run-on) もリスト内の ID のいずれかに設定してください
 
 このポリシーは [`models`](#models) で定義された 1 つのカスタム ID をリストし、その ID でセッションを開始します：
 
@@ -927,13 +927,13 @@ managed:
 
 #### `cli` に何を入れるか
 
-各 `code` または `cli` の値は、完全な Claude Code の `managed-settings.json` ドキュメントであり、MDM や `/etc/claude-code/managed-settings.json` でデプロイするものと同じスキーマを、ここでは YAML で表現したものです。CLI は配信されたドキュメントを、ユーザー設定やプロジェクト設定より上位の管理レベルで、サーバー管理設定の代わりに適用します。そのため、`policyHelper` や `wslInheritsWindowsSettings` など、[OS レベルのポリシーソースに限定された](/docs/ja/server-managed-settings.md#current-limitations) 設定は無視されます。
+各 `code` または `cli` の値は、完全な Claude Code の `managed-settings.json` ドキュメントであり、MDM や `/etc/claude-code/managed-settings.json` でデプロイするものと同じスキーマを、ここでは YAML で表現したものです。CLI は配信されたドキュメントを、ユーザー設定やプロジェクト設定より上位の管理レベルで、サーバー管理設定の代わりに適用します。そのため、`policyHelper` や `wslInheritsWindowsSettings` など、[OS レベルのポリシーソースに限定された](https://code.claude.com/docs/ja/server-managed-settings.md#current-limitations) 設定は無視されます。
 
 ゲートウェイはブート時に各ドキュメントを CLI の設定スキーマに対して検証するため、認識されないトップレベルキーがあるとブートが失敗し、違反するすべてのキーを示すエラーが表示されます。スキーマの意図的にオープンな部分は引き続き任意の値を受け入れます。新しいクライアントが、ゲートウェイのスキーマが認識しないエントリを認識する可能性があるためです。これらのオープンキーには `env`、`pluginConfigs`、`permissions` の下にネストされたキーが含まれます。
 
 検証はゲートウェイのインストール済みバージョンにバンドルされたスキーマを使用するため、新しい Claude Code リリースで導入されたトップレベル設定キーを管理設定に入れるには、まずゲートウェイをアップグレードする必要があります。新しいポリシーはロールアウトする前に 1 つのクライアントでスモークテストしてください。
 
-完全なキーリファレンスは [Claude Code 設定](/docs/ja/settings-reference.md#all-settings) にあります。オペレーターが最初に使うことの多いキー：
+完全なキーリファレンスは [Claude Code 設定](https://code.claude.com/docs/ja/settings-reference.md#all-settings) にあります。オペレーターが最初に使うことの多いキー：
 
 ```yaml theme={null}
 managed:
@@ -971,13 +971,13 @@ managed:
 | キー | 強制元 | 効果 |
 | - | - | - |
 | `availableModels` | ゲートウェイ + CLI | モデル許可リスト。`/v1/messages` でもチェックされるため、パッチされたクライアントはバイパスできません。 |
-| [`deniedModels`](/docs/ja/settings-reference#deniedmodels)、[`availableModelsMatch`](/docs/ja/settings-reference#availablemodelsmatch) | ゲートウェイ + CLI | `availableModels` では本来許可される [特定のモデルやバージョンをブロック](/docs/ja/model-config.md#block-specific-models-or-versions) します。ブロックされたモデルは `/v1/messages` で `400` により拒否され、`/v1/models` から除外されます。ゲートウェイ自体のチェックには、ゲートウェイサーバー上の Claude Code v2.1.299 以降が必要です。CLI のチェックにはクライアント上の v2.1.283 以降が必要で、それより前のクライアントは両方のキーを無視します。 |
-| `permissions.allow` / `.deny` | CLI | ツールとコマンドのルール。[権限](/docs/ja/permissions.md) を参照してください。 |
-| `permissions.disableBypassPermissionsMode` | CLI | `disable` に設定すると、[`bypassPermissions`](/docs/ja/permission-modes#skip-all-checks-with-bypasspermissions-mode)（権限プロンプトをスキップするモード）と `--dangerously-skip-permissions` フラグをブロックします |
-| `allowManagedPermissionRulesOnly` | CLI | `true` の場合、管理設定が権限ルールの唯一の設定ソースになります。[`allowManagedPermissionRulesOnly`](/docs/ja/settings-reference#allowmanagedpermissionrulesonly) エントリには、その場合に Claude Code が無視するすべてのソースがリストされています。 |
+| [`deniedModels`](https://code.claude.com/docs/ja/settings-reference#deniedmodels)、[`availableModelsMatch`](https://code.claude.com/docs/ja/settings-reference#availablemodelsmatch) | ゲートウェイ + CLI | `availableModels` では本来許可される [特定のモデルやバージョンをブロック](https://code.claude.com/docs/ja/model-config.md#block-specific-models-or-versions) します。ブロックされたモデルは `/v1/messages` で `400` により拒否され、`/v1/models` から除外されます。ゲートウェイ自体のチェックには、ゲートウェイサーバー上の Claude Code v2.1.299 以降が必要です。CLI のチェックにはクライアント上の v2.1.283 以降が必要で、それより前のクライアントは両方のキーを無視します。 |
+| `permissions.allow` / `.deny` | CLI | ツールとコマンドのルール。[権限](https://code.claude.com/docs/ja/permissions.md) を参照してください。 |
+| `permissions.disableBypassPermissionsMode` | CLI | `disable` に設定すると、[`bypassPermissions`](https://code.claude.com/docs/ja/permission-modes#skip-all-checks-with-bypasspermissions-mode)（権限プロンプトをスキップするモード）と `--dangerously-skip-permissions` フラグをブロックします |
+| `allowManagedPermissionRulesOnly` | CLI | `true` の場合、管理設定が権限ルールの唯一の設定ソースになります。[`allowManagedPermissionRulesOnly`](https://code.claude.com/docs/ja/settings-reference#allowmanagedpermissionrulesonly) エントリには、その場合に Claude Code が無視するすべてのソースがリストされています。 |
 | `env` | CLI | CLI プロセスにマージされる環境変数。テレメトリ、自動更新、モデル名の上書きに使用します。 |
-| `hooks` | CLI | 組織全体の [フック](/docs/ja/hooks.md) |
-| `managedMcpServers` | CLI | デベロッパーが自分で追加するサーバーとともに [マッチするすべてのデベロッパーに提供される](/docs/ja/managed-mcp.md#provide-servers-through-managed-settings) リモート MCP サーバー（`http` と `sse` のみ）。[ポリシー内の MCP サーバー](#mcp-servers-in-a-policy) を参照してください。ゲートウェイサーバーとクライアントの両方で Claude Code v2.1.259 以降が必要です。以前のクライアントはキーを無視します。 |
+| `hooks` | CLI | 組織全体の [フック](https://code.claude.com/docs/ja/hooks.md) |
+| `managedMcpServers` | CLI | デベロッパーが自分で追加するサーバーとともに [マッチするすべてのデベロッパーに提供される](https://code.claude.com/docs/ja/managed-mcp.md#provide-servers-through-managed-settings) リモート MCP サーバー（`http` と `sse` のみ）。[ポリシー内の MCP サーバー](#mcp-servers-in-a-policy) を参照してください。ゲートウェイサーバーとクライアントの両方で Claude Code v2.1.259 以降が必要です。以前のクライアントはキーを無視します。 |
 
 これらの設定はネットワーク経由で届くため、CLI は以下の設定を適用する前に、各デベロッパーにセキュリティ承認ダイアログを表示します：
 
@@ -985,17 +985,17 @@ managed:
 * プロキシやベース URL の変数など、デベロッパーの承認が必要な `env` 変数
 * `apiKeyHelper` や `statusLine` などのシェル実行設定
 * サンドボックスバイナリ設定 `sandbox.bwrapPath`、`sandbox.socatPath`、`sandbox.ripgrep`
-* `sandbox.network.tlsTerminate` やプロキシポート設定など、トラフィックをインターセプトしたり、認証情報を注入したり、分離を弱めたりするサンドボックス設定。[セキュリティ承認ダイアログ](/docs/ja/server-managed-settings.md#security-approval-dialogs) にすべてがリストされています。
+* `sandbox.network.tlsTerminate` やプロキシポート設定など、トラフィックをインターセプトしたり、認証情報を注入したり、分離を弱めたりするサンドボックス設定。[セキュリティ承認ダイアログ](https://code.claude.com/docs/ja/server-managed-settings.md#security-approval-dialogs) にすべてがリストされています。
 
-承認がどのくらい持続し、いつダイアログが再表示されるかについては [承認の記憶](/docs/ja/server-managed-settings.md#approval-memory) を参照してください。
+承認がどのくらい持続し、いつダイアログが再表示されるかについては [承認の記憶](https://code.claude.com/docs/ja/server-managed-settings.md#approval-memory) を参照してください。
 
 Claude Code は、モデル選択設定や数値制限など、配信された `env` 変数の一部をデベロッパーに承認ダイアログを表示せずに適用します。その他の配信変数は、有効になる前にデベロッパーの承認が必要な場合があります。空でないプロキシ、ベース URL、または `OTEL_EXPORTER_OTLP_ENDPOINT` の値は常に承認が必要です。配信変数に承認が必要な場合、ダイアログにはその変数名が表示されます。
 
-詳細は [環境変数と承認ダイアログ](/docs/ja/server-managed-settings.md#environment-variables-and-the-approval-dialog) を参照してください。配信値によって承認が必要かどうかが決まる 4 つのプライバシートグルについても記載されています。v2.1.218 より前では、Claude Code がデベロッパーに確認せずに適用する変数が少なかったため、より多くの配信変数でダイアログが表示されていました。
+詳細は [環境変数と承認ダイアログ](https://code.claude.com/docs/ja/server-managed-settings.md#environment-variables-and-the-approval-dialog) を参照してください。配信値によって承認が必要かどうかが決まる 4 つのプライバシートグルについても記載されています。v2.1.218 より前では、Claude Code がデベロッパーに確認せずに適用する変数が少なかったため、より多くの配信変数でダイアログが表示されていました。
 
 ゲートウェイの [テレメトリ](#telemetry) 設定は `OTEL_EXPORTER_OTLP_ENDPOINT` をプッシュするため、`telemetry.forward_to` を設定すると各インタラクティブクライアントでダイアログが表示されます。このダイアログは、侵害されたゲートウェイや悪意のあるゲートウェイからデベロッパーのマシンを保護するものであり、デベロッパーから組織を保護するものではありません。
 
-`claude -p`、Agent SDK セッション、Claude Desktop の Code タブのセッションなどの[非インタラクティブ実行](/docs/ja/server-managed-settings.md#security-approval-dialogs)では、ダイアログを表示できません。その実行に限りプッシュされた設定を適用し、承認済みとして記録しないため、開発者の次のインタラクティブセッションでは引き続きダイアログが表示されます。
+`claude -p`、Agent SDK セッション、Claude Desktop の Code タブのセッションなどの[非インタラクティブ実行](https://code.claude.com/docs/ja/server-managed-settings.md#security-approval-dialogs)では、ダイアログを表示できません。その実行に限りプッシュされた設定を適用し、承認済みとして記録しないため、開発者の次のインタラクティブセッションでは引き続きダイアログが表示されます。
 
 デベロッパーが拒否した場合、Claude Code はポリシーを適用せずにそのセッションを終了します。そのため、新しいフックやダイアログが表示される env 変数を広範なポリシーにプッシュすると、マッチするすべてのデベロッパーのインタラクティブセッションでダイアログが表示されます。実行中のインタラクティブセッションでは次の 1 時間ごとのポーリング時に表示され、それ以外の場合はデベロッパーの次のインタラクティブ起動時に表示されます。
 
@@ -1005,7 +1005,7 @@ Claude Code は、モデル選択設定や数値制限など、配信された `
 
 `/login` でサインインしたターミナルセッションは、Opus 4.7 以降、Sonnet 5 以降、および Fable モデルで 1M のコンテキストウィンドウを使用します。モデル ID に `[1m]` サフィックスは不要で、セッションは約 967K トークンで圧縮されます。デベロッパーのマシン上の Claude Code v2.1.287 より前では、Claude Code はモデル ID が `[1m]` で終わらない限り、Opus と Fable モデルのウィンドウを 200K として扱っていました。
 
-代わりにターミナルセッションを 200K の境界で圧縮させるには、ポリシーの `env` で [自動圧縮ウィンドウ](/docs/ja/model-config.md#set-the-auto-compact-window) を設定します：
+代わりにターミナルセッションを 200K の境界で圧縮させるには、ポリシーの `env` で [自動圧縮ウィンドウ](https://code.claude.com/docs/ja/model-config.md#set-the-auto-compact-window) を設定します：
 
 ```yaml theme={null}
 managed:
@@ -1018,11 +1018,11 @@ managed:
 
 Claude Code は、デベロッパーに承認ダイアログを表示せずにこの変数を適用します。この変数は、`[1m]` で終わるモデル ID を含むすべてのモデルに適用されます。
 
-代わりに 1M コンテキストをオフにするには、同じ `env` ブロックで [`CLAUDE_CODE_DISABLE_1M_CONTEXT: "1"`](/docs/ja/model-config#extended-context) を設定します。すると Claude Code はすべてのモデルのウィンドウを 200K として扱います。インタラクティブセッションでは、この変数が有効になる前に、各デベロッパーが [承認ダイアログ](#what-goes-in-cli) でこれを承認します。
+代わりに 1M コンテキストをオフにするには、同じ `env` ブロックで [`CLAUDE_CODE_DISABLE_1M_CONTEXT: "1"`](https://code.claude.com/docs/ja/model-config#extended-context) を設定します。すると Claude Code はすべてのモデルのウィンドウを 200K として扱います。インタラクティブセッションでは、この変数が有効になる前に、各デベロッパーが [承認ダイアログ](#what-goes-in-cli) でこれを承認します。
 
 #### 1 時間のプロンプトキャッシュ
 
-デフォルトの 5 分の代わりに 1 時間の [プロンプトキャッシュ TTL](/docs/ja/prompt-caching.md#cache-lifetime) をリクエストするには、ポリシーの既存の [`code`、`cli`、または `settings` ブロック](#choose-cli-or-code) にこれらのキーを追加し、ゲートウェイを再起動します。これらのキーには、ゲートウェイサーバーとクライアントの両方で Claude Code v2.1.242 以降が必要です。
+デフォルトの 5 分の代わりに 1 時間の [プロンプトキャッシュ TTL](https://code.claude.com/docs/ja/prompt-caching.md#cache-lifetime) をリクエストするには、ポリシーの既存の [`code`、`cli`、または `settings` ブロック](#choose-cli-or-code) にこれらのキーを追加し、ゲートウェイを再起動します。これらのキーには、ゲートウェイサーバーとクライアントの両方で Claude Code v2.1.242 以降が必要です。
 
 `promptCacheTtl` はメインの会話をカバーします。`subagentPromptCacheTtl` はオプションで、サブエージェント、ワークフロー、バックグラウンドリクエストをカバーします。次の例では、`cli` をキーとする `match: {}` ポリシーに両方を追加しています。
 
@@ -1039,23 +1039,23 @@ managed:
 >
 > アップストリームが、ゲートウェイが提供するすべてのモデルで 1 時間の TTL を提供している場合にのみ、これらのキーを設定してください。アップストリームが TTL を拒否した場合、リクエストは失敗し、ゲートウェイも Claude Code も 5 分の TTL で再試行しません。Amazon Bedrock については、[サポートされているモデル、リージョン、制限](https://docs.aws.amazon.com/bedrock/latest/userguide/prompt-caching.html#prompt-caching-models) を確認してください。
 
-`promptCacheTtl` を確認するには、ポリシーが一致するユーザーとしてゲートウェイにサインインし、[キャッシュ書き込みに使用された TTL を確認](/docs/ja/prompt-caching.md#choose-the-ttl-yourself) します。`--model` を渡して、ゲートウェイが提供する各モデルについて確認を繰り返してください。
+`promptCacheTtl` を確認するには、ポリシーが一致するユーザーとしてゲートウェイにサインインし、[キャッシュ書き込みに使用された TTL を確認](https://code.claude.com/docs/ja/prompt-caching.md#choose-the-ttl-yourself) します。`--model` を渡して、ゲートウェイが提供する各モデルについて確認を繰り返してください。
 
-1 時間のキャッシュ書き込みは、5 分の書き込みより [コストが高く](/docs/ja/prompt-caching.md#cache-lifetime) なります。[支出上限](/docs/ja/claude-apps-gateway-spend-limits.md#how-requests-are-priced) でその高い料金をカウントするには、ゲートウェイサーバーに v2.1.286 以降が必要です。
+1 時間のキャッシュ書き込みは、5 分の書き込みより [コストが高く](https://code.claude.com/docs/ja/prompt-caching.md#cache-lifetime) なります。[支出上限](https://code.claude.com/docs/ja/claude-apps-gateway-spend-limits.md#how-requests-are-priced) でその高い料金をカウントするには、ゲートウェイサーバーに v2.1.286 以降が必要です。
 
 #### ポリシー内の MCP サーバー
 
-ポリシーがマッチする Claude Code クライアントに MCP サーバーを提供するには、そのポリシーの `cli` ブロックで [`managedMcpServers`](/docs/ja/managed-mcp#provide-servers-through-managed-settings) を設定します。ゲートウェイサーバーとクライアントの両方で Claude Code v2.1.259 以降が必要です。
+ポリシーがマッチする Claude Code クライアントに MCP サーバーを提供するには、そのポリシーの `cli` ブロックで [`managedMcpServers`](https://code.claude.com/docs/ja/managed-mcp#provide-servers-through-managed-settings) を設定します。ゲートウェイサーバーとクライアントの両方で Claude Code v2.1.259 以降が必要です。
 
-ゲートウェイはブート時に [Claude Code がクライアントで適用するのと同じルール](/docs/ja/managed-mcp.md#what-an-entry-can-contain) で各エントリをチェックし、エントリがチェックに失敗した場合は起動を拒否してそのエントリを示します。
+ゲートウェイはブート時に [Claude Code がクライアントで適用するのと同じルール](https://code.claude.com/docs/ja/managed-mcp.md#what-an-entry-can-contain) で各エントリをチェックし、エントリがチェックに失敗した場合は起動を拒否してそのエントリを示します。
 
-`gateway.yaml` に `${VAR}` 参照を記述した場合、ゲートウェイはエントリチェックを実行する前に、ブート時に [シークレット展開](#secret-expansion) を通じて自身の環境から解決します。そのため、マッチするすべてのクライアントはリテラル値を受け取り、それを読むことができます。[提供されるサーバーのヘッダーに関するガイダンス](/docs/ja/managed-mcp.md#provide-servers-through-managed-settings) は展開後の値に適用されます。
+`gateway.yaml` に `${VAR}` 参照を記述した場合、ゲートウェイはエントリチェックを実行する前に、ブート時に [シークレット展開](#secret-expansion) を通じて自身の環境から解決します。そのため、マッチするすべてのクライアントはリテラル値を受け取り、それを読むことができます。[提供されるサーバーのヘッダーに関するガイダンス](https://code.claude.com/docs/ja/managed-mcp.md#provide-servers-through-managed-settings) は展開後の値に適用されます。
 
 ゲートウェイは `cli` ブロック内の `.mcp.json` 表記 `mcpServers` を拒否し、そのブートエラーでは使用すべきキーとして `managedMcpServers` を示します。v2.1.259 より前では、ゲートウェイは `cli` ブロック内のすべての MCP サーバー定義を拒否していました。
 
 #### Claude Desktop オーバーレイ
 
-組織が [Claude Desktop](/docs/ja/desktop.md) もデプロイしている場合、同じゲートウェイが両方のクライアントに対応します。Claude Desktop の [管理設定](https://claude.com/docs/third-party/claude-desktop/configuration) の `bootstrapUrl` を `<listen.public_url>/user/bootstrap` に向けてください。Claude Desktop はその URL から OAuth 発行者を導出し、このゲートウェイに対して同じデバイスコードサインインを実行し、レスポンスから設定を取得します。
+組織が [Claude Desktop](https://code.claude.com/docs/ja/desktop.md) もデプロイしている場合、同じゲートウェイが両方のクライアントに対応します。Claude Desktop の [管理設定](https://claude.com/docs/third-party/claude-desktop/configuration) の `bootstrapUrl` を `<listen.public_url>/user/bootstrap` に向けてください。Claude Desktop はその URL から OAuth 発行者を導出し、このゲートウェイに対して同じデバイスコードサインインを実行し、レスポンスから設定を取得します。
 
 > [!NOTE]
 >
@@ -1069,7 +1069,7 @@ Claude Desktop をデプロイしない場合は、ポリシーから `desktop` 
 
 * モデルリスト。`availableModels` から導出されます。このリストには、ポリシーが [`deniedModels` または `availableModelsMatch: exact`](#what-goes-in-cli) でブロックしたモデルは含まれません。このフィルターには、ゲートウェイサーバー上の Claude Code v2.1.299 以降が必要です。各モデルの 1M コンテキストオプションについては [Claude Desktop の拡張コンテキスト](#extended-context-in-claude-desktop) で説明しています
 * ツール名のみの `permissions.deny` エントリからの無効化されたツール。ポリシーの `desktop` ブロックで `disabledBuiltinTools` を設定した場合、ゲートウェイは指定した値と導出されたリストの和集合を提供します。そのため、この方法でさらにツールを無効化できますが、`permissions.deny` で無効化したツールを再度有効化することはできません
-* `sandbox.network.allowedDomains` から導出される送信許可リスト。ポリシーの `desktop` ブロックで `coworkEgressAllowedHosts` を設定すると、ゲートウェイは導出リストの代わりにその値を使用します。ゲートウェイが提供する許可リストに `*` が含まれ、かつゲートウェイが Claude Desktop の [`allowedWorkspaceFolders`](https://claude.com/docs/third-party/claude-desktop/code#applied-as-managed-policy) も提供していない場合、Claude Desktop は Code タブで [Bash サンドボックス](/docs/ja/sandboxing.md)をオンにしません
+* `sandbox.network.allowedDomains` から導出される送信許可リスト。ポリシーの `desktop` ブロックで `coworkEgressAllowedHosts` を設定すると、ゲートウェイは導出リストの代わりにその値を使用します。ゲートウェイが提供する許可リストに `*` が含まれ、かつゲートウェイが Claude Desktop の [`allowedWorkspaceFolders`](https://claude.com/docs/third-party/claude-desktop/code#applied-as-managed-policy) も提供していない場合、Claude Desktop は Code タブで [Bash サンドボックス](https://code.claude.com/docs/ja/sandboxing.md)をオンにしません
 * ゲートウェイ自体を指す OTLP エンドポイントと、サインインしたユーザーのアイデンティティ属性。ゲートウェイはそのエンドポイントで受け取ったエクスポートを `forward_to` の宛先にリレーします。[`telemetry.forward_to`](#telemetry) と `listen.public_url` の両方を設定した場合に、エンドポイントと属性が含まれます。
 
   Claude Desktop はすべてのシグナルを 1 つのエンコーディングでエクスポートします：`http/protobuf`、またはポリシーの `env` で `OTEL_EXPORTER_OTLP_PROTOCOL` またはそのシグナルごとのバリアントのいずれかを `http/json` に設定した場合は `http/json` です。ゲートウェイサーバー上の Claude Code v2.1.261 より前では、レスポンスは常に `http/json` を設定していたため、protobuf のみを受け入れるコレクターは Claude Desktop のエクスポートを拒否していました
@@ -1097,7 +1097,7 @@ Claude Desktop をデプロイしない場合は、ポリシーから `desktop` 
 
 ゲートウェイの前段にあるプロキシが `/managed/settings` に独自の 404 で応答する場合も、4 つの条件をすべて満たすマシンであっても、Code タブは `code` 設定なしで開始されます。
 
-`desktop` キーを持つポリシーで、設定を含む `code` ブロックがあると、Cowork、Chat、Code タブで WebSearch ツールがオフになります。MCP サーバーについては、[`managedMcpServers` が適用される場所](/docs/ja/managed-mcp#where-managedmcpservers-applies) を参照してください。
+`desktop` キーを持つポリシーで、設定を含む `code` ブロックがあると、Cowork、Chat、Code タブで WebSearch ツールがオフになります。MCP サーバーについては、[`managedMcpServers` が適用される場所](https://code.claude.com/docs/ja/managed-mcp#where-managedmcpservers-applies) を参照してください。
 
 ##### Claude Desktop の設定を直接指定する
 
@@ -1161,7 +1161,7 @@ v2.1.232 より前では、ゲートウェイは `chatTabEnabled` や `disableAu
 
 #### Claude Desktop の拡張コンテキスト
 
-ゲートウェイから [Claude Desktop](#claude-desktop-overlay) に提供している場合、そのモデルピッカーは、1M のコンテキストウィンドウで実行できるリスト内の各モデルについて 1M コンテキストオプションを提供します。これには Claude Opus 4.6 以降、Claude Sonnet 4.6 以降、および Fable モデルが含まれます。このオプションはモデルの `[1m]` バリアントであり、[拡張コンテキスト](/docs/ja/model-config.md#extended-context) で説明されています。ゲートウェイサーバー上の Claude Code v2.1.284 以降が必要です。
+ゲートウェイから [Claude Desktop](#claude-desktop-overlay) に提供している場合、そのモデルピッカーは、1M のコンテキストウィンドウで実行できるリスト内の各モデルについて 1M コンテキストオプションを提供します。これには Claude Opus 4.6 以降、Claude Sonnet 4.6 以降、および Fable モデルが含まれます。このオプションはモデルの `[1m]` バリアントであり、[拡張コンテキスト](https://code.claude.com/docs/ja/model-config.md#extended-context) で説明されています。ゲートウェイサーバー上の Claude Code v2.1.284 以降が必要です。
 
 次の場合、[`models`](#models) エントリには 1M オプションが表示されません：
 
@@ -1195,21 +1195,21 @@ managed:
 
 ピッカーからオプションを削除するには、ポリシーの `cli` キーの下の `env` ブロックで `CLAUDE_CODE_DISABLE_1M_CONTEXT: "1"` を設定します。`id` が `[1m]` で終わるエントリもリストしていた場合、ゲートウェイは引き続きそれを提供するため、そのエントリも削除してください。
 
-この変数は、ポリシーがマッチするデベロッパーのターミナルセッションにも届きます。そこで何が変わるかについては、[拡張コンテキスト](/docs/ja/model-config.md#extended-context) を参照してください。
+この変数は、ポリシーがマッチするデベロッパーのターミナルセッションにも届きます。そこで何が変わるかについては、[拡張コンテキスト](https://code.claude.com/docs/ja/model-config.md#extended-context) を参照してください。
 
 #### 他の管理ソースとの優先順位
 
-デバイスに MDM で配信されたポリシーやローカルの `managed-settings.json` もある場合、ゲートウェイで配信された設定が最優先になります。管理設定ページの [管理層内の優先順位](/docs/ja/managed-settings.md#precedence-within-the-managed-tier) には、ローカルソースが適用される場合と、サンドボックスロックキー、`forceRemoteSettingsRefresh`、変数ごとの `env` マージなど、どのソースを選択したかに関わらず [Claude Code がすべての管理ソースから読み取るキー](/docs/ja/managed-settings.md#keys-read-from-every-admin-source) が記載されています。MDM プロファイルまたは管理設定ファイルで設定された [`policyHelper`](/docs/ja/settings-reference#policyhelper) は、ゲートウェイが設定を配信しない場合にのみ実行されます。そのエントリには、その出力が何を置き換えるかが記載されています。
+デバイスに MDM で配信されたポリシーやローカルの `managed-settings.json` もある場合、ゲートウェイで配信された設定が最優先になります。管理設定ページの [管理層内の優先順位](https://code.claude.com/docs/ja/managed-settings.md#precedence-within-the-managed-tier) には、ローカルソースが適用される場合と、サンドボックスロックキー、`forceRemoteSettingsRefresh`、変数ごとの `env` マージなど、どのソースを選択したかに関わらず [Claude Code がすべての管理ソースから読み取るキー](https://code.claude.com/docs/ja/managed-settings.md#keys-read-from-every-admin-source) が記載されています。MDM プロファイルまたは管理設定ファイルで設定された [`policyHelper`](https://code.claude.com/docs/ja/settings-reference#policyhelper) は、ゲートウェイが設定を配信しない場合にのみ実行されます。そのエントリには、その出力が何を置き換えるかが記載されています。
 
-[Claude Desktop](/docs/ja/desktop.md) などの埋め込みホストは、SDK の `managedSettings` オプションを通じてポリシーを提供できます。[埋め込みホストからの親設定](/docs/ja/managed-settings.md#parent-settings-from-embedding-hosts) には Claude Code がそれを適用する場合が、[親設定を制限する](/docs/ja/claude-apps-gateway#restrict-parent-settings) には `allowManaged*Only` ロックがなくても適用される許可方向の設定がリストされています。
+[Claude Desktop](https://code.claude.com/docs/ja/desktop.md) などの埋め込みホストは、SDK の `managedSettings` オプションを通じてポリシーを提供できます。[埋め込みホストからの親設定](https://code.claude.com/docs/ja/managed-settings.md#parent-settings-from-embedding-hosts) には Claude Code がそれを適用する場合が、[親設定を制限する](https://code.claude.com/docs/ja/claude-apps-gateway#restrict-parent-settings) には `allowManaged*Only` ロックがなくても適用される許可方向の設定がリストされています。
 
 ゲートウェイポリシーは、非インタラクティブな `claude -p` 実行や Agent SDK によって生成されたセッションを含め、マシン上のすべての Claude Code 呼び出しに適用されます。起動時にゲートウェイに到達できない場合、サインイン済みセッションはポリシーなしで実行されるのではなく、エラーで終了します。
 
 ### `telemetry`
 
-CLI はメトリクス、ログ、および有効な場合はトレースをゲートウェイに送信し、ゲートウェイはそれらをそのまま各設定済みの宛先にリレーします。エクスポートは HTTP 上の OpenTelemetry Protocol（OTLP）を使用します。リレーをスキップしてセッションからコレクターに直接エクスポートするには、[ポリシーでコレクターを指定](#export-directly-to-your-collector) します。CLI が出力するメトリクスとイベントについては [使用状況の監視](/docs/ja/monitoring-usage.md) を参照してください。
+CLI はメトリクス、ログ、および有効な場合はトレースをゲートウェイに送信し、ゲートウェイはそれらをそのまま各設定済みの宛先にリレーします。エクスポートは HTTP 上の OpenTelemetry Protocol（OTLP）を使用します。リレーをスキップしてセッションからコレクターに直接エクスポートするには、[ポリシーでコレクターを指定](#export-directly-to-your-collector) します。CLI が出力するメトリクスとイベントについては [使用状況の監視](https://code.claude.com/docs/ja/monitoring-usage.md) を参照してください。
 
-`/login` でサインインしたセッションでは、CLI は各エクスポートに、ゲートウェイが発行した JWT から読み取った認証済みユーザーの ID、つまり `user.id`、`user.email`、`user.groups` 属性を付与します。そのため、開発者側の設定なしで、開発者ごとのコストと使用量の帰属が機能します。開発者がサインインする前に Claude Code がログに記録したイベントには、[この ID は含まれません](/docs/ja/monitoring-usage.md#standard-attributes)。開発者のグループが変更されたときにどの属性がそれに追従するかについては、[セッション中のグループの変更](#group-changes-during-an-open-session) を参照してください。
+`/login` でサインインしたセッションでは、CLI は各エクスポートに、ゲートウェイが発行した JWT から読み取った認証済みユーザーの ID、つまり `user.id`、`user.email`、`user.groups` 属性を付与します。そのため、開発者側の設定なしで、開発者ごとのコストと使用量の帰属が機能します。開発者がサインインする前に Claude Code がログに記録したイベントには、[この ID は含まれません](https://code.claude.com/docs/ja/monitoring-usage.md#standard-attributes)。開発者のグループが変更されたときにどの属性がそれに追従するかについては、[セッション中のグループの変更](#group-changes-during-an-open-session) を参照してください。
 
 ゲートウェイでサインインした [Claude Desktop](#claude-desktop-overlay) と Cowork のセッションは、テレメトリに `enduser.id` とともに `user.email` と `user.groups` を付与するため、`user.email` または `user.groups` に対する 1 つのクエリでターミナル、Desktop、Cowork の使用状況をカバーできます。`user.groups` はコンマ区切りの IdP グループリストです。
 
@@ -1251,7 +1251,7 @@ telemetry:
 
 各 `forward_to` URL は `https://` を使用する必要があります。ただし、ゲートウェイ自身のループバックインターフェイス上のコレクターについては 1 つの例外があります：
 
-* `http://localhost:<port>` は設定検証を通過しますが、ゲートウェイの環境で `CLAUDE_GATEWAY_ALLOW_LOOPBACK=1` を設定しない限り、[SSRF ガード](/docs/ja/claude-apps-gateway-deploy.md#threat-model-summary) がすべてのエクスポートを `ECONNREFUSED_SSRF` でブロックします
+* `http://localhost:<port>` は設定検証を通過しますが、ゲートウェイの環境で `CLAUDE_GATEWAY_ALLOW_LOOPBACK=1` を設定しない限り、[SSRF ガード](https://code.claude.com/docs/ja/claude-apps-gateway-deploy.md#threat-model-summary) がすべてのエクスポートを `ECONNREFUSED_SSRF` でブロックします
 * `http://127.0.0.1:<port>` または `http://[::1]:<port>` は、その変数が設定されていない限りブートが失敗します
 
 クラスター内コレクターの場合は、独自の内部アドレスで HTTPS で公開するか、変数を設定したサイドカーとして実行してください。
@@ -1282,7 +1282,7 @@ telemetry:
 
 シグナルの `forward_to` 宛先がない場合、ゲートウェイはそれを受け入れて破棄します。デベロッパーが既に Claude Code のテレメトリをいずれかのコレクターにエクスポートしている場合は、サインイン後もそのコレクターがデータを受け取り続けるように、それを `forward_to` 宛先として追加し、ログやトレースをエクスポートしている場合はそれらも有効にしてください。代わりにリレーをスキップするには、[ポリシーでコレクターを指定](#export-directly-to-your-collector) します。
 
-[トレース](/docs/ja/monitoring-usage.md#traces-beta) には、各クライアントで `CLAUDE_CODE_ENHANCED_TELEMETRY_BETA=1` も必要です。ゲートウェイはこれをプッシュしないため、管理ポリシーの `env` ブロックで設定してください。デベロッパーは、プッシュされたエンドポイントで既に表示される同じ [セキュリティ承認ダイアログ](#managed) でこれを承認します。
+[トレース](https://code.claude.com/docs/ja/monitoring-usage.md#traces-beta) には、各クライアントで `CLAUDE_CODE_ENHANCED_TELEMETRY_BETA=1` も必要です。ゲートウェイはこれをプッシュしないため、管理ポリシーの `env` ブロックで設定してください。デベロッパーは、プッシュされたエンドポイントで既に表示される同じ [セキュリティ承認ダイアログ](#managed) でこれを承認します。
 
 トレースしたいグループのポリシーでのみ `1` に設定してください。これを設定しないポリシーは、[マージルール](#managed) に従い、`match: {}` キャッチオールポリシーが値を設定していればその値を継承します。デベロッパーがローカルで変数を設定してもグループのクライアントからトレースが送信されないようにするには、そのグループのポリシーで `0` に設定してください。
 
@@ -1290,14 +1290,14 @@ protobuf と JSON の両方の OTLP エンコーディングがリレーされ�
 
 #### 累積メトリクスを送信する
 
-コレクターが累積メトリクスのみを受け付ける場合は、[`OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE`](/docs/ja/monitoring-usage#common-configuration-variables) を `cumulative` に設定します。Claude Code はデフォルトでデルタメトリクスを送信し、ゲートウェイはそれらを変換せずに中継します。各種類のセッションがこの変数を読み取る場所で設定してください。
+コレクターが累積メトリクスのみを受け付ける場合は、[`OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE`](https://code.claude.com/docs/ja/monitoring-usage#common-configuration-variables) を `cumulative` に設定します。Claude Code はデフォルトでデルタメトリクスを送信し、ゲートウェイはそれらを変換せずに中継します。各種類のセッションがこの変数を読み取る場所で設定してください。
 
 * **ターミナルセッション**: ポリシーの [`cli` または `code` キー](#choose-cli-or-code) の下の `env` ブロック
-* **[ユーザーのマシンで実行される](/docs/ja/managed-settings.md#where-and-when-a-policy-applies) Cowork セッション**: そのマシン上の [クライアント側の管理設定](#client-side-managed-settings) の `env` ブロック
+* **[ユーザーのマシンで実行される](https://code.claude.com/docs/ja/managed-settings.md#where-and-when-a-policy-applies) Cowork セッション**: そのマシン上の [クライアント側の管理設定](#client-side-managed-settings) の `env` ブロック
 * **`code` ポリシーの下の Code タブセッション**: [`code` 設定が適用される条件](#apply-code-settings-in-the-code-tab) を満たしたうえで、ポリシーの `env` ブロック
 * **`cli` ポリシーの下の Code タブセッション**: セッションを実行するマシン上のクライアント側の管理設定の `env` ブロック。SSH 経由の場合はリモートホストです。
 
-マシンの管理設定に変数を追加する場合は、そのマシン上の優先順位が最も高いソースで [`parentSettingsBehavior: "merge"`](/docs/ja/claude-apps-gateway#set-the-opt-in) も設定してください。これがないと、Cowork セッションと `cli` ポリシーの下の Code タブセッションは、Claude Desktop が親設定として渡すエグレス許可リストやその他のポリシーなしで実行されます。
+マシンの管理設定に変数を追加する場合は、そのマシン上の優先順位が最も高いソースで [`parentSettingsBehavior: "merge"`](https://code.claude.com/docs/ja/claude-apps-gateway#set-the-opt-in) も設定してください。これがないと、Cowork セッションと `cli` ポリシーの下の Code タブセッションは、Claude Desktop が親設定として渡すエグレス許可リストやその他のポリシーなしで実行されます。
 
 #### 独自のラベルを追加する
 
@@ -1326,7 +1326,7 @@ telemetry:
 
 `/login` でサインインしたターミナルセッションは、他の [テレメトリ変数](#telemetry) とともにプッシュされる `OTEL_RESOURCE_ATTRIBUTES` としてラベルを受け取ります。ポリシーの `env` ブロックで `OTEL_RESOURCE_ATTRIBUTES` を設定した場合、そのポリシーがマッチするターミナルセッションはラベルの代わりにその値を受け取ります。Claude Desktop は、`user.email` やその他のアイデンティティ属性とともにゲートウェイからラベルを受け取ります。
 
-Claude Code は各ラベルをすべてのメトリクスデータポイントにもコピーするため、リソース属性をインデックス化しないバックエンドでもラベルでメトリクスをフィルタリングできます。このコピーをオフにするには、[メトリクスのカーディナリティ制御](/docs/ja/monitoring-usage.md#metrics-cardinality-control) を参照してください。
+Claude Code は各ラベルをすべてのメトリクスデータポイントにもコピーするため、リソース属性をインデックス化しないバックエンドでもラベルでメトリクスをフィルタリングできます。このコピーをオフにするには、[メトリクスのカーディナリティ制御](https://code.claude.com/docs/ja/monitoring-usage.md#metrics-cardinality-control) を参照してください。
 
 #### セッション中のグループの変更
 
@@ -1360,7 +1360,7 @@ Claude Code はシグナルを直接エクスポートする前にエンドポ�
 * URL が `https://`、またはループバックアドレスへの `http://` を使用していること
 * URL が `/v1/<signal>` で終わるパスに解決され、クエリやフラグメントがないこと。Claude Code は汎用変数からこのパスを自身で構築します。`OTEL_EXPORTER_OTLP_METRICS_ENDPOINT` などのシグナルごとの変数は記述どおりに使用するため、そこには完全なパスを含めてください。
 * URL がゲートウェイ自身のホストではないこと。ゲートウェイ宛てのエンドポイントはリレーパスとそのセッショントークンを維持します。
-* 管理者とデベロッパーのどちらも、いずれの設定ソースでも [`otelHeadersHelper`](/docs/ja/settings-reference#otelheadershelper) を設定していないこと。ヘルパーが設定されている場合、すべてのシグナルはリレーに残ります。
+* 管理者とデベロッパーのどちらも、いずれの設定ソースでも [`otelHeadersHelper`](https://code.claude.com/docs/ja/settings-reference#otelheadershelper) を設定していないこと。ヘルパーが設定されている場合、すべてのシグナルはリレーに残ります。
 
 指定したエンドポイントによって変わるのはエクスポート先のみです。どのシグナルをエクスポートするかは、引き続き `OTEL_*_EXPORTER` セレクターで選択します。
 
@@ -1387,18 +1387,18 @@ Claude Code はシグナルを直接エクスポートする前にエンドポ�
 | - | - | - | - |
 | `access_control` | `allow_cidrs` / `deny_cidrs` | 空 | `trusted_proxies` による解決後のクライアントアドレスによるインバウンド IP の許可/拒否。`deny_cidrs` が最初にチェックされ、それにマッチするクライアントは `allow_cidrs` にもマッチしても拒否されます。`allow_cidrs` が空でない場合、ゲートウェイはデフォルト拒否になります。`/healthz` と `/readyz` は `allow_cidrs` の対象外です。信頼されたプロキシが IP アドレスではない `X-Forwarded-For` エントリを送信した場合、実際のクライアントは不明となり、ゲートウェイは確認すべき内容を示す警告を 1 回ログに記録します。いずれかのリストがリクエストに適用される場合は、`403` と監査理由 `xff_unparseable` でリクエストを拒否します。どちらも適用されない場合は、リクエストを処理し、IP ごとのレート制限と監査のクライアント IP としてプロキシ自身のアドレスを使用します。 |
 | `limits` | `max_request_bytes` | 32 MiB | インバウンドリクエストボディの最大サイズ。サイズを超えたリクエストはボディがバッファリングされる前に `413` を受け取ります。大きなファイルや画像のリクエストの場合は上げてください。 |
-| `limits` | `max_request_header_bytes` | 未設定 | リクエストのヘッダー全体に対するゲートウェイの 256 KiB の制限を引き下げます。制限を超えたリクエストは `431` を返し、256 KiB を超える値は効果がありません。サインイン後にデベロッパーが `431` を受け取る場合は、[サインイン後にリクエストヘッダーが大きすぎる](/docs/ja/claude-apps-gateway-deploy.md#request-headers-too-large-after-sign-in) を参照してください。 |
+| `limits` | `max_request_header_bytes` | 未設定 | リクエストのヘッダー全体に対するゲートウェイの 256 KiB の制限を引き下げます。制限を超えたリクエストは `431` を返し、256 KiB を超える値は効果がありません。サインイン後にデベロッパーが `431` を受け取る場合は、[サインイン後にリクエストヘッダーが大きすぎる](https://code.claude.com/docs/ja/claude-apps-gateway-deploy.md#request-headers-too-large-after-sign-in) を参照してください。 |
 | `limits` | `max_url_length` | 未設定 | 設定されている場合、長すぎる URL は `414` を返します |
 | `timeouts` | `upstream_ttfb_ms` | 120000 | 上流のレスポンスヘッダーの最大待機時間（最初のバイトまでの時間）。その後、レスポンスボディは経過時間の上限なしでストリーミングされます。直接 Anthropic 上流パスに適用されます。他のすべてのプロバイダーでは、ゲートウェイはレスポンスが開始されるまで最大 1 時間待機します。 |
-| `rate_limits` | `device_authorization.max` / `.window_seconds` | 30 / 600 | 認証されていないデバイス認可エンドポイントの IP ごとのレート制限。共有出力 IP や NAT の背後にある大規模な組織の場合は上げてください。サイズの決め方は [大規模ロールアウト](/docs/ja/claude-apps-gateway-deploy.md#large-rollouts) を参照してください。これらの制限はデバイスグラントのサインインフローにのみ適用され、`/v1/messages` の推論には適用されません。[ユーザーコードのブルートフォース耐性](/docs/ja/claude-apps-gateway-deploy.md#user-code-brute-force-resistance) を参照してください。 |
-| `rate_limits` | `device_verify.max` / `.window_seconds` | 10 / 600 | `/device` での `user_code` 送信の IP ごとのレート制限。他のデベロッパーのコードの推測を防ぐものです。どこまで上げるかについては [大規模ロールアウト](/docs/ja/claude-apps-gateway-deploy.md#large-rollouts) を参照してください。 |
+| `rate_limits` | `device_authorization.max` / `.window_seconds` | 30 / 600 | 認証されていないデバイス認可エンドポイントの IP ごとのレート制限。共有出力 IP や NAT の背後にある大規模な組織の場合は上げてください。サイズの決め方は [大規模ロールアウト](https://code.claude.com/docs/ja/claude-apps-gateway-deploy.md#large-rollouts) を参照してください。これらの制限はデバイスグラントのサインインフローにのみ適用され、`/v1/messages` の推論には適用されません。[ユーザーコードのブルートフォース耐性](https://code.claude.com/docs/ja/claude-apps-gateway-deploy.md#user-code-brute-force-resistance) を参照してください。 |
+| `rate_limits` | `device_verify.max` / `.window_seconds` | 10 / 600 | `/device` での `user_code` 送信の IP ごとのレート制限。他のデベロッパーのコードの推測を防ぐものです。どこまで上げるかについては [大規模ロールアウト](https://code.claude.com/docs/ja/claude-apps-gateway-deploy.md#large-rollouts) を参照してください。 |
 
 デフォルトのように両方の `access_control` リストを空のままにすると、ゲートウェイはすべてのクライアントアドレスにサービスを提供するため、ゲートウェイに到達できるユーザーを制限するのはネットワークのみになります。ゲートウェイはデベロッパーのマシンでコマンドを実行する [管理設定](#managed) をプッシュできるため、これは重要です。
 
 `allow_cidrs` が空の間、ゲートウェイはリクエストへの応答方法を変えずに、2 か所で警告します：
 
 * **ブート時**：運用ログの警告で、プライベート範囲 `10.0.0.0/8`、`172.16.0.0/12`、`192.168.0.0/16`、`100.64.0.0/10`、`127.0.0.0/8`、`::1/128`、`fc00::/7` と、デベロッパーが接続元とするその他の内部範囲のみを許可することを推奨します。ローカル開発のように、ゲートウェイをループバックアドレスにバインドし、`trusted_proxies` も `public_url` も設定していない場合、この警告は表示されません。
-* **実行時**：これらのプライベート範囲外のアドレスから初めてリクエストが届いたとき、ゲートウェイは警告をログに記録し、クライアント IP を含む [`access.public_client` 監査イベント](/docs/ja/claude-apps-gateway-deploy#logs) を発行します。どちらもプロセスごとに 1 回発生します。リンクローカルアドレス `169.254.0.0/16` と `fe80::/10` はパブリックとしてカウントされません。ゲートウェイはこのチェックの実行前に `/healthz` と `/readyz` に応答するため、パブリック範囲からのヘルスプローブではトリガーされません。
+* **実行時**：これらのプライベート範囲外のアドレスから初めてリクエストが届いたとき、ゲートウェイは警告をログに記録し、クライアント IP を含む [`access.public_client` 監査イベント](https://code.claude.com/docs/ja/claude-apps-gateway-deploy#logs) を発行します。どちらもプロセスごとに 1 回発生します。リンクローカルアドレス `169.254.0.0/16` と `fe80::/10` はパブリックとしてカウントされません。ゲートウェイはこのチェックの実行前に `/healthz` と `/readyz` に応答するため、パブリック範囲からのヘルスプローブではトリガーされません。
 
 どちらのシグナルも、ゲートウェイが解決したクライアントアドレスを使用します。ロードバランサー、ポートフォワード、またはトンネルがトラフィックをリレーしていて、`listen.trusted_proxies` にリストされていない場合、ゲートウェイにはリレーのアドレス（通常はプライベート）が見えるため、実行時の警告もプライベートの許可リストも、それを経由してリレーされたトラフィックを検出できません。
 
@@ -1435,11 +1435,11 @@ load_test_mode:
 
 > [!WARNING]
 >
-> デベロッパーが使用するゲートウェイでは絶対にこれをオンにしないでください。すべてのリクエストが定型の返信を受け取り、モデルは呼び出されません。モードがオンの間、ゲートウェイはブート時に `load_test_mode is on` 警告をログに記録し、各 `inference` [監査イベント](/docs/ja/claude-apps-gateway-deploy.md#logs) に `load_test: true` を付けます。
+> デベロッパーが使用するゲートウェイでは絶対にこれをオンにしないでください。すべてのリクエストが定型の返信を受け取り、モデルは呼び出されません。モードがオンの間、ゲートウェイはブート時に `load_test_mode is on` 警告をログに記録し、各 `inference` [監査イベント](https://code.claude.com/docs/ja/claude-apps-gateway-deploy.md#logs) に `load_test: true` を付けます。
 
 ## 完全な例
 
-この完全なリファレンス設定は、すべてのコアセクションを実行します。[HTTP チューニングブロック](#http-tuning)はデフォルト値を保持します。これをコピーして、不要な部分を削除し、値を入力してください。[クイックスタート](/docs/ja/claude-apps-gateway#quickstart)の設定は、これの最小限のバージョンです。
+この完全なリファレンス設定は、すべてのコアセクションを実行します。[HTTP チューニングブロック](#http-tuning)はデフォルト値を保持します。これをコピーして、不要な部分を削除し、値を入力してください。[クイックスタート](https://code.claude.com/docs/ja/claude-apps-gateway#quickstart)の設定は、これの最小限のバージョンです。
 
 ```yaml gateway.yaml theme={null}
 # Run with:
@@ -1600,7 +1600,7 @@ telemetry:
 
 ## クライアント側で管理される設定
 
-上記のすべてはゲートウェイサーバーを設定します。開発者マシンはゲートウェイに別途ポイントし、各デバイスで Claude Code の[管理設定](/docs/ja/managed-settings.md)を通じて設定します。ゲートウェイはログインキー自体をプッシュできません。これらのキーがクライアントにゲートウェイの場所を伝えるためです。
+上記のすべてはゲートウェイサーバーを設定します。開発者マシンはゲートウェイに別途ポイントし、各デバイスで Claude Code の[管理設定](https://code.claude.com/docs/ja/managed-settings.md)を通じて設定します。ゲートウェイはログインキー自体をプッシュできません。これらのキーがクライアントにゲートウェイの場所を伝えるためです。
 
 CLI の場合、OS ごとの `managed-settings.json` でこれらのキーを設定します。2 つのログインキーは各開発者の `/login` をゲートウェイにルーティングします。
 
@@ -1612,22 +1612,22 @@ CLI の場合、OS ごとの `managed-settings.json` でこれらのキーを設
 }
 ```
 
-`parentSettingsBehavior: "merge"` は Claude Desktop の出力許可リストの配信を埋め込み Claude Code セッションで機能させ続けます。[Claude Desktop セッションにポリシーを配信する](/docs/ja/claude-apps-gateway#deliver-policy-to-claude-desktop-sessions)はメカニズムと opt-in が配置される場所を説明しています。
+`parentSettingsBehavior: "merge"` は Claude Desktop の出力許可リストの配信を埋め込み Claude Code セッションで機能させ続けます。[Claude Desktop セッションにポリシーを配信する](https://code.claude.com/docs/ja/claude-apps-gateway#deliver-policy-to-claude-desktop-sessions)はメカニズムと opt-in が配置される場所を説明しています。
 
-開発者がクラウドプロバイダー変数または独自の `ANTHROPIC_BASE_URL` でゲートウェイをバイパスするのを防ぐには、同じファイルに `"allowedProviders": ["gateway"]` を追加します。Claude Code はその後、マシン上でクラウドゲートウェイ用に設定されていないすべてのセッションを拒否し、`forceLoginGatewayUrl` が指定するゲートウェイ、またはファイルの `env` ブロックが `ANTHROPIC_BASE_URL` として設定する URL を持つゲートウェイのみを認めます。`claude gateway` はこのリストを設定するマシンでの実行を拒否するため、ゲートウェイホストではこのキーをオフのままにしてください。設定リファレンスの [`allowedProviders`](/docs/ja/settings-reference#allowedproviders) エントリを参照してください。Claude Code v2.1.285 以降が必要です。
+開発者がクラウドプロバイダー変数または独自の `ANTHROPIC_BASE_URL` でゲートウェイをバイパスするのを防ぐには、同じファイルに `"allowedProviders": ["gateway"]` を追加します。Claude Code はその後、マシン上でクラウドゲートウェイ用に設定されていないすべてのセッションを拒否し、`forceLoginGatewayUrl` が指定するゲートウェイ、またはファイルの `env` ブロックが `ANTHROPIC_BASE_URL` として設定する URL を持つゲートウェイのみを認めます。`claude gateway` はこのリストを設定するマシンでの実行を拒否するため、ゲートウェイホストではこのキーをオフのままにしてください。設定リファレンスの [`allowedProviders`](https://code.claude.com/docs/ja/settings-reference#allowedproviders) エントリを参照してください。Claude Code v2.1.285 以降が必要です。
 
-`managed-settings.json` ファイルを各デバイスにデプロイします。通常は MDM プラットフォーム経由です。ファイルパスはプラットフォームによって異なります。[各メカニズムがポリシーを保存する場所](/docs/ja/managed-settings.md#where-each-mechanism-stores-the-policy)を参照してください。
+`managed-settings.json` ファイルを各デバイスにデプロイします。通常は MDM プラットフォーム経由です。ファイルパスはプラットフォームによって異なります。[各メカニズムがポリシーを保存する場所](https://code.claude.com/docs/ja/managed-settings.md#where-each-mechanism-stores-the-policy)を参照してください。
 
 デフォルトでは、Windows のレジストリポリシーまたは macOS のマネージドプリファレンス plist は、[上記の例外キーとクロスソースチェック](#precedence-with-other-managed-sources)を除き、`managed-settings.json` ファイルとマージするのではなく置き換えます。このスニペットの 3 つのキーはすべて最優先ソースルールに従うため、Group Policy または設定プロファイルを通じてポリシーを配信するフリートは、代わりにそのメカニズムにすべての 3 つを配置する必要があります。
 
 Claude Desktop の場合、Claude Desktop 独自の[マネージド設定](https://claude.com/docs/third-party/claude-desktop/configuration)で `bootstrapUrl` キーを `<listen.public_url>/user/bootstrap` に設定します。サインインフロー及びグループごとのポリシーは、ポリシーが `desktop` キーでサーバー側で opt-in した後、CLI のものと一致します。opt-in がない場合、`/user/bootstrap` は 404 を返します。[Claude Desktop オーバーレイ](#claude-desktop-overlay)でサーバー側の半分を参照してください。
 
-Claude Code は [`forceLoginGatewayUrl`](/docs/ja/settings-reference#forcelogingatewayurl)、[`gatewayInternalNetworks`](/docs/ja/settings-reference#gatewayinternalnetworks)、および [`forceLoginMethod`](/docs/ja/settings-reference#forceloginmethod) の `"gateway"` 値をマシン上のマネージドソースから認識します。`managed-settings.json`、macOS plist または Windows HKLM レジストリ、またはポリシーヘルパーです。ゲートウェイペイロードでこれらを設定しても、ゲートウェイのサインインは設定されません。開発者自身の `~/.claude/settings.json` については、[ユーザー設定でゲートウェイ URL を設定する](/docs/ja/claude-apps-gateway#set-the-gateway-url-in-user-settings)を参照してください。
+Claude Code は [`forceLoginGatewayUrl`](https://code.claude.com/docs/ja/settings-reference#forcelogingatewayurl)、[`gatewayInternalNetworks`](https://code.claude.com/docs/ja/settings-reference#gatewayinternalnetworks)、および [`forceLoginMethod`](https://code.claude.com/docs/ja/settings-reference#forceloginmethod) の `"gateway"` 値をマシン上のマネージドソースから認識します。`managed-settings.json`、macOS plist または Windows HKLM レジストリ、またはポリシーヘルパーです。ゲートウェイペイロードでこれらを設定しても、ゲートウェイのサインインは設定されません。開発者自身の `~/.claude/settings.json` については、[ユーザー設定でゲートウェイ URL を設定する](https://code.claude.com/docs/ja/claude-apps-gateway#set-the-gateway-url-in-user-settings)を参照してください。
 
-`forceLoginMethod` と `forceLoginOrgUUID` をペイロードから除外してください。Claude Code はスタートアップ認証情報チェックのためにペイロードから両方のキーを読み込みます。そのため、Anthropic が発行した認証情報をマシンに保持している開発者は、サインイン後でも[管理者ポリシーがクラウドゲートウェイサインインを必要とする](/docs/ja/errors.md#administrator-policy-requires-a-cloud-gateway-sign-in)の下で説明されているスタートアップ終了を取得します。
+`forceLoginMethod` と `forceLoginOrgUUID` をペイロードから除外してください。Claude Code はスタートアップ認証情報チェックのためにペイロードから両方のキーを読み込みます。そのため、Anthropic が発行した認証情報をマシンに保持している開発者は、サインイン後でも[管理者ポリシーがクラウドゲートウェイサインインを必要とする](https://code.claude.com/docs/ja/errors.md#administrator-policy-requires-a-cloud-gateway-sign-in)の下で説明されているスタートアップ終了を取得します。
 
 ## 関連
 
-* [Claude apps gateway 概要](/docs/ja/claude-apps-gateway)：クイックスタートと開発者接続
-* [デプロイメントガイド](/docs/ja/claude-apps-gateway-deploy.md)：IdP セットアップ、コンテナイメージ、Kubernetes と Cloud Run、運用
-* [支出制限](/docs/ja/claude-apps-gateway-spend-limits.md)：開発者ごとのキャップと Admin API
+* [Claude apps gateway 概要](https://code.claude.com/docs/ja/claude-apps-gateway)：クイックスタートと開発者接続
+* [デプロイメントガイド](https://code.claude.com/docs/ja/claude-apps-gateway-deploy.md)：IdP セットアップ、コンテナイメージ、Kubernetes と Cloud Run、運用
+* [支出制限](https://code.claude.com/docs/ja/claude-apps-gateway-spend-limits.md)：開発者ごとのキャップと Admin API

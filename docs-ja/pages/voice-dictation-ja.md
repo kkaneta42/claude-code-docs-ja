@@ -8,21 +8,21 @@
 
 Claude Code CLI でプロンプトを入力する代わりに、話して入力できます。音声はプロンプト入力にリアルタイムで文字起こしされるため、同じメッセージ内で音声と入力を混在させることができます。`/voice` で音声ディクテーションを有効にしてから、キーを押しながら話すか、1 回タップして開始し、もう 1 回タップして送信します。
 
-[ホールドモード](#hold-to-record) では、ディクテーション機能は [エージェントビュー](/docs/ja/agent-view.md#peek-and-reply) でも機能します。dispatch 入力またはピークパネルの返信がフォーカスされている間にプッシュトークキーを長押しすると、バックグラウンドセッションにディクテーションを行うことができます。
+[ホールドモード](#hold-to-record) では、ディクテーション機能は [エージェントビュー](https://code.claude.com/docs/ja/agent-view.md#peek-and-reply) でも機能します。dispatch 入力またはピークパネルの返信がフォーカスされている間にプッシュトークキーを長押しすると、バックグラウンドセッションにディクテーションを行うことができます。
 
 ## 要件
 
 音声ディクテーションは、記録された音声を Anthropic のサーバーにストリーミングして文字起こしします。音声はローカルで処理されません。以下のすべてが必要です。
 
 * **Claude.ai アカウント**：音声テキスト変換サービスは Claude.ai アカウントで認証した場合にのみ利用可能であり、Claude Code が Anthropic API キー、Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry を直接使用するように設定されている場合は利用できません。
-* **ローカルマイク**：音声ディクテーションは [Web 上の Claude Code](/docs/ja/claude-code-on-the-web.md)や SSH セッションなどのリモート環境では機能しません。
+* **ローカルマイク**：音声ディクテーションは [Web 上の Claude Code](https://code.claude.com/docs/ja/claude-code-on-the-web.md)や SSH セッションなどのリモート環境では機能しません。
 * **WSL で Claude Code を実行する場合は WSLg**：WSLg は Windows 10 または 11 の Microsoft Store からインストールされた WSL2 に含まれています。WSLg が利用できない場合（例えば WSL1 など）は、代わりにネイティブ Windows で Claude Code を実行してください。
 
-文字起こしは Claude メッセージやトークンを消費せず、`/usage` に表示される制限にはカウントされません。Anthropic がデータをどのように処理するかについては、[データ使用](/docs/ja/data-usage.md)を参照してください。
+文字起こしは Claude メッセージやトークンを消費せず、`/usage` に表示される制限にはカウントされません。Anthropic がデータをどのように処理するかについては、[データ使用](https://code.claude.com/docs/ja/data-usage.md)を参照してください。
 
 音声録音は macOS、Linux、Windows のビルトイン ネイティブ モジュールを使用します。Linux では、ネイティブ モジュールが読み込めない場合、Claude Code は ALSA utils の `arecord` または SoX の `rec` にフォールバックします。どちらも利用できない場合、`/voice` はパッケージ マネージャーのインストール コマンドを出力します。
 
-Claude Code [VS Code 拡張機能](/docs/ja/vs-code.md)も、同じ Claude.ai アカウント要件で音声ディクテーションをサポートしています。マイクはローカル マシンにあり、拡張機能はリモート ホストで実行されるため、SSH、Dev Containers、Codespaces などの VS Code Remote セッションでは利用できません。
+Claude Code [VS Code 拡張機能](https://code.claude.com/docs/ja/vs-code.md)も、同じ Claude.ai アカウント要件で音声ディクテーションをサポートしています。マイクはローカル マシンにあり、拡張機能はリモート ホストで実行されるため、SSH、Dev Containers、Codespaces などの VS Code Remote セッションでは利用できません。
 
 ## 音声ディクテーションを有効にする
 
@@ -42,7 +42,7 @@ Voice mode enabled (hold). Hold space to record. Dictation language: en (/config
 | `/voice tap` | [タップモード](#tap-to-record-and-send)で有効にする |
 | `/voice off` | 無効にする |
 
-音声ディクテーションはセッション間で保持されます。`/voice` を実行する代わりに、[ユーザー設定ファイル](/docs/ja/settings.md)で直接設定します。
+音声ディクテーションはセッション間で保持されます。`/voice` を実行する代わりに、[ユーザー設定ファイル](https://code.claude.com/docs/ja/settings.md)で直接設定します。
 
 ```json theme={null}
 {
@@ -53,7 +53,7 @@ Voice mode enabled (hold). Hold space to record. Dictation language: en (/config
 }
 ```
 
-音声ディクテーションが有効な場合、最初の 3 つのセッションでは、プロンプトが空のときに入力フッターに `hold space to speak` ヒントが表示されます。ヒントは現在の `voice:pushToTalk` バインディングを反映し、[ディクテーション キーを再バインド](#rebind-the-dictation-key)する場合は更新されます。ヒント テキストは両方のモードで同じであり、[カスタム ステータス ラインを](/docs/ja/statusline.md)設定している場合は表示されません。
+音声ディクテーションが有効な場合、最初の 3 つのセッションでは、プロンプトが空のときに入力フッターに `hold space to speak` ヒントが表示されます。ヒントは現在の `voice:pushToTalk` バインディングを反映し、[ディクテーション キーを再バインド](#rebind-the-dictation-key)する場合は更新されます。ヒント テキストは両方のモードで同じであり、[カスタム ステータス ラインを](https://code.claude.com/docs/ja/statusline.md)設定している場合は表示されません。
 
 文字起こしは両方のモードでコーディング語彙用に調整されています。`regex`、`OAuth`、`JSON`、`localhost` などの一般的な開発用語は正しく認識され、現在のプロジェクト名と git ブランチ名は認識ヒントとして自動的に追加されます。
 
@@ -61,11 +61,11 @@ Voice mode enabled (hold). Hold space to record. Dictation language: en (/config
 
 長押しモードはプッシュツートーク機能です。キーを押している間は録音が実行され、キーを離すと停止します。これはデフォルト モードです。
 
-`Space` を長押しして録音を開始します。Claude Code はターミナルからの高速キー リピート イベントを監視することでキーの長押しを検出するため、録音が開始される前に短いウォームアップがあります。フッターはウォームアップ中に `keep holding…` を表示し、録音がアクティブになると `listening…` に切り替わります。録音中、プロンプト カーソルはマイク レベルに応じて上下する棒になります。ただし、[`prefersReducedMotion`](/docs/ja/settings-reference#prefersreducedmotion) がオンになっている場合を除きます。
+`Space` を長押しして録音を開始します。Claude Code はターミナルからの高速キー リピート イベントを監視することでキーの長押しを検出するため、録音が開始される前に短いウォームアップがあります。フッターはウォームアップ中に `keep holding…` を表示し、録音がアクティブになると `listening…` に切り替わります。録音中、プロンプト カーソルはマイク レベルに応じて上下する棒になります。ただし、[`prefersReducedMotion`](https://code.claude.com/docs/ja/settings-reference#prefersreducedmotion) がオンになっている場合を除きます。
 
 最初の数個のキー リピート文字はウォームアップ中に入力に入力され、録音がアクティブになると自動的に削除されます。単一の `Space` タップはスペースを入力します。長押し検出は高速リピートでのみトリガーされるためです。
 
-`Space` を長押しまたはタップして音声入力を開始するのは、キープレスがプロンプトに入力される場所のみです。[トランスクリプト ビューアー](/docs/ja/interactive-mode.md#transcript-viewer)では、`Space` は会話をページングし、[vim モード](/docs/ja/interactive-mode.md#vim-editor-mode)の INSERT 外では コマンドです。[修飾子の組み合わせにリバインド](#rebind-the-dictation-key)（`meta+k` など）は テキストを入力しないため、これらの場所からも音声入力を開始します。
+`Space` を長押しまたはタップして音声入力を開始するのは、キープレスがプロンプトに入力される場所のみです。[トランスクリプト ビューアー](https://code.claude.com/docs/ja/interactive-mode.md#transcript-viewer)では、`Space` は会話をページングし、[vim モード](https://code.claude.com/docs/ja/interactive-mode.md#vim-editor-mode)の INSERT 外では コマンドです。[修飾子の組み合わせにリバインド](#rebind-the-dictation-key)（`meta+k` など）は テキストを入力しないため、これらの場所からも音声入力を開始します。
 
 > [!TIP]
 >
@@ -99,11 +99,11 @@ Claude Code は文字起こしを挿入し、文字起こしが少なくとも 3
 
 両方のキーは、完了した録音のトランスクリプトがまだ処理中の場合もキャンセルできます。処理中に編集または送信したプロンプトは、そのままの状態で保持されます。
 
-どちらのキーもキャンセルを実行する以外の処理は行いません。`Esc` は Claude の応答を中断しませんし、`Ctrl+C` はプロンプトをクリアしたり、[Claude Code を終了する 2 回のプレスの最初のプレス](/docs/ja/interactive-mode.md#general-controls)としてカウントされません。
+どちらのキーもキャンセルを実行する以外の処理は行いません。`Esc` は Claude の応答を中断しませんし、`Ctrl+C` はプロンプトをクリアしたり、[Claude Code を終了する 2 回のプレスの最初のプレス](https://code.claude.com/docs/ja/interactive-mode.md#general-controls)としてカウントされません。
 
 ## 音声ディクテーション言語を変更する
 
-音声ディクテーションは、Claude の応答言語を制御する同じ [`language` 設定](/docs/ja/settings-reference#language)を使用します。その設定が空の場合、音声ディクテーションはデフォルトで英語になります。VS Code 拡張機能では、`language` が空の場合、音声ディクテーションは VS Code の `accessibility.voice.speechLanguage` 設定を使用してから、デフォルトで英語になります。
+音声ディクテーションは、Claude の応答言語を制御する同じ [`language` 設定](https://code.claude.com/docs/ja/settings-reference#language)を使用します。その設定が空の場合、音声ディクテーションはデフォルトで英語になります。VS Code 拡張機能では、`language` が空の場合、音声ディクテーションは VS Code の `accessibility.voice.speechLanguage` 設定を使用してから、デフォルトで英語になります。
 
 > **サポートされている音声ディクテーション言語**
 >
@@ -142,7 +142,7 @@ Claude Code は文字起こしを挿入し、文字起こしが少なくとも 3
 
 ## 音声ディクテーション キーをリバインドする
 
-音声ディクテーション キーは `Chat` コンテキストの `voice:pushToTalk` にバインドされ、デフォルトは `Space` です。同じバインディングは長押しモードとタップモードの両方を制御します。[`~/.claude/keybindings.json`](/docs/ja/keybindings)でリバインドします。
+音声ディクテーション キーは `Chat` コンテキストの `voice:pushToTalk` にバインドされ、デフォルトは `Space` です。同じバインディングは長押しモードとタップモードの両方を制御します。[`~/.claude/keybindings.json`](https://code.claude.com/docs/ja/keybindings)でリバインドします。
 
 ```json theme={null}
 {
@@ -162,7 +162,7 @@ Claude Code は文字起こしを挿入し、文字起こしが少なくとも 3
 
 長押しモードでは、`v` などのベア文字キーへのバインディングを避けてください。長押し検出はキー リピートに依存し、文字はウォームアップ中にプロンプトに入力されるためです。`Space` を使用するか、`meta+k` などの修飾子の組み合わせを使用して、ウォームアップなしで最初のキープレスで録音を開始します。タップモードにはウォームアップがないため、ほとんどのキーが機能します。
 
-一部のキーはターミナル アプリケーションに配信されず、まったくバインドできません。たとえば、`Caps Lock` をバインドしようとするとエラーが表示されます。完全なキーバインディング構文と予約済みショートカットのリストについては、[キーボード ショートカットをカスタマイズする](/docs/ja/keybindings.md)を参照してください。
+一部のキーはターミナル アプリケーションに配信されず、まったくバインドできません。たとえば、`Caps Lock` をバインドしようとするとエラーが表示されます。完全なキーバインディング構文と予約済みショートカットのリストについては、[キーボード ショートカットをカスタマイズする](https://code.claude.com/docs/ja/keybindings.md)を参照してください。
 
 ## トラブルシューティング
 
@@ -180,7 +180,7 @@ Claude Code は文字起こしを挿入し、文字起こしが少なくとも 3
 * **タップモードで `Space` をタップするとスペースが入力され、記録されない**：最初のタップは、プロンプト入力が空の場合にのみ記録を開始します。入力を最初にクリアするか、`/voice tap` を実行してタップモードであることを確認してください。
 * **`No audio detected from microphone`**：記録が開始されましたが、無音がキャプチャされました。正しい入力デバイスがシステムデフォルトとして設定されており、その入力レベルがミュートされていないか、ゼロに近くないことを確認してください。Windows では、設定 → システム → サウンド → 入力 を開いてマイクを選択してください。macOS では、システム設定 → サウンド → 入力 を開いてください。
 * **`Voice connection failed`**：接続に失敗したため、記録が文字起こしサービスに到達しませんでした。ネットワークを確認して、もう一度試してください。オーディオをキャプチャしない記録は、このメッセージの代わりに `No audio detected from microphone` を報告します。v2.1.200 より前は、無音マイクが接続失敗を報告する可能性があり、実際の問題が入力デバイスであるのに、ネットワーク問題を示唆していました。
-* **`Dictation error: WebSocket error:` の後に `unable to get local issuer certificate` などの証明書エラーが続く**：VS Code ページの [TLS 検査プロキシの背後でディクテーションまたは Web タブが失敗する](/docs/ja/vs-code.md#dictation-or-the-web-tab-fails-behind-a-tls-inspecting-proxy) を参照してください。
+* **`Dictation error: WebSocket error:` の後に `unable to get local issuer certificate` などの証明書エラーが続く**：VS Code ページの [TLS 検査プロキシの背後でディクテーションまたは Web タブが失敗する](https://code.claude.com/docs/ja/vs-code.md#dictation-or-the-web-tab-fails-behind-a-tls-inspecting-proxy) を参照してください。
 * **`Voice stream error: WebSocket upgrade rejected with HTTP <status>`**：サーバーが表示された HTTP ステータスで接続を拒否したため、これはネットワーク障害ではありません。400 範囲のステータスは通常、古いサインイン、またはプロキシもしくはボット保護サービスが文字起こしサービスの代わりに応答していることを意味します。`/login` を実行してサインインを更新し、ステータスが続く場合はネットワークパス上の VPN またはプロキシを確認してください。拒否が到着したときにまだ記録中の場合、Claude Code は 400 範囲外のステータスを 1 回再試行してからこのメッセージを表示します。400 範囲のステータスは再試行しません。v2.1.229 から v2.1.231 では、ネイティブビルドはこのメッセージを表示しませんでした：Claude Code は記録を続け、ホールドモードフッターは `listening…` を表示し続け、記録を停止した後に `Voice connection failed` を報告しました。
 * **`No speech detected`**：オーディオは文字起こしサービスに到達しましたが、単語は認識されませんでした。マイクに近づいて話し、背景ノイズを減らし、[ディクテーション言語](#change-the-dictation-language) が話している言語と一致することを確認してください。
 * **`Dictation stopped: no speech recognized for 15 seconds` または `Dictation stopped at its 2-minute limit`**：VS Code 拡張機能では、認識された単語がないまま 15 秒が経過するか、開始から 2 分が経過すると記録が終了します。その 15 秒間に話していた場合は、`No speech detected` の対処法を試してください。すでに認識された単語はプロンプトボックスに残り、送信されません。さらに追加するには、マイクボタンをもう一度クリックしてください。
@@ -208,7 +208,7 @@ Claude Code を起動して `/voice` を実行してください。macOS がマ�
 
 ## 関連項目
 
-* [キーボード ショートカットをカスタマイズする](/docs/ja/keybindings.md): `voice:pushToTalk` および他の CLI キーボード アクションをリバインドする
-* [すべての設定](/docs/ja/settings-reference.md#voice): `voice`、`language`、およびその他の設定キー
-* [インタラクティブ モード](/docs/ja/interactive-mode.md): キーボード ショートカット、入力モード、およびセッション コントロール
-* [コマンド](/docs/ja/commands.md): `/voice`、`/config`、およびその他すべてのコマンドのリファレンス
+* [キーボード ショートカットをカスタマイズする](https://code.claude.com/docs/ja/keybindings.md): `voice:pushToTalk` および他の CLI キーボード アクションをリバインドする
+* [すべての設定](https://code.claude.com/docs/ja/settings-reference.md#voice): `voice`、`language`、およびその他の設定キー
+* [インタラクティブ モード](https://code.claude.com/docs/ja/interactive-mode.md): キーボード ショートカット、入力モード、およびセッション コントロール
+* [コマンド](https://code.claude.com/docs/ja/commands.md): `/voice`、`/config`、およびその他すべてのコマンドのリファレンス

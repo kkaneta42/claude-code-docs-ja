@@ -15,7 +15,7 @@
 * 複数のセッション間で作業し、それらを区別する必要がある
 * git ブランチとステータスを常に表示したい
 
-ステータスラインは組み込みのフッターバッジの上にある独自の行にレンダリングされ、それらを置き換えません。カスタムステータスラインが設定されている場合、Claude Code はフッターのキーボードヒントのほとんどを表示しなくなります。これには `esc to interrupt`、`? for shortcuts` フォールバック、および `hold space to speak` [音声入力](/docs/ja/voice-dictation.md) ヒントが含まれます。会話内に ID が表示されたときにフッターにクリック可能なリンクバッジを追加する場合は、スクリプトを記述せずに [`footerLinksRegexes`](/docs/ja/settings-reference#footerlinksregexes) を設定してください。
+ステータスラインは組み込みのフッターバッジの上にある独自の行にレンダリングされ、それらを置き換えません。カスタムステータスラインが設定されている場合、Claude Code はフッターのキーボードヒントのほとんどを表示しなくなります。これには `esc to interrupt`、`? for shortcuts` フォールバック、および `hold space to speak` [音声入力](https://code.claude.com/docs/ja/voice-dictation.md) ヒントが含まれます。会話内に ID が表示されたときにフッターにクリック可能なリンクバッジを追加する場合は、スクリプトを記述せずに [`footerLinksRegexes`](https://code.claude.com/docs/ja/settings-reference#footerlinksregexes) を設定してください。
 
 以下は、最初の行に git 情報を表示し、2 番目の行にカラーコード化されたコンテキストバーを表示する [複数行ステータスライン](#display-multiple-lines) の例です。
 
@@ -39,7 +39,7 @@
 
 ### ステータスラインを手動で設定する
 
-ユーザー設定（`~/.claude/settings.json`、`~` はホームディレクトリ）または [プロジェクト設定](/docs/ja/settings.md#where-settings-live) に `statusLine` フィールドを追加します。`type` を `"command"` に設定し、`command` をスクリプトパスまたはインラインシェルコマンドに指定します。スクリプト作成の完全なチュートリアルについては、[ステータスラインをステップバイステップで構築する](#build-a-status-line-step-by-step) を参照してください。
+ユーザー設定（`~/.claude/settings.json`、`~` はホームディレクトリ）または [プロジェクト設定](https://code.claude.com/docs/ja/settings.md#where-settings-live) に `statusLine` フィールドを追加します。`type` を `"command"` に設定し、`command` をスクリプトパスまたはインラインシェルコマンドに指定します。スクリプト作成の完全なチュートリアルについては、[ステータスラインをステップバイステップで構築する](#build-a-status-line-step-by-step) を参照してください。
 
 ```json theme={null}
 {
@@ -175,9 +175,9 @@ Claude Code は以下の JSON フィールドを stdin 経由でスクリプト�
 | `cwd`、`workspace.current_dir` | 現在の作業ディレクトリ。両方のフィールドに同じ値が含まれます。`workspace.current_dir` は `workspace.project_dir` との一貫性のために推奨されます。 |
 | `workspace.project_dir` | Claude Code が起動されたディレクトリ。セッション中に作業ディレクトリが変更された場合、`cwd` と異なる場合があります |
 | `workspace.added_dirs` | `/add-dir` または `--add-dir` 経由で追加された追加ディレクトリ。追加されていない場合は空配列 |
-| `workspace.git_worktree` | 現在のディレクトリが `git worktree add` で作成されたリンク worktree 内にある場合の git worktree 名。メイン作業ツリーでは不在。`worktree.*` が [worktree セッション](/docs/ja/worktrees.md) 中のみに存在するのとは異なり、任意の git worktree に対して入力されます |
+| `workspace.git_worktree` | 現在のディレクトリが `git worktree add` で作成されたリンク worktree 内にある場合の git worktree 名。メイン作業ツリーでは不在。`worktree.*` が [worktree セッション](https://code.claude.com/docs/ja/worktrees.md) 中のみに存在するのとは異なり、任意の git worktree に対して入力されます |
 | `workspace.repo.host`、`workspace.repo.owner`、`workspace.repo.name` | `origin` リモートから解析されたリポジトリ ID。例えば `"github.com"`、`"anthropics"`、`"claude-code"`。git リポジトリの外部または `origin` リモートが設定されていない場合は不在。gitlab.com プロジェクトがサブグループにネストされている場合、`owner` は `"group/subgroup"` のようなスラッシュ付きの完全な名前空間パスです。v2.1.260 より前は、これらのプロジェクトでは `workspace.repo` が不在でした |
-| `cost.total_cost_usd` | USD でのセッションの推定コスト。クライアント側で計算されます。[`modelPricing`](/docs/ja/settings-reference#modelpricing) テーブルが有効な場合を除き、定価で計算されます。実際の請求額と異なる場合があります。`/clear` で新しいセッションが開始されると \$0 にリセットされます |
+| `cost.total_cost_usd` | USD でのセッションの推定コスト。クライアント側で計算されます。[`modelPricing`](https://code.claude.com/docs/ja/settings-reference#modelpricing) テーブルが有効な場合を除き、定価で計算されます。実際の請求額と異なる場合があります。`/clear` で新しいセッションが開始されると \$0 にリセットされます |
 | `cost.total_duration_ms` | セッション開始からの総経過時間（ミリ秒） |
 | `cost.total_api_duration_ms` | API レスポンスを待つのに費やされた総時間（ミリ秒） |
 | `cost.total_lines_added`、`cost.total_lines_removed` | 変更されたコード行 |
@@ -187,26 +187,26 @@ Claude Code は以下の JSON フィールドを stdin 経由でスクリプト�
 | `context_window.remaining_percentage` | 事前計算されたコンテキストウィンドウ残り割合 |
 | `context_window.current_usage` | 最後の API 呼び出しからのトークン数。[コンテキストウィンドウフィールド](#context-window-fields) で説明されています |
 | `exceeds_200k_tokens` | 最新の API レスポンスからの総トークン数（入力、キャッシュ、出力トークンの組み合わせ）が 200k を超えるかどうか。これは実際のコンテキストウィンドウサイズに関係なく固定閾値です。 |
-| `fast_mode` | セッションで [fast mode](/docs/ja/fast-mode.md) が有効になっているかどうか |
+| `fast_mode` | セッションで [fast mode](https://code.claude.com/docs/ja/fast-mode.md) が有効になっているかどうか |
 | `effort.level` | 現在の推論努力レベル（`low`、`medium`、`high`、`xhigh`、または `max`）。ライブセッション値を反映しており、セッション中の `/effort` 変更を含みます。現在のモデルが effort パラメータをサポートしていない場合は不在 |
 | `thinking.enabled` | セッションで拡張思考が有効になっているかどうか |
 | `rate_limits.five_hour.used_percentage`、`rate_limits.seven_day.used_percentage` | 5 時間または 7 日のレート制限の消費割合（0～100） |
 | `rate_limits.five_hour.resets_at`、`rate_limits.seven_day.resets_at` | 5 時間または 7 日のレート制限ウィンドウがリセットされる Unix エポック秒 |
 | `rate_limits.spend_limit.used_percentage`、`rate_limits.spend_limit.resets_at` | Claude apps gateway の背後にある場合、支出制限をどれだけ使用したか、およびその期間がいつリセットされるか。[支出制限フィールド](#spend-limit-fields) を参照してください。Claude Code v2.1.251 以降が必要です |
 | `rate_limits.spend_limit.used_usd`、`rate_limits.spend_limit.limit_usd`、`rate_limits.spend_limit.period` | 米ドル建ての推定支出額と制限額、および制限の期間。これらのフィールドは不在の場合があります。[支出制限フィールド](#spend-limit-fields) を参照してください。Claude Code とゲートウェイの両方で v2.1.284 以降が必要です |
-| `prompt_cache` | メイン会話の [prompt cache](/docs/ja/prompt-caching.md) 統計情報：ヒット率、ミス数、キャッシュがウォーム状態かどうか。すべてのフィールドについては [prompt cache フィールド](#prompt-cache-fields) を参照してください。メイン会話の最初の API レスポンスまで不在。Claude Code v2.1.251 以降が必要です |
+| `prompt_cache` | メイン会話の [prompt cache](https://code.claude.com/docs/ja/prompt-caching.md) 統計情報：ヒット率、ミス数、キャッシュがウォーム状態かどうか。すべてのフィールドについては [prompt cache フィールド](#prompt-cache-fields) を参照してください。メイン会話の最初の API レスポンスまで不在。Claude Code v2.1.251 以降が必要です |
 | `session_id` | 一意のセッション識別子 |
-| `session_name` | セッション名。`--name` フラグまたは `/rename` で設定されたカスタム名が存在する場合はそれを使用し、そうでない場合は AI が生成したセッションタイトルを使用します。[デフォルト表示名](/docs/ja/sessions.md#name-your-sessions)（`my-app-3f` など）はこのフィールドに入力されません。セッションにカスタム名も AI が生成したタイトルもない場合は不在 |
-| `prompt_id` | 現在処理中のユーザープロンプトを識別する UUID。OpenTelemetry イベントの [`prompt.id` 属性](/docs/ja/monitoring-usage#event-correlation-attributes) と一致します。最初のユーザー入力まで不在 |
+| `session_name` | セッション名。`--name` フラグまたは `/rename` で設定されたカスタム名が存在する場合はそれを使用し、そうでない場合は AI が生成したセッションタイトルを使用します。[デフォルト表示名](https://code.claude.com/docs/ja/sessions.md#name-your-sessions)（`my-app-3f` など）はこのフィールドに入力されません。セッションにカスタム名も AI が生成したタイトルもない場合は不在 |
+| `prompt_id` | 現在処理中のユーザープロンプトを識別する UUID。OpenTelemetry イベントの [`prompt.id` 属性](https://code.claude.com/docs/ja/monitoring-usage#event-correlation-attributes) と一致します。最初のユーザー入力まで不在 |
 | `transcript_path` | 会話トランスクリプトファイルへのパス |
 | `version` | Claude Code バージョン |
 | `output_style.name` | 現在の出力スタイルの名前 |
-| `vim.mode` | [vim モード](/docs/ja/interactive-mode.md#vim-editor-mode) が有効な場合の現在の vim モード（`NORMAL`、`INSERT`、`VISUAL`、または `VISUAL LINE`） |
+| `vim.mode` | [vim モード](https://code.claude.com/docs/ja/interactive-mode.md#vim-editor-mode) が有効な場合の現在の vim モード（`NORMAL`、`INSERT`、`VISUAL`、または `VISUAL LINE`） |
 | `agent.name` | `--agent` フラグまたはエージェント設定が設定されている場合のエージェント名 |
-| `pr.number`、`pr.url` | 現在のブランチのオープンプルリクエスト。フッターの PR バッジをミラーします。リポジトリに GitLab リモートがある場合、Claude Code はこれらのフィールドをブランチのオープン [merge request](/docs/ja/interactive-mode.md#gitlab-merge-requests) から代わりに入力するため、`pr.number` はマージリクエスト番号です。マージリクエストデータには Claude Code v2.1.234 以降が必要です。git リポジトリにない場合、プルリクエストまたはマージリクエストが見つかるまで、またはマージもしくはクローズされた後は不在 |
+| `pr.number`、`pr.url` | 現在のブランチのオープンプルリクエスト。フッターの PR バッジをミラーします。リポジトリに GitLab リモートがある場合、Claude Code はこれらのフィールドをブランチのオープン [merge request](https://code.claude.com/docs/ja/interactive-mode.md#gitlab-merge-requests) から代わりに入力するため、`pr.number` はマージリクエスト番号です。マージリクエストデータには Claude Code v2.1.234 以降が必要です。git リポジトリにない場合、プルリクエストまたはマージリクエストが見つかるまで、またはマージもしくはクローズされた後は不在 |
 | `pr.review_state` | オープン PR のレビューステータス：`approved`、`pending`、`changes_requested`、または `draft`。`pr` が存在する場合でも独立して不在の可能性があります |
-| `pr.kind` | [GitLab merge request](/docs/ja/interactive-mode.md#gitlab-merge-requests) を説明する場合は `mr`。GitHub プルリクエストでは不在なため、このフィールドの前に書かれたスクリプトは引き続き機能します。マージリクエストの場合、Claude Code は GitLab がマージ可能と報告した場合は `review_state` を `approved` に、その他のオープン状態の場合は `pending` に、ドラフトの場合は `draft` に設定します。Claude Code v2.1.234 以降が必要です |
-| `worktree.name` | アクティブな worktree の名前。[worktree セッション](/docs/ja/worktrees.md) 中のみ存在 |
+| `pr.kind` | [GitLab merge request](https://code.claude.com/docs/ja/interactive-mode.md#gitlab-merge-requests) を説明する場合は `mr`。GitHub プルリクエストでは不在なため、このフィールドの前に書かれたスクリプトは引き続き機能します。マージリクエストの場合、Claude Code は GitLab がマージ可能と報告した場合は `review_state` を `approved` に、その他のオープン状態の場合は `pending` に、ドラフトの場合は `draft` に設定します。Claude Code v2.1.234 以降が必要です |
+| `worktree.name` | アクティブな worktree の名前。[worktree セッション](https://code.claude.com/docs/ja/worktrees.md) 中のみ存在 |
 | `worktree.path` | worktree ディレクトリへの絶対パス |
 | `worktree.branch` | worktree の git ブランチ名（例：`"worktree-my-feature"`）。フックベースの worktree では不在 |
 | `worktree.original_cwd` | worktree に入る前に Claude がいたディレクトリ |
@@ -340,7 +340,7 @@ Claude Code は以下の JSON フィールドを stdin 経由でスクリプト�
 > * `vim`：vim モードが有効な場合のみ表示
 > * `agent`：`--agent` フラグまたはエージェント設定が設定されている場合のみ表示
 > * `pr`：現在のブランチのオープン PR または GitLab マージリクエストが見つかった場合のみ表示。PR またはマージリクエストがマージまたはクローズされると削除されます。`pr.review_state` と `pr.kind` は独立して不在の可能性があります
-> * `worktree`：[worktree セッション](/docs/ja/worktrees.md) 中のみ表示。存在する場合、`branch` と `original_branch` もフックベースの worktree では不在の可能性があります
+> * `worktree`：[worktree セッション](https://code.claude.com/docs/ja/worktrees.md) 中のみ表示。存在する場合、`branch` と `original_branch` もフックベースの worktree では不在の可能性があります
 > * `rate_limits`：Claude.ai Pro および Max サブスクライバー、または支出制限を設定する Claude apps gateway の背後にある場合のみ表示。セッションの最初の API レスポンスの後のみ表示。各ウィンドウ（`five_hour`、`seven_day`、`spend_limit`）は独立して不在の可能性があり、Claude Code は `resets_at` 時刻が経過するとウィンドウを削除します。`jq -r '.rate_limits.five_hour.used_percentage // empty'` を使用して、不在を適切に処理します。
 > * `prompt_cache`：メイン会話の最初の API レスポンスの後に表示。[prompt cache フィールド](#prompt-cache-fields) を参照してください
 >
@@ -365,7 +365,7 @@ Claude Code は以下の JSON フィールドを stdin 経由でスクリプト�
 * `cache_creation_input_tokens`：キャッシュに書き込まれたトークン
 * `cache_read_input_tokens`：キャッシュから読み取られたトークン
 
-キャッシュフィールドの意味とそれらがどのように請求されるかについては、[キャッシュパフォーマンスの確認](/docs/ja/prompt-caching.md#check-cache-performance) を参照してください。
+キャッシュフィールドの意味とそれらがどのように請求されるかについては、[キャッシュパフォーマンスの確認](https://code.claude.com/docs/ja/prompt-caching.md#check-cache-performance) を参照してください。
 
 `used_percentage` フィールドは入力トークンのみから計算されます：`input_tokens + cache_creation_input_tokens + cache_read_input_tokens`。`output_tokens` は含まれません。
 
@@ -375,16 +375,16 @@ Claude Code は以下の JSON フィールドを stdin 経由でスクリプト�
 
 ### 支出制限フィールド
 
-[支出制限が設定された Claude apps gateway](/docs/ja/claude-apps-gateway-spend-limits.md#usage-warnings-in-claude-code) の背後では、`rate_limits.spend_limit` オブジェクトが適用される支出制限を説明します。このオブジェクトはセッションの最初の API レスポンスの後に表示され、Claude Code v2.1.251 以降が必要です。スクリプトはそのフィールドを別々のタイミングで受け取ります：
+[支出制限が設定された Claude apps gateway](https://code.claude.com/docs/ja/claude-apps-gateway-spend-limits.md#usage-warnings-in-claude-code) の背後では、`rate_limits.spend_limit` オブジェクトが適用される支出制限を説明します。このオブジェクトはセッションの最初の API レスポンスの後に表示され、Claude Code v2.1.251 以降が必要です。スクリプトはそのフィールドを別々のタイミングで受け取ります：
 
 * `used_percentage` と `resets_at`：すべてのレスポンスに含まれるため、`spend_limit` が存在する場合は常に存在します。`used_percentage` は 0～100 の範囲、または制限を超えると 100 を超える値になり、`resets_at` は制限の期間がリセットされる Unix エポック秒です。
-* `used_usd`、`limit_usd`、`period`：これまでの推定支出額と制限額（米ドル）、および制限の対象期間（`daily`、`weekly`、`monthly` のいずれか）。ゲートウェイは [`used_usd` をトークン数から計算する](/docs/ja/claude-apps-gateway-spend-limits#how-requests-are-priced) ため、これは推定値であり、請求額ではありません。Claude Code は、リクエストを送信している間、約 5 分ごとに別のリクエストでゲートウェイからこれらを読み取ります。金額は `used_percentage` より約 5 分古い場合があるため、両者が一時的に一致しないことがあります。Claude Code とゲートウェイの両方で v2.1.284 以降が必要です。
+* `used_usd`、`limit_usd`、`period`：これまでの推定支出額と制限額（米ドル）、および制限の対象期間（`daily`、`weekly`、`monthly` のいずれか）。ゲートウェイは [`used_usd` をトークン数から計算する](https://code.claude.com/docs/ja/claude-apps-gateway-spend-limits#how-requests-are-priced) ため、これは推定値であり、請求額ではありません。Claude Code は、リクエストを送信している間、約 5 分ごとに別のリクエストでゲートウェイからこれらを読み取ります。金額は `used_percentage` より約 5 分古い場合があるため、両者が一時的に一致しないことがあります。Claude Code とゲートウェイの両方で v2.1.284 以降が必要です。
 
 `spend_limit` が存在する場合でも、`used_usd`、`limit_usd`、`period` はオプションとして扱ってください。スクリプトはこれらより先に割合を受け取ります。また、`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` を設定するとそのリクエストがオフになるため、これらは不在のままになります。スクリプトでは、`jq -r '.rate_limits.spend_limit.used_usd // empty'` のように、それぞれをフォールバック付きで読み取ってください。
 
 ### Prompt cache フィールド
 
-`prompt_cache` オブジェクトは、セッションのメイン会話が [prompt cache](/docs/ja/prompt-caching.md) をどのように使用しているかを要約します。Claude Code は API のレスポンスのキャッシュトークン数から計算するため、すべてのプロバイダーで機能します。
+`prompt_cache` オブジェクトは、セッションのメイン会話が [prompt cache](https://code.claude.com/docs/ja/prompt-caching.md) をどのように使用しているかを要約します。Claude Code は API のレスポンスのキャッシュトークン数から計算するため、すべてのプロバイダーで機能します。
 
 オブジェクトはメイン会話の最初の API レスポンスの後に表示されます。Claude Code はこれらの統計情報でサブエージェントリクエストをカウントしません。Claude Code v2.1.251 以降が必要です。
 
@@ -394,7 +394,7 @@ Claude Code は以下の JSON フィールドを stdin 経由でスクリプト�
 | - | - |
 | `warm` | キャッシュされたプレフィックスがまだ TTL 内にあるかどうか。最後のレスポンスがキャッシュトークンを報告しなかった場合は `false`。`caching_observed` が `true` の場合でも |
 | `caching_observed` | このセッションのレスポンスがキャッシュトークンを報告したかどうか。`false` は prompt caching がオフ、またはプロバイダーまたはゲートウェイがそれを報告しないことを意味します |
-| `ttl` | 現在のキャッシュされたプレフィックスの [キャッシュライフタイム](/docs/ja/prompt-caching.md#cache-lifetime)：`"5m"` または `"1h"` |
+| `ttl` | 現在のキャッシュされたプレフィックスの [キャッシュライフタイム](https://code.claude.com/docs/ja/prompt-caching.md#cache-lifetime)：`"5m"` または `"1h"` |
 | `expires_at` | キャッシュされたプレフィックスが TTL を離れてコールドになる時刻（エポック秒）。最後のレスポンスがキャッシュトークンを報告しなかった場合は `null` |
 | `requests` | このセッションのメイン会話で記録された API リクエスト |
 | `misses` | キャッシュが既に保持していたコンテンツを再処理したリクエスト：キャッシュが読み取ることができた 5% 以上かつ少なくとも 2,000 トークン。コンパクションまたはツール結果のクリアで不足を説明できない場合 |
@@ -407,7 +407,7 @@ Claude Code は以下の JSON フィールドを stdin 経由でスクリプト�
 | `miss_causes` | このセッションの診断されたミスのうち、各原因を持つ数。`last_miss_cause` と同じ原因名でキー付けされています。Claude Code v2.1.260 以降が必要です |
 | `recache_tokens_if_cold` | キャッシュがそれまでにコールドになった場合、次のリクエストが再キャッシュするトークン。コンパクションまたは古いツール結果のクリアの直後は `null`。次のリクエストが書き直された会話のサイズを記録するまで `null` のままです |
 
-Claude Code はターミナルで同じ統計情報を表示します。[`/usage` コマンドの `Prompt cache (main)` 行](/docs/ja/costs#prompt-cache-statistics) を参照してください。
+Claude Code はターミナルで同じ統計情報を表示します。[`/usage` コマンドの `Prompt cache (main)` 行](https://code.claude.com/docs/ja/costs#prompt-cache-statistics) を参照してください。
 
 #### 最後のミスの原因
 
@@ -1085,7 +1085,7 @@ echo "$dirname [$model]"
 
 ## サブエージェントステータスライン
 
-`subagentStatusLine` 設定は、エージェントパネルに表示される各 [サブエージェント](/docs/ja/sub-agents.md) のカスタム行本体をレンダリングします。デフォルトの `name · description · token count` 行を独自のフォーマットに置き換えるために使用します。
+`subagentStatusLine` 設定は、エージェントパネルに表示される各 [サブエージェント](https://code.claude.com/docs/ja/sub-agents.md) のカスタム行本体をレンダリングします。デフォルトの `name · description · token count` 行を独自のフォーマットに置き換えるために使用します。
 
 ```json theme={null}
 {
@@ -1096,11 +1096,11 @@ echo "$dirname [$model]"
 }
 ```
 
-コマンドはリフレッシュティックごとに 1 回実行され、表示されているすべてのサブエージェント行を単一の JSON オブジェクトとして stdin で受け取ります。入力には [基本フックフィールド](/docs/ja/hooks.md#common-input-fields)、使用可能な行幅を示す `columns` フィールド、および行ごとに 1 つのエントリを持つ `tasks` 配列が含まれます。`tasks` 配列については [タスクフィールド](#task-fields) で説明します。
+コマンドはリフレッシュティックごとに 1 回実行され、表示されているすべてのサブエージェント行を単一の JSON オブジェクトとして stdin で受け取ります。入力には [基本フックフィールド](https://code.claude.com/docs/ja/hooks.md#common-input-fields)、使用可能な行幅を示す `columns` フィールド、および行ごとに 1 つのエントリを持つ `tasks` 配列が含まれます。`tasks` 配列については [タスクフィールド](#task-fields) で説明します。
 
 オーバーライドしたい各行に対して stdout に 1 つの JSON 行を書き込みます。形式は `{"id": "<task id>", "content": "<row body>"}` です。`content` 文字列はそのままレンダリングされます。ANSI 色と OSC 8 ハイパーリンクを含みます。タスクの `id` を省略して、その行のデフォルトレンダリングを保持します。空の `content` 文字列を出力して、その行を非表示にします。
 
-`statusLine` に適用される同じトラストと `disableAllHooks` および [`allowManagedHooksOnly`](/docs/ja/settings-reference#allowmanagedhooksonly) ゲートが `subagentStatusLine` に適用されます。プラグインは、[`settings.json`](/docs/ja/plugins/manifest-reference#standard-layout) でデフォルトの `subagentStatusLine` を配布できます。ただし、フックとは異なり、プラグインが管理設定の `enabledPlugins` で強制的に有効化されている場合でも、プラグイン値は `allowManagedHooksOnly` の下で実行されません。
+`statusLine` に適用される同じトラストと `disableAllHooks` および [`allowManagedHooksOnly`](https://code.claude.com/docs/ja/settings-reference#allowmanagedhooksonly) ゲートが `subagentStatusLine` に適用されます。プラグインは、[`settings.json`](https://code.claude.com/docs/ja/plugins/manifest-reference#standard-layout) でデフォルトの `subagentStatusLine` を配布できます。ただし、フックとは異なり、プラグインが管理設定の `enabledPlugins` で強制的に有効化されている場合でも、プラグイン値は `allowManagedHooksOnly` の下で実行されません。
 
 ### タスクフィールド
 
@@ -1109,15 +1109,15 @@ echo "$dirname [$model]"
 | フィールド | 型 | 説明 |
 | :- | :- | :- |
 | `id` | string | タスクの識別子。この行に対して書き戻す行で `id` としてそのまま返します |
-| `name` | string、省略可能 | サブエージェントに名前がある場合、その [呼び出しに使われる](/docs/ja/sub-agents.md#subagent-names) 名前 |
+| `name` | string、省略可能 | サブエージェントに名前がある場合、その [呼び出しに使われる](https://code.claude.com/docs/ja/sub-agents.md#subagent-names) 名前 |
 | `type` | string | タスクの種類: `local_agent` |
-| `agentType` | string | タスクが実行されるサブエージェントタイプ。組み込みの [`Explore`](/docs/ja/sub-agents#built-in-subagents) やカスタムの `code-reviewer` などです。フックが [`agent_type`](/docs/ja/hooks#subagentstart) として受け取るのと同じ値を保持します。Claude Code v2.1.293 以降が必要です |
+| `agentType` | string | タスクが実行されるサブエージェントタイプ。組み込みの [`Explore`](https://code.claude.com/docs/ja/sub-agents#built-in-subagents) やカスタムの `code-reviewer` などです。フックが [`agent_type`](https://code.claude.com/docs/ja/hooks#subagentstart) として受け取るのと同じ値を保持します。Claude Code v2.1.293 以降が必要です |
 | `status` | string | タスクの状態。`running`、`completed`、`failed`、`killed` など |
 | `description` | string | タスクの短い説明。Claude がサブエージェントを生成したときに付けた説明など |
 | `label` | string | Claude Code が持っている場合はタスクの短い進捗サマリー、それ以外の場合は `description` と同じテキスト |
 | `startTime` | number | タスクが開始された時刻（Unix エポックからのミリ秒） |
 | `model` | string、省略可能 | タスクが実行される解決済みモデルの ID。モデルが解決されるまでは省略されます |
-| `effort` | string または number、省略可能 | サブエージェントの [定義フロントマター](/docs/ja/sub-agents.md#supported-frontmatter-fields) または個別の呼び出しで設定された推論 effort: `low`、`medium`、`high`、`xhigh`、`max`、またはトークン予算の数値。これは設定された値であり、モデルがそのレベルをサポートしていない場合、Claude Code が実際に適用する effort は異なる可能性があります。effort が設定されていない場合は省略されます |
+| `effort` | string または number、省略可能 | サブエージェントの [定義フロントマター](https://code.claude.com/docs/ja/sub-agents.md#supported-frontmatter-fields) または個別の呼び出しで設定された推論 effort: `low`、`medium`、`high`、`xhigh`、`max`、またはトークン予算の数値。これは設定された値であり、モデルがそのレベルをサポートしていない場合、Claude Code が実際に適用する effort は異なる可能性があります。effort が設定されていない場合は省略されます |
 | `contextWindowSize` | number、省略可能 | `model` のコンテキストウィンドウ（トークン単位）。メインステータスラインの [`context_window.context_window_size`](#context-window-fields) と同じ方法で計算されるため、`tokenCount` から行ごとのパーセンテージをレンダリングできます。`model` が省略されている場合は省略されます |
 | `tokenCount` | number | サブエージェントの累計トークン数。デフォルトの行に表示される数値です |
 | `tokenSamples` | array of numbers | 直近最大 16 個の `tokenCount` の読み取り値。リフレッシュティックごとに 1 つずつ、古い順に並び、現在の値で終わります |
@@ -1143,8 +1143,8 @@ echo "$dirname [$model]"
 * スクリプトが stdout に出力し、stderr に出力していないことを確認します
 * スクリプトを手動で実行して、出力を生成することを確認します
 * Windows で Git Bash がインストールされている場合、`command` パスのバックスラッシュはスクリプトが実行される前にエスケープ文字として消費される可能性があります。パスでは前方スラッシュを使用してください。[Windows 設定](#windows-configuration)を参照してください。
-* [設定の優先順位](/docs/ja/hooks.md#disable-or-remove-hooks)が適用された後、`disableAllHooks` が管理設定外で `true` の場合、Claude Code は管理設定からの `statusLine` のみを実行し、管理 `statusLine` がない場合はステータスラインが無効になります。この設定を削除するか、それを設定するファイルで `false` に設定して、再度有効にします。[`disableAllHooks`](/docs/ja/settings-reference#disableallhooks)を参照してください。
-* 組織が管理設定で `allowManagedHooksOnly` を設定している場合、カスタムステータスラインは警告なく消えます：これらの管理設定の `statusLine` 値からのみステータスラインを取得できます。[`allowManagedHooksOnly` で実行される内容](/docs/ja/settings-reference#what-runs-under-allowmanagedhooksonly)を参照して完全な動作を確認し、この設定が自分に適用されるかどうかを管理者に確認してください。
+* [設定の優先順位](https://code.claude.com/docs/ja/hooks.md#disable-or-remove-hooks)が適用された後、`disableAllHooks` が管理設定外で `true` の場合、Claude Code は管理設定からの `statusLine` のみを実行し、管理 `statusLine` がない場合はステータスラインが無効になります。この設定を削除するか、それを設定するファイルで `false` に設定して、再度有効にします。[`disableAllHooks`](https://code.claude.com/docs/ja/settings-reference#disableallhooks)を参照してください。
+* 組織が管理設定で `allowManagedHooksOnly` を設定している場合、カスタムステータスラインは警告なく消えます：これらの管理設定の `statusLine` 値からのみステータスラインを取得できます。[`allowManagedHooksOnly` で実行される内容](https://code.claude.com/docs/ja/settings-reference#what-runs-under-allowmanagedhooksonly)を参照して完全な動作を確認し、この設定が自分に適用されるかどうかを管理者に確認してください。
 * `claude --debug` を実行すると、ステータスラインの呼び出しごとにスクリプトの stderr が、セッション内の最初の呼び出しではその終了コードがログに記録されます
 * Claude に設定ファイルを読み取り、`statusLine` コマンドを直接実行するよう依頼して、エラーを表示します
 
@@ -1188,7 +1188,7 @@ echo "$dirname [$model]"
 
 ### ワークスペーストラストが必要
 
-ワークスペーストラストダイアログを受け入れるまで、ステータスラインは空白のままです。`statusLine` はシェルコマンドを実行するため、Claude Code は[設定ファイルのフックと同じワークスペーストラストルール](/docs/ja/permissions.md#what-runs-before-you-trust-a-folder)の下で実行します。フォルダのダイアログを受け入れるか、その信頼がそれに拡張される親ディレクトリのダイアログを受け入れるだけで十分です。
+ワークスペーストラストダイアログを受け入れるまで、ステータスラインは空白のままです。`statusLine` はシェルコマンドを実行するため、Claude Code は[設定ファイルのフックと同じワークスペーストラストルール](https://code.claude.com/docs/ja/permissions.md#what-runs-before-you-trust-a-folder)の下で実行します。フォルダのダイアログを受け入れるか、その信頼がそれに拡張される親ディレクトリのダイアログを受け入れるだけで十分です。
 
 それまでの間、`claude --debug` は `Status line command skipped: workspace trust not accepted` をログに記録します。Claude Code を再起動し、トラストダイアログを受け入れて有効にします。
 
@@ -1203,8 +1203,8 @@ Claude Code は、スクリプトが終了コード 0 で終了した後にの�
 
 ### 通知がステータスラインの行を共有する
 
-[フルスクリーンレンダリング](/docs/ja/fullscreen.md)の外では、Claude Code は通知をステータスラインと同じ行に表示します。フルスクリーンレンダリングでは、Claude Code は通知に独自の行を提供します。
+[フルスクリーンレンダリング](https://code.claude.com/docs/ja/fullscreen.md)の外では、Claude Code は通知をステータスラインと同じ行に表示します。フルスクリーンレンダリングでは、Claude Code は通知に独自の行を提供します。
 
 * MCP サーバーエラーおよび自動更新などのシステム通知は、行の右側に表示されます。コンテキスト低警告などの一時的な通知もこの領域を循環します。
-* 詳細モードを有効にすると、この領域にトークンカウンターが追加されます。これは最後の API レスポンスが報告したコンテキストのサイズを示すもので、[スピナーの横に表示されるターンごとのカウント](/docs/ja/costs.md#read-the-token-count-beside-the-spinner)ではありません
+* 詳細モードを有効にすると、この領域にトークンカウンターが追加されます。これは最後の API レスポンスが報告したコンテキストのサイズを示すもので、[スピナーの横に表示されるターンごとのカウント](https://code.claude.com/docs/ja/costs.md#read-the-token-count-beside-the-spinner)ではありません
 * 狭いターミナルでは、これらの通知がステータスラインの出力を切り詰める可能性があります

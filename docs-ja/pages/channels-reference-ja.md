@@ -8,7 +8,7 @@
 
 > [!NOTE]
 >
-> チャネルは[リサーチプレビュー](/docs/ja/channels.md#research-preview)段階にあります。Team および Enterprise 組織は[明示的に有効化](/docs/ja/channels.md#enterprise-controls)する必要があります。
+> チャネルは[リサーチプレビュー](https://code.claude.com/docs/ja/channels.md#research-preview)段階にあります。Team および Enterprise 組織は[明示的に有効化](https://code.claude.com/docs/ja/channels.md#enterprise-controls)する必要があります。
 
 チャネルは、Claude Code セッションにイベントをプッシュする MCP サーバーで、Claude がターミナルの外で発生していることに反応できるようにします。
 
@@ -25,7 +25,7 @@
 * [インバウンドメッセージをゲート](#gate-inbound-messages)：プロンプトインジェクションを防ぐための送信者チェック
 * [権限プロンプトをリレー](#relay-permission-prompts)：ツール承認プロンプトをリモートチャネルに転送
 
-既存のチャネルを使用する場合は、[チャネル](/docs/ja/channels.md)を参照してください。Telegram、Discord、iMessage、および fakechat はリサーチプレビューに含まれています。
+既存のチャネルを使用する場合は、[チャネル](https://code.claude.com/docs/ja/channels.md)を参照してください。Telegram、Discord、iMessage、および fakechat はリサーチプレビューに含まれています。
 
 ## 概要
 
@@ -48,7 +48,7 @@
 
 [サーバーオプション](#server-options)と[通知フォーマット](#notification-format)セクションでは、これらのそれぞれについて詳しく説明しています。完全なウォークスルーについては、[例：webhook レシーバーを構築](#example-build-a-webhook-receiver)を参照してください。
 
-リサーチプレビュー中、カスタムチャネルは[承認許可リスト](/docs/ja/channels.md#supported-channels)にありません。ローカルでテストするには `--dangerously-load-development-channels` を使用してください。詳細については、[リサーチプレビュー中のテスト](#test-during-the-research-preview)を参照してください。
+リサーチプレビュー中、カスタムチャネルは[承認許可リスト](https://code.claude.com/docs/ja/channels.md#supported-channels)にありません。ローカルでテストするには `--dangerously-load-development-channels` を使用してください。詳細については、[リサーチプレビュー中のテスト](#test-during-the-research-preview)を参照してください。
 
 ## 例：webhook レシーバーを構築
 
@@ -144,7 +144,7 @@ Claude Code は最初に、読み込んでいる開発チャネルをリスト�
 
 スタートアップバナーの下の薄い通知がチャネルが登録されたことを確認します：`Channels (experimental) messages from server:webhook inject directly in this session · restart without --dangerously-load-development-channels to stop`。
 
-'組織ポリシーによってブロックされています'が表示される場合は、組織管理者が最初に [チャネルを有効化](/docs/ja/channels.md#enterprise-controls) する必要があります。
+'組織ポリシーによってブロックされています'が表示される場合は、組織管理者が最初に [チャネルを有効化](https://code.claude.com/docs/ja/channels.md#enterprise-controls) する必要があります。
 
 別のターミナルで、HTTP POST でメッセージを送信して webhook をシミュレートします。この例は、CI 失敗アラートをポート 8788（または設定したポート）に送信します：
 
@@ -171,7 +171,7 @@ build failed on main: https://ci.example.com/run/1234
 
 ## リサーチプレビュー中のテスト
 
-リサーチプレビュー中、すべてのチャネルは登録するために[承認許可リスト](/docs/ja/channels.md#research-preview)にある必要があります。開発フラグは、確認プロンプトの後、特定のエントリの許可リストをバイパスします。この例は両方のエントリタイプを示しています：
+リサーチプレビュー中、すべてのチャネルは登録するために[承認許可リスト](https://code.claude.com/docs/ja/channels.md#research-preview)にある必要があります。開発フラグは、確認プロンプトの後、特定のエントリの許可リストをバイパスします。この例は両方のエントリタイプを示しています：
 
 ```bash theme={null}
 # 開発中のプラグインをテスト
@@ -431,7 +431,7 @@ await mcp.notification({ ... })
 
 チャットまたはルーム ID ではなく、送信者の ID でゲートします：例では `message.from.id`、`message.chat.id` ではありません。グループチャットでは、これらは異なり、ルームでゲートすると、許可リストに登録されたグループ内の誰もがセッションにメッセージを注入できます。
 
-[Telegram](https://github.com/anthropics/claude-plugins-official/tree/main/external_plugins/telegram) と [Discord](https://github.com/anthropics/claude-plugins-official/tree/main/external_plugins/discord) チャネルは同じ方法で送信者許可リストでゲートします。[ペアリング](/docs/ja/channels.md#security)でリストをブートストラップします。完全なペアリングフローについては、いずれかの実装を参照してください。[iMessage](https://github.com/anthropics/claude-plugins-official/tree/main/external_plugins/imessage) チャネルは異なるアプローチを取ります：起動時にメッセージデータベースからユーザー自身のアドレスを検出し、それらを自動的に通します。他の送信者はハンドルで追加されます。
+[Telegram](https://github.com/anthropics/claude-plugins-official/tree/main/external_plugins/telegram) と [Discord](https://github.com/anthropics/claude-plugins-official/tree/main/external_plugins/discord) チャネルは同じ方法で送信者許可リストでゲートします。[ペアリング](https://code.claude.com/docs/ja/channels.md#security)でリストをブートストラップします。完全なペアリングフローについては、いずれかの実装を参照してください。[iMessage](https://github.com/anthropics/claude-plugins-official/tree/main/external_plugins/imessage) チャネルは異なるアプローチを取ります：起動時にメッセージデータベースからユーザー自身のアドレスを検出し、それらを自動的に通します。他の送信者はハンドルで追加されます。
 
 ## 権限プロンプトをリレー
 
@@ -439,7 +439,7 @@ Claude が承認が必要なツールを呼び出すと、ローカルターミ�
 
 リレーは `Bash`、`Write`、`Edit` などのツール使用承認をカバーします。プロジェクト信頼と MCP サーバー同意ダイアログはリレーされません。これらはローカルターミナルにのみ表示されます。
 
-Claude Code v2.1.234 以降は、セッション用にチャネルとして登録したサーバーにのみ権限リクエストを送信するため、リレーは[セッションオプトインと組織コントロール](/docs/ja/channels.md#security)と同じ背後にあります。リレーはまた、`--channels` または開発フラグでサーバーをオプトインし、サーバーが権限機能を宣言することを必要とします。
+Claude Code v2.1.234 以降は、セッション用にチャネルとして登録したサーバーにのみ権限リクエストを送信するため、リレーは[セッションオプトインと組織コントロール](https://code.claude.com/docs/ja/channels.md#security)と同じ背後にあります。リレーはまた、`--channels` または開発フラグでサーバーをオプトインし、サーバーが権限機能を宣言することを必要とします。
 
 ### リレーの仕組み
 
@@ -767,15 +767,15 @@ curl -d "yes <id>" -H "X-Sender: dev" localhost:8788
 
 ## プラグインとしてパッケージ化
 
-チャネルをインストール可能で共有可能にするには、[プラグイン](/docs/ja/plugins/overview.md)でラップして[マーケットプレイス](/docs/ja/plugins/overview.md)に公開します。ユーザーは `/plugin install` でインストールし、`--channels plugin:<name>@<marketplace>` でセッションごとに有効化します。
+チャネルをインストール可能で共有可能にするには、[プラグイン](https://code.claude.com/docs/ja/plugins/overview.md)でラップして[マーケットプレイス](https://code.claude.com/docs/ja/plugins/overview.md)に公開します。ユーザーは `/plugin install` でインストールし、`--channels plugin:<name>@<marketplace>` でセッションごとに有効化します。
 
-独自のマーケットプレイスに公開されたチャネルは、[承認許可リスト](/docs/ja/channels.md#supported-channels)にないため、実行するには `--dangerously-load-development-channels` が必要です。デフォルトの許可リストは `claude-plugins-official` のチャネルプラグインです。コミュニティマーケットプレイスはチャネル許可リストにはありません。
+独自のマーケットプレイスに公開されたチャネルは、[承認許可リスト](https://code.claude.com/docs/ja/channels.md#supported-channels)にないため、実行するには `--dangerously-load-development-channels` が必要です。デフォルトの許可リストは `claude-plugins-official` のチャネルプラグインです。コミュニティマーケットプレイスはチャネル許可リストにはありません。
 
-Anthropic パートナー連絡先と協力している場合は、公式マーケットプレイスリストを調整するために彼らに連絡してください。Team および Enterprise プランでは、管理者は代わりにプラグインを組織の独自の [`allowedChannelPlugins`](/docs/ja/channels#restrict-which-channel-plugins-can-run) リストに含めることができます。これはデフォルトの Anthropic 許可リストを置き換えます。
+Anthropic パートナー連絡先と協力している場合は、公式マーケットプレイスリストを調整するために彼らに連絡してください。Team および Enterprise プランでは、管理者は代わりにプラグインを組織の独自の [`allowedChannelPlugins`](https://code.claude.com/docs/ja/channels#restrict-which-channel-plugins-can-run) リストに含めることができます。これはデフォルトの Anthropic 許可リストを置き換えます。
 
 ## 関連項目
 
-* [チャネル](/docs/ja/channels.md)：Telegram、Discord、iMessage、または fakechat デモをインストールして使用し、Team または Enterprise 組織のチャネルを有効化
+* [チャネル](https://code.claude.com/docs/ja/channels.md)：Telegram、Discord、iMessage、または fakechat デモをインストールして使用し、Team または Enterprise 組織のチャネルを有効化
 * [チャネル実装の動作](https://github.com/anthropics/claude-plugins-official/tree/main/external_plugins)：ペアリングフロー、返信ツール、ファイル添付を含む完全なサーバーコード
-* [MCP](/docs/ja/mcp.md)：チャネルサーバーが実装する基礎となるプロトコル
-* [プラグイン](/docs/ja/plugins/overview.md)：チャネルをパッケージ化して、ユーザーが `/plugin install` でインストールできるようにする
+* [MCP](https://code.claude.com/docs/ja/mcp.md)：チャネルサーバーが実装する基礎となるプロトコル
+* [プラグイン](https://code.claude.com/docs/ja/plugins/overview.md)：チャネルをパッケージ化して、ユーザーが `/plugin install` でインストールできるようにする

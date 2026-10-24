@@ -17,13 +17,13 @@ Contact sales
 
 ほとんどの組織では、Claude for Teams または Claude for Enterprise が最適なエクスペリエンスを提供します。チームメンバーは、単一のサブスクリプション、一元化された請求、インフラストラクチャセットアップが不要で、Claude Code と Web 上の Claude の両方にアクセスできます。
 
-**Claude for Teams** はセルフサービスで、コラボレーション機能、管理ツール、SSO、請求管理、および[サーバー管理設定](/docs/ja/server-managed-settings.md)（組織全体の Claude Code 構成用）が含まれています。迅速に開始する必要がある小規模なチームに最適です。
+**Claude for Teams** はセルフサービスで、コラボレーション機能、管理ツール、SSO、請求管理、および[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)（組織全体の Claude Code 構成用）が含まれています。迅速に開始する必要がある小規模なチームに最適です。
 
 **Claude for Enterprise** はドメインキャプチャ、ロールベースの権限、およびコンプライアンス API アクセスを追加します。セキュリティとコンプライアンス要件がある大規模な組織に最適です。
 
 [Team プラン](https://support.claude.com/en/articles/9266767-what-is-the-team-plan)と[Enterprise プラン](https://support.claude.com/en/articles/9797531-what-is-the-enterprise-plan)の詳細をご覧ください。
 
-以下で比較されるデプロイメントオプションは、モデル推論が実行される場所をカバーしています。組織が運用するコンピュート上で [Claude Code on the web](/docs/ja/claude-code-on-the-web.md) セッションを実行するには、[セルフホスト環境](/docs/ja/self-hosted-environments)を参照してください。
+以下で比較されるデプロイメントオプションは、モデル推論が実行される場所をカバーしています。組織が運用するコンピュート上で [Claude Code on the web](https://code.claude.com/docs/ja/claude-code-on-the-web.md) セッションを実行するには、[セルフホスト環境](https://code.claude.com/docs/ja/self-hosted-environments)を参照してください。
 
 組織に特定のインフラストラクチャ要件がある場合は、以下のオプションを比較してください。
 
@@ -85,7 +85,7 @@ Contact sales
     <tr>
       <td>認証</td>
       <td>claude.ai SSO またはメール</td>
-      <td>API キーまたは [API キーなしのコンソールサインイン](/docs/ja/authentication.md#sign-in-without-an-api-key)</td>
+      <td>API キーまたは [API キーなしのコンソールサインイン](https://code.claude.com/docs/ja/authentication.md#sign-in-without-an-api-key)</td>
       <td>API キーまたは AWS 認証情報</td>
       <td>API キーまたは AWS 認証情報</td>
       <td>GCP 認証情報</td>
@@ -124,17 +124,17 @@ Contact sales
   </tbody>
 </table>
 
-各オプションで利用可能な機能の詳細な比較については、[機能の可用性](/docs/ja/feature-availability.md)を参照してください。
+各オプションで利用可能な機能の詳細な比較については、[機能の可用性](https://code.claude.com/docs/ja/feature-availability.md)を参照してください。
 
 デプロイメントオプションを選択してセットアップ手順を表示します。
 
-* [Claude for Teams または Enterprise](/docs/ja/authentication.md#claude-for-teams-or-enterprise)
-* [Anthropic Console](/docs/ja/authentication.md#claude-console-authentication)
-* [Claude apps gateway](/docs/ja/claude-apps-gateway)、Amazon Bedrock、Claude Platform on AWS、Google Cloud の Agent Platform、Microsoft Foundry、または Anthropic API の前に IdP サインインを追加するセルフホスト型ゲートウェイ
-* [Amazon Bedrock](/docs/ja/amazon-bedrock.md)
-* [Claude Platform on AWS](/docs/ja/claude-platform-on-aws.md)
-* [Google Cloud の Agent Platform](/docs/ja/google-vertex-ai.md)
-* [Microsoft Foundry](/docs/ja/microsoft-foundry.md)
+* [Claude for Teams または Enterprise](https://code.claude.com/docs/ja/authentication.md#claude-for-teams-or-enterprise)
+* [Anthropic Console](https://code.claude.com/docs/ja/authentication.md#claude-console-authentication)
+* [Claude apps gateway](https://code.claude.com/docs/ja/claude-apps-gateway)、Amazon Bedrock、Claude Platform on AWS、Google Cloud の Agent Platform、Microsoft Foundry、または Anthropic API の前に IdP サインインを追加するセルフホスト型ゲートウェイ
+* [Amazon Bedrock](https://code.claude.com/docs/ja/amazon-bedrock.md)
+* [Claude Platform on AWS](https://code.claude.com/docs/ja/claude-platform-on-aws.md)
+* [Google Cloud の Agent Platform](https://code.claude.com/docs/ja/google-vertex-ai.md)
+* [Microsoft Foundry](https://code.claude.com/docs/ja/microsoft-foundry.md)
 
 Amazon Bedrock と Google Vertex AI の場合、ログインプロンプトで `claude` を実行して**3rd-party platform** を選択し、インタラクティブセットアップウィザードを起動することもできます。
 
@@ -142,18 +142,18 @@ Amazon Bedrock と Google Vertex AI の場合、ログインプロンプトで `
 
 ほとんどの組織は、追加の構成なしでクラウドプロバイダーを直接使用できます。ただし、組織に特定のネットワークまたは管理要件がある場合は、企業プロキシまたは LLM ゲートウェイを構成する必要がある場合があります。これらは一緒に使用できる異なる構成です。
 
-* **企業プロキシ**: HTTP/HTTPS プロキシを通じてトラフィックをルーティングします。組織がセキュリティ監視、コンプライアンス、またはネットワークポリシー実装のためにすべての送信トラフィックをプロキシサーバーを通じて渡す必要がある場合に使用します。`HTTPS_PROXY` または `HTTP_PROXY` 環境変数で構成します。[エンタープライズネットワーク構成](/docs/ja/network-config.md)で詳細をご覧ください。
-* **LLM ゲートウェイ**: Claude Code とクラウドプロバイダーの間に位置して、認証とルーティングを処理するサービスです。チーム全体の一元化された使用状況追跡、カスタムレート制限または予算、または一元化された認証管理が必要な場合に使用します。`ANTHROPIC_BASE_URL`、`ANTHROPIC_BEDROCK_BASE_URL`、`ANTHROPIC_AWS_BASE_URL`、`ANTHROPIC_VERTEX_BASE_URL`、または `ANTHROPIC_FOUNDRY_BASE_URL` 環境変数で構成します。[LLM ゲートウェイ](/docs/ja/llm-gateway)で詳細をご覧ください。
+* **企業プロキシ**: HTTP/HTTPS プロキシを通じてトラフィックをルーティングします。組織がセキュリティ監視、コンプライアンス、またはネットワークポリシー実装のためにすべての送信トラフィックをプロキシサーバーを通じて渡す必要がある場合に使用します。`HTTPS_PROXY` または `HTTP_PROXY` 環境変数で構成します。[エンタープライズネットワーク構成](https://code.claude.com/docs/ja/network-config.md)で詳細をご覧ください。
+* **LLM ゲートウェイ**: Claude Code とクラウドプロバイダーの間に位置して、認証とルーティングを処理するサービスです。チーム全体の一元化された使用状況追跡、カスタムレート制限または予算、または一元化された認証管理が必要な場合に使用します。`ANTHROPIC_BASE_URL`、`ANTHROPIC_BEDROCK_BASE_URL`、`ANTHROPIC_AWS_BASE_URL`、`ANTHROPIC_VERTEX_BASE_URL`、または `ANTHROPIC_FOUNDRY_BASE_URL` 環境変数で構成します。[LLM ゲートウェイ](https://code.claude.com/docs/ja/llm-gateway)で詳細をご覧ください。
 
-プロバイダーごとの環境変数で Amazon Bedrock、Microsoft Foundry、または Google Cloud の Agent Platform を LLM ゲートウェイを通じてルーティングする場合は、[ゲートウェイを通じてクラウドプロバイダーにルーティング](/docs/ja/llm-gateway-connect.md#route-to-a-cloud-provider-through-a-gateway)を参照してください。Claude Code で `/status` を実行して、セッションが使用しているプロバイダー、ベース URL、およびプロキシを確認します。
+プロバイダーごとの環境変数で Amazon Bedrock、Microsoft Foundry、または Google Cloud の Agent Platform を LLM ゲートウェイを通じてルーティングする場合は、[ゲートウェイを通じてクラウドプロバイダーにルーティング](https://code.claude.com/docs/ja/llm-gateway-connect.md#route-to-a-cloud-provider-through-a-gateway)を参照してください。Claude Code で `/status` を実行して、セッションが使用しているプロバイダー、ベース URL、およびプロキシを確認します。
 
-組織が[顧客管理暗号化キー](https://platform.claude.com/docs/en/manage-claude/cmek)（CMEK）を使用し、Claude Code を LLM ゲートウェイまたはカスタム `ANTHROPIC_BASE_URL` を通じてルーティングする場合、CMEK はそれらのセッションの Claude Code の運用テレメトリには適用されません。すべての開発者のテレメトリをオフにするには、[組織のテレメトリをオフにする](/docs/ja/managed-settings.md#turn-telemetry-off-for-your-organization)に示されているように、管理設定を通じて `DISABLE_TELEMETRY` を配信します。
+組織が[顧客管理暗号化キー](https://platform.claude.com/docs/en/manage-claude/cmek)（CMEK）を使用し、Claude Code を LLM ゲートウェイまたはカスタム `ANTHROPIC_BASE_URL` を通じてルーティングする場合、CMEK はそれらのセッションの Claude Code の運用テレメトリには適用されません。すべての開発者のテレメトリをオフにするには、[組織のテレメトリをオフにする](https://code.claude.com/docs/ja/managed-settings.md#turn-telemetry-off-for-your-organization)に示されているように、管理設定を通じて `DISABLE_TELEMETRY` を配信します。
 
 ## 組織のベストプラクティス
 
 ### ドキュメントとメモリに投資する
 
-Claude Code がコードベースを理解できるように、ドキュメントに投資してください。組織は複数のレベルで CLAUDE.md ファイルをデプロイできます。[CLAUDE.md ファイルをどこに配置できるか](/docs/ja/memory.md#choose-where-to-put-claude-md-files)と[組織全体の CLAUDE.md をデプロイする方法](/docs/ja/memory.md#deploy-organization-wide-claude-md)をご覧ください。
+Claude Code がコードベースを理解できるように、ドキュメントに投資してください。組織は複数のレベルで CLAUDE.md ファイルをデプロイできます。[CLAUDE.md ファイルをどこに配置できるか](https://code.claude.com/docs/ja/memory.md#choose-where-to-put-claude-md-files)と[組織全体の CLAUDE.md をデプロイする方法](https://code.claude.com/docs/ja/memory.md#deploy-organization-wide-claude-md)をご覧ください。
 
 ### デプロイメントを簡素化する
 
@@ -165,22 +165,22 @@ Claude Code がコードベースを理解できるように、ドキュメン�
 
 ### クラウドプロバイダーのモデルバージョンをピン留めする
 
-[Amazon Bedrock](/docs/ja/amazon-bedrock.md)、[Google Cloud の Agent Platform](/docs/ja/google-vertex-ai.md)、[Microsoft Foundry](/docs/ja/microsoft-foundry.md)、または [Claude Platform on AWS](/docs/ja/claude-platform-on-aws.md) を通じてデプロイする場合は、`ANTHROPIC_DEFAULT_FABLE_MODEL`、`ANTHROPIC_DEFAULT_OPUS_MODEL`、`ANTHROPIC_DEFAULT_SONNET_MODEL`、および `ANTHROPIC_DEFAULT_HAIKU_MODEL` を使用して特定のモデルバージョンをピン留めします。ピン留めしない場合、モデルエイリアスは Claude Code のそのプロバイダーの組み込みデフォルトに解決され、最新リリースより遅れる可能性があり、アカウントでまだ有効になっていない可能性があります。ピン留めすることで、ユーザーが新しいモデルに移行するタイミングを制御できます。各プロバイダーがデフォルトが利用できない場合に何を行うかについては、[モデル構成](/docs/ja/model-config.md#pin-models-for-third-party-deployments)を参照してください。
+[Amazon Bedrock](https://code.claude.com/docs/ja/amazon-bedrock.md)、[Google Cloud の Agent Platform](https://code.claude.com/docs/ja/google-vertex-ai.md)、[Microsoft Foundry](https://code.claude.com/docs/ja/microsoft-foundry.md)、または [Claude Platform on AWS](https://code.claude.com/docs/ja/claude-platform-on-aws.md) を通じてデプロイする場合は、`ANTHROPIC_DEFAULT_FABLE_MODEL`、`ANTHROPIC_DEFAULT_OPUS_MODEL`、`ANTHROPIC_DEFAULT_SONNET_MODEL`、および `ANTHROPIC_DEFAULT_HAIKU_MODEL` を使用して特定のモデルバージョンをピン留めします。ピン留めしない場合、モデルエイリアスは Claude Code のそのプロバイダーの組み込みデフォルトに解決され、最新リリースより遅れる可能性があり、アカウントでまだ有効になっていない可能性があります。ピン留めすることで、ユーザーが新しいモデルに移行するタイミングを制御できます。各プロバイダーがデフォルトが利用できない場合に何を行うかについては、[モデル構成](https://code.claude.com/docs/ja/model-config.md#pin-models-for-third-party-deployments)を参照してください。
 
 ### セキュリティポリシーを構成する
 
-セキュリティチームは、Claude Code が実行できることと実行できないことに対する管理権限を構成できます。これはローカル構成によって上書きされません。[詳細をご覧ください](/docs/ja/security.md)。
+セキュリティチームは、Claude Code が実行できることと実行できないことに対する管理権限を構成できます。これはローカル構成によって上書きされません。[詳細をご覧ください](https://code.claude.com/docs/ja/security.md)。
 
-これらのデプロイメントオプションのうち、管理対象マシンが使用できるものを制限するには、管理設定で [`allowedProviders`](/docs/ja/settings-reference#allowedproviders) を設定します。たとえば、`["bedrock"]` は Amazon Bedrock のみを許可します。Mantle エンドポイントも有効にする Bedrock フリートは `"mantle"` も一覧に含めます。このエントリは、管理対象の `env` ピン留めも必要なエンドポイント変数を示します。Claude Code v2.1.285 以降が必要です。
+これらのデプロイメントオプションのうち、管理対象マシンが使用できるものを制限するには、管理設定で [`allowedProviders`](https://code.claude.com/docs/ja/settings-reference#allowedproviders) を設定します。たとえば、`["bedrock"]` は Amazon Bedrock のみを許可します。Mantle エンドポイントも有効にする Bedrock フリートは `"mantle"` も一覧に含めます。このエントリは、管理対象の `env` ピン留めも必要なエンドポイント変数を示します。Claude Code v2.1.285 以降が必要です。
 
 ### 統合に MCP を活用する
 
-MCP は Claude Code にチケット管理システムやエラーログへの接続など、より多くの情報を提供する優れた方法です。1 つの中央チームが MCP サーバーを構成し、`.mcp.json` 構成をコードベースにチェックインして、すべてのユーザーが恩恵を受けられるようにします。[詳細をご覧ください](/docs/ja/mcp.md)。
+MCP は Claude Code にチケット管理システムやエラーログへの接続など、より多くの情報を提供する優れた方法です。1 つの中央チームが MCP サーバーを構成し、`.mcp.json` 構成をコードベースにチェックインして、すべてのユーザーが恩恵を受けられるようにします。[詳細をご覧ください](https://code.claude.com/docs/ja/mcp.md)。
 
 ## 次のステップ
 
 デプロイメントオプションを選択し、チームのアクセスを構成したら、以下を実行します。
 
-1. **チームにロールアウトする**: インストール手順を共有し、チームメンバーに [Claude Code をインストール](/docs/ja/setup.md)して認証情報で認証するよう依頼します。
-2. **共有構成をセットアップする**: リポジトリに [CLAUDE.md ファイル](/docs/ja/memory.md)を作成して、Claude Code がコードベースとコーディング標準を理解するのに役立てます。
-3. **権限を構成する**: [セキュリティ設定](/docs/ja/security.md)を確認して、環境内で Claude Code が実行できることと実行できないことを定義します。
+1. **チームにロールアウトする**: インストール手順を共有し、チームメンバーに [Claude Code をインストール](https://code.claude.com/docs/ja/setup.md)して認証情報で認証するよう依頼します。
+2. **共有構成をセットアップする**: リポジトリに [CLAUDE.md ファイル](https://code.claude.com/docs/ja/memory.md)を作成して、Claude Code がコードベースとコーディング標準を理解するのに役立てます。
+3. **権限を構成する**: [セキュリティ設定](https://code.claude.com/docs/ja/security.md)を確認して、環境内で Claude Code が実行できることと実行できないことを定義します。

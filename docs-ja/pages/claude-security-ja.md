@@ -8,15 +8,15 @@
 
 Claude Security プラグインは、Claude Code セッション内でコードベースのマルチエージェント脆弱性スキャンを実行します。Claude エージェントのチームがアーキテクチャをマッピングし、脅威モデルを構築し、脆弱性を検出し、すべての検出結果を独立してレビューしてからレポートを作成します。プラグインを使用して、リポジトリ全体をスキャンするか、[変更のみをスキャン](#scan-only-your-changes)することができます。例えば、ブランチの diff、プルリクエストの diff、または単一のコミットなどです。その後、選択した検出結果をレビューして自分で適用できるパッチに変換します。
 
-プラグインはセッション内でローカルに実行され、[Claude Code でアクセスできるモデルを使用](#models-and-providers)し、各スキャンは[使用量](/docs/ja/costs.md)にカウントされます。リポジトリを監視するマネージドサービスが必要な場合、または [Claude Mythos](https://platform.claude.com/docs/en/about-claude/models/introducing-claude-fable-5-and-claude-mythos-5) でスキャンを実行したい場合は、Enterprise プランで利用可能な [Claude Security](https://claude.com/product/claude-security) プロダクトを参照してください。
+プラグインはセッション内でローカルに実行され、[Claude Code でアクセスできるモデルを使用](#models-and-providers)し、各スキャンは[使用量](https://code.claude.com/docs/ja/costs.md)にカウントされます。リポジトリを監視するマネージドサービスが必要な場合、または [Claude Mythos](https://platform.claude.com/docs/en/about-claude/models/introducing-claude-fable-5-and-claude-mythos-5) でスキャンを実行したい場合は、Enterprise プランで利用可能な [Claude Security](https://claude.com/product/claude-security) プロダクトを参照してください。
 
-プラグインは、Claude Code に既に含まれているレビューツールとも異なります。[security guidance プラグイン](/docs/ja/security-guidance.md)は Claude が記述するコードをレビューし、[`/security-review`](/docs/ja/commands#all-commands)はブランチに対して単一パスを実行し、[Code Review](/docs/ja/code-review.md)はプルリクエストをレビューします。レイヤーがどのようにスタックするかについては、[プラグインが他のセキュリティツールとどのように適合するか](#how-the-plugin-fits-with-other-security-tools)を参照してください。
+プラグインは、Claude Code に既に含まれているレビューツールとも異なります。[security guidance プラグイン](https://code.claude.com/docs/ja/security-guidance.md)は Claude が記述するコードをレビューし、[`/security-review`](https://code.claude.com/docs/ja/commands#all-commands)はブランチに対して単一パスを実行し、[Code Review](https://code.claude.com/docs/ja/code-review.md)はプルリクエストをレビューします。レイヤーがどのようにスタックするかについては、[プラグインが他のセキュリティツールとどのように適合するか](#how-the-plugin-fits-with-other-security-tools)を参照してください。
 
 ## 前提条件
 
 プラグインを実行するには、以下が必要です。
 
-* 有料プラン、Anthropic API アクセス、または[サードパーティプロバイダー](#models-and-providers)。スキャンが使用する[動的ワークフロー](/docs/ja/workflows.md)でエージェントをオーケストレーションするためです。Pro では、`/config` の Dynamic workflows 行から有効にしてください。
+* 有料プラン、Anthropic API アクセス、または[サードパーティプロバイダー](#models-and-providers)。スキャンが使用する[動的ワークフロー](https://code.claude.com/docs/ja/workflows.md)でエージェントをオーケストレーションするためです。Pro では、`/config` の Dynamic workflows 行から有効にしてください。
 * Python 3.9 以降が `PATH` で `python3` として利用可能であること。`python3 --version` で確認してください。プラグインのツーリングは Python 標準ライブラリのみを使用するため、何もインストールされません。
 * Linux、macOS、または Windows。
 * Git。変更スキャンと検出結果をパッチに変換するためです。これらのジョブは他のバージョン管理システムをサポートしていません。完全スキャンは、バージョン管理の有無を問わず、任意のディレクトリで機能します。
@@ -25,29 +25,29 @@ Claude Security プラグインは、Claude Code セッション内でコード�
 
 スキャンは Claude Code セッション内で実行されます。プラグインは独自のモデル呼び出しを行わないため、設定する必要のある個別の API キーやプロバイダー設定はありません。
 
-* **モデル**: 脆弱性を検出し、検出結果を検証し、パッチを作成およびレビューするエージェントは、[セッションのモデル](/docs/ja/sub-agents.md#choose-a-model)で実行されます。これを変更するには、スキャンを開始する前にセッションで [`/model`](/docs/ja/model-config#setting-your-model) を実行してください。リポジトリのマッピングなどのいくつかのサポート手順では、代わりに [`sonnet` エイリアス](/docs/ja/model-config#model-aliases)を使用します。
-* **プロバイダー**: スキャンは有料プラン、Anthropic API アクセス、または [Amazon Bedrock](/docs/ja/amazon-bedrock.md)、[Google Cloud の Agent Platform](/docs/ja/google-vertex-ai.md)、[Microsoft Foundry](/docs/ja/microsoft-foundry.md)などの[サードパーティプロバイダー](/docs/ja/third-party-integrations.md)で実行されます。
+* **モデル**: 脆弱性を検出し、検出結果を検証し、パッチを作成およびレビューするエージェントは、[セッションのモデル](https://code.claude.com/docs/ja/sub-agents.md#choose-a-model)で実行されます。これを変更するには、スキャンを開始する前にセッションで [`/model`](https://code.claude.com/docs/ja/model-config#setting-your-model) を実行してください。リポジトリのマッピングなどのいくつかのサポート手順では、代わりに [`sonnet` エイリアス](https://code.claude.com/docs/ja/model-config#model-aliases)を使用します。
+* **プロバイダー**: スキャンは有料プラン、Anthropic API アクセス、または [Amazon Bedrock](https://code.claude.com/docs/ja/amazon-bedrock.md)、[Google Cloud の Agent Platform](https://code.claude.com/docs/ja/google-vertex-ai.md)、[Microsoft Foundry](https://code.claude.com/docs/ja/microsoft-foundry.md)などの[サードパーティプロバイダー](https://code.claude.com/docs/ja/third-party-integrations.md)で実行されます。
 
-サードパーティプロバイダーでは、`sonnet` エイリアスが Anthropic API での場合とは異なるバージョンに解決される可能性があります。アカウントがそのバージョンを使用できない場合は、`ANTHROPIC_DEFAULT_SONNET_MODEL` を含む[モデルバージョンをピン留めしてください](/docs/ja/model-config.md#pin-models-for-third-party-deployments)。
+サードパーティプロバイダーでは、`sonnet` エイリアスが Anthropic API での場合とは異なるバージョンに解決される可能性があります。アカウントがそのバージョンを使用できない場合は、`ANTHROPIC_DEFAULT_SONNET_MODEL` を含む[モデルバージョンをピン留めしてください](https://code.claude.com/docs/ja/model-config.md#pin-models-for-third-party-deployments)。
 
-[自動モデルフォールバック](/docs/ja/model-config.md#automatic-model-fallback)は、モデルのセーフガードがフラグを立てたリクエストを再実行します。Amazon Bedrock、Google Cloud の Agent Platform、および Microsoft Foundry では、[デプロイメントの設定方法](/docs/ja/model-config.md#enable-fallback-on-bedrock-agent-platform-and-foundry)に応じて、リクエストが拒否メッセージで終了する可能性があります。
+[自動モデルフォールバック](https://code.claude.com/docs/ja/model-config.md#automatic-model-fallback)は、モデルのセーフガードがフラグを立てたリクエストを再実行します。Amazon Bedrock、Google Cloud の Agent Platform、および Microsoft Foundry では、[デプロイメントの設定方法](https://code.claude.com/docs/ja/model-config.md#enable-fallback-on-bedrock-agent-platform-and-foundry)に応じて、リクエストが拒否メッセージで終了する可能性があります。
 
 ## プラグインをインストールする
 
-VS Code 拡張機能またはデスクトップアプリでは、[プラグインをインストールする](/docs/ja/plugins/install.md#install-a-plugin)の手順に従ってインストールします。ターミナルでは、`claude` を実行して Claude Code を起動し、そのプロンプトで次のように入力して[公式 Anthropic マーケットプレイス](/docs/ja/plugins/anthropic-marketplaces.md)からインストールします。
+VS Code 拡張機能またはデスクトップアプリでは、[プラグインをインストールする](https://code.claude.com/docs/ja/plugins/install.md#install-a-plugin)の手順に従ってインストールします。ターミナルでは、`claude` を実行して Claude Code を起動し、そのプロンプトで次のように入力して[公式 Anthropic マーケットプレイス](https://code.claude.com/docs/ja/plugins/anthropic-marketplaces.md)からインストールします。
 
 ```text theme={null}
 /plugin install claude-security@claude-plugins-official
 ```
 
-コマンドはプラグインの詳細を開き、[インストールスコープ](/docs/ja/plugins/install.md#install-a-plugin)を選択してインストールを開始します。
+コマンドはプラグインの詳細を開き、[インストールスコープ](https://code.claude.com/docs/ja/plugins/install.md#install-a-plugin)を選択してインストールを開始します。
 
 インストールが失敗した場合は、Claude Code が報告するメッセージに応じて対処してください。
 
 * `Marketplace "claude-plugins-official" not found` と報告された場合は、`/plugin marketplace add anthropics/claude-plugins-official` でマーケットプレイスを追加してから、インストールを再試行してください。
-* `Plugin "claude-security" not found in marketplace "claude-plugins-official"` と報告された場合は、マーケットプレイスカタログのローカルコピーが古くなっている可能性があります。`/plugin marketplace update claude-plugins-official` で更新してから、インストールを再試行してください。再試行しても同じメッセージが表示される場合は、[マーケットプレイスでプラグインが見つからない](/docs/ja/plugins/troubleshooting.md#plugin-not-found-in-marketplace)を参照してください。
+* `Plugin "claude-security" not found in marketplace "claude-plugins-official"` と報告された場合は、マーケットプレイスカタログのローカルコピーが古くなっている可能性があります。`/plugin marketplace update claude-plugins-official` で更新してから、インストールを再試行してください。再試行しても同じメッセージが表示される場合は、[マーケットプレイスでプラグインが見つからない](https://code.claude.com/docs/ja/plugins/troubleshooting.md#plugin-not-found-in-marketplace)を参照してください。
 
-インストール概要を確認してください。`Run /reload-plugins to apply.` と報告された場合は、[プラグインの変更を再起動なしで適用](/docs/ja/plugins/cli-reference.md#reload-plugins)を参照して、現在のセッションでプラグインをアクティブにしてください。
+インストール概要を確認してください。`Run /reload-plugins to apply.` と報告された場合は、[プラグインの変更を再起動なしで適用](https://code.claude.com/docs/ja/plugins/cli-reference.md#reload-plugins)を参照して、現在のセッションでプラグインをアクティブにしてください。
 
 プラグインがアクティブになり、[コードベースをスキャンして修正](#scan-and-fix-your-codebase)する準備ができました。
 
@@ -73,7 +73,7 @@ VS Code 拡張機能またはデスクトップアプリでは、[プラグイ�
 
 **4. レポートを読む**
 
-スキャンが実行されている間、各ステージが開始されるたびに報告され、詳細は [`/workflows`](/docs/ja/workflows) で利用可能です。結果は、リポジトリ内のタイムスタンプ付きディレクトリに格納され、[スキャン結果を読む](#read-the-scan-results)で説明されています。
+スキャンが実行されている間、各ステージが開始されるたびに報告され、詳細は [`/workflows`](https://code.claude.com/docs/ja/workflows) で利用可能です。結果は、リポジトリ内のタイムスタンプ付きディレクトリに格納され、[スキャン結果を読む](#read-the-scan-results)で説明されています。
 
 **5. 検出結果をパッチに変換する**
 
@@ -83,7 +83,7 @@ VS Code 拡張機能またはデスクトップアプリでは、[プラグイ�
 
 シェルから `git apply` で各パッチを適用します。独自のプルリクエストで実行してください。パッチは自動的に適用されることはありません。
 
-メニューから開始する必要はありません。コマンドの引数として直接ジョブを要求することができます。例えば `/claude-security scan my branch` のように、またはプレーンテキストで「scan commit abc1234」のように要求できます。プラグインは [auto mode](/docs/ja/permission-modes.md) で最適に機能します。これにより、スキャンのエージェントは各ステップで権限プロンプトなしで進行できます。
+メニューから開始する必要はありません。コマンドの引数として直接ジョブを要求することができます。例えば `/claude-security scan my branch` のように、またはプレーンテキストで「scan commit abc1234」のように要求できます。プラグインは [auto mode](https://code.claude.com/docs/ja/permission-modes.md) で最適に機能します。これにより、スキャンのエージェントは各ステップで権限プロンプトなしで進行できます。
 
 ### 変更のみをスキャンする
 
@@ -126,14 +126,14 @@ git apply CLAUDE-SECURITY-<timestamp>/patches/F1.patch
 
 ## プラグインが他のセキュリティツールとどのように適合するか
 
-Claude Security プラグインは、[セキュリティガイダンスプラグイン](/docs/ja/security-guidance.md)、[`/security-review`](/docs/ja/commands#all-commands)、[Code Review](/docs/ja/code-review.md)、マネージド [Claude Security](https://claude.com/product/claude-security) プロダクト、および既存のスキャナーと並んで、多層防御スタックのオンデマンド深スキャンレイヤーです。
+Claude Security プラグインは、[セキュリティガイダンスプラグイン](https://code.claude.com/docs/ja/security-guidance.md)、[`/security-review`](https://code.claude.com/docs/ja/commands#all-commands)、[Code Review](https://code.claude.com/docs/ja/code-review.md)、マネージド [Claude Security](https://claude.com/product/claude-security) プロダクト、および既存のスキャナーと並んで、多層防御スタックのオンデマンド深スキャンレイヤーです。
 
 | ステージ | ツール | カバー内容 |
 | :- | :- | :- |
-| セッション内 | [セキュリティガイダンスプラグイン](/docs/ja/security-guidance.md) | Claude が書くコード内の一般的な脆弱性。同じセッションで修正 |
-| オンデマンド、単一パス | [`/security-review`](/docs/ja/commands#all-commands) | 現在のブランチに対する 1 回限りのセキュリティパス |
+| セッション内 | [セキュリティガイダンスプラグイン](https://code.claude.com/docs/ja/security-guidance.md) | Claude が書くコード内の一般的な脆弱性。同じセッションで修正 |
+| オンデマンド、単一パス | [`/security-review`](https://code.claude.com/docs/ja/commands#all-commands) | 現在のブランチに対する 1 回限りのセキュリティパス |
 | オンデマンド、深スキャン | Claude Security プラグイン | リポジトリまたは差分のマルチエージェントスキャン。独立してレビューされた検出結果とパッチ |
-| プルリクエスト時 | [Code Review](/docs/ja/code-review.md)、Team および Enterprise プラン | 完全なコードベースコンテキストを備えたマルチエージェント正確性およびセキュリティレビュー |
+| プルリクエスト時 | [Code Review](https://code.claude.com/docs/ja/code-review.md)、Team および Enterprise プラン | 完全なコードベースコンテキストを備えたマルチエージェント正確性およびセキュリティレビュー |
 | マネージド | [Claude Security](https://claude.com/product/claude-security)、Enterprise プラン | 接続されたリポジトリを監視するホストされたスキャン |
 | CI 内 | 既存の静的分析および依存関係スキャナー | 言語固有のルール、サプライチェーンチェック、ポリシー実装 |
 
@@ -143,14 +143,14 @@ Claude Security プラグインは、[セキュリティガイダンスプラグ
 
 **`/claude-security` メニューが Python 警告で開きます。** プラグインは `PATH` に Python 3.9 以降の `python3` が必要です。`python3` がまったく見つからない場合、メニューは Claude Security がインストールされるまで機能しないことを警告します。`PATH` の最初の `python3` が古い場合、警告は見つかったバージョンを名前で指定します。Python 3 をインストールするか、新しい `python3` を `PATH` の最初に配置してから、新しいセッションを開始してください。
 
-**Fable モデルでスキャンするときに「safeguards flagged this message」という通知が表示される場合があります。** メッセージは実行しているモデルを名前で指定します。Fable のサイバーセキュリティ安全分類器により、特定のリクエストがフラグされ、Claude Code は [自動モデルフォールバック](/docs/ja/model-config.md#automatic-model-fallback)を通じてフラグされたリクエストを Opus モデルで再実行します。これは予想されており、リクエストが再実行されるとき、スキャンは引き続き正常に完了するはずです。
+**Fable モデルでスキャンするときに「safeguards flagged this message」という通知が表示される場合があります。** メッセージは実行しているモデルを名前で指定します。Fable のサイバーセキュリティ安全分類器により、特定のリクエストがフラグされ、Claude Code は [自動モデルフォールバック](https://code.claude.com/docs/ja/model-config.md#automatic-model-fallback)を通じてフラグされたリクエストを Opus モデルで再実行します。これは予想されており、リクエストが再実行されるとき、スキャンは引き続き正常に完了するはずです。
 
 ## 関連リソース
 
 このページが触れるピースについてさらに詳しく知るには：
 
-* [セキュリティガイダンスプラグイン](/docs/ja/security-guidance.md)：Claude がコードを書くときにコード内の問題をキャッチします。同じセッション内で
-* [Code Review](/docs/ja/code-review.md)：PR 時のマルチエージェントレビューをセットアップします
+* [セキュリティガイダンスプラグイン](https://code.claude.com/docs/ja/security-guidance.md)：Claude がコードを書くときにコード内の問題をキャッチします。同じセッション内で
+* [Code Review](https://code.claude.com/docs/ja/code-review.md)：PR 時のマルチエージェントレビューをセットアップします
 * [Claude Security](https://claude.com/product/claude-security)：接続されたリポジトリを監視するマネージドサービス
-* [Claude Code セキュリティ](/docs/ja/security.md)：Claude Code がトラスト、権限、セーフガードにどのようにアプローチするか
-* [プラグインをインストールして管理](/docs/ja/plugins/install.md)：公式マーケットプレイスから他のプラグインを検索してインストールします
+* [Claude Code セキュリティ](https://code.claude.com/docs/ja/security.md)：Claude Code がトラスト、権限、セーフガードにどのようにアプローチするか
+* [プラグインをインストールして管理](https://code.claude.com/docs/ja/plugins/install.md)：公式マーケットプレイスから他のプラグインを検索してインストールします

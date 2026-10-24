@@ -6,122 +6,122 @@
 
 > Claude Code が使用できるツールの完全なリファレンス。権限要件とツール別の動作を含みます。
 
-Claude Code は、コードベースを理解および変更するのに役立つ組み込みツールのセットにアクセスできます。ツール名は、[権限ルール](/docs/ja/permissions.md#tool-specific-permission-rules)、[サブエージェントツールリスト](/docs/ja/sub-agents.md)、および[フックマッチャー](/docs/ja/hooks.md)で使用する正確な文字列です。
+Claude Code は、コードベースを理解および変更するのに役立つ組み込みツールのセットにアクセスできます。ツール名は、[権限ルール](https://code.claude.com/docs/ja/permissions.md#tool-specific-permission-rules)、[サブエージェントツールリスト](https://code.claude.com/docs/ja/sub-agents.md)、および[フックマッチャー](https://code.claude.com/docs/ja/hooks.md)で使用する正確な文字列です。
 
-Claude が使用できるツールと、いつ最初に確認するかを制御するには、設定、[フック](/docs/ja/hooks.md)、または[サブエージェントのツールリスト](/docs/ja/sub-agents.md#supported-frontmatter-fields)で[権限ルール](/docs/ja/permissions.md#tool-specific-permission-rules)を設定します。ツール名を受け入れる各場所については、[権限ルールとフックでツールを設定する](#configure-tools-with-permission-rules-and-hooks)を参照してください。
+Claude が使用できるツールと、いつ最初に確認するかを制御するには、設定、[フック](https://code.claude.com/docs/ja/hooks.md)、または[サブエージェントのツールリスト](https://code.claude.com/docs/ja/sub-agents.md#supported-frontmatter-fields)で[権限ルール](https://code.claude.com/docs/ja/permissions.md#tool-specific-permission-rules)を設定します。ツール名を受け入れる各場所については、[権限ルールとフックでツールを設定する](#configure-tools-with-permission-rules-and-hooks)を参照してください。
 
-カスタムツールを追加するには、[MCP サーバー](/docs/ja/mcp.md)を接続します。再利用可能なプロンプトベースのワークフローで Claude を拡張するには、[スキル](/docs/ja/skills.md)を作成します。これは新しいツールエントリを追加するのではなく、既存の `Skill` ツールを通じて実行されます。
+カスタムツールを追加するには、[MCP サーバー](https://code.claude.com/docs/ja/mcp.md)を接続します。再利用可能なプロンプトベースのワークフローで Claude を拡張するには、[スキル](https://code.claude.com/docs/ja/skills.md)を作成します。これは新しいツールエントリを追加するのではなく、既存の `Skill` ツールを通じて実行されます。
 
 > [!NOTE]
 >
-> [オートモード](/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)では、分類器がほとんどの権限プロンプトを決定します。`Permission required` 列は、ツールが[マニュアルモード](/docs/ja/permission-modes.md)でワーキングディレクトリ内のパスに対してプロンプトを表示するかどうかを示します。`Read`、`Grep`、`Glob` を含むファイルアクセスツールは「いいえ」とマークされていますが、[ワーキングディレクトリと追加ディレクトリ](/docs/ja/permissions.md#working-directories)外のパスに対してはプロンプトを表示します。`Bash` は「はい」とマークされていますが、プロンプトなしで組み込みの[読み取り専用コマンド](/docs/ja/permissions.md#read-only-commands)セットを実行します。
+> [オートモード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)では、分類器がほとんどの権限プロンプトを決定します。`Permission required` 列は、ツールが[マニュアルモード](https://code.claude.com/docs/ja/permission-modes.md)でワーキングディレクトリ内のパスに対してプロンプトを表示するかどうかを示します。`Read`、`Grep`、`Glob` を含むファイルアクセスツールは「いいえ」とマークされていますが、[ワーキングディレクトリと追加ディレクトリ](https://code.claude.com/docs/ja/permissions.md#working-directories)外のパスに対してはプロンプトを表示します。`Bash` は「はい」とマークされていますが、プロンプトなしで組み込みの[読み取り専用コマンド](https://code.claude.com/docs/ja/permissions.md#read-only-commands)セットを実行します。
 
 | ツール | 説明 | 権限が必要 |
 | :- | :- | :- |
-| `Agent` | タスクを処理するために独自のコンテキストウィンドウを持つ[サブエージェント](/docs/ja/sub-agents.md)を生成します。[エージェントチーム](/docs/ja/agent-teams.md)が有効な場合、`name` を含む呼び出しは[チームメイト](/docs/ja/agent-teams.md#how-claude-starts-agent-teams)を起動できます。[Agent ツールの動作](#agent-tool-behavior)を参照してください | いいえ |
-| `Artifact` | HTML または Markdown ファイルを[アーティファクト](/docs/ja/artifacts.md)として公開します。これは claude.ai 上のプライベートでインタラクティブなページです。公開リンクで共有することも、Team および Enterprise プランの組織内で共有することもできます。公開共有には Owner による[有効化](/docs/ja/artifacts.md#control-public-sharing)が必要です。Pro、Max、Team、または Enterprise プランが必要で、`/login` 認証が必要です。[利用可能性](/docs/ja/artifacts.md#availability)を参照してください | はい |
+| `Agent` | タスクを処理するために独自のコンテキストウィンドウを持つ[サブエージェント](https://code.claude.com/docs/ja/sub-agents.md)を生成します。[エージェントチーム](https://code.claude.com/docs/ja/agent-teams.md)が有効な場合、`name` を含む呼び出しは[チームメイト](https://code.claude.com/docs/ja/agent-teams.md#how-claude-starts-agent-teams)を起動できます。[Agent ツールの動作](#agent-tool-behavior)を参照してください | いいえ |
+| `Artifact` | HTML または Markdown ファイルを[アーティファクト](https://code.claude.com/docs/ja/artifacts.md)として公開します。これは claude.ai 上のプライベートでインタラクティブなページです。公開リンクで共有することも、Team および Enterprise プランの組織内で共有することもできます。公開共有には Owner による[有効化](https://code.claude.com/docs/ja/artifacts.md#control-public-sharing)が必要です。Pro、Max、Team、または Enterprise プランが必要で、`/login` 認証が必要です。[利用可能性](https://code.claude.com/docs/ja/artifacts.md#availability)を参照してください | はい |
 | `AskUserQuestion` | 要件を収集したり曖昧さを明確にしたりするために、複数選択肢の質問をします。デフォルトでは、質問に答えるまで質問は開いたままになります。[AskUserQuestion ツールの動作](#askuserquestion-tool-behavior)を参照してください | いいえ |
 | `Bash` | 環境でシェルコマンドを実行します。[Bash ツールの動作](#bash-tool-behavior)を参照してください | はい |
-| `CronCreate` | 現在のセッション内で定期的または 1 回限りのプロンプトをスケジュールします。タスクはセッションスコープであり、`--resume` または `--continue` で復元されます（有効期限が切れていない場合）。[セッションスコープのスケジュールタスク](/docs/ja/scheduled-tasks.md)を参照してください | いいえ |
+| `CronCreate` | 現在のセッション内で定期的または 1 回限りのプロンプトをスケジュールします。タスクはセッションスコープであり、`--resume` または `--continue` で復元されます（有効期限が切れていない場合）。[セッションスコープのスケジュールタスク](https://code.claude.com/docs/ja/scheduled-tasks.md)を参照してください | いいえ |
 | `CronDelete` | セッションスコープのスケジュールタスクを ID でキャンセルします | いいえ |
 | `CronList` | セッションスコープのすべてのスケジュールタスクをリストします | いいえ |
 | `Edit` | 特定のファイルに対して対象を絞った編集を行います。[Edit ツールの動作](#edit-tool-behavior)を参照してください | はい |
 | `EndConversation` | セッションを終了します。持続的な不正使用入力の稀なケースまたは Claude にツールのデモンストレーションを求める場合に使用します。[EndConversation ツールの動作](#endconversation-tool-behavior)を参照してください | いいえ |
 | `EnterPlanMode` | プランモードに切り替えて、コーディング前にアプローチを設計します | いいえ |
-| `EnterWorktree` | 分離された[git worktree](/docs/ja/worktrees.md)を作成し、それに切り替えます。新しいものを作成する代わりに、既存の worktree に切り替えるには `path` を渡します。最初のエントリでは、ターゲットは現在のリポジトリの worktree、またはマルチリポジトリワークスペースでは、その中にネストされたリポジトリの worktree である可能性があります。v2.1.203 より前では、ネストされたリポジトリの worktree は拒否されていました。`.claude/worktrees/` の外の `path` は、セッションのワーキングディレクトリと書き込みアクセスをその場所に移動するため、承認を求めるプロンプトが表示されます。新しい worktree の作成と `.claude/worktrees/` の下のパスはプロンプトを表示しません。v2.1.206 より前では、Claude は `.claude/worktrees/` の外のパスにプロンプトなしで入りました。worktree セッション内から、または [`isolation: worktree`](/docs/ja/sub-agents#supported-frontmatter-fields) などのピン留めされたワーキングディレクトリを持つサブエージェントから、`path` フォームのみが利用可能で、ターゲットはセッションのリポジトリの `.claude/worktrees/` の下にある必要があります | はい |
+| `EnterWorktree` | 分離された[git worktree](https://code.claude.com/docs/ja/worktrees.md)を作成し、それに切り替えます。新しいものを作成する代わりに、既存の worktree に切り替えるには `path` を渡します。最初のエントリでは、ターゲットは現在のリポジトリの worktree、またはマルチリポジトリワークスペースでは、その中にネストされたリポジトリの worktree である可能性があります。v2.1.203 より前では、ネストされたリポジトリの worktree は拒否されていました。`.claude/worktrees/` の外の `path` は、セッションのワーキングディレクトリと書き込みアクセスをその場所に移動するため、承認を求めるプロンプトが表示されます。新しい worktree の作成と `.claude/worktrees/` の下のパスはプロンプトを表示しません。v2.1.206 より前では、Claude は `.claude/worktrees/` の外のパスにプロンプトなしで入りました。worktree セッション内から、または [`isolation: worktree`](https://code.claude.com/docs/ja/sub-agents#supported-frontmatter-fields) などのピン留めされたワーキングディレクトリを持つサブエージェントから、`path` フォームのみが利用可能で、ターゲットはセッションのリポジトリの `.claude/worktrees/` の下にある必要があります | はい |
 | `ExitPlanMode` | 承認のためのプランを提示し、プランモードを終了します | はい |
-| `ExitWorktree` | worktree セッションを終了し、元のディレクトリに戻ります。[`isolation: worktree`](/docs/ja/sub-agents#supported-frontmatter-fields) などのように既に独自のワーキングディレクトリで実行されているサブエージェントは利用できません | いいえ |
+| `ExitWorktree` | worktree セッションを終了し、元のディレクトリに戻ります。[`isolation: worktree`](https://code.claude.com/docs/ja/sub-agents#supported-frontmatter-fields) などのように既に独自のワーキングディレクトリで実行されているサブエージェントは利用できません | いいえ |
 | `Glob` | パターンマッチングに基づいてファイルを検索します。macOS、Linux、WSL ではデフォルトで存在しません。[Glob ツールの動作](#glob-tool-behavior)を参照してください | いいえ |
 | `Grep` | ファイルコンテンツ内のパターンを検索します。macOS、Linux、WSL ではデフォルトで存在しません。[Grep ツールの動作](#grep-tool-behavior)を参照してください | いいえ |
-| `ListAgents` | Claude が `SendMessage` でメッセージを送信できるエージェントをリストします。セッション内のサブエージェント、[エージェントチーム](/docs/ja/agent-teams.md)チームメイト、その他のローカル Claude Code セッション、およびこのセッションが[リモートコントロール](/docs/ja/remote-control.md)に接続されている間、[ウェブ上の Claude Code](/docs/ja/claude-code-on-the-web.md)セッションと他のマシン上のリモートコントロールセッション。`/list-agents` コマンドをサポートします。[クロスセッションメッセージング](/docs/ja/cross-session-messaging.md)を参照してください。Claude Code v2.1.224 以降が必要で、[クロスセッションメッセージングが有効](/docs/ja/cross-session-messaging.md#availability)なセッションにのみ表示されます。チームメイト行とこのセッション独自の名前を示す最初の行には v2.1.239 以降が必要です | いいえ |
-| `ListMcpResourcesTool` | 接続された[MCP サーバー](/docs/ja/mcp.md)によって公開されたリソースをリストします。[MCP Apps UI リソース](/docs/ja/mcp.md#reference-mcp-resources)は除外されます。これらはホストアプリケーションがレンダリングするためのページです | いいえ |
+| `ListAgents` | Claude が `SendMessage` でメッセージを送信できるエージェントをリストします。セッション内のサブエージェント、[エージェントチーム](https://code.claude.com/docs/ja/agent-teams.md)チームメイト、その他のローカル Claude Code セッション、およびこのセッションが[リモートコントロール](https://code.claude.com/docs/ja/remote-control.md)に接続されている間、[ウェブ上の Claude Code](https://code.claude.com/docs/ja/claude-code-on-the-web.md)セッションと他のマシン上のリモートコントロールセッション。`/list-agents` コマンドをサポートします。[クロスセッションメッセージング](https://code.claude.com/docs/ja/cross-session-messaging.md)を参照してください。Claude Code v2.1.224 以降が必要で、[クロスセッションメッセージングが有効](https://code.claude.com/docs/ja/cross-session-messaging.md#availability)なセッションにのみ表示されます。チームメイト行とこのセッション独自の名前を示す最初の行には v2.1.239 以降が必要です | いいえ |
+| `ListMcpResourcesTool` | 接続された[MCP サーバー](https://code.claude.com/docs/ja/mcp.md)によって公開されたリソースをリストします。[MCP Apps UI リソース](https://code.claude.com/docs/ja/mcp.md#reference-mcp-resources)は除外されます。これらはホストアプリケーションがレンダリングするためのページです | いいえ |
 | `LSP` | 言語サーバー経由のコードインテリジェンス。定義にジャンプ、参照を検索、型エラーと警告をレポートします。[LSP ツールの動作](#lsp-tool-behavior)を参照してください | いいえ |
 | `Monitor` | コマンドをバックグラウンドで実行し、各出力行を Claude にフィードバックして、ログエントリ、ファイル変更、またはポーリングされたステータスに対応できるようにします。WebSocket を開いて、各受信メッセージをイベントとして扱うこともできます。[Monitor ツール](#monitor-tool)を参照してください | はい |
 | `NotebookEdit` | Jupyter ノートブックセルを変更します。[NotebookEdit ツールの動作](#notebookedit-tool-behavior)を参照してください | はい |
 | `PowerShell` | PowerShell コマンドをネイティブに実行します。[PowerShell ツール](#powershell-tool)の利用可能性を参照してください | はい |
-| `PushNotification` | デスクトップ通知を送信し、[Remote Control](/docs/ja/remote-control.md) が接続されている場合は電話プッシュを送信します。長時間実行されるタスクまたは[セッションスコープのスケジュールタスク](/docs/ja/scheduled-tasks.md)が、ユーザーが離れているときにも届くようにします。プッシュ配信は Anthropic ホスト型インフラストラクチャを通じて実行されます。これは Amazon Bedrock、AWS 上の Claude Platform、Google Cloud の Agent Platform、または Microsoft Foundry からはアクセスできません | いいえ |
+| `PushNotification` | デスクトップ通知を送信し、[Remote Control](https://code.claude.com/docs/ja/remote-control.md) が接続されている場合は電話プッシュを送信します。長時間実行されるタスクまたは[セッションスコープのスケジュールタスク](https://code.claude.com/docs/ja/scheduled-tasks.md)が、ユーザーが離れているときにも届くようにします。プッシュ配信は Anthropic ホスト型インフラストラクチャを通じて実行されます。これは Amazon Bedrock、AWS 上の Claude Platform、Google Cloud の Agent Platform、または Microsoft Foundry からはアクセスできません | いいえ |
 | `Read` | ファイルの内容を読み取ります。[Read ツールの動作](#read-tool-behavior)を参照してください | いいえ |
 | `ReadMcpResourceTool` | URI で特定の MCP リソースを読み取ります | いいえ |
-| `RemoteTrigger` | claude.ai で[クラウドスケジュールタスク](/docs/ja/routines.md)（旧ルーティン）を作成、更新、実行、リストします。`/schedule` コマンドをサポートします。[`RemoteTrigger` 入力リファレンス](/docs/ja/agent-sdk/typescript#remotetrigger)は、すべてのアクションと、ツールを削除する組織ポリシーを文書化しています。クラウドスケジュールタスクは claude.ai に存在し、Pro、Max、Team、または Enterprise プランが必要です。そのため、このツールは Amazon Bedrock、AWS 上の Claude Platform、Google Cloud の Agent Platform、または Microsoft Foundry からはアクセスできません | いいえ |
+| `RemoteTrigger` | claude.ai で[クラウドスケジュールタスク](https://code.claude.com/docs/ja/routines.md)（旧ルーティン）を作成、更新、実行、リストします。`/schedule` コマンドをサポートします。[`RemoteTrigger` 入力リファレンス](https://code.claude.com/docs/ja/agent-sdk/typescript#remotetrigger)は、すべてのアクションと、ツールを削除する組織ポリシーを文書化しています。クラウドスケジュールタスクは claude.ai に存在し、Pro、Max、Team、または Enterprise プランが必要です。そのため、このツールは Amazon Bedrock、AWS 上の Claude Platform、Google Cloud の Agent Platform、または Microsoft Foundry からはアクセスできません | いいえ |
 | `ReportFindings` | コードレビューの検出結果を構造化リストとしてレポートします。検出結果ごとにファイル、概要、失敗シナリオがあり、Claude Code はテキストとして出力する代わりにレンダリングできます。Claude はアクティブなコードレビュー指示がこれを呼び出すように指示する場合に呼び出します。検出結果には、`correctness` や `test-coverage` などのオプションの `category` スラッグを含めることもでき、レンダリングされたリストのファイルの場所の横に表示されます | いいえ |
-| `ScheduleWakeup` | [自分のペースで進む `/loop`](/docs/ja/scheduled-tasks#let-claude-choose-the-interval) の次の反復をスケジュールし直します。Claude は各反復の終了時にこれを呼び出して、次の反復をいつ実行するかを 1 分後から 1 時間後の間で選択します。ユーザーが直接呼び出すことはありません。代わりにループを終了するには、Claude はこれを `stop: true` で呼び出します。これは保留中のウェイクアップをキャンセルします。保留中のウェイクアップは[Stop フックの入力](/docs/ja/hooks.md#stop-input)の `session_crons` に表示されます | いいえ |
+| `ScheduleWakeup` | [自分のペースで進む `/loop`](https://code.claude.com/docs/ja/scheduled-tasks#let-claude-choose-the-interval) の次の反復をスケジュールし直します。Claude は各反復の終了時にこれを呼び出して、次の反復をいつ実行するかを 1 分後から 1 時間後の間で選択します。ユーザーが直接呼び出すことはありません。代わりにループを終了するには、Claude はこれを `stop: true` で呼び出します。これは保留中のウェイクアップをキャンセルします。保留中のウェイクアップは[Stop フックの入力](https://code.claude.com/docs/ja/hooks.md#stop-input)の `session_crons` に表示されます | いいえ |
 | `SendFeedback` | Claude Code に関するフィードバックレポートを作成します。製品の問題または Claude Code セッション内での Claude 自身の動作をカバーします。ユーザーがレビューできるよう、お使いのマシン上のキューに入れます。Claude Code は、ドラフトを送信することを選択するまで何も送信しません。[SendFeedback ツールの動作](#sendfeedback-tool-behavior)を参照してください。Claude Code v2.1.238 以降が必要です | いいえ |
-| `SendMessage` | 別のエージェントにメッセージを送信します。[エージェントチーム](/docs/ja/agent-teams.md)チームメイト、[エージェント ID または名前で再開するサブエージェント](/docs/ja/sub-agents.md#resume-subagents)、またはこのマシン上またはその外にある他の Claude Code セッションのいずれか。他のセッションへのメッセージングには Claude Code v2.1.224 以降が必要です。[クロスセッションメッセージング](/docs/ja/cross-session-messaging.md)は、Claude が到達できるセッション、[メッセージが到着したときの外観](/docs/ja/cross-session-messaging.md#what-a-message-looks-like)、および[別のセッションがアイドル状態になったときに Claude が通知を受け取る方法](/docs/ja/cross-session-messaging.md#get-a-notice-when-another-session-goes-idle)をカバーしています。Claude はオプションの `summary` 入力を含めることができます。通常は 5～10 語で、Claude Code は 1 行のプレビューとして表示します。Claude が[プレーンテキストメッセージ](/docs/ja/cross-session-messaging.md#limitations)で省略した場合、Claude Code はメッセージの最初の行を概要として使用します。Claude Code は 200 文字を超える概要を省略記号で切り詰めます | いいえ |
-| `SendUserFile` | セッションからファイルをオプションのキャプション付きでユーザーに送信します。生成されたレポート、図、スクリーンショット、または構築されたアーティファクトがトランスクリプトで言及されるだけでなく、デバイスに届くようにします。オプションの `display` 入力は表示方法を制御します。`render` はファイルをクライアントにインラインで開き、`attach` はダウンロードカードのみを表示し、設定されていない場合、クライアントはファイルタイプで決定します。[Remote Control](/docs/ja/remote-control.md) クライアントが接続されている場合、または[クラウドセッション](/docs/ja/claude-code-on-the-web.md)で利用可能です。配信は Anthropic ホスト型インフラストラクチャを通じて実行されるため、このツールは Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry では利用できません | いいえ |
+| `SendMessage` | 別のエージェントにメッセージを送信します。[エージェントチーム](https://code.claude.com/docs/ja/agent-teams.md)チームメイト、[エージェント ID または名前で再開するサブエージェント](https://code.claude.com/docs/ja/sub-agents.md#resume-subagents)、またはこのマシン上またはその外にある他の Claude Code セッションのいずれか。他のセッションへのメッセージングには Claude Code v2.1.224 以降が必要です。[クロスセッションメッセージング](https://code.claude.com/docs/ja/cross-session-messaging.md)は、Claude が到達できるセッション、[メッセージが到着したときの外観](https://code.claude.com/docs/ja/cross-session-messaging.md#what-a-message-looks-like)、および[別のセッションがアイドル状態になったときに Claude が通知を受け取る方法](https://code.claude.com/docs/ja/cross-session-messaging.md#get-a-notice-when-another-session-goes-idle)をカバーしています。Claude はオプションの `summary` 入力を含めることができます。通常は 5～10 語で、Claude Code は 1 行のプレビューとして表示します。Claude が[プレーンテキストメッセージ](https://code.claude.com/docs/ja/cross-session-messaging.md#limitations)で省略した場合、Claude Code はメッセージの最初の行を概要として使用します。Claude Code は 200 文字を超える概要を省略記号で切り詰めます | いいえ |
+| `SendUserFile` | セッションからファイルをオプションのキャプション付きでユーザーに送信します。生成されたレポート、図、スクリーンショット、または構築されたアーティファクトがトランスクリプトで言及されるだけでなく、デバイスに届くようにします。オプションの `display` 入力は表示方法を制御します。`render` はファイルをクライアントにインラインで開き、`attach` はダウンロードカードのみを表示し、設定されていない場合、クライアントはファイルタイプで決定します。[Remote Control](https://code.claude.com/docs/ja/remote-control.md) クライアントが接続されている場合、または[クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md)で利用可能です。配信は Anthropic ホスト型インフラストラクチャを通じて実行されるため、このツールは Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry では利用できません | いいえ |
 | `ShareOnboardingGuide` | `ONBOARDING.md` をアップロードし、チームメイトが Claude Code で開くことができる共有リンクを返します。ガイドが作成された後、`/team-onboarding` から呼び出されます。Team および Enterprise プランの claude.ai サブスクライバーが利用できます | はい |
-| `Skill` | メイン会話内で[スキル](/docs/ja/skills.md#control-who-invokes-a-skill)を実行します | はい |
-| `SubagentHandback` | サブエージェントの最終レポートを、そのサブエージェントの結果を受け取る会話に配信します。[オートモード](/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)でのみ提供され、Agent ツールがローカルで実行するサブエージェント（[フォーク](/docs/ja/sub-agents.md#fork-the-current-conversation)以外）に提供され、ターミナル CLI、IDE 拡張機能、クラウドセッション、および Agent SDK で利用可能です。分類器はレポートが配信される前にレビューします。Claude Code v2.1.271 以降が必要です | いいえ |
+| `Skill` | メイン会話内で[スキル](https://code.claude.com/docs/ja/skills.md#control-who-invokes-a-skill)を実行します | はい |
+| `SubagentHandback` | サブエージェントの最終レポートを、そのサブエージェントの結果を受け取る会話に配信します。[オートモード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)でのみ提供され、Agent ツールがローカルで実行するサブエージェント（[フォーク](https://code.claude.com/docs/ja/sub-agents.md#fork-the-current-conversation)以外）に提供され、ターミナル CLI、IDE 拡張機能、クラウドセッション、および Agent SDK で利用可能です。分類器はレポートが配信される前にレビューします。Claude Code v2.1.271 以降が必要です | いいえ |
 | `TaskCreate` | タスクリストに新しいタスクを作成します。[タスクツール利用可能性](#task-tool-availability)の下にリストされているモデルでデフォルトで提供され、他のモデルではオプトインした場合に提供されます | いいえ |
 | `TaskGet` | 特定のタスクの完全な詳細を取得します。[タスクツール利用可能性](#task-tool-availability)の下にリストされているモデルでデフォルトで提供され、他のモデルではオプトインした場合に提供されます | いいえ |
 | `TaskList` | すべてのタスクを現在のステータスでリストします。[タスクツール利用可能性](#task-tool-availability)の下にリストされているモデルでデフォルトで提供され、他のモデルではオプトインした場合に提供されます | いいえ |
-| `TaskOutput` | v2.1.277 で削除されました。以前はバックグラウンドタスクから出力を取得していました。現在、Claude はバックグラウンドタスクの[出力ファイル](/docs/ja/interactive-mode.md#how-backgrounding-works)を `Read` で読み取ります | いいえ |
-| `TaskStop` | 実行中のバックグラウンドタスクを ID で停止します。[エージェントチームのチームメイト](/docs/ja/agent-teams.md)や名前付きバックグラウンドエージェントも、エージェント ID または名前で受け付けます。ID に一致するタスクがない場合、エラーは実行中のバックグラウンドエージェントを ID と説明でリストします。別のエージェントが生成したエージェントも含まれます | いいえ |
+| `TaskOutput` | v2.1.277 で削除されました。以前はバックグラウンドタスクから出力を取得していました。現在、Claude はバックグラウンドタスクの[出力ファイル](https://code.claude.com/docs/ja/interactive-mode.md#how-backgrounding-works)を `Read` で読み取ります | いいえ |
+| `TaskStop` | 実行中のバックグラウンドタスクを ID で停止します。[エージェントチームのチームメイト](https://code.claude.com/docs/ja/agent-teams.md)や名前付きバックグラウンドエージェントも、エージェント ID または名前で受け付けます。ID に一致するタスクがない場合、エラーは実行中のバックグラウンドエージェントを ID と説明でリストします。別のエージェントが生成したエージェントも含まれます | いいえ |
 | `TaskUpdate` | タスクステータス、依存関係、詳細を更新するか、タスクを削除します。[タスクツール利用可能性](#task-tool-availability)の下にリストされているモデルでデフォルトで提供され、他のモデルではオプトインした場合に提供されます | いいえ |
 | `TodoWrite` | セッションタスクチェックリストを管理します。`TaskCreate`、`TaskGet`、`TaskList`、`TaskUpdate` を優先して、デフォルトで無効になっています。[タスク追跡ツールを持つセッション](#task-tool-availability)で再度有効にするには、`CLAUDE_CODE_ENABLE_TASKS=0` を設定します | いいえ |
-| `ToolSearch` | [ツール検索](/docs/ja/mcp.md#scale-with-mcp-tool-search)が有効な場合、遅延ツールを検索してロードします | いいえ |
-| `WaitForMcpServers` | バックグラウンドでまだ接続中の 1 つ以上の[MCP サーバー](/docs/ja/mcp.md)を待機して、セッションを再開しなくてもリクエストがそのツールを使用できるようにします。必要なサーバーがまだ接続されていない場合、Claude はこれを呼び出します。[ツール検索](/docs/ja/mcp.md#scale-with-mcp-tool-search)が無効な場合にのみ表示されます。有効な場合は `ToolSearch` が待機を処理します | いいえ |
+| `ToolSearch` | [ツール検索](https://code.claude.com/docs/ja/mcp.md#scale-with-mcp-tool-search)が有効な場合、遅延ツールを検索してロードします | いいえ |
+| `WaitForMcpServers` | バックグラウンドでまだ接続中の 1 つ以上の[MCP サーバー](https://code.claude.com/docs/ja/mcp.md)を待機して、セッションを再開しなくてもリクエストがそのツールを使用できるようにします。必要なサーバーがまだ接続されていない場合、Claude はこれを呼び出します。[ツール検索](https://code.claude.com/docs/ja/mcp.md#scale-with-mcp-tool-search)が無効な場合にのみ表示されます。有効な場合は `ToolSearch` が待機を処理します | いいえ |
 | `WebFetch` | 指定された URL からコンテンツを取得します。[WebFetch ツールの動作](#webfetch-tool-behavior)を参照してください | はい |
 | `WebSearch` | ウェブ検索を実行します。[WebSearch ツールの動作](#websearch-tool-behavior)を参照してください | はい |
-| `Workflow` | [動的ワークフロー](/docs/ja/workflows.md)を実行します。バックグラウンドで多くのサブエージェントをオーケストレーションし、1 つの統合結果を返すスクリプト | はい |
+| `Workflow` | [動的ワークフロー](https://code.claude.com/docs/ja/workflows.md)を実行します。バックグラウンドで多くのサブエージェントをオーケストレーションし、1 つの統合結果を返すスクリプト | はい |
 | `Write` | ファイルを作成または上書きします。[Write ツールの動作](#write-tool-behavior)を参照してください | はい |
 
 ## 権限ルールとフックでツールを設定する
 
 ほとんどの場合、Claude がこれらのツールをいつ使用するかを決定するため、Claude と対話するときに自分でツール名を指定する必要はありません。権限やその他の設定を定義するときにツール名を直接参照します。
 
-* 設定の [`permissions.allow`](/docs/ja/settings-reference#permissions-allow) と [`permissions.deny`](/docs/ja/settings-reference#permissions-deny)、および `/permissions` インターフェース内
-* [CLI フラグ](/docs/ja/cli-reference.md)の `--allowedTools` と `--disallowedTools`
-* Agent SDK の [`allowedTools` と `disallowedTools`](/docs/ja/agent-sdk/permissions#allow-and-deny-rules) オプション内
-* [スキルの `allowed-tools`](/docs/ja/skills#frontmatter-reference) frontmatter 内
-* フックの [`if` 条件](/docs/ja/hooks-guide#filter-by-tool-name-and-arguments-with-the-if-field)内
+* 設定の [`permissions.allow`](https://code.claude.com/docs/ja/settings-reference#permissions-allow) と [`permissions.deny`](https://code.claude.com/docs/ja/settings-reference#permissions-deny)、および `/permissions` インターフェース内
+* [CLI フラグ](https://code.claude.com/docs/ja/cli-reference.md)の `--allowedTools` と `--disallowedTools`
+* Agent SDK の [`allowedTools` と `disallowedTools`](https://code.claude.com/docs/ja/agent-sdk/permissions#allow-and-deny-rules) オプション内
+* [スキルの `allowed-tools`](https://code.claude.com/docs/ja/skills#frontmatter-reference) frontmatter 内
+* フックの [`if` 条件](https://code.claude.com/docs/ja/hooks-guide#filter-by-tool-name-and-arguments-with-the-if-field)内
 
 これらはすべて同じルール形式 `ToolName(specifier)` を受け入れます。指定子はツールによって異なり、複数のツールが形式を共有しています。
 
 | ルール形式 | 適用対象 | 詳細 |
 | :- | :- | :- |
-| `Bash(npm run *)` | Bash、Monitor | [コマンドパターンマッチング](/docs/ja/permissions.md#bash) |
-| `PowerShell(Get-ChildItem *)` | PowerShell | [コマンドパターンマッチング](/docs/ja/permissions.md#powershell) |
-| `Read(~/secrets/**)` | Read、Grep、Glob、LSP | [パスパターンマッチング](/docs/ja/permissions.md#read-and-edit) |
-| `Edit(/src/**)` | Edit、Write、NotebookEdit | [パスパターンマッチング](/docs/ja/permissions.md#read-and-edit) |
-| `Skill(deploy *)` | Skill | [スキル名マッチング](/docs/ja/skills.md#restrict-claude%E2%80%99s-skill-access) |
-| `Agent(Explore)` | Agent | [サブエージェントタイプマッチング](/docs/ja/permissions.md#agent-subagents) |
-| `WebFetch(domain:example.com)` | WebFetch | [ドメインマッチング](/docs/ja/permissions.md#webfetch) |
+| `Bash(npm run *)` | Bash、Monitor | [コマンドパターンマッチング](https://code.claude.com/docs/ja/permissions.md#bash) |
+| `PowerShell(Get-ChildItem *)` | PowerShell | [コマンドパターンマッチング](https://code.claude.com/docs/ja/permissions.md#powershell) |
+| `Read(~/secrets/**)` | Read、Grep、Glob、LSP | [パスパターンマッチング](https://code.claude.com/docs/ja/permissions.md#read-and-edit) |
+| `Edit(/src/**)` | Edit、Write、NotebookEdit | [パスパターンマッチング](https://code.claude.com/docs/ja/permissions.md#read-and-edit) |
+| `Skill(deploy *)` | Skill | [スキル名マッチング](https://code.claude.com/docs/ja/skills.md#restrict-claude%E2%80%99s-skill-access) |
+| `Agent(Explore)` | Agent | [サブエージェントタイプマッチング](https://code.claude.com/docs/ja/permissions.md#agent-subagents) |
+| `WebFetch(domain:example.com)` | WebFetch | [ドメインマッチング](https://code.claude.com/docs/ja/permissions.md#webfetch) |
 | `WebSearch` | WebSearch | 指定子なし。ツール全体を許可または拒否 |
 
 ここに記載されていないツール（`ExitPlanMode` や `ShareOnboardingGuide` など）は、指定子なしの裸のツール名のみを受け入れます。
 
 `Edit(...)` 許可ルールは同じパスへの読み取りアクセスも付与するため、一致する `Read(...)` ルールは必要ありません。`Read(...)` 拒否ルールは同じパス上の Edit および Write ツールもブロックします。これには新しいファイルの作成も含まれます。両方のツールが Claude が読み戻す必要があるコンテンツを変更するためです。Write ツールについては、`Read` 拒否チェックに Claude Code v2.1.228 以降が必要です。
 
-フックの `matcher` フィールドは、括弧で囲まれたルール形式ではなく、裸のツール名を使用します。マッチングルールについては [matcher パターン](/docs/ja/hooks.md#matcher-patterns)を参照してください。各ツールがフック内の `tool_input` に渡すフィールド名については、[PreToolUse 入力リファレンス](/docs/ja/hooks.md#pretooluse-input)を参照してください。
+フックの `matcher` フィールドは、括弧で囲まれたルール形式ではなく、裸のツール名を使用します。マッチングルールについては [matcher パターン](https://code.claude.com/docs/ja/hooks.md#matcher-patterns)を参照してください。各ツールがフック内の `tool_input` に渡すフィールド名については、[PreToolUse 入力リファレンス](https://code.claude.com/docs/ja/hooks.md#pretooluse-input)を参照してください。
 
 ## Agent ツールの動作
 
 Agent ツールは、別のコンテキストウィンドウでサブエージェントを起動します。サブエージェントはそのタスクを自律的に処理し、親の会話に結果を返します。親はサブエージェントの中間的なツール呼び出しや出力を見ることはなく、最終的な結果のみを見ます。同じツールで、チームメイトやフォークを起動することもできます。
 
-* **チームメイト**: [エージェントチーム](/docs/ja/agent-teams.md) が有効な場合、`name` を持つ呼び出しは代わりに [チームメイト](/docs/ja/agent-teams.md#how-claude-starts-agent-teams) を起動できます。チームメイトは結果を返すのではなく、チームメッセージを通じて報告します
-* **フォーク**: [フォークモード](/docs/ja/sub-agents.md#turn-fork-mode-on-or-off) がオンの場所では、このツールは [フォークされたサブエージェント](/docs/ja/sub-agents.md#fork-the-current-conversation) を起動できます。フォークされたサブエージェントは、新規に開始する代わりに親の会話全体を継承します
+* **チームメイト**: [エージェントチーム](https://code.claude.com/docs/ja/agent-teams.md) が有効な場合、`name` を持つ呼び出しは代わりに [チームメイト](https://code.claude.com/docs/ja/agent-teams.md#how-claude-starts-agent-teams) を起動できます。チームメイトは結果を返すのではなく、チームメッセージを通じて報告します
+* **フォーク**: [フォークモード](https://code.claude.com/docs/ja/sub-agents.md#turn-fork-mode-on-or-off) がオンの場所では、このツールは [フォークされたサブエージェント](https://code.claude.com/docs/ja/sub-agents.md#fork-the-current-conversation) を起動できます。フォークされたサブエージェントは、新規に開始する代わりに親の会話全体を継承します
 
-サブエージェントが実行するターン数を制限するには、[subagent definition](/docs/ja/sub-agents.md#supported-frontmatter-fields) で `maxTurns` を設定します。サブエージェントが制限に達すると、Claude Code は返された結果を部分的な出力としてマークし、Claude は [subagent を再開](/docs/ja/sub-agents.md#resume-subagents) して続行することができます。
+サブエージェントが実行するターン数を制限するには、[subagent definition](https://code.claude.com/docs/ja/sub-agents.md#supported-frontmatter-fields) で `maxTurns` を設定します。サブエージェントが制限に達すると、Claude Code は返された結果を部分的な出力としてマークし、Claude は [subagent を再開](https://code.claude.com/docs/ja/sub-agents.md#resume-subagents) して続行することができます。
 
-非フォーク subagent が使用できるツールは、[subagent definition](/docs/ja/sub-agents.md) の `tools` フィールドと `disallowedTools` フィールドに依存します。
+非フォーク subagent が使用できるツールは、[subagent definition](https://code.claude.com/docs/ja/sub-agents.md) の `tools` フィールドと `disallowedTools` フィールドに依存します。
 
-* **どちらのフィールドも設定されていない場合**: subagent は [subagent で利用可能なすべてのツール](/docs/ja/sub-agents.md#available-tools) を継承します。
+* **どちらのフィールドも設定されていない場合**: subagent は [subagent で利用可能なすべてのツール](https://code.claude.com/docs/ja/sub-agents.md#available-tools) を継承します。
 * **`tools` のみ**: subagent はリストされたツールのみを取得します。
 * **`disallowedTools` のみ**: subagent はリストされたツール以外のすべての親ツールを取得します。
 * **両方設定されている場合**: `disallowedTools` が優先されます。両方にリストされているツールは削除されます。
 
-すべての場合において、解決されたセットは [subagent で利用可能なツール](/docs/ja/sub-agents.md#available-tools) に制限されます。subagent で利用可能でないツールは、`tools` にリストされている場合でも付与されることはありません。`SubagentHandback` ツールテーブルエントリの条件が成立する場合、Claude Code は `tools` から除外されているか `disallowedTools` にリストされている場合でも、subagent にそのツールを付与します。
+すべての場合において、解決されたセットは [subagent で利用可能なツール](https://code.claude.com/docs/ja/sub-agents.md#available-tools) に制限されます。subagent で利用可能でないツールは、`tools` にリストされている場合でも付与されることはありません。`SubagentHandback` ツールテーブルエントリの条件が成立する場合、Claude Code は `tools` から除外されているか `disallowedTools` にリストされている場合でも、subagent にそのツールを付与します。
 
-subagent の `tools` リスト内のすべてのエントリが使用可能なツールと一致しない場合、Agent ツールは通常、subagent を起動する代わりにエントリを名前で指定するエラーを返します。[Agent would be spawned with zero tools](/docs/ja/errors.md#agent-would-be-spawned-with-zero-tools) でメッセージと各エントリの修正方法を参照してください。
+subagent の `tools` リスト内のすべてのエントリが使用可能なツールと一致しない場合、Agent ツールは通常、subagent を起動する代わりにエントリを名前で指定するエラーを返します。[Agent would be spawned with zero tools](https://code.claude.com/docs/ja/errors.md#agent-would-be-spawned-with-zero-tools) でメッセージと各エントリの修正方法を参照してください。
 
 subagent を起動すること自体は権限の確認を促しません。Claude Code は実行時に subagent 自身のツール呼び出しを権限ルールに対してチェックします。
 
-subagent の権限プロンプトが表示される場所は、foreground で実行されるか background で実行されるかによって異なります。Claude Code は [foreground で実行されるケース](/docs/ja/sub-agents.md#run-subagents-in-foreground-or-background) を除き、デフォルトで background で subagent を実行します。
+subagent の権限プロンプトが表示される場所は、foreground で実行されるか background で実行されるかによって異なります。Claude Code は [foreground で実行されるケース](https://code.claude.com/docs/ja/sub-agents.md#run-subagents-in-foreground-or-background) を除き、デフォルトで background で subagent を実行します。
 
 * **Foreground subagents** は、メイン会話で見られるのと同じ権限プロンプトを表示し、各ツール呼び出しが発生した時点で表示されます。
 * **バックグラウンドのサブエージェント**は、メインセッションで権限プロンプトを表示します。プロンプトはどのサブエージェントがリクエストしているかを名前で示し、Esc キーを押すとそのツール呼び出しのみを拒否し、サブエージェントを停止しません。
 
-[subagent が到達できる範囲を制限](/docs/ja/sub-agents.md#control-subagent-capabilities) するには、まず `tools` フィールドを絞り込みます。例えば、Bash をリストから除外するか、設定で拒否ルールを設定します。
+[subagent が到達できる範囲を制限](https://code.claude.com/docs/ja/sub-agents.md#control-subagent-capabilities) するには、まず `tools` フィールドを絞り込みます。例えば、Bash をリストから除外するか、設定で拒否ルールを設定します。
 
 ## AskUserQuestion ツールの動作
 
@@ -131,11 +131,11 @@ Claude は `AskUserQuestion` を使用して、決定や確認が必要な場合
 
 ### 質問の自動継続タイムアウト
 
-質問は、回答するまで開いたままになります。回答しないままにした質問が最終的に閉じて、Claude がユーザーを待たずに続行できるようにしたい場合は、[`askUserQuestionTimeout`](/docs/ja/settings-reference#askuserquestiontimeout) 設定を `60s`、`5m`、または `10m` に設定します。これはユーザーの `settings.json` または `/config` の **Question auto-continue timeout** 行から設定できます。
+質問は、回答するまで開いたままになります。回答しないままにした質問が最終的に閉じて、Claude がユーザーを待たずに続行できるようにしたい場合は、[`askUserQuestionTimeout`](https://code.claude.com/docs/ja/settings-reference#askuserquestiontimeout) 設定を `60s`、`5m`、または `10m` に設定します。これはユーザーの `settings.json` または `/config` の **Question auto-continue timeout** 行から設定できます。
 
 質問がその期間入力なしで放置された後、ダイアログは自動的に閉じます。既に選択したオプションを送信し、ユーザーがキーボードから離れている可能性があることを Claude に伝えるため、Claude は独自の判断で進行し、後で再度質問できます。最後の 20 秒間はカウントダウンが表示されます。任意のキーを押してタイマーを再開します。ターミナルがウィンドウにフォーカスがあると報告している間は、タイマーはカウントダウンしません。
 
-Claude が[バックグラウンドセッション](/docs/ja/agent-view.md)で行った質問、[スクリーンリーダーモード](/docs/ja/accessibility.md)での質問、またはセッションが [Remote Control](/docs/ja/remote-control.md) に接続されている間の質問では、タイマーは開始されません。これらの質問は回答するまで待機します。タイムアウトは `AskUserQuestion` の複数選択肢の質問にのみ適用されます。権限プロンプト（計画承認を含む）は、アイドル時に自動解決されることはありません。
+Claude が[バックグラウンドセッション](https://code.claude.com/docs/ja/agent-view.md)で行った質問、[スクリーンリーダーモード](https://code.claude.com/docs/ja/accessibility.md)での質問、またはセッションが [Remote Control](https://code.claude.com/docs/ja/remote-control.md) に接続されている間の質問では、タイマーは開始されません。これらの質問は回答するまで待機します。タイムアウトは `AskUserQuestion` の複数選択肢の質問にのみ適用されます。権限プロンプト（計画承認を含む）は、アイドル時に自動解決されることはありません。
 
 ## Bash ツールの動作
 
@@ -143,20 +143,20 @@ Bash ツールは各コマンドを別々のプロセスで実行します。
 
 ### コマンド間で保持されるもの
 
-* Claude がメインセッションで `cd` を実行すると、新しい作業ディレクトリは、プロジェクトディレクトリ内に留まっている限り、または `--add-dir`、`/add-dir`、もしくは設定の `additionalDirectories` で追加した[追加の作業ディレクトリ](/docs/ja/permissions.md#working-directories)内に留まっている限り、後続の Bash コマンドに引き継がれます。これには、後続のメッセージに応答して Claude が実行するコマンドが含まれます。
+* Claude がメインセッションで `cd` を実行すると、新しい作業ディレクトリは、プロジェクトディレクトリ内に留まっている限り、または `--add-dir`、`/add-dir`、もしくは設定の `additionalDirectories` で追加した[追加の作業ディレクトリ](https://code.claude.com/docs/ja/permissions.md#working-directories)内に留まっている限り、後続の Bash コマンドに引き継がれます。これには、後続のメッセージに応答して Claude が実行するコマンドが含まれます。
   * サブエージェントセッションは作業ディレクトリの変更を引き継ぎません。
   * `cd` がこれらのディレクトリの外に出た場合、Claude Code はプロジェクトディレクトリにリセットし、ツール結果に `Shell cwd was reset to <dir>` を追加します。
   * この引き継ぎを無効にして、すべての Bash コマンドがプロジェクトディレクトリで開始されるようにするには、`CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR=1` を設定します。
 * 環境変数は保持されません。1 つのコマンドで `export` しても、次のコマンドでは利用できません。
 * シェルスタートアップファイルで定義されたエイリアスとシェル関数は利用可能です。セッション開始時に、Claude Code は `~/.zshrc`、`~/.bashrc`、または `~/.profile` をシェルに応じてソースし、結果のエイリアス、関数、シェルオプションをキャプチャして、すべての Bash コマンドに適用します。
 
-Claude Code を起動する前に virtualenv または conda 環境をアクティベートしてください。環境変数を Bash コマンド間で保持するには、Claude Code を起動する前に [`CLAUDE_ENV_FILE`](/docs/ja/env-vars) をシェルスクリプトに設定するか、[SessionStart フック](/docs/ja/hooks.md#persist-environment-variables)を使用して動的に設定してください。
+Claude Code を起動する前に virtualenv または conda 環境をアクティベートしてください。環境変数を Bash コマンド間で保持するには、Claude Code を起動する前に [`CLAUDE_ENV_FILE`](https://code.claude.com/docs/ja/env-vars) をシェルスクリプトに設定するか、[SessionStart フック](https://code.claude.com/docs/ja/hooks.md#persist-environment-variables)を使用して動的に設定してください。
 
 ### タイムアウトと出力制限
 
 各コマンドはタイムアウト下で実行され、Claude がそれを管理します。コマンドにデフォルトより長い時間が必要な場合、その呼び出しで `timeout` パラメータを渡します。ユーザーがコマンドごとのタイムアウトを設定することはありません。
 
-2 つの[環境変数](/docs/ja/env-vars.md)が、フォアグラウンドで実行されるコマンドに対して Claude が取得するものを制御します。
+2 つの[環境変数](https://code.claude.com/docs/ja/env-vars.md)が、フォアグラウンドで実行されるコマンドに対して Claude が取得するものを制御します。
 
 * `BASH_DEFAULT_TIMEOUT_MS` — Claude がタイムアウトを渡さない場合のデフォルト。デフォルトでは 2 分です。
 * `BASH_MAX_TIMEOUT_MS` — デフォルトでは、Claude が要求するものを上限で制限します。有効な上限は 2 つの値の大きい方です。デフォルトでは 10 分です。
@@ -174,9 +174,9 @@ Claude Code はコマンドの出力をコマンド実行中に作業ファイ�
 
 終了コード 1 で終了するコマンドは、Claude Code がそのコマンドに対して終了コード 1 を良好な結果として認識する場合にのみ、Bash ツールの有効な結果としてカウントされます。`grep`、`rg`、`egrep`、`fgrep`、`find`、`diff`、`test`、`[`、および `git diff` と `git grep` です。終了コード 1 で終了する他のすべてのコマンドは失敗としてカウントされます。終了コード 1 が良好な情報結果である場合でも同様です。`pgrep` と `jq -e` の一致なし、`cmp` の異なるファイルなど。
 
-[`BASH_MAX_OUTPUT_LENGTH`](/docs/ja/env-vars) は、Claude Code が作業ファイルからコマンド結果に読み戻す出力の文字数を設定します。デフォルトは 30,000 文字で、ハード上限は 150,000 文字です。コマンドが定期的にそのウィンドウをオーバーフローする場合、例えば詳細なビルドまたは完全なテストスイートログの場合は、これを上げてください。これを上げると読み戻しウィンドウが拡大され、これは失敗したコマンドの抜粋が切り出されるウィンドウでもあります。インラインの上限は上げません。インラインの上限を超える有効な結果は、この変数に関係なくファイルパスとプレビューとして到達します。
+[`BASH_MAX_OUTPUT_LENGTH`](https://code.claude.com/docs/ja/env-vars) は、Claude Code が作業ファイルからコマンド結果に読み戻す出力の文字数を設定します。デフォルトは 30,000 文字で、ハード上限は 150,000 文字です。コマンドが定期的にそのウィンドウをオーバーフローする場合、例えば詳細なビルドまたは完全なテストスイートログの場合は、これを上げてください。これを上げると読み戻しウィンドウが拡大され、これは失敗したコマンドの抜粋が切り出されるウィンドウでもあります。インラインの上限は上げません。インラインの上限を超える有効な結果は、この変数に関係なくファイルパスとプレビューとして到達します。
 
-有効な結果の Claude が受け取るインラインの量を変更するには、代わりに [`bashOutputMaxChars`](/docs/ja/settings-reference#bashoutputmaxchars) 設定を設定してください。最大 128,000 文字まで設定できます。これはインラインの上限と読み戻しウィンドウのサイズを一緒に設定し、Claude Code は `BASH_MAX_OUTPUT_LENGTH` を無視します。Claude Code v2.1.261 以降が必要です。
+有効な結果の Claude が受け取るインラインの量を変更するには、代わりに [`bashOutputMaxChars`](https://code.claude.com/docs/ja/settings-reference#bashoutputmaxchars) 設定を設定してください。最大 128,000 文字まで設定できます。これはインラインの上限と読み戻しウィンドウのサイズを一緒に設定し、Claude Code は `BASH_MAX_OUTPUT_LENGTH` を無視します。Claude Code v2.1.261 以降が必要です。
 
 ### バックグラウンドコマンド
 
@@ -184,9 +184,9 @@ Claude Code はコマンドの出力をコマンド実行中に作業ファイ�
 
 #### バックグラウンドコマンドが停止するとき
 
-[フォアグラウンドサブエージェント](/docs/ja/sub-agents.md#run-subagents-in-foreground-or-background)が開始したコマンドは、そのサブエージェントの実行が終了すると停止します。完了したか、失敗したか、中断されたかに関係なく。メインの会話またはバックグラウンドサブエージェントが開始したコマンドは、最終応答の後も実行し続けます。終了するまで、停止されるまで、またはその[時間制限](#time-limit-for-background-commands)に達するまで。
+[フォアグラウンドサブエージェント](https://code.claude.com/docs/ja/sub-agents.md#run-subagents-in-foreground-or-background)が開始したコマンドは、そのサブエージェントの実行が終了すると停止します。完了したか、失敗したか、中断されたかに関係なく。メインの会話またはバックグラウンドサブエージェントが開始したコマンドは、最終応答の後も実行し続けます。終了するまで、停止されるまで、またはその[時間制限](#time-limit-for-background-commands)に達するまで。
 
-メインの会話が開始したコマンドがまだ実行中の間、`-p` フラグを使用した非対話モードの実行は、そのコマンドが終了するか時間制限に達するまで、[結果の後も開いたままになります](/docs/ja/headless.md#background-tasks-at-exit)。バックグラウンドサブエージェントが開始したコマンドは、実行が終了すると停止されます。
+メインの会話が開始したコマンドがまだ実行中の間、`-p` フラグを使用した非対話モードの実行は、そのコマンドが終了するか時間制限に達するまで、[結果の後も開いたままになります](https://code.claude.com/docs/ja/headless.md#background-tasks-at-exit)。バックグラウンドサブエージェントが開始したコマンドは、実行が終了すると停止されます。
 
 #### バックグラウンドコマンドの時間制限
 
@@ -199,13 +199,13 @@ Claude Code はコマンドの出力をコマンド実行中に作業ファイ�
 * Claude がバックグラウンドで開始するコマンドは 30 分、または Claude が `run_in_background` で渡す `timeout` を取得します。最大 2 時間まで。
 * フォアグラウンドで開始してからバックグラウンドに移動するコマンド（例えばそのタイムアウトで移動したもの）は、移動から 30 分を取得します。
 
-プロンプトを `--input-format stream-json` ではなくテキストとして渡す `-p` フラグ付きの実行では、実行が[結果の後にバックグラウンドコマンドを待機する](/docs/ja/headless.md#background-tasks-at-exit)ため、両方のデフォルトが 30 分ではなく 10 分になります。
+プロンプトを `--input-format stream-json` ではなくテキストとして渡す `-p` フラグ付きの実行では、実行が[結果の後にバックグラウンドコマンドを待機する](https://code.claude.com/docs/ja/headless.md#background-tasks-at-exit)ため、両方のデフォルトが 30 分ではなく 10 分になります。
 
 バックグラウンドコマンドが時間制限に達すると、Claude Code はそれを停止し、Claude に理由を伝えます。Claude は、作業がまだ必要な場合、より長い `timeout` でコマンドを再度開始できます。停止通知は `Background command "<description>" was stopped after reaching its background time limit` と読みます。
 
 #### バックグラウンドコマンドの時間制限を上げる
 
-2 つの[環境変数](/docs/ja/env-vars.md)がこれらの制限を上げます。Bash および PowerShell コマンド同様。両方ともミリ秒を取得し、どちらも制限を短縮することはできません。低い値はデフォルトと 2 時間の最大値を保ちます。
+2 つの[環境変数](https://code.claude.com/docs/ja/env-vars.md)がこれらの制限を上げます。Bash および PowerShell コマンド同様。両方ともミリ秒を取得し、どちらも制限を短縮することはできません。低い値はデフォルトと 2 時間の最大値を保ちます。
 
 * `BASH_DEFAULT_TIMEOUT_MS` を `1800000` より上に設定して、30 分のデフォルトをその値に置き換えます。Claude が `timeout` なしで開始するコマンドと移動されたコマンドの両方に対して。プロンプトをテキストとして渡す `-p` 実行では、`600000` を超える値がその 10 分のデフォルトを置き換えます。
 * `BASH_MAX_TIMEOUT_MS` を `7200000` より上に設定して、2 時間の最大値をその値に上げます。`BASH_DEFAULT_TIMEOUT_MS` を `7200000` より上に設定すると、最大値が同じ方法で上がります。
@@ -214,7 +214,7 @@ Claude Code はコマンドの出力をコマンド実行中に作業ファイ�
 
 フォアグラウンドコマンドが完了せずにタイムアウトに達すると、Claude Code はそれを停止する代わりにバックグラウンドに移動します。ただし、コマンドが `sleep` で始まる場合は除きます。移動されたコマンドの[時間制限](#time-limit-for-background-commands)は移動からカウントされ、フォアグラウンドサブエージェントの移動されたコマンドはそのサブエージェントの実行が終了すると停止します。
 
-[`CLAUDE_CODE_DISABLE_BACKGROUND_TASKS=1`](/docs/ja/env-vars#variables) を設定するか、[bare モード](/docs/ja/headless.md#start-faster-with-bare-mode)で実行すると、バックグラウンドタスク機能の残りと共に自動バックグラウンド化が無効になるため、タイムアウトに達したコマンドは代わりに停止します。
+[`CLAUDE_CODE_DISABLE_BACKGROUND_TASKS=1`](https://code.claude.com/docs/ja/env-vars#variables) を設定するか、[bare モード](https://code.claude.com/docs/ja/headless.md#start-faster-with-bare-mode)で実行すると、自動バックグラウンド化が無効になるため、タイムアウトに達したコマンドは代わりに停止します。
 
 バックグラウンドに移動されたコマンドの結果は、何が起こったかを示します。
 
@@ -223,7 +223,7 @@ Claude Code はコマンドの出力をコマンド実行中に作業ファイ�
 
 ### Linux と WSL のメモリ制限
 
-Linux と WSL では、[`CLAUDE_CODE_TOOL_MEMORY_LIMIT`](/docs/ja/env-vars#variables) を `4G` などのサイズに設定して、Bash、PowerShell、および [Monitor](#monitor-tool) ツールコマンドが使用できるメモリを上限に設定し、1 つの暴走ビルドがセッションの残りが必要とするメモリを奪わないようにします。Claude Code v2.1.233 以降が必要です。v2.1.246 より前では、Monitor ツールコマンドは上限の外で実行されていました。
+Linux と WSL では、[`CLAUDE_CODE_TOOL_MEMORY_LIMIT`](https://code.claude.com/docs/ja/env-vars#variables) を `4G` などのサイズに設定して、Bash、PowerShell、および [Monitor](#monitor-tool) ツールコマンドが使用できるメモリを上限に設定し、1 つの暴走ビルドがセッションの残りが必要とするメモリを奪わないようにします。Claude Code v2.1.233 以降が必要です。v2.1.246 より前では、Monitor ツールコマンドは上限の外で実行されていました。
 
 * サイズをバイト数として、または `K`、`M`、`G`、または `T` サフィックス付きで記述します。`0`、`off`、`false`、`no`、または `none` を設定して上限をオフにします。Claude Code は `4e9` などのサイズとして読み取ることができない他の値を無視します。
 * Claude Code は、各コマンドごとではなく、1 つの上限に対してセッションのすべての Bash、PowerShell、および Monitor コマンドをカウントします。
@@ -231,14 +231,14 @@ Linux と WSL では、[`CLAUDE_CODE_TOOL_MEMORY_LIMIT`](/docs/ja/env-vars#varia
 * Claude Code が開始した最初のプロセスが上限をオンにした後、またはオフ値または cgroup セットアップの失敗のためにオフにした後、Claude Code は再起動するまでその結果を保持します。変更または削除された値、または修正されたセットアップを適用するには、`claude` を再度起動します。
 * コマンドが上限の下に留まることができない場合、カーネルはコマンドを強制終了し、その結果に上限を名前で示すものはありません。
 
-Claude Code は、開始する他の種類のプロセスも同じ制限に対してカウントできます。[`CLAUDE_CODE_TOOL_MEMORY_CGROUP_EXCLUDE`](/docs/ja/env-vars#variables) を上限から除外する種類のカンマ区切りリストに設定します。Claude Code はリストにない種類に上限を適用します。`none` に設定してすべての種類に上限を設定するか、`all-new` に設定して Bash、PowerShell、および Monitor ツールコマンドのみに上限を設定します。Claude Code v2.1.246 以降が必要です。名前を付けることができる種類は次のとおりです。
+Claude Code は、開始する他の種類のプロセスも同じ制限に対してカウントできます。[`CLAUDE_CODE_TOOL_MEMORY_CGROUP_EXCLUDE`](https://code.claude.com/docs/ja/env-vars#variables) を上限から除外する種類のカンマ区切りリストに設定します。Claude Code はリストにない種類に上限を適用します。`none` に設定してすべての種類に上限を設定するか、`all-new` に設定して Bash、PowerShell、および Monitor ツールコマンドのみに上限を設定します。Claude Code v2.1.246 以降が必要です。名前を付けることができる種類は次のとおりです。
 
-* `mcp`: ローカル [MCP サーバー](/docs/ja/mcp.md)
+* `mcp`: ローカル [MCP サーバー](https://code.claude.com/docs/ja/mcp.md)
 * `lsp`: [言語サーバー](#lsp-tool-behavior)
-* `hooks`: [フック](/docs/ja/hooks.md)コマンド
-* `plugin`: [プラグイン](/docs/ja/plugins/overview.md)が実行するコマンド
+* `hooks`: [フック](https://code.claude.com/docs/ja/hooks.md)コマンド
+* `plugin`: [プラグイン](https://code.claude.com/docs/ja/plugins/overview.md)が実行するコマンド
 * `helper`: Claude Code 独自のヘルパーコマンド（`git` など）
-* `agent`: [エージェントチームメイト](/docs/ja/agent-teams.md)などの子 Claude Code プロセス
+* `agent`: [エージェントチームメイト](https://code.claude.com/docs/ja/agent-teams.md)などの子 Claude Code プロセス
 
 リストするものに関係なく、これらのルールが適用されます。
 
@@ -250,7 +250,7 @@ Claude Code は、開始する他の種類のプロセスも同じ制限に対�
 
 Edit ツールは正確な文字列置換を実行します。`old_string` と `new_string` を受け取り、最初のものを 2 番目のものに置き換えます。正規表現やあいまい一致は使用しません。
 
-編集を適用するには、これらのチェックに合格する必要があります。そのいずれよりも前に、[`Read` 拒否ルール](/docs/ja/permissions#tool-specific-permission-rules)に一致するパスは拒否されます。新しいファイルをそこに作成することも含まれます。
+編集を適用するには、これらのチェックに合格する必要があります。そのいずれよりも前に、[`Read` 拒否ルール](https://code.claude.com/docs/ja/permissions#tool-specific-permission-rules)に一致するパスは拒否されます。新しいファイルをそこに作成することも含まれます。
 
 * **Read-before-edit**: Claude は編集前に現在の会話でファイルを読み取り、[`PARTIAL view` 通知](#large-files)で短縮された読み取りはカウントされません。Claude Opus 4.6、Claude Haiku 4.5、およびそれ以前のモデルは常に読み取りが必要です。新しいモデルは、読み取りが権限プロンプトを必要としない場合、および Read ツールが利用可能な場合、読み取られていないファイルを編集できます。
 * **Match**: `old_string` はファイルに記述されたとおりに正確に表示される必要があります。空白またはインデントの 1 文字の違いでも一致を逃す可能性があります。
@@ -260,13 +260,13 @@ Claude が最後に読み取った後、ディスク上で変更されたファ�
 
 Claude は、`cat` や `grep` などの Bash コマンドでファイルを表示した後も、別途 Read を行わずにそのファイルを編集できます。対象となるコマンドは `cat`、`nl`、`bat`、`batcat`、`head`、`tail`、`sed -n 'X,Yp'`、`grep`、`egrep`、`fgrep`、`rg` で、いずれもパイプやリダイレクトなしで 1 つのファイルに対して実行したものに限ります。一致するものを何も出力しない検索は読み取りとしてカウントされず、このリストにないコマンドも同様にカウントされません。
 
-Claude がこの方法でファイルを表示すると、Claude Code はそのファイルに適用される[サブディレクトリの `CLAUDE.md`](/docs/ja/memory#how-claude-md-files-load)と[パススコープのルール](/docs/ja/memory.md#path-specific-rules)も読み込みます。`Read` と `Edit` の拒否ルールがどの Bash コマンドをカバーするかについては、[Read と Edit の権限ルール](/docs/ja/permissions.md#read-and-edit)を参照してください。
+Claude がこの方法でファイルを表示すると、Claude Code はそのファイルに適用される[サブディレクトリの `CLAUDE.md`](https://code.claude.com/docs/ja/memory#how-claude-md-files-load)と[パススコープのルール](https://code.claude.com/docs/ja/memory.md#path-specific-rules)も読み込みます。`Read` と `Edit` の拒否ルールがどの Bash コマンドをカバーするかについては、[Read と Edit の権限ルール](https://code.claude.com/docs/ja/permissions.md#read-and-edit)を参照してください。
 
 ### UTF-8 以外のファイル
 
 Claude は、有効な UTF-8 ではないファイルに対して [NotebookEdit](#notebookedit-tool-behavior) を使用できません。Edit も同様ですが、ファイルがリトルエンディアンの UTF-16 バイトオーダーマークで始まる場合は例外です。Claude が変更を試みると、ツールは変更を拒否し、ファイルには手を加えません。拒否されるファイルには、Windows-1252 や Shift-JIS などのレガシーエンコーディングで保存された非 ASCII テキスト、バイナリファイル、無効なバイトシーケンスを含む UTF-8 ファイルが含まれます。
 
-これらのツールが拒否するのは、ファイル全体を UTF-8 として保存し直すため、デコードできないすべてのバイトが置換文字 `U+FFFD` に置き換わってしまうからです。代わりに、[Claude が受け取るエラー](/docs/ja/errors.md#file-is-not-valid-utf-8)は、ファイルのエンコーディングを維持するシェルコマンドを使って変更を行うか、先に UTF-8 への変換についてユーザーに確認するよう Claude に指示します。
+これらのツールが拒否するのは、ファイル全体を UTF-8 として保存し直すため、デコードできないすべてのバイトが置換文字 `U+FFFD` に置き換わってしまうからです。代わりに、[Claude が受け取るエラー](https://code.claude.com/docs/ja/errors.md#file-is-not-valid-utf-8)は、ファイルのエンコーディングを維持するシェルコマンドを使って変更を行うか、先に UTF-8 への変換についてユーザーに確認するよう Claude に指示します。
 
 新しいコンテンツに `U+FFFD`（Read がデコードできないバイトの代わりに Claude に表示する文字）が含まれていない限り、Claude はそのようなファイルを Write で置き換えることができます。このガードにより、Claude が読み取った文字化けしたテキストを書き戻すことを防ぎます。Write がファイルを置き換える場合は新しいコンテンツを UTF-8 として保存するため、ファイルの元のエンコーディングは失われます。
 
@@ -281,23 +281,23 @@ EndConversation ツールは現在のセッションを終了します。Claude 
 
 Claude がインタラクティブセッションを終了した後、セッションはロックされます。新しいプロンプトとほとんどのコマンドは `Claude ended this conversation. Start a new session (or /clear) to continue.` を返し、`/clear`、`/resume`、`/help`、`/exit`、および `/feedback` のみが実行されます。Claude Code はセッションのトランスクリプトに終了を記録するため、終了したセッションを再開するとロックが復元されます。セッションの履歴は削除されません。
 
-[非インタラクティブモード](/docs/ja/headless.md)で `-p` フラグを使用して終了したセッションを再開するとエラーが発生し、コード 1 で終了するため、スクリプトは終了した実行を成功として読み取りません。
+[非インタラクティブモード](https://code.claude.com/docs/ja/headless.md)で `-p` フラグを使用して終了したセッションを再開するとエラーが発生し、コード 1 で終了するため、スクリプトは終了した実行を成功として読み取りません。
 
-このツールは権限を求めるプロンプトを表示することはなく、[PreToolUse フック](/docs/ja/hooks.md#pretooluse)はこのツールに対して実行されません。他のツールが残っている間は、これをブロックすることもできません。`EndConversation` を指定する [deny ルールと ask ルール](/docs/ja/permissions.md#tool-specific-permission-rules)は効果がなく、`--disallowedTools` も `--tools` リストもこれを削除できません。この除外は意図的です。このツールは会話を終了する以外に何もしません。ファイルやデータを読み取ったり変更したりすることはなく、この種のセーフガードは、それが適用されるセッションがそれをオフにできない場合にのみ機能します。deny ルールが他のすべてのツールを削除し、`"*"` のように `EndConversation` にも一致する場合、Claude Code は allow ルールが `EndConversation` を明示的に指定しない限り、唯一のツールとして残すのではなく、それも削除します。`EndConversation` に一致せずに他のすべてのツールを削除する deny リストは、それを所定の位置に残します。
+このツールは権限を求めるプロンプトを表示することはなく、[PreToolUse フック](https://code.claude.com/docs/ja/hooks.md#pretooluse)はこのツールに対して実行されません。他のツールが残っている間は、これをブロックすることもできません。`EndConversation` を指定する [deny ルールと ask ルール](https://code.claude.com/docs/ja/permissions.md#tool-specific-permission-rules)は効果がなく、`--disallowedTools` も `--tools` リストもこれを削除できません。この除外は意図的です。このツールは会話を終了する以外に何もしません。ファイルやデータを読み取ったり変更したりすることはなく、この種のセーフガードは、それが適用されるセッションがそれをオフにできない場合にのみ機能します。deny ルールが他のすべてのツールを削除し、`"*"` のように `EndConversation` にも一致する場合、Claude Code は allow ルールが `EndConversation` を明示的に指定しない限り、唯一のツールとして残すのではなく、それも削除します。`EndConversation` に一致せずに他のすべてのツールを削除する deny リストは、それを所定の位置に残します。
 
-[サブエージェント](/docs/ja/sub-agents.md)はこのツールを取得しません。メインの会話のツールリストを共有するバックグラウンドタスクはそれを見ますが、そこでそれを呼び出しても何も終了しません。
+[サブエージェント](https://code.claude.com/docs/ja/sub-agents.md)はこのツールを取得しません。メインの会話のツールリストを共有するバックグラウンドタスクはそれを見ますが、そこでそれを呼び出しても何も終了しません。
 
 このツールは以下のすべてが当てはまる場合にのみ表示されます。
 
 * **モデル**: セッションのモデルが Claude Opus 4.8、Claude Sonnet 5、Claude Fable 5、またはこれらのファミリーの後続バージョンです。
-* **サーフェス**: インタラクティブターミナルセッション。IDE の統合ターミナルの `claude` セッションを含みます。これは [JetBrains プラグイン](/docs/ja/jetbrains.md)がそれを実行する方法です。他のサーフェスはこのツールを含みません。例えば：
+* **サーフェス**: インタラクティブターミナルセッション。IDE の統合ターミナルの `claude` セッションを含みます。これは [JetBrains プラグイン](https://code.claude.com/docs/ja/jetbrains.md)がそれを実行する方法です。他のサーフェスはこのツールを含みません。例えば：
   * 非インタラクティブな `-p` 実行
-  * [Agent SDK](/docs/ja/agent-sdk/overview.md) TypeScript および Python パッケージを通じたセッション
-  * [VS Code 拡張機能](/docs/ja/vs-code.md)パネル。独自の CLI をバンドルしています
-  * [GitHub Actions](/docs/ja/github-actions.md)
-  * [Claude Code on the web](/docs/ja/claude-code-on-the-web.md)
-* **スタートアップモード**: [`--bare`](/docs/ja/headless#start-faster-with-bare-mode) セッションではありません。ベアモードはシェルとファイルツールのみをロードするため、このツールはそこに登録されません。
-* **プロバイダー**: [Amazon Bedrock](/docs/ja/amazon-bedrock.md)、[Claude Platform on AWS](/docs/ja/claude-platform-on-aws.md)、[Google Cloud の Agent Platform](/docs/ja/google-vertex-ai.md)、または [Microsoft Foundry](/docs/ja/microsoft-foundry.md) では利用できません。また、[クラウドゲートウェイ](/docs/ja/claude-apps-gateway)を通じてサインインしたセッションでも利用できません。
+  * [Agent SDK](https://code.claude.com/docs/ja/agent-sdk/overview.md) TypeScript および Python パッケージを通じたセッション
+  * [VS Code 拡張機能](https://code.claude.com/docs/ja/vs-code.md)パネル。独自の CLI をバンドルしています
+  * [GitHub Actions](https://code.claude.com/docs/ja/github-actions.md)
+  * [Claude Code on the web](https://code.claude.com/docs/ja/claude-code-on-the-web.md)
+* **スタートアップモード**: [`--bare`](https://code.claude.com/docs/ja/headless#start-faster-with-bare-mode) セッションではありません。ベアモードはシェルとファイルツールのみをロードするため、このツールはそこに登録されません。
+* **プロバイダー**: [Amazon Bedrock](https://code.claude.com/docs/ja/amazon-bedrock.md)、[Claude Platform on AWS](https://code.claude.com/docs/ja/claude-platform-on-aws.md)、[Google Cloud の Agent Platform](https://code.claude.com/docs/ja/google-vertex-ai.md)、または [Microsoft Foundry](https://code.claude.com/docs/ja/microsoft-foundry.md) では利用できません。また、[クラウドゲートウェイ](https://code.claude.com/docs/ja/claude-apps-gateway)を通じてサインインしたセッションでも利用できません。
 
 ## Glob ツールの動作
 
@@ -305,9 +305,9 @@ Glob ツールはファイル名パターンでファイルを検索します。
 
 macOS、Linux、および WSL では、以下の場合に Glob と Grep ツールが戻ります。
 
-* セッションを開始するときに [`--tools` または `--allowedTools`](/docs/ja/cli-reference#cli-flags) で `Glob` または `Grep` を指定するか、同等の [Agent SDK](/docs/ja/agent-sdk/overview.md) オプションで指定します。`--tools` を使用すると、リストしたものが取得され、`--allowedTools` でいずれかのツールを指定すると両方が復元されます。設定ファイルの許可ルールはこの効果を持ちません。
-* 権限の[拒否ルール](/docs/ja/permissions.md#match-all-uses-of-a-tool)、`--disallowedTools` フラグ、または [`--restricted`](/docs/ja/cli-reference#cli-flags) がセッションから `Bash` を削除します。
-* [サブエージェント](/docs/ja/sub-agents.md#available-tools)が `tools` フィールドに `Glob` または `Grep` をリストし、`Bash` を除外します。リストされたツールはそのサブエージェントのみ、または [`--agent`](/docs/ja/sub-agents#invoke-subagents-explicitly) または `agent` 設定を通じてメインセッションエージェントとして実行される場合はセッション全体に戻ります。
+* セッションを開始するときに [`--tools` または `--allowedTools`](https://code.claude.com/docs/ja/cli-reference#cli-flags) で `Glob` または `Grep` を指定するか、同等の [Agent SDK](https://code.claude.com/docs/ja/agent-sdk/overview.md) オプションで指定します。`--tools` を使用すると、リストしたものが取得され、`--allowedTools` でいずれかのツールを指定すると両方が復元されます。設定ファイルの許可ルールはこの効果を持ちません。
+* 権限の[拒否ルール](https://code.claude.com/docs/ja/permissions.md#match-all-uses-of-a-tool)、`--disallowedTools` フラグ、または [`--restricted`](https://code.claude.com/docs/ja/cli-reference#cli-flags) がセッションから `Bash` を削除します。
+* [サブエージェント](https://code.claude.com/docs/ja/sub-agents.md#available-tools)が `tools` フィールドに `Glob` または `Grep` をリストし、`Bash` を除外します。リストされたツールはそのサブエージェントのみ、または [`--agent`](https://code.claude.com/docs/ja/sub-agents#invoke-subagents-explicitly) または `agent` 設定を通じてメインセッションエージェントとして実行される場合はセッション全体に戻ります。
 
 Glob は再帰的なディレクトリマッチングのための `**` を含む標準的な glob 構文をサポートしています。
 
@@ -319,7 +319,7 @@ Glob は再帰的なディレクトリマッチングのための `**` を含む
 
 Glob はデフォルトでは `.gitignore` を尊重しないため、gitignore されたファイルと追跡されたファイルの両方を検索します。これは gitignore されたファイルをスキップする [Grep](#grep-tool-behavior) とは異なります。Glob が `.gitignore` を尊重するようにするには、Claude Code を起動する前に `CLAUDE_CODE_GLOB_NO_IGNORE=false` を設定してください。
 
-Claude Code は Glob 呼び出しの権限を決定してから、検索ディレクトリが存在するかどうかを確認します。[作業ディレクトリ](/docs/ja/permissions.md#working-directories)外の存在しない `path` に対しても読み取り権限チェックを実行するため、パスの権限プロンプトはそのパスが存在することを意味しません。
+Claude Code は Glob 呼び出しの権限を決定してから、検索ディレクトリが存在するかどうかを確認します。[作業ディレクトリ](https://code.claude.com/docs/ja/permissions.md#working-directories)外の存在しない `path` に対しても読み取り権限チェックを実行するため、パスの権限プロンプトはそのパスが存在することを意味しません。
 
 null バイトを含む `pattern` または `path` 値はエラーを返し、Claude にそれを削除するよう求めます。
 
@@ -341,7 +341,7 @@ Claude は `glob` パラメータ（例：`**/*.tsx`）でファイルごとに�
 
 Grep は `.gitignore` を尊重するため、gitignore されたファイルはスキップされます。gitignore されたファイルを検索するには、Claude はそのパスを直接渡します。
 
-Claude Code は Grep 呼び出しの権限を、検索 `path` が存在するかどうかを確認する前に決定します。[作業ディレクトリ](/docs/ja/permissions.md#working-directories) 外の存在しない `path` に対して読み取り権限チェックを実行するため、パスの権限プロンプトはそのパスが存在することを意味しません。
+Claude Code は Grep 呼び出しの権限を、検索 `path` が存在するかどうかを確認する前に決定します。[作業ディレクトリ](https://code.claude.com/docs/ja/permissions.md#working-directories) 外の存在しない `path` に対して読み取り権限チェックを実行するため、パスの権限プロンプトはそのパスが存在することを意味しません。
 
 ## LSP ツールの動作
 
@@ -355,7 +355,7 @@ LSP ツールは、実行中の言語サーバーから Claude にコード イ�
 * インターフェースの実装を検索
 * コール階層をトレース
 
-Claude Code は、言語の[コード インテリジェンス プラグイン](/docs/ja/plugins/code-intelligence.md)をインストールするまで、ツールを非アクティブに保ちます。[クラウド セッション](/docs/ja/claude-code-on-the-web.md)では、Claude Code はプラグイン言語サーバーを起動しないため、LSP ツールはそこで非アクティブなままです。Claude Code は言語サーバーの設定をプラグインから取得し、サーバー バイナリは自分でインストールします。
+Claude Code は、言語の[コード インテリジェンス プラグイン](https://code.claude.com/docs/ja/plugins/code-intelligence.md)をインストールするまで、ツールを非アクティブに保ちます。[クラウド セッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md)では、Claude Code はプラグイン言語サーバーを起動しないため、LSP ツールはそこで非アクティブなままです。Claude Code は言語サーバーの設定をプラグインから取得し、サーバー バイナリは自分でインストールします。
 
 Claude Code は、言語サーバーを起動できないファイルの各 LSP 呼び出しに対してエラー結果を返します。
 
@@ -373,19 +373,19 @@ Monitor ツールは Claude がバックグラウンドで何かを監視し、�
 
 同じセッションで作業を続けることができ、イベントが到着すると Claude が割り込みます。
 
-Claude が開始するすべての監視には期限があります。デフォルトでは 5 分、最大 30 分、および `-p` で単一のプロンプトが与えられた [非対話型](/docs/ja/headless.md) 実行では最大 10 分です。
+Claude が開始するすべての監視には期限があります。デフォルトでは 5 分、最大 30 分、および `-p` で単一のプロンプトが与えられた [非対話型](https://code.claude.com/docs/ja/headless.md) 実行では最大 10 分です。
 
 期限に達すると監視が終了します。Claude は 1 つの通知を受け取るため、必要に応じて監視を再度開始できます。
 
-Monitor をキャンセルするよう Claude に依頼するか、セッションを終了することで Monitor を停止できます。Monitor を開始した [サブエージェント](/docs/ja/sub-agents.md) を、例えば `/tasks` から停止すると、それらの Monitor も一緒に停止します。
+Monitor をキャンセルするよう Claude に依頼するか、セッションを終了することで Monitor を停止できます。Monitor を開始した [サブエージェント](https://code.claude.com/docs/ja/sub-agents.md) を、例えば `/tasks` から停止すると、それらの Monitor も一緒に停止します。
 
-Monitor がコマンドを実行するとき、[Bash と同じ権限ルール](/docs/ja/permissions.md#tool-specific-permission-rules) を使用するため、Bash に設定した `allow` および `deny` パターンがここにも適用されます。[auto モード](/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode) がアクティブな場合、Claude Code は `Monitor` 自体を名前に含む許可ルールを、[削除する他の広範な許可ルール](/docs/ja/permission-modes.md#how-the-classifier-evaluates-actions) とともに脇に置くため、分類器は Monitor コマンドを Bash コマンドと同じ方法で確認します。
+Monitor がコマンドを実行するとき、[Bash と同じ権限ルール](https://code.claude.com/docs/ja/permissions.md#tool-specific-permission-rules) を使用するため、Bash に設定した `allow` および `deny` パターンがここにも適用されます。[auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode) がアクティブな場合、Claude Code は `Monitor` 自体を名前に含む許可ルールを、[削除する他の広範な許可ルール](https://code.claude.com/docs/ja/permission-modes.md#how-the-classifier-evaluates-actions) とともに脇に置くため、分類器は Monitor コマンドを Bash コマンドと同じ方法で確認します。
 
 [WebSocket ソース](#websocket-source) には独自の承認プロンプトがあり、auto モードではこれも分類器が決定します。
 
-このツールは Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry では利用できません。また、`DISABLE_TELEMETRY` または `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` が設定されている場合も利用できません。Windows では、[Git Bash](/docs/ja/setup.md#set-up-on-windows) がインストールされている場合にのみこのツールを利用できます。
+このツールは Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry では利用できません。また、`DISABLE_TELEMETRY` または `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` が設定されている場合も利用できません。Windows では、[Git Bash](https://code.claude.com/docs/ja/setup.md#set-up-on-windows) がインストールされている場合にのみこのツールを利用できます。
 
-プラグインは Claude に開始を依頼する代わりに、プラグインがアクティブな場合に自動的に開始される Monitor を宣言できます。[プラグイン Monitor](/docs/ja/plugins/components.md#monitors) を参照してください。
+プラグインは Claude に開始を依頼する代わりに、プラグインがアクティブな場合に自動的に開始される Monitor を宣言できます。[プラグイン Monitor](https://code.claude.com/docs/ja/plugins/components.md#monitors) を参照してください。
 
 ### WebSocket ソース
 
@@ -405,9 +405,9 @@ WebSocket 監視は `command` の代わりに `ws` 入力を取り、単一の M
 
 `timeout_ms` 期限は WebSocket 監視にも適用されます。監視は期限で終了し、`TaskStop` は早期にキャンセルします。
 
-WebSocket を開くと承認を求めるプロンプトが表示されます。[auto モード](/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode) では分類器が代わりに決定します。プロンプトは同じホストの将来のプロンプトをスキップするオプションを提供しません。
+WebSocket を開くと承認を求めるプロンプトが表示されます。[auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode) では分類器が代わりに決定します。プロンプトは同じホストの将来のプロンプトをスキップするオプションを提供しません。
 
-Claude Code は、プライベート、リンク ローカル、またはクラウド メタデータ アドレスを指す URL を、それらのアドレスに解決されるホスト名も含めて拒否します。また、`sandbox.network.deniedDomains` 内のホストも拒否し、管理設定で [`allowManagedDomainsOnly`](/docs/ja/settings-reference#sandbox-network-allowmanageddomainsonly) が設定されている場合、管理された許可リスト外のホストも拒否します。
+Claude Code は、プライベート、リンク ローカル、またはクラウド メタデータ アドレスを指す URL を、それらのアドレスに解決されるホスト名も含めて拒否します。また、`sandbox.network.deniedDomains` 内のホストも拒否し、管理設定で [`allowManagedDomainsOnly`](https://code.claude.com/docs/ja/settings-reference#sandbox-network-allowmanageddomainsonly) が設定されている場合、管理された許可リスト外のホストも拒否します。
 
 ## NotebookEdit ツールの動作
 
@@ -431,9 +431,9 @@ PowerShell ツールを使用すると、Claude は PowerShell コマンドを�
 * **Git Bash がインストールされている Windows**: ツールは claude.ai と Console アカウントではデフォルトで有効です。Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry セッションで有効にするには `CLAUDE_CODE_USE_POWERSHELL_TOOL=1` を設定するか、無効にするには `0` を設定します。
 * **Linux、macOS、WSL**: ツールはオプトインです。
 
-[PreToolUse フック](/docs/ja/hooks.md#powershell)は、Bash ツールと同じフィールドを持つ `tool_input.command` でツールのコマンド文字列を受け取ります。
+[PreToolUse フック](https://code.claude.com/docs/ja/hooks.md#powershell)は、Bash ツールと同じフィールドを持つ `tool_input.command` でツールのコマンド文字列を受け取ります。
 
-シェルコマンドを検査するフックで `Bash|PowerShell` と一致させます。[PowerShell フック入力セクション](/docs/ja/hooks.md#powershell)は、`Bash` だけと一致させるだけでは十分でない理由を説明しています。
+シェルコマンドを検査するフックで `Bash|PowerShell` と一致させます。[PowerShell フック入力セクション](https://code.claude.com/docs/ja/hooks.md#powershell)は、`Bash` だけと一致させるだけでは十分でない理由を説明しています。
 
 ### PowerShell ツールを有効にする
 
@@ -455,12 +455,12 @@ Claude Code は PowerShell をプロセススコープのみで `-ExecutionPolic
 
 ### Bash の拒否ルールは PowerShell ツールもオフにする
 
-Git Bash がインストールされている Windows では、Bash を拒否すると、そのセッションでは PowerShell ツールもオフになります。これは単独の `Bash` だけでなく `Bash(git push *)` のようなスコープ付きルールにも適用され、いずれかの設定ファイルのルールにも `--disallowedTools` のルールにも適用されます。Claude Code がこのように動作するのは、`Bash` ルールでは PowerShell ツールが制限されないためです。PowerShell ツールには[独自の権限ルール](/docs/ja/permissions.md#powershell)があります。PowerShell がオンのままだと、Claude はルールで Bash において拒否されている操作を PowerShell で実行できてしまいます。
+Git Bash がインストールされている Windows では、Bash を拒否すると、そのセッションでは PowerShell ツールもオフになります。これは単独の `Bash` だけでなく `Bash(git push *)` のようなスコープ付きルールにも適用され、いずれかの設定ファイルのルールにも `--disallowedTools` のルールにも適用されます。Claude Code がこのように動作するのは、`Bash` ルールでは PowerShell ツールが制限されないためです。PowerShell ツールには[独自の権限ルール](https://code.claude.com/docs/ja/permissions.md#powershell)があります。PowerShell がオンのままだと、Claude はルールで Bash において拒否されている操作を PowerShell で実行できてしまいます。
 
 Bash の拒否ルールと併せて PowerShell ツールをオンのままにするには、次のいずれかを行います。
 
 * [PowerShell ツールを有効にする](#enable-the-powershell-tool)に示すように、環境または設定ファイルの `env` ブロックで `CLAUDE_CODE_USE_POWERSHELL_TOOL=1` を設定します。
-* `PowerShell(git push *)` 拒否ルールなど、スコープ付きの [`PowerShell` 権限ルール](/docs/ja/permissions#powershell)を設定ファイルに追加します。
+* `PowerShell(git push *)` 拒否ルールなど、スコープ付きの [`PowerShell` 権限ルール](https://code.claude.com/docs/ja/permissions#powershell)を設定ファイルに追加します。
 
 これらのいずれも行わない場合、スコープ付きの Bash 拒否ルールでは Bash ツールは利用可能なままですが、Claude Code は警告なしに PowerShell をオフにします。Bash ツール全体を除外するルールの場合、そのセッションで Claude が使えるシェルツールはなくなります。
 
@@ -468,19 +468,19 @@ Bash の拒否ルールと併せて PowerShell ツールをオンのままにす
 
 3 つの追加設定は PowerShell が使用される場所を制御します。
 
-* [`settings.json`](/docs/ja/settings-reference#all-settings) の `"defaultShell": "powershell"`: インタラクティブな `!` コマンドを PowerShell を経由してルーティングします。PowerShell ツールが有効になっている必要があります。
-* 個別の[コマンドフック](/docs/ja/hooks.md#command-hook-fields)の `"shell": "powershell"`: そのフックを PowerShell で実行します。フックは PowerShell を直接起動するため、`CLAUDE_CODE_USE_POWERSHELL_TOOL` に関係なく機能します。
-* [スキルフロントマター](/docs/ja/skills.md#frontmatter-reference)の `shell: powershell`: `` !`command` `` ブロックを PowerShell で実行します。PowerShell ツールが有効になっている必要があります。
+* [`settings.json`](https://code.claude.com/docs/ja/settings-reference#all-settings) の `"defaultShell": "powershell"`: インタラクティブな `!` コマンドを PowerShell を経由してルーティングします。PowerShell ツールが有効になっている必要があります。
+* 個別の[コマンドフック](https://code.claude.com/docs/ja/hooks.md#command-hook-fields)の `"shell": "powershell"`: そのフックを PowerShell で実行します。フックは PowerShell を直接起動するため、`CLAUDE_CODE_USE_POWERSHELL_TOOL` に関係なく機能します。
+* [スキルフロントマター](https://code.claude.com/docs/ja/skills.md#frontmatter-reference)の `shell: powershell`: `` !`command` `` ブロックを PowerShell で実行します。PowerShell ツールが有効になっている必要があります。
 
 PowerShell コマンドには、`CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR` 環境変数を含め、Bash コマンドと[同じメインセッションの作業ディレクトリリセット動作](#what-persists-between-commands)が適用されます。
 
-PowerShell コマンドは、[PowerShell コマンドでの永続化された変数](/docs/ja/hooks.md#persisted-variables-in-powershell-commands)に記載されている条件のもとで、フックが `CLAUDE_ENV_FILE` を通じて永続化した変数も受け取ります。Claude Code v2.1.296 以降が必要です。
+PowerShell コマンドは、[PowerShell コマンドでの永続化された変数](https://code.claude.com/docs/ja/hooks.md#persisted-variables-in-powershell-commands)に記載されている条件のもとで、フックが `CLAUDE_ENV_FILE` を通じて永続化した変数も受け取ります。Claude Code v2.1.296 以降が必要です。
 
 ### PowerShell での検索と `git diff` からの終了コード 1
 
 Claude が PowerShell ツールで実行した、何にも一致しない `grep` または `rg` の検索で `Error: Exit code 1` が表示された場合でも、検索は失敗していません。対処は不要です。このエラーは、検索がより長いコマンドの一部である場合に表示されることがあります。たとえば、`rg` が終了コード 1 で終了したとき、`rg foo | Out-Null` ではエラーが表示されますが、`rg foo` では表示されません。
 
-PowerShell ツールは、`grep`、`rg`、`egrep`、`fgrep`、`findstr`、`git grep`、`git diff` からの終了コード 1 を通常の結果として扱うことができます。これらの検索は、一致がないことを報告するために終了コード 1 を使用します。`git diff` の場合、終了コード 1 はファイルが異なることを意味します。Claude が実行したときにエラーが表示されるコマンドは、`shell: powershell` を指定したスキルでは[失敗としてカウントされます](/docs/ja/skills.md#when-an-injected-command-fails)。
+PowerShell ツールは、`grep`、`rg`、`egrep`、`fgrep`、`findstr`、`git grep`、`git diff` からの終了コード 1 を通常の結果として扱うことができます。これらの検索は、一致がないことを報告するために終了コード 1 を使用します。`git diff` の場合、終了コード 1 はファイルが異なることを意味します。Claude が実行したときにエラーが表示されるコマンドは、`shell: powershell` を指定したスキルでは[失敗としてカウントされます](https://code.claude.com/docs/ja/skills.md#when-an-injected-command-fails)。
 
 ### Windows エンコーディングと終了コード
 
@@ -510,17 +510,17 @@ Read は平文テキスト以外のいくつかのファイルタイプを処理
 
   Claude が大きな画像の細かいピクセルレベルの詳細を見落とした場合は、Bash で ImageMagick を使用するなどして関心のある領域をトリミングするよう指示し、トリミングした画像を読み込ませてください。
 
-  Read は 128 MB を超える画像ファイルの読み込みを拒否し、画像をリサイズするか小さいコピーをエクスポートしてからそのコピーを読み込むよう Claude に指示するエラーを返します。Claude がそうせずにエラーで止まってしまう場合は、[File is too large to read as an image](/docs/ja/errors.md#file-is-too-large-to-read-as-an-image) を参照してください。
+  Read は 128 MB を超える画像ファイルの読み込みを拒否し、画像をリサイズするか小さいコピーをエクスポートしてからそのコピーを読み込むよう Claude に指示するエラーを返します。Claude がそうせずにエラーで止まってしまう場合は、[File is too large to read as an image](https://code.claude.com/docs/ja/errors.md#file-is-too-large-to-read-as-an-image) を参照してください。
 * **PDF**: Claude は短い `.pdf` ファイルを全体として読み込みます。10 ページを超える PDF の場合、`pages` パラメータ（例：`"1-5"`）を使用して範囲で読み込み、一度に最大 20 ページまで読み込みます。ページ範囲の読み込みは poppler-utils の `pdftoppm` でページをレンダリングするため、macOS では `brew install poppler` でインストールし、Debian および Ubuntu では `apt-get install poppler-utils` でインストールしてください。Windows およびその他のプラットフォームでは、`pdftoppm` を `PATH` に配置する poppler ビルドをインストールしてください。これがない場合、ページ範囲の読み込みは `pdftoppm is not installed` というエラーで失敗します。
 * **Jupyter ノートブック**: `.ipynb` ファイルは、コード、マークダウン、ビジュアライゼーションを含むすべてのセルとその出力を返します。セルの合計が 256 KB を超えるノートブック、または[トークン制限](#large-files)を超えるノートブックは、代わりにエラーを返します。Claude Code は 100 MB を超えるノートブックファイルの読み込みを拒否します。エラーは Claude に、シェルコマンドを使用してセルのスライスなど、ノートブックの一部を読み込む方法を指示します。
 
 Read はファイルのみを読み込み、ディレクトリは読み込みません。Claude は `ls` などのシェルコマンドを使用してディレクトリコンテンツをリストします。
 
-Read は、`.xlsx`、`.parquet`、`.heic`、`.zip` など、バイナリとして扱う拡張子を持つファイルの読み込みを拒否します。拒否された後も Claude は作業を続けます。エラーは、そのファイルタイプに対応するスキルがあればそれを提案し、なければその形式を読み込めるシェルコマンドまたはスクリプトを提案します。Read が拒否するファイルを [`@` メンション](/docs/ja/common-workflows#reference-files-and-directories)した場合、Claude はファイルのパスを受け取りますが、その内容は受け取りません。
+Read は、`.xlsx`、`.parquet`、`.heic`、`.zip` など、バイナリとして扱う拡張子を持つファイルの読み込みを拒否します。拒否された後も Claude は作業を続けます。エラーは、そのファイルタイプに対応するスキルがあればそれを提案し、なければその形式を読み込めるシェルコマンドまたはスクリプトを提案します。Read が拒否するファイルを [`@` メンション](https://code.claude.com/docs/ja/common-workflows#reference-files-and-directories)した場合、Claude はファイルのパスを受け取りますが、その内容は受け取りません。
 
 ### 大きなファイル
 
-Claude は、1 回の Read 呼び出しで返される量より大きいテキストファイルを読み込むことができます。デフォルトでは、1 回の呼び出しで返されるのは最大 25,000 トークン、または [`CLAUDE_CODE_FILE_READ_MAX_OUTPUT_TOKENS`](/docs/ja/env-vars) に設定した値までで、256 KB を超えるファイル全体の読み込みは拒否されるため、Claude はより大きなファイルを `offset` と `limit` を使用してページ単位で読み込みます。Claude Code v2.1.296 以降では、ユーザーがファイル全体を求めた場合など必要なときに、`allow_large: true` を設定して、ファイル全体または長い行範囲を 1 回の呼び出しで読み込むこともできます。その読み込みのサイズは、デフォルトの制限ではなく、セッションの[コンテキストウィンドウ](/docs/ja/context-window.md)の残り容量に基づいて判断されます。画像、PDF、ノートブックには引き続きそれぞれの制限が適用されます。
+Claude は、1 回の Read 呼び出しで返される量より大きいテキストファイルを読み込むことができます。デフォルトでは、1 回の呼び出しで返されるのは最大 25,000 トークン、または [`CLAUDE_CODE_FILE_READ_MAX_OUTPUT_TOKENS`](https://code.claude.com/docs/ja/env-vars) に設定した値までで、256 KB を超えるファイル全体の読み込みは拒否されるため、Claude はより大きなファイルを `offset` と `limit` を使用してページ単位で読み込みます。Claude Code v2.1.296 以降では、ユーザーがファイル全体を求めた場合など必要なときに、`allow_large: true` を設定して、ファイル全体または長い行範囲を 1 回の呼び出しで読み込むこともできます。その読み込みのサイズは、デフォルトの制限ではなく、セッションの[コンテキストウィンドウ](https://code.claude.com/docs/ja/context-window.md)の残り容量に基づいて判断されます。画像、PDF、ノートブックには引き続きそれぞれの制限が適用されます。
 
 読み込みがデフォルトの制限を超えた場合に Claude が受け取る内容:
 
@@ -540,7 +540,7 @@ Claude が作成したフィードバックは、Claude Code に関する Claude
 
 Claude がドラフトをキューに入れた後、プロンプトの上にドラフトのタイトルが表示されたカードが表示されます。`1` を押してドラフトを確認し、`2` を 2 回押して記述されたとおりに送信するか、`0` を押して却下します。却下されたドラフトはキューに残ります。カードを却下した後、Claude Code は Claude が作成したフィードバックをオフにするかどうかを尋ねます。2 回拒否すると、質問が停止します。
 
-デフォルトでは、セッションで最大 3 つのカードが表示されます。Anthropic はリリースなしでサーバーからその制限を調整できます。制限後、および [`feedbackDrafts`](/docs/ja/settings-reference#feedbackdrafts) を `quiet` に設定するたびに、プロンプトフッターにキューに入れられたドラフトの数のみが表示されます。
+デフォルトでは、セッションで最大 3 つのカードが表示されます。Anthropic はリリースなしでサーバーからその制限を調整できます。制限後、および [`feedbackDrafts`](https://code.claude.com/docs/ja/settings-reference#feedbackdrafts) を `quiet` に設定するたびに、プロンプトフッターにキューに入れられたドラフトの数のみが表示されます。
 
 ### ドラフトを確認して編集する
 
@@ -554,7 +554,7 @@ Claude がドラフトをキューに入れた後、プロンプトの上にド�
 
 ### ドラフトを送信する
 
-ドラフトを送信すると、Claude Code は `/feedback` レポートと同じ方法で送信し、同じ [保持期間](/docs/ja/data-usage.md#feedback-using-the-%2Ffeedback-command) を使用し、マシンからドラフトを削除します。カードから送信すると、`✓ Sent` が表示されます。キューから送信すると、受信 ID で閉じます。
+ドラフトを送信すると、Claude Code は `/feedback` レポートと同じ方法で送信し、同じ [保持期間](https://code.claude.com/docs/ja/data-usage.md#feedback-using-the-%2Ffeedback-command) を使用し、マシンからドラフトを削除します。カードから送信すると、`✓ Sent` が表示されます。キューから送信すると、受信 ID で閉じます。
 
 レポートには以下が含まれます。
 
@@ -565,50 +565,53 @@ Claude がドラフトをキューに入れた後、プロンプトの上にド�
 
 Claude Code はローカルドラフトに作業ディレクトリを保持してトランスクリプトを見つけることができ、ディレクトリは送信しません。
 
-[ゼロデータ保持を使用する組織](/docs/ja/zero-data-retention.md#features-disabled-under-zdr) および [HIPAA 設定](/docs/ja/hipaa-setup.md) が適用された組織では、Claude Code はセッションから SendFeedback ツールを除外します。ゼロデータ保持を使用する組織のセッションがまだツールを提供している場合、ドラフトはマシンに残り、送信は `Feedback collection is not available for organizations with custom data retention policies.` で失敗します。
+[ゼロデータ保持を使用する組織](https://code.claude.com/docs/ja/zero-data-retention.md#features-disabled-under-zdr) および [HIPAA 設定](https://code.claude.com/docs/ja/hipaa-setup.md) が適用された組織では、Claude Code はセッションから SendFeedback ツールを除外します。ゼロデータ保持を使用する組織のセッションがまだツールを提供している場合、ドラフトはマシンに残り、送信は `Feedback collection is not available for organizations with custom data retention policies.` で失敗します。
 
 ### ドラフトを破棄または保持する
 
-ドラフトを破棄すると、Claude Code はマシンからそれを削除します。キューに残すドラフトは 30 日後、または [`cleanupPeriodDays`](/docs/ja/settings-reference#cleanupperioddays) がより短い場合はその後に期限切れになります。キューはすべてのセッション全体で 10 個のドラフトを保持し、Claude が 11 番目をキューに入れると、Claude Code は最も古いものを削除します。セッションからのドラフトがまだキューに入っている状態で `/exit` を実行すると、Claude Code は終了する前にそれらを確認するか破棄するかを尋ねます。
+ドラフトを破棄すると、Claude Code はマシンからそれを削除します。キューに残すドラフトは 30 日後、または [`cleanupPeriodDays`](https://code.claude.com/docs/ja/settings-reference#cleanupperioddays) がより短い場合はその後に期限切れになります。キューはすべてのセッション全体で 10 個のドラフトを保持し、Claude が 11 番目をキューに入れると、Claude Code は最も古いものを削除します。セッションからのドラフトがまだキューに入っている状態で `/exit` を実行すると、Claude Code は終了する前にそれらを確認するか破棄するかを尋ねます。
 
 ### Claude が作成したフィードバックをオフにする
 
-`/config` で **Claude が作成したフィードバック** を `off` に設定します。これにより [`feedbackDrafts`](/docs/ja/settings-reference#feedbackdrafts) 設定が書き込まれるか、1 つのセッションに対して [`CLAUDE_CODE_SEND_FEEDBACK=0`](/docs/ja/env-vars) を設定します。どちらでも、Claude はドラフトをキューに入れることができません。カードなしでドラフトを続行するには、代わりに `feedbackDrafts` を `quiet` に設定します。管理者は [管理設定](/docs/ja/managed-settings.md) で `feedbackDrafts` を設定でき、これは独自の設定よりも優先されます。
+`/config` で **Claude が作成したフィードバック** を `off` に設定します。これにより [`feedbackDrafts`](https://code.claude.com/docs/ja/settings-reference#feedbackdrafts) 設定が書き込まれるか、1 つのセッションに対して [`CLAUDE_CODE_SEND_FEEDBACK=0`](https://code.claude.com/docs/ja/env-vars) を設定します。どちらでも、Claude はドラフトをキューに入れることができません。カードなしでドラフトを続行するには、代わりに `feedbackDrafts` を `quiet` に設定します。管理者は [管理設定](https://code.claude.com/docs/ja/managed-settings.md) で `feedbackDrafts` を設定でき、これは独自の設定よりも優先されます。
 
 ### Claude が作成したフィードバックなしのセッション
 
 Claude Code には、Claude API を使用する独自のマシン上のインタラクティブターミナルセッションにツールが含まれています。以下からツールを除外します。
 
-* キューを確認する画面がない非インタラクティブ `-p` 実行と [Agent SDK](/docs/ja/agent-sdk/overview.md) セッション
-* マシン上のキューに書き込むことができない [Claude Code on the web](/docs/ja/claude-code-on-the-web.md) などのクラウドセッション
-* [Amazon Bedrock](/docs/ja/amazon-bedrock.md)、[Claude Platform on AWS](/docs/ja/claude-platform-on-aws.md)、[Google Cloud の Agent Platform](/docs/ja/google-vertex-ai.md)、または [Microsoft Foundry](/docs/ja/microsoft-foundry.md) 上のセッション
-* [`CLAUDE_CODE_SEND_FEEDBACK=0`](/docs/ja/env-vars) または [`DISABLE_FEEDBACK_COMMAND=1`](/docs/ja/env-vars) を設定したセッション、`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` を空でない値に設定したセッション、または [機能フラグ取得](/docs/ja/env-vars.md#features-that-need-feature-flag-fetching) をオフにしたセッション
-* 製品フィードバックをオフにした組織、[ゼロデータ保持を使用する組織](/docs/ja/zero-data-retention.md#features-disabled-under-zdr)、および [HIPAA 設定](/docs/ja/hipaa-setup.md) が適用された組織
+* キューを確認する画面がない非インタラクティブ `-p` 実行と [Agent SDK](https://code.claude.com/docs/ja/agent-sdk/overview.md) セッション
+* マシン上のキューに書き込むことができない [Claude Code on the web](https://code.claude.com/docs/ja/claude-code-on-the-web.md) などのクラウドセッション
+* [Amazon Bedrock](https://code.claude.com/docs/ja/amazon-bedrock.md)、[Claude Platform on AWS](https://code.claude.com/docs/ja/claude-platform-on-aws.md)、[Google Cloud の Agent Platform](https://code.claude.com/docs/ja/google-vertex-ai.md)、または [Microsoft Foundry](https://code.claude.com/docs/ja/microsoft-foundry.md) 上のセッション
+* [`CLAUDE_CODE_SEND_FEEDBACK=0`](https://code.claude.com/docs/ja/env-vars) または [`DISABLE_FEEDBACK_COMMAND=1`](https://code.claude.com/docs/ja/env-vars) を設定したセッション、`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` を空でない値に設定したセッション、または [機能フラグ取得](https://code.claude.com/docs/ja/env-vars.md#features-that-need-feature-flag-fetching) をオフにしたセッション
+* 製品フィードバックをオフにした組織、[ゼロデータ保持を使用する組織](https://code.claude.com/docs/ja/zero-data-retention.md#features-disabled-under-zdr)、および [HIPAA 設定](https://code.claude.com/docs/ja/hipaa-setup.md) が適用された組織
 
 ## Task ツールの利用可能性
 
-Task トラッキングツール（`TaskCreate`、`TaskGet`、`TaskUpdate`、`TaskList`、および `TodoWrite`）は、デフォルトでは Opus 4.7、Sonnet 4.6、Haiku 4.5、およびそれ以前のモデルでのみ利用可能です。ツールが利用可能な場所では、4 つの Task ツール、または [`CLAUDE_CODE_ENABLE_TASKS=0`](/docs/ja/env-vars) を設定した場合は `TodoWrite` が提供されます。
+Task トラッキングツール（`TaskCreate`、`TaskGet`、`TaskUpdate`、`TaskList`、および `TodoWrite`）は、デフォルトでは Opus 4.7、Sonnet 4.6、Haiku 4.5、およびそれ以前のモデルでのみ利用可能です。ツールが利用可能な場所では、4 つの Task ツール、または [`CLAUDE_CODE_ENABLE_TASKS=0`](https://code.claude.com/docs/ja/env-vars) を設定した場合は `TodoWrite` が提供されます。
 
-他のすべてのモデルでは、Claude Code はオプトインしない限りツールを除外します。Claude Code が認識しないモデル ID（[LLM ゲートウェイ](/docs/ja/llm-gateway) を通じて提供されるカスタムモデル名など）にも同じことが当てはまります。新しいモデルでは、Claude は書かれたチェックリストなしで複数ステップの作業を追跡でき、ツールの定義とリマインダーはコンテキストを占有します。ツールがない場合、Claude は作業中に[タスクリスト](/docs/ja/interactive-mode.md#task-list)に何も追加しません。
+他のすべてのモデルでは、Claude Code はオプトインしない限りツールを除外します。Claude Code が認識しないモデル ID（[LLM ゲートウェイ](https://code.claude.com/docs/ja/llm-gateway) を通じて提供されるカスタムモデル名など）にも同じことが当てはまります。新しいモデルでは、Claude は書かれたチェックリストなしで複数ステップの作業を追跡でき、ツールの定義とリマインダーはコンテキストを占有します。ツールがない場合、Claude は作業中に[タスクリスト](https://code.claude.com/docs/ja/interactive-mode.md#task-list)に何も追加しません。
 
 デフォルトではこれらのツールを持たないモデルでこれらのツールを使用したい場合は、以下のいずれかを実行してください：
 
-* Claude Code を開始する前に [`CLAUDE_CODE_ENABLE_TODO_TOOLS=1`](/docs/ja/env-vars) をエクスポートします。例えば `CLAUDE_CODE_ENABLE_TODO_TOOLS=1 claude`。Claude Code はすべてのモデルとすべてのプロバイダーで同じツールを提供します
-* [`--allowedTools`](/docs/ja/cli-reference#cli-flags) で、例えば `claude --allowedTools TaskCreate` のようにツールの 1 つを指定します
-* [`--tools`](/docs/ja/cli-reference#cli-flags) でツールをリストします。これはセッションの組み込みツールを指定されたものに制限します。使用する他の組み込みツールと一緒に必要なツールを含めます
-* Agent SDK では、[`allowedTools` と `tools` オプション](/docs/ja/agent-sdk/todo-tracking#model-availability) は 2 つのフラグと同じように機能します
+* Claude Code を開始する前に [`CLAUDE_CODE_ENABLE_TODO_TOOLS=1`](https://code.claude.com/docs/ja/env-vars) をエクスポートします。例えば `CLAUDE_CODE_ENABLE_TODO_TOOLS=1 claude`。Claude Code はすべてのモデルとすべてのプロバイダーで同じツールを提供します
+* [`--allowedTools`](https://code.claude.com/docs/ja/cli-reference#cli-flags) で、例えば `claude --allowedTools TaskCreate` のようにツールの 1 つを指定します
+* [`--tools`](https://code.claude.com/docs/ja/cli-reference#cli-flags) でツールをリストします。これはセッションの組み込みツールを指定されたものに制限します。使用する他の組み込みツールと一緒に必要なツールを含めます
+* Agent SDK では、[`allowedTools` と `tools` オプション](https://code.claude.com/docs/ja/agent-sdk/todo-tracking#model-availability) は 2 つのフラグと同じように機能します
 
-[バックグラウンドセッション](/docs/ja/agent-view.md) および[ウェブ上の Claude Code](/docs/ja/claude-code-on-the-web.md) では、Claude Code はリストされているかどうかに関わらず、すべてのモデルで同じツールを提供します。
+[バックグラウンドセッション](https://code.claude.com/docs/ja/agent-view.md) および[ウェブ上の Claude Code](https://code.claude.com/docs/ja/claude-code-on-the-web.md) では、Claude Code はリストされているかどうかに関わらず、すべてのモデルで同じツールを提供します。
 
-サブエージェントが Task トラッキングツールを持つのは、サブエージェントがどのモデルを実行しているかに関わらず、セッションがそれらを持っている場合のみです。プロセス内の[エージェントチーム](/docs/ja/agent-teams.md)のチームメイトは、セッションが Task トラッキングツールを持っている場合にそれらを持ちます。[分割ペイン](/docs/ja/agent-teams.md#choose-a-display-mode)のチームメイトは別の Claude Code プロセスであり、`--allowedTools` ではなく `--tools` リストと拒否ルールを[継承](/docs/ja/agent-teams.md#permissions)するため、設定内容を確認してください：
+ここで説明されているデフォルトセットは Claude Code v2.1.268 以降に適用されます。
+
+### サブエージェントとエージェントチームにおける Task トラッキングツール
+
+サブエージェントが Task トラッキングツールを持つのは、サブエージェントがどのモデルを実行しているかに関わらず、セッションがそれらを持っている場合のみです。プロセス内の[エージェントチーム](https://code.claude.com/docs/ja/agent-teams.md)のチームメイトは、セッションが Task トラッキングツールを持っている場合にそれらを持ちます。[分割ペイン](https://code.claude.com/docs/ja/agent-teams.md#choose-a-display-mode)のチームメイトは別の Claude Code プロセスであり、`--allowedTools` ではなく `--tools` リストと拒否ルールを[継承](https://code.claude.com/docs/ja/agent-teams.md#permissions)するため、設定内容を確認してください：
 
 * **`--tools` リストも拒否ルールもなく、チームメイトに対して `CLAUDE_CODE_ENABLE_TODO_TOOLS` が未設定の場合**：チームメイトは、自身のモデルがデフォルトで持つ Task トラッキングツールを持ちます。
+* **シェルで `CLAUDE_CODE_ENABLE_TODO_TOOLS` をエクスポートしている場合**：Claude Code はチームメイトに固定された環境変数のセットを渡しますが、その中にエクスポートした変数は含まれません。チームメイトにも設定するには、シェルで `claude --settings '{"env":{"CLAUDE_CODE_ENABLE_TODO_TOOLS":"1"}}'` を実行してセッションを開始します。チームメイトには [`--settings`](https://code.claude.com/docs/ja/settings#change-a-setting-for-one-session) の値も渡されます。
 * **`--tools` で Task トラッキングツールを指定している場合**：チームメイトはどのモデルでもそれらを持ちます。
 * **Task トラッキングツールが `--tools` に含まれていない、または拒否ルールで指定されている場合**：チームメイトはそのツールを持ちません。
 
-Task ツールがない場合、エージェントは[共有タスクリスト](/docs/ja/agent-teams.md#assign-and-claim-tasks)の代わりにメッセージを通じてチームと調整します。
-
-ここで説明されているデフォルトセットは Claude Code v2.1.268 以降に適用されます。
+Task ツールがない場合、エージェントは[共有タスクリスト](https://code.claude.com/docs/ja/agent-teams.md#assign-and-claim-tasks)の代わりにメッセージを通じてチームと調整します。
 
 ## WebFetch ツールの動作
 
@@ -618,35 +621,35 @@ WebFetch は URL とそこから抽出する内容を説明するプロンプト
 
 Claude が受け取るレスポンスを形作るいくつかの動作があります。
 
-* WebFetch は `localhost` およびドットのない他のホスト名（ベアなイントラネット名など）をリクエストを行う前に拒否します。[返されるエラー](/docs/ja/errors.md#webfetch-cannot-fetch-localhost) は Claude に Bash 経由で `curl` を使用してローカルサーバーに到達するよう指示します。
+* WebFetch は `localhost` およびドットのない他のホスト名（ベアなイントラネット名など）をリクエストを行う前に拒否します。[返されるエラー](https://code.claude.com/docs/ja/errors.md#webfetch-cannot-fetch-localhost) は Claude に Bash 経由で `curl` を使用してローカルサーバーに到達するよう指示します。
 * HTTP URL は自動的に HTTPS にアップグレードされます。
 * WebFetch は 1 回の呼び出しにつき、ページのコンテンツを最大 100,000 文字まで読み取ります。Claude Code v2.1.290 以降では、より長いページの結果で読み取られなかった量が Claude に伝えられるため、Claude は次の部分をフェッチできます。
-* WebFetch はデフォルトで各レスポンスを 15 分間キャッシュするため、同じ URL の繰り返しフェッチは迅速に返されます。Claude Code v2.1.233 以降では、[`CLAUDE_CODE_WEBFETCH_CACHE_TTL_MS`](/docs/ja/env-vars#variables) を設定して、WebFetch が各レスポンスを保持する期間を変更できます。
-* ページが 5 分以内（WebFetch が従うリダイレクトを含む）にダウンロードを完了しない場合、デッドラインエラーで失敗します。Claude Code v2.1.268 以降では、[`CLAUDE_CODE_WEBFETCH_DEADLINE_MS`](/docs/ja/env-vars#variables) を設定して制限を変更するか、`0` に設定して削除できます。
+* WebFetch はデフォルトで各レスポンスを 15 分間キャッシュするため、同じ URL の繰り返しフェッチは迅速に返されます。Claude Code v2.1.233 以降では、[`CLAUDE_CODE_WEBFETCH_CACHE_TTL_MS`](https://code.claude.com/docs/ja/env-vars#variables) を設定して、WebFetch が各レスポンスを保持する期間を変更できます。
+* ページが 5 分以内（WebFetch が従うリダイレクトを含む）にダウンロードを完了しない場合、デッドラインエラーで失敗します。Claude Code v2.1.268 以降では、[`CLAUDE_CODE_WEBFETCH_DEADLINE_MS`](https://code.claude.com/docs/ja/env-vars#variables) を設定して制限を変更するか、`0` に設定して削除できます。
 * URL が別のホストにリダイレクトされる場合、WebFetch はそれに従う代わりに、元の URL とリダイレクト先を名前で示すテキスト結果を返します。その後 Claude は 2 番目の WebFetch 呼び出しで新しい URL をフェッチします。
 * 抽出ステップが過負荷の API にヒットした場合、Claude Code はバックオフで再試行します。それでも失敗するフェッチはエラー結果を返します。
 
-Manual および `acceptEdits` [権限モード](/docs/ja/permission-modes.md) では、WebFetch はフェッチ前にプロンプトを表示します。ただし、[権限ルール](/docs/ja/permissions.md#manage-permissions) で既に許可または拒否されているドメインと、プロンプトなしでフェッチされる事前承認済みドキュメンテーションドメインの組み込みセットは例外です。ルールが許可するものが何であれ、フェッチは最初に [WebFetch ドメイン安全性チェック](/docs/ja/data-usage.md#webfetch-domain-safety-check) に合格する必要があります。そのセクションではチェックが送信する内容とそれをスキップする設定について説明しています。プロンプトは 3 つのオプションを提供します。
+Manual および `acceptEdits` [権限モード](https://code.claude.com/docs/ja/permission-modes.md) では、WebFetch はフェッチ前にプロンプトを表示します。ただし、[権限ルール](https://code.claude.com/docs/ja/permissions.md#manage-permissions) で既に許可または拒否されているドメインと、プロンプトなしでフェッチされる事前承認済みドキュメンテーションドメインの組み込みセットは例外です。ルールが許可するものが何であれ、フェッチは最初に [WebFetch ドメイン安全性チェック](https://code.claude.com/docs/ja/data-usage.md#webfetch-domain-safety-check) に合格する必要があります。そのセクションではチェックが送信する内容とそれをスキップする設定について説明しています。プロンプトは 3 つのオプションを提供します。
 
 * **Yes**: このフェッチのみを承認します。次の WebFetch 呼び出しは、同じドメインであってもプロンプトを再度表示します。
-* **Yes, and don't ask again for `<domain>`**: フェッチを承認し、そのドメインの `WebFetch(domain:...)` 許可ルールをそのリポジトリの `.claude/settings.local.json` に保存します。[保存された承認の永続化方法](/docs/ja/permissions.md#permission-system) を参照してください。組織が [`allowManagedPermissionRulesOnly`](/docs/ja/permissions#managed-only-settings) を設定している場合、Claude Code はこのオプションを非表示にします。
+* **Yes, and don't ask again for `<domain>`**: フェッチを承認し、そのドメインの `WebFetch(domain:...)` 許可ルールをそのリポジトリの `.claude/settings.local.json` に保存します。[保存された承認の永続化方法](https://code.claude.com/docs/ja/permissions.md#permission-system) を参照してください。組織が [`allowManagedPermissionRulesOnly`](https://code.claude.com/docs/ja/permissions#managed-only-settings) を設定している場合、Claude Code はこのオプションを非表示にします。
 * **No, and tell Claude what to do differently**: フェッチを拒否します。
 
-プロンプトなしで事前にドメインを許可するには、`WebFetch(domain:example.com)` のような許可ルールを追加します。`WebFetch(domain:*)` はすべてのドメインを許可します。`auto` および `bypassPermissions` [権限モード](/docs/ja/permissions.md#permission-modes) はプロンプトをスキップします。ただし、明示的な `ask` ルールが一致するドメインは除きます。
+プロンプトなしで事前にドメインを許可するには、`WebFetch(domain:example.com)` のような許可ルールを追加します。`WebFetch(domain:*)` はすべてのドメインを許可します。`auto` および `bypassPermissions` [権限モード](https://code.claude.com/docs/ja/permissions.md#permission-modes) はプロンプトをスキップします。ただし、明示的な `ask` ルールが一致するドメインは除きます。
 
 `deny`、`ask`、または `allow` の明示的な `WebFetch(domain:...)` ルールは事前承認セットより優先されるため、事前承認されたドメインをブロックするか、そのドメインに対してプロンプトを要求できます。
 
-URL が claude.ai の [アーティファクト](/docs/ja/artifacts.md) リンクである場合、Claude Code はアーティファクト自体を読み取るための承認を求めることもあります。承認を求めるケースについては、[共有されたアーティファクトを読む](/docs/ja/artifacts.md#read-an-artifact-shared-with-you) を参照してください。
+URL が claude.ai の [アーティファクト](https://code.claude.com/docs/ja/artifacts.md) リンクである場合、Claude Code はアーティファクト自体を読み取るための承認を求めることもあります。承認を求めるケースについては、[共有されたアーティファクトを読む](https://code.claude.com/docs/ja/artifacts.md#read-an-artifact-shared-with-you) を参照してください。
 
 WebFetch は `Claude-User` で始まる `User-Agent` ヘッダーと、コンテンツネゴシエーションをサポートするサーバーが Markdown を直接返すことができるように HTML より Markdown を優先する `Accept` ヘッダーを設定します。
 
-サンドボックス化されたコマンドは WebFetch の事前承認されたドキュメンテーションドメインの組み込みセットを継承しません。サンドボックス化されたコマンドがプロンプトなしでドメインに到達できるようにするには、ドメインを [`allowedDomains`](/docs/ja/settings-reference#sandbox-network-alloweddomains) に追加するか、`WebFetch(domain:...)` ルールで許可します。[サンドボックスもこれを尊重します](/docs/ja/sandboxing.md#network-isolation)。WebFetch は代わりにサンドボックス許可リストを読み取ることはないため、ドメインをサンドボックスまたは組織ネットワーク許可リストに追加しても、WebFetch がそれについてプロンプトを表示するのを止めることはできません。
+サンドボックス化されたコマンドは WebFetch の事前承認されたドキュメンテーションドメインの組み込みセットを継承しません。サンドボックス化されたコマンドがプロンプトなしでドメインに到達できるようにするには、ドメインを [`allowedDomains`](https://code.claude.com/docs/ja/settings-reference#sandbox-network-alloweddomains) に追加するか、`WebFetch(domain:...)` ルールで許可します。[サンドボックスもこれを尊重します](https://code.claude.com/docs/ja/sandboxing.md#network-isolation)。WebFetch は代わりにサンドボックス許可リストを読み取ることはないため、ドメインをサンドボックスまたは組織ネットワーク許可リストに追加しても、WebFetch がそれについてプロンプトを表示するのを止めることはできません。
 
 ### WebFetch の利用可能性
 
-Claude Code v2.1.285 以降では、[`CLAUDE_CODE_DISABLE_WEB_FETCH`](/docs/ja/env-vars#variables) を `1` に設定して WebFetch をオフにできます。
+Claude Code v2.1.285 以降では、[`CLAUDE_CODE_DISABLE_WEB_FETCH`](https://code.claude.com/docs/ja/env-vars#variables) を `1` に設定して WebFetch をオフにできます。
 
-Team または Enterprise claude.ai アカウントでサインインし、[LLM ゲートウェイ](/docs/ja/llm-gateway) を経由して接続しない場合、WebFetch はまた組織のポリシーに依存します。Claude Code はセッション開始時に `api.anthropic.com` からこのポリシーをリクエストします。同じことは、Claude Code が計画を決定できないセッション（別のアプリが提供した claude.ai トークンで実行されているセッションなど）にも当てはまります。
+Team または Enterprise claude.ai アカウントでサインインし、[LLM ゲートウェイ](https://code.claude.com/docs/ja/llm-gateway) を経由して接続しない場合、WebFetch はまた組織のポリシーに依存します。Claude Code はセッション開始時に `api.anthropic.com` からこのポリシーをリクエストします。同じことは、Claude Code が計画を決定できないセッション（別のアプリが提供した claude.ai トークンで実行されているセッションなど）にも当てはまります。
 
 WebFetch がセッションから欠落している場合、セッションで `/status` を実行してください。その `Organization policy` 行がポリシーが読み込まれなかったことを報告し、ポリシーを待つ機能の中に Web フェッチを名前で示す場合、Claude Code は組織がそれを許可することを確認できるまで WebFetch を保留しています。セッション外では、`claude doctor` は独自のリクエストを行い、同じ行を出力します。WebFetch を許可するポリシーが読み込まれると、ツールは再起動なしで返されます。
 
@@ -660,25 +663,25 @@ WebSearch は Anthropic の [ウェブ検索](https://platform.claude.com/docs/e
 
 WebSearch 権限ルールは指定子を取りません。`allow` または `deny` の単なる `WebSearch` エントリが唯一の形式です。
 
-検索バックエンドは設定不可です。別のプロバイダーで検索するには、検索ツールを公開する [MCP サーバー](/docs/ja/mcp.md) を追加します。
+検索バックエンドは設定不可です。別のプロバイダーで検索するには、検索ツールを公開する [MCP サーバー](https://code.claude.com/docs/ja/mcp.md) を追加します。
 
 > [!NOTE]
 >
-> WebSearch は Claude API、[AWS 上の Claude Platform](/docs/ja/claude-platform-on-aws.md)、Microsoft Foundry で利用可能です。Google Cloud の Agent Platform では Opus 4、Sonnet 4、Haiku 4.5 以降のモデルで動作します。Amazon Bedrock はサーバー側ウェブ検索ツールを公開していません。
+> WebSearch は Claude API、[AWS 上の Claude Platform](https://code.claude.com/docs/ja/claude-platform-on-aws.md)、Microsoft Foundry で利用可能です。Google Cloud の Agent Platform では Opus 4、Sonnet 4、Haiku 4.5 以降のモデルで動作します。Amazon Bedrock はサーバー側ウェブ検索ツールを公開していません。
 
 ### セッション検索制限
 
-インタラクティブなターミナルセッションには 200 回の WebSearch 呼び出しの制限があります。メイン会話からの検索と、並列リサーチのファンアウトなど [サブエージェント](/docs/ja/sub-agents.md) からの検索は、同じ制限にカウントされます。
+インタラクティブなターミナルセッションには 200 回の WebSearch 呼び出しの制限があります。メイン会話からの検索と、並列リサーチのファンアウトなど [サブエージェント](https://code.claude.com/docs/ja/sub-agents.md) からの検索は、同じ制限にカウントされます。
 
 セッションが制限に達している間、検索は会話に何もしなかった呼び出しとして表示されます。Claude には、既に収集した情報で続行し、そのことを回答で伝え、さらに検索が必要な場合は制限を引き上げるようユーザーに求めるよう指示する通知が届きます。
 
 さらに検索するには、上限を引き上げるか、制限の回復を待つか、新しい会話を開始します。
 
-* **上限を引き上げる**: [`CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION`](/docs/ja/env-vars#variables) 環境変数に `500` などの正の整数を設定します。上限は引き上げることはできますが、オフにすることはできません。
-* **回復を待つ**: Claude Code v2.1.290 以降では、インタラクティブなターミナルセッションの制限は 1 時間あたり約 100 回の呼び出しで回復します。レートを変更するには、[`CLAUDE_CODE_WEB_SEARCH_REFILLS_PER_HOUR`](/docs/ja/env-vars#variables) に 1 時間あたりの呼び出し回数（`50` など）を設定します。
-* **新しい会話を開始する**: Claude Code のプロンプトで [`/clear`](/docs/ja/commands#all-commands) を実行してもカウントがリセットされます。実行中のワークフローなど、サブエージェントをまだ生成できる作業がクリア後も存在する場合、カウントは代わりに引き継がれます。
+* **上限を引き上げる**: [`CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION`](https://code.claude.com/docs/ja/env-vars#variables) 環境変数に `500` などの正の整数を設定します。上限は引き上げることはできますが、オフにすることはできません。
+* **回復を待つ**: Claude Code v2.1.290 以降では、インタラクティブなターミナルセッションの制限は 1 時間あたり約 100 回の呼び出しで回復します。レートを変更するには、[`CLAUDE_CODE_WEB_SEARCH_REFILLS_PER_HOUR`](https://code.claude.com/docs/ja/env-vars#variables) に 1 時間あたりの呼び出し回数（`50` など）を設定します。
+* **新しい会話を開始する**: Claude Code のプロンプトで [`/clear`](https://code.claude.com/docs/ja/commands#all-commands) を実行してもカウントがリセットされます。実行中のワークフローなど、サブエージェントをまだ生成できる作業がクリア後も存在する場合、カウントは代わりに引き継がれます。
 
-`-p` を使用した [非対話モード](/docs/ja/headless.md) および [Agent SDK](/docs/ja/agent-sdk/overview.md) では、制限はセッションごとではなくターンごとに適用されます。ターンは、ユーザーがメッセージを送信してから Claude が応答を終えるまでの期間です。制限は、その後に次のメッセージを送信したとき、または新しい `claude -p` の実行を開始したときにリセットされます。これは [`--continue` または `--resume`](/docs/ja/headless#continue-conversations) を使用した場合も同様です。さらに検索するには、[`CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION`](/docs/ja/env-vars#variables) を引き上げるか、[`CLAUDE_CODE_WEB_SEARCH_REFILLS_PER_HOUR`](/docs/ja/env-vars#variables) で回復レートを設定します。
+`-p` を使用した [非対話モード](https://code.claude.com/docs/ja/headless.md) および [Agent SDK](https://code.claude.com/docs/ja/agent-sdk/overview.md) では、制限はセッションごとではなくターンごとに適用されます。ターンは、ユーザーがメッセージを送信してから Claude が応答を終えるまでの期間です。制限は、その後に次のメッセージを送信したとき、または新しい `claude -p` の実行を開始したときにリセットされます。これは [`--continue` または `--resume`](https://code.claude.com/docs/ja/headless#continue-conversations) を使用した場合も同様です。さらに検索するには、[`CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION`](https://code.claude.com/docs/ja/env-vars#variables) を引き上げるか、[`CLAUDE_CODE_WEB_SEARCH_REFILLS_PER_HOUR`](https://code.claude.com/docs/ja/env-vars#variables) で回復レートを設定します。
 
 ## Write ツールの動作
 
@@ -708,11 +711,11 @@ Claude は会話形式の概要を提供します。正確な MCP ツール名�
 
 > [!NOTE]
 >
-> [advisor tool](/docs/ja/advisor.md) は、Claude Code が実装するツールではなく、API が実行する [server tool](https://platform.claude.com/docs/en/agents-and-tools/tool-use/advisor-tool) です。権限ルールやフック マッチャーで参照できる名前はありません。
+> [advisor tool](https://code.claude.com/docs/ja/advisor.md) は、Claude Code が実装するツールではなく、API が実行する [server tool](https://platform.claude.com/docs/en/agents-and-tools/tool-use/advisor-tool) です。権限ルールやフック マッチャーで参照できる名前はありません。
 
 ## 関連項目
 
-* [MCP servers](/docs/ja/mcp.md)：外部サーバーを接続してカスタム ツールを追加する
-* [権限](/docs/ja/permissions.md)：権限システム、ルール構文、ツール固有のパターン
-* [Subagents](/docs/ja/sub-agents.md)：subagent のツール アクセスを構成する
-* [フック](/docs/ja/hooks-guide.md)：ツール実行の前後にカスタム コマンドを実行する
+* [MCP servers](https://code.claude.com/docs/ja/mcp.md)：外部サーバーを接続してカスタム ツールを追加する
+* [権限](https://code.claude.com/docs/ja/permissions.md)：権限システム、ルール構文、ツール固有のパターン
+* [Subagents](https://code.claude.com/docs/ja/sub-agents.md)：subagent のツール アクセスを構成する
+* [フック](https://code.claude.com/docs/ja/hooks-guide.md)：ツール実行の前後にカスタム コマンドを実行する

@@ -8,24 +8,24 @@
 
 > [!NOTE]
 >
-> クラウド環境は [クラウドセッション](/docs/ja/claude-code-on-the-web.md) に適用されます。これは Pro、Max、Team プランで利用可能であり、[プレミアムシートまたは Chat + Claude Code シートを持つ](https://support.claude.com/en/articles/11845131-use-claude-code-with-your-team-or-enterprise-plan) Enterprise ユーザー向けです。
+> クラウド環境は [クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md) に適用されます。これは Pro、Max、Team プランで利用可能であり、[プレミアムシートまたは Chat + Claude Code シートを持つ](https://support.claude.com/en/articles/11845131-use-claude-code-with-your-team-or-enterprise-plan) Enterprise ユーザー向けです。
 
-各 [クラウドセッション](/docs/ja/claude-code-on-the-web.md) はクラウド環境で実行されます。環境を設定して [ネットワークアクセス](#access-levels) を許可または拒否し、セッション用に [環境変数を設定](#set-environment-variables) し、セッションが内容を見ずに使用できる [ネットワークシークレット](#add-network-secrets) を保存し、Claude が作業を開始する前に [セットアップスクリプト](#setup-scripts) を実行できます。
+各 [クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md) はクラウド環境で実行されます。環境を設定して [ネットワークアクセス](#access-levels) を許可または拒否し、セッション用に [環境変数を設定](#set-environment-variables) し、セッションが内容を見ずに使用できる [ネットワークシークレット](#add-network-secrets) を保存し、Claude が作業を開始する前に [セットアップスクリプト](#setup-scripts) を実行できます。
 
 同じ環境は、クラウドセッションを開始する場所に関係なく適用されます。
 
-* [Desktop アプリ](/docs/ja/desktop.md)
-* [Claude モバイルアプリ](/docs/ja/mobile.md)
+* [Desktop アプリ](https://code.claude.com/docs/ja/desktop.md)
+* [Claude モバイルアプリ](https://code.claude.com/docs/ja/mobile.md)
 * [claude.ai/code](https://claude.ai/code) のブラウザ
-* [`claude --cloud`](/docs/ja/claude-code-on-the-web#from-terminal-to-cloud) を使用したターミナル
-* [クラウドスケジュールタスク](/docs/ja/routines.md)
+* [`claude --cloud`](https://code.claude.com/docs/ja/claude-code-on-the-web#from-terminal-to-cloud) を使用したターミナル
+* [クラウドスケジュールタスク](https://code.claude.com/docs/ja/routines.md)
 * [Claude Tag](https://claude.com/docs/claude-tag/overview)
 
-これらの各サーフェスは [セルフホスト環境](/docs/ja/self-hosted-environments) にもルーティングできます。[利用可能性と制限](/docs/ja/self-hosted-environments#availability-and-limitations) は、Claude Tag セッションがセルフホスト環境で実行される場合に Claude がまだ使用できないものをカバーしています。
+これらの各サーフェスは [セルフホスト環境](https://code.claude.com/docs/ja/self-hosted-environments) にもルーティングできます。[利用可能性と制限](https://code.claude.com/docs/ja/self-hosted-environments#availability-and-limitations) は、Claude Tag セッションがセルフホスト環境で実行される場合に Claude がまだ使用できないものをカバーしています。
 
 > [!NOTE]
 >
-> [Remote Control](/docs/ja/remote-control.md) セッションは Web とモバイルインターフェイスを自分のマシン上のセッションに接続します。これはクラウド環境ではなく、自分のマシンのネットワークとファイルを使用します。Claude Tag チャネルセッションは [共有環境](#organization-shared-environments) または [セルフホスト環境](/docs/ja/self-hosted-environments) のいずれかの組織レベルの環境のみを使用します。
+> [Remote Control](https://code.claude.com/docs/ja/remote-control.md) セッションは Web とモバイルインターフェイスを自分のマシン上のセッションに接続します。これはクラウド環境ではなく、自分のマシンのネットワークとファイルを使用します。Claude Tag チャネルセッションは [共有環境](#organization-shared-environments) または [セルフホスト環境](https://code.claude.com/docs/ja/self-hosted-environments) のいずれかの組織レベルの環境のみを使用します。
 
 ## Default 環境
 
@@ -33,7 +33,7 @@
 
 * **`/web-setup` などの CLI フロー**：**Default** を作成します
 * **Pro および Max での Web オンボーディング**：**Default** を作成します
-* **Team および Enterprise での Web オンボーディング**：オーナーが [Quick setup](/docs/ja/claude-code-on-the-web.md#quick-setup-for-team-and-enterprise) をオンにしていない限り、**最初のクラウド環境を作成** フォームを表示します。フォームのデフォルトを保持して **作成して完了** をクリックして、同じ **Default** 環境を取得します
+* **Team および Enterprise での Web オンボーディング**：オーナーが [Quick setup](https://code.claude.com/docs/ja/claude-code-on-the-web.md#quick-setup-for-team-and-enterprise) をオンにしていない限り、**最初のクラウド環境を作成** フォームを表示します。フォームのデフォルトを保持して **作成して完了** をクリックして、同じ **Default** 環境を取得します
 
 **Default** は独自の設定を持ちません。
 
@@ -42,14 +42,14 @@
 
 **Default** のみが利用可能な場合、すべてのセッションはそれで実行されます。複数の環境がある場合、セッションはサーフェスごとに 1 つを選択します。
 
-* Desktop アプリ、モバイルアプリ、および claude.ai/code では、自分で開始したセッションは [セレクタ](#configure-your-environment) に表示される環境を使用します。オーナーが設定した [組織のデフォルト](#organization-shared-environments) は、選択していない場合にセレクションを埋めます。[プロジェクト](/docs/ja/claude-projects.md#project-settings-reference) 内のスレッドは、代わりにプロジェクトの設定で設定された環境を使用します。
-* CLI からは、Claude Code は [`/remote-env` の選択](#select-an-environment-from-the-cli) を使用するか、リストに 1 つある場合は Anthropic ホスト環境にフォールバックし、そうでない場合はブリッジ環境ではないリスト内の最初の環境にフォールバックします。ブリッジ環境は、クラウド環境ではなく独自のマシンを表すために [Remote Control](/docs/ja/remote-control.md) が登録するエントリです。[セルフホスト環境](/docs/ja/self-hosted-environments) の場合、[セッションをディスパッチする](/docs/ja/self-hosted-environments-testing.md#run-the-test-loop) ときに `ccpool_` ID を持つ `--environment <environment-id>` を渡すと、その呼び出しの `/remote-env` の選択とフォールバックをオーバーライドします。Claude Code は Anthropic ホスト `env_` ID をフラグに渡されたものを拒否するため、それらをターゲットにするには `/remote-env` を使用します。フラグには Claude Code v2.1.224 以降が必要です。
+* Desktop アプリ、モバイルアプリ、および claude.ai/code では、自分で開始したセッションは [セレクタ](#configure-your-environment) に表示される環境を使用します。オーナーが設定した [組織のデフォルト](#organization-shared-environments) は、選択していない場合にセレクションを埋めます。[プロジェクト](https://code.claude.com/docs/ja/claude-projects.md#project-settings-reference) 内のスレッドは、代わりにプロジェクトの設定で設定された環境を使用します。
+* CLI からは、Claude Code は [`/remote-env` の選択](#select-an-environment-from-the-cli) を使用するか、リストに 1 つある場合は Anthropic ホスト環境にフォールバックし、そうでない場合はブリッジ環境ではないリスト内の最初の環境にフォールバックします。ブリッジ環境は、クラウド環境ではなく独自のマシンを表すために [Remote Control](https://code.claude.com/docs/ja/remote-control.md) が登録するエントリです。[セルフホスト環境](https://code.claude.com/docs/ja/self-hosted-environments) の場合、[セッションをディスパッチする](https://code.claude.com/docs/ja/self-hosted-environments-testing.md#run-the-test-loop) ときに `ccpool_` ID を持つ `--environment <environment-id>` を渡すと、その呼び出しの `/remote-env` の選択とフォールバックをオーバーライドします。Claude Code は Anthropic ホスト `env_` ID をフラグに渡されたものを拒否するため、それらをターゲットにするには `/remote-env` を使用します。フラグには Claude Code v2.1.224 以降が必要です。
 
 デフォルトでは不十分な場合は環境を設定します。Claude が [デフォルト許可リスト](#default-allowed-domains) 外のドメインに到達する必要がある場合、セッション用に環境変数を設定する必要がある場合、または作業を開始する前に依存関係をインストールする必要がある場合です。
 
 ## 環境を設定する
 
-[claude.ai/code](https://claude.ai/code) で新しいセッションを開始する画面のメッセージボックスの下にある環境セレクターから、環境を追加、編集、アーカイブできます。この画面にアクセスするには、[Web オンボーディング](/docs/ja/web-quickstart.md) を完了してください。Desktop アプリについては、[クラウドセッション](/docs/ja/desktop.md#cloud-sessions) を参照してください。作成した環境はアカウントに個人的なものです。Owner が作成した [共有環境](#organization-shared-environments) も、それらと並んでセレクターに表示されます。設定なしで利用可能な内容については、[インストール済みツール](#installed-tools) を参照してください。
+[claude.ai/code](https://claude.ai/code) で新しいセッションを開始する画面のメッセージボックスの下にある環境セレクターから、環境を追加、編集、アーカイブできます。この画面にアクセスするには、[Web オンボーディング](https://code.claude.com/docs/ja/web-quickstart.md) を完了してください。Desktop アプリについては、[クラウドセッション](https://code.claude.com/docs/ja/desktop.md#cloud-sessions) を参照してください。作成した環境はアカウントに個人的なものです。Owner が作成した [共有環境](#organization-shared-environments) も、それらと並んでセレクターに表示されます。設定なしで利用可能な内容については、[インストール済みツール](#installed-tools) を参照してください。
 
 セレクターは、新しいセッションの最初のメッセージを送信するまでしか表示されません。実行中の自分のクラウドセッションの環境を編集するには、上部のセッションタイトルの後にあるキャレットを選択し、**クラウド環境を編集** を選択します。
 
@@ -62,7 +62,7 @@
 * **環境を追加する**: メニュー下部の **新しい環境** を選択して **新しい環境** ダイアログを開きます。フォームに入力し、**環境を追加** を選択します。新しいセッションでは、追加した環境が使用されます。
 * **環境を編集する**: **Cloud** の下でその環境の行を見つけます。**Cloud** が 1 行だけの場合は、それを選択してリストを開きます。環境が **Cloud** の下に表示されていない場合は、その見出しの下の **その他** 行を選択します。環境の行にホバーし、右側に表示される設定アイコンを選択してダイアログを開きます。
 
-ダイアログには名前、ネットワークアクセスレベル、環境変数、セットアップスクリプトが含まれます。セッションがキーを見ることなく使用できるようにキーを保存するには、[ネットワークシークレットを追加する](#add-network-secrets) を参照してください。
+環境を追加する場合、または自分の環境を編集する場合は、ダイアログの [**ネットワークアクセス**](#network-access)、[**セットアップスクリプト**](#add-a-setup-script)、または [**環境変数**](#set-environment-variables) 行を選択して、その設定を開きます。最後の変更が終わったら、新しい環境の場合は **環境を追加**、既存の環境の場合は **変更を保存** で保存します。セッションがキーを見ることなく使用できるようにキーを保存するには、[ネットワークシークレットを追加する](#add-network-secrets) を参照してください。
 
 ### 環境変数を設定する
 
@@ -76,16 +76,16 @@ LOG_LEVEL=debug
 DATABASE_URL=postgres://localhost:5432/myapp
 ```
 
-セッションは環境の値を読み込んで、Claude が実行するコマンドが読み取ることができる通常の環境変数にします。ただし、`OTEL_*` 変数は除きます。Claude Code はそれらを独自の [テレメトリエクスポート](/docs/ja/monitoring-usage.md#telemetry-from-cloud-sessions-and-claude-tag) に使用し、実行するコマンドに渡しません。
+セッションは環境の値を読み込んで、Claude が実行するコマンドが読み取ることができる通常の環境変数にします。ただし、`OTEL_*` 変数は除きます。Claude Code はそれらを独自の [テレメトリエクスポート](https://code.claude.com/docs/ja/monitoring-usage.md#telemetry-from-cloud-sessions-and-claude-tag) に使用し、実行するコマンドに渡しません。
 
 Anthropic ホスト型環境では、セッションは環境の値をセッション作成時に読み込み、その後 Claude Code がセッションの VM で起動するたびに再度読み込みます。これは 2 つのケースで発生します。
 
 * **VM がアイドル後に復元される**: 数分間アクティビティがない場合、セッションの VM はファイルが保存された状態で一時停止します。次のメッセージは同じ VM を復元し、Claude Code を再度起動します。
-* **VM が回収され再構築される**: 一時停止した VM が [回収](/docs/ja/claude-code-on-the-web.md#environment-expired) されている場合、セッションを再度開くと新しい VM がプロビジョニングされます。
+* **VM が回収され再構築される**: 一時停止した VM が [回収](https://code.claude.com/docs/ja/claude-code-on-the-web.md#environment-expired) されている場合、セッションを再度開くと新しい VM がプロビジョニングされます。
 
 変数を編集、追加、または削除した後、Anthropic ホスト型環境の既存セッションは、VM が次に復元または再構築されるまで最後に読み込んだ値を保持し、その後は変更を使用します。VM はセッションがアイドル状態になると自動的に一時停止し、自分で一時停止することはできません。新しい値をすぐに使用するには、Claude に実行するコマンドで設定するよう依頼します。例えば `LOG_LEVEL=trace npm test` のように、または新しいセッションを開始します。
 
-クラウドセッションは起動時に自身でいくつかの変数も設定します。[`CLAUDE_AUTOCOMPACT_PCT_OVERRIDE`](/docs/ja/claude-code-on-the-web#manage-context) の場合、セッションが設定する値はここで追加した値をオーバーライドするため、ここでそのキーを追加しても効果がありません。
+クラウドセッションは起動時に自身でいくつかの変数も設定します。[`CLAUDE_AUTOCOMPACT_PCT_OVERRIDE`](https://code.claude.com/docs/ja/claude-code-on-the-web#manage-context) の場合、セッションが設定する値はここで追加した値をオーバーライドするため、ここでそのキーを追加しても効果がありません。
 
 環境を使用する誰もが値を読み取ることができます。Anthropic ホスト型環境では、エージェントプロキシがリクエストに添付できるキーに対しては、代わりに [ネットワークシークレット](#add-network-secrets) を使用してください。[シークレットを取得しないリクエスト](#requests-that-never-get-the-credential) はそこにリストされています。
 
@@ -100,10 +100,10 @@ Anthropic ホスト型環境では、セッションは環境の値をセッシ�
 これらの要件によって、シークレットを追加できるかどうか、および追加後にエージェントプロキシがそれを使用できるかどうかが決まります。
 
 * **ロール**: Pro、Max、Team プランでは、ロールに関係なく自分の環境でシークレットを追加および削除できます。Team および Enterprise では、Owner は claude.ai 組織内で組織管理者ロールを保持し、Admin は保持しません。これにより、次のケースで表示される内容が変わります。
-  * **Enterprise での自分の環境**: 組織管理者ロールがあれば、シークレットを追加および削除できます。ない場合、**ネットワークシークレット** セクションには「Only an organization admin can add or delete network secrets」という注記の下にシークレットが一覧表示され、**シークレットを追加** ボタンや削除ボタンはありません。Owner に [共有環境](#organization-shared-environments) へのシークレットの追加を依頼し、そこでセッションを実行してください
+  * **Enterprise での自分の環境**: 組織管理者ロールがあれば、シークレットを追加および削除できます。ない場合、**ネットワークシークレット** 行を選択すると「Only an organization admin can add or delete network secrets」という注記付きでシークレットのリストが開き、**シークレットを追加** ボタンや削除ボタンはありません。Owner に [共有環境](#organization-shared-environments) へのシークレットの追加を依頼し、そこでセッションを実行してください
   * **共有環境**: Owner が管理設定から [シークレットを追加および削除](#add-a-credential) します。組織管理者ロールがない場合は、環境のダイアログに **ネットワークシークレット** セクションがないため、Owner にシークレットの追加を依頼してください
   * **Team での自分の環境**: 組織管理者ロールがない場合、**シークレットを追加** を選択すると、1 つのホストを指定する [短いフォーム](#add-a-secret-without-the-role) が開きます
-* **環境タイプ**: 既に存在する Anthropic ホスト型クラウド環境。[自己ホスト型環境](/docs/ja/self-hosted-environments) にはネットワークシークレットがありません
+* **環境タイプ**: 既に存在する Anthropic ホスト型クラウド環境。[自己ホスト型環境](https://code.claude.com/docs/ja/self-hosted-environments) にはネットワークシークレットがありません
 * **API 到達可能性**: API がインターネットからの接続を受け入れます。リクエストは Anthropic のネットワークから離れるためです
 * **暗号化キー**: 組織が顧客管理の暗号化キーを使用する場合、ネットワークシークレットを保存できません
 
@@ -111,11 +111,11 @@ Anthropic ホスト型環境では、セッションは環境の値をセッシ�
 
 シークレットは一度に 1 つずつ追加し、追加後にシークレットを編集することはできません。シークレットのホストまたは値を変更するには、削除して再度追加します。
 
-[共有環境](#organization-shared-environments) にシークレットを追加するには、[管理設定](https://claude.ai/admin-settings) の **クラウド環境** ページから環境を編集用に開き、**ネットワークシークレット** セクションから手順 1 を続けます。Team プランで [組織管理者ロール](#requirements) を持っていない場合は、自分の環境で手順 1 に従い、その後 [短いフォームに入力](#add-a-secret-without-the-role) します。
+[共有環境](#organization-shared-environments) にシークレットを追加するには、[管理設定](https://claude.ai/admin-settings) の **クラウド環境** ページから環境を編集用に開き、その **ネットワークシークレット** セクションで手順 2 から続けます。Team プランで [組織管理者ロール](#requirements) を持っていない場合は、自分の環境で手順 1 に従い、その後 [短いフォームに入力](#add-a-secret-without-the-role) します。
 
 **1. 環境のネットワークシークレットを開く**
 
-[claude.ai/code](https://claude.ai/code) で [環境を編集用に開きます](#configure-your-environment)。**クラウド環境を編集** ダイアログで、**ネットワークシークレット** セクションを見つけます。環境に既にあるシークレットが表示され、それぞれが適用されるホストが表示されます。
+[claude.ai/code](https://claude.ai/code) で [環境を編集用に開きます](#configure-your-environment)。**クラウド環境を編集** ダイアログで、**ネットワークシークレット** 行を選択します。環境に既にあるシークレットが表示され、それぞれが適用されるホストが表示されます。
 
 **2. シークレットを追加する**
 
@@ -135,7 +135,7 @@ Anthropic ホスト型環境では、セッションは環境の値をセッシ�
 
 #### 組織管理者ロールなしで Team プランでシークレットを追加する
 
-Team プランで [組織管理者ロール](#requirements) を持っていない場合、**シークレットを追加** フォームでは 1 つのホストに対して 1 つのシークレットを指定します。環境の [**ネットワークシークレット** セクション](#add-a-credential) で **シークレットを追加** を選択し、次のフィールドに入力してから、フォームの **シークレットを追加** ボタンを選択します。
+Team プランで [組織管理者ロール](#requirements) を持っていない場合、**シークレットを追加** フォームでは 1 つのホストに対して 1 つのシークレットを指定します。環境の [**ネットワークシークレット** 行](#add-a-credential) を選択し、次に **シークレットを追加** を選択します。次のフィールドに入力し、フォームの **シークレットを追加** ボタンを選択します。
 
 * **ホスト**: シークレットを受け取る 1 つのホスト（`api.example.com` など）。フォームは `*.` ワイルドカードを受け付けません
 * **名前**: シークレットの任意のラベル
@@ -152,13 +152,13 @@ Team プランで [組織管理者ロール](#requirements) を持っていな�
 * **GitHub**: [GitHub プロキシ](#github-proxy) は代わりに GitHub へのリクエストを認証するため、GitHub に対してネットワークシークレットは不要です
 * **Anthropic API およびパブリックパッケージレジストリ**: `api.anthropic.com`、`registry.npmjs.org`、`jsr.io`、`npm.jsr.io`、`pypi.org`、`files.pythonhosted.org`、`index.crates.io`、および `proxy.golang.org`
 * **セットアップスクリプトリクエスト**: Claude Code は [セットアップスクリプト](#setup-scripts) が実行された後、起動時にエージェントプロキシに接続します
-* **Claude Code のテレメトリエクスポート**: Claude Code は [テレメトリエクスポート](/docs/ja/monitoring-usage.md#telemetry-from-cloud-sessions-and-claude-tag) を実行するコマンドではなく自身で送信し、そのリクエストはエージェントプロキシを通過しません
+* **Claude Code のテレメトリエクスポート**: Claude Code は [テレメトリエクスポート](https://code.claude.com/docs/ja/monitoring-usage.md#telemetry-from-cloud-sessions-and-claude-tag) を実行するコマンドではなく自身で送信し、そのリクエストはエージェントプロキシを通過しません
 
 ### CLI から環境を選択する
 
-ターミナルで `/remote-env` を実行して、[`claude --cloud`](/docs/ja/claude-code-on-the-web#from-terminal-to-cloud) などの CLI から作成するクラウドセッションのデフォルト環境を選択します。コマンドは既存の環境のピッカーを開き、選択を [ユーザー設定](/docs/ja/settings.md#where-settings-live) の `remote.defaultEnvironmentId` キーに保存するため、マシン上のすべてのプロジェクトに適用されます。同じキーが [設定レイヤー](/docs/ja/settings.md#settings-precedence) の高い優先度で設定されている場合（リポジトリのプロジェクト設定など）を除きます。
+ターミナルで `/remote-env` を実行して、[`claude --cloud`](https://code.claude.com/docs/ja/claude-code-on-the-web#from-terminal-to-cloud) などの CLI から作成するクラウドセッションのデフォルト環境を選択します。コマンドは既存の環境のピッカーを開き、選択を [ユーザー設定](https://code.claude.com/docs/ja/settings.md#where-settings-live) の `remote.defaultEnvironmentId` キーに保存するため、マシン上のすべてのプロジェクトに適用されます。同じキーが [設定レイヤー](https://code.claude.com/docs/ja/settings.md#settings-precedence) の高い優先度で設定されている場合（リポジトリのプロジェクト設定など）を除きます。
 
-[自己ホスト型環境](/docs/ja/self-hosted-environments) ID（`ccpool_...` の形式）は、より厳密なソースルールに従います。Claude Code がそれを受け入れる設定レイヤーについては、[`remote.defaultEnvironmentId`](/docs/ja/settings-reference#remote-defaultenvironmentid) を参照してください。
+[自己ホスト型環境](https://code.claude.com/docs/ja/self-hosted-environments) ID（`ccpool_...` の形式）は、より厳密なソースルールに従います。Claude Code がそれを受け入れる設定レイヤーについては、[`remote.defaultEnvironmentId`](https://code.claude.com/docs/ja/settings-reference#remote-defaultenvironmentid) を参照してください。
 
 `/remote-env` はデフォルトのみを設定します。セッションを開始せず、環境を追加または編集することはできません。[環境セレクター](#configure-your-environment) から管理します。
 
@@ -173,13 +173,13 @@ Team プランで [組織管理者ロール](#requirements) を持っていな�
 * 環境のネットワークシークレットは実行中のセッションに添付されたままです。アーカイブする前に不要なものを削除してください。
 * アーカイブされた環境では、どのサーフェスでも新しいセッションを開始できません。
   * **保存された CLI デフォルト**: 環境が保存された [CLI デフォルト](#select-an-environment-from-the-cli) だった場合、リストに Anthropic ホスト型環境があれば、Claude Code はそこで CLI クラウドセッションを開始します。ない場合は、リスト内で [Remote Control ブリッジ環境](#the-default-environment) ではない最初の環境で開始します。
-  * **明示的に設定されたもの**: [クラウドスケジュールタスク](/docs/ja/routines.md#environments-and-network-access) など、その環境を明示的に指定して設定されたものは、その環境で新しいセッションを開始できません。別の環境を指すようにしてください。
+  * **明示的に設定されたもの**: [クラウドスケジュールタスク](https://code.claude.com/docs/ja/routines.md#environments-and-network-access) など、その環境を明示的に指定して設定されたものは、その環境で新しいセッションを開始できません。別の環境を指すようにしてください。
 
-Anthropic ホスト型環境が不要になったら、アーカイブしてください。環境のダイアログにも **クラウド環境** 管理ページにも、Anthropic ホスト型環境を削除するオプションはありません。環境が [自己ホスト型](/docs/ja/self-hosted-environments) の場合は、Owner が管理設定の **クラウド環境** ページから削除できます。自分が Owner でない場合は、Owner に削除を依頼してください。
+Anthropic ホスト型環境が不要になったら、アーカイブしてください。環境のダイアログにも **クラウド環境** 管理ページにも、Anthropic ホスト型環境を削除するオプションはありません。環境が [自己ホスト型](https://code.claude.com/docs/ja/self-hosted-environments) の場合は、Owner が管理設定の **クラウド環境** ページから削除できます。自分が Owner でない場合は、Owner に削除を依頼してください。
 
 ### 組織共有環境
 
-Team および Enterprise プランでは、Owner は組織のすべてのメンバーと共有されるクラウド環境を作成できます。同じロールは **クラウド環境** 管理ページで他のすべてを管理します。[自己ホスト型環境](/docs/ja/self-hosted-environments) を含みます。Admin ロールはページを開くことができません。それを開くことができるロールの完全なリストは、[サーバー管理設定を管理する](/docs/ja/server-managed-settings.md#access-control) ためのものです。
+Team および Enterprise プランでは、Owner は組織のすべてのメンバーと共有されるクラウド環境を作成できます。同じロールは **クラウド環境** 管理ページで他のすべてを管理します。[自己ホスト型環境](https://code.claude.com/docs/ja/self-hosted-environments) を含みます。Admin ロールはページを開くことができません。それを開くことができるロールの完全なリストは、[サーバー管理設定を管理する](https://code.claude.com/docs/ja/server-managed-settings.md#access-control) ためのものです。
 
 共有環境は各メンバーの [環境セレクター](#configure-your-environment) に **組織** 見出しの下に表示され、メンバー独自の環境の下に **個人** が表示されるため、チームは各メンバーが再作成する代わりに 1 つの設定で標準化できます。共有環境の設定アイコンを選択すると、すべてのメンバー（Owner を含む）の設定の読み取り専用サマリーが開きます。
 
@@ -194,7 +194,7 @@ Owner は [claude.ai/admin-settings/claude-code](https://claude.ai/admin-setting
 
 ### Claude Tag チャネルが使用する環境を設定する
 
-[Claude Tag](https://claude.com/docs/claude-tag/overview) チャネルでは、Claude はメンバーではなく組織の共有アイデンティティとして機能するため、チャネルセッションは組織レベルの環境のみを使用します。共有環境または [自己ホスト型環境](/docs/ja/self-hosted-environments)。チャネルに .NET などの [事前インストール](#installed-tools) されていないツールチェーンを提供するには、Owner は **クラウド環境** 管理ページから [共有環境](#organization-shared-environments) を作成し、それをインストールする [セットアップスクリプト](#setup-scripts) を使用できます。チャネルを環境に指す 2 つの方法のいずれかで：
+[Claude Tag](https://claude.com/docs/claude-tag/overview) チャネルでは、Claude はメンバーではなく組織の共有アイデンティティとして機能するため、チャネルセッションは組織レベルの環境のみを使用します。共有環境または [自己ホスト型環境](https://code.claude.com/docs/ja/self-hosted-environments)。チャネルに .NET などの [事前インストール](#installed-tools) されていないツールチェーンを提供するには、Owner は **クラウド環境** 管理ページから [共有環境](#organization-shared-environments) を作成し、それをインストールする [セットアップスクリプト](#setup-scripts) を使用できます。チャネルを環境に指す 2 つの方法のいずれかで：
 
 * [claude.ai/admin-settings/claude-code](https://claude.ai/admin-settings/claude-code) で共有環境または自己ホスト型環境を組織の [デフォルト環境](#the-default-environment) として設定します。
 * Claude Tag 管理設定で [チャネルに 1 つをピンする](https://claude.com/docs/claude-tag/admins/troubleshooting#channel-sessions-use-the-wrong-environment-or-can%E2%80%99t-find-one)。
@@ -203,13 +203,13 @@ Owner は [claude.ai/admin-settings/claude-code](https://claude.ai/admin-setting
 
 各環境は 1 つのネットワークアクセスレベルを設定します。これは、セッションが行える送信接続を制御します。デフォルトレベルの **Trusted** は、パッケージレジストリおよび他の [許可リストに登録されたドメイン](#default-allowed-domains) を許可します。**Custom** はカスタムドメインリストを使用します。
 
-環境のネットワークアクセスを変更するには、[編集用に開き](#configure-your-environment)、ダイアログの **Network access** セレクターを使用します。[共有環境](#organization-shared-environments) はそこで読み取り専用で開くため、Owner は [admin settings](https://claude.ai/admin-settings) の **Cloud environments** ページからネットワークアクセスを変更します。セレクターを開くコントロールは、[The Default environment](#the-default-environment) に記載されているアプリサーフェスと [クラウドスケジュールタスクエディター](/docs/ja/routines.md#environments-and-network-access) に表示されます。個人環境は claude.ai アカウント設定に別ページを持ちません。
+環境のネットワークアクセスを変更するには、[編集用に開き](#configure-your-environment)、ダイアログの **Network access** セレクターを使用します。[共有環境](#organization-shared-environments) はそこで読み取り専用で開くため、Owner は [admin settings](https://claude.ai/admin-settings) の **Cloud environments** ページからネットワークアクセスを変更します。セレクターを開くコントロールは、[The Default environment](#the-default-environment) に記載されているアプリサーフェスと [クラウドスケジュールタスクエディター](https://code.claude.com/docs/ja/routines.md#environments-and-network-access) に表示されます。個人環境は claude.ai アカウント設定に別ページを持ちません。
 
 Anthropic ホスト環境のネットワークアクセスを変更すると、既存のセッションはセッションの [network allowlist](#access-levels) を通じて行くリクエストについて、約 1 分以内に新しい設定に従います。新しいセッションを開始する必要はありません。
 
 > [!NOTE]
 >
-> セッションまたはスケジュールタスクで有効にした MCP コネクタは、**Allowed domains** にホストを追加しなくても機能します。コネクタのトラフィックはセッションのネットワークではなく Anthropic のサーバーを通じて移動するためです。これは [Security and isolation](/docs/ja/claude-code-on-the-web.md#security-and-isolation) に記載されている同じ Anthropic バウンドチャネルに依存しています。不要なコネクタをオフにして、Claude が到達できるツールを制限します。
+> セッションまたはスケジュールタスクで有効にした MCP コネクタは、**Allowed domains** にホストを追加しなくても機能します。コネクタのトラフィックはセッションのネットワークではなく Anthropic のサーバーを通じて移動するためです。これは [Security and isolation](https://code.claude.com/docs/ja/claude-code-on-the-web.md#security-and-isolation) に記載されている同じ Anthropic バウンドチャネルに依存しています。不要なコネクタをオフにして、Claude が到達できるツールを制限します。
 
 ### アクセスレベル
 
@@ -227,7 +227,7 @@ Anthropic ホスト環境のネットワークアクセスを変更すると、�
 * GitHub（[separate proxy](#github-proxy) を通じて）
 * 有効にした [MCP connectors](#network-access)（トラフィックは Anthropic のサーバーを通じて移動）
 * 環境の [ネットワークシークレット](#add-network-secrets) にリストしたホスト（[シークレットを取得しないホスト](#requests-that-never-get-the-credential) を除く）
-* Anthropic API（Claude Code 独自のリクエスト用。[Security and isolation](/docs/ja/claude-code-on-the-web.md#security-and-isolation) に記載されているように **None** でも）
+* Anthropic API（Claude Code 独自のリクエスト用。[Security and isolation](https://code.claude.com/docs/ja/claude-code-on-the-web.md#security-and-isolation) に記載されているように **None** でも）
 
 ### 特定のドメインを許可する
 
@@ -241,16 +241,16 @@ registry.example.com
 
 この環境のセッションは、`api.example.com`、`internal.example.com` のすべてのサブドメイン、および `registry.example.com` に到達でき、セッションのネットワークを通じた他のドメインには到達できません。[GitHub traffic](#github-proxy)、[MCP connector traffic](#network-access)、および環境の [ネットワークシークレット](#add-network-secrets) のホストへのリクエスト（[シークレットを取得しないホスト](#requests-that-never-get-the-credential) を除く）は、この許可リストを通じません。先頭の `*.` はすべてのサブドメインにマッチします。[Trusted domains](#default-allowed-domains) も保持するには、**Also include default list of common package managers** をチェックします。チェックを外すと、リストしたもののみを許可します。
 
-組織が [artifacts](/docs/ja/artifacts.md#availability) を使用する場合、セッションがそれらを読み取るために `*.frame.claudeusercontent.com` をリストに含める必要はありません。リストがそのホストを除外する場合、Claude Code はセッションの Anthropic への接続を通じてアーティファクトコンテンツを読み取ります。ホストを許可リストに保持する 2 つの状況があります。
+組織が [artifacts](https://code.claude.com/docs/ja/artifacts.md#availability) を使用する場合、セッションがそれらを読み取るために `*.frame.claudeusercontent.com` をリストに含める必要はありません。リストがそのホストを除外する場合、Claude Code はセッションの Anthropic への接続を通じてアーティファクトコンテンツを読み取ります。ホストを許可リストに保持する 2 つの状況があります。
 
 * **この環境のセッションが別の組織のパブリックアーティファクトを開く**：Claude Code はホストから直接それらをフェッチするため、このリストに追加します。
-* **ローカル CLI または自己ホスト型ランナーを設定している**：ホストをその許可リストに保持します。[network access requirements](/docs/ja/network-config.md#network-access-requirements) と自己ホスト型 [network requirements](/docs/ja/self-hosted-environments-deploy.md#network-requirements) を参照してください。
+* **ローカル CLI または自己ホスト型ランナーを設定している**：ホストをその許可リストに保持します。[network access requirements](https://code.claude.com/docs/ja/network-config.md#network-access-requirements) と自己ホスト型 [network requirements](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#network-requirements) を参照してください。
 
-各環境は独自の許可ドメインリストを持ちます。管理者がすべてのメンバーの環境にプッシュできる組織レベルの許可リストはありません。[server-managed setting](/docs/ja/server-managed-settings.md) も環境のネットワーク許可リストにドメインを追加しません。チームに 1 つの標準リストを提供するには、Owner が **Custom** ネットワークアクセスとそのリストを持つ [organization-shared environment](#organization-shared-environments) を作成できます。
+各環境は独自の許可ドメインリストを持ちます。管理者がすべてのメンバーの環境にプッシュできる組織レベルの許可リストはありません。[server-managed setting](https://code.claude.com/docs/ja/server-managed-settings.md) も環境のネットワーク許可リストにドメインを追加しません。チームに 1 つの標準リストを提供するには、Owner が **Custom** ネットワークアクセスとそのリストを持つ [organization-shared environment](#organization-shared-environments) を作成できます。
 
 ### GitHub プロキシ
 
-Anthropic ホスト環境では、すべての GitHub 操作は、環境の [access level](#access-levels) に関係なく、セッションの VM の外に実際の GitHub 認証情報を保つ専用プロキシを通じて行われます。自己ホスト型環境のセッションは、デプロイが提供する認証情報で git 操作を認証します。[Configure git](/docs/ja/self-hosted-environments-deploy.md#configure-git) はオプションをカバーしており、セッションごとにミントされた認証情報と同じプロキシへのオプトインが含まれます。プロキシは以下を提供します。
+Anthropic ホスト環境では、すべての GitHub 操作は、環境の [access level](#access-levels) に関係なく、セッションの VM の外に実際の GitHub 認証情報を保つ専用プロキシを通じて行われます。自己ホスト型環境のセッションは、デプロイが提供する認証情報で git 操作を認証します。[Configure git](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#configure-git) はオプションをカバーしており、セッションごとにミントされた認証情報と同じプロキシへのオプトインが含まれます。プロキシは以下を提供します。
 
 * **Git credentials**：VM 内の git クライアントはスコープ付き認証情報を使用し、プロキシはそれを検証して実際の GitHub トークンと交換します。
 * **API requests**：組み込み GitHub ツールからのリクエスト、および [`proxy-injected` placeholder](#work-with-github-issues-and-pull-requests) の下の `gh` からのリクエストは、実際の認証情報が置き換えられて送信されます。
@@ -262,7 +262,7 @@ Anthropic ホスト環境では、すべての GitHub 操作は、環境の [acc
 
 ### セキュリティプロキシ
 
-Anthropic ホスト環境のクラウドセッションは、セキュリティと不正使用防止のための HTTP/HTTPS ネットワークプロキシの背後で実行されます。[self-hosted environment](/docs/ja/self-hosted-environments-deploy.md#default-deny-egress) では、送信トラフィックは代わりに独自のネットワーク境界を通じて離脱します。Anthropic ホストセッションからのすべての送信インターネットトラフィックはこのプロキシを通じて渡され、以下を提供します。
+Anthropic ホスト環境のクラウドセッションは、セキュリティと不正使用防止のための HTTP/HTTPS ネットワークプロキシの背後で実行されます。[self-hosted environment](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#default-deny-egress) では、送信トラフィックは代わりに独自のネットワーク境界を通じて離脱します。Anthropic ホストセッションからのすべての送信インターネットトラフィックはこのプロキシを通じて渡され、以下を提供します。
 
 * 悪意のあるリクエストに対する保護
 * レート制限と不正使用防止
@@ -273,30 +273,30 @@ Anthropic ホスト環境では、各セッションは独自のオペレーテ�
 
 > [!NOTE]
 >
-> 組織が[セルフホスト環境](/docs/ja/self-hosted-environments)にルーティングするセッションは、代わりに独自のランナーで実行され、ランナーイメージが提供するツールを使用します。
+> 組織が[セルフホスト環境](https://code.claude.com/docs/ja/self-hosted-environments)にルーティングするセッションは、代わりに独自のランナーで実行され、ランナーイメージが提供するツールを使用します。
 
 ### セットアップから引き継がれるもの
 
 > [!NOTE]
 >
-> この表のリポジトリ設定のうち、[プロジェクト](/docs/ja/claude-projects.md)内のクラウドスレッドが読み込むのは、リポジトリルートの `CLAUDE.md`、`.claude/CLAUDE.md`、および[パス固有](/docs/ja/memory.md#path-specific-rules)ではない `.claude/rules/` ファイルのみです。[スレッドがリポジトリから取り込むもの](/docs/ja/claude-projects.md#what-threads-pick-up-from-your-repositories)を参照してください。
+> この表のリポジトリ設定のうち、[プロジェクト](https://code.claude.com/docs/ja/claude-projects.md)内のクラウドスレッドが読み込むのは、リポジトリルートの `CLAUDE.md`、`.claude/CLAUDE.md`、および[パス固有](https://code.claude.com/docs/ja/memory.md#path-specific-rules)ではない `.claude/rules/` ファイルのみです。[スレッドがリポジトリから取り込むもの](https://code.claude.com/docs/ja/claude-projects.md#what-threads-pick-up-from-your-repositories)を参照してください。
 
-クラウドセッションはリポジトリの新しいクローンから開始されます。リポジトリにコミットしたものはすべて利用可能です。独自のマシンにのみインストールまたは構成したものはセッションでは利用できません。組織のポリシーは[サーバー管理設定](/docs/ja/server-managed-settings.md)を通じて別途到着します。
+クラウドセッションはリポジトリの新しいクローンから開始されます。リポジトリにコミットしたものはすべて利用可能です。独自のマシンにのみインストールまたは構成したものはセッションでは利用できません。組織のポリシーは[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)を通じて別途到着します。
 
 | | クラウドセッションで利用可能 | 理由 |
 | :- | :- | :- |
 | リポジトリの `CLAUDE.md` | はい | クローンの一部 |
-| リポジトリの `.claude/settings.json` フックと権限ルール | はい、1 つのリポジトリを持つセッションの場合 | クローンの一部。複数のリポジトリを持つセッションについては、[読み取られる設定](/docs/ja/settings.md#settings-in-cloud-sessions)を参照してください |
-| リポジトリの `.mcp.json` MCP サーバー | はい、1 つのリポジトリを持つセッションの場合 | クローンの一部、セッションの作業ディレクトリから検出されます。セルフホスト環境については、[どのリポジトリの設定が適用されるか](/docs/ja/self-hosted-environments-configuration.md#repository-settings-in-sessions-with-several-repositories)を参照してください |
+| リポジトリの `.claude/settings.json` フックと権限ルール | はい、1 つのリポジトリを持つセッションの場合 | クローンの一部。複数のリポジトリを持つセッションについては、[読み取られる設定](https://code.claude.com/docs/ja/settings.md#settings-in-cloud-sessions)を参照してください |
+| リポジトリの `.mcp.json` MCP サーバー | はい、1 つのリポジトリを持つセッションの場合 | クローンの一部、セッションの作業ディレクトリから検出されます。セルフホスト環境については、[どのリポジトリの設定が適用されるか](https://code.claude.com/docs/ja/self-hosted-environments-configuration.md#repository-settings-in-sessions-with-several-repositories)を参照してください |
 | リポジトリの `.claude/rules/` | はい | クローンの一部 |
 | リポジトリの `.claude/skills/`、`.claude/agents/`、`.claude/commands/` | はい | クローンの一部 |
-| リポジトリの `.claude/settings.json` で宣言されたプラグインとマーケットプレイス | いいえ | クラウドセッションは、リポジトリが [`enabledPlugins`](/docs/ja/settings-reference#enabledplugins) で有効にするプラグインをインストールしません。これには [`extraKnownMarketplaces`](/docs/ja/settings-reference#extraknownmarketplaces) の下にリストされているマーケットプレイスのプラグインも含まれます |
-| 組織の[サーバー管理設定](/docs/ja/server-managed-settings.md) | はい、[Claude Tag](https://claude.com/docs/claude-tag/overview) セッションを除く | セッション開始時に Anthropic のサーバーから取得されます。クラウドセッションで `availableModels` がどのように適用されるかについては、[Surface coverage](/docs/ja/model-config.md#surface-coverage) を参照してください。MDM または管理設定ファイルを通じてデバイスにデプロイされた設定は適用されません。セッションは Anthropic 管理 VM で実行されるためです。[セルフホスト環境](/docs/ja/self-hosted-environments)では、セッションはランナーイメージの管理設定ファイルも読み取ります。[Claude Code が管理ソースを組み合わせる方法](/docs/ja/managed-settings.md#how-claude-code-combines-managed-sources)に従います |
+| リポジトリの `.claude/settings.json` で宣言されたプラグインとマーケットプレイス | いいえ | クラウドセッションは、リポジトリが [`enabledPlugins`](https://code.claude.com/docs/ja/settings-reference#enabledplugins) で有効にするプラグインをインストールしません。これには [`extraKnownMarketplaces`](https://code.claude.com/docs/ja/settings-reference#extraknownmarketplaces) の下にリストされているマーケットプレイスのプラグインも含まれます |
+| 組織の[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md) | はい、[Claude Tag](https://claude.com/docs/claude-tag/overview) セッションを除く | セッション開始時に Anthropic のサーバーから取得されます。クラウドセッションで `availableModels` がどのように適用されるかについては、[Surface coverage](https://code.claude.com/docs/ja/model-config.md#surface-coverage) を参照してください。MDM または管理設定ファイルを通じてデバイスにデプロイされた設定は適用されません。セッションは Anthropic 管理 VM で実行されるためです。[セルフホスト環境](https://code.claude.com/docs/ja/self-hosted-environments)では、セッションはランナーイメージの管理設定ファイルも読み取ります。[Claude Code が管理ソースを組み合わせる方法](https://code.claude.com/docs/ja/managed-settings.md#how-claude-code-combines-managed-sources)に従います |
 | ユーザー `~/.claude/CLAUDE.md` | いいえ | マシンに存在し、リポジトリには存在しません。[リポジトリにコミットせずに個人設定を追加する](#add-personal-preferences-without-committing-to-the-repo)を参照してください |
-| ユーザー `~/.claude/skills/`、`~/.claude/agents/`、`~/.claude/commands/` | いいえ | マシンに存在し、リポジトリには存在しません。代わりにリポジトリの `.claude/` ディレクトリにコミットしてください。クラウドセッションは [claude.ai で有効にしたスキル](/docs/ja/skills.md#skills-in-cowork-and-cloud-sessions)を自動的に読み込みます |
+| ユーザー `~/.claude/skills/`、`~/.claude/agents/`、`~/.claude/commands/` | いいえ | マシンに存在し、リポジトリには存在しません。代わりにリポジトリの `.claude/` ディレクトリにコミットしてください。クラウドセッションは [claude.ai で有効にしたスキル](https://code.claude.com/docs/ja/skills.md#skills-in-cowork-and-cloud-sessions)を自動的に読み込みます |
 | ユーザー設定でのみ有効なプラグイン | いいえ | ユーザースコープの `enabledPlugins` はマシンの `~/.claude/settings.json` に存在します |
-| デフォルトのローカルスコープまたはユーザースコープで `claude mcp add` を使用して追加した MCP サーバー | いいえ | これらはマシンの `~/.claude.json` に書き込まれ、リポジトリには書き込まれません。`claude mcp add --scope project` でサーバーを追加します。これはリポジトリの[`.mcp.json`](/docs/ja/mcp#project-scope)に書き込まれ、そのファイルをコミットしてください。1 つのリポジトリを持つセッションはそれを読み込みます |
-| リポジトリの `.claude/settings.json` `env` ブロック内のトランスポート変数（`NODE_EXTRA_CA_CERTS` や[mTLS クライアント証明書変数](/docs/ja/network-config.md#mtls-authentication)など） | いいえ | ホスティング環境がセッションの API 接続を管理するため、Claude Code はこれらのキーを無視し、セッションのデバッグログで無視された各キーを記録します |
+| デフォルトのローカルスコープまたはユーザースコープで `claude mcp add` を使用して追加した MCP サーバー | いいえ | これらはマシンの `~/.claude.json` に書き込まれ、リポジトリには書き込まれません。`claude mcp add --scope project` でサーバーを追加します。これはリポジトリの[`.mcp.json`](https://code.claude.com/docs/ja/mcp#project-scope)に書き込まれ、そのファイルをコミットしてください。1 つのリポジトリを持つセッションはそれを読み込みます |
+| リポジトリの `.claude/settings.json` `env` ブロック内のトランスポート変数（`NODE_EXTRA_CA_CERTS` や[mTLS クライアント証明書変数](https://code.claude.com/docs/ja/network-config.md#mtls-authentication)など） | いいえ | ホスティング環境がセッションの API 接続を管理するため、Claude Code はこれらのキーを無視し、セッションのデバッグログで無視された各キーを記録します |
 | Claude が呼び出すサービスの API キーとトークン | Anthropic ホスト環境では、[ネットワークシークレット](#add-network-secrets)として | キーを環境に一度追加すると、エージェントプロキシがリストしたホストへのリクエストにそれを添付します。エージェントプロキシが[添付できない](#requests-that-never-get-the-credential)キーは環境変数に留まります |
 | AWS SSO のようなインタラクティブ認証 | いいえ | サポートされていません。SSO はクラウドセッションで実行できないブラウザベースのログインが必要です |
 
@@ -306,7 +306,7 @@ Anthropic ホスト環境では、各セッションは独自のオペレーテ�
 
 #### リポジトリにコミットせずに個人設定を追加する
 
-Anthropic ホスト環境では、共有リポジトリに置きたくない設定のために、`~/.claude/CLAUDE.md` を書き込む[セットアップスクリプト](#setup-scripts)を追加してください。Claude Code はそのファイルをセッション内で[ユーザー指示](/docs/ja/memory.md#choose-where-to-put-claude-md-files)として読み込みます。この例では、コミットメッセージに関する設定を指定します：
+Anthropic ホスト環境では、共有リポジトリに置きたくない設定のために、`~/.claude/CLAUDE.md` を書き込む[セットアップスクリプト](#setup-scripts)を追加してください。Claude Code はそのファイルをセッション内で[ユーザー指示](https://code.claude.com/docs/ja/memory.md#choose-where-to-put-claude-md-files)として読み込みます。この例では、コミットメッセージに関する設定を指定します：
 
 ```bash theme={null}
 #!/bin/bash
@@ -348,7 +348,7 @@ Node.js バージョンは `/opt/node20`、`/opt/node21`、`/opt/node22` にイ�
 
 ### GitHub の issue とプルリクエストを操作する
 
-クラウドセッションには、Claude が issue を読み取り、プルリクエストをリストし、diff を取得し、セットアップなしでコメントを投稿できる組み込み GitHub ツールが含まれています。これらのツールは[GitHub プロキシ](#github-proxy)を通じて認証され、[GitHub 認証オプション](/docs/ja/claude-code-on-the-web.md#github-authentication-options)で構成した方法を使用するため、トークンはコンテナに入りません。
+クラウドセッションには、Claude が issue を読み取り、プルリクエストをリストし、diff を取得し、セットアップなしでコメントを投稿できる組み込み GitHub ツールが含まれています。これらのツールは[GitHub プロキシ](#github-proxy)を通じて認証され、[GitHub 認証オプション](https://code.claude.com/docs/ja/claude-code-on-the-web.md#github-authentication-options)で構成した方法を使用するため、トークンはコンテナに入りません。
 
 [環境設定](#set-environment-variables)で `GH_TOKEN` または `GITHUB_TOKEN` を自分で設定するか、両方を設定しないままにして[GitHub プロキシ](#github-proxy)に認証を処理させることができます：
 
@@ -365,7 +365,7 @@ GitHub の[`gh` CLI](https://cli.github.com)は事前にインストールされ
 
 各クラウドセッションは claude.ai 上にトランスクリプト URL を持ち、セッションは `CLAUDE_CODE_REMOTE_SESSION_ID` 環境変数から独自の ID を読み取ることができます。これを使用して、PR 本文、コミットメッセージ、Slack 投稿、または生成されたレポートに追跡可能なリンクを配置し、レビュアーがそれらを生成した実行を開くことができるようにします。
 
-Claude がクラウドセッションで作成するコミットには `Claude-Session: <url>` git トレーラーが含まれ、PR 本文にはセッション URL が独自の行に含まれます。トレーラーと PR 本文リンクを省略するには、[`attribution.sessionUrl`](/docs/ja/settings-reference#attribution-sessionurl)を `false` に設定します。
+Claude がクラウドセッションで作成するコミットには `Claude-Session: <url>` git トレーラーが含まれ、PR 本文にはセッション URL が独自の行に含まれます。トレーラーと PR 本文リンクを省略するには、[`attribution.sessionUrl`](https://code.claude.com/docs/ja/settings-reference#attribution-sessionurl)を `false` に設定します。
 
 Claude が投稿する Slack メッセージやレポートファイルなど、コミットまたは PR 以外のものにセッションリンクを含めるには、Claude に次のコマンドを実行させ、その出力を使用してください。このコマンドは環境変数の値の `cse_` プレフィックスをトランスクリプト URL が期待する `session_` プレフィックスに変換します：
 
@@ -409,7 +409,7 @@ Anthropic ホスト環境のクラウドセッションは、時間とともに�
 * 16 GB の RAM
 * 30 GB のディスク
 
-VM は大規模なビルドジョブやメモリ集約的なテストなど、大幅により多くのメモリを必要とするタスクを停止する可能性があります。これらの制限を超えるワークロードの場合は、[Remote Control](/docs/ja/remote-control.md)を使用して Claude Code を独自のハードウェアで実行するか、組織が運用するコンピュートで[セルフホスト環境](/docs/ja/self-hosted-environments)でクラウドセッションを実行してください。
+VM は大規模なビルドジョブやメモリ集約的なテストなど、大幅により多くのメモリを必要とするタスクを停止する可能性があります。これらの制限を超えるワークロードの場合は、[Remote Control](https://code.claude.com/docs/ja/remote-control.md)を使用して Claude Code を独自のハードウェアで実行するか、組織が運用するコンピュートで[セルフホスト環境](https://code.claude.com/docs/ja/self-hosted-environments)でクラウドセッションを実行してください。
 
 ### 時間制限
 
@@ -417,12 +417,12 @@ Anthropic ホスト環境では、ビルド、インストール、テスト実�
 
 * **Claude が実行するコマンド**：クラウド環境は独自のコマンドタイムアウトを設定しないため、Bash ツールのデフォルトが適用されます。Claude はデフォルトでフォアグラウンドコマンドを 2 分間待機し、最大 10 分間要求できます。
 
-  コマンドが[タイムアウト](/docs/ja/tools-reference.md#timeout-and-output-limits)に達すると、Claude Code は `sleep` で始まるコマンドを除き、それを停止する代わりに[バックグラウンドに移動](/docs/ja/tools-reference.md#foreground-commands-that-move-to-the-background)します。この方法で移動されたコマンドは、Claude Code がそれを[バックグラウンド時間制限](/docs/ja/tools-reference.md#time-limit-for-background-commands)で停止する前に、最大 30 分間実行し続けることができます。`BASH_DEFAULT_TIMEOUT_MS` を `1800000` ミリ秒より上に設定すると、その制限とフォアグラウンドデフォルトの両方が長くなります。
-* **SessionStart hooks**：Claude Code は、hook エントリで[`timeout`](/docs/ja/hooks#common-fields)（秒単位）を設定しない限り、600 秒後に `command` hook をキャンセルします。Claude Code は[`async: true`](/docs/ja/hooks#run-hooks-in-the-background)で実行する hook に対してタイムアウトを適用しません。
+  コマンドが[タイムアウト](https://code.claude.com/docs/ja/tools-reference.md#timeout-and-output-limits)に達すると、Claude Code は `sleep` で始まるコマンドを除き、それを停止する代わりに[バックグラウンドに移動](https://code.claude.com/docs/ja/tools-reference.md#foreground-commands-that-move-to-the-background)します。この方法で移動されたコマンドは、Claude Code がそれを[バックグラウンド時間制限](https://code.claude.com/docs/ja/tools-reference.md#time-limit-for-background-commands)で停止する前に、最大 30 分間実行し続けることができます。`BASH_DEFAULT_TIMEOUT_MS` を `1800000` ミリ秒より上に設定すると、その制限とフォアグラウンドデフォルトの両方が長くなります。
+* **SessionStart hooks**：Claude Code は、hook エントリで[`timeout`](https://code.claude.com/docs/ja/hooks#common-fields)（秒単位）を設定しない限り、600 秒後に `command` hook をキャンセルします。Claude Code は[`async: true`](https://code.claude.com/docs/ja/hooks#run-hooks-in-the-background)で実行する hook に対してタイムアウトを適用しません。
 * **セットアップスクリプト**：約 5 分以上かかるスクリプトはキャッシュされません。[スクリプト要件](#script-requirements)は、その制限内に留まる方法をカバーしています。
-* **アイドルセッション**：数分間アクティビティがない場合、セッションの VM はファイルが保存された状態で一時停止され、一時停止された VM は後で回収される可能性があります。[環境変数の設定](#set-environment-variables)は、各ケースでセッションが何を取得するかについて説明し、[Environment expired](/docs/ja/claude-code-on-the-web.md#environment-expired)は VM が回収されたセッションを再度開く方法をカバーしています。
+* **アイドルセッション**：数分間アクティビティがない場合、セッションの VM はファイルが保存された状態で一時停止され、一時停止された VM は後で回収される可能性があります。[環境変数の設定](#set-environment-variables)は、各ケースでセッションが何を取得するかについて説明し、[Environment expired](https://code.claude.com/docs/ja/claude-code-on-the-web.md#environment-expired)は VM が回収されたセッションを再度開く方法をカバーしています。
 
-環境のセッションのコマンドタイムアウトを上げるには、[`BASH_DEFAULT_TIMEOUT_MS` と `BASH_MAX_TIMEOUT_MS`](/docs/ja/env-vars#variables)をその[環境変数](#set-environment-variables)に追加してください。どちらもミリ秒を取ります。例えば、`BASH_DEFAULT_TIMEOUT_MS=600000` は 10 分をデフォルトにします。
+環境のセッションのコマンドタイムアウトを上げるには、[`BASH_DEFAULT_TIMEOUT_MS` と `BASH_MAX_TIMEOUT_MS`](https://code.claude.com/docs/ja/env-vars#variables)をその[環境変数](#set-environment-variables)に追加してください。どちらもミリ秒を取ります。例えば、`BASH_DEFAULT_TIMEOUT_MS=600000` は 10 分をデフォルトにします。
 
 ## セットアップスクリプト
 
@@ -430,7 +430,9 @@ Anthropic ホスト環境では、ビルド、インストール、テスト実�
 
 スクリプトは Ubuntu 24.04 上で root として実行されるため、`apt install` およびほとんどの言語パッケージマネージャーが機能します。
 
-セットアップスクリプトを追加するには、環境設定ダイアログを開き、**Setup script** フィールドにスクリプトを入力します。
+### セットアップスクリプトを追加する
+
+自分の環境にセットアップスクリプトを追加するには、スクリプトを入力または貼り付けるか、`setup.sh` などのテキストファイルを読み込みます。[環境を追加または編集](#configure-your-environment) して、**Setup script** 行を選択します。開いたボックスにスクリプトを入力するか、**Choose file** を選択して、ボックスの内容を最大 64 KB のファイルのテキストに置き換えます。その後、**Add environment** または **Save changes** を選択します。
 
 この例は、プリインストールされていない [ShellCheck](https://www.shellcheck.net/) をインストールします。
 
@@ -444,7 +446,7 @@ apt update && apt install -y shellcheck
 セットアップスクリプトには、対応する 3 つの制約があります。
 
 * **ゼロで終了**：スクリプトがゼロ以外で終了する場合、セッションは開始に失敗します。非重要なコマンドに `|| true` を追加して、一時的なインストール失敗がセッションをブロックしないようにします。
-* **5 分以内に完了**：スクリプトの総実行時間を約 5 分以内に保つため、[環境キャッシュ](#environment-caching) をビルドできます。セットアップが 5 分以上かかる場合、環境はキャッシュされません。独立したインストールを `&` と `wait` で並列実行し、フィットしない単一ダウンロードを [SessionStart フック](#setup-scripts-vs-sessionstart-hooks) に移動して、バックグラウンドで起動します。新しいセッションがセットアップ中にハングまたはタイムアウトする場合は、[新しいセッションがセットアップ中にハングまたはタイムアウトする](/docs/ja/web-quickstart.md#new-sessions-hang-or-time-out-during-setup) を参照してください。
+* **5 分以内に完了**：スクリプトの総実行時間を約 5 分以内に保つため、[環境キャッシュ](#environment-caching) をビルドできます。セットアップが 5 分以上かかる場合、環境はキャッシュされません。独立したインストールを `&` と `wait` で並列実行し、フィットしない単一ダウンロードを [SessionStart フック](#setup-scripts-vs-sessionstart-hooks) に移動して、バックグラウンドで起動します。新しいセッションがセットアップ中にハングまたはタイムアウトする場合は、[新しいセッションがセットアップ中にハングまたはタイムアウトする](https://code.claude.com/docs/ja/web-quickstart.md#new-sessions-hang-or-time-out-during-setup) を参照してください。
 * **インストール用のネットワークアクセス**：パッケージインストールはレジストリに到達する必要があります。デフォルトの **Trusted** レベルは npm、PyPI、RubyGems、crates.io を含む [一般的なパッケージレジストリ](#default-allowed-domains) をカバーします。**None** ネットワークアクセスでは、インストールは失敗します。
 
 ### 環境キャッシング
@@ -453,30 +455,30 @@ apt update && apt install -y shellcheck
 
 キャッシュはファイルシステムスナップショットであるため、セットアップスクリプトがディスクに書き込むものを保持し、実行中のみのものを失います。インストールするパッケージ、プルする Docker イメージ、書き込むファイルはすべて引き継がれます。スクリプトが開始したデータベース、`docker compose up` スタック、またはその他のバックグラウンドプロセスは引き継がれません。これらはセッションごとに Claude に依頼するか、[SessionStart フック](#setup-scripts-vs-sessionstart-hooks) で開始します。
 
-セットアップスクリプトは、環境のセットアップスクリプトまたは許可されたネットワークホストを変更するとき、およびキャッシュが約 7 日後に有効期限に達するときに再度実行され、キャッシュを再構築します。Anthropic ホスト環境では、セッションの VM が [アイドル後に復元](#set-environment-variables) されるときに、セットアップスクリプトは実行されません。そのため、スクリプトへの変更は、その VM が [回収](/docs/ja/claude-code-on-the-web.md#environment-expired) されて再構築されるときにのみ既存のセッションに到達します。変更をすぐに適用するには、セッションでコマンドを実行するか、新しいセッションを開始します。
+セットアップスクリプトは、環境のセットアップスクリプトまたは許可されたネットワークホストを変更するとき、およびキャッシュが約 7 日後に有効期限に達するときに再度実行され、キャッシュを再構築します。Anthropic ホスト環境では、セッションの VM が [アイドル後に復元](#set-environment-variables) されるときに、セットアップスクリプトは実行されません。そのため、スクリプトへの変更は、その VM が [回収](https://code.claude.com/docs/ja/claude-code-on-the-web.md#environment-expired) されて再構築されるときにのみ既存のセッションに到達します。変更をすぐに適用するには、セッションでコマンドを実行するか、新しいセッションを開始します。
 
 キャッシングを有効にするか、スナップショットを自分で管理する必要はありません。
 
 ### セットアップスクリプト対 SessionStart フック
 
-セットアップスクリプトを使用して VM 自体をプロビジョニングします。[プリインストール](#installed-tools) されていないツールチェーンと CLI ツール。[SessionStart フック](/docs/ja/hooks.md#sessionstart) をプロジェクトセットアップに使用します。クラウドとローカルで実行する必要があります。`npm install` などです。
+セットアップスクリプトを使用して VM 自体をプロビジョニングします。[プリインストール](#installed-tools) されていないツールチェーンと CLI ツール。[SessionStart フック](https://code.claude.com/docs/ja/hooks.md#sessionstart) をプロジェクトセットアップに使用します。クラウドとローカルで実行する必要があります。`npm install` などです。
 
 セットアップスクリプトと SessionStart フックは、クラウドセッションが開始するときに固定順序で実行されます。テーブルは、設定場所、実行時期、実行場所を比較しています。
 
 | | セットアップスクリプト | SessionStart フック |
 | - | - | - |
-| **設定場所** | [claude.ai/code](https://claude.ai/code) の環境ダイアログ、[共有環境](#organization-shared-environments) の **クラウド環境** 管理ページ | [設定ファイル](/docs/ja/settings.md#where-settings-live)（リポジトリの `.claude/settings.json` など）。[セットアップから引き継がれるもの](#what-carries-over-from-your-setup) を参照して、どのファイルがクラウドセッションに到達するかを確認してください |
+| **設定場所** | [claude.ai/code](https://claude.ai/code) の環境ダイアログ、[共有環境](#organization-shared-environments) の **クラウド環境** 管理ページ | [設定ファイル](https://code.claude.com/docs/ja/settings.md#where-settings-live)（リポジトリの `.claude/settings.json` など）。[セットアップから引き継がれるもの](#what-carries-over-from-your-setup) を参照して、どのファイルがクラウドセッションに到達するかを確認してください |
 | **実行時期** | Claude Code が起動する前に、[キャッシュされた環境](#environment-caching) が存在する場合はスキップ | Claude Code が起動した後、再開を含むすべてのセッションで |
 | **実行場所** | クラウドセッションのみ | ローカルとクラウドセッション |
 
 ユーザーレベルの `~/.claude/settings.json` に SessionStart フックがある場合、クラウドではそれらを期待しないでください。ユーザーレベルの設定はマシンに留まります。どの他のフックが実行されるかは、セッションが実行される場所によって異なります。
 
-* **Anthropic ホスト環境**：Claude Code は組織の [サーバー管理設定](/docs/ja/server-managed-settings.md) からフックを実行し、[プロジェクト](/docs/ja/claude-projects.md#what-threads-pick-up-from-your-repositories) のスレッド以外ではリポジトリからもフックを実行します。[Claude Tag](https://claude.com/docs/claude-tag/overview) セッションはサーバー管理設定を受け取らないため、サーバー管理設定からのフックはそこで実行されません。
-* **[セルフホスト環境](/docs/ja/self-hosted-environments-configuration.md#permissions-and-tool-approval)**：Claude Code はオペレーターがランナーホストの `~/.claude/` からシードしたフックも実行し、ランナーイメージの管理設定ファイルのフック（そのファイルが [Claude Code が適用する管理ソース](/docs/ja/managed-settings.md#how-claude-code-combines-managed-sources) のいずれかである場合）。
+* **Anthropic ホスト環境**：Claude Code は組織の [サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md) からフックを実行し、[プロジェクト](https://code.claude.com/docs/ja/claude-projects.md#what-threads-pick-up-from-your-repositories) のスレッド以外ではリポジトリからもフックを実行します。[Claude Tag](https://claude.com/docs/claude-tag/overview) セッションはサーバー管理設定を受け取らないため、サーバー管理設定からのフックはそこで実行されません。
+* **[セルフホスト環境](https://code.claude.com/docs/ja/self-hosted-environments-configuration.md#permissions-and-tool-approval)**：Claude Code はオペレーターがランナーホストの `~/.claude/` からシードしたフックも実行し、ランナーイメージの管理設定ファイルのフック（そのファイルが [Claude Code が適用する管理ソース](https://code.claude.com/docs/ja/managed-settings.md#how-claude-code-combines-managed-sources) のいずれかである場合）。
 
 ### SessionStart フックで依存関係をインストールする
 
-[プロジェクト](/docs/ja/claude-projects.md#what-threads-pick-up-from-your-repositories) のスレッド以外のクラウドセッションでのみ依存関係をインストールするには、SessionStart フックを実行場所をチェックするスクリプトと組み合わせます。
+[プロジェクト](https://code.claude.com/docs/ja/claude-projects.md#what-threads-pick-up-from-your-repositories) のスレッド以外のクラウドセッションでのみ依存関係をインストールするには、SessionStart フックを実行場所をチェックするスクリプトと組み合わせます。
 
 まず、SessionStart フックをリポジトリの `.claude/settings.json` に追加します。この設定は、セッションが開始または再開されるたびに Claude Code に `scripts/install_pkgs.sh` をリポジトリから実行するよう指示します。
 
@@ -537,11 +539,11 @@ exit 0
 
 SessionStart フックはクラウドでローカルと同じように動作しますが、これらの注意事項があります。
 
-* **セッションごとに 1 つのリポジトリ**：Anthropic ホスト環境では、複数のリポジトリを持つセッションはどのリポジトリの `.claude/settings.json` からもフックをロードしないため、そこで定義した SessionStart フックは実行されません。これらのセッションの依存関係は、代わりに [セットアップスクリプト](#setup-scripts) でインストールしてください。セルフホスト環境については、[どのリポジトリの設定が適用されるか](/docs/ja/self-hosted-environments-configuration.md#repository-settings-in-sessions-with-several-repositories) を参照してください。
-* **プロジェクトのクラウドスレッドでは実行されない**：[プロジェクト](/docs/ja/claude-projects.md#what-threads-pick-up-from-your-repositories) 内のクラウドスレッドは、リポジトリの数にかかわらず、リポジトリの `.claude/settings.json` からフックを実行しません。Anthropic ホスト環境では、スレッドの依存関係は [セットアップスクリプト](#setup-scripts) でインストールしてください。セルフホスト環境では、代わりに [ランナーホストの設定](/docs/ja/self-hosted-environments-configuration.md#repository-settings-in-sessions-with-several-repositories) にあるフックを使用してください。
+* **セッションごとに 1 つのリポジトリ**：Anthropic ホスト環境では、複数のリポジトリを持つセッションはどのリポジトリの `.claude/settings.json` からもフックをロードしないため、そこで定義した SessionStart フックは実行されません。これらのセッションの依存関係は、代わりに [セットアップスクリプト](#setup-scripts) でインストールしてください。セルフホスト環境については、[どのリポジトリの設定が適用されるか](https://code.claude.com/docs/ja/self-hosted-environments-configuration.md#repository-settings-in-sessions-with-several-repositories) を参照してください。
+* **プロジェクトのクラウドスレッドでは実行されない**：[プロジェクト](https://code.claude.com/docs/ja/claude-projects.md#what-threads-pick-up-from-your-repositories) 内のクラウドスレッドは、リポジトリの数にかかわらず、リポジトリの `.claude/settings.json` からフックを実行しません。Anthropic ホスト環境では、スレッドの依存関係は [セットアップスクリプト](#setup-scripts) でインストールしてください。セルフホスト環境では、代わりに [ランナーホストの設定](https://code.claude.com/docs/ja/self-hosted-environments-configuration.md#repository-settings-in-sessions-with-several-repositories) にあるフックを使用してください。
 * **クラウドのみのスコープなし**：フックはローカルとクラウドセッションの両方で実行されます。ローカル実行をスキップするには、[依存関係インストールスクリプト](#install-dependencies-with-a-sessionstart-hook) のように `CLAUDE_CODE_REMOTE` 環境変数が `true` でない限り早期に終了します。
 * **ネットワークアクセスが必要**：インストールコマンドはパッケージレジストリに到達する必要があります。環境が **None** ネットワークアクセスを使用する場合、これらのフックは失敗します。**Trusted** の下の [デフォルト許可リスト](#default-allowed-domains) は npm、PyPI、RubyGems、crates.io をカバーします。
-* **プロキシ互換性**：Anthropic ホスト環境では、すべての送信トラフィックは [セキュリティプロキシ](#security-proxy) を通じて渡されます。一部のパッケージマネージャーはこのプロキシで正しく機能しません。Bun は既知の例です。[セルフホスト環境](/docs/ja/self-hosted-environments-deploy.md#default-deny-egress) では、送信トラフィックは代わりに独自のネットワーク境界を通じて行きます。
+* **プロキシ互換性**：Anthropic ホスト環境では、すべての送信トラフィックは [セキュリティプロキシ](#security-proxy) を通じて渡されます。一部のパッケージマネージャーはこのプロキシで正しく機能しません。Bun は既知の例です。[セルフホスト環境](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#default-deny-egress) では、送信トラフィックは代わりに独自のネットワーク境界を通じて行きます。
 * **スタートアップレイテンシを追加**：フックはセッションが開始または再開されるたびに実行されます。[環境キャッシング](#environment-caching) の恩恵を受けるセットアップスクリプトとは異なります。[依存関係インストールスクリプト](#install-dependencies-with-a-sessionstart-hook) のように、既に完了している作業をスキップすることで、インストールスクリプトを高速に保ちます。
 
 ベースイメージをカスタマイズするには、セットアップスクリプトを使用して [提供されたイメージ](#installed-tools) の上にインストールするか、`docker compose` で Claude と一緒にコンテナとして独自のイメージを実行します。ベースイメージ全体を置き換えることはまだサポートされていません。
@@ -807,11 +809,11 @@ SessionStart フックはクラウドでローカルと同じように動作し�
 
 ## 関連リソース
 
-* [Cloud sessions reference](/docs/ja/claude-code-on-the-web.md)：クラウドセッションを開始、管理、共有します
-* [Cloud sessions quickstart](/docs/ja/web-quickstart.md)：GitHub を接続して最初のクラウドセッションを開始します
+* [Cloud sessions reference](https://code.claude.com/docs/ja/claude-code-on-the-web.md)：クラウドセッションを開始、管理、共有します
+* [Cloud sessions quickstart](https://code.claude.com/docs/ja/web-quickstart.md)：GitHub を接続して最初のクラウドセッションを開始します
 * [Claude Tag](https://claude.com/docs/claude-tag/overview)：Claude が Slack から開始するセッションは同じ環境で実行されます
-* [Cloud scheduled tasks](/docs/ja/routines.md)：スケジュール実行は同じ環境とネットワークアクセスレベルを使用します
-* [Remote Control](/docs/ja/remote-control.md)：代わりに独自のマシンのネットワークとファイルでセッションを実行します
-* [Self-hosted environments](/docs/ja/self-hosted-environments)：組織独自のインフラストラクチャでクラウドセッションを実行します
-* [SessionStart hooks](/docs/ja/hooks.md#sessionstart)：ローカルとクラウドセッションで実行されるリポジトリコミットセットアップ
-* [Server-managed settings](/docs/ja/server-managed-settings.md)：管理コンソールから配信される組織ポリシー
+* [Cloud scheduled tasks](https://code.claude.com/docs/ja/routines.md)：スケジュール実行は同じ環境とネットワークアクセスレベルを使用します
+* [Remote Control](https://code.claude.com/docs/ja/remote-control.md)：代わりに独自のマシンのネットワークとファイルでセッションを実行します
+* [Self-hosted environments](https://code.claude.com/docs/ja/self-hosted-environments)：組織独自のインフラストラクチャでクラウドセッションを実行します
+* [SessionStart hooks](https://code.claude.com/docs/ja/hooks.md#sessionstart)：ローカルとクラウドセッションで実行されるリポジトリコミットセットアップ
+* [Server-managed settings](https://code.claude.com/docs/ja/server-managed-settings.md)：管理コンソールから配信される組織ポリシー

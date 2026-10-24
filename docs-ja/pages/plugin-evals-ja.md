@@ -6,7 +6,7 @@
 
 > Claude Code プラグイン用の eval ケースを作成し、claude plugin eval で実行し、結果をグレード化し、プラグインなしのベースラインと比較し、CI でスコアをゲートする。
 
-`claude plugin eval` シェルコマンドは [プラグイン](/docs/ja/plugins/overview.md) をテストケースのスイートに対して実行し、結果をスコア化します。各ケースは現実的なプロンプトと 1 つ以上のグレーダーで構成されます。グレーダーは Claude が生成したものに対する合格/不合格チェックで、返信に対する正規表現、特定のツールが呼び出されたかどうか、または第 2 のモデルが返信を判定するルーブリックなどです。
+`claude plugin eval` シェルコマンドは [プラグイン](https://code.claude.com/docs/ja/plugins/overview.md) をテストケースのスイートに対して実行し、結果をスコア化します。各ケースは現実的なプロンプトと 1 つ以上のグレーダーで構成されます。グレーダーは Claude が生成したものに対する合格/不合格チェックで、返信に対する正規表現、特定のツールが呼び出されたかどうか、または第 2 のモデルが返信を判定するルーブリックなどです。
 
 スイートを手動で作成する必要はありません。`claude plugin eval init` はプラグインについて質問し、ケースとグレーダーを提案し、それらを試し、ファイルを作成します。既に開いているセッションから Claude に同じことを行うよう依頼することもできます。
 
@@ -16,7 +16,7 @@ evals を使用して以下を実行します。
 * プラグインを変更したり新しいモデルがリリースされたりしたときの回帰を検出する
 * プラグインなしの場合と比較してプラグインが何を貢献しているかを確認する
 
-このページはプラグインとスキル作成者向けで、動作するプラグインがあり、その動作をテストしたい場合、および CI でプラグイン変更をゲートするチーム向けです。Claude Code 会話内で 1 つのスキルを反復処理する場合、[skill-creator プラグイン](/docs/ja/skills.md#run-evals-with-skill-creator) は独自の `evals/evals.json` 形式で同様の比較を実行し、どちらのツールも他方のケースファイルを読み込みません。プラグインを作成するには [プラグインを作成する](/docs/ja/plugins/create.md) を参照してください。プラグインの動作ではなく構文とスキーマエラーをチェックするには、[`claude plugin validate`](/docs/ja/plugins/cli-reference#plugin-validate) を使用します。
+このページはプラグインとスキル作成者向けで、動作するプラグインがあり、その動作をテストしたい場合、および CI でプラグイン変更をゲートするチーム向けです。Claude Code 会話内で 1 つのスキルを反復処理する場合、[skill-creator プラグイン](https://code.claude.com/docs/ja/skills.md#run-evals-with-skill-creator) は独自の `evals/evals.json` 形式で同様の比較を実行し、どちらのツールも他方のケースファイルを読み込みません。プラグインを作成するには [プラグインを作成する](https://code.claude.com/docs/ja/plugins/create.md) を参照してください。プラグインの動作ではなく構文とスキーマエラーをチェックするには、[`claude plugin validate`](https://code.claude.com/docs/ja/plugins/cli-reference#plugin-validate) を使用します。
 
 > [!NOTE]
 >
@@ -28,8 +28,8 @@ evals を使用して以下を実行します。
 
 * Claude Code v2.1.269 以降。`claude --version` で確認し、`claude update` でアップグレードしてください。
 * Git 2.31 以降（Git がインストールされている場合）。`git --version` で確認してください。古いバージョンの Git では、`claude plugin eval` は [ケースを実行する前に停止します](#git-is-too-old-for-claude-plugin-eval)。Git がない場合は、通常どおり実行されます。
-* `plugin.json` または `.claude-plugin/plugin.json` マニフェストを含むプラグインディレクトリ、または [skills-directory プラグイン](/docs/ja/plugins/loading.md#plugins-shared-through-a-repository)。
-* 通常の Claude Code セッションで使用するのと同じ認証とモデルプロバイダー。Eval 実行、judge-scored graders、および `claude plugin eval init` はユーザーの認証情報でモデルを呼び出すため、プランの使用制限または API 請求に対してカウントされます。コマンドがコストを報告する場合、その数値はそれらの呼び出しの [定価見積もり](/docs/ja/costs.md) です。Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry で Claude Code を実行している場合は、通常のセッションと同じプロバイダー変数をエクスポートするシェルからスイートを実行してください。[`env` フィールド](#prompt-md-fields) で説明されているとおり、各実行はそのシェルからこれらの変数を継承するためです。
+* `plugin.json` または `.claude-plugin/plugin.json` マニフェストを含むプラグインディレクトリ、または [skills-directory プラグイン](https://code.claude.com/docs/ja/plugins/loading.md#plugins-shared-through-a-repository)。
+* 通常の Claude Code セッションで使用するのと同じ認証とモデルプロバイダー。Eval 実行、judge-scored graders、および `claude plugin eval init` はユーザーの認証情報でモデルを呼び出すため、プランの使用制限または API 請求に対してカウントされます。コマンドがコストを報告する場合、その数値はそれらの呼び出しの [定価見積もり](https://code.claude.com/docs/ja/costs.md) です。Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry で Claude Code を実行している場合は、通常のセッションと同じプロバイダー変数をエクスポートするシェルからスイートを実行してください。[`env` フィールド](#prompt-md-fields) で説明されているとおり、各実行はそのシェルからこれらの変数を継承するためです。
 
 ## eval 実行の仕組み
 
@@ -37,7 +37,7 @@ eval スイートはプラグイン内の `evals/` というディレクトリ�
 
 ### 実行中に何が起こるか
 
-ケースの各実行について、Claude Code は新しい [分離された](#how-runs-are-isolated) [非対話型セッション](/docs/ja/headless.md) を開始し、プラグインのみをロードし、プロンプトを送信し、Claude が完了するか、ケースのターン制限または時間制限に達するまで動作させます。その後、各グレーダーは最終的な返信、トランスクリプト、または Claude が作成したファイルをチェックし、合格または不合格を判定します。
+ケースの各実行について、Claude Code は新しい [分離された](#how-runs-are-isolated) [非対話型セッション](https://code.claude.com/docs/ja/headless.md) を開始し、プラグインのみをロードし、プロンプトを送信し、Claude が完了するか、ケースのターン制限または時間制限に達するまで動作させます。その後、各グレーダーは最終的な返信、トランスクリプト、または Claude が作成したファイルをチェックし、合格または不合格を判定します。
 
 ### ケースのスコア化方法
 
@@ -108,7 +108,7 @@ Published: https://claude.ai/... · keep local next time with --no-publish
 
 `Published:` URL、または `Published:` 行が表示されない場合は `Report:` パスを開いて、すべての実行のすべてのグレーダーの判定と説明を確認し、`llm` グレーダーについてはジャッジの投票と判定した抜粋を確認します。`Published:` 行は、アカウントが [レポートを公開](#html-report) できる場合にのみ表示されます。
 
-最初の一般的な発見は、ケースの `tool_used: Skill` グレーダーが失敗している `Δ` がほぼゼロで、Claude が自然な表現でスキルを選択していないことを意味します。スキルの [`description`](/docs/ja/skills#frontmatter-reference) を調整し、`claude plugin eval .` を再度実行し、比較します。
+最初の一般的な発見は、ケースの `tool_used: Skill` グレーダーが失敗している `Δ` がほぼゼロで、Claude が自然な表現でスキルを選択していないことを意味します。スキルの [`description`](https://code.claude.com/docs/ja/skills#frontmatter-reference) を調整し、`claude plugin eval .` を再度実行し、比較します。
 
 実行回数を減らして 1 つのケースを反復するには、1 つの arm を 1 回実行します。1 回の実行はノイズが多いため、信頼する前にデフォルトの 3 回で変更を確認してください。1 つの arm では、テーブルは `WITH`、`W/OUT`、`Δ` の列の代わりに `SCORE` と `PASS%` の列を表示します。
 
@@ -282,7 +282,7 @@ context:
 
 ### MCP サーバーをモックする
 
-スキルが MCP ツールを呼び出すプラグインを評価できます。その背後にある実際のサービスなしで。スイート全体の場合は `evals/mocks/<server>/<tool>.md` の下に 1 つのツールごとに 1 つの Markdown ファイルを配置するか、1 つのケースの場合はケース独自の `mocks/` ディレクトリの下に配置します。`<server>` はプラグインの [MCP 設定](/docs/ja/plugins/components.md#mcp-servers) のサーバーの名前です。
+スキルが MCP ツールを呼び出すプラグインを評価できます。その背後にある実際のサービスなしで。スイート全体の場合は `evals/mocks/<server>/<tool>.md` の下に 1 つのツールごとに 1 つの Markdown ファイルを配置するか、1 つのケースの場合はケース独自の `mocks/` ディレクトリの下に配置します。`<server>` はプラグインの [MCP 設定](https://code.claude.com/docs/ja/plugins/components.md#mcp-servers) のサーバーの名前です。
 
 実行は、要求しない限り、プラグインの実際の MCP サーバーを開始しません。Claude Code は各サーバー独自の名前で代替サーバーを登録します。モックファイルを持つツールはそのファイルから回答し、`--allow-tools` 付与なしで許可されます。モックファイルを持たないツールは Claude で利用できません。モックがまったくないサーバーは、ケースの `mocked:` 進捗行に `plugin_<plugin>_<server>[not started: no mock]` として表示されます。
 
@@ -332,8 +332,8 @@ Created issue #4821: {{input.title}}
 | :- | :- |
 | プラグインのルートディレクトリ（`.` など） | その eval ディレクトリの下のすべてのケース（そのプラグインをロード） |
 | 単一の `prompt.md` または `case.yaml` ファイル | そのケース（その囲むプラグインをロード） |
-| インストール済みプラグイン（名前、`name` または `name@marketplace`） | プラグインとその eval ディレクトリ内のケース。[元の場所から、またはインストール済みコピーから](/docs/ja/plugins/loading.md#in-place-and-copied-plugins)読み取られます。結果は現在のディレクトリの `./evals/results/` または `--eval-dir` で `./<dir>/results/` に書き込まれます。 |
-| `name@skills-dir` | [skills-directory プラグイン](/docs/ja/plugins/loading.md#plugins-shared-through-a-repository) の場合も同じ |
+| インストール済みプラグイン（名前、`name` または `name@marketplace`） | プラグインとその eval ディレクトリ内のケース。[元の場所から、またはインストール済みコピーから](https://code.claude.com/docs/ja/plugins/loading.md#in-place-and-copied-plugins)読み取られます。結果は現在のディレクトリの `./evals/results/` または `--eval-dir` で `./<dir>/results/` に書き込まれます。 |
+| `name@skills-dir` | [skills-directory プラグイン](https://code.claude.com/docs/ja/plugins/loading.md#plugins-shared-through-a-repository) の場合も同じ |
 | 省略 | 現在のディレクトリをパスとして |
 
 `--case <glob>` を追加してケース名でフィルタリングし、`--tag <tag>` を使用して指定されたタグのいずれかを持つケースを保持します。
@@ -352,7 +352,7 @@ claude plugin eval . --allow-tools Write Edit "Bash(npm test *)"
 
 ケースが付与しなかったツールを要求した場合、進捗出力は `not granted` としてリストします。[モックされた](#mock-mcp-servers) MCP サーバー上のツールは許可が不要です。実際のプラグイン MCP サーバー上のツールは、サーバーが開始されている必要があります（`--allow-real-servers` または `--mocks off` で）、および `--allow-tools "mcp__plugin_my-plugin_github__*"` などの名前による付与。プラグインの MCP ツールは `mcp__plugin_<plugin>_<server>__<tool>` という名前です。
 
-任意の形式で `Bash` を付与すると、すべてのコマンドは Claude Code の [OS レベルサンドボックス](/docs/ja/sandboxing.md) の下で実行されます。書き込みは実行のワークスペースに限定され、ホームディレクトリと Claude Code 設定は読み取り不可で、ネットワークアクセスは `--allow-tools "WebFetch(domain:example.com)"` で付与するドメインに限定されます。サンドボックスバックエンドのないマシンで Bash または PowerShell を付与すると、Claude Code は制限なしで実行するのではなく各実行を拒否し、ケースは実行エラーを表示し、通常はスコア 0 になります。ネイティブ Windows にはバックエンドがないため、WSL2 の下でシェル付与スイートを実行します。Linux では、最初に `bubblewrap` と `socat` をインストールします。[サンドボックスの前提条件](/docs/ja/sandboxing.md) を参照してください。
+任意の形式で `Bash` を付与すると、すべてのコマンドは Claude Code の [OS レベルサンドボックス](https://code.claude.com/docs/ja/sandboxing.md) の下で実行されます。書き込みは実行のワークスペースに限定され、ホームディレクトリと Claude Code 設定は読み取り不可で、ネットワークアクセスは `--allow-tools "WebFetch(domain:example.com)"` で付与するドメインに限定されます。サンドボックスバックエンドのないマシンで Bash または PowerShell を付与すると、Claude Code は制限なしで実行するのではなく各実行を拒否し、ケースは実行エラーを表示し、通常はスコア 0 になります。ネイティブ Windows にはバックエンドがないため、WSL2 の下でシェル付与スイートを実行します。Linux では、最初に `bubblewrap` と `socat` をインストールします。[サンドボックスの前提条件](https://code.claude.com/docs/ja/sandboxing.md) を参照してください。
 
 ### コマンドオプション
 
@@ -409,7 +409,7 @@ with-minus-without デルタは報告されますが、終了コードを変更�
 
 CI ランナーには、以下も必要です。
 
-* **インストールと認証情報**：CI ランナーは Claude Code インストールと [環境の認証情報](/docs/ja/authentication.md)（`ANTHROPIC_API_KEY` やクラウドプロバイダーの変数など）が必要です。
+* **インストールと認証情報**：CI ランナーは Claude Code インストールと [環境の認証情報](https://code.claude.com/docs/ja/authentication.md)（`ANTHROPIC_API_KEY` やクラウドプロバイダーの変数など）が必要です。
 * **信頼**：`--trust-plugin` なしで、チェックアウトディレクトリを Claude Code がまだ信頼していないジョブは、[最初の実行信頼プロンプト](#trust-the-plugin-directory) が必要で、質問できない実行は終了 1 で拒否されます。
 * **CI での `init`**：`claude plugin eval init` は質問をするためにターミナルが必要です。CI では、`claude plugin eval init --bare <name>` を実行して空のテンプレートを取得します。
 
@@ -432,7 +432,7 @@ CI ランナーには、以下も必要です。
 * **ケース内** では、プラグイン付き実行が最初に来て、ベースライン実行が後に来ます。各実行はグレーダーを合格または不合格チップでリストします。失敗したグレーダーは説明付きで既に展開されており、`llm` グレーダーはジャッジの投票とジャッジに提示された証拠も表示します。ここで、実行のスコアが低かった理由を確認できます。スコアに算入されないグレーダー（`tool_used: Skill` など）には `plugin-fired indicator` バッジが付きます。
 * **プロンプトとグレーダー** は実行の下に表示され、ケースのプロンプトと各グレーダーのルーブリックまたはパターンを示すため、スイートを持たずにレポートを読む人でも、何が尋ねられ、何が良いとみなされたかを確認できます。
 
-claude.ai サブスクリプションでサインインしており、[アーティファクト](/docs/ja/artifacts.md) がアカウントで利用可能な場合、Claude Code はレポートをプライベートアーティファクトとして公開し、`Published: <url>` を出力します。`--no-publish` を渡してローカルに保持します。`Published:` 行が表示されない場合（API キー認証など）、ローカルファイルがレポートです。
+claude.ai サブスクリプションでサインインしており、[アーティファクト](https://code.claude.com/docs/ja/artifacts.md) がアカウントで利用可能な場合、Claude Code はレポートをプライベートアーティファクトとして公開し、`Published: <url>` を出力します。`--no-publish` を渡してローカルに保持します。`Published:` 行が表示されない場合（API キー認証など）、ローカルファイルがレポートです。
 
 Claude Code セッションが開始した実行（Claude にスイートを実行するよう依頼するなど）もローカルに留まり、その `Report:` 行は `kept local` と言います。そのコマンドに `--publish-report` を追加して公開します。
 
@@ -481,8 +481,8 @@ Claude Code セッションが開始した実行（Claude にスイートを実�
 各実行は、一時的なホームディレクトリ、作業ディレクトリ、Claude Code 設定を取得し、テスト中のエージェントはそこで `claude -p` 子プロセスとして実行され、プラグインのみが読み込まれます。ケースを作成する際は、これらの結果を念頭に置いてください。
 
 * **個人またはプロジェクトレベルのものは読み込まれません。** ユーザー設定、フック、`CLAUDE.md` ファイル、MCP サーバー、その他のインストール済みプラグイン、メモリ、スキルは存在しません。プロジェクトスコープの設定もどこからも読み取られません。ワークスペースの上位からも内部からも、`.claude/` ディレクトリ、`CLAUDE.md`、`.mcp.json` は読み込まれず、`scaffold_script` が書き込んだものであっても同様です。また、`add_dirs` のディレクトリは読み取りアクセスのみを付与します。シェル環境のほとんども保留されます。[許可リスト](#prompt-md-fields)と `EVAL_*` 変数のみが実行に到達します。[`scaffold_script`](#add-setup-or-history-with-case-yaml) が提供できるのはファイルと Git の状態のみであるため、ケースが依存するスキル、エージェント、フック、MCP サーバーはテスト対象のプラグインに含めてください。
-* **管理ポリシーは引き続き実行を制限できます。** 管理者がマシンに展開した[管理設定](/docs/ja/managed-settings.md)の制限は実行内に適用されるため、管理マシン上の結果は、そのポリシーによって管理されていないマシンと異なる場合があります。
-* **Artifact ツールはオフです。** [アーティファクト](/docs/ja/artifacts.md)を公開するスキルは、そのステップの前に生成するものについてのみグレード可能です。
+* **管理ポリシーは引き続き実行を制限できます。** 管理者がマシンに展開した[管理設定](https://code.claude.com/docs/ja/managed-settings.md)の制限は実行内に適用されるため、管理マシン上の結果は、そのポリシーによって管理されていないマシンと異なる場合があります。
+* **Artifact ツールはオフです。** [アーティファクト](https://code.claude.com/docs/ja/artifacts.md)を公開するスキルは、そのステップの前に生成するものについてのみグレード可能です。
 * **ケース定義はエージェントから隠されています。** 実行は eval ディレクトリを読み取ることができないため、Claude はケースのプロンプト、グレーダー、または兄弟ケースを見ることができません。
 * **シェルコマンド外のネットワークサンドボックスはありません。** 付与するシェルコマンドはサンドボックスのネットワークルールの下で実行されます。`WebFetch(domain:…)` 付与はそのドメインに直接到達し、プラグイン自体のフックと開始する実際の MCP サーバーは任意のホストに到達できます。
 
@@ -642,7 +642,7 @@ v2.1.283 より前では、`claude plugin eval` は git バージョンをチェ
 
 ### "cannot be evaluated where sessions load it"
 
-シェルで、[ローカルパスから追加した](/docs/ja/plugins/loading.md#in-place-and-copied-plugins)マーケットプレイスからインストールしたプラグインの名前を指定して `claude plugin eval` を実行しました。現在、そのマーケットプレイスからプラグインを読み込めるセッションがないため、コマンドはこのメッセージを表示して実行を拒否し、コード 1 で終了します。
+シェルで、[ローカルパスから追加した](https://code.claude.com/docs/ja/plugins/loading.md#in-place-and-copied-plugins)マーケットプレイスからインストールしたプラグインの名前を指定して `claude plugin eval` を実行しました。現在、そのマーケットプレイスからプラグインを読み込めるセッションがないため、コマンドはこのメッセージを表示して実行を拒否し、コード 1 で終了します。
 
 ```text theme={null}
 Error: formatter@my-marketplace cannot be evaluated where sessions load it: no session could load it now. Its marketplace is a folder whose catalog could not be read, or lists it no more. Check the marketplace with `claude plugin marketplace list`, or pass ./<dir> to evaluate a directory.
@@ -664,7 +664,7 @@ Error: formatter@my-marketplace cannot be evaluated where sessions load it: no s
 
 ### プラグインのエージェントの 1 つに対して「Agent type '...' not found」
 
-デフォルトでは、各ケースはプラグインありとプラグインなしの両方で実行され、プラグインなしの実行は[プラグインなしベースライン](#the-no-plugin-baseline)です。Claude がベースライン実行でプラグインのエージェントの 1 つをディスパッチする場合、Agent ツール呼び出しは `Agent type '<plugin>:<agent-name>' not found. Available agents: ...` で失敗します。リストは、[組み込みサブエージェント](/docs/ja/sub-agents.md#built-in-subagents)など、プラグインなしで存在するエージェントのみを名前付けします。
+デフォルトでは、各ケースはプラグインありとプラグインなしの両方で実行され、プラグインなしの実行は[プラグインなしベースライン](#the-no-plugin-baseline)です。Claude がベースライン実行でプラグインのエージェントの 1 つをディスパッチする場合、Agent ツール呼び出しは `Agent type '<plugin>:<agent-name>' not found. Available agents: ...` で失敗します。リストは、[組み込みサブエージェント](https://code.claude.com/docs/ja/sub-agents.md#built-in-subagents)など、プラグインなしで存在するエージェントのみを名前付けします。
 
 エラーは予期されています。`Δ` はプラグインの実行をベースラインと比較するためです。JSON 結果では、ベースライン実行は `cases[].arms.without` の下にあります。
 
@@ -727,9 +727,9 @@ v2.1.299 より前では、このような実行は生成されたものに基�
 
 ## 関連項目も参照
 
-* [プラグインを作成する](/docs/ja/plugins/create.md): テストしているプラグインを構築し、開発中に `--plugin-dir` でロードします
-* [プラグインコマンドリファレンス](/docs/ja/plugins/cli-reference.md#plugin-eval): `plugin eval` および `plugin eval init` コマンドエントリ。マニフェストの [`experimental.evals`](/docs/ja/plugins/manifest-reference#fields) キーはマニフェストリファレンスにあります
-* [スキル](/docs/ja/skills.md): スキルの説明が Claude がそれを呼び出すときを決定する方法。これはスキルがトリガーされるかどうかをチェックするケースが測定しているものです。
-* [サンドボックス](/docs/ja/sandboxing.md): 実行に Bash を付与するときに適用される OS レベルサンドボックス
-* [プラグインを公開する](/docs/ja/plugins/publish.md): スイートが合格したら、プラグインを公開します
-* [プラグインのコストと使用状況を測定する](/docs/ja/plugins/measure.md): プラグインが各セッションのコンテキストに追加するもの、および人々がそれを使用し続けているかどうか
+* [プラグインを作成する](https://code.claude.com/docs/ja/plugins/create.md): テストしているプラグインを構築し、開発中に `--plugin-dir` でロードします
+* [プラグインコマンドリファレンス](https://code.claude.com/docs/ja/plugins/cli-reference.md#plugin-eval): `plugin eval` および `plugin eval init` コマンドエントリ。マニフェストの [`experimental.evals`](https://code.claude.com/docs/ja/plugins/manifest-reference#fields) キーはマニフェストリファレンスにあります
+* [スキル](https://code.claude.com/docs/ja/skills.md): スキルの説明が Claude がそれを呼び出すときを決定する方法。これはスキルがトリガーされるかどうかをチェックするケースが測定しているものです。
+* [サンドボックス](https://code.claude.com/docs/ja/sandboxing.md): 実行に Bash を付与するときに適用される OS レベルサンドボックス
+* [プラグインを公開する](https://code.claude.com/docs/ja/plugins/publish.md): スイートが合格したら、プラグインを公開します
+* [プラグインのコストと使用状況を測定する](https://code.claude.com/docs/ja/plugins/measure.md): プラグインが各セッションのコンテキストに追加するもの、および人々がそれを使用し続けているかどうか

@@ -6,7 +6,7 @@
 
 > Claude Code を Chrome ブラウザに接続して、Web アプリをテストし、コンソールログでデバッグし、フォーム入力を自動化し、Web ページからデータを抽出します。
 
-Claude Code は [Claude in Chrome ブラウザ拡張機能](https://chromewebstore.google.com/detail/claude/fcoeoabgfenejglbffodgkkbkcdhcgfn) と統合され、CLI または [VS Code 拡張機能](/docs/ja/vs-code.md#automate-browser-tasks-with-chrome) からブラウザ自動化機能を提供します。コードをビルドしてから、コンテキストを切り替えることなくブラウザでテストおよびデバッグできます。
+Claude Code は [Claude in Chrome ブラウザ拡張機能](https://chromewebstore.google.com/detail/claude/fcoeoabgfenejglbffodgkkbkcdhcgfn) と統合され、CLI または [VS Code 拡張機能](https://code.claude.com/docs/ja/vs-code.md#automate-browser-tasks-with-chrome) からブラウザ自動化機能を提供します。コードをビルドしてから、コンテキストを切り替えることなくブラウザでテストおよびデバッグできます。
 
 Claude はブラウザタスク用に新しいタブを開き、ブラウザのログイン状態を共有するため、既にサインインしているサイトにアクセスできます。ブラウザアクションはリアルタイムで表示される Chrome ウィンドウで実行されます。Claude がログインページまたは CAPTCHA に遭遇した場合、一時停止して手動で処理するよう求めます。
 
@@ -38,12 +38,12 @@ Claude Code を Chrome で使用する前に、以下が必要です。
 
 * [Google Chrome](https://www.google.com/chrome/)、[Microsoft Edge](https://www.microsoft.com/edge)、または Brave、Arc、Vivaldi、Opera などのその他の Chromium ベースのブラウザ
 * [Claude in Chrome 拡張機能](https://chromewebstore.google.com/detail/claude/fcoeoabgfenejglbffodgkkbkcdhcgfn) バージョン 1.0.36 以上（Chrome Web Store で入手可能）
-* [Claude Code](/docs/ja/quickstart.md#step-1-install-claude-code)
+* [Claude Code](https://code.claude.com/docs/ja/quickstart.md#step-1-install-claude-code)
 * 直接 Anthropic プラン（Pro、Max、Team、または Enterprise）
 
-HIPAA が有効になっている Enterprise 組織では、Claude in Chrome はデフォルトでオフになっており、[Owner](/docs/ja/server-managed-settings.md#access-control) が [**Organization settings > Claude in Chrome**](https://claude.ai/admin-settings/browser-extension) でオンにできます。Anthropic との事業提携契約（BAA）は、Claude in Chrome を通じてサードパーティのサイトに送信されるデータを対象としていません。対象サービス（Eligible Services）の一覧については、[実装ガイド](https://trust.anthropic.com/resources?s=l1wrssd9hsbi4gak0tp5a6\&name=%5Banthropic%5D-hipaa-ready-offering-implementation-guide)を参照してください。
+HIPAA が有効になっている Enterprise 組織では、Claude in Chrome はデフォルトでオフになっており、[Owner](https://code.claude.com/docs/ja/server-managed-settings.md#access-control) が [**Organization settings > Claude in Chrome**](https://claude.ai/admin-settings/browser-extension) でオンにできます。Anthropic との事業提携契約（BAA）は、Claude in Chrome を通じてサードパーティのサイトに送信されるデータを対象としていません。対象サービス（Eligible Services）の一覧については、[実装ガイド](https://trust.anthropic.com/resources?s=l1wrssd9hsbi4gak0tp5a6\&name=%5Banthropic%5D-hipaa-ready-offering-implementation-guide)を参照してください。
 
-Chrome 統合を使用するには、`/login` でサインインする必要もあります。API キーまたは [`claude setup-token`](/docs/ja/authentication#generate-a-long-lived-token) で発行した長期間有効なトークンで認証している場合、ブラウザ拡張機能はこれらの認証情報では認証できないため、`--chrome` を渡しても Claude Code は Chrome 統合を無効のままにします。v2.1.216 より前のバージョンでは、これらのセッションでも Chrome 統合を有効にできましたが、ブラウザ拡張機能への接続はすべて 403 エラーで失敗していました。
+Chrome 統合を使用するには、`/login` でサインインする必要もあります。API キーまたは [`claude setup-token`](https://code.claude.com/docs/ja/authentication#generate-a-long-lived-token) で発行した長期間有効なトークンで認証している場合、ブラウザ拡張機能はこれらの認証情報では認証できないため、`--chrome` を渡しても Claude Code は Chrome 統合を無効のままにします。v2.1.216 より前のバージョンでは、これらのセッションでも Chrome 統合を有効にできましたが、ブラウザ拡張機能への接続はすべて 403 エラーで失敗していました。
 
 > [!NOTE]
 >
@@ -78,7 +78,7 @@ type "hooks", and tell me what results appear
 
 複数のブラウザが接続されている場合は、Claude が使用するブラウザを選択します。選択する前にブラウザアクションが開始されると、Claude はいずれかを選択するよう促します。後でブラウザを切り替えるには、`/chrome` を実行して **ブラウザを選択…** を選びます。別のブラウザが接続された場合でも、Claude は選択したブラウザを使い続けます。
 
-VS Code については、[VS Code でのブラウザ自動化](/docs/ja/vs-code.md#automate-browser-tasks-with-chrome) を参照してください。
+VS Code については、[VS Code でのブラウザ自動化](https://code.claude.com/docs/ja/vs-code.md#automate-browser-tasks-with-chrome) を参照してください。
 
 ### Claude から求められたときに拡張機能をインストールする
 
@@ -92,12 +92,12 @@ VS Code については、[VS Code でのブラウザ自動化](/docs/ja/vs-code
 
 次の 2 つの管理 MCP ポリシーによってプロンプトはオフになります。
 
-* 組織が [`deniedMcpServers` 管理設定](/docs/ja/managed-mcp#policy-based-control-with-allowlists-and-denylists)で `claude-in-chrome` MCP サーバーをブロックしている場合、Claude Code はインストールプロンプトを表示しません。
-* 組織が [`managed-mcp.json`](/docs/ja/managed-mcp#exclusive-control-with-managed-mcp-json) ファイルをデプロイしており、[管理対象セットと併せて Claude in Chrome を許可](/docs/ja/managed-mcp.md#allow-claude-in-chrome-alongside-the-managed-set)していない場合、Claude Code はインストールプロンプトを表示しません。
+* 組織が [`deniedMcpServers` 管理設定](https://code.claude.com/docs/ja/managed-mcp#policy-based-control-with-allowlists-and-denylists)で `claude-in-chrome` MCP サーバーをブロックしている場合、Claude Code はインストールプロンプトを表示しません。
+* 組織が [`managed-mcp.json`](https://code.claude.com/docs/ja/managed-mcp#exclusive-control-with-managed-mcp-json) ファイルをデプロイしており、[管理対象セットと併せて Claude in Chrome を許可](https://code.claude.com/docs/ja/managed-mcp.md#allow-claude-in-chrome-alongside-the-managed-set)していない場合、Claude Code はインストールプロンプトを表示しません。
 
 ### Chrome をデフォルトで有効にする
 
-毎回 `--chrome` を渡さずに Chrome に接続するには、CLI セッションで `/chrome` を実行して **デフォルトで有効** を選択します。[VS Code 拡張機能](/docs/ja/vs-code.md#automate-browser-tasks-with-chrome)では、プロンプトボックスに `/chrome` と入力して **デフォルトで有効** スイッチをオンにします。両者は 1 つの設定を共有しているため、どちらかでオンにすると CLI と VS Code の両方でオンになります。
+毎回 `--chrome` を渡さずに Chrome に接続するには、CLI セッションで `/chrome` を実行して **デフォルトで有効** を選択します。[VS Code 拡張機能](https://code.claude.com/docs/ja/vs-code.md#automate-browser-tasks-with-chrome)では、プロンプトボックスに `/chrome` と入力して **デフォルトで有効** スイッチをオンにします。両者は 1 つの設定を共有しているため、どちらかでオンにすると CLI と VS Code の両方でオンになります。
 
 この設定がオンで Claude Code v2.1.287 以降を使用している場合、各 VS Code セッションは開始時にブラウザに接続するため、`@browser` と入力する前から Claude がブラウザを使用できます。それより前のバージョン、または設定がオフの場合、VS Code セッションは `@browser` と入力したときに接続します。
 
@@ -105,11 +105,11 @@ Chrome が実行されていない場合でも、Claude Code は通常どおり�
 
 > [!NOTE]
 >
-> Chrome をデフォルトで有効にすると、ブラウザツールとその指示が常にロードされるため、コンテキスト使用量が増加します。コンテキスト消費の増加に気付いた場合は、この設定をオフにして、必要なときにのみ接続してください。CLI では `--chrome` を使用し、VS Code ではプロンプトボックスに [`@browser`](/docs/ja/vs-code#automate-browser-tasks-with-chrome) と入力します。
+> Chrome をデフォルトで有効にすると、ブラウザツールとその指示が常にロードされるため、コンテキスト使用量が増加します。コンテキスト消費の増加に気付いた場合は、この設定をオフにして、必要なときにのみ接続してください。CLI では `--chrome` を使用し、VS Code ではプロンプトボックスに [`@browser`](https://code.claude.com/docs/ja/vs-code#automate-browser-tasks-with-chrome) と入力します。
 
 ### サイト権限を管理する
 
-サイトレベルの権限は Chrome 拡張機能から継承されます。Chrome 拡張機能の設定で権限を管理して、Claude がブラウズ、クリック、入力できるサイトを制御します。[auto モード](/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)では、auto モードの分類器自体があるサイトへのブラウザ呼び出しを承認した場合、権限ルールで Claude in Chrome に対していずれかのサイトを拒否していない限り、拡張機能はその呼び出しについて独自のサイトごとのチェックを省略します。
+サイトレベルの権限は Chrome 拡張機能から継承されます。Chrome 拡張機能の設定で権限を管理して、Claude がブラウズ、クリック、入力できるサイトを制御します。[auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)では、auto モードの分類器自体があるサイトへのブラウザ呼び出しを承認した場合、権限ルールで Claude in Chrome に対していずれかのサイトを拒否していない限り、拡張機能はその呼び出しについて独自のサイトごとのチェックを省略します。
 
 ### VS Code セッションでの権限プロンプト
 
@@ -119,7 +119,7 @@ VS Code セッションでは、ブラウザアクションの前に Claude Code
 
 ### plan モードでのブラウザツール
 
-[plan モード](/docs/ja/permission-modes.md#analyze-before-you-edit-with-plan-mode)では、Claude が GIF を記録する、新しいタブを開く、またはショートカットを実行する前に権限プロンプトが表示されます。対話型 CLI セッションでは、[bypassPermissions モードが利用可能](/docs/ja/permission-modes.md#skip-all-checks-with-bypasspermissions-mode)で、かつ[機能フラグの取得](/docs/ja/env-vars.md#features-that-need-feature-flag-fetching)がオフの場合、これらの呼び出しはプロンプトなしで実行されます。
+[plan モード](https://code.claude.com/docs/ja/permission-modes.md#analyze-before-you-edit-with-plan-mode)では、Claude が GIF を記録する、新しいタブを開く、またはショートカットを実行する前に権限プロンプトが表示されます。対話型 CLI セッションでは、[bypassPermissions モードが利用可能](https://code.claude.com/docs/ja/permission-modes.md#skip-all-checks-with-bypasspermissions-mode)で、かつ[機能フラグの取得](https://code.claude.com/docs/ja/env-vars.md#features-that-need-feature-flag-fetching)がオフの場合、これらの呼び出しはプロンプトなしで実行されます。
 
 `createIfEmpty` を設定する `tabs_context_mcp` 呼び出しや、これらのアクションのいずれかを含む `browser_batch` 呼び出しでもプロンプトが表示されます。
 
@@ -175,7 +175,7 @@ and attach logs/session.log to it
 
 Claude がファイルの添付を拒否した場合やアップロードが失敗した場合は、次の原因を確認してください。
 
-* **権限**: Claude がファイルをアップロードできるのは、セッションがそのファイルの読み取りを許可されている場合のみです。そのため、ファイルへの `Read` アクセスを拒否する[権限ルール](/docs/ja/settings-reference.md#permission-settings)は、そのファイルのアップロードもブロックします。
+* **権限**: Claude がファイルをアップロードできるのは、セッションがそのファイルの読み取りを許可されている場合のみです。そのため、ファイルへの `Read` アクセスを拒否する[権限ルール](https://code.claude.com/docs/ja/settings-reference.md#permission-settings)は、そのファイルのアップロードもブロックします。
 * **サイズ**: 1 回のアップロードに含められるファイルは合計 10 MB までです。
 * **ハードリンク**: Claude は複数のハードリンクを持つファイルを拒否します。これは `node_modules` などのパッケージマネージャーのストア内でよく見られます。ファイルをコピーし、そのコピーをアップロードしてください。
 * **認証情報に関する名前**: Claude は、`.env`、`.pem` ファイルや `.key` ファイル、`.ssh` 配下のものなど、認証情報が保管される名前やフォルダーを持つファイルを拒否します。Claude Code v2.1.293 以降が必要です。
@@ -275,7 +275,7 @@ Edge の場合：
 Claude Code ignored CLAUDE_CODE_ENABLE_CFC in this project's settings: a project can't turn on Claude in Chrome. To turn it on yourself, run /chrome or start with --chrome.
 ```
 
-プロジェクトの `.claude/settings.json` または `.claude/settings.local.json` が、Chrome 統合をオンにするために `env` ブロックで [`CLAUDE_CODE_ENABLE_CFC`](/docs/ja/env-vars#variables) を `1` に設定しています。Claude Code はその設定を適用しなかったため、このセッションでは Chrome 統合がオフになっており、Claude はブラウザツールを使用できません。
+プロジェクトの `.claude/settings.json` または `.claude/settings.local.json` が、Chrome 統合をオンにするために `env` ブロックで [`CLAUDE_CODE_ENABLE_CFC`](https://code.claude.com/docs/ja/env-vars#variables) を `1` に設定しています。Claude Code はその設定を適用しなかったため、このセッションでは Chrome 統合がオフになっており、Claude はブラウザツールを使用できません。
 
 Claude Code がこの設定をスキップするのは、これらのファイルがプロジェクトディレクトリに保存されており、チェックアウトしたリポジトリが Claude をブラウザに接続できてはならないためです。
 
@@ -303,7 +303,7 @@ Chrome 拡張機能のサービスワーカーは長時間のセッション中�
 
 複数の claude.ai 組織に所属している場合、拡張機能は Claude Code と同じ組織にサインインしている必要があります。両者が異なる場合、両方が同じ claude.ai アカウントを使用していても、Claude のブラウザツールは「Browser extension is not connected」を返します。
 
-Claude Code がどの組織にサインインしているかを確認するには、Claude Code のプロンプトで [`/status`](/docs/ja/commands) を実行し、`Organization` 行を確認します。
+Claude Code がどの組織にサインインしているかを確認するには、Claude Code のプロンプトで [`/status`](https://code.claude.com/docs/ja/commands) を実行し、`Organization` 行を確認します。
 
 > [!WARNING]
 >
@@ -325,17 +325,17 @@ Windows では、以下の問題が発生する可能性があります。
 
 | エラー | 原因 | 修正 |
 | - | - | - |
-| "Browser extension is not connected" | 拡張機能が Chrome にインストールされていないか実行されていない、拡張機能が Claude Code とは異なる claude.ai アカウントまたは組織にサインインしている、または組織の IP 許可リストが `bridge.claudeusercontent.com` への接続を拒否している | 拡張機能が Claude Code と同じ claude.ai アカウントおよび[組織](#extension-signed-in-to-a-different-organization)にサインインしていることを確認し、Chrome と Claude Code を再起動してから、`/chrome` を実行して再接続します。組織が IP 許可リストを使用しており、エラーが解決しない場合は、[組織の IP 許可リストとプロキシのエグレス](/docs/ja/network-config.md#organization-ip-allowlists-and-proxy-egress)を参照してください |
+| "Browser extension is not connected" | 拡張機能が Chrome にインストールされていないか実行されていない、拡張機能が Claude Code とは異なる claude.ai アカウントまたは組織にサインインしている、または組織の IP 許可リストが `bridge.claudeusercontent.com` への接続を拒否している | 拡張機能が Claude Code と同じ claude.ai アカウントおよび[組織](#extension-signed-in-to-a-different-organization)にサインインしていることを確認し、Chrome と Claude Code を再起動してから、`/chrome` を実行して再接続します。組織が IP 許可リストを使用しており、エラーが解決しない場合は、[組織の IP 許可リストとプロキシのエグレス](https://code.claude.com/docs/ja/network-config.md#organization-ip-allowlists-and-proxy-egress)を参照してください |
 | `/chrome` で拡張機能に「Not detected」と表示される | Chrome 拡張機能がインストールされていないか、無効になっている | `chrome://extensions` で拡張機能をインストールまたは有効にします |
 | "No tab available" | Claude がタブの準備ができる前に動作しようとした | Claude に新しいタブを作成して再度試すよう依頼します |
 | "Receiving end does not exist" | 拡張機能サービスワーカーがアイドル状態になった | `/chrome` を実行して「Reconnect extension」を選択します |
-| "No browsers are connected" | 拡張機能が Claude Code と同じ claude.ai アカウントおよび組織にサインインした状態で Chrome が開かれていない、または Claude Code が `bridge.claudeusercontent.com` に到達できない | Chrome が開いており、拡張機能が Claude Code と同じ claude.ai アカウントおよび[組織](#extension-signed-in-to-a-different-organization)にサインインしていることを確認します。そのうえで解決しない場合は、[ネットワークアクセス要件](/docs/ja/network-config.md#network-access-requirements)に記載されている `bridge.claudeusercontent.com` に Claude Code がネットワーク経由で到達できることを確認します |
+| "No browsers are connected" | 拡張機能が Claude Code と同じ claude.ai アカウントおよび組織にサインインした状態で Chrome が開かれていない、または Claude Code が `bridge.claudeusercontent.com` に到達できない | Chrome が開いており、拡張機能が Claude Code と同じ claude.ai アカウントおよび[組織](#extension-signed-in-to-a-different-organization)にサインインしていることを確認します。そのうえで解決しない場合は、[ネットワークアクセス要件](https://code.claude.com/docs/ja/network-config.md#network-access-requirements)に記載されている `bridge.claudeusercontent.com` に Claude Code がネットワーク経由で到達できることを確認します |
 
 ## 関連項目
 
-* [コンピュータ使用](/docs/ja/computer-use.md)：ブラウザでタスクを実行できない場合にネイティブ macOS アプリを制御します
-* [VS Code で Claude Code を使用する](/docs/ja/vs-code.md#automate-browser-tasks-with-chrome)：VS Code 拡張機能でのブラウザ自動化
-* [CLI リファレンス](/docs/ja/cli-reference.md)：`--chrome` を含むコマンドラインフラグ
-* [一般的なワークフロー](/docs/ja/common-workflows.md)：Claude Code を使用するその他の方法
-* [データとプライバシー](/docs/ja/data-usage.md)：Claude Code がデータを処理する方法
+* [コンピュータ使用](https://code.claude.com/docs/ja/computer-use.md)：ブラウザでタスクを実行できない場合にネイティブ macOS アプリを制御します
+* [VS Code で Claude Code を使用する](https://code.claude.com/docs/ja/vs-code.md#automate-browser-tasks-with-chrome)：VS Code 拡張機能でのブラウザ自動化
+* [CLI リファレンス](https://code.claude.com/docs/ja/cli-reference.md)：`--chrome` を含むコマンドラインフラグ
+* [一般的なワークフロー](https://code.claude.com/docs/ja/common-workflows.md)：Claude Code を使用するその他の方法
+* [データとプライバシー](https://code.claude.com/docs/ja/data-usage.md)：Claude Code がデータを処理する方法
 * [Chrome で Claude を使い始める](https://support.claude.com/en/articles/12012173-getting-started-with-claude-in-chrome)：ショートカット、スケジューリング、権限を含む Chrome 拡張機能の完全なドキュメント

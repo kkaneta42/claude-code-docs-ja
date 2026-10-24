@@ -13,7 +13,7 @@ Claude Code は、組織が開発者の使用パターンを理解し、貢献�
 | Claude for Teams / Enterprise | [claude.ai/analytics/claude-code](https://claude.ai/analytics/claude-code) | 使用メトリクス、GitHub 統合による貢献メトリクス、リーダーボード、データエクスポート | [詳細](#access-analytics-for-team-and-enterprise) |
 | API（Claude Console） | [platform.claude.com/claude-code](https://platform.claude.com/claude-code) | 使用メトリクス、支出追跡、チームインサイト | [詳細](#access-analytics-for-api-customers) |
 
-Code Review には専用のダッシュボードがあります。レビューのアクティビティと支出については、[使用状況を表示する](/docs/ja/code-review-costs.md#view-usage)を参照してください。
+Code Review には専用のダッシュボードがあります。レビューのアクティビティと支出については、[使用状況を表示する](https://code.claude.com/docs/ja/code-review-costs.md#view-usage)を参照してください。
 
 ## Team と Enterprise の分析にアクセスする
 
@@ -26,7 +26,7 @@ Team と Enterprise ダッシュボードには以下が含まれます。
 * **リーダーボード**：Claude Code 使用量でランク付けされたトップコントリビューター
 * **データエクスポート**：カスタムレポート用に貢献データを CSV としてダウンロード
 
-ユーザーごとのトークン数とコスト推定については、[OpenTelemetry エクスポート](/docs/ja/monitoring-usage.md)を構成するか、組織の分析設定から[支出レポート](https://support.claude.com/en/articles/12883420-view-usage-analytics-for-team-and-enterprise-plans)をエクスポートしてください。これはユーザーごと、モデルごとのトークン使用量と推定使用クレジット支出を一覧表示します。
+ユーザーごとのトークン数とコスト推定については、[OpenTelemetry エクスポート](https://code.claude.com/docs/ja/monitoring-usage.md)を構成するか、組織の分析設定から[支出レポート](https://support.claude.com/en/articles/12883420-view-usage-analytics-for-team-and-enterprise-plans)をエクスポートしてください。これはユーザーごと、モデルごとのトークン使用量と推定使用クレジット支出を一覧表示します。
 
 ### 貢献メトリクスを有効にする
 
@@ -40,7 +40,7 @@ Team と Enterprise ダッシュボードには以下が含まれます。
 
 > [!WARNING]
 >
-> [Zero Data Retention](/docs/ja/zero-data-retention.md) が有効になっている組織では、貢献メトリクスは利用できません。分析ダッシュボードは使用メトリクスのみを表示します。
+> [Zero Data Retention](https://code.claude.com/docs/ja/zero-data-retention.md) が有効になっている組織では、貢献メトリクスは利用できません。分析ダッシュボードは使用メトリクスのみを表示します。
 
 **1. GitHub アプリをインストールする**
 
@@ -63,7 +63,7 @@ GitHub 認証フローを完了し、分析に含める GitHub 組織を選択�
 * **「GitHub app required」**：貢献メトリクスを表示するには GitHub アプリをインストールしてください
 * **「Data processing in progress」**：数日後に確認し、データが表示されない場合は GitHub アプリがインストールされていることを確認してください
 
-貢献メトリクスは github.com でホストされているリポジトリを対象とします。[GitHub Enterprise Server](/docs/ja/github-enterprise-server.md) 上のリポジトリについては、分析ダッシュボードは使用メトリクスのみを表示します。
+貢献メトリクスは github.com でホストされているリポジトリを対象とします。[GitHub Enterprise Server](https://code.claude.com/docs/ja/github-enterprise-server.md) 上のリポジトリについては、分析ダッシュボードは使用メトリクスのみを表示します。
 
 ### サマリーメトリクスを確認する
 
@@ -219,6 +219,6 @@ Console ダッシュボードは以下を表示します。
 
 ## 関連リソース
 
-* [OpenTelemetry での監視](/docs/ja/monitoring-usage.md)：リアルタイムメトリクスとイベントを可観測性スタックにエクスポート
-* [コストを効果的に管理する](/docs/ja/costs.md)：支出制限を設定し、トークン使用を最適化
-* [権限](/docs/ja/permissions.md)：ロールと権限を構成
+* [OpenTelemetry での監視](https://code.claude.com/docs/ja/monitoring-usage.md)：リアルタイムメトリクスとイベントを可観測性スタックにエクスポート
+* [コストを効果的に管理する](https://code.claude.com/docs/ja/costs.md)：支出制限を設定し、トークン使用を最適化
+* [権限](https://code.claude.com/docs/ja/permissions.md)：ロールと権限を構成
