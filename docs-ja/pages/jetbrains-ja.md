@@ -61,7 +61,7 @@ claude
 /ide
 ```
 
-接続が成功すると、Claude Code は `Connected to IntelliJ IDEA.` のようなメッセージで確認します。Claude Code がプラグインを持たない実行中の IDE を検出した場合、`/ide` はプラグインをインストールし、IDE を再起動するよう求めます。
+接続が成功すると、Claude Code は `Connected to IntelliJ IDEA.` のようなメッセージで確認します。
 
 Claude が IDE と同じファイルにアクセスできるようにしたい場合は、IDE プロジェクトルートと同じディレクトリから Claude Code を起動してください。
 

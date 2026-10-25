@@ -537,7 +537,7 @@ Claude Code は、慣例的な変数である `AWS_ACCESS_KEY_ID`、`AWS_SECRET_
 
 * **作業ディレクトリとその上位のディレクトリ**: `.claude` 設定ファイル、`.claude/skills`、`.claude/agents`、`.claude/commands`、`.claude/hooks` ディレクトリ、`.mcp.json`、および `.claude/workflows` や `.claude/scheduled_tasks.json` など Claude Code が自ら実行するファイル
 * **作業ディレクトリのみ**: `.bashrc` や `.zshrc` などのシェル起動ファイル、`.gitconfig`、`.vscode` および `.idea` ディレクトリ、`.git` 内の `hooks` と `config`
-* **作業ディレクトリをベア git リポジトリに変えてしまうファイル**: 最上位の `HEAD`、`objects`、`refs`、および `HEAD` が隣にある場合の既存の `config` と `hooks` エントリ。`config` という名前のファイルは、`HEAD` がなくても拒否されます。Linux と WSL2 では、サンドボックス化されたコマンドの実行中に最上位の `HEAD` ファイルや `objects` または `refs` ディレクトリが出現すると、サンドボックスがそれを削除します
+* **作業ディレクトリをベア git リポジトリに変えてしまうファイル**: 最上位の `HEAD`、`objects`、`refs`、および `HEAD` ファイルまたはシンボリックリンクが隣にある場合の既存の `config` と `hooks` エントリ。`config` という名前のファイルは、`HEAD` がなくても拒否されます。[後から出現した `HEAD`、`objects`、`refs` は削除されることがあります](#when-the-sandbox-deletes-head-objects-or-refs)。Linux と WSL2 では、存在しない場合にサンドボックス化されたコマンドがそれらを作成できます。
 * **`~/.claude`、または `CLAUDE_CONFIG_DIR` が指すディレクトリ内**: その内容の大部分、および `~/.claude.json` と `.credentials.json` 認証情報ストア
 
 セッション中に保護された設定ファイルのパスにシンボリックリンクが出現した場合、サンドボックスは次のコマンドから、そのリンク先のファイルへの書き込みも拒否します。
@@ -551,6 +551,12 @@ Claude Code は、慣例的な変数である `AWS_ACCESS_KEY_ID`、`AWS_SECRET_
 ご使用のマシンで解決されたこれらのパスの大部分を確認するには、`/sandbox` を実行して **Config** タブを開きます。ここでは、これらのパスがユーザー自身の `denyWrite` エントリと混在して **Denied within allowed** の下に一覧表示されます。
 
 これらのパスのいずれかで `git merge` または `git checkout` が `unable to unlink old` で失敗する場合は、[git コマンドが `unable to unlink old` で失敗する](#a-git-command-fails-with-unable-to-unlink-old)を参照してください。
+
+#### サンドボックスが `HEAD`、`objects`、`refs` を削除する場合
+
+サンドボックス化されたコマンドが終了した後、作業ディレクトリ内の新しい最上位の `HEAD`、`objects`、`refs` エントリは、内容のあるフォルダーでない限り削除されます。「新しい」とは、サンドボックスが最後に設定を構築した時点（セッション開始時、または [`/cd`](https://code.claude.com/docs/ja/commands) などの変更後）にそのエントリが存在しなかったことを意味します。
+
+内容のある新しい `objects` または `refs` フォルダーも、サンドボックスが最後に設定を構築した時点で `HEAD` ファイルまたはシンボリックリンクが存在していた場合は、その内容ごと削除されます。フォルダーを保持するには、[コマンドの実行後に `objects` または `refs` という名前のフォルダーが消える](#a-folder-named-objects-or-refs-disappears-after-a-command)を参照してください。
 
 #### シンボリックリンクを経由する拒否パス
 
@@ -880,6 +886,12 @@ Claude がテキストをこれらのツールの 1 つにパイプする場合�
 * サンドボックスがコマンドに書き込みを許可するディレクトリの外
 
 失敗後、Claude は[コマンドをサンドボックス外で再実行することを提案](#the-unsandboxed-retry-escape-hatch)する場合があります。その再試行を承認するか、別のターミナルで git コマンドを自分で実行してください。`allowUnsandboxedCommands` を `false` に設定している場合、Claude は再試行を提案できないため、コマンドを自分で実行してください。
+
+### `objects` または `refs` という名前のフォルダがコマンドの後に消える
+
+セッション中に現れたトップレベルの `objects` または `refs` フォルダは、[サンドボックス化されたコマンドの終了後に削除される](#when-the-sandbox-deletes-head-objects-or-refs)ことがあります。コマンド、Claude、ユーザーのいずれが作成したかは関係ありません。フォルダを残すには、その中に何かを置いておいてください。セッション中に `HEAD` ファイルまたはシンボリックリンクがトップレベルに存在していた場合は、それを別の場所に移動してから、そこで開いているすべての Claude Code セッションを再起動してください。
+
+v2.1.307 より前では、フォルダに何かが入っていて `HEAD` がなくても、フォルダは削除されていました。以前のバージョンを使用している場合は、[Claude Code を更新](https://code.claude.com/docs/ja/setup.md#update-claude-code)してください。
 
 ### Bubblewrap がコンテナ内で起動に失敗する
 

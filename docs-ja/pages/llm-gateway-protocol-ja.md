@@ -238,7 +238,10 @@ Claude Code は `ANTHROPIC_BASE_URL` ゲートウェイを Anthropic フォー�
 * アップストリームが会話中のシステムメッセージの `cache_control` マーカーのみを拒否した場合、Claude Code はシステムメッセージを維持し、マーカーを移動して 1 回再試行します。その再試行と、Claude Code が終了するまでの以降のリクエストでは、マーカーは `messages` 内でシステムメッセージではない最後のエントリに付けられます
 * アップストリームが[思考署名](https://platform.claude.com/docs/en/build-with-claude/extended-thinking)を拒否する場合（`bound to a different conversation` という `400` を含む）、Claude Code はリクエストを以前の思考ブロックなしでリトライし、それらを後のすべてのリクエストから除外します。新しい応答には依然として思考が含まれます
 * ゲートウェイまたはそのアップストリームが [advisor ツール](https://code.claude.com/docs/ja/advisor.md)エントリを `tools` で認識されないツールタイプとして拒否する場合、Claude Code はそのエントリとその `anthropic-beta` 値なしでリクエストを 1 回リトライします。その後のそのベース URL へのリクエストは Claude Code が終了するまで advisor を除外し、その時間は `/advisor` は開発者に利用不可です。Claude Code はこの拒否を `Input tag` の後にツールタイプを命名するメッセージを含む `400` または `422` レスポンスによって認識します。例えば `Input tag 'advisor_20260301'` です。v2.1.280 より前では、Claude Code はこの拒否をリトライしませんでした
-* アップストリームが `output_config.effort` を拒否する場合、Claude Code は努力なしでリクエストを再試行し、Claude Code が終了するまでそのモデルへの以降のリクエストから努力を除外します。Claude Code はこの拒否を、メッセージが `Extra inputs are not permitted` とともに `output_config.effort` を挙げている、またはモデルが努力パラメーターをサポートしていないと述べている `400` によって認識します
+* アップストリームが `output_config.effort` またはその `anthropic-beta` 値を拒否する場合、Claude Code は再試行し、Claude Code が終了するまでそのモデルへのリクエストにはどちらも追加しません。ゲートウェイがアップストリームの `400` を変更せずに転送し、メッセージが次のいずれかに該当する場合、ゲートウェイ側の変更は不要です：
+  * `Extra inputs are not permitted` とともに `output_config.effort` を挙げている
+  * モデルが努力パラメーターをサポートしていないと述べている
+  * `Unexpected value(s)` で始まり、`anthropic-beta` ヘッダーについて `effort-2025-11-24` を挙げている。v2.1.310 以降が必要です。[`ANTHROPIC_BETAS`](https://code.claude.com/docs/ja/env-vars) にこの値を含めている開発者は引き続きそれを送信して `400` を受け取るため、そのエントリを削除してもらってください
 * アップストリームが `context_management` フィールドまたはその `anthropic-beta` 値を拒否する場合、ゲートウェイにはそれらを除いたリクエストがもう一度届きます。後のリクエストでゲートウェイが再びそれらを受け取り、アップストリームが再び拒否した場合も、同じ再試行が行われます。Claude Code はこの拒否をメッセージによって認識します。たとえば `context_management: Extra inputs are not permitted` を含むメッセージです。v2.1.304 より前では、Claude Code はこの拒否を再試行しませんでした
 * アップストリームが `strict` など `defer_loading` 以外のベータツールフィールドを拒否する場合、`400` は開発者に届きます。その前に、ゲートウェイには[ツール検索フィールドを除いた](#retry-without-tool-search)リクエストが再び届くことがあります。このようなフィールドの送信を停止するには、開発者に [`CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1`](#disable-pre-release-capabilities) を設定してもらってください
 

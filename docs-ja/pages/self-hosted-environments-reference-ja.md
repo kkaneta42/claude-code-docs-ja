@@ -52,7 +52,7 @@
 | `--retire-at <epoch-seconds>` | `SELF_HOSTED_RUNNER_RETIRE_AT` | 未設定 | 既知の時刻にランナーを強制終了するインフラ向けに、秒単位の絶対 Unix タイムスタンプでランナーを退役させます。解放の手順とマージンの見積もり方については、[ランナーのライフサイクル](https://code.claude.com/docs/ja/self-hosted-environments#runner-lifecycle)で説明しています。2001 年より前または 5138 年より後の値は、フラグでは拒否され、環境変数では無視されます。 |
 | `--server-auto-mode-lists <mode>` | `SELF_HOSTED_RUNNER_SERVER_AUTO_MODE_LISTS` | `no-allow` | コントロールプレーンがセッションとともに送信する [auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)の分類器ルールリストのうち、どれをそのセッションに届けるかを指定します。値は `all`、`no-allow`、`none` のいずれかです。各値で何が適用されるかについては、[auto モードのルールリスト](#auto-mode-rule-lists)を参照してください。無効な値を指定すると、ランナーは起動時に停止します。Claude Code v2.1.295 以降が必要です。 |
 | `--session-stop-grace-sec <n>` | `SELF_HOSTED_RUNNER_SESSION_STOP_GRACE_MS` | `5` | セッションの終了後、強制終了する前に Claude プロセスが正常に終了するのを待つ時間。子プロセス自身の `SessionEnd` フックにより多くの時間が必要な場合は、値を引き上げてください。 |
-| `--startup-timeout-min <n>` | `SELF_HOSTED_RUNNER_STARTUP_TIMEOUT_MS` | `15` | 子プロセスが N 分以内に[アクティビティチャネル](https://code.claude.com/docs/ja/self-hosted-environments-configuration.md#keep-stdin-and-file-descriptor-3-attached)で初期化完了を通知しなかった場合、セッションスロットを解放します。N 分はクローン後の起動時点から計測が始まり、子プロセスが初期化するか状態を報告する前に `user` または `assistant` メッセージを出力するたびに、計測がやり直しになります。v2.1.299 より前は、このタイムアウトはセッションで最初にそのようなメッセージが出力された時点で適用されなくなっていました。初期化シグナル後の解放については、`--release-idle-session-min` を参照してください。`0` で無効になります。 |
+| `--startup-timeout-min <n>` | `SELF_HOSTED_RUNNER_STARTUP_TIMEOUT_MS` | `15` | 初期化されていない子プロセスを、セッションのスロットを解放するまでに待つ時間。計測がどこから始まるか、またどのセッションが実行されたまま残るかについては、[セッション起動タイムアウト](#session-startup-timeout)を参照してください。`0` でタイムアウトが無効になります。 |
 | `--trust-workspace [bool]` | `SELF_HOSTED_RUNNER_TRUST_WORKSPACE` | オン | 各セッションのリポジトリパスに対する永続的な信頼を事前に設定し、リポジトリにコミットされた `permissions.allow` と `additionalDirectories` が尊重されるようにします。`false` に設定すると、リポジトリにコミットされた権限の付与を破棄し、代わりにホスト設定の `settings.json` で許可ルールを構成します。リポジトリにコミットされた `sandbox.*` 設定はどちらの場合も適用されるため、[リポジトリ設定ガード](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#harden-your-deployment)はこのフラグに関係なくそれらをスキャンします。 |
 | `--use-anthropic-git-proxy` | `CLAUDE_RUNNER_USE_GIT_PROXY=1` | オフ | 顧客が管理する git 認証の代わりに、[Anthropic git プロキシ](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#use-the-anthropic-git-proxy)経由で github.com 上のリポジトリをクローンします。`--capacity 1` と git 2.32 以降が必要で、これらを満たさない場合、ランナーは起動を拒否します。書き換えフラグよりも優先されます。 |
 
@@ -60,6 +60,12 @@
 
 * **フラグ**：エラーで起動に失敗します。
 * **環境変数**：ランナーは値を拒否せず、タイマーの上限に切り詰めます。
+
+### セッション起動タイムアウト
+
+`/code-review` などのターンの途中でセッションがスロットを失った場合は、ランナーと子バイナリを v2.1.309 以降に更新してください。v2.1.299 から v2.1.308 までは、`user` または `assistant` メッセージがないまま起動タイムアウトが経過すると、ランナーはターンの途中であってもセッションを解放していました。
+
+`--startup-timeout-min <n>` を指定すると、クローン後 `<n>` 分以内に子プロセスが初期化されない場合、ランナーはセッションのスロットを解放します。子プロセスの初期化前に始まったターンの間は、子プロセスの[アクティビティチャネル](https://code.claude.com/docs/ja/self-hosted-environments-configuration.md#keep-stdin-and-file-descriptor-3-attached)に行が出力されないまま `<n>` 分が経過するまで、セッションはスロットを保持します。子プロセスが初期化されると、ランナーはその計測をリセットし、以降の解放は `--release-idle-session-min` によって制御されます。子プロセスは動作しているもののスタックしているセッションを制限するには、`--kill-session-after-min` を設定してください。
 
 ### auto モードのルールリスト
 
@@ -83,7 +89,7 @@
 
 | フラグ | デフォルト | 説明 |
 | :- | :- | :- |
-| `--hook-concurrency <n>` | `4` | 並列で実行される最大 `spawn-runner` フック数。また、ポーリングごとにクレームされるスポーン要求の数もキャップします。 |
+| `--hook-concurrency <n>` | `4` | 並列で実行される最大 `spawn-runner` フック数。また、ポーリングごとにクレームされるスポーン要求の数もキャップします。オーケストレーターは、開始したすべてのフックが終了した後にのみ新しいスポーン要求を確認するため、1 つの遅いフックがそのオーケストレーターの次のフックを遅延させます。 |
 | `--hook-timeout <sec>` | `60` | この多くの秒後にフックのプロセスツリーを終了します。タイムアウトとその 5 秒のキルグレースは `--expected-spawn-seconds` より下にある必要があります。オーケストレーターはスタートアップでこれを強制します。 |
 | `--expected-spawn-seconds <sec>` | `120` | オーケストレーターがスポーン要求を受信してからランナーが登録されるまでの予想 p99 時間（プラットフォーム上でのキャパシティ待ちを含む）。サーバーは 10 ～ 3600 の範囲を強制します。すべてのポーリングでサーバー側リースとして送信されます。ランナーが経過前に登録されない場合、セッションは新しいオーダー ID で再提供されます。すべてのレプリカはこの値を共有する必要があります。 |
 | `--min-idle <n>` | `0` | スタンバイランナーを積極的に生成することで、少なくとも N 個のアイドルセッションスロットを無料で保ちます。`0` はプレウォーミングを無効にします。ランナーの `--exit-if-unused-min` とペアにして、余分なスタンバイランナーが自分自身を再利用するようにします。 |
@@ -116,7 +122,7 @@ SCM コネクタは利用できないため、このセクションのフラグ�
 | `SELF_HOSTED_RUNNER_MAX_LIFETIME_GRACE_MS` | `900000` | セッションが `--kill-session-after-min` 制限に達した後、実行中のターンが終了するか、リリースが完了するのを待つ時間。その後、ランナーはセッションを終了します。 |
 | `SELF_HOSTED_RUNNER_POST_TURN_SETTLE_MS` | `7000` | ターンが終了した後、セッションのプロセスがターンの終了を Anthropic に報告している間、ランナーが `--drain-wait-sec` ドレイン用にセッションをビジーとしてカウントする時間の上限。`0` または使用不可能な値はデフォルトにフォールバックするため、ホールドをオフにすることはできません。Claude Code v2.1.275 以降が必要です。 |
 | `SELF_HOSTED_RUNNER_SIGKILL_GRACE_MS` | `30000` | ランナーが割り込み不可能な I/O でスタックしている子に `SIGKILL` を配信するのを待つ時間。その後、ランナー自体が終了します。`--post-session-hook-timeout-sec` プラス 15 秒でフロアされ、`--push-outcome-on-release` が設定されている場合は 30 秒追加されます。有効な最小値はデフォルトで 75 秒です。 |
-| `CLAUDE_RUNNER_FETCH_DEPTH` | `50` | 新規クローン用の Git フェッチ深度。正の整数、または完全なフェッチ用に `full` または `0` を設定します。ワークスペースに既に存在するリポジトリは既存の深度を保持します。 |
+| `CLAUDE_RUNNER_FETCH_DEPTH` | `50` | 新規クローン用の Git フェッチ深度。正の整数、または完全なフェッチ用に `full` または `0` を設定します。ワークスペースに既に存在するクローンについては、[事前ウォームアップ済みのチェックアウトを再利用する](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#reuse-a-pre-warmed-checkout)を参照してください。 |
 | `CLAUDE_RUNNER_FETCH_SERVER_PROGRESS_CAP_MS` | `600000` | git サーバー自身の進捗値が上昇し続けている間（サーバーが大規模なリポジトリ用のパックを準備している場合など）、git フェッチが最初のデータを待機できる時間（試行ごと、ミリ秒単位）。`0` または `off` を指定すると待機がオフになり、その場合、そのようなフェッチはデータがないまま 2 分経過すると打ち切られます。その他の整数は `120000` から `1800000` の範囲（2〜30 分）に制限されます。Claude Code v2.1.295 以降が必要です。 |
 | `CLAUDE_RUNNER_SKIP_GIT_VERIFY` | 未設定 | `1` の場合、`checkout` フック実行後の `.git` 存在チェックをスキップします。フックが非 git ソースを具体化する場合は、これを設定します。 |
 | `FORCE_AUTOUPDATE_PLUGINS` | 未設定 | `1` の場合、バイナリがピン留めされていても、プラグインマーケットプレイスの自動更新を許可します。 |
@@ -229,6 +235,8 @@ spec:
       interval: 30s
 ```
 
+### サンプルアラートルール
+
 これらのサンプルアラートルールは出発点です。フリートサイズのしきい値を調整します。
 
 ```yaml theme={null}
@@ -250,11 +258,11 @@ groups:
         annotations:
           summary: "ランナーは混合バージョンを実行しています"
       - alert: ClaudeRunnerInitErrorsHigh
-        expr: increase(claude_code_self_hosted_runner_session_init_errors_total[10m]) > 3
+        expr: sum by (namespace) (increase(claude_code_self_hosted_runner_session_init_errors_total[10m])) > 3
         for: 5m
         labels: {severity: warning}
         annotations:
-          summary: "ランナー {{ $labels.pod }}：10 分間に 3 回以上のセッション初期化失敗（チェックアウトフック / git / トークン / 初期化前クラッシュ）"
+          summary: "セッションが初期化前に失敗しています（チェックアウトフック / git / トークン / 初期化前クラッシュ）"
       - alert: ClaudeRunnerPollErrors
         expr: sum by (pod) (rate(claude_code_self_hosted_runner_poll_errors_total[5m])) > 0
         for: 2m
@@ -262,11 +270,11 @@ groups:
         annotations:
           summary: "ランナー {{ $labels.pod }}：PollWork が失敗しています（5 分間に {{ $value | humanize }}/s）"
       - alert: ClaudeRunnerSessionStartHookErrors
-        expr: increase(claude_code_self_hosted_runner_session_start_hook_errors_total[10m]) > 3
+        expr: sum by (namespace) (increase(claude_code_self_hosted_runner_session_start_hook_errors_total[10m])) > 3
         for: 5m
         labels: {severity: warning}
         annotations:
-          summary: "ランナー {{ $labels.pod }}：10 分間に 3 回以上の SessionStart フック失敗"
+          summary: "SessionStart フックが失敗しています"
 
   - name: claude-code-self-hosted-orchestrator
     rules:
@@ -283,7 +291,7 @@ groups:
         annotations:
           summary: "オーケストレーター {{ $labels.pod }} は 90 秒以上ポーリングしていません（ポーリングループはフック実行で待機）"
       - alert: ClaudeOrchestratorCircuitBroken
-        expr: claude_code_self_hosted_orchestrator_queue_circuit_broken_sessions > 0
+        expr: max by (namespace) (claude_code_self_hosted_orchestrator_queue_circuit_broken_sessions and on (instance) max_over_time(claude_code_self_hosted_orchestrator_connected[2m]) == 1) > 0
         for: 1m
         labels: {severity: critical}
         annotations:
@@ -301,6 +309,66 @@ groups:
         annotations:
           summary: "オーケストレーター {{ $labels.pod }}：5 分間に 3 回以上の spawn-runner フック失敗"
 ```
+
+### ランナーの喪失と待機中のセッションでアラートする
+
+[固定フリート](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#scale-the-fleet) では、`ClaudeRunnersBelowFloor` を読み込みます。[オンデマンドランナー](https://code.claude.com/docs/ja/self-hosted-environments-configuration.md#on-demand-runners) を使用する場合は、代わりに `ClaudeOrchestratorSessionsWaiting` と `ClaudeOrchestratorQueueWaitHigh` を読み込みます。
+
+#### 固定フリートがランナーを失ったときにアラートする
+
+`ClaudeRunnersBelowFloor` は、登録済みかつスクレイプ済みのランナー数がフロアを下回る状態が 10 分間続いたときに発火します。
+
+```yaml theme={null}
+groups:
+  # 固定フリートのみ。オンデマンドランナーではランナー数が需要に従うため、
+  # ClaudeRunnersBelowFloor は需要が低いときに常に発火してしまいます。
+  - name: claude-code-self-hosted-fixed-fleet-capacity
+    rules:
+      - alert: ClaudeRunnersBelowFloor
+        expr: (count(claude_code_self_hosted_runner_info{namespace="claude-runners"}) or vector(0)) < 2
+        for: 10m
+        labels: {severity: critical, namespace: claude-runners}
+        annotations:
+          summary: "登録済みかつスクレイプ済みのランナー：{{ $value }}、フロアを下回っています。まずランナーのワークロードを確認し、すべて実行中であればスクレイプターゲットを確認してください。"
+```
+
+* **フロア**：`expr` 内の `2` を、レプリカ数の約半分（切り上げ）に設定します。レプリカが 3 つの場合は `2` のままにすると、ランナーが 1 つ以下になったときにアラートが発火します。
+* **名前空間**：matcher と `labels` 内の `claude-runners` を置き換え、追加の名前空間ごとにアラートをコピーします。ターゲットに `namespace` ラベルがない場合は、matcher とラベルを削除してください。そうしないと、アラートは 0 を読み取って発火します。
+* **`ClaudeRunnerPollStale` と `ClaudeRunnerPollErrors`**：[サンプルアラートルール](#sample-alert-rules) から読み込んだままにしておきます。`ClaudeRunnersBelowFloor` はポーリングできないランナーもカウントするためです
+
+#### オンデマンドランナーをセッションが待機しているときにアラートする
+
+`ClaudeOrchestratorSessionsWaiting` は、ランナーを待機しているセッション数が 10 分間 0 を超えたままのときに発火します。`ClaudeOrchestratorQueueWaitHigh` は、直近 10 分間のキュー待機の 1% 超が 160 秒を超え、その状態が 5 分間続いたときに発火します。
+
+```yaml theme={null}
+groups:
+  # オンデマンドランナーのみ。名前空間に合わせた編集は不要です。
+  - name: claude-code-self-hosted-on-demand-capacity
+    rules:
+      - alert: ClaudeOrchestratorSessionsWaiting
+        expr: |
+          max by (namespace) (
+            claude_code_self_hosted_orchestrator_pool_pending_sessions
+            and on (instance)
+            max_over_time(claude_code_self_hosted_orchestrator_connected[2m]) == 1
+          ) > 0
+        for: 10m
+        labels: {severity: warning}
+        annotations:
+          summary: "ランナーを待機しているセッション：{{ $value }}、10 分間しきい値を超えています。result 別の claude_code_self_hosted_orchestrator_spawn_hooks_total を確認し、次に起動しないランナーのワークロードを確認してください。"
+      - alert: ClaudeOrchestratorQueueWaitHigh
+        expr: |
+          histogram_quantile(0.99, sum by (namespace, le) (
+            rate(claude_code_self_hosted_orchestrator_session_queue_wait_seconds_bucket[10m])
+          )) > 160
+        for: 5m
+        labels: {severity: warning}
+        annotations:
+          summary: "直近 10 分間のキュー待機の 1% 超が 160 秒を超えました。ClaudeOrchestratorDisconnected が発火しているかを確認し、次に result 別の claude_code_self_hosted_orchestrator_spawn_hooks_total と claude_code_self_hosted_orchestrator_spawn_hook_duration_seconds を確認してください。"
+```
+
+* **しきい値**：常に何らかのセッションが待機している場合は、`ClaudeOrchestratorSessionsWaiting` の `> 0` を、通常見られる数より大きい値に引き上げます
+* **`ClaudeOrchestratorDisconnected`**：[サンプルアラートルール](#sample-alert-rules) から読み込んだままにしておきます。`ClaudeOrchestratorSessionsWaiting` は、名前空間内の最後のオーケストレーターが切断されてから約 2 分後に発火を停止するためです
 
 ### セッション子メトリクスをパススルーする
 

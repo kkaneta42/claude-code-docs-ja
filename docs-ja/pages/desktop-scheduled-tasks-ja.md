@@ -15,6 +15,10 @@ Desktop アプリの **Scheduled tasks** ページには、ローカルスケジ
 
 このページではローカルスケジュールタスクについて説明します。クラウドスケジュールタスクとそのトリガーオプションについては、[スケジュールタスクで作業を自動化する](https://code.claude.com/docs/ja/routines.md)を参照してください。
 
+> [!NOTE]
+>
+> アプリでこの機能が[以前の名前](https://code.claude.com/docs/ja/routines.md#where-the-name-routines-still-appears)で表示されている場合は、このページで **Scheduled** と記載されている箇所では **Routines** を、**New task** と記載されている箇所では **New routine** をクリックしてください。
+
 ## スケジュール設定オプションの比較
 
 Claude Code は、定期的または 1 回限りの作業をスケジュールするための 3 つの方法を提供します。
@@ -45,11 +49,15 @@ Claude Code は、定期的または 1 回限りの作業をスケジュール�
 
 **1. Scheduled tasks ページを開く**
 
-[**Code** タブ](https://code.claude.com/docs/ja/desktop.md)で、サイドバーまたはサイドバーの **More** メニューにある **Scheduled** をクリックします。
+[**Code** タブ](https://code.claude.com/docs/ja/desktop.md)で、サイドバーまたはサイドバーの **More** メニューにある **Scheduled** をクリックします。サイドバーに **Scheduled** ではなく **Routines** が表示されている場合は、**Routines** をクリックしてから **New routine** をクリックし、[フルページフォーム](#full-page-form)に進んでください。
 
 **2. 新しいタスクを開始する**
 
-**New task** をクリックします。**Create with Claude** と **Set up manually** を含むメニューが開いた場合は、**Set up manually** を選択します。**New scheduled task** ダイアログが開きます。ダイアログの上部に **Only on this computer** がある場合は、何かを入力する前に[上部に Only on this computer があるダイアログ](#dialog-with-only-on-this-computer-at-the-top)に進んでください。
+**New task** をクリックして **New scheduled task** ダイアログを開きます。先に進む前に、次の画面が表示されていないか確認してください。
+
+* **Create with Claude** と **Set up manually** を含むメニューが開いた場合は、**Set up manually** を選択してダイアログを開きます。
+* ダイアログの上部に **Only on this computer** がある場合は、何かを入力する前に[上部に Only on this computer があるダイアログ](#dialog-with-only-on-this-computer-at-the-top)に進んでください。
+* **Local** と **Cloud** を含むメニューが開いた場合、またはダイアログの代わりにフルページが開いた場合は、[フルページフォーム](#full-page-form)に進んでください。
 
 **3. タスクに名前を付ける**
 
@@ -99,9 +107,20 @@ Claude Code は、定期的または 1 回限りの作業をスケジュール�
 
 **Create** をクリックします。タスクの詳細ページが開きます。
 
+### フルページフォーム
+
+**Local** と **Cloud** を含むメニューが開いた場合は、**Local** を選択します。**New local routine** または **New local scheduled task** というタイトルのページが開きます。各フィールドに入力します。
+
+* **Name**：すべてのタスクの中で一意の名前を入力します。
+* **Description**：説明を入力します。
+* **Instructions**：タスクの実行時に Claude が行う内容を入力します。同じボックスで、権限モード、モデル、タスクを実行するフォルダを選択します。
+* **Schedule**：[スケジュールオプション](#schedule-options)のいずれかを選択します。
+
+**Create** が使用できない場合は、その上にカーソルを合わせると、フォームにまだ必要な項目が表示されます。**Create** をクリックすると、タスクの詳細ページが開きます。
+
 ## スケジュール設定オプション
 
-**Advanced settings** で **Only on this computer** をオンにすると、**Trigger** カードには Hourly、Daily、Weekdays、Weekly が表示されます。このようなタスクで **Manual** または **Custom** を使用するには、作成後にタスクの [**Edit** フォーム](#manage-scheduled-tasks)を開きます。このフォームと [**Only on this computer** が上部にあるダイアログ](#dialog-with-only-on-this-computer-at-the-top)では、次の 6 つのオプションを選択できます。
+**Advanced settings** で **Only on this computer** をオンにすると、**Trigger** カードには Hourly、Daily、Weekdays、Weekly が表示されます。このようなタスクで **Manual** または **Custom** を使用するには、作成後にタスクの [**Edit** フォーム](#manage-scheduled-tasks)を開きます。このフォーム、[**Only on this computer** が上部にあるダイアログ](#dialog-with-only-on-this-computer-at-the-top)、および[全ページフォーム](#full-page-form)では、次の 6 つのオプションを選択できます。
 
 * **Hourly**: 1 時間ごとに実行されます
 * **Daily**: 毎日、選択した現地時間に実行されます

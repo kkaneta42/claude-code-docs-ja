@@ -1001,15 +1001,20 @@ Claude の応答内の数式がまったく組版されない場合は、[数式
 
 ### TLS インスペクションを行うプロキシの背後で音声入力または Web タブが失敗する
 
-音声入力または Web タブが `unable to get local issuer certificate` などの証明書エラーで失敗する場合は、`~/.claude/settings.json` の `env` ブロックに [`NODE_EXTRA_CA_CERTS`](https://code.claude.com/docs/ja/network-config#custom-ca-certificates) を設定してください。値には、プロキシのルート CA 証明書を含む PEM ファイルのパスを設定します。このファイルは IT チームから入手できます。このエラーテキストは、マイクボタンまたは拡張機能のログで確認できます。
+音声入力または Web タブが `unable to get local issuer certificate` などの証明書エラーで失敗する場合は、`~/.claude/settings.json` の `env` ブロックに [`NODE_EXTRA_CA_CERTS`](https://code.claude.com/docs/ja/network-config#custom-ca-certificates) を設定してください。値には、プロキシのルート CA 証明書を含む PEM ファイルのパスを設定します。このファイルは IT チームから入手できます。この失敗は、マイクボタン、Web タブ、またはログに表示されます。
 
 * **音声入力**: マイクボタンに、`Dictation error: WebSocket error:` に続けてエラーテキストが表示されます。
 * **Web タブ**: [クラウドセッション](#resume-cloud-sessions-from-claude-ai)を一覧表示するタブには、エラーテキストなしで `Remote server is not connected` が表示されます。ログでエラーテキストを確認するには、次の手順を実行します。
   1. [コマンドパレット](#vs-code-commands-and-shortcuts)から **Claude Code: Show Logs** を実行して、`Claude VSCode` 出力チャネルを開きます。
   2. タブの **Reconnect** をクリックし、`Connecting…` が表示されなくなるまで待ちます。
   3. チャネル内で `Error fetching remote sessions:` または `Failed to fetch organization UUID:` を検索し、一致する最新の行でそのプレフィックスの後にあるエラーテキストを確認します。
+* **ログの警告**: `an authority that Claude Code does not trust` を含む警告は、証明書エラーを示しています。TLS インスペクションを行うプロキシの背後では、`~/.claude/settings.json` の `env` に `NODE_EXTRA_CA_CERTS` を設定してください。v2.1.309 より前のバージョンでは、この警告はログに記録されません。
 
 この修正には拡張機能バージョン 2.1.307 以降が必要なため、まず拡張機能を更新してください。次に、`NODE_EXTRA_CA_CERTS` に証明書ファイルのフルパスを `~` を使わずに設定します。Windows のパスの場合、`settings.json` では `C:\\certs\\example-ca.pem` のように各バックスラッシュを 2 つずつ記述してください。
+
+> [!NOTE]
+>
+> WSL、SSH ホスト、開発コンテナ、またはその他のシステムに接続されたウィンドウでは、ローカルコンピューターではなく、そのシステム上で証明書ファイルを保存し、`~/.claude/settings.json` を編集してください。
 
 この例では、Linux または macOS のパス `/etc/ssl/certs/example-ca.pem` にある証明書ファイルを指定しています。
 

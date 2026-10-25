@@ -8,7 +8,7 @@
 
 > [!NOTE]
 >
-> クラウドセッションは Pro、Max、Team プランで利用でき、Premium シートまたは Chat + Claude Code シートを持つ Enterprise ユーザーも対象です。Enterprise 組織が[カスタムロール](https://support.claude.com/en/articles/13930452)でアクセスを管理している場合は、クラウドセッションの権限を含むロールも必要です。Owner にロールの確認を依頼し、不足している場合は [**Organization settings > Roles**](https://claude.ai/admin-settings/roles) で追加してもらってください。
+> クラウドセッションは Pro、Max、Team プランで利用でき、Premium シートまたは Chat + Claude Code シートを持つ Enterprise ユーザーも対象です。[カスタムロール](https://support.claude.com/en/articles/13930452)でアクセスが管理されている場合、ブラウザ、アプリ、またはターミナルから Anthropic のインフラストラクチャでセッションを開始するには、クラウドセッションの権限を含むロールも必要です。Owner に依頼して、[**Organization settings > Roles**](https://claude.ai/admin-settings/roles) でいずれかのロールにこの権限を追加してもらってください。
 
 クラウドセッションは、マシン上ではなくクラウドインフラストラクチャで実行される Claude Code セッションです。デフォルトでは Anthropic が管理するインフラストラクチャで実行されるか、ルーティングされた場合は組織の[セルフホスト環境](https://code.claude.com/docs/ja/self-hosted-environments)で実行されます。セッションはラップトップを閉じた後も実行を続け、任意のデバイスから確認または操作できます。クラウドセッションは、Claude および Claude Code のその他の使用量と合わせてプランの使用制限にカウントされ、クラウド VM に対する別途料金はかかりません。
 
@@ -18,7 +18,7 @@
 
 * **ブラウザ**：[claude.ai/code](https://claude.ai/code)（ウェブ上の Claude Code とも呼ばれます）
 * **モバイル**：[Claude アプリ](https://code.claude.com/docs/ja/mobile.md)の**Code** タブ
-* **デスクトップアプリ**：[セッションを開始](https://code.claude.com/docs/ja/desktop.md#run-long-running-tasks-in-the-cloud)するときに**Local** の代わりに**Cloud** を選択
+* **デスクトップアプリ**：[セッションを開始](https://code.claude.com/docs/ja/desktop.md#run-long-running-tasks-in-the-cloud)するときに、環境セレクターの**Cloud** の下にある環境を選択
 * **ターミナル**：[`claude --cloud`](#from-terminal-to-cloud)
 * **クラウドスケジュールタスク**：[スケジュール実行とトリガー実行](https://code.claude.com/docs/ja/routines.md)は各々クラウドセッションとして実行されます
 
@@ -247,9 +247,15 @@ Teleport には claude.ai のサブスクリプション認証が必要です。
 
 ### 変更を確認
 
-各セッションは追加および削除された行数を示す差分インジケーター（例：`+42 -18`）を表示します。それを選択して差分ビューを開き、特定の行にインラインコメントを残し、次のメッセージで Claude に送信します。
+Claude がブランチに変更をプッシュすると、チャットの横のパネルにある **Changes** カードに、`+42 -18` のように追加および削除された行数が表示されます。**Changes** カードの行数をクリックすると差分ビューが開きます。
 
-差分ビューは、デフォルトでセッションの変更をそのベースブランチと比較します。リポジトリ内の他の任意のブランチと比較するには、**Compare against** を選択してブランチを 1 つ選びます。
+* セッションのタイトルバー、またはバーの **⋮** メニューにある **Changes** をクリックすることもできます。
+* パネルが非表示のときに表示するには、セッションのタイトルバー、またはバーの **⋮** メニューにある **Show session rail** アイコンをクリックします。
+
+差分ビューでは、行にコメントしたり、別のブランチと比較したりできます：
+
+* **Comment**：特定の行にインラインコメントを残し、次のメッセージでそのコメントを Claude に送信します
+* **Compare**：差分ビューは、デフォルトでセッションの変更をそのベースブランチと比較します。リポジトリ内の他の任意のブランチと比較するには、**Compare against** を選択してブランチを 1 つ選びます
 
 Claude Code はこれらの差分を raw git blob コンテンツから計算するため、リポジトリで設定された diff ドライバーと `textconv` フィルターは適用されません。
 
@@ -313,16 +319,19 @@ Max および Pro アカウントでは、共有は次のように機能しま�
 
 ### セッションをアーカイブ
 
-セッションをアーカイブしてセッションリストを整理できます。アーカイブされたセッションはデフォルトのセッションリストから非表示になりますが、アーカイブされたセッションをフィルタリングして表示できます。
+セッションをアーカイブすると、サイドバーのセッションリストから削除されます。セッションをアーカイブするには、サイドバーでセッションにマウスを合わせ、**⋯** メニューを開いて **Archive** を選択します。
 
-セッションをアーカイブするには、サイドバーのセッションにマウスを合わせてアーカイブアイコンを選択します。
+#### アーカイブされたセッションを見つける
+
+アーカイブされたセッションを表示するには、[claude.ai/code/sessions](https://claude.ai/code/sessions) に移動して **Archived** タブを開きます。セッションをサイドバーのセッションリストに戻すには、そのタブでセッションにマウスを合わせ、**⋮** メニューを開いて **Unarchive** を選択します。
 
 ### セッションを削除
 
-セッションを削除すると、セッションとそのデータが永続的に削除されます。このアクションは取り消せません。セッションは 2 つの方法で削除できます：
+セッションを削除すると、セッションとそのデータが永続的に削除されます。このアクションは取り消せません。セッションは、サイドバー、セッションメニュー、またはすでにアーカイブしている場合は **Archived** タブから削除できます：
 
-* **サイドバーから**：アーカイブされたセッションをフィルタリングし、削除するセッションにマウスを合わせて削除アイコンを選択します
+* **サイドバーから**：セッションにマウスを合わせ、**⋯** メニューを開いて **Delete** を選択します
 * **セッションメニューから**：セッションを開き、セッションタイトルの横のドロップダウンを選択し、**Delete** を選択します
+* **Archived タブから**：[**Archived** タブ](#find-an-archived-session)でセッションにマウスを合わせ、**⋮** メニューを開いて **Delete** を選択します
 
 セッションが削除される前に確認するよう求められます。
 
@@ -336,12 +345,12 @@ Claude はプルリクエストを監視し、CI 失敗とレビューコメン�
 
 PR がどこから来たか、どのデバイスを使用しているかに応じて、auto-fix をオンにするにはいくつかの方法があります：
 
-* **クラウドセッションで作成された PR**：claude.ai/code でセッションを開き、CI ステータスバーを開き、**Auto-fix** を選択します
+* **クラウドセッションで作成された PR**：claude.ai/code でセッションを開き、[**Changes** カード](#review-changes)でプルリクエストを見つけます。プルリクエストのタイトルの横にある **⋮** メニューを開き、**Auto-fix** をオンにします
 * **ターミナルから**：PR のブランチにいる間に [`/autofix-pr`](https://code.claude.com/docs/ja/commands) を実行します。Claude Code は `gh` で開いている PR を検出し、クラウドセッションをスポーンし、1 ステップで auto-fix をオンにします
 * **モバイルアプリから**：Claude に PR を auto-fix するよう指示します。例えば「watch this PR and fix any CI failures or review comments」
 * **既存の PR**：PR URL をセッションに貼り付けて、Claude に auto-fix するよう指示します
 
-Auto-fix は PR ごとのトグルです。監視を停止するには、claude.ai/code のセッションで CI ステータスバーを開き、**Auto-fix** トグルをクリアするか、Claude に PR の監視を停止するよう指示します。
+監視を停止するには、セッションの [**Changes** カード](#review-changes)にあるプルリクエストの **⋮** メニューで **Auto-fix** をオフにするか、Claude に PR の監視を停止するよう指示します。
 
 ### Claude が PR アクティビティにどのように応答するか
 
@@ -380,6 +389,17 @@ Claude は PR を解決する際に GitHub のレビューコメントスレッ�
 * [status.claude.com](https://status.claude.com) でクラウドセッションインシデントを確認してください
 * 1 分後に再試行してください。容量はオンデマンドでプロビジョニングされます
 * [GitHub 接続後にリポジトリが表示されない](https://code.claude.com/docs/ja/web-quickstart.md#no-repositories-appear-after-connecting-github)に従って、GitHub 接続がリポジトリに到達できることを確認してください
+
+### Your new session couldn't start
+
+プロンプトは、送信元の入力ボックスに戻されています。
+
+* **Connection lost**: インターネット接続と、使用している VPN またはプロキシを確認してから、プロンプトを再度送信してください
+* **Server error**: しばらく待ってから、プロンプトを再度送信してください。この通知が再び表示される場合は、[status.claude.com](https://status.claude.com) を確認してください
+
+### Can't rewind to this message
+
+セッションが v2.1.246 より前の Claude Code を使用する[セルフホストランナー](https://code.claude.com/docs/ja/self-hosted-environments)で実行されている場合、最新のメッセージ以外のメッセージで **Rewind to here** を実行すると、このエラーで失敗します。組織のランナーを運用している担当者に[アップグレード](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#pin-the-version)を依頼してください。
 
 ### 組織 UUID を取得できない
 

@@ -117,7 +117,7 @@
 | [`gcpAuthRefresh`](#gcpauthrefresh) | 独自のコマンドで [Google Cloud の認証情報](https://code.claude.com/docs/ja/google-vertex-ai.md#advanced-credential-configuration)を更新します | 認証とプロバイダー | Any file |
 | [`hooks`](#hooks) | Claude Code のライフサイクルの各時点で、独自のコマンドを[フック](https://code.claude.com/docs/ja/hooks.md)として実行します | フックと自動化 | Any file |
 | [`httpHookAllowedEnvVars`](#httphookallowedenvvars) | [HTTP フック](https://code.claude.com/docs/ja/hooks.md)がヘッダーに含められる環境変数を制限します | フックと自動化 | Any file |
-| [`idleCompaction`](#idlecompaction) | ターミナルセッションがアイドル状態の間に、Claude Code が長い会話を圧縮しないようにします | メモリとコンテキスト | Any file |
+| [`idleCompaction`](#idlecompaction) | 席を外している間に、Claude Code が長い会話を圧縮しないようにします | メモリとコンテキスト | Any file |
 | [`includeCoAuthoredBy`](#includecoauthoredby) | 非推奨です。コミットと PR の帰属表示を非表示にしたり変更したりするには `attribution` を使用してください | Git と帰属表示 | Any file |
 | [`includeGitInstructions`](#includegitinstructions) | 組み込みのコミットおよび PR の指示を Claude のコンテキストから除外します | Git と帰属表示 | Any file |
 | [`inputNeededNotifEnabled`](#inputneedednotifenabled) | Claude がユーザーの入力を待っているときに[プッシュ通知](https://code.claude.com/docs/ja/remote-control.md#mobile-push-notifications)を受け取ります | リモート、デスクトップ、通知 | Any file |
@@ -266,20 +266,20 @@
 
 ## モデルと応答
 
-Claude Code が使用するモデルと応答方法を選択します。これらの設定が `/model` コマンドと環境変数とどのように相互作用するかについては、[モデル設定](https://code.claude.com/docs/ja/model-config.md)を参照してください。
+Claude Code が使用するモデルと、その応答のしかたを選択します。これらの設定が `/model` コマンドや環境変数とどのように相互作用するかについては、[モデル設定](https://code.claude.com/docs/ja/model-config.md)を参照してください。
 
 ### `advisorModel`
 
-Claude がサーバー側の[アドバイザーツール](https://code.claude.com/docs/ja/advisor.md)を呼び出すときに回答するモデルを選択します。これを設定解除するとアドバイザーがオフになります。アドバイザーはメインモデル以上の能力を持つ必要があります。受け入れられるペアリングと受け入れられないペアリングを選択した場合の動作については、[アドバイザーモデルを選択](https://code.claude.com/docs/ja/advisor.md#choose-an-advisor-model)を参照してください。
+Claude がサーバー側の [advisor ツール](https://code.claude.com/docs/ja/advisor.md)を呼び出したときに応答するモデルを選択します。設定を解除すると advisor はオフになります。advisor はメインモデルと同等以上の能力を持つ必要があります。受け入れられる組み合わせと、受け入れられない組み合わせを選択した場合の動作については、[advisor モデルを選択する](https://code.claude.com/docs/ja/advisor.md#choose-an-advisor-model)を参照してください。
 
-通常、このキーを手動で編集することはありません。`/advisor` を実行して、現在の選択、アドバイザーができるモデル、および**アドバイザーなし**を表示するピッカーを開きます。Claude Code は選択を `~/.claude/settings.json` のこのキーに保存します。[リモートコントロール](https://code.claude.com/docs/ja/remote-control.md)クライアントから、またはリモートワーカーに接続されたセッションで選択した場合、その選択はそのセッションのみに適用され、このキーは変更されません。
+通常、このキーを手動で編集することはありません。`/advisor` を実行すると、現在の選択、advisor として使用できるモデル、および **No advisor** を表示するピッカーが開きます。Claude Code は選択内容を `~/.claude/settings.json` のこのキーに保存します。[Remote Control](https://code.claude.com/docs/ja/remote-control.md) クライアントから選択した場合や、リモートワーカーに接続されたセッションで選択した場合、その選択はそのセッションにのみ適用され、このキーは変更されません。
 
-アカウントが[使用クレジット同意](https://code.claude.com/docs/ja/advisor.md#fable-advisor-and-usage-credits)を必要とする場合は、`/model fable` を実行して最初に同意を受け入れます。これを行うまで、`/advisor` で Fable を選択しても何も保存されず、Claude Code は最初に `/model fable` を実行するよう指示します。
+アカウントで[使用クレジットへの同意](https://code.claude.com/docs/ja/advisor.md#fable-advisor-and-usage-credits)が必要な場合は、まず `/model fable` を実行して同意してください。同意するまでは、`/advisor` で Fable を選択しても何も保存されず、Claude Code は先に `/model fable` を実行するよう案内します。
 
-* **スコープ**: [`任意のファイル`](#scopes)
-* **タイプ**: 文字列、エイリアス `"fable"`、`"opus"`、または `"sonnet"` のいずれか。これらは Claude Code の現在のデフォルトバージョンのそのモデルファミリーに解決されます。または、`"claude-opus-5-5"` などの完全なモデル ID
-* **デフォルト**: 設定解除されているため、アドバイザーはオフです
-* **セッションごとのオーバーライド**: `--advisor` はこのキーより優先されます。[`CLAUDE_CODE_DISABLE_ADVISOR_TOOL`](https://code.claude.com/docs/ja/env-vars)はアドバイザーをオフにし、このキーはそれをオンに戻すことはできません
+* **スコープ**: [`Any file`](#scopes)
+* **型**: 文字列。エイリアス `"fable"`、`"opus"`、`"sonnet"` のいずれか（Claude Code におけるそのモデルファミリーの現在のデフォルトバージョンに解決されます）、または `"claude-opus-5-5"` のような完全なモデル ID
+* **デフォルト**: 未設定。advisor はオフです
+* **セッションごとの上書き**: `--advisor` は、1 つのセッションに限りこのキーよりも優先されます。[`CLAUDE_CODE_DISABLE_ADVISOR_TOOL`](https://code.claude.com/docs/ja/env-vars) は advisor をオフにし、このキーで再びオンにすることはできません
 
 ```json settings.json theme={null}
 {
@@ -287,20 +287,20 @@ Claude がサーバー側の[アドバイザーツール](https://code.claude.co
 }
 ```
 
-このキーは、Amazon Bedrock や Claude Platform on AWS など、アドバイザーが[利用できない](https://code.claude.com/docs/ja/advisor.md#requirements)プロバイダーには影響しません。`"fable"` には[Fable アクセス](https://code.claude.com/docs/ja/advisor.md#choose-an-advisor-model)が必要です。
+このキーは、Amazon Bedrock や Claude Platform on AWS など、advisor が[利用できない](https://code.claude.com/docs/ja/advisor.md#requirements)プロバイダーでは効果がありません。`"fable"` には [Fable へのアクセス](https://code.claude.com/docs/ja/advisor.md#choose-an-advisor-model)が必要です。
 
 ### `alwaysThinkingEnabled`
 
-このキーを `false` に設定して、すべてのセッションで[拡張思考](https://code.claude.com/docs/ja/model-config.md#extended-thinking)をオフにします。思考はデフォルトでオンなので、`true` は何も変わりません。ほとんどの人はファイルを編集するのではなく `/config` を通じてこれを設定します。
+これを `false` に設定すると、すべてのセッションで[拡張思考](https://code.claude.com/docs/ja/model-config.md#extended-thinking)がオフになります。思考はデフォルトでオンのため、`true` にしても何も変わりません。ほとんどのユーザーは、ファイルを編集するのではなく `/config` からこれを設定します。
 
-Opus 5.5、Sonnet 5.5、Haiku 5.5、Fable モデルなど、常に思考するモデルでは、`false` は効果がありません。[サードパーティプロバイダー](https://code.claude.com/docs/ja/third-party-integrations.md)では、Claude Code は思考をオフにする代わりに `thinking` パラメータを省略するため、適応推論モデルは引き続き思考する可能性があります。Anthropic API で思考をオフにした場合、Claude Code は、Opus 5 など[その組み合わせを受け付けない](https://code.claude.com/docs/ja/errors.md#effort-isnt-available-with-thinking-turned-off)ことが分かっているモデルに対して、より高いレベルの代わりに effort `high` を送信します。
+Opus 5.5、Sonnet 5.5、Haiku 5.5、Fable モデルなど、常に思考するモデルでは `false` は効果がありません。[サードパーティプロバイダー](https://code.claude.com/docs/ja/third-party-integrations.md)では、Claude Code は思考をオフにする代わりに `thinking` パラメータを省略するため、適応型推論モデルは引き続き思考する場合があります。Anthropic API で思考をオフにした場合、Claude Code は、Opus 5 など[その組み合わせを受け付けない](https://code.claude.com/docs/ja/errors.md#effort-isnt-available-with-thinking-turned-off)ことが分かっているモデルに対して、より高いレベルではなく effort `high` を送信します。
 
-* **スコープ**: [`任意のファイル`](#scopes)
-* **タイプ**: ブール値
-  * `true`: 効果なし。思考は既にオンです
+* **スコープ**: [`Any file`](#scopes)
+* **型**: Boolean
+  * `true`: 効果なし。思考はすでにオンです
   * `false`: Claude Code はすべてのセッションで拡張思考をオフにします
-* **デフォルト**: 設定解除されているため、思考はそれをサポートするモデルではオンです
-* **セッションごとのオーバーライド**: [`MAX_THINKING_TOKENS`](https://code.claude.com/docs/ja/env-vars)はこのキーより優先されます。`0` は `false` と同じモデルおよびプロバイダーの制限の下で思考をオフにし、正の値は、このキーが `false` の場合でも思考をオンにします。適応推論モデルでは、数値自体は無視されます
+* **デフォルト**: 未設定。思考をサポートするモデルでは思考がオンになります
+* **セッションごとの上書き**: [`MAX_THINKING_TOKENS`](https://code.claude.com/docs/ja/env-vars) は、1 つのセッションに限りこのキーよりも優先されます。`0` は `false` と同じモデルおよびプロバイダーの制限のもとで思考をオフにし、正の値はこのキーが `false` の場合でも思考をオンにします。適応型推論モデルでは、数値そのものは無視されます
 
 ```json settings.json theme={null}
 {
@@ -310,13 +310,13 @@ Opus 5.5、Sonnet 5.5、Haiku 5.5、Fable モデルなど、常に思考する�
 
 ### `availableModels`
 
-メインセッション、[サブエージェント](https://code.claude.com/docs/ja/sub-agents.md)、[スキル](https://code.claude.com/docs/ja/skills.md)、および[アドバイザー](https://code.claude.com/docs/ja/advisor.md)で選択できるモデルを制限します。管理リストは `/model`、`--model`、および開発者自身のファイルの `model` キーを制限します。リスト外のモデルは選択できません。デフォルトのプレフィックスマッチングでは、これは Default オプション自体には影響しません。[`enforceAvailableModels`](#enforceavailablemodels)とペアにしてください。
+メインセッション、[サブエージェント](https://code.claude.com/docs/ja/sub-agents.md)、[スキル](https://code.claude.com/docs/ja/skills.md)、[advisor](https://code.claude.com/docs/ja/advisor.md) でユーザーが選択できるモデルを制限します。管理されたリストは、`/model`、`--model`、および開発者自身のファイル内の `model` キーを制約し、リスト外のモデルは選択できません。デフォルトのプレフィックス一致では、これだけでは Default オプションには影響しません。Default オプションも制限するには、[`enforceAvailableModels`](#enforceavailablemodels) と組み合わせてください。
 
-* **スコープ**: [`任意のファイル`](#scopes)。組織に対して強制するために、管理設定にデプロイします。
-* **タイプ**: モデルエイリアスまたは ID の配列
-* **デフォルト**: 設定解除されているため、すべてのモデルが利用可能です
+* **スコープ**: [`Any file`](#scopes)。組織全体に適用するには、管理設定でデプロイします。
+* **型**: モデルのエイリアスまたは ID の配列
+* **デフォルト**: 未設定。すべてのモデルが利用可能です
 
-この例では、Sonnet と Haiku モデルのみを選択できます:
+この例では、Sonnet と Haiku のモデルのみを選択できるようにします。
 
 ```json settings.json theme={null}
 {
@@ -324,19 +324,19 @@ Opus 5.5、Sonnet 5.5、Haiku 5.5、Fable モデルなど、常に思考する�
 }
 ```
 
-`"claude-opus-5"` などのモデル ID エントリは、Opus 5.5 などそれを拡張する後のバージョンも許可します。これらのバージョンのいずれかをブロックするには、[`deniedModels`](#deniedmodels)を使用します。各モデル ID エントリが名前を付けたバージョンのみを許可するようにするには、[`availableModelsMatch`](#availablemodelsmatch)を使用します。[モデル選択を制限](https://code.claude.com/docs/ja/model-config.md#restrict-model-selection)を参照してください。
+`"claude-opus-5"` のようなモデル ID のエントリは、Opus 5.5 など、それを拡張する後続のバージョンも許可します。それらのバージョンのいずれかをブロックするには、[`deniedModels`](#deniedmodels) を使用します。各モデル ID のエントリが指定したバージョンのみを許可するようにするには、[`availableModelsMatch`](#availablemodelsmatch) を使用します。[モデル選択を制限する](https://code.claude.com/docs/ja/model-config.md#restrict-model-selection)を参照してください。サードパーティプロバイダーの ID については、[サードパーティデプロイ向けにモデルを固定する](https://code.claude.com/docs/ja/model-config.md#pin-models-for-third-party-deployments)を参照してください。
 
 ### `availableModelsMatch`
 
-[`availableModels`](#availablemodels)エントリがモデル ID とどのように一致するかを選択します。デフォルトでは、モデル ID エントリはそれを拡張する後のバージョンも許可するため、`"claude-opus-5"` は Opus 5.5 を許可します。`"exact"` では、各モデル ID エントリは名前を付けたバージョンのみを許可するため、そのモデルの新しいバージョンはリストに追加されるまでブロックされたままです。Claude Code v2.1.283 以降が必要です。
+[`availableModels`](#availablemodels) のエントリをモデル ID とどのように照合するかを選択します。デフォルトでは、モデル ID のエントリはそれを拡張する後続のバージョンも許可するため、`"claude-opus-5"` は Opus 5.5 を許可します。`"exact"` を指定すると、各モデル ID のエントリは指定したバージョンのみを許可するため、そのモデルの新しいバージョンは、リストに追加するまでブロックされたままになります。Claude Code v2.1.283 以降が必要です。
 
-* **スコープ**: [`管理`](#scopes)。Claude Code はユーザー、プロジェクト、ローカル設定および `--settings` のキーを無視し、警告を表示します
-* **タイプ**: 文字列、以下のいずれか:
-  * `"prefix"`: モデル ID エントリはそのバージョンと、別のセグメントで拡張するモデル ID を許可します
-  * `"exact"`: モデル ID エントリは名前を付けたバージョンのみを許可します。日付付き ID を含むため、`"claude-opus-5"` は Opus 5 を許可しますが `claude-opus-5-5` は許可しません。`"opus"` などのファミリーエイリアスは依然としてファミリー全体を許可し、`best`、`opusplan`、および `default` エントリは無視されます
+* **スコープ**: [`Managed`](#scopes)。Claude Code は、ユーザー設定、プロジェクト設定、ローカル設定、および `--settings` 内のこのキーを警告付きで無視します
+* **型**: 文字列。次のいずれか:
+  * `"prefix"`: モデル ID のエントリは、そのバージョンと、別のセグメントでそれを拡張するすべてのモデル ID を許可します
+  * `"exact"`: モデル ID のエントリは指定したバージョンのみを許可するため、`"claude-opus-5"` は Opus 5 を許可しますが、`claude-opus-5-5` は許可しません。`"claude-opus-4-5"` のようなエントリは、日付付きの Anthropic モデル ID `claude-opus-4-5-20251101` も許可します。`"opus"` のようなファミリーエイリアスは引き続きファミリー全体を許可し、`best`、`opusplan`、`default` のエントリは無視されます
 * **デフォルト**: `"prefix"`
 
-この例は Opus 5 と Sonnet 5 を許可し、どちらの後のリリースも許可しません:
+この例では、Opus 5 と Sonnet 5 を許可し、いずれの後続リリースも許可しません。
 
 ```json managed-settings.json theme={null}
 {
@@ -345,21 +345,21 @@ Opus 5.5、Sonnet 5.5、Haiku 5.5、Fable モデルなど、常に思考する�
 }
 ```
 
-`"exact"` では、リストが少なくとも 1 つのモデルまたはファミリーを名前付けするときはいつでも、Default オプションもリストされたモデルに制限されます。[特定のモデルまたはバージョンをブロック](https://code.claude.com/docs/ja/model-config.md#block-specific-models-or-versions)を参照してください。
+`"exact"` を指定した場合、リストに少なくとも 1 つのモデルまたはファミリーが指定されていれば、Default オプションもリスト内のモデルに制限されます。[特定のモデルまたはバージョンをブロックする](https://code.claude.com/docs/ja/model-config.md#block-specific-models-or-versions)を参照してください。
 
 ### `deniedModels`
 
-[`availableModels`](#availablemodels)許可リストの有無にかかわらず、特定のモデルをブロックし、そのリストがそれらを許可する場合でもブロックします。Claude Code はブロックされたモデルを `/model` ピッカーから非表示にし、`availableModels` が強制される場所ではどこでもモデルを選択できません。Default オプションのセッションは、[特定のモデルまたはバージョンをブロック](https://code.claude.com/docs/ja/model-config.md#block-specific-models-or-versions)で説明されているように、ブロックされたモデルも実行しません。Claude Code v2.1.283 以降が必要です。
+[`availableModels`](#availablemodels) 許可リストの有無にかかわらず、またそのリストで許可されている場合でも、特定のモデルをブロックします。Claude Code はブロックされたモデルを `/model` ピッカーに表示せず、`availableModels` が適用されるあらゆる場所でそのモデルを選択できなくなります。[特定のモデルまたはバージョンをブロックする](https://code.claude.com/docs/ja/model-config.md#block-specific-models-or-versions)で説明しているとおり、Default オプションのセッションでもブロックされたモデルは実行されません。Claude Code v2.1.283 以降が必要です。
 
-* **スコープ**: [`管理`](#scopes)。Claude Code はユーザー、プロジェクト、ローカル設定および `--settings` のキーを無視し、警告を表示します
-* **タイプ**: モデルエイリアスまたは ID の配列
-  * `"opus"` などのファミリーエイリアスはそのファミリーのすべてのモデルをブロックします
-  * `"claude-opus-5-5"` などのモデル ID は、日付付きおよびプロバイダー固有の ID を含むすべてのスペルでそのバージョンをブロックします
-  * `"claude-opus-5"` などのマイナーバージョンなしのモデル ID は、Opus 5.5 などの後のマイナーバージョンもブロックします。Opus 5 のみをブロックするには `"claude-opus-5-0"` を記述します
-  * `best`、`opusplan`、および `default` エントリは無視されます
-* **デフォルト**: 設定解除されているため、モデルはブロックされません
+* **スコープ**: [`Managed`](#scopes)。Claude Code は、ユーザー設定、プロジェクト設定、ローカル設定、および `--settings` 内のこのキーを警告付きで無視します
+* **型**: モデルのエイリアスまたは ID の配列
+  * `"opus"` のようなファミリーエイリアスは、そのファミリーのすべてのモデルをブロックします
+  * `"claude-opus-5-5"` のようなモデル ID は、日付付き ID やプロバイダー固有の ID を含む、あらゆる表記のそのバージョンをブロックします
+  * `"claude-opus-5"` のようにマイナーバージョンのないモデル ID は、Opus 5.5 など後続のマイナーバージョンもブロックします。Opus 5 のみをブロックするには `"claude-opus-5-0"` と記述します
+  * `best`、`opusplan`、`default` のエントリは無視されます
+* **デフォルト**: 未設定。ブロックされるモデルはありません
 
-この例は Opus と Sonnet モデルを許可し、Opus 5.5 をブロックします:
+この例では、Opus と Sonnet のモデルを許可し、Opus 5.5 をブロックします。
 
 ```json managed-settings.json theme={null}
 {
@@ -368,26 +368,26 @@ Opus 5.5、Sonnet 5.5、Haiku 5.5、Fable モデルなど、常に思考する�
 }
 ```
 
-[特定のモデルまたはバージョンをブロック](https://code.claude.com/docs/ja/model-config.md#block-specific-models-or-versions)を参照してください。
+[特定のモデルまたはバージョンをブロックする](https://code.claude.com/docs/ja/model-config.md#block-specific-models-or-versions)を参照してください。
 
 ### `effortLevel`
 
-保存していないモデルのデフォルト[努力レベル](https://code.claude.com/docs/ja/model-config.md#adjust-effort-level)を設定します。低いレベルは単純なタスクではより高速で安価であり、高いレベルは複雑な問題でより深く推論します。
+レベルを保存していないモデルに対して、デフォルトの [effort レベル](https://code.claude.com/docs/ja/model-config.md#adjust-effort-level)を設定します。低いレベルは単純なタスクでより高速かつ低コストになり、高いレベルは複雑な問題に対してより深く推論します。
 
-マシン上のインタラクティブセッションで `/effort low`、`medium`、`high`、または `xhigh` を実行すると、Claude Code はレベルをファイルを編集するのではなく [`modelSettings`](#modelsettings)の下のアクティブなモデルに保存します。v2.1.251 より前では、`/effort` はこのキーを書き込みました。
+自分のマシン上の対話セッションで `/effort low`、`medium`、`high`、`xhigh` を実行すると、Claude Code はこのキーに書き込むのではなく、アクティブなモデルのレベルを [`modelSettings`](#modelsettings) の下に保存します。v2.1.251 より前は、`/effort` はこのキーに書き込んでいました。
 
-同じ設定ファイル内で、Claude Code はこのキーではなくモデルの保存されたレベルを使用します。[`modelSettings`](#modelsettings)はクロスファイルの優先順位を述べています。
+同じ設定ファイル内では、Claude Code はこのキーよりもモデルごとに保存されたレベルを使用します。ファイル間の優先順位については [`modelSettings`](#modelsettings) に記載しています。
 
-リモートワーカーに接続されたセッション、`-p` 実行、および Agent SDK では、`/effort` はそのセッションのみに適用されます。[努力レベルを調整](https://code.claude.com/docs/ja/model-config.md#adjust-effort-level)はそのセッションのみに適用されるインタラクティブな選択肢もリストします。`/effort` が出力するメッセージは、どちらが起こったかを示します。
+リモートワーカーに接続されたセッション、`-p` の実行、および Agent SDK では、`/effort` はそのセッションにのみ適用されます。同様にそのセッションにのみ適用される対話的な選択については、[effort レベルを調整する](https://code.claude.com/docs/ja/model-config.md#adjust-effort-level)に記載しています。`/effort` が出力するメッセージに、どちらになったかが示されます。
 
-* **スコープ**: [`任意のファイル`](#scopes)
-* **タイプ**: 文字列、以下のいずれか:
-  * `"low"`: 最小限の推論。短く、スコープが限定され、レイテンシに敏感で、インテリジェンスに敏感ではないタスク用
-  * `"medium"`: コスト敏感な作業のトークン使用量を削減します。インテリジェンスをいくらか取引できます
-  * `"high"`: トークン使用量とインテリジェンスのバランスを取ります
-  * `"xhigh"`: より高いトークン支出でより深い推論
-* **デフォルト**: 設定解除されています
-* **セッションごとのオーバーライド**: `--effort` はこのキーより優先されます。[`CLAUDE_CODE_EFFORT_LEVEL`](https://code.claude.com/docs/ja/env-vars)は両方より優先されます
+* **スコープ**: [`Any file`](#scopes)
+* **型**: 文字列。次のいずれか:
+  * `"low"`: 推論が最も少なく、知能をあまり必要としない、短く範囲の限られたレイテンシー重視のタスク向け
+  * `"medium"`: ある程度の知能と引き換えにできる、コスト重視の作業でトークン使用量を削減します
+  * `"high"`: トークン使用量と知能のバランスを取ります
+  * `"xhigh"`: より多くのトークンを消費して、より深く推論します
+* **デフォルト**: 未設定
+* **セッションごとの上書き**: `--effort` は 1 つのセッションに限りこのキーよりも優先され、[`CLAUDE_CODE_EFFORT_LEVEL`](https://code.claude.com/docs/ja/env-vars) はその両方よりも優先されます
 
 ```json settings.json theme={null}
 {
@@ -395,23 +395,23 @@ Opus 5.5、Sonnet 5.5、Haiku 5.5、Fable モデルなど、常に思考する�
 }
 ```
 
-ユーザー設定ファイル `~/.claude/settings.json` では、このキーは `/effort` が保存する前の古い形式です。モデルごとにレベルを保存し、以前に適用された場所に適用され続けます。Opus 5、Fable 5.1、および以前のモデルで。Opus 5.5 およびそれ以降にリリースされたモデルはそれを無視し、[`modelSettings`](#modelsettings)の下でレベルを保存するまで独自のデフォルトで開始します。これは `/effort` が書き込みます。プロジェクト、ローカル、管理設定、および `--settings` では、このキーはすべてのモデルに適用されます。
+ユーザー設定ファイル `~/.claude/settings.json` では、このキーは `/effort` がモデルごとにレベルを保存するようになる前に書き込んでいた古い形式であり、以前と同じ範囲、つまり Opus 5、Fable 5.1、およびそれ以前のモデルに引き続き適用されます。Opus 5.5 とそれ以降にリリースされたモデルはこのキーを無視し、レベルを保存するまでは独自のデフォルトで開始します。レベルは `/effort` によって [`modelSettings`](#modelsettings) の下に書き込まれます。プロジェクト設定、ローカル設定、管理設定、および `--settings` では、このキーはすべてのモデルに適用されます。
 
 ### `enforceAvailableModels`
 
-`/model` ピッカーには**Default**オプションがあり、[`default` モデル設定](https://code.claude.com/docs/ja/model-config#default-model-setting)はそれが解決するモデルを説明します。[`availableModels`](#availablemodels)許可リストは名前を付けることができるモデルを制限しますが、デフォルト[プレフィックスマッチング](#availablemodelsmatch)では、アカウントタイプのデフォルトを再マップしないため、**Default**はリスト外のモデルに解決できます。このキーはそのギャップを閉じます。Claude Code v2.1.175 以降が必要です。
+`/model` ピッカーには **Default** オプションがあり、それが解決されるモデルについては [`default` モデル設定](https://code.claude.com/docs/ja/model-config#default-model-setting)で説明しています。[`availableModels`](#availablemodels) 許可リストは指定できるモデルを制限しますが、デフォルトの[プレフィックス一致](#availablemodelsmatch)ではアカウントタイプのデフォルトを再マッピングしないため、**Default** がリスト外のモデルに解決される場合があります。このキーはそのギャップを埋めます。Claude Code v2.1.175 以降が必要です。
 
-組織が管理設定をデプロイすると、Claude Code はこのキーを管理ソースからのみ読み取り、他のファイルでは無視します。
+組織が何らかの管理設定をデプロイしている場合、Claude Code はこのキーを管理ソースからのみ読み取り、他のファイル内のこのキーは無視します。
 
-起動時のモデルチェックにこのキーがどのように適用されるかについては、[Amazon Bedrock](https://code.claude.com/docs/ja/amazon-bedrock.md#when-your-organization-enforces-a-model-allowlist) および [Google Cloud の Agent Platform](https://code.claude.com/docs/ja/google-vertex-ai.md#when-your-organization-enforces-a-model-allowlist) を参照してください。
+起動時のモデルチェックにこのキーがどのように適用されるかについては、[Amazon Bedrock](https://code.claude.com/docs/ja/amazon-bedrock.md#when-your-organization-enforces-a-model-allowlist) および [Google Cloud's Agent Platform](https://code.claude.com/docs/ja/google-vertex-ai.md#when-your-organization-enforces-a-model-allowlist) を参照してください。
 
-* **スコープ**: [`任意のファイル`](#scopes)
-* **タイプ**: ブール値
-  * `true`: **Default**が `availableModels` 外のモデルに解決される場合、Claude Code はそれをリスト内の最初の利用可能なモデルに解決します
-  * `false`: このキーは**Default**の解決方法を変更しません
+* **スコープ**: [`Any file`](#scopes)
+* **型**: Boolean
+  * `true`: **Default** が `availableModels` 外のモデルに解決される場合、Claude Code はそれをリスト内で最初に利用可能なモデルに解決します
+  * `false`: このキーは **Default** の解決方法を変更しません
 * **デフォルト**: `false`
 
-この例は、名前付き選択を Sonnet と Haiku モデルに制限し、**Default**を利用可能なそれらの最初のものに解決します:
+この例では、名前による選択を Sonnet と Haiku のモデルに制限し、**Default** がそれらのうち最初に利用可能なものに解決されるようにします。
 
 ```json settings.json theme={null}
 {
@@ -420,20 +420,20 @@ Opus 5.5、Sonnet 5.5、Haiku 5.5、Fable モデルなど、常に思考する�
 }
 ```
 
-このキーは `availableModels` が設定解除されているか空の場合は効果がありません。[Default モデルの許可リストを強制](https://code.claude.com/docs/ja/model-config.md#enforce-the-allowlist-for-the-default-model)を参照してください。Claude Code v2.1.175 以降が必要です。
+`availableModels` が未設定または空の場合、このキーは効果がありません。[Default モデルに許可リストを適用する](https://code.claude.com/docs/ja/model-config.md#enforce-the-allowlist-for-the-default-model)を参照してください。Claude Code v2.1.175 以降が必要です。
 
 ### `fallbackModel`
 
-プライマリモデルがオーバーロードされているか利用できない場合に、Claude Code が順番に試すバックアップモデルに名前を付けます。Claude Code はターンの残りの間、チェーン内の次の利用可能なモデルに切り替え、通知を表示します。チェーンがない場合、Claude Code は同じモデルを再試行してからサーバーのエラーを表示し、再試行するか自分でモデルを切り替えます。
+プライマリモデルが過負荷または利用できない場合に Claude Code が順番に試すバックアップモデルを指定します。Claude Code はそのターンの残りの間、チェーン内で次に利用可能なモデルに切り替え、通知を表示します。チェーンがない場合、Claude Code は同じモデルで再試行した後にサーバーのエラーを表示し、ユーザーが自分で再試行するかモデルを切り替えることになります。
 
-切り替えは、フォールバックモデルでコールド[プロンプトキャッシュ](https://code.claude.com/docs/ja/prompt-caching.md#switching-models)を使用した 1 ターンを意味します。次のメッセージはプライマリモデルを最初に再度試します。
+切り替えが発生すると、フォールバックモデルでは 1 ターンの間[プロンプトキャッシュ](https://code.claude.com/docs/ja/prompt-caching.md#switching-models)がコールドの状態になります。次のメッセージでは再びプライマリモデルが最初に試されます。
 
-* **スコープ**: [`任意のファイル`](#scopes)
-* **タイプ**: モデルエイリアスまたは ID の配列。`"default"` はデフォルトモデルに展開されます
-* **デフォルト**: 設定解除されているため、失敗したリクエストは別のモデルで再試行されません
-* **セッションごとのオーバーライド**: `--fallback-model` はこのキーより優先されます
+* **スコープ**: [`Any file`](#scopes)
+* **型**: モデルのエイリアスまたは ID の配列。`"default"` はデフォルトモデルに展開されます
+* **デフォルト**: 未設定。失敗したリクエストは別のモデルで再試行されません
+* **セッションごとの上書き**: `--fallback-model` は、1 つのセッションに限りこのキーよりも優先されます
 
-この例は、プライマリモデルが失敗したときに最初に Sonnet 5 を試し、次に Haiku 4.5 を試します:
+この例では、プライマリモデルが失敗した場合に、まず Sonnet 5、次に Haiku 4.5 を試します。
 
 ```json settings.json theme={null}
 {
@@ -441,18 +441,18 @@ Opus 5.5、Sonnet 5.5、Haiku 5.5、Fable モデルなど、常に思考する�
 }
 ```
 
-ほとんどの配列設定とは異なり、このキーは設定ファイル全体でマージされません。最も優先度の高いファイルがそれを定義すると、チェーン全体が供給されます。プロジェクトファイルが `["claude-sonnet-5"]` を設定し、ユーザーファイルが `["claude-haiku-4-5"]` を設定する場合、チェーンは `["claude-sonnet-5"]` のみです。Claude Code はリストから最大 3 つの異なる許可されたモデルを保持し、残りを無視します。[フォールバックモデルチェーン](https://code.claude.com/docs/ja/model-config.md#fallback-model-chains)を参照してください。
+ほとんどの配列設定とは異なり、このキーは設定ファイル間でマージされません。このキーを定義している最も優先順位の高いファイルがチェーン全体を提供します。プロジェクトファイルで `["claude-sonnet-5"]` を設定し、ユーザーファイルで `["claude-haiku-4-5"]` を設定した場合、チェーンは `["claude-sonnet-5"]` のみになります。Claude Code はリストから最大 3 つの異なる許可されたモデルを保持し、残りは無視します。[フォールバックモデルチェーン](https://code.claude.com/docs/ja/model-config.md#fallback-model-chains)を参照してください。
 
 ### `fastMode`
 
-利用可能なセッションで[高速モード](https://code.claude.com/docs/ja/fast-mode.md)をオンにします。高速反復やライブデバッグなどのインタラクティブな作業用で、トークンあたりのコストが高い速度が必要な場合。通常、このキーを手動で編集することはありません。`/fast` を実行すると `fastMode: true` が `~/.claude/settings.json` に書き込まれ、再度実行すると高速モードをオフにするキーが削除されます。高速モードは Opus 5.5、Opus 5、および Opus 4.8 でのみ実行されます。別のモデルからオンにするとあなたを Opus に切り替え、サポートされていないモデルに切り替えるとオフになります。[高速モードがオンの間にモデルを切り替え](https://code.claude.com/docs/ja/fast-mode.md#switch-models-while-fast-mode-is-on)を参照してください。
+利用可能なセッションで [fast mode](https://code.claude.com/docs/ja/fast-mode.md) をオンにします。トークンあたりのコストが高くても速度を優先したい、迅速な反復作業やライブデバッグなどの対話的な作業向けです。通常、このキーを手動で編集することはありません。`/fast` を実行すると `~/.claude/settings.json` に `fastMode: true` が書き込まれ、もう一度実行して fast mode をオフにするとキーが削除されます。fast mode は Opus 5.5、Opus 5、Opus 4.8 でのみ動作します。他のモデルからオンにすると Opus に切り替わり、サポートされていないモデルに切り替えるとオフになります。[fast mode がオンの状態でモデルを切り替える](https://code.claude.com/docs/ja/fast-mode.md#switch-models-while-fast-mode-is-on)を参照してください。
 
-* **スコープ**: [`任意のファイル`](#scopes)
-* **タイプ**: ブール値
-  * `true`: Claude Code は利用可能なセッションで高速モードをオンにします
-  * `false`: 高速モードはオフのままです
-* **デフォルト**: 設定解除されているため、高速モードはオフです
-* **セッションごとのオーバーライド**: [`CLAUDE_CODE_DISABLE_FAST_MODE`](https://code.claude.com/docs/ja/env-vars)は 1 つのセッションで高速モードをオフにし、このキーはそれをオンに戻すことはできません
+* **スコープ**: [`Any file`](#scopes)
+* **型**: Boolean
+  * `true`: Claude Code は、利用可能なセッションで fast mode をオンにします
+  * `false`: fast mode はオフのままです
+* **デフォルト**: 未設定。fast mode はオフです
+* **セッションごとの上書き**: [`CLAUDE_CODE_DISABLE_FAST_MODE`](https://code.claude.com/docs/ja/env-vars) は 1 つのセッションに限り fast mode をオフにし、このキーで再びオンにすることはできません
 
 ```json settings.json theme={null}
 {
@@ -462,14 +462,14 @@ Opus 5.5、Sonnet 5.5、Haiku 5.5、Fable モデルなど、常に思考する�
 
 ### `fastModePerSessionOptIn`
 
-通常、`/fast` を実行すると [`fastMode`](#fastmode)がユーザー設定に保存されるため、高速モードは後のすべてのセッションの開始時にオンになります。このキーを `true` に設定して、それを停止します。保存された `fastMode: true` はセッション開始時に高速モードをオンにしなくなり、各ユーザーは必要な各セッションで `/fast` を実行する必要があります。Claude Code は `fastMode` キーをファイルに残すため、このキーをオフにすると古い動作が復元されます。
+通常、`/fast` を実行すると [`fastMode`](#fastmode) がユーザー設定に保存されるため、以降のすべてのセッションの開始時に fast mode がオンになります。このキーを `true` に設定するとこれを止められます。保存された `fastMode: true` はセッション開始時に fast mode をオンにしなくなり、各ユーザーは fast mode を使いたいセッションごとに `/fast` を実行する必要があります。Claude Code はユーザーのファイル内の `fastMode` キーを残すため、このキーをオフにすると以前の動作に戻ります。
 
-Team または Enterprise プランのオーナーは、[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)を通じて組織全体にデプロイできます。管理設定がキーを設定すると、`/fast on` はインタラクティブターミナルセッション外で拒否され、組織が高速モードを無効にしたことを報告します。これは[非インタラクティブモード](https://code.claude.com/docs/ja/headless.md)、[VS Code 拡張機能](https://code.claude.com/docs/ja/vs-code.md)、および[クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md)をカバーします。
+Team プランまたは Enterprise プランのオーナーは、[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)を通じて組織全体にデプロイできます。管理設定でこのキーが設定されている場合、対話型ターミナルセッション以外では `/fast on` が拒否され、組織によって fast mode が無効化されていることが通知されます。これには、[非対話モード](https://code.claude.com/docs/ja/headless.md)、[VS Code 拡張機能](https://code.claude.com/docs/ja/vs-code.md)、[クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md)が含まれます。
 
-* **スコープ**: [`任意のファイル`](#scopes)
-* **タイプ**: ブール値
-  * `true`: 保存された `fastMode: true` はセッション開始時に高速モードをオンにしなくなるため、各ユーザーは必要な各セッションで `/fast` を実行します。`--settings` で渡された `fastMode: true` は、管理設定がこのキーを設定しない限り、そのセッションでもカウントされます
-  * `false`: 保存された `fastMode: true` は後のすべてのセッションの開始時に高速モードをオンにします
+* **スコープ**: [`Any file`](#scopes)
+* **型**: Boolean
+  * `true`: 保存された `fastMode: true` はセッション開始時に fast mode をオンにしなくなるため、各ユーザーは fast mode を使いたいセッションごとに `/fast` を実行します。`--settings` で渡された `fastMode: true` は、管理設定でこのキーが設定されていない限り、そのセッションでは引き続き有効です
+  * `false`: 保存された `fastMode: true` は、以降のすべてのセッションの開始時に fast mode をオンにします
 * **デフォルト**: `false`
 
 ```json settings.json theme={null}
@@ -482,11 +482,11 @@ Team または Enterprise プランのオーナーは、[サーバー管理設�
 
 ### `language`
 
-Claude がデフォルトで英語以外の言語で応答するようにします。応答の固定リストはありません。Claude Code は値を Claude に逐語的に、常にその言語で応答するという指示として渡すため、Claude が読むことができる言語名は機能します。Claude Code は値をチェックしないため、スペルが間違った名前はエラーを生成するのではなく、書かれたとおりに Claude に到達します。同じ値は[音声ディクテーション](https://code.claude.com/docs/ja/voice-dictation.md#change-the-dictation-language)の言語を設定します。これは[サポートされているディクテーション言語](https://code.claude.com/docs/ja/voice-dictation.md#change-the-dictation-language)の固定リストを持ち、自動生成されたセッションタイトルも設定します。
+Claude がデフォルトで英語以外の言語で応答するようにします。応答に使える言語の固定リストはありません。Claude Code はこの値を、常にその言語で応答するという指示としてそのまま Claude に渡すため、Claude が読み取れる言語名であれば何でも機能します。Claude Code は値をチェックしないため、スペルを誤った名前はエラーにならず、記述したとおりに Claude に渡されます。同じ値は、[音声入力](https://code.claude.com/docs/ja/voice-dictation.md#change-the-dictation-language)（こちらには[サポートされている音声入力言語](https://code.claude.com/docs/ja/voice-dictation.md#change-the-dictation-language)の固定リストがあります）と、自動生成されるセッションタイトルの言語も設定します。
 
-* **スコープ**: [`任意のファイル`](#scopes)
-* **タイプ**: 文字列、`"japanese"`、`"spanish"`、`"french"` などの言語名。Claude Code はそれを検証しません
-* **デフォルト**: 設定解除されています。セッションタイトルは会話の言語と一致します
+* **スコープ**: [`Any file`](#scopes)
+* **型**: 文字列。`"japanese"`、`"spanish"`、`"french"` など任意の言語名。Claude Code は検証しません
+* **デフォルト**: 未設定。その場合、セッションタイトルは会話の言語に合わせられます
 
 ```json settings.json theme={null}
 {
@@ -496,14 +496,14 @@ Claude がデフォルトで英語以外の言語で応答するようにしま�
 
 ### `maxEffortLevel`
 
-セッションが使用できる[努力レベル](https://code.claude.com/docs/ja/model-config.md#adjust-effort-level)をキャップし、低いレベルを利用可能なままにします。より高いレベルはキャップで実行されます。`/effort`、`/model` ピッカー、`--effort`、[`CLAUDE_CODE_EFFORT_LEVEL`](https://code.claude.com/docs/ja/env-vars)、スキルまたはサブエージェントの `effort` frontmatter、またはモデル自体のデフォルトから。Claude Code はリクエストの前にキャップ自体を適用するため、Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry を含むすべてのプロバイダーで保持されます。Claude Code v2.1.267 以降が必要です。
+セッションで使用できる [effort レベル](https://code.claude.com/docs/ja/model-config.md#adjust-effort-level)に上限を設け、それより低いレベルは使用可能なままにします。それより高いレベルは、`/effort`、`/model` ピッカー、`--effort`、[`CLAUDE_CODE_EFFORT_LEVEL`](https://code.claude.com/docs/ja/env-vars)、スキルやサブエージェントの `effort` フロントマター、またはモデル自体のデフォルトから指定されたものを含め、すべて上限のレベルで実行されます。Claude Code は各リクエストの前に自ら上限を適用するため、Amazon Bedrock、Google Cloud's Agent Platform、Microsoft Foundry を含むすべてのプロバイダーで上限が維持されます。Claude Code v2.1.267 以降が必要です。
 
-* **スコープ**: [`任意のファイル`](#scopes)。組織に対して強制するために、管理設定にデプロイします。複数のスコープがキャップを設定する場合、最も低いものが適用されるため、1 つのスコープで設定されたキャップを別のスコープから上げることはできません
-* **タイプ**: 文字列、`"low"`、`"medium"`、`"high"`、`"xhigh"`、または `"max"` のいずれか。`"max"` 値はキャップを設定しません
-* **デフォルト**: 設定解除されているため、キャップは適用されません
-* **モデルごとのキャップ**: モデルの [`modelSettings`](#modelsettings)エントリに `maxEffortLevel` を追加します。そのエントリは、ユーザー設定や 1 つの[管理ソース](https://code.claude.com/docs/ja/managed-settings.md#how-claude-code-combines-managed-sources)など、両方を設定する設定ソース内でのみこのキーを置き換えます。そこで `"max"` を設定して、そのソースのキャップからモデルを除外します。Claude Code は他のソースからのキャップを依然として適用します
+* **スコープ**: [`Any file`](#scopes)。組織全体に適用するには、管理設定でデプロイします。複数のスコープで上限が設定されている場合は最も低いものが適用されるため、あるスコープで設定された上限を別のスコープから引き上げることはできません
+* **型**: 文字列。`"low"`、`"medium"`、`"high"`、`"xhigh"`、`"max"` のいずれか。`"max"` を指定すると上限は設定されません
+* **デフォルト**: 未設定。上限は適用されません
+* **モデルごとの上限**: モデルの [`modelSettings`](#modelsettings) エントリに `maxEffortLevel` を追加します。そのエントリは、ユーザー設定や 1 つの[管理ソース](https://code.claude.com/docs/ja/managed-settings.md#how-claude-code-combines-managed-sources)など、両方を設定している設定ソース内に限り、そのモデルについてこのキーを置き換えます。そこで `"max"` を設定すると、そのモデルをそのソースの上限から除外できます。ただし、Claude Code は他のソースからの上限を引き続き適用します
 
-この例はすべてのモデルを `medium` でキャップし、Sonnet 4.6 を除外します:
+この例では、すべてのモデルの上限を `medium` に設定し、Sonnet 4.6 を除外します。
 
 ```json settings.json theme={null}
 {
@@ -516,16 +516,16 @@ Claude がデフォルトで英語以外の言語で応答するようにしま�
 }
 ```
 
-組織がモデルの[努力制限](https://code.claude.com/docs/ja/model-config.md#organization-effort-limits)も設定する場合、2 つのキャップの低い方が適用されます。
+組織がモデルに対して [effort の制限](https://code.claude.com/docs/ja/model-config.md#organization-effort-limits)も設定している場合は、2 つの上限のうち低い方が適用されます。
 
 ### `model`
 
-すべての新しいセッションが使用するモデルを設定するため、毎回 `/model` で 1 つを選択する必要はありません。ここで設定してもセッション中に切り替えることは止まりません。管理者が[組織デフォルトモデル](https://code.claude.com/docs/ja/model-config.md#organization-default-model)を設定してユーザー選択をオーバーライドした場合、ユーザー、プロジェクト、またはローカル設定でこのキーを設定しても、そのモデルを取得します。
+新しいセッションごとに使用するモデルを設定し、毎回 `/model` で選択しなくて済むようにします。ここで設定しても、セッションの途中で切り替えることはできます。管理者がユーザーの選択を上書きする[組織のデフォルトモデル](https://code.claude.com/docs/ja/model-config.md#organization-default-model)を設定している場合は、ユーザー設定、プロジェクト設定、ローカル設定でこのキーを設定していても、そのモデルが使用されます。
 
-* **スコープ**: [`任意のファイル`](#scopes)
-* **タイプ**: 文字列、モデルエイリアスまたは完全なモデル ID
-* **デフォルト**: 設定解除されているため、Claude Code はアカウントのデフォルトモデルを使用します
-* **セッションごとのオーバーライド**: `--model` は [`ANTHROPIC_MODEL`](https://code.claude.com/docs/ja/env-vars)より優先され、両方は 1 つのセッションでこのキーより優先されます。管理 `model` を含む。[`availableModels`](#availablemodels)リストは依然として選択に適用されます
+* **スコープ**: [`Any file`](#scopes)
+* **型**: 文字列。モデルのエイリアスまたは完全なモデル ID
+* **デフォルト**: 未設定。Claude Code はアカウントのデフォルトモデルを使用します
+* **セッションごとの上書き**: `--model` は [`ANTHROPIC_MODEL`](https://code.claude.com/docs/ja/env-vars) よりも優先され、どちらも 1 つのセッションに限り、管理された `model` を含めてこのキーよりも優先されます。ただし、[`availableModels`](#availablemodels) リストは引き続き選択に適用されます
 
 ```json settings.json theme={null}
 {
@@ -533,17 +533,17 @@ Claude がデフォルトで英語以外の言語で応答するようにしま�
 }
 ```
 
-ここの値は [`ANTHROPIC_DEFAULT_MODEL`](https://code.claude.com/docs/ja/model-config#set-a-default-model-for-new-sessions)をランク付けし、Claude Code は他に何もモデルを選択しない場合にのみ使用します。
+ここで設定した値は、[`ANTHROPIC_DEFAULT_MODEL`](https://code.claude.com/docs/ja/model-config#set-a-default-model-for-new-sessions) よりも優先されます。Claude Code が `ANTHROPIC_DEFAULT_MODEL` を使用するのは、他に何もモデルを選択していない場合のみです。
 
 ### `modelOverrides`
 
-Anthropic モデル ID をプロバイダー固有のモデル ID (Amazon Bedrock 推論プロファイル ARN など)にマップします。各モデルピッカーエントリは、プロバイダー API を呼び出すときにマップされた値を使用します。管理者は[Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry](https://code.claude.com/docs/ja/model-config.md#override-model-ids-per-version)でこれを使用して、各モデルバージョンを特定の推論プロファイル、バージョン名、またはガバナンス、コスト配分、または地域ルーティングのためのデプロイメントにルーティングします。
+Anthropic のモデル ID を、Amazon Bedrock の推論プロファイル ARN などのプロバイダー固有のモデル ID にマッピングします。これにより、モデルピッカーの各エントリは、プロバイダー API を呼び出す際にマッピングされた値を使用します。管理者は [Amazon Bedrock、Google Cloud's Agent Platform、Microsoft Foundry](https://code.claude.com/docs/ja/model-config.md#override-model-ids-per-version) でこれを使用して、ガバナンス、コスト配分、リージョンルーティングのために、各モデルバージョンを特定の推論プロファイル、バージョン名、またはデプロイにルーティングします。
 
-* **スコープ**: [`任意のファイル`](#scopes)
-* **タイプ**: モデル ID をプロバイダーモデル ID にマップするオブジェクト
-* **デフォルト**: 設定解除されています
+* **スコープ**: [`Any file`](#scopes)
+* **型**: モデル ID をプロバイダーのモデル ID にマッピングするオブジェクト
+* **デフォルト**: 未設定
 
-この例は、Opus 4.6 のすべての呼び出しを名前付き Bedrock 推論プロファイルにルーティングします:
+この例では、Opus 4.6 へのすべての呼び出しを指定した Bedrock 推論プロファイルにルーティングします。
 
 ```json settings.json theme={null}
 {
@@ -553,17 +553,17 @@ Anthropic モデル ID をプロバイダー固有のモデル ID (Amazon Bedroc
 }
 ```
 
-[モデル ID をバージョンごとにオーバーライド](https://code.claude.com/docs/ja/model-config.md#override-model-ids-per-version)を参照してください。
+[バージョンごとにモデル ID を上書きする](https://code.claude.com/docs/ja/model-config.md#override-model-ids-per-version)を参照してください。
 
 ### `modelPicker`
 
-`/model` ピッカーが提供するモデルを、書き込む順序で、選択するラベルの下にリストします。ピッカーは組織が実行するモデルをリストします。組み込みラインアップの後または代わりに。各行の `model` は逐語的に取得されるため、`--model` が受け入れるもの、`opus` などのエイリアス、Anthropic モデル ID、または Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、または LLM ゲートウェイのプロバイダー形式 ID を受け入れます。Claude Code v2.1.242 以降が必要です。
+`/model` ピッカーに表示するモデルを、記述した順序と選択したラベルで一覧にします。これにより、ピッカーには組織で実行しているモデルが、組み込みのラインナップの後に、またはその代わりに表示されます。各行の `model` はそのまま使用されるため、`--model` が受け付けるものは何でも指定できます。`opus` のようなエイリアス、Anthropic のモデル ID、または Amazon Bedrock、Google Cloud's Agent Platform、Microsoft Foundry、LLM ゲートウェイ向けのプロバイダー形式の ID です。Claude Code v2.1.242 以降が必要です。
 
-* **スコープ**: [`ユーザーまたは管理`](#scopes)。Claude Code は管理設定、`--settings`、およびユーザー設定からキーを読み取り、プロジェクトおよびローカル設定では無視するため、クローンするリポジトリはピッカーを再ラベルできません。これら 3 つの最も高いものがキーを設定すると、ラインアップ全体が供給され、Claude Code は 2 つのソースからラインアップをマージしません。
-* **タイプ**: `options` 配列と行とオプションの `replaceBuiltInOptions` ブール値を持つオブジェクト
-* **デフォルト**: 設定解除されているため、ピッカーは組み込みラインアップを表示します
+* **スコープ**: [`User or managed`](#scopes)。Claude Code はこのキーを管理設定、`--settings`、ユーザー設定から読み取り、プロジェクト設定とローカル設定では無視します。これにより、クローンしたリポジトリがピッカーのラベルを変更することはできません。これら 3 つのうちこのキーを設定している最も優先順位の高いものがラインナップ全体を提供し、Claude Code が 2 つのソースのラインナップを組み合わせることはありません。
+* **型**: 行の配列である `options` と、省略可能な Boolean の `replaceBuiltInOptions` を持つオブジェクト
+* **デフォルト**: 未設定。ピッカーには組み込みのラインナップが表示されます
 
-この例は、組み込みラインアップの後に 2 つの Bedrock デプロイメントを追加し、チームが認識する名前の下に:
+この例では、チームが認識できる名前で、組み込みのラインナップの後に 2 つの Bedrock デプロイを追加します。
 
 ```json managed-settings.json theme={null}
 {
@@ -582,36 +582,36 @@ Anthropic モデル ID をプロバイダー固有のモデル ID (Amazon Bedroc
 
 #### `modelPicker` のフィールド
 
-キーは 2 つのフィールドを取ります。1 つは行自体用で、もう 1 つは組み込みラインアップを置き換えるか追加するかです。
+このキーは 2 つのフィールドを受け取ります。1 つは行そのもの用、もう 1 つはそれらの行が組み込みのラインナップを置き換えるか、追加されるかを指定するものです。
 
-| フィールド | タイプ | 動作 |
+| フィールド | 型 | 機能 |
 | :- | :- | :- |
-| `options` | 必須の `model` とオプションの `label`、`description`、および `behavesAs` を持つ行の配列 | ピッカーが表示する行。この順序で。グレーアウトされた行は下部に移動します。`label` がない場合、Claude Code は既知のモデルの組み込み名でタイトルを付けるか、モデル ID でタイトルを付けます。`description` がない場合は、一般的な 2 行目を書き込みます |
-| `replaceBuiltInOptions` | ブール値、デフォルト `false` | これらの行のみ、**Default**、およびセッションが既に使用しているモデルの行を表示するには `true` に設定します。これらの行を組み込みラインアップの後に追加するには、設定解除のままにします |
+| `options` | 行の配列。各行には必須の `model` と、省略可能な `label`、`description`、`behavesAs` があります | ピッカーに表示される行で、この順序で表示されます。ただし、グレーアウトされた行は一番下に移動します。`label` がない場合、Claude Code は既知のモデルであれば組み込みの名前を、それ以外の場合はモデル ID を行のタイトルとし、`description` がない場合は汎用的な 2 行目を記述します |
+| `replaceBuiltInOptions` | Boolean、デフォルトは `false` | `true` に設定すると、これらの行、**Default**、およびセッションですでに使用しているモデルの行のみが表示されます。未設定のままにすると、これらの行は組み込みのラインナップの後に追加されます |
 
-`options` のエントリは、その `model` の横にオプションの `behavesAs` 文字列を持つこともできます。これには v2.1.257 以降が必要です。Claude Code バージョンが既に知っている `claude-opus-4-8` などのモデルの ID に設定します。`model` が バージョンより新しいエントリで。Claude Code はそれ以降、既知のモデルの機能と努力デフォルトをエントリに適用し、そのモデルを不明として扱いません。エントリのラベルと Claude Code がリクエストで送信するモデル ID は変わりません。
+`options` 内のエントリには、`model` と並んで省略可能な `behavesAs` 文字列を含めることもでき、これには v2.1.257 以降が必要です。`model` が使用中のバージョンより新しいエントリに対して、`claude-opus-4-8` など、使用中の Claude Code バージョンがすでに認識しているモデルの ID を設定します。すると Claude Code は、そのモデルを不明なモデルとして扱う代わりに、既知のモデルの機能と effort のデフォルトをそのエントリに適用します。エントリのラベルと、Claude Code がリクエストで送信するモデル ID は変わりません。
 
-`replaceBuiltInOptions` がオンの場合、Claude Code はすべての他の行を非表示にします。組み込みラインアップ、[`availableModels`](#availablemodels)エントリ用に追加する行、[ゲートウェイディスカバリー](https://code.claude.com/docs/ja/llm-gateway-protocol.md#model-discovery)が見つけたモデル、および [`ANTHROPIC_CUSTOM_MODEL_OPTION`](https://code.claude.com/docs/ja/model-config#add-a-custom-model-option)。オフの場合、Claude Code は組み込みラインアップが既にカバーするリストされたモデルをスキップします。ラベルはピッカーが表示するものを変更し、Claude Code が実行するモデルではありません。
+`replaceBuiltInOptions` がオンの場合、Claude Code は他のすべての行を非表示にします。対象は、組み込みのラインナップ、[`availableModels`](#availablemodels) のエントリに対して追加される行、[ゲートウェイ検出](https://code.claude.com/docs/ja/llm-gateway-protocol.md#model-discovery)で見つかったモデル、および [`ANTHROPIC_CUSTOM_MODEL_OPTION`](https://code.claude.com/docs/ja/model-config#add-a-custom-model-option) です。オフの場合、Claude Code は組み込みのラインナップですでにカバーされているリスト内のモデルをスキップします。ラベルはピッカーの表示を変えるだけで、Claude Code が実行するモデルは変わりません。
 
-[`availableModels`](#availablemodels)許可リストはこれらの行に依然として適用されます。リストされたモデルを許可リストに追加する前に、[マージ動作](https://code.claude.com/docs/ja/model-config.md#merge-behavior)を読んでください。特定のモデル ID はそのファミリーのワイルドカード エントリを絞ります。Claude Code はピッカーを表示する前に各行をセッションに対してチェックします:
+[`availableModels`](#availablemodels) 許可リストは、これらの行にも引き続き適用されます。リスト内のモデルを許可リストに追加する前に、[マージの動作](https://code.claude.com/docs/ja/model-config.md#merge-behavior)を読んでください。特定のモデル ID は、そのファミリーのワイルドカードエントリを絞り込みます。Claude Code は、ピッカーを表示する前に各行をセッションに照らしてチェックすることも行います。
 
-* **削除**: Claude Code が提供できない行。廃止されたモデルや組織がアクセスできないモデルなど
-* **グレーアウト**: まだ選択できない行。理由を示して表示されます
-* **行が生き残らない**: Claude Code は通常どおり許可リストでフィルタリングされた組み込みラインアップを保持します
+* **削除**: 廃止されたモデルや組織がアクセスできないモデルなど、Claude Code が提供できない行
+* **グレーアウト**: まだ選択できない行。理由とともに表示されます
+* **残る行がない場合**: Claude Code は組み込みのラインナップを保持し、通常どおり許可リストで絞り込みます
 
-Claude Code は解析できない行を削除し、残りを保持します。[壊れた設定ファイルを修正](https://code.claude.com/docs/ja/settings.md#fix-a-broken-settings-file)を参照してください。
+Claude Code は解析できない行を削除し、残りを保持します。[壊れた設定ファイルを修正する](https://code.claude.com/docs/ja/settings.md#fix-a-broken-settings-file)を参照してください。
 
 ### `modelPricing`
 
-組織が支払うレートでリスト価格の代わりに支出を報告します。組織が契約レートを持っている場合に設定するため、開発者が見るドル数字は請求書と一致します。Claude Code は `/usage`、[ステータスライン](https://code.claude.com/docs/ja/statusline.md)、Agent SDK の `total_cost_usd`、[`--max-budget-usd`](https://code.claude.com/docs/ja/cli-reference)制限、および[OpenTelemetry](https://code.claude.com/docs/ja/monitoring-usage.md)コストメトリックとイベントのレートを適用します。レートを供給します。Claude Code は契約またはClaude Console から読み取りません。Claude Code v2.1.242 以降が必要です。
+表示価格ではなく、組織が実際に支払っている料金で支出を報告します。組織に契約料金がある場合に設定すると、開発者が目にする金額が請求額と一致するようになります。Claude Code はこの料金を、`/usage`、[ステータスライン](https://code.claude.com/docs/ja/statusline.md)、Agent SDK の `total_cost_usd`、[`--max-budget-usd`](https://code.claude.com/docs/ja/cli-reference) の上限、および [OpenTelemetry](https://code.claude.com/docs/ja/monitoring-usage.md) のコストメトリクスとイベントに適用します。料金はユーザーが指定します。Claude Code が契約や Claude Console から料金を読み取ることはありません。Claude Code v2.1.242 以降が必要です。
 
-* **スコープ**: [`管理`](#scopes)。サーバー管理設定、MDM ポリシー、`managed-settings.json` ファイル、または[ポリシーヘルパー](https://code.claude.com/docs/ja/managed-settings.md#compute-the-policy-with-a-helper-program)を通じてキーをデプロイします。Claude Code はユーザー、プロジェクト、ローカル設定、`--settings`、および Windows のユーザー書き込み可能な[HKCU レジストリ](https://code.claude.com/docs/ja/managed-settings.md#where-each-mechanism-stores-the-policy)では無視します。サーバー管理設定では、各セッションはそのセッションの[設定フェッチ](https://code.claude.com/docs/ja/server-managed-settings.md#fetch-and-caching-behavior)が設定を確認するまでリスト価格でコストを報告します。Claude Code を埋め込み、[`CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST`](https://code.claude.com/docs/ja/env-vars)を設定するホストアプリケーションは、SDK [`managedSettings`](https://code.claude.com/docs/ja/agent-sdk/typescript#options)オプションを通じて独自のテーブルを供給でき、Claude Code はマネージドソースがキーを設定しない場合にのみ使用し、Claude Code v2.1.246 以降でのみ使用します。
-* **タイプ**: オプションの `multiplier` とオプションの `overrides` マップを持つオブジェクト
-* **デフォルト**: 設定解除されているため、Claude Code はリスト価格を報告します。ホストアプリケーションがテーブルを供給しない限り
+* **スコープ**: [`Managed`](#scopes)。このキーは、サーバー管理設定、MDM ポリシー、`managed-settings.json` ファイル、または[ポリシーヘルパー](https://code.claude.com/docs/ja/managed-settings.md#compute-the-policy-with-a-helper-program)を通じてデプロイします。Claude Code は、ユーザー設定、プロジェクト設定、ローカル設定、`--settings`、および Windows ではユーザーが書き込み可能な [HKCU レジストリ](https://code.claude.com/docs/ja/managed-settings.md#where-each-mechanism-stores-the-policy)内のこのキーを無視します。サーバー管理設定を使用する場合、各セッションは、そのセッションの[設定の取得](https://code.claude.com/docs/ja/server-managed-settings.md#fetch-and-caching-behavior)で設定が確認されるまで、表示価格でコストを報告します。Claude Code を組み込み、[`CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST`](https://code.claude.com/docs/ja/env-vars) を設定しているホストアプリケーションは、SDK の [`managedSettings`](https://code.claude.com/docs/ja/agent-sdk/typescript#options) オプションを通じて独自の料金表を提供できます。Claude Code がこれを使用するのは、どの管理ソースもこのキーを設定していない場合のみで、Claude Code v2.1.246 以降に限られます。
+* **型**: 省略可能な `multiplier` と省略可能な `overrides` マップを持つオブジェクト
+* **デフォルト**: 未設定。ホストアプリケーションが料金表を提供しない限り、Claude Code は表示価格で報告します
 
-`multiplier` のみを設定して定額割引またはマークアップ、`overrides` のみをモデルごとのレート、または両方を設定します。
+一律の割引または上乗せには `multiplier` のみを、モデルごとの料金には `overrides` のみを設定するか、両方を設定します。
 
-この例は Sonnet 4.6 の契約レートを設定し、すべての数字を 15% 削減します。Sonnet 行を含む:
+この例では、Sonnet 4.6 の契約料金を設定したうえで、Sonnet の行を含むすべての金額を 15% 引き下げます。
 
 ```json managed-settings.json theme={null}
 {
@@ -629,49 +629,49 @@ Claude Code は解析できない行を削除し、残りを保持します。[�
 }
 ```
 
-1 より上、最大 10 までマークアップするには `multiplier` を設定します。マークアップには Claude Code v2.1.271 以降が必要です。以前のバージョンは警告付きで 1 より上の `multiplier` を無視し、設定の残りを保持します。
+すべての金額を上乗せするには、`multiplier` を 1 より大きく 10 以下の値に設定します。上乗せには Claude Code v2.1.271 以降が必要です。それより前のバージョンでは、1 より大きい `multiplier` は警告付きで無視され、設定の残りは保持されます。
 
-手順を含む、レートが有効であることを確認する方法については、[契約レートで支出を報告](https://code.claude.com/docs/ja/costs.md#report-spend-at-your-contracted-rates)を参照してください。
+料金が有効になっていることを確認する方法を含む手順については、[契約料金で支出を報告する](https://code.claude.com/docs/ja/costs.md#report-spend-at-your-contracted-rates)を参照してください。
 
 #### `modelPricing` のフィールド
 
-| フィールド | タイプ | 動作 |
+| フィールド | 型 | 機能 |
 | :- | :- | :- |
-| `multiplier` | 0 より大きく最大 10 の数値 | Claude Code が計算するすべてのコストをスケーリングします。`overrides` 行がカバーするかどうかに関わらず。1 未満は割引、1 より上はマークアップです |
-| `overrides` | モデル ID をそれぞれ 0 から 10000 の `input`、`output`、`cacheRead`、および `cacheWrite` を持つレートオブジェクトにマップします | そのモデルの USD-per-million-token レート。すべて 4 つが必要です。`cacheWrite` は 5 分と 1 時間のキャッシュ書き込みの両方をカバーします。[どのモデルが行に適用されるか](#which-models-a-modelpricing-row-applies-to)を参照してください |
+| `multiplier` | 0 より大きく 10 以下の数値 | `overrides` の行が対象としているかどうかにかかわらず、Claude Code が計算するすべてのコストをスケーリングします。1 未満は割引、1 より大きい値は上乗せです |
+| `overrides` | モデル ID から、`input`、`output`、`cacheRead`、`cacheWrite`（それぞれ 0 から 10000）を持つ料金オブジェクトへのマップ | そのモデルの 100 万トークンあたりの USD 料金で、4 つすべてが必須です。`cacheWrite` は 5 分と 1 時間の両方のキャッシュ書き込みを対象とします。[`modelPricing` の行が適用されるモデル](#which-models-a-modelpricing-row-applies-to)を参照してください |
 
-Claude Code はレートを書き込んだとおりに使用し、高速モード割増料金または[US のみの推論レート](https://platform.claude.com/docs/en/about-claude/pricing)を追加しません。`multiplier` も設定する場合、Claude Code はそれを行のレートの上に適用します。Claude Code は解析できないレートを持つ行、または解析できない `multiplier` を削除し、残りを保持します。[壊れた設定ファイルを修正](https://code.claude.com/docs/ja/settings.md#fix-a-broken-settings-file)を参照してください。
+Claude Code は、fast mode の追加料金や[米国内のみでの推論の料金](https://platform.claude.com/docs/en/about-claude/pricing)を加算せず、行の料金を記述したとおりに使用します。`multiplier` も設定している場合、Claude Code はそれを行の料金に重ねて適用します。Claude Code は、解析できない料金を持つ行や、解析できない `multiplier` を削除し、残りを保持します。[壊れた設定ファイルを修正する](https://code.claude.com/docs/ja/settings.md#fix-a-broken-settings-file)を参照してください。
 
-#### どのモデルが `modelPricing` 行に適用されるか
+#### `modelPricing` の行が適用されるモデル
 
-Claude Code は行のキーから行が適用されるモデルを決定します:
+Claude Code は、行のキーからその行がどのモデルに適用されるかを判断します。
 
-* **組み込みモデルの ID**: Claude Code 自体がモデルの独自の ID (例: `claude-sonnet-4-6`) またはその Bedrock、Agent Platform、または Foundry ID であるかどうかに関わらず、組み込みモデルに使用するキー。Claude Code はそのモデルのすべての日付スナップショット ID とプロバイダー固有の ID に行を適用します。
-* **その他のキー**: 組み込みモデルの ID ではないキー。ゲートウェイモデルエイリアスなど。Claude Code はそのキーのみに行を適用します。モデル ID がキーの 1 つと正確に一致し、組み込みモデルの ID でキーされた行の下にも該当する場合、Claude Code は正確な一致を使用します。
-* **Bedrock アプリケーション推論プロファイル**: Claude Code がプロファイルを [`modelOverrides`](#modeloverrides)マップまたは [`bedrock:GetInferenceProfile` ルックアップ](https://code.claude.com/docs/ja/amazon-bedrock#iam-configuration)を通じてルーティングするモデルに解決した後、Claude Code はそのモデルの行をプロファイルに適用します。
+* **組み込みモデルの ID**: Claude Code 自身が組み込みモデルに使用するキーで、`claude-sonnet-4-6` のようなモデル自体の ID であるか、Bedrock、Agent Platform、Foundry の ID であるかは問いません。Claude Code は、そのモデルのすべての日付付きスナップショット ID とプロバイダー固有の ID にその行を適用します。
+* **その他のキー**: ゲートウェイのモデルエイリアスなど、組み込みモデルの ID ではないキー。Claude Code はその 1 つの ID にのみ行を適用します。モデル ID がいずれかのキーに完全に一致し、かつ組み込みモデルの ID をキーとする行にも該当する場合、Claude Code は完全一致を使用します。
+* **Bedrock のアプリケーション推論プロファイル**: Claude Code が [`modelOverrides`](#modeloverrides) マップまたは [`bedrock:GetInferenceProfile` による検索](https://code.claude.com/docs/ja/amazon-bedrock#iam-configuration)を通じて、プロファイルをルーティング先のモデルに解決すると、Claude Code はそのモデルの行をプロファイルに適用します。
 
 ### `modelSettings`
 
-使用する各モデルの[努力レベル](https://code.claude.com/docs/ja/model-config.md#adjust-effort-level)を保存します。Claude Code v2.1.251 以降が必要です。
+使用するモデルごとに [effort レベル](https://code.claude.com/docs/ja/model-config.md#adjust-effort-level)を保存します。Claude Code v2.1.251 以降が必要です。
 
-マシン上のインタラクティブセッションで、`/effort` または `/model` ピッカーの努力スライダーで `low`、`medium`、`high`、または `xhigh` をデフォルトとして保存すると、Claude Code はそれを使用しているモデルの下にここにそのレベルを書き込むため、このキーを自分で編集することはめったにありません。[VS Code 拡張機能のモデルピッカー](https://code.claude.com/docs/ja/vs-code.md#use-the-prompt-box)でこれらのレベルのいずれかを選択すると、Claude Code は同じ方法でここに保存します。[`effortLevel`](#effortlevel)エントリは `/effort` がそのセッションのみに適用されるセッションをリストします。
+自分のマシン上の対話セッションで、`/effort` または `/model` ピッカーの effort スライダーを使って `low`、`medium`、`high`、`xhigh` をデフォルトとして保存すると、Claude Code は使用中のモデルの下にそのレベルをここに書き込むため、このキーを自分で編集することはほとんどありません。[VS Code 拡張機能のモデルピッカー](https://code.claude.com/docs/ja/vs-code.md#use-the-prompt-box)でこれらのレベルのいずれかを選択した場合も、Claude Code は同じようにここに保存します。`/effort` がそのセッションにのみ適用されるセッションについては、[`effortLevel`](#effortlevel) のエントリに記載しています。
 
-レベルを変更または削除するには、キーを手動で編集します。
+保存したレベルを変更または削除するには、このキーを手動で編集します。
 
-ここで指定するモデルの `effortLevel` は、同じ設定ファイルの最上位 [`effortLevel`](#effortlevel)より優先されます。ファイル間では、Claude Code は各モデルを個別に解決します。そのモデルの `effortLevel` または[そのモデルに適用される](#effortlevel)最上位 `effortLevel` のいずれかを設定する最も優先度の高い[設定ファイル](https://code.claude.com/docs/ja/settings.md#settings-precedence)が決定するため、管理設定の `effortLevel` はユーザー設定で保存されたレベルより優先されます。[努力レベルを調整](https://code.claude.com/docs/ja/model-config.md#adjust-effort-level)は、起動時の `--effort` など、保存されたレベルをオーバーライドできるその他のものをリストします。
+ここでのモデルの `effortLevel` は、同じ設定ファイル内のトップレベルの [`effortLevel`](#effortlevel) よりも優先されます。ファイル間では、Claude Code はモデルごとに個別に解決します。そのモデルの `effortLevel`、または[そのモデルに適用される](#effortlevel)トップレベルの `effortLevel` のいずれかを設定している、最も優先順位の高い[設定ファイル](https://code.claude.com/docs/ja/settings.md#settings-precedence)が決定するため、管理設定の `effortLevel` はユーザー設定に保存したレベルよりも優先されます。起動時の `--effort` など、保存されたレベルを上書きできるその他の要素については、[effort レベルを調整する](https://code.claude.com/docs/ja/model-config.md#adjust-effort-level)に記載しています。
 
-1 つのモデルの努力レベルを設定するのではなくキャップするには、そのモデルのエントリに [`maxEffortLevel`](#maxeffortlevel)フィールドを追加します。フィールドには Claude Code v2.1.267 以降が必要です。
+1 つのモデルのレベルを設定するのではなく effort に上限を設けるには、そのモデルのエントリに [`maxEffortLevel`](#maxeffortlevel) フィールドを追加します。このフィールドには Claude Code v2.1.267 以降が必要です。
 
-* **スコープ**: [`任意のファイル`](#scopes)
-* **タイプ**: モデル名を、以下のいずれかのフィールドを持つオブジェクトにマッピングするオブジェクト:
+* **スコープ**: [`Any file`](#scopes)
+* **型**: モデル名を、次のいずれかのフィールドを持つオブジェクトにマッピングするオブジェクト:
   * `effortLevel`: `"low"`、`"medium"`、`"high"`、`"xhigh"` のいずれか
   * [`maxEffortLevel`](#maxeffortlevel): モデルが実行できる最も高い effort レベル
-  * `autoCompactWindow`: `100000` から `1000000` までのトークン数、またはモデルに合わせて調整されたウィンドウを使う `"auto"`。[`/autocompact`](https://code.claude.com/docs/ja/model-config#set-the-auto-compact-window) はここに保存します。そのモデルについては、この値が同じ設定ファイル内の最上位の [`autoCompactWindow`](#autocompactwindow) より優先されます。Claude Code v2.1.288 以降が必要です
-* **デフォルト**: 設定解除されています
+  * `autoCompactWindow`: `100000` から `1000000` までのトークン数、またはモデル向けに調整されたウィンドウを表す `"auto"`。[`/autocompact`](https://code.claude.com/docs/ja/model-config#set-the-auto-compact-window) はここに保存します。そのモデルについては、この値が同じ設定ファイル内のトップレベルの [`autoCompactWindow`](#autocompactwindow) よりも優先されます。Claude Code v2.1.288 以降が必要です
+* **デフォルト**: 未設定
 
-Claude Code は各エントリを `claude-opus-5-5` などのモデルの正規名の下に書き込み、そのモデルのエイリアス、日付サフィックス、`[1m]`、および認識されたプロバイダー固有の ID を同じエントリと一致させます。
+Claude Code は各エントリを `claude-opus-5-5` のようなモデルの正規名の下に書き込み、そのモデルのエイリアス、日付サフィックス付き、`[1m]`、および認識されたプロバイダー固有の ID を同じエントリに照合します。
 
-この例は Opus 5.5 を `high` に保ちながら、他のモデルは独自の保存またはデフォルトレベルを使用します:
+この例では、他のモデルがそれぞれ保存済みまたはデフォルトのレベルを使用する一方で、Opus 5.5 を `high` に保ちます。
 
 ```json settings.json theme={null}
 {
@@ -683,19 +683,19 @@ Claude Code は各エントリを `claude-opus-5-5` などのモデルの正規�
 }
 ```
 
-`/effort auto` を実行して、使用しているモデルの保存されたレベルをクリアします。Claude Code は他のエントリと最上位の `effortLevel` をそのままにします。
+使用中のモデルについて保存したレベルをクリアするには、`/effort auto` を実行します。Claude Code は、他のエントリとトップレベルの `effortLevel` をそのまま残します。
 
 ### `outputStyle`
 
-[出力スタイル](https://code.claude.com/docs/ja/output-styles.md)を名前で選択します。出力スタイルは、Claude の役割、トーン、出力形式を変更する保存された指示のセットです。組み込みの Explanatory および Learning スタイルや自分で書いたものなど。
+名前で[出力スタイル](https://code.claude.com/docs/ja/output-styles.md)を選択します。出力スタイルとは、Claude の役割、トーン、出力形式を変更する指示の保存済みセットで、組み込みの Explanatory スタイルや Learning スタイル、または自分で作成したスタイルなどがあります。
 
-セッション中にこのキーを変更すると、Claude は次のメッセージから新しいスタイルを使用します。そのメッセージがプロンプトキャッシュでコストするものについては、[出力スタイルを変更](https://code.claude.com/docs/ja/prompt-caching.md#changing-output-style)を参照してください。v2.1.251 より前では、編集は `/clear` を実行した後またはセッションを開始した後にのみ適用されました。
+セッション中にこのキーを変更すると、Claude は次のメッセージから新しいスタイルを使用します。そのメッセージのプロンプトキャッシュにおけるコストについては、[出力スタイルの変更](https://code.claude.com/docs/ja/prompt-caching.md#changing-output-style)を参照してください。v2.1.251 より前は、変更は `/clear` を実行するか新しいセッションを開始した後にのみ適用されていました。
 
-* **スコープ**: [`任意のファイル`](#scopes)
-* **タイプ**: 文字列。[組み込み](https://code.claude.com/docs/ja/output-styles.md#built-in-output-styles)または[カスタム](https://code.claude.com/docs/ja/output-styles.md#create-a-custom-output-style)出力スタイルの名前
-* **デフォルト**: 設定解除されているため、Claude Code はデフォルトスタイルを使用します
+* **スコープ**: [`Any file`](#scopes)
+* **型**: 文字列。[組み込み](https://code.claude.com/docs/ja/output-styles.md#built-in-output-styles)または[カスタム](https://code.claude.com/docs/ja/output-styles.md#create-a-custom-output-style)の出力スタイルの名前
+* **デフォルト**: 未設定。Claude Code はデフォルトのスタイルを使用します
 
-この例は、タスク間に教育的な洞察を追加する組み込みの Explanatory スタイルを選択します:
+この例では、タスクの合間に教育的な解説を追加する組み込みの Explanatory スタイルを選択します。
 
 ```json settings.json theme={null}
 {
@@ -705,16 +705,16 @@ Claude Code は各エントリを `claude-opus-5-5` などのモデルの正規�
 
 ### `promptCacheTtl`
 
-[プロンプトキャッシュ](https://code.claude.com/docs/ja/prompt-caching.md)がメイン会話を保持する期間を選択します。このキーはインタラクティブ、`-p`、および Agent SDK ターンに適用されます。Claude Code がインラインで実行するヘルパーと一緒に。1 時間のライフタイムはより長い休憩全体でキャッシュを温かく保ち、API は[各キャッシュ書き込みを 5 分のライフタイムより高いレートで請求します](https://platform.claude.com/docs/en/build-with-claude/prompt-caching#pricing)。Claude Code v2.1.242 以降が必要です。
+[プロンプトキャッシュ](https://code.claude.com/docs/ja/prompt-caching.md)がメインの会話を保持する期間を選択します。このキーは、対話、`-p`、および Agent SDK のターンと、それらとインラインで Claude Code が実行するヘルパーに適用されます。1 時間の有効期間では、長めの休憩をはさんでもキャッシュがウォームな状態に保たれますが、API は 5 分の有効期間よりも[高い料金で各キャッシュ書き込みを請求](https://platform.claude.com/docs/en/build-with-claude/prompt-caching#pricing)します。Claude Code v2.1.242 以降が必要です。
 
-* **スコープ**: [`任意のファイル`](#scopes)
-* **タイプ**: 文字列、以下のいずれか:
+* **スコープ**: [`Any file`](#scopes)
+* **型**: 文字列。次のいずれか:
   * `"5m"`: キャッシュは 5 分間保持されます
   * `"1h"`: キャッシュは 1 時間保持されます
-* **デフォルト**: 設定解除されているため、各メイン会話リクエストは[そのデフォルトライフタイム](https://code.claude.com/docs/ja/prompt-caching.md#which-ttl-each-request-gets)を取得します
-* **セッションごとのオーバーライド**: [`FORCE_PROMPT_CACHING_5M`](https://code.claude.com/docs/ja/env-vars)はすべてを優先し、次に [`CLAUDE_CODE_PROMPT_CACHE_TTL`](https://code.claude.com/docs/ja/env-vars)、次にこのキー、最後に [`ENABLE_PROMPT_CACHING_1H`](https://code.claude.com/docs/ja/env-vars)
+* **デフォルト**: 未設定。メインの会話の各リクエストには[デフォルトの有効期間](https://code.claude.com/docs/ja/prompt-caching.md#which-ttl-each-request-gets)が適用されます
+* **セッションごとの上書き**: [`FORCE_PROMPT_CACHING_5M`](https://code.claude.com/docs/ja/env-vars) が他のすべてよりも優先され、次に [`CLAUDE_CODE_PROMPT_CACHE_TTL`](https://code.claude.com/docs/ja/env-vars)、次にこのキー、最後に [`ENABLE_PROMPT_CACHING_1H`](https://code.claude.com/docs/ja/env-vars) の順になります
 
-この例はメイン会話を 1 時間のライフタイムに保ち、サブエージェントを 5 分のままにします:
+この例では、メインの会話を 1 時間の有効期間に保ち、サブエージェントは 5 分のままにします。
 
 ```json settings.json theme={null}
 {
@@ -723,16 +723,16 @@ Claude Code は各エントリを `claude-opus-5-5` などのモデルの正規�
 }
 ```
 
-各ライフタイムのコストについては、[キャッシュライフタイム](https://code.claude.com/docs/ja/prompt-caching.md#cache-lifetime)を参照してください。
+各有効期間のコストについては、[キャッシュの有効期間](https://code.claude.com/docs/ja/prompt-caching.md#cache-lifetime)を参照してください。
 
 ### `showThinkingSummaries`
 
-対話セッションで Claude の[拡張思考](https://code.claude.com/docs/ja/model-config.md#extended-thinking)の要約を表示します。`Ctrl+O` で思考を展開したときに完全な要約を見たい場合に設定します。設定解除または `false` の場合、Anthropic API は思考ブロックを秘匿し、Claude Code は折りたたまれたスタブを表示します。
+対話セッションで Claude の[拡張思考](https://code.claude.com/docs/ja/model-config.md#extended-thinking)の要約を表示します。`Ctrl+O` で思考を展開したときに完全な要約を表示したい場合に設定します。未設定または `false` の場合、Anthropic API は思考ブロックを編集済み（非表示）にし、Claude Code は折りたたまれたスタブを表示します。
 
-* **スコープ**: [`任意のファイル`](#scopes)
-* **タイプ**: ブール値
-  * `true`: `Ctrl+O` で思考を展開するときに完全な思考概要が表示されます
-  * `false`: Anthropic API は思考ブロックを編集し、Claude Code は折りたたまれたスタブを表示します
+* **スコープ**: [`Any file`](#scopes)
+* **型**: Boolean
+  * `true`: `Ctrl+O` で思考を展開すると、完全な思考の要約が表示されます
+  * `false`: Anthropic API は思考ブロックを編集済み（非表示）にし、Claude Code は折りたたまれたスタブを表示します
 * **デフォルト**: `false`
 
 ```json settings.json theme={null}
@@ -741,20 +741,20 @@ Claude Code は各エントリを `claude-opus-5-5` などのモデルの正規�
 }
 ```
 
-編集は、モデルが生成するものではなく、表示するものだけを変更します。思考支出を削減するには、代わりに[予算を低下させるか思考を無効にします](https://code.claude.com/docs/ja/model-config.md#extended-thinking)。
+編集による非表示化で変わるのは表示内容だけであり、モデルが生成する内容は変わりません。思考の費用を削減するには、代わりに[予算を下げるか思考を無効にします](https://code.claude.com/docs/ja/model-config.md#extended-thinking)。
 
 ### `subagentPromptCacheTtl`
 
-[プロンプトキャッシュ](https://code.claude.com/docs/ja/prompt-caching.md)がメイン会話外で Claude Code が行うリクエストを保持する期間を選択します。このキーは[サブエージェント](https://code.claude.com/docs/ja/sub-agents.md)、[ワークフロー](https://code.claude.com/docs/ja/workflows.md)、および Claude Code 独自のバックグラウンドおよびヘルパーリクエスト (圧縮やセッションタイトルなど)に適用されます。1 時間のライフタイムはより長い休憩全体でキャッシュを温かく保ち、API は[各キャッシュ書き込みを 5 分のライフタイムより高いレートで請求します](https://platform.claude.com/docs/en/build-with-claude/prompt-caching#pricing)。Claude Code v2.1.242 以降が必要です。
+Claude Code がメインの会話の外で行うリクエストを[プロンプトキャッシュ](https://code.claude.com/docs/ja/prompt-caching.md)が保持する期間を選択します。このキーは、[サブエージェント](https://code.claude.com/docs/ja/sub-agents.md)、[ワークフロー](https://code.claude.com/docs/ja/workflows.md)、およびコンテキスト圧縮やセッションタイトルなど、Claude Code 自身のバックグラウンドリクエストとヘルパーリクエストに適用されます。1 時間の有効期間では、長めの休憩をはさんでもキャッシュがウォームな状態に保たれますが、API は 5 分の有効期間よりも[高い料金で各キャッシュ書き込みを請求](https://platform.claude.com/docs/en/build-with-claude/prompt-caching#pricing)します。Claude Code v2.1.242 以降が必要です。
 
-* **スコープ**: [`任意のファイル`](#scopes)
-* **タイプ**: 文字列、以下のいずれか:
+* **スコープ**: [`Any file`](#scopes)
+* **型**: 文字列。次のいずれか:
   * `"5m"`: キャッシュは 5 分間保持されます
   * `"1h"`: キャッシュは 1 時間保持されます
-* **デフォルト**: 設定解除されているため、これらの各リクエストは[そのデフォルトライフタイム](https://code.claude.com/docs/ja/prompt-caching.md#which-ttl-each-request-gets)を取得します
-* **セッションごとのオーバーライド**: [`FORCE_PROMPT_CACHING_5M`](https://code.claude.com/docs/ja/env-vars)はすべてを優先し、次に [`CLAUDE_CODE_SUBAGENT_PROMPT_CACHE_TTL`](https://code.claude.com/docs/ja/env-vars)、次にこのキー、次に [`ENABLE_PROMPT_CACHING_1H`](https://code.claude.com/docs/ja/env-vars)。サブエージェント独自の frontmatter 値がランク付けされる場所については、[TTL を自分で選択](https://code.claude.com/docs/ja/prompt-caching.md#choose-the-ttl-yourself)を参照してください
+* **デフォルト**: 未設定。これらの各リクエストには[デフォルトの有効期間](https://code.claude.com/docs/ja/prompt-caching.md#which-ttl-each-request-gets)が適用されます
+* **セッションごとの上書き**: [`FORCE_PROMPT_CACHING_5M`](https://code.claude.com/docs/ja/env-vars) が他のすべてよりも優先され、次に [`CLAUDE_CODE_SUBAGENT_PROMPT_CACHE_TTL`](https://code.claude.com/docs/ja/env-vars)、次にこのキー、次にすべてのリクエストに 1 時間の有効期間を求める [`ENABLE_PROMPT_CACHING_1H`](https://code.claude.com/docs/ja/env-vars) の順になります。サブエージェント自身のフロントマターの値の優先順位については、[TTL を自分で選択する](https://code.claude.com/docs/ja/prompt-caching.md#choose-the-ttl-yourself)を参照してください
 
-この例はサブエージェントとメイン会話外の他のリクエストに 1 時間のライフタイムを与えます:
+この例では、サブエージェントとメインの会話の外で行われるその他のリクエストに 1 時間の有効期間を与えます。
 
 ```json settings.json theme={null}
 {
@@ -762,17 +762,17 @@ Claude Code は各エントリを `claude-opus-5-5` などのモデルの正規�
 }
 ```
 
-このキーは [`promptCacheTtl`](#promptcachettl)がカバーしないリクエストをカバーするため、Claude Code が行うすべてのリクエストのライフタイムを選択するには両方を設定します。サブエージェントのキャッシュがメイン会話のキャッシュとどのように異なるかについては、[サブエージェントとキャッシュ](https://code.claude.com/docs/ja/prompt-caching.md#subagents-and-the-cache)を参照してください。
+このキーは [`promptCacheTtl`](#promptcachettl) が対象としないリクエストをカバーするため、両方を設定すると Claude Code が行うすべてのリクエストの有効期間を選択できます。サブエージェントのキャッシュがメインの会話のキャッシュとどのように異なるかについては、[サブエージェントとキャッシュ](https://code.claude.com/docs/ja/prompt-caching.md#subagents-and-the-cache)を参照してください。
 
 ### `switchModelsOnFlag`
 
-[安全分類器がリクエストにフラグを立てた](https://code.claude.com/docs/ja/model-config.md#automatic-model-fallback)場合に何が起こるかを選択します。フォールバックモデルに切り替えて続行するか、切り替えるかプロンプトを編集するかを選択できるように一時停止します。
+[安全性分類器がリクエストを警告した](https://code.claude.com/docs/ja/model-config.md#automatic-model-fallback)ときの動作を選択します。フォールバックモデルに切り替えて続行するか、一時停止して切り替えるかプロンプトを編集するかを選べるようにするかのいずれかです。
 
-* **スコープ**: [`任意のファイル`](#scopes)。`/config` には **メッセージが警告対象となったときにモデルを切り替える** として表示され、選択肢は **自動的に切り替える** と **毎回確認する** です。
-* **タイプ**: ブール値
+* **スコープ**: [`Any file`](#scopes)。`/config` では **Switch models when a message is flagged** として表示され、オプションは **Switch automatically** と **Ask each time** です。
+* **型**: Boolean
   * `true`: Claude Code はフォールバックモデルに切り替えて続行します
-  * `false`: インタラクティブセッションで Claude Code は一時停止して、切り替えるかプロンプトを編集するかを選択できます。ダイアログが表示できない場所 (`-p` 実行など)では、フラグされたリクエストはエラーで終了します
-* **デフォルト**: 設定解除されています。Claude Code は自動的に切り替えますが、対話セッションでは[先に確認する](https://code.claude.com/docs/ja/model-config.md#ask-before-switching)場合があります
+  * `false`: 対話セッションでは、Claude Code は一時停止し、切り替えるかプロンプトを編集するかを選べるようにします。`-p` の実行など、ダイアログを表示できない場合は、警告されたリクエストはエラーとして終了します
+* **デフォルト**: 未設定。Claude Code は自動的に切り替えますが、対話セッションでは[先に確認する](https://code.claude.com/docs/ja/model-config.md#ask-before-switching)場合があります
 
 ```json settings.json theme={null}
 {
@@ -780,18 +780,18 @@ Claude Code は各エントリを `claude-opus-5-5` などのモデルの正規�
 }
 ```
 
-[切り替える前に確認](https://code.claude.com/docs/ja/model-config.md#ask-before-switching)を参照してください。
+[切り替える前に確認する](https://code.claude.com/docs/ja/model-config.md#ask-before-switching)を参照してください。
 
 ### `ultracode`
 
-セッションを[ultracode](https://code.claude.com/docs/ja/workflows.md#let-claude-decide-with-ultracode)でオンで開始します。オンの場合、Claude は、あなたが尋ねるのを待つのではなく、各実質的なタスクのワークフローを計画します。Claude は[動的ワークフロー](https://code.claude.com/docs/ja/workflows.md)が有効になっており、モデルが `xhigh` 努力をサポートする場合にのみワークフローを計画します。キーはセッションの努力レベルを変更しません。ultracode はセッションが使用するレベルで実行されます。Claude Code はこのキーを読み取りますが、決して書き込みません。`/effort ultracode` は現在のセッションのみで ultracode をオンにします。
+[ultracode](https://code.claude.com/docs/ja/workflows.md#let-claude-decide-with-ultracode) をオンにした状態でセッションを開始します。オンにすると、Claude はユーザーからの依頼を待たずに、実質的なタスクごとにワークフローを計画します。Claude がワークフローを計画するのは、ユーザーに対して[動的ワークフロー](https://code.claude.com/docs/ja/workflows.md)が有効で、かつモデルが `xhigh` の effort をサポートしている場合のみです。このキーはセッションの effort レベルを変更しません。ultracode はセッションが使用しているレベルで実行されます。Claude Code はこのキーを読み取りますが、書き込むことはありません。`/effort ultracode` は現在のセッションに限り ultracode をオンにします。
 
-* **スコープ**: [`任意のファイル`](#scopes)
-* **タイプ**: ブール値
-  * `true`: 動的ワークフローが有効になっており、モデルが `xhigh` をサポートする場合、セッションは ultracode でオンで開始されます
-  * `false`: セッションは ultracode でオフで開始されます
-* **デフォルト**: 設定解除されているため、ultracode はオフです
-* **セッションごとの上書き**: `/effort ultracode` はこのキーなしで 1 つのセッションの ultracode をオンにし、`/effort ultracode off` はこのキーが `true` の場合に 1 つのセッションの ultracode をオフにします。`--effort ultracode` フラグも、1 つのセッションで `xhigh` effort にして ultracode をオンにします
+* **スコープ**: [`Any file`](#scopes)
+* **型**: Boolean
+  * `true`: ユーザーに対して動的ワークフローが有効で、かつモデルが `xhigh` をサポートしている場合、セッションは ultracode がオンの状態で開始します
+  * `false`: セッションは ultracode がオフの状態で開始します
+* **デフォルト**: 未設定。ultracode はオフです
+* **セッションごとの上書き**: `/effort ultracode` はこのキーなしで 1 つのセッションに限り ultracode をオンにし、`/effort ultracode off` はこのキーが `true` の場合に 1 つのセッションに限りオフにします。`--effort ultracode` フラグも、1 つのセッションに限り `xhigh` の effort で ultracode をオンにします
 
 ```json settings.json theme={null}
 {
@@ -799,7 +799,7 @@ Claude Code は各エントリを `claude-opus-5-5` などのモデルの正規�
 }
 ```
 
-セッションの努力レベルは [`effortLevel`](#effortlevel)、[`modelSettings`](#modelsettings)、および他の[努力ソース](https://code.claude.com/docs/ja/model-config.md#adjust-effort-level)から来ます。[`maxEffortLevel`](#maxeffortlevel)などの[努力キャップ](https://code.claude.com/docs/ja/model-config.md#organization-effort-limits)はそのレベルを低下させますが、ultracode をオフにしません。これと `/effort ultracode off` フォームには Claude Code v2.1.284 以降が必要です。v2.1.284 より前では、`ultracode: true` はセッションを `xhigh` 努力で実行し、`xhigh` より下の努力キャップは ultracode をオフに保ちました。Agent SDK `apply_flag_settings` コントロールリクエストもキーを受け入れます。
+セッションの effort レベルは、[`effortLevel`](#effortlevel)、[`modelSettings`](#modelsettings)、およびその他の [effort のソース](https://code.claude.com/docs/ja/model-config.md#adjust-effort-level)から決まります。[`maxEffortLevel`](#maxeffortlevel) などの [effort の上限](https://code.claude.com/docs/ja/model-config.md#organization-effort-limits)は、ultracode をオフにすることなくそのレベルを引き下げます。この動作と `/effort ultracode off` の形式には Claude Code v2.1.284 以降が必要です。v2.1.284 より前は、`ultracode: true` はセッションを `xhigh` の effort で実行し、`xhigh` 未満の effort の上限があると ultracode はオフのままでした。Agent SDK の `apply_flag_settings` コントロールリクエストもこのキーを受け付けます。
 
 ## 権限設定
 
@@ -1371,12 +1371,40 @@ Claude Code はこれらのリストを OS サンドボックス境界で強制�
 
 Claude Code はディレクトリパスから末尾のスラッシュを削除するため、`~/.aws` と `~/.aws/` は同じディレクトリと一致します。v2.1.224 より前では、Claude Code は末尾のスラッシュをサンドボックスに渡していたため、末尾のスラッシュ付きで記述された `denyRead` または `denyWrite` エントリの下のパスを、Claude が引き続き読み取りまたは書き込みできました。
 
-Claude Code は末尾の `/**` も削除するため、`~/build/**` と `~/build` は同じディレクトリをカバーします。`*` などのワイルドカードが機能するかどうかは、エントリがどのリストにあるか、およびプラットフォームに依存します：
+##### サンドボックスパスでワイルドカードが機能する場所
 
-* **`allowWrite` および `denyWrite`**: macOS ではワイルドカードが機能します。Linux と WSL2 では、サンドボックスは具体的なパスをマウントするため、Claude Code は末尾の `/**` を削除した後に `*`、`?`、または `[` を含むエントリをスキップし、そのエントリは効果がありません。Claude Code は `Edit` 権限ルールからパスを追加するため、同じ制限が適用され、`/sandbox` の **Config** タブはワイルドカードを含む `Edit` および `Read` 権限ルールについて警告します。
-* **`denyRead` および `allowRead`**: ワイルドカードはすべてのプラットフォームで機能します。Linux と WSL2 では、Claude Code は読み取りエントリを、それが一致する具体的なパスに展開します。これは書き込みリストでは行いません。
+ワイルドカード `*`、`?`、`**` は、macOS では 4 つの `sandbox.filesystem` パスリストすべてで機能しますが、Linux と WSL2 では機能する場所が限られます：
 
-波括弧は名前の中で通常の文字として一致するため、`~/data/{keys,tokens}` は 2 つの選択肢ではなく、文字どおり `{keys,tokens}` という名前のディレクトリをカバーします。`~/data/keys` と `~/data/tokens` をカバーするには、それぞれを個別のエントリとして追加します。
+| `sandbox.filesystem` リスト | Linux と WSL2 で機能するもの | Linux と WSL2 で機能しない例 | 代わりに記述するもの |
+| :- | :- | :- | :- |
+| `denyRead`、`allowRead` | 末尾の `/**` は機能するため、`~/build/**` は `~/build` と同じディレクトリを対象とします。その他のワイルドカードは、エントリの[フルパス](#sandbox-path-prefixes)の最初のディレクトリ名より後でのみ機能します。 | `denyRead` 内の `/**/*.pem` は何も対象としないため、読み取りをブロックしません | `/srv/**/*.pem` のように、トップレベルディレクトリごとに 1 つのエントリ |
+| `allowWrite`、`denyWrite` | 末尾の `/**` のみが機能するため、`~/build/**` は `~/build` と同じディレクトリを対象とします | `./src/*` は `src` 内にある `*` という名前のファイルまたはディレクトリのみを対象とし、それが存在しない場合は何も対象としません | `src` 配下のすべてを対象とする `./src`、またはパスごとに 1 つのエントリ |
+
+`~/keys/*.pem` では、ワイルドカードは最初のディレクトリ名より後にあります。ホームディレクトリが `/home/alice` の場合、最初のディレクトリ名は `home` です：
+
+```text theme={null}
+~/keys/*.pem              the entry
+/home/alice/keys/*.pem    its full path
+ ^^^^                     the first directory name, home
+```
+
+Linux と WSL2 では、セッション内の `/sandbox` の **Config** タブに、末尾の `/**` 以外のワイルドカードを含む `Edit` 権限ルールについての警告が表示されます。それらのワイルドカードは、サンドボックス化されたコマンドには機能しません。ルールが対象とすべき各パス、またはそれらを含むディレクトリを、許可ルールの場合は `allowWrite` に、拒否ルールの場合は `denyWrite` に追加してください。
+
+##### 角括弧、波括弧、丸括弧を含むディレクトリ名
+
+名前に角括弧を含むディレクトリを許可またはブロックするには、`./app/[slug]` のように名前をそのまま記述します。このエントリでは、`[slug]` は角括弧を含めてディレクトリの実際の名前です：
+
+```text theme={null}
+app/
+└── [slug]/
+    └── page.tsx
+```
+
+このエントリはディレクトリ配下のすべてを対象とするため、末尾の `/**` は付けないでください。macOS、Linux、WSL2 では、サンドボックス化されたコマンドの起動時に `app/[slug]` ディレクトリが存在している必要があります。
+
+* **`[slug]` のような角括弧**: macOS ではすべてのリストで、Linux と WSL2 では `denyRead` と `allowRead` で、`./app/[slug]` の角括弧はパターンとしても扱われます。その場合、このエントリは `app/s` や `app/g` など、`app` 配下にある、`slug` のうち 1 文字を名前とするパスにも一致します。このエントリが `allowRead` にある場合、または macOS で `allowWrite` にある場合、サンドボックス化されたコマンドはそれらのパスにもアクセスできます。アクセスさせるべきでないものは名前を変更してください。
+* **`[user-id]` や `[post-id]` のように、ハイフンの左側の文字が右側の文字より後にソートされる角括弧**: `./app/[user-id]` は、すべてのプラットフォームのすべてのリストで、その名前と完全に一致するディレクトリのみを対象とします。v2.1.304 より前は、`denyRead` または `allowRead` にそのようなエントリがあると、Linux と WSL2 でサンドボックス化されたコマンドの起動に失敗していました。
+* **波括弧と丸括弧**: これらは通常の文字であるため、`~/data/{keys,tokens}` は 2 つの選択肢ではなく、`{keys,tokens}` という名前の 1 つのディレクトリを対象とします。`~/data/keys` と `~/data/tokens` を対象とするには、それぞれを個別のエントリとして追加してください。
 
 ### `sandbox.filesystem.allowWrite`
 
@@ -2387,11 +2415,15 @@ Claude Code が[メモリ](https://code.claude.com/docs/ja/memory.md#exclude-spe
 
 ### `idleCompaction`
 
-アイドル時のコンテキスト圧縮は、ユーザーが離席している長い会話を、そのプロンプトキャッシュの有効期限が切れる少し前に[圧縮](https://code.claude.com/docs/ja/context-window.md#what-survives-compaction)します。これにより、次のメッセージでは会話全体ではなく要約が送信されます。戻ってくると、会話に `Compacted while idle, before the prompt cache expired` で始まる行が表示されます。
+アイドル時のコンテキスト圧縮は、ユーザーが離席している長い会話を[圧縮](https://code.claude.com/docs/ja/context-window.md#what-survives-compaction)します。これにより、次のメッセージでは会話全体ではなく要約が送信されます。圧縮されると、会話に次の通知が表示されます。
+
+* **ターミナル**: `Compacted while idle, before the prompt cache expired` で始まる行
+* **[VS Code のチャットパネル](#idle-compaction-in-vs-code-and-the-desktop-app)**: `a summary written while you were away` を含む通知
+* **[デスクトップアプリ](#idle-compaction-in-vs-code-and-the-desktop-app)**: 同じ通知が、ラベルに `Claude Code notice` を含む行の中に表示されます。その行やテキストが表示されない場合は、[Verbose 表示モード](https://code.claude.com/docs/ja/desktop.md#switch-view-modes)に切り替えてください。
 
 アイドル時のコンテキスト圧縮は、次のすべての条件を満たす会話に対してデフォルトでオンになっています。
 
-* **セッション**: 対話型のターミナルセッションを使用している
+* **セッション**: 対話型のターミナルセッションを使用している、または [Anthropic が選択したアカウント](#idle-compaction-in-vs-code-and-the-desktop-app)で VS Code 拡張機能のチャットパネルかデスクトップアプリの Code タブを使用している
 * **自動圧縮**: [`autoCompactEnabled`](#autocompactenabled) がオンになっている
 * **プロンプトキャッシュ**: 会話が [1 時間のプロンプトキャッシュ TTL](https://code.claude.com/docs/ja/prompt-caching.md#which-ttl-each-request-gets) を使用している
 * **機能フラグ**: Claude Code が [Anthropic から機能フラグを取得](https://code.claude.com/docs/ja/env-vars.md#features-that-need-feature-flag-fetching)できる
@@ -2413,7 +2445,7 @@ Claude Code が[メモリ](https://code.claude.com/docs/ja/memory.md#exclude-spe
 }
 ```
 
-セッション内からアイドル時のコンテキスト圧縮をオフまたはオンにするには、`/config` を実行して **Idle compaction** の行を変更します。選択内容はユーザー設定に保存され、すぐに適用されます。この行には Claude Code v2.1.302 以降が必要です。これらのバージョンを実行していて `/config` にこの行が表示されない場合は、次の原因を確認してください。
+ターミナルセッション内からアイドル時のコンテキスト圧縮をオフまたはオンにするには、`/config` を実行して **Idle compaction** の行を変更します。選択内容はユーザー設定に保存され、すぐに適用されます。この行には Claude Code v2.1.302 以降が必要です。これらのバージョンを実行していて `/config` にこの行が表示されない場合は、次の原因を確認してください。
 
 * **別の設定ソースがキーを設定している**: 管理設定、`--settings` フラグ、またはプロジェクトやローカルの設定ファイルの値がユーザー設定を上書きしています。代わりにそのソースでキーを変更してください
 * **機能フラグが利用できない**: Claude Code が [Anthropic から機能フラグを取得](https://code.claude.com/docs/ja/env-vars.md#features-that-need-feature-flag-fetching)できない場合、アイドル時のコンテキスト圧縮は実行されないため、オフにする対象がありません
@@ -2433,6 +2465,18 @@ Claude Code が[メモリ](https://code.claude.com/docs/ja/memory.md#exclude-spe
   }
 }
 ```
+
+#### VS Code とデスクトップアプリでのアイドル時のコンテキスト圧縮
+
+次のような通知は、Claude Code が[以前の会話を要約に置き換え](https://code.claude.com/docs/ja/context-window.md#what-survives-compaction)、Claude が現在その要約をもとに作業していることを意味します。
+
+```text theme={null}
+Compacted using a summary written while you were away · turn off with "idleCompaction": false in settings.json
+```
+
+特に操作は必要ありません。アイドル時のコンテキスト圧縮をオフにするには、`~/.claude/settings.json` または別の[設定ファイル](https://code.claude.com/docs/ja/settings.md#settings-files-and-who-they-affect)で `idleCompaction` を `false` に設定します。
+
+VS Code 拡張機能のチャットパネルとデスクトップアプリの Code タブでは、アイドル時のコンテキスト圧縮は Anthropic が選択したアカウントで実行されます。Claude Code はユーザーの離席中に要約を作成し、次のメッセージが最後のリクエストから 1 時間以上経過して送信された場合にのみ、その要約を使って圧縮します。
 
 ### `plansDirectory`
 
@@ -3470,7 +3514,7 @@ Claude Code が [クラウド](https://code.claude.com/docs/ja/claude-code-on-th
 
 ホスト名マッチングは大文字と小文字を区別せず、完全修飾ドメイン名を示す末尾のドット付きの `hooks.example.com.` を `hooks.example.com` と同じように扱います。これは DNS の扱い方と同じです。許可リストはすべてのソースからのフック（管理設定を含む）に適用されます。
 
-Agent SDK の `managedSettings` オプションでは、リストにエントリがある場合、Claude Code はこのキーを無視するため、代わりに SDK の `settings` オプションでリストを渡してください。[親設定での各値の動作](https://code.claude.com/docs/ja/claude-apps-gateway#how-hook-and-skill-keys-in-parent-settings-take-effect)を参照してください。
+Agent SDK の `managedSettings` オプションでは、リストにエントリがある場合、Claude Code はこのキーを無視するため、代わりに SDK の [`settings` オプション](https://code.claude.com/docs/ja/agent-sdk/typescript#options)でリストを渡してください。[親設定で空のリストがどのように動作するか](https://code.claude.com/docs/ja/claude-apps-gateway#how-hook-and-skill-keys-in-parent-settings-take-effect)を参照してください。
 
 ### `allowManagedHooksOnly`
 
@@ -3494,6 +3538,7 @@ Agent SDK の `managedSettings` オプションでは、リストにエントリ
 
 * **管理フックと SDK フックが実行されます**: 管理設定からのフックと [Agent SDK](https://code.claude.com/docs/ja/agent-sdk/overview.md) がプロセス内で登録するフック
 * **強制有効プラグインフックが実行されます**: 管理設定が [`enabledPlugins`](#enabledplugins) を通じて強制有効にするプラグインからのフック。Claude Code は完全な `plugin@marketplace` ID でマッチするため、別のマーケットプレイスからの同じ名前のプラグインはブロックされたままです。これにより、組織マーケットプレイスを通じて検証済みフックを配布しながら、その他すべてをブロックできます。このようなプラグイン内の [mod](https://code.claude.com/docs/ja/plugins/mods/overview.md) は、[組織のものとしてカウント](https://code.claude.com/docs/ja/plugins/mods/admin.md#install-your-organizations-mods)される場合のみロードされます
+* **他のプラグインのモニターはブロックされます**: プラグインの[モニター](https://code.claude.com/docs/ja/plugins/components.md#monitors)は、そのプラグインが強制有効にされていない限り起動しません。Claude Code v2.1.310 以降が必要です
 * **その他すべてはブロックされます**: ユーザー、プロジェクト、ローカルフック、他のインストール済みプラグインからのフックと mod、エージェントのフロントマターで宣言されたフック。[Claude Code に組み込まれた mod](https://code.claude.com/docs/ja/plugins/mods/overview.md#mods-built-into-claude-code) は実行し続けます。ユーザーの mod のみをブロックするには、代わりに [`allowManagedModsOnly`](https://code.claude.com/docs/ja/plugins/mods/admin#set-options-on-the-built-in-guard) を設定してください。
 * **コマンドソースプラグインは無効になります**: Claude Code は [`command` ソース](https://code.claude.com/docs/ja/plugins/marketplace-reference#command-plugin-source)を持つプラグイン（管理 `enabledPlugins` で強制有効にされたプラグインを含む）も無効にします。ただし、[`disableCommandPluginSources`](#disablecommandpluginsources) を明示的に `false` に設定した場合を除きます
 * **マーケットプレイス `headersHelper` コマンドはブロックされます**: Claude Code はマーケットプレイス [`headersHelper` コマンド](https://code.claude.com/docs/ja/plugins/host-marketplace#authenticate-archive-downloads)もブロックします。ただし、[`disableCommandPluginSources`](#disablecommandpluginsources) が明示的に `false` に設定されている場合、または管理設定自体が宣言するマーケットプレイスの場合を除きます。Claude Code v2.1.238 以降が必要です
@@ -3520,7 +3565,7 @@ Agent SDK の `managedSettings` オプションでは、リストにエントリ
 到達範囲はキーを持つファイルによって異なります:
 
 * **管理設定内**: Claude Code はすべての設定済みフック（管理フックを含む）を無効にし、[Agent SDK](https://code.claude.com/docs/ja/agent-sdk/overview.md) がプロセス内で登録するフックは実行し続けます
-* **Agent SDK の `managedSettings` オプション内**: Claude Code はこのキーを `allowManagedHooksOnly: true` として扱うため、どのフックが停止するかについては [`allowManagedHooksOnly` 下で実行されるもの](#what-runs-under-allowmanagedhooksonly)を参照してください。管理者が管理設定をデプロイしているマシンでは、管理者が[埋め込みホストによるポリシーの追加を許可](https://code.claude.com/docs/ja/managed-settings.md#let-an-embedding-host-add-policy)していない限り、Claude Code はこのキーを無視します。Claude Code v2.1.309 以降が必要です。
+* **Agent SDK の `managedSettings` オプション内**: 管理者が管理設定をデプロイしているマシンでは、管理者が[埋め込みホストによるポリシーの追加を許可](https://code.claude.com/docs/ja/managed-settings.md#let-an-embedding-host-add-policy)していない限り、Claude Code はこのキーを無視します。キーが有効になる場合、ユーザー、プロジェクト、ローカル、プラグインのフックが停止し、SDK の `settings` オプション内のフックも停止します。管理者の管理フック、[強制有効](#enabledplugins)にされたプラグインのフック、および [SDK フックコールバック](https://code.claude.com/docs/ja/agent-sdk/hooks.md)は実行し続けます。Claude Code v2.1.309 以降が必要です。
 * **他の設定ファイル内**: Claude Code はユーザー、プロジェクト、ローカル、プラグインフックを無効にします。管理フック、Agent SDK フック、管理 [`enabledPlugins`](#enabledplugins) で強制有効にされたプラグインからのフックは実行し続けます
 
 このキーは、コードがフックを登録するプラグインである [mod](https://code.claude.com/docs/ja/plugins/mods/overview.md) も停止します:
@@ -3624,7 +3669,7 @@ Claude Code のライフサイクルの特定の時点（ツール呼び出し�
 
 許可リストはすべてのソースからのフック（管理設定を含む）に適用されます。
 
-Agent SDK の `managedSettings` オプションでは、リストにエントリがある場合、Claude Code はこのキーを無視するため、代わりに SDK の `settings` オプションでリストを渡してください。[親設定での各値の動作](https://code.claude.com/docs/ja/claude-apps-gateway#how-hook-and-skill-keys-in-parent-settings-take-effect)を参照してください。
+Agent SDK の `managedSettings` オプションでは、リストにエントリがある場合、Claude Code はこのキーを無視するため、代わりに SDK の [`settings` オプション](https://code.claude.com/docs/ja/agent-sdk/typescript#options)でリストを渡してください。[親設定で空のリストがどのように動作するか](https://code.claude.com/docs/ja/claude-apps-gateway#how-hook-and-skill-keys-in-parent-settings-take-effect)を参照してください。
 
 ### `workflowKeywordTriggerEnabled`
 
@@ -3841,7 +3886,7 @@ Claude Code に同梱されている[スキル](https://code.claude.com/docs/ja/
 * **型**: Boolean
   * `true`: Claude Code はマーケットプレイスが宣言したコマンドを実行せず、command ソースのプラグインをインストールも更新もせず、すでにインストールされているものの読み込みも停止します
   * `false`: Claude Code は command ソースのプラグインを明示的に許可します
-* **デフォルト**: 未設定。Claude Code は [`allowManagedHooksOnly`](#allowmanagedhooksonly) に従います。フックの実行を管理設定に制限している組織では、command ソースも無効になります
+* **デフォルト**: 未設定。Claude Code は [`allowManagedHooksOnly`](#allowmanagedhooksonly) に従います。フックの実行を管理設定に制限している組織では、command ソースも無効になります。Agent SDK の `managedSettings` オプションで [`disableAllHooks: true`](#disableallhooks) を渡すアプリケーションは、それだけでは command ソースを無効にしません。
 
 ```json managed-settings.json theme={null}
 {

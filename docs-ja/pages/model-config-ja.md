@@ -349,7 +349,7 @@ Claude Code がユーザーに代わって行うモデル変更も、同じ方�
 
 Claude Code が適用する管理設定で `availableModels` が定義されている場合、[独自のものを提供するホストプラットフォーム](https://code.claude.com/docs/ja/settings.md#exceptions-to-managed-settings-precedence)を除き、そのリストのみが適用されます。ユーザー設定、プロジェクト設定、ローカル設定のエントリでそれを拡張することはできず、Claude Code は管理ソース間で `availableModels` をマージすることもありません。どのソースのリストが適用されるかについては、[Claude Code が管理ソースを組み合わせる方法](https://code.claude.com/docs/ja/managed-settings.md#how-claude-code-combines-managed-sources)を参照してください。それ以外の場合、ユーザー設定、プロジェクト設定、ローカル設定のリストは、他の配列設定と同様に[連結され、重複が除去されます](https://code.claude.com/docs/ja/settings.md#settings-precedence)。Claude Code v2.1.175 より前は、優先順位の低いスコープのエントリは、管理リストに置き換えられるのではなく、管理リストにマージされていました。
 
-有効なリスト内で、ファミリー内の特定のモデルを指定するエントリ（バージョンプレフィックスまたは完全なモデル ID）は、そのファミリーのワイルドカードエントリを無効にします。`["sonnet", "claude-sonnet-4-5"]` は、すべての Sonnet モデルではなく、Sonnet 4.5 のバージョンのみを許可します。
+有効なリスト内で、ファミリー内の特定のモデルを指定するエントリ（バージョンプレフィックスまたは完全なモデル ID）は、そのファミリーのワイルドカードエントリを無効にします。たとえば `["sonnet", "claude-sonnet-4-5"]` の場合、ユーザーが選択できるのは、すべての Sonnet モデルではなく、`claude-sonnet-4-5` が[一致する](#restrict-model-selection)モデル ID のみです。
 
 ### Mantle のモデル ID
 
@@ -947,7 +947,12 @@ export ANTHROPIC_DEFAULT_OPUS_MODEL='claude-opus-4-6[1m]'
 >
 > [MDM または管理設定ファイル](https://code.claude.com/docs/ja/managed-settings.md#delivery-mechanisms)を通じて配布される `availableModels` 許可リストは、サードパーティプロバイダーを使用する場合でも適用されます。[サーバー管理設定はそこには配布されません](https://code.claude.com/docs/ja/server-managed-settings.md#platform-availability)。
 >
-> フィルタリングは、`opus` などのモデルエイリアス、`claude-opus-4-8` などのバージョンプレフィックス、またはプロバイダー形式の完全なモデル ID に対して照合されます。`us.anthropic.` などのプロバイダー固有のプレフィックスは取り除かれないため、特定のモデルを許可するには、プロバイダー形式の完全な ID を記載するか、[`modelOverrides`](#override-model-ids-per-version) を通じてマッピングしてください。固定したモデルの場合、その ID は対応する `ANTHROPIC_DEFAULT_*_MODEL` 変数に設定した値です。照合の前に、許可リストのエントリと要求されたモデルの両方から `[1m]` サフィックスが取り除かれます。
+> フィルタリングは、`opus` などのモデルエイリアス、`claude-opus-4-8` などのバージョンプレフィックス、またはプロバイダー形式の完全なモデル ID に対して照合されます。`us.anthropic.` などのプロバイダー固有のプレフィックスは取り除かれないため、特定のモデルを許可するには、[`modelOverrides`](#override-model-ids-per-version) を通じてマッピングするか、プロバイダー形式の完全な ID を記載してください。
+>
+> * **Google Cloud's Agent Platform**: Claude Code が要求する ID に `claude-sonnet-4-5@20250929` のような `@` 付きの日付が含まれる場合は、許可リストのエントリにその日付を含めてください。`claude-sonnet-4-5` だけでは、[`availableModelsMatch`](https://code.claude.com/docs/ja/settings-reference#availablemodelsmatch) がどちらの設定であってもその ID に一致しません。
+> * **固定したモデル**: そのモデルの `ANTHROPIC_DEFAULT_*_MODEL` 変数に設定した値を記載します
+>
+> 照合の前に、許可リストのエントリと要求されたモデルの両方から `[1m]` サフィックスが取り除かれます。
 
 ### 固定モデルの表示と機能のカスタマイズ
 

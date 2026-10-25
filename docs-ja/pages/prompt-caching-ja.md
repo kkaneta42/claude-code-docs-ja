@@ -184,7 +184,7 @@ Claude Code は、プラグインのスキル、コマンド、エージェン�
 >
 > コンテキスト圧縮は、破棄するコンテキストがもう必要ないコンテンツである場合に有利に働きます。そのオーバーヘッドが発生するタイミングを選択するには、自動圧縮がタスク中にトリガーされるのを待つのではなく、タスク間などの作業の自然な区切りで `/compact` を実行します。完全に放棄したい方向に進んでしまった場合は、代わりに [`/rewind`](#rewinding-the-conversation) で以前のターンに戻してください。巻き戻しは、圧縮のように新しいプレフィックスを構築するのではなく、既にキャッシュされているプレフィックスまで切り詰めます。
 
-[1 時間の TTL](#which-ttl-each-request-gets) が適用されているターミナルセッションで長い会話をアイドル状態のままにすると、Claude Code はキャッシュが期限切れになる少し前にその会話を圧縮することがあります。アイドル時の圧縮をオフにするには、[`idleCompaction`](https://code.claude.com/docs/ja/settings-reference#idlecompaction) を `false` に設定します。これには Claude Code v2.1.290 以降が必要です。
+[1 時間の TTL](#which-ttl-each-request-gets) が適用されている長い会話をアイドル状態のままにすると、Claude Code はその会話を圧縮することがあります。アイドル時の圧縮をオフにするには、[`idleCompaction`](https://code.claude.com/docs/ja/settings-reference#idlecompaction) を `false` に設定します。これには Claude Code v2.1.290 以降が必要です。
 
 ### 多くの画像の蓄積
 

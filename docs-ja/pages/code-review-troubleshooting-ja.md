@@ -15,7 +15,7 @@
 | チェック実行のタイトル | 意味 | 対処方法 |
 | :- | :- | :- |
 | **Code review queued...** または **Code review in progress...** | レビューがまだ完了していません | タイトルが変わるまで待ちます |
-| **Code review found no issues** | レビューが完了し、指摘すべき点は見つかりませんでした | 対処は不要です |
+| **Code review found no issues** | レビューが完了し、指摘事項は投稿されませんでした | プルリクエストの最初のレビューでない場合は、レビュー本文で[レビューが除外した指摘事項](https://code.claude.com/docs/ja/code-review-pull-requests.md#what-a-later-review-covers)の件数を確認してください。それ以外の場合は、対処は不要です |
 | 問題が見つかったことを示すタイトル | レビューが完了し、指摘事項があります | 差分上に表示されない場合は、[インラインコメントとして表示されない問題を見つける](#find-issues-that-aren’t-showing-as-inline-comments)を参照してください |
 | **Code review skipped — no new changes** | 最新のプッシュに対して自動レビューが実行されませんでした | それでもレビューを受けたい場合は、`@claude review` とコメントします |
 | **Code review not repeated — earlier findings still open** | 最新のプッシュに対して自動レビューが実行されず、以前のレビューの Important の指摘事項がまだ未解決です | 修正をプッシュするか、それでもレビューを受けたい場合は `@claude review` とコメントします。[プッシュ後も以前の結果が維持される場合](https://code.claude.com/docs/ja/code-review-pull-requests.md#when-a-push-keeps-the-earlier-result)を参照してください |
@@ -67,7 +67,7 @@
 
 ## チェック実行に REVIEW\.md が記載されている
 
-チェック実行に表示される `REVIEW.md` に関するメッセージのうち、次の 3 つを取り上げます。
+チェック実行に表示される `REVIEW.md` に関するメッセージのうち、次の 4 つを取り上げます。
 
 * **「This review applied the repository's review instructions (REVIEW\.md) from its default branch, which is not protected against direct pushes.」**：レビューはルートのファイルのみを読み込みました。ブランチを保護すると何が変わるかについては、[REVIEW.md の読み込み元ブランチ](https://code.claude.com/docs/ja/code-review-customize.md#which-branch-review-md-is-read-from)を参照してください。
 * **「were not applied to this review: branch protection could not be confirmed」**：レビューは `REVIEW.md` を読み込みませんでした。
@@ -75,6 +75,7 @@
   * **リンクが多すぎる**：64 個を超える Markdown リンクが含まれています。リンクを [64 個以下](https://code.claude.com/docs/ja/code-review-customize.md#include-other-files-in-review-md)に減らしてください。
   * **レビューが解析できないリンク**：不正な形式の Markdown リンクが含まれています。リンクを修正するか削除してください。
   * **変更されたファイルへのリンク**：このプルリクエストが変更するファイルまたはフォルダーにリンクしており、レビューはそのリンクを含む行だけを除外することができませんでした。ルールを `REVIEW.md` 自体に記述してください。
+* **「include line(s) in the root REVIEW\.md were skipped on this review」**：ルートの `REVIEW.md` は適用されましたが、それらの行で指定されたファイルは適用されませんでした。[REVIEW.md に他のファイルをインクルードする](https://code.claude.com/docs/ja/code-review-customize.md#include-other-files-in-review-md)の一覧を確認し、スキルの場合は[スキルファイルをインクルードする](https://code.claude.com/docs/ja/code-review-customize.md#include-a-skill-file)の一覧も確認してください。
 
 ## セットアップの問題
 

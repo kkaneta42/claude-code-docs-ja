@@ -223,7 +223,7 @@ Code タブはペインを任意のレイアウトで配置できるように構
 
 #### セッション詳細パネルを表示または非表示にする
 
-パネルを表示または非表示にするには、セッションのタイトルバー、またはウィンドウの幅が狭い場合はバーの\*\*⋮**メニューで、**Hide session rail**または**Show session rail\*\*をクリックします。それでもパネルが表示されない場合は、[使用している Code タブのレイアウトを確認してください](#check-which-layout-you-have)。
+パネルを表示または非表示にするには、セッションのタイトルバー、またはバーの\*\*⋮**メニューで、**Hide session rail**または**Show session rail\*\*をクリックします。それでもパネルが表示されない場合は、[使用している Code タブのレイアウトを確認してください](#check-which-layout-you-have)。
 
 ### ターミナルでコマンドを実行する
 
@@ -844,7 +844,7 @@ Localhost アドレスは直接開き、デフォルトのポートアドレス�
 | [`CLAUDE_CONFIG_DIR`](https://code.claude.com/docs/ja/env-vars#variables) または [`CLAUDE_CODE_TMPDIR`](https://code.claude.com/docs/ja/env-vars#variables) | [開発サーバー用の変数を設定する場所のいずれか](#set-environment-variables-for-dev-servers)で設定してから、Desktop を終了して再度開きます |
 | `API_TIMEOUT_MS`、`ANTHROPIC_BASE_URL`、または Desktop 自身が設定するその他の変数 | [Desktop 自身が設定する環境変数](#environment-variables-desktop-sets-itself)を参照してください |
 
-macOS または Linux で、すでに `~/.zshrc` または `~/.bashrc` で `export` を使って変数を設定している場合は、[Claude が実行するコマンドでエクスポートした変数が見つからない、または値が正しくない](#exported-variable-missing-or-wrong-in-commands-claude-runs)を参照してください。
+macOS または Linux で、`export` で設定した変数が Claude の実行するコマンドで欠落している、または誤っている場合は、[Claude が実行するコマンドでエクスポートした変数が欠落している、または誤っている](#exported-variable-missing-or-wrong-in-commands-claude-runs)を参照してください。
 
 #### ローカルセッションの環境変数を設定する
 
@@ -904,11 +904,11 @@ Claude にコマンドを再度実行するよう依頼します。
 
 **3. 保存済みの変数を確認する**
 
-コマンドに誤った値が渡される場合は、[保存済み環境](#use-edit-or-remove-a-saved-environment)または[ローカル環境エディター](#use-the-local-environment-editor)でもその変数を設定していないか確認します。設定している場合は、そこで値を変更して新しいセッションを開始します。
+コマンドに誤った値が渡される場合は、その変数を[保存済み環境](#use-edit-or-remove-a-saved-environment)または[ローカル環境エディター](#use-the-local-environment-editor)でも設定していないか確認します。設定している場合は、そこで値を変更し、新しいセッションを開始します。
 
 **4. 保存済み環境を使用する**
 
-変数を[保存済みのローカル環境](#set-environment-variables-for-local-sessions)に追加してから、その環境で新しいセッションを開始します。`PATH` や `CLAUDE_CONFIG_DIR` などの変数については、代わりに[専用の手順](#environment-variables-in-local-sessions)に従ってください。
+変数を[保存済みのローカル環境](#set-environment-variables-for-local-sessions)に追加してから、その環境から新しいセッションを開始します。`PATH`、`CLAUDE_CONFIG_DIR`、`API_TIMEOUT_MS` などの変数については、代わりに[専用の手順](#environment-variables-in-local-sessions)に従ってください。
 
 v2.1.304 より前の Claude Code はエクスポートされた変数をコマンドに渡さないため、[セッションで実行されているバージョンを確認](#claude-code-version-in-the-code-tab)してください。
 

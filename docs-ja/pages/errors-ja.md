@@ -317,6 +317,8 @@
 | `Skipping connection (recent failure cached; retries automatically in 15 min, or edit the plugin config to retry now)` | [プラグインエラー](#skipping-connection-recent-failure-cached) |
 | `Error: No such tool available: <tool name>` | [ツールエラー](#no-such-tool-available) |
 | `MCP server "<name>" connection closed before the tool call was answered` | [ツールエラー](#connection-closed-before-the-tool-call-was-answered) |
+| `MCP server "<name>" is disabled — re-enable it via /mcp to use its tools` | [ツールエラー](#mcp-server-is-disabled) |
+| `MCP server "<name>" tool "<tool>" timed out after <N>s. The server asked the user a question, and no answer came before the time limit.` | [ツールエラー](#mcp-tool-call-timed-out-with-the-servers-question-unanswered) |
 | `would be spawned with zero tools — refusing` | [ツールエラー](#agent-would-be-spawned-with-zero-tools) |
 | `File is covered by a Read deny rule in your permission settings` | [ツールエラー](#file-is-covered-by-a-read-deny-rule) |
 | `cannot contain null bytes (\0)` | [ツールエラー](#path-cannot-contain-null-bytes) |
@@ -348,6 +350,7 @@
 | `Your disk quota is full on the filesystem with Claude Code's temp directory <dir> (EDQUOT)` / `The filesystem with Claude Code's temp directory <dir>, or your disk quota on it, is full (ENOSPC)` | [ツールエラー](#disk-quota-or-temp-filesystem-is-full) |
 | `Command output was lost: the temp filesystem at <dir> is full` / `is out of inodes` | [ツールエラー](#disk-quota-or-temp-filesystem-is-full) |
 | `File is not valid UTF-8. It may use a legacy encoding such as Windows-1252, Shift-JIS or GBK, or be binary` | [ツールエラー](#file-is-not-valid-utf-8) |
+| `git is not installed on this Mac. To install it, run xcode-select --install, then try again.` | [ツールエラー](#git-is-not-installed-on-this-mac) |
 | `the source file is not valid UTF-8 text` / `the source file is not valid UTF-16 text` | [ツールエラー](#the-source-file-is-not-valid-utf-8-text) |
 | `the source file has the replacement character U+FFFD` | [ツールエラー](#the-source-file-is-not-valid-utf-8-text) |
 | `Not published: that file is on a network share` | [ツールエラー](#not-published-that-file-is-on-a-network-share) |
@@ -486,6 +489,16 @@ v2.1.198 以降では、再試行中は通常のスピナーのヒントが表�
 このバナーは、データの受信が再開されるか再試行が成功すると自動的に消えます。すべての試行でバナーが再表示される場合は、[ネットワークの問題](#unable-to-connect-to-api)として扱ってください。v2.1.185 より前は、バナーは 10 秒後に異なる文言で表示されていました。
 
 Claude が [advisor](https://code.claude.com/docs/ja/advisor.md) に相談している間は、長い advisor のレビューでは 20 秒を大きく超えて何も送信されないことがあるため、バナーは 20 秒ではなく、データのない状態が 90 秒続いた後に表示されます。v2.1.214 より前は、advisor の呼び出し中にも 20 秒のしきい値が適用されていたため、何も問題がない場合でも advisor のレビュー中にバナーが表示されていました。
+
+#### ゲートウェイ経由で待機中のバナーが表示されたり消えたりする
+
+Claude が思考している間に `Waiting for API response` バナーが表示されたり消えたりし、ゲートウェイ経由で接続している場合は、[Claude Code を更新](https://code.claude.com/docs/ja/setup.md#update-claude-code)して v2.1.309 以降にしてください。次の接続では、データのない状態が 45 秒続いた後にバナーが表示されます。
+
+* [LLM ゲートウェイ](https://code.claude.com/docs/ja/llm-gateway)など、Anthropic API 以外のホストに設定された [`ANTHROPIC_BASE_URL`](https://code.claude.com/docs/ja/env-vars)
+* [Claude apps gateway](https://code.claude.com/docs/ja/claude-apps-gateway) のセッション
+* `ANTHROPIC_AWS_BASE_URL` が設定された [Claude Platform on AWS](https://code.claude.com/docs/ja/claude-platform-on-aws.md)
+
+v2.1.309 より前は、これらの接続ではバナーは 20 秒後に表示されていました。
 
 ### 再試行の動作を調整する
 
@@ -3256,7 +3269,7 @@ Error: Workspace not trusted. Please run `claude` in /Users/you/project first to
 
 **対処方法:**
 
-* スクリプトや CI ジョブでは、`--trust-workspace` を追加して、その実行に限りチェックアウトを信頼します: `claude ultrareview --trust-workspace`。チェックアウトの git 設定や Claude Code のプロジェクト設定がプログラムを実行できるようになるため、このフラグは信頼できるコードに対してのみ追加してください。信頼できないコードのプルリクエストをレビューするには、[信頼できるチェックアウトからレビューする方法](https://code.claude.com/docs/ja/ultrareview.md#trust-the-folder-before-the-review-runs)を参照してください。
+* スクリプトや CI ジョブでは、`--trust-workspace` を末尾に追加してその実行に限りフォルダーを信頼します: `claude ultrareview --trust-workspace`。信頼できるコードに対してのみ追加してください。追加すると、Git と Claude Code がフォルダーの Git 設定やプロジェクト設定で指定されたプログラムを実行できるようになるためです。コードを信頼できないプルリクエストの場合は、[信頼できるブランチからレビューを実行](https://code.claude.com/docs/ja/ultrareview.md#trust-the-folder-before-the-review-runs)してください。
 * 自分のマシンでは、そのフォルダーで `claude` を実行して[ワークスペースの信頼ダイアログ](https://code.claude.com/docs/ja/permissions.md#project-allow-rules-and-workspace-trust)を承認してから、元のコマンドを再実行します
 
 `claude ultrareview` からの次の各メッセージは、レビューが開始されず、終了コードが 1 であることを意味します:
@@ -3425,7 +3438,7 @@ v2.1.283 より前は、変更を確認できなかった場合でも、コマ�
 
 **対処方法:**
 
-* `claude mcp get <name>` を実行して、変更がディスクに反映されているかどうかを確認します。`local` スコープはプロジェクトごとのため、`local` スコープのサーバーの場合は、サーバーが属するプロジェクトディレクトリから実行します。
+* `claude mcp get <name>` を実行して、変更がディスクに反映されているかを確認します。`local` スコープのサーバーの場合、ローカルスコープはプロジェクトごとであるため、サーバーが属するプロジェクトディレクトリから実行します。
 * 追加後にサーバーが見つからない場合、または削除後もまだ一覧に表示される場合は、同じ追加または削除のコマンドを再実行します。
 
 ### Server is Anthropic-hosted and doesn't support local OAuth
@@ -3507,7 +3520,7 @@ v2.1.268 より前は、Claude Code はオペレーティングシステムが�
 
 ### origin/HEAD がないと /security-review が失敗する
 
-[`/security-review`](https://code.claude.com/docs/ja/commands#all-commands) は、ブランチと `origin/HEAD` の差分を取ってレビューのコンテキストを構築します。`origin/HEAD` は、`origin` リモートのデフォルトブランチがどれかを記録するローカルの ref です。この ref が存在しない場合、差分を収集する git コマンドが失敗し、レビューは開始前に停止します。
+[`/security-review`](https://code.claude.com/docs/ja/commands#all-commands) は、ブランチと `origin/HEAD`（`origin` リモートでどのブランチがデフォルトかを記録するローカルの ref）との差分を取ることで、レビューのコンテキストを構築します。その ref が存在しない場合、差分を収集する Git コマンドが失敗し、レビューは開始前に停止します。
 
 ```text theme={null}
 Error: Shell command failed for pattern "!`git diff --name-only origin/HEAD...`": [stderr]
@@ -3526,8 +3539,8 @@ Claude Code は、[動的コンテキストを挿入する](https://code.claude.
 
 次の類似のメッセージは、コマンドがまったく実行される前に発生します:
 
-* `Shell command permission check failed for pattern "..."`: コマンドの権限チェックで許可されませんでした。[挿入されたコマンドの権限チェック](https://code.claude.com/docs/ja/skills.md#permission-checks-on-injected-commands)で、各権限モードでどの結果が中止につながるか、および `allowed-tools` でコマンドを事前承認する方法を説明しています
-* ``Skill <name> requires bash (`shell: bash` in frontmatter) but Git Bash was not found``: bash のないマシンで、スキルのフロントマターが bash を要求しています。Git for Windows をインストールするか、フロントマターを `shell: powershell` に変更します。[挿入されたコマンドの実行方法](https://code.claude.com/docs/ja/skills.md#how-injected-commands-run)を参照してください
+* `Shell command permission check failed for pattern "..."`: コマンドの権限チェックでコマンドが許可されませんでした。[挿入されたコマンドの権限チェック](https://code.claude.com/docs/ja/skills.md#permission-checks-on-injected-commands)では、各権限モードでどの結果が中止になるか、`allowed-tools` でコマンドを事前承認する方法を説明しています
+* ``Skill <name> requires bash (`shell: bash` in frontmatter) but Git Bash was not found``: スキルのフロントマターが、bash のないマシンで bash を要求しています。Git for Windows をインストールするか、フロントマターを `shell: powershell` に変更してください。[挿入されたコマンドの実行方法](https://code.claude.com/docs/ja/skills.md#how-injected-commands-run)を参照してください
 * `No shell command in <name> was run`: ファイル内の `!` コマンドのいずれかに、タブや改行以外の生の制御文字が含まれているため、どのコマンドも実行されません。[文字を見つけて削除する方法](#no-shell-command-was-run)を参照してください
 
 **対処方法:**
@@ -3678,7 +3691,7 @@ Could not find merge-base with main. Pass the base branch explicitly (e.g. `/cod
 
 * **ベースブランチを指定しなかった場合**: Claude Code はリポジトリのデフォルトブランチと比較しており、上の例のようにベースを明示的に指定するよう提案します
 * **クローン内に既に存在するベースブランチを指定した場合**: ヒントは ``Make sure <branch> exists locally or on origin (try `git fetch origin <branch>`)`` となります
-* **クローン内に存在しないベースブランチを指定した場合**: Claude Code は比較の前にそのブランチを origin からフェッチしています。ヒントは ``<branch> was fetched from origin but shares no history with HEAD. If another branch is your real base, pass it explicitly (`/code-review ultra <branch>`)`` となります。クローンがシャロークローンかどうかを Claude Code が判断できない場合は、代わりに `git fetch --unshallow origin` を提案します。v2.1.221 より前は、フェッチしたベースブランチすべてに対して `git fetch --unshallow origin` を提案しており、完全なクローンではこのコマンドが `fatal: --unshallow on a complete repository does not make sense` で失敗していました。
+* **クローンに存在しないベースブランチを指定した場合**: Claude Code は比較の前にそのブランチを origin から取得します。ヒントは ``<branch> was fetched from origin but shares no history with HEAD. If another branch is your real base, pass it explicitly (`/code-review ultra <branch>`)`` となります。クローンがシャロークローンかどうかを Claude Code が判断できない場合は、代わりに `git fetch --unshallow origin` を提案します。v2.1.221 より前は、取得したすべてのベースブランチに対して `git fetch --unshallow origin` が提案されていましたが、完全なクローンではこのコマンドが `fatal: --unshallow on a complete repository does not make sense` で失敗していました。
 
 **対処方法:**
 
@@ -4419,6 +4432,37 @@ MCP server "<name>" connection closed before the tool call was answered. The too
 * アクションが実行されていなかった場合は、Claude にツールを再度実行するよう依頼します。Claude Code はそのサーバーのツールへの次の呼び出し時にサーバーへ再度接続するため、事前にサーバーを再接続する必要はありません。その接続も失敗する場合は、[リモートサーバーのセッション中の切断](https://code.claude.com/docs/ja/mcp.md#mid-session-drops-of-a-remote-server) を参照してください。
 * サーバーを自分でビルドしていて、ツールを 2 回呼び出しても安全な場合は、[繰り返しても安全であるとマーク](https://code.claude.com/docs/ja/mcp.md#tool-calls-pending-when-a-connection-closes) して、Claude Code が失われた呼び出しを繰り返せるようにします
 
+### MCP server is disabled
+
+ツール結果にこのメッセージが含まれている場合、Claude が [オフになっている](https://code.claude.com/docs/ja/mcp.md#disable-a-server-without-removing-it) [MCP サーバー](https://code.claude.com/docs/ja/mcp.md) のツールを呼び出したことを意味します。Claude Code はサーバーに接続しなかったため、ツールは実行されず、Claude は結果の代わりにこのテキストを受け取りました。
+
+```text wrap theme={null}
+MCP server "<name>" is disabled — re-enable it via /mcp to use its tools
+```
+
+**What to do:**
+
+* サーバーを意図的にオフにした場合は、何もする必要はありません
+* Claude がサーバーのツールを必要とする場合は、Claude Code のプロンプトで `/mcp` からサーバーをオンに戻します
+* [Agent SDK](https://code.claude.com/docs/ja/agent-sdk/overview.md) アプリケーションでは、TypeScript では `enabled` を `true` に設定して [`toggleMcpServer()`](https://code.claude.com/docs/ja/agent-sdk/typescript#togglemcpserver) を呼び出し、Python では `enabled` を `True` に設定して [`toggle_mcp_server()`](https://code.claude.com/docs/ja/agent-sdk/python#claudesdkclient) を呼び出して、サーバーをオンに戻します
+
+### MCP tool call timed out with the server's question unanswered
+
+[非対話モード](https://code.claude.com/docs/ja/headless.md) で、[MCP サーバー](https://code.claude.com/docs/ja/mcp.md) がツール呼び出し中に [elicitation](https://code.claude.com/docs/ja/mcp.md#respond-to-mcp-elicitation-requests) を通じて入力を求めましたが、回答が届く前に呼び出しの制限時間が切れました。
+
+```text theme={null}
+MCP server "<name>" tool "<tool>" timed out after <N>s. The server asked the user a question, and no answer came before the time limit. Do not call this tool again in this turn. Tell the user that the server's question got no answer, and wait for their reply.
+```
+
+v2.1.310 より前は、結果は `timed out after <N>s` で終わり、質問については何も示されませんでした。
+
+**What to do:**
+
+* サーバーのリクエストに回答する [`Elicitation` フック](https://code.claude.com/docs/ja/hooks#elicitation) を設定します
+* TypeScript Agent SDK アプリケーションでは、[`onElicitation`](https://code.claude.com/docs/ja/agent-sdk/typescript#options) コールバックが制限時間内に回答を返すようにします
+* 回答までの時間を延ばすには、サーバーの設定エントリでより長い [`timeout`](https://code.claude.com/docs/ja/mcp#time-limits-on-mcp-tool-calls) をミリ秒単位で設定します（例えば、10 分の場合は `"timeout": 600000`）
+* 代わりに対話セッションでタスクを実行し、サーバーの [ダイアログ](https://code.claude.com/docs/ja/mcp.md#respond-to-mcp-elicitation-requests) に自分で回答します
+
 ### Agent would be spawned with zero tools
 
 サブエージェントの [`tools` リスト](https://code.claude.com/docs/ja/sub-agents#supported-frontmatter-fields) のすべてのエントリが使用可能なツールと一致しなかったため、Claude Code はサブエージェントの起動を拒否しました。ツールがないと、サブエージェントは動作できません。メッセージはエントリを何が問題かでグループ化します。
@@ -4741,7 +4785,7 @@ Claude Code は各 Bash および PowerShell コマンドの出力をそのデ�
 The command was not started: this computer's disk is full (ENOSPC) on the volume holding /tmp/claude-501 (Claude Code's temporary directory), so the file that captures command output could not be created there and nothing ran. Free space on that volume, or restart Claude Code with CLAUDE_CODE_TMPDIR set to a directory on another one, then retry. If this is the user's own computer, tell them before deleting anything to make room.
 ```
 
-他の 3 つのメッセージは、実行されてゼロ以外のコードで終了したコマンドの後に表示されます。次の例は `Disk full:` 形式です。
+`Disk full:`、`Disk quota used up:`、`Nearly out of inodes:` の各メッセージは、実行されてゼロ以外のコードで終了したコマンドの後に表示されます。例えば次のとおりです。
 
 ```text wrap theme={null}
 Disk full: this computer's volume holding /tmp/claude-501 (Claude Code's temporary directory) has 3 MB free, so whatever this command printed was lost and its own writes may have failed with "No space left on device". Free space on that volume, or restart Claude Code with CLAUDE_CODE_TMPDIR set to a directory on another one, then retry. If this is the user's own computer, tell them before deleting anything to make room.
@@ -4751,8 +4795,7 @@ Disk full: this computer's volume holding /tmp/claude-501 (Claude Code's tempora
 
 * macOS および Linux では、シェルで `df -h <dir>` を実行して、そのディレクトリを保持するボリュームとその使用状況を確認します。`df -i <dir>` は空きアイノードの数を表示します。`<dir>` はメッセージに示されたディレクトリです（例: `df -i /tmp/claude-501`）
 * **`Disk full: this computer's volume` または `disk is full (ENOSPC)`**: そのボリューム上のどこでも構わないので、不要なファイルを削除します
-* **`Disk quota used up:` または `Disk full: a test write`**: ボリュームにまだ空き容量が表示されている場合でも、そのボリューム上の自分のファイルを削除します
-* **`disk quota is used up (EDQUOT)`**: そのボリューム上の自分のファイルを削除します
+* **`Disk quota used up:`、`disk quota is used up (EDQUOT)`、または `Disk full: a test write`**: ボリュームにまだ空き容量が表示されている場合でも、そのボリューム上の自分のファイルを削除します
 * **`Nearly out of inodes:`**: そのボリューム上の多数のファイルを削除します。各ファイルはサイズに関係なく 1 つのアイノードを使用するため、重要なのはサイズではなくファイルの数です
 * または、[`CLAUDE_CODE_TMPDIR`](https://code.claude.com/docs/ja/env-vars) を容量のあるボリューム上のディレクトリに設定して Claude Code を再起動します
 * その後、Claude にコマンドを再度実行させます
@@ -4765,6 +4808,20 @@ v2.1.309 より前は、メッセージは次のとおりで、同じ手順が�
 * `The command was not started: this computer's disk is full (ENOSPC), so the file that captures command output could not be created. Nothing ran.`、または `(EDQUOT)` を含む同じメッセージ。この形式はディレクトリを示さないため、`/tmp` などのシステムの一時ディレクトリ、または `CLAUDE_CODE_TMPDIR` で設定したディレクトリを保持するボリュームを確認します
 
 v2.1.305 より前は、ディスクが満杯のために Claude Code が開始できなかったコマンドは、オペレーティングシステムのエラーテキストのみを返していました。そのテキストは、例えば `ENOSPC: no space left on device, open <path>.output` のようなものでした。
+
+### git is not installed on this Mac
+
+このメッセージは、Claude Code のある手順で git が必要になり、見つかった git が `/usr/bin/git` にある Apple の代替スタブであったことを意味します。git を提供する開発者ツールはインストールされていません。
+
+Claude Code はこの代替スタブを起動せず、代わりにこのテキストを表示します。例えば、より長いメッセージの中に表示されることがあります。
+
+```text wrap theme={null}
+git is not installed on this Mac. To install it, run xcode-select --install, then try again.
+```
+
+**What to do:**
+
+* ターミナルで `xcode-select --install` を実行し、開始されるインストールを完了してから、Claude Code で行っていた操作を再試行します
 
 ### File is not valid UTF-8
 

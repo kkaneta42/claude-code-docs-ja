@@ -67,7 +67,7 @@ Code Review をセットアップする前に、組織が条件を満たして�
 
 * **結果**：該当する行へのインラインコメントと、レビュー本文の概要
 * **チェック実行**：**Claude Code Review** という名前で、結果はその[詳細](https://code.claude.com/docs/ja/code-review-pull-requests.md#check-run-output)に一覧表示されます。チェック実行が失敗として完了することはありません。
-* **何も見つからなかった場合**：チェック実行のタイトルは **Code review found no issues** となり、Claude は同じ短いメモをプルリクエストに投稿します
+* **結果の代わりのメモ**：チェック実行のタイトルが **Code review found no issues** となる場合に投稿されます
 
 Code Review はレビューを実行する Claude モデルを選択し、その管理設定にモデルの選択肢はありません。レビューの徹底度を上げたり下げたりするには、[レビューレベル](#review-levels)を変更します。
 

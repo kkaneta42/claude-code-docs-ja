@@ -306,7 +306,7 @@ CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1 claude --add-dir ../shared
 
 ## ディレクトリごとのスキルを追加する
 
-任意のサブディレクトリは、独自のスタックにスコープされた[スキル](https://code.claude.com/docs/ja/skills.md)を定義できます。スキルは Claude が関連性があると判断したときにオンデマンドで読み込まれるため、API 固有のツーリングはフロントエンド作業中にコンテキストを消費しません。
+任意のサブディレクトリは、独自のスタックにスコープされた[スキル](https://code.claude.com/docs/ja/skills.md)を定義できます。スキルは Claude が関連性があると判断したときにオンデマンドで読み込まれます。
 
 スキルはディレクトリ内の `.claude/skills/` の下に存在します。その領域のコードと一緒にコミットして、リポジトリをクローンした誰もがそれらを取得できるようにします。モノレポでは、パッケージごとに 1 つのスキルセットを持つことができます。大規模な単一ツリーコードベースでは、`src/db/.claude/skills/` などのサブシステムごとに 1 つのセットを持つことができます。
 
@@ -347,7 +347,7 @@ Each route file has a corresponding `.test.ts` file.
 - Mock external services in `src/__tests__/mocks/`
 ```
 
-別のサブディレクトリは同じ方法で異なるスキルを保持します。`packages/web/.claude/skills/component-patterns/` はテストの代わりにフロントエンドのコンポーネント規約を説明します。Claude が `packages/api/` のファイルで作業するとき、api-testing スキルを読み込みます。`packages/web/` で作業するとき、component-patterns を読み込みます。どちらのディレクトリのスキルも他方のタスク中には読み込まれません。
+別のサブディレクトリは同じ方法で異なるスキルを保持します。`packages/web/.claude/skills/component-patterns/` はテストの代わりにフロントエンドのコンポーネント規約を説明します。Claude が `packages/api/` のファイルで作業するとき、api-testing スキルを読み込みます。`packages/web/` で作業するとき、component-patterns を読み込みます。
 
 配置の代わりにファイルパターンでスキルをスコープすることもできます。[`paths` フロントマターフィールド](https://code.claude.com/docs/ja/skills#frontmatter-reference)はグロブパターンを受け取り、Claude は一致するファイルで作業するときのみ自動的にスキルを読み込みます。これをリポジトリルートの `.claude/skills/` に存在するスキルに使用して、データベースマイグレーションスキルなど `**/migrations/**` にスコープされた特定のファイルにのみ適用します。
 

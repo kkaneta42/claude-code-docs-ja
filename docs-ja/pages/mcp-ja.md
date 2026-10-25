@@ -384,7 +384,7 @@ HTTP または SSE サーバーの最初の接続が 5xx レスポンス、接�
 これらの再試行は、次の場合には適用されません。
 
 * stdio サーバーの最初の接続。再度試すには、[終了した、または起動に失敗した stdio サーバー](#stdio-servers-that-exit-or-fail-to-start) を参照してください
-* WebSocket サーバーの最初の接続
+* WebSocket サーバーの最初の接続。対話的なターミナルセッションでもう一度試すには、`/mcp` でサーバーのメニューから **Reconnect** を選択してください
 * 認証エラーまたは not-found エラー。解決には設定の変更が必要なためです。[`headersHelper`](#use-dynamic-headers-for-custom-authentication) がサーバーの `Authorization` ヘッダーの唯一のソースである場合は、Claude Code は認証エラーでも再試行します。各試行でヘルパーを再実行し、新しい認証情報を取得できるためです
 
 #### 終了した、または起動に失敗した stdio サーバー
@@ -403,7 +403,7 @@ stdio サーバーを再度起動するには、サーバーに起きたこと�
 
 #### 失敗したサーバーを自分で再試行する
 
-失敗した、または認証が必要なすべてのサーバーを再試行するには、`/mcp reconnect all` を実行してください。対話的なターミナルでは、これには Claude Code v2.1.284 以降が必要です。それより前のバージョンでは、そこで `MCP server "all" not found` が出力されます。
+失敗したサーバーまたは認証が必要なサーバーをすべて再試行するには、対話的なターミナルセッションの Claude Code プロンプトで `/mcp reconnect all` を実行します。これには Claude Code v2.1.284 以降が必要です。それより前のバージョンでは `MCP server "all" not found` と出力されます。
 
 #### Claude がサーバーが失敗したことを学ぶ方法
 
@@ -1332,7 +1332,7 @@ Claude Code で、次のコマンドを使用します。
 
 claude.ai からのサーバーはリストに表示され、claude.ai から来たことを示すインジケーターが付きます。
 
-Anthropic は、ユーザーまたは管理者が追加しなくても、いくつかの connector を自体で提供しています。[Claude Docs](https://code.claude.com/docs/ja/artifacts.md#write-a-document-with-claude-docs) が利用可能なアカウントでは、`/mcp` は `claude.ai Claude Docs` をセットアップなしでリストし、他の人向けのドキュメントを要求すると Claude がそれを使用します。これをオフにするには、`deniedMcpServers` に `"claude.ai Claude Docs"` の `serverName` エントリを追加するか、[Disable claude.ai connectors](#disable-claude-ai-connectors) で説明されている `/mcp` トグルを使用します。
+Anthropic は、ユーザーや管理者が追加しなくても、いくつかのコネクタを自ら提供しています。[Claude Docs](https://code.claude.com/docs/ja/artifacts.md#write-a-document-with-claude-docs) が利用可能なアカウントでは、`/mcp` にセットアップなしで `claude.ai Claude Docs` が表示され、他の人向けのドキュメントを依頼すると Claude がそれを使用します。このコネクタだけをオフにするには、[claude.ai コネクタを無効にする](#disable-claude-ai-connectors)を参照してください。
 
 Claude Code は、組織が claude.ai で認証を管理している場合、`/mcp` および [`/plugin`](https://code.claude.com/docs/ja/plugins/install) マネージャーで connector を `managed` としてマークします。Managed ステータスは、Claude Code が connector に接続する方法や、組織の [tool controls](#organization-controls-on-connector-tools) を適用する方法を変更しません。
 

@@ -155,25 +155,35 @@ Claude Code は、モデル切り替え、再接続、または失敗した[可�
 
 高速モードを提供する前に、Claude Code は `api.anthropic.com` への直接リクエストで組織の高速モード可用性をチェックします。チェックは [`ANTHROPIC_BASE_URL`](https://code.claude.com/docs/ja/llm-gateway-connect#set-the-base-url-and-credential) に従わないため、Claude トラフィックを [LLM ゲートウェイ](https://code.claude.com/docs/ja/llm-gateway)を通じてルーティングし、`api.anthropic.com` への直接エグレスをブロックするネットワークでは、推論リクエストが機能していてもチェックが失敗します。チェックは設定された [HTTP プロキシ](https://code.claude.com/docs/ja/network-config.md#proxy-configuration)を使用するため、ネットワークブロックはプロキシを通じても `api.anthropic.com` に到達できない場合にのみチェックに失敗します。
 
-チェックが失敗すると、`/fast` は「Fast mode unavailable due to network connectivity issues」と報告され、組織で高速モードが有効になっていても、リクエストは標準速度で実行されます。過去に成功したチェックはキャッシュされた結果から機能し続けるため、ブロックされたチェックは主に新しいインストールに影響します。
+組織で fast mode が有効になっているのに `/fast` がそうでないと表示する場合は、表示されたメッセージを以下のケースから探してください。
 
-同じ接続メッセージは、チェックが `api.anthropic.com` に到達しても Anthropic が拒否する認証情報を提示するオープンネットワークに表示されます。解決されたキーがゲートウェイが発行した認証情報であるセッション（[`ANTHROPIC_API_KEY`](https://code.claude.com/docs/ja/llm-gateway-connect#set-the-base-url-and-credential) に保持されているか、[`apiKeyHelper`](https://code.claude.com/docs/ja/settings-reference#apikeyhelper) によって生成される）は、そのキーでチェックを送信し、拒否されたリクエストは接続失敗として報告されます。
+#### Fast mode unavailable due to network connectivity issues
 
-高速モードを復元するには、ネットワークブロックが原因の場合は `api.anthropic.com` への直接エグレスをホワイトリストに登録するか、チェックが失敗する方法に一致する変数を設定します：
+ネットワークが `api.anthropic.com` をブロックしているなどの理由で利用可否チェックが失敗し、リクエストは標準速度で実行されます。過去に成功したチェックはキャッシュされた結果で機能し続けるため、チェックのブロックは主に新しいインストールに影響します。
 
-* `CLAUDE_CODE_SKIP_FAST_MODE_NETWORK_ERRORS=1` は失敗したチェックを利用可能として扱い、「disabled by your organization」応答を引き続き尊重します。ネットワークが接続を拒否する場合、または Anthropic がゲートウェイ認証情報を拒否する場合に使用します。認証情報の場合はホワイトリストに登録しても役に立ちません。何もブロックされていないためです。
-* `CLAUDE_CODE_SKIP_FAST_MODE_ORG_CHECK=1` はチェック全体をスキップします。ネットワークがリクエストをインターセプトする場合に使用します。
+fast mode を復元するには、`api.anthropic.com` への直接エグレスを許可リストに登録するか、`CLAUDE_CODE_SKIP_FAST_MODE_NETWORK_ERRORS=1` を設定します。この変数は失敗したチェックを利用可能として扱い、「disabled by your organization」応答は引き続き尊重します。
 
-2 つのゲートウェイ構成は、組織で高速モードが有効になっている場合でも、接続メッセージではなく「Fast mode has been disabled by your organization」と報告します：
+#### Fast mode is currently unavailable
 
-* [`ANTHROPIC_AUTH_TOKEN`](https://code.claude.com/docs/ja/llm-gateway-connect#set-the-base-url-and-credential)のみで認証するセッションはチェックをスキップします：claude.ai ログインまたは Anthropic API キーがなく、キャッシュされた成功したチェックがない場合、Claude Code はリクエストを送信せずに高速モードが組織によって無効化されていると扱います。
-* チェックをインターセプトして独自のページで応答するプロキシ（例えば、HTTP 200 ブロックページを返す TLS 検査プロキシ）は、組織で高速モードが無効化されていることを示す応答として読み取られます。
+ゲートウェイの背後では、Claude Code が利用可否チェックを送信せず、以前に成功したチェックもキャッシュされていない、次の設定になっていないか確認してください：
 
-どちらの場合も、`CLAUDE_CODE_SKIP_FAST_MODE_ORG_CHECK=1` を設定して高速モードを復元します。`CLAUDE_CODE_SKIP_FAST_MODE_NETWORK_ERRORS` は失敗したチェックのみをバイパスし、これら両方は無効化応答を生成するため、どちらのケースにも適用されません。ホワイトリストに登録する直接エグレスは、リクエストを送信しないベアラートークンケースには役に立ちません。
+* `ANTHROPIC_BASE_URL` をゲートウェイに向け、[`ANTHROPIC_API_KEY`](https://code.claude.com/docs/ja/llm-gateway-connect#set-the-base-url-and-credential) に Anthropic API キーの形式ではないゲートウェイ発行のキーを設定している。
+* [`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`](https://code.claude.com/docs/ja/env-vars) を設定しているため、Claude Code がチェックをスキップする。
 
-変数はクライアント側のチェックのみに影響します。組織で高速モードが無効化されている場合、設定されているかどうかに関わらず、API は高速モードリクエストを拒否します。API からの拒否は、スキップ変数が設定されていても有効です。Claude Code は拒否されたリクエストを標準速度で再試行し、高速モードをオフにして、`/fast` は組織が高速モードを無効化したことを報告します。
+どちらの設定でも、fast mode を復元するには `CLAUDE_CODE_SKIP_FAST_MODE_NETWORK_ERRORS=1` を設定します。
 
-`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` を設定すると、可用性チェックも抑制されます。以前にキャッシュされた成功したチェックがない場合、`/fast` は「Fast mode is currently unavailable」と報告します。両方のスキップ変数はその構成でも高速モードを復元します。
+#### Fast mode has been disabled by your organization
+
+ゲートウェイの背後では、次のいずれかの設定の場合、組織で fast mode が有効になっていてもこのメッセージが表示されることがあります：
+
+* claude.ai ログインも API キーもなく、キャッシュされた成功したチェックもない状態で、[`ANTHROPIC_AUTH_TOKEN`](https://code.claude.com/docs/ja/llm-gateway-connect#set-the-base-url-and-credential) のみで認証している。この場合、Claude Code はリクエストを送信せずに fast mode が組織によって無効化されていると扱います。
+* プロキシがチェックをインターセプトし、独自のページで応答している（例えば、HTTP 200 のブロックページを返す TLS 検査プロキシ）。Claude Code はそのページを、組織で fast mode が無効化されていることを示すレスポンスとして読み取ります。
+
+どちらの場合も、`CLAUDE_CODE_SKIP_FAST_MODE_NETWORK_ERRORS` ではなく、チェック全体をスキップする `CLAUDE_CODE_SKIP_FAST_MODE_ORG_CHECK=1` を設定します。`CLAUDE_CODE_SKIP_FAST_MODE_NETWORK_ERRORS` はどちらのケースにも適用されません。
+
+> [!NOTE]
+>
+> スキップ変数はクライアント側のチェックのみを変更します。組織で fast mode が無効化されている場合、これらが設定されているかどうかに関わらず、API は fast mode リクエストを拒否します。その場合、Claude Code はリクエストを標準速度で再試行し、fast mode をオフにして、`/fast` は組織が fast mode を無効化したことを報告します。
 
 ### セッションごとのオプトインが必要
 

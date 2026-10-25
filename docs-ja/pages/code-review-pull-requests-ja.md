@@ -152,7 +152,10 @@ gh api repos/OWNER/REPO/check-runs/CHECK_RUN_ID --jq '
 
 ### 以降のレビューの対象範囲
 
-プッシュ後など、自動的に開始される以降のレビューは、前回のレビュー以降に変更された部分に焦点を当て、Nit や既存の問題の指摘を少なく投稿します。そのサマリーには、除外した件数が "found and not posted" または "outside the scope of this re-review and not posted." で終わる行に記載されます。
+プッシュ後など、自動的に開始される以降のレビューは、前回のレビュー以降に変更された部分に焦点を当て、[Nit や既存の問題の指摘](#severity-levels)を少なく投稿します。その結果として指摘が除外されたかどうかを確認するには、レビュー本文でその件数を示す文を探してください。
+
+* **前回のレビュー以降に変更されていないコードに対する指摘**: 文の末尾が "outside the scope of this re-review and not posted" となります
+* **Nit と既存の問題の指摘**: 文の末尾が "found and not posted" となります
 
 これらを何も除外しないレビューを受けるには、[`@claude review`](#comment-commands) をコメントしてください。プルリクエスト全体が改めてレビューされます。
 

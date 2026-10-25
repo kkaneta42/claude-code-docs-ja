@@ -179,7 +179,7 @@ Remote Control セッションがアクティブになったら、別のデバ�
 * **変更の差分**：セッションのディレクトリが git リポジトリ内にある場合、接続されたデバイスの差分ペインに変更が表示されます。リポジトリのデフォルトブランチより先行するコミットがあるブランチでは、ペインにはデフォルトブランチから分岐して以降の変更が、コミットされていない編集も含めて表示されます。デフォルトブランチ自体、またはデフォルトブランチより先行していないブランチでは、コミットされていない変更のみが表示されます。
 * **モデル**：接続されたデバイスから[モデル](https://code.claude.com/docs/ja/model-config.md)を選択すると、Claude Code はそのモデルでセッションを実行します。Claude Code v2.1.238 以降が必要です。デバイスのモデルコントロールで選択したモデルは現在のセッションにのみ適用されます。デバイスからインタラクティブセッションに `/model <name>` を送信すると、Claude Code は新しいセッションのデフォルトも設定します。
 * **effort レベル**：接続されたデバイスから `/effort` またはデバイスの effort コントロールで [effort レベル](https://code.claude.com/docs/ja/model-config.md#adjust-effort-level)を設定すると、Claude Code はそれをマシン上のセッションに適用します。`CLAUDE_CODE_EFFORT_LEVEL` でレベルを固定している場合、セッションはそのレベルを維持し、Claude Code は effort コントロールでの異なる選択を拒否します。effort コントロールからレベルを選択するには、マシン上で Claude Code v2.1.234 以降が必要です。
-* **接続失敗後の再接続**：`/remote-control` を実行して再接続します。その間にコンテキスト圧縮によって会話が書き換えられたか、`/resume` で会話を切り替えた場合、Claude Code は使用していたサーバーセッションをセッション一覧に残さずアーカイブします。[アーカイブされたセッションでフィルタリング](https://code.claude.com/docs/ja/claude-code-on-the-web.md#archive-sessions)すれば引き続き見つけられます。デバイスが接続されたままの状態で会話を切り替えても、セッションはアーカイブされません。
+* **接続失敗後の再接続**：`/remote-control` を実行して再接続します。その間にコンテキスト圧縮によって会話が書き換えられたか、`/resume` で会話を切り替えた場合、Claude Code は使用していたサーバーセッションをセッション一覧に残さずアーカイブします。そのセッションは、claude.ai/code の[アーカイブされたセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md#find-an-archived-session)から引き続き見つけられます。デバイスが接続されたままの状態で会話を切り替えても、セッションはアーカイブされません。
 
 ### すべてのセッションで Remote Control を有効にする
 
@@ -401,6 +401,14 @@ claude mcp login "claude.ai Slack" --no-browser
 
 ## トラブルシューティング
 
+### "Remote Control disconnected" or "Can't reach"
+
+[claude.ai/code](https://claude.ai/code) またはデスクトップアプリで **Remote Control disconnected** または **Can't reach** メッセージが表示される場合、ブラウザまたはアプリがコンピューター上の Claude Code との接続を失ったことを意味します。どちらのメッセージも、見ていた Claude やサブエージェントがコンピューター上でまだ作業を続けているかどうかは示しません。そのコンピューターで Claude Code がどの状態にあるかを確認し、該当する手順に従って再接続してください。
+
+* **対話型セッションに `Remote Control disconnected` と表示されている**：[その行に示されている理由に応じた再接続手順](#session-ended-elsewhere)に従ってください
+* **Claude Code が実行中で、失敗が表示されていない**：対話型セッションは、マシンがスリープから復帰してオンラインになると自動的に再接続するため、操作は不要です。`claude remote-control` を使用した場合は、[制限事項](#limitations)の **長時間のネットワーク障害** を参照してください
+* **Claude Code が実行されていない**：[再度起動してセッションを復元してください](#resume-sessions-after-stopping-the-server)
+
 ### "Remote Control requires a claude.ai subscription"
 
 claude.ai アカウントでサインインしていないか、別の認証情報がログインより優先されています。メッセージは以下のいずれかの形式です。
@@ -463,7 +471,7 @@ v2.1.281 より前では、このメッセージは Claude Code がこのマシ�
 * **`/remote-control`、`claude --remote-control`、または [自動接続](#enable-remote-control-for-all-sessions) で開始した場合**：セッションは Remote Control なしで実行し続け、Claude Code は claude.ai でそのセッションをアーカイブします
 * **`claude remote-control` で開始した場合**：サーバーは停止し、提供していたセッションをアーカイブしてから終了します
 
-アーカイブされたセッションは、[アーカイブされたセッションでフィルタリング](https://code.claude.com/docs/ja/claude-code-on-the-web.md#archive-sessions)することで引き続き見つけられます。
+これらのセッションを再び見つけるには、claude.ai/code で[アーカイブされたセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md#find-an-archived-session)を開いてください。
 
 Remote Control は自動的には再接続しません。組織が再び許可した後にオンに戻すには、セッションで `/remote-control` を実行するか、シェルで `claude remote-control` を実行してください。このマシンの Claude Code が変更されたポリシーを取得するまで、どちらのコマンドも [`Remote Control is disabled by your organization's policy`](#remote-control-is-disabled-by-your-organizations-policy) で失敗します。開いているセッションは約 1 時間に 1 回ポリシーを取得します。Remote Control をブロックしている原因を確認するには、コマンドが出力する完全なテキストをその項目と照合してください。
 

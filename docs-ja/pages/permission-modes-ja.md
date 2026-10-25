@@ -248,7 +248,7 @@ Desktop 固有の詳細については、Desktop ガイドの [権限モード�
 
 **Web and mobile**
 
-[claude.ai/code](https://claude.ai/code) では、プロンプトボックスの横にあるモードドロップダウンを使用します。モバイルアプリでは、プロンプトボックスの **+** ボタンをタップし、次に **Permission** をタップします。クラウドセッションと Remote Control セッションでは、提供される権限モードが異なります。
+[claude.ai/code](https://claude.ai/code) では、プロンプトボックスの下の行にあるモードドロップダウンを使用します。モバイルアプリでは、プロンプトボックスの **+** ボタンをタップし、次に **Permission** をタップします。クラウドセッションと Remote Control セッションでは、提供される権限モードが異なります。
 
 * **[クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md)**：Accept edits、Plan、Auto。Accept edits は `default` モードに対応します。クラウドセッションはモードに関係なくファイル編集を事前承認するため、ドロップダウンは Manual の代わりに Accept edits を表示します。クラウドセッションは設定からの `defaultMode: "acceptEdits"` を引き続き尊重します。Auto モードは組織がそれを許可し、選択されたモデルがそれをサポートする場合にのみ表示されます。Bypass permissions は利用できません。
 * **ローカルマシンの [Remote Control](https://code.claude.com/docs/ja/remote-control.md) セッション**：自分で開始したセッションの場合は Manual、Accept edits、Plan、Auto を使用でき、アプリから Bypass permissions を選択することはできません。Auto を使用するには、セッションが auto モードの[利用要件](#eliminate-prompts-with-auto-mode)を満たしている必要があります。コンピューター上で実行されるプロジェクトスレッドについては、[スレッドを自分のコンピューター上で実行する](https://code.claude.com/docs/ja/claude-projects.md#run-a-thread-on-your-own-computer)を参照してください。

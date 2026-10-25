@@ -25,7 +25,7 @@
 * API トリガーのみを持つタスクは、そのエンドポイントを呼び出したときに実行されます。
 * GitHub トリガーのみを持つタスクは、一致するリポジトリイベントが発生したときに実行されます。
 
-スケジュールタスクは Pro、Max、Team、Enterprise プランで利用できます。[claude.ai/code/routines](https://claude.ai/code/routines) で作成・管理するか、CLI で `/schedule` を使用します。以前の名前であるルーティンは、Web アドレス、CLI、API に[引き続き表示されます](#where-the-name-routines-still-appears)。
+スケジュールタスクは Pro、Max、Team、Enterprise プランで利用できます。[claude.ai/code/routines](https://claude.ai/code/routines) で作成・管理するか、CLI で `/schedule` を使用します。以前の名前であるルーティンは[引き続き表示されます](#where-the-name-routines-still-appears)。
 
 > [!NOTE]
 >
@@ -66,7 +66,12 @@ Enterprise 組織が[カスタムロール](https://support.claude.com/en/articl
 
 **1. 作成ダイアログを開く**
 
-[claude.ai/code/routines](https://claude.ai/code/routines) にアクセスし、**New task** をクリックします。先にメニューが開いた場合は、**Set up manually** を選択します。**New scheduled task** ダイアログが開きます。メニューのもう 1 つのオプションである **Create with Claude** を選ぶと、チャットでタスクを説明し、Claude に作成させることができます。
+[claude.ai/code/routines](https://claude.ai/code/routines) にアクセスし、**New task** をクリックして **New scheduled task** ダイアログを開きます。先に進む前に、次の画面が表示されていないか確認してください。
+
+* ボタンが **New task** ではなく **New routine** と表示されている場合は、**New routine** をクリックし、[全画面フォーム](#full-page-form)に進みます。
+* Desktop アプリで **Local** と **Cloud** のメニューが開いた場合は、[全画面フォーム](#full-page-form)に進みます。
+* **Create with Claude** と **Set up manually** のメニューが開いた場合は、**Set up manually** を選択してダイアログを開きます。**Create with Claude** を選ぶと、代わりにチャットでタスクを説明し、Claude に作成させることができます。
+* ダイアログの代わりに全画面のページが開いた場合は、[全画面フォーム](#full-page-form)に進みます。
 
 ダイアログを開いた時点で **Repositories** と **Environment** がすでに表示されている場合は、[そのダイアログの違い](#dialog-with-repositories-and-environment-in-the-main-view)を参照してください。それ以外の場合、このダイアログは claude.ai チャット用のスケジュールタスクも作成します。ダイアログで Claude Code タスクと呼ばれるものにするには、以降の手順でリポジトリを選択するか、GitHub イベントまたは API トリガーを追加します。この種類のタスクは、クラウドセッションで Claude Code を実行します。
 
@@ -126,6 +131,17 @@ Enterprise 組織が[カスタムロール](https://support.claude.com/en/articl
 
 GitHub イベントトリガーを追加する前にリポジトリを選択してください。リポジトリを選択するまで、そのトリガーは使用できません。
 
+#### 全画面フォーム
+
+Desktop アプリで **Local** と **Cloud** のメニューが開いた場合は、**Cloud** を選択します。**New routine** または **New scheduled task** というタイトルのページが開きます。各フィールドに入力します。
+
+* **Name**: 名前を入力します。
+* **Instructions**: プロンプトを入力します。同じボックスで、モデル、リポジトリ、環境を選択します。それぞれが制御する内容については、[Web から作成する](#create-from-the-web)の手順を参照してください。
+* **Select a trigger**: **Schedule**、**GitHub event**、**API** のいずれかを選択します。スケジュールについては、[スケジュールトリガーを追加する](#add-a-schedule-trigger)を参照してください。[GitHub イベント](#add-a-github-trigger)の場合は、リポジトリを選択します。[API トリガー](#add-an-api-trigger)の場合は、**Create** をクリックした後に開く **API token** ダイアログからトークンをコピーしてください。トークンは 1 回だけ表示されます。複数のトリガーを組み合わせるには、**Add another trigger** をクリックします。
+* **Connectors**: 接続済みのすべてのコネクタがデフォルトで含まれているため、タスクに不要なものは削除してください。
+
+**Create** が使用できない場合は、その上にカーソルを合わせると、フォームにまだ必要な項目が表示されます。**Create** をクリックすると、タスクの詳細ページが開きます。
+
 ### CLI から作成する
 
 任意のセッションで `/schedule` を実行すると、会話形式でスケジュールタスクを作成できます。説明を直接渡すこともできます。定期タスクなら `/schedule daily PR review at 9am`、1 回限りなら `/schedule clean up feature flag in one week` のように指定します。Claude は Web ダイアログが収集するのと同じ情報を順に確認し、タスクをアカウントに保存します。このコマンドは `/routines` というエイリアスでも利用できます。
@@ -152,6 +168,7 @@ API 呼び出しや GitHub イベントによってのみ開始されるもの�
 * **正時の実行**: 9:00 のように正時ちょうどに実行をスケジュールすると、数分遅れて開始される場合があります。スケジュールした時刻に近いタイミングで開始するには、9:07 のように正時から数分ずらした時刻を選択してください。
 * **カスタム間隔**: プリセットにないペースの場合は、タスクを作成してから、その[編集ダイアログ](#edit-and-control-scheduled-tasks)で **Custom** を選択します。次に、2 時間ごとを表す `0 */2 * * *` などの cron 式を入力します。CLI から設定するには、[`/schedule update`](#manage-scheduled-tasks-from-the-cli) を実行します。1 時間に 1 回より頻繁に実行される式は拒否されます。
 * **タイムゾーン**: プリセット頻度を選択する場合は、時刻をローカルのタイムゾーンで入力します。
+* **cron 式のタイムゾーン**: 式が 5 つのフィールドだけで構成されている場合は、時刻を UTC で記述します。たとえば `0 9 * * 1-5` は平日の UTC 午前 9:00 に実行されます。フィールドが `CRON_TZ=` プレフィックスで始まる場合は、それを残してそのタイムゾーンで時刻を記述するか、プレフィックスを削除して UTC で記述します。
 
 #### 1 回限りの実行をスケジュールする
 
@@ -276,12 +293,13 @@ GitHub トリガーは、接続されたリポジトリで一致するイベン�
 
 #### サポートされているイベント
 
-GitHub トリガーは、次のいずれかのイベントカテゴリにサブスクライブできます。各カテゴリ内で、`pull_request.opened` などの特定のアクションを選択するか、カテゴリ内のすべてのアクションに反応させることができます。
+次のいずれかのカテゴリからイベントを選択します。各カテゴリ内で、`pull_request.opened` などの特定のアクションを選択するか、カテゴリ内のすべてのアクションに反応させることができます。
 
 | イベント | トリガーのタイミング |
 | :- | :- |
 | プルリクエスト | PR がオープン、クローズ、割り当て、ラベル付け、同期、またはその他の方法で更新されたとき |
 | リリース | リリースが作成、公開、編集、または削除されたとき |
+| Issue | Issue がオープン、編集、クローズ、再オープン、ラベル付け、割り当て、またはその他の方法で更新されたとき |
 
 #### プルリクエストをフィルタリングする
 
@@ -316,9 +334,13 @@ GitHub トリガーは、次のいずれかのイベントカテゴリにサブ�
 
 任意の実行をクリックして、フルセッションとして開きます。そこから Claude が何をしたかを確認し、変更をレビューし、プルリクエストを作成するか、会話を続けることができます。各実行セッションは他のセッションと同じように機能します。セッションタイトルの横のドロップダウンメニューを使用して、名前変更、アーカイブ、または削除を行います。
 
-> [!NOTE]
->
-> 実行リストの緑色のステータスは、セッションが開始され、インフラストラクチャエラーなしで終了したことを意味します。プロンプトに記述された作業が成功したことを意味するものではありません。実行を開いてトランスクリプトを読み、Claude が実際に何をしたかを確認してください。ブロックされたネットワークリクエスト、不足しているコネクタツール、作業自体の失敗は、いずれもステータスインジケーターではなくそこに表示されます。
+タスクの詳細ページの **History** では、完了した各実行の行の末尾に、実行が失敗した場合は **Error**、キャンセルされた場合は **Cancelled** と表示され、成功した場合はどちらも表示されません。**Status** フィルターでは、同じ 3 つの結果を **Failed**、**Cancelled**、**Succeeded** と呼びます。これらの結果はセッションがどのように終了したかを示すものであり、プロンプトに記述された作業を Claude が完了したかどうかを示すものではありません。何が起こったかを確認するには、実行を開いてトランスクリプトを読んでください。
+
+* **Succeeded**: Claude Code が失敗を報告することなくセッションが終了しました。ブロックされたネットワークリクエスト、不足しているコネクタツール、Claude が完了できなかった作業は、行ではなくトランスクリプトに表示されます
+* **Failed**: セッションが正常に終了しませんでした。たとえば、予期せず停止した、エラーで終了した、または実行の開始前にアーカイブされた場合です
+* **Cancelled**: 実行は失敗しておらず、そのセッションがアーカイブされました。成功した実行のセッションをアーカイブすると、その実行は **Cancelled** に変わります。タスク側で変更する必要はありません
+
+**History** に警告が表示される場合は、[「The last run」の警告](#the-last-run-didnt-start)を参照してください。
 
 ### スケジュールタスクを編集して制御する
 
@@ -455,6 +477,7 @@ API トリガーや GitHub トリガーによって開始された実行を含�
 
 スケジュールタスクは以前ルーティンと呼ばれており、以下の場所では以前の名前が残っています。いずれも同じ機能を指します。
 
+* **アプリ**: 一部のアカウントでは、サイドバーの項目とページタイトルが **Routines**、ボタンが **New routine** と表示され、その他のラベルでも routine と表記されています。そこからタスクを作成するには、[フルページフォーム](#full-page-form)を参照してください。
 * **Web アドレス**: `claude.ai/code/routines`
 * **CLI**: `/schedule` のエイリアス `/routines`、コマンドの説明、タスクのセットアップ中の Claude の返答
 * **API**: `/fire` エンドポイントのパス、そのベータヘッダー、レスポンスの `type`、`<routine-fire-payload>` タグ、および [API 経由でルーティンをトリガーする](https://platform.claude.com/docs/en/api/claude-code/routines-fire)リファレンスページ
@@ -480,6 +503,21 @@ CLI は `/schedule` の要件の 1 つが満たされていない場合、この
 ### "Routines are disabled by your organization's policy"
 
 Team または Enterprise 組織の Owner が、[**Organization settings > Capabilities > Remote sessions**](https://claude.ai/admin-settings/capabilities) の **Scheduled tasks (Was Routines)** トグルをオフにしている可能性があります。Claude Code v2.1.227 以降では、同じトグルで CLI の `/schedule` も非表示になります。これはサーバー側の組織設定であるため、ローカルの設定から上書きすることはできません。組織のスケジュールタスクを再びオンにするよう Owner に依頼してください。
+
+### "The last run" の警告
+
+**History** の下にある警告が「The last run」で始まる場合は、最初の列でその警告を探し、その行に記載された対処を行ってください。警告は、以降の実行が開始されると消えます。
+
+| 警告 | 対処方法 |
+| :- | :- |
+| "The last run didn't start because your organization had reached its limit on cloud sessions running at once." | タスクを変更する必要はありません。後で **Run now** をクリックするか、次回の実行を待ってください |
+| "The last run didn't start because its cloud environment couldn't be found or used." | タスクの詳細ページで、名前の横にあるメニューを開き、**Edit** を選択して、[クラウド環境セレクター](#environments-and-network-access)を探します。**Unavailable environment** と表示されている場合、その環境はアーカイブされたか、アカウントで利用できなくなっているため、そこで別の環境を選択して変更を保存してください。それ以外の場合は、詳細ページの **Run now** で再試行するか、セレクターで別の環境を選択して変更を保存してください |
+| "The last run was blocked because it couldn't access something it needs, or your organization's policy doesn't allow it." | [GitHub アクセス](#repositories-and-branch-permissions)がタスクのリポジトリを対象に含んでいることを確認してください。含まれている場合は、Claude 組織の [Owner](https://code.claude.com/docs/ja/server-managed-settings.md#access-control) に、ポリシーがタスクをブロックしていないか確認してください |
+| "The last run didn't start because of a problem that's usually temporary." | **Run now** をクリックして再試行するか、次回の実行を待ってください |
+| "The last run didn't start because its repository or branch wasn't available." | タスク内の各リポジトリに[実行の開始元となるブランチ](#repositories-and-branch-permissions)が存在することを GitHub で確認してください。また、[GitHub アクセス](#repositories-and-branch-permissions)が各リポジトリを対象に含んでいることを確認し、接続の有効期限が切れている場合は GitHub に再接続してください |
+| "The last run didn't start because some of its settings weren't accepted." | タスクの詳細ページで、名前の横にあるメニューを開き、**Edit** を選択します。ダイアログにはどの設定項目が受け入れられなかったかは示されないため、タスクの名前、プロンプト、モデル、リポジトリ、環境、コネクタ、トリガーを含め、各設定項目をそこで確認してください |
+| "The last run stopped because a usage limit was reached." | 使用制限に達した後、タスクの実行を再開できるタイミングについては、[使用量と制限](#usage-and-limits)を参照してください |
+| "The last run failed." | **Run now** をクリックして再試行するか、次回の実行を待ってください。失敗した実行には開けるセッションがありません |
 
 ## 関連リソース
 

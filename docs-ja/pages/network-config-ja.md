@@ -240,9 +240,11 @@ npm または独自のバイナリ配布を通じて Claude Code をインスト
 
 2 つの Datadog インテークホストはオプションの運用テレメトリのみを実行し、[`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`](https://code.claude.com/docs/ja/env-vars) を設定するとその両方が無効になります。サードパーティプロバイダーのセッションは、プラットフォームが [`CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST`](https://code.claude.com/docs/ja/env-vars) を設定し、テレメトリメトリクスがデフォルトでオンになっている場合でも、これらのホストに送信されません。Claude Code が送信するすべてのもの、およびホワイトリストを最終化する前にそれを無効にする方法については、[テレメトリサービス](https://code.claude.com/docs/ja/data-usage.md#telemetry-services)を参照してください。
 
+### クラウドプロバイダーと LLM ゲートウェイのルーティング
+
 [Amazon Bedrock](https://code.claude.com/docs/ja/amazon-bedrock.md)、[Google Cloud の Agent Platform](https://code.claude.com/docs/ja/google-vertex-ai.md)、[Microsoft Foundry](https://code.claude.com/docs/ja/microsoft-foundry.md)、またはサインイン済みの [Claude apps gateway](https://code.claude.com/docs/ja/claude-apps-gateway) セッションを使用する場合、モデルトラフィックと認証は `api.anthropic.com`、`claude.ai`、または `platform.claude.com` ではなく、プロバイダーまたはゲートウェイに送信されます。WebFetch ツールは、[設定](https://code.claude.com/docs/ja/settings.md)で `skipWebFetchPreflight: true` を設定しない限り、[ドメイン安全性チェック](https://code.claude.com/docs/ja/data-usage.md#webfetch-domain-safety-check)のために `api.anthropic.com` を呼び出します。
 
-[`ANTHROPIC_BASE_URL`](https://code.claude.com/docs/ja/llm-gateway-connect#set-the-base-url-and-credential) を使用して [LLM ゲートウェイ](https://code.claude.com/docs/ja/llm-gateway)を経由してルーティングする場合、[高速モード](https://code.claude.com/docs/ja/fast-mode.md)の可用性チェックはゲートウェイベース URL ではなく `api.anthropic.com` を呼び出します。チェックは設定された HTTP プロキシを尊重するため、ネットワークブロックが原因の場合、プロキシ内の `api.anthropic.com` のホワイトリストエントリが修正です。ネットワークブロックはホストがプロキシを通じても到達不可能な場合にのみチェックに失敗し、高速モードは接続エラーを報告します。チェックがゲートウェイ発行の認証情報を提示し、Anthropic がそれを拒否する場合も同じ接続エラーが表示されます。ホワイトリストはそこでは役に立ちません。何もブロックされていないためです。[プロキシと LLM ゲートウェイの背後で高速モードを使用する](https://code.claude.com/docs/ja/fast-mode.md#use-fast-mode-behind-proxies-and-llm-gateways)を参照して、それを復元する変数を確認してください。
+開発者が [`ANTHROPIC_BASE_URL`](https://code.claude.com/docs/ja/llm-gateway-connect#set-the-base-url-and-credential) で設定した [LLM ゲートウェイ](https://code.claude.com/docs/ja/llm-gateway)の背後で [fast mode](https://code.claude.com/docs/ja/fast-mode.md) を使用する場合は、プロキシ経由で `api.anthropic.com` に到達できる状態を維持してください。Claude Code が fast mode の可用性チェックを送信する場合、そのチェックは設定済みの HTTP プロキシを経由してこのホストに送られ、ゲートウェイには決して送られません。チェックが送信されないケースと、各ケースで fast mode を復元する変数については、[プロキシと LLM ゲートウェイの背後で fast mode を使用する](https://code.claude.com/docs/ja/fast-mode.md#use-fast-mode-behind-proxies-and-llm-gateways)を参照してください。
 
 ### 組織 IP ホワイトリストとプロキシ出力
 

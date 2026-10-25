@@ -36,6 +36,7 @@ claude self-hosted-runner --environment-secret-file /etc/claude/environment-secr
 | `CLAUDE_CODE_REMOTE_SESSION_UUID` | 正規 UUID 形式の同じセッション ID。UUID をキーとするシステム用です。 |
 | `CLAUDE_CODE_REMOTE_SLACK_THREAD_URL` | 1 つの Slack スレッドに属する [Claude Tag](https://claude.com/docs/claude-tag/overview) セッションの場合、そのスレッドへのリンク。他のセッションでは設定されず、スレッドセッションでも設定されない場合があります。 |
 | `CLAUDE_CODE_REMOTE_SLACK_THREAD_TS` | 1 つの Slack スレッドに属する Claude Tag セッションの場合、そのスレッドの Slack タイムスタンプ（`1700000000.000100` など）。設定されない場合があり、`CLAUDE_CODE_REMOTE_SLACK_THREAD_URL` が設定されていないときに設定される場合もあるため、各変数を個別に確認してください。 |
+| `CLAUDE_CODE_REMOTE_SLACK_CHANNEL_ID` | Claude Tag セッションの場合、セッションが対応する、またはそのスレッドが属する Slack チャンネルまたはダイレクトメッセージの ID（`C0123ABCDE` など）。Slack タイムスタンプは 1 つのチャンネル内のメッセージを識別するため、この ID は `CLAUDE_CODE_REMOTE_SLACK_THREAD_TS` と一緒に記録してください。他のセッションでは設定されず、Claude Tag セッションでも設定されない場合があります。 |
 | `CLAUDE_SESSION_INGRESS_TOKEN_FILE` | 現在のセッション JWT を保持する、セッションごとのファイルへの絶対パス。トークン更新全体で最新に保たれます。シェルサブプロセスは、ユーザーがセッションに追加した添付ファイルをダウンロードするときに、その `Authorization` ヘッダーに対して読み取ります。`exec` は変数を自動的に保持します。子の環境を再構築するラッパーは変数を引き継ぐ必要があります。そうしないと、添付ファイルのダウンロードが静かに停止します。 |
 | `CLAUDE_CONFIG_DIR` | セッションごとの Claude 設定ディレクトリ。ランナーが起動時にキャプチャするランナーホストの設定のスナップショットからセッション開始時に書き込まれます。[権限とツール承認](#permissions-and-tool-approval) を参照してください。このディレクトリへの書き込みはこのセッションに分離されます。ディレクトリはセッション終了後、ランナーを [`--remove-session-state`](https://code.claude.com/docs/ja/self-hosted-environments-reference#runner-cli-flags) で起動しない限り `<base-dir>/_sessions/` の下に留まります。[事前ウォーミングされたチェックアウトを再利用する](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#reuse-a-pre-warmed-checkout) を参照してください。 |
 | `CLAUDE_CODE_REMOTE_MCP_CONFIG` | Anthropic のコントロールプレーンがこのセッション用に配信した MCP サーバー定義を保持する、`CLAUDE_CONFIG_DIR` 内のファイルへのパス。ラッパーが子の環境を再構築する場合は、この変数を引き継いでください。この変数がないと、コントロールプレーンが配信するサーバーを更新したときに、ラッパーが [`--mcp-config`](https://code.claude.com/docs/ja/cli-reference#cli-flags) で追加した stdio、HTTP、SSE サーバーのうち更新に含まれないものを子がシャットダウンします。Claude Code v2.1.299 以降が必要です。 |
@@ -44,11 +45,11 @@ claude self-hosted-runner --environment-secret-file /etc/claude/environment-secr
 
 ラッパーはこどもの管理環境の残りの部分も継承します。これには、サーバーが提供する環境変数が含まれます。`exec` はすべてを自動的に伝播します。ラッパーが別の方法でこどもをスポーンする場合、完全な環境を転送します。
 
-`CLAUDE_CODE_REMOTE_SLACK_THREAD_URL` と `CLAUDE_CODE_REMOTE_SLACK_THREAD_TS` は、ラッパーまたは [`command` フック](#command) に届きます。また、シェルコマンド、git フック、Claude Code フックなど、セッションが実行するものにも届きます。`checkout`、`post-session`、`spawn-runner` フックはこれらを受け取りません。
+`CLAUDE_CODE_REMOTE_SLACK_*` 変数は、ラッパーまたは [`command` フック](#command) で読み取ることができます。また、シェルコマンド、git フック、Claude Code フックなど、セッションが実行するものでも読み取れます。`checkout`、`post-session`、`spawn-runner` フックはこれらを受け取りません。
 
 ### 設定されない可能性のある変数にデフォルト値を与える
 
-`CCR_SESSION_ACCOUNT_EMAIL`、`CLAUDE_RUNNER_CLIENT_PLATFORM`、`CLAUDE_CODE_REMOTE_SLACK_THREAD_URL`、`CLAUDE_CODE_REMOTE_SLACK_THREAD_TS` は、それぞれ設定されない場合があります。スクリプトで `set -u` を使用している場合、設定されていない変数を展開すると Bash は `unbound variable` で停止するため、`"${CCR_SESSION_ACCOUNT_EMAIL:-}"` のようにデフォルト値付きで展開してください。
+スクリプトで `set -u` を使用している場合は、`CCR_SESSION_ACCOUNT_EMAIL`、`CLAUDE_RUNNER_CLIENT_PLATFORM`、`CLAUDE_CODE_REMOTE_SLACK_THREAD_URL`、`CLAUDE_CODE_REMOTE_SLACK_THREAD_TS`、`CLAUDE_CODE_REMOTE_SLACK_CHANNEL_ID` を `"${CCR_SESSION_ACCOUNT_EMAIL:-}"` のようにデフォルト値付きで展開してください。これらはそれぞれ設定されない場合があり、`set -u` の下では、設定されていない変数を展開すると Bash は `unbound variable` で停止します。
 
 ### スクリプトが展開する引数と変数を引用符で囲む
 
@@ -89,6 +90,26 @@ Claude Code v2.1.281 以降のランナーは、プロンプトをファイル�
 * **そのまま渡す**: ラッパーを `exec "$CLAUDE_RUNNER_CLAUDE_BIN" "$@"` で終了します。これにより、ファイルフラグが他のすべての引数とともに転送されます。フラグを削除したり書き換えたりしないでください。セッションがプロンプトファイルフラグを失うと、コントロールプレーンがそのセッションに送信した指示なしで実行されます。
 * **v2.1.281 以降のランナーでは、追加したファイルフラグはサーバーのフラグを置き換えるものであり、追加されることはない**: 各プロンプトファイルフラグは単一の値を取り、Claude Code は最後に出現したものを保持します。そのため、`"$@"` の後に `--append-system-prompt-file <path>` を追加すると、ファイルの内容がサーバーの追加指示を置き換えます。サーバーの指示に加えて指示を追加するには、ランナーイメージの `CLAUDE.md` に記述します。ランナーはこれを[すべてのセッションのユーザーレベル設定にシードします](#how-each-session’s-config-is-assembled)。
 
+#### セッション開始時の `Argument list too long` を修正する
+
+Linux で、コントロールプレーンのプロンプトと独自のテキストを 1 つの `--append-system-prompt` 引数に結合すると、引数が 128 KB に達した時点で、ランナーは次のような行をログに記録します。
+
+```text theme={null}
+Session <id> finished: failed — reason: child exited 126: /opt/wrapper.sh: line 9: /usr/local/bin/claude: Argument list too long
+```
+
+Linux は個々の引数を 32 メモリページ、つまり一般的な 4 KB ページで 128 KB に制限しています。`getconf ARG_MAX` で得られる値（多くの場合 2 MB）は、すべての引数と環境を合わせたものに対する別の制限です。
+
+Claude Code v2.1.283 以降では、ファイルフラグを `"$@"` に残したまま、独自のテキストのみを `--append-system-prompt` として渡します。Claude Code は[両方を使用](https://code.claude.com/docs/ja/cli-reference.md#system-prompt-flags)し、コントロールプレーンのプロンプトを先に、独自のテキストをその後に配置します。
+
+```bash theme={null}
+exec "$CLAUDE_RUNNER_CLAUDE_BIN" "$@" --append-system-prompt "$(cat /opt/team-instructions.md)"
+```
+
+Linux で独自のテキストが 128 KB に達する場合は、それでも 1 つの引数であることに変わりはないため、ランナーイメージの `CLAUDE.md` に移してください。
+
+v2.1.281 または v2.1.282 では、このコマンドは `Cannot use both --append-system-prompt and --append-system-prompt-file` で終了します。それより前のバージョンでは、エラーなしで独自のテキストがコントロールプレーンのプロンプトを置き換えます。いずれのバージョンでも、まず更新するか、独自のテキストを `CLAUDE.md` に移してください。
+
 ### セッション作成者にスコープされた認証情報をプロビジョニングする
 
 `decode-token` サブコマンドを使用してセッション JWT からクレームを読み取ります。引数、`CLAUDE_CODE_SESSION_ACCESS_TOKEN`、または stdin からトークンを読み取ります（この順序で）。[セッション内のトークンを検証する](https://code.claude.com/docs/ja/self-hosted-environments-identity.md#verify-the-token-inside-the-session) を参照して、何をチェックするかを確認してください。以下の例は作成者 ID をデコードし、短期 AWS 認証情報と交換し、Claude Code に exec します。
@@ -122,7 +143,7 @@ exec "$CLAUDE_RUNNER_CLAUDE_BIN" "$@"
 | 変数 | 説明 |
 | :- | :- |
 | `CLAUDE_RUNNER_REPO_URL` | クローンするリポジトリ URL。`--git-host-rewrite` と `--git-ssh-rewrite` が適用された後 |
-| `CLAUDE_RUNNER_REPO_REF` | チェックアウトするリビジョン。セッションがリクエストしたとおりの値で、ブランチ、タグ、コミット SHA、または `refs/pull/<number>/head` などの完全な参照名。空の場合はリポジトリのデフォルトブランチ |
+| `CLAUDE_RUNNER_REPO_REF` | チェックアウトするリビジョン。セッションがリクエストしたとおりの値で、ブランチ、タグ、コミット SHA、または `refs/heads/<branch>` や `refs/pull/<number>/head` などの完全な参照名。空の場合はリポジトリのデフォルトブランチ |
 | `CLAUDE_RUNNER_CHECKOUT_PATH` | ワーキングツリーを配置する必要がある絶対パス |
 | `CLAUDE_RUNNER_SESSION_ID` | ログと相関のための `session_...` 形式のセッション ID |
 | `CLAUDE_RUNNER_SESSION_UUID` | 正規 UUID 形式の同じセッション ID |
@@ -303,12 +324,12 @@ claude self-hosted-runner orchestrator \
 
 コントラクトには 4 つのプロビジョナー非依存ルールがあります。
 
-1. **`CLAUDE_RUNNER_ORDER_ID` でべき等です。** 同じ要求の再配信は、最大 1 つのランナーをスポーンする必要があります。オーダー ID から決定論的なリソース名を導出し、プラットフォームに重複を拒否させてください。`CLAUDE_RUNNER_SESSION_ID` をキーとして使用しないでください。セッションの再要求のたびに同じセッション ID が新しいオーダー ID で実行されるため、セッション ID で名前付けまたは重複排除されたワークロードは、そのセッションに対して 1 回作成され、二度と作成されません。
+1. **`CLAUDE_RUNNER_ORDER_ID` でべき等です。** 同じ要求の再配信は、最大 1 つのランナーをスポーンする必要があります。オーダー ID から決定論的なリソース名を導出し、プラットフォームに重複を拒否させてください。`CLAUDE_RUNNER_SESSION_ID` をキーとして使用しないでください。セッションの再要求のたびに、同じセッション ID が新しいオーダー ID とともに渡されます。セッション ID で名前付けまたは重複排除されたワークロードは、最初のワークロードが存在する間は再び作成されません。
 2. **ワークロードを再試行しないでください。** 1 つのオーダー ID は、最大 1 つの作成されたワークロードを意味します。ランナーが登録されない場合、Anthropic は `--expected-spawn-seconds` 後に新しいオーダー ID で再要求します。
 3. **終了コードコントラクトを使用します。** 結果に一致するステータスで終了してください。
 
    * **終了 0**：送信済み。
-   * **終了 1、または `--hook-timeout` の終了時点でまだ実行中**：再試行可能な失敗。セッションはバックオフして再度提供されます。
+   * **終了 1、または `--hook-timeout` の終了時点でまだ実行中**：再試行可能な失敗。セッションはバックオフして再度提供されます。10 回連続で要求が失敗すると、終了 2 以上の場合と同様にブロックされます。
    * **終了 2 以上**：再試行不可の失敗。ユーザーがセッションに新しいメッセージを送信するか、[Owner](https://code.claude.com/docs/ja/cloud-environments.md#organization-shared-environments) が環境の **Activity** タブでそのセッションに対して **Retry** を選択するまで、セッションは再度スポーンされることがブロックされます。
 
    セッションがバックオフしている間は、**Activity** タブにスポーンエラーなしで **Queued** と表示されるため、フックの出力はオーケストレーターのログで確認してください。ブロックされると、セッションには **Failed** と表示されます。展開すると、フックの stderr の末尾 512 文字から取得されたスポーンエラーを確認できます。対処可能なエラーを stderr に書き込み、シークレットは書き込まないでください。シェルフックでは、[一時的な失敗を再試行可能なままにしてください](#keep-transient-failures-retryable-in-a-shell-hook)。
@@ -318,7 +339,41 @@ claude self-hosted-runner orchestrator \
 
 フックが stdout または stderr に書き込むすべてのものは、認証情報が自動的に削除されたオーケストレーターのログに表示されます。セッションがキューに入ったままの場合、オーケストレーターの `/healthz` ボディをチェックしてキュー数を確認し、[**Cloud environments** 管理ページ](https://claude.ai/admin-settings/cloud-environments)で環境の **Activity** タブを開きます。失敗したセッションをそこで展開してスポーンエラーを確認し、**Retry** を選択して再要求してください。
 
-セッションが **Activity** タブにスポーンエラーなしでキューに入ったままの場合、フックがセッション ID でキーになっていることを意味する可能性があります。確認するには、プラットフォームがそのセッションの最初のスポーン要求のワークロードを持っているかどうか、および再要求のワークロードを持っていないかどうかを確認してください。その場合は、ワークロードを `CLAUDE_RUNNER_ORDER_ID` でキーにしてください。
+#### 再開したセッションが Queued のままになる、または Failed と表示される場合の修正
+
+再開したセッションが **Queued** のままになる、**Failed** と表示される、またはそれらのセッションでフックがタイムアウトする場合、原因の 1 つとして、フックがセッション ID でワークロードの名前付けや重複排除を行っていることが考えられます。セッションは、ランナーが終了した後にユーザーがそのセッションにメッセージを送信すると再開されます。たとえば、各ワークロードの名前を次のように作成するフックを考えます。
+
+```bash theme={null}
+name="runner-${CLAUDE_RUNNER_SESSION_ID}"
+```
+
+1. セッションの最初のスポーン要求で、フックはその名前でワークロードを作成し、ランナーが起動します
+2. ランナーが終了し（たとえば [`--release-idle-session-min`](#make-on-demand-runners-exit-when-idle) の後）、その後ユーザーがセッションを再開します
+3. セッションの次のスポーン要求は同じセッション ID と新しいオーダー ID を持つため、フックは同じ名前を作成します
+4. ランナーの終了時に何もワークロードを[削除](#make-on-demand-runners-exit-when-idle)しなかったために、最初の要求のワークロードがプラットフォームにまだ残っている場合、フックは新しいワークロードを作成せず、ランナーは起動しません
+5. そのセッションに対する以降のスポーン要求もすべて同じ結果になります
+
+自分のフックを開き、ワークロードがすでに存在する場合（たとえばプラットフォームが重複した名前を拒否した場合）にどう動作するかを確認してください。その動作を最初の列で探すと、再開したセッションが **Activity** タブに何を表示するかがわかります。
+
+| ワークロードが存在する場合のフックの動作 | **Queued** が **Failed** に変わるタイミング | スポーンエラー |
+| :- | :- | :- |
+| 何も作成せずに 0 で終了する | そのような要求が 10 回連続した後 | `runner did not register within ETA after max attempts` |
+| 1 で終了する | そのような要求が 10 回連続した後 | フックの stderr の末尾、または stderr に何も書き込まなかった場合は `exit 1` |
+| 2 以上で終了する | すぐに | フックの stderr の末尾、または stderr に何も書き込まなかった場合は `exit` とコード（`exit 2` など） |
+| `--hook-timeout` の終了まで待機する | そのような要求が 10 回連続した後 | フックの stderr の末尾、または stderr に何も書き込まなかった場合は `spawn-runner hook timed out after 60000ms` |
+
+最後の行のスポーンエラーの `60000` は、ミリ秒単位の `--hook-timeout` です。フックが `--hook-timeout` の終了まで待機した場合、オーケストレーターのログにも `timed out after` の行が記録されます。
+
+フックを修正するには、[フックコントラクトのルール 1](#the-spawn-runner-hook) で求められているとおり、各名前やキーを `CLAUDE_RUNNER_ORDER_ID` から作成します。この例では、名前は次のようになります。
+
+```bash theme={null}
+name="runner-${CLAUDE_RUNNER_ORDER_ID}"
+```
+
+フックが待機する場合は、待機するフックは[そのオーケストレーターの次のフックを遅らせる](https://code.claude.com/docs/ja/self-hosted-environments-reference.md#orchestrator-cli-flags)ため、ワークロードを送信した時点で終了するようにも変更してください。フックを変更した後、**Activity** タブで停滞している各セッションのステータスを確認します。
+
+* **Queued**：セッションは次のスポーン要求を自動的に受け取ります
+* **Failed**：Owner としてそのセッションで **Retry** を選択するか、ユーザーにセッションへ新しいメッセージを送信してもらいます
 
 #### オンデマンドランナーをアイドル時に終了させる
 
@@ -744,6 +799,27 @@ Anthropic のコントロールプレーンがセッションに [Claude Code �
 [Claude Tag](https://claude.com/docs/claude-tag/overview) セッション以外では、セルフホスト環境のセッションはデフォルトで [自動メモリ](https://code.claude.com/docs/ja/memory.md#auto-memory) がオフの状態で実行されます。セッションをまたいで引き継ぐべき指示には、ランナーイメージまたはリポジトリ内の `CLAUDE.md` を使用してください。
 
 ランナーによるホストの `~/.claude/` のスナップショットには `projects/` ディレクトリは含まれません。自動メモリのデフォルトの保存場所はこのディレクトリの下にあります。そこにメモリファイルを置いても、ランナーはそれらをセッションにシードせず、自動メモリがオンになることもありません。
+
+### サーバー管理設定の取得に失敗したセッションを停止する
+
+[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md) を取得するセッションについて、その取得が失敗したときにセッションが開始しないようにするには、ランナーイメージ内の [`managed-settings.json`](https://code.claude.com/docs/ja/settings#where-settings-live) で [`forceRemoteSettingsRefresh`](https://code.claude.com/docs/ja/settings-reference#forceremotesettingsrefresh) を `true` に設定します。組織にサーバー管理設定がないという Anthropic の API からの応答は、取得の成功として扱われます。
+
+キーを追加する前に、その環境で Claude Tag チャネルセッションを実行しているか、Bedrock または Agent Platform にモデルリクエストを送信しているかを確認してください。
+
+* **Claude Tag チャネルセッション**：Owner が [Claude Tag チャネルのルーティング先に設定している](https://code.claude.com/docs/ja/cloud-environments.md#set-the-environment-a-claude-tag-channel-uses) 環境のランナーでは、このキーを設定しないでください。Anthropic の API はこれらのセッションによるサーバー管理設定のリクエストを拒否するため、キーを設定するとこれらのセッションは開始に失敗します。これらのセッションのルールはランナーイメージの `managed-settings.json` に記述してください。これらのセッションも [このファイルは読み取ります](https://code.claude.com/docs/ja/managed-settings.md#where-and-when-a-policy-applies)。他のセッションでこのキーを使用するには、それらのセッションを別の環境で実行してください。
+* **Bedrock または Agent Platform**：これらのプロバイダー上のセッションは [サーバー管理設定を取得しない](#what-differs-from-sessions-on-the-anthropic-api) ため、キーを設定するかどうかにかかわらず開始します。代わりに同じ `managed-settings.json` からルールを適用してください。
+
+次の `managed-settings.json` はこのキーを設定します。
+
+```json managed-settings.json theme={null}
+{
+  "forceRemoteSettingsRefresh": true
+}
+```
+
+claude.ai の管理コンソールでもキーを設定している場合でも、このファイルでキーを設定してください。新しいセッションにはサーバー管理設定の [キャッシュされたコピー](https://code.claude.com/docs/ja/server-managed-settings.md#fetch-and-caching-behavior) がないため、コンソールでのみキーを設定した場合、セッションはまだそのキーを持っていません。その状態で取得が失敗すると、セッションは後の取得が成功するまでそれらの設定なしで実行されます。
+
+設定の取得失敗がセッションが開始しなかった原因であることを確認するには、セッション内の [Claude Code の最後の出力](#keep-stdin-and-file-descriptor-3-attached) またはランナーのログを確認してください。そこには `Your organization requires remote managed settings to load, but they could not be loaded.` が含まれます。
 
 ### 複数のリポジトリを含むセッションでのリポジトリ設定
 

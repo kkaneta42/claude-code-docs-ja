@@ -121,17 +121,22 @@ Check "Notification Center Alerts", then click "Filter Alerts" and enable "Send 
 * **バックグラウンドセッション**：[バックグラウンドセッション](https://code.claude.com/docs/ja/agent-view.md)は、アタッチしている間であっても、ターミナルにステータスを報告しません。代わりにエージェントビューにステータスが表示されます。
 * **[`CLAUDE_CODE_DISABLE_TERMINAL_TITLE`](https://code.claude.com/docs/ja/env-vars#variables)**：この変数を `1` に設定している場合、Claude Code はサポートの有無を確認せず、ステータスも報告しません。この変数の設定を解除してください。
 
+プロトコルのサポートを報告するターミナルでは、タブのタイトルの先頭にステータスのグリフは付きません。ターミナル自体がセッションの状態を表示するため、Claude Code は他のターミナルでタイトルの前に付けるグリフを省略します。
+
 ## tmux を設定する
 
 Claude Code が tmux 内で実行される場合、デフォルトでは Shift+Enter が改行を挿入する代わりに送信してしまい、デスクトップ通知と[プログレスバー](https://code.claude.com/docs/ja/settings-reference.md#terminalprogressbarenabled)が外側のターミナルに到達しません。これらの行を `~/.tmux.conf` に追加してから、`tmux source-file ~/.tmux.conf` を実行して、実行中のサーバーに適用してください。
 
 ```bash ~/.tmux.conf theme={null}
 set -g allow-passthrough on
+set -g focus-events on
 set -s extended-keys on
 set -as terminal-features 'xterm*:extkeys'
 ```
 
 `allow-passthrough` 行により、通知とプログレス更新が tmux に飲み込まれるのではなく、外側のターミナルに到達できるようになります。`extended-keys` 行により、tmux が Shift+Enter と通常の Enter を区別できるようになり、改行ショートカットが機能するようになります。
+
+[mod の `Image`](https://code.claude.com/docs/ja/plugins/mods/reference#elements) には、`allow-passthrough` 行と `focus-events` 行に加えて、その他の [tmux 内で描画するための要件](https://code.claude.com/docs/ja/plugins/mods/gallery.md#draw-an-image-inside-tmux)が必要です。これらの行を追加した後は、tmux からデタッチして再度アタッチし、Claude Code を再起動してください。
 
 ## Windows で Backspace がワード全体を削除する問題を修正する
 

@@ -258,7 +258,7 @@ Edit ツールは正確な文字列置換を実行します。`old_string` と `
 
 Claude が最後に読み取った後、ディスク上で変更されたファイルは、`old_string` が現在のコンテンツと正確かつ明確に一致し、Claude Code がプロンプトなしでファイルを読み取ることができる場合でも編集できます。ファイルの現在のコンテンツに対してマッチングすることでこれを安全に保ち、結果はファイルが他の変更を含むことを示すため、Claude は周囲のコンテンツに依存する編集の前に再度読み取ります。古い `old_string` や `replace_all` なしで複数回一致するものなど、その他の場合は、Claude は編集前にファイルを再度読み取ります。
 
-Claude は、`cat` や `grep` などの Bash コマンドでファイルを表示した後も、別途 Read を行わずにそのファイルを編集できます。対象となるコマンドは `cat`、`nl`、`bat`、`batcat`、`head`、`tail`、`sed -n 'X,Yp'`、`grep`、`egrep`、`fgrep`、`rg` で、いずれもパイプやリダイレクトなしで 1 つのファイルに対して実行したものに限ります。一致するものを何も出力しない検索は読み取りとしてカウントされず、このリストにないコマンドも同様にカウントされません。
+Claude は、`cat` や `grep` などの Bash コマンドでファイルを表示した後も、別途 Read を行わずにそのファイルを編集できます。対象となるコマンドは `cat`、`nl`、`bat`、`batcat`、`head`、`tail`、`sed -n 'X,Yp'`、`grep`、`egrep`、`fgrep`、`rg` で、いずれもパイプやリダイレクトなしで 1 つのファイルに対して実行したものに限ります。検索が何にも一致しない場合など、コマンドがファイルのテキストを何も出力しなかった場合は、引き続き Read-before-edit チェックが適用されます。
 
 Claude がこの方法でファイルを表示すると、Claude Code はそのファイルに適用される[サブディレクトリの `CLAUDE.md`](https://code.claude.com/docs/ja/memory#how-claude-md-files-load)と[パススコープのルール](https://code.claude.com/docs/ja/memory.md#path-specific-rules)も読み込みます。`Read` と `Edit` の拒否ルールがどの Bash コマンドをカバーするかについては、[Read と Edit の権限ルール](https://code.claude.com/docs/ja/permissions.md#read-and-edit)を参照してください。
 
@@ -383,7 +383,10 @@ Monitor がコマンドを実行するとき、[Bash と同じ権限ルール](h
 
 [WebSocket ソース](#websocket-source) には独自の承認プロンプトがあり、auto モードではこれも分類器が決定します。
 
-このツールは Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry では利用できません。また、`DISABLE_TELEMETRY` または `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` が設定されている場合も利用できません。Windows では、[Git Bash](https://code.claude.com/docs/ja/setup.md#set-up-on-windows) がインストールされている場合にのみこのツールを利用できます。
+次の場合、Monitor には最小バージョンまたは Git Bash が必要です。
+
+* **最小バージョン**: Amazon Bedrock、Claude Platform on AWS、Google Cloud の Agent Platform、または Microsoft Foundry 上で使用する場合、あるいは `DISABLE_TELEMETRY` または `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` が設定されている場合、Monitor には Claude Code v2.1.310 以降が必要です。この要件は [フィーチャーフラグの取得](https://code.claude.com/docs/ja/env-vars.md#features-that-need-feature-flag-fetching) がオフの場合に適用されます
+* **Windows**: [Git Bash](https://code.claude.com/docs/ja/setup.md#set-up-on-windows) がインストールされている場合にのみこのツールを利用できます
 
 プラグインは Claude に開始を依頼する代わりに、プラグインがアクティブな場合に自動的に開始される Monitor を宣言できます。[プラグイン Monitor](https://code.claude.com/docs/ja/plugins/components.md#monitors) を参照してください。
 

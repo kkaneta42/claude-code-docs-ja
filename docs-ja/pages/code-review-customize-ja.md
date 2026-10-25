@@ -123,12 +123,72 @@ Code Review は保護されたブランチから `REVIEW.md` を読み込む場�
 
 レビューで取り込んだファイルが適用されない場合は、次の各項目を確認してください。
 
-* **場所**：ファイルをリポジトリのルートに移動します。`@docs/review-rules.md` のようなサブディレクトリ内へのパスは取り込まれません。
+* **場所**：ファイルをリポジトリのルートに移動します。[スキルファイル](#include-a-skill-file)を除き、`@docs/review-rules.md` のようなサブディレクトリ内へのパスは取り込まれません。
 * **名前**：大文字と小文字を含めてファイル名を正確に一致させ、スペースを含まない名前を使用します。`REVIEW.md` と同じ場所にあるどのファイルとも名前が一致しない行は、プレーンテキストとして `REVIEW.md` に残り、チェック実行ではスキップされた取り込みとして報告されません。
-* **1 階層のみ**：すべてのファイルをルートの `REVIEW.md` に列挙します。取り込まれたファイル内やサブディレクトリの `REVIEW.md` 内の `@` 行はプレーンテキストのまま残り、別のファイルへの Markdown リンクは取り込みになりません。
+* **1 階層のみ**：すべてのファイルをルートの `REVIEW.md` に列挙します。取り込まれたファイル内やサブディレクトリの `REVIEW.md` 内の `@` 行はプレーンテキストのまま残り（[スキルファイルは異なります](#include-a-skill-file)）、別のファイルへの Markdown リンクは取り込みになりません。
 * **上限**：取り込むファイルは異なるファイルで最大 8 つまでとし、`REVIEW.md` とそれが取り込むファイルの合計を 150,000 バイト未満に保ちます。バイト数の上限に達するファイルは、途中で切り詰められるのではなく、ファイル全体がスキップされます。チェック実行では、いずれかの上限によってスキップされた取り込み行の数が報告されます。
-* **リンク**：`REVIEW.md` とそれが取り込むファイル全体で、Markdown リンクを 64 個以下に保ちます。`http`、`https`、`mailto` アドレスへのリンクと `#` アンカーへのリンクは数に含まれません。この上限を超えると、レビューは取り込まれたファイルだけでなく、ルートの `REVIEW.md` 全体をスキップします。その場合、チェック実行では[指示が適用されなかったことが示されます](https://code.claude.com/docs/ja/code-review-troubleshooting.md#the-check-run-mentions-review-md)。
+* **リンク**：`REVIEW.md` とそれが取り込むファイル全体で、Markdown リンクを 64 個以下に保ちます。`http`、`https`、`mailto` アドレスへのリンクと `#` アンカーへのリンクは数に含まれず、[スキルファイル](#include-a-skill-file)内のリンクも含まれません。この上限を超えると、レビューは取り込まれたファイルだけでなく、ルートの `REVIEW.md` 全体をスキップします。その場合、チェック実行では[指示が適用されなかったことが示されます](https://code.claude.com/docs/ja/code-review-troubleshooting.md#the-check-run-mentions-review-md)。
 * **マージ済みのコピー**：取り込むファイルを [`REVIEW.md` が読み込まれるブランチ](#which-branch-review-md-is-read-from)にマージします。レビューは両方を同じコミットから読み込み、プルリクエスト自体の変更から読み込むことはありません。
+
+### スキルファイルを取り込む
+
+[スキル](https://code.claude.com/docs/ja/skills.md)で管理しているガイダンスにレビューを従わせるには、スキルの `SKILL.md` をルートの `REVIEW.md` に取り込みます。Code Review はスキルを実行しません。
+
+`@` と `SKILL.md` へのパスを `.claude/skills/<folder>/SKILL.md` の形式で、単独の行に追加します。
+
+```markdown theme={null}
+# Review instructions
+
+Report at most five Nits per review.
+
+@.claude/skills/api-review/SKILL.md
+
+Treat any change under `migrations/` as Important.
+```
+
+Code Review は保護されたブランチから `REVIEW.md` を読み込む場合にのみスキルファイルを取り込むため、[`REVIEW.md` が読み込まれるブランチ](#which-branch-review-md-is-read-from)を保護してください。スキルファイルは 8 ファイルおよび 150,000 バイトの上限の対象となり、さらに独自の上限として 30,000 バイトがあります。
+
+#### Code Review が取り込むスキル行を書く
+
+スペースを含まないフォルダー名を使用します。パスにスペースを含む行はプレーンテキストとして `REVIEW.md` に残り、チェック実行ではスキップされた取り込みとして報告されません。
+
+スキルの `@` 行が次のいずれかのルールに違反している場合、Code Review はその行からスキルを取り込みません。
+
+* **パス**：パスはリポジトリのルートからの `.claude/skills/<folder>/SKILL.md` として記述し、スキルのフォルダーを `skills/` の直下に置きます。ルートにあるファイル名とは異なり、この形式のパスでどのファイルとも一致しないものはスキップされ、カウントされます。
+* **ソース**：`.claude/` 配下のその他のファイルや、[バンドル、個人、またはプラグインのスキル](https://code.claude.com/docs/ja/skills.md#where-skills-live)からのガイダンスは、`REVIEW.md` と並ぶファイルにコピーします。これらを直接取り込むことはできません。
+* **ファイル**：`SKILL.md` は通常のテキストファイルとしてコミットします。Code Review はシンボリックリンクをたどりません。リンクがファイル自体であっても、パス内のフォルダーであっても同様です。
+* **サイズ**：`SKILL.md` はフロントマターを含めて 30,000 バイト以下に保ちます
+* **数**：スキル行は最大 8 つまでとします。繰り返された行も、8 つのうちに改めてカウントされます。
+* **`REVIEW.md` 内のブロック**：`@` 行をコードフェンスの外に置きます。その行より上にあるすべての HTML コメントと、すべての `<pre>`、`<script>`、`<style>`、`<textarea>` ブロックを閉じてください。
+
+Code Review がファイル、サイズ、数、またはブロックのルールへの違反によってスキル行をスキップした場合、その行はチェック実行の[スキップされた取り込み行に関するメッセージ](https://code.claude.com/docs/ja/code-review-troubleshooting.md#the-check-run-mentions-review-md)でカウントされます。このメッセージは、レビューが保護されたブランチの `REVIEW.md` を適用する場合にのみ表示されます。
+
+#### レビューがスキルから受け取る内容を確認する
+
+スキルが取り込まれると、レビューはスキルから `SKILL.md` の本文だけを受け取ります。そのため、次のリストに照らしてスキルを確認してください。
+
+* **フロントマター**：レビューが[フロントマター](https://code.claude.com/docs/ja/skills.md#frontmatter-reference)から必要とする内容、たとえばスキルを使用する条件として `description` に記述されている内容を、本文にも繰り返し記述します
+* **挿入されるコマンド**：[`!` コマンド](https://code.claude.com/docs/ja/skills#inject-dynamic-context)が提供する内容を書き出します。Code Review はコマンドを実行せず、コマンドを含む行またはブロック全体をプレースホルダーに置き換えます。
+* **置換**：`$ARGUMENTS` やその他の[置換](https://code.claude.com/docs/ja/skills.md#available-string-substitutions)を固定テキストに置き換えます。レビューは引数を渡さず、それらを記述されたまま残すためです
+* **サポートファイル**：レビューに必要な内容を `SKILL.md` にコピーします。Code Review はスクリプト、リンクされたファイル、`@file` 参照を読み込まないためです
+* **除外と Nit の上限**：検出結果を除外する指示や Nit に上限を設ける指示は、スキルではなく、`REVIEW.md` またはそれと並ぶファイルに記述します。Code Review は、スキルのテキストをそのどちらの根拠としても受け入れません。
+* **リポジトリのファイルへのリンク**：リンクや `@file` 参照が何を指しているかを言葉で説明します。レビューではパスがプレーンテキストまたはプレースホルダーとして表示されます。
+
+スキルの `!` コマンド、`$ARGUMENTS`、またはリンクを編集すると、Claude Code でのスキルの動作も変わります。チームがそれらに依存している場合は、ガイダンスを `REVIEW.md` と並ぶファイルにコピーし、スキルの代わりにそのファイルを取り込んでください。
+
+#### Code Review がスキルのテキスト内で変更する文字
+
+Code Review はスキルのテキスト内の一部の文字を変更するため、コードサンプルは次のような形でレビューに渡されます。
+
+```text theme={null}
+In SKILL.md:       Use `items[0]`, never `List<String>`.
+The review reads:  Use ˋitems(0)ˋ, never ˋList< String>ˋ.
+
+In SKILL.md:       Run `ps | grep api` and ask @alice.
+The review reads:  Run ˋps ¦ grep apiˋ and ask @ alice.
+```
+
+ルールがこれらの文字のいずれかに依存する場合は、その内容を言葉でも説明してください。
 
 ### REVIEW\.md がどのブランチから読み込まれるか
 
@@ -139,6 +199,8 @@ Code Review は、`REVIEW.md` をプルリクエストのベースブランチ�
 * 検出結果の重大度を下げる
 * パス、ファイル、または問題の種類を除外する
 * nit コメントの数に上限を設ける
+
+除外と Nit の上限は、[取り込まれたスキル](#include-a-skill-file)ではなく、`REVIEW.md` またはそれと並ぶファイルに記述してください。
 
 #### ブランチ保護とみなされるもの
 

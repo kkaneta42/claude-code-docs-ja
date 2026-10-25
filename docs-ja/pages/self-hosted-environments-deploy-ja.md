@@ -313,6 +313,26 @@ gh api repos/{owner}/{repo}/pulls -f title='Fix' -f head='my-branch' -f base='ma
 
 Anthropic 管理の git を使用する各セッションについて、ランナーは `[runner:warn]` 行をログに記録します。これは `governed git: GIT_SSL_CAINFO is set` または `governed git: GIT_SSL_NO_VERIFY is set` で始まります。行は、ランナーが独自の git、セッション内の git、およびライフサイクルフックのその変数で何をしたかを示します。何かを変更する必要があるかどうかで終わります。
 
+### Claude Tag チャンネルのセッションに github.com のリポジトリを追加する
+
+Claude が Claude Tag チャンネルのセッションに github.com のリポジトリを追加できない場合は、ランナーがそのリポジトリをクローンできる場合でも、チャンネルがそのリポジトリにアクセスできることを確認してください。このアクセス権は、ランナーの git 認証情報ではなく、GitHub と Claude 組織の設定によって決まります。
+
+**1. Claude GitHub App をインストールする**
+
+リポジトリを所有する GitHub 組織またはアカウントに [Claude GitHub App](https://github.com/apps/claude) をインストールし、そのリポジトリをインストール対象に含めます。
+
+**2. GitHub 組織またはアカウントをリンクする**
+
+[**Organization settings > Git providers**](https://claude.ai/admin-settings/source-control) で、その組織またはアカウントを Claude 組織にリンクします。GitHub 組織のオーナーでもある Claude 組織の Owner がリンクできます。[GitHub 組織をリンクする](https://claude.com/docs/claude-tag/admins/configure-github#link-your-github-organization)を参照してください。
+
+**3. リポジトリへのアクセスを付与する**
+
+[Claude Tag 管理設定](https://claude.ai/admin-settings/claude-tag)で、チャンネル、またはそのチャンネルを含むより広いスコープ（その Slack ワークスペースまたは Slack 全体）にリポジトリへのアクセスを付与します。Owner ロールまたは Claude Tag Admin 権限を持つユーザーが付与できます。チャンネルマネージャーも、自分の GitHub アカウントがリポジトリの管理者であれば、自分のチャンネルにリポジトリを追加できます。[リポジトリへのアクセスを付与する](https://claude.com/docs/claude-tag/admins/configure-github#grant-repository-access)を参照してください。
+
+その後、チャンネルで新しいスレッドを開始し、最初のメッセージで[リポジトリ名を指定](https://claude.com/docs/claude-tag/admins/configure-github#how-granted-repositories-reach-a-session)してください。
+
+それでも Claude がリポジトリを追加できない場合は、GitHub のリンクとリポジトリへのアクセス付与を確認する場所について、[Claude がリポジトリにアクセスできない場合](https://claude.com/docs/claude-tag/admins/configure-github#if-claude-can%E2%80%99t-reach-a-repository)を参照してください。
+
 ### プライベートネットワークの git URL を書き直す
 
 リポジトリ URL はコントロールプレーンから HTTPS として到達します。git ホストのホスト名を使用します。GitHub Enterprise の場合、claude.ai で [GitHub Enterprise 統合](https://code.claude.com/docs/ja/github-enterprise-server.md)用に設定したホスト名です。2 つの繰り返し可能なフラグはクローン前にこれらの URL を書き直します：
@@ -376,10 +396,89 @@ resources:
 
 ビルドとテストは通常、セッションの負荷の最大かつ最も変動する部分です。リポジトリの代表的なビルドを実行し、ピーク CPU とメモリを測定し、そのピークの上に Claude Code プロセスの余地を残さない開始値を引き上げてください。
 
-ランナーは `--capacity` を使用して、一度に実行するセッション数をキャップします。CPU またはメモリをセッション間で分割しないため、ランナー上のセッションはコンテナの CPU とメモリを共有します。1 つのセッションのシェアをキャップするには、[ラッパースクリプト](https://code.claude.com/docs/ja/self-hosted-environments-configuration.md#wrapper-scripts)から制限を適用してください。したがって、1 つのコンテナに与える内容は、一度に何個のセッションを提供するかによって異なります。
+ランナーは `--capacity` を使用して、一度に実行するセッション数をキャップします。CPU またはメモリをセッション間で分割しないため、ランナー上のセッションはコンテナの CPU とメモリを共有します。1 つのセッションのメモリ使用が他のセッションを終了させないようにするには、[専用のメモリ制限](#give-each-session-its-own-memory-limit)を設けて、ランナーあたり 1 つのセッションを実行してください。
 
 * **ランナーあたり 1 つのセッション**: 各コンテナに 1 つのセッションの値を与えます。[強化セクション](#harden-your-deployment)が推奨する `--capacity 1` でこのサイズ設定を使用し、[オンデマンドランナー](https://code.claude.com/docs/ja/self-hosted-environments-configuration.md#on-demand-runners)の場合、[`spawn-runner` フック](https://code.claude.com/docs/ja/self-hosted-environments-configuration#the-spawn-runner-hook)が送信するワークロード（Kubernetes Job のポッドテンプレートなど）に値を設定します。
 * **ランナーあたり複数のセッション**: `--capacity` が 1 より上の場合、1 つのセッションの値に容量を掛けます。その容量まで多くのセッションがコンテナ内で同時に実行できるためです。[Kubernetes](#kubernetes) と [Docker Compose](#docker-compose) レシピは CPU またはメモリ制限なしで `--capacity 4` を実行するため、実行する容量のサイズ設定された制限を追加してください。
+* **1 つのホスト上の複数のランナーコンテナ**: 各ランナーは自身のセッションのみを `--capacity` に対してカウントするため、ランナーの容量の合計に合わせてホストをサイズ設定します。
+
+  * **メモリ**: 1 つのセッションのメモリに合計を掛け、ホスト自身のプロセスが使用する分を加えます
+  * **CPU**: 1 つのセッションの CPU リクエストに合計を掛けます。すべてのセッションが同時にバーストできるようにするには、代わりに CPU 制限を掛けます。
+
+  各ランナーに専用のコンテナを与えてください。各ランナーが[専用の作業ディレクトリ](#harden-your-deployment)を持つように、それぞれで[同じ `--base-dir` パス](#keep-the-base-directory-and-capacity-identical-across-runners)を、他のランナーのコンテナがマウントしないストレージ上で使用してください。
+
+### 各セッションに専用のメモリ制限を与える
+
+メモリが不足したときに 1 つのセッションが他のセッションを終了させないようにするには、各ランナーを `--capacity 1` で、1 つのセッションのメモリに設定した専用のメモリ制限の下で実行してください。
+
+* **コンテナ内**: コンテナあたり 1 つのランナーを実行し、コンテナのメモリ制限を設定します。例えば Kubernetes では `limits.memory`、Docker では `--memory`、Compose ファイルでは `mem_limit` です。コンテナの制限の合計はホストのメモリ未満に保ってください。ホスト自体のメモリが不足すると、カーネルはホスト上のどこにあるプロセスでも強制終了する可能性があるためです。
+* **コンテナなしの systemd 下**: ランナーのユニットに `MemoryMax` を設定し、ホストあたり 1 つのランナーを実行します。1 つのファイルシステム上で[同じ `--base-dir` を使用する](#keep-the-base-directory-and-capacity-identical-across-runners)ランナーは、そこにクローンされたリポジトリを共有するためです。例えば、`checkout` フックなしの `--capacity 1` では、1 つのリポジトリ上のそれらのセッションが同じチェックアウトで同時に作業する可能性があります。1 つのホストで複数のランナーを実行するには、それぞれにコンテナを与えてください。
+
+コンテナまたはユニットがメモリ制限に達すると、カーネルはその内部のプロセスのみを強制終了します。`--capacity` を 1 より上に設定すると、セッションは 1 つの制限を共有します。制限に達したとき、カーネルは強制終了するプロセスをセッション単位で選択しないため、1 つのセッションのメモリ使用が他のセッションを終了させる可能性があります。
+
+Kubernetes では、kubelet の `singleProcessOOMKill` 設定のどちらの値でもセッションを分離することはできません。また、[ラッパースクリプト](https://code.claude.com/docs/ja/self-hosted-environments-configuration.md#wrapper-scripts)内のメモリ `ulimit` でセッションの合計メモリをキャップすることもできません。カーネルは `ulimit -v` などの値を各プロセスに個別に適用します。
+
+### プロセスとスレッドの制限に余裕を残す
+
+プロセスとスレッドの制限をサイズ設定するには、1 つのセッションが必要とする量を測定し、その制限を共有するセッション数を掛けます。それらのセッションが制限に達すると、カーネルは新しいプロセスとスレッドを拒否するため、いずれのセッションでもコマンド、ビルド、テストが失敗する可能性があります。拒否された呼び出しは `EAGAIN` を返し、その標準メッセージは `Resource temporarily unavailable` です。
+
+1 つのセッションのピークが 300 のプロセスとスレッドで、4 つのセッションが制限を共有するとします。合計で 1,200 が必要になり、制限を 2,400 にすれば、その 2 倍を必要とするビルドにも余裕を残せます。
+
+#### 各制限の設定場所
+
+この表の各制限はプロセスだけでなくスレッドもカウントし、`pids.max` は cgroup の制限を保持するファイルです。
+
+| 制限 | 設定場所 | 共有するもの |
+| :- | :- | :- |
+| Kubernetes の `pids.max` | ランナーを実行するノードの kubelet 設定の `podPidsLimit`。Pod スペックでは設定できません。 | 1 つの Pod のコンテナ |
+| Docker の `pids.max` | `--pids-limit`、または Compose ファイルの `pids_limit` | 1 つのコンテナ |
+| systemd 下の `pids.max` | ランナーのユニットの `TasksMax` | 1 つのユニット |
+| `ulimit -u` | ランナーを開始するシェルまたはサービス | ホスト上でランナーのユーザー ID として実行されるすべてのもの。root には適用されません。 |
+
+`TasksMax` を設定しない場合、systemd は `DefaultTasksMax` を適用します。そのデフォルトは、`kernel.pid_max`、`kernel.threads-max`、ルート cgroup の `pids.max` のうち最も低い値の 15% です。
+
+#### 1 つのセッションのピークを測定する
+
+自分のランナーの数値を得るには、ホスト（Kubernetes ではノード）上で 1 つのセッションを測定します。
+
+**1. 1 つのランナーを単独で開始する**
+
+コンテナまたは systemd ユニット内に他に何もない状態で、1 つのランナーを `--capacity 1` で開始し、ホストと環境で単独にします。
+
+* **ホスト**: 他のランナーを実行していないホストを使用します。これにより、次のステップでそのプロセスを特定できます。
+* **環境**: 例えば[テスト用に作成した](https://code.claude.com/docs/ja/self-hosted-environments-quickstart.md#set-up-manually)環境で、そこにある唯一のランナーにします。セッションはランナーではなく環境にルーティングされます。
+
+ビルドを開始する前に次のステップのディレクトリが必要なため、まだセッションを開始しないでください。
+
+**2. ランナーの cgroup ディレクトリを見つける**
+
+コンテナ内ではなくホスト上で、例えば `ps` を使ってランナーのプロセス ID を見つけます。その ID の `/proc/<pid>/cgroup` を読み取ります。
+
+* **`:pids:` を含む行がある**: ホストは cgroup v1 を使用しており、ディレクトリは `/sys/fs/cgroup/pids` に `:pids:` の後のテキストを続けたものです
+* **唯一の行が `0::` で始まる**: ホストは cgroup v2 を使用しており、ディレクトリは `/sys/fs/cgroup` に `0::` の後のテキストを続けたものです
+
+**3. 代表的なビルドを実行してピークを記録する**
+
+1 つのセッションで代表的なビルドを実行し、ランナーの cgroup ディレクトリからピークを取得します。
+
+* **ディレクトリに `pids.peak` がある**: ビルドが終了した後にファイルを読み取ります
+* **ディレクトリに `pids.peak` がない**: ビルドの実行中に `pids.current` を 1 秒ごとに読み取り、最大値を保持します。2 回の読み取りの間のピークは見逃されるため、その値は低めの見積もりとして扱ってください。
+
+**4. 制限を共有するセッション数を掛ける**
+
+* **1 つのランナーの Pod、コンテナ、またはユニット**: ピークにランナーの `--capacity` を掛けます
+* **複数のランナーが共有する制限**: ピークにそれらの容量の合計を掛けます
+
+次に、Pod 内の別のコンテナなど、制限を共有する他のもののピークを加えます。
+
+**5. 結果より上に制限を設定する**
+
+制限を高くすれば、より重いビルドに余裕を残せます。低くすれば、フォーク爆弾をより早く止められます。
+
+#### `pids.max` 制限を確認する
+
+* **`pids.max` に達したかどうかを確認する**: 例えば `dmesg` を使って、ホストのカーネルログで `cgroup: fork rejected by pids controller in` と cgroup のパスを含む行を検索します。カーネルはその cgroup で最初にプロセスまたはスレッドを拒否したときにのみログに記録するため、ログ全体を検索してください。
+* **適用中の制限を確認する**: ランナーの cgroup ディレクトリとその上位の各ディレクトリで `pids.max` を読み取ります。最も低い値が適用中の制限で、`max` はそのレベルで制限がないことを意味します。
 
 ## Kubernetes
 
@@ -577,7 +676,7 @@ secrets:
 
 再利用パスが保証するもの、しないもの：
 
-* **任意のクローン形状が機能する**: パスの完全、シャロー、または単一ブランチクローンはそのまま使用されます。ランナーは既存のクローンにフェッチするときに `--depth` を渡しません。そのため、完全なプリウォームは完全な履歴を保持し、シャロークローンはシャローのままです。`CLAUDE_RUNNER_FETCH_DEPTH`（`full`、`0`、または数値。デフォルト 50）は、クローンがまだ存在しない場合にランナーが作成するコールドクローンのみを制御します。
+* **クローンの深さ**: クローンは `--depth` なしでビルドしてください。`--single-branch` の有無は問いません。ランナーは `origin` リモートを持つクローンにフェッチするとき、[`CLAUDE_RUNNER_FETCH_DEPTH`](https://code.claude.com/docs/ja/self-hosted-environments-reference#environment-variable-only-settings) を設定していても `--depth` を渡しません。完全なクローンでは、各セッションはクローンに欠けているコミットのみをダウンロードします。シャロークローンでは、クローンの最も古いコミットより前に分岐したブランチ上のセッションは、そのブランチの履歴全体をダウンロードします。
 * **追跡された変更はリセットされ、追跡されていないファイルは保持される**: `--capacity 1` では、各セッションはハードリセットから開始され、前のセッションの追跡された変更を削除しますが、ランナーは `git clean` を実行しないため、ロックされたオーナーの以前のセッションからの追跡されていないファイルはツリーに残ります。
 * **セッションごとのディレクトリも保持される**: チェックアウトの横に、ランナーは実行するすべてのセッションに対して `<base-dir>/_sessions/` の下にセッションごとのエントリを作成します。セッションの Claude 設定ディレクトリは、会話トランスクリプトのローカルコピーを保持します。その横には、セッションがある場合、セッションのアップロードされたファイルが配置されます。セッションディレクトリもそこに配置されます。セッションの実行中、セッションごとの worktrees と `checkout` フックチェックアウトを保持し、Claude がそこに書き込んだ他のすべてのものを保持します。
 
@@ -586,6 +685,12 @@ secrets:
 * **git プロキシを使用する場合、リセットはチェックアウトになる**: [`--use-anthropic-git-proxy`](#use-the-anthropic-git-proxy) を使用すると、ランナーは各セッションの前にクローンの `.git/` をサニタイズします。オブジェクトストアとシャロー状態は保持し、インデックスは削除します。インデックスがないため、各セッションはほぼ瞬時のリセットではなく、完全なワーキングツリーチェックアウトから開始されます。それでもランナーは、リポジトリを再度クローンするのではなく、既存のクローンにフェッチします。プロキシの下ではサブモジュールプリウォームはサポートされていません。
 * **git プロキシを使用する場合、`reftable` のプリウォームは ref を失う**: ランナーは各セッションの前に `.git/` をサニタイズする際、`.git/refs/` を保持し、`.git/reftable/` ディレクトリを削除します。git の `reftable` ref 形式でプリウォームされたクローンはこの処理によって ref を失うため、代わりに git の `files` ref 形式でクローンをプリウォームしてください。
 * **長いクローンは回避策を必要としない**: ランナーは各 git 操作を 120 秒の無進捗ウォッチドッグと 30 分のハードキャップで制限し、フラットタイムアウトではないため、進捗を報告し続けるスローコールドクローンは完了します。
+
+### ランナーがクローンを使用していることを確認する
+
+ランナーがクローンを使用していることを確認するには、[`--log-level debug`](https://code.claude.com/docs/ja/self-hosted-environments-reference#runner-cli-flags) を指定してランナーを起動し、そのリポジトリでセッションを開始します。ランナーは `Prefetched repo found at` とクローンのパスをログに記録します。代わりに `No prefetched repo, fresh init at` をログに記録した場合、その行に示されたパスで使用可能なクローンが見つからなかったことを意味します。クローンがそのパスにあり、ランナーのユーザーが所有しており、`origin` という名前のリモートを持っていることを確認してください。
+
+ランナーがクローンを見つけているにもかかわらずセッションの起動が遅い場合は、クローンがシャロークローンになっていないか確認してください。
 
 ## バージョンをピンする
 
@@ -608,6 +713,23 @@ secrets:
 
 * **固定フリート**: 静的なランナーレプリカセットを実行し、各ランナーが提供する [Prometheus メトリクス](https://code.claude.com/docs/ja/self-hosted-environments-reference.md#prometheus-metrics)に基づいてスケーリングします
 * **オンデマンドランナー**: `claude self-hosted-runner orchestrator` サブコマンドを実行します。このコマンドは、利用可能なランナーがないキューに入っているセッションについて Anthropic をポーリングし、`spawn-runner` フックを呼び出して、セッションごとに 1 つ起動します。[オンデマンドランナー](https://code.claude.com/docs/ja/self-hosted-environments-configuration.md#on-demand-runners)を参照してください。
+
+### 固定フリートでアイドル状態のセッションを解放する
+
+固定フリートですべてのランナーがオンラインであるにもかかわらずセッションがキューに入ったままになる場合、アイドル状態のセッションが原因である可能性があります。デフォルトでは、セッションはターンが終了した後もスロットを保持し、そのランナーはそのセッションの[オーナー](https://code.claude.com/docs/ja/self-hosted-environments#key-concepts)にロックされたままになります。チームの[クラウドスケジュールタスク](https://code.claude.com/docs/ja/routines.md)が実行のたびに新しいセッションを開始する場合、そのアイドル状態のセッションがすべてのスロットを埋めてしまう可能性があります。
+
+確認するには、各ランナーの [Prometheus メトリクス](https://code.claude.com/docs/ja/self-hosted-environments-reference.md#prometheus-metrics)で `claude_code_self_hosted_runner_session_idle_seconds` を読み取ります。ランナーが保持する各セッションには独自の系列があり、セッションがビジー状態の間は `0`、それ以外の場合はアイドル状態になってからの秒数を示します。許容するアイドル時間を選択してください。作業途中で人が取る休止よりも長く、かつスケジュールタスクの次の実行が始まる前に各実行が解放されるほど短い時間にします。系列をその時間と比較します。
+
+* **その時間を超える系列（30 分の場合の `1800` など）**: アイドル状態のセッションがそれらのスロットを保持しているため、`--release-idle-session-min` を設定します
+* **すべての系列がその時間未満**: それほど長くアイドル状態のセッションはありません。ランナーを追加するか、[アイドル状態にならないセッション](#some-sessions-don’t-count-as-idle)のために [`--kill-session-after-min`](https://code.claude.com/docs/ja/self-hosted-environments-reference#runner-cli-flags) を設定します。
+* **系列がないランナー**: そのランナーを保持しているセッションはありません。[トラブルシューティング](#troubleshooting)の **Sessions stay queued** を参照してください。
+* **メトリクスが応答しないランナー**: プロセスが終了している可能性があります。[ランナーが終了したとき](#when-the-runner-exits)の **An environment that looks healthy** を参照してください。
+
+アイドル状態のセッションを解放するには、すべてのランナーを [`--release-idle-session-min`](https://code.claude.com/docs/ja/self-hosted-environments-reference#runner-cli-flags) とその時間（分単位）を指定して起動します（例: `--release-idle-session-min 30`）。ランナーは、スケジュールタスクと人のどちらが開始したかにかかわらず、その時間アイドル状態が続いたセッションを解放します。
+
+* **プッシュされていない作業**: 解放されたセッションは次のメッセージで再開されますが、プッシュしていなかった作業は失われます。コミットを保持するには、[再開されたセッションはプッシュされていない作業を失う](#additional-limitations)を参照してください。
+* **ランナーの終了**: 最後のセッションを解放したランナーは[通常の終了](#when-the-runner-exits)を開始します。[デプロイを強化する](#harden-your-deployment)で説明しているように、スーパーバイザーが新しいファイルシステム上でランナーを再起動するようにしてください。
+* **アイドル状態にならないセッション**: [一部のセッションはアイドル状態としてカウントされない](#some-sessions-don’t-count-as-idle)ため、[`--kill-session-after-min`](https://code.claude.com/docs/ja/self-hosted-environments-reference#runner-cli-flags) も設定します
 
 ## 既知の問題と制限事項
 
@@ -642,9 +764,11 @@ Anthropic は、コネクタのツールをランナーからではなく、Anth
 ### その他の制限事項
 
 * **再開されたセッションではプッシュしていない作業が失われる**: 新しいランナーはリポジトリを開始ブランチから再度クローンするため、セッションがプッシュしていなかった作業は失われます。
-  * **コミット済みの作業を保持するには**: 環境内のすべてのランナーで [`--push-outcome-on-release`](https://code.claude.com/docs/ja/self-hosted-environments-reference#runner-cli-flags) を設定してください。このフラグのないランナーは、セッションを開始ブランチから再開するためです。このフラグを設定したランナーは、解放する前にセッションの成果ブランチのプッシュをベストエフォートで行い、再開されたセッションはそれらのコミットから開始されます。プッシュにはランナーホスト自身の git 認証情報が使用されます。これは [Anthropic 管理の git](#use-the-anthropic-git-proxy) を使用するランナーでも同様です。コミットされていない変更は引き続き失われます。
+  * **コミット済みの作業を保持するには**: 環境内のすべてのランナーで [`--push-outcome-on-release`](https://code.claude.com/docs/ja/self-hosted-environments-reference#runner-cli-flags) を設定してください。このフラグのないランナーは、セッションを開始ブランチから再開するためです。このフラグを設定したランナーは、解放する前にセッションの成果ブランチのプッシュをベストエフォートで行い、再開されたセッションはそれらのコミットから開始されます。プッシュにはランナーホスト自身の git 認証情報が使用されます。これは [Anthropic 管理の git](#use-the-anthropic-git-proxy) を使用するランナーでも同様です。
   * **`checkout` フックを使用する場合**: [`checkout` ライフサイクルフック](https://code.claude.com/docs/ja/self-hosted-environments-configuration#checkout)でチェックアウトされたリポジトリはプッシュされません。代わりに [`post-session` フック](https://code.claude.com/docs/ja/self-hosted-environments-configuration#post-session)からそれらのスナップショットを取得してください。
   * **フラグを有効にする前に**: ソースリモート上の `claude/*` ref にプッシュできるユーザーを制限してください。再開時、ランナーは以前にプッシュされたブランチを、誰がプッシュしたかを検証せずにフェッチします。
+  * **コミットされていない変更は引き続き失われる**: Claude が応答を終えたときにコミットとプッシュを行うよう促すには、[セッションに作業のプッシュを促す](https://code.claude.com/docs/ja/self-hosted-environments-configuration.md#prompt-sessions-to-push-their-work)を参照してください。
+* **ランナーの喪失によって中断されたコマンドが再度実行されることがある**: セッションが別のランナーで再開されると、中断されたツール呼び出しが、その成否が不明であることを示す結果とともに Claude に表示されます。
 * **セッションの途中で追加したリポジトリのクローンが失敗することがある**: Claude は HTTPS 経由の `git clone` でリポジトリをクローンします。[`--use-anthropic-git-proxy`](#use-the-anthropic-git-proxy) を使用していないランナーでは、ホスト上にリポジトリを読み取れるものが何もない場合、クローンは git の認証エラーで失敗します。可能であれば、セッションの作成時に、セッションで必要なすべてのリポジトリを選択してください。
 * **一部のコネクタがセルフホストセッションに表示されない**: claude.ai の設定でまだ接続していないコネクタはセルフホストセッションに表示されず、セッションから接続を求められることもありません。まず設定で接続してから、新しいセッションを開始してください。また、すでに実行中のセッションにコネクタを追加しても、そのツールは Claude で使用できるようになりません。新しく追加したコネクタを反映するには、新しいセッションを開始してください。
 * **誰かがセッションをアーカイブまたは削除した場合、またはセッションのメニューからランナーを解放した場合**: [`--push-outcome-on-release`](https://code.claude.com/docs/ja/self-hosted-environments-reference#runner-cli-flags) によるプッシュは当てにしないでください。このような場合にコミットを保存するには、[`post-session` フック](https://code.claude.com/docs/ja/self-hosted-environments-configuration#post-session)から `HEAD` を退避用ブランチにプッシュしてください。そこにある例をもとにする場合は、コミットされていない変更が何もないときでもプッシュするように変更してください。この例はスナップショットのコミットを作成した後にのみプッシュするためです。
@@ -684,6 +808,7 @@ claude self-hosted-runner doctor
 * **ピックアップ直後にセッションが失敗する**: claude.ai/code でセッションを開いてエラーを確認してください。git が認証できなかったことをエラーが示している場合は、ランナーの [git 認証情報](#configure-git)を確認してください。`--use-anthropic-git-proxy` 付きで起動したランナーでは、[git プロキシを使用するランナーでセッションの開始に失敗した場合](#when-anthropic-doesnt-serve-a-session)を参照してください。
 
   書き込めないベースディレクトリは、セッションを失敗させるのではなく、起動時にランナーを停止させます。このリストの **ランナーが起動時に `cannot create or write to base directory` で終了する** の項目を参照してください。
+* **セッションはピックアップされたが、Claude が最初のメッセージに応答しない**: ランナーがプロキシ経由で `api.anthropic.com` に到達している場合は、セッションの `/worker/events/stream` レスポンスを到着したとおりに通過させるようにプロキシを設定してください。ランナーのタイムアウトを引き上げても解決しません。ランナーのログで原因を確認するには、[セッションはピックアップされたが、Claude が最初のメッセージに応答しない](#when-a-sessions-first-message-is-never-answered)を参照してください。
 * **`--use-anthropic-git-proxy` を設定したランナーでセッションの開始に失敗する**: ランナーのログで `access denied by the git proxy`、または `/git_proxy/` を含む `api.anthropic.com` アドレスを示す git エラーを探してください。Anthropic がセッションを処理したかどうかを判断して原因を修正するには、[git プロキシを使用するランナーでセッションの開始に失敗した場合](#when-anthropic-doesnt-serve-a-session)を参照してください。
 * **認証を行うエグレスプロキシ経由でセッションがネットワークに到達できない**: [`--proxy-authorization-command` または `--proxy-authorization-file`](#authenticate-to-an-egress-proxy) で設定したソースが失敗する、30 秒後にタイムアウトする、または空の値を返す場合、ランナーはその接続に `502 Bad Gateway` で応答し、理由をログに記録します。ランナーはそのログ内でコマンドの stderr を秘匿し、ヘッダー値をログに記録することはありません。`--proxy-authorization-command` を使用している場合は、ホスト上でそのコマンドを自分で実行し、ヘッダー値全体が stdout に出力されることを確認してください。代わりにランナーが起動時に `could not start the proxy-authorization listener` で終了する場合、ランナーはループバックリスナーを開けませんでした。
 * **ランナーが `rejecting the malformed poll response` を含む `Poll failed` 行をログに記録する**: ランナーが受け取ったワークポーリングのレスポンスのボディが、キューが想定する JSON ではありません。原因の 1 つは、インターセプトプロキシやキャプティブポータルが独自のページで応答したことです。ランナーがプロキシ経由で接続している場合は、`api.anthropic.com` からのレスポンスを変更せずに通過させるようにプロキシを設定してください。
@@ -708,7 +833,11 @@ claude self-hosted-runner doctor
 * **セッションが `This runner couldn't read` で開始に失敗する**: ランナーが [git 認証情報](#configure-git)を使って git ホストにリポジトリを要求し、見つからないという応答を受け取りました。リポジトリが存在しないか、その認証情報ではリポジトリにアクセスできません。
   * **ランナーを管理している場合**: ランナーの git 認証情報にリポジトリへの読み取りアクセス権を付与してから、新しいセッションを開始してください。
   * **セッションを開始した場合**: リポジトリが存在しない場合は、正しいリポジトリで新しいセッションを開始してください。ランナーがリポジトリにアクセスできない場合は、ランナーの管理者にアクセス権の付与を依頼してから、新しいセッションを開始してください。
-* **セッションの開始に数分かかる**: 通常、最初のクローンが大部分を占めます。`claude_code_self_hosted_runner_session_init_duration_seconds` [メトリクス](https://code.claude.com/docs/ja/self-hosted-environments-reference.md#prometheus-metrics)を監視して確認し、[事前にウォームアップしたチェックアウト](#reuse-a-pre-warmed-checkout)またはより小さい `CLAUDE_RUNNER_FETCH_DEPTH` でクローンを短縮してください。
+* **セッションの開始または再開に数分かかる**: 原因の 1 つは新規のクローンです。各ランナーを空のディスクで起動し、[`checkout` フック](https://code.claude.com/docs/ja/self-hosted-environments-configuration#checkout)がないフリートでは、ランナーは Claude Code を起動する前にセッションのリポジトリを新たにクローンします。空のディスク上で再開するセッションも、同じクローンを再び待つことになります。
+
+  新規のクローンを省略するには、[事前にウォームアップしたチェックアウト](#reuse-a-pre-warmed-checkout)を用意してください。すでに用意している場合は、[ランナーがそれを使用していることを確認](#confirm-that-the-runner-uses-your-clone)してください。ランナー自身がクローンを作成し、1 つのセッションの後に終了する場合は、[`CLAUDE_RUNNER_FETCH_DEPTH`](https://code.claude.com/docs/ja/self-hosted-environments-reference#environment-variable-only-settings) をデフォルトの 50 コミットから下げて、フェッチする履歴を減らしてください。
+
+  フックを使用している場合、フックはランナーのクローンの代わりに実行されるため、代わりにフックの処理内容を確認してください。開始にかかる時間を確認するには、`claude_code_self_hosted_runner_session_init_duration_seconds` [メトリクス](https://code.claude.com/docs/ja/self-hosted-environments-reference.md#prometheus-metrics)を監視してください。
 * **ターンが 401 で失敗する**: ターンが Anthropic API からの 401 または 403 で終了すると、ランナーは Anthropic から新しい [`CLAUDE_CODE_OAUTH_TOKEN`](https://code.claude.com/docs/ja/self-hosted-environments-configuration#wrapper-scripts) を取得してセッションに渡します。失敗したターンは再試行されません。このトークンは有効期間が短く、ランナーはセッションの stdin を介してこれをローテーションします。
 
   取得に失敗すると、ランナーはいつ再試行するかを示す `inference_token refresh failed` 行をログに記録し、セッションが実行されている間は再試行を続けます。
@@ -787,6 +916,43 @@ claude self-hosted-runner doctor
 * **環境の Activity タブ**: 環境を開き、**Activity** を選択します。そこに新しいランナーが次々と表示され、どれも作業をピックアップしていない場合は、スーパーバイザーがランナーを再起動しています。
 
 ランナーホストでガイド付きの診断を行うには、[doctor サブコマンド](#troubleshooting)を実行してください。
+
+### セッションはピックアップされたが、Claude が最初のメッセージに応答しない
+
+ランナーがセッションをピックアップしたのに Claude が最初のメッセージに応答せず、ランナーがプロキシ経由で `api.anthropic.com` に到達している場合は、プロキシが原因である可能性があります。Anthropic は、開いたままになる 1 つのストリーミングレスポンスを通じてセッションにメッセージを送信します。プロキシがこのレスポンスをバッファリングしたり、何も渡さないうちに終了させたりすると、最初のメッセージは届きません。セッションからの他のリクエストは引き続き成功します。
+
+修正するには、プロキシがこのリクエストを処理する方法を変更してください:
+
+```text theme={null}
+GET https://api.anthropic.com/v1/code/sessions/<session-id>/worker/events/stream
+```
+
+* **レスポンスをバッファリングしない**: 到着したとおりに通過させてください。コンテンツタイプは `text/event-stream` です。
+* **レスポンスを開いたままにする**: レスポンスは最長 1 時間開いたままになることがあります。プロキシにアイドルタイムアウトがある場合は、15 秒よりも十分に長くしてください。Anthropic はデフォルトで少なくともその頻度でキープアライブを送信するためです。
+
+その後、新しいセッションを開始し、Claude が応答することを確認してください。ランナーのタイムアウトを引き上げても解決しません。ランナーがセッションを停止するまでの待ち時間が長くなるだけです。
+
+#### ランナーのログで原因を確認する
+
+以下の手順は、デフォルトの `--log-level info` で動作する Claude Code v2.1.287 以降のランナーを対象としています。それより古いランナーでは、これらの行はより遅れて記録されるか、まったく記録されません。
+
+1. [`--startup-timeout-min`](https://code.claude.com/docs/ja/self-hosted-environments-reference#runner-cli-flags)（デフォルトは 15 分）が経過するのを待ちます。するとランナーはセッションを停止し、`no child output for` を含み `— releasing` で終わる行をログに記録します。
+2. ランナーのログで `SDKStartup: SSE` を検索します。これらの行は、手順 1 の行から数行後にある `finished: interrupted` 行に続きます。ほとんどの行にはタイムスタンプがないため、ログコレクターでは別の場所に表示されることがあります。
+3. 次の表で該当する行を見つけます:
+
+| ログ行に含まれる内容 | 対処方法 |
+| :- | :- |
+| `SSE connect failed (no response in 30s)` または `SSE liveness timeout` | プロキシがリクエストを転送し、レスポンスのヘッダーとデータを到着したとおりに通過させ、接続を切断していないことを確認してください |
+| `SSE connect failed (HTTP` とステータスコード | プロキシ自身のログを確認してください。プロキシ自体がリクエストに応答していた場合は、リクエストがプロキシを通過するようにしてください。 |
+| `SSE connect failed (` とその他のテキスト | 括弧内のテキストがエラーです。プロキシ自身のログで同じ接続を探してください。 |
+| `SSE stream ended by server` が何度も繰り返される | 長時間続くレスポンスに対するプロキシの時間制限を確認してください。このような行が 1 つだけであれば正常です。 |
+| `SSE reconnected after` | その後にある他のいずれかの行を探してください。この行は、何かがセッションに届いたことを意味するものではありません。 |
+
+ログにこれらの行がいずれもない場合、またはプロキシのログに問題が見当たらない場合は、[問題を報告](#report-an-issue)してください。
+
+#### セッションの再試行を止める
+
+セッションはメッセージを保留したままにし、セッションの所有者に対応できるランナーがセッションを再びピックアップします。プロキシを変更するまで、セッションは毎回同じように待機します。これを止めるには、claude.ai/code でセッションをアーカイブしてください。
 
 ## 次のステップ
 

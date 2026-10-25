@@ -16,21 +16,21 @@
 
 チームがクラウドセッションを使用していない場合、ここで設定することはありません。ターミナルまたは IDE のセッションは常に開発者自身のマシンで実行されます。Claude Code を常時稼働しているマシンで実行し、他のデバイスから駆動したい場合は、[リモートコントロール](https://code.claude.com/docs/ja/remote-control.md)を使用してください。これは Pro および Max プランでも利用可能です。セットアップの準備ができたら、[クイックスタート](https://code.claude.com/docs/ja/self-hosted-environments-quickstart.md)に直接進んでください。セキュリティ体制を最初に確認したい場合は、[本番環境へのデプロイ](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md)から始めてください。このページの残りの部分では、自己ホスティングの仕組みと、それを選択する時期について説明します。
 
-## 自己ホスト環境の仕組み
+## セルフホスト環境の仕組み
 
-自己ホスティングには 3 つの部分があります。
+セルフホストは 3 つの要素で構成されます。
 
-* **環境**: クラウドセッションを送信できる名前付きの宛先。組織は claude.ai 管理設定で環境を作成し、各環境はランナーのセットをグループ化します。
-* **ランナー**: ネットワーク内のホストで実行されるプログラム。ランナーはセッションを実行します。概念は自己ホスト CI ランナーと同じです。
-* **セッション**: 開発者が開始した 1 つの Claude Code タスク。
+* **環境**: クラウドセッションの送信先となる名前付きの宛先です。組織は claude.ai の管理設定で環境を作成し、各環境は一連のランナーをまとめます。
+* **ランナー**: ネットワーク内のホスト上で動作するプログラムです。ランナーがセッションを実行します。考え方はセルフホスト型 CI ランナーと同じです。
+* **セッション**: 開発者が開始した 1 つの Claude Code タスクです。
 
-開発者がクラウドセッションを開始すると、セッション開始 UI に環境ピッカーが表示され、Anthropic ホスト環境と組織が作成した環境が一覧表示されます。組織の環境を選択すると、Anthropic のコントロールプレーンはセッションを環境のキューに配置し、ランナーがそれを要求し、開発者が選択したリポジトリをクローンし、ホストで Claude Code プロセスを開始して実行します。ランナーは設定した認証情報を使用して git ホストに認証します。[git の設定](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#configure-git)では、オプションについて説明しています。セッションはネットワーク内からの内部サービスに到達し、内部の場合は同じ方法で git ホストに到達します。Anthropic へのトラフィック（キューポーリング、セッションのイベントストリーム、およびデフォルトではモデル推論）は、`api.anthropic.com` への送信 HTTPS であり、セッションが到達できるその他のホストの短いリストは[ネットワーク要件](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#network-requirements)にあります。Anthropic はネットワークに接続することはありません。
+開発者がクラウドセッションを開始すると、セッション開始 UI に環境ピッカーが表示され、Anthropic がホストする環境と、組織が作成した環境が並んで表示されます。開発者が自社の環境を選択すると、Anthropic のコントロールプレーンがそのセッションを環境のキューに配置します。そこでランナーがセッションを取得し、開発者が選択したリポジトリをクローンして、ホスト上で Claude Code プロセスを起動してセッションを実行します。ランナーは、設定された認証情報を使用して Git ホストに認証します。選択肢については [Git を設定する](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#configure-git)で説明しています。セッションはネットワーク内部から社内サービスにアクセスし、Git ホストが社内にある場合は Git ホストにも同様にアクセスします。Anthropic への通信（キューのポーリング、セッションのイベントストリーム、およびデフォルトではモデル推論）は `api.anthropic.com` へのアウトバウンド HTTPS であり、セッションがアクセスできるその他の少数のホストについては[ネットワーク要件](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#network-requirements)に記載されています。Anthropic がネットワークの外部から内部へ接続することは一切ありません。
 
-![自己ホスト環境のアーキテクチャ図。ネットワーク境界内にはランナー、その内部の 2 つの Claude Code セッションプロセス、および git ホストが含まれており、api.anthropic.com の外側にはキュー、セッションストリーム、および推論があります。ランナーはキューをポーリングして git ホストに到達し、各セッションプロセスは独自のストリーム、推論、および git 接続を開き、すべての接続はネットワークからの送信であり、受信はありません。](https://mintcdn.com/claude-code/Y0sJ2uDoOVbOVZrQ/images/self-hosted-network-paths.svg?fit=max\&auto=format\&n=Y0sJ2uDoOVbOVZrQ\&q=85\&s=8056103fc1c5564c7f0ef219d260b99d)
+![セルフホスト環境のアーキテクチャ図：ネットワーク境界の内側にはランナー、その中の 2 つの Claude Code セッションプロセス、および Git ホストがあり、外側の api.anthropic.com にはキュー、セッションストリーム、推論があります。ランナーはキューをポーリングして Git ホストにアクセスし、各セッションプロセスはそれぞれ独自のストリーム、推論、Git の接続を開きます。すべての接続はネットワークからのアウトバウンドであり、インバウンドの接続はありません。](https://mintcdn.com/claude-code/Y0sJ2uDoOVbOVZrQ/images/self-hosted-network-paths.svg?fit=max\&auto=format\&n=Y0sJ2uDoOVbOVZrQ\&q=85\&s=8056103fc1c5564c7f0ef219d260b99d)
 
-図の 2 つの Claude Code ボックスはセッションプロセスです。1 つのランナーが最大で設定容量まで 2 つのセッションを同時に実行しています。ランナーは一度に 1 つの[オーナー](#key-concepts)に対応し、最初のセッションを要求するときにそのオーナーにロックされるため、チェックアウトされたコードはオーナー間で混在しません。[ランナーのライフサイクル](#runner-lifecycle)では、このルールについて説明しています。
+図中の 2 つの Claude Code ボックスはセッションプロセスです。1 つのランナーが、設定された容量の上限まで、2 つのセッションを同時に実行しています。ランナーは一度に 1 つの[オーナー](#key-concepts)にのみ対応し、最初のセッションを取得した時点でそのオーナーに固定されるため、チェックアウトされたコードがオーナー間で混在することはありません。このルールについては[ランナーのライフサイクル](#runner-lifecycle)で説明しています。
 
-ランナーを自分で開始して実行し続けるか、ホストする[オートスケーリングオーケストレーター](https://code.claude.com/docs/ja/self-hosted-environments-configuration.md#on-demand-runners)（セッションがキューに入るときにランナーを開始する 2 番目のプロセス）を実行できます。各ランナーは作業が完了すると自動的に終了します。どちらの方法でも、環境を一度セットアップすると、サポートされているすべてのサーフェスのピッカーに表示されます。
+ランナーを自分で起動して稼働させ続けることも、[オートスケーリングオーケストレーター](https://code.claude.com/docs/ja/self-hosted-environments-configuration.md#on-demand-runners)を実行することもできます。オーケストレーターは自社でホストする別のプロセスで、セッションがキューに入るとランナーを起動します。いずれの場合も、環境の設定は一度だけで済み、サポートされているすべてのサーフェスのピッカーに表示されます。
 
 ## 利用可能性と制限事項
 
@@ -122,7 +122,8 @@ kill の時点を過ぎても続くターンは失われます。マージンの
 
 企業のエグレスプロキシもサポートされています。ランナーとオプションの[オートスケーリングオーケストレーター](https://code.claude.com/docs/ja/self-hosted-environments-configuration.md#on-demand-runners)は、`HTTPS_PROXY` や `NO_PROXY` など、[ネットワーク設定](https://code.claude.com/docs/ja/network-config.md)で説明されているプロキシおよび mTLS の環境変数に従います。これらは各プロセスの環境で設定してください。これらの変数は、コントロールプレーンへの呼び出し、オーケストレーターの [SCM コネクタ](https://code.claude.com/docs/ja/self-hosted-environments-reference.md#scm-connector-flags)の WebSocket、および HTTPS リモートの組み込みクローンに適用され、セッションはランナーからこれらを継承します。セッションのストリーミングは HTTPS 上の server-sent events を使用するため、経路上のプロキシはレスポンスをバッファリングしてはいけません。
 
-プロキシで `Proxy-Authorization` ヘッダーも必要な場合、ランナーはプロキシに対して開く各接続にそのヘッダーを追加できます。[エグレスプロキシへの認証](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#authenticate-to-an-egress-proxy)を参照してください。
+* **プロキシ認証**：プロキシで `Proxy-Authorization` ヘッダーも必要な場合、ランナーはプロキシに対して開く各接続にそのヘッダーを追加できます。[エグレスプロキシへの認証](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#authenticate-to-an-egress-proxy)を参照してください。
+* **長時間維持されるレスポンス**：ランナーがセッションを取得したにもかかわらず、Claude が最初のメッセージに一向に応答しない場合、プロキシが原因である可能性があります。[セッションは取得されたが、Claude が最初のメッセージに応答しない](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#when-a-sessions-first-message-is-never-answered)を参照してください。
 
 ## インフラストラクチャに保たれるもの
 

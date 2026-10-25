@@ -961,17 +961,26 @@ Error: Cannot find module '/path/to/project/.claude/hooks/check-command.js'
 blocking because Git Bash wasn't found, so only exit code 0 or 2 counts as this hook's verdict.
 ```
 
-フックが失敗した理由を調べるには、[デバッグ ログ](#debug-hooks)を確認してください。フックに合った修正方法を選んでください。
+エラーに `PowerShell started no program` とも表示されている場合は、まず[引用符で囲まれた文字列のみの `command` に対する修正方法](#powershell-started-no-program)から始めてください。PowerShell はそのような `command` を実行せずに出力します。
 
-* **フックが失敗したときにアクションを進行させたい**: フックに [`"onFailure": "continue"`](#block-the-action-when-a-hook-fails) を追加します
-* **フックが Bash 向けに書かれている**: `shell` が設定されていない[シェル形式](#exec-form-and-shell-form)のフックは、Git Bash がインストールされていない場合は PowerShell で実行され、Bash 向けに書かれたスクリプトはそのままでは実行できないことがあります。[Git for Windows](https://git-scm.com/downloads/win) をインストールするか、Claude Code が見つけられない場所に Git Bash がインストールされている場合は [`CLAUDE_CODE_GIT_BASH_PATH`](https://code.claude.com/docs/ja/env-vars) を設定してから、新しいセッションを開始します
+Git Bash がない場合、そのフックからの 0 または 2 以外の終了コードは、呼び出しを拒否しない JSON を出力した場合でも、すべて[失敗](#block-the-action-when-a-hook-fails)としてカウントされます。フックが失敗した理由を調べるには、[デバッグ ログ](#debug-hooks)を確認してください。そのうえで、フックに合った修正方法を選んでください。
+
+* **フックが失敗したときに呼び出しを進行させたい**: フックに [`"onFailure": "continue"`](#block-the-action-when-a-hook-fails) を追加します
+* **フックは警告のために 1 で終了するが、クラッシュしたときはブロックする必要がある**: `"onFailure": "continue"` では、警告であってもクラッシュであっても、終了コード 1 で呼び出しが進行します。代わりに `"onFailure": "block"` を追加し、警告する箇所ではスクリプトを終了コード 0 で終了させて、それらの呼び出しが進行するようにします。`PreToolUse` で引き続き警告を表示するには、1 つの JSON オブジェクトの [`systemMessage`](#json-output) フィールドとして stdout に出力します。
+* **フックが Bash 向けに書かれている**: Git Bash がない場合、`shell` が設定されていない[シェル形式](#exec-form-and-shell-form)のフックは PowerShell で実行され、失敗することがあります。[Git for Windows](https://git-scm.com/downloads/win) をインストールするか、Claude Code が見つけられない場所に Git Bash がインストールされている場合は [`CLAUDE_CODE_GIT_BASH_PATH`](https://code.claude.com/docs/ja/env-vars) を設定してください。その後、新しいセッションを開始します。
 * **フックが `.cmd` や `.bat` ファイルではなく 1 つの `.exe` を実行する**: プログラムを `command` に、その引数を `args` に指定して exec 形式を使用し、`"onFailure": "block"` を追加します。これにより Claude Code はシェルを介さずにプログラムを起動します。`"onFailure": "block"` がない場合、プログラムが失敗した、存在しない、またはタイムアウトしたときに呼び出しが進行することがあります
-* **フックは警告のために 1 で終了するが、クラッシュしたときはブロックする必要がある**: `"onFailure": "continue"` では、警告であってもクラッシュであっても、終了コード 1 で呼び出しが進行します。代わりに `"onFailure": "block"` を追加し、警告する箇所ではスクリプトを終了コード 0 で終了させて、それらの呼び出しが進行するようにします。終了コード 0 の後に `PreToolUse` で警告を表示するには、1 つの JSON オブジェクトの [`systemMessage`](#json-output) フィールドに入れて stdout に出力します
 * **失敗時にブロックする必要がある PowerShell のガード フック**: `onFailure` が未設定の場合、Git for Windows がインストールされて Claude Code が Git Bash を見つけると、ブロックしなくなります。Git Bash の有無にかかわらず失敗やタイムアウトで呼び出しがブロックされるよう、`"onFailure": "block"` を追加します。また、それ以降も Git Bash ではなく PowerShell でフックが実行され続けるよう、`"shell": "powershell"` も設定します
 
-このエラーを表示するフックでは、呼び出しを拒否しない JSON を出力した場合でも、0 または 2 以外の終了コードはすべて[失敗](#block-the-action-when-a-hook-fails)としてカウントされます。
-
 v2.1.309 より前は、メッセージは `blocking because Git Bash wasn't found and this hook doesn't set "shell" to "powershell", so only exit code 0 or 2 counts as its verdict.` でした。
+
+#### PowerShell started no program
+
+このエラーが出たフックは PowerShell で実行されています。PowerShell は、`"command": "\"C:\\Tools\\guard.exe\""` のように引用符で囲まれた文字列のみの `command` を、実行せずに出力します。
+
+* **テキスト（JSON など）を出力する場合**: `"shell": "powershell"` を設定すると、フックは 0 で終了します
+* **`.ps1`、`.cmd`、`.bat` ファイル、またはパスに変数を含む `.exe` を実行する場合**: `"shell": "powershell"` を設定し、引用符で囲んだパスの前に `&` を付けます。`$HOME` はそのまま残し、環境変数は [`check.ps1` の例](#reference-scripts-by-path-in-powershell-hooks)が `$env:CLAUDE_PROJECT_DIR` と書いているように記述します
+* **`$` を含まないパスにある 1 つの `.exe` を実行する場合**: `command` から内側の引用符を削除し、[1 つの `.exe` を実行するフックの修正方法](#failed-hooks-on-windows-without-git-bash)を適用します。プログラムが引数を取らない場合は `"args": []` と記述します
+* **Bash 向けに書かれたスクリプトを実行する場合**: [Bash 向けに書かれたフックの修正方法](#failed-hooks-on-windows-without-git-bash)を適用します
 
 #### イベントごとの終了コード 2 動作
 
@@ -1417,7 +1426,7 @@ Setup はすべての起動で発火するわけではないため、依存関�
 
 Setup フックはブロックできません。どの終了コードでも実行は継続されます。どの終了コードの場合も、Claude Code は Setup フックの [JSON 出力フィールド](#json-output)（`systemMessage`、`continue`、`hookSpecificOutput.additionalContext` など）を破棄します。`-p` では、Setup フックの stdout、stderr、終了コードは、`--output-format stream-json --verbose` で起動した場合にのみ、[`hook_response` イベント](https://code.claude.com/docs/ja/headless#read-session-metadata)として実行の出力に表示されます。
 
-Setup フックは `CLAUDE_ENV_FILE` にアクセスできます。このファイルに書き込まれた変数は、[SessionStart フック](#persist-environment-variables)と同様に、セッションの後続の Bash コマンドに引き継がれます。`Setup` では `type: "command"` フックのみが実行されます。`Setup` の `type: "mcp_tool"` フックは、[MCP ツールフックのフィールド](#mcp-tool-hook-fields)で説明されているとおり、常にスキップされます。
+Setup フックは `CLAUDE_ENV_FILE` にアクセスできます。フックがこのファイルに変数を書き込むと、[SessionStart フック](#persist-environment-variables)と同様に、セッション中の後続の Bash コマンドに引き継がれます。`Setup` で実行されるのは `type: "command"` フックのみです。[MCP ツールフックのフィールド](#mcp-tool-hook-fields)で説明されているとおり、`Setup` の `type: "mcp_tool"` フックは常にスキップされます。
 
 ### InstructionsLoaded
 
@@ -1473,6 +1482,12 @@ InstructionsLoaded フックには決定制御がありません。指示の読�
 [`async: true`](#run-hooks-in-the-background) で実行するコマンドフックを除き、タイムアウトに達した `UserPromptSubmit` のコマンド、HTTP、MCP ツールのフックはキャンセルされ、その出力（`additionalContext` を含む）は破棄されます。プロンプトはそのコンテキストなしで Claude に届きます。代わりにプロンプトをブロックするには、コマンドフックまたは HTTP フックで [`onFailure: "block"`](#block-the-action-when-a-hook-fails) を設定してください。トランスクリプトには、フック名、発生したタイムアウト、出力が破棄されたことを示す通知が表示されます。
 
 `UserPromptSubmit` の [Agent SDK コールバックフック](https://code.claude.com/docs/ja/agent-sdk/hooks.md)がタイムアウトに達すると、フック名とタイムアウトを示すメッセージとともにプロンプトがブロックされます。そこでのコールバックは、フェイルオープンしてはならないポリシーゲートとして機能している可能性があるためです。セッションは継続します。
+
+#### プロンプトのチェック中の `Esc`
+
+フックがプロンプトをチェックしている最中に `Esc` を押すかセッションを中断すると、チェックは停止し、プロンプトは Claude に届きません。ターミナルで入力したテキストはプロンプトの入力欄に戻り、再送信したときにフックが再びチェックします。
+
+中断したのと同じタイミングでフックがプロンプトをブロックすることもあります。その場合、プロンプトはブロックされたままになります：そのフックの[ブロックメッセージ](#what-a-blocked-prompt-leaves-behind)が表示され、テキストは入力欄に戻りません。
 
 #### UserPromptSubmit の入力
 
@@ -2448,7 +2463,7 @@ Claude Code が通知を送信するときに実行されます。通知タイ�
 | `quota_auto_resume_fired` | claude.ai の使用制限によってタスクが一時停止された後、Claude Code がタスクを続行したとき。続行はリセット時に行われるか、待機中に Claude Code で使用クレジットの追加、プランのアップグレード、モデルの切り替えなどを行って使用量が再び利用可能になった場合はそれより早く行われます（[モデル設定の例外](https://code.claude.com/docs/ja/interactive-mode.md#wait-for-a-usage-limit-to-reset)あり） |
 | `quota_auto_resume_stale` | コンピューターが約 30 分以上スリープしている間に claude.ai の使用制限がリセットされたとき。Claude Code は続行せず、ユーザーが `Enter` を押すのを待ちます。スリープがそれより短い場合は続行し、代わりに `quota_auto_resume_fired` を発火します |
 | `quota_auto_resume_disabled` | Claude Code が claude.ai の使用制限の待機を、タスクを続行せずに終了したとき。たとえば、Claude Code が自動的に開始した待機中に [`autoContinueAtUsageLimit`](https://code.claude.com/docs/ja/settings-reference#autocontinueatusagelimit) がオフにされた場合やリセットが 24 時間以上先に移動した場合、続行したタスクが繰り返し制限に達した場合、続行がモデルに到達する前にブロックされた場合です。ユーザーが `Esc` または `Ctrl+C` を押した場合や、**Don't continue automatically** を選択した場合は発火しません |
-| `plugin_notification` | [mod](https://code.claude.com/docs/ja/plugins/mods/api.md#show-something-without-starting-a-turn) が `$.ui.notify` で通知を発生させたとき。mod が `title` を設定していない限り、フックの `title` は mod の名前になります |
+| `plugin_notification` | [mod](https://code.claude.com/docs/ja/plugins/mods/api.md#show-something-without-starting-a-turn) が `$.ui.notify` で通知を発行したとき。mod がタイトルを設定していない限り、フックの `title` は mod の名前になります |
 
 `quota_auto_resume_fired`、`quota_auto_resume_stale`、`quota_auto_resume_disabled` タイプには Claude Code v2.1.234 以降が必要です。
 
@@ -2961,7 +2976,7 @@ Claude Code は ConfigChange フックの JSON 出力のうちブロックの決
 
 メインの会話内のシェルコマンドが作業ディレクトリを変更したとき、たとえば Claude が `cd` コマンドを実行したときに実行されます。環境変数の再読み込み、プロジェクト固有のツールチェーンの有効化、セットアップスクリプトの自動実行など、ディレクトリの変更に反応するために使用します。ディレクトリごとの環境を管理する [direnv](https://direnv.net/) のようなツールでは、[FileChanged](#filechanged) と組み合わせて使用します。
 
-CwdChanged フックは [`CLAUDE_ENV_FILE`](#persist-environment-variables) にアクセスできます。そのファイルに書き込まれた変数は、次の CwdChanged イベントで Claude Code によってクリアされるまで、後続の Bash コマンドに引き継がれます。
+CwdChanged フックは [`CLAUDE_ENV_FILE`](#persist-environment-variables) にアクセスできます。フックがそのファイルに変数を書き込むと、それらの変数は次の CwdChanged イベントで Claude Code がクリアするまで、後続の Bash コマンドに引き継がれます。
 
 CwdChanged は matcher をサポートせず、すべての発生時に発火します。
 
@@ -3126,7 +3141,10 @@ Claude Code は JSON 出力から `watchPaths` と `systemMessage` を読み取�
 * Claude Code が[バックグラウンドセッション](https://code.claude.com/docs/ja/agent-view.md#how-file-edits-are-isolated)を専用の worktree に分離した
 * `worktree` モードの [`claude remote-control`](https://code.claude.com/docs/ja/remote-control#start-a-remote-control-session) が専用の worktree でセッションを開始した
 
-Claude が `EnterWorktree` を呼び出すのではなく、Bash ツールを通じて `git worktree add` を実行した場合、WorktreeCreate フックは実行されません。そのコマンドを検査またはブロックするには、`Bash` matcher を持つ [`PreToolUse`](#pretooluse) フックを追加してください。
+WorktreeCreate フックは、Claude が Bash を通じて追加する worktree に対しては実行されません。また、`--worktree` と [`--tmux`](https://code.claude.com/docs/ja/cli-reference#cli-flags) で起動したときに作成される worktree に対しては、プラグインのフックは実行されません。
+
+* **Bash を通じた `git worktree add`**: そのコマンドを検査またはブロックするには、`Bash` matcher を持つ [`PreToolUse`](#pretooluse) フックを追加してください。
+* **`--worktree` と `--tmux` の併用**: Claude Code はプラグインを読み込む前に worktree を作成するため、プラグインの WorktreeCreate フックは実行されません。両方のフラグでフックを実行させるには、代わりに[設定ファイル](#configuration)でフックを定義してください。v2.1.300 より前は、`--worktree` 単独の場合でもプラグインの WorktreeCreate フックは実行されませんでした。
 
 デフォルトでは、Claude Code は `git worktree` を使って分離された作業コピーを作成します。WorktreeCreate フックを設定すると、このデフォルトの git の動作が置き換えられ、SVN、Perforce、Mercurial などの別のバージョン管理システムを使用できるようになります。
 
@@ -4186,6 +4204,8 @@ Windows では、コマンド フックで `"shell": "powershell"` を設定す�
   }
 }
 ```
+
+### PowerShell フックでパスによってスクリプトを参照する
 
 PowerShell シェル形式のコマンドからプロジェクト ルートを参照するには、`${CLAUDE_PROJECT_DIR}` または `$env:CLAUDE_PROJECT_DIR` を記述します。Claude Code は `settings.json`、プラグイン、またはスキルで定義されているかどうかに関係なく、PowerShell シェル形式のコマンド内の `${CLAUDE_PROJECT_DIR}`、`${CLAUDE_PLUGIN_ROOT}`、および `${CLAUDE_PLUGIN_DATA}` プレースホルダーを PowerShell の `${env:NAME}` 形式に書き換えます。PowerShell は解析後にエクスポートされた環境から値を解決するため、プレースホルダーはダブルクォート文字列内では機能しますが、PowerShell が変数を展開しないシングルクォート文字列内では機能しません。
 

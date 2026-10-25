@@ -121,6 +121,8 @@ claude.ai/code でセッションを開始し、環境ピッカーから環境�
 * **セッションが git エラーで開始に失敗する**：エラーに git の `could not read Username for` に続いて git ホストの URL が含まれている場合、ランナーにはそのホストの HTTPS 認証情報がありませんでした。
   * **HTTPS 認証情報を指定する**：[git を設定する](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#configure-git)を参照してください
   * **代わりに SSH でクローンする**：ランナーホストに既に SSH キーがある場合は、[プライベートネットワーク向けに git URL を書き換える](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#rewrite-git-urls-for-private-networks)を参照してください
+  * **いずれかの修正の後**：ランナーを再度起動し、新しいセッションを開始するのではなく、失敗したセッションを監視してください。何度も失敗している場合は、ランナーが `Picked up session` をログに記録するまで数分待ってください。
+  * **代わりに別のリポジトリを使用する場合**：失敗したセッションを[アーカイブ](https://code.claude.com/docs/ja/claude-code-on-the-web.md#archive-sessions)または[削除](https://code.claude.com/docs/ja/claude-code-on-the-web.md#delete-sessions)してから、ランナーを再度起動して新しいセッションを開始してください。そうしないと、ランナーが新しいセッションではなく失敗したセッションを取得することがあります。
 
 ### ランナーが終了した場合
 

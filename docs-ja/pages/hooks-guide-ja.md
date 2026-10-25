@@ -954,7 +954,7 @@ HTTP hooks は、Web サーバー、クラウド関数、または外部サー�
 * `PostToolUse` フックは、ツールがすでに実行されているため、アクションを元に戻すことはできません。
 * [`PermissionRequest`](https://code.claude.com/docs/ja/hooks#permissionrequest) フックは、Claude Code がユーザーに権限を求めようとするとき、またはプロンプトを表示できない呼び出しをそのままでは自動的に拒否するときに発火します。`-p` フラグを使用した[非対話モード](https://code.claude.com/docs/ja/headless.md)でも、[`dontAsk` モード](https://code.claude.com/docs/ja/permission-modes#allow-only-pre-approved-tools-with-dontask-mode)以外では引き続き実行され、どのフックも判断せず、他に応答できるものもない呼び出しは拒否されます。
 * `Stop` フックは、タスクの完了時だけでなく、Claude が応答を終えるたびに発火します。ユーザーによる中断では発火しません。API エラーの場合は代わりに [StopFailure](https://code.claude.com/docs/ja/hooks.md#stopfailure) が発火します。
-* 複数の `PreToolUse` フックがツールの引数を書き換えるために [`updatedInput`](https://code.claude.com/docs/ja/hooks#pretooluse) を返す場合、最後に完了したものが有効になります。フックは並列に実行されるため、順序は非決定的です。同じツールの入力を複数のフックで変更することは避けてください。
+* 複数の `PreToolUse` フックがツールの入力を書き換えるために [`updatedInput`](https://code.claude.com/docs/ja/hooks#pretooluse) を返す場合、Claude Code は書き換えをマージせず、どの書き換えでツールが実行されるかも保証しません。同じツールの入力を複数のフックで書き換えることは避けてください。
 
 ### フックと権限モード
 
