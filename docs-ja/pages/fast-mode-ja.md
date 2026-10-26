@@ -80,11 +80,11 @@ Claude Code は、モデル切り替え、再接続、または失敗した[可�
 
 高速モード価格は完全な 1M トークンコンテキストウィンドウ全体で一定です。比較対象となる標準 Opus レートについては、[Claude 価格リファレンス](https://platform.claude.com/docs/ja/about-claude/pricing)を参照してください。
 
-会話で初めて fast mode を有効にすると、会話コンテキスト全体に対して、fast mode のキャッシュされていない入力トークンの価格を全額支払います。会話が進んでいるほどこのコストは高くなるため、最初に fast mode を有効にしたときに請求額が最も小さくなります。コストは会話ごとに 1 回だけ適用されるため、後で fast mode をオフにしてから再びオンに切り替えても、再度請求されることはありません。仕組みについては、[fast mode がプロンプトキャッシュとどのように相互作用するか](https://code.claude.com/docs/ja/prompt-caching.md#turning-on-fast-mode)を参照してください。
+会話で初めて fast mode を有効にすると、会話コンテキスト全体に対して、fast mode のキャッシュされていない入力トークンの価格を全額支払います。会話が進んでいるほどこのコストは高くなるため、最初に fast mode を有効にしたときに請求額が最も小さくなります。fast mode と標準速度は[別々のキャッシュ](https://code.claude.com/docs/ja/prompt-caching.md#turning-on-fast-mode)を保持するため、その後切り替えるたびに、会話の一部または全体が再びキャッシュなしで読み込まれます。
 
 ### 高速モード支出がどこに表示されるかを確認する
 
-高速モード支出がどこに表示されるかは、サインイン方法によって異なるため、まず [`/status`](https://code.claude.com/docs/ja/commands)を実行して確認してください。`Claude Max アカウント`などの `ログイン方法`行が表示される場合は、Claude サブスクリプションでサインインしています。代わりに `API キー`行が表示される場合は、リクエストが Claude Console 組織に請求されます。
+fast mode の支出がどこに表示されるかは、サインイン方法によって異なるため、まず [`/status`](https://code.claude.com/docs/ja/commands) を実行して確認してください。`Claude Max account` などの `Login method` 行が表示される場合は、Claude サブスクリプションでサインインしています。代わりに `API key` 行が表示される場合は、リクエストが Claude Console 組織に請求されます。
 
 * **Pro と Max**：使用クレジットから高速モードの料金を支払います。claude.ai の [**設定 > 使用状況**](https://claude.ai/settings/usage)に移動します。ここで、**使用クレジット**セクションに今月の使用クレジットの支出額が表示されます。この数字には高速モードが含まれていますが、別途に分類されていません。
 * **Team と Enterprise**：組織が使用クレジットから高速モード使用の料金を支払います。自分の使用クレジット支出を確認するには、[`/usage`](https://code.claude.com/docs/ja/costs#check-your-usage-credits-spend)を実行してください。組織がその支出をどこで確認するかについては、[Claude for Teams and Enterprise](https://code.claude.com/docs/ja/costs.md#claude-for-teams-and-enterprise)を参照してください。

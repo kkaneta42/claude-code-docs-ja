@@ -344,16 +344,16 @@ Claude が Claude Tag チャンネルのセッションに github.com のリポ�
 
 ## ランナーイメージをビルドする
 
-Anthropic は事前にビルドされたランナーイメージを公開していません。`claude` バイナリの周りに独自のイメージをビルドし、リポジトリが必要とするツールチェーン（言語ランタイム、コンパイラ、パッケージマネージャー、[MCP](https://code.claude.com/docs/ja/mcp.md) サイドカー）をレイヤーに追加してください。
+Anthropic はビルド済みのランナーイメージを公開していません。`claude` バイナリを中心に独自のイメージをビルドし、リポジトリに必要なツールチェーン（言語ランタイム、コンパイラ、パッケージマネージャー、[MCP](https://code.claude.com/docs/ja/mcp.md) サイドカーなど）を重ねてください。
 
-以下のレシピは `--capacity 4` を使用しているため、1 つのコンテナが同じロックされたオーナーからの最大 4 つの同時セッションを処理します。これは[ハードニングセクション](#harden-your-deployment)のセッションごとのコンテナ分離を提供していません。環境を本番システムに接続する前に、レシピを `--capacity 1` で実行してセッションごとに 1 つのコンテナを使用するか、[オンデマンドランナー](https://code.claude.com/docs/ja/self-hosted-environments-configuration.md#on-demand-runners)を使用してください。オンデマンドランナーは、セッション実行ホストから環境シークレットを保持します。これらのレシピのいずれかに[Anthropic git プロキシ](#use-the-anthropic-git-proxy)を追加する場合は、`--capacity` も `1` に変更してください。
+以下のレシピでは `--capacity 4` を使用しているため、1 つのコンテナが同じロックされたオーナーからの最大 4 つの同時セッションを処理します。これでは[強化のセクション](#harden-your-deployment)で説明しているセッションごとのコンテナ分離は実現されません。環境を本番システムに接続する前に、レシピを `--capacity 1` で実行してセッションごとに 1 つのコンテナを使用するか、[オンデマンドランナー](https://code.claude.com/docs/ja/self-hosted-environments-configuration.md#on-demand-runners)を使用してください。オンデマンドランナーを使用すると、環境シークレットがセッションを実行するホスト上に置かれないようにすることもできます。これらのレシピのいずれかに [Anthropic git プロキシ](#use-the-anthropic-git-proxy)を追加する場合は、`--capacity` も `1` に変更してください。
 
-これは最小限の開始点となる Dockerfile です。
+この Dockerfile は最小限の出発点です。`python3` をインストールしているのは、[Anthropic のコントロールプレーンが Claude Tag セッションに提供するフック](https://code.claude.com/docs/ja/self-hosted-environments-configuration.md#how-each-session’s-config-is-assembled)（Claude に Slack で返信を投稿させるフックを含む）が `python3` を実行するためです。Claude Tag セッションを処理するすべてのイメージで、`python3` を `PATH` 上に維持してください。
 
 ```dockerfile theme={null}
 FROM debian:bookworm-slim
 ARG CLAUDE_CODE_VERSION
-RUN apt-get update && apt-get install -y --no-install-recommends git curl ca-certificates openssh-client jq \
+RUN apt-get update && apt-get install -y --no-install-recommends git curl ca-certificates openssh-client jq python3 \
  && rm -rf /var/lib/apt/lists/*
 RUN curl -fsSL "https://downloads.claude.ai/claude-code-releases/${CLAUDE_CODE_VERSION:?set with --build-arg CLAUDE_CODE_VERSION}/linux-x64/claude" \
       -o /usr/local/bin/claude && chmod +x /usr/local/bin/claude
@@ -363,7 +363,7 @@ RUN git config --system user.name "Claude" \
 ENTRYPOINT ["claude"]
 ```
 
-ARM ノードの場合は `linux-x64` を `linux-arm64` に置き換えるか、Alpine などの musl ベースのイメージの場合は `linux-x64-musl` または `linux-arm64-musl` に置き換えてください。[Alpine Linux セットアップ](https://code.claude.com/docs/ja/setup.md#alpine-linux-and-musl-based-distributions)を参照して、musl イメージが必要とする追加パッケージを確認してください。URL は標準的な Claude Code リリースロケーションであるため、[バイナリの整合性とコード署名](https://code.claude.com/docs/ja/setup.md#binary-integrity-and-code-signing)で説明されているように、ダウンロードされたバイナリをリリースの署名されたマニフェストに対して検証できます。ランナーは Claude Code バージョン 2.1.224 以降が必要です。イメージをビルドしてから、レジストリにプッシュし、以下のレシピで参照してください。
+ノードが ARM の場合は `linux-x64` を `linux-arm64` に置き換え、Alpine などの musl ベースのイメージでは `linux-x64-musl` または `linux-arm64-musl` に置き換えてください。musl イメージに必要な追加パッケージについては、[Alpine Linux のセットアップ](https://code.claude.com/docs/ja/setup.md#alpine-linux-and-musl-based-distributions)を参照してください。この URL は標準の Claude Code リリース配布場所であるため、[バイナリの整合性とコード署名](https://code.claude.com/docs/ja/setup.md#binary-integrity-and-code-signing)で説明しているとおり、ダウンロードしたバイナリをリリースの署名付きマニフェストと照合して検証できます。ランナーには Claude Code バージョン 2.1.224 以降が必要で、Claude Tag セッションを処理するには 2.1.229 以降が必要です。イメージをビルドしたら、レジストリにプッシュし、以下のレシピで参照してください。
 
 ```bash theme={null}
 docker build \
@@ -371,7 +371,7 @@ docker build \
   -t <your-registry>/claude-runner:latest .
 ```
 
-コマンド置換は現在の `stable` リリース番号を検索し、ビルド引数として渡すため、新しい安定版リリース後に同じコマンドを実行すると、ダウンロードレイヤーが新しいバイナリで再ビルドされます。再現可能なビルドのために特定のリリースをピンするには、バージョン番号を `CLAUDE_CODE_VERSION` として直接渡してください。[新しくリリースされたモデルが必要とする](https://code.claude.com/docs/ja/model-config.md)ような安定版チャネルより新しいリリースが必要な場合は、ルックアップ URL の `stable` を `latest` に置き換えてください。
+このコマンド置換は現在の `stable` リリース番号を調べてビルド引数として渡すため、新しい stable リリースの後に同じコマンドを実行すると、ダウンロードレイヤーが新しいバイナリで再ビルドされます。再現可能なビルドのために特定のリリースに固定するには、バージョン番号を `CLAUDE_CODE_VERSION` として直接渡してください。stable チャネルより新しいリリース（[新しくリリースされたモデルが必要とする](https://code.claude.com/docs/ja/model-config.md)リリースなど）が必要な場合は、参照先 URL の `stable` を `latest` に置き換えてください。
 
 ## セッション用に CPU とメモリをサイズ設定する
 
@@ -825,6 +825,7 @@ claude self-hosted-runner doctor
   ランナーをアップグレードするか原因を修正したら、セッションを再試行するか、新しいセッションを開始してください。これらのチェックで原因が見つからない場合は、[問題を報告](#report-an-issue)してください。
 
   セッションが結果をプッシュするソースでは、ブランチが削除されているとセッションが失敗します。セッションが読み取るだけの git ソースでは、ランナーはそのソースをスキップして残りのソースで続行します。スキップするとリポジトリがまったくなくなる場合、ランナーはセッションを失敗させます。v2.1.228 より前は、そのようなセッションは空のディレクトリで開始されていました。
+* **Claude Tag が Slack に返信を投稿しないことがある**: 返信のリマインダーは、[コントロールプレーンが提供するフック](https://code.claude.com/docs/ja/self-hosted-environments-configuration.md#how-each-session’s-config-is-assembled)です。古いランナーは提供されたフックを無視するため、`claude --version` でランナーが Claude Code v2.1.229 以降であることを確認してください。フックは `python3` を実行するため、ランナーイメージ内で `python3 --version` が成功することを確認してください。また、フックをオフにする設定ファイルがないことを確認してください。対象は、`managed-settings.json`、ランナーユーザーの `~/.claude/settings.json`、リポジトリの `.claude/settings.json` または `.claude/settings.local.json` にある `disableAllHooks`、および管理設定内の `allowManagedHooksOnly` またはフックを対象とする [`strictPluginOnlyCustomization`](https://code.claude.com/docs/ja/settings-reference#strictpluginonlycustomization) です。
 * **セッションがリポジトリの 1 つを欠いたまま開始される**: [`checkout` フック](https://code.claude.com/docs/ja/self-hosted-environments-configuration#checkout)のないランナーでは、セッションが読み取るだけのリポジトリについて、git ホストがランナーのアクセスチェックを拒否することがあります。その場合、ランナーはそのリポジトリをスキップし、拒否内容を示す `[runner:warn] could not access context source` 行をログに記録して、残りのリポジトリでセッションを開始します。
 
   ランナーがスキップするのは明確な拒否の場合のみです。つまり、ホストがリポジトリが見つからないと応答した場合、git がホストの認証情報を見つけられない場合、または認証に失敗した場合です。ネットワーク障害、タイムアウト、HTTP `403` の場合は、セッションが結果をプッシュするリポジトリに対する拒否と同様に、引き続きセッションの開始が失敗します。スキップするとリポジトリがまったくなくなるセッションは、引き続きランナーによって失敗とされます。[`--use-anthropic-git-proxy`](#use-the-anthropic-git-proxy) を使用する場合、ランナーは git プロキシ自体が拒否したリポジトリのみをスキップします。

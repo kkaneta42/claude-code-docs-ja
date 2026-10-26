@@ -35,7 +35,7 @@ claude.ai 側には以下が必要です。
 
 開始する前にホストにインストールしてください。
 
-* **Claude Code v2.1.224 以降**。[標準インストール方法](https://code.claude.com/docs/ja/setup.md)のいずれかを使用します。ランナーは標準 `claude` バイナリの一部であり、以前のバージョンは `self-hosted-runner` サブコマンドを認識しません。フリートが実行する正確なバージョンをピンするには、[特定のバージョンをインストール](https://code.claude.com/docs/ja/setup.md#install-a-specific-version)を参照してください。コンテナイメージについては、[本番環境へのデプロイ](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#build-the-runner-image)の Dockerfile を参照してください。
+* **Claude Code v2.1.224 以降**。[標準インストール方法](https://code.claude.com/docs/ja/setup.md)のいずれかを使用します。ランナーは標準 `claude` バイナリの一部であり、以前のバージョンは `self-hosted-runner` サブコマンドを認識しません。Claude Tag セッションを処理するランナーには、v2.1.229 以降と `PATH` 上の `python3` が必要です。これらのセッション用に[コントロールプレーンが提供するフック](https://code.claude.com/docs/ja/self-hosted-environments-configuration.md#how-each-session’s-config-is-assembled)が `python3` を実行するためです。フリートが実行する正確なバージョンをピンするには、[特定のバージョンをインストール](https://code.claude.com/docs/ja/setup.md#install-a-specific-version)を参照してください。コンテナイメージについては、[本番環境へのデプロイ](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#build-the-runner-image)の Dockerfile を参照してください。
 * **Git 2.24 以降**。デプロイページの一部の git オプションはより新しいバージョンが必要です。[git を設定](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#configure-git)は各フロアを記載しています。
 
 ホストの準備ができていることを確認します。

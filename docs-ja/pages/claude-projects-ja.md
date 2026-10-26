@@ -111,7 +111,7 @@
 
 プロジェクトはサイドバーの **Projects** の下にリストされ、その会話が開いています。[最初のバッチ](#your-first-batch)では、作業を送信する前に何をセットアップするかについて説明しています。
 
-### 既存のクラウドセッションから開始する
+### 既存のセッションから開始する
 
 自分で開始したクラウドセッションがプロジェクトに属する作業を行っている場合は、そのセッションのサイドバーメニューを開いて **Move to project** を選択し、サブメニューから選択します。
 
@@ -120,7 +120,12 @@
 
 クラウドセッションのメッセージボックスの上に **Set up project** バナーが表示されることもあります。**Continue as new project** の代わりにこれを使用した場合も結果は同じですが、プロジェクトが開くとセッションの実行中のターンが停止します。
 
-ローカルセッションにはこれらのオプションがありません。プロジェクトでその作業を続行するには、プロジェクト会話で作業を説明するか、ブランチをプッシュし、そのリポジトリをプロジェクトに追加して、タスクでブランチに名前を付けます。
+自分のマシン上のセッションも、[Remote Control](https://code.claude.com/docs/ja/remote-control.md#start-a-remote-control-session) で接続すると、claude.ai/code で同じサイドバーメニューが使えるようになります。ただし、アカウントで [**Require trusted devices**](https://code.claude.com/docs/ja/remote-control.md#trusted-devices) がオンになっている間に接続したセッションのトランスクリプトは、プロジェクトから Claude が読み取ることはできません。この設定がオフの場合は、次の手順に従います。
+
+1. セッションがまだ接続されていない場合は、そのセッションで `/remote-control` を実行します。この設定がオンの間に接続した場合は、まず切断してから再接続してください。
+2. ブラウザで [claude.ai/code](https://claude.ai/code) のサイドバーにあるセッションの行を見つけ、そのメニューを開いて、同じサブメニューから選択します。
+
+**Require trusted devices** がオンの場合、または Remote Control を使用していない場合は、プロジェクトの会話で自分で作業を説明してください。または、セッションのブランチをプッシュし、そのリポジトリをプロジェクトに追加して、Claude にブランチ名を伝えます。
 
 ### GitHub アクセスをセットアップする
 
@@ -425,7 +430,7 @@ Claude は**デバイス上のフォルダーで作業することを Claude に
 * **クラウドセッション**: すべてのスレッドは[クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md)です。ただし、Claude にマシン上で実行するよう要求する場合を除きます。どちらの場合でも、Claude がユーザーに代わってそれを開始して追跡します。自分で開始したクラウドセッションの作業をプロジェクトに取り込むこともできます。そのセッションのサイドバーメニューで [**Move to project**](#start-from-an-existing-cloud-session) を選択します。
 * **スケジュールタスク**: プロジェクトでスケジュールされた作業を要求すると、Claude はそのプロジェクト内のスレッドとして実行され、その **Scheduled tasks** タブに表示される[クラウドスケジュールタスク](https://code.claude.com/docs/ja/routines.md)を作成します。プロジェクト外で作成したスケジュールタスクは独立して動作し続けます。
 * **Remote Control**: [Remote Control](https://code.claude.com/docs/ja/remote-control.md) は claude.ai をマシン上で実行している Claude Code セッションに接続します。プロジェクトで Claude にコンピュータ上でスレッドを実行するよう要求すると、プロジェクトは [Remote Control を使用してそれを実行します](#run-a-thread-on-your-own-computer)。
-* **Local sessions と agent view**: ターミナル、IDE、またはデスクトップアプリのローカル環境で自分で開始したセッションはプロジェクトに追加できません。[Agent view](https://code.claude.com/docs/ja/agent-view.md) は複数のローカルセッションを並べて追跡するための画面であり、各セッションを自分で開始してタスクを割り当てます。
+* **ローカルセッションと agent view**: ターミナル、IDE、またはデスクトップアプリのローカル環境で自分で開始したセッションはプロジェクトの外に留まりますが、[その作業をプロジェクトに取り込む](#start-from-an-existing-cloud-session)ことはできます。[Agent view](https://code.claude.com/docs/ja/agent-view.md) は複数のローカルセッションを並べて追跡するための画面であり、各セッションの開始とタスクの割り当ては引き続き自分で行います。
 * **worktree**: [worktree](https://code.claude.com/docs/ja/worktrees.md) は各ローカルセッションにリポジトリの独自の作業コピーを提供します。クラウドスレッドはそれらを必要としません。各スレッドはリポジトリを独自のクラウドサンドボックスにクローンし、独自のブランチで作業します。
 * **Agent teams**: [agent team](https://code.claude.com/docs/ja/agent-teams.md) は、マシン上またはクラウドセッション内で単一のタスク用にチームメイトセッションを開始し、そのタスクで終了する 1 つのセッションです。
 * **Subagents**: [subagent](https://code.claude.com/docs/ja/sub-agents.md) は 1 つのセッション内で実行され、独自のコンテキストウィンドウで副次的なタスクを実行し、そのセッションに概要を返します。プロジェクトのスレッドは Claude が開始し、プロジェクト会話に報告する完全なセッションであり、スレッドは独自の副次的なタスク用に subagents を使用することができます。
@@ -437,7 +442,7 @@ Claude は**デバイス上のフォルダーで作業することを Claude に
 
 * プロジェクトは claude.ai/code、デスクトップアプリ、Claude モバイルアプリで利用可能です。ターミナル CLI、VS Code 拡張機能、JetBrains プラグイン、Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry では利用できません。
 * プロジェクトスレッドは [クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md) です。または [Remote Control](https://code.claude.com/docs/ja/remote-control.md) を通じてお客様のマシン上のセッションです。どちらの場合も Anthropic がモデルプロバイダーです。[セキュリティ](https://code.claude.com/docs/ja/security.md) および [データ使用](https://code.claude.com/docs/ja/data-usage.md) はクラウドセッションがどのように分離され、何が保持されるかをカバーしています。また [接続とセキュリティ](https://code.claude.com/docs/ja/remote-control.md#connection-and-security) はお客様のマシン上のスレッドがどのように接続され、何が保存されるかをカバーしています。
-* お客様のマシン上で自分で開始したセッションをプロジェクトに追加することはできません。プロジェクトがお客様のマシン上でスレッドを実行するには、[Remote Control を通じてお客様のマシン上でスレッドを実行](#run-a-thread-on-your-own-computer) し、そのセクションに必要なものが記載されています。
+* 自分のマシン上で自分で開始したセッションをプロジェクトに追加することはできませんが、[その作業をプロジェクトに持ち込む](#start-from-an-existing-cloud-session) ことはできます。プロジェクトを自分のマシン上で使用するには、[Remote Control を通じてそこでスレッドを実行](#run-a-thread-on-your-own-computer) します。必要なものはそのセクションに記載されています。
 * クラウドスレッドのサンドボックスはターン間で一時停止し、スレッドが続くときに再開されます。サンドボックスを再開できない場合、スレッドは新しいクローンから続きます。コミットされていない変更は失われる可能性があります。長いタスクでは、Claude にコミットしてプログレス作業をプッシュするよう求めてください。
 * プロジェクトは 1 人のユーザーに属します。プロジェクトまたはそのスレッドを別のユーザーと共有することはできず、スレッドトランスクリプトは他のクラウドセッションが持つ共有オプションを持ちません。ベータ中、プロジェクトの組織レベルコントロールはありません。
 * スレッドはそれを開始した 1 つのプロジェクトに属します。スレッドを別のプロジェクトに移動またはコピーすることはできず、それを単独で移動することはできません。[**プロジェクトに移動**](#start-from-an-existing-cloud-session) は別の方向のみです。クラウドセッションの作業をプロジェクトに持ち込みます。2 つのプロジェクトを 1 つにマージすることはできません。

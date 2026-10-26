@@ -378,10 +378,21 @@ groups:
 
 #### セッションのメトリクスをランナーのメトリクスと結合する
 
-セッション独自のメトリクスを `claude_code_self_hosted_runner_session_idle_seconds` と並べるには、ランナーの `session_id` で結合します。
+アイドル状態のセッションにかかったコストを確認するには、ランナーの `claude_code_self_hosted_runner_session_idle_seconds` を Claude Code のコストメトリクスと `ccr_session_id` で結合します。ランナーのメトリクスはこのラベルを持たないため、次のクエリのように `label_replace` でラベルを付与します。
 
-* **`--capacity` が 1 を超える場合**：直接結合します。ランナーの `/metrics` では、セッションのシリーズはそのメトリクスと同じ `session_id` を `session_...` 形式で持ちます。
-* **`--capacity 1` の場合**：変換した `ccr_session_id` で結合します。デフォルトでは、ポート 9464 の各 Claude Code メトリクスはこのラベルを持ち、セッション ID を `cse_...` 形式で保持しています。新しいラベルで `cse_` プレフィックスを `session_` に置き換えると、ランナーの `session_id` が得られます。メトリクス自体の `session_id` には Claude Code 独自の [`session.id`](https://code.claude.com/docs/ja/monitoring-usage#standard-attributes) が入っており、どのランナーシリーズとも一致しません。
+```text theme={null}
+sum by (ccr_session_id) (claude_code_cost_usage_total)
+and on (ccr_session_id)
+label_replace(
+  claude_code_self_hosted_runner_session_idle_seconds > 600,
+  "ccr_session_id", "cse_$1", "session_id", "session_(.*)"
+)
+```
+
+このクエリは、10 分を超えてアイドル状態のセッションごとに 1 つの結果を返します。結果は、そのセッションの Claude Code プロセスがこれまでに計上したコスト（米ドル）です。別の Claude Code メトリクスを結合するには、クエリ内の `claude_code_cost_usage_total` を置き換えます。このクエリは任意の `--capacity` で機能します。
+
+* **`session_id`**：ポート 9464 では、Claude Code メトリクスのこのラベルには Claude Code 独自の [`session.id`](https://code.claude.com/docs/ja/monitoring-usage#standard-attributes) が入っており、どのランナーシリーズとも一致しません。このラベルで結合しても何も返されないため、`ccr_session_id` で結合してください。
+* **Claude Code メトリクスに `ccr_session_id` がない場合**：[`OTEL_METRICS_INCLUDE_SESSION_ID`](https://code.claude.com/docs/ja/monitoring-usage#metrics-cardinality-control) が `false` に設定されていないことを確認してください
 
 ### セッションライフサイクルカウンターセマンティクス
 

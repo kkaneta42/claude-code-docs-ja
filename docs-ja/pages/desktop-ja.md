@@ -984,7 +984,12 @@ Linux または macOS のリモートマシンには、サポートされてい�
 
 * **システム**：x86\_64 または arm64 プロセッサ。マシンは Claude Code の[システム要件](https://code.claude.com/docs/ja/setup.md#system-requirements)も満たす必要があります。Linux では、Claude Code には glibc 2.17 以降、または musl が必要です。マシンがどちらを使用しているかを確認するには、そのマシンで `ldd --version` を実行します。Alpine Linux などの musl ベースのディストリビューションでは、[Claude Code が必要とするパッケージ](https://code.claude.com/docs/ja/setup.md#alpine-linux-and-musl-based-distributions)もインストールしてください。
 * **SFTP**：SSH サーバーが SFTP サブシステムを提供している必要があります。これは `sshd_config` の `Subsystem sftp` 行で有効になります。確認するには、コンピューターのターミナルで `sftp` を使用して同じホストとポートに接続します。正常に動作しているサーバーでは `sftp>` プロンプトが表示されます。
-* **接続あたりのセッション数**：macOS と Linux の Desktop は、1 つの SSH 接続で複数のセッションを開きます。サーバーの `sshd_config` で `MaxSessions 1` が設定されている場合は、OpenSSH のデフォルトである 10 などに引き上げてください。
+* **サーバーでの `MaxSessions 1`**: `sshd_config` で `MaxSessions 1` が設定されているサーバーに接続するには、次のいずれかを行います。
+  * **コンピューターが macOS または Linux の場合**: Claude Desktop v3.1623.0 以降に更新します
+  * **コンピューターが Windows の場合**: Desktop の組み込み SSH クライアントはそのサーバーに接続できないため、Desktop が [OpenSSH クライアント経由で接続する](#use-your-ssh-configuration)ようにします
+  * **サーバーを変更できる場合**: `MaxSessions` を、たとえば OpenSSH のデフォルトである 10 に引き上げます
+* **`MaxSessions 1` でのログイン**: SSH エージェントが保持する鍵など、プロンプトなしで機能するログインを使用してください。Desktop は接続または再接続のたびに少なくとも 2 回ログインします。さらに、[ターミナル](#run-commands-in-the-terminal)タブごと、および `!` で始まるコマンドを実行する Desktop セッションごとに、少なくとも 1 回のログインが追加で発生します。Claude が実行するコマンドではログインは発生しません。
+* **`MaxSessions 1` でのワンタイムコード**: ワンタイムコードのようにログインのたびにプロンプトが表示される場合、`!` コマンドは失敗します。代わりに、それらのコマンドはターミナルタブで実行してください。ターミナルタブでは、独自のペインでプロンプトが表示されます。
 * **インストールフォルダ**：Desktop は、ホームディレクトリの `~/.claude/remote/` の下にヘルパープログラムと Claude Code をインストールします。そこからそれらを実行するため、そのフォルダを `noexec` でマウントされたファイルシステム上に置くことはできません。接続する各ユーザーのホームディレクトリに約 1 GB のディスク容量を確保してください。そのフォルダに含まれる内容については、[リモートマシン上のファイルとプロセス](#files-and-processes-on-the-remote-machine)を参照してください。
 * **シェル**：リモートマシン上のアカウントに設定されているシェルは、Bash、Zsh、`sh` と同様に、SSH 経由で送信されたコマンドを実行できる必要があります
 * **ネットワーク**：Claude Code はリモートマシンで実行され、そこからネットワークリクエストを行うため、マシンには [Claude Code が必要とするネットワークアクセス](https://code.claude.com/docs/ja/network-config.md#network-access-requirements)が必要です。マシンが Claude Code をダウンロードできない場合、Desktop はコンピューター上でダウンロードしてアップロードします。Claude Code のその他のリクエストは引き続きリモートマシンから送信されます。Linux のリモートマシンで、それらのリクエストにプロキシが必要な場合は、[SSH セッション用に設定してください](#set-a-proxy-or-a-ca-certificate-for-ssh-sessions)。
@@ -993,7 +998,7 @@ Linux または macOS のリモートマシンには、サポートされてい�
 
 Linux のリモートマシンがプロキシ経由でインターネットに接続する場合、または CA 証明書が必要な場合は、そのマシン上の `~/.claude/settings.json` の `env` に[プロキシと CA の変数](https://code.claude.com/docs/ja/network-config.md)を追加してください。そのマシンの `~/.profile`、`~/.bash_profile`、`~/.zprofile`、または `~/.zshrc` ですでにエクスポートしている場合でも追加してください。
 
-そのマシンのターミナルで実行した `claude` がそれらのファイルから変数を取得する場合でも、SSH セッションはそれらのファイルから変数を取得しません。その結果、セッションが応答しなくなったり、**The connection from … to the API failed** や **Authentication failed** が表示されたりすることがあり、再度サインインしても解決しません。
+SSH セッションでは、そのマシンのターミナルで実行した `claude` にはそれらのファイルの変数が渡される場合でも、Claude Code には渡されません。その結果、セッションがハングしたり、**The connection from … to the API failed** や **Authentication failed** が表示されたりすることがあり、再度サインインしても解決しません。
 
 **1. 変数を追加する**
 
@@ -1028,19 +1033,42 @@ Linux のリモートマシンがプロキシまたは CA の変数を別の場�
 
 リモートマシンを再起動するか、[ヘルパーを削除する](#files-and-processes-on-the-remote-machine)手順の最初の 2 つのステップと同様に、Desktop を終了してヘルパーのプロセスを終了します。どちらの方法でも Claude の作業が中断されるため、タスクが実行されていないときに行ってください。
 
-#### macOS と Linux で SSH 設定を使用する
+#### SSH 設定を使用する
 
-macOS と Linux では、Desktop はコンピューター上の OpenSSH クライアントを実行して接続するため、`~/.ssh/config` が使用されます。OpenSSH クライアントを介した接続には Claude Desktop v1.37937.0 以降が必要です。そのファイルの `Host` 名を **SSH host** フィールドに入力すると、`HostName`、`User`、`IdentityFile`、`CertificateFile`、`ProxyJump`、`ProxyCommand` など、そのエントリの設定が使用されます。
+Desktop が自分のコンピューター上の OpenSSH クライアント経由で接続する場合、macOS、Linux、Windows で SSH 設定を使用できます。
+
+* **macOS と Linux**: Desktop は自分のコンピューター上で OpenSSH クライアントを実行して接続するため、`~/.ssh/config` を使用します。OpenSSH クライアント経由で接続するには、Claude Desktop v1.37937.0 以降が必要です。
+* **Windows**: Desktop が OpenSSH クライアント経由で接続する場合、`%USERPROFILE%\.ssh\config` を使用します。サードパーティプロバイダーではなく Claude アカウントを使用している場合、OpenSSH クライアント経由で接続するには、次のすべてが必要です。
+
+  * Claude Desktop v2.2553.0 以降。バージョンを確認するには、[バージョンを確認する](#check-your-version)を参照してください。
+  * Microsoft の OpenSSH 9.4 以降
+  * このページ上部のダウンロードボタンでインストールした Desktop。Microsoft Store 版の Desktop は OpenSSH クライアント経由で接続しないためです
+
+  これらの要件を満たせない場合、またはサードパーティプロバイダーを使用している場合は、[OpenSSH クライアントを使用せずに Windows で接続する](#connect-on-windows-without-the-openssh-client)を参照してください。
+
+OpenSSH クライアントを使用する場合は、**SSH host** フィールドに設定ファイルの `Host` 名を入力します。Desktop は、その `Host` エントリの `HostName`、`User`、`IdentityFile`、`CertificateFile`、`ProxyJump`、`ProxyCommand` などの設定を使用します。
 
 接続を追加する前に、コンピューターのターミナルでクライアントとエントリを確認してください：
 
-* **クライアントのバージョン**：`ssh -V` を実行します。クライアントは OpenSSH 7.6 以降である必要があります。
-* **エントリ**：`ssh devbox` のように、`Host` 名を指定して `ssh` を実行します。失敗する場合は、先にエントリを修正してください。
+* **macOS と Linux でのクライアントのバージョン**: `ssh -V` を実行します。クライアントは OpenSSH 7.6 以降である必要があります。
+* **Windows でのクライアントのバージョン**: Desktop は最初に `PATH` 上の `ssh` を試すため、`ssh -V` を実行します。出力に `OpenSSH_for_Windows_` と 9.4 以降が表示されれば、そのクライアントは要件を満たしています。満たしていない場合は、Desktop が次に試す 2 つのフォルダーを確認します。`C:\Windows\System32\OpenSSH` で `.\ssh.exe -V` を実行し、次に `C:\Program Files\OpenSSH` で実行します。
+* **Windows で要件を満たすクライアントがない場合**: Windows で **OpenSSH Client** オプション機能を追加して保留中の Windows 更新プログラムをインストールするか、[Microsoft の新しいビルド](https://learn.microsoft.com/en-us/troubleshoot/windows-server/system-management-components/upgrade-in-box-openssh-to-latest-openssh-release)をインストールします。その後、Desktop を終了して再度開きます。Desktop が使用可能な OpenSSH クライアントを見つけたかどうかを確認するには、[`ssh.log`](#get-desktops-logs-for-an-ssh-problem) で `Windows OpenSSH client:` とバージョン、または `no usable Windows OpenSSH client` を探します。
+* **エントリ**: Windows では、バージョンチェックで要件を満たしたクライアントを使用します。`ssh devbox` のように、`Host` 名を指定して `ssh` を実行します。失敗する場合は、先にエントリを修正してください。
 
 **SSH port** と **SSH key (optional)** フィールドは空のままにできます。いずれかを入力した場合、Desktop はそれをエントリと組み合わせて使用します：
 
 * **SSH port**：ここに入力した値は、エントリの `Port` を上書きします
-* **SSH key (optional)**：Desktop は、エントリの `IdentityFile` と SSH エージェント内の鍵に加えて、選択した鍵ファイルを提示します
+* **SSH key (optional)**: OpenSSH クライアントでは、Desktop はエントリの `IdentityFile` と SSH エージェント内の鍵に加えて、ここで選択した鍵ファイルを提示します。Windows では、`ssh` は PuTTY の `.ppk` ファイルを読み込まないため、OpenSSH 形式の鍵を選択してください。
+
+##### OpenSSH クライアントを使用せずに Windows で接続する
+
+Windows では、コンピューターが [OpenSSH クライアントの要件](#use-your-ssh-configuration)を満たしていない場合、Desktop の組み込み SSH クライアント経由で接続します。サードパーティプロバイダーでは、デフォルトで組み込みクライアント経由で接続しますが、管理者がこれを変更できます。この設定については、[SSH remote sessions in Claude Desktop on 3P](https://claude.com/docs/third-party/claude-desktop/ssh-remote-sessions) を参照してください。
+
+組み込みクライアントでも、`PATH` に `ssh` コマンドがあれば、**SSH host** フィールドに SSH 設定の `Host` 名を入力できます。ただし、次の制限があります。
+
+* **エントリからの設定**: Desktop は `HostName`、`User`、`Port`、`IdentityFile` を使用します。`PATH` に `sh` シェルがある場合は `ProxyCommand` も使用します。
+* **SSH key (optional)**: ここで選択した鍵ファイルは `IdentityFile` を置き換えるため、エントリの `IdentityFile` を使い続けるにはこのフィールドを空欄のままにします
+* **`CertificateFile` と `ProxyJump`**: Desktop は `CertificateFile` を無視し、エントリで `ProxyJump` が設定されていると接続は失敗します。いずれかの設定を使用するには、[OpenSSH クライアント経由で接続してください](#use-your-ssh-configuration)。
 
 ##### ジャンプホストの背後にあるマシンに接続する
 
@@ -1095,7 +1123,7 @@ Host devbox-container
 
 ##### `ProxyCommand` でシェルの変数を使用する
 
-`ProxyCommand` または `Match exec` コマンドで独自の環境変数を使用するには、`~/.zshrc` などのシェル起動ファイルでその変数をエクスポートしてから、Desktop を終了して再度開きます。Desktop は起動時にログインシェルがエクスポートする内容を読み取り、終了するまでその値を保持します。
+macOS と Linux で、`ProxyCommand` または `Match exec` コマンドで独自の環境変数を使用するには、`~/.zshrc` などのシェル起動ファイルでエクスポートします。その後、Desktop を終了して再度開きます。Desktop は起動時にログインシェルがエクスポートする内容を読み込み、終了するまでその値を保持します。
 
 これには Claude Desktop v2.37337.0 以降と、`-0` を受け付ける `env` コマンドが必要です。これはコンピューターのターミナルで `env -0` を実行して確認できます。
 
@@ -1103,7 +1131,7 @@ Host devbox-container
 >
 > シェルが一時的な AWS 認証情報を設定する場合は、`AWS_*` 変数をエクスポートする代わりに、[AWS CLI にプロファイルを指定してください](#use-aws-credentials-in-a-proxycommand)。
 
-##### `ProxyCommand` で AWS 認証情報を使用する
+##### macOS と Linux で `ProxyCommand` に AWS 認証情報を使用する
 
 シェル起動ファイルで一時的な AWS 認証情報を設定している場合、AWS CLI を実行する `ProxyCommand` は、ターミナルでは接続できても Desktop では失敗することがあります。シェルが `AWS_SESSION_TOKEN`、`AWS_SECURITY_TOKEN`、または `AWS_CREDENTIAL_EXPIRATION` をエクスポートしていると、Desktop の `ssh` と `ProxyCommand` は、シェルの AWS 認証情報、`AWS_REGION`、`AWS_PROFILE` を取得しません。
 
@@ -1242,8 +1270,9 @@ Claude Code は、Desktop がリモートマシンにインストールするバ
 
 ##### 長いタスクを準備する
 
-* **先に更新する**：長いタスクを開始する前に Desktop を更新してください。macOS と Windows では、Desktop はダウンロード済みのアップデートをインストールするために自動的に再起動することがあります。この再起動は、Claude が SSH タスクに取り組んでいる間は待機します。macOS で Claude アカウントを使用している場合、デフォルトでは、アップデートが 72 時間待機した後は、それでも再起動が実行されることがあります。
-* **Windows の場合、またはサードパーティプロバイダーで v2.42304.0 より前の場合は終了しない**: その場合は終了すると実行中のタスクが失われるため、タスクの間は Desktop を開いたままにしてください。それ以外の場合は、終了する前に[何が戻るか](#reopen-a-session-after-you-quit-desktop)を確認してください。
+* **先に更新する**: 長時間のタスクを開始する前に Desktop を更新してください。macOS と Windows では、Desktop はダウンロード済みの更新をインストールするために自動的に再起動することがあります。この再起動は、Claude が SSH タスクで作業している間は待機します。デフォルトでは、更新が 72 時間待機した後、Desktop が[その後タスクに再接続できる](#reopen-a-session-after-you-quit-desktop)場合は、タスク中でも再起動が実行されることがあります。
+* **終了する前に確認する**: 終了や再起動の後、たとえば一部の Desktop の更新後などには、実行中のタスクに必ず戻れるとは限りません。該当するケースについては、[Desktop を終了した後にセッションを再度開く](#reopen-a-session-after-you-quit-desktop)を参照してください。
+* **古いバージョンでは Desktop を開いたままにする**: Windows で v3.1623.0 より前の Claude Desktop を使用している場合、Desktop が終了または再起動すると、実行中のタスクに戻れません。macOS または Linux で v2.42304.0 より前のサードパーティプロバイダーを使用している場合も同様です。どちらの場合も、タスクの実行中は Desktop を開いたままにしてください。バージョンを確認するには、[バージョンを確認する](#check-your-version)を参照してください。
 * **リクエストを減らす**：[タスクがユーザーを待つ頻度を減らす](#handle-requests-that-arrive-while-you-are-away)権限モード、ルール、またはフックを選択します
 * **ジャンプホストを確認する**：ジャンプホストがサインイン（スマートフォンへのプッシュ通知など）を求める場合は、プロンプトなしで機能するログインに切り替えてください。そうしないと、Desktop は再接続を試みるたびに別のプッシュ通知を送信する可能性があります。
 * **リモートマシンをテストする**：短いタスクを開始し、タスクの実行中に Desktop を終了して、タスクが完了しているはずの時刻を十分に過ぎてからセッションを再度開きます。タスクが完了しておらず、セッションに認証エラーが表示されていない場合は、リモートマシンで[タスクを終了させうる要因](#limits-while-desktop-is-disconnected)を確認してください。
@@ -1320,11 +1349,11 @@ Claude Code は、Bypass permissions を含むどの権限モードでも、[い
 
 Desktop を終了した後もタスクはリモートマシン上で実行を続けますが、Desktop がそのプロセスに再参加できない限り、セッションを再度開いたときに停止します。Desktop が閉じている間、タスクは完了するか、ユーザーの対応が必要になるか、[制限](#limits-while-desktop-is-disconnected)のいずれかに達するまで実行されます。
 
-* **Windows の Desktop**: Desktop は終了後に再参加することがないため、実行中のタスクは戻りません。Desktop の起動時にセッションが開くことがあるため、タスクが完了していると見込まれるときにのみ Desktop を再度起動してください。
-* **サードパーティプロバイダー、以前のバージョンのタスク**: v2.42304.0 より前の Desktop バージョンでタスクを開始した場合、macOS や Linux でもタスクは戻りません。タスクが完了していると見込まれるときにのみ Desktop を再度起動してください。
-* **その他のタスク（macOS または Linux の Desktop）**: Desktop を起動してセッションを開くと、Desktop が再参加した場合はタスクが続行されます。一部の Desktop アップデートの後など、常に再参加できるとは限らないため、[長時間のタスクの前に更新してください](#prepare-a-long-task)。
+* **Windows の Desktop で、v3.1623.0 より前のバージョンで開始したタスク**: その後 Desktop が更新されていても、タスクには戻れません。Desktop の起動時にセッションが開くことがあり、セッションが開くとタスクは停止するため、タスクが完了していると予想される時点になってから Desktop を再度起動してください。どのバージョンでタスクを開始したかわからない場合も、タスクが完了していると予想される時点まで待ってください。
+* **macOS または Linux のサードパーティプロバイダーで、v2.42304.0 より前のバージョンで開始したタスク**: タスクには戻れません。タスクが完了していると予想される時点になってから Desktop を再度起動してください。
+* **その他のタスク**: Desktop を起動してセッションを開くと、Desktop が再接続できればタスクは続行されます。一部の Desktop の更新後など、常に再接続できるとは限らないため、[長時間のタスクの前に更新してください](#prepare-a-long-task)。
 
-Desktop が再参加できない場合、待機していた承認や質問も失われます。タスクが自動的に続行されない場合はメッセージを送信すると、Claude は会話の保存された履歴から続行します。
+タスクが停止すると、Desktop が新しいプロセスを開始する間、セッションに `Restarting Claude Code on <host>…` が表示されることがあります。また、待機していた承認や質問も失われます。Claude が自動的に続行しない場合はメッセージを送信してください。Claude は会話の保存済み履歴から続行します。
 
 サードパーティのデプロイについては、[SSH remote sessions in Claude Desktop on 3P](https://claude.com/docs/third-party/claude-desktop/ssh-remote-sessions) を参照してください。
 
@@ -1410,6 +1439,8 @@ worktree にコミットされていない変更があるセッションをア�
 ##### リモートマシンに接続したユーザーを確認する
 
 リモートマシンに誰が接続したかを確認するには、そのマシン上の SSH サーバーのログを読みます。ログでは、Desktop からのログインはターミナルからのログインと同じように表示されます。macOS または Linux の Desktop では、エントリはセッションごとではなく、Desktop が接続するたびに記録されます。
+
+サーバーが `MaxSessions 1` を設定している場合、Desktop が接続または再接続するたびに少なくとも 2 つのエントリが記録されます。さらに、ターミナルタブごと、および `!` で始まるコマンドを実行する Desktop セッションごとに、少なくとも 1 つずつ追加されます。
 
 Desktop の SSH 接続は、Claude Code の[メトリクスとイベント](https://code.claude.com/docs/ja/monitoring-usage.md#available-metrics-and-events)には含まれません。そこから SSH セッションがどのリモートマシンで実行されたかを確認するには、[Desktop SSH セッションにテレメトリを関連付ける](https://code.claude.com/docs/ja/monitoring-usage.md#attribute-telemetry-to-desktop-ssh-sessions)を参照してください。Desktop 自体の接続記録については、[SSH の問題について Desktop のログを取得する](#get-desktops-logs-for-an-ssh-problem)を参照してください。
 
@@ -2112,7 +2143,7 @@ MCP サーバートグルが応答しない場合、または Windows でサー�
 | - | - | - |
 | `<host>'s SSH server has SFTP turned off` | `[SFTP_UNAVAILABLE]` | [リモートマシンの要件](#remote-machine-requirements-for-ssh-sessions)で説明されているとおり、サーバーの `sshd_config` で SFTP をオンにします |
 | `SFTP doesn't start on <host>` | `[SFTP_NOT_STARTED]` | コンピューターのターミナルで `sftp` を使用して同じホストに接続し、何が起動を妨げているかを確認してから、Desktop のメッセージに示されている設定とファイルを確認します |
-| `<host> allows too few SSH sessions per connection` | `[SESSION_LIMIT]` | サーバーの `sshd_config` で `MaxSessions` を引き上げます（例：OpenSSH のデフォルトである 10） |
+| `<host> allows too few SSH sessions per connection` | `[SESSION_LIMIT]` | Claude Desktop v3.1623.0 以降に更新するか、サーバーの `sshd_config` で `MaxSessions` を引き上げます（例：OpenSSH のデフォルトである 10） |
 | `<host> is out of disk space` | `[ENOSPC]` または `[EDQUOT]` | リモートマシンのホームディレクトリまたは `/tmp` で空き容量またはクォータを確保します |
 | `Free up disk space on this computer` | `[ENOSPC]` または `[EDQUOT]`（`Couldn't prepare the deploy locally` で始まるメッセージ内） | コンピューターの空き容量を確保します |
 | `Claude Code won't start on <host>` | `[CLI_UNRESPONSIVE]` | 1 分待ってから、もう一度試してください。失敗が続く場合は、メッセージに示されているコマンドをリモートマシンで実行し、そこで Claude Code が応答するかどうかを確認します。 |

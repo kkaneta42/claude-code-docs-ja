@@ -223,6 +223,8 @@ auto-allow モードでも、次の点は引き続き適用されます。
 * **パラメーターに対する確認ルール**：Bash の再試行時にプロンプトを表示させるには、`Bash(dangerouslyDisableSandbox:true)` に対する[確認ルール](https://code.claude.com/docs/ja/permissions.md#match-by-input-parameter)を追加します。auto モードと `bypassPermissions` モードでもプロンプトが表示され、このルールは一致する許可ルールより優先されます
 * **[`permissions.blockReadsOutsideWorkingDirectories`](https://code.claude.com/docs/ja/settings-reference#permissions-blockreadsoutsideworkingdirectories)**：これがオンの間にプロンプトが表示される再試行については、[どのモードでも自動承認されないアクション](https://code.claude.com/docs/ja/permission-modes.md#actions-no-mode-auto-approves)で説明しています
 
+コマンドが [`Sandbox is required` メッセージ](#commands-refused-with-sandbox-is-required)で拒否されている間は、Claude Code は `dangerouslyDisableSandbox` パラメーターを無視し、再試行も拒否します。
+
 #### strict sandbox モードで再試行をオフにする
 
 [サンドボックス設定](https://code.claude.com/docs/ja/settings-reference.md#sandbox-settings)で `"allowUnsandboxedCommands": false` を設定すると、サンドボックス外での再試行を無効にできます。再試行が無効になると、Claude Code は `dangerouslyDisableSandbox` パラメーターを無視します。これにより、サンドボックスが動作している間、Claude が実行するコマンドは `excludedCommands` のエントリに一致しない限りサンドボックス化されます。サンドボックスを起動できないときに Claude Code がコマンドをサンドボックス外で実行しないようにするには、[`failIfUnavailable`](https://code.claude.com/docs/ja/settings-reference#sandbox-failifunavailable) も設定します。`/sandbox` の **Overrides** タブでは、この設定は **Strict sandbox mode** として表示されます。
@@ -899,9 +901,16 @@ v2.1.307 より前では、フォルダに何かが入っていて `HEAD` がな
 
 ### 0 バイトの読み取り専用ファイルが `.claude` 設定パスに表示され、「はい、今後は聞かない」が保存されない
 
-Linux と WSL2 では、サンドボックスはサンドボックス化されたコマンドが実行されている間に、まだ存在しないファイルに対する書き込み拒否を保持するために、そこに 0 バイトの読み取り専用プレースホルダーを作成します。サンドボックスはその後プレースホルダーを削除します。SIGKILL などによってセッションがそのクリーンアップが実行される前に強制終了された場合、プレースホルダーは残ります。後のセッションは毎回起動時にそれらを読み取り専用で再度バインドするため、プレースホルダーが残っている箇所では、権限の選択を保存するなどの設定書き込みが失敗します。
+Linux と WSL2 では、サンドボックスはサンドボックス化されたコマンドが実行されている間に、まだ存在しないファイルに対する書き込み拒否を保持するために、そこに 0 バイトの読み取り専用プレースホルダーを作成します。サンドボックスはその後プレースホルダーを削除します。
 
-ターミナルで `claude doctor` を実行して、残されたプレースホルダーファイルをリストアップしてください。[`Sandbox mask files left behind at write-deny paths`](https://code.claude.com/docs/ja/errors#stale-sandbox-mask-files-left-by-a-killed-session) 警告はその一部の名前を表示し、残りをカウントします。そのプロジェクトで他の Claude Code セッションが実行されていない間に、`rm` で各ファイルを削除してください。v2.1.257 より前では、Claude Code は同じプレースホルダーを残していましたが、警告していませんでした。
+次のような場合、プレースホルダーは残ります：
+
+* SIGKILL などによって、そのクリーンアップが実行される前にセッションが強制終了された場合
+* バックグラウンドコマンドなど、サンドボックス化されたコマンドがまだ実行中の間にセッションが終了した場合
+
+後のセッションは毎回起動時にそれらを読み取り専用で再度バインドするため、プレースホルダーが残っている箇所では、権限の選択を保存するなどの設定書き込みが失敗します。
+
+ターミナルで `claude doctor` を実行して、残されたプレースホルダーファイルをリストアップしてください。[`Sandbox mask files left behind at write-deny paths`](https://code.claude.com/docs/ja/errors#stale-sandbox-mask-files-left-by-a-killed-session) 警告はその一部の名前を表示し、残りをカウントします。そのプロジェクトで他の Claude Code セッションが実行されていない間に、`rm` で各ファイルを削除してください。v2.1.257 より前では、Claude Code はセッションが強制終了されたときに同じプレースホルダーを残していましたが、警告していませんでした。
 
 ### サンドボックスがオンの状態で SSH 経由の `git` が失敗する
 
@@ -999,6 +1008,21 @@ SSH 経由の単純な `ssh`、`scp`、`rsync` は、[データベースクラ�
 ポートを指定しない IP アドレスのエントリでは、サンドボックス化されたコマンドがそのアドレスでリッスンしているすべてのサービスに到達できるようになります。
 
 v2.1.284 より前では、プロキシは許可されたホスト名がどのアドレスに解決されても接続していました。
+
+### コマンドが `Sandbox is required` で拒否される
+
+[`sandbox.failIfUnavailable`](https://code.claude.com/docs/ja/settings-reference#sandbox-failifunavailable) でサンドボックスを必須にしていて、Claude Code の起動後にサンドボックスが次のいずれかの形で失敗した場合、Claude が実行するサンドボックス化された各コマンドは、示されたメッセージとともに拒否されます。セッションは実行を続け、拒否されたコマンドがサンドボックス外で実行されることはありません：
+
+* **`Sandbox is required but failed to initialize: <reason>`**：Claude Code は起動しましたが、その後サンドボックスの初期化に失敗しました。メッセージに示された手順（`Restart to retry.` または `Fix the sandbox settings to retry`）に従ってください。
+* **`Sandbox is required (sandbox.failIfUnavailable) and stopped being available in this session: <reason>`**：Linux または WSL2 で、サンドボックスは起動しましたが、その後 Claude Code が依存関係の不足を検出しました。理由に示された問題を修正し（[不足している依存関係のインストール](#set-up-linux-and-wsl2)など）、Claude Code を再起動してください。
+
+除外されたコマンドとユーザーが自分で入力したコマンドは引き続き実行され、Claude は拒否されたコマンドをサンドボックス外で再試行できません：
+
+* **除外されたコマンド**：[`excludedCommands`](#run-commands-outside-the-sandbox-with-excludedcommands) エントリに一致するコマンドは、引き続きサンドボックス外で実行されます。そのようなコマンドが作業ディレクトリ外の [`filesystem.allowWrite`](https://code.claude.com/docs/ja/settings-reference#sandbox-filesystem-allowwrite) パスに書き込む場合、その書き込みは通常の権限フローを経由します。[管理者必須のサンドボックス](#repository-settings-under-an-admin-required-sandbox)の下では、Claude Code はリポジトリの設定からのエントリを無視します
+* **[`!` シェルモードのプロンプト](https://code.claude.com/docs/ja/interactive-mode#shell-mode-with-prefix)で入力したコマンド**：引き続きサンドボックス外で実行されます。[バックグラウンドセッション](https://code.claude.com/docs/ja/agent-view.md)では、これらも拒否されます
+* **サンドボックス外での再試行**：Claude Code は[サンドボックス外での再試行](#the-unsandboxed-retry-escape-hatch)の `dangerouslyDisableSandbox` パラメータを無視します
+
+`CLAUDE_CODE_SUBPROCESS_ENV_SCRUB` が設定された Linux セッションでは、すべてのコマンドがサンドボックス内で実行されるため、除外されたコマンドやユーザーが入力したコマンドも拒否されます。
 
 ### `/sandbox` が `Sandbox settings are overridden by a higher-priority configuration` で失敗する
 

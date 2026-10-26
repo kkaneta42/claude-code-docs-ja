@@ -100,9 +100,12 @@ v2.1.260 より前では、API キーまたは Claude サブスクリプショ�
 
 ### fast mode のオン
 
-[fast mode](https://code.claude.com/docs/ja/fast-mode.md) を有効にすると、キャッシュキーの一部であるリクエストヘッダーが追加されるため、Claude Code が fast mode をオンにして送信する最初のリクエストはキャッシュヒットなしで会話履歴全体を読み込みます。Claude Code はターンの開始時にそのヘッダーを 1 回設定し、ターン全体でそれを保持するため、Claude が作業中に fast mode をオンにすると、ヘッダーからのキャッシュミスは次のターンの最初のリクエストで発生します。これらのキャッシュされていない入力トークンは [fast mode の料金](https://code.claude.com/docs/ja/fast-mode.md#understand-the-cost-tradeoff) で請求されます。これが、セッションの開始時に fast mode をオンにすることが、長いセッションの深くでオンにすることより低コストである理由です。現在のモデルが fast mode をサポートしていない場合、fast mode を有効にすると [モデルも切り替わり](#switching-models)、そのスイッチ自体が実行中のターンの次のリクエストから新しいキャッシュを開始します。
+[fast mode](https://code.claude.com/docs/ja/fast-mode.md) と標準速度はそれぞれ別のキャッシュを保持するため、fast mode をオンまたはオフにした後の次のリクエストは、もう一方の速度でキャッシュされた内容を使用できません。会話で初めて fast mode をオンにすると、次のリクエストはそれまでの会話全体をキャッシュなしで [fast mode の料金](https://code.claude.com/docs/ja/fast-mode.md#understand-the-cost-tradeoff) で読み込みます。このコストを小さく抑えるには、セッションの開始時にオンにしてください。
 
-コストは会話ごとに 1 回適用されます。最初の fast mode ターンの後、Claude Code はヘッダーを送信し続け、キャッシュキーの一部ではないリクエストの速度設定のみを変更します。fast mode をオフにすること、[レート制限後の標準速度への自動フォールバック](https://code.claude.com/docs/ja/fast-mode.md#handle-rate-limits)、およびその後にオンに戻すことはすべてキャッシュを保持します。セッション中に [使用クレジットが不足した](https://code.claude.com/docs/ja/fast-mode.md#handle-rate-limits) 場合、Claude Code は拒否された各 fast mode リクエストを同じ方法で標準速度で再試行するため、このフォールバックもキャッシュを保持します。`/clear` と `/compact` はこれをリセットします。これらはいずれにしてもその時点でキャッシュを再構築するためです。
+* Claude が作業中にオンにした場合、そのターンは標準速度で完了し、キャッシュされていない読み込みのコストは次のターンの最初のリクエストで支払います。
+* 現在のモデルが fast mode をサポートしていない場合、fast mode を有効にすると [Opus にも切り替わります](https://code.claude.com/docs/ja/fast-mode.md#toggle-fast-mode)。その [モデルスイッチ](#switching-models) 自体が、実行中のターンの次のリクエストから新しいキャッシュを開始します。
+
+以降の各切り替えでは、切り替え先の速度にキャッシュされていない内容がキャッシュなしで読み込まれます。レート制限後の [標準速度へのフォールバック](https://code.claude.com/docs/ja/fast-mode.md#handle-rate-limits) や、その後の fast mode への復帰など、Claude Code が自動的に行う速度変更も切り替えとしてカウントされます。
 
 ### MCP サーバーの接続または削除
 
@@ -309,9 +312,12 @@ TTL を自分で選択しない限り、Claude Code は Claude サブスクリ�
 
 Claude Code では、キャッシュは事実上 1 つのマシンとディレクトリにスコープされます。システムプロンプトは自動メモリパスを埋め込み、会話は作業ディレクトリ、プラットフォーム、シェル、OS バージョンのアナウンスで開始されます。異なるディレクトリの 2 つのセッションは、したがって異なるプリフィックスを構築し、互いのキャッシュをミスします。
 
-同じディレクトリで並行して実行するセッションは、一致するプリフィックスを構築し、互いのキャッシュを読み取ります。順序付きセッションは、起動時に取得された git ステータススナップショットが一致する場合にのみプリフィックスを共有します。各会話はそのスナップショットからブランチと最近のコミットも保持するためです。
+* 同じディレクトリで並行して実行するセッションは、一致するプリフィックスを構築し、互いのキャッシュを読み取ることができます。
+* 順序付きセッションは、起動時に取得された git ステータススナップショットが一致する場合にのみプリフィックスを共有します。各会話はそのスナップショットからブランチと最近のコミットも保持するためです。
 
-基礎となる API キャッシュはより広いです。キャッシュは組織間で分離され、一部のプロバイダーでは、[組織内のワークスペース間](https://platform.claude.com/docs/ja/build-with-claude/prompt-caching#cache-storage-and-sharing)で分離されます。これらの境界内で、同じモデルとプリフィックスを持つ 2 つのリクエストは同じキャッシュを読み取ります。自動化されたプロセスのフリートを実行する Agent SDK 呼び出し元については、[ユーザーとマシン間でプロンプトキャッシングを改善](https://code.claude.com/docs/ja/agent-sdk/modifying-system-prompts.md#improve-prompt-caching-across-users-and-machines)を参照して、自動メモリの場所をシステムプロンプトから移動し、システムプロンプトのキャッシュエントリをユーザーとマシン間で共有します。
+基礎となる API キャッシュはより広いです。キャッシュは組織間で分離され、一部のプロバイダーでは、[組織内のワークスペース間](https://platform.claude.com/docs/ja/build-with-claude/prompt-caching#cache-storage-and-sharing)で分離されます。これらの境界内で、2 つのリクエストがキャッシュを共有するのは、モデル、[速度](#turning-on-fast-mode)、プリフィックスが一致する場合のみです。
+
+自動化されたプロセスのフリートを実行する Agent SDK 呼び出し元については、[ユーザーとマシン間でプロンプトキャッシュを改善](https://code.claude.com/docs/ja/agent-sdk/modifying-system-prompts.md#improve-prompt-caching-across-users-and-machines)を参照して、自動メモリの場所をシステムプロンプトから移動してください。
 
 ## キャッシュパフォーマンスを確認する
 

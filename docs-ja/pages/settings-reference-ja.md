@@ -1229,12 +1229,12 @@ Linux と WSL2 では、サンドボックスは `bubblewrap` と `socat` が必
 サンドボックスがサポートしていないプラットフォームでは、このキーがオンの場合、Claude Code は起動しません。[管理設定でサンドボックスを強制する](https://code.claude.com/docs/ja/sandboxing.md#enforce-sandboxing-with-managed-settings)を参照してください。
 
 * **Scope**: [`Any file`](#scopes)（[プロジェクト設定とローカル設定には制限あり](https://code.claude.com/docs/ja/sandboxing.md#repository-settings-under-an-admin-required-sandbox)）
-* **Type**: ブール値
-  * `true`: `sandbox.enabled` が `true` であるにもかかわらずサンドボックスが起動できない場合、Claude Code はスタートアップ時にエラーで終了します
-  * `false`: サンドボックスが起動できない場合、Claude Code はコマンドをサンドボックスなしで実行します
+* **型**: ブール値
+  * `true`: `sandbox.enabled` が `true` でもサンドボックスを起動できない場合、Claude Code は起動時にエラーで終了します。サンドボックスがこのチェックを通過した後に初期化に失敗した場合、セッションは実行を続け、Claude Code は[サンドボックス化された各コマンドを拒否します](https://code.claude.com/docs/ja/sandboxing.md#commands-refused-with-sandbox-is-required)
+  * `false`: サンドボックスを起動できない場合、Claude Code はサンドボックスなしでコマンドを実行します
 * **Default**: `false`
 
-これにより、すべての管理対象マシンがコマンドをサンドボックス化するか、起動を拒否します：
+次の例では、管理対象のマシンでサンドボックスをオンにし、`failIfUnavailable` を `true` に設定します。
 
 ```json managed-settings.json theme={null}
 {

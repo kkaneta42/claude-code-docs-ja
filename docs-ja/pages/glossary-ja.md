@@ -120,9 +120,9 @@ CLAUDE.md は、プロジェクトスコープでは `./CLAUDE.md` または `./
 
 ### Compaction
 
-[コンテキストウィンドウ](#context-window)が上限に近づいたときに、会話を自動的に要約する処理です。まず古いツール出力がクリアされ、次に会話が要約されます。プロジェクトルートの CLAUDE.md と自動メモリは圧縮後も保持され、ディスクから再読み込みされますが、会話の中でのみ与えられた指示は失われる可能性があります。手動で実行するには `/compact` を実行します。`/compact focus on the API changes` のように重点を指定することもできます。
+[コンテキストウィンドウ](#context-window)が上限に近づいたときに、会話を自動的に要約する処理です。プロジェクトルートの CLAUDE.md と自動メモリは圧縮後も保持されますが、会話の中でのみ与えられた指示は失われる可能性があります。手動で実行するには `/compact` を実行します。`/compact focus on the API changes` のように重点を指定することもできます。
 
-詳細: [コンテキスト圧縮後も保持されるもの](https://code.claude.com/docs/ja/context-window.md#what-survives-compaction) · [コンテキストがいっぱいになったとき](https://code.claude.com/docs/ja/how-claude-code-works.md#when-context-fills-up)
+詳細: [コンテキスト圧縮後も保持されるもの](https://code.claude.com/docs/ja/context-window.md#what-survives-compaction) · [コンテキストがいっぱいになったとき](https://code.claude.com/docs/ja/how-claude-code-works.md#when-context-fills-up) · [アイドル状態のままにした会話を Claude Code が圧縮するタイミング](https://code.claude.com/docs/ja/settings-reference.md#idlecompaction)
 
 ### Connector
 

@@ -788,7 +788,7 @@ exec "$CLAUDE_RUNNER_CLAUDE_BIN" "$@" --permission-mode auto
 
 これらのソースが適用される順序については、[設定の優先順位](https://code.claude.com/docs/ja/settings.md#settings-precedence) を参照してください。
 
-Anthropic のコントロールプレーンがセッションに [Claude Code フック](https://code.claude.com/docs/ja/hooks.md) を提供する場合、ランナーはそれらを独自の設定の上ではなく隣に設定します。Claude Code v2.1.229 以降が必要です。
+Anthropic のコントロールプレーンがセッションに [Claude Code フック](https://code.claude.com/docs/ja/hooks.md) を提供する場合、ランナーはそれらを独自の設定の上ではなく隣に設定します。Claude Code v2.1.229 以降が必要です。それより古いランナーは提供されたフックを無視します。提供されたフックは `python3` を実行するため、[ランナーイメージ](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#build-the-runner-image) に `python3` をインストールしてください。
 
 * **どこに着地するか**：ランナーは提供された各フックスクリプトをセッションの設定ディレクトリの予約済み `hooks/.ccr-launcher/` サブディレクトリに書き込み、スクリプトを `--settings` で渡す別の設定ファイルに登録し、シードされた `settings.json` と `hooks/<name>` の独自のスクリプトを変更しないままにします。ランナーは各セッションの予約済みサブディレクトリを再作成し、`~/.claude/hooks/.ccr-launcher/` のホストコンテンツをセッションにシードしません。
 * **誰がそれらを作成するか**：コントロールプレーンはセッションごとまたはサードパーティ入力からではなく、独自のデプロイメント内の固定定数からスクリプトを入力します。

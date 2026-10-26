@@ -1747,7 +1747,7 @@ Claude がツールのパラメータを作成した後、ツール呼び出し�
 
 [PreToolUse の決定制御](#pretooluse-decision-control)を使用して、ツール呼び出しを許可、拒否、確認、または遅延します。
 
-`PreToolUse` の [Agent SDK コールバックフック](https://code.claude.com/docs/ja/agent-sdk/hooks.md)がタイムアウトを超えると、ツール呼び出しはブロックされ、Claude はタイムアウトを示すエラー結果を受け取ります。
+タイムアウトを超えた `PreToolUse` の [Agent SDK コールバックフック](https://code.claude.com/docs/ja/agent-sdk/hooks.md#hook-timeout)は、ツール呼び出しをブロックします。
 
 #### PreToolUse の入力
 
@@ -4086,7 +4086,7 @@ Claude Code が非同期フックの結果を配信するのは、セッショ�
 
 非同期フックが発火すると、Claude Code はフック プロセスを開始し、完了を待たずにすぐに続行します。フックは同期フックと同じ JSON 入力を stdin 経由で受け取ります。
 
-バックグラウンド プロセスが終了した後、Claude Code はフックの JSON レスポンスに含まれる `additionalContext` フィールドと `systemMessage` フィールドを次の会話ターンで Claude に配信します。同期フックの `systemMessage` とは異なり、どちらのフィールドもユーザーには表示されません。
+バックグラウンド プロセスが終了した後、Claude Code はフックの JSON レスポンスに含まれる `additionalContext` フィールドと `systemMessage` フィールドを次の会話ターンで Claude に配信します。ただし、[繰り返される `SessionStart` の出力](#limitations)は除きます。同期フックの `systemMessage` とは異なり、どちらのフィールドもユーザーには表示されません。
 
 JSON レスポンスは、stdout に単独で出力するか、それ自体だけの 1 行として出力します。
 
@@ -4154,6 +4154,7 @@ jq -nc --arg msg "$MSG" '{hookSpecificOutput: {hookEventName: "PostToolUse", add
 
 * フック出力は次の会話ターンで配信されます。セッションがアイドル状態の場合、レスポンスは次のユーザー操作まで待機します。例外: `asyncRewake` フックが終了コード 2 で終了すると、セッションがアイドル状態でも Claude を直ちに起動します。
 * 各実行は個別のバックグラウンド プロセスを作成します。
+* 非同期の `SessionStart` フックは、イベントが発火するたびに実行されます。`additionalContext` と `systemMessage` のテキストが、Claude がそのフックから最後に受け取った内容と一致する場合、Claude Code はフックの出力をスキップします。ただし、それ以降に同期 `SessionStart` フックが別のテキストを追加した場合は除きます。Claude Code はテキストが変更されたときにそのテキストを配信し、コンテキスト圧縮または `/clear` の後に次にフックが実行されたときにも再度配信します。v2.1.295 より前は、Claude Code は再開のたびに同じテキストを会話に再度追加していました。
 
 ## セキュリティに関する考慮事項
 

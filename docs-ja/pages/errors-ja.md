@@ -327,6 +327,8 @@
 | `Cannot read this as an image: <path> is a pipe or a device` | [ツールエラー](#file-is-too-large-to-read-as-an-image) |
 | `subagent_type is required: the general-purpose agent is not available in this session` | [ツールエラー](#subagent-type-is-required) |
 | `Error: this write left the memory index at MEMORY.md at ..., over its ... read limit` | [ツールエラー](#memory-index-is-over-its-read-limit) |
+| `Sandbox is required but failed to initialize: <reason>` | [サンドボックス化のトラブルシューティング](https://code.claude.com/docs/ja/sandboxing.md#commands-refused-with-sandbox-is-required) |
+| `Sandbox is required (sandbox.failIfUnavailable) and stopped being available in this session: <reason>` | [サンドボックス化のトラブルシューティング](https://code.claude.com/docs/ja/sandboxing.md#commands-refused-with-sandbox-is-required) |
 | `pkill: refusing to run` | [ツールエラー](#pkill-pattern-matches-the-claude-code-process) |
 | `Failed to write to <name>'s inbox — nothing was sent` | [ツールエラー](#failed-to-write-to-a-teammate-inbox) |
 | `Failed to write the plan approval request to the lead's inbox — plan not submitted` | [ツールエラー](#failed-to-write-to-a-teammate-inbox) |

@@ -167,54 +167,54 @@ Claude Code はスクリプトの出力をキャプチャするため、ター�
 
 ## 利用可能なデータ
 
-Claude Code は以下の JSON フィールドを stdin 経由でスクリプトに送信します：
+Claude Code は、stdin 経由で以下の JSON フィールドをスクリプトに送信します。
 
 | フィールド | 説明 |
 | - | - |
-| `model.id`、`model.display_name` | 現在のモデル識別子と表示名 |
-| `cwd`、`workspace.current_dir` | 現在の作業ディレクトリ。両方のフィールドに同じ値が含まれます。`workspace.current_dir` は `workspace.project_dir` との一貫性のために推奨されます。 |
-| `workspace.project_dir` | Claude Code が起動されたディレクトリ。セッション中に作業ディレクトリが変更された場合、`cwd` と異なる場合があります |
-| `workspace.added_dirs` | `/add-dir` または `--add-dir` 経由で追加された追加ディレクトリ。追加されていない場合は空配列 |
-| `workspace.git_worktree` | 現在のディレクトリが `git worktree add` で作成されたリンク worktree 内にある場合の git worktree 名。メイン作業ツリーでは不在。`worktree.*` が [worktree セッション](https://code.claude.com/docs/ja/worktrees.md) 中のみに存在するのとは異なり、任意の git worktree に対して入力されます |
-| `workspace.repo.host`、`workspace.repo.owner`、`workspace.repo.name` | `origin` リモートから解析されたリポジトリ ID。例えば `"github.com"`、`"anthropics"`、`"claude-code"`。git リポジトリの外部または `origin` リモートが設定されていない場合は不在。gitlab.com プロジェクトがサブグループにネストされている場合、`owner` は `"group/subgroup"` のようなスラッシュ付きの完全な名前空間パスです。v2.1.260 より前は、これらのプロジェクトでは `workspace.repo` が不在でした |
-| `cost.total_cost_usd` | USD でのセッションの推定コスト。クライアント側で計算されます。[`modelPricing`](https://code.claude.com/docs/ja/settings-reference#modelpricing) テーブルが有効な場合を除き、定価で計算されます。実際の請求額と異なる場合があります。`/clear` で新しいセッションが開始されると \$0 にリセットされます |
-| `cost.total_duration_ms` | セッション開始からの総経過時間（ミリ秒） |
-| `cost.total_api_duration_ms` | API レスポンスを待つのに費やされた総時間（ミリ秒） |
-| `cost.total_lines_added`、`cost.total_lines_removed` | 変更されたコード行 |
-| `context_window.total_input_tokens`、`context_window.total_output_tokens` | コンテキストウィンドウに現在あるトークン数。最新の API レスポンスから取得。入力にはキャッシュ読み取りと書き込みが含まれます |
-| `context_window.context_window_size` | トークン単位の最大コンテキストウィンドウサイズ。デフォルトは 200000、拡張コンテキストを持つモデルの場合は 1000000 |
-| `context_window.used_percentage` | 事前計算されたコンテキストウィンドウ使用割合 |
-| `context_window.remaining_percentage` | 事前計算されたコンテキストウィンドウ残り割合 |
-| `context_window.current_usage` | 最後の API 呼び出しからのトークン数。[コンテキストウィンドウフィールド](#context-window-fields) で説明されています |
-| `exceeds_200k_tokens` | 最新の API レスポンスからの総トークン数（入力、キャッシュ、出力トークンの組み合わせ）が 200k を超えるかどうか。これは実際のコンテキストウィンドウサイズに関係なく固定閾値です。 |
-| `fast_mode` | セッションで [fast mode](https://code.claude.com/docs/ja/fast-mode.md) が有効になっているかどうか |
-| `effort.level` | 現在の推論努力レベル（`low`、`medium`、`high`、`xhigh`、または `max`）。ライブセッション値を反映しており、セッション中の `/effort` 変更を含みます。現在のモデルが effort パラメータをサポートしていない場合は不在 |
-| `thinking.enabled` | セッションで拡張思考が有効になっているかどうか |
-| `rate_limits.five_hour.used_percentage`、`rate_limits.seven_day.used_percentage` | 5 時間または 7 日のレート制限の消費割合（0～100） |
-| `rate_limits.five_hour.resets_at`、`rate_limits.seven_day.resets_at` | 5 時間または 7 日のレート制限ウィンドウがリセットされる Unix エポック秒 |
-| `rate_limits.spend_limit.used_percentage`、`rate_limits.spend_limit.resets_at` | Claude apps gateway の背後にある場合、支出制限をどれだけ使用したか、およびその期間がいつリセットされるか。[支出制限フィールド](#spend-limit-fields) を参照してください。Claude Code v2.1.251 以降が必要です |
-| `rate_limits.spend_limit.used_usd`、`rate_limits.spend_limit.limit_usd`、`rate_limits.spend_limit.period` | 米ドル建ての推定支出額と制限額、および制限の期間。これらのフィールドは不在の場合があります。[支出制限フィールド](#spend-limit-fields) を参照してください。Claude Code とゲートウェイの両方で v2.1.284 以降が必要です |
-| `prompt_cache` | メイン会話の [prompt cache](https://code.claude.com/docs/ja/prompt-caching.md) 統計情報：ヒット率、ミス数、キャッシュがウォーム状態かどうか。すべてのフィールドについては [prompt cache フィールド](#prompt-cache-fields) を参照してください。メイン会話の最初の API レスポンスまで不在。Claude Code v2.1.251 以降が必要です |
+| `model.id`, `model.display_name` | 現在のモデル識別子と表示名 |
+| `cwd`, `workspace.current_dir` | 現在の作業ディレクトリ。両フィールドには同じ値が含まれます。`workspace.project_dir` との一貫性のため、`workspace.current_dir` の使用が推奨されます。 |
+| `workspace.project_dir` | Claude Code が起動されたディレクトリ。セッション中に作業ディレクトリが変更された場合、`cwd` と異なることがあります |
+| `workspace.added_dirs` | `/add-dir` または `--add-dir` で追加されたディレクトリ。何も追加されていない場合は空の配列です |
+| `workspace.git_worktree` | 現在のディレクトリが `git worktree add` で作成されたリンク済み worktree 内にある場合の Git worktree 名。メインの作業ツリーでは存在しません。`worktree.*` はセッションが [worktree セッション](https://code.claude.com/docs/ja/worktrees.md)にある間のみ存在するのに対し、こちらはあらゆる git worktree で設定されます |
+| `workspace.repo.host`, `workspace.repo.owner`, `workspace.repo.name` | `origin` リモートから解析されたリポジトリの識別情報。例：`"github.com"`、`"anthropics"`、`"claude-code"`。git リポジトリの外にいる場合や、`origin` リモートが設定されていない場合は存在しません。サブグループにネストされた gitlab.com プロジェクトの場合、`owner` は `"group/subgroup"` のようにスラッシュを含む完全な名前空間パスになります。v2.1.260 より前は、これらのプロジェクトでは `workspace.repo` が存在しませんでした |
+| `cost.total_cost_usd` | 推定セッションコスト（USD）。[`modelPricing`](https://code.claude.com/docs/ja/settings-reference#modelpricing) テーブルが有効でない限り、クライアント側で定価に基づいて計算されます。実際の請求額とは異なる場合があります。`/clear` で新しいセッションが開始されると \$0 にリセットされます |
+| `cost.total_duration_ms` | セッションが実行されている合計の実時間（ミリ秒）。再開をまたいで累積され、セッションが実行されていない間の時間は含まれません |
+| `cost.total_api_duration_ms` | API レスポンスの待機に費やされた合計時間（ミリ秒） |
+| `cost.total_lines_added`, `cost.total_lines_removed` | 変更されたコードの行数 |
+| `context_window.total_input_tokens`, `context_window.total_output_tokens` | 直近の API レスポンスに基づく、現在コンテキストウィンドウ内にあるトークン数。入力にはキャッシュの読み取りと書き込みが含まれます |
+| `context_window.context_window_size` | 最大コンテキストウィンドウサイズ（トークン）。デフォルトは 200000、拡張コンテキストを持つモデルでは 1000000 です。 |
+| `context_window.used_percentage` | 事前計算されたコンテキストウィンドウの使用率 |
+| `context_window.remaining_percentage` | 事前計算されたコンテキストウィンドウの残り率 |
+| `context_window.current_usage` | 最後の API 呼び出しからのトークン数。[コンテキストウィンドウのフィールド](#context-window-fields)で説明しています |
+| `exceeds_200k_tokens` | 直近の API レスポンスからの合計トークン数（入力、キャッシュ、出力トークンの合計）が 200k を超えているかどうか。これは実際のコンテキストウィンドウサイズに関係なく固定されたしきい値です。 |
+| `fast_mode` | セッションで [fast mode](https://code.claude.com/docs/ja/fast-mode.md) が有効かどうか |
+| `effort.level` | 現在の推論エフォート（`low`、`medium`、`high`、`xhigh`、または `max`）。セッション途中の `/effort` による変更を含め、セッションの現在の値を反映します。現在のモデルが effort パラメータをサポートしていない場合は存在しません |
+| `thinking.enabled` | セッションで拡張思考が有効かどうか |
+| `rate_limits.five_hour.used_percentage`, `rate_limits.seven_day.used_percentage` | 5 時間または 7 日間のレート制限の消費率（0 から 100） |
+| `rate_limits.five_hour.resets_at`, `rate_limits.seven_day.resets_at` | 5 時間または 7 日間のレート制限ウィンドウがリセットされる時刻（Unix エポック秒） |
+| `rate_limits.spend_limit.used_percentage`, `rate_limits.spend_limit.resets_at` | Claude apps ゲートウェイの背後で、支出上限をどれだけ使用したか、およびその期間がいつリセットされるか。[支出上限のフィールド](#spend-limit-fields)を参照してください。Claude Code v2.1.251 以降が必要です |
+| `rate_limits.spend_limit.used_usd`, `rate_limits.spend_limit.limit_usd`, `rate_limits.spend_limit.period` | 米ドル建ての推定支出額と上限、および上限の期間。これらのフィールドは存在しない場合があります。[支出上限のフィールド](#spend-limit-fields)を参照してください。Claude Code とゲートウェイの両方で v2.1.284 以降が必要です |
+| `prompt_cache` | メインの会話におけるセッションの[プロンプトキャッシュ](https://code.claude.com/docs/ja/prompt-caching.md)統計：ヒット率、ミス、キャッシュがウォームかどうか。すべてのフィールドについては[プロンプトキャッシュのフィールド](#prompt-cache-fields)を参照してください。メインの会話の最初の API レスポンスまでは存在しません。Claude Code v2.1.251 以降が必要です |
 | `session_id` | 一意のセッション識別子 |
-| `session_name` | セッション名。`--name` フラグまたは `/rename` で設定されたカスタム名が存在する場合はそれを使用し、そうでない場合は AI が生成したセッションタイトルを使用します。[デフォルト表示名](https://code.claude.com/docs/ja/sessions.md#name-your-sessions)（`my-app-3f` など）はこのフィールドに入力されません。セッションにカスタム名も AI が生成したタイトルもない場合は不在 |
-| `prompt_id` | 現在処理中のユーザープロンプトを識別する UUID。OpenTelemetry イベントの [`prompt.id` 属性](https://code.claude.com/docs/ja/monitoring-usage#event-correlation-attributes) と一致します。最初のユーザー入力まで不在 |
+| `session_name` | セッション名。`--name` フラグまたは `/rename` で設定されたカスタム名があればそれを使用し、なければ AI が生成したセッションタイトルを使用します。`my-app-3f` のような[デフォルトの表示名](https://code.claude.com/docs/ja/sessions.md#name-your-sessions)は、このフィールドには設定されません。セッションにカスタム名も AI 生成のタイトルもない場合は存在しません |
+| `prompt_id` | 現在処理中のユーザープロンプトを識別する UUID。[OpenTelemetry イベントの `prompt.id` 属性](https://code.claude.com/docs/ja/monitoring-usage#event-correlation-attributes)と一致します。最初のユーザー入力までは存在しません |
 | `transcript_path` | 会話トランスクリプトファイルへのパス |
-| `version` | Claude Code バージョン |
+| `version` | Claude Code のバージョン |
 | `output_style.name` | 現在の出力スタイルの名前 |
-| `vim.mode` | [vim モード](https://code.claude.com/docs/ja/interactive-mode.md#vim-editor-mode) が有効な場合の現在の vim モード（`NORMAL`、`INSERT`、`VISUAL`、または `VISUAL LINE`） |
-| `agent.name` | `--agent` フラグまたはエージェント設定が設定されている場合のエージェント名 |
-| `pr.number`、`pr.url` | 現在のブランチのオープンプルリクエスト。フッターの PR バッジをミラーします。リポジトリに GitLab リモートがある場合、Claude Code はこれらのフィールドをブランチのオープン [merge request](https://code.claude.com/docs/ja/interactive-mode.md#gitlab-merge-requests) から代わりに入力するため、`pr.number` はマージリクエスト番号です。マージリクエストデータには Claude Code v2.1.234 以降が必要です。git リポジトリにない場合、プルリクエストまたはマージリクエストが見つかるまで、またはマージもしくはクローズされた後は不在 |
-| `pr.review_state` | オープン PR のレビューステータス：`approved`、`pending`、`changes_requested`、または `draft`。`pr` が存在する場合でも独立して不在の可能性があります |
-| `pr.kind` | [GitLab merge request](https://code.claude.com/docs/ja/interactive-mode.md#gitlab-merge-requests) を説明する場合は `mr`。GitHub プルリクエストでは不在なため、このフィールドの前に書かれたスクリプトは引き続き機能します。マージリクエストの場合、Claude Code は GitLab がマージ可能と報告した場合は `review_state` を `approved` に、その他のオープン状態の場合は `pending` に、ドラフトの場合は `draft` に設定します。Claude Code v2.1.234 以降が必要です |
-| `worktree.name` | アクティブな worktree の名前。[worktree セッション](https://code.claude.com/docs/ja/worktrees.md) 中のみ存在 |
+| `vim.mode` | [vim モード](https://code.claude.com/docs/ja/interactive-mode.md#vim-editor-mode)が有効な場合の現在の vim モード（`NORMAL`、`INSERT`、`VISUAL`、または `VISUAL LINE`） |
+| `agent.name` | `--agent` フラグで実行している場合、またはエージェント設定が構成されている場合のエージェント名 |
+| `pr.number`, `pr.url` | 現在のブランチのオープンなプルリクエスト。フッターの PR バッジを反映します。GitLab リモートを持つリポジトリでは、Claude Code は代わりにブランチのオープンな[マージリクエスト](https://code.claude.com/docs/ja/interactive-mode.md#gitlab-merge-requests)からこれらのフィールドを設定するため、`pr.number` はマージリクエスト番号になります。マージリクエストのデータには Claude Code v2.1.234 以降が必要です。git リポジトリ内にいない場合、プルリクエストまたはマージリクエストが見つかるまで、あるいはそれがマージまたはクローズされた後は存在しません |
+| `pr.review_state` | オープンな PR のレビューステータス：`approved`、`pending`、`changes_requested`、または `draft`。`pr` が存在する場合でも、独立して存在しないことがあります |
+| `pr.kind` | `pr` が [GitLab マージリクエスト](https://code.claude.com/docs/ja/interactive-mode.md#gitlab-merge-requests)を表す場合は `mr`。GitHub プルリクエストでは存在しないため、このフィールド以前に書かれたスクリプトも引き続き動作します。マージリクエストの場合、Claude Code は GitLab がマージ可能と報告したときに `review_state` を `approved` に、その他のオープン状態では `pending` に、ドラフトでは `draft` に設定します。Claude Code v2.1.234 以降が必要です |
+| `worktree.name` | アクティブな worktree の名前。セッションが [worktree セッション](https://code.claude.com/docs/ja/worktrees.md)にある間のみ存在します |
 | `worktree.path` | worktree ディレクトリへの絶対パス |
-| `worktree.branch` | worktree の git ブランチ名（例：`"worktree-my-feature"`）。フックベースの worktree では不在 |
+| `worktree.branch` | worktree の Git ブランチ名（例：`"worktree-my-feature"`）。フックベースの worktree では存在しません |
 | `worktree.original_cwd` | worktree に入る前に Claude がいたディレクトリ |
-| `worktree.original_branch` | worktree に入る前にチェックアウトされた git ブランチ。フックベースの worktree では不在 |
+| `worktree.original_branch` | worktree に入る前にチェックアウトされていた Git ブランチ。フックベースの worktree では存在しません |
 
 > **完全な JSON スキーマ**
 >
-> ステータスラインコマンドは stdin 経由でこの JSON 構造を受け取ります：
+> ステータスラインコマンドは、stdin 経由で次の JSON 構造を受け取ります。
 >
 > ```json theme={null}
 > {
@@ -330,93 +330,93 @@ Claude Code は以下の JSON フィールドを stdin 経由でスクリプト�
 > }
 > ```
 >
-> **不在の可能性があるフィールド**（JSON に存在しない）：
+> **存在しない可能性のあるフィールド**（JSON に含まれない）：
 >
-> * `session_name`：`--name` または `/rename` でカスタム名が設定されている場合、または AI が生成したセッションタイトルが存在する場合に表示されます。`my-app-3f` などのデフォルト表示名はこのフィールドに入力されません
-> * `prompt_id`：最初のユーザー入力の後のみ表示
-> * `workspace.git_worktree`：現在のディレクトリがリンク git worktree 内にある場合のみ表示
-> * `workspace.repo`：git リポジトリ内で `origin` リモートが設定されている場合のみ表示
-> * `effort`：現在のモデルが推論努力パラメータをサポートしている場合のみ表示
-> * `vim`：vim モードが有効な場合のみ表示
-> * `agent`：`--agent` フラグまたはエージェント設定が設定されている場合のみ表示
-> * `pr`：現在のブランチのオープン PR または GitLab マージリクエストが見つかった場合のみ表示。PR またはマージリクエストがマージまたはクローズされると削除されます。`pr.review_state` と `pr.kind` は独立して不在の可能性があります
-> * `worktree`：[worktree セッション](https://code.claude.com/docs/ja/worktrees.md) 中のみ表示。存在する場合、`branch` と `original_branch` もフックベースの worktree では不在の可能性があります
-> * `rate_limits`：Claude.ai Pro および Max サブスクライバー、または支出制限を設定する Claude apps gateway の背後にある場合のみ表示。セッションの最初の API レスポンスの後のみ表示。各ウィンドウ（`five_hour`、`seven_day`、`spend_limit`）は独立して不在の可能性があり、Claude Code は `resets_at` 時刻が経過するとウィンドウを削除します。`jq -r '.rate_limits.five_hour.used_percentage // empty'` を使用して、不在を適切に処理します。
-> * `prompt_cache`：メイン会話の最初の API レスポンスの後に表示。[prompt cache フィールド](#prompt-cache-fields) を参照してください
+> * `session_name`：`--name` または `/rename` でカスタム名が設定された場合、または AI 生成のセッションタイトルが存在するようになった時点で表示されます。`my-app-3f` のようなデフォルトの表示名はこのフィールドには設定されません
+> * `prompt_id`：最初のユーザー入力の後にのみ表示されます
+> * `workspace.git_worktree`：現在のディレクトリがリンク済みの git worktree 内にある場合にのみ表示されます
+> * `workspace.repo`：`origin` リモートが設定された git リポジトリ内でのみ表示されます
+> * `effort`：現在のモデルが推論エフォートパラメータをサポートしている場合にのみ表示されます
+> * `vim`：vim モードが有効な場合にのみ表示されます
+> * `agent`：`--agent` フラグで実行している場合、またはエージェント設定が構成されている場合にのみ表示されます
+> * `pr`：現在のブランチでオープンな PR または GitLab マージリクエストが見つかっている間のみ表示され、マージまたはクローズされると削除されます。`pr.review_state` と `pr.kind` は独立して存在しないことがあります
+> * `worktree`：セッションが [worktree セッション](https://code.claude.com/docs/ja/worktrees.md)にある間のみ表示されます。存在する場合でも、フックベースの worktree では `branch` と `original_branch` が存在しないことがあります
+> * `rate_limits`：claude.ai の Pro および Max サブスクライバー、または支出上限を設定する Claude apps ゲートウェイの背後にいる場合にのみ、かつセッションの最初の API レスポンスの後にのみ表示されます。各ウィンドウ（`five_hour`、`seven_day`、`spend_limit`）は独立して存在しないことがあり、Claude Code は `resets_at` の時刻を過ぎたウィンドウを削除します。存在しない場合を適切に処理するには、`jq -r '.rate_limits.five_hour.used_percentage // empty'` を使用してください。
+> * `prompt_cache`：メインの会話の最初の API レスポンスの後に表示されます。[プロンプトキャッシュのフィールド](#prompt-cache-fields)を参照してください
 >
-> **`null` の可能性があるフィールド**：
+> **`null` になる可能性のあるフィールド**：
 >
-> * `context_window.current_usage`：セッションの最初の API 呼び出しの前は `null`。また `/compact` の直後は次の API 呼び出しが再度入力されるまで `null`
-> * `context_window.used_percentage`、`context_window.remaining_percentage`：セッションの早期段階では `null` の可能性があります
+> * `context_window.current_usage`：セッションの最初の API 呼び出しの前は `null` で、`/compact` の後も次の API 呼び出しで再設定されるまで再び `null` になります
+> * `context_window.used_percentage`、`context_window.remaining_percentage`：セッションの初期段階では `null` になることがあります
 >
-> スクリプトで条件付きアクセスと null 値のフォールバックデフォルトを使用して、不在のフィールドを処理します。
+> スクリプトでは、存在しないフィールドは条件付きアクセスで、null 値はフォールバックのデフォルト値で処理してください。
 
-### コンテキストウィンドウフィールド
+### コンテキストウィンドウのフィールド
 
-`context_window` オブジェクトは、最新の API レスポンスからのライブコンテキストウィンドウを説明します。
+`context_window` オブジェクトは、直近の API レスポンスに基づく現在のコンテキストウィンドウを表します。
 
-* **結合合計**（`total_input_tokens`、`total_output_tokens`）：コンテキストウィンドウに現在あるトークン。`total_input_tokens` は `input_tokens`、`cache_creation_input_tokens`、および `cache_read_input_tokens` の合計です。`total_output_tokens` は最新レスポンスからの出力トークンです。両方とも最初の API レスポンスの前は `0` です。
-* **コンポーネント別使用状況**（`current_usage`）：カテゴリ別に分類された同じトークン数。キャッシュヒットを新規入力から分離する必要がある場合に使用します。
+* **合計値**（`total_input_tokens`、`total_output_tokens`）：現在コンテキストウィンドウ内にあるトークン。`total_input_tokens` は `input_tokens`、`cache_creation_input_tokens`、`cache_read_input_tokens` の合計で、`total_output_tokens` は直近の応答の出力トークンです。どちらも最初の API レスポンスの前は `0` です。
+* **コンポーネント別の使用量**（`current_usage`）：同じトークン数をカテゴリ別に分けたもの。キャッシュヒットを新規の入力と分けて把握する必要がある場合に使用します。
 
-`current_usage` オブジェクトには以下が含まれます：
+`current_usage` オブジェクトには以下が含まれます。
 
-* `input_tokens`：現在のコンテキストの入力トークン
+* `input_tokens`：現在のコンテキスト内の入力トークン
 * `output_tokens`：生成された出力トークン
 * `cache_creation_input_tokens`：キャッシュに書き込まれたトークン
 * `cache_read_input_tokens`：キャッシュから読み取られたトークン
 
-キャッシュフィールドの意味とそれらがどのように請求されるかについては、[キャッシュパフォーマンスの確認](https://code.claude.com/docs/ja/prompt-caching.md#check-cache-performance) を参照してください。
+キャッシュフィールドの意味と課金方法については、[キャッシュパフォーマンスの確認](https://code.claude.com/docs/ja/prompt-caching.md#check-cache-performance)を参照してください。
 
 `used_percentage` フィールドは入力トークンのみから計算されます：`input_tokens + cache_creation_input_tokens + cache_read_input_tokens`。`output_tokens` は含まれません。
 
-`current_usage` から手動でコンテキスト割合を計算する場合、`used_percentage` と一致させるために同じ入力のみの式を使用します。
+`current_usage` からコンテキストの割合を手動で計算する場合は、`used_percentage` と一致させるために同じ入力のみの計算式を使用してください。
 
-`current_usage` オブジェクトはセッションの最初の API 呼び出しの前は `null` です。また `/compact` の直後は `null` であり、次の API 呼び出しが再度入力されるまで `null` のままです。
+`current_usage` オブジェクトは、セッションの最初の API 呼び出しの前は `null` で、`/compact` の直後も次の API 呼び出しで再設定されるまで再び `null` になります。
 
-### 支出制限フィールド
+### 支出上限のフィールド
 
-[支出制限が設定された Claude apps gateway](https://code.claude.com/docs/ja/claude-apps-gateway-spend-limits.md#usage-warnings-in-claude-code) の背後では、`rate_limits.spend_limit` オブジェクトが適用される支出制限を説明します。このオブジェクトはセッションの最初の API レスポンスの後に表示され、Claude Code v2.1.251 以降が必要です。スクリプトはそのフィールドを別々のタイミングで受け取ります：
+[支出上限が設定された Claude apps ゲートウェイ](https://code.claude.com/docs/ja/claude-apps-gateway-spend-limits.md#usage-warnings-in-claude-code)の背後では、`rate_limits.spend_limit` オブジェクトがユーザーに適用される支出上限を表します。このオブジェクトはセッションの最初の API レスポンスの後に表示され、Claude Code v2.1.251 以降が必要です。スクリプトは、そのフィールドを別々のタイミングで受け取ります。
 
-* `used_percentage` と `resets_at`：すべてのレスポンスに含まれるため、`spend_limit` が存在する場合は常に存在します。`used_percentage` は 0～100 の範囲、または制限を超えると 100 を超える値になり、`resets_at` は制限の期間がリセットされる Unix エポック秒です。
-* `used_usd`、`limit_usd`、`period`：これまでの推定支出額と制限額（米ドル）、および制限の対象期間（`daily`、`weekly`、`monthly` のいずれか）。ゲートウェイは [`used_usd` をトークン数から計算する](https://code.claude.com/docs/ja/claude-apps-gateway-spend-limits#how-requests-are-priced) ため、これは推定値であり、請求額ではありません。Claude Code は、リクエストを送信している間、約 5 分ごとに別のリクエストでゲートウェイからこれらを読み取ります。金額は `used_percentage` より約 5 分古い場合があるため、両者が一時的に一致しないことがあります。Claude Code とゲートウェイの両方で v2.1.284 以降が必要です。
+* `used_percentage` と `resets_at`：すべての応答で送られるため、`spend_limit` が存在する場合は常に存在します。`used_percentage` は 0 から 100 の範囲で、上限を超えると 100 を上回ります。`resets_at` は上限の期間がリセットされる時刻（Unix エポック秒）です。
+* `used_usd`、`limit_usd`、`period`：これまでの米ドル建ての推定支出額と上限、および上限が対象とする期間（`daily`、`weekly`、`monthly` のいずれか）。ゲートウェイは [`used_usd` をトークン数から計算](https://code.claude.com/docs/ja/claude-apps-gateway-spend-limits#how-requests-are-priced)するため、これは推定値であり、請求額ではありません。Claude Code は、リクエストを送信している間、約 5 分ごとに別のリクエストでゲートウェイからこれらを読み取ります。金額は `used_percentage` より約 5 分古い場合があるため、両者が一時的に一致しないことがあります。Claude Code とゲートウェイの両方で v2.1.284 以降が必要です。
 
-`spend_limit` が存在する場合でも、`used_usd`、`limit_usd`、`period` はオプションとして扱ってください。スクリプトはこれらより先に割合を受け取ります。また、`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` を設定するとそのリクエストがオフになるため、これらは不在のままになります。スクリプトでは、`jq -r '.rate_limits.spend_limit.used_usd // empty'` のように、それぞれをフォールバック付きで読み取ってください。
+スクリプトは割合をこれらより先に受け取るため、`spend_limit` が存在する場合でも、`used_usd`、`limit_usd`、`period` は省略可能として扱ってください。スクリプトでは、`jq -r '.rate_limits.spend_limit.used_usd // empty'` のように、それぞれをフォールバック付きで読み取ってください。Claude Code v2.1.295 より前は、`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` を設定するとそのリクエストが無効になり、これらのフィールドは存在しないままでした。
 
-### Prompt cache フィールド
+### プロンプトキャッシュのフィールド
 
-`prompt_cache` オブジェクトは、セッションのメイン会話が [prompt cache](https://code.claude.com/docs/ja/prompt-caching.md) をどのように使用しているかを要約します。Claude Code は API のレスポンスのキャッシュトークン数から計算するため、すべてのプロバイダーで機能します。
+`prompt_cache` オブジェクトは、セッションのメインの会話が[プロンプトキャッシュ](https://code.claude.com/docs/ja/prompt-caching.md)をどのように使用しているかをまとめたものです。Claude Code は API の応答に含まれるキャッシュトークン数からこれを計算するため、すべてのプロバイダーで機能します。
 
-オブジェクトはメイン会話の最初の API レスポンスの後に表示されます。Claude Code はこれらの統計情報でサブエージェントリクエストをカウントしません。Claude Code v2.1.251 以降が必要です。
+このオブジェクトは、メインの会話の最初の API レスポンスの後に表示されます。Claude Code は、サブエージェントのリクエストをこれらの統計に含めません。Claude Code v2.1.251 以降が必要です。
 
-テーブルは各フィールドとその意味を示しています。タイムスタンプは Unix エポック秒で、`rate_limits.*.resets_at` と同じ単位です。短いステータスラインは通常、これらの 1 つまたは 2 つを表示します。`warm` と `hit_ratio` はキャッシュ状態を最も直接的に要約します。
+次の表に、各フィールドとその意味を示します。タイムスタンプは `rate_limits.*.resets_at` と同じ単位の Unix エポック秒です。短いステータスラインでは通常、これらのうち 1 つか 2 つを表示します。`warm` と `hit_ratio` は、キャッシュの状態を最も直接的に要約します。
 
 | フィールド | 説明 |
 | - | - |
-| `warm` | キャッシュされたプレフィックスがまだ TTL 内にあるかどうか。最後のレスポンスがキャッシュトークンを報告しなかった場合は `false`。`caching_observed` が `true` の場合でも |
-| `caching_observed` | このセッションのレスポンスがキャッシュトークンを報告したかどうか。`false` は prompt caching がオフ、またはプロバイダーまたはゲートウェイがそれを報告しないことを意味します |
-| `ttl` | 現在のキャッシュされたプレフィックスの [キャッシュライフタイム](https://code.claude.com/docs/ja/prompt-caching.md#cache-lifetime)：`"5m"` または `"1h"` |
-| `expires_at` | キャッシュされたプレフィックスが TTL を離れてコールドになる時刻（エポック秒）。最後のレスポンスがキャッシュトークンを報告しなかった場合は `null` |
-| `requests` | このセッションのメイン会話で記録された API リクエスト |
-| `misses` | キャッシュが既に保持していたコンテンツを再処理したリクエスト：キャッシュが読み取ることができた 5% 以上かつ少なくとも 2,000 トークン。コンパクションまたはツール結果のクリアで不足を説明できない場合 |
-| `expected_rebuilds` | コンパクションまたは古いツール結果のクリアに続いたキャッシュリビルド |
-| `hit_ratio` | キャッシュ読み取りトークンをこのセッションのすべての入力トークンの分数として表したもの。0～1 の範囲。分母はキャッシュ読み取り、キャッシュ書き込み、およびキャッシュされていない入力をカウントします。これらのカウントがすべてゼロの場合は `null` |
-| `cache_write_tokens` | このセッション中にキャッシュに書き込まれたすべてのトークン。最初のリクエストの初期書き込みを含む |
+| `warm` | キャッシュされたプレフィックスがまだ TTL 内にあるかどうか。最後の応答でキャッシュトークンが報告されなかった場合は、`caching_observed` が `true` であっても `false` になります |
+| `caching_observed` | このセッションでいずれかの応答がキャッシュトークンを報告したかどうか。`false` は、プロンプトキャッシュが無効であるか、プロバイダーまたはゲートウェイがそれを報告しないことを意味します |
+| `ttl` | 現在キャッシュされているプレフィックスの[キャッシュの有効期間](https://code.claude.com/docs/ja/prompt-caching.md#cache-lifetime)：`"5m"` または `"1h"` |
+| `expires_at` | キャッシュされたプレフィックスが TTL を過ぎてコールドになる時刻（エポック秒）。最後の応答でキャッシュトークンが報告されなかった場合は `null` |
+| `requests` | このセッションでメインの会話について記録された API リクエスト数 |
+| `misses` | キャッシュがすでに保持していたコンテンツを再処理したリクエスト数：リクエストがキャッシュから読み取れたはずの量のうち 5% 超かつ 2,000 トークン以上を再処理し、キャッシュ読み取りの不足をコンテキスト圧縮やツール結果のクリアで説明できないもの |
+| `expected_rebuilds` | コンテキスト圧縮または古いツール結果のクリアに続いて行われたキャッシュの再構築の回数 |
+| `hit_ratio` | このセッションのすべての入力トークンに占めるキャッシュ読み取りトークンの割合（0 から 1）。分母にはキャッシュ読み取り、キャッシュ書き込み、キャッシュされていない入力が含まれます。これらがすべてゼロの間は `null` |
+| `cache_write_tokens` | このセッションでキャッシュに書き込まれたすべてのトークン（最初のリクエストの初回書き込みを含む） |
 | `miss_recache_tokens` | ミスとしてカウントされたリクエストによってキャッシュに書き込まれたトークン |
-| `last_miss_at` | 最後のミスが発生した時刻（エポック秒）。セッションにミスがない場合は `null` |
-| `last_miss_cause` | Claude Code が最後のミスの可能な原因として特定したもの。[最後のミスの原因](#last-miss-cause) で説明されています。Claude Code v2.1.260 以降が必要です |
-| `miss_causes` | このセッションの診断されたミスのうち、各原因を持つ数。`last_miss_cause` と同じ原因名でキー付けされています。Claude Code v2.1.260 以降が必要です |
-| `recache_tokens_if_cold` | キャッシュがそれまでにコールドになった場合、次のリクエストが再キャッシュするトークン。コンパクションまたは古いツール結果のクリアの直後は `null`。次のリクエストが書き直された会話のサイズを記録するまで `null` のままです |
+| `last_miss_at` | 最後のミスが発生した時刻（エポック秒）。セッションにミスがない間は `null` |
+| `last_miss_cause` | Claude Code が最後のミスの原因と推定したもの。[最後のミスの原因](#last-miss-cause)で説明しています。Claude Code v2.1.260 以降が必要です |
+| `miss_causes` | このセッションで診断されたミスのうち、各原因によるものの件数。キーは `last_miss_cause` と同じ原因名です。Claude Code v2.1.260 以降が必要です |
+| `recache_tokens_if_cold` | 次のリクエストまでにキャッシュがコールドになっていた場合に、そのリクエストが再キャッシュするトークン数。コンテキスト圧縮または古いツール結果のクリアの直後は、次のリクエストが書き換えられた会話のサイズを記録するまで `null` |
 
-Claude Code はターミナルで同じ統計情報を表示します。[`/usage` コマンドの `Prompt cache (main)` 行](https://code.claude.com/docs/ja/costs#prompt-cache-statistics) を参照してください。
+Claude Code は、同じ統計をターミナルの [`/usage` コマンドの `Prompt cache (main)` 行](https://code.claude.com/docs/ja/costs#prompt-cache-statistics)にも表示します。
 
 #### 最後のミスの原因
 
-`last_miss_cause` オブジェクトは、Claude Code が最新のミスの可能な原因として特定したものを報告します。その `causes` 配列は `tools_changed`、`system_prompt_changed`、`ttl_expired_5m`、または `likely_server_side` などの 1 つ以上の原因名を保持します。オブジェクトはセッションの最初のミスまで `null` であり、Claude Code が最新のミスの原因を特定できなかった場合は再び `null` になります。Claude Code v2.1.260 以降が必要です。
+`last_miss_cause` オブジェクトは、Claude Code が直近のミスの原因と推定したものを報告します。その `causes` 配列には、`tools_changed`、`system_prompt_changed`、`ttl_expired_5m`、`likely_server_side` などの原因名が 1 つ以上含まれます。このオブジェクトは、セッションの最初のミスまでは `null` で、Claude Code が直近のミスの原因を特定できなかった場合も再び `null` になります。Claude Code v2.1.260 以降が必要です。
 
-2 つの原因はオブジェクトにカウントを追加します：
+2 つの原因では、オブジェクトに件数が追加されます。
 
-* `tools_added` と `tools_removed`：`tools_changed` を使用して、リクエストに追加または削除されたツールの数
-* `system_char_delta`：`system_prompt_changed` を使用して、システムプロンプトの長さの変化（文字数）
+* `tools_added` と `tools_removed`：`tools_changed` とともに、リクエストに追加またはリクエストから削除されたツールの数
+* `system_char_delta`：`system_prompt_changed` とともに、システムプロンプトの長さの変化（文字数）
 
 ## 例
 

@@ -470,7 +470,7 @@ Claude Code は、これらの値を OTLP リソースブロックで送信す�
 名前が届かない場合は、次のいずれかの原因を確認してください。
 
 * **Desktop を実行しているコンピューターで設定した**: Desktop は、そこで設定した値を SSH セッションに渡しません
-* **ログインファイルでエクスポートした**: `/etc/profile` などのファイルを読み取るのはログインシェルのみです。そこで `export` した値は、ログインシェルから起動した Claude Code には届きます。Desktop はログインシェル経由で Claude Code を起動しないため、Desktop SSH セッションには届きません。
+* **`/etc/profile` など、ログインシェルのみが読み取るファイルでエクスポートした**: ログインシェルから `claude` を実行した場合は名前が届きますが、Desktop SSH セッションでは届きません。Desktop はログインシェル経由で Claude Code を起動しません。代わりに、リモートマシン上の[管理設定ファイル](https://code.claude.com/docs/ja/desktop.md#managed-settings)の `env` で変数を設定してください。
 * **値の中にスペースが含まれている**: この場合、Claude Code はどのキーもイベントやデータポイントにコピーせず、エラーも報告しません。[値からスペースを取り除いてください](#multi-team-organization-support)。
 * **他の何かがすでにこの変数を設定している**: デスクトップアプリが開始するセッションでは、起動環境ですでに設定されている変数が[設定ファイルより優先されます](https://code.claude.com/docs/ja/settings-reference.md#how-env-values-interact-with-your-shell)。[デバッグログ](https://code.claude.com/docs/ja/debug-your-config.md)には、無視された各変数の名前が記録されます。サードパーティの Desktop デプロイが、提供する環境で [OTLP エンドポイントを指定している](#how-managed-settings-lock-the-otlp-destination)場合、その環境には Desktop 独自の `OTEL_RESOURCE_ATTRIBUTES` が含まれます。
 
@@ -1403,7 +1403,7 @@ API リクエストが複数回の試行の後に失敗したときに 1 回ロ�
 * `pre_tokens`: 圧縮前のおおよそのトークン数
 * `post_tokens`: 圧縮後のおおよそのトークン数
 * `error`: 圧縮が失敗した場合のエラーメッセージ
-* `precompute_reuse`: `trigger` が `"manual"` の場合、または `trigger` を `"auto"` として報告する[アイドル時の圧縮](https://code.claude.com/docs/ja/settings-reference.md#idlecompaction)の場合にのみ設定されます。自動圧縮では、コンテキストウィンドウが埋まる前にバックグラウンドで要約を準備できます。この属性は、圧縮がその準備済みの要約を再利用したかどうかを記録します。`"hit"` は再利用されたことを意味し、`"miss_custom_instructions"`、`"miss_hook"`、`"miss_not_ready"` は代わりに新しい要約が計算された理由を示します
+* `precompute_reuse`: `trigger` が `"manual"` の場合、またはインタラクティブなターミナルセッションでの[アイドル時の圧縮](https://code.claude.com/docs/ja/settings-reference.md#idlecompaction)で `trigger` が `"auto"` の場合にのみ設定されます。自動圧縮では、コンテキストウィンドウがいっぱいになる前にバックグラウンドで要約を準備できます。この属性は、圧縮がその準備済みの要約を再利用したかどうかを記録します。`"hit"` は再利用されたことを意味し、`"miss_custom_instructions"`、`"miss_hook"`、`"miss_not_ready"` は代わりに新しい要約が計算された理由を示します
 
 #### Subagent completed event
 
